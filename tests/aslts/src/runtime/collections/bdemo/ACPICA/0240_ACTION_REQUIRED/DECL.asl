@@ -68,7 +68,7 @@ Method(m032, 1)
 					Store(Acquire(\_GL, 0xffff), Local0)
 					if (Local0) {
 						Store("Thread 0: failed to Acquire GL", Debug)
-						err("", zFFF, 0x000, 0, 0, 0, 0)
+						err("", zFFF, __LINE__, 0, 0, 0, 0)
 					} else {
 						Store("Thread 0: succeeded to Acquire GL", Debug)
 						Store(1, i000)
@@ -84,7 +84,7 @@ Method(m032, 1)
 					if (LNot(i001)) {
 						Store("Thread 1: before attempt to Release GL", Debug)
 						Release(\_GL)
-						CH04("", 0, 63, 0, 0x001, 0, 0) // AE_AML_NOT_OWNER
+						CH04("", 0, 63, 0, __LINE__, 0, 0) // AE_AML_NOT_OWNER
 						Store("Thread 1: after attempt to Release GL", Debug)
 						Store(1, i001)
 					}
@@ -119,7 +119,7 @@ Method(m033, 1)
 					Store(Acquire(MX00, 0xffff), Local0)
 					if (Local0) {
 						Store("Thread 0: failed to Acquire MX00", Debug)
-						err("", zFFF, 0x002, 0, 0, 0, 0)
+						err("", zFFF, __LINE__, 0, 0, 0, 0)
 					} else {
 						Store("Thread 0: succeeded to Acquire MX00", Debug)
 						Store(1, i000)
@@ -135,7 +135,7 @@ Method(m033, 1)
 					if (LNot(i001)) {
 						Store("Thread 1: before attempt to Release MX00", Debug)
 						Release(MX00)
-						CH04("", 0, 63, 0, 0x003, 0, 0) // AE_AML_NOT_OWNER
+						CH04("", 0, 63, 0, __LINE__, 0, 0) // AE_AML_NOT_OWNER
 						Store("Thread 1: after attempt to Release MX00", Debug)
 						Store(1, i001)
 					}

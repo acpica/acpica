@@ -67,11 +67,11 @@ Method(mdf9,, Serialized)
 	Store(SizeOf(b000), Local1)
 
 	if (LNotEqual(Local0, 3)) {
-		err("", zFFF, 0x000, 0, 0, Local0, 3)
+		err("", zFFF, __LINE__, 0, 0, Local0, 3)
 	} elseif (LNotEqual(Local1, 202)) {
-		err("", zFFF, 0x001, 0, 0, Local0, 202)
+		err("", zFFF, __LINE__, 0, 0, Local0, 202)
 	} elseif (LNotEqual(b000, b001)) {
-		err("", zFFF, 0x002, 0, 0, b000, b001)
+		err("", zFFF, __LINE__, 0, 0, b000, b001)
 	}
 }
 

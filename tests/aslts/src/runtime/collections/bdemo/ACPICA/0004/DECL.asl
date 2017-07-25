@@ -46,12 +46,12 @@ Method(mda0)
 	Store(ObjectType(Local5), Local0)
 
 	if (LNotEqual(Local0, c009)){
-		err("", zFFF, 0x000, 0, 0, Local0, c009)
+		err("", zFFF, __LINE__, 0, 0, Local0, c009)
 	}
 
 	Increment(Local5)
 
 	if (LNotEqual(Local5, 1)){
-		err("", zFFF, 0x001, 0, 0, Local5, 1)
+		err("", zFFF, __LINE__, 0, 0, Local5, 1)
 	}
 }

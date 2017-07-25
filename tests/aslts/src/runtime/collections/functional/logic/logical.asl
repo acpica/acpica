@@ -55,65 +55,65 @@ Method(m003, 6, Serialized)
 			case (0) {
 				Store(LNotEqual(Local0, Local1), Local7)
 				if (LNotEqual(Local7, Local2)) {
-					err(arg0, z035, 0, 0, 0, Local5, arg2)
+					err(arg0, z035, __LINE__, 0, 0, Local5, arg2)
 				}
 				Store(LNotEqual(Local1, Local0), Local7)
 				if (LNotEqual(Local7, Local2)) {
-					err(arg0, z035, 1, 0, 0, Local5, arg2)
+					err(arg0, z035, __LINE__, 0, 0, Local5, arg2)
 				}
 			}
 			case (1) {
 				Store(LAnd(Local0, Local1), Local7)
 				if (LNotEqual(Local7, Local2)) {
-					err(arg0, z035, 2, 0, 0, Local5, arg2)
+					err(arg0, z035, __LINE__, 0, 0, Local5, arg2)
 				}
 				Store(LAnd(Local1, Local0), Local7)
 				if (LNotEqual(Local7, Local2)) {
-					err(arg0, z035, 3, 0, 0, Local5, arg2)
+					err(arg0, z035, __LINE__, 0, 0, Local5, arg2)
 				}
 			}
 			case (2) {
 				Store(LOr(Local0, Local1), Local7)
 				if (LNotEqual(Local7, Local2)) {
-					err(arg0, z035, 4, 0, 0, Local5, arg2)
+					err(arg0, z035, __LINE__, 0, 0, Local5, arg2)
 				}
 				Store(LOr(Local1, Local0), Local7)
 				if (LNotEqual(Local7, Local2)) {
-					err(arg0, z035, 5, 0, 0, Local5, arg2)
+					err(arg0, z035, __LINE__, 0, 0, Local5, arg2)
 				}
 			}
 			case (3) {
 				Store(LEqual(Local0, Local1), Local7)
 				if (LNotEqual(Local7, Local2)) {
-					err(arg0, z035, 6, 0, 0, Local5, arg2)
+					err(arg0, z035, __LINE__, 0, 0, Local5, arg2)
 				}
 				Store(LEqual(Local1, Local0), Local7)
 				if (LNotEqual(Local7, Local2)) {
-					err(arg0, z035, 7, 0, 0, Local5, arg2)
+					err(arg0, z035, __LINE__, 0, 0, Local5, arg2)
 				}
 			}
 			case (4) {
 				Store(LGreater(Local0, Local1), Local7)
 				if (LNotEqual(Local7, Local2)) {
-					err(arg0, z035, 8, 0, 0, Local5, arg2)
+					err(arg0, z035, __LINE__, 0, 0, Local5, arg2)
 				}
 			}
 			case (5) {
 				Store(LGreaterEqual(Local0, Local1), Local7)
 				if (LNotEqual(Local7, Local2)) {
-					err(arg0, z035, 9, 0, 0, Local5, arg2)
+					err(arg0, z035, __LINE__, 0, 0, Local5, arg2)
 				}
 			}
 			case (6) {
 				Store(LLess(Local0, Local1), Local7)
 				if (LNotEqual(Local7, Local2)) {
-					err(arg0, z035, 10, 0, 0, Local5, arg2)
+					err(arg0, z035, __LINE__, 0, 0, Local5, arg2)
 				}
 			}
 			case (7) {
 				Store(LLessEqual(Local0, Local1), Local7)
 				if (LNotEqual(Local7, Local2)) {
-					err(arg0, z035, 11, 0, 0, Local5, arg2)
+					err(arg0, z035, __LINE__, 0, 0, Local5, arg2)
 				}
 			}
 		}
@@ -152,7 +152,7 @@ Method(m004, 6, Serialized)
 			case (0) {
 				Store(LNot(Local0), Local2)
 				if (LNotEqual(Local2, Local1)) {
-					err(arg0, z035, 12, 0, 0, Local5, arg2)
+					err(arg0, z035, __LINE__, 0, 0, Local5, arg2)
 				}
 			}
 		}
@@ -576,7 +576,7 @@ Method(LEQ0,, Serialized)
 
 	Store(LEqual(BIG0, BIG0), Local0)
 	if (LNotEqual(Local0, Ones)) {
-		err(ts, z035, 13, 0, 0, 0, 0)
+		err(ts, z035, __LINE__, 0, 0, 0, 0)
 	}
 
 	// Buffers
@@ -640,7 +640,7 @@ Method(LGR0,, Serialized)
 
 	Store(LGreater(BIG0, BIG0), Local0)
 	if (LNotEqual(Local0, Zero)) {
-		err(ts, z035, 14, 0, 0, 0, 0)
+		err(ts, z035, __LINE__, 0, 0, 0, 0)
 	}
 
 	// Buffers
@@ -704,7 +704,7 @@ Method(LGE0,, Serialized)
 
 	Store(LGreaterEqual(BIG0, BIG0), Local0)
 	if (LNotEqual(Local0, Ones)) {
-		err(ts, z035, 15, 0, 0, 0, 0)
+		err(ts, z035, __LINE__, 0, 0, 0, 0)
 	}
 
 	// Buffers
@@ -768,7 +768,7 @@ Method(LL00,, Serialized)
 
 	Store(LLess(BIG0, BIG0), Local0)
 	if (LNotEqual(Local0, Zero)) {
-		err(ts, z035, 16, 0, 0, 0, 0)
+		err(ts, z035, __LINE__, 0, 0, 0, 0)
 	}
 
 	// Buffers
@@ -832,7 +832,7 @@ Method(LLE0,, Serialized)
 
 	Store(LLessEqual(BIG0, BIG0), Local0)
 	if (LNotEqual(Local0, Ones)) {
-		err(ts, z035, 17, 0, 0, 0, 0)
+		err(ts, z035, __LINE__, 0, 0, 0, 0)
 	}
 
 	// Buffers
@@ -896,7 +896,7 @@ Method(LNE0,, Serialized)
 
 	Store(LNotEqual(BIG0, BIG0), Local0)
 	if (LNotEqual(Local0, Zero)) {
-		err(ts, z035, 18, 0, 0, 0, 0)
+		err(ts, z035, __LINE__, 0, 0, 0, 0)
 	}
 
 	// Buffers

@@ -81,7 +81,7 @@ Method(m024)
 		Store(Add(DerefOf(Index(s000, 1)), m001()), Local0)
 
 		if (LNotEqual(Local0, 0x24)) {
-			err("", zFFF, 0x000, 0, 0, Local0, 0x24)
+			err("", zFFF, __LINE__, 0, 0, Local0, 0x24)
 		}
 
 		Store(DerefOf(Index(s000, 1)), Local0)
@@ -89,7 +89,7 @@ Method(m024)
 		Store(0x08, Local1)
 
 		if (LNotEqual(Local0, Local1)) {
-			err("", zFFF, 0x000, 0, 0, Local0, Local1)
+			err("", zFFF, __LINE__, 0, 0, Local0, Local1)
 		}
 	}
 

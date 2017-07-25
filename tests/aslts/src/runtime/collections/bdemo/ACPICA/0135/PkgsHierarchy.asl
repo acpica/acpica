@@ -363,7 +363,7 @@ Method(mfe2, 6, Serialized)
 
 	if (LNotEqual(arg4, Local1)) {
 		Store(1, Local7)
-		err("", zFFF, 0x201, 0, 0, arg4, Local1)
+		err("", zFFF, __LINE__, 0, 0, arg4, Local1)
 		Store("================= Params:", debug)
 		Store(arg0, Debug)
 		Store(arg1, Debug)
@@ -1836,7 +1836,7 @@ SRMT("verify-4-of-pHR0-by-cross-refs-of-pHR2")
 
 Method(mfdb)
 {
-	CH03("", 0, 0x200, 0, 0)
+	CH03("", 0, 0x200, __LINE__, 0)
 	mfdc()
-	CH03("", 0, 0x202, 0, 0)
+	CH03("", 0, 0x202, __LINE__, 0)
 }

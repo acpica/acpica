@@ -42,10 +42,10 @@ Method(md59,, Serialized)
 	Store (0x61, i001)
 
 	if (LNotEqual(i001, 0x61)) {
-		err("", zFFF, 0x500, 0, 0, i001, 0x61)
+		err("", zFFF, __LINE__, 0, 0, i001, 0x61)
 	}
 	if (LNotEqual(i000, 0)) {
-		err("", zFFF, 0x501, 0, 0, i000, 0)
+		err("", zFFF, __LINE__, 0, 0, i000, 0)
 	}
 }
 
@@ -60,10 +60,10 @@ Method(md21,, Serialized)
 	Store(0x61, i000)
 
 	if (LNotEqual(i000, 0x61)) {
-		err("", zFFF, 0x502, 0, 0, i000, 0x61)
+		err("", zFFF, __LINE__, 0, 0, i000, 0x61)
 	}
 	if (LNotEqual(s000, "String")) {
-		err("", zFFF, 0x503, 0, 0, s000, "String")
+		err("", zFFF, __LINE__, 0, 0, s000, "String")
 	}
 }
 
@@ -78,18 +78,18 @@ Method(md22,, Serialized)
 	Store (0x61, i000)
 
 	if (LNotEqual(i000, 0x61)) {
-		err("", zFFF, 0x504, 0, 0, i000, 0x61)
+		err("", zFFF, __LINE__, 0, 0, i000, 0x61)
 	}
 	if (LNotEqual(b000, Buffer() {1,2,3,4})) {
-		err("", zFFF, 0x505, 0, 0, b000, Buffer() {1,2,3,4})
+		err("", zFFF, __LINE__, 0, 0, b000, Buffer() {1,2,3,4})
 	}
 }
 
 Method(md23)
 {
-	CH03("", 0, 0xf0c, 0, 0)
+	CH03("", 0, 0xf0c, __LINE__, 0)
 	md59()
 	md21()
 	md22()
-	CH03("", 0, 0xf0d, 0, 0)
+	CH03("", 0, 0xf0d, __LINE__, 0)
 }

@@ -62,10 +62,10 @@
 		me66()
 
 		if (id0d) {
-			err("", zFFF, 0x000, 0, 0, 0, 0)
+			err("", zFFF, __LINE__, 0, 0, 0, 0)
 		}
 
 		if (id0e) {
-			err("", zFFF, 0x001, 0, 0, 0, 0)
+			err("", zFFF, __LINE__, 0, 0, 0, 0)
 		}
 	}

@@ -82,7 +82,7 @@ Method(m210, 7, Serialized)
 	Name(ix02, 0)
 
 	if (LGreaterEqual(arg3, arg1)) {
-		err("m210", z153, 0x000, 0, 0, arg3, arg1)
+		err("m210", z153, __LINE__, 0, 0, arg3, arg1)
 		return
 	}
 
@@ -94,7 +94,7 @@ Method(m210, 7, Serialized)
 	}
 	Add(arg3, sz01, ix02)
 	if (LGreater(ix02, arg1)) {
-		err("m210", z153, 0x001, 0, 0, ix02, arg1)
+		err("m210", z153, __LINE__, 0, 0, ix02, arg1)
 		Store(arg1, Debug)
 		Store(arg3, Debug)
 		Store(arg4, Debug)

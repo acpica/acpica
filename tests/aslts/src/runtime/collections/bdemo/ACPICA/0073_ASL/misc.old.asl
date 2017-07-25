@@ -55,7 +55,7 @@ Method(m100, 1)
 	}
 
 	if (LNotEqual(Local0, 1)) {
-		err(arg0, z054, 0, Local0, 0)
+		err(arg0, z054, __LINE__, Local0, 0)
 	}
 }
 
@@ -70,13 +70,13 @@ Method(m102, 1)
 	Store(0, Local0)
 	m101(Local0)
 	if (LNotequal(Local0, 0)) {
-		err(arg0, z054, 1, Local0, 0)
+		err(arg0, z054, __LINE__, Local0, 0)
 	}
 
 	Store(0, Local0)
 	Concatenate("qwertyuiop", Local0)
 	if (LNotequal(Local0, 0)) {
-		err(arg0, z054, 2, Local0, 0)
+		err(arg0, z054, __LINE__, Local0, 0)
 	}
 }
 
@@ -92,7 +92,7 @@ Method(m105, 1)
 
 	Store(ObjectType(RefOf(f000)), Local0)
 	if (LNotEqual(Local0, 5)) {
-		err(arg0, z054, 3, Local0, 0)
+		err(arg0, z054, __LINE__, Local0, 0)
 	}
 }
 
@@ -117,25 +117,25 @@ Method(m106, 1)
 
 	Store(1, bnk0)
 	if (LNotEqual(bnk0, 1)) {
-		err(arg0, z054, 4, bnk0, 0)
+		err(arg0, z054, __LINE__, bnk0, 0)
 	}
 
 	Store(0x96, bf01)
 	if (LNotEqual(bnk0, 1)) {
-		err(arg0, z054, 5, bnk0, 0)
+		err(arg0, z054, __LINE__, bnk0, 0)
 	}
 
 	Store(0x87, bf00)
 	if (LNotEqual(bnk0, 1)) {
-		err(arg0, z054, 6, bnk0, 0)
+		err(arg0, z054, __LINE__, bnk0, 0)
 	}
 
 	if (LNotEqual(bf00, 0x87)) {
-		err(arg0, z054, 7, bf00, 0)
+		err(arg0, z054, __LINE__, bf00, 0)
 	}
 
 	if (LNotEqual(bf01, 0x96)) {
-		err(arg0, z054, 8, bf01, 0)
+		err(arg0, z054, __LINE__, bf01, 0)
 	}
 }
 
@@ -146,7 +146,7 @@ Method(m107, 1)
 	Store(ObjectType(Local0), Local1)
 
 	if (LNotEqual(Local1, c00b)) {
-		err(arg0, z054, 9, Local1, 0)
+		err(arg0, z054, __LINE__, Local1, 0)
 	}
 
 	ToBuffer(Local0, Local2)
@@ -156,7 +156,7 @@ Method(m107, 1)
 	Store(ObjectType(Local0), Local3)
 
 	if (LNotEqual(Local3, c00b)) {
-		err(arg0, z054, 10, Local3, 0)
+		err(arg0, z054, __LINE__, Local3, 0)
 	}
 }
 
@@ -183,7 +183,7 @@ Method(m109, 2)
 	Store(ObjectType(Local0), Local1)
 
 	if (LNotEqual(Local1, 0)) {
-		err(arg0, z054, 11, Local1, 0)
+		err(arg0, z054, __LINE__, Local1, 0)
 	}
 
 	CH03()
@@ -212,7 +212,7 @@ Method(m10b, 1)
 	Store(ObjectType(Local1), Local2)
 
 	if (LNotEqual(Local2, 3)) {
-		err(arg0, z054, 12, Local2, 0)
+		err(arg0, z054, __LINE__, Local2, 0)
 	}
 
 	Store("================ 2:", Debug)
@@ -253,7 +253,7 @@ Method(m10c, 1)
 	Store(Local3, Debug)
 
 	if (LNotEqual(Local3, 3)) {
-		err(arg0, z054, 13, Local3, 3)
+		err(arg0, z054, __LINE__, Local3, 3)
 	}
 
 	// 1
@@ -263,7 +263,7 @@ Method(m10c, 1)
 	Store(Local3, Debug)
 
 	if (LNotEqual(Local3, 9)) {
-		err(arg0, z054, 14, Local3, 9)
+		err(arg0, z054, __LINE__, Local3, 9)
 	}
 
 	// 2
@@ -273,7 +273,7 @@ Method(m10c, 1)
 	Store(Local3, Debug)
 
 	if (LNotEqual(Local3, 6)) {
-		err(arg0, z054, 15, Local3, 6)
+		err(arg0, z054, __LINE__, Local3, 6)
 	}
 
 	Store(SizeOf(p000), Local0)
@@ -281,7 +281,7 @@ Method(m10c, 1)
 	Store(Local0, Debug)
 
 	if (LNotEqual(Local0, 3)) {
-		err(arg0, z054, 16, Local0, 3)
+		err(arg0, z054, __LINE__, Local0, 3)
 	}
 }
 */
@@ -298,11 +298,11 @@ Method(m10d, 1)
 	Store(DeRefOf(Index(p000, 0)), Local7)
 
 	if (LEqual(b000, Local7)) {
-		err(arg0, z054, 17, b000, Local7)
+		err(arg0, z054, __LINE__, b000, Local7)
 	}
 
 	if (LEqual(Local7, b000)) {
-		err(arg0, z054, 18, Local7, b000)
+		err(arg0, z054, __LINE__, Local7, b000)
 	}
 
 	return (0)
@@ -334,7 +334,7 @@ Method(m10f, 1) {
 			// ASL-compiler report Warning in this case
 			// Store("ERROR 0: m113, after Return !!!", Debug)
 		}
-		err(arg0, z054, 19, 0, 0)
+		err(arg0, z054, __LINE__, 0, 0)
 
 		return (0x5678)
 	}
@@ -348,10 +348,10 @@ Method(m10f, 1) {
 			// ASL-compiler DOESN'T report Warning in this case!!!
 			// And the Store operator below is actually processed!!!
 
-			err(arg0, z054, 20, 0, 0)
+			err(arg0, z054, __LINE__, 0, 0)
 		}
 
-		err(arg0, z054, 21, 0, 0)
+		err(arg0, z054, __LINE__, 0, 0)
 
 		return
 	}
@@ -374,7 +374,7 @@ Method(m110, 1) {
 
 	if (LNotEqual(Sizeof(buf0), 2)) {
 		// Error: length of the buffer not reduced to the stored string
-		err(arg0, z054, 22, 0, 0)
+		err(arg0, z054, __LINE__, 0, 0)
 	}
 	return (0)
 }
@@ -392,7 +392,7 @@ Method(m111, 1) {
 	{
 		Store(ObjectType(arg1), Local0)
 		if (LNotEqual(Local0, 14)) {
-			err(arg0, z054, 23, Local0, 14)
+			err(arg0, z054, __LINE__, Local0, 14)
 		}
 	}
 
@@ -400,7 +400,7 @@ Method(m111, 1) {
 	{
 		Store(ObjectType(bf00), Local0)
 		if (LNotEqual(Local0, 14)) {
-			err(arg0, z054, 24, Local0, 14)
+			err(arg0, z054, __LINE__, Local0, 14)
 		} else {
 			m000(arg0, bf00)
 		}
@@ -422,7 +422,7 @@ Method(m112, 1) {
 	{
 		Store(ObjectType(arg1), Local0)
 		if (LNotEqual(Local0, 5)) {
-			err(arg0, z054, 25, Local0, 5)
+			err(arg0, z054, __LINE__, Local0, 5)
 		}
 	}
 
@@ -430,7 +430,7 @@ Method(m112, 1) {
 	{
 		Store(ObjectType(f000), Local0)
 		if (LNotEqual(Local0, 5)) {
-			err(arg0, z054, 26, Local0, 5)
+			err(arg0, z054, __LINE__, Local0, 5)
 		} else {
 			m000(arg0, f000)
 		}
@@ -457,12 +457,12 @@ Method(m113, 1) {
 	{
 		Store(ObjectType(bf00), Local0)
 		if (LNotEqual(Local0, 14)) {
-			err(arg0, z054, 27, Local0, 14)
+			err(arg0, z054, __LINE__, Local0, 14)
 		} else {
 			Store(m000(), Local7)
 			Store(ObjectType(Local7), Local0)
 			if (LNotEqual(Local0, 14)) {
-				err(arg0, z054, 28, Local0, 14)
+				err(arg0, z054, __LINE__, Local0, 14)
 			}
 		}
 	}
@@ -488,12 +488,12 @@ Method(m114, 1) {
 	{
 		Store(ObjectType(f000), Local0)
 		if (LNotEqual(Local0, 5)) {
-			err(arg0, z054, 29, Local0, 5)
+			err(arg0, z054, __LINE__, Local0, 5)
 		} else {
 			Store(m000(), Local7)
 			Store(ObjectType(Local7), Local0)
 			if (LNotEqual(Local0, 5)) {
-				err(arg0, z054, 30, Local0, 5)
+				err(arg0, z054, __LINE__, Local0, 5)
 			}
 		}
 	}
@@ -575,19 +575,19 @@ Method(m116, 1)
 
 	Store(ObjectType(m000), Local0)
 	if (LNotEqual(Local0, c010)) {
-		err(arg0, z054, 31, Local0, c010)
+		err(arg0, z054, __LINE__, Local0, c010)
 	}
 
     /* Nov. 2012: Method invocation as arg to ObjectType is now illegal */
 //
 //	Store(ObjectType(m000()), Local0)
 //	if (LNotEqual(Local0, c009)) {
-//		err(arg0, z054, 32, Local0, c009)
+//		err(arg0, z054, __LINE__, Local0, c009)
 //	}
 //
 //	Store(ObjectType(m001(123)), Local1)
 //	if (LNotEqual(Local1, c009)) {
-//		err(arg0, z054, 33, Local1, c009)
+//		err(arg0, z054, __LINE__, Local1, c009)
 //	}
 }
 

@@ -86,12 +86,12 @@ Method(m4bd,, Serialized)
 		// CondRefOf
 		
 		CondRefOf(Local0, Local1)
-		CH03(ts, z105, 1, 0, 0)
+		CH03(ts, z105, 1, __LINE__, 0)
 
 		// CopyObject
 
 		CopyObject(Local0, Local1)
-		CH03(ts, z105, 2, 0, 0)
+		CH03(ts, z105, 2, __LINE__, 0)
 
 		// Decrement
 
@@ -136,12 +136,12 @@ Method(m4bd,, Serialized)
 		// ObjectType
 
 		Store (ObjectType(Local0), Local1)
-		CH03(ts, z105, 3, 0, 0)
+		CH03(ts, z105, 3, __LINE__, 0)
 
 		// RefOf
 
 		Store (RefOf(Local0), Local1)
-		CH03(ts, z105, 4, 0, 0)
+		CH03(ts, z105, 4, __LINE__, 0)
 
 		// Release
 
@@ -444,7 +444,7 @@ Method(m4bd,, Serialized)
 
 		Store(ObjectType(arg1), Local0)
 		if (LNotEqual(Local0, 13)) {
-			err(arg0, z105, 200, 0, 0, Local0, 13)
+			err(arg0, z105, __LINE__, 0, 0, Local0, 13)
 			return (1)
 		}
 
@@ -455,7 +455,7 @@ Method(m4bd,, Serialized)
 		}
 
 		Store (DeRefOf(arg1), Local1)
-		CH03(ts, z105, 5, 0, 0)
+		CH03(ts, z105, 5, __LINE__, 0)
 
 		// CondRefOf
 		
@@ -510,7 +510,7 @@ Method(m4bd,, Serialized)
 		// ObjectType
 
 		Store (ObjectType(DeRefOf(arg1)), Local1)
-		CH03(ts, z105, 6, 0, 0)
+		CH03(ts, z105, 6, __LINE__, 0)
 
 		// RefOf
 
@@ -819,7 +819,7 @@ Method(m4bd,, Serialized)
 		// CopyObject
 
 		CopyObject(m000(), Local1)
-		CH03(ts, z105, 7, 0, 0)
+		CH03(ts, z105, 7, __LINE__, 0)
 
 		// Decrement
 
@@ -865,7 +865,7 @@ Method(m4bd,, Serialized)
         /* **** Nov. 2016: Method invocation as arg to ObjectType is now illegal */
 
 		Store (ObjectType(m000), Local0)
-		CH03(ts, z105, 8, 0, 0)
+		CH03(ts, z105, 8, __LINE__, 0)
 
 		// RefOf
         /* **** Oct. 2016: Method invocation as arg to RefOf is now illegal */
@@ -1188,7 +1188,7 @@ Method(m4bd,, Serialized)
 		Method(CH00, 2)
 		{
 			if (LNotEqual(i000, arg1)) {
-				err(arg0, z105, 0, 0, 0, i000, arg1)
+				err(arg0, z105, __LINE__, 0, 0, i000, arg1)
 			}
 		}
 
@@ -1201,7 +1201,7 @@ Method(m4bd,, Serialized)
 			Store(0, i000)
 
 			Store (DerefOf(m000(1, lpC0)), Local1)
-			CH03(ts, z105, Add(9, lpC0), 0, 0)
+			CH03(ts, z105, __LINE__, 0, 0)
 			CH00(arg0, 1)
 
 			Store (DerefOf(DerefOf(m000(2, lpC0))), Local1)
@@ -1221,7 +1221,7 @@ Method(m4bd,, Serialized)
 		}
 	}
 
-	CH03(ts, z105, 11, 0, 0)
+	CH03(ts, z105, 11, __LINE__, 0)
 
 	// Local Named Object
 	m000(ts)

@@ -98,15 +98,15 @@ Method(mt00,, Serialized)
       mm01()
     }
 
-    CH03(ts, z170, 0x100, 0, 0)
+    CH03(ts, z170, 0x100, __LINE__, 0)
 
     mm00()
 
     if (LNotEqual(i000, 0xabcd0000)) {
-        err(ts, z170, 0x000, 0, 0, i000, 0xabcd0000)
+        err(ts, z170, __LINE__, 0, 0, i000, 0xabcd0000)
     }
 
-    CH03(ts, z170, 0x101, 0, 0)
+    CH03(ts, z170, 0x101, __LINE__, 0)
 }
 
 /*
@@ -249,15 +249,15 @@ Method(mt01,, Serialized)
       mm01()
     }
 
-    CH03(ts, z170, 0x102, 0, 0)
+    CH03(ts, z170, 0x102, __LINE__, 0)
 
     mm00()
 
     if (LNotEqual(i000, 0xabcd0000)) {
-        err(ts, z170, 0x001, 0, 0, i000, 0xabcd0000)
+        err(ts, z170, __LINE__, 0, 0, i000, 0xabcd0000)
     }
 
-    CH03(ts, z170, 0x103, 0, 0)
+    CH03(ts, z170, 0x103, __LINE__, 0)
 }
 
 /*
@@ -335,15 +335,15 @@ Method(mt02,, Serialized)
       Store(0xabcd0000, i000)
     }
 
-    CH03(ts, z170, 0x104, 0, 0)
+    CH03(ts, z170, 0x104, __LINE__, 0)
 
     mm00()
 
     if (LNotEqual(i000, 0xabcd0000)) {
-        err(ts, z170, 0x002, 0, 0, i000, 0xabcd0000)
+        err(ts, z170, __LINE__, 0, 0, i000, 0xabcd0000)
     }
 
-    CH03(ts, z170, 0x105, 0, 0)
+    CH03(ts, z170, 0x105, __LINE__, 0)
 }
 
 /*
@@ -486,15 +486,15 @@ Method(mt03,, Serialized)
       Store(0xabcd0000, i000)
     }
 
-    CH03(ts, z170, 0x106, 0, 0)
+    CH03(ts, z170, 0x106, __LINE__, 0)
 
     mm00()
 
     if (LNotEqual(i000, 0xabcd0000)) {
-        err(ts, z170, 0x003, 0, 0, i000, 0xabcd0000)
+        err(ts, z170, __LINE__, 0, 0, i000, 0xabcd0000)
     }
 
-    CH03(ts, z170, 0x107, 0, 0)
+    CH03(ts, z170, 0x107, __LINE__, 0)
 }
 
 /*
@@ -530,10 +530,10 @@ Method(mt04,, Serialized)
                     OUTC("mt04,   \\mt04.dz05.iy07:")
                     OUTC(Local0)
                     if (LNotEqual(Local0, 0xabcd0109)) {
-                      err(ts, z170, 0x004, 0, 0, Local0, 0xabcd0109)
+                      err(ts, z170, __LINE__, 0, 0, Local0, 0xabcd0109)
                     }
                     if (LNotEqual(\mt04.dz05.iy07, 0xabcd0109)) {
-                      err(ts, z170, 0x005, 0, 0, \mt04.dz05.iy07, 0xabcd0109)
+                      err(ts, z170, __LINE__, 0, 0, \mt04.dz05.iy07, 0xabcd0109)
                     }
                   }
                   Increment(\mt04.dz05.iy07)
@@ -558,17 +558,17 @@ Method(mt04,, Serialized)
       mm01()
     }
 
-    CH03(ts, z170, 0x006, 0, 0)
+    CH03(ts, z170, 0x006, __LINE__, 0)
 
     Increment(\mt04.dz05.iy07)
 
     mm00()
 
     if (LNotEqual(\mt04.dz05.iy07, 0xabcd0109)) {
-      err(ts, z170, 0x007, 0, 0, \mt04.dz05.iy07, 0xabcd0109)
+      err(ts, z170, __LINE__, 0, 0, \mt04.dz05.iy07, 0xabcd0109)
     }
 
-    CH03(ts, z170, 0x008, 0, 0)
+    CH03(ts, z170, 0x008, __LINE__, 0)
 }
 
 /*
@@ -620,10 +620,10 @@ Method(mt05,, Serialized)
                                     OUTC("mt05,   \\mt05.dz05.iy07:")
                                     OUTC(Local0)
                                     if (LNotEqual(Local0, 0xabcd0211)) {
-                                        err(ts, z170, 0x009, 0, 0, Local0, 0xabcd0211)
+                                        err(ts, z170, __LINE__, 0, 0, Local0, 0xabcd0211)
                                     }
                                     if (LNotEqual(\mt05.dz05.iy07, 0xabcd0211)) {
-                                        err(ts, z170, 0x00a, 0, 0, \mt05.dz05.iy07, 0xabcd0211)
+                                        err(ts, z170, __LINE__, 0, 0, \mt05.dz05.iy07, 0xabcd0211)
                                     }
                                   }
                                   Increment(\mt05.dz05.iy07)
@@ -672,16 +672,16 @@ Method(mt05,, Serialized)
       mm01()
     }
 
-    CH03(ts, z170, 0x108, 0, 0)
+    CH03(ts, z170, 0x108, __LINE__, 0)
 
     Increment(\mt05.dz05.iy07)
     mm00()
 
     if (LNotEqual(\mt05.dz05.iy07, 0xabcd0211)) {
-        err(ts, z170, 0x00b, 0, 0, \mt05.dz05.iy07, 0xabcd0211)
+        err(ts, z170, __LINE__, 0, 0, \mt05.dz05.iy07, 0xabcd0211)
     }
 
-    CH03(ts, z170, 0x109, 0, 0)
+    CH03(ts, z170, 0x109, __LINE__, 0)
 }
 
 /*
@@ -737,10 +737,10 @@ Method(mt06,, Serialized)
               OUTC("mt06,   \\mt06.dz05.iy07:")
               OUTC(Local0)
               if (LNotEqual(Local0, 0x11112222)) {
-                  err(ts, z170, 0x00c, 0, 0, Local0, 0x11112222)
+                  err(ts, z170, __LINE__, 0, 0, Local0, 0x11112222)
               }
               if (LNotEqual(\mt06.dz05.iy07, 0x11112222)) {
-                  err(ts, z170, 0x00d, 0, 0, \mt06.dz05.iy07, 0x11112222)
+                  err(ts, z170, __LINE__, 0, 0, \mt06.dz05.iy07, 0x11112222)
               }
             }
             mm04()
@@ -752,17 +752,17 @@ Method(mt06,, Serialized)
       mm01()
     }
 
-    CH03(ts, z170, 0x10a, 0, 0)
+    CH03(ts, z170, 0x10a, __LINE__, 0)
 
     mm00()
 
     mt07()
 
     if (LNotEqual(\mt06.dz05.iy07, 0x11112222)) {
-        err(ts, z170, 0x00e, 0, 0, \mt06.dz05.iy07, 0x11112222)
+        err(ts, z170, __LINE__, 0, 0, \mt06.dz05.iy07, 0x11112222)
     }
 
-    CH03(ts, z170, 0x10b, 0, 0)
+    CH03(ts, z170, 0x10b, __LINE__, 0)
 }
 
 /*
@@ -796,10 +796,10 @@ Method(mt07,, Serialized)
                     OUTC("0 mt07,   \\mt06.dz05.iy07:")
                     OUTC(Local0)
                     if (LNotEqual(Local0, 0x11112222)) {
-                        err(ts, z170, 0x00f, 0, 0, Local0, 0x11112222)
+                        err(ts, z170, __LINE__, 0, 0, Local0, 0x11112222)
                     }
                     if (LNotEqual(\mt06.dz05.iy07, 0x11112222)) {
-                        err(ts, z170, 0x010, 0, 0, \mt06.dz05.iy07, 0x11112222)
+                        err(ts, z170, __LINE__, 0, 0, \mt06.dz05.iy07, 0x11112222)
                     }
                   }
                   mm07()
@@ -817,7 +817,7 @@ Method(mt07,, Serialized)
       mm01()
     }
 
-    CH03(ts, z170, 0x10c, 0, 0)
+    CH03(ts, z170, 0x10c, __LINE__, 0)
 
     mm00()
 
@@ -825,13 +825,13 @@ Method(mt07,, Serialized)
     OUTC("1 mt07,   \\mt06.dz05.iy07:")
     OUTC(Local0)
     if (LNotEqual(Local0, 0x11112222)) {
-        err(ts, z170, 0x011, 0, 0, Local0, 0x11112222)
+        err(ts, z170, __LINE__, 0, 0, Local0, 0x11112222)
     }
     if (LNotEqual(\mt06.dz05.iy07, 0x11112222)) {
-        err(ts, z170, 0x012, 0, 0, \mt06.dz05.iy07, 0x11112222)
+        err(ts, z170, __LINE__, 0, 0, \mt06.dz05.iy07, 0x11112222)
     }
 
-    CH03(ts, z170, 0x10d, 0, 0)
+    CH03(ts, z170, 0x10d, __LINE__, 0)
 }
 
 /*
@@ -900,10 +900,10 @@ Method(mt08,, Serialized)
                     OUTC("mt08,   \\mt08.dz05.iy07:")
                     OUTC(Local0)
                     if (LNotEqual(Local0, 0x22223333)) {
-                        err(ts, z170, 0x013, 0, 0, Local0, 0x22223333)
+                        err(ts, z170, __LINE__, 0, 0, Local0, 0x22223333)
                     }
                     if (LNotEqual(\mt08.dz05.iy07, 0x22223333)) {
-                        err(ts, z170, 0x014, 0, 0, \mt08.dz05.iy07, 0x22223333)
+                        err(ts, z170, __LINE__, 0, 0, \mt08.dz05.iy07, 0x22223333)
                     }
                   }
                   mm07()
@@ -921,17 +921,17 @@ Method(mt08,, Serialized)
       mm01()
     }
 
-    CH03(ts, z170, 0x10e, 0, 0)
+    CH03(ts, z170, 0x10e, __LINE__, 0)
 
     mm00()
 
     mt09()
 
     if (LNotEqual(\mt08.dz05.iy07, 0x22223333)) {
-        err(ts, z170, 0x015, 0, 0, \mt08.dz05.iy07, 0x22223333)
+        err(ts, z170, __LINE__, 0, 0, \mt08.dz05.iy07, 0x22223333)
     }
 
-    CH03(ts, z170, 0x10f, 0, 0)
+    CH03(ts, z170, 0x10f, __LINE__, 0)
 }
 
 /*
@@ -979,10 +979,10 @@ Method(mt09,, Serialized)
                                     OUTC("0 mt09,   \\mt08.dz05.iy07:")
                                     OUTC(Local0)
                                     if (LNotEqual(Local0, 0x22223333)) {
-                                        err(ts, z170, 0x016, 0, 0, Local0, 0x22223333)
+                                        err(ts, z170, __LINE__, 0, 0, Local0, 0x22223333)
                                     }
                                     if (LNotEqual(\mt08.dz05.iy07, 0x22223333)) {
-                                        err(ts, z170, 0x017, 0, 0, \mt08.dz05.iy07, 0x22223333)
+                                        err(ts, z170, __LINE__, 0, 0, \mt08.dz05.iy07, 0x22223333)
                                     }
                                   }
                                   mm0f()
@@ -1016,7 +1016,7 @@ Method(mt09,, Serialized)
       mm01()
     }
 
-    CH03(ts, z170, 0x110, 0, 0)
+    CH03(ts, z170, 0x110, __LINE__, 0)
 
     mm00()
 
@@ -1024,13 +1024,13 @@ Method(mt09,, Serialized)
     OUTC("1 mt09,   \\mt08.dz05.iy07:")
     OUTC(Local0)
     if (LNotEqual(Local0, 0x22223333)) {
-        err(ts, z170, 0x018, 0, 0, Local0, 0x22223333)
+        err(ts, z170, __LINE__, 0, 0, Local0, 0x22223333)
     }
     if (LNotEqual(\mt08.dz05.iy07, 0x22223333)) {
-        err(ts, z170, 0x019, 0, 0, \mt08.dz05.iy07, 0x22223333)
+        err(ts, z170, __LINE__, 0, 0, \mt08.dz05.iy07, 0x22223333)
     }
 
-    CH03(ts, z170, 0x111, 0, 0)
+    CH03(ts, z170, 0x111, __LINE__, 0)
 }
 
 /*
@@ -1041,16 +1041,16 @@ Method(mt0a,, Serialized)
 {
     Name(ts, "mt0a")
 
-    CH03(ts, z170, 0x112, 0, 0)
+    CH03(ts, z170, 0x112, __LINE__, 0)
 
     Store (\pr7d.iy07, Local0)
     OUTC("mt0a,   \\pr7d.iy07:")
     OUTC(Local0)
     if (LNotEqual(\pr7d.iy07, 0xabcd0120)) {
-        err(ts, z170, 0x01a, 0, 0, \pr7d.iy07, 0xabcd0120)
+        err(ts, z170, __LINE__, 0, 0, \pr7d.iy07, 0xabcd0120)
     }
 
-    CH03(ts, z170, 0x113, 0, 0)
+    CH03(ts, z170, 0x113, __LINE__, 0)
 }
 
 /*
@@ -1060,7 +1060,7 @@ Method(mt0b,, Serialized)
 {
     Name(ts, "mt0b")
 
-    CH03(ts, z170, 0x114, 0, 0)
+    CH03(ts, z170, 0x114, __LINE__, 0)
 
     Increment(\pr7d.iy07)
     Store (\pr7d.iy07, Local0)
@@ -1068,10 +1068,10 @@ Method(mt0b,, Serialized)
     OUTC(Local0)
 
     if (LNotEqual(\pr7d.iy07, 0xabcd0121)) {
-        err(ts, z170, 0x01b, 0, 0, \pr7d.iy07, 0xabcd0121)
+        err(ts, z170, __LINE__, 0, 0, \pr7d.iy07, 0xabcd0121)
     }
 
-    CH03(ts, z170, 0x115, 0, 0)
+    CH03(ts, z170, 0x115, __LINE__, 0)
 }
 
 /*
@@ -1087,7 +1087,7 @@ Method(mt0c,, Serialized)
         Name(iy07, 0xabcd0660)
     }
 
-    CH03(ts, z170, 0x116, 0, 0)
+    CH03(ts, z170, 0x116, __LINE__, 0)
 
     Increment(\mt0c.pr7d.iy07)
     Store (\mt0c.pr7d.iy07, Local0)
@@ -1095,10 +1095,10 @@ Method(mt0c,, Serialized)
     OUTC(Local0)
 
     if (LNotEqual(\mt0c.pr7d.iy07, 0xabcd0661)) {
-        err(ts, z170, 0x01d, 0, 0, \mt0c.pr7d.iy07, 0xabcd0661)
+        err(ts, z170, __LINE__, 0, 0, \mt0c.pr7d.iy07, 0xabcd0661)
     }
 
-    CH03(ts, z170, 0x117, 0, 0)
+    CH03(ts, z170, 0x117, __LINE__, 0)
 }
 
 /*
@@ -1110,7 +1110,7 @@ Method(mt0d,, Serialized)
 
 	Name(i000, 0xabcd1234)
 
-	CH03(ts, z170, 0x118, 0, 0)
+	CH03(ts, z170, 0x118, __LINE__, 0)
 
 	Store(0, Local0)
 	While (1) {
@@ -1123,13 +1123,13 @@ Method(mt0d,, Serialized)
 
 			mt0e()
 
-			CH03(ts, z170, 0x119, 0, 0)
+			CH03(ts, z170, 0x119, __LINE__, 0)
 
 			Return
 		}
 	}
 
-	CH03(ts, z170, 0x11a, 0, 0)
+	CH03(ts, z170, 0x11a, __LINE__, 0)
 }
 
 /*
@@ -1139,17 +1139,17 @@ Method(mt0e,, Serialized)
 {
     Name(ts, "mt0e")
 
-    CH03(ts, z170, 0x11b, 0, 0)
+    CH03(ts, z170, 0x11b, __LINE__, 0)
 
     Store (\mt0d.i000, Local0)
     OUTC("mt0e,   \\mt0d.i000:")
     OUTC(Local0)
 
     if (LNotEqual(\mt0d.i000, 0xabcd1234)) {
-        err(ts, z170, 0x01f, 0, 0, \mt0d.i000, 0xabcd1234)
+        err(ts, z170, __LINE__, 0, 0, \mt0d.i000, 0xabcd1234)
     }
 
-    CH03(ts, z170, 0x11c, 0, 0)
+    CH03(ts, z170, 0x11c, __LINE__, 0)
 }
 
 /*
@@ -1186,10 +1186,10 @@ Method(mt0f,, Serialized)
                     OUTC("mt0f,   \\mt0f.dz05.iy07:")
                     OUTC(Local0)
                     if (LNotEqual(Local0, 0xabcd0509)) {
-                      err(ts, z170, 0x020, 0, 0, Local0, 0xabcd0509)
+                      err(ts, z170, __LINE__, 0, 0, Local0, 0xabcd0509)
                     }
                     if (LNotEqual(\mt0f.dz05.iy07, 0xabcd0509)) {
-                      err(ts, z170, 0x021, 0, 0, \mt0f.dz05.iy07, 0xabcd0509)
+                      err(ts, z170, __LINE__, 0, 0, \mt0f.dz05.iy07, 0xabcd0509)
                     }
                   }
                   Add(\mt0f.dz05.iy07, 1, \mt0f.dz05.iy07)
@@ -1214,16 +1214,16 @@ Method(mt0f,, Serialized)
       mm01()
     }
 
-    CH03(ts, z170, 0x022, 0, 0)
+    CH03(ts, z170, 0x022, __LINE__, 0)
 
     Add(\mt0f.dz05.iy07, 1, \mt0f.dz05.iy07)
     mm00()
 
     if (LNotEqual(\mt0f.dz05.iy07, 0xabcd0509)) {
-      err(ts, z170, 0x023, 0, 0, \mt0f.dz05.iy07, 0xabcd0509)
+      err(ts, z170, __LINE__, 0, 0, \mt0f.dz05.iy07, 0xabcd0509)
     }
 
-    CH03(ts, z170, 0x024, 0, 0)
+    CH03(ts, z170, 0x024, __LINE__, 0)
 }
 
 /*
@@ -1275,10 +1275,10 @@ Method(mt10,, Serialized)
                                     OUTC("mt10,   \\mt10.dz05.iy07:")
                                     OUTC(Local0)
                                     if (LNotEqual(Local0, 0xabcd0611)) {
-                                        err(ts, z170, 0x025, 0, 0, Local0, 0xabcd0611)
+                                        err(ts, z170, __LINE__, 0, 0, Local0, 0xabcd0611)
                                     }
                                     if (LNotEqual(\mt10.dz05.iy07, 0xabcd0611)) {
-                                        err(ts, z170, 0x026, 0, 0, \mt10.dz05.iy07, 0xabcd0611)
+                                        err(ts, z170, __LINE__, 0, 0, \mt10.dz05.iy07, 0xabcd0611)
                                     }
                                   }
                                   Add(\mt10.dz05.iy07, 1, \mt10.dz05.iy07)
@@ -1327,16 +1327,16 @@ Method(mt10,, Serialized)
       mm01()
     }
 
-    CH03(ts, z170, 0x027, 0, 0)
+    CH03(ts, z170, 0x027, __LINE__, 0)
 
     Add(\mt10.dz05.iy07, 1, \mt10.dz05.iy07)
     mm00()
 
     if (LNotEqual(\mt10.dz05.iy07, 0xabcd0611)) {
-        err(ts, z170, 0x028, 0, 0, \mt10.dz05.iy07, 0xabcd0611)
+        err(ts, z170, __LINE__, 0, 0, \mt10.dz05.iy07, 0xabcd0611)
     }
 
-    CH03(ts, z170, 0x029, 0, 0)
+    CH03(ts, z170, 0x029, __LINE__, 0)
 }
 
 /*
@@ -1372,10 +1372,10 @@ Method(mt11,, Serialized)
                     OUTC("mt11,   ^^^^^^^^dz05.iy07:")
                     OUTC(Local0)
                     if (LNotEqual(Local0, 0xabcd0709)) {
-                      err(ts, z170, 0x02a, 0, 0, Local0, 0xabcd0709)
+                      err(ts, z170, __LINE__, 0, 0, Local0, 0xabcd0709)
                     }
                     if (LNotEqual(^^^^^^^^dz05.iy07, 0xabcd0709)) {
-                      err(ts, z170, 0x02b, 0, 0, ^^^^^^^^dz05.iy07, 0xabcd0709)
+                      err(ts, z170, __LINE__, 0, 0, ^^^^^^^^dz05.iy07, 0xabcd0709)
                     }
                   }
                   Increment(^^^^^^^dz05.iy07)
@@ -1400,16 +1400,16 @@ Method(mt11,, Serialized)
       mm01()
     }
 
-    CH03(ts, z170, 0x02c, 0, 0)
+    CH03(ts, z170, 0x02c, __LINE__, 0)
 
     Increment(dz05.iy07)
     mm00()
 
     if (LNotEqual(dz05.iy07, 0xabcd0709)) {
-      err(ts, z170, 0x02d, 0, 0, dz05.iy07, 0xabcd0709)
+      err(ts, z170, __LINE__, 0, 0, dz05.iy07, 0xabcd0709)
     }
 
-    CH03(ts, z170, 0x02e, 0, 0)
+    CH03(ts, z170, 0x02e, __LINE__, 0)
 }
 
 /*
@@ -1493,10 +1493,10 @@ Method(mt12,, Serialized)
                                                                     OUTC("mt12,   ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^dz05.iy07:")
                                                                     OUTC(Local0)
                                                                     if (LNotEqual(Local0, 0xabcd0821)) {
-                                                                        err(ts, z170, 0x02f, 0, 0, Local0, 0xabcd0821)
+                                                                        err(ts, z170, __LINE__, 0, 0, Local0, 0xabcd0821)
                                                                     }
                                                                     if (LNotEqual(^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^dz05.iy07, 0xabcd0821)) {
-                                                                        err(ts, z170, 0x030, 0, 0, ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^dz05.iy07, 0xabcd0821)
+                                                                        err(ts, z170, __LINE__, 0, 0, ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^dz05.iy07, 0xabcd0821)
                                                                     }
                                                                   }
                                                                   Increment(^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^dz05.iy07)
@@ -1593,16 +1593,16 @@ Method(mt12,, Serialized)
       mm01()
     }
 
-    CH03(ts, z170, 0x11d, 0, 0)
+    CH03(ts, z170, 0x11d, __LINE__, 0)
 
     Increment(dz05.iy07)
     mm00()
 
     if (LNotEqual(dz05.iy07, 0xabcd0821)) {
-        err(ts, z170, 0x031, 0, 0, dz05.iy07, 0xabcd0821)
+        err(ts, z170, __LINE__, 0, 0, dz05.iy07, 0xabcd0821)
     }
 
-    CH03(ts, z170, 0x11e, 0, 0)
+    CH03(ts, z170, 0x11e, __LINE__, 0)
 }
 
 /*
@@ -1635,59 +1635,59 @@ Method(mt13,, Serialized)
                   OUTC("mt13,   \\mt13.dz05.iy07:")
                   OUTC(Local0)
                   if (LNotEqual(Local0, 0xabcd0500)) {
-                      err(ts, z170, 0x032, 0, 0, Local0, 0xabcd0500)
+                      err(ts, z170, __LINE__, 0, 0, Local0, 0xabcd0500)
                   }
                   if (LNotEqual(\mt13.dz05.iy07, 0xabcd0500)) {
-                      err(ts, z170, 0x033, 0, 0, \mt13.dz05.iy07, 0xabcd0500)
+                      err(ts, z170, __LINE__, 0, 0, \mt13.dz05.iy07, 0xabcd0500)
                   }
                 }
                 Store (\mt13.dz05.iy07, Local0)
                 mm06()
                 if (LNotEqual(\mt13.dz05.iy07, 0xabcd0500)) {
-                    err(ts, z170, 0x034, 0, 0, \mt13.dz05.iy07, 0xabcd0500)
+                    err(ts, z170, __LINE__, 0, 0, \mt13.dz05.iy07, 0xabcd0500)
                 }
               }
               Store (\mt13.dz05.iy07, Local0)
               mm05()
               if (LNotEqual(\mt13.dz05.iy07, 0xabcd0500)) {
-                  err(ts, z170, 0x035, 0, 0, \mt13.dz05.iy07, 0xabcd0500)
+                  err(ts, z170, __LINE__, 0, 0, \mt13.dz05.iy07, 0xabcd0500)
               }
             }
             Store (\mt13.dz05.iy07, Local0)
             mm04()
             if (LNotEqual(\mt13.dz05.iy07, 0xabcd0500)) {
-                err(ts, z170, 0x036, 0, 0, \mt13.dz05.iy07, 0xabcd0500)
+                err(ts, z170, __LINE__, 0, 0, \mt13.dz05.iy07, 0xabcd0500)
             }
           }
           Store (\mt13.dz05.iy07, Local0)
           mm03()
           if (LNotEqual(\mt13.dz05.iy07, 0xabcd0500)) {
-              err(ts, z170, 0x037, 0, 0, \mt13.dz05.iy07, 0xabcd0500)
+              err(ts, z170, __LINE__, 0, 0, \mt13.dz05.iy07, 0xabcd0500)
           }
         }
         Store (\mt13.dz05.iy07, Local0)
         mm02()
         if (LNotEqual(\mt13.dz05.iy07, 0xabcd0500)) {
-            err(ts, z170, 0x038, 0, 0, \mt13.dz05.iy07, 0xabcd0500)
+            err(ts, z170, __LINE__, 0, 0, \mt13.dz05.iy07, 0xabcd0500)
         }
       }
       Store (\mt13.dz05.iy07, Local0)
       mm01()
       if (LNotEqual(\mt13.dz05.iy07, 0xabcd0500)) {
-          err(ts, z170, 0x039, 0, 0, \mt13.dz05.iy07, 0xabcd0500)
+          err(ts, z170, __LINE__, 0, 0, \mt13.dz05.iy07, 0xabcd0500)
       }
     }
 
-    CH03(ts, z170, 0x03a, 0, 0)
+    CH03(ts, z170, 0x03a, __LINE__, 0)
 
     Store (\mt13.dz05.iy07, Local0)
     mm00()
 
     if (LNotEqual(\mt13.dz05.iy07, 0xabcd0500)) {
-      err(ts, z170, 0x03b, 0, 0, \mt13.dz05.iy07, 0xabcd0500)
+      err(ts, z170, __LINE__, 0, 0, \mt13.dz05.iy07, 0xabcd0500)
     }
 
-    CH03(ts, z170, 0x03c, 0, 0)
+    CH03(ts, z170, 0x03c, __LINE__, 0)
 }
 
 /*
@@ -1770,304 +1770,304 @@ Method(mt14,, Serialized)
                                                                     OUTC("mt14,   \\mt14.dz05.iy07:")
                                                                     OUTC(Local0)
                                                                     if (LNotEqual(Local0, 0xabcd2900)) {
-                                                                        err(ts, z170, 0x03d, 0, 0, Local0, 0xabcd2900)
+                                                                        err(ts, z170, __LINE__, 0, 0, Local0, 0xabcd2900)
                                                                     }
                                                                     if (LNotEqual(\mt14.dz05.iy07, 0xabcd2900)) {
-                                                                        err(ts, z170, 0x03e, 0, 0, \mt14.dz05.iy07, 0xabcd2900)
+                                                                        err(ts, z170, __LINE__, 0, 0, \mt14.dz05.iy07, 0xabcd2900)
                                                                     }
                                                                   }
                                                                   Store (\mt14.dz05.iy07, Local0)
                                                                   mm1f()
                                                                   if (LNotEqual(Local0, 0xabcd2900)) {
-                                                                      err(ts, z170, 0x03f, 0, 0, Local0, 0xabcd2900)
+                                                                      err(ts, z170, __LINE__, 0, 0, Local0, 0xabcd2900)
                                                                   }
                                                                   if (LNotEqual(\mt14.dz05.iy07, 0xabcd2900)) {
-                                                                      err(ts, z170, 0x040, 0, 0, \mt14.dz05.iy07, 0xabcd2900)
+                                                                      err(ts, z170, __LINE__, 0, 0, \mt14.dz05.iy07, 0xabcd2900)
                                                                   }
                                                                 }
                                                                 Store (\mt14.dz05.iy07, Local0)
                                                                 mm1e()
                                                                 if (LNotEqual(Local0, 0xabcd2900)) {
-                                                                    err(ts, z170, 0x041, 0, 0, Local0, 0xabcd2900)
+                                                                    err(ts, z170, __LINE__, 0, 0, Local0, 0xabcd2900)
                                                                 }
                                                                 if (LNotEqual(\mt14.dz05.iy07, 0xabcd2900)) {
-                                                                    err(ts, z170, 0x042, 0, 0, \mt14.dz05.iy07, 0xabcd2900)
+                                                                    err(ts, z170, __LINE__, 0, 0, \mt14.dz05.iy07, 0xabcd2900)
                                                                 }
                                                               }
                                                               Store (\mt14.dz05.iy07, Local0)
                                                               mm1d()
                                                               if (LNotEqual(Local0, 0xabcd2900)) {
-                                                                  err(ts, z170, 0x043, 0, 0, Local0, 0xabcd2900)
+                                                                  err(ts, z170, __LINE__, 0, 0, Local0, 0xabcd2900)
                                                               }
                                                               if (LNotEqual(\mt14.dz05.iy07, 0xabcd2900)) {
-                                                                  err(ts, z170, 0x044, 0, 0, \mt14.dz05.iy07, 0xabcd2900)
+                                                                  err(ts, z170, __LINE__, 0, 0, \mt14.dz05.iy07, 0xabcd2900)
                                                               }
                                                             }
                                                             Store (\mt14.dz05.iy07, Local0)
                                                             mm1c()
                                                             if (LNotEqual(Local0, 0xabcd2900)) {
-                                                                err(ts, z170, 0x045, 0, 0, Local0, 0xabcd2900)
+                                                                err(ts, z170, __LINE__, 0, 0, Local0, 0xabcd2900)
                                                             }
                                                             if (LNotEqual(\mt14.dz05.iy07, 0xabcd2900)) {
-                                                                err(ts, z170, 0x046, 0, 0, \mt14.dz05.iy07, 0xabcd2900)
+                                                                err(ts, z170, __LINE__, 0, 0, \mt14.dz05.iy07, 0xabcd2900)
                                                             }
                                                           }
                                                           Store (\mt14.dz05.iy07, Local0)
                                                           mm1b()
                                                           if (LNotEqual(Local0, 0xabcd2900)) {
-                                                              err(ts, z170, 0x047, 0, 0, Local0, 0xabcd2900)
+                                                              err(ts, z170, __LINE__, 0, 0, Local0, 0xabcd2900)
                                                           }
                                                           if (LNotEqual(\mt14.dz05.iy07, 0xabcd2900)) {
-                                                              err(ts, z170, 0x048, 0, 0, \mt14.dz05.iy07, 0xabcd2900)
+                                                              err(ts, z170, __LINE__, 0, 0, \mt14.dz05.iy07, 0xabcd2900)
                                                           }
                                                         }
                                                         Store (\mt14.dz05.iy07, Local0)
                                                         mm1a()
                                                         if (LNotEqual(Local0, 0xabcd2900)) {
-                                                            err(ts, z170, 0x049, 0, 0, Local0, 0xabcd2900)
+                                                            err(ts, z170, __LINE__, 0, 0, Local0, 0xabcd2900)
                                                         }
                                                         if (LNotEqual(\mt14.dz05.iy07, 0xabcd2900)) {
-                                                            err(ts, z170, 0x04a, 0, 0, \mt14.dz05.iy07, 0xabcd2900)
+                                                            err(ts, z170, __LINE__, 0, 0, \mt14.dz05.iy07, 0xabcd2900)
                                                         }
                                                       }
                                                       Store (\mt14.dz05.iy07, Local0)
                                                       mm19()
                                                       if (LNotEqual(Local0, 0xabcd2900)) {
-                                                          err(ts, z170, 0x04b, 0, 0, Local0, 0xabcd2900)
+                                                          err(ts, z170, __LINE__, 0, 0, Local0, 0xabcd2900)
                                                       }
                                                       if (LNotEqual(\mt14.dz05.iy07, 0xabcd2900)) {
-                                                          err(ts, z170, 0x04c, 0, 0, \mt14.dz05.iy07, 0xabcd2900)
+                                                          err(ts, z170, __LINE__, 0, 0, \mt14.dz05.iy07, 0xabcd2900)
                                                       }
                                                     }
                                                     Store (\mt14.dz05.iy07, Local0)
                                                     mm18()
                                                     if (LNotEqual(Local0, 0xabcd2900)) {
-                                                        err(ts, z170, 0x04d, 0, 0, Local0, 0xabcd2900)
+                                                        err(ts, z170, __LINE__, 0, 0, Local0, 0xabcd2900)
                                                     }
                                                     if (LNotEqual(\mt14.dz05.iy07, 0xabcd2900)) {
-                                                        err(ts, z170, 0x04e, 0, 0, \mt14.dz05.iy07, 0xabcd2900)
+                                                        err(ts, z170, __LINE__, 0, 0, \mt14.dz05.iy07, 0xabcd2900)
                                                     }
                                                   }
                                                   Store (\mt14.dz05.iy07, Local0)
                                                   mm17()
                                                   if (LNotEqual(Local0, 0xabcd2900)) {
-                                                      err(ts, z170, 0x04f, 0, 0, Local0, 0xabcd2900)
+                                                      err(ts, z170, __LINE__, 0, 0, Local0, 0xabcd2900)
                                                   }
                                                   if (LNotEqual(\mt14.dz05.iy07, 0xabcd2900)) {
-                                                      err(ts, z170, 0x050, 0, 0, \mt14.dz05.iy07, 0xabcd2900)
+                                                      err(ts, z170, __LINE__, 0, 0, \mt14.dz05.iy07, 0xabcd2900)
                                                   }
                                                 }
                                                 Store (\mt14.dz05.iy07, Local0)
                                                 mm16()
                                                 if (LNotEqual(Local0, 0xabcd2900)) {
-                                                    err(ts, z170, 0x051, 0, 0, Local0, 0xabcd2900)
+                                                    err(ts, z170, __LINE__, 0, 0, Local0, 0xabcd2900)
                                                 }
                                                 if (LNotEqual(\mt14.dz05.iy07, 0xabcd2900)) {
-                                                    err(ts, z170, 0x052, 0, 0, \mt14.dz05.iy07, 0xabcd2900)
+                                                    err(ts, z170, __LINE__, 0, 0, \mt14.dz05.iy07, 0xabcd2900)
                                                 }
                                               }
                                               Store (\mt14.dz05.iy07, Local0)
                                               mm15()
                                               if (LNotEqual(Local0, 0xabcd2900)) {
-                                                  err(ts, z170, 0x053, 0, 0, Local0, 0xabcd2900)
+                                                  err(ts, z170, __LINE__, 0, 0, Local0, 0xabcd2900)
                                               }
                                               if (LNotEqual(\mt14.dz05.iy07, 0xabcd2900)) {
-                                                  err(ts, z170, 0x054, 0, 0, \mt14.dz05.iy07, 0xabcd2900)
+                                                  err(ts, z170, __LINE__, 0, 0, \mt14.dz05.iy07, 0xabcd2900)
                                               }
                                             }
                                             Store (\mt14.dz05.iy07, Local0)
                                             mm14()
                                             if (LNotEqual(Local0, 0xabcd2900)) {
-                                                err(ts, z170, 0x055, 0, 0, Local0, 0xabcd2900)
+                                                err(ts, z170, __LINE__, 0, 0, Local0, 0xabcd2900)
                                             }
                                             if (LNotEqual(\mt14.dz05.iy07, 0xabcd2900)) {
-                                                err(ts, z170, 0x056, 0, 0, \mt14.dz05.iy07, 0xabcd2900)
+                                                err(ts, z170, __LINE__, 0, 0, \mt14.dz05.iy07, 0xabcd2900)
                                             }
                                           }
                                           Store (\mt14.dz05.iy07, Local0)
                                           mm13()
                                           if (LNotEqual(Local0, 0xabcd2900)) {
-                                              err(ts, z170, 0x057, 0, 0, Local0, 0xabcd2900)
+                                              err(ts, z170, __LINE__, 0, 0, Local0, 0xabcd2900)
                                           }
                                           if (LNotEqual(\mt14.dz05.iy07, 0xabcd2900)) {
-                                              err(ts, z170, 0x058, 0, 0, \mt14.dz05.iy07, 0xabcd2900)
+                                              err(ts, z170, __LINE__, 0, 0, \mt14.dz05.iy07, 0xabcd2900)
                                           }
                                         }
                                         Store (\mt14.dz05.iy07, Local0)
                                         mm12()
                                         if (LNotEqual(Local0, 0xabcd2900)) {
-                                            err(ts, z170, 0x059, 0, 0, Local0, 0xabcd2900)
+                                            err(ts, z170, __LINE__, 0, 0, Local0, 0xabcd2900)
                                         }
                                         if (LNotEqual(\mt14.dz05.iy07, 0xabcd2900)) {
-                                            err(ts, z170, 0x05a, 0, 0, \mt14.dz05.iy07, 0xabcd2900)
+                                            err(ts, z170, __LINE__, 0, 0, \mt14.dz05.iy07, 0xabcd2900)
                                         }
                                       }
                                       Store (\mt14.dz05.iy07, Local0)
                                       mm11()
                                       if (LNotEqual(Local0, 0xabcd2900)) {
-                                          err(ts, z170, 0x05b, 0, 0, Local0, 0xabcd2900)
+                                          err(ts, z170, __LINE__, 0, 0, Local0, 0xabcd2900)
                                       }
                                       if (LNotEqual(\mt14.dz05.iy07, 0xabcd2900)) {
-                                          err(ts, z170, 0x05c, 0, 0, \mt14.dz05.iy07, 0xabcd2900)
+                                          err(ts, z170, __LINE__, 0, 0, \mt14.dz05.iy07, 0xabcd2900)
                                       }
                                     }
                                     Store (\mt14.dz05.iy07, Local0)
                                     mm10()
                                     if (LNotEqual(Local0, 0xabcd2900)) {
-                                        err(ts, z170, 0x05d, 0, 0, Local0, 0xabcd2900)
+                                        err(ts, z170, __LINE__, 0, 0, Local0, 0xabcd2900)
                                     }
                                     if (LNotEqual(\mt14.dz05.iy07, 0xabcd2900)) {
-                                        err(ts, z170, 0x05e, 0, 0, \mt14.dz05.iy07, 0xabcd2900)
+                                        err(ts, z170, __LINE__, 0, 0, \mt14.dz05.iy07, 0xabcd2900)
                                     }
                                   }
                                   Store (\mt14.dz05.iy07, Local0)
                                   mm0f()
                                   if (LNotEqual(Local0, 0xabcd2900)) {
-                                      err(ts, z170, 0x05f, 0, 0, Local0, 0xabcd2900)
+                                      err(ts, z170, __LINE__, 0, 0, Local0, 0xabcd2900)
                                   }
                                   if (LNotEqual(\mt14.dz05.iy07, 0xabcd2900)) {
-                                      err(ts, z170, 0x060, 0, 0, \mt14.dz05.iy07, 0xabcd2900)
+                                      err(ts, z170, __LINE__, 0, 0, \mt14.dz05.iy07, 0xabcd2900)
                                   }
                                 }
                                 Store (\mt14.dz05.iy07, Local0)
                                 mm0e()
                                 if (LNotEqual(Local0, 0xabcd2900)) {
-                                    err(ts, z170, 0x061, 0, 0, Local0, 0xabcd2900)
+                                    err(ts, z170, __LINE__, 0, 0, Local0, 0xabcd2900)
                                 }
                                 if (LNotEqual(\mt14.dz05.iy07, 0xabcd2900)) {
-                                    err(ts, z170, 0x062, 0, 0, \mt14.dz05.iy07, 0xabcd2900)
+                                    err(ts, z170, __LINE__, 0, 0, \mt14.dz05.iy07, 0xabcd2900)
                                 }
                               }
                               Store (\mt14.dz05.iy07, Local0)
                               mm0d()
                               if (LNotEqual(Local0, 0xabcd2900)) {
-                                  err(ts, z170, 0x063, 0, 0, Local0, 0xabcd2900)
+                                  err(ts, z170, __LINE__, 0, 0, Local0, 0xabcd2900)
                               }
                               if (LNotEqual(\mt14.dz05.iy07, 0xabcd2900)) {
-                                  err(ts, z170, 0x064, 0, 0, \mt14.dz05.iy07, 0xabcd2900)
+                                  err(ts, z170, __LINE__, 0, 0, \mt14.dz05.iy07, 0xabcd2900)
                               }
                             }
                             Store (\mt14.dz05.iy07, Local0)
                             mm0c()
                             if (LNotEqual(Local0, 0xabcd2900)) {
-                                err(ts, z170, 0x065, 0, 0, Local0, 0xabcd2900)
+                                err(ts, z170, __LINE__, 0, 0, Local0, 0xabcd2900)
                             }
                             if (LNotEqual(\mt14.dz05.iy07, 0xabcd2900)) {
-                                err(ts, z170, 0x066, 0, 0, \mt14.dz05.iy07, 0xabcd2900)
+                                err(ts, z170, __LINE__, 0, 0, \mt14.dz05.iy07, 0xabcd2900)
                             }
                           }
                           Store (\mt14.dz05.iy07, Local0)
                           mm0b()
                           if (LNotEqual(Local0, 0xabcd2900)) {
-                              err(ts, z170, 0x067, 0, 0, Local0, 0xabcd2900)
+                              err(ts, z170, __LINE__, 0, 0, Local0, 0xabcd2900)
                           }
                           if (LNotEqual(\mt14.dz05.iy07, 0xabcd2900)) {
-                              err(ts, z170, 0x068, 0, 0, \mt14.dz05.iy07, 0xabcd2900)
+                              err(ts, z170, __LINE__, 0, 0, \mt14.dz05.iy07, 0xabcd2900)
                           }
                         }
                         Store (\mt14.dz05.iy07, Local0)
                         mm0a()
                         if (LNotEqual(Local0, 0xabcd2900)) {
-                            err(ts, z170, 0x069, 0, 0, Local0, 0xabcd2900)
+                            err(ts, z170, __LINE__, 0, 0, Local0, 0xabcd2900)
                         }
                         if (LNotEqual(\mt14.dz05.iy07, 0xabcd2900)) {
-                            err(ts, z170, 0x06a, 0, 0, \mt14.dz05.iy07, 0xabcd2900)
+                            err(ts, z170, __LINE__, 0, 0, \mt14.dz05.iy07, 0xabcd2900)
                         }
                       }
                       Store (\mt14.dz05.iy07, Local0)
                       mm09()
                       if (LNotEqual(Local0, 0xabcd2900)) {
-                          err(ts, z170, 0x06b, 0, 0, Local0, 0xabcd2900)
+                          err(ts, z170, __LINE__, 0, 0, Local0, 0xabcd2900)
                       }
                       if (LNotEqual(\mt14.dz05.iy07, 0xabcd2900)) {
-                          err(ts, z170, 0x06c, 0, 0, \mt14.dz05.iy07, 0xabcd2900)
+                          err(ts, z170, __LINE__, 0, 0, \mt14.dz05.iy07, 0xabcd2900)
                       }
                     }
                     Store (\mt14.dz05.iy07, Local0)
                     mm08()
                     if (LNotEqual(Local0, 0xabcd2900)) {
-                        err(ts, z170, 0x06d, 0, 0, Local0, 0xabcd2900)
+                        err(ts, z170, __LINE__, 0, 0, Local0, 0xabcd2900)
                     }
                     if (LNotEqual(\mt14.dz05.iy07, 0xabcd2900)) {
-                        err(ts, z170, 0x06e, 0, 0, \mt14.dz05.iy07, 0xabcd2900)
+                        err(ts, z170, __LINE__, 0, 0, \mt14.dz05.iy07, 0xabcd2900)
                     }
                   }
                   Store (\mt14.dz05.iy07, Local0)
                   mm07()
                   if (LNotEqual(Local0, 0xabcd2900)) {
-                      err(ts, z170, 0x06f, 0, 0, Local0, 0xabcd2900)
+                      err(ts, z170, __LINE__, 0, 0, Local0, 0xabcd2900)
                   }
                   if (LNotEqual(\mt14.dz05.iy07, 0xabcd2900)) {
-                      err(ts, z170, 0x070, 0, 0, \mt14.dz05.iy07, 0xabcd2900)
+                      err(ts, z170, __LINE__, 0, 0, \mt14.dz05.iy07, 0xabcd2900)
                   }
                 }
                 Store (\mt14.dz05.iy07, Local0)
                 mm06()
                 if (LNotEqual(Local0, 0xabcd2900)) {
-                    err(ts, z170, 0x071, 0, 0, Local0, 0xabcd2900)
+                    err(ts, z170, __LINE__, 0, 0, Local0, 0xabcd2900)
                 }
                 if (LNotEqual(\mt14.dz05.iy07, 0xabcd2900)) {
-                    err(ts, z170, 0x072, 0, 0, \mt14.dz05.iy07, 0xabcd2900)
+                    err(ts, z170, __LINE__, 0, 0, \mt14.dz05.iy07, 0xabcd2900)
                 }
               }
               Store (\mt14.dz05.iy07, Local0)
               mm05()
               if (LNotEqual(Local0, 0xabcd2900)) {
-                  err(ts, z170, 0x073, 0, 0, Local0, 0xabcd2900)
+                  err(ts, z170, __LINE__, 0, 0, Local0, 0xabcd2900)
               }
               if (LNotEqual(\mt14.dz05.iy07, 0xabcd2900)) {
-                  err(ts, z170, 0x074, 0, 0, \mt14.dz05.iy07, 0xabcd2900)
+                  err(ts, z170, __LINE__, 0, 0, \mt14.dz05.iy07, 0xabcd2900)
               }
             }
             Store (\mt14.dz05.iy07, Local0)
             mm04()
             if (LNotEqual(Local0, 0xabcd2900)) {
-                err(ts, z170, 0x075, 0, 0, Local0, 0xabcd2900)
+                err(ts, z170, __LINE__, 0, 0, Local0, 0xabcd2900)
             }
             if (LNotEqual(\mt14.dz05.iy07, 0xabcd2900)) {
-                err(ts, z170, 0x076, 0, 0, \mt14.dz05.iy07, 0xabcd2900)
+                err(ts, z170, __LINE__, 0, 0, \mt14.dz05.iy07, 0xabcd2900)
             }
           }
           Store (\mt14.dz05.iy07, Local0)
           mm03()
           if (LNotEqual(Local0, 0xabcd2900)) {
-              err(ts, z170, 0x077, 0, 0, Local0, 0xabcd2900)
+              err(ts, z170, __LINE__, 0, 0, Local0, 0xabcd2900)
           }
           if (LNotEqual(\mt14.dz05.iy07, 0xabcd2900)) {
-              err(ts, z170, 0x078, 0, 0, \mt14.dz05.iy07, 0xabcd2900)
+              err(ts, z170, __LINE__, 0, 0, \mt14.dz05.iy07, 0xabcd2900)
           }
         }
         Store (\mt14.dz05.iy07, Local0)
         mm02()
         if (LNotEqual(Local0, 0xabcd2900)) {
-            err(ts, z170, 0x079, 0, 0, Local0, 0xabcd2900)
+            err(ts, z170, __LINE__, 0, 0, Local0, 0xabcd2900)
         }
         if (LNotEqual(\mt14.dz05.iy07, 0xabcd2900)) {
-            err(ts, z170, 0x07a, 0, 0, \mt14.dz05.iy07, 0xabcd2900)
+            err(ts, z170, __LINE__, 0, 0, \mt14.dz05.iy07, 0xabcd2900)
         }
       }
       Store (\mt14.dz05.iy07, Local0)
       mm01()
       if (LNotEqual(Local0, 0xabcd2900)) {
-          err(ts, z170, 0x07b, 0, 0, Local0, 0xabcd2900)
+          err(ts, z170, __LINE__, 0, 0, Local0, 0xabcd2900)
       }
       if (LNotEqual(\mt14.dz05.iy07, 0xabcd2900)) {
-          err(ts, z170, 0x07c, 0, 0, \mt14.dz05.iy07, 0xabcd2900)
+          err(ts, z170, __LINE__, 0, 0, \mt14.dz05.iy07, 0xabcd2900)
       }
     }
 
-    CH03(ts, z170, 0x11f, 0, 0)
+    CH03(ts, z170, 0x11f, __LINE__, 0)
 
     Store (\mt14.dz05.iy07, Local0)
     mm00()
     if (LNotEqual(Local0, 0xabcd2900)) {
-        err(ts, z170, 0x07d, 0, 0, Local0, 0xabcd2900)
+        err(ts, z170, __LINE__, 0, 0, Local0, 0xabcd2900)
     }
     if (LNotEqual(\mt14.dz05.iy07, 0xabcd2900)) {
-        err(ts, z170, 0x07e, 0, 0, \mt14.dz05.iy07, 0xabcd2900)
+        err(ts, z170, __LINE__, 0, 0, \mt14.dz05.iy07, 0xabcd2900)
     }
 
-    CH03(ts, z170, 0x120, 0, 0)
+    CH03(ts, z170, 0x120, __LINE__, 0)
 }
 
 /*
@@ -2150,304 +2150,304 @@ Method(mt15,, Serialized)
                                                                     OUTC("mt15,   ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^dz05.iy07:")
                                                                     OUTC(Local0)
                                                                     if (LNotEqual(Local0, 0xabcd3900)) {
-                                                                        err(ts, z170, 0x07f, 0, 0, Local0, 0xabcd3900)
+                                                                        err(ts, z170, __LINE__, 0, 0, Local0, 0xabcd3900)
                                                                     }
                                                                     if (LNotEqual(^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^dz05.iy07, 0xabcd3900)) {
-                                                                        err(ts, z170, 0x080, 0, 0, ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^dz05.iy07, 0xabcd3900)
+                                                                        err(ts, z170, __LINE__, 0, 0, ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^dz05.iy07, 0xabcd3900)
                                                                     }
                                                                   }
                                                                   Store (^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^dz05.iy07, Local0)
                                                                   mm1f()
                                                                   if (LNotEqual(Local0, 0xabcd3900)) {
-                                                                      err(ts, z170, 0x081, 0, 0, Local0, 0xabcd3900)
+                                                                      err(ts, z170, __LINE__, 0, 0, Local0, 0xabcd3900)
                                                                   }
                                                                   if (LNotEqual(^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^dz05.iy07, 0xabcd3900)) {
-                                                                      err(ts, z170, 0x082, 0, 0, ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^dz05.iy07, 0xabcd3900)
+                                                                      err(ts, z170, __LINE__, 0, 0, ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^dz05.iy07, 0xabcd3900)
                                                                   }
                                                                 }
                                                                 Store (^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^dz05.iy07, Local0)
                                                                 mm1e()
                                                                 if (LNotEqual(Local0, 0xabcd3900)) {
-                                                                    err(ts, z170, 0x083, 0, 0, Local0, 0xabcd3900)
+                                                                    err(ts, z170, __LINE__, 0, 0, Local0, 0xabcd3900)
                                                                 }
                                                                 if (LNotEqual(^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^dz05.iy07, 0xabcd3900)) {
-                                                                    err(ts, z170, 0x084, 0, 0, ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^dz05.iy07, 0xabcd3900)
+                                                                    err(ts, z170, __LINE__, 0, 0, ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^dz05.iy07, 0xabcd3900)
                                                                 }
                                                               }
                                                               Store (^^^^^^^^^^^^^^^^^^^^^^^^^^^^^dz05.iy07, Local0)
                                                               mm1d()
                                                               if (LNotEqual(Local0, 0xabcd3900)) {
-                                                                  err(ts, z170, 0x085, 0, 0, Local0, 0xabcd3900)
+                                                                  err(ts, z170, __LINE__, 0, 0, Local0, 0xabcd3900)
                                                               }
                                                               if (LNotEqual(^^^^^^^^^^^^^^^^^^^^^^^^^^^^^dz05.iy07, 0xabcd3900)) {
-                                                                  err(ts, z170, 0x086, 0, 0, ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^dz05.iy07, 0xabcd3900)
+                                                                  err(ts, z170, __LINE__, 0, 0, ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^dz05.iy07, 0xabcd3900)
                                                               }
                                                             }
                                                             Store (^^^^^^^^^^^^^^^^^^^^^^^^^^^^dz05.iy07, Local0)
                                                             mm1c()
                                                             if (LNotEqual(Local0, 0xabcd3900)) {
-                                                                err(ts, z170, 0x087, 0, 0, Local0, 0xabcd3900)
+                                                                err(ts, z170, __LINE__, 0, 0, Local0, 0xabcd3900)
                                                             }
                                                             if (LNotEqual(^^^^^^^^^^^^^^^^^^^^^^^^^^^^dz05.iy07, 0xabcd3900)) {
-                                                                err(ts, z170, 0x088, 0, 0, ^^^^^^^^^^^^^^^^^^^^^^^^^^^^dz05.iy07, 0xabcd3900)
+                                                                err(ts, z170, __LINE__, 0, 0, ^^^^^^^^^^^^^^^^^^^^^^^^^^^^dz05.iy07, 0xabcd3900)
                                                             }
                                                           }
                                                           Store (^^^^^^^^^^^^^^^^^^^^^^^^^^^dz05.iy07, Local0)
                                                           mm1b()
                                                           if (LNotEqual(Local0, 0xabcd3900)) {
-                                                              err(ts, z170, 0x089, 0, 0, Local0, 0xabcd3900)
+                                                              err(ts, z170, __LINE__, 0, 0, Local0, 0xabcd3900)
                                                           }
                                                           if (LNotEqual(^^^^^^^^^^^^^^^^^^^^^^^^^^^dz05.iy07, 0xabcd3900)) {
-                                                              err(ts, z170, 0x08a, 0, 0, ^^^^^^^^^^^^^^^^^^^^^^^^^^^dz05.iy07, 0xabcd3900)
+                                                              err(ts, z170, __LINE__, 0, 0, ^^^^^^^^^^^^^^^^^^^^^^^^^^^dz05.iy07, 0xabcd3900)
                                                           }
                                                         }
                                                         Store (^^^^^^^^^^^^^^^^^^^^^^^^^^dz05.iy07, Local0)
                                                         mm1a()
                                                         if (LNotEqual(Local0, 0xabcd3900)) {
-                                                            err(ts, z170, 0x08b, 0, 0, Local0, 0xabcd3900)
+                                                            err(ts, z170, __LINE__, 0, 0, Local0, 0xabcd3900)
                                                         }
                                                         if (LNotEqual(^^^^^^^^^^^^^^^^^^^^^^^^^^dz05.iy07, 0xabcd3900)) {
-                                                            err(ts, z170, 0x08c, 0, 0, ^^^^^^^^^^^^^^^^^^^^^^^^^^dz05.iy07, 0xabcd3900)
+                                                            err(ts, z170, __LINE__, 0, 0, ^^^^^^^^^^^^^^^^^^^^^^^^^^dz05.iy07, 0xabcd3900)
                                                         }
                                                       }
                                                       Store (^^^^^^^^^^^^^^^^^^^^^^^^^dz05.iy07, Local0)
                                                       mm19()
                                                       if (LNotEqual(Local0, 0xabcd3900)) {
-                                                          err(ts, z170, 0x08d, 0, 0, Local0, 0xabcd3900)
+                                                          err(ts, z170, __LINE__, 0, 0, Local0, 0xabcd3900)
                                                       }
                                                       if (LNotEqual(^^^^^^^^^^^^^^^^^^^^^^^^^dz05.iy07, 0xabcd3900)) {
-                                                          err(ts, z170, 0x08e, 0, 0, ^^^^^^^^^^^^^^^^^^^^^^^^^dz05.iy07, 0xabcd3900)
+                                                          err(ts, z170, __LINE__, 0, 0, ^^^^^^^^^^^^^^^^^^^^^^^^^dz05.iy07, 0xabcd3900)
                                                       }
                                                     }
                                                     Store (^^^^^^^^^^^^^^^^^^^^^^^^dz05.iy07, Local0)
                                                     mm18()
                                                     if (LNotEqual(Local0, 0xabcd3900)) {
-                                                        err(ts, z170, 0x08f, 0, 0, Local0, 0xabcd3900)
+                                                        err(ts, z170, __LINE__, 0, 0, Local0, 0xabcd3900)
                                                     }
                                                     if (LNotEqual(^^^^^^^^^^^^^^^^^^^^^^^^dz05.iy07, 0xabcd3900)) {
-                                                        err(ts, z170, 0x090, 0, 0, ^^^^^^^^^^^^^^^^^^^^^^^^dz05.iy07, 0xabcd3900)
+                                                        err(ts, z170, __LINE__, 0, 0, ^^^^^^^^^^^^^^^^^^^^^^^^dz05.iy07, 0xabcd3900)
                                                     }
                                                   }
                                                   Store (^^^^^^^^^^^^^^^^^^^^^^^dz05.iy07, Local0)
                                                   mm17()
                                                   if (LNotEqual(Local0, 0xabcd3900)) {
-                                                      err(ts, z170, 0x091, 0, 0, Local0, 0xabcd3900)
+                                                      err(ts, z170, __LINE__, 0, 0, Local0, 0xabcd3900)
                                                   }
                                                   if (LNotEqual(^^^^^^^^^^^^^^^^^^^^^^^dz05.iy07, 0xabcd3900)) {
-                                                      err(ts, z170, 0x092, 0, 0, ^^^^^^^^^^^^^^^^^^^^^^^dz05.iy07, 0xabcd3900)
+                                                      err(ts, z170, __LINE__, 0, 0, ^^^^^^^^^^^^^^^^^^^^^^^dz05.iy07, 0xabcd3900)
                                                   }
                                                 }
                                                 Store (^^^^^^^^^^^^^^^^^^^^^^dz05.iy07, Local0)
                                                 mm16()
                                                 if (LNotEqual(Local0, 0xabcd3900)) {
-                                                    err(ts, z170, 0x093, 0, 0, Local0, 0xabcd3900)
+                                                    err(ts, z170, __LINE__, 0, 0, Local0, 0xabcd3900)
                                                 }
                                                 if (LNotEqual(^^^^^^^^^^^^^^^^^^^^^^dz05.iy07, 0xabcd3900)) {
-                                                    err(ts, z170, 0x094, 0, 0, ^^^^^^^^^^^^^^^^^^^^^^dz05.iy07, 0xabcd3900)
+                                                    err(ts, z170, __LINE__, 0, 0, ^^^^^^^^^^^^^^^^^^^^^^dz05.iy07, 0xabcd3900)
                                                 }
                                               }
                                               Store (^^^^^^^^^^^^^^^^^^^^^dz05.iy07, Local0)
                                               mm15()
                                               if (LNotEqual(Local0, 0xabcd3900)) {
-                                                  err(ts, z170, 0x095, 0, 0, Local0, 0xabcd3900)
+                                                  err(ts, z170, __LINE__, 0, 0, Local0, 0xabcd3900)
                                               }
                                               if (LNotEqual(^^^^^^^^^^^^^^^^^^^^^dz05.iy07, 0xabcd3900)) {
-                                                  err(ts, z170, 0x096, 0, 0, ^^^^^^^^^^^^^^^^^^^^^dz05.iy07, 0xabcd3900)
+                                                  err(ts, z170, __LINE__, 0, 0, ^^^^^^^^^^^^^^^^^^^^^dz05.iy07, 0xabcd3900)
                                               }
                                             }
                                             Store (^^^^^^^^^^^^^^^^^^^^dz05.iy07, Local0)
                                             mm14()
                                             if (LNotEqual(Local0, 0xabcd3900)) {
-                                                err(ts, z170, 0x097, 0, 0, Local0, 0xabcd3900)
+                                                err(ts, z170, __LINE__, 0, 0, Local0, 0xabcd3900)
                                             }
                                             if (LNotEqual(^^^^^^^^^^^^^^^^^^^^dz05.iy07, 0xabcd3900)) {
-                                                err(ts, z170, 0x098, 0, 0, ^^^^^^^^^^^^^^^^^^^^dz05.iy07, 0xabcd3900)
+                                                err(ts, z170, __LINE__, 0, 0, ^^^^^^^^^^^^^^^^^^^^dz05.iy07, 0xabcd3900)
                                             }
                                           }
                                           Store (^^^^^^^^^^^^^^^^^^^dz05.iy07, Local0)
                                           mm13()
                                           if (LNotEqual(Local0, 0xabcd3900)) {
-                                              err(ts, z170, 0x099, 0, 0, Local0, 0xabcd3900)
+                                              err(ts, z170, __LINE__, 0, 0, Local0, 0xabcd3900)
                                           }
                                           if (LNotEqual(^^^^^^^^^^^^^^^^^^^dz05.iy07, 0xabcd3900)) {
-                                              err(ts, z170, 0x09a, 0, 0, ^^^^^^^^^^^^^^^^^^^dz05.iy07, 0xabcd3900)
+                                              err(ts, z170, __LINE__, 0, 0, ^^^^^^^^^^^^^^^^^^^dz05.iy07, 0xabcd3900)
                                           }
                                         }
                                         Store (^^^^^^^^^^^^^^^^^^dz05.iy07, Local0)
                                         mm12()
                                         if (LNotEqual(Local0, 0xabcd3900)) {
-                                            err(ts, z170, 0x09b, 0, 0, Local0, 0xabcd3900)
+                                            err(ts, z170, __LINE__, 0, 0, Local0, 0xabcd3900)
                                         }
                                         if (LNotEqual(^^^^^^^^^^^^^^^^^^dz05.iy07, 0xabcd3900)) {
-                                            err(ts, z170, 0x09c, 0, 0, ^^^^^^^^^^^^^^^^^^dz05.iy07, 0xabcd3900)
+                                            err(ts, z170, __LINE__, 0, 0, ^^^^^^^^^^^^^^^^^^dz05.iy07, 0xabcd3900)
                                         }
                                       }
                                       Store (^^^^^^^^^^^^^^^^^dz05.iy07, Local0)
                                       mm11()
                                       if (LNotEqual(Local0, 0xabcd3900)) {
-                                          err(ts, z170, 0x09d, 0, 0, Local0, 0xabcd3900)
+                                          err(ts, z170, __LINE__, 0, 0, Local0, 0xabcd3900)
                                       }
                                       if (LNotEqual(^^^^^^^^^^^^^^^^^dz05.iy07, 0xabcd3900)) {
-                                          err(ts, z170, 0x09e, 0, 0, ^^^^^^^^^^^^^^^^^dz05.iy07, 0xabcd3900)
+                                          err(ts, z170, __LINE__, 0, 0, ^^^^^^^^^^^^^^^^^dz05.iy07, 0xabcd3900)
                                       }
                                     }
                                     Store (^^^^^^^^^^^^^^^^dz05.iy07, Local0)
                                     mm10()
                                     if (LNotEqual(Local0, 0xabcd3900)) {
-                                        err(ts, z170, 0x09f, 0, 0, Local0, 0xabcd3900)
+                                        err(ts, z170, __LINE__, 0, 0, Local0, 0xabcd3900)
                                     }
                                     if (LNotEqual(^^^^^^^^^^^^^^^^dz05.iy07, 0xabcd3900)) {
-                                        err(ts, z170, 0x0a0, 0, 0, ^^^^^^^^^^^^^^^^dz05.iy07, 0xabcd3900)
+                                        err(ts, z170, __LINE__, 0, 0, ^^^^^^^^^^^^^^^^dz05.iy07, 0xabcd3900)
                                     }
                                   }
                                   Store (^^^^^^^^^^^^^^^dz05.iy07, Local0)
                                   mm0f()
                                   if (LNotEqual(Local0, 0xabcd3900)) {
-                                      err(ts, z170, 0x0a1, 0, 0, Local0, 0xabcd3900)
+                                      err(ts, z170, __LINE__, 0, 0, Local0, 0xabcd3900)
                                   }
                                   if (LNotEqual(^^^^^^^^^^^^^^^dz05.iy07, 0xabcd3900)) {
-                                      err(ts, z170, 0x0a2, 0, 0, ^^^^^^^^^^^^^^^dz05.iy07, 0xabcd3900)
+                                      err(ts, z170, __LINE__, 0, 0, ^^^^^^^^^^^^^^^dz05.iy07, 0xabcd3900)
                                   }
                                 }
                                 Store (^^^^^^^^^^^^^^dz05.iy07, Local0)
                                 mm0e()
                                 if (LNotEqual(Local0, 0xabcd3900)) {
-                                    err(ts, z170, 0x0a3, 0, 0, Local0, 0xabcd3900)
+                                    err(ts, z170, __LINE__, 0, 0, Local0, 0xabcd3900)
                                 }
                                 if (LNotEqual(^^^^^^^^^^^^^^dz05.iy07, 0xabcd3900)) {
-                                    err(ts, z170, 0x0a4, 0, 0, ^^^^^^^^^^^^^^dz05.iy07, 0xabcd3900)
+                                    err(ts, z170, __LINE__, 0, 0, ^^^^^^^^^^^^^^dz05.iy07, 0xabcd3900)
                                 }
                               }
                               Store (^^^^^^^^^^^^^dz05.iy07, Local0)
                               mm0d()
                               if (LNotEqual(Local0, 0xabcd3900)) {
-                                  err(ts, z170, 0x0a5, 0, 0, Local0, 0xabcd3900)
+                                  err(ts, z170, __LINE__, 0, 0, Local0, 0xabcd3900)
                               }
                               if (LNotEqual(^^^^^^^^^^^^^dz05.iy07, 0xabcd3900)) {
-                                  err(ts, z170, 0x0a6, 0, 0, ^^^^^^^^^^^^^dz05.iy07, 0xabcd3900)
+                                  err(ts, z170, __LINE__, 0, 0, ^^^^^^^^^^^^^dz05.iy07, 0xabcd3900)
                               }
                             }
                             Store (^^^^^^^^^^^^dz05.iy07, Local0)
                             mm0c()
                             if (LNotEqual(Local0, 0xabcd3900)) {
-                                err(ts, z170, 0x0a7, 0, 0, Local0, 0xabcd3900)
+                                err(ts, z170, __LINE__, 0, 0, Local0, 0xabcd3900)
                             }
                             if (LNotEqual(^^^^^^^^^^^^dz05.iy07, 0xabcd3900)) {
-                                err(ts, z170, 0x0a8, 0, 0, ^^^^^^^^^^^^dz05.iy07, 0xabcd3900)
+                                err(ts, z170, __LINE__, 0, 0, ^^^^^^^^^^^^dz05.iy07, 0xabcd3900)
                             }
                           }
                           Store (^^^^^^^^^^^dz05.iy07, Local0)
                           mm0b()
                           if (LNotEqual(Local0, 0xabcd3900)) {
-                              err(ts, z170, 0x0a9, 0, 0, Local0, 0xabcd3900)
+                              err(ts, z170, __LINE__, 0, 0, Local0, 0xabcd3900)
                           }
                           if (LNotEqual(^^^^^^^^^^^dz05.iy07, 0xabcd3900)) {
-                              err(ts, z170, 0x0aa, 0, 0, ^^^^^^^^^^^dz05.iy07, 0xabcd3900)
+                              err(ts, z170, __LINE__, 0, 0, ^^^^^^^^^^^dz05.iy07, 0xabcd3900)
                           }
                         }
                         Store (^^^^^^^^^^dz05.iy07, Local0)
                         mm0a()
                         if (LNotEqual(Local0, 0xabcd3900)) {
-                            err(ts, z170, 0x0ab, 0, 0, Local0, 0xabcd3900)
+                            err(ts, z170, __LINE__, 0, 0, Local0, 0xabcd3900)
                         }
                         if (LNotEqual(^^^^^^^^^^dz05.iy07, 0xabcd3900)) {
-                            err(ts, z170, 0x0ac, 0, 0, ^^^^^^^^^^dz05.iy07, 0xabcd3900)
+                            err(ts, z170, __LINE__, 0, 0, ^^^^^^^^^^dz05.iy07, 0xabcd3900)
                         }
                       }
                       Store (^^^^^^^^^dz05.iy07, Local0)
                       mm09()
                       if (LNotEqual(Local0, 0xabcd3900)) {
-                          err(ts, z170, 0x0ad, 0, 0, Local0, 0xabcd3900)
+                          err(ts, z170, __LINE__, 0, 0, Local0, 0xabcd3900)
                       }
                       if (LNotEqual(^^^^^^^^^dz05.iy07, 0xabcd3900)) {
-                          err(ts, z170, 0x0ae, 0, 0, ^^^^^^^^^dz05.iy07, 0xabcd3900)
+                          err(ts, z170, __LINE__, 0, 0, ^^^^^^^^^dz05.iy07, 0xabcd3900)
                       }
                     }
                     Store (^^^^^^^^dz05.iy07, Local0)
                     mm08()
                     if (LNotEqual(Local0, 0xabcd3900)) {
-                        err(ts, z170, 0x0af, 0, 0, Local0, 0xabcd3900)
+                        err(ts, z170, __LINE__, 0, 0, Local0, 0xabcd3900)
                     }
                     if (LNotEqual(^^^^^^^^dz05.iy07, 0xabcd3900)) {
-                        err(ts, z170, 0x0b0, 0, 0, ^^^^^^^^dz05.iy07, 0xabcd3900)
+                        err(ts, z170, __LINE__, 0, 0, ^^^^^^^^dz05.iy07, 0xabcd3900)
                     }
                   }
                   Store (^^^^^^^dz05.iy07, Local0)
                   mm07()
                   if (LNotEqual(Local0, 0xabcd3900)) {
-                      err(ts, z170, 0x0b1, 0, 0, Local0, 0xabcd3900)
+                      err(ts, z170, __LINE__, 0, 0, Local0, 0xabcd3900)
                   }
                   if (LNotEqual(^^^^^^^dz05.iy07, 0xabcd3900)) {
-                      err(ts, z170, 0x0b2, 0, 0, ^^^^^^^dz05.iy07, 0xabcd3900)
+                      err(ts, z170, __LINE__, 0, 0, ^^^^^^^dz05.iy07, 0xabcd3900)
                   }
                 }
                 Store (^^^^^^dz05.iy07, Local0)
                 mm06()
                 if (LNotEqual(Local0, 0xabcd3900)) {
-                    err(ts, z170, 0x0b3, 0, 0, Local0, 0xabcd3900)
+                    err(ts, z170, __LINE__, 0, 0, Local0, 0xabcd3900)
                 }
                 if (LNotEqual(^^^^^^dz05.iy07, 0xabcd3900)) {
-                    err(ts, z170, 0x0b4, 0, 0, ^^^^^^dz05.iy07, 0xabcd3900)
+                    err(ts, z170, __LINE__, 0, 0, ^^^^^^dz05.iy07, 0xabcd3900)
                 }
               }
               Store (^^^^^dz05.iy07, Local0)
               mm05()
               if (LNotEqual(Local0, 0xabcd3900)) {
-                  err(ts, z170, 0x0b5, 0, 0, Local0, 0xabcd3900)
+                  err(ts, z170, __LINE__, 0, 0, Local0, 0xabcd3900)
               }
               if (LNotEqual(^^^^^dz05.iy07, 0xabcd3900)) {
-                  err(ts, z170, 0x0b6, 0, 0, ^^^^^dz05.iy07, 0xabcd3900)
+                  err(ts, z170, __LINE__, 0, 0, ^^^^^dz05.iy07, 0xabcd3900)
               }
             }
             Store (^^^^dz05.iy07, Local0)
             mm04()
             if (LNotEqual(Local0, 0xabcd3900)) {
-                err(ts, z170, 0x0b7, 0, 0, Local0, 0xabcd3900)
+                err(ts, z170, __LINE__, 0, 0, Local0, 0xabcd3900)
             }
             if (LNotEqual(^^^^dz05.iy07, 0xabcd3900)) {
-                err(ts, z170, 0x0b8, 0, 0, ^^^^dz05.iy07, 0xabcd3900)
+                err(ts, z170, __LINE__, 0, 0, ^^^^dz05.iy07, 0xabcd3900)
             }
           }
           Store (^^^dz05.iy07, Local0)
           mm03()
           if (LNotEqual(Local0, 0xabcd3900)) {
-              err(ts, z170, 0x0b9, 0, 0, Local0, 0xabcd3900)
+              err(ts, z170, __LINE__, 0, 0, Local0, 0xabcd3900)
           }
           if (LNotEqual(^^^dz05.iy07, 0xabcd3900)) {
-              err(ts, z170, 0x0ba, 0, 0, ^^^dz05.iy07, 0xabcd3900)
+              err(ts, z170, __LINE__, 0, 0, ^^^dz05.iy07, 0xabcd3900)
           }
         }
         Store (^^dz05.iy07, Local0)
         mm02()
         if (LNotEqual(Local0, 0xabcd3900)) {
-            err(ts, z170, 0x0bb, 0, 0, Local0, 0xabcd3900)
+            err(ts, z170, __LINE__, 0, 0, Local0, 0xabcd3900)
         }
         if (LNotEqual(^^dz05.iy07, 0xabcd3900)) {
-            err(ts, z170, 0x0bc, 0, 0, ^^dz05.iy07, 0xabcd3900)
+            err(ts, z170, __LINE__, 0, 0, ^^dz05.iy07, 0xabcd3900)
         }
       }
       Store (^dz05.iy07, Local0)
       mm01()
       if (LNotEqual(Local0, 0xabcd3900)) {
-          err(ts, z170, 0x0bd, 0, 0, Local0, 0xabcd3900)
+          err(ts, z170, __LINE__, 0, 0, Local0, 0xabcd3900)
       }
       if (LNotEqual(^dz05.iy07, 0xabcd3900)) {
-          err(ts, z170, 0x0be, 0, 0, ^dz05.iy07, 0xabcd3900)
+          err(ts, z170, __LINE__, 0, 0, ^dz05.iy07, 0xabcd3900)
       }
     }
 
-    CH03(ts, z170, 0x121, 0, 0)
+    CH03(ts, z170, 0x121, __LINE__, 0)
 
     Store (dz05.iy07, Local0)
     mm00()
     if (LNotEqual(Local0, 0xabcd3900)) {
-        err(ts, z170, 0x0bf, 0, 0, Local0, 0xabcd3900)
+        err(ts, z170, __LINE__, 0, 0, Local0, 0xabcd3900)
     }
     if (LNotEqual(dz05.iy07, 0xabcd3900)) {
-        err(ts, z170, 0x0c0, 0, 0, dz05.iy07, 0xabcd3900)
+        err(ts, z170, __LINE__, 0, 0, dz05.iy07, 0xabcd3900)
     }
 
-    CH03(ts, z170, 0x122, 0, 0)
+    CH03(ts, z170, 0x122, __LINE__, 0)
 }
 
 /*
@@ -2521,12 +2521,12 @@ Method(mt16, 1, Serialized)
       mmF1(arg0)
     }
 
-    CH03(ts, z170, 0x0c1, 0, 0)
+    CH03(ts, z170, 0x0c1, __LINE__, 0)
 
     if (LEqual(arg0, 0)) {
         // Access to the internal data of method (mm00...) not being invoked
         m000()
-        CH04(ts, 1, 5, z170, 0x0c2, 0, 0) // AE_NOT_FOUND
+        CH04(ts, 1, 5, z170, __LINE__, 0, 0) // AE_NOT_FOUND
     } elseif (LEqual(arg0, 1)) {
 
         // Access to the internal data of method (mm00...) being invoked
@@ -2536,7 +2536,7 @@ Method(mt16, 1, Serialized)
         Store(1, i001)
         mm00()
         if (LNotEqual(i000, 0xabcd4904)) {
-            err(ts, z170, 0x0c3, 0, 0, i000, 0xabcd4904)
+            err(ts, z170, __LINE__, 0, 0, i000, 0xabcd4904)
         }
     } elseif (LEqual(arg0, 2)) {
 
@@ -2546,7 +2546,7 @@ Method(mt16, 1, Serialized)
         Store(2, i001)
         mm00()
         if (LNotEqual(i000, 0xabcd4905)) {
-            err(ts, z170, 0x0c4, 0, 0, i000, 0xabcd4905)
+            err(ts, z170, __LINE__, 0, 0, i000, 0xabcd4905)
         }
 
     } elseif (LEqual(arg0, 3)) {
@@ -2557,11 +2557,11 @@ Method(mt16, 1, Serialized)
         Store(3, i001)
         mm00()
         if (LNotEqual(i000, 0xabcd6900)) {
-            err(ts, z170, 0x1c4, 0, 0, i000, 0xabcd6900)
+            err(ts, z170, __LINE__, 0, 0, i000, 0xabcd6900)
         }
     }
 
-    CH03(ts, z170, 0x0c5, 0, 0)
+    CH03(ts, z170, 0x0c5, __LINE__, 0)
 }
 
 /*
@@ -2884,12 +2884,12 @@ if (LEqual(arg0, 1)) {
       mmF1(arg0)
     }
 
-    CH03(ts, z170, 0x0c6, 0, 0)
+    CH03(ts, z170, 0x0c6, __LINE__, 0)
 
     if (LEqual(arg0, 0)) {
         // Access to the internal data of method (mm00...) not being invoked
         m000()
-        CH04(ts, 1, 5, z170, 0x0c7, 0, 0) // AE_NOT_FOUND
+        CH04(ts, 1, 5, z170, __LINE__, 0, 0) // AE_NOT_FOUND
     } elseif (LEqual(arg0, 1)) {
 
         // Access to the internal data of method (mm00...) being invoked
@@ -2898,7 +2898,7 @@ if (LEqual(arg0, 1)) {
         Store(1, i001)
         mm00()
         if (LNotEqual(i000, 0xabcd4906)) {
-            err(ts, z170, 0x0c8, 0, 0, i000, 0xabcd4906)
+            err(ts, z170, __LINE__, 0, 0, i000, 0xabcd4906)
         }
     } elseif (LEqual(arg0, 2)) {
 
@@ -2908,7 +2908,7 @@ if (LEqual(arg0, 1)) {
         Store(2, i001)
         mm00()
         if (LNotEqual(i000, 0xabcd4907)) {
-            err(ts, z170, 0x0c9, 0, 0, i000, 0xabcd4907)
+            err(ts, z170, __LINE__, 0, 0, i000, 0xabcd4907)
         }
 
     } elseif (LEqual(arg0, 3)) {
@@ -2919,11 +2919,11 @@ if (LEqual(arg0, 1)) {
         Store(3, i001)
         mm00()
         if (LNotEqual(i000, 0xabcd4908)) {
-            err(ts, z170, 0x0ca, 0, 0, i000, 0xabcd4908)
+            err(ts, z170, __LINE__, 0, 0, i000, 0xabcd4908)
         }
     }
 
-    CH03(ts, z170, 0x0cb, 0, 0)
+    CH03(ts, z170, 0x0cb, __LINE__, 0)
 }
 
 Method(mt18, 1, Serialized)
@@ -2935,21 +2935,21 @@ Method(mt18, 1, Serialized)
 		Name(iy07, 0xabcd4900)
 	}
 
-	CH03(ts, z170, 0x0cc, 0, 0)
+	CH03(ts, z170, 0x0cc, __LINE__, 0)
 
 	if (arg0) {
 		Store(0xabcd9000, \mt18.dz05.iy07)
             if (LNotEqual(\mt18.dz05.iy07, 0xabcd9000)) {
-                err(ts, z170, 0x0ca, 0, 0, \mt18.dz05.iy07, 0xabcd9000)
+                err(ts, z170, __LINE__, 0, 0, \mt18.dz05.iy07, 0xabcd9000)
             }
 	} else {
 		Store(0xabcd9001, dz05.iy07)
             if (LNotEqual(dz05.iy07, 0xabcd9001)) {
-                err(ts, z170, 0x0ca, 0, 0, dz05.iy07, 0xabcd9001)
+                err(ts, z170, __LINE__, 0, 0, dz05.iy07, 0xabcd9001)
             }
 	}
 
-	CH03(ts, z170, 0x0cd, 0, 0)
+	CH03(ts, z170, 0x0cd, __LINE__, 0)
 }
 
 Method(mt19, 1, Serialized)
@@ -2961,40 +2961,40 @@ Method(mt19, 1, Serialized)
 		Name(iy07, 0xabcd0660)
 	}
 
-	CH03(ts, z170, 0x0ce, 0, 0)
+	CH03(ts, z170, 0x0ce, __LINE__, 0)
 
 	if (arg0) {
 		Store(0xabcd9002, \mt19.pr7d.iy07)
             if (LNotEqual(\mt19.pr7d.iy07, 0xabcd9002)) {
-                err(ts, z170, 0x0ca, 0, 0, \mt19.pr7d.iy07, 0xabcd9002)
+                err(ts, z170, __LINE__, 0, 0, \mt19.pr7d.iy07, 0xabcd9002)
             }
 	} else {
 		Store(0xabcd9003, pr7d.iy07)
             if (LNotEqual(pr7d.iy07, 0xabcd9003)) {
-                err(ts, z170, 0x0ca, 0, 0, pr7d.iy07, 0xabcd9003)
+                err(ts, z170, __LINE__, 0, 0, pr7d.iy07, 0xabcd9003)
             }
 	}
 
-	CH03(ts, z170, 0x0cf, 0, 0)
+	CH03(ts, z170, 0x0cf, __LINE__, 0)
 }
 
 Method(mt1a, 1, Serialized)
 {
 	Name(ts, "mt1a")
 
-	CH03(ts, z170, 0x0d0, 0, 0)
+	CH03(ts, z170, 0x0d0, __LINE__, 0)
 	if (arg0) {
 		Store(0xabcd9004, \pr7d.iy07)
             if (LNotEqual(\pr7d.iy07, 0xabcd9004)) {
-                err(ts, z170, 0x0ca, 0, 0, \pr7d.iy07, 0xabcd9004)
+                err(ts, z170, __LINE__, 0, 0, \pr7d.iy07, 0xabcd9004)
             }
 	} else {
 		Store(0xabcd9005, ^pr7d.iy07)
             if (LNotEqual(^pr7d.iy07, 0xabcd9005)) {
-                err(ts, z170, 0x0ca, 0, 0, ^pr7d.iy07, 0xabcd9005)
+                err(ts, z170, __LINE__, 0, 0, ^pr7d.iy07, 0xabcd9005)
             }
 	}
-	CH03(ts, z170, 0x0d1, 0, 0)
+	CH03(ts, z170, 0x0d1, __LINE__, 0)
 }
 
 

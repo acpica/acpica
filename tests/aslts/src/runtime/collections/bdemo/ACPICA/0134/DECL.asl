@@ -49,7 +49,7 @@
 		Store(Local6, Debug)
 
 		if (LNotEqual(Local6, 0x11)) {
-			err("", zFFF, 0x000, 0, 0, Local6, 0x11)
+			err("", zFFF, __LINE__, 0, 0, Local6, 0x11)
 		}
 
 		Store("LocalX case of Method finished", Debug)
@@ -72,7 +72,7 @@
 		Store(arg6, Debug)
 
 		if (LNotEqual(arg6, 0x11)) {
-			err("", zFFF, 0x000, 0, 0, arg6, 0x11)
+			err("", zFFF, __LINE__, 0, 0, arg6, 0x11)
 		}
 
 		Store("ArgX case (1) of Method finished", Debug)
@@ -95,7 +95,7 @@
 		Store(arg6, Debug)
 
 		if (LNotEqual(arg6, 0x11)) {
-			err("", zFFF, 0x000, 0, 0, arg6, 0x11)
+			err("", zFFF, __LINE__, 0, 0, arg6, 0x11)
 		}
 
 		Store("ArgX case (2) of Method finished", Debug)

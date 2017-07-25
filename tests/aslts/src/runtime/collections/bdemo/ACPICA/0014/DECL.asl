@@ -39,13 +39,13 @@ Method(mdae, 1)
 
 Method(mdaf)
 {
-	CH03("", 0, 0x000, 0, 0)
+	CH03("", 0, 0x000, __LINE__, 0)
 	mdae(100)
-	CH03("", 0, 0x001, 0, 0)
+	CH03("", 0, 0x001, __LINE__, 0)
 	mdae(101)
-	CH04("", 0, 48, 0, 0x002, 0, 0) // AE_AML_OPERAND_VALUE
+	CH04("", 0, 48, 0, __LINE__, 0, 0) // AE_AML_OPERAND_VALUE
 	mdae(255)
-	CH04("", 0, 48, 0, 0x003, 0, 0) // AE_AML_OPERAND_VALUE
+	CH04("", 0, 48, 0, __LINE__, 0, 0) // AE_AML_OPERAND_VALUE
 	mdae(256)
-	CH04("", 0, 48, 0, 0x004, 0, 0) // AE_AML_OPERAND_VALUE
+	CH04("", 0, 48, 0, __LINE__, 0, 0) // AE_AML_OPERAND_VALUE
 }

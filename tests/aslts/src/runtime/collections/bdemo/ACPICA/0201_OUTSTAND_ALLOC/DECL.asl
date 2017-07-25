@@ -41,7 +41,7 @@ Method(mfc1)
 	Store("To be investigated:", Debug)
 	Store("many Outstanding allocations on Reference ASLTS test run and other ASLTS tests.", Debug)
 
-	err("", zFFF, 0x000, 0, 0, 0, 0)
+	err("", zFFF, __LINE__, 0, 0, 0, 0)
 }
 
 /*

@@ -75,35 +75,35 @@ Method(mc73,, Serialized)
 	}
 
 	if (LNotEqual(F273, SSDT)) {
-		err("", zFFF, 0x001, 0, 0, F273, SSDT)
+		err("", zFFF, __LINE__, 0, 0, F273, SSDT)
 	}
 
 	if (CondRefof(\_XT2, Local0)) {
-		err("", zFFF, 0x002, 0, 0, "\\_XT2", 1)
+		err("", zFFF, __LINE__, 0, 0, "\\_XT2", 1)
 	}
 
 	if (CondRefof(\D273._XT2, Local0)) {
-		err("", zFFF, 0x003, 0, 0, "\\D273._XT2", 1)
+		err("", zFFF, __LINE__, 0, 0, "\\D273._XT2", 1)
 	}
 
 	LD()
 
 	if (CondRefof(\_XT2, Local0)) {
-		err("", zFFF, 0x004, 0, 0, "\\_XT2", 1)
+		err("", zFFF, __LINE__, 0, 0, "\\_XT2", 1)
 	}
 
 	if (CondRefof(\D273._XT2, Local0)) {
 	} else {
-		err("", zFFF, 0x005, 0, 0, "\\D273._XT2", 0)
+		err("", zFFF, __LINE__, 0, 0, "\\D273._XT2", 0)
 	}
 
 	UNLD()
 
 	if (CondRefof(\_XT2, Local0)) {
-		err("", zFFF, 0x006, 0, 0, "\\_XT2", 1)
+		err("", zFFF, __LINE__, 0, 0, "\\_XT2", 1)
 	}
 
 	if (CondRefof(\D273._XT2, Local0)) {
-		err("", zFFF, 0x007, 0, 0, "\\D273._XT2", 1)
+		err("", zFFF, __LINE__, 0, 0, "\\D273._XT2", 1)
 	}
 }

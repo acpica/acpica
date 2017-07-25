@@ -37,6 +37,6 @@
 		Store(ConcatenateResTemplate(rtd0, rtd0), Local0)
 
 		if (LNotEqual(Local0, bd0b)) {
-			err("", zFFF, 0x000, 0, 0, Local0, 256)
+			err("", zFFF, __LINE__, 0, 0, Local0, 256)
 		}
 	}

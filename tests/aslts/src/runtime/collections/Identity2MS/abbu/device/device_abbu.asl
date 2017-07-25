@@ -54,7 +54,7 @@ Method(dvf2,, Serialized)
 
 	Store(Add(\_SB_.ABBU.dvf2.d000.i000, m001()), Local0)
 	if (LNotEqual(Local0, 0xabcd0003)) {
-		err(ts, z172, 0x001, 0, 0, Local0, 0xabcd0003)
+		err(ts, z172, __LINE__, 0, 0, Local0, 0xabcd0003)
 	}
 }
 
@@ -89,34 +89,34 @@ Method(mf26,, Serialized)
 	{
 		Store(DerefOf(Index(arg0, 0)), Local0)
 		if (LNotEqual(Local0, 0xabcd0000)) {
-			err(ts, z164, 0x000, 0, 0, Local0, 0xabcd0000)
+			err(ts, z164, __LINE__, 0, 0, Local0, 0xabcd0000)
 		}
 		Store(DerefOf(Index(arg0, 1)), Local0)
 		if (LNotEqual(Local0, 0xabcd0001)) {
-			err(ts, z164, 0x001, 0, 0, Local0, 0xabcd0001)
+			err(ts, z164, __LINE__, 0, 0, Local0, 0xabcd0001)
 		}
 		Store(DerefOf(Index(arg0, 2)), Local0)
 		if (LNotEqual(Local0, 0xabcd0002)) {
-			err(ts, z164, 0x002, 0, 0, Local0, 0xabcd0002)
+			err(ts, z164, __LINE__, 0, 0, Local0, 0xabcd0002)
 		}
 		Store(DerefOf(Index(arg0, 3)), Local0)
 		if (LNotEqual(Local0, "i000")) {
-			err(ts, z164, 0x003, 0, 0, Local0, "i000")
+			err(ts, z164, __LINE__, 0, 0, Local0, "i000")
 		}
 		Store(DerefOf(Index(arg0, 4)), Local0)
 		if (LNotEqual(Local0, 0xabcd0003)) {
-			err(ts, z164, 0x004, 0, 0, Local0, 0xabcd0003)
+			err(ts, z164, __LINE__, 0, 0, Local0, 0xabcd0003)
 		}
 		Store(DerefOf(Index(arg0, 5)), Local0)
 		if (LNotEqual(Local0, 0xabcd0004)) {
-			err(ts, z164, 0x004, 0, 0, Local0, 0xabcd0004)
+			err(ts, z164, __LINE__, 0, 0, Local0, 0xabcd0004)
 		}
 
 		Store(ii00, Index(arg0, 0))
 
 		Store(DerefOf(Index(arg0, 0)), Local0)
 		if (LNotEqual(Local0, 0x11112222)) {
-			err(ts, z164, 0x005, 0, 0, Local0, 0x11112222)
+			err(ts, z164, __LINE__, 0, 0, Local0, 0x11112222)
 		}
 	}
 
@@ -139,30 +139,30 @@ Method(mf26,, Serialized)
 
 	Store(DerefOf(Index(p000, 0)), Local0)
 	if (LNotEqual(Local0, 0x11112222)) {
-		err(ts, z164, 0x006, 0, 0, Local0, 0x11112222)
+		err(ts, z164, __LINE__, 0, 0, Local0, 0x11112222)
 	}
 	Store(DerefOf(Index(p000, 1)), Local0)
 	if (LNotEqual(Local0, 0xabcd0001)) {
-		err(ts, z164, 0x007, 0, 0, Local0, 0xabcd0001)
+		err(ts, z164, __LINE__, 0, 0, Local0, 0xabcd0001)
 	}
 
 	Store(DerefOf(Index(p000, 2)), Local0)
 	if (LNotEqual(Local0, 0xabcd0002)) {
-		err(ts, z164, 0x008, 0, 0, Local0, 0xabcd0002)
+		err(ts, z164, __LINE__, 0, 0, Local0, 0xabcd0002)
 	}
 
 	Store(DerefOf(Index(p000, 3)), Local0)
 	if (LNotEqual(Local0, "i000")) {
-		err(ts, z164, 0x009, 0, 0, Local0, "i000")
+		err(ts, z164, __LINE__, 0, 0, Local0, "i000")
 	}
 
 	Store(DerefOf(Index(p000, 4)), Local0)
 	if (LNotEqual(Local0, 0xabcd0003)) {
-		err(ts, z164, 0x00a, 0, 0, Local0, 0xabcd0003)
+		err(ts, z164, __LINE__, 0, 0, Local0, 0xabcd0003)
 	}
 
 	Store(DerefOf(Index(p000, 5)), Local0)
 	if (LNotEqual(Local0, 0xabcd0004)) {
-		err(ts, z164, 0x004, 0, 0, Local0, 0xabcd0004)
+		err(ts, z164, __LINE__, 0, 0, Local0, 0xabcd0004)
 	}
 }

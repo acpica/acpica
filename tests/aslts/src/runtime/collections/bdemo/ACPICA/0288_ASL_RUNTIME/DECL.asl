@@ -44,7 +44,7 @@ Device (D288) {
 		Store(LoadTable("OEM1", "", "", , "\\D288.PLDT", Local0), Local1)
 
 		if (LNotEqual(PLDT, 1)) {
-			err("", zFFF, 0x001, 0, 0, PLDT, 1)
+			err("", zFFF, __LINE__, 0, 0, PLDT, 1)
 		}
 
 		UnLoad(Local1)
@@ -52,7 +52,7 @@ Device (D288) {
 		Store(LoadTable("OEM1", "", "", , "\\PLDT", m000(2)), Local1)
 
 		if (LNotEqual(PLDT, 2)) {
-			err("", zFFF, 0x002, 0, 0, PLDT, 2)
+			err("", zFFF, __LINE__, 0, 0, PLDT, 2)
 		}
 
 		UnLoad(Local1)

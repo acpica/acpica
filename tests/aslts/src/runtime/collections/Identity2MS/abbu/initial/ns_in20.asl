@@ -50,7 +50,7 @@ Method(in20, 1, Serialized)
 
 	Name(i001, 0)
 
-	CH03(ts, z165, 0x000, 0, 0)
+	CH03(ts, z165, 0x000, __LINE__, 0)
 
 	Store(arg0, i001)
 
@@ -79,7 +79,7 @@ Method(in20, 1, Serialized)
 	Store(m000(i000), Local0)
 
 	if (LNotEqual(Local0, 0xabcd0003)) {
-		err(ts, z165, 0x001, 0, 0, Local0, 0xabcd0003)
+		err(ts, z165, __LINE__, 0, 0, Local0, 0xabcd0003)
 	}
 }
 
@@ -144,11 +144,11 @@ Method(in21, 1, Serialized)
 	Store(Add(i000, m001(i000)), Local0)
 
 	if (LNotEqual(Local0, 0x87654321)) {
-		err(ts, z165, 0x003, 0, 0, Local0, 0x87654321)
+		err(ts, z165, __LINE__, 0, 0, Local0, 0x87654321)
 	}
 
 	if (LNotEqual(i000, 0x00000001)) {
-		err(ts, z165, 0x004, 0, 0, i000, 0x00000001)
+		err(ts, z165, __LINE__, 0, 0, i000, 0x00000001)
 	}
 }
 
@@ -185,11 +185,11 @@ Method(in22,, Serialized)
 	Store(Add(i000, m000(i000)), Local0)
 
 	if (LNotEqual(Local0, 0x00b0002d)) {
-		err(ts, z165, 0x006, 0, 0, Local0, 0x00b0002d)
+		err(ts, z165, __LINE__, 0, 0, Local0, 0x00b0002d)
 	}
 
 	if (LNotEqual(i000, 0x00100000)) {
-		err(ts, z165, 0x007, 0, 0, i000, 0x00100000)
+		err(ts, z165, __LINE__, 0, 0, i000, 0x00100000)
 	}
 }
 
@@ -252,14 +252,14 @@ Method(in23, 2, Serialized)
 	Store(Add(arg1, m001(1)), Local0)
 
 	if (LNotEqual(Local0, 0x87654321)) {
-		err(ts, z165, 0x00f, 0, 0, Local0, 0x87654321)
+		err(ts, z165, __LINE__, 0, 0, Local0, 0x87654321)
 	}
 
 	if (LNotEqual(arg1, 1)) {
-		err(ts, z165, 0x010, 0, 0, arg1, 1)
+		err(ts, z165, __LINE__, 0, 0, arg1, 1)
 	}
 
-	CH03(ts, z165, 0x011, 0, 0)
+	CH03(ts, z165, 0x011, __LINE__, 0)
 }
 
 Method(ini2)
@@ -273,6 +273,6 @@ Method(ini2)
 	SRMT("in23-0")
 	in23(0, 0)
 
-	CH03("ini2", z165, 0x000, 0, 0)
+	CH03("ini2", z165, 0x000, __LINE__, 0)
 }
 

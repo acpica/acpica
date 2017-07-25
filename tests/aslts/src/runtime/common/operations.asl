@@ -416,47 +416,47 @@ Method(m480, 7, Serialized)
 
 	Store(ObjectType(arg0), tmp0)
 	if (LNotEqual(tmp0, OT00)) {
-		err(ts, z082, 0, 0, 0, tmp0, OT00)
+		err(ts, z082, __LINE__, 0, 0, tmp0, OT00)
 	}
 	Store(ObjectType(arg1), tmp0)
 	if (LNotEqual(tmp0, OT01)) {
-		err(ts, z082, 1, 0, 0, tmp0, OT01)
+		err(ts, z082, __LINE__, 0, 0, tmp0, OT01)
 	}
 	Store(ObjectType(arg2), tmp0)
 	if (LNotEqual(tmp0, OT02)) {
-		err(ts, z082, 2, 0, 0, tmp0, OT02)
+		err(ts, z082, __LINE__, 0, 0, tmp0, OT02)
 	}
 	Store(ObjectType(arg3), tmp0)
 	if (LNotEqual(tmp0, OT03)) {
-		err(ts, z082, 3, 0, 0, tmp0, OT03)
+		err(ts, z082, __LINE__, 0, 0, tmp0, OT03)
 	}
 	Store(ObjectType(arg4), tmp0)
 	if (LNotEqual(tmp0, OT04)) {
-		err(ts, z082, 4, 0, 0, tmp0, OT04)
+		err(ts, z082, __LINE__, 0, 0, tmp0, OT04)
 	}
 
 	if (res0) {
 		Store(ObjectType(arg5), tmp0)
 		if (LNotEqual(tmp0, OT05)) {
-			err(ts, z082, 5, 0, 0, tmp0, OT05)
+			err(ts, z082, __LINE__, 0, 0, tmp0, OT05)
 		}
 	}
 	Store(ObjectType(arg6), tmp0)
 	if (LNotEqual(tmp0, OT06)) {
-		err(ts, z082, 6, 0, 0, tmp0, OT06)
+		err(ts, z082, __LINE__, 0, 0, tmp0, OT06)
 	}
 
 	// Types of LocalX are save, and data of LocalX and ArgX are identical
 
 	Store(ObjectType(Local0), tmp0)
 	if (LNotEqual(tmp0, OT10)) {
-		err(ts, z082, 7, 0, 0, tmp0, OT10)
+		err(ts, z082, __LINE__, 0, 0, tmp0, OT10)
 	} else {
 		m481(ts, 8, tmp0, Local0, arg0)
 	}
 	Store(ObjectType(Local1), tmp0)
 	if (LNotEqual(tmp0, OT11)) {
-		err(ts, z082, 9, 0, 0, tmp0, OT11)
+		err(ts, z082, __LINE__, 0, 0, tmp0, OT11)
 	} else {
 		m481(ts, 10, tmp0, Local1, arg1)
 	}
@@ -464,7 +464,7 @@ Method(m480, 7, Serialized)
 	if (res1) {
 		Store(ObjectType(Local2), tmp0)
 		if (LNotEqual(tmp0, OT12)) {
-			err(ts, z082, 11, 0, 0, tmp0, OT12)
+			err(ts, z082, __LINE__, 0, 0, tmp0, OT12)
 		} else {
 			m481(ts, 12, tmp0, Local2, arg2)
 		}
@@ -472,38 +472,38 @@ Method(m480, 7, Serialized)
 
 	Store(ObjectType(Local3), tmp0)
 	if (LNotEqual(tmp0, OT13)) {
-		err(ts, z082, 13, 0, 0, tmp0, OT13)
+		err(ts, z082, __LINE__, 0, 0, tmp0, OT13)
 	} else {
 		m481(ts, 14, tmp0, Local3, arg3)
 	}
 	Store(ObjectType(Local4), tmp0)
 	if (LNotEqual(tmp0, OT14)) {
-		err(ts, z082, 15, 0, 0, tmp0, OT14)
+		err(ts, z082, __LINE__, 0, 0, tmp0, OT14)
 	} else {
 		m481(ts, 16, tmp0, Local4, arg4)
 	}
 	Store(ObjectType(Local5), tmp0)
 	if (LNotEqual(tmp0, OT15)) {
-		err(ts, z082, 17, 0, 0, tmp0, OT15)
+		err(ts, z082, __LINE__, 0, 0, tmp0, OT15)
 	} elseif (res0) {
 		m481(ts, 18, tmp0, Local5, arg5)
 	}
 	Store(ObjectType(Local6), tmp0)
 	if (LNotEqual(tmp0, OT16)) {
-		err(ts, z082, 19, 0, 0, tmp0, OT16)
+		err(ts, z082, __LINE__, 0, 0, tmp0, OT16)
 	} else {
 		m481(ts, 20, tmp0, Local6, arg6)
 	}
 
 	if (res2) {
 		if (LNotEqual(Local7, Ones)) {
-			err(ts, z082, 21, 0, 0, Local7, Ones)
+			err(ts, z082, __LINE__, 0, 0, Local7, Ones)
 		}
 	} elseif (res0) {
 		Store(ObjectType(Local7), tmp0)
 		Store(ObjectType(arg5), tmp1)
 		if (LNotEqual(tmp0, tmp1)) {
-			err(ts, z082, 22, 0, 0, tmp0, tmp1)
+			err(ts, z082, __LINE__, 0, 0, tmp0, tmp1)
 		} else {
 			m481(ts, 23, tmp0, Local7, arg5)
 		}
@@ -545,19 +545,19 @@ Method(m481, 5, Serialized)
 	switch (ToInteger (arg2)) {
 		case (1) {
 			if (LNotEqual(arg3, arg4)) {
-				err(arg0, z082, 24, 0, 0, arg1, 0)
+				err(arg0, z082, __LINE__, 0, 0, arg1, 0)
 				Store(1, Local0)
 			}
 		}
 		case (2) {
 			if (LNotEqual(arg3, arg4)) {
-				err(arg0, z082, 25, 0, 0, arg1, 0)
+				err(arg0, z082, __LINE__, 0, 0, arg1, 0)
 				Store(1, Local0)
 			}
 		}
 		case (3) {
 			if (LNotEqual(arg3, arg4)) {
-				err(arg0, z082, 26, 0, 0, arg1, 0)
+				err(arg0, z082, __LINE__, 0, 0, arg1, 0)
 				Store(1, Local0)
 			}
 		}
@@ -650,75 +650,75 @@ Method(m482, 7, Serialized)
 
 	Store(ObjectType(arg0), tmp0)
 	if (LNotEqual(tmp0, OT00)) {
-		err(ts, z082, 27, 0, 0, tmp0, OT00)
+		err(ts, z082, __LINE__, 0, 0, tmp0, OT00)
 	}
 	Store(ObjectType(arg1), tmp0)
 	if (LNotEqual(tmp0, OT01)) {
-		err(ts, z082, 28, 0, 0, tmp0, OT01)
+		err(ts, z082, __LINE__, 0, 0, tmp0, OT01)
 	}
 	Store(ObjectType(arg2), tmp0)
 	if (LNotEqual(tmp0, OT02)) {
-		err(ts, z082, 29, 0, 0, tmp0, OT02)
+		err(ts, z082, __LINE__, 0, 0, tmp0, OT02)
 	}
 	Store(ObjectType(arg3), tmp0)
 	if (LNotEqual(tmp0, OT03)) {
-		err(ts, z082, 30, 0, 0, tmp0, OT03)
+		err(ts, z082, __LINE__, 0, 0, tmp0, OT03)
 	}
 	Store(ObjectType(arg4), tmp0)
 	if (LNotEqual(tmp0, OT04)) {
-		err(ts, z082, 31, 0, 0, tmp0, OT04)
+		err(ts, z082, __LINE__, 0, 0, tmp0, OT04)
 	}
 	Store(ObjectType(arg5), tmp0)
 	if (LNotEqual(tmp0, OT05)) {
-		err(ts, z082, 32, 0, 0, tmp0, OT05)
+		err(ts, z082, __LINE__, 0, 0, tmp0, OT05)
 	}
 	Store(ObjectType(arg6), tmp0)
 	if (LNotEqual(tmp0, OT06)) {
-		err(ts, z082, 33, 0, 0, tmp0, OT06)
+		err(ts, z082, __LINE__, 0, 0, tmp0, OT06)
 	}
 
 	// Types of LocalX are save, and data of LocalX and ArgX are identical
 
 	Store(ObjectType(Local0), tmp0)
 	if (LNotEqual(tmp0, OT10)) {
-		err(ts, z082, 34, 0, 0, tmp0, OT10)
+		err(ts, z082, __LINE__, 0, 0, tmp0, OT10)
 	} else {
 		m481(ts, 35, tmp0, Local0, arg0)
 	}
 	Store(ObjectType(Local1), tmp0)
 	if (LNotEqual(tmp0, OT11)) {
-		err(ts, z082, 36, 0, 0, tmp0, OT11)
+		err(ts, z082, __LINE__, 0, 0, tmp0, OT11)
 	} else {
 		m481(ts, 37, tmp0, Local1, arg1)
 	}
 	Store(ObjectType(Local2), tmp0)
 	if (LNotEqual(tmp0, OT12)) {
-		err(ts, z082, 38, 0, 0, tmp0, OT12)
+		err(ts, z082, __LINE__, 0, 0, tmp0, OT12)
 	} else {
 		m481(ts, 39, tmp0, Local2, arg2)
 	}
 	Store(ObjectType(Local3), tmp0)
 	if (LNotEqual(tmp0, OT13)) {
-		err(ts, z082, 40, 0, 0, tmp0, OT13)
+		err(ts, z082, __LINE__, 0, 0, tmp0, OT13)
 	} else {
 		m481(ts, 41, tmp0, Local3, arg3)
 	}
 	Store(ObjectType(Local4), tmp0)
 	if (LNotEqual(tmp0, OT14)) {
-		err(ts, z082, 42, 0, 0, tmp0, OT14)
+		err(ts, z082, __LINE__, 0, 0, tmp0, OT14)
 	} else {
 		m481(ts, 43, tmp0, Local4, arg4)
 	}
 	Store(ObjectType(Local5), tmp0)
 	if (LNotEqual(tmp0, OT15)) {
-		err(ts, z082, 44, 0, 0, tmp0, OT15)
+		err(ts, z082, __LINE__, 0, 0, tmp0, OT15)
 	} else {
 		m481(ts, 45, tmp0, Local5, arg5)
 	}
 
 	Store(ObjectType(Local6), tmp0)
 	if (LNotEqual(tmp0, OT16)) {
-		err(ts, z082, 46, 0, 0, tmp0, OT16)
+		err(ts, z082, __LINE__, 0, 0, tmp0, OT16)
 	} else {
 		// Package is passed by arg6
 		// m481(ts, 47, tmp0, Local6, arg6)
@@ -744,14 +744,14 @@ Method(m482, 7, Serialized)
 		Store(0, Local3)
 
 		if (LNotEqual(Local2, Local0)) {
-			err(ts, z082, 48, 0, 0, 0, 0)
+			err(ts, z082, __LINE__, 0, 0, 0, 0)
 			Store("Expected type of result:", Debug)
 			Store(Local0, Debug)
 			Store("The type of obtained result:", Debug)
 			Store(Local2, Debug)
 			Store(1, Local3)
 		} elseif (LNotEqual(Local7, Local1)) {
-			err(ts, z082, 49, 0, 0, 0, 0)
+			err(ts, z082, __LINE__, 0, 0, 0, 0)
 			Store(1, Local3)
 		}
 		if (Local3) {

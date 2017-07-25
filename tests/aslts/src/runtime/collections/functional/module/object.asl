@@ -101,16 +101,16 @@ Method(MLO0,, Serialized)
 	Store("TEST: MLO0, Type1Opcode is executable under objects", Debug)
 
 	if (LNotEqual(ml10, 2)) {
-		err(ts, z181, 0, z181, 0, ml10, 2)
+		err(ts, z181, __LINE__, z181, 0, ml10, 2)
 	}
 	if (LNotEqual(ml11, 2)) {
-		err(ts, z181, 1, z181, 1, ml11, 2)
+		err(ts, z181, __LINE__, z181, 1, ml11, 2)
 	}
 	if (LNotEqual(ml12, 2)) {
-		err(ts, z181, 2, z181, 2, ml12, 2)
+		err(ts, z181, __LINE__, z181, 2, ml12, 2)
 	}
 	if (LNotEqual(ml13, 2)) {
-		err(ts, z181, 3, z181, 3, ml13, 2)
+		err(ts, z181, __LINE__, z181, 3, ml13, 2)
 	}
 }
 
@@ -166,15 +166,15 @@ Method(MLO1,, Serialized)
 	Store("TEST: MLO1 Type2Opcode is executable under objects", Debug)
 
 	if (LNotEqual(ml14, 2)) {
-		err(ts, z181, 4, z181, 4, ml14, 2)
+		err(ts, z181, __LINE__, z181, 4, ml14, 2)
 	}
 	if (LNotEqual(ml15, 2)) {
-		err(ts, z181, 5, z181, 5, ml15, 2)
+		err(ts, z181, __LINE__, z181, 5, ml15, 2)
 	}
 	if (LNotEqual(ml16, 2)) {
-		err(ts, z181, 6, z181, 6, ml16, 2)
+		err(ts, z181, __LINE__, z181, 6, ml16, 2)
 	}
 	if (LNotEqual(ml17, 2)) {
-		err(ts, z181, 7, z181, 7, ml17, 2)
+		err(ts, z181, __LINE__, z181, 7, ml17, 2)
 	}
 }

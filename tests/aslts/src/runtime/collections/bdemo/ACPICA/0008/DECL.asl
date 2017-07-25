@@ -40,6 +40,6 @@ Method(mda5,, Serialized)
 	Store(ObjectType(f000), Local0)
 
 	if (LNotequal(Local0, c00d)) {
-		err("", zFFF, 0x000, 0, 0, Local0, c00d)
+		err("", zFFF, __LINE__, 0, 0, Local0, c00d)
 	}
 }

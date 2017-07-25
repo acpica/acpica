@@ -38,16 +38,16 @@ Method(mf7d,, Serialized)
 
 	Store(Buffer(){0x79}, Local0)
 
-	CH03("", 0, 0x000, 0, 0)
+	CH03("", 0, 0x000, __LINE__, 0)
 
 	Store(ConcatenateResTemplate(RT00, Local0), Local1)
 
-	CH04("", 0, 0xff, 0, 0x001, 0, 0)
+	CH04("", 0, 0xff, 0, __LINE__, 0, 0)
 
 	Store(Buffer(){0x78}, Local0)
 
 	Store(ConcatenateResTemplate(RT00, Local0), Local1)
 
-	CH04("", 0, 0xff, 0, 0x002, 0, 0)
+	CH04("", 0, 0xff, 0, __LINE__, 0, 0)
 }
 

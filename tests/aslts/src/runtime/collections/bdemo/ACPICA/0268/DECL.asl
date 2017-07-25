@@ -49,7 +49,7 @@ Method(m023,, Serialized)
 		Store(i000, Debug)
 
 		if (LNotEqual(arg0, 0xabcd0000)) {
-			err("", zFFF, 0x000, 0, 0, arg0, 0xabcd0000)
+			err("", zFFF, __LINE__, 0, 0, arg0, 0xabcd0000)
 		}
 	}
 
@@ -64,6 +64,6 @@ Method(m023,, Serialized)
 	Store(i000, Debug)
 
 	if (LNotEqual(i000, 0x11223344)) {
-		err("", zFFF, 0x001, 0, 0, i000, 0x11223344)
+		err("", zFFF, __LINE__, 0, 0, i000, 0x11223344)
 	}
 }

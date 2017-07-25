@@ -139,7 +139,7 @@ Method(m18a, 1, Serialized, 3)
 			Store(DeRefOf(Index(arg2, lpC0)), Local0)
 			Store(DeRefOf(Index(arg3, lpC0)), Local1)
 			if (LNotEqual(Local0, Local1)) {
-				err("", zFFF, 0x000, 0, 0, Local0, Local1)
+				err("", zFFF, __LINE__, 0, 0, Local0, Local1)
 				Store(arg0, Debug)
 				Store(lpC0, Debug)
 			}
@@ -150,22 +150,22 @@ Method(m18a, 1, Serialized, 3)
 		Switch (ToInteger (arg0)) {
 			Case (1) {
 				if (LNotEqual(ind1, n100)) {
-					err("", zFFF, 0x001, 0, 0, ind1, n100)
+					err("", zFFF, __LINE__, 0, 0, ind1, n100)
 				}
 			}
 			Case (2) {
 				if (LNotEqual(ind2, n200)) {
-					err("", zFFF, 0x002, 0, 0, ind2, n200)
+					err("", zFFF, __LINE__, 0, 0, ind2, n200)
 				}
 			}
 			Case (3) {
 				if (LNotEqual(ind3, n300)) {
-					err("", zFFF, 0x003, 0, 0, ind3, n300)
+					err("", zFFF, __LINE__, 0, 0, ind3, n300)
 				}
 			}
 			Case (4) {
 				if (LNotEqual(ind4, n400)) {
-					err("", zFFF, 0x004, 0, 0, ind4, n400)
+					err("", zFFF, __LINE__, 0, 0, ind4, n400)
 				}
 			}
 		}
@@ -203,7 +203,7 @@ Method(m18a, 1, Serialized, 3)
 		Add(cnt1, Local0, cnt1)
 		Store(DerefOf(Index(p100, Local1)), Local1)
 		if (LNotEqual(Local1, Local0)) {
-			err("", zFFF, 0x005, 0, 0, Local1, Local0)
+			err("", zFFF, __LINE__, 0, 0, Local1, Local0)
 		}
 	}
 	Method(m200, 0, Serialized, 0)
@@ -222,7 +222,7 @@ Method(m18a, 1, Serialized, 3)
 		Add(cnt1, Local0, cnt1)
 		Store(DerefOf(Index(p200, Local1)), Local1)
 		if (LNotEqual(Local1, Local0)) {
-			err("", zFFF, 0x006, 0, 0, Local1, Local0)
+			err("", zFFF, __LINE__, 0, 0, Local1, Local0)
 		}
 	}
 	Method(m300, 0, Serialized, 0)
@@ -247,7 +247,7 @@ Method(m18a, 1, Serialized, 3)
 		Add(cnt1, Local0, cnt1)
 		Store(DerefOf(Index(p300, Local1)), Local1)
 		if (LNotEqual(Local1, Local0)) {
-			err("", zFFF, 0x007, 0, 0, Local1, Local0)
+			err("", zFFF, __LINE__, 0, 0, Local1, Local0)
 		}
 	}
 	Method(m400, 0, Serialized, 0)
@@ -265,7 +265,7 @@ Method(m18a, 1, Serialized, 3)
 		Add(cnt1, Local0, cnt1)
 		Store(DerefOf(Index(p400, Local1)), Local1)
 		if (LNotEqual(Local1, Local0)) {
-			err("", zFFF, 0x008, 0, 0, Local1, Local0)
+			err("", zFFF, __LINE__, 0, 0, Local1, Local0)
 		}
 	}
 
@@ -278,17 +278,17 @@ Method(m18a, 1, Serialized, 3)
 	// Check if exception takes place (AE_AML_METHOD_LIMIT)
 
 	if (arg0) {
-		CH04("", 0, 84, 0, 0x009, 0, 0) // AE_AML_METHOD_LIMIT
+		CH04("", 0, 84, 0, __LINE__, 0, 0) // AE_AML_METHOD_LIMIT
 	} else {
-		CH03("", 0, 0x00a, 0, 0)
+		CH03("", 0, 0x00a, __LINE__, 0)
 	}
 }
 
-	CH03("", 0, 0x00b, 0, 0)
+	CH03("", 0, 0x00b, __LINE__, 0)
 	SRMT("m18a-0")
 	m18a(0)
-	CH03("", 0, 0x00c, 0, 0)
+	CH03("", 0, 0x00c, __LINE__, 0)
 	SRMT("m18a-1")
 	m18a(1)
-	CH03("", 0, 0x00d, 0, 0)
+	CH03("", 0, 0x00d, __LINE__, 0)
 }

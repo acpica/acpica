@@ -349,7 +349,7 @@ Method(m0de, 1)
 		Decrement(lpN0)
 		Increment(lpC0)
 		if (LNotEqual(Local1, lpN0)) {
-			err(arg0, z070, 0, 0, 0, Local1, lpN0)
+			err(arg0, z070, __LINE__, 0, 0, Local1, lpN0)
 			return (Ones)
 		}
 		Store(2, Index(b0sw, lpN0))
@@ -370,7 +370,7 @@ Method(m0de, 1)
 		Increment(lpC0)
 		Add(TMAX, lpN0, Local7)
 		if (LNotEqual(Local1, Local7)) {
-			err(arg0, z070, 1, 0, 0, Local1, Local7)
+			err(arg0, z070, __LINE__, 0, 0, Local1, Local7)
 			return (Ones)
 		}
 	}
@@ -712,7 +712,7 @@ Method(m0de, 1)
 
 	Store(m002(), Local1)
 	if (LNotEqual(Local1, Local7)) {
-		err(arg0, z070, 2, 0, 0, Local1, Local7)
+		err(arg0, z070, __LINE__, 0, 0, Local1, Local7)
 		return (Ones)
 	}
 
@@ -727,7 +727,7 @@ Method(m0de, 1)
 		Decrement(lpN0)
 		Increment(lpC0)
 		if (LNotEqual(Local1, lpN0)) {
-			err(arg0, z070, 3, 0, 0, Local1, lpN0)
+			err(arg0, z070, __LINE__, 0, 0, Local1, lpN0)
 			return (Ones)
 		}
 	}
@@ -912,7 +912,7 @@ Method(m0de, 1)
 	Decrement(lpN0)
 	Increment(lpC0)
 	if (LNotEqual(Local0, lpN0)) {
-		err(arg0, z070, 4, 0, 0, Local0, lpN0)
+		err(arg0, z070, __LINE__, 0, 0, Local0, lpN0)
 		return (Ones)
 	}
 	Store(1, Index(b0sw, lpN0))

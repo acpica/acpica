@@ -48,10 +48,10 @@ Method(m130, 1, Serialized)
 	Store(ToString(B000, Local0), Local2)
 
 	if (LNotequal(Local0, 0)) {
-		err(arg0, z055, 0, 0, 0, Local0, 0)
+		err(arg0, z055, __LINE__, 0, 0, Local0, 0)
 	}
 
-	CH03(arg0, z055, 1, 0, 0)
+	CH03(arg0, z055, 1, __LINE__, 0)
 }
 
 // Store-like actions affect the source objects passed as parameter
@@ -69,10 +69,10 @@ Method(m132, 1)
 	Store(10, Local0)
 	m131(Local0)
 	if (LNotEqual(Local0, 10)){
-		err(arg0, z055, 2, 0, 0, Local0, 10)
+		err(arg0, z055, __LINE__, 0, 0, Local0, 10)
 	}
 
-	CH03(arg0, z055, 3, 0, 0)
+	CH03(arg0, z055, 3, __LINE__, 0)
 }
 
 // Operator doesn't update the source object passed to method as a REFERENCE
@@ -83,10 +83,10 @@ Method(m133, 1)
 	Store(RefOf(Local0), Local1)
 	m131(Local1)
 	if (LNotEqual(Local0, 9)){
-		err(arg0, z055, 4, 0, 0, Local0, 9)
+		err(arg0, z055, __LINE__, 0, 0, Local0, 9)
 	}
 
-	CH03(arg0, z055, 5, 0, 0)
+	CH03(arg0, z055, 5, __LINE__, 0)
 }
 
 Method(m134, 1)
@@ -94,10 +94,10 @@ Method(m134, 1)
 	Store(10, Local0)
 	m131(RefOf(Local0))
 	if (LNotEqual(Local0, 9)){
-		err(arg0, z055, 6, 0, 0, Local0, 9)
+		err(arg0, z055, __LINE__, 0, 0, Local0, 9)
 	}
 
-	CH03(arg0, z055, 7, 0, 0)
+	CH03(arg0, z055, 7, __LINE__, 0)
 }
 
 Method(m135, 1)
@@ -110,10 +110,10 @@ Method(m136, 1)
 	Store(10, Local0)
 	m135(RefOf(Local0))
 	if (LNotEqual(Local0, 5)){
-		err(arg0, z055, 8, 0, 0, Local0, 5)
+		err(arg0, z055, __LINE__, 0, 0, Local0, 5)
 	}
 
-	CH03(arg0, z055, 9, 0, 0)
+	CH03(arg0, z055, 9, __LINE__, 0)
 }
 
 // Run-method

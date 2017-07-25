@@ -59,7 +59,7 @@
 		Store(mf59(0), Local0)
 		Store(DerefOf(Local0), Local1)
 		if (LNotEqual(Local1, 2)){
-			err("", zFFF, 0x000, 0, 0, Local1, 2)
+			err("", zFFF, __LINE__, 0, 0, Local1, 2)
 		}
 
 		Store(mf59(1), Debug)
@@ -67,6 +67,6 @@
 		Store(mf59(1), Local0)
 		Store(DerefOf(Local0), Local1)
 		if (LNotEqual(Local1, 12)){
-			err("", zFFF, 0x001, 0, 0, Local1, 12)
+			err("", zFFF, __LINE__, 0, 0, Local1, 12)
 		}
 	}

@@ -39,6 +39,6 @@ Method(me8b,, Serialized)
 	mm20(1)
 
 	if (LNotEqual(i000, 32)) {
-		err("", zFFF, 0x000, 0, 0, i000, 32)
+		err("", zFFF, __LINE__, 0, 0, i000, 32)
 	}
 }

@@ -56,7 +56,7 @@ Method(m4b0, 1, Serialized)
 		// CondRefOf
 		
 		CondRefOf(Local0, Local1)
-		CH03(ts, z092, 1, 0, 0)
+		CH03(ts, z092, 1, __LINE__, 0)
 
 		// CopyObject
 
@@ -106,12 +106,12 @@ Method(m4b0, 1, Serialized)
 		// ObjectType
 
 		Store (ObjectType(Local0), Local1)
-		CH03(ts, z092, 2, 0, 0)
+		CH03(ts, z092, 2, __LINE__, 0)
 
 		// RefOf
 
 		Store (RefOf(Local0), Local1)
-		CH03(ts, z092, 3, 0, 0)
+		CH03(ts, z092, 3, __LINE__, 0)
 
 		// Release
 
@@ -415,7 +415,7 @@ Method(m4b0, 1, Serialized)
 		// DeRefOf(Index(Package, Ind))
 
 		Store (DeRefOf(Index(p000, 0)), Local1)
-		CH04(ts, 1, 51, z092, 4, 0, 0)
+		CH04(ts, 1, 51, z092, __LINE__, 0, 0)
 
 		// CondRefOf
 		
@@ -471,7 +471,7 @@ Method(m4b0, 1, Serialized)
 
 		if (X104) {
 			Store (ObjectType(DeRefOf(Index(p000, 0))), Local1)
-			CH03(ts, z092, 5, 0, 0)
+			CH03(ts, z092, 5, __LINE__, 0)
 		}
 
 		// RefOf
@@ -773,10 +773,10 @@ Method(m4b0, 1, Serialized)
 		// CondRefOf
 		
 		CondRefOf(arg2)
-		CH03(ts, z092, 6, 0, 0)
+		CH03(ts, z092, 6, __LINE__, 0)
 
 		CondRefOf(arg2, Local1)
-		CH03(ts, z092, 7, 0, 0)
+		CH03(ts, z092, 7, __LINE__, 0)
 
 		// CopyObject
 
@@ -838,12 +838,12 @@ Method(m4b0, 1, Serialized)
 		// ObjectType
 
 		ObjectType(arg2)
-		CH03(ts, z092, 8, 0, 0)
+		CH03(ts, z092, 8, __LINE__, 0)
 
 		// RefOf
 
 		RefOf(arg2)
-		CH03(ts, z092, 9, 0, 0)
+		CH03(ts, z092, 9, __LINE__, 0)
 
 		// Release
 
@@ -1265,12 +1265,12 @@ Method(m4b0, 1, Serialized)
 	{
 		Store(ObjectType(arg1), Local0)
 		if (LNotEqual(Local0, 0)) {
-			err(arg0, z092, 8, 0, 0, Local0, 0)
+			err(arg0, z092, __LINE__, 0, 0, Local0, 0)
 			return (1)
 		}
 
 		Store (DeRefOf(arg1), Local1)
-		CH04(ts, 0, 62, z092, 10, 0, 0)
+		CH04(ts, 0, 62, z092, __LINE__, 0, 0)
 
 		// CondRefOf
 		
@@ -1326,7 +1326,7 @@ Method(m4b0, 1, Serialized)
 
 		if (X104) {
 			Store (ObjectType(DeRefOf(arg1)), Local1)
-			CH03(ts, z092, 11, 0, 0)
+			CH03(ts, z092, 11, __LINE__, 0)
 		}
 
 		// RefOf
@@ -1776,7 +1776,7 @@ Method(m4b0, 1, Serialized)
 		m00d(Derefof(Index(p000, 0)))
 		CH06(arg0, 0, 51)
 		if (LNotEqual(i001, 0)) {
-			err(arg0, z092, 1, 0, 0, i001, 0)
+			err(arg0, z092, __LINE__, 0, 0, i001, 0)
 		}
 
 		Store(0, i001)
@@ -1784,14 +1784,14 @@ Method(m4b0, 1, Serialized)
 		m00d(Derefof(Local1))
 		CH06(arg0, 2, 51)
 		if (LNotEqual(i001, 0)) {
-			err(arg0, z092, 3, 0, 0, i001, 0)
+			err(arg0, z092, __LINE__, 0, 0, i001, 0)
 		}
 
 		Store(0, i001)
 		m00d(Derefof(Index(p000, 0, Local2)))
 		CH06(arg0, 4, 51)
 		if (LNotEqual(i001, 0)) {
-			err(arg0, z092, 5, 0, 0, i001, 0)
+			err(arg0, z092, __LINE__, 0, 0, i001, 0)
 		}
 
 		Store(0, i001)
@@ -1799,7 +1799,7 @@ Method(m4b0, 1, Serialized)
 		m00d(Derefof(Local3))
 		CH06(arg0, 6, 51)
 		if (LNotEqual(i001, 0)) {
-			err(arg0, z092, 7, 0, 0, i001, 0)
+			err(arg0, z092, __LINE__, 0, 0, i001, 0)
 		}
 
 		Store(0, i001)
@@ -1807,11 +1807,11 @@ Method(m4b0, 1, Serialized)
 		m00d(Derefof(Local5))
 		CH06(arg0, 8, 51)
 		if (LNotEqual(i001, 0)) {
-			err(arg0, z092, 9, 0, 0, i001, 0)
+			err(arg0, z092, __LINE__, 0, 0, i001, 0)
 		}
 	}
 
-	CH03(ts, z092, 12, 0, 0)
+	CH03(ts, z092, 12, __LINE__, 0)
 
 	// Uninitialized Local
 	m000(Concatenate(ts, "-m000"), 0)
@@ -1912,7 +1912,7 @@ Method(m4b0, 1, Serialized)
 	m00d(Local0)
 	CH06(ts, 9, 49)
 	if (LNotEqual(i001, 0)) {
-		err(ts, z092, 10, 0, 0, i001, 0)
+		err(ts, z092, __LINE__, 0, 0, i001, 0)
 	}
 
 	// Uninitialized element of Package as parameter of a method
@@ -1927,7 +1927,7 @@ Method(m4b0, 1, Serialized)
 	m00d(Arg1)
 	CH06(ts, 11, 50)
 	if (LNotEqual(i001, 0)) {
-		err(ts, z092, 12, i001, 0)
+		err(ts, z092, __LINE__, i001, 0)
 	}
 */
 }

@@ -80,7 +80,7 @@ Method(m690,, Serialized)
 						// ArgX Object
 	 					// Store(Src0, arg3)
 						Store("Not implemented", Debug)
-						err(terr, z123, 1, 0, 0, arg1, arg2)
+						err(terr, z123, __LINE__, 0, 0, arg1, arg2)
 						Return (1)
 					} elseif (LEqual(arg2, 3)) {
 						// LocalX Object
@@ -89,17 +89,17 @@ Method(m690,, Serialized)
 						// Reference in ArgX Object
 	 					// Store(Src0, arg4)
 						Store("Not implemented", Debug)
-						err(terr, z123, 2, 0, 0, arg1, arg2)
+						err(terr, z123, __LINE__, 0, 0, arg1, arg2)
 						Return (1)
 					} elseif (LEqual(arg2, 5)) {
 						// Elemenf of a Package
 	 					// Store(Src0, Index(p680, 0))
 						Store("Not implemented", Debug)
-						err(terr, z123, 3, 0, 0, arg1, arg2)
+						err(terr, z123, __LINE__, 0, 0, arg1, arg2)
 						Return (1)
 					} else {
 						Store("Unexpected Kind of the Object to store into", Debug)
-						err(terr, z123, 4, 0, 0, arg1, arg2)
+						err(terr, z123, __LINE__, 0, 0, arg1, arg2)
 						Return (1)
 					}
 				}
@@ -109,7 +109,7 @@ Method(m690,, Serialized)
 						// Constant
  						// Store(Src0, "")
 						Store("Not implemented", Debug)
-						err(terr, z123, 5, 0, 0, arg1, arg2)
+						err(terr, z123, __LINE__, 0, 0, arg1, arg2)
 						Return (1)
 					} elseif (LEqual(arg2, 1)) {
 						// Named Object
@@ -118,7 +118,7 @@ Method(m690,, Serialized)
 						// ArgX Object
 	 					// Store(Src0, arg3)
 						Store("Not implemented", Debug)
-						err(terr, z123, 6, 0, 0, arg1, arg2)
+						err(terr, z123, __LINE__, 0, 0, arg1, arg2)
 						Return (1)
 					} elseif (LEqual(arg2, 3)) {
 						// LocalX Object
@@ -127,17 +127,17 @@ Method(m690,, Serialized)
 						// Reference in ArgX Object
 	 					// Store(Src0, arg4)
 						Store("Not implemented", Debug)
-						err(terr, z123, 7, 0, 0, arg1, arg2)
+						err(terr, z123, __LINE__, 0, 0, arg1, arg2)
 						Return (1)
 					} elseif (LEqual(arg2, 5)) {
 						// Elemenf of a Package
 	 					// Store(Src0, Index(p680, 0))
 						Store("Not implemented", Debug)
-						err(terr, z123, 8, 0, 0, arg1, arg2)
+						err(terr, z123, __LINE__, 0, 0, arg1, arg2)
 						Return (1)
 					} else {
 						Store("Unexpected Kind of the Object to store into", Debug)
-						err(terr, z123, 9, 0, 0, arg1, arg2)
+						err(terr, z123, __LINE__, 0, 0, arg1, arg2)
 						Return (1)
 					}
 				}
@@ -147,7 +147,7 @@ Method(m690,, Serialized)
 						// Constant
  						// Store(Src0, Buffer(1){})
 						Store("Not implemented", Debug)
-						err(terr, z123, 10, 0, 0, arg1, arg2)
+						err(terr, z123, __LINE__, 0, 0, arg1, arg2)
 						Return (1)
 					} elseif (LEqual(arg2, 1)) {
 						// Named Object
@@ -156,36 +156,36 @@ Method(m690,, Serialized)
 						// ArgX Object
 	 					// Store(Src0, arg3)
 						Store("Not implemented", Debug)
-						err(terr, z123, 11, 0, 0, arg1, arg2)
+						err(terr, z123, __LINE__, 0, 0, arg1, arg2)
 						Return (1)
 					} elseif (LEqual(arg2, 3)) {
 						// LocalX Object
 	 					// Store(Src0, Local2)
 						Store("Not implemented", Debug)
-						err(terr, z123, 12, 0, 0, arg1, arg2)
+						err(terr, z123, __LINE__, 0, 0, arg1, arg2)
 						Return (1)
 					} elseif (LEqual(arg2, 4)) {
 						// Reference in ArgX Object
 	 					// Store(Src0, arg4)
 						Store("Not implemented", Debug)
-						err(terr, z123, 13, 0, 0, arg1, arg2)
+						err(terr, z123, __LINE__, 0, 0, arg1, arg2)
 						Return (1)
 					} elseif (LEqual(arg2, 5)) {
 						// Elemenf of a Package
 	 					// Store(Src0, Index(p680, 0))
 						Store("Not implemented", Debug)
-						err(terr, z123, 14, 0, 0, arg1, arg2)
+						err(terr, z123, __LINE__, 0, 0, arg1, arg2)
 						Return (1)
 					} else {
 						Store("Unexpected Kind of the Object to store into", Debug)
-						err(terr, z123, 15, 0, 0, arg1, arg2)
+						err(terr, z123, __LINE__, 0, 0, arg1, arg2)
 						Return (1)
 					}
 				}
 				Case(4) {	// Package
 					// Store(Src0, p680)
 					Store("Not implemented", Debug)
-					err(terr, z123, 16, 0, 0, arg1, arg2)
+					err(terr, z123, __LINE__, 0, 0, arg1, arg2)
 					Return (1)
 				}
 				Case(14) {	// Buffer field
@@ -193,7 +193,7 @@ Method(m690,, Serialized)
 					if (LEqual(arg2, 0)) {
 						// Constant (like Store(Src0, Zero))
 						Store("Not implemented", Debug)
-						err(terr, z123, 17, 0, 0, arg1, arg2)
+						err(terr, z123, __LINE__, 0, 0, arg1, arg2)
 						Return (1)
 					} elseif (LEqual(arg2, 1)) {
 						// Named Object
@@ -204,35 +204,35 @@ Method(m690,, Serialized)
 						// ArgX Object
 	 					// Store(Src0, arg3)
 						Store("Not implemented", Debug)
-						err(terr, z123, 18, 0, 0, arg1, arg2)
+						err(terr, z123, __LINE__, 0, 0, arg1, arg2)
 						Return (1)
 					} elseif (LEqual(arg2, 3)) {
 						// LocalX Object
 	 					// Store(Src0, Local2)
 						Store("Not implemented", Debug)
-						err(terr, z123, 19, 0, 0, arg1, arg2)
+						err(terr, z123, __LINE__, 0, 0, arg1, arg2)
 						Return (1)
 					} elseif (LEqual(arg2, 4)) {
 						// Reference in ArgX Object
 	 					// Store(Src0, arg4)
 						Store("Not implemented", Debug)
-						err(terr, z123, 20, 0, 0, arg1, arg2)
+						err(terr, z123, __LINE__, 0, 0, arg1, arg2)
 						Return (1)
 					} elseif (LEqual(arg2, 5)) {
 						// Elemenf of a Package
 	 					// Store(Src0, Index(p680, 0))
 						Store("Not implemented", Debug)
-						err(terr, z123, 21, 0, 0, arg1, arg2)
+						err(terr, z123, __LINE__, 0, 0, arg1, arg2)
 						Return (1)
 					} else {
 						Store("Unexpected Kind of the Object to store into", Debug)
-						err(terr, z123, 22, 0, 0, arg1, arg2)
+						err(terr, z123, __LINE__, 0, 0, arg1, arg2)
 						Return (1)
 					}
 				}
 				Default {
 					Store("Unexpected type of the Object to store into", Debug)
-					err(terr, z123, 23, 0, 0, arg1, arg2)
+					err(terr, z123, __LINE__, 0, 0, arg1, arg2)
 					Return (1)
 				}
 			}
@@ -282,12 +282,12 @@ Method(m690,, Serialized)
 				}
 				Case(5) {	// Field Unit
 					Store("Not implemented", Debug)
-					err(terr, z123, 30, 0, 0, arg1, arg2)
+					err(terr, z123, __LINE__, 0, 0, arg1, arg2)
 					Return (1)
 				}
 				Case(14) {	// Buffer Field
 					Store("Not implemented", Debug)
-					err(terr, z123, 31, 0, 0, arg1, arg2)
+					err(terr, z123, __LINE__, 0, 0, arg1, arg2)
 					Return (1)
 				}
 			}
@@ -314,12 +314,12 @@ Method(m690,, Serialized)
 				}
 				Case(5) {	// Field Unit
 					Store("Not implemented", Debug)
-					err(terr, z123, 38, 0, 0, arg1, arg2)
+					err(terr, z123, __LINE__, 0, 0, arg1, arg2)
 					Return (1)
 				}
 				Case(14) {	// Buffer Field
 					Store("Not implemented", Debug)
-					err(terr, z123, 39, 0, 0, arg1, arg2)
+					err(terr, z123, __LINE__, 0, 0, arg1, arg2)
 					Return (1)
 				}
 			}
@@ -351,12 +351,12 @@ Method(m690,, Serialized)
 					}
 					Case(5) {	// Field Unit
 						Store("Not implemented", Debug)
-						err(terr, z123, 44, 0, 0, arg1, arg2)
+						err(terr, z123, __LINE__, 0, 0, arg1, arg2)
 						Return (1)
 					}
 					Case(14) {	// Buffer Field
 						Store("Not implemented", Debug)
-						err(terr, z123, 45, 0, 0, arg1, arg2)
+						err(terr, z123, __LINE__, 0, 0, arg1, arg2)
 						Return (1)
 					}
 				}
@@ -380,12 +380,12 @@ Method(m690,, Serialized)
 					}
 					Case(5) {	// Field Unit
 						Store("Not implemented", Debug)
-						err(terr, z123, 52, 0, 0, arg1, arg2)
+						err(terr, z123, __LINE__, 0, 0, arg1, arg2)
 						Return (1)
 					}
 					Case(14) {	// Buffer Field
 						Store("Not implemented", Debug)
-						err(terr, z123, 53, 0, 0, arg1, arg2)
+						err(terr, z123, __LINE__, 0, 0, arg1, arg2)
 						Return (1)
 					}
 				}
@@ -407,12 +407,12 @@ Method(m690,, Serialized)
 					}
 					Case(5) {	// Field Unit
 						Store("Not implemented", Debug)
-						err(terr, z123, 54, 0, 0, arg1, arg2)
+						err(terr, z123, __LINE__, 0, 0, arg1, arg2)
 						Return (1)
 					}
 					Case(14) {	// Buffer Field
 						Store("Not implemented", Debug)
-						err(terr, z123, 55, 0, 0, arg1, arg2)
+						err(terr, z123, __LINE__, 0, 0, arg1, arg2)
 						Return (1)
 					}
 				}
@@ -434,12 +434,12 @@ Method(m690,, Serialized)
 					}
 					Case(5) {	// Field Unit
 						Store("Not implemented", Debug)
-						err(terr, z123, 62, 0, 0, arg1, arg2)
+						err(terr, z123, __LINE__, 0, 0, arg1, arg2)
 						Return (1)
 					}
 					Case(14) {	// Buffer Field
 						Store("Not implemented", Debug)
-						err(terr, z123, 63, 0, 0, arg1, arg2)
+						err(terr, z123, __LINE__, 0, 0, arg1, arg2)
 						Return (1)
 					}
 				}
@@ -466,12 +466,12 @@ Method(m690,, Serialized)
 					}
 					Case(5) {	// Field Unit
 						Store("Not implemented", Debug)
-						err(terr, z123, 70, 0, 0, arg1, arg2)
+						err(terr, z123, __LINE__, 0, 0, arg1, arg2)
 						Return (1)
 					}
 					Case(14) {	// Buffer Field
 						Store("Not implemented", Debug)
-						err(terr, z123, 71, 0, 0, arg1, arg2)
+						err(terr, z123, __LINE__, 0, 0, arg1, arg2)
 						Return (1)
 					}
 				}
@@ -495,12 +495,12 @@ Method(m690,, Serialized)
 					}
 					Case(5) {	// Field Unit
 						Store("Not implemented", Debug)
-						err(terr, z123, 78, 0, 0, arg1, arg2)
+						err(terr, z123, __LINE__, 0, 0, arg1, arg2)
 						Return (1)
 					}
 					Case(14) {	// Buffer Field
 						Store("Not implemented", Debug)
-						err(terr, z123, 79, 0, 0, arg1, arg2)
+						err(terr, z123, __LINE__, 0, 0, arg1, arg2)
 						Return (1)
 					}
 				}
@@ -524,12 +524,12 @@ Method(m690,, Serialized)
 					}
 					Case(5) {	// Field Unit
 						Store("Not implemented", Debug)
-						err(terr, z123, 86, 0, 0, arg1, arg2)
+						err(terr, z123, __LINE__, 0, 0, arg1, arg2)
 						Return (1)
 					}
 					Case(14) {	// Buffer Field
 						Store("Not implemented", Debug)
-						err(terr, z123, 87, 0, 0, arg1, arg2)
+						err(terr, z123, __LINE__, 0, 0, arg1, arg2)
 						Return (1)
 					}
 				}
@@ -553,12 +553,12 @@ Method(m690,, Serialized)
 					}
 					Case(5) {	// Field Unit
 						Store("Not implemented", Debug)
-						err(terr, z123, 94, 0, 0, arg1, arg2)
+						err(terr, z123, __LINE__, 0, 0, arg1, arg2)
 						Return (1)
 					}
 					Case(14) {	// Buffer Field
 						Store("Not implemented", Debug)
-						err(terr, z123, 95, 0, 0, arg1, arg2)
+						err(terr, z123, __LINE__, 0, 0, arg1, arg2)
 						Return (1)
 					}
 				}
@@ -569,7 +569,7 @@ Method(m690,, Serialized)
 			// Derefof of Reference returned by called Method
 			Default {
 				Store("Unexpected way to obtain some result Object", Debug)
-				err(terr, z123, 96, 0, 0, arg1, arg2)
+				err(terr, z123, __LINE__, 0, 0, arg1, arg2)
 				Return (1)
 			}
 		}
@@ -621,12 +621,12 @@ Method(m690,, Serialized)
 				}
 				Case(5) {	// Field Unit
 					Store("Not implemented", Debug)
-					err(terr, z123, 109, 0, 0, arg1, arg2)
+					err(terr, z123, __LINE__, 0, 0, arg1, arg2)
 					Return (1)
 				}
 				Case(14) {	// Buffer Field
 					Store("Not implemented", Debug)
-					err(terr, z123, 110, 0, 0, arg1, arg2)
+					err(terr, z123, __LINE__, 0, 0, arg1, arg2)
 					Return (1)
 				}
 			}
@@ -675,12 +675,12 @@ Method(m690,, Serialized)
 				}
 				Case(5) {	// Field Unit
 					Store("Not implemented", Debug)
-					err(terr, z123, 123, 0, 0, arg1, arg2)
+					err(terr, z123, __LINE__, 0, 0, arg1, arg2)
 					Return (1)
 				}
 				Case(14) {	// Buffer Field
 					Store("Not implemented", Debug)
-					err(terr, z123, 124, 0, 0, arg1, arg2)
+					err(terr, z123, __LINE__, 0, 0, arg1, arg2)
 					Return (1)
 				}
 			}
@@ -725,12 +725,12 @@ Method(m690,, Serialized)
 					}
 					Case(5) {	// Field Unit
 						Store("Not implemented", Debug)
-						err(terr, z123, 131, 0, 0, arg1, arg2)
+						err(terr, z123, __LINE__, 0, 0, arg1, arg2)
 						Return (1)
 					}
 					Case(14) {	// Buffer Field
 						Store("Not implemented", Debug)
-						err(terr, z123, 132, 0, 0, arg1, arg2)
+						err(terr, z123, __LINE__, 0, 0, arg1, arg2)
 						Return (1)
 					}
 				}
@@ -782,12 +782,12 @@ Method(m690,, Serialized)
 */
 					Case(5) {	// Field Unit
 						Store("Not implemented", Debug)
-						err(terr, z123, 145, 0, 0, arg1, arg2)
+						err(terr, z123, __LINE__, 0, 0, arg1, arg2)
 						Return (1)
 					}
 					Case(14) {	// Buffer Field
 						Store("Not implemented", Debug)
-						err(terr, z123, 146, 0, 0, arg1, arg2)
+						err(terr, z123, __LINE__, 0, 0, arg1, arg2)
 						Return (1)
 					}
 				}
@@ -809,12 +809,12 @@ Method(m690,, Serialized)
 					}
 					Case(5) {	// Field Unit
 						Store("Not implemented", Debug)
-						err(terr, z123, 147, 0, 0, arg1, arg2)
+						err(terr, z123, __LINE__, 0, 0, arg1, arg2)
 						Return (1)
 					}
 					Case(14) {	// Buffer Field
 						Store("Not implemented", Debug)
-						err(terr, z123, 148, 0, 0, arg1, arg2)
+						err(terr, z123, __LINE__, 0, 0, arg1, arg2)
 						Return (1)
 					}
 				}
@@ -900,12 +900,12 @@ Method(m690,, Serialized)
 					}
 					Case(5) {	// Field Unit
 						Store("Not implemented", Debug)
-						err(terr, z123, 173, 0, 0, arg1, arg2)
+						err(terr, z123, __LINE__, 0, 0, arg1, arg2)
 						Return (1)
 					}
 					Case(14) {	// Buffer Field
 						Store("Not implemented", Debug)
-						err(terr, z123, 174, 0, 0, arg1, arg2)
+						err(terr, z123, __LINE__, 0, 0, arg1, arg2)
 						Return (1)
 					}
 				}
@@ -950,12 +950,12 @@ Method(m690,, Serialized)
 					}
 					Case(5) {	// Field Unit
 						Store("Not implemented", Debug)
-						err(terr, z123, 187, 0, 0, arg1, arg2)
+						err(terr, z123, __LINE__, 0, 0, arg1, arg2)
 						Return (1)
 					}
 					Case(14) {	// Buffer Field
 						Store("Not implemented", Debug)
-						err(terr, z123, 188, 0, 0, arg1, arg2)
+						err(terr, z123, __LINE__, 0, 0, arg1, arg2)
 						Return (1)
 					}
 				}
@@ -1000,12 +1000,12 @@ Method(m690,, Serialized)
 					}
 					Case(5) {	// Field Unit
 						Store("Not implemented", Debug)
-						err(terr, z123, 201, 0, 0, arg1, arg2)
+						err(terr, z123, __LINE__, 0, 0, arg1, arg2)
 						Return (1)
 					}
 					Case(14) {	// Buffer Field
 						Store("Not implemented", Debug)
-						err(terr, z123, 202, 0, 0, arg1, arg2)
+						err(terr, z123, __LINE__, 0, 0, arg1, arg2)
 						Return (1)
 					}
 				}
@@ -1050,12 +1050,12 @@ Method(m690,, Serialized)
 					}
 					Case(5) {	// Field Unit
 						Store("Not implemented", Debug)
-						err(terr, z123, 215, 0, 0, arg1, arg2)
+						err(terr, z123, __LINE__, 0, 0, arg1, arg2)
 						Return (1)
 					}
 					Case(14) {	// Buffer Field
 						Store("Not implemented", Debug)
-						err(terr, z123, 216, 0, 0, arg1, arg2)
+						err(terr, z123, __LINE__, 0, 0, arg1, arg2)
 						Return (1)
 					}
 				}
@@ -1066,7 +1066,7 @@ Method(m690,, Serialized)
 			// Derefof of Reference returned by called Method
 			Default {
 				Store("Unexpected way to obtain some result Object", Debug)
-				err(terr, z123, 217, 0, 0, arg1, arg2)
+				err(terr, z123, __LINE__, 0, 0, arg1, arg2)
 				Return (1)
 			}
 		}
@@ -1112,12 +1112,12 @@ Method(m690,, Serialized)
 				}
 				Case(5) {	// Field Unit
 					Store("Not implemented", Debug)
-					err(terr, z123, 231, 0, 0, arg1, arg2)
+					err(terr, z123, __LINE__, 0, 0, arg1, arg2)
 					Return (1)
 				}
 				Case(14) {	// Buffer Field
 					Store("Not implemented", Debug)
-					err(terr, z123, 232, 0, 0, arg1, arg2)
+					err(terr, z123, __LINE__, 0, 0, arg1, arg2)
 					Return (1)
 				}
 			}
@@ -1160,12 +1160,12 @@ Method(m690,, Serialized)
 				}
 				Case(5) {	// Field Unit
 					Store("Not implemented", Debug)
-					err(terr, z123, 246, 0, 0, arg1, arg2)
+					err(terr, z123, __LINE__, 0, 0, arg1, arg2)
 					Return (1)
 				}
 				Case(14) {	// Buffer Field
 					Store("Not implemented", Debug)
-					err(terr, z123, 247, 0, 0, arg1, arg2)
+					err(terr, z123, __LINE__, 0, 0, arg1, arg2)
 					Return (1)
 				}
 			}
@@ -1204,12 +1204,12 @@ Method(m690,, Serialized)
 					}
 					Case(5) {	// Field Unit
 						Store("Not implemented", Debug)
-						err(terr, z123, 255, 0, 0, arg1, arg2)
+						err(terr, z123, __LINE__, 0, 0, arg1, arg2)
 						Return (1)
 					}
 					Case(14) {	// Buffer Field
 						Store("Not implemented", Debug)
-						err(terr, z123, 256, 0, 0, arg1, arg2)
+						err(terr, z123, __LINE__, 0, 0, arg1, arg2)
 						Return (1)
 					}
 				}
@@ -1246,7 +1246,7 @@ Method(m690,, Serialized)
 					}
 					Default {
 						Store("Unexpected type of the result Object to be stored", Debug)
-						err(terr, z123, 270, 0, 0, arg1, arg2)
+						err(terr, z123, __LINE__, 0, 0, arg1, arg2)
 						Return (1)
 					}
 				}
@@ -1271,12 +1271,12 @@ Method(m690,, Serialized)
 					}
 					Case(5) {	// Field Unit
 						Store("Not implemented", Debug)
-						err(terr, z123, 271, 0, 0, arg1, arg2)
+						err(terr, z123, __LINE__, 0, 0, arg1, arg2)
 						Return (1)
 					}
 					Case(14) {	// Buffer Field
 						Store("Not implemented", Debug)
-						err(terr, z123, 272, 0, 0, arg1, arg2)
+						err(terr, z123, __LINE__, 0, 0, arg1, arg2)
 						Return (1)
 					}
 				}
@@ -1346,12 +1346,12 @@ Method(m690,, Serialized)
 					}
 					Case(5) {	// Field Unit
 						Store("Not implemented", Debug)
-						err(terr, z123, 299, 0, 0, arg1, arg2)
+						err(terr, z123, __LINE__, 0, 0, arg1, arg2)
 						Return (1)
 					}
 					Case(14) {	// Buffer Field
 						Store("Not implemented", Debug)
-						err(terr, z123, 300, 0, 0, arg1, arg2)
+						err(terr, z123, __LINE__, 0, 0, arg1, arg2)
 						Return (1)
 					}
 				}
@@ -1420,12 +1420,12 @@ Method(m690,, Serialized)
 					}
 					Case(5) {	// Field Unit
 						Store("Not implemented", Debug)
-						err(terr, z123, 327, 0, 0, arg1, arg2)
+						err(terr, z123, __LINE__, 0, 0, arg1, arg2)
 						Return (1)
 					}
 					Case(14) {	// Buffer Field
 						Store("Not implemented", Debug)
-						err(terr, z123, 328, 0, 0, arg1, arg2)
+						err(terr, z123, __LINE__, 0, 0, arg1, arg2)
 						Return (1)
 					}
 				}
@@ -1463,12 +1463,12 @@ Method(m690,, Serialized)
 					}
 					Case(5) {	// Field Unit
 						Store("Not implemented", Debug)
-						err(terr, z123, 342, 0, 0, arg1, arg2)
+						err(terr, z123, __LINE__, 0, 0, arg1, arg2)
 						Return (1)
 					}
 					Case(14) {	// Buffer Field
 						Store("Not implemented", Debug)
-						err(terr, z123, 343, 0, 0, arg1, arg2)
+						err(terr, z123, __LINE__, 0, 0, arg1, arg2)
 						Return (1)
 					}
 				}
@@ -1479,7 +1479,7 @@ Method(m690,, Serialized)
 			// Derefof of Reference returned by called Method
 			Default {
 				Store("Unexpected way to obtain some result Object", Debug)
-				err(terr, z123, 344, 0, 0, arg1, arg2)
+				err(terr, z123, __LINE__, 0, 0, arg1, arg2)
 				Return (1)
 			}
 		}
@@ -1527,12 +1527,12 @@ Method(m690,, Serialized)
 				}
 				Case(5) {	// Field Unit
 					Store("Not implemented", Debug)
-					err(terr, z123, 359, 0, 0, arg1, arg2)
+					err(terr, z123, __LINE__, 0, 0, arg1, arg2)
 					Return (1)
 				}
 				Case(14) {	// Buffer Field
 					Store("Not implemented", Debug)
-					err(terr, z123, 360, 0, 0, arg1, arg2)
+					err(terr, z123, __LINE__, 0, 0, arg1, arg2)
 					Return (1)
 				}
 			}
@@ -1577,12 +1577,12 @@ Method(m690,, Serialized)
 				}
 				Case(5) {	// Field Unit
 					Store("Not implemented", Debug)
-					err(terr, z123, 375, 0, 0, arg1, arg2)
+					err(terr, z123, __LINE__, 0, 0, arg1, arg2)
 					Return (1)
 				}
 				Case(14) {	// Buffer Field
 					Store("Not implemented", Debug)
-					err(terr, z123, 376, 0, 0, arg1, arg2)
+					err(terr, z123, __LINE__, 0, 0, arg1, arg2)
 					Return (1)
 				}
 			}
@@ -1619,12 +1619,12 @@ Method(m690,, Serialized)
 					}
 					Case(5) {	// Field Unit
 						Store("Not implemented", Debug)
-						err(terr, z123, 384, 0, 0, arg1, arg2)
+						err(terr, z123, __LINE__, 0, 0, arg1, arg2)
 						Return (1)
 					}
 					Case(14) {	// Buffer Field
 						Store("Not implemented", Debug)
-						err(terr, z123, 385, 0, 0, arg1, arg2)
+						err(terr, z123, __LINE__, 0, 0, arg1, arg2)
 						Return (1)
 					}
 				}
@@ -1665,12 +1665,12 @@ Method(m690,, Serialized)
 					}
 					Case(5) {	// Field Unit
 						Store("Not implemented", Debug)
-						err(terr, z123, 400, 0, 0, arg1, arg2)
+						err(terr, z123, __LINE__, 0, 0, arg1, arg2)
 						Return (1)
 					}
 					Case(14) {	// Buffer Field
 						Store("Not implemented", Debug)
-						err(terr, z123, 401, 0, 0, arg1, arg2)
+						err(terr, z123, __LINE__, 0, 0, arg1, arg2)
 						Return (1)
 					}
 				}
@@ -1692,12 +1692,12 @@ Method(m690,, Serialized)
 					}
 					Case(5) {	// Field Unit
 						Store("Not implemented", Debug)
-						err(terr, z123, 402, 0, 0, arg1, arg2)
+						err(terr, z123, __LINE__, 0, 0, arg1, arg2)
 						Return (1)
 					}
 					Case(14) {	// Buffer Field
 						Store("Not implemented", Debug)
-						err(terr, z123, 403, 0, 0, arg1, arg2)
+						err(terr, z123, __LINE__, 0, 0, arg1, arg2)
 						Return (1)
 					}
 				}
@@ -1775,12 +1775,12 @@ Method(m690,, Serialized)
 					}
 					Case(5) {	// Field Unit
 						Store("Not implemented", Debug)
-						err(terr, z123, 432, 0, 0, arg1, arg2)
+						err(terr, z123, __LINE__, 0, 0, arg1, arg2)
 						Return (1)
 					}
 					Case(14) {	// Buffer Field
 						Store("Not implemented", Debug)
-						err(terr, z123, 433, 0, 0, arg1, arg2)
+						err(terr, z123, __LINE__, 0, 0, arg1, arg2)
 						Return (1)
 					}
 				}
@@ -1821,12 +1821,12 @@ Method(m690,, Serialized)
 					}
 					Case(5) {	// Field Unit
 						Store("Not implemented", Debug)
-						err(terr, z123, 448, 0, 0, arg1, arg2)
+						err(terr, z123, __LINE__, 0, 0, arg1, arg2)
 						Return (1)
 					}
 					Case(14) {	// Buffer Field
 						Store("Not implemented", Debug)
-						err(terr, z123, 449, 0, 0, arg1, arg2)
+						err(terr, z123, __LINE__, 0, 0, arg1, arg2)
 						Return (1)
 					}
 				}
@@ -1867,12 +1867,12 @@ Method(m690,, Serialized)
 					}
 					Case(5) {	// Field Unit
 						Store("Not implemented", Debug)
-						err(terr, z123, 464, 0, 0, arg1, arg2)
+						err(terr, z123, __LINE__, 0, 0, arg1, arg2)
 						Return (1)
 					}
 					Case(14) {	// Buffer Field
 						Store("Not implemented", Debug)
-						err(terr, z123, 465, 0, 0, arg1, arg2)
+						err(terr, z123, __LINE__, 0, 0, arg1, arg2)
 						Return (1)
 					}
 				}
@@ -1914,12 +1914,12 @@ Method(m690,, Serialized)
 					}
 					Case(5) {	// Field Unit
 						Store("Not implemented", Debug)
-						err(terr, z123, 480, 0, 0, arg1, arg2)
+						err(terr, z123, __LINE__, 0, 0, arg1, arg2)
 						Return (1)
 					}
 					Case(14) {	// Buffer Field
 						Store("Not implemented", Debug)
-						err(terr, z123, 481, 0, 0, arg1, arg2)
+						err(terr, z123, __LINE__, 0, 0, arg1, arg2)
 						Return (1)
 					}
 				}
@@ -1930,7 +1930,7 @@ Method(m690,, Serialized)
 			// Derefof of Reference returned by called Method
 			Default {
 				Store("Unexpected way to obtain some result Object", Debug)
-				err(terr, z123, 482, 0, 0, arg1, arg2)
+				err(terr, z123, __LINE__, 0, 0, arg1, arg2)
 				Return (1)
 			}
 		}
@@ -1978,12 +1978,12 @@ Method(m690,, Serialized)
 				}
 				Case(5) {	// Field Unit
 					Store("Not implemented", Debug)
-					err(terr, z123, 497, 0, 0, arg1, arg2)
+					err(terr, z123, __LINE__, 0, 0, arg1, arg2)
 					Return (1)
 				}
 				Case(14) {	// Buffer Field
 					Store("Not implemented", Debug)
-					err(terr, z123, 498, 0, 0, arg1, arg2)
+					err(terr, z123, __LINE__, 0, 0, arg1, arg2)
 					Return (1)
 				}
 			}
@@ -2028,12 +2028,12 @@ Method(m690,, Serialized)
 				}
 				Case(5) {	// Field Unit
 					Store("Not implemented", Debug)
-					err(terr, z123, 513, 0, 0, arg1, arg2)
+					err(terr, z123, __LINE__, 0, 0, arg1, arg2)
 					Return (1)
 				}
 				Case(14) {	// Buffer Field
 					Store("Not implemented", Debug)
-					err(terr, z123, 514, 0, 0, arg1, arg2)
+					err(terr, z123, __LINE__, 0, 0, arg1, arg2)
 					Return (1)
 				}
 			}
@@ -2072,12 +2072,12 @@ Method(m690,, Serialized)
 					}
 					Case(5) {	// Field Unit
 						Store("Not implemented", Debug)
-						err(terr, z123, 522, 0, 0, arg1, arg2)
+						err(terr, z123, __LINE__, 0, 0, arg1, arg2)
 						Return (1)
 					}
 					Case(14) {	// Buffer Field
 						Store("Not implemented", Debug)
-						err(terr, z123, 523, 0, 0, arg1, arg2)
+						err(terr, z123, __LINE__, 0, 0, arg1, arg2)
 						Return (1)
 					}
 				}
@@ -2118,12 +2118,12 @@ Method(m690,, Serialized)
 					}
 					Case(5) {	// Field Unit
 						Store("Not implemented", Debug)
-						err(terr, z123, 538, 0, 0, arg1, arg2)
+						err(terr, z123, __LINE__, 0, 0, arg1, arg2)
 						Return (1)
 					}
 					Case(14) {	// Buffer Field
 						Store("Not implemented", Debug)
-						err(terr, z123, 539, 0, 0, arg1, arg2)
+						err(terr, z123, __LINE__, 0, 0, arg1, arg2)
 						Return (1)
 					}
 				}
@@ -2145,12 +2145,12 @@ Method(m690,, Serialized)
 					}
 					Case(5) {	// Field Unit
 						Store("Not implemented", Debug)
-						err(terr, z123, 540, 0, 0, arg1, arg2)
+						err(terr, z123, __LINE__, 0, 0, arg1, arg2)
 						Return (1)
 					}
 					Case(14) {	// Buffer Field
 						Store("Not implemented", Debug)
-						err(terr, z123, 541, 0, 0, arg1, arg2)
+						err(terr, z123, __LINE__, 0, 0, arg1, arg2)
 						Return (1)
 					}
 				}
@@ -2228,12 +2228,12 @@ Method(m690,, Serialized)
 					}
 					Case(5) {	// Field Unit
 						Store("Not implemented", Debug)
-						err(terr, z123, 570, 0, 0, arg1, arg2)
+						err(terr, z123, __LINE__, 0, 0, arg1, arg2)
 						Return (1)
 					}
 					Case(14) {	// Buffer Field
 						Store("Not implemented", Debug)
-						err(terr, z123, 571, 0, 0, arg1, arg2)
+						err(terr, z123, __LINE__, 0, 0, arg1, arg2)
 						Return (1)
 					}
 				}
@@ -2274,12 +2274,12 @@ Method(m690,, Serialized)
 					}
 					Case(5) {	// Field Unit
 						Store("Not implemented", Debug)
-						err(terr, z123, 586, 0, 0, arg1, arg2)
+						err(terr, z123, __LINE__, 0, 0, arg1, arg2)
 						Return (1)
 					}
 					Case(14) {	// Buffer Field
 						Store("Not implemented", Debug)
-						err(terr, z123, 587, 0, 0, arg1, arg2)
+						err(terr, z123, __LINE__, 0, 0, arg1, arg2)
 						Return (1)
 					}
 				}
@@ -2320,12 +2320,12 @@ Method(m690,, Serialized)
 					}
 					Case(5) {	// Field Unit
 						Store("Not implemented", Debug)
-						err(terr, z123, 602, 0, 0, arg1, arg2)
+						err(terr, z123, __LINE__, 0, 0, arg1, arg2)
 						Return (1)
 					}
 					Case(14) {	// Buffer Field
 						Store("Not implemented", Debug)
-						err(terr, z123, 603, 0, 0, arg1, arg2)
+						err(terr, z123, __LINE__, 0, 0, arg1, arg2)
 						Return (1)
 					}
 				}
@@ -2367,12 +2367,12 @@ Method(m690,, Serialized)
 					}
 					Case(5) {	// Field Unit
 						Store("Not implemented", Debug)
-						err(terr, z123, 618, 0, 0, arg1, arg2)
+						err(terr, z123, __LINE__, 0, 0, arg1, arg2)
 						Return (1)
 					}
 					Case(14) {	// Buffer Field
 						Store("Not implemented", Debug)
-						err(terr, z123, 619, 0, 0, arg1, arg2)
+						err(terr, z123, __LINE__, 0, 0, arg1, arg2)
 						Return (1)
 					}
 				}
@@ -2383,7 +2383,7 @@ Method(m690,, Serialized)
 			// Derefof of Reference returned by called Method
 			Default {
 				Store("Unexpected way to obtain some result Object", Debug)
-				err(terr, z123, 620, 0, 0, arg1, arg2)
+				err(terr, z123, __LINE__, 0, 0, arg1, arg2)
 				Return (1)
 			}
 		}
@@ -2415,12 +2415,12 @@ Method(m690,, Serialized)
 				}
 				Case(5) {	// Field Unit
 					Store("Not implemented", Debug)
-					err(terr, z123, 624, 0, 0, arg1, arg2)
+					err(terr, z123, __LINE__, 0, 0, arg1, arg2)
 					Return (1)
 				}
 				Case(14) {	// Buffer Field
 					Store("Not implemented", Debug)
-					err(terr, z123, 625, 0, 0, arg1, arg2)
+					err(terr, z123, __LINE__, 0, 0, arg1, arg2)
 					Return (1)
 				}
 			}
@@ -2448,12 +2448,12 @@ Method(m690,, Serialized)
 				}
 				Case(5) {	// Field Unit
 					Store("Not implemented", Debug)
-					err(terr, z123, 629, 0, 0, arg1, arg2)
+					err(terr, z123, __LINE__, 0, 0, arg1, arg2)
 					Return (1)
 				}
 				Case(14) {	// Buffer Field
 					Store("Not implemented", Debug)
-					err(terr, z123, 630, 0, 0, arg1, arg2)
+					err(terr, z123, __LINE__, 0, 0, arg1, arg2)
 					Return (1)
 				}
 			}
@@ -2522,12 +2522,12 @@ Method(m690,, Serialized)
 					}
 					Case(5) {	// Field Unit
 						Store("Not implemented", Debug)
-						err(terr, z123, 631, 0, 0, arg1, arg2)
+						err(terr, z123, __LINE__, 0, 0, arg1, arg2)
 						Return (1)
 					}
 					Case(14) {	// Buffer Field
 						Store("Not implemented", Debug)
-						err(terr, z123, 632, 0, 0, arg1, arg2)
+						err(terr, z123, __LINE__, 0, 0, arg1, arg2)
 						Return (1)
 					}
 				}
@@ -2551,12 +2551,12 @@ Method(m690,, Serialized)
 					}
 					Case(5) {	// Field Unit
 						Store("Not implemented", Debug)
-						err(terr, z123, 636, 0, 0, arg1, arg2)
+						err(terr, z123, __LINE__, 0, 0, arg1, arg2)
 						Return (1)
 					}
 					Case(14) {	// Buffer Field
 						Store("Not implemented", Debug)
-						err(terr, z123, 637, 0, 0, arg1, arg2)
+						err(terr, z123, __LINE__, 0, 0, arg1, arg2)
 						Return (1)
 					}
 				}
@@ -2578,12 +2578,12 @@ Method(m690,, Serialized)
 					}
 					Case(5) {	// Field Unit
 						Store("Not implemented", Debug)
-						err(terr, z123, 638, 0, 0, arg1, arg2)
+						err(terr, z123, __LINE__, 0, 0, arg1, arg2)
 						Return (1)
 					}
 					Case(14) {	// Buffer Field
 						Store("Not implemented", Debug)
-						err(terr, z123, 639, 0, 0, arg1, arg2)
+						err(terr, z123, __LINE__, 0, 0, arg1, arg2)
 						Return (1)
 					}
 				}
@@ -2627,12 +2627,12 @@ Method(m690,, Serialized)
 					}
 					Case(5) {	// Field Unit
 						Store("Not implemented", Debug)
-						err(terr, z123, 646, 0, 0, arg1, arg2)
+						err(terr, z123, __LINE__, 0, 0, arg1, arg2)
 						Return (1)
 					}
 					Case(14) {	// Buffer Field
 						Store("Not implemented", Debug)
-						err(terr, z123, 647, 0, 0, arg1, arg2)
+						err(terr, z123, __LINE__, 0, 0, arg1, arg2)
 						Return (1)
 					}
 				}
@@ -2656,12 +2656,12 @@ Method(m690,, Serialized)
 					}
 					Case(5) {	// Field Unit
 						Store("Not implemented", Debug)
-						err(terr, z123, 651, 0, 0, arg1, arg2)
+						err(terr, z123, __LINE__, 0, 0, arg1, arg2)
 						Return (1)
 					}
 					Case(14) {	// Buffer Field
 						Store("Not implemented", Debug)
-						err(terr, z123, 652, 0, 0, arg1, arg2)
+						err(terr, z123, __LINE__, 0, 0, arg1, arg2)
 						Return (1)
 					}
 				}
@@ -2685,12 +2685,12 @@ Method(m690,, Serialized)
 					}
 					Case(5) {	// Field Unit
 						Store("Not implemented", Debug)
-						err(terr, z123, 656, 0, 0, arg1, arg2)
+						err(terr, z123, __LINE__, 0, 0, arg1, arg2)
 						Return (1)
 					}
 					Case(14) {	// Buffer Field
 						Store("Not implemented", Debug)
-						err(terr, z123, 657, 0, 0, arg1, arg2)
+						err(terr, z123, __LINE__, 0, 0, arg1, arg2)
 						Return (1)
 					}
 				}
@@ -2723,12 +2723,12 @@ Method(m690,, Serialized)
 					}
 					Case(5) {	// Field Unit
 						Store("Not implemented", Debug)
-						err(terr, z123, 669, 0, 0, arg1, arg2)
+						err(terr, z123, __LINE__, 0, 0, arg1, arg2)
 						Return (1)
 					}
 					Case(14) {	// Buffer Field
 						Store("Not implemented", Debug)
-						err(terr, z123, 670, 0, 0, arg1, arg2)
+						err(terr, z123, __LINE__, 0, 0, arg1, arg2)
 						Return (1)
 					}
 				}
@@ -2739,7 +2739,7 @@ Method(m690,, Serialized)
 			// Derefof of Reference returned by called Method
 			Default {
 				Store("Unexpected way to obtain some result Object", Debug)
-				err(terr, z123, 671, 0, 0, arg1, arg2)
+				err(terr, z123, __LINE__, 0, 0, arg1, arg2)
 				Return (1)
 			}
 		}
@@ -2771,12 +2771,12 @@ Method(m690,, Serialized)
 				}
 				Case(5) {	// Field Unit
 					Store("Not implemented", Debug)
-					err(terr, z123, 675, 0, 0, arg1, arg2)
+					err(terr, z123, __LINE__, 0, 0, arg1, arg2)
 					Return (1)
 				}
 				Case(14) {	// Buffer Field
 					Store("Not implemented", Debug)
-					err(terr, z123, 676, 0, 0, arg1, arg2)
+					err(terr, z123, __LINE__, 0, 0, arg1, arg2)
 					Return (1)
 				}
 			}
@@ -2804,12 +2804,12 @@ Method(m690,, Serialized)
 				}
 				Case(5) {	// Field Unit
 					Store("Not implemented", Debug)
-					err(terr, z123, 680, 0, 0, arg1, arg2)
+					err(terr, z123, __LINE__, 0, 0, arg1, arg2)
 					Return (1)
 				}
 				Case(14) {	// Buffer Field
 					Store("Not implemented", Debug)
-					err(terr, z123, 681, 0, 0, arg1, arg2)
+					err(terr, z123, __LINE__, 0, 0, arg1, arg2)
 					Return (1)
 				}
 			}
@@ -2908,12 +2908,12 @@ Method(m690,, Serialized)
 					}
 					Case(5) {	// Field Unit
 						Store("Not implemented", Debug)
-						err(terr, z123, 682, 0, 0, arg1, arg2)
+						err(terr, z123, __LINE__, 0, 0, arg1, arg2)
 						Return (1)
 					}
 					Case(14) {	// Buffer Field
 						Store("Not implemented", Debug)
-						err(terr, z123, 683, 0, 0, arg1, arg2)
+						err(terr, z123, __LINE__, 0, 0, arg1, arg2)
 						Return (1)
 					}
 				}
@@ -2937,12 +2937,12 @@ Method(m690,, Serialized)
 					}
 					Case(5) {	// Field Unit
 						Store("Not implemented", Debug)
-						err(terr, z123, 687, 0, 0, arg1, arg2)
+						err(terr, z123, __LINE__, 0, 0, arg1, arg2)
 						Return (1)
 					}
 					Case(14) {	// Buffer Field
 						Store("Not implemented", Debug)
-						err(terr, z123, 688, 0, 0, arg1, arg2)
+						err(terr, z123, __LINE__, 0, 0, arg1, arg2)
 						Return (1)
 					}
 				}
@@ -2964,12 +2964,12 @@ Method(m690,, Serialized)
 					}
 					Case(5) {	// Field Unit
 						Store("Not implemented", Debug)
-						err(terr, z123, 689, 0, 0, arg1, arg2)
+						err(terr, z123, __LINE__, 0, 0, arg1, arg2)
 						Return (1)
 					}
 					Case(14) {	// Buffer Field
 						Store("Not implemented", Debug)
-						err(terr, z123, 690, 0, 0, arg1, arg2)
+						err(terr, z123, __LINE__, 0, 0, arg1, arg2)
 						Return (1)
 					}
 				}
@@ -3013,12 +3013,12 @@ Method(m690,, Serialized)
 					}
 					Case(5) {	// Field Unit
 						Store("Not implemented", Debug)
-						err(terr, z123, 697, 0, 0, arg1, arg2)
+						err(terr, z123, __LINE__, 0, 0, arg1, arg2)
 						Return (1)
 					}
 					Case(14) {	// Buffer Field
 						Store("Not implemented", Debug)
-						err(terr, z123, 698, 0, 0, arg1, arg2)
+						err(terr, z123, __LINE__, 0, 0, arg1, arg2)
 						Return (1)
 					}
 				}
@@ -3042,12 +3042,12 @@ Method(m690,, Serialized)
 					}
 					Case(5) {	// Field Unit
 						Store("Not implemented", Debug)
-						err(terr, z123, 702, 0, 0, arg1, arg2)
+						err(terr, z123, __LINE__, 0, 0, arg1, arg2)
 						Return (1)
 					}
 					Case(14) {	// Buffer Field
 						Store("Not implemented", Debug)
-						err(terr, z123, 703, 0, 0, arg1, arg2)
+						err(terr, z123, __LINE__, 0, 0, arg1, arg2)
 						Return (1)
 					}
 				}
@@ -3071,12 +3071,12 @@ Method(m690,, Serialized)
 					}
 					Case(5) {	// Field Unit
 						Store("Not implemented", Debug)
-						err(terr, z123, 707, 0, 0, arg1, arg2)
+						err(terr, z123, __LINE__, 0, 0, arg1, arg2)
 						Return (1)
 					}
 					Case(14) {	// Buffer Field
 						Store("Not implemented", Debug)
-						err(terr, z123, 708, 0, 0, arg1, arg2)
+						err(terr, z123, __LINE__, 0, 0, arg1, arg2)
 						Return (1)
 					}
 				}
@@ -3125,12 +3125,12 @@ Method(m690,, Serialized)
 					}
 					Case(5) {	// Field Unit
 						Store("Not implemented", Debug)
-						err(terr, z123, 724, 0, 0, arg1, arg2)
+						err(terr, z123, __LINE__, 0, 0, arg1, arg2)
 						Return (1)
 					}
 					Case(14) {	// Buffer Field
 						Store("Not implemented", Debug)
-						err(terr, z123, 725, 0, 0, arg1, arg2)
+						err(terr, z123, __LINE__, 0, 0, arg1, arg2)
 						Return (1)
 					}
 				}
@@ -3141,7 +3141,7 @@ Method(m690,, Serialized)
 			// Derefof of Reference returned by called Method
 			Default {
 				Store("Unexpected way to obtain some result Object", Debug)
-				err(terr, z123, 726, 0, 0, arg1, arg2)
+				err(terr, z123, __LINE__, 0, 0, arg1, arg2)
 				Return (1)
 			}
 		}
@@ -3173,12 +3173,12 @@ Method(m690,, Serialized)
 				}
 				Case(5) {	// Field Unit
 					Store("Not implemented", Debug)
-					err(terr, z123, 730, 0, 0, arg1, arg2)
+					err(terr, z123, __LINE__, 0, 0, arg1, arg2)
 					Return (1)
 				}
 				Case(14) {	// Buffer Field
 					Store("Not implemented", Debug)
-					err(terr, z123, 731, 0, 0, arg1, arg2)
+					err(terr, z123, __LINE__, 0, 0, arg1, arg2)
 					Return (1)
 				}
 			}
@@ -3206,12 +3206,12 @@ Method(m690,, Serialized)
 				}
 				Case(5) {	// Field Unit
 					Store("Not implemented", Debug)
-					err(terr, z123, 735, 0, 0, arg1, arg2)
+					err(terr, z123, __LINE__, 0, 0, arg1, arg2)
 					Return (1)
 				}
 				Case(14) {	// Buffer Field
 					Store("Not implemented", Debug)
-					err(terr, z123, 736, 0, 0, arg1, arg2)
+					err(terr, z123, __LINE__, 0, 0, arg1, arg2)
 					Return (1)
 				}
 			}
@@ -3290,12 +3290,12 @@ Method(m690,, Serialized)
 					}
 					Case(5) {	// Field Unit
 						Store("Not implemented", Debug)
-						err(terr, z123, 737, 0, 0, arg1, arg2)
+						err(terr, z123, __LINE__, 0, 0, arg1, arg2)
 						Return (1)
 					}
 					Case(14) {	// Buffer Field
 						Store("Not implemented", Debug)
-						err(terr, z123, 738, 0, 0, arg1, arg2)
+						err(terr, z123, __LINE__, 0, 0, arg1, arg2)
 						Return (1)
 					}
 				}
@@ -3319,12 +3319,12 @@ Method(m690,, Serialized)
 					}
 					Case(5) {	// Field Unit
 						Store("Not implemented", Debug)
-						err(terr, z123, 742, 0, 0, arg1, arg2)
+						err(terr, z123, __LINE__, 0, 0, arg1, arg2)
 						Return (1)
 					}
 					Case(14) {	// Buffer Field
 						Store("Not implemented", Debug)
-						err(terr, z123, 743, 0, 0, arg1, arg2)
+						err(terr, z123, __LINE__, 0, 0, arg1, arg2)
 						Return (1)
 					}
 				}
@@ -3346,12 +3346,12 @@ Method(m690,, Serialized)
 					}
 					Case(5) {	// Field Unit
 						Store("Not implemented", Debug)
-						err(terr, z123, 744, 0, 0, arg1, arg2)
+						err(terr, z123, __LINE__, 0, 0, arg1, arg2)
 						Return (1)
 					}
 					Case(14) {	// Buffer Field
 						Store("Not implemented", Debug)
-						err(terr, z123, 745, 0, 0, arg1, arg2)
+						err(terr, z123, __LINE__, 0, 0, arg1, arg2)
 						Return (1)
 					}
 				}
@@ -3395,12 +3395,12 @@ Method(m690,, Serialized)
 					}
 					Case(5) {	// Field Unit
 						Store("Not implemented", Debug)
-						err(terr, z123, 752, 0, 0, arg1, arg2)
+						err(terr, z123, __LINE__, 0, 0, arg1, arg2)
 						Return (1)
 					}
 					Case(14) {	// Buffer Field
 						Store("Not implemented", Debug)
-						err(terr, z123, 753, 0, 0, arg1, arg2)
+						err(terr, z123, __LINE__, 0, 0, arg1, arg2)
 						Return (1)
 					}
 				}
@@ -3424,12 +3424,12 @@ Method(m690,, Serialized)
 					}
 					Case(5) {	// Field Unit
 						Store("Not implemented", Debug)
-						err(terr, z123, 757, 0, 0, arg1, arg2)
+						err(terr, z123, __LINE__, 0, 0, arg1, arg2)
 						Return (1)
 					}
 					Case(14) {	// Buffer Field
 						Store("Not implemented", Debug)
-						err(terr, z123, 758, 0, 0, arg1, arg2)
+						err(terr, z123, __LINE__, 0, 0, arg1, arg2)
 						Return (1)
 					}
 				}
@@ -3453,12 +3453,12 @@ Method(m690,, Serialized)
 					}
 					Case(5) {	// Field Unit
 						Store("Not implemented", Debug)
-						err(terr, z123, 762, 0, 0, arg1, arg2)
+						err(terr, z123, __LINE__, 0, 0, arg1, arg2)
 						Return (1)
 					}
 					Case(14) {	// Buffer Field
 						Store("Not implemented", Debug)
-						err(terr, z123, 763, 0, 0, arg1, arg2)
+						err(terr, z123, __LINE__, 0, 0, arg1, arg2)
 						Return (1)
 					}
 				}
@@ -3491,12 +3491,12 @@ Method(m690,, Serialized)
 					}
 					Case(5) {	// Field Unit
 						Store("Not implemented", Debug)
-						err(terr, z123, 775, 0, 0, arg1, arg2)
+						err(terr, z123, __LINE__, 0, 0, arg1, arg2)
 						Return (1)
 					}
 					Case(14) {	// Buffer Field
 						Store("Not implemented", Debug)
-						err(terr, z123, 776, 0, 0, arg1, arg2)
+						err(terr, z123, __LINE__, 0, 0, arg1, arg2)
 						Return (1)
 					}
 				}
@@ -3507,7 +3507,7 @@ Method(m690,, Serialized)
 			// Derefof of Reference returned by called Method
 			Default {
 				Store("Unexpected way to obtain some result Object", Debug)
-				err(terr, z123, 777, 0, 0, arg1, arg2)
+				err(terr, z123, __LINE__, 0, 0, arg1, arg2)
 				Return (1)
 			}
 		}
@@ -3553,12 +3553,12 @@ Method(m690,, Serialized)
 				}
 				Case(5) {	// Field Unit
 					Store("Not implemented", Debug)
-					err(terr, z123, 791, 0, 0, arg1, arg2)
+					err(terr, z123, __LINE__, 0, 0, arg1, arg2)
 					Return (1)
 				}
 				Case(14) {	// Buffer Field
 					Store("Not implemented", Debug)
-					err(terr, z123, 792, 0, 0, arg1, arg2)
+					err(terr, z123, __LINE__, 0, 0, arg1, arg2)
 					Return (1)
 				}
 			}
@@ -3601,12 +3601,12 @@ Method(m690,, Serialized)
 				}
 				Case(5) {	// Field Unit
 					Store("Not implemented", Debug)
-					err(terr, z123, 806, 0, 0, arg1, arg2)
+					err(terr, z123, __LINE__, 0, 0, arg1, arg2)
 					Return (1)
 				}
 				Case(14) {	// Buffer Field
 					Store("Not implemented", Debug)
-					err(terr, z123, 807, 0, 0, arg1, arg2)
+					err(terr, z123, __LINE__, 0, 0, arg1, arg2)
 					Return (1)
 				}
 			}
@@ -3645,12 +3645,12 @@ Method(m690,, Serialized)
 					}
 					Case(5) {	// Field Unit
 						Store("Not implemented", Debug)
-						err(terr, z123, 815, 0, 0, arg1, arg2)
+						err(terr, z123, __LINE__, 0, 0, arg1, arg2)
 						Return (1)
 					}
 					Case(14) {	// Buffer Field
 						Store("Not implemented", Debug)
-						err(terr, z123, 816, 0, 0, arg1, arg2)
+						err(terr, z123, __LINE__, 0, 0, arg1, arg2)
 						Return (1)
 					}
 				}
@@ -3687,7 +3687,7 @@ Method(m690,, Serialized)
 					}
 					Default {
 						Store("Unexpected type of the result Object to be stored", Debug)
-						err(terr, z123, 830, 0, 0, arg1, arg2)
+						err(terr, z123, __LINE__, 0, 0, arg1, arg2)
 						Return (1)
 					}
 				}
@@ -3712,12 +3712,12 @@ Method(m690,, Serialized)
 					}
 					Case(5) {	// Field Unit
 						Store("Not implemented", Debug)
-						err(terr, z123, 831, 0, 0, arg1, arg2)
+						err(terr, z123, __LINE__, 0, 0, arg1, arg2)
 						Return (1)
 					}
 					Case(14) {	// Buffer Field
 						Store("Not implemented", Debug)
-						err(terr, z123, 832, 0, 0, arg1, arg2)
+						err(terr, z123, __LINE__, 0, 0, arg1, arg2)
 						Return (1)
 					}
 				}
@@ -3787,12 +3787,12 @@ Method(m690,, Serialized)
 					}
 					Case(5) {	// Field Unit
 						Store("Not implemented", Debug)
-						err(terr, z123, 859, 0, 0, arg1, arg2)
+						err(terr, z123, __LINE__, 0, 0, arg1, arg2)
 						Return (1)
 					}
 					Case(14) {	// Buffer Field
 						Store("Not implemented", Debug)
-						err(terr, z123, 860, 0, 0, arg1, arg2)
+						err(terr, z123, __LINE__, 0, 0, arg1, arg2)
 						Return (1)
 					}
 				}
@@ -3861,12 +3861,12 @@ Method(m690,, Serialized)
 					}
 					Case(5) {	// Field Unit
 						Store("Not implemented", Debug)
-						err(terr, z123, 887, 0, 0, arg1, arg2)
+						err(terr, z123, __LINE__, 0, 0, arg1, arg2)
 						Return (1)
 					}
 					Case(14) {	// Buffer Field
 						Store("Not implemented", Debug)
-						err(terr, z123, 888, 0, 0, arg1, arg2)
+						err(terr, z123, __LINE__, 0, 0, arg1, arg2)
 						Return (1)
 					}
 				}
@@ -3904,12 +3904,12 @@ Method(m690,, Serialized)
 					}
 					Case(5) {	// Field Unit
 						Store("Not implemented", Debug)
-						err(terr, z123, 902, 0, 0, arg1, arg2)
+						err(terr, z123, __LINE__, 0, 0, arg1, arg2)
 						Return (1)
 					}
 					Case(14) {	// Buffer Field
 						Store("Not implemented", Debug)
-						err(terr, z123, 903, 0, 0, arg1, arg2)
+						err(terr, z123, __LINE__, 0, 0, arg1, arg2)
 						Return (1)
 					}
 				}
@@ -3920,7 +3920,7 @@ Method(m690,, Serialized)
 			// Derefof of Reference returned by called Method
 			Default {
 				Store("Unexpected way to obtain some result Object", Debug)
-				err(terr, z123, 904, 0, 0, arg1, arg2)
+				err(terr, z123, __LINE__, 0, 0, arg1, arg2)
 				Return (1)
 			}
 		}

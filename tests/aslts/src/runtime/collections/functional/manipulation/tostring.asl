@@ -92,7 +92,7 @@ Method(m305, 5)	// ts, string, len, err, case
 	While (LLess(Local0, arg2)) {
 		Mod(Add(Local0, 1), 256, Local1)
 		if (LNotEqual(Derefof(Index(arg1, Local0)), Local1)) {
-			err(arg0, z048, arg3, 0, 0, Local0, arg4)
+			err(arg0, z048, __LINE__, 0, 0, Local0, arg4)
 		}
 		Increment(Local0)
 	}
@@ -102,10 +102,10 @@ Method(m305, 5)	// ts, string, len, err, case
 Method(m307, 5)	// ts, string, len, ts, err, case
 {
 	if (LNotequal(ObjectType(arg1), 2)) {
-		err(arg0, z048, arg3, 0, 0, arg2, "Type")
+		err(arg0, z048, __LINE__, 0, 0, arg2, "Type")
 	} else {
 		if (LNotEqual(Sizeof(arg1), arg2)) {
-			err(arg0, z048, arg3, 0, 0, arg2, "Sizeof")
+			err(arg0, z048, __LINE__, 0, 0, arg2, "Sizeof")
 		} else {
 			m305(arg0, arg1, arg2, arg3, arg4)
 		}
@@ -121,7 +121,7 @@ Method(m309, 3)	// ts, indbuf, err
 	Store(0, Local0)
 	While (LLess(Local0, 8)) {
 		if (LNotEqual(Derefof(Index(Local1, Local0)), 0xff)) {
-			err(arg0, z048, arg2, 0, 0, Local0, "buf8")
+			err(arg0, z048, __LINE__, 0, 0, Local0, "buf8")
 		}
 		Increment(Local0)
 	}

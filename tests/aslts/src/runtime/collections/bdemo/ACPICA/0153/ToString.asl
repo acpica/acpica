@@ -42,10 +42,10 @@ Method(md4d,, Serialized)
 	Store (0x61, s000)
 
 	if (LNotEqual(s000, 0x61)) {
-		err("", zFFF, 0xb00, 0, 0, s000, 0x61)
+		err("", zFFF, __LINE__, 0, 0, s000, 0x61)
 	}
 	if (LNotEqual(i000, 0xabcd)) {
-		err("", zFFF, 0xb01, 0, 0, i000, 0xabcd)
+		err("", zFFF, __LINE__, 0, 0, i000, 0xabcd)
 	}
 }
 
@@ -60,10 +60,10 @@ Method(md4e,, Serialized)
 	Store("ADb", s001)
 
 	if (LNotEqual(s001, "ADb")) {
-		err("", zFFF, 0xb02, 0, 0, s001, "ADb")
+		err("", zFFF, __LINE__, 0, 0, s001, "ADb")
 	}
 	if (LNotEqual(s000, "zxcvbqwertynm")) {
-		err("", zFFF, 0xb03, 0, 0, s000, "zxcvbqwertynm")
+		err("", zFFF, __LINE__, 0, 0, s000, "zxcvbqwertynm")
 	}
 }
 
@@ -78,18 +78,18 @@ Method(md4f,, Serialized)
 	Store (Buffer() {5,6}, s000)
 
 	if (LNotEqual(s000, Buffer() {5,6})) {
-		err("", zFFF, 0xb04, 0, 0, s000, Buffer() {5,6})
+		err("", zFFF, __LINE__, 0, 0, s000, Buffer() {5,6})
 	}
 	if (LNotEqual(b000, Buffer() {1,2,3,4})) {
-		err("", zFFF, 0xb05, 0, 0, b000, Buffer() {1,2,3,4})
+		err("", zFFF, __LINE__, 0, 0, b000, Buffer() {1,2,3,4})
 	}
 }
 
 Method(md50)
 {
-	CH03("", 0, 0xf18, 0, 0)
+	CH03("", 0, 0xf18, __LINE__, 0)
 	md4d()
 	md4e()
 	md4f()
-	CH03("", 0, 0xf19, 0, 0)
+	CH03("", 0, 0xf19, __LINE__, 0)
 }

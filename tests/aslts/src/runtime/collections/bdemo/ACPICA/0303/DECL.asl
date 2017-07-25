@@ -42,10 +42,10 @@ Method(m1ec)
 			Name(\i4z0, 0xabcd0000)
 
 			if (LNotEqual(i4z0, 0xabcd0000)) {
-				err("", zFFF, 0x000, 0, 0, i4z0, 0xabcd0000)
+				err("", zFFF, __LINE__, 0, 0, i4z0, 0xabcd0000)
 			}
 			if (LNotEqual(\i4z0, 0xabcd0000)) {
-				err("", zFFF, 0x001, 0, 0, \i4z0, 0xabcd0000)
+				err("", zFFF, __LINE__, 0, 0, \i4z0, 0xabcd0000)
 			}
 			m101()
 		}
@@ -53,10 +53,10 @@ Method(m1ec)
 		Method(m101)
 		{
 			if (LNotEqual(i4z0, 0xabcd0000)) {
-				err("", zFFF, 0x002, 0, 0, i4z0, 0xabcd0000)
+				err("", zFFF, __LINE__, 0, 0, i4z0, 0xabcd0000)
 			}
 			if (LNotEqual(\i4z0, 0xabcd0000)) {
-				err("", zFFF, 0x003, 0, 0, \i4z0, 0xabcd0000)
+				err("", zFFF, __LINE__, 0, 0, \i4z0, 0xabcd0000)
 			}
 		}
 
@@ -75,10 +75,10 @@ Method(m1ec)
 			}
 
 			if (LNotEqual(i4z1, 0xabcd0000)) {
-				err("", zFFF, 0x004, 0, 0, i4z1, 0xabcd0000)
+				err("", zFFF, __LINE__, 0, 0, i4z1, 0xabcd0000)
 			}
 			if (LNotEqual(\i4z1, 0xabcd0000)) {
-				err("", zFFF, 0x005, 0, 0, \i4z1, 0xabcd0000)
+				err("", zFFF, __LINE__, 0, 0, \i4z1, 0xabcd0000)
 			}
 			m101()
 		}
@@ -86,10 +86,10 @@ Method(m1ec)
 		Method(m101)
 		{
 			if (LNotEqual(i4z1, 0xabcd0000)) {
-				err("", zFFF, 0x006, 0, 0, i4z1, 0xabcd0000)
+				err("", zFFF, __LINE__, 0, 0, i4z1, 0xabcd0000)
 			}
 			if (LNotEqual(\i4z1, 0xabcd0000)) {
-				err("", zFFF, 0x007, 0, 0, \i4z1, 0xabcd0000)
+				err("", zFFF, __LINE__, 0, 0, \i4z1, 0xabcd0000)
 			}
 		}
 
@@ -98,13 +98,13 @@ Method(m1ec)
 		Store("---------------- Completed",debug)
 	}
 
-	CH03("", 0, 0x008, 0, 0)
+	CH03("", 0, 0x008, __LINE__, 0)
 	SRMT("m1ec-m000")
 	m000()
-	CH03("", 0, 0x009, 0, 0)
+	CH03("", 0, 0x009, __LINE__, 0)
 	SRMT("m1ec-m001")
 	m001()
-	CH03("", 0, 0x00a, 0, 0)
+	CH03("", 0, 0x00a, __LINE__, 0)
 }
 
 

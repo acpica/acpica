@@ -60,15 +60,15 @@ Method(m4b4, 1, Serialized)
 		// CondRefOf
 		
 		Store (CondRefOf(p000), Local1)
-		CH03(ts, z096, 0, 0, 0)
+		CH03(ts, z096, 0, __LINE__, 0)
 
 		CondRefOf(p000, Local1)
-		CH03(ts, z096, 1, 0, 0)
+		CH03(ts, z096, 1, __LINE__, 0)
 
 		// CopyObject
 
 		CopyObject(p000, Local1)
-		CH03(ts, z096, 2, 0, 0)
+		CH03(ts, z096, 2, __LINE__, 0)
 
 		// Decrement
 
@@ -96,12 +96,12 @@ Method(m4b4, 1, Serialized)
 		// ObjectType
 
 		Store (ObjectType(p000), Local1)
-		CH03(ts, z096, 3, 0, 0)
+		CH03(ts, z096, 3, __LINE__, 0)
 
 		// RefOf
 
 		Store (RefOf(p000), Local1)
-		CH03(ts, z096, 4, 0, 0)
+		CH03(ts, z096, 4, __LINE__, 0)
 
 		// Release
 
@@ -112,7 +112,7 @@ Method(m4b4, 1, Serialized)
 		// SizeOf
 
 		Store (SizeOf(p000), Local1)
-		CH03(ts, z096, 5, 0, 0)
+		CH03(ts, z096, 5, __LINE__, 0)
 
 		// Sleep
 
@@ -121,7 +121,7 @@ Method(m4b4, 1, Serialized)
 		// Store
 
 		Store(p000, Local1)
-		CH03(ts, z096, 6, 0, 0)
+		CH03(ts, z096, 6, __LINE__, 0)
 
 		// ToBCD
 
@@ -150,10 +150,10 @@ Method(m4b4, 1, Serialized)
 		// Index
 
 		Index(p000, 0, Local1)
-		CH03(ts, z096, 7, 0, 0)
+		CH03(ts, z096, 7, __LINE__, 0)
 
 		Store (Index(p000, 0), Local1)
-		CH03(ts, z096, 8, 0, 0)
+		CH03(ts, z096, 8, __LINE__, 0)
 
 		// LEqual
 
@@ -196,7 +196,7 @@ Method(m4b4, 1, Serialized)
 		// Match
 
 		Store (Match(p000, MTR, 0, MTR, 0, 0), Local1)
-		CH03(ts, z096, 9, 0, 0)
+		CH03(ts, z096, 9, __LINE__, 0)
 	}
 
 	// Global Named Object
@@ -205,12 +205,12 @@ Method(m4b4, 1, Serialized)
 		// CondRefOf
 		
 		CondRefOf(p100, Local1)
-		CH03(ts, z096, 11, 0, 0)
+		CH03(ts, z096, 11, __LINE__, 0)
 
 		// CopyObject
 
 		CopyObject(p100, Local1)
-		CH03(ts, z096, 12, 0, 0)
+		CH03(ts, z096, 12, __LINE__, 0)
 
 		// Decrement
 
@@ -237,12 +237,12 @@ Method(m4b4, 1, Serialized)
 		// ObjectType
 
 		Store (ObjectType(p100), Local1)
-		CH03(ts, z096, 13, 0, 0)
+		CH03(ts, z096, 13, __LINE__, 0)
 
 		// RefOf
 
 		Store (RefOf(p100), Local1)
-		CH03(ts, z096, 14, 0, 0)
+		CH03(ts, z096, 14, __LINE__, 0)
 
 		// Release
 
@@ -253,7 +253,7 @@ Method(m4b4, 1, Serialized)
 		// SizeOf
 
 		Store (SizeOf(p100), Local1)
-		CH03(ts, z096, 15, 0, 0)
+		CH03(ts, z096, 15, __LINE__, 0)
 
 		// Sleep
 
@@ -262,7 +262,7 @@ Method(m4b4, 1, Serialized)
 		// Store
 
 		Store(p100, Local1)
-		CH03(ts, z096, 16, 0, 0)
+		CH03(ts, z096, 16, __LINE__, 0)
 
 		// ToBCD
 
@@ -291,7 +291,7 @@ Method(m4b4, 1, Serialized)
 		// Index
 
 		Store (Index(p100, 0), Local1)
-		CH03(ts, z096, 18, 0, 0)
+		CH03(ts, z096, 18, __LINE__, 0)
 
 		// LEqual
 
@@ -334,7 +334,7 @@ Method(m4b4, 1, Serialized)
 		// Match
 
 		Store (Match(p100, MTR, 0, MTR, 0, 0), Local1)
-		CH03(ts, z096, 19, 0, 0)
+		CH03(ts, z096, 19, __LINE__, 0)
 	}
 
 	// Argument
@@ -345,12 +345,12 @@ Method(m4b4, 1, Serialized)
 		// CondRefOf
 		
 		CondRefOf(arg1, Local1)
-		CH03(ts, z096, 21, 0, 0)
+		CH03(ts, z096, 21, __LINE__, 0)
 
 		// CopyObject
 
 		CopyObject(arg1, Local1)
-		CH03(ts, z096, 22, 0, 0)
+		CH03(ts, z096, 22, __LINE__, 0)
 
 		// Decrement
 
@@ -395,12 +395,12 @@ Method(m4b4, 1, Serialized)
 		// ObjectType
 
 		Store (ObjectType(arg1), Local1)
-		CH03(ts, z096, 23, 0, 0)
+		CH03(ts, z096, 23, __LINE__, 0)
 
 		// RefOf
 
 		Store (RefOf(arg1), Local1)
-		CH03(ts, z096, 24, 0, 0)
+		CH03(ts, z096, 24, __LINE__, 0)
 
 		// Release
 
@@ -420,7 +420,7 @@ Method(m4b4, 1, Serialized)
 		// SizeOf
 
 		Store (SizeOf(arg1), Local1)
-		CH03(ts, z096, 25, 0, 0)
+		CH03(ts, z096, 25, __LINE__, 0)
 
 		// Sleep
 
@@ -435,7 +435,7 @@ Method(m4b4, 1, Serialized)
 		// Store
 
 		Store(arg1, Local1)
-		CH03(ts, z096, 26, 0, 0)
+		CH03(ts, z096, 26, __LINE__, 0)
 
 		// ToBCD
 
@@ -521,7 +521,7 @@ Method(m4b4, 1, Serialized)
 		// Index
 
 		Index(arg1, 0, Local1)
-		CH03(ts, z096, 28, 0, 0)
+		CH03(ts, z096, 28, __LINE__, 0)
 
 		Index("0", arg1, Local1)
 		CH06(arg0, 57, 47)
@@ -684,7 +684,7 @@ Method(m4b4, 1, Serialized)
 		// Match
 
 		Store (Match(arg1, MTR, 0, MTR, 0, 0), Local1)
-		CH03(ts, z096, 29, 0, 0)
+		CH03(ts, z096, 29, __LINE__, 0)
 
 		Store (Match(Package(){1}, MTR, arg1, MTR, 0, 0), Local1)
 		CH06(arg0, 121, 47)
@@ -704,12 +704,12 @@ Method(m4b4, 1, Serialized)
 		// CondRefOf
 		
 		CondRefOf(Local0, Local1)
-		CH03(ts, z096, 31, 0, 0)
+		CH03(ts, z096, 31, __LINE__, 0)
 
 		// CopyObject
 
 		CopyObject(Local0, Local1)
-		CH03(ts, z096, 32, 0, 0)
+		CH03(ts, z096, 32, __LINE__, 0)
 
 		// Decrement
 
@@ -754,12 +754,12 @@ Method(m4b4, 1, Serialized)
 		// ObjectType
 
 		Store (ObjectType(Local0), Local1)
-		CH03(ts, z096, 33, 0, 0)
+		CH03(ts, z096, 33, __LINE__, 0)
 
 		// RefOf
 
 		Store (RefOf(Local0), Local1)
-		CH03(ts, z096, 34, 0, 0)
+		CH03(ts, z096, 34, __LINE__, 0)
 
 		// Release
 
@@ -779,7 +779,7 @@ Method(m4b4, 1, Serialized)
 		// SizeOf
 
 		Store (SizeOf(Local0), Local1)
-		CH03(ts, z096, 35, 0, 0)
+		CH03(ts, z096, 35, __LINE__, 0)
 
 		// Sleep
 
@@ -794,7 +794,7 @@ Method(m4b4, 1, Serialized)
 		// Store
 
 		Store(Local0, Local1)
-		CH03(ts, z096, 36, 0, 0)
+		CH03(ts, z096, 36, __LINE__, 0)
 
 		// ToBCD
 
@@ -877,7 +877,7 @@ Method(m4b4, 1, Serialized)
 		// Index
 
 		Index(Local0, 0, Local1)
-		CH03(ts, z096, 38, 0, 0)
+		CH03(ts, z096, 38, __LINE__, 0)
 
 		Index("0", Local0, Local1)
 		CH06(arg0, 57, 47)
@@ -1040,7 +1040,7 @@ Method(m4b4, 1, Serialized)
 		// Match
 
 		Store (Match(Local0, MTR, 0, MTR, 0, 0), Local1)
-		CH03(ts, z096, 39, 0, 0)
+		CH03(ts, z096, 39, __LINE__, 0)
 
 		Store (Match(Package(){1}, MTR, Local0, MTR, 0, 0), Local1)
 		CH06(arg0, 121, 47)
@@ -1067,7 +1067,7 @@ Method(m4b4, 1, Serialized)
 		// CopyObject
 
 		CopyObject(DeRefOf(Index(p000, 0)), Local1)
-		CH03(ts, z096, 40, 0, 0)
+		CH03(ts, z096, 40, __LINE__, 0)
 
 		// Decrement
 
@@ -1112,7 +1112,7 @@ Method(m4b4, 1, Serialized)
 		// ObjectType
 
 		Store (ObjectType(DeRefOf(Index(p000, 0))), Local1)
-		CH03(ts, z096, 41, 0, 0)
+		CH03(ts, z096, 41, __LINE__, 0)
 
 		// RefOf
 
@@ -1128,7 +1128,7 @@ Method(m4b4, 1, Serialized)
 		// SizeOf
 
 		Store (SizeOf(DeRefOf(Index(p000, 0))), Local1)
-		CH03(ts, z096, 42, 0, 0)
+		CH03(ts, z096, 42, __LINE__, 0)
 
 		// Sleep
 
@@ -1143,7 +1143,7 @@ Method(m4b4, 1, Serialized)
 		// Store
 
 		Store(DeRefOf(Index(p000, 0)), Local1)
-		CH03(ts, z096, 43, 0, 0)
+		CH03(ts, z096, 43, __LINE__, 0)
 
 		// ToBCD
 
@@ -1226,7 +1226,7 @@ Method(m4b4, 1, Serialized)
 		// Index
 
 		Index(DeRefOf(Index(p000, 0)), 0, Local1)
-		CH03(ts, z096, 45, 0, 0)
+		CH03(ts, z096, 45, __LINE__, 0)
 
 		Index("0", DeRefOf(Index(p000, 0)), Local1)
 		CH06(arg0, 57, 47)
@@ -1386,7 +1386,7 @@ Method(m4b4, 1, Serialized)
 		// Match
 
 		Store (Match(DeRefOf(Index(p000, 0)), MTR, 0, MTR, 0, 0), Local1)
-		CH03(ts, z096, 46, 0, 0)
+		CH03(ts, z096, 46, __LINE__, 0)
 
 		Store (Match(Package(){1}, MTR, DeRefOf(Index(p000, 0)), MTR, 0, 0), Local1)
 		CH06(arg0, 121, 47)
@@ -1408,7 +1408,7 @@ Method(m4b4, 1, Serialized)
 		// CopyObject
 
 		CopyObject(DeRefOf(Index(p000, 0, Local0)), Local1)
-		CH03(ts, z096, 47, 0, 0)
+		CH03(ts, z096, 47, __LINE__, 0)
 
 		// Decrement
 
@@ -1453,7 +1453,7 @@ Method(m4b4, 1, Serialized)
 		// ObjectType
 
 		Store (ObjectType(DeRefOf(Index(p000, 0, Local0))), Local1)
-		CH03(ts, z096, 48, 0, 0)
+		CH03(ts, z096, 48, __LINE__, 0)
 
 		// RefOf
 
@@ -1469,7 +1469,7 @@ Method(m4b4, 1, Serialized)
 		// SizeOf
 
 		Store (SizeOf(DeRefOf(Index(p000, 0, Local0))), Local1)
-		CH03(ts, z096, 49, 0, 0)
+		CH03(ts, z096, 49, __LINE__, 0)
 
 		// Sleep
 
@@ -1484,7 +1484,7 @@ Method(m4b4, 1, Serialized)
 		// Store
 
 		Store(DeRefOf(Index(p000, 0, Local0)), Local1)
-		CH03(ts, z096, 50, 0, 0)
+		CH03(ts, z096, 50, __LINE__, 0)
 
 		// ToBCD
 
@@ -1567,7 +1567,7 @@ Method(m4b4, 1, Serialized)
 		// Index
 
 		Index(DeRefOf(Index(p000, 0, Local0)), 0, Local1)
-		CH03(ts, z096, 52, 0, 0)
+		CH03(ts, z096, 52, __LINE__, 0)
 
 		Index("0", DeRefOf(Index(p000, 0, Local0)), Local1)
 		CH06(arg0, 57, 47)
@@ -1727,7 +1727,7 @@ Method(m4b4, 1, Serialized)
 		// Match
 
 		Store (Match(DeRefOf(Index(p000, 0, Local0)), MTR, 0, MTR, 0, 0), Local1)
-		CH03(ts, z096, 53, 0, 0)
+		CH03(ts, z096, 53, __LINE__, 0)
 
 		Store (Match(Package(){1}, MTR, DeRefOf(Index(p000, 0, Local0)), MTR, 0, 0), Local1)
 		CH06(arg0, 121, 47)
@@ -1747,12 +1747,12 @@ Method(m4b4, 1, Serialized)
 
 		Store(ObjectType(arg1), Local0)
 		if (LNotEqual(Local0, 4)) {
-			err(arg0, z096, 0, 0, 0, Local0, 4)
+			err(arg0, z096, __LINE__, 0, 0, Local0, 4)
 			return (1)
 		}
 
 		Store (DerefOf(arg1), Local1)
-		CH03(ts, z096, 54, 0, 0)
+		CH03(ts, z096, 54, __LINE__, 0)
 
 		// CondRefOf
 		
@@ -1765,7 +1765,7 @@ Method(m4b4, 1, Serialized)
 		// CopyObject
 
 		CopyObject(DerefOf(arg1), Local1)
-		CH03(ts, z096, 55, 0, 0)
+		CH03(ts, z096, 55, __LINE__, 0)
 
 		// Decrement
 
@@ -1810,7 +1810,7 @@ Method(m4b4, 1, Serialized)
 		// ObjectType
 
 		Store (ObjectType(DerefOf(arg1)), Local1)
-		CH03(ts, z096, 56, 0, 0)
+		CH03(ts, z096, 56, __LINE__, 0)
 
 		// RefOf
 
@@ -1826,7 +1826,7 @@ Method(m4b4, 1, Serialized)
 		// SizeOf
 
 		Store (SizeOf(DerefOf(arg1)), Local1)
-		CH03(ts, z096, 57, 0, 0)
+		CH03(ts, z096, 57, __LINE__, 0)
 
 		// Sleep
 
@@ -1841,7 +1841,7 @@ Method(m4b4, 1, Serialized)
 		// Store
 
 		Store(DerefOf(arg1), Local1)
-		CH03(ts, z096, 58, 0, 0)
+		CH03(ts, z096, 58, __LINE__, 0)
 
 		// ToBCD
 
@@ -1924,7 +1924,7 @@ Method(m4b4, 1, Serialized)
 		// Index
 
 		Index(DerefOf(arg1), 0, Local1)
-		CH03(ts, z096, 60, 0, 0)
+		CH03(ts, z096, 60, __LINE__, 0)
 
 		Index("0", DerefOf(arg1), Local1)
 		CH06(arg0, 57, 47)
@@ -2084,7 +2084,7 @@ Method(m4b4, 1, Serialized)
 		// Match
 
 		Store (Match(DerefOf(arg1), MTR, 0, MTR, 0, 0), Local1)
-		CH03(ts, z096, 61, 0, 0)
+		CH03(ts, z096, 61, __LINE__, 0)
 
 		Store (Match(Package(){1}, MTR, DerefOf(arg1), MTR, 0, 0), Local1)
 		CH06(arg0, 121, 47)
@@ -2127,7 +2127,7 @@ Method(m4b4, 1, Serialized)
 		// CopyObject
 
 		CopyObject(m000(), Local1)
-		CH03(ts, z096, 62, 0, 0)
+		CH03(ts, z096, 62, __LINE__, 0)
 
 		// Decrement
 
@@ -2173,7 +2173,7 @@ Method(m4b4, 1, Serialized)
         /* Nov. 2012: Method invocation as arg to ObjectType is now illegal */
 
 		Store (ObjectType(m000), Local0)
-		CH03(ts, z096, 63, 0, 0)
+		CH03(ts, z096, 63, __LINE__, 0)
 
 		// RefOf
         /* **** Oct. 2016: Method invocation as arg to RefOf is now illegal */
@@ -2300,23 +2300,23 @@ Method(m4b4, 1, Serialized)
 
 		if (y900) {
 			Index(m000(), 0, Local1)
-			CH03(ts, z096, 65, 0, 0)
+			CH03(ts, z096, 65, __LINE__, 0)
 
 			Index("0", m000(), Local1)
 			CH06(arg0, 57, 47)
 		} else {
-			CH03(ts, z096, 0x123, 0, 0)
-			CH03(ts, z096, 0x127, 0, 0)
+			CH03(ts, z096, 0x123, __LINE__, 0)
+			CH03(ts, z096, 0x127, __LINE__, 0)
 			Index(m000(), 0, Local1)
-			CH04(ts, 0, 85, z094, 0x128, 0, 0) // AE_INDEX_TO_NOT_ATTACHED
+			CH04(ts, 0, 85, z094, __LINE__, 0, 0) // AE_INDEX_TO_NOT_ATTACHED
 
-			CH03(ts, z096, 0x129, 0, 0)
+			CH03(ts, z096, 0x129, __LINE__, 0)
 			Index("0", m000(), Local1)
-			CH04(ts, 0, 0xff, z094, 0x12a, 0, 0) // AE_INDEX_TO_NOT_ATTACHED
+			CH04(ts, 0, 0xff, z094, __LINE__, 0, 0) // AE_INDEX_TO_NOT_ATTACHED
 
-			CH03(ts, z096, 0x129, 0, 0)
+			CH03(ts, z096, 0x129, __LINE__, 0)
 			Index(ss00, m000(), Local1)
-			CH04(ts, 0, 47, z094, 0x12a, 0, 0) // AE_INDEX_TO_NOT_ATTACHED
+			CH04(ts, 0, 47, z094, __LINE__, 0, 0) // AE_INDEX_TO_NOT_ATTACHED
 		}
 
 		// LEqual
@@ -2477,7 +2477,7 @@ Method(m4b4, 1, Serialized)
 		// Match
 
 		Store (Match(m000(), MTR, 0, MTR, 0, 0), Local1)
-		CH03(ts, z096, 66, 0, 0)
+		CH03(ts, z096, 66, __LINE__, 0)
 
 		Store (Match(Package(){1}, MTR, m000(), MTR, 0, 0), Local1)
 		CH06(arg0, 121, 47)
@@ -2510,7 +2510,7 @@ Method(m4b4, 1, Serialized)
 		Method(CH00, 2)
 		{
 			if (LNotEqual(i000, arg1)) {
-				err(arg0, z096, 0, 0, 0, i000, arg1)
+				err(arg0, z096, __LINE__, 0, 0, i000, arg1)
 			}
 		}
 
@@ -2523,7 +2523,7 @@ Method(m4b4, 1, Serialized)
 			Store(0, i000)
 
 			Store (DerefOf(m000(1, lpC0)), Local1)
-			CH03(ts, z096, Add(67, lpC0), 0, 0)
+			CH03(ts, z096, __LINE__, 0, 0)
 			CH00(arg0, 1)
 
 			Store (DerefOf(DerefOf(m000(2, lpC0))), Local1)
@@ -2558,7 +2558,7 @@ Method(m4b4, 1, Serialized)
 		Method(CH00, 2)
 		{
 			if (LNotEqual(i000, arg1)) {
-				err(arg0, z096, 0, 0, 0, i000, arg1)
+				err(arg0, z096, __LINE__, 0, 0, i000, arg1)
 			}
 		}
 
@@ -2629,13 +2629,13 @@ Method(m4b4, 1, Serialized)
 
 		// Index
 
-		CH03(ts, z094, 0x123, 0, 0)
+		CH03(ts, z094, 0x123, __LINE__, 0)
 		Store (Index(m000(9), 0), Local1)
 		if (y900) {
-			CH03(ts, z096, 69, 0, 0)
+			CH03(ts, z096, 69, __LINE__, 0)
 			CH00(arg0, 9)
 		} else {
-			CH04(ts, 0, 85, z094, 0x124, 0, 0) // AE_INDEX_TO_NOT_ATTACHED
+			CH04(ts, 0, 85, z094, __LINE__, 0, 0) // AE_INDEX_TO_NOT_ATTACHED
 		}
 
 		// Wait
@@ -2649,13 +2649,13 @@ Method(m4b4, 1, Serialized)
 		// Match
 
 		Store (Match(m000(11), MTR, 0, MTR, 0, 0), Local1)
-		CH03(ts, z096, 70, 0, 0)
+		CH03(ts, z096, 70, __LINE__, 0)
 		CH00(arg0, 11)
 	}
 
 	SET0(z096, ts, 0)
 
-	CH03(ts, z096, 70, 0, 0)
+	CH03(ts, z096, 70, __LINE__, 0)
 
 	// Local Named Object
 	m000(ts)

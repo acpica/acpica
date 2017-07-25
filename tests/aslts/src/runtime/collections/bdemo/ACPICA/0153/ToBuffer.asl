@@ -42,10 +42,10 @@ Method(md08,, Serialized)
 	Store (0x61, b000)
 
 	if (LNotEqual(b000, Buffer() {0x61,0,0,0})) {
-		err("", zFFF, 0x200, 0, 0, b000, Buffer() {0x61,0,0,0})
+		err("", zFFF, __LINE__, 0, 0, b000, Buffer() {0x61,0,0,0})
 	}
 	if (LNotEqual(i000, 0xabcd)) {
-		err("", zFFF, 0x201, 0, 0, i000, 0xabcd)
+		err("", zFFF, __LINE__, 0, 0, i000, 0xabcd)
 	}
 }
 
@@ -60,10 +60,10 @@ Method(md09,, Serialized)
 	Store("ADb", b000)
 
 	if (LNotEqual(b000, Buffer() {0x41,0x44,0x62,0})) {
-		err("", zFFF, 0x202, 0, 0, b000, Buffer() {0x41,0x44,0x62,0})
+		err("", zFFF, __LINE__, 0, 0, b000, Buffer() {0x41,0x44,0x62,0})
 	}
 	if (LNotEqual(s000, "zxcvbqwertynm")) {
-		err("", zFFF, 0x203, 0, 0, s000, "zxcvbqwertynm")
+		err("", zFFF, __LINE__, 0, 0, s000, "zxcvbqwertynm")
 	}
 }
 
@@ -78,10 +78,10 @@ Method(md0a,, Serialized)
 	Store (Buffer() {5,6}, b001)
 
 	if (LNotEqual(b001, Buffer() {5,6,0,0})) {
-		err("", zFFF, 0x204, 0, 0, b001, Buffer() {5,6,0,0})
+		err("", zFFF, __LINE__, 0, 0, b001, Buffer() {5,6,0,0})
 	}
 	if (LNotEqual(b000, Buffer() {1,2,3,4})) {
-		err("", zFFF, 0x205, 0, 0, b000, Buffer() {1,2,3,4})
+		err("", zFFF, __LINE__, 0, 0, b000, Buffer() {1,2,3,4})
 	}
 }
 
@@ -97,7 +97,7 @@ Method(md0b,, Serialized)
 	Store (0x61, b000)
 
 	if (LNotEqual(b000, Buffer() {0x61,0,0,0})) {
-		err("", zFFF, 0x206, 0, 0, b000, Buffer() {0x61,0,0,0})
+		err("", zFFF, __LINE__, 0, 0, b000, Buffer() {0x61,0,0,0})
 	}
 }
 
@@ -111,7 +111,7 @@ Method(md0c,, Serialized)
 	Store("ADb", b000)
 
 	if (LNotEqual(b000, Buffer() {0x41,0x44,0x62,0})) {
-		err("", zFFF, 0x207, 0, 0, b000, Buffer() {0x41,0x44,0x62,0})
+		err("", zFFF, __LINE__, 0, 0, b000, Buffer() {0x41,0x44,0x62,0})
 	}
 }
 
@@ -125,18 +125,18 @@ Method(md0d,, Serialized)
 	Store (Buffer() {5,6}, b001)
 
 	if (LNotEqual(b001, Buffer() {5,6,0,0})) {
-		err("", zFFF, 0x208, 0, 0, b001, Buffer() {5,6,0,0})
+		err("", zFFF, __LINE__, 0, 0, b001, Buffer() {5,6,0,0})
 	}
 }
 
 Method(m00e)
 {
-	CH03("", 0, 0xf04, 0, 0)
+	CH03("", 0, 0xf04, __LINE__, 0)
 	md08()
 	md09()
 	md0a()
 	md0b()
 	md0c()
 	md0d()
-	CH03("", 0, 0xf05, 0, 0)
+	CH03("", 0, 0xf05, __LINE__, 0)
 }

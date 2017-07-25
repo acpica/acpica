@@ -49,9 +49,9 @@ Method(m81b)
 		Return(Local0)
 	}
 
-	CH03("", 0, 0x000, 0, 0)
+	CH03("", 0, 0x000, __LINE__, 0)
 	Store(m000(), Local0)
-	CH04("", 0, 0xff, 0, 0x001, 0, 0)
+	CH04("", 0, 0xff, 0, __LINE__, 0, 0)
 	Store(Derefof(Local0), Debug)
-	CH04("", 0, 0xff, 0, 0x002, 0, 0)
+	CH04("", 0, 0xff, 0, __LINE__, 0, 0)
 }

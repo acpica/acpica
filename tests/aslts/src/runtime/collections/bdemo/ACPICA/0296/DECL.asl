@@ -41,20 +41,20 @@ Device (D296) {
 	{
 		Store(LoadTable("OEM1", "", "", , "\\PLDT", "1"), Local0)
 
-		if (CH03("", 0, 0x001, 0, 0)) {
+		if (CH03("", 0, 0x001, __LINE__, 0)) {
 			return
 		}
 
 		Store(ObjectType(PLDT), Local1)
 
 		if (LNotEqual(Local1, 1)) {
-			err("", zFFF, 0x002, 0, 0, Local1, 1)
+			err("", zFFF, __LINE__, 0, 0, Local1, 1)
 		} elseif (LNotEqual(1, PLDT)) {
-			err("", zFFF, 0x003, 0, 0, 1, PLDT)
+			err("", zFFF, __LINE__, 0, 0, 1, PLDT)
 		}
 
 		UnLoad(Local0)
-		CH03("", 0, 0x004, 0, 0)
+		CH03("", 0, 0x004, __LINE__, 0)
 	}
 }
 

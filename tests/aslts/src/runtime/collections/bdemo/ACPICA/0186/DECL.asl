@@ -74,12 +74,12 @@ Method(mf6d, 0, Serialized)
 
 	Store(0xdddd0000, i000)
 
-	CH03("", 0, 0x000, 0, 0)
+	CH03("", 0, 0x000, __LINE__, 0)
 
 	Store(m000, i000)
 
 	if (SLCK) {
-		CH03("", 0, 0x001, 0, 0)
+		CH03("", 0, 0x001, __LINE__, 0)
 
 		//y901: Predicate generates Implicit Return since ACPICA release 20080926	
 		if (y901) {
@@ -88,7 +88,7 @@ Method(mf6d, 0, Serialized)
 			Store(0xabcd0000, Local0)
 		}
 		if (LNotEqual(i000, Local0)) {
-			err("", zFFF, 0x002, 0, 0, i000, Local0)
+			err("", zFFF, __LINE__, 0, 0, i000, Local0)
 		}
 	} else {
 		CH07("", 0, 0xff, 0, 0x003, 0, 0)
@@ -98,12 +98,12 @@ Method(mf6d, 0, Serialized)
 
 	Store(0xdddd0001, i000)
 
-	CH03("", 0, 0x004, 0, 0)
+	CH03("", 0, 0x004, __LINE__, 0)
 
 	Store(m001, i000)
 
 	if (SLCK) {
-		CH03("", 0, 0x005, 0, 0)
+		CH03("", 0, 0x005, __LINE__, 0)
 
 		//y901: Predicate generates Implicit Return since ACPICA release 20080926	
 		if (y901) {
@@ -112,7 +112,7 @@ Method(mf6d, 0, Serialized)
 			Store(0xabcd0001, Local0)
 		}
 		if (LNotEqual(i000, Local0)) {
-			err("", zFFF, 0x006, 0, 0, i000, Local0)
+			err("", zFFF, __LINE__, 0, 0, i000, Local0)
 		}
 	} else {
 		CH07("", 0, 0xff, 0, 0x007, 0, 0)
@@ -122,12 +122,12 @@ Method(mf6d, 0, Serialized)
 
 	Store(0xdddd0002, i000)
 
-	CH03("", 0, 0x008, 0, 0)
+	CH03("", 0, 0x008, __LINE__, 0)
 
 	Store(m001, i000)
 
 	if (SLCK) {
-		CH03("", 0, 0x009, 0, 0)
+		CH03("", 0, 0x009, __LINE__, 0)
 
 		//y901: Predicate generates Implicit Return since ACPICA release 20080926	
 		if (y901) {
@@ -136,7 +136,7 @@ Method(mf6d, 0, Serialized)
 			Store(0xabcd0002, Local0)
 		}
 		if (LNotEqual(i000, Local0)) {
-			err("", zFFF, 0x00a, 0, 0, i000, Local0)
+			err("", zFFF, __LINE__, 0, 0, i000, Local0)
 		}
 	} else {
 		CH07("", 0, 0xff, 0, 0x00b, 0, 0)

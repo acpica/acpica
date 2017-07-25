@@ -36,7 +36,7 @@
 	{
 		Name (i000, 0x89abcdef)
 
-		CH03("", 0, 0x000, 0, 0)
+		CH03("", 0, 0x000, __LINE__, 0)
 
 		Store(ToInteger("0"), Local0)    // AE_BAD_DECIMAL_CONSTANT
 
@@ -46,5 +46,5 @@
 
 		Store("0", i000)  // AE_BAD_HEX_CONSTANT
 
-		CH03("", 0, 0x000, 0, 0)
+		CH03("", 0, 0x000, __LINE__, 0)
 	}

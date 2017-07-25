@@ -85,13 +85,13 @@ Method(mr00)
 
     Decrement(IG00)
     if (LNotEqual(Local0, IG00)) {
-        err(ts, z172, 0x000, 0, 0, Local0, IG00)
+        err(ts, z172, __LINE__, 0, 0, Local0, IG00)
     }
 
     if (LNotEqual(IG02, RC00)) {
         if (LNot(IG03)) {
             Store(1, IG03)
-            err(ts, z172, 0x000, 0, 0, IG02, RC00)
+            err(ts, z172, __LINE__, 0, 0, IG02, RC00)
         }
     }
 }
@@ -117,10 +117,10 @@ Method(mr01, 1)
 
     Decrement(IG00)
     if (LNotEqual(Local1, IG00)) {
-        err(ts, z172, 0x000, 0, 0, Local1, IG00)
+        err(ts, z172, __LINE__, 0, 0, Local1, IG00)
     }
     if (LNotEqual(Local2, arg0)) {
-        err(ts, z172, 0x000, 0, 0, Local2, arg0)
+        err(ts, z172, __LINE__, 0, 0, Local2, arg0)
     }
 
     Multiply(RC00, 2, Local0)
@@ -128,7 +128,7 @@ Method(mr01, 1)
     if (LNotEqual(IG02, Local0)) {
         if (LNot(IG03)) {
             Store(1, IG03)
-            err(ts, z172, 0x000, 0, 0, IG02, Local0)
+            err(ts, z172, __LINE__, 0, 0, IG02, Local0)
         }
     }
 }
@@ -149,10 +149,10 @@ Method(mr02, 1)
 
     Decrement(IG01)
     if (LNotEqual(Local1, IG01)) {
-        err(ts, z172, 0x000, 0, 0, Local1, IG01)
+        err(ts, z172, __LINE__, 0, 0, Local1, IG01)
     }
     if (LNotEqual(Local2, arg0)) {
-        err(ts, z172, 0x000, 0, 0, Local2, arg0)
+        err(ts, z172, __LINE__, 0, 0, Local2, arg0)
     }
 
     Multiply(RC00, 2, Local0)
@@ -160,7 +160,7 @@ Method(mr02, 1)
     if (LNotEqual(IG02, Local0)) {
         if (LNot(IG03)) {
             Store(1, IG03)
-            err(ts, z172, 0x000, 0, 0, IG02, Local0)
+            err(ts, z172, __LINE__, 0, 0, IG02, Local0)
         }
     }
 }
@@ -195,7 +195,7 @@ Method(mr03,, Serialized)
 
             Decrement(IG00)
             if (LNotEqual(Local0, IG00)) {
-                err(ts, z172, 0x000, 0, 0, Local0, IG00)
+                err(ts, z172, __LINE__, 0, 0, Local0, IG00)
             }
 
         }
@@ -212,7 +212,7 @@ Method(mr03,, Serialized)
     if (LNotEqual(IG02, RC00)) {
         if (LNot(IG03)) {
             Store(1, IG03)
-            err(ts, z172, 0x000, 0, 0, IG02, RC00)
+            err(ts, z172, __LINE__, 0, 0, IG02, RC00)
         }
     }
 }
@@ -252,7 +252,7 @@ Method(mr04,, Serialized)
 
             Decrement(IG00)
             if (LNotEqual(Local0, IG00)) {
-                err(ts, z172, 0x000, 0, 0, Local0, IG00)
+                err(ts, z172, __LINE__, 0, 0, Local0, IG00)
             }
 
         }
@@ -271,7 +271,7 @@ Method(mr04,, Serialized)
     if (LNotEqual(IG02, Local0)) {
         if (LNot(IG03)) {
             Store(1, IG03)
-            err(ts, z172, 0x000, 0, 0, IG02, Local0)
+            err(ts, z172, __LINE__, 0, 0, IG02, Local0)
         }
     }
 }
@@ -292,10 +292,10 @@ Method(mr05, 1)
 
     Decrement(IG01)
     if (LNotEqual(Local1, IG01)) {
-        err(ts, z172, 0x000, 0, 0, Local1, IG01)
+        err(ts, z172, __LINE__, 0, 0, Local1, IG01)
     }
     if (LNotEqual(Local2, arg0)) {
-        err(ts, z172, 0x000, 0, 0, Local2, arg0)
+        err(ts, z172, __LINE__, 0, 0, Local2, arg0)
     }
 
     Multiply(RC00, 2, Local0)
@@ -303,7 +303,7 @@ Method(mr05, 1)
     if (LNotEqual(IG02, Local0)) {
         if (LNot(IG03)) {
             Store(1, IG03)
-            err(ts, z172, 0x000, 0, 0, IG02, Local0)
+            err(ts, z172, __LINE__, 0, 0, IG02, Local0)
         }
     }
 }
@@ -314,7 +314,7 @@ Method(mrff,, Serialized)
     Name(ts, "mrff")
     Name(run0, 1)
 
-    CH03(ts, z172, 0x000, 0, 0)
+    CH03(ts, z172, 0x000, __LINE__, 0)
 
     SRMT("mr00")
     mrfd()
@@ -341,5 +341,5 @@ test --- run mr05 and expect exception
 */
 
 
-    CH03(ts, z172, 0x000, 0, 0)
+    CH03(ts, z172, 0x000, __LINE__, 0)
 }

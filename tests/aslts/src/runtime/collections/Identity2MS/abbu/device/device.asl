@@ -47,26 +47,26 @@ Method(md00,, Serialized)
 	}
 
 	if (LNotEqual(d000.i000, 0xabcd0000)) {
-		err(ts, z174, 0x000, 0, 0, d000.i000, 0xabcd0000)
+		err(ts, z174, __LINE__, 0, 0, d000.i000, 0xabcd0000)
 	}
 
 	CopyObject(d001, d000)
 	if (LNotEqual(d000.i000, 0xabcd0001)) {
-		err(ts, z174, 0x001, 0, 0, d000.i000, 0xabcd0001)
+		err(ts, z174, __LINE__, 0, 0, d000.i000, 0xabcd0001)
 	}
 
 	CopyObject(tz00, d000)
 	if (LNotEqual(d000.i000, 0xabcd0002)) {
-		err(ts, z174, 0x002, 0, 0, d000.i000, 0xabcd0002)
+		err(ts, z174, __LINE__, 0, 0, d000.i000, 0xabcd0002)
 	}
 
-	CH03(ts, z174, 0x003, 0, 0)
+	CH03(ts, z174, 0x003, __LINE__, 0)
 	Store(d000.i001, Local0)
-	CH04(ts, 0, 0xff, z174, 0x004, 0, 0)
+	CH04(ts, 0, 0xff, z174, __LINE__, 0, 0)
 
 //	Rejected by ASL compiler
 //	if (LNotEqual(d000.i002, 0x22222222)) {
-//		err(ts, z174, 0x005, 0, 0, d000.i002, 0x22222222)
+//		err(ts, z174, __LINE__, 0, 0, d000.i002, 0x22222222)
 //	}
 }
 

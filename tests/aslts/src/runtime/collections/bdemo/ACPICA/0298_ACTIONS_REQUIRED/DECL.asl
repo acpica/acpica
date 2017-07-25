@@ -49,10 +49,10 @@ Method(m1e7)
 	Store(0x123, Local0)
 	Acquire(MX03, 0x100)
 
-	CH03("", 0, 0x000, 0, 0)
+	CH03("", 0, 0x000, __LINE__, 0)
 
 	Acquire(MX02, 0x100)
-	CH04("", 0, 64, 0, 0x003, 0, 0) // AE_AML_MUTEX_ORDER
+	CH04("", 0, 64, 0, __LINE__, 0, 0) // AE_AML_MUTEX_ORDER
 
 	Store(RefOf(p000), Local2) // L0(0x004d5ec8, 0x123), L2 (0x004d5dc8, res of RefOf)
 	Store(DerefOf(Local2), Local3)
@@ -67,16 +67,16 @@ Method(m1e7)
 	Add(Local0, 0x11111111, Local4)
 	Store(Local4, Debug)
 	if (LNotEqual(Local4, 0x11111233)) {
-		err("", zFFF, 0x001, 0, 0, Local4, 0x11111233)
+		err("", zFFF, __LINE__, 0, 0, Local4, 0x11111233)
 	}
 	Store("============================== 3", Debug)
 
-	CH03("", 0, 0x002, 0, 0)
+	CH03("", 0, 0x002, __LINE__, 0)
 
 	/*
 	 * The problem is not automatically detected,
 	 * so remove this error report after the problem has been resolved.
 	 */
-	err("", zFFF, 0x123, 0, 0, 0, 0)
+	err("", zFFF, __LINE__, 0, 0, 0, 0)
 }
 

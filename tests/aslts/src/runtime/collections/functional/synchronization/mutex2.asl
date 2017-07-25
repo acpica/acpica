@@ -76,75 +76,75 @@ Method(m301,, Serialized)
 
     Name(ts, "m301")
 
-    CH03(ts, z150, 0x000, 0, 0)
+    CH03(ts, z150, 0x000, __LINE__, 0)
 
     Store(Acquire(MT00, 0xffff), Local0)
     if (Local0) {
-        err(ts, z150, 1, 0, 0, 0, Local0)
+        err(ts, z150, __LINE__, 0, 0, 0, Local0)
     } else {
     Store(Acquire(\_GL, 0xffff), Local0) /* GL */
     if (Local0) {
-        err(ts, z150, 3, 0, 0, 0, Local0)
+        err(ts, z150, __LINE__, 0, 0, 0, Local0)
     } else {
         Store(Acquire(MT10, 0xffff), Local0)
         if (Local0) {
-            err(ts, z150, 2, 0, 0, 0, Local0)
+            err(ts, z150, __LINE__, 0, 0, 0, Local0)
         } else {
             Store(Acquire(MT20, 0xffff), Local0)
             if (Local0) {
-                err(ts, z150, 3, 0, 0, 0, Local0)
+                err(ts, z150, __LINE__, 0, 0, 0, Local0)
             } else {
                 Store(Acquire(MT30, 0xffff), Local0)
                 if (Local0) {
-                    err(ts, z150, 4, 0, 0, 0, Local0)
+                    err(ts, z150, __LINE__, 0, 0, 0, Local0)
                 } else {
                     Store(Acquire(MT40, 0xffff), Local0)
                     if (Local0) {
-                        err(ts, z150, 5, 0, 0, 0, Local0)
+                        err(ts, z150, __LINE__, 0, 0, 0, Local0)
                     } else {
                         Store(Acquire(MT50, 0xffff), Local0)
                         if (Local0) {
-                            err(ts, z150, 6, 0, 0, 0, Local0)
+                            err(ts, z150, __LINE__, 0, 0, 0, Local0)
                         } else {
                             Store(Acquire(MT60, 0xffff), Local0)
                             if (Local0) {
-                                err(ts, z150, 7, 0, 0, 0, Local0)
+                                err(ts, z150, __LINE__, 0, 0, 0, Local0)
                             } else {
                                 Store(Acquire(MT70, 0xffff), Local0)
                                 if (Local0) {
-                                    err(ts, z150, 8, 0, 0, 0, Local0)
+                                    err(ts, z150, __LINE__, 0, 0, 0, Local0)
                                 } else {
                                     Store(Acquire(MT80, 0xffff), Local0)
                                     if (Local0) {
-                                        err(ts, z150, 9, 0, 0, 0, Local0)
+                                        err(ts, z150, __LINE__, 0, 0, 0, Local0)
                                     } else {
                                         Store(Acquire(MT90, 0xffff), Local0)
                                         if (Local0) {
-                                            err(ts, z150, 0x00a, 0, 0, 0, Local0)
+                                            err(ts, z150, __LINE__, 0, 0, 0, Local0)
                                         } else {
                                             Store(Acquire(MTa0, 0xffff), Local0)
                                             if (Local0) {
-                                                err(ts, z150, 0x00b, 0, 0, 0, Local0)
+                                                err(ts, z150, __LINE__, 0, 0, 0, Local0)
                                             } else {
                                                 Store(Acquire(MTb0, 0xffff), Local0)
                                                 if (Local0) {
-                                                    err(ts, z150, 0x00c, 0, 0, 0, Local0)
+                                                    err(ts, z150, __LINE__, 0, 0, 0, Local0)
                                                 } else {
                                                     Store(Acquire(MTc0, 0xffff), Local0)
                                                     if (Local0) {
-                                                        err(ts, z150, 0x00d, 0, 0, 0, Local0)
+                                                        err(ts, z150, __LINE__, 0, 0, 0, Local0)
                                                     } else {
                                                         Store(Acquire(MTd0, 0xffff), Local0)
                                                         if (Local0) {
-                                                            err(ts, z150, 0x00e, 0, 0, 0, Local0)
+                                                            err(ts, z150, __LINE__, 0, 0, 0, Local0)
                                                         } else {
                                                             Store(Acquire(MTe0, 0xffff), Local0)
                                                             if (Local0) {
-                                                                err(ts, z150, 0x00f, 0, 0, 0, Local0)
+                                                                err(ts, z150, __LINE__, 0, 0, 0, Local0)
                                                             } else {
                                                                 Store(Acquire(MTf0, 0xffff), Local0)
                                                                 if (Local0) {
-                                                                    err(ts, z150, 0x010, 0, 0, 0, Local0)
+                                                                    err(ts, z150, __LINE__, 0, 0, 0, Local0)
                                                                 } else {
                                                                     Release(MTF0)
                                                                     Release(MTE0)
@@ -181,7 +181,7 @@ Method(m301,, Serialized)
     }
     }
 
-    CH03(ts, z150, 0x011, 0, 0)
+    CH03(ts, z150, 0x011, __LINE__, 0)
 }
 
 /*
@@ -198,7 +198,7 @@ Method(m369, 1, Serialized)
 {
     Name(ts, "m369")
 
-    CH03(ts, z150, 0x022, 0, 0)
+    CH03(ts, z150, 0x022, __LINE__, 0)
 
     Mutex(MT00, 0)
     Mutex(MT10, 1)
@@ -243,131 +243,131 @@ Method(m369, 1, Serialized)
 
     Store(Acquire(MT00, 0xffff), Local0)
     if (Local0) {
-        err(ts, z150, 1, 0, 0, 0, Local0)
+        err(ts, z150, __LINE__, 0, 0, 0, Local0)
     } else {
     Store(Acquire(MT01, 0xffff), Local0) /* the same level */
     if (Local0) {
-        err(ts, z150, 2, 0, 0, 0, Local0)
+        err(ts, z150, __LINE__, 0, 0, 0, Local0)
     } else {
     Store(Acquire(\_GL, 0xffff), Local0) /* GL */
     if (Local0) {
-        err(ts, z150, 3, 0, 0, 0, Local0)
+        err(ts, z150, __LINE__, 0, 0, 0, Local0)
     } else {
         Store(Acquire(MT10, 0xffff), Local0)
         if (Local0) {
-            err(ts, z150, 4, 0, 0, 0, Local0)
+            err(ts, z150, __LINE__, 0, 0, 0, Local0)
         } else {
         Store(Acquire(MT11, 0xffff), Local0)
         if (Local0) {
-            err(ts, z150, 5, 0, 0, 0, Local0)
+            err(ts, z150, __LINE__, 0, 0, 0, Local0)
         } else {
             Store(Acquire(MT20, 0xffff), Local0)
             if (Local0) {
-                err(ts, z150, 6, 0, 0, 0, Local0)
+                err(ts, z150, __LINE__, 0, 0, 0, Local0)
             } else {
             Store(Acquire(MT21, 0xffff), Local0)
             if (Local0) {
-                err(ts, z150, 7, 0, 0, 0, Local0)
+                err(ts, z150, __LINE__, 0, 0, 0, Local0)
             } else {
                 Store(Acquire(MT30, 0xffff), Local0)
                 if (Local0) {
-                    err(ts, z150, 8, 0, 0, 0, Local0)
+                    err(ts, z150, __LINE__, 0, 0, 0, Local0)
                 } else {
                 Store(Acquire(MT31, 0xffff), Local0)
                 if (Local0) {
-                    err(ts, z150, 9, 0, 0, 0, Local0)
+                    err(ts, z150, __LINE__, 0, 0, 0, Local0)
                 } else {
                     Store(Acquire(MT40, 0xffff), Local0)
                     if (Local0) {
-                        err(ts, z150, 0x00a, 0, 0, 0, Local0)
+                        err(ts, z150, __LINE__, 0, 0, 0, Local0)
                     } else {
                     Store(Acquire(MT41, 0xffff), Local0)
                     if (Local0) {
-                        err(ts, z150, 0x00b, 0, 0, 0, Local0)
+                        err(ts, z150, __LINE__, 0, 0, 0, Local0)
                     } else {
                         Store(Acquire(MT50, 0xffff), Local0)
                         if (Local0) {
-                            err(ts, z150, 0x00c, 0, 0, 0, Local0)
+                            err(ts, z150, __LINE__, 0, 0, 0, Local0)
                         } else {
                         Store(Acquire(MT51, 0xffff), Local0)
                         if (Local0) {
-                            err(ts, z150, 0x00d, 0, 0, 0, Local0)
+                            err(ts, z150, __LINE__, 0, 0, 0, Local0)
                         } else {
                             Store(Acquire(MT60, 0xffff), Local0)
                             if (Local0) {
-                                err(ts, z150, 0x00e, 0, 0, 0, Local0)
+                                err(ts, z150, __LINE__, 0, 0, 0, Local0)
                             } else {
                             Store(Acquire(MT61, 0xffff), Local0)
                             if (Local0) {
-                                err(ts, z150, 0x00f, 0, 0, 0, Local0)
+                                err(ts, z150, __LINE__, 0, 0, 0, Local0)
                             } else {
                                 Store(Acquire(MT70, 0xffff), Local0)
                                 if (Local0) {
-                                    err(ts, z150, 0x010, 0, 0, 0, Local0)
+                                    err(ts, z150, __LINE__, 0, 0, 0, Local0)
                                 } else {
                                 Store(Acquire(MT71, 0xffff), Local0)
                                 if (Local0) {
-                                    err(ts, z150, 0x011, 0, 0, 0, Local0)
+                                    err(ts, z150, __LINE__, 0, 0, 0, Local0)
                                 } else {
                                     Store(Acquire(MT80, 0xffff), Local0)
                                     if (Local0) {
-                                        err(ts, z150, 0x012, 0, 0, 0, Local0)
+                                        err(ts, z150, __LINE__, 0, 0, 0, Local0)
                                     } else {
                                     Store(Acquire(MT81, 0xffff), Local0)
                                     if (Local0) {
-                                        err(ts, z150, 0x013, 0, 0, 0, Local0)
+                                        err(ts, z150, __LINE__, 0, 0, 0, Local0)
                                     } else {
                                         Store(Acquire(MT90, 0xffff), Local0)
                                         if (Local0) {
-                                            err(ts, z150, 0x014, 0, 0, 0, Local0)
+                                            err(ts, z150, __LINE__, 0, 0, 0, Local0)
                                         } else {
                                         Store(Acquire(MT91, 0xffff), Local0)
                                         if (Local0) {
-                                            err(ts, z150, 0x015, 0, 0, 0, Local0)
+                                            err(ts, z150, __LINE__, 0, 0, 0, Local0)
                                         } else {
                                             Store(Acquire(MTa0, 0xffff), Local0)
                                             if (Local0) {
-                                                err(ts, z150, 0x016, 0, 0, 0, Local0)
+                                                err(ts, z150, __LINE__, 0, 0, 0, Local0)
                                             } else {
                                             Store(Acquire(MTa1, 0xffff), Local0)
                                             if (Local0) {
-                                                err(ts, z150, 0x017, 0, 0, 0, Local0)
+                                                err(ts, z150, __LINE__, 0, 0, 0, Local0)
                                             } else {
                                                 Store(Acquire(MTb0, 0xffff), Local0)
                                                 if (Local0) {
-                                                    err(ts, z150, 0x018, 0, 0, 0, Local0)
+                                                    err(ts, z150, __LINE__, 0, 0, 0, Local0)
                                                 } else {
                                                 Store(Acquire(MTb1, 0xffff), Local0)
                                                 if (Local0) {
-                                                    err(ts, z150, 0x019, 0, 0, 0, Local0)
+                                                    err(ts, z150, __LINE__, 0, 0, 0, Local0)
                                                 } else {
                                                     Store(Acquire(MTc0, 0xffff), Local0)
                                                     if (Local0) {
-                                                        err(ts, z150, 0x01a, 0, 0, 0, Local0)
+                                                        err(ts, z150, __LINE__, 0, 0, 0, Local0)
                                                     } else {
                                                     Store(Acquire(MTc1, 0xffff), Local0)
                                                     if (Local0) {
-                                                        err(ts, z150, 0x01b, 0, 0, 0, Local0)
+                                                        err(ts, z150, __LINE__, 0, 0, 0, Local0)
                                                     } else {
                                                         Store(Acquire(MTd0, 0xffff), Local0)
                                                         if (Local0) {
-                                                            err(ts, z150, 0x01c, 0, 0, 0, Local0)
+                                                            err(ts, z150, __LINE__, 0, 0, 0, Local0)
                                                         } else {
                                                         Store(Acquire(MTd1, 0xffff), Local0)
                                                         if (Local0) {
-                                                            err(ts, z150, 0x01d, 0, 0, 0, Local0)
+                                                            err(ts, z150, __LINE__, 0, 0, 0, Local0)
                                                         } else {
                                                             Store(Acquire(MTe0, 0xffff), Local0)
                                                             if (Local0) {
-                                                                err(ts, z150, 0x01e, 0, 0, 0, Local0)
+                                                                err(ts, z150, __LINE__, 0, 0, 0, Local0)
                                                             } else {
                                                             Store(Acquire(MTe1, 0xffff), Local0)
                                                             if (Local0) {
-                                                                err(ts, z150, 0x01f, 0, 0, 0, Local0)
+                                                                err(ts, z150, __LINE__, 0, 0, 0, Local0)
                                                             } else {
                                                                 Store(Acquire(MTf0, 0xffff), Local0)
                                                                 if (Local0) {
-                                                                    err(ts, z150, 0x020, 0, 0, 0, Local0)
+                                                                    err(ts, z150, __LINE__, 0, 0, 0, Local0)
                                                                 } else {
                                                                 if (arg0) {
                                                                     Store(Acquire(MTf1, 0xffff), Local0)
@@ -375,7 +375,7 @@ Method(m369, 1, Serialized)
                                                                     Store(0, Local0)
                                                                 }
                                                                 if (Local0) {
-                                                                    err(ts, z150, 0x021, 0, 0, 0, Local0)
+                                                                    err(ts, z150, __LINE__, 0, 0, 0, Local0)
                                                                 } else {
                                                                     if (arg0) {
                                                                         Release(MTF1)
@@ -447,9 +447,9 @@ Method(m369, 1, Serialized)
     }
 
     if (arg0) {
-        CH04(ts, 1, 18, z150, 0x122, 0, 0) // AE_LIMIT
+        CH04(ts, 1, 18, z150, __LINE__, 0, 0) // AE_LIMIT
     } else {
-        CH03(ts, z150, 0x123, 0, 0)
+        CH03(ts, z150, 0x123, __LINE__, 0)
     }
 }
 
@@ -489,71 +489,71 @@ Method(m36a,, Serialized)
 
     Store(Acquire(MT00, 0xffff), Local0)
     if (Local0) {
-        err(ts, z150, 1, 0, 0, 0, Local0)
+        err(ts, z150, __LINE__, 0, 0, 0, Local0)
     } else {
     Store(Acquire(\_GL, 0xffff), Local0)
     if (Local0) {
-        err(ts, z150, 2, 0, 0, 0, Local0)
+        err(ts, z150, __LINE__, 0, 0, 0, Local0)
     } else {
         Store(Acquire(MT10, 0xffff), Local0)
         if (Local0) {
-            err(ts, z150, 3, 0, 0, 0, Local0)
+            err(ts, z150, __LINE__, 0, 0, 0, Local0)
         } else {
             Store(Acquire(MT20, 0xffff), Local0)
             if (Local0) {
-                err(ts, z150, 4, 0, 0, 0, Local0)
+                err(ts, z150, __LINE__, 0, 0, 0, Local0)
             } else {
                 Store(Acquire(MT30, 0xffff), Local0)
                 if (Local0) {
-                    err(ts, z150, 5, 0, 0, 0, Local0)
+                    err(ts, z150, __LINE__, 0, 0, 0, Local0)
                 } else {
                     Store(Acquire(MT40, 0xffff), Local0)
                     if (Local0) {
-                        err(ts, z150, 6, 0, 0, 0, Local0)
+                        err(ts, z150, __LINE__, 0, 0, 0, Local0)
                     } else {
                         Store(Acquire(MT50, 0xffff), Local0)
                         if (Local0) {
-                            err(ts, z150, 7, 0, 0, 0, Local0)
+                            err(ts, z150, __LINE__, 0, 0, 0, Local0)
                         } else {
                             Store(Acquire(MT60, 0xffff), Local0)
                             if (Local0) {
-                                err(ts, z150, 8, 0, 0, 0, Local0)
+                                err(ts, z150, __LINE__, 0, 0, 0, Local0)
                             } else {
                                 Store(Acquire(MT70, 0xffff), Local0)
                                 if (Local0) {
-                                    err(ts, z150, 9, 0, 0, 0, Local0)
+                                    err(ts, z150, __LINE__, 0, 0, 0, Local0)
                                 } else {
                                     Store(Acquire(MT80, 0xffff), Local0)
                                     if (Local0) {
-                                        err(ts, z150, 0x00a, 0, 0, 0, Local0)
+                                        err(ts, z150, __LINE__, 0, 0, 0, Local0)
                                     } else {
                                         Store(Acquire(MT90, 0xffff), Local0)
                                         if (Local0) {
-                                            err(ts, z150, 0x00b, 0, 0, 0, Local0)
+                                            err(ts, z150, __LINE__, 0, 0, 0, Local0)
                                         } else {
                                             Store(Acquire(MTa0, 0xffff), Local0)
                                             if (Local0) {
-                                                err(ts, z150, 0x00c, 0, 0, 0, Local0)
+                                                err(ts, z150, __LINE__, 0, 0, 0, Local0)
                                             } else {
                                                 Store(Acquire(MTb0, 0xffff), Local0)
                                                 if (Local0) {
-                                                    err(ts, z150, 0x00d, 0, 0, 0, Local0)
+                                                    err(ts, z150, __LINE__, 0, 0, 0, Local0)
                                                 } else {
                                                     Store(Acquire(MTc0, 0xffff), Local0)
                                                     if (Local0) {
-                                                        err(ts, z150, 0x00e, 0, 0, 0, Local0)
+                                                        err(ts, z150, __LINE__, 0, 0, 0, Local0)
                                                     } else {
                                                         Store(Acquire(MTd0, 0xffff), Local0)
                                                         if (Local0) {
-                                                            err(ts, z150, 0x00f, 0, 0, 0, Local0)
+                                                            err(ts, z150, __LINE__, 0, 0, 0, Local0)
                                                         } else {
                                                             Store(Acquire(MTe0, 0xffff), Local0)
                                                             if (Local0) {
-                                                                err(ts, z150, 0x010, 0, 0, 0, Local0)
+                                                                err(ts, z150, __LINE__, 0, 0, 0, Local0)
                                                             } else {
                                                                 Store(Acquire(MTf0, 0xffff), Local0)
                                                                 if (Local0) {
-                                                                    err(ts, z150, 0x011, 0, 0, 0, Local0)
+                                                                    err(ts, z150, __LINE__, 0, 0, 0, Local0)
                                                                 } else {
                                                                     m001()
                                                                 }
@@ -596,9 +596,9 @@ Method(m36a,, Serialized)
 		Release(MT00)
     }
 
-    CH03(ts, z150, 0x012, 0, 0)
+    CH03(ts, z150, 0x012, __LINE__, 0)
     m000()
-    CH03(ts, z150, 0x013, 0, 0)
+    CH03(ts, z150, 0x013, __LINE__, 0)
 }
 
 /*
@@ -637,71 +637,71 @@ Method(m36b,, Serialized)
 
     Store(Acquire(MT00, 0xffff), Local0)
     if (Local0) {
-        err(ts, z150, 1, 0, 0, 0, Local0)
+        err(ts, z150, __LINE__, 0, 0, 0, Local0)
     } else {
     Store(Acquire(\_GL, 0xffff), Local0)
     if (Local0) {
-        err(ts, z150, 2, 0, 0, 0, Local0)
+        err(ts, z150, __LINE__, 0, 0, 0, Local0)
     } else {
         Store(Acquire(MT10, 0xffff), Local0)
         if (Local0) {
-            err(ts, z150, 3, 0, 0, 0, Local0)
+            err(ts, z150, __LINE__, 0, 0, 0, Local0)
         } else {
             Store(Acquire(MT20, 0xffff), Local0)
             if (Local0) {
-                err(ts, z150, 4, 0, 0, 0, Local0)
+                err(ts, z150, __LINE__, 0, 0, 0, Local0)
             } else {
                 Store(Acquire(MT30, 0xffff), Local0)
                 if (Local0) {
-                    err(ts, z150, 5, 0, 0, 0, Local0)
+                    err(ts, z150, __LINE__, 0, 0, 0, Local0)
                 } else {
                     Store(Acquire(MT40, 0xffff), Local0)
                     if (Local0) {
-                        err(ts, z150, 6, 0, 0, 0, Local0)
+                        err(ts, z150, __LINE__, 0, 0, 0, Local0)
                     } else {
                         Store(Acquire(MT50, 0xffff), Local0)
                         if (Local0) {
-                            err(ts, z150, 7, 0, 0, 0, Local0)
+                            err(ts, z150, __LINE__, 0, 0, 0, Local0)
                         } else {
                             Store(Acquire(MT60, 0xffff), Local0)
                             if (Local0) {
-                                err(ts, z150, 8, 0, 0, 0, Local0)
+                                err(ts, z150, __LINE__, 0, 0, 0, Local0)
                             } else {
                                 Store(Acquire(MT70, 0xffff), Local0)
                                 if (Local0) {
-                                    err(ts, z150, 9, 0, 0, 0, Local0)
+                                    err(ts, z150, __LINE__, 0, 0, 0, Local0)
                                 } else {
                                     Store(Acquire(MT80, 0xffff), Local0)
                                     if (Local0) {
-                                        err(ts, z150, 0x00a, 0, 0, 0, Local0)
+                                        err(ts, z150, __LINE__, 0, 0, 0, Local0)
                                     } else {
                                         Store(Acquire(MT90, 0xffff), Local0)
                                         if (Local0) {
-                                            err(ts, z150, 0x00b, 0, 0, 0, Local0)
+                                            err(ts, z150, __LINE__, 0, 0, 0, Local0)
                                         } else {
                                             Store(Acquire(MTa0, 0xffff), Local0)
                                             if (Local0) {
-                                                err(ts, z150, 0x00c, 0, 0, 0, Local0)
+                                                err(ts, z150, __LINE__, 0, 0, 0, Local0)
                                             } else {
                                                 Store(Acquire(MTb0, 0xffff), Local0)
                                                 if (Local0) {
-                                                    err(ts, z150, 0x00d, 0, 0, 0, Local0)
+                                                    err(ts, z150, __LINE__, 0, 0, 0, Local0)
                                                 } else {
                                                     Store(Acquire(MTc0, 0xffff), Local0)
                                                     if (Local0) {
-                                                        err(ts, z150, 0x00e, 0, 0, 0, Local0)
+                                                        err(ts, z150, __LINE__, 0, 0, 0, Local0)
                                                     } else {
                                                         Store(Acquire(MTd0, 0xffff), Local0)
                                                         if (Local0) {
-                                                            err(ts, z150, 0x00f, 0, 0, 0, Local0)
+                                                            err(ts, z150, __LINE__, 0, 0, 0, Local0)
                                                         } else {
                                                             Store(Acquire(MTe0, 0xffff), Local0)
                                                             if (Local0) {
-                                                                err(ts, z150, 0x010, 0, 0, 0, Local0)
+                                                                err(ts, z150, __LINE__, 0, 0, 0, Local0)
                                                             } else {
                                                                 Store(Acquire(MTf0, 0xffff), Local0)
                                                                 if (Local0) {
-                                                                    err(ts, z150, 0x011, 0, 0, 0, Local0)
+                                                                    err(ts, z150, __LINE__, 0, 0, 0, Local0)
                                                                 }
                                                             }
                                                         }
@@ -742,11 +742,11 @@ Method(m36b,, Serialized)
 		Release(MT00)
     }
 
-    CH03(ts, z150, 0x012, 0, 0)
+    CH03(ts, z150, 0x012, __LINE__, 0)
     m000()
-    CH03(ts, z150, 0x013, 0, 0)
+    CH03(ts, z150, 0x013, __LINE__, 0)
     m001()
-    CH03(ts, z150, 0x014, 0, 0)
+    CH03(ts, z150, 0x014, __LINE__, 0)
 }
 
 /*
@@ -774,9 +774,9 @@ Method(m36c,, Serialized)
 	{
 		/* Acquire the first mutex */
 
-		CH03(ts, z150, 0x000, 0, 0)
+		CH03(ts, z150, 0x000, __LINE__, 0)
 		m36f(arg0, 0, 0, 0) // Acquire N-level mutex
-		CH03(ts, z150, 0x001, 0, 0)
+		CH03(ts, z150, 0x001, __LINE__, 0)
 
 		/*
 		 * Attempt to Acquire the second mutex (exception is expected).
@@ -795,11 +795,11 @@ Method(m36c,, Serialized)
 				m36f(arg1, 0, 1, 0) // Acquire arg1-level mux
 			}
 		}
-		CH04(ts, 0, 64, z150, 0x002, 0, 0) // AE_AML_MUTEX_ORDER
+		CH04(ts, 0, 64, z150, __LINE__, 0, 0) // AE_AML_MUTEX_ORDER
 
 		m388(arg0, 0, 0) // Release
 
-		CH03(ts, z150, 0x003, 0, 0)
+		CH03(ts, z150, 0x003, __LINE__, 0)
 	}
 
 	/*
@@ -853,19 +853,19 @@ Method(m389,, Serialized)
 	/* arg0 - level of mutex */
 	Method(m000, 1)
 	{
-		CH03(ts, z150, 0x000, 0, 0)
+		CH03(ts, z150, 0x000, __LINE__, 0)
 		m36f(arg0, 0, 0, 0) // Acquire
 		m388(arg0, 0, 0) // Release
-		CH03(ts, z150, 0x001, 0, 0)
+		CH03(ts, z150, 0x001, __LINE__, 0)
 
 		/* Attempt to Release free mutex */
 		m388(arg0, 0, 0) // Release
-		CH04(ts, 0, 65, z150, 0x002, 0, 0) // AE_AML_MUTEX_NOT_ACQUIRED
+		CH04(ts, 0, 65, z150, __LINE__, 0, 0) // AE_AML_MUTEX_NOT_ACQUIRED
 
-		CH03(ts, z150, 0x003, 0, 0)
+		CH03(ts, z150, 0x003, __LINE__, 0)
 		m36f(arg0, 0, 0, 0) // Acquire
 		m388(arg0, 0, 0) // Release
-		CH03(ts, z150, 0x004, 0, 0)
+		CH03(ts, z150, 0x004, __LINE__, 0)
 	}
 
 	Store(max0, lpN0)
@@ -878,19 +878,19 @@ Method(m389,, Serialized)
 
 	/* Separately for GL */
 
-	CH03(ts, z150, 0x005, 0, 0)
+	CH03(ts, z150, 0x005, __LINE__, 0)
 	m36f(GLLL, GLIX, 0, 0) // Acquire
 	m388(GLLL, GLIX, 0) // Release
-	CH03(ts, z150, 0x006, 0, 0)
+	CH03(ts, z150, 0x006, __LINE__, 0)
 
 	/* Attempt to Release free mutex */
 	m388(GLLL, GLIX, 0) // Release
-	CH04(ts, 0, 65, z150, 0x007, 0, 0) // AE_AML_MUTEX_NOT_ACQUIRED
+	CH04(ts, 0, 65, z150, __LINE__, 0, 0) // AE_AML_MUTEX_NOT_ACQUIRED
 
-	CH03(ts, z150, 0x008, 0, 0)
+	CH03(ts, z150, 0x008, __LINE__, 0)
 	m36f(GLLL, GLIX, 0, 0) // Acquire
 	m388(GLLL, GLIX, 0) // Release
-	CH03(ts, z150, 0x009, 0, 0)
+	CH03(ts, z150, 0x009, __LINE__, 0)
 }
 
 /*
@@ -920,140 +920,140 @@ Method(m07b,, Serialized)
 
 	/* First time */
 
-	CH03(ts, z150, 0x000, 0, 0)
+	CH03(ts, z150, 0x000, __LINE__, 0)
 	Release(T000)
-	CH04(ts, 0, 65, z150, 0x001, 0, 0) // AE_AML_MUTEX_NOT_ACQUIRED
+	CH04(ts, 0, 65, z150, __LINE__, 0, 0) // AE_AML_MUTEX_NOT_ACQUIRED
 
-	CH03(ts, z150, 0x002, 0, 0)
+	CH03(ts, z150, 0x002, __LINE__, 0)
 	Release(\_GL)
-	CH04(ts, 0, 65, z150, 0x003, 0, 0)
+	CH04(ts, 0, 65, z150, __LINE__, 0, 0)
 
-	CH03(ts, z150, 0x004, 0, 0)
+	CH03(ts, z150, 0x004, __LINE__, 0)
 	Release(T100)
-	CH04(ts, 0, 65, z150, 0x005, 0, 0)
+	CH04(ts, 0, 65, z150, __LINE__, 0, 0)
 
-	CH03(ts, z150, 0x006, 0, 0)
+	CH03(ts, z150, 0x006, __LINE__, 0)
 	Release(T200)
-	CH04(ts, 0, 65, z150, 0x007, 0, 0)
+	CH04(ts, 0, 65, z150, __LINE__, 0, 0)
 
-	CH03(ts, z150, 0x008, 0, 0)
+	CH03(ts, z150, 0x008, __LINE__, 0)
 	Release(T300)
-	CH04(ts, 0, 65, z150, 0x009, 0, 0)
+	CH04(ts, 0, 65, z150, __LINE__, 0, 0)
 
-	CH03(ts, z150, 0x00a, 0, 0)
+	CH03(ts, z150, 0x00a, __LINE__, 0)
 	Release(T400)
-	CH04(ts, 0, 65, z150, 0x00b, 0, 0)
+	CH04(ts, 0, 65, z150, __LINE__, 0, 0)
 
-	CH03(ts, z150, 0x00c, 0, 0)
+	CH03(ts, z150, 0x00c, __LINE__, 0)
 	Release(T500)
-	CH04(ts, 0, 65, z150, 0x00d, 0, 0)
+	CH04(ts, 0, 65, z150, __LINE__, 0, 0)
 
-	CH03(ts, z150, 0x00e, 0, 0)
+	CH03(ts, z150, 0x00e, __LINE__, 0)
 	Release(T600)
-	CH04(ts, 0, 65, z150, 0x00f, 0, 0)
+	CH04(ts, 0, 65, z150, __LINE__, 0, 0)
 
-	CH03(ts, z150, 0x010, 0, 0)
+	CH03(ts, z150, 0x010, __LINE__, 0)
 	Release(T700)
-	CH04(ts, 0, 65, z150, 0x011, 0, 0)
+	CH04(ts, 0, 65, z150, __LINE__, 0, 0)
 
-	CH03(ts, z150, 0x012, 0, 0)
+	CH03(ts, z150, 0x012, __LINE__, 0)
 	Release(T800)
-	CH04(ts, 0, 65, z150, 0x013, 0, 0)
+	CH04(ts, 0, 65, z150, __LINE__, 0, 0)
 
-	CH03(ts, z150, 0x014, 0, 0)
+	CH03(ts, z150, 0x014, __LINE__, 0)
 	Release(T900)
-	CH04(ts, 0, 65, z150, 0x015, 0, 0)
+	CH04(ts, 0, 65, z150, __LINE__, 0, 0)
 
-	CH03(ts, z150, 0x016, 0, 0)
+	CH03(ts, z150, 0x016, __LINE__, 0)
 	Release(Ta00)
-	CH04(ts, 0, 65, z150, 0x017, 0, 0)
+	CH04(ts, 0, 65, z150, __LINE__, 0, 0)
 
-	CH03(ts, z150, 0x018, 0, 0)
+	CH03(ts, z150, 0x018, __LINE__, 0)
 	Release(Tb00)
-	CH04(ts, 0, 65, z150, 0x019, 0, 0)
+	CH04(ts, 0, 65, z150, __LINE__, 0, 0)
 
-	CH03(ts, z150, 0x01a, 0, 0)
+	CH03(ts, z150, 0x01a, __LINE__, 0)
 	Release(Tc00)
-	CH04(ts, 0, 65, z150, 0x01b, 0, 0)
+	CH04(ts, 0, 65, z150, __LINE__, 0, 0)
 
-	CH03(ts, z150, 0x01c, 0, 0)
+	CH03(ts, z150, 0x01c, __LINE__, 0)
 	Release(Td00)
-	CH04(ts, 0, 65, z150, 0x01d, 0, 0)
+	CH04(ts, 0, 65, z150, __LINE__, 0, 0)
 
-	CH03(ts, z150, 0x01e, 0, 0)
+	CH03(ts, z150, 0x01e, __LINE__, 0)
 	Release(Te00)
-	CH04(ts, 0, 65, z150, 0x01f, 0, 0)
+	CH04(ts, 0, 65, z150, __LINE__, 0, 0)
 
-	CH03(ts, z150, 0x020, 0, 0)
+	CH03(ts, z150, 0x020, __LINE__, 0)
 	Release(Tf00)
-	CH04(ts, 0, 65, z150, 0x021, 0, 0)
+	CH04(ts, 0, 65, z150, __LINE__, 0, 0)
 
 
 	/* Second time */
 
-	CH03(ts, z150, 0x022, 0, 0)
+	CH03(ts, z150, 0x022, __LINE__, 0)
 	Release(T000)
-	CH04(ts, 0, 65, z150, 0x023, 0, 0) // AE_AML_MUTEX_NOT_ACQUIRED
+	CH04(ts, 0, 65, z150, __LINE__, 0, 0) // AE_AML_MUTEX_NOT_ACQUIRED
 
-	CH03(ts, z150, 0x024, 0, 0)
+	CH03(ts, z150, 0x024, __LINE__, 0)
 	Release(T100)
-	CH04(ts, 0, 65, z150, 0x025, 0, 0)
+	CH04(ts, 0, 65, z150, __LINE__, 0, 0)
 
-	CH03(ts, z150, 0x026, 0, 0)
+	CH03(ts, z150, 0x026, __LINE__, 0)
 	Release(T200)
-	CH04(ts, 0, 65, z150, 0x027, 0, 0)
+	CH04(ts, 0, 65, z150, __LINE__, 0, 0)
 
-	CH03(ts, z150, 0x028, 0, 0)
+	CH03(ts, z150, 0x028, __LINE__, 0)
 	Release(T300)
-	CH04(ts, 0, 65, z150, 0x029, 0, 0)
+	CH04(ts, 0, 65, z150, __LINE__, 0, 0)
 
-	CH03(ts, z150, 0x02a, 0, 0)
+	CH03(ts, z150, 0x02a, __LINE__, 0)
 	Release(T400)
-	CH04(ts, 0, 65, z150, 0x02b, 0, 0)
+	CH04(ts, 0, 65, z150, __LINE__, 0, 0)
 
-	CH03(ts, z150, 0x02c, 0, 0)
+	CH03(ts, z150, 0x02c, __LINE__, 0)
 	Release(T500)
-	CH04(ts, 0, 65, z150, 0x02d, 0, 0)
+	CH04(ts, 0, 65, z150, __LINE__, 0, 0)
 
-	CH03(ts, z150, 0x02e, 0, 0)
+	CH03(ts, z150, 0x02e, __LINE__, 0)
 	Release(T600)
-	CH04(ts, 0, 65, z150, 0x02f, 0, 0)
+	CH04(ts, 0, 65, z150, __LINE__, 0, 0)
 
-	CH03(ts, z150, 0x030, 0, 0)
+	CH03(ts, z150, 0x030, __LINE__, 0)
 	Release(T700)
-	CH04(ts, 0, 65, z150, 0x031, 0, 0)
+	CH04(ts, 0, 65, z150, __LINE__, 0, 0)
 
-	CH03(ts, z150, 0x032, 0, 0)
+	CH03(ts, z150, 0x032, __LINE__, 0)
 	Release(T800)
-	CH04(ts, 0, 65, z150, 0x033, 0, 0)
+	CH04(ts, 0, 65, z150, __LINE__, 0, 0)
 
-	CH03(ts, z150, 0x034, 0, 0)
+	CH03(ts, z150, 0x034, __LINE__, 0)
 	Release(T900)
-	CH04(ts, 0, 65, z150, 0x035, 0, 0)
+	CH04(ts, 0, 65, z150, __LINE__, 0, 0)
 
-	CH03(ts, z150, 0x036, 0, 0)
+	CH03(ts, z150, 0x036, __LINE__, 0)
 	Release(Ta00)
-	CH04(ts, 0, 65, z150, 0x037, 0, 0)
+	CH04(ts, 0, 65, z150, __LINE__, 0, 0)
 
-	CH03(ts, z150, 0x038, 0, 0)
+	CH03(ts, z150, 0x038, __LINE__, 0)
 	Release(Tb00)
-	CH04(ts, 0, 65, z150, 0x039, 0, 0)
+	CH04(ts, 0, 65, z150, __LINE__, 0, 0)
 
-	CH03(ts, z150, 0x03a, 0, 0)
+	CH03(ts, z150, 0x03a, __LINE__, 0)
 	Release(Tc00)
-	CH04(ts, 0, 65, z150, 0x03b, 0, 0)
+	CH04(ts, 0, 65, z150, __LINE__, 0, 0)
 
-	CH03(ts, z150, 0x03c, 0, 0)
+	CH03(ts, z150, 0x03c, __LINE__, 0)
 	Release(Td00)
-	CH04(ts, 0, 65, z150, 0x03d, 0, 0)
+	CH04(ts, 0, 65, z150, __LINE__, 0, 0)
 
-	CH03(ts, z150, 0x03e, 0, 0)
+	CH03(ts, z150, 0x03e, __LINE__, 0)
 	Release(Te00)
-	CH04(ts, 0, 65, z150, 0x03f, 0, 0)
+	CH04(ts, 0, 65, z150, __LINE__, 0, 0)
 
-	CH03(ts, z150, 0x040, 0, 0)
+	CH03(ts, z150, 0x040, __LINE__, 0)
 	Release(Tf00)
-	CH04(ts, 0, 65, z150, 0x041, 0, 0)
+	CH04(ts, 0, 65, z150, __LINE__, 0, 0)
 }
 
 /*
@@ -1128,7 +1128,7 @@ Method(m38a,, Serialized)
 		Increment(lpC0)
 	}
 
-	CH03("m38a", z150, 0x000, 0, 0)
+	CH03("m38a", z150, 0x000, __LINE__, 0)
 }
 
 /*
@@ -1271,7 +1271,7 @@ Method(m079, 2, Serialized)
 
 	/* Release */
 
-	CH03(ts, z150, 0x000, 0, 0)
+	CH03(ts, z150, 0x000, __LINE__, 0)
 
 	Store(max0, lpN0)
 	Subtract(max0, 1, lpC0)
@@ -1293,9 +1293,9 @@ Method(m079, 2, Serialized)
 	Store(max0, lpN0)
 	Subtract(max0, 1, lpC0)
 	While (lpN0) {
-		CH03(ts, z150, 0x001, 0, 0)
+		CH03(ts, z150, 0x001, __LINE__, 0)
 		m388(lpC0, ix00, 0)
-		CH04(ts, 0, 65, z150, 0x002, 0, 0) // AE_AML_MUTEX_NOT_ACQUIRED
+		CH04(ts, 0, 65, z150, __LINE__, 0, 0) // AE_AML_MUTEX_NOT_ACQUIRED
 		Decrement(lpN0)
 		Decrement(lpC0)
 	}
@@ -1332,7 +1332,7 @@ Method(m0b9,, Serialized)
 		return
 	}
 
-	CH03(ts, z150, 0x000, 0, 0)
+	CH03(ts, z150, 0x000, __LINE__, 0)
 
 }
 
@@ -1344,7 +1344,7 @@ Method(m0bb,, Serialized)
 {
 	Name(ts, "m0bb")
 
-	CH03(ts, z150, 0x000, 0, 0)
+	CH03(ts, z150, 0x000, __LINE__, 0)
 
 	Method(m137)
 	{
@@ -1364,7 +1364,7 @@ Method(m0bb,, Serialized)
 
 		Store(Acquire(T805, 0xffff), i103)
 		if (i103) {
-			err(ts, z150, 0x001, 0, 0, 0, i103)
+			err(ts, z150, __LINE__, 0, 0, 0, i103)
 		}
 
 		Store("m13e completed", Debug)
@@ -1394,15 +1394,15 @@ Method(m0bb,, Serialized)
 
 	if (i102) {
 		Store("Acquire(T804, 0xffff) failed", Debug)
-		err(ts, z150, 0x002, 0, 0, 0, i102)
+		err(ts, z150, __LINE__, 0, 0, 0, i102)
 	}
 
 	if (i103) {
 		Store("Acquire(T805, 0xffff) failed", Debug)
-		err(ts, z150, 0x003, 0, 0, 0, i103)
+		err(ts, z150, __LINE__, 0, 0, 0, i103)
 	}
 
-	CH03(ts, z150, 0x004, 0, 0)
+	CH03(ts, z150, 0x004, __LINE__, 0)
 }
 
 /*
@@ -1420,96 +1420,96 @@ Method(m07c,, Serialized)
 	/* Acquire and Release operations are in the same method */
 	Method(m000)
 	{
-			CH03(ts, z150, 0x000, 0, 0)
+			CH03(ts, z150, 0x000, __LINE__, 0)
 
 			/* Acquire all */
 
 			Store(Acquire(\_GL, 0xffff), Local0)
 			if (Local0) {
-				err(ts, z150, 0x000, 0, 0, 0, Local0)
+				err(ts, z150, __LINE__, 0, 0, 0, Local0)
 			}
 
 			Store(Acquire(T000, 0xffff), Local0)
 			if (Local0) {
-				err(ts, z150, 0x000, 0, 0, 0, Local0)
+				err(ts, z150, __LINE__, 0, 0, 0, Local0)
 			}
 
 			Store(Acquire(T100, 0xffff), Local0)
 			if (Local0) {
-				err(ts, z150, 0x000, 0, 0, 0, Local0)
+				err(ts, z150, __LINE__, 0, 0, 0, Local0)
 			}
 
 			Store(Acquire(T200, 0xffff), Local0)
 			if (Local0) {
-				err(ts, z150, 0x000, 0, 0, 0, Local0)
+				err(ts, z150, __LINE__, 0, 0, 0, Local0)
 			}
 
 			Store(Acquire(T300, 0xffff), Local0)
 			if (Local0) {
-				err(ts, z150, 0x000, 0, 0, 0, Local0)
+				err(ts, z150, __LINE__, 0, 0, 0, Local0)
 			}
 
 			Store(Acquire(T400, 0xffff), Local0)
 			if (Local0) {
-				err(ts, z150, 0x000, 0, 0, 0, Local0)
+				err(ts, z150, __LINE__, 0, 0, 0, Local0)
 			}
 
 			Store(Acquire(T500, 0xffff), Local0)
 			if (Local0) {
-				err(ts, z150, 0x000, 0, 0, 0, Local0)
+				err(ts, z150, __LINE__, 0, 0, 0, Local0)
 			}
 
 			Store(Acquire(T600, 0xffff), Local0)
 			if (Local0) {
-				err(ts, z150, 0x000, 0, 0, 0, Local0)
+				err(ts, z150, __LINE__, 0, 0, 0, Local0)
 			}
 
 			Store(Acquire(T700, 0xffff), Local0)
 			if (Local0) {
-				err(ts, z150, 0x000, 0, 0, 0, Local0)
+				err(ts, z150, __LINE__, 0, 0, 0, Local0)
 			}
 
 			Store(Acquire(T800, 0xffff), Local0)
 			if (Local0) {
-				err(ts, z150, 0x000, 0, 0, 0, Local0)
+				err(ts, z150, __LINE__, 0, 0, 0, Local0)
 			}
 
 			Store(Acquire(T900, 0xffff), Local0)
 			if (Local0) {
-				err(ts, z150, 0x000, 0, 0, 0, Local0)
+				err(ts, z150, __LINE__, 0, 0, 0, Local0)
 			}
 
 			Store(Acquire(Ta00, 0xffff), Local0)
 			if (Local0) {
-				err(ts, z150, 0x000, 0, 0, 0, Local0)
+				err(ts, z150, __LINE__, 0, 0, 0, Local0)
 			}
 
 			Store(Acquire(Tb00, 0xffff), Local0)
 			if (Local0) {
-				err(ts, z150, 0x000, 0, 0, 0, Local0)
+				err(ts, z150, __LINE__, 0, 0, 0, Local0)
 			}
 
 			Store(Acquire(Tc00, 0xffff), Local0)
 			if (Local0) {
-				err(ts, z150, 0x000, 0, 0, 0, Local0)
+				err(ts, z150, __LINE__, 0, 0, 0, Local0)
 			}
 
 			Store(Acquire(Td00, 0xffff), Local0)
 			if (Local0) {
-				err(ts, z150, 0x000, 0, 0, 0, Local0)
+				err(ts, z150, __LINE__, 0, 0, 0, Local0)
 			}
 
 			Store(Acquire(Te00, 0xffff), Local0)
 			if (Local0) {
-				err(ts, z150, 0x000, 0, 0, 0, Local0)
+				err(ts, z150, __LINE__, 0, 0, 0, Local0)
 			}
 
 			Store(Acquire(Tf00, 0xffff), Local0)
 			if (Local0) {
-				err(ts, z150, 0x000, 0, 0, 0, Local0)
+				err(ts, z150, __LINE__, 0, 0, 0, Local0)
 			}
 
-			CH03(ts, z150, 0x000, 0, 0)
+			CH03(ts, z150, 0x000, __LINE__, 0)
 
 			/* Release all */
 
@@ -1531,7 +1531,7 @@ Method(m07c,, Serialized)
 			Release(T000)
 			Release(\_GL)
 
-			CH03(ts, z150, 0x000, 0, 0)
+			CH03(ts, z150, 0x000, __LINE__, 0)
 	}
 
 	/* Acquire and Release operations are in different methods */
@@ -1539,99 +1539,99 @@ Method(m07c,, Serialized)
 	{
 		Method(mm00)
 		{
-			CH03(ts, z150, 0x000, 0, 0)
+			CH03(ts, z150, 0x000, __LINE__, 0)
 
 			Store(Acquire(\_GL, 0xffff), Local0)
 			if (Local0) {
-				err(ts, z150, 0x000, 0, 0, 0, Local0)
+				err(ts, z150, __LINE__, 0, 0, 0, Local0)
 			}
 
 			Store(Acquire(T000, 0xffff), Local0)
 			if (Local0) {
-				err(ts, z150, 0x000, 0, 0, 0, Local0)
+				err(ts, z150, __LINE__, 0, 0, 0, Local0)
 			}
 
 			Store(Acquire(T100, 0xffff), Local0)
 			if (Local0) {
-				err(ts, z150, 0x000, 0, 0, 0, Local0)
+				err(ts, z150, __LINE__, 0, 0, 0, Local0)
 			}
 
 			Store(Acquire(T200, 0xffff), Local0)
 			if (Local0) {
-				err(ts, z150, 0x000, 0, 0, 0, Local0)
+				err(ts, z150, __LINE__, 0, 0, 0, Local0)
 			}
 
 			Store(Acquire(T300, 0xffff), Local0)
 			if (Local0) {
-				err(ts, z150, 0x000, 0, 0, 0, Local0)
+				err(ts, z150, __LINE__, 0, 0, 0, Local0)
 			}
 
 			Store(Acquire(T400, 0xffff), Local0)
 			if (Local0) {
-				err(ts, z150, 0x000, 0, 0, 0, Local0)
+				err(ts, z150, __LINE__, 0, 0, 0, Local0)
 			}
 
 			Store(Acquire(T500, 0xffff), Local0)
 			if (Local0) {
-				err(ts, z150, 0x000, 0, 0, 0, Local0)
+				err(ts, z150, __LINE__, 0, 0, 0, Local0)
 			}
 
 			Store(Acquire(T600, 0xffff), Local0)
 			if (Local0) {
-				err(ts, z150, 0x000, 0, 0, 0, Local0)
+				err(ts, z150, __LINE__, 0, 0, 0, Local0)
 			}
 
 			Store(Acquire(T700, 0xffff), Local0)
 			if (Local0) {
-				err(ts, z150, 0x000, 0, 0, 0, Local0)
+				err(ts, z150, __LINE__, 0, 0, 0, Local0)
 			}
 
 			Store(Acquire(T800, 0xffff), Local0)
 			if (Local0) {
-				err(ts, z150, 0x000, 0, 0, 0, Local0)
+				err(ts, z150, __LINE__, 0, 0, 0, Local0)
 			}
 
 			Store(Acquire(T900, 0xffff), Local0)
 			if (Local0) {
-				err(ts, z150, 0x000, 0, 0, 0, Local0)
+				err(ts, z150, __LINE__, 0, 0, 0, Local0)
 			}
 
 			Store(Acquire(Ta00, 0xffff), Local0)
 			if (Local0) {
-				err(ts, z150, 0x000, 0, 0, 0, Local0)
+				err(ts, z150, __LINE__, 0, 0, 0, Local0)
 			}
 
 			Store(Acquire(Tb00, 0xffff), Local0)
 			if (Local0) {
-				err(ts, z150, 0x000, 0, 0, 0, Local0)
+				err(ts, z150, __LINE__, 0, 0, 0, Local0)
 			}
 
 			Store(Acquire(Tc00, 0xffff), Local0)
 			if (Local0) {
-				err(ts, z150, 0x000, 0, 0, 0, Local0)
+				err(ts, z150, __LINE__, 0, 0, 0, Local0)
 			}
 
 			Store(Acquire(Td00, 0xffff), Local0)
 			if (Local0) {
-				err(ts, z150, 0x000, 0, 0, 0, Local0)
+				err(ts, z150, __LINE__, 0, 0, 0, Local0)
 			}
 
 			Store(Acquire(Te00, 0xffff), Local0)
 			if (Local0) {
-				err(ts, z150, 0x000, 0, 0, 0, Local0)
+				err(ts, z150, __LINE__, 0, 0, 0, Local0)
 			}
 
 			Store(Acquire(Tf00, 0xffff), Local0)
 			if (Local0) {
-				err(ts, z150, 0x000, 0, 0, 0, Local0)
+				err(ts, z150, __LINE__, 0, 0, 0, Local0)
 			}
 
-			CH03(ts, z150, 0x000, 0, 0)
+			CH03(ts, z150, 0x000, __LINE__, 0)
 		}
 
 		Method(mm01)
 		{
-			CH03(ts, z150, 0x000, 0, 0)
+			CH03(ts, z150, 0x000, __LINE__, 0)
 
 			Release(Tf00)
 			Release(Te00)
@@ -1651,62 +1651,62 @@ Method(m07c,, Serialized)
 			Release(T000)
 			Release(\_GL)
 
-			CH03(ts, z150, 0x000, 0, 0)
+			CH03(ts, z150, 0x000, __LINE__, 0)
 		}
 
 		Method(mm02)
 		{
-			CH03(ts, z150, 0x000, 0, 0)
+			CH03(ts, z150, 0x000, __LINE__, 0)
 			Release(Tf00)
-			CH04(ts, 0, 65, z150, 0x001, 0, 0) // AE_AML_MUTEX_NOT_ACQUIRED
-			CH03(ts, z150, 0x002, 0, 0)
+			CH04(ts, 0, 65, z150, __LINE__, 0, 0) // AE_AML_MUTEX_NOT_ACQUIRED
+			CH03(ts, z150, 0x002, __LINE__, 0)
 			Release(Te00)
-			CH04(ts, 0, 65, z150, 0x003, 0, 0) // AE_AML_MUTEX_NOT_ACQUIRED
-			CH03(ts, z150, 0x004, 0, 0)
+			CH04(ts, 0, 65, z150, __LINE__, 0, 0) // AE_AML_MUTEX_NOT_ACQUIRED
+			CH03(ts, z150, 0x004, __LINE__, 0)
 			Release(Td00)
-			CH04(ts, 0, 65, z150, 0x005, 0, 0) // AE_AML_MUTEX_NOT_ACQUIRED
-			CH03(ts, z150, 0x006, 0, 0)
+			CH04(ts, 0, 65, z150, __LINE__, 0, 0) // AE_AML_MUTEX_NOT_ACQUIRED
+			CH03(ts, z150, 0x006, __LINE__, 0)
 			Release(Tc00)
-			CH04(ts, 0, 65, z150, 0x007, 0, 0) // AE_AML_MUTEX_NOT_ACQUIRED
-			CH03(ts, z150, 0x008, 0, 0)
+			CH04(ts, 0, 65, z150, __LINE__, 0, 0) // AE_AML_MUTEX_NOT_ACQUIRED
+			CH03(ts, z150, 0x008, __LINE__, 0)
 			Release(Tb00)
-			CH04(ts, 0, 65, z150, 0x009, 0, 0) // AE_AML_MUTEX_NOT_ACQUIRED
-			CH03(ts, z150, 0x00a, 0, 0)
+			CH04(ts, 0, 65, z150, __LINE__, 0, 0) // AE_AML_MUTEX_NOT_ACQUIRED
+			CH03(ts, z150, 0x00a, __LINE__, 0)
 			Release(Ta00)
-			CH04(ts, 0, 65, z150, 0x00b, 0, 0) // AE_AML_MUTEX_NOT_ACQUIRED
-			CH03(ts, z150, 0x00c, 0, 0)
+			CH04(ts, 0, 65, z150, __LINE__, 0, 0) // AE_AML_MUTEX_NOT_ACQUIRED
+			CH03(ts, z150, 0x00c, __LINE__, 0)
 			Release(T900)
-			CH04(ts, 0, 65, z150, 0x00d, 0, 0) // AE_AML_MUTEX_NOT_ACQUIRED
-			CH03(ts, z150, 0x00e, 0, 0)
+			CH04(ts, 0, 65, z150, __LINE__, 0, 0) // AE_AML_MUTEX_NOT_ACQUIRED
+			CH03(ts, z150, 0x00e, __LINE__, 0)
 			Release(T800)
-			CH04(ts, 0, 65, z150, 0x00f, 0, 0) // AE_AML_MUTEX_NOT_ACQUIRED
-			CH03(ts, z150, 0x010, 0, 0)
+			CH04(ts, 0, 65, z150, __LINE__, 0, 0) // AE_AML_MUTEX_NOT_ACQUIRED
+			CH03(ts, z150, 0x010, __LINE__, 0)
 			Release(T700)
-			CH04(ts, 0, 65, z150, 0x011, 0, 0) // AE_AML_MUTEX_NOT_ACQUIRED
-			CH03(ts, z150, 0x012, 0, 0)
+			CH04(ts, 0, 65, z150, __LINE__, 0, 0) // AE_AML_MUTEX_NOT_ACQUIRED
+			CH03(ts, z150, 0x012, __LINE__, 0)
 			Release(T600)
-			CH04(ts, 0, 65, z150, 0x013, 0, 0) // AE_AML_MUTEX_NOT_ACQUIRED
-			CH03(ts, z150, 0x014, 0, 0)
+			CH04(ts, 0, 65, z150, __LINE__, 0, 0) // AE_AML_MUTEX_NOT_ACQUIRED
+			CH03(ts, z150, 0x014, __LINE__, 0)
 			Release(T500)
-			CH04(ts, 0, 65, z150, 0x015, 0, 0) // AE_AML_MUTEX_NOT_ACQUIRED
-			CH03(ts, z150, 0x016, 0, 0)
+			CH04(ts, 0, 65, z150, __LINE__, 0, 0) // AE_AML_MUTEX_NOT_ACQUIRED
+			CH03(ts, z150, 0x016, __LINE__, 0)
 			Release(T400)
-			CH04(ts, 0, 65, z150, 0x017, 0, 0) // AE_AML_MUTEX_NOT_ACQUIRED
-			CH03(ts, z150, 0x018, 0, 0)
+			CH04(ts, 0, 65, z150, __LINE__, 0, 0) // AE_AML_MUTEX_NOT_ACQUIRED
+			CH03(ts, z150, 0x018, __LINE__, 0)
 			Release(T300)
-			CH04(ts, 0, 65, z150, 0x019, 0, 0) // AE_AML_MUTEX_NOT_ACQUIRED
-			CH03(ts, z150, 0x01a, 0, 0)
+			CH04(ts, 0, 65, z150, __LINE__, 0, 0) // AE_AML_MUTEX_NOT_ACQUIRED
+			CH03(ts, z150, 0x01a, __LINE__, 0)
 			Release(T200)
-			CH04(ts, 0, 65, z150, 0x01b, 0, 0) // AE_AML_MUTEX_NOT_ACQUIRED
-			CH03(ts, z150, 0x01c, 0, 0)
+			CH04(ts, 0, 65, z150, __LINE__, 0, 0) // AE_AML_MUTEX_NOT_ACQUIRED
+			CH03(ts, z150, 0x01c, __LINE__, 0)
 			Release(T100)
-			CH04(ts, 0, 65, z150, 0x01d, 0, 0) // AE_AML_MUTEX_NOT_ACQUIRED
-			CH03(ts, z150, 0x01e, 0, 0)
+			CH04(ts, 0, 65, z150, __LINE__, 0, 0) // AE_AML_MUTEX_NOT_ACQUIRED
+			CH03(ts, z150, 0x01e, __LINE__, 0)
 			Release(T000)
-			CH04(ts, 0, 65, z150, 0x01f, 0, 0) // AE_AML_MUTEX_NOT_ACQUIRED
-			CH03(ts, z150, 0x020, 0, 0)
+			CH04(ts, 0, 65, z150, __LINE__, 0, 0) // AE_AML_MUTEX_NOT_ACQUIRED
+			CH03(ts, z150, 0x020, __LINE__, 0)
 			Release(\_GL)
-			CH04(ts, 0, 65, z150, 0x021, 0, 0) // AE_AML_MUTEX_NOT_ACQUIRED
+			CH04(ts, 0, 65, z150, __LINE__, 0, 0) // AE_AML_MUTEX_NOT_ACQUIRED
 		}
 
 		mm00()
@@ -1728,18 +1728,18 @@ Method(m0ba,, Serialized)
 {
 	Name(ts, "m0ba")
 
-	CH03(ts, z150, 0x000, 0, 0)
+	CH03(ts, z150, 0x000, __LINE__, 0)
 
 	/* Add */
 
 	Add(Acquire(\_GL, 0xffff), 1, Local0)
 	if (LNotEqual(Local0, 1)) {
-		err(ts, z150, 0x001, 0, 0, 0, Local0)
+		err(ts, z150, __LINE__, 0, 0, 0, Local0)
 	}
 
 	Add(Acquire(T500, 0xffff), 1, Local0)
 	if (LNotEqual(Local0, 1)) {
-		err(ts, z150, 0x002, 0, 0, 0, Local0)
+		err(ts, z150, __LINE__, 0, 0, 0, Local0)
 	}
 
 	Release(T500)
@@ -1749,12 +1749,12 @@ Method(m0ba,, Serialized)
 
 	Subtract(1, Acquire(\_GL, 0xffff), Local0)
 	if (LNotEqual(Local0, 1)) {
-		err(ts, z150, 0x003, 0, 0, 0, Local0)
+		err(ts, z150, __LINE__, 0, 0, 0, Local0)
 	}
 
 	Subtract(1, Acquire(T500, 0xffff), Local0)
 	if (LNotEqual(Local0, 1)) {
-		err(ts, z150, 0x004, 0, 0, 0, Local0)
+		err(ts, z150, __LINE__, 0, 0, 0, Local0)
 	}
 
 	Release(T500)
@@ -1763,7 +1763,7 @@ Method(m0ba,, Serialized)
 	/* LEqual */
 
 	if (LNotEqual(Acquire(T500, 0xffff), 0)) {
-		err(ts, z150, 0x004, 0, 0, 0, Local0)
+		err(ts, z150, __LINE__, 0, 0, 0, Local0)
 	}
 	Release(T500)
 
@@ -2105,7 +2105,7 @@ Method(m300)
 
 	SRMT("m300")
 	if (ERR7) {
-		err("ERRORS were detected during the loading stage", z150, 0x200, 0, 0, 0, ERR7)
+		err("ERRORS were detected during the loading stage", z150, __LINE__, 0, 0, 0, ERR7)
 	}
 
 	/* ATTENTION: this test must be run the first */
@@ -2247,7 +2247,7 @@ Method(m300)
 		m08a()
 	}
 
-	CH03("m300", z150, 0x000, 0, 0)
+	CH03("m300", z150, 0x000, __LINE__, 0)
 }
 
 

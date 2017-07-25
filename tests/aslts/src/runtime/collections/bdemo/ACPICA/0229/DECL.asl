@@ -36,11 +36,11 @@ Method(m10f, 1, Serialized)
 {
 	Name(b000, Buffer(Arg0) {})
 
-	CH03("", 0, 0x000, 0, 0)
+	CH03("", 0, 0x000, __LINE__, 0)
 	Add(b000, 0, Local0)
-	CH03("", 0, 0x001, 0, 0)
+	CH03("", 0, 0x001, __LINE__, 0)
 
-	CH03("", 0, 0x002, 0, 0)
+	CH03("", 0, 0x002, __LINE__, 0)
 	ToInteger(b000, Local0)
-	CH04("", 0, 54, 0, 0x003, 0, 0) // AE_AML_BUFFER_LIMIT
+	CH04("", 0, 54, 0, __LINE__, 0, 0) // AE_AML_BUFFER_LIMIT
 }

@@ -74,14 +74,14 @@
 		Store(Sizeof (p000), Local0)
 
 		if (LNotEqual(Local0, 256)) {
-			err("", zFFF, 0x000, 0, 0, Local0, 256)
+			err("", zFFF, __LINE__, 0, 0, Local0, 256)
 		} else {
 			Store(1, Local1)
 			Store(0, Local2)
 			while (Local0) {
 				Store(DeRefOf(Index(p000, Local2)), Local3)
 				if (LNotEqual(Local3, Local1)) {
-					err("", zFFF, 0x001, 0, 0, Local3, Local1)
+					err("", zFFF, __LINE__, 0, 0, Local3, Local1)
 					Break
 				}
 				Decrement(Local0)
@@ -132,12 +132,12 @@
 		Store(0, i000)
 		mm00(0)
 		if (LNotEqual(i000, 1)) {
-			err("", zFFF, 0x002, 0, 0, i000, 1)
+			err("", zFFF, __LINE__, 0, 0, i000, 1)
 		}
 
 		Store(0, i000)
 		mm00(1)
 		if (LNotEqual(i000, 2)) {
-			err("", zFFF, 0x003, 0, 0, i000, 2)
+			err("", zFFF, __LINE__, 0, 0, i000, 2)
 		}
 	}

@@ -152,7 +152,7 @@ Method(m0ef,, Serialized)
 		m801(1)
 	}
 
-	CH03(ts, z177, 0x000, 0, 0)
+	CH03(ts, z177, 0x000, __LINE__, 0)
 
 	m100()
 
@@ -160,15 +160,15 @@ Method(m0ef,, Serialized)
 
 	/* Check Maximal number of methods being in progress simultaneously */
 	if (LNotEqual(max0, 45)) {
-		err(ts, z177, 0x001, 0, 0, max0, 45)
+		err(ts, z177, __LINE__, 0, 0, max0, 45)
 	}
 
 	/* Overall got out of methods the same number as got into methods */
 	if (LNotEqual(cnt0, 0)) {
-		err(ts, z177, 0x002, 0, 0, cnt0, 0)
+		err(ts, z177, __LINE__, 0, 0, cnt0, 0)
 	}
 
-	CH03(ts, z177, 0x003, 0, 0)
+	CH03(ts, z177, 0x003, __LINE__, 0)
 }
 
 /*
@@ -281,7 +281,7 @@ Method(m0fb,, Serialized)
 			Store(DeRefOf(Index(arg2, lpC0)), Local0)
 			Store(DeRefOf(Index(arg3, lpC0)), Local1)
 			if (LNotEqual(Local0, Local1)) {
-				err(ts, z177, 0x004, 0, 0, Local0, Local1)
+				err(ts, z177, __LINE__, 0, 0, Local0, Local1)
 				Store(arg0, Debug)
 				Store(lpC0, Debug)
 			}
@@ -292,22 +292,22 @@ Method(m0fb,, Serialized)
 		Switch (arg0) {
 			Case (1) {
 				if (LNotEqual(ind1, n100)) {
-					err(ts, z177, 0x005, 0, 0, ind1, n100)
+					err(ts, z177, __LINE__, 0, 0, ind1, n100)
 				}
 			}
 			Case (2) {
 				if (LNotEqual(ind2, n200)) {
-					err(ts, z177, 0x006, 0, 0, ind2, n200)
+					err(ts, z177, __LINE__, 0, 0, ind2, n200)
 				}
 			}
 			Case (3) {
 				if (LNotEqual(ind3, n300)) {
-					err(ts, z177, 0x007, 0, 0, ind3, n300)
+					err(ts, z177, __LINE__, 0, 0, ind3, n300)
 				}
 			}
 			Case (4) {
 				if (LNotEqual(ind4, n400)) {
-					err(ts, z177, 0x008, 0, 0, ind4, n400)
+					err(ts, z177, __LINE__, 0, 0, ind4, n400)
 				}
 			}
 		}
@@ -355,7 +355,7 @@ Method(m0fb,, Serialized)
 					Add(cnt1, Local0, cnt1)
 					Store(DerefOf(Index(p400, ii00)), ii00)
 					if (LNotEqual(ii00, Local0)) {
-						err(ts, z177, 0x009, 0, 0, ii00, Local0)
+						err(ts, z177, __LINE__, 0, 0, ii00, Local0)
 					}
 				}
 				Store(ind3, ii00)
@@ -374,7 +374,7 @@ Method(m0fb,, Serialized)
 				Add(cnt1, Local0, cnt1)
 				Store(DerefOf(Index(p300, ii00)), ii00)
 				if (LNotEqual(ii00, Local0)) {
-					err(ts, z177, 0x00a, 0, 0, ii00, Local0)
+					err(ts, z177, __LINE__, 0, 0, ii00, Local0)
 				}
 			}
 			Store(ind2, ii00)
@@ -393,7 +393,7 @@ Method(m0fb,, Serialized)
 			Add(cnt1, Local0, cnt1)
 			Store(DerefOf(Index(p200, ii00)), ii00)
 			if (LNotEqual(ii00, Local0)) {
-				err(ts, z177, 0x00b, 0, 0, ii00, Local0)
+				err(ts, z177, __LINE__, 0, 0, ii00, Local0)
 			}
 		}
 		Store(ind1, ii00)
@@ -412,11 +412,11 @@ Method(m0fb,, Serialized)
 		Add(cnt1, Local0, cnt1)
 		Store(DerefOf(Index(p100, ii00)), ii00)
 		if (LNotEqual(ii00, Local0)) {
-			err(ts, z177, 0x00c, 0, 0, ii00, Local0)
+			err(ts, z177, __LINE__, 0, 0, ii00, Local0)
 		}
 	}
 
-	CH03(ts, z177, 0x00d, 0, 0)
+	CH03(ts, z177, 0x00d, __LINE__, 0)
 
 	m100()
 
@@ -424,12 +424,12 @@ Method(m0fb,, Serialized)
 
 	/* Check Maximal number of methods being in progress simultaneously */
 	if (LNotEqual(max0, 45)) {
-		err(ts, z177, 0x00e, 0, 0, max0, 45)
+		err(ts, z177, __LINE__, 0, 0, max0, 45)
 	}
 
 	/* Overall got out of methods the same number as got into methods */
 	if (LNotEqual(cnt0, 0)) {
-		err(ts, z177, 0x00f, 0, 0, cnt0, 0)
+		err(ts, z177, __LINE__, 0, 0, cnt0, 0)
 	}
 
 	/* Check indexes */
@@ -441,10 +441,10 @@ Method(m0fb,, Serialized)
 
 	/* Check the overall sum of total indexes */
 	if (LNotEqual(cnt1, 0x3DE)) {
-		err(ts, z177, 0x010, 0, 0, cnt1, 0x3DE)
+		err(ts, z177, __LINE__, 0, 0, cnt1, 0x3DE)
 	}
 
-	CH03(ts, z177, 0x011, 0, 0)
+	CH03(ts, z177, 0x011, __LINE__, 0)
 }
 
 /*
@@ -578,29 +578,29 @@ Method(m0ff, 1, Serialized)
 		m801(1)
 	}
 
-	CH03(ts, z177, 0x012, 0, 0)
+	CH03(ts, z177, 0x012, __LINE__, 0)
 
 	Store(arg0, i000)
 
 	m100()
 
 	if (arg0) {
-		CH04(ts, 0, 84, z177, 0x013, 0, 0)	// AE_AML_METHOD_LIMIT
+		CH04(ts, 0, 84, z177, __LINE__, 0, 0)	// AE_AML_METHOD_LIMIT
 	} else {
 		Concatenate("Maximal number of methods being in progress simultaneously ", max0, Debug)
 
 		/* Check Maximal number of methods being in progress simultaneously */
 		if (LNotEqual(max0, 221)) {
-			err(ts, z177, 0x014, 0, 0, max0, 221)
+			err(ts, z177, __LINE__, 0, 0, max0, 221)
 		}
 
 		/* Overall got out of methods the same number as got into methods */
 		if (LNotEqual(cnt0, 0)) {
-			err(ts, z177, 0x015, 0, 0, cnt0, 0)
+			err(ts, z177, __LINE__, 0, 0, cnt0, 0)
 		}
 	}
 
-	CH03(ts, z177, 0x016, 0, 0)
+	CH03(ts, z177, 0x016, __LINE__, 0)
 }
 
 /*
@@ -719,7 +719,7 @@ Method(m18a, 1, Serialized)
 			Store(DeRefOf(Index(arg2, lpC0)), Local0)
 			Store(DeRefOf(Index(arg3, lpC0)), Local1)
 			if (LNotEqual(Local0, Local1)) {
-				err(ts, z177, 0x017, 0, 0, Local0, Local1)
+				err(ts, z177, __LINE__, 0, 0, Local0, Local1)
 				Store(arg0, Debug)
 				Store(lpC0, Debug)
 			}
@@ -730,22 +730,22 @@ Method(m18a, 1, Serialized)
 		Switch (arg0) {
 			Case (1) {
 				if (LNotEqual(ind1, n100)) {
-					err(ts, z177, 0x018, 0, 0, ind1, n100)
+					err(ts, z177, __LINE__, 0, 0, ind1, n100)
 				}
 			}
 			Case (2) {
 				if (LNotEqual(ind2, n200)) {
-					err(ts, z177, 0x019, 0, 0, ind2, n200)
+					err(ts, z177, __LINE__, 0, 0, ind2, n200)
 				}
 			}
 			Case (3) {
 				if (LNotEqual(ind3, n300)) {
-					err(ts, z177, 0x01a, 0, 0, ind3, n300)
+					err(ts, z177, __LINE__, 0, 0, ind3, n300)
 				}
 			}
 			Case (4) {
 				if (LNotEqual(ind4, n400)) {
-					err(ts, z177, 0x01b, 0, 0, ind4, n400)
+					err(ts, z177, __LINE__, 0, 0, ind4, n400)
 				}
 			}
 		}
@@ -783,7 +783,7 @@ Method(m18a, 1, Serialized)
 		Add(cnt1, Local0, cnt1)
 		Store(DerefOf(Index(p100, Local1)), Local1)
 		if (LNotEqual(Local1, Local0)) {
-			err(ts, z177, 0x01c, 0, 0, Local1, Local0)
+			err(ts, z177, __LINE__, 0, 0, Local1, Local0)
 		}
 	}
 	Method(m200, 0, Serialized, 0)
@@ -802,7 +802,7 @@ Method(m18a, 1, Serialized)
 		Add(cnt1, Local0, cnt1)
 		Store(DerefOf(Index(p200, Local1)), Local1)
 		if (LNotEqual(Local1, Local0)) {
-			err(ts, z177, 0x01d, 0, 0, Local1, Local0)
+			err(ts, z177, __LINE__, 0, 0, Local1, Local0)
 		}
 	}
 	Method(m300, 0, Serialized, 0)
@@ -826,7 +826,7 @@ Method(m18a, 1, Serialized)
 		Add(cnt1, Local0, cnt1)
 		Store(DerefOf(Index(p300, Local1)), Local1)
 		if (LNotEqual(Local1, Local0)) {
-			err(ts, z177, 0x01e, 0, 0, Local1, Local0)
+			err(ts, z177, __LINE__, 0, 0, Local1, Local0)
 		}
 	}
 	Method(m400, 0, Serialized, 0)
@@ -844,11 +844,11 @@ Method(m18a, 1, Serialized)
 		Add(cnt1, Local0, cnt1)
 		Store(DerefOf(Index(p400, Local1)), Local1)
 		if (LNotEqual(Local1, Local0)) {
-			err(ts, z177, 0x01f, 0, 0, Local1, Local0)
+			err(ts, z177, __LINE__, 0, 0, Local1, Local0)
 		}
 	}
 
-	CH03(ts, z177, 0x020, 0, 0)
+	CH03(ts, z177, 0x020, __LINE__, 0)
 
 	Store(arg0, i000)
 
@@ -857,17 +857,17 @@ Method(m18a, 1, Serialized)
 	Concatenate("Maximal number of methods being in progress simultaneously ", max0, Debug)
 
 	if (arg0) {
-		CH04(ts, 0, 84, z177, 0x113, 0, 0)	// AE_AML_METHOD_LIMIT
+		CH04(ts, 0, 84, z177, __LINE__, 0, 0)	// AE_AML_METHOD_LIMIT
 	} else {
 
 		/* Check Maximal number of methods being in progress simultaneously */
 		if (LNotEqual(max0, 45)) {
-			err(ts, z177, 0x021, 0, 0, max0, 45)
+			err(ts, z177, __LINE__, 0, 0, max0, 45)
 		}
 
 		/* Overall got out of methods the same number as got into methods */
 		if (LNotEqual(cnt0, 0)) {
-			err(ts, z177, 0x022, 0, 0, cnt0, 0)
+			err(ts, z177, __LINE__, 0, 0, cnt0, 0)
 		}
 
 		/* Check indexes */
@@ -879,10 +879,10 @@ Method(m18a, 1, Serialized)
 
 		/* Check the overall sum of total indexes */
 		if (LNotEqual(cnt1, 0x3DE)) {
-			err(ts, z177, 0x023, 0, 0, cnt1, 0x3DE)
+			err(ts, z177, __LINE__, 0, 0, cnt1, 0x3DE)
 		}
 	}
-	CH03(ts, z177, 0x024, 0, 0)
+	CH03(ts, z177, 0x024, __LINE__, 0)
 }
 
 /*
@@ -1000,7 +1000,7 @@ Method(m18b, 1, Serialized)
 			Store(DeRefOf(Index(arg2, lpC0)), Local0)
 			Store(DeRefOf(Index(arg3, lpC0)), Local1)
 			if (LNotEqual(Local0, Local1)) {
-				err(ts, z177, 0x025, 0, 0, Local0, Local1)
+				err(ts, z177, __LINE__, 0, 0, Local0, Local1)
 				Store(arg0, Debug)
 				Store(lpC0, Debug)
 			}
@@ -1011,22 +1011,22 @@ Method(m18b, 1, Serialized)
 		Switch (arg0) {
 			Case (1) {
 				if (LNotEqual(ind1, n100)) {
-					err(ts, z177, 0x026, 0, 0, ind1, n100)
+					err(ts, z177, __LINE__, 0, 0, ind1, n100)
 				}
 			}
 			Case (2) {
 				if (LNotEqual(ind2, n200)) {
-					err(ts, z177, 0x027, 0, 0, ind2, n200)
+					err(ts, z177, __LINE__, 0, 0, ind2, n200)
 				}
 			}
 			Case (3) {
 				if (LNotEqual(ind3, n300)) {
-					err(ts, z177, 0x028, 0, 0, ind3, n300)
+					err(ts, z177, __LINE__, 0, 0, ind3, n300)
 				}
 			}
 			Case (4) {
 				if (LNotEqual(ind4, n400)) {
-					err(ts, z177, 0x029, 0, 0, ind4, n400)
+					err(ts, z177, __LINE__, 0, 0, ind4, n400)
 				}
 			}
 		}
@@ -1064,7 +1064,7 @@ Method(m18b, 1, Serialized)
 		Add(cnt1, Local0, cnt1)
 		Store(DerefOf(Index(p100, Local1)), Local1)
 		if (LNotEqual(Local1, Local0)) {
-			err(ts, z177, 0x02a, 0, 0, Local1, Local0)
+			err(ts, z177, __LINE__, 0, 0, Local1, Local0)
 		}
 	}
 	Method(m200, 0, Serialized, 7)
@@ -1083,7 +1083,7 @@ Method(m18b, 1, Serialized)
 		Add(cnt1, Local0, cnt1)
 		Store(DerefOf(Index(p200, Local1)), Local1)
 		if (LNotEqual(Local1, Local0)) {
-			err(ts, z177, 0x02b, 0, 0, Local1, Local0)
+			err(ts, z177, __LINE__, 0, 0, Local1, Local0)
 		}
 	}
 	Method(m300, 0, Serialized, 7)
@@ -1107,7 +1107,7 @@ Method(m18b, 1, Serialized)
 		Add(cnt1, Local0, cnt1)
 		Store(DerefOf(Index(p300, Local1)), Local1)
 		if (LNotEqual(Local1, Local0)) {
-			err(ts, z177, 0x02c, 0, 0, Local1, Local0)
+			err(ts, z177, __LINE__, 0, 0, Local1, Local0)
 		}
 	}
 	Method(m400, 0, Serialized, 7)
@@ -1125,11 +1125,11 @@ Method(m18b, 1, Serialized)
 		Add(cnt1, Local0, cnt1)
 		Store(DerefOf(Index(p400, Local1)), Local1)
 		if (LNotEqual(Local1, Local0)) {
-			err(ts, z177, 0x02d, 0, 0, Local1, Local0)
+			err(ts, z177, __LINE__, 0, 0, Local1, Local0)
 		}
 	}
 
-	CH03(ts, z177, 0x02e, 0, 0)
+	CH03(ts, z177, 0x02e, __LINE__, 0)
 
 	Store(arg0, i000)
 
@@ -1138,17 +1138,17 @@ Method(m18b, 1, Serialized)
 	Concatenate("Maximal number of methods being in progress simultaneously ", max0, Debug)
 
 	if (arg0) {
-		CH04(ts, 0, 84, z177, 0x213, 0, 0)	// AE_AML_METHOD_LIMIT
+		CH04(ts, 0, 84, z177, __LINE__, 0, 0)	// AE_AML_METHOD_LIMIT
 	} else {
 
 		/* Check Maximal number of methods being in progress simultaneously */
 		if (LNotEqual(max0, 45)) {
-			err(ts, z177, 0x02f, 0, 0, max0, 45)
+			err(ts, z177, __LINE__, 0, 0, max0, 45)
 		}
 
 		/* Overall got out of methods the same number as got into methods */
 		if (LNotEqual(cnt0, 0)) {
-			err(ts, z177, 0x030, 0, 0, cnt0, 0)
+			err(ts, z177, __LINE__, 0, 0, cnt0, 0)
 		}
 
 		/* Check indexes */
@@ -1160,11 +1160,11 @@ Method(m18b, 1, Serialized)
 
 		/* Check the overall sum of total indexes */
 		if (LNotEqual(cnt1, 0x3DE)) {
-			err(ts, z177, 0x031, 0, 0, cnt1, 0x3DE)
+			err(ts, z177, __LINE__, 0, 0, cnt1, 0x3DE)
 		}
 	}
 
-	CH03(ts, z177, 0x032, 0, 0)
+	CH03(ts, z177, 0x032, __LINE__, 0)
 }
 
 
@@ -1190,9 +1190,9 @@ Method(m18d,, Serialized)
 		}
 	}
 
-	CH03(ts, z177, 0x033, 0, 0)
+	CH03(ts, z177, 0x033, __LINE__, 0)
 	m000(0)
-	CH03(ts, z177, 0x034, 0, 0)
+	CH03(ts, z177, 0x034, __LINE__, 0)
 }
 
 /*
@@ -1212,12 +1212,12 @@ Method(m18e,, Serialized)
 		}
 	}
 
-	CH03(ts, z177, 0x035, 0, 0)
+	CH03(ts, z177, 0x035, __LINE__, 0)
 	m000(0)
 	if (y902) {
-		CH04(ts, 0, 7, z177, 0x036, 0, 0)	// AE_ALREADY_EXISTS
+		CH04(ts, 0, 7, z177, __LINE__, 0, 0)	// AE_ALREADY_EXISTS
 	} else {
-		CH03(ts, z177, 0x037, 0, 0)
+		CH03(ts, z177, 0x037, __LINE__, 0)
 	}
 }
 
@@ -1242,12 +1242,12 @@ Method(m18f,, Serialized)
 		}
 	}
 
-	CH03(ts, z177, 0x038, 0, 0)
+	CH03(ts, z177, 0x038, __LINE__, 0)
 	m000(0)
 	if (y902) {
-		CH04(ts, 0, 7, z177, 0x039, 0, 0)	// AE_ALREADY_EXISTS
+		CH04(ts, 0, 7, z177, __LINE__, 0, 0)	// AE_ALREADY_EXISTS
 	} else {
-		CH03(ts, z177, 0x03a, 0, 0)
+		CH03(ts, z177, 0x03a, __LINE__, 0)
 	}
 }
 
@@ -1268,12 +1268,12 @@ Method(m19a,, Serialized)
 		}
 	}
 
-	CH03(ts, z177, 0x03b, 0, 0)
+	CH03(ts, z177, 0x03b, __LINE__, 0)
 	m000(0)
 	if (y902) {
-		CH04(ts, 0, 7, z177, 0x03c, 0, 0)	// AE_ALREADY_EXISTS
+		CH04(ts, 0, 7, z177, __LINE__, 0, 0)	// AE_ALREADY_EXISTS
 	} else {
-		CH03(ts, z177, 0x03d, 0, 0)
+		CH03(ts, z177, 0x03d, __LINE__, 0)
 	}
 }
 
@@ -1294,12 +1294,12 @@ Method(m19b,, Serialized)
 		}
 	}
 
-	CH03(ts, z177, 0x03e, 0, 0)
+	CH03(ts, z177, 0x03e, __LINE__, 0)
 	m000(0)
 	if (y902) {
-		CH04(ts, 0, 7, z177, 0x03f, 0, 0)	// AE_ALREADY_EXISTS
+		CH04(ts, 0, 7, z177, __LINE__, 0, 0)	// AE_ALREADY_EXISTS
 	} else {
-		CH03(ts, z177, 0x040, 0, 0)
+		CH03(ts, z177, 0x040, __LINE__, 0)
 	}
 }
 
@@ -1406,12 +1406,12 @@ Method(m19c,, Serialized)
 		m801(1)
 	}
 
-	CH03(ts, z177, 0x041, 0, 0)
+	CH03(ts, z177, 0x041, __LINE__, 0)
 	m100()
 	if (y902) {
-		CH04(ts, 0, 7, z177, 0x042, 0, 0)	// AE_ALREADY_EXISTS
+		CH04(ts, 0, 7, z177, __LINE__, 0, 0)	// AE_ALREADY_EXISTS
 	} else {
-		CH03(ts, z177, 0x043, 0, 0)
+		CH03(ts, z177, 0x043, __LINE__, 0)
 	}
 }
 
@@ -1433,39 +1433,39 @@ Method(m19d,, Serialized)
 		Name(\i2z0, 0xabcd0000)
 
 		if (LNotEqual(i2z0, 0xabcd0000)) {
-			err(ts, z177, 0x044, 0, 0, i2z0, 0xabcd0000)
+			err(ts, z177, __LINE__, 0, 0, i2z0, 0xabcd0000)
 		}
 		if (LNotEqual(\i2z0, 0xabcd0000)) {
-			err(ts, z177, 0x045, 0, 0, \i2z0, 0xabcd0000)
+			err(ts, z177, __LINE__, 0, 0, \i2z0, 0xabcd0000)
 		}
 
 		Store(0x12345678, i2z0)
 		if (LNotEqual(i2z0, 0x12345678)) {
-			err(ts, z177, 0x046, 0, 0, i2z0, 0x12345678)
+			err(ts, z177, __LINE__, 0, 0, i2z0, 0x12345678)
 		}
 		if (LNotEqual(\i2z0, 0x12345678)) {
-			err(ts, z177, 0x047, 0, 0, \i2z0, 0x12345678)
+			err(ts, z177, __LINE__, 0, 0, \i2z0, 0x12345678)
 		}
 
 		Store(0x11112222, \i2z0)
 		if (LNotEqual(i2z0, 0x11112222)) {
-			err(ts, z177, 0x048, 0, 0, i2z0, 0x11112222)
+			err(ts, z177, __LINE__, 0, 0, i2z0, 0x11112222)
 		}
 		if (LNotEqual(\i2z0, 0x11112222)) {
-			err(ts, z177, 0x049, 0, 0, \i2z0, 0x11112222)
+			err(ts, z177, __LINE__, 0, 0, \i2z0, 0x11112222)
 		}
 	}
-	CH03(ts, z177, 0x04a, 0, 0)
+	CH03(ts, z177, 0x04a, __LINE__, 0)
 	m000(0)
-	CH03(ts, z177, 0x04b, 0, 0)
+	CH03(ts, z177, 0x04b, __LINE__, 0)
 
 	Store(0x11112222, i2z0)
 
-	CH04(ts, 1, 5, z177, 0x04c, 0, 0)	// AE_NOT_FOUND
+	CH04(ts, 1, 5, z177, __LINE__, 0, 0)	// AE_NOT_FOUND
 
 	Store(0x11112222, \i2z0)
 
-	CH04(ts, 1, 5, z177, 0x04d, 0, 0)	// AE_NOT_FOUND
+	CH04(ts, 1, 5, z177, __LINE__, 0, 0)	// AE_NOT_FOUND
 }
 
 /*
@@ -1480,39 +1480,39 @@ Method(m19e,, Serialized)
 		Name(\i2z1, 0xabcd0000)
 
 		if (LNotEqual(i2z1, 0xabcd0000)) {
-			err(ts, z177, 0x04e, 0, 0, i2z1, 0xabcd0000)
+			err(ts, z177, __LINE__, 0, 0, i2z1, 0xabcd0000)
 		}
 		if (LNotEqual(\i2z1, 0xabcd0000)) {
-			err(ts, z177, 0x04f, 0, 0, \i2z1, 0xabcd0000)
+			err(ts, z177, __LINE__, 0, 0, \i2z1, 0xabcd0000)
 		}
 
 		Store(0x12345678, i2z1)
 		if (LNotEqual(i2z1, 0x12345678)) {
-			err(ts, z177, 0x050, 0, 0, i2z1, 0x12345678)
+			err(ts, z177, __LINE__, 0, 0, i2z1, 0x12345678)
 		}
 		if (LNotEqual(\i2z1, 0x12345678)) {
-			err(ts, z177, 0x051, 0, 0, \i2z1, 0x12345678)
+			err(ts, z177, __LINE__, 0, 0, \i2z1, 0x12345678)
 		}
 
 		Store(0x22223333, \i2z1)
 		if (LNotEqual(i2z1, 0x22223333)) {
-			err(ts, z177, 0x052, 0, 0, i2z1, 0x22223333)
+			err(ts, z177, __LINE__, 0, 0, i2z1, 0x22223333)
 		}
 		if (LNotEqual(\i2z1, 0x22223333)) {
-			err(ts, z177, 0x053, 0, 0, \i2z1, 0x22223333)
+			err(ts, z177, __LINE__, 0, 0, \i2z1, 0x22223333)
 		}
 	}
-	CH03(ts, z177, 0x054, 0, 0)
+	CH03(ts, z177, 0x054, __LINE__, 0)
 	m000(0)
-	CH03(ts, z177, 0x055, 0, 0)
+	CH03(ts, z177, 0x055, __LINE__, 0)
 
 	Store(0x11112222, i2z1)
 
-	CH04(ts, 1, 5, z177, 0x056, 0, 0)	// AE_NOT_FOUND
+	CH04(ts, 1, 5, z177, __LINE__, 0, 0)	// AE_NOT_FOUND
 
 	Store(0x11112222, \i2z1)
 
-	CH04(ts, 1, 5, z177, 0x057, 0, 0)	// AE_NOT_FOUND
+	CH04(ts, 1, 5, z177, __LINE__, 0, 0)	// AE_NOT_FOUND
 }
 
 /*
@@ -1532,9 +1532,9 @@ Method(m19f,, Serialized)
 		}
 	}
 
-	CH03(ts, z177, 0x058, 0, 0)
+	CH03(ts, z177, 0x058, __LINE__, 0)
 	m000(0)
-	CH04(ts, 0, 7, z177, 0x059, 0, 0)	// AE_ALREADY_EXISTS
+	CH04(ts, 0, 7, z177, __LINE__, 0, 0)	// AE_ALREADY_EXISTS
 }
 
 /*
@@ -1554,9 +1554,9 @@ Method(m1b8,, Serialized)
 		}
 	}
 
-	CH03(ts, z177, 0x05a, 0, 0)
+	CH03(ts, z177, 0x05a, __LINE__, 0)
 	m000(0)
-	CH04(ts, 0, 7, z177, 0x05b, 0, 0)	// AE_ALREADY_EXISTS
+	CH04(ts, 0, 7, z177, __LINE__, 0, 0)	// AE_ALREADY_EXISTS
 }
 
 
@@ -1577,9 +1577,9 @@ Method(m1b9,, Serialized)
 		Scope(\_SB) { Name(i2z4, 0xabcd0004) }
 	}
 
-	CH03(ts, z177, 0x05c, 0, 0)
+	CH03(ts, z177, 0x05c, __LINE__, 0)
 	m000(0)
-	CH03(ts, z177, 0x05d, 0, 0)
+	CH03(ts, z177, 0x05d, __LINE__, 0)
 }
 
 /*
@@ -1595,9 +1595,9 @@ Method(m1ba,, Serialized)
 		Scope(\_SB) { Name(i2z5, 0xabcd0005) }
 	}
 
-	CH03(ts, z177, 0x05e, 0, 0)
+	CH03(ts, z177, 0x05e, __LINE__, 0)
 	m000(0)
-	CH03(ts, z177, 0x05f, 0, 0)
+	CH03(ts, z177, 0x05f, __LINE__, 0)
 }
 
 /*
@@ -1617,9 +1617,9 @@ Method(m1bb,, Serialized)
 		}
 	}
 
-	CH03(ts, z177, 0x060, 0, 0)
+	CH03(ts, z177, 0x060, __LINE__, 0)
 	m000(0)
-	CH04(ts, 0, 7, z177, 0x061, 0, 0)	// AE_ALREADY_EXISTS
+	CH04(ts, 0, 7, z177, __LINE__, 0, 0)	// AE_ALREADY_EXISTS
 }
 
 /*
@@ -1639,9 +1639,9 @@ Method(m1bc,, Serialized)
 		}
 	}
 
-	CH03(ts, z177, 0x062, 0, 0)
+	CH03(ts, z177, 0x062, __LINE__, 0)
 	m000(0)
-	CH04(ts, 0, 7, z177, 0x063, 0, 0)	// AE_ALREADY_EXISTS
+	CH04(ts, 0, 7, z177, __LINE__, 0, 0)	// AE_ALREADY_EXISTS
 }
 
 /*
@@ -1659,34 +1659,34 @@ Method(m1bd,, Serialized)
 			Name(\i2z8, 0xabcd0108)
 
 			if (LNotEqual(i2z8, 0xabcd0108)) {
-				err(ts, z177, 0x064, 0, 0, i2z8, 0xabcd0108)
+				err(ts, z177, __LINE__, 0, 0, i2z8, 0xabcd0108)
 			}
 			if (LNotEqual(\i2z8, 0xabcd0108)) {
-				err(ts, z177, 0x065, 0, 0, \i2z8, 0xabcd0108)
+				err(ts, z177, __LINE__, 0, 0, \i2z8, 0xabcd0108)
 			}
 		} else {
 			if (LNotEqual(i2z8, 0x22223333)) {
-				err(ts, z177, 0x066, 0, 0, i2z8, 0x22223333)
+				err(ts, z177, __LINE__, 0, 0, i2z8, 0x22223333)
 			}
 			if (LNotEqual(\i2z8, 0x22223333)) {
-				err(ts, z177, 0x067, 0, 0, \i2z8, 0x22223333)
+				err(ts, z177, __LINE__, 0, 0, \i2z8, 0x22223333)
 			}
 		}
 
 		Store(0x12345678, i2z8)
 		if (LNotEqual(i2z8, 0x12345678)) {
-			err(ts, z177, 0x068, 0, 0, i2z8, 0x12345678)
+			err(ts, z177, __LINE__, 0, 0, i2z8, 0x12345678)
 		}
 		if (LNotEqual(\i2z8, 0x12345678)) {
-			err(ts, z177, 0x069, 0, 0, \i2z8, 0x12345678)
+			err(ts, z177, __LINE__, 0, 0, \i2z8, 0x12345678)
 		}
 
 		Store(0x22223333, \i2z8)
 		if (LNotEqual(i2z8, 0x22223333)) {
-			err(ts, z177, 0x06a, 0, 0, i2z8, 0x22223333)
+			err(ts, z177, __LINE__, 0, 0, i2z8, 0x22223333)
 		}
 		if (LNotEqual(\i2z8, 0x22223333)) {
-			err(ts, z177, 0x06b, 0, 0, \i2z8, 0x22223333)
+			err(ts, z177, __LINE__, 0, 0, \i2z8, 0x22223333)
 		}
 
 		if (LNot(arg0)) {
@@ -1695,17 +1695,17 @@ Method(m1bd,, Serialized)
 
 		if (arg0) {
 			if (LNotEqual(i2z8, 0x22223333)) {
-				err(ts, z177, 0x06c, 0, 0, i2z8, 0x22223333)
+				err(ts, z177, __LINE__, 0, 0, i2z8, 0x22223333)
 			}
 			if (LNotEqual(\i2z8, 0x22223333)) {
-				err(ts, z177, 0x06d, 0, 0, \i2z8, 0x22223333)
+				err(ts, z177, __LINE__, 0, 0, \i2z8, 0x22223333)
 			}
 		} else {
 			if (LNotEqual(i2z8, 0x66667777)) {
-				err(ts, z177, 0x06e, 0, 0, i2z8, 0x66667777)
+				err(ts, z177, __LINE__, 0, 0, i2z8, 0x66667777)
 			}
 			if (LNotEqual(\i2z8, 0x66667777)) {
-				err(ts, z177, 0x06f, 0, 0, \i2z8, 0x66667777)
+				err(ts, z177, __LINE__, 0, 0, \i2z8, 0x66667777)
 			}
 		}
 
@@ -1716,9 +1716,9 @@ Method(m1bd,, Serialized)
 		}
 	}
 
-	CH03(ts, z177, 0x070, 0, 0)
+	CH03(ts, z177, 0x070, __LINE__, 0)
 	m000(0)
-	CH03(ts, z177, 0x071, 0, 0)
+	CH03(ts, z177, 0x071, __LINE__, 0)
 }
 
 /*
@@ -1736,34 +1736,34 @@ Method(m1be,, Serialized)
 			Name(\i2z9, 0xabcd0109)
 
 			if (LNotEqual(i2z9, 0xabcd0109)) {
-				err(ts, z177, 0x072, 0, 0, i2z9, 0xabcd0109)
+				err(ts, z177, __LINE__, 0, 0, i2z9, 0xabcd0109)
 			}
 			if (LNotEqual(\i2z9, 0xabcd0109)) {
-				err(ts, z177, 0x073, 0, 0, \i2z9, 0xabcd0109)
+				err(ts, z177, __LINE__, 0, 0, \i2z9, 0xabcd0109)
 			}
 		} else {
 			if (LNotEqual(i2z9, 0x22223333)) {
-				err(ts, z177, 0x074, 0, 0, i2z9, 0x22223333)
+				err(ts, z177, __LINE__, 0, 0, i2z9, 0x22223333)
 			}
 			if (LNotEqual(\i2z9, 0x22223333)) {
-				err(ts, z177, 0x075, 0, 0, \i2z9, 0x22223333)
+				err(ts, z177, __LINE__, 0, 0, \i2z9, 0x22223333)
 			}
 		}
 
 		Store(0x12345678, i2z9)
 		if (LNotEqual(i2z9, 0x12345678)) {
-			err(ts, z177, 0x076, 0, 0, i2z9, 0x12345678)
+			err(ts, z177, __LINE__, 0, 0, i2z9, 0x12345678)
 		}
 		if (LNotEqual(\i2z9, 0x12345678)) {
-			err(ts, z177, 0x077, 0, 0, \i2z9, 0x12345678)
+			err(ts, z177, __LINE__, 0, 0, \i2z9, 0x12345678)
 		}
 
 		Store(0x22223333, \i2z9)
 		if (LNotEqual(i2z9, 0x22223333)) {
-			err(ts, z177, 0x078, 0, 0, i2z9, 0x22223333)
+			err(ts, z177, __LINE__, 0, 0, i2z9, 0x22223333)
 		}
 		if (LNotEqual(\i2z9, 0x22223333)) {
-			err(ts, z177, 0x079, 0, 0, \i2z9, 0x22223333)
+			err(ts, z177, __LINE__, 0, 0, \i2z9, 0x22223333)
 		}
 
 		if (LNot(arg0)) {
@@ -1772,17 +1772,17 @@ Method(m1be,, Serialized)
 
 		if (arg0) {
 			if (LNotEqual(i2z9, 0x22223333)) {
-				err(ts, z177, 0x07a, 0, 0, i2z9, 0x22223333)
+				err(ts, z177, __LINE__, 0, 0, i2z9, 0x22223333)
 			}
 			if (LNotEqual(\i2z9, 0x22223333)) {
-				err(ts, z177, 0x07b, 0, 0, \i2z9, 0x22223333)
+				err(ts, z177, __LINE__, 0, 0, \i2z9, 0x22223333)
 			}
 		} else {
 			if (LNotEqual(i2z9, 0x66667777)) {
-				err(ts, z177, 0x07c, 0, 0, i2z9, 0x66667777)
+				err(ts, z177, __LINE__, 0, 0, i2z9, 0x66667777)
 			}
 			if (LNotEqual(\i2z9, 0x66667777)) {
-				err(ts, z177, 0x07d, 0, 0, \i2z9, 0x66667777)
+				err(ts, z177, __LINE__, 0, 0, \i2z9, 0x66667777)
 			}
 		}
 
@@ -1793,9 +1793,9 @@ Method(m1be,, Serialized)
 		}
 	}
 
-	CH03(ts, z177, 0x07e, 0, 0)
+	CH03(ts, z177, 0x07e, __LINE__, 0)
 	m000(0)
-	CH03(ts, z177, 0x07f, 0, 0)
+	CH03(ts, z177, 0x07f, __LINE__, 0)
 }
 
 /*
@@ -1811,17 +1811,17 @@ Method(m1de,, Serialized)
 	{
 		if (LNot(arg0)) {
 			if (LNotEqual(i3z0, 0xabcd0000)) {
-				err(ts, z177, 0x080, 0, 0, i3z0, 0xabcd0000)
+				err(ts, z177, __LINE__, 0, 0, i3z0, 0xabcd0000)
 			}
 		} else {
 			if (LNotEqual(i3z0, 0x12345678)) {
-				err(ts, z177, 0x081, 0, 0, i3z0, 0x12345678)
+				err(ts, z177, __LINE__, 0, 0, i3z0, 0x12345678)
 			}
 		}
 
 		Store(0x12345678, i3z0)
 		if (LNotEqual(i3z0, 0x12345678)) {
-			err(ts, z177, 0x082, 0, 0, i3z0, 0x12345678)
+			err(ts, z177, __LINE__, 0, 0, i3z0, 0x12345678)
 		}
 
 		if (LNot(arg0)) {
@@ -1830,11 +1830,11 @@ Method(m1de,, Serialized)
 
 		if (arg0) {
 			if (LNotEqual(i3z0, 0x12345678)) {
-				err(ts, z177, 0x083, 0, 0, i3z0, 0x12345678)
+				err(ts, z177, __LINE__, 0, 0, i3z0, 0x12345678)
 			}
 		} else {
 			if (LNotEqual(i3z0, 0x66667777)) {
-				err(ts, z177, 0x084, 0, 0, i3z0, 0x66667777)
+				err(ts, z177, __LINE__, 0, 0, i3z0, 0x66667777)
 			}
 		}
 
@@ -1845,9 +1845,9 @@ Method(m1de,, Serialized)
 		}
 	}
 
-	CH03(ts, z177, 0x085, 0, 0)
+	CH03(ts, z177, 0x085, __LINE__, 0)
 	m000(0)
-	CH03(ts, z177, 0x086, 0, 0)
+	CH03(ts, z177, 0x086, __LINE__, 0)
 }
 
 /*
@@ -1863,17 +1863,17 @@ Method(m1df,, Serialized)
 	{
 		if (LNot(arg0)) {
 			if (LNotEqual(i3z0, 0xabcd0000)) {
-				err(ts, z177, 0x087, 0, 0, i3z0, 0xabcd0000)
+				err(ts, z177, __LINE__, 0, 0, i3z0, 0xabcd0000)
 			}
 		} else {
 			if (LNotEqual(i3z0, 0x12345678)) {
-				err(ts, z177, 0x088, 0, 0, i3z0, 0x12345678)
+				err(ts, z177, __LINE__, 0, 0, i3z0, 0x12345678)
 			}
 		}
 
 		Store(0x12345678, i3z0)
 		if (LNotEqual(i3z0, 0x12345678)) {
-			err(ts, z177, 0x089, 0, 0, i3z0, 0x12345678)
+			err(ts, z177, __LINE__, 0, 0, i3z0, 0x12345678)
 		}
 
 		if (LNot(arg0)) {
@@ -1882,11 +1882,11 @@ Method(m1df,, Serialized)
 
 		if (arg0) {
 			if (LNotEqual(i3z0, 0x12345678)) {
-				err(ts, z177, 0x08a, 0, 0, i3z0, 0x12345678)
+				err(ts, z177, __LINE__, 0, 0, i3z0, 0x12345678)
 			}
 		} else {
 			if (LNotEqual(i3z0, 0x66667777)) {
-				err(ts, z177, 0x08b, 0, 0, i3z0, 0x66667777)
+				err(ts, z177, __LINE__, 0, 0, i3z0, 0x66667777)
 			}
 		}
 
@@ -1897,9 +1897,9 @@ Method(m1df,, Serialized)
 		}
 	}
 
-	CH03(ts, z177, 0x08c, 0, 0)
+	CH03(ts, z177, 0x08c, __LINE__, 0)
 	m000(0)
-	CH03(ts, z177, 0x08d, 0, 0)
+	CH03(ts, z177, 0x08d, __LINE__, 0)
 }
 
 /*
@@ -1916,16 +1916,16 @@ Method(m1ee,, Serialized)
 			Name(\_SB.i0q8, 0xabcd0008)
 
 			if (LNotEqual(\_SB.i0q8, 0xabcd0008)) {
-				err(ts, z177, 0x08e, 0, 0, \_SB.i0q8, 0xabcd0008)
+				err(ts, z177, __LINE__, 0, 0, \_SB.i0q8, 0xabcd0008)
 			}
 		} else {
 			if (LNotEqual(\_SB.i0q8, 0x22223333)) {
-				err(ts, z177, 0x08f, 0, 0, \_SB.i0q8, 0x22223333)
+				err(ts, z177, __LINE__, 0, 0, \_SB.i0q8, 0x22223333)
 			}
 		}
 		Store(0x22223333, \_SB.i0q8)
 		if (LNotEqual(\_SB.i0q8, 0x22223333)) {
-			err(ts, z177, 0x090, 0, 0, \_SB.i0q8, 0x22223333)
+			err(ts, z177, __LINE__, 0, 0, \_SB.i0q8, 0x22223333)
 		}
 
 		if (LNot(arg0)) {
@@ -1934,11 +1934,11 @@ Method(m1ee,, Serialized)
 
 		if (arg0) {
 			if (LNotEqual(\_SB.i0q8, 0x22223333)) {
-				err(ts, z177, 0x091, 0, 0, \_SB.i0q8, 0x22223333)
+				err(ts, z177, __LINE__, 0, 0, \_SB.i0q8, 0x22223333)
 			}
 		} else {
 			if (LNotEqual(\_SB.i0q8, 0x66667777)) {
-				err(ts, z177, 0x092, 0, 0, \_SB.i0q8, 0x66667777)
+				err(ts, z177, __LINE__, 0, 0, \_SB.i0q8, 0x66667777)
 			}
 		}
 		if (arg0) {
@@ -1948,9 +1948,9 @@ Method(m1ee,, Serialized)
 		}
 	}
 
-	CH03(ts, z177, 0x093, 0, 0)
+	CH03(ts, z177, 0x093, __LINE__, 0)
 	m000(0)
-	CH03(ts, z177, 0x094, 0, 0)
+	CH03(ts, z177, 0x094, __LINE__, 0)
 }
 
 /*
@@ -1968,17 +1968,17 @@ Method(m1ef,, Serialized)
 			Name(\_SB.i0q9, 0xabcd0009)
 
 			if (LNotEqual(\_SB.i0q9, 0xabcd0009)) {
-				err(ts, z177, 0x08e, 0, 0, \_SB.i0q9, 0xabcd0009)
+				err(ts, z177, __LINE__, 0, 0, \_SB.i0q9, 0xabcd0009)
 			}
 		} else {
 			if (LNotEqual(\_SB.i0q9, 0x22223333)) {
-				err(ts, z177, 0x08f, 0, 0, \_SB.i0q9, 0x22223333)
+				err(ts, z177, __LINE__, 0, 0, \_SB.i0q9, 0x22223333)
 			}
 		}
 
 		Store(0x22223333, \_SB.i0q9)
 		if (LNotEqual(\_SB.i0q9, 0x22223333)) {
-			err(ts, z177, 0x090, 0, 0, \_SB.i0q9, 0x22223333)
+			err(ts, z177, __LINE__, 0, 0, \_SB.i0q9, 0x22223333)
 		}
 
 		if (LNot(arg0)) {
@@ -1987,11 +1987,11 @@ Method(m1ef,, Serialized)
 
 		if (arg0) {
 			if (LNotEqual(\_SB.i0q9, 0x22223333)) {
-				err(ts, z177, 0x091, 0, 0, \_SB.i0q9, 0x22223333)
+				err(ts, z177, __LINE__, 0, 0, \_SB.i0q9, 0x22223333)
 			}
 		} else {
 			if (LNotEqual(\_SB.i0q9, 0x66667777)) {
-				err(ts, z177, 0x092, 0, 0, \_SB.i0q9, 0x66667777)
+				err(ts, z177, __LINE__, 0, 0, \_SB.i0q9, 0x66667777)
 			}
 		}
 
@@ -2002,9 +2002,9 @@ Method(m1ef,, Serialized)
 		}
 	}
 
-	CH03(ts, z177, 0x093, 0, 0)
+	CH03(ts, z177, 0x093, __LINE__, 0)
 	m000(0)
-	CH03(ts, z177, 0x094, 0, 0)
+	CH03(ts, z177, 0x094, __LINE__, 0)
 }
 
 /*
@@ -2022,17 +2022,17 @@ Method(m1bf,, Serialized)
 			Scope(\_SB) { Name(i1q8, 0xabcd0008) }
 
 			if (LNotEqual(\_SB.i1q8, 0xabcd0008)) {
-				err(ts, z177, 0x095, 0, 0, \_SB.i1q8, 0xabcd0008)
+				err(ts, z177, __LINE__, 0, 0, \_SB.i1q8, 0xabcd0008)
 			}
 		} else {
 			if (LNotEqual(\_SB.i1q8, 0x22223333)) {
-				err(ts, z177, 0x096, 0, 0, \_SB.i1q8, 0x22223333)
+				err(ts, z177, __LINE__, 0, 0, \_SB.i1q8, 0x22223333)
 			}
 		}
 
 		Store(0x22223333, \_SB.i1q8)
 		if (LNotEqual(\_SB.i1q8, 0x22223333)) {
-			err(ts, z177, 0x097, 0, 0, \_SB.i1q8, 0x22223333)
+			err(ts, z177, __LINE__, 0, 0, \_SB.i1q8, 0x22223333)
 		}
 
 		if (LNot(arg0)) {
@@ -2041,11 +2041,11 @@ Method(m1bf,, Serialized)
 
 		if (arg0) {
 			if (LNotEqual(\_SB.i1q8, 0x22223333)) {
-				err(ts, z177, 0x098, 0, 0, \_SB.i1q8, 0x22223333)
+				err(ts, z177, __LINE__, 0, 0, \_SB.i1q8, 0x22223333)
 			}
 		} else {
 			if (LNotEqual(\_SB.i1q8, 0x66667777)) {
-				err(ts, z177, 0x099, 0, 0, \_SB.i1q8, 0x66667777)
+				err(ts, z177, __LINE__, 0, 0, \_SB.i1q8, 0x66667777)
 			}
 		}
 		if (arg0) {
@@ -2055,9 +2055,9 @@ Method(m1bf,, Serialized)
 		}
 	}
 
-	CH03(ts, z177, 0x09a, 0, 0)
+	CH03(ts, z177, 0x09a, __LINE__, 0)
 	m000(0)
-	CH03(ts, z177, 0x09b, 0, 0)
+	CH03(ts, z177, 0x09b, __LINE__, 0)
 }
 
 /*
@@ -2075,17 +2075,17 @@ Method(m1dd,, Serialized)
 			Scope(\_SB) { Name(i1q9, 0xabcd0008) }
 
 			if (LNotEqual(\_SB.i1q9, 0xabcd0008)) {
-				err(ts, z177, 0x09c, 0, 0, \_SB.i1q9, 0xabcd0008)
+				err(ts, z177, __LINE__, 0, 0, \_SB.i1q9, 0xabcd0008)
 			}
 		} else {
 			if (LNotEqual(\_SB.i1q9, 0x22223333)) {
-				err(ts, z177, 0x09d, 0, 0, \_SB.i1q9, 0x22223333)
+				err(ts, z177, __LINE__, 0, 0, \_SB.i1q9, 0x22223333)
 			}
 		}
 
 		Store(0x22223333, \_SB.i1q9)
 		if (LNotEqual(\_SB.i1q9, 0x22223333)) {
-			err(ts, z177, 0x09e, 0, 0, \_SB.i1q9, 0x22223333)
+			err(ts, z177, __LINE__, 0, 0, \_SB.i1q9, 0x22223333)
 		}
 
 		if (LNot(arg0)) {
@@ -2094,11 +2094,11 @@ Method(m1dd,, Serialized)
 
 		if (arg0) {
 			if (LNotEqual(\_SB.i1q9, 0x22223333)) {
-				err(ts, z177, 0x09f, 0, 0, \_SB.i1q9, 0x22223333)
+				err(ts, z177, __LINE__, 0, 0, \_SB.i1q9, 0x22223333)
 			}
 		} else {
 			if (LNotEqual(\_SB.i1q9, 0x66667777)) {
-				err(ts, z177, 0x0a0, 0, 0, \_SB.i1q9, 0x66667777)
+				err(ts, z177, __LINE__, 0, 0, \_SB.i1q9, 0x66667777)
 			}
 		}
 		if (arg0) {
@@ -2108,9 +2108,9 @@ Method(m1dd,, Serialized)
 		}
 	}
 
-	CH03(ts, z177, 0x0a1, 0, 0)
+	CH03(ts, z177, 0x0a1, __LINE__, 0)
 	m000(0)
-	CH03(ts, z177, 0x0a2, 0, 0)
+	CH03(ts, z177, 0x0a2, __LINE__, 0)
 }
 
 
@@ -2129,34 +2129,34 @@ Method(m277,, Serialized)
 			Scope(\) { Name(i3z1, 0xabcd0208) }
 
 			if (LNotEqual(i3z1, 0xabcd0208)) {
-				err(ts, z177, 0x064, 0, 0, i3z1, 0xabcd0208)
+				err(ts, z177, __LINE__, 0, 0, i3z1, 0xabcd0208)
 			}
 			if (LNotEqual(\i3z1, 0xabcd0208)) {
-				err(ts, z177, 0x065, 0, 0, \i3z1, 0xabcd0208)
+				err(ts, z177, __LINE__, 0, 0, \i3z1, 0xabcd0208)
 			}
 		} else {
 			if (LNotEqual(i3z1, 0x22223333)) {
-				err(ts, z177, 0x066, 0, 0, i3z1, 0x22223333)
+				err(ts, z177, __LINE__, 0, 0, i3z1, 0x22223333)
 			}
 			if (LNotEqual(\i3z1, 0x22223333)) {
-				err(ts, z177, 0x067, 0, 0, \i3z1, 0x22223333)
+				err(ts, z177, __LINE__, 0, 0, \i3z1, 0x22223333)
 			}
 		}
 
 		Store(0x12345678, i3z1)
 		if (LNotEqual(i3z1, 0x12345678)) {
-			err(ts, z177, 0x068, 0, 0, i3z1, 0x12345678)
+			err(ts, z177, __LINE__, 0, 0, i3z1, 0x12345678)
 		}
 		if (LNotEqual(\i3z1, 0x12345678)) {
-			err(ts, z177, 0x069, 0, 0, \i3z1, 0x12345678)
+			err(ts, z177, __LINE__, 0, 0, \i3z1, 0x12345678)
 		}
 
 		Store(0x22223333, \i3z1)
 		if (LNotEqual(i3z1, 0x22223333)) {
-			err(ts, z177, 0x06a, 0, 0, i3z1, 0x22223333)
+			err(ts, z177, __LINE__, 0, 0, i3z1, 0x22223333)
 		}
 		if (LNotEqual(\i3z1, 0x22223333)) {
-			err(ts, z177, 0x06b, 0, 0, \i3z1, 0x22223333)
+			err(ts, z177, __LINE__, 0, 0, \i3z1, 0x22223333)
 		}
 
 		if (LNot(arg0)) {
@@ -2165,17 +2165,17 @@ Method(m277,, Serialized)
 
 		if (arg0) {
 			if (LNotEqual(i3z1, 0x22223333)) {
-				err(ts, z177, 0x06c, 0, 0, i3z1, 0x22223333)
+				err(ts, z177, __LINE__, 0, 0, i3z1, 0x22223333)
 			}
 			if (LNotEqual(\i3z1, 0x22223333)) {
-				err(ts, z177, 0x06d, 0, 0, \i3z1, 0x22223333)
+				err(ts, z177, __LINE__, 0, 0, \i3z1, 0x22223333)
 			}
 		} else {
 			if (LNotEqual(i3z1, 0x66667777)) {
-				err(ts, z177, 0x06e, 0, 0, i3z1, 0x66667777)
+				err(ts, z177, __LINE__, 0, 0, i3z1, 0x66667777)
 			}
 			if (LNotEqual(\i3z1, 0x66667777)) {
-				err(ts, z177, 0x06f, 0, 0, \i3z1, 0x66667777)
+				err(ts, z177, __LINE__, 0, 0, \i3z1, 0x66667777)
 			}
 		}
 
@@ -2186,9 +2186,9 @@ Method(m277,, Serialized)
 		}
 	}
 
-	CH03(ts, z177, 0x070, 0, 0)
+	CH03(ts, z177, 0x070, __LINE__, 0)
 	m000(0)
-	CH03(ts, z177, 0x071, 0, 0)
+	CH03(ts, z177, 0x071, __LINE__, 0)
 }
 
 /*
@@ -2206,34 +2206,34 @@ Method(m27d,, Serialized)
 			Scope(\) { Name(i3z2, 0xabcd0209) }
 
 			if (LNotEqual(i3z2, 0xabcd0209)) {
-				err(ts, z177, 0x072, 0, 0, i3z2, 0xabcd0209)
+				err(ts, z177, __LINE__, 0, 0, i3z2, 0xabcd0209)
 			}
 			if (LNotEqual(\i3z2, 0xabcd0209)) {
-				err(ts, z177, 0x073, 0, 0, \i3z2, 0xabcd0209)
+				err(ts, z177, __LINE__, 0, 0, \i3z2, 0xabcd0209)
 			}
 		} else {
 			if (LNotEqual(i3z2, 0x22223333)) {
-				err(ts, z177, 0x074, 0, 0, i3z2, 0x22223333)
+				err(ts, z177, __LINE__, 0, 0, i3z2, 0x22223333)
 			}
 			if (LNotEqual(\i3z2, 0x22223333)) {
-				err(ts, z177, 0x075, 0, 0, \i3z2, 0x22223333)
+				err(ts, z177, __LINE__, 0, 0, \i3z2, 0x22223333)
 			}
 		}
 
 		Store(0x12345678, i3z2)
 		if (LNotEqual(i3z2, 0x12345678)) {
-			err(ts, z177, 0x076, 0, 0, i3z2, 0x12345678)
+			err(ts, z177, __LINE__, 0, 0, i3z2, 0x12345678)
 		}
 		if (LNotEqual(\i3z2, 0x12345678)) {
-			err(ts, z177, 0x077, 0, 0, \i3z2, 0x12345678)
+			err(ts, z177, __LINE__, 0, 0, \i3z2, 0x12345678)
 		}
 
 		Store(0x22223333, \i3z2)
 		if (LNotEqual(i3z2, 0x22223333)) {
-			err(ts, z177, 0x078, 0, 0, i3z2, 0x22223333)
+			err(ts, z177, __LINE__, 0, 0, i3z2, 0x22223333)
 		}
 		if (LNotEqual(\i3z2, 0x22223333)) {
-			err(ts, z177, 0x079, 0, 0, \i3z2, 0x22223333)
+			err(ts, z177, __LINE__, 0, 0, \i3z2, 0x22223333)
 		}
 
 		if (LNot(arg0)) {
@@ -2242,17 +2242,17 @@ Method(m27d,, Serialized)
 
 		if (arg0) {
 			if (LNotEqual(i3z2, 0x22223333)) {
-				err(ts, z177, 0x07a, 0, 0, i3z2, 0x22223333)
+				err(ts, z177, __LINE__, 0, 0, i3z2, 0x22223333)
 			}
 			if (LNotEqual(\i3z2, 0x22223333)) {
-				err(ts, z177, 0x07b, 0, 0, \i3z2, 0x22223333)
+				err(ts, z177, __LINE__, 0, 0, \i3z2, 0x22223333)
 			}
 		} else {
 			if (LNotEqual(i3z2, 0x66667777)) {
-				err(ts, z177, 0x07c, 0, 0, i3z2, 0x66667777)
+				err(ts, z177, __LINE__, 0, 0, i3z2, 0x66667777)
 			}
 			if (LNotEqual(\i3z2, 0x66667777)) {
-				err(ts, z177, 0x07d, 0, 0, \i3z2, 0x66667777)
+				err(ts, z177, __LINE__, 0, 0, \i3z2, 0x66667777)
 			}
 		}
 
@@ -2263,9 +2263,9 @@ Method(m27d,, Serialized)
 		}
 	}
 
-	CH03(ts, z177, 0x07e, 0, 0)
+	CH03(ts, z177, 0x07e, __LINE__, 0)
 	m000(0)
-	CH03(ts, z177, 0x07f, 0, 0)
+	CH03(ts, z177, 0x07f, __LINE__, 0)
 }
 
 

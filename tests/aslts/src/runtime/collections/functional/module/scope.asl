@@ -80,13 +80,13 @@ Method(MLS0,, Serialized)
 	Store("TEST: MLS0, Type1Opcode is executable under scopes", Debug)
 
 	if (LNotEqual(ml00, 2)) {
-		err(ts, z180, 0, z180, 0, ml00, 2)
+		err(ts, z180, __LINE__, z180, 0, ml00, 2)
 	}
 	if (LNotEqual(ml01, 2)) {
-		err(ts, z180, 1, z180, 1, ml01, 2)
+		err(ts, z180, __LINE__, z180, 1, ml01, 2)
 	}
 	if (LNotEqual(ml02, 2)) {
-		err(ts, z180, 2, z180, 2, ml02, 2)
+		err(ts, z180, __LINE__, z180, 2, ml02, 2)
 	}
 }
 
@@ -122,12 +122,12 @@ Method(MLS1,, Serialized)
 	Store("TEST: MLS1, Type2Opcode is executable under scopes", Debug)
 
 	if (LNotEqual(ml03, 2)) {
-		err(ts, z180, 3, z180, 3, ml03, 2)
+		err(ts, z180, __LINE__, z180, 3, ml03, 2)
 	}
 	if (LNotEqual(ml04, 2)) {
-		err(ts, z180, 4, z180, 4, ml04, 2)
+		err(ts, z180, __LINE__, z180, 4, ml04, 2)
 	}
 	if (LNotEqual(ml05, 2)) {
-		err(ts, z180, 5, z180, 5, ml05, 2)
+		err(ts, z180, __LINE__, z180, 5, ml05, 2)
 	}
 }

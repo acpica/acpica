@@ -45,7 +45,7 @@ Method(md7e, 1)
 	// (BufferField is converted to Integer).
 	Store(ObjectType(arg0), Local0)
 	if (LNotEqual(Local0, c009)) {
-		err("", zFFF, 0x000, 0, 0, Local0, c009)
+		err("", zFFF, __LINE__, 0, 0, Local0, c009)
 	}
 }
 
@@ -55,7 +55,7 @@ Method(md7f, 1)
 	// (BufferField is converted to Buffer).
 	Store(ObjectType(arg0), Local0)
 	if (LNotEqual(Local0, c00b)) {
-		err("", zFFF, 0x001, 0, 0, Local0, c00b)
+		err("", zFFF, __LINE__, 0, 0, Local0, c00b)
 	}
 }
 
@@ -65,12 +65,12 @@ Method(md80)
 
 	Store(ObjectType(bf30), Local0)
 	if (LNotEqual(Local0, c016)) {
-		err("", zFFF, 0x002, 0, 0, Local0, c016)
+		err("", zFFF, __LINE__, 0, 0, Local0, c016)
 	}
 
 	Store(ObjectType(bf31), Local0)
 	if (LNotEqual(Local0, c016)) {
-		err("", zFFF, 0x003, 0, 0, Local0, c016)
+		err("", zFFF, __LINE__, 0, 0, Local0, c016)
 	}
 
 	md7e(bf30)

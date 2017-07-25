@@ -40,6 +40,6 @@ Method(mdd5)
 	Store(ToUUID("0a1b2c3d-4e5f-6071-8293-a4b5c6d7e8f9"), Local1)
 
 	if (LNotEqual(Local0, Local1)) {
-		err("", zFFF, 0x000, 0, 0, Local0, Local1)
+		err("", zFFF, __LINE__, 0, 0, Local0, Local1)
 	}
 }

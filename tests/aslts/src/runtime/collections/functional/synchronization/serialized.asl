@@ -60,13 +60,13 @@ Method(m3b0, 0, Serialized, 0)
 		Increment(i000)
 		Store("m016", Debug)
 		if (LNotEqual(i000, 17)) {
-			err(ts, z173, 0x000, 0, 0, i000, 17)
+			err(ts, z173, __LINE__, 0, 0, i000, 17)
 		}
 	}
 
-	CH03(ts, z173, 0x001, 0, 0)
+	CH03(ts, z173, 0x001, __LINE__, 0)
 	m000()
-	CH03(ts, z173, 0x002, 0, 0)
+	CH03(ts, z173, 0x002, __LINE__, 0)
 }
 
 /*
@@ -98,13 +98,13 @@ Method(m3b1,, Serialized)
 		Increment(i000)
 		Store("m016", Debug)
 		if (LNotEqual(i000, 17)) {
-			err(ts, z173, 0x003, 0, 0, i000, 17)
+			err(ts, z173, __LINE__, 0, 0, i000, 17)
 		}
 	}
 
-	CH03(ts, z173, 0x004, 0, 0)
+	CH03(ts, z173, 0x004, __LINE__, 0)
 	m000()
-	CH03(ts, z173, 0x005, 0, 0)
+	CH03(ts, z173, 0x005, __LINE__, 0)
 }
 
 /*
@@ -163,18 +163,18 @@ Method(m3b2, 0, Serialized, 0)
 		Increment(i000)
 		Store("m016", Debug)
 		if (LNotEqual(i000, 28)) {
-			err(ts, z173, 0x006, 0, 0, i000, 28)
+			err(ts, z173, __LINE__, 0, 0, i000, 28)
 		}
 		Store(0xabcd0000, i001)
 	}
 
-	CH03(ts, z173, 0x007, 0, 0)
+	CH03(ts, z173, 0x007, __LINE__, 0)
 	m000()
 
 	if (LNotEqual(i001, 0xabcd0000)) {
-		err(ts, z173, 0x008, 0, 0, i001, 0xabcd0000)
+		err(ts, z173, __LINE__, 0, 0, i001, 0xabcd0000)
 	}
-	CH03(ts, z173, 0x009, 0, 0)
+	CH03(ts, z173, 0x009, __LINE__, 0)
 }
 
 /*
@@ -296,7 +296,7 @@ Method(m3b3, 3, Serialized)
 		}
 	}
 
-	CH03(ts, z173, 0x00a, 0, 0)
+	CH03(ts, z173, 0x00a, __LINE__, 0)
 
 	Store(arg0, i000)
 	Store(arg1, i001)
@@ -305,17 +305,17 @@ Method(m3b3, 3, Serialized)
 	mm00(0, i000, i001)
 
 	if (LGreater(arg0, arg1)) {
-		CH04(ts, 0, 64, z173, 0x00b, 0, 0) // AE_AML_MUTEX_ORDER
+		CH04(ts, 0, 64, z173, __LINE__, 0, 0) // AE_AML_MUTEX_ORDER
 	} else {
 		if (LNotEqual(i003, arg0)) {
-			err(ts, z173, 0x00c, 0, 0, i003, arg0)
+			err(ts, z173, __LINE__, 0, 0, i003, arg0)
 		}
 		if (LNotEqual(i004, arg1)) {
-			err(ts, z173, 0x00d, 0, 0, i004, arg1)
+			err(ts, z173, __LINE__, 0, 0, i004, arg1)
 		}
 	}
 
-	CH03(ts, z173, 0x00e, 0, 0)
+	CH03(ts, z173, 0x00e, __LINE__, 0)
 }
 
 Method(m3b4,, Serialized)
@@ -429,7 +429,7 @@ Method(m3b5, 2, Serialized)
 		}
 	}
 
-	CH03(ts, z173, 0x00f, 0, 0)
+	CH03(ts, z173, 0x00f, __LINE__, 0)
 
 	Store(arg0, i000)
 	Store(arg1, i001)
@@ -437,17 +437,17 @@ Method(m3b5, 2, Serialized)
 	mm00(0, i000, i001)
 
 	if (LGreater(arg0, arg1)) {
-		CH04(ts, 0, 64, z173, 0x010, 0, 0) // AE_AML_MUTEX_ORDER
+		CH04(ts, 0, 64, z173, __LINE__, 0, 0) // AE_AML_MUTEX_ORDER
 	} else {
 		if (LNotEqual(i003, arg0)) {
-			err(ts, z173, 0x011, 0, 0, i003, arg0)
+			err(ts, z173, __LINE__, 0, 0, i003, arg0)
 		}
 		if (LNotEqual(i004, arg1)) {
-			err(ts, z173, 0x012, 0, 0, i004, arg1)
+			err(ts, z173, __LINE__, 0, 0, i004, arg1)
 		}
 	}
 
-	CH03(ts, z173, 0x013, 0, 0)
+	CH03(ts, z173, 0x013, __LINE__, 0)
 }
 
 Method(m3b6,, Serialized)
@@ -601,7 +601,7 @@ Method(m3b7, 3, Serialized)
 		}
 	}
 
-	CH03(ts, z173, 0x014, 0, 0)
+	CH03(ts, z173, 0x014, __LINE__, 0)
 
 	Store(arg0, i000)
 	Store(arg1, i001)
@@ -610,17 +610,17 @@ Method(m3b7, 3, Serialized)
 	mm00(0, i000, i001)
 
 	if (LGreater(arg0, arg1)) {
-		CH04(ts, 0, 64, z173, 0x015, 0, 0) // AE_AML_MUTEX_ORDER
+		CH04(ts, 0, 64, z173, __LINE__, 0, 0) // AE_AML_MUTEX_ORDER
 	} else {
 		if (LNotEqual(i003, arg0)) {
-			err(ts, z173, 0x016, 0, 0, i003, arg0)
+			err(ts, z173, __LINE__, 0, 0, i003, arg0)
 		}
 		if (LNotEqual(i004, arg1)) {
-			err(ts, z173, 0x017, 0, 0, i004, arg1)
+			err(ts, z173, __LINE__, 0, 0, i004, arg1)
 		}
 	}
 
-	CH03(ts, z173, 0x018, 0, 0)
+	CH03(ts, z173, 0x018, __LINE__, 0)
 }
 
 Method(m3b8,, Serialized)
@@ -804,7 +804,7 @@ Method(m3bb, 3, Serialized)
 		mm00(1, i000, i001)
 		if (arg1) {
 			if (Local0) {
-				err(ts, z173, 0x019, 0, 0, 0, Local0)
+				err(ts, z173, __LINE__, 0, 0, 0, Local0)
 			}
 		}
 		if (LNot(Local0)) {
@@ -821,7 +821,7 @@ Method(m3bb, 3, Serialized)
 		mm00(1, i000, i001)
 		if (arg1) {
 			if (Local0) {
-				err(ts, z173, 0x019, 0, 0, 0, Local0)
+				err(ts, z173, __LINE__, 0, 0, 0, Local0)
 			}
 		}
 		if (LNot(Local0)) {
@@ -838,7 +838,7 @@ Method(m3bb, 3, Serialized)
 		mm00(1, i000, i001)
 		if (arg1) {
 			if (Local0) {
-				err(ts, z173, 0x019, 0, 0, 0, Local0)
+				err(ts, z173, __LINE__, 0, 0, 0, Local0)
 			}
 		}
 		if (LNot(Local0)) {
@@ -855,7 +855,7 @@ Method(m3bb, 3, Serialized)
 		mm00(1, i000, i001)
 		if (arg1) {
 			if (Local0) {
-				err(ts, z173, 0x019, 0, 0, 0, Local0)
+				err(ts, z173, __LINE__, 0, 0, 0, Local0)
 			}
 		}
 		if (LNot(Local0)) {
@@ -872,7 +872,7 @@ Method(m3bb, 3, Serialized)
 		mm00(1, i000, i001)
 		if (arg1) {
 			if (Local0) {
-				err(ts, z173, 0x019, 0, 0, 0, Local0)
+				err(ts, z173, __LINE__, 0, 0, 0, Local0)
 			}
 		}
 		if (LNot(Local0)) {
@@ -889,7 +889,7 @@ Method(m3bb, 3, Serialized)
 		mm00(1, i000, i001)
 		if (arg1) {
 			if (Local0) {
-				err(ts, z173, 0x019, 0, 0, 0, Local0)
+				err(ts, z173, __LINE__, 0, 0, 0, Local0)
 			}
 		}
 		if (LNot(Local0)) {
@@ -906,7 +906,7 @@ Method(m3bb, 3, Serialized)
 		mm00(1, i000, i001)
 		if (arg1) {
 			if (Local0) {
-				err(ts, z173, 0x019, 0, 0, 0, Local0)
+				err(ts, z173, __LINE__, 0, 0, 0, Local0)
 			}
 		}
 		if (LNot(Local0)) {
@@ -923,7 +923,7 @@ Method(m3bb, 3, Serialized)
 		mm00(1, i000, i001)
 		if (arg1) {
 			if (Local0) {
-				err(ts, z173, 0x019, 0, 0, 0, Local0)
+				err(ts, z173, __LINE__, 0, 0, 0, Local0)
 			}
 		}
 		if (LNot(Local0)) {
@@ -940,7 +940,7 @@ Method(m3bb, 3, Serialized)
 		mm00(1, i000, i001)
 		if (arg1) {
 			if (Local0) {
-				err(ts, z173, 0x019, 0, 0, 0, Local0)
+				err(ts, z173, __LINE__, 0, 0, 0, Local0)
 			}
 		}
 		if (LNot(Local0)) {
@@ -957,7 +957,7 @@ Method(m3bb, 3, Serialized)
 		mm00(1, i000, i001)
 		if (arg1) {
 			if (Local0) {
-				err(ts, z173, 0x019, 0, 0, 0, Local0)
+				err(ts, z173, __LINE__, 0, 0, 0, Local0)
 			}
 		}
 		if (LNot(Local0)) {
@@ -974,7 +974,7 @@ Method(m3bb, 3, Serialized)
 		mm00(1, i000, i001)
 		if (arg1) {
 			if (Local0) {
-				err(ts, z173, 0x019, 0, 0, 0, Local0)
+				err(ts, z173, __LINE__, 0, 0, 0, Local0)
 			}
 		}
 		if (LNot(Local0)) {
@@ -991,7 +991,7 @@ Method(m3bb, 3, Serialized)
 		mm00(1, i000, i001)
 		if (arg1) {
 			if (Local0) {
-				err(ts, z173, 0x019, 0, 0, 0, Local0)
+				err(ts, z173, __LINE__, 0, 0, 0, Local0)
 			}
 		}
 		if (LNot(Local0)) {
@@ -1008,7 +1008,7 @@ Method(m3bb, 3, Serialized)
 		mm00(1, i000, i001)
 		if (arg1) {
 			if (Local0) {
-				err(ts, z173, 0x019, 0, 0, 0, Local0)
+				err(ts, z173, __LINE__, 0, 0, 0, Local0)
 			}
 		}
 		if (LNot(Local0)) {
@@ -1025,7 +1025,7 @@ Method(m3bb, 3, Serialized)
 		mm00(1, i000, i001)
 		if (arg1) {
 			if (Local0) {
-				err(ts, z173, 0x019, 0, 0, 0, Local0)
+				err(ts, z173, __LINE__, 0, 0, 0, Local0)
 			}
 		}
 		if (LNot(Local0)) {
@@ -1042,7 +1042,7 @@ Method(m3bb, 3, Serialized)
 		mm00(1, i000, i001)
 		if (arg1) {
 			if (Local0) {
-				err(ts, z173, 0x019, 0, 0, 0, Local0)
+				err(ts, z173, __LINE__, 0, 0, 0, Local0)
 			}
 		}
 		if (LNot(Local0)) {
@@ -1059,7 +1059,7 @@ Method(m3bb, 3, Serialized)
 		mm00(1, i000, i001)
 		if (arg1) {
 			if (Local0) {
-				err(ts, z173, 0x019, 0, 0, 0, Local0)
+				err(ts, z173, __LINE__, 0, 0, 0, Local0)
 			}
 		}
 		if (LNot(Local0)) {
@@ -1211,7 +1211,7 @@ Method(m3bb, 3, Serialized)
 		}
 	}
 
-	CH03(ts, z173, 0x00a, 0, 0)
+	CH03(ts, z173, 0x00a, __LINE__, 0)
 
 	Store(arg0, i000)
 	Store(arg1, i001)
@@ -1236,17 +1236,17 @@ Method(m3bb, 3, Serialized)
 	}
 
 	if (LNot(Local4)) {
-		CH04(ts, 1, 64, z173, 0x00b, 0, 0) // AE_AML_MUTEX_ORDER
+		CH04(ts, 1, 64, z173, __LINE__, 0, 0) // AE_AML_MUTEX_ORDER
 	} else {
 		if (LNotEqual(i003, arg0)) {
-			err(ts, z173, 0x00c, 0, 0, i003, arg0)
+			err(ts, z173, __LINE__, 0, 0, i003, arg0)
 		}
 		if (LNotEqual(i004, arg1)) {
-			err(ts, z173, 0x00d, 0, 0, i004, arg1)
+			err(ts, z173, __LINE__, 0, 0, i004, arg1)
 		}
 	}
 
-	CH03(ts, z173, 0x00e, 0, 0)
+	CH03(ts, z173, 0x00e, __LINE__, 0)
 }
 
 Method(m3bc,, Serialized)

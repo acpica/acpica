@@ -35,51 +35,51 @@
 
 	Method(mf61, 1)
 	{
-		CH03("", 0, 0x000, 0, 0)
+		CH03("", 0, 0x000, __LINE__, 0)
 		Add("", 0xabcd0000, Local0)
 		if (LNotEqual(Local0, 0xabcd0000)) {
-			err("", zFFF, 0x001, 0, 0, Local0, 0xabcd0000)
+			err("", zFFF, __LINE__, 0, 0, Local0, 0xabcd0000)
 		}
-		CH03("", 0, 0x002, 0, 0)
+		CH03("", 0, 0x002, __LINE__, 0)
 
-		CH03("", 0, 0x003, 0, 0)
+		CH03("", 0, 0x003, __LINE__, 0)
 		Add("                      ", 0xabcd0001, Local0)
 		if (LNotEqual(Local0, 0xabcd0001)) {
-			err("", zFFF, 0x004, 0, 0, Local0, 0xabcd0001)
+			err("", zFFF, __LINE__, 0, 0, Local0, 0xabcd0001)
 		}
-		CH03("", 0, 0x005, 0, 0)
+		CH03("", 0, 0x005, __LINE__, 0)
 
-		CH03("", 0, 0x006, 0, 0)
+		CH03("", 0, 0x006, __LINE__, 0)
 		Store("", Local1)
 		ToInteger(Local1, Local0)
-		CH04("", 0, 36, 0, 0x007, 0, 0) // AE_BAD_DECIMAL_CONSTANT
+		CH04("", 0, 36, 0, __LINE__, 0, 0) // AE_BAD_DECIMAL_CONSTANT
 
-		CH03("", 0, 0x008, 0, 0)
+		CH03("", 0, 0x008, __LINE__, 0)
 		Store("                 ", Local1)
 		ToInteger(Local1, Local0)
-		CH04("", 0, 36, 0, 0x009, 0, 0) // AE_BAD_DECIMAL_CONSTANT
+		CH04("", 0, 36, 0, __LINE__, 0, 0) // AE_BAD_DECIMAL_CONSTANT
 
-		CH03("", 0, 0x00a, 0, 0)
+		CH03("", 0, 0x00a, __LINE__, 0)
 		Add("q", 0xabcd0002, Local0)
 		if (LNotEqual(Local0, 0xabcd0002)) {
-			err("", zFFF, 0x00b, 0, 0, Local0, 0xabcd0002)
+			err("", zFFF, __LINE__, 0, 0, Local0, 0xabcd0002)
 		}
-		CH03("", 0, 0x00c, 0, 0)
+		CH03("", 0, 0x00c, __LINE__, 0)
 
-		CH03("", 0, 0x00d, 0, 0)
+		CH03("", 0, 0x00d, __LINE__, 0)
 		Add("q                      ", 0xabcd0003, Local0)
 		if (LNotEqual(Local0, 0xabcd0003)) {
-			err("", zFFF, 0x00e, 0, 0, Local0, 0xabcd0003)
+			err("", zFFF, __LINE__, 0, 0, Local0, 0xabcd0003)
 		}
-		CH03("", 0, 0x00f, 0, 0)
+		CH03("", 0, 0x00f, __LINE__, 0)
 
-		CH03("", 0, 0x010, 0, 0)
+		CH03("", 0, 0x010, __LINE__, 0)
 		Store("q", Local1)
 		ToInteger(Local1, Local0)
-		CH04("", 0, 36, 0, 0x011, 0, 0) // AE_BAD_DECIMAL_CONSTANT
+		CH04("", 0, 36, 0, __LINE__, 0, 0) // AE_BAD_DECIMAL_CONSTANT
 
-		CH03("", 0, 0x012, 0, 0)
+		CH03("", 0, 0x012, __LINE__, 0)
 		Store("q                 ", Local1)
 		ToInteger(Local1, Local0)
-		CH04("", 0, 36, 0, 0x013, 0, 0) // AE_BAD_DECIMAL_CONSTANT
+		CH04("", 0, 36, 0, __LINE__, 0, 0) // AE_BAD_DECIMAL_CONSTANT
 	}

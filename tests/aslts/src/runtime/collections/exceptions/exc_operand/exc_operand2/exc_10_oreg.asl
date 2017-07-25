@@ -85,15 +85,15 @@ Method(m4ba,, Serialized)
 		// CondRefOf
 		
 		Store (CondRefOf(Local0), Local1)
-		CH03(ts, z102, 0, 0, 0)
+		CH03(ts, z102, 0, __LINE__, 0)
 
 		CondRefOf(Local0, Local1)
-		CH03(ts, z102, 1, 0, 0)
+		CH03(ts, z102, 1, __LINE__, 0)
 
 		// CopyObject
 
 		CopyObject(Local0, Local1)
-		CH03(ts, z102, 2, 0, 0)
+		CH03(ts, z102, 2, __LINE__, 0)
 
 		// Decrement
 
@@ -138,12 +138,12 @@ Method(m4ba,, Serialized)
 		// ObjectType
 
 		Store (ObjectType(Local0), Local1)
-		CH03(ts, z102, 3, 0, 0)
+		CH03(ts, z102, 3, __LINE__, 0)
 
 		// RefOf
 
 		Store (RefOf(Local0), Local1)
-		CH03(ts, z102, 4, 0, 0)
+		CH03(ts, z102, 4, __LINE__, 0)
 
 		// Release
 
@@ -444,12 +444,12 @@ Method(m4ba,, Serialized)
 	{
 		Store(ObjectType(arg1), Local0)
 		if (LNotEqual(Local0, 10)) {
-			err(arg0, z102, 200, 0, 0, Local0, 10)
+			err(arg0, z102, __LINE__, 0, 0, Local0, 10)
 			return (1)
 		}
 
 		Store (DeRefOf(arg1), Local1)
-		CH03(ts, z102, 5, 0, 0)
+		CH03(ts, z102, 5, __LINE__, 0)
 
 		// CondRefOf
 		
@@ -504,7 +504,7 @@ Method(m4ba,, Serialized)
 		// ObjectType
 
 		Store (ObjectType(DeRefOf(arg1)), Local1)
-		CH03(ts, z102, 6, 0, 0)
+		CH03(ts, z102, 6, __LINE__, 0)
 
 		// RefOf
 
@@ -813,7 +813,7 @@ Method(m4ba,, Serialized)
 		// CopyObject
 
 		CopyObject(m000(), Local1)
-		CH03(ts, z102, 7, 0, 0)
+		CH03(ts, z102, 7, __LINE__, 0)
 
 		// Decrement
 
@@ -859,7 +859,7 @@ Method(m4ba,, Serialized)
         /* **** Nov. 2016: Method invocation as arg to ObjectType is now illegal */
 
 		Store (ObjectType(m000), Local0)
-		CH03(ts, z102, 8, 0, 0)
+		CH03(ts, z102, 8, __LINE__, 0)
 
 		// RefOf
         /* **** Oct. 2016: Method invocation as arg to RefOf is now illegal */
@@ -1182,7 +1182,7 @@ Method(m4ba,, Serialized)
 		Method(CH00, 2)
 		{
 			if (LNotEqual(i000, arg1)) {
-				err(arg0, z102, 0, 0, 0, i000, arg1)
+				err(arg0, z102, __LINE__, 0, 0, i000, arg1)
 			}
 		}
 
@@ -1215,7 +1215,7 @@ Method(m4ba,, Serialized)
 		}
 	}
 
-	CH03(ts, z102, 11, 0, 0)
+	CH03(ts, z102, 11, __LINE__, 0)
 
 	// Local Named Object
 	m000(ts)

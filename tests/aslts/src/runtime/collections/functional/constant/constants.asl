@@ -38,29 +38,29 @@ Method(CST1,, Serialized)
 	Name(ts, "CST1")
 
 	if (LNotEqual(Zero, 0)){
-		err(ts, z002, 0, 0, 0, Zero, 0)
+		err(ts, z002, __LINE__, 0, 0, Zero, 0)
 	}
 
 	if (LNotEqual(One, 1)){
-		err(ts, z002, 1, 0, 0, One, 1)
+		err(ts, z002, __LINE__, 0, 0, One, 1)
 	}
 
 	if (LEqual(F64, 1)) {
 		if (LNotEqual(Ones, 0xffffffffffffffff)){
-			err(ts, z002, 2, 0, 0, Ones, 0xffffffffffffffff)
+			err(ts, z002, __LINE__, 0, 0, Ones, 0xffffffffffffffff)
 		}
 	} else {
 		if (LNotEqual(Ones, 0xffffffff)){
-			err(ts, z002, 3, 0, 0, Ones, 0xffffffff)
+			err(ts, z002, __LINE__, 0, 0, Ones, 0xffffffff)
 		}
 	}
 
 	if (LLess(Revision, 0x20140114)){
-		err(ts, z002, 4, 0, 0, Revision, 0x20050114)
+		err(ts, z002, __LINE__, 0, 0, Revision, 0x20050114)
 	}
 
 	if (LGreater(Revision, 0x20500000)){
-		err(ts, z002, 5, 0, 0, Revision, 0x20500000)
+		err(ts, z002, __LINE__, 0, 0, Revision, 0x20500000)
 	}
 
     /*
@@ -71,6 +71,6 @@ Method(CST1,, Serialized)
      * other ACPI implementations.
      */
 	if (LNotEqual(\_REV, 2)){
-		err(ts, z002, 6, 0, 0, \_REV, 2)
+		err(ts, z002, __LINE__, 0, 0, \_REV, 2)
 	}
 }

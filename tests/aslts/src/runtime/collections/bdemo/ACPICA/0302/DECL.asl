@@ -48,7 +48,7 @@ Method(m1eb)
 		Method(m201)
 		{
 			if (LNotEqual(\_SB.i2z7, 0xabcd0007)) {
-				err("", zFFF, 0x000, 0, 0, \_SB.i2z7, 0xabcd0007)
+				err("", zFFF, __LINE__, 0, 0, \_SB.i2z7, 0xabcd0007)
 			}
 		}
 
@@ -69,7 +69,7 @@ Method(m1eb)
 		Method(m203)
 		{
 			if (LNotEqual(\i2z4, 0xabcd0004)) {
-				err("", zFFF, 0x001, 0, 0, \i2z4, 0xabcd0004)
+				err("", zFFF, __LINE__, 0, 0, \i2z4, 0xabcd0004)
 			}
 		}
 
@@ -77,7 +77,7 @@ Method(m1eb)
 	}
 
 
-	CH03("", 0, 0x002, 0, 0)
+	CH03("", 0, 0x002, __LINE__, 0)
 
 	SRMT("m1eb-m100")
 	m100()
@@ -89,7 +89,7 @@ Method(m1eb)
 		BLCK()
 	}
 
-	CH03("", 0, 0x003, 0, 0)
+	CH03("", 0, 0x003, __LINE__, 0)
 }
 
 

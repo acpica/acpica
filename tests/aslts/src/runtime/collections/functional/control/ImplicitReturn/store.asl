@@ -178,202 +178,202 @@ Method(mf6c,, Serialized)
 
 	Store(0xabcd9000, i000)
 
-	CH03("", z138, 0x000, 0, 0)
+	CH03("", z138, 0x000, __LINE__, 0)
 
 	Store(m000(), i000)
 
 	if (SLCK) {
-		CH03("", z138, 0x001, 0, 0)
+		CH03("", z138, 0x001, __LINE__, 0)
 		if (y901) {
 			Store(0, Local0)
 		} else {
 			Store(0xabcd0002, Local0)
 		}
 		if (LNotEqual(i000, Local0)) {
-			err("", z138, 0x002, 0, 0, i000, Local0)
+			err("", z138, __LINE__, 0, 0, i000, Local0)
 		}
 	} else {
-		CH04("", 0, 0xff, z138, 0x003, 0, 0)
+		CH04("", 0, 0xff, z138, __LINE__, 0, 0)
 	}
 
 	// m001
 
 	Store(0xabcd9001, i000)
 
-	CH03("", z138, 0x004, 0, 0)
+	CH03("", z138, 0x004, __LINE__, 0)
 
 	Store(m001(), i000)
 
 	if (SLCK) {
-		CH03("", z138, 0x005, 0, 0)
+		CH03("", z138, 0x005, __LINE__, 0)
 		if (LNotEqual(i000, 0xabcd0003)) {
-			err("", z138, 0x006, 0, 0, i000, 0xabcd0003)
+			err("", z138, __LINE__, 0, 0, i000, 0xabcd0003)
 		}
 	} else {
-		CH04("", 0, 0xff, z138, 0x007, 0, 0)
+		CH04("", 0, 0xff, z138, __LINE__, 0, 0)
 	}
 
 	// m002
 
 	Store(0xabcd9002, i000)
 
-	CH03("", z138, 0x008, 0, 0)
+	CH03("", z138, 0x008, __LINE__, 0)
 
 	Store(m002(1), i000)
 
 	if (SLCK) {
-		CH03("", z138, 0x009, 0, 0)
+		CH03("", z138, 0x009, __LINE__, 0)
 		if (LNotEqual(i000, 0xabcd0004)) {
-			err("", z138, 0x00a, 0, 0, i000, 0xabcd0004)
+			err("", z138, __LINE__, 0, 0, i000, 0xabcd0004)
 		}
 	} else {
-		CH04("", 0, 0xff, z138, 0x00b, 0, 0)
+		CH04("", 0, 0xff, z138, __LINE__, 0, 0)
 	}
 
 	// m003
 
 	Store(0xabcd9003, i000)
 
-	CH03("", z138, 0x00c, 0, 0)
+	CH03("", z138, 0x00c, __LINE__, 0)
 
 	Store(m003(0), i000)
 
 	if (SLCK) {
-		CH03("", z138, 0x00d, 0, 0)
+		CH03("", z138, 0x00d, __LINE__, 0)
 		if (LNotEqual(i000, 0xabcd0006)) {
-			err("", z138, 0x00e, 0, 0, i000, 0xabcd0006)
+			err("", z138, __LINE__, 0, 0, i000, 0xabcd0006)
 		}
 	} else {
-		CH04("", 0, 0xff, z138, 0x00f, 0, 0)
+		CH04("", 0, 0xff, z138, __LINE__, 0, 0)
 	}
 
 	// m004(0)
 
 	Store(0xabcd9004, i000)
 
-	CH03("", z138, 0x010, 0, 0)
+	CH03("", z138, 0x010, __LINE__, 0)
 
 	Store(m004(0), i000)
 
 	if (SLCK) {
-		CH03("", z138, 0x011, 0, 0)
+		CH03("", z138, 0x011, __LINE__, 0)
 		if (LNotEqual(i000, 0xabcd0007)) {
-			err("", z138, 0x012, 0, 0, i000, 0xabcd0007)
+			err("", z138, __LINE__, 0, 0, i000, 0xabcd0007)
 		}
 	} else {
-		CH04("", 0, 0xff, z138, 0x013, 0, 0)
+		CH04("", 0, 0xff, z138, __LINE__, 0, 0)
 	}
 
 	// m004(0x12345678)
 
 	Store(0xabcd9005, i000)
 
-	CH03("", z138, 0x014, 0, 0)
+	CH03("", z138, 0x014, __LINE__, 0)
 
 	Store(m004(0x12345678), i000)
 
 	if (SLCK) {
-		CH03("", z138, 0x015, 0, 0)
+		CH03("", z138, 0x015, __LINE__, 0)
 		if (LNotEqual(i000, 0xabcd0008)) {
-			err("", z138, 0x016, 0, 0, i000, 0xabcd0008)
+			err("", z138, __LINE__, 0, 0, i000, 0xabcd0008)
 		}
 	} else {
-		CH04("", 0, 0xff, z138, 0x017, 0, 0)
+		CH04("", 0, 0xff, z138, __LINE__, 0, 0)
 	}
 
 	// m004(Default)
 
 	Store(0xabcd9006, i000)
 
-	CH03("", z138, 0x018, 0, 0)
+	CH03("", z138, 0x018, __LINE__, 0)
 
 	Store(m004(1111), i000)
 
 	if (SLCK) {
-		CH03("", z138, 0x019, 0, 0)
+		CH03("", z138, 0x019, __LINE__, 0)
 		if (LNotEqual(i000, 0xabcd0009)) {
-			err("", z138, 0x01a, 0, 0, i000, 0xabcd0009)
+			err("", z138, __LINE__, 0, 0, i000, 0xabcd0009)
 		}
 	} else {
-		CH04("", 0, 0xff, z138, 0x01b, 0, 0)
+		CH04("", 0, 0xff, z138, __LINE__, 0, 0)
 	}
 
 	// m005
 
 	Store(0xabcd9007, i000)
 
-	CH03("", z138, 0x01c, 0, 0)
+	CH03("", z138, 0x01c, __LINE__, 0)
 
 	Store(m005(), i000)
 
 	if (SLCK) {
-		CH03("", z138, 0x01d, 0, 0)
+		CH03("", z138, 0x01d, __LINE__, 0)
 		if (LNotEqual(i000, 0xabcd000a)) {
-			err("", z138, 0x01e, 0, 0, i000, 0xabcd000a)
+			err("", z138, __LINE__, 0, 0, i000, 0xabcd000a)
 		}
 	} else {
-		CH04("", 0, 0xff, z138, 0x01f, 0, 0)
+		CH04("", 0, 0xff, z138, __LINE__, 0, 0)
 	}
 
 	// m006
 
 	Store(0xabcd9008, i000)
 
-	CH03("", z138, 0x020, 0, 0)
+	CH03("", z138, 0x020, __LINE__, 0)
 
 	Store(m006(), i000)
 
 	if (SLCK) {
-		CH03("", z138, 0x021, 0, 0)
+		CH03("", z138, 0x021, __LINE__, 0)
 		if (y901) {
 			Store(1, Local0)
 		} else {
 			Store(0xabcd000b, Local0)
 		}
 		if (LNotEqual(i000, Local0)) {
-			err("", z138, 0x022, 0, 0, i000, Local0)
+			err("", z138, __LINE__, 0, 0, i000, Local0)
 		}
 	} else {
-		CH04("", 0, 0xff, z138, 0x023, 0, 0)
+		CH04("", 0, 0xff, z138, __LINE__, 0, 0)
 	}
 
 	// m007
 
 	Store(0xabcd9009, i000)
 
-	CH03("", z138, 0x024, 0, 0)
+	CH03("", z138, 0x024, __LINE__, 0)
 
 	Store(m007(), i000)
 
 	if (SLCK) {
-		CH03("", z138, 0x025, 0, 0)
+		CH03("", z138, 0x025, __LINE__, 0)
 		if (y901) {
 			Store(1, Local0)
 		} else {
 			Store(0xabcd000c, Local0)
 		}
 		if (LNotEqual(i000, Local0)) {
-			err("", z138, 0x026, 0, 0, i000, Local0)
+			err("", z138, __LINE__, 0, 0, i000, Local0)
 		}
 	} else {
-		CH04("", 0, 0xff, z138, 0x027, 0, 0)
+		CH04("", 0, 0xff, z138, __LINE__, 0, 0)
 	}
 
 	// m008
 
 	Store(0xabcd900a, i000)
 
-	CH03("", z138, 0x028, 0, 0)
+	CH03("", z138, 0x028, __LINE__, 0)
 
 	Store(m008(), i000)
 
 	if (SLCK) {
-		CH03("", z138, 0x029, 0, 0)
+		CH03("", z138, 0x029, __LINE__, 0)
 		if (LNotEqual(i000, 0xabcd000d)) {
-			err("", z138, 0x02a, 0, 0, i000, 0xabcd000d)
+			err("", z138, __LINE__, 0, 0, i000, 0xabcd000d)
 		}
 	} else {
-		CH04("", 0, 0xff, z138, 0x02b, 0, 0)
+		CH04("", 0, 0xff, z138, __LINE__, 0, 0)
 	}
 }
 
@@ -624,55 +624,55 @@ Method(mf6e,, Serialized)
           }
 
           Store(0xdddd0000, i000)
-          CH03("", z138, 0x02c, 0, 0)
+          CH03("", z138, 0x02c, __LINE__, 0)
           Store(m000(), i000)
           if (SLCK) {
-              CH03("", z138, 0x02d, 0, 0)
+              CH03("", z138, 0x02d, __LINE__, 0)
               Store(0xaaaa0006, Local0)
               if (LNotEqual(i000, Local0)) {
-                  err("", z138, 0x02e, 0, 0, i000, Local0)
+                  err("", z138, __LINE__, 0, 0, i000, Local0)
               }
           } else {
-              CH04("", 0, 0xff, z138, 0x02f, 0, 0)
+              CH04("", 0, 0xff, z138, __LINE__, 0, 0)
           }
 
           Store(0xdddd0000, i000)
-          CH03("", z138, 0x030, 0, 0)
+          CH03("", z138, 0x030, __LINE__, 0)
           Store(m001(), i000)
           if (SLCK) {
-              CH03("", z138, 0x031, 0, 0)
+              CH03("", z138, 0x031, __LINE__, 0)
               Store(0xaaaa000c, Local0)
               if (LNotEqual(i000, Local0)) {
-                  err("", z138, 0x032, 0, 0, i000, Local0)
+                  err("", z138, __LINE__, 0, 0, i000, Local0)
               }
           } else {
-              CH04("", 0, 0xff, z138, 0x033, 0, 0)
+              CH04("", 0, 0xff, z138, __LINE__, 0, 0)
           }
 
           Store(0xdddd0000, i000)
-          CH03("", z138, 0x034, 0, 0)
+          CH03("", z138, 0x034, __LINE__, 0)
           Store(m002(), i000)
           if (SLCK) {
-              CH03("", z138, 0x035, 0, 0)
+              CH03("", z138, 0x035, __LINE__, 0)
               Store(0xaaaa0013, Local0)
               if (LNotEqual(i000, Local0)) {
-                  err("", z138, 0x036, 0, 0, i000, Local0)
+                  err("", z138, __LINE__, 0, 0, i000, Local0)
               }
           } else {
-              CH04("", 0, 0xff, z138, 0x037, 0, 0)
+              CH04("", 0, 0xff, z138, __LINE__, 0, 0)
           }
 
           Store(0xdddd0000, i000)
-          CH03("", z138, 0x038, 0, 0)
+          CH03("", z138, 0x038, __LINE__, 0)
           Store(m003(), i000)
           if (SLCK) {
-              CH03("", z138, 0x039, 0, 0)
+              CH03("", z138, 0x039, __LINE__, 0)
               Store(0xaaaa0019, Local0)
               if (LNotEqual(i000, Local0)) {
-                  err("", z138, 0x03a, 0, 0, i000, Local0)
+                  err("", z138, __LINE__, 0, 0, i000, Local0)
               }
           } else {
-              CH04("", 0, 0xff, z138, 0x03b, 0, 0)
+              CH04("", 0, 0xff, z138, __LINE__, 0, 0)
           }
 
 
@@ -680,68 +680,68 @@ Method(mf6e,, Serialized)
 
 
           Store(0xdddd0000, i000)
-          CH03("", z138, 0x03c, 0, 0)
+          CH03("", z138, 0x03c, __LINE__, 0)
           Store(m006(), i000)
           if (LAnd(SLCK, y901)) {
-              CH03("", z138, 0x03d, 0, 0)
+              CH03("", z138, 0x03d, __LINE__, 0)
               Store(0, Local0)
               if (LNotEqual(i000, Local0)) {
-                  err("", z138, 0x03e, 0, 0, i000, Local0)
+                  err("", z138, __LINE__, 0, 0, i000, Local0)
               }
           } else {
-              CH04("", 0, 0xff, z138, 0x03f, 0, 0)
+              CH04("", 0, 0xff, z138, __LINE__, 0, 0)
           }
 
           Store(0xdddd0000, i000)
-          CH03("", z138, 0x040, 0, 0)
+          CH03("", z138, 0x040, __LINE__, 0)
           Store(m007(), i000)
           if (LAnd(SLCK, y901)) {
-              CH03("", z138, 0x041, 0, 0)
+              CH03("", z138, 0x041, __LINE__, 0)
               Store(0, Local0)
               if (LNotEqual(i000, Local0)) {
-                  err("", z138, 0x042, 0, 0, i000, Local0)
+                  err("", z138, __LINE__, 0, 0, i000, Local0)
               }
           } else {
-              CH04("", 0, 0xff, z138, 0x043, 0, 0)
+              CH04("", 0, 0xff, z138, __LINE__, 0, 0)
           }
 
           Store(0xdddd0000, i000)
-          CH03("", z138, 0x044, 0, 0)
+          CH03("", z138, 0x044, __LINE__, 0)
           Store(m008(), i000)
           if (LAnd(SLCK, y901)) {
-              CH03("", z138, 0x045, 0, 0)
+              CH03("", z138, 0x045, __LINE__, 0)
               Store(0xabcd0000, Local0)
               if (LNotEqual(i000, Local0)) {
-                  err("", z138, 0x046, 0, 0, i000, Local0)
+                  err("", z138, __LINE__, 0, 0, i000, Local0)
               }
           } else {
-              CH04("", 0, 0xff, z138, 0x047, 0, 0)
+              CH04("", 0, 0xff, z138, __LINE__, 0, 0)
           }
 
           Store(0xdddd0000, i000)
-          CH03("", z138, 0x048, 0, 0)
+          CH03("", z138, 0x048, __LINE__, 0)
           Store(m009(), i000)
           if (LAnd(SLCK, y901)) {
-              CH03("", z138, 0x049, 0, 0)
+              CH03("", z138, 0x049, __LINE__, 0)
               Store(0xabcd0000, Local0)
               if (LNotEqual(i000, Local0)) {
-                  err("", z138, 0x04a, 0, 0, i000, Local0)
+                  err("", z138, __LINE__, 0, 0, i000, Local0)
               }
           } else {
-              CH04("", 0, 0xff, z138, 0x04b, 0, 0)
+              CH04("", 0, 0xff, z138, __LINE__, 0, 0)
           }
 
           Store(0xdddd0000, i000)
-          CH03("", z138, 0x04c, 0, 0)
+          CH03("", z138, 0x04c, __LINE__, 0)
           Store(m00a(), i000)
           if (LAnd(SLCK, y901)) {
-              CH03("", z138, 0x04d, 0, 0)
+              CH03("", z138, 0x04d, __LINE__, 0)
               Store(0xabcd0008, Local0)
               if (LNotEqual(i000, Local0)) {
-                  err("", z138, 0x04e, 0, 0, i000, Local0)
+                  err("", z138, __LINE__, 0, 0, i000, Local0)
               }
           } else {
-              CH04("", 0, 0xff, z138, 0x04f, 0, 0)
+              CH04("", 0, 0xff, z138, __LINE__, 0, 0)
           }
 
           Store(0, tmp0)
@@ -749,19 +749,19 @@ Method(mf6e,, Serialized)
               Store(1, tmp0)
           }
           Store(0xdddd0000, i000)
-          CH03("", z138, 0x050, 0, 0)
+          CH03("", z138, 0x050, __LINE__, 0)
           Store(m00b(), i000)
           if (tmp0) {
-              CH03("", z138, 0x051, 0, 0)
+              CH03("", z138, 0x051, __LINE__, 0)
               // Oct 2013, David Box
               // Implicit return for logical opertions (LNot, LEqual, ...)
               // returns logical value of the operation
               Store(Ones, Local0)
               if (LNotEqual(i000, Local0)) {
-                  err("", z138, 0x052, 0, 0, i000, Local0)
+                  err("", z138, __LINE__, 0, 0, i000, Local0)
               }
           } else {
-              CH04("", 0, 0xff, z138, 0x053, 0, 0)
+              CH04("", 0, 0xff, z138, __LINE__, 0, 0)
           }
 
           Store(0, tmp0)
@@ -769,32 +769,32 @@ Method(mf6e,, Serialized)
               Store(1, tmp0)
           }
           Store(0xdddd0000, i000)
-          CH03("", z138, 0x054, 0, 0)
+          CH03("", z138, 0x054, __LINE__, 0)
           Store(m00c(), i000)
           if (tmp0) {
-              CH03("", z138, 0x055, 0, 0)
+              CH03("", z138, 0x055, __LINE__, 0)
               // Oct 2013, David Box
               // Implicit return for logical opertions (LNot, LEqual, ...)
               // returns logical value of the operation
               Store(Zero, Local0)
               if (LNotEqual(i000, Local0)) {
-                  err("", z138, 0x056, 0, 0, i000, Local0)
+                  err("", z138, __LINE__, 0, 0, i000, Local0)
               }
           } else {
-              CH04("", 0, 0xff, z138, 0x057, 0, 0)
+              CH04("", 0, 0xff, z138, __LINE__, 0, 0)
           }
 
           Store(0xdddd0000, i000)
-          CH03("", z138, 0x058, 0, 0)
+          CH03("", z138, 0x058, __LINE__, 0)
           Store(m00d(), i000)
           if (LAnd(SLCK, y901)) {
-              CH03("", z138, 0x059, 0, 0)
+              CH03("", z138, 0x059, __LINE__, 0)
               Store(0xabcd0009, Local0)
               if (LNotEqual(i000, Local0)) {
-                  err("", z138, 0x05a, 0, 0, i000, Local0)
+                  err("", z138, __LINE__, 0, 0, i000, Local0)
               }
           } else {
-              CH04("", 0, 0xff, z138, 0x05b, 0, 0)
+              CH04("", 0, 0xff, z138, __LINE__, 0, 0)
           }
 
           Store(0, tmp0)
@@ -802,19 +802,19 @@ Method(mf6e,, Serialized)
               Store(1, tmp0)
           }
           Store(0xdddd0000, i000)
-          CH03("", z138, 0x05c, 0, 0)
+          CH03("", z138, 0x05c, __LINE__, 0)
           Store(m00e(), i000)
           if (tmp0) {
-              CH03("", z138, 0x05d, 0, 0)
+              CH03("", z138, 0x05d, __LINE__, 0)
               // Oct 2013, David Box
               // Implicit return for logical opertions (LNot, LEqual, ...)
               // returns logical value of the operation
               Store(Ones, Local0)
               if (LNotEqual(i000, Local0)) {
-                  err("", z138, 0x05e, 0, 0, i000, Local0)
+                  err("", z138, __LINE__, 0, 0, i000, Local0)
               }
           } else {
-              CH04("", 0, 0xff, z138, 0x55f, 0, 0)
+              CH04("", 0, 0xff, z138, __LINE__, 0, 0)
           }
 
           Store(0, tmp0)
@@ -822,76 +822,76 @@ Method(mf6e,, Serialized)
               Store(1, tmp0)
           }
           Store(0xdddd0000, i000)
-          CH03("", z138, 0x060, 0, 0)
+          CH03("", z138, 0x060, __LINE__, 0)
           Store(m00f(), i000)
           if (tmp0) {
-              CH03("", z138, 0x061, 0, 0)
+              CH03("", z138, 0x061, __LINE__, 0)
               // Oct 2013, David Box
               // Implicit return for logical opertions (LNot, LEqual, ...)
               // returns logical value of the operation
               Store(Zero, Local0)
               if (LNotEqual(i000, Local0)) {
-                  err("", z138, 0x062, 0, 0, i000, Local0)
+                  err("", z138, __LINE__, 0, 0, i000, Local0)
               }
           } else {
-              CH04("", 0, 0xff, z138, 0x063, 0, 0)
+              CH04("", 0, 0xff, z138, __LINE__, 0, 0)
           }
 
           Store(0xdddd0000, i000)
-          CH03("", z138, 0x064, 0, 0)
+          CH03("", z138, 0x064, __LINE__, 0)
           Store(m010(), i000)
           if (LAnd(SLCK, y901)) {
-              CH03("", z138, 0x065, 0, 0)
+              CH03("", z138, 0x065, __LINE__, 0)
               Store(0xabcd0008, Local0)
               if (LNotEqual(i000, Local0)) {
-                  err("", z138, 0x066, 0, 0, i000, Local0)
+                  err("", z138, __LINE__, 0, 0, i000, Local0)
               }
           } else {
-              CH04("", 0, 0xff, z138, 0x067, 0, 0)
+              CH04("", 0, 0xff, z138, __LINE__, 0, 0)
           }
 
           if (y901) {
 
           Store(0xdddd0000, i000)
-          CH03("", z138, 0x068, 0, 0)
+          CH03("", z138, 0x068, __LINE__, 0)
           Store(m011(), i000)
           if (LAnd(SLCK, y901)) {
-              CH03("", z138, 0x069, 0, 0)
+              CH03("", z138, 0x069, __LINE__, 0)
               Store(Zero, Local0)
               if (LNotEqual(i000, Local0)) {
-                  err("", z138, 0x06a, 0, 0, i000, Local0)
+                  err("", z138, __LINE__, 0, 0, i000, Local0)
               }
           } else {
-              CH04("", 0, 0xff, z138, 0x06b, 0, 0)
+              CH04("", 0, 0xff, z138, __LINE__, 0, 0)
           }
 
           Store(0xdddd0000, i000)
-          CH03("", z138, 0x06c, 0, 0)
+          CH03("", z138, 0x06c, __LINE__, 0)
           Store(m012(), i000)
           if (LAnd(SLCK, y901)) {
-              CH03("", z138, 0x06d, 0, 0)
+              CH03("", z138, 0x06d, __LINE__, 0)
               Store(Ones, Local0)
               if (LNotEqual(i000, Local0)) {
-                  err("", z138, 0x06e, 0, 0, i000, Local0)
+                  err("", z138, __LINE__, 0, 0, i000, Local0)
               }
           } else {
-              CH04("", 0, 0xff, z138, 0x06f, 0, 0)
+              CH04("", 0, 0xff, z138, __LINE__, 0, 0)
           }
           } /* if (y901) */
 
 		// Should be the last
 
           Store(0xdddd0000, i000)
-          CH03("", z138, 0x070, 0, 0)
+          CH03("", z138, 0x070, __LINE__, 0)
           Store(m004(), i000)
           if (SLCK) {
-              CH03("", z138, 0x071, 0, 0)
+              CH03("", z138, 0x071, __LINE__, 0)
               Store(0xaaaa001c, Local0)
               if (LNotEqual(i000, Local0)) {
-                  err("", z138, 0x072, 0, 0, i000, Local0)
+                  err("", z138, __LINE__, 0, 0, i000, Local0)
               }
           } else {
-              CH04("", 0, 0xff, z138, 0x073, 0, 0)
+              CH04("", 0, 0xff, z138, __LINE__, 0, 0)
           }
 
 
@@ -912,69 +912,69 @@ Method(mf6e,, Serialized)
                         if (0xabcd0007) {
 
                           Store(0xdddd0000, i000)
-                          CH03("", z138, 0x040, 0, 0)
+                          CH03("", z138, 0x040, __LINE__, 0)
                           Store(m000(), i000)
 
                           if (r002) {
 
                           if (SLCK) {
-                              CH03("", z138, 0x041, 0, 0)
+                              CH03("", z138, 0x041, __LINE__, 0)
                               if (LNotEqual(i000, 0xaaaa0006)) {
-                                  err("", z138, 0x042, 0, 0, i000, 0xaaaa0006)
+                                  err("", z138, __LINE__, 0, 0, i000, 0xaaaa0006)
                               }
                           } else {
-                              CH04("", 0, 0xff, z138, 0x043, 0, 0)
+                              CH04("", 0, 0xff, z138, __LINE__, 0, 0)
                           }
 
                           Store(0xdddd0000, i000)
-                          CH03("", z138, 0x044, 0, 0)
+                          CH03("", z138, 0x044, __LINE__, 0)
                           Store(m001(), i000)
                           if (SLCK) {
-                              CH03("", z138, 0x045, 0, 0)
+                              CH03("", z138, 0x045, __LINE__, 0)
                               if (LNotEqual(i000, 0xaaaa000c)) {
-                                  err("", z138, 0x046, 0, 0, i000, 0xaaaa000c)
+                                  err("", z138, __LINE__, 0, 0, i000, 0xaaaa000c)
                               }
                           } else {
-                              CH04("", 0, 0xff, z138, 0x047, 0, 0)
+                              CH04("", 0, 0xff, z138, __LINE__, 0, 0)
                           }
 
                           Store(0xdddd0123, i000)
 
                           if (r003) {
 
-                          CH03("", z138, 0x048, 0, 0)
+                          CH03("", z138, 0x048, __LINE__, 0)
                           Store(m002(), i000)
                           if (SLCK) {
-                              CH03("", z138, 0x049, 0, 0)
+                              CH03("", z138, 0x049, __LINE__, 0)
                               if (LNotEqual(i000, 0xaaaa0013)) {
-                                  err("", z138, 0x04a, 0, 0, i000, 0xaaaa0013)
+                                  err("", z138, __LINE__, 0, 0, i000, 0xaaaa0013)
                               }
                           } else {
-                              CH04("", 0, 0xff, z138, 0x04b, 0, 0)
+                              CH04("", 0, 0xff, z138, __LINE__, 0, 0)
                           }
 
                           Store(0xdddd0000, i000)
-                          CH03("", z138, 0x04c, 0, 0)
+                          CH03("", z138, 0x04c, __LINE__, 0)
                           Store(m003(), i000)
                           if (SLCK) {
-                              CH03("", z138, 0x04d, 0, 0)
+                              CH03("", z138, 0x04d, __LINE__, 0)
                               if (LNotEqual(i000, 0xaaaa0019)) {
-                                  err("", z138, 0x04e, 0, 0, i000, 0xaaaa0019)
+                                  err("", z138, __LINE__, 0, 0, i000, 0xaaaa0019)
                               }
                           } else {
-                              CH04("", 0, 0xff, z138, 0x04f, 0, 0)
+                              CH04("", 0, 0xff, z138, __LINE__, 0, 0)
                           }
 
                           Store(0xdddd0000, i000)
-                          CH03("", z138, 0x050, 0, 0)
+                          CH03("", z138, 0x050, __LINE__, 0)
                           Store(m004(), i000)
                           if (SLCK) {
-                              CH03("", z138, 0x051, 0, 0)
+                              CH03("", z138, 0x051, __LINE__, 0)
                               if (LNotEqual(i000, 0xaaaa001c)) {
-                                  err("", z138, 0x052, 0, 0, i000, 0xaaaa001c)
+                                  err("", z138, __LINE__, 0, 0, i000, 0xaaaa001c)
                               }
                           } else {
-                              CH04("", 0, 0xff, z138, 0x053, 0, 0)
+                              CH04("", 0, 0xff, z138, __LINE__, 0, 0)
                           }
 
                           while (0xabcd0008) {
@@ -1034,72 +1034,72 @@ Method(mf6e,, Serialized)
 	// 0000
 
 	Store(0xdddd0000, i003)
-	CH03("", z138, 0x054, 0, 0)
+	CH03("", z138, 0x054, __LINE__, 0)
 	Store(m005(0), i003)
 	if (SLCK) {
-		CH03("", z138, 0x055, 0, 0)
+		CH03("", z138, 0x055, __LINE__, 0)
 		if (LNotEqual(i003, 0xabcd0030)) {
-			err("", z138, 0x056, 0, 0, i003, 0xabcd0030)
+			err("", z138, __LINE__, 0, 0, i003, 0xabcd0030)
 		}
 	} else {
-		CH03("", z138, 0x057, 0, 0)
+		CH03("", z138, 0x057, __LINE__, 0)
 	}
 
 	// r001
 
 	Store(0xdddd0000, i003)
-	CH03("", z138, 0x058, 0, 0)
+	CH03("", z138, 0x058, __LINE__, 0)
 	Store(m005(1), i003)
 	if (SLCK) {
-		CH03("", z138, 0x059, 0, 0)
+		CH03("", z138, 0x059, __LINE__, 0)
 		if (y901) {
 			Store(0, Local0)
 		} else {
 			Store(Ones, Local0)
 		}
 		if (LNotEqual(i003, Local0)) {
-			err("", z138, 0x05a, 0, 0, i003, Local0)
+			err("", z138, __LINE__, 0, 0, i003, Local0)
 		}
 	} else {
-		CH04("", 0, 0xff, z138, 0x05b, 0, 0)
+		CH04("", 0, 0xff, z138, __LINE__, 0, 0)
 	}
 
 	// r002
 
 	Store(0xdddd0000, i003)
-	CH03("", z138, 0x05c, 0, 0)
+	CH03("", z138, 0x05c, __LINE__, 0)
 	Store(m005(2), i003)
 	if (SLCK) {
-		CH03("", z138, 0x05d, 0, 0)
+		CH03("", z138, 0x05d, __LINE__, 0)
 		if (y901) {
 			Store(i006, Local0)
 		} else {
 			Store(0xaaaa0006, Local0)
 		}
 		if (LNotEqual(i003, Local0)) {
-			err("", z138, 0x05e, 0, 0, i003, Local0)
+			err("", z138, __LINE__, 0, 0, i003, Local0)
 		}
 	} else {
-		CH04("", 0, 0xff, z138, 0x05f, 0, 0)
+		CH04("", 0, 0xff, z138, __LINE__, 0, 0)
 	}
 
 	// r003
 
 	Store(0xdddd0000, i003)
-	CH03("", z138, 0x060, 0, 0)
+	CH03("", z138, 0x060, __LINE__, 0)
 	Store(m005(3), i003)
 	if (SLCK) {
-		CH03("", z138, 0x061, 0, 0)
+		CH03("", z138, 0x061, __LINE__, 0)
 		if (y901) {
 			Store(i007, Local0)
 		} else {
 			Store(0xdddd0123, Local0)
 		}
 		if (LNotEqual(i003, Local0)) {
-			err("", z138, 0x062, 0, 0, i003, Local0)
+			err("", z138, __LINE__, 0, 0, i003, Local0)
 		}
 	} else {
-		CH04("", 0, 0xff, z138, 0x063, 0, 0)
+		CH04("", 0, 0xff, z138, __LINE__, 0, 0)
 	}
 }
 
@@ -1228,112 +1228,112 @@ Method(mff1,, Serialized)
 	// m002
 
 	Store(0, Local0)
-	CH03("", z138, 0x064, 0, 0)
+	CH03("", z138, 0x064, __LINE__, 0)
 	Store(m002(), Local0)
 	if (SLCK) {
-		CH03("", z138, 0x065, 0, 0)
+		CH03("", z138, 0x065, __LINE__, 0)
 		if (LNotEqual(Local0, 0xf3)) {
-			err("", z138, 0x066, 0, 0, Local0, 0xf3)
+			err("", z138, __LINE__, 0, 0, Local0, 0xf3)
 		}
 	} else {
-		CH04("", 0, 0xff, z138, 0x067, 0, 0)
+		CH04("", 0, 0xff, z138, __LINE__, 0, 0)
 	}
 
 	// m004
 
 	Store(0, Local0)
-	CH03("", z138, 0x068, 0, 0)
+	CH03("", z138, 0x068, __LINE__, 0)
 	Store(m004(), Local0)
 	if (SLCK) {
-		CH03("", z138, 0x069, 0, 0)
+		CH03("", z138, 0x069, __LINE__, 0)
 		if (LNotEqual(Local0, 0xfabec)) {
-			err("", z138, 0x06a, 0, 0, Local0, 0xfabec)
+			err("", z138, __LINE__, 0, 0, Local0, 0xfabec)
 		}
 	} else {
-		CH04("", 0, 0xff, z138, 0x06b, 0, 0)
+		CH04("", 0, 0xff, z138, __LINE__, 0, 0)
 	}
 
 	// m006
 
 	Store(0, Local0)
-	CH03("", z138, 0x06e, 0, 0)
+	CH03("", z138, 0x06e, __LINE__, 0)
 	Store(m006(), Local0)
 	if (SLCK) {
-		CH03("", z138, 0x06f, 0, 0)
+		CH03("", z138, 0x06f, __LINE__, 0)
 		if (LNotEqual(Local0, 0xcedab)) {
-			err("", z138, 0x070, 0, 0, Local0, 0xcedab)
+			err("", z138, __LINE__, 0, 0, Local0, 0xcedab)
 		}
 	} else {
-		CH04("", 0, 0xff, z138, 0x071, 0, 0)
+		CH04("", 0, 0xff, z138, __LINE__, 0, 0)
 	}
 
 	// m008
 
 	Store(0, Local0)
-	CH03("", z138, 0x072, 0, 0)
+	CH03("", z138, 0x072, __LINE__, 0)
 	Store(m008(), Local0)
 	if (SLCK) {
-		CH03("", z138, 0x073, 0, 0)
+		CH03("", z138, 0x073, __LINE__, 0)
 		if (LNotEqual(Local0, 0xabcd)) {
-			err("", z138, 0x074, 0, 0, Local0, 0xabcd)
+			err("", z138, __LINE__, 0, 0, Local0, 0xabcd)
 		}
 	} else {
-		CH04("", 0, 0xff, z138, 0x075, 0, 0)
+		CH04("", 0, 0xff, z138, __LINE__, 0, 0)
 	}
 
 	// m00a
 
 	Store(0, Local0)
-	CH03("", z138, 0x076, 0, 0)
+	CH03("", z138, 0x076, __LINE__, 0)
 	Store(m00a(), Local0)
 	if (SLCK) {
-		CH03("", z138, 0x077, 0, 0)
+		CH03("", z138, 0x077, __LINE__, 0)
 		if (LNotEqual(Local0, 0x1234)) {
-			err("", z138, 0x078, 0, 0, Local0, 0x1234)
+			err("", z138, __LINE__, 0, 0, Local0, 0x1234)
 		}
 	} else {
-		CH04("", 0, 0xff, z138, 0x079, 0, 0)
+		CH04("", 0, 0xff, z138, __LINE__, 0, 0)
 	}
 
 	// m00b
 
 	Store(0, Local0)
-	CH03("", z138, 0x080, 0, 0)
+	CH03("", z138, 0x080, __LINE__, 0)
 	Store(m00b(), Local0)
 	if (SLCK) {
-		CH03("", z138, 0x081, 0, 0)
+		CH03("", z138, 0x081, __LINE__, 0)
 		if (LNotEqual(Local0, 0x5678)) {
-			err("", z138, 0x082, 0, 0, Local0, 0x5678)
+			err("", z138, __LINE__, 0, 0, Local0, 0x5678)
 		}
 	} else {
-		CH04("", 0, 0xff, z138, 0x083, 0, 0)
+		CH04("", 0, 0xff, z138, __LINE__, 0, 0)
 	}
 
 	if (LNotEqual(i000, 0xf3)) {
-		err("", z138, 0x084, 0, 0, i000, 0xf3)
+		err("", z138, __LINE__, 0, 0, i000, 0xf3)
 	}
 	if (LNotEqual(i001, 0xf3)) {
-		err("", z138, 0x085, 0, 0, i001, 0xf3)
+		err("", z138, __LINE__, 0, 0, i001, 0xf3)
 	}
 	if (LNotEqual(i002, 0xabcd)) {
-		err("", z138, 0x086, 0, 0, i002, 0xabcd)
+		err("", z138, __LINE__, 0, 0, i002, 0xabcd)
 	}
 	if (LNotEqual(i003, 0xabcd)) {
-		err("", z138, 0x087, 0, 0, i003, 0xabcd)
+		err("", z138, __LINE__, 0, 0, i003, 0xabcd)
 	}
 	if (LNotEqual(i004, 0xabcd)) {
-		err("", z138, 0x088, 0, 0, i004, 0xabcd)
+		err("", z138, __LINE__, 0, 0, i004, 0xabcd)
 	}
 	if (LNotEqual(i005, 0x1234)) {
-		err("", z138, 0x089, 0, 0, i005, 0x1234)
+		err("", z138, __LINE__, 0, 0, i005, 0x1234)
 	}
 	if (LNotEqual(i006, 0x1234)) {
-		err("", z138, 0x08a, 0, 0, i006, 0x1234)
+		err("", z138, __LINE__, 0, 0, i006, 0x1234)
 	}
 	if (LNotEqual(i007, 0x5678)) {
-		err("", z138, 0x08b, 0, 0, i007, 0x5678)
+		err("", z138, __LINE__, 0, 0, i007, 0x5678)
 	}
 	if (LNotEqual(i008, 0x5678)) {
-		err("", z138, 0x08c, 0, 0, i008, 0x5678)
+		err("", z138, __LINE__, 0, 0, i008, 0x5678)
 	}
 }

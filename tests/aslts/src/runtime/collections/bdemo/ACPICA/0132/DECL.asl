@@ -36,12 +36,12 @@
 	{
 		Store(arg0, Debug)
 
-		CH03("", 0, 0x000, 0, 0)
+		CH03("", 0, 0x000, __LINE__, 0)
 		Add(arg0, 1, Local7)
-		CH03("", 0, 0x001, 0, 0)
+		CH03("", 0, 0x001, __LINE__, 0)
 
 		if (LNotEqual(Local7, 0x78)) {
-			err("", zFFF, 0x000, 0, 0, id12, 5)
+			err("", zFFF, __LINE__, 0, 0, id12, 5)
 		}
 	}
 

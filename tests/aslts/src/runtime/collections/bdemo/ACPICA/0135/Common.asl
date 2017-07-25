@@ -381,7 +381,7 @@ Method(mfc6, 7, Serialized)
 	Name(p000, Package(Multiply(num, 2)) {})
 	Name(p001, Package(Multiply(num, 2)) {})
 
-	CH03("", 0, 0x000, 0, 0)
+	CH03("", 0, 0x000, __LINE__, 0)
 
 
 	/* Unpack arg2 */
@@ -4046,7 +4046,7 @@ Method(mfc6, 7, Serialized)
 	 */
 	mfcc(Local7, num, num, i000, AR21, 0x001)
 
-	CH03("", 0, 0x002, 0, 0)
+	CH03("", 0, 0x002, __LINE__, 0)
 }
 
 /*
@@ -4088,7 +4088,7 @@ Method(mfcc, 6, Serialized)
 		}
 
 		if (LNotEqual(Local2, i000)) {
-			err("", zFFF, arg5, 0, 0, Local2, i000)
+			err("", zFFF, __LINE__, 0, 0, Local2, i000)
 		}
 
 		Increment(i000)
@@ -4135,7 +4135,7 @@ Method(mfce, 6, Serialized)
 		}
 
 		if (LNotEqual(Local2, arg3)) {
-			err("", zFFF, arg5, 0, 0, Local2, arg3)
+			err("", zFFF, __LINE__, 0, 0, Local2, arg3)
 		}
 
 		Increment(targ)
@@ -4157,6 +4157,6 @@ Method(mfd8, 3)
 	Store(DerefOf(arg0), Local0)
 
 	if (LNotEqual(Local0, arg1)) {
-		err("", zFFF, arg2, 0, 0, Local0, arg1)
+		err("", zFFF, __LINE__, 0, 0, Local0, arg1)
 	}
 }

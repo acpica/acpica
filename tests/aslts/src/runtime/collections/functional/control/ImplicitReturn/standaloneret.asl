@@ -188,186 +188,186 @@ Method(mf6f,, Serialized)
 
 	Store(0xabcd9000, i000)
 
-	CH03("", z137, 0x200, 0, 0)
+	CH03("", z137, 0x200, __LINE__, 0)
 
 	Store(m000(), i000)
 
 	if (SLCK) {
-		CH03("", z137, 0x201, 0, 0)
+		CH03("", z137, 0x201, __LINE__, 0)
 		if (LNotEqual(i000, 0)) {
-			err("", z137, 0x202, 0, 0, i000, 0)
+			err("", z137, __LINE__, 0, 0, i000, 0)
 		}
 	} else {
-		CH03("", z137, 0x203, 0, 0)
+		CH03("", z137, 0x203, __LINE__, 0)
 	}
 
 	// m001
 
 	Store(0xabcd9001, i000)
 
-	CH03("", z137, 0x204, 0, 0)
+	CH03("", z137, 0x204, __LINE__, 0)
 
 	Store(m001(), i000)
 
 	if (SLCK) {
-		CH03("", z137, 0x205, 0, 0)
+		CH03("", z137, 0x205, __LINE__, 0)
 		if (LNotEqual(i000, 0)) {
-			err("", z137, 0x206, 0, 0, i000, 0)
+			err("", z137, __LINE__, 0, 0, i000, 0)
 		}
 	} else {
-		CH03("", z137, 0x207, 0, 0)
+		CH03("", z137, 0x207, __LINE__, 0)
 	}
 
 	// m002
 
 	Store(0xabcd9002, i000)
 
-	CH03("", z137, 0x208, 0, 0)
+	CH03("", z137, 0x208, __LINE__, 0)
 
 	Store(m002(1), i000)
 
 	if (SLCK) {
-		CH03("", z137, 0x209, 0, 0)
+		CH03("", z137, 0x209, __LINE__, 0)
 		if (LNotEqual(i000, 0)) {
-			err("", z137, 0x20a, 0, 0, i000, 0)
+			err("", z137, __LINE__, 0, 0, i000, 0)
 		}
 	} else {
-		CH03("", z137, 0x20b, 0, 0)
+		CH03("", z137, 0x20b, __LINE__, 0)
 	}
 
 	// m003
 
 	Store(0xabcd9003, i000)
 
-	CH03("", z137, 0x20c, 0, 0)
+	CH03("", z137, 0x20c, __LINE__, 0)
 
 	Store(m003(0), i000)
 
 	if (SLCK) {
-		CH03("", z137, 0x20d, 0, 0)
+		CH03("", z137, 0x20d, __LINE__, 0)
 		if (LNotEqual(i000, 0)) {
-			err("", z137, 0x20e, 0, 0, i000, 0)
+			err("", z137, __LINE__, 0, 0, i000, 0)
 		}
 	} else {
-		CH03("", z137, 0x20f, 0, 0)
+		CH03("", z137, 0x20f, __LINE__, 0)
 	}
 
 	// m004(0)
 
 	Store(0xabcd9004, i000)
 
-	CH03("", z137, 0x210, 0, 0)
+	CH03("", z137, 0x210, __LINE__, 0)
 
 	Store(m004(0), i000)
 
 	if (SLCK) {
-		CH03("", z137, 0x211, 0, 0)
+		CH03("", z137, 0x211, __LINE__, 0)
 		if (LNotEqual(i000, 0)) {
-			err("", z137, 0x212, 0, 0, i000, 0)
+			err("", z137, __LINE__, 0, 0, i000, 0)
 		}
 	} else {
-		CH03("", z137, 0x213, 0, 0)
+		CH03("", z137, 0x213, __LINE__, 0)
 	}
 
 	// m004(0x12345678)
 
 	Store(0xabcd9005, i000)
 
-	CH03("", z137, 0x214, 0, 0)
+	CH03("", z137, 0x214, __LINE__, 0)
 
 	Store(m004(0x12345678), i000)
 
 	if (SLCK) {
-		CH03("", z137, 0x215, 0, 0)
+		CH03("", z137, 0x215, __LINE__, 0)
 		if (LNotEqual(i000, 0)) {
-			err("", z137, 0x216, 0, 0, i000, 0)
+			err("", z137, __LINE__, 0, 0, i000, 0)
 		}
 	} else {
-		CH03("", z137, 0x217, 0, 0)
+		CH03("", z137, 0x217, __LINE__, 0)
 	}
 
 	// m004(Default)
 
 	Store(0xabcd9006, i000)
 
-	CH03("", z137, 0x218, 0, 0)
+	CH03("", z137, 0x218, __LINE__, 0)
 
 	Store(m004(1111), i000)
 
 	if (SLCK) {
-		CH03("", z137, 0x219, 0, 0)
+		CH03("", z137, 0x219, __LINE__, 0)
 		if (LNotEqual(i000, 0)) {
-			err("", z137, 0x21a, 0, 0, i000, 0)
+			err("", z137, __LINE__, 0, 0, i000, 0)
 		}
 	} else {
-		CH03("", z137, 0x21b, 0, 0)
+		CH03("", z137, 0x21b, __LINE__, 0)
 	}
 
 	// m005
 
 	Store(0xabcd9007, i000)
 
-	CH03("", z137, 0x21c, 0, 0)
+	CH03("", z137, 0x21c, __LINE__, 0)
 
 	Store(m005(), i000)
 
 	if (SLCK) {
-		CH03("", z137, 0x21d, 0, 0)
+		CH03("", z137, 0x21d, __LINE__, 0)
 		if (LNotEqual(i000, 0)) {
-			err("", z137, 0x21e, 0, 0, i000, 0)
+			err("", z137, __LINE__, 0, 0, i000, 0)
 		}
 	} else {
-		CH03("", z137, 0x21f, 0, 0)
+		CH03("", z137, 0x21f, __LINE__, 0)
 	}
 
 	// m006
 
 	Store(0xabcd9008, i000)
 
-	CH03("", z137, 0x220, 0, 0)
+	CH03("", z137, 0x220, __LINE__, 0)
 
 	Store(m006(), i000)
 
 	if (SLCK) {
-		CH03("", z137, 0x221, 0, 0)
+		CH03("", z137, 0x221, __LINE__, 0)
 		if (LNotEqual(i000, 0)) {
-			err("", z137, 0x222, 0, 0, i000, 0)
+			err("", z137, __LINE__, 0, 0, i000, 0)
 		}
 	} else {
-		CH03("", z137, 0x223, 0, 0)
+		CH03("", z137, 0x223, __LINE__, 0)
 	}
 
 	// m007
 
 	Store(0xabcd9009, i000)
 
-	CH03("", z137, 0x224, 0, 0)
+	CH03("", z137, 0x224, __LINE__, 0)
 
 	Store(m007(), i000)
 
 	if (SLCK) {
-		CH03("", z137, 0x225, 0, 0)
+		CH03("", z137, 0x225, __LINE__, 0)
 		if (LNotEqual(i000, 0)) {
-			err("", z137, 0x226, 0, 0, i000, 0)
+			err("", z137, __LINE__, 0, 0, i000, 0)
 		}
 	} else {
-		CH03("", z137, 0x227, 0, 0)
+		CH03("", z137, 0x227, __LINE__, 0)
 	}
 
 	// m008
 
 	Store(0xabcd900a, i000)
 
-	CH03("", z137, 0x228, 0, 0)
+	CH03("", z137, 0x228, __LINE__, 0)
 
 	Store(m008(), i000)
 
 	if (SLCK) {
-		CH03("", z137, 0x229, 0, 0)
+		CH03("", z137, 0x229, __LINE__, 0)
 		if (LNotEqual(i000, 0)) {
-			err("", z137, 0x22a, 0, 0, i000, 0)
+			err("", z137, __LINE__, 0, 0, i000, 0)
 		}
 	} else {
-		CH03("", z137, 0x22b, 0, 0)
+		CH03("", z137, 0x22b, __LINE__, 0)
 	}
 }

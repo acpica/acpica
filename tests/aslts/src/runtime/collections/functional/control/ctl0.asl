@@ -100,13 +100,13 @@ Method(m074,, Serialized)
 	Store(0, Local7)
 	Store(m070(Local7), Local0)
 	if (LNotEqual(Local0, Local7)){
-		err(ts, z003, 0, 0, 0, Local7, 0)
+		err(ts, z003, __LINE__, 0, 0, Local7, 0)
 	}
 
 	Store(0x12345678, Local7)
 	Store(m070(Local7), Local0)
 	if (LNotEqual(Local0, Local7)){
-		err(ts, z003, 1, 0, 0, Local7, 0)
+		err(ts, z003, __LINE__, 0, 0, Local7, 0)
 	}
 
 	// m071
@@ -115,7 +115,7 @@ Method(m074,, Serialized)
 	While(LLess(Local7, 2)) {
 		Store(m071(Local7), Local0)
 		if (LNotEqual(Local0, Local7)){
-			err(ts, z003, 2, 0, 0, Local7, 0)
+			err(ts, z003, __LINE__, 0, 0, Local7, 0)
 		}
 		Increment(Local7)
 	}
@@ -123,7 +123,7 @@ Method(m074,, Serialized)
 	Store(0x12345678, Local7)
 	Store(m071(Local7), Local0)
 	if (LNotEqual(Local0, 1)){
-		err(ts, z003, 3, 0, 0, Local7, 0)
+		err(ts, z003, __LINE__, 0, 0, Local7, 0)
 	}
 
 	// m072
@@ -132,7 +132,7 @@ Method(m074,, Serialized)
 	While(LLess(Local7, 2)) {
 		Store(m072(Local7), Local0)
 		if (LNotEqual(Local0, Local7)){
-			err(ts, z003, 4, 0, 0, Local7, 0)
+			err(ts, z003, __LINE__, 0, 0, Local7, 0)
 		}
 		Increment(Local7)
 	}
@@ -140,7 +140,7 @@ Method(m074,, Serialized)
 	Store(0x12345678, Local7)
 	Store(m072(Local7), Local0)
 	if (LNotEqual(Local0, Local7)){
-		err(ts, z003, 5, 0, 0, Local7, 0)
+		err(ts, z003, __LINE__, 0, 0, Local7, 0)
 	}
 
 	// m073
@@ -149,7 +149,7 @@ Method(m074,, Serialized)
 	While(LLess(Local7, 3)) {
 		Store(m073(Local7), Local0)
 		if (LNotEqual(Local0, Local7)){
-			err(ts, z003, 6, 0, 0, Local7, 0)
+			err(ts, z003, __LINE__, 0, 0, Local7, 0)
 		}
 		Increment(Local7)
 	}
@@ -157,7 +157,7 @@ Method(m074,, Serialized)
 	Store(0x12345678, Local7)
 	Store(m073(Local7), Local0)
 	if (LNotEqual(Local0, 2)){
-		err(ts, z003, 7, 0, 0, Local7, 0)
+		err(ts, z003, __LINE__, 0, 0, Local7, 0)
 	}
 }
 

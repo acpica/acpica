@@ -46,7 +46,7 @@
 		Store(Local1, Debug)
 
 		if (LNotEqual(Local1, c010)) {
-			err("", zFFF, 0x000, 0, 0, Local1, c010)
+			err("", zFFF, __LINE__, 0, 0, Local1, c010)
 		}
 
 		Store("Finish of test", Debug)

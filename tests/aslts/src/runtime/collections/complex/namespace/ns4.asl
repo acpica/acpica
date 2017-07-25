@@ -44,7 +44,7 @@ Method(m401, 1, Serialized)
 	Name(i001, 0)
 	Name(p000, Package() {1,2,3,4})
 
-	CH03(ts, z158, 0x000, 0, 0)
+	CH03(ts, z158, 0x000, __LINE__, 0)
 
 	Store(arg0, i001)
 
@@ -100,14 +100,14 @@ Method(m401, 1, Serialized)
 	Store(MAdd(i000, m001()), Local0)
 
 	if (LNotEqual(Local0, 0x87654321)) {
-		err(ts, z158, 0x001, 0, 0, Local0, 0x87654321)
+		err(ts, z158, __LINE__, 0, 0, Local0, 0x87654321)
 	}
 
 	if (LNotEqual(i000, 0x80000000)) {
-		err(ts, z158, 0x002, 0, 0, i000, 0x80000000)
+		err(ts, z158, __LINE__, 0, 0, i000, 0x80000000)
 	}
 
-	CH03(ts, z158, 0x003, 0, 0)
+	CH03(ts, z158, 0x003, __LINE__, 0)
 }
 
 Method(n004)

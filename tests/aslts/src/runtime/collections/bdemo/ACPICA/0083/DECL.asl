@@ -62,79 +62,79 @@
 
 		// Expected exception for each DerefOf below
 
-		CH03("", 0, 0x000, 0, 0)
+		CH03("", 0, 0x000, __LINE__, 0)
 		Store(DerefOf(i000), Local0)
-		CH04("", 0, 0xff, 0, 0x001, 0, 0)
+		CH04("", 0, 0xff, 0, __LINE__, 0, 0)
 
-		CH03("", 0, 0x000, 0, 0)
+		CH03("", 0, 0x000, __LINE__, 0)
 		Store(DerefOf(b000), Local0)
-		CH04("", 0, 0xff, 0, 0x001, 0, 0)
+		CH04("", 0, 0xff, 0, __LINE__, 0, 0)
 
-		CH03("", 0, 0x000, 0, 0)
+		CH03("", 0, 0x000, __LINE__, 0)
 		Store(DerefOf(p000), Local0)
-		CH04("", 0, 0xff, 0, 0x001, 0, 0)
+		CH04("", 0, 0xff, 0, __LINE__, 0, 0)
 
-		CH03("", 0, 0x000, 0, 0)
+		CH03("", 0, 0x000, __LINE__, 0)
 		Store(DerefOf(d000), Local0)
-		CH04("", 0, 0xff, 0, 0x001, 0, 0)
+		CH04("", 0, 0xff, 0, __LINE__, 0, 0)
 
 
-		CH03("", 0, 0x000, 0, 0)
+		CH03("", 0, 0x000, __LINE__, 0)
 		Store(DerefOf(e000), Local0)
-		CH04("", 0, 0xff, 0, 0x001, 0, 0)
+		CH04("", 0, 0xff, 0, __LINE__, 0, 0)
 
-		CH03("", 0, 0x000, 0, 0)
+		CH03("", 0, 0x000, __LINE__, 0)
 		Store(DerefOf(mx00), Local0)
-		CH04("", 0, 0xff, 0, 0x001, 0, 0)
+		CH04("", 0, 0xff, 0, __LINE__, 0, 0)
 
-		CH03("", 0, 0x000, 0, 0)
+		CH03("", 0, 0x000, __LINE__, 0)
 		Store(DerefOf(tz00), Local0)
-		CH04("", 0, 0xff, 0, 0x001, 0, 0)
+		CH04("", 0, 0xff, 0, __LINE__, 0, 0)
 
-		CH03("", 0, 0x000, 0, 0)
+		CH03("", 0, 0x000, __LINE__, 0)
 		Store(DerefOf(pr00), Local0)
-		CH04("", 0, 0xff, 0, 0x001, 0, 0)
+		CH04("", 0, 0xff, 0, __LINE__, 0, 0)
 
-		CH03("", 0, 0x000, 0, 0)
+		CH03("", 0, 0x000, __LINE__, 0)
 		Store(DerefOf(pw00), Local0)
-		CH04("", 0, 0xff, 0, 0x001, 0, 0)
+		CH04("", 0, 0xff, 0, __LINE__, 0, 0)
 
-		CH03("", 0, 0x000, 0, 0)
+		CH03("", 0, 0x000, __LINE__, 0)
 		Store(DerefOf(r000), Local0)
-		CH04("", 0, 0xff, 0, 0x001, 0, 0)
+		CH04("", 0, 0xff, 0, __LINE__, 0, 0)
 
 
-		CH03("", 0, 0x000, 0, 0)
+		CH03("", 0, 0x000, __LINE__, 0)
 		Store(DerefOf(bf90), Local0)
-		CH04("", 0, 0xff, 0, 0x001, 0, 0)
+		CH04("", 0, 0xff, 0, __LINE__, 0, 0)
 
-		CH03("", 0, 0x000, 0, 0)
+		CH03("", 0, 0x000, __LINE__, 0)
 		Store(DerefOf(f900), Local0)
-		CH04("", 0, 0xff, 0, 0x001, 0, 0)
+		CH04("", 0, 0xff, 0, __LINE__, 0, 0)
 
-		CH03("", 0, 0x000, 0, 0)
+		CH03("", 0, 0x000, __LINE__, 0)
 		Store(DerefOf(f901), Local0)
-		CH04("", 0, 0xff, 0, 0x001, 0, 0)
+		CH04("", 0, 0xff, 0, __LINE__, 0, 0)
 
-		CH03("", 0, 0x000, 0, 0)
+		CH03("", 0, 0x000, __LINE__, 0)
 		Store(DerefOf(f902), Local0)
-		CH04("", 0, 0xff, 0, 0x001, 0, 0)
+		CH04("", 0, 0xff, 0, __LINE__, 0, 0)
 
-		CH03("", 0, 0x000, 0, 0)
+		CH03("", 0, 0x000, __LINE__, 0)
 		Store(DerefOf(f903), Local0)
-		CH04("", 0, 0xff, 0, 0x001, 0, 0)
+		CH04("", 0, 0xff, 0, __LINE__, 0, 0)
 
-		CH03("", 0, 0x000, 0, 0)
+		CH03("", 0, 0x000, __LINE__, 0)
 		Store(DerefOf(bn90), Local0)
-		CH04("", 0, 0xff, 0, 0x001, 0, 0)
+		CH04("", 0, 0xff, 0, __LINE__, 0, 0)
 
-		CH03("", 0, 0x000, 0, 0)
+		CH03("", 0, 0x000, __LINE__, 0)
 		Store(DerefOf(if90), Local0)
-		CH04("", 0, 0xff, 0, 0x001, 0, 0)
+		CH04("", 0, 0xff, 0, __LINE__, 0, 0)
 
-		CH03("", 0, 0x000, 0, 0)
+		CH03("", 0, 0x000, __LINE__, 0)
 		Store(DerefOf(if91), Local0)
-		CH04("", 0, 0xff, 0, 0x001, 0, 0)
+		CH04("", 0, 0xff, 0, __LINE__, 0, 0)
 
 
 		// And so on..

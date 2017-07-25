@@ -36,20 +36,20 @@
 
 	Method(mf48,, Serialized)
 	{
-		CH03("", 0, 0x000, 0, 0)
+		CH03("", 0, 0x000, __LINE__, 0)
 		Store("mf48 started", Debug)
 		Field(rd05, ByteAcc, NoLock, Preserve) { f000, 8 }
 		Store("mf48 finished", Debug)
-		CH03("", 0, 0x001, 0, 0)
+		CH03("", 0, 0x001, __LINE__, 0)
 	}
 
 	Method(mf49,, Serialized)
 	{
-		CH03("", 0, 0x002, 0, 0)
+		CH03("", 0, 0x002, __LINE__, 0)
 		Store("mf49 started", Debug)
 		if (1) {
 			Field(rd05, ByteAcc, NoLock, Preserve) { f000, 8 }
 		}
 		Store("mf49 finished", Debug)
-		CH03("", 0, 0x003, 0, 0)
+		CH03("", 0, 0x003, __LINE__, 0)
 	}

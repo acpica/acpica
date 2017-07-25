@@ -41,7 +41,7 @@
 
 		Store(ObjectType(Local0), Local1)
 		if (LNotEqual(Local1, c014)) {
-			err("", zFFF, 0x000, 0, 0, Local1, c014)
+			err("", zFFF, __LINE__, 0, 0, Local1, c014)
 		}
 	}
 
@@ -54,7 +54,7 @@
 
 		Store(ObjectType(Local0), Local1)
 		if (LNotEqual(Local1, c012)) {
-			err("", zFFF, 0x001, 0, 0, Local1, c012)
+			err("", zFFF, __LINE__, 0, 0, Local1, c012)
 		}
 	}
 
@@ -67,7 +67,7 @@
 
 		Store(ObjectType(Local0), Local1)
 		if (LNotEqual(Local1, c013)) {
-			err("", zFFF, 0x002, 0, 0, Local1, c013)
+			err("", zFFF, __LINE__, 0, 0, Local1, c013)
 		}
 	}
 
@@ -80,7 +80,7 @@
 
 		Store(ObjectType(Local0), Local1)
 		if (LNotEqual(Local1, c00f)) {
-			err("", zFFF, 0x003, 0, 0, Local1, c00f)
+			err("", zFFF, __LINE__, 0, 0, Local1, c00f)
 		}
 	}
 
@@ -93,7 +93,7 @@
 
 		Store(ObjectType(Local0), Local1)
 		if (LNotEqual(Local1, c011)) {
-			err("", zFFF, 0x004, 0, 0, Local1, c011)
+			err("", zFFF, __LINE__, 0, 0, Local1, c011)
 		}
 	}
 
@@ -103,15 +103,15 @@
 
 		Index(pp00, 0, Local0)
 
-		CH03("", 0, 0x005, 0, 0)
+		CH03("", 0, 0x005, __LINE__, 0)
 		Store(ObjectType(Local0), Debug)
-		CH03("", 0, 0x006, 0, 0)
+		CH03("", 0, 0x006, __LINE__, 0)
 		Store(Derefof(Local0), Debug)
-		CH03("", 0, 0x007, 0, 0)
+		CH03("", 0, 0x007, __LINE__, 0)
 
 		Store(ObjectType(Local0), Local1)
 		if (LNotEqual(Local1, c00e)) {
-			err("", zFFF, 0x008, 0, 0, Local1, c00e)
+			err("", zFFF, __LINE__, 0, 0, Local1, c00e)
 		}
 	}
 
@@ -121,15 +121,15 @@
 
 		Index(pp00, 0, Local0)
 
-		CH03("", 0, 0x009, 0, 0)
+		CH03("", 0, 0x009, __LINE__, 0)
 		Store(ObjectType(Local0), Debug)
-		CH03("", 0, 0x00a, 0, 0)
+		CH03("", 0, 0x00a, __LINE__, 0)
 		Store(Derefof(Local0), Debug)
-		CH03("", 0, 0x00b, 0, 0)
+		CH03("", 0, 0x00b, __LINE__, 0)
 
 		Store(ObjectType(Local0), Local1)
 		if (LNotEqual(Local1, c015)) {
-			err("", zFFF, 0x00c, 0, 0, Local1, c015)
+			err("", zFFF, __LINE__, 0, 0, Local1, c015)
 		}
 	}
 

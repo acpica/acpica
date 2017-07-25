@@ -44,10 +44,10 @@ Method(md44,, Serialized)
 	Store(DeRefof(Refof(OOO2)), Local1)
 
 	if (LNotEqual(Local1, 0x61)) {
-		err("", zFFF, 0xa00, 0, 0, Local1, 0x61)
+		err("", zFFF, __LINE__, 0, 0, Local1, 0x61)
 	}
 	if (LNotEqual(i000, 0xe0385bcd)) {
-		err("", zFFF, 0xa01, 0, 0, i000, 0xe0385bcd)
+		err("", zFFF, __LINE__, 0, 0, i000, 0xe0385bcd)
 	}
 }
 
@@ -66,10 +66,10 @@ Method(md45,, Serialized)
 	Store(DeRefof(Local0), Local1)
 
 	if (LNotEqual(Local1, "Strang")) {
-		err("", zFFF, 0xa02, 0, 0, Local1, "Strang")
+		err("", zFFF, __LINE__, 0, 0, Local1, "Strang")
 	}
 	if (LNotEqual(s000, "String")) {
-		err("", zFFF, 0xa03, 0, 0, s000, "String")
+		err("", zFFF, __LINE__, 0, 0, s000, "String")
 	}
 }
 
@@ -87,10 +87,10 @@ Method(md46,, Serialized)
 	Store(DeRefof(Local0), Local1)
 
 	if (LNotEqual(Local1, Buffer() {1,2,3,0x61})) {
-		err("", zFFF, 0xa04, 0, 0, Local1, Buffer() {1,2,3,0x61})
+		err("", zFFF, __LINE__, 0, 0, Local1, Buffer() {1,2,3,0x61})
 	}
 	if (LNotEqual(b000, Buffer() {1,2,3,4})) {
-		err("", zFFF, 0xa05, 0, 0, b000, Buffer() {1,2,3,4})
+		err("", zFFF, __LINE__, 0, 0, b000, Buffer() {1,2,3,4})
 	}
 }
 
@@ -109,38 +109,38 @@ Method(md47,, Serialized)
 
 	Store(DeRefof(Index(DerefOf(Index(DeRefof(Local0), 0)), 0)), Local1)
 	if (LNotEqual(Local1, 1)) {
-		err("", zFFF, 0xa06, 0, 0, Local1, 1)
+		err("", zFFF, __LINE__, 0, 0, Local1, 1)
 	}
 	Store(DeRefof(Index(DerefOf(Index(DeRefof(Local0), 0)), 1)), Local1)
 	if (LNotEqual(Local1, 2)) {
-		err("", zFFF, 0xa07, 0, 0, Local1, 2)
+		err("", zFFF, __LINE__, 0, 0, Local1, 2)
 	}
 	Store(DeRefof(Index(DerefOf(Index(DeRefof(Local0), 0)), 2)), Local1)
 	if (LNotEqual(Local1, 3)) {
-		err("", zFFF, 0xa08, 0, 0, Local1, 3)
+		err("", zFFF, __LINE__, 0, 0, Local1, 3)
 	}
 	Store(DeRefof(Index(DerefOf(Index(DeRefof(Local0), 0)), 3)), Local1)
 	if (LNotEqual(Local1, 0x61)) {
-		err("", zFFF, 0xa09, 0, 0, Local1, 0x61)
+		err("", zFFF, __LINE__, 0, 0, Local1, 0x61)
 	}
 
 	// pppp
 
 	Store(DeRefof(Index(DerefOf(Index(pppp, 0)), 0)), Local0)
 	if (LNotEqual(Local0, 1)) {
-		err("", zFFF, 0xa0a, 0, 0, Local0, 1)
+		err("", zFFF, __LINE__, 0, 0, Local0, 1)
 	}
 	Store(DeRefof(Index(DerefOf(Index(pppp, 0)), 1)), Local0)
 	if (LNotEqual(Local0, 2)) {
-		err("", zFFF, 0xa0b, 0, 0, Local0, 2)
+		err("", zFFF, __LINE__, 0, 0, Local0, 2)
 	}
 	Store(DeRefof(Index(DerefOf(Index(pppp, 0)), 2)), Local0)
 	if (LNotEqual(Local0, 3)) {
-		err("", zFFF, 0xa0c, 0, 0, Local0, 3)
+		err("", zFFF, __LINE__, 0, 0, Local0, 3)
 	}
 	Store(DeRefof(Index(DerefOf(Index(pppp, 0)), 3)), Local0)
 	if (LNotEqual(Local0, 4)) {
-		err("", zFFF, 0xa0d, 0, 0, Local0, 4)
+		err("", zFFF, __LINE__, 0, 0, Local0, 4)
 	}
 }
 
@@ -158,7 +158,7 @@ Method(md48,, Serialized)
 	Store(DeRefof(Refof(OOO2)), Local1)
 
 	if (LNotEqual(Local1, 0x61)) {
-		err("", zFFF, 0xa0e, 0, 0, Local1, 0x61)
+		err("", zFFF, __LINE__, 0, 0, Local1, 0x61)
 	}
 }
 
@@ -176,7 +176,7 @@ Method(md49,, Serialized)
 	Store(DeRefof(Local0), Local1)
 
 	if (LNotEqual(Local1, "Strang")) {
-		err("", zFFF, 0xa0f, 0, 0, Local1, "Strang")
+		err("", zFFF, __LINE__, 0, 0, Local1, "Strang")
 	}
 }
 
@@ -193,7 +193,7 @@ Method(md4a,, Serialized)
 	Store(DeRefof(Local0), Local1)
 
 	if (LNotEqual(Local1, Buffer() {1,2,3,0x61})) {
-		err("", zFFF, 0xa10, 0, 0, Local1, Buffer() {1,2,3,0x61})
+		err("", zFFF, __LINE__, 0, 0, Local1, Buffer() {1,2,3,0x61})
 	}
 }
 
@@ -211,25 +211,25 @@ Method(md4b,, Serialized)
 
 	Store(DeRefof(Index(DerefOf(Index(DeRefof(Local0), 0)), 0)), Local1)
 	if (LNotEqual(Local1, 1)) {
-		err("", zFFF, 0xa11, 0, 0, Local1, 1)
+		err("", zFFF, __LINE__, 0, 0, Local1, 1)
 	}
 	Store(DeRefof(Index(DerefOf(Index(DeRefof(Local0), 0)), 1)), Local1)
 	if (LNotEqual(Local1, 2)) {
-		err("", zFFF, 0xa12, 0, 0, Local1, 2)
+		err("", zFFF, __LINE__, 0, 0, Local1, 2)
 	}
 	Store(DeRefof(Index(DerefOf(Index(DeRefof(Local0), 0)), 2)), Local1)
 	if (LNotEqual(Local1, 3)) {
-		err("", zFFF, 0xa13, 0, 0, Local1, 3)
+		err("", zFFF, __LINE__, 0, 0, Local1, 3)
 	}
 	Store(DeRefof(Index(DerefOf(Index(DeRefof(Local0), 0)), 3)), Local1)
 	if (LNotEqual(Local1, 0x61)) {
-		err("", zFFF, 0xa14, 0, 0, Local1, 0x61)
+		err("", zFFF, __LINE__, 0, 0, Local1, 0x61)
 	}
 }
 
 Method(md4c)
 {
-	CH03("", 0, 0xf16, 0, 0)
+	CH03("", 0, 0xf16, __LINE__, 0)
 	md44()
 	md45()
 	md46()
@@ -238,5 +238,5 @@ Method(md4c)
 	md49()
 	md4a()
 	md4b()
-	CH03("", 0, 0xf17, 0, 0)
+	CH03("", 0, 0xf17, __LINE__, 0)
 }

@@ -61,7 +61,7 @@ Method(m126,, Serialized)
 		Store(0xabcd0001, Index(p000, 0))
 		Store(DerefOf(Index(p000, 0)), Local0)
 		if (LNotEqual(Local0, 0xabcd0001)) {
-			err("", zFFF, 0x000, 0, 0, Local0, 0xabcd0001)
+			err("", zFFF, __LINE__, 0, 0, Local0, 0xabcd0001)
 		}
 
 /*
@@ -71,19 +71,19 @@ Store to method invocation is not supported
 		Store(0xabcd0004, m002())
 		Store(DerefOf(Index(p000, 1)), Local0)
 		if (LNotEqual(Local0, 0xabcd0004)) {
-			err("", zFFF, 0x000, 0, 0, Local0, 0xabcd0004)
+			err("", zFFF, __LINE__, 0, 0, Local0, 0xabcd0004)
 		}
 
 		Store(0xabcd0005, m003())
 		Store(DerefOf(Index(p000, 1)), Local0)
 		if (LNotEqual(Local0, 0xabcd0005)) {
-			err("", zFFF, 0x000, 0, 0, Local0, 0xabcd0005)
+			err("", zFFF, __LINE__, 0, 0, Local0, 0xabcd0005)
 		}
 
 		Store(0xabcd0006, m004(1))
 		Store(DerefOf(Index(p000, 1)), Local0)
 		if (LNotEqual(Local0, 0xabcd0006)) {
-			err("", zFFF, 0x000, 0, 0, Local0, 0xabcd0006)
+			err("", zFFF, __LINE__, 0, 0, Local0, 0xabcd0006)
 		}
 */
 	}

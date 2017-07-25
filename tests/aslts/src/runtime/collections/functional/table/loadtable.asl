@@ -156,7 +156,7 @@ Device(DTM2) {
 		Concatenate(arg0, "-tst0", arg0)
 
 		if (LNotEqual(OEMT, FU00)) {
-			err(arg0, z176, 0x001, 0, 0, FU00, OEMT)
+			err(arg0, z176, __LINE__, 0, 0, FU00, OEMT)
 			return (1)
 		}
 
@@ -175,7 +175,7 @@ Device(DTM2) {
 		}
 
 		if (CondRefof(\_XT2, Local0)) {
-			err(arg0, z176, 0x002, 0, 0, "\\_XT2", 1)
+			err(arg0, z176, __LINE__, 0, 0, "\\_XT2", 1)
 			return (1)
 		}
 
@@ -183,34 +183,34 @@ Device(DTM2) {
 
 		Store(LoadTable("OEM1", "", "", "\\", PPST, 1), DDBH)
 
-		if (CH03(arg0, z176, 0x003, 0, 0)) {
+		if (CH03(arg0, z176, 0x003, __LINE__, 0)) {
 			return (1)
 		}
 
 		Store(ObjectType(DDBH), Local1)
 		if (LNotEqual(Local1, c017)) { // DDB Handle
-			err(arg0, z176, 0x005, 0, 0, Local1, c017)
+			err(arg0, z176, __LINE__, 0, 0, Local1, c017)
 			return (1)
 		}
 
 		if (LNotEqual(1, \DTM2.PLDT)) {
-			err(arg0, z176, 0x006, 0, 0, \DTM2.PLDT, 1)
+			err(arg0, z176, __LINE__, 0, 0, \DTM2.PLDT, 1)
 		}
 
 		if (CondRefof(\_XT2, Local0)) {
 		} else {
-			err(arg0, z176, 0x007, 0, 0, "\\_XT2", 0)
+			err(arg0, z176, __LINE__, 0, 0, "\\_XT2", 0)
 		}
 
 		UnLoad(DDBH)
 		Store("OEM1 unloaded", Debug)
 
-		if (CH03(arg0, z176, 0x008, 0, 0)) {
+		if (CH03(arg0, z176, 0x008, __LINE__, 0)) {
 			return (1)
 		}
 
 		if (CondRefof(\_XT2, Local0)) {
-			err(arg0, z176, 0x009, 0, 0, "\\_XT2", 1)
+			err(arg0, z176, __LINE__, 0, 0, "\\_XT2", 1)
 		}
 
 		return (0)
@@ -225,7 +225,7 @@ Device(DTM2) {
 		Concatenate(arg0, "-tst1", arg0)
 
 		if (CondRefof(\_XT2, Local0)) {
-			err(arg0, z176, 0x010, 0, 0, "\\_XT2", 1)
+			err(arg0, z176, __LINE__, 0, 0, "\\_XT2", 1)
 			return (1)
 		}
 
@@ -239,34 +239,34 @@ Device(DTM2) {
 			Store(LoadTable("OEM1", "", "", "\\", PPST, 1), DDBH)
 		}
 
-		if (CH03(arg0, z176, 0x011, 0, 0)) {
+		if (CH03(arg0, z176, 0x011, __LINE__, 0)) {
 			return (1)
 		}
 
 		Store(ObjectType(DDBH), Local1)
 		if (LNotEqual(Local1, c017)) { // DDB Handle
-			err(arg0, z176, 0x012, 0, 0, Local1, c017)
+			err(arg0, z176, __LINE__, 0, 0, Local1, c017)
 			return (1)
 		}
 
 		if (LNotEqual(1, \DTM2.PLDT)) {
-			err(arg0, z176, 0x013, 0, 0, \DTM2.PLDT, 1)
+			err(arg0, z176, __LINE__, 0, 0, \DTM2.PLDT, 1)
 		}
 
 		if (CondRefof(\_XT2, Local0)) {
 		} else {
-			err(arg0, z176, 0x014, 0, 0, "\\_XT2", 0)
+			err(arg0, z176, __LINE__, 0, 0, "\\_XT2", 0)
 		}
 
 		UnLoad(DDBH)
 		Store("OEM1 unloaded", Debug)
 
-		if (CH03(arg0, z176, 0x015, 0, 0)) {
+		if (CH03(arg0, z176, 0x015, __LINE__, 0)) {
 			return (1)
 		}
 
 		if (CondRefof(\_XT2, Local0)) {
-			err(arg0, z176, 0x016, 0, 0, "\\_XT2", 1)
+			err(arg0, z176, __LINE__, 0, 0, "\\_XT2", 1)
 		}
 
 		// Unhappy comparison due to the SignatureString
@@ -275,41 +275,41 @@ Device(DTM2) {
 
 		Store(ObjectType(Local2), Local1)
 		if (LNotEqual(Local1, c008)) {
-			err(arg0, z176, 0x017, 0, 0, Local1, c008)
+			err(arg0, z176, __LINE__, 0, 0, Local1, c008)
 		}
 
 		Store(LoadTable("OeM1", "Intel", "Many", "\\", PPST, 1), Local2)
 		if (y281) {
 			// No exception
-			if (CH03(arg0, z176, 0x018, 0, 0)) {
+			if (CH03(arg0, z176, 0x018, __LINE__, 0)) {
 				return (1)
 			}
 		} else {
 			// Exception: AE_BAD_SIGNATURE
-			if (CH04(arg0, 1, 37, z176, 0x019, 0, 0)) {
+			if (CH04(arg0, 1, 37, z176, __LINE__, 0, 0)) {
 				return (1)
 			}
 		}
 		Store(ObjectType(Local2), Local1)
 		if (y281) {
 			if (LNotEqual(Local1, c009)) {
-				err(arg0, z176, 0x01a, 0, 0, Local1, c009)
+				err(arg0, z176, __LINE__, 0, 0, Local1, c009)
 			}
 			if (LNotEqual(Local2, 0)) {
-				err(arg0, z176, 0x01b, 0, 0, Local2, 0)
+				err(arg0, z176, __LINE__, 0, 0, Local2, 0)
 			}
 		} else {
 			if (LNotEqual(Local1, c008)) {
-				err(arg0, z176, 0x01c, 0, 0, Local1, c008)
+				err(arg0, z176, __LINE__, 0, 0, Local1, c008)
 			}
 		}
 
 		if (LNotEqual(0, \DTM2.PLDT)) {
-			err(arg0, z176, 0x01d, 0, 0, \DTM2.PLDT, 0)
+			err(arg0, z176, __LINE__, 0, 0, \DTM2.PLDT, 0)
 		}
 
 		if (CondRefof(\_XT2, Local0)) {
-			err(arg0, z176, 0x01e, 0, 0, "\\_XT2", 1)
+			err(arg0, z176, __LINE__, 0, 0, "\\_XT2", 1)
 		}
 
 		// Unhappy comparison due to the OEMIDString
@@ -318,30 +318,30 @@ Device(DTM2) {
 
 		Store(ObjectType(Local3), Local1)
 		if (LNotEqual(Local1, c008)) {
-			err(arg0, z176, 0x01f, 0, 0, Local1, c008)
+			err(arg0, z176, __LINE__, 0, 0, Local1, c008)
 		}
 
 		Store(LoadTable("OEM1", "InteL", "Many", "\\", PPST, 1), Local3)
 
-		if (CH03(arg0, z176, 0x020, 0, 0)) {
+		if (CH03(arg0, z176, 0x020, __LINE__, 0)) {
 			return (1)
 		}
 
 		Store(ObjectType(Local3), Local1)
 		if (LNotEqual(Local1, c009)) {
-			err(arg0, z176, 0x021, 0, 0, Local1, c009)
+			err(arg0, z176, __LINE__, 0, 0, Local1, c009)
 		}
 
 		if (LNotEqual(Local3, 0)) {
-			err(arg0, z176, 0x022, 0, 0, Local3, 0)
+			err(arg0, z176, __LINE__, 0, 0, Local3, 0)
 		}
 
 		if (LNotEqual(0, \DTM2.PLDT)) {
-			err(arg0, z176, 0x023, 0, 0, \DTM2.PLDT, 0)
+			err(arg0, z176, __LINE__, 0, 0, \DTM2.PLDT, 0)
 		}
 
 		if (CondRefof(\_XT2, Local0)) {
-			err(arg0, z176, 0x024, 0, 0, "\\_XT2", 1)
+			err(arg0, z176, __LINE__, 0, 0, "\\_XT2", 1)
 		}
 
 		// Unhappy comparison due to the OEMTableIDString
@@ -350,30 +350,30 @@ Device(DTM2) {
 
 		Store(ObjectType(Local4), Local1)
 		if (LNotEqual(Local1, c008)) {
-			err(arg0, z176, 0x025, 0, 0, Local1, c008)
+			err(arg0, z176, __LINE__, 0, 0, Local1, c008)
 		}
 
 		Store(LoadTable("OEM1", "Intel", "many", "\\", PPST, 1), Local4)
 
-		if (CH03(arg0, z176, 0x026, 0, 0)) {
+		if (CH03(arg0, z176, 0x026, __LINE__, 0)) {
 			return (1)
 		}
 
 		Store(ObjectType(Local4), Local1)
 		if (LNotEqual(Local1, c009)) {
-			err(arg0, z176, 0x027, 0, 0, Local1, c009)
+			err(arg0, z176, __LINE__, 0, 0, Local1, c009)
 		}
 
 		if (LNotEqual(Local4, 0)) {
-			err(arg0, z176, 0x028, 0, 0, Local4, 0)
+			err(arg0, z176, __LINE__, 0, 0, Local4, 0)
 		}
 
 		if (LNotEqual(0, \DTM2.PLDT)) {
-			err(arg0, z176, 0x029, 0, 0, \DTM2.PLDT, 0)
+			err(arg0, z176, __LINE__, 0, 0, \DTM2.PLDT, 0)
 		}
 
 		if (CondRefof(\_XT2, Local0)) {
-			err(arg0, z176, 0x02a, 0, 0, "\\_XT2", 1)
+			err(arg0, z176, __LINE__, 0, 0, "\\_XT2", 1)
 		}
 
 		return (0)
@@ -391,7 +391,7 @@ Device(DTM2) {
 		Concatenate(arg0, "-tst2", arg0)
 
 		if (CondRefof(\_XT2, Local0)) {
-			err(arg0, z176, 0x030, 0, 0, "\\_XT2", 1)
+			err(arg0, z176, __LINE__, 0, 0, "\\_XT2", 1)
 			return (1)
 		}
 
@@ -401,34 +401,34 @@ Device(DTM2) {
 
 		Store(LoadTable("OEM1", "", "", , PPST, 1), DDB0)
 
-		if (CH03(arg0, z176, 0x031, 0, 0)) {
+		if (CH03(arg0, z176, 0x031, __LINE__, 0)) {
 			return (1)
 		}
 
 		Store(ObjectType(DDB0), Local1)
 		if (LNotEqual(Local1, c017)) { // DDB Handle
-			err(arg0, z176, 0x032, 0, 0, Local1, c017)
+			err(arg0, z176, __LINE__, 0, 0, Local1, c017)
 			return (1)
 		}
 
 		if (LNotEqual(1, \DTM2.PLDT)) {
-			err(arg0, z176, 0x033, 0, 0, \DTM2.PLDT, 1)
+			err(arg0, z176, __LINE__, 0, 0, \DTM2.PLDT, 1)
 		}
 
 		if (CondRefof(\_XT2, Local0)) {
 		} else {
-			err(arg0, z176, 0x034, 0, 0, "\\_XT2", 0)
+			err(arg0, z176, __LINE__, 0, 0, "\\_XT2", 0)
 		}
 
 		UnLoad(DDB0)
 		Store("OEM1 unloaded", Debug)
 
-		if (CH03(arg0, z176, 0x035, 0, 0)) {
+		if (CH03(arg0, z176, 0x035, __LINE__, 0)) {
 			return (1)
 		}
 
 		if (CondRefof(\_XT2, Local0)) {
-			err(arg0, z176, 0x036, 0, 0, "\\_XT2", 1)
+			err(arg0, z176, __LINE__, 0, 0, "\\_XT2", 1)
 		}
 
 		// Check when ParameterPathString omitted
@@ -437,34 +437,34 @@ Device(DTM2) {
 
 		Store(LoadTable("OEM1", "", "", "\\", , 1), DDB1)
 
-		if (CH03(arg0, z176, 0x037, 0, 0)) {
+		if (CH03(arg0, z176, 0x037, __LINE__, 0)) {
 			return (1)
 		}
 
 		Store(ObjectType(DDB1), Local1)
 		if (LNotEqual(Local1, c017)) { // DDB Handle
-			err(arg0, z176, 0x038, 0, 0, Local1, c017)
+			err(arg0, z176, __LINE__, 0, 0, Local1, c017)
 			return (1)
 		}
 
 		if (LNotEqual(0, \DTM2.PLDT)) {
-			err(arg0, z176, 0x039, 0, 0, \DTM2.PLDT, 0)
+			err(arg0, z176, __LINE__, 0, 0, \DTM2.PLDT, 0)
 		}
 
 		if (CondRefof(\_XT2, Local0)) {
 		} else {
-			err(arg0, z176, 0x03a, 0, 0, "\\_XT2", 0)
+			err(arg0, z176, __LINE__, 0, 0, "\\_XT2", 0)
 		}
 
 		UnLoad(DDB1)
 		Store("OEM1 unloaded", Debug)
 
-		if (CH03(arg0, z176, 0x03b, 0, 0)) {
+		if (CH03(arg0, z176, 0x03b, __LINE__, 0)) {
 			return (1)
 		}
 
 		if (CondRefof(\_XT2, Local0)) {
-			err(arg0, z176, 0x03c, 0, 0, "\\_XT2", 1)
+			err(arg0, z176, __LINE__, 0, 0, "\\_XT2", 1)
 		}
 
 		// Check when ParameterData omitted
@@ -473,34 +473,34 @@ Device(DTM2) {
 
 		Store(LoadTable("OEM1", "", "", "\\", PPST, ), DDB2)
 
-		if (CH03(arg0, z176, 0x03d, 0, 0)) {
+		if (CH03(arg0, z176, 0x03d, __LINE__, 0)) {
 			return (1)
 		}
 
 		Store(ObjectType(DDB2), Local1)
 		if (LNotEqual(Local1, c017)) { // DDB Handle
-			err(arg0, z176, 0x03e, 0, 0, Local1, c017)
+			err(arg0, z176, __LINE__, 0, 0, Local1, c017)
 			return (1)
 		}
 
 		if (LNotEqual(0, \DTM2.PLDT)) {
-			err(arg0, z176, 0x03f, 0, 0, \DTM2.PLDT, 0)
+			err(arg0, z176, __LINE__, 0, 0, \DTM2.PLDT, 0)
 		}
 
 		if (CondRefof(\_XT2, Local0)) {
 		} else {
-			err(arg0, z176, 0x040, 0, 0, "\\_XT2", 0)
+			err(arg0, z176, __LINE__, 0, 0, "\\_XT2", 0)
 		}
 
 		UnLoad(DDB2)
 		Store("OEM1 unloaded", Debug)
 
-		if (CH03(arg0, z176, 0x041, 0, 0)) {
+		if (CH03(arg0, z176, 0x041, __LINE__, 0)) {
 			return (1)
 		}
 
 		if (CondRefof(\_XT2, Local0)) {
-			err(arg0, z176, 0x042, 0, 0, "\\_XT2", 1)
+			err(arg0, z176, __LINE__, 0, 0, "\\_XT2", 1)
 		}
 
 		// Check when all optional parameters omitted
@@ -509,34 +509,34 @@ Device(DTM2) {
 
 		Store(LoadTable("OEM1", "", "", , , ), DDB3)
 
-		if (CH03(arg0, z176, 0x043, 0, 0)) {
+		if (CH03(arg0, z176, 0x043, __LINE__, 0)) {
 			return (1)
 		}
 
 		Store(ObjectType(DDB3), Local1)
 		if (LNotEqual(Local1, c017)) { // DDB Handle
-			err(arg0, z176, 0x044, 0, 0, Local1, c017)
+			err(arg0, z176, __LINE__, 0, 0, Local1, c017)
 			return (1)
 		}
 
 		if (LNotEqual(0, \DTM2.PLDT)) {
-			err(arg0, z176, 0x045, 0, 0, \DTM2.PLDT, 0)
+			err(arg0, z176, __LINE__, 0, 0, \DTM2.PLDT, 0)
 		}
 
 		if (CondRefof(\_XT2, Local0)) {
 		} else {
-			err(arg0, z176, 0x046, 0, 0, "\\_XT2", 0)
+			err(arg0, z176, __LINE__, 0, 0, "\\_XT2", 0)
 		}
 
 		UnLoad(DDB3)
 		Store("OEM1 unloaded", Debug)
 
-		if (CH03(arg0, z176, 0x047, 0, 0)) {
+		if (CH03(arg0, z176, 0x047, __LINE__, 0)) {
 			return (1)
 		}
 
 		if (CondRefof(\_XT2, Local0)) {
-			err(arg0, z176, 0x048, 0, 0, "\\_XT2", 1)
+			err(arg0, z176, __LINE__, 0, 0, "\\_XT2", 1)
 		}
 
 		return (0)
@@ -565,34 +565,34 @@ Device(DTM2) {
 		{
 			Concatenate(arg0, arg2, arg0)
 
-			if (CH03(arg0, z176, 0x051, 0, 0)) {
+			if (CH03(arg0, z176, 0x051, __LINE__, 0)) {
 				return (1)
 			}
 
 			Store(ObjectType(arg1), Local1)
 			if (LNotEqual(Local1, c017)) { // DDB Handle
-				err(arg0, z176, 0x052, 0, 0, Local1, c017)
+				err(arg0, z176, __LINE__, 0, 0, Local1, c017)
 				return (1)
 			}
 
 			if (LNotEqual(0, \DTM2.PLDT)) {
-				err(arg0, z176, 0x053, 0, 0, \DTM2.PLDT, 0)
+				err(arg0, z176, __LINE__, 0, 0, \DTM2.PLDT, 0)
 			}
 
 			if (CondRefof(\_XT2, Local0)) {
 			} else {
-				err(arg0, z176, 0x054, 0, 0, "\\DTM2._XT2", 0)
+				err(arg0, z176, __LINE__, 0, 0, "\\DTM2._XT2", 0)
 			}
 
 			UnLoad(arg1)
 			Store("OEM1 unloaded", Debug)
 
-			if (CH03(arg0, z176, 0x055, 0, 0)) {
+			if (CH03(arg0, z176, 0x055, __LINE__, 0)) {
 				return (1)
 			}
 
 			if (CondRefof(\_XT2, Local0)) {
-				err(arg0, z176, 0x056, 0, 0, "\\DTM2._XT2", 1)
+				err(arg0, z176, __LINE__, 0, 0, "\\DTM2._XT2", 1)
 				return (1)
 			}
 
@@ -623,7 +623,7 @@ Device(DTM2) {
 		}
 
 		if (CondRefof(\DTM2._XT2, Local0)) {
-			err(arg0, z176, 0x057, 0, 0, "\\_XT2", 1)
+			err(arg0, z176, __LINE__, 0, 0, "\\_XT2", 1)
 			return (1)
 		}
 
@@ -750,34 +750,34 @@ Device(DTM2) {
 		{
 			Concatenate(arg0, arg2, arg0)
 
-			if (CH03(arg0, z176, 0x061, 0, 0)) {
+			if (CH03(arg0, z176, 0x061, __LINE__, 0)) {
 				return (1)
 			}
 
 			Store(ObjectType(arg1), Local1)
 			if (LNotEqual(Local1, c017)) { // DDB Handle
-				err(arg0, z176, 0x062, 0, 0, Local1, c017)
+				err(arg0, z176, __LINE__, 0, 0, Local1, c017)
 				return (1)
 			}
 
 			if (LNotEqual(1, \DTM2.PLDT)) {
-				err(arg0, z176, 0x063, 0, 0, \DTM2.PLDT, 1)
+				err(arg0, z176, __LINE__, 0, 0, \DTM2.PLDT, 1)
 			}
 
 			if (CondRefof(\DTM2._XT2, Local0)) {
 			} else {
-				err(arg0, z176, 0x064, 0, 0, "\\DTM2._XT2", 0)
+				err(arg0, z176, __LINE__, 0, 0, "\\DTM2._XT2", 0)
 			}
 
 			UnLoad(arg1)
 			Store("OEM1 unloaded", Debug)
 
-			if (CH03(arg0, z176, 0x065, 0, 0)) {
+			if (CH03(arg0, z176, 0x065, __LINE__, 0)) {
 				return (1)
 			}
 
 			if (CondRefof(\DTM2._XT2, Local0)) {
-				err(arg0, z176, 0x066, 0, 0, "\\DTM2._XT2", 1)
+				err(arg0, z176, __LINE__, 0, 0, "\\DTM2._XT2", 1)
 				return (1)
 			}
 
@@ -811,7 +811,7 @@ Device(DTM2) {
 		Concatenate(arg0, "-tst4", arg0)
 
 		if (CondRefof(\DTM2._XT2, Local0)) {
-			err(arg0, z176, 0x067, 0, 0, "\\DTM2._XT2", 1)
+			err(arg0, z176, __LINE__, 0, 0, "\\DTM2._XT2", 1)
 			return (1)
 		}
 
@@ -932,12 +932,12 @@ Device(DTM2) {
 		Concatenate(arg0, "-tst5", arg0)
 
 		if (CondRefof(\_XT2, Local0)) {
-			err(arg0, z176, 0x070, 0, 0, "\\_XT2", 1)
+			err(arg0, z176, __LINE__, 0, 0, "\\_XT2", 1)
 			return (1)
 		}
 
 		if (CondRefof(\DTM2.DEVR._XT2, Local0)) {
-			err(arg0, z176, 0x071, 0, 0, "\\DTM2.DEVR._XT2", 1)
+			err(arg0, z176, __LINE__, 0, 0, "\\DTM2.DEVR._XT2", 1)
 			return (1)
 		}
 
@@ -945,42 +945,42 @@ Device(DTM2) {
 
 		Store(LoadTable("OEM1", "", "", Arg1, PPST, 1), DDBH)
 
-		if (CH03(arg0, z176, 0x072, 0, 0)) {
+		if (CH03(arg0, z176, 0x072, __LINE__, 0)) {
 			return (1)
 		}
 
 		Store(ObjectType(DDBH), Local1)
 		if (LNotEqual(Local1, c017)) { // DDB Handle
-			err(arg0, z176, 0x073, 0, 0, Local1, c017)
+			err(arg0, z176, __LINE__, 0, 0, Local1, c017)
 			return (1)
 		}
 
 		if (LNotEqual(1, \DTM2.PLDT)) {
-			err(arg0, z176, 0x074, 0, 0, \DTM2.PLDT, 1)
+			err(arg0, z176, __LINE__, 0, 0, \DTM2.PLDT, 1)
 		}
 
 		if (CondRefof(\_XT2, Local0)) {
-			err(arg0, z176, 0x075, 0, 0, "\\_XT2", 1)
+			err(arg0, z176, __LINE__, 0, 0, "\\_XT2", 1)
 		}
 
 		if (CondRefof(\DTM2.DEVR._XT2, Local0)) {
 		} else {
-			err(arg0, z176, 0x076, 0, 0, "\\DTM2.DEVR._XT2", 0)
+			err(arg0, z176, __LINE__, 0, 0, "\\DTM2.DEVR._XT2", 0)
 		}
 
 		UnLoad(DDBH)
 		Store("OEM1 unloaded", Debug)
 
-		if (CH03(arg0, z176, 0x077, 0, 0)) {
+		if (CH03(arg0, z176, 0x077, __LINE__, 0)) {
 			return (1)
 		}
 
 		if (CondRefof(\_XT2, Local0)) {
-			err(arg0, z176, 0x078, 0, 0, "\\_XT2", 1)
+			err(arg0, z176, __LINE__, 0, 0, "\\_XT2", 1)
 		}
 
 		if (CondRefof(\DTM2.DEVR._XT2, Local0)) {
-			err(arg0, z176, 0x079, 0, 0, "\\DTM2.DEVR._XT2", 1)
+			err(arg0, z176, __LINE__, 0, 0, "\\DTM2.DEVR._XT2", 1)
 		}
 
 		return (0)
@@ -995,7 +995,7 @@ Device(DTM2) {
 		Concatenate(arg0, "-tst6", arg0)
 
 		if (CondRefof(\_XT2, Local0)) {
-			err(arg0, z176, 0x080, 0, 0, "\\_XT2", 1)
+			err(arg0, z176, __LINE__, 0, 0, "\\_XT2", 1)
 			return (1)
 		}
 
@@ -1003,34 +1003,34 @@ Device(DTM2) {
 
 		Store(LoadTable("OEM1", "", "", , PPST, 1), DDBH)
 
-		if (CH03(arg0, z176, 0x081, 0, 0)) {
+		if (CH03(arg0, z176, 0x081, __LINE__, 0)) {
 			return (1)
 		}
 
 		Store(ObjectType(DDBH), Local1)
 		if (LNotEqual(Local1, c017)) { // DDB Handle
-			err(arg0, z176, 0x082, 0, 0, Local1, c017)
+			err(arg0, z176, __LINE__, 0, 0, Local1, c017)
 			return (1)
 		}
 
 		if (LNotEqual(1, \DTM2.PLDT)) {
-			err(arg0, z176, 0x083, 0, 0, \DTM2.PLDT, 1)
+			err(arg0, z176, __LINE__, 0, 0, \DTM2.PLDT, 1)
 		}
 
 		if (CondRefof(\_XT2, Local0)) {
 		} else {
-			err(arg0, z176, 0x084, 0, 0, "\\_XT2", 0)
+			err(arg0, z176, __LINE__, 0, 0, "\\_XT2", 0)
 		}
 
 		UnLoad(DDBH)
 		Store("OEM1 unloaded", Debug)
 
-		if (CH03(arg0, z176, 0x085, 0, 0)) {
+		if (CH03(arg0, z176, 0x085, __LINE__, 0)) {
 			return (1)
 		}
 
 		if (CondRefof(\_XT2, Local0)) {
-			err(arg0, z176, 0x086, 0, 0, "\\_XT2", 1)
+			err(arg0, z176, __LINE__, 0, 0, "\\_XT2", 1)
 		}
 
 		return (0)
@@ -1049,23 +1049,23 @@ Device(DTM2) {
 
 		Store(LoadTable("OEM1", "", "", RPST, "^TST7.PLDT", 1), DDBH)
 
-		if (CH03(arg0, z176, 0x091, 0, 0)) {
+		if (CH03(arg0, z176, 0x091, __LINE__, 0)) {
 			return (1)
 		}
 
 		Store(ObjectType(DDBH), Local1)
 		if (LNotEqual(Local1, c017)) { // DDB Handle
-			err(arg0, z176, 0x092, 0, 0, Local1, c017)
+			err(arg0, z176, __LINE__, 0, 0, Local1, c017)
 			return (1)
 		}
 
 		if (LNotEqual(1, PLDT)) {
-			err(arg0, z176, 0x093, 0, 0, PLDT, 1)
+			err(arg0, z176, __LINE__, 0, 0, PLDT, 1)
 		}
 
 		UnLoad(DDBH)
 
-		if (CH03(arg0, z176, 0x094, 0, 0)) {
+		if (CH03(arg0, z176, 0x094, __LINE__, 0)) {
 			return (1)
 		}
 
@@ -1074,27 +1074,27 @@ Device(DTM2) {
 
 		Store(LoadTable("OEM1", "", "", RPST, "PLDT", 1), DDBH)
 
-		if (CH03(arg0, z176, 0x095, 0, 0)) {
+		if (CH03(arg0, z176, 0x095, __LINE__, 0)) {
 			return (1)
 		}
 
 		Store(ObjectType(DDBH), Local1)
 		if (LNotEqual(Local1, c017)) { // DDB Handle
-			err(arg0, z176, 0x096, 0, 0, Local1, c017)
+			err(arg0, z176, __LINE__, 0, 0, Local1, c017)
 			return (1)
 		}
 
 		if (LNotEqual(0, PLDT)) {
-			err(arg0, z176, 0x097, 0, 0, PLDT, 0)
+			err(arg0, z176, __LINE__, 0, 0, PLDT, 0)
 		}
 
 		if (LNotEqual(1, \DTM2.PLDT)) {
-			err(arg0, z176, 0x098, 0, 0, \DTM2.PLDT, 1)
+			err(arg0, z176, __LINE__, 0, 0, \DTM2.PLDT, 1)
 		}
 
 		UnLoad(DDBH)
 
-		if (CH03(arg0, z176, 0x099, 0, 0)) {
+		if (CH03(arg0, z176, 0x099, __LINE__, 0)) {
 			return (1)
 		}
 
@@ -1119,10 +1119,10 @@ Device(DTM2) {
 			LoadTable("OEM1X", "", "", RPST, PPST, 1)
 		}
 
-		CH04(arg0, 0, 61, z176, 0x0a0, 0, 0)	// AE_AML_STRING_LIMIT
+		CH04(arg0, 0, 61, z176, __LINE__, 0, 0)	// AE_AML_STRING_LIMIT
 
 		if (LNotEqual(0, \DTM2.PLDT)) {
-			err(arg0, z176, 0x0a1, 0, 0, \DTM2.PLDT, 1)
+			err(arg0, z176, __LINE__, 0, 0, \DTM2.PLDT, 1)
 
 			if (y287) {
 				return (1)
@@ -1136,20 +1136,20 @@ Device(DTM2) {
 		// OEMIDString is greater than six characters
 		LoadTable("OEM1", "IntelXX", "", RPST, PPST, 1)
 
-		CH04(arg0, 0, 61, z176, 0x0a2, 0, 0)	// AE_AML_STRING_LIMIT
+		CH04(arg0, 0, 61, z176, __LINE__, 0, 0)	// AE_AML_STRING_LIMIT
 
 		if (LNotEqual(0, \DTM2.PLDT)) {
-			err(arg0, z176, 0x0a3, 0, 0, \DTM2.PLDT, 1)
+			err(arg0, z176, __LINE__, 0, 0, \DTM2.PLDT, 1)
 			return (1)
 		}
 
 		// OEMTableID is greater than eight characters
 		LoadTable("OEM1", "", "ManyXXXXX", RPST, PPST, 1)
 
-		CH04(arg0, 0, 61, z176, 0x0a4, 0, 0)	// AE_AML_STRING_LIMIT
+		CH04(arg0, 0, 61, z176, __LINE__, 0, 0)	// AE_AML_STRING_LIMIT
 
 		if (LNotEqual(0, \DTM2.PLDT)) {
-			err(arg0, z176, 0x0a5, 0, 0, \DTM2.PLDT, 1)
+			err(arg0, z176, __LINE__, 0, 0, \DTM2.PLDT, 1)
 			return (1)
 		}
 
@@ -1167,19 +1167,19 @@ Device(DTM2) {
 		// SignatureString is "DSDT"
 		LoadTable("DSDT", "", "", RPST, PPST, 1)
 
-		CH04(arg0, 0, 7, z176, 0x0a6, 0, 0)	// AE_ALREADY_EXISTS
+		CH04(arg0, 0, 7, z176, __LINE__, 0, 0)	// AE_ALREADY_EXISTS
 
 		if (LNotEqual(0, \DTM2.PLDT)) {
-			err(arg0, z176, 0x0a7, 0, 0, \DTM2.PLDT, 1)
+			err(arg0, z176, __LINE__, 0, 0, \DTM2.PLDT, 1)
 		}
 
 		// SignatureString is "SSDT"
 		LoadTable("SSDT", "", "", RPST, PPST, 1)
 
-		CH04(arg0, 0, 7, z176, 0x0a8, 0, 0)	// AE_ALREADY_EXISTS
+		CH04(arg0, 0, 7, z176, __LINE__, 0, 0)	// AE_ALREADY_EXISTS
 
 		if (LNotEqual(0, \DTM2.PLDT)) {
-			err(arg0, z176, 0x0a9, 0, 0, \DTM2.PLDT, 1)
+			err(arg0, z176, __LINE__, 0, 0, \DTM2.PLDT, 1)
 		}
 
 		return (0)
@@ -1193,7 +1193,7 @@ Device(DTM2) {
 		Concatenate(arg0, "-tsta", arg0)
 
 		if (CondRefof(\_XT2, Local0)) {
-			err(arg0, z176, 0x0b0, 0, 0, "\\_XT2", 1)
+			err(arg0, z176, __LINE__, 0, 0, "\\_XT2", 1)
 			return (1)
 		}
 
@@ -1201,53 +1201,53 @@ Device(DTM2) {
 
 		Store(LoadTable("OEM1", "", "", "\\", PPST, 1), DDBH)
 
-		if (CH03(arg0, z176, 0x0b1, 0, 0)) {
+		if (CH03(arg0, z176, 0x0b1, __LINE__, 0)) {
 			return (1)
 		}
 
 		Store(ObjectType(DDBH), Local1)
 		if (LNotEqual(Local1, c017)) { // DDB Handle
-			err(arg0, z176, 0x0b2, 0, 0, Local1, c017)
+			err(arg0, z176, __LINE__, 0, 0, Local1, c017)
 			return (1)
 		}
 
 		if (LNotEqual(1, \DTM2.PLDT)) {
-			err(arg0, z176, 0x0b3, 0, 0, \DTM2.PLDT, 1)
+			err(arg0, z176, __LINE__, 0, 0, \DTM2.PLDT, 1)
 		}
 
 		if (CondRefof(\_XT2, Local0)) {
 		} else {
-			err(arg0, z176, 0x0b4, 0, 0, "\\_XT2", 0)
+			err(arg0, z176, __LINE__, 0, 0, "\\_XT2", 0)
 		}
 
 		Store(0, \DTM2.PLDT)
 
 		LoadTable("OEM1", "", "", "\\DTM2", PPST, 1)
 
-		CH04(arg0, 0, 7, z176, 0x0b5, 0, 0)	// AE_ALREADY_EXISTS
+		CH04(arg0, 0, 7, z176, __LINE__, 0, 0)	// AE_ALREADY_EXISTS
 
 		if (LNotEqual(0, \DTM2.PLDT)) {
-			err(arg0, z176, 0x0b6, 0, 0, \DTM2.PLDT, 0)
+			err(arg0, z176, __LINE__, 0, 0, \DTM2.PLDT, 0)
 		}
 
 		if (CondRefof(\DTM2._XT2, Local0)) {
-			err(arg0, z176, 0x0b7, 0, 0, "\\DTM2._XT2", 1)
+			err(arg0, z176, __LINE__, 0, 0, "\\DTM2._XT2", 1)
 		}
 
 		if (CondRefof(\_XT2, Local0)) {
 		} else {
-			err(arg0, z176, 0x0b8, 0, 0, "\\_XT2", 0)
+			err(arg0, z176, __LINE__, 0, 0, "\\_XT2", 0)
 		}
 
 		UnLoad(DDBH)
 		Store("OEM1 unloaded", Debug)
 
-		if (CH03(arg0, z176, 0x0b9, 0, 0)) {
+		if (CH03(arg0, z176, 0x0b9, __LINE__, 0)) {
 			return (1)
 		}
 
 		if (CondRefof(\_XT2, Local0)) {
-			err(arg0, z176, 0x0ba, 0, 0, "\\_XT2", 1)
+			err(arg0, z176, __LINE__, 0, 0, "\\_XT2", 1)
 		}
 
 		return (0)
@@ -1281,52 +1281,52 @@ Device(DTM2) {
 		Concatenate(arg0, "-tstb", arg0)
 
 		if (CondRefof(\_XT2, Local0)) {
-			err(arg0, z176, 0x0c0, 0, 0, "\\_XT2", 1)
+			err(arg0, z176, __LINE__, 0, 0, "\\_XT2", 1)
 			return (1)
 		}
 
 		Store(BUF4, RFU4)
 		Load(RFU4, DDBH)
 
-		if (CH03(arg0, z176, 0x0c1, 0, 0)) {
+		if (CH03(arg0, z176, 0x0c1, __LINE__, 0)) {
 			return (1)
 		}
 
 		Store(ObjectType(DDBH), Local1)
 		if (LNotEqual(Local1, c017)) { // DDB Handle
-			err(arg0, z176, 0x0c2, 0, 0, Local1, c017)
+			err(arg0, z176, __LINE__, 0, 0, Local1, c017)
 			return (1)
 		}
 
 		if (CondRefof(\_XT2, Local0)) {
 		} else {
-			err(arg0, z176, 0x0c3, 0, 0, "\\_XT2", 0)
+			err(arg0, z176, __LINE__, 0, 0, "\\_XT2", 0)
 		}
 
 		Store(0, \DTM2.PLDT)
 
 		LoadTable("OEM1", "", "", "\\", PPST, 1)
 
-		CH04(arg0, 0, 7, z176, 0x0c4, 0, 0)	// AE_ALREADY_EXISTS
+		CH04(arg0, 0, 7, z176, __LINE__, 0, 0)	// AE_ALREADY_EXISTS
 
 		if (LNotEqual(0, \DTM2.PLDT)) {
-			err(arg0, z176, 0x0c5, 0, 0, \DTM2.PLDT, 0)
+			err(arg0, z176, __LINE__, 0, 0, \DTM2.PLDT, 0)
 		}
 
 		if (CondRefof(\_XT2, Local0)) {
 		} else {
-			err(arg0, z176, 0x0c6, 0, 0, "\\_XT2", 0)
+			err(arg0, z176, __LINE__, 0, 0, "\\_XT2", 0)
 		}
 
 		UnLoad(DDBH)
 		Store("SSDT unloaded", Debug)
 
-		if (CH03(arg0, z176, 0x0c7, 0, 0)) {
+		if (CH03(arg0, z176, 0x0c7, __LINE__, 0)) {
 			return (1)
 		}
 
 		if (CondRefof(\_XT2, Local0)) {
-			err(arg0, z176, 0x0c8, 0, 0, "\\_XT2", 1)
+			err(arg0, z176, __LINE__, 0, 0, "\\_XT2", 1)
 		}
 
 		return (0)
@@ -1340,7 +1340,7 @@ Device(DTM2) {
 
 		LoadTable("DSDT", "", "", RPST, "\\DTM2.NULL", 1)
 
-		CH04(arg0, 0, 5, z176, 0x0c9, 0, 0)	// AE_NOT_FOUND
+		CH04(arg0, 0, 5, z176, __LINE__, 0, 0)	// AE_NOT_FOUND
 
 		return (0)
 	}
@@ -1355,14 +1355,14 @@ Device(DTM2) {
 
 		LoadTable("OEM1", "", "", "\\", "\\DTM2.PLDT", \DTM2.DEVR)
 
-		CH04(arg0, 0, 47, z176, 0x0ca, 0, 0)	// AE_AML_OPERAND_TYPE
+		CH04(arg0, 0, 47, z176, __LINE__, 0, 0)	// AE_AML_OPERAND_TYPE
 
 		if (LNotEqual(0, \DTM2.PLDT)) {
-			err(arg0, z176, 0x0cb, 0, 0, \DTM2.PLDT, 0)
+			err(arg0, z176, __LINE__, 0, 0, \DTM2.PLDT, 0)
 		}
 
 		if (CondRefof(\_XT2, Local0)) {
-			err(arg0, z176, 0x0cc, 0, 0, "\\_XT2", 1)
+			err(arg0, z176, __LINE__, 0, 0, "\\_XT2", 1)
 		}
 
 		return (0)
@@ -1390,7 +1390,7 @@ Device(DTM2) {
 			Switch(ToInteger (arg2)) {
 				Case(0) {
 					LoadTable(arg1, SOID, STID, RPST, PPST, 1)
-					return (CH04(arg0, 0, 37, z176, 0x0d0, 0, 0))// AE_BAD_SIGNATURE
+					return (CH04(arg0, 0, 37, z176, __LINE__, 0, 0))// AE_BAD_SIGNATURE
 				}
 				Case(1) {
 					Store(LoadTable(SOEM, arg1, STID, RPST, PPST, 1), DDBH)
@@ -1400,36 +1400,36 @@ Device(DTM2) {
 				}
 				Case(3) {
 					LoadTable(SOEM, SOID, STID, arg1, PPST, 1)
-					return (CH04(arg0, 0, 30, z176, 0x0d1, 0, 0)) // AE_BAD_PATHNAME
+					return (CH04(arg0, 0, 30, z176, __LINE__, 0, 0)) // AE_BAD_PATHNAME
 				}
 				Case(4) {
 					LoadTable(SOEM, SOID, STID, RPST, arg1, 1)
-					return (CH04(arg0, 0, 30, z176, 0x0d2, 0, 0)) // AE_BAD_PATHNAME
+					return (CH04(arg0, 0, 30, z176, __LINE__, 0, 0)) // AE_BAD_PATHNAME
 				}
 			}
 
-			if (CH03(arg0, z176, 0x0d3, 0, 0)) {
+			if (CH03(arg0, z176, 0x0d3, __LINE__, 0)) {
 				return (1)
 			}
 
 			if (LNotEqual(0, \DTM2.PLDT)) {
-				err(arg0, z176, 0x0d4, 0, 0, \DTM2.PLDT, 0)
+				err(arg0, z176, __LINE__, 0, 0, \DTM2.PLDT, 0)
 				return (1)
 			}
 
 			Store(ObjectType(DDBH), Local5)
 
-			if (CH03(arg0, z176, 0x0d5, 0, 0)) {
+			if (CH03(arg0, z176, 0x0d5, __LINE__, 0)) {
 				return (1)
 			}
 
 			if (LNotEqual(Local5, c009)) {	// Integer
-				err(arg0, z176, 0x0d6, 0, 0, Local5, c009)
+				err(arg0, z176, __LINE__, 0, 0, Local5, c009)
 				return (1)
 			}
 
 			if (LNotEqual(0, DDBH)) {
-				err(arg0, z176, 0x0d7, 0, 0, DDBH, 0)
+				err(arg0, z176, __LINE__, 0, 0, DDBH, 0)
 				return (1)
 			}
 
@@ -1462,27 +1462,27 @@ Device(DTM2) {
 		// Check consistency of the parameters
 
 		if (LNotEqual(ToBuffer(SOEM), Local0)) {
-			err(arg0, z176, 0x0d8, 0, 0, Local0, ToBuffer(SOEM))
+			err(arg0, z176, __LINE__, 0, 0, Local0, ToBuffer(SOEM))
 			return (1)
 		}
 
 		if (LNotEqual(ToBuffer(SOID), Local1)) {
-			err(arg0, z176, 0x0d9, 0, 0, Local1, ToBuffer(SOID))
+			err(arg0, z176, __LINE__, 0, 0, Local1, ToBuffer(SOID))
 			return (1)
 		}
 
 		if (LNotEqual(ToBuffer(STID), Local2)) {
-			err(arg0, z176, 0x0da, 0, 0, Local2, ToBuffer(STID))
+			err(arg0, z176, __LINE__, 0, 0, Local2, ToBuffer(STID))
 			return (1)
 		}
 
 		if (LNotEqual(ToBuffer(RPST), Local3)) {
-			err(arg0, z176, 0x0db, 0, 0, Local3, ToBuffer(RPST))
+			err(arg0, z176, __LINE__, 0, 0, Local3, ToBuffer(RPST))
 			return (1)
 		}
 
 		if (LNotEqual(ToBuffer(PPST), Local4)) {
-			err(arg0, z176, 0x0dc, 0, 0, Local4, ToBuffer(PPST))
+			err(arg0, z176, __LINE__, 0, 0, Local4, ToBuffer(PPST))
 			return (1)
 		}
 
@@ -1504,7 +1504,7 @@ Device(DTM2) {
 
 		if (y293) {
 			if (CondRefof(\_XT2, Local0)) {
-				err(arg0, z176, 0x0e0, 0, 0, "\\_XT2", 1)
+				err(arg0, z176, __LINE__, 0, 0, "\\_XT2", 1)
 				return (1)
 			}
 
@@ -1515,29 +1515,29 @@ Device(DTM2) {
 
 			Store(LoadTable(SOEM, Local1, Local1, RPST, PPST, 1), DDBH)
 
-			if (CH03(arg0, z176, 0x0e1, 0, 0)) {
+			if (CH03(arg0, z176, 0x0e1, __LINE__, 0)) {
 				return (1)
 			}
 
 			if (LNotEqual(1, \DTM2.PLDT)) {
-				err(arg0, z176, 0x0e2, 0, 0, \DTM2.PLDT, 1)
+				err(arg0, z176, __LINE__, 0, 0, \DTM2.PLDT, 1)
 				return (1)
 			}
 
 			if (CondRefof(\_XT2, Local0)) {
 			} else {
-				err(arg0, z176, 0x0e3, 0, 0, "\\_XT2", 1)
+				err(arg0, z176, __LINE__, 0, 0, "\\_XT2", 1)
 				return (1)
 			}
 
 			UnLoad(DDBH)
 
-			if (CH03(arg0, z176, 0x0e4, 0, 0)) {
+			if (CH03(arg0, z176, 0x0e4, __LINE__, 0)) {
 				return (1)
 			}
 
 			if (CondRefof(\_XT2, Local0)) {
-				err(arg0, z176, 0x0e5, 0, 0, "\\_XT2", 1)
+				err(arg0, z176, __LINE__, 0, 0, "\\_XT2", 1)
 				return (1)
 			}
 		}
@@ -1570,37 +1570,37 @@ Device(DTM2) {
 		Concatenate(arg0, "-tstf", arg0)
 
 		if (CondRefof(\_XT2, Local0)) {
-			err(arg0, z176, 0x0f1, 0, 0, "\\_XT2", 1)
+			err(arg0, z176, __LINE__, 0, 0, "\\_XT2", 1)
 			return (1)
 		}
 
 		Store(BUF4, RFU4)
 		Load(RFU4, DDBH)
 
-		if (CH03(arg0, z176, 0x0f2, 0, 0)) {
+		if (CH03(arg0, z176, 0x0f2, __LINE__, 0)) {
 			return (1)
 		}
 
 		Store(ObjectType(DDBH), Local1)
 		if (LNotEqual(Local1, c017)) { // DDB Handle
-			err(arg0, z176, 0x0f3, 0, 0, Local1, c017)
+			err(arg0, z176, __LINE__, 0, 0, Local1, c017)
 			return (1)
 		}
 
 		if (CondRefof(\_XT2, Local0)) {
 		} else {
-			err(arg0, z176, 0x0f4, 0, 0, "\\_XT2", 0)
+			err(arg0, z176, __LINE__, 0, 0, "\\_XT2", 0)
 		}
 
 		UnLoad(DDBH)
 		Store("SSDT unloaded", Debug)
 
-		if (CH03(arg0, z176, 0x0f5, 0, 0)) {
+		if (CH03(arg0, z176, 0x0f5, __LINE__, 0)) {
 			return (1)
 		}
 
 		if (CondRefof(\_XT2, Local0)) {
-			err(arg0, z176, 0x0f6, 0, 0, "\\_XT2", 1)
+			err(arg0, z176, __LINE__, 0, 0, "\\_XT2", 1)
 			return (1)
 		}
 
@@ -1612,14 +1612,14 @@ Device(DTM2) {
 			Store(LoadTable("SSDT", "iASLTS", "LTBL0001", "\\", PPST, 1), DDBH)
 		}
 
-		CH04(arg0, 0, 28, z176, 0x0f7, 0, 0)	// AE_BAD_PARAMETER
+		CH04(arg0, 0, 28, z176, __LINE__, 0, 0)	// AE_BAD_PARAMETER
 
 		if (LNotEqual(0, \DTM2.PLDT)) {
-			err(arg0, z176, 0x0f8, 0, 0, \DTM2.PLDT, 0)
+			err(arg0, z176, __LINE__, 0, 0, \DTM2.PLDT, 0)
 		}
 
 		if (CondRefof(\_XT2, Local0)) {
-			err(arg0, z176, 0x0f9, 0, 0, "\\_XT2", 1)
+			err(arg0, z176, __LINE__, 0, 0, "\\_XT2", 1)
 			if (y289) {
 				// Cleanup
 				UnLoad(DDBH)
@@ -1653,12 +1653,12 @@ Device(DTM2) {
 
 			Store(ObjectType(arg2), Local0)
 			if (LNotEqual(arg3, Local0)) {
-				err(arg0, z176, 0x100, 0, 0, Local0, arg3)
+				err(arg0, z176, __LINE__, 0, 0, Local0, arg3)
 				return (1)
 			}
 
 			LoadTable(Derefof(arg2), "", "", "\\", "\\DTM2.PLDT", 1)
-			CH04(arg0, 0, 47, z176, 0x101, 0, 0)	// AE_AML_OPERAND_TYPE
+			CH04(arg0, 0, 47, z176, __LINE__, 0, 0)	// AE_AML_OPERAND_TYPE
 
 			return (0)
 		}
@@ -1670,12 +1670,12 @@ Device(DTM2) {
 
 			Store(ObjectType(arg2), Local0)
 			if (LNotEqual(arg3, Local0)) {
-				err(arg0, z176, 0x102, 0, 0, Local0, arg3)
+				err(arg0, z176, __LINE__, 0, 0, Local0, arg3)
 				return (1)
 			}
 
 			LoadTable("OEM1", Derefof(arg2), "", "\\", "\\DTM2.PLDT", 1)
-			CH04(arg0, 0, 47, z176, 0x103, 0, 0)	// AE_AML_OPERAND_TYPE
+			CH04(arg0, 0, 47, z176, __LINE__, 0, 0)	// AE_AML_OPERAND_TYPE
 
 			return (0)
 		}
@@ -1687,12 +1687,12 @@ Device(DTM2) {
 
 			Store(ObjectType(arg2), Local0)
 			if (LNotEqual(arg3, Local0)) {
-				err(arg0, z176, 0x104, 0, 0, Local0, arg3)
+				err(arg0, z176, __LINE__, 0, 0, Local0, arg3)
 				return (1)
 			}
 
 			LoadTable("OEM1", "", Derefof(arg2), "\\", "\\DTM2.PLDT", 1)
-			CH04(arg0, 0, 47, z176, 0x105, 0, 0)	// AE_AML_OPERAND_TYPE
+			CH04(arg0, 0, 47, z176, __LINE__, 0, 0)	// AE_AML_OPERAND_TYPE
 
 			return (0)
 		}
@@ -1704,15 +1704,15 @@ Device(DTM2) {
 
 			Store(ObjectType(arg2), Local0)
 			if (LNotEqual(arg3, Local0)) {
-				err(arg0, z176, 0x106, 0, 0, Local0, arg3)
+				err(arg0, z176, __LINE__, 0, 0, Local0, arg3)
 				return (1)
 			}
 
 			LoadTable("OEM1", "", "", Derefof(arg2), "\\DTM2.PLDT", 1)
 			if (Derefof(Index(BTYP, arg3))) {
-				CH04(arg0, 0, 30, z176, 0x107, 0, 0) // AE_BAD_PATHNAME
+				CH04(arg0, 0, 30, z176, __LINE__, 0, 0) // AE_BAD_PATHNAME
 			} else {
-				CH04(arg0, 0, 47, z176, 0x108, 0, 0) // AE_AML_OPERAND_TYPE
+				CH04(arg0, 0, 47, z176, __LINE__, 0, 0) // AE_AML_OPERAND_TYPE
 			}
 
 			return (0)
@@ -1725,15 +1725,15 @@ Device(DTM2) {
 
 			Store(ObjectType(arg2), Local0)
 			if (LNotEqual(arg3, Local0)) {
-				err(arg0, z176, 0x109, 0, 0, Local0, arg3)
+				err(arg0, z176, __LINE__, 0, 0, Local0, arg3)
 				return (1)
 			}
 
 			LoadTable("OEM1", "", "", "\\", Derefof(arg2), 1)
 			if (Derefof(Index(BTYP, arg3))) {
-				CH04(arg0, 0, 30, z176, 0x10a, 0, 0) // AE_BAD_PATHNAME
+				CH04(arg0, 0, 30, z176, __LINE__, 0, 0) // AE_BAD_PATHNAME
 			} else {
-				CH04(arg0, 0, 47, z176, 0x10b, 0, 0) // AE_AML_OPERAND_TYPE
+				CH04(arg0, 0, 47, z176, __LINE__, 0, 0) // AE_AML_OPERAND_TYPE
 			}
 
 			return (0)
@@ -1745,7 +1745,7 @@ Device(DTM2) {
 		Store(\DTM0.BUF3, \DTM0.RFU3)
 		Load(\DTM0.RFU3, DDB0)
 
-		if (CH03(arg0, z176, 0x10c, 0, 0)) {
+		if (CH03(arg0, z176, 0x10c, __LINE__, 0)) {
 			return (1)
 		}
 
@@ -1755,43 +1755,43 @@ Device(DTM2) {
 		}
 		Store(ObjectType(Local1), Local0)
 		if (LNotEqual(c008, Local0)) {
-			err(arg0, z176, 0x10d, 0, 0, Local0, c008)
+			err(arg0, z176, __LINE__, 0, 0, Local0, c008)
 		} else {
 			LoadTable(Local1, "", "", "\\", "\\DTM2.PLDT", 1)
 			if (SLCK) {
-				CH04(arg0, 0, 61, z176, 0x10e, 0, 0) // AE_AML_STRING_LIMIT
+				CH04(arg0, 0, 61, z176, __LINE__, 0, 0) // AE_AML_STRING_LIMIT
 			} else {
-				CH04(arg0, 0, 49, z176, 0x10e, 0, 0) // AE_AML_UNINITIALIZED_LOCAL
+				CH04(arg0, 0, 49, z176, __LINE__, 0, 0) // AE_AML_UNINITIALIZED_LOCAL
 			}
 			LoadTable("OEM1", Local1, "", "\\", "\\DTM2.PLDT", 1)
 			if (SLCK) {
-				CH04(arg0, 0, 61, z176, 0x10f, 0, 0) // AE_AML_STRING_LIMIT
+				CH04(arg0, 0, 61, z176, __LINE__, 0, 0) // AE_AML_STRING_LIMIT
 			} else {
-				CH04(arg0, 0, 49, z176, 0x10f, 0, 0) // AE_AML_UNINITIALIZED_LOCAL
+				CH04(arg0, 0, 49, z176, __LINE__, 0, 0) // AE_AML_UNINITIALIZED_LOCAL
 			}
 			LoadTable("OEM1", "", Local1, "\\", "\\DTM2.PLDT", 1)
 			if (SLCK) {
 				// ACPI_OEM_TABLE_ID_SIZE should be less than 8.
 				// The size of the "Integer" converted from "Any" is ISZ0*2.
 				if (LLessEqual(ISZ0, 4)) {
-					CH03(arg0, z176, 0x110, 0, 0) // No exception
+					CH03(arg0, z176, 0x110, __LINE__, 0) // No exception
 				} else {
-					CH04(arg0, 0, 61, z176, 0x110, 0, 0) // AE_AML_STRING_LIMIT
+					CH04(arg0, 0, 61, z176, __LINE__, 0, 0) // AE_AML_STRING_LIMIT
 				}
 			} else {
-				CH04(arg0, 0, 49, z176, 0x110, 0, 0) // AE_AML_UNINITIALIZED_LOCAL
+				CH04(arg0, 0, 49, z176, __LINE__, 0, 0) // AE_AML_UNINITIALIZED_LOCAL
 			}
 			LoadTable("OEM1", "", "", Local1, "\\DTM2.PLDT", 1)
 			if (SLCK) {
-				CH04(arg0, 0, 30, z176, 0x111, 0, 0) // AE_BAD_PATHNAME
+				CH04(arg0, 0, 30, z176, __LINE__, 0, 0) // AE_BAD_PATHNAME
 			} else {
-				CH04(arg0, 0, 49, z176, 0x111, 0, 0) // AE_AML_UNINITIALIZED_LOCAL
+				CH04(arg0, 0, 49, z176, __LINE__, 0, 0) // AE_AML_UNINITIALIZED_LOCAL
 			}
 			LoadTable("OEM1", "", "", "\\", Local1, 1)
 			if (SLCK) {
-				CH04(arg0, 0, 30, z176, 0x112, 0, 0) // AE_BAD_PATHNAME
+				CH04(arg0, 0, 30, z176, __LINE__, 0, 0) // AE_BAD_PATHNAME
 			} else {
-				CH04(arg0, 0, 49, z176, 0x112, 0, 0) // AE_AML_UNINITIALIZED_LOCAL
+				CH04(arg0, 0, 49, z176, __LINE__, 0, 0) // AE_AML_UNINITIALIZED_LOCAL
 			}
 		}
 
@@ -1816,18 +1816,18 @@ Device(DTM2) {
 			m004(arg0, "pac", Refof(\AUXD.PAC0), c00c)
 		}
 		LoadTable(\AUXD.PAC0, "", "", "\\", "\\DTM2.PLDT", 1)
-		CH04(arg0, 0, 47, z176, 0x113, 0, 0)	// AE_AML_OPERAND_TYPE
+		CH04(arg0, 0, 47, z176, __LINE__, 0, 0)	// AE_AML_OPERAND_TYPE
 		LoadTable("OEM1", \AUXD.PAC0, "", "\\", "\\DTM2.PLDT", 1)
-		CH04(arg0, 0, 47, z176, 0x114, 0, 0)	// AE_AML_OPERAND_TYPE
+		CH04(arg0, 0, 47, z176, __LINE__, 0, 0)	// AE_AML_OPERAND_TYPE
 		LoadTable("OEM1", "", \AUXD.PAC0, "\\", "\\DTM2.PLDT", 1)
-		CH04(arg0, 0, 47, z176, 0x115, 0, 0)	// AE_AML_OPERAND_TYPE
+		CH04(arg0, 0, 47, z176, __LINE__, 0, 0)	// AE_AML_OPERAND_TYPE
 		LoadTable("OEM1", "", "", \AUXD.PAC0, "\\DTM2.PLDT", 1)
-		CH04(arg0, 0, 47, z176, 0x116, 0, 0) // AE_AML_OPERAND_TYPE
+		CH04(arg0, 0, 47, z176, __LINE__, 0, 0) // AE_AML_OPERAND_TYPE
 		LoadTable("OEM1", "", "", "\\", \AUXD.PAC0, 1)
-		CH04(arg0, 0, 47, z176, 0x117, 0, 0) // AE_AML_OPERAND_TYPE
+		CH04(arg0, 0, 47, z176, __LINE__, 0, 0) // AE_AML_OPERAND_TYPE
 		Store(ObjectType(\AUXD.PAC0), Local0)
 		if (LNotEqual(c00c, Local0)) {
-			err(arg0, z176, 0x118, 0, 0, Local0, c00c)
+			err(arg0, z176, __LINE__, 0, 0, Local0, c00c)
 		}
 
 		// Field Unit
@@ -1836,18 +1836,18 @@ Device(DTM2) {
 
 		// Device
 		LoadTable(\AUXD.DEV0, "", "", "\\", "\\DTM2.PLDT", 1)
-		CH04(arg0, 0, 47, z176, 0x119, 0, 0)	// AE_AML_OPERAND_TYPE
+		CH04(arg0, 0, 47, z176, __LINE__, 0, 0)	// AE_AML_OPERAND_TYPE
 		LoadTable("OEM1", \AUXD.DEV0, "", "\\", "\\DTM2.PLDT", 1)
-		CH04(arg0, 0, 47, z176, 0x11a, 0, 0)	// AE_AML_OPERAND_TYPE
+		CH04(arg0, 0, 47, z176, __LINE__, 0, 0)	// AE_AML_OPERAND_TYPE
 		LoadTable("OEM1", "", \AUXD.DEV0, "\\", "\\DTM2.PLDT", 1)
-		CH04(arg0, 0, 47, z176, 0x11b, 0, 0)	// AE_AML_OPERAND_TYPE
+		CH04(arg0, 0, 47, z176, __LINE__, 0, 0)	// AE_AML_OPERAND_TYPE
 		LoadTable("OEM1", "", "", \AUXD.DEV0, "\\DTM2.PLDT", 1)
-		CH04(arg0, 0, 47, z176, 0x11c, 0, 0) // AE_AML_OPERAND_TYPE
+		CH04(arg0, 0, 47, z176, __LINE__, 0, 0) // AE_AML_OPERAND_TYPE
 		LoadTable("OEM1", "", "", "\\", \AUXD.DEV0, 1)
-		CH04(arg0, 0, 47, z176, 0x11d, 0, 0) // AE_AML_OPERAND_TYPE
+		CH04(arg0, 0, 47, z176, __LINE__, 0, 0) // AE_AML_OPERAND_TYPE
 		Store(ObjectType(\AUXD.DEV0), Local0)
 		if (LNotEqual(c00e, Local0)) {
-			err(arg0, z176, 0x11e, 0, 0, Local0, c00e)
+			err(arg0, z176, __LINE__, 0, 0, Local0, c00e)
 		}
 
 		// Event
@@ -1894,18 +1894,18 @@ Device(DTM2) {
 
 		// Thermal Zone
 		LoadTable(\AUXD.TZN0, "", "", "\\", "\\DTM2.PLDT", 1)
-		CH04(arg0, 0, 47, z176, 0x120, 0, 0)	// AE_AML_OPERAND_TYPE
+		CH04(arg0, 0, 47, z176, __LINE__, 0, 0)	// AE_AML_OPERAND_TYPE
 		LoadTable("OEM1", \AUXD.TZN0, "", "\\", "\\DTM2.PLDT", 1)
-		CH04(arg0, 0, 47, z176, 0x121, 0, 0)	// AE_AML_OPERAND_TYPE
+		CH04(arg0, 0, 47, z176, __LINE__, 0, 0)	// AE_AML_OPERAND_TYPE
 		LoadTable("OEM1", "", \AUXD.TZN0, "\\", "\\DTM2.PLDT", 1)
-		CH04(arg0, 0, 47, z176, 0x122, 0, 0)	// AE_AML_OPERAND_TYPE
+		CH04(arg0, 0, 47, z176, __LINE__, 0, 0)	// AE_AML_OPERAND_TYPE
 		LoadTable("OEM1", "", "", \AUXD.TZN0, "\\DTM2.PLDT", 1)
-		CH04(arg0, 0, 47, z176, 0x123, 0, 0) // AE_AML_OPERAND_TYPE
+		CH04(arg0, 0, 47, z176, __LINE__, 0, 0) // AE_AML_OPERAND_TYPE
 		LoadTable("OEM1", "", "", "\\", \AUXD.TZN0, 1)
-		CH04(arg0, 0, 47, z176, 0x124, 0, 0) // AE_AML_OPERAND_TYPE
+		CH04(arg0, 0, 47, z176, __LINE__, 0, 0) // AE_AML_OPERAND_TYPE
 		Store(ObjectType(\AUXD.TZN0), Local0)
 		if (LNotEqual(c015, Local0)) {
-			err(arg0, z176, 0x125, 0, 0, Local0, c015)
+			err(arg0, z176, __LINE__, 0, 0, Local0, c015)
 		}
 
 		// Buffer Field
@@ -1914,7 +1914,7 @@ Device(DTM2) {
 
 		UnLoad(DDB0)
 
-		CH03(arg0, z176, 0x126, 0, 0)
+		CH03(arg0, z176, 0x126, __LINE__, 0)
 
 		return (0)
 	}
@@ -1932,7 +1932,7 @@ Device(DTM2) {
 		Store(\DTM0.BUF3, \DTM0.RFU3)
 		Load(\DTM0.RFU3, DDB0)
 
-		if (CH03(arg0, z176, 0x130, 0, 0)) {
+		if (CH03(arg0, z176, 0x130, __LINE__, 0)) {
 			return (1)
 		}
 
@@ -1942,15 +1942,15 @@ Device(DTM2) {
 		}
 		Store(ObjectType(Local1), Local0)
 		if (LNotEqual(c008, Local0)) {
-			err(arg0, z176, 0x131, 0, 0, Local0, c008)
+			err(arg0, z176, __LINE__, 0, 0, Local0, c008)
 		} else {
 // Bug 288: iASL unexpectedly forbids ParameterData of Loadtable to be LocalX or UserTerm
 /*
 			LoadTable("OEM1", "", "", "\\", "\\DTM2.PLDT", Local1)
 			if (SLCK) {
-				CH04(arg0, 0, 47, z176, 0x132, 0, 0) // AE_AML_OPERAND_TYPE
+				CH04(arg0, 0, 47, z176, __LINE__, 0, 0) // AE_AML_OPERAND_TYPE
 			} else {
-				CH04(arg0, 0, 49, z176, 0x132, 0, 0) // AE_AML_UNINITIALIZED_LOCAL
+				CH04(arg0, 0, 49, z176, __LINE__, 0, 0) // AE_AML_UNINITIALIZED_LOCAL
 			}
 */
 		}
@@ -1958,58 +1958,58 @@ Device(DTM2) {
 		// Integer
 		Store(ObjectType(\DTM2.PLDT), Local0)
 		if (LNotEqual(c009, Local0)) {
-			err(arg0, z176, 0x133, 0, 0, Local0, c009)
+			err(arg0, z176, __LINE__, 0, 0, Local0, c009)
 			return (1)
 		}
 		Store(LoadTable("OEM1", "", "", "\\", "\\DTM2.PLDT", \AUXD.INT0), DDB1)
-		if (CH03(arg0, z176, 0x134, 0, 0)) {
+		if (CH03(arg0, z176, 0x134, __LINE__, 0)) {
 			return (1)
 		}
 		Store(ObjectType(\DTM2.PLDT), Local0)
 		if (LNotEqual(c009, Local0)) {
-			err(arg0, z176, 0x135, 0, 0, Local0, c009)
+			err(arg0, z176, __LINE__, 0, 0, Local0, c009)
 			return (1)
 		}
 		if (LNotEqual(\DTM2.PLDT, \AUXD.INT0)) {
-			err(arg0, z176, 0x136, 0, 0, \DTM2.PLDT, \AUXD.INT0)
+			err(arg0, z176, __LINE__, 0, 0, \DTM2.PLDT, \AUXD.INT0)
 			return (1)
 		}
 		Unload(DDB1)
-		if (CH03(arg0, z176, 0x137, 0, 0)) {
+		if (CH03(arg0, z176, 0x137, __LINE__, 0)) {
 			return (1)
 		}
 		Store(ObjectType(\AUXD.INT0), Local0)
 		if (LNotEqual(c009, Local0)) {
-			err(arg0, z176, 0x138, 0, 0, Local0, c009)
+			err(arg0, z176, __LINE__, 0, 0, Local0, c009)
 		}
 
 		// String
 	if (y296) {
 		Store(ObjectType(\DTM2.PLDT), Local0)
 		if (LNotEqual(c009, Local0)) {
-			err(arg0, z176, 0x139, 0, 0, Local0, c009)
+			err(arg0, z176, __LINE__, 0, 0, Local0, c009)
 			return (1)
 		}
 		Store(LoadTable("OEM1", "", "", "\\", "\\DTM2.PLDT", \AUXD.STR0), DDB1)
-		if (CH03(arg0, z176, 0x13a, 0, 0)) {
+		if (CH03(arg0, z176, 0x13a, __LINE__, 0)) {
 			return (1)
 		}
 		Store(ObjectType(\DTM2.PLDT), Local0)
 		if (LNotEqual(c009, Local0)) {
-			err(arg0, z176, 0x13b, 0, 0, Local0, c009)
+			err(arg0, z176, __LINE__, 0, 0, Local0, c009)
 			return (1)
 		}
 		if (LNotEqual(\DTM2.PLDT, \AUXD.STR0)) {
-			err(arg0, z176, 0x13c, 0, 0, \DTM2.PLDT, \AUXD.STR0)
+			err(arg0, z176, __LINE__, 0, 0, \DTM2.PLDT, \AUXD.STR0)
 			return (1)
 		}
 		Unload(DDB1)
-		if (CH03(arg0, z176, 0x13d, 0, 0)) {
+		if (CH03(arg0, z176, 0x13d, __LINE__, 0)) {
 			return (1)
 		}
 		Store(ObjectType(\AUXD.STR0), Local0)
 		if (LNotEqual(c00a, Local0)) {
-			err(arg0, z176, 0x13e, 0, 0, Local0, c00a)
+			err(arg0, z176, __LINE__, 0, 0, Local0, c00a)
 		}
 	}
 
@@ -2017,169 +2017,169 @@ Device(DTM2) {
 	if (y296) {
 		Store(ObjectType(\DTM2.PLDT), Local0)
 		if (LNotEqual(c009, Local0)) {
-			err(arg0, z176, 0x13f, 0, 0, Local0, c009)
+			err(arg0, z176, __LINE__, 0, 0, Local0, c009)
 			return (1)
 		}
 		Store(LoadTable("OEM1", "", "", "\\", "\\DTM2.PLDT", \AUXD.BUF0), DDB1)
-		if (CH03(arg0, z176, 0x140, 0, 0)) {
+		if (CH03(arg0, z176, 0x140, __LINE__, 0)) {
 			return (1)
 		}
 		Store(ObjectType(\DTM2.PLDT), Local0)
 		if (LNotEqual(c009, Local0)) {
-			err(arg0, z176, 0x141, 0, 0, Local0, c009)
+			err(arg0, z176, __LINE__, 0, 0, Local0, c009)
 			return (1)
 		}
 		if (LNotEqual(\DTM2.PLDT, \AUXD.BUF0)) {
-			err(arg0, z176, 0x142, 0, 0, \DTM2.PLDT, \AUXD.BUF0)
+			err(arg0, z176, __LINE__, 0, 0, \DTM2.PLDT, \AUXD.BUF0)
 			return (1)
 		}
 		Unload(DDB1)
-		if (CH03(arg0, z176, 0x143, 0, 0)) {
+		if (CH03(arg0, z176, 0x143, __LINE__, 0)) {
 			return (1)
 		}
 		Store(ObjectType(\AUXD.BUF0), Local0)
 		if (LNotEqual(c00b, Local0)) {
-			err(arg0, z176, 0x144, 0, 0, Local0, c00b)
+			err(arg0, z176, __LINE__, 0, 0, Local0, c00b)
 		}
 	}
 
 		// Package
 		LoadTable("OEM1", "", "", "\\", "\\DTM2.PLDT", \AUXD.PAC0)
-		CH04(arg0, 0, 47, z176, 0x145, 0, 0)	// AE_AML_OPERAND_TYPE
+		CH04(arg0, 0, 47, z176, __LINE__, 0, 0)	// AE_AML_OPERAND_TYPE
 		Store(ObjectType(\AUXD.PAC0), Local0)
 		if (LNotEqual(c00c, Local0)) {
-			err(arg0, z176, 0x146, 0, 0, Local0, c00c)
+			err(arg0, z176, __LINE__, 0, 0, Local0, c00c)
 		}
 
 		// Field Unit
 	if (y296) {
 		Store(ObjectType(\DTM2.PLDT), Local0)
 		if (LNotEqual(c009, Local0)) {
-			err(arg0, z176, 0x147, 0, 0, Local0, c009)
+			err(arg0, z176, __LINE__, 0, 0, Local0, c009)
 			return (1)
 		}
 		Store(LoadTable("OEM1", "", "", "\\", "\\DTM2.PLDT", \AUXD.FLU0), DDB1)
-		if (CH03(arg0, z176, 0x148, 0, 0)) {
+		if (CH03(arg0, z176, 0x148, __LINE__, 0)) {
 			return (1)
 		}
 		Store(ObjectType(\DTM2.PLDT), Local0)
 		if (LNotEqual(c009, Local0)) {
-			err(arg0, z176, 0x149, 0, 0, Local0, c009)
+			err(arg0, z176, __LINE__, 0, 0, Local0, c009)
 			return (1)
 		}
 		if (LNotEqual(\DTM2.PLDT, \AUXD.FLU0)) {
-			err(arg0, z176, 0x14a, 0, 0, \DTM2.PLDT, \AUXD.FLU0)
+			err(arg0, z176, __LINE__, 0, 0, \DTM2.PLDT, \AUXD.FLU0)
 			return (1)
 		}
 		Unload(DDB1)
-		if (CH03(arg0, z176, 0x14b, 0, 0)) {
+		if (CH03(arg0, z176, 0x14b, __LINE__, 0)) {
 			return (1)
 		}
 		Store(ObjectType(\AUXD.FLU0), Local0)
 		if (LNotEqual(c00d, Local0)) {
-			err(arg0, z176, 0x14c, 0, 0, Local0, c00d)
+			err(arg0, z176, __LINE__, 0, 0, Local0, c00d)
 		}
 	}
 
 		// Device
 		LoadTable("OEM1", "", "", "\\", "\\DTM2.PLDT", \AUXD.DEV0)
-		CH04(arg0, 0, 47, z176, 0x14d, 0, 0)	// AE_AML_OPERAND_TYPE
+		CH04(arg0, 0, 47, z176, __LINE__, 0, 0)	// AE_AML_OPERAND_TYPE
 		Store(ObjectType(\AUXD.DEV0), Local0)
 		if (LNotEqual(c00e, Local0)) {
-			err(arg0, z176, 0x14e, 0, 0, Local0, c00e)
+			err(arg0, z176, __LINE__, 0, 0, Local0, c00e)
 		}
 
 		// Event
 		LoadTable("OEM1", "", "", "\\", "\\DTM2.PLDT", \AUXD.EVE0)
-		CH04(arg0, 0, 47, z176, 0x14f, 0, 0)	// AE_AML_OPERAND_TYPE
+		CH04(arg0, 0, 47, z176, __LINE__, 0, 0)	// AE_AML_OPERAND_TYPE
 		Store(ObjectType(\AUXD.EVE0), Local0)
 		if (LNotEqual(c00f, Local0)) {
-			err(arg0, z176, 0x150, 0, 0, Local0, c00f)
+			err(arg0, z176, __LINE__, 0, 0, Local0, c00f)
 		}
 
 		// Method
 		if (y288) {
 			LoadTable("OEM1", "", "", "\\", "\\DTM2.PLDT", \AUXD.MMM0)
-			CH04(arg0, 0, 47, z176, 0x151, 0, 0)	// AE_AML_OPERAND_TYPE
+			CH04(arg0, 0, 47, z176, __LINE__, 0, 0)	// AE_AML_OPERAND_TYPE
 			Store(ObjectType(\AUXD.MMM0), Local0)
 			if (LNotEqual(c010, Local0)) {
-				err(arg0, z176, 0x152, 0, 0, Local0, c010)
+				err(arg0, z176, __LINE__, 0, 0, Local0, c010)
 			}
 		}
 
 		// Mutex
 		LoadTable("OEM1", "", "", "\\", "\\DTM2.PLDT", \AUXD.MTX0)
-		CH04(arg0, 0, 47, z176, 0x153, 0, 0)	// AE_AML_OPERAND_TYPE
+		CH04(arg0, 0, 47, z176, __LINE__, 0, 0)	// AE_AML_OPERAND_TYPE
 		Store(ObjectType(\AUXD.MTX0), Local0)
 		if (LNotEqual(c011, Local0)) {
-			err(arg0, z176, 0x154, 0, 0, Local0, c011)
+			err(arg0, z176, __LINE__, 0, 0, Local0, c011)
 		}
 
 		// OpRegion
 		LoadTable("OEM1", "", "", "\\", "\\DTM2.PLDT", \AUXD.OPR0)
-		CH04(arg0, 0, 47, z176, 0x155, 0, 0)	// AE_AML_OPERAND_TYPE
+		CH04(arg0, 0, 47, z176, __LINE__, 0, 0)	// AE_AML_OPERAND_TYPE
 		Store(ObjectType(\AUXD.OPR0), Local0)
 		if (LNotEqual(c012, Local0)) {
-			err(arg0, z176, 0x156, 0, 0, Local0, c012)
+			err(arg0, z176, __LINE__, 0, 0, Local0, c012)
 		}
 
 		// Power Resource
 		LoadTable("OEM1", "", "", "\\", "\\DTM2.PLDT", \AUXD.PWR0)
-		CH04(arg0, 0, 47, z176, 0x157, 0, 0)	// AE_AML_OPERAND_TYPE
+		CH04(arg0, 0, 47, z176, __LINE__, 0, 0)	// AE_AML_OPERAND_TYPE
 		Store(ObjectType(\AUXD.PWR0), Local0)
 		if (LNotEqual(c013, Local0)) {
-			err(arg0, z176, 0x158, 0, 0, Local0, c013)
+			err(arg0, z176, __LINE__, 0, 0, Local0, c013)
 		}
 
 		// Processor
 		LoadTable("OEM1", "", "", "\\", "\\DTM2.PLDT", \AUXD.CPU0)
-		CH04(arg0, 0, 47, z176, 0x159, 0, 0)	// AE_AML_OPERAND_TYPE
+		CH04(arg0, 0, 47, z176, __LINE__, 0, 0)	// AE_AML_OPERAND_TYPE
 		Store(ObjectType(\AUXD.CPU0), Local0)
 		if (LNotEqual(c014, Local0)) {
-			err(arg0, z176, 0x15a, 0, 0, Local0, c014)
+			err(arg0, z176, __LINE__, 0, 0, Local0, c014)
 		}
 
 		// Thermal Zone
 		LoadTable("OEM1", "", "", "\\", "\\DTM2.PLDT", \AUXD.TZN0)
-		CH04(arg0, 0, 47, z176, 0x15b, 0, 0)	// AE_AML_OPERAND_TYPE
+		CH04(arg0, 0, 47, z176, __LINE__, 0, 0)	// AE_AML_OPERAND_TYPE
 		Store(ObjectType(\AUXD.TZN0), Local0)
 		if (LNotEqual(c015, Local0)) {
-			err(arg0, z176, 0x15c, 0, 0, Local0, c015)
+			err(arg0, z176, __LINE__, 0, 0, Local0, c015)
 		}
 
 		// Buffer Field
 	if (y296) {
 		Store(ObjectType(\DTM2.PLDT), Local0)
 		if (LNotEqual(c009, Local0)) {
-			err(arg0, z176, 0x15d, 0, 0, Local0, c009)
+			err(arg0, z176, __LINE__, 0, 0, Local0, c009)
 			return (1)
 		}
 		Store(LoadTable("OEM1", "", "", "\\", "\\DTM2.PLDT", \AUXD.BFL0), DDB1)
-		if (CH03(arg0, z176, 0x15e, 0, 0)) {
+		if (CH03(arg0, z176, 0x15e, __LINE__, 0)) {
 			return (1)
 		}
 		Store(ObjectType(\DTM2.PLDT), Local0)
 		if (LNotEqual(c009, Local0)) {
-			err(arg0, z176, 0x15f, 0, 0, Local0, c009)
+			err(arg0, z176, __LINE__, 0, 0, Local0, c009)
 			return (1)
 		}
 		if (LNotEqual(\DTM2.PLDT, \AUXD.BFL0)) {
-			err(arg0, z176, 0x160, 0, 0, \DTM2.PLDT, \AUXD.BFL0)
+			err(arg0, z176, __LINE__, 0, 0, \DTM2.PLDT, \AUXD.BFL0)
 			return (1)
 		}
 		Unload(DDB1)
-		if (CH03(arg0, z176, 0x161, 0, 0)) {
+		if (CH03(arg0, z176, 0x161, __LINE__, 0)) {
 			return (1)
 		}
 		Store(ObjectType(\AUXD.BFL0), Local0)
 		if (LNotEqual(c016, Local0)) {
-			err(arg0, z176, 0x162, 0, 0, Local0, c016)
+			err(arg0, z176, __LINE__, 0, 0, Local0, c016)
 		}
 	}
 
 		UnLoad(DDB0)
 
-		CH03(arg0, z176, 0x163, 0, 0)
+		CH03(arg0, z176, 0x163, __LINE__, 0)
 
 		return (0)
 	}
@@ -2189,34 +2189,34 @@ Method(TLT0,, Serialized)
 {
 	Name(ts, "TLT0")
 
-	CH03(ts, z176, 0x200, 0, 0)
+	CH03(ts, z176, 0x200, __LINE__, 0)
 
 	// Simple Loadtable test
 	SRMT("TLT0.tst0")
 	\DTM2.tst0(ts)
 
-	CH03(ts, z176, 0x201, 0, 0)
+	CH03(ts, z176, 0x201, __LINE__, 0)
 
 	// All comparisons of Loadtable parameters are case sensitive,
 	// if no table matches the specified parameters, then 0 is returned
 	SRMT("TLT0.tst1")
 	\DTM2.tst1(ts)
 
-	CH03(ts, z176, 0x202, 0, 0)
+	CH03(ts, z176, 0x202, __LINE__, 0)
 
 	// Any of the RootPathString, ParameterPathString, and ParameterData
 	// parameters in LoadTable expression can be omitted
 	SRMT("TLT0.tst2")
 	\DTM2.tst2(ts)
 
-	CH03(ts, z176, 0x203, 0, 0)
+	CH03(ts, z176, 0x203, __LINE__, 0)
 
 	// Different sources of the String parameters: Named Objects, LocalX,
 	// ArgX, elements of Packages, results of functions, any TermArg
 	SRMT("TLT0.tst3")
 	\DTM2.tst3(ts)
 
-	CH03(ts, z176, 0x204, 0, 0)
+	CH03(ts, z176, 0x204, __LINE__, 0)
 
 	// Different sources of the optional parameters (RootPathString,
 	// ParameterPathString, and ParameterData): Named Objects, LocalX,
@@ -2224,14 +2224,14 @@ Method(TLT0,, Serialized)
 	SRMT("TLT0.tst4")
 	\DTM2.tst4(ts)
 
-	CH03(ts, z176, 0x205, 0, 0)
+	CH03(ts, z176, 0x205, __LINE__, 0)
 
 	// Namespace location to load the Definition Block is determined
 	// by the RootPathString parameter of Loadtable
 	SRMT("TLT0.tst5.0")
 	\DTM2.tst5(ts, "\\DTM2.DEVR")
 
-	CH03(ts, z176, 0x206, 0, 0)
+	CH03(ts, z176, 0x206, __LINE__, 0)
 
 	// The RootPathString value is evaluated using normal scoping rules,
 	// assuming that the scope of the LoadTable operator is the current
@@ -2239,14 +2239,14 @@ Method(TLT0,, Serialized)
 	SRMT("TLT0.tst5.1")
 	\DTM2.tst5(ts, "^DEVR")
 
-	CH03(ts, z176, 0x207, 0, 0)
+	CH03(ts, z176, 0x207, __LINE__, 0)
 
 	// "\" is assumed to be Namespace location to load the Definition
 	// Block if RootPathString parameter is not specified
 	SRMT("TLT0.tst6")
 	\DTM2.tst6(ts)
 
-	CH03(ts, z176, 0x208, 0, 0)
+	CH03(ts, z176, 0x208, __LINE__, 0)
 
 	// If the first character of ParameterPathString is a backslash
 	// or caret character, then the path of the object set up on success
@@ -2255,20 +2255,20 @@ Method(TLT0,, Serialized)
 	SRMT("TLT0.tst7")
 	\DTM2.tst7(ts)
 
-	CH03(ts, z176, 0x209, 0, 0)
+	CH03(ts, z176, 0x209, __LINE__, 0)
 
 	// Implicit operand conversion of the parameters specified to be strings
 	SRMT("TLT0.tste")
 	\DTM2.tste(ts)
 
-	CH03(ts, z176, 0x20a, 0, 0)
+	CH03(ts, z176, 0x20a, __LINE__, 0)
 
 	// LoadTable returns 0 if some SSDT matching the LoadTable
 	// parameters is originally not listed in XSDT
 	//SRMT("TLT0.tstf")
 	//\DTM2.tstf(ts)
 
-	CH03(ts, z176, 0x20b, 0, 0)
+	CH03(ts, z176, 0x20b, __LINE__, 0)
 }
 
 // Exceptional conditions

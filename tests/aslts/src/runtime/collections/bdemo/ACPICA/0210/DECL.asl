@@ -48,9 +48,9 @@ Method(m819)
 	Method(m000, 1)
 	{
 		Store(2, Local0)
-		CH03("", 0, 0x000, 0, 0)
+		CH03("", 0, 0x000, __LINE__, 0)
 		Divide(1, arg0, Local0)
-		CH04("", 0, 56, 0, 0x001, 0, 0) // AE_AML_DIVIDE_BY_ZERO
+		CH04("", 0, 56, 0, __LINE__, 0, 0) // AE_AML_DIVIDE_BY_ZERO
 	}
 
 	Method(m001)
@@ -62,5 +62,5 @@ Method(m819)
 	m001()
 
 	Store("Fight Outstanding allocations here", Debug)
-	err("", zFFF, 0x000, 0, 0, 0, 0)
+	err("", zFFF, __LINE__, 0, 0, 0, 0)
 }

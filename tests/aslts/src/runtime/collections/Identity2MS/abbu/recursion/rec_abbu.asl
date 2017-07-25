@@ -79,15 +79,15 @@ Method(mr00,, Serialized)
 Method(mr01)
 {
 /*
-    CH03(ts, z169, 0x100, 0, 0)
+    CH03(ts, z169, 0x100, __LINE__, 0)
 
     mm00()
 
     if (LNotEqual(i000, 0xabcd0000)) {
-        err(ts, z169, 0x000, 0, 0, i000, 0xabcd0000)
+        err(ts, z169, __LINE__, 0, 0, i000, 0xabcd0000)
     }
 
-    CH03(ts, z169, 0x101, 0, 0)
+    CH03(ts, z169, 0x101, __LINE__, 0)
 */
 }
 

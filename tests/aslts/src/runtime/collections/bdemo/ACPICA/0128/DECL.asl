@@ -41,7 +41,7 @@ Method(mf17,, Serialized)
 	Store(DerefOf(Local0), Local1)
 	Store(Local1, Debug)
 	if (LNotEqual(Local1, 0x1234)) {
-		err("", zFFF, 0x000, 0, 0, Local1, 0x1234)
+		err("", zFFF, __LINE__, 0, 0, Local1, 0x1234)
 	}
 }
 
@@ -50,7 +50,7 @@ Method(mf18,, Serialized)
 	Name(ref0, 0)
 	Name(i000, 0x1234)
 
-	CH03("", 0, 0x000, 0, 0)
+	CH03("", 0, 0x000, __LINE__, 0)
 
 	CopyObject(RefOf(i000), ref0)
 	Store("Before printing ref0", Debug)
@@ -62,10 +62,10 @@ Method(mf18,, Serialized)
 	Store("Before LNotEqual", Debug)
 
 	if (LNotEqual(Local1, 0x1234)) {
-		err("", zFFF, 0x001, 0, 0, Local1, 0x1234)
+		err("", zFFF, __LINE__, 0, 0, Local1, 0x1234)
 	}
 
-	CH03("", 0, 0x002, 0, 0)
+	CH03("", 0, 0x002, __LINE__, 0)
 }
 
 Method(mf9e,, Serialized)
@@ -81,7 +81,7 @@ Method(mf9e,, Serialized)
 
 	Name(ref0, 0)
 
-	CH03("", 0, 0x000, 0, 0)
+	CH03("", 0, 0x000, __LINE__, 0)
 
 	CopyObject(RefOf(i000), ref0)
 	mf88(DerefOf(ref0), c009, ii00, 1, 2, 1)
@@ -95,7 +95,7 @@ Method(mf9e,, Serialized)
 	CopyObject(RefOf(p000), ref0)
 	mf88(DerefOf(ref0), c00c, ss00, 5, 6, 0)
 
-	CH03("", 0, 0x007, 0, 0)
+	CH03("", 0, 0x007, __LINE__, 0)
 }
 
 Method(mf9f,, Serialized)
@@ -112,35 +112,35 @@ Method(mf9f,, Serialized)
 
 	// Checkings
 
-	CH03("", 0, 0x026, 0, 0)
+	CH03("", 0, 0x026, __LINE__, 0)
 	CopyObject(RefOf(e000), ref0)
 	mf88(DerefOf(ref0), c00f, 0, 0x027, 0x028, 0)
 
-	CH03("", 0, 0x029, 0, 0)
+	CH03("", 0, 0x029, __LINE__, 0)
 	CopyObject(RefOf(mx00), ref0)
 	mf88(DerefOf(ref0), c011, 0, 0x02a, 0x02b, 0)
 
 	if (y511) {
-		CH03("", 0, 0x02c, 0, 0)
+		CH03("", 0, 0x02c, __LINE__, 0)
 		CopyObject(RefOf(d000), ref0)
 		mf88(DerefOf(ref0), c00e, 0, 0x02d, 0x02e, 0)
 	}
 
 	if (y508) {
-		CH03("", 0, 0x02f, 0, 0)
+		CH03("", 0, 0x02f, __LINE__, 0)
 		CopyObject(RefOf(tz00), ref0)
 		mf88(DerefOf(ref0), c015, 0, 0x030, 0x031, 0)
 	}
 
-	CH03("", 0, 0x032, 0, 0)
+	CH03("", 0, 0x032, __LINE__, 0)
 	CopyObject(RefOf(pr00), ref0)
 	mf88(DerefOf(ref0), c014, 0, 0x033, 0x034, 0)
 
-	CH03("", 0, 0x035, 0, 0)
+	CH03("", 0, 0x035, __LINE__, 0)
 	CopyObject(RefOf(r000), ref0)
 	mf88(DerefOf(ref0), c012, 0, 0x036, 0x037, 0)
 
-	CH03("", 0, 0x038, 0, 0)
+	CH03("", 0, 0x038, __LINE__, 0)
 	CopyObject(RefOf(pw00), ref0)
 	mf88(DerefOf(ref0), c013, 0, 0x039, 0x03a, 0)
 }

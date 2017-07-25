@@ -47,7 +47,7 @@ Method(m129)
 
 		Store(Refof(FU01), Local2)
 
-		if (CH03("", 0, 0x000, 0, 0)) {
+		if (CH03("", 0, 0x000, __LINE__, 0)) {
 			return
 		}
 
@@ -62,7 +62,7 @@ Method(m129)
 		{
 			Store (1, EXC0)
 		}
-		CH04("", 0, 62, 0, 0x001, 0, 0) // AE_AML_NO_RETURN_VALUE
+		CH04("", 0, 62, 0, __LINE__, 0, 0) // AE_AML_NO_RETURN_VALUE
 	}
 
 	m000(0x100)

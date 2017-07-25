@@ -51,22 +51,22 @@ Method(mdd6,, Serialized)
 	ToDecimalString(b001, Local0)
 	if (LNotEqual(Local0,
 		"1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1")) {
-		err("", zFFF, 0x000, 0, 0, Local0,
+		err("", zFFF, __LINE__, 0, 0, Local0,
 				"1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1")
 	}
 	Store(SizeOf(Local0), Local1)
 	if (LNotEqual(Local1, 99)) {
-		err("", zFFF, 0x001, 0, 0, Local1, 99)
+		err("", zFFF, __LINE__, 0, 0, Local1, 99)
 	}
 
 	ToDecimalString(b000, Local0)
 	if (LNotEqual(Local0,
 		"1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1")) {
-		err("", zFFF, 0x002, 0, 0, Local0,
+		err("", zFFF, __LINE__, 0, 0, Local0,
 				"1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1")
 	}
 	Store(SizeOf(Local0), Local1)
 	if (LNotEqual(Local1, 101)) {
-		err("", zFFF, 0x003, 0, 0, Local1, 101)
+		err("", zFFF, __LINE__, 0, 0, Local1, 101)
 	}
 }

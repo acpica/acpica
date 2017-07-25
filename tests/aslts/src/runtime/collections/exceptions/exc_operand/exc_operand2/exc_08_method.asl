@@ -82,12 +82,12 @@ Method(m4b8,, Serialized)
 		// CondRefOf
 		
 		CondRefOf(Local0, Local1)
-		CH03(ts, z100, 1, 0, 0)
+		CH03(ts, z100, 1, __LINE__, 0)
 
 		// CopyObject
 
 		CopyObject(Local0, Local1)
-		CH03(ts, z100, 2, 0, 0)
+		CH03(ts, z100, 2, __LINE__, 0)
 
 		// Decrement
 
@@ -132,12 +132,12 @@ Method(m4b8,, Serialized)
 		// ObjectType
 
 		Store (ObjectType(Local0), Local1)
-		CH03(ts, z100, 3, 0, 0)
+		CH03(ts, z100, 3, __LINE__, 0)
 
 		// RefOf
 
 		Store (RefOf(Local0), Local1)
-		CH03(ts, z100, 4, 0, 0)
+		CH03(ts, z100, 4, __LINE__, 0)
 
 		// Release
 
@@ -438,13 +438,13 @@ Method(m4b8,, Serialized)
 	{
 		Store(ObjectType(arg1), Local0)
 		if (LNotEqual(Local0, 8)) {
-			err(arg0, z100, 200, 0, 0, Local0, 8)
+			err(arg0, z100, __LINE__, 0, 0, Local0, 8)
 			return (1)
 		}
 
 		Store (DeRefOf(arg1), Local1)
 		if(LNot(SLCK)){
-			CH04(ts, 0, 47, z100, 5, 0, 0)
+			CH04(ts, 0, 47, z100, __LINE__, 0, 0)
 		}
 
 		// CondRefOf
@@ -455,7 +455,7 @@ Method(m4b8,, Serialized)
 		// CopyObject
 
 		CopyObject(DeRefOf(arg1), Local1)
-		CH03(ts, z100, 2, 0, 0)
+		CH03(ts, z100, 2, __LINE__, 0)
 
 		// Decrement
 
@@ -500,7 +500,7 @@ Method(m4b8,, Serialized)
 		// ObjectType
 
 		Store (ObjectType(DeRefOf(arg1)), Local1)
-		CH03(ts, z100, 6, 0, 0)
+		CH03(ts, z100, 6, __LINE__, 0)
 
 		// RefOf
 
@@ -814,7 +814,7 @@ Method(m4b8,, Serialized)
 		// CopyObject
 
 		CopyObject(m000(), Local1)
-		CH03(ts, z100, 7, 0, 0)
+		CH03(ts, z100, 7, __LINE__, 0)
 
 		// Decrement
 
@@ -860,7 +860,7 @@ Method(m4b8,, Serialized)
         /* **** Nov. 2016: Method invocation as arg to ObjectType is now illegal */
 
 		Store (ObjectType(m000), Local0)
-		CH03(ts, z100, 8, 0, 0)
+		CH03(ts, z100, 8, __LINE__, 0)
 
 		// RefOf
         /* **** Oct. 2016: Method invocation as arg to RefOf is now illegal */
@@ -1185,7 +1185,7 @@ Method(m4b8,, Serialized)
 		Method(CH00, 2)
 		{
 			if (LNotEqual(i000, arg1)) {
-				err(arg0, z100, 0, 0, 0, i000, arg1)
+				err(arg0, z100, __LINE__, 0, 0, i000, arg1)
 			}
 		}
 
@@ -1199,7 +1199,7 @@ Method(m4b8,, Serialized)
 
 			Store (DerefOf(m000(1, lpC0)), Local1)
 			if(LNot(SLCK)){
-				CH04(ts, 0, 47, z100, Add(9, lpC0), 0, 0)
+				CH04(ts, 0, 47, z100, __LINE__, 0, 0)
 			}
 			CH00(arg0, 1)
 
@@ -1224,7 +1224,7 @@ Method(m4b8,, Serialized)
 
 	SET0(z100, ts, 0)
 
-	CH03(ts, z100, 11, 0, 0)
+	CH03(ts, z100, 11, __LINE__, 0)
 
 	// Local Named Object
 	m000(ts)

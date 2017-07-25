@@ -49,11 +49,11 @@ Method(m026)
 		Store(i000, Debug)
 
 		if (LNotEqual(Local0, 0x50000001)) {
-			err("", zFFF, 0x000, 0, 0, Local0, 0x50000001)
+			err("", zFFF, __LINE__, 0, 0, Local0, 0x50000001)
 		}
 
 		if (LNotEqual(i000, 0x50000000)) {
-			err("", zFFF, 0x001, 0, 0, i000, 0x50000000)
+			err("", zFFF, __LINE__, 0, 0, i000, 0x50000000)
 		}
 	}
 
@@ -111,11 +111,11 @@ Method(m026)
 		Store(Add(i000, m001()), Local0)
 
 		if (LNotEqual(Local0, 0x87654321)) {
-			err("", zFFF, 0x002, 0, 0, Local0, 0x87654321)
+			err("", zFFF, __LINE__, 0, 0, Local0, 0x87654321)
 		}
 
 		if (LNotEqual(i000, 0x80000000)) {
-			err("", zFFF, 0x003, 0, 0, i000, 0x80000000)
+			err("", zFFF, __LINE__, 0, 0, i000, 0x80000000)
 		}
 	}
 	mm00()

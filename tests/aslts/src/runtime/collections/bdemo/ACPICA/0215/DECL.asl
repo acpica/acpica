@@ -72,21 +72,21 @@ Method(m81d)
 
 		Store(1, idf0)
 		if (LNotEqual(idf0, 1)) {
-			err("", zFFF, 0x000, 0, 0, idf0, 1)
+			err("", zFFF, __LINE__, 0, 0, idf0, 1)
 		}
 
 		Store(1, idf1)
 		if (LNotEqual(idf1, 1)) {
-			err("", zFFF, 0x001, 0, 0, idf1, 1)
+			err("", zFFF, __LINE__, 0, 0, idf1, 1)
 		}
 
 		Store(1, idf2)
 		if (LNotEqual(idf2, 1)) {
-			err("", zFFF, 0x002, 0, 0, idf2, 1)
+			err("", zFFF, __LINE__, 0, 0, idf2, 1)
 		}
 	}
 
-	CH03("", 0, 0x000, 0, 0)
+	CH03("", 0, 0x000, __LINE__, 0)
 	m000()
-	CH03("", 0, 0x001, 0, 0)
+	CH03("", 0, 0x001, __LINE__, 0)
 }

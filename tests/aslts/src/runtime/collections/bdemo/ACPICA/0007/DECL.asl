@@ -41,6 +41,6 @@ Method(mda4,, Serialized)
 	ToString(B000, Local0, Local1)
 
 	if (LNotequal(Local0, 0)) {
-		err("", zFFF, 0x000, 0, 0, Local0, 0)
+		err("", zFFF, __LINE__, 0, 0, Local0, 0)
 	}
 }

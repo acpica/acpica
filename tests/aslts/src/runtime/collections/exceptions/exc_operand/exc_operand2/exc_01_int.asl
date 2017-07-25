@@ -244,12 +244,12 @@ Method(m4b1, 1, Serialized)
 
 		Store(ObjectType(arg1), Local0)
 		if (LNotEqual(Local0, 1)) {
-			err(arg0, z093, 46, 0, 0, Local0, 1)
+			err(arg0, z093, __LINE__, 0, 0, Local0, 1)
 			return (1)
 		}
 
 		Store (DerefOf(arg1), Local1)
-		CH03(ts, z093, 0, 0, 0)
+		CH03(ts, z093, 0, __LINE__, 0)
 
 		Store (DerefOf(DerefOf(arg1)), Local1)
 		CH06(arg0, 47, 47)
@@ -278,7 +278,7 @@ Method(m4b1, 1, Serialized)
 		Method(CH00, 2)
 		{
 			if (LNotEqual(i000, arg1)) {
-				err(arg0, z093, 50, 0, 0, i000, arg1)
+				err(arg0, z093, __LINE__, 0, 0, i000, arg1)
 			}
 		}
 
@@ -346,7 +346,7 @@ Method(m4b1, 1, Serialized)
 		Method(CH00, 2)
 		{
 			if (LNotEqual(i001, arg1)) {
-				err(arg0, z093, 59, 0, 0, i000, arg1)
+				err(arg0, z093, __LINE__, 0, 0, i000, arg1)
 			}
 		}
 
@@ -359,7 +359,7 @@ Method(m4b1, 1, Serialized)
 			Store(0, i001)
 
 			Store (DerefOf(m000(1, lpC0)), Local1)
-			CH03(ts, z093, Add(1, lpC0), 0, 0)
+			CH03(ts, z093, __LINE__, 0, 0)
 			CH00(arg0, 1)
 
 			Store (DerefOf(DerefOf(m000(2, lpC0))), Local1)
@@ -379,7 +379,7 @@ Method(m4b1, 1, Serialized)
 		}
 	}
 
-	CH03(ts, z093, 3, 0, 0)
+	CH03(ts, z093, 3, __LINE__, 0)
 
 	// Local Named Object
 	m000(ts)

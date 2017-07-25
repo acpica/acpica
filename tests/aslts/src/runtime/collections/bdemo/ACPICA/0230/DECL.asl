@@ -109,10 +109,10 @@ Method(m127,, Serialized)
 		Store("Finish of test", Debug)
 	}
 
-	CH03("", 0, 0x000, 0, 0)
+	CH03("", 0, 0x000, __LINE__, 0)
 	m100()
 
 	/* Expect either ASL compiler error or any AML interpreter exception */
 
-	CH04("", 0, 0xff, 0, 0x001, 0, 0)
+	CH04("", 0, 0xff, 0, __LINE__, 0, 0)
 }

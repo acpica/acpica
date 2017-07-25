@@ -69,9 +69,9 @@ OperationRegion(OPRj, SystemIO, 0x230, 0x133)
 Method(m7bf, 4)
 {
 	if (LNotEqual(ObjectType(arg1), ObjectType(arg2))) {
-		err(arg0, z145, arg3, 0, 0, ObjectType(arg1), ObjectType(arg2))
+		err(arg0, z145, __LINE__, 0, 0, ObjectType(arg1), ObjectType(arg2))
 	} elseif (LNotEqual(arg1, arg2)) {
-		err(arg0, z145, arg3, 0, 0, arg1, arg2)
+		err(arg0, z145, __LINE__, 0, 0, arg1, arg2)
 	}
 }
 
@@ -400,7 +400,7 @@ Method(m7d0, 6, Serialized)
 				Store(Refof(g000), Local4)
 			}
 			default {
-				err(arg0, z145, 11, 0, 0, arg2, arg3)
+				err(arg0, z145, __LINE__, 0, 0, arg2, arg3)
 				return
 			}
 		}
@@ -528,7 +528,7 @@ Method(m7d0, 6, Serialized)
 				Store(Refof(g001), Local4)
 			}
 			default {
-				err(arg0, z145, 12, 0, 0, arg2, arg3)
+				err(arg0, z145, __LINE__, 0, 0, arg2, arg3)
 				return
 			}
 		}
@@ -656,7 +656,7 @@ Method(m7d0, 6, Serialized)
 				Store(Refof(g002), Local4)
 			}
 			default {
-				err(arg0, z145, 13, 0, 0, arg2, arg3)
+				err(arg0, z145, __LINE__, 0, 0, arg2, arg3)
 				return
 			}
 		}
@@ -784,7 +784,7 @@ Method(m7d0, 6, Serialized)
 				Store(Refof(g003), Local4)
 			}
 			default {
-				err(arg0, z145, 14, 0, 0, arg2, arg3)
+				err(arg0, z145, __LINE__, 0, 0, arg2, arg3)
 				return
 			}
 		}
@@ -912,7 +912,7 @@ Method(m7d0, 6, Serialized)
 				Store(Refof(g004), Local4)
 			}
 			default {
-				err(arg0, z145, 15, 0, 0, arg2, arg3)
+				err(arg0, z145, __LINE__, 0, 0, arg2, arg3)
 				return
 			}
 		}
@@ -1040,7 +1040,7 @@ Method(m7d0, 6, Serialized)
 				Store(Refof(g005), Local4)
 			}
 			default {
-				err(arg0, z145, 16, 0, 0, arg2, arg3)
+				err(arg0, z145, __LINE__, 0, 0, arg2, arg3)
 				return
 			}
 		}
@@ -1168,7 +1168,7 @@ Method(m7d0, 6, Serialized)
 				Store(Refof(g006), Local4)
 			}
 			default {
-				err(arg0, z145, 17, 0, 0, arg2, arg3)
+				err(arg0, z145, __LINE__, 0, 0, arg2, arg3)
 				return
 			}
 		}
@@ -1296,7 +1296,7 @@ Method(m7d0, 6, Serialized)
 				Store(Refof(g007), Local4)
 			}
 			default {
-				err(arg0, z145, 18, 0, 0, arg2, arg3)
+				err(arg0, z145, __LINE__, 0, 0, arg2, arg3)
 				return
 			}
 		}
@@ -1424,7 +1424,7 @@ Method(m7d0, 6, Serialized)
 				Store(Refof(g008), Local4)
 			}
 			default {
-				err(arg0, z145, 19, 0, 0, arg2, arg3)
+				err(arg0, z145, __LINE__, 0, 0, arg2, arg3)
 				return
 			}
 		}
@@ -1552,7 +1552,7 @@ Method(m7d0, 6, Serialized)
 				Store(Refof(g009), Local4)
 			}
 			default {
-				err(arg0, z145, 20, 0, 0, arg2, arg3)
+				err(arg0, z145, __LINE__, 0, 0, arg2, arg3)
 				return
 			}
 		}
@@ -1680,7 +1680,7 @@ Method(m7d0, 6, Serialized)
 				Store(Refof(g00a), Local4)
 			}
 			default {
-				err(arg0, z145, 21, 0, 0, arg2, arg3)
+				err(arg0, z145, __LINE__, 0, 0, arg2, arg3)
 				return
 			}
 		}
@@ -1808,7 +1808,7 @@ Method(m7d0, 6, Serialized)
 				Store(Refof(g00b), Local4)
 			}
 			default {
-				err(arg0, z145, 22, 0, 0, arg2, arg3)
+				err(arg0, z145, __LINE__, 0, 0, arg2, arg3)
 				return
 			}
 		}
@@ -1936,7 +1936,7 @@ Method(m7d0, 6, Serialized)
 				Store(Refof(g00c), Local4)
 			}
 			default {
-				err(arg0, z145, 23, 0, 0, arg2, arg3)
+				err(arg0, z145, __LINE__, 0, 0, arg2, arg3)
 				return
 			}
 		}
@@ -2064,7 +2064,7 @@ Method(m7d0, 6, Serialized)
 				Store(Refof(g00d), Local4)
 			}
 			default {
-				err(arg0, z145, 24, 0, 0, arg2, arg3)
+				err(arg0, z145, __LINE__, 0, 0, arg2, arg3)
 				return
 			}
 		}
@@ -2192,7 +2192,7 @@ Method(m7d0, 6, Serialized)
 				Store(Refof(g00e), Local4)
 			}
 			default {
-				err(arg0, z145, 25, 0, 0, arg2, arg3)
+				err(arg0, z145, __LINE__, 0, 0, arg2, arg3)
 				return
 			}
 		}
@@ -2320,13 +2320,13 @@ Method(m7d0, 6, Serialized)
 				Store(Refof(g000), Local4)
 			}
 			default {
-				err(arg0, z145, 26, 0, 0, arg2, arg3)
+				err(arg0, z145, __LINE__, 0, 0, arg2, arg3)
 				return
 			}
 		}
 	}
 	default {
-		err(arg0, z145, 27, 0, 0, arg2, arg3)
+		err(arg0, z145, __LINE__, 0, 0, arg2, arg3)
 		return}
 	}
 
@@ -2520,7 +2520,7 @@ Method(m7d1, 6, Serialized)
 				Store(Refof(g000), Local4)
 			}
 			default {
-				err(arg0, z145, 28, 0, 0, arg2, arg3)
+				err(arg0, z145, __LINE__, 0, 0, arg2, arg3)
 				return
 			}
 		}
@@ -2648,7 +2648,7 @@ Method(m7d1, 6, Serialized)
 				Store(Refof(g001), Local4)
 			}
 			default {
-				err(arg0, z145, 29, 0, 0, arg2, arg3)
+				err(arg0, z145, __LINE__, 0, 0, arg2, arg3)
 				return
 			}
 		}
@@ -2776,7 +2776,7 @@ Method(m7d1, 6, Serialized)
 				Store(Refof(g002), Local4)
 			}
 			default {
-				err(arg0, z145, 30, 0, 0, arg2, arg3)
+				err(arg0, z145, __LINE__, 0, 0, arg2, arg3)
 				return
 			}
 		}
@@ -2904,7 +2904,7 @@ Method(m7d1, 6, Serialized)
 				Store(Refof(g003), Local4)
 			}
 			default {
-				err(arg0, z145, 31, 0, 0, arg2, arg3)
+				err(arg0, z145, __LINE__, 0, 0, arg2, arg3)
 				return
 			}
 		}
@@ -3032,7 +3032,7 @@ Method(m7d1, 6, Serialized)
 				Store(Refof(g004), Local4)
 			}
 			default {
-				err(arg0, z145, 32, 0, 0, arg2, arg3)
+				err(arg0, z145, __LINE__, 0, 0, arg2, arg3)
 				return
 			}
 		}
@@ -3160,7 +3160,7 @@ Method(m7d1, 6, Serialized)
 				Store(Refof(g005), Local4)
 			}
 			default {
-				err(arg0, z145, 33, 0, 0, arg2, arg3)
+				err(arg0, z145, __LINE__, 0, 0, arg2, arg3)
 				return
 			}
 		}
@@ -3288,7 +3288,7 @@ Method(m7d1, 6, Serialized)
 				Store(Refof(g006), Local4)
 			}
 			default {
-				err(arg0, z145, 34, 0, 0, arg2, arg3)
+				err(arg0, z145, __LINE__, 0, 0, arg2, arg3)
 				return
 			}
 		}
@@ -3416,7 +3416,7 @@ Method(m7d1, 6, Serialized)
 				Store(Refof(g007), Local4)
 			}
 			default {
-				err(arg0, z145, 35, 0, 0, arg2, arg3)
+				err(arg0, z145, __LINE__, 0, 0, arg2, arg3)
 				return
 			}
 		}
@@ -3544,7 +3544,7 @@ Method(m7d1, 6, Serialized)
 				Store(Refof(g008), Local4)
 			}
 			default {
-				err(arg0, z145, 36, 0, 0, arg2, arg3)
+				err(arg0, z145, __LINE__, 0, 0, arg2, arg3)
 				return
 			}
 		}
@@ -3672,7 +3672,7 @@ Method(m7d1, 6, Serialized)
 				Store(Refof(g009), Local4)
 			}
 			default {
-				err(arg0, z145, 37, 0, 0, arg2, arg3)
+				err(arg0, z145, __LINE__, 0, 0, arg2, arg3)
 				return
 			}
 		}
@@ -3800,7 +3800,7 @@ Method(m7d1, 6, Serialized)
 				Store(Refof(g00a), Local4)
 			}
 			default {
-				err(arg0, z145, 38, 0, 0, arg2, arg3)
+				err(arg0, z145, __LINE__, 0, 0, arg2, arg3)
 				return
 			}
 		}
@@ -3928,7 +3928,7 @@ Method(m7d1, 6, Serialized)
 				Store(Refof(g00b), Local4)
 			}
 			default {
-				err(arg0, z145, 39, 0, 0, arg2, arg3)
+				err(arg0, z145, __LINE__, 0, 0, arg2, arg3)
 				return
 			}
 		}
@@ -4056,7 +4056,7 @@ Method(m7d1, 6, Serialized)
 				Store(Refof(g00c), Local4)
 			}
 			default {
-				err(arg0, z145, 40, 0, 0, arg2, arg3)
+				err(arg0, z145, __LINE__, 0, 0, arg2, arg3)
 				return
 			}
 		}
@@ -4184,7 +4184,7 @@ Method(m7d1, 6, Serialized)
 				Store(Refof(g00d), Local4)
 			}
 			default {
-				err(arg0, z145, 41, 0, 0, arg2, arg3)
+				err(arg0, z145, __LINE__, 0, 0, arg2, arg3)
 				return
 			}
 		}
@@ -4312,7 +4312,7 @@ Method(m7d1, 6, Serialized)
 				Store(Refof(g00e), Local4)
 			}
 			default {
-				err(arg0, z145, 42, 0, 0, arg2, arg3)
+				err(arg0, z145, __LINE__, 0, 0, arg2, arg3)
 				return
 			}
 		}
@@ -4440,13 +4440,13 @@ Method(m7d1, 6, Serialized)
 				Store(Refof(g000), Local4)
 			}
 			default {
-				err(arg0, z145, 43, 0, 0, arg2, arg3)
+				err(arg0, z145, __LINE__, 0, 0, arg2, arg3)
 				return
 			}
 		}
 	}
 	default {
-		err(arg0, z145, 44, 0, 0, arg2, arg3)
+		err(arg0, z145, __LINE__, 0, 0, arg2, arg3)
 		return}
 	}
 
@@ -4640,7 +4640,7 @@ Method(m7d2, 6, Serialized)
 				Store(Refof(g000), Local4)
 			}
 			default {
-				err(arg0, z145, 45, 0, 0, arg2, arg3)
+				err(arg0, z145, __LINE__, 0, 0, arg2, arg3)
 				return
 			}
 		}
@@ -4768,7 +4768,7 @@ Method(m7d2, 6, Serialized)
 				Store(Refof(g001), Local4)
 			}
 			default {
-				err(arg0, z145, 46, 0, 0, arg2, arg3)
+				err(arg0, z145, __LINE__, 0, 0, arg2, arg3)
 				return
 			}
 		}
@@ -4896,7 +4896,7 @@ Method(m7d2, 6, Serialized)
 				Store(Refof(g002), Local4)
 			}
 			default {
-				err(arg0, z145, 47, 0, 0, arg2, arg3)
+				err(arg0, z145, __LINE__, 0, 0, arg2, arg3)
 				return
 			}
 		}
@@ -5024,7 +5024,7 @@ Method(m7d2, 6, Serialized)
 				Store(Refof(g003), Local4)
 			}
 			default {
-				err(arg0, z145, 48, 0, 0, arg2, arg3)
+				err(arg0, z145, __LINE__, 0, 0, arg2, arg3)
 				return
 			}
 		}
@@ -5152,7 +5152,7 @@ Method(m7d2, 6, Serialized)
 				Store(Refof(g004), Local4)
 			}
 			default {
-				err(arg0, z145, 49, 0, 0, arg2, arg3)
+				err(arg0, z145, __LINE__, 0, 0, arg2, arg3)
 				return
 			}
 		}
@@ -5280,7 +5280,7 @@ Method(m7d2, 6, Serialized)
 				Store(Refof(g005), Local4)
 			}
 			default {
-				err(arg0, z145, 50, 0, 0, arg2, arg3)
+				err(arg0, z145, __LINE__, 0, 0, arg2, arg3)
 				return
 			}
 		}
@@ -5408,7 +5408,7 @@ Method(m7d2, 6, Serialized)
 				Store(Refof(g006), Local4)
 			}
 			default {
-				err(arg0, z145, 51, 0, 0, arg2, arg3)
+				err(arg0, z145, __LINE__, 0, 0, arg2, arg3)
 				return
 			}
 		}
@@ -5536,7 +5536,7 @@ Method(m7d2, 6, Serialized)
 				Store(Refof(g007), Local4)
 			}
 			default {
-				err(arg0, z145, 52, 0, 0, arg2, arg3)
+				err(arg0, z145, __LINE__, 0, 0, arg2, arg3)
 				return
 			}
 		}
@@ -5664,7 +5664,7 @@ Method(m7d2, 6, Serialized)
 				Store(Refof(g008), Local4)
 			}
 			default {
-				err(arg0, z145, 53, 0, 0, arg2, arg3)
+				err(arg0, z145, __LINE__, 0, 0, arg2, arg3)
 				return
 			}
 		}
@@ -5792,7 +5792,7 @@ Method(m7d2, 6, Serialized)
 				Store(Refof(g009), Local4)
 			}
 			default {
-				err(arg0, z145, 54, 0, 0, arg2, arg3)
+				err(arg0, z145, __LINE__, 0, 0, arg2, arg3)
 				return
 			}
 		}
@@ -5920,7 +5920,7 @@ Method(m7d2, 6, Serialized)
 				Store(Refof(g00a), Local4)
 			}
 			default {
-				err(arg0, z145, 55, 0, 0, arg2, arg3)
+				err(arg0, z145, __LINE__, 0, 0, arg2, arg3)
 				return
 			}
 		}
@@ -6048,7 +6048,7 @@ Method(m7d2, 6, Serialized)
 				Store(Refof(g00b), Local4)
 			}
 			default {
-				err(arg0, z145, 56, 0, 0, arg2, arg3)
+				err(arg0, z145, __LINE__, 0, 0, arg2, arg3)
 				return
 			}
 		}
@@ -6176,7 +6176,7 @@ Method(m7d2, 6, Serialized)
 				Store(Refof(g00c), Local4)
 			}
 			default {
-				err(arg0, z145, 32, 0, 0, arg2, arg3)
+				err(arg0, z145, __LINE__, 0, 0, arg2, arg3)
 				return
 			}
 		}
@@ -6312,7 +6312,7 @@ Method(m7d2, 6, Serialized)
 				Store(Refof(g00d), Local4)
 			}
 			default {
-				err(arg0, z145, 57, 0, 0, arg2, arg3)
+				err(arg0, z145, __LINE__, 0, 0, arg2, arg3)
 				return
 			}
 		}
@@ -6440,7 +6440,7 @@ Method(m7d2, 6, Serialized)
 				Store(Refof(g00e), Local4)
 			}
 			default {
-				err(arg0, z145, 58, 0, 0, arg2, arg3)
+				err(arg0, z145, __LINE__, 0, 0, arg2, arg3)
 				return
 			}
 		}
@@ -6568,13 +6568,13 @@ Method(m7d2, 6, Serialized)
 				Store(Refof(g000), Local4)
 			}
 			default {
-				err(arg0, z145, 59, 0, 0, arg2, arg3)
+				err(arg0, z145, __LINE__, 0, 0, arg2, arg3)
 				return
 			}
 		}
 	}
 	default {
-		err(arg0, z145, 60, 0, 0, arg2, arg3)
+		err(arg0, z145, __LINE__, 0, 0, arg2, arg3)
 		return}
 	}
 
@@ -6768,7 +6768,7 @@ Method(m7d3, 6, Serialized)
 				Store(Refof(g000), Local4)
 			}
 			default {
-				err(arg0, z145, 61, 0, 0, arg2, arg3)
+				err(arg0, z145, __LINE__, 0, 0, arg2, arg3)
 				return
 			}
 		}
@@ -6896,7 +6896,7 @@ Method(m7d3, 6, Serialized)
 				Store(Refof(g001), Local4)
 			}
 			default {
-				err(arg0, z145, 62, 0, 0, arg2, arg3)
+				err(arg0, z145, __LINE__, 0, 0, arg2, arg3)
 				return
 			}
 		}
@@ -7024,7 +7024,7 @@ Method(m7d3, 6, Serialized)
 				Store(Refof(g002), Local4)
 			}
 			default {
-				err(arg0, z145, 63, 0, 0, arg2, arg3)
+				err(arg0, z145, __LINE__, 0, 0, arg2, arg3)
 				return
 			}
 		}
@@ -7152,7 +7152,7 @@ Method(m7d3, 6, Serialized)
 				Store(Refof(g003), Local4)
 			}
 			default {
-				err(arg0, z145, 64, 0, 0, arg2, arg3)
+				err(arg0, z145, __LINE__, 0, 0, arg2, arg3)
 				return
 			}
 		}
@@ -7280,7 +7280,7 @@ Method(m7d3, 6, Serialized)
 				Store(Refof(g004), Local4)
 			}
 			default {
-				err(arg0, z145, 65, 0, 0, arg2, arg3)
+				err(arg0, z145, __LINE__, 0, 0, arg2, arg3)
 				return
 			}
 		}
@@ -7408,7 +7408,7 @@ Method(m7d3, 6, Serialized)
 				Store(Refof(g005), Local4)
 			}
 			default {
-				err(arg0, z145, 66, 0, 0, arg2, arg3)
+				err(arg0, z145, __LINE__, 0, 0, arg2, arg3)
 				return
 			}
 		}
@@ -7536,7 +7536,7 @@ Method(m7d3, 6, Serialized)
 				Store(Refof(g006), Local4)
 			}
 			default {
-				err(arg0, z145, 67, 0, 0, arg2, arg3)
+				err(arg0, z145, __LINE__, 0, 0, arg2, arg3)
 				return
 			}
 		}
@@ -7664,7 +7664,7 @@ Method(m7d3, 6, Serialized)
 				Store(Refof(g007), Local4)
 			}
 			default {
-				err(arg0, z145, 68, 0, 0, arg2, arg3)
+				err(arg0, z145, __LINE__, 0, 0, arg2, arg3)
 				return
 			}
 		}
@@ -7792,7 +7792,7 @@ Method(m7d3, 6, Serialized)
 				Store(Refof(g008), Local4)
 			}
 			default {
-				err(arg0, z145, 69, 0, 0, arg2, arg3)
+				err(arg0, z145, __LINE__, 0, 0, arg2, arg3)
 				return
 			}
 		}
@@ -7920,7 +7920,7 @@ Method(m7d3, 6, Serialized)
 				Store(Refof(g009), Local4)
 			}
 			default {
-				err(arg0, z145, 70, 0, 0, arg2, arg3)
+				err(arg0, z145, __LINE__, 0, 0, arg2, arg3)
 				return
 			}
 		}
@@ -8048,7 +8048,7 @@ Method(m7d3, 6, Serialized)
 				Store(Refof(g00a), Local4)
 			}
 			default {
-				err(arg0, z145, 71, 0, 0, arg2, arg3)
+				err(arg0, z145, __LINE__, 0, 0, arg2, arg3)
 				return
 			}
 		}
@@ -8176,7 +8176,7 @@ Method(m7d3, 6, Serialized)
 				Store(Refof(g00b), Local4)
 			}
 			default {
-				err(arg0, z145, 72, 0, 0, arg2, arg3)
+				err(arg0, z145, __LINE__, 0, 0, arg2, arg3)
 				return
 			}
 		}
@@ -8304,7 +8304,7 @@ Method(m7d3, 6, Serialized)
 				Store(Refof(g00c), Local4)
 			}
 			default {
-				err(arg0, z145, 73, 0, 0, arg2, arg3)
+				err(arg0, z145, __LINE__, 0, 0, arg2, arg3)
 				return
 			}
 		}
@@ -8432,7 +8432,7 @@ Method(m7d3, 6, Serialized)
 				Store(Refof(g00d), Local4)
 			}
 			default {
-				err(arg0, z145, 74, 0, 0, arg2, arg3)
+				err(arg0, z145, __LINE__, 0, 0, arg2, arg3)
 				return
 			}
 		}
@@ -8560,7 +8560,7 @@ Method(m7d3, 6, Serialized)
 				Store(Refof(g00e), Local4)
 			}
 			default {
-				err(arg0, z145, 75, 0, 0, arg2, arg3)
+				err(arg0, z145, __LINE__, 0, 0, arg2, arg3)
 				return
 			}
 		}
@@ -8688,13 +8688,13 @@ Method(m7d3, 6, Serialized)
 				Store(Refof(g000), Local4)
 			}
 			default {
-				err(arg0, z145, 76, 0, 0, arg2, arg3)
+				err(arg0, z145, __LINE__, 0, 0, arg2, arg3)
 				return
 			}
 		}
 	}
 	default {
-		err(arg0, z145, 77, 0, 0, arg2, arg3)
+		err(arg0, z145, __LINE__, 0, 0, arg2, arg3)
 		return}
 	}
 
@@ -8888,7 +8888,7 @@ Method(m7d4, 6, Serialized)
 				Store(Refof(g000), Local4)
 			}
 			default {
-				err(arg0, z145, 78, 0, 0, arg2, arg3)
+				err(arg0, z145, __LINE__, 0, 0, arg2, arg3)
 				return
 			}
 		}
@@ -9016,7 +9016,7 @@ Method(m7d4, 6, Serialized)
 				Store(Refof(g001), Local4)
 			}
 			default {
-				err(arg0, z145, 79, 0, 0, arg2, arg3)
+				err(arg0, z145, __LINE__, 0, 0, arg2, arg3)
 				return
 			}
 		}
@@ -9144,7 +9144,7 @@ Method(m7d4, 6, Serialized)
 				Store(Refof(g002), Local4)
 			}
 			default {
-				err(arg0, z145, 80, 0, 0, arg2, arg3)
+				err(arg0, z145, __LINE__, 0, 0, arg2, arg3)
 				return
 			}
 		}
@@ -9272,7 +9272,7 @@ Method(m7d4, 6, Serialized)
 				Store(Refof(g003), Local4)
 			}
 			default {
-				err(arg0, z145, 81, 0, 0, arg2, arg3)
+				err(arg0, z145, __LINE__, 0, 0, arg2, arg3)
 				return
 			}
 		}
@@ -9400,7 +9400,7 @@ Method(m7d4, 6, Serialized)
 				Store(Refof(g004), Local4)
 			}
 			default {
-				err(arg0, z145, 82, 0, 0, arg2, arg3)
+				err(arg0, z145, __LINE__, 0, 0, arg2, arg3)
 				return
 			}
 		}
@@ -9528,7 +9528,7 @@ Method(m7d4, 6, Serialized)
 				Store(Refof(g005), Local4)
 			}
 			default {
-				err(arg0, z145, 83, 0, 0, arg2, arg3)
+				err(arg0, z145, __LINE__, 0, 0, arg2, arg3)
 				return
 			}
 		}
@@ -9656,7 +9656,7 @@ Method(m7d4, 6, Serialized)
 				Store(Refof(g006), Local4)
 			}
 			default {
-				err(arg0, z145, 84, 0, 0, arg2, arg3)
+				err(arg0, z145, __LINE__, 0, 0, arg2, arg3)
 				return
 			}
 		}
@@ -9784,7 +9784,7 @@ Method(m7d4, 6, Serialized)
 				Store(Refof(g007), Local4)
 			}
 			default {
-				err(arg0, z145, 85, 0, 0, arg2, arg3)
+				err(arg0, z145, __LINE__, 0, 0, arg2, arg3)
 				return
 			}
 		}
@@ -9912,7 +9912,7 @@ Method(m7d4, 6, Serialized)
 				Store(Refof(g008), Local4)
 			}
 			default {
-				err(arg0, z145, 86, 0, 0, arg2, arg3)
+				err(arg0, z145, __LINE__, 0, 0, arg2, arg3)
 				return
 			}
 		}
@@ -10040,7 +10040,7 @@ Method(m7d4, 6, Serialized)
 				Store(Refof(g009), Local4)
 			}
 			default {
-				err(arg0, z145, 87, 0, 0, arg2, arg3)
+				err(arg0, z145, __LINE__, 0, 0, arg2, arg3)
 				return
 			}
 		}
@@ -10168,7 +10168,7 @@ Method(m7d4, 6, Serialized)
 				Store(Refof(g00a), Local4)
 			}
 			default {
-				err(arg0, z145, 88, 0, 0, arg2, arg3)
+				err(arg0, z145, __LINE__, 0, 0, arg2, arg3)
 				return
 			}
 		}
@@ -10296,7 +10296,7 @@ Method(m7d4, 6, Serialized)
 				Store(Refof(g00b), Local4)
 			}
 			default {
-				err(arg0, z145, 89, 0, 0, arg2, arg3)
+				err(arg0, z145, __LINE__, 0, 0, arg2, arg3)
 				return
 			}
 		}
@@ -10424,7 +10424,7 @@ Method(m7d4, 6, Serialized)
 				Store(Refof(g00c), Local4)
 			}
 			default {
-				err(arg0, z145, 90, 0, 0, arg2, arg3)
+				err(arg0, z145, __LINE__, 0, 0, arg2, arg3)
 				return
 			}
 		}
@@ -10552,7 +10552,7 @@ Method(m7d4, 6, Serialized)
 				Store(Refof(g00d), Local4)
 			}
 			default {
-				err(arg0, z145, 91, 0, 0, arg2, arg3)
+				err(arg0, z145, __LINE__, 0, 0, arg2, arg3)
 				return
 			}
 		}
@@ -10680,7 +10680,7 @@ Method(m7d4, 6, Serialized)
 				Store(Refof(g00e), Local4)
 			}
 			default {
-				err(arg0, z145, 92, 0, 0, arg2, arg3)
+				err(arg0, z145, __LINE__, 0, 0, arg2, arg3)
 				return
 			}
 		}
@@ -10808,13 +10808,13 @@ Method(m7d4, 6, Serialized)
 				Store(Refof(g000), Local4)
 			}
 			default {
-				err(arg0, z145, 93, 0, 0, arg2, arg3)
+				err(arg0, z145, __LINE__, 0, 0, arg2, arg3)
 				return
 			}
 		}
 	}
 	default {
-		err(arg0, z145, 94, 0, 0, arg2, arg3)
+		err(arg0, z145, __LINE__, 0, 0, arg2, arg3)
 		return}
 	}
 
@@ -11572,7 +11572,7 @@ Method(m7c8, 1, Serialized)
 		}
 
 		if (LNotEqual(bf03, i000)) {
-			err(arg0, z145, arg2, 0, 0, bf03, i000)
+			err(arg0, z145, __LINE__, 0, 0, bf03, i000)
 		}
 	}
 
@@ -11581,13 +11581,13 @@ Method(m7c8, 1, Serialized)
 	Store(i000, bf00)
 
 	if (LNotEqual(bf00, i000)) {
-		err(arg0, z145, 115, 0, 0, bf00, i000)
+		err(arg0, z145, __LINE__, 0, 0, bf00, i000)
 	}
 	if (LNotEqual(bf01, i000)) {
-		err(arg0, z145, 116, 0, 0, bf00, i000)
+		err(arg0, z145, __LINE__, 0, 0, bf00, i000)
 	}
 	if (LNotEqual(bf02, i000)) {
-		err(arg0, z145, 117, 0, 0, bf00, i000)
+		err(arg0, z145, __LINE__, 0, 0, bf00, i000)
 	}
 
     //

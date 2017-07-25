@@ -63,7 +63,7 @@ Method(m4b2, 1, Serialized)
 		// Index
 
 		Index(s000, 0, Local1)
-		CH03(ts, z094, 1, 0, 0)
+		CH03(ts, z094, 1, __LINE__, 0)
 
 		// ConcatenateResTemplate
 
@@ -86,7 +86,7 @@ Method(m4b2, 1, Serialized)
 		// Index
 
 		Index(s100, 0, Local1)
-		CH03(ts, z094, 3, 0, 0)
+		CH03(ts, z094, 3, __LINE__, 0)
 
 		// ConcatenateResTemplate
 
@@ -137,7 +137,7 @@ Method(m4b2, 1, Serialized)
 		// Index
 
 		Index(arg1, 0, Local1)
-		CH03(ts, z094, 5, 0, 0)
+		CH03(ts, z094, 5, __LINE__, 0)
 
 		// Wait
 
@@ -191,7 +191,7 @@ Method(m4b2, 1, Serialized)
 		// Index
 
 		Index(Local0, 0, Local1)
-		CH03(ts, z094, 7, 0, 0)
+		CH03(ts, z094, 7, __LINE__, 0)
 
 		// Wait
 
@@ -215,7 +215,7 @@ Method(m4b2, 1, Serialized)
 		CH06(arg0, 32, 5)
 
 		Store (Index(DeRefOf(Index(p000, 0)), 0), Local1)
-		CH03(ts, z094, 8, 0, 0)
+		CH03(ts, z094, 8, __LINE__, 0)
 
 		Store (Match(DeRefOf(Index(p000, 0)), MTR, 0, MTR, 0, 0), Local1)
 		CH06(arg0, 33, 47)
@@ -226,7 +226,7 @@ Method(m4b2, 1, Serialized)
 		CH06(arg0, 34, 5)
 
 		Store (Index(DeRefOf(Index(p000, 0, Local0)), 0), Local1)
-		CH03(ts, z094, 9, 0, 0)
+		CH03(ts, z094, 9, __LINE__, 0)
 
 		Store (Match(DeRefOf(Index(p000, 0, Local0)), MTR, 0, MTR, 0, 0), Local1)
 		CH06(arg0, 35, 47)
@@ -240,18 +240,18 @@ Method(m4b2, 1, Serialized)
 
 		Store(ObjectType(arg1), Local0)
 		if (LNotEqual(Local0, 2)) {
-			err(arg0, z094, 36, 0, 0, Local0, 2)
+			err(arg0, z094, __LINE__, 0, 0, Local0, 2)
 			return (1)
 		}
 
 		Store (DerefOf(arg1), Local1)
-		CH03(ts, z094, 10, 0, 0)
+		CH03(ts, z094, 10, __LINE__, 0)
 
 		Store (DerefOf(DerefOf(arg1)), Local1)
 		CH06(arg0, 37, 5)
 
 		Store (Index(DerefOf(arg1), 0), Local1)
-		CH03(ts, z094, 11, 0, 0)
+		CH03(ts, z094, 11, __LINE__, 0)
 
 		Store (Match(DerefOf(arg1), MTR, 0, MTR, 0, 0), Local1)
 		CH06(arg0, 38, 47)
@@ -274,7 +274,7 @@ Method(m4b2, 1, Serialized)
 		Method(CH00, 2)
 		{
 			if (LNotEqual(i000, arg1)) {
-				err(arg0, z094, 39, 0, 0, i000, arg1)
+				err(arg0, z094, __LINE__, 0, 0, i000, arg1)
 			}
 		}
 
@@ -306,13 +306,13 @@ Method(m4b2, 1, Serialized)
 			CH00(arg0, 5)
 		}
 
-		CH03(ts, z094, 12, 0, 0)
+		CH03(ts, z094, 12, __LINE__, 0)
 		Store (Index(m000(6), 0), Local1)
 		if (y900) {
-			CH03(ts, z094, 12, 0, 0)
+			CH03(ts, z094, 12, __LINE__, 0)
 			CH00(arg0, 6)
 		} else {
-			CH04(ts, 0, 85, z094, 0x123, 0, 0) // AE_INDEX_TO_NOT_ATTACHED
+			CH04(ts, 0, 85, z094, __LINE__, 0, 0) // AE_INDEX_TO_NOT_ATTACHED
 		}
 
 		Store(Wait(m000(7), 0), Local1)
@@ -347,7 +347,7 @@ Method(m4b2, 1, Serialized)
 		Method(CH00, 2)
 		{
 			if (LNotEqual(i000, arg1)) {
-				err(arg0, z094, 47, 0, 0, i000, arg1)
+				err(arg0, z094, __LINE__, 0, 0, i000, arg1)
 			}
 		}
 
@@ -360,7 +360,7 @@ Method(m4b2, 1, Serialized)
 			Store(0, i000)
 
 			Store (DerefOf(m000(1, lpC0)), Local1)
-			CH03(ts, z094, Add(13, lpC0), 0, 0)
+			CH03(ts, z094, __LINE__, 0, 0)
 			CH00(arg0, 1)
 
 			Store (DerefOf(DerefOf(m000(2, lpC0))), Local1)
@@ -380,7 +380,7 @@ Method(m4b2, 1, Serialized)
 		}
 	}
 
-	CH03(ts, z094, 15, 0, 0)
+	CH03(ts, z094, 15, __LINE__, 0)
 
 	// Local Named Object
 	m000(ts)

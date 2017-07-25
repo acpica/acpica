@@ -41,10 +41,10 @@
 		Add(Local0, 1, Local7)
 
 		if (LNotEqual(Local0, 7)) {
-			err("", zFFF, 0x000, 0, 0, Local0, 7)
+			err("", zFFF, __LINE__, 0, 0, Local0, 7)
 		}
 		if (LNotEqual(Local7, 8)) {
-			err("", zFFF, 0x000, 0, 0, Local7, 8)
+			err("", zFFF, __LINE__, 0, 0, Local7, 8)
 		}
 
 		Store("m000 finished", Debug)
@@ -59,10 +59,10 @@
 		Add(arg0, 1, Local7)
 
 		if (LNotEqual(arg0, 7)) {
-			err("", zFFF, 0x000, 0, 0, arg0, 7)
+			err("", zFFF, __LINE__, 0, 0, arg0, 7)
 		}
 		if (LNotEqual(Local7, 8)) {
-			err("", zFFF, 0x000, 0, 0, arg0, 8)
+			err("", zFFF, __LINE__, 0, 0, arg0, 8)
 		}
 
 		Store("m001 finished", Debug)

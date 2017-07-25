@@ -56,7 +56,7 @@ Method(md89)
 	Store(md87(), Local7)
 	Store(ObjectType(Local7), Local0)
 	if (LNotEqual(Local0, c009)) {
-		err("", zFFF, 0x000, 0, 0, Local0, c009)
+		err("", zFFF, __LINE__, 0, 0, Local0, c009)
 	}
 
 	// FiledUnit converted to Buffer before return
@@ -64,6 +64,6 @@ Method(md89)
 	Store(md88(), Local7)
 	Store(ObjectType(Local7), Local0)
 	if (LNotEqual(Local0, c00b)) {
-		err("", zFFF, 0x001, 0, 0, Local0, c00b)
+		err("", zFFF, __LINE__, 0, 0, Local0, c00b)
 	}
 }

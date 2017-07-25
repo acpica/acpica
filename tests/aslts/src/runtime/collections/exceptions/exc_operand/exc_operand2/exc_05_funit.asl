@@ -87,9 +87,9 @@ Method(m4b5,, Serialized)
 
 		Store (Index(fu03, 0), Local1)
 		if (y900) {
-			CH03(ts, z097, 0, 0, 0)
+			CH03(ts, z097, 0, __LINE__, 0)
 		} else {
-			CH04(ts, 0, 85, z094, 0x123, 0, 0) // AE_INDEX_TO_NOT_ATTACHED
+			CH04(ts, 0, 85, z094, __LINE__, 0, 0) // AE_INDEX_TO_NOT_ATTACHED
 		}
 	}
 
@@ -118,9 +118,9 @@ Method(m4b5,, Serialized)
 
 		Store (Index(fu01, 0), Local1)
 		if (y900) {
-			CH03(ts, z097, 1, 0, 0)
+			CH03(ts, z097, 1, __LINE__, 0)
 		} else {
-			CH04(ts, 0, 85, z094, 0x123, 0, 0) // AE_INDEX_TO_NOT_ATTACHED
+			CH04(ts, 0, 85, z094, __LINE__, 0, 0) // AE_INDEX_TO_NOT_ATTACHED
 		}
 	}
 
@@ -132,12 +132,12 @@ Method(m4b5,, Serialized)
 
 		Store(ObjectType(arg1), Local0)
 		if (LNotEqual(Local0, 5)) {
-			err(arg0, z097, 6, 0, 0, Local0, 5)
+			err(arg0, z097, __LINE__, 0, 0, Local0, 5)
 			return (1)
 		}
 
 		Store (DerefOf(arg1), Local1)
-		CH03(ts, z097, 2, 0, 0)
+		CH03(ts, z097, 2, __LINE__, 0)
 
 		Store (DerefOf(DerefOf(arg1)), Local1)
 		CH06(arg0, 7, 47)
@@ -147,9 +147,9 @@ Method(m4b5,, Serialized)
 		if (arg2) {
 			// Like Buffer behaviour
 			if (y900) {
-				CH03(ts, z097, 3, 0, 0)
+				CH03(ts, z097, 3, __LINE__, 0)
 			} else {
-				CH04(ts, 0, 85, z097, 0x123, 0, 0) // AE_INDEX_TO_NOT_ATTACHED
+				CH04(ts, 0, 85, z097, __LINE__, 0, 0) // AE_INDEX_TO_NOT_ATTACHED
 			}
 		} else {
 			// Like Integer behaviour
@@ -190,7 +190,7 @@ Method(m4b5,, Serialized)
 		Method(CH00, 2)
 		{
 			if (LNotEqual(i000, arg1)) {
-				err(arg0, z097, 10, 0, 0, i000, arg1)
+				err(arg0, z097, __LINE__, 0, 0, i000, arg1)
 			}
 		}
 
@@ -208,7 +208,7 @@ Method(m4b5,, Serialized)
 			Store(0, i000)
 
 			Store (DerefOf(m000(1, lpC0)), Local1)
-			CH03(ts, z097, Add(4, lpC0), 0, 0)
+			CH03(ts, z097, __LINE__, 0, 0)
 			CH00(arg0, 1)
 
 
@@ -220,9 +220,9 @@ Method(m4b5,, Serialized)
 			if (Mod(lpC0, 2)) {
 				// Like Buffer behaviour
 				if (y900) {
-					CH03(ts, z097, Add(8, lpC0), 0, 0)
+					CH03(ts, z097, __LINE__, 0, 0)
 				} else {
-					CH04(ts, 0, 85, z097, 0x123, 0, 0) // AE_INDEX_TO_NOT_ATTACHED
+					CH04(ts, 0, 85, z097, __LINE__, 0, 0) // AE_INDEX_TO_NOT_ATTACHED
 				}
 			} else {
 				// Like Integer behaviour
@@ -239,7 +239,7 @@ Method(m4b5,, Serialized)
 		}
 	}
 
-	CH03(ts, z097, 12, 0, 0)
+	CH03(ts, z097, 12, __LINE__, 0)
 
 	// Local Named Object
 	m000(ts)

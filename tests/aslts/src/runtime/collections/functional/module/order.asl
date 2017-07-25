@@ -58,6 +58,6 @@ Method(MLD0,, Serialized)
 	Store("TEST: MLD0, Type2Opcode is executed right in place", Debug)
 
 	if (LNotEqual(ml20, 1)) {
-		err(ts, z182, 6, z182, 6, ml20, 1)
+		err(ts, z182, __LINE__, z182, 6, ml20, 1)
 	}
 }

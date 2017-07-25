@@ -42,50 +42,50 @@ Method(md9a,, Serialized)
 	 * Check that exceptions initiated by some bdemo tests on the
 	 * global level are all actually handled and reset at this point.
 	 */
-	CH03("", 0, 0x999, 0, 0)
+	CH03("", 0, 0x999, __LINE__, 0)
 
 	Store(LAnd(1, 1), Local0)
 	if (LNotEqual(Local0, ON00)) {
-		err("", zFFF, 0x000, 0, 0, Local0, ON00)
+		err("", zFFF, __LINE__, 0, 0, Local0, ON00)
 	}
 
 	Store(LEqual(0, 0), Local0)
 	if (LNotEqual(Local0, ON00)) {
-		err("", zFFF, 0x001, 0, 0, Local0, ON00)
+		err("", zFFF, __LINE__, 0, 0, Local0, ON00)
 	}
 
 	Store(LGreater(1, 0), Local0)
 	if (LNotEqual(Local0, ON00)) {
-		err("", zFFF, 0x002, 0, 0, Local0, ON00)
+		err("", zFFF, __LINE__, 0, 0, Local0, ON00)
 	}
 
 	Store(LGreaterEqual(1, 1), Local0)
 	if (LNotEqual(Local0, ON00)) {
-		err("", zFFF, 0x003, 0, 0, Local0, ON00)
+		err("", zFFF, __LINE__, 0, 0, Local0, ON00)
 	}
 
 	Store(LLess(0, 1), Local0)
 	if (LNotEqual(Local0, ON00)) {
-		err("", zFFF, 0x004, 0, 0, Local0, ON00)
+		err("", zFFF, __LINE__, 0, 0, Local0, ON00)
 	}
 
 	Store(LLessEqual(1, 1), Local0)
 	if (LNotEqual(Local0, ON00)) {
-		err("", zFFF, 0x005, 0, 0, Local0, ON00)
+		err("", zFFF, __LINE__, 0, 0, Local0, ON00)
 	}
 
 	Store(LNot(0), Local0)
 	if (LNotEqual(Local0, ON00)) {
-		err("", zFFF, 0x006, 0, 0, Local0, ON00)
+		err("", zFFF, __LINE__, 0, 0, Local0, ON00)
 	}
 
 	Store(LNotEqual(1, 0), Local0)
 	if (LNotEqual(Local0, ON00)) {
-		err("", zFFF, 0x007, 0, 0, Local0, ON00)
+		err("", zFFF, __LINE__, 0, 0, Local0, ON00)
 	}
 
 	Store(LOr(0, 1), Local0)
 	if (LNotEqual(Local0, ON00)) {
-		err("", zFFF, 0x008, 0, 0, Local0, ON00)
+		err("", zFFF, __LINE__, 0, 0, Local0, ON00)
 	}
 }

@@ -41,6 +41,6 @@ External(\SS00)
 Method(m279)
 {
 	if (CondRefof(\SS00, Local0)) {
-		err("", zFFF, 0x001, 0, 0, "\\SS00", 1)
+		err("", zFFF, __LINE__, 0, 0, "\\SS00", 1)
 	}
 }

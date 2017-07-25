@@ -194,7 +194,7 @@ Method(_ERR, 3)
 			Store(arg0, Index(EX03, EXC0))
 		} else {
 			Store("Maximal number of exceptions exceeded", Debug)
-			err("_ERR", z063, 0, 0, 0, EXC0, EXC2)
+			err("_ERR", z063, __LINE__, 0, 0, EXC0, EXC2)
 		}
 	}
 
@@ -214,7 +214,7 @@ Method(CH02)
 {
 	if (EXC1) {
 		Concatenate("Some unexpected exceptions were handled, 0x", EXC1, Local0)
-		err("CH02", z063, 1, 0, 0, Local0, 0)
+		err("CH02", z063, __LINE__, 0, 0, Local0, 0)
 	}
 	Return(EXC1)
 }
@@ -223,7 +223,7 @@ Method(CH02)
  * Check that the counter of current exceptions is zero. Set it to zero.
  * arg0 - diagnostic message
  * arg1 - absolute index of file initiating the checking
- * arg2 - index of checking
+ * arg2 - line number of checking
  * arg3 - arg5 of err, "received value"
  * arg4 - arg6 of err, "expected value"
  */
@@ -237,7 +237,7 @@ Method(CH03, 5)
 		Concatenate(Local1, EX01, Local0)
 		Concatenate(Local0, ", ", Local1)
 		Concatenate(Local1, EX00, Debug)
-		err(arg0, z063, 2, arg1, arg2, arg3, arg4)
+		err(arg0, z063, __LINE__, arg1, arg2, arg3, arg4)
 		Store(EXC0, Local7)
 	}
 	Store(0, EXC0)
@@ -281,7 +281,7 @@ Method(ST16, 1, Serialized)
  *
  * arg2 - index of exception info in pf00 Package
  * arg3 - absolute index of file initiating the checking
- * arg4 - index of checking
+ * arg4 - line number of checking
  * arg5 - arg5 of err, "received value"
  * arg6 - arg6 of err, "expected value"
  */
@@ -355,7 +355,7 @@ Method(CH04, 7)
 	Store(0, EX04)
 
 	if (Local5) {
-		err(arg0, z063, 3, arg3, arg4, arg5, arg6)
+		err(arg0, z063, __LINE__, arg3, arg4, arg5, arg6)
 	}
 
 	return (Local5)
@@ -363,16 +363,16 @@ Method(CH04, 7)
 
 Method(CH05)
 {
-	return (CH03("CH05", 0, 0, 0, 0))
+	return (CH03("CH05", 0, 0, __LINE__, 0))
 }
 
 Method(CH06, 3)
 {
 	if (EXCV) {
-		return (CH04(arg0, 0, arg2, 0, arg1, 0, 0))
+		return (CH04(arg0, 0, arg2, 0, __LINE__, 0, 0))
 	} else {
 		// Just only presence of ANY exception(s)
-		return (CH04(arg0, 0, 0xff, 0, arg1, 0, 0))
+		return (CH04(arg0, 0, 0xff, 0, __LINE__, 0, 0))
 	}
 }
 
@@ -382,9 +382,9 @@ Method(CH06, 3)
 Method(CH07, 7)
 {
 	if (SLCK) {
-		CH03(arg0, arg3, arg4, arg5, arg6)
+		CH03(arg0, arg3, arg4, __LINE__, arg6)
 	} else {
-		CH04(arg0, arg1, arg2, arg3, arg4, arg5, arg6)
+		CH04(arg0, arg1, arg2, arg3, __LINE__, arg5, arg6)
 	}
 }
 
@@ -475,7 +475,7 @@ Method(CH08, 6)
 		Concatenate(Local0, ", number of exceptions 0x", Local1)
 		Concatenate(Local1, Local4, Local0)
 		MSG0(arg1, Local0)
-		err(arg0, z063, 4, arg2, arg3, arg4, arg5)
+		err(arg0, z063, __LINE__, arg2, arg3, arg4, arg5)
 		Store(1, Local7)
 	}
 
@@ -555,7 +555,7 @@ Method(CH09, 6)
 	 */
 
 	if (Local5) {
-		err("", z063, 5, arg3, arg4, 0, 0)
+		err("", z063, __LINE__, arg3, arg4, 0, 0)
 	}
 
 	Store(Local7, arg5)

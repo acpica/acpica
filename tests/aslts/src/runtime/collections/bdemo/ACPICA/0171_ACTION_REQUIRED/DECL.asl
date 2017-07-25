@@ -47,11 +47,11 @@
 	{
 		Store(LEqual("C179B3FE", 0xc179b3fe), Local0)
 		if (LNotEqual(Local0, Ones)) {
-			err("", zFFF, 0x000, 0, 0, Local0, Ones)
+			err("", zFFF, __LINE__, 0, 0, Local0, Ones)
 		}
 
 		Store(LEqual(0xc179b3fe, "C179B3FE"), Local0)
 		if (LNotEqual(Local0, Ones)) {
-			err("", zFFF, 0x001, 0, 0, Local0, Ones)
+			err("", zFFF, __LINE__, 0, 0, Local0, Ones)
 		}
 	}

@@ -2384,10 +2384,10 @@ Method(m818, 1, Serialized)
 	m103(arg0)
 
 	if (LNotequal(FLG2, thr1)) {
-		err(arg0, z152, 0x000, 0, 0, FLG2, thr1)
+		err(arg0, z152, __LINE__, 0, 0, FLG2, thr1)
 	}
 	if (LNotequal(FLG3, thr2)) {
-		err(arg0, z152, 0x001, 0, 0, FLG3, thr2)
+		err(arg0, z152, __LINE__, 0, 0, FLG3, thr2)
 	}
 }
 

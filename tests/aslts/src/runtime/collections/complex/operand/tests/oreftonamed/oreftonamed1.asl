@@ -11817,16 +11817,16 @@ Method(m616,, Serialized)
 			m600(arg0, 11, Derefof(Local0), bi11)
 		} else {
 
-			CH03(arg0, z091, 0, 0, 0)
+			CH03(arg0, z091, 0, __LINE__, 0)
 
 			Store(Index(m601(2, 6), Derefof(Refof(s614))), Local3)
-			CH04(arg0, 0, 85, z091, 9, 0, 0)	// AE_INDEX_TO_NOT_ATTACHED
+			CH04(arg0, 0, 85, z091, __LINE__, 0, 0)	// AE_INDEX_TO_NOT_ATTACHED
 
 			Store(Index(m601(3, 6), Derefof(Refof(s614))), Local3)
-			CH04(arg0, 0, 85, z091, 10, 0, 0)	// AE_INDEX_TO_NOT_ATTACHED
+			CH04(arg0, 0, 85, z091, __LINE__, 0, 0)	// AE_INDEX_TO_NOT_ATTACHED
 
 			Store(Index(m601(4, 0), Derefof(Refof(s614))), Local3)
-			CH04(arg0, 0, 85, z091, 11, 0, 0)	// AE_INDEX_TO_NOT_ATTACHED
+			CH04(arg0, 0, 85, z091, __LINE__, 0, 0)	// AE_INDEX_TO_NOT_ATTACHED
 		}
 
 		// Method returns Reference
@@ -11885,16 +11885,16 @@ Method(m616,, Serialized)
 			m600(arg0, 26, Derefof(Local0), bi11)
 		} else {
 
-			CH03(arg0, z091, 0, 0, 0)
+			CH03(arg0, z091, 0, __LINE__, 0)
 
 			Index(m601(2, 6), Derefof(Refof(s614)), Local0)
-			CH04(arg0, 0, 85, z091, 24, 0, 0)	// AE_INDEX_TO_NOT_ATTACHED
+			CH04(arg0, 0, 85, z091, __LINE__, 0, 0)	// AE_INDEX_TO_NOT_ATTACHED
 
 			Index(m601(3, 6), Derefof(Refof(s614)), Local0)
-			CH04(arg0, 0, 85, z091, 25, 0, 0)	// AE_INDEX_TO_NOT_ATTACHED
+			CH04(arg0, 0, 85, z091, __LINE__, 0, 0)	// AE_INDEX_TO_NOT_ATTACHED
 
 			Index(m601(4, 0), Derefof(Refof(s614)), Local0)
-			CH04(arg0, 0, 85, z091, 26, 0, 0)	// AE_INDEX_TO_NOT_ATTACHED
+			CH04(arg0, 0, 85, z091, __LINE__, 0, 0)	// AE_INDEX_TO_NOT_ATTACHED
 		}
 
 		// Method returns Reference
@@ -11975,14 +11975,14 @@ Method(m616,, Serialized)
 	// (it can only be checked an exception does not occur)
 	Method(m02e, 1)
 	{
-		CH03(arg0, z091, 0, 0, 0)
+		CH03(arg0, z091, 0, __LINE__, 0)
 		Fatal(0xff, 0xffffffff, Derefof(Refof(s601)))
 		if (F64) {
 			Fatal(0xff, 0xffffffff, Derefof(Refof(s605)))
 		} else {
 			Fatal(0xff, 0xffffffff, Derefof(Refof(s604)))
 		}
-		CH03(arg0, z091, 1, 0, 0)
+		CH03(arg0, z091, 1, __LINE__, 0)
 	}
 
 	// String to Integer conversion of the String Index and Length
@@ -12610,19 +12610,19 @@ Method(m616,, Serialized)
 	// of the Method execution control operators (Sleep, Stall)
 	Method(m031, 1)
 	{
-		CH03(arg0, z091, 2, 0, 0)
+		CH03(arg0, z091, 2, __LINE__, 0)
 
 		// Sleep
 
 		Store(Timer, Local0)
 
 		Sleep(Derefof(Refof(s601)))
-		CH03(arg0, z091, 3, 0, 0)
+		CH03(arg0, z091, 3, __LINE__, 0)
 
 		Store(Timer, Local1)
 		Subtract(Local1, Local0, Local2)
 		if (LLess(Local2, c08c)) {
-			err(arg0, z091, 0, 0, 0, Local2, c08c)
+			err(arg0, z091, __LINE__, 0, 0, Local2, c08c)
 		}
 
 		// Stall
@@ -12630,12 +12630,12 @@ Method(m616,, Serialized)
 		Store(Timer, Local0)
 
 		Stall(Derefof(Refof(s61b)))
-		CH03(arg0, z091, 4, 0, 0)
+		CH03(arg0, z091, 4, __LINE__, 0)
 
 		Store(Timer, Local1)
 		Subtract(Local1, Local0, Local2)
 		if (LLess(Local2, 990)) {
-			err(arg0, z091, 1, 0, 0, Local2, 990)
+			err(arg0, z091, __LINE__, 0, 0, Local2, 990)
 		}
 	}
 
@@ -12646,19 +12646,19 @@ Method(m616,, Serialized)
 		Mutex(MTX0, 0)
 
 		Acquire(MTX0, 0)
-		CH03(arg0, z091, 5, 0, 0)
+		CH03(arg0, z091, 5, __LINE__, 0)
 
 		Store(Timer, Local0)
 
 /* Compiler allows only Integer constant as TimeoutValue (Bug 1)
 		Acquire(MTX0, Derefof(Refof(s601)))
 */
-		CH03(arg0, z091, 6, 0, 0)
+		CH03(arg0, z091, 6, __LINE__, 0)
 
 		Store(Timer, Local1)
 		Subtract(Local1, Local0, Local2)
 		if (LLess(Local2, c08c)) {
-			err(arg0, z091, 0, 0, 0, Local2, c08c)
+			err(arg0, z091, __LINE__, 0, 0, Local2, c08c)
 		}
 	}
 
@@ -12668,17 +12668,17 @@ Method(m616,, Serialized)
 	{
 		Event(EVT0)
 
-		CH03(arg0, z091, 7, 0, 0)
+		CH03(arg0, z091, 7, __LINE__, 0)
 
 		Store(Timer, Local0)
 
 		Wait(EVT0, Derefof(Refof(s601)))
-		CH03(arg0, z091, 8, 0, 0)
+		CH03(arg0, z091, 8, __LINE__, 0)
 
 		Store(Timer, Local1)
 		Subtract(Local1, Local0, Local2)
 		if (LLess(Local2, c08c)) {
-			err(arg0, z091, 0, 0, 0, Local2, c08c)
+			err(arg0, z091, __LINE__, 0, 0, Local2, c08c)
 		}
 	}
 
@@ -23238,16 +23238,16 @@ Method(m616,, Serialized)
 			m600(arg0, 11, Derefof(Local0), bi11)
 		} else {
 
-			CH03(arg0, z091, 0, 0, 0)
+			CH03(arg0, z091, 0, __LINE__, 0)
 
 			Store(Index(m601(2, 6), Derefof(Refof(b60e))), Local3)
-			CH04(arg0, 0, 85, z091, 9, 0, 0)	// AE_INDEX_TO_NOT_ATTACHED
+			CH04(arg0, 0, 85, z091, __LINE__, 0, 0)	// AE_INDEX_TO_NOT_ATTACHED
 
 			Store(Index(m601(3, 6), Derefof(Refof(b60e))), Local3)
-			CH04(arg0, 0, 85, z091, 10, 0, 0)	// AE_INDEX_TO_NOT_ATTACHED
+			CH04(arg0, 0, 85, z091, __LINE__, 0, 0)	// AE_INDEX_TO_NOT_ATTACHED
 
 			Store(Index(m601(4, 0), Derefof(Refof(b60e))), Local3)
-			CH04(arg0, 0, 85, z091, 11, 0, 0)	// AE_INDEX_TO_NOT_ATTACHED
+			CH04(arg0, 0, 85, z091, __LINE__, 0, 0)	// AE_INDEX_TO_NOT_ATTACHED
 		}
 
 		// Method returns Reference
@@ -23306,16 +23306,16 @@ Method(m616,, Serialized)
 			m600(arg0, 26, Derefof(Local0), bi11)
 		} else {
 
-			CH03(arg0, z091, 0, 0, 0)
+			CH03(arg0, z091, 0, __LINE__, 0)
 
 			Index(m601(2, 6), Derefof(Refof(b60e)), Local0)
-			CH04(arg0, 0, 85, z091, 24, 0, 0)	// AE_INDEX_TO_NOT_ATTACHED
+			CH04(arg0, 0, 85, z091, __LINE__, 0, 0)	// AE_INDEX_TO_NOT_ATTACHED
 
 			Index(m601(3, 6), Derefof(Refof(b60e)), Local0)
-			CH04(arg0, 0, 85, z091, 25, 0, 0)	// AE_INDEX_TO_NOT_ATTACHED
+			CH04(arg0, 0, 85, z091, __LINE__, 0, 0)	// AE_INDEX_TO_NOT_ATTACHED
 
 			Index(m601(4, 0), Derefof(Refof(b60e)), Local0)
-			CH04(arg0, 0, 85, z091, 26, 0, 0)	// AE_INDEX_TO_NOT_ATTACHED
+			CH04(arg0, 0, 85, z091, __LINE__, 0, 0)	// AE_INDEX_TO_NOT_ATTACHED
 		}
 
 		// Method returns Reference
@@ -23396,14 +23396,14 @@ Method(m616,, Serialized)
 	// (it can only be checked an exception does not occur)
 	Method(m068, 1)
 	{
-		CH03(arg0, z091, 9, 0, 0)
+		CH03(arg0, z091, 9, __LINE__, 0)
 		Fatal(0xff, 0xffffffff, Derefof(Refof(b606)))
 		if (F64) {
 			Fatal(0xff, 0xffffffff, Derefof(Refof(b60a)))
 		} else {
 			Fatal(0xff, 0xffffffff, Derefof(Refof(b60a)))
 		}
-		CH03(arg0, z091, 10, 0, 0)
+		CH03(arg0, z091, 10, __LINE__, 0)
 	}
 
 	// Buffer to Integer conversion of the Buffer Index and Length
@@ -24031,19 +24031,19 @@ Method(m616,, Serialized)
 	// of the Method execution control operators (Sleep, Stall)
 	Method(m06b, 1)
 	{
-		CH03(arg0, z091, 11, 0, 0)
+		CH03(arg0, z091, 11, __LINE__, 0)
 
 		// Sleep
 
 		Store(Timer, Local0)
 
 		Sleep(Derefof(Refof(b606)))
-		CH03(arg0, z091, 12, 0, 0)
+		CH03(arg0, z091, 12, __LINE__, 0)
 
 		Store(Timer, Local1)
 		Subtract(Local1, Local0, Local2)
 		if (LLess(Local2, c08c)) {
-			err(arg0, z091, 0, 0, 0, Local2, c08c)
+			err(arg0, z091, __LINE__, 0, 0, Local2, c08c)
 		}
 
 		// Stall
@@ -24051,12 +24051,12 @@ Method(m616,, Serialized)
 		Store(Timer, Local0)
 
 		Stall(Derefof(Refof(b613)))
-		CH03(arg0, z091, 13, 0, 0)
+		CH03(arg0, z091, 13, __LINE__, 0)
 
 		Store(Timer, Local1)
 		Subtract(Local1, Local0, Local2)
 		if (LLess(Local2, 990)) {
-			err(arg0, z091, 1, 0, 0, Local2, 990)
+			err(arg0, z091, __LINE__, 0, 0, Local2, 990)
 		}
 	}
 
@@ -24068,19 +24068,19 @@ Method(m616,, Serialized)
 		Mutex(MTX0, 0)
 
 		Acquire(MTX0, 0)
-		CH03(arg0, z091, 14, 0, 0)
+		CH03(arg0, z091, 14, __LINE__, 0)
 
 		Store(Timer, Local0)
 
 /* Compiler allows only Integer constant as TimeoutValue (Bug 1)
 		Acquire(MTX0, Derefof(Refof(b606)))
 */
-		CH03(arg0, z091, 15, 0, 0)
+		CH03(arg0, z091, 15, __LINE__, 0)
 
 		Store(Timer, Local1)
 		Subtract(Local1, Local0, Local2)
 		if (LLess(Local2, c08c)) {
-			err(arg0, z091, 0, 0, 0, Local2, c08c)
+			err(arg0, z091, __LINE__, 0, 0, Local2, c08c)
 		}
 	}
 
@@ -24090,17 +24090,17 @@ Method(m616,, Serialized)
 	{
 		Event(EVT0)
 
-		CH03(arg0, z091, 16, 0, 0)
+		CH03(arg0, z091, 16, __LINE__, 0)
 
 		Store(Timer, Local0)
 
 		Wait(EVT0, Derefof(Refof(b606)))
-		CH03(arg0, z091, 17, 0, 0)
+		CH03(arg0, z091, 17, __LINE__, 0)
 
 		Store(Timer, Local1)
 		Subtract(Local1, Local0, Local2)
 		if (LLess(Local2, c08c)) {
-			err(arg0, z091, 0, 0, 0, Local2, c08c)
+			err(arg0, z091, __LINE__, 0, 0, Local2, c08c)
 		}
 	}
 

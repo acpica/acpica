@@ -72,12 +72,12 @@ Method(m310, 4)
 Method(m311, 3)
 {
 	if (LNotequal(ObjectType(arg1), 3)) {
-		err("m311: unexpected type of Arg1", z036, 0, 0, 0, 0, 0)
+		err("m311: unexpected type of Arg1", z036, __LINE__, 0, 0, 0, 0)
 		return (Ones)
 	}
 
 	if (LNotequal(ObjectType(arg2), 3)) {
-		err("m311: unexpected type of Arg2", z036, 1, 0, 0, 0, 0)
+		err("m311: unexpected type of Arg2", z036, __LINE__, 0, 0, 0, 0)
 		return (Ones)
 	}
 
@@ -119,7 +119,7 @@ Method(m312, 6, Serialized)
 				Concatenate(Local0, Local1, Local7)
 
 				if (m311(Arg0, Local7, Local2)) {
-					err(arg0, z036, 2, 0, 0, Local5, arg2)
+					err(arg0, z036, __LINE__, 0, 0, Local5, arg2)
 				}
 			}
 			case (1) {
@@ -128,11 +128,11 @@ Method(m312, 6, Serialized)
 				Concatenate(Local0, Local1, Local7)
 
 				if (LNotequal(ObjectType(Local7), 2)) {
-					err(arg0, z036, 3, 0, 0, Local7, arg2)
+					err(arg0, z036, __LINE__, 0, 0, Local7, arg2)
 				} elseif (LNotequal(ObjectType(Local2), 2)) {
-					err(arg0, z036, 4, 0, 0, Local2, arg2)
+					err(arg0, z036, __LINE__, 0, 0, Local2, arg2)
 				} elseif (LNotEqual(Local7, Local2)) {
-					err(arg0, z036, 5, 0, 0, Local7, arg2)
+					err(arg0, z036, __LINE__, 0, 0, Local7, arg2)
 				}
 			}
 		}

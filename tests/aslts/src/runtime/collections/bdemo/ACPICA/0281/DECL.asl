@@ -53,12 +53,12 @@ Device (D281) {
 
 		if (LNotEqual(PLDT, 0)) {
 			Store(PLDT, Debug)
-			err("", zFFF, 0x000, 0, 0, PLDT, 0)
+			err("", zFFF, __LINE__, 0, 0, PLDT, 0)
 			return (1)
 		}
 
 		if (CondRefof(\_XT2, Local0)) {
-			err("", zFFF, 0x001, 0, 0, "\\_XT2", 1)
+			err("", zFFF, __LINE__, 0, 0, "\\_XT2", 1)
 		}
 
 		// Successful case: spaces is replaced with zeroes
@@ -76,21 +76,21 @@ Device (D281) {
 
 		if (LNotEqual(PLDT, 1)) {
 			Store(PLDT, Debug)
-			err("", zFFF, 0x003, 0, 0, PLDT, 1)
+			err("", zFFF, __LINE__, 0, 0, PLDT, 1)
 			return (1)
 		}
 		Store("OEM1 loaded", Debug)
 
 		if (CondRefof(\_XT2, Local0)) {
 		} else {
-			err("", zFFF, 0x004, 0, 0, "\\_XT2", 0)
+			err("", zFFF, __LINE__, 0, 0, "\\_XT2", 0)
 		}
 
 		UnLoad(DDB0)
 		Store("OEM1 unloaded", Debug)
 
 		if (CondRefof(\_XT2, Local0)) {
-			err("", zFFF, 0x005, 0, 0, "\\_XT2", 1)
+			err("", zFFF, __LINE__, 0, 0, "\\_XT2", 1)
 		}
 
 		// Unhappy case: normal strings
@@ -101,21 +101,21 @@ Device (D281) {
 
 		if (LNotEqual(PLDT, 1)) {
 			Store(PLDT, Debug)
-			err("", zFFF, 0x007, 0, 0, PLDT, 1)
+			err("", zFFF, __LINE__, 0, 0, PLDT, 1)
 			return (1)
 		}
 		Store("OEM1 loaded", Debug)
 
 		if (CondRefof(\_XT2, Local0)) {
 		} else {
-			err("", zFFF, 0x008, 0, 0, "\\_XT2", 0)
+			err("", zFFF, __LINE__, 0, 0, "\\_XT2", 0)
 		}
 
 		UnLoad(DDB1)
 		Store("OEM1 unloaded", Debug)
 
 		if (CondRefof(\_XT2, Local0)) {
-			err("", zFFF, 0x009, 0, 0, "\\_XT2", 1)
+			err("", zFFF, __LINE__, 0, 0, "\\_XT2", 1)
 		}
 
 		return (0)

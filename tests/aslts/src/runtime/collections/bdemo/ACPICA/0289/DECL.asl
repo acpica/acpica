@@ -67,7 +67,7 @@ Device (D289) {
 		Store(LoadTable("SSDT", "iASLTS", "LTBL0001", "\\", "\\D289.PLDT", 1), DDBH)
 
 		if (LEqual(PLDT, 1)) {
-			err("", zFFF, 0x001, 0, 0, "PLDT", 1)
+			err("", zFFF, __LINE__, 0, 0, "PLDT", 1)
 
 			UnLoad(DDBH)
 		}

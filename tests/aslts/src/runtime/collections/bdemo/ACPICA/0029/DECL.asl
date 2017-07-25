@@ -42,7 +42,7 @@ Method(mdbf, 2, Serialized)
 		Subtract(Local2, Local1, Local6)
 		Multiply(arg1, 10000, Local4)
 		if (LLess(Local6, Local4)) {
-			err("", zFFF, 0x000, 0, 0, Local6, Local4)
+			err("", zFFF, __LINE__, 0, 0, Local6, Local4)
 		}
 	}
 	case (1) {
@@ -52,7 +52,7 @@ Method(mdbf, 2, Serialized)
 		Subtract(Local2, Local1, Local6)
 		Multiply(arg1, 10, Local4)
 		if (LLess(Local6, Local4)) {
-			err("", zFFF, 0x001, 0, 0, Local6, Local4)
+			err("", zFFF, __LINE__, 0, 0, Local6, Local4)
 		}
 	}
 	case (2) {
@@ -62,7 +62,7 @@ Method(mdbf, 2, Serialized)
 		Subtract(Local2, Local1, Local6)
 		Multiply(arg1, 10000, Local4)
 		if (LLess(Local6, Local4)) {
-			err("", zFFF, 0x002, 0, 0, Local6, Local4)
+			err("", zFFF, __LINE__, 0, 0, Local6, Local4)
 		}
 	}
 	}

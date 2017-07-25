@@ -256,7 +256,7 @@ Method(m693, 5, Serialized)
 				CopyObject(Derefof(arg3), BUF1)
 				Store(Sizeof(BUF1), Local0)
 				if (LNotEqual(Local0, 17)) {
-					err(Concatenate(arg0, terr), z126, 1, 0, 0, Local0, 17)
+					err(Concatenate(arg0, terr), z126, __LINE__, 0, 0, Local0, 17)
 					Return (1)
 				}
 				CopyObject(BUF1, arg2)
@@ -304,11 +304,11 @@ Method(m693, 5, Serialized)
 			}
 			Default {
 				// Unexpected Target Type
-				err(Concatenate(arg0, terr), z126, 2, 0, 0, arg1, 0)
+				err(Concatenate(arg0, terr), z126, __LINE__, 0, 0, arg1, 0)
 				Return (1)
 			}
 		}
-		if (CH03(arg0, z126, 3, arg1, 0)) {
+		if (CH03(arg0, z126, 3, __LINE__, 0)) {
 			//Exception during preparing of Target Object
 			Return (1)
 		}
@@ -316,7 +316,7 @@ Method(m693, 5, Serialized)
 		Store(ObjectType(arg2), Local0)
 		if (LNotEqual(Local0, arg1)) {
 			// ObjectType of Target can not be set up
-			err(arg0, z126, 4, 0, 0, Local0, arg1)
+			err(arg0, z126, __LINE__, 0, 0, Local0, arg1)
 			Return (1)
 		}
 
@@ -345,11 +345,11 @@ Method(m693, 5, Serialized)
 			}
 			Default {
 				// Unexpected Source Type
-				err(Concatenate(arg0, terr), z126, 5, 0, 0, arg1, 0)
+				err(Concatenate(arg0, terr), z126, __LINE__, 0, 0, arg1, 0)
 				Return (1)
 			}
 		}
-		if (CH03(arg0, z126, 6, arg1, 0)) {
+		if (CH03(arg0, z126, 6, __LINE__, 0)) {
 			// Exception during preparing of Source Object
 			Return (1)
 		}
@@ -357,7 +357,7 @@ Method(m693, 5, Serialized)
 		Store(ObjectType(arg2), Local0)
 		if (LNotEqual(Local0, arg1)) {
 			// ObjectType of Source can not be set up
-			err(arg0, z126, 7, 0, 0, Local0, arg1)
+			err(arg0, z126, __LINE__, 0, 0, Local0, arg1)
 			Return (1)
 		}
 
@@ -372,7 +372,7 @@ Method(m693, 5, Serialized)
 		Store(ObjectType(arg2), Local0)
 		if (LNotEqual(Local0, arg1)) {
 			// ObjectType of Source object is corrupted
-			err(arg0, z126, 8, 0, 0, Local0, arg1)
+			err(arg0, z126, __LINE__, 0, 0, Local0, arg1)
 			Return (1)
 		}
 
@@ -388,14 +388,14 @@ Method(m693, 5, Serialized)
 			}
 			Default {
 				// Unexpected Result Type
-				err(arg0, z126, 9, 0, 0, arg1, 0)
+				err(arg0, z126, __LINE__, 0, 0, arg1, 0)
 				Return (1)
 			}
 		}
 
 		if (LNotEqual(Local0, arg1)) {
 			// Mismatch of Source Type against specified one
-			err(arg0, z126, 10, 0, 0, Local0, arg1)
+			err(arg0, z126, __LINE__, 0, 0, Local0, arg1)
 			if (STCS) {m000(3, 0x1000000, Local0, arg0)}
 			Return (1)
 		} else {
@@ -403,31 +403,31 @@ Method(m693, 5, Serialized)
 			Switch(ToInteger(arg1)) {
 				Case(1) {
 					if (LNotEqual(INT0, Derefof(arg3))) {
-						err(arg0, z126, 11, 0, 0, INT0, Derefof(arg3))
+						err(arg0, z126, __LINE__, 0, 0, INT0, Derefof(arg3))
 						Return (1)
 					}
 					if (LNotEqual(Derefof(arg2), INT0)) {
-						err(arg0, z126, 12, 0, 0, Derefof(arg2), INT0)
+						err(arg0, z126, __LINE__, 0, 0, Derefof(arg2), INT0)
 						Return (1)
 					}
 				}
 				Case(2) {
 					if (LNotEqual(STR0, Derefof(arg3))) {
-						err(arg0, z126, 13, 0, 0, STR0, Derefof(arg3))
+						err(arg0, z126, __LINE__, 0, 0, STR0, Derefof(arg3))
 						Return (1)
 					}
 					if (LNotEqual(Derefof(arg2), STR0)) {
-						err(arg0, z126, 14, 0, 0, Derefof(arg2), STR0)
+						err(arg0, z126, __LINE__, 0, 0, Derefof(arg2), STR0)
 						Return (1)
 					}
 				}
 				Case(3) {
 					if (LNotEqual(BUF0, Derefof(arg3))) {
-						err(arg0, z126, 15, 0, 0, BUF0, Derefof(arg3))
+						err(arg0, z126, __LINE__, 0, 0, BUF0, Derefof(arg3))
 						Return (1)
 					}
 					if (LNotEqual(Derefof(arg2), BUF0)) {
-						err(arg0, z126, 16, 0, 0, Derefof(arg2), BUF0)
+						err(arg0, z126, __LINE__, 0, 0, Derefof(arg2), BUF0)
 						Return (1)
 					}
 				}
@@ -455,10 +455,10 @@ Method(m693, 5, Serialized)
 				// Types mismatch Target/Target on storing
 				if (LEqual(arg2, c016)) {
 					if (X170) {
-						err(arg0, z126, 17, 0, 0, Local2, arg2)
+						err(arg0, z126, __LINE__, 0, 0, Local2, arg2)
 					}
 				} else {
-					err(arg0, z126, 17, 0, 0, Local2, arg2)
+					err(arg0, z126, __LINE__, 0, 0, Local2, arg2)
 				}
 				if (STCS) {m000(3, 0x100, arg2, Local2)}
 				Return (1)
@@ -469,12 +469,12 @@ Method(m693, 5, Serialized)
 			if (LNotEqual(Local2, arg3)) {
 				if (LNotEqual(m684(arg3), 1)) {
 					// Types mismatch Result/Target on storing
-					err(arg0, z126, 18, 0, 0, Local2, arg3)
+					err(arg0, z126, __LINE__, 0, 0, Local2, arg3)
 					Return (1)
 				} elseif (LNotEqual(Local2, 3)) {
 					// Types mismatch Result/Target on storing
 					// Test fixed type Objects are converted to Buffer
-					err(arg0, z126, 19, 0, 0, Local2, 3)
+					err(arg0, z126, __LINE__, 0, 0, Local2, 3)
 					Return (1)
 				}
 				if (STCS) {m000(3, 0x100, arg3, Local2)}
@@ -494,10 +494,10 @@ Method(m693, 5, Serialized)
 		if (LNotEqual(Derefof(arg1), Local7)) {
 			if (LAnd(LEqual(arg2, c00b), LEqual(arg3, c00b))) {
 				if (X194) {
-					err(arg0, z126, 20, 0, 0, Derefof(arg1), Local7)
+					err(arg0, z126, __LINE__, 0, 0, Derefof(arg1), Local7)
 				}
 			} else {
-				err(arg0, z126, 20, 0, 0, Derefof(arg1), Local7)
+				err(arg0, z126, __LINE__, 0, 0, Derefof(arg1), Local7)
 			}
 			Return (1)
 		}
@@ -527,7 +527,7 @@ Method(m693, 5, Serialized)
 		Store(Index(arg6, 1), Local7)
 		if (m004(Concatenate(arg0, "-m004"), arg3, Refof(SRC0), Local7)) {
 			// Source Object can not be prepared
-			err(Concatenate(arg0, terr), z126, 21, 0, 0, arg3, 0)
+			err(Concatenate(arg0, terr), z126, __LINE__, 0, 0, arg3, 0)
 			Return (1)
 		}
 
@@ -544,7 +544,7 @@ Method(m693, 5, Serialized)
 		}
 		if (m003(Concatenate(arg0, "-m003"), arg2, Local1, Local7)) {
 			// Target Object can not be prepared
-			err(Concatenate(arg0, terr), z126, 22, 0, 0, arg2, 0)
+			err(Concatenate(arg0, terr), z126, __LINE__, 0, 0, arg2, 0)
 			Return (1)
 		}
 
@@ -582,7 +582,7 @@ Method(m693, 5, Serialized)
 				}
 			} else {
 				// Unexpected Kind of Op (0 - Store, ...)
-				err(Concatenate(arg0, terr), z126, 23, 0, 0, arg4, 0)
+				err(Concatenate(arg0, terr), z126, __LINE__, 0, 0, arg4, 0)
 				Return (1)
 			}
 		} elseif (LEqual(arg2, 14)) {		// Buffer Field Target
@@ -618,7 +618,7 @@ Method(m693, 5, Serialized)
 				}
 			} else {
 				// Unexpected Kind of Op (0 - Store, ...)
-				err(Concatenate(arg0, terr), z126, 24, 0, 0, arg4, 0)
+				err(Concatenate(arg0, terr), z126, __LINE__, 0, 0, arg4, 0)
 				Return (1)
 			}
 
@@ -654,7 +654,7 @@ Method(m693, 5, Serialized)
 			}
 		} else {
 			// Unexpected Kind of Op (0 - Store, ...)
-			err(Concatenate(arg0, terr), z126, 25, 0, 0, arg4, 0)
+			err(Concatenate(arg0, terr), z126, __LINE__, 0, 0, arg4, 0)
 			Return (1)
 		}
 
@@ -663,7 +663,7 @@ Method(m693, 5, Serialized)
 			if (LNot(CH06(arg0, 26, 0xff))) {
 				if (STCS) {m000(2, 0x100, arg2, arg3)}
 			}
-		} elseif (CH03(arg0, z126, 27, arg3, arg2)) {
+		} elseif (CH03(arg0, z126, 27, __LINE__, arg2)) {
 			// Storing caused unexpected exception
 			if (STCS) {m000(2, 0x100, arg2, arg3)}
 		} else {
@@ -711,7 +711,7 @@ Method(m693, 5, Serialized)
 		Store(Index(arg6, 1), Local7)
 		if (m004(Concatenate(arg0, "-m004"), arg3, Refof(SRC0), Local7)) {
 			// Source Object can not be prepared
-			err(Concatenate(arg0, terr), z126, 28, 0, 0, arg3, 0)
+			err(Concatenate(arg0, terr), z126, __LINE__, 0, 0, arg3, 0)
 			Return (1)
 		}
 
@@ -719,7 +719,7 @@ Method(m693, 5, Serialized)
 		Store(Index(Derefof(Index(arg6, 2)), arg2), Local7)
 		if (m003(Concatenate(arg0, "-m003"), arg2, Refof(Local4), Local7)) {
 			// Target Object can not be prepared
-			err(Concatenate(arg0, terr), z126, 29, 0, 0, arg2, 0)
+			err(Concatenate(arg0, terr), z126, __LINE__, 0, 0, arg2, 0)
 			Return (1)
 		}
 
@@ -756,7 +756,7 @@ Method(m693, 5, Serialized)
 			}
 		} else {
 			// Unexpected Kind of Op (0 - Store, ...)
-			err(Concatenate(arg0, terr), z126, 30, 0, 0, arg4, 0)
+			err(Concatenate(arg0, terr), z126, __LINE__, 0, 0, arg4, 0)
 			Return (1)
 		}
 
@@ -765,7 +765,7 @@ Method(m693, 5, Serialized)
 			if (LNot(CH06(arg0, 31, 0xff))) {
 				if (STCS) {m000(2, 0x100, arg2, arg3)}
 			}
-		} elseif (CH03(arg0, z126, 32, arg3, arg2)) {
+		} elseif (CH03(arg0, z126, 32, __LINE__, arg2)) {
 			// Storing caused unexpected exception
 			if (STCS) {m000(2, 0x100, arg2, arg3)}
 		} else {
@@ -1288,13 +1288,13 @@ Method(m693, 5, Serialized)
 
 	if (LGreater(arg0, 2)) {
 		// Unexpected Kind of Op (0 - Store, ...)
-		err(Concatenate(ts, terr), z126, 33, 0, 0, arg0, 0)
+		err(Concatenate(ts, terr), z126, __LINE__, 0, 0, arg0, 0)
 		Return (1)
 	}
 
 	if (LGreater(arg4, 1)) {
 		// Unexpected Kind of Source-Target pair
-		err(Concatenate(ts, terr), z126, 34, 0, 0, arg4, 0)
+		err(Concatenate(ts, terr), z126, __LINE__, 0, 0, arg4, 0)
 		Return (1)
 	}
 

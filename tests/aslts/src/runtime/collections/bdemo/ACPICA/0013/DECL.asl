@@ -47,41 +47,41 @@ Method(mdad)
 
 	Store(ObjectType(bf00), Local7)
 	if (LNotEqual(Local7, c016)) {
-		err("", zFFF, 0x000, 0, 0, Local7, c016)
+		err("", zFFF, __LINE__, 0, 0, Local7, c016)
 	}
 
 	Store(ObjectType(bf01), Local7)
 	if (LNotEqual(Local7, c016)) {
-		err("", zFFF, 0x001, 0, 0, Local7, c016)
+		err("", zFFF, __LINE__, 0, 0, Local7, c016)
 	}
 
 	Store(ObjectType(bf02), Local7)
 	if (LNotEqual(Local7, c016)) {
-		err("", zFFF, 0x002, 0, 0, Local7, c016)
+		err("", zFFF, __LINE__, 0, 0, Local7, c016)
 	}
 
 	Store(ObjectType(bf03), Local7)
 	if (LNotEqual(Local7, c016)) {
-		err("", zFFF, 0x003, 0, 0, Local7, c016)
+		err("", zFFF, __LINE__, 0, 0, Local7, c016)
 	}
 
 	Store(ObjectType(bf04), Local7)
 	if (LNotEqual(Local7, c016)) {
-		err("", zFFF, 0x004, 0, 0, Local7, c016)
+		err("", zFFF, __LINE__, 0, 0, Local7, c016)
 	}
 
 	Store(ObjectType(bf05), Local7)
 	if (LNotEqual(Local7, c016)) {
-		err("", zFFF, 0x005, 0, 0, Local7, c016)
+		err("", zFFF, __LINE__, 0, 0, Local7, c016)
 	}
 
 	Store(ObjectType(bf06), Local7)
 	if (LNotEqual(Local7, c016)) {
-		err("", zFFF, 0x006, 0, 0, Local7, c016)
+		err("", zFFF, __LINE__, 0, 0, Local7, c016)
 	}
 
 	Store(ObjectType(bf07), Local7)
 	if (LNotEqual(Local7, c016)) {
-		err("", zFFF, 0x007, 0, 0, Local7, c016)
+		err("", zFFF, __LINE__, 0, 0, Local7, c016)
 	}
 }

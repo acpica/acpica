@@ -188,7 +188,7 @@ Method(m0f8, 4, Serialized)
 		Store(m0f4(arg1, CHL0, lpC0), Local0)
 
 		if (LEqual(Local0, 0)) {
-			err(arg0, z074, 0, 0, 0, 0, lpC0)
+			err(arg0, z074, __LINE__, 0, 0, 0, lpC0)
 		}
 
 		Decrement(lpN0)
@@ -206,7 +206,7 @@ Method(m0f8, 4, Serialized)
 		Store(m0f4(arg2, CNT0, lpC0), Local1)
 
 		if (LNotEqual(Local0, Local1)) {
-			err(arg0, z074, 1, 0, 0, Local0, Local1)
+			err(arg0, z074, __LINE__, 0, 0, Local0, Local1)
 		}
 
 		Decrement(lpN0)
@@ -224,7 +224,7 @@ Method(m0f8, 4, Serialized)
 		Store(m0f4(arg2, BRK0, lpC0), Local1)
 
 		if (LNotEqual(Local0, Local1)) {
-			err(arg0, z074, 2, 0, 0, Local0, Local1)
+			err(arg0, z074, __LINE__, 0, 0, Local0, Local1)
 		}
 
 		Decrement(lpN0)
@@ -278,7 +278,7 @@ Method(m0fa, 2, Serialized)
 	Store(Local0, Debug)
 
 	if (LEqual(arg1, 0)) {
-		err(arg0, z074, 3, 0, 0, 0, 0)
+		err(arg0, z074, __LINE__, 0, 0, 0, 0)
 	}
 
 	Add(arg1, 1, Local0)
@@ -3703,11 +3703,11 @@ Method(m0fa, 2, Serialized)
 
 		if (c049) {
 			// We should not be there
-			err(arg0, z074, 4, 0, 0, 0, 0)
+			err(arg0, z074, __LINE__, 0, 0, 0, 0)
 		}
 		if (b049) {
 			// We should not be there
-			err(arg0, z074, 5, 0, 0, 0, 0)
+			err(arg0, z074, __LINE__, 0, 0, 0, 0)
 		}
 
 		Store(m0f5(p000, p001, ln49), Local0)
@@ -3724,7 +3724,7 @@ Method(m0fa, 2, Serialized)
 
 		if (b049) {
 			// We should not be there
-			err(arg0, z074, 6, 0, 0, 0, 0)
+			err(arg0, z074, __LINE__, 0, 0, 0, 0)
 		}
 	}
 
@@ -3745,11 +3745,11 @@ Method(m0fa, 2, Serialized)
 
 		if (c048) {
 			// We should not be there
-			err(arg0, z074, 7, 0, 0, 0, 0)
+			err(arg0, z074, __LINE__, 0, 0, 0, 0)
 		}
 		if (b048) {
 			// We should not be there
-			err(arg0, z074, 8, 0, 0, 0, 0)
+			err(arg0, z074, __LINE__, 0, 0, 0, 0)
 		}
 
 		Store(m0f5(p000, p001, ln48), Local0)
@@ -3766,7 +3766,7 @@ Method(m0fa, 2, Serialized)
 
 		if (b048) {
 			// We should not be there
-			err(arg0, z074, 9, 0, 0, 0, 0)
+			err(arg0, z074, __LINE__, 0, 0, 0, 0)
 		}
 	}
 
@@ -3787,11 +3787,11 @@ Method(m0fa, 2, Serialized)
 
 		if (c047) {
 			// We should not be there
-			err(arg0, z074, 10, 0, 0, 0, 0)
+			err(arg0, z074, __LINE__, 0, 0, 0, 0)
 		}
 		if (b047) {
 			// We should not be there
-			err(arg0, z074, 11, 0, 0, 0, 0)
+			err(arg0, z074, __LINE__, 0, 0, 0, 0)
 		}
 
 		Store(m0f5(p000, p001, ln47), Local0)
@@ -3808,7 +3808,7 @@ Method(m0fa, 2, Serialized)
 
 		if (b047) {
 			// We should not be there
-			err(arg0, z074, 12, 0, 0, 0, 0)
+			err(arg0, z074, __LINE__, 0, 0, 0, 0)
 		}
 	}
 
@@ -3829,11 +3829,11 @@ Method(m0fa, 2, Serialized)
 
 		if (c046) {
 			// We should not be there
-			err(arg0, z074, 13, 0, 0, 0, 0)
+			err(arg0, z074, __LINE__, 0, 0, 0, 0)
 		}
 		if (b046) {
 			// We should not be there
-			err(arg0, z074, 14, 0, 0, 0, 0)
+			err(arg0, z074, __LINE__, 0, 0, 0, 0)
 		}
 
 		Store(m0f5(p000, p001, ln46), Local0)
@@ -3850,7 +3850,7 @@ Method(m0fa, 2, Serialized)
 
 		if (b046) {
 			// We should not be there
-			err(arg0, z074, 15, 0, 0, 0, 0)
+			err(arg0, z074, __LINE__, 0, 0, 0, 0)
 		}
 	}
 
@@ -3871,11 +3871,11 @@ Method(m0fa, 2, Serialized)
 
 		if (c045) {
 			// We should not be there
-			err(arg0, z074, 16, 0, 0, 0, 0)
+			err(arg0, z074, __LINE__, 0, 0, 0, 0)
 		}
 		if (b045) {
 			// We should not be there
-			err(arg0, z074, 17, 0, 0, 0, 0)
+			err(arg0, z074, __LINE__, 0, 0, 0, 0)
 		}
 
 		Store(m0f5(p000, p001, ln45), Local0)
@@ -3892,7 +3892,7 @@ Method(m0fa, 2, Serialized)
 
 		if (b045) {
 			// We should not be there
-			err(arg0, z074, 18, 0, 0, 0, 0)
+			err(arg0, z074, __LINE__, 0, 0, 0, 0)
 		}
 	}
 
@@ -3913,11 +3913,11 @@ Method(m0fa, 2, Serialized)
 
 		if (c044) {
 			// We should not be there
-			err(arg0, z074, 19, 0, 0, 0, 0)
+			err(arg0, z074, __LINE__, 0, 0, 0, 0)
 		}
 		if (b044) {
 			// We should not be there
-			err(arg0, z074, 20, 0, 0, 0, 0)
+			err(arg0, z074, __LINE__, 0, 0, 0, 0)
 		}
 
 		Store(m0f5(p000, p001, ln44), Local0)
@@ -3934,7 +3934,7 @@ Method(m0fa, 2, Serialized)
 
 		if (b044) {
 			// We should not be there
-			err(arg0, z074, 21, 0, 0, 0, 0)
+			err(arg0, z074, __LINE__, 0, 0, 0, 0)
 		}
 	}
 
@@ -3955,11 +3955,11 @@ Method(m0fa, 2, Serialized)
 
 		if (c043) {
 			// We should not be there
-			err(arg0, z074, 22, 0, 0, 0, 0)
+			err(arg0, z074, __LINE__, 0, 0, 0, 0)
 		}
 		if (b043) {
 			// We should not be there
-			err(arg0, z074, 23, 0, 0,  0, 0)
+			err(arg0, z074, __LINE__, 0, 0,  0, 0)
 		}
 
 		Store(m0f5(p000, p001, ln43), Local0)
@@ -3976,7 +3976,7 @@ Method(m0fa, 2, Serialized)
 
 		if (b043) {
 			// We should not be there
-			err(arg0, z074, 24, 0, 0, 0, 0)
+			err(arg0, z074, __LINE__, 0, 0, 0, 0)
 		}
 	}
 
@@ -3997,11 +3997,11 @@ Method(m0fa, 2, Serialized)
 
 		if (c042) {
 			// We should not be there
-			err(arg0, z074, 25, 0, 0, 0, 0)
+			err(arg0, z074, __LINE__, 0, 0, 0, 0)
 		}
 		if (b042) {
 			// We should not be there
-			err(arg0, z074, 26, 0, 0, 0, 0)
+			err(arg0, z074, __LINE__, 0, 0, 0, 0)
 		}
 
 		Store(m0f5(p000, p001, ln42), Local0)
@@ -4018,7 +4018,7 @@ Method(m0fa, 2, Serialized)
 
 		if (b042) {
 			// We should not be there
-			err(arg0, z074, 27, 0, 0, 0, 0)
+			err(arg0, z074, __LINE__, 0, 0, 0, 0)
 		}
 	}
 
@@ -4039,11 +4039,11 @@ Method(m0fa, 2, Serialized)
 
 		if (c041) {
 			// We should not be there
-			err(arg0, z074, 28, 0, 0, 0, 0)
+			err(arg0, z074, __LINE__, 0, 0, 0, 0)
 		}
 		if (b041) {
 			// We should not be there
-			err(arg0, z074, 29, 0, 0, 0, 0)
+			err(arg0, z074, __LINE__, 0, 0, 0, 0)
 		}
 
 		Store(m0f5(p000, p001, ln41), Local0)
@@ -4060,7 +4060,7 @@ Method(m0fa, 2, Serialized)
 
 		if (b041) {
 			// We should not be there
-			err(arg0, z074, 30, 0, 0, 0, 0)
+			err(arg0, z074, __LINE__, 0, 0, 0, 0)
 		}
 	}
 
@@ -4081,11 +4081,11 @@ Method(m0fa, 2, Serialized)
 
 		if (c040) {
 			// We should not be there
-			err(arg0, z074, 31, 0, 0, 0, 0)
+			err(arg0, z074, __LINE__, 0, 0, 0, 0)
 		}
 		if (b040) {
 			// We should not be there
-			err(arg0, z074, 32, 0, 0, 0, 0)
+			err(arg0, z074, __LINE__, 0, 0, 0, 0)
 		}
 
 		Store(m0f5(p000, p001, ln40), Local0)
@@ -4102,7 +4102,7 @@ Method(m0fa, 2, Serialized)
 
 		if (b040) {
 			// We should not be there
-			err(arg0, z074, 33, 0, 0, 0, 0)
+			err(arg0, z074, __LINE__, 0, 0, 0, 0)
 		}
 	}
 
@@ -4123,11 +4123,11 @@ Method(m0fa, 2, Serialized)
 
 		if (c039) {
 			// We should not be there
-			err(arg0, z074, 34, 0, 0, 0, 0)
+			err(arg0, z074, __LINE__, 0, 0, 0, 0)
 		}
 		if (b039) {
 			// We should not be there
-			err(arg0, z074, 35, 0, 0, 0, 0)
+			err(arg0, z074, __LINE__, 0, 0, 0, 0)
 		}
 
 		Store(m0f5(p000, p001, ln39), Local0)
@@ -4144,7 +4144,7 @@ Method(m0fa, 2, Serialized)
 
 		if (b039) {
 			// We should not be there
-			err(arg0, z074, 36, 0, 0, 0, 0)
+			err(arg0, z074, __LINE__, 0, 0, 0, 0)
 		}
 	}
 
@@ -4165,11 +4165,11 @@ Method(m0fa, 2, Serialized)
 
 		if (c038) {
 			// We should not be there
-			err(arg0, z074, 37, 0, 0, 0, 0)
+			err(arg0, z074, __LINE__, 0, 0, 0, 0)
 		}
 		if (b038) {
 			// We should not be there
-			err(arg0, z074, 38, 0, 0, 0, 0)
+			err(arg0, z074, __LINE__, 0, 0, 0, 0)
 		}
 
 		Store(m0f5(p000, p001, ln38), Local0)
@@ -4186,7 +4186,7 @@ Method(m0fa, 2, Serialized)
 
 		if (b038) {
 			// We should not be there
-			err(arg0, z074, 39, 0, 0, 0, 0)
+			err(arg0, z074, __LINE__, 0, 0, 0, 0)
 		}
 	}
 
@@ -4207,11 +4207,11 @@ Method(m0fa, 2, Serialized)
 
 		if (c037) {
 			// We should not be there
-			err(arg0, z074, 40, 0, 0, 0, 0)
+			err(arg0, z074, __LINE__, 0, 0, 0, 0)
 		}
 		if (b037) {
 			// We should not be there
-			err(arg0, z074, 41, 0, 0, 0, 0)
+			err(arg0, z074, __LINE__, 0, 0, 0, 0)
 		}
 
 		Store(m0f5(p000, p001, ln37), Local0)
@@ -4228,7 +4228,7 @@ Method(m0fa, 2, Serialized)
 
 		if (b037) {
 			// We should not be there
-			err(arg0, z074, 42, 0, 0, 0, 0)
+			err(arg0, z074, __LINE__, 0, 0, 0, 0)
 		}
 	}
 
@@ -4249,11 +4249,11 @@ Method(m0fa, 2, Serialized)
 
 		if (c036) {
 			// We should not be there
-			err(arg0, z074, 43, 0, 0, 0, 0)
+			err(arg0, z074, __LINE__, 0, 0, 0, 0)
 		}
 		if (b036) {
 			// We should not be there
-			err(arg0, z074, 44, 0, 0, 0, 0)
+			err(arg0, z074, __LINE__, 0, 0, 0, 0)
 		}
 
 		Store(m0f5(p000, p001, ln36), Local0)
@@ -4270,7 +4270,7 @@ Method(m0fa, 2, Serialized)
 
 		if (b036) {
 			// We should not be there
-			err(arg0, z074, 45, 0, 0, 0, 0)
+			err(arg0, z074, __LINE__, 0, 0, 0, 0)
 		}
 	}
 
@@ -4291,11 +4291,11 @@ Method(m0fa, 2, Serialized)
 
 		if (c035) {
 			// We should not be there
-			err(arg0, z074, 46, 0, 0, 0, 0)
+			err(arg0, z074, __LINE__, 0, 0, 0, 0)
 		}
 		if (b035) {
 			// We should not be there
-			err(arg0, z074, 47, 0, 0, 0, 0)
+			err(arg0, z074, __LINE__, 0, 0, 0, 0)
 		}
 
 		Store(m0f5(p000, p001, ln35), Local0)
@@ -4312,7 +4312,7 @@ Method(m0fa, 2, Serialized)
 
 		if (b035) {
 			// We should not be there
-			err(arg0, z074, 48, 0, 0, 0, 0)
+			err(arg0, z074, __LINE__, 0, 0, 0, 0)
 		}
 	}
 
@@ -4333,11 +4333,11 @@ Method(m0fa, 2, Serialized)
 
 		if (c034) {
 			// We should not be there
-			err(arg0, z074, 49, 0, 0, 0, 0)
+			err(arg0, z074, __LINE__, 0, 0, 0, 0)
 		}
 		if (b034) {
 			// We should not be there
-			err(arg0, z074, 50, 0, 0, 0, 0)
+			err(arg0, z074, __LINE__, 0, 0, 0, 0)
 		}
 
 		Store(m0f5(p000, p001, ln34), Local0)
@@ -4354,7 +4354,7 @@ Method(m0fa, 2, Serialized)
 
 		if (b034) {
 			// We should not be there
-			err(arg0, z074, 51, 0, 0, 0, 0)
+			err(arg0, z074, __LINE__, 0, 0, 0, 0)
 		}
 	}
 
@@ -4375,11 +4375,11 @@ Method(m0fa, 2, Serialized)
 
 		if (c033) {
 			// We should not be there
-			err(arg0, z074, 52, 0, 0, 0, 0)
+			err(arg0, z074, __LINE__, 0, 0, 0, 0)
 		}
 		if (b033) {
 			// We should not be there
-			err(arg0, z074, 53, 0, 0, 0, 0)
+			err(arg0, z074, __LINE__, 0, 0, 0, 0)
 		}
 
 		Store(m0f5(p000, p001, ln33), Local0)
@@ -4396,7 +4396,7 @@ Method(m0fa, 2, Serialized)
 
 		if (b033) {
 			// We should not be there
-			err(arg0, z074, 54, 0, 0, 0, 0)
+			err(arg0, z074, __LINE__, 0, 0, 0, 0)
 		}
 	}
 
@@ -4417,11 +4417,11 @@ Method(m0fa, 2, Serialized)
 
 		if (c032) {
 			// We should not be there
-			err(arg0, z074, 55, 0, 0, 0, 0)
+			err(arg0, z074, __LINE__, 0, 0, 0, 0)
 		}
 		if (b032) {
 			// We should not be there
-			err(arg0, z074, 56, 0, 0, 0, 0)
+			err(arg0, z074, __LINE__, 0, 0, 0, 0)
 		}
 
 		Store(m0f5(p000, p001, ln32), Local0)
@@ -4438,7 +4438,7 @@ Method(m0fa, 2, Serialized)
 
 		if (b032) {
 			// We should not be there
-			err(arg0, z074, 57, 0, 0, 0, 0)
+			err(arg0, z074, __LINE__, 0, 0, 0, 0)
 		}
 	}
 
@@ -4459,11 +4459,11 @@ Method(m0fa, 2, Serialized)
 
 		if (c031) {
 			// We should not be there
-			err(arg0, z074, 58, 0, 0, 0, 0)
+			err(arg0, z074, __LINE__, 0, 0, 0, 0)
 		}
 		if (b031) {
 			// We should not be there
-			err(arg0, z074, 59, 0, 0, 0, 0)
+			err(arg0, z074, __LINE__, 0, 0, 0, 0)
 		}
 
 		Store(m0f5(p000, p001, ln31), Local0)
@@ -4480,7 +4480,7 @@ Method(m0fa, 2, Serialized)
 
 		if (b031) {
 			// We should not be there
-			err(arg0, z074, 60, 0, 0, 0, 0)
+			err(arg0, z074, __LINE__, 0, 0, 0, 0)
 		}
 	}
 
@@ -4501,11 +4501,11 @@ Method(m0fa, 2, Serialized)
 
 		if (c030) {
 			// We should not be there
-			err(arg0, z074, 61, 0, 0, 0, 0)
+			err(arg0, z074, __LINE__, 0, 0, 0, 0)
 		}
 		if (b030) {
 			// We should not be there
-			err(arg0, z074, 62, 0, 0, 0, 0)
+			err(arg0, z074, __LINE__, 0, 0, 0, 0)
 		}
 
 		Store(m0f5(p000, p001, ln30), Local0)
@@ -4522,7 +4522,7 @@ Method(m0fa, 2, Serialized)
 
 		if (b030) {
 			// We should not be there
-			err(arg0, z074, 63, 0, 0, 0, 0)
+			err(arg0, z074, __LINE__, 0, 0, 0, 0)
 		}
 	}
 
@@ -4543,11 +4543,11 @@ Method(m0fa, 2, Serialized)
 
 		if (c029) {
 			// We should not be there
-			err(arg0, z074, 64, 0, 0, 0, 0)
+			err(arg0, z074, __LINE__, 0, 0, 0, 0)
 		}
 		if (b029) {
 			// We should not be there
-			err(arg0, z074, 65, 0, 0, 0, 0)
+			err(arg0, z074, __LINE__, 0, 0, 0, 0)
 		}
 
 		Store(m0f5(p000, p001, ln29), Local0)
@@ -4564,7 +4564,7 @@ Method(m0fa, 2, Serialized)
 
 		if (b029) {
 			// We should not be there
-			err(arg0, z074, 66, 0, 0, 0, 0)
+			err(arg0, z074, __LINE__, 0, 0, 0, 0)
 		}
 	}
 
@@ -4585,11 +4585,11 @@ Method(m0fa, 2, Serialized)
 
 		if (c028) {
 			// We should not be there
-			err(arg0, z074, 67, 0, 0, 0, 0)
+			err(arg0, z074, __LINE__, 0, 0, 0, 0)
 		}
 		if (b028) {
 			// We should not be there
-			err(arg0, z074, 68, 0, 0, 0, 0)
+			err(arg0, z074, __LINE__, 0, 0, 0, 0)
 		}
 
 		Store(m0f5(p000, p001, ln28), Local0)
@@ -4606,7 +4606,7 @@ Method(m0fa, 2, Serialized)
 
 		if (b028) {
 			// We should not be there
-			err(arg0, z074, 69, 0, 0, 0, 0)
+			err(arg0, z074, __LINE__, 0, 0, 0, 0)
 		}
 	}
 
@@ -4627,11 +4627,11 @@ Method(m0fa, 2, Serialized)
 
 		if (c027) {
 			// We should not be there
-			err(arg0, z074, 70, 0, 0, 0, 0)
+			err(arg0, z074, __LINE__, 0, 0, 0, 0)
 		}
 		if (b027) {
 			// We should not be there
-			err(arg0, z074, 71, 0, 0, 0, 0)
+			err(arg0, z074, __LINE__, 0, 0, 0, 0)
 		}
 
 		Store(m0f5(p000, p001, ln27), Local0)
@@ -4648,7 +4648,7 @@ Method(m0fa, 2, Serialized)
 
 		if (b027) {
 			// We should not be there
-			err(arg0, z074, 72, 0, 0, 0, 0)
+			err(arg0, z074, __LINE__, 0, 0, 0, 0)
 		}
 	}
 
@@ -4669,11 +4669,11 @@ Method(m0fa, 2, Serialized)
 
 		if (c026) {
 			// We should not be there
-			err(arg0, z074, 73, 0, 0, 0, 0)
+			err(arg0, z074, __LINE__, 0, 0, 0, 0)
 		}
 		if (b026) {
 			// We should not be there
-			err(arg0, z074, 74, 0, 0, 0, 0)
+			err(arg0, z074, __LINE__, 0, 0, 0, 0)
 		}
 
 		Store(m0f5(p000, p001, ln26), Local0)
@@ -4690,7 +4690,7 @@ Method(m0fa, 2, Serialized)
 
 		if (b026) {
 			// We should not be there
-			err(arg0, z074, 75, 0, 0, 0, 0)
+			err(arg0, z074, __LINE__, 0, 0, 0, 0)
 		}
 	}
 
@@ -4711,11 +4711,11 @@ Method(m0fa, 2, Serialized)
 
 		if (c025) {
 			// We should not be there
-			err(arg0, z074, 76, 0, 0, 0, 0)
+			err(arg0, z074, __LINE__, 0, 0, 0, 0)
 		}
 		if (b025) {
 			// We should not be there
-			err(arg0, z074, 77, 0, 0, 0, 0)
+			err(arg0, z074, __LINE__, 0, 0, 0, 0)
 		}
 
 		Store(m0f5(p000, p001, ln25), Local0)
@@ -4732,7 +4732,7 @@ Method(m0fa, 2, Serialized)
 
 		if (b025) {
 			// We should not be there
-			err(arg0, z074, 78, 0, 0, 0, 0)
+			err(arg0, z074, __LINE__, 0, 0, 0, 0)
 		}
 	}
 
@@ -4753,11 +4753,11 @@ Method(m0fa, 2, Serialized)
 
 		if (c024) {
 			// We should not be there
-			err(arg0, z074, 79, 0, 0, 0, 0)
+			err(arg0, z074, __LINE__, 0, 0, 0, 0)
 		}
 		if (b024) {
 			// We should not be there
-			err(arg0, z074, 80, 0, 0, 0, 0)
+			err(arg0, z074, __LINE__, 0, 0, 0, 0)
 		}
 
 		Store(m0f5(p000, p001, ln24), Local0)
@@ -4774,7 +4774,7 @@ Method(m0fa, 2, Serialized)
 
 		if (b024) {
 			// We should not be there
-			err(arg0, z074, 81, 0, 0, 0, 0)
+			err(arg0, z074, __LINE__, 0, 0, 0, 0)
 		}
 	}
 
@@ -4795,11 +4795,11 @@ Method(m0fa, 2, Serialized)
 
 		if (c023) {
 			// We should not be there
-			err(arg0, z074, 82, 0, 0, 0, 0)
+			err(arg0, z074, __LINE__, 0, 0, 0, 0)
 		}
 		if (b023) {
 			// We should not be there
-			err(arg0, z074, 83, 0, 0, 0, 0)
+			err(arg0, z074, __LINE__, 0, 0, 0, 0)
 		}
 
 		Store(m0f5(p000, p001, ln23), Local0)
@@ -4816,7 +4816,7 @@ Method(m0fa, 2, Serialized)
 
 		if (b023) {
 			// We should not be there
-			err(arg0, z074, 84, 0, 0, 0, 0)
+			err(arg0, z074, __LINE__, 0, 0, 0, 0)
 		}
 	}
 
@@ -4837,11 +4837,11 @@ Method(m0fa, 2, Serialized)
 
 		if (c022) {
 			// We should not be there
-			err(arg0, z074, 85, 0, 0, 0, 0)
+			err(arg0, z074, __LINE__, 0, 0, 0, 0)
 		}
 		if (b022) {
 			// We should not be there
-			err(arg0, z074, 86, 0, 0, 0, 0)
+			err(arg0, z074, __LINE__, 0, 0, 0, 0)
 		}
 
 		Store(m0f5(p000, p001, ln22), Local0)
@@ -4858,7 +4858,7 @@ Method(m0fa, 2, Serialized)
 
 		if (b022) {
 			// We should not be there
-			err(arg0, z074, 87, 0, 0, 0, 0)
+			err(arg0, z074, __LINE__, 0, 0, 0, 0)
 		}
 	}
 
@@ -4879,11 +4879,11 @@ Method(m0fa, 2, Serialized)
 
 		if (c021) {
 			// We should not be there
-			err(arg0, z074, 88, 0, 0, 0, 0)
+			err(arg0, z074, __LINE__, 0, 0, 0, 0)
 		}
 		if (b021) {
 			// We should not be there
-			err(arg0, z074, 89, 0, 0, 0, 0)
+			err(arg0, z074, __LINE__, 0, 0, 0, 0)
 		}
 
 		Store(m0f5(p000, p001, ln21), Local0)
@@ -4900,7 +4900,7 @@ Method(m0fa, 2, Serialized)
 
 		if (b021) {
 			// We should not be there
-			err(arg0, z074, 90, 0, 0, 0, 0)
+			err(arg0, z074, __LINE__, 0, 0, 0, 0)
 		}
 	}
 
@@ -4921,11 +4921,11 @@ Method(m0fa, 2, Serialized)
 
 		if (c020) {
 			// We should not be there
-			err(arg0, z074, 91, 0, 0, 0, 0)
+			err(arg0, z074, __LINE__, 0, 0, 0, 0)
 		}
 		if (b020) {
 			// We should not be there
-			err(arg0, z074, 92, 0, 0, 0, 0)
+			err(arg0, z074, __LINE__, 0, 0, 0, 0)
 		}
 
 		Store(m0f5(p000, p001, ln20), Local0)
@@ -4942,7 +4942,7 @@ Method(m0fa, 2, Serialized)
 
 		if (b020) {
 			// We should not be there
-			err(arg0, z074, 93, 0, 0, 0, 0)
+			err(arg0, z074, __LINE__, 0, 0, 0, 0)
 		}
 	}
 
@@ -4963,11 +4963,11 @@ Method(m0fa, 2, Serialized)
 
 		if (c019) {
 			// We should not be there
-			err(arg0, z074, 94, 0, 0, 0, 0)
+			err(arg0, z074, __LINE__, 0, 0, 0, 0)
 		}
 		if (b019) {
 			// We should not be there
-			err(arg0, z074, 95, 0, 0, 0, 0)
+			err(arg0, z074, __LINE__, 0, 0, 0, 0)
 		}
 
 		Store(m0f5(p000, p001, ln19), Local0)
@@ -4984,7 +4984,7 @@ Method(m0fa, 2, Serialized)
 
 		if (b019) {
 			// We should not be there
-			err(arg0, z074, 96, 0, 0, 0, 0)
+			err(arg0, z074, __LINE__, 0, 0, 0, 0)
 		}
 	}
 
@@ -5005,11 +5005,11 @@ Method(m0fa, 2, Serialized)
 
 		if (c018) {
 			// We should not be there
-			err(arg0, z074, 97, 0, 0, 0, 0)
+			err(arg0, z074, __LINE__, 0, 0, 0, 0)
 		}
 		if (b018) {
 			// We should not be there
-			err(arg0, z074, 98, 0, 0, 0, 0)
+			err(arg0, z074, __LINE__, 0, 0, 0, 0)
 		}
 
 		Store(m0f5(p000, p001, ln18), Local0)
@@ -5026,7 +5026,7 @@ Method(m0fa, 2, Serialized)
 
 		if (b018) {
 			// We should not be there
-			err(arg0, z074, 99, 0, 0, 0, 0)
+			err(arg0, z074, __LINE__, 0, 0, 0, 0)
 		}
 	}
 
@@ -5047,11 +5047,11 @@ Method(m0fa, 2, Serialized)
 
 		if (c017) {
 			// We should not be there
-			err(arg0, z074, 100, 0, 0, 0, 0)
+			err(arg0, z074, __LINE__, 0, 0, 0, 0)
 		}
 		if (b017) {
 			// We should not be there
-			err(arg0, z074, 101, 0, 0, 0, 0)
+			err(arg0, z074, __LINE__, 0, 0, 0, 0)
 		}
 
 		Store(m0f5(p000, p001, ln17), Local0)
@@ -5068,7 +5068,7 @@ Method(m0fa, 2, Serialized)
 
 		if (b017) {
 			// We should not be there
-			err(arg0, z074, 102, 0, 0, 0, 0)
+			err(arg0, z074, __LINE__, 0, 0, 0, 0)
 		}
 	}
 
@@ -5089,11 +5089,11 @@ Method(m0fa, 2, Serialized)
 
 		if (c016) {
 			// We should not be there
-			err(arg0, z074, 103, 0, 0, 0, 0)
+			err(arg0, z074, __LINE__, 0, 0, 0, 0)
 		}
 		if (b016) {
 			// We should not be there
-			err(arg0, z074, 104, 0, 0, 0, 0)
+			err(arg0, z074, __LINE__, 0, 0, 0, 0)
 		}
 
 		Store(m0f5(p000, p001, ln16), Local0)
@@ -5110,7 +5110,7 @@ Method(m0fa, 2, Serialized)
 
 		if (b016) {
 			// We should not be there
-			err(arg0, z074, 105, 0, 0, 0, 0)
+			err(arg0, z074, __LINE__, 0, 0, 0, 0)
 		}
 	}
 
@@ -5131,11 +5131,11 @@ Method(m0fa, 2, Serialized)
 
 		if (c015) {
 			// We should not be there
-			err(arg0, z074, 106, 0, 0, 0, 0)
+			err(arg0, z074, __LINE__, 0, 0, 0, 0)
 		}
 		if (b015) {
 			// We should not be there
-			err(arg0, z074, 107, 0, 0, 0, 0)
+			err(arg0, z074, __LINE__, 0, 0, 0, 0)
 		}
 
 		Store(m0f5(p000, p001, ln15), Local0)
@@ -5152,7 +5152,7 @@ Method(m0fa, 2, Serialized)
 
 		if (b015) {
 			// We should not be there
-			err(arg0, z074, 108, 0, 0, 0, 0)
+			err(arg0, z074, __LINE__, 0, 0, 0, 0)
 		}
 	}
 
@@ -5173,11 +5173,11 @@ Method(m0fa, 2, Serialized)
 
 		if (c014) {
 			// We should not be there
-			err(arg0, z074, 109, 0, 0, 0, 0)
+			err(arg0, z074, __LINE__, 0, 0, 0, 0)
 		}
 		if (b014) {
 			// We should not be there
-			err(arg0, z074, 110, 0, 0, 0, 0)
+			err(arg0, z074, __LINE__, 0, 0, 0, 0)
 		}
 
 		Store(m0f5(p000, p001, ln14), Local0)
@@ -5194,7 +5194,7 @@ Method(m0fa, 2, Serialized)
 
 		if (b014) {
 			// We should not be there
-			err(arg0, z074, 111, 0, 0, 0, 0)
+			err(arg0, z074, __LINE__, 0, 0, 0, 0)
 		}
 	}
 
@@ -5215,11 +5215,11 @@ Method(m0fa, 2, Serialized)
 
 		if (c013) {
 			// We should not be there
-			err(arg0, z074, 112, 0, 0, 0, 0)
+			err(arg0, z074, __LINE__, 0, 0, 0, 0)
 		}
 		if (b013) {
 			// We should not be there
-			err(arg0, z074, 113, 0, 0, 0, 0)
+			err(arg0, z074, __LINE__, 0, 0, 0, 0)
 		}
 
 		Store(m0f5(p000, p001, ln13), Local0)
@@ -5236,7 +5236,7 @@ Method(m0fa, 2, Serialized)
 
 		if (b013) {
 			// We should not be there
-			err(arg0, z074, 114, 0, 0, 0, 0)
+			err(arg0, z074, __LINE__, 0, 0, 0, 0)
 		}
 	}
 
@@ -5257,11 +5257,11 @@ Method(m0fa, 2, Serialized)
 
 		if (c012) {
 			// We should not be there
-			err(arg0, z074, 115, 0, 0, 0, 0)
+			err(arg0, z074, __LINE__, 0, 0, 0, 0)
 		}
 		if (b012) {
 			// We should not be there
-			err(arg0, z074, 116, 0, 0, 0, 0)
+			err(arg0, z074, __LINE__, 0, 0, 0, 0)
 		}
 
 		Store(m0f5(p000, p001, ln12), Local0)
@@ -5278,7 +5278,7 @@ Method(m0fa, 2, Serialized)
 
 		if (b012) {
 			// We should not be there
-			err(arg0, z074, 117, 0, 0, 0, 0)
+			err(arg0, z074, __LINE__, 0, 0, 0, 0)
 		}
 	}
 
@@ -5299,11 +5299,11 @@ Method(m0fa, 2, Serialized)
 
 		if (c011) {
 			// We should not be there
-			err(arg0, z074, 118, 0, 0, 0, 0)
+			err(arg0, z074, __LINE__, 0, 0, 0, 0)
 		}
 		if (b011) {
 			// We should not be there
-			err(arg0, z074, 119, 0, 0, 0, 0)
+			err(arg0, z074, __LINE__, 0, 0, 0, 0)
 		}
 
 		Store(m0f5(p000, p001, ln11), Local0)
@@ -5320,7 +5320,7 @@ Method(m0fa, 2, Serialized)
 
 		if (b011) {
 			// We should not be there
-			err(arg0, z074, 120, 0, 0, 0, 0)
+			err(arg0, z074, __LINE__, 0, 0, 0, 0)
 		}
 	}
 
@@ -5341,11 +5341,11 @@ Method(m0fa, 2, Serialized)
 
 		if (c010) {
 			// We should not be there
-			err(arg0, z074, 121, 0, 0, 0, 0)
+			err(arg0, z074, __LINE__, 0, 0, 0, 0)
 		}
 		if (b010) {
 			// We should not be there
-			err(arg0, z074, 122, 0, 0, 0, 0)
+			err(arg0, z074, __LINE__, 0, 0, 0, 0)
 		}
 
 		Store(m0f5(p000, p001, ln10), Local0)
@@ -5362,7 +5362,7 @@ Method(m0fa, 2, Serialized)
 
 		if (b010) {
 			// We should not be there
-			err(arg0, z074, 123, 0, 0, 0, 0)
+			err(arg0, z074, __LINE__, 0, 0, 0, 0)
 		}
 	}
 
@@ -5383,11 +5383,11 @@ Method(m0fa, 2, Serialized)
 
 		if (c009) {
 			// We should not be there
-			err(arg0, z074, 124, 0, 0, 0, 0)
+			err(arg0, z074, __LINE__, 0, 0, 0, 0)
 		}
 		if (b009) {
 			// We should not be there
-			err(arg0, z074, 125, 0, 0, 0, 0)
+			err(arg0, z074, __LINE__, 0, 0, 0, 0)
 		}
 
 		Store(m0f5(p000, p001, ln09), Local0)
@@ -5404,7 +5404,7 @@ Method(m0fa, 2, Serialized)
 
 		if (b009) {
 			// We should not be there
-			err(arg0, z074, 126, 0, 0, 0, 0)
+			err(arg0, z074, __LINE__, 0, 0, 0, 0)
 		}
 	}
 
@@ -5425,11 +5425,11 @@ Method(m0fa, 2, Serialized)
 
 		if (c008) {
 			// We should not be there
-			err(arg0, z074, 127, 0, 0, 0, 0)
+			err(arg0, z074, __LINE__, 0, 0, 0, 0)
 		}
 		if (b008) {
 			// We should not be there
-			err(arg0, z074, 128, 0, 0, 0, 0)
+			err(arg0, z074, __LINE__, 0, 0, 0, 0)
 		}
 
 		Store(m0f5(p000, p001, ln08), Local0)
@@ -5446,7 +5446,7 @@ Method(m0fa, 2, Serialized)
 
 		if (b008) {
 			// We should not be there
-			err(arg0, z074, 129, 0, 0, 0, 0)
+			err(arg0, z074, __LINE__, 0, 0, 0, 0)
 		}
 	}
 
@@ -5467,11 +5467,11 @@ Method(m0fa, 2, Serialized)
 
 		if (c007) {
 			// We should not be there
-			err(arg0, z074, 130, 0, 0, 0, 0)
+			err(arg0, z074, __LINE__, 0, 0, 0, 0)
 		}
 		if (b007) {
 			// We should not be there
-			err(arg0, z074, 131, 0, 0, 0, 0)
+			err(arg0, z074, __LINE__, 0, 0, 0, 0)
 		}
 
 		Store(m0f5(p000, p001, ln07), Local0)
@@ -5488,7 +5488,7 @@ Method(m0fa, 2, Serialized)
 
 		if (b007) {
 			// We should not be there
-			err(arg0, z074, 132, 0, 0, 0, 0)
+			err(arg0, z074, __LINE__, 0, 0, 0, 0)
 		}
 	}
 
@@ -5509,11 +5509,11 @@ Method(m0fa, 2, Serialized)
 
 		if (c006) {
 			// We should not be there
-			err(arg0, z074, 133, 0, 0, 0, 0)
+			err(arg0, z074, __LINE__, 0, 0, 0, 0)
 		}
 		if (b006) {
 			// We should not be there
-			err(arg0, z074, 134, 0, 0, 0, 0)
+			err(arg0, z074, __LINE__, 0, 0, 0, 0)
 		}
 
 		Store(m0f5(p000, p001, ln06), Local0)
@@ -5530,7 +5530,7 @@ Method(m0fa, 2, Serialized)
 
 		if (b006) {
 			// We should not be there
-			err(arg0, z074, 135, 0, 0, 0, 0)
+			err(arg0, z074, __LINE__, 0, 0, 0, 0)
 		}
 	}
 
@@ -5551,11 +5551,11 @@ Method(m0fa, 2, Serialized)
 
 		if (c005) {
 			// We should not be there
-			err(arg0, z074, 136, 0, 0, 0, 0)
+			err(arg0, z074, __LINE__, 0, 0, 0, 0)
 		}
 		if (b005) {
 			// We should not be there
-			err(arg0, z074, 137, 0, 0, 0, 0)
+			err(arg0, z074, __LINE__, 0, 0, 0, 0)
 		}
 
 		Store(m0f5(p000, p001, ln05), Local0)
@@ -5572,7 +5572,7 @@ Method(m0fa, 2, Serialized)
 
 		if (b005) {
 			// We should not be there
-			err(arg0, z074, 138, 0, 0, 0, 0)
+			err(arg0, z074, __LINE__, 0, 0, 0, 0)
 		}
 	}
 
@@ -5593,11 +5593,11 @@ Method(m0fa, 2, Serialized)
 
 		if (c004) {
 			// We should not be there
-			err(arg0, z074, 139, 0, 0, 0, 0)
+			err(arg0, z074, __LINE__, 0, 0, 0, 0)
 		}
 		if (b004) {
 			// We should not be there
-			err(arg0, z074, 140, 0, 0, 0, 0)
+			err(arg0, z074, __LINE__, 0, 0, 0, 0)
 		}
 
 		Store(m0f5(p000, p001, ln04), Local0)
@@ -5614,7 +5614,7 @@ Method(m0fa, 2, Serialized)
 
 		if (b004) {
 			// We should not be there
-			err(arg0, z074, 141, 0, 0, 0, 0)
+			err(arg0, z074, __LINE__, 0, 0, 0, 0)
 		}
 	}
 
@@ -5635,11 +5635,11 @@ Method(m0fa, 2, Serialized)
 
 		if (c003) {
 			// We should not be there
-			err(arg0, z074, 142, 0, 0, 0, 0)
+			err(arg0, z074, __LINE__, 0, 0, 0, 0)
 		}
 		if (b003) {
 			// We should not be there
-			err(arg0, z074, 143, 0, 0, 0, 0)
+			err(arg0, z074, __LINE__, 0, 0, 0, 0)
 		}
 
 		Store(m0f5(p000, p001, ln03), Local0)
@@ -5656,7 +5656,7 @@ Method(m0fa, 2, Serialized)
 
 		if (b003) {
 			// We should not be there
-			err(arg0, z074, 144, 0, 0, 0, 0)
+			err(arg0, z074, __LINE__, 0, 0, 0, 0)
 		}
 	}
 
@@ -5677,11 +5677,11 @@ Method(m0fa, 2, Serialized)
 
 		if (c002) {
 			// We should not be there
-			err(arg0, z074, 145, 0, 0, 0, 0)
+			err(arg0, z074, __LINE__, 0, 0, 0, 0)
 		}
 		if (b002) {
 			// We should not be there
-			err(arg0, z074, 146, 0, 0, 0, 0)
+			err(arg0, z074, __LINE__, 0, 0, 0, 0)
 		}
 
 		Store(m0f5(p000, p001, ln02), Local0)
@@ -5698,7 +5698,7 @@ Method(m0fa, 2, Serialized)
 
 		if (b002) {
 			// We should not be there
-			err(arg0, z074, 147, 0, 0, 0, 0)
+			err(arg0, z074, __LINE__, 0, 0, 0, 0)
 		}
 	}
 
@@ -5719,11 +5719,11 @@ Method(m0fa, 2, Serialized)
 
 		if (c001) {
 			// We should not be there
-			err(arg0, z074, 148, 0, 0, 0, 0)
+			err(arg0, z074, __LINE__, 0, 0, 0, 0)
 		}
 		if (b001) {
 			// We should not be there
-			err(arg0, z074, 149, 0, 0, 0, 0)
+			err(arg0, z074, __LINE__, 0, 0, 0, 0)
 		}
 
 		Store(m0f5(p000, p001, ln01), Local0)
@@ -5740,7 +5740,7 @@ Method(m0fa, 2, Serialized)
 
 		if (b001) {
 			// We should not be there
-			err(arg0, z074, 150, 0, 0, 0, 0)
+			err(arg0, z074, __LINE__, 0, 0, 0, 0)
 		}
 	}
 
@@ -5756,11 +5756,11 @@ Method(m0fa, 2, Serialized)
 		}
 		if (c000) {
 			// We should not be there
-			err(arg0, z074, 151, 0, 0, 0, 0)
+			err(arg0, z074, __LINE__, 0, 0, 0, 0)
 		}
 		if (b000) {
 			// We should not be there
-			err(arg0, z074, 152, 0, 0, 0, 0)
+			err(arg0, z074, __LINE__, 0, 0, 0, 0)
 		}
 
 		Store(m0f5(p000, p001, ln00), Local0)
@@ -5776,7 +5776,7 @@ Method(m0fa, 2, Serialized)
 
 		if (b000) {
 			// We should not be there
-			err(arg0, z074, 153, 0, 0, 0, 0)
+			err(arg0, z074, __LINE__, 0, 0, 0, 0)
 		}
 	}
 

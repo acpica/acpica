@@ -238,7 +238,7 @@ Device (D294) {
 		Name(DDB3, 0)
 
 		if (INIT()) {
-			err("", zFFF, 0x001, 0, 0, 0, 0)
+			err("", zFFF, __LINE__, 0, 0, 0, 0)
 			return (1)
 		}
 
@@ -249,7 +249,7 @@ Device (D294) {
 		while (Local0) {
 //			Store(HI0N, Debug)
 			if (LD()) {
-				err("", zFFF, 0x002, 0, 0, Local0, HI0N)
+				err("", zFFF, __LINE__, 0, 0, Local0, HI0N)
 				return (1)
 			}
 			Decrement(Local0)
@@ -263,7 +263,7 @@ Device (D294) {
 		// The following Load should cause AE_OWNER_ID_LIMIT
 		Load(RFU3, DDB3)
 
-		CH04("", 0, 0xff, 0, 0x003, 0, 0)
+		CH04("", 0, 0xff, 0, __LINE__, 0, 0)
 
 		return (0)
 	}

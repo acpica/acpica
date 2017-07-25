@@ -51,15 +51,15 @@ Method(mdd9,, Serialized)
 	// to produce 201 byte long string and have to result
 	// in AE_AML_STRING_LIMIT exception.
 
-	CH03("", 0, 0x000, 0, 0)
+	CH03("", 0, 0x000, __LINE__, 0)
 
 	ToDecimalString(b000, Local0)
 
 	/*
 	 * No restriction on the length of String objects now:
 	 *
-	 * CH04("", 0, 61, 0, 0x001, 0, 0) // AE_AML_STRING_LIMIT
+	 * CH04("", 0, 61, 0, __LINE__, 0, 0) // AE_AML_STRING_LIMIT
 	 */
 
-	CH03("", 0, 0x001, 0, 0)
+	CH03("", 0, 0x001, __LINE__, 0)
 }

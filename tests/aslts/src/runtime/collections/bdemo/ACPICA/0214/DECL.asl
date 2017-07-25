@@ -57,28 +57,28 @@ Method(m81c,, Serialized)
 		Store(0x01, rfu0)
 		m000(OPR1)
 		if (LNotEqual(rfu0, 0x01)) {
-			err("", zFFF, 0x000, 0, 0, rfu0, 0x01)
+			err("", zFFF, __LINE__, 0, 0, rfu0, 0x01)
 		}
 
 		Store(0x02, rfu0)
 		m000(OPR1)
 		if (LNotEqual(rfu0, 0x02)) {
-			err("", zFFF, 0x001, 0, 0, rfu0, 0x02)
+			err("", zFFF, __LINE__, 0, 0, rfu0, 0x02)
 		}
 
 		Store(0x03, rfu0)
 		m000(OPR1)
 		if (LNotEqual(rfu0, 0x03)) {
-			err("", zFFF, 0x002, 0, 0, rfu0, 0x03)
+			err("", zFFF, __LINE__, 0, 0, rfu0, 0x03)
 		}
 
 		Store(0x04, rfu0)
 		if (LNotEqual(rfu0, 0x04)) {
-			err("", zFFF, 0x003, 0, 0, rfu0, 0x04)
+			err("", zFFF, __LINE__, 0, 0, rfu0, 0x04)
 		}
 	}
 
-	CH03("", 0, 0x000, 0, 0)
+	CH03("", 0, 0x000, __LINE__, 0)
 	m001()
-	CH03("", 0, 0x001, 0, 0)
+	CH03("", 0, 0x001, __LINE__, 0)
 }

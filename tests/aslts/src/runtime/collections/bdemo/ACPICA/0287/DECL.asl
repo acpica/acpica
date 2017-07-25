@@ -42,27 +42,27 @@ Device (D287) {
 		// SignatureString is greater than four characters
 		LoadTable("OEMXX", "", "", , "\\D287.PLDT", 1)
 
-		CH04("", 0, 0xff, 0, 0x001, 0, 0)
+		CH04("", 0, 0xff, 0, __LINE__, 0, 0)
 		if (LNotEqual(PLDT, 0)) {
-			err("", zFFF, 0x002, 0, 0, PLDT, 0)
+			err("", zFFF, __LINE__, 0, 0, PLDT, 0)
 			Return (1)
 		}
 
 		// OEMIDString is greater than six characters
 		LoadTable("OEM1", "IntelXX", "", , "\\D287.PLDT", 1)
 
-		CH04("", 0, 0xff, 0, 0x003, 0, 0)
+		CH04("", 0, 0xff, 0, __LINE__, 0, 0)
 		if (LNotEqual(PLDT, 0)) {
-			err("", zFFF, 0x004, 0, 0, PLDT, 0)
+			err("", zFFF, __LINE__, 0, 0, PLDT, 0)
 			Return (1)
 		}
 
 		// OEMTableID is greater than eight characters
 		LoadTable("OEM1", "", "ManyXXXXX", , "\\D287.PLDT", 1)
 
-		CH04("", 0, 0xff, 0, 0x005, 0, 0)
+		CH04("", 0, 0xff, 0, __LINE__, 0, 0)
 		if (LNotEqual(PLDT, 0)) {
-			err("", zFFF, 0x006, 0, 0, PLDT, 0)
+			err("", zFFF, __LINE__, 0, 0, PLDT, 0)
 			Return (1)
 		}
 

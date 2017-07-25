@@ -40,40 +40,40 @@
 
 			Store("Buffer as a named object:", Debug)
 
-			CH03("", 0, 0x000, 0, 0)
+			CH03("", 0, 0x000, __LINE__, 0)
 			Store(DerefOf(Index(b000, 5)), Local0)
 			if (LNotEqual(Local0, 66)) {
-				err("", zFFF, 0x001, 0, 0, Local0, 66)
+				err("", zFFF, __LINE__, 0, 0, Local0, 66)
 			}
-			CH03("", 0, 0x002, 0, 0)
+			CH03("", 0, 0x002, __LINE__, 0)
 
 		} elseif (LEqual(Arg0, 1)) {
 
 			Store("The same Buffer but substituted immediately:", Debug)
 
-			CH03("", 0, 0x003, 0, 0)
+			CH03("", 0, 0x003, __LINE__, 0)
 			Store(Index(Buffer() {11,22,33,44,55,66,77,88}, 5), Local1)
 			if (y900) {
 				Store(DerefOf(Local1), Local0)
 				if (LNotEqual(Local0, 66)) {
-					err("", zFFF, 0x004, 0, 0, Local0, 66)
+					err("", zFFF, __LINE__, 0, 0, Local0, 66)
 				}
-				CH03("", 0, 0x005, 0, 0)
+				CH03("", 0, 0x005, __LINE__, 0)
 			} else {
-				CH04("", 0, 0xff, 0, 0x006, 0, 0) // AE_INDEX_TO_NOT_ATTACHED
+				CH04("", 0, 0xff, 0, __LINE__, 0, 0) // AE_INDEX_TO_NOT_ATTACHED
 			}
 
 		} else {
 
-			CH03("", 0, 0x007, 0, 0)
+			CH03("", 0, 0x007, __LINE__, 0)
 			Store(DerefOf(Index(Buffer() {11,22,33,44,55,66,77,88}, 5)), Local0)
 			if (y900) {
 				if (LNotEqual(Local0, 66)) {
-					err("", zFFF, 0x008, 0, 0, Local0, 66)
+					err("", zFFF, __LINE__, 0, 0, Local0, 66)
 				}
-				CH03("", 0, 0x009, 0, 0)
+				CH03("", 0, 0x009, __LINE__, 0)
 			} else {
-				CH04("", 0, 0xff, 0, 0x00a, 0, 0) // AE_INDEX_TO_NOT_ATTACHED
+				CH04("", 0, 0xff, 0, __LINE__, 0, 0) // AE_INDEX_TO_NOT_ATTACHED
 			}
 		}
 	}

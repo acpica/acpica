@@ -236,11 +236,11 @@ Method(m22c,, Serialized)
 	{
 		CreateField(arg0, 8, 8, bf90)
 		if (LNotEqual(bf90, 0x77)) {
-			err(ts, z111, 0, 0, 0, bf90, 0x77)
+			err(ts, z111, __LINE__, 0, 0, bf90, 0x77)
 		}
 		Store(0x9999992b, bf90)
 		if (LNotEqual(bf90, 0x2b)) {
-			err(ts, z111, 1, 0, 0, bf90, 0x2b)
+			err(ts, z111, __LINE__, 0, 0, bf90, 0x2b)
 		}
 	}
 
@@ -248,13 +248,13 @@ Method(m22c,, Serialized)
 	{
 		CreateField(arg0, 8, 8, bf90)
 		if (LNotEqual(bf90, 0x77)) {
-			err(ts, z111, 2, 0, 0, bf90, 0x77)
+			err(ts, z111, __LINE__, 0, 0, bf90, 0x77)
 		}
 		Store(0x2b, bf90)
 
 		CopyObject(0x9999992b, bf90)
 		if (LNotEqual(bf90, 0x2b)) {
-			err(ts, z111, 3, 0, 0, bf90, 0x2b)
+			err(ts, z111, __LINE__, 0, 0, bf90, 0x2b)
 		}
 	}
 
@@ -373,11 +373,11 @@ Method(m234,, Serialized)
 
 		CreateField(Local2, 8, 8, bf90)
 		if (LNotEqual(bf90, 0x77)) {
-			err(ts, z111, 0, 0, 0, bf90, 0x77)
+			err(ts, z111, __LINE__, 0, 0, bf90, 0x77)
 		}
 		Store(0x9999992b, bf90)
 		if (LNotEqual(bf90, 0x2b)) {
-			err(ts, z111, 1, 0, 0, bf90, 0x2b)
+			err(ts, z111, __LINE__, 0, 0, bf90, 0x2b)
 		}
 	}
 
@@ -387,11 +387,11 @@ Method(m234,, Serialized)
 
 		CreateField(Local2, 8, 8, bf90)
 		if (LNotEqual(bf90, 0x77)) {
-			err(ts, z111, 2, 0, 0, bf90, 0x77)
+			err(ts, z111, __LINE__, 0, 0, bf90, 0x77)
 		}
 		CopyObject(0x9999992b, bf90)
 		if (LNotEqual(bf90, 0x2b)) {
-			err(ts, z111, 3, 0, 0, bf90, 0x2b)
+			err(ts, z111, __LINE__, 0, 0, bf90, 0x2b)
 		}
 	}
 
@@ -789,7 +789,7 @@ Method(m236,, Serialized)
 		Store(ObjectType(arg0), Local0)
 
 		if (LNotEqual(Local0, arg1)) {
-			err(ts, z111, 8, 0, 0, Local0, arg1)
+			err(ts, z111, __LINE__, 0, 0, Local0, arg1)
 		}
 
 		// Overwrite LocalX which contains either
@@ -1774,9 +1774,9 @@ Method(m354,, Serialized)
 	Store(RefOf(i000), Local0)
 	if (0) {
 		// This is a reference
-		CH03(ts, 0, 0, 0, 0)
+		CH03(ts, 0, 0, __LINE__, 0)
 		Add(Local0, 1, Local7)
-		CH04(ts, 0, 0xff, 0, 0, 0, 0)
+		CH04(ts, 0, 0xff, 0, __LINE__, 0, 0)
 	}
 	m1a3(Local0, c009, 0, 0, 2)
 	m380(ts, DerefOf(Local0), 0, 3)
@@ -1830,9 +1830,9 @@ Method(m355,, Serialized)
 	CopyObject(RefOf(i000), Local0)
 	if (0) {
 		// This is a reference
-		CH03(ts, 0, 2, 0, 0)
+		CH03(ts, 0, 2, __LINE__, 0)
 		Add(Local0, 1, Local7)
-		CH04(ts, 0, 0xff, 0, 1, 0, 0)
+		CH04(ts, 0, 0xff, 0, __LINE__, 0, 0)
 	}
 	m1a3(Local0, c009, 0, 0, 0)
 	m380(ts, DerefOf(Local0), 0, 1)
@@ -1921,9 +1921,9 @@ Method(m356, 1, Serialized)
 	Store(RefOf(i000), arg0)
 	if (0) {
 		// This is a reference
-		CH03(ts, 0, 4, 0, 0)
+		CH03(ts, 0, 4, __LINE__, 0)
 		Add(arg0, 1, Local7)
-		CH04(ts, 0, 0xff, 0, 2, 0, 0)
+		CH04(ts, 0, 0xff, 0, __LINE__, 0, 0)
 	}
 	m1a3(arg0, c009, 0, 0, 0)
 	m380(ts, DerefOf(arg0), 0, 1)
@@ -1977,9 +1977,9 @@ Method(m357, 1, Serialized)
 	CopyObject(RefOf(i000), arg0)
 	if (0) {
 		// This is a reference
-		CH03(ts, 0, 6, 0, 0)
+		CH03(ts, 0, 6, __LINE__, 0)
 		Add(arg0, 1, Local7)
-		CH04(ts, 0, 0xff, 0, 3, 0, 0)
+		CH04(ts, 0, 0xff, 0, __LINE__, 0, 0)
 	}
 	m1a3(arg0, c009, 0, 0, 0)
 	m380(ts, DerefOf(arg0), 0, 1)
@@ -2061,9 +2061,9 @@ Method(m358,, Serialized)
 	Store(RefOf(i000), iii0)
 	if (0) {
 		// This is a reference
-		CH03(ts, 0, 8, 0, 0)
+		CH03(ts, 0, 8, __LINE__, 0)
 		Add(iii0, 1, Local7)
-		CH04(ts, 0, 0xff, 0, 4, 0, 0)
+		CH04(ts, 0, 0xff, 0, __LINE__, 0, 0)
 	}
 	m1a3(iii0, c009, 0, 0, 0)
 	m380(ts, DerefOf(iii0), 0, 1)
@@ -2119,9 +2119,9 @@ Method(m359,, Serialized)
 	CopyObject(RefOf(i000), iii0)
 	if (0) {
 		// This is a reference
-		CH03(ts, 0, 10, 0, 0)
+		CH03(ts, 0, 10, __LINE__, 0)
 		Add(iii0, 1, Local7)
-		CH04(ts, 0, 0xff, 0, 5, 0, 0)
+		CH04(ts, 0, 0xff, 0, __LINE__, 0, 0)
 	}
 	m1a3(iii0, c009, 0, 0, 0)
 	m380(ts, DerefOf(iii0), 0, 1)
@@ -2994,9 +2994,9 @@ Method(m26c)
  */
 Method(m26d)
 {
-	CH03("m26d", 0, 0, 0, 0)
+	CH03("m26d", 0, 0, __LINE__, 0)
 	m1ae("m26d", "Buffer total", "Not implemented yet")
-	CH03("m26d", 0, 1, 0, 0)
+	CH03("m26d", 0, 1, __LINE__, 0)
 }
 
 /*
@@ -3012,7 +3012,7 @@ Method(m26e,, Serialized)
 		Store(ts, Debug)
 	}
 
-	CH03(ts, 0, 0, 0, 0)
+	CH03(ts, 0, 0, __LINE__, 0)
 
 	// Store
 	m365()
@@ -3020,7 +3020,7 @@ Method(m26e,, Serialized)
 	// CopyObject
 	m366()
 
-	CH03(ts, 0, 1, 0, 0)
+	CH03(ts, 0, 1, __LINE__, 0)
 }
 
 Method(m365,, Serialized)
@@ -3355,12 +3355,12 @@ Method(m366,, Serialized)
  */
 Method(m26f)
 {
-	CH03("m26f", 0, 0, 0, 0)
+	CH03("m26f", 0, 0, __LINE__, 0)
 
 	m1ae("m26f", "All the legal ways of writing IRef reference to some target location",
 		"Not implemented yet")
 
-	CH03("m26f", 0, 1, 0, 0)
+	CH03("m26f", 0, 1, __LINE__, 0)
 }
 
 /*
@@ -3370,7 +3370,7 @@ Method(m270,, Serialized)
 {
 	Name(ts, "m270")
 
-	CH03(ts, 0, 0, 0, 0)
+	CH03(ts, 0, 0, __LINE__, 0)
 
 	if (y100) {
 		ts00(ts)
@@ -3378,22 +3378,22 @@ Method(m270,, Serialized)
 		Store(ts, Debug)
 	}
 
-	CH03(ts, 0, 1, 0, 0)
+	CH03(ts, 0, 1, __LINE__, 0)
 
 	// Store
 	m367()
 
-	CH03(ts, 0, 2, 0, 0)
+	CH03(ts, 0, 2, __LINE__, 0)
 
 	// CopyObject
 	m368()
 
-	CH03(ts, 0, 3, 0, 0)
+	CH03(ts, 0, 3, __LINE__, 0)
 
 	m1ae("m270", "All the legal sources of references (ORef and IRef)",
 		"Started, but not implemented yet")
 
-	CH03(ts, 0, 4, 0, 0)
+	CH03(ts, 0, 4, __LINE__, 0)
 }
 
 Method(m367,, Serialized)
@@ -3643,7 +3643,7 @@ Method(m341,, Serialized)
 		Store(DerefOf(Arg0), Local0)
 		Add(Local0, 5, Local7)
 		if (LNotEqual(Local7, 0x1928374b)) {
-			err(ts, z111, 9, 0, 0, Local7, 0x1928374b)
+			err(ts, z111, __LINE__, 0, 0, Local7, 0x1928374b)
 		}
 	}
 
@@ -3683,7 +3683,7 @@ Method(m343,, Serialized)
 		Store(DerefOf(Arg0), Local0)
 		Add(Local0, 5, Local7)
 		if (LNotEqual(Local7, 19)) {
-			err(ts, z111, 10, 0, 0, Local7, 19)
+			err(ts, z111, __LINE__, 0, 0, Local7, 19)
 		}
 	}
 
@@ -3702,7 +3702,7 @@ Method(m344,, Serialized)
 	{
 		Add(Arg0, 5, Local7)
 		if (LNotEqual(Local7, 19)) {
-			err(ts, z111, 11, 0, 0, Local7, 19)
+			err(ts, z111, __LINE__, 0, 0, Local7, 19)
 		}
 	}
 
@@ -3729,11 +3729,11 @@ Method(m345,, Serialized)
 
 		Store(0x90, Local0)
 		if (LNotEqual(Local0, 0x90)) {
-			err(ts, z111, 12, 0, 0, Local0, 0x90)
+			err(ts, z111, __LINE__, 0, 0, Local0, 0x90)
 		}
 		Store(0x91, Local1)
 		if (LNotEqual(Local1, 0x91)) {
-			err(ts, z111, 13, 0, 0, Local1, 0x91)
+			err(ts, z111, __LINE__, 0, 0, Local1, 0x91)
 		}
 	}
 
@@ -3744,11 +3744,11 @@ Method(m345,, Serialized)
 
 		CopyObject(0x94, Local0)
 		if (LNotEqual(Local0, 0x94)) {
-			err(ts, z111, 14, 0, 0, Local0, 0x94)
+			err(ts, z111, __LINE__, 0, 0, Local0, 0x94)
 		}
 		CopyObject(0x95, Local1)
 		if (LNotEqual(Local1, 0x95)) {
-			err(ts, z111, 15, 0, 0, Local1, 0x95)
+			err(ts, z111, __LINE__, 0, 0, Local1, 0x95)
 		}
 	}
 
@@ -3827,24 +3827,24 @@ Method(m346,, Serialized)
 
 		Store(ObjectType(Local0), Local1)
 		if (LNotEqual(Local1, c009)) {
-			err(ts, z111, 16, 0, 0, Local1, c009)
+			err(ts, z111, __LINE__, 0, 0, Local1, c009)
 		} else {
 			Store(SizeOf(Local0), Local1)
 			if (LNotEqual(Local1, ISZ0)) {
-				err(ts, z111, 17, 0, 0, Local1, ISZ0)
+				err(ts, z111, __LINE__, 0, 0, Local1, ISZ0)
 			}
 			if (LNotEqual(Local6, 0xabcd0000)) {
-				err(ts, z111, 18, 0, 0, Local6, 0xabcd0000)
+				err(ts, z111, __LINE__, 0, 0, Local6, 0xabcd0000)
 			}
 			if (LNotEqual(Local7, 0x11111111)) {
-				err(ts, z111, 19, 0, 0, Local7, 0x11111111)
+				err(ts, z111, __LINE__, 0, 0, Local7, 0x11111111)
 			}
 		}
 	}
 
 	m000(i000)
 	if (LNotEqual(i000, 0xabcd0000)) {
-		err(ts, z111, 20, 0, 0, i000, 0xabcd0000)
+		err(ts, z111, __LINE__, 0, 0, i000, 0xabcd0000)
 	}
 }
 
@@ -3859,21 +3859,21 @@ Method(m347,, Serialized)
 		Store(DerefOf(RefOf(arg0)), Local0)
 		Store(ObjectType(Local0), Local1)
 		if (LNotEqual(Local1, c009)) {
-			err(ts, z111, 21, 0, 0, Local1, c009)
+			err(ts, z111, __LINE__, 0, 0, Local1, c009)
 		} else {
 			Store(SizeOf(Local0), Local1)
 			if (LNotEqual(Local1, ISZ0)) {
-				err(ts, z111, 22, 0, 0, Local1, ISZ0)
+				err(ts, z111, __LINE__, 0, 0, Local1, ISZ0)
 			}
 			if (LNotEqual(Local0, 0xabcd0000)) {
-				err(ts, z111, 23, 0, 0, Local0, 0xabcd0000)
+				err(ts, z111, __LINE__, 0, 0, Local0, 0xabcd0000)
 			}
 		}
 	}
 
 	m000(i000)
 	if (LNotEqual(i000, 0xabcd0000)) {
-		err(ts, z111, 24, 0, 0, i000, 0xabcd0000)
+		err(ts, z111, __LINE__, 0, 0, i000, 0xabcd0000)
 	}
 }
 
@@ -3889,7 +3889,7 @@ Method(m348,, Serialized)
 		Store(DeRefOf(Local0), Local1)
 		Store(DeRefOf(Local1), Local2)
 		if (LNotEqual(Local2, 0xabcd0000)) {
-			err(ts, z111, 25, 0, 0, Local2, 0xabcd0000)
+			err(ts, z111, __LINE__, 0, 0, Local2, 0xabcd0000)
 		}
 
 		Store(0x11111111, RefOf(arg0))
@@ -3897,23 +3897,23 @@ Method(m348,, Serialized)
 		Store(0x11111111, Local0)
 
 		if (LNotEqual(Local0, 0x11111111)) {
-			err(ts, z111, 26, 0, 0, Local0, 0x11111111)
+			err(ts, z111, __LINE__, 0, 0, Local0, 0x11111111)
 		}
 	}
 
 	m000(RefOf(i000))
 	if (LNotEqual(i000, 0xabcd0000)) {
-		err(ts, z111, 27, 0, 0, i000, 0xabcd0000)
+		err(ts, z111, __LINE__, 0, 0, i000, 0xabcd0000)
 	}
 
 	Store(RefOf(i000), Local0)
 	m000(Local0)
 	if (LNotEqual(i000, 0xabcd0000)) {
-		err(ts, z111, 28, 0, 0, i000, 0xabcd0000)
+		err(ts, z111, __LINE__, 0, 0, i000, 0xabcd0000)
 	}
 	Store(DeRefOf(Local0), Local2)
 	if (LNotEqual(Local2, 0xabcd0000)) {
-		err(ts, z111, 29, 0, 0, Local2, 0xabcd0000)
+		err(ts, z111, __LINE__, 0, 0, Local2, 0xabcd0000)
 	}
 }
 
@@ -3929,7 +3929,7 @@ Method(m349,, Serialized)
 		Store(DeRefOf(RefOf(arg0)), Local1)
 		Store(DeRefOf(Local1), Local2)
 		if (LNotEqual(Local2, 0xabcd0000)) {
-			err(ts, z111, 30, 0, 0, Local2, 0xabcd0000)
+			err(ts, z111, __LINE__, 0, 0, Local2, 0xabcd0000)
 		}
 	}
 
@@ -3943,18 +3943,18 @@ Method(m349,, Serialized)
 
 	m000(RefOf(i000))
 	if (LNotEqual(i000, 0xabcd0000)) {
-		err(ts, z111, 31, 0, 0, i000, 0xabcd0000)
+		err(ts, z111, __LINE__, 0, 0, i000, 0xabcd0000)
 	}
 
 	Store(RefOf(i000), Local0)
 	m000(Local0)
 	if (LNotEqual(i000, 0xabcd0000)) {
-		err(ts, z111, 32, 0, 0, i000, 0xabcd0000)
+		err(ts, z111, __LINE__, 0, 0, i000, 0xabcd0000)
 	}
 	if (y512) {
 		Store(DeRefOf(Local0), Local2)
 		if (LNotEqual(Local2, 0xabcd0000)) {
-			err(ts, z111, 33, 0, 0, Local2, 0xabcd0000)
+			err(ts, z111, __LINE__, 0, 0, Local2, 0xabcd0000)
 		}
 	}
 
@@ -3962,18 +3962,18 @@ Method(m349,, Serialized)
 
 	m001(RefOf(i001))
 	if (LNotEqual(i001, 0x11111111)) {
-		err(ts, z111, 34, 0, 0, i001, 0x11111111)
+		err(ts, z111, __LINE__, 0, 0, i001, 0x11111111)
 	}
 
 	Store(RefOf(i001), Local0)
 	m001(Local0)
 	if (LNotEqual(i001, 0x11111111)) {
-		err(ts, z111, 35, 0, 0, i001, 0x11111111)
+		err(ts, z111, __LINE__, 0, 0, i001, 0x11111111)
 	}
 	if (y512) {
 		Store(DeRefOf(Local0), Local2)
 		if (LNotEqual(Local2, 0x11111111)) {
-			err(ts, z111, 36, 0, 0, Local2, 0x11111111)
+			err(ts, z111, __LINE__, 0, 0, Local2, 0x11111111)
 		}
 	}
 }
@@ -3988,7 +3988,7 @@ Method(m34a,, Serialized)
 	{
 		Store(DeRefOf(arg0), Local2)
 		if (LNotEqual(Local2, 0x69)) {
-			err(ts, z111, 37, 0, 0, Local2, 0x69)
+			err(ts, z111, __LINE__, 0, 0, Local2, 0x69)
 		}
 	}
 
@@ -4000,7 +4000,7 @@ Method(m34a,, Serialized)
 
 		Store(DeRefOf(Local1), Local2)
 		if (LNotEqual(Local2, 0x69)) {
-			err(ts, z111, 38, 0, 0, Local2, 0x69)
+			err(ts, z111, __LINE__, 0, 0, Local2, 0x69)
 		}
 	}
 
@@ -4011,7 +4011,7 @@ Method(m34a,, Serialized)
 		Store(0x11111111, Local0)
 
 		if (LNotEqual(Local0, 0x11111111)) {
-			err(ts, z111, 39, 0, 0, Local0, 0x11111111)
+			err(ts, z111, __LINE__, 0, 0, Local0, 0x11111111)
 		}
 	}
 
@@ -4019,105 +4019,105 @@ Method(m34a,, Serialized)
 
 	m000(Index(b000, 2))
 	if (LNotEqual(b000, Buffer() {1,2,0x69,4,5})) {
-		err(ts, z111, 40, 0, 0, b000, Buffer() {1,2,0x69,4,5})
+		err(ts, z111, __LINE__, 0, 0, b000, Buffer() {1,2,0x69,4,5})
 	}
 
 	Store(Index(b000, 2), Local0)
 	m000(Local0)
 	if (LNotEqual(b000, Buffer() {1,2,0x69,4,5})) {
-		err(ts, z111, 41, 0, 0, b000, Buffer() {1,2,0x69,4,5})
+		err(ts, z111, __LINE__, 0, 0, b000, Buffer() {1,2,0x69,4,5})
 	}
 	Store(DeRefOf(Local0), Local2)
 	if (LNotEqual(Local2, 0x69)) {
-		err(ts, z111, 42, 0, 0, Local2, 0x69)
+		err(ts, z111, __LINE__, 0, 0, Local2, 0x69)
 	}
 
 	Store(Index(b000, 2, Local0), Local1)
 	m000(Local0)
 	if (LNotEqual(b000, Buffer() {1,2,0x69,4,5})) {
-		err(ts, z111, 43, 0, 0, b000, Buffer() {1,2,0x69,4,5})
+		err(ts, z111, __LINE__, 0, 0, b000, Buffer() {1,2,0x69,4,5})
 	}
 	Store(DeRefOf(Local0), Local2)
 	if (LNotEqual(Local2, 0x69)) {
-		err(ts, z111, 44, 0, 0, Local2, 0x69)
+		err(ts, z111, __LINE__, 0, 0, Local2, 0x69)
 	}
 	m000(Local1)
 	if (LNotEqual(b000, Buffer() {1,2,0x69,4,5})) {
-		err(ts, z111, 45, 0, 0, b000, Buffer() {1,2,0x69,4,5})
+		err(ts, z111, __LINE__, 0, 0, b000, Buffer() {1,2,0x69,4,5})
 	}
 	Store(DeRefOf(Local1), Local2)
 	if (LNotEqual(Local2, 0x69)) {
-		err(ts, z111, 46, 0, 0, Local2, 0x69)
+		err(ts, z111, __LINE__, 0, 0, Local2, 0x69)
 	}
 
 	// m001
 
 	m001(Index(b000, 2))
 	if (LNotEqual(b000, Buffer() {1,2,0x69,4,5})) {
-		err(ts, z111, 47, 0, 0, b000, Buffer() {1,2,0x69,4,5})
+		err(ts, z111, __LINE__, 0, 0, b000, Buffer() {1,2,0x69,4,5})
 	}
 
 	Store(Index(b000, 2), Local0)
 	m001(Local0)
 	if (LNotEqual(b000, Buffer() {1,2,0x69,4,5})) {
-		err(ts, z111, 48, 0, 0, b000, Buffer() {1,2,0x69,4,5})
+		err(ts, z111, __LINE__, 0, 0, b000, Buffer() {1,2,0x69,4,5})
 	}
 	Store(DeRefOf(Local0), Local2)
 	if (LNotEqual(Local2, 0x69)) {
-		err(ts, z111, 49, 0, 0, Local2, 0x69)
+		err(ts, z111, __LINE__, 0, 0, Local2, 0x69)
 	}
 
 	Store(Index(b000, 2, Local0), Local1)
 	m001(Local0)
 	if (LNotEqual(b000, Buffer() {1,2,0x69,4,5})) {
-		err(ts, z111, 50, 0, 0, b000, Buffer() {1,2,0x69,4,5})
+		err(ts, z111, __LINE__, 0, 0, b000, Buffer() {1,2,0x69,4,5})
 	}
 	Store(DeRefOf(Local0), Local2)
 	if (LNotEqual(Local2, 0x69)) {
-		err(ts, z111, 51, 0, 0, Local2, 0x69)
+		err(ts, z111, __LINE__, 0, 0, Local2, 0x69)
 	}
 	m001(Local1)
 	if (LNotEqual(b000, Buffer() {1,2,0x69,4,5})) {
-		err(ts, z111, 52, 0, 0, b000, Buffer() {1,2,0x69,4,5})
+		err(ts, z111, __LINE__, 0, 0, b000, Buffer() {1,2,0x69,4,5})
 	}
 	Store(DeRefOf(Local1), Local2)
 	if (LNotEqual(Local2, 0x69)) {
-		err(ts, z111, 53, 0, 0, Local2, 0x69)
+		err(ts, z111, __LINE__, 0, 0, Local2, 0x69)
 	}
 
 	// m002
 
 	m002(Index(b000, 2))
 	if (LNotEqual(b000, Buffer() {1,2,0x69,4,5})) {
-		err(ts, z111, 54, 0, 0, b000, Buffer() {1,2,0x69,4,5})
+		err(ts, z111, __LINE__, 0, 0, b000, Buffer() {1,2,0x69,4,5})
 	}
 
 	Store(Index(b000, 2), Local0)
 	m002(Local0)
 	if (LNotEqual(b000, Buffer() {1,2,0x69,4,5})) {
-		err(ts, z111, 55, 0, 0, b000, Buffer() {1,2,0x69,4,5})
+		err(ts, z111, __LINE__, 0, 0, b000, Buffer() {1,2,0x69,4,5})
 	}
 	Store(DeRefOf(Local0), Local2)
 	if (LNotEqual(Local2, 0x69)) {
-		err(ts, z111, 56, 0, 0, Local2, 0x69)
+		err(ts, z111, __LINE__, 0, 0, Local2, 0x69)
 	}
 
 	Store(Index(b000, 2, Local0), Local1)
 	m002(Local0)
 	if (LNotEqual(b000, Buffer() {1,2,0x69,4,5})) {
-		err(ts, z111, 57, 0, 0, b000, Buffer() {1,2,0x69,4,5})
+		err(ts, z111, __LINE__, 0, 0, b000, Buffer() {1,2,0x69,4,5})
 	}
 	Store(DeRefOf(Local0), Local2)
 	if (LNotEqual(Local2, 0x69)) {
-		err(ts, z111, 58, 0, 0, Local2, 0x69)
+		err(ts, z111, __LINE__, 0, 0, Local2, 0x69)
 	}
 	m002(Local1)
 	if (LNotEqual(b000, Buffer() {1,2,0x69,4,5})) {
-		err(ts, z111, 59, 0, 0, b000, Buffer() {1,2,0x69,4,5})
+		err(ts, z111, __LINE__, 0, 0, b000, Buffer() {1,2,0x69,4,5})
 	}
 	Store(DeRefOf(Local1), Local2)
 	if (LNotEqual(Local2, 0x69)) {
-		err(ts, z111, 60, 0, 0, Local2, 0x69)
+		err(ts, z111, __LINE__, 0, 0, Local2, 0x69)
 	}
 }
 
@@ -4132,7 +4132,7 @@ Method(m34b,, Serialized)
 	{
 		Store(DeRefOf(arg0), Local2)
 		if (LNotEqual(Local2, 0x69)) {
-			err(ts, z111, 61, 0, 0, Local2, 0x69)
+			err(ts, z111, __LINE__, 0, 0, Local2, 0x69)
 		}
 	}
 
@@ -4143,7 +4143,7 @@ Method(m34b,, Serialized)
 
 		Store(DeRefOf(Local1), Local2)
 		if (LNotEqual(Local2, 0x69)) {
-			err(ts, z111, 62, 0, 0, Local2, 0x69)
+			err(ts, z111, __LINE__, 0, 0, Local2, 0x69)
 		}
 	}
 
@@ -4157,75 +4157,75 @@ Method(m34b,, Serialized)
 
 	m000(Index(b000, 2))
 	if (LNotEqual(b000, Buffer() {1,2,0x69,4,5})) {
-		err(ts, z111, 63, 0, 0, b000, Buffer() {1,2,0x69,4,5})
+		err(ts, z111, __LINE__, 0, 0, b000, Buffer() {1,2,0x69,4,5})
 	}
 
 	Store(Index(b000, 2), Local0)
 	m000(Local0)
 	if (LNotEqual(b000, Buffer() {1,2,0x69,4,5})) {
-		err(ts, z111, 64, 0, 0, b000, Buffer() {1,2,0x69,4,5})
+		err(ts, z111, __LINE__, 0, 0, b000, Buffer() {1,2,0x69,4,5})
 	}
 	Store(DeRefOf(Local0), Local2)
 	if (LNotEqual(Local2, 0x69)) {
-		err(ts, z111, 65, 0, 0, Local2, 0x69)
+		err(ts, z111, __LINE__, 0, 0, Local2, 0x69)
 	}
 
 	Store(Index(b000, 2, Local0), Local1)
 	m000(Local0)
 	if (LNotEqual(b000, Buffer() {1,2,0x69,4,5})) {
-		err(ts, z111, 66, 0, 0, b000, Buffer() {1,2,0x69,4,5})
+		err(ts, z111, __LINE__, 0, 0, b000, Buffer() {1,2,0x69,4,5})
 	}
 	Store(DeRefOf(Local0), Local2)
 	if (LNotEqual(Local2, 0x69)) {
-		err(ts, z111, 67, 0, 0, Local2, 0x69)
+		err(ts, z111, __LINE__, 0, 0, Local2, 0x69)
 	}
 	m000(Local1)
 	if (LNotEqual(b000, Buffer() {1,2,0x69,4,5})) {
-		err(ts, z111, 68, 0, 0, b000, Buffer() {1,2,0x69,4,5})
+		err(ts, z111, __LINE__, 0, 0, b000, Buffer() {1,2,0x69,4,5})
 	}
 	Store(DeRefOf(Local1), Local2)
 	if (LNotEqual(Local2, 0x69)) {
-		err(ts, z111, 69, 0, 0, Local2, 0x69)
+		err(ts, z111, __LINE__, 0, 0, Local2, 0x69)
 	}
 
 	// m001
 
 	m001(Index(b000, 2))
 	if (LNotEqual(b000, Buffer() {1,2,0x69,4,5})) {
-		err(ts, z111, 70, 0, 0, b000, Buffer() {1,2,0x69,4,5})
+		err(ts, z111, __LINE__, 0, 0, b000, Buffer() {1,2,0x69,4,5})
 	}
 
 	Store(Index(b000, 2), Local0)
 	m001(Local0)
 	if (LNotEqual(b000, Buffer() {1,2,0x69,4,5})) {
-		err(ts, z111, 71, 0, 0, b000, Buffer() {1,2,0x69,4,5})
+		err(ts, z111, __LINE__, 0, 0, b000, Buffer() {1,2,0x69,4,5})
 	}
 	if (y512) {
 		Store(DeRefOf(Local0), Local2)
 		if (LNotEqual(Local2, 0x69)) {
-			err(ts, z111, 72, 0, 0, Local2, 0x69)
+			err(ts, z111, __LINE__, 0, 0, Local2, 0x69)
 		}
 	}
 
 	Store(Index(b000, 2, Local0), Local1)
 	m001(Local0)
 	if (LNotEqual(b000, Buffer() {1,2,0x69,4,5})) {
-		err(ts, z111, 73, 0, 0, b000, Buffer() {1,2,0x69,4,5})
+		err(ts, z111, __LINE__, 0, 0, b000, Buffer() {1,2,0x69,4,5})
 	}
 	if (y512) {
 		Store(DeRefOf(Local0), Local2)
 		if (LNotEqual(Local2, 0x69)) {
-			err(ts, z111, 74, 0, 0, Local2, 0x69)
+			err(ts, z111, __LINE__, 0, 0, Local2, 0x69)
 		}
 	}
 	m001(Local1)
 	if (LNotEqual(b000, Buffer() {1,2,0x69,4,5})) {
-		err(ts, z111, 75, 0, 0, b000, Buffer() {1,2,0x69,4,5})
+		err(ts, z111, __LINE__, 0, 0, b000, Buffer() {1,2,0x69,4,5})
 	}
 	if (y512) {
 		Store(DeRefOf(Local1), Local2)
 		if (LNotEqual(Local2, 0x69)) {
-			err(ts, z111, 76, 0, 0, Local2, 0x69)
+			err(ts, z111, __LINE__, 0, 0, Local2, 0x69)
 		}
 	}
 
@@ -4233,40 +4233,40 @@ Method(m34b,, Serialized)
 
 	m002(Index(b000, 2))
 	if (LNotEqual(b000, Buffer() {1,2,0x11,4,5})) {
-		err(ts, z111, 77, 0, 0, b000, Buffer() {1,2,0x11,4,5})
+		err(ts, z111, __LINE__, 0, 0, b000, Buffer() {1,2,0x11,4,5})
 	}
 
 	Store(Index(b000, 2), Local0)
 	m002(Local0)
 	if (LNotEqual(b000, Buffer() {1,2,0x11,4,5})) {
-		err(ts, z111, 78, 0, 0, b000, Buffer() {1,2,0x11,4,5})
+		err(ts, z111, __LINE__, 0, 0, b000, Buffer() {1,2,0x11,4,5})
 	}
 	if (y512) {
 		Store(DeRefOf(Local0), Local2)
 		if (LNotEqual(Local2, 0x11)) {
-			err(ts, z111, 79, 0, 0, Local2, 0x11)
+			err(ts, z111, __LINE__, 0, 0, Local2, 0x11)
 		}
 	}
 
 	Store(Index(b000, 2, Local0), Local1)
 	m002(Local0)
 	if (LNotEqual(b000, Buffer() {1,2,0x11,4,5})) {
-		err(ts, z111, 80, 0, 0, b000, Buffer() {1,2,0x11,4,5})
+		err(ts, z111, __LINE__, 0, 0, b000, Buffer() {1,2,0x11,4,5})
 	}
 	if (y512) {
 		Store(DeRefOf(Local0), Local2)
 		if (LNotEqual(Local2, 0x11)) {
-			err(ts, z111, 81, 0, 0, Local2, 0x11)
+			err(ts, z111, __LINE__, 0, 0, Local2, 0x11)
 		}
 	}
 	m002(Local1)
 	if (LNotEqual(b000, Buffer() {1,2,0x11,4,5})) {
-		err(ts, z111, 82, 0, 0, b000, Buffer() {1,2,0x11,4,5})
+		err(ts, z111, __LINE__, 0, 0, b000, Buffer() {1,2,0x11,4,5})
 	}
 	if (y512) {
 		Store(DeRefOf(Local1), Local2)
 		if (LNotEqual(Local2, 0x11)) {
-			err(ts, z111, 83, 0, 0, Local2, 0x11)
+			err(ts, z111, __LINE__, 0, 0, Local2, 0x11)
 		}
 	}
 }
@@ -4299,18 +4299,18 @@ Method(m34c,, Serialized)
 
 		Store(ObjectType(Local2), Local3)
 		if (LNotEqual(Local3, arg1)) {
-			err(ts, z111, 84, 0, 0, Local3, arg1)
+			err(ts, z111, __LINE__, 0, 0, Local3, arg1)
 		}
 
 		Store(Index(Local2, 1, Local0), Local1)
 
 		Store(0x90, Local0)
 		if (LNotEqual(Local0, 0x90)) {
-			err(ts, z111, 85, 0, 0, Local0, 0x90)
+			err(ts, z111, __LINE__, 0, 0, Local0, 0x90)
 		}
 		Store(0x91, Local1)
 		if (LNotEqual(Local1, 0x91)) {
-			err(ts, z111, 86, 0, 0, Local1, 0x91)
+			err(ts, z111, __LINE__, 0, 0, Local1, 0x91)
 		}
 	}
 
@@ -4323,11 +4323,11 @@ Method(m34c,, Serialized)
 
 		CopyObject(0x94, Local0)
 		if (LNotEqual(Local0, 0x94)) {
-			err(ts, z111, 87, 0, 0, Local0, 0x94)
+			err(ts, z111, __LINE__, 0, 0, Local0, 0x94)
 		}
 		CopyObject(0x95, Local1)
 		if (LNotEqual(Local1, 0x95)) {
-			err(ts, z111, 88, 0, 0, Local1, 0x95)
+			err(ts, z111, __LINE__, 0, 0, Local1, 0x95)
 		}
 	}
 
@@ -4365,7 +4365,7 @@ Method(m34c,, Serialized)
 
 		Store(DerefOf(Local0), Local2)
 		if (LNotEqual(Local2, 0x2b)) {
-			err(ts, z111, 89, 0, 0, Local2, 0x2b)
+			err(ts, z111, __LINE__, 0, 0, Local2, 0x2b)
 		}
 	}
 
@@ -4571,7 +4571,7 @@ Method(m34d, 1, Serialized)
 				{
 					Store(ObjectType(arg0), Local0)
 					if (LNotEqual(Local0, arg2)) {
-						err(ts, z111, 90, 0, 0, Local0, arg2)
+						err(ts, z111, __LINE__, 0, 0, Local0, arg2)
 					}
 
 					if (op00) {
@@ -4781,7 +4781,7 @@ Method(m34e, 1, Serialized)
 				{
 					Store(ObjectType(arg0), Local0)
 					if (LNotEqual(Local0, arg2)) {
-						err(ts, z111, 91, 0, 0, Local0, arg2)
+						err(ts, z111, __LINE__, 0, 0, Local0, arg2)
 					}
 					if (op00) {
 						CopyObject(0x2b, arg0)
@@ -4913,11 +4913,11 @@ Method(m351, 1, Serialized)
 		Store(Index(arg0, lpC0), Local0)
 		Store(ObjectType(Local0), Local1)
 		if (LNotEqual(Local1, c009)) {
-			err(ts, z111, 92, 0, 0, Local1, c009)
+			err(ts, z111, __LINE__, 0, 0, Local1, c009)
 		} else {
 			Store(DerefOf(Local0), Local1)
 			if (LNotEqual(Local1, Local6)) {
-				err(ts, z111, 93, 0, 0, Local1, Local6)
+				err(ts, z111, __LINE__, 0, 0, Local1, Local6)
 			}
 		}
 		Increment(Local6)
@@ -5112,12 +5112,12 @@ Method(mfab,, Serialized)
 	Index(p000, 15, Local0)
 	Store(ObjectType(Local0), Local1)
 	if (LNotEqual(Local1, c01c)) {
-		err("mfab", z111, 94, 0, 0, Local1, c01c)
+		err("mfab", z111, __LINE__, 0, 0, Local1, c01c)
 	}
 
 	Store(ObjectType(DerefOf(Local0)), Local1)
 	if (LNotEqual(Local1, c01c)) {
-		err("mfab", z111, 95, 0, 0, Local1, c01c)
+		err("mfab", z111, __LINE__, 0, 0, Local1, c01c)
 	}
 }
 
@@ -5160,14 +5160,14 @@ Method(mfad,, Serialized)
 		Store(ObjectType(Local0), Local1)
 		Store(Local1, Debug)
 		if (LNotEqual(Local1, c01c)) {
-			err("mfad", z111, 96, 0, 0, Local1, c01c)
+			err("mfad", z111, __LINE__, 0, 0, Local1, c01c)
 		}
 	} else {
 		/*
 		 * ObjectType here falls into the infinitive loop.
 		 * Sort this out!
 		 */
-		err("mfad", z111, 97, 0, 0, 0, 0)
+		err("mfad", z111, __LINE__, 0, 0, 0, 0)
 	}
 }
 
@@ -5210,14 +5210,14 @@ Method(mfc3,, Serialized)
 		Store(SizeOf(Local0), Local1)
 		Store(Local1, Debug)
 		if (LNotEqual(Local1, 100)) {
-			err("mfc3", z111, 98, 0, 0, Local1, 100)
+			err("mfc3", z111, __LINE__, 0, 0, Local1, 100)
 		}
 	} else {
 		/*
 		 * SizeOf here falls into the infinitive loop.
 		 * Sort this out!
 		 */
-		err("mfc3", z111, 99, 0, 0, 0, 0)
+		err("mfc3", z111, __LINE__, 0, 0, 0, 0)
 	}
 }
 
@@ -5261,14 +5261,14 @@ Method(mfc4,, Serialized)
 		Store(DerefOf(Local0), Local1)
 		Store(Local1, Debug)
 		if (LNotEqual(Local1, 100)) {
-			err("mfc4", z111, 100, 0, 0, Local1, 100)
+			err("mfc4", z111, __LINE__, 0, 0, Local1, 100)
 		}
 	} else {
 		/*
 		 * SizeOf here falls into the infinitive loop.
 		 * Sort this out!
 		 */
-		err("mfc4", z111, 101, 0, 0, 0, 0)
+		err("mfc4", z111, __LINE__, 0, 0, 0, 0)
 	}
 }
 

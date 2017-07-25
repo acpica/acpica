@@ -55,10 +55,10 @@ Method(m1a7, 7, Serialized)
 		}
 	}
 
-	CH03(ts, z081, 0x200, arg6, arg6)
+	CH03(ts, z081, 0x200, __LINE__, arg6)
 /*
 	// FILE BUG: hangs without printing error
-	Store(CH03(ts, z081, 0x200, arg6, arg6), Local0)
+	Store(CH03(ts, z081, 0x200, __LINE__, arg6), Local0)
 	if (Local0) {
 		Concatenate("Operation: 0x", arg6, Local0)
 		Store(Local0, Debug)
@@ -74,11 +74,11 @@ Method(m1a7, 7, Serialized)
 		}
 	}
 
-	CH04(c080, 0, 0xff, z081, 0x201, arg6, arg6)
+	CH04(c080, 0, 0xff, z081, __LINE__, arg6, arg6)
 
 /*
 	// FILE BUG: hangs without printing error
-	Store(CH04(c080, 0, 0xff, z081, 0x201, arg6, arg6), Local0)
+	Store(CH04(c080, 0, 0xff, z081, __LINE__, arg6, arg6), Local0)
 	if (Local0) {
 		Concatenate("Operation: 0x", arg6, Local0)
 		Store(Local0, Debug)
@@ -99,7 +99,7 @@ Method(m1a7, 7, Serialized)
  */
 Method(m167, 1, Serialized)
 {
-	CH03("m167", z081, 0x206, 56, 56)
+	CH03("m167", z081, 0x206, __LINE__, 56)
 	Switch (ToInteger (arg0)) {
 		Case (0) {
 			Store(0, Local7)
@@ -108,7 +108,7 @@ Method(m167, 1, Serialized)
 			Store(1, Local7)
 		}
 	}
-	CH04(c080, 0, 0xff, z081, 0x207, 56, 56)
+	CH04(c080, 0, 0xff, z081, __LINE__, 56, 56)
 }
 
 // Check reaction on OPERAND-REFERENCE (exceptions are expected in most cases)
@@ -128,34 +128,34 @@ Method(m1a8, 3, Serialized)
 	// If
 	Method(m001, 1)
 	{
-		CH03(ts, z081, 0x202, 54, 54)
+		CH03(ts, z081, 0x202, __LINE__, 54)
 		if (arg0) {
 			Store(0, Local7)
 		}
-		CH04(c080, 0, 0xff, z081, 0x203, 54, 54)
+		CH04(c080, 0, 0xff, z081, __LINE__, 54, 54)
 	}
 
 	// ElseIf
 	Method(m002, 1)
 	{
-		CH03(ts, z081, 0x204, 55, 55)
+		CH03(ts, z081, 0x204, __LINE__, 55)
 		if (0) {
 			Store(0, Local7)
 		} elseif (arg0) {
 			Store(1, Local7)
 		}
-		CH04(c080, 0, 0xff, z081, 0x205, 55, 55)
+		CH04(c080, 0, 0xff, z081, __LINE__, 55, 55)
 	}
 
 	// While
 	Method(m004, 1)
 	{
-		CH03(ts, z081, 0x208, 58, 58)
+		CH03(ts, z081, 0x208, __LINE__, 58)
 		While (arg0) {
 			Store(0, Local7)
 			Break
 		}
-		CH04(c080, 0, 0xff, z081, 0x209, 58, 58)
+		CH04(c080, 0, 0xff, z081, __LINE__, 58, 58)
 	}
 
 	// Set parameters of current checking
@@ -197,33 +197,33 @@ Method(m1a8, 3, Serialized)
 	if (rn00) {
 		// CondRefOf
 
-		CH03(ts, z081, 0x20a, 0, 0)
+		CH03(ts, z081, 0x20a, __LINE__, 0)
 		m480(arg0, 0, 0, 0, 0, 0, 5)
-		CH03(ts, z081, 0x20b, 0, 0)
+		CH03(ts, z081, 0x20b, __LINE__, 0)
 	}
 
 	if (rn01) {
 		// DerefOf
 
-		CH03(ts, z081, 0x20c, 0, 0)
+		CH03(ts, z081, 0x20c, __LINE__, 0)
 		m480(arg0, 0, 0, 0, 0, 0, 8)
-		CH03(ts, z081, 0x20d, 0, 0)
+		CH03(ts, z081, 0x20d, __LINE__, 0)
 	}
 
 	if (rn02) {
 		// ObjectType
 
-		CH03(ts, z081, 0x20e, 0, 0)
+		CH03(ts, z081, 0x20e, __LINE__, 0)
 		m480(arg0, 0, 0, 0, 0, 0, 32)
-		CH03(ts, z081, 0x20f, 0, 0)
+		CH03(ts, z081, 0x20f, __LINE__, 0)
 	}
 
 	if (rn03) {
 		// RefOf
 
-		CH03(ts, z081, 0x210, 0, 0)
+		CH03(ts, z081, 0x210, __LINE__, 0)
 		m480(arg0, 0, 0, 0, 0, 0, 34)
-		CH03(ts, z081, 0x211, 0, 0)
+		CH03(ts, z081, 0x211, __LINE__, 0)
 	}
 
 	if (rn04) {
@@ -263,9 +263,9 @@ Method(m1a8, 3, Serialized)
 		}
 
 		if (Local0) {
-			CH03(ts, z081, 0x212, 0, 0)
+			CH03(ts, z081, 0x212, __LINE__, 0)
 			m480(arg0, 0, 0, 0, 0, 0, 41)
-			CH03(ts, z081, 0x213, 0, 0)
+			CH03(ts, z081, 0x213, __LINE__, 0)
 		} else {
 			m1a7(arg0, 0, 0, 0, 0, 0, 41)
 		}
@@ -276,18 +276,18 @@ Method(m1a8, 3, Serialized)
 
 		// CopyObject
 
-		CH03(ts, z081, 0x214, 0, 0)
+		CH03(ts, z081, 0x214, __LINE__, 0)
 		CopyObject(arg0, Local7)
-		CH03(ts, z081, 0x215, 0, 0)
+		CH03(ts, z081, 0x215, __LINE__, 0)
 	}
 
 	if (rn06) {
 
 		// Return
 
-		CH03(ts, z081, 0x216, 0, 0)
+		CH03(ts, z081, 0x216, __LINE__, 0)
 		m000(arg0)
-		CH03(ts, z081, 0x217, 0, 0)
+		CH03(ts, z081, 0x217, __LINE__, 0)
 	}
 
 	if (rn07) {
@@ -490,9 +490,9 @@ Method(m1a8, 3, Serialized)
 
 	// Store
 
-	CH03(ts, z081, 0x218, 0, 0)
+	CH03(ts, z081, 0x218, __LINE__, 0)
 	Store(arg0, Local7)
-	CH03(ts, z081, 0x219, 0, 0)
+	CH03(ts, z081, 0x219, __LINE__, 0)
 
 	// Subtract
 
@@ -817,11 +817,11 @@ Method(m106,, Serialized)
 
 	Method(m000, 1)
 	{
-		CH03(ts, z081, 72, 0, 0)
+		CH03(ts, z081, 72, __LINE__, 0)
 
 		Store(DerefOf(RefOf(DerefOf(RefOf(arg0)))), Debug)
 
-		CH04(c080, 0, 0xff, z081, 73, 0, 0)
+		CH04(c080, 0, 0xff, z081, __LINE__, 0, 0)
 	}
 
 	m000(i000)

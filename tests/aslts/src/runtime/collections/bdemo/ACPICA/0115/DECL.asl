@@ -82,7 +82,7 @@
 		Store(0xabcd0000, Local0)
 		me7e(me85(), Local0)
 		if (LNotEqual(id10, Local0)) {
-			err("", zFFF, 0x000, 0, 0, id10, Local0)
+			err("", zFFF, __LINE__, 0, 0, id10, Local0)
 		}
 
 		// To show: all methods return Index references (Ok)
@@ -103,42 +103,42 @@
 		me7e(me7f(), Local0)
 		Store(DerefOf(Index(pd04, 0)), Local1)
 		if (LNotEqual(Local1, Local0)) {
-			err("", zFFF, 0x001, 0, 0, Local1, Local0)
+			err("", zFFF, __LINE__, 0, 0, Local1, Local0)
 		}
 
 		Store(0xabcd0002, Local0)
 		me7e(me80(), Local0)
 		Store(DerefOf(Index(pd05, 0)), Local1)
 		if (LNotEqual(Local1, Local0)) {
-			err("", zFFF, 0x001, 0, 0, Local1, Local0)
+			err("", zFFF, __LINE__, 0, 0, Local1, Local0)
 		}
 
 		Store(0xabcd0003, Local0)
 		me7e(me81(), Local0)
 		Store(DerefOf(Index(pd06, 0)), Local1)
 		if (LNotEqual(Local1, Local0)) {
-			err("", zFFF, 0x001, 0, 0, Local1, Local0)
+			err("", zFFF, __LINE__, 0, 0, Local1, Local0)
 		}
 
 		Store(0xabcd0004, Local0)
 		me7e(me82(), Local0)
 		Store(DerefOf(Index(pd07, 0)), Local1)
 		if (LNotEqual(Local1, Local0)) {
-			err("", zFFF, 0x001, 0, 0, Local1, Local0)
+			err("", zFFF, __LINE__, 0, 0, Local1, Local0)
 		}
 
 		Store(0xabcd0005, Local0)
 		me7e(me83(), Local0)
 		Store(DerefOf(Index(pd08, 0)), Local1)
 		if (LNotEqual(Local1, Local0)) {
-			err("", zFFF, 0x001, 0, 0, Local1, Local0)
+			err("", zFFF, __LINE__, 0, 0, Local1, Local0)
 		}
 
 		Store(0xabcd0006, Local0)
 		me7e(me84(), Local0)
 		Store(DerefOf(Index(pd09, 0)), Local1)
 		if (LNotEqual(Local1, Local0)) {
-			err("", zFFF, 0x001, 0, 0, Local1, Local0)
+			err("", zFFF, __LINE__, 0, 0, Local1, Local0)
 		}
 	}
 

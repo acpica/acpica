@@ -87,19 +87,19 @@ Method(m4a2, 1, Serialized)
 
 		Store(ObjectType(Local0), Local1)
 		if (LNotEqual(Local1, 2)) {
-			err(arg0, z065, 0, 0, 0, Local1, 2)
+			err(arg0, z065, __LINE__, 0, 0, Local1, 2)
 		} else {
 			Store(SizeOf(Local0), Local1)
 			if (LNotEqual(Local1, 1)) {
-				err(arg0, z065, 1, 0, 0, Local1, 1)
+				err(arg0, z065, __LINE__, 0, 0, Local1, 1)
 			} else {
-				CH03(ts, z065, 0, 0, 0)
+				CH03(ts, z065, 0, __LINE__, 0)
 				Add(Local0, 0, Local7)
-				CH04(arg0, 0, 34, z065, 1, 0, 0)	// AE_BAD_HEX_CONSTANT
+				CH04(arg0, 0, 34, z065, __LINE__, 0, 0)	// AE_BAD_HEX_CONSTANT
 
-				CH03(ts, z065, 2, 0, 0)
+				CH03(ts, z065, 2, __LINE__, 0)
 				Add(0, Local0, Local7)
-				CH04(arg0, 0, 34, z065, 3, 0, 0)	// AE_BAD_HEX_CONSTANT
+				CH04(arg0, 0, 34, z065, __LINE__, 0, 0)	// AE_BAD_HEX_CONSTANT
 			}
 		}
 
@@ -126,19 +126,19 @@ Method(m4a4, 1, Serialized)
 
 		Store(ObjectType(Local0), Local1)
 		if (LNotEqual(Local1, 2)) {
-			err(arg0, z065, 2, 0, 0, Local1, 2)
+			err(arg0, z065, __LINE__, 0, 0, Local1, 2)
 		} else {
 			Store(SizeOf(Local0), Local1)
 			if (LNotEqual(Local1, 1)) {
-				err(arg0, z065, 3, 0, 0, Local1, 1)
+				err(arg0, z065, __LINE__, 0, 0, Local1, 1)
 			} else {
-				CH03(ts, z065, 4, 0, 0)
+				CH03(ts, z065, 4, __LINE__, 0)
 				Add(Local0, 0, Local7)
-				CH03(ts, z065, 5, 0, 0)
+				CH03(ts, z065, 5, __LINE__, 0)
 
-				CH03(ts, z065, 6, 0, 0)
+				CH03(ts, z065, 6, __LINE__, 0)
 				Add(0, Local0, Local7)
-				CH03(ts, z065, 7, 0, 0)
+				CH03(ts, z065, 7, __LINE__, 0)
 			}
 		}
 
@@ -158,48 +158,48 @@ Method(m4a0, 1, Serialized)
 
 	if (arg0) {
 
-	CH03(ts, z065, 8, 0, 0)
+	CH03(ts, z065, 8, __LINE__, 0)
 	Add("fedcba98765432101", 0, Local7)
-	CH04(ts, 0, 34, z065, 9, 0, 0)	// AE_BAD_HEX_CONSTANT
+	CH04(ts, 0, 34, z065, __LINE__, 0, 0)	// AE_BAD_HEX_CONSTANT
 
-	CH03(ts, z065, 10, 0, 0)
+	CH03(ts, z065, 10, __LINE__, 0)
 	Add(0, "fedcba98765432101", Local7)
-	CH04(ts, 0, 34, z065, 11, 0, 0)	// AE_BAD_HEX_CONSTANT
+	CH04(ts, 0, 34, z065, __LINE__, 0, 0)	// AE_BAD_HEX_CONSTANT
 
-	CH03(ts, z065, 12, 0, 0)
+	CH03(ts, z065, 12, __LINE__, 0)
 	Add("1234q", 0, Local7)
-	CH04(ts, 0, 34, z065, 13, 0, 0)	// AE_BAD_HEX_CONSTANT
+	CH04(ts, 0, 34, z065, __LINE__, 0, 0)	// AE_BAD_HEX_CONSTANT
 
-	CH03(ts, z065, 14, 0, 0)
+	CH03(ts, z065, 14, __LINE__, 0)
 	Add(0, "1234q", Local7)
-	CH04(ts, 0, 34, z065, 15, 0, 0)	// AE_BAD_HEX_CONSTANT
+	CH04(ts, 0, 34, z065, __LINE__, 0, 0)	// AE_BAD_HEX_CONSTANT
 
 
 if (0) {
 
-	CH03(ts, z065, 16, 0, 0)
+	CH03(ts, z065, 16, __LINE__, 0)
 	Add("0xfedcba98765432", 0, Local7)
-	CH04(ts, 0, 34, z065, 17, 0, 0)	// AE_BAD_HEX_CONSTANT
+	CH04(ts, 0, 34, z065, __LINE__, 0, 0)	// AE_BAD_HEX_CONSTANT
 
-	CH03(ts, z065, 18, 0, 0)
+	CH03(ts, z065, 18, __LINE__, 0)
 	Add(0, "0xfedcba98765432", Local7)
-	CH04(ts, 0, 34, z065, 19, 0, 0)	// AE_BAD_HEX_CONSTANT
+	CH04(ts, 0, 34, z065, __LINE__, 0, 0)	// AE_BAD_HEX_CONSTANT
 
-	CH03(ts, z065, 20, 0, 0)
+	CH03(ts, z065, 20, __LINE__, 0)
 	Add("", 0, Local7)
-	CH04(ts, 0, 34, z065, 21, 0, 0)	// AE_BAD_HEX_CONSTANT
+	CH04(ts, 0, 34, z065, __LINE__, 0, 0)	// AE_BAD_HEX_CONSTANT
 
-	CH03(ts, z065, 22, 0, 0)
+	CH03(ts, z065, 22, __LINE__, 0)
 	Add(0, "", Local7)
-	CH04(ts, 0, 34, z065, 23, 0, 0)	// AE_BAD_HEX_CONSTANT
+	CH04(ts, 0, 34, z065, __LINE__, 0, 0)	// AE_BAD_HEX_CONSTANT
 
-	CH03(ts, z065, 24, 0, 0)
+	CH03(ts, z065, 24, __LINE__, 0)
 	Add(" ", 0, Local7)
-	CH04(ts, 0, 34, z065, 25, 0, 0)	// AE_BAD_HEX_CONSTANT
+	CH04(ts, 0, 34, z065, __LINE__, 0, 0)	// AE_BAD_HEX_CONSTANT
 
-	CH03(ts, z065, 26, 0, 0)
+	CH03(ts, z065, 26, __LINE__, 0)
 	Add(0, " ", Local7)
-	CH04(ts, 0, 34, z065, 27, 0, 0)	// AE_BAD_HEX_CONSTANT
+	CH04(ts, 0, 34, z065, __LINE__, 0, 0)	// AE_BAD_HEX_CONSTANT
 }
 
 	m4a2(ts)

@@ -87,7 +87,7 @@ Method(m02d)
 		}
 
 		if (LNotEqual(DerefOf(Local0), 0xabcd0000)) {
-			err("", zFFF, 0x000, 0, 0, DerefOf(Local0), 0xabcd0000)
+			err("", zFFF, __LINE__, 0, 0, DerefOf(Local0), 0xabcd0000)
 		}
 
 		Store("============== sit 0 (Local0):", debug)
@@ -125,7 +125,7 @@ Method(m02d)
 		Store("============== before checking:", debug)
 
 		if (LNotEqual(DerefOf(Local0), 0xabcd0000)) {
-			err("", zFFF, 0x001, 0, 0, DerefOf(Local0), 0xabcd0000)
+			err("", zFFF, __LINE__, 0, 0, DerefOf(Local0), 0xabcd0000)
 		}
 
 		Store("============== end of test", debug)
@@ -135,11 +135,11 @@ Method(m02d)
 		m1a9()
 	}
 
-	CH03("", 0, 0x002, 0, 0)
+	CH03("", 0, 0x002, __LINE__, 0)
 	mm00()
 
 	/* Check opcode of the last exception */
-	CH04("", 2, 47, 0, 0x003, 0, 0) // AE_AML_OPERAND_TYPE
+	CH04("", 2, 47, 0, __LINE__, 0, 0) // AE_AML_OPERAND_TYPE
 }
 
 /*
@@ -156,18 +156,18 @@ Method(m03d,, Serialized)
 	Name(hg01, 1) // if non-zero - the test hangs
 	Name(hg02, 1) // if non-zero - the test hangs
 
-	CH03("", 0, 184, 0, 0)
+	CH03("", 0, 184, __LINE__, 0)
 
 	CopyObject(Index(p000, 1, Local0), i001)
 
-	CH03("", 0, 185, 0, 0)
+	CH03("", 0, 185, __LINE__, 0)
 
 	// Type of i001 should be already IRef here,
 	// so, don't expect exception.
 
 	Store(Index(p000, 0, Local0), i001)
 
-	CH03("", 0, 186, 0, 0)
+	CH03("", 0, 186, __LINE__, 0)
 
 	Add(Local0, 1, Local7)
 
@@ -200,11 +200,11 @@ Method(m03d,, Serialized)
 		Store(Local7, debug)
 	}
 
-	CH04("", 0, 0xff, 0, 187, 0, 0)
+	CH04("", 0, 0xff, 0, __LINE__, 0, 0)
 
 	Add(i001, 1, Local7)
 
-	CH04("", 0, 0xff, 0, 188, 0, 0)
+	CH04("", 0, 0xff, 0, __LINE__, 0, 0)
 
 	/*
 	 * Looks identical to b248: "Incorrect ReferenceCount on Switch operation"

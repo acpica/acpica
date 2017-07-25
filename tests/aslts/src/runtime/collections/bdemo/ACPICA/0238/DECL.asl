@@ -44,17 +44,17 @@ Method(m039,, Serialized)
 		Acquire(MX08, 0xffff)
 		Acquire(MX09, 0xffff)
 
-		CH03("", 0, 0x000, 0, 0)
+		CH03("", 0, 0x000, __LINE__, 0)
 		Release(MX08)
 		/*
 		 * Release(MX08) above doesn't cause exception
 		 * but, seems, it should.
 		 */
-		CH04("", 0, 64, 0, 0x001, 0, 0) // AE_AML_MUTEX_ORDER
+		CH04("", 0, 64, 0, __LINE__, 0, 0) // AE_AML_MUTEX_ORDER
 
 		/* Also this */
 		Release(MX07)
-		CH04("", 0, 64, 0, 0x002, 0, 0) // AE_AML_MUTEX_ORDER
+		CH04("", 0, 64, 0, __LINE__, 0, 0) // AE_AML_MUTEX_ORDER
 
 		/*
 		 * Now, the Release(MX09) below causes exception,
@@ -68,7 +68,7 @@ Method(m039,, Serialized)
 		Release(MX09)
 		Release(MX08)
 		Release(MX07)
-		CH03("", 0, 0x003, 0, 0)
+		CH03("", 0, 0x003, __LINE__, 0)
 	}
 	m000()
 }

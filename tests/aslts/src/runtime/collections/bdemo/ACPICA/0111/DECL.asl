@@ -64,25 +64,25 @@
 		Store(0, id0f)
 		me73("1")
 		if (LNot(id0f)) {
-			err("", zFFF, 0x000, 0, 0, 0, 0)
+			err("", zFFF, __LINE__, 0, 0, 0, 0)
 		}
 
 		Store(0, id0f)
 		me73(Buffer(){1})
 		if (LNot(id0f)) {
-			err("", zFFF, 0x001, 0, 0, 0, 0)
+			err("", zFFF, __LINE__, 0, 0, 0, 0)
 		}
 
 		Store(0, id0f)
 		me73("0")
 		if (id0f) {
-			err("", zFFF, 0x002, 0, 0, 0, 0)
+			err("", zFFF, __LINE__, 0, 0, 0, 0)
 		}
 
 		Store(0, id0f)
 		me73(Buffer(){0})
 		if (id0f) {
-			err("", zFFF, 0x003, 0, 0, 0, 0)
+			err("", zFFF, __LINE__, 0, 0, 0, 0)
 		}
 
 		// //////////
@@ -90,61 +90,61 @@
 		Store(0, id0f)
 		me74("1", 0)
 		if (LNotEqual(id0f, 2)) {
-			err("", zFFF, 0x004, 0, 0, 0, 0)
+			err("", zFFF, __LINE__, 0, 0, 0, 0)
 		}
 
 		Store(0, id0f)
 		me74(Buffer(){0,0,1,0}, 0)
 		if (LNotEqual(id0f, 2)) {
-			err("", zFFF, 0x005, 0, 0, 0, 0)
+			err("", zFFF, __LINE__, 0, 0, 0, 0)
 		}
 
 		Store(0, id0f)
 		me74("0", 0)
 		if (id0f) {
-			err("", zFFF, 0x006, 0, 0, 0, 0)
+			err("", zFFF, __LINE__, 0, 0, 0, 0)
 		}
 
 		Store(0, id0f)
 		me74(Buffer(){0,0,0,0}, 0)
 		if (id0f) {
-			err("", zFFF, 0x007, 0, 0, 0, 0)
+			err("", zFFF, __LINE__, 0, 0, 0, 0)
 		}
 
 		Store(0, id0f)
 		me74("1", 1)
 		if (LNotEqual(id0f, 1)) {
-			err("", zFFF, 0x008, 0, 0, 0, 0)
+			err("", zFFF, __LINE__, 0, 0, 0, 0)
 		}
 
 		Store(0, id0f)
 		me74(Buffer(){0,0,1,0}, 1)
 		if (LNotEqual(id0f, 1)) {
-			err("", zFFF, 0x009, 0, 0, 0, 0)
+			err("", zFFF, __LINE__, 0, 0, 0, 0)
 		}
 
 		Store(0, id0f)
 		me75("0")
 		if (id0f) {
-			err("", zFFF, 0x00a, 0, 0, 0, 0)
+			err("", zFFF, __LINE__, 0, 0, 0, 0)
 		}
 
 		Store(0, id0f)
 		me75(Buffer(){0})
 		if (id0f) {
-			err("", zFFF, 0x00b, 0, 0, 0, 0)
+			err("", zFFF, __LINE__, 0, 0, 0, 0)
 		}
 
 		Store(0, id0f)
 		me75("01")
 		if (LNot(id0f)) {
-			err("", zFFF, 0x00c, 0, 0, 0, 0)
+			err("", zFFF, __LINE__, 0, 0, 0, 0)
 		}
 
 		Store(0, id0f)
 		me75(Buffer(){0,0,1,0})
 		if (LNot(id0f)) {
-			err("", zFFF, 0x00d, 0, 0, 0, 0)
+			err("", zFFF, __LINE__, 0, 0, 0, 0)
 		}
 
 	}

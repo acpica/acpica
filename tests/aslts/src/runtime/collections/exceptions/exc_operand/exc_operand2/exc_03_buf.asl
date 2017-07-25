@@ -57,7 +57,7 @@ Method(m4b3, 1, Serialized)
 		}
 
 		Store (Index(b000, 0), Local1)
-		CH03(ts, z095, 0, 0, 0)
+		CH03(ts, z095, 0, __LINE__, 0)
 	}
 
 	// Global Named Object
@@ -69,7 +69,7 @@ Method(m4b3, 1, Serialized)
 		}
 
 		Store (Index(b100, 0), Local1)
-		CH03(ts, z095, 1, 0, 0)
+		CH03(ts, z095, 1, __LINE__, 0)
 	}
 
 	// Argument
@@ -91,7 +91,7 @@ Method(m4b3, 1, Serialized)
 		CH06(arg0, 6, 47)
 
 		Store (Index(arg1, 0), Local1)
-		CH03(ts, z095, 2, 0, 0)
+		CH03(ts, z095, 2, __LINE__, 0)
 
 		Store(Wait(arg1, 0), Local1)
 		CH06(arg0, 7, 47)
@@ -121,7 +121,7 @@ Method(m4b3, 1, Serialized)
 		CH06(arg0, 13, 47)
 
 		Store (Index(Local0, 0), Local1)
-		CH03(ts, z095, 3, 0, 0)
+		CH03(ts, z095, 3, __LINE__, 0)
 
 		Store(Wait(Local0, 0), Local1)
 		CH06(arg0, 14, 47)
@@ -141,7 +141,7 @@ Method(m4b3, 1, Serialized)
 		CH06(arg0, 18, 47)
 
 		Store (Index(DeRefOf(Index(p000, 0, Local0)), 0), Local1)
-		CH03(ts, z095, 5, 0, 0)
+		CH03(ts, z095, 5, __LINE__, 0)
 
 		Store (Match(DeRefOf(Index(p000, 0, Local0)), MTR, 0, MTR, 0, 0), Local1)
 		CH06(arg0, 19, 47)
@@ -155,18 +155,18 @@ Method(m4b3, 1, Serialized)
 
 		Store(ObjectType(arg1), Local0)
 		if (LNotEqual(Local0, 3)) {
-			err(arg0, z095, 20, 0, 0, Local0, 3)
+			err(arg0, z095, __LINE__, 0, 0, Local0, 3)
 			return (1)
 		}
 
 		Store (DerefOf(arg1), Local1)
-		CH03(ts, z095, 6, 0, 0)
+		CH03(ts, z095, 6, __LINE__, 0)
 
 		Store (DerefOf(DerefOf(arg1)), Local1)
 		CH06(arg0, 21, 47)
 
 		Store (Index(DerefOf(arg1), 0), Local1)
-		CH03(ts, z095, 7, 0, 0)
+		CH03(ts, z095, 7, __LINE__, 0)
 
 		Store (Match(DerefOf(arg1), MTR, 0, MTR, 0, 0), Local1)
 		CH06(arg0, 22, 47)
@@ -189,7 +189,7 @@ Method(m4b3, 1, Serialized)
 		Method(CH00, 2)
 		{
 			if (LNotEqual(i000, arg1)) {
-				err(arg0, z095, 23, 0, 0, i000, arg1)
+				err(arg0, z095, __LINE__, 0, 0, i000, arg1)
 			}
 		}
 
@@ -221,13 +221,13 @@ Method(m4b3, 1, Serialized)
 			CH00(arg0, 5)
 		}
 
-		CH03(ts, z095, 12, 0, 0)
+		CH03(ts, z095, 12, __LINE__, 0)
 		Store (Index(m000(6), 0), Local1)
 		if (y900) {
-			CH03(ts, z095, 8, 0, 0)
+			CH03(ts, z095, 8, __LINE__, 0)
 			CH00(arg0, 6)
 		} else {
-			CH04(ts, 0, 85, z095, 0x123, 0, 0) // AE_INDEX_TO_NOT_ATTACHED
+			CH04(ts, 0, 85, z095, __LINE__, 0, 0) // AE_INDEX_TO_NOT_ATTACHED
 		}
 
 		Store(Wait(m000(7), 0), Local1)
@@ -262,7 +262,7 @@ Method(m4b3, 1, Serialized)
 		Method(CH00, 2)
 		{
 			if (LNotEqual(i000, arg1)) {
-				err(arg0, z095, 31, 0, 0, i000, arg1)
+				err(arg0, z095, __LINE__, 0, 0, i000, arg1)
 			}
 		}
 
@@ -275,7 +275,7 @@ Method(m4b3, 1, Serialized)
 			Store(0, i000)
 
 			Store (DerefOf(m000(1, lpC0)), Local1)
-			CH03(ts, z095, Add(9, lpC0), 0, 0)
+			CH03(ts, z095, __LINE__, 0, 0)
 			CH00(arg0, 1)
 
 			Store (DerefOf(DerefOf(m000(2, lpC0))), Local1)
@@ -295,7 +295,7 @@ Method(m4b3, 1, Serialized)
 		}
 	}
 
-	CH03(ts, z095, 11, 0, 0)
+	CH03(ts, z095, 11, __LINE__, 0)
 
 	// Local Named Object
 	m000(ts)

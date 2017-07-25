@@ -38,17 +38,17 @@ Method(mfb2,, Serialized)
 	Name(i000, 0xabbc0000)
 	Name(p000, Package() {1,2,3,4})
 
-	CH03("", 0, 0x000, 0, 0)
+	CH03("", 0, 0x000, __LINE__, 0)
 	Store(DerefOf(b000), Local0)
-	CH04("", 1, 47, 0, 0x001, 0, 0) // AE_AML_OPERAND_TYPE
+	CH04("", 1, 47, 0, __LINE__, 0, 0) // AE_AML_OPERAND_TYPE
 
-	CH03("", 0, 0x002, 0, 0)
+	CH03("", 0, 0x002, __LINE__, 0)
 	Store(DerefOf(i000), Local0)
-	CH04("", 1, 47, 0, 0x003, 0, 0) // AE_AML_OPERAND_TYPE
+	CH04("", 1, 47, 0, __LINE__, 0, 0) // AE_AML_OPERAND_TYPE
 
-	CH03("", 0, 0x004, 0, 0)
+	CH03("", 0, 0x004, __LINE__, 0)
 	Store(DerefOf(p000), Local0)
-	CH04("", 1, 47, 0, 0x005, 0, 0) // AE_AML_OPERAND_TYPE
+	CH04("", 1, 47, 0, __LINE__, 0, 0) // AE_AML_OPERAND_TYPE
 }
 
 Method(mfb3,, Serialized)
@@ -61,31 +61,31 @@ Method(mfb3,, Serialized)
 	OperationRegion(r000, SystemMemory, 0x100, 0x100)
 	PowerResource(pw00, 1, 0) {Method(mmmm){return (0)}}
 
-	CH03("", 0, 0x006, 0, 0)
+	CH03("", 0, 0x006, __LINE__, 0)
 	Store(DerefOf(e000), Local0)
-	CH04("", 1, 47, 0, 0x007, 0, 0) // AE_AML_OPERAND_TYPE
+	CH04("", 1, 47, 0, __LINE__, 0, 0) // AE_AML_OPERAND_TYPE
 
-	CH03("", 0, 0x008, 0, 0)
+	CH03("", 0, 0x008, __LINE__, 0)
 	Store(DerefOf(mx00), Local0)
-	CH04("", 1, 47, 0, 0x009, 0, 0) // AE_AML_OPERAND_TYPE
+	CH04("", 1, 47, 0, __LINE__, 0, 0) // AE_AML_OPERAND_TYPE
 
-	CH03("", 0, 0x00a, 0, 0)
+	CH03("", 0, 0x00a, __LINE__, 0)
 	Store(DerefOf(d000), Local0)
-	CH04("", 1, 47, 0, 0x00b, 0, 0) // AE_AML_OPERAND_TYPE
+	CH04("", 1, 47, 0, __LINE__, 0, 0) // AE_AML_OPERAND_TYPE
 
-	CH03("", 0, 0x00c, 0, 0)
+	CH03("", 0, 0x00c, __LINE__, 0)
 	Store(DerefOf(tz00), Local0)
-	CH04("", 1, 47, 0, 0x00d, 0, 0) // AE_AML_OPERAND_TYPE
+	CH04("", 1, 47, 0, __LINE__, 0, 0) // AE_AML_OPERAND_TYPE
 
-	CH03("", 0, 0x00e, 0, 0)
+	CH03("", 0, 0x00e, __LINE__, 0)
 	Store(DerefOf(pr00), Local0)
-	CH04("", 1, 47, 0, 0x00f, 0, 0) // AE_AML_OPERAND_TYPE
+	CH04("", 1, 47, 0, __LINE__, 0, 0) // AE_AML_OPERAND_TYPE
 
-	CH03("", 0, 0x010, 0, 0)
+	CH03("", 0, 0x010, __LINE__, 0)
 	Store(DerefOf(r000), Local0)
-	CH04("", 1, 47, 0, 0x011, 0, 0) // AE_AML_OPERAND_TYPE
+	CH04("", 1, 47, 0, __LINE__, 0, 0) // AE_AML_OPERAND_TYPE
 
-	CH03("", 0, 0x012, 0, 0)
+	CH03("", 0, 0x012, __LINE__, 0)
 	Store(DerefOf(pw00), Local0)
-	CH04("", 1, 47, 0, 0x013, 0, 0) // AE_AML_OPERAND_TYPE
+	CH04("", 1, 47, 0, __LINE__, 0, 0) // AE_AML_OPERAND_TYPE
 }

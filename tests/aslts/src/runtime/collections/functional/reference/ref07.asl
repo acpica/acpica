@@ -223,55 +223,55 @@ Method(m1c3, 7, Serialized)
 	if (FL00) {
 		Store(Index(p000, 0), Local5)
 
-		CH03(ts, z116, 0, 0, 0)
+		CH03(ts, z116, 0, __LINE__, 0)
 		Add(Local5, 1, Local6)
-		CH04(ts, 0, 0xff, z116, 1, 0, 0)
+		CH04(ts, 0, 0xff, z116, __LINE__, 0, 0)
 
-		CH03(ts, z116, 2, 0, 0)
+		CH03(ts, z116, 2, __LINE__, 0)
 		Add(DerefOf(Local5), 1, Local6)
-		CH04(ts, 0, 0xff, z116, 3, 0, 0)
+		CH04(ts, 0, 0xff, z116, __LINE__, 0, 0)
 
-		CH03(ts, z116, 4, 0, 0)
+		CH03(ts, z116, 4, __LINE__, 0)
 		m390(Local5, V000, 0, 0)
-		CH04(ts, 0, 0xff, z116, 5, 0, 0)
+		CH04(ts, 0, 0xff, z116, __LINE__, 0, 0)
 
-		CH03(ts, z116, 6, 0, 0)
+		CH03(ts, z116, 6, __LINE__, 0)
 		m390(DerefOf(Local5), V000, 0, 0)
-		CH04(ts, 0, 0xff, z116, 7, 0, 0)
+		CH04(ts, 0, 0xff, z116, __LINE__, 0, 0)
 
 		Store(Index(p000, 0, Local2), Local5)
 
-		CH03(ts, z116, 8, 0, 0)
+		CH03(ts, z116, 8, __LINE__, 0)
 		Add(Local5, 1, Local6)
-		CH04(ts, 0, 0xff, z116, 9, 0, 0)
+		CH04(ts, 0, 0xff, z116, __LINE__, 0, 0)
 
-		CH03(ts, z116, 10, 0, 0)
+		CH03(ts, z116, 10, __LINE__, 0)
 		Add(DerefOf(Local5), 1, Local6)
-		CH04(ts, 0, 0xff, z116, 11, 0, 0)
+		CH04(ts, 0, 0xff, z116, __LINE__, 0, 0)
 
-		CH03(ts, z116, 12, 0, 0)
+		CH03(ts, z116, 12, __LINE__, 0)
 		m390(Local5, V000, 0, 0)
-		CH04(ts, 0, 0xff, z116, 13, 0, 0)
+		CH04(ts, 0, 0xff, z116, __LINE__, 0, 0)
 
-		CH03(ts, z116, 14, 0, 0)
+		CH03(ts, z116, 14, __LINE__, 0)
 		m390(DerefOf(Local5), V000, 0, 0)
-		CH04(ts, 0, 0xff, z116, 15, 0, 0)
+		CH04(ts, 0, 0xff, z116, __LINE__, 0, 0)
 
-		CH03(ts, z116, 16, 0, 0)
+		CH03(ts, z116, 16, __LINE__, 0)
 		Add(Local2, 1, Local6)
-		CH04(ts, 0, 0xff, z116, 17, 0, 0)
+		CH04(ts, 0, 0xff, z116, __LINE__, 0, 0)
 
-		CH03(ts, z116, 18, 0, 0)
+		CH03(ts, z116, 18, __LINE__, 0)
 		Add(DerefOf(Local2), 1, Local6)
-		CH04(ts, 0, 0xff, z116, 19, 0, 0)
+		CH04(ts, 0, 0xff, z116, __LINE__, 0, 0)
 
-		CH03(ts, z116, 20, 0, 0)
+		CH03(ts, z116, 20, __LINE__, 0)
 		m390(Local2, V000, 0, 0)
-		CH04(ts, 0, 0xff, z116, 21, 0, 0)
+		CH04(ts, 0, 0xff, z116, __LINE__, 0, 0)
 
-		CH03(ts, z116, 22, 0, 0)
+		CH03(ts, z116, 22, __LINE__, 0)
 		m390(DerefOf(Local2), V000, 0, 0)
-		CH04(ts, 0, 0xff, z116, 23, 0, 0)
+		CH04(ts, 0, 0xff, z116, __LINE__, 0, 0)
 	}
 
 	if (q001) {
@@ -302,55 +302,55 @@ Method(m1c3, 7, Serialized)
 	if (FL00) {
 		Store(Index(p000, 1), Local5)
 
-		CH03(ts, z116, 24, 0, 0)
+		CH03(ts, z116, 24, __LINE__, 0)
 		Add(Local5, 1, Local6)
-		CH04(ts, 0, 0xff, z116, 25, 0, 0)
+		CH04(ts, 0, 0xff, z116, __LINE__, 0, 0)
 
-		CH03(ts, z116, 26, 0, 0)
+		CH03(ts, z116, 26, __LINE__, 0)
 		Add(DerefOf(Local5), 1, Local6)
-		CH04(ts, 0, 0xff, z116, 27, 0, 0)
+		CH04(ts, 0, 0xff, z116, __LINE__, 0, 0)
 
-		CH03(ts, z116, 28, 0, 0)
+		CH03(ts, z116, 28, __LINE__, 0)
 		m390(Local5, V000, 0, 33)
-		CH04(ts, 0, 0xff, z116, 29, 0, 0)
+		CH04(ts, 0, 0xff, z116, __LINE__, 0, 0)
 
-		CH03(ts, z116, 30, 0, 0)
+		CH03(ts, z116, 30, __LINE__, 0)
 		m390(DerefOf(Local5), V000, 0, 34)
-		CH04(ts, 0, 0xff, z116, 31, 0, 0)
+		CH04(ts, 0, 0xff, z116, __LINE__, 0, 0)
 
 		Store(Index(p000, 1, Local2), Local5)
 
-		CH03(ts, z116, 32, 0, 0)
+		CH03(ts, z116, 32, __LINE__, 0)
 		Add(Local5, 1, Local6)
-		CH04(ts, 0, 0xff, z116, 33, 0, 0)
+		CH04(ts, 0, 0xff, z116, __LINE__, 0, 0)
 
-		CH03(ts, z116, 34, 0, 0)
+		CH03(ts, z116, 34, __LINE__, 0)
 		Add(DerefOf(Local5), 1, Local6)
-		CH04(ts, 0, 0xff, z116, 35, 0, 0)
+		CH04(ts, 0, 0xff, z116, __LINE__, 0, 0)
 
-		CH03(ts, z116, 36, 0, 0)
+		CH03(ts, z116, 36, __LINE__, 0)
 		m390(Local5, V000, 0, 35)
-		CH04(ts, 0, 0xff, z116, 37, 0, 0)
+		CH04(ts, 0, 0xff, z116, __LINE__, 0, 0)
 
-		CH03(ts, z116, 38, 0, 0)
+		CH03(ts, z116, 38, __LINE__, 0)
 		m390(DerefOf(Local5), V000, 0, 36)
-		CH04(ts, 0, 0xff, z116, 39, 0, 0)
+		CH04(ts, 0, 0xff, z116, __LINE__, 0, 0)
 
-		CH03(ts, z116, 40, 0, 0)
+		CH03(ts, z116, 40, __LINE__, 0)
 		Add(Local2, 1, Local6)
-		CH04(ts, 0, 0xff, z116, 41, 0, 0)
+		CH04(ts, 0, 0xff, z116, __LINE__, 0, 0)
 
-		CH03(ts, z116, 42, 0, 0)
+		CH03(ts, z116, 42, __LINE__, 0)
 		Add(DerefOf(Local2), 1, Local6)
-		CH04(ts, 0, 0xff, z116, 43, 0, 0)
+		CH04(ts, 0, 0xff, z116, __LINE__, 0, 0)
 
-		CH03(ts, z116, 44, 0, 0)
+		CH03(ts, z116, 44, __LINE__, 0)
 		m390(Local2, V000, 0, 37)
-		CH04(ts, 0, 0xff, z116, 45, 0, 0)
+		CH04(ts, 0, 0xff, z116, __LINE__, 0, 0)
 
-		CH03(ts, z116, 46, 0, 0)
+		CH03(ts, z116, 46, __LINE__, 0)
 		m390(DerefOf(Local2), V000, 0, 38)
-		CH04(ts, 0, 0xff, z116, 47, 0, 0)
+		CH04(ts, 0, 0xff, z116, __LINE__, 0, 0)
 	}
 
 	if (q001) {
@@ -381,55 +381,55 @@ Method(m1c3, 7, Serialized)
 	if (FL00) {
 		Store(Index(p000, 0), arg5)
 
-		CH03(ts, z116, 48, 0, 0)
+		CH03(ts, z116, 48, __LINE__, 0)
 		Add(arg5, 1, arg6)
-		CH04(ts, 0, 0xff, z116, 49, 0, 0)
+		CH04(ts, 0, 0xff, z116, __LINE__, 0, 0)
 
-		CH03(ts, z116, 50, 0, 0)
+		CH03(ts, z116, 50, __LINE__, 0)
 		Add(DerefOf(arg5), 1, arg6)
-		CH04(ts, 0, 0xff, z116, 51, 0, 0)
+		CH04(ts, 0, 0xff, z116, __LINE__, 0, 0)
 
-		CH03(ts, z116, 52, 0, 0)
+		CH03(ts, z116, 52, __LINE__, 0)
 		m390(arg5, V000, 0, 45)
-		CH04(ts, 0, 0xff, z116, 53, 0, 0)
+		CH04(ts, 0, 0xff, z116, __LINE__, 0, 0)
 
-		CH03(ts, z116, 54, 0, 0)
+		CH03(ts, z116, 54, __LINE__, 0)
 		m390(DerefOf(arg5), V000, 0, 46)
-		CH04(ts, 0, 0xff, z116, 55, 0, 0)
+		CH04(ts, 0, 0xff, z116, __LINE__, 0, 0)
 
 		Store(Index(p000, 0, arg2), arg5)
 
-		CH03(ts, z116, 56, 0, 0)
+		CH03(ts, z116, 56, __LINE__, 0)
 		Add(arg5, 1, arg6)
-		CH04(ts, 0, 0xff, z116, 57, 0, 0)
+		CH04(ts, 0, 0xff, z116, __LINE__, 0, 0)
 
-		CH03(ts, z116, 58, 0, 0)
+		CH03(ts, z116, 58, __LINE__, 0)
 		Add(DerefOf(arg5), 1, arg6)
-		CH04(ts, 0, 0xff, z116, 59, 0, 0)
+		CH04(ts, 0, 0xff, z116, __LINE__, 0, 0)
 
-		CH03(ts, z116, 60, 0, 0)
+		CH03(ts, z116, 60, __LINE__, 0)
 		m390(arg5, V000, 0, 47)
-		CH04(ts, 0, 0xff, z116, 61, 0, 0)
+		CH04(ts, 0, 0xff, z116, __LINE__, 0, 0)
 
-		CH03(ts, z116, 62, 0, 0)
+		CH03(ts, z116, 62, __LINE__, 0)
 		m390(DerefOf(arg5), V000, 0, 48)
-		CH04(ts, 0, 0xff, z116, 63, 0, 0)
+		CH04(ts, 0, 0xff, z116, __LINE__, 0, 0)
 
-		CH03(ts, z116, 64, 0, 0)
+		CH03(ts, z116, 64, __LINE__, 0)
 		Add(arg2, 1, arg6)
-		CH04(ts, 0, 0xff, z116, 65, 0, 0)
+		CH04(ts, 0, 0xff, z116, __LINE__, 0, 0)
 
-		CH03(ts, z116, 66, 0, 0)
+		CH03(ts, z116, 66, __LINE__, 0)
 		Add(DerefOf(arg2), 1, arg6)
-		CH04(ts, 0, 0xff, z116, 67, 0, 0)
+		CH04(ts, 0, 0xff, z116, __LINE__, 0, 0)
 
-		CH03(ts, z116, 68, 0, 0)
+		CH03(ts, z116, 68, __LINE__, 0)
 		m390(arg2, V000, 0, 49)
-		CH04(ts, 0, 0xff, z116, 69, 0, 0)
+		CH04(ts, 0, 0xff, z116, __LINE__, 0, 0)
 
-		CH03(ts, z116, 70, 0, 0)
+		CH03(ts, z116, 70, __LINE__, 0)
 		m390(DerefOf(arg2), V000, 0, 50)
-		CH04(ts, 0, 0xff, z116, 71, 0, 0)
+		CH04(ts, 0, 0xff, z116, __LINE__, 0, 0)
 	}
 
 	if (q001) {
@@ -460,55 +460,55 @@ Method(m1c3, 7, Serialized)
 	if (FL00) {
 		Store(Index(p000, 1), arg5)
 
-		CH03(ts, z116, 72, 0, 0)
+		CH03(ts, z116, 72, __LINE__, 0)
 		Add(arg5, 1, arg6)
-		CH04(ts, 0, 0xff, z116, 73, 0, 0)
+		CH04(ts, 0, 0xff, z116, __LINE__, 0, 0)
 
-		CH03(ts, z116, 74, 0, 0)
+		CH03(ts, z116, 74, __LINE__, 0)
 		Add(DerefOf(arg5), 1, arg6)
-		CH04(ts, 0, 0xff, z116, 75, 0, 0)
+		CH04(ts, 0, 0xff, z116, __LINE__, 0, 0)
 
-		CH03(ts, z116, 76, 0, 0)
+		CH03(ts, z116, 76, __LINE__, 0)
 		m390(arg5, V000, 0, 57)
-		CH04(ts, 0, 0xff, z116, 77, 0, 0)
+		CH04(ts, 0, 0xff, z116, __LINE__, 0, 0)
 
-		CH03(ts, z116, 78, 0, 0)
+		CH03(ts, z116, 78, __LINE__, 0)
 		m390(DerefOf(arg5), V000, 0, 58)
-		CH04(ts, 0, 0xff, z116, 79, 0, 0)
+		CH04(ts, 0, 0xff, z116, __LINE__, 0, 0)
 
 		Store(Index(p000, 1, arg2), arg5)
 
-		CH03(ts, z116, 80, 0, 0)
+		CH03(ts, z116, 80, __LINE__, 0)
 		Add(arg5, 1, arg6)
-		CH04(ts, 0, 0xff, z116, 81, 0, 0)
+		CH04(ts, 0, 0xff, z116, __LINE__, 0, 0)
 
-		CH03(ts, z116, 82, 0, 0)
+		CH03(ts, z116, 82, __LINE__, 0)
 		Add(DerefOf(arg5), 1, arg6)
-		CH04(ts, 0, 0xff, z116, 83, 0, 0)
+		CH04(ts, 0, 0xff, z116, __LINE__, 0, 0)
 
-		CH03(ts, z116, 84, 0, 0)
+		CH03(ts, z116, 84, __LINE__, 0)
 		m390(arg5, V000, 0, 59)
-		CH04(ts, 0, 0xff, z116, 85, 0, 0)
+		CH04(ts, 0, 0xff, z116, __LINE__, 0, 0)
 
-		CH03(ts, z116, 86, 0, 0)
+		CH03(ts, z116, 86, __LINE__, 0)
 		m390(DerefOf(arg5), V000, 0, 60)
-		CH04(ts, 0, 0xff, z116, 87, 0, 0)
+		CH04(ts, 0, 0xff, z116, __LINE__, 0, 0)
 
-		CH03(ts, z116, 88, 0, 0)
+		CH03(ts, z116, 88, __LINE__, 0)
 		Add(arg2, 1, arg6)
-		CH04(ts, 0, 0xff, z116, 89, 0, 0)
+		CH04(ts, 0, 0xff, z116, __LINE__, 0, 0)
 
-		CH03(ts, z116, 90, 0, 0)
+		CH03(ts, z116, 90, __LINE__, 0)
 		Add(DerefOf(arg2), 1, arg6)
-		CH04(ts, 0, 0xff, z116, 91, 0, 0)
+		CH04(ts, 0, 0xff, z116, __LINE__, 0, 0)
 
-		CH03(ts, z116, 92, 0, 0)
+		CH03(ts, z116, 92, __LINE__, 0)
 		m390(arg2, V000, 0, 61)
-		CH04(ts, 0, 0xff, z116, 93, 0, 0)
+		CH04(ts, 0, 0xff, z116, __LINE__, 0, 0)
 
-		CH03(ts, z116, 94, 0, 0)
+		CH03(ts, z116, 94, __LINE__, 0)
 		m390(DerefOf(arg2), V000, 0, 62)
-		CH04(ts, 0, 0xff, z116, 95, 0, 0)
+		CH04(ts, 0, 0xff, z116, __LINE__, 0, 0)
 	}
 
 	if (q001) {
@@ -542,55 +542,55 @@ Method(m1c3, 7, Serialized)
 		CopyObject(Index(ppp0, 0), i005)
 		Store(Index(p000, 0), i005)
 
-		CH03(ts, z116, 96, 0, 0)
+		CH03(ts, z116, 96, __LINE__, 0)
 		Add(i005, 1, i006)
-		CH04(ts, 0, 0xff, z116, 97, 0, 0)
+		CH04(ts, 0, 0xff, z116, __LINE__, 0, 0)
 
-		CH03(ts, z116, 98, 0, 0)
+		CH03(ts, z116, 98, __LINE__, 0)
 		Add(DerefOf(i005), 1, i006)
-		CH04(ts, 0, 0xff, z116, 99, 0, 0)
+		CH04(ts, 0, 0xff, z116, __LINE__, 0, 0)
 
-		CH03(ts, z116, 100, 0, 0)
+		CH03(ts, z116, 100, __LINE__, 0)
 		m390(i005, V000, 0, 69)
-		CH04(ts, 0, 0xff, z116, 101, 0, 0)
+		CH04(ts, 0, 0xff, z116, __LINE__, 0, 0)
 
-		CH03(ts, z116, 102, 0, 0)
+		CH03(ts, z116, 102, __LINE__, 0)
 		m390(DerefOf(i005), V000, 0, 70)
-		CH04(ts, 0, 0xff, z116, 103, 0, 0)
+		CH04(ts, 0, 0xff, z116, __LINE__, 0, 0)
 
 		Store(Index(p000, 0, i002), i005)
 
-		CH03(ts, z116, 104, 0, 0)
+		CH03(ts, z116, 104, __LINE__, 0)
 		Add(i005, 1, i006)
-		CH04(ts, 0, 0xff, z116, 105, 0, 0)
+		CH04(ts, 0, 0xff, z116, __LINE__, 0, 0)
 
-		CH03(ts, z116, 106, 0, 0)
+		CH03(ts, z116, 106, __LINE__, 0)
 		Add(DerefOf(i005), 1, i006)
-		CH04(ts, 0, 0xff, z116, 107, 0, 0)
+		CH04(ts, 0, 0xff, z116, __LINE__, 0, 0)
 
-		CH03(ts, z116, 108, 0, 0)
+		CH03(ts, z116, 108, __LINE__, 0)
 		m390(i005, V000, 0, 71)
-		CH04(ts, 0, 0xff, z116, 109, 0, 0)
+		CH04(ts, 0, 0xff, z116, __LINE__, 0, 0)
 
-		CH03(ts, z116, 110, 0, 0)
+		CH03(ts, z116, 110, __LINE__, 0)
 		m390(DerefOf(i005), V000, 0, 72)
-		CH04(ts, 0, 0xff, z116, 111, 0, 0)
+		CH04(ts, 0, 0xff, z116, __LINE__, 0, 0)
 
-		CH03(ts, z116, 112, 0, 0)
+		CH03(ts, z116, 112, __LINE__, 0)
 		Add(i002, 1, i006)
-		CH04(ts, 0, 0xff, z116, 113, 0, 0)
+		CH04(ts, 0, 0xff, z116, __LINE__, 0, 0)
 
-		CH03(ts, z116, 114, 0, 0)
+		CH03(ts, z116, 114, __LINE__, 0)
 		Add(DerefOf(i002), 1, i006)
-		CH04(ts, 0, 0xff, z116, 115, 0, 0)
+		CH04(ts, 0, 0xff, z116, __LINE__, 0, 0)
 
-		CH03(ts, z116, 116, 0, 0)
+		CH03(ts, z116, 116, __LINE__, 0)
 		m390(i002, V000, 0, 73)
-		CH04(ts, 0, 0xff, z116, 117, 0, 0)
+		CH04(ts, 0, 0xff, z116, __LINE__, 0, 0)
 
-		CH03(ts, z116, 118, 0, 0)
+		CH03(ts, z116, 118, __LINE__, 0)
 		m390(DerefOf(i002), V000, 0, 74)
-		CH04(ts, 0, 0xff, z116, 119, 0, 0)
+		CH04(ts, 0, 0xff, z116, __LINE__, 0, 0)
 	}
 
 	if (q001) {
@@ -621,55 +621,55 @@ Method(m1c3, 7, Serialized)
 	if (FL00) {
 		Store(Index(p000, 1), i005)
 
-		CH03(ts, z116, 120, 0, 0)
+		CH03(ts, z116, 120, __LINE__, 0)
 		Add(i005, 1, i006)
-		CH04(ts, 0, 0xff, z116, 121, 0, 0)
+		CH04(ts, 0, 0xff, z116, __LINE__, 0, 0)
 
-		CH03(ts, z116, 122, 0, 0)
+		CH03(ts, z116, 122, __LINE__, 0)
 		Add(DerefOf(i005), 1, i006)
-		CH04(ts, 0, 0xff, z116, 123, 0, 0)
+		CH04(ts, 0, 0xff, z116, __LINE__, 0, 0)
 
-		CH03(ts, z116, 124, 0, 0)
+		CH03(ts, z116, 124, __LINE__, 0)
 		m390(i005, V000, 0, 81)
-		CH04(ts, 0, 0xff, z116, 125, 0, 0)
+		CH04(ts, 0, 0xff, z116, __LINE__, 0, 0)
 
-		CH03(ts, z116, 126, 0, 0)
+		CH03(ts, z116, 126, __LINE__, 0)
 		m390(DerefOf(i005), V000, 0, 82)
-		CH04(ts, 0, 0xff, z116, 127, 0, 0)
+		CH04(ts, 0, 0xff, z116, __LINE__, 0, 0)
 
 		Store(Index(p000, 1, i002), i005)
 
-		CH03(ts, z116, 128, 0, 0)
+		CH03(ts, z116, 128, __LINE__, 0)
 		Add(i005, 1, i006)
-		CH04(ts, 0, 0xff, z116, 129, 0, 0)
+		CH04(ts, 0, 0xff, z116, __LINE__, 0, 0)
 
-		CH03(ts, z116, 130, 0, 0)
+		CH03(ts, z116, 130, __LINE__, 0)
 		Add(DerefOf(i005), 1, i006)
-		CH04(ts, 0, 0xff, z116, 131, 0, 0)
+		CH04(ts, 0, 0xff, z116, __LINE__, 0, 0)
 
-		CH03(ts, z116, 132, 0, 0)
+		CH03(ts, z116, 132, __LINE__, 0)
 		m390(i005, V000, 0, 83)
-		CH04(ts, 0, 0xff, z116, 133, 0, 0)
+		CH04(ts, 0, 0xff, z116, __LINE__, 0, 0)
 
-		CH03(ts, z116, 134, 0, 0)
+		CH03(ts, z116, 134, __LINE__, 0)
 		m390(DerefOf(i005), V000, 0, 84)
-		CH04(ts, 0, 0xff, z116, 135, 0, 0)
+		CH04(ts, 0, 0xff, z116, __LINE__, 0, 0)
 
-		CH03(ts, z116, 136, 0, 0)
+		CH03(ts, z116, 136, __LINE__, 0)
 		Add(i002, 1, i006)
-		CH04(ts, 0, 0xff, z116, 137, 0, 0)
+		CH04(ts, 0, 0xff, z116, __LINE__, 0, 0)
 
-		CH03(ts, z116, 138, 0, 0)
+		CH03(ts, z116, 138, __LINE__, 0)
 		Add(DerefOf(i002), 1, i006)
-		CH04(ts, 0, 0xff, z116, 139, 0, 0)
+		CH04(ts, 0, 0xff, z116, __LINE__, 0, 0)
 
-		CH03(ts, z116, 140, 0, 0)
+		CH03(ts, z116, 140, __LINE__, 0)
 		m390(i002, V000, 0, 85)
-		CH04(ts, 0, 0xff, z116, 141, 0, 0)
+		CH04(ts, 0, 0xff, z116, __LINE__, 0, 0)
 
-		CH03(ts, z116, 142, 0, 0)
+		CH03(ts, z116, 142, __LINE__, 0)
 		m390(DerefOf(i002), V000, 0, 86)
-		CH04(ts, 0, 0xff, z116, 143, 0, 0)
+		CH04(ts, 0, 0xff, z116, __LINE__, 0, 0)
 	}
 
 	if (q001) {
@@ -933,51 +933,51 @@ Method(m1c9,, Serialized)
 
 	Store(Index(p000, 0), Local0)
 	m1a3(Local0, c010, z116, ts, 131)
-	CH03(ts, z116, 144, 0, 0)
+	CH03(ts, z116, 144, __LINE__, 0)
 	Store(DerefOf(Local0), Local1)
-	CH04(ts, 0, 0xff, z116, 145, 0, 0)
+	CH04(ts, 0, 0xff, z116, __LINE__, 0, 0)
 
 	Store(Index(p000, 1), Local0)
 	m1a3(Local0, c010, z116, ts, 132)
-	CH03(ts, z116, 146, 0, 0)
+	CH03(ts, z116, 146, __LINE__, 0)
 	Store(DerefOf(Local0), Local1)
-	CH04(ts, 0, 0xff, z116, 147, 0, 0)
+	CH04(ts, 0, 0xff, z116, __LINE__, 0, 0)
 
 	Store(Index(p000, 2), Local0)
 	m1a3(Local0, c010, z116, ts, 133)
-	CH03(ts, z116, 148, 0, 0)
+	CH03(ts, z116, 148, __LINE__, 0)
 	Store(DerefOf(Local0), Local1)
-	CH04(ts, 0, 0xff, z116, 149, 0, 0)
+	CH04(ts, 0, 0xff, z116, __LINE__, 0, 0)
 
 	Store(Index(p000, 3), Local0)
 	m1a3(Local0, c010, z116, ts, 134)
-	CH03(ts, z116, 150, 0, 0)
+	CH03(ts, z116, 150, __LINE__, 0)
 	Store(DerefOf(Local0), Local1)
-	CH04(ts, 0, 0xff, z116, 151, 0, 0)
+	CH04(ts, 0, 0xff, z116, __LINE__, 0, 0)
 
 	Store(Index(p000, 4), Local0)
 	m1a3(Local0, c010, z116, ts, 135)
-	CH03(ts, z116, 152, 0, 0)
+	CH03(ts, z116, 152, __LINE__, 0)
 	Store(DerefOf(Local0), Local1)
-	CH04(ts, 0, 0xff, z116, 153, 0, 0)
+	CH04(ts, 0, 0xff, z116, __LINE__, 0, 0)
 
 	Store(Index(p000, 5), Local0)
 	m1a3(Local0, c010, z116, ts, 136)
-	CH03(ts, z116, 154, 0, 0)
+	CH03(ts, z116, 154, __LINE__, 0)
 	Store(DerefOf(Local0), Local1)
-	CH04(ts, 0, 0xff, z116, 155, 0, 0)
+	CH04(ts, 0, 0xff, z116, __LINE__, 0, 0)
 
 	Store(Index(p000, 6), Local0)
 	m1a3(Local0, c010, z116, ts, 137)
-	CH03(ts, z116, 156, 0, 0)
+	CH03(ts, z116, 156, __LINE__, 0)
 	Store(DerefOf(Local0), Local1)
-	CH04(ts, 0, 0xff, z116, 157, 0, 0)
+	CH04(ts, 0, 0xff, z116, __LINE__, 0, 0)
 
 	Store(Index(p000, 7), Local0)
 	m1a3(Local0, c010, z116, ts, 138)
-	CH03(ts, z116, 158, 0, 0)
+	CH03(ts, z116, 158, __LINE__, 0)
 	Store(DerefOf(Local0), Local1)
-	CH04(ts, 0, 0xff, z116, 159, 0, 0)
+	CH04(ts, 0, 0xff, z116, __LINE__, 0, 0)
 
 	m380(ts, i000, 0, 139)
 }
@@ -991,9 +991,9 @@ Method(m1ca,, Serialized)
 	{
 		Name(p000, Package(arg0) {})
 
-		CH03(ts, z116, 160, 0, 0)
+		CH03(ts, z116, 160, __LINE__, 0)
 		Store(Index(p000, arg0), Local0)
-		CH04(ts, 0, 0xff, z116, 161, 0, 0)
+		CH04(ts, 0, 0xff, z116, __LINE__, 0, 0)
 	}
 
 	Method(m001, 1, Serialized)
@@ -1023,7 +1023,7 @@ Method(m1ca,, Serialized)
 			Store(Index(p000, lpC0), Local0)
 			Store(DerefOf(Local0), Local1)
 			if (LNotEqual(Local1, lpC0)) {
-				err(ts, z116, 0, z116, 0, Local1, lpC0)
+				err(ts, z116, __LINE__, z116, 0, Local1, lpC0)
 				break
 			}
 			Decrement(lpN0)
@@ -1035,18 +1035,18 @@ Method(m1ca,, Serialized)
 	{
 		Name(p000, Package(2) {})
 
-		CH03(ts, z116, 162, 0, 0)
+		CH03(ts, z116, 162, __LINE__, 0)
 		Store(Index(p000, 2), Local0)
-		CH04(ts, 0, 0xff, z116, 163, 0, 0)
+		CH04(ts, 0, 0xff, z116, __LINE__, 0, 0)
 	}
 
 	Method(m004,, Serialized)
 	{
 		Name(p000, Package(255) {})
 
-		CH03(ts, z116, 164, 0, 0)
+		CH03(ts, z116, 164, __LINE__, 0)
 		Store(Index(p000, 255), Local0)
-		CH04(ts, 0, 0xff, z116, 165, 0, 0)
+		CH04(ts, 0, 0xff, z116, __LINE__, 0, 0)
 	}
 
 	// Size not greater than 255
@@ -1074,7 +1074,7 @@ Method(m1cb,, Serialized)
 
 	Store(SizeOf(p000), Local0)
 	if (LNotEqual(Local0, 6)) {
-		err(ts, z116, 1, 0, 0, Local0, 6)
+		err(ts, z116, __LINE__, 0, 0, Local0, 6)
 	}
 }
 
@@ -1085,16 +1085,16 @@ Method(m1cb,, Serialized)
 // arg3 - exception is expected
 Method(m1cc, 4)
 {
-	CH03(arg0, z116, 166, 0, 0)
+	CH03(arg0, z116, 166, __LINE__, 0)
 
 	Store(arg1, Local0)
 	Add(Local0, 1, Local7)
 
 	if (LNotEqual(Local7, arg2)) {
-		err(arg0, z116, 2, 0, 0, Local7, arg2)
+		err(arg0, z116, __LINE__, 0, 0, Local7, arg2)
 	}
 
-	CH03(arg0, z116, 167, 0, 0)
+	CH03(arg0, z116, 167, __LINE__, 0)
 }
 
 // Check the read automatic dereference
@@ -1104,15 +1104,15 @@ Method(m1cc, 4)
 // arg3 - exception is expected
 Method(m1cd, 4)
 {
-	CH03(arg0, z116, 168, 0, 0)
+	CH03(arg0, z116, 168, __LINE__, 0)
 
 	Add(arg1, 1, Local7)
 
 	if (LNotEqual(Local7, arg2)) {
-		err(arg0, z116, 3, 0, 0, Local7, arg2)
+		err(arg0, z116, __LINE__, 0, 0, Local7, arg2)
 	}
 
-	CH03(arg0, z116, 169, 0, 0)
+	CH03(arg0, z116, 169, __LINE__, 0)
 }
 
 // Check the read automatic dereference
@@ -1171,9 +1171,9 @@ Method(m1d0,, Serialized)
  * Method(m1d1)
  * {
  *	Name(p000, Package(1) {0x77})
- *	CH03(ts, z116, 170, 0, 0)
+ *	CH03(ts, z116, 170, __LINE__, 0)
  *	Add(Index(p000, 0, Local0), 1, Local7)
- *	CH04(ts, 0, 0xff, z116, 171, 0, 0)
+ *	CH04(ts, 0, 0xff, z116, __LINE__, 0, 0)
  * }
  */
 
@@ -1187,15 +1187,15 @@ Method(m1d1,, Serialized)
 
 	Store(Index(p000, 0, Local0), Local1)
 
-	CH03(ts, z116, 172, 0, 0)
+	CH03(ts, z116, 172, __LINE__, 0)
 
 	Add(Local0, 1, Local7)
 
-	CH04(ts, 0, 0xff, z116, 173, 0, 0)
+	CH04(ts, 0, 0xff, z116, __LINE__, 0, 0)
 
 	Add(Local1, 1, Local7)
 
-	CH04(ts, 0, 0xff, z116, 174, 0, 0)
+	CH04(ts, 0, 0xff, z116, __LINE__, 0, 0)
 }
 
 Method(m1d2,, Serialized)
@@ -1206,15 +1206,15 @@ Method(m1d2,, Serialized)
 
 	CopyObject(Index(p000, 0, Local0), Local1)
 
-	CH03(ts, z116, 175, 0, 0)
+	CH03(ts, z116, 175, __LINE__, 0)
 
 	Add(Local0, 1, Local7)
 
-	CH04(ts, 0, 0xff, z116, 176, 0, 0)
+	CH04(ts, 0, 0xff, z116, __LINE__, 0, 0)
 
 	Add(Local1, 1, Local7)
 
-	CH04(ts, 0, 0xff, z116, 177, 0, 0)
+	CH04(ts, 0, 0xff, z116, __LINE__, 0, 0)
 }
 
 // ArgX
@@ -1227,15 +1227,15 @@ Method(m1d3, 2, Serialized)
 
 	Store(Index(p000, 0, Arg0), Arg1)
 
-	CH03(ts, z116, 178, 0, 0)
+	CH03(ts, z116, 178, __LINE__, 0)
 
 	Add(Arg0, 1, Local7)
 
-	CH04(ts, 0, 0xff, z116, 179, 0, 0)
+	CH04(ts, 0, 0xff, z116, __LINE__, 0, 0)
 
 	Add(Arg1, 1, Local7)
 
-	CH04(ts, 0, 0xff, z116, 180, 0, 0)
+	CH04(ts, 0, 0xff, z116, __LINE__, 0, 0)
 }
 
 Method(m1d4, 2, Serialized)
@@ -1246,18 +1246,18 @@ Method(m1d4, 2, Serialized)
 
 	CopyObject(Index(p000, 0, Arg0), Arg1)
 
-	CH03(ts, z116, 181, 0, 0)
+	CH03(ts, z116, 181, __LINE__, 0)
 
 	Add(Arg0, 1, Local7)
 
-	CH04(ts, 0, 0xff, z116, 182, 0, 0)
+	CH04(ts, 0, 0xff, z116, __LINE__, 0, 0)
 
 	// Type of Arg1 should be IRef here,
 	// so, exception is expected.
 
 	Add(Arg1, 1, Local7)
 
-	CH04(ts, 0, 0xff, z116, 183, 0, 0)
+	CH04(ts, 0, 0xff, z116, __LINE__, 0, 0)
 }
 
 // NamedX
@@ -1274,18 +1274,18 @@ Method(m1d5,, Serialized)
 	Name(hg01, 0) // if non-zero - the test hangs
 	Name(hg02, 0) // if non-zero - the test hangs
 
-	CH03(ts, z116, 184, 0, 0)
+	CH03(ts, z116, 184, __LINE__, 0)
 
 	CopyObject(Index(p000, 1, Local0), i001)
 
-	CH03(ts, z116, 185, 0, 0)
+	CH03(ts, z116, 185, __LINE__, 0)
 
 	// Type of i001 should be already IRef here,
 	// so, don't expect exception.
 
 	Store(Index(p000, 0, Local0), i001)
 
-	CH03(ts, z116, 186, 0, 0)
+	CH03(ts, z116, 186, __LINE__, 0)
 
 	Add(Local0, 1, Local7)
 
@@ -1318,11 +1318,11 @@ Method(m1d5,, Serialized)
 		Store(Local7, debug)
 	}
 
-	CH04(ts, 0, 0xff, z116, 187, 0, 0)
+	CH04(ts, 0, 0xff, z116, __LINE__, 0, 0)
 
 	Add(i001, 1, Local7)
 
-	CH04(ts, 0, 0xff, z116, 188, 0, 0)
+	CH04(ts, 0, 0xff, z116, __LINE__, 0, 0)
 
 	/*
 	 * Looks identical to b248: "Incorrect ReferenceCount on Switch operation":
@@ -1349,15 +1349,15 @@ Method(m1d6,, Serialized)
 
 	Name(p000, Package(1) {0x77})
 
-	CH03(ts, z116, 189, 0, 0)
+	CH03(ts, z116, 189, __LINE__, 0)
 
 	CopyObject(Index(p000, 0, Local0), i001)
 
-	CH03(ts, z116, 190, 0, 0)
+	CH03(ts, z116, 190, __LINE__, 0)
 
 	Add(i001, 1, Local7)
 
-	CH04(ts, 0, 0xff, z116, 192, 0, 0)
+	CH04(ts, 0, 0xff, z116, __LINE__, 0, 0)
 }
 
 // Out of Package
@@ -1368,15 +1368,15 @@ Method(m1d7,, Serialized)
 
 	Name(p000, Package(1) {0x77})
 
-	CH03(ts, z116, 193, 0, 0)
+	CH03(ts, z116, 193, __LINE__, 0)
 
 	Store(Index(p000, 1), Local0)
 
-	CH04(ts, 0, 0xff, z116, 194, 0, 0)
+	CH04(ts, 0, 0xff, z116, __LINE__, 0, 0)
 
 	Store(Index(p000, 1, Local0), Local1)
 
-	CH04(ts, 0, 0xff, z116, 195, 0, 0)
+	CH04(ts, 0, 0xff, z116, __LINE__, 0, 0)
 }
 
 Method(m1d8,, Serialized)
@@ -1385,15 +1385,15 @@ Method(m1d8,, Serialized)
 
 	Name(p000, Package(1) {0x77})
 
-	CH03(ts, z116, 196, 0, 0)
+	CH03(ts, z116, 196, __LINE__, 0)
 
 	CopyObject(Index(p000, 1), Local0)
 
-	CH04(ts, 0, 0xff, z116, 197, 0, 0)
+	CH04(ts, 0, 0xff, z116, __LINE__, 0, 0)
 
 	CopyObject(Index(p000, 1, Local0), Local1)
 
-	CH04(ts, 0, 0xff, z116, 198, 0, 0)
+	CH04(ts, 0, 0xff, z116, __LINE__, 0, 0)
 }
 
 Method(m1db,, Serialized)
@@ -1404,11 +1404,11 @@ Method(m1db,, Serialized)
 
 	Name(p000, Package(2) {0x77, 0x88})
 
-	CH03(ts, z116, 199, 0, 0)
+	CH03(ts, z116, 199, __LINE__, 0)
 
 	CopyObject(Index(p000, 1), i001)
 
-	CH03(ts, z116, 200, 0, 0)
+	CH03(ts, z116, 200, __LINE__, 0)
 
 	// Type of i001 should be already IRef here,
 	// so, don't expect exception. Writing to i001
@@ -1416,11 +1416,11 @@ Method(m1db,, Serialized)
 
 	Index(p000, 0, i001)
 
-	CH03(ts, z116, 201, 0, 0)
+	CH03(ts, z116, 201, __LINE__, 0)
 
 	Add(i001, 1, Local7)
 
-	CH04(ts, 0, 0xff, z116, 202, 0, 0)
+	CH04(ts, 0, 0xff, z116, __LINE__, 0, 0)
 }
 
 

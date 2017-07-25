@@ -784,9 +784,9 @@ Method(m600, 4)
 	Store(ObjectType(arg2), Local0)
 	Store(ObjectType(arg3), Local1)
 	if (LNotEqual(Local0, Local1)) {
-		err(Concatenate(arg0, "-OType"), z084, arg1, 0, 0, Local0, Local1)
+		err(Concatenate(arg0, "-OType"), z084, __LINE__, 0, 0, Local0, Local1)
 	} elseif (LNotEqual(arg2, arg3)) {
-		err(arg0, z084, arg1, 0, 0, arg2, arg3)
+		err(arg0, z084, __LINE__, 0, 0, arg2, arg3)
 	}
 }
 
@@ -870,7 +870,7 @@ Method(m601, 2, Serialized)
 					Return (0xd650a283)
 				}
 				Default {
-					err(terr, z084, 11, 0, 0, arg0, arg1)
+					err(terr, z084, __LINE__, 0, 0, arg0, arg1)
 				}
 			}
 		}
@@ -910,7 +910,7 @@ Method(m601, 2, Serialized)
 					Return ("21 03 01")
 				}
 				Default {
-					err(terr, z084, 12, 0, 0, arg0, arg1)
+					err(terr, z084, __LINE__, 0, 0, arg0, arg1)
 				}
 			}
 		}
@@ -944,7 +944,7 @@ Method(m601, 2, Serialized)
 					Return (Buffer() {0x30, 0x33, 0x32, 0x31, 0x01})
 				}
 				Default {
-					err(terr, z084, 13, 0, 0, arg0, arg1)
+					err(terr, z084, __LINE__, 0, 0, arg0, arg1)
 				}
 			}
 		}
@@ -956,12 +956,12 @@ Method(m601, 2, Serialized)
 						0xa58, 0xa59, 0xa5a, 0xa5b, 0xa5c, 0xa5d, 0xa5e,})
 				}
 				Default {
-					err(terr, z084, 14, 0, 0, arg0, arg1)
+					err(terr, z084, __LINE__, 0, 0, arg0, arg1)
 				}
 			}
 		}
 		Default {
-			err(terr, z084, 15, 0, 0, arg0, arg1)
+			err(terr, z084, __LINE__, 0, 0, arg0, arg1)
 		}
 	}
 	Return(Local0)
@@ -1210,7 +1210,7 @@ Method(m602, 3, Serialized)
 						}
 					}
 					Default {
-						err(terr, z084, 16, 0, 0, arg0, arg1)
+						err(terr, z084, __LINE__, 0, 0, arg0, arg1)
 					}
 				}
 			}
@@ -1327,7 +1327,7 @@ Method(m602, 3, Serialized)
 						}
 					}
 					Default {
-						err(terr, z084, 17, 0, 0, arg0, arg1)
+						err(terr, z084, __LINE__, 0, 0, arg0, arg1)
 					}
 				}
 			}
@@ -1424,7 +1424,7 @@ Method(m602, 3, Serialized)
 						}
 					}
 					Default {
-						err(terr, z084, 18, 0, 0, arg0, arg1)
+						err(terr, z084, __LINE__, 0, 0, arg0, arg1)
 					}
 				}
 			}
@@ -1441,16 +1441,16 @@ Method(m602, 3, Serialized)
 						}
 					}
 					Default {
-						err(terr, z084, 19, 0, 0, arg0, arg1)
+						err(terr, z084, __LINE__, 0, 0, arg0, arg1)
 					}
 				}
 			}
 			Default {
-				err(terr, z084, 20, 0, 0, arg0, arg1)
+				err(terr, z084, __LINE__, 0, 0, arg0, arg1)
 			}
 		}
 	} else {
-		err(terr, z084, 21, 0, 0, arg1, arg2)
+		err(terr, z084, __LINE__, 0, 0, arg1, arg2)
 	}
 	Return(Local0)
 }
@@ -1478,11 +1478,11 @@ Method(m603, 3, Serialized)
 						Return (Local0)
 					}
 					Default {
-						err(terr, z084, 22, 0, 0, arg1, arg2)
+						err(terr, z084, __LINE__, 0, 0, arg1, arg2)
 					}
 				}
 			} else {
-				err(terr, z084, 23, 0, 0, arg0, arg1)
+				err(terr, z084, __LINE__, 0, 0, arg0, arg1)
 			}
 		}
 		Case(2) {	// String
@@ -1499,11 +1499,11 @@ Method(m603, 3, Serialized)
 						Return (Local0)
 					}
 					Default {
-						err(terr, z084, 24, 0, 0, arg1, arg2)
+						err(terr, z084, __LINE__, 0, 0, arg1, arg2)
 					}
 				}
 			} else {
-				err(terr, z084, 25, 0, 0, arg0, arg1)
+				err(terr, z084, __LINE__, 0, 0, arg0, arg1)
 			}
 		}
 		Case(3) {	// Buffer
@@ -1520,11 +1520,11 @@ Method(m603, 3, Serialized)
 						Return (Local0)
 					}
 					Default {
-						err(terr, z084, 26, 0, 0, arg1, arg2)
+						err(terr, z084, __LINE__, 0, 0, arg1, arg2)
 					}
 				}
 			} else {
-				err(terr, z084, 27, 0, 0, arg0, arg1)
+				err(terr, z084, __LINE__, 0, 0, arg0, arg1)
 			}
 		}
 		Case(4) {	// Package
@@ -1541,15 +1541,15 @@ Method(m603, 3, Serialized)
 						Return (Local0)
 					}
 					Default {
-						err(terr, z084, 28, 0, 0, arg1, arg2)
+						err(terr, z084, __LINE__, 0, 0, arg1, arg2)
 					}
 				}
 			} else {
-				err(terr, z084, 29, 0, 0, arg0, arg1)
+				err(terr, z084, __LINE__, 0, 0, arg0, arg1)
 			}
 		}
 		Default {
-			err(terr, z084, 30, 0, 0, arg0, arg1)
+			err(terr, z084, __LINE__, 0, 0, arg0, arg1)
 		}
 	}
 	Return(Local0)
@@ -1565,7 +1565,7 @@ Method(m604, 4, Serialized)
 	Switch(ToInteger (arg0)) {
 		Case(0) {	// Constant
 			if (arg3) {
-				err(terr, z084, 0, 0, 0, arg1, arg2)
+				err(terr, z084, __LINE__, 0, 0, arg1, arg2)
 			}
 			Switch(ToInteger (arg1)) {
 				Case(1) {	// Integer
@@ -1589,7 +1589,7 @@ Method(m604, 4, Serialized)
 							Return (0x6e7c534136002214)
 						}
 						Default {
-							err(terr, z084, 1, 0, 0, arg1, arg2)
+							err(terr, z084, __LINE__, 0, 0, arg1, arg2)
 						}
 					}
 				}
@@ -1632,7 +1632,7 @@ Method(m604, 4, Serialized)
 							Return ("63")
 						}
 						Default {
-							err(terr, z084, 1, 0, 0, arg1, arg2)
+							err(terr, z084, __LINE__, 0, 0, arg1, arg2)
 						}
 					}
 				}
@@ -1674,12 +1674,12 @@ Method(m604, 4, Serialized)
 							Return (Buffer(1){0x3f})
 						}
 						Default {
-							err(terr, z084, 1, 0, 0, arg1, arg2)
+							err(terr, z084, __LINE__, 0, 0, arg1, arg2)
 						}
 					}
 				}
 				Default {
-					err(terr, z084, 2, 0, 0, arg1, arg2)
+					err(terr, z084, __LINE__, 0, 0, arg1, arg2)
 				}
 			}
 		}
@@ -1700,7 +1700,7 @@ Method(m604, 4, Serialized)
 									Return (Local0)
 								}
 								Default {
-									err(terr, z084, 3, 0, 0, arg2, arg3)
+									err(terr, z084, __LINE__, 0, 0, arg2, arg3)
 								}
 							}
 						}
@@ -1717,17 +1717,17 @@ Method(m604, 4, Serialized)
 									Return (Local0)
 								}
 								Default {
-									err(terr, z084, 4, 0, 0, arg2, arg3)
+									err(terr, z084, __LINE__, 0, 0, arg2, arg3)
 								}
 							}
 						}
 						Default {
-							err(terr, z084, 5, 0, 0, arg1, arg2)
+							err(terr, z084, __LINE__, 0, 0, arg1, arg2)
 						}
 					}
 				}
 				Default {
-					err(terr, z084, 6, 0, 0, arg1, arg2)
+					err(terr, z084, __LINE__, 0, 0, arg1, arg2)
 				}
 			}
 		}
@@ -1747,11 +1747,11 @@ Method(m604, 4, Serialized)
 								Return (Local0)
 							}
 							Default {
-								err(terr, z084, 7, 0, 0, arg2, arg3)
+								err(terr, z084, __LINE__, 0, 0, arg2, arg3)
 							}
 						}
 					} else {
-						err(terr, z084, 8, 0, 0, arg1, arg2)
+						err(terr, z084, __LINE__, 0, 0, arg1, arg2)
 					}
 				}
 				Case(2) {	// String
@@ -1768,11 +1768,11 @@ Method(m604, 4, Serialized)
 								Return (Local0)
 							}
 							Default {
-								err(terr, z084, 7, 0, 0, arg2, arg3)
+								err(terr, z084, __LINE__, 0, 0, arg2, arg3)
 							}
 						}
 					} else {
-						err(terr, z084, 8, 0, 0, arg1, arg2)
+						err(terr, z084, __LINE__, 0, 0, arg1, arg2)
 					}
 				}
 				Case(3) {	// Buffer
@@ -1789,20 +1789,20 @@ Method(m604, 4, Serialized)
 								Return (Local0)
 							}
 							Default {
-								err(terr, z084, 7, 0, 0, arg2, arg3)
+								err(terr, z084, __LINE__, 0, 0, arg2, arg3)
 							}
 						}
 					} else {
-						err(terr, z084, 8, 0, 0, arg1, arg2)
+						err(terr, z084, __LINE__, 0, 0, arg1, arg2)
 					}
 				}
 				Default {
-					err(terr, z084, 9, 0, 0, arg1, arg2)
+					err(terr, z084, __LINE__, 0, 0, arg1, arg2)
 				}
 			}
 		}
 		Default {
-			err(terr, z084, 10, 0, 0, arg0, arg1)
+			err(terr, z084, __LINE__, 0, 0, arg0, arg1)
 		}
 	}
 	Return(Local0)

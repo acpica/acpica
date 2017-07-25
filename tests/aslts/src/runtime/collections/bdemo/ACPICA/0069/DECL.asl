@@ -41,7 +41,7 @@ Method(me08,, Serialized)
 	Store(Mid(b000, 1, 1), Local0)
 
 	if (LNotEqual(Local0, Buffer() {2})){
-		err("", zFFF, 0x001, 0, 0, Local0, Buffer() {2})
+		err("", zFFF, __LINE__, 0, 0, Local0, Buffer() {2})
 	}
 
 	Store("Finish of test", Debug)

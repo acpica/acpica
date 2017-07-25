@@ -398,17 +398,17 @@ Method(m700, 1)
 	// Check incorrect calls
 
 	if (LNotEqual(IRSK, 0)) {
-		err(arg0, z141, 1, 0, 0, IRSK, 0)
+		err(arg0, z141, __LINE__, 0, 0, IRSK, 0)
 	}
 	if (LNotEqual(IFLG, 0)) {
-		err(arg0, z141, 2, 0, 0, IFLG, 0)
+		err(arg0, z141, __LINE__, 0, 0, IFLG, 0)
 	}
 
 	if (LNotEqual(\DOR0.IRSK, 0)) {
-		err(arg0, z141, 3, 0, 0, IRSK, 0)
+		err(arg0, z141, __LINE__, 0, 0, IRSK, 0)
 	}
 	if (LNotEqual(\DOR0.IFLG, 0)) {
-		err(arg0, z141, 4, 0, 0, IFLG, 0)
+		err(arg0, z141, __LINE__, 0, 0, IFLG, 0)
 	}
 
 	// Emulate and verify incorrect calls
@@ -417,29 +417,29 @@ Method(m700, 1)
 	\DOR0._REG(FRSK, 2)
 
 	if (LNotEqual(IRSK, 1)) {
-		err(arg0, z141, 5, 0, 0, IRSK, 1)
+		err(arg0, z141, __LINE__, 0, 0, IRSK, 1)
 	}
 	if (LNotEqual(IFLG, 1)) {
-		err(arg0, z141, 6, 0, 0, IFLG, 1)
+		err(arg0, z141, __LINE__, 0, 0, IFLG, 1)
 	}
 	if (LNotEqual(\DOR0.IRSK, 1)) {
-		err(arg0, z141, 7, 0, 0, IRSK, 1)
+		err(arg0, z141, __LINE__, 0, 0, IRSK, 1)
 	}
 	if (LNotEqual(\DOR0.IFLG, 1)) {
-		err(arg0, z141, 8, 0, 0, IFLG, 1)
+		err(arg0, z141, __LINE__, 0, 0, IFLG, 1)
 	}
 
 	// Check total calls to \_REG
 
 	if (LNotEqual(Derefof(Index(VFLG, 1)), 9)) {
-		err(arg0, z141, 9, 0, 0, Derefof(Index(VFLG, 1)), 9)
+		err(arg0, z141, __LINE__, 0, 0, Derefof(Index(VFLG, 1)), 9)
 	}
 	m70e(arg0, 1, VRSK, ERSK, 10)
 
 	// Check total calls to \DOR0._REG
 
 	if (LNotEqual(Derefof(Index(\DOR0.VFLG, 1)), 6)) {
-		err(arg0, z141, 11, 0, 0, Derefof(Index(\DOR0.VFLG, 1)), 6)
+		err(arg0, z141, __LINE__, 0, 0, Derefof(Index(\DOR0.VFLG, 1)), 6)
 	}
 	m70e(arg0, 1, \DOR0.VRSK, \DOR0.ERSK, 12)
 }
@@ -452,35 +452,35 @@ Method(m701, 1)
 	Concatenate(arg0, "-m701", arg0)
 
 	if (LNotEqual(\DOR1.IREG, 0)) {
-		err(arg0, z141, 13, 0, 0, \DOR1.IREG, 0)
+		err(arg0, z141, __LINE__, 0, 0, \DOR1.IREG, 0)
 	}
 	if (LNotEqual(\DOR1.IRSK, 0)) {
-		err(arg0, z141, 14, 0, 0, \DOR1.IRSK, 0)
+		err(arg0, z141, __LINE__, 0, 0, \DOR1.IRSK, 0)
 	}
 	if (LNotEqual(\DOR1.IFLG, 0)) {
-		err(arg0, z141, 15, 0, 0, \DOR1.IFLG, 0)
+		err(arg0, z141, __LINE__, 0, 0, \DOR1.IFLG, 0)
 	}
 	if (LNotEqual(Derefof(Index(\DOR1.VFLG, 1)), 0)) {
-		err(arg0, z141, 16, 0, 0, Derefof(Index(\DOR1.VFLG, 1)), 0)
+		err(arg0, z141, __LINE__, 0, 0, Derefof(Index(\DOR1.VFLG, 1)), 0)
 	}
 	m70e(arg0, 2, \DOR1.VRSK, 0, 17)
 
 	\DOR1.M000()
 
 	if (LNotEqual(\DOR1.IREG, 0)) {
-		err(arg0, z141, 18, 0, 0, \DOR1.IREG, 1)
+		err(arg0, z141, __LINE__, 0, 0, \DOR1.IREG, 1)
 	}
 	if (LNotEqual(\DOR1.IRSK, 1)) {
-		err(arg0, z141, 19, 0, 0, \DOR1.IRSK, 1)
+		err(arg0, z141, __LINE__, 0, 0, \DOR1.IRSK, 1)
 	}
 	if (LNotEqual(\DOR1.IFLG, 1)) {
-		err(arg0, z141, 20, 0, 0, \DOR1.IFLG, 1)
+		err(arg0, z141, __LINE__, 0, 0, \DOR1.IFLG, 1)
 	}
 
 	// Check total calls to \DOR1._REG
 
 	if (LNotEqual(Derefof(Index(\DOR1.VFLG, 1)), 6)) {
-		err(arg0, z141, 21, 0, 0, Derefof(Index(\DOR1.VFLG, 1)), 6)
+		err(arg0, z141, __LINE__, 0, 0, Derefof(Index(\DOR1.VFLG, 1)), 6)
 	}
 	m70e(arg0, 1, \DOR1.VRSK, \DOR1.ERSK, 22)
 }
@@ -588,16 +588,16 @@ Method(m70c, 3, Serialized)
 	else {
 		Store(b000, Derefof(Local5))
 
-		CH03(arg0, z141, 24, arg2, Local3)
+		CH03(arg0, z141, 24, __LINE__, Local3)
 
 		Store(ObjectType(Derefof(Local6)), Local0)
 		Store(c00b, Local1)
 		if (LNotEqual(Local0, Local1)) {
-			err(arg0, z141, 25, 0, 0, Local0, Local1)
+			err(arg0, z141, __LINE__, 0, 0, Local0, Local1)
 		} else {
 			Store(Derefof(Local6), Local0)
 			if (LNotEqual(Local0, b000)) {
-				err(arg0, z141, 26, z141, arg2, Local0, b000)
+				err(arg0, z141, __LINE__, z141, arg2, Local0, b000)
 			}
 		}
 	}
@@ -650,12 +650,12 @@ Method(m70e, 5, Serialized)
 			case (1) {
 				Index(arg3, Local0, Local3)
 				if (LNotEqual(DeRefof(Local1), DeRefof(Local3))) {
-					err(arg0, z141, arg4, z141, Local0, DeRefof(Local1), DeRefof(Local3))
+					err(arg0, z141, __LINE__, z141, Local0, DeRefof(Local1), DeRefof(Local3))
 				}
 			}
 			case (2) {
 				if (LNotEqual(DeRefof(Local1), 0)) {
-					err(arg0, z141, arg4, z141, Local0, DeRefof(Local1), 0)
+					err(arg0, z141, __LINE__, z141, Local0, DeRefof(Local1), 0)
 				}
 			}
 		}
@@ -704,7 +704,7 @@ Method(m70f, 5, Serialized)
 	Store(Buffer(){1,1,1,2,2,2,2,2,2,2}, Local1)
 
 	if (LNotEqual(Local0, Local1)) {
-		err(arg0, z141, 27, z141, arg4, Local0, Local1)
+		err(arg0, z141, __LINE__, z141, arg4, Local0, Local1)
 	}
 }
 
@@ -717,7 +717,7 @@ Method(m704, 1, Serialized)
 	Method(CHCK, 4)
 	{
 		if (LNotEqual(arg1, arg2)) {
-			err(arg0, z141, 28, z141, arg3, arg1, arg2)
+			err(arg0, z141, __LINE__, z141, arg3, arg1, arg2)
 		}
 	}
 
@@ -793,7 +793,7 @@ Method(m705, 1, Serialized)
 		Store(i002, Derefof(Local6))
 		Store(DeRefof(Local5), Local7)
 		if (LNotEqual(i002, Local7)) {
-			err(arg0, z141, 29, z141, arg1, Local7, i002)
+			err(arg0, z141, __LINE__, z141, arg1, Local7, i002)
 		}
 	}
 
@@ -828,7 +828,7 @@ Method(m705, 1, Serialized)
 		Store(i002, Derefof(Local6))
 		Store(DeRefof(Local5), Local7)
 		if (LNotEqual(i002, Local7)) {
-			err(arg0, z141, 30, z141, arg1, Local7, i002)
+			err(arg0, z141, __LINE__, z141, arg1, Local7, i002)
 		}
 	}
 
@@ -866,7 +866,7 @@ Method(m705, 1, Serialized)
 		Store(i002, Derefof(Local6))
 		Store(DeRefof(Local5), Local7)
 		if (LNotEqual(i002, Local7)) {
-			err(arg0, z141, 31, z141, arg1, Local7, i002)
+			err(arg0, z141, __LINE__, z141, arg1, Local7, i002)
 		}
 	}
 
@@ -904,7 +904,7 @@ Method(m705, 1, Serialized)
 		Store(i002, Derefof(Local6))
 		Store(DeRefof(Local5), Local7)
 		if (LNotEqual(i002, Local7)) {
-			err(arg0, z141, 32, z141, arg1, Local7, i002)
+			err(arg0, z141, __LINE__, z141, arg1, Local7, i002)
 		}
 	}
 
@@ -972,7 +972,7 @@ Method(m706, 1, Serialized)
 			FU04, 0x20}
 
 		if (LNotEqual(FU04, i000)) {
-			err(arg0, z141, arg3, 0, 0, FU04, i000)
+			err(arg0, z141, __LINE__, 0, 0, FU04, i000)
 		}
 	}
 
@@ -981,33 +981,33 @@ Method(m706, 1, Serialized)
 	Store(i000, FU00)
 
 	if (LNotEqual(FU00, i000)) {
-		err(arg0, z141, 33, 0, 0, FU00, i000)
+		err(arg0, z141, __LINE__, 0, 0, FU00, i000)
 	}
 
 	if (LNotEqual(0xfedcba987654321f, off0)) {
-		err(arg0, z141, 34, 0, 0, off0, 0xfedcba987654321f)
+		err(arg0, z141, __LINE__, 0, 0, off0, 0xfedcba987654321f)
 	} elseif (LNotEqual(0x123, len0)) {
-		err(arg0, z141, 35, 0, 0, len0, 0x123)
+		err(arg0, z141, __LINE__, 0, 0, len0, 0x123)
 	} elseif (LNotEqual(FU01, i000)) {
-		err(arg0, z141, 36, 0, 0, FU00, i000)
+		err(arg0, z141, __LINE__, 0, 0, FU00, i000)
 	}
 
 	if (LNotEqual(0xfedcba987654321f, offb)) {
-		err(arg0, z141, 37, 0, 0, offb, 0xfedcba987654321f)
+		err(arg0, z141, __LINE__, 0, 0, offb, 0xfedcba987654321f)
 	} elseif (LNotEqual(0x123, lenb)) {
-		err(arg0, z141, 38, 0, 0, lenb, 0x123)
+		err(arg0, z141, __LINE__, 0, 0, lenb, 0x123)
 	} elseif (LNotEqual(FU02, i000)) {
-		err(arg0, z141, 39, 0, 0, FU00, i000)
+		err(arg0, z141, __LINE__, 0, 0, FU00, i000)
 	}
 
 	if (LNotEqual(0xfedcba987654321f, offs)) {
 		Add(offs, 0, Local0)
-		err(arg0, z141, 40, 0, 0, Local0, 0xfedcba987654321f)
+		err(arg0, z141, __LINE__, 0, 0, Local0, 0xfedcba987654321f)
 	} elseif (LNotEqual(0x123, lens)) {
 		Add(lens, 0, Local0)
-		err(arg0, z141, 41, 0, 0, Local0, 0x123)
+		err(arg0, z141, __LINE__, 0, 0, Local0, 0x123)
 	} elseif (LNotEqual(FU03, i000)) {
-		err(arg0, z141, 42, 0, 0, FU00, i000)
+		err(arg0, z141, __LINE__, 0, 0, FU00, i000)
 	}
 
 	m000(arg0, off0, len0, 43)
@@ -1087,7 +1087,7 @@ Method(m707, 1, Serialized)
 	Store(Buffer(){4,4,4,4,4,4,2,2,5,5,1,1,6,6,3,3,7,7,7,7,7,7}, Local1)
 
 	if (LNotEqual(Local0, Local1)) {
-		err(arg0, z141, 43, 0, 0, Local0, Local1)
+		err(arg0, z141, __LINE__, 0, 0, Local0, Local1)
 	}
 }
 

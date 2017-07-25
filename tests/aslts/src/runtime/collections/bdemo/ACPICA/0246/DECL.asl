@@ -40,7 +40,7 @@ Method(m17b, 0, Serialized)
 	Store(0x000, Local2)
 
 	while (Local0) {
-		if (CH03("", 0, Local2, 0, 0)) {
+		if (CH03("", 0, Local2, __LINE__, 0)) {
 			return
 		}
 		Increment(Local2)
@@ -54,7 +54,7 @@ Method(m17b, 0, Serialized)
 				Add(Local1, 2, Local1)
 			}
 		}
-		if (CH03("", 0, Local2, 0, 0)) {
+		if (CH03("", 0, Local2, __LINE__, 0)) {
 			return
 		}
 		Increment(Local2)
@@ -62,6 +62,6 @@ Method(m17b, 0, Serialized)
 	}
 
 	if (LNotEqual(Local1, 3)) {
-		err("", zFFF, Local2, 0, 0, Local1, 3)
+		err("", zFFF, __LINE__, 0, 0, Local1, 3)
 	}
 }

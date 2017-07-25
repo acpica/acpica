@@ -65,7 +65,7 @@ Method(obt0, 2)
 {
 	Store(ObjectType(arg0), Local0)
 	if (LNotEqual(Local0, arg1)) {
-		err("obt0", z167, 0x000, 0, 0, Local0, arg1)
+		err("obt0", z167, __LINE__, 0, 0, Local0, arg1)
 	}
 	Return (5)
 }
@@ -85,65 +85,65 @@ Method(act0, 4, Serialized)
 	Case (0) {		// ObjectType
 		Store(ObjectType(arg1), Local0)
 		if (LNotEqual(Local0, arg2)) {
-			err(ts, z167, 0x000, 0, 0, Local0, arg2)
+			err(ts, z167, __LINE__, 0, 0, Local0, arg2)
 		}
 	}
 	Case (1) {		// Add
 		Add(arg1, arg2, Local0)
 		if (LNotEqual(Local0, arg3)) {
-			err(ts, z167, 0x001, 0, 0, Local0, arg3)
+			err(ts, z167, __LINE__, 0, 0, Local0, arg3)
 		}
 	}
 	Case (2) {		// LNotEqual
 		if (LNotEqual(arg1, 0xabcd0000)) {
-			err(ts, z167, 0x002, 0, 0, arg1, 0xabcd0000)
+			err(ts, z167, __LINE__, 0, 0, arg1, 0xabcd0000)
 		}
 	}
 	Case (3) {		// LNotEqual
 		// if (chk0) {
 		if (LNotEqual(arg1, "qwrtyu0003")) {
-			err(ts, z167, 0x003, 0, 0, arg1, "qwrtyu0003")
+			err(ts, z167, __LINE__, 0, 0, arg1, "qwrtyu0003")
 		}
 		// }
 	}
 	Case (4) {		// LNotEqual
 		// if (chk0) {
 		if (LNotEqual(arg1, "abcd0800")) {
-			err(ts, z167, 0x004, 0, 0, arg1, "abcd0800")
+			err(ts, z167, __LINE__, 0, 0, arg1, "abcd0800")
 		}
 		// }
 	}
 	Case (5) {		// LNotEqual
 		// if (chk0) {
 		if (LNotEqual(arg1, Buffer() {0xb0,0xb1,0xb2,0xb3,0xb4})) {
-			err(ts, z167, 0x005, 0, 0, arg1, Buffer() {0xb0,0xb1,0xb2,0xb3,0xb4})
+			err(ts, z167, __LINE__, 0, 0, arg1, Buffer() {0xb0,0xb1,0xb2,0xb3,0xb4})
 		}
 		// }
 	}
 	Case (6) {		// LNotEqual
 		Store(DerefOf(Index(arg1, 1)), Local0)
 		if (LNotEqual(Local0, 0xabcd0902)) {
-			err(ts, z167, 0x006, 0, 0, Local0, 0xabcd0902)
+			err(ts, z167, __LINE__, 0, 0, Local0, 0xabcd0902)
 		}
 	}
 	Case (7) {		// LNotEqual
 		if (LNotEqual(arg1, 0xabcd0a00)) {
-			err(ts, z167, 0x007, 0, 0, arg1, 0xabcd0a00)
+			err(ts, z167, __LINE__, 0, 0, arg1, 0xabcd0a00)
 		}
 	}
 	Case (8) {		// LNotEqual
 		if (LNotEqual(arg1, 0xabababab)) {
-			err(ts, z167, 0x008, 0, 0, arg1, 0xabababab)
+			err(ts, z167, __LINE__, 0, 0, arg1, 0xabababab)
 		}
 	}
 	Case (9) {		// LNotEqual
 		if (LNotEqual(arg1, 0)) {
-			err(ts, z167, 0x009, 0, 0, arg1, 0)
+			err(ts, z167, __LINE__, 0, 0, arg1, 0)
 		}
 	}
 	Case (10) {		// LNotEqual
 		if (LNotEqual(arg1, 0xabcd0d08)) {
-			err(ts, z167, 0x00a, 0, 0, arg1, 0xabcd0d08)
+			err(ts, z167, __LINE__, 0, 0, arg1, 0xabcd0d08)
 		}
 	}
 	} // Switch (arg0)
@@ -170,14 +170,14 @@ Method(mI01, 1, Serialized)
 		if (LEqual(cmd0, 1)) {		// Integer
 			Store(ObjectType(arg0), Local0)
 			if (LNotEqual(Local0, c009)) {
-				err("mI01", z167, 0x000, 0, 0, Local0, c009)
+				err("mI01", z167, __LINE__, 0, 0, Local0, c009)
 			}
 			Add(arg0, 1, Local0)
 			if (LNotEqual(Local0, 0xabcd0001)) {
-				err("mI01", z167, 0x001, 0, 0, Local0, 0xabcd0001)
+				err("mI01", z167, __LINE__, 0, 0, Local0, 0xabcd0001)
 			}
 			if (LNotEqual(arg0, 0xabcd0000)) {
-				err("mI01", z167, 0x007, 0, 0, arg0, 0xabcd0000)
+				err("mI01", z167, __LINE__, 0, 0, arg0, 0xabcd0000)
 			}
 
 			Return (arg0)
@@ -186,12 +186,12 @@ Method(mI01, 1, Serialized)
 		if (LEqual(cmd0, 2)) {		// String
 			Store(ObjectType(arg0), Local0)
 			if (LNotEqual(Local0, c00a)) {
-				err("mI01", z167, 0x000, 0, 0, Local0, c00a)
+				err("mI01", z167, __LINE__, 0, 0, Local0, c00a)
 			}
 
 			if (LNot(run4)) { // Run on ACPICA only
 				if (LNotEqual(arg0, "qwrtyu0003")) {
-					err("mI01", z167, 0x007, 0, 0, arg0, "qwrtyu0003")
+					err("mI01", z167, __LINE__, 0, 0, arg0, "qwrtyu0003")
 				}
 			}
 			Return (arg0)
@@ -200,16 +200,16 @@ Method(mI01, 1, Serialized)
 		if (LEqual(cmd0, 3)) {		// String applicable to the Implicit Conversion Rules ("abcd0800")
 			Store(ObjectType(arg0), Local0)
 			if (LNotEqual(Local0, c00a)) {
-				err("mI01", z167, 0x000, 0, 0, Local0, c00a)
+				err("mI01", z167, __LINE__, 0, 0, Local0, c00a)
 			}
 
 			if (LNot(run4)) { // Run on ACPICA only
 				Add(arg0, 5, Local0)
 				if (LNotEqual(Local0, 0xabcd0805)) {
-					err("mI01", z167, 0x001, 0, 0, Local0, 0xabcd0805)
+					err("mI01", z167, __LINE__, 0, 0, Local0, 0xabcd0805)
 				}
 				if (LNotEqual(arg0, "abcd0800")) {
-					err("mI01", z167, 0x007, 0, 0, arg0, "abcd0800")
+					err("mI01", z167, __LINE__, 0, 0, arg0, "abcd0800")
 				}
 			}
 
@@ -219,16 +219,16 @@ Method(mI01, 1, Serialized)
 		if (LEqual(cmd0, 4)) {		// Buffer
 			Store(ObjectType(arg0), Local0)
 			if (LNotEqual(Local0, c00b)) {
-				err("mI01", z167, 0x000, 0, 0, Local0, c00b)
+				err("mI01", z167, __LINE__, 0, 0, Local0, c00b)
 			}
 
 			if (LNot(run4)) { // Run on ACPICA only
 				Add(arg0, 7, Local0)
 				if (LNotEqual(Local0, 0xb4b3b2b1b7)) {
-					err("mI01", z167, 0x001, 0, 0, Local0, 0xb4b3b2b1b7)
+					err("mI01", z167, __LINE__, 0, 0, Local0, 0xb4b3b2b1b7)
 				}
 				if (LNotEqual(arg0, Buffer() {0xb0,0xb1,0xb2,0xb3,0xb4})) {
-					err("mI01", z167, 0x007, 0, 0, arg0, Buffer() {0xb0,0xb1,0xb2,0xb3,0xb4})
+					err("mI01", z167, __LINE__, 0, 0, arg0, Buffer() {0xb0,0xb1,0xb2,0xb3,0xb4})
 				}
 			}
 
@@ -238,11 +238,11 @@ Method(mI01, 1, Serialized)
 		if (LEqual(cmd0, 5)) {		// Package
 			Store(ObjectType(arg0), Local0)
 			if (LNotEqual(Local0, c00c)) {
-				err("mI01", z167, 0x000, 0, 0, Local0, c00c)
+				err("mI01", z167, __LINE__, 0, 0, Local0, c00c)
 			}
 			Store(DerefOf(Index(arg0, 1)), Local0)
 			if (LNotEqual(Local0, 0xabcd0902)) {
-				err("mI01", z167, 0x006, 0, 0, Local0, 0xabcd0902)
+				err("mI01", z167, __LINE__, 0, 0, Local0, 0xabcd0902)
 			}
 			Return (arg0)
 		}
@@ -250,14 +250,14 @@ Method(mI01, 1, Serialized)
 		if (LEqual(cmd0, 6)) {		// Field
 			Store(ObjectType(arg0), Local0)
 			if (LNotEqual(Local0, c009)) {
-				err("mI01", z167, 0x000, 0, 0, Local0, c009)
+				err("mI01", z167, __LINE__, 0, 0, Local0, c009)
 			}
 			Add(arg0, 9, Local0)
 			if (LNotEqual(Local0, 0xabcd0a09)) {
-				err("mI01", z167, 0x001, 0, 0, Local0, 0xabcd0a09)
+				err("mI01", z167, __LINE__, 0, 0, Local0, 0xabcd0a09)
 			}
 			if (LNotEqual(arg0, 0xabcd0a00)) {
-				err("mI01", z167, 0x007, 0, 0, arg0, 0xabcd0a00)
+				err("mI01", z167, __LINE__, 0, 0, arg0, 0xabcd0a00)
 			}
 
 			Return (arg0)
@@ -266,7 +266,7 @@ Method(mI01, 1, Serialized)
 		if (LEqual(cmd0, 7)) {		// Device
 			Store(ObjectType(arg0), Local0)
 			if (LNotEqual(Local0, c00e)) {
-				err("mI01", z167, 0x000, 0, 0, Local0, c00e)
+				err("mI01", z167, __LINE__, 0, 0, Local0, c00e)
 			}
 			Return (arg0)
 		}
@@ -274,7 +274,7 @@ Method(mI01, 1, Serialized)
 		if (LEqual(cmd0, 8)) {		// Event
 			Store(ObjectType(arg0), Local0)
 			if (LNotEqual(Local0, c00f)) {
-				err("mI01", z167, 0x000, 0, 0, Local0, c00f)
+				err("mI01", z167, __LINE__, 0, 0, Local0, c00f)
 			}
 			Return (arg0)
 		}
@@ -282,7 +282,7 @@ Method(mI01, 1, Serialized)
 		if (LEqual(cmd0, 9)) {		// Mutex
 			Store(ObjectType(arg0), Local0)
 			if (LNotEqual(Local0, c011)) {
-				err("mI01", z167, 0x000, 0, 0, Local0, c011)
+				err("mI01", z167, __LINE__, 0, 0, Local0, c011)
 			}
 			Return (arg0)
 		}
@@ -290,7 +290,7 @@ Method(mI01, 1, Serialized)
 		if (LEqual(cmd0, 10)) {		// Operation Region
 			Store(ObjectType(arg0), Local0)
 			if (LNotEqual(Local0, c012)) {
-				err("mI01", z167, 0x000, 0, 0, Local0, c012)
+				err("mI01", z167, __LINE__, 0, 0, Local0, c012)
 			}
 			Return (arg0)
 		}
@@ -298,7 +298,7 @@ Method(mI01, 1, Serialized)
 		if (LEqual(cmd0, 11)) {		// Power Resource
 			Store(ObjectType(arg0), Local0)
 			if (LNotEqual(Local0, c013)) {
-				err("mI01", z167, 0x000, 0, 0, Local0, c013)
+				err("mI01", z167, __LINE__, 0, 0, Local0, c013)
 			}
 			Return (arg0)
 		}
@@ -306,7 +306,7 @@ Method(mI01, 1, Serialized)
 		if (LEqual(cmd0, 12)) {		// Processor
 			Store(ObjectType(arg0), Local0)
 			if (LNotEqual(Local0, c014)) {
-				err("mI01", z167, 0x000, 0, 0, Local0, c014)
+				err("mI01", z167, __LINE__, 0, 0, Local0, c014)
 			}
 			Return (arg0)
 		}
@@ -314,7 +314,7 @@ Method(mI01, 1, Serialized)
 		if (LEqual(cmd0, 13)) {		// Thermal Zone
 			Store(ObjectType(arg0), Local0)
 			if (LNotEqual(Local0, c015)) {
-				err("mI01", z167, 0x000, 0, 0, Local0, c015)
+				err("mI01", z167, __LINE__, 0, 0, Local0, c015)
 			}
 			Return (arg0)
 		}
@@ -322,14 +322,14 @@ Method(mI01, 1, Serialized)
 		if (LEqual(cmd0, 14)) {		// Index Field
 			Store(ObjectType(arg0), Local0)
 			if (LNotEqual(Local0, c009)) {
-				err("mI01", z167, 0x000, 0, 0, Local0, c009)
+				err("mI01", z167, __LINE__, 0, 0, Local0, c009)
 			}
 			Add(arg0, 9, Local0)
 			if (LNotEqual(Local0, 0xabababb4)) {
-				err("mI01", z167, 0x001, 0, 0, Local0, 0xabababb4)
+				err("mI01", z167, __LINE__, 0, 0, Local0, 0xabababb4)
 			}
 			if (LNotEqual(arg0, 0xabababab)) {
-				err("mI01", z167, 0x008, 0, 0, arg0, 0xabababab)
+				err("mI01", z167, __LINE__, 0, 0, arg0, 0xabababab)
 			}
 			Return (arg0)
 		}
@@ -337,14 +337,14 @@ Method(mI01, 1, Serialized)
 		if (LEqual(cmd0, 15)) {		// Bank Field
 			Store(ObjectType(arg0), Local0)
 			if (LNotEqual(Local0, c009)) {
-				err("mI01", z167, 0x000, 0, 0, Local0, c009)
+				err("mI01", z167, __LINE__, 0, 0, Local0, c009)
 			}
 			Add(arg0, 9, Local0)
 			if (LNotEqual(Local0, 9)) {
-				err("mI01", z167, 0x001, 0, 0, Local0, 9)
+				err("mI01", z167, __LINE__, 0, 0, Local0, 9)
 			}
 			if (LNotEqual(arg0, 0)) {
-				err("mI01", z167, 0x009, 0, 0, arg0, 0)
+				err("mI01", z167, __LINE__, 0, 0, arg0, 0)
 			}
 
 			Return (arg0)
@@ -356,16 +356,16 @@ Method(mI01, 1, Serialized)
 
 			Store(ObjectType(arg0), Local0)
 			if (LAnd(LNotEqual(Local0, c009), LNotEqual(Local0, c00b))) {
-				err("mI01", z167, 0x000, 0, 0, Local0, c00b)
+				err("mI01", z167, __LINE__, 0, 0, Local0, c00b)
 			}
 
 			if (chk0) {
 				Add(arg0, 2, Local0)
 				if (LNotEqual(Local0, 0xabcd0d0a)) {
-					err("mI01", z167, 0x001, 0, 0, Local0, 0xabcd0d0a)
+					err("mI01", z167, __LINE__, 0, 0, Local0, 0xabcd0d0a)
 				}
 				if (LNotEqual(arg0, 0xabcd0d08)) {
-					err("mI01", z167, 0x00a, 0, 0, arg0, 0xabcd0d08)
+					err("mI01", z167, __LINE__, 0, 0, arg0, 0xabcd0d08)
 				}
 			}
 			Return (arg0)
@@ -4559,6 +4559,6 @@ Method(ini4)
 	SRMT("in41")
 	in41(0,0,0,0,0,0,0)
 
-	CH03("ini4", z167, 0x000, 0, 0)
+	CH03("ini4", z167, 0x000, __LINE__, 0)
 }
 

@@ -12261,16 +12261,16 @@ Method(m610,, Serialized)
 			m600(arg0, 11, Derefof(Local0), bi11)
 		} else {
 
-			CH03(arg0, z085, 0, 0, 0)
+			CH03(arg0, z085, 0, __LINE__, 0)
 
 			Store(Index(m601(2, 6), "B"), Local3)
-			CH04(arg0, 0, 85, z085, 9, 0, 0)	// AE_INDEX_TO_NOT_ATTACHED
+			CH04(arg0, 0, 85, z085, __LINE__, 0, 0)	// AE_INDEX_TO_NOT_ATTACHED
 
 			Store(Index(m601(3, 6), "B"), Local3)
-			CH04(arg0, 0, 85, z085, 10, 0, 0)	// AE_INDEX_TO_NOT_ATTACHED
+			CH04(arg0, 0, 85, z085, __LINE__, 0, 0)	// AE_INDEX_TO_NOT_ATTACHED
 
 			Store(Index(m601(4, 0), "B"), Local3)
-			CH04(arg0, 0, 85, z085, 11, 0, 0)	// AE_INDEX_TO_NOT_ATTACHED
+			CH04(arg0, 0, 85, z085, __LINE__, 0, 0)	// AE_INDEX_TO_NOT_ATTACHED
 		}
 
 
@@ -12330,16 +12330,16 @@ Method(m610,, Serialized)
 			m600(arg0, 26, Derefof(Local0), bi11)
 		} else {
 
-			CH03(arg0, z085, 0, 0, 0)
+			CH03(arg0, z085, 0, __LINE__, 0)
 
 			Index(m601(2, 6), "B", Local0)
-			CH04(arg0, 0, 85, z085, 24, 0, 0)	// AE_INDEX_TO_NOT_ATTACHED
+			CH04(arg0, 0, 85, z085, __LINE__, 0, 0)	// AE_INDEX_TO_NOT_ATTACHED
 
 			Index(m601(3, 6), "B", Local0)
-			CH04(arg0, 0, 85, z085, 25, 0, 0)	// AE_INDEX_TO_NOT_ATTACHED
+			CH04(arg0, 0, 85, z085, __LINE__, 0, 0)	// AE_INDEX_TO_NOT_ATTACHED
 
 			Index(m601(4, 0), "B", Local0)
-			CH04(arg0, 0, 85, z085, 26, 0, 0)	// AE_INDEX_TO_NOT_ATTACHED
+			CH04(arg0, 0, 85, z085, __LINE__, 0, 0)	// AE_INDEX_TO_NOT_ATTACHED
 		}
 
 
@@ -12421,14 +12421,14 @@ Method(m610,, Serialized)
 	// (it can only be checked an exception does not occur)
 	Method(m02e, 1)
 	{
-		CH03(arg0, z085, 0, 0, 0)
+		CH03(arg0, z085, 0, __LINE__, 0)
 		Fatal(0xff, 0xffffffff, "0321")
 		if (F64) {
 			Fatal(0xff, 0xffffffff, "FE7CB391D650A284")
 		} else {
 			Fatal(0xff, 0xffffffff, "C179B3FE")
 		}
-		CH03(arg0, z085, 1, 0, 0)
+		CH03(arg0, z085, 1, __LINE__, 0)
 	}
 
 	// String to Integer conversion of the String Index and Length
@@ -13126,19 +13126,19 @@ Method(m610,, Serialized)
 	// of the Method execution control operators (Sleep, Stall)
 	Method(m031, 1)
 	{
-		CH03(arg0, z085, 2, 0, 0)
+		CH03(arg0, z085, 2, __LINE__, 0)
 
 		// Sleep
 
 		Store(Timer, Local0)
 
 		Sleep("0321")
-		CH03(arg0, z085, 3, 0, 0)
+		CH03(arg0, z085, 3, __LINE__, 0)
 
 		Store(Timer, Local1)
 		Subtract(Local1, Local0, Local2)
 		if (LLess(Local2, c08c)) {
-			err(arg0, z085, 0, 0, 0, Local2, c08c)
+			err(arg0, z085, __LINE__, 0, 0, Local2, c08c)
 		}
 
 		// Stall
@@ -13146,12 +13146,12 @@ Method(m610,, Serialized)
 		Store(Timer, Local0)
 
 		Stall("63")
-		CH03(arg0, z085, 4, 0, 0)
+		CH03(arg0, z085, 4, __LINE__, 0)
 
 		Store(Timer, Local1)
 		Subtract(Local1, Local0, Local2)
 		if (LLess(Local2, 990)) {
-			err(arg0, z085, 1, 0, 0, Local2, 990)
+			err(arg0, z085, __LINE__, 0, 0, Local2, 990)
 		}
 	}
 
@@ -13162,19 +13162,19 @@ Method(m610,, Serialized)
 		Mutex(MTX0, 0)
 
 		Acquire(MTX0, 0)
-		CH03(arg0, z085, 5, 0, 0)
+		CH03(arg0, z085, 5, __LINE__, 0)
 
 		Store(Timer, Local0)
 
 /* Compiler allows only Integer constant as TimeoutValue (Bug 1)
 		Acquire(MTX0, "0321")
 */
-		CH03(arg0, z085, 6, 0, 0)
+		CH03(arg0, z085, 6, __LINE__, 0)
 
 		Store(Timer, Local1)
 		Subtract(Local1, Local0, Local2)
 		if (LLess(Local2, c08c)) {
-			err(arg0, z085, 0, 0, 0, Local2, c08c)
+			err(arg0, z085, __LINE__, 0, 0, Local2, c08c)
 		}
 	}
 
@@ -13184,17 +13184,17 @@ Method(m610,, Serialized)
 	{
 		Event(EVT0)
 
-		CH03(arg0, z085, 7, 0, 0)
+		CH03(arg0, z085, 7, __LINE__, 0)
 
 		Store(Timer, Local0)
 
 		Wait(EVT0, "0321")
-		CH03(arg0, z085, 8, 0, 0)
+		CH03(arg0, z085, 8, __LINE__, 0)
 
 		Store(Timer, Local1)
 		Subtract(Local1, Local0, Local2)
 		if (LLess(Local2, c08c)) {
-			err(arg0, z085, 0, 0, 0, Local2, c08c)
+			err(arg0, z085, __LINE__, 0, 0, Local2, c08c)
 		}
 	}
 
@@ -24199,16 +24199,16 @@ Method(m610,, Serialized)
 			m600(arg0, 11, Derefof(Local0), bi11)
 		} else {
 
-			CH03(arg0, z085, 0, 0, 0)
+			CH03(arg0, z085, 0, __LINE__, 0)
 
 			Store(Index(m601(2, 6), Buffer(1){0xb}), Local3)
-			CH04(arg0, 0, 85, z085, 9, 0, 0)	// AE_INDEX_TO_NOT_ATTACHED
+			CH04(arg0, 0, 85, z085, __LINE__, 0, 0)	// AE_INDEX_TO_NOT_ATTACHED
 
 			Store(Index(m601(3, 6), Buffer(1){0xb}), Local3)
-			CH04(arg0, 0, 85, z085, 10, 0, 0)	// AE_INDEX_TO_NOT_ATTACHED
+			CH04(arg0, 0, 85, z085, __LINE__, 0, 0)	// AE_INDEX_TO_NOT_ATTACHED
 
 			Store(Index(m601(4, 0), Buffer(1){0xb}), Local3)
-			CH04(arg0, 0, 85, z085, 11, 0, 0)	// AE_INDEX_TO_NOT_ATTACHED
+			CH04(arg0, 0, 85, z085, __LINE__, 0, 0)	// AE_INDEX_TO_NOT_ATTACHED
 		}
 
 		// Method returns Reference
@@ -24267,16 +24267,16 @@ Method(m610,, Serialized)
 			m600(arg0, 26, Derefof(Local0), bi11)
 		} else {
 
-			CH03(arg0, z085, 0, 0, 0)
+			CH03(arg0, z085, 0, __LINE__, 0)
 
 			Index(m601(2, 6), Buffer(1){0xb}, Local0)
-			CH04(arg0, 0, 85, z085, 24, 0, 0)	// AE_INDEX_TO_NOT_ATTACHED
+			CH04(arg0, 0, 85, z085, __LINE__, 0, 0)	// AE_INDEX_TO_NOT_ATTACHED
 
 			Index(m601(3, 6), Buffer(1){0xb}, Local0)
-			CH04(arg0, 0, 85, z085, 25, 0, 0)	// AE_INDEX_TO_NOT_ATTACHED
+			CH04(arg0, 0, 85, z085, __LINE__, 0, 0)	// AE_INDEX_TO_NOT_ATTACHED
 
 			Index(m601(4, 0), Buffer(1){0xb}, Local0)
-			CH04(arg0, 0, 85, z085, 26, 0, 0)	// AE_INDEX_TO_NOT_ATTACHED
+			CH04(arg0, 0, 85, z085, __LINE__, 0, 0)	// AE_INDEX_TO_NOT_ATTACHED
 		}
 
 		// Method returns Reference
@@ -24357,14 +24357,14 @@ Method(m610,, Serialized)
 	// (it can only be checked an exception does not occur)
 	Method(m068, 1)
 	{
-		CH03(arg0, z085, 9, 0, 0)
+		CH03(arg0, z085, 9, __LINE__, 0)
 		Fatal(0xff, 0xffffffff, Buffer(3){0x21, 0x03, 0x00})
 		if (F64) {
 			Fatal(0xff, 0xffffffff, Buffer(9){0x84, 0xA2, 0x50, 0xD6, 0x91, 0xB3, 0x7C, 0xFE, 0xa5})
 		} else {
 			Fatal(0xff, 0xffffffff, Buffer(9){0x84, 0xA2, 0x50, 0xD6, 0x91, 0xB3, 0x7C, 0xFE, 0xa5})
 		}
-		CH03(arg0, z085, 10, 0, 0)
+		CH03(arg0, z085, 10, __LINE__, 0)
 	}
 
 	// Buffer to Integer conversion of the Buffer Index and Length
@@ -25030,19 +25030,19 @@ Method(m610,, Serialized)
 	// of the Method execution control operators (Sleep, Stall)
 	Method(m06b, 1)
 	{
-		CH03(arg0, z085, 11, 0, 0)
+		CH03(arg0, z085, 11, __LINE__, 0)
 
 		// Sleep
 
 		Store(Timer, Local0)
 
 		Sleep(Buffer(3){0x21, 0x03, 0x00})
-		CH03(arg0, z085, 12, 0, 0)
+		CH03(arg0, z085, 12, __LINE__, 0)
 
 		Store(Timer, Local1)
 		Subtract(Local1, Local0, Local2)
 		if (LLess(Local2, c08c)) {
-			err(arg0, z085, 0, 0, 0, Local2, c08c)
+			err(arg0, z085, __LINE__, 0, 0, Local2, c08c)
 		}
 
 		// Stall
@@ -25050,12 +25050,12 @@ Method(m610,, Serialized)
 		Store(Timer, Local0)
 
 		Stall(Buffer(1){0x3f})
-		CH03(arg0, z085, 13, 0, 0)
+		CH03(arg0, z085, 13, __LINE__, 0)
 
 		Store(Timer, Local1)
 		Subtract(Local1, Local0, Local2)
 		if (LLess(Local2, 990)) {
-			err(arg0, z085, 1, 0, 0, Local2, 990)
+			err(arg0, z085, __LINE__, 0, 0, Local2, 990)
 		}
 	}
 
@@ -25067,19 +25067,19 @@ Method(m610,, Serialized)
 		Mutex(MTX0, 0)
 
 		Acquire(MTX0, 0)
-		CH03(arg0, z085, 14, 0, 0)
+		CH03(arg0, z085, 14, __LINE__, 0)
 
 		Store(Timer, Local0)
 
 /* Compiler allows only Integer constant as TimeoutValue (Bug 1)
 		Acquire(MTX0, Buffer(3){0x21, 0x03, 0x00})
 */
-		CH03(arg0, z085, 15, 0, 0)
+		CH03(arg0, z085, 15, __LINE__, 0)
 
 		Store(Timer, Local1)
 		Subtract(Local1, Local0, Local2)
 		if (LLess(Local2, c08c)) {
-			err(arg0, z085, 0, 0, 0, Local2, c08c)
+			err(arg0, z085, __LINE__, 0, 0, Local2, c08c)
 		}
 	}
 
@@ -25089,17 +25089,17 @@ Method(m610,, Serialized)
 	{
 		Event(EVT0)
 
-		CH03(arg0, z085, 16, 0, 0)
+		CH03(arg0, z085, 16, __LINE__, 0)
 
 		Store(Timer, Local0)
 
 		Wait(EVT0, Buffer(3){0x21, 0x03, 0x00})
-		CH03(arg0, z085, 17, 0, 0)
+		CH03(arg0, z085, 17, __LINE__, 0)
 
 		Store(Timer, Local1)
 		Subtract(Local1, Local0, Local2)
 		if (LLess(Local2, c08c)) {
-			err(arg0, z085, 0, 0, 0, Local2, c08c)
+			err(arg0, z085, __LINE__, 0, 0, Local2, c08c)
 		}
 	}
 

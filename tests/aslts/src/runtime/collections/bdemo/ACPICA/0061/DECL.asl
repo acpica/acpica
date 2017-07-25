@@ -38,9 +38,9 @@
 Method(m206, 2)
 {
 	if (SLCK) {
-		CH03("", 0, arg0, 0, 0)
+		CH03("", 0, arg0, __LINE__, 0)
 	} else {
-		CH04("", 0, 47, 0, arg1, 0, 0)
+		CH04("", 0, 47, 0, __LINE__, 0, 0)
 	}
 }
 
@@ -53,7 +53,7 @@ Method(me02)
 /*
 // Removed 09/2015
 
-	CH03("", 0, 0x000, 0, 0)
+	CH03("", 0, 0x000, __LINE__, 0)
 	Store(rd01, Local7)
 	m206(0x001, 0x002)
 */
@@ -75,7 +75,7 @@ Method(me04)
 /*
 // Removed 09/2015
 
-	CH03("", 0, 0x003, 0, 0)
+	CH03("", 0, 0x003, __LINE__, 0)
 	Store(rd02, Local7)
 	m206(0x004, 0x005)
 */
@@ -116,6 +116,6 @@ Method(me07)
 	me03()
 	me06()
 	if (LNotEqual(id09, 1)) {
-		err("", zFFF, 0x002, 0, 0, id09, 1)
+		err("", zFFF, __LINE__, 0, 0, id09, 1)
 	}
 }

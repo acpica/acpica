@@ -375,7 +375,7 @@ Method(m80f,, Serialized)
 
 		CopyObject(DerefOf(ir00), Local0)
 		if (LNotEqual(Local0, arg0)) {
-			err("", zFFF, 0x534, 0, 0, Local0, arg0)
+			err("", zFFF, __LINE__, 0, 0, Local0, arg0)
 		}
 	}
 	m000()

@@ -115,16 +115,16 @@ Method(m7f0, 1)
 	\DTR0._REG(0x101, 2)
 
 	if (LNotEqual(\DTR0.IRSK, 1)) {
-		err(arg0, z142, 1, 0, 0, \DTR0.IRSK, 1)
+		err(arg0, z142, __LINE__, 0, 0, \DTR0.IRSK, 1)
 	}
 	if (LNotEqual(\DTR0.IFLG, 1)) {
-		err(arg0, z142, 2, 0, 0, \DTR0.IFLG, 1)
+		err(arg0, z142, __LINE__, 0, 0, \DTR0.IFLG, 1)
 	}
 	if (LNotEqual(\DTR0.VRSK, 2)) {
-		err(arg0, z142, 3, 0, 0, \DTR0.VRSK, 2)
+		err(arg0, z142, __LINE__, 0, 0, \DTR0.VRSK, 2)
 	}
 	if (LNotEqual(Derefof(Index(\DTR0.VFLG, 1)), 2)) {
-		err(arg0, z142, 4, 0, 0, Derefof(Index(\DTR0.VFLG, 1)), 2)
+		err(arg0, z142, __LINE__, 0, 0, Derefof(Index(\DTR0.VFLG, 1)), 2)
 	}
 }
 
@@ -175,34 +175,34 @@ Method(m7f1, 1, Serialized)
 	Concatenate(arg0, "-m7f1", arg0)
 
 	if (LNotEqual(VRSK, 0)) {
-		err(arg0, z142, 5, 0, 0, VRSK, 0)
+		err(arg0, z142, __LINE__, 0, 0, VRSK, 0)
 	}
 	if (LNotEqual(Derefof(Index(VFLG, 1)), 0)) {
-		err(arg0, z142, 6, 0, 0, Derefof(Index(VFLG, 1)), 0)
+		err(arg0, z142, __LINE__, 0, 0, Derefof(Index(VFLG, 1)), 0)
 	}
 
 	DataTableRegion (DR00, "SSDT", "", "")
 
 	if (LNotEqual(IRSK, 0)) {
-		err(arg0, z142, 8, 0, 0, IRSK, 0)
+		err(arg0, z142, __LINE__, 0, 0, IRSK, 0)
 	}
 	if (LNotEqual(IFLG, 0)) {
-		err(arg0, z142, 9, 0, 0, IFLG, 0)
+		err(arg0, z142, __LINE__, 0, 0, IFLG, 0)
 	}
 
 	_REG(0x101, 2)
 
 	if (LNotEqual(IRSK, 1)) {
-		err(arg0, z142, 10, 0, 0, IRSK, 1)
+		err(arg0, z142, __LINE__, 0, 0, IRSK, 1)
 	}
 	if (LNotEqual(IFLG, 1)) {
-		err(arg0, z142, 11, 0, 0, IFLG, 1)
+		err(arg0, z142, __LINE__, 0, 0, IFLG, 1)
 	}
 	if (LNotEqual(VRSK, 1)) {
-		err(arg0, z142, 12, 0, 0, VRSK, 1)
+		err(arg0, z142, __LINE__, 0, 0, VRSK, 1)
 	}
 	if (LNotEqual(Derefof(Index(VFLG, 1)), 1)) {
-		err(arg0, z142, 13, 0, 0, Derefof(Index(VFLG, 1)), 1)
+		err(arg0, z142, __LINE__, 0, 0, Derefof(Index(VFLG, 1)), 1)
 	}
 }
 
@@ -221,12 +221,12 @@ Method(m7f2, 1, Serialized)
 
 	Store(Derefof(Local0), Local2)
 
-	CH03(arg0, z142, 16, 0, 0)
+	CH03(arg0, z142, 16, __LINE__, 0)
 
 	Store(\DTR0.SSDT, Local3)
 
 	if (LNotEqual(Local2, Local3)) {
-		err(arg0, z142, 17, 0, 0, Local2, Local3)
+		err(arg0, z142, __LINE__, 0, 0, Local2, Local3)
 	}
 }
 
@@ -249,7 +249,7 @@ Method(m7f3, 1, Serialized)
 		Store(\DTR0.SSDT, Local1)
 
 		if (LNotEqual(Local0, Local1)) {
-			err(arg0, z142, 18, 0, 0, Local0, Local1)
+			err(arg0, z142, __LINE__, 0, 0, Local0, Local1)
 		}
 	}
 
@@ -264,7 +264,7 @@ Method(m7f3, 1, Serialized)
 		Store(\DTR0.SSDT, Local1)
 
 		if (LNotEqual(Local0, Local1)) {
-			err(arg0, z142, 19, 0, 0, Local0, Local1)
+			err(arg0, z142, __LINE__, 0, 0, Local0, Local1)
 		}
 	}
 
@@ -279,7 +279,7 @@ Method(m7f3, 1, Serialized)
 		Store(\DTR0.SSDT, Local1)
 
 		if (LNotEqual(Local0, Local1)) {
-			err(arg0, z142, 20, 0, 0, Local0, Local1)
+			err(arg0, z142, __LINE__, 0, 0, Local0, Local1)
 		}
 	}
 
@@ -298,7 +298,7 @@ Method(m7f3, 1, Serialized)
 		Store(\DTR0.SSDT, Local1)
 
 		if (LNotEqual(Local0, Local1)) {
-			err(arg0, z142, 21, 0, 0, Local0, Local1)
+			err(arg0, z142, __LINE__, 0, 0, Local0, Local1)
 		}
 	}
 
@@ -316,7 +316,7 @@ Method(m7f3, 1, Serialized)
 		Store(\DTR0.SSDT, Local1)
 
 		if (LNotEqual(Local0, Local1)) {
-			err(arg0, z142, 22, 0, 0, Local0, Local1)
+			err(arg0, z142, __LINE__, 0, 0, Local0, Local1)
 		}
 	}
 
@@ -343,7 +343,7 @@ Method(m7f4, 1)
 		Store(ToString(FU00, 4), Local0)
 
 		if (LNotEqual(Local0, arg1)) {
-			err(arg0, z142, arg2, 0, 0, Local0, arg1)
+			err(arg0, z142, __LINE__, 0, 0, Local0, arg1)
 		}
 	}
 

@@ -52,7 +52,7 @@
 
 		Concatenate(b000, b001, Local0)
 		if (LNotEqual(Local0, Buffer(7){1,2,3,4,5,6,7})) {
-			err("", zFFF, 0x000, 0, 0, Local0, Buffer(7){1,2,3,4,5,6,7})
+			err("", zFFF, __LINE__, 0, 0, Local0, Buffer(7){1,2,3,4,5,6,7})
 		}
 
 		// 2.
@@ -67,7 +67,7 @@
 
 		Concatenate(Local0, b001, Local0)
 		if (LNotEqual(Local0, Buffer(7){1,2,3,4,5,6,7})) {
-			err("", zFFF, 0x001, 0, 0, Local0, Buffer(7){1,2,3,4,5,6,7})
+			err("", zFFF, __LINE__, 0, 0, Local0, Buffer(7){1,2,3,4,5,6,7})
 		}
 	}
 
@@ -89,7 +89,7 @@
 
 		Concatenate(s000, s001, Local0)
 		if (LNotEqual(Local0, "String1")) {
-			err("", zFFF, 0x002, 0, 0, Local0, "String1")
+			err("", zFFF, __LINE__, 0, 0, Local0, "String1")
 		}
 
 		// 4.
@@ -104,7 +104,7 @@
 
 		Concatenate(Local0, s001, Local0)
 		if (LNotEqual(Local0, "String1")) {
-			err("", zFFF, 0x003, 0, 0, Local0, "String1")
+			err("", zFFF, __LINE__, 0, 0, Local0, "String1")
 		}
 	}
 

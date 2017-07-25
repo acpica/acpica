@@ -43,9 +43,9 @@ Method(m380, 4)
 	Store(ObjectType(arg1), Local0)
 
 	if (LNotEqual(Local0, c009)) {
-		err(arg0, z115, 0, arg2, arg3, Local0, c009)
+		err(arg0, z115, __LINE__, arg2, arg3, Local0, c009)
 	} elseif (LNotEqual(arg1, 0x77)) {
-		err(arg0, z115, 1, arg2, arg3, arg1, 0x77)
+		err(arg0, z115, __LINE__, arg2, arg3, arg1, 0x77)
 	}
 }
 
@@ -58,9 +58,9 @@ Method(m381, 4)
 	Store(ObjectType(arg1), Local0)
 
 	if (LNotEqual(Local0, c00a)) {
-		err(arg0, z115, 2, arg2, arg3, Local0, c00a)
+		err(arg0, z115, __LINE__, arg2, arg3, Local0, c00a)
 	} elseif (LNotEqual(arg1, "qwer0000")) {
-		err(arg0, z115, 3, arg2, arg3, arg1, "qwer0000")
+		err(arg0, z115, __LINE__, arg2, arg3, arg1, "qwer0000")
 	}
 }
 
@@ -73,9 +73,9 @@ Method(m382, 4)
 	Store(ObjectType(arg1), Local0)
 
 	if (LNotEqual(Local0, c00b)) {
-		err(arg0, z115, 4, arg2, arg3, Local0, c00b)
+		err(arg0, z115, __LINE__, arg2, arg3, Local0, c00b)
 	} elseif (LNotEqual(arg1, Buffer(4) {1,0x77,3,4})) {
-		err(arg0, z115, 5, arg2, arg3, arg1, Buffer(4) {1,0x77,3,4})
+		err(arg0, z115, __LINE__, arg2, arg3, arg1, Buffer(4) {1,0x77,3,4})
 	}
 }
 
@@ -88,24 +88,24 @@ Method(m383, 4)
 	Store(ObjectType(arg1), Local0)
 
 	if (LNotEqual(Local0, c00c)) {
-		err(arg0, z115, 6, arg2, arg3, Local0, c00c)
+		err(arg0, z115, __LINE__, arg2, arg3, Local0, c00c)
 	} else {
 		Index(arg1, 0, Local0)
 		Store(DerefOf(Local0), Local1)
 		if (LNotEqual(Local1, 5)) {
-			err(arg0, z115, 7, arg2, arg3, Local1, 5)
+			err(arg0, z115, __LINE__, arg2, arg3, Local1, 5)
 		}
 
 		Index(arg1, 1, Local0)
 		Store(DerefOf(Local0), Local1)
 		if (LNotEqual(Local1, 0x77)) {
-			err(arg0, z115, 8, arg2, arg3, Local1, 0x77)
+			err(arg0, z115, __LINE__, arg2, arg3, Local1, 0x77)
 		}
 
 		Index(arg1, 2, Local0)
 		Store(DerefOf(Local0), Local1)
 		if (LNotEqual(Local1, 7)) {
-			err(arg0, z115, 9, arg2, arg3, Local1, 7)
+			err(arg0, z115, __LINE__, arg2, arg3, Local1, 7)
 		}
 	}
 }
@@ -121,9 +121,9 @@ Method(m384, 4)
 	Store(ObjectType(arg1), Local0)
 
 	if (LNotEqual(Local0, c009)) {
-		err(arg0, z115, 10, arg2, arg3, Local0, c009)
+		err(arg0, z115, __LINE__, arg2, arg3, Local0, c009)
 	} elseif (LNotEqual(arg1, 0x2b)) {
-		err(arg0, z115, 11, arg2, arg3, arg1, 0x2b)
+		err(arg0, z115, __LINE__, arg2, arg3, arg1, 0x2b)
 	}
 }
 
@@ -136,9 +136,9 @@ Method(m385, 4)
 	Store(ObjectType(arg1), Local0)
 
 	if (LNotEqual(Local0, c00a)) {
-		err(arg0, z115, 12, arg2, arg3, Local0, c00a)
+		err(arg0, z115, __LINE__, arg2, arg3, Local0, c00a)
 	} elseif (LNotEqual(arg1, "q+er0000")) {
-		err(arg0, z115, 13, arg2, arg3, arg1, "q+er0000")
+		err(arg0, z115, __LINE__, arg2, arg3, arg1, "q+er0000")
 	}
 }
 
@@ -151,9 +151,9 @@ Method(m386, 4)
 	Store(ObjectType(arg1), Local0)
 
 	if (LNotEqual(Local0, c00b)) {
-		err(arg0, z115, 14, arg2, arg3, Local0, c00b)
+		err(arg0, z115, __LINE__, arg2, arg3, Local0, c00b)
 	} elseif (LNotEqual(arg1, Buffer(4) {1,0x2b,3,4})) {
-		err(arg0, z115, 15, arg2, arg3, arg1, Buffer(4) {1,0x2b,3,4})
+		err(arg0, z115, __LINE__, arg2, arg3, arg1, Buffer(4) {1,0x2b,3,4})
 	}
 }
 
@@ -166,24 +166,24 @@ Method(m387, 4)
 	Store(ObjectType(arg1), Local0)
 
 	if (LNotEqual(Local0, c00c)) {
-		err(arg0, z115, 16, arg2, arg3, Local0, c00c)
+		err(arg0, z115, __LINE__, arg2, arg3, Local0, c00c)
 	} else {
 		Index(arg1, 0, Local0)
 		Store(DerefOf(Local0), Local1)
 		if (LNotEqual(Local1, 5)) {
-			err(arg0, z115, 17, arg2, arg3, Local1, 5)
+			err(arg0, z115, __LINE__, arg2, arg3, Local1, 5)
 		}
 
 		Index(arg1, 1, Local0)
 		Store(DerefOf(Local0), Local1)
 		if (LNotEqual(Local1, 0x2b)) {
-			err(arg0, z115, 18, arg2, arg3, Local1, 0x2b)
+			err(arg0, z115, __LINE__, arg2, arg3, Local1, 0x2b)
 		}
 
 		Index(arg1, 2, Local0)
 		Store(DerefOf(Local0), Local1)
 		if (LNotEqual(Local1, 7)) {
-			err(arg0, z115, 19, arg2, arg3, Local1, 7)
+			err(arg0, z115, __LINE__, arg2, arg3, Local1, 7)
 		}
 	}
 }

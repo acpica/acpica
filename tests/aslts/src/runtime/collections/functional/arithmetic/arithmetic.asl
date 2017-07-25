@@ -55,95 +55,95 @@ Method(m000, 6, Serialized)
 			case (0) {
 				Add(Local0, Local1, Local7)
 				if (LNotEqual(Local7, Local2)) {
-					err(arg0, z083, 0, 0, 0, Local5, arg2)
+					err(arg0, z083, __LINE__, 0, 0, Local5, arg2)
 				}
 				Add(Local1, Local0, Local7)
 				if (LNotEqual(Local7, Local2)) {
-					err(arg0, z083, 1, 0, 0, Local5, arg2)
+					err(arg0, z083, __LINE__, 0, 0, Local5, arg2)
 				}
 			}
 			case (1) {
 				Subtract(Local0, Local1, Local7)
 				if (LNotEqual(Local7, Local2)) {
-					err(arg0, z083, 2, 0, 0, Local5, arg2)
+					err(arg0, z083, __LINE__, 0, 0, Local5, arg2)
 				}
 			}
 			case (2) {
 				Multiply(Local0, Local1, Local7)
 				if (LNotEqual(Local7, Local2)) {
-					err(arg0, z083, 3, 0, 0, Local5, arg2)
+					err(arg0, z083, __LINE__, 0, 0, Local5, arg2)
 				}
 				Multiply(Local1, Local0, Local7)
 				if (LNotEqual(Local7, Local2)) {
-					err(arg0, z083, 4, 0, 0, Local5, arg2)
+					err(arg0, z083, __LINE__, 0, 0, Local5, arg2)
 				}
 			}
 			case (3) {
 				And(Local0, Local1, Local7)
 				if (LNotEqual(Local7, Local2)) {
-					err(arg0, z083, 5, 0, 0, Local5, arg2)
+					err(arg0, z083, __LINE__, 0, 0, Local5, arg2)
 				}
 				And(Local1, Local0, Local7)
 				if (LNotEqual(Local7, Local2)) {
-					err(arg0, z083, 6, 0, 0, Local5, arg2)
+					err(arg0, z083, __LINE__, 0, 0, Local5, arg2)
 				}
 			}
 			case (4) {
 				Nand(Local0, Local1, Local7)
 				if (LNotEqual(Local7, Local2)) {
-					err(arg0, z083, 7, 0, 0, Local5, arg2)
+					err(arg0, z083, __LINE__, 0, 0, Local5, arg2)
 				}
 				Nand(Local1, Local0, Local7)
 				if (LNotEqual(Local7, Local2)) {
-					err(arg0, z083, 8, 0, 0, Local5, arg2)
+					err(arg0, z083, __LINE__, 0, 0, Local5, arg2)
 				}
 			}
 			case (5) {
 				Nor(Local0, Local1, Local7)
 				if (LNotEqual(Local7, Local2)) {
-					err(arg0, z083, 9, 0, 0, Local5, arg2)
+					err(arg0, z083, __LINE__, 0, 0, Local5, arg2)
 				}
 				Nor(Local1, Local0, Local7)
 				if (LNotEqual(Local7, Local2)) {
-					err(arg0, z083, 10, 0, 0, Local5, arg2)
+					err(arg0, z083, __LINE__, 0, 0, Local5, arg2)
 				}
 			}
 			case (6) {
 				Or(Local0, Local1, Local7)
 				if (LNotEqual(Local7, Local2)) {
-					err(arg0, z083, 11, 0, 0, Local5, arg2)
+					err(arg0, z083, __LINE__, 0, 0, Local5, arg2)
 				}
 				Or(Local1, Local0, Local7)
 				if (LNotEqual(Local7, Local2)) {
-					err(arg0, z083, 12, 0, 0, Local5, arg2)
+					err(arg0, z083, __LINE__, 0, 0, Local5, arg2)
 				}
 			}
 			case (7) {
 				Xor(Local0, Local1, Local7)
 				if (LNotEqual(Local7, Local2)) {
-					err(arg0, z083, 13, 0, 0, Local5, arg2)
+					err(arg0, z083, __LINE__, 0, 0, Local5, arg2)
 				}
 				Xor(Local1, Local0, Local7)
 				if (LNotEqual(Local7, Local2)) {
-					err(arg0, z083, 14, 0, 0, Local5, arg2)
+					err(arg0, z083, __LINE__, 0, 0, Local5, arg2)
 				}
 			}
 			case (8) {
 				Mod(Local0, Local1, Local7)
 				if (LNotEqual(Local7, Local2)) {
-					err(arg0, z083, 15, 0, 0, Local5, arg2)
+					err(arg0, z083, __LINE__, 0, 0, Local5, arg2)
 				}
 			}
 			case (9) {
 				ShiftLeft(Local0, Local1, Local7)
 				if (LNotEqual(Local7, Local2)) {
-					err(arg0, z083, 16, 0, 0, Local5, arg2)
+					err(arg0, z083, __LINE__, 0, 0, Local5, arg2)
 				}
 			}
 			case (10) {
 				ShiftRight(Local0, Local1, Local7)
 				if (LNotEqual(Local7, Local2)) {
-					err(arg0, z083, 17, 0, 0, Local5, arg2)
+					err(arg0, z083, __LINE__, 0, 0, Local5, arg2)
 				}
 			}
 		}
@@ -178,10 +178,10 @@ Method(m001, 6, Serialized)
 			case (0) {
 				Divide(Local0, Local1, Local6, Local7)
 				if (LNotEqual(Local7, Local2)) {
-					err(arg0, z083, 18, 0, 0, Local5, arg2)
+					err(arg0, z083, __LINE__, 0, 0, Local5, arg2)
 				}
 				if (LNotEqual(Local6, Local3)) {
-					err(arg0, z083, 19, 0, 0, Local5, arg2)
+					err(arg0, z083, __LINE__, 0, 0, Local5, arg2)
 				}
 			}
 		}
@@ -210,31 +210,31 @@ Method(m002, 6, Serialized)
 			case (0) {
 				Increment(Local0)
 				if (LNotEqual(Local0, Local1)) {
-					err(arg0, z083, 20, 0, 0, Local5, arg2)
+					err(arg0, z083, __LINE__, 0, 0, Local5, arg2)
 				}
 			}
 			case (1) {
 				Decrement(Local0)
 				if (LNotEqual(Local0, Local1)) {
-					err(arg0, z083, 21, 0, 0, Local5, arg2)
+					err(arg0, z083, __LINE__, 0, 0, Local5, arg2)
 				}
 			}
 			case (2) {
 				Not(Local0, Local2)
 				if (LNotEqual(Local2, Local1)) {
-					err(arg0, z083, 22, 0, 0, Local5, arg2)
+					err(arg0, z083, __LINE__, 0, 0, Local5, arg2)
 				}
 			}
 			case (3) {
 				FindSetLeftBit(Local0, Local2)
 				if (LNotEqual(Local2, Local1)) {
-					err(arg0, z083, 23, 0, 0, Local5, arg2)
+					err(arg0, z083, __LINE__, 0, 0, Local5, arg2)
 				}
 			}
 			case (4) {
 				FindSetRightBit(Local0, Local2)
 				if (LNotEqual(Local2, Local1)) {
-					err(arg0, z083, 24, 0, 0, Local5, arg2)
+					err(arg0, z083, __LINE__, 0, 0, Local5, arg2)
 				}
 			}
 		}
@@ -1441,7 +1441,7 @@ Method(FSL0,, Serialized)
 		FindSetLeftBit(Local2, Local3)
 		Add(Local1, 1, Local4)
 		if (LNotEqual(Local3, Local4)) {
-			err(ts, z083, 25, 0, 0, Local0, 0)
+			err(ts, z083, __LINE__, 0, 0, Local0, 0)
 		}
 		Increment(Local1)
 		Decrement(Local0)
@@ -1502,7 +1502,7 @@ Method(FSR0,, Serialized)
 		}
 		FindSetRightBit(Local2, Local3)
 		if (LNotEqual(Local3, Local4)) {
-			err(ts, z083, 26, 0, 0, Local0, 0)
+			err(ts, z083, __LINE__, 0, 0, Local0, 0)
 		}
 		Increment(Local1)
 		Decrement(Local0)

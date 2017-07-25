@@ -83,9 +83,9 @@ Method(m4be,, Serialized)
 
 		Store (Index(bf03, 0), Local1)
 		if (y900) {
-			CH03(ts, z106, 0, 0, 0)
+			CH03(ts, z106, 0, __LINE__, 0)
 		} else {
-			CH04(ts, 0, 85, z106, 0x123, 0, 0) // AE_INDEX_TO_NOT_ATTACHED
+			CH04(ts, 0, 85, z106, __LINE__, 0, 0) // AE_INDEX_TO_NOT_ATTACHED
 		}
 	}
 
@@ -114,9 +114,9 @@ Method(m4be,, Serialized)
 
 		Store (Index(bf21, 0), Local1)
 		if (y900) {
-			CH03(ts, z106, 1, 0, 0)
+			CH03(ts, z106, 1, __LINE__, 0)
 		} else {
-			CH04(ts, 0, 85, z106, 0x123, 0, 0) // AE_INDEX_TO_NOT_ATTACHED
+			CH04(ts, 0, 85, z106, __LINE__, 0, 0) // AE_INDEX_TO_NOT_ATTACHED
 		}
 
 	}
@@ -129,12 +129,12 @@ Method(m4be,, Serialized)
 
 		Store(ObjectType(arg1), Local0)
 		if (LNotEqual(Local0, 14)) {
-			err(arg0, z106, 6, 0, 0, Local0, 14)
+			err(arg0, z106, __LINE__, 0, 0, Local0, 14)
 			return (1)
 		}
 
 		Store (DerefOf(arg1), Local1)
-		CH03(ts, z106, 2, 0, 0)
+		CH03(ts, z106, 2, __LINE__, 0)
 
 		Store (DerefOf(DerefOf(arg1)), Local1)
 		CH06(arg0, 7, 47)
@@ -144,9 +144,9 @@ Method(m4be,, Serialized)
 		if (arg2) {
 			// Like Buffer behaviour
 			if (y900) {
-				CH03(ts, z106, 3, 0, 0)
+				CH03(ts, z106, 3, __LINE__, 0)
 			} else {
-				CH04(ts, 0, 85, z106, 0x123, 0, 0) // AE_INDEX_TO_NOT_ATTACHED
+				CH04(ts, 0, 85, z106, __LINE__, 0, 0) // AE_INDEX_TO_NOT_ATTACHED
 			}
 		} else {
 			// Like Integer behaviour
@@ -186,7 +186,7 @@ Method(m4be,, Serialized)
 		Method(CH00, 2)
 		{
 			if (LNotEqual(i000, arg1)) {
-				err(arg0, z106, 10, 0, 0, i000, arg1)
+				err(arg0, z106, __LINE__, 0, 0, i000, arg1)
 			}
 		}
 
@@ -218,7 +218,7 @@ Method(m4be,, Serialized)
 				if (y900) {
 					CH03(ts, z106, Add(8, lpC0), 0, 0)
 				} else {
-					CH04(ts, 0, 85, z106, 0x123, 0, 0) // AE_INDEX_TO_NOT_ATTACHED
+					CH04(ts, 0, 85, z106, __LINE__, 0, 0) // AE_INDEX_TO_NOT_ATTACHED
 				}
 			} else {
 				// Like Integer behaviour
@@ -235,7 +235,7 @@ Method(m4be,, Serialized)
 		}
 	}
 
-	CH03(ts, z106, 12, 0, 0)
+	CH03(ts, z106, 12, __LINE__, 0)
 
 	// Local Named Object
 	m000(ts)

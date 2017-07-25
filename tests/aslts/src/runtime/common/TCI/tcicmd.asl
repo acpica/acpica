@@ -184,12 +184,12 @@ Method(m165, 2, Serialized)
 				Store(arg1, num)
 			}
 			Default {
-				err("m165", z128, 0, 0, 0, arg0, 0)
+				err("m165", z128, __LINE__, 0, 0, arg0, 0)
 			}
 		}
 
 		if (LLess(num, c22b)) {
-			err("m165", z128, 0, 0, 0, num, c22b)
+			err("m165", z128, __LINE__, 0, 0, num, c22b)
 		} else {
 			Name(p000, Package(num) {})
 			Name(lpN0, 0)
@@ -456,7 +456,7 @@ Method(m3a4, 7, Serialized)
 
 			if (LNotEqual(Local6, Local5)) {
 				if (LNot(DE00)) {
-					err("m3a4", z128, 1, 0, arg6, Local6, Local5)
+					err("m3a4", z128, __LINE__, 0, arg6, Local6, Local5)
 					Store(lpC0, Debug)
 					Store(Local0, Debug)
 					Store(Local1, Debug)
@@ -486,7 +486,7 @@ Method(m3a4, 7, Serialized)
 			Store(DerefOf(Index(arg2, Local1)), Local3)
 			if (LNotEqual(Local2, Local3)) {
 				if (LNot(DE00)) {
-					err("m3a4", z128, 2, 0, arg6, Local2, Local3)
+					err("m3a4", z128, __LINE__, 0, arg6, Local2, Local3)
 				}
 				Store(1, Local7)
 			}
@@ -515,7 +515,7 @@ Method(m3a4, 7, Serialized)
 		Add(Local4, Local5, Local6)
 		if (LNotEqual(Local3, Local6)) {
 			if (LNot(DE00)) {
-				err("m3a4", z128, 3, 0, arg6, Local3, Local6)
+				err("m3a4", z128, __LINE__, 0, arg6, Local3, Local6)
 			}
 			Store(1, Local7)
 		}
@@ -545,7 +545,7 @@ Method(m3a4, 7, Serialized)
 		Add(Local4, Local5, Local6)
 		if (LNotEqual(Local3, Local6)) {
 			if (LNot(DE00)) {
-				err("m3a4", z128, 4, 0, arg6, Local3, Local6)
+				err("m3a4", z128, __LINE__, 0, arg6, Local3, Local6)
 			}
 			Store(1, Local7)
 		}
@@ -571,7 +571,7 @@ Method(m3a4, 7, Serialized)
 			Store(DerefOf(Index(arg3, Local1)), Local3)
 			if (LNotEqual(Local2, Local3)) {
 				if (LNot(DE00)) {
-					err("m3a4", z128, 5, 0, arg6, Local2, Local3)
+					err("m3a4", z128, __LINE__, 0, arg6, Local2, Local3)
 				}
 				Store(1, Local7)
 			}
@@ -605,7 +605,7 @@ Method(m3a4, 7, Serialized)
 			Store(DerefOf(Index(Local4, Local1)), Local3)
 			if (LNotEqual(Local2, Local3)) {
 				if (LNot(DE00)) {
-					err("m3a4", z128, 6, 0, arg6, Local2, Local3)
+					err("m3a4", z128, __LINE__, 0, arg6, Local2, Local3)
 				}
 				Store(1, Local7)
 			}
@@ -668,7 +668,7 @@ Method(m3a6, 3)
 
 	Store(DerefOf(Index(arg0, 0)), Local1)
 	if (LNotEqual(Local1, Local0)) {
-		err("m3a6", z128, 7, 0, arg2, Local1, Local0)
+		err("m3a6", z128, __LINE__, 0, arg2, Local1, Local0)
 		Store(1, Local7)
 	}
 
@@ -676,7 +676,7 @@ Method(m3a6, 3)
 
 	Store(DerefOf(Index(arg0, 1)), Local1)
 	if (LNotEqual(Local1, c220)) {
-		err("m3a6", z128, 8, 0, arg2, Local1, c220)
+		err("m3a6", z128, __LINE__, 0, arg2, Local1, c220)
 		Store(1, Local7)
 	}
 
@@ -690,7 +690,7 @@ Method(m3a6, 3)
 
 	Store(DerefOf(Index(arg0, 2)), Local1)
 	if (LNotEqual(Local1, Local0)) {
-		err("m3a6", z128, 9, 0, arg2, Local1, Local0)
+		err("m3a6", z128, __LINE__, 0, arg2, Local1, Local0)
 		Store(1, Local7)
 	}
 
@@ -698,7 +698,7 @@ Method(m3a6, 3)
 
 	Store(DerefOf(Index(arg0, 3)), Local1)
 	if (LNot(Local1)) {
-		err("m3a6", z128, 10, 0, arg2, Local1, 1)
+		err("m3a6", z128, __LINE__, 0, arg2, Local1, 1)
 		Store(1, Local7)
 	}
 
@@ -729,7 +729,7 @@ Method(m3a7, 3)
 		Store(DerefOf(Index(arg0, Local0)), Local2)
 
 		if (LNotEqual(Local2, Local1)) {
-			err("m3a7", z128, 11, 0, arg2, Local2, Local1)
+			err("m3a7", z128, __LINE__, 0, arg2, Local2, Local1)
 			Store(1, Local7)
 		}
 */
@@ -741,7 +741,7 @@ Method(m3a7, 3)
 		Store(c21d, Local0)
 		Store(DerefOf(Index(arg0, Local0)), Local1)
 		if (Local1) {
-			err("m3a7", z128, 12, 0, arg2, Local1, 0)
+			err("m3a7", z128, __LINE__, 0, arg2, Local1, 0)
 			Store(1, Local7)
 		}
 
@@ -750,7 +750,7 @@ Method(m3a7, 3)
 		Increment(Local0)
 		Store(DerefOf(Index(arg0, Local0)), Local1)
 		if (Local1) {
-			err("m3a7", z128, 13, 0, arg2, Local1, 0)
+			err("m3a7", z128, __LINE__, 0, arg2, Local1, 0)
 			Store(1, Local7)
 		}
 
@@ -759,7 +759,7 @@ Method(m3a7, 3)
 		Increment(Local0)
 		Store(DerefOf(Index(arg0, Local0)), Local1)
 		if (Local1) {
-			err("m3a7", z128, 14, 0, arg2, Local1, 0)
+			err("m3a7", z128, __LINE__, 0, arg2, Local1, 0)
 			Store(1, Local7)
 		}
 
@@ -768,7 +768,7 @@ Method(m3a7, 3)
 		Increment(Local0)
 		Store(DerefOf(Index(arg0, Local0)), Local1)
 		if (Local1) {
-			err("m3a7", z128, 15, 0, arg2, Local1, 0)
+			err("m3a7", z128, __LINE__, 0, arg2, Local1, 0)
 			Store(1, Local7)
 		}
 
@@ -777,7 +777,7 @@ Method(m3a7, 3)
 		Increment(Local0)
 		Store(DerefOf(Index(arg0, Local0)), Local1)
 		if (Local1) {
-			err("m3a7", z128, 16, 0, arg2, Local1, 0)
+			err("m3a7", z128, __LINE__, 0, arg2, Local1, 0)
 			Store(1, Local7)
 		}
 	}
@@ -869,7 +869,7 @@ Method(m3aa,, Serialized)
 
 	if (LEqual(Local6, Local7)) {
 		Store("Internal error 0", Debug)
-		err("m3aa", z128, 17, 0, 0, Local6, Local7)
+		err("m3aa", z128, __LINE__, 0, 0, Local6, Local7)
 	} elseif (Local6) {
 		Store(1, FOPT)
 	} else {

@@ -36,18 +36,18 @@
 	{
 		ShiftLeft(0xffffffffffffffff, 64, Local0)
 		if (LNotEqual(Local0, 0)){
-			err("", zFFF, 0x000, 0, 0, Local0, 0)
+			err("", zFFF, __LINE__, 0, 0, Local0, 0)
 		}
 		ShiftLeft(0xffffffffffffffff, 65, Local0)
 		if (LNotEqual(Local0, 0)){
-			err("", zFFF, 0x001, 0, 0, Local0, 0)
+			err("", zFFF, __LINE__, 0, 0, Local0, 0)
 		}
 		ShiftRight(0xffffffffffffffff, 64, Local0)
 		if (LNotEqual(Local0, 0)){
-			err("", zFFF, 0x002, 0, 0, Local0, 0)
+			err("", zFFF, __LINE__, 0, 0, Local0, 0)
 		}
 		ShiftRight(0xffffffffffffffff, 65, Local0)
 		if (LNotEqual(Local0, 0)){
-			err("", zFFF, 0x003, 0, 0, Local0, 0)
+			err("", zFFF, __LINE__, 0, 0, Local0, 0)
 		}
 	}

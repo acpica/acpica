@@ -62,26 +62,26 @@ Method(mf80,, Serialized)
 	Add(Local1, 0x079, Local5)
 
 	if (LNotEqual(Local4, c009)) {
-		err("", zFFF, 0x000, 0, 0, Local4, c009)
+		err("", zFFF, __LINE__, 0, 0, Local4, c009)
 	} elseif (LNotEqual(Local5, 0xaaaa0279)) {
-		err("", zFFF, 0x001, 0, 0, Local5, 0xaaaa0279)
+		err("", zFFF, __LINE__, 0, 0, Local5, 0xaaaa0279)
 	}
 
 	if (LNotEqual(i000, 0xaaaa0300)) {
-		err("", zFFF, 0x002, 0, 0, i000, 0xaaaa0300)
+		err("", zFFF, __LINE__, 0, 0, i000, 0xaaaa0300)
 	}
 
 	if (LNotEqual(Local2, c009)) {
-		err("", zFFF, 0x003, 0, 0, Local2, c009)
+		err("", zFFF, __LINE__, 0, 0, Local2, c009)
 	}
 
 	if (LNotEqual(Local3, c009)) {
-		err("", zFFF, 0x004, 0, 0, Local3, c009)
+		err("", zFFF, __LINE__, 0, 0, Local3, c009)
 	}
 
-	CH03("", 0, 0x005, 0, 0)
+	CH03("", 0, 0x005, __LINE__, 0)
 	Add(Local0, 0x079, Local5)
-	CH04("", 0, 47, 0, 0x006, 0, 0) // AE_AML_OPERAND_TYPE
+	CH04("", 0, 47, 0, __LINE__, 0, 0) // AE_AML_OPERAND_TYPE
 }
 
 Method(mf81,, Serialized)
@@ -115,26 +115,26 @@ Method(mf81,, Serialized)
 	Add(ii01, 0x079, ii05)
 
 	if (LNotEqual(ii04, c009)) {
-		err("", zFFF, 0x007, 0, 0, ii04, c009)
+		err("", zFFF, __LINE__, 0, 0, ii04, c009)
 	} elseif (LNotEqual(ii05, 0xaaaa0279)) {
-		err("", zFFF, 0x008, 0, 0, ii05, 0xaaaa0279)
+		err("", zFFF, __LINE__, 0, 0, ii05, 0xaaaa0279)
 	}
 
 	if (LNotEqual(i000, 0xaaaa0300)) {
-		err("", zFFF, 0x009, 0, 0, i000, 0xaaaa0300)
+		err("", zFFF, __LINE__, 0, 0, i000, 0xaaaa0300)
 	}
 
 	if (LNotEqual(ii02, c009)) {
-		err("", zFFF, 0x00a, 0, 0, ii02, c009)
+		err("", zFFF, __LINE__, 0, 0, ii02, c009)
 	}
 
 	if (LNotEqual(ii03, c009)) {
-		err("", zFFF, 0x00b, 0, 0, ii03, c009)
+		err("", zFFF, __LINE__, 0, 0, ii03, c009)
 	}
 
-	CH03("", 0, 0x00c, 0, 0)
+	CH03("", 0, 0x00c, __LINE__, 0)
 	Add(Local0, 0x079, ii05)
-	CH04("", 0, 47, 0, 0x00d, 0, 0) // AE_AML_OPERAND_TYPE
+	CH04("", 0, 47, 0, __LINE__, 0, 0) // AE_AML_OPERAND_TYPE
 }
 
 Method(mf82,, Serialized)
@@ -166,26 +166,26 @@ Method(mf82,, Serialized)
 	Add(ii01, 0x079, ii05)
 
 	if (LNotEqual(ii04, c009)) {
-		err("", zFFF, 0x00e, 0, 0, ii04, c009)
+		err("", zFFF, __LINE__, 0, 0, ii04, c009)
 	} elseif (LNotEqual(ii05, 0xaaaa0279)) {
-		err("", zFFF, 0x00f, 0, 0, ii05, 0xaaaa0279)
+		err("", zFFF, __LINE__, 0, 0, ii05, 0xaaaa0279)
 	}
 
 	if (LNotEqual(i000, 0xaaaa0300)) {
-		err("", zFFF, 0x010, 0, 0, i000, 0xaaaa0300)
+		err("", zFFF, __LINE__, 0, 0, i000, 0xaaaa0300)
 	}
 
 	if (LNotEqual(ii02, c009)) {
-		err("", zFFF, 0x011, 0, 0, ii02, c009)
+		err("", zFFF, __LINE__, 0, 0, ii02, c009)
 	}
 
 	if (LNotEqual(ii03, c009)) {
-		err("", zFFF, 0x012, 0, 0, ii03, c009)
+		err("", zFFF, __LINE__, 0, 0, ii03, c009)
 	}
 
-	CH03("", 0, 0x013, 0, 0)
+	CH03("", 0, 0x013, __LINE__, 0)
 	Add(ii00, 0x079, ii05)
-	CH04("", 0, 47, 0, 0x014, 0, 0) // AE_AML_OPERAND_TYPE
+	CH04("", 0, 47, 0, __LINE__, 0, 0) // AE_AML_OPERAND_TYPE
 }
 
 Method(md79)
@@ -195,10 +195,10 @@ Method(md79)
 	Store(ObjectType(Local1), Local0)
 
 	if (LNotEqual(Local0, c009)) {
-		err("", zFFF, 0x000, 0, 0, Local0, c009)
+		err("", zFFF, __LINE__, 0, 0, Local0, c009)
 	} else {
 		if (LNotEqual(Local1, 0xfe7cb391d650a284)) {
-			err("", zFFF, 0x001, 0, 0, Local1, 0xfe7cb391d650a284)
+			err("", zFFF, __LINE__, 0, 0, Local1, 0xfe7cb391d650a284)
 		}
 	}
 }
@@ -212,7 +212,7 @@ Method(md7a)
 	Store(ObjectType(Local1), Local0)
 
 	if (LNotEqual(Local0, c016)) {
-		err("", zFFF, 0x002, 0, 0, Local0, c016)
+		err("", zFFF, __LINE__, 0, 0, Local0, c016)
 	} else {
 Store("=======================================", Debug)
 Store(Local1, Debug)
@@ -222,7 +222,7 @@ Store(Local0, Debug)
 Store("=======================================", Debug)
 if (1) {
 		if (LNotEqual(Local1, 0x59)) {
-			err("", zFFF, 0x003, 0, 0, Local1, 0x59)
+			err("", zFFF, __LINE__, 0, 0, Local1, 0x59)
 		}
 }
 	}
@@ -237,7 +237,7 @@ Method(md7b)
 	Store(ObjectType(Local1), Local0)
 
 	if (LNotEqual(Local0, c00d)) {
-		err("", zFFF, 0x004, 0, 0, Local0, c00d)
+		err("", zFFF, __LINE__, 0, 0, Local0, c00d)
 	} else {
 
 Store("=======================================", Debug)
@@ -248,7 +248,7 @@ Store(Local0, Debug)
 Store("=======================================", Debug)
 if (1) {
 		if (LNotEqual(Local1, 0)) {
-			err("", zFFF, 0x005, 0, 0, Local1, 0)
+			err("", zFFF, __LINE__, 0, 0, Local1, 0)
 		}
 }
 	}

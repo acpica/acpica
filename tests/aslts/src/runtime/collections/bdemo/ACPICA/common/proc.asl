@@ -74,7 +74,7 @@ Method(md6a, 7, Serialized)
 			Store(DerefOf(Index(arg0, lpC0)), Local0)
 			TRC1(arg0, lpC0, Local0)
 			if (LNotEqual(Local0, lpC0)) {
-				err("", zFFF, 0x000, 0, 0, Local0, lpC0)
+				err("", zFFF, __LINE__, 0, 0, Local0, lpC0)
 			}
 			Decrement(lpN0)
 			Increment(lpC0)
@@ -86,7 +86,7 @@ Method(md6a, 7, Serialized)
 		Store(DerefOf(Index(arg0, 0)), Local0)
 		TRC1(arg0, 0, Local0)
 		if (LNotEqual(Local0, 0)) {
-			err("", zFFF, 0x001, 0, 0, Local0, 0)
+			err("", zFFF, __LINE__, 0, 0, Local0, 0)
 		}
 
 		// Last pre-initialized element
@@ -94,7 +94,7 @@ Method(md6a, 7, Serialized)
 		Store(DerefOf(Index(arg0, Local0)), Local1)
 		TRC1(arg0, Local0, Local1)
 		if (LNotEqual(Local1, Local0)) {
-			err("", zFFF, 0x002, 0, 0, Local1, Local0)
+			err("", zFFF, __LINE__, 0, 0, Local1, Local0)
 		}
 
 		// Middle pre-initialized element
@@ -102,7 +102,7 @@ Method(md6a, 7, Serialized)
 		Store(DerefOf(Index(arg0, Local0)), Local1)
 		TRC1(arg0, Local0, Local1)
 		if (LNotEqual(Local1, Local0)) {
-			err("", zFFF, 0x003, 0, 0, Local1, Local0)
+			err("", zFFF, __LINE__, 0, 0, Local1, Local0)
 		}
 	}
 
@@ -119,7 +119,7 @@ Method(md6a, 7, Serialized)
 			Store(DerefOf(Index(arg0, lpC0)), Local0)
 			TRC1(arg0, lpC0, Local0)
 			if (LNotEqual(Local0, lpC0)) {
-				err("", zFFF, 0x004, 0, 0, Local0, lpC0)
+				err("", zFFF, __LINE__, 0, 0, Local0, lpC0)
 			}
 			Decrement(lpN0)
 			Increment(lpC0)
@@ -131,7 +131,7 @@ Method(md6a, 7, Serialized)
 		Store(DerefOf(Index(arg0, arg3)), Local0)
 		TRC1(arg0, arg3, Local0)
 		if (LNotEqual(Local0, arg3)) {
-			err("", zFFF, 0x005, 0, 0, Local0, arg3)
+			err("", zFFF, __LINE__, 0, 0, Local0, arg3)
 		}
 
 		// Last written element
@@ -140,7 +140,7 @@ Method(md6a, 7, Serialized)
 		Store(DerefOf(Index(arg0, Local0)), Local1)
 		TRC1(arg0, Local0, Local1)
 		if (LNotEqual(Local1, Local0)) {
-			err("", zFFF, 0x006, 0, 0, Local1, Local0)
+			err("", zFFF, __LINE__, 0, 0, Local1, Local0)
 		}
 
 		// Middle written element
@@ -149,7 +149,7 @@ Method(md6a, 7, Serialized)
 		Store(DerefOf(Index(arg0, Local0)), Local1)
 		TRC1(arg0, Local0, Local1)
 		if (LNotEqual(Local1, Local0)) {
-			err("", zFFF, 0x007, 0, 0, Local1, Local0)
+			err("", zFFF, __LINE__, 0, 0, Local1, Local0)
 		}
 	}
 
@@ -163,18 +163,18 @@ Method(md6a, 7, Serialized)
 
 				TRC1(arg0, arg2, 0xf0f0f0f0)
 				Store(Index(arg0, arg2), Local0)
-				CH03("", 0, 0x100, 0, 0)
+				CH03("", 0, 0x100, __LINE__, 0)
 				Store(DerefOf(Local0), Local1)
-				CH04("", 1, 51, 0, 0x101, 0, 0) // AE_AML_UNINITIALIZED_ELEMENT
+				CH04("", 1, 51, 0, __LINE__, 0, 0) // AE_AML_UNINITIALIZED_ELEMENT
 
 				// Just before written area
 
 				Subtract(arg3, 1, Local1)
 				TRC1(arg0, Local1, 0xf0f0f0f0)
 				Store(Index(arg0, Local1), Local0)
-				CH03("", 0, 0x102, 0, 0)
+				CH03("", 0, 0x102, __LINE__, 0)
 				Store(DerefOf(Local0), Local1)
-				CH04("", 1, 51, 0, 0x103, 0, 0) // AE_AML_UNINITIALIZED_ELEMENT
+				CH04("", 1, 51, 0, __LINE__, 0, 0) // AE_AML_UNINITIALIZED_ELEMENT
 			}
 
 			// Just after pre-initialized and written areas
@@ -187,59 +187,59 @@ Method(md6a, 7, Serialized)
 			if (LLess(Local7, arg1)) {
 				TRC1(arg0, Local7, 0xf0f0f0f0)
 				Store(Index(arg0, Local7), Local0)
-				CH03("", 0, 0x104, 0, 0)
+				CH03("", 0, 0x104, __LINE__, 0)
 				Store(DerefOf(Local0), Local1)
-				CH04("", 1, 51, 0, 0x105, 0, 0) // AE_AML_UNINITIALIZED_ELEMENT
+				CH04("", 1, 51, 0, __LINE__, 0, 0) // AE_AML_UNINITIALIZED_ELEMENT
 
 				// Last element of Package
 
 				Subtract(arg1, 1, Local1)
 				TRC1(arg0, Local1, 0xf0f0f0f0)
 				Store(Index(arg0, Local1), Local0)
-				CH03("", 0, 0x106, 0, 0)
+				CH03("", 0, 0x106, __LINE__, 0)
 				Store(DerefOf(Local0), Local1)
-				CH04("", 1, 51, 0, 0x107, 0, 0) // AE_AML_UNINITIALIZED_ELEMENT
+				CH04("", 1, 51, 0, __LINE__, 0, 0) // AE_AML_UNINITIALIZED_ELEMENT
 			}
 		} else {
 			// Just after pre-initialized area
 
 			TRC1(arg0, arg2, 0xf0f0f0f0)
 			Store(Index(arg0, arg2), Local0)
-			CH03("", 0, 0x108, 0, 0)
+			CH03("", 0, 0x108, __LINE__, 0)
 			Store(DerefOf(Local0), Local1)
-			CH04("", 1, 51, 0, 0x109, 0, 0) // AE_AML_UNINITIALIZED_ELEMENT
+			CH04("", 1, 51, 0, __LINE__, 0, 0) // AE_AML_UNINITIALIZED_ELEMENT
 
 			// Last element of Package
 
 			Subtract(arg1, 1, Local1)
 			TRC1(arg0, Local1, 0xf0f0f0f0)
 			Store(Index(arg0, Local1), Local0)
-			CH03("", 0, 0x10a, 0, 0)
+			CH03("", 0, 0x10a, __LINE__, 0)
 			Store(DerefOf(Local0), Local1)
-			CH04("", 1, 51, 0, 0x10b, 0, 0) // AE_AML_UNINITIALIZED_ELEMENT
+			CH04("", 1, 51, 0, __LINE__, 0, 0) // AE_AML_UNINITIALIZED_ELEMENT
 		}
 	}
 
 	// Check exception on out of Package access
 
 	TRC1(arg0, arg1, 0xf0f0f0f0)
-	CH03("", 0, 0x10c, 0, 0)
+	CH03("", 0, 0x10c, __LINE__, 0)
 	Index(arg0, arg1, Local0)
-	CH04("", 0, 55, 0, 0x10d, 0, 0) // AE_AML_PACKAGE_LIMIT
+	CH04("", 0, 55, 0, __LINE__, 0, 0) // AE_AML_PACKAGE_LIMIT
 
 	Add(arg1, 1, Local7)
 	if (LGreaterEqual(Local7, arg1)) {
 		TRC1(arg0, Local7, 0xf0f0f0f0)
-		CH03("", 0, 0x10e, 0, 0)
+		CH03("", 0, 0x10e, __LINE__, 0)
 		Index(arg0, Local7, Local0)
-		CH04("", 0, 55, 0, 0x10f, 0, 0) // AE_AML_PACKAGE_LIMIT
+		CH04("", 0, 55, 0, __LINE__, 0, 0) // AE_AML_PACKAGE_LIMIT
 	}
 
 	if (LGreaterEqual(0xffffffffffffffff, arg1)) {
 		TRC1(arg0, 0xffffffffffffffff, 0xf0f0f0f0)
-		CH03("", 0, 0x110, 0, 0)
+		CH03("", 0, 0x110, __LINE__, 0)
 		Index(arg0, 0xffffffffffffffff, Local0)
-		CH04("", 0, 55, 0, 0x111, 0, 0) // AE_AML_PACKAGE_LIMIT
+		CH04("", 0, 55, 0, __LINE__, 0, 0) // AE_AML_PACKAGE_LIMIT
 	}
 
 	// Check near the maximal bound of a simple Package
@@ -280,13 +280,13 @@ Method(md6b, 6)
 
 		// Was initialized
 
-		CH03("", 0, 0x112, 0, 0)
+		CH03("", 0, 0x112, __LINE__, 0)
 		Store(DerefOf(Index(arg0, arg5)), Local0)
 		TRC1(arg0, arg5, Local0)
 		if (LNotEqual(Local0, arg5)) {
-			err("", zFFF, 0x008, 0, 0, Local0, arg5)
+			err("", zFFF, __LINE__, 0, 0, Local0, arg5)
 		}
-		CH03("", 0, 0x113, 0, 0)
+		CH03("", 0, 0x113, __LINE__, 0)
 
 	} elseif (LLess(arg5, arg1)) {
 
@@ -294,18 +294,18 @@ Method(md6b, 6)
 
 		TRC1(arg0, arg5, 0xf0f0f0f0)
 		Store(Index(arg0, arg5), Local0)
-		CH03("", 0, 0x114, 0, 0)
+		CH03("", 0, 0x114, __LINE__, 0)
 		Store(DerefOf(Local0), Local1)
-		CH04("", 1, 51, 0, 0x115, 0, 0) // AE_AML_UNINITIALIZED_ELEMENT
+		CH04("", 1, 51, 0, __LINE__, 0, 0) // AE_AML_UNINITIALIZED_ELEMENT
 
 	} else {
 
 		// Check exception on out of Package access
 
 		TRC1(arg0, arg5, 0xf0f0f0f0)
-		CH03("", 0, 0x116, 0, 0)
+		CH03("", 0, 0x116, __LINE__, 0)
 		Index(arg0, arg5, Local0)
-		CH04("", 0, 55, 0, 0x117, 0, 0) // AE_AML_PACKAGE_LIMIT
+		CH04("", 0, 55, 0, __LINE__, 0, 0) // AE_AML_PACKAGE_LIMIT
 
 	}
 }
@@ -328,7 +328,7 @@ Method(md7d)
 	 */
 
 	/* Check opcode of the first exception */
-	CH04("", 1, 56, 0, 0x118, 0, 0) // AE_AML_DIVIDE_BY_ZERO
+	CH04("", 1, 56, 0, __LINE__, 0, 0) // AE_AML_DIVIDE_BY_ZERO
 
 	/* Number of exceptions not greater than two */
 	if (LGreater(EXC1, 2)) {
@@ -342,7 +342,7 @@ Method(md7d)
 		Store(1, id01)
 	}
 
-	CH03("", 0, 0x119, 0, 0)
+	CH03("", 0, 0x119, __LINE__, 0)
 	return (1)
 }
 
@@ -360,11 +360,11 @@ Method(mf88, 6)
 	Store(ObjectType(arg0), Local0)
 
 	if (LNotEqual(Local0, arg1)) {
-		err("", zFFF, arg3, 0, 0, Local0, arg1)
+		err("", zFFF, __LINE__, 0, 0, Local0, arg1)
 	}
 	if (arg5) {
 		if (LNotEqual(arg0, arg2)) {
-			err("", zFFF, arg4, 0, 0, arg0, arg2)
+			err("", zFFF, __LINE__, 0, 0, arg0, arg2)
 		}
 	}
 }
@@ -373,5 +373,5 @@ Method(m02a)
 {
 	Store("Check the error manually and remove call to m02a() when the bug is fixed.", Debug)
 
-	err("", zFFF, 0x800, 0, 0, 0, 0)
+	err("", zFFF, __LINE__, 0, 0, 0, 0)
 }

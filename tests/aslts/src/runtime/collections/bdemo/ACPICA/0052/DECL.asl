@@ -42,16 +42,16 @@ Method(mddd,, Serialized)
 
 	Store(DN00._HE, Local0)
 	if (LNotEqual(Local0, 0x19)){
-		err("", zFFF, 0x000, 0, 0, Local0, 0x19)
+		err("", zFFF, __LINE__, 0, 0, Local0, 0x19)
 	}
 
 	Store(DN00._LL, Local0)
 	if (LNotEqual(Local0, 0x1a)){
-		err("", zFFF, 0x000, 0, 0, Local0, 0x1a)
+		err("", zFFF, __LINE__, 0, 0, Local0, 0x1a)
 	}
 
 	Store(DN00._SHR, Local0)
 	if (LNotEqual(Local0, 0x1b)){
-		err("", zFFF, 0x000, 0, 0, Local0, 0x1b)
+		err("", zFFF, __LINE__, 0, 0, Local0, 0x1b)
 	}
 }

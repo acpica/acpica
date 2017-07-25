@@ -362,80 +362,80 @@ Method(m169,, Serialized)
 
 	Store(ObjectType(i900), Local0)
 	if (LNotEqual(Local0, c009)) {
-		err(c080, z077, 0x100, 0, 0, Local0, c009)
+		err(c080, z077, __LINE__, 0, 0, Local0, c009)
 	}
 	if (LNotEqual(i900, 0xfe7cb391d65a1000)) {
-		err(c080, z077, 0x101, 0, 0, i900, 0xfe7cb391d65a1000)
+		err(c080, z077, __LINE__, 0, 0, i900, 0xfe7cb391d65a1000)
 	}
 
 	Store(ObjectType(i901), Local0)
 	if (LNotEqual(Local0, c009)) {
-		err(c080, z077, 0x102, 0, 0, Local0, c009)
+		err(c080, z077, __LINE__, 0, 0, Local0, c009)
 	}
 	if (LNotEqual(i901, 0xc1791001)) {
-		err(c080, z077, 0x103, 0, 0, i901, 0xc1791001)
+		err(c080, z077, __LINE__, 0, 0, i901, 0xc1791001)
 	}
 
 	Store(ObjectType(i902), Local0)
 	if (LNotEqual(Local0, c009)) {
-		err(c080, z077, 0x104, 0, 0, Local0, c009)
+		err(c080, z077, __LINE__, 0, 0, Local0, c009)
 	}
 	if (LNotEqual(i902, 0)) {
-		err(c080, z077, 0x105, 0, 0, i902, 0)
+		err(c080, z077, __LINE__, 0, 0, i902, 0)
 	}
 
 	Store(ObjectType(i903), Local0)
 	if (LNotEqual(Local0, c009)) {
-		err(c080, z077, 0x106, 0, 0, Local0, c009)
+		err(c080, z077, __LINE__, 0, 0, Local0, c009)
 	}
 	if (LNotEqual(i903, 0xffffffffffffffff)) {
-		err(c080, z077, 0x107, 0, 0, i903, 0xffffffffffffffff)
+		err(c080, z077, __LINE__, 0, 0, i903, 0xffffffffffffffff)
 	}
 
 	Store(ObjectType(i904), Local0)
 	if (LNotEqual(Local0, c009)) {
-		err(c080, z077, 0x108, 0, 0, Local0, c009)
+		err(c080, z077, __LINE__, 0, 0, Local0, c009)
 	}
 	if (LNotEqual(i904, 0xffffffff)) {
-		err(c080, z077, 0x109, 0, 0, i904, 0xffffffff)
+		err(c080, z077, __LINE__, 0, 0, i904, 0xffffffff)
 	}
 
 	// String
 
 	Store(ObjectType(s900), Local0)
 	if (LNotEqual(Local0, c00a)) {
-		err(c080, z077, 0x10a, 0, 0, Local0, c00a)
+		err(c080, z077, __LINE__, 0, 0, Local0, c00a)
 	}
 	if (LNotEqual(s900, "12341002")) {
-		err(c080, z077, 0x10b, 0, 0, s900, "12341002")
+		err(c080, z077, __LINE__, 0, 0, s900, "12341002")
 	}
 
 	Store(ObjectType(s901), Local0)
 	if (LNotEqual(Local0, c00a)) {
-		err(c080, z077, 0x10c, 0, 0, Local0, c00a)
+		err(c080, z077, __LINE__, 0, 0, Local0, c00a)
 	}
 	if (LNotEqual(s901, "qwrtyu1003")) {
-		err(c080, z077, 0x10d, 0, 0, s901, "qwrtyu1003")
+		err(c080, z077, __LINE__, 0, 0, s901, "qwrtyu1003")
 	}
 
 	// Buffer
 
 	Store(ObjectType(b900), Local0)
 	if (LNotEqual(Local0, c00b)) {
-		err(c080, z077, 0x10e, 0, 0, Local0, c00b)
+		err(c080, z077, __LINE__, 0, 0, Local0, c00b)
 	}
 	if (LNotEqual(b900, Buffer() {0x10,0x11,0x12,0x13,0x14})) {
-		err(c080, z077, 0x10f, 0, 0, b900, Buffer() {0x10,0x11,0x12,0x13,0x14})
+		err(c080, z077, __LINE__, 0, 0, b900, Buffer() {0x10,0x11,0x12,0x13,0x14})
 	}
 
 	// Buffer Field
 
 	Store(ObjectType(bf90), Local0)
 	if (LNotEqual(Local0, c016)) {
-		err(c080, z077, 0x110, 0, 0, Local0, c016)
+		err(c080, z077, __LINE__, 0, 0, Local0, c016)
 	}
 	if (LNotEqual(bf90, 0x10)) {
-		err(c080, z077, 0x111, 0, 0, bf90, 0x10)
+		err(c080, z077, __LINE__, 0, 0, bf90, 0x10)
 	}
 
 	// One level Package
@@ -443,87 +443,87 @@ Method(m169,, Serialized)
 	Store(Index(p900, 0), Local0)
 	Store(ObjectType(Local0), Local1)
 	if (LNotEqual(Local1, c008)) {
-		err(c080, z077, 0x112, 0, 0, Local1, c008)
+		err(c080, z077, __LINE__, 0, 0, Local1, c008)
 	}
 
 	Store(Index(p901, 0), Local0)
 	Store(DerefOf(Local0), Local1)
 	Store(ObjectType(Local1), Local2)
 	if (LNotEqual(Local2, c009)) {
-		err(c080, z077, 0x113, 0, 0, Local2, c009)
+		err(c080, z077, __LINE__, 0, 0, Local2, c009)
 	}
 	if (LNotEqual(Local1, 0xabcd1004)) {
-		err(c080, z077, 0x114, 0, 0, Local1, 0xabcd1004)
+		err(c080, z077, __LINE__, 0, 0, Local1, 0xabcd1004)
 	}
 
 	Store(Index(p901, 1), Local0)
 	Store(DerefOf(Local0), Local1)
 	Store(ObjectType(Local1), Local2)
 	if (LNotEqual(Local2, c009)) {
-		err(c080, z077, 0x115, 0, 0, Local2, c009)
+		err(c080, z077, __LINE__, 0, 0, Local2, c009)
 	}
 	if (LNotEqual(Local1, 0x1122334455661005)) {
-		err(c080, z077, 0x116, 0, 0, Local1, 0x1122334455661005)
+		err(c080, z077, __LINE__, 0, 0, Local1, 0x1122334455661005)
 	}
 
 	Store(Index(p902, 0), Local0)
 	Store(DerefOf(Local0), Local1)
 	Store(ObjectType(Local1), Local2)
 	if (LNotEqual(Local2, c00a)) {
-		err(c080, z077, 0x117, 0, 0, Local2, c00a)
+		err(c080, z077, __LINE__, 0, 0, Local2, c00a)
 	}
 	if (LNotEqual(Local1, "12341006")) {
-		err(c080, z077, 0x118, 0, 0, Local1, "12341006")
+		err(c080, z077, __LINE__, 0, 0, Local1, "12341006")
 	}
 
 	Store(Index(p902, 1), Local0)
 	Store(DerefOf(Local0), Local1)
 	Store(ObjectType(Local1), Local2)
 	if (LNotEqual(Local2, c00a)) {
-		err(c080, z077, 0x119, 0, 0, Local2, c00a)
+		err(c080, z077, __LINE__, 0, 0, Local2, c00a)
 	}
 	if (LNotEqual(Local1, "q1w2e3r4t5y6u7i81007")) {
-		err(c080, z077, 0x11a, 0, 0, Local1, "q1w2e3r4t5y6u7i81007")
+		err(c080, z077, __LINE__, 0, 0, Local1, "q1w2e3r4t5y6u7i81007")
 	}
 
 	Store(Index(p903, 0), Local0)
 	Store(DerefOf(Local0), Local1)
 	Store(ObjectType(Local1), Local2)
 	if (LNotEqual(Local2, c00a)) {
-		err(c080, z077, 0x11b, 0, 0, Local2, c00a)
+		err(c080, z077, __LINE__, 0, 0, Local2, c00a)
 	}
 	if (LNotEqual(Local1, "qwrtyuiop1008")) {
-		err(c080, z077, 0x11c, 0, 0, Local1, "qwrtyuiop1008")
+		err(c080, z077, __LINE__, 0, 0, Local1, "qwrtyuiop1008")
 	}
 
 	Store(Index(p903, 1), Local0)
 	Store(DerefOf(Local0), Local1)
 	Store(ObjectType(Local1), Local2)
 	if (LNotEqual(Local2, c00a)) {
-		err(c080, z077, 0x11d, 0, 0, Local2, c00a)
+		err(c080, z077, __LINE__, 0, 0, Local2, c00a)
 	}
 	if (LNotEqual(Local1, "1234567890abdef0251009")) {
-		err(c080, z077, 0x11e, 0, 0, Local1, "1234567890abdef0251009")
+		err(c080, z077, __LINE__, 0, 0, Local1, "1234567890abdef0251009")
 	}
 
 	Store(Index(p904, 0), Local0)
 	Store(DerefOf(Local0), Local1)
 	Store(ObjectType(Local1), Local2)
 	if (LNotEqual(Local2, c00b)) {
-		err(c080, z077, 0x11f, 0, 0, Local2, c00b)
+		err(c080, z077, __LINE__, 0, 0, Local2, c00b)
 	}
 	if (LNotEqual(Local1, Buffer() {0xa0,0xa1,0xa2})) {
-		err(c080, z077, 0x120, 0, 0, Local1, Buffer() {0xa0,0xa1,0xa2})
+		err(c080, z077, __LINE__, 0, 0, Local1, Buffer() {0xa0,0xa1,0xa2})
 	}
 
 	Store(Index(p904, 1), Local0)
 	Store(DerefOf(Local0), Local1)
 	Store(ObjectType(Local1), Local2)
 	if (LNotEqual(Local2, c00b)) {
-		err(c080, z077, 0x121, 0, 0, Local2, c00b)
+		err(c080, z077, __LINE__, 0, 0, Local2, c00b)
 	}
 	if (LNotEqual(Local1, Buffer() {0xa3,0xa4})) {
-		err(c080, z077, 0x122, 0, 0, Local1, Buffer() {0xa3,0xa4})
+		err(c080, z077, __LINE__, 0, 0, Local1, Buffer() {0xa3,0xa4})
 	}
 
 	// Two level Package
@@ -534,10 +534,10 @@ Method(m169,, Serialized)
 	Store(DerefOf(Local2), Local3)
 	Store(ObjectType(Local3), Local4)
 	if (LNotEqual(Local4, c009)) {
-		err(c080, z077, 0x123, 0, 0, Local4, c009)
+		err(c080, z077, __LINE__, 0, 0, Local4, c009)
 	}
 	if (LNotEqual(Local3, 0xabc100a)) {
-		err(c080, z077, 0x124, 0, 0, Local3, 0xabc100a)
+		err(c080, z077, __LINE__, 0, 0, Local3, 0xabc100a)
 	}
 
 	Store(Index(p905, 0), Local0)
@@ -546,10 +546,10 @@ Method(m169,, Serialized)
 	Store(DerefOf(Local2), Local3)
 	Store(ObjectType(Local3), Local4)
 	if (LNotEqual(Local4, c00a)) {
-		err(c080, z077, 0x125, 0, 0, Local4, c00a)
+		err(c080, z077, __LINE__, 0, 0, Local4, c00a)
 	}
 	if (LNotEqual(Local3, "0xabc100b")) {
-		err(c080, z077, 0x126, 0, 0, Local3, "0xabc100b")
+		err(c080, z077, __LINE__, 0, 0, Local3, "0xabc100b")
 	}
 
 	Store(Index(p905, 0), Local0)
@@ -558,10 +558,10 @@ Method(m169,, Serialized)
 	Store(DerefOf(Local2), Local3)
 	Store(ObjectType(Local3), Local4)
 	if (LNotEqual(Local4, c00a)) {
-		err(c080, z077, 0x127, 0, 0, Local4, c00a)
+		err(c080, z077, __LINE__, 0, 0, Local4, c00a)
 	}
 	if (LNotEqual(Local3, "abc100c")) {
-		err(c080, z077, 0x128, 0, 0, Local3, "abc100c")
+		err(c080, z077, __LINE__, 0, 0, Local3, "abc100c")
 	}
 
 	Store(Index(p906, 0), Local0)
@@ -570,10 +570,10 @@ Method(m169,, Serialized)
 	Store(DerefOf(Local2), Local3)
 	Store(ObjectType(Local3), Local4)
 	if (LNotEqual(Local4, c00a)) {
-		err(c080, z077, 0x129, 0, 0, Local4, c00a)
+		err(c080, z077, __LINE__, 0, 0, Local4, c00a)
 	}
 	if (LNotEqual(Local3, "abc100d")) {
-		err(c080, z077, 0x12a, 0, 0, Local3, "abc100d")
+		err(c080, z077, __LINE__, 0, 0, Local3, "abc100d")
 	}
 
 	Store(Index(p907, 0), Local0)
@@ -582,10 +582,10 @@ Method(m169,, Serialized)
 	Store(DerefOf(Local2), Local3)
 	Store(ObjectType(Local3), Local4)
 	if (LNotEqual(Local4, c00a)) {
-		err(c080, z077, 0x12b, 0, 0, Local4, c00a)
+		err(c080, z077, __LINE__, 0, 0, Local4, c00a)
 	}
 	if (LNotEqual(Local3, "aqwevbgnm100e")) {
-		err(c080, z077, 0x12c, 0, 0, Local3, "aqwevbgnm100e")
+		err(c080, z077, __LINE__, 0, 0, Local3, "aqwevbgnm100e")
 	}
 
 	Store(Index(p908, 0), Local0)
@@ -594,10 +594,10 @@ Method(m169,, Serialized)
 	Store(DerefOf(Local2), Local3)
 	Store(ObjectType(Local3), Local4)
 	if (LNotEqual(Local4, c00b)) {
-		err(c080, z077, 0x12d, 0, 0, Local4, c00b)
+		err(c080, z077, __LINE__, 0, 0, Local4, c00b)
 	}
 	if (LNotEqual(Local3, Buffer() {0xa5,0xa6,0xa7,0xa8,0xa9})) {
-		err(c080, z077, 0x12e, 0, 0, Local3, Buffer() {0xa5,0xa6,0xa7,0xa8,0xa9})
+		err(c080, z077, __LINE__, 0, 0, Local3, Buffer() {0xa5,0xa6,0xa7,0xa8,0xa9})
 	}
 
 	// Three level Package
@@ -610,10 +610,10 @@ Method(m169,, Serialized)
 	Store(DerefOf(Local4), Local5)
 	Store(ObjectType(Local5), Local6)
 	if (LNotEqual(Local6, c009)) {
-		err(c080, z077, 0x12f, 0, 0, Local6, c009)
+		err(c080, z077, __LINE__, 0, 0, Local6, c009)
 	}
 	if (LNotEqual(Local5, 0xabc100f)) {
-		err(c080, z077, 0x130, 0, 0, Local5, 0xabc100f)
+		err(c080, z077, __LINE__, 0, 0, Local5, 0xabc100f)
 	}
 
 	Store(Index(p90a, 0), Local0)
@@ -624,10 +624,10 @@ Method(m169,, Serialized)
 	Store(DerefOf(Local4), Local5)
 	Store(ObjectType(Local5), Local6)
 	if (LNotEqual(Local6, c00a)) {
-		err(c080, z077, 0x131, 0, 0, Local6, c00a)
+		err(c080, z077, __LINE__, 0, 0, Local6, c00a)
 	}
 	if (LNotEqual(Local5, "12341010")) {
-		err(c080, z077, 0x132, 0, 0, Local5, "12341010")
+		err(c080, z077, __LINE__, 0, 0, Local5, "12341010")
 	}
 
 	Store(Index(p90b, 0), Local0)
@@ -638,10 +638,10 @@ Method(m169,, Serialized)
 	Store(DerefOf(Local4), Local5)
 	Store(ObjectType(Local5), Local6)
 	if (LNotEqual(Local6, c00a)) {
-		err(c080, z077, 0x133, 0, 0, Local6, c00a)
+		err(c080, z077, __LINE__, 0, 0, Local6, c00a)
 	}
 	if (LNotEqual(Local5, "zxswefas1011")) {
-		err(c080, z077, 0x134, 0, 0, Local5, "zxswefas1011")
+		err(c080, z077, __LINE__, 0, 0, Local5, "zxswefas1011")
 	}
 
 	Store(Index(p90c, 0), Local0)
@@ -652,30 +652,30 @@ Method(m169,, Serialized)
 	Store(DerefOf(Local4), Local5)
 	Store(ObjectType(Local5), Local6)
 	if (LNotEqual(Local6, c00b)) {
-		err(c080, z077, 0x135, 0, 0, Local6, c00b)
+		err(c080, z077, __LINE__, 0, 0, Local6, c00b)
 	}
 	if (LNotEqual(Local5, Buffer() {0xaa,0xab,0xac})) {
-		err(c080, z077, 0x136, 0, 0, Local5, Buffer() {0xaa,0xab,0xac})
+		err(c080, z077, __LINE__, 0, 0, Local5, Buffer() {0xaa,0xab,0xac})
 	}
 
 	Store(Index(p953, 0), Local0)
 	Store(DerefOf(Local0), Local1)
 	Store(ObjectType(Local1), Local2)
 	if (LNotEqual(Local2, c009)) {
-		err(c080, z077, 0x137, 0, 0, Local2, c009)
+		err(c080, z077, __LINE__, 0, 0, Local2, c009)
 	}
 	if (LNotEqual(Local1, 0xabcd1018)) {
-		err(c080, z077, 0x138, 0, 0, Local1, 0xabcd1018)
+		err(c080, z077, __LINE__, 0, 0, Local1, 0xabcd1018)
 	}
 
 	Store(Index(p953, 1), Local0)
 	Store(DerefOf(Local0), Local1)
 	Store(ObjectType(Local1), Local2)
 	if (LNotEqual(Local2, c009)) {
-		err(c080, z077, 0x139, 0, 0, Local2, c009)
+		err(c080, z077, __LINE__, 0, 0, Local2, c009)
 	}
 	if (LNotEqual(Local1, 0xabcd1019)) {
-		err(c080, z077, 0x13a, 0, 0, Local1, 0xabcd1019)
+		err(c080, z077, __LINE__, 0, 0, Local1, 0xabcd1019)
 	}
 
 	// Not Computational Data
@@ -694,13 +694,13 @@ Method(m169,, Serialized)
  *	// Field Unit (Field)
  *
  *	if (LNotEqual(f900, 0xd7)) {
- *		err(c080, z077, 0x137, 0, 0, f900, 0xd7)
+ *		err(c080, z077, __LINE__, 0, 0, f900, 0xd7)
  *	}
  *
  *	// Field Unit (IndexField)
  *
  *	if (LNotEqual(if90, 0xd7)) {
- *		err(c080, z077, 0x138, 0, 0, if90, 0xd7)
+ *		err(c080, z077, __LINE__, 0, 0, if90, 0xd7)
  *	}
  */
 	} /* m000 */
@@ -1609,80 +1609,80 @@ Method(m16a, 1, Serialized)
 
 	Store(ObjectType(i900), Local0)
 	if (LNotEqual(Local0, c009)) {
-		err(c080, z077, 0x100, 0, 0, Local0, c009)
+		err(c080, z077, __LINE__, 0, 0, Local0, c009)
 	}
 	if (LNotEqual(i900, 0xfe7cb391d65a2000)) {
-		err(c080, z077, 0x101, 0, 0, i900, 0xfe7cb391d65a2000)
+		err(c080, z077, __LINE__, 0, 0, i900, 0xfe7cb391d65a2000)
 	}
 
 	Store(ObjectType(i901), Local0)
 	if (LNotEqual(Local0, c009)) {
-		err(c080, z077, 0x102, 0, 0, Local0, c009)
+		err(c080, z077, __LINE__, 0, 0, Local0, c009)
 	}
 	if (LNotEqual(i901, 0xc1792001)) {
-		err(c080, z077, 0x103, 0, 0, i901, 0xc1792001)
+		err(c080, z077, __LINE__, 0, 0, i901, 0xc1792001)
 	}
 
 	Store(ObjectType(i902), Local0)
 	if (LNotEqual(Local0, c009)) {
-		err(c080, z077, 0x104, 0, 0, Local0, c009)
+		err(c080, z077, __LINE__, 0, 0, Local0, c009)
 	}
 	if (LNotEqual(i902, 0)) {
-		err(c080, z077, 0x105, 0, 0, i902, 0)
+		err(c080, z077, __LINE__, 0, 0, i902, 0)
 	}
 
 	Store(ObjectType(i903), Local0)
 	if (LNotEqual(Local0, c009)) {
-		err(c080, z077, 0x106, 0, 0, Local0, c009)
+		err(c080, z077, __LINE__, 0, 0, Local0, c009)
 	}
 	if (LNotEqual(i903, 0xffffffffffffffff)) {
-		err(c080, z077, 0x107, 0, 0, i903, 0xffffffffffffffff)
+		err(c080, z077, __LINE__, 0, 0, i903, 0xffffffffffffffff)
 	}
 
 	Store(ObjectType(i904), Local0)
 	if (LNotEqual(Local0, c009)) {
-		err(c080, z077, 0x108, 0, 0, Local0, c009)
+		err(c080, z077, __LINE__, 0, 0, Local0, c009)
 	}
 	if (LNotEqual(i904, 0xffffffff)) {
-		err(c080, z077, 0x109, 0, 0, i904, 0xffffffff)
+		err(c080, z077, __LINE__, 0, 0, i904, 0xffffffff)
 	}
 
 	// String
 
 	Store(ObjectType(s900), Local0)
 	if (LNotEqual(Local0, c00a)) {
-		err(c080, z077, 0x10a, 0, 0, Local0, c00a)
+		err(c080, z077, __LINE__, 0, 0, Local0, c00a)
 	}
 	if (LNotEqual(s900, "12342002")) {
-		err(c080, z077, 0x10b, 0, 0, s900, "12342002")
+		err(c080, z077, __LINE__, 0, 0, s900, "12342002")
 	}
 
 	Store(ObjectType(s901), Local0)
 	if (LNotEqual(Local0, c00a)) {
-		err(c080, z077, 0x10c, 0, 0, Local0, c00a)
+		err(c080, z077, __LINE__, 0, 0, Local0, c00a)
 	}
 	if (LNotEqual(s901, "qwrtyu2003")) {
-		err(c080, z077, 0x10d, 0, 0, s901, "qwrtyu2003")
+		err(c080, z077, __LINE__, 0, 0, s901, "qwrtyu2003")
 	}
 
 	// Buffer
 
 	Store(ObjectType(b900), Local0)
 	if (LNotEqual(Local0, c00b)) {
-		err(c080, z077, 0x10e, 0, 0, Local0, c00b)
+		err(c080, z077, __LINE__, 0, 0, Local0, c00b)
 	}
 	if (LNotEqual(b900, Buffer() {0xc0,0xc1,0xc2,0xc3,0xc4})) {
-		err(c080, z077, 0x10f, 0, 0, b900, Buffer() {0xc0,0xc1,0xc2,0xc3,0xc4})
+		err(c080, z077, __LINE__, 0, 0, b900, Buffer() {0xc0,0xc1,0xc2,0xc3,0xc4})
 	}
 
 	// Buffer Field
 
 	Store(ObjectType(bf90), Local0)
 	if (LNotEqual(Local0, c016)) {
-		err(c080, z077, 0x110, 0, 0, Local0, c016)
+		err(c080, z077, __LINE__, 0, 0, Local0, c016)
 	}
 	if (LNotEqual(bf90, 0xc0)) {
-		err(c080, z077, 0x111, 0, 0, bf90, 0xc0)
+		err(c080, z077, __LINE__, 0, 0, bf90, 0xc0)
 	}
 
 	// One level Package
@@ -1690,87 +1690,87 @@ Method(m16a, 1, Serialized)
 	Store(Index(p900, 0), Local0)
 	Store(ObjectType(Local0), Local1)
 	if (LNotEqual(Local1, c008)) {
-		err(c080, z077, 0x112, 0, 0, Local1, c008)
+		err(c080, z077, __LINE__, 0, 0, Local1, c008)
 	}
 
 	Store(Index(p901, 0), Local0)
 	Store(DerefOf(Local0), Local1)
 	Store(ObjectType(Local1), Local2)
 	if (LNotEqual(Local2, c009)) {
-		err(c080, z077, 0x113, 0, 0, Local2, c009)
+		err(c080, z077, __LINE__, 0, 0, Local2, c009)
 	}
 	if (LNotEqual(Local1, 0xabcd2004)) {
-		err(c080, z077, 0x114, 0, 0, Local1, 0xabcd2004)
+		err(c080, z077, __LINE__, 0, 0, Local1, 0xabcd2004)
 	}
 
 	Store(Index(p901, 1), Local0)
 	Store(DerefOf(Local0), Local1)
 	Store(ObjectType(Local1), Local2)
 	if (LNotEqual(Local2, c009)) {
-		err(c080, z077, 0x115, 0, 0, Local2, c009)
+		err(c080, z077, __LINE__, 0, 0, Local2, c009)
 	}
 	if (LNotEqual(Local1, 0x1122334455662005)) {
-		err(c080, z077, 0x116, 0, 0, Local1, 0x1122334455662005)
+		err(c080, z077, __LINE__, 0, 0, Local1, 0x1122334455662005)
 	}
 
 	Store(Index(p902, 0), Local0)
 	Store(DerefOf(Local0), Local1)
 	Store(ObjectType(Local1), Local2)
 	if (LNotEqual(Local2, c00a)) {
-		err(c080, z077, 0x117, 0, 0, Local2, c00a)
+		err(c080, z077, __LINE__, 0, 0, Local2, c00a)
 	}
 	if (LNotEqual(Local1, "12342006")) {
-		err(c080, z077, 0x118, 0, 0, Local1, "12342006")
+		err(c080, z077, __LINE__, 0, 0, Local1, "12342006")
 	}
 
 	Store(Index(p902, 1), Local0)
 	Store(DerefOf(Local0), Local1)
 	Store(ObjectType(Local1), Local2)
 	if (LNotEqual(Local2, c00a)) {
-		err(c080, z077, 0x119, 0, 0, Local2, c00a)
+		err(c080, z077, __LINE__, 0, 0, Local2, c00a)
 	}
 	if (LNotEqual(Local1, "q1w2e3r4t5y6u7i82007")) {
-		err(c080, z077, 0x11a, 0, 0, Local1, "q1w2e3r4t5y6u7i82007")
+		err(c080, z077, __LINE__, 0, 0, Local1, "q1w2e3r4t5y6u7i82007")
 	}
 
 	Store(Index(p903, 0), Local0)
 	Store(DerefOf(Local0), Local1)
 	Store(ObjectType(Local1), Local2)
 	if (LNotEqual(Local2, c00a)) {
-		err(c080, z077, 0x11b, 0, 0, Local2, c00a)
+		err(c080, z077, __LINE__, 0, 0, Local2, c00a)
 	}
 	if (LNotEqual(Local1, "qwrtyuiop2008")) {
-		err(c080, z077, 0x11c, 0, 0, Local1, "qwrtyuiop2008")
+		err(c080, z077, __LINE__, 0, 0, Local1, "qwrtyuiop2008")
 	}
 
 	Store(Index(p903, 1), Local0)
 	Store(DerefOf(Local0), Local1)
 	Store(ObjectType(Local1), Local2)
 	if (LNotEqual(Local2, c00a)) {
-		err(c080, z077, 0x11d, 0, 0, Local2, c00a)
+		err(c080, z077, __LINE__, 0, 0, Local2, c00a)
 	}
 	if (LNotEqual(Local1, "1234567890abdef0252009")) {
-		err(c080, z077, 0x11e, 0, 0, Local1, "1234567890abdef0252009")
+		err(c080, z077, __LINE__, 0, 0, Local1, "1234567890abdef0252009")
 	}
 
 	Store(Index(p904, 0), Local0)
 	Store(DerefOf(Local0), Local1)
 	Store(ObjectType(Local1), Local2)
 	if (LNotEqual(Local2, c00b)) {
-		err(c080, z077, 0x11f, 0, 0, Local2, c00b)
+		err(c080, z077, __LINE__, 0, 0, Local2, c00b)
 	}
 	if (LNotEqual(Local1, Buffer() {0xc5,0xc6,0xc7})) {
-		err(c080, z077, 0x120, 0, 0, Local1, Buffer() {0xc5,0xc6,0xc7})
+		err(c080, z077, __LINE__, 0, 0, Local1, Buffer() {0xc5,0xc6,0xc7})
 	}
 
 	Store(Index(p904, 1), Local0)
 	Store(DerefOf(Local0), Local1)
 	Store(ObjectType(Local1), Local2)
 	if (LNotEqual(Local2, c00b)) {
-		err(c080, z077, 0x121, 0, 0, Local2, c00b)
+		err(c080, z077, __LINE__, 0, 0, Local2, c00b)
 	}
 	if (LNotEqual(Local1, Buffer() {0xc8,0xc9})) {
-		err(c080, z077, 0x122, 0, 0, Local1, Buffer() {0xc8,0xc9})
+		err(c080, z077, __LINE__, 0, 0, Local1, Buffer() {0xc8,0xc9})
 	}
 
 	// Two level Package
@@ -1781,10 +1781,10 @@ Method(m16a, 1, Serialized)
 	Store(DerefOf(Local2), Local3)
 	Store(ObjectType(Local3), Local4)
 	if (LNotEqual(Local4, c009)) {
-		err(c080, z077, 0x123, 0, 0, Local4, c009)
+		err(c080, z077, __LINE__, 0, 0, Local4, c009)
 	}
 	if (LNotEqual(Local3, 0xabc200a)) {
-		err(c080, z077, 0x124, 0, 0, Local3, 0xabc200a)
+		err(c080, z077, __LINE__, 0, 0, Local3, 0xabc200a)
 	}
 
 	Store(Index(p905, 0), Local0)
@@ -1793,10 +1793,10 @@ Method(m16a, 1, Serialized)
 	Store(DerefOf(Local2), Local3)
 	Store(ObjectType(Local3), Local4)
 	if (LNotEqual(Local4, c00a)) {
-		err(c080, z077, 0x125, 0, 0, Local4, c00a)
+		err(c080, z077, __LINE__, 0, 0, Local4, c00a)
 	}
 	if (LNotEqual(Local3, "0xabc200b")) {
-		err(c080, z077, 0x126, 0, 0, Local3, "0xabc200b")
+		err(c080, z077, __LINE__, 0, 0, Local3, "0xabc200b")
 	}
 
 	Store(Index(p905, 0), Local0)
@@ -1805,10 +1805,10 @@ Method(m16a, 1, Serialized)
 	Store(DerefOf(Local2), Local3)
 	Store(ObjectType(Local3), Local4)
 	if (LNotEqual(Local4, c00a)) {
-		err(c080, z077, 0x127, 0, 0, Local4, c00a)
+		err(c080, z077, __LINE__, 0, 0, Local4, c00a)
 	}
 	if (LNotEqual(Local3, "abc200c")) {
-		err(c080, z077, 0x128, 0, 0, Local3, "abc200c")
+		err(c080, z077, __LINE__, 0, 0, Local3, "abc200c")
 	}
 
 	Store(Index(p906, 0), Local0)
@@ -1817,10 +1817,10 @@ Method(m16a, 1, Serialized)
 	Store(DerefOf(Local2), Local3)
 	Store(ObjectType(Local3), Local4)
 	if (LNotEqual(Local4, c00a)) {
-		err(c080, z077, 0x129, 0, 0, Local4, c00a)
+		err(c080, z077, __LINE__, 0, 0, Local4, c00a)
 	}
 	if (LNotEqual(Local3, "abc200d")) {
-		err(c080, z077, 0x12a, 0, 0, Local3, "abc200d")
+		err(c080, z077, __LINE__, 0, 0, Local3, "abc200d")
 	}
 
 	Store(Index(p907, 0), Local0)
@@ -1829,10 +1829,10 @@ Method(m16a, 1, Serialized)
 	Store(DerefOf(Local2), Local3)
 	Store(ObjectType(Local3), Local4)
 	if (LNotEqual(Local4, c00a)) {
-		err(c080, z077, 0x12b, 0, 0, Local4, c00a)
+		err(c080, z077, __LINE__, 0, 0, Local4, c00a)
 	}
 	if (LNotEqual(Local3, "aqwevbgnm200e")) {
-		err(c080, z077, 0x12c, 0, 0, Local3, "aqwevbgnm200e")
+		err(c080, z077, __LINE__, 0, 0, Local3, "aqwevbgnm200e")
 	}
 
 	Store(Index(p908, 0), Local0)
@@ -1841,10 +1841,10 @@ Method(m16a, 1, Serialized)
 	Store(DerefOf(Local2), Local3)
 	Store(ObjectType(Local3), Local4)
 	if (LNotEqual(Local4, c00b)) {
-		err(c080, z077, 0x12d, 0, 0, Local4, c00b)
+		err(c080, z077, __LINE__, 0, 0, Local4, c00b)
 	}
 	if (LNotEqual(Local3, Buffer() {0xca,0xcb,0xcc,0xcd,0xce})) {
-		err(c080, z077, 0x12e, 0, 0, Local3, Buffer() {0xca,0xcb,0xcc,0xcd,0xce})
+		err(c080, z077, __LINE__, 0, 0, Local3, Buffer() {0xca,0xcb,0xcc,0xcd,0xce})
 	}
 
 	// Three level Package
@@ -1857,10 +1857,10 @@ Method(m16a, 1, Serialized)
 	Store(DerefOf(Local4), Local5)
 	Store(ObjectType(Local5), Local6)
 	if (LNotEqual(Local6, c009)) {
-		err(c080, z077, 0x12f, 0, 0, Local6, c009)
+		err(c080, z077, __LINE__, 0, 0, Local6, c009)
 	}
 	if (LNotEqual(Local5, 0xabc200f)) {
-		err(c080, z077, 0x130, 0, 0, Local5, 0xabc200f)
+		err(c080, z077, __LINE__, 0, 0, Local5, 0xabc200f)
 	}
 
 	Store(Index(p90a, 0), Local0)
@@ -1871,10 +1871,10 @@ Method(m16a, 1, Serialized)
 	Store(DerefOf(Local4), Local5)
 	Store(ObjectType(Local5), Local6)
 	if (LNotEqual(Local6, c00a)) {
-		err(c080, z077, 0x131, 0, 0, Local6, c00a)
+		err(c080, z077, __LINE__, 0, 0, Local6, c00a)
 	}
 	if (LNotEqual(Local5, "12342010")) {
-		err(c080, z077, 0x132, 0, 0, Local5, "12342010")
+		err(c080, z077, __LINE__, 0, 0, Local5, "12342010")
 	}
 
 	Store(Index(p90b, 0), Local0)
@@ -1885,10 +1885,10 @@ Method(m16a, 1, Serialized)
 	Store(DerefOf(Local4), Local5)
 	Store(ObjectType(Local5), Local6)
 	if (LNotEqual(Local6, c00a)) {
-		err(c080, z077, 0x133, 0, 0, Local6, c00a)
+		err(c080, z077, __LINE__, 0, 0, Local6, c00a)
 	}
 	if (LNotEqual(Local5, "zxswefas2011")) {
-		err(c080, z077, 0x134, 0, 0, Local5, "zxswefas2011")
+		err(c080, z077, __LINE__, 0, 0, Local5, "zxswefas2011")
 	}
 
 	Store(Index(p90c, 0), Local0)
@@ -1899,30 +1899,30 @@ Method(m16a, 1, Serialized)
 	Store(DerefOf(Local4), Local5)
 	Store(ObjectType(Local5), Local6)
 	if (LNotEqual(Local6, c00b)) {
-		err(c080, z077, 0x135, 0, 0, Local6, c00b)
+		err(c080, z077, __LINE__, 0, 0, Local6, c00b)
 	}
 	if (LNotEqual(Local5, Buffer() {0xcf,0xd0,0xd1})) {
-		err(c080, z077, 0x136, 0, 0, Local5, Buffer() {0xcf,0xd0,0xd1})
+		err(c080, z077, __LINE__, 0, 0, Local5, Buffer() {0xcf,0xd0,0xd1})
 	}
 
 	Store(Index(p953, 0), Local0)
 	Store(DerefOf(Local0), Local1)
 	Store(ObjectType(Local1), Local2)
 	if (LNotEqual(Local2, c009)) {
-		err(c080, z077, 0x137, 0, 0, Local2, c009)
+		err(c080, z077, __LINE__, 0, 0, Local2, c009)
 	}
 	if (LNotEqual(Local1, 0xabcd2018)) {
-		err(c080, z077, 0x138, 0, 0, Local1, 0xabcd2018)
+		err(c080, z077, __LINE__, 0, 0, Local1, 0xabcd2018)
 	}
 
 	Store(Index(p953, 1), Local0)
 	Store(DerefOf(Local0), Local1)
 	Store(ObjectType(Local1), Local2)
 	if (LNotEqual(Local2, c009)) {
-		err(c080, z077, 0x139, 0, 0, Local2, c009)
+		err(c080, z077, __LINE__, 0, 0, Local2, c009)
 	}
 	if (LNotEqual(Local1, 0xabcd2019)) {
-		err(c080, z077, 0x13a, 0, 0, Local1, 0xabcd2019)
+		err(c080, z077, __LINE__, 0, 0, Local1, 0xabcd2019)
 	}
 
 	// Not Computational Data
@@ -1941,13 +1941,13 @@ Method(m16a, 1, Serialized)
  *	// Field Unit (Field)
  *
  *	if (LNotEqual(f900, 0xd7)) {
- *		err(c080, z077, 0x137, 0, 0, f900, 0xd7)
+ *		err(c080, z077, __LINE__, 0, 0, f900, 0xd7)
  *	}
  *
  *	// Field Unit (IndexField)
  *
  *	if (LNotEqual(if90, 0xd7)) {
- *		err(c080, z077, 0x138, 0, 0, if90, 0xd7)
+ *		err(c080, z077, __LINE__, 0, 0, if90, 0xd7)
  *	}
  */
 	} /* m000 */
@@ -2728,80 +2728,80 @@ Method(m16b,, Serialized)
 
 	Store(ObjectType(i900), Local0)
 	if (LNotEqual(Local0, c009)) {
-		err(c080, z077, 0x100, 0, 0, Local0, c009)
+		err(c080, z077, __LINE__, 0, 0, Local0, c009)
 	}
 	if (LNotEqual(i900, 0xfe7cb391d65a3000)) {
-		err(c080, z077, 0x101, 0, 0, i900, 0xfe7cb391d65a3000)
+		err(c080, z077, __LINE__, 0, 0, i900, 0xfe7cb391d65a3000)
 	}
 
 	Store(ObjectType(i901), Local0)
 	if (LNotEqual(Local0, c009)) {
-		err(c080, z077, 0x102, 0, 0, Local0, c009)
+		err(c080, z077, __LINE__, 0, 0, Local0, c009)
 	}
 	if (LNotEqual(i901, 0x21793001)) {
-		err(c080, z077, 0x103, 0, 0, i901, 0x21793001)
+		err(c080, z077, __LINE__, 0, 0, i901, 0x21793001)
 	}
 
 	Store(ObjectType(i902), Local0)
 	if (LNotEqual(Local0, c009)) {
-		err(c080, z077, 0x104, 0, 0, Local0, c009)
+		err(c080, z077, __LINE__, 0, 0, Local0, c009)
 	}
 	if (LNotEqual(i902, 0)) {
-		err(c080, z077, 0x105, 0, 0, i902, 0)
+		err(c080, z077, __LINE__, 0, 0, i902, 0)
 	}
 
 	Store(ObjectType(i903), Local0)
 	if (LNotEqual(Local0, c009)) {
-		err(c080, z077, 0x106, 0, 0, Local0, c009)
+		err(c080, z077, __LINE__, 0, 0, Local0, c009)
 	}
 	if (LNotEqual(i903, 0xffffffffffffffff)) {
-		err(c080, z077, 0x107, 0, 0, i903, 0xffffffffffffffff)
+		err(c080, z077, __LINE__, 0, 0, i903, 0xffffffffffffffff)
 	}
 
 	Store(ObjectType(i904), Local0)
 	if (LNotEqual(Local0, c009)) {
-		err(c080, z077, 0x108, 0, 0, Local0, c009)
+		err(c080, z077, __LINE__, 0, 0, Local0, c009)
 	}
 	if (LNotEqual(i904, 0xffffffff)) {
-		err(c080, z077, 0x109, 0, 0, i904, 0xffffffff)
+		err(c080, z077, __LINE__, 0, 0, i904, 0xffffffff)
 	}
 
 	// String
 
 	Store(ObjectType(s900), Local0)
 	if (LNotEqual(Local0, c00a)) {
-		err(c080, z077, 0x10a, 0, 0, Local0, c00a)
+		err(c080, z077, __LINE__, 0, 0, Local0, c00a)
 	}
 	if (LNotEqual(s900, "12343002")) {
-		err(c080, z077, 0x10b, 0, 0, s900, "12343002")
+		err(c080, z077, __LINE__, 0, 0, s900, "12343002")
 	}
 
 	Store(ObjectType(s901), Local0)
 	if (LNotEqual(Local0, c00a)) {
-		err(c080, z077, 0x10c, 0, 0, Local0, c00a)
+		err(c080, z077, __LINE__, 0, 0, Local0, c00a)
 	}
 	if (LNotEqual(s901, "qwrtyu3003")) {
-		err(c080, z077, 0x10d, 0, 0, s901, "qwrtyu3003")
+		err(c080, z077, __LINE__, 0, 0, s901, "qwrtyu3003")
 	}
 
 	// Buffer
 
 	Store(ObjectType(b900), Local0)
 	if (LNotEqual(Local0, c00b)) {
-		err(c080, z077, 0x10e, 0, 0, Local0, c00b)
+		err(c080, z077, __LINE__, 0, 0, Local0, c00b)
 	}
 	if (LNotEqual(b900, Buffer() {0xd0,0xd1,0xd2,0xd3,0xd4})) {
-		err(c080, z077, 0x10f, 0, 0, b900, Buffer() {0xd0,0xd1,0xd2,0xd3,0xd4})
+		err(c080, z077, __LINE__, 0, 0, b900, Buffer() {0xd0,0xd1,0xd2,0xd3,0xd4})
 	}
 
 	// Buffer Field
 
 	Store(ObjectType(bf90), Local0)
 	if (LNotEqual(Local0, c016)) {
-		err(c080, z077, 0x110, 0, 0, Local0, c016)
+		err(c080, z077, __LINE__, 0, 0, Local0, c016)
 	}
 	if (LNotEqual(bf90, 0xd0)) {
-		err(c080, z077, 0x111, 0, 0, bf90, 0xd0)
+		err(c080, z077, __LINE__, 0, 0, bf90, 0xd0)
 	}
 
 	// One level Package
@@ -2809,87 +2809,87 @@ Method(m16b,, Serialized)
 	Store(Index(p900, 0), Local0)
 	Store(ObjectType(Local0), Local1)
 	if (LNotEqual(Local1, c008)) {
-		err(c080, z077, 0x112, 0, 0, Local1, c008)
+		err(c080, z077, __LINE__, 0, 0, Local1, c008)
 	}
 
 	Store(Index(p901, 0), Local0)
 	Store(DerefOf(Local0), Local1)
 	Store(ObjectType(Local1), Local2)
 	if (LNotEqual(Local2, c009)) {
-		err(c080, z077, 0x113, 0, 0, Local2, c009)
+		err(c080, z077, __LINE__, 0, 0, Local2, c009)
 	}
 	if (LNotEqual(Local1, 0xabcd3004)) {
-		err(c080, z077, 0x114, 0, 0, Local1, 0xabcd3004)
+		err(c080, z077, __LINE__, 0, 0, Local1, 0xabcd3004)
 	}
 
 	Store(Index(p901, 1), Local0)
 	Store(DerefOf(Local0), Local1)
 	Store(ObjectType(Local1), Local2)
 	if (LNotEqual(Local2, c009)) {
-		err(c080, z077, 0x115, 0, 0, Local2, c009)
+		err(c080, z077, __LINE__, 0, 0, Local2, c009)
 	}
 	if (LNotEqual(Local1, 0x1122334455663005)) {
-		err(c080, z077, 0x116, 0, 0, Local1, 0x1122334455663005)
+		err(c080, z077, __LINE__, 0, 0, Local1, 0x1122334455663005)
 	}
 
 	Store(Index(p902, 0), Local0)
 	Store(DerefOf(Local0), Local1)
 	Store(ObjectType(Local1), Local2)
 	if (LNotEqual(Local2, c00a)) {
-		err(c080, z077, 0x117, 0, 0, Local2, c00a)
+		err(c080, z077, __LINE__, 0, 0, Local2, c00a)
 	}
 	if (LNotEqual(Local1, "12343006")) {
-		err(c080, z077, 0x118, 0, 0, Local1, "12343006")
+		err(c080, z077, __LINE__, 0, 0, Local1, "12343006")
 	}
 
 	Store(Index(p902, 1), Local0)
 	Store(DerefOf(Local0), Local1)
 	Store(ObjectType(Local1), Local2)
 	if (LNotEqual(Local2, c00a)) {
-		err(c080, z077, 0x119, 0, 0, Local2, c00a)
+		err(c080, z077, __LINE__, 0, 0, Local2, c00a)
 	}
 	if (LNotEqual(Local1, "q1w2e3r4t5y6u7i83007")) {
-		err(c080, z077, 0x11a, 0, 0, Local1, "q1w2e3r4t5y6u7i83007")
+		err(c080, z077, __LINE__, 0, 0, Local1, "q1w2e3r4t5y6u7i83007")
 	}
 
 	Store(Index(p903, 0), Local0)
 	Store(DerefOf(Local0), Local1)
 	Store(ObjectType(Local1), Local2)
 	if (LNotEqual(Local2, c00a)) {
-		err(c080, z077, 0x11b, 0, 0, Local2, c00a)
+		err(c080, z077, __LINE__, 0, 0, Local2, c00a)
 	}
 	if (LNotEqual(Local1, "qwrtyuiop3008")) {
-		err(c080, z077, 0x11c, 0, 0, Local1, "qwrtyuiop3008")
+		err(c080, z077, __LINE__, 0, 0, Local1, "qwrtyuiop3008")
 	}
 
 	Store(Index(p903, 1), Local0)
 	Store(DerefOf(Local0), Local1)
 	Store(ObjectType(Local1), Local2)
 	if (LNotEqual(Local2, c00a)) {
-		err(c080, z077, 0x11d, 0, 0, Local2, c00a)
+		err(c080, z077, __LINE__, 0, 0, Local2, c00a)
 	}
 	if (LNotEqual(Local1, "1234567890abdef0253009")) {
-		err(c080, z077, 0x11e, 0, 0, Local1, "1234567890abdef0253009")
+		err(c080, z077, __LINE__, 0, 0, Local1, "1234567890abdef0253009")
 	}
 
 	Store(Index(p904, 0), Local0)
 	Store(DerefOf(Local0), Local1)
 	Store(ObjectType(Local1), Local2)
 	if (LNotEqual(Local2, c00b)) {
-		err(c080, z077, 0x11f, 0, 0, Local2, c00b)
+		err(c080, z077, __LINE__, 0, 0, Local2, c00b)
 	}
 	if (LNotEqual(Local1, Buffer() {0xd5,0xd6,0xd7})) {
-		err(c080, z077, 0x120, 0, 0, Local1, Buffer() {0xd5,0xd6,0xd7})
+		err(c080, z077, __LINE__, 0, 0, Local1, Buffer() {0xd5,0xd6,0xd7})
 	}
 
 	Store(Index(p904, 1), Local0)
 	Store(DerefOf(Local0), Local1)
 	Store(ObjectType(Local1), Local2)
 	if (LNotEqual(Local2, c00b)) {
-		err(c080, z077, 0x121, 0, 0, Local2, c00b)
+		err(c080, z077, __LINE__, 0, 0, Local2, c00b)
 	}
 	if (LNotEqual(Local1, Buffer() {0xd8,0xd9})) {
-		err(c080, z077, 0x122, 0, 0, Local1, Buffer() {0xd8,0xd9})
+		err(c080, z077, __LINE__, 0, 0, Local1, Buffer() {0xd8,0xd9})
 	}
 
 	// Two level Package
@@ -2900,10 +2900,10 @@ Method(m16b,, Serialized)
 	Store(DerefOf(Local2), Local3)
 	Store(ObjectType(Local3), Local4)
 	if (LNotEqual(Local4, c009)) {
-		err(c080, z077, 0x123, 0, 0, Local4, c009)
+		err(c080, z077, __LINE__, 0, 0, Local4, c009)
 	}
 	if (LNotEqual(Local3, 0xabc300a)) {
-		err(c080, z077, 0x124, 0, 0, Local3, 0xabc300a)
+		err(c080, z077, __LINE__, 0, 0, Local3, 0xabc300a)
 	}
 
 	Store(Index(p905, 0), Local0)
@@ -2912,10 +2912,10 @@ Method(m16b,, Serialized)
 	Store(DerefOf(Local2), Local3)
 	Store(ObjectType(Local3), Local4)
 	if (LNotEqual(Local4, c00a)) {
-		err(c080, z077, 0x125, 0, 0, Local4, c00a)
+		err(c080, z077, __LINE__, 0, 0, Local4, c00a)
 	}
 	if (LNotEqual(Local3, "0xabc300b")) {
-		err(c080, z077, 0x126, 0, 0, Local3, "0xabc300b")
+		err(c080, z077, __LINE__, 0, 0, Local3, "0xabc300b")
 	}
 
 	Store(Index(p905, 0), Local0)
@@ -2924,10 +2924,10 @@ Method(m16b,, Serialized)
 	Store(DerefOf(Local2), Local3)
 	Store(ObjectType(Local3), Local4)
 	if (LNotEqual(Local4, c00a)) {
-		err(c080, z077, 0x127, 0, 0, Local4, c00a)
+		err(c080, z077, __LINE__, 0, 0, Local4, c00a)
 	}
 	if (LNotEqual(Local3, "abc300c")) {
-		err(c080, z077, 0x128, 0, 0, Local3, "abc300c")
+		err(c080, z077, __LINE__, 0, 0, Local3, "abc300c")
 	}
 
 	Store(Index(p906, 0), Local0)
@@ -2936,10 +2936,10 @@ Method(m16b,, Serialized)
 	Store(DerefOf(Local2), Local3)
 	Store(ObjectType(Local3), Local4)
 	if (LNotEqual(Local4, c00a)) {
-		err(c080, z077, 0x129, 0, 0, Local4, c00a)
+		err(c080, z077, __LINE__, 0, 0, Local4, c00a)
 	}
 	if (LNotEqual(Local3, "abc300d")) {
-		err(c080, z077, 0x12a, 0, 0, Local3, "abc300d")
+		err(c080, z077, __LINE__, 0, 0, Local3, "abc300d")
 	}
 
 	Store(Index(p907, 0), Local0)
@@ -2948,10 +2948,10 @@ Method(m16b,, Serialized)
 	Store(DerefOf(Local2), Local3)
 	Store(ObjectType(Local3), Local4)
 	if (LNotEqual(Local4, c00a)) {
-		err(c080, z077, 0x12b, 0, 0, Local4, c00a)
+		err(c080, z077, __LINE__, 0, 0, Local4, c00a)
 	}
 	if (LNotEqual(Local3, "aqwevbgnm300e")) {
-		err(c080, z077, 0x12c, 0, 0, Local3, "aqwevbgnm300e")
+		err(c080, z077, __LINE__, 0, 0, Local3, "aqwevbgnm300e")
 	}
 
 	Store(Index(p908, 0), Local0)
@@ -2960,10 +2960,10 @@ Method(m16b,, Serialized)
 	Store(DerefOf(Local2), Local3)
 	Store(ObjectType(Local3), Local4)
 	if (LNotEqual(Local4, c00b)) {
-		err(c080, z077, 0x12d, 0, 0, Local4, c00b)
+		err(c080, z077, __LINE__, 0, 0, Local4, c00b)
 	}
 	if (LNotEqual(Local3, Buffer() {0xda,0xdb,0xdc,0xdd,0xde})) {
-		err(c080, z077, 0x12e, 0, 0, Local3, Buffer() {0xda,0xdb,0xdc,0xdd,0xde})
+		err(c080, z077, __LINE__, 0, 0, Local3, Buffer() {0xda,0xdb,0xdc,0xdd,0xde})
 	}
 
 	// Three level Package
@@ -2976,10 +2976,10 @@ Method(m16b,, Serialized)
 	Store(DerefOf(Local4), Local5)
 	Store(ObjectType(Local5), Local6)
 	if (LNotEqual(Local6, c009)) {
-		err(c080, z077, 0x12f, 0, 0, Local6, c009)
+		err(c080, z077, __LINE__, 0, 0, Local6, c009)
 	}
 	if (LNotEqual(Local5, 0xabc300f)) {
-		err(c080, z077, 0x130, 0, 0, Local5, 0xabc300f)
+		err(c080, z077, __LINE__, 0, 0, Local5, 0xabc300f)
 	}
 
 	Store(Index(p90a, 0), Local0)
@@ -2990,10 +2990,10 @@ Method(m16b,, Serialized)
 	Store(DerefOf(Local4), Local5)
 	Store(ObjectType(Local5), Local6)
 	if (LNotEqual(Local6, c00a)) {
-		err(c080, z077, 0x131, 0, 0, Local6, c00a)
+		err(c080, z077, __LINE__, 0, 0, Local6, c00a)
 	}
 	if (LNotEqual(Local5, "12343010")) {
-		err(c080, z077, 0x132, 0, 0, Local5, "12343010")
+		err(c080, z077, __LINE__, 0, 0, Local5, "12343010")
 	}
 
 	Store(Index(p90b, 0), Local0)
@@ -3004,10 +3004,10 @@ Method(m16b,, Serialized)
 	Store(DerefOf(Local4), Local5)
 	Store(ObjectType(Local5), Local6)
 	if (LNotEqual(Local6, c00a)) {
-		err(c080, z077, 0x133, 0, 0, Local6, c00a)
+		err(c080, z077, __LINE__, 0, 0, Local6, c00a)
 	}
 	if (LNotEqual(Local5, "zxswefas3011")) {
-		err(c080, z077, 0x134, 0, 0, Local5, "zxswefas3011")
+		err(c080, z077, __LINE__, 0, 0, Local5, "zxswefas3011")
 	}
 
 	Store(Index(p90c, 0), Local0)
@@ -3018,30 +3018,30 @@ Method(m16b,, Serialized)
 	Store(DerefOf(Local4), Local5)
 	Store(ObjectType(Local5), Local6)
 	if (LNotEqual(Local6, c00b)) {
-		err(c080, z077, 0x135, 0, 0, Local6, c00b)
+		err(c080, z077, __LINE__, 0, 0, Local6, c00b)
 	}
 	if (LNotEqual(Local5, Buffer() {0xdf,0x20,0x21})) {
-		err(c080, z077, 0x136, 0, 0, Local5, Buffer() {0xdf,0x20,0x21})
+		err(c080, z077, __LINE__, 0, 0, Local5, Buffer() {0xdf,0x20,0x21})
 	}
 
 	Store(Index(p953, 0), Local0)
 	Store(DerefOf(Local0), Local1)
 	Store(ObjectType(Local1), Local2)
 	if (LNotEqual(Local2, c009)) {
-		err(c080, z077, 0x137, 0, 0, Local2, c009)
+		err(c080, z077, __LINE__, 0, 0, Local2, c009)
 	}
 	if (LNotEqual(Local1, 0xabcd3018)) {
-		err(c080, z077, 0x138, 0, 0, Local1, 0xabcd3018)
+		err(c080, z077, __LINE__, 0, 0, Local1, 0xabcd3018)
 	}
 
 	Store(Index(p953, 1), Local0)
 	Store(DerefOf(Local0), Local1)
 	Store(ObjectType(Local1), Local2)
 	if (LNotEqual(Local2, c009)) {
-		err(c080, z077, 0x139, 0, 0, Local2, c009)
+		err(c080, z077, __LINE__, 0, 0, Local2, c009)
 	}
 	if (LNotEqual(Local1, 0xabcd3019)) {
-		err(c080, z077, 0x13a, 0, 0, Local1, 0xabcd3019)
+		err(c080, z077, __LINE__, 0, 0, Local1, 0xabcd3019)
 	}
 
 	// Not Computational Data
@@ -3060,13 +3060,13 @@ Method(m16b,, Serialized)
  *	// Field Unit (Field)
  *
  *	if (LNotEqual(f900, 0xd7)) {
- *		err(c080, z077, 0x137, 0, 0, f900, 0xd7)
+ *		err(c080, z077, __LINE__, 0, 0, f900, 0xd7)
  *	}
  *
  *	// Field Unit (IndexField)
  *
  *	if (LNotEqual(if90, 0xd7)) {
- *		err(c080, z077, 0x138, 0, 0, if90, 0xd7)
+ *		err(c080, z077, __LINE__, 0, 0, if90, 0xd7)
  *	}
  */
 	} /* m000 */
@@ -3768,80 +3768,80 @@ Method(m16c, 1, Serialized)
 
 	Store(ObjectType(i900), Local0)
 	if (LNotEqual(Local0, c009)) {
-		err(c080, z077, 0x100, 0, 0, Local0, c009)
+		err(c080, z077, __LINE__, 0, 0, Local0, c009)
 	}
 	if (LNotEqual(i900, 0xfe7cb391d65a4000)) {
-		err(c080, z077, 0x101, 0, 0, i900, 0xfe7cb391d65a4000)
+		err(c080, z077, __LINE__, 0, 0, i900, 0xfe7cb391d65a4000)
 	}
 
 	Store(ObjectType(i901), Local0)
 	if (LNotEqual(Local0, c009)) {
-		err(c080, z077, 0x102, 0, 0, Local0, c009)
+		err(c080, z077, __LINE__, 0, 0, Local0, c009)
 	}
 	if (LNotEqual(i901, 0xc1794001)) {
-		err(c080, z077, 0x103, 0, 0, i901, 0xc1794001)
+		err(c080, z077, __LINE__, 0, 0, i901, 0xc1794001)
 	}
 
 	Store(ObjectType(i902), Local0)
 	if (LNotEqual(Local0, c009)) {
-		err(c080, z077, 0x104, 0, 0, Local0, c009)
+		err(c080, z077, __LINE__, 0, 0, Local0, c009)
 	}
 	if (LNotEqual(i902, 0)) {
-		err(c080, z077, 0x105, 0, 0, i902, 0)
+		err(c080, z077, __LINE__, 0, 0, i902, 0)
 	}
 
 	Store(ObjectType(i903), Local0)
 	if (LNotEqual(Local0, c009)) {
-		err(c080, z077, 0x106, 0, 0, Local0, c009)
+		err(c080, z077, __LINE__, 0, 0, Local0, c009)
 	}
 	if (LNotEqual(i903, 0xffffffffffffffff)) {
-		err(c080, z077, 0x107, 0, 0, i903, 0xffffffffffffffff)
+		err(c080, z077, __LINE__, 0, 0, i903, 0xffffffffffffffff)
 	}
 
 	Store(ObjectType(i904), Local0)
 	if (LNotEqual(Local0, c009)) {
-		err(c080, z077, 0x108, 0, 0, Local0, c009)
+		err(c080, z077, __LINE__, 0, 0, Local0, c009)
 	}
 	if (LNotEqual(i904, 0xffffffff)) {
-		err(c080, z077, 0x109, 0, 0, i904, 0xffffffff)
+		err(c080, z077, __LINE__, 0, 0, i904, 0xffffffff)
 	}
 
 	// String
 
 	Store(ObjectType(s900), Local0)
 	if (LNotEqual(Local0, c00a)) {
-		err(c080, z077, 0x10a, 0, 0, Local0, c00a)
+		err(c080, z077, __LINE__, 0, 0, Local0, c00a)
 	}
 	if (LNotEqual(s900, "12344002")) {
-		err(c080, z077, 0x10b, 0, 0, s900, "12344002")
+		err(c080, z077, __LINE__, 0, 0, s900, "12344002")
 	}
 
 	Store(ObjectType(s901), Local0)
 	if (LNotEqual(Local0, c00a)) {
-		err(c080, z077, 0x10c, 0, 0, Local0, c00a)
+		err(c080, z077, __LINE__, 0, 0, Local0, c00a)
 	}
 	if (LNotEqual(s901, "qwrtyu4003")) {
-		err(c080, z077, 0x10d, 0, 0, s901, "qwrtyu4003")
+		err(c080, z077, __LINE__, 0, 0, s901, "qwrtyu4003")
 	}
 
 	// Buffer
 
 	Store(ObjectType(b900), Local0)
 	if (LNotEqual(Local0, c00b)) {
-		err(c080, z077, 0x10e, 0, 0, Local0, c00b)
+		err(c080, z077, __LINE__, 0, 0, Local0, c00b)
 	}
 	if (LNotEqual(b900, Buffer() {0xe0,0xe1,0xe2,0xe3,0xe4})) {
-		err(c080, z077, 0x10f, 0, 0, b900, Buffer() {0xe0,0xe1,0xe2,0xe3,0xe4})
+		err(c080, z077, __LINE__, 0, 0, b900, Buffer() {0xe0,0xe1,0xe2,0xe3,0xe4})
 	}
 
 	// Buffer Field
 
 	Store(ObjectType(bf90), Local0)
 	if (LNotEqual(Local0, c016)) {
-		err(c080, z077, 0x110, 0, 0, Local0, c016)
+		err(c080, z077, __LINE__, 0, 0, Local0, c016)
 	}
 	if (LNotEqual(bf90, 0xe0)) {
-		err(c080, z077, 0x111, 0, 0, bf90, 0xe0)
+		err(c080, z077, __LINE__, 0, 0, bf90, 0xe0)
 	}
 
 	// One level Package
@@ -3849,87 +3849,87 @@ Method(m16c, 1, Serialized)
 	Store(Index(p900, 0), Local0)
 	Store(ObjectType(Local0), Local1)
 	if (LNotEqual(Local1, c008)) {
-		err(c080, z077, 0x112, 0, 0, Local1, c008)
+		err(c080, z077, __LINE__, 0, 0, Local1, c008)
 	}
 
 	Store(Index(p901, 0), Local0)
 	Store(DerefOf(Local0), Local1)
 	Store(ObjectType(Local1), Local2)
 	if (LNotEqual(Local2, c009)) {
-		err(c080, z077, 0x113, 0, 0, Local2, c009)
+		err(c080, z077, __LINE__, 0, 0, Local2, c009)
 	}
 	if (LNotEqual(Local1, 0xabcd4004)) {
-		err(c080, z077, 0x114, 0, 0, Local1, 0xabcd4004)
+		err(c080, z077, __LINE__, 0, 0, Local1, 0xabcd4004)
 	}
 
 	Store(Index(p901, 1), Local0)
 	Store(DerefOf(Local0), Local1)
 	Store(ObjectType(Local1), Local2)
 	if (LNotEqual(Local2, c009)) {
-		err(c080, z077, 0x115, 0, 0, Local2, c009)
+		err(c080, z077, __LINE__, 0, 0, Local2, c009)
 	}
 	if (LNotEqual(Local1, 0x1122334455664005)) {
-		err(c080, z077, 0x116, 0, 0, Local1, 0x1122334455664005)
+		err(c080, z077, __LINE__, 0, 0, Local1, 0x1122334455664005)
 	}
 
 	Store(Index(p902, 0), Local0)
 	Store(DerefOf(Local0), Local1)
 	Store(ObjectType(Local1), Local2)
 	if (LNotEqual(Local2, c00a)) {
-		err(c080, z077, 0x117, 0, 0, Local2, c00a)
+		err(c080, z077, __LINE__, 0, 0, Local2, c00a)
 	}
 	if (LNotEqual(Local1, "12344006")) {
-		err(c080, z077, 0x118, 0, 0, Local1, "12344006")
+		err(c080, z077, __LINE__, 0, 0, Local1, "12344006")
 	}
 
 	Store(Index(p902, 1), Local0)
 	Store(DerefOf(Local0), Local1)
 	Store(ObjectType(Local1), Local2)
 	if (LNotEqual(Local2, c00a)) {
-		err(c080, z077, 0x119, 0, 0, Local2, c00a)
+		err(c080, z077, __LINE__, 0, 0, Local2, c00a)
 	}
 	if (LNotEqual(Local1, "q1w2e3r4t5y6u7i84007")) {
-		err(c080, z077, 0x11a, 0, 0, Local1, "q1w2e3r4t5y6u7i84007")
+		err(c080, z077, __LINE__, 0, 0, Local1, "q1w2e3r4t5y6u7i84007")
 	}
 
 	Store(Index(p903, 0), Local0)
 	Store(DerefOf(Local0), Local1)
 	Store(ObjectType(Local1), Local2)
 	if (LNotEqual(Local2, c00a)) {
-		err(c080, z077, 0x11b, 0, 0, Local2, c00a)
+		err(c080, z077, __LINE__, 0, 0, Local2, c00a)
 	}
 	if (LNotEqual(Local1, "qwrtyuiop4008")) {
-		err(c080, z077, 0x11c, 0, 0, Local1, "qwrtyuiop4008")
+		err(c080, z077, __LINE__, 0, 0, Local1, "qwrtyuiop4008")
 	}
 
 	Store(Index(p903, 1), Local0)
 	Store(DerefOf(Local0), Local1)
 	Store(ObjectType(Local1), Local2)
 	if (LNotEqual(Local2, c00a)) {
-		err(c080, z077, 0x11d, 0, 0, Local2, c00a)
+		err(c080, z077, __LINE__, 0, 0, Local2, c00a)
 	}
 	if (LNotEqual(Local1, "1234567890abdef0254009")) {
-		err(c080, z077, 0x11e, 0, 0, Local1, "1234567890abdef0254009")
+		err(c080, z077, __LINE__, 0, 0, Local1, "1234567890abdef0254009")
 	}
 
 	Store(Index(p904, 0), Local0)
 	Store(DerefOf(Local0), Local1)
 	Store(ObjectType(Local1), Local2)
 	if (LNotEqual(Local2, c00b)) {
-		err(c080, z077, 0x11f, 0, 0, Local2, c00b)
+		err(c080, z077, __LINE__, 0, 0, Local2, c00b)
 	}
 	if (LNotEqual(Local1, Buffer() {0xe5,0xe6,0xe7})) {
-		err(c080, z077, 0x120, 0, 0, Local1, Buffer() {0xe5,0xe6,0xe7})
+		err(c080, z077, __LINE__, 0, 0, Local1, Buffer() {0xe5,0xe6,0xe7})
 	}
 
 	Store(Index(p904, 1), Local0)
 	Store(DerefOf(Local0), Local1)
 	Store(ObjectType(Local1), Local2)
 	if (LNotEqual(Local2, c00b)) {
-		err(c080, z077, 0x121, 0, 0, Local2, c00b)
+		err(c080, z077, __LINE__, 0, 0, Local2, c00b)
 	}
 	if (LNotEqual(Local1, Buffer() {0xe8,0xe9})) {
-		err(c080, z077, 0x122, 0, 0, Local1, Buffer() {0xe8,0xe9})
+		err(c080, z077, __LINE__, 0, 0, Local1, Buffer() {0xe8,0xe9})
 	}
 
 	// Two level Package
@@ -3940,10 +3940,10 @@ Method(m16c, 1, Serialized)
 	Store(DerefOf(Local2), Local3)
 	Store(ObjectType(Local3), Local4)
 	if (LNotEqual(Local4, c009)) {
-		err(c080, z077, 0x123, 0, 0, Local4, c009)
+		err(c080, z077, __LINE__, 0, 0, Local4, c009)
 	}
 	if (LNotEqual(Local3, 0xabc400a)) {
-		err(c080, z077, 0x124, 0, 0, Local3, 0xabc400a)
+		err(c080, z077, __LINE__, 0, 0, Local3, 0xabc400a)
 	}
 
 	Store(Index(p905, 0), Local0)
@@ -3952,10 +3952,10 @@ Method(m16c, 1, Serialized)
 	Store(DerefOf(Local2), Local3)
 	Store(ObjectType(Local3), Local4)
 	if (LNotEqual(Local4, c00a)) {
-		err(c080, z077, 0x125, 0, 0, Local4, c00a)
+		err(c080, z077, __LINE__, 0, 0, Local4, c00a)
 	}
 	if (LNotEqual(Local3, "0xabc400b")) {
-		err(c080, z077, 0x126, 0, 0, Local3, "0xabc400b")
+		err(c080, z077, __LINE__, 0, 0, Local3, "0xabc400b")
 	}
 
 	Store(Index(p905, 0), Local0)
@@ -3964,10 +3964,10 @@ Method(m16c, 1, Serialized)
 	Store(DerefOf(Local2), Local3)
 	Store(ObjectType(Local3), Local4)
 	if (LNotEqual(Local4, c00a)) {
-		err(c080, z077, 0x127, 0, 0, Local4, c00a)
+		err(c080, z077, __LINE__, 0, 0, Local4, c00a)
 	}
 	if (LNotEqual(Local3, "abc400c")) {
-		err(c080, z077, 0x128, 0, 0, Local3, "abc400c")
+		err(c080, z077, __LINE__, 0, 0, Local3, "abc400c")
 	}
 
 	Store(Index(p906, 0), Local0)
@@ -3976,10 +3976,10 @@ Method(m16c, 1, Serialized)
 	Store(DerefOf(Local2), Local3)
 	Store(ObjectType(Local3), Local4)
 	if (LNotEqual(Local4, c00a)) {
-		err(c080, z077, 0x129, 0, 0, Local4, c00a)
+		err(c080, z077, __LINE__, 0, 0, Local4, c00a)
 	}
 	if (LNotEqual(Local3, "abc400d")) {
-		err(c080, z077, 0x12a, 0, 0, Local3, "abc400d")
+		err(c080, z077, __LINE__, 0, 0, Local3, "abc400d")
 	}
 
 	Store(Index(p907, 0), Local0)
@@ -3988,10 +3988,10 @@ Method(m16c, 1, Serialized)
 	Store(DerefOf(Local2), Local3)
 	Store(ObjectType(Local3), Local4)
 	if (LNotEqual(Local4, c00a)) {
-		err(c080, z077, 0x12b, 0, 0, Local4, c00a)
+		err(c080, z077, __LINE__, 0, 0, Local4, c00a)
 	}
 	if (LNotEqual(Local3, "aqwevbgnm400e")) {
-		err(c080, z077, 0x12c, 0, 0, Local3, "aqwevbgnm400e")
+		err(c080, z077, __LINE__, 0, 0, Local3, "aqwevbgnm400e")
 	}
 
 	Store(Index(p908, 0), Local0)
@@ -4000,10 +4000,10 @@ Method(m16c, 1, Serialized)
 	Store(DerefOf(Local2), Local3)
 	Store(ObjectType(Local3), Local4)
 	if (LNotEqual(Local4, c00b)) {
-		err(c080, z077, 0x12d, 0, 0, Local4, c00b)
+		err(c080, z077, __LINE__, 0, 0, Local4, c00b)
 	}
 	if (LNotEqual(Local3, Buffer() {0xea,0xeb,0xec,0xed,0xee})) {
-		err(c080, z077, 0x12e, 0, 0, Local3, Buffer() {0xea,0xeb,0xec,0xed,0xee})
+		err(c080, z077, __LINE__, 0, 0, Local3, Buffer() {0xea,0xeb,0xec,0xed,0xee})
 	}
 
 	// Three level Package
@@ -4016,10 +4016,10 @@ Method(m16c, 1, Serialized)
 	Store(DerefOf(Local4), Local5)
 	Store(ObjectType(Local5), Local6)
 	if (LNotEqual(Local6, c009)) {
-		err(c080, z077, 0x12f, 0, 0, Local6, c009)
+		err(c080, z077, __LINE__, 0, 0, Local6, c009)
 	}
 	if (LNotEqual(Local5, 0xabc400f)) {
-		err(c080, z077, 0x130, 0, 0, Local5, 0xabc400f)
+		err(c080, z077, __LINE__, 0, 0, Local5, 0xabc400f)
 	}
 
 	Store(Index(p90a, 0), Local0)
@@ -4030,10 +4030,10 @@ Method(m16c, 1, Serialized)
 	Store(DerefOf(Local4), Local5)
 	Store(ObjectType(Local5), Local6)
 	if (LNotEqual(Local6, c00a)) {
-		err(c080, z077, 0x131, 0, 0, Local6, c00a)
+		err(c080, z077, __LINE__, 0, 0, Local6, c00a)
 	}
 	if (LNotEqual(Local5, "12344010")) {
-		err(c080, z077, 0x132, 0, 0, Local5, "12344010")
+		err(c080, z077, __LINE__, 0, 0, Local5, "12344010")
 	}
 
 	Store(Index(p90b, 0), Local0)
@@ -4044,10 +4044,10 @@ Method(m16c, 1, Serialized)
 	Store(DerefOf(Local4), Local5)
 	Store(ObjectType(Local5), Local6)
 	if (LNotEqual(Local6, c00a)) {
-		err(c080, z077, 0x133, 0, 0, Local6, c00a)
+		err(c080, z077, __LINE__, 0, 0, Local6, c00a)
 	}
 	if (LNotEqual(Local5, "zxswefas4011")) {
-		err(c080, z077, 0x134, 0, 0, Local5, "zxswefas4011")
+		err(c080, z077, __LINE__, 0, 0, Local5, "zxswefas4011")
 	}
 
 	Store(Index(p90c, 0), Local0)
@@ -4058,30 +4058,30 @@ Method(m16c, 1, Serialized)
 	Store(DerefOf(Local4), Local5)
 	Store(ObjectType(Local5), Local6)
 	if (LNotEqual(Local6, c00b)) {
-		err(c080, z077, 0x135, 0, 0, Local6, c00b)
+		err(c080, z077, __LINE__, 0, 0, Local6, c00b)
 	}
 	if (LNotEqual(Local5, Buffer() {0xef,0x30,0x31})) {
-		err(c080, z077, 0x136, 0, 0, Local5, Buffer() {0xef,0x30,0x31})
+		err(c080, z077, __LINE__, 0, 0, Local5, Buffer() {0xef,0x30,0x31})
 	}
 
 	Store(Index(p953, 0), Local0)
 	Store(DerefOf(Local0), Local1)
 	Store(ObjectType(Local1), Local2)
 	if (LNotEqual(Local2, c009)) {
-		err(c080, z077, 0x137, 0, 0, Local2, c009)
+		err(c080, z077, __LINE__, 0, 0, Local2, c009)
 	}
 	if (LNotEqual(Local1, 0xabcd4018)) {
-		err(c080, z077, 0x138, 0, 0, Local1, 0xabcd4018)
+		err(c080, z077, __LINE__, 0, 0, Local1, 0xabcd4018)
 	}
 
 	Store(Index(p953, 1), Local0)
 	Store(DerefOf(Local0), Local1)
 	Store(ObjectType(Local1), Local2)
 	if (LNotEqual(Local2, c009)) {
-		err(c080, z077, 0x139, 0, 0, Local2, c009)
+		err(c080, z077, __LINE__, 0, 0, Local2, c009)
 	}
 	if (LNotEqual(Local1, 0xabcd4019)) {
-		err(c080, z077, 0x13a, 0, 0, Local1, 0xabcd4019)
+		err(c080, z077, __LINE__, 0, 0, Local1, 0xabcd4019)
 	}
 
 	// Not Computational Data
@@ -4100,13 +4100,13 @@ Method(m16c, 1, Serialized)
  *	// Field Unit (Field)
  *
  *	if (LNotEqual(f900, 0xd7)) {
- *		err(c080, z077, 0x137, 0, 0, f900, 0xd7)
+ *		err(c080, z077, __LINE__, 0, 0, f900, 0xd7)
  *	}
  *
  *	// Field Unit (IndexField)
  *
  *	if (LNotEqual(if90, 0xd7)) {
- *		err(c080, z077, 0x138, 0, 0, if90, 0xd7)
+ *		err(c080, z077, __LINE__, 0, 0, if90, 0xd7)
  *	}
  */
 	} /* m000 */
@@ -5110,80 +5110,80 @@ Method(m16e,, Serialized)
 
 	Store(ObjectType(i900), Local0)
 	if (LNotEqual(Local0, c009)) {
-		err(c080, z077, 0x100, 0, 0, Local0, c009)
+		err(c080, z077, __LINE__, 0, 0, Local0, c009)
 	}
 	if (LNotEqual(i900, 0xfe7cb391d65a5000)) {
-		err(c080, z077, 0x101, 0, 0, i900, 0xfe7cb391d65a5000)
+		err(c080, z077, __LINE__, 0, 0, i900, 0xfe7cb391d65a5000)
 	}
 
 	Store(ObjectType(i901), Local0)
 	if (LNotEqual(Local0, c009)) {
-		err(c080, z077, 0x102, 0, 0, Local0, c009)
+		err(c080, z077, __LINE__, 0, 0, Local0, c009)
 	}
 	if (LNotEqual(i901, 0x41795001)) {
-		err(c080, z077, 0x103, 0, 0, i901, 0x41795001)
+		err(c080, z077, __LINE__, 0, 0, i901, 0x41795001)
 	}
 
 	Store(ObjectType(i902), Local0)
 	if (LNotEqual(Local0, c009)) {
-		err(c080, z077, 0x104, 0, 0, Local0, c009)
+		err(c080, z077, __LINE__, 0, 0, Local0, c009)
 	}
 	if (LNotEqual(i902, 0)) {
-		err(c080, z077, 0x105, 0, 0, i902, 0)
+		err(c080, z077, __LINE__, 0, 0, i902, 0)
 	}
 
 	Store(ObjectType(i903), Local0)
 	if (LNotEqual(Local0, c009)) {
-		err(c080, z077, 0x106, 0, 0, Local0, c009)
+		err(c080, z077, __LINE__, 0, 0, Local0, c009)
 	}
 	if (LNotEqual(i903, 0xffffffffffffffff)) {
-		err(c080, z077, 0x107, 0, 0, i903, 0xffffffffffffffff)
+		err(c080, z077, __LINE__, 0, 0, i903, 0xffffffffffffffff)
 	}
 
 	Store(ObjectType(i904), Local0)
 	if (LNotEqual(Local0, c009)) {
-		err(c080, z077, 0x108, 0, 0, Local0, c009)
+		err(c080, z077, __LINE__, 0, 0, Local0, c009)
 	}
 	if (LNotEqual(i904, 0xffffffff)) {
-		err(c080, z077, 0x109, 0, 0, i904, 0xffffffff)
+		err(c080, z077, __LINE__, 0, 0, i904, 0xffffffff)
 	}
 
 	// String
 
 	Store(ObjectType(s900), Local0)
 	if (LNotEqual(Local0, c00a)) {
-		err(c080, z077, 0x10a, 0, 0, Local0, c00a)
+		err(c080, z077, __LINE__, 0, 0, Local0, c00a)
 	}
 	if (LNotEqual(s900, "12345002")) {
-		err(c080, z077, 0x10b, 0, 0, s900, "12345002")
+		err(c080, z077, __LINE__, 0, 0, s900, "12345002")
 	}
 
 	Store(ObjectType(s901), Local0)
 	if (LNotEqual(Local0, c00a)) {
-		err(c080, z077, 0x10c, 0, 0, Local0, c00a)
+		err(c080, z077, __LINE__, 0, 0, Local0, c00a)
 	}
 	if (LNotEqual(s901, "qwrtyu5003")) {
-		err(c080, z077, 0x10d, 0, 0, s901, "qwrtyu5003")
+		err(c080, z077, __LINE__, 0, 0, s901, "qwrtyu5003")
 	}
 
 	// Buffer
 
 	Store(ObjectType(b900), Local0)
 	if (LNotEqual(Local0, c00b)) {
-		err(c080, z077, 0x10e, 0, 0, Local0, c00b)
+		err(c080, z077, __LINE__, 0, 0, Local0, c00b)
 	}
 	if (LNotEqual(b900, Buffer() {0xf0,0xf1,0xf2,0xf3,0xf4})) {
-		err(c080, z077, 0x10f, 0, 0, b900, Buffer() {0xf0,0xf1,0xf2,0xf3,0xf4})
+		err(c080, z077, __LINE__, 0, 0, b900, Buffer() {0xf0,0xf1,0xf2,0xf3,0xf4})
 	}
 
 	// Buffer Field
 
 	Store(ObjectType(bf90), Local0)
 	if (LNotEqual(Local0, c016)) {
-		err(c080, z077, 0x110, 0, 0, Local0, c016)
+		err(c080, z077, __LINE__, 0, 0, Local0, c016)
 	}
 	if (LNotEqual(bf90, 0xf0)) {
-		err(c080, z077, 0x111, 0, 0, bf90, 0xf0)
+		err(c080, z077, __LINE__, 0, 0, bf90, 0xf0)
 	}
 
 	// One level Package
@@ -5191,87 +5191,87 @@ Method(m16e,, Serialized)
 	Store(Index(p900, 0), Local0)
 	Store(ObjectType(Local0), Local1)
 	if (LNotEqual(Local1, c008)) {
-		err(c080, z077, 0x112, 0, 0, Local1, c008)
+		err(c080, z077, __LINE__, 0, 0, Local1, c008)
 	}
 
 	Store(Index(p901, 0), Local0)
 	Store(DerefOf(Local0), Local1)
 	Store(ObjectType(Local1), Local2)
 	if (LNotEqual(Local2, c009)) {
-		err(c080, z077, 0x113, 0, 0, Local2, c009)
+		err(c080, z077, __LINE__, 0, 0, Local2, c009)
 	}
 	if (LNotEqual(Local1, 0xabcd5004)) {
-		err(c080, z077, 0x114, 0, 0, Local1, 0xabcd5004)
+		err(c080, z077, __LINE__, 0, 0, Local1, 0xabcd5004)
 	}
 
 	Store(Index(p901, 1), Local0)
 	Store(DerefOf(Local0), Local1)
 	Store(ObjectType(Local1), Local2)
 	if (LNotEqual(Local2, c009)) {
-		err(c080, z077, 0x115, 0, 0, Local2, c009)
+		err(c080, z077, __LINE__, 0, 0, Local2, c009)
 	}
 	if (LNotEqual(Local1, 0x1122334455665005)) {
-		err(c080, z077, 0x116, 0, 0, Local1, 0x1122334455665005)
+		err(c080, z077, __LINE__, 0, 0, Local1, 0x1122334455665005)
 	}
 
 	Store(Index(p902, 0), Local0)
 	Store(DerefOf(Local0), Local1)
 	Store(ObjectType(Local1), Local2)
 	if (LNotEqual(Local2, c00a)) {
-		err(c080, z077, 0x117, 0, 0, Local2, c00a)
+		err(c080, z077, __LINE__, 0, 0, Local2, c00a)
 	}
 	if (LNotEqual(Local1, "12345006")) {
-		err(c080, z077, 0x118, 0, 0, Local1, "12345006")
+		err(c080, z077, __LINE__, 0, 0, Local1, "12345006")
 	}
 
 	Store(Index(p902, 1), Local0)
 	Store(DerefOf(Local0), Local1)
 	Store(ObjectType(Local1), Local2)
 	if (LNotEqual(Local2, c00a)) {
-		err(c080, z077, 0x119, 0, 0, Local2, c00a)
+		err(c080, z077, __LINE__, 0, 0, Local2, c00a)
 	}
 	if (LNotEqual(Local1, "q1w2e3r4t5y6u7i85007")) {
-		err(c080, z077, 0x11a, 0, 0, Local1, "q1w2e3r4t5y6u7i85007")
+		err(c080, z077, __LINE__, 0, 0, Local1, "q1w2e3r4t5y6u7i85007")
 	}
 
 	Store(Index(p903, 0), Local0)
 	Store(DerefOf(Local0), Local1)
 	Store(ObjectType(Local1), Local2)
 	if (LNotEqual(Local2, c00a)) {
-		err(c080, z077, 0x11b, 0, 0, Local2, c00a)
+		err(c080, z077, __LINE__, 0, 0, Local2, c00a)
 	}
 	if (LNotEqual(Local1, "qwrtyuiop5008")) {
-		err(c080, z077, 0x11c, 0, 0, Local1, "qwrtyuiop5008")
+		err(c080, z077, __LINE__, 0, 0, Local1, "qwrtyuiop5008")
 	}
 
 	Store(Index(p903, 1), Local0)
 	Store(DerefOf(Local0), Local1)
 	Store(ObjectType(Local1), Local2)
 	if (LNotEqual(Local2, c00a)) {
-		err(c080, z077, 0x11d, 0, 0, Local2, c00a)
+		err(c080, z077, __LINE__, 0, 0, Local2, c00a)
 	}
 	if (LNotEqual(Local1, "1234567890abdef0255009")) {
-		err(c080, z077, 0x11e, 0, 0, Local1, "1234567890abdef0255009")
+		err(c080, z077, __LINE__, 0, 0, Local1, "1234567890abdef0255009")
 	}
 
 	Store(Index(p904, 0), Local0)
 	Store(DerefOf(Local0), Local1)
 	Store(ObjectType(Local1), Local2)
 	if (LNotEqual(Local2, c00b)) {
-		err(c080, z077, 0x11f, 0, 0, Local2, c00b)
+		err(c080, z077, __LINE__, 0, 0, Local2, c00b)
 	}
 	if (LNotEqual(Local1, Buffer() {0xf5,0xf6,0xf7})) {
-		err(c080, z077, 0x120, 0, 0, Local1, Buffer() {0xf5,0xf6,0xf7})
+		err(c080, z077, __LINE__, 0, 0, Local1, Buffer() {0xf5,0xf6,0xf7})
 	}
 
 	Store(Index(p904, 1), Local0)
 	Store(DerefOf(Local0), Local1)
 	Store(ObjectType(Local1), Local2)
 	if (LNotEqual(Local2, c00b)) {
-		err(c080, z077, 0x121, 0, 0, Local2, c00b)
+		err(c080, z077, __LINE__, 0, 0, Local2, c00b)
 	}
 	if (LNotEqual(Local1, Buffer() {0xf8,0xf9})) {
-		err(c080, z077, 0x122, 0, 0, Local1, Buffer() {0xf8,0xf9})
+		err(c080, z077, __LINE__, 0, 0, Local1, Buffer() {0xf8,0xf9})
 	}
 
 	// Two level Package
@@ -5282,10 +5282,10 @@ Method(m16e,, Serialized)
 	Store(DerefOf(Local2), Local3)
 	Store(ObjectType(Local3), Local4)
 	if (LNotEqual(Local4, c009)) {
-		err(c080, z077, 0x123, 0, 0, Local4, c009)
+		err(c080, z077, __LINE__, 0, 0, Local4, c009)
 	}
 	if (LNotEqual(Local3, 0xabc500a)) {
-		err(c080, z077, 0x124, 0, 0, Local3, 0xabc500a)
+		err(c080, z077, __LINE__, 0, 0, Local3, 0xabc500a)
 	}
 
 	Store(Index(p905, 0), Local0)
@@ -5294,10 +5294,10 @@ Method(m16e,, Serialized)
 	Store(DerefOf(Local2), Local3)
 	Store(ObjectType(Local3), Local4)
 	if (LNotEqual(Local4, c00a)) {
-		err(c080, z077, 0x125, 0, 0, Local4, c00a)
+		err(c080, z077, __LINE__, 0, 0, Local4, c00a)
 	}
 	if (LNotEqual(Local3, "0xabc500b")) {
-		err(c080, z077, 0x126, 0, 0, Local3, "0xabc500b")
+		err(c080, z077, __LINE__, 0, 0, Local3, "0xabc500b")
 	}
 
 	Store(Index(p905, 0), Local0)
@@ -5306,10 +5306,10 @@ Method(m16e,, Serialized)
 	Store(DerefOf(Local2), Local3)
 	Store(ObjectType(Local3), Local4)
 	if (LNotEqual(Local4, c00a)) {
-		err(c080, z077, 0x127, 0, 0, Local4, c00a)
+		err(c080, z077, __LINE__, 0, 0, Local4, c00a)
 	}
 	if (LNotEqual(Local3, "abc500c")) {
-		err(c080, z077, 0x128, 0, 0, Local3, "abc500c")
+		err(c080, z077, __LINE__, 0, 0, Local3, "abc500c")
 	}
 
 	Store(Index(p906, 0), Local0)
@@ -5318,10 +5318,10 @@ Method(m16e,, Serialized)
 	Store(DerefOf(Local2), Local3)
 	Store(ObjectType(Local3), Local4)
 	if (LNotEqual(Local4, c00a)) {
-		err(c080, z077, 0x129, 0, 0, Local4, c00a)
+		err(c080, z077, __LINE__, 0, 0, Local4, c00a)
 	}
 	if (LNotEqual(Local3, "abc500d")) {
-		err(c080, z077, 0x12a, 0, 0, Local3, "abc500d")
+		err(c080, z077, __LINE__, 0, 0, Local3, "abc500d")
 	}
 
 	Store(Index(p907, 0), Local0)
@@ -5330,10 +5330,10 @@ Method(m16e,, Serialized)
 	Store(DerefOf(Local2), Local3)
 	Store(ObjectType(Local3), Local4)
 	if (LNotEqual(Local4, c00a)) {
-		err(c080, z077, 0x12b, 0, 0, Local4, c00a)
+		err(c080, z077, __LINE__, 0, 0, Local4, c00a)
 	}
 	if (LNotEqual(Local3, "aqwevbgnm500e")) {
-		err(c080, z077, 0x12c, 0, 0, Local3, "aqwevbgnm500e")
+		err(c080, z077, __LINE__, 0, 0, Local3, "aqwevbgnm500e")
 	}
 
 	Store(Index(p908, 0), Local0)
@@ -5342,10 +5342,10 @@ Method(m16e,, Serialized)
 	Store(DerefOf(Local2), Local3)
 	Store(ObjectType(Local3), Local4)
 	if (LNotEqual(Local4, c00b)) {
-		err(c080, z077, 0x12d, 0, 0, Local4, c00b)
+		err(c080, z077, __LINE__, 0, 0, Local4, c00b)
 	}
 	if (LNotEqual(Local3, Buffer() {0xfa,0xfb,0xfc,0xfd,0xfe})) {
-		err(c080, z077, 0x12e, 0, 0, Local3, Buffer() {0xfa,0xfb,0xfc,0xfd,0xfe})
+		err(c080, z077, __LINE__, 0, 0, Local3, Buffer() {0xfa,0xfb,0xfc,0xfd,0xfe})
 	}
 
 	// Three level Package
@@ -5358,10 +5358,10 @@ Method(m16e,, Serialized)
 	Store(DerefOf(Local4), Local5)
 	Store(ObjectType(Local5), Local6)
 	if (LNotEqual(Local6, c009)) {
-		err(c080, z077, 0x12f, 0, 0, Local6, c009)
+		err(c080, z077, __LINE__, 0, 0, Local6, c009)
 	}
 	if (LNotEqual(Local5, 0xabc500f)) {
-		err(c080, z077, 0x130, 0, 0, Local5, 0xabc500f)
+		err(c080, z077, __LINE__, 0, 0, Local5, 0xabc500f)
 	}
 
 	Store(Index(p90a, 0), Local0)
@@ -5372,10 +5372,10 @@ Method(m16e,, Serialized)
 	Store(DerefOf(Local4), Local5)
 	Store(ObjectType(Local5), Local6)
 	if (LNotEqual(Local6, c00a)) {
-		err(c080, z077, 0x131, 0, 0, Local6, c00a)
+		err(c080, z077, __LINE__, 0, 0, Local6, c00a)
 	}
 	if (LNotEqual(Local5, "12345010")) {
-		err(c080, z077, 0x132, 0, 0, Local5, "12345010")
+		err(c080, z077, __LINE__, 0, 0, Local5, "12345010")
 	}
 
 	Store(Index(p90b, 0), Local0)
@@ -5386,10 +5386,10 @@ Method(m16e,, Serialized)
 	Store(DerefOf(Local4), Local5)
 	Store(ObjectType(Local5), Local6)
 	if (LNotEqual(Local6, c00a)) {
-		err(c080, z077, 0x133, 0, 0, Local6, c00a)
+		err(c080, z077, __LINE__, 0, 0, Local6, c00a)
 	}
 	if (LNotEqual(Local5, "zxswefas5011")) {
-		err(c080, z077, 0x134, 0, 0, Local5, "zxswefas5011")
+		err(c080, z077, __LINE__, 0, 0, Local5, "zxswefas5011")
 	}
 
 	Store(Index(p90c, 0), Local0)
@@ -5400,30 +5400,30 @@ Method(m16e,, Serialized)
 	Store(DerefOf(Local4), Local5)
 	Store(ObjectType(Local5), Local6)
 	if (LNotEqual(Local6, c00b)) {
-		err(c080, z077, 0x135, 0, 0, Local6, c00b)
+		err(c080, z077, __LINE__, 0, 0, Local6, c00b)
 	}
 	if (LNotEqual(Local5, Buffer() {0xff,0x40,0x41})) {
-		err(c080, z077, 0x136, 0, 0, Local5, Buffer() {0xff,0x40,0x41})
+		err(c080, z077, __LINE__, 0, 0, Local5, Buffer() {0xff,0x40,0x41})
 	}
 
 	Store(Index(p953, 0), Local0)
 	Store(DerefOf(Local0), Local1)
 	Store(ObjectType(Local1), Local2)
 	if (LNotEqual(Local2, c009)) {
-		err(c080, z077, 0x137, 0, 0, Local2, c009)
+		err(c080, z077, __LINE__, 0, 0, Local2, c009)
 	}
 	if (LNotEqual(Local1, 0xabcd5018)) {
-		err(c080, z077, 0x138, 0, 0, Local1, 0xabcd5018)
+		err(c080, z077, __LINE__, 0, 0, Local1, 0xabcd5018)
 	}
 
 	Store(Index(p953, 1), Local0)
 	Store(DerefOf(Local0), Local1)
 	Store(ObjectType(Local1), Local2)
 	if (LNotEqual(Local2, c009)) {
-		err(c080, z077, 0x139, 0, 0, Local2, c009)
+		err(c080, z077, __LINE__, 0, 0, Local2, c009)
 	}
 	if (LNotEqual(Local1, 0xabcd5019)) {
-		err(c080, z077, 0x13a, 0, 0, Local1, 0xabcd5019)
+		err(c080, z077, __LINE__, 0, 0, Local1, 0xabcd5019)
 	}
 
 	// Not Computational Data
@@ -5442,13 +5442,13 @@ Method(m16e,, Serialized)
  *	// Field Unit (Field)
  *
  *	if (LNotEqual(f900, 0xd7)) {
- *		err(c080, z077, 0x137, 0, 0, f900, 0xd7)
+ *		err(c080, z077, __LINE__, 0, 0, f900, 0xd7)
  *	}
  *
  *	// Field Unit (IndexField)
  *
  *	if (LNotEqual(if90, 0xd7)) {
- *		err(c080, z077, 0x138, 0, 0, if90, 0xd7)
+ *		err(c080, z077, __LINE__, 0, 0, if90, 0xd7)
  *	}
  */
 	} /* m000 */

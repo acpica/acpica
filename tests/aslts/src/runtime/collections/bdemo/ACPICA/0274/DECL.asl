@@ -54,7 +54,7 @@ Method(mc74,, Serialized)
 	{
 		Store(DerefOf(Index(Arg1, Arg2)), Local0)
 		if (LNotEqual(Local0, Arg0)) {
-			err("", zFFF, Arg3, 0, 0, Arg0, Local0)
+			err("", zFFF, __LINE__, 0, 0, Arg0, Local0)
 		}
 	}
 

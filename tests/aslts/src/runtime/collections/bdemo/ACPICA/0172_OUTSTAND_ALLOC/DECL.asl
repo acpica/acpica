@@ -45,5 +45,5 @@
 		Store(id1e, pd10)
 
 //		Store("Outstanding allocations to be investigated!", Debug)
-//		err("", zFFF, 0x000, 0, 0, 0, 0)
+//		err("", zFFF, __LINE__, 0, 0, 0, 0)
 	}

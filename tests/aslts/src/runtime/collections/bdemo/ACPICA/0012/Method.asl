@@ -47,16 +47,16 @@ Method(m13b)
 
 Method(m138)
 {
-	CH03("", 0, 0x098, 0, 0)
+	CH03("", 0, 0x098, __LINE__, 0)
 	Store(DerefOf("m13b"), Local0)
 	if (SLCK) {
-		CH03("", 0, 0x099, 0, 0)
+		CH03("", 0, 0x099, __LINE__, 0)
 		Store(ObjectType(Local0), Local1)
 		if (LNotEqual(Local1, c010)) {
-			err("", zFFF, 0x09a, 0, 0, Local1, c010)
+			err("", zFFF, __LINE__, 0, 0, Local1, c010)
 		}
 	} else {
-		CH04("", 0, 47, 0, 0x09b, 0, 0) // AE_AML_OPERAND_TYPE
+		CH04("", 0, 47, 0, __LINE__, 0, 0) // AE_AML_OPERAND_TYPE
 	}
 }
 
@@ -64,16 +64,16 @@ Method(m138)
 
 Method(m12c)
 {
-	CH03("", 0, 0x09c, 0, 0)
+	CH03("", 0, 0x09c, __LINE__, 0)
 	Store(DerefOf("m12c"), Local0)
 	if (SLCK) {
-		CH03("", 0, 0x09d, 0, 0)
+		CH03("", 0, 0x09d, __LINE__, 0)
 		Store(ObjectType(Local0), Local1)
 		if (LNotEqual(Local1, c010)) {
-			err("", zFFF, 0x09e, 0, 0, Local1, c010)
+			err("", zFFF, __LINE__, 0, 0, Local1, c010)
 		}
 	} else {
-		CH04("", 0, 47, 0, 0x09f, 0, 0) // AE_AML_OPERAND_TYPE
+		CH04("", 0, 47, 0, __LINE__, 0, 0) // AE_AML_OPERAND_TYPE
 	}
 }
 
@@ -86,16 +86,16 @@ Method(m139)
 		return (0xabcd0003)
 	}
 
-	CH03("", 0, 0x0a0, 0, 0)
+	CH03("", 0, 0x0a0, __LINE__, 0)
 	Store(DerefOf("m13c"), Local0)
 	if (SLCK) {
-		CH03("", 0, 0x0a1, 0, 0)
+		CH03("", 0, 0x0a1, __LINE__, 0)
 		Store(ObjectType(Local0), Local1)
 		if (LNotEqual(Local1, c010)) {
-			err("", zFFF, 0x0a2, 0, 0, Local1, c010)
+			err("", zFFF, __LINE__, 0, 0, Local1, c010)
 		}
 	} else {
-		CH04("", 0, 47, 0, 0x0a3, 0, 0) // AE_AML_OPERAND_TYPE
+		CH04("", 0, 47, 0, __LINE__, 0, 0) // AE_AML_OPERAND_TYPE
 	}
 }
 
@@ -109,16 +109,16 @@ Method(m13a)
 	}
 	Method(m138)
 	{
-		CH03("", 0, 0x0a4, 0, 0)
+		CH03("", 0, 0x0a4, __LINE__, 0)
 		Store(DerefOf("m13d"), Local0)
 		if (SLCK) {
-			CH03("", 0, 0x0a5, 0, 0)
+			CH03("", 0, 0x0a5, __LINE__, 0)
 			Store(ObjectType(Local0), Local1)
 			if (LNotEqual(Local1, c010)) {
-				err("", zFFF, 0x0a6, 0, 0, Local1, c010)
+				err("", zFFF, __LINE__, 0, 0, Local1, c010)
 			}
 		} else {
-			CH04("", 0, 47, 0, 0x0a7, 0, 0) // AE_AML_OPERAND_TYPE
+			CH04("", 0, 47, 0, __LINE__, 0, 0) // AE_AML_OPERAND_TYPE
 		}
 	}
 	m138()

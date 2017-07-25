@@ -61,13 +61,13 @@ Method(m304, 6, Serialized)
 			case (0) {
 				Mid(Local0, Local1, Local4, Local7)
 				if (LNotEqual(Local7, Local2)) {
-					err(arg0, z039, 0, 0, 0, Local5, arg2)
+					err(arg0, z039, __LINE__, 0, 0, Local5, arg2)
 				}
 			}
 			case (1) {
 				Mid(s200, Local1, Local4, Local7)
 				if (LNotEqual(Local7, Local2)) {
-					err(arg0, z039, 1, 0, 0, Local5, arg2)
+					err(arg0, z039, __LINE__, 0, 0, Local5, arg2)
 				}
 			}
 		}
@@ -283,10 +283,10 @@ Method(MID0,, Serialized)
 	// Buffer, Mid(Buffer(0){})
 	Mid(Buffer(Local1) {}, 0, 1, Local7)
 	if (LNotEqual(Local7, Buffer(Local1) {})) {
-		err(ts, z039, 2, 0, 0, 0, "Buffer(0)")
+		err(ts, z039, __LINE__, 0, 0, 0, "Buffer(0)")
 	}
 	Mid(Buffer(Local1) {}, 300, 300, Local7)
 	if (LNotEqual(Local7, Buffer(Local1) {})) {
-		err(ts, z039, 3, 0, 0, 0, "Buffer(0)")
+		err(ts, z039, __LINE__, 0, 0, 0, "Buffer(0)")
 	}
 }

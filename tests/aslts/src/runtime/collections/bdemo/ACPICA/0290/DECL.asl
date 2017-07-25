@@ -59,17 +59,17 @@ Device (D290) {
 		Store(BUF0, RFU0)
 
 		if (CondRefof(\AUXD, Local0)) {
-			err("", zFFF, 0x000, 0, 0, "\\AUXD", 1)
+			err("", zFFF, __LINE__, 0, 0, "\\AUXD", 1)
 			return
 		}
 
 		Load(IST0, Local1)
 
-		if (CH03("", 0, 0x001, 0, 0)) {
+		if (CH03("", 0, 0x001, __LINE__, 0)) {
 			return
 		} elseif (CondRefof(\AUXD, Local0)) {
 		} else {
-			err("", zFFF, 0x002, 0, 0, "\\AUXD", 0)
+			err("", zFFF, __LINE__, 0, 0, "\\AUXD", 0)
 			return
 		}
 
@@ -80,7 +80,7 @@ Device (D290) {
 		Store("SSDT unloaded", Debug)
 
 		if (CondRefof(\AUXD, Local0)) {
-			err("", zFFF, 0x003, 0, 0, "\\AUXD", 1)
+			err("", zFFF, __LINE__, 0, 0, "\\AUXD", 1)
 		}
 
 		return

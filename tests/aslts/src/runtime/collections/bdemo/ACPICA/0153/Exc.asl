@@ -39,9 +39,9 @@ Method(md01,, Serialized)
 	Name(pppp, Package(1){Buffer() {1,2,3,4}})
 	Name(i000, 0x5678)
 
-	CH03("", 0, 0x000, 0, 0)
+	CH03("", 0, 0x000, __LINE__, 0)
 	Store(pppp, i000)
-	CH04("", 0, 47, 0, 0x001, 0, 0) // AE_AML_OPERAND_TYPE
+	CH04("", 0, 47, 0, __LINE__, 0, 0) // AE_AML_OPERAND_TYPE
 }
 
 // Package --> String
@@ -51,9 +51,9 @@ Method(md02,, Serialized)
 	Name(pppp, Package(1){Buffer() {1,2,3,4}})
 	Name(s000, "String")
 
-	CH03("", 0, 0x002, 0, 0)
+	CH03("", 0, 0x002, __LINE__, 0)
 	Store(pppp, s000)
-	CH04("", 0, 47, 0, 0x003, 0, 0) // AE_AML_OPERAND_TYPE
+	CH04("", 0, 47, 0, __LINE__, 0, 0) // AE_AML_OPERAND_TYPE
 }
 
 // Package --> Buffer
@@ -63,16 +63,16 @@ Method(md03,, Serialized)
 	Name(pppp, Package(1){Buffer() {1,2,3,4}})
 	Name(b000, Buffer() {1,2,3,4})
 
-	CH03("", 0, 0x004, 0, 0)
+	CH03("", 0, 0x004, __LINE__, 0)
 	Store(pppp, b000)
-	CH04("", 0, 47, 0, 0x005, 0, 0) // AE_AML_OPERAND_TYPE
+	CH04("", 0, 47, 0, __LINE__, 0, 0) // AE_AML_OPERAND_TYPE
 }
 
 Method(md04)
 {
-	CH03("", 0, 0xf00, 0, 0)
+	CH03("", 0, 0xf00, __LINE__, 0)
 	md01()
 	md02()
 	md03()
-	CH03("", 0, 0xf01, 0, 0)
+	CH03("", 0, 0xf01, __LINE__, 0)
 }

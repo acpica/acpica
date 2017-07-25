@@ -41,7 +41,7 @@ Method(mdcf,, Serialized)
 
 	Store(ObjectType(Debug), Local0)
 	if (LNotEqual(Local0, c018)) {
-		err("", zFFF, 0x000, 0, 0, Local0, c018)
+		err("", zFFF, __LINE__, 0, 0, Local0, c018)
 	}
 
 	// Method
@@ -49,6 +49,6 @@ Method(mdcf,, Serialized)
 	Method(m0f2) { return (0x1234) }
 	Store(ObjectType(m0f2), Local0)
 	if (LNotEqual(Local0, c010)) {
-		err("", zFFF, 0x001, 0, 0, Local0, c010)
+		err("", zFFF, __LINE__, 0, 0, Local0, c010)
 	}
 }

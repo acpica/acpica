@@ -47,7 +47,7 @@ Method(m17c,, Serialized)
 		Store(2, Local0)
 
 		while (Local0) {
-			if (CH03("", 0, ERRN, 0, 0)) {
+			if (CH03("", 0, ERRN, __LINE__, 0)) {
 				return
 			}
 			Increment(ERRN)
@@ -67,7 +67,7 @@ Method(m17c,, Serialized)
 					Store(1, CH21)
 				}
 			}
-			if (CH03("", 0, ERRN, 0, 0)) {
+			if (CH03("", 0, ERRN, __LINE__, 0)) {
 				return
 			}
 			Increment(ERRN)
@@ -75,19 +75,19 @@ Method(m17c,, Serialized)
 		}
 
 		if (LNotEqual(CH10, Arg1)) {
-			err("", zFFF, ERRN, 0, 0, CH10, Arg1)
+			err("", zFFF, __LINE__, 0, 0, CH10, Arg1)
 		}
 		Increment(ERRN)
 		if (LEqual(CH11, Arg1)) {
-			err("", zFFF, ERRN, 0, 0, CH11, Arg1)
+			err("", zFFF, __LINE__, 0, 0, CH11, Arg1)
 		}
 		Increment(ERRN)
 		if (LNotEqual(CH20, Arg2)) {
-			err("", zFFF, ERRN, 0, 0, CH20, Arg2)
+			err("", zFFF, __LINE__, 0, 0, CH20, Arg2)
 		}
 		Increment(ERRN)
 		if (LEqual(CH21, Arg2)) {
-			err("", zFFF, ERRN, 0, 0, CH21, Arg2)
+			err("", zFFF, __LINE__, 0, 0, CH21, Arg2)
 		}
 		Increment(ERRN)
 	}

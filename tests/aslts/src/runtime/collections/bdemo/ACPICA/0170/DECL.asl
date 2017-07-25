@@ -42,7 +42,7 @@
 		Store(ObjectType(bf90), Local0)
 
 		if (LNotEqual(Local0, 14)) {
-			err("", zFFF, 0x000, 0, 0, Local0, 14)
+			err("", zFFF, __LINE__, 0, 0, Local0, 14)
 		} else {
 
 			Store(0x9999992b, bf90)
@@ -50,9 +50,9 @@
 			Store(ObjectType(bf90), Local1)
 
 			if (LNotEqual(Local1, Local0)) {
-				err("", zFFF, 0x001, 0, 0, Local1, Local0)
+				err("", zFFF, __LINE__, 0, 0, Local1, Local0)
 			} elseif (LNotEqual(bf90, 0x2b)) {
-				err("", zFFF, 0x002, 0, 0, bf90, 0x2b)
+				err("", zFFF, __LINE__, 0, 0, bf90, 0x2b)
 			}
 		}
 	}

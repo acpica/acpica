@@ -71,11 +71,11 @@ Method(mfa9) {
 
 		if (LNotEqual(Local0, s000)) {
 			// Store("Error 0", Debug)
-			err("", zFFF, 0x000, 0, 0, Local0, s000)
+			err("", zFFF, __LINE__, 0, 0, Local0, s000)
 		}
 		if (LNotEqual(Local1, s000)) {
 			// Store("Error 1", Debug)
-			err("", zFFF, 0x001, 0, 0, Local0, s000)
+			err("", zFFF, __LINE__, 0, 0, Local0, s000)
 		}
 
 		Store("========================================.", Debug)
@@ -147,7 +147,7 @@ Method(m002)
 //	Store(Index(RR55, 0), Debug)
 	Store("---------------------------------- SSSSSSSS 0", Debug)
 
-	CH03("", 0, 0x002, 0, 0)
+	CH03("", 0, 0x002, __LINE__, 0)
 	m002()
 
 //	Store("---------------------------------- SSSSSSSS 1", Debug)
@@ -161,8 +161,8 @@ Method(m002)
 //	m000()
 
 	if (F64) {
-		CH03("", 0, 0x003, 0, 0)
+		CH03("", 0, 0x003, __LINE__, 0)
 	} else {
-		CH04("", 0, 0xff, 0, 0x004, 0, 0) // AE_AML_NUMERIC_OVERFLOW
+		CH04("", 0, 0xff, 0, __LINE__, 0, 0) // AE_AML_NUMERIC_OVERFLOW
 	}
 }

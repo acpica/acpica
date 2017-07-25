@@ -46,10 +46,10 @@ Method(md79)
 	Store(ObjectType(Local1), Local0)
 
 	if (LNotEqual(Local0, c009)) {
-		err("", zFFF, 0x000, 0, 0, Local0, c009)
+		err("", zFFF, __LINE__, 0, 0, Local0, c009)
 	} else {
 		if (LNotEqual(Local1, 0xfe7cb391d650a284)) {
-			err("", zFFF, 0x001, 0, 0, Local1, 0xfe7cb391d650a284)
+			err("", zFFF, __LINE__, 0, 0, Local1, 0xfe7cb391d650a284)
 		}
 	}
 }
@@ -62,7 +62,7 @@ Method(md7a)
 	Store(ObjectType(Local1), Local0)
 
 	if (LNotEqual(Local0, c016)) {
-		err("", zFFF, 0x002, 0, 0, Local0, c016)
+		err("", zFFF, __LINE__, 0, 0, Local0, c016)
 	} else {
 Store("=======================================", Debug)
 Store(Local1, Debug)
@@ -72,7 +72,7 @@ Store(Local0, Debug)
 Store("=======================================", Debug)
 if (1) {
 		if (LNotEqual(Local1, 0x59)) {
-			err("", zFFF, 0x003, 0, 0, Local1, 0x59)
+			err("", zFFF, __LINE__, 0, 0, Local1, 0x59)
 		}
 }
 	}
@@ -86,7 +86,7 @@ Method(md7b)
 	Store(ObjectType(Local1), Local0)
 
 	if (LNotEqual(Local0, c00d)) {
-		err("", zFFF, 0x004, 0, 0, Local0, c00d)
+		err("", zFFF, __LINE__, 0, 0, Local0, c00d)
 	} else {
 
 Store("=======================================", Debug)
@@ -97,7 +97,7 @@ Store(Local0, Debug)
 Store("=======================================", Debug)
 if (1) {
 		if (LNotEqual(Local1, 0)) {
-			err("", zFFF, 0x005, 0, 0, Local1, 0)
+			err("", zFFF, __LINE__, 0, 0, Local1, 0)
 		}
 }
 	}

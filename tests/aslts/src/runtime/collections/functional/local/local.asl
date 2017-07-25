@@ -70,25 +70,25 @@ Method(ma00, 7)
 		} // 5
 
 		if (LNotEqual(arg0, 8)) {
-			err(arg0, z999, 0, 0, 0, arg0, 8)
+			err(arg0, z999, __LINE__, 0, 0, arg0, 8)
 		}
 		if (LNotEqual(arg1, 9)) {
-			err(arg0, z999, 0, 0, 0, arg0, 9)
+			err(arg0, z999, __LINE__, 0, 0, arg0, 9)
 		}
 		if (LNotEqual(arg2, 10)) {
-			err(arg0, z999, 0, 0, 0, arg0, 10)
+			err(arg0, z999, __LINE__, 0, 0, arg0, 10)
 		}
 		if (LNotEqual(arg3, 11)) {
-			err(arg0, z999, 0, 0, 0, arg0, 11)
+			err(arg0, z999, __LINE__, 0, 0, arg0, 11)
 		}
 		if (LNotEqual(arg4, 12)) {
-			err(arg0, z999, 0, 0, 0, arg0, 12)
+			err(arg0, z999, __LINE__, 0, 0, arg0, 12)
 		}
 		if (LNotEqual(arg5, 13)) {
-			err(arg0, z999, 0, 0, 0, arg0, 13)
+			err(arg0, z999, __LINE__, 0, 0, arg0, 13)
 		}
 //		if (LNotEqual(arg6, 7)) {
-//			err(arg0, z999, 0, 0, 0, arg0, 7)
+//			err(arg0, z999, __LINE__, 0, 0, arg0, 7)
 //		}
 
 		m000(14,15,16,17,18)
@@ -96,49 +96,49 @@ Method(ma00, 7)
 	} // 6
 
 	if (LNotEqual(arg0, 1)) {
-		err(arg0, z999, 0, 0, 0, arg0, 1)
+		err(arg0, z999, __LINE__, 0, 0, arg0, 1)
 	}
 	if (LNotEqual(arg1, 2)) {
-		err(arg0, z999, 0, 0, 0, arg0, 2)
+		err(arg0, z999, __LINE__, 0, 0, arg0, 2)
 	}
 	if (LNotEqual(arg2, 3)) {
-		err(arg0, z999, 0, 0, 0, arg0, 3)
+		err(arg0, z999, __LINE__, 0, 0, arg0, 3)
 	}
 	if (LNotEqual(arg3, 4)) {
-		err(arg0, z999, 0, 0, 0, arg0, 4)
+		err(arg0, z999, __LINE__, 0, 0, arg0, 4)
 	}
 	if (LNotEqual(arg4, 5)) {
-		err(arg0, z999, 0, 0, 0, arg0, 5)
+		err(arg0, z999, __LINE__, 0, 0, arg0, 5)
 	}
 	if (LNotEqual(arg5, 6)) {
-		err(arg0, z999, 0, 0, 0, arg0, 6)
+		err(arg0, z999, __LINE__, 0, 0, arg0, 6)
 	}
 	if (LNotEqual(arg6, 7)) {
-		err(arg0, z999, 0, 0, 0, arg0, 7)
+		err(arg0, z999, __LINE__, 0, 0, arg0, 7)
 	}
 
 	m000(8,9,10,11,12,13)
 
 	if (LNotEqual(arg0, 1)) {
-		err(arg0, z999, 0, 0, 0, arg0, 1)
+		err(arg0, z999, __LINE__, 0, 0, arg0, 1)
 	}
 	if (LNotEqual(arg1, 2)) {
-		err(arg0, z999, 0, 0, 0, arg0, 2)
+		err(arg0, z999, __LINE__, 0, 0, arg0, 2)
 	}
 	if (LNotEqual(arg2, 3)) {
-		err(arg0, z999, 0, 0, 0, arg0, 3)
+		err(arg0, z999, __LINE__, 0, 0, arg0, 3)
 	}
 	if (LNotEqual(arg3, 4)) {
-		err(arg0, z999, 0, 0, 0, arg0, 4)
+		err(arg0, z999, __LINE__, 0, 0, arg0, 4)
 	}
 	if (LNotEqual(arg4, 5)) {
-		err(arg0, z999, 0, 0, 0, arg0, 5)
+		err(arg0, z999, __LINE__, 0, 0, arg0, 5)
 	}
 	if (LNotEqual(arg5, 6)) {
-		err(arg0, z999, 0, 0, 0, arg0, 6)
+		err(arg0, z999, __LINE__, 0, 0, arg0, 6)
 	}
 	if (LNotEqual(arg6, 7)) {
-		err(arg0, z999, 0, 0, 0, arg0, 7)
+		err(arg0, z999, __LINE__, 0, 0, arg0, 7)
 	}
 }
 

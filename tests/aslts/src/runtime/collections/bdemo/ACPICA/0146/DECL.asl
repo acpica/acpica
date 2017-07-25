@@ -48,6 +48,6 @@
 	{
 		Store(mf3a(Buffer(1) {10}), Local0)
 		if (LNotEqual(Local0, 0x12389)) {
-			err("", zFFF, 0x000, 0, 0, Local0, 0x12389)
+			err("", zFFF, __LINE__, 0, 0, Local0, 0x12389)
 		}
 	}

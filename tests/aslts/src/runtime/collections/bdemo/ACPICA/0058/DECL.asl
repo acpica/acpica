@@ -46,11 +46,11 @@ Method(mdf5, 1)
 		Store(Concatenate(1, 2), Local0)
 		if (F64) {
 			if (LNotEqual(Local0, Buffer() {1,0,0,0,0,0,0,0,2,0,0,0,0,0,0,0})){
-				err("", zFFF, 0x000, 0, 0, Local0, Buffer() {1,0,0,0,0,0,0,0,2,0,0,0,0,0,0,0})
+				err("", zFFF, __LINE__, 0, 0, Local0, Buffer() {1,0,0,0,0,0,0,0,2,0,0,0,0,0,0,0})
 			}
 		} else {
 			if (LNotEqual(Local0, Buffer() {1,0,0,0,2,0,0,0})){
-				err("", zFFF, 0x001, 0, 0, Local0, Buffer() {1,0,0,0,2,0,0,0})
+				err("", zFFF, __LINE__, 0, 0, Local0, Buffer() {1,0,0,0,2,0,0,0})
 			}
 		}
 	} else {
@@ -67,11 +67,11 @@ Method(mdf6, 1)
 		Store(Concatenate(0x1234, 0x7890), Local0)
 		if (F64) {
 			if (LNotEqual(Local0, Buffer() {0x34,0x12,0,0,0,0,0,0,0x90,0x78,0,0,0,0,0,0})){
-				err("", zFFF, 0x002, 0, 0, Local0, Buffer() {0x34,0x12,0,0,0,0,0,0,0x90,0x78,0,0,0,0,0,0})
+				err("", zFFF, __LINE__, 0, 0, Local0, Buffer() {0x34,0x12,0,0,0,0,0,0,0x90,0x78,0,0,0,0,0,0})
 			}
 		} else {
 			if (LNotEqual(Local0, Buffer() {0x34,0x12,0,0,0x90,0x78,0,0})){
-				err("", zFFF, 0x003, 0, 0, Local0, Buffer() {0x34,0x12,0,0,0x90,0x78,0,0})
+				err("", zFFF, __LINE__, 0, 0, Local0, Buffer() {0x34,0x12,0,0,0x90,0x78,0,0})
 			}
 		}
 	} else {
@@ -85,11 +85,11 @@ Method(mdf7)
 	Store(Concatenate(1, 2), Local0)
 	if (F64) {
 		if (LNotEqual(Local0, Buffer() {1,0,0,0,0,0,0,0,2,0,0,0,0,0,0,0})){
-			err("", zFFF, 0x004, 0, 0, Local0, Buffer() {1,0,0,0,0,0,0,0,2,0,0,0,0,0,0,0})
+			err("", zFFF, __LINE__, 0, 0, Local0, Buffer() {1,0,0,0,0,0,0,0,2,0,0,0,0,0,0,0})
 		}
 	} else {
 		if (LNotEqual(Local0, Buffer() {1,0,0,0,2,0,0,0})){
-			err("", zFFF, 0x005, 0, 0, Local0, Buffer() {1,0,0,0,2,0,0,0})
+			err("", zFFF, __LINE__, 0, 0, Local0, Buffer() {1,0,0,0,2,0,0,0})
 		}
 	}
 	Store(Local0, Debug)

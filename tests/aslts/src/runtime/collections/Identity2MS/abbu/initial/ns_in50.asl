@@ -398,256 +398,256 @@ Method(in51, 7, Serialized)
 
 
   if (LNotEqual(Local0, 0x0006000C)) {
-    err(ts, z168, 0x000, 0, 0, Local0, 0x0006000C)
+    err(ts, z168, __LINE__, 0, 0, Local0, 0x0006000C)
   }
   if (LNotEqual(Local1, 0x0018002A)) {
-    err(ts, z168, 0x001, 0, 0, Local1, 0x0018002A)
+    err(ts, z168, __LINE__, 0, 0, Local1, 0x0018002A)
   }
   if (LNotEqual(Local2, 0x006000A6)) {
-    err(ts, z168, 0x002, 0, 0, Local2, 0x006000A6)
+    err(ts, z168, __LINE__, 0, 0, Local2, 0x006000A6)
   }
   if (LNotEqual(arg0, 0x001E0036)) {
-    err(ts, z168, 0x003, 0, 0, arg0, 0x001E0036)
+    err(ts, z168, __LINE__, 0, 0, arg0, 0x001E0036)
   }
   if (LNotEqual(arg1, 0x007E00DC)) {
-    err(ts, z168, 0x004, 0, 0, arg1, 0x007E00DC)
+    err(ts, z168, __LINE__, 0, 0, arg1, 0x007E00DC)
   }
   if (LNotEqual(ii00, 0x00000006)) {
-    err(ts, z168, 0x005, 0, 0, ii00, 0x00000006)
+    err(ts, z168, __LINE__, 0, 0, ii00, 0x00000006)
   }
   if (LNotEqual(Local3, 0x00076976)) {
-    err(ts, z168, 0x006, 0, 0, Local3, 0x00076976)
+    err(ts, z168, __LINE__, 0, 0, Local3, 0x00076976)
   }
   if (LNotEqual(ii01, 0x003B4BB0)) {
-    err(ts, z168, 0x007, 0, 0, ii01, 0x003B4BB0)
+    err(ts, z168, __LINE__, 0, 0, ii01, 0x003B4BB0)
   }
   if (LNotEqual(arg2, 0x00769760)) {
-    err(ts, z168, 0x008, 0, 0, arg2, 0x00769760)
+    err(ts, z168, __LINE__, 0, 0, arg2, 0x00769760)
   }
   if (LNotEqual(Local5, 0x1F710810)) {
-    err(ts, z168, 0x009, 0, 0, Local5, 0x1F710810)
+    err(ts, z168, __LINE__, 0, 0, Local5, 0x1F710810)
   }
   if (LNotEqual(ii02, 0x03EE2102)) {
-    err(ts, z168, 0x00a, 0, 0, ii02, 0x03EE2102)
+    err(ts, z168, __LINE__, 0, 0, ii02, 0x03EE2102)
   }
   if (LNotEqual(Local6, 0x034E2102)) {
-    err(ts, z168, 0x00b, 0, 0, Local6, 0x034E2102)
+    err(ts, z168, __LINE__, 0, 0, Local6, 0x034E2102)
   }
   if (LNotEqual(ii03, 0x00000007)) {
-    err(ts, z168, 0x00c, 0, 0, ii03, 0x00000007)
+    err(ts, z168, __LINE__, 0, 0, ii03, 0x00000007)
   }
   if (LNotEqual(ii04, 0x034E2109)) {
-    err(ts, z168, 0x00d, 0, 0, ii04, 0x034E2109)
+    err(ts, z168, __LINE__, 0, 0, ii04, 0x034E2109)
   }
   if (LNotEqual(ii05, 0x0000001F)) {
-    err(ts, z168, 0x00e, 0, 0, ii05, 0x0000001F)
+    err(ts, z168, __LINE__, 0, 0, ii05, 0x0000001F)
   }
   if (LNotEqual(arg3, 0x034E2128)) {
-    err(ts, z168, 0x00f, 0, 0, arg3, 0x034E2128)
+    err(ts, z168, __LINE__, 0, 0, arg3, 0x034E2128)
   }
   if (LNotEqual(ii06, 0x00000011)) {
-    err(ts, z168, 0x010, 0, 0, ii06, 0x00000011)
+    err(ts, z168, __LINE__, 0, 0, ii06, 0x00000011)
   }
   if (LNotEqual(arg4, 0x034E2139)) {
-    err(ts, z168, 0x011, 0, 0, arg4, 0x034E2139)
+    err(ts, z168, __LINE__, 0, 0, arg4, 0x034E2139)
   }
   if (LNotEqual(arg5, 0x12FAB246)) {
-    err(ts, z168, 0x012, 0, 0, arg5, 0x12FAB246)
+    err(ts, z168, __LINE__, 0, 0, arg5, 0x12FAB246)
   }
   if (LNotEqual(ii07, 0xFFFFFFFF01543726)) {
-    err(ts, z168, 0x013, 0, 0, ii07, 0xFFFFFFFF01543726)
+    err(ts, z168, __LINE__, 0, 0, ii07, 0xFFFFFFFF01543726)
   }
   if (LNotEqual(arg6, 0xFFFFFFFF144EE96C)) {
-    err(ts, z168, 0x014, 0, 0, arg6, 0xFFFFFFFF144EE96C)
+    err(ts, z168, __LINE__, 0, 0, arg6, 0xFFFFFFFF144EE96C)
   }
   if (LNotEqual(ii08, 0xFFFFFFFF050B0301)) {
-    err(ts, z168, 0x015, 0, 0, ii08, 0xFFFFFFFF050B0301)
+    err(ts, z168, __LINE__, 0, 0, ii08, 0xFFFFFFFF050B0301)
   }
   if (LNotEqual(Local7, 0xFFFFFFFE1959EC6D)) {
-    err(ts, z168, 0x016, 0, 0, Local7, 0xFFFFFFFE1959EC6D)
+    err(ts, z168, __LINE__, 0, 0, Local7, 0xFFFFFFFE1959EC6D)
   }
   if (LNotEqual(ii09, 0xFFFFFFFF01FB4321)) {
-    err(ts, z168, 0x017, 0, 0, ii09, 0xFFFFFFFF01FB4321)
+    err(ts, z168, __LINE__, 0, 0, ii09, 0xFFFFFFFF01FB4321)
   }
   if (LNotEqual(ii0a, 0xFFFFFFFD1B552F8E)) {
-    err(ts, z168, 0x018, 0, 0, ii0a, 0xFFFFFFFD1B552F8E)
+    err(ts, z168, __LINE__, 0, 0, ii0a, 0xFFFFFFFD1B552F8E)
   }
   if (LNotEqual(ii0b, 0x1B552F8E)) {
-    err(ts, z168, 0x019, 0, 0, ii0b, 0x1B552F8E)
+    err(ts, z168, __LINE__, 0, 0, ii0b, 0x1B552F8E)
   }
   if (LNotEqual(ii0c, 0x00769760)) {
-    err(ts, z168, 0x01a, 0, 0, ii0c, 0x00769760)
+    err(ts, z168, __LINE__, 0, 0, ii0c, 0x00769760)
   }
   if (LNotEqual(ii0d, 0x20769760)) {
-    err(ts, z168, 0x01b, 0, 0, ii0d, 0x20769760)
+    err(ts, z168, __LINE__, 0, 0, ii0d, 0x20769760)
   }
   if (LNotEqual(ii0e, 0)) {
-    err(ts, z168, 0x01c, 0, 0, ii0e, 0)
+    err(ts, z168, __LINE__, 0, 0, ii0e, 0)
   }
   if (LNotEqual(ii0f, 0xFFFFFFFFFFFFFFFF)) {
-    err(ts, z168, 0x01d, 0, 0, ii0f, 0xFFFFFFFFFFFFFFFF)
+    err(ts, z168, __LINE__, 0, 0, ii0f, 0xFFFFFFFFFFFFFFFF)
   }
   if (LNotEqual(Local4, 0x052167D2)) {
-    err(ts, z168, 0x01e, 0, 0, Local4, 0x052167D2)
+    err(ts, z168, __LINE__, 0, 0, Local4, 0x052167D2)
   }
   if (LNotEqual(ii10, 0x052167D1)) {
-    err(ts, z168, 0x01f, 0, 0, ii10, 0x052167D1)
+    err(ts, z168, __LINE__, 0, 0, ii10, 0x052167D1)
   }
   if (LNotEqual(ii11, 0)) {
-    err(ts, z168, 0x020, 0, 0, ii11, 0)
+    err(ts, z168, __LINE__, 0, 0, ii11, 0)
   }
   if (LNotEqual(ii12, 0xFFFFFFFFFFFFFFFF)) {
-    err(ts, z168, 0x021, 0, 0, ii12, 0xFFFFFFFFFFFFFFFF)
+    err(ts, z168, __LINE__, 0, 0, ii12, 0xFFFFFFFFFFFFFFFF)
   }
   if (LNotEqual(ii13, 0x00000000052167D1)) {
-    err(ts, z168, 0x022, 0, 0, ii13, 0x00000000052167D1)
+    err(ts, z168, __LINE__, 0, 0, ii13, 0x00000000052167D1)
   }
   if (LNotEqual(ii14, 0xFFFFFFFFFFFFFFFF)) {
-    err(ts, z168, 0x023, 0, 0, ii14, 0xFFFFFFFFFFFFFFFF)
+    err(ts, z168, __LINE__, 0, 0, ii14, 0xFFFFFFFFFFFFFFFF)
   }
   if (LNotEqual(ii15, 0)) {
-    err(ts, z168, 0x024, 0, 0, ii15, 0)
+    err(ts, z168, __LINE__, 0, 0, ii15, 0)
   }
   if (LNotEqual(ii16, 0xFFFFFFFFFFFFFFFF)) {
-    err(ts, z168, 0x025, 0, 0, ii16, 0xFFFFFFFFFFFFFFFF)
+    err(ts, z168, __LINE__, 0, 0, ii16, 0xFFFFFFFFFFFFFFFF)
   }
   if (LNotEqual(ii17, 0)) {
-    err(ts, z168, 0x026, 0, 0, ii17, 0)
+    err(ts, z168, __LINE__, 0, 0, ii17, 0)
   }
   if (LNotEqual(ii18, 0x052167D1)) {
-    err(ts, z168, 0x027, 0, 0, ii18, 0x052167D1)
+    err(ts, z168, __LINE__, 0, 0, ii18, 0x052167D1)
   }
   if (LNotEqual(ii19, 0xFFFFFFFFFFFFFFFF)) {
-    err(ts, z168, 0x028, 0, 0, ii19, 0xFFFFFFFFFFFFFFFF)
+    err(ts, z168, __LINE__, 0, 0, ii19, 0xFFFFFFFFFFFFFFFF)
   }
   if (LNotEqual(ii1a, 0)) {
-    err(ts, z168, 0x029, 0, 0, ii1a, 0)
+    err(ts, z168, __LINE__, 0, 0, ii1a, 0)
   }
   if (LNotEqual(ii1b, 0xFFFFFFFFFFFFFFFF)) {
-    err(ts, z168, 0x02a, 0, 0, ii1c, 0xFFFFFFFFFFFFFFFF)
+    err(ts, z168, __LINE__, 0, 0, ii1c, 0xFFFFFFFFFFFFFFFF)
   }
   if (LNotEqual(ii1c, 0x052167D0)) {
-    err(ts, z168, 0x02b, 0, 0, ii1d, 0x052167D0)
+    err(ts, z168, __LINE__, 0, 0, ii1d, 0x052167D0)
   }
   if (LNotEqual(ii1d, 0)) {
-    err(ts, z168, 0x02c, 0, 0, ii1d, 0)
+    err(ts, z168, __LINE__, 0, 0, ii1d, 0)
   }
   if (LNotEqual(ii1e, 0)) {
-    err(ts, z168, 0x02d, 0, 0, ii1e, 0)
+    err(ts, z168, __LINE__, 0, 0, ii1e, 0)
   }
   if (LNotEqual(ii1f, 0)) {
-    err(ts, z168, 0x02e, 0, 0, ii1f, 0)
+    err(ts, z168, __LINE__, 0, 0, ii1f, 0)
   }
   if (LNotEqual(ii20, 0xFFFFFFFFFFFFFFFF)) {
-    err(ts, z168, 0x02f, 0, 0, ii20, 0xFFFFFFFFFFFFFFFF)
+    err(ts, z168, __LINE__, 0, 0, ii20, 0xFFFFFFFFFFFFFFFF)
   }
   if (LNotEqual(ii21, 0xFFFFFFFFFFFFFFFF)) {
-    err(ts, z168, 0x30, 0, 0, ii21, 0xFFFFFFFFFFFFFFFF)
+    err(ts, z168, __LINE__, 0, 0, ii21, 0xFFFFFFFFFFFFFFFF)
   }
   if (LNotEqual(ii22, 0xFFFFFFFFFFFFFFFE)) {
-    err(ts, z168, 0x031, 0, 0, ii22, 0xFFFFFFFFFFFFFFFE)
+    err(ts, z168, __LINE__, 0, 0, ii22, 0xFFFFFFFFFFFFFFFE)
   }
   if (LNotEqual(ii23, 0xFFFFFFFFFFFFFFFE)) {
-    err(ts, z168, 0x032, 0, 0, ii23, 0xFFFFFFFFFFFFFFFE)
+    err(ts, z168, __LINE__, 0, 0, ii23, 0xFFFFFFFFFFFFFFFE)
   }
   if (LNotEqual(ii24, 0x052167CE)) {
-    err(ts, z168, 0x033, 0, 0, ii24, 0x052167CE)
+    err(ts, z168, __LINE__, 0, 0, ii24, 0x052167CE)
   }
   if (LNotEqual(ii25, 0xFFFFFFFFFFFFFFFF)) {
-    err(ts, z168, 0x034, 0, 0, ii25, 0xFFFFFFFFFFFFFFFF)
+    err(ts, z168, __LINE__, 0, 0, ii25, 0xFFFFFFFFFFFFFFFF)
   }
   if (LNotEqual(ii26, 0)) {
-    err(ts, z168, 0x035, 0, 0, ii26, 0)
+    err(ts, z168, __LINE__, 0, 0, ii26, 0)
   }
   if (LNotEqual(ii27, 0xFFFFFFFFFFFFFFFF)) {
-    err(ts, z168, 0x036, 0, 0, ii27, 0xFFFFFFFFFFFFFFFF)
+    err(ts, z168, __LINE__, 0, 0, ii27, 0xFFFFFFFFFFFFFFFF)
   }
   if (LNotEqual(ii28, 0xFFFFFFFFFFFFFFFF)) {
-    err(ts, z168, 0x037, 0, 0, ii28, 0xFFFFFFFFFFFFFFFF)
+    err(ts, z168, __LINE__, 0, 0, ii28, 0xFFFFFFFFFFFFFFFF)
   }
   if (LNotEqual(ii29, 0xFFFFFFFFFFFFFFFF)) {
-    err(ts, z168, 0x038, 0, 0, ii29, 0xFFFFFFFFFFFFFFFF)
+    err(ts, z168, __LINE__, 0, 0, ii29, 0xFFFFFFFFFFFFFFFF)
   }
   if (LNotEqual(ii2a, 0xFFFFFFFFFFFFFFFE)) {
-    err(ts, z168, 0x039, 0, 0, ii2a, 0xFFFFFFFFFFFFFFFE)
+    err(ts, z168, __LINE__, 0, 0, ii2a, 0xFFFFFFFFFFFFFFFE)
   }
   if (LNotEqual(ii2b, 0xFFFFFFFFFFFFFFFD)) {
-    err(ts, z168, 0x03a, 0, 0, ii2b, 0xFFFFFFFFFFFFFFFD)
+    err(ts, z168, __LINE__, 0, 0, ii2b, 0xFFFFFFFFFFFFFFFD)
   }
   if (LNotEqual(ii2c, 0x052167CB)) {
-    err(ts, z168, 0x03b, 0, 0, ii2c, 0x052167CB)
+    err(ts, z168, __LINE__, 0, 0, ii2c, 0x052167CB)
   }
   if (LNotEqual(ii2d, 0)) {
-    err(ts, z168, 0x03c, 0, 0, ii2d, 0)
+    err(ts, z168, __LINE__, 0, 0, ii2d, 0)
   }
   if (LNotEqual(ii2e, 0xFFFFFFFFFFFFFFFF)) {
-    err(ts, z168, 0x03d, 0, 0, ii2e, 0xFFFFFFFFFFFFFFFF)
+    err(ts, z168, __LINE__, 0, 0, ii2e, 0xFFFFFFFFFFFFFFFF)
   }
   if (LNotEqual(ii2f, 0xFFFFFFFFFFFFFFFF)) {
-    err(ts, z168, 0x03e, 0, 0, ii2f, 0xFFFFFFFFFFFFFFFF)
+    err(ts, z168, __LINE__, 0, 0, ii2f, 0xFFFFFFFFFFFFFFFF)
   }
   if (LNotEqual(ii30, 0)) {
-    err(ts, z168, 0x03f, 0, 0, ii30, 0)
+    err(ts, z168, __LINE__, 0, 0, ii30, 0)
   }
   if (LNotEqual(ii31, 0)) {
-    err(ts, z168, 0x040, 0, 0, ii31, 0)
+    err(ts, z168, __LINE__, 0, 0, ii31, 0)
   }
   if (LNotEqual(ii32, 0)) {
-    err(ts, z168, 0x041, 0, 0, ii32, 0)
+    err(ts, z168, __LINE__, 0, 0, ii32, 0)
   }
   if (LNotEqual(ii33, 0xFFFFFFFFFFFFFFFF)) {
-    err(ts, z168, 0x042, 0, 0, ii33, 0xFFFFFFFFFFFFFFFF)
+    err(ts, z168, __LINE__, 0, 0, ii33, 0xFFFFFFFFFFFFFFFF)
   }
   if (LNotEqual(ii34, 0x052167CA)) {
-    err(ts, z168, 0x043, 0, 0, ii34, 0x052167CA)
+    err(ts, z168, __LINE__, 0, 0, ii34, 0x052167CA)
   }
   if (LNotEqual(ii35, 0xFFFFFFFFFFFFFFFF)) {
-    err(ts, z168, 0x044, 0, 0, ii35, 0xFFFFFFFFFFFFFFFF)
+    err(ts, z168, __LINE__, 0, 0, ii35, 0xFFFFFFFFFFFFFFFF)
   }
   if (LNotEqual(ii36, 0xFFFFFFFFFFFFFFFF)) {
-    err(ts, z168, 0x045, 0, 0, ii36, 0xFFFFFFFFFFFFFFFF)
+    err(ts, z168, __LINE__, 0, 0, ii36, 0xFFFFFFFFFFFFFFFF)
   }
   if (LNotEqual(ii37, 0xFFFFFFFFFFFFFFFE)) {
-    err(ts, z168, 0x046, 0, 0, ii37, 0xFFFFFFFFFFFFFFFE)
+    err(ts, z168, __LINE__, 0, 0, ii37, 0xFFFFFFFFFFFFFFFE)
   }
   if (LNotEqual(ii38, 0)) {
-    err(ts, z168, 0x047, 0, 0, ii38, 0)
+    err(ts, z168, __LINE__, 0, 0, ii38, 0)
   }
   if (LNotEqual(ii39, 0)) {
-    err(ts, z168, 0x048, 0, 0, ii39, 0)
+    err(ts, z168, __LINE__, 0, 0, ii39, 0)
   }
   if (LNotEqual(ii3a, 0)) {
-    err(ts, z168, 0x049, 0, 0, ii3a, 0)
+    err(ts, z168, __LINE__, 0, 0, ii3a, 0)
   }
   if (LNotEqual(ii3b, 0xFFFFFFFFFFFFFFFE)) {
-    err(ts, z168, 0x04a, 0, 0, ii3b, 0xFFFFFFFFFFFFFFFE)
+    err(ts, z168, __LINE__, 0, 0, ii3b, 0xFFFFFFFFFFFFFFFE)
   }
   if (LNotEqual(ii3c, 0x052167C8)) {
-    err(ts, z168, 0x04b, 0, 0, ii3c, 0x052167C8)
+    err(ts, z168, __LINE__, 0, 0, ii3c, 0x052167C8)
   }
   if (LNotEqual(ii3d, 0)) {
-    err(ts, z168, 0x04c, 0, 0, ii3d, 0)
+    err(ts, z168, __LINE__, 0, 0, ii3d, 0)
   }
   if (LNotEqual(ii3e, 0xFFFFFFFFFFFFFFFF)) {
-    err(ts, z168, 0x04d, 0, 0, ii3e, 0xFFFFFFFFFFFFFFFF)
+    err(ts, z168, __LINE__, 0, 0, ii3e, 0xFFFFFFFFFFFFFFFF)
   }
   if (LNotEqual(ii3f, 0xFFFFFFFFFFFFFFFF)) {
-    err(ts, z168, 0x04e, 0, 0, ii3f, 0xFFFFFFFFFFFFFFFF)
+    err(ts, z168, __LINE__, 0, 0, ii3f, 0xFFFFFFFFFFFFFFFF)
   }
   if (LNotEqual(ii40, 0xFFFFFFFFFFFFFFFF)) {
-    err(ts, z168, 0x04f, 0, 0, ii40, 0xFFFFFFFFFFFFFFFF)
+    err(ts, z168, __LINE__, 0, 0, ii40, 0xFFFFFFFFFFFFFFFF)
   }
   if (LNotEqual(ii41, 0xFFFFFFFFFFFFFFFF)) {
-    err(ts, z168, 0x050, 0, 0, ii41, 0xFFFFFFFFFFFFFFFF)
+    err(ts, z168, __LINE__, 0, 0, ii41, 0xFFFFFFFFFFFFFFFF)
   }
   if (LNotEqual(ii42, 0xFFFFFFFFFFFFFFFE)) {
-    err(ts, z168, 0x051, 0, 0, ii42, 0xFFFFFFFFFFFFFFFE)
+    err(ts, z168, __LINE__, 0, 0, ii42, 0xFFFFFFFFFFFFFFFE)
   }
   if (LNotEqual(ii43, 0xFFFFFFFFFFFFFFFD)) {
-    err(ts, z168, 0x052, 0, 0, ii43, 0xFFFFFFFFFFFFFFFD)
+    err(ts, z168, __LINE__, 0, 0, ii43, 0xFFFFFFFFFFFFFFFD)
   }
   if (LNotEqual(ii44, 0x052167C5)) {
-    err(ts, z168, 0x053, 0, 0, ii44, 0x052167C5)
+    err(ts, z168, __LINE__, 0, 0, ii44, 0x052167C5)
   }
 }
 
@@ -659,6 +659,6 @@ Method(ini5)
   SRMT("in51")
   in51(0,0,0,0,0,0,0)
 
-  CH03("ini5", z168, 0x000, 0, 0)
+  CH03("ini5", z168, 0x000, __LINE__, 0)
 }
 

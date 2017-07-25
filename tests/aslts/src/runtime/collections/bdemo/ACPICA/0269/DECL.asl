@@ -90,16 +90,16 @@ Method(m022,, Serialized)
 		Return (MAdd(i000, m002()))
 	}
 
-	CH03("", 0, 0x000, 0, 0)
+	CH03("", 0, 0x000, __LINE__, 0)
 
 	Store(MAdd(i000, m001()), Local0)
 
 	if (LNotEqual(Local0, 0x87654321)) {
-		err("", zFFF, 0x001, 0, 0, Local0, c00e)
+		err("", zFFF, __LINE__, 0, 0, Local0, c00e)
 	}
 
 	if (LNotEqual(i000, 0x80000000)) {
-		err("", zFFF, 0x002, 0, 0, Local0, c00e)
+		err("", zFFF, __LINE__, 0, 0, Local0, c00e)
 	}
 
 	Store("Result:", Debug)
@@ -108,5 +108,5 @@ Method(m022,, Serialized)
 	Store("i000:", Debug)
 	Store(i000, Debug)
 
-	CH03("", 0, 0x000, 0, 0)
+	CH03("", 0, 0x000, __LINE__, 0)
 }

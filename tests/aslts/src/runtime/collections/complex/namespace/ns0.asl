@@ -53,7 +53,7 @@ Method(m000, 1, Serialized)
 
 	Name(i001, 0)
 
-	CH03(ts, z154, 0x000, 0, 0)
+	CH03(ts, z154, 0x000, __LINE__, 0)
 
 	Store(arg0, i001)
 
@@ -74,11 +74,11 @@ Method(m000, 1, Serialized)
 	}
 	Store(Add(i000, m001()), Local0)
 	if (LNotEqual(Local0, 0xabcd0003)) {
-		err(ts, z154, 0x001, 0, 0, Local0, 0xabcd0003)
+		err(ts, z154, __LINE__, 0, 0, Local0, 0xabcd0003)
 	}
 	Store(Local0, Debug)
 
-	CH03(ts, z154, 0x002, 0, 0)
+	CH03(ts, z154, 0x002, __LINE__, 0)
 }
 
 Method(m001, 1, Serialized)
@@ -136,14 +136,14 @@ Method(m001, 1, Serialized)
 	Store(Add(i000, m001()), Local0)
 
 	if (LNotEqual(Local0, 0x87654321)) {
-		err(ts, z154, 0x003, 0, 0, Local0, 0x87654321)
+		err(ts, z154, __LINE__, 0, 0, Local0, 0x87654321)
 	}
 
 	if (LNotEqual(i000, 0x80000000)) {
-		err(ts, z154, 0x004, 0, 0, i000, 0x80000000)
+		err(ts, z154, __LINE__, 0, 0, i000, 0x80000000)
 	}
 
-	CH03(ts, z154, 0x005, 0, 0)
+	CH03(ts, z154, 0x005, __LINE__, 0)
 }
 
 Method(m002,, Serialized)
@@ -165,14 +165,14 @@ Method(m002,, Serialized)
 	Store(Add(i000, m001()), Local0)
 
 	if (LNotEqual(Local0, 0x065013BA)) {
-		err(ts, z154, 0x006, 0, 0, Local0, 0x065013BA)
+		err(ts, z154, __LINE__, 0, 0, Local0, 0x065013BA)
 	}
 
 	if (LNotEqual(i000, 0x00100064)) {
-		err(ts, z154, 0x007, 0, 0, i000, 0x00100064)
+		err(ts, z154, __LINE__, 0, 0, i000, 0x00100064)
 	}
 
-	CH03(ts, z154, 0x008, 0, 0)
+	CH03(ts, z154, 0x008, __LINE__, 0)
 }
 
 Method(m003,, Serialized)
@@ -193,14 +193,14 @@ Method(m003,, Serialized)
 	Store(Add(i000, m001()), Local0)
 
 	if (LNotEqual(Local0, 0x065013BA)) {
-		err(ts, z154, 0x009, 0, 0, Local0, 0x065013BA)
+		err(ts, z154, __LINE__, 0, 0, Local0, 0x065013BA)
 	}
 
 	if (LNotEqual(i000, 0x00100064)) {
-		err(ts, z154, 0x00a, 0, 0, i000, 0x00100064)
+		err(ts, z154, __LINE__, 0, 0, i000, 0x00100064)
 	}
 
-	CH03(ts, z154, 0x00b, 0, 0)
+	CH03(ts, z154, 0x00b, __LINE__, 0)
 }
 
 /*
@@ -262,14 +262,14 @@ Method(m004, 1, Serialized)
 	Store(Add(Local7, m001()), Local0)
 
 	if (LNotEqual(Local0, 0x87654321)) {
-		err(ts, z154, 0x00c, 0, 0, Local0, 0x87654321)
+		err(ts, z154, __LINE__, 0, 0, Local0, 0x87654321)
 	}
 
 	if (LNotEqual(Local7, 1)) {
-		err(ts, z154, 0x00d, 0, 0, Local7, 1)
+		err(ts, z154, __LINE__, 0, 0, Local7, 1)
 	}
 
-	CH03(ts, z154, 0x00e, 0, 0)
+	CH03(ts, z154, 0x00e, __LINE__, 0)
 }
 
 /*
@@ -331,14 +331,14 @@ Method(m005, 2, Serialized)
 	Store(Add(arg1, m001()), Local0)
 
 	if (LNotEqual(Local0, 0x87654321)) {
-		err(ts, z154, 0x00f, 0, 0, Local0, 0x87654321)
+		err(ts, z154, __LINE__, 0, 0, Local0, 0x87654321)
 	}
 
 	if (LNotEqual(arg1, 1)) {
-		err(ts, z154, 0x010, 0, 0, arg1, 1)
+		err(ts, z154, __LINE__, 0, 0, arg1, 1)
 	}
 
-	CH03(ts, z154, 0x011, 0, 0)
+	CH03(ts, z154, 0x011, __LINE__, 0)
 }
 
 Method(n000)
