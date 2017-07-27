@@ -487,6 +487,9 @@ AcpiUtWalkPackageTree (
 
     /* We should never get here */
 
+    ACPI_ERROR ((AE_INFO,
+        "State list did not terminate correctly"));
+
     return_ACPI_STATUS (AE_AML_INTERNAL);
 }
 
