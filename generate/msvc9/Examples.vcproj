@@ -706,6 +706,10 @@
 					>
 				</File>
 				<File
+					RelativePath="..\..\source\components\dispatcher\dspkginit.c"
+					>
+				</File>
+				<File
 					RelativePath="..\..\source\components\dispatcher\dsutils.c"
 					>
 				</File>
