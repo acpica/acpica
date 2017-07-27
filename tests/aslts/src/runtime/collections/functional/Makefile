@@ -13,7 +13,8 @@ MDIRS = \
 	region \
 	synchronization \
 	table \
-	external
+	external \
+	alias
 
 # extern local FULL
 

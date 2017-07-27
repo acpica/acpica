@@ -1467,7 +1467,9 @@ Name(TNF0, Package() {
 	"region",
 	"synchronization",
 	"table",
-	"module"
+	"module",
+	"external",
+	"alias"
 })
 
 // Names of complex tests
@@ -1748,7 +1750,8 @@ Name(TFN0, Package() {
 
 // External Op tests
 
-	"external.asl"	// 204
+	"external.asl",	// 204
+	"alias.asl"	// 205
 })
 
 /*

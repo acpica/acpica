@@ -27,8 +27,8 @@
  */
 
 
-if (STTT("External", TCLF, 15, W023)) {
-	SRMT("EXT1")
-	EXT1()
+if (STTT("Alias", TCLF, 16, W024)) {
+	SRMT("ALI1")
+	ALI1()
 }
 FTTT()

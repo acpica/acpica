@@ -67,6 +67,8 @@ Name(W00b, 0) // region
 Name(W00c, 0) // synchronization
 Name(W00d, 0) // table
 Name(W01a, 0) // module
+Name(W023, 0) // external
+Name(W024, 0) // alias
 
 // COMPLEX
 
@@ -166,6 +168,10 @@ Store(1, W00a) // reference        10
 Store(1, W00b) // region           11
 Store(1, W00c) // synchronization  12
 Store(1, W00d) // table            13
+Store(1, W023) // external         14
+Store(1, W024) // alias            15
+
+
 
 // COMPLEX, collection # 2
 
