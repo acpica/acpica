@@ -55,7 +55,7 @@
   BaseLib
 
 [BuildOptions]
-  MSFT:*_*_IA32_CC_FLAGS = /Oi- /WX- /D_EDK2_EFI /DACPI_DUMP_APP
-  MSFT:*_*_X64_CC_FLAGS  = /Oi- /WX- /D_EDK2_EFI /DACPI_DUMP_APP
+  MSFT:*_*_IA32_CC_FLAGS = /GL- /D_EDK2_EFI /DUSE_MS_ABI /D__i386__ /DACPI_DUMP_APP
+  MSFT:*_*_X64_CC_FLAGS  = /GL- /D_EDK2_EFI /DUSE_MS_ABI /D__x86_64__ /DACPI_DUMP_APP
   GCC:*_*_IA32_CC_FLAGS  = -U__linux__ -U_LINUX -D_EDK2_EFI -DACPI_DUMP_APP -fno-builtin -iwithprefix include
   GCC:*_*_X64_CC_FLAGS   = -U__linux__ -U_LINUX -D_EDK2_EFI -DACPI_DUMP_APP -fno-builtin -iwithprefix include

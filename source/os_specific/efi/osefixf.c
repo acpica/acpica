@@ -173,6 +173,15 @@ AcpiEfiGetPciDev (
     ACPI_PCI_ID             *PciId);
 
 
+/* Global variables */
+
+#ifdef _EDK2_EFI
+struct _ACPI_EFI_SYSTEM_TABLE        *ST;
+struct _ACPI_EFI_BOOT_SERVICES       *BS;
+struct _ACPI_EFI_RUNTIME_SERVICES    *RT;
+#endif
+
+
 /******************************************************************************
  *
  * FUNCTION:    AcpiEfiGetRsdpViaGuid
@@ -225,7 +234,7 @@ AcpiEfiGetRsdpViaGuid (
     ACPI_EFI_GUID           *Guid)
 {
     ACPI_PHYSICAL_ADDRESS   Address = 0;
-    int                     i;
+    UINTN                   i;
 
 
     for (i = 0; i < ST->NumberOfTableEntries; i++)
@@ -270,6 +279,36 @@ AcpiOsGetRootPointer (
     }
 
     return (Address);
+}
+
+
+/******************************************************************************
+ *
+ * FUNCTION:    AcpiOsPredefinedOverride
+ *
+ * PARAMETERS:  InitVal             - Initial value of the predefined object
+ *              NewVal              - The new value for the object
+ *
+ * RETURN:      Status, pointer to value. Null pointer returned if not
+ *              overriding.
+ *
+ * DESCRIPTION: Allow the OS to override predefined names
+ *
+ *****************************************************************************/
+
+ACPI_STATUS
+AcpiOsPredefinedOverride (
+    const ACPI_PREDEFINED_NAMES *InitVal,
+    ACPI_STRING                 *NewVal)
+{
+
+    if (!InitVal || !NewVal)
+    {
+        return (AE_BAD_PARAMETER);
+    }
+
+    *NewVal = NULL;
+    return (AE_OK);
 }
 
 
@@ -322,7 +361,7 @@ AcpiOsUnmapMemory (
 
 /******************************************************************************
  *
- * FUNCTION:    Spinlock interfaces
+ * FUNCTION:    Single threaded stub interfaces
  *
  * DESCRIPTION: No-op on single threaded BIOS
  *
@@ -353,6 +392,232 @@ AcpiOsReleaseLock (
     ACPI_SPINLOCK           Handle,
     ACPI_CPU_FLAGS          Flags)
 {
+}
+
+ACPI_STATUS
+AcpiOsCreateSemaphore (
+    UINT32              MaxUnits,
+    UINT32              InitialUnits,
+    ACPI_HANDLE         *OutHandle)
+{
+    *OutHandle = (ACPI_HANDLE) 1;
+    return (AE_OK);
+}
+
+ACPI_STATUS
+AcpiOsDeleteSemaphore (
+    ACPI_HANDLE         Handle)
+{
+    return (AE_OK);
+}
+
+ACPI_STATUS
+AcpiOsWaitSemaphore (
+    ACPI_HANDLE         Handle,
+    UINT32              Units,
+    UINT16              Timeout)
+{
+    return (AE_OK);
+}
+
+ACPI_STATUS
+AcpiOsSignalSemaphore (
+    ACPI_HANDLE         Handle,
+    UINT32              Units)
+{
+    return (AE_OK);
+}
+
+ACPI_THREAD_ID
+AcpiOsGetThreadId (
+    void)
+{
+    return (1);
+}
+
+ACPI_STATUS
+AcpiOsExecute (
+    ACPI_EXECUTE_TYPE       Type,
+    ACPI_OSD_EXEC_CALLBACK  Function,
+    void                    *Context)
+{
+    return (AE_OK);
+}
+
+void
+AcpiOsWaitEventsComplete (
+    void)
+{
+    return;
+}
+
+
+/******************************************************************************
+ *
+ * FUNCTION:    AcpiOsInstallInterruptHandler
+ *
+ * PARAMETERS:  InterruptNumber     - Level handler should respond to.
+ *              ServiceRoutine      - Address of the ACPI interrupt handler
+ *              Context             - Where status is returned
+ *
+ * RETURN:      Handle to the newly installed handler.
+ *
+ * DESCRIPTION: Install an interrupt handler. Used to install the ACPI
+ *              OS-independent handler.
+ *
+ *****************************************************************************/
+
+UINT32
+AcpiOsInstallInterruptHandler (
+    UINT32                  InterruptNumber,
+    ACPI_OSD_HANDLER        ServiceRoutine,
+    void                    *Context)
+{
+
+    return (AE_OK);
+}
+
+
+/******************************************************************************
+ *
+ * FUNCTION:    AcpiOsRemoveInterruptHandler
+ *
+ * PARAMETERS:  InterruptNumber     - Level handler should respond to.
+ *              ServiceRoutine      - Address of the ACPI interrupt handler
+ *
+ * RETURN:      Status
+ *
+ * DESCRIPTION: Uninstalls an interrupt handler.
+ *
+ *****************************************************************************/
+
+ACPI_STATUS
+AcpiOsRemoveInterruptHandler (
+    UINT32                  InterruptNumber,
+    ACPI_OSD_HANDLER        ServiceRoutine)
+{
+
+    return (AE_OK);
+}
+
+
+/******************************************************************************
+ *
+ * FUNCTION:    AcpiOsGetTimer
+ *
+ * PARAMETERS:  None
+ *
+ * RETURN:      Current time in 100 nanosecond units
+ *
+ * DESCRIPTION: Get the current system time
+ *
+ *****************************************************************************/
+
+UINT64
+AcpiOsGetTimer (
+    void)
+{
+    ACPI_EFI_STATUS         EfiStatus;
+    ACPI_EFI_TIME           EfiTime;
+    int                     Year, Month, Day;
+    int                     Hour, Minute, Second;
+    UINT64                  Timer;
+
+
+    EfiStatus = uefi_call_wrapper (RT->GetTime, 2, &EfiTime, NULL);
+    if (ACPI_EFI_ERROR (EfiStatus))
+    {
+        return ((UINT64) -1);
+    }
+
+    Year = EfiTime.Year;
+    Month = EfiTime.Month;
+    Day = EfiTime.Day;
+    Hour = EfiTime.Hour;
+    Minute = EfiTime.Minute;
+    Second = EfiTime.Second;
+
+    /* 1..12 -> 11,12,1..10 */
+
+    if (0 >= (int) (Month -= 2))
+    {
+        /* Feb has leap days */
+
+        Month += 12;
+        Year -= 1;
+    }
+
+    /* Calculate days */
+
+    Timer = ((UINT64) (Year/4 - Year/100 + Year/400 + 367*Month/12 + Day) +
+                       Year*365 - 719499);
+
+    /* Calculate seconds */
+
+    (void) AcpiUtShortMultiply (Timer, 24, &Timer);
+    Timer += Hour;
+    (void) AcpiUtShortMultiply (Timer, 60, &Timer);
+    Timer += Minute;
+    (void) AcpiUtShortMultiply (Timer, 60, &Timer);
+    Timer += Second;
+
+    /* Calculate 100 nanoseconds */
+
+    (void) AcpiUtShortMultiply (Timer, ACPI_100NSEC_PER_SEC, &Timer);
+    return (Timer + (EfiTime.Nanosecond / 100));
+}
+
+
+/******************************************************************************
+ *
+ * FUNCTION:    AcpiOsStall
+ *
+ * PARAMETERS:  microseconds        - Time to sleep
+ *
+ * RETURN:      Blocks until sleep is completed.
+ *
+ * DESCRIPTION: Sleep at microsecond granularity
+ *
+ *****************************************************************************/
+
+void
+AcpiOsStall (
+    UINT32                  microseconds)
+{
+
+    if (microseconds)
+    {
+        uefi_call_wrapper (BS->Stall, 1, microseconds);
+    }
+}
+
+
+/******************************************************************************
+ *
+ * FUNCTION:    AcpiOsSleep
+ *
+ * PARAMETERS:  milliseconds        - Time to sleep
+ *
+ * RETURN:      Blocks until sleep is completed.
+ *
+ * DESCRIPTION: Sleep at millisecond granularity
+ *
+ *****************************************************************************/
+
+void
+AcpiOsSleep (
+    UINT64                  milliseconds)
+{
+    UINT64                  microseconds;
+
+
+    AcpiUtShortMultiply (milliseconds, ACPI_USEC_PER_MSEC, &microseconds);
+    while (microseconds > ACPI_UINT32_MAX)
+    {
+        AcpiOsStall (ACPI_UINT32_MAX);
+        microseconds -= ACPI_UINT32_MAX;
+    }
+    AcpiOsStall ((UINT32) microseconds);
 }
 
 
@@ -492,13 +757,13 @@ AcpiOsVprintf (
 
 /******************************************************************************
  *
- * FUNCTION:    AcpiOsInitialize
+ * FUNCTION:    AcpiOsInitialize, AcpiOsTerminate
  *
  * PARAMETERS:  None
  *
  * RETURN:      Status
  *
- * DESCRIPTION: Initialize this module.
+ * DESCRIPTION: Initialize/terminate this module.
  *
  *****************************************************************************/
 
@@ -509,6 +774,100 @@ AcpiOsInitialize (
 
     return (AE_OK);
 }
+
+
+ACPI_STATUS
+AcpiOsTerminate (
+    void)
+{
+
+    return (AE_OK);
+}
+
+
+/******************************************************************************
+ *
+ * FUNCTION:    AcpiOsSignal
+ *
+ * PARAMETERS:  Function            - ACPI A signal function code
+ *              Info                - Pointer to function-dependent structure
+ *
+ * RETURN:      Status
+ *
+ * DESCRIPTION: Miscellaneous functions. Example implementation only.
+ *
+ *****************************************************************************/
+
+ACPI_STATUS
+AcpiOsSignal (
+    UINT32                  Function,
+    void                    *Info)
+{
+
+    switch (Function)
+    {
+    case ACPI_SIGNAL_FATAL:
+
+        break;
+
+    case ACPI_SIGNAL_BREAKPOINT:
+
+        break;
+
+    default:
+
+        break;
+    }
+
+    return (AE_OK);
+}
+
+
+/******************************************************************************
+ *
+ * FUNCTION:    AcpiOsReadable
+ *
+ * PARAMETERS:  Pointer             - Area to be verified
+ *              Length              - Size of area
+ *
+ * RETURN:      TRUE if readable for entire length
+ *
+ * DESCRIPTION: Verify that a pointer is valid for reading
+ *
+ *****************************************************************************/
+
+BOOLEAN
+AcpiOsReadable (
+    void                    *Pointer,
+    ACPI_SIZE               Length)
+{
+
+    return (TRUE);
+}
+
+
+/******************************************************************************
+ *
+ * FUNCTION:    AcpiOsWritable
+ *
+ * PARAMETERS:  Pointer             - Area to be verified
+ *              Length              - Size of area
+ *
+ * RETURN:      TRUE if writable for entire length
+ *
+ * DESCRIPTION: Verify that a pointer is valid for writing
+ *
+ *****************************************************************************/
+
+BOOLEAN
+AcpiOsWritable (
+    void                    *Pointer,
+    ACPI_SIZE               Length)
+{
+
+    return (TRUE);
+}
+
 
 /******************************************************************************
  *
@@ -704,3 +1063,26 @@ AcpiEfiGetPciDev (
     uefi_call_wrapper (BS->FreePool, 1, Handles);
     return (NULL);
 }
+
+
+#if defined(_EDK2_EFI) && defined(USE_STDLIB)
+extern EFI_RUNTIME_SERVICES                 *gRT;
+extern EFI_BOOT_SERVICES                    *gBS;
+extern EFI_SYSTEM_TABLE                     *gST;
+
+int ACPI_SYSTEM_XFACE
+main (
+    int                     argc,
+    char                    *argv[])
+{
+    int                     Error;
+
+
+    ST = ACPI_CAST_PTR (ACPI_EFI_SYSTEM_TABLE, gST);
+    BS = ACPI_CAST_PTR (ACPI_EFI_BOOT_SERVICES, gBS);
+    RT = ACPI_CAST_PTR (ACPI_EFI_RUNTIME_SERVICES, gRT);
+
+    Error = acpi_main (argc, argv);
+    return (Error);
+}
+#endif

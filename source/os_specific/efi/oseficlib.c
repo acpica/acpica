@@ -621,7 +621,7 @@ WaitKey:
                 break;
             }
         }
-        Length = Pos;
+        Length = (int) Pos;
     }
     else
     {
@@ -641,7 +641,7 @@ WaitKey:
             Length = -EIO;
             goto ErrorExit;
         }
-        Length = ReadSize;
+        Length = (int) ReadSize;
     }
 
 ErrorExit:
@@ -720,7 +720,7 @@ fwrite (
     const char              *Ascii;
     CHAR16                  *End;
     CHAR16                  *Pos;
-    int                     i, j;
+    ACPI_SIZE               i, j;
     ACPI_EFI_FILE_HANDLE    EfiFile;
     UINTN                   WriteSize;
     ACPI_EFI_STATUS         EfiStatus;
@@ -773,7 +773,7 @@ fwrite (
             errno = EIO;
             goto ErrorExit;
         }
-        Length = WriteSize;
+        Length = (int) WriteSize;
     }
 
 ErrorExit:
@@ -926,7 +926,7 @@ fseek (
         {
             return (Error);
         }
-        Size = Info->FileSize;
+        Size = (ACPI_SIZE) (Info->FileSize);
         AcpiOsFree (Info);
 
         if (From == SEEK_CUR)
@@ -1229,6 +1229,7 @@ efi_main (
 
     ST = SystemTab;
     BS = SystemTab->BootServices;
+    RT = SystemTab->RuntimeServices;
     stdin = ACPI_CAST_PTR (ACPI_EFI_FILE, SystemTab->ConIn);
     stdout = ACPI_CAST_PTR (ACPI_EFI_FILE, SystemTab->ConOut);
     stderr = ACPI_CAST_PTR (ACPI_EFI_FILE, SystemTab->ConOut);
@@ -1289,10 +1290,6 @@ ErrorAlloc:
 }
 
 #ifdef _EDK2_EFI
-struct _ACPI_EFI_SYSTEM_TABLE        *ST;
-struct _ACPI_EFI_BOOT_SERVICES       *BS;
-struct _ACPI_EFI_RUNTIME_SERVICES    *RT;
-
 EFI_STATUS
 EFIAPI
 UefiMain (
