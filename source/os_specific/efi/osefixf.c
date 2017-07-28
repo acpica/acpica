@@ -184,7 +184,7 @@ struct _ACPI_EFI_RUNTIME_SERVICES    *RT;
 
 /******************************************************************************
  *
- * FUNCTION:    AcpiEfiGetRsdpViaGuid
+ * FUNCTION:    AcpiEfiCompareGuid
  *
  * PARAMETERS:  Guid1               - GUID to compare
  *              Guid2               - GUID to compare
