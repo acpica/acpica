@@ -1469,7 +1469,8 @@ Name(TNF0, Package() {
 	"table",
 	"module",
 	"external",
-	"alias"
+	"alias",
+	"fwdref"
 })
 
 // Names of complex tests

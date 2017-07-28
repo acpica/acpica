@@ -69,6 +69,7 @@ Name(W00d, 0) // table
 Name(W01a, 0) // module
 Name(W023, 0) // external
 Name(W024, 0) // alias
+Name(W025, 0) // fwdref
 
 // COMPLEX
 
@@ -170,6 +171,7 @@ Store(1, W00c) // synchronization  12
 Store(1, W00d) // table            13
 Store(1, W023) // external         14
 Store(1, W024) // alias            15
+Store(1, W025) // alias            16
 
 
 

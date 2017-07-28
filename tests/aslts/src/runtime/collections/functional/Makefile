@@ -14,7 +14,8 @@ MDIRS = \
 	synchronization \
 	table \
 	external \
-	alias
+	alias \
+	fwdref
 
 # extern local FULL
 
