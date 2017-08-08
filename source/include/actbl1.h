@@ -1663,7 +1663,8 @@ enum AcpiPpttType
 
 /* 0: Processor Hierarchy Node Structure */
 
-typedef struct acpi_pptt_processor {
+typedef struct acpi_pptt_processor
+{
     ACPI_SUBTABLE_HEADER    Header;
     UINT16                  Reserved;
     UINT32                  Flags;
@@ -1681,7 +1682,8 @@ typedef struct acpi_pptt_processor {
 
 /* 1: Cache Type Structure */
 
-typedef struct acpi_pptt_cache {
+typedef struct acpi_pptt_cache
+{
     ACPI_SUBTABLE_HEADER    Header;
     UINT16                  Reserved;
     UINT32                  Flags;
@@ -1713,7 +1715,8 @@ typedef struct acpi_pptt_cache {
 
 /* 2: ID Structure */
 
-typedef struct acpi_pptt_id {
+typedef struct acpi_pptt_id
+{
     ACPI_SUBTABLE_HEADER    Header;
     UINT16                  Reserved;
     UINT32                  VendorId;
