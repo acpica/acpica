@@ -170,6 +170,32 @@ AslIsExceptionDisabled (
     UINT8                   Level,
     UINT16                  MessageId);
 
+static void AslInitEnode (
+    ASL_ERROR_MSG           **Enode,
+    UINT8                   Level,
+    UINT16                  MessageId,
+    UINT32                  LineNumber,
+    UINT32                  LogicalLineNumber,
+    UINT32                  LogicalByteOffset,
+    UINT32                  Column,
+    char                    *Filename,
+    char                    *Message,
+    char                    *SourceLine,
+    ASL_ERROR_MSG           *SubError);
+
+static void
+AslLogNewError (
+    UINT8                   Level,
+    UINT16                  MessageId,
+    UINT32                  LineNumber,
+    UINT32                  LogicalLineNumber,
+    UINT32                  LogicalByteOffset,
+    UINT32                  Column,
+    char                    *Filename,
+    char                    *Message,
+    char                    *SourceLine,
+    ASL_ERROR_MSG           *SubError);
+
 
 /*******************************************************************************
  *
@@ -640,6 +666,83 @@ AePrintErrorLog (
 
 /*******************************************************************************
  *
+ * FUNCTION:    AslInitEnode
+ *
+ * PARAMETERS:  Level               - Seriousness (Warning/error, etc.)
+ *              MessageId           - Index into global message buffer
+ *              CurrentLineNumber   - Actual file line number
+ *              LogicalLineNumber   - Cumulative line number
+ *              LogicalByteOffset   - Byte offset in source file
+ *              Column              - Column in current line
+ *              Filename            - source filename
+ *              ExtraMessage        - additional error message
+ *
+ * RETURN:      None
+ *
+ * DESCRIPTION: Initialize an Error node
+ *
+ ******************************************************************************/
+
+static void AslInitEnode (
+    ASL_ERROR_MSG           **InputEnode,
+    UINT8                   Level,
+    UINT16                  MessageId,
+    UINT32                  LineNumber,
+    UINT32                  LogicalLineNumber,
+    UINT32                  LogicalByteOffset,
+    UINT32                  Column,
+    char                    *Filename,
+    char                    *ExtraMessage,
+    char                    *SourceLine,
+    ASL_ERROR_MSG           *SubError)
+{
+    ASL_ERROR_MSG           *Enode;
+
+    *InputEnode = UtLocalCalloc (sizeof (ASL_ERROR_MSG));
+    Enode = *InputEnode;
+    Enode->Level                = Level;
+    Enode->MessageId            = MessageId;
+    Enode->LineNumber           = LineNumber;
+    Enode->LogicalLineNumber    = LogicalLineNumber;
+    Enode->LogicalByteOffset    = LogicalByteOffset;
+    Enode->Column               = Column;
+    Enode->SubError             = SubError;
+    Enode->Message              = NULL;
+    Enode->SourceLine           = NULL;
+    Enode->Filename             = NULL;
+
+    if (ExtraMessage)
+    {
+        /* Allocate a buffer for the message and a new error node */
+
+        Enode->Message = UtLocalCacheCalloc (strlen (ExtraMessage) + 1);
+
+        /* Keep a copy of the extra message */
+
+        strcpy (Enode->Message, ExtraMessage);
+    }
+
+    if (SourceLine)
+    {
+        Enode->SourceLine = UtLocalCalloc (strlen (SourceLine) + 1);
+        strcpy (Enode->SourceLine, SourceLine);
+    }
+
+
+    if (Filename)
+    {
+        Enode->Filename = Filename;
+        Enode->FilenameLength = strlen (Filename);
+        if (Enode->FilenameLength < 6)
+        {
+            Enode->FilenameLength = 6;
+        }
+    }
+}
+
+
+/*******************************************************************************
+ *
  * FUNCTION:    AslCommonError2
  *
  * PARAMETERS:  Level               - Seriousness (Warning/error, etc.)
@@ -666,60 +769,8 @@ AslCommonError2 (
     char                    *Filename,
     char                    *ExtraMessage)
 {
-    char                    *MessageBuffer = NULL;
-    char                    *LineBuffer;
-    ASL_ERROR_MSG           *Enode;
-
-
-    Enode = UtLocalCalloc (sizeof (ASL_ERROR_MSG));
-
-    if (ExtraMessage)
-    {
-        /* Allocate a buffer for the message and a new error node */
-
-        MessageBuffer = UtLocalCacheCalloc (strlen (ExtraMessage) + 1);
-
-        /* Keep a copy of the extra message */
-
-        strcpy (MessageBuffer, ExtraMessage);
-    }
-
-    LineBuffer = UtLocalCalloc (strlen (SourceLine) + 1);
-    strcpy (LineBuffer, SourceLine);
-
-    /* Initialize the error node */
-
-    if (Filename)
-    {
-        Enode->Filename = Filename;
-        Enode->FilenameLength = strlen (Filename);
-        if (Enode->FilenameLength < 6)
-        {
-            Enode->FilenameLength = 6;
-        }
-    }
-
-    Enode->MessageId            = MessageId;
-    Enode->Level                = Level;
-    Enode->LineNumber           = LineNumber;
-    Enode->LogicalLineNumber    = LineNumber;
-    Enode->LogicalByteOffset    = 0;
-    Enode->Column               = Column;
-    Enode->Message              = MessageBuffer;
-    Enode->SourceLine           = LineBuffer;
-
-    /* Add the new node to the error node list */
-
-    AeAddToErrorLog (Enode);
-
-    if (Gbl_DebugFlag)
-    {
-        /* stderr is a file, send error to it immediately */
-
-        AePrintException (ASL_FILE_STDERR, Enode, NULL);
-    }
-
-    Gbl_ExceptionCount[Level]++;
+    AslLogNewError (Level, MessageId, LineNumber, LineNumber, 0, Column,
+                    Filename, ExtraMessage, SourceLine, NULL);
 }
 
 
@@ -753,48 +804,49 @@ AslCommonError (
     char                    *Filename,
     char                    *ExtraMessage)
 {
-    char                    *MessageBuffer = NULL;
-    ASL_ERROR_MSG           *Enode;
+    AslLogNewError (Level, MessageId, CurrentLineNumber, LogicalLineNumber,
+                    LogicalByteOffset, Column, Filename, ExtraMessage,
+                    NULL, NULL);
+}
 
 
-    if (AslIsExceptionIgnored (Level, MessageId))
-    {
-        return;
-    }
+/*******************************************************************************
+ *
+ * FUNCTION:    AslLogNewError
+ *
+ * PARAMETERS:  Level               - Seriousness (Warning/error, etc.)
+ *              MessageId           - Index into global message buffer
+ *              CurrentLineNumber   - Actual file line number
+ *              LogicalLineNumber   - Cumulative line number
+ *              LogicalByteOffset   - Byte offset in source file
+ *              Column              - Column in current line
+ *              Filename            - source filename
+ *              ExtraMessage        - additional error message
+ *
+ * RETURN:      None
+ *
+ * DESCRIPTION: Create a new error node and add it to the error log
+ *
+ ******************************************************************************/
+static void
+AslLogNewError (
+    UINT8                   Level,
+    UINT16                  MessageId,
+    UINT32                  LineNumber,
+    UINT32                  LogicalLineNumber,
+    UINT32                  LogicalByteOffset,
+    UINT32                  Column,
+    char                    *Filename,
+    char                    *Message,
+    char                    *SourceLine,
+    ASL_ERROR_MSG           *SubError)
+{
+    ASL_ERROR_MSG           *Enode = NULL;
 
-    Enode = UtLocalCalloc (sizeof (ASL_ERROR_MSG));
 
-    if (ExtraMessage)
-    {
-        /* Allocate a buffer for the message and a new error node */
-
-        MessageBuffer = UtLocalCacheCalloc (strlen (ExtraMessage) + 1);
-
-        /* Keep a copy of the extra message */
-
-        strcpy (MessageBuffer, ExtraMessage);
-    }
-
-    /* Initialize the error node */
-
-    if (Filename)
-    {
-        Enode->Filename = Filename;
-        Enode->FilenameLength = strlen (Filename);
-        if (Enode->FilenameLength < 6)
-        {
-            Enode->FilenameLength = 6;
-        }
-    }
-
-    Enode->MessageId            = MessageId;
-    Enode->Level                = Level;
-    Enode->LineNumber           = CurrentLineNumber;
-    Enode->LogicalLineNumber    = LogicalLineNumber;
-    Enode->LogicalByteOffset    = LogicalByteOffset;
-    Enode->Column               = Column;
-    Enode->Message              = MessageBuffer;
-    Enode->SourceLine           = NULL;
+    AslInitEnode (&Enode, Level, MessageId, LineNumber, LogicalLineNumber,
+                  LogicalByteOffset, Column, Filename, Message, SourceLine,
+                  SubError);
 
     /* Add the new node to the error node list */
 
