@@ -450,6 +450,16 @@ AslAbort (
     void);
 
 void
+AslDualParseOpError (
+    UINT8                   Level,
+    UINT16                  MainMessageId,
+    ACPI_PARSE_OBJECT       *MainOp,
+    char                    *MainMessage,
+    UINT16                  SecondMessageId,
+    ACPI_PARSE_OBJECT       *SecondOp,
+    char                    *SecondaryMessage);
+
+void
 AslError (
     UINT8                   Level,
     UINT16                  MessageId,
