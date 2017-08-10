@@ -648,6 +648,8 @@ AcpiEvInitializeGpeBlock (
                 continue;
             }
 
+            GpeEventInfo->Flags |= ACPI_GPE_AUTO_ENABLED;
+
             if (EventStatus & ACPI_EVENT_FLAG_STATUS_SET)
             {
                 ACPI_INFO (("GPE 0x%02X active on init",
