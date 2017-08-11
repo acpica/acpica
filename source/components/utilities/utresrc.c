@@ -295,20 +295,13 @@ AcpiUtWalkAmlResources (
     ACPI_STATUS             Status;
     UINT8                   *EndAml;
     UINT8                   ResourceIndex;
-    UINT32                  Length;
+    UINT32                  Length, Remained;
     UINT32                  Offset = 0;
     UINT8                   EndTag[2] = {0x79, 0x00};
 
 
     ACPI_FUNCTION_TRACE (UtWalkAmlResources);
 
-
-    /* The absolute minimum resource template is one EndTag descriptor */
-
-    if (AmlLength < sizeof (AML_RESOURCE_END_TAG))
-    {
-        return_ACPI_STATUS (AE_AML_NO_RESOURCE_END_TAG);
-    }
 
     /* Point to the end of the resource template buffer */
 
@@ -318,7 +311,7 @@ AcpiUtWalkAmlResources (
 
     while (Aml < EndAml)
     {
-        /* Validate the Resource Type and Resource Length */
+        /* Validate the Resource Type */
 
         Status = AcpiUtValidateResource (WalkState, Aml, &ResourceIndex);
         if (ACPI_FAILURE (Status))
@@ -327,12 +320,40 @@ AcpiUtWalkAmlResources (
              * Exit on failure. Cannot continue because the descriptor
              * length may be bogus also.
              */
-            return_ACPI_STATUS (Status);
+            goto ExitWalk;
         }
 
-        /* Get the length of this descriptor */
+        /* Validate the Resource Length */
 
         Length = AcpiUtGetDescriptorLength (Aml);
+        Remained = ACPI_PTR_DIFF (EndAml, Aml);
+        if (Length > Remained)
+        {
+            Status = AE_AML_INVALID_RESOURCE_LENGTH;
+            goto ExitWalk;
+        }
+
+        /* Validate the Resource Checksum */
+
+        if (AcpiUtGetResourceType (Aml) == ACPI_RESOURCE_NAME_END_TAG)
+        {
+            /*
+             * There must be at least one more byte in the buffer for
+             * the 2nd byte of the EndTag
+             */
+            if (Remained < 2)
+            {
+                Status = AE_AML_INVALID_RESOURCE_LENGTH;
+                goto ExitWalk;
+            }
+
+            /*
+             * Don't attempt to perform any validation on the 2nd byte.
+             * Although all known ASL compilers insert a zero for the 2nd
+             * byte, it can also be a checksum (as per the ACPI spec),
+             * and this is occasionally seen in the field. July 2017.
+             */
+        }
 
         /* Invoke the user function */
 
@@ -342,7 +363,7 @@ AcpiUtWalkAmlResources (
                 Aml, Length, Offset, ResourceIndex, Context);
             if (ACPI_FAILURE (Status))
             {
-                return_ACPI_STATUS (Status);
+                goto ExitWalk;
             }
         }
 
@@ -350,32 +371,10 @@ AcpiUtWalkAmlResources (
 
         if (AcpiUtGetResourceType (Aml) == ACPI_RESOURCE_NAME_END_TAG)
         {
-            /*
-             * There must be at least one more byte in the buffer for
-             * the 2nd byte of the EndTag
-             */
-            if ((Aml + 1) >= EndAml)
-            {
-                return_ACPI_STATUS (AE_AML_NO_RESOURCE_END_TAG);
-            }
-
-            /*
-             * Don't attempt to perform any validation on the 2nd byte.
-             * Although all known ASL compilers insert a zero for the 2nd
-             * byte, it can also be a checksum (as per the ACPI spec),
-             * and this is occasionally seen in the field. July 2017.
-             */
-
-            /* Return the pointer to the EndTag if requested */
-
-            if (!UserFunction)
-            {
-                *Context = Aml;
-            }
-
             /* Normal exit */
 
-            return_ACPI_STATUS (AE_OK);
+            Status = AE_OK;
+            goto ExitWalk;
         }
 
         Aml += Length;
@@ -392,11 +391,14 @@ AcpiUtWalkAmlResources (
         Status = UserFunction (EndTag, 2, Offset, ResourceIndex, Context);
         if (ACPI_FAILURE (Status))
         {
-            return_ACPI_STATUS (Status);
+            goto ExitWalk;
         }
     }
+    Status = AE_AML_NO_RESOURCE_END_TAG;
 
-    return_ACPI_STATUS (AE_AML_NO_RESOURCE_END_TAG);
+ExitWalk:
+    *Context = Aml;
+    return_ACPI_STATUS (Status);
 }
 
 
@@ -735,7 +737,7 @@ AcpiUtGetDescriptorLength (
  * RETURN:      Status, pointer to the end tag
  *
  * DESCRIPTION: Find the EndTag resource descriptor in an AML resource template
- *              Note: allows a buffer length of zero.
+ *              Note: EndTag is allowed to be missing from the buffer object.
  *
  ******************************************************************************/
 
@@ -750,18 +752,16 @@ AcpiUtGetResourceEndTag (
     ACPI_FUNCTION_TRACE (UtGetResourceEndTag);
 
 
-    /* Allow a buffer length of zero */
-
-    if (!ObjDesc->Buffer.Length)
-    {
-        *EndTag = ObjDesc->Buffer.Pointer;
-        return_ACPI_STATUS (AE_OK);
-    }
-
     /* Validate the template and get a pointer to the EndTag */
 
     Status = AcpiUtWalkAmlResources (NULL, ObjDesc->Buffer.Pointer,
         ObjDesc->Buffer.Length, NULL, (void **) EndTag);
 
+    /* Allow Buffers to be used to generate ResourceTemplates */
+
+    if (Status == AE_AML_NO_RESOURCE_END_TAG)
+    {
+        Status = AE_OK;
+    }
     return_ACPI_STATUS (Status);
 }

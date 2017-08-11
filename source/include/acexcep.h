@@ -308,8 +308,9 @@ typedef struct acpi_exception_info
 #define AE_AML_INFINITE_LOOP            EXCEP_AML (0x0021)
 #define AE_AML_UNINITIALIZED_NODE       EXCEP_AML (0x0022)
 #define AE_AML_TARGET_TYPE              EXCEP_AML (0x0023)
+#define AE_AML_INVALID_RESOURCE_LENGTH  EXCEP_AML (0x0024)
 
-#define AE_CODE_AML_MAX                 0x0023
+#define AE_CODE_AML_MAX                 0x0024
 
 
 /*
@@ -435,7 +436,8 @@ static const ACPI_EXCEPTION_INFO    AcpiGbl_ExceptionNames_Aml[] =
     EXCEP_TXT ("AE_AML_ILLEGAL_ADDRESS",        "A memory, I/O, or PCI configuration address is invalid"),
     EXCEP_TXT ("AE_AML_INFINITE_LOOP",          "An apparent infinite AML While loop, method was aborted"),
     EXCEP_TXT ("AE_AML_UNINITIALIZED_NODE",     "A namespace node is uninitialized or unresolved"),
-    EXCEP_TXT ("AE_AML_TARGET_TYPE",            "A target operand of an incorrect type was encountered")
+    EXCEP_TXT ("AE_AML_TARGET_TYPE",            "A target operand of an incorrect type was encountered"),
+    EXCEP_TXT ("AE_AML_INVALID_RESOURCE_LENGTH","Invalid resource length in resource list")
 };
 
 static const ACPI_EXCEPTION_INFO    AcpiGbl_ExceptionNames_Ctrl[] =
