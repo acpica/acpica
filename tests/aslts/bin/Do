@@ -320,7 +320,43 @@ make_target()
 
 make_install()
 {
-	make_target install "$1" "$2"
+	local res=0 nres=0
+
+	echo $1 $2 $ENABLENORM32
+	if [ $ENABLENORM32 != 0 ]; then
+		echo "Make n32"
+		make_target install_n32 "$1" "$2"
+		nres=$?
+		if [ $nres -ne 0 ]; then
+			res=$nres
+		fi
+	fi
+	if [ $ENABLENORM64 != 0 ]; then
+		echo "Make n64"
+		make_target install_n64 "$1" "$2"
+		nres=$?
+		if [ $nres -ne 0 ]; then
+			res=$nres
+		fi
+	fi
+	if [ $ENABLEOPT32 != 0 ]; then
+		echo "Make s32"
+		make_target install_s32 "$1" "$2"
+		nres=$?
+		if [ $nres -ne 0 ]; then
+			res=$nres
+		fi
+	fi
+	if [ $ENABLEOPT64 != 0 ]; then
+		echo "Make s64"
+		make_target install_s64 "$1" "$2"
+		nres=$?
+		if [ $nres -ne 0 ]; then
+			res=$nres
+		fi
+	fi
+
+	return $res
 }
 
 # Make-install all the provided test cases
@@ -458,6 +494,16 @@ run_asl_compiler()
 {
 	local nparam=$2 list="$3" execonly=$4
 	local action=100
+
+	# It's better to split this function into a special 'asltscomp'
+	# script. For now, still uses it as an inline function.
+	RESET_SETTINGS
+	INIT_ALL_AVAILABLE_CASES
+	INIT_ALL_AVAILABLE_MODES
+	INIT_SET_OF_TEST_CASES
+	INIT_SET_OF_TEST_MODES
+	INIT_LOG_RESULTS
+	INIT_MEM_STAT
 
 	if [ $nparam -le 1 ]; then
 		usage
