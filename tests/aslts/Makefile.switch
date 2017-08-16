@@ -1,10 +1,24 @@
 # common switch make
+# Two level hierarchy of compilation:
+# optimization & (32/64 mode).
+#
+#  Directory |           Flags
+#            |---------------------------
+#            | optimization |  32/64 mode
+# ---------------------------------------
+#    opt/32  |              |  -r 1
+#    opt/64  |              |  -r 2
+#   nopt/32  |  -oa         |  -r 1
+#   nopt/64  |  -oa         |  -r 2
 
 all:	${MDIRS}
 ${MDIRS}: FORCE
-	@cd $@; pwd; make
+	@cd $@; pwd; make all ASLTS_ASLFLAGS="-oa -r 1"
+	@cd $@; pwd; make all ASLTS_ASLFLAGS="-oa -r 2"
+	@cd $@; pwd; make all ASLTS_ASLFLAGS="-r 1"
+	@cd $@; pwd; make all ASLTS_ASLFLAGS="-r 2"
 
-install:	FORCE
+__install:	FORCE
 		@r=0; set -e; for d in ${MDIRS}; do \
 			(cd $$d; \
 			if [ $$? -ne 0 ]; then \
@@ -12,7 +26,7 @@ install:	FORCE
 			else \
 				pwd; \
 				>&2 echo "Begin compiling test package: [$$d]"; \
-				if ($(MAKE) install); then \
+				if ($(MAKE) __install); then \
 					:; \
 				else \
 					r=1; \
@@ -24,6 +38,17 @@ install:	FORCE
 		fi; \
 		>&2 echo "Compiled test package: [$$d]"; \
 		done
+
+install_n32:
+	$(MAKE) __install ASLTS_AMLDIR=nopt/32 ASLTS_ASLFLAGS="-oa -r 1"
+install_n64:
+	$(MAKE) __install ASLTS_AMLDIR=nopt/64 ASLTS_ASLFLAGS="-oa -r 2"
+install_s32:
+	$(MAKE) __install ASLTS_AMLDIR=opt/32 ASLTS_ASLFLAGS="-r 1"
+install_s64:
+	$(MAKE) __install ASLTS_AMLDIR=opt/64 ASLTS_ASLFLAGS="-r 2"
+
+install:	install_n32 install_n64 install_s32 install_s64
 
 clean:	FORCE
 		@for d in ${MDIRS}; do \

@@ -212,42 +212,46 @@ get_collection_opcode()
 {
 	local rval=0
 
-	echo $FUNC_COLL | grep $1 > /dev/null
+	if [ -z $1 ]; then
+		return $COLLS_NUM
+	fi
+
+	echo $FUNC_COLL | grep -w $1 > /dev/null
 	if [ $? -eq 0 ]; then
 		return $FUNC_COLL_OP
 	fi
 
-	echo $CPLX_COLL | grep $1 > /dev/null
+	echo $CPLX_COLL | grep -w $1 > /dev/null
 	if [ $? -eq 0 ]; then
 		return $CPLX_COLL_OP
 	fi
 
-	echo $EXCP_COLL | grep $1 > /dev/null
+	echo $EXCP_COLL | grep -w $1 > /dev/null
 	if [ $? -eq 0 ]; then
 		return $EXCP_COLL_OP
 	fi
 
-	echo $BDEMO_COLL | grep $1 > /dev/null
+	echo $BDEMO_COLL | grep -w $1 > /dev/null
 	if [ $? -eq 0 ]; then
 		return $BDEMO_COLL_OP
 	fi
 
-	echo $SERV_COLL | grep $1 > /dev/null
+	echo $SERV_COLL | grep -w $1 > /dev/null
 	if [ $? -eq 0 ]; then
 		return $SERV_COLL_OP
 	fi
 
-	echo $MT_COLL | grep $1 > /dev/null
+	echo $MT_COLL | grep -w $1 > /dev/null
 	if [ $? -eq 0 ]; then
 		return $MT_COLL_OP
 	fi
 
-	echo $MS_IDENT_COLL | grep $1 > /dev/null
+	echo $MS_IDENT_COLL | grep -w $1 > /dev/null
 	if [ $? -eq 0 ]; then
 		return $MS_IDENT_COLL_OP
 	fi
 
-	echo $IMPL_COLL | grep $1 > /dev/null
+	echo $IMPL_COLL | grep -w $1 > /dev/null
 	if [ $? -eq 0 ]; then
 		return $IMPL_COLL_OP
 	fi
