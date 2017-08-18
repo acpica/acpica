@@ -1004,11 +1004,11 @@ UtAttachNamepathToOwner (
  *
  * FUNCTION:    UtDoConstant
  *
- * PARAMETERS:  String              - Hexadecimal or decimal string
+ * PARAMETERS:  String              - Hex/Decimal/Octal
  *
  * RETURN:      Converted Integer
  *
- * DESCRIPTION: Convert a string to an integer, with error checking.
+ * DESCRIPTION: Convert a string to an integer, with overflow/error checking.
  *
  ******************************************************************************/
 
@@ -1017,17 +1017,18 @@ UtDoConstant (
     char                    *String)
 {
     ACPI_STATUS             Status;
-    UINT64                  Converted;
+    UINT64                  ConvertedInteger;
     char                    ErrBuf[64];
 
 
-    Status = AcpiUtStrtoul64 (String, ACPI_STRTOUL_64BIT, &Converted);
+    Status = AcpiUtStrtoul64 (String, &ConvertedInteger);
     if (ACPI_FAILURE (Status))
     {
-        sprintf (ErrBuf, "%s %s\n", "Conversion error:",
+        sprintf (ErrBuf, "%u%s %s\n", AcpiGbl_IntegerBitWidth,
+            "-bit Integer conversion error:",
             AcpiFormatException (Status));
         AslCompilererror (ErrBuf);
     }
 
-    return (Converted);
+    return (ConvertedInteger);
 }
