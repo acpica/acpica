@@ -1,6 +1,6 @@
 /*******************************************************************************
  *
- * Module Name: utstrsuppt - string-to-integer conversion support functions
+ * Module Name: utstrsuppt - Support functions for string-to-integer conversion
  *
  ******************************************************************************/
 
@@ -207,7 +207,7 @@ AcpiUtConvertOctalString (
 
     while (*String)
     {
-        /* Must be ASCII 0-7, otherwise terminate with no error */
+        /* Character must be ASCII 0-7, otherwise terminate with no error */
 
         if (!(ACPI_IS_OCTAL_DIGIT (*String)))
         {
@@ -263,7 +263,7 @@ AcpiUtConvertDecimalString (
 
     while (*String)
     {
-        /* Must be ASCII 0-9, otherwise terminate with no error */
+        /* Character must be ASCII 0-9, otherwise terminate with no error */
 
         if (!isdigit (*String))
         {
@@ -351,12 +351,12 @@ AcpiUtConvertHexString (
  *
  * PARAMETERS:  String                  - Pointer to input ASCII string
  *
- * RETURN:      Next character after the leading zeros. This behavior may be
- *              Used by the caller to detect end-of-string.
+ * RETURN:      Next character after any leading zeros. This character may be
+ *              used by the caller to detect end-of-string.
  *
- * DESCRIPTION: Remove all leading zeros in the input string. Return the
- *              next character after the final zero to check for the end
- *              of the string (NULL terminator).
+ * DESCRIPTION: Remove any leading zeros in the input string. Return the
+ *              next character after the final ASCII zero to enable the caller
+ *              to check for the end of the string (NULL terminator).
  *
  ******************************************************************************/
 
@@ -364,7 +364,6 @@ char
 AcpiUtRemoveLeadingZeros (
     char                    **String)
 {
-    /* Skip all leading zeros */
 
     while (**String == ACPI_ASCII_ZERO)
     {
@@ -381,9 +380,9 @@ AcpiUtRemoveLeadingZeros (
  *
  * PARAMETERS:  String                  - Pointer to input ASCII string
  *
- * RETURN:      TRUE if a 0x prefix was found
+ * RETURN:      TRUE if a "0x" prefix was found at the start of the string
  *
- * DESCRIPTION: Detect and remove a hex 0x prefix
+ * DESCRIPTION: Detect and remove a hex "0x" prefix
  *
  ******************************************************************************/
 
@@ -409,7 +408,8 @@ AcpiUtDetectHexPrefix (
  *
  * PARAMETERS:  String                  - Pointer to input ASCII string
  *
- * RETURN:      True if an octal 0 prefix was found
+ * RETURN:      True if an octal "0" prefix was found at the start of the
+ *              string
  *
  * DESCRIPTION: Detect and remove an octal prefix (zero)
  *
@@ -435,23 +435,22 @@ AcpiUtDetectOctalPrefix (
  * FUNCTION:    AcpiUtInsertDigit
  *
  * PARAMETERS:  AccumulatedValue        - Current value of the integer value
- *                                        accumulator. The New value is
+ *                                        accumulator. The new value is
  *                                        returned here.
- *              Base                    - Radix, either 8/10/16 supported
+ *              Base                    - Radix, either 8/10/16
  *              AsciiDigit              - ASCII single digit to be inserted
  *
- * RETURN:      Status and result of convert/insert operation. The only
- *              exception is numeric overflow of either the multiply or the
- *              add operations.
+ * RETURN:      Status and result of the convert/insert operation. The only
+ *              possible returned exception code is numeric overflow of
+ *              either the multiply or add conversion operations.
  *
  * DESCRIPTION: Generic conversion and insertion function for all bases:
  *
- *              1) Multiply the current accumulated converted value by the
+ *              1) Multiply the current accumulated/converted value by the
  *              base in order to make room for the new character.
  *
- *              2) Add the current accumulated/converted value the new
- *              character (after the character has been converted to a binary
- *              value).
+ *              2) Convert the new character to binary and add it to the
+ *              current accumulated value.
  *
  *              Note: The only possible exception indicates an integer
  *              overflow (AE_NUMERIC_OVERFLOW)
@@ -476,16 +475,12 @@ AcpiUtInsertDigit (
         return (Status);
     }
 
-    /* Add in the new digit, and store to the caller's accumulated value */
+    /* Add in the new digit, and store the sum to the accumulated value */
 
     Status = AcpiUtStrtoulAdd64 (Product, AcpiUtAsciiCharToHex (AsciiDigit),
         AccumulatedValue);
-    if (ACPI_FAILURE (Status))
-    {
-        return (Status);
-    }
 
-    return (AE_OK);
+    return (Status);
 }
 
 
