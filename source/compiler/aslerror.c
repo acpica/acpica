@@ -949,9 +949,9 @@ AslDisableException (
 
     MessageId = (UINT32) strtoul (MessageIdString, NULL, 0);
 
-    if ((MessageId < 2000) || (MessageId > 5999))
+    if ((MessageId < 2000) || (MessageId > 6999))
     {
-        printf ("\"%s\" is not a valid warning/remark ID\n",
+        printf ("\"%s\" is not a valid warning/remark/error ID\n",
             MessageIdString);
         return (AE_BAD_PARAMETER);
     }
@@ -1050,8 +1050,9 @@ AslIsExceptionDisabled (
 
     case ASL_WARNING:
     case ASL_REMARK:
+    case ASL_ERROR:
         /*
-         * Ignore this warning/remark if it has been disabled by
+         * Ignore this error/warning/remark if it has been disabled by
          * the user (-vw option)
          */
         EncodedMessageId = AeBuildFullExceptionCode (Level, MessageId);
