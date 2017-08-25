@@ -757,6 +757,11 @@ AslCommonError (
     ASL_ERROR_MSG           *Enode;
 
 
+    if (AslIsExceptionIgnored (Level, MessageId))
+    {
+        return;
+    }
+
     Enode = UtLocalCalloc (sizeof (ASL_ERROR_MSG));
 
     if (ExtraMessage)
@@ -1098,14 +1103,6 @@ AslError (
     ACPI_PARSE_OBJECT       *Op,
     char                    *ExtraMessage)
 {
-
-    /* Check if user wants to ignore this exception */
-
-    if (AslIsExceptionIgnored (Level, MessageId))
-    {
-        return;
-    }
-
     if (Op)
     {
         AslCommonError (Level, MessageId, Op->Asl.LineNumber,
