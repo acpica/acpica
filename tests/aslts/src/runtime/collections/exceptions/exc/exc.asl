@@ -794,6 +794,9 @@ Method(m154,, Serialized)
  * Updated specs 12.03.05:
  * "Note: the first non-hex character terminates the conversion
  * without error, and a '0x' prefix is not allowed."
+ *
+ * Update 08.10.17
+ * Allow '0x' prefix for usability and clarity.
  */
 Method(m155,, Serialized)
 {
@@ -810,7 +813,7 @@ Method(m155,, Serialized)
 	 * New:
 	 */
 	CH03(ts, z058, 106, __LINE__, 0)
-	if (LNotEqual(Local0, 0)) {
+	if (LNotEqual(Local0, 0x1111)) {
 		// Bug 63, Bugzilla 5329.
 		err(ts, z058, __LINE__, 0, 0, Local0, 0)
 	}
