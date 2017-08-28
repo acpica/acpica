@@ -116,15 +116,13 @@ run_aslts() {
 	version=`$ASL | grep version | awk '{print $5}'`
 	rm -rf $ASLTSDIR/tmp/aml/$version
 
-	if [ "x$TEST_CASES" = "x" ]; then
-		# Compile all ASL test modules
-		Do 0 aslts $EXECONLY
-		if [ $? -ne 0 ]; then
-			echo "ASLTS Compile Failure"
-			exit 1
-		fi
-	else
-		Do 0 $TEST_CASES $EXECONLY
+	if [ "x$TEST_MODES" = "x" ]; then
+		TEST_MODES="n32 n64 o32 o64"
+	fi
+	Do 0 $TEST_MODES $TEST_CASES $EXECONLY
+	if [ $? -ne 0 ]; then
+		echo "ASLTS Compile Failure"
+		exit 1
 	fi
 
 	# Execute the test suite
