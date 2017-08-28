@@ -297,21 +297,23 @@ do_bdemo_table()
 
 make_target()
 {
-	local dir restore_dir mode options
+	local dir restore_dir mode options aslversion
 
 	restore_dir=$PWD
 	target=$1
 	dir="$2"
 	execonly=$3
 	mode=$4
+	aslversion=`get_iasl_version`
 
 	cd "$dir"
 
 	echo "Running make $target from $dir"
+	options="ASLTS_VER=$aslversion"
 	if [ "$execonly" = "yes" ]; then
-		options="OPT=1"
+		options="$options OPT=1"
 	else
-		options="OPT=0"
+		options="$options OPT=0"
 	fi
 	if [ ! -z $mode ]; then
 		options="$options ASLTS_MODE=$mode"
@@ -545,6 +547,28 @@ run_asl_compiler()
 		make_install_3 "$1" "$list" "$execonly"
 	else
 		do_exit 1 "Bad parameters 2"
+	fi
+}
+
+get_iasl_version()
+{
+	local x version
+
+	if [ ! -f $ASL ]; then
+		do_exit 1 "Bad iASL 1: <$ASL> does not exist"
+	else
+		x=`$ASL -version | grep "Compiler/Disassembler version"`
+		if [ x"$x" == x ]; then
+			version=00000000
+			do_exit 1 "Bad iASL 2: bad signon <$ASL>"
+		else
+			version=`echo "$x" | awk -F" " '{print $5}'`
+			if [ x"$version" == x ]; then
+				do_exit 1 "Bad iASL 3: could not get version <$ASL>"
+			else
+				echo "$version"
+			fi
+		fi
 	fi
 }
 
