@@ -297,21 +297,26 @@ do_bdemo_table()
 
 make_target()
 {
-	local dir restore_dir
+	local dir restore_dir mode options
 
 	restore_dir=$PWD
 	target=$1
 	dir="$2"
 	execonly=$3
+	mode=$4
 
 	cd "$dir"
 
 	echo "Running make $target from $dir"
 	if [ "$execonly" = "yes" ]; then
-		make $target OPT=1 > /dev/null
+		options="OPT=1"
 	else
-		make $target OPT=0 > /dev/null
+		options="OPT=0"
 	fi
+	if [ ! -z $mode ]; then
+		options="$options ASLTS_MODE=$mode"
+	fi
+	make $target $options > /dev/null
 	res=$?
 
 	cd "$restore_dir"
@@ -320,7 +325,43 @@ make_target()
 
 make_install()
 {
-	make_target install "$1" "$2"
+	local res=0 nres=0
+
+	echo $1 $2 $ENABLENORM32
+	if [ $ENABLENORM32 != 0 ]; then
+		echo "Make n32"
+		make_target install "$1" "$2" "n32"
+		nres=$?
+		if [ $nres -ne 0 ]; then
+			res=$nres
+		fi
+	fi
+	if [ $ENABLENORM64 != 0 ]; then
+		echo "Make n64"
+		make_target install "$1" "$2" "n64"
+		nres=$?
+		if [ $nres -ne 0 ]; then
+			res=$nres
+		fi
+	fi
+	if [ $ENABLEOPT32 != 0 ]; then
+		echo "Make s32"
+		make_target install "$1" "$2" "o32"
+		nres=$?
+		if [ $nres -ne 0 ]; then
+			res=$nres
+		fi
+	fi
+	if [ $ENABLEOPT64 != 0 ]; then
+		echo "Make s64"
+		make_target install "$1" "$2" "o64"
+		nres=$?
+		if [ $nres -ne 0 ]; then
+			res=$nres
+		fi
+	fi
+
+	return $res
 }
 
 # Make-install all the provided test cases
@@ -458,6 +499,16 @@ run_asl_compiler()
 {
 	local nparam=$2 list="$3" execonly=$4
 	local action=100
+
+	# It's better to split this function into a special 'asltscomp'
+	# script. For now, still uses it as an inline function.
+	RESET_SETTINGS
+	INIT_ALL_AVAILABLE_CASES
+	INIT_ALL_AVAILABLE_MODES
+	INIT_SET_OF_TEST_CASES
+	INIT_SET_OF_TEST_MODES
+	INIT_LOG_RESULTS
+	INIT_MEM_STAT
 
 	if [ $nparam -le 1 ]; then
 		usage
