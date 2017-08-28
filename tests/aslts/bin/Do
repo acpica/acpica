@@ -295,31 +295,43 @@ do_bdemo_table()
 	bdemostabs "$DIR0" "$DIR1" "$ALLBUGS" "$KBSUM" "$LBSUM" "$BUG_STATE_DIR"
 }
 
+make_target()
+{
+	local dir restore_dir
+
+	restore_dir=$PWD
+	target=$1
+	dir="$2"
+	execonly=$3
+
+	cd "$dir"
+
+	echo "Running make $target from $dir"
+	if [ "$execonly" = "yes" ]; then
+		make $target OPT=1 > /dev/null
+	else
+		make $target OPT=0 > /dev/null
+	fi
+	res=$?
+
+	cd "$restore_dir"
+	return $res
+}
+
+make_install()
+{
+	make_target install "$1" "$2"
+}
 
 # Make-install all the provided test cases
 # (make install from aslts directory)
 # arg1 - root directory of aslts
 make_install_1()
 {
-	local dir restore_dir diasm
-
-	restore_dir=$PWD
-	dir="$1"
-	execonly=$2
-
-	cd "$dir"
-
-	echo "Running make install from $dir"
-	if [ "$execonly" = "yes" ]; then
-		make install OPT=1 > /dev/null
-	else
-		make install OPT=0 > /dev/null
-	fi
-
+	make_install "$1" "$2"
 	if [ $? -ne 0 ]; then
 		do_exit 1 "make install error"
 	fi
-	cd "$restore_dir"
 }
 
 # Check parameters to be the names of test
@@ -347,13 +359,7 @@ do_test_cases_make_install()
 		check_dir "$dir"
 
 		if [ $3 != 0 ]; then
-			cd "$dir"
-			if [ "x$execonly" = "xyes" ]; then
-				make install OPT=1 > /dev/null
-			else
-				make install OPT=0 > /dev/null
-			fi
-
+			make_install "$dir" "$execonly"
 			if [ $? -ne 0 ]; then
 				errors=1
 			fi
@@ -361,8 +367,6 @@ do_test_cases_make_install()
 	done
 
 	cd "$restore_dir"
-
-	return $errors
 }
 
 # Make-install a list of specified test cases
@@ -404,12 +408,7 @@ do_collections_make_install()
 		check_dir "$dir"
 
 		if [ $3 != 0 ]; then
-			cd "$dir"
-			if [ "$execonly" = "yes" ]; then
-				make install OPT=1 > /dev/null
-			else
-				make install OPT=0 > /dev/null
-			fi
+			make_install "$dir" "$execonly"
 			if [ $? -ne 0 ]; then
 				errors=1
 			fi
