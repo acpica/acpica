@@ -600,7 +600,7 @@ main (
 
     /* ACPICA runtime configuration */
 
-    AcpiGbl_MaxLoopIterations = 400;
+    AcpiGbl_MaxLoopIterations = AcpiGbl_MaxLoopIterations;
 
 
     /* Initialize the AML debugger */
