@@ -302,19 +302,13 @@ make_target()
 	restore_dir=$PWD
 	target=$1
 	dir="$2"
-	execonly=$3
-	mode=$4
+	mode=$3
 	aslversion=`get_iasl_version`
 
 	cd "$dir"
 
 	echo "Running make $target from $dir"
 	options="ASLTS_VER=$aslversion"
-	if [ "$execonly" = "yes" ]; then
-		options="$options OPT=1"
-	else
-		options="$options OPT=0"
-	fi
 	if [ ! -z $mode ]; then
 		options="$options ASLTS_MODE=$mode"
 	fi
@@ -328,11 +322,12 @@ make_target()
 make_install()
 {
 	local res=0 nres=0
+	execonly=$2
 
 	echo $1 $2 $ENABLENORM32
 	if [ $ENABLENORM32 != 0 ]; then
 		echo "Make n32"
-		make_target install "$1" "$2" "n32"
+		make_target install "$1" "n32"
 		nres=$?
 		if [ $nres -ne 0 ]; then
 			res=$nres
@@ -340,7 +335,7 @@ make_install()
 	fi
 	if [ $ENABLENORM64 != 0 ]; then
 		echo "Make n64"
-		make_target install "$1" "$2" "n64"
+		make_target install "$1" "n64"
 		nres=$?
 		if [ $nres -ne 0 ]; then
 			res=$nres
@@ -348,7 +343,7 @@ make_install()
 	fi
 	if [ $ENABLEOPT32 != 0 ]; then
 		echo "Make s32"
-		make_target install "$1" "$2" "o32"
+		make_target install "$1" "o32"
 		nres=$?
 		if [ $nres -ne 0 ]; then
 			res=$nres
@@ -356,7 +351,21 @@ make_install()
 	fi
 	if [ $ENABLEOPT64 != 0 ]; then
 		echo "Make s64"
-		make_target install "$1" "$2" "o64"
+		make_target install "$1" "o64"
+		nres=$?
+		if [ $nres -ne 0 ]; then
+			res=$nres
+		fi
+	fi
+	if [ "x$execonly" = "xno" ]; then
+		echo "Make ASL plus"
+		make_target install "$1" "aslplus"
+		nres=$?
+		if [ $nres -ne 0 ]; then
+			res=$nres
+		fi
+		echo "Make ASL minus"
+		make_target install "$1" "aslminus"
 		nres=$?
 		if [ $nres -ne 0 ]; then
 			res=$nres
