@@ -327,8 +327,6 @@ binary_compare()
 
 	disasm_compile_dir="$ASLTSDIR/tmp/aml/$aslversion/$mode"
 	normal_compile_dir="$ASLTSDIR/tmp/aml/$aslversion/nopt/64"
-	echo "disasm path $disasm_compile_dir"
-	echo "normal path $normal_compile_dir"
 
 	if [ ! -d $disasm_compile_dir ]; then
 		echo "$dism_compile_dir does not exist. Aborting binary compare"
@@ -355,7 +353,6 @@ make_install()
 	local res=0 nres=0
 	execonly=$2
 
-	echo $1 $2 $ENABLENORM32
 	if [ $ENABLENORM32 != 0 ]; then
 		echo "Make n32"
 		make_target install "$1" "n32"
