@@ -42,7 +42,8 @@ endif
 endif
 ASLTS_VER ?= $(ASLTS_VER)
 
-COMMON_ASL_FLAGS= "-of -cr -vs -l -sc -sa -ic -ta -ts -so -lm -ln -ls -li"
+COMMON_NO_OUTPUT_ASL_FLAGS= "-of -cr -vs"
+COMMON_ASL_FLAGS= $(COMMON_NO_OUTPUT_ASL_FLAGS)" -l -sc -sa -ic -ta -ts -so -lm -ln -ls -li"
 
 COMPILER_LOG="$(TOP)/tmp/aml/$(ASLTS_VER)/compile.txt"
 COMPILER_ERROR_LOG="$(TOP)/tmp/aml/$(ASLTS_VER)/error.txt"
