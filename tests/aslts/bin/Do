@@ -319,6 +319,37 @@ make_target()
 	return $res
 }
 
+
+binary_compare()
+{
+	mode=$1
+	aslversion=`get_iasl_version`
+
+	disasm_compile_dir="$ASLTSDIR/tmp/aml/$aslversion/$mode"
+	normal_compile_dir="$ASLTSDIR/tmp/aml/$aslversion/nopt/64"
+	echo "disasm path $disasm_compile_dir"
+	echo "normal path $normal_compile_dir"
+
+	if [ ! -d $disasm_compile_dir ]; then
+		echo "$dism_compile_dir does not exist. Aborting binary compare"
+		return;
+	fi
+	if [ ! -d $normal_compile_dir ]; then
+		echo "$normal_compile_dir does not exist. Aborting binary compare"
+		return;
+	fi
+	for f in $disasm_compile_dir/*
+	do
+		filename=`basename $f`
+		acpibin -a "$f" "$normal_compile_dir/$filename" > /dev/null
+		if [ $? -ne 0 ]; then
+			echo "[[ Error: $mode Binary compare for $filename failed ]]"
+		else
+			echo "$mode Binary compare for $filename passed"
+		fi
+	done
+}
+
 make_install()
 {
 	local res=0 nres=0
@@ -358,17 +389,32 @@ make_install()
 		fi
 	fi
 	if [ "x$execonly" = "xno" ]; then
+		# for binary compare, we need to compare with normal 64 bit aml
+                # files build n64 mode normal 64 bit aml files build n64 mode
+		# if this test run does not include it.
+		if [ $ENABLENORM64 -eq 0 ]; then
+			echo "Make n64"
+			make_target install "$1" "n64"
+			nres=$?
+			if [ $nres -ne 0 ]; then
+				res=$nres
+			fi
+		fi
 		echo "Make ASL plus"
 		make_target install "$1" "aslplus"
 		nres=$?
+		binary_compare "aslplus"
+		nres=$(($nres+ $?))
 		if [ $nres -ne 0 ]; then
 			res=$nres
 		fi
 		echo "Make ASL minus"
 		make_target install "$1" "aslminus"
 		nres=$?
+		binary_compare "aslplus"
+		nres=$(($nres+ $?))
 		if [ $nres -ne 0 ]; then
-			res=$nres
+			res=$(($res + $nres))
 		fi
 	fi
 
