@@ -376,6 +376,35 @@ AcpiUtRemoveLeadingZeros (
 
 /*******************************************************************************
  *
+ * FUNCTION:    AcpiUtRemoveWhitespace
+ *
+ * PARAMETERS:  String                  - Pointer to input ASCII string
+ *
+ * RETURN:      Next character after any whitespace. This character may be
+ *              used by the caller to detect end-of-string.
+ *
+ * DESCRIPTION: Remove any leading whitespace in the input string. Return the
+ *              next character after the final ASCII zero to enable the caller
+ *              to check for the end of the string (NULL terminator).
+ *
+ ******************************************************************************/
+
+char
+AcpiUtRemoveWhitespace (
+    char                    **String)
+{
+
+    while (isspace ((UINT8) **String))
+    {
+        *String += 1;
+    }
+
+    return (**String);
+}
+
+
+/*******************************************************************************
+ *
  * FUNCTION:    AcpiUtDetectHexPrefix
  *
  * PARAMETERS:  String                  - Pointer to input ASCII string

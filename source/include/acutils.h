@@ -354,6 +354,10 @@ AcpiUtConvertHexString (
     UINT64                  *ReturnValuePtr);
 
 char
+AcpiUtRemoveWhitespace (
+    char                    **String);
+
+char
 AcpiUtRemoveLeadingZeros (
     char                    **String);
 

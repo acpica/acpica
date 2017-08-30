@@ -1024,8 +1024,7 @@ UtDoConstant (
     Status = AcpiUtStrtoul64 (String, &ConvertedInteger);
     if (ACPI_FAILURE (Status))
     {
-        sprintf (ErrBuf, "%u%s %s\n", AcpiGbl_IntegerBitWidth,
-            "-bit Integer conversion error:",
+        sprintf (ErrBuf, "While creating 64-bit constant: %s\n",
             AcpiFormatException (Status));
 
         AslCommonError (ASL_ERROR, ASL_MSG_SYNTAX, Gbl_CurrentLineNumber,

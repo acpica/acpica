@@ -238,7 +238,7 @@ const char                      *AslCompilerMsgs [] =
 /*    ASL_MSG_HID_SUFFIX */                 "_HID suffix must be all hex digits",
 /*    ASL_MSG_INCLUDE_FILE_OPEN */          "Could not open include file",
 /*    ASL_MSG_INPUT_FILE_OPEN */            "Could not open input file",
-/*    ASL_MSG_INTEGER_LENGTH */             "64-bit integer in 32-bit table, truncating (DSDT or SSDT version < 2)",
+/*    ASL_MSG_INTEGER_LENGTH */             "Truncating 64-bit constant found in 32-bit table",
 /*    ASL_MSG_INTEGER_OPTIMIZATION */       "Integer optimized to single-byte AML opcode",
 /*    ASL_MSG_INTERRUPT_LIST */             "Too many interrupts (16 max)",
 /*    ASL_MSG_INTERRUPT_NUMBER */           "Invalid interrupt number (must be 0-15)",
