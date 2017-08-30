@@ -499,7 +499,7 @@ make_install_3()
 # arg3 - all parameters passed to Do utility
 run_asl_compiler()
 {
-	local nparam=$2 list="$3" execonly=$4
+	local list="$2" execonly=$3
 	local action=100
 
 	# It's better to split this function into a special 'asltscomp'
@@ -512,24 +512,11 @@ run_asl_compiler()
 	INIT_LOG_RESULTS
 	INIT_MEM_STAT
 
-	if [ $nparam -le 1 ]; then
-		usage
-		do_exit 1 "Bad parameters 0"
-	elif [ $list == ASLTS -o $list == aslts ]; then
-		if [ $nparam != 3 ]; then
-			usage
-			do_exit 1 "Bad parameters 1"
-		else
-			action=1
-		fi
+	if [ $list == ASLTS -o $list == aslts ]; then
+		action=1
 	elif [ $list == ALL -o $list == all ]; then
-		if [ $nparam -le 3 ]; then
-			usage
-			do_exit 1 "Bad parameters 2"
-		else
-			list=`echo "$3" | cut -c 7-`
-			action=3
-		fi
+		list=`echo "$3" | cut -c 7-`
+		action=3
 	else
 		action=2
 	fi
@@ -700,11 +687,11 @@ if [ $CMD == $ASLCOMPILE ]; then
 		fi
 		ENABLED_TMODES="$1 $ENABLED_TMODES"
 		shift 1
-		# Sort NPARAM
-		# NPARAM=$(($NPARAM - 1))
 	done
 	export ENABLED_TMODES
 
+	#NPARAM counts the number of enabled test cases
+	NPARAM=0
 	ENABLED_TCASES=
 	while :
 	do
@@ -714,22 +701,35 @@ if [ $CMD == $ASLCOMPILE ]; then
 		fi
 		ENABLED_TCASES="$1 $ENABLED_TCASES"
 		shift 1
-		# Sort NPARAM
-		# NPARAM=$(($NPARAM - 1))
+		NPARAM=$(($NPARAM + 1))
 	done
 	export ENABLED_TCASES
 
 	if [ "x$ENABLED_TCASES" == "x" ]; then
 		x=aslts
+		NPARAM=$(($NPARAM + 1))
 	else
 		x="$ENABLED_TCASES"
 	fi
-	# Sort NPARAM
-	# NPARAM=$(($NPARAM + 1))
+
+	if [ $NPARAM -le 0 ]; then
+		usage
+		do_exit 1 "Bad parameters 0"
+	elif [ $x == ASLTS -o $x == aslts ]; then
+		if [ $NPARAM != 1 ]; then
+			usage
+			do_exit 1 "Bad parameters 1"
+		fi
+	elif [ $x == ALL -o $x == all ]; then
+		if [ $NPARAM -le 0 ]; then
+			usage
+			do_exit 1 "Bad parameters 2"
+		fi
+	fi
+
 
 	EXECONLY=$1
-	>&2 echo "disassemble: $EXECONLY"
-	run_asl_compiler "$ASLTSDIR" $NPARAM "$x" "$EXECONLY"
+	run_asl_compiler "$ASLTSDIR" "$x" "$EXECONLY"
 
 elif [ $CMD == $RUNTESTS ]; then
 
