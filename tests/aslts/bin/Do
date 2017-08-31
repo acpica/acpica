@@ -295,31 +295,138 @@ do_bdemo_table()
 	bdemostabs "$DIR0" "$DIR1" "$ALLBUGS" "$KBSUM" "$LBSUM" "$BUG_STATE_DIR"
 }
 
+make_target()
+{
+	local dir restore_dir mode options aslversion
+
+	restore_dir=$PWD
+	target=$1
+	dir="$2"
+	mode=$3
+	aslversion=`get_iasl_version`
+
+	cd "$dir"
+
+	echo "Running make $target from $dir"
+	options="ASLTS_VER=$aslversion"
+	if [ ! -z $mode ]; then
+		options="$options ASLTS_MODE=$mode"
+	fi
+	make $target $options > /dev/null
+	res=$?
+
+	cd "$restore_dir"
+	return $res
+}
+
+
+binary_compare()
+{
+	mode=$1
+	aslversion=`get_iasl_version`
+
+	disasm_compile_dir="$ASLTSDIR/tmp/aml/$aslversion/$mode"
+	normal_compile_dir="$ASLTSDIR/tmp/aml/$aslversion/nopt/64"
+
+	if [ ! -d $disasm_compile_dir ]; then
+		echo "$dism_compile_dir does not exist. Aborting binary compare"
+		return;
+	fi
+	if [ ! -d $normal_compile_dir ]; then
+		echo "$normal_compile_dir does not exist. Aborting binary compare"
+		return;
+	fi
+	for f in $disasm_compile_dir/*
+	do
+		filename=`basename $f`
+		acpibin -a "$f" "$normal_compile_dir/$filename" > /dev/null
+		if [ $? -ne 0 ]; then
+			echo "[[ Error: $mode Binary compare for $filename failed ]]"
+		else
+			echo "$mode Binary compare for $filename passed"
+		fi
+	done
+}
+
+make_install()
+{
+	local res=0 nres=0
+	execonly=$2
+
+	if [ $ENABLENORM32 != 0 ]; then
+		echo "Make n32"
+		make_target install "$1" "n32"
+		nres=$?
+		if [ $nres -ne 0 ]; then
+			res=$nres
+		fi
+	fi
+	if [ $ENABLENORM64 != 0 ]; then
+		echo "Make n64"
+		make_target install "$1" "n64"
+		nres=$?
+		if [ $nres -ne 0 ]; then
+			res=$nres
+		fi
+	fi
+	if [ $ENABLEOPT32 != 0 ]; then
+		echo "Make s32"
+		make_target install "$1" "o32"
+		nres=$?
+		if [ $nres -ne 0 ]; then
+			res=$nres
+		fi
+	fi
+	if [ $ENABLEOPT64 != 0 ]; then
+		echo "Make s64"
+		make_target install "$1" "o64"
+		nres=$?
+		if [ $nres -ne 0 ]; then
+			res=$nres
+		fi
+	fi
+	if [ "x$execonly" = "xno" ]; then
+		# for binary compare, we need to compare with normal 64 bit aml
+                # files build n64 mode normal 64 bit aml files build n64 mode
+		# if this test run does not include it.
+		if [ $ENABLENORM64 -eq 0 ]; then
+			echo "Make n64"
+			make_target install "$1" "n64"
+			nres=$?
+			if [ $nres -ne 0 ]; then
+				res=$nres
+			fi
+		fi
+		echo "Make ASL plus"
+		make_target install "$1" "aslplus"
+		nres=$?
+		binary_compare "aslplus"
+		nres=$(($nres+ $?))
+		if [ $nres -ne 0 ]; then
+			res=$nres
+		fi
+		echo "Make ASL minus"
+		make_target install "$1" "aslminus"
+		nres=$?
+		binary_compare "aslplus"
+		nres=$(($nres+ $?))
+		if [ $nres -ne 0 ]; then
+			res=$(($res + $nres))
+		fi
+	fi
+
+	return $res
+}
 
 # Make-install all the provided test cases
 # (make install from aslts directory)
 # arg1 - root directory of aslts
 make_install_1()
 {
-	local dir restore_dir diasm
-
-	restore_dir=$PWD
-	dir="$1"
-	execonly=$2
-
-	cd "$dir"
-
-	echo "Running make install from $dir"
-	if [ "$execonly" = "yes" ]; then
-		make install OPT=1 > /dev/null
-	else
-		make install OPT=0 > /dev/null
-	fi
-
+	make_install "$1" "$2"
 	if [ $? -ne 0 ]; then
 		do_exit 1 "make install error"
 	fi
-	cd "$restore_dir"
 }
 
 # Check parameters to be the names of test
@@ -347,13 +454,7 @@ do_test_cases_make_install()
 		check_dir "$dir"
 
 		if [ $3 != 0 ]; then
-			cd "$dir"
-			if [ "x$execonly" = "xyes" ]; then
-				make install OPT=1 > /dev/null
-			else
-				make install OPT=0 > /dev/null
-			fi
-
+			make_install "$dir" "$execonly"
 			if [ $? -ne 0 ]; then
 				errors=1
 			fi
@@ -361,8 +462,6 @@ do_test_cases_make_install()
 	done
 
 	cd "$restore_dir"
-
-	return $errors
 }
 
 # Make-install a list of specified test cases
@@ -404,12 +503,7 @@ do_collections_make_install()
 		check_dir "$dir"
 
 		if [ $3 != 0 ]; then
-			cd "$dir"
-			if [ "$execonly" = "yes" ]; then
-				make install OPT=1 > /dev/null
-			else
-				make install OPT=0 > /dev/null
-			fi
+			make_install "$dir" "$execonly"
 			if [ $? -ne 0 ]; then
 				errors=1
 			fi
@@ -457,36 +551,30 @@ make_install_3()
 # arg3 - all parameters passed to Do utility
 run_asl_compiler()
 {
-	local lexem list nparam=$2 action=100 execonly=$4
+	local list="$2" execonly=$3
+	local action=100
 
-	lexem=`echo "$3" | awk '{ print $2}'`
+	# It's better to split this function into a special 'asltscomp'
+	# script. For now, still uses it as an inline function.
+	RESET_SETTINGS
+	INIT_ALL_AVAILABLE_CASES
+	INIT_ALL_AVAILABLE_MODES
+	INIT_SET_OF_TEST_CASES
+	INIT_SET_OF_TEST_MODES
+	INIT_LOG_RESULTS
+	INIT_MEM_STAT
 
-	if [ $nparam -le 1 ]; then
-		usage
-		do_exit 1 "Bad parameters 0"
-	elif [ $lexem == ASLTS -o $lexem == aslts ]; then
-		if [ $nparam != 3 ]; then
-			usage
-			do_exit 1 "Bad parameters 1"
-		else
-			action=1
-		fi
-	elif [ $lexem == ALL -o $lexem == all ]; then
-		if [ $nparam -le 3 ]; then
-			usage
-			do_exit 1 "Bad parameters 2"
-		else
-			list=`echo "$3" | cut -c 7-`
-			action=3
-		fi
+	if [ $list == ASLTS -o $list == aslts ]; then
+		action=1
+	elif [ $list == ALL -o $list == all ]; then
+		list=`echo "$3" | cut -c 7-`
+		action=3
 	else
 		action=2
-		list=`echo "$3" | cut -c 3-`
 	fi
 
-	# cut the last item from the list. It's a yes or no from execonly.
-	list=`echo $list | rev | cut -c 4- | rev `
-	>&2 echo "list of testcases: $list"
+	echo "list of testcases: $list"
+
 	if [ $action == 1 ]; then
 		echo "Make-install all the provided test cases"
 		make_install_1 "$1" "$execonly"
@@ -498,6 +586,28 @@ run_asl_compiler()
 		make_install_3 "$1" "$list" "$execonly"
 	else
 		do_exit 1 "Bad parameters 2"
+	fi
+}
+
+get_iasl_version()
+{
+	local x version
+
+	if [ ! -f $ASL ]; then
+		do_exit 1 "Bad iASL 1: <$ASL> does not exist"
+	else
+		x=`$ASL -version | grep "Compiler/Disassembler version"`
+		if [ x"$x" == x ]; then
+			version=00000000
+			do_exit 1 "Bad iASL 2: bad signon <$ASL>"
+		else
+			version=`echo "$x" | awk -F" " '{print $5}'`
+			if [ x"$version" == x ]; then
+				do_exit 1 "Bad iASL 3: could not get version <$ASL>"
+			else
+				echo "$version"
+			fi
+		fi
 	fi
 }
 
@@ -619,9 +729,59 @@ if [ $CMD == $ASLCOMPILE ]; then
 		do_exit 1 "Undefined ASL variable! Set it to pathname of ASL compiler."
 	fi
 
-	x="$@"
-	>&2 echo "disassemble: $EXECONLY"
-	run_asl_compiler "$ASLTSDIR" $NPARAM "$x" "$EXECONLY"
+	shift 1
+	ENABLED_TMODES=
+	while :
+	do
+		check_mode_id $1
+		if [ $? -eq 1 ]; then
+			break
+		fi
+		ENABLED_TMODES="$1 $ENABLED_TMODES"
+		shift 1
+	done
+	export ENABLED_TMODES
+
+	#NPARAM counts the number of enabled test cases
+	NPARAM=0
+	ENABLED_TCASES=
+	while :
+	do
+		get_collection_opcode $1
+		if [ $? -eq $COLLS_NUM ]; then
+			break
+		fi
+		ENABLED_TCASES="$1 $ENABLED_TCASES"
+		shift 1
+		NPARAM=$(($NPARAM + 1))
+	done
+	export ENABLED_TCASES
+
+	if [ "x$ENABLED_TCASES" == "x" ]; then
+		x=aslts
+		NPARAM=$(($NPARAM + 1))
+	else
+		x="$ENABLED_TCASES"
+	fi
+
+	if [ $NPARAM -le 0 ]; then
+		usage
+		do_exit 1 "Bad parameters 0"
+	elif [ $x == ASLTS -o $x == aslts ]; then
+		if [ $NPARAM != 1 ]; then
+			usage
+			do_exit 1 "Bad parameters 1"
+		fi
+	elif [ $x == ALL -o $x == all ]; then
+		if [ $NPARAM -le 0 ]; then
+			usage
+			do_exit 1 "Bad parameters 2"
+		fi
+	fi
+
+
+	EXECONLY=$1
+	run_asl_compiler "$ASLTSDIR" "$x" "$EXECONLY"
 
 elif [ $CMD == $RUNTESTS ]; then
 

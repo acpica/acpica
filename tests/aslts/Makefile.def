@@ -22,13 +22,39 @@
 #   nopt/32  |  -oa         |  -r 1
 #   nopt/64  |  -oa         |  -r 2
 
-SETOF_INDEXES= 0 1 2 3
-SETOF_AMLDIRS= nopt/32 nopt/64 opt/32 opt/64
-SETOF_ASLFAGS= "-oa -r 1" "-oa -r 2" "-r 1" "-r 2"
-COMMON_ASL_FLAGS= "-of -cr -vs -l -sc -sa -ic -ta -ts -so -lm -ln -ls -li"
+ifndef ASLTS_AMLDIR
+ifeq ("$(ASLTS_MODE)", "n32")
+	ASLTS_AMLDIR=nopt/32
+	ASLTS_ASLFLAGS="-oa -r 1"
+endif
+ifeq ("$(ASLTS_MODE)", "n64")
+	ASLTS_AMLDIR=nopt/64
+	ASLTS_ASLFLAGS="-oa -r 2"
+endif
+ifeq ("$(ASLTS_MODE)", "o32")
+	ASLTS_AMLDIR=opt/32
+	ASLTS_ASLFLAGS="-r 1"
+endif
+ifeq ("$(ASLTS_MODE)", "o64")
+	ASLTS_AMLDIR=opt/64
+	ASLTS_ASLFLAGS="-r 2"
+endif
+ifeq ("$(ASLTS_MODE)", "aslminus")
+	ASLTS_AMLDIR=aslminus/
+	ASLTS_ASLFLAGS="-oa -r 2"
+endif
+ifeq ("$(ASLTS_MODE)", "aslplus")
+	ASLTS_AMLDIR=aslplus/
+	ASLTS_ASLFLAGS="-oa -r 2"
+endif
+endif
+ASLTS_VER ?= $(ASLTS_VER)
 
-COMPILER_LOG="$(TOP)/tmp/aml/$(aslversion)/compile.txt"
-COMPILER_ERROR_LOG="$(TOP)/tmp/aml/$(aslversion)/error.txt"
+COMMON_NO_OUTPUT_ASL_FLAGS= "-of -cr -vs"
+COMMON_ASL_FLAGS= $(COMMON_NO_OUTPUT_ASL_FLAGS)" -l -sc -sa -ic -ta -ts -so -lm -ln -ls -li"
+
+COMPILER_LOG="$(TOP)/tmp/aml/$(ASLTS_VER)/compile.txt"
+COMPILER_ERROR_LOG="$(TOP)/tmp/aml/$(ASLTS_VER)/error.txt"
 
 # Create general directory
 
@@ -42,125 +68,57 @@ ASLMOD= MAIN
 empty_all:	FORCE
 
 # Rule to create directories located into aslts/tmp/aml;
-# aslversion is determined dynamically.
 
-${SETOF_AMLDIRS:%=$(TOP)/tmp/aml/$(aslversion)/%}:
+$(TOP)/tmp/aml/$(ASLTS_VER)/$(ASLTS_AMLDIR):
 	@$(INST.dir)
 
 # Make-install one particular Test Case for all modes
 
-install_all_modes_of_test_case:	${SETOF_AMLDIRS:%=$(TOP)/tmp/aml/$(aslversion)/%}
+install_all_modes_of_test_case:	$(TOP)/tmp/aml/$(ASLTS_VER)/$(ASLTS_AMLDIR)
 	@rval=0; \
 	if [ -f "$(ASL)" ]; then \
 		dd=`pwd`; \
 		echo "---- Test path: $$dd" >> $(COMPILER_LOG); \
 		echo "---- Test path: $$dd" >> $(COMPILER_ERROR_LOG); \
 		>&2 echo "Test path: $$dd"; \
-		for i in ${SETOF_INDEXES}; do \
-			set -- $(SETOF_AMLDIRS); \
-			shift $$i; \
-			CUR_AMLDIR=$$1; \
-			set -- $(SETOF_ASLFAGS); \
-			shift $$i; \
-			CUR_ASLFLAGS=$$1; \
-			echo "---- Test type: $$CUR_AMLDIR   (Flags $(COMMON_ASL_FLAGS) $$CUR_ASLFLAGS $(ADD_ASLFLAGS))" >> $(COMPILER_LOG); \
-			echo "---- Test type: $$CUR_AMLDIR   (Flags $(COMMON_ASL_FLAGS) $$CUR_ASLFLAGS $(ADD_ASLFLAGS))" >> $(COMPILER_ERROR_LOG); \
-			for j in ${AMLMOD}; do \
-				rm -f $$j.aml; \
-			done; \
-			for j in ${ASLMOD} $(ASLMODADD); do \
-				echo "---- Compile: $$j.asl" >> $(COMPILER_LOG); \
-				>&2 printf "%-18s" "    Type: $$CUR_AMLDIR "; \
-				>&2 printf  "Compile"; \
-				"$(ASL)" $$CUR_ASLFLAGS "$(COMMON_ASL_FLAGS)" $(ADD_ASLFLAGS) $$j.asl >> $(COMPILER_LOG) 2>> $(COMPILER_ERROR_LOG); \
-				ret=$$?; \
-				echo "" >> $(COMPILER_LOG); \
-				if [ $(OPT) -eq 0 ] && [ "x$(ADD_ASLFLAGS)" != "x-f" ]; then \
-					for k in ${AMLMOD}; do \
-						>&2 printf  " => Compile Ext in-place"; \
-						"$(ASL)" -p $$k-extInPlace -oE $$CUR_ASLFLAGS "$(COMMON_ASL_FLAGS)" $(ADD_ASLFLAGS) $$j.asl >> $(COMPILER_LOG) 2>> $(COMPILER_ERROR_LOG); \
-						if [ ! -f $$k-extInPlace.aml ]; then \
-							>&2 printf " [[ Error: disassembly failed of $$k.aml failed ]]\n"; \
-							>&2 printf "          Flags used: -p $$k-aslminus -oE -cr -vs $$CUR_ASLFLAGS $(ADD_ASLFLAGS) -od -dl\n\n"; \
-							#exit 1; \
-						fi; \
-						>&2 printf " => Disassemble"; \
-						echo "---- Diasassemble: $$k.aml" >> $(COMPILER_LOG); \
-						echo "---- Diasassemble: $$k.aml" >> $(COMPILER_ERROR_LOG); \
-						"$(ASL)" -p $$k-aslminus -oe -cr -vs $$CUR_ASLFLAGS $(ADD_ASLFLAGS) -od -dl $$k-extInPlace.aml >> $(COMPILER_LOG) 2>> $(COMPILER_ERROR_LOG); \
-						if [ ! -f $$k-aslminus.dsl ]; then \
-							>&2 printf " [[ Error: disassembly failed of $$k.aml failed ]]\n"; \
-							>&2 printf "          Flags used: -p $$k-aslminus -cr -vs $$CUR_ASLFLAGS $(ADD_ASLFLAGS) -od -dl\n\n"; \
-							#exit 1; \
-						fi; \
-						>&2 printf " => Recompile"; \
-						echo "---- Recompile: $$k.dsl" >> $(COMPILER_LOG); \
-						echo "---- Recompile: $$k.dsl" >> $(COMPILER_ERROR_LOG); \
-						"$(ASL)" $$CUR_ASLFLAGS "$(COMMON_ASL_FLAGS)" $(ADD_ASLFLAGS) $$k-aslminus.dsl >> $(COMPILER_LOG) 2>> $(COMPILER_ERROR_LOG); \
-						if [ ! -f $$k-aslminus.aml ]; then \
-							>&2 printf " [[ Error: re-compilation of $$k-aslminus.dsl failed]]\n"; \
-							>&2 printf "          Flags used: $$CUR_ASLFLAGS "$(COMMON_ASL_FLAGS)" $(ADD_ASLFLAGS)\n\n"; \
-							#exit 1; \
-						fi; \
-						if [ $$CUR_AMLDIR = "nopt/32" ] || [ $$CUR_AMLDIR = "nopt/64" ]; then \
-							>&2 printf " => Binary compare"; \
-							rm -f comparison_output.txt; \
-							acpibin -c $$k.aml $$k-aslminus.aml >> comparison_output.txt; \
-							if [ $$? != 0 ]; then \
-								>&2 printf " [[ Error: comparison of $$k.aml and $$k-aslminus.aml do not match ]]"; \
-								cat comparison_output.txt | sed '1,/^Error/d' | sed 's/Error - Byte mismatch at offset     /         => /g' | sed -n 1,10p > comparison_output.txt;\
-								>&2 printf "\n"; \
-								cat comparison_output.txt >&2 ; \
-								>&2 printf "        "; \
-								#exit 1; \
-							else \
-								>&2 printf " => Success!"; \
-								rm comparison_output.txt; \
-							fi; \
-						fi; \
-						if [ ! -f comparison_output.txt ]; then \
-							>&2 printf " => Removing files"; \
-							rm $$k-aslminus.lst; \
-							rm $$k-aslminus.aml; \
-							rm $$k-aslminus.dsl; \
-						fi; \
-						for n in "$$k-aslminus" "$$k-extInPlace"; do \
-							rm $$n.i $$n.asm $$n.nsp; \
-							rm $$n.c $$n.hex $$n.map; \
-							rm $$n.h $$n.src $$n.offset.h; \
-						done; \
-						rm $$k-extInPlace.aml; \
-						rm $$k-extInPlace.lst; \
-						>&2 printf " => Done"; \
-					done; \
-				fi; \
-				>&2 printf " => Removing files"; \
-				rm $$j.asm; \
-				rm $$j.c; \
-				rm $$j.h; \
-				rm $$j.i; \
-				rm $$j.hex; \
-				rm $$j.lst; \
-				rm $$j.map; \
-				rm $$j.nsp; \
-				rm $$j.offset.h; \
-				rm $$j.src; \
-				>&2 printf " => Done"; \
-				if [ $$ret != 0 ]; then \
-					rval=1; \
-					>&2 echo "**** Unexpected iASL failure in $$dd/$$j.asl!"; \
-					exit 1; \
-				fi; \
-			done; \
-			>&2 echo ""; \
-			if [ $$ret != 0 ]; then break; fi; \
-			for j in ${AMLMOD}; do \
-				ls -l $$j.aml >> $(COMPILER_LOG); \
-				echo "---- Move: $$j.aml $(TOP)/tmp/aml/$(aslversion)/$$CUR_AMLDIR" >> $(COMPILER_LOG); \
-				mv $$j.aml $(TOP)/tmp/aml/$(aslversion)/$$CUR_AMLDIR; \
-				ret=$$?; \
-				if [ $$ret != 0 ]; then rval=2; echo "**** mv failed!" >> $(COMPILER_LOG) 2>> $(COMPILER_ERROR_LOG); break; fi; \
-			done; \
+		echo "---- Test type: $(ASLTS_AMLDIR)   (Flags $(COMMON_ASL_FLAGS) $(ASLTS_ASLFLAGS) $(ADD_ASLFLAGS))" >> $(COMPILER_LOG); \
+		echo "---- Test type: $(ASLTS_AMLDIR)   (Flags $(COMMON_ASL_FLAGS) $(ASLTS_ASLFLAGS) $(ADD_ASLFLAGS))" >> $(COMPILER_ERROR_LOG); \
+		for j in ${AMLMOD}; do \
+			rm -f $$j.aml; \
+		done; \
+		for j in ${ASLMOD} $(ASLMODADD); do \
+			echo "---- Compile: $$j.asl" >> $(COMPILER_LOG); \
+			>&2 printf "%-18s" "    Type: $(ASLTS_AMLDIR) "; \
+			>&2 printf  "Compile"; \
+			"$(ASL)" $(ASLTS_ASLFLAGS) "$(COMMON_ASL_FLAGS)" $(ADD_ASLFLAGS) $$j.asl >> $(COMPILER_LOG) 2>> $(COMPILER_ERROR_LOG); \
+			ret=$$?; \
+			echo "" >> $(COMPILER_LOG); \
+			>&2 printf " => Removing files"; \
+			rm $$j.asm; \
+			rm $$j.c; \
+			rm $$j.h; \
+			rm $$j.i; \
+			rm $$j.hex; \
+			rm $$j.lst; \
+			rm $$j.map; \
+			rm $$j.nsp; \
+			rm $$j.offset.h; \
+			rm $$j.src; \
+			>&2 printf " => Done"; \
+			if [ $$ret != 0 ]; then \
+				rval=1; \
+				>&2 echo "**** Unexpected iASL failure in $$dd/$$j.asl!"; \
+				exit 1; \
+			fi; \
+		done; \
+		>&2 echo ""; \
+		if [ $$ret != 0 ]; then break; fi; \
+		for j in ${AMLMOD}; do \
+			ls -l $$j.aml >> $(COMPILER_LOG); \
+			echo "---- Move: $$j.aml $(TOP)/tmp/aml/$(ASLTS_VER)/$(ASLTS_AMLDIR)" >> $(COMPILER_LOG); \
+			mv $$j.aml $(TOP)/tmp/aml/$(ASLTS_VER)/$(ASLTS_AMLDIR); \
+			ret=$$?; \
+			if [ $$ret != 0 ]; then rval=2; echo "**** mv failed!" >> $(COMPILER_LOG) 2>> $(COMPILER_ERROR_LOG); break; fi; \
 		done; \
 	else \
 		echo "Bad iASL 0: <$(ASL)> does not exist"; \
@@ -169,65 +127,77 @@ install_all_modes_of_test_case:	${SETOF_AMLDIRS:%=$(TOP)/tmp/aml/$(aslversion)/%
 	if [ $$rval != 0 ]; then exit 1; fi
 
 # Make-install one particular Test Case for all modes.
-# Move results to aslts/tmp/aml directory.
-# Determine current version of iASL.
-# Create aslts/tmp/aml/<version> directory with the precautions.
 
 install_test_case:
 	@if [ ! -f "$(ASL)" ]; then \
 		echo "Bad iASL 1: <$(ASL)> does not exist"; exit 1; \
+	fi; \
+	if [ "$(ASLTS_MODE)" = "aslminus" ]; then \
+		make install_disasm_test_case DISASM_FLAG="-dl" ASLTS_MODE=$(ASLTS_MODE) ASLTS_VER=$(ASLTS_VER); \
+	elif [ "$(ASLTS_MODE)" = "aslplus" ]; then \
+		make install_disasm_test_case DISASM_FLAG="-d" ASLTS_MODE=$(ASLTS_MODE) ASLTS_VER=$(ASLTS_VER); \
 	else \
-		aslversion=""; \
-		testcasedir=`pwd`; \
-		cd $(TOP); \
-		if [ $$? -ne 0 ]; then \
-			echo "Bad dir: $(TOP)"; exit 1; \
-		else \
-			dd=`pwd`; \
-			base=`basename "$$dd"`; \
-			if [ x$$base != xaslts ]; then \
-				echo "Bad base name of ASLTS Test Suite: <$$base> of <$$dd>"; exit 1; \
-			else \
-				x=`"$(ASL)" -va xxx | grep "Compiler/Disassembler version"`; \
-				echo "---- iASL version: $$x"; \
-				if [ -z "$$x" ]; then \
-					echo "Bad iASL 2: bad signon <$(ASL)>"; exit 1; \
-				else \
-					aslversion=`echo "$$x" | awk -F" " '{ print $$5}'`; \
-					if [ -z "$$aslversion" ]; then \
-						echo "Bad iASL 3: could not get version <$(ASL)>"; exit 1; \
-					else \
-						if [ ! -d ./tmp ]; then \
-							mkdir tmp; \
-						fi; \
-						cd ./tmp; \
-						if [ $$? -ne 0 ]; then \
-							echo "Bad dir: aslts/tmp"; exit 1; \
-						else \
-							if [ ! -d ./aml ]; then \
-								mkdir aml; \
-							fi; \
-							cd ./aml; \
-							if [ $$? -ne 0 ]; then \
-								echo "Bad dir: aslts/tmp/aml"; exit 1; \
-							else \
-								if [ ! -d "./$$aslversion" ]; then \
-									mkdir $$aslversion; \
-								fi; \
-								cd ./$$aslversion; \
-								if [ $$? -ne 0 ]; then \
-									echo "Bad dir: aslts/tmp"; exit 1; \
-								else \
-									cd "$$testcasedir"; \
-									export aslversion; make install_all_modes_of_test_case OPT=$(OPT); \
-								fi; \
-							fi; \
-						fi; \
-					fi; \
-				fi; \
-			fi; \
-		fi; \
+		make install_all_modes_of_test_case ASLTS_MODE=$(ASLTS_MODE) ASLTS_VER=$(ASLTS_VER); \
 	fi
+
+
+TEST_SEQUENCE_ASL_FLAGS="$(ASLTS_ASLFLAGS) $(COMMON_NO_OUTPUT_ASL_FLAGS) $(ADD_ASLFLAGS)"
+
+disasm_test_compile: $(TOP)/tmp/aml/$(ASLTS_VER)/$(ASLTS_AMLDIR)
+	@rval=0; \
+	for j in ${ASLMOD} $(ASLMODADD); do \
+		for k in ${AMLMOD}; do \
+			>&2 printf  " => Compile Ext in-place"; \
+			"$(ASL)" -p $$k-extInPlace -oE $(TEST_SEQUENCE_ASL_FLAGS) $$j.asl >> $(COMPILER_LOG) 2>> $(COMPILER_ERROR_LOG); \
+			ret=$$?; \
+			if [ $$ret != 0 ]; then \
+				rval=2; \
+				>&2 printf " [[ Error: compiling $$k.aml with externals in place failed ]]\n"; \
+				>&2 printf "          Flags used: -p $$k-extInPlace -oE $(TEST_SEQUENCE_ASL_FLAGS)\n\n"; \
+			fi; \
+		done; \
+	done; \
+	if [ $$rval != 0 ]; then exit 1; fi
+
+disasm_test_disassemble: disasm_test_compile
+	@rval=0; \
+	for k in ${AMLMOD}; do \
+		>&2 printf " => Disassemble"; \
+		"$(ASL)" -p $$k -oe -od $(COMMON_NO_OUTPUT_ASL_FLAGS) $(ADD_ASLFLAGS) $(DISASM_FLAG) $$k-extInPlace.aml >> $(COMPILER_LOG) 2>> $(COMPILER_ERROR_LOG); \
+		ret=$$?; \
+		if [ $$ret != 0 ]; then \
+			retval=2; \
+			>&2 printf " [[ Error: disassembly of $$k-extInPlace.aml failed ]]\n"; \
+			>&2 printf "          Flags used: -oe -od $(COMMON_NO_OUTPUT_ASL_FLAGS) $(ADD_ASLFLAGS) $(DISASM_FLAG)\n\n"; \
+		fi; \
+	done; \
+	if [ $$rval != 0 ]; then exit 1; fi
+
+disasm_test_recompile: disasm_test_disassemble
+	@rval=0; \
+	for k in ${AMLMOD}; do \
+		>&2 printf " => Recompile\n"; \
+		"$(ASL)" $(TEST_SEQUENCE_ASL_FLAGS) $$k.dsl >> $(COMPILER_LOG) 2>> $(COMPILER_ERROR_LOG); \
+		ret=$$?; \
+		if [ $$ret != 0 ]; then \
+			rval=2; \
+			>&2 printf " [[ Error: re-compilation of $$k-$$l.dsl failed]]\n"; \
+			>&2 printf "          Flags used: $(TEST_SEQUENCE_ASL_FLAGS)\n\n"; \
+		fi; \
+		rm $$k.dsl; \
+		echo "---- Move: $$k.aml $(TOP)/tmp/aml/$(ASLTS_VER)/$(ASLTS_AMLDIR)" >> $(COMPILER_LOG); \
+		mv $$k.aml $(TOP)/tmp/aml/$(ASLTS_VER)/$(ASLTS_AMLDIR); \
+		ret=$$?; \
+		if [ $$ret != 0 ]; then rval=2; echo "**** mv failed!" >> $(COMPILER_LOG) 2>> $(COMPILER_ERROR_LOG); break; fi; \
+	done; \
+
+install_disasm_test_case:
+	if [ "x$(ADD_ASLFLAGS)" != "x-f" ]; then \
+		make disasm_test_recompile; \
+		make clean; \
+	else \
+		>&2 echo "Skipping disassembler test for this test case"; \
+	fi;
 
 # Compile one particular Test Case for all modes.
 # No moving results to aslts/tmp/aml directory.
@@ -238,18 +208,10 @@ compile_test_case:
 	echo "Compile_test_case"
 
 	if [ -f "$(ASL)" ]; then \
-		for i in ${SETOF_INDEXES}; do \
-			set -- $(SETOF_AMLDIRS); \
-			shift $$i; \
-			CUR_AMLDIR=$$1; \
-			set -- $(SETOF_ASLFAGS); \
-			shift $$i; \
-			CUR_ASLFLAGS=$$1; \
-			for j in ${ASLMOD} $(ASLMODADD); do \
-				"$(ASL)" $$CUR_ASLFLAGS $(ADD_ASLFLAGS) $$j.asl; \
-				ret=$$?; \
-				if [ $$ret != 0 ]; then rval=1; echo "**** Unexpected iASL failure!"; exit 1; fi; \
-			done; \
+		for j in ${ASLMOD} $(ASLMODADD); do \
+			"$(ASL)" $(ASLTS_ASLFLAGS) $(ADD_ASLFLAGS) $$j.asl; \
+			ret=$$?; \
+			if [ $$ret != 0 ]; then rval=1; echo "**** Unexpected iASL failure!"; exit 1; fi; \
 		done; \
 	else \
 		echo "Bad iASL 4: <$(ASL)> does not exist"; \
