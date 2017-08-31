@@ -932,7 +932,9 @@ AsGetFile (
         {
             printf ("File contains only printable ASCII characters\n");
         }
-        goto ErrorFree;
+
+        free (Buffer);
+        return (0);
     }
 
     /* Check for unix contamination */
@@ -953,7 +955,6 @@ ErrorFree:
     free (Buffer);
 
 ErrorExit:
-
     fclose (File);
     return (-1);
 }
