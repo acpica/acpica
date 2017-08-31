@@ -147,7 +147,7 @@ disasm_test_compile: $(TOP)/tmp/aml/$(ASLTS_VER)/$(ASLTS_AMLDIR)
 	@rval=0; \
 	for j in ${ASLMOD} $(ASLMODADD); do \
 		for k in ${AMLMOD}; do \
-			>&2 printf  " => Compile Ext in-place"; \
+			>&2 printf  " => Compile with externals in place"; \
 			"$(ASL)" -p $$k-extInPlace -oE $(TEST_SEQUENCE_ASL_FLAGS) $$j.asl >> $(COMPILER_LOG) 2>> $(COMPILER_ERROR_LOG); \
 			ret=$$?; \
 			if [ $$ret != 0 ]; then \
