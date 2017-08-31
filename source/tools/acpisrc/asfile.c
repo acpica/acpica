@@ -922,7 +922,6 @@ AsGetFile (
     }
 
     Buffer [Size] = 0;         /* Null terminate the buffer */
-    fclose (File);
 
     /* This option checks the entire file for non-printable chars */
 
@@ -945,6 +944,7 @@ AsGetFile (
      */
     AsConvertToLineFeeds (Buffer);
 
+    fclose (File);
     *FileBuffer = Buffer;
     *FileSize = Size;
     return (0);
