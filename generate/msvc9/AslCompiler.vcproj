@@ -820,6 +820,10 @@
 			Name="Compiler Source"
 			>
 			<File
+				RelativePath="..\..\source\compiler\aslallocate.c"
+				>
+			</File>
+			<File
 				RelativePath="..\..\source\compiler\aslanalyze.c"
 				>
 			</File>
@@ -829,6 +833,10 @@
 			</File>
 			<File
 				RelativePath="..\..\source\compiler\aslbtypes.c"
+				>
+			</File>
+			<File
+				RelativePath="..\..\source\compiler\aslcache.c"
 				>
 			</File>
 			<File

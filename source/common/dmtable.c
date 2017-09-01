@@ -154,7 +154,6 @@
 #include "acdisasm.h"
 #include "actables.h"
 #include "aslcompiler.h"
-#include "dtcompiler.h"
 
 /* This module used for application-level code only */
 

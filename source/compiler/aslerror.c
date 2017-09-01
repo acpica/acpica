@@ -677,7 +677,7 @@ AslCommonError2 (
     {
         /* Allocate a buffer for the message and a new error node */
 
-        MessageBuffer = UtStringCacheCalloc (strlen (ExtraMessage) + 1);
+        MessageBuffer = UtLocalCacheCalloc (strlen (ExtraMessage) + 1);
 
         /* Keep a copy of the extra message */
 
@@ -768,7 +768,7 @@ AslCommonError (
     {
         /* Allocate a buffer for the message and a new error node */
 
-        MessageBuffer = UtStringCacheCalloc (strlen (ExtraMessage) + 1);
+        MessageBuffer = UtLocalCacheCalloc (strlen (ExtraMessage) + 1);
 
         /* Keep a copy of the extra message */
 

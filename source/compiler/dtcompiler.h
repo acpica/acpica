@@ -154,7 +154,6 @@
 #ifndef _DTCOMPILER
 #define _DTCOMPILER
 
-#include <stdio.h>
 #include "acdisasm.h"
 
 
@@ -508,18 +507,6 @@ DtSetTableChecksum (
 
 void
 DtSetTableLength(
-    void);
-
-DT_SUBTABLE *
-UtSubtableCacheCalloc (
-    void);
-
-DT_FIELD *
-UtFieldCacheCalloc (
-    void);
-
-void
-DtDeleteCaches (
     void);
 
 

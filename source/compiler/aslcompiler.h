@@ -181,6 +181,7 @@
 #include "aslmessages.h"
 #include "aslglobal.h"
 #include "preprocess.h"
+#include "dtcompiler.h"
 
 
 /*******************************************************************************
@@ -265,8 +266,50 @@ void
 CmCleanupAndExit (
     void);
 
+
+/*
+ * aslallocate - memory allocation
+ */
+void *
+UtLocalCalloc (
+    UINT32                  Size);
+
 void
-CmDeleteCaches (
+UtExpandLineBuffers (
+    void);
+
+void
+UtReallocLineBuffers (
+    char                    **Buffer,
+    UINT32                  OldSize,
+    UINT32                  NewSize);
+
+void
+UtFreeLineBuffers (
+    void);
+
+
+/*
+ * aslcache - local cache support
+ */
+char *
+UtLocalCacheCalloc (
+    UINT32                  Length);
+
+ACPI_PARSE_OBJECT *
+UtParseOpCacheCalloc (
+    void);
+
+DT_SUBTABLE *
+UtSubtableCacheCalloc (
+    void);
+
+DT_FIELD *
+UtFieldCacheCalloc (
+    void);
+
+void
+UtDeleteLocalCaches (
     void);
 
 
@@ -1150,10 +1193,6 @@ void
 UtEndEvent (
     UINT8                   Event);
 
-void *
-UtLocalCalloc (
-    UINT32                  Size);
-
 void
 UtDisplaySummary (
     UINT32                  FileId);
@@ -1175,18 +1214,6 @@ UtGetOpName (
 void
 UtSetParseOpName (
     ACPI_PARSE_OBJECT       *Op);
-
-char *
-UtStringCacheCalloc (
-    UINT32                  Length);
-
-void
-UtExpandLineBuffers (
-    void);
-
-void
-UtFreeLineBuffers (
-    void);
 
 ACPI_STATUS
 UtInternalizeName (
