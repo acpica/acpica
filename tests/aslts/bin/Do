@@ -328,6 +328,10 @@ binary_compare()
 	disasm_compile_dir="$ASLTSDIR/tmp/aml/$aslversion/$mode"
 	normal_compile_dir="$ASLTSDIR/tmp/aml/$aslversion/nopt/64"
 
+	echo "Performing binary comparison of AML files within"
+	echo "    $normal_compile_dir"
+	echo "    $disasm_compile_dir"
+
 	if [ ! -d $disasm_compile_dir ]; then
 		echo "$dism_compile_dir does not exist. Aborting binary compare"
 		return;
@@ -408,7 +412,7 @@ make_install()
 		echo "Make ASL minus"
 		make_target install "$1" "aslminus"
 		nres=$?
-		binary_compare "aslplus"
+		binary_compare "aslminus"
 		nres=$(($nres+ $?))
 		if [ $nres -ne 0 ]; then
 			res=$(($res + $nres))

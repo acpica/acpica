@@ -915,6 +915,12 @@ compare_two_summaries()
 	echo "$longDivider"
 	printf "$format" "pass diff" $o64p $n64p $o32p $n32p
 	printf "$format" "fail diff" $o64f $n64f $o32f $n32f
+	for result_value in $o64p $n64p $o32p $n32p $o64f $n64f $o32f $n32f
+	do
+		if [ $result_value -ne 0 ]; then
+			return 1
+		fi
+	done
 }
 
 # ############################## MAIN ###############################
@@ -1096,6 +1102,13 @@ if [ "$summary_to_compare" == "" ]; then
 else
 	echo "comparing against $summary_to_compare"
 	compare_two_summaries "$COMMONLOGFILE" "$summary_to_compare"
+	if [ $? -ne 0 ]; then \
+		do2path=$MULTIPATH/do2Output.txt
+		Do 2 > $do2path
+		if [ $? -ne 0 ]; then \
+			echo "Detailed comparsion of previous 2 test runs in $do2path"
+		fi
+	fi
 fi
 
 exit $UTILSTATUS
