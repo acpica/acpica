@@ -508,6 +508,10 @@
 					>
 				</File>
 				<File
+					RelativePath="..\..\source\components\hardware\hwtimer.c"
+					>
+				</File>
+				<File
 					RelativePath="..\..\source\components\hardware\hwvalid.c"
 					>
 				</File>
