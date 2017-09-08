@@ -336,7 +336,7 @@ AcpiDsExecEndControlOp (
             if (ACPI_TIME_AFTER (AcpiOsGetTimer (),
                     ControlState->Control.LoopTimeout))
             {
-                Status = AE_AML_INFINITE_LOOP;
+                Status = AE_AML_LOOP_TIMEOUT;
                 break;
             }
 
