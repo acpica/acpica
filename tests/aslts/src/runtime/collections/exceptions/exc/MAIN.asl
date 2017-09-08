@@ -44,10 +44,10 @@ Method (XXXX, 1)
 }
 
 	// All declarations
-	#include("../../../../runtime/cntl/DECL.asl")
-	#include("../../../../runtime/common/data.asl")
-	#include("../../../../runtime/collections/exceptions/exc/exc.asl")
-	#include("../../../../runtime/collections/functional/reference/ref71.asl")
+	Include("../../../../runtime/cntl/DECL.asl")
+	Include("../../../../runtime/common/data.asl")
+	Include("../../../../runtime/collections/exceptions/exc/exc.asl")
+	Include("../../../../runtime/collections/functional/reference/ref71.asl")
 
 	Method(MAIN) {
 

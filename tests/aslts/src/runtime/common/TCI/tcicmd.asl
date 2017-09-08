@@ -105,11 +105,11 @@ Name(c22f, 7)	// length TCI_PACKAGE_THR_HEADER_SIZE
 
 
 Name(c221, 5)	// CACHE_LISTS_NUMBER (Object Caches):
-			//   CLIST_ID_NAMESPACE     0 /* Acpi-Namespace */
-			//   CLIST_ID_STATE         1 /* Acpi-State */
-			//   CLIST_ID_OPERAND       2 /* Acpi-Operand */
-			//   CLIST_ID_PSNODE        3 /* Acpi-Parse */
-			//   CLIST_ID_PSNODE_EXT    4 /* Acpi-ParseExt */
+			//   CLIST_ID_NAMESPACE     0 -- Acpi-Namespace
+			//   CLIST_ID_STATE         1 -- Acpi-State
+			//   CLIST_ID_OPERAND       2 -- Acpi-Operand
+			//   CLIST_ID_PSNODE        3 -- Acpi-Parse
+			//   CLIST_ID_PSNODE_EXT    4 -- Acpi-ParseExt
 
 Name(c226, 0)	// CLIST_ID_NAMESPACE
 Name(c227, 1)	// CLIST_ID_STATE
