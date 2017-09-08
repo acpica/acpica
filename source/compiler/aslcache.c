@@ -155,7 +155,7 @@
  * Local caches. The caches are fully deleted after the compilation/disassembly
  * of each individual input file. Thus, individual allocations from the cache
  * memory do not need to be freed or even released back into the cache.
- * 
+ *
  * See aslallocate.c for standard heap allocations.
  */
 

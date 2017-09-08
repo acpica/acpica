@@ -515,8 +515,8 @@ AePrintErrorSourceLine (
             /*
              * Seek to the offset in the combined source file,
              * read the source line, and write it to the output.
-	     */
-	    Actual = fseek (SourceFile,
+         */
+        Actual = fseek (SourceFile,
                 (long) Enode->LogicalByteOffset, (int) SEEK_SET);
             if (Actual)
             {
