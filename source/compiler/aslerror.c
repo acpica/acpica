@@ -485,6 +485,12 @@ AePrintErrorSourceLine (
                 *PrematureEOF = TRUE;
             }
         }
+        else
+        {
+            fprintf (OutputFile,
+                "[*** iASL: Source File Does not exist ***]\n");
+            return AE_IO_ERROR;
+        }
     }
 
     /* Print filename and line number if present and valid */
