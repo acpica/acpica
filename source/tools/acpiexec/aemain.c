@@ -270,7 +270,7 @@ usage (
     ACPI_OPTION ("-fv <Value>",         "Operation Region initialization fill value");
     printf ("\n");
 
-    ACPI_OPTION ("-i <Count>",          "Maximum iterations for AML while loops");
+    ACPI_OPTION ("-i <Seconds>",        "Maximum timeout for AML while loops");
     ACPI_OPTION ("-l",                  "Load tables and namespace only");
     ACPI_OPTION ("-r",                  "Use hardware-reduced FADT V5");
     ACPI_OPTION ("-v",                  "Display version information");
@@ -597,6 +597,10 @@ main (
     {
         goto ErrorExit;
     }
+
+    /* Use a shorter timeout value for acpiexec */
+
+    AcpiGbl_MaxLoopIterations = 1;
 
     /* Initialize the AML debugger */
 
