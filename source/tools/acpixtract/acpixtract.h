@@ -180,7 +180,7 @@
 #define AX_REQUIRED_TABLE           1
 
 #define AX_UTILITY_NAME             "ACPI Binary Table Extraction Utility"
-#define AX_SUPPORTED_OPTIONS        "ahlms:v"
+#define AX_SUPPORTED_OPTIONS        "ahlms:v^"
 #define AX_MULTI_TABLE_FILENAME     "amltables.dat"
 #define AX_TABLE_INFO_FORMAT        "Acpi table [%4.4s] - %7u bytes written to %s\n"
 

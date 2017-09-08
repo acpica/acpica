@@ -197,8 +197,6 @@ BOOLEAN                     AcpiGbl_LoadTestTables = FALSE;
 BOOLEAN                     AcpiGbl_AeLoadOnly = FALSE;
 static UINT8                AcpiGbl_ExecutionMode = AE_MODE_COMMAND_LOOP;
 static char                 BatchBuffer[AE_BUFFER_SIZE];    /* Batch command buffer */
-static char                 AeBuildDate[] = __DATE__;
-static char                 AeBuildTime[] = __TIME__;
 
 #define ACPIEXEC_NAME               "AML Execution/Debug Utility"
 #define AE_SUPPORTED_OPTIONS        "?b:d:e:f^ghlm^rt^v^:x:"
@@ -540,7 +538,7 @@ AeDoOptions (
 
         case 'd':
 
-            printf ("Build date/time: %s %s\n", AeBuildDate, AeBuildTime);
+            printf (ACPI_COMMON_BUILD_TIME);
             return (1);
 
         case 'i':
