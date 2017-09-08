@@ -401,6 +401,16 @@ make_install()
 				res=$nres
 			fi
 		fi
+		echo "Make ASL convert"
+		make_target install "$1" "aslconvert"
+		find . -type f -name *.dsl -delete
+		nres=$?
+		binary_compare "aslconvert"
+		nres=$(($nres+ $?))
+		if [ $nres -ne 0 ]; then
+			res=$(($res + $nres))
+		fi
+
 		echo "Make ASL plus"
 		make_target install "$1" "aslplus"
 		nres=$?

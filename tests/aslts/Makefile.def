@@ -47,6 +47,11 @@ ifeq ("$(ASLTS_MODE)", "aslplus")
 	ASLTS_AMLDIR=aslplus/
 	ASLTS_ASLFLAGS="-oa -r 2"
 endif
+ifeq ("$(ASLTS_MODE)", "aslconvert")
+	ASLTS_AMLDIR=aslconvert/
+	ASLTS_ASLFLAGS="-oa -r 2"
+endif
+
 endif
 ASLTS_VER ?= $(ASLTS_VER)
 
@@ -136,6 +141,8 @@ install_test_case:
 		make install_disasm_test_case DISASM_FLAG="-dl" ASLTS_MODE=$(ASLTS_MODE) ASLTS_VER=$(ASLTS_VER); \
 	elif [ "$(ASLTS_MODE)" = "aslplus" ]; then \
 		make install_disasm_test_case DISASM_FLAG="-d" ASLTS_MODE=$(ASLTS_MODE) ASLTS_VER=$(ASLTS_VER); \
+	elif [ "$(ASLTS_MODE)" = "aslconvert" ]; then \
+		make install_converter_test_case ASLTS_MODE=$(ASLTS_MODE) ASLTS_VER=$(ASLTS_VER); \
 	else \
 		make install_all_modes_of_test_case ASLTS_MODE=$(ASLTS_MODE) ASLTS_VER=$(ASLTS_VER); \
 	fi
@@ -198,6 +205,51 @@ install_disasm_test_case:
 	else \
 		>&2 echo "Skipping disassembler test for this test case"; \
 	fi;
+
+converter_test_convert: $(TOP)/tmp/aml/$(ASLTS_VER)/$(ASLTS_AMLDIR)
+	@rval=0; \
+	for j in ${ASLMOD} $(ASLMODADD); do \
+		>&2 printf  "  Convert"; \
+		"$(ASL)" -cr -ca $$j.asl >> $(COMPILER_LOG) 2>> $(COMPILER_ERROR_LOG); \
+		ret=$$?; \
+		if [ $$ret != 0 ]; then \
+			rval=2; \
+			>&2 printf " [[ Error: conversion of $$j.asl failed ]]\n"; \
+			>&2 printf "          Flags used: -ca\n\n"; \
+		fi; \
+	done; \
+	if [ $$rval != 0 ]; then exit 1; fi
+
+converter_test_recompile: converter_test_convert
+	@rval=0; \
+	for j in ${ASLMOD} $(ASLMODADD); do \
+		for k in ${AMLMOD}; do \
+			>&2 printf " => Recompile"; \
+			"$(ASL)" $(TEST_SEQUENCE_ASL_FLAGS) -p $$k $$j.dsl >> $(COMPILER_LOG) 2>> $(COMPILER_ERROR_LOG); \
+			ret=$$?; \
+			if [ $$ret != 0 ]; then \
+				rval=2; \
+				>&2 printf " [[ Error: re-compilation of $$j.dsl failed]]\n"; \
+				>&2 printf "          Flags used: $(TEST_SEQUENCE_ASL_FLAGS) -p $$k\n\n"; \
+			else \
+				>&2 printf " => Done\n"; \
+			fi; \
+			echo "---- Move: $$k.aml $(TOP)/tmp/aml/$(ASLTS_VER)/$(ASLTS_AMLDIR)" >> $(COMPILER_LOG); \
+			mv $$k.aml $(TOP)/tmp/aml/$(ASLTS_VER)/$(ASLTS_AMLDIR); \
+			ret=$$?; \
+			if [ $$ret != 0 ]; then rval=2; echo "**** mv failed!" >> $(COMPILER_LOG) 2>> $(COMPILER_ERROR_LOG); break; fi; \
+		done; \
+	done; \
+
+install_converter_test_case:
+	if [ "x$(ADD_ASLFLAGS)" != "x-f" ]; then \
+		make converter_test_recompile; \
+		make clean; \
+	else \
+		>&2 echo "Skipping converter test for this test case"; \
+	fi;
+
+
 
 # Compile one particular Test Case for all modes.
 # No moving results to aslts/tmp/aml directory.

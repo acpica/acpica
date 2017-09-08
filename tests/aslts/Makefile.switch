@@ -38,8 +38,10 @@ install_aslminus:
 	$(MAKE) install ASLTS_MODE=aslminus ASLTS_VER=$(ASLTS_VER)
 install_aslplus:
 	$(MAKE) install ASLTS_MODE=aslplus ASLTS_VER=$(ASLTS_VER)
+install_aslconvert:
+	$(MAKE) install ASLTS_MODE=aslconvert ASLTS_VER=$(ASLTS_VER)
 
-install_all:	install_n32 install_n64 install_o32 install_o64 install_aslminus install_aslplus
+install_all:	install_n32 install_n64 install_o32 install_o64 install_aslminus install_aslplus install_aslconvert
 
 clean:	FORCE
 		@for d in ${MDIRS}; do \
