@@ -25,34 +25,24 @@
  * NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE,
  * EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
+DefinitionBlock ("exc_result1", "DSDT", 2, "Intel", "Many", 0x00000001)
+{
+    /* All declarations */
+    Include ("../../../../../runtime/cntl/DECL_5UP.asl")
+    Include ("../../../../../runtime/common/conversion/rproc.asl")
+    Include ("../../../../../runtime/common/conversion/rtest.asl")
+    Include ("../../../../../runtime/collections/exceptions/exc_result/exc_result1/exc_result1.asl")
+    Method (MAIN, 0, NotSerialized)
+    {
+        /* Initialization */
 
-DefinitionBlock(
-	"exc_result1.aml",   // Output filename
-	"DSDT",     // Signature
-	0x02,       // DSDT Revision
-	"Intel",    // OEMID
-	"Many",     // TABLE ID
-	0x00000001  // OEM Revision
-	) {
+        STRT (0x00)
+        /* Run verification methods */
+        Include ("../../../../../runtime/collections/exceptions/exc_result/exc_result1/RUN.asl")
+        /* Final actions */
 
-	// All declarations
-	Include("../../../../../runtime/cntl/DECL_5UP.asl")
-	Include("../../../../../runtime/common/conversion/rproc.asl")
-	Include("../../../../../runtime/common/conversion/rtest.asl")
-	Include("../../../../../runtime/collections/exceptions/exc_result/exc_result1/exc_result1.asl")
-
-	Method(MAIN) {
-
-		// Initialization
-		STRT(0)
-
-		// Run verification methods
-
-		Include("../../../../../runtime/collections/exceptions/exc_result/exc_result1/RUN.asl")
-
-		// Final actions
-		Store(FNSH(), Local7)
-
-		return (Local7)
-	}
+        Store (FNSH (), Local7)
+        Return (Local7)
+    }
 }
+

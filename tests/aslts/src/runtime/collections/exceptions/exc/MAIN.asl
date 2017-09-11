@@ -25,45 +25,35 @@
  * NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE,
  * EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
-
-// Run exceptional conditions complex test
-
-DefinitionBlock(
-	"exc.aml",   // Output filename
-	"DSDT",     // Signature
-	0x02,       // DSDT Revision
-	"Intel",    // OEMID
-	"Many",     // TABLE ID
-	0x00000001  // OEM Revision
-	) {
-
-//TMP
-Method (XXXX, 1)
+/* Run exceptional conditions complex test */
+DefinitionBlock ("exc", "DSDT", 2, "Intel", "Many", 0x00000001)
 {
-    Add (Arg0, 4, Local0)
+    /*TMP */
+
+    Method (XXXX, 1, NotSerialized)
+    {
+        Local0 = (Arg0 + 0x04)
+    }
+
+    /* All declarations */
+    Include ("../../../../runtime/cntl/DECL.asl")
+    Include ("../../../../runtime/common/data.asl")
+    Include ("../../../../runtime/collections/exceptions/exc/exc.asl")
+    Include ("../../../../runtime/collections/functional/reference/ref71.asl")
+    Method (MAIN, 0, NotSerialized)
+    {
+        /* Initialization */
+
+        STRT (0x00)
+        /* Run verification methods */
+        Include ("../../../../runtime/collections/exceptions/exc/RUN.asl")
+        /* Final actions */
+
+        Store (FNSH (), Local7)
+        /* TMP: */
+
+        Local0 = (Local7 + 0x01)
+        Return (Local7)
+    }
 }
 
-	// All declarations
-	Include("../../../../runtime/cntl/DECL.asl")
-	Include("../../../../runtime/common/data.asl")
-	Include("../../../../runtime/collections/exceptions/exc/exc.asl")
-	Include("../../../../runtime/collections/functional/reference/ref71.asl")
-
-	Method(MAIN) {
-
-		// Initialization
-		STRT(0)
-
-		// Run verification methods
-
-		Include("../../../../runtime/collections/exceptions/exc/RUN.asl")
-
-		// Final actions
-		Store(FNSH(), Local7)
-
-// TMP:
-Add (Local7, 1, Local0)
-
-		return (Local7)
-	}
-}

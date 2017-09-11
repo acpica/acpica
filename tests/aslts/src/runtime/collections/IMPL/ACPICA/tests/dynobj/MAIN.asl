@@ -25,37 +25,27 @@
  * NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE,
  * EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
+DefinitionBlock ("dynobj", "DSDT", 2, "Intel", "Many", 0x00000001)
+{
+    /* All declarations */
+    Include ("../../../../../../runtime/cntl/DECL_6UP.asl")
+    Include ("../../../../../../runtime/common/TCI/tcicmd.asl")
+    Include ("../../../../../../runtime/collections/IMPL/ACPICA/tests/dynobj/dobdecl.asl")
+    Include ("../../../../../../runtime/collections/IMPL/ACPICA/tests/dynobj/dobctl.asl")
+    Include ("../../../../../../runtime/collections/IMPL/ACPICA/tests/dynobj/dobexec.asl")
+    Include ("../../../../../../runtime/collections/IMPL/ACPICA/tests/dynobj/dobexceptions.asl")
+    Include ("../../../../../../runtime/collections/IMPL/ACPICA/tests/dynobj/dobmisc.asl")
+    Method (MAIN, 0, NotSerialized)
+    {
+        /* Initialization */
 
-DefinitionBlock(
-	"dynobj.aml",   // Output filename
-	"DSDT",     // Signature
-	0x02,       // DSDT Revision
-	"Intel",    // OEMID
-	"Many",     // TABLE ID
-	0x00000001  // OEM Revision
-	) {
+        STRT (0x00)
+        /* Run verification methods */
+        Include ("../../../../../../runtime/collections/IMPL/ACPICA/tests/dynobj/RUN.asl")
+        /* Final actions */
 
-	// All declarations
-	Include("../../../../../../runtime/cntl/DECL_6UP.asl")
-	Include("../../../../../../runtime/common/TCI/tcicmd.asl")
-	Include("../../../../../../runtime/collections/IMPL/ACPICA/tests/dynobj/dobdecl.asl")
-	Include("../../../../../../runtime/collections/IMPL/ACPICA/tests/dynobj/dobctl.asl")
-	Include("../../../../../../runtime/collections/IMPL/ACPICA/tests/dynobj/dobexec.asl")
-	Include("../../../../../../runtime/collections/IMPL/ACPICA/tests/dynobj/dobexceptions.asl")
-	Include("../../../../../../runtime/collections/IMPL/ACPICA/tests/dynobj/dobmisc.asl")
-
-	Method(MAIN) {
-
-		// Initialization
-		STRT(0)
-
-		// Run verification methods
-
-		Include("../../../../../../runtime/collections/IMPL/ACPICA/tests/dynobj/RUN.asl")
-
-		// Final actions
-		Store(FNSH(), Local7)
-
-		return (Local7)
-	}
+        Store (FNSH (), Local7)
+        Return (Local7)
+    }
 }
+

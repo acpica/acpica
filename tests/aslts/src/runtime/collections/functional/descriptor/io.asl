@@ -1,104 +1,147 @@
-/*
- * Some or all of this work - Copyright (c) 2006 - 2017, Intel Corp.
- * All rights reserved.
- *
- * Redistribution and use in source and binary forms, with or without modification,
- * are permitted provided that the following conditions are met:
- *
- * Redistributions of source code must retain the above copyright notice,
- * this list of conditions and the following disclaimer.
- * Redistributions in binary form must reproduce the above copyright notice,
- * this list of conditions and the following disclaimer in the documentation
- * and/or other materials provided with the distribution.
- * Neither the name of Intel Corporation nor the names of its contributors
- * may be used to endorse or promote products derived from this software
- * without specific prior written permission.
- *
- * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS"
- * AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE
- * IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE
- * ARE DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT OWNER OR CONTRIBUTORS BE
- * LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL
- * DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES;
- * LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY
- * THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING
- * NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE,
- * EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
- */
+    /*
+     * Some or all of this work - Copyright (c) 2006 - 2017, Intel Corp.
+     * All rights reserved.
+     *
+     * Redistribution and use in source and binary forms, with or without modification,
+     * are permitted provided that the following conditions are met:
+     *
+     * Redistributions of source code must retain the above copyright notice,
+     * this list of conditions and the following disclaimer.
+     * Redistributions in binary form must reproduce the above copyright notice,
+     * this list of conditions and the following disclaimer in the documentation
+     * and/or other materials provided with the distribution.
+     * Neither the name of Intel Corporation nor the names of its contributors
+     * may be used to endorse or promote products derived from this software
+     * without specific prior written permission.
+     *
+     * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS"
+     * AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE
+     * IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE
+     * ARE DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT OWNER OR CONTRIBUTORS BE
+     * LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL
+     * DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES;
+     * LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY
+     * THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING
+     * NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE,
+     * EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
+     */
+    /*
+     * Resource Descriptor macros
+     *
+     * IO Resource Descriptor Macro
+     */
+    Name (P408, Package (0x03)
+    {
+        ResourceTemplate ()
+        {
+            IO (Decode10,
+                0xF0F1,             // Range Minimum
+                0xF2F3,             // Range Maximum
+                0xF4,               // Alignment
+                0xF5,               // Length
+                )
+        }, 
 
-/*
- * Resource Descriptor macros
- *
- * IO Resource Descriptor Macro
- */
+        ResourceTemplate ()
+        {
+            IO (Decode16,
+                0xF0F1,             // Range Minimum
+                0xF2F3,             // Range Maximum
+                0xF4,               // Alignment
+                0xF5,               // Length
+                )
+        }, 
 
-Name (p408, Package() {
-	ResourceTemplate () {
-		IO (Decode10, 0xf0f1, 0xf2f3, 0xf4, 0xf5)
-	},
-	ResourceTemplate () {
-		IO (Decode16, 0xf0f1, 0xf2f3, 0xf4, 0xf5)
-	},
-	ResourceTemplate () {
-		IO (Decode16, 0, 0, 0, 0)
-	},
-})
+        ResourceTemplate ()
+        {
+            IO (Decode16,
+                0x0000,             // Range Minimum
+                0x0000,             // Range Maximum
+                0x00,               // Alignment
+                0x00,               // Length
+                )
+        }
+    })
+    /*
+     ACPI Specification, Revision 3.0, September 2, 2004
+     6.4.2.5   I/O Port Descriptor
+     I/O Port Descriptor layout:
+     Byte 0 (Tag Bits): Value = 01000111B (0x47) (Type = 0, Small item name = 0x8, Length = 7)
+     Byte 1 (Information): 0000000dB
+     Bits[7:1] 	Reserved and must be 0
+     Bit[0] 	 	(_DEC)
+     1	The logical device decodes 16-bit addresses
+     0	The logical device only decodes address bits[9:0]
+     Byte 2 (Range minimum base address, _MIN bits[7:0])
+     Byte 3 (Range minimum base address, _MIN bits[15:8])
+     Byte 4 (Range maximum base address, _MAX bits[7:0])
+     Byte 5 (Range maximum base address, _MAX bits[15:8])
+     Byte 6 (Base alignment, _ALN): Alignment for minimum base address,
+     increment in 1-byte blocks.
+     Byte 7 (Range length, _LEN): The number of contiguous I/O ports requested.
+     */
+    Name (P409, Package (0x03)
+    {
+        ResourceTemplate ()
+        {
+            IO (Decode10,
+                0xF0F1,             // Range Minimum
+                0xF2F3,             // Range Maximum
+                0xF4,               // Alignment
+                0xF5,               // Length
+                )
+        }, 
 
-/*
-ACPI Specification, Revision 3.0, September 2, 2004
-6.4.2.5   I/O Port Descriptor
+        ResourceTemplate ()
+        {
+            IO (Decode16,
+                0xF0F1,             // Range Minimum
+                0xF2F3,             // Range Maximum
+                0xF4,               // Alignment
+                0xF5,               // Length
+                )
+        }, 
 
-I/O Port Descriptor layout:
+        ResourceTemplate ()
+        {
+            IO (Decode16,
+                0x0000,             // Range Minimum
+                0x0000,             // Range Maximum
+                0x00,               // Alignment
+                0x00,               // Length
+                )
+        }
+    })
+    Method (RT05, 0, Serialized)
+    {
+        Name (TS, "RT05")
+        /* Emit test header, set the filename */
 
-Byte 0 (Tag Bits): Value = 01000111B (0x47) (Type = 0, Small item name = 0x8, Length = 7)
+        THDR (TS, "IO Resource Descriptor Macro", "io.asl")
+        /* Main test case for packages above */
 
-Byte 1 (Information): 0000000dB
-Bits[7:1] 	Reserved and must be 0
-Bit[0] 	 	(_DEC)
-			1	The logical device decodes 16-bit addresses
-			0	The logical device only decodes address bits[9:0]
+        M330 (TS, 0x03, "p408", P408, P409)
+        /* Check resource descriptor tag offsets */
 
-Byte 2 (Range minimum base address, _MIN bits[7:0])
-Byte 3 (Range minimum base address, _MIN bits[15:8])
+        Local0 = ResourceTemplate ()
+            {
+                IO (Decode16,
+                    0xF0F1,             // Range Minimum
+                    0xF2F3,             // Range Maximum
+                    0xF4,               // Alignment
+                    0xF5,               // Length
+                    )
+                IO (Decode16,
+                    0xF0F1,             // Range Minimum
+                    0xF2F3,             // Range Maximum
+                    0xF4,               // Alignment
+                    0xF5,               // Length
+                    )
+            }
+        M331 (TS, 0x01, 0x08, 0x08, 0x48, 0x48, "_DEC")
+        M331 (TS, 0x02, 0x10, 0x10, 0x50, 0x50, "_MIN")
+        M331 (TS, 0x03, 0x20, 0x20, 0x60, 0x60, "_MAX")
+        M331 (TS, 0x04, 0x30, 0x30, 0x70, 0x70, "_ALN")
+        M331 (TS, 0x05, 0x38, 0x38, 0x78, 0x78, "_LEN")
+    }
 
-Byte 4 (Range maximum base address, _MAX bits[7:0])
-Byte 5 (Range maximum base address, _MAX bits[15:8])
-
-Byte 6 (Base alignment, _ALN): Alignment for minimum base address,
-                               increment in 1-byte blocks.
-
-Byte 7 (Range length, _LEN): The number of contiguous I/O ports requested.
-*/
-
-Name (p409, Package() {
-	Buffer () {0x47, 0x00, 0xf1, 0xf0, 0xf3, 0xf2, 0xf4, 0xf5, 0x79, 0x00},
-	Buffer () {0x47, 0x01, 0xf1, 0xf0, 0xf3, 0xf2, 0xf4, 0xf5, 0x79, 0x00},
-	Buffer () {0x47, 0x01, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x79, 0x00},
-})
-
-Method(RT05,, Serialized)
-{
-	Name(ts, "RT05")
-
-	// Emit test header, set the filename
-
-	THDR (ts, "IO Resource Descriptor Macro", __FILE__)
-
-    // Main test case for packages above
-
-	m330(ts, 3, "p408", p408, p409)
-
-    // Check resource descriptor tag offsets
-
-	Store (
-		ResourceTemplate () {
-			IO (Decode16, 0xf0f1, 0xf2f3, 0xf4, 0xf5, IO0)
-			IO (Decode16, 0xf0f1, 0xf2f3, 0xf4, 0xf5, IO1)
-		}, Local0)
-
-	m331(ts, 1, IO0._DEC, 0x08, IO1._DEC, 0x48, "_DEC")
-	m331(ts, 2, IO0._MIN, 0x10, IO1._MIN, 0x50, "_MIN")
-	m331(ts, 3, IO0._MAX, 0x20, IO1._MAX, 0x60, "_MAX")
-	m331(ts, 4, IO0._ALN, 0x30, IO1._ALN, 0x70, "_ALN")
-	m331(ts, 5, IO0._LEN, 0x38, IO1._LEN, 0x78, "_LEN")
-}

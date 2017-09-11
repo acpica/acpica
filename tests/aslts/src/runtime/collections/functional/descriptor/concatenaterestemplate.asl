@@ -1,1005 +1,2168 @@
-/*
- * Some or all of this work - Copyright (c) 2006 - 2017, Intel Corp.
- * All rights reserved.
- *
- * Redistribution and use in source and binary forms, with or without modification,
- * are permitted provided that the following conditions are met:
- *
- * Redistributions of source code must retain the above copyright notice,
- * this list of conditions and the following disclaimer.
- * Redistributions in binary form must reproduce the above copyright notice,
- * this list of conditions and the following disclaimer in the documentation
- * and/or other materials provided with the distribution.
- * Neither the name of Intel Corporation nor the names of its contributors
- * may be used to endorse or promote products derived from this software
- * without specific prior written permission.
- *
- * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS"
- * AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE
- * IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE
- * ARE DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT OWNER OR CONTRIBUTORS BE
- * LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL
- * DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES;
- * LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY
- * THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING
- * NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE,
- * EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
- */
+    /*
+     * Some or all of this work - Copyright (c) 2006 - 2017, Intel Corp.
+     * All rights reserved.
+     *
+     * Redistribution and use in source and binary forms, with or without modification,
+     * are permitted provided that the following conditions are met:
+     *
+     * Redistributions of source code must retain the above copyright notice,
+     * this list of conditions and the following disclaimer.
+     * Redistributions in binary form must reproduce the above copyright notice,
+     * this list of conditions and the following disclaimer in the documentation
+     * and/or other materials provided with the distribution.
+     * Neither the name of Intel Corporation nor the names of its contributors
+     * may be used to endorse or promote products derived from this software
+     * without specific prior written permission.
+     *
+     * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS"
+     * AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE
+     * IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE
+     * ARE DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT OWNER OR CONTRIBUTORS BE
+     * LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL
+     * DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES;
+     * LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY
+     * THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING
+     * NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE,
+     * EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
+     */
+    /*
+     * Resource Descriptor macros
+     *
+     * Concatenate two resource templates
+     */
+    Name (Z007, 0x07)
+    Name (P440, Package (0x03)
+    {
+        Buffer (0x02)
+        {
+             0x79, 0x00                                       // y.
+        }, 
 
-/*
- * Resource Descriptor macros
- *
- * Concatenate two resource templates
- */
+        ResourceTemplate ()
+        {
+            IRQ (Level, ActiveHigh, Exclusive, )
+                {0}
+            IRQNoFlags ()
+                {1}
+            DMA (Compatibility, NotBusMaster, Transfer16, )
+                {2}
+            IO (Decode16,
+                0xF0F1,             // Range Minimum
+                0xF2F3,             // Range Maximum
+                0xF4,               // Alignment
+                0xF5,               // Length
+                )
+            FixedIO (
+                0xF0F1,             // Address
+                0xF2,               // Length
+                )
+            VendorShort ()      // Length = 0x07
+            {
+                 0x00, 0xA2, 0xB3, 0x76, 0xD5, 0xE6, 0xF7         // ...v...
+            }
+            Memory24 (ReadWrite,
+                0xF0F1,             // Range Minimum
+                0xF2F3,             // Range Maximum
+                0xF4F5,             // Alignment
+                0xF6F7,             // Length
+                )
+            Memory32 (ReadWrite,
+                0xF0F1F2F3,         // Range Minimum
+                0xF4F5F6F7,         // Range Maximum
+                0xF8F9FAFB,         // Alignment
+                0xFCFDFEFF,         // Length
+                )
+            Memory32Fixed (ReadOnly,
+                0xF0F1F2F3,         // Address Base
+                0xF4F5F6F7,         // Address Length
+                )
+            VendorLong  ()      // Length = 0x15
+            {
+                /* 0000 */  0x9F, 0xF0, 0xF1, 0xF2, 0xF3, 0xF4, 0xF5, 0xF6,  // ........
+                /* 0008 */  0xF7, 0xF8, 0xF9, 0xFA, 0xFB, 0xFC, 0xFD, 0xFE,  // ........
+                /* 0010 */  0xFF, 0x00, 0x01, 0x02, 0x03                     // .....
+            }
+            QWordIO (ResourceConsumer, MinFixed, MaxFixed, SubDecode, EntireRange,
+                0xD8D9DADBDCDDDEDF, // Granularity
+                0xE0E1E2E3E4E5E6E7, // Range Minimum
+                0xE8E9EAEBECEDEEEF, // Range Maximum
+                0xF0F1F2F3F4F5F6F7, // Translation Offset
+                0xF8F9FAFBFCFDFEFF, // Length
+                0xFF, "PATHPATHPATH", , TypeTranslation, SparseTranslation)
+            DWordIO (ResourceConsumer, MinFixed, MaxFixed, SubDecode, EntireRange,
+                0xECEDEEEF,         // Granularity
+                0xF0F1F2F3,         // Range Minimum
+                0xF4F5F6F7,         // Range Maximum
+                0xF8F9FAFB,         // Translation Offset
+                0xFCFDFEFF,         // Length
+                0xFF, "PATHPATHPATH", , TypeTranslation, SparseTranslation)
+            WordIO (ResourceConsumer, MinFixed, MaxFixed, SubDecode, EntireRange,
+                0xF6F7,             // Granularity
+                0xF8F9,             // Range Minimum
+                0xFAFB,             // Range Maximum
+                0xFCFD,             // Translation Offset
+                0xFEFF,             // Length
+                0xFF, "PATHPATHPATH", , TypeTranslation, SparseTranslation)
+            QWordMemory (ResourceConsumer, SubDecode, MinFixed, MaxFixed, NonCacheable, ReadOnly,
+                0xD8D9DADBDCDDDEDF, // Granularity
+                0xE0E1E2E3E4E5E6E7, // Range Minimum
+                0xE8E9EAEBECEDEEEF, // Range Maximum
+                0xF0F1F2F3F4F5F6F7, // Translation Offset
+                0xF8F9FAFBFCFDFEFF, // Length
+                0xFF, "PATHPATHPATH", , AddressRangeACPI, TypeTranslation)
+            DWordMemory (ResourceConsumer, SubDecode, MinFixed, MaxFixed, NonCacheable, ReadOnly,
+                0xECEDEEEF,         // Granularity
+                0xF0F1F2F3,         // Range Minimum
+                0xF4F5F6F7,         // Range Maximum
+                0xF8F9FAFB,         // Translation Offset
+                0xFCFDFEFF,         // Length
+                0xFF, "PATHPATHPATH", , AddressRangeACPI, TypeTranslation)
+            WordBusNumber (ResourceConsumer, MinFixed, MaxFixed, SubDecode,
+                0xF6F7,             // Granularity
+                0xF8F9,             // Range Minimum
+                0xFAFB,             // Range Maximum
+                0xFCFD,             // Translation Offset
+                0xFEFF,             // Length
+                0xFF, "PATHPATHPATH", )
+            Interrupt (ResourceConsumer, Edge, ActiveLow, Shared, 0xFF, "!\"#$%&\'()*+,-./0123456789:;<=>?@ABCDEFGHIJKLMNOPQRSTUVWXYZ[\\]^_`abcdefghijklmnopqrstuvwxyz{|}~ !\"#$%&\'()*+,-./0123456789:;<=>?@ABCDEFGHIJKLMNOPQRSTUVWXYZ[\\]^_`abcdefghijklmnopqrstuvwxyz{|}~ !\"#$%&\'()*", )
+            {
+                0x00000001,
+                0x00000002,
+                0x00000003,
+                0x00000004,
+                0x00000005,
+                0x00000006,
+                0x00000007,
+                0x00000008,
+                0x00000009,
+                0x0000000A,
+                0x0000000B,
+                0x0000000C,
+                0x0000000D,
+                0x0000000E,
+                0x0000000F,
+                0x00000010,
+                0x00000011,
+                0x00000012,
+                0x00000013,
+                0x00000014,
+                0x00000015,
+                0x00000016,
+                0x00000017,
+                0x00000018,
+                0x00000019,
+                0x0000001A,
+                0x0000001B,
+                0x0000001C,
+                0x0000001D,
+                0x0000001E,
+                0x0000001F,
+                0x00000020,
+                0x00000021,
+                0x00000022,
+                0x00000023,
+                0x00000024,
+                0x00000025,
+                0x00000026,
+                0x00000027,
+                0x00000028,
+                0x00000029,
+                0x0000002A,
+                0x0000002B,
+                0x0000002C,
+                0x0000002D,
+                0x0000002E,
+                0x0000002F,
+                0x00000030,
+                0x00000031,
+                0x00000032,
+                0x00000033,
+                0x00000034,
+                0x00000035,
+                0x00000036,
+                0x00000037,
+                0x00000038,
+                0x00000039,
+                0x0000003A,
+                0x0000003B,
+                0x0000003C,
+                0x0000003D,
+                0x0000003E,
+                0x0000003F,
+                0x00000040,
+                0x00000041,
+                0x00000042,
+                0x00000043,
+                0x00000044,
+                0x00000045,
+                0x00000046,
+                0x00000047,
+                0x00000048,
+                0x00000049,
+                0x0000004A,
+                0x0000004B,
+                0x0000004C,
+                0x0000004D,
+                0x0000004E,
+                0x0000004F,
+                0x00000050,
+                0x00000051,
+                0x00000052,
+                0x00000053,
+                0x00000054,
+                0x00000055,
+                0x00000056,
+                0x00000057,
+                0x00000058,
+                0x00000059,
+                0x0000005A,
+                0x0000005B,
+                0x0000005C,
+                0x0000005D,
+                0x0000005E,
+                0x0000005F,
+                0x00000060,
+                0x00000061,
+                0x00000062,
+                0x00000063,
+                0x00000064,
+                0x00000065,
+                0x00000066,
+                0x00000067,
+                0x00000068,
+                0x00000069,
+                0x0000006A,
+                0x0000006B,
+                0x0000006C,
+                0x0000006D,
+                0x0000006E,
+                0x0000006F,
+                0x00000070,
+                0x00000071,
+                0x00000072,
+                0x00000073,
+                0x00000074,
+                0x00000075,
+                0x00000076,
+                0x00000077,
+                0x00000078,
+                0x00000079,
+                0x0000007A,
+                0x0000007B,
+                0x0000007C,
+                0x0000007D,
+                0x0000007E,
+                0x0000007F,
+                0x00000080,
+                0x00000081,
+                0x00000082,
+                0x00000083,
+                0x00000084,
+                0x00000085,
+                0x00000086,
+                0x00000087,
+                0x00000088,
+                0x00000089,
+                0x0000008A,
+                0x0000008B,
+                0x0000008C,
+                0x0000008D,
+                0x0000008E,
+                0x0000008F,
+                0x00000090,
+                0x00000091,
+                0x00000092,
+                0x00000093,
+                0x00000094,
+                0x00000095,
+                0x00000096,
+                0x00000097,
+                0x00000098,
+                0x00000099,
+                0x0000009A,
+                0x0000009B,
+                0x0000009C,
+                0x0000009D,
+                0x0000009E,
+                0x0000009F,
+                0x000000A0,
+                0x000000A1,
+                0x000000A2,
+                0x000000A3,
+                0x000000A4,
+                0x000000A5,
+                0x000000A6,
+                0x000000A7,
+                0x000000A8,
+                0x000000A9,
+                0x000000AA,
+                0x000000AB,
+                0x000000AC,
+                0x000000AD,
+                0x000000AE,
+                0x000000AF,
+                0x000000B0,
+                0x000000B1,
+                0x000000B2,
+                0x000000B3,
+                0x000000B4,
+                0x000000B5,
+                0x000000B6,
+                0x000000B7,
+                0x000000B8,
+                0x000000B9,
+                0x000000BA,
+                0x000000BB,
+                0x000000BC,
+                0x000000BD,
+                0x000000BE,
+                0x000000BF,
+                0x000000C0,
+                0x000000C1,
+                0x000000C2,
+                0x000000C3,
+                0x000000C4,
+                0x000000C5,
+                0x000000C6,
+                0x000000C7,
+                0x000000C8,
+                0x000000C9,
+                0x000000CA,
+                0x000000CB,
+                0x000000CC,
+                0x000000CD,
+                0x000000CE,
+                0x000000CF,
+                0x000000D0,
+                0x000000D1,
+                0x000000D2,
+                0x000000D3,
+                0x000000D4,
+                0x000000D5,
+                0x000000D6,
+                0x000000D7,
+                0x000000D8,
+                0x000000D9,
+                0x000000DA,
+                0x000000DB,
+                0x000000DC,
+                0x000000DD,
+                0x000000DE,
+                0x000000DF,
+                0x000000E0,
+                0x000000E1,
+                0x000000E2,
+                0x000000E3,
+                0x000000E4,
+                0x000000E5,
+                0x000000E6,
+                0x000000E7,
+                0x000000E8,
+                0x000000E9,
+                0x000000EA,
+                0x000000EB,
+                0x000000EC,
+                0x000000ED,
+                0x000000EE,
+                0x000000EF,
+                0x000000F0,
+                0x000000F1,
+                0x000000F2,
+                0x000000F3,
+                0x000000F4,
+                0x000000F5,
+                0x000000F6,
+                0x000000F7,
+                0x000000F8,
+                0x000000F9,
+                0x000000FA,
+                0x000000FB,
+                0x000000FC,
+                0x000000FD,
+                0x000000FE,
+                0x000000FF,
+            }
+            Register (FFixedHW, 
+                0xF0,               // Bit Width
+                0xF1,               // Bit Offset
+                0xF2F3F4F5F6F7F8F9, // Address
+                ,)
+            ExtendedIO (ResourceConsumer, MinFixed, MaxFixed, SubDecode, EntireRange,
+                0xD0D1D2D3D4D5D6D7, // Granularity
+                0xD8D9DADBDCDDDEDF, // Range Minimum
+                0xE0E1E2E3E4E5E6E7, // Range Maximum
+                0xE8E9EAEBECEDEEEF, // Translation Offset
+                0xF0F1F2F3F4F5F6F7, // Length
+                0xF8F9FAFBFCFDFEFF, // Type-Specific Attributes
+                , TypeTranslation, SparseTranslation)
+            ExtendedMemory (ResourceConsumer, SubDecode, MinFixed, MaxFixed, NonCacheable, ReadOnly,
+                0xD0D1D2D3D4D5D6D7, // Granularity
+                0xD8D9DADBDCDDDEDF, // Range Minimum
+                0xE0E1E2E3E4E5E6E7, // Range Maximum
+                0xE8E9EAEBECEDEEEF, // Translation Offset
+                0xF0F1F2F3F4F5F6F7, // Length
+                0xF8F9FAFBFCFDFEFF, // Type-Specific Attributes
+                , AddressRangeACPI, TypeTranslation)
+            ExtendedSpace (0xC0, ResourceConsumer, SubDecode, MinFixed, MaxFixed, 0x5A,
+                0xD0D1D2D3D4D5D6D7, // Granularity
+                0xD8D9DADBDCDDDEDF, // Range Minimum
+                0xE0E1E2E3E4E5E6E7, // Range Maximum
+                0xE8E9EAEBECEDEEEF, // Translation Offset
+                0xF0F1F2F3F4F5F6F7, // Length
+                0xF8F9FAFBFCFDFEFF, // Type-Specific Attributes
+                )
+            DWordSpace (0xC0, ResourceConsumer, SubDecode, MinFixed, MaxFixed, 0x5A,
+                0xECEDEEEF,         // Granularity
+                0xF0F1F2F3,         // Range Minimum
+                0xF4F5F6F7,         // Range Maximum
+                0xF8F9FAFB,         // Translation Offset
+                0xFCFDFEFF,         // Length
+                0xFF, "PATHPATHPATH", )
+            QWordSpace (0xC0, ResourceConsumer, SubDecode, MinFixed, MaxFixed, 0x5A,
+                0xD8D9DADBDCDDDEDF, // Granularity
+                0xE0E1E2E3E4E5E6E7, // Range Minimum
+                0xE8E9EAEBECEDEEEF, // Range Maximum
+                0xF0F1F2F3F4F5F6F7, // Translation Offset
+                0xF8F9FAFBFCFDFEFF, // Length
+                0xFF, "PATHPATHPATH", )
+            WordSpace (0xC0, ResourceConsumer, SubDecode, MinFixed, MaxFixed, 0x5A,
+                0xF6F7,             // Granularity
+                0xF8F9,             // Range Minimum
+                0xFAFB,             // Range Maximum
+                0xFCFD,             // Translation Offset
+                0xFEFF,             // Length
+                0xFF, "PATHPATHPATH", )
+            IRQ (Level, ActiveHigh, Exclusive, )
+                {0}
+            IRQNoFlags ()
+                {1}
+            DMA (Compatibility, NotBusMaster, Transfer16, )
+                {2}
+            IO (Decode16,
+                0xF0F1,             // Range Minimum
+                0xF2F3,             // Range Maximum
+                0xF4,               // Alignment
+                0xF5,               // Length
+                )
+            FixedIO (
+                0xF0F1,             // Address
+                0xF2,               // Length
+                )
+            VendorShort ()      // Length = 0x07
+            {
+                 0x00, 0xA2, 0xB3, 0x76, 0xD5, 0xE6, 0xF7         // ...v...
+            }
+            Memory24 (ReadWrite,
+                0xF0F1,             // Range Minimum
+                0xF2F3,             // Range Maximum
+                0xF4F5,             // Alignment
+                0xF6F7,             // Length
+                )
+            Memory32 (ReadWrite,
+                0xF0F1F2F3,         // Range Minimum
+                0xF4F5F6F7,         // Range Maximum
+                0xF8F9FAFB,         // Alignment
+                0xFCFDFEFF,         // Length
+                )
+            Memory32Fixed (ReadOnly,
+                0xF0F1F2F3,         // Address Base
+                0xF4F5F6F7,         // Address Length
+                )
+            VendorLong  ()      // Length = 0x15
+            {
+                /* 0000 */  0x9F, 0xF0, 0xF1, 0xF2, 0xF3, 0xF4, 0xF5, 0xF6,  // ........
+                /* 0008 */  0xF7, 0xF8, 0xF9, 0xFA, 0xFB, 0xFC, 0xFD, 0xFE,  // ........
+                /* 0010 */  0xFF, 0x00, 0x01, 0x02, 0x03                     // .....
+            }
+            QWordIO (ResourceConsumer, MinFixed, MaxFixed, SubDecode, EntireRange,
+                0xD8D9DADBDCDDDEDF, // Granularity
+                0xE0E1E2E3E4E5E6E7, // Range Minimum
+                0xE8E9EAEBECEDEEEF, // Range Maximum
+                0xF0F1F2F3F4F5F6F7, // Translation Offset
+                0xF8F9FAFBFCFDFEFF, // Length
+                0xFF, "PATHPATHPATH", , TypeTranslation, SparseTranslation)
+            DWordIO (ResourceConsumer, MinFixed, MaxFixed, SubDecode, EntireRange,
+                0xECEDEEEF,         // Granularity
+                0xF0F1F2F3,         // Range Minimum
+                0xF4F5F6F7,         // Range Maximum
+                0xF8F9FAFB,         // Translation Offset
+                0xFCFDFEFF,         // Length
+                0xFF, "PATHPATHPATH", , TypeTranslation, SparseTranslation)
+            WordIO (ResourceConsumer, MinFixed, MaxFixed, SubDecode, EntireRange,
+                0xF6F7,             // Granularity
+                0xF8F9,             // Range Minimum
+                0xFAFB,             // Range Maximum
+                0xFCFD,             // Translation Offset
+                0xFEFF,             // Length
+                0xFF, "PATHPATHPATH", , TypeTranslation, SparseTranslation)
+            QWordMemory (ResourceConsumer, SubDecode, MinFixed, MaxFixed, NonCacheable, ReadOnly,
+                0xD8D9DADBDCDDDEDF, // Granularity
+                0xE0E1E2E3E4E5E6E7, // Range Minimum
+                0xE8E9EAEBECEDEEEF, // Range Maximum
+                0xF0F1F2F3F4F5F6F7, // Translation Offset
+                0xF8F9FAFBFCFDFEFF, // Length
+                0xFF, "PATHPATHPATH", , AddressRangeACPI, TypeTranslation)
+            DWordMemory (ResourceConsumer, SubDecode, MinFixed, MaxFixed, NonCacheable, ReadOnly,
+                0xECEDEEEF,         // Granularity
+                0xF0F1F2F3,         // Range Minimum
+                0xF4F5F6F7,         // Range Maximum
+                0xF8F9FAFB,         // Translation Offset
+                0xFCFDFEFF,         // Length
+                0xFF, "PATHPATHPATH", , AddressRangeACPI, TypeTranslation)
+            WordBusNumber (ResourceConsumer, MinFixed, MaxFixed, SubDecode,
+                0xF6F7,             // Granularity
+                0xF8F9,             // Range Minimum
+                0xFAFB,             // Range Maximum
+                0xFCFD,             // Translation Offset
+                0xFEFF,             // Length
+                0xFF, "PATHPATHPATH", )
+            Interrupt (ResourceConsumer, Edge, ActiveLow, Shared, 0xFF, "!\"#$%&\'()*+,-./0123456789:;<=>?@ABCDEFGHIJKLMNOPQRSTUVWXYZ[\\]^_`abcdefghijklmnopqrstuvwxyz{|}~ !\"#$%&\'()*+,-./0123456789:;<=>?@ABCDEFGHIJKLMNOPQRSTUVWXYZ[\\]^_`abcdefghijklmnopqrstuvwxyz{|}~ !\"#$%&\'()*", )
+            {
+                0x00000001,
+                0x00000002,
+                0x00000003,
+                0x00000004,
+                0x00000005,
+                0x00000006,
+                0x00000007,
+                0x00000008,
+                0x00000009,
+                0x0000000A,
+                0x0000000B,
+                0x0000000C,
+                0x0000000D,
+                0x0000000E,
+                0x0000000F,
+                0x00000010,
+                0x00000011,
+                0x00000012,
+                0x00000013,
+                0x00000014,
+                0x00000015,
+                0x00000016,
+                0x00000017,
+                0x00000018,
+                0x00000019,
+                0x0000001A,
+                0x0000001B,
+                0x0000001C,
+                0x0000001D,
+                0x0000001E,
+                0x0000001F,
+                0x00000020,
+                0x00000021,
+                0x00000022,
+                0x00000023,
+                0x00000024,
+                0x00000025,
+                0x00000026,
+                0x00000027,
+                0x00000028,
+                0x00000029,
+                0x0000002A,
+                0x0000002B,
+                0x0000002C,
+                0x0000002D,
+                0x0000002E,
+                0x0000002F,
+                0x00000030,
+                0x00000031,
+                0x00000032,
+                0x00000033,
+                0x00000034,
+                0x00000035,
+                0x00000036,
+                0x00000037,
+                0x00000038,
+                0x00000039,
+                0x0000003A,
+                0x0000003B,
+                0x0000003C,
+                0x0000003D,
+                0x0000003E,
+                0x0000003F,
+                0x00000040,
+                0x00000041,
+                0x00000042,
+                0x00000043,
+                0x00000044,
+                0x00000045,
+                0x00000046,
+                0x00000047,
+                0x00000048,
+                0x00000049,
+                0x0000004A,
+                0x0000004B,
+                0x0000004C,
+                0x0000004D,
+                0x0000004E,
+                0x0000004F,
+                0x00000050,
+                0x00000051,
+                0x00000052,
+                0x00000053,
+                0x00000054,
+                0x00000055,
+                0x00000056,
+                0x00000057,
+                0x00000058,
+                0x00000059,
+                0x0000005A,
+                0x0000005B,
+                0x0000005C,
+                0x0000005D,
+                0x0000005E,
+                0x0000005F,
+                0x00000060,
+                0x00000061,
+                0x00000062,
+                0x00000063,
+                0x00000064,
+                0x00000065,
+                0x00000066,
+                0x00000067,
+                0x00000068,
+                0x00000069,
+                0x0000006A,
+                0x0000006B,
+                0x0000006C,
+                0x0000006D,
+                0x0000006E,
+                0x0000006F,
+                0x00000070,
+                0x00000071,
+                0x00000072,
+                0x00000073,
+                0x00000074,
+                0x00000075,
+                0x00000076,
+                0x00000077,
+                0x00000078,
+                0x00000079,
+                0x0000007A,
+                0x0000007B,
+                0x0000007C,
+                0x0000007D,
+                0x0000007E,
+                0x0000007F,
+                0x00000080,
+                0x00000081,
+                0x00000082,
+                0x00000083,
+                0x00000084,
+                0x00000085,
+                0x00000086,
+                0x00000087,
+                0x00000088,
+                0x00000089,
+                0x0000008A,
+                0x0000008B,
+                0x0000008C,
+                0x0000008D,
+                0x0000008E,
+                0x0000008F,
+                0x00000090,
+                0x00000091,
+                0x00000092,
+                0x00000093,
+                0x00000094,
+                0x00000095,
+                0x00000096,
+                0x00000097,
+                0x00000098,
+                0x00000099,
+                0x0000009A,
+                0x0000009B,
+                0x0000009C,
+                0x0000009D,
+                0x0000009E,
+                0x0000009F,
+                0x000000A0,
+                0x000000A1,
+                0x000000A2,
+                0x000000A3,
+                0x000000A4,
+                0x000000A5,
+                0x000000A6,
+                0x000000A7,
+                0x000000A8,
+                0x000000A9,
+                0x000000AA,
+                0x000000AB,
+                0x000000AC,
+                0x000000AD,
+                0x000000AE,
+                0x000000AF,
+                0x000000B0,
+                0x000000B1,
+                0x000000B2,
+                0x000000B3,
+                0x000000B4,
+                0x000000B5,
+                0x000000B6,
+                0x000000B7,
+                0x000000B8,
+                0x000000B9,
+                0x000000BA,
+                0x000000BB,
+                0x000000BC,
+                0x000000BD,
+                0x000000BE,
+                0x000000BF,
+                0x000000C0,
+                0x000000C1,
+                0x000000C2,
+                0x000000C3,
+                0x000000C4,
+                0x000000C5,
+                0x000000C6,
+                0x000000C7,
+                0x000000C8,
+                0x000000C9,
+                0x000000CA,
+                0x000000CB,
+                0x000000CC,
+                0x000000CD,
+                0x000000CE,
+                0x000000CF,
+                0x000000D0,
+                0x000000D1,
+                0x000000D2,
+                0x000000D3,
+                0x000000D4,
+                0x000000D5,
+                0x000000D6,
+                0x000000D7,
+                0x000000D8,
+                0x000000D9,
+                0x000000DA,
+                0x000000DB,
+                0x000000DC,
+                0x000000DD,
+                0x000000DE,
+                0x000000DF,
+                0x000000E0,
+                0x000000E1,
+                0x000000E2,
+                0x000000E3,
+                0x000000E4,
+                0x000000E5,
+                0x000000E6,
+                0x000000E7,
+                0x000000E8,
+                0x000000E9,
+                0x000000EA,
+                0x000000EB,
+                0x000000EC,
+                0x000000ED,
+                0x000000EE,
+                0x000000EF,
+                0x000000F0,
+                0x000000F1,
+                0x000000F2,
+                0x000000F3,
+                0x000000F4,
+                0x000000F5,
+                0x000000F6,
+                0x000000F7,
+                0x000000F8,
+                0x000000F9,
+                0x000000FA,
+                0x000000FB,
+                0x000000FC,
+                0x000000FD,
+                0x000000FE,
+                0x000000FF,
+            }
+            Register (FFixedHW, 
+                0xF0,               // Bit Width
+                0xF1,               // Bit Offset
+                0xF2F3F4F5F6F7F8F9, // Address
+                ,)
+            ExtendedIO (ResourceConsumer, MinFixed, MaxFixed, SubDecode, EntireRange,
+                0xD0D1D2D3D4D5D6D7, // Granularity
+                0xD8D9DADBDCDDDEDF, // Range Minimum
+                0xE0E1E2E3E4E5E6E7, // Range Maximum
+                0xE8E9EAEBECEDEEEF, // Translation Offset
+                0xF0F1F2F3F4F5F6F7, // Length
+                0xF8F9FAFBFCFDFEFF, // Type-Specific Attributes
+                , TypeTranslation, SparseTranslation)
+            ExtendedMemory (ResourceConsumer, SubDecode, MinFixed, MaxFixed, NonCacheable, ReadOnly,
+                0xD0D1D2D3D4D5D6D7, // Granularity
+                0xD8D9DADBDCDDDEDF, // Range Minimum
+                0xE0E1E2E3E4E5E6E7, // Range Maximum
+                0xE8E9EAEBECEDEEEF, // Translation Offset
+                0xF0F1F2F3F4F5F6F7, // Length
+                0xF8F9FAFBFCFDFEFF, // Type-Specific Attributes
+                , AddressRangeACPI, TypeTranslation)
+            ExtendedSpace (0xC0, ResourceConsumer, SubDecode, MinFixed, MaxFixed, 0x5A,
+                0xD0D1D2D3D4D5D6D7, // Granularity
+                0xD8D9DADBDCDDDEDF, // Range Minimum
+                0xE0E1E2E3E4E5E6E7, // Range Maximum
+                0xE8E9EAEBECEDEEEF, // Translation Offset
+                0xF0F1F2F3F4F5F6F7, // Length
+                0xF8F9FAFBFCFDFEFF, // Type-Specific Attributes
+                )
+            DWordSpace (0xC0, ResourceConsumer, SubDecode, MinFixed, MaxFixed, 0x5A,
+                0xECEDEEEF,         // Granularity
+                0xF0F1F2F3,         // Range Minimum
+                0xF4F5F6F7,         // Range Maximum
+                0xF8F9FAFB,         // Translation Offset
+                0xFCFDFEFF,         // Length
+                0xFF, "PATHPATHPATH", )
+            QWordSpace (0xC0, ResourceConsumer, SubDecode, MinFixed, MaxFixed, 0x5A,
+                0xD8D9DADBDCDDDEDF, // Granularity
+                0xE0E1E2E3E4E5E6E7, // Range Minimum
+                0xE8E9EAEBECEDEEEF, // Range Maximum
+                0xF0F1F2F3F4F5F6F7, // Translation Offset
+                0xF8F9FAFBFCFDFEFF, // Length
+                0xFF, "PATHPATHPATH", )
+            WordSpace (0xC0, ResourceConsumer, SubDecode, MinFixed, MaxFixed, 0x5A,
+                0xF6F7,             // Granularity
+                0xF8F9,             // Range Minimum
+                0xFAFB,             // Range Maximum
+                0xFCFD,             // Translation Offset
+                0xFEFF,             // Length
+                0xFF, "PATHPATHPATH", )
+        }, 
 
-Name(z007, 7)
+        ResourceTemplate ()
+        {
+            StartDependentFnNoPri ()
+            {
+                IRQ (Level, ActiveHigh, Exclusive, )
+                    {0}
+                IRQNoFlags ()
+                    {1}
+            }
+            StartDependentFnNoPri ()
+            {
+                IRQ (Level, ActiveHigh, Exclusive, )
+                    {0}
+                IRQNoFlags ()
+                    {1}
+                DMA (Compatibility, NotBusMaster, Transfer16, )
+                    {2}
+            }
+            StartDependentFn (0x00, 0x00)
+            {
+                IRQ (Level, ActiveHigh, Exclusive, )
+                    {0}
+                IRQNoFlags ()
+                    {1}
+                DMA (Compatibility, NotBusMaster, Transfer16, )
+                    {2}
+                IO (Decode16,
+                    0xF0F1,             // Range Minimum
+                    0xF2F3,             // Range Maximum
+                    0xF4,               // Alignment
+                    0xF5,               // Length
+                    )
+            }
+            StartDependentFn (0x00, 0x01)
+            {
+                IRQ (Level, ActiveHigh, Exclusive, )
+                    {0}
+                IRQNoFlags ()
+                    {1}
+                DMA (Compatibility, NotBusMaster, Transfer16, )
+                    {2}
+                IO (Decode16,
+                    0xF0F1,             // Range Minimum
+                    0xF2F3,             // Range Maximum
+                    0xF4,               // Alignment
+                    0xF5,               // Length
+                    )
+                FixedIO (
+                    0xF0F1,             // Address
+                    0xF2,               // Length
+                    )
+            }
+            StartDependentFn (0x00, 0x02)
+            {
+                IRQ (Level, ActiveHigh, Exclusive, )
+                    {0}
+                IRQNoFlags ()
+                    {1}
+                DMA (Compatibility, NotBusMaster, Transfer16, )
+                    {2}
+                IO (Decode16,
+                    0xF0F1,             // Range Minimum
+                    0xF2F3,             // Range Maximum
+                    0xF4,               // Alignment
+                    0xF5,               // Length
+                    )
+                FixedIO (
+                    0xF0F1,             // Address
+                    0xF2,               // Length
+                    )
+                VendorShort ()      // Length = 0x07
+                {
+                     0x00, 0xA2, 0xB3, 0x76, 0xD5, 0xE6, 0xF7         // ...v...
+                }
+            }
+            StartDependentFn (0x01, 0x00)
+            {
+                IRQ (Level, ActiveHigh, Exclusive, )
+                    {0}
+                IRQNoFlags ()
+                    {1}
+                DMA (Compatibility, NotBusMaster, Transfer16, )
+                    {2}
+                IO (Decode16,
+                    0xF0F1,             // Range Minimum
+                    0xF2F3,             // Range Maximum
+                    0xF4,               // Alignment
+                    0xF5,               // Length
+                    )
+                FixedIO (
+                    0xF0F1,             // Address
+                    0xF2,               // Length
+                    )
+                VendorShort ()      // Length = 0x07
+                {
+                     0x00, 0xA2, 0xB3, 0x76, 0xD5, 0xE6, 0xF7         // ...v...
+                }
+                Memory24 (ReadWrite,
+                    0xF0F1,             // Range Minimum
+                    0xF2F3,             // Range Maximum
+                    0xF4F5,             // Alignment
+                    0xF6F7,             // Length
+                    )
+            }
+            StartDependentFn (0x01, 0x01)
+            {
+                IRQ (Level, ActiveHigh, Exclusive, )
+                    {0}
+                IRQNoFlags ()
+                    {1}
+                DMA (Compatibility, NotBusMaster, Transfer16, )
+                    {2}
+                IO (Decode16,
+                    0xF0F1,             // Range Minimum
+                    0xF2F3,             // Range Maximum
+                    0xF4,               // Alignment
+                    0xF5,               // Length
+                    )
+                FixedIO (
+                    0xF0F1,             // Address
+                    0xF2,               // Length
+                    )
+                VendorShort ()      // Length = 0x07
+                {
+                     0x00, 0xA2, 0xB3, 0x76, 0xD5, 0xE6, 0xF7         // ...v...
+                }
+                Memory24 (ReadWrite,
+                    0xF0F1,             // Range Minimum
+                    0xF2F3,             // Range Maximum
+                    0xF4F5,             // Alignment
+                    0xF6F7,             // Length
+                    )
+                Memory32 (ReadWrite,
+                    0xF0F1F2F3,         // Range Minimum
+                    0xF4F5F6F7,         // Range Maximum
+                    0xF8F9FAFB,         // Alignment
+                    0xFCFDFEFF,         // Length
+                    )
+            }
+            StartDependentFn (0x01, 0x01)
+            {
+                IRQ (Level, ActiveHigh, Exclusive, )
+                    {0}
+                IRQNoFlags ()
+                    {1}
+                DMA (Compatibility, NotBusMaster, Transfer16, )
+                    {2}
+                IO (Decode16,
+                    0xF0F1,             // Range Minimum
+                    0xF2F3,             // Range Maximum
+                    0xF4,               // Alignment
+                    0xF5,               // Length
+                    )
+                FixedIO (
+                    0xF0F1,             // Address
+                    0xF2,               // Length
+                    )
+                VendorShort ()      // Length = 0x07
+                {
+                     0x00, 0xA2, 0xB3, 0x76, 0xD5, 0xE6, 0xF7         // ...v...
+                }
+                Memory24 (ReadWrite,
+                    0xF0F1,             // Range Minimum
+                    0xF2F3,             // Range Maximum
+                    0xF4F5,             // Alignment
+                    0xF6F7,             // Length
+                    )
+                Memory32 (ReadWrite,
+                    0xF0F1F2F3,         // Range Minimum
+                    0xF4F5F6F7,         // Range Maximum
+                    0xF8F9FAFB,         // Alignment
+                    0xFCFDFEFF,         // Length
+                    )
+                Memory32Fixed (ReadOnly,
+                    0xF0F1F2F3,         // Address Base
+                    0xF4F5F6F7,         // Address Length
+                    )
+                VendorLong  ()      // Length = 0x15
+                {
+                    /* 0000 */  0x9F, 0xF0, 0xF1, 0xF2, 0xF3, 0xF4, 0xF5, 0xF6,  // ........
+                    /* 0008 */  0xF7, 0xF8, 0xF9, 0xFA, 0xFB, 0xFC, 0xFD, 0xFE,  // ........
+                    /* 0010 */  0xFF, 0x00, 0x01, 0x02, 0x03                     // .....
+                }
+                QWordIO (ResourceConsumer, MinFixed, MaxFixed, SubDecode, EntireRange,
+                    0xD8D9DADBDCDDDEDF, // Granularity
+                    0xE0E1E2E3E4E5E6E7, // Range Minimum
+                    0xE8E9EAEBECEDEEEF, // Range Maximum
+                    0xF0F1F2F3F4F5F6F7, // Translation Offset
+                    0xF8F9FAFBFCFDFEFF, // Length
+                    0xFF, "PATHPATHPATH", , TypeTranslation, SparseTranslation)
+                DWordIO (ResourceConsumer, MinFixed, MaxFixed, SubDecode, EntireRange,
+                    0xECEDEEEF,         // Granularity
+                    0xF0F1F2F3,         // Range Minimum
+                    0xF4F5F6F7,         // Range Maximum
+                    0xF8F9FAFB,         // Translation Offset
+                    0xFCFDFEFF,         // Length
+                    0xFF, "PATHPATHPATH", , TypeTranslation, SparseTranslation)
+                WordIO (ResourceConsumer, MinFixed, MaxFixed, SubDecode, EntireRange,
+                    0xF6F7,             // Granularity
+                    0xF8F9,             // Range Minimum
+                    0xFAFB,             // Range Maximum
+                    0xFCFD,             // Translation Offset
+                    0xFEFF,             // Length
+                    0xFF, "PATHPATHPATH", , TypeTranslation, SparseTranslation)
+                QWordMemory (ResourceConsumer, SubDecode, MinFixed, MaxFixed, NonCacheable, ReadOnly,
+                    0xD8D9DADBDCDDDEDF, // Granularity
+                    0xE0E1E2E3E4E5E6E7, // Range Minimum
+                    0xE8E9EAEBECEDEEEF, // Range Maximum
+                    0xF0F1F2F3F4F5F6F7, // Translation Offset
+                    0xF8F9FAFBFCFDFEFF, // Length
+                    0xFF, "PATHPATHPATH", , AddressRangeACPI, TypeTranslation)
+                DWordMemory (ResourceConsumer, SubDecode, MinFixed, MaxFixed, NonCacheable, ReadOnly,
+                    0xECEDEEEF,         // Granularity
+                    0xF0F1F2F3,         // Range Minimum
+                    0xF4F5F6F7,         // Range Maximum
+                    0xF8F9FAFB,         // Translation Offset
+                    0xFCFDFEFF,         // Length
+                    0xFF, "PATHPATHPATH", , AddressRangeACPI, TypeTranslation)
+                WordBusNumber (ResourceConsumer, MinFixed, MaxFixed, SubDecode,
+                    0xF6F7,             // Granularity
+                    0xF8F9,             // Range Minimum
+                    0xFAFB,             // Range Maximum
+                    0xFCFD,             // Translation Offset
+                    0xFEFF,             // Length
+                    0xFF, "PATHPATHPATH", )
+                Interrupt (ResourceConsumer, Edge, ActiveLow, Shared, 0xFF, "!\"#$%&\'()*+,-./0123456789:;<=>?@ABCDEFGHIJKLMNOPQRSTUVWXYZ[\\]^_`abcdefghijklmnopqrstuvwxyz{|}~ !\"#$%&\'()*+,-./0123456789:;<=>?@ABCDEFGHIJKLMNOPQRSTUVWXYZ[\\]^_`abcdefghijklmnopqrstuvwxyz{|}~ !\"#$%&\'()*", )
+                {
+                    0x00000001,
+                    0x00000002,
+                    0x00000003,
+                    0x00000004,
+                    0x00000005,
+                    0x00000006,
+                    0x00000007,
+                    0x00000008,
+                    0x00000009,
+                    0x0000000A,
+                    0x0000000B,
+                    0x0000000C,
+                    0x0000000D,
+                    0x0000000E,
+                    0x0000000F,
+                    0x00000010,
+                    0x00000011,
+                    0x00000012,
+                    0x00000013,
+                    0x00000014,
+                    0x00000015,
+                    0x00000016,
+                    0x00000017,
+                    0x00000018,
+                    0x00000019,
+                    0x0000001A,
+                    0x0000001B,
+                    0x0000001C,
+                    0x0000001D,
+                    0x0000001E,
+                    0x0000001F,
+                    0x00000020,
+                    0x00000021,
+                    0x00000022,
+                    0x00000023,
+                    0x00000024,
+                    0x00000025,
+                    0x00000026,
+                    0x00000027,
+                    0x00000028,
+                    0x00000029,
+                    0x0000002A,
+                    0x0000002B,
+                    0x0000002C,
+                    0x0000002D,
+                    0x0000002E,
+                    0x0000002F,
+                    0x00000030,
+                    0x00000031,
+                    0x00000032,
+                    0x00000033,
+                    0x00000034,
+                    0x00000035,
+                    0x00000036,
+                    0x00000037,
+                    0x00000038,
+                    0x00000039,
+                    0x0000003A,
+                    0x0000003B,
+                    0x0000003C,
+                    0x0000003D,
+                    0x0000003E,
+                    0x0000003F,
+                    0x00000040,
+                    0x00000041,
+                    0x00000042,
+                    0x00000043,
+                    0x00000044,
+                    0x00000045,
+                    0x00000046,
+                    0x00000047,
+                    0x00000048,
+                    0x00000049,
+                    0x0000004A,
+                    0x0000004B,
+                    0x0000004C,
+                    0x0000004D,
+                    0x0000004E,
+                    0x0000004F,
+                    0x00000050,
+                    0x00000051,
+                    0x00000052,
+                    0x00000053,
+                    0x00000054,
+                    0x00000055,
+                    0x00000056,
+                    0x00000057,
+                    0x00000058,
+                    0x00000059,
+                    0x0000005A,
+                    0x0000005B,
+                    0x0000005C,
+                    0x0000005D,
+                    0x0000005E,
+                    0x0000005F,
+                    0x00000060,
+                    0x00000061,
+                    0x00000062,
+                    0x00000063,
+                    0x00000064,
+                    0x00000065,
+                    0x00000066,
+                    0x00000067,
+                    0x00000068,
+                    0x00000069,
+                    0x0000006A,
+                    0x0000006B,
+                    0x0000006C,
+                    0x0000006D,
+                    0x0000006E,
+                    0x0000006F,
+                    0x00000070,
+                    0x00000071,
+                    0x00000072,
+                    0x00000073,
+                    0x00000074,
+                    0x00000075,
+                    0x00000076,
+                    0x00000077,
+                    0x00000078,
+                    0x00000079,
+                    0x0000007A,
+                    0x0000007B,
+                    0x0000007C,
+                    0x0000007D,
+                    0x0000007E,
+                    0x0000007F,
+                    0x00000080,
+                    0x00000081,
+                    0x00000082,
+                    0x00000083,
+                    0x00000084,
+                    0x00000085,
+                    0x00000086,
+                    0x00000087,
+                    0x00000088,
+                    0x00000089,
+                    0x0000008A,
+                    0x0000008B,
+                    0x0000008C,
+                    0x0000008D,
+                    0x0000008E,
+                    0x0000008F,
+                    0x00000090,
+                    0x00000091,
+                    0x00000092,
+                    0x00000093,
+                    0x00000094,
+                    0x00000095,
+                    0x00000096,
+                    0x00000097,
+                    0x00000098,
+                    0x00000099,
+                    0x0000009A,
+                    0x0000009B,
+                    0x0000009C,
+                    0x0000009D,
+                    0x0000009E,
+                    0x0000009F,
+                    0x000000A0,
+                    0x000000A1,
+                    0x000000A2,
+                    0x000000A3,
+                    0x000000A4,
+                    0x000000A5,
+                    0x000000A6,
+                    0x000000A7,
+                    0x000000A8,
+                    0x000000A9,
+                    0x000000AA,
+                    0x000000AB,
+                    0x000000AC,
+                    0x000000AD,
+                    0x000000AE,
+                    0x000000AF,
+                    0x000000B0,
+                    0x000000B1,
+                    0x000000B2,
+                    0x000000B3,
+                    0x000000B4,
+                    0x000000B5,
+                    0x000000B6,
+                    0x000000B7,
+                    0x000000B8,
+                    0x000000B9,
+                    0x000000BA,
+                    0x000000BB,
+                    0x000000BC,
+                    0x000000BD,
+                    0x000000BE,
+                    0x000000BF,
+                    0x000000C0,
+                    0x000000C1,
+                    0x000000C2,
+                    0x000000C3,
+                    0x000000C4,
+                    0x000000C5,
+                    0x000000C6,
+                    0x000000C7,
+                    0x000000C8,
+                    0x000000C9,
+                    0x000000CA,
+                    0x000000CB,
+                    0x000000CC,
+                    0x000000CD,
+                    0x000000CE,
+                    0x000000CF,
+                    0x000000D0,
+                    0x000000D1,
+                    0x000000D2,
+                    0x000000D3,
+                    0x000000D4,
+                    0x000000D5,
+                    0x000000D6,
+                    0x000000D7,
+                    0x000000D8,
+                    0x000000D9,
+                    0x000000DA,
+                    0x000000DB,
+                    0x000000DC,
+                    0x000000DD,
+                    0x000000DE,
+                    0x000000DF,
+                    0x000000E0,
+                    0x000000E1,
+                    0x000000E2,
+                    0x000000E3,
+                    0x000000E4,
+                    0x000000E5,
+                    0x000000E6,
+                    0x000000E7,
+                    0x000000E8,
+                    0x000000E9,
+                    0x000000EA,
+                    0x000000EB,
+                    0x000000EC,
+                    0x000000ED,
+                    0x000000EE,
+                    0x000000EF,
+                    0x000000F0,
+                    0x000000F1,
+                    0x000000F2,
+                    0x000000F3,
+                    0x000000F4,
+                    0x000000F5,
+                    0x000000F6,
+                    0x000000F7,
+                    0x000000F8,
+                    0x000000F9,
+                    0x000000FA,
+                    0x000000FB,
+                    0x000000FC,
+                    0x000000FD,
+                    0x000000FE,
+                    0x000000FF,
+                }
+                Register (FFixedHW, 
+                    0xF0,               // Bit Width
+                    0xF1,               // Bit Offset
+                    0xF2F3F4F5F6F7F8F9, // Address
+                    ,)
+                ExtendedIO (ResourceConsumer, MinFixed, MaxFixed, SubDecode, EntireRange,
+                    0xD0D1D2D3D4D5D6D7, // Granularity
+                    0xD8D9DADBDCDDDEDF, // Range Minimum
+                    0xE0E1E2E3E4E5E6E7, // Range Maximum
+                    0xE8E9EAEBECEDEEEF, // Translation Offset
+                    0xF0F1F2F3F4F5F6F7, // Length
+                    0xF8F9FAFBFCFDFEFF, // Type-Specific Attributes
+                    , TypeTranslation, SparseTranslation)
+                ExtendedMemory (ResourceConsumer, SubDecode, MinFixed, MaxFixed, NonCacheable, ReadOnly,
+                    0xD0D1D2D3D4D5D6D7, // Granularity
+                    0xD8D9DADBDCDDDEDF, // Range Minimum
+                    0xE0E1E2E3E4E5E6E7, // Range Maximum
+                    0xE8E9EAEBECEDEEEF, // Translation Offset
+                    0xF0F1F2F3F4F5F6F7, // Length
+                    0xF8F9FAFBFCFDFEFF, // Type-Specific Attributes
+                    , AddressRangeACPI, TypeTranslation)
+                ExtendedSpace (0xC0, ResourceConsumer, SubDecode, MinFixed, MaxFixed, 0x5A,
+                    0xD0D1D2D3D4D5D6D7, // Granularity
+                    0xD8D9DADBDCDDDEDF, // Range Minimum
+                    0xE0E1E2E3E4E5E6E7, // Range Maximum
+                    0xE8E9EAEBECEDEEEF, // Translation Offset
+                    0xF0F1F2F3F4F5F6F7, // Length
+                    0xF8F9FAFBFCFDFEFF, // Type-Specific Attributes
+                    )
+                DWordSpace (0xC0, ResourceConsumer, SubDecode, MinFixed, MaxFixed, 0x5A,
+                    0xECEDEEEF,         // Granularity
+                    0xF0F1F2F3,         // Range Minimum
+                    0xF4F5F6F7,         // Range Maximum
+                    0xF8F9FAFB,         // Translation Offset
+                    0xFCFDFEFF,         // Length
+                    0xFF, "PATHPATHPATH", )
+                QWordSpace (0xC0, ResourceConsumer, SubDecode, MinFixed, MaxFixed, 0x5A,
+                    0xD8D9DADBDCDDDEDF, // Granularity
+                    0xE0E1E2E3E4E5E6E7, // Range Minimum
+                    0xE8E9EAEBECEDEEEF, // Range Maximum
+                    0xF0F1F2F3F4F5F6F7, // Translation Offset
+                    0xF8F9FAFBFCFDFEFF, // Length
+                    0xFF, "PATHPATHPATH", )
+                WordSpace (0xC0, ResourceConsumer, SubDecode, MinFixed, MaxFixed, 0x5A,
+                    0xF6F7,             // Granularity
+                    0xF8F9,             // Range Minimum
+                    0xFAFB,             // Range Maximum
+                    0xFCFD,             // Translation Offset
+                    0xFEFF,             // Length
+                    0xFF, "PATHPATHPATH", )
+            }
+            StartDependentFn (0x01, 0x02)
+            {
+                IRQ (Level, ActiveHigh, Exclusive, )
+                    {0}
+                IRQNoFlags ()
+                    {1}
+                DMA (Compatibility, NotBusMaster, Transfer16, )
+                    {2}
+                IO (Decode16,
+                    0xF0F1,             // Range Minimum
+                    0xF2F3,             // Range Maximum
+                    0xF4,               // Alignment
+                    0xF5,               // Length
+                    )
+                FixedIO (
+                    0xF0F1,             // Address
+                    0xF2,               // Length
+                    )
+                VendorShort ()      // Length = 0x07
+                {
+                     0x00, 0xA2, 0xB3, 0x76, 0xD5, 0xE6, 0xF7         // ...v...
+                }
+                Memory24 (ReadWrite,
+                    0xF0F1,             // Range Minimum
+                    0xF2F3,             // Range Maximum
+                    0xF4F5,             // Alignment
+                    0xF6F7,             // Length
+                    )
+                Memory32 (ReadWrite,
+                    0xF0F1F2F3,         // Range Minimum
+                    0xF4F5F6F7,         // Range Maximum
+                    0xF8F9FAFB,         // Alignment
+                    0xFCFDFEFF,         // Length
+                    )
+                Memory32Fixed (ReadOnly,
+                    0xF0F1F2F3,         // Address Base
+                    0xF4F5F6F7,         // Address Length
+                    )
+            }
+            StartDependentFn (0x02, 0x00)
+            {
+            }
+            StartDependentFn (0x02, 0x01)
+            {
+                IRQ (Level, ActiveHigh, Exclusive, )
+                    {0}
+                IRQNoFlags ()
+                    {1}
+                DMA (Compatibility, NotBusMaster, Transfer16, )
+                    {2}
+                IO (Decode16,
+                    0xF0F1,             // Range Minimum
+                    0xF2F3,             // Range Maximum
+                    0xF4,               // Alignment
+                    0xF5,               // Length
+                    )
+                FixedIO (
+                    0xF0F1,             // Address
+                    0xF2,               // Length
+                    )
+                VendorShort ()      // Length = 0x07
+                {
+                     0x00, 0xA2, 0xB3, 0x76, 0xD5, 0xE6, 0xF7         // ...v...
+                }
+                Memory24 (ReadWrite,
+                    0xF0F1,             // Range Minimum
+                    0xF2F3,             // Range Maximum
+                    0xF4F5,             // Alignment
+                    0xF6F7,             // Length
+                    )
+                Memory32 (ReadWrite,
+                    0xF0F1F2F3,         // Range Minimum
+                    0xF4F5F6F7,         // Range Maximum
+                    0xF8F9FAFB,         // Alignment
+                    0xFCFDFEFF,         // Length
+                    )
+                Memory32Fixed (ReadOnly,
+                    0xF0F1F2F3,         // Address Base
+                    0xF4F5F6F7,         // Address Length
+                    )
+                VendorLong  ()      // Length = 0x15
+                {
+                    /* 0000 */  0x9F, 0xF0, 0xF1, 0xF2, 0xF3, 0xF4, 0xF5, 0xF6,  // ........
+                    /* 0008 */  0xF7, 0xF8, 0xF9, 0xFA, 0xFB, 0xFC, 0xFD, 0xFE,  // ........
+                    /* 0010 */  0xFF, 0x00, 0x01, 0x02, 0x03                     // .....
+                }
+            }
+            StartDependentFn (0x02, 0x02)
+            {
+            }
+            EndDependentFn ()
+            StartDependentFnNoPri ()
+            {
+                IRQ (Level, ActiveHigh, Exclusive, )
+                    {0}
+                IRQNoFlags ()
+                    {1}
+            }
+            StartDependentFnNoPri ()
+            {
+                IRQ (Level, ActiveHigh, Exclusive, )
+                    {0}
+                IRQNoFlags ()
+                    {1}
+                DMA (Compatibility, NotBusMaster, Transfer16, )
+                    {2}
+            }
+            StartDependentFn (0x00, 0x00)
+            {
+                IRQ (Level, ActiveHigh, Exclusive, )
+                    {0}
+                IRQNoFlags ()
+                    {1}
+                DMA (Compatibility, NotBusMaster, Transfer16, )
+                    {2}
+                IO (Decode16,
+                    0xF0F1,             // Range Minimum
+                    0xF2F3,             // Range Maximum
+                    0xF4,               // Alignment
+                    0xF5,               // Length
+                    )
+            }
+            StartDependentFn (0x00, 0x01)
+            {
+                IRQ (Level, ActiveHigh, Exclusive, )
+                    {0}
+                IRQNoFlags ()
+                    {1}
+                DMA (Compatibility, NotBusMaster, Transfer16, )
+                    {2}
+                IO (Decode16,
+                    0xF0F1,             // Range Minimum
+                    0xF2F3,             // Range Maximum
+                    0xF4,               // Alignment
+                    0xF5,               // Length
+                    )
+                FixedIO (
+                    0xF0F1,             // Address
+                    0xF2,               // Length
+                    )
+            }
+            StartDependentFn (0x00, 0x02)
+            {
+                IRQ (Level, ActiveHigh, Exclusive, )
+                    {0}
+                IRQNoFlags ()
+                    {1}
+                DMA (Compatibility, NotBusMaster, Transfer16, )
+                    {2}
+                IO (Decode16,
+                    0xF0F1,             // Range Minimum
+                    0xF2F3,             // Range Maximum
+                    0xF4,               // Alignment
+                    0xF5,               // Length
+                    )
+                FixedIO (
+                    0xF0F1,             // Address
+                    0xF2,               // Length
+                    )
+                VendorShort ()      // Length = 0x07
+                {
+                     0x00, 0xA2, 0xB3, 0x76, 0xD5, 0xE6, 0xF7         // ...v...
+                }
+            }
+            StartDependentFn (0x01, 0x00)
+            {
+                IRQ (Level, ActiveHigh, Exclusive, )
+                    {0}
+                IRQNoFlags ()
+                    {1}
+                DMA (Compatibility, NotBusMaster, Transfer16, )
+                    {2}
+                IO (Decode16,
+                    0xF0F1,             // Range Minimum
+                    0xF2F3,             // Range Maximum
+                    0xF4,               // Alignment
+                    0xF5,               // Length
+                    )
+                FixedIO (
+                    0xF0F1,             // Address
+                    0xF2,               // Length
+                    )
+                VendorShort ()      // Length = 0x07
+                {
+                     0x00, 0xA2, 0xB3, 0x76, 0xD5, 0xE6, 0xF7         // ...v...
+                }
+                Memory24 (ReadWrite,
+                    0xF0F1,             // Range Minimum
+                    0xF2F3,             // Range Maximum
+                    0xF4F5,             // Alignment
+                    0xF6F7,             // Length
+                    )
+            }
+            StartDependentFn (0x01, 0x01)
+            {
+                IRQ (Level, ActiveHigh, Exclusive, )
+                    {0}
+                IRQNoFlags ()
+                    {1}
+                DMA (Compatibility, NotBusMaster, Transfer16, )
+                    {2}
+                IO (Decode16,
+                    0xF0F1,             // Range Minimum
+                    0xF2F3,             // Range Maximum
+                    0xF4,               // Alignment
+                    0xF5,               // Length
+                    )
+                FixedIO (
+                    0xF0F1,             // Address
+                    0xF2,               // Length
+                    )
+                VendorShort ()      // Length = 0x07
+                {
+                     0x00, 0xA2, 0xB3, 0x76, 0xD5, 0xE6, 0xF7         // ...v...
+                }
+                Memory24 (ReadWrite,
+                    0xF0F1,             // Range Minimum
+                    0xF2F3,             // Range Maximum
+                    0xF4F5,             // Alignment
+                    0xF6F7,             // Length
+                    )
+                Memory32 (ReadWrite,
+                    0xF0F1F2F3,         // Range Minimum
+                    0xF4F5F6F7,         // Range Maximum
+                    0xF8F9FAFB,         // Alignment
+                    0xFCFDFEFF,         // Length
+                    )
+            }
+            StartDependentFn (0x01, 0x01)
+            {
+                IRQ (Level, ActiveHigh, Exclusive, )
+                    {0}
+                IRQNoFlags ()
+                    {1}
+                DMA (Compatibility, NotBusMaster, Transfer16, )
+                    {2}
+                IO (Decode16,
+                    0xF0F1,             // Range Minimum
+                    0xF2F3,             // Range Maximum
+                    0xF4,               // Alignment
+                    0xF5,               // Length
+                    )
+                FixedIO (
+                    0xF0F1,             // Address
+                    0xF2,               // Length
+                    )
+                VendorShort ()      // Length = 0x07
+                {
+                     0x00, 0xA2, 0xB3, 0x76, 0xD5, 0xE6, 0xF7         // ...v...
+                }
+                Memory24 (ReadWrite,
+                    0xF0F1,             // Range Minimum
+                    0xF2F3,             // Range Maximum
+                    0xF4F5,             // Alignment
+                    0xF6F7,             // Length
+                    )
+                Memory32 (ReadWrite,
+                    0xF0F1F2F3,         // Range Minimum
+                    0xF4F5F6F7,         // Range Maximum
+                    0xF8F9FAFB,         // Alignment
+                    0xFCFDFEFF,         // Length
+                    )
+                Memory32Fixed (ReadOnly,
+                    0xF0F1F2F3,         // Address Base
+                    0xF4F5F6F7,         // Address Length
+                    )
+                VendorLong  ()      // Length = 0x15
+                {
+                    /* 0000 */  0x9F, 0xF0, 0xF1, 0xF2, 0xF3, 0xF4, 0xF5, 0xF6,  // ........
+                    /* 0008 */  0xF7, 0xF8, 0xF9, 0xFA, 0xFB, 0xFC, 0xFD, 0xFE,  // ........
+                    /* 0010 */  0xFF, 0x00, 0x01, 0x02, 0x03                     // .....
+                }
+                QWordIO (ResourceConsumer, MinFixed, MaxFixed, SubDecode, EntireRange,
+                    0xD8D9DADBDCDDDEDF, // Granularity
+                    0xE0E1E2E3E4E5E6E7, // Range Minimum
+                    0xE8E9EAEBECEDEEEF, // Range Maximum
+                    0xF0F1F2F3F4F5F6F7, // Translation Offset
+                    0xF8F9FAFBFCFDFEFF, // Length
+                    0xFF, "PATHPATHPATH", , TypeTranslation, SparseTranslation)
+                DWordIO (ResourceConsumer, MinFixed, MaxFixed, SubDecode, EntireRange,
+                    0xECEDEEEF,         // Granularity
+                    0xF0F1F2F3,         // Range Minimum
+                    0xF4F5F6F7,         // Range Maximum
+                    0xF8F9FAFB,         // Translation Offset
+                    0xFCFDFEFF,         // Length
+                    0xFF, "PATHPATHPATH", , TypeTranslation, SparseTranslation)
+                WordIO (ResourceConsumer, MinFixed, MaxFixed, SubDecode, EntireRange,
+                    0xF6F7,             // Granularity
+                    0xF8F9,             // Range Minimum
+                    0xFAFB,             // Range Maximum
+                    0xFCFD,             // Translation Offset
+                    0xFEFF,             // Length
+                    0xFF, "PATHPATHPATH", , TypeTranslation, SparseTranslation)
+                QWordMemory (ResourceConsumer, SubDecode, MinFixed, MaxFixed, NonCacheable, ReadOnly,
+                    0xD8D9DADBDCDDDEDF, // Granularity
+                    0xE0E1E2E3E4E5E6E7, // Range Minimum
+                    0xE8E9EAEBECEDEEEF, // Range Maximum
+                    0xF0F1F2F3F4F5F6F7, // Translation Offset
+                    0xF8F9FAFBFCFDFEFF, // Length
+                    0xFF, "PATHPATHPATH", , AddressRangeACPI, TypeTranslation)
+                DWordMemory (ResourceConsumer, SubDecode, MinFixed, MaxFixed, NonCacheable, ReadOnly,
+                    0xECEDEEEF,         // Granularity
+                    0xF0F1F2F3,         // Range Minimum
+                    0xF4F5F6F7,         // Range Maximum
+                    0xF8F9FAFB,         // Translation Offset
+                    0xFCFDFEFF,         // Length
+                    0xFF, "PATHPATHPATH", , AddressRangeACPI, TypeTranslation)
+                WordBusNumber (ResourceConsumer, MinFixed, MaxFixed, SubDecode,
+                    0xF6F7,             // Granularity
+                    0xF8F9,             // Range Minimum
+                    0xFAFB,             // Range Maximum
+                    0xFCFD,             // Translation Offset
+                    0xFEFF,             // Length
+                    0xFF, "PATHPATHPATH", )
+                Interrupt (ResourceConsumer, Edge, ActiveLow, Shared, 0xFF, "!\"#$%&\'()*+,-./0123456789:;<=>?@ABCDEFGHIJKLMNOPQRSTUVWXYZ[\\]^_`abcdefghijklmnopqrstuvwxyz{|}~ !\"#$%&\'()*+,-./0123456789:;<=>?@ABCDEFGHIJKLMNOPQRSTUVWXYZ[\\]^_`abcdefghijklmnopqrstuvwxyz{|}~ !\"#$%&\'()*", )
+                {
+                    0x00000001,
+                    0x00000002,
+                    0x00000003,
+                    0x00000004,
+                    0x00000005,
+                    0x00000006,
+                    0x00000007,
+                    0x00000008,
+                    0x00000009,
+                    0x0000000A,
+                    0x0000000B,
+                    0x0000000C,
+                    0x0000000D,
+                    0x0000000E,
+                    0x0000000F,
+                    0x00000010,
+                    0x00000011,
+                    0x00000012,
+                    0x00000013,
+                    0x00000014,
+                    0x00000015,
+                    0x00000016,
+                    0x00000017,
+                    0x00000018,
+                    0x00000019,
+                    0x0000001A,
+                    0x0000001B,
+                    0x0000001C,
+                    0x0000001D,
+                    0x0000001E,
+                    0x0000001F,
+                    0x00000020,
+                    0x00000021,
+                    0x00000022,
+                    0x00000023,
+                    0x00000024,
+                    0x00000025,
+                    0x00000026,
+                    0x00000027,
+                    0x00000028,
+                    0x00000029,
+                    0x0000002A,
+                    0x0000002B,
+                    0x0000002C,
+                    0x0000002D,
+                    0x0000002E,
+                    0x0000002F,
+                    0x00000030,
+                    0x00000031,
+                    0x00000032,
+                    0x00000033,
+                    0x00000034,
+                    0x00000035,
+                    0x00000036,
+                    0x00000037,
+                    0x00000038,
+                    0x00000039,
+                    0x0000003A,
+                    0x0000003B,
+                    0x0000003C,
+                    0x0000003D,
+                    0x0000003E,
+                    0x0000003F,
+                    0x00000040,
+                    0x00000041,
+                    0x00000042,
+                    0x00000043,
+                    0x00000044,
+                    0x00000045,
+                    0x00000046,
+                    0x00000047,
+                    0x00000048,
+                    0x00000049,
+                    0x0000004A,
+                    0x0000004B,
+                    0x0000004C,
+                    0x0000004D,
+                    0x0000004E,
+                    0x0000004F,
+                    0x00000050,
+                    0x00000051,
+                    0x00000052,
+                    0x00000053,
+                    0x00000054,
+                    0x00000055,
+                    0x00000056,
+                    0x00000057,
+                    0x00000058,
+                    0x00000059,
+                    0x0000005A,
+                    0x0000005B,
+                    0x0000005C,
+                    0x0000005D,
+                    0x0000005E,
+                    0x0000005F,
+                    0x00000060,
+                    0x00000061,
+                    0x00000062,
+                    0x00000063,
+                    0x00000064,
+                    0x00000065,
+                    0x00000066,
+                    0x00000067,
+                    0x00000068,
+                    0x00000069,
+                    0x0000006A,
+                    0x0000006B,
+                    0x0000006C,
+                    0x0000006D,
+                    0x0000006E,
+                    0x0000006F,
+                    0x00000070,
+                    0x00000071,
+                    0x00000072,
+                    0x00000073,
+                    0x00000074,
+                    0x00000075,
+                    0x00000076,
+                    0x00000077,
+                    0x00000078,
+                    0x00000079,
+                    0x0000007A,
+                    0x0000007B,
+                    0x0000007C,
+                    0x0000007D,
+                    0x0000007E,
+                    0x0000007F,
+                    0x00000080,
+                    0x00000081,
+                    0x00000082,
+                    0x00000083,
+                    0x00000084,
+                    0x00000085,
+                    0x00000086,
+                    0x00000087,
+                    0x00000088,
+                    0x00000089,
+                    0x0000008A,
+                    0x0000008B,
+                    0x0000008C,
+                    0x0000008D,
+                    0x0000008E,
+                    0x0000008F,
+                    0x00000090,
+                    0x00000091,
+                    0x00000092,
+                    0x00000093,
+                    0x00000094,
+                    0x00000095,
+                    0x00000096,
+                    0x00000097,
+                    0x00000098,
+                    0x00000099,
+                    0x0000009A,
+                    0x0000009B,
+                    0x0000009C,
+                    0x0000009D,
+                    0x0000009E,
+                    0x0000009F,
+                    0x000000A0,
+                    0x000000A1,
+                    0x000000A2,
+                    0x000000A3,
+                    0x000000A4,
+                    0x000000A5,
+                    0x000000A6,
+                    0x000000A7,
+                    0x000000A8,
+                    0x000000A9,
+                    0x000000AA,
+                    0x000000AB,
+                    0x000000AC,
+                    0x000000AD,
+                    0x000000AE,
+                    0x000000AF,
+                    0x000000B0,
+                    0x000000B1,
+                    0x000000B2,
+                    0x000000B3,
+                    0x000000B4,
+                    0x000000B5,
+                    0x000000B6,
+                    0x000000B7,
+                    0x000000B8,
+                    0x000000B9,
+                    0x000000BA,
+                    0x000000BB,
+                    0x000000BC,
+                    0x000000BD,
+                    0x000000BE,
+                    0x000000BF,
+                    0x000000C0,
+                    0x000000C1,
+                    0x000000C2,
+                    0x000000C3,
+                    0x000000C4,
+                    0x000000C5,
+                    0x000000C6,
+                    0x000000C7,
+                    0x000000C8,
+                    0x000000C9,
+                    0x000000CA,
+                    0x000000CB,
+                    0x000000CC,
+                    0x000000CD,
+                    0x000000CE,
+                    0x000000CF,
+                    0x000000D0,
+                    0x000000D1,
+                    0x000000D2,
+                    0x000000D3,
+                    0x000000D4,
+                    0x000000D5,
+                    0x000000D6,
+                    0x000000D7,
+                    0x000000D8,
+                    0x000000D9,
+                    0x000000DA,
+                    0x000000DB,
+                    0x000000DC,
+                    0x000000DD,
+                    0x000000DE,
+                    0x000000DF,
+                    0x000000E0,
+                    0x000000E1,
+                    0x000000E2,
+                    0x000000E3,
+                    0x000000E4,
+                    0x000000E5,
+                    0x000000E6,
+                    0x000000E7,
+                    0x000000E8,
+                    0x000000E9,
+                    0x000000EA,
+                    0x000000EB,
+                    0x000000EC,
+                    0x000000ED,
+                    0x000000EE,
+                    0x000000EF,
+                    0x000000F0,
+                    0x000000F1,
+                    0x000000F2,
+                    0x000000F3,
+                    0x000000F4,
+                    0x000000F5,
+                    0x000000F6,
+                    0x000000F7,
+                    0x000000F8,
+                    0x000000F9,
+                    0x000000FA,
+                    0x000000FB,
+                    0x000000FC,
+                    0x000000FD,
+                    0x000000FE,
+                    0x000000FF,
+                }
+                Register (FFixedHW, 
+                    0xF0,               // Bit Width
+                    0xF1,               // Bit Offset
+                    0xF2F3F4F5F6F7F8F9, // Address
+                    ,)
+                ExtendedIO (ResourceConsumer, MinFixed, MaxFixed, SubDecode, EntireRange,
+                    0xD0D1D2D3D4D5D6D7, // Granularity
+                    0xD8D9DADBDCDDDEDF, // Range Minimum
+                    0xE0E1E2E3E4E5E6E7, // Range Maximum
+                    0xE8E9EAEBECEDEEEF, // Translation Offset
+                    0xF0F1F2F3F4F5F6F7, // Length
+                    0xF8F9FAFBFCFDFEFF, // Type-Specific Attributes
+                    , TypeTranslation, SparseTranslation)
+                ExtendedMemory (ResourceConsumer, SubDecode, MinFixed, MaxFixed, NonCacheable, ReadOnly,
+                    0xD0D1D2D3D4D5D6D7, // Granularity
+                    0xD8D9DADBDCDDDEDF, // Range Minimum
+                    0xE0E1E2E3E4E5E6E7, // Range Maximum
+                    0xE8E9EAEBECEDEEEF, // Translation Offset
+                    0xF0F1F2F3F4F5F6F7, // Length
+                    0xF8F9FAFBFCFDFEFF, // Type-Specific Attributes
+                    , AddressRangeACPI, TypeTranslation)
+                ExtendedSpace (0xC0, ResourceConsumer, SubDecode, MinFixed, MaxFixed, 0x5A,
+                    0xD0D1D2D3D4D5D6D7, // Granularity
+                    0xD8D9DADBDCDDDEDF, // Range Minimum
+                    0xE0E1E2E3E4E5E6E7, // Range Maximum
+                    0xE8E9EAEBECEDEEEF, // Translation Offset
+                    0xF0F1F2F3F4F5F6F7, // Length
+                    0xF8F9FAFBFCFDFEFF, // Type-Specific Attributes
+                    )
+                DWordSpace (0xC0, ResourceConsumer, SubDecode, MinFixed, MaxFixed, 0x5A,
+                    0xECEDEEEF,         // Granularity
+                    0xF0F1F2F3,         // Range Minimum
+                    0xF4F5F6F7,         // Range Maximum
+                    0xF8F9FAFB,         // Translation Offset
+                    0xFCFDFEFF,         // Length
+                    0xFF, "PATHPATHPATH", )
+                QWordSpace (0xC0, ResourceConsumer, SubDecode, MinFixed, MaxFixed, 0x5A,
+                    0xD8D9DADBDCDDDEDF, // Granularity
+                    0xE0E1E2E3E4E5E6E7, // Range Minimum
+                    0xE8E9EAEBECEDEEEF, // Range Maximum
+                    0xF0F1F2F3F4F5F6F7, // Translation Offset
+                    0xF8F9FAFBFCFDFEFF, // Length
+                    0xFF, "PATHPATHPATH", )
+                WordSpace (0xC0, ResourceConsumer, SubDecode, MinFixed, MaxFixed, 0x5A,
+                    0xF6F7,             // Granularity
+                    0xF8F9,             // Range Minimum
+                    0xFAFB,             // Range Maximum
+                    0xFCFD,             // Translation Offset
+                    0xFEFF,             // Length
+                    0xFF, "PATHPATHPATH", )
+            }
+            StartDependentFn (0x01, 0x02)
+            {
+                IRQ (Level, ActiveHigh, Exclusive, )
+                    {0}
+                IRQNoFlags ()
+                    {1}
+                DMA (Compatibility, NotBusMaster, Transfer16, )
+                    {2}
+                IO (Decode16,
+                    0xF0F1,             // Range Minimum
+                    0xF2F3,             // Range Maximum
+                    0xF4,               // Alignment
+                    0xF5,               // Length
+                    )
+                FixedIO (
+                    0xF0F1,             // Address
+                    0xF2,               // Length
+                    )
+                VendorShort ()      // Length = 0x07
+                {
+                     0x00, 0xA2, 0xB3, 0x76, 0xD5, 0xE6, 0xF7         // ...v...
+                }
+                Memory24 (ReadWrite,
+                    0xF0F1,             // Range Minimum
+                    0xF2F3,             // Range Maximum
+                    0xF4F5,             // Alignment
+                    0xF6F7,             // Length
+                    )
+                Memory32 (ReadWrite,
+                    0xF0F1F2F3,         // Range Minimum
+                    0xF4F5F6F7,         // Range Maximum
+                    0xF8F9FAFB,         // Alignment
+                    0xFCFDFEFF,         // Length
+                    )
+                Memory32Fixed (ReadOnly,
+                    0xF0F1F2F3,         // Address Base
+                    0xF4F5F6F7,         // Address Length
+                    )
+            }
+            StartDependentFn (0x02, 0x00)
+            {
+            }
+            StartDependentFn (0x02, 0x01)
+            {
+                IRQ (Level, ActiveHigh, Exclusive, )
+                    {0}
+                IRQNoFlags ()
+                    {1}
+                DMA (Compatibility, NotBusMaster, Transfer16, )
+                    {2}
+                IO (Decode16,
+                    0xF0F1,             // Range Minimum
+                    0xF2F3,             // Range Maximum
+                    0xF4,               // Alignment
+                    0xF5,               // Length
+                    )
+                FixedIO (
+                    0xF0F1,             // Address
+                    0xF2,               // Length
+                    )
+                VendorShort ()      // Length = 0x07
+                {
+                     0x00, 0xA2, 0xB3, 0x76, 0xD5, 0xE6, 0xF7         // ...v...
+                }
+                Memory24 (ReadWrite,
+                    0xF0F1,             // Range Minimum
+                    0xF2F3,             // Range Maximum
+                    0xF4F5,             // Alignment
+                    0xF6F7,             // Length
+                    )
+                Memory32 (ReadWrite,
+                    0xF0F1F2F3,         // Range Minimum
+                    0xF4F5F6F7,         // Range Maximum
+                    0xF8F9FAFB,         // Alignment
+                    0xFCFDFEFF,         // Length
+                    )
+                Memory32Fixed (ReadOnly,
+                    0xF0F1F2F3,         // Address Base
+                    0xF4F5F6F7,         // Address Length
+                    )
+                VendorLong  ()      // Length = 0x15
+                {
+                    /* 0000 */  0x9F, 0xF0, 0xF1, 0xF2, 0xF3, 0xF4, 0xF5, 0xF6,  // ........
+                    /* 0008 */  0xF7, 0xF8, 0xF9, 0xFA, 0xFB, 0xFC, 0xFD, 0xFE,  // ........
+                    /* 0010 */  0xFF, 0x00, 0x01, 0x02, 0x03                     // .....
+                }
+            }
+            StartDependentFn (0x02, 0x02)
+            {
+            }
+            EndDependentFn ()
+        }
+    })
+    /* Particular cases */
 
-Name (p440, Package() {
-	Buffer () {0x79, 0},
-	Buffer () {
-		0x23, 0x01, 0x00, 0x00,
-		0x22, 0x02, 0x00,
-		0x2a, 0x04, 0x02,
-		0x47, 0x01, 0xf1, 0xf0, 0xf3, 0xf2, 0xf4, 0xf5,
-		0x4b, 0xf1, 0xf0, 0xf2,
-		0x77, 0x00, 0xa2, 0xb3, 0x76, 0xd5, 0xe6, 0xf7,
-		0x81, 0x09, 0x00, 0x01, 0xf1, 0xf0, 0xf3, 0xf2, 0xf5, 0xf4, 0xf7, 0xf6,
-		0x85, 0x11, 0x00, 0x01,
-			0xf3, 0xf2, 0xf1, 0xf0, 0xf7, 0xf6, 0xf5, 0xf4,
-			0xfb, 0xfa, 0xf9, 0xf8, 0xff, 0xfe, 0xfd, 0xfc,
-		0x86, 0x09, 0x00, 0x00,
-			0xf3, 0xf2, 0xf1, 0xf0, 0xf7, 0xf6, 0xf5, 0xf4,
-		0x84, 0x15, 0x00, 0x9f,
-			0xf0, 0xf1, 0xf2, 0xf3, 0xf4, 0xf5, 0xf6, 0xf7,
-			0xf8, 0xf9, 0xfa, 0xfb, 0xfc, 0xfd, 0xfe, 0xff,
-			0x00, 0x01, 0x02, 0x03,
-		0x8a, 0x39, 0x00, 0x01, 0x0f, 0x33,
-			0xdf, 0xde, 0xdd, 0xdc, 0xdb, 0xda, 0xd9, 0xd8,
-			0xe7, 0xe6, 0xe5, 0xe4, 0xe3, 0xe2, 0xe1, 0xe0,
-			0xef, 0xee, 0xed, 0xec, 0xeb, 0xea, 0xe9, 0xe8,
-			0xf7, 0xf6, 0xf5, 0xf4, 0xf3, 0xf2, 0xf1, 0xf0,
-			0xff, 0xfe, 0xfd, 0xfc, 0xfb, 0xfa, 0xf9, 0xf8,
-			0xff, 0x50, 0x41, 0x54, 0x48, 0x50, 0x41, 0x54,
-			0x48, 0x50, 0x41, 0x54, 0x48, 0x00,
-		0x87, 0x25, 0x00, 0x01, 0x0f, 0x33, 0xef, 0xee, 0xed, 0xec,
-			0xf3, 0xf2, 0xf1, 0xf0, 0xf7, 0xf6, 0xf5, 0xf4,
-			0xfb, 0xfa, 0xf9, 0xf8, 0xff, 0xfe, 0xfd, 0xfc,
-			0xff, 0x50, 0x41, 0x54, 0x48, 0x50, 0x41, 0x54,
-			0x48, 0x50, 0x41, 0x54, 0x48, 0x00,
-		0x88, 0x1b, 0x00, 0x01, 0x0f, 0x33,
-			0xf7, 0xf6, 0xf9, 0xf8, 0xfb, 0xfa, 0xfd, 0xfc, 0xff, 0xfe,
-			0xff, 0x50, 0x41, 0x54, 0x48, 0x50, 0x41, 0x54,
-			0x48, 0x50, 0x41, 0x54, 0x48, 0x00,
-		0x8a, 0x39, 0x00, 0x00, 0x0f, 0x30,
-			0xdf, 0xde, 0xdd, 0xdc, 0xdb, 0xda, 0xd9, 0xd8,
-			0xe7, 0xe6, 0xe5, 0xe4, 0xe3, 0xe2, 0xe1, 0xe0,
-			0xef, 0xee, 0xed, 0xec, 0xeb, 0xea, 0xe9, 0xe8,
-			0xf7, 0xf6, 0xf5, 0xf4, 0xf3, 0xf2, 0xf1, 0xf0,
-			0xff, 0xfe, 0xfd, 0xfc, 0xfb, 0xfa, 0xf9, 0xf8,
-			0xff, 0x50, 0x41, 0x54, 0x48, 0x50, 0x41, 0x54,
-			0x48, 0x50, 0x41, 0x54, 0x48, 0x00,
-		0x87, 0x25, 0x00, 0x00, 0x0f, 0x30,
-			0xef, 0xee, 0xed, 0xec,
-			0xf3, 0xf2, 0xf1, 0xf0, 0xf7, 0xf6, 0xf5, 0xf4,
-			0xfb, 0xfa, 0xf9, 0xf8, 0xff, 0xfe, 0xfd, 0xfc,
-			0xff, 0x50, 0x41, 0x54, 0x48, 0x50, 0x41, 0x54,
-			0x48, 0x50, 0x41, 0x54, 0x48, 0x00,
-		0x88, 0x1b, 0x00, 0x02, 0x0f, 0x00,
-			0xf7, 0xf6, 0xf9, 0xf8, 0xfb, 0xfa, 0xfd, 0xfc, 0xff, 0xfe,
-			0xff, 0x50, 0x41, 0x54, 0x48, 0x50, 0x41, 0x54,
-			0x48, 0x50, 0x41, 0x54, 0x48, 0x00,
-		0x89, 0xc8, 0x04, 0x0f, 0xff,
-			  1,  0,  0,  0,  2,  0,  0,  0,  3,  0,  0,  0,  4,  0,  0,  0,
-			  5,  0,  0,  0,  6,  0,  0,  0,  7,  0,  0,  0,  8,  0,  0,  0,
-			  9,  0,  0,  0, 10,  0,  0,  0, 11,  0,  0,  0, 12,  0,  0,  0,
-			 13,  0,  0,  0, 14,  0,  0,  0, 15,  0,  0,  0, 16,  0,  0,  0,
-			 17,  0,  0,  0, 18,  0,  0,  0, 19,  0,  0,  0, 20,  0,  0,  0,
-			 21,  0,  0,  0, 22,  0,  0,  0, 23,  0,  0,  0, 24,  0,  0,  0,
-			 25,  0,  0,  0, 26,  0,  0,  0, 27,  0,  0,  0, 28,  0,  0,  0,
-			 29,  0,  0,  0, 30,  0,  0,  0, 31,  0,  0,  0, 32,  0,  0,  0,
-			 33,  0,  0,  0, 34,  0,  0,  0, 35,  0,  0,  0, 36,  0,  0,  0,
-			 37,  0,  0,  0, 38,  0,  0,  0, 39,  0,  0,  0, 40,  0,  0,  0,
-			 41,  0,  0,  0, 42,  0,  0,  0, 43,  0,  0,  0, 44,  0,  0,  0,
-			 45,  0,  0,  0, 46,  0,  0,  0, 47,  0,  0,  0, 48,  0,  0,  0,
-			 49,  0,  0,  0, 50,  0,  0,  0, 51,  0,  0,  0, 52,  0,  0,  0,
-			 53,  0,  0,  0, 54,  0,  0,  0, 55,  0,  0,  0, 56,  0,  0,  0,
-			 57,  0,  0,  0, 58,  0,  0,  0, 59,  0,  0,  0, 60,  0,  0,  0,
-			 61,  0,  0,  0, 62,  0,  0,  0, 63,  0,  0,  0, 64,  0,  0,  0,
-			 65,  0,  0,  0, 66,  0,  0,  0, 67,  0,  0,  0, 68,  0,  0,  0,
-			 69,  0,  0,  0, 70,  0,  0,  0, 71,  0,  0,  0, 72,  0,  0,  0,
-			 73,  0,  0,  0, 74,  0,  0,  0, 75,  0,  0,  0, 76,  0,  0,  0,
-			 77,  0,  0,  0, 78,  0,  0,  0, 79,  0,  0,  0, 80,  0,  0,  0,
-			 81,  0,  0,  0, 82,  0,  0,  0, 83,  0,  0,  0, 84,  0,  0,  0,
-			 85,  0,  0,  0, 86,  0,  0,  0, 87,  0,  0,  0, 88,  0,  0,  0,
-			 89,  0,  0,  0, 90,  0,  0,  0, 91,  0,  0,  0, 92,  0,  0,  0,
-			 93,  0,  0,  0, 94,  0,  0,  0, 95,  0,  0,  0, 96,  0,  0,  0,
-			 97,  0,  0,  0, 98,  0,  0,  0, 99,  0,  0,  0,100,  0,  0,  0,
-			101,  0,  0,  0,102,  0,  0,  0,103,  0,  0,  0,104,  0,  0,  0,
-			105,  0,  0,  0,106,  0,  0,  0,107,  0,  0,  0,108,  0,  0,  0,
-			109,  0,  0,  0,110,  0,  0,  0,111,  0,  0,  0,112,  0,  0,  0,
-			113,  0,  0,  0,114,  0,  0,  0,115,  0,  0,  0,116,  0,  0,  0,
-			117,  0,  0,  0,118,  0,  0,  0,119,  0,  0,  0,120,  0,  0,  0,
-			121,  0,  0,  0,122,  0,  0,  0,123,  0,  0,  0,124,  0,  0,  0,
-			125,  0,  0,  0,126,  0,  0,  0,127,  0,  0,  0,128,  0,  0,  0,
-			129,  0,  0,  0,130,  0,  0,  0,131,  0,  0,  0,132,  0,  0,  0,
-			133,  0,  0,  0,134,  0,  0,  0,135,  0,  0,  0,136,  0,  0,  0,
-			137,  0,  0,  0,138,  0,  0,  0,139,  0,  0,  0,140,  0,  0,  0,
-			141,  0,  0,  0,142,  0,  0,  0,143,  0,  0,  0,144,  0,  0,  0,
-			145,  0,  0,  0,146,  0,  0,  0,147,  0,  0,  0,148,  0,  0,  0,
-			149,  0,  0,  0,150,  0,  0,  0,151,  0,  0,  0,152,  0,  0,  0,
-			153,  0,  0,  0,154,  0,  0,  0,155,  0,  0,  0,156,  0,  0,  0,
-			157,  0,  0,  0,158,  0,  0,  0,159,  0,  0,  0,160,  0,  0,  0,
-			161,  0,  0,  0,162,  0,  0,  0,163,  0,  0,  0,164,  0,  0,  0,
-			165,  0,  0,  0,166,  0,  0,  0,167,  0,  0,  0,168,  0,  0,  0,
-			169,  0,  0,  0,170,  0,  0,  0,171,  0,  0,  0,172,  0,  0,  0,
-			173,  0,  0,  0,174,  0,  0,  0,175,  0,  0,  0,176,  0,  0,  0,
-			177,  0,  0,  0,178,  0,  0,  0,179,  0,  0,  0,180,  0,  0,  0,
-			181,  0,  0,  0,182,  0,  0,  0,183,  0,  0,  0,184,  0,  0,  0,
-			185,  0,  0,  0,186,  0,  0,  0,187,  0,  0,  0,188,  0,  0,  0,
-			189,  0,  0,  0,190,  0,  0,  0,191,  0,  0,  0,192,  0,  0,  0,
-			193,  0,  0,  0,194,  0,  0,  0,195,  0,  0,  0,196,  0,  0,  0,
-			197,  0,  0,  0,198,  0,  0,  0,199,  0,  0,  0,200,  0,  0,  0,
-			201,  0,  0,  0,202,  0,  0,  0,203,  0,  0,  0,204,  0,  0,  0,
-			205,  0,  0,  0,206,  0,  0,  0,207,  0,  0,  0,208,  0,  0,  0,
-			209,  0,  0,  0,210,  0,  0,  0,211,  0,  0,  0,212,  0,  0,  0,
-			213,  0,  0,  0,214,  0,  0,  0,215,  0,  0,  0,216,  0,  0,  0,
-			217,  0,  0,  0,218,  0,  0,  0,219,  0,  0,  0,220,  0,  0,  0,
-			221,  0,  0,  0,222,  0,  0,  0,223,  0,  0,  0,224,  0,  0,  0,
-			225,  0,  0,  0,226,  0,  0,  0,227,  0,  0,  0,228,  0,  0,  0,
-			229,  0,  0,  0,230,  0,  0,  0,231,  0,  0,  0,232,  0,  0,  0,
-			233,  0,  0,  0,234,  0,  0,  0,235,  0,  0,  0,236,  0,  0,  0,
-			237,  0,  0,  0,238,  0,  0,  0,239,  0,  0,  0,240,  0,  0,  0,
-			241,  0,  0,  0,242,  0,  0,  0,243,  0,  0,  0,244,  0,  0,  0,
-			245,  0,  0,  0,246,  0,  0,  0,247,  0,  0,  0,248,  0,  0,  0,
-			249,  0,  0,  0,250,  0,  0,  0,251,  0,  0,  0,252,  0,  0,  0,
-			253,  0,  0,  0,254,  0,  0,  0,255,  0,  0,  0,
-			0xff,
-			0x21, 0x22, 0x23, 0x24, 0x25, 0x26, 0x27, 0x28,
-			0x29, 0x2a, 0x2b, 0x2c, 0x2d, 0x2e, 0x2f, 0x30,
-			0x31, 0x32, 0x33, 0x34, 0x35, 0x36, 0x37, 0x38,
-			0x39, 0x3a, 0x3b, 0x3c, 0x3d, 0x3e, 0x3f, 0x40,
-			0x41, 0x42, 0x43, 0x44, 0x45, 0x46, 0x47, 0x48,
-			0x49, 0x4a, 0x4b, 0x4c, 0x4d, 0x4e, 0x4f, 0x50,
-			0x51, 0x52, 0x53, 0x54, 0x55, 0x56, 0x57, 0x58,
-			0x59, 0x5a, 0x5b, 0x5c, 0x5d, 0x5e, 0x5f, 0x60,
-			0x61, 0x62, 0x63, 0x64, 0x65, 0x66, 0x67, 0x68,
-			0x69, 0x6a, 0x6b, 0x6c, 0x6d, 0x6e, 0x6f, 0x70,
-			0x71, 0x72, 0x73, 0x74, 0x75, 0x76, 0x77, 0x78,
-			0x79, 0x7a, 0x7b, 0x7c, 0x7d, 0x7e, 0x20, 0x21,
-			0x22, 0x23, 0x24, 0x25, 0x26, 0x27, 0x28, 0x29,
-			0x2a, 0x2b, 0x2c, 0x2d, 0x2e, 0x2f, 0x30, 0x31,
-			0x32, 0x33, 0x34, 0x35, 0x36, 0x37, 0x38, 0x39,
-			0x3a, 0x3b, 0x3c, 0x3d, 0x3e, 0x3f, 0x40, 0x41,
-			0x42, 0x43, 0x44, 0x45, 0x46, 0x47, 0x48, 0x49,
-			0x4a, 0x4b, 0x4c, 0x4d, 0x4e, 0x4f, 0x50, 0x51,
-			0x52, 0x53, 0x54, 0x55, 0x56, 0x57, 0x58, 0x59,
-			0x5a, 0x5b, 0x5c, 0x5d, 0x5e, 0x5f, 0x60, 0x61,
-			0x62, 0x63, 0x64, 0x65, 0x66, 0x67, 0x68, 0x69,
-			0x6a, 0x6b, 0x6c, 0x6d, 0x6e, 0x6f, 0x70, 0x71,
-			0x72, 0x73, 0x74, 0x75, 0x76, 0x77, 0x78, 0x79,
-			0x7a, 0x7b, 0x7c, 0x7d, 0x7e, 0x20, 0x21, 0x22,
-			0x23, 0x24, 0x25, 0x26, 0x27, 0x28, 0x29, 0x2a,
-			0x00,
-		0x82, 0x0c, 0x00, 0x7f, 0xf0, 0xf1, 0x00,
-			0xf9, 0xf8, 0xf7, 0xf6, 0xf5, 0xf4, 0xf3, 0xf2,
-		0x8b, 0x35, 0x00, 0x01, 0x0f, 0x33, 0x01, 0x00,
-			0xd7, 0xd6, 0xd5, 0xd4, 0xd3, 0xd2, 0xd1, 0xd0,
-			0xdf, 0xde, 0xdd, 0xdc, 0xdb, 0xda, 0xd9, 0xd8,
-			0xe7, 0xe6, 0xe5, 0xe4, 0xe3, 0xe2, 0xe1, 0xe0,
-			0xef, 0xee, 0xed, 0xec, 0xeb, 0xea, 0xe9, 0xe8,
-			0xf7, 0xf6, 0xf5, 0xf4, 0xf3, 0xf2, 0xf1, 0xf0,
-			0xff, 0xfe, 0xfd, 0xfc, 0xfb, 0xfa, 0xf9, 0xf8,
-		0x8b, 0x35, 0x00, 0x00, 0x0f, 0x30, 0x01, 0x00,
-			0xd7, 0xd6, 0xd5, 0xd4, 0xd3, 0xd2, 0xd1, 0xd0,
-			0xdf, 0xde, 0xdd, 0xdc, 0xdb, 0xda, 0xd9, 0xd8,
-			0xe7, 0xe6, 0xe5, 0xe4, 0xe3, 0xe2, 0xe1, 0xe0,
-			0xef, 0xee, 0xed, 0xec, 0xeb, 0xea, 0xe9, 0xe8,
-			0xf7, 0xf6, 0xf5, 0xf4, 0xf3, 0xf2, 0xf1, 0xf0,
-			0xff, 0xfe, 0xfd, 0xfc, 0xfb, 0xfa, 0xf9, 0xf8,
-		0x8b, 0x35, 0x00, 0xc0, 0x0f, 0x5a, 0x01, 0x00,
-			0xd7, 0xd6, 0xd5, 0xd4, 0xd3, 0xd2, 0xd1, 0xd0,
-			0xdf, 0xde, 0xdd, 0xdc, 0xdb, 0xda, 0xd9, 0xd8,
-			0xe7, 0xe6, 0xe5, 0xe4, 0xe3, 0xe2, 0xe1, 0xe0,
-			0xef, 0xee, 0xed, 0xec, 0xeb, 0xea, 0xe9, 0xe8,
-			0xf7, 0xf6, 0xf5, 0xf4, 0xf3, 0xf2, 0xf1, 0xf0,
-			0xff, 0xfe, 0xfd, 0xfc, 0xfb, 0xfa, 0xf9, 0xf8,
-		0x87, 0x25, 0x00, 0xc0, 0x0f, 0x5a,
-			0xef, 0xee, 0xed, 0xec,
-			0xf3, 0xf2, 0xf1, 0xf0, 0xf7, 0xf6, 0xf5, 0xf4,
-			0xfb, 0xfa, 0xf9, 0xf8, 0xff, 0xfe, 0xfd, 0xfc,
-			0xff, 0x50, 0x41, 0x54, 0x48, 0x50, 0x41, 0x54,
-			0x48, 0x50, 0x41, 0x54, 0x48, 0x00,
-		0x8a, 0x39, 0x00, 0xc0, 0x0f, 0x5a,
-			0xdf, 0xde, 0xdd, 0xdc, 0xdb, 0xda, 0xd9, 0xd8,
-			0xe7, 0xe6, 0xe5, 0xe4, 0xe3, 0xe2, 0xe1, 0xe0,
-			0xef, 0xee, 0xed, 0xec, 0xeb, 0xea, 0xe9, 0xe8,
-			0xf7, 0xf6, 0xf5, 0xf4, 0xf3, 0xf2, 0xf1, 0xf0,
-			0xff, 0xfe, 0xfd, 0xfc, 0xfb, 0xfa, 0xf9, 0xf8,
-			0xff, 0x50, 0x41, 0x54, 0x48, 0x50, 0x41, 0x54,
-			0x48, 0x50, 0x41, 0x54, 0x48, 0x00,
-		0x88, 0x1b, 0x00, 0xc0, 0x0f, 0x5a,
-			0xf7, 0xf6, 0xf9, 0xf8, 0xfb, 0xfa, 0xfd, 0xfc, 0xff, 0xfe,
-			0xff, 0x50, 0x41, 0x54, 0x48, 0x50, 0x41, 0x54,
-			0x48, 0x50, 0x41, 0x54, 0x48, 0x00,
-		0x23, 0x01, 0x00, 0x00,
-		0x22, 0x02, 0x00,
-		0x2a, 0x04, 0x02,
-		0x47, 0x01, 0xf1, 0xf0, 0xf3, 0xf2, 0xf4, 0xf5,
-		0x4b, 0xf1, 0xf0, 0xf2,
-		0x77, 0x00, 0xa2, 0xb3, 0x76, 0xd5, 0xe6, 0xf7,
-		0x81, 0x09, 0x00, 0x01, 0xf1, 0xf0, 0xf3, 0xf2, 0xf5, 0xf4, 0xf7, 0xf6,
-		0x85, 0x11, 0x00, 0x01,
-			0xf3, 0xf2, 0xf1, 0xf0, 0xf7, 0xf6, 0xf5, 0xf4,
-			0xfb, 0xfa, 0xf9, 0xf8, 0xff, 0xfe, 0xfd, 0xfc,
-		0x86, 0x09, 0x00, 0x00,
-			0xf3, 0xf2, 0xf1, 0xf0, 0xf7, 0xf6, 0xf5, 0xf4,
-		0x84, 0x15, 0x00, 0x9f,
-			0xf0, 0xf1, 0xf2, 0xf3, 0xf4, 0xf5, 0xf6, 0xf7,
-			0xf8, 0xf9, 0xfa, 0xfb, 0xfc, 0xfd, 0xfe, 0xff,
-			0x00, 0x01, 0x02, 0x03,
-		0x8a, 0x39, 0x00, 0x01, 0x0f, 0x33,
-			0xdf, 0xde, 0xdd, 0xdc, 0xdb, 0xda, 0xd9, 0xd8,
-			0xe7, 0xe6, 0xe5, 0xe4, 0xe3, 0xe2, 0xe1, 0xe0,
-			0xef, 0xee, 0xed, 0xec, 0xeb, 0xea, 0xe9, 0xe8,
-			0xf7, 0xf6, 0xf5, 0xf4, 0xf3, 0xf2, 0xf1, 0xf0,
-			0xff, 0xfe, 0xfd, 0xfc, 0xfb, 0xfa, 0xf9, 0xf8,
-			0xff, 0x50, 0x41, 0x54, 0x48, 0x50, 0x41, 0x54,
-			0x48, 0x50, 0x41, 0x54, 0x48, 0x00,
-		0x87, 0x25, 0x00, 0x01, 0x0f, 0x33, 0xef, 0xee, 0xed, 0xec,
-			0xf3, 0xf2, 0xf1, 0xf0, 0xf7, 0xf6, 0xf5, 0xf4,
-			0xfb, 0xfa, 0xf9, 0xf8, 0xff, 0xfe, 0xfd, 0xfc,
-			0xff, 0x50, 0x41, 0x54, 0x48, 0x50, 0x41, 0x54,
-			0x48, 0x50, 0x41, 0x54, 0x48, 0x00,
-		0x88, 0x1b, 0x00, 0x01, 0x0f, 0x33,
-			0xf7, 0xf6, 0xf9, 0xf8, 0xfb, 0xfa, 0xfd, 0xfc, 0xff, 0xfe,
-			0xff, 0x50, 0x41, 0x54, 0x48, 0x50, 0x41, 0x54,
-			0x48, 0x50, 0x41, 0x54, 0x48, 0x00,
-		0x8a, 0x39, 0x00, 0x00, 0x0f, 0x30,
-			0xdf, 0xde, 0xdd, 0xdc, 0xdb, 0xda, 0xd9, 0xd8,
-			0xe7, 0xe6, 0xe5, 0xe4, 0xe3, 0xe2, 0xe1, 0xe0,
-			0xef, 0xee, 0xed, 0xec, 0xeb, 0xea, 0xe9, 0xe8,
-			0xf7, 0xf6, 0xf5, 0xf4, 0xf3, 0xf2, 0xf1, 0xf0,
-			0xff, 0xfe, 0xfd, 0xfc, 0xfb, 0xfa, 0xf9, 0xf8,
-			0xff, 0x50, 0x41, 0x54, 0x48, 0x50, 0x41, 0x54,
-			0x48, 0x50, 0x41, 0x54, 0x48, 0x00,
-		0x87, 0x25, 0x00, 0x00, 0x0f, 0x30,
-			0xef, 0xee, 0xed, 0xec,
-			0xf3, 0xf2, 0xf1, 0xf0, 0xf7, 0xf6, 0xf5, 0xf4,
-			0xfb, 0xfa, 0xf9, 0xf8, 0xff, 0xfe, 0xfd, 0xfc,
-			0xff, 0x50, 0x41, 0x54, 0x48, 0x50, 0x41, 0x54,
-			0x48, 0x50, 0x41, 0x54, 0x48, 0x00,
-		0x88, 0x1b, 0x00, 0x02, 0x0f, 0x00,
-			0xf7, 0xf6, 0xf9, 0xf8, 0xfb, 0xfa, 0xfd, 0xfc, 0xff, 0xfe,
-			0xff, 0x50, 0x41, 0x54, 0x48, 0x50, 0x41, 0x54,
-			0x48, 0x50, 0x41, 0x54, 0x48, 0x00,
-		0x89, 0xc8, 0x04, 0x0f, 0xff,
-			  1,  0,  0,  0,  2,  0,  0,  0,  3,  0,  0,  0,  4,  0,  0,  0,
-			  5,  0,  0,  0,  6,  0,  0,  0,  7,  0,  0,  0,  8,  0,  0,  0,
-			  9,  0,  0,  0, 10,  0,  0,  0, 11,  0,  0,  0, 12,  0,  0,  0,
-			 13,  0,  0,  0, 14,  0,  0,  0, 15,  0,  0,  0, 16,  0,  0,  0,
-			 17,  0,  0,  0, 18,  0,  0,  0, 19,  0,  0,  0, 20,  0,  0,  0,
-			 21,  0,  0,  0, 22,  0,  0,  0, 23,  0,  0,  0, 24,  0,  0,  0,
-			 25,  0,  0,  0, 26,  0,  0,  0, 27,  0,  0,  0, 28,  0,  0,  0,
-			 29,  0,  0,  0, 30,  0,  0,  0, 31,  0,  0,  0, 32,  0,  0,  0,
-			 33,  0,  0,  0, 34,  0,  0,  0, 35,  0,  0,  0, 36,  0,  0,  0,
-			 37,  0,  0,  0, 38,  0,  0,  0, 39,  0,  0,  0, 40,  0,  0,  0,
-			 41,  0,  0,  0, 42,  0,  0,  0, 43,  0,  0,  0, 44,  0,  0,  0,
-			 45,  0,  0,  0, 46,  0,  0,  0, 47,  0,  0,  0, 48,  0,  0,  0,
-			 49,  0,  0,  0, 50,  0,  0,  0, 51,  0,  0,  0, 52,  0,  0,  0,
-			 53,  0,  0,  0, 54,  0,  0,  0, 55,  0,  0,  0, 56,  0,  0,  0,
-			 57,  0,  0,  0, 58,  0,  0,  0, 59,  0,  0,  0, 60,  0,  0,  0,
-			 61,  0,  0,  0, 62,  0,  0,  0, 63,  0,  0,  0, 64,  0,  0,  0,
-			 65,  0,  0,  0, 66,  0,  0,  0, 67,  0,  0,  0, 68,  0,  0,  0,
-			 69,  0,  0,  0, 70,  0,  0,  0, 71,  0,  0,  0, 72,  0,  0,  0,
-			 73,  0,  0,  0, 74,  0,  0,  0, 75,  0,  0,  0, 76,  0,  0,  0,
-			 77,  0,  0,  0, 78,  0,  0,  0, 79,  0,  0,  0, 80,  0,  0,  0,
-			 81,  0,  0,  0, 82,  0,  0,  0, 83,  0,  0,  0, 84,  0,  0,  0,
-			 85,  0,  0,  0, 86,  0,  0,  0, 87,  0,  0,  0, 88,  0,  0,  0,
-			 89,  0,  0,  0, 90,  0,  0,  0, 91,  0,  0,  0, 92,  0,  0,  0,
-			 93,  0,  0,  0, 94,  0,  0,  0, 95,  0,  0,  0, 96,  0,  0,  0,
-			 97,  0,  0,  0, 98,  0,  0,  0, 99,  0,  0,  0,100,  0,  0,  0,
-			101,  0,  0,  0,102,  0,  0,  0,103,  0,  0,  0,104,  0,  0,  0,
-			105,  0,  0,  0,106,  0,  0,  0,107,  0,  0,  0,108,  0,  0,  0,
-			109,  0,  0,  0,110,  0,  0,  0,111,  0,  0,  0,112,  0,  0,  0,
-			113,  0,  0,  0,114,  0,  0,  0,115,  0,  0,  0,116,  0,  0,  0,
-			117,  0,  0,  0,118,  0,  0,  0,119,  0,  0,  0,120,  0,  0,  0,
-			121,  0,  0,  0,122,  0,  0,  0,123,  0,  0,  0,124,  0,  0,  0,
-			125,  0,  0,  0,126,  0,  0,  0,127,  0,  0,  0,128,  0,  0,  0,
-			129,  0,  0,  0,130,  0,  0,  0,131,  0,  0,  0,132,  0,  0,  0,
-			133,  0,  0,  0,134,  0,  0,  0,135,  0,  0,  0,136,  0,  0,  0,
-			137,  0,  0,  0,138,  0,  0,  0,139,  0,  0,  0,140,  0,  0,  0,
-			141,  0,  0,  0,142,  0,  0,  0,143,  0,  0,  0,144,  0,  0,  0,
-			145,  0,  0,  0,146,  0,  0,  0,147,  0,  0,  0,148,  0,  0,  0,
-			149,  0,  0,  0,150,  0,  0,  0,151,  0,  0,  0,152,  0,  0,  0,
-			153,  0,  0,  0,154,  0,  0,  0,155,  0,  0,  0,156,  0,  0,  0,
-			157,  0,  0,  0,158,  0,  0,  0,159,  0,  0,  0,160,  0,  0,  0,
-			161,  0,  0,  0,162,  0,  0,  0,163,  0,  0,  0,164,  0,  0,  0,
-			165,  0,  0,  0,166,  0,  0,  0,167,  0,  0,  0,168,  0,  0,  0,
-			169,  0,  0,  0,170,  0,  0,  0,171,  0,  0,  0,172,  0,  0,  0,
-			173,  0,  0,  0,174,  0,  0,  0,175,  0,  0,  0,176,  0,  0,  0,
-			177,  0,  0,  0,178,  0,  0,  0,179,  0,  0,  0,180,  0,  0,  0,
-			181,  0,  0,  0,182,  0,  0,  0,183,  0,  0,  0,184,  0,  0,  0,
-			185,  0,  0,  0,186,  0,  0,  0,187,  0,  0,  0,188,  0,  0,  0,
-			189,  0,  0,  0,190,  0,  0,  0,191,  0,  0,  0,192,  0,  0,  0,
-			193,  0,  0,  0,194,  0,  0,  0,195,  0,  0,  0,196,  0,  0,  0,
-			197,  0,  0,  0,198,  0,  0,  0,199,  0,  0,  0,200,  0,  0,  0,
-			201,  0,  0,  0,202,  0,  0,  0,203,  0,  0,  0,204,  0,  0,  0,
-			205,  0,  0,  0,206,  0,  0,  0,207,  0,  0,  0,208,  0,  0,  0,
-			209,  0,  0,  0,210,  0,  0,  0,211,  0,  0,  0,212,  0,  0,  0,
-			213,  0,  0,  0,214,  0,  0,  0,215,  0,  0,  0,216,  0,  0,  0,
-			217,  0,  0,  0,218,  0,  0,  0,219,  0,  0,  0,220,  0,  0,  0,
-			221,  0,  0,  0,222,  0,  0,  0,223,  0,  0,  0,224,  0,  0,  0,
-			225,  0,  0,  0,226,  0,  0,  0,227,  0,  0,  0,228,  0,  0,  0,
-			229,  0,  0,  0,230,  0,  0,  0,231,  0,  0,  0,232,  0,  0,  0,
-			233,  0,  0,  0,234,  0,  0,  0,235,  0,  0,  0,236,  0,  0,  0,
-			237,  0,  0,  0,238,  0,  0,  0,239,  0,  0,  0,240,  0,  0,  0,
-			241,  0,  0,  0,242,  0,  0,  0,243,  0,  0,  0,244,  0,  0,  0,
-			245,  0,  0,  0,246,  0,  0,  0,247,  0,  0,  0,248,  0,  0,  0,
-			249,  0,  0,  0,250,  0,  0,  0,251,  0,  0,  0,252,  0,  0,  0,
-			253,  0,  0,  0,254,  0,  0,  0,255,  0,  0,  0,
-			0xff,
-			0x21, 0x22, 0x23, 0x24, 0x25, 0x26, 0x27, 0x28,
-			0x29, 0x2a, 0x2b, 0x2c, 0x2d, 0x2e, 0x2f, 0x30,
-			0x31, 0x32, 0x33, 0x34, 0x35, 0x36, 0x37, 0x38,
-			0x39, 0x3a, 0x3b, 0x3c, 0x3d, 0x3e, 0x3f, 0x40,
-			0x41, 0x42, 0x43, 0x44, 0x45, 0x46, 0x47, 0x48,
-			0x49, 0x4a, 0x4b, 0x4c, 0x4d, 0x4e, 0x4f, 0x50,
-			0x51, 0x52, 0x53, 0x54, 0x55, 0x56, 0x57, 0x58,
-			0x59, 0x5a, 0x5b, 0x5c, 0x5d, 0x5e, 0x5f, 0x60,
-			0x61, 0x62, 0x63, 0x64, 0x65, 0x66, 0x67, 0x68,
-			0x69, 0x6a, 0x6b, 0x6c, 0x6d, 0x6e, 0x6f, 0x70,
-			0x71, 0x72, 0x73, 0x74, 0x75, 0x76, 0x77, 0x78,
-			0x79, 0x7a, 0x7b, 0x7c, 0x7d, 0x7e, 0x20, 0x21,
-			0x22, 0x23, 0x24, 0x25, 0x26, 0x27, 0x28, 0x29,
-			0x2a, 0x2b, 0x2c, 0x2d, 0x2e, 0x2f, 0x30, 0x31,
-			0x32, 0x33, 0x34, 0x35, 0x36, 0x37, 0x38, 0x39,
-			0x3a, 0x3b, 0x3c, 0x3d, 0x3e, 0x3f, 0x40, 0x41,
-			0x42, 0x43, 0x44, 0x45, 0x46, 0x47, 0x48, 0x49,
-			0x4a, 0x4b, 0x4c, 0x4d, 0x4e, 0x4f, 0x50, 0x51,
-			0x52, 0x53, 0x54, 0x55, 0x56, 0x57, 0x58, 0x59,
-			0x5a, 0x5b, 0x5c, 0x5d, 0x5e, 0x5f, 0x60, 0x61,
-			0x62, 0x63, 0x64, 0x65, 0x66, 0x67, 0x68, 0x69,
-			0x6a, 0x6b, 0x6c, 0x6d, 0x6e, 0x6f, 0x70, 0x71,
-			0x72, 0x73, 0x74, 0x75, 0x76, 0x77, 0x78, 0x79,
-			0x7a, 0x7b, 0x7c, 0x7d, 0x7e, 0x20, 0x21, 0x22,
-			0x23, 0x24, 0x25, 0x26, 0x27, 0x28, 0x29, 0x2a,
-			0x00,
-		0x82, 0x0c, 0x00, 0x7f, 0xf0, 0xf1, 0x00,
-			0xf9, 0xf8, 0xf7, 0xf6, 0xf5, 0xf4, 0xf3, 0xf2,
-		0x8b, 0x35, 0x00, 0x01, 0x0f, 0x33, 0x01, 0x00,
-			0xd7, 0xd6, 0xd5, 0xd4, 0xd3, 0xd2, 0xd1, 0xd0,
-			0xdf, 0xde, 0xdd, 0xdc, 0xdb, 0xda, 0xd9, 0xd8,
-			0xe7, 0xe6, 0xe5, 0xe4, 0xe3, 0xe2, 0xe1, 0xe0,
-			0xef, 0xee, 0xed, 0xec, 0xeb, 0xea, 0xe9, 0xe8,
-			0xf7, 0xf6, 0xf5, 0xf4, 0xf3, 0xf2, 0xf1, 0xf0,
-			0xff, 0xfe, 0xfd, 0xfc, 0xfb, 0xfa, 0xf9, 0xf8,
-		0x8b, 0x35, 0x00, 0x00, 0x0f, 0x30, 0x01, 0x00,
-			0xd7, 0xd6, 0xd5, 0xd4, 0xd3, 0xd2, 0xd1, 0xd0,
-			0xdf, 0xde, 0xdd, 0xdc, 0xdb, 0xda, 0xd9, 0xd8,
-			0xe7, 0xe6, 0xe5, 0xe4, 0xe3, 0xe2, 0xe1, 0xe0,
-			0xef, 0xee, 0xed, 0xec, 0xeb, 0xea, 0xe9, 0xe8,
-			0xf7, 0xf6, 0xf5, 0xf4, 0xf3, 0xf2, 0xf1, 0xf0,
-			0xff, 0xfe, 0xfd, 0xfc, 0xfb, 0xfa, 0xf9, 0xf8,
-		0x8b, 0x35, 0x00, 0xc0, 0x0f, 0x5a, 0x01, 0x00,
-			0xd7, 0xd6, 0xd5, 0xd4, 0xd3, 0xd2, 0xd1, 0xd0,
-			0xdf, 0xde, 0xdd, 0xdc, 0xdb, 0xda, 0xd9, 0xd8,
-			0xe7, 0xe6, 0xe5, 0xe4, 0xe3, 0xe2, 0xe1, 0xe0,
-			0xef, 0xee, 0xed, 0xec, 0xeb, 0xea, 0xe9, 0xe8,
-			0xf7, 0xf6, 0xf5, 0xf4, 0xf3, 0xf2, 0xf1, 0xf0,
-			0xff, 0xfe, 0xfd, 0xfc, 0xfb, 0xfa, 0xf9, 0xf8,
-		0x87, 0x25, 0x00, 0xc0, 0x0f, 0x5a,
-			0xef, 0xee, 0xed, 0xec,
-			0xf3, 0xf2, 0xf1, 0xf0, 0xf7, 0xf6, 0xf5, 0xf4,
-			0xfb, 0xfa, 0xf9, 0xf8, 0xff, 0xfe, 0xfd, 0xfc,
-			0xff, 0x50, 0x41, 0x54, 0x48, 0x50, 0x41, 0x54,
-			0x48, 0x50, 0x41, 0x54, 0x48, 0x00,
-		0x8a, 0x39, 0x00, 0xc0, 0x0f, 0x5a,
-			0xdf, 0xde, 0xdd, 0xdc, 0xdb, 0xda, 0xd9, 0xd8,
-			0xe7, 0xe6, 0xe5, 0xe4, 0xe3, 0xe2, 0xe1, 0xe0,
-			0xef, 0xee, 0xed, 0xec, 0xeb, 0xea, 0xe9, 0xe8,
-			0xf7, 0xf6, 0xf5, 0xf4, 0xf3, 0xf2, 0xf1, 0xf0,
-			0xff, 0xfe, 0xfd, 0xfc, 0xfb, 0xfa, 0xf9, 0xf8,
-			0xff, 0x50, 0x41, 0x54, 0x48, 0x50, 0x41, 0x54,
-			0x48, 0x50, 0x41, 0x54, 0x48, 0x00,
-		0x88, 0x1b, 0x00, 0xc0, 0x0f, 0x5a,
-			0xf7, 0xf6, 0xf9, 0xf8, 0xfb, 0xfa, 0xfd, 0xfc, 0xff, 0xfe,
-			0xff, 0x50, 0x41, 0x54, 0x48, 0x50, 0x41, 0x54,
-			0x48, 0x50, 0x41, 0x54, 0x48, 0x00,
-		0x79, 0},
-	Buffer () {
-	0x30,
-		0x23, 0x01, 0x00, 0x00,
-		0x22, 0x02, 0x00,
-	0x30,
-		0x23, 0x01, 0x00, 0x00,
-		0x22, 0x02, 0x00,
-		0x2a, 0x04, 0x02,
-	0x31, 0x00,
-		0x23, 0x01, 0x00, 0x00,
-		0x22, 0x02, 0x00,
-		0x2a, 0x04, 0x02,
-		0x47, 0x01, 0xf1, 0xf0, 0xf3, 0xf2, 0xf4, 0xf5,
-	0x31, 0x04,
-		0x23, 0x01, 0x00, 0x00,
-		0x22, 0x02, 0x00,
-		0x2a, 0x04, 0x02,
-		0x47, 0x01, 0xf1, 0xf0, 0xf3, 0xf2, 0xf4, 0xf5,
-		0x4b, 0xf1, 0xf0, 0xf2,
-	0x31, 0x08,
-		0x23, 0x01, 0x00, 0x00,
-		0x22, 0x02, 0x00,
-		0x2a, 0x04, 0x02,
-		0x47, 0x01, 0xf1, 0xf0, 0xf3, 0xf2, 0xf4, 0xf5,
-		0x4b, 0xf1, 0xf0, 0xf2,
-		0x77, 0x00, 0xa2, 0xb3, 0x76, 0xd5, 0xe6, 0xf7,
-	0x31, 0x01,
-		0x23, 0x01, 0x00, 0x00,
-		0x22, 0x02, 0x00,
-		0x2a, 0x04, 0x02,
-		0x47, 0x01, 0xf1, 0xf0, 0xf3, 0xf2, 0xf4, 0xf5,
-		0x4b, 0xf1, 0xf0, 0xf2,
-		0x77, 0x00, 0xa2, 0xb3, 0x76, 0xd5, 0xe6, 0xf7,
-		0x81, 0x09, 0x00, 0x01, 0xf1, 0xf0, 0xf3, 0xf2, 0xf5, 0xf4, 0xf7, 0xf6,
-	0x31, 0x05,
-		0x23, 0x01, 0x00, 0x00,
-		0x22, 0x02, 0x00,
-		0x2a, 0x04, 0x02,
-		0x47, 0x01, 0xf1, 0xf0, 0xf3, 0xf2, 0xf4, 0xf5,
-		0x4b, 0xf1, 0xf0, 0xf2,
-		0x77, 0x00, 0xa2, 0xb3, 0x76, 0xd5, 0xe6, 0xf7,
-		0x81, 0x09, 0x00, 0x01, 0xf1, 0xf0, 0xf3, 0xf2, 0xf5, 0xf4, 0xf7, 0xf6,
-		0x85, 0x11, 0x00, 0x01,
-			0xf3, 0xf2, 0xf1, 0xf0, 0xf7, 0xf6, 0xf5, 0xf4,
-			0xfb, 0xfa, 0xf9, 0xf8, 0xff, 0xfe, 0xfd, 0xfc,
-	0x31, 0x05,
-		0x23, 0x01, 0x00, 0x00,
-		0x22, 0x02, 0x00,
-		0x2a, 0x04, 0x02,
-		0x47, 0x01, 0xf1, 0xf0, 0xf3, 0xf2, 0xf4, 0xf5,
-		0x4b, 0xf1, 0xf0, 0xf2,
-		0x77, 0x00, 0xa2, 0xb3, 0x76, 0xd5, 0xe6, 0xf7,
-		0x81, 0x09, 0x00, 0x01, 0xf1, 0xf0, 0xf3, 0xf2, 0xf5, 0xf4, 0xf7, 0xf6,
-		0x85, 0x11, 0x00, 0x01,
-			0xf3, 0xf2, 0xf1, 0xf0, 0xf7, 0xf6, 0xf5, 0xf4,
-			0xfb, 0xfa, 0xf9, 0xf8, 0xff, 0xfe, 0xfd, 0xfc,
-		0x86, 0x09, 0x00, 0x00,
-			0xf3, 0xf2, 0xf1, 0xf0, 0xf7, 0xf6, 0xf5, 0xf4,
-		0x84, 0x15, 0x00, 0x9f,
-			0xf0, 0xf1, 0xf2, 0xf3, 0xf4, 0xf5, 0xf6, 0xf7,
-			0xf8, 0xf9, 0xfa, 0xfb, 0xfc, 0xfd, 0xfe, 0xff,
-			0x00, 0x01, 0x02, 0x03,
-		0x8a, 0x39, 0x00, 0x01, 0x0f, 0x33,
-			0xdf, 0xde, 0xdd, 0xdc, 0xdb, 0xda, 0xd9, 0xd8,
-			0xe7, 0xe6, 0xe5, 0xe4, 0xe3, 0xe2, 0xe1, 0xe0,
-			0xef, 0xee, 0xed, 0xec, 0xeb, 0xea, 0xe9, 0xe8,
-			0xf7, 0xf6, 0xf5, 0xf4, 0xf3, 0xf2, 0xf1, 0xf0,
-			0xff, 0xfe, 0xfd, 0xfc, 0xfb, 0xfa, 0xf9, 0xf8,
-			0xff, 0x50, 0x41, 0x54, 0x48, 0x50, 0x41, 0x54,
-			0x48, 0x50, 0x41, 0x54, 0x48, 0x00,
-		0x87, 0x25, 0x00, 0x01, 0x0f, 0x33, 0xef, 0xee, 0xed, 0xec,
-			0xf3, 0xf2, 0xf1, 0xf0, 0xf7, 0xf6, 0xf5, 0xf4,
-			0xfb, 0xfa, 0xf9, 0xf8, 0xff, 0xfe, 0xfd, 0xfc,
-			0xff, 0x50, 0x41, 0x54, 0x48, 0x50, 0x41, 0x54,
-			0x48, 0x50, 0x41, 0x54, 0x48, 0x00,
-		0x88, 0x1b, 0x00, 0x01, 0x0f, 0x33,
-			0xf7, 0xf6, 0xf9, 0xf8, 0xfb, 0xfa, 0xfd, 0xfc, 0xff, 0xfe,
-			0xff, 0x50, 0x41, 0x54, 0x48, 0x50, 0x41, 0x54,
-			0x48, 0x50, 0x41, 0x54, 0x48, 0x00,
-		0x8a, 0x39, 0x00, 0x00, 0x0f, 0x30,
-			0xdf, 0xde, 0xdd, 0xdc, 0xdb, 0xda, 0xd9, 0xd8,
-			0xe7, 0xe6, 0xe5, 0xe4, 0xe3, 0xe2, 0xe1, 0xe0,
-			0xef, 0xee, 0xed, 0xec, 0xeb, 0xea, 0xe9, 0xe8,
-			0xf7, 0xf6, 0xf5, 0xf4, 0xf3, 0xf2, 0xf1, 0xf0,
-			0xff, 0xfe, 0xfd, 0xfc, 0xfb, 0xfa, 0xf9, 0xf8,
-			0xff, 0x50, 0x41, 0x54, 0x48, 0x50, 0x41, 0x54,
-			0x48, 0x50, 0x41, 0x54, 0x48, 0x00,
-		0x87, 0x25, 0x00, 0x00, 0x0f, 0x30,
-			0xef, 0xee, 0xed, 0xec,
-			0xf3, 0xf2, 0xf1, 0xf0, 0xf7, 0xf6, 0xf5, 0xf4,
-			0xfb, 0xfa, 0xf9, 0xf8, 0xff, 0xfe, 0xfd, 0xfc,
-			0xff, 0x50, 0x41, 0x54, 0x48, 0x50, 0x41, 0x54,
-			0x48, 0x50, 0x41, 0x54, 0x48, 0x00,
-		0x88, 0x1b, 0x00, 0x02, 0x0f, 0x00,
-			0xf7, 0xf6, 0xf9, 0xf8, 0xfb, 0xfa, 0xfd, 0xfc, 0xff, 0xfe,
-			0xff, 0x50, 0x41, 0x54, 0x48, 0x50, 0x41, 0x54,
-			0x48, 0x50, 0x41, 0x54, 0x48, 0x00,
-		0x89, 0xc8, 0x04, 0x0f, 0xff,
-			  1,  0,  0,  0,  2,  0,  0,  0,  3,  0,  0,  0,  4,  0,  0,  0,
-			  5,  0,  0,  0,  6,  0,  0,  0,  7,  0,  0,  0,  8,  0,  0,  0,
-			  9,  0,  0,  0, 10,  0,  0,  0, 11,  0,  0,  0, 12,  0,  0,  0,
-			 13,  0,  0,  0, 14,  0,  0,  0, 15,  0,  0,  0, 16,  0,  0,  0,
-			 17,  0,  0,  0, 18,  0,  0,  0, 19,  0,  0,  0, 20,  0,  0,  0,
-			 21,  0,  0,  0, 22,  0,  0,  0, 23,  0,  0,  0, 24,  0,  0,  0,
-			 25,  0,  0,  0, 26,  0,  0,  0, 27,  0,  0,  0, 28,  0,  0,  0,
-			 29,  0,  0,  0, 30,  0,  0,  0, 31,  0,  0,  0, 32,  0,  0,  0,
-			 33,  0,  0,  0, 34,  0,  0,  0, 35,  0,  0,  0, 36,  0,  0,  0,
-			 37,  0,  0,  0, 38,  0,  0,  0, 39,  0,  0,  0, 40,  0,  0,  0,
-			 41,  0,  0,  0, 42,  0,  0,  0, 43,  0,  0,  0, 44,  0,  0,  0,
-			 45,  0,  0,  0, 46,  0,  0,  0, 47,  0,  0,  0, 48,  0,  0,  0,
-			 49,  0,  0,  0, 50,  0,  0,  0, 51,  0,  0,  0, 52,  0,  0,  0,
-			 53,  0,  0,  0, 54,  0,  0,  0, 55,  0,  0,  0, 56,  0,  0,  0,
-			 57,  0,  0,  0, 58,  0,  0,  0, 59,  0,  0,  0, 60,  0,  0,  0,
-			 61,  0,  0,  0, 62,  0,  0,  0, 63,  0,  0,  0, 64,  0,  0,  0,
-			 65,  0,  0,  0, 66,  0,  0,  0, 67,  0,  0,  0, 68,  0,  0,  0,
-			 69,  0,  0,  0, 70,  0,  0,  0, 71,  0,  0,  0, 72,  0,  0,  0,
-			 73,  0,  0,  0, 74,  0,  0,  0, 75,  0,  0,  0, 76,  0,  0,  0,
-			 77,  0,  0,  0, 78,  0,  0,  0, 79,  0,  0,  0, 80,  0,  0,  0,
-			 81,  0,  0,  0, 82,  0,  0,  0, 83,  0,  0,  0, 84,  0,  0,  0,
-			 85,  0,  0,  0, 86,  0,  0,  0, 87,  0,  0,  0, 88,  0,  0,  0,
-			 89,  0,  0,  0, 90,  0,  0,  0, 91,  0,  0,  0, 92,  0,  0,  0,
-			 93,  0,  0,  0, 94,  0,  0,  0, 95,  0,  0,  0, 96,  0,  0,  0,
-			 97,  0,  0,  0, 98,  0,  0,  0, 99,  0,  0,  0,100,  0,  0,  0,
-			101,  0,  0,  0,102,  0,  0,  0,103,  0,  0,  0,104,  0,  0,  0,
-			105,  0,  0,  0,106,  0,  0,  0,107,  0,  0,  0,108,  0,  0,  0,
-			109,  0,  0,  0,110,  0,  0,  0,111,  0,  0,  0,112,  0,  0,  0,
-			113,  0,  0,  0,114,  0,  0,  0,115,  0,  0,  0,116,  0,  0,  0,
-			117,  0,  0,  0,118,  0,  0,  0,119,  0,  0,  0,120,  0,  0,  0,
-			121,  0,  0,  0,122,  0,  0,  0,123,  0,  0,  0,124,  0,  0,  0,
-			125,  0,  0,  0,126,  0,  0,  0,127,  0,  0,  0,128,  0,  0,  0,
-			129,  0,  0,  0,130,  0,  0,  0,131,  0,  0,  0,132,  0,  0,  0,
-			133,  0,  0,  0,134,  0,  0,  0,135,  0,  0,  0,136,  0,  0,  0,
-			137,  0,  0,  0,138,  0,  0,  0,139,  0,  0,  0,140,  0,  0,  0,
-			141,  0,  0,  0,142,  0,  0,  0,143,  0,  0,  0,144,  0,  0,  0,
-			145,  0,  0,  0,146,  0,  0,  0,147,  0,  0,  0,148,  0,  0,  0,
-			149,  0,  0,  0,150,  0,  0,  0,151,  0,  0,  0,152,  0,  0,  0,
-			153,  0,  0,  0,154,  0,  0,  0,155,  0,  0,  0,156,  0,  0,  0,
-			157,  0,  0,  0,158,  0,  0,  0,159,  0,  0,  0,160,  0,  0,  0,
-			161,  0,  0,  0,162,  0,  0,  0,163,  0,  0,  0,164,  0,  0,  0,
-			165,  0,  0,  0,166,  0,  0,  0,167,  0,  0,  0,168,  0,  0,  0,
-			169,  0,  0,  0,170,  0,  0,  0,171,  0,  0,  0,172,  0,  0,  0,
-			173,  0,  0,  0,174,  0,  0,  0,175,  0,  0,  0,176,  0,  0,  0,
-			177,  0,  0,  0,178,  0,  0,  0,179,  0,  0,  0,180,  0,  0,  0,
-			181,  0,  0,  0,182,  0,  0,  0,183,  0,  0,  0,184,  0,  0,  0,
-			185,  0,  0,  0,186,  0,  0,  0,187,  0,  0,  0,188,  0,  0,  0,
-			189,  0,  0,  0,190,  0,  0,  0,191,  0,  0,  0,192,  0,  0,  0,
-			193,  0,  0,  0,194,  0,  0,  0,195,  0,  0,  0,196,  0,  0,  0,
-			197,  0,  0,  0,198,  0,  0,  0,199,  0,  0,  0,200,  0,  0,  0,
-			201,  0,  0,  0,202,  0,  0,  0,203,  0,  0,  0,204,  0,  0,  0,
-			205,  0,  0,  0,206,  0,  0,  0,207,  0,  0,  0,208,  0,  0,  0,
-			209,  0,  0,  0,210,  0,  0,  0,211,  0,  0,  0,212,  0,  0,  0,
-			213,  0,  0,  0,214,  0,  0,  0,215,  0,  0,  0,216,  0,  0,  0,
-			217,  0,  0,  0,218,  0,  0,  0,219,  0,  0,  0,220,  0,  0,  0,
-			221,  0,  0,  0,222,  0,  0,  0,223,  0,  0,  0,224,  0,  0,  0,
-			225,  0,  0,  0,226,  0,  0,  0,227,  0,  0,  0,228,  0,  0,  0,
-			229,  0,  0,  0,230,  0,  0,  0,231,  0,  0,  0,232,  0,  0,  0,
-			233,  0,  0,  0,234,  0,  0,  0,235,  0,  0,  0,236,  0,  0,  0,
-			237,  0,  0,  0,238,  0,  0,  0,239,  0,  0,  0,240,  0,  0,  0,
-			241,  0,  0,  0,242,  0,  0,  0,243,  0,  0,  0,244,  0,  0,  0,
-			245,  0,  0,  0,246,  0,  0,  0,247,  0,  0,  0,248,  0,  0,  0,
-			249,  0,  0,  0,250,  0,  0,  0,251,  0,  0,  0,252,  0,  0,  0,
-			253,  0,  0,  0,254,  0,  0,  0,255,  0,  0,  0,
-			0xff,
-			0x21, 0x22, 0x23, 0x24, 0x25, 0x26, 0x27, 0x28,
-			0x29, 0x2a, 0x2b, 0x2c, 0x2d, 0x2e, 0x2f, 0x30,
-			0x31, 0x32, 0x33, 0x34, 0x35, 0x36, 0x37, 0x38,
-			0x39, 0x3a, 0x3b, 0x3c, 0x3d, 0x3e, 0x3f, 0x40,
-			0x41, 0x42, 0x43, 0x44, 0x45, 0x46, 0x47, 0x48,
-			0x49, 0x4a, 0x4b, 0x4c, 0x4d, 0x4e, 0x4f, 0x50,
-			0x51, 0x52, 0x53, 0x54, 0x55, 0x56, 0x57, 0x58,
-			0x59, 0x5a, 0x5b, 0x5c, 0x5d, 0x5e, 0x5f, 0x60,
-			0x61, 0x62, 0x63, 0x64, 0x65, 0x66, 0x67, 0x68,
-			0x69, 0x6a, 0x6b, 0x6c, 0x6d, 0x6e, 0x6f, 0x70,
-			0x71, 0x72, 0x73, 0x74, 0x75, 0x76, 0x77, 0x78,
-			0x79, 0x7a, 0x7b, 0x7c, 0x7d, 0x7e, 0x20, 0x21,
-			0x22, 0x23, 0x24, 0x25, 0x26, 0x27, 0x28, 0x29,
-			0x2a, 0x2b, 0x2c, 0x2d, 0x2e, 0x2f, 0x30, 0x31,
-			0x32, 0x33, 0x34, 0x35, 0x36, 0x37, 0x38, 0x39,
-			0x3a, 0x3b, 0x3c, 0x3d, 0x3e, 0x3f, 0x40, 0x41,
-			0x42, 0x43, 0x44, 0x45, 0x46, 0x47, 0x48, 0x49,
-			0x4a, 0x4b, 0x4c, 0x4d, 0x4e, 0x4f, 0x50, 0x51,
-			0x52, 0x53, 0x54, 0x55, 0x56, 0x57, 0x58, 0x59,
-			0x5a, 0x5b, 0x5c, 0x5d, 0x5e, 0x5f, 0x60, 0x61,
-			0x62, 0x63, 0x64, 0x65, 0x66, 0x67, 0x68, 0x69,
-			0x6a, 0x6b, 0x6c, 0x6d, 0x6e, 0x6f, 0x70, 0x71,
-			0x72, 0x73, 0x74, 0x75, 0x76, 0x77, 0x78, 0x79,
-			0x7a, 0x7b, 0x7c, 0x7d, 0x7e, 0x20, 0x21, 0x22,
-			0x23, 0x24, 0x25, 0x26, 0x27, 0x28, 0x29, 0x2a,
-			0x00,
-		0x82, 0x0c, 0x00, 0x7f, 0xf0, 0xf1, 0x00,
-			0xf9, 0xf8, 0xf7, 0xf6, 0xf5, 0xf4, 0xf3, 0xf2,
-		0x8b, 0x35, 0x00, 0x01, 0x0f, 0x33, 0x01, 0x00,
-			0xd7, 0xd6, 0xd5, 0xd4, 0xd3, 0xd2, 0xd1, 0xd0,
-			0xdf, 0xde, 0xdd, 0xdc, 0xdb, 0xda, 0xd9, 0xd8,
-			0xe7, 0xe6, 0xe5, 0xe4, 0xe3, 0xe2, 0xe1, 0xe0,
-			0xef, 0xee, 0xed, 0xec, 0xeb, 0xea, 0xe9, 0xe8,
-			0xf7, 0xf6, 0xf5, 0xf4, 0xf3, 0xf2, 0xf1, 0xf0,
-			0xff, 0xfe, 0xfd, 0xfc, 0xfb, 0xfa, 0xf9, 0xf8,
-		0x8b, 0x35, 0x00, 0x00, 0x0f, 0x30, 0x01, 0x00,
-			0xd7, 0xd6, 0xd5, 0xd4, 0xd3, 0xd2, 0xd1, 0xd0,
-			0xdf, 0xde, 0xdd, 0xdc, 0xdb, 0xda, 0xd9, 0xd8,
-			0xe7, 0xe6, 0xe5, 0xe4, 0xe3, 0xe2, 0xe1, 0xe0,
-			0xef, 0xee, 0xed, 0xec, 0xeb, 0xea, 0xe9, 0xe8,
-			0xf7, 0xf6, 0xf5, 0xf4, 0xf3, 0xf2, 0xf1, 0xf0,
-			0xff, 0xfe, 0xfd, 0xfc, 0xfb, 0xfa, 0xf9, 0xf8,
-		0x8b, 0x35, 0x00, 0xc0, 0x0f, 0x5a, 0x01, 0x00,
-			0xd7, 0xd6, 0xd5, 0xd4, 0xd3, 0xd2, 0xd1, 0xd0,
-			0xdf, 0xde, 0xdd, 0xdc, 0xdb, 0xda, 0xd9, 0xd8,
-			0xe7, 0xe6, 0xe5, 0xe4, 0xe3, 0xe2, 0xe1, 0xe0,
-			0xef, 0xee, 0xed, 0xec, 0xeb, 0xea, 0xe9, 0xe8,
-			0xf7, 0xf6, 0xf5, 0xf4, 0xf3, 0xf2, 0xf1, 0xf0,
-			0xff, 0xfe, 0xfd, 0xfc, 0xfb, 0xfa, 0xf9, 0xf8,
-		0x87, 0x25, 0x00, 0xc0, 0x0f, 0x5a,
-			0xef, 0xee, 0xed, 0xec,
-			0xf3, 0xf2, 0xf1, 0xf0, 0xf7, 0xf6, 0xf5, 0xf4,
-			0xfb, 0xfa, 0xf9, 0xf8, 0xff, 0xfe, 0xfd, 0xfc,
-			0xff, 0x50, 0x41, 0x54, 0x48, 0x50, 0x41, 0x54,
-			0x48, 0x50, 0x41, 0x54, 0x48, 0x00,
-		0x8a, 0x39, 0x00, 0xc0, 0x0f, 0x5a,
-			0xdf, 0xde, 0xdd, 0xdc, 0xdb, 0xda, 0xd9, 0xd8,
-			0xe7, 0xe6, 0xe5, 0xe4, 0xe3, 0xe2, 0xe1, 0xe0,
-			0xef, 0xee, 0xed, 0xec, 0xeb, 0xea, 0xe9, 0xe8,
-			0xf7, 0xf6, 0xf5, 0xf4, 0xf3, 0xf2, 0xf1, 0xf0,
-			0xff, 0xfe, 0xfd, 0xfc, 0xfb, 0xfa, 0xf9, 0xf8,
-			0xff, 0x50, 0x41, 0x54, 0x48, 0x50, 0x41, 0x54,
-			0x48, 0x50, 0x41, 0x54, 0x48, 0x00,
-		0x88, 0x1b, 0x00, 0xc0, 0x0f, 0x5a,
-			0xf7, 0xf6, 0xf9, 0xf8, 0xfb, 0xfa, 0xfd, 0xfc, 0xff, 0xfe,
-			0xff, 0x50, 0x41, 0x54, 0x48, 0x50, 0x41, 0x54,
-			0x48, 0x50, 0x41, 0x54, 0x48, 0x00,
-	0x31, 0x09,
-		0x23, 0x01, 0x00, 0x00,
-		0x22, 0x02, 0x00,
-		0x2a, 0x04, 0x02,
-		0x47, 0x01, 0xf1, 0xf0, 0xf3, 0xf2, 0xf4, 0xf5,
-		0x4b, 0xf1, 0xf0, 0xf2,
-		0x77, 0x00, 0xa2, 0xb3, 0x76, 0xd5, 0xe6, 0xf7,
-		0x81, 0x09, 0x00, 0x01, 0xf1, 0xf0, 0xf3, 0xf2, 0xf5, 0xf4, 0xf7, 0xf6,
-		0x85, 0x11, 0x00, 0x01,
-			0xf3, 0xf2, 0xf1, 0xf0, 0xf7, 0xf6, 0xf5, 0xf4,
-			0xfb, 0xfa, 0xf9, 0xf8, 0xff, 0xfe, 0xfd, 0xfc,
-		0x86, 0x09, 0x00, 0x00,
-			0xf3, 0xf2, 0xf1, 0xf0, 0xf7, 0xf6, 0xf5, 0xf4,
-	0x31, 0x02,
-	0x31, 0x06,
-		0x23, 0x01, 0x00, 0x00,
-		0x22, 0x02, 0x00,
-		0x2a, 0x04, 0x02,
-		0x47, 0x01, 0xf1, 0xf0, 0xf3, 0xf2, 0xf4, 0xf5,
-		0x4b, 0xf1, 0xf0, 0xf2,
-		0x77, 0x00, 0xa2, 0xb3, 0x76, 0xd5, 0xe6, 0xf7,
-		0x81, 0x09, 0x00, 0x01, 0xf1, 0xf0, 0xf3, 0xf2, 0xf5, 0xf4, 0xf7, 0xf6,
-		0x85, 0x11, 0x00, 0x01,
-			0xf3, 0xf2, 0xf1, 0xf0, 0xf7, 0xf6, 0xf5, 0xf4,
-			0xfb, 0xfa, 0xf9, 0xf8, 0xff, 0xfe, 0xfd, 0xfc,
-		0x86, 0x09, 0x00, 0x00,
-			0xf3, 0xf2, 0xf1, 0xf0, 0xf7, 0xf6, 0xf5, 0xf4,
-		0x84, 0x15, 0x00, 0x9f,
-			0xf0, 0xf1, 0xf2, 0xf3, 0xf4, 0xf5, 0xf6, 0xf7,
-			0xf8, 0xf9, 0xfa, 0xfb, 0xfc, 0xfd, 0xfe, 0xff,
-			0x00, 0x01, 0x02, 0x03,
-	0x31, 0x0a,
-	0x38,
-	0x30,
-		0x23, 0x01, 0x00, 0x00,
-		0x22, 0x02, 0x00,
-	0x30,
-		0x23, 0x01, 0x00, 0x00,
-		0x22, 0x02, 0x00,
-		0x2a, 0x04, 0x02,
-	0x31, 0x00,
-		0x23, 0x01, 0x00, 0x00,
-		0x22, 0x02, 0x00,
-		0x2a, 0x04, 0x02,
-		0x47, 0x01, 0xf1, 0xf0, 0xf3, 0xf2, 0xf4, 0xf5,
-	0x31, 0x04,
-		0x23, 0x01, 0x00, 0x00,
-		0x22, 0x02, 0x00,
-		0x2a, 0x04, 0x02,
-		0x47, 0x01, 0xf1, 0xf0, 0xf3, 0xf2, 0xf4, 0xf5,
-		0x4b, 0xf1, 0xf0, 0xf2,
-	0x31, 0x08,
-		0x23, 0x01, 0x00, 0x00,
-		0x22, 0x02, 0x00,
-		0x2a, 0x04, 0x02,
-		0x47, 0x01, 0xf1, 0xf0, 0xf3, 0xf2, 0xf4, 0xf5,
-		0x4b, 0xf1, 0xf0, 0xf2,
-		0x77, 0x00, 0xa2, 0xb3, 0x76, 0xd5, 0xe6, 0xf7,
-	0x31, 0x01,
-		0x23, 0x01, 0x00, 0x00,
-		0x22, 0x02, 0x00,
-		0x2a, 0x04, 0x02,
-		0x47, 0x01, 0xf1, 0xf0, 0xf3, 0xf2, 0xf4, 0xf5,
-		0x4b, 0xf1, 0xf0, 0xf2,
-		0x77, 0x00, 0xa2, 0xb3, 0x76, 0xd5, 0xe6, 0xf7,
-		0x81, 0x09, 0x00, 0x01, 0xf1, 0xf0, 0xf3, 0xf2, 0xf5, 0xf4, 0xf7, 0xf6,
-	0x31, 0x05,
-		0x23, 0x01, 0x00, 0x00,
-		0x22, 0x02, 0x00,
-		0x2a, 0x04, 0x02,
-		0x47, 0x01, 0xf1, 0xf0, 0xf3, 0xf2, 0xf4, 0xf5,
-		0x4b, 0xf1, 0xf0, 0xf2,
-		0x77, 0x00, 0xa2, 0xb3, 0x76, 0xd5, 0xe6, 0xf7,
-		0x81, 0x09, 0x00, 0x01, 0xf1, 0xf0, 0xf3, 0xf2, 0xf5, 0xf4, 0xf7, 0xf6,
-		0x85, 0x11, 0x00, 0x01,
-			0xf3, 0xf2, 0xf1, 0xf0, 0xf7, 0xf6, 0xf5, 0xf4,
-			0xfb, 0xfa, 0xf9, 0xf8, 0xff, 0xfe, 0xfd, 0xfc,
-	0x31, 0x05,
-		0x23, 0x01, 0x00, 0x00,
-		0x22, 0x02, 0x00,
-		0x2a, 0x04, 0x02,
-		0x47, 0x01, 0xf1, 0xf0, 0xf3, 0xf2, 0xf4, 0xf5,
-		0x4b, 0xf1, 0xf0, 0xf2,
-		0x77, 0x00, 0xa2, 0xb3, 0x76, 0xd5, 0xe6, 0xf7,
-		0x81, 0x09, 0x00, 0x01, 0xf1, 0xf0, 0xf3, 0xf2, 0xf5, 0xf4, 0xf7, 0xf6,
-		0x85, 0x11, 0x00, 0x01,
-			0xf3, 0xf2, 0xf1, 0xf0, 0xf7, 0xf6, 0xf5, 0xf4,
-			0xfb, 0xfa, 0xf9, 0xf8, 0xff, 0xfe, 0xfd, 0xfc,
-		0x86, 0x09, 0x00, 0x00,
-			0xf3, 0xf2, 0xf1, 0xf0, 0xf7, 0xf6, 0xf5, 0xf4,
-		0x84, 0x15, 0x00, 0x9f,
-			0xf0, 0xf1, 0xf2, 0xf3, 0xf4, 0xf5, 0xf6, 0xf7,
-			0xf8, 0xf9, 0xfa, 0xfb, 0xfc, 0xfd, 0xfe, 0xff,
-			0x00, 0x01, 0x02, 0x03,
-		0x8a, 0x39, 0x00, 0x01, 0x0f, 0x33,
-			0xdf, 0xde, 0xdd, 0xdc, 0xdb, 0xda, 0xd9, 0xd8,
-			0xe7, 0xe6, 0xe5, 0xe4, 0xe3, 0xe2, 0xe1, 0xe0,
-			0xef, 0xee, 0xed, 0xec, 0xeb, 0xea, 0xe9, 0xe8,
-			0xf7, 0xf6, 0xf5, 0xf4, 0xf3, 0xf2, 0xf1, 0xf0,
-			0xff, 0xfe, 0xfd, 0xfc, 0xfb, 0xfa, 0xf9, 0xf8,
-			0xff, 0x50, 0x41, 0x54, 0x48, 0x50, 0x41, 0x54,
-			0x48, 0x50, 0x41, 0x54, 0x48, 0x00,
-		0x87, 0x25, 0x00, 0x01, 0x0f, 0x33, 0xef, 0xee, 0xed, 0xec,
-			0xf3, 0xf2, 0xf1, 0xf0, 0xf7, 0xf6, 0xf5, 0xf4,
-			0xfb, 0xfa, 0xf9, 0xf8, 0xff, 0xfe, 0xfd, 0xfc,
-			0xff, 0x50, 0x41, 0x54, 0x48, 0x50, 0x41, 0x54,
-			0x48, 0x50, 0x41, 0x54, 0x48, 0x00,
-		0x88, 0x1b, 0x00, 0x01, 0x0f, 0x33,
-			0xf7, 0xf6, 0xf9, 0xf8, 0xfb, 0xfa, 0xfd, 0xfc, 0xff, 0xfe,
-			0xff, 0x50, 0x41, 0x54, 0x48, 0x50, 0x41, 0x54,
-			0x48, 0x50, 0x41, 0x54, 0x48, 0x00,
-		0x8a, 0x39, 0x00, 0x00, 0x0f, 0x30,
-			0xdf, 0xde, 0xdd, 0xdc, 0xdb, 0xda, 0xd9, 0xd8,
-			0xe7, 0xe6, 0xe5, 0xe4, 0xe3, 0xe2, 0xe1, 0xe0,
-			0xef, 0xee, 0xed, 0xec, 0xeb, 0xea, 0xe9, 0xe8,
-			0xf7, 0xf6, 0xf5, 0xf4, 0xf3, 0xf2, 0xf1, 0xf0,
-			0xff, 0xfe, 0xfd, 0xfc, 0xfb, 0xfa, 0xf9, 0xf8,
-			0xff, 0x50, 0x41, 0x54, 0x48, 0x50, 0x41, 0x54,
-			0x48, 0x50, 0x41, 0x54, 0x48, 0x00,
-		0x87, 0x25, 0x00, 0x00, 0x0f, 0x30,
-			0xef, 0xee, 0xed, 0xec,
-			0xf3, 0xf2, 0xf1, 0xf0, 0xf7, 0xf6, 0xf5, 0xf4,
-			0xfb, 0xfa, 0xf9, 0xf8, 0xff, 0xfe, 0xfd, 0xfc,
-			0xff, 0x50, 0x41, 0x54, 0x48, 0x50, 0x41, 0x54,
-			0x48, 0x50, 0x41, 0x54, 0x48, 0x00,
-		0x88, 0x1b, 0x00, 0x02, 0x0f, 0x00,
-			0xf7, 0xf6, 0xf9, 0xf8, 0xfb, 0xfa, 0xfd, 0xfc, 0xff, 0xfe,
-			0xff, 0x50, 0x41, 0x54, 0x48, 0x50, 0x41, 0x54,
-			0x48, 0x50, 0x41, 0x54, 0x48, 0x00,
-		0x89, 0xc8, 0x04, 0x0f, 0xff,
-			  1,  0,  0,  0,  2,  0,  0,  0,  3,  0,  0,  0,  4,  0,  0,  0,
-			  5,  0,  0,  0,  6,  0,  0,  0,  7,  0,  0,  0,  8,  0,  0,  0,
-			  9,  0,  0,  0, 10,  0,  0,  0, 11,  0,  0,  0, 12,  0,  0,  0,
-			 13,  0,  0,  0, 14,  0,  0,  0, 15,  0,  0,  0, 16,  0,  0,  0,
-			 17,  0,  0,  0, 18,  0,  0,  0, 19,  0,  0,  0, 20,  0,  0,  0,
-			 21,  0,  0,  0, 22,  0,  0,  0, 23,  0,  0,  0, 24,  0,  0,  0,
-			 25,  0,  0,  0, 26,  0,  0,  0, 27,  0,  0,  0, 28,  0,  0,  0,
-			 29,  0,  0,  0, 30,  0,  0,  0, 31,  0,  0,  0, 32,  0,  0,  0,
-			 33,  0,  0,  0, 34,  0,  0,  0, 35,  0,  0,  0, 36,  0,  0,  0,
-			 37,  0,  0,  0, 38,  0,  0,  0, 39,  0,  0,  0, 40,  0,  0,  0,
-			 41,  0,  0,  0, 42,  0,  0,  0, 43,  0,  0,  0, 44,  0,  0,  0,
-			 45,  0,  0,  0, 46,  0,  0,  0, 47,  0,  0,  0, 48,  0,  0,  0,
-			 49,  0,  0,  0, 50,  0,  0,  0, 51,  0,  0,  0, 52,  0,  0,  0,
-			 53,  0,  0,  0, 54,  0,  0,  0, 55,  0,  0,  0, 56,  0,  0,  0,
-			 57,  0,  0,  0, 58,  0,  0,  0, 59,  0,  0,  0, 60,  0,  0,  0,
-			 61,  0,  0,  0, 62,  0,  0,  0, 63,  0,  0,  0, 64,  0,  0,  0,
-			 65,  0,  0,  0, 66,  0,  0,  0, 67,  0,  0,  0, 68,  0,  0,  0,
-			 69,  0,  0,  0, 70,  0,  0,  0, 71,  0,  0,  0, 72,  0,  0,  0,
-			 73,  0,  0,  0, 74,  0,  0,  0, 75,  0,  0,  0, 76,  0,  0,  0,
-			 77,  0,  0,  0, 78,  0,  0,  0, 79,  0,  0,  0, 80,  0,  0,  0,
-			 81,  0,  0,  0, 82,  0,  0,  0, 83,  0,  0,  0, 84,  0,  0,  0,
-			 85,  0,  0,  0, 86,  0,  0,  0, 87,  0,  0,  0, 88,  0,  0,  0,
-			 89,  0,  0,  0, 90,  0,  0,  0, 91,  0,  0,  0, 92,  0,  0,  0,
-			 93,  0,  0,  0, 94,  0,  0,  0, 95,  0,  0,  0, 96,  0,  0,  0,
-			 97,  0,  0,  0, 98,  0,  0,  0, 99,  0,  0,  0,100,  0,  0,  0,
-			101,  0,  0,  0,102,  0,  0,  0,103,  0,  0,  0,104,  0,  0,  0,
-			105,  0,  0,  0,106,  0,  0,  0,107,  0,  0,  0,108,  0,  0,  0,
-			109,  0,  0,  0,110,  0,  0,  0,111,  0,  0,  0,112,  0,  0,  0,
-			113,  0,  0,  0,114,  0,  0,  0,115,  0,  0,  0,116,  0,  0,  0,
-			117,  0,  0,  0,118,  0,  0,  0,119,  0,  0,  0,120,  0,  0,  0,
-			121,  0,  0,  0,122,  0,  0,  0,123,  0,  0,  0,124,  0,  0,  0,
-			125,  0,  0,  0,126,  0,  0,  0,127,  0,  0,  0,128,  0,  0,  0,
-			129,  0,  0,  0,130,  0,  0,  0,131,  0,  0,  0,132,  0,  0,  0,
-			133,  0,  0,  0,134,  0,  0,  0,135,  0,  0,  0,136,  0,  0,  0,
-			137,  0,  0,  0,138,  0,  0,  0,139,  0,  0,  0,140,  0,  0,  0,
-			141,  0,  0,  0,142,  0,  0,  0,143,  0,  0,  0,144,  0,  0,  0,
-			145,  0,  0,  0,146,  0,  0,  0,147,  0,  0,  0,148,  0,  0,  0,
-			149,  0,  0,  0,150,  0,  0,  0,151,  0,  0,  0,152,  0,  0,  0,
-			153,  0,  0,  0,154,  0,  0,  0,155,  0,  0,  0,156,  0,  0,  0,
-			157,  0,  0,  0,158,  0,  0,  0,159,  0,  0,  0,160,  0,  0,  0,
-			161,  0,  0,  0,162,  0,  0,  0,163,  0,  0,  0,164,  0,  0,  0,
-			165,  0,  0,  0,166,  0,  0,  0,167,  0,  0,  0,168,  0,  0,  0,
-			169,  0,  0,  0,170,  0,  0,  0,171,  0,  0,  0,172,  0,  0,  0,
-			173,  0,  0,  0,174,  0,  0,  0,175,  0,  0,  0,176,  0,  0,  0,
-			177,  0,  0,  0,178,  0,  0,  0,179,  0,  0,  0,180,  0,  0,  0,
-			181,  0,  0,  0,182,  0,  0,  0,183,  0,  0,  0,184,  0,  0,  0,
-			185,  0,  0,  0,186,  0,  0,  0,187,  0,  0,  0,188,  0,  0,  0,
-			189,  0,  0,  0,190,  0,  0,  0,191,  0,  0,  0,192,  0,  0,  0,
-			193,  0,  0,  0,194,  0,  0,  0,195,  0,  0,  0,196,  0,  0,  0,
-			197,  0,  0,  0,198,  0,  0,  0,199,  0,  0,  0,200,  0,  0,  0,
-			201,  0,  0,  0,202,  0,  0,  0,203,  0,  0,  0,204,  0,  0,  0,
-			205,  0,  0,  0,206,  0,  0,  0,207,  0,  0,  0,208,  0,  0,  0,
-			209,  0,  0,  0,210,  0,  0,  0,211,  0,  0,  0,212,  0,  0,  0,
-			213,  0,  0,  0,214,  0,  0,  0,215,  0,  0,  0,216,  0,  0,  0,
-			217,  0,  0,  0,218,  0,  0,  0,219,  0,  0,  0,220,  0,  0,  0,
-			221,  0,  0,  0,222,  0,  0,  0,223,  0,  0,  0,224,  0,  0,  0,
-			225,  0,  0,  0,226,  0,  0,  0,227,  0,  0,  0,228,  0,  0,  0,
-			229,  0,  0,  0,230,  0,  0,  0,231,  0,  0,  0,232,  0,  0,  0,
-			233,  0,  0,  0,234,  0,  0,  0,235,  0,  0,  0,236,  0,  0,  0,
-			237,  0,  0,  0,238,  0,  0,  0,239,  0,  0,  0,240,  0,  0,  0,
-			241,  0,  0,  0,242,  0,  0,  0,243,  0,  0,  0,244,  0,  0,  0,
-			245,  0,  0,  0,246,  0,  0,  0,247,  0,  0,  0,248,  0,  0,  0,
-			249,  0,  0,  0,250,  0,  0,  0,251,  0,  0,  0,252,  0,  0,  0,
-			253,  0,  0,  0,254,  0,  0,  0,255,  0,  0,  0,
-			0xff,
-			0x21, 0x22, 0x23, 0x24, 0x25, 0x26, 0x27, 0x28,
-			0x29, 0x2a, 0x2b, 0x2c, 0x2d, 0x2e, 0x2f, 0x30,
-			0x31, 0x32, 0x33, 0x34, 0x35, 0x36, 0x37, 0x38,
-			0x39, 0x3a, 0x3b, 0x3c, 0x3d, 0x3e, 0x3f, 0x40,
-			0x41, 0x42, 0x43, 0x44, 0x45, 0x46, 0x47, 0x48,
-			0x49, 0x4a, 0x4b, 0x4c, 0x4d, 0x4e, 0x4f, 0x50,
-			0x51, 0x52, 0x53, 0x54, 0x55, 0x56, 0x57, 0x58,
-			0x59, 0x5a, 0x5b, 0x5c, 0x5d, 0x5e, 0x5f, 0x60,
-			0x61, 0x62, 0x63, 0x64, 0x65, 0x66, 0x67, 0x68,
-			0x69, 0x6a, 0x6b, 0x6c, 0x6d, 0x6e, 0x6f, 0x70,
-			0x71, 0x72, 0x73, 0x74, 0x75, 0x76, 0x77, 0x78,
-			0x79, 0x7a, 0x7b, 0x7c, 0x7d, 0x7e, 0x20, 0x21,
-			0x22, 0x23, 0x24, 0x25, 0x26, 0x27, 0x28, 0x29,
-			0x2a, 0x2b, 0x2c, 0x2d, 0x2e, 0x2f, 0x30, 0x31,
-			0x32, 0x33, 0x34, 0x35, 0x36, 0x37, 0x38, 0x39,
-			0x3a, 0x3b, 0x3c, 0x3d, 0x3e, 0x3f, 0x40, 0x41,
-			0x42, 0x43, 0x44, 0x45, 0x46, 0x47, 0x48, 0x49,
-			0x4a, 0x4b, 0x4c, 0x4d, 0x4e, 0x4f, 0x50, 0x51,
-			0x52, 0x53, 0x54, 0x55, 0x56, 0x57, 0x58, 0x59,
-			0x5a, 0x5b, 0x5c, 0x5d, 0x5e, 0x5f, 0x60, 0x61,
-			0x62, 0x63, 0x64, 0x65, 0x66, 0x67, 0x68, 0x69,
-			0x6a, 0x6b, 0x6c, 0x6d, 0x6e, 0x6f, 0x70, 0x71,
-			0x72, 0x73, 0x74, 0x75, 0x76, 0x77, 0x78, 0x79,
-			0x7a, 0x7b, 0x7c, 0x7d, 0x7e, 0x20, 0x21, 0x22,
-			0x23, 0x24, 0x25, 0x26, 0x27, 0x28, 0x29, 0x2a,
-			0x00,
-		0x82, 0x0c, 0x00, 0x7f, 0xf0, 0xf1, 0x00,
-			0xf9, 0xf8, 0xf7, 0xf6, 0xf5, 0xf4, 0xf3, 0xf2,
-		0x8b, 0x35, 0x00, 0x01, 0x0f, 0x33, 0x01, 0x00,
-			0xd7, 0xd6, 0xd5, 0xd4, 0xd3, 0xd2, 0xd1, 0xd0,
-			0xdf, 0xde, 0xdd, 0xdc, 0xdb, 0xda, 0xd9, 0xd8,
-			0xe7, 0xe6, 0xe5, 0xe4, 0xe3, 0xe2, 0xe1, 0xe0,
-			0xef, 0xee, 0xed, 0xec, 0xeb, 0xea, 0xe9, 0xe8,
-			0xf7, 0xf6, 0xf5, 0xf4, 0xf3, 0xf2, 0xf1, 0xf0,
-			0xff, 0xfe, 0xfd, 0xfc, 0xfb, 0xfa, 0xf9, 0xf8,
-		0x8b, 0x35, 0x00, 0x00, 0x0f, 0x30, 0x01, 0x00,
-			0xd7, 0xd6, 0xd5, 0xd4, 0xd3, 0xd2, 0xd1, 0xd0,
-			0xdf, 0xde, 0xdd, 0xdc, 0xdb, 0xda, 0xd9, 0xd8,
-			0xe7, 0xe6, 0xe5, 0xe4, 0xe3, 0xe2, 0xe1, 0xe0,
-			0xef, 0xee, 0xed, 0xec, 0xeb, 0xea, 0xe9, 0xe8,
-			0xf7, 0xf6, 0xf5, 0xf4, 0xf3, 0xf2, 0xf1, 0xf0,
-			0xff, 0xfe, 0xfd, 0xfc, 0xfb, 0xfa, 0xf9, 0xf8,
-		0x8b, 0x35, 0x00, 0xc0, 0x0f, 0x5a, 0x01, 0x00,
-			0xd7, 0xd6, 0xd5, 0xd4, 0xd3, 0xd2, 0xd1, 0xd0,
-			0xdf, 0xde, 0xdd, 0xdc, 0xdb, 0xda, 0xd9, 0xd8,
-			0xe7, 0xe6, 0xe5, 0xe4, 0xe3, 0xe2, 0xe1, 0xe0,
-			0xef, 0xee, 0xed, 0xec, 0xeb, 0xea, 0xe9, 0xe8,
-			0xf7, 0xf6, 0xf5, 0xf4, 0xf3, 0xf2, 0xf1, 0xf0,
-			0xff, 0xfe, 0xfd, 0xfc, 0xfb, 0xfa, 0xf9, 0xf8,
-		0x87, 0x25, 0x00, 0xc0, 0x0f, 0x5a,
-			0xef, 0xee, 0xed, 0xec,
-			0xf3, 0xf2, 0xf1, 0xf0, 0xf7, 0xf6, 0xf5, 0xf4,
-			0xfb, 0xfa, 0xf9, 0xf8, 0xff, 0xfe, 0xfd, 0xfc,
-			0xff, 0x50, 0x41, 0x54, 0x48, 0x50, 0x41, 0x54,
-			0x48, 0x50, 0x41, 0x54, 0x48, 0x00,
-		0x8a, 0x39, 0x00, 0xc0, 0x0f, 0x5a,
-			0xdf, 0xde, 0xdd, 0xdc, 0xdb, 0xda, 0xd9, 0xd8,
-			0xe7, 0xe6, 0xe5, 0xe4, 0xe3, 0xe2, 0xe1, 0xe0,
-			0xef, 0xee, 0xed, 0xec, 0xeb, 0xea, 0xe9, 0xe8,
-			0xf7, 0xf6, 0xf5, 0xf4, 0xf3, 0xf2, 0xf1, 0xf0,
-			0xff, 0xfe, 0xfd, 0xfc, 0xfb, 0xfa, 0xf9, 0xf8,
-			0xff, 0x50, 0x41, 0x54, 0x48, 0x50, 0x41, 0x54,
-			0x48, 0x50, 0x41, 0x54, 0x48, 0x00,
-		0x88, 0x1b, 0x00, 0xc0, 0x0f, 0x5a,
-			0xf7, 0xf6, 0xf9, 0xf8, 0xfb, 0xfa, 0xfd, 0xfc, 0xff, 0xfe,
-			0xff, 0x50, 0x41, 0x54, 0x48, 0x50, 0x41, 0x54,
-			0x48, 0x50, 0x41, 0x54, 0x48, 0x00,
-	0x31, 0x09,
-		0x23, 0x01, 0x00, 0x00,
-		0x22, 0x02, 0x00,
-		0x2a, 0x04, 0x02,
-		0x47, 0x01, 0xf1, 0xf0, 0xf3, 0xf2, 0xf4, 0xf5,
-		0x4b, 0xf1, 0xf0, 0xf2,
-		0x77, 0x00, 0xa2, 0xb3, 0x76, 0xd5, 0xe6, 0xf7,
-		0x81, 0x09, 0x00, 0x01, 0xf1, 0xf0, 0xf3, 0xf2, 0xf5, 0xf4, 0xf7, 0xf6,
-		0x85, 0x11, 0x00, 0x01,
-			0xf3, 0xf2, 0xf1, 0xf0, 0xf7, 0xf6, 0xf5, 0xf4,
-			0xfb, 0xfa, 0xf9, 0xf8, 0xff, 0xfe, 0xfd, 0xfc,
-		0x86, 0x09, 0x00, 0x00,
-			0xf3, 0xf2, 0xf1, 0xf0, 0xf7, 0xf6, 0xf5, 0xf4,
-	0x31, 0x02,
-	0x31, 0x06,
-		0x23, 0x01, 0x00, 0x00,
-		0x22, 0x02, 0x00,
-		0x2a, 0x04, 0x02,
-		0x47, 0x01, 0xf1, 0xf0, 0xf3, 0xf2, 0xf4, 0xf5,
-		0x4b, 0xf1, 0xf0, 0xf2,
-		0x77, 0x00, 0xa2, 0xb3, 0x76, 0xd5, 0xe6, 0xf7,
-		0x81, 0x09, 0x00, 0x01, 0xf1, 0xf0, 0xf3, 0xf2, 0xf5, 0xf4, 0xf7, 0xf6,
-		0x85, 0x11, 0x00, 0x01,
-			0xf3, 0xf2, 0xf1, 0xf0, 0xf7, 0xf6, 0xf5, 0xf4,
-			0xfb, 0xfa, 0xf9, 0xf8, 0xff, 0xfe, 0xfd, 0xfc,
-		0x86, 0x09, 0x00, 0x00,
-			0xf3, 0xf2, 0xf1, 0xf0, 0xf7, 0xf6, 0xf5, 0xf4,
-		0x84, 0x15, 0x00, 0x9f,
-			0xf0, 0xf1, 0xf2, 0xf3, 0xf4, 0xf5, 0xf6, 0xf7,
-			0xf8, 0xf9, 0xfa, 0xfb, 0xfc, 0xfd, 0xfe, 0xff,
-			0x00, 0x01, 0x02, 0x03,
-	0x31, 0x0a,
-	0x38,
-	0x79, 0},
-})
+    Name (P441, Package (0x01)
+    {
+        ResourceTemplate ()
+        {
+            DMA (Compatibility, BusMaster, Transfer8_16, )
+                {4}
+        }
+        /* Buffer () {0x00, 0x00, 0x00, 0x79, 0x00}, */
+    /* Buffer () {0x2a, 0x10, 0x05, 0x79}, */
+    /* Empty buffer */
+    })
+    Name (P442, Package (0x02)
+    {
+        ResourceTemplate ()
+        {
+            IRQNoFlags ()
+                {1}
+        }, 
 
-// Particular cases
+        ResourceTemplate ()
+        {
+            IRQNoFlags ()
+                {1}
+        }
+        /*
+     * ResourceTemplate () {
+     *	IRQNoFlags () {1}
+     * },
+     *
+     * ResourceTemplate () {
+     *	IRQNoFlags () {1}
+     * },
+     */
+    })
+    Name (P443, Package (0x02)
+    {
+        ResourceTemplate ()
+        {
+            DMA (Compatibility, BusMaster, Transfer8_16, )
+                {4}
+            IRQNoFlags ()
+                {1}
+        }, 
 
-Name (p441, Package() {
-	ResourceTemplate () {
-		DMA (Compatibility, BusMaster, Transfer8_16) {4}
-	},
-	// Buffer () {0x00, 0x00, 0x00, 0x79, 0x00},
-	// Buffer () {0x2a, 0x10, 0x05, 0x79},
-	// Empty buffer
-})
+        /* Buffer () {0x00, 0x00, 0x00, 0x22, 0x02, 0x00, 0x79, 0}, */
+        /* Buffer () {0x2a, 0x10, 0x05, 0x22, 0x02, 0x00, 0x79, 0}, */
+        ResourceTemplate ()
+        {
+            IRQNoFlags ()
+                {1}
+        }
+    })
+    Name (P444, Package (0x02)
+    {
+        ResourceTemplate ()
+        {
+            IRQNoFlags ()
+                {1}
+            DMA (Compatibility, BusMaster, Transfer8_16, )
+                {4}
+        }, 
 
-Name (p442, Package() {
-	ResourceTemplate () {
-		IRQNoFlags () {1}
-	},
-	ResourceTemplate () {
-		IRQNoFlags () {1}
-	},
-	/*
-	 * ResourceTemplate () {
-	 *	IRQNoFlags () {1}
-	 * },
-	 *
-	 * ResourceTemplate () {
-	 *	IRQNoFlags () {1}
-	 * },
-	 */
-})
+        /* Buffer () {0x22, 0x02, 0x00, 0x00, 0x00, 0x00, 0x79, 0}, */
+        /* Buffer () {0x22, 0x02, 0x00, 0x2a, 0x10, 0x05, 0x79, 0}, */
+        ResourceTemplate ()
+        {
+            IRQNoFlags ()
+                {1}
+        }
+    })
+    Method (RT1B, 0, Serialized)
+    {
+        Name (TS, "RT1b")
+        /* Emit test header, set the filename */
 
-Name (p443, Package() {
-	Buffer () {0x2a, 0x10, 0x05, 0x22, 0x02, 0x00, 0x79, 0},
-	// Buffer () {0x00, 0x00, 0x00, 0x22, 0x02, 0x00, 0x79, 0},
-	// Buffer () {0x2a, 0x10, 0x05, 0x22, 0x02, 0x00, 0x79, 0},
-	Buffer () {0x22, 0x02, 0x00, 0x79, 0},
-})
+        THDR (TS, "Concatenate two resource templates", "concatenaterestemplate.asl")
+        /* Calculate the checksum for the target first */
+        /*	m334(p440, 3) */
+        /*	m332(ts, 3, "p440", p438, p438, p440) */
+        /* Particular cases */
+        /*	Store(0, Local0) */
+        /*	Store(Buffer(Local0){}, Local1) */
+        /*	Store(Local1, Index(p441, 1)) */
+        M332 (TS, 0x01, "p443", P441, P442, P443)
+        M332 (TS, 0x01, "p444", P442, P441, P444)
+        CH03 (TS, Z007, 0x0123, 0x03EC, 0x00)
+    }
 
-Name (p444, Package() {
-	Buffer () {0x22, 0x02, 0x00, 0x2a, 0x10, 0x05, 0x79, 0},
-	// Buffer () {0x22, 0x02, 0x00, 0x00, 0x00, 0x00, 0x79, 0},
-	// Buffer () {0x22, 0x02, 0x00, 0x2a, 0x10, 0x05, 0x79, 0},
-	Buffer () {0x22, 0x02, 0x00, 0x79, 0},
-})
-
-Method(RT1b,, Serialized)
-{
-	Name(ts, "RT1b")
-
-	// Emit test header, set the filename
-
-	THDR (ts, "Concatenate two resource templates", __FILE__)
-
-	// Calculate the checksum for the target first
-	
-//	m334(p440, 3)
-//	m332(ts, 3, "p440", p438, p438, p440)
-
-
-	// Particular cases
-
-//	Store(0, Local0)
-//	Store(Buffer(Local0){}, Local1)
-//	Store(Local1, Index(p441, 1))
-
-	m332(ts, 1, "p443", p441, p442, p443)
-
-	m332(ts, 1, "p444", p442, p441, p444)
-
-	CH03(ts, z007, 0x123, __LINE__, 0)
-}

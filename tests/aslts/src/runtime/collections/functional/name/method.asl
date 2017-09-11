@@ -1,1090 +1,1392 @@
-/*
- * Some or all of this work - Copyright (c) 2006 - 2017, Intel Corp.
- * All rights reserved.
- *
- * Redistribution and use in source and binary forms, with or without modification,
- * are permitted provided that the following conditions are met:
- *
- * Redistributions of source code must retain the above copyright notice,
- * this list of conditions and the following disclaimer.
- * Redistributions in binary form must reproduce the above copyright notice,
- * this list of conditions and the following disclaimer in the documentation
- * and/or other materials provided with the distribution.
- * Neither the name of Intel Corporation nor the names of its contributors
- * may be used to endorse or promote products derived from this software
- * without specific prior written permission.
- *
- * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS"
- * AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE
- * IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE
- * ARE DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT OWNER OR CONTRIBUTORS BE
- * LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL
- * DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES;
- * LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY
- * THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING
- * NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE,
- * EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
- */
-
-/*
- * Miscellaneous named object creation
- */
-
-Name(z133, 133)
-
-/*
- * This sub-test is intended to comprehensively verify
- * the Control Method declaration syntax implementation.
- *
- * Declare the Control Method Objects of different signature,
- * check that properly specified or default arguments values
- * provide required functionality.
- *
- *    17.5.75    Method (Declare Control Method)
- *    Syntax
- * Method (MethodName, NumArgs, SerializeRule, SyncLevel,
- *         ReturnType, ParameterTypes) {TermList}
- *
- *    Validated Assertions:
- *
- * - Control Method declaration creates an Object in the ACPI
- *   namespace which can be referred by the specified MethodName
- *   either to initiate its invocation or to obtain its AML Object
- *   type. Also MethodName can be used to save a copy of the Object
- *   or a reference to it in another AML Object.
- *
- * - ASL compiler should allow only a Namestring data type in the
- *   MethodName position.
- *
- * - ASL compiler should allow only an Type3Opcode (integer) constant
- *   expression of the value in the range 0-7 in the NumArgs position.
- *   NumArgs is optional argument.
- *
- * - ASL compiler should allow only the keywords 'NotSerialized'
- *   and 'Serialized' in the SerializeRule position. SerializeRule
- *   is optional argument.
- *
- * - ASL compiler should allow only an Type3Opcode (integer) constant
- *   expression of the value in the range 0-15 in the SyncLevel position.
- *   SyncLevel is optional argument. If no SyncLevel is specified, SyncLevel
- *   0 is assumed.
- *
- * - ASL compiler should allow only an ObjectTypeKeyword or
- *   a comma-separated ObjectTypeKeywords enclosed with curly
- *   brackets (OTK package) in the ReturnType position. ReturnType
- *   is optional argument. If no ReturnType is specified, ReturnType
- *   UnknownObj is assumed.
- *   ObjectTypeKeyword := UnknownObj | IntObj | StrObj | BuffObj |
- *                        PkgObj | FieldUnitObj | DeviceObj | EventObj |
- *                        MethodObj | MutexObj | OpRegionObj | PowerResObj |
- *                        ThermalZoneObj | BuffFieldObj | DDBHandleObj
- *
- * - Every ASL data type should have a respective unique ObjectType Keyword.
- *
- * - ASL compiler should report an error when an actual Object specified
- *   to be returned is of inappropriate type.
- *
- * - ASL compiler should report an error when there is at least one
- *   control path in the method that returns no any actual Object.
- *
- * - ASL compiler should report an error when some different from
- *   UnknownObj ObjectType Keyword specified in the ReturnType position
- *   but no any actual Object specified to be returned.
- *
- * - ASL compiler should allow only an OTK package or a package
- *   containing OTK packages along with ObjectTypeKeywords in the
- *   ParameterTypes position.
- *
- * - ASL compiler should report an error when ParameterTypes is specified
- *   and the number of members in the ParameterTypes package don't match
- *   NumArgs.
- *
- * - ASL compiler should report an error when an actual Object
- *   specified to be a respective argument of the Method is of
- *   inappropriate type.
- *
- * - System software should execute a control method by referencing
- *   the objects in the Method body in order.
- *
- * - Method opens a name scope. All namespace references that occur
- *   during the method execution are relative to the Method package
- *   location.
- *
- * - If the  method is declared as Serialized, it can be called
- *   recursively, maybe, through another auxiliary method.
- *
- * - One method declared as Serialized can call another
- *   one declared as Serialized too when the SyncLevel of
- *   the second method is not less than that of the first.
- *
- * - The method declared as Serialized can acquire an Mutex
- *   when the SyncLevel of the Mutex is not less than that of
- *   the method.
- *
- * - If some method acquired an Mutex it can call another one
- *   declared as Serialized when the SyncLevel of the called
- *   method is not less than that of the Mutex.
- *
- * - All Acquire terms must refer to a synchronization object
- *   with an equal or greater SyncLevel to the current Method level.
- *
- * - The method declared as Serialized can release an Mutex
- *   when the SyncLevel of the Mutex is not less than that of
- *   the method.
- *
- * - All namespace objects created by a method should be destroyed
- *   when method execution exits.
- *
- */
-
-// Flags of types of Computational Data Objects
-// (Fields and Integer, String, Buffer)
-Name(bz00, Buffer() {0,1,1,1,0,1,0,0,0,0,0,0,0,0,1,0,0,0})
-
-// Check Result of operation on equal to Benchmark value
-// m680(<method name>,
-//	<internal type of error if it occurs>,
-//	<Result>,
-//	<Benchmark value>)
-Method(m205, 4)
-{
-	Store(ObjectType(arg2), Local0)
-	Store(ObjectType(arg3), Local1)
-	if (LNotEqual(Local0, Local1)) {
-		err(Concatenate(arg0, "-OType"), z133, __LINE__, 0, 0, Local0, Local1)
-		Return (1)
-	} elseif (Derefof(Index(bz00, Local0))) {
-		if (LNot(y119)) {
-			if (LEqual(Local1, 1)) {
-				// Cast 64-bit to 32-bit
-				if (LNot(F64)) {
-					Store(arg3, arg3)
-				}
-			}
-		}
-		if (LNotEqual(arg2, arg3)) {
-			err(arg0, z133, __LINE__, 0, 0, arg2, arg3)
-			Return (1)
-		}
-	} elseif (LEqual(Local0, 8)) {
-		// Methods, compare the results of them
-		Store(m209(Concatenate(arg0, "-Method"), arg1, arg2, arg3), Local2)
-		Return (Local2)
-	} elseif (LEqual(Local0, 4)) {
-		// Packages
-		Store(m20a(Concatenate(arg0, "-Pack"), arg1, arg2, arg3), Local2)
-		Return (Local2)
-	}
-	Return (0)
-}
-
-// Check that Results of the Methods are equal each other
-Method(m209, 4, Serialized)
-{
-	Name(MMM0, 0)
-	Name(MMM1, 0)
-
-	CopyObject(arg2, MMM0)
-	CopyObject(arg3, MMM1)
-
-	Return (m205(arg0, arg1, MMM0, MMM1))
-}
-
-// Check that two Packages are equal each other
-Method(m20a, 4)
-{
-	Store(Sizeof(arg3), Local0)
-	if (LNotEqual(Sizeof(arg2), Local0)) {
-		err(Concatenate(arg0, "-Size"), z133, __LINE__, 0, 0, Sizeof(arg2), Local0)
-		Return (1)
-	}
-	While (Local0) {
-		Decrement(Local0)
-		Store(ObjectType(Derefof(Index(arg2, Local0))), Local1)
-		Store(ObjectType(Derefof(Index(arg3, Local0))), Local2)
-		if (LNotEqual(Local1, Local2)) {
-			// ObjectType is corrupted
-			err(Concatenate(arg0, "-OType"), z133, __LINE__, 0, 0, Local1, Local2)
-			Return (1)
-		} elseif (Derefof(Index(bz00, Local1))) {
-			// the computational data type
-			if (LNotEqual(
-					Derefof(Index(arg2, Local0)),
-					Derefof(Index(arg3, Local0)))) {
-				// The value is corrupted
-				err(arg0, z133, __LINE__, 0, 0, Derefof(Index(arg2, Local0)), Derefof(Index(arg3, Local0)))
-				Return (1)
-			}
-		}
-	}
-	Return (0)
-}
-
-Scope(\_SB){
-	Method(m206){}
-}
-
-Method(m207,, Serialized)
-{
-	Name(ts, "m207")
-
-	Method(m240)
-	{
-		Method(mm00) {Return ("\\m207.m240.mm00")}
-		Method(\_SB.m206.mm00) {Return ("\\_SB.m206.mm00")}
-	
-		m205(ts, 1, ObjectType(mm00), 8)
-		m205(ts, 2, mm00(), "\\m207.m240.mm00")
-
-		m205(ts, 3, ObjectType(\m207.m240.mm00), 8)
-		m205(ts, 4, \m207.m240.mm00(), "\\m207.m240.mm00")
-
-		m205(ts, 5, ObjectType(^m240.mm00), 8)
-		m205(ts, 6, ^m240.mm00(), "\\m207.m240.mm00")
-
-		m205(ts, 7, ObjectType(\_SB.m206.mm00), 8)
-		m205(ts, 8, \_SB.m206.mm00(), "\\_SB.m206.mm00")
-	}
-
-	Method(m241)
-	{
-		Method(mm10) {Return ("\\m207.m241.mm10")}
-		Method(mm20, ) {Return ("\\m207.m241.mm20")}
-		Method(mm30, , ) {Return ("\\m207.m241.mm30")}
-		Method(mm40, , , ) {Return ("\\m207.m241.mm40")}
-		Method(mm50, , , , ) {Return ("\\m207.m241.mm50")}
-		Method(mm60, , , , , ) {Return ("\\m207.m241.mm60")}
-
-		Method(mm00, 0) {Return ("\\m207.m241.mm00")}
-		Method(mm01, 1) {Return ("\\m207.m241.mm01")}
-		Method(mm02, 2) {Return ("\\m207.m241.mm02")}
-		Method(mm03, 3) {Return ("\\m207.m241.mm03")}
-		Method(mm04, 4) {Return ("\\m207.m241.mm04")}
-		Method(mm05, 5) {Return ("\\m207.m241.mm05")}
-		Method(mm06, 6) {Return ("\\m207.m241.mm06")}
-		Method(mm07, 7) {Return ("\\m207.m241.mm07")}
-
-		// Numargs as Type3Opcode (integer) constant expression
-// Invalid checksum warning
-//		Method(mm09, Add(6, 1)) {Return ("\\m207.m241.mm09")}
-
-		m205(ts,  9, ObjectType(mm10), 8)
-		m205(ts, 10, mm10(), "\\m207.m241.mm10")
-
-		m205(ts, 11, ObjectType(mm20), 8)
-		m205(ts, 12, mm20(), "\\m207.m241.mm20")
-
-		m205(ts, 13, ObjectType(mm30), 8)
-		m205(ts, 14, mm30(), "\\m207.m241.mm30")
-
-		m205(ts, 15, ObjectType(mm40), 8)
-		m205(ts, 16, mm40(), "\\m207.m241.mm40")
-
-		m205(ts, 17, ObjectType(mm50), 8)
-		m205(ts, 18, mm50(), "\\m207.m241.mm50")
-
-		m205(ts, 19, ObjectType(mm60), 8)
-		
-		if (y157) {
-			m205(ts, 20, mm60(), "\\m207.m241.mm60")
-		}
-
-		m205(ts, 21, ObjectType(mm00), 8)
-		m205(ts, 22, mm00(), "\\m207.m241.mm00")
-
-		m205(ts, 23, ObjectType(mm01), 8)
-		m205(ts, 24, mm01(0), "\\m207.m241.mm01")
-
-		m205(ts, 25, ObjectType(mm02), 8)
-		m205(ts, 26, mm02(0, 1), "\\m207.m241.mm02")
-
-		m205(ts, 27, ObjectType(mm03), 8)
-		m205(ts, 28, mm03(0, 1, 2), "\\m207.m241.mm03")
-
-		m205(ts, 29, ObjectType(mm04), 8)
-		m205(ts, 30, mm04(0, 1, 2, 3), "\\m207.m241.mm04")
-
-		m205(ts, 31, ObjectType(mm05), 8)
-		m205(ts, 32, mm05(0, 1, 2, 3, 4), "\\m207.m241.mm05")
-
-		m205(ts, 33, ObjectType(mm06), 8)
-		m205(ts, 34, mm06(0, 1, 2, 3, 4, 5), "\\m207.m241.mm06")
-
-		m205(ts, 35, ObjectType(mm07), 8)
-		m205(ts, 36, mm07(0, 1, 2, 3, 4, 5, 6), "\\m207.m241.mm07")
-
-// Invalid checksum warning
-//		m205(ts, 37, ObjectType(mm09), 8)
-// Too many arguments ^  (MM09 requires 0)
-//		m205(ts, 38, mm09(0, 1, 2, 3, 4, 5, 6), "\\m207.m241.mm09")
-	}
-
-	Method(m242)
-	{
-		Method(mm10, , NotSerialized) {Return ("\\m207.m242.mm10")}
-		Method(mm20, , Serialized) {Return ("\\m207.m242.mm20")}
-		Method(mm30, , NotSerialized, ) {Return ("\\m207.m242.mm30")}
-		Method(mm40, , Serialized, , ) {Return ("\\m207.m242.mm40")}
-		Method(mm50, , NotSerialized, , , ) {Return ("\\m207.m242.mm50")}
-		Method(mm60, , Serialized, , , ) {Return ("\\m207.m242.mm60")}
-
-		Method(mm00, 0, Serialized, 0) {Return ("\\m207.m242.mm00")}
-		Method(mm01, 1, Serialized, 1) {Return ("\\m207.m242.mm01")}
-		Method(mm02, 2, Serialized, 2) {Return ("\\m207.m242.mm02")}
-		Method(mm03, 3, Serialized, 3) {Return ("\\m207.m242.mm03")}
-		Method(mm04, 4, Serialized, 4) {Return ("\\m207.m242.mm04")}
-		Method(mm05, 5, Serialized, 5) {Return ("\\m207.m242.mm05")}
-		Method(mm06, 6, Serialized, 6) {Return ("\\m207.m242.mm06")}
-		Method(mm07, 7, Serialized, 7) {Return ("\\m207.m242.mm07")}
-		Method(mm08, 0, Serialized, 8) {Return ("\\m207.m242.mm08")}
-		Method(mm09, 1, Serialized, 9) {Return ("\\m207.m242.mm09")}
-		Method(mm0a, 2, Serialized, 10) {Return ("\\m207.m242.mm0a")}
-		Method(mm0b, 3, Serialized, 11) {Return ("\\m207.m242.mm0b")}
-		Method(mm0c, 4, Serialized, 12) {Return ("\\m207.m242.mm0c")}
-		Method(mm0d, 5, Serialized, 13) {Return ("\\m207.m242.mm0d")}
-		Method(mm0e, 6, Serialized, 14) {Return ("\\m207.m242.mm0e")}
-		Method(mm0f, 7, Serialized, 15) {Return ("\\m207.m242.mm0f")}
-
-		// Numargs as Type3Opcode (integer) constant expression
-// Invalid checksum warning
-//		Method(mm70, Add(6, 1), NotSerialized) {Return ("\\m207.m242.mm70")}
-
-		// SyncLevel as Type3Opcode (integer) constant expression
-		Method(mm80, 7, Serialized, Add(14, 1)) {Return ("\\m207.m242.mm80")}
-
-		// Both Numargs and SyncLevel as Type3Opcode (integer) constant expressions
-// Invalid checksum warning
-//		Method(mm90, Add(6, 1), Serialized, Add(14, 1)) {Return ("\\m207.m242.mm90")}
-
-		m205(ts, 39, ObjectType(mm10), 8)
-		m205(ts, 40, mm10(), "\\m207.m242.mm10")
-
-		m205(ts, 41, ObjectType(mm10), 8)
-		m205(ts, 42, mm20(), "\\m207.m242.mm20")
-
-		m205(ts, 43, ObjectType(mm10), 8)
-		m205(ts, 44, mm30(), "\\m207.m242.mm30")
-
-		m205(ts, 45, ObjectType(mm10), 8)
-		m205(ts, 46, mm40(), "\\m207.m242.mm40")
-
-		m205(ts, 47, ObjectType(mm10), 8)
-		if (y157) {
-			m205(ts, 48, mm50(), "\\m207.m242.mm50")
-		}
-
-		m205(ts, 49, ObjectType(mm10), 8)
-		if (y157) {
-			m205(ts, 50, mm60(), "\\m207.m242.mm60")
-		}
-
-		m205(ts, 51, ObjectType(mm00), 8)
-		m205(ts, 52, mm00(), "\\m207.m242.mm00")
-
-		m205(ts, 53, ObjectType(mm01), 8)
-		m205(ts, 54, mm01(0), "\\m207.m242.mm01")
-
-		m205(ts, 55, ObjectType(mm02), 8)
-		m205(ts, 56, mm02(0, 1), "\\m207.m242.mm02")
-
-		m205(ts, 57, ObjectType(mm03), 8)
-		m205(ts, 58, mm03(0, 1, 2), "\\m207.m242.mm03")
-
-		m205(ts, 59, ObjectType(mm04), 8)
-		m205(ts, 60, mm04(0, 1, 2, 3), "\\m207.m242.mm04")
-
-		m205(ts, 61, ObjectType(mm05), 8)
-		m205(ts, 62, mm05(0, 1, 2, 3, 4), "\\m207.m242.mm05")
-
-		m205(ts, 63, ObjectType(mm06), 8)
-		m205(ts, 64, mm06(0, 1, 2, 3, 4, 5), "\\m207.m242.mm06")
-
-		m205(ts, 65, ObjectType(mm07), 8)
-		m205(ts, 66, mm07(0, 1, 2, 3, 4, 5, 6), "\\m207.m242.mm07")
-
-		m205(ts, 67, ObjectType(mm00), 8)
-		m205(ts, 68, mm08(), "\\m207.m242.mm08")
-
-		m205(ts, 69, ObjectType(mm01), 8)
-		m205(ts, 70, mm09(0), "\\m207.m242.mm09")
-
-		m205(ts, 71, ObjectType(mm02), 8)
-		m205(ts, 72, mm0a(0, 1), "\\m207.m242.mm0a")
-
-		m205(ts, 73, ObjectType(mm03), 8)
-		m205(ts, 74, mm0b(0, 1, 2), "\\m207.m242.mm0b")
-
-		m205(ts, 75, ObjectType(mm04), 8)
-		m205(ts, 76, mm0c(0, 1, 2, 3), "\\m207.m242.mm0c")
-
-		m205(ts, 77, ObjectType(mm05), 8)
-		m205(ts, 78, mm0d(0, 1, 2, 3, 4), "\\m207.m242.mm0d")
-
-		m205(ts, 79, ObjectType(mm06), 8)
-		m205(ts, 80, mm0e(0, 1, 2, 3, 4, 5), "\\m207.m242.mm0e")
-
-		m205(ts, 81, ObjectType(mm07), 8)
-		m205(ts, 82, mm0f(0, 1, 2, 3, 4, 5, 6), "\\m207.m242.mm0f")
-
-// Invalid checksum warning
-//		m205(ts, 83, ObjectType(mm70), 8)
-//	Too many arguments ^  (MM70 requires 0)
-//		m205(ts, 84, mm70(0, 1, 2, 3, 4, 5, 6), "\\m207.m242.mm70")
-
-		m205(ts, 85, ObjectType(mm80), 8)
-// Outstanding allocations
-//		m205(ts, 86, mm80(0, 1, 2, 3, 4, 5, 6), "\\m207.m242.mm80")
-
-// Invalid checksum warning
-//		m205(ts, 87, ObjectType(mm90), 8)
-//	Too many arguments ^  (MM90 requires 0)
-//		m205(ts, 88, mm90(0, 1, 2, 3, 4, 5, 6), "\\m207.m242.mm90")
-	}
-
-	// Integer
-	Name(INT0, 0xfedcba9876543210)
-
-	// String
-	Name(STR0, "source string")
-
-	// Buffer
-	Name(BUF0, Buffer(9){9,8,7,6,5,4,3,2,1})
-
-	// Initializer of Fields
-	Name(BUF2, Buffer(9){0x95,0x85,0x75,0x65,0x55,0x45,0x35,0x25,0x15})
-
-	// Base of Buffer Fields
-	Name(BUFZ, Buffer(48){})
-
-	// Package
-	Name(PAC0, Package(3) {
-		0xfedcba987654321f,
-		"test package",
-		Buffer(9){19,18,17,16,15,14,13,12,11},
-	})
-
-	// Operation Region
-	OperationRegion(OPR0, SystemMemory, 0, 48)
-
-	// Field Unit
-	Field(OPR0, ByteAcc, NoLock, Preserve) {
-		FLU0, 69,
-		FLU2, 64,
-		FLU4, 32,
-	}
-
-	// Device
-	Device(DEV0) {Name(s000, "DEV0")}
-
-	// Event
-	Event(EVE0)
-
-	// Method
-	Method(MMM0) {Return ("ff0X")}
-
-	// Mutex
-	Mutex(MTX0, 0)
-
-	// Power Resource
-	PowerResource(PWR0, 0, 0) {Name(s000, "PWR0")}
-
-	// Processor
-	Processor(CPU0, 0x0, 0xFFFFFFFF, 0x0) {Name(s000, "CPU0")}
-
-	// Thermal Zone
-	ThermalZone(TZN0) {Name(s000, "TZN0")}
-
-	// Buffer Field
-	Createfield(BUFZ,   0, 69, BFL0)
-	Createfield(BUFZ,  80, 64, BFL2)
-	Createfield(BUFZ, 160, 32, BFL4)
-
-	// DDBHandle
-	Name(DDB0, Ones)
-
-	// Reference
-	Name(ORF0, "ORF0")
-	Name(REF0, Package(1){})
-
-	Method(m243)
-	{
-		Method(mm00, 1, , , UnknownObj) {Add(Derefof(arg0), 1, arg0)}
-
-		Method(mm01, , , , IntObj) {Return (INT0)}
-		Method(mm11, , , , StrObj) {Return (INT0)}
-		Method(mm02, , , , StrObj) {Return (STR0)}
-		Method(mm03, , , , BuffObj) {Return (BUF0)}
-		Method(mm04, , , , PkgObj) {Return (PAC0)}
-		Method(mm05, , , , FieldUnitObj) {Return (FLU0)}
-		Method(mm06, , , , DeviceObj) {Return (DEV0)}
-		Method(mm07, , , , EventObj) {Return (EVE0)}
-		Method(mm08, , , , MethodObj) {
-			CopyObject(MMM0, Local0)
-			Return (Local0)
-		}
-		Method(mm09, , , , MutexObj) {Return (MTX0)}
-		Method(mm0a, , , , OpRegionObj) {Return (OPR0)}
-		Method(mm0b, , , , PowerResObj) {Return (PWR0)}
-		Method(mm0c, , , , ProcessorObj) {Return (CPU0)}
-		Method(mm0d, , , , ThermalZoneObj) {Return (TZN0)}
-		Method(mm0e, , , , BuffFieldObj) {Return (BFL0)}
-		Method(mm0f, , , , DDBHandleObj) {Return (DDB0)}
-
-		// Formal declaration
-		// Method(mm0g, , , , DebugObj) {Return (Debug)}
-
-		Method(mm0h, , , , IntObj) {Return (Refof(ORF0))}
-
-		Store(0xfedcba9876543210, Local0)
-		m205(ts, 89, ObjectType(mm00), 8)
-		mm00(Refof(Local0))
-		m205(ts, 90, Local0, 0xfedcba9876543211)
-
-		m205(ts, 91, ObjectType(mm01), 8)
-		m205(ts, 92, mm01(), INT0)
-
-		m205(ts, 93, ObjectType(mm02), 8)
-		m205(ts, 94, mm02(), STR0)
-
-		m205(ts, 95, ObjectType(mm03), 8)
-		m205(ts, 96, mm03(), BUF0)
-
-		m205(ts, 97, ObjectType(mm04), 8)
-		m205(ts, 98, mm04(), PAC0)
-
-		m205(ts, 99, ObjectType(mm05), 8)
-		m205(ts, 100, mm05(), FLU0)
-
-		m205(ts, 101, ObjectType(mm06), 8)
-		m205(ts, 102, mm06(), DEV0)
-
-		m205(ts, 103, ObjectType(mm07), 8)
-		m205(ts, 104, mm07(), EVE0)
-
-		m205(ts, 105, ObjectType(mm08), 8)
-		CopyObject(MMM0, Local0)
-		m205(ts, 106, mm08(), Local0)
-
-		m205(ts, 107, ObjectType(mm09), 8)
-		m205(ts, 108, mm09(), MTX0)
-
-		m205(ts, 109, ObjectType(mm0a), 8)
-		m205(ts, 110, mm0a(), OPR0)
-
-		m205(ts, 111, ObjectType(mm0b), 8)
-		m205(ts, 112, mm0b(), PWR0)
-
-		m205(ts, 113, ObjectType(mm0c), 8)
-		m205(ts, 114, mm0c(), CPU0)
-
-		m205(ts, 115, ObjectType(mm0d), 8)
-		
-		if (y350) {
-			m205(ts, 116, mm0d(), TZN0)
-		}
-
-		m205(ts, 117, ObjectType(mm0e), 8)
-		m205(ts, 118, mm0e(), BFL0)
-
-		m205(ts, 119, ObjectType(mm0f), 8)
-		m205(ts, 120, mm0f(), DDB0)
-
-		/*
-			m205(ts, 121, ObjectType(mm0g), 8)
-			m205(ts, 122, mm0g(), Debug)
-		*/
-
-		m205(ts, 123, ObjectType(mm0h), 8)
-		m205(ts, 124, DeRefof(mm0h()), ORF0)
-	}
-
-	Method(m244)
-	{
-		Method(mm00, , , , {IntObj, StrObj}) {Return (STR0)}
-		Method(mm01, , , , {IntObj, StrObj, BuffObj, PkgObj,
-								FieldUnitObj, DeviceObj, EventObj, MethodObj,
-								MutexObj, OpRegionObj, PowerResObj, /*ProcessorObj,*/
-								ThermalZoneObj, BuffFieldObj, DDBHandleObj})
-			{Return (INT0)}
-
-		m205(ts, 125, ObjectType(mm00), 8)
-		m205(ts, 126, mm00(), STR0)
-
-		m205(ts, 127, ObjectType(mm01), 8)
-		m205(ts, 128, mm01(), INT0)
-	}
-
-	Method(m245,, Serialized)
-	{
-		Name(Flag, Ones)
-
-		// List of types of the parameters contains the same keyword
-		Method(mm00, 1, , , , IntObj) {Store(0, Flag)}
-		Method(mm01, 1, , , , {IntObj}) {Store(1, Flag)}
-		Method(mm02, 2, , , , {IntObj, IntObj}) {Store(2, Flag)}
-		Method(mm03, 3, , , , {IntObj, IntObj, IntObj}) {Store(3, Flag)}
-		Method(mm04, 4, , , , {IntObj, IntObj, IntObj, IntObj}) {Store(4, Flag)}
-		Method(mm05, 5, , , , {IntObj, IntObj, IntObj, IntObj,
-				IntObj}) {Store(5, Flag)}
-		Method(mm06, 6, , , , {IntObj, IntObj, IntObj, IntObj,
-				IntObj, IntObj}) {Store(6, Flag)}
-		Method(mm07, 7, , , , {IntObj, IntObj, IntObj, IntObj,
-				IntObj, IntObj, IntObj}) {Store(7, Flag)}
-
-		// List of types of the parameters contains the UnknownObj keyword
-		Method(mm08, 1, , , , UnknownObj) {Store(8, Flag)}
-		Method(mm09, 1, , , , {UnknownObj}) {Store(9, Flag)}
-		Method(mm0a, 7, , , , {UnknownObj, UnknownObj, UnknownObj, UnknownObj,
-				UnknownObj, UnknownObj, UnknownObj}) {Store(10, Flag)}
-
-		// List of types of the parameters contains different keywords
-		Method(mm10, 2, , , , {IntObj, StrObj}) {Store(16, Flag)}
-		Method(mm11, 2, , , , {IntObj, BuffObj}) {Store(17, Flag)}
-		Method(mm12, 2, , , , {StrObj, BuffObj}) {Store(18, Flag)}
-		Method(mm13, 3, , , , {IntObj, StrObj, BuffObj}) {Store(19, Flag)}
-		Method(mm14, 4, , , , {IntObj, StrObj, BuffObj, PkgObj}) {Store(20, Flag)}
-		Method(mm15, 5, , , , {IntObj, StrObj, BuffObj, PkgObj,
-				FieldUnitObj}) {Store(21, Flag)}
-		Method(mm16, 6, , , , {IntObj, StrObj, BuffObj, PkgObj,
-				FieldUnitObj, DeviceObj}) {Store(22, Flag)}
-		Method(mm17, 7, , , , {IntObj, StrObj, BuffObj, PkgObj,
-				FieldUnitObj, DeviceObj, EventObj}) {Store(23, Flag)}
-		Method(mm18, 7, , , , {MethodObj, MutexObj, OpRegionObj, PowerResObj,
-				ThermalZoneObj, BuffFieldObj, DDBHandleObj}) {Store(24, Flag)}
-
-		// List of types of the parameters contains keyword packages
-		// along with different keywords
-		Method(mm20, 1, , , , {{IntObj}}) {Store(32, Flag)}
-		Method(mm21, 1, , , , {{IntObj, StrObj}}) {Store(33, Flag)}
-/*
-// Bug 148
-		Method(mm22, 1, , , , {{IntObj, StrObj, BuffObj, PkgObj,
-				FieldUnitObj, DeviceObj, EventObj, MethodObj,
-				MutexObj, OpRegionObj, PowerResObj, //ProcessorObj,
-				ThermalZoneObj, BuffFieldObj, DDBHandleObj}}) {Store(34, Flag)}
-*/
-		Method(mm23, 2, , , , {{IntObj}, IntObj}) {Store(35, Flag)}
-		Method(mm24, 2, , , , {{IntObj}, StrObj}) {Store(36, Flag)}
-		Method(mm25, 2, , , , {{IntObj}, BuffObj}) {Store(37, Flag)}
-		Method(mm26, 2, , , , {{IntObj}, {IntObj}}) {Store(38, Flag)}
-		Method(mm27, 2, , , , {{IntObj}, {StrObj}}) {Store(39, Flag)}
-		Method(mm28, 2, , , , {{IntObj}, {BuffObj}}) {Store(40, Flag)}
-		Method(mm29, 2, , , , {{StrObj}, {BuffObj}}) {Store(41, Flag)}
-/*
-// Bug 148
-		Method(mm2a, 7, , , , {
-			{IntObj, StrObj, BuffObj, PkgObj, FieldUnitObj, DeviceObj, EventObj, MethodObj,
-			 MutexObj, OpRegionObj, PowerResObj, ThermalZoneObj, BuffFieldObj, DDBHandleObj},
-			{IntObj, StrObj, BuffObj, PkgObj, FieldUnitObj, DeviceObj, EventObj, MethodObj,
-			 MutexObj, OpRegionObj, PowerResObj, ThermalZoneObj, BuffFieldObj, DDBHandleObj},
-			{IntObj, StrObj, BuffObj, PkgObj, FieldUnitObj, DeviceObj, EventObj, MethodObj,
-			 MutexObj, OpRegionObj, PowerResObj, ThermalZoneObj, BuffFieldObj, DDBHandleObj},
-			{IntObj, StrObj, BuffObj, PkgObj, FieldUnitObj, DeviceObj, EventObj, MethodObj,
-			 MutexObj, OpRegionObj, PowerResObj, ThermalZoneObj, BuffFieldObj, DDBHandleObj},
-			{IntObj, StrObj, BuffObj, PkgObj, FieldUnitObj, DeviceObj, EventObj, MethodObj,
-			 MutexObj, OpRegionObj, PowerResObj, ThermalZoneObj, BuffFieldObj, DDBHandleObj},
-			{IntObj, StrObj, BuffObj, PkgObj, FieldUnitObj, DeviceObj, EventObj, MethodObj,
-			 MutexObj, OpRegionObj, PowerResObj, ThermalZoneObj, BuffFieldObj, DDBHandleObj},
-			{IntObj, StrObj, BuffObj, PkgObj, FieldUnitObj, DeviceObj, EventObj, MethodObj,
-			 MutexObj, OpRegionObj, PowerResObj, ThermalZoneObj, BuffFieldObj, DDBHandleObj},
-		}) {Store(42, Flag)}
-*/
-
-		// List of types of the parameters contains the same keyword
-
-		m205(ts, 129, ObjectType(mm00), 8)
-		mm00(1)
-		m205(ts, 130, Flag, 0)
-
-		m205(ts, 131, ObjectType(mm01), 8)
-		mm01(1)
-		m205(ts, 132, Flag, 1)
-
-		m205(ts, 133, ObjectType(mm02), 8)
-		mm02(1, 2)
-		m205(ts, 134, Flag, 2)
-
-		m205(ts, 135, ObjectType(mm03), 8)
-		mm03(1, 2, 3)
-		m205(ts, 136, Flag, 3)
-
-		m205(ts, 137, ObjectType(mm04), 8)
-		mm04(1, 2, 3, 4)
-		m205(ts, 138, Flag, 4)
-
-		m205(ts, 139, ObjectType(mm05), 8)
-		mm05(1, 2, 3, 4, 5)
-		m205(ts, 140, Flag, 5)
-
-		m205(ts, 141, ObjectType(mm06), 8)
-		mm06(1, 2, 3, 4, 5, 6)
-		m205(ts, 142, Flag, 6)
-
-		m205(ts, 143, ObjectType(mm07), 8)
-		mm07(1, 2, 3, 4, 5, 6, 7)
-		m205(ts, 144, Flag, 7)
-
-
-		// List of types of the parameters contains the UnknownObj keyword
-
-		m205(ts, 145, ObjectType(mm08), 8)
-		mm08(1)
-		m205(ts, 146, Flag, 8)
-
-		m205(ts, 147, ObjectType(mm09), 8)
-		mm09(1)
-		m205(ts, 148, Flag, 9)
-
-		m205(ts, 149, ObjectType(mm0a), 8)
-		mm0a(1, 2, 3, 4, 5, 6, 7)
-		m205(ts, 150, Flag, 10)
-
-		// List of types of the parameters contains different keywords
-
-		m205(ts, 151, ObjectType(mm10), 8)
-		mm10(1, 2)
-		m205(ts, 152, Flag, 16)
-
-		m205(ts, 153, ObjectType(mm11), 8)
-		mm11(1, 2)
-		m205(ts, 154, Flag, 17)
-
-		m205(ts, 155, ObjectType(mm12), 8)
-		mm12(1, 2)
-		m205(ts, 156, Flag, 18)
-
-		m205(ts, 157, ObjectType(mm13), 8)
-		mm13(1, 2, 3)
-		m205(ts, 158, Flag, 19)
-
-		m205(ts, 159, ObjectType(mm14), 8)
-		mm14(1, 2, 3, 4)
-		m205(ts, 160, Flag, 20)
-
-		m205(ts, 161, ObjectType(mm15), 8)
-		mm15(1, 2, 3, 4, 5)
-		m205(ts, 162, Flag, 21)
-
-		m205(ts, 163, ObjectType(mm16), 8)
-		mm16(1, 2, 3, 4, 5, 6)
-		m205(ts, 164, Flag, 22)
-
-		m205(ts, 165, ObjectType(mm17), 8)
-		mm17(1, 2, 3, 4, 5, 6, 7)
-		m205(ts, 166, Flag, 23)
-
-		m205(ts, 167, ObjectType(mm18), 8)
-		mm18(1, 2, 3, 4, 5, 6, 7)
-		m205(ts, 168, Flag, 24)
-
-
-		// List of types of the parameters contains keyword packages
-		// along with different keywords
-
-		m205(ts, 169, ObjectType(mm20), 8)
-		mm20(1)
-		m205(ts, 170, Flag, 32)
-
-		m205(ts, 171, ObjectType(mm21), 8)
-		mm21(1)
-		m205(ts, 172, Flag, 33)
-
-/*
-// Bug 148
-		m205(ts, 173, ObjectType(mm22), 8)
-		mm22(1)
-		m205(ts, 174, Flag, 34)
-*/
-
-		m205(ts, 175, ObjectType(mm23), 8)
-		mm23(1, 2)
-		m205(ts, 176, Flag, 35)
-
-		m205(ts, 177, ObjectType(mm24), 8)
-		mm24(1, 2)
-		m205(ts, 178, Flag, 36)
-
-		m205(ts, 179, ObjectType(mm25), 8)
-		mm25(1, 2)
-		m205(ts, 180, Flag, 37)
-
-		m205(ts, 181, ObjectType(mm26), 8)
-		mm26(1, 2)
-		m205(ts, 182, Flag, 38)
-
-		m205(ts, 183, ObjectType(mm27), 8)
-		mm27(1, 2)
-		m205(ts, 184, Flag, 39)
-
-		m205(ts, 185, ObjectType(mm28), 8)
-		mm28(1, 2)
-		m205(ts, 186, Flag, 40)
-
-		m205(ts, 187, ObjectType(mm29), 8)
-		mm29(1, 2)
-		m205(ts, 188, Flag, 41)
-
-/*
-// Bug 148
-		m205(ts, 189, ObjectType(mm2a), 8)
-		mm2a(1, 2, 3, 4, 5, 6, 7)
-		m205(ts, 190, Flag, 42)
-*/
-	}
-
-	// UnSerialized Method can be invoked recursively
-	Method(m246,, Serialized)
-	{
-		Name(i000, 0)
-
-		Method(mm00, 1)
-		{
-			Increment(i000)
-
-			if (arg0) {
-				mm01()
-			}
-		}
-
-		Method(mm01) {mm00(0)}
-
-		Store(0, i000)
-		mm00(0)
-		m205(ts, 191, i000, 1)
-
-		Store(0, i000)
-		mm00(1)
-		m205(ts, 192, i000, 2)
-	}
-
-	// Serialized Method can be invoked recursively
-	Method(m247,, Serialized)
-	{
-		Name(i000, 0)
-
-		Method(mm00, 1, Serialized, 0)
-		{
-			Increment(i000)
-
-			if (arg0) {
-				mm01()
-			}
-		}
-
-		Method(mm01) {mm00(0)}
-
-		Store(0, i000)
-		mm00(0)
-		m205(ts, 193, i000, 1)
-
-		Store(0, i000)
-		mm00(1)
-		m205(ts, 194, i000, 2)
-	}
-
-	// Serialized Method can invoke another Serialized One
-	// if SyncLevel is not lowered
-	Method(m248,, Serialized)
-	{
-		Name(i000, 0)
-
-		Method(mm00, 1, Serialized, 0)
-		{
-			Increment(i000)
-
-			if (arg0) {
-				mm01()
-			}
-		}
-
-		Method(mm01, 0, Serialized, 15)
-		{
-			Increment(i000)
-		}
-
-		Store(0, i000)
-		mm00(0)
-		m205(ts, 195, i000, 1)
-
-		Store(0, i000)
-		mm00(1)
-		m205(ts, 196, i000, 2)
-	}
-
-	// Serialized Method can acquire an Mutex
-	// if SyncLevel is not lowered
-	Method(m249,, Serialized)
-	{
-		Mutex(MTX0, 15)
-		Name(i000, 0)
-
-		Method(mm00, 1, Serialized, 0)
-		{
-			Increment(i000)
-
-			if (arg0) {
-				Store(Acquire(MTX0, 0), Local0)
-				if (LNot(m205(ts, 197, Local0, Zero))) {
-					Increment(i000)
-					Release(MTX0)
-				}
-			}
-		}
-
-		Store(0, i000)
-		mm00(0)
-		m205(ts, 198, i000, 1)
-
-		Store(0, i000)
-		mm00(1)
-		m205(ts, 199, i000, 2)
-	}
-
-	// When Serialized Method calls another one then
-	// the last can acquire an Mutex if SyncLevel is not lowered
-	Method(m24a,, Serialized)
-	{
-		Mutex(MTX1, 15)
-		Name(i000, 0)
-
-		Method(mm00, 1, Serialized, 0)
-		{
-			Increment(i000)
-
-			if (arg0) {
-				mm01()
-			}
-		}
-
-		Method(mm01)
-		{
-			Store(Acquire(MTX1, 0), Local0)
-			if (LNot(m205(ts, 200, Local0, Zero))) {
-				Increment(i000)
-				Release(MTX1)
-			}
-		}
-
-		Store(0, i000)
-		mm00(0)
-		m205(ts, 201, i000, 1)
-
-		Store(0, i000)
-		mm00(1)
-		m205(ts, 202, i000, 2)
-	}
-
-	// UnSerialized Method acquiring an Mutex can invoke
-	// another Serialized One if SyncLevel is not lowered
-	Method(m24b,, Serialized)
-	{
-		Mutex(MTX0, 0)
-		Name(i000, 0)
-
-		Method(mm00, 1)
-		{
-			Store(Acquire(MTX0, 0), Local0)
-			if (LNot(m205(ts, 203, Local0, Zero))) {
-				Increment(i000)
-
-				if (arg0) {
-					mm01()
-				}
-				Release(MTX0)
-			}
-		}
-
-		Method(mm01, 0, Serialized, 15)
-		{
-			Increment(i000)
-		}
-
-		Store(0, i000)
-		mm00(0)
-		m205(ts, 204, i000, 1)
-
-		Store(0, i000)
-		mm00(1)
-		m205(ts, 205, i000, 2)
-	}
-
-	// When UnSerialized Method acquiring an Mutex invokes
-	// another Serialized One then the last can release the
-	// Mutex if Mutex's SyncLevel is not lower than the Method's
-	Method(m24c,, Serialized)
-	{
-		Mutex(MTX0, 0)
-		Name(i000, 0)
-
-		Method(mm00, 1)
-		{
-			Store(Acquire(MTX0, 0), Local0)
-			if (LNot(m205(ts, 206, Local0, Zero))) {
-				Increment(i000)
-
-				if (arg0) {
-					mm01()
-				} else {
-					Release(MTX0)
-				}
-			}
-		}
-
-		Method(mm01, 0, Serialized)
-		{
-			Increment(i000)
-			Release(MTX0)
-		}
-
-		Store(0, i000)
-		mm00(0)
-		m205(ts, 207, i000, 1)
-
-		Store(0, i000)
-		mm00(1)
-		m205(ts, 208, i000, 2)
-	}
-
-	SRMT("m240")
-	m240()
-	SRMT("m241")
-	m241()
-	SRMT("m242")
-	m242()
-	SRMT("m243")
-	m243()
-	SRMT("m244")
-	m244()
-	SRMT("m245")
-	m245()
-	SRMT("m246")
-	m246()
-
-	SRMT("m247")
-	if (y349) {
-		m247()
-	} else {
-		BLCK()
-	}
-
-	SRMT("m248")
-	m248()
-	SRMT("m249")
-	m249()
-	SRMT("m24a")
-	m24a()
-	SRMT("m24b")
-	m24b()
-	SRMT("m24c")
-	m24c()
-}
-
-// Run-method
-Method(NM01)
-{
-	Store("TEST: NM01, Declare Control Method Named Object", Debug)
-
-	m207()
-
-	CH03("NM01", z133, 209, __LINE__, 0)
-}
+    /*
+     * Some or all of this work - Copyright (c) 2006 - 2017, Intel Corp.
+     * All rights reserved.
+     *
+     * Redistribution and use in source and binary forms, with or without modification,
+     * are permitted provided that the following conditions are met:
+     *
+     * Redistributions of source code must retain the above copyright notice,
+     * this list of conditions and the following disclaimer.
+     * Redistributions in binary form must reproduce the above copyright notice,
+     * this list of conditions and the following disclaimer in the documentation
+     * and/or other materials provided with the distribution.
+     * Neither the name of Intel Corporation nor the names of its contributors
+     * may be used to endorse or promote products derived from this software
+     * without specific prior written permission.
+     *
+     * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS"
+     * AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE
+     * IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE
+     * ARE DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT OWNER OR CONTRIBUTORS BE
+     * LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL
+     * DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES;
+     * LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY
+     * THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING
+     * NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE,
+     * EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
+     */
+    /*
+     * Miscellaneous named object creation
+     */
+    Name (Z133, 0x85)
+    /*
+     * This sub-test is intended to comprehensively verify
+     * the Control Method declaration syntax implementation.
+     *
+     * Declare the Control Method Objects of different signature,
+     * check that properly specified or default arguments values
+     * provide required functionality.
+     *
+     *    17.5.75    Method (Declare Control Method)
+     *    Syntax
+     * Method (MethodName, NumArgs, SerializeRule, SyncLevel,
+     *         ReturnType, ParameterTypes) {TermList}
+     *
+     *    Validated Assertions:
+     *
+     * - Control Method declaration creates an Object in the ACPI
+     *   namespace which can be referred by the specified MethodName
+     *   either to initiate its invocation or to obtain its AML Object
+     *   type. Also MethodName can be used to save a copy of the Object
+     *   or a reference to it in another AML Object.
+     *
+     * - ASL compiler should allow only a Namestring data type in the
+     *   MethodName position.
+     *
+     * - ASL compiler should allow only an Type3Opcode (integer) constant
+     *   expression of the value in the range 0-7 in the NumArgs position.
+     *   NumArgs is optional argument.
+     *
+     * - ASL compiler should allow only the keywords 'NotSerialized'
+     *   and 'Serialized' in the SerializeRule position. SerializeRule
+     *   is optional argument.
+     *
+     * - ASL compiler should allow only an Type3Opcode (integer) constant
+     *   expression of the value in the range 0-15 in the SyncLevel position.
+     *   SyncLevel is optional argument. If no SyncLevel is specified, SyncLevel
+     *   0 is assumed.
+     *
+     * - ASL compiler should allow only an ObjectTypeKeyword or
+     *   a comma-separated ObjectTypeKeywords enclosed with curly
+     *   brackets (OTK package) in the ReturnType position. ReturnType
+     *   is optional argument. If no ReturnType is specified, ReturnType
+     *   UnknownObj is assumed.
+     *   ObjectTypeKeyword := UnknownObj | IntObj | StrObj | BuffObj |
+     *                        PkgObj | FieldUnitObj | DeviceObj | EventObj |
+     *                        MethodObj | MutexObj | OpRegionObj | PowerResObj |
+     *                        ThermalZoneObj | BuffFieldObj | DDBHandleObj
+     *
+     * - Every ASL data type should have a respective unique ObjectType Keyword.
+     *
+     * - ASL compiler should report an error when an actual Object specified
+     *   to be returned is of inappropriate type.
+     *
+     * - ASL compiler should report an error when there is at least one
+     *   control path in the method that returns no any actual Object.
+     *
+     * - ASL compiler should report an error when some different from
+     *   UnknownObj ObjectType Keyword specified in the ReturnType position
+     *   but no any actual Object specified to be returned.
+     *
+     * - ASL compiler should allow only an OTK package or a package
+     *   containing OTK packages along with ObjectTypeKeywords in the
+     *   ParameterTypes position.
+     *
+     * - ASL compiler should report an error when ParameterTypes is specified
+     *   and the number of members in the ParameterTypes package don't match
+     *   NumArgs.
+     *
+     * - ASL compiler should report an error when an actual Object
+     *   specified to be a respective argument of the Method is of
+     *   inappropriate type.
+     *
+     * - System software should execute a control method by referencing
+     *   the objects in the Method body in order.
+     *
+     * - Method opens a name scope. All namespace references that occur
+     *   during the method execution are relative to the Method package
+     *   location.
+     *
+     * - If the  method is declared as Serialized, it can be called
+     *   recursively, maybe, through another auxiliary method.
+     *
+     * - One method declared as Serialized can call another
+     *   one declared as Serialized too when the SyncLevel of
+     *   the second method is not less than that of the first.
+     *
+     * - The method declared as Serialized can acquire an Mutex
+     *   when the SyncLevel of the Mutex is not less than that of
+     *   the method.
+     *
+     * - If some method acquired an Mutex it can call another one
+     *   declared as Serialized when the SyncLevel of the called
+     *   method is not less than that of the Mutex.
+     *
+     * - All Acquire terms must refer to a synchronization object
+     *   with an equal or greater SyncLevel to the current Method level.
+     *
+     * - The method declared as Serialized can release an Mutex
+     *   when the SyncLevel of the Mutex is not less than that of
+     *   the method.
+     *
+     * - All namespace objects created by a method should be destroyed
+     *   when method execution exits.
+     *
+     */
+    /* Flags of types of Computational Data Objects */
+    /* (Fields and Integer, String, Buffer) */
+    Name (BZ00, Buffer (0x12)
+    {
+        /* 0000 */  0x00, 0x01, 0x01, 0x01, 0x00, 0x01, 0x00, 0x00,  // ........
+        /* 0008 */  0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x01, 0x00,  // ........
+        /* 0010 */  0x00, 0x00                                       // ..
+    })
+    /* Check Result of operation on equal to Benchmark value */
+    /* m680(<method name>, */
+    /*	<internal type of error if it occurs>, */
+    /*	<Result>, */
+    /*	<Benchmark value>) */
+    Method (M205, 4, NotSerialized)
+    {
+        Local0 = ObjectType (Arg2)
+        Local1 = ObjectType (Arg3)
+        If ((Local0 != Local1))
+        {
+            ERR (Concatenate (Arg0, "-OType"), Z133, 0x9A, 0x00, 0x00, Local0, Local1)
+            Return (0x01)
+        }
+        ElseIf (DerefOf (BZ00 [Local0]))
+        {
+            If (!Y119)
+            {
+                If ((Local1 == 0x01))
+                {
+                    /* Cast 64-bit to 32-bit */
+
+                    If (!F64)
+                    {
+                        Arg3 = Arg3
+                    }
+                }
+            }
+
+            If ((Arg2 != Arg3))
+            {
+                ERR (Arg0, Z133, 0xA6, 0x00, 0x00, Arg2, Arg3)
+                Return (0x01)
+            }
+        }
+        ElseIf ((Local0 == 0x08))
+        {
+            /* Methods, compare the results of them */
+
+            Local2 = M209 (Concatenate (Arg0, "-Method"), Arg1, Arg2, Arg3)
+            Return (Local2)
+        }
+        ElseIf ((Local0 == 0x04))
+        {
+            /* Packages */
+
+            Local2 = M20A (Concatenate (Arg0, "-Pack"), Arg1, Arg2, Arg3)
+            Return (Local2)
+        }
+
+        Return (0x00)
+    }
+
+    /* Check that Results of the Methods are equal each other */
+
+    Method (M209, 4, Serialized)
+    {
+        Name (MMM0, 0x00)
+        Name (MMM1, 0x00)
+        CopyObject (Arg2, MMM0) /* \M209.MMM0 */
+        CopyObject (Arg3, MMM1) /* \M209.MMM1 */
+        Return (M205 (Arg0, Arg1, MMM0, MMM1))
+    }
+
+    /* Check that two Packages are equal each other */
+
+    Method (M20A, 4, NotSerialized)
+    {
+        Local0 = SizeOf (Arg3)
+        If ((SizeOf (Arg2) != Local0))
+        {
+            ERR (Concatenate (Arg0, "-Size"), Z133, 0xC6, 0x00, 0x00, SizeOf (Arg2), Local0)
+            Return (0x01)
+        }
+
+        While (Local0)
+        {
+            Local0--
+            Local1 = ObjectType (DerefOf (Arg2 [Local0]))
+            Local2 = ObjectType (DerefOf (Arg3 [Local0]))
+            If ((Local1 != Local2))
+            {
+                /* ObjectType is corrupted */
+
+                ERR (Concatenate (Arg0, "-OType"), Z133, 0xCF, 0x00, 0x00, Local1, Local2)
+                Return (0x01)
+            }
+            ElseIf (DerefOf (BZ00 [Local1]))
+            {
+                /* the computational data type */
+
+                If ((DerefOf (Arg2 [Local0]) != DerefOf (Arg3 [Local0]
+                    )))
+                {
+                    /* The value is corrupted */
+
+                    ERR (Arg0, Z133, 0xD7, 0x00, 0x00, DerefOf (Arg2 [Local0]), DerefOf (
+                        Arg3 [Local0]))
+                    Return (0x01)
+                }
+            }
+        }
+
+        Return (0x00)
+    }
+
+    Scope (\_SB)
+    {
+        Method (M206, 0, NotSerialized)
+        {
+        }
+    }
+
+    Method (M207, 0, Serialized)
+    {
+        Name (TS, "m207")
+        Method (M240, 0, NotSerialized)
+        {
+            Method (MM00, 0, NotSerialized)
+            {
+                Return ("\\m207.m240.mm00")
+            }
+
+            Method (\_SB.M206.MM00, 0, NotSerialized)
+            {
+                Return ("\\_SB.m206.mm00")
+            }
+
+            M205 (TS, 0x01, ObjectType (MM00), 0x08)
+            M205 (TS, 0x02, MM00 (), "\\m207.m240.mm00")
+            M205 (TS, 0x03, ObjectType (\M207.M240.MM00), 0x08)
+            M205 (TS, 0x04, \M207.M240.MM00 (), "\\m207.m240.mm00")
+            M205 (TS, 0x05, ObjectType (^M240.MM00), 0x08)
+            M205 (TS, 0x06, ^M240.MM00 (), "\\m207.m240.mm00")
+            M205 (TS, 0x07, ObjectType (\_SB.M206.MM00), 0x08)
+            M205 (TS, 0x08, \_SB.M206.MM00 (), "\\_SB.m206.mm00")
+        }
+
+        Method (M241, 0, NotSerialized)
+        {
+            Method (MM10, 0, NotSerialized)
+            {
+                Return ("\\m207.m241.mm10")
+            }
+
+            Method (MM20, 0, NotSerialized)
+            {
+                Return ("\\m207.m241.mm20")
+            }
+
+            Method (MM30, 0, NotSerialized)
+            {
+                Return ("\\m207.m241.mm30")
+            }
+
+            Method (MM40, 0, NotSerialized)
+            {
+                Return ("\\m207.m241.mm40")
+            }
+
+            Method (MM50, 0, NotSerialized)
+            {
+                Return ("\\m207.m241.mm50")
+            }
+
+            Method (MM60, 0, NotSerialized)
+            {
+                Return ("\\m207.m241.mm60")
+            }
+
+            Method (MM00, 0, NotSerialized)
+            {
+                Return ("\\m207.m241.mm00")
+            }
+
+            Method (MM01, 1, NotSerialized)
+            {
+                Return ("\\m207.m241.mm01")
+            }
+
+            Method (MM02, 2, NotSerialized)
+            {
+                Return ("\\m207.m241.mm02")
+            }
+
+            Method (MM03, 3, NotSerialized)
+            {
+                Return ("\\m207.m241.mm03")
+            }
+
+            Method (MM04, 4, NotSerialized)
+            {
+                Return ("\\m207.m241.mm04")
+            }
+
+            Method (MM05, 5, NotSerialized)
+            {
+                Return ("\\m207.m241.mm05")
+            }
+
+            Method (MM06, 6, NotSerialized)
+            {
+                Return ("\\m207.m241.mm06")
+            }
+
+            Method (MM07, 7, NotSerialized)
+            {
+                Return ("\\m207.m241.mm07")
+            }
+
+            /* Numargs as Type3Opcode (integer) constant expression */
+            /* Invalid checksum warning */
+            /*		Method(mm09, Add(6, 1)) {Return ("\\m207.m241.mm09")} */
+            M205 (TS, 0x09, ObjectType (MM10), 0x08)
+            M205 (TS, 0x0A, MM10 (), "\\m207.m241.mm10")
+            M205 (TS, 0x0B, ObjectType (MM20), 0x08)
+            M205 (TS, 0x0C, MM20 (), "\\m207.m241.mm20")
+            M205 (TS, 0x0D, ObjectType (MM30), 0x08)
+            M205 (TS, 0x0E, MM30 (), "\\m207.m241.mm30")
+            M205 (TS, 0x0F, ObjectType (MM40), 0x08)
+            M205 (TS, 0x10, MM40 (), "\\m207.m241.mm40")
+            M205 (TS, 0x11, ObjectType (MM50), 0x08)
+            M205 (TS, 0x12, MM50 (), "\\m207.m241.mm50")
+            M205 (TS, 0x13, ObjectType (MM60), 0x08)
+            If (Y157)
+            {
+                M205 (TS, 0x14, MM60 (), "\\m207.m241.mm60")
+            }
+
+            M205 (TS, 0x15, ObjectType (MM00), 0x08)
+            M205 (TS, 0x16, MM00 (), "\\m207.m241.mm00")
+            M205 (TS, 0x17, ObjectType (MM01), 0x08)
+            M205 (TS, 0x18, MM01 (0x00), "\\m207.m241.mm01")
+            M205 (TS, 0x19, ObjectType (MM02), 0x08)
+            M205 (TS, 0x1A, MM02 (0x00, 0x01), "\\m207.m241.mm02")
+            M205 (TS, 0x1B, ObjectType (MM03), 0x08)
+            M205 (TS, 0x1C, MM03 (0x00, 0x01, 0x02), "\\m207.m241.mm03")
+            M205 (TS, 0x1D, ObjectType (MM04), 0x08)
+            M205 (TS, 0x1E, MM04 (0x00, 0x01, 0x02, 0x03), "\\m207.m241.mm04")
+            M205 (TS, 0x1F, ObjectType (MM05), 0x08)
+            M205 (TS, 0x20, MM05 (0x00, 0x01, 0x02, 0x03, 0x04), "\\m207.m241.mm05")
+            M205 (TS, 0x21, ObjectType (MM06), 0x08)
+            M205 (TS, 0x22, MM06 (0x00, 0x01, 0x02, 0x03, 0x04, 0x05), "\\m207.m241.mm06")
+            M205 (TS, 0x23, ObjectType (MM07), 0x08)
+            M205 (TS, 0x24, MM07 (0x00, 0x01, 0x02, 0x03, 0x04, 0x05, 0x06), "\\m207.m241.mm07")
+                /* Invalid checksum warning */
+        /*		m205(ts, 37, ObjectType(mm09), 8) */
+        /* Too many arguments ^  (MM09 requires 0) */
+        /*		m205(ts, 38, mm09(0, 1, 2, 3, 4, 5, 6), "\\m207.m241.mm09") */
+        }
+
+        Method (M242, 0, NotSerialized)
+        {
+            Method (MM10, 0, NotSerialized)
+            {
+                Return ("\\m207.m242.mm10")
+            }
+
+            Method (MM20, 0, Serialized)
+            {
+                Return ("\\m207.m242.mm20")
+            }
+
+            Method (MM30, 0, NotSerialized)
+            {
+                Return ("\\m207.m242.mm30")
+            }
+
+            Method (MM40, 0, Serialized)
+            {
+                Return ("\\m207.m242.mm40")
+            }
+
+            Method (MM50, 0, NotSerialized)
+            {
+                Return ("\\m207.m242.mm50")
+            }
+
+            Method (MM60, 0, Serialized)
+            {
+                Return ("\\m207.m242.mm60")
+            }
+
+            Method (MM00, 0, Serialized)
+            {
+                Return ("\\m207.m242.mm00")
+            }
+
+            Method (MM01, 1, Serialized, 1)
+            {
+                Return ("\\m207.m242.mm01")
+            }
+
+            Method (MM02, 2, Serialized, 2)
+            {
+                Return ("\\m207.m242.mm02")
+            }
+
+            Method (MM03, 3, Serialized, 3)
+            {
+                Return ("\\m207.m242.mm03")
+            }
+
+            Method (MM04, 4, Serialized, 4)
+            {
+                Return ("\\m207.m242.mm04")
+            }
+
+            Method (MM05, 5, Serialized, 5)
+            {
+                Return ("\\m207.m242.mm05")
+            }
+
+            Method (MM06, 6, Serialized, 6)
+            {
+                Return ("\\m207.m242.mm06")
+            }
+
+            Method (MM07, 7, Serialized, 7)
+            {
+                Return ("\\m207.m242.mm07")
+            }
+
+            Method (MM08, 0, Serialized, 8)
+            {
+                Return ("\\m207.m242.mm08")
+            }
+
+            Method (MM09, 1, Serialized, 9)
+            {
+                Return ("\\m207.m242.mm09")
+            }
+
+            Method (MM0A, 2, Serialized, 10)
+            {
+                Return ("\\m207.m242.mm0a")
+            }
+
+            Method (MM0B, 3, Serialized, 11)
+            {
+                Return ("\\m207.m242.mm0b")
+            }
+
+            Method (MM0C, 4, Serialized, 12)
+            {
+                Return ("\\m207.m242.mm0c")
+            }
+
+            Method (MM0D, 5, Serialized, 13)
+            {
+                Return ("\\m207.m242.mm0d")
+            }
+
+            Method (MM0E, 6, Serialized, 14)
+            {
+                Return ("\\m207.m242.mm0e")
+            }
+
+            Method (MM0F, 7, Serialized, 15)
+            {
+                Return ("\\m207.m242.mm0f")
+            }
+
+            /* Numargs as Type3Opcode (integer) constant expression */
+            /* Invalid checksum warning */
+            /*		Method(mm70, Add(6, 1), NotSerialized) {Return ("\\m207.m242.mm70")} */
+            /* SyncLevel as Type3Opcode (integer) constant expression */
+            Method (MM80, 7, Serialized, 15)
+            {
+                Return ("\\m207.m242.mm80")
+            }
+
+            /* Both Numargs and SyncLevel as Type3Opcode (integer) constant expressions */
+            /* Invalid checksum warning */
+            /*		Method(mm90, Add(6, 1), Serialized, Add(14, 1)) {Return ("\\m207.m242.mm90")} */
+            M205 (TS, 0x27, ObjectType (MM10), 0x08)
+            M205 (TS, 0x28, MM10 (), "\\m207.m242.mm10")
+            M205 (TS, 0x29, ObjectType (MM10), 0x08)
+            M205 (TS, 0x2A, MM20 (), "\\m207.m242.mm20")
+            M205 (TS, 0x2B, ObjectType (MM10), 0x08)
+            M205 (TS, 0x2C, MM30 (), "\\m207.m242.mm30")
+            M205 (TS, 0x2D, ObjectType (MM10), 0x08)
+            M205 (TS, 0x2E, MM40 (), "\\m207.m242.mm40")
+            M205 (TS, 0x2F, ObjectType (MM10), 0x08)
+            If (Y157)
+            {
+                M205 (TS, 0x30, MM50 (), "\\m207.m242.mm50")
+            }
+
+            M205 (TS, 0x31, ObjectType (MM10), 0x08)
+            If (Y157)
+            {
+                M205 (TS, 0x32, MM60 (), "\\m207.m242.mm60")
+            }
+
+            M205 (TS, 0x33, ObjectType (MM00), 0x08)
+            M205 (TS, 0x34, MM00 (), "\\m207.m242.mm00")
+            M205 (TS, 0x35, ObjectType (MM01), 0x08)
+            M205 (TS, 0x36, MM01 (0x00), "\\m207.m242.mm01")
+            M205 (TS, 0x37, ObjectType (MM02), 0x08)
+            M205 (TS, 0x38, MM02 (0x00, 0x01), "\\m207.m242.mm02")
+            M205 (TS, 0x39, ObjectType (MM03), 0x08)
+            M205 (TS, 0x3A, MM03 (0x00, 0x01, 0x02), "\\m207.m242.mm03")
+            M205 (TS, 0x3B, ObjectType (MM04), 0x08)
+            M205 (TS, 0x3C, MM04 (0x00, 0x01, 0x02, 0x03), "\\m207.m242.mm04")
+            M205 (TS, 0x3D, ObjectType (MM05), 0x08)
+            M205 (TS, 0x3E, MM05 (0x00, 0x01, 0x02, 0x03, 0x04), "\\m207.m242.mm05")
+            M205 (TS, 0x3F, ObjectType (MM06), 0x08)
+            M205 (TS, 0x40, MM06 (0x00, 0x01, 0x02, 0x03, 0x04, 0x05), "\\m207.m242.mm06")
+            M205 (TS, 0x41, ObjectType (MM07), 0x08)
+            M205 (TS, 0x42, MM07 (0x00, 0x01, 0x02, 0x03, 0x04, 0x05, 0x06), "\\m207.m242.mm07")
+            M205 (TS, 0x43, ObjectType (MM00), 0x08)
+            M205 (TS, 0x44, MM08 (), "\\m207.m242.mm08")
+            M205 (TS, 0x45, ObjectType (MM01), 0x08)
+            M205 (TS, 0x46, MM09 (0x00), "\\m207.m242.mm09")
+            M205 (TS, 0x47, ObjectType (MM02), 0x08)
+            M205 (TS, 0x48, MM0A (0x00, 0x01), "\\m207.m242.mm0a")
+            M205 (TS, 0x49, ObjectType (MM03), 0x08)
+            M205 (TS, 0x4A, MM0B (0x00, 0x01, 0x02), "\\m207.m242.mm0b")
+            M205 (TS, 0x4B, ObjectType (MM04), 0x08)
+            M205 (TS, 0x4C, MM0C (0x00, 0x01, 0x02, 0x03), "\\m207.m242.mm0c")
+            M205 (TS, 0x4D, ObjectType (MM05), 0x08)
+            M205 (TS, 0x4E, MM0D (0x00, 0x01, 0x02, 0x03, 0x04), "\\m207.m242.mm0d")
+            M205 (TS, 0x4F, ObjectType (MM06), 0x08)
+            M205 (TS, 0x50, MM0E (0x00, 0x01, 0x02, 0x03, 0x04, 0x05), "\\m207.m242.mm0e")
+            M205 (TS, 0x51, ObjectType (MM07), 0x08)
+            M205 (TS, 0x52, MM0F (0x00, 0x01, 0x02, 0x03, 0x04, 0x05, 0x06), "\\m207.m242.mm0f")
+            /* Invalid checksum warning */
+            /*		m205(ts, 83, ObjectType(mm70), 8) */
+            /*	Too many arguments ^  (MM70 requires 0) */
+            /*		m205(ts, 84, mm70(0, 1, 2, 3, 4, 5, 6), "\\m207.m242.mm70") */
+            M205 (TS, 0x55, ObjectType (MM80), 0x08)
+                /* Outstanding allocations */
+        /*		m205(ts, 86, mm80(0, 1, 2, 3, 4, 5, 6), "\\m207.m242.mm80") */
+        /* Invalid checksum warning */
+        /*		m205(ts, 87, ObjectType(mm90), 8) */
+        /*	Too many arguments ^  (MM90 requires 0) */
+        /*		m205(ts, 88, mm90(0, 1, 2, 3, 4, 5, 6), "\\m207.m242.mm90") */
+        }
+
+        /* Integer */
+
+        Name (INT0, 0xFEDCBA9876543210)
+        /* String */
+
+        Name (STR0, "source string")
+        /* Buffer */
+
+        Name (BUF0, Buffer (0x09)
+        {
+            /* 0000 */  0x09, 0x08, 0x07, 0x06, 0x05, 0x04, 0x03, 0x02,  // ........
+            /* 0008 */  0x01                                             // .
+        })
+        /* Initializer of Fields */
+
+        Name (BUF2, Buffer (0x09)
+        {
+            /* 0000 */  0x95, 0x85, 0x75, 0x65, 0x55, 0x45, 0x35, 0x25,  // ..ueUE5%
+            /* 0008 */  0x15                                             // .
+        })
+        /* Base of Buffer Fields */
+
+        Name (BUFZ, Buffer (0x30){})
+        /* Package */
+
+        Name (PAC0, Package (0x03)
+        {
+            0xFEDCBA987654321F, 
+            "test package", 
+            Buffer (0x09)
+            {
+                /* 0000 */  0x13, 0x12, 0x11, 0x10, 0x0F, 0x0E, 0x0D, 0x0C,  // ........
+                /* 0008 */  0x0B                                             // .
+            }
+        })
+        /* Operation Region */
+
+        OperationRegion (OPR0, SystemMemory, 0x00, 0x30)
+        /* Field Unit */
+
+        Field (OPR0, ByteAcc, NoLock, Preserve)
+        {
+            FLU0,   69, 
+            FLU2,   64, 
+            FLU4,   32
+        }
+
+        /* Device */
+
+        Device (DEV0)
+        {
+            Name (S000, "DEV0")
+        }
+
+        /* Event */
+
+        Event (EVE0)
+        /* Method */
+
+        Method (MMM0, 0, NotSerialized)
+        {
+            Return ("ff0X")
+        }
+
+        /* Mutex */
+
+        Mutex (MTX0, 0x00)
+        /* Power Resource */
+
+        PowerResource (PWR0, 0x00, 0x0000)
+        {
+            Name (S000, "PWR0")
+        }
+
+        /* Processor */
+
+        Processor (CPU0, 0x00, 0xFFFFFFFF, 0x00)
+        {
+            Name (S000, "CPU0")
+        }
+
+        /* Thermal Zone */
+
+        ThermalZone (TZN0)
+        {
+            Name (S000, "TZN0")
+        }
+
+        /* Buffer Field */
+
+        CreateField (BUFZ, 0x00, 0x45, BFL0)
+        CreateField (BUFZ, 0x50, 0x40, BFL2)
+        CreateField (BUFZ, 0xA0, 0x20, BFL4)
+        /* DDBHandle */
+
+        Name (DDB0, Ones)
+        /* Reference */
+
+        Name (ORF0, "ORF0")
+        Name (REF0, Package (0x01){})
+        Method (M243, 0, NotSerialized)
+        {
+            Method (MM00, 1, NotSerialized)
+            {
+                Arg0 = (DerefOf (Arg0) + 0x01)
+            }
+
+            Method (MM01, 0, NotSerialized)
+            {
+                Return (INT0) /* \M207.INT0 */
+            }
+
+            Method (MM11, 0, NotSerialized)
+            {
+                Return (INT0) /* \M207.INT0 */
+            }
+
+            Method (MM02, 0, NotSerialized)
+            {
+                Return (STR0) /* \M207.STR0 */
+            }
+
+            Method (MM03, 0, NotSerialized)
+            {
+                Return (BUF0) /* \M207.BUF0 */
+            }
+
+            Method (MM04, 0, NotSerialized)
+            {
+                Return (PAC0) /* \M207.PAC0 */
+            }
+
+            Method (MM05, 0, NotSerialized)
+            {
+                Return (FLU0) /* \M207.FLU0 */
+            }
+
+            Method (MM06, 0, NotSerialized)
+            {
+                Return (DEV0) /* \M207.DEV0 */
+            }
+
+            Method (MM07, 0, NotSerialized)
+            {
+                Return (EVE0) /* \M207.EVE0 */
+            }
+
+            Method (MM08, 0, NotSerialized)
+            {
+                CopyObject (MMM0 (), Local0)
+                Return (Local0)
+            }
+
+            Method (MM09, 0, NotSerialized)
+            {
+                Return (MTX0) /* \M207.MTX0 */
+            }
+
+            Method (MM0A, 0, NotSerialized)
+            {
+                Return (OPR0) /* \M207.OPR0 */
+            }
+
+            Method (MM0B, 0, NotSerialized)
+            {
+                Return (PWR0) /* \M207.PWR0 */
+            }
+
+            Method (MM0C, 0, NotSerialized)
+            {
+                Return (CPU0) /* \M207.CPU0 */
+            }
+
+            Method (MM0D, 0, NotSerialized)
+            {
+                Return (TZN0) /* \M207.TZN0 */
+            }
+
+            Method (MM0E, 0, NotSerialized)
+            {
+                Return (BFL0) /* \M207.BFL0 */
+            }
+
+            Method (MM0F, 0, NotSerialized)
+            {
+                Return (DDB0) /* \M207.DDB0 */
+            }
+
+            /* Formal declaration */
+            /* Method(mm0g, , , , DebugObj) {Return (Debug)} */
+            Method (MM0H, 0, NotSerialized)
+            {
+                Return (RefOf (ORF0))
+            }
+
+            Local0 = 0xFEDCBA9876543210
+            M205 (TS, 0x59, ObjectType (MM00), 0x08)
+            MM00 (RefOf (Local0))
+            M205 (TS, 0x5A, Local0, 0xFEDCBA9876543211)
+            M205 (TS, 0x5B, ObjectType (MM01), 0x08)
+            M205 (TS, 0x5C, MM01 (), INT0)
+            M205 (TS, 0x5D, ObjectType (MM02), 0x08)
+            M205 (TS, 0x5E, MM02 (), STR0)
+            M205 (TS, 0x5F, ObjectType (MM03), 0x08)
+            M205 (TS, 0x60, MM03 (), BUF0)
+            M205 (TS, 0x61, ObjectType (MM04), 0x08)
+            M205 (TS, 0x62, MM04 (), PAC0)
+            M205 (TS, 0x63, ObjectType (MM05), 0x08)
+            M205 (TS, 0x64, MM05 (), FLU0)
+            M205 (TS, 0x65, ObjectType (MM06), 0x08)
+            M205 (TS, 0x66, MM06 (), DEV0)
+            M205 (TS, 0x67, ObjectType (MM07), 0x08)
+            M205 (TS, 0x68, MM07 (), EVE0)
+            M205 (TS, 0x69, ObjectType (MM08), 0x08)
+            CopyObject (MMM0 (), Local0)
+            M205 (TS, 0x6A, MM08 (), Local0)
+            M205 (TS, 0x6B, ObjectType (MM09), 0x08)
+            M205 (TS, 0x6C, MM09 (), MTX0)
+            M205 (TS, 0x6D, ObjectType (MM0A), 0x08)
+            M205 (TS, 0x6E, MM0A (), OPR0)
+            M205 (TS, 0x6F, ObjectType (MM0B), 0x08)
+            M205 (TS, 0x70, MM0B (), PWR0)
+            M205 (TS, 0x71, ObjectType (MM0C), 0x08)
+            M205 (TS, 0x72, MM0C (), CPU0)
+            M205 (TS, 0x73, ObjectType (MM0D), 0x08)
+            If (Y350)
+            {
+                M205 (TS, 0x74, MM0D (), TZN0)
+            }
+
+            M205 (TS, 0x75, ObjectType (MM0E), 0x08)
+            M205 (TS, 0x76, MM0E (), BFL0)
+            M205 (TS, 0x77, ObjectType (MM0F), 0x08)
+            M205 (TS, 0x78, MM0F (), DDB0)
+            /*
+             m205(ts, 121, ObjectType(mm0g), 8)
+             m205(ts, 122, mm0g(), Debug)
+             */
+            M205 (TS, 0x7B, ObjectType (MM0H), 0x08)
+            M205 (TS, 0x7C, DerefOf (MM0H ()), ORF0)
+        }
+
+        Method (M244, 0, NotSerialized)
+        {
+            Method (MM00, 0, NotSerialized)
+            {
+                Return (STR0) /* \M207.STR0 */
+            }
+
+            Method (MM01, 0, NotSerialized)
+            {
+                Return (INT0) /* \M207.INT0 */
+            }
+
+            M205 (TS, 0x7D, ObjectType (MM00), 0x08)
+            M205 (TS, 0x7E, MM00 (), STR0)
+            M205 (TS, 0x7F, ObjectType (MM01), 0x08)
+            M205 (TS, 0x80, MM01 (), INT0)
+        }
+
+        Method (M245, 0, Serialized)
+        {
+            Name (FLAG, Ones)
+            /* List of types of the parameters contains the same keyword */
+
+            Method (MM00, 1, NotSerialized)
+            {
+                FLAG = 0x00
+            }
+
+            Method (MM01, 1, NotSerialized)
+            {
+                FLAG = 0x01
+            }
+
+            Method (MM02, 2, NotSerialized)
+            {
+                FLAG = 0x02
+            }
+
+            Method (MM03, 3, NotSerialized)
+            {
+                FLAG = 0x03
+            }
+
+            Method (MM04, 4, NotSerialized)
+            {
+                FLAG = 0x04
+            }
+
+            Method (MM05, 5, NotSerialized)
+            {
+                FLAG = 0x05
+            }
+
+            Method (MM06, 6, NotSerialized)
+            {
+                FLAG = 0x06
+            }
+
+            Method (MM07, 7, NotSerialized)
+            {
+                FLAG = 0x07
+            }
+
+            /* List of types of the parameters contains the UnknownObj keyword */
+
+            Method (MM08, 1, NotSerialized)
+            {
+                FLAG = 0x08
+            }
+
+            Method (MM09, 1, NotSerialized)
+            {
+                FLAG = 0x09
+            }
+
+            Method (MM0A, 7, NotSerialized)
+            {
+                FLAG = 0x0A
+            }
+
+            /* List of types of the parameters contains different keywords */
+
+            Method (MM10, 2, NotSerialized)
+            {
+                FLAG = 0x10
+            }
+
+            Method (MM11, 2, NotSerialized)
+            {
+                FLAG = 0x11
+            }
+
+            Method (MM12, 2, NotSerialized)
+            {
+                FLAG = 0x12
+            }
+
+            Method (MM13, 3, NotSerialized)
+            {
+                FLAG = 0x13
+            }
+
+            Method (MM14, 4, NotSerialized)
+            {
+                FLAG = 0x14
+            }
+
+            Method (MM15, 5, NotSerialized)
+            {
+                FLAG = 0x15
+            }
+
+            Method (MM16, 6, NotSerialized)
+            {
+                FLAG = 0x16
+            }
+
+            Method (MM17, 7, NotSerialized)
+            {
+                FLAG = 0x17
+            }
+
+            Method (MM18, 7, NotSerialized)
+            {
+                FLAG = 0x18
+            }
+
+            /* List of types of the parameters contains keyword packages */
+            /* along with different keywords */
+            Method (MM20, 1, NotSerialized)
+            {
+                FLAG = 0x20
+            }
+
+            Method (MM21, 1, NotSerialized)
+            {
+                FLAG = 0x21
+            }
+
+            /*
+             // Bug 148
+             Method(mm22, 1, , , , {{IntObj, StrObj, BuffObj, PkgObj,
+             FieldUnitObj, DeviceObj, EventObj, MethodObj,
+             MutexObj, OpRegionObj, PowerResObj, //ProcessorObj,
+             ThermalZoneObj, BuffFieldObj, DDBHandleObj}}) {Store(34, Flag)}
+             */
+            Method (MM23, 2, NotSerialized)
+            {
+                FLAG = 0x23
+            }
+
+            Method (MM24, 2, NotSerialized)
+            {
+                FLAG = 0x24
+            }
+
+            Method (MM25, 2, NotSerialized)
+            {
+                FLAG = 0x25
+            }
+
+            Method (MM26, 2, NotSerialized)
+            {
+                FLAG = 0x26
+            }
+
+            Method (MM27, 2, NotSerialized)
+            {
+                FLAG = 0x27
+            }
+
+            Method (MM28, 2, NotSerialized)
+            {
+                FLAG = 0x28
+            }
+
+            Method (MM29, 2, NotSerialized)
+            {
+                FLAG = 0x29
+            }
+
+            /*
+             // Bug 148
+             Method(mm2a, 7, , , , {
+             {IntObj, StrObj, BuffObj, PkgObj, FieldUnitObj, DeviceObj, EventObj, MethodObj,
+             MutexObj, OpRegionObj, PowerResObj, ThermalZoneObj, BuffFieldObj, DDBHandleObj},
+             {IntObj, StrObj, BuffObj, PkgObj, FieldUnitObj, DeviceObj, EventObj, MethodObj,
+             MutexObj, OpRegionObj, PowerResObj, ThermalZoneObj, BuffFieldObj, DDBHandleObj},
+             {IntObj, StrObj, BuffObj, PkgObj, FieldUnitObj, DeviceObj, EventObj, MethodObj,
+             MutexObj, OpRegionObj, PowerResObj, ThermalZoneObj, BuffFieldObj, DDBHandleObj},
+             {IntObj, StrObj, BuffObj, PkgObj, FieldUnitObj, DeviceObj, EventObj, MethodObj,
+             MutexObj, OpRegionObj, PowerResObj, ThermalZoneObj, BuffFieldObj, DDBHandleObj},
+             {IntObj, StrObj, BuffObj, PkgObj, FieldUnitObj, DeviceObj, EventObj, MethodObj,
+             MutexObj, OpRegionObj, PowerResObj, ThermalZoneObj, BuffFieldObj, DDBHandleObj},
+             {IntObj, StrObj, BuffObj, PkgObj, FieldUnitObj, DeviceObj, EventObj, MethodObj,
+             MutexObj, OpRegionObj, PowerResObj, ThermalZoneObj, BuffFieldObj, DDBHandleObj},
+             {IntObj, StrObj, BuffObj, PkgObj, FieldUnitObj, DeviceObj, EventObj, MethodObj,
+             MutexObj, OpRegionObj, PowerResObj, ThermalZoneObj, BuffFieldObj, DDBHandleObj},
+             }) {Store(42, Flag)}
+             */
+            /* List of types of the parameters contains the same keyword */
+            M205 (TS, 0x81, ObjectType (MM00), 0x08)
+            MM00 (0x01)
+            M205 (TS, 0x82, FLAG, 0x00)
+            M205 (TS, 0x83, ObjectType (MM01), 0x08)
+            MM01 (0x01)
+            M205 (TS, 0x84, FLAG, 0x01)
+            M205 (TS, 0x85, ObjectType (MM02), 0x08)
+            MM02 (0x01, 0x02)
+            M205 (TS, 0x86, FLAG, 0x02)
+            M205 (TS, 0x87, ObjectType (MM03), 0x08)
+            MM03 (0x01, 0x02, 0x03)
+            M205 (TS, 0x88, FLAG, 0x03)
+            M205 (TS, 0x89, ObjectType (MM04), 0x08)
+            MM04 (0x01, 0x02, 0x03, 0x04)
+            M205 (TS, 0x8A, FLAG, 0x04)
+            M205 (TS, 0x8B, ObjectType (MM05), 0x08)
+            MM05 (0x01, 0x02, 0x03, 0x04, 0x05)
+            M205 (TS, 0x8C, FLAG, 0x05)
+            M205 (TS, 0x8D, ObjectType (MM06), 0x08)
+            MM06 (0x01, 0x02, 0x03, 0x04, 0x05, 0x06)
+            M205 (TS, 0x8E, FLAG, 0x06)
+            M205 (TS, 0x8F, ObjectType (MM07), 0x08)
+            MM07 (0x01, 0x02, 0x03, 0x04, 0x05, 0x06, 0x07)
+            M205 (TS, 0x90, FLAG, 0x07)
+            /* List of types of the parameters contains the UnknownObj keyword */
+
+            M205 (TS, 0x91, ObjectType (MM08), 0x08)
+            MM08 (0x01)
+            M205 (TS, 0x92, FLAG, 0x08)
+            M205 (TS, 0x93, ObjectType (MM09), 0x08)
+            MM09 (0x01)
+            M205 (TS, 0x94, FLAG, 0x09)
+            M205 (TS, 0x95, ObjectType (MM0A), 0x08)
+            MM0A (0x01, 0x02, 0x03, 0x04, 0x05, 0x06, 0x07)
+            M205 (TS, 0x96, FLAG, 0x0A)
+            /* List of types of the parameters contains different keywords */
+
+            M205 (TS, 0x97, ObjectType (MM10), 0x08)
+            MM10 (0x01, 0x02)
+            M205 (TS, 0x98, FLAG, 0x10)
+            M205 (TS, 0x99, ObjectType (MM11), 0x08)
+            MM11 (0x01, 0x02)
+            M205 (TS, 0x9A, FLAG, 0x11)
+            M205 (TS, 0x9B, ObjectType (MM12), 0x08)
+            MM12 (0x01, 0x02)
+            M205 (TS, 0x9C, FLAG, 0x12)
+            M205 (TS, 0x9D, ObjectType (MM13), 0x08)
+            MM13 (0x01, 0x02, 0x03)
+            M205 (TS, 0x9E, FLAG, 0x13)
+            M205 (TS, 0x9F, ObjectType (MM14), 0x08)
+            MM14 (0x01, 0x02, 0x03, 0x04)
+            M205 (TS, 0xA0, FLAG, 0x14)
+            M205 (TS, 0xA1, ObjectType (MM15), 0x08)
+            MM15 (0x01, 0x02, 0x03, 0x04, 0x05)
+            M205 (TS, 0xA2, FLAG, 0x15)
+            M205 (TS, 0xA3, ObjectType (MM16), 0x08)
+            MM16 (0x01, 0x02, 0x03, 0x04, 0x05, 0x06)
+            M205 (TS, 0xA4, FLAG, 0x16)
+            M205 (TS, 0xA5, ObjectType (MM17), 0x08)
+            MM17 (0x01, 0x02, 0x03, 0x04, 0x05, 0x06, 0x07)
+            M205 (TS, 0xA6, FLAG, 0x17)
+            M205 (TS, 0xA7, ObjectType (MM18), 0x08)
+            MM18 (0x01, 0x02, 0x03, 0x04, 0x05, 0x06, 0x07)
+            M205 (TS, 0xA8, FLAG, 0x18)
+            /* List of types of the parameters contains keyword packages */
+            /* along with different keywords */
+            M205 (TS, 0xA9, ObjectType (MM20), 0x08)
+            MM20 (0x01)
+            M205 (TS, 0xAA, FLAG, 0x20)
+            M205 (TS, 0xAB, ObjectType (MM21), 0x08)
+            MM21 (0x01)
+            M205 (TS, 0xAC, FLAG, 0x21)
+            /*
+             // Bug 148
+             m205(ts, 173, ObjectType(mm22), 8)
+             mm22(1)
+             m205(ts, 174, Flag, 34)
+             */
+            M205 (TS, 0xAF, ObjectType (MM23), 0x08)
+            MM23 (0x01, 0x02)
+            M205 (TS, 0xB0, FLAG, 0x23)
+            M205 (TS, 0xB1, ObjectType (MM24), 0x08)
+            MM24 (0x01, 0x02)
+            M205 (TS, 0xB2, FLAG, 0x24)
+            M205 (TS, 0xB3, ObjectType (MM25), 0x08)
+            MM25 (0x01, 0x02)
+            M205 (TS, 0xB4, FLAG, 0x25)
+            M205 (TS, 0xB5, ObjectType (MM26), 0x08)
+            MM26 (0x01, 0x02)
+            M205 (TS, 0xB6, FLAG, 0x26)
+            M205 (TS, 0xB7, ObjectType (MM27), 0x08)
+            MM27 (0x01, 0x02)
+            M205 (TS, 0xB8, FLAG, 0x27)
+            M205 (TS, 0xB9, ObjectType (MM28), 0x08)
+            MM28 (0x01, 0x02)
+            M205 (TS, 0xBA, FLAG, 0x28)
+            M205 (TS, 0xBB, ObjectType (MM29), 0x08)
+            MM29 (0x01, 0x02)
+            M205 (TS, 0xBC, FLAG, 0x29)
+                /*
+         // Bug 148
+         m205(ts, 189, ObjectType(mm2a), 8)
+         mm2a(1, 2, 3, 4, 5, 6, 7)
+         m205(ts, 190, Flag, 42)
+         */
+        }
+
+        /* UnSerialized Method can be invoked recursively */
+
+        Method (M246, 0, Serialized)
+        {
+            Name (I000, 0x00)
+            Method (MM00, 1, NotSerialized)
+            {
+                I000++
+                If (Arg0)
+                {
+                    MM01 ()
+                }
+            }
+
+            Method (MM01, 0, NotSerialized)
+            {
+                MM00 (0x00)
+            }
+
+            I000 = 0x00
+            MM00 (0x00)
+            M205 (TS, 0xBF, I000, 0x01)
+            I000 = 0x00
+            MM00 (0x01)
+            M205 (TS, 0xC0, I000, 0x02)
+        }
+
+        /* Serialized Method can be invoked recursively */
+
+        Method (M247, 0, Serialized)
+        {
+            Name (I000, 0x00)
+            Method (MM00, 1, Serialized)
+            {
+                I000++
+                If (Arg0)
+                {
+                    MM01 ()
+                }
+            }
+
+            Method (MM01, 0, NotSerialized)
+            {
+                MM00 (0x00)
+            }
+
+            I000 = 0x00
+            MM00 (0x00)
+            M205 (TS, 0xC1, I000, 0x01)
+            I000 = 0x00
+            MM00 (0x01)
+            M205 (TS, 0xC2, I000, 0x02)
+        }
+
+        /* Serialized Method can invoke another Serialized One */
+        /* if SyncLevel is not lowered */
+        Method (M248, 0, Serialized)
+        {
+            Name (I000, 0x00)
+            Method (MM00, 1, Serialized)
+            {
+                I000++
+                If (Arg0)
+                {
+                    MM01 ()
+                }
+            }
+
+            Method (MM01, 0, Serialized, 15)
+            {
+                I000++
+            }
+
+            I000 = 0x00
+            MM00 (0x00)
+            M205 (TS, 0xC3, I000, 0x01)
+            I000 = 0x00
+            MM00 (0x01)
+            M205 (TS, 0xC4, I000, 0x02)
+        }
+
+        /* Serialized Method can acquire an Mutex */
+        /* if SyncLevel is not lowered */
+        Method (M249, 0, Serialized)
+        {
+            Mutex (MTX0, 0x0F)
+            Name (I000, 0x00)
+            Method (MM00, 1, Serialized)
+            {
+                I000++
+                If (Arg0)
+                {
+                    Local0 = Acquire (MTX0, 0x0000)
+                    If (!M205 (TS, 0xC5, Local0, Zero))
+                    {
+                        I000++
+                        Release (MTX0)
+                    }
+                }
+            }
+
+            I000 = 0x00
+            MM00 (0x00)
+            M205 (TS, 0xC6, I000, 0x01)
+            I000 = 0x00
+            MM00 (0x01)
+            M205 (TS, 0xC7, I000, 0x02)
+        }
+
+        /* When Serialized Method calls another one then */
+        /* the last can acquire an Mutex if SyncLevel is not lowered */
+        Method (M24A, 0, Serialized)
+        {
+            Mutex (MTX1, 0x0F)
+            Name (I000, 0x00)
+            Method (MM00, 1, Serialized)
+            {
+                I000++
+                If (Arg0)
+                {
+                    MM01 ()
+                }
+            }
+
+            Method (MM01, 0, NotSerialized)
+            {
+                Local0 = Acquire (MTX1, 0x0000)
+                If (!M205 (TS, 0xC8, Local0, Zero))
+                {
+                    I000++
+                    Release (MTX1)
+                }
+            }
+
+            I000 = 0x00
+            MM00 (0x00)
+            M205 (TS, 0xC9, I000, 0x01)
+            I000 = 0x00
+            MM00 (0x01)
+            M205 (TS, 0xCA, I000, 0x02)
+        }
+
+        /* UnSerialized Method acquiring an Mutex can invoke */
+        /* another Serialized One if SyncLevel is not lowered */
+        Method (M24B, 0, Serialized)
+        {
+            Mutex (MTX0, 0x00)
+            Name (I000, 0x00)
+            Method (MM00, 1, NotSerialized)
+            {
+                Local0 = Acquire (MTX0, 0x0000)
+                If (!M205 (TS, 0xCB, Local0, Zero))
+                {
+                    I000++
+                    If (Arg0)
+                    {
+                        MM01 ()
+                    }
+
+                    Release (MTX0)
+                }
+            }
+
+            Method (MM01, 0, Serialized, 15)
+            {
+                I000++
+            }
+
+            I000 = 0x00
+            MM00 (0x00)
+            M205 (TS, 0xCC, I000, 0x01)
+            I000 = 0x00
+            MM00 (0x01)
+            M205 (TS, 0xCD, I000, 0x02)
+        }
+
+        /* When UnSerialized Method acquiring an Mutex invokes */
+        /* another Serialized One then the last can release the */
+        /* Mutex if Mutex's SyncLevel is not lower than the Method's */
+        Method (M24C, 0, Serialized)
+        {
+            Mutex (MTX0, 0x00)
+            Name (I000, 0x00)
+            Method (MM00, 1, NotSerialized)
+            {
+                Local0 = Acquire (MTX0, 0x0000)
+                If (!M205 (TS, 0xCE, Local0, Zero))
+                {
+                    I000++
+                    If (Arg0)
+                    {
+                        MM01 ()
+                    }
+                    Else
+                    {
+                        Release (MTX0)
+                    }
+                }
+            }
+
+            Method (MM01, 0, Serialized)
+            {
+                I000++
+                Release (MTX0)
+            }
+
+            I000 = 0x00
+            MM00 (0x00)
+            M205 (TS, 0xCF, I000, 0x01)
+            I000 = 0x00
+            MM00 (0x01)
+            M205 (TS, 0xD0, I000, 0x02)
+        }
+
+        SRMT ("m240")
+        M240 ()
+        SRMT ("m241")
+        M241 ()
+        SRMT ("m242")
+        M242 ()
+        SRMT ("m243")
+        M243 ()
+        SRMT ("m244")
+        M244 ()
+        SRMT ("m245")
+        M245 ()
+        SRMT ("m246")
+        M246 ()
+        SRMT ("m247")
+        If (Y349)
+        {
+            M247 ()
+        }
+        Else
+        {
+            BLCK ()
+        }
+
+        SRMT ("m248")
+        M248 ()
+        SRMT ("m249")
+        M249 ()
+        SRMT ("m24a")
+        M24A ()
+        SRMT ("m24b")
+        M24B ()
+        SRMT ("m24c")
+        M24C ()
+    }
+
+    /* Run-method */
+
+    Method (NM01, 0, NotSerialized)
+    {
+        Debug = "TEST: NM01, Declare Control Method Named Object"
+        M207 ()
+        CH03 ("NM01", Z133, 0xD1, 0x0441, 0x00)
+    }
+

@@ -1,4502 +1,7296 @@
-/*
- * Some or all of this work - Copyright (c) 2006 - 2017, Intel Corp.
- * All rights reserved.
- *
- * Redistribution and use in source and binary forms, with or without modification,
- * are permitted provided that the following conditions are met:
- *
- * Redistributions of source code must retain the above copyright notice,
- * this list of conditions and the following disclaimer.
- * Redistributions in binary form must reproduce the above copyright notice,
- * this list of conditions and the following disclaimer in the documentation
- * and/or other materials provided with the distribution.
- * Neither the name of Intel Corporation nor the names of its contributors
- * may be used to endorse or promote products derived from this software
- * without specific prior written permission.
- *
- * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS"
- * AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE
- * IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE
- * ARE DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT OWNER OR CONTRIBUTORS BE
- * LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL
- * DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES;
- * LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY
- * THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING
- * NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE,
- * EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
- */
-
-/*
- * Check implicit conversion being applied to data images
- */
-
-Name(z122, 122)
-
-// Flags of types can be used in Index Operator
-Name(b66f, Buffer() {0,0,1,1,1,0,0,0,0,0,0,0,0,0,0,0,0,0})
-
-// Not invalid types for testing to store in,
-// excluded: Field Unit, Op.Region, Thermal Zone,
-//           DDB handle, Debug, Reference
-Name(b670, Buffer() {1,1,1,1,1,0,1,1,1,1,0,1,1,0,1,0,0,0})
-
-// Not invalid types for testing to be stored,
-// excluded: Field Unit, Op.Region, Thermal Zone,
-//           DDB handle, Debug, Reference
-Name(b671, Buffer() {1,1,1,1,1,0,1,1,1,1,0,1,1,0,1,0,0,0})
-
-// Flags of types of non-Computational Data Objects
-Name(b674, Buffer() {1,0,0,0,1,0,1,1,1,1,1,1,1,1,0,1,1,1})
-
-// Possible types of the Named Object
-Name(b676, Buffer() {0,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,0,1})
-
-// Possible types of the LocalX Object
-Name(b677, Buffer() {1,1,1,1,1,0,1,1,1,1,1,1,1,1,0,1,0,1})
-
-// Flags of types of Fixed type Data Objects (Fields)
-Name(b678, Buffer() {0,0,0,0,0,1,0,0,0,0,0,0,0,0,1,0,0,0})
-
-// Flags of types of Computational Data Objects
-// (Fields and Integer, String, Buffer)
-Name(b679, Buffer() {0,1,1,1,0,1,0,0,0,0,0,0,0,0,1,0,0,0})
-
-// Type group numbers according with the type of an Object
-Name(b67a, Buffer() {0,2,2,2,3,1,5,5,4,5,5,5,5,5,1,0,0,6})
-
-// Flags of types not causing exceptins on Increment/Decrement
-// (~ Computational Data Objects)
-Name(b67b, Buffer() {0,1,1,1,0,1,0,0,0,0,0,0,0,0,1,0,0,0})
-
-// Flags of types that can be verified only by ObjectType
-// (Not Computational Data, Package and Method Objects)
-Name(b67c, Buffer() {1,0,0,0,0,0,1,1,0,1,1,1,1,1,0,1,1,1})
-
-// Possible types of Package Elements
-Name(b67d, Buffer() {1,1,1,1,1,0,0,0,0,0,0,0,0,0,0,0,0,1})
-
-// Not invalid types for Store taking into
-// account the ACPICA exresop restriction:
-// Needed Integer/Buffer/String/Package/Ref/Ddb
-Name(b67f, Buffer() {0,1,1,1,1,1,0,0,0,0,0,0,0,0,1,0,0,1})
-
-// Testing Destination Named Objects
-
-// Integers
-
-Name(i680, 0xa0a1a2a35f5e5d80)
-Name(i681, 0xa0a1a2a35f5e5d81)
-Name(i682, 0xa0a1a2a35f5e5d82)
-Name(i683, 0xa0a1a2a35f5e5d83)
-Name(i684, 0xa0a1a2a35f5e5d84)
-Name(i685, 0xa0a1a2a35f5e5d85)
-Name(i686, 0xa0a1a2a35f5e5d86)
-Name(i687, 0xa0a1a2a35f5e5d87)
-Name(i688, 0xa0a1a2a35f5e5d88)
-Name(i689, 0xa0a1a2a35f5e5d89)
-Name(i68a, 0xa0a1a2a35f5e5d8a)
-Name(i68b, 0xa0a1a2a35f5e5d8b)
-Name(i68c, 0xa0a1a2a35f5e5d8c)
-Name(i68d, 0xa0a1a2a35f5e5d8d)
-Name(i68e, 0xa0a1a2a35f5e5d8e)
-Name(i68f, 0xa0a1a2a35f5e5d8f)
-
-Name(i690, 0xa0a1a2a35f5e5d90)
-Name(i691, 0xa0a1a2a35f5e5d91)
-Name(i692, 0xa0a1a2a35f5e5d92)
-Name(i693, 0xa0a1a2a35f5e5d93)
-Name(i694, 0xa0a1a2a35f5e5d94)
-Name(i695, 0xa0a1a2a35f5e5d95)
-Name(i696, 0xa0a1a2a35f5e5d96)
-Name(i697, 0xa0a1a2a35f5e5d97)
-Name(i698, 0xa0a1a2a35f5e5d98)
-Name(i699, 0xa0a1a2a35f5e5d99)
-Name(i69a, 0xa0a1a2a35f5e5d9a)
-Name(i69b, 0xa0a1a2a35f5e5d9b)
-Name(i69c, 0xa0a1a2a35f5e5d9c)
-Name(i69d, 0xa0a1a2a35f5e5d9d)
-Name(i69e, 0xa0a1a2a35f5e5d9e)
-Name(i69f, 0xa0a1a2a35f5e5d9f)
-
-// Strings
-
-Name(s680, "initial named string80")
-Name(s681, "initial named string81")
-Name(s682, "initial named string82")
-Name(s683, "initial named string83")
-Name(s684, "initial named string84")
-Name(s685, "initial named string85")
-Name(s686, "initial named string86")
-Name(s687, "initial named string87")
-Name(s688, "initial named string88")
-Name(s689, "initial named string89")
-Name(s68a, "initial named string8a")
-Name(s68b, "initial named string8b")
-Name(s68c, "initial named string8c")
-Name(s68d, "initial named string8d")
-Name(s68e, "initial named string8e")
-Name(s68f, "initial named string8f")
-
-Name(s690, "initial named string90")
-Name(s691, "initial named string91")
-Name(s692, "initial named string92")
-Name(s693, "initial named string93")
-Name(s694, "initial named string94")
-Name(s695, "initial named string95")
-Name(s696, "initial named string96")
-Name(s697, "initial named string97")
-Name(s698, "initial named string98")
-Name(s699, "initial named string99")
-Name(s69a, "initial named string9a")
-Name(s69b, "initial named string9b")
-Name(s69c, "initial named string9c")
-Name(s69d, "initial named string9d")
-Name(s69e, "initial named string9e")
-Name(s69f, "initial named string9f")
-
-// Buffers
-
-Name(b680, Buffer(9){0xf8, 0xf7, 0xf6, 0xf5, 0xf4, 0xf3, 0xf2, 0xf1, 0x80})
-Name(b681, Buffer(9){0xf8, 0xf7, 0xf6, 0xf5, 0xf4, 0xf3, 0xf2, 0xf1, 0x81})
-Name(b682, Buffer(9){0xf8, 0xf7, 0xf6, 0xf5, 0xf4, 0xf3, 0xf2, 0xf1, 0x82})
-Name(b683, Buffer(9){0xf8, 0xf7, 0xf6, 0xf5, 0xf4, 0xf3, 0xf2, 0xf1, 0x83})
-Name(b684, Buffer(9){0xf8, 0xf7, 0xf6, 0xf5, 0xf4, 0xf3, 0xf2, 0xf1, 0x84})
-Name(b685, Buffer(9){0xf8, 0xf7, 0xf6, 0xf5, 0xf4, 0xf3, 0xf2, 0xf1, 0x85})
-Name(b686, Buffer(9){0xf8, 0xf7, 0xf6, 0xf5, 0xf4, 0xf3, 0xf2, 0xf1, 0x86})
-Name(b687, Buffer(9){0xf8, 0xf7, 0xf6, 0xf5, 0xf4, 0xf3, 0xf2, 0xf1, 0x87})
-Name(b688, Buffer(9){0xf8, 0xf7, 0xf6, 0xf5, 0xf4, 0xf3, 0xf2, 0xf1, 0x88})
-Name(b689, Buffer(9){0xf8, 0xf7, 0xf6, 0xf5, 0xf4, 0xf3, 0xf2, 0xf1, 0x89})
-Name(b68a, Buffer(9){0xf8, 0xf7, 0xf6, 0xf5, 0xf4, 0xf3, 0xf2, 0xf1, 0x8a})
-Name(b68b, Buffer(9){0xf8, 0xf7, 0xf6, 0xf5, 0xf4, 0xf3, 0xf2, 0xf1, 0x8b})
-Name(b68c, Buffer(9){0xf8, 0xf7, 0xf6, 0xf5, 0xf4, 0xf3, 0xf2, 0xf1, 0x8c})
-Name(b68d, Buffer(9){0xf8, 0xf7, 0xf6, 0xf5, 0xf4, 0xf3, 0xf2, 0xf1, 0x8d})
-Name(b68e, Buffer(9){0xf8, 0xf7, 0xf6, 0xf5, 0xf4, 0xf3, 0xf2, 0xf1, 0x8e})
-Name(b68f, Buffer(9){0xf8, 0xf7, 0xf6, 0xf5, 0xf4, 0xf3, 0xf2, 0xf1, 0x8f})
-
-Name(b690, Buffer(9){0xf8, 0xf7, 0xf6, 0xf5, 0xf4, 0xf3, 0xf2, 0xf1, 0x90})
-Name(b691, Buffer(9){0xf8, 0xf7, 0xf6, 0xf5, 0xf4, 0xf3, 0xf2, 0xf1, 0x91})
-Name(b692, Buffer(9){0xf8, 0xf7, 0xf6, 0xf5, 0xf4, 0xf3, 0xf2, 0xf1, 0x92})
-Name(b693, Buffer(9){0xf8, 0xf7, 0xf6, 0xf5, 0xf4, 0xf3, 0xf2, 0xf1, 0x93})
-Name(b694, Buffer(9){0xf8, 0xf7, 0xf6, 0xf5, 0xf4, 0xf3, 0xf2, 0xf1, 0x94})
-Name(b695, Buffer(9){0xf8, 0xf7, 0xf6, 0xf5, 0xf4, 0xf3, 0xf2, 0xf1, 0x95})
-Name(b696, Buffer(9){0xf8, 0xf7, 0xf6, 0xf5, 0xf4, 0xf3, 0xf2, 0xf1, 0x96})
-Name(b697, Buffer(9){0xf8, 0xf7, 0xf6, 0xf5, 0xf4, 0xf3, 0xf2, 0xf1, 0x97})
-Name(b698, Buffer(9){0xf8, 0xf7, 0xf6, 0xf5, 0xf4, 0xf3, 0xf2, 0xf1, 0x98})
-Name(b699, Buffer(9){0xf8, 0xf7, 0xf6, 0xf5, 0xf4, 0xf3, 0xf2, 0xf1, 0x99})
-Name(b69a, Buffer(9){0xf8, 0xf7, 0xf6, 0xf5, 0xf4, 0xf3, 0xf2, 0xf1, 0x9a})
-Name(b69b, Buffer(9){0xf8, 0xf7, 0xf6, 0xf5, 0xf4, 0xf3, 0xf2, 0xf1, 0x9b})
-Name(b69c, Buffer(9){0xf8, 0xf7, 0xf6, 0xf5, 0xf4, 0xf3, 0xf2, 0xf1, 0x9c})
-Name(b69d, Buffer(9){0xf8, 0xf7, 0xf6, 0xf5, 0xf4, 0xf3, 0xf2, 0xf1, 0x9d})
-Name(b69e, Buffer(9){0xf8, 0xf7, 0xf6, 0xf5, 0xf4, 0xf3, 0xf2, 0xf1, 0x9e})
-Name(b69f, Buffer(9){0xf8, 0xf7, 0xf6, 0xf5, 0xf4, 0xf3, 0xf2, 0xf1, 0x9f})
-
-// Packages
-
-Name(p680, Package(1){0})
-
-// Buffer Fields
-
-Name(b675, Buffer(23){})
-
-CreateField(b675,   0, 31, bf80)
-CreateField(b675,  35, 63, bf81)
-CreateField(b675, 110, 69, bf82)
-
-// Auxiliary Source Named Objects
-
-Name(i6e0, 0xfe7cb391d650a284)
-Name(i6e1, 0xfe7cb391d650a284)
-Name(i6e2, 0xfe7cb391d650a284)
-Name(i6e3, 0xfe7cb391d650a284)
-Name(i6e4, 0xfe7cb391d650a284)
-Name(i6e5, 0xfe7cb391d650a284)
-Name(i6e6, 0xfe7cb391d650a284)
-Name(i6e7, 0xfe7cb391d650a284)
-Name(i6e8, 0xfe7cb391d650a284)
-Name(i6e9, 0xfe7cb391d650a284)
-
-Name(p690, Package(){
-	0xfe7cb391d650a284,
-	"FE7CB391D650A284",
-	Buffer() {0x84, 0xA2, 0x50, 0xD6, 0x91, 0xB3, 0x7C, 0xFE},
-	0xfe7cb391d650a284,
-	"FE7CB391D650A284",
-	Buffer() {0x84, 0xA2, 0x50, 0xD6, 0x91, 0xB3, 0x7C, 0xFE},
-	0xfe7cb391d650a284,
-	"FE7CB391D650A284",
-	Buffer() {0x84, 0xA2, 0x50, 0xD6, 0x91, 0xB3, 0x7C, 0xFE},
-	0xfe7cb391d650a284,
-	"FE7CB391D650A284",
-	Buffer() {0x84, 0xA2, 0x50, 0xD6, 0x91, 0xB3, 0x7C, 0xFE},
-	0xfe7cb391d650a284,
-	"FE7CB391D650A284",
-	Buffer() {0x84, 0xA2, 0x50, 0xD6, 0x91, 0xB3, 0x7C, 0xFE},
-	0xfe7cb391d650a284,
-	"FE7CB391D650A284",
-	Buffer() {0x84, 0xA2, 0x50, 0xD6, 0x91, 0xB3, 0x7C, 0xFE},
-})
-
-Name(p691, Package(1){})
-
-Name(s6e0, "FE7CB391D650A284")
-Name(s6e1, "FE7CB391D650A284")
-Name(s6e2, "FE7CB391D650A284")
-Name(s6e3, "FE7CB391D650A284")
-Name(s6e4, "FE7CB391D650A284")
-Name(s6e5, "FE7CB391D650A284")
-Name(s6e6, "FE7CB391D650A284")
-Name(s6e7, "FE7CB391D650A284")
-Name(s6e8, "FE7CB391D650A284")
-Name(s6e9, "FE7CB391D650A284")
-
-Name(b6e0, Buffer() {0x84, 0xA2, 0x50, 0xD6, 0x91, 0xB3, 0x7C, 0xFE})
-Name(b6e1, Buffer() {0x84, 0xA2, 0x50, 0xD6, 0x91, 0xB3, 0x7C, 0xFE})
-Name(b6e2, Buffer() {0x84, 0xA2, 0x50, 0xD6, 0x91, 0xB3, 0x7C, 0xFE})
-Name(b6e3, Buffer() {0x84, 0xA2, 0x50, 0xD6, 0x91, 0xB3, 0x7C, 0xFE})
-Name(b6e4, Buffer() {0x84, 0xA2, 0x50, 0xD6, 0x91, 0xB3, 0x7C, 0xFE})
-Name(b6e5, Buffer() {0x84, 0xA2, 0x50, 0xD6, 0x91, 0xB3, 0x7C, 0xFE})
-Name(b6e6, Buffer() {0x84, 0xA2, 0x50, 0xD6, 0x91, 0xB3, 0x7C, 0xFE})
-Name(b6e7, Buffer() {0x84, 0xA2, 0x50, 0xD6, 0x91, 0xB3, 0x7C, 0xFE})
-Name(b6e8, Buffer() {0x84, 0xA2, 0x50, 0xD6, 0x91, 0xB3, 0x7C, 0xFE})
-Name(b6e9, Buffer() {0x84, 0xA2, 0x50, 0xD6, 0x91, 0xB3, 0x7C, 0xFE})
-
-// Matrixes of exceptions expected during an attempt to make
-// a copy of the Result Object by some storing operator,
-// a raw relies to the type group of a Target Object,
-// a column relies to the type group of a Result Object
-// (uninitialized, fixed, other computational data types,
-// Package, Method, others, reference)
-
-// Store to Named Object
-Name(p6a0, Package(){
-	Buffer() {1,0,0,0,1,1,0},
-	Buffer() {1,0,0,1,1,1,1},
-	Buffer() {1,0,0,1,1,1,1},
-	Buffer() {1,1,1,0,1,1,0},
-	Buffer() {1,1,1,1,1,1,0},
-	Buffer() {1,1,1,1,1,1,0},
-	Buffer() {1,0,0,0,1,1,0},
-})
-
-// Store in other cases and CopyObject
-Name(p6a1, Package(){
-	Buffer() {1,0,0,0,0,0,0},
-	Buffer() {1,0,0,1,1,1,1},
-	Buffer() {1,0,0,0,0,0,0},
-	Buffer() {1,0,0,0,0,0,0},
-	Buffer() {1,0,0,0,0,0,0},
-	Buffer() {1,0,0,0,0,0,0},
-	Buffer() {1,0,0,0,0,0,0},
-})
-
-// Matrixes of saving Target type storings
-// (have sense in absence of exceptions)
-
-// Store to Named Object
-Name(p6a2, Package(){
-	Buffer() {0,0,0,0,0,0,0},
-	Buffer() {0,1,1,0,1,0,0},
-	Buffer() {0,1,1,0,1,0,0},
-	Buffer() {0,0,0,1,0,0,0},
-	Buffer() {0,0,0,0,0,0,0},
-	Buffer() {0,0,0,0,0,0,0},
-	Buffer() {0,0,0,0,0,0,0},
-})
-
-// Store in other cases and CopyObject
-Name(p6a3, Package(){
-	Buffer() {0,0,0,0,0,0,0},
-	Buffer() {0,1,1,0,0,0,0},
-	Buffer() {0,0,0,0,0,0,0},
-	Buffer() {0,0,0,0,0,0,0},
-	Buffer() {0,0,0,0,0,0,0},
-	Buffer() {0,0,0,0,0,0,0},
-	Buffer() {0,0,0,0,0,0,0},
-})
-
-// Check Result of operation on equal to Benchmark value
-// m680(<method name>,
-//	<internal type of error if it occurs>,
-//	<internal subtype>,
-//	<Result>,
-//	<Benchmark value>)
-Method(m680, 5)
-{
-	Store(ObjectType(arg3), Local0)
-	Store(ObjectType(arg4), Local1)
-	if (LNotEqual(Local0, Local1)) {
-		err(Concatenate(arg0, "-OType"), z122, __LINE__, arg2, 0, Local0, Local1)
-		Return (1)
-	} elseif (Derefof(Index(b679, Local0))) {
-		if (LNotEqual(arg3, arg4)) {
-			err(arg0, z122, __LINE__, arg2, 0, arg3, arg4)
-			Return (1)
-		}
-	}
-	Return (0)
-}
-
-// Return Indexed reference
-// m681(<source>, <index>)
-Method(m681, 2)
-{
-	Return (Index(arg0, arg1))
-}
-
-// Return the value of an Auxiliary Source Named Object
-// m682(<type>, <index>)
-Method(m682, 2, Serialized)
-{
-	Switch(ToInteger(arg0)) {
-		Case(1) {
-			Switch(ToInteger(arg1)) {
-				Case(0) {Return (i6e0)}
-				Case(1) {Return (i6e1)}
-				Case(2) {Return (i6e2)}
-				Case(3) {Return (i6e3)}
-				Case(4) {Return (i6e4)}
-				Case(5) {Return (i6e5)}
-				Case(6) {Return (i6e6)}
-				Case(7) {Return (i6e7)}
-				Case(8) {Return (i6e8)}
-				Case(9) {Return (i6e9)}
-			}
-		}
-		Case(2) {
-			Switch(ToInteger(arg1)) {
-				Case(0) {Return (s6e0)}
-				Case(1) {Return (s6e1)}
-				Case(2) {Return (s6e2)}
-				Case(3) {Return (s6e3)}
-				Case(4) {Return (s6e4)}
-				Case(5) {Return (s6e5)}
-				Case(6) {Return (s6e6)}
-				Case(7) {Return (s6e7)}
-				Case(8) {Return (s6e8)}
-				Case(9) {Return (s6e9)}
-			}
-		}
-		Case(3) {
-			Switch(ToInteger(arg1)) {
-				Case(0) {Return (b6e0)}
-				Case(1) {Return (b6e1)}
-				Case(2) {Return (b6e2)}
-				Case(3) {Return (b6e3)}
-				Case(4) {Return (b6e4)}
-				Case(5) {Return (b6e5)}
-				Case(6) {Return (b6e6)}
-				Case(7) {Return (b6e7)}
-				Case(8) {Return (b6e8)}
-				Case(9) {Return (b6e9)}
-			}
-		}
-		Case(0xff) {Store(0, Local0)}
-	}
-	Return (Local0)
-}
-
-// Initialize the bytes of the buffer in the range of bits
-// m683(<buffer>, <bit1>, <length>, <byte>)
-Method(m683, 4)
-{
-	// First byte
-	Divide(arg1, 8,,Local1)
-
-	//Last byte
-	Divide(Subtract(Add(arg1, arg2), 1), 8,,Local2)
-
-	Subtract(Add(Local2, 1), Local1 ,Local0)
-
-	While (Local0) {
-		Store(arg3, Index(arg0, Local1))
-		Increment(Local1)
-		Decrement(Local0)
-	}
-}
-
-// Return the number of the type group
-Method(m684, 1)
-{
-	Return (Derefof(Index(b67a, arg0)))
-}
-
-// Return flag of exception on storing
-// m685(<opcode>, <target type>, <result type>,
-//      <flag of being Named Source>, <flag of being Named Target>)
-Method(m685, 5)
-{	
-	if (arg0) {
-		// CopyObject issue
-		Return (Derefof(Index(Derefof(Index(p6a1, m684(arg1))), m684(arg2))))
-	} else {
-		// Store issue
-		if (LAnd(arg3, LEqual(arg2, 8))) {
-			// Store Named of type Method causes invocation of the Method
-			// which returns a String in the test
-			Store(2, arg2)
-		}
-		if (Derefof(Index(b67f, arg2))) {
-			// Data can be stored
-			if (Lor(arg4, Derefof(Index(b678, arg1)))) {
-				// Store to Named or to Fixed Type
-				// Result Object Conversion issue
-				Return (Derefof(Index(Derefof(Index(p6a0, m684(arg1))), m684(arg2))))
-			} else {
-				Return (0)
-			}
-		} else {
-			Return (1)
-		}
-	}
-}
-
-// Return flag of type saving on storing
-// m686(<opcode>, <target type>, <result type>)
-Method(m686, 3)
-{	
-	if (arg0) {
-		if (LEqual(arg0, 2)) {
-			// CopyObject to Named Object issue
-			Return (Derefof(Index(Derefof(Index(p6a3, m684(arg1))), m684(arg2))))
-		} else {
-			Return (0)
-		}
-	} else {
-		// Store to Named Object issue
-		Return (Derefof(Index(Derefof(Index(p6a2, m684(arg1))), m684(arg2))))
-	}
-}
-
-// Store the Object by the reference
-// m687(<source>, <reference>)
-Method(m687, 2)
-{
-	Store(arg0, arg1)
-}
-
-// Gathers simple statistics of Store/CopyObject operators
-// m688(<name>)
-Method(m688, 1, Serialized)
-{
-	// Objects are used as Source
-
-	// Integer
-	Name(INT0, 0xfedcba9876543210)
-
-	// String
-	Name(STR0, "source string")
-
-	// Buffer
-	Name(BUF0, Buffer(9){9,8,7,6,5,4,3,2,1})
-
-	// Base of Buffer Fields
-	Name(BUFZ, Buffer(20){})
-
-	// Package
-	Name(PAC0, Package(3) {
-		0xfedcba987654321f,
-		"test package",
-		Buffer(9){19,18,17,16,15,14,13,12,11},
-	})
-
-if (y361) {
-	// Field Unit
-	Field(OPR0, ByteAcc, NoLock, Preserve) {
-		FLU0, 69,
-	}
-}
-
-	// Device
-	Device(DEV0) {Name(s000, "DEV0")}
-
-	// Event
-	Event(EVE0)
-
-	// Method
-	Name(MM00, "ff0X")	// Value, returned from MMMX
-	Method(MMM0) {Return (MM00)}
-
-	// Mutex
-	Mutex(MTX0, 0)
-
-if (y361) {
-	// Operation Region
-	OperationRegion(OPR0, SystemMemory, 0, 20)
-}
-
-	// Power Resource
-	PowerResource(PWR0, 0, 0) {Name(s000, "PWR0")}
-
-	// Processor
-	Processor(CPU0, 0x0, 0xFFFFFFFF, 0x0) {Name(s000, "CPU0")}
-
-	// Thermal Zone
-	ThermalZone(TZN0) {Name(s000, "TZN0")}
-
-	// Buffer Field
-	Createfield(BUFZ,   0, 69, BFL0)
-
-	// Data to gather statistics
-
-	Name(STCS, 0)
-
-	Name(INDM, 255)
-
-	Name(PAC2, Package(1) {})
-	Name(IND2, 0)
-
-	Name(PAC3, Package(1) {})
-	Name(IND3, 0)
-
-
-	// Update statistics
-	// m000(<type>, <shift>, <low>, <up>)
-	Method(m000, 4)
-	{
-		if (LEqual(arg0, 2)) {
-			if (LLess(IND2, INDM)) {
-				Store(Add(Multiply(arg3, arg1), arg2), Index(PAC2, IND2))
-				Increment(IND2)
-			}
-		} elseif (LEqual(arg0, 3)) {
-			if (LLess(IND3, INDM)) {
-				Store(Add(Multiply(arg3, arg1), arg2), Index(PAC3, IND3))
-				Increment(IND3)
-			}
-		}
-	}
-
-	// Initialize statistics
-	Method(m001)
-	{
-		if (STCS) {
-			Store(Package(255) {}, PAC2)
-			Store(0, IND2)
-			Store(Package(255) {}, PAC3)
-			Store(0, IND3)
-		}
-	}
-
-	// Output statistics
-	Method(m002, 1, Serialized)
-	{
-		Name(lpN0, 0)
-		Name(lpC0, 0)
-
-		if (STCS) {
-			Store(arg0, Debug)
-
-			if (IND2) {
-				Store("Run-time exceptions:", Debug)
-				Store(IND2, Debug)
-				Store("Types:", Debug)
-
-				Store(IND2, lpN0)
-				Store(0, lpC0)
-
-				While (lpN0) {
-					Store(Derefof(Index(PAC2, lpC0)), Debug)
-					Decrement(lpN0)
-					Increment(lpC0)
-				}
-			}
-
-			if (IND3) {
-				Store("Type mismatch:", Debug)
-				Store(IND3, Debug)
-
-				Store(IND3, lpN0)
-				Store(0, lpC0)
-
-				While (lpN0) {
-					Store(Derefof(Index(PAC3, lpC0)), Debug)
-					Decrement(lpN0)
-					Increment(lpC0)
-				}
-			}
-		}
-	}
-
-	// Check exceptions
-	Method(m003, 1)
-	{
-		if (CH03(arg0, z122, 1, __LINE__, 0)) {
-			if (STCS) {
-				if (LLess(IND2, INDM)) {
-					Store(arg0, Index(PAC2, IND2))
-					Increment(IND2)
-				}
-			}
-		}
-	}
-
-	// Check equality
-	Method(m004, 3)
-	{
-		if (LNotEqual(arg0, arg1)) {
-			err(arg0, z122, __LINE__, 0, 0, arg0, arg1)
-			if (STCS) {m000(3, 0x100, arg2, arg1)}
-		}
-	}
-
-
-	// Gathers statistics of Store to Local
-	Method(m010, 2)
-	{
-		// Initialize statistics
-		m001()
-
-		if (arg1) {Store(0, Local1)}
-
-		Store(Local1, Local0)
-		m003(ObjectType(Local1))
-
-		Store(INT0, Local0)
-		m003(ObjectType(INT0))
-
-		Store(STR0, Local0)
-		m003(ObjectType(STR0))
-
-		Store(BUF0, Local0)
-		m003(ObjectType(BUF0))
-
-		Store(PAC0, Local0)
-		m003(ObjectType(PAC0))
-
-		Store(FLU0, Local0)
-		m003(ObjectType(FLU0))
-
-/*
-// Removed 09/2015: iASL now disallows stores to these objects
-
-		Store(DEV0, Local0)
-		m003(ObjectType(DEV0))
-
-		Store(EVE0, Local0)
-		m003(ObjectType(EVE0))
-
-		Store(MTX0, Local0)
-		m003(ObjectType(MTX0))
-
-		Store(OPR0, Local0)
-		m003(ObjectType(OPR0))
-
-		Store(PWR0, Local0)
-		m003(ObjectType(PWR0))
-
-		Store(CPU0, Local0)
-		m003(ObjectType(CPU0))
-
-		Store(TZN0, Local0)
-		m003(ObjectType(TZN0))
-*/
-		Store(BFL0, Local0)
-		m003(ObjectType(BFL0))
-
-		// Output statistics
-		m002("Store to LocalX")
-	}
-
-	// Gathers statistics of CopyObject to Local
-	Method(m011, 2)
-	{
-		// Initialize statistics
-		m001()
-
-		if (arg1) {Store(0, Local1)}
-
-		CopyObject(Local1, Local0)
-		m003(ObjectType(Local1))
-
-		CopyObject(INT0, Local0)
-		m003(ObjectType(INT0))
-
-		CopyObject(STR0, Local0)
-		m003(ObjectType(STR0))
-
-		CopyObject(BUF0, Local0)
-		m003(ObjectType(BUF0))
-
-		CopyObject(PAC0, Local0)
-		m003(ObjectType(PAC0))
-
-		CopyObject(FLU0, Local0)
-		m003(ObjectType(FLU0))
-
-		CopyObject(DEV0, Local0)
-		m003(ObjectType(DEV0))
-
-		CopyObject(EVE0, Local0)
-		m003(ObjectType(EVE0))
-
-		CopyObject(MMM0, Local0)
-		m003(ObjectType(MMM0))
-
-		CopyObject(MTX0, Local0)
-		m003(ObjectType(MTX0))
-
-		CopyObject(OPR0, Local0)
-		m003(ObjectType(OPR0))
-
-		CopyObject(PWR0, Local0)
-		m003(ObjectType(PWR0))
-
-		CopyObject(CPU0, Local0)
-		m003(ObjectType(CPU0))
-
-		CopyObject(TZN0, Local0)
-		m003(ObjectType(TZN0))
-
-		CopyObject(BFL0, Local0)
-		m003(ObjectType(BFL0))
-
-		// Output statistics
-		m002("CopyObject to LocalX")
-	}
-
-	// Gathers statistics of CopyObject to Integer
-	Method(m012, 2, Serialized)
-	{
-		// Integer
-		Name(INT1, 0xfedcba9876543211)
-		Name(INT2, 0xfedcba9876543212)
-		Name(INT3, 0xfedcba9876543213)
-		Name(INT4, 0xfedcba9876543214)
-		Name(INT5, 0xfedcba9876543215)
-		Name(INT6, 0xfedcba9876543216)
-		Name(INT7, 0xfedcba9876543217)
-		Name(INT8, 0xfedcba9876543218)
-		Name(INT9, 0xfedcba9876543219)
-		Name(INTa, 0xfedcba987654321a)
-		Name(INTb, 0xfedcba987654321b)
-		Name(INTc, 0xfedcba987654321c)
-		Name(INTd, 0xfedcba987654321d)
-		Name(INTe, 0xfedcba987654321e)
-		Name(INTf, 0xfedcba987654321f)
-
-		// Initialize statistics
-		m001()
-
-		if (arg1) {Store(0, Local1)}
-
-		CopyObject(Local1, INTf)
-		m003(ObjectType(Local1))
-		m004(arg0, ObjectType(INTf), 0)
-
-		CopyObject(INT0, INT1)
-		m003(ObjectType(INT0))
-		m004(arg0, ObjectType(INT1), 1)
-
-		CopyObject(STR0, INT2)
-		m003(ObjectType(STR0))
-		m004(arg0, ObjectType(INT2), 2)
-
-		CopyObject(BUF0, INT3)
-		m003(ObjectType(BUF0))
-		m004(arg0, ObjectType(INT3), 3)
-
-		CopyObject(PAC0, INT4)
-		m003(ObjectType(PAC0))
-		m004(arg0, ObjectType(INT4), 4)
-
-		CopyObject(FLU0, INT5)
-		m003(ObjectType(FLU0))
-		m004(arg0, ObjectType(INT5), 5)
-
-		CopyObject(DEV0, INT6)
-		m003(ObjectType(DEV0))
-		m004(arg0, ObjectType(INT6), 6)
-
-		CopyObject(EVE0, INT7)
-		m003(ObjectType(EVE0))
-		m004(arg0, ObjectType(INT7), 7)
-
-		CopyObject(MMM0, INT8)
-		m003(ObjectType(MMM0))
-		m004(arg0, ObjectType(INT8), 8)
-
-		CopyObject(MTX0, INT9)
-		m003(ObjectType(MTX0))
-		m004(arg0, ObjectType(INT9), 9)
-
-		CopyObject(OPR0, INTa)
-		m003(ObjectType(OPR0))
-		m004(arg0, ObjectType(INTa), 10)
-
-		CopyObject(PWR0, INTb)
-		m003(ObjectType(PWR0))
-		m004(arg0, ObjectType(INTb), 11)
-
-		CopyObject(CPU0, INTc)
-		m003(ObjectType(CPU0))
-		m004(arg0, ObjectType(INTc), 12)
-
-		CopyObject(TZN0, INTd)
-		m003(ObjectType(TZN0))
-		m004(arg0, ObjectType(INTd), 13)
-
-		CopyObject(BFL0, INTe)
-		m003(ObjectType(BFL0))
-		m004(arg0, ObjectType(INTe), 14)
-
-		// Output statistics
-		m002("CopyObject to Integer Named Object")
-	}
-
-	m010(Concatenate(arg0, "-m010"), 0)
-	m011(Concatenate(arg0, "-m011"), 0)
-	m012(Concatenate(arg0, "-m012"), 0)
-}
-
-// Verify storing of an immediate Source Object into different kinds
-// of Target Objects by means of the specified operator (Store/CopyObject)
-// m689(<name>, <store op>, <exc. conditions>)
-Method(m689, 3, Serialized)
-{
-	// Object-initializers are used either with Source or Target
-	// (names ended by 0 and 1 respectively)
-
-	// Integer
-	Name(INT0, 0xfedcba9876543210)
-	Name(INT1, 0xfedcba9876543211)
-
-	// String
-	Name(STR0, "source string")
-	Name(STR1, "target string")
-
-	// Buffer
-	Name(BUF0, Buffer(9){9,8,7,6,5,4,3,2,1})
-	Name(BUF1, Buffer(17){0xc3})
-
-	// Initializer of Fields
-	Name(BUF2, Buffer(9){0x95,0x85,0x75,0x65,0x55,0x45,0x35,0x25,0x15})
-
-	// Base of Buffer Fields
-	Name(BUFZ, Buffer(48){})
-
-	// Package
-	Name(PAC0, Package(3) {
-		0xfedcba987654321f,
-		"test package",
-		Buffer(9){19,18,17,16,15,14,13,12,11},
-	})
-
-	Name(PAC1, Package(1) {"target package"})
-
-if (y361) {
-	// Field Unit
-	Field(OPR0, ByteAcc, NoLock, Preserve) {
-		FLU0, 69,
-		FLU2, 64,
-		FLU4, 32,
-	}
-}
-
-	// Device
-	Device(DEV0) {Name(s000, "DEV0")}
-	Device(DEV1) {Name(s000, "DEV1")}
-
-	// Event
-	Event(EVE0)
-	Event(EVE1)
-
-	// Method
-	Name(MM00, "ff0X")	// Value, returned from MMMX
-	Name(MM01, "ff1Y")	// Value, returned from MMMY
-	Name(MMM0, 0)	// Method as Source Object
-	Name(MMM1, 0)	// Method as Target Object
-	Method(MMMX) {Return (MM00)}
-	Method(MMMY) {Return (MM01)}
-
-	// Mutex
-	Mutex(MTX0, 0)
-	Mutex(MTX1, 0)
-
-if (y361) {
-	// Operation Region
-	OperationRegion(OPR0, SystemMemory, 0, 48)
-	OperationRegion(OPR1, SystemMemory, 0, 24)
-}
-	// Power Resource
-	PowerResource(PWR0, 0, 0) {Name(s000, "PWR0")}
-	PowerResource(PWR1, 0, 0) {Name(s000, "PWR1")}
-
-	// Processor
-	Processor(CPU0, 0x0, 0xFFFFFFFF, 0x0) {Name(s000, "CPU0")}
-	Processor(CPU1, 0x0, 0xFFFFFFFF, 0x0) {Name(s000, "CPU1")}
-
-	// Thermal Zone
-	ThermalZone(TZN0) {Name(s000, "TZN0")}
-	ThermalZone(TZN1) {Name(s000, "TZN1")}
-
-	// Buffer Field
-	Createfield(BUFZ,   0, 69, BFL0)
-	Createfield(BUFZ,  80, 64, BFL2)
-	Createfield(BUFZ, 160, 32, BFL4)
-
-	// Reference
-	Name(ORF0, "ORF0")
-	Name(REF0, Package(1){})
-	Name(ORF1, "ORF0")
-	Name(REF1, Package(1){})
-
-	// Data to gather statistics
-
-	Name(STCS, 0)
-
-	Name(INDM, 255)
-
-	Name(PAC2, Package(1) {})
-	Name(IND2, 0)
-
-	Name(PAC3, Package(1) {})
-	Name(IND3, 0)
-
-	Name(PAC4, Package(2) {
-		"Store",
-		"Copyobject",
-	})
-
-	Name(PAC5, Package(7) {
-		"Storing Named-Named with ",
-		"Storing Named-LocalX with ",
-		"Storing LocalX-Named with ",
-		"Storing LocalX-LocalX with ",
-		"Storing Named-ArgX(Named on read-only argument rule) with ",
-		"Storing Named-ArgX(Named by reference) with ",
-		"Storing LocalX-Element of Package with ",
-	})
-
-	Name(terr, "-test error")
-
-	// Update statistics
-	// m000(<type>, <shift>, <low>, <up>)
-	Method(m000, 4)
-	{
-		if (LEqual(arg0, 2)) {
-			if (LLess(IND2, INDM)) {
-				Store(Add(Multiply(arg3, arg1), arg2), Index(PAC2, IND2))
-				Increment(IND2)
-			}
-		} elseif (LEqual(arg0, 3)) {
-			if (LLess(IND3, INDM)) {
-				Store(Add(Multiply(arg3, arg1), arg2), Index(PAC3, IND3))
-				Increment(IND3)
-			}
-		}
-	}
-
-	// Initialize statistics
-	Method(m001)
-	{
-		if (STCS) {
-			Store(Package(INDM) {}, PAC2)
-			Store(0, IND2)
-			Store(Package(INDM) {}, PAC3)
-			Store(0, IND3)
-		}
-	}
-
-	// Output statistics
-	Method(m002, 1, Serialized)
-	{
-		Name(lpN0, 0)
-		Name(lpC0, 0)
-
-		if (STCS) {
-			Store(arg0, Debug)
-
-			if (IND2) {
-				Store("Run-time exceptions:", Debug)
-				Store(IND2, Debug)
-				Store("Types:", Debug)
-
-				Store(IND2, lpN0)
-				Store(0, lpC0)
-
-				While (lpN0) {
-					Store(Derefof(Index(PAC2, lpC0)), Debug)
-					Decrement(lpN0)
-					Increment(lpC0)
-				}
-			}
-
-			if (IND3) {
-				Store("Type mismatch:", Debug)
-				Store(IND3, Debug)
-
-				Store(IND3, lpN0)
-				Store(0, lpC0)
-
-				While (lpN0) {
-					Store(Derefof(Index(PAC3, lpC0)), Debug)
-					Decrement(lpN0)
-					Increment(lpC0)
-				}
-			}
-		}
-	}
-
-	// Prepare Target of specified type
-	Method(m003, 4, Serialized)
-	{
-		Switch(ToInteger(arg1)) {
-			Case(0) {	// Only check
-			}
-			Case(1) {
-				CopyObject(Derefof(arg3), INT1)
-				CopyObject(INT1, arg2)
-			}
-			Case(2) {
-				CopyObject(Derefof(arg3), STR1)
-				CopyObject(STR1, arg2)
-			}
-			Case(3) {
-				if (y136) {
-					CopyObject(Derefof(arg3), BUF1)
-				} else {
-					m687(Derefof(arg3), Refof(BUF1))
-				}
-				CopyObject(BUF1, arg2)
-			}
-			Case(4) {
-				CopyObject(Derefof(arg3), PAC1)
-				CopyObject(PAC1, arg2)
-			}
-			Case(5) {	// Check only
-			}
-			Case(6) {
-				CopyObject(DEV1, arg2)
-			}
-			Case(7) {
-				CopyObject(EVE1, arg2)
-			}
-			Case(8) {
-				CopyObject(Derefof(Index(Derefof(arg3), 0)), MMM1)
-				CopyObject(Derefof(Index(Derefof(arg3), 1)), MM01)
-				CopyObject(Derefof(Refof(MMM1)), arg2)
-			}
-			Case(9) {
-				CopyObject(MTX1, arg2)
-			}
-			Case(10) {
-				CopyObject(OPR1, arg2)
-			}
-			Case(11) {
-				CopyObject(PWR1, arg2)
-			}
-			Case(12) {
-				CopyObject(CPU1, arg2)
-			}
-			Case(13) {
-				CopyObject(TZN1, arg2)
-			}
-			Case(14) {	// Check only
-			}
-			Case(17) {
-				CopyObject(Refof(ORF1), REF1)
-				//if (y522) {
-					CopyObject(REF1, arg2)
-				//} else {
-				//	CopyObject(DeRefof(REF1), arg2)
-				//}
-			}
-			Default {
-				// Unexpected Target Type
-				err(Concatenate(arg0, terr), z122, __LINE__, 0, 0, arg1, 0)
-				Return (1)
-			}
-		}
-		if (CH03(arg0, z122, 5, __LINE__, 0)) {
-			//Exception during preparing of Target Object
-			Return (1)
-		}
-
-		if (LEqual(arg1, 17)) {
-			// Reference
-			Return (0)
-		}
-
-		Store(ObjectType(arg2), Local0)
-		if (LNotEqual(Local0, arg1)) {
-			// ObjectType of Target can not be set up
-			err(arg0, z122, __LINE__, 0, 0, Local0, arg1)
-			Return (1)
-		}
-
-		Return (0)
-	}
-
-	// Prepare Source of specified type
-	Method(m004, 4, Serialized)
-	{
-		Switch(ToInteger(arg1)) {
-			Case(0) {
-			}
-			Case(1) {
-				CopyObject(Derefof(arg3), INT0)
-				CopyObject(INT0, arg2)
-			}
-			Case(2) {
-				CopyObject(Derefof(arg3), STR0)
-				CopyObject(STR0, arg2)
-			}
-			Case(3) {
-				if (y136) {
-					CopyObject(Derefof(arg3), BUF0)
-				} else {
-					m687(Derefof(arg3), Refof(BUF0))
-				}
-				CopyObject(BUF0, arg2)
-			}
-			Case(4) {
-				CopyObject(Derefof(arg3), PAC0)
-				CopyObject(PAC0, arg2)
-			}
-			Case(5) {
-				Store(Derefof(Index(Derefof(arg3), 0)), Local0)
-				if (LEqual(Local0, 0)) {
-					Store(Derefof(Index(Derefof(arg3), 1)), FLU0)
-				} elseif (LEqual(Local0, 1)) {
-					Store(Derefof(Index(Derefof(arg3), 1)), FLU2)
-				} else {
-					Store(Derefof(Index(Derefof(arg3), 1)), FLU4)
-				}
-			}
-			Case(6) {
-				CopyObject(DEV0, arg2)
-			}
-			Case(7) {
-				CopyObject(EVE0, arg2)
-			}
-			Case(8) {
-				CopyObject(Derefof(Index(Derefof(arg3), 0)), MMM0)
-				CopyObject(Derefof(Index(Derefof(arg3), 1)), MM00)
-				CopyObject(Derefof(Refof(MMM0)), arg2)
-			}
-			Case(9) {
-				CopyObject(MTX0, arg2)
-			}
-			Case(10) {
-				CopyObject(OPR0, arg2)
-			}
-			Case(11) {
-				CopyObject(PWR0, arg2)
-			}
-			Case(12) {
-				CopyObject(CPU0, arg2)
-			}
-			Case(13) {
-				CopyObject(TZN0, arg2)
-			}
-			Case(14) {
-				Store(Derefof(Index(Derefof(arg3), 0)), Local0)
-				if (LEqual(Local0, 0)) {
-					Store(Derefof(Index(Derefof(arg3), 1)), BFL0)
-				} elseif (LEqual(Local0, 1)) {
-					Store(Derefof(Index(Derefof(arg3), 1)), BFL2)
-				} else {
-					Store(Derefof(Index(Derefof(arg3), 1)), BFL4)
-				}
-			}
-			Case(17) {
-				CopyObject(Refof(ORF0), REF0)
-				//if (y522) {
-					CopyObject(REF0, arg2)
-				//} else {
-				//	CopyObject(DeRefof(REF0), arg2)
-				//}
-			}
-			Default {
-				// Unexpected Source Type
-				err(Concatenate(arg0, terr), z122, __LINE__, 0, 0, arg1, 0)
-				Return (1)
-			}
-		}
-		if (CH03(arg0, z122, 8, __LINE__, 0)) {
-			// Exception during preparing of Source Object
-			Return (1)
-		}
-
-		if (LEqual(arg1, 17)) {
-			// Reference
-			Return (0)
-		}
-
-		Store(ObjectType(arg2), Local0)
-		if (LNotEqual(Local0, arg1)) {
-			// ObjectType of Source can not be set up
-			err(arg0, z122, __LINE__, 0, 0, Local0, arg1)
-			Return (1)
-		}
-
-		Return (0)
-	}
-
-	// Check Source Object type is not corrupted after storing,
-	// for the computational data types verify its value against
-	// the Object-initializer value
-	Method(m005, 4, Serialized)
-	{
-		Name(MMM2, 0) // An auxiliary Object to invoke Method
-
-		if (LEqual(arg1, 17)) {
-			// Source object is a reference
-			// Check that it can be used as reference
-			Store(Derefof(arg2), Local0)
-			Store(Derefof(Local0) ,Local3)
-			if (CH03(arg0, z122, 10, __LINE__, Local0)) {
-				// Derefof caused unexpected exception
-				Return (1)
-			}
-			Return (0)
-		}
-
-		Store(ObjectType(arg2), Local0)
-		if (LNotEqual(Local0, arg1)) {
-			// ObjectType of Source object is corrupted
-			err(arg0, z122, __LINE__, 0, 0, Local0, arg1)
-			Return (1)
-		}
-
-		Switch(ToInteger(arg1)) {
-			Case(0) {
-				Return (0)
-			}
-			Case(1) {
-				Store(ObjectType(INT0), Local0)
-			}
-			Case(2) {
-				Store(ObjectType(STR0), Local0)
-			}
-			Case(3) {
-				Store(ObjectType(BUF0), Local0)
-			}
-			Case(4) {
-				Store(ObjectType(PAC0), Local0)
-			}
-			Case(5) {
-				Store(Derefof(Index(Derefof(arg3), 0)), Local0)
-				if (LEqual(Local0, 0)) {
-					Store(ObjectType(FLU0), Local0)
-				} elseif (LEqual(Local0, 1)) {
-					Store(ObjectType(FLU2), Local0)
-				} else {
-					Store(ObjectType(FLU4), Local0)
-				}
-			}
-			Case(6) {
-				Store(ObjectType(DEV0), Local0)
-			}
-			Case(7) {
-				Store(ObjectType(EVE0), Local0)
-			}
-			Case(8) {
-				Store(ObjectType(MMM0), Local0)
-			}
-			Case(9) {
-				Store(ObjectType(MTX0), Local0)
-			}
-			Case(10) {
-				Store(ObjectType(OPR0), Local0)
-			}
-			Case(11) {
-				Store(ObjectType(PWR0), Local0)
-			}
-			Case(12) {
-				Store(ObjectType(CPU0), Local0)
-			}
-			Case(13) {
-				Store(ObjectType(TZN0), Local0)
-			}
-			Case(14) {
-				Store(Derefof(Index(Derefof(arg3), 0)), Local0)
-				if (LEqual(Local0, 0)) {
-					Store(ObjectType(BFL0), Local0)
-				} elseif (LEqual(Local0, 1)) {
-					Store(ObjectType(BFL2), Local0)
-				} else {
-					Store(ObjectType(BFL4), Local0)
-				}
-			}
-			Default {
-				// Unexpected Result Type
-				err(arg0, z122, __LINE__, 0, 0, arg1, 0)
-				Return (1)
-			}
-		}
-
-		if (LNotEqual(Local0, arg1)) {
-			// Mismatch of Source Type against specified Result Type
-			err(arg0, z122, __LINE__, 0, 0, Local0, arg1)
-
-			if (STCS) {m000(3, 0x1000000, Local0, arg1)}
-
-			Return (1)
-		} else {
-			// Check equality of the Source value to the Object-initializer one
-			Switch(ToInteger(arg1)) {
-				Case(1) {
-					if (LNotEqual(INT0, Derefof(arg3))) {
-						err(arg0, z122, __LINE__, 0, 0, INT0, Derefof(arg3))
-						Return (1)
-					}
-					if (LNotEqual(Derefof(arg2), INT0)) {
-						err(arg0, z122, __LINE__, 0, 0, Derefof(arg2), INT0)
-						Return (1)
-					}
-				}
-				Case(2) {
-					if (LNotEqual(STR0, Derefof(arg3))) {
-						err(arg0, z122, __LINE__, 0, 0, STR0, Derefof(arg3))
-						Return (1)
-					}
-					if (LNotEqual(Derefof(arg2), STR0)) {
-						err(arg0, z122, __LINE__, 0, 0, Derefof(arg2), STR0)
-						Return (1)
-					}
-				}
-				Case(3) {
-					if (LNotEqual(BUF0, Derefof(arg3))) {
-						err(arg0, z122, __LINE__, 0, 0, BUF0, Derefof(arg3))
-						Return (1)
-					}
-					if (LNotEqual(Derefof(arg2), BUF0)) {
-						err(arg0, z122, __LINE__, 0, 0, Derefof(arg2), BUF0)
-						Return (1)
-					}
-				}
-				Case(4) {
-
-					Store(Sizeof(PAC0), Local0)
-					if (LNotEqual(Sizeof(arg3), Local0)) {
-						err(arg0, z122, __LINE__, 0, 0, Sizeof(arg3), Local0)
-						Return (1)
-					}
-					While (Local0) {
-						Decrement(Local0)
-						Store(ObjectType(Derefof(Index(Derefof(arg3), Local0))), Local1)
-						Store(ObjectType(Derefof(Index(PAC0, Local0))), Local2)
-						if (LNotEqual(Local1, Local2)) {
-							// ObjectType is corrupted
-							err(arg0, z122, __LINE__, 0, 0, Local1, Local2)
-							Return (1)
-						} elseif (Derefof(Index(b679, Local1))) {
-							// the computational data type
-							if (LNotEqual(
-									Derefof(Index(Derefof(arg3), Local0)),
-									Derefof(Index(PAC0, Local0)))) {
-								// The value is corrupted
-								err(arg0, z122, __LINE__, 0, 0, Derefof(Index(Derefof(arg3), Local0)), Local0)
-								Return (1)
-							}
-						}
-					}
-
-					Store(Sizeof(PAC0), Local0)
-					if (LNotEqual(Sizeof(arg2), Local0)) {
-						err(arg0, z122, __LINE__, 0, 0, Sizeof(arg2), Local0)
-						Return (1)
-					}
-					While (Local0) {
-						Decrement(Local0)
-						Store(ObjectType(Derefof(Index(Derefof(arg2), Local0))), Local1)
-						Store(ObjectType(Derefof(Index(PAC0, Local0))), Local2)
-						if (LNotEqual(Local1, Local2)) {
-							// ObjectType is corrupted
-							err(arg0, z122, __LINE__, 0, 0, Local1, Local2)
-							Return (1)
-						} elseif (Derefof(Index(b679, Local1))) {
-							// the computational data type
-							if (LNotEqual(
-									Derefof(Index(Derefof(arg2), Local0)),
-									Derefof(Index(PAC0, Local0)))) {
-								// The value is corrupted
-								err(arg0, z122, __LINE__, 0, 0, Derefof(Index(Derefof(arg2), Local0)), Local0)
-								Return (1)
-							}
-						}
-					}
-				}
-				Case(5) {
-					Store(Derefof(Index(Derefof(arg3), 0)), Local0)
-					if (LEqual(Local0, 0)) {
-						if (LNotEqual(FLU0, Derefof(Index(Derefof(arg3), 1)))) {
-							err(arg0, z122, __LINE__, 0, 0, FLU0, Derefof(Index(Derefof(arg3), 1)))
-							Return (1)
-						}
-						if (LNotEqual(Derefof(arg2), FLU0)) {
-							err(arg0, z122, __LINE__, 0, 0, Derefof(arg2), FLU0)
-							Return (1)
-						}
-					} elseif (LEqual(Local0, 1)) {
-						if (LNotEqual(FLU2, Derefof(Index(Derefof(arg3), 1)))) {
-							err(arg0, z122, __LINE__, 0, 0, FLU2, Derefof(Index(Derefof(arg3), 1)))
-							Return (1)
-						}
-						if (LNotEqual(Derefof(arg2), FLU2)) {
-							err(arg0, z122, __LINE__, 0, 0, Derefof(arg2), FLU2)
-							Return (1)
-						}
-					} else {
-						if (LNotEqual(FLU4, Derefof(Index(Derefof(arg3), 1)))) {
-							err(arg0, z122, __LINE__, 0, 0, FLU4, Derefof(Index(Derefof(arg3), 1)))
-							Return (1)
-						}
-						if (LNotEqual(Derefof(arg2), FLU4)) {
-							err(arg0, z122, __LINE__, 0, 0, Derefof(arg2), FLU4)
-							Return (1)
-						}
-					}
-				}
-				Case(8) {
-					CopyObject(Derefof(arg2), MMM2)
-					if (LNotEqual(MMM2, MMM0)) {
-						err(arg0, z122, __LINE__, 0, 0, MMM2, MMM0)
-						Return (1)
-					}
-				}
-				Case(14) {
-					Store(Derefof(Index(Derefof(arg3), 0)), Local0)
-					if (LEqual(Local0, 0)) {
-						if (LNotEqual(BFL0, Derefof(Index(Derefof(arg3), 1)))) {
-							err(arg0, z122, __LINE__, 0, 0, BFL0, Derefof(Index(Derefof(arg3), 1)))
-							Return (1)
-						}
-						if (LNotEqual(Derefof(arg2), BFL0)) {
-							err(arg0, z122, __LINE__, 0, 0, Derefof(arg2), BFL0)
-							Return (1)
-						}
-					} elseif (LEqual(Local0, 1)) {
-						if (LNotEqual(BFL2, Derefof(Index(Derefof(arg3), 1)))) {
-							err(arg0, z122, __LINE__, 0, 0, BFL2, Derefof(Index(Derefof(arg3), 1)))
-							Return (1)
-						}
-						if (LNotEqual(Derefof(arg2), BFL2)) {
-							err(arg0, z122, __LINE__, 0, 0, Derefof(arg2), BFL2)
-							Return (1)
-						}
-					} else {
-						if (LNotEqual(BFL4, Derefof(Index(Derefof(arg3), 1)))) {
-							err(arg0, z122, __LINE__, 0, 0, BFL4, Derefof(Index(Derefof(arg3), 1)))
-							Return (1)
-						}
-						if (LNotEqual(Derefof(arg2), BFL4)) {
-							err(arg0, z122, __LINE__, 0, 0, Derefof(arg2), BFL4)
-							Return (1)
-						}
-					}
-				}
-			}
-		}
-		Return (0)
-	}
-
-	// Check Target Object to have the expected type and value
-	// m006(<msg>, <ref to target>, <target type>, <result object type>,
-	//      <op>, <target save type>, <test data package>)
-	Method(m006, 7, Serialized)
-	{
-		Name(MMM2, 0) // An auxiliary Object to invoke Method
-
-		Store(ObjectType(arg1), Local2)
-
-		if (LNotEqual(Local2, arg2)) {
-			if (STCS) {m000(3, 0x10000, arg2, Local2)}
-		}
-
-		if (m686(arg5, arg2, arg3)) {
-			// Target must save type
-			if (LNotEqual(Local2, arg2)) {
-				// Types mismatch Target/Target on storing
-				if (LEqual(arg2, c016)) {
-					if (X170) {
-						//this sentence is for m00d and invalid, removed.
-						//err(arg0, z122, __LINE__, 0, 0, Local2, arg2)
-					}
-				} else {
-					err(arg0, z122, __LINE__, 0, 0, Local2, arg2)
-				}
-
-				if (STCS) {m000(3, 0x100, arg2, Local2)}
-
-				Return (1)
-			}
-		} else {
-			// Target if it is not of fixed type
-			// must accept type of the Result Object
-
-			if (LNotEqual(Local2, arg3)) {
-				if (LEqual(m684(arg3), 6)) {
-					// Result object is a reference
-					// Check that Target can be used as reference
-					Store(Derefof(arg1), Local0)
-					Store(Derefof(Local0), Local3)
-					if (CH03(arg0, z122, 40, __LINE__, arg3)) {
-						// Derefof caused unexpected exception
-						Return (1)
-					}
-				} elseif (LNotEqual(m684(arg3), 1)) {
-					// Types mismatch Result/Target on storing
-					err(arg0, z122, __LINE__, 0, 0, Local2, arg3)
-					Return (1)
-				} elseif (LNotEqual(Local2, 3)) {
-					// Types mismatch Result/Target on storing
-					// Test fixed type Objects are converted to Buffer
-					err(arg0, z122, __LINE__, 0, 0, Local2, 3)
-					Return (1)
-				}
-				if (STCS) {m000(3, 0x100, arg3, Local2)}
-			}
-		}
-
-		// Retrieve the benchmark value
-		if (m686(arg5, arg2, arg3)) {
-			// Save type of Target
-
-			if (Derefof(Index(b67c, arg2))) {
-				// Types that can be verified only by ObjectType
-				Return (0)
-			}
-
-			// Retrieve the benchmark value
-			Store(Derefof(Index(Derefof(Index(arg6, 5)), arg2)), Local7)
-
-		} else {
-			// Accept type of Result
-
-			if (Derefof(Index(b67c, arg3))) {
-				// Types that can be verified only by ObjectType
-				Return (0)
-			}
-
-			Store(Derefof(Index(arg6, 4)), Local7)
-		}
-
-		if (LEqual(arg3, 8)) {				// Method
-			CopyObject(Derefof(arg1), MMM2)
-			if (LNotEqual(MMM2, Local7)) {
-				err(arg0, z122, __LINE__, 0, 0, MMM2, Local7)
-				Return (1)
-			}
-		} elseif (LNotEqual(arg3, 4)) {		// Not Package
-			if (LNotEqual(Derefof(arg1), Local7)) {
-				err(arg0, z122, __LINE__, 0, 0, Derefof(arg1), Local7)
-				Return (1)
-			}
-		} else {							// Package
-			Store(Sizeof(Local7), Local0)
-			if (LNotEqual(Sizeof(arg1), Local0)) {
-				err(arg0, z122, __LINE__, 0, 0, Sizeof(arg1), Local0)
-				Return (1)
-			}
-			While (Local0) {
-				Decrement(Local0)
-				Store(ObjectType(Derefof(Index(Derefof(arg1), Local0))), Local1)
-				Store(ObjectType(Derefof(Index(Local7, Local0))), Local2)
-				if (LNotEqual(Local1, Local2)) {
-					// ObjectType is corrupted
-					err(arg0, z122, __LINE__, 0, 0, Local1, Local2)
-					Return (1)
-				} elseif (Derefof(Index(b679, Local1))) {
-					// the computational data type
-					if (LNotEqual(
-							Derefof(Index(Derefof(arg1), Local0)),
-							Derefof(Index(Local7, Local0)))) {
-						// The value is corrupted
-						err(arg0, z122, __LINE__, 0, 0, Derefof(Index(Derefof(arg1), Local0)), Derefof(Index(Local7, Local0)))
-						Return (1)
-					}
-				}
-			}
-		}
-		Return (0)
-	}
-
-
-	// Update specified Object
-	// m007(<msg>, <ref to target>)
-	Method(m007, 2)
-	{
-		Store(ObjectType(arg1), Local0)
-
-		if (Derefof(Index(b66f, Local0))) {
-			// Can be used in Index Operator
-			Store(Sizeof(arg1), Local1)
-			if (Local1) {
-				// Update the last Member Object
-				Decrement(Local1)
-				Index(Derefof(arg1), Local1, Local2)
-				Store(Refof(Local2), Local3)
-				Store(Derefof(Local2), Local4)
-				if (LEqual(ObjectType(Local4), 1)) {
-					// Integer
-					Store(Not(Local4), Derefof(Local3))
-				} else {
-					Store(Ones, Derefof(Local3))
-					if (CH03(arg0, z122, 48, __LINE__, arg1)) {
-						// Store caused unexpected exception
-						Return (1)
-					}
-				}
-				if (Local1) {
-					// Update the First Member Object
-					Index(Derefof(arg1), 0, Local2)
-					Store(Derefof(Local2), Local4)
-					if (LEqual(ObjectType(Local4), 1)) {
-						// Integer
-						Store(Not(Local4), Derefof(Local3))
-					} else {
-						Store(Ones, Derefof(Local3))
-						if (CH03(arg0, z122, 49, __LINE__, arg1)) {
-							// Store caused unexpected exception
-							Return (1)
-						}
-					}
-				}
-			} elseif (LEqual(Local0, 4)) {
-				// Empty Package
-				Store(Package(1){"update string"}, arg1)
-			} else {
-				// Empty String/Buffer
-				Store("update string", arg1)
-			}
-		} elseif (Derefof(Index(b674, Local0))) {
-			// Non-Computational Data Objects
-			CopyObject("update string", arg1)
-		} else {
-			Store(Not(ToInteger(Derefof(arg1))), arg1)
-		}
-
-		if (CH03(arg0, z122, 50, __LINE__, arg1)) {
-			// Update caused unexpected exception
-			Return (1)
-		}
-
-		Return (0)
-	}
-
-	// Check processing of an Source Named Object of the specified type
-	// on immediate storing to a Target Named Object of the specified type
-	// m008(<msg>, <aux>, <target type>, <source type>,
-	//      <op>, <exc. condition>, <test data package>)
-	Method(m008, 7, Serialized)
-	{
-		// Source Named Object
-		Name(SRC0, 0)
-		// Target Named Object
-		Name(DST0, 0)
-
-		Name(scl0, Buffer() {0,0,1,1,1,0,0,0,0,0,0,0,0,0,0,0,0,0})
-		Name(scl1, Buffer() {0,0,0,0,1,0,1,1,1,1,0,1,1,0,0,0,0,0})
-
-		Concatenate(arg0, "-", arg0)
-		Concatenate(arg0, Concatenate(Mid(arg4,0,2), Concatenate(Mid(arg2,0,2), Mid(arg3,0,2))), arg0)
-		if (STCS) {Store(arg0, Debug)}
-
-		// Choose expected Result Object type
-//		if (LAnd(LEqual(arg4, 0), LEqual(arg3, 8))) {
-		if (LEqual(arg3, 8)) {
-			// Method expected to be invoked and result in String
-			Store(2, Local5)
-		} else {
-			Store(arg3, Local5)
-		}
-
-		// Prepare Source of specified type
-		Store(Index(arg6, 2), Local7)
-		if (LEqual(arg3, 5)) {				// Field Unit Source
-			Store(Derefof(Index(Derefof(Local7), 0)), Local0)
-			if (LEqual(Local0, 0)) {
-				Store(Refof(FLU0), Local6)
-				Store(3, Local5)
-			} elseif (LEqual(Local0, 1)) {
-				Store(Refof(FLU2), Local6)
-				if (F64) {
-					Store(1, Local5)
-				} else {
-					Store(3, Local5)
-				}
-			} else {
-				Store(Refof(FLU4), Local6)
-				Store(1, Local5)
-			}
-		} elseif (LEqual(arg3, 14)) {		// Buffer Field Source
-			Store(Derefof(Index(Derefof(Local7), 0)), Local0)
-			if (LEqual(Local0, 0)) {
-				Store(Refof(BFL0), Local6)
-				Store(3, Local5)
-			} elseif (LEqual(Local0, 1)) {
-				Store(Refof(BFL2), Local6)
-				if (F64) {
-					Store(1, Local5)
-				} else {
-					Store(3, Local5)
-				}
-			} else {
-				Store(Refof(BFL4), Local6)
-				Store(1, Local5)
-			}
-		} else {
-			Store(Refof(SRC0), Local6)
-		}
-		if (m004(Concatenate(arg0, "-m004"), arg3, Local6, Local7)) {
-			// Source Object can not be prepared
-			err(Concatenate(arg0, terr), z122, __LINE__, 0, 0, arg3, 0)
-			Return (1)
-		}
-
-		// Prepare Target of specified type
-		Store(Index(Derefof(Index(arg6, 3)), arg2), Local7)
-		if (LEqual(arg2, 5)) {				// Field Unit Target
-			Field(OPR0, ByteAcc, NoLock, Preserve) {FLUX, 192, FLU1, 69}
-			Store(Refof(FLU1), Local1)
-		} elseif (LEqual(arg2, 14)) {		// Buffer Field Target
-			Createfield(BUFZ, 192, 69, BFL1)
-			Store(Refof(BFL1), Local1)
-		} else {
-			Store(Refof(DST0), Local1)
-		}
-		if (m003(Concatenate(arg0, "-m003"), arg2, Local1, Local7)) {
-			// Target Object can not be prepared
-			err(Concatenate(arg0, terr), z122, __LINE__, 0, 0, arg2, 0)
-			Return (1)
-		}
-
-		if (CH03(arg0, z122, 53, __LINE__, arg2)) {
-			// Unexpected exception during preparation
-			Return (1)
-		}
-
-		// Use a Source Object to immediately store into the Target
-		Store(Index(arg6, 2), Local7)
-		if (LEqual(arg2, 5)) {				// Field Unit Target
-			if (LEqual(arg4, 0)) {				// Store
-				if (LEqual(arg3, 5)) {			// Field Unit Source
-					Store(Derefof(Index(Derefof(Local7), 0)), Local0)
-					if (LEqual(Local0, 0)) {
-						Store(FLU0, FLU1)
-					} elseif (LEqual(Local0, 1)) {
-						Store(FLU2, FLU1)
-					} else {
-						Store(FLU4, FLU1)
-					}
-				} elseif (LEqual(arg3, 14)) {	// Buffer Field Source
-					Store(Derefof(Index(Derefof(Local7), 0)), Local0)
-					if (LEqual(Local0, 0)) {
-						Store(BFL0, FLU1)
-					} elseif (LEqual(Local0, 1)) {
-						Store(BFL2, FLU1)
-					} else {
-						Store(BFL4, FLU1)
-					}
-				} else {
-					Store(SRC0, FLU1)
-				}
-			} elseif (LEqual(arg4, 1)) {		// CopyObject
-				if (LEqual(arg3, 5)) {			// Field Unit Source
-					Store(Derefof(Index(Derefof(Local7), 0)), Local0)
-					if (LEqual(Local0, 0)) {
-						CopyObject(FLU0, FLU1)
-					} elseif (LEqual(Local0, 1)) {
-						CopyObject(FLU2, FLU1)
-					} else {
-						CopyObject(FLU4, FLU1)
-					}
-				} elseif (LEqual(arg3, 14)) {	// Buffer Field Source
-					Store(Derefof(Index(Derefof(Local7), 0)), Local0)
-					if (LEqual(Local0, 0)) {
-						CopyObject(BFL0, FLU1)
-					} elseif (LEqual(Local0, 1)) {
-						CopyObject(BFL2, FLU1)
-					} else {
-						CopyObject(BFL4, FLU1)
-					}
-				} else {
-					CopyObject(SRC0, FLU1)
-				}
-			} else {
-				// Unexpected Kind of Op (0 - Store, ...)
-				err(Concatenate(arg0, terr), z122, __LINE__, 0, 0, arg4, 0)
-				Return (1)
-			}
-		} elseif (LEqual(arg2, 14)) {		// Buffer Field Target
-			if (LEqual(arg4, 0)) {				// Store
-				if (LEqual(arg3, 5)) {			// Field Unit Source
-					Store(Derefof(Index(Derefof(Local7), 0)), Local0)
-					if (LEqual(Local0, 0)) {
-						Store(FLU0, BFL1)
-					} elseif (LEqual(Local0, 1)) {
-						Store(FLU2, BFL1)
-					} else {
-						Store(FLU4, BFL1)
-					}
-				} elseif (LEqual(arg3, 14)) {	// Buffer Field Source
-					Store(Derefof(Index(Derefof(Local7), 0)), Local0)
-					if (LEqual(Local0, 0)) {
-						Store(BFL0, BFL1)
-					} elseif (LEqual(Local0, 1)) {
-						Store(BFL2, BFL1)
-					} else {
-						Store(BFL4, BFL1)
-					}
-				} else {
-					Store(SRC0, BFL1)
-				}
-			} elseif (LEqual(arg4, 1)) {		// CopyObject
-				if (LEqual(arg3, 5)) {			// Field Unit Source
-					Store(Derefof(Index(Derefof(Local7), 0)), Local0)
-					if (LEqual(Local0, 0)) {
-						CopyObject(FLU0, BFL1)
-					} elseif (LEqual(Local0, 1)) {
-						CopyObject(FLU2, BFL1)
-					} else {
-						CopyObject(FLU4, BFL1)
-					}
-				} elseif (LEqual(arg3, 14)) {	// Buffer Field Source
-					Store(Derefof(Index(Derefof(Local7), 0)), Local0)
-					if (LEqual(Local0, 0)) {
-						CopyObject(BFL0, BFL1)
-					} elseif (LEqual(Local0, 1)) {
-						CopyObject(BFL2, BFL1)
-					} else {
-						CopyObject(BFL4, BFL1)
-					}
-				} else {
-					CopyObject(SRC0, BFL1)
-				}
-			} else {
-				// Unexpected Kind of Op (0 - Store, ...)
-				err(Concatenate(arg0, terr), z122, __LINE__, 0, 0, arg4, 0)
-				Return (1)
-			}
-
-		} elseif (LEqual(arg4, 0)) {		// Store
-			if (LEqual(arg3, 5)) {				// Field Unit Source
-				Store(Derefof(Index(Derefof(Local7), 0)), Local0)
-				if (LEqual(Local0, 0)) {
-					Store(FLU0, DST0)
-				} elseif (LEqual(Local0, 1)) {
-					Store(FLU2, DST0)
-				} else {
-					Store(FLU4, DST0)
-				}
-			} elseif (LEqual(arg3, 14)) {		// Buffer Field Source
-				Store(Derefof(Index(Derefof(Local7), 0)), Local0)
-				if (LEqual(Local0, 0)) {
-					Store(BFL0, DST0)
-				} elseif (LEqual(Local0, 1)) {
-					Store(BFL2, DST0)
-				} else {
-					Store(BFL4, DST0)
-				}
-			} else {
-				Store(SRC0, DST0)
-			}
-
-		} elseif (LEqual(arg4, 1)) {		// CopyObject
-			if (LEqual(arg3, 5)) {				// Field Unit Source
-				Store(Derefof(Index(Derefof(Local7), 0)), Local0)
-				if (LEqual(Local0, 0)) {
-					CopyObject(FLU0, DST0)
-				} elseif (LEqual(Local0, 1)) {
-					CopyObject(FLU2, DST0)
-				} else {
-					CopyObject(FLU4, DST0)
-				}
-			} elseif (LEqual(arg3, 14)) {		// Buffer Field Source
-				Store(Derefof(Index(Derefof(Local7), 0)), Local0)
-				if (LEqual(Local0, 0)) {
-					CopyObject(BFL0, DST0)
-				} elseif (LEqual(Local0, 1)) {
-					CopyObject(BFL2, DST0)
-				} else {
-					CopyObject(BFL4, DST0)
-				}
-			} else {
-				CopyObject(SRC0, DST0)
-			}
-
-		} else {
-			// Unexpected Kind of Op (0 - Store, ...)
-			err(Concatenate(arg0, terr), z122, __LINE__, 0, 0, arg4, 0)
-			Return (1)
-		}
-
-		if (arg5) {
-			// Exception is expected
-			if (LAnd(LEqual(arg4, 1), LEqual(arg2, c016))) {
-				if (X170) {
-					if (LNot(CH06(arg0, 57, 0xff))) {
-						if (STCS) {m000(2, 0x100, arg2, arg3)}
-					}
-				} else {
-					CH03(arg0, z122, 57, __LINE__, arg2)
-				}
-			} else {
-				if (LNot(CH06(arg0, 57, 0xff))) {
-					if (STCS) {m000(2, 0x100, arg2, arg3)}
-				}
-			}
-			// No further test if exception is expected
-			Return (0)
-		} elseif (CH03(arg0, z122, 58, __LINE__, arg2)) {
-			// Storing caused unexpected exception
-			if (STCS) {m000(2, 0x100, arg2, arg3)}
-		} else {
-			// Check Target Object to have the expected type and value
-
-			// Target accept type on storing to Named by Store operator is 0
-			if (arg4) {
-				Store(2, Local0)
-			} else {
-				Store(0, Local0)
-			}
-
-			m006(Concatenate(arg0, "-m006"), Local1, arg2, Local5, arg4, Local0, arg6)
-		}
-
-		// Check Source Object value and type is not corrupted after storing
-		Store(Index(arg6, 2), Local7)
-		if (m005(Concatenate(arg0, "-m005"), arg3, Local6, Local7)) {
-			if (STCS) {
-				Store("m008, Source Object has been corrupted during storing", Debug)
-			}
-			Return (1)
-		}
-
-		// Check auxiliary Target Object to have the initial type and value
-		Store(Index(Derefof(Index(arg6, 3)), arg2), Local7)
-		if (m016(Concatenate(arg0, "-m016"), arg2, 0, Local7)) {
-			if (STCS) {
-				Store("m008, auxiliary Target Object has been corrupted during storing", Debug)
-			}
-			Return (1)
-		}
-
-		// Update Target Object
-		if (m007(Concatenate(arg0, "-m007"), Local1)) {
-			if (STCS) {
-				Store("m008, Error during update of Target", Debug)
-			}
-			Return (1)
-		}
-
-		// Check Source Object value and type is not corrupted after updating the copy
-
-		Store(Index(arg6, 2), Local7)
-
-		if (y900) {
-		    if (LAnd(LEqual(arg4, 0), LAnd(	// Store
-				// Source type is 2-4
-				Derefof(Index(Buffer() {0,0,1,1,1,0,0,0,0,0,0,0,0,0,0,0,0,0}, arg3)),
-				// Target type is 4, 6-9, 11-12
-				Derefof(Index(Buffer() {0,0,0,0,1,0,1,1,1,1,0,1,1,0,0,0,0,0}, arg2))))) {
-			    if (X153) {
-				    if (m005(Concatenate(arg0, "-m005"), arg3, Local6, Local7)) {
-					    if (STCS) {
-						    Store("m008, Source Object has been corrupted during update of Target", Debug)
-					    }
-				    }
-			    }
-		    } else {
-			    if (m005(Concatenate(arg0, "-m005"), arg3, Local6, Local7)) {
-				    if (STCS) {
-					    Store("m008, Source Object has been corrupted during update of Target", Debug)
-				    }
-			    }
-		    }
-		} else {
-		    if (LAnd(LEqual(arg4, 0), LAnd(	// Store
-				// Source type is 2-4
-				Derefof(Index(scl0, arg3)),
-				// Target type is 4, 6-9, 11-12
-				Derefof(Index(scl1, arg2))))) {
-			    if (X153) {
-				    if (m005(Concatenate(arg0, "-m005"), arg3, Local6, Local7)) {
-					    if (STCS) {
-						    Store("m008, Source Object has been corrupted during update of Target", Debug)
-					    }
-				    }
-			    }
-		    } else {
-			    if (m005(Concatenate(arg0, "-m005"), arg3, Local6, Local7)) {
-				    if (STCS) {
-					    Store("m008, Source Object has been corrupted during update of Target", Debug)
-				    }
-			    }
-		    }
-		}
-
-		// Check auxiliary Target Object to have the initial type and value
-		Store(Index(Derefof(Index(arg6, 3)), arg2), Local7)
-		if (m016(Concatenate(arg0, "-m016"), arg2, 0, Local7)) {
-			if (STCS) {
-				Store("m008, auxiliary Target Object has been corrupted during update of Target", Debug)
-			}
-			Return (1)
-		}
-
-		Return (0)
-	}
-
-	// Check processing of an Source Named Object of the specified type
-	// on immediate storing to a Target LocalX Object of the specified type
-	// m009(<msg>, <aux>, <target type>, <source type>,
-	//      <op>, <exc. condition>, <test data package>)
-	Method(m009, 7, Serialized)
-	{
-		// Source Named Object
-		Name(SRC0, 0)
-		// Target LocalX Object: Local4
-
-		Concatenate(arg0, "-", arg0)
-		Concatenate(arg0, Concatenate(Mid(arg4,0,2), Concatenate(Mid(arg2,0,2), Mid(arg3,0,2))), arg0)
-		if (STCS) {Store(arg0, Debug)}
-
-		// Choose expected Result Object type
-//		if (LAnd(LEqual(arg4, 0), LEqual(arg3, 8))) {
-		if (LEqual(arg3, 8)) {
-			// Method expected to be invoked and result in String
-			Store(2, Local5)
-		} else {
-			Store(arg3, Local5)
-		}
-
-		// Prepare Source of specified type
-		Store(Index(arg6, 2), Local7)
-		if (LEqual(arg3, 5)) {				// Field Unit Source
-			Store(Derefof(Index(Derefof(Local7), 0)), Local0)
-			if (LEqual(Local0, 0)) {
-				Store(Refof(FLU0), Local6)
-			} elseif (LEqual(Local0, 1)) {
-				Store(Refof(FLU2), Local6)
-				Store(3, Local5)
-				if (F64) {
-					Store(1, Local5)
-				} else {
-					Store(3, Local5)
-				}
-			} else {
-				Store(Refof(FLU4), Local6)
-				Store(1, Local5)
-			}
-		} elseif (LEqual(arg3, 14)) {		// Buffer Field Source
-			Store(Derefof(Index(Derefof(Local7), 0)), Local0)
-			if (LEqual(Local0, 0)) {
-				Store(Refof(BFL0), Local6)
-				Store(3, Local5)
-			} elseif (LEqual(Local0, 1)) {
-				Store(Refof(BFL2), Local6)
-				if (F64) {
-					Store(1, Local5)
-				} else {
-					Store(3, Local5)
-				}
-			} else {
-				Store(Refof(BFL4), Local6)
-				Store(1, Local5)
-			}
-		} else {
-			Store(Refof(SRC0), Local6)
-		}
-		if (m004(Concatenate(arg0, "-m004"), arg3, Local6, Local7)) {
-			// Source Object can not be prepared
-			err(Concatenate(arg0, terr), z122, __LINE__, 0, 0, arg3, 0)
-			Return (1)
-		}
-
-		// Prepare Target of specified type
-		Store(Index(Derefof(Index(arg6, 3)), arg2), Local7)
-		if (m003(Concatenate(arg0, "-m003"), arg2, Refof(Local4), Local7)) {
-			// Target Object can not be prepared
-			err(Concatenate(arg0, terr), z122, __LINE__, 0, 0, arg2, 0)
-			Return (1)
-		}
-
-		if (CH03(arg0, z122, 61, __LINE__, arg2)) {
-			// Unexpected exception during preparation
-			Return (1)
-		}
-
-		// Use a Source Object to immediately store into the Target
-		Store(Index(arg6, 2), Local7)
-		if (LEqual(arg4, 0)) {				// Store
-			if (LEqual(arg3, 5)) {				// Field Unit Source
-				Store(Derefof(Index(Derefof(Local7), 0)), Local0)
-				if (LEqual(Local0, 0)) {
-					Store(FLU0, Local4)
-				} elseif (LEqual(Local0, 1)) {
-					Store(FLU2, Local4)
-				} else {
-					Store(FLU4, Local4)
-				}
-			} elseif (LEqual(arg3, 14)) {		// Buffer Field Source
-				Store(Derefof(Index(Derefof(Local7), 0)), Local0)
-				if (LEqual(Local0, 0)) {
-					Store(BFL0, Local4)
-				} elseif (LEqual(Local0, 1)) {
-					Store(BFL2, Local4)
-				} else {
-					Store(BFL4, Local4)
-				}
-			} else {
-				Store(SRC0, Local4)
-			}
-		} elseif (LEqual(arg4, 1)) {		// CopyObject
-			if (LEqual(arg3, 5)) {				// Field Unit Source
-				Store(Derefof(Index(Derefof(Local7), 0)), Local0)
-				if (LEqual(Local0, 0)) {
-					CopyObject(FLU0, Local4)
-				} elseif (LEqual(Local0, 1)) {
-					CopyObject(FLU2, Local4)
-				} else {
-					CopyObject(FLU4, Local4)
-				}
-			} elseif (LEqual(arg3, 14)) {		// Buffer Field Source
-				Store(Derefof(Index(Derefof(Local7), 0)), Local0)
-				if (LEqual(Local0, 0)) {
-					CopyObject(BFL0, Local4)
-				} elseif (LEqual(Local0, 1)) {
-					CopyObject(BFL2, Local4)
-				} else {
-					CopyObject(BFL4, Local4)
-				}
-			} else {
-				CopyObject(SRC0, Local4)
-			}
-		} else {
-			// Unexpected Kind of Op (0 - Store, ...)
-			err(Concatenate(arg0, terr), z122, __LINE__, 0, 0, arg4, 0)
-			Return (1)
-		}
-
-		if (arg5) {
-			// Exception is expected
-			if (LNot(CH06(arg0, 15, 0xff))) {
-				if (STCS) {m000(2, 0x100, arg2, arg3)}
-			}
-		} elseif (CH03(arg0, z122, 63, __LINE__, arg2)) {
-			// Storing caused unexpected exception
-			if (STCS) {m000(2, 0x100, arg2, arg3)}
-		} else {
-			// Check Target Object to have the expected type and value
-
-			// Target accept type on storing to LocalX is 1
-			Store(1, Local0)
-
-			m006(Concatenate(arg0, "-m006"), Refof(Local4), arg2, Local5, arg4, Local0, arg6)
-		}
-
-		// Check Source Object value and type is not corrupted after storing
-		Store(Index(arg6, 2), Local7)
-		if (m005(Concatenate(arg0, "-m005"), arg3, Local6, Local7)) {
-			if (STCS) {
-				Store("m009, Source Object has been corrupted during storing", Debug)
-			}
-		}
-
-		// Check auxiliary Target Object to have the initial type and value
-		Store(Index(Derefof(Index(arg6, 3)), arg2), Local7)
-		if (m016(Concatenate(arg0, "-m016"), arg2, 0, Local7)) {
-			if (STCS) {
-				Store("m009, auxiliary Target Object has been corrupted during storing", Debug)
-			}
-			Return (1)
-		}
-
-		// Update Target Object
-		if (m007(Concatenate(arg0, "-m007"), Refof(Local4))) {
-			if (STCS) {
-				Store("m009, Error during update of Target", Debug)
-			}
-			Return (1)
-		}
-
-		// Check Source Object value and type is not corrupted after updating the copy
-		Store(Index(arg6, 2), Local7)
-		if (m005(Concatenate(arg0, "-m005"), arg3, Local6, Local7)) {
-			if (STCS) {
-				Store("m009, Source Object has been corrupted during update of Target", Debug)
-			}
-		}
-
-		// Check auxiliary Target Object to have the initial type and value
-		Store(Index(Derefof(Index(arg6, 3)), arg2), Local7)
-		if (m016(Concatenate(arg0, "-m016"), arg2, 0, Local7)) {
-			if (STCS) {
-				Store("m009, auxiliary Target Object has been corrupted during update of Target", Debug)
-			}
-			Return (1)
-		}
-
-		Return (0)
-	}
-
-	// Check processing of an Source LocalX Object of the specified type
-	// on immediate storing to a Target Named Object of the specified type
-	// m00a(<msg>, <aux>, <target type>, <source type>,
-	//      <op>, <exc. condition>, <test data package>)
-	Method(m00a, 7, Serialized)
-	{
-		// Source Object: Local1
-		// Target Named Object (or the reference to it in case of Fields)
-		Name(DST0, 0)
-
-		Name(scl0, Buffer() {0,0,1,1,1,0,0,0,0,0,0,0,0,0,0,0,0,0})
-		Name(scl1, Buffer() {0,0,0,0,1,0,1,1,1,1,0,1,1,0,0,0,0,0})
-
-		Concatenate(arg0, "-", arg0)
-		Concatenate(arg0, Concatenate(Mid(arg4,0,2), Concatenate(Mid(arg2,0,2), Mid(arg3,0,2))), arg0)
-		if (STCS) {Store(arg0, Debug)}
-
-		// Prepare Source of specified type
-		Store(Index(arg6, 2), Local7)
-		if (m004(Concatenate(arg0, "-m004"), arg3, Refof(Local1), Local7)) {
-			// Source Object can not be prepared
-			err(Concatenate(arg0, terr), z122, __LINE__, 0, 0, arg3, 0)
-			Return (1)
-		}
-
-		// Prepare Target of specified type
-		Store(Index(Derefof(Index(arg6, 3)), arg2), Local7)
-		if (LEqual(arg2, 5)) {				// Field Unit Target
-			Field(OPR0, ByteAcc, NoLock, Preserve) {FLUX, 192, FLU1, 69}
-			Store(Refof(FLU1), Local4)
-		} elseif (LEqual(arg2, 14)) {		// Buffer Field Target
-			Createfield(BUFZ, 192, 69, BFL1)
-			Store(Refof(BFL1), Local4)
-		} else {
-			Store(Refof(DST0), Local4)
-		}
-		if (m003(Concatenate(arg0, "-m003"), arg2, Local4, Local7)) {
-			// Target Object can not be prepared
-			err(Concatenate(arg0, terr), z122, __LINE__, 0, 0, arg2, 0)
-			Return (1)
-		}
-
-		if (CH03(arg0, z122, 66, __LINE__, arg2)) {
-			// Unexpected exception during preparation
-			Return (1)
-		}
-
-		// Use a Source Object to immediately store into the Target
-		if (LEqual(arg2, 5)) {		// Field Unit Target
-			if (LEqual(arg4, 0)) {				// Store
-				Store(Local1, FLU1)
-			} elseif (LEqual(arg4, 1)) {		// CopyObject
-				CopyObject(Local1, FLU1)
-			} else {
-				// Unexpected Kind of Op (0 - Store, ...)
-				err(Concatenate(arg0, terr), z122, __LINE__, 0, 0, arg4, 0)
-				Return (1)
-			}
-		} elseif (LEqual(arg2, 14)) {		// Buffer Field Target
-			if (LEqual(arg4, 0)) {				// Store
-				Store(Local1, BFL1)
-			} elseif (LEqual(arg4, 1)) {		// CopyObject
-				CopyObject(Local1, BFL1)
-			} else {
-				// Unexpected Kind of Op (0 - Store, ...)
-				err(Concatenate(arg0, terr), z122, __LINE__, 0, 0, arg4, 0)
-				Return (1)
-			}
-
-		} elseif (LEqual(arg4, 0)) {		// Store
-			Store(Local1, DST0)
-
-		} elseif (LEqual(arg4, 1)) {		// CopyObject
-				CopyObject(Local1, DST0)
-
-		} else {
-			// Unexpected Kind of Op (0 - Store, ...)
-			err(Concatenate(arg0, terr), z122, __LINE__, 0, 0, arg4, 0)
-			Return (1)
-		}
-
-		if (arg5) {
-			// Exception is expected
-			if (LAnd(LEqual(arg4, 1), LAnd(LEqual(arg2, c016), LNotEqual(arg3, c008)))) {
-				if (X170) {
-					if (LNot(CH06(arg0, 70, 0xff))) {
-						if (STCS) {m000(2, 0x100, arg2, arg3)}
-					}
-				} else {
-					CH03(arg0, z122, 70, __LINE__, arg2)
-				}
-			} else {
-				if (LNot(CH06(arg0, 70, 0xff))) {
-					if (STCS) {m000(2, 0x100, arg2, arg3)}
-				}
-			}
-			// No further test if exception is expected
-			Return (0)
-		} elseif (CH03(arg0, z122, 71, __LINE__, arg2)) {
-			// Storing caused unexpected exception
-			if (STCS) {m000(2, 0x100, arg2, arg3)}
-		} else {
-			// Check Target Object to have the expected type and value
-
-			// Target accept type on storing to Named of Store operator is 0
-			if (arg4) {
-				Store(2, Local0)
-			} else {
-				Store(0, Local0)
-			}
-
-			m006(Concatenate(arg0, "-m006"), Local4, arg2, arg3, arg4, Local0, arg6)
-		}
-
-		// Check Source Object value and type is not corrupted after storing
-		Store(Index(arg6, 2), Local7)
-		if (m005(Concatenate(arg0, "-m005"), arg3, Refof(Local1), Local7)) {
-			if (STCS) {
-				Store("m00a, Source Object has been corrupted during storing", Debug)
-			}
-		}
-
-		// Check auxiliary Target Object to have the initial type and value
-		Store(Index(Derefof(Index(arg6, 3)), arg2), Local7)
-		if (m016(Concatenate(arg0, "-m016"), arg2, 0, Local7)) {
-			if (STCS) {
-				Store("m00a, auxiliary Target Object has been corrupted during storing", Debug)
-			}
-			Return (1)
-		}
-
-		// Update Target Object
-		if (m007(Concatenate(arg0, "-m007"), Local4)) {
-			if (STCS) {
-				Store("m00a, Error during update of Target", Debug)
-			}
-			Return (1)
-		}
-
-		// Check Source Object value and type is not corrupted after updating the copy
-
-		Store(Index(arg6, 2), Local7)
-
-		if (y900) {
-
-		if (LAnd(LEqual(arg4, 0), LAnd(	// Store
-				// Source type is 2-4
-				Derefof(Index(Buffer() {0,0,1,1,1,0,0,0,0,0,0,0,0,0,0,0,0,0}, arg3)),
-				// Target type is 4, 6-9, 11-12
-				Derefof(Index(Buffer() {0,0,0,0,1,0,1,1,1,1,0,1,1,0,0,0,0,0}, arg2))))) {
-			if (X153) {
-				if (m005(Concatenate(arg0, "-m005"), arg3, Refof(Local1), Local7)) {
-					if (STCS) {
-						Store("m00a, Source Object has been corrupted during update of Target", Debug)
-					}
-				}
-			}
-		} else {
-			if (m005(Concatenate(arg0, "-m005"), arg3, Refof(Local1), Local7)) {
-				if (STCS) {
-					Store("m00a, Source Object has been corrupted during update of Target", Debug)
-				}
-			}
-		}
-
-		} else { // if (y900)
-
-		if (LAnd(LEqual(arg4, 0), LAnd(	// Store
-				// Source type is 2-4
-				Derefof(Index(scl0, arg3)),
-				// Target type is 4, 6-9, 11-12
-				Derefof(Index(scl1, arg2))))) {
-			if (X153) {
-				if (m005(Concatenate(arg0, "-m005"), arg3, Refof(Local1), Local7)) {
-					if (STCS) {
-						Store("m00a, Source Object has been corrupted during update of Target", Debug)
-					}
-				}
-			}
-		} else {
-			if (m005(Concatenate(arg0, "-m005"), arg3, Refof(Local1), Local7)) {
-				if (STCS) {
-					Store("m00a, Source Object has been corrupted during update of Target", Debug)
-				}
-			}
-		}
-		} // if (y900)
-
-		// Check auxiliary Target Object to have the initial type and value
-		Store(Index(Derefof(Index(arg6, 3)), arg2), Local7)
-		if (m016(Concatenate(arg0, "-m016"), arg2, 0, Local7)) {
-			if (STCS) {
-				Store("m00a, auxiliary Target Object has been corrupted during update of Target", Debug)
-			}
-			Return (1)
-		}
-
-		Return (0)
-	}
-
-	// Check processing of an Source LocalX Object of the specified type
-	// on immediate storing to a Target LocalX Object of the specified type
-	// m00b(<msg>, <aux>, <target type>, <source type>,
-	//      <op>, <exc. condition>, <test data package>)
-	Method(m00b, 7)
-	{
-		// Source LocalX Object: Local1
-		// Target LocalX Object: Local4
-
-		Concatenate(arg0, "-", arg0)
-		Concatenate(arg0, Concatenate(Mid(arg4,0,2), Concatenate(Mid(arg2,0,2), Mid(arg3,0,2))), arg0)
-		if (STCS) {Store(arg0, Debug)}
-
-		// Prepare Source of specified type
-		Store(Index(arg6, 2), Local7)
-		if (m004(Concatenate(arg0, "-m004"), arg3, Refof(Local1), Local7)) {
-			// Source Object can not be prepared
-			err(Concatenate(arg0, terr), z122, __LINE__, 0, 0, arg3, 0)
-			Return (1)
-		}
-
-		// Prepare Target of specified type
-		Store(Index(Derefof(Index(arg6, 3)), arg2), Local7)
-		if (m003(Concatenate(arg0, "-m003"), arg2, Refof(Local4), Local7)) {
-			// Target Object can not be prepared
-			err(Concatenate(arg0, terr), z122, __LINE__, 0, 0, arg2, 0)
-			Return (1)
-		}
-
-		if (CH03(arg0, z122, 74, __LINE__, arg2)) {
-			// Unexpected exception during preparation
-			Return (1)
-		}
-
-		// Use a Source Object to immediately store into the Target
-		if (LEqual(arg4, 0)) {			// Store
-				Store(Local1, Local4)
-		} elseif (LEqual(arg4, 1)) {	// CopyObject
-				CopyObject(Local1, Local4)
-		} else {
-			// Unexpected Kind of Op (0 - Store, ...)
-			err(Concatenate(arg0, terr), z122, __LINE__, 0, 0, arg4, 0)
-			Return (1)
-		}
-
-		if (arg5) {
-			// Exception is expected
-			if (LNot(CH06(arg0, 15, 0xff))) {
-				if (STCS) {m000(2, 0x100, arg2, arg3)}
-			}
-		} elseif (CH03(arg0, z122, 76, __LINE__, arg2)) {
-			// Storing caused unexpected exception
-			if (STCS) {m000(2, 0x100, arg2, arg3)}
-		} else {
-			// Check Target Object to have the expected type and value
-
-			// Target accept type on storing to LocalX is 1
-			Store(1, Local0)
-
-			m006(Concatenate(arg0, "-m006"), Refof(Local4), arg2, arg3, arg4, Local0, arg6)
-		}
-
-		// Check Source Object value and type is not corrupted after storing
-		Store(Index(arg6, 2), Local7)
-		if (m005(Concatenate(arg0, "-m005"), arg3, Refof(Local1), Local7)) {
-			if (STCS) {
-				Store("m00b, Source Object has been corrupted during storing", Debug)
-			}
-		}
-
-		// Check auxiliary Target Object to have the initial type and value
-		Store(Index(Derefof(Index(arg6, 3)), arg2), Local7)
-		if (m016(Concatenate(arg0, "-m016"), arg2, 0, Local7)) {
-			if (STCS) {
-				Store("m00b, auxiliary Target Object has been corrupted during storing", Debug)
-			}
-			Return (1)
-		}
-
-		// Update Target Object
-		if (m007(Concatenate(arg0, "-m007"), Refof(Local4))) {
-			if (STCS) {
-				Store("m00b, Error during update of Target", Debug)
-			}
-			Return (1)
-		}
-
-		// Check Source Object value and type is not corrupted after updating the copy
-		Store(Index(arg6, 2), Local7)
-		if (m005(Concatenate(arg0, "-m005"), arg3, Refof(Local1), Local7)) {
-			if (STCS) {
-				Store("m00b, Source Object has been corrupted during update of Target", Debug)
-			}
-		}
-
-		// Check auxiliary Target Object to have the initial type and value
-		Store(Index(Derefof(Index(arg6, 3)), arg2), Local7)
-		if (m016(Concatenate(arg0, "-m016"), arg2, 0, Local7)) {
-			if (STCS) {
-				Store("m00b, auxiliary Target Object has been corrupted during update of Target", Debug)
-			}
-			Return (1)
-		}
-
-		Return (0)
-	}
-
-	// Check processing of an Source Named Object of the specified type
-	// on immediate storing to an argument of Method passed to as immediate
-	// Named Object of another specified type
-	// m00c(<msg>, <aux>, <target type>, <source type>,
-	//      <op>, <exc. condition>, <test data package>)
-	Method(m00c, 7, Serialized)
-	{
-		Method(m10c, 7, Serialized)
-		{
-			// Source Named Object
-			Name(SRC0, 0)
-			// Target Named Object: ARG1
-
-			// Choose expected Result Object type
-//			if (LAnd(LEqual(arg4, 0), LEqual(arg3, 8))) {
-			if (LEqual(arg3, 8)) {
-				// Method expected to be invoked and result in String
-				Store(2, Local5)
-			} else {
-				Store(arg3, Local5)
-			}
-
-			// Prepare Source of specified type
-			Store(Index(arg6, 2), Local7)
-			if (LEqual(arg3, 5)) {				// Field Unit Source
-				Store(Derefof(Index(Derefof(Local7), 0)), Local0)
-				if (LEqual(Local0, 0)) {
-					Store(Refof(FLU0), Local6)
-					Store(3, Local5)
-				} elseif (LEqual(Local0, 1)) {
-					Store(Refof(FLU2), Local6)
-					if (F64) {
-						Store(1, Local5)
-					} else {
-						Store(3, Local5)
-					}
-				} else {
-					Store(Refof(FLU4), Local6)
-					Store(1, Local5)
-				}
-			} elseif (LEqual(arg3, 14)) {		// Buffer Field Source
-				Store(Derefof(Index(Derefof(Local7), 0)), Local0)
-				if (LEqual(Local0, 0)) {
-					Store(Refof(BFL0), Local6)
-					Store(3, Local5)
-				} elseif (LEqual(Local0, 1)) {
-					Store(Refof(BFL2), Local6)
-					if (F64) {
-						Store(1, Local5)
-					} else {
-						Store(3, Local5)
-					}
-				} else {
-					Store(Refof(BFL4), Local6)
-					Store(1, Local5)
-				}
-			} else {
-				Store(Refof(SRC0), Local6)
-			}
-			if (m004(Concatenate(arg0, "-m004"), arg3, Local6, Local7)) {
-				// Source Object can not be prepared
-				err(Concatenate(arg0, terr), z122, __LINE__, 0, 0, arg3, 0)
-				Return (1)
-			}
-
-			Store(Refof(ARG1), Local1)
-
-			if (CH03(arg0, z122, 78, __LINE__, arg2)) {
-				// Unexpected exception during preparation
-				Return (1)
-			}
-
-			// Use a Source Object to immediately store into the Target
-			Store(Index(arg6, 2), Local7)
-			if (LEqual(arg4, 0)) {		// Store
-				if (LEqual(arg3, 5)) {				// Field Unit Source
-					Store(Derefof(Index(Derefof(Local7), 0)), Local0)
-					if (LEqual(Local0, 0)) {
-						Store(FLU0, ARG1)
-					} elseif (LEqual(Local0, 1)) {
-						Store(FLU2, ARG1)
-					} else {
-						Store(FLU4, ARG1)
-					}
-				} elseif (LEqual(arg3, 14)) {		// Buffer Field Source
-					Store(Derefof(Index(Derefof(Local7), 0)), Local0)
-					if (LEqual(Local0, 0)) {
-						Store(BFL0, ARG1)
-					} elseif (LEqual(Local0, 1)) {
-						Store(BFL2, ARG1)
-					} else {
-						Store(BFL4, ARG1)
-					}
-				} else {
-					Store(SRC0, ARG1)
-				}
-
-			} elseif (LEqual(arg4, 1)) {		// CopyObject
-				if (LEqual(arg3, 5)) {				// Field Unit Source
-					Store(Derefof(Index(Derefof(Local7), 0)), Local0)
-					if (LEqual(Local0, 0)) {
-						CopyObject(FLU0, ARG1)
-					} elseif (LEqual(Local0, 1)) {
-						CopyObject(FLU2, ARG1)
-					} else {
-						CopyObject(FLU4, ARG1)
-					}
-				} elseif (LEqual(arg3, 14)) {		// Buffer Field Source
-					Store(Derefof(Index(Derefof(Local7), 0)), Local0)
-					if (LEqual(Local0, 0)) {
-						CopyObject(BFL0, ARG1)
-					} elseif (LEqual(Local0, 1)) {
-						CopyObject(BFL2, ARG1)
-					} else {
-						CopyObject(BFL4, ARG1)
-					}
-				} else {
-					CopyObject(SRC0, ARG1)
-				}
-
-			} else {
-				// Unexpected Kind of Op (0 - Store, ...)
-				err(Concatenate(arg0, terr), z122, __LINE__, 0, 0, arg4, 0)
-				Return (1)
-			}
-
-			if (arg5) {
-				// Exception is expected
-				if (LOr(
-						LAnd(LEqual(arg4, 0), LAnd(LEqual(arg2, c016), LEqual(arg3, c00c))),
-						LAnd(LEqual(arg4, 1), LAnd(LEqual(arg2, c016), LNotEqual(arg3, c008))))) {
-					if (X170) {
-						if (LNot(CH06(arg0, 80, 0xff))) {
-							if (STCS) {m000(2, 0x100, arg2, arg3)}
-						}
-					} else {
-						CH03(arg0, z122, 80, __LINE__, arg2)
-					}
-				} else {
-					if (LNot(CH06(arg0, 80, 0xff))) {
-						if (STCS) {m000(2, 0x100, arg2, arg3)}
-					}
-				}
-			} elseif (CH03(arg0, z122, 81, __LINE__, arg2)) {
-				// Storing caused unexpected exception
-				if (STCS) {m000(2, 0x100, arg2, arg3)}
-			} else {
-				// Check Target Object to have the expected type and value
-
-				// Target accept type on storing to read-only ArgX is 1
-				Store(1, Local0)
-
-				m006(Concatenate(arg0, "-m006"), Local1, arg2, Local5, arg4, Local0, arg6)
-			}
-
-			// Check Source Object value and type is not corrupted after storing
-			Store(Index(arg6, 2), Local7)
-			if (m005(Concatenate(arg0, "-m005"), arg3, Local6, Local7)) {
-				if (STCS) {
-					Store("m00c, Source Object has been corrupted during storing", Debug)
-				}
-				Return (1)
-			}
-
-			// Check auxiliary Target Object to have the initial type and value
-			Store(Index(Derefof(Index(arg6, 3)), arg2), Local7)
-			if (m016(Concatenate(arg0, "-m016"), arg2, 0, Local7)) {
-				if (STCS) {
-					Store("m00c, auxiliary Target Object has been corrupted during storing", Debug)
-				}
-				Return (1)
-			}
-
-			// Update Target Object
-			if (m007(Concatenate(arg0, "-m007"), Local1)) {
-				if (STCS) {
-					Store("m00c, Error during update of Target", Debug)
-				}
-				Return (1)
-			}
-
-			// Check Source Object value and type is not corrupted after updating the copy
-			Store(Index(arg6, 2), Local7)
-			if (m005(Concatenate(arg0, "-m005"), arg3, Local6, Local7)) {
-				if (STCS) {
-					Store("m00c, Source Object has been corrupted during update of Target", Debug)
-				}
-			}
-
-			// Check auxiliary Target Object to have the initial type and value
-			Store(Index(Derefof(Index(arg6, 3)), arg2), Local7)
-			if (m016(Concatenate(arg0, "-m016"), arg2, 0, Local7)) {
-				if (STCS) {
-					Store("m00c, auxiliary Target Object has been corrupted during update of Target", Debug)
-				}
-				Return (1)
-			}
-
-			Return (0)
-		}
-
-		// Target Named Object
-		Name(DST0, 0)
-
-		Concatenate(arg0, "-", arg0)
-		Concatenate(arg0, Concatenate(Mid(arg4,0,2), Concatenate(Mid(arg2,0,2), Mid(arg3,0,2))), arg0)
-		if (STCS) {Store(arg0, Debug)}
-
-		// Prepare Target of specified type
-		Store(Index(Derefof(Index(arg6, 3)), arg2), Local7)
-		if (LEqual(arg2, 5)) {				// Field Unit Target
-			Field(OPR0, ByteAcc, NoLock, Preserve) {FLUX, 192, FLU1, 69}
-			Store(Refof(FLU1), Local1)
-			Store(Derefof(Local7), FLU1)
-		} elseif (LEqual(arg2, 14)) {		// Buffer Field Target
-			Createfield(BUFZ, 192, 69, BFL1)
-			Store(Refof(BFL1), Local1)
-			Store(Derefof(Local7), BFL1)
-		} else {
-			Store(Refof(DST0), Local1)
-		}
-		if (m003(Concatenate(arg0, "-m003"), arg2, Local1, Local7)) {
-			// Target Object can not be prepared
-			err(Concatenate(arg0, terr), z122, __LINE__, 0, 0, arg2, 0)
-			Return (1)
-		}
-
-		if (CH03(arg0, z122, 83, __LINE__, arg2)) {
-			// Unexpected exception during preparation
-			Return (1)
-		}
-
-		// Use the Target Object to be the ArgX Object
-		if (m10c(Concatenate(arg0, "-m10c"), DST0, arg2, arg3, arg4, arg5, arg6)) {
-			if (STCS) {
-				Store("m00c, error on using the Target Object as the ArgX Object", Debug)
-			}
-			Return (1)
-		}
-
-		if (arg5) {
-			// Exception is expected
-			Return (0)
-		}
-
-		// Check Target Object to be saving the initial type and value
-		Store(Index(Derefof(Index(arg6, 3)), arg2), Local7)
-		if (m015(Concatenate(arg0, "-m015"), arg2, Local1, Local7)) {
-			if (STCS) {
-				Store("m00c, Target Object has been corrupted during storing to ArgX", Debug)
-			}
-			Return (1)
-		}
-
-		Return (0)
-	}
-
-	// Check processing of an Source Named Object of the specified type
-	// on immediate storing to an argument of Method passed to as reference
-	// to the Named Object of another specified type
-	// m00d(<msg>, <aux>, <target type>, <source type>,
-	//      <op>, <exc. condition>, <test data package>)
-	Method(m00d, 7, Serialized)
-	{
-		Method(m10d, 7, Serialized)
-		{
-			// Source Named Object
-			Name(SRC0, 0)
-			// Target Named Object: ARG1
-
-			// Choose expected Result Object type
-//			if (LAnd(LEqual(arg4, 0), LEqual(arg3, 8))) {
-			if (LEqual(arg3, 8)) {
-				// Method expected to be invoked and result in String
-				Store(2, Local5)
-			} else {
-				Store(arg3, Local5)
-			}
-
-			// Prepare Source of specified type
-			Store(Index(arg6, 2), Local7)
-			if (LEqual(arg3, 5)) {				// Field Unit Source
-				Store(Derefof(Index(Derefof(Local7), 0)), Local0)
-				if (LEqual(Local0, 0)) {
-					Store(Refof(FLU0), Local6)
-					Store(3, Local5)
-				} elseif (LEqual(Local0, 1)) {
-					Store(Refof(FLU2), Local6)
-					if (F64) {
-						Store(1, Local5)
-					} else {
-						Store(3, Local5)
-					}
-				} else {
-					Store(Refof(FLU4), Local6)
-					Store(1, Local5)
-				}
-			} elseif (LEqual(arg3, 14)) {		// Buffer Field Source
-				Store(Derefof(Index(Derefof(Local7), 0)), Local0)
-				if (LEqual(Local0, 0)) {
-					Store(Refof(BFL0), Local6)
-					Store(3, Local5)
-				} elseif (LEqual(Local0, 1)) {
-					Store(Refof(BFL2), Local6)
-					if (F64) {
-						Store(1, Local5)
-					} else {
-						Store(3, Local5)
-					}
-				} else {
-					Store(Refof(BFL4), Local6)
-					Store(1, Local5)
-				}
-			} else {
-				Store(Refof(SRC0), Local6)
-			}
-			if (m004(Concatenate(arg0, "-m004"), arg3, Local6, Local7)) {
-				// Source Object can not be prepared
-				err(Concatenate(arg0, terr), z122, __LINE__, 0, 0, arg3, 0)
-				Return (1)
-			}
-
-			if (CH03(arg0, z122, 85, __LINE__, arg2)) {
-				// Unexpected exception during preparation
-				Return (1)
-			}
-
-			// Use a Source Object to immediately store into the Target
-			Store(Index(arg6, 2), Local7)
-			if (LEqual(arg4, 0)) {		// Store
-				if (LEqual(arg3, 5)) {				// Field Unit Source
-					Store(Derefof(Index(Derefof(Local7), 0)), Local0)
-					if (LEqual(Local0, 0)) {
-						Store(FLU0, ARG1)
-					} elseif (LEqual(Local0, 1)) {
-						Store(FLU2, ARG1)
-					} else {
-						Store(FLU4, ARG1)
-					}
-				} elseif (LEqual(arg3, 14)) {		// Buffer Field Source
-					Store(Derefof(Index(Derefof(Local7), 0)), Local0)
-					if (LEqual(Local0, 0)) {
-						Store(BFL0, ARG1)
-					} elseif (LEqual(Local0, 1)) {
-						Store(BFL2, ARG1)
-					} else {
-						Store(BFL4, ARG1)
-					}
-				} else {
-					Store(SRC0, ARG1)
-				}
-
-			} elseif (LEqual(arg4, 1)) {		// CopyObject
-				if (LEqual(arg3, 5)) {				// Field Unit Source
-					Store(Derefof(Index(Derefof(Local7), 0)), Local0)
-					if (LEqual(Local0, 0)) {
-						CopyObject(FLU0, ARG1)
-					} elseif (LEqual(Local0, 1)) {
-						CopyObject(FLU2, ARG1)
-					} else {
-						CopyObject(FLU4, ARG1)
-					}
-				} elseif (LEqual(arg3, 14)) {		// Buffer Field Source
-					Store(Derefof(Index(Derefof(Local7), 0)), Local0)
-					if (LEqual(Local0, 0)) {
-						CopyObject(BFL0, ARG1)
-					} elseif (LEqual(Local0, 1)) {
-						CopyObject(BFL2, ARG1)
-					} else {
-						CopyObject(BFL4, ARG1)
-					}
-				} else {
-					CopyObject(SRC0, ARG1)
-				}
-
-			} else {
-				// Unexpected Kind of Op (0 - Store, ...)
-				err(Concatenate(arg0, terr), z122, __LINE__, 0, 0, arg4, 0)
-				Return (1)
-			}
-
-			if (arg5) {
-				// Exception is expected
-				if (LAnd(LEqual(arg4, 1), LEqual(arg2, c016))) {
-					if (X170) {
-						if (LNot(CH06(arg0, 87, 0xff))) {
-							if (STCS) {m000(2, 0x100, arg2, arg3)}
-						}
-					} else {
-						CH03(arg0, z122, 87, __LINE__, arg2)
-					}
-				} else {
-					if (LNot(CH06(arg0, 87, 0xff))) {
-						if (STCS) {m000(2, 0x100, arg2, arg3)}
-					}
-				}
-			} elseif (CH03(arg0, z122, 88, __LINE__, arg2)) {
-				// Storing caused unexpected exception
-				if (STCS) {m000(2, 0x100, arg2, arg3)}
-			} else {
-				// Check Target Object to have the expected type and value
-
-				// Target accept type on storing to ArgX containing reference is 1
-				// (besides Store() to fixed types)
-				if (LAnd(LEqual(arg4, 0), Derefof(Index(b678, arg2)))) {
-					Store(0, Local0)
-				} else {
-					Store(1, Local0)
-				}
-
-				m006(Concatenate(arg0, "-m006"), ARG1, arg2, Local5, arg4, Local0, arg6)
-			}
-
-			// Check Source Object value and type is not corrupted after storing
-			Store(Index(arg6, 2), Local7)
-			if (m005(Concatenate(arg0, "-m005"), arg3, Local6, Local7)) {
-				if (STCS) {
-					Store("m00d, Source Object has been corrupted during storing", Debug)
-				}
-				Return (1)
-			}
-
-			// Check auxiliary Target Object to have the initial type and value
-			Store(Index(Derefof(Index(arg6, 3)), arg2), Local7)
-			if (m016(Concatenate(arg0, "-m016"), arg2, 0, Local7)) {
-				if (STCS) {
-					Store("m00d, auxiliary Target Object has been corrupted during storing", Debug)
-				}
-				Return (1)
-			}
-
-			// Update Target Object
-			if (m007(Concatenate(arg0, "-m007"), ARG1)) {
-				if (STCS) {
-					Store("m00d, Error during update of Target", Debug)
-				}
-				Return (1)
-			}
-
-			// Check Source Object value and type is not corrupted after updating the copy
-			Store(Index(arg6, 2), Local7)
-			if (m005(Concatenate(arg0, "-m005"), arg3, Local6, Local7)) {
-				if (STCS) {
-					Store("m00d, Source Object has been corrupted during update of Target", Debug)
-				}
-			}
-
-			// Check auxiliary Target Object to have the initial type and value
-			Store(Index(Derefof(Index(arg6, 3)), arg2), Local7)
-			if (m016(Concatenate(arg0, "-m016"), arg2, 0, Local7)) {
-				if (STCS) {
-					Store("m00d, auxiliary Target Object has been corrupted during update of Target", Debug)
-				}
-				Return (1)
-			}
-
-			Return (0)
-		}
-
-		// Target Named Object
-		Name(DST0, 0)
-
-		Concatenate(arg0, "-", arg0)
-		Concatenate(arg0, Concatenate(Mid(arg4,0,2), Concatenate(Mid(arg2,0,2), Mid(arg3,0,2))), arg0)
-		if (STCS) {Store(arg0, Debug)}
-
-		// Prepare Target of specified type
-		Store(Index(Derefof(Index(arg6, 3)), arg2), Local7)
-		if (LEqual(arg2, 5)) {				// Field Unit Target
-			Field(OPR0, ByteAcc, NoLock, Preserve) {FLUX, 192, FLU1, 69}
-			Store(Refof(FLU1), Local1)
-			Store(Derefof(Local7), FLU1)
-		} elseif (LEqual(arg2, 14)) {		// Buffer Field Target
-			Createfield(BUFZ, 192, 69, BFL1)
-			Store(Refof(BFL1), Local1)
-			Store(Derefof(Local7), BFL1)
-		} else {
-			Store(Refof(DST0), Local1)
-		}
-		if (m003(Concatenate(arg0, "-m003"), arg2, Local1, Local7)) {
-			// Target Object can not be prepared
-			err(Concatenate(arg0, terr), z122, __LINE__, 0, 0, arg2, 0)
-			Return (1)
-		}
-
-		if (CH03(arg0, z122, 90, __LINE__, arg2)) {
-			// Unexpected exception during preparation
-			Return (1)
-		}
-
-		// Use the reference to Target Object to be the ArgX Object
-		if (m10d(Concatenate(arg0, "-m10d"), Refof(DST0), arg2, arg3, arg4, arg5, arg6)) {
-			if (STCS) {
-				Store("m00d, error on using the Target Object as the ArgX Object", Debug)
-			}
-			Return (1)
-		}
-
-		Return (0)
-	}
-
-	// Check processing of an Source LocalX Object of the specified type
-	// on immediate storing to an Element of Package of the specified type
-	// m00e(<msg>, <aux>, <target type>, <source type>,
-	//      <op>, <exc. condition>, <test data package>)
-	Method(m00e, 7, Serialized)
-	{
-		// Source LocalX Object: Local1
-		// Target Package
-		Name(DST0, Package(1){})
-
-		Concatenate(arg0, "-", arg0)
-		Concatenate(arg0, Concatenate(Mid(arg4,0,2), Concatenate(Mid(arg2,0,2), Mid(arg3,0,2))), arg0)
-		if (STCS) {Store(arg0, Debug)}
-
-		// Prepare Source of specified type
-		Store(Index(arg6, 2), Local7)
-		if (m004(Concatenate(arg0, "-m004"), arg3, Refof(Local1), Local7)) {
-			// Source Object can not be prepared
-			err(Concatenate(arg0, terr), z122, __LINE__, 0, 0, arg3, 0)
-			Return (1)
-		}
-
-		// Prepare Target of specified type
-		Index(DST0, 0, Local4)
-		Store(Index(Derefof(Index(arg6, 3)), arg2), Local7)
-		if (m013(Concatenate(arg0, "-m003"), arg2, DST0, Local7)) {
-			// Target Object can not be prepared
-			err(Concatenate(arg0, terr), z122, __LINE__, 0, 0, arg2, 0)
-			Return (1)
-		}
-
-		if (CH03(arg0, z122, 93, __LINE__, arg2)) {
-			// Unexpected exception during preparation
-			Return (1)
-		}
-
-		// Check Target Object to have the initial type and value
-		if (m015(Concatenate(arg0, "-m015"), arg2, Local4, Local7)) {
-			// Target Object can not be prepared
-			err(Concatenate(arg0, terr), z122, __LINE__, 0, 0, arg2, 0)
-			Return (1)
-		}
-
-		// Use a Source Object to immediately store into the Target
-		if (LEqual(arg4, 0)) {			// Store
-				Store(Local1, Index(DST0, 0))
-		//} elseif (LEqual(arg4, 1)) {	// CopyObject
-		//		CopyObject(Local1, Index(DST0, 0))
-		} else {
-			// Unexpected Kind of Op (0 - Store, ...)
-			err(Concatenate(arg0, terr), z122, __LINE__, 0, 0, arg4, 0)
-			Return (1)
-		}
-
-		if (arg5) {
-			// Exception is expected
-			if (LNot(CH06(arg0, 96, 0xff))) {
-				if (STCS) {m000(2, 0x100, arg2, arg3)}
-			}
-		} elseif (CH03(arg0, z122, 97, __LINE__, arg2)) {
-			// Storing caused unexpected exception
-			if (STCS) {m000(2, 0x100, arg2, arg3)}
-		} else {
-			// Check Target Object to have the expected type and value
-
-			// Target accept type on storing to an Element of Package is 1
-			Store(1, Local0)
-
-			m006(Concatenate(arg0, "-m006"), Local4, arg2, arg3, arg4, Local0, arg6)
-		}
-
-		// Check Source Object value and type is not corrupted after storing
-		Store(Index(arg6, 2), Local7)
-		if (m005(Concatenate(arg0, "-m005"), arg3, Refof(Local1), Local7)) {
-			if (STCS) {
-				Store("m00e, Source Object has been corrupted during storing", Debug)
-			}
-		}
-
-		// Check auxiliary Target Object to have the initial type and value
-		Store(Index(Derefof(Index(arg6, 3)), arg2), Local7)
-		if (m016(Concatenate(arg0, "-m016"), arg2, 0, Local7)) {
-			if (STCS) {
-				Store("m00e, auxiliary Target Object has been corrupted during storing", Debug)
-			}
-			Return (1)
-		}
-
-		// Update Target Object
-		if (m017(Concatenate(arg0, "-m007"), DST0)) {
-			if (STCS) {
-				Store("m00e, Error during update of Target", Debug)
-			}
-			Return (1)
-		}
-
-		// Check Source Object value and type is not corrupted after updating the copy
-		Store(Index(arg6, 2), Local7)
-		if (m005(Concatenate(arg0, "-m005"), arg3, Refof(Local1), Local7)) {
-			if (STCS) {
-				Store("m00e, Source Object has been corrupted during update of Target", Debug)
-			}
-		}
-
-		// Check auxiliary Target Object to have the initial type and value
-		Store(Index(Derefof(Index(arg6, 3)), arg2), Local7)
-		if (m016(Concatenate(arg0, "-m016"), arg2, 0, Local7)) {
-			if (STCS) {
-				Store("m00e, auxiliary Target Object has been corrupted during update of Target", Debug)
-			}
-			Return (1)
-		}
-
-		Return (0)
-	}
-
-	// Prepare Target as Package Element of specified type
-	Method(m013, 4, Serialized)
-	{
-		Switch(ToInteger(arg1)) {
-			Case(0) {	// Only check
-			}
-			Case(1) {
-				CopyObject(Derefof(arg3), INT1)
-				Store(INT1, Index(arg2, 0))
-			}
-			Case(2) {
-				CopyObject(Derefof(arg3), STR1)
-				Store(STR1, Index(arg2, 0))
-			}
-			Case(3) {
-				if (y136) {
-					CopyObject(Derefof(arg3), BUF1)
-				} else {
-					m687(Derefof(arg3), Refof(BUF1))
-				}
-				Store(BUF1, Index(arg2, 0))
-			}
-			Case(4) {
-				CopyObject(Derefof(arg3), PAC1)
-				Store(PAC1, Index(arg2, 0))
-			}
-			Case(17) {
-				CopyObject(Refof(ORF1), REF1)
-				//if (y522) {
-					Store(REF1, Index(arg2, 0))
-				//} else {
-				//	Store(DeRefof(REF1), Index(arg2, 0))
-				//}
-			}
-			Default {
-				// Unexpected Target Type
-				err(Concatenate(arg0, terr), z122, __LINE__, 0, 0, arg1, 0)
-				Return (1)
-			}
-		}
-		if (CH03(arg0, z122, 99, __LINE__, 0)) {
-			//Exception during preparing of Target Object
-			Return (1)
-		}
-
-		if (LEqual(arg1, 17)) {
-			// Reference
-			Return (0)
-		}
-
-		Store(ObjectType(Index(arg2, 0)), Local0)
-		if (LNotEqual(Local0, arg1)) {
-			// ObjectType of Target can not be set up
-			err(arg0, z122, __LINE__, 0, 0, Local0, arg1)
-			Return (1)
-		}
-
-		Return (0)
-	}
-
-	// Check Target Object type is not corrupted after storing,
-	// for the computational data types verify its value against
-	// the Object-initializer value
-	Method(m015, 4, Serialized)
-	{
-		Name(MMM2, 0) // An auxiliary Object to invoke Method
-
-		if (LEqual(arg1, 17)) {
-			// Target object is a reference
-			// Check that it can be used as reference
-			Store(Derefof(arg2), Local0)
-			Store(Derefof(Local0), Local3)
-			if (CH03(arg0, z122, 101, __LINE__, Local0)) {
-				// Derefof caused unexpected exception
-				Return (1)
-			}
-		} else {
-			Store(ObjectType(arg2), Local0)
-			if (LNotEqual(Local0, arg1)) {
-				// ObjectType of Target object is corrupted
-				err(arg0, z122, __LINE__, 0, 0, Local0, arg1)
-				Return (1)
-			}
-		}
-
-		Switch(ToInteger(arg1)) {
-			Case(0) {
-				Return (0)
-			}
-			Case(1) {
-				Store(ObjectType(INT1), Local0)
-			}
-			Case(2) {
-				Store(ObjectType(STR1), Local0)
-			}
-			Case(3) {
-				Store(ObjectType(BUF1), Local0)
-			}
-			Case(4) {
-				Store(ObjectType(PAC1), Local0)
-			}
-			Case(5) {
-				Store(5, Local0)
-			}
-			Case(6) {
-				Store(ObjectType(DEV1), Local0)
-			}
-			Case(7) {
-				Store(ObjectType(EVE1), Local0)
-			}
-			Case(8) {
-				Store(ObjectType(MMM1), Local0)
-			}
-			Case(9) {
-				Store(ObjectType(MTX1), Local0)
-			}
-			Case(10) {
-				Store(ObjectType(OPR1), Local0)
-			}
-			Case(11) {
-				Store(ObjectType(PWR1), Local0)
-			}
-			Case(12) {
-				Store(ObjectType(CPU1), Local0)
-			}
-			Case(13) {
-				Store(ObjectType(TZN1), Local0)
-			}
-			Case(14) {
-				Store(14, Local0)
-			}
-			Case(17) {
-				//Store(Derefof(REF1), Local3)
-				Store (REF1, Local3)
-				if (CH03(arg0, z122, 103, __LINE__, Local0)) {
-					// Derefof caused unexpected exception
-					Return (1)
-				}
-				Return (0)
-			}
-			Default {
-				// Unexpected Result Type
-				err(arg0, z122, __LINE__, 0, 0, arg1, 0)
-				Return (1)
-			}
-		}
-
-		if (LNotEqual(Local0, arg1)) {
-			// Mismatch of Target Type against the specified one
-			err(arg0, z122, __LINE__, 0, 0, Local0, arg1)
-
-			if (STCS) {m000(3, 0x1000000, Local0, arg1)}
-
-			Return (1)
-		} else {
-			// Check equality of the Source value to the Object-initializer one
-			Switch(ToInteger(arg1)) {
-				Case(1) {
-					if (LNotEqual(INT1, Derefof(arg3))) {
-						err(arg0, z122, __LINE__, 0, 0, INT1, Derefof(arg3))
-						Return (1)
-					}
-					if (LNotEqual(Derefof(arg2), INT1)) {
-						err(arg0, z122, __LINE__, 0, 0, Derefof(arg2), INT1)
-						Return (1)
-					}
-				}
-				Case(2) {
-					if (LNotEqual(STR1, Derefof(arg3))) {
-						err(arg0, z122, __LINE__, 0, 0, STR1, Derefof(arg3))
-						Return (1)
-					}
-					if (LNotEqual(Derefof(arg2), STR1)) {
-						err(arg0, z122, __LINE__, 0, 0, Derefof(arg2), STR1)
-						Return (1)
-					}
-				}
-				Case(3) {
-					if (LNotEqual(BUF1, Derefof(arg3))) {
-						err(arg0, z122, __LINE__, 0, 0, BUF1, Derefof(arg3))
-						Return (1)
-					}
-					if (LNotEqual(Derefof(arg2), BUF1)) {
-						err(arg0, z122, __LINE__, 0, 0, Derefof(arg2), BUF1)
-						Return (1)
-					}
-				}
-				Case(4) {
-
-					Store(Sizeof(PAC1), Local0)
-					if (LNotEqual(Sizeof(arg3), Local0)) {
-						err(arg0, z122, __LINE__, 0, 0, Sizeof(arg3), Local0)
-						Return (1)
-					}
-					While (Local0) {
-						Decrement(Local0)
-						Store(ObjectType(Derefof(Index(Derefof(arg3), Local0))), Local1)
-						Store(ObjectType(Derefof(Index(PAC1, Local0))), Local2)
-						if (LNotEqual(Local1, Local2)) {
-							// ObjectType is corrupted
-							err(arg0, z122, __LINE__, 0, 0, Local1, Local2)
-							Return (1)
-						} elseif (Derefof(Index(b679, Local1))) {
-							// the computational data type
-							if (LNotEqual(
-									Derefof(Index(Derefof(arg3), Local0)),
-									Derefof(Index(PAC1, Local0)))) {
-								// The value is corrupted
-								err(arg0, z122, __LINE__, 0, 0, Derefof(Index(Derefof(arg3), Local0)), Local0)
-								Return (1)
-							}
-						}
-					}
-
-					Store(Sizeof(PAC1), Local0)
-					if (LNotEqual(Sizeof(arg2), Local0)) {
-						err(arg0, z122, __LINE__, 0, 0, Sizeof(arg2), Local0)
-						Return (1)
-					}
-					While (Local0) {
-						Decrement(Local0)
-						Store(ObjectType(Derefof(Index(Derefof(arg2), Local0))), Local1)
-						Store(ObjectType(Derefof(Index(PAC1, Local0))), Local2)
-						if (LNotEqual(Local1, Local2)) {
-							// ObjectType is corrupted
-							err(arg0, z122, __LINE__, 0, 0, Local1, Local2)
-							Return (1)
-						} elseif (Derefof(Index(b679, Local1))) {
-							// the computational data type
-							if (LNotEqual(
-									Derefof(Index(Derefof(arg2), Local0)),
-									Derefof(Index(PAC1, Local0)))) {
-								// The value is corrupted
-								err(arg0, z122, __LINE__, 0, 0, Derefof(Index(Derefof(arg2), Local0)), Local0)
-								Return (1)
-							}
-						}
-					}
-				}
-				Case(5) {
-					if (LNotEqual(Derefof(arg2), Derefof(arg3))) {
-						err(arg0, z122, __LINE__, 0, 0, Derefof(arg2), Derefof(arg3))
-						Return (1)
-					}
-				}
-				Case(8) {
-					CopyObject(Derefof(arg2), MMM2)
-					if (LNotEqual(MMM2, MMM1)) {
-						err(arg0, z122, __LINE__, 0, 0, MMM2, MMM1)
-						Return (1)
-					}
-				}
-				Case(14) {
-					if (LNotEqual(Derefof(arg2), Derefof(arg3))) {
-						err(arg0, z122, __LINE__, 0, 0, Derefof(arg2), Derefof(arg3))
-						Return (1)
-					}
-				}
-			}
-		}
-		Return (0)
-	}
-
-	// Check auxiliary Target Named Object type is not corrupted,
-	// for the computational data types verify its value against
-	// the Object-initializer value
-	Method(m016, 4, Serialized)
-	{
-		Switch(ToInteger(arg1)) {
-			Case(0) {
-				Return (0)
-			}
-			Case(1) {
-				Store(ObjectType(INT1), Local0)
-			}
-			Case(2) {
-				Store(ObjectType(STR1), Local0)
-			}
-			Case(3) {
-				Store(ObjectType(BUF1), Local0)
-			}
-			Case(4) {
-				Store(ObjectType(PAC1), Local0)
-			}
-			Case(5) {
-				Store(5, Local0)
-			}
-			Case(6) {
-				Store(ObjectType(DEV1), Local0)
-			}
-			Case(7) {
-				Store(ObjectType(EVE1), Local0)
-			}
-			Case(8) {
-				Store(ObjectType(MMM1), Local0)
-			}
-			Case(9) {
-				Store(ObjectType(MTX1), Local0)
-			}
-			Case(10) {
-				Store(ObjectType(OPR1), Local0)
-			}
-			Case(11) {
-				Store(ObjectType(PWR1), Local0)
-			}
-			Case(12) {
-				Store(ObjectType(CPU1), Local0)
-			}
-			Case(13) {
-				Store(ObjectType(TZN1), Local0)
-			}
-			Case(14) {
-				Store(14, Local0)
-			}
-			Case(17) {
-				//Store(Derefof(REF1), Local3)
-				Store(REF1, Local3)
-				if (CH03(arg0, z122, 121, __LINE__, 0)) {
-					// Derefof caused unexpected exception
-					Return (1)
-				}
-				Return (0)
-			}
-			Default {
-				// Unexpected Result Type
-				err(arg0, z122, __LINE__, 0, 0, arg1, 0)
-				Return (1)
-			}
-		}
-
-		if (LNotEqual(Local0, arg1)) {
-			// Mismatch of Target Type against the specified one
-			err(arg0, z122, __LINE__, 0, 0, Local0, arg1)
-
-			if (STCS) {m000(3, 0x1000000, Local0, arg1)}
-
-			Return (1)
-		} else {
-			// Check equality of the Source value to the Object-initializer one
-			Switch(ToInteger(arg1)) {
-				Case(1) {
-					if (LNotEqual(INT1, Derefof(arg3))) {
-						err(arg0, z122, __LINE__, 0, 0, INT1, Derefof(arg3))
-						Return (1)
-					}
-				}
-				Case(2) {
-					if (LNotEqual(STR1, Derefof(arg3))) {
-						err(arg0, z122, __LINE__, 0, 0, STR1, Derefof(arg3))
-						Return (1)
-					}
-				}
-				Case(3) {
-					if (LNotEqual(BUF1, Derefof(arg3))) {
-						err(arg0, z122, __LINE__, 0, 0, BUF1, Derefof(arg3))
-						Return (1)
-					}
-				}
-				Case(4) {
-
-					Store(Sizeof(PAC1), Local0)
-					if (LNotEqual(Sizeof(arg3), Local0)) {
-						err(arg0, z122, __LINE__, 0, 0, Sizeof(arg3), Local0)
-						Return (1)
-					}
-					While (Local0) {
-						Decrement(Local0)
-						Store(ObjectType(Derefof(Index(Derefof(arg3), Local0))), Local1)
-						Store(ObjectType(Derefof(Index(PAC1, Local0))), Local2)
-						if (LNotEqual(Local1, Local2)) {
-							// ObjectType is corrupted
-							err(arg0, z122, __LINE__, 0, 0, Local1, Local2)
-							Return (1)
-						} elseif (Derefof(Index(b679, Local1))) {
-							// the computational data type
-							if (LNotEqual(
-									Derefof(Index(Derefof(arg3), Local0)),
-									Derefof(Index(PAC1, Local0)))) {
-								// The value is corrupted
-								err(arg0, z122, __LINE__, 0, 0, Derefof(Index(Derefof(arg3), Local0)), Local0)
-								Return (1)
-							}
-						}
-					}
-				}
-			}
-		}
-		Return (0)
-	}
-
-	// Update the first element of specified Package
-	// m017(<msg>, <Package>)
-	Method(m017, 2)
-	{
-		Store(ObjectType(Index(arg1, 0)), Local0)
-
-		if (Derefof(Index(b66f, Local0))) {
-			// Can be used in Index Operator
-			Store(Sizeof(Index(arg1, 0)), Local1)
-			if (Local1) {
-				// Update the last Member Object
-				Decrement(Local1)
-				Index(Derefof(Index(arg1, 0)), Local1, Local2)
-				Store(Refof(Local2), Local3)
-				Store(Derefof(Local2), Local4)
-				if (LEqual(ObjectType(Local4), 1)) {
-					// Integer
-					Store(Not(Local4), Derefof(Local3))
-				} else {
-					Store(Ones, Derefof(Local3))
-					if (CH03(arg0, z122, 130, __LINE__, Index(arg1, 0))) {
-						// Store caused unexpected exception
-						Return (1)
-					}
-				}
-				if (Local1) {
-					// Update the First Member Object
-					Index(Derefof(Index(arg1, 0)), 0, Local2)
-					Store(Derefof(Local2), Local4)
-					if (LEqual(ObjectType(Local4), 1)) {
-						// Integer
-						Store(Not(Local4), Derefof(Local3))
-					} else {
-						Store(Ones, Derefof(Local3))
-						if (CH03(arg0, z122, 131, __LINE__, Index(arg1, 0))) {
-							// Store caused unexpected exception
-							Return (1)
-						}
-					}
-				}
-			} elseif (LEqual(Local0, 4)) {
-				// Empty Package
-				Store(Package(1){"update string"}, Index(arg1, 0))
-			} else {
-				// Empty String/Buffer
-				Store("update string", Index(arg1, 0))
-			}
-		} elseif (Derefof(Index(b674, Local0))) {
-			// Non-Computational Data Objects
-			Store("update string", Index(arg1, 0))
-		} else {
-			Store(Not(ToInteger(Derefof(Index(arg1, 0)))), Index(arg1, 0))
-		}
-
-		if (CH03(arg0, z122, 132, __LINE__, Index(arg1, 0))) {
-			// Update caused unexpected exception
-			Return (1)
-		}
-
-		Return (0)
-	}
-
-	// Test data packages for each type of the Result Object
-
-	// Empty Package
-	Name(p000, Package(18){})
-
-	// Target Objects initial values for common use
-	Name(p001, Package(18) {
-		0,
-		0xfedcba9876543211,
-		"target string",
-		Buffer(17){0xc3,0xc4,0xc5,0x00,0xc6,0xc7,0xc8,0xc9,0xca,0xcb,0xcc,0xcd,0xce,0xcf,0xc0,0xc1,0xc2,},
-		Package(2) {
-			"target package",
-			0xfedcba9876543210,
-		},
-		Buffer(9){0x9a,0x8a,0x7a,0x6a,0x5a,0x4a,0x3a,0x2a,0x1a,},
-		0, 0,
-		Package() {MMMY, "ff0Y"},
-		0, 0, 0, 0, 0,
-		Buffer(9){0x9a,0x8a,0x7a,0x6a,0x5a,0x4a,0x3a,0x2a,0x1a,},
-		0, 0, 0,})
-
-	// Uninitialized
-
-	Name(p002, Package() {
-		// Type of the Result(Source) Object
-		0,
-		// Number of different initial values
-		1,
-		// SRC0 initial value
-		0,
-		// Target Objects initial values
-		p001,
-		// Benchmark Result object value
-		0,
-		// Benchmark Result object converted to Target type values
-		p000,
-	})
-
-	// Integer
-
-	Name(p132, Package() {
-		// Type of the Result(Source) Object
-		1,
-		// Number of different initial values
-		1,
-		// SRC0 initial value
-		0xfedcba9876543210,
-		// Target Objects initial values
-		p001,
-		// Benchmark Result object value
-		0xfedcba9876543210,
-		// Benchmark Result object converted to Target type values
-		Package(18) {
-			0,
-			0xfedcba9876543210,
-			"76543210",
-			Buffer(17){0x10, 0x32, 0x54, 0x76,},
-			0,
-			Buffer(9){0x10, 0x32, 0x54, 0x76,},
-			0, 0, 0, 0, 0, 0, 0, 0,
-			Buffer(9){0x10, 0x32, 0x54, 0x76,},
-			0, 0, 0,},
-	})
-
-	Name(p164, Package() {
-		// Type of the Result(Source) Object
-		1,
-		// Number of different initial values
-		1,
-		// SRC0 initial value
-		0xfedcba9876543210,
-		// Target Objects initial values
-		p001,
-		// Benchmark Result object value
-		0xfedcba9876543210,
-		// Benchmark Result object converted to Target type values
-		Package(18) {
-			0,
-			0xfedcba9876543210,
-			"FEDCBA9876543210",
-			Buffer(17){0x10, 0x32, 0x54, 0x76, 0x98, 0xBA, 0xDC, 0xFE,},
-			0,
-			Buffer(9){0x10, 0x32, 0x54, 0x76, 0x98, 0xBA, 0xDC, 0xFE,},
-			0, 0, 0, 0, 0, 0, 0, 0,
-			Buffer(9){0x10, 0x32, 0x54, 0x76, 0x98, 0xBA, 0xDC, 0xFE,},
-			0, 0, 0,},
-	})
-
-	// String
-
-	Name(p201, Package() {
-		// Type of the Result(Source) Object
-		2,
-		// Number of different initial values
-		1,
-		// SRC0 initial value
-		"\x01",
-		// Target Objects initial values
-		p001,
-		// Benchmark Result object value
-		"\x01",
-		// Benchmark Result object converted to Target type values
-		Package(18) {
-			0,
-			0,
-			"\x01",
-			Buffer(17){1,},
-			0,
-			Buffer(9){1,},
-			0, 0, 0, 0, 0, 0, 0, 0,
-			Buffer(9){1,},
-			0, 0, 0,},
-	})
-
-	Name(p202, Package() {
-		// Type of the Result(Source) Object
-		2,
-		// Number of different initial values
-		2,
-		// SRC0 initial value
-		"!\"#$%&'()*+,-./0123456789:;<=>?@ABCDEFGHIJKLMNOPQRSTUVWXYZ[\\]^_`abcdefghijklmnopqrstuvwxyz{|}~ !\"#$%&'()*+,-./0123456789:;<=>?@ABCDEFGHIJKLMNOPQRSTUVWXYZ[\\]^_`abcdefghijklmnopqrstuvwxyz{|}~ !\"#$%&'()*",
-		// Target Objects initial values
-		p001,
-		// Benchmark Result object value
-		"!\"#$%&'()*+,-./0123456789:;<=>?@ABCDEFGHIJKLMNOPQRSTUVWXYZ[\\]^_`abcdefghijklmnopqrstuvwxyz{|}~ !\"#$%&'()*+,-./0123456789:;<=>?@ABCDEFGHIJKLMNOPQRSTUVWXYZ[\\]^_`abcdefghijklmnopqrstuvwxyz{|}~ !\"#$%&'()*",
-		// Benchmark Result object converted to Target type values
-		Package(18) {
-			0,
-			0,
-			"!\"#$%&'()*+,-./0123456789:;<=>?@ABCDEFGHIJKLMNOPQRSTUVWXYZ[\\]^_`abcdefghijklmnopqrstuvwxyz{|}~ !\"#$%&'()*+,-./0123456789:;<=>?@ABCDEFGHIJKLMNOPQRSTUVWXYZ[\\]^_`abcdefghijklmnopqrstuvwxyz{|}~ !\"#$%&'()*",
-			Buffer(17){0x21,0x22,0x23,0x24,0x25,0x26,0x27,0x28,0x29,0x2A,0x2B,0x2C,0x2D,0x2E,0x2F,0x30,0x31,},
-			0,
-			Buffer(9){0x21,0x22,0x23,0x24,0x25,0x26,0x27,0x28,0x09,},
-			0, 0, 0, 0, 0, 0, 0, 0,
-			Buffer(9){0x21,0x22,0x23,0x24,0x25,0x26,0x27,0x28,0x09,},
-			0, 0, 0,},
-	})
-
-	Name(p232, Package() {
-		// Type of the Result(Source) Object
-		2,
-		// Number of different initial values
-		2,
-		Package() {
-			// Type of the Result(Source) Object
-			3,
-			// Number of different initial values
-			0,
-			// SRC0 initial value
-			"fedcba98 string",
-			// Target Objects initial values
-			p001,
-			// Benchmark Result object value
-			"fedcba98 string",
-			// Benchmark Result object converted to Target type values
-			Package(18) {
-				0,
-				0xfedcba98,
-				"fedcba98 string",
-				Buffer(17){0x66, 0x65, 0x64, 0x63, 0x62, 0x61, 0x39, 0x38, 0x20, 0x73, 0x74, 0x72, 0x69, 0x6E, 0x67,},
-				0,
-				Buffer(9){0x66, 0x65, 0x64, 0x63, 0x62, 0x61, 0x39, 0x38,},
-				0, 0, 0, 0, 0, 0, 0, 0,
-				Buffer(9){0x66, 0x65, 0x64, 0x63, 0x62, 0x61, 0x39, 0x38,},
-				0, 0, 0,},
-		},
-		p201,
-		p202,
-	})
-
-	Name(p264, Package() {
-		// Type of the Result(Source) Object
-		2,
-		// Number of different initial values
-		3,
-		Package() {
-			// Type of the Result(Source) Object
-			2,
-			// Number of different initial values
-			0,
-			// SRC0 initial value
-			"fedcba9876543210 string",
-			// Target Objects initial values
-			p001,
-			// Benchmark Result object value
-			"fedcba9876543210 string",
-			// Benchmark Result object converted to Target type values
-			Package(18) {
-				0,
-				0xfedcba9876543210,
-				"fedcba9876543210 string",
-				Buffer(17){0x66, 0x65, 0x64, 0x63, 0x62, 0x61, 0x39, 0x38, 0x37, 0x36, 0x35, 0x34, 0x33, 0x32, 0x31, 0x30, 0x20,},
-				0,
-				Buffer(9){0x66, 0x65, 0x64, 0x63, 0x62, 0x61, 0x39, 0x38, 0x17,},
-				0, 0, 0, 0, 0, 0, 0, 0,
-				Buffer(9){0x66, 0x65, 0x64, 0x63, 0x62, 0x61, 0x39, 0x38, 0x17,},
-				0, 0, 0,},
-		},
-		p201,
-		p202,
-	})
-
-	// Buffer
-
-	Name(p301, Package() {
-		// Type of the Result(Source) Object
-		3,
-		// Number of different initial values
-		1,
-		// SRC0 initial value
-		Buffer(67) {
-			 1,  2,  3,  4,  5,  6,  7,  8,  9, 10, 11, 12, 13, 14, 15, 16,
-			17, 18, 19, 20, 21, 22, 23, 24, 25, 26, 27, 28, 29, 30, 31, 32,
-			33, 34, 35, 36, 37, 38, 39, 40, 41, 42, 43, 44, 45, 46, 47, 48,
-			49, 50, 51, 52, 53, 54, 55, 56, 57, 58, 59, 60, 61, 62, 63, 64,
-			65, 66, 67},
-		// Target Objects initial values
-		p001,
-		// Benchmark Result object value
-		Buffer(67) {
-			 1,  2,  3,  4,  5,  6,  7,  8,  9, 10, 11, 12, 13, 14, 15, 16,
-			17, 18, 19, 20, 21, 22, 23, 24, 25, 26, 27, 28, 29, 30, 31, 32,
-			33, 34, 35, 36, 37, 38, 39, 40, 41, 42, 43, 44, 45, 46, 47, 48,
-			49, 50, 51, 52, 53, 54, 55, 56, 57, 58, 59, 60, 61, 62, 63, 64,
-			65, 66, 67},
-		// Benchmark Result object converted to Target type values
-		Package(18) {
-			0,
-			0x0807060504030201,
-			"01 02 03 04 05 06 07 08 09 0A 0B 0C 0D 0E 0F 10 11 12 13 14 15 16 17 18 19 1A 1B 1C 1D 1E 1F 20 21 22 23 24 25 26 27 28 29 2A 2B 2C 2D 2E 2F 30 31 32 33 34 35 36 37 38 39 3A 3B 3C 3D 3E 3F 40 41 42 43",
-			Buffer(17) {1,  2,  3,  4,  5,  6,  7,  8,  9, 10, 11, 12, 13, 14, 15, 16, 17,},
-			0,
-			Buffer(9){1,  2,  3,  4,  5,  6,  7,  8,  9},
-			0, 0, 0, 0, 0, 0, 0, 0,
-			Buffer(9){1,  2,  3,  4,  5,  6,  7,  8,  9},
-			0, 0, 0,},
-	})
-
-	Name(p300, Package() {
-		// Type of the Result(Source) Object
-		3,
-		// Number of different initial values
-		2,
-		Package() {
-			// Type of the Result(Source) Object
-			3,
-			// Number of different initial values
-			0,
-			// SRC0 initial value
-			Buffer(9){0xf8, 0xf7, 0xf6, 0xf5, 0xf4, 0xf3, 0xf2, 0xf1, 0x88},
-			// Target Objects initial values
-			p001,
-			// Benchmark Result object value
-			Buffer(9){0xf8, 0xf7, 0xf6, 0xf5, 0xf4, 0xf3, 0xf2, 0xf1, 0x88},
-			// Benchmark Result object converted to Target type values
-			Package(18) {
-				0,
-				0xf1f2f3f4f5f6f7f8,
-				"F8 F7 F6 F5 F4 F3 F2 F1 88",
-				Buffer(17){0xf8, 0xf7, 0xf6, 0xf5, 0xf4, 0xf3, 0xf2, 0xf1, 0x88},
-				0,
-				Buffer(9){0xf8, 0xf7, 0xf6, 0xf5, 0xf4, 0xf3, 0xf2, 0xf1, 0x08},
-				0, 0, 0, 0, 0, 0, 0, 0,
-				Buffer(9){0xf8, 0xf7, 0xf6, 0xf5, 0xf4, 0xf3, 0xf2, 0xf1, 0x08},
-				0, 0, 0,},
-		},
-		p301,
-	})
-
-	// Package
-
-	Name(p401, Package() {
-		// Type of the Result(Source) Object
-		4,
-		// Number of different initial values
-		1,
-		// SRC0 initial value
-		Package(1) {
-			"test p401 package",
-		},
-		// Target Objects initial values
-		p001,
-		// Benchmark Result object value
-		Package(1) {
-			"test p401 package",
-		},
-		// Benchmark Result object converted to Target type values
-		Package(18) {
-			0, 0, 0, 0,
-			Package(1) {
-				"test p401 package",
-			},
-			0,
-			0, 0, 0, 0, 0, 0, 0, 0,
-			0,
-			0, 0, 0,},
-	})
-
-	Name(p400, Package() {
-		// Type of the Result(Source) Object
-		4,
-		// Number of different initial values
-		2,
-		Package() {
-			// Type of the Result(Source) Object
-			4,
-			// Number of different initial values
-			0,
-			// SRC0 initial value
-			Package(3) {
-				0xfedcba987654321f,
-				"test package",
-				Buffer(9){19,18,17,16,15,14,13,12,11},},
-			// Target Objects initial values
-			p001,
-			// Benchmark Result object value
-			Package(3) {
-				0xfedcba987654321f,
-				"test package",
-				Buffer(9){19,18,17,16,15,14,13,12,11},},
-			// Benchmark Result object converted to Target type values
-			Package(18) {
-				0, 0, 0, 0,
-				Package(3) {
-					0xfedcba987654321f,
-					"test package",
-					Buffer(9){19,18,17,16,15,14,13,12,11},},
-				0,
-				0, 0, 0, 0, 0, 0, 0, 0,
-				0,
-				0, 0, 0,},
-		},
-		p401,
-	})
-
-	// Field Unit
-
-	Name(p500, Package() {
-		// Type of the Result(Source) Object
-		5,
-		// Number of different initial values
-		1,
-		// SRC0 initial value
-		Package(2){0, Buffer(9){0x95,0x85,0x75,0x65,0x55,0x45,0x35,0x25,0x15,}},
-		// Target Objects initial values
-		p001,
-		// Benchmark Result object value
-		Buffer(9){0x95,0x85,0x75,0x65,0x55,0x45,0x35,0x25,0x15,},
-		// Benchmark Result object converted to Target type values
-		Package(18) {
-			0,
-			0x2535455565758595,
-			"95 85 75 65 55 45 35 25 15",
-			Buffer(17){0x95,0x85,0x75,0x65,0x55,0x45,0x35,0x25,0x15,},
-			0,
-			Buffer(9){0x95,0x85,0x75,0x65,0x55,0x45,0x35,0x25,0x15,},
-			0, 0, 0, 0, 0, 0, 0, 0,
-			Buffer(9){0x95,0x85,0x75,0x65,0x55,0x45,0x35,0x25,0x15,},
-			0, 0, 0,},
-	})
-
-	// Device
-
-	Name(p600, Package() {
-		// Type of the Result(Source) Object
-		6,
-		// Number of different initial values
-		1,
-		// SRC0 initial value
-		ResourceTemplate(){},
-		// Target Objects initial values
-		p001,
-		// Benchmark Result object value
-		0,
-		// Benchmark Result object converted to Target type values
-		p000,
-	})
-
-	// Event
-
-	Name(p700, Package() {
-		// Type of the Result(Source) Object
-		7,
-		// Number of different initial values
-		1,
-		// SRC0 initial value
-		0,
-		// Target Objects initial values
-		p001,
-		// Benchmark Result object value
-		0,
-		// Benchmark Result object converted to Target type values
-		p000,
-	})
-
-	// Method
-
-	Name(p800, Package() {
-		// Type of the Result(Source) Object
-		8,
-		// Number of different initial values
-		1,
-		// SRC0 initial value
-		Package() {MMMX, "ff0X"},
-		// Target Objects initial values
-		p001,
-		// Benchmark Result object value
-		"ff0X",
-		// Benchmark Result object converted to Target type values
-		Package(18) {
-			0,
-			0xff0,
-			"ff0X",
-			Buffer(17){0x66, 0x66, 0x30, 0x58,},
-			0,
-			Buffer(9){0x66, 0x66, 0x30, 0x58,},
-			0, 0,
-			"ff0X",
-			0, 0, 0, 0, 0,
-			Buffer(9){0x66, 0x66, 0x30, 0x58,},
-			0, 0, 0,},
-	})
-
-	// Mutex
-
-	Name(p900, Package() {
-		// Type of the Result(Source) Object
-		9,
-		// Number of different initial values
-		1,
-		// SRC0 initial value
-		0,
-		// Target Objects initial values
-		p001,
-		// Benchmark Result object value
-		0,
-		// Benchmark Result object converted to Target type values
-		p000,
-	})
-
-	// Operation Region
-
-	Name(pa00, Package() {
-		// Type of the Result(Source) Object
-		10,
-		// Number of different initial values
-		1,
-		// SRC0 initial value
-		0,
-		// Target Objects initial values
-		p001,
-		// Benchmark Result object value
-		0,
-		// Benchmark Result object converted to Target type values
-		p000,
-	})
-
-	// Power Resource
-
-	Name(pb00, Package() {
-		// Type of the Result(Source) Object
-		11,
-		// Number of different initial values
-		1,
-		// SRC0 initial value
-		0,
-		// Target Objects initial values
-		p001,
-		// Benchmark Result object value
-		0,
-		// Benchmark Result object converted to Target type values
-		p000,
-	})
-
-	// Processor
-
-	Name(pc00, Package() {
-		// Type of the Result(Source) Object
-		12,
-		// Number of different initial values
-		1,
-		// SRC0 initial value
-		0,
-		// Target Objects initial values
-		p001,
-		// Benchmark Result object value
-		0,
-		// Benchmark Result object converted to Target type values
-		p000,
-	})
-
-	// Thermal Zone
-
-	Name(pd00, Package() {
-		// Type of the Result(Source) Object
-		13,
-		// Number of different initial values
-		1,
-		// SRC0 initial value
-		0,
-		// Target Objects initial values
-		p001,
-		// Benchmark Result object value
-		0,
-		// Benchmark Result object converted to Target type values
-		p000,
-	})
-
-	// Buffer Field
-
-	Name(pe00, Package() {
-		// Type of the Result(Source) Object
-		14,
-		// Number of different initial values
-		0,
-		// SRC0 initial value
-		Package(2){0, Buffer(9){0x95,0x85,0x75,0x65,0x55,0x45,0x35,0x25,0x15,}},
-		// Target Objects initial values
-		p001,
-		// Benchmark Result object value
-		Buffer(9){0x95,0x85,0x75,0x65,0x55,0x45,0x35,0x25,0x15,},
-		// Benchmark Result object converted to Target type values
-		Package(18) {
-			0,
-			0x2535455565758595,
-			"95 85 75 65 55 45 35 25 15",
-			Buffer(17){0x95,0x85,0x75,0x65,0x55,0x45,0x35,0x25,0x15,},
-			0,
-			Buffer(9){0x95,0x85,0x75,0x65,0x55,0x45,0x35,0x25,0x15,},
-			0, 0, 0, 0, 0, 0, 0, 0,
-			Buffer(9){0x95,0x85,0x75,0x65,0x55,0x45,0x35,0x25,0x15,},
-			0, 0, 0,},
-	})
-
-	Name(pe01, Package() {
-		// Type of the Result(Source) Object
-		14,
-		// Number of different initial values
-		1,
-		// SRC0 initial value
-		Package(2){1, Buffer(8){0x95,0x85,0x75,0x65,0x55,0x45,0x35,0x25,}},
-		// Target Objects initial values
-		p001,
-		// Benchmark Result object value
-		Buffer(8){0x95,0x85,0x75,0x65,0x55,0x45,0x35,0x25},
-		// Benchmark Result object converted to Target type values
-		Package(18) {
-			0,
-			0x2535455565758595,
-			"95 85 75 65 55 45 35 25",
-			Buffer(17){0x95,0x85,0x75,0x65,0x55,0x45,0x35,0x25,},
-			0,
-			Buffer(9){0x95,0x85,0x75,0x65,0x55,0x45,0x35,0x25,},
-			0, 0, 0, 0, 0, 0, 0, 0,
-			Buffer(9){0x95,0x85,0x75,0x65,0x55,0x45,0x35,0x25,},
-			0, 0, 0,},
-	})
-
-	Name(pe02, Package() {
-		// Type of the Result(Source) Object
-		14,
-		// Number of different initial values
-		1,
-		// SRC0 initial value
-		Package(2){1, Buffer(8){0x95,0x85,0x75,0x65,0x55,0x45,0x35,0x25,}},
-		// Target Objects initial values
-		p001,
-		// Benchmark Result object value
-		0x2535455565758595,
-		// Benchmark Result object converted to Target type values
-		Package(18) {
-			0,
-			0x2535455565758595,
-			"2535455565758595",
-			Buffer(17){0x95,0x85,0x75,0x65,0x55,0x45,0x35,0x25,},
-			0,
-			Buffer(9){0x95,0x85,0x75,0x65,0x55,0x45,0x35,0x25,},
-			0, 0, 0, 0, 0, 0, 0, 0,
-			Buffer(9){0x95,0x85,0x75,0x65,0x55,0x45,0x35,0x25,},
-			0, 0, 0,},
-	})
-
-	Name(pe03, Package() {
-		// Type of the Result(Source) Object
-		14,
-		// Number of different initial values
-		2,
-		// SRC0 initial value
-		Package(2){2, Buffer(4){0x95,0x85,0x75,0x65,}},
-		// Target Objects initial values
-		p001,
-		// Benchmark Result object value
-		0x65758595,
-		// Benchmark Result object converted to Target type values
-		Package(18) {
-			0,
-			0x65758595,
-			"65758595",
-			Buffer(17){0x95,0x85,0x75,0x65,},
-			0,
-			Buffer(9){0x95,0x85,0x75,0x65,},
-			0, 0, 0, 0, 0, 0, 0, 0,
-			Buffer(9){0x95,0x85,0x75,0x65,},
-			0, 0, 0,},
-	})
-
-	Name(pe04, Package() {
-		// Type of the Result(Source) Object
-		14,
-		// Number of different initial values
-		2,
-		// SRC0 initial value
-		Package(2){2, Buffer(4){0x95,0x85,0x75,0x65,}},
-		// Target Objects initial values
-		p001,
-		// Benchmark Result object value
-		0x65758595,
-		// Benchmark Result object converted to Target type values
-		Package(18) {
-			0,
-			0x65758595,
-			"0000000065758595",
-			Buffer(17){0x95,0x85,0x75,0x65,},
-			0,
-			Buffer(9){0x95,0x85,0x75,0x65,},
-			0, 0, 0, 0, 0, 0, 0, 0,
-			Buffer(9){0x95,0x85,0x75,0x65,},
-			0, 0, 0,},
-	})
-
-	Name(pe32, Package() {
-		// Type of the Result(Source) Object
-		14,
-		// Number of different initial values
-		3,
-		// Data
-		pe00,
-		pe01,
-		pe03,
-	})
-
-	Name(pe64, Package() {
-		// Type of the Result(Source) Object
-		14,
-		// Number of different initial values
-		3,
-		// Data
-		pe00,
-		pe02,
-		pe04,
-	})
-
-	// DDB Handle
-
-	Name(pf00, Package() {
-		// Type of the Result(Source) Object
-		15,
-		// Number of different initial values
-		1,
-		// SRC0 initial value
-		0,
-		// Target Objects initial values
-		p001,
-		// Benchmark Result object value
-		0,
-		// Benchmark Result object converted to Target type values
-		p000,
-	})
-
-	// Debug
-
-	Name(pg00, Package() {
-		// Type of the Result(Source) Object
-		16,
-		// Number of different initial values
-		1,
-		// SRC0 initial value
-		0,
-		// Target Objects initial values
-		p001,
-		// Benchmark Result object value
-		0,
-		// Benchmark Result object converted to Target type values
-		p000,
-	})
-
-	// Reference
-
-	Name(ph00, Package() {
-		// Type of the Result(Source) Object
-		17,
-		// Number of different initial values
-		1,
-		// SRC0 initial value
-		0,
-		// Target Objects initial values
-		p001,
-		// Benchmark Result object value
-		0,
-		// Benchmark Result object converted to Target type values
-		p000,
-	})
-
-	Name(p320, Package(18) {
-		p002, p132, p232, p300, p400, p500, p600, p700, p800, p900,
-		pa00, pb00, pc00, pd00, pe32, pf00, pg00, ph00,})
-	Name(p640, Package(18) {
-		p002, p164, p264, p300, p400, p500, p600, p700, p800, p900,
-		pa00, pb00, pc00, pd00, pe64, pf00, pg00, ph00,})
-
-	// m020(<msg>, <store op>, <exc. conditions>,
-	//      <Target scale>, <Result scale>, <kind of Source-Target pair>)
-	Method(m020, 6, Serialized)
-	{
-		// Initialize statistics
-		m001()
-		Name(scl0, Buffer() {0,1,1,1,0,0,0,0,0,0,0,0,0,0,0,0,0,0})
-
-		Name(lpN0, 18)
-		Name(lpC0, 0)
-
-		Name(lpN1, 0)
-		Name(lpC1, 0)
-		Name(lpN2, 0)
-		Name(lpC2, 0)
-
-		SRMT(arg0)
-
-		if (LGreater(arg1, 1)) {
-			// Unexpected Kind of Op (0 - Store, ...)
-			err(Concatenate(arg0, terr), z122, __LINE__, 0, 0, arg1, 0)
-			Return (1)
-		}
-
-		if (LGreater(arg5, 6)) {
-			// Unexpected Kind of Source-Target pair
-			err(Concatenate(arg0, terr), z122, __LINE__, 0, 0, arg5, 0)
-			Return (1)
-		}
-
-		// Flags of Store from and to Named to check
-		// exceptional conditions on storing
-		if (arg1) {
-			Store(0, Local0)
-			Store(0, Local1)
-		} else {
-			Store(Lor(LEqual(arg5, 0), LEqual(arg5, 1)), Local0)
-			Store(Lor(Local0, LEqual(arg5, 4)), Local0)
-			Store(Lor(Local0, LEqual(arg5, 5)), Local0)
-			Store(Lor(LEqual(arg5, 0), LEqual(arg5, 2)), Local1)
-		}
-
-		// Enumerate Target types
-		While (lpN0) {
-			if (LAnd(Derefof(Index(b670, lpC0)), Derefof(Index(arg3, lpC0)))) {
-				// Not invalid type of the Target Object to store in
-
-				Store(18, lpN1)
-				Store(0, lpC1)
-
-				// Enumerate Source types
-				While (lpN1) {
-					if (LAnd(Derefof(Index(b671, lpC1)), Derefof(Index(arg4, lpC1)))) {
-						// Not invalid type of the result Object to be stored
-						if (arg2) {
-							// Skip cases without exceptional conditions
-							if (LNot(m685(arg1, lpC0, lpC1, Local0, Local1))) {
-								Decrement(lpN1)
-								Increment(lpC1)
-								Continue
-							}
-						} else {
-							// Skip cases with exceptional conditions
-							if (m685(arg1, lpC0, lpC1, Local0, Local1)) {
-								Decrement(lpN1)
-								Increment(lpC1)
-								Continue
-							}
-						}
-						if (F64) {
-							Store(Derefof(Index(p640, lpC1)), Local2)
-						} else {
-							Store(Derefof(Index(p320, lpC1)), Local2)
-						}
-						Store(Derefof(Index(Local2, 0)), Local3)
-						if (LNotEqual(Local3, lpC1)) {
-							// Unexpected data package
-							err(Concatenate(arg0, terr), z122, __LINE__, 0, 0, arg1, lpC1)
-							Return (1)
-						}
-						Store(Derefof(Index(Local2, 1)), Local3)
-						
-						Store(Local3, lpN2)
-						Store(0, lpC2)
-
-						// Enumerate Result values
-						While (lpN2) {
-							if (LGreater(Local3, 1)) {
-								// Complex test data
-								Index(Local2, Add(lpC2, 2), Local4)
-							} else {
-								Store(Refof(Local2), Local4)
-							}
-
-							if (LEqual(arg5, 0)) {
-								// Named-Named
-								m008(Concatenate(arg0, "-m008"), 0, lpC0, lpC1, arg1, arg2, Derefof(Local4))
-							} elseif (LEqual(arg5, 1)) {
-								// Named-LocalX
-								m009(Concatenate(arg0, "-m009"), 0, lpC0, lpC1, arg1, arg2, Derefof(Local4))
-							} elseif (LEqual(arg5, 2)) {
-								// LocalX-Named
-								m00a(Concatenate(arg0, "-m00a"), 0, lpC0, lpC1, arg1, arg2, Derefof(Local4))
-							} elseif (LEqual(arg5, 3)) {
-								// LocalX-LocalX
-								m00b(Concatenate(arg0, "-m00b"), 0, lpC0, lpC1, arg1, arg2, Derefof(Local4))
-							} elseif (LEqual(arg5, 4)) {
-								// Named-ArgX(Named read-only)
-								m00c(Concatenate(arg0, "-m00c"), 0, lpC0, lpC1, arg1, arg2, Derefof(Local4))
-							} elseif (LEqual(arg5, 5)) {
-								// Named-ArgX(Named by reference)
-								if (y900) {
-								if (LAnd(LEqual(lpC1, 4),	// Source type is 4
-										// Target type is 1-3
-										Derefof(Index(Buffer() {0,1,1,1,0,0,0,0,0,0,0,0,0,0,0,0,0,0}, lpC0)))) {
-									if (y366) {
-										m00d(Concatenate(arg0, "-m00d"), 0, lpC0, lpC1, arg1, arg2, Derefof(Local4))
-									}
-								} else {
-									m00d(Concatenate(arg0, "-m00d"), 0, lpC0, lpC1, arg1, arg2, Derefof(Local4))
-								}
-								} else { // if (y900)
-								if (LAnd(LEqual(lpC1, 4),	// Source type is 4
-										// Target type is 1-3
-										Derefof(Index(scl0, lpC0)))) {
-									if (y366) {
-										m00d(Concatenate(arg0, "-m00d"), 0, lpC0, lpC1, arg1, arg2, Derefof(Local4))
-									}
-								} else {
-									m00d(Concatenate(arg0, "-m00d"), 0, lpC0, lpC1, arg1, arg2, Derefof(Local4))
-								}
-								} // if (y900)
-
-							} elseif (LEqual(arg5, 6)) {
-								// LocalX-Element of Package
-								m00e(Concatenate(arg0, "-m00e"), 0, lpC0, lpC1, arg1, arg2, Derefof(Local4))
-							}
-							Decrement(lpN2)
-							Increment(lpC2)
-						}
-					}
-					Decrement(lpN1)
-					Increment(lpC1)
-				}
-			}
-			Decrement(lpN0)
-			Increment(lpC0)
-		}
-
-		// Output statistics
-		m002(Concatenate(Derefof(Index(PAC5, arg5)), Derefof(Index(PAC4, arg1))))
-
-		Return (0)
-	}
-
-	Concatenate(arg0, "-m020", arg0)
-
-	// Named-Named
-	m020(Concatenate(arg0, "-NN"), arg1, arg2, b676, b676, 0)
-
-	// Named-LocalX
-	m020(Concatenate(arg0, "-NL"), arg1, arg2, b677, b676, 1)
-
-	// LocalX-Named
-	m020(Concatenate(arg0, "-LN"), arg1, arg2, b676, b677, 2)
-
-	// LocalX-LocalX
-	m020(Concatenate(arg0, "-LL"), arg1, arg2, b677, b677, 3)
-
-	// Named-ArgX(Named read-only)
-	m020(Concatenate(arg0, "-NA-RO"), arg1, arg2, b676, b676, 4)
-
-	// Named-ArgX(Named by reference)
-	m020(Concatenate(arg0, "-NA-REF"), arg1, arg2, b676, b676, 5)
-
-	// LocalX-Element of Package
-	if (LEqual(arg1, 0)) {
-		m020(Concatenate(arg0, "-LP"), arg1, arg2, b67d, b677, 6)
-	}
-}
+    /*
+     * Some or all of this work - Copyright (c) 2006 - 2017, Intel Corp.
+     * All rights reserved.
+     *
+     * Redistribution and use in source and binary forms, with or without modification,
+     * are permitted provided that the following conditions are met:
+     *
+     * Redistributions of source code must retain the above copyright notice,
+     * this list of conditions and the following disclaimer.
+     * Redistributions in binary form must reproduce the above copyright notice,
+     * this list of conditions and the following disclaimer in the documentation
+     * and/or other materials provided with the distribution.
+     * Neither the name of Intel Corporation nor the names of its contributors
+     * may be used to endorse or promote products derived from this software
+     * without specific prior written permission.
+     *
+     * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS"
+     * AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE
+     * IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE
+     * ARE DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT OWNER OR CONTRIBUTORS BE
+     * LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL
+     * DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES;
+     * LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY
+     * THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING
+     * NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE,
+     * EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
+     */
+    /*
+     * Check implicit conversion being applied to data images
+     */
+    Name (Z122, 0x7A)
+    /* Flags of types can be used in Index Operator */
+
+    Name (B66F, Buffer (0x12)
+    {
+        /* 0000 */  0x00, 0x00, 0x01, 0x01, 0x01, 0x00, 0x00, 0x00,  // ........
+        /* 0008 */  0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00,  // ........
+        /* 0010 */  0x00, 0x00                                       // ..
+    })
+    /* Not invalid types for testing to store in, */
+    /* excluded: Field Unit, Op.Region, Thermal Zone, */
+    /*           DDB handle, Debug, Reference */
+    Name (B670, Buffer (0x12)
+    {
+        /* 0000 */  0x01, 0x01, 0x01, 0x01, 0x01, 0x00, 0x01, 0x01,  // ........
+        /* 0008 */  0x01, 0x01, 0x00, 0x01, 0x01, 0x00, 0x01, 0x00,  // ........
+        /* 0010 */  0x00, 0x00                                       // ..
+    })
+    /* Not invalid types for testing to be stored, */
+    /* excluded: Field Unit, Op.Region, Thermal Zone, */
+    /*           DDB handle, Debug, Reference */
+    Name (B671, Buffer (0x12)
+    {
+        /* 0000 */  0x01, 0x01, 0x01, 0x01, 0x01, 0x00, 0x01, 0x01,  // ........
+        /* 0008 */  0x01, 0x01, 0x00, 0x01, 0x01, 0x00, 0x01, 0x00,  // ........
+        /* 0010 */  0x00, 0x00                                       // ..
+    })
+    /* Flags of types of non-Computational Data Objects */
+
+    Name (B674, Buffer (0x12)
+    {
+        /* 0000 */  0x01, 0x00, 0x00, 0x00, 0x01, 0x00, 0x01, 0x01,  // ........
+        /* 0008 */  0x01, 0x01, 0x01, 0x01, 0x01, 0x01, 0x00, 0x01,  // ........
+        /* 0010 */  0x01, 0x01                                       // ..
+    })
+    /* Possible types of the Named Object */
+
+    Name (B676, Buffer (0x12)
+    {
+        /* 0000 */  0x00, 0x01, 0x01, 0x01, 0x01, 0x01, 0x01, 0x01,  // ........
+        /* 0008 */  0x01, 0x01, 0x01, 0x01, 0x01, 0x01, 0x01, 0x01,  // ........
+        /* 0010 */  0x00, 0x01                                       // ..
+    })
+    /* Possible types of the LocalX Object */
+
+    Name (B677, Buffer (0x12)
+    {
+        /* 0000 */  0x01, 0x01, 0x01, 0x01, 0x01, 0x00, 0x01, 0x01,  // ........
+        /* 0008 */  0x01, 0x01, 0x01, 0x01, 0x01, 0x01, 0x00, 0x01,  // ........
+        /* 0010 */  0x00, 0x01                                       // ..
+    })
+    /* Flags of types of Fixed type Data Objects (Fields) */
+
+    Name (B678, Buffer (0x12)
+    {
+        /* 0000 */  0x00, 0x00, 0x00, 0x00, 0x00, 0x01, 0x00, 0x00,  // ........
+        /* 0008 */  0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x01, 0x00,  // ........
+        /* 0010 */  0x00, 0x00                                       // ..
+    })
+    /* Flags of types of Computational Data Objects */
+    /* (Fields and Integer, String, Buffer) */
+    Name (B679, Buffer (0x12)
+    {
+        /* 0000 */  0x00, 0x01, 0x01, 0x01, 0x00, 0x01, 0x00, 0x00,  // ........
+        /* 0008 */  0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x01, 0x00,  // ........
+        /* 0010 */  0x00, 0x00                                       // ..
+    })
+    /* Type group numbers according with the type of an Object */
+
+    Name (B67A, Buffer (0x12)
+    {
+        /* 0000 */  0x00, 0x02, 0x02, 0x02, 0x03, 0x01, 0x05, 0x05,  // ........
+        /* 0008 */  0x04, 0x05, 0x05, 0x05, 0x05, 0x05, 0x01, 0x00,  // ........
+        /* 0010 */  0x00, 0x06                                       // ..
+    })
+    /* Flags of types not causing exceptins on Increment/Decrement */
+    /* (~ Computational Data Objects) */
+    Name (B67B, Buffer (0x12)
+    {
+        /* 0000 */  0x00, 0x01, 0x01, 0x01, 0x00, 0x01, 0x00, 0x00,  // ........
+        /* 0008 */  0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x01, 0x00,  // ........
+        /* 0010 */  0x00, 0x00                                       // ..
+    })
+    /* Flags of types that can be verified only by ObjectType */
+    /* (Not Computational Data, Package and Method Objects) */
+    Name (B67C, Buffer (0x12)
+    {
+        /* 0000 */  0x01, 0x00, 0x00, 0x00, 0x00, 0x00, 0x01, 0x01,  // ........
+        /* 0008 */  0x00, 0x01, 0x01, 0x01, 0x01, 0x01, 0x00, 0x01,  // ........
+        /* 0010 */  0x01, 0x01                                       // ..
+    })
+    /* Possible types of Package Elements */
+
+    Name (B67D, Buffer (0x12)
+    {
+        /* 0000 */  0x01, 0x01, 0x01, 0x01, 0x01, 0x00, 0x00, 0x00,  // ........
+        /* 0008 */  0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00,  // ........
+        /* 0010 */  0x00, 0x01                                       // ..
+    })
+    /* Not invalid types for Store taking into */
+    /* account the ACPICA exresop restriction: */
+    /* Needed Integer/Buffer/String/Package/Ref/Ddb */
+    Name (B67F, Buffer (0x12)
+    {
+        /* 0000 */  0x00, 0x01, 0x01, 0x01, 0x01, 0x01, 0x00, 0x00,  // ........
+        /* 0008 */  0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x01, 0x00,  // ........
+        /* 0010 */  0x00, 0x01                                       // ..
+    })
+    /* Testing Destination Named Objects */
+    /* Integers */
+    Name (I680, 0xA0A1A2A35F5E5D80)
+    Name (I681, 0xA0A1A2A35F5E5D81)
+    Name (I682, 0xA0A1A2A35F5E5D82)
+    Name (I683, 0xA0A1A2A35F5E5D83)
+    Name (I684, 0xA0A1A2A35F5E5D84)
+    Name (I685, 0xA0A1A2A35F5E5D85)
+    Name (I686, 0xA0A1A2A35F5E5D86)
+    Name (I687, 0xA0A1A2A35F5E5D87)
+    Name (I688, 0xA0A1A2A35F5E5D88)
+    Name (I689, 0xA0A1A2A35F5E5D89)
+    Name (I68A, 0xA0A1A2A35F5E5D8A)
+    Name (I68B, 0xA0A1A2A35F5E5D8B)
+    Name (I68C, 0xA0A1A2A35F5E5D8C)
+    Name (I68D, 0xA0A1A2A35F5E5D8D)
+    Name (I68E, 0xA0A1A2A35F5E5D8E)
+    Name (I68F, 0xA0A1A2A35F5E5D8F)
+    Name (I690, 0xA0A1A2A35F5E5D90)
+    Name (I691, 0xA0A1A2A35F5E5D91)
+    Name (I692, 0xA0A1A2A35F5E5D92)
+    Name (I693, 0xA0A1A2A35F5E5D93)
+    Name (I694, 0xA0A1A2A35F5E5D94)
+    Name (I695, 0xA0A1A2A35F5E5D95)
+    Name (I696, 0xA0A1A2A35F5E5D96)
+    Name (I697, 0xA0A1A2A35F5E5D97)
+    Name (I698, 0xA0A1A2A35F5E5D98)
+    Name (I699, 0xA0A1A2A35F5E5D99)
+    Name (I69A, 0xA0A1A2A35F5E5D9A)
+    Name (I69B, 0xA0A1A2A35F5E5D9B)
+    Name (I69C, 0xA0A1A2A35F5E5D9C)
+    Name (I69D, 0xA0A1A2A35F5E5D9D)
+    Name (I69E, 0xA0A1A2A35F5E5D9E)
+    Name (I69F, 0xA0A1A2A35F5E5D9F)
+    /* Strings */
+
+    Name (S680, "initial named string80")
+    Name (S681, "initial named string81")
+    Name (S682, "initial named string82")
+    Name (S683, "initial named string83")
+    Name (S684, "initial named string84")
+    Name (S685, "initial named string85")
+    Name (S686, "initial named string86")
+    Name (S687, "initial named string87")
+    Name (S688, "initial named string88")
+    Name (S689, "initial named string89")
+    Name (S68A, "initial named string8a")
+    Name (S68B, "initial named string8b")
+    Name (S68C, "initial named string8c")
+    Name (S68D, "initial named string8d")
+    Name (S68E, "initial named string8e")
+    Name (S68F, "initial named string8f")
+    Name (S690, "initial named string90")
+    Name (S691, "initial named string91")
+    Name (S692, "initial named string92")
+    Name (S693, "initial named string93")
+    Name (S694, "initial named string94")
+    Name (S695, "initial named string95")
+    Name (S696, "initial named string96")
+    Name (S697, "initial named string97")
+    Name (S698, "initial named string98")
+    Name (S699, "initial named string99")
+    Name (S69A, "initial named string9a")
+    Name (S69B, "initial named string9b")
+    Name (S69C, "initial named string9c")
+    Name (S69D, "initial named string9d")
+    Name (S69E, "initial named string9e")
+    Name (S69F, "initial named string9f")
+    /* Buffers */
+
+    Name (B680, Buffer (0x09)
+    {
+        /* 0000 */  0xF8, 0xF7, 0xF6, 0xF5, 0xF4, 0xF3, 0xF2, 0xF1,  // ........
+        /* 0008 */  0x80                                             // .
+    })
+    Name (B681, Buffer (0x09)
+    {
+        /* 0000 */  0xF8, 0xF7, 0xF6, 0xF5, 0xF4, 0xF3, 0xF2, 0xF1,  // ........
+        /* 0008 */  0x81                                             // .
+    })
+    Name (B682, Buffer (0x09)
+    {
+        /* 0000 */  0xF8, 0xF7, 0xF6, 0xF5, 0xF4, 0xF3, 0xF2, 0xF1,  // ........
+        /* 0008 */  0x82                                             // .
+    })
+    Name (B683, Buffer (0x09)
+    {
+        /* 0000 */  0xF8, 0xF7, 0xF6, 0xF5, 0xF4, 0xF3, 0xF2, 0xF1,  // ........
+        /* 0008 */  0x83                                             // .
+    })
+    Name (B684, Buffer (0x09)
+    {
+        /* 0000 */  0xF8, 0xF7, 0xF6, 0xF5, 0xF4, 0xF3, 0xF2, 0xF1,  // ........
+        /* 0008 */  0x84                                             // .
+    })
+    Name (B685, Buffer (0x09)
+    {
+        /* 0000 */  0xF8, 0xF7, 0xF6, 0xF5, 0xF4, 0xF3, 0xF2, 0xF1,  // ........
+        /* 0008 */  0x85                                             // .
+    })
+    Name (B686, Buffer (0x09)
+    {
+        /* 0000 */  0xF8, 0xF7, 0xF6, 0xF5, 0xF4, 0xF3, 0xF2, 0xF1,  // ........
+        /* 0008 */  0x86                                             // .
+    })
+    Name (B687, Buffer (0x09)
+    {
+        /* 0000 */  0xF8, 0xF7, 0xF6, 0xF5, 0xF4, 0xF3, 0xF2, 0xF1,  // ........
+        /* 0008 */  0x87                                             // .
+    })
+    Name (B688, Buffer (0x09)
+    {
+        /* 0000 */  0xF8, 0xF7, 0xF6, 0xF5, 0xF4, 0xF3, 0xF2, 0xF1,  // ........
+        /* 0008 */  0x88                                             // .
+    })
+    Name (B689, Buffer (0x09)
+    {
+        /* 0000 */  0xF8, 0xF7, 0xF6, 0xF5, 0xF4, 0xF3, 0xF2, 0xF1,  // ........
+        /* 0008 */  0x89                                             // .
+    })
+    Name (B68A, Buffer (0x09)
+    {
+        /* 0000 */  0xF8, 0xF7, 0xF6, 0xF5, 0xF4, 0xF3, 0xF2, 0xF1,  // ........
+        /* 0008 */  0x8A                                             // .
+    })
+    Name (B68B, Buffer (0x09)
+    {
+        /* 0000 */  0xF8, 0xF7, 0xF6, 0xF5, 0xF4, 0xF3, 0xF2, 0xF1,  // ........
+        /* 0008 */  0x8B                                             // .
+    })
+    Name (B68C, Buffer (0x09)
+    {
+        /* 0000 */  0xF8, 0xF7, 0xF6, 0xF5, 0xF4, 0xF3, 0xF2, 0xF1,  // ........
+        /* 0008 */  0x8C                                             // .
+    })
+    Name (B68D, Buffer (0x09)
+    {
+        /* 0000 */  0xF8, 0xF7, 0xF6, 0xF5, 0xF4, 0xF3, 0xF2, 0xF1,  // ........
+        /* 0008 */  0x8D                                             // .
+    })
+    Name (B68E, Buffer (0x09)
+    {
+        /* 0000 */  0xF8, 0xF7, 0xF6, 0xF5, 0xF4, 0xF3, 0xF2, 0xF1,  // ........
+        /* 0008 */  0x8E                                             // .
+    })
+    Name (B68F, Buffer (0x09)
+    {
+        /* 0000 */  0xF8, 0xF7, 0xF6, 0xF5, 0xF4, 0xF3, 0xF2, 0xF1,  // ........
+        /* 0008 */  0x8F                                             // .
+    })
+    Name (B690, Buffer (0x09)
+    {
+        /* 0000 */  0xF8, 0xF7, 0xF6, 0xF5, 0xF4, 0xF3, 0xF2, 0xF1,  // ........
+        /* 0008 */  0x90                                             // .
+    })
+    Name (B691, Buffer (0x09)
+    {
+        /* 0000 */  0xF8, 0xF7, 0xF6, 0xF5, 0xF4, 0xF3, 0xF2, 0xF1,  // ........
+        /* 0008 */  0x91                                             // .
+    })
+    Name (B692, Buffer (0x09)
+    {
+        /* 0000 */  0xF8, 0xF7, 0xF6, 0xF5, 0xF4, 0xF3, 0xF2, 0xF1,  // ........
+        /* 0008 */  0x92                                             // .
+    })
+    Name (B693, Buffer (0x09)
+    {
+        /* 0000 */  0xF8, 0xF7, 0xF6, 0xF5, 0xF4, 0xF3, 0xF2, 0xF1,  // ........
+        /* 0008 */  0x93                                             // .
+    })
+    Name (B694, Buffer (0x09)
+    {
+        /* 0000 */  0xF8, 0xF7, 0xF6, 0xF5, 0xF4, 0xF3, 0xF2, 0xF1,  // ........
+        /* 0008 */  0x94                                             // .
+    })
+    Name (B695, Buffer (0x09)
+    {
+        /* 0000 */  0xF8, 0xF7, 0xF6, 0xF5, 0xF4, 0xF3, 0xF2, 0xF1,  // ........
+        /* 0008 */  0x95                                             // .
+    })
+    Name (B696, Buffer (0x09)
+    {
+        /* 0000 */  0xF8, 0xF7, 0xF6, 0xF5, 0xF4, 0xF3, 0xF2, 0xF1,  // ........
+        /* 0008 */  0x96                                             // .
+    })
+    Name (B697, Buffer (0x09)
+    {
+        /* 0000 */  0xF8, 0xF7, 0xF6, 0xF5, 0xF4, 0xF3, 0xF2, 0xF1,  // ........
+        /* 0008 */  0x97                                             // .
+    })
+    Name (B698, Buffer (0x09)
+    {
+        /* 0000 */  0xF8, 0xF7, 0xF6, 0xF5, 0xF4, 0xF3, 0xF2, 0xF1,  // ........
+        /* 0008 */  0x98                                             // .
+    })
+    Name (B699, Buffer (0x09)
+    {
+        /* 0000 */  0xF8, 0xF7, 0xF6, 0xF5, 0xF4, 0xF3, 0xF2, 0xF1,  // ........
+        /* 0008 */  0x99                                             // .
+    })
+    Name (B69A, Buffer (0x09)
+    {
+        /* 0000 */  0xF8, 0xF7, 0xF6, 0xF5, 0xF4, 0xF3, 0xF2, 0xF1,  // ........
+        /* 0008 */  0x9A                                             // .
+    })
+    Name (B69B, Buffer (0x09)
+    {
+        /* 0000 */  0xF8, 0xF7, 0xF6, 0xF5, 0xF4, 0xF3, 0xF2, 0xF1,  // ........
+        /* 0008 */  0x9B                                             // .
+    })
+    Name (B69C, Buffer (0x09)
+    {
+        /* 0000 */  0xF8, 0xF7, 0xF6, 0xF5, 0xF4, 0xF3, 0xF2, 0xF1,  // ........
+        /* 0008 */  0x9C                                             // .
+    })
+    Name (B69D, Buffer (0x09)
+    {
+        /* 0000 */  0xF8, 0xF7, 0xF6, 0xF5, 0xF4, 0xF3, 0xF2, 0xF1,  // ........
+        /* 0008 */  0x9D                                             // .
+    })
+    Name (B69E, Buffer (0x09)
+    {
+        /* 0000 */  0xF8, 0xF7, 0xF6, 0xF5, 0xF4, 0xF3, 0xF2, 0xF1,  // ........
+        /* 0008 */  0x9E                                             // .
+    })
+    Name (B69F, Buffer (0x09)
+    {
+        /* 0000 */  0xF8, 0xF7, 0xF6, 0xF5, 0xF4, 0xF3, 0xF2, 0xF1,  // ........
+        /* 0008 */  0x9F                                             // .
+    })
+    /* Packages */
+
+    Name (P680, Package (0x01)
+    {
+        0x00
+    })
+    /* Buffer Fields */
+
+    Name (B675, Buffer (0x17){})
+    CreateField (B675, 0x00, 0x1F, BF80)
+    CreateField (B675, 0x23, 0x3F, BF81)
+    CreateField (B675, 0x6E, 0x45, BF82)
+    /* Auxiliary Source Named Objects */
+
+    Name (I6E0, 0xFE7CB391D650A284)
+    Name (I6E1, 0xFE7CB391D650A284)
+    Name (I6E2, 0xFE7CB391D650A284)
+    Name (I6E3, 0xFE7CB391D650A284)
+    Name (I6E4, 0xFE7CB391D650A284)
+    Name (I6E5, 0xFE7CB391D650A284)
+    Name (I6E6, 0xFE7CB391D650A284)
+    Name (I6E7, 0xFE7CB391D650A284)
+    Name (I6E8, 0xFE7CB391D650A284)
+    Name (I6E9, 0xFE7CB391D650A284)
+    Name (P690, Package (0x12)
+    {
+        0xFE7CB391D650A284, 
+        "FE7CB391D650A284", 
+        Buffer (0x08)
+        {
+             0x84, 0xA2, 0x50, 0xD6, 0x91, 0xB3, 0x7C, 0xFE   // ..P...|.
+        }, 
+
+        0xFE7CB391D650A284, 
+        "FE7CB391D650A284", 
+        Buffer (0x08)
+        {
+             0x84, 0xA2, 0x50, 0xD6, 0x91, 0xB3, 0x7C, 0xFE   // ..P...|.
+        }, 
+
+        0xFE7CB391D650A284, 
+        "FE7CB391D650A284", 
+        Buffer (0x08)
+        {
+             0x84, 0xA2, 0x50, 0xD6, 0x91, 0xB3, 0x7C, 0xFE   // ..P...|.
+        }, 
+
+        0xFE7CB391D650A284, 
+        "FE7CB391D650A284", 
+        Buffer (0x08)
+        {
+             0x84, 0xA2, 0x50, 0xD6, 0x91, 0xB3, 0x7C, 0xFE   // ..P...|.
+        }, 
+
+        0xFE7CB391D650A284, 
+        "FE7CB391D650A284", 
+        Buffer (0x08)
+        {
+             0x84, 0xA2, 0x50, 0xD6, 0x91, 0xB3, 0x7C, 0xFE   // ..P...|.
+        }, 
+
+        0xFE7CB391D650A284, 
+        "FE7CB391D650A284", 
+        Buffer (0x08)
+        {
+             0x84, 0xA2, 0x50, 0xD6, 0x91, 0xB3, 0x7C, 0xFE   // ..P...|.
+        }
+    })
+    Name (P691, Package (0x01){})
+    Name (S6E0, "FE7CB391D650A284")
+    Name (S6E1, "FE7CB391D650A284")
+    Name (S6E2, "FE7CB391D650A284")
+    Name (S6E3, "FE7CB391D650A284")
+    Name (S6E4, "FE7CB391D650A284")
+    Name (S6E5, "FE7CB391D650A284")
+    Name (S6E6, "FE7CB391D650A284")
+    Name (S6E7, "FE7CB391D650A284")
+    Name (S6E8, "FE7CB391D650A284")
+    Name (S6E9, "FE7CB391D650A284")
+    Name (B6E0, Buffer (0x08)
+    {
+         0x84, 0xA2, 0x50, 0xD6, 0x91, 0xB3, 0x7C, 0xFE   // ..P...|.
+    })
+    Name (B6E1, Buffer (0x08)
+    {
+         0x84, 0xA2, 0x50, 0xD6, 0x91, 0xB3, 0x7C, 0xFE   // ..P...|.
+    })
+    Name (B6E2, Buffer (0x08)
+    {
+         0x84, 0xA2, 0x50, 0xD6, 0x91, 0xB3, 0x7C, 0xFE   // ..P...|.
+    })
+    Name (B6E3, Buffer (0x08)
+    {
+         0x84, 0xA2, 0x50, 0xD6, 0x91, 0xB3, 0x7C, 0xFE   // ..P...|.
+    })
+    Name (B6E4, Buffer (0x08)
+    {
+         0x84, 0xA2, 0x50, 0xD6, 0x91, 0xB3, 0x7C, 0xFE   // ..P...|.
+    })
+    Name (B6E5, Buffer (0x08)
+    {
+         0x84, 0xA2, 0x50, 0xD6, 0x91, 0xB3, 0x7C, 0xFE   // ..P...|.
+    })
+    Name (B6E6, Buffer (0x08)
+    {
+         0x84, 0xA2, 0x50, 0xD6, 0x91, 0xB3, 0x7C, 0xFE   // ..P...|.
+    })
+    Name (B6E7, Buffer (0x08)
+    {
+         0x84, 0xA2, 0x50, 0xD6, 0x91, 0xB3, 0x7C, 0xFE   // ..P...|.
+    })
+    Name (B6E8, Buffer (0x08)
+    {
+         0x84, 0xA2, 0x50, 0xD6, 0x91, 0xB3, 0x7C, 0xFE   // ..P...|.
+    })
+    Name (B6E9, Buffer (0x08)
+    {
+         0x84, 0xA2, 0x50, 0xD6, 0x91, 0xB3, 0x7C, 0xFE   // ..P...|.
+    })
+    /* Matrixes of exceptions expected during an attempt to make */
+    /* a copy of the Result Object by some storing operator, */
+    /* a raw relies to the type group of a Target Object, */
+    /* a column relies to the type group of a Result Object */
+    /* (uninitialized, fixed, other computational data types, */
+    /* Package, Method, others, reference) */
+    /* Store to Named Object */
+    Name (P6A0, Package (0x07)
+    {
+        Buffer (0x07)
+        {
+             0x01, 0x00, 0x00, 0x00, 0x01, 0x01, 0x00         // .......
+        }, 
+
+        Buffer (0x07)
+        {
+             0x01, 0x00, 0x00, 0x01, 0x01, 0x01, 0x01         // .......
+        }, 
+
+        Buffer (0x07)
+        {
+             0x01, 0x00, 0x00, 0x01, 0x01, 0x01, 0x01         // .......
+        }, 
+
+        Buffer (0x07)
+        {
+             0x01, 0x01, 0x01, 0x00, 0x01, 0x01, 0x00         // .......
+        }, 
+
+        Buffer (0x07)
+        {
+             0x01, 0x01, 0x01, 0x01, 0x01, 0x01, 0x00         // .......
+        }, 
+
+        Buffer (0x07)
+        {
+             0x01, 0x01, 0x01, 0x01, 0x01, 0x01, 0x00         // .......
+        }, 
+
+        Buffer (0x07)
+        {
+             0x01, 0x00, 0x00, 0x00, 0x01, 0x01, 0x00         // .......
+        }
+    })
+    /* Store in other cases and CopyObject */
+
+    Name (P6A1, Package (0x07)
+    {
+        Buffer (0x07)
+        {
+             0x01, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00         // .......
+        }, 
+
+        Buffer (0x07)
+        {
+             0x01, 0x00, 0x00, 0x01, 0x01, 0x01, 0x01         // .......
+        }, 
+
+        Buffer (0x07)
+        {
+             0x01, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00         // .......
+        }, 
+
+        Buffer (0x07)
+        {
+             0x01, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00         // .......
+        }, 
+
+        Buffer (0x07)
+        {
+             0x01, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00         // .......
+        }, 
+
+        Buffer (0x07)
+        {
+             0x01, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00         // .......
+        }, 
+
+        Buffer (0x07)
+        {
+             0x01, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00         // .......
+        }
+    })
+    /* Matrixes of saving Target type storings */
+    /* (have sense in absence of exceptions) */
+    /* Store to Named Object */
+    Name (P6A2, Package (0x07)
+    {
+        Buffer (0x07)
+        {
+             0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00         // .......
+        }, 
+
+        Buffer (0x07)
+        {
+             0x00, 0x01, 0x01, 0x00, 0x01, 0x00, 0x00         // .......
+        }, 
+
+        Buffer (0x07)
+        {
+             0x00, 0x01, 0x01, 0x00, 0x01, 0x00, 0x00         // .......
+        }, 
+
+        Buffer (0x07)
+        {
+             0x00, 0x00, 0x00, 0x01, 0x00, 0x00, 0x00         // .......
+        }, 
+
+        Buffer (0x07)
+        {
+             0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00         // .......
+        }, 
+
+        Buffer (0x07)
+        {
+             0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00         // .......
+        }, 
+
+        Buffer (0x07)
+        {
+             0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00         // .......
+        }
+    })
+    /* Store in other cases and CopyObject */
+
+    Name (P6A3, Package (0x07)
+    {
+        Buffer (0x07)
+        {
+             0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00         // .......
+        }, 
+
+        Buffer (0x07)
+        {
+             0x00, 0x01, 0x01, 0x00, 0x00, 0x00, 0x00         // .......
+        }, 
+
+        Buffer (0x07)
+        {
+             0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00         // .......
+        }, 
+
+        Buffer (0x07)
+        {
+             0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00         // .......
+        }, 
+
+        Buffer (0x07)
+        {
+             0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00         // .......
+        }, 
+
+        Buffer (0x07)
+        {
+             0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00         // .......
+        }, 
+
+        Buffer (0x07)
+        {
+             0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00         // .......
+        }
+    })
+    /* Check Result of operation on equal to Benchmark value */
+    /* m680(<method name>, */
+    /*	<internal type of error if it occurs>, */
+    /*	<internal subtype>, */
+    /*	<Result>, */
+    /*	<Benchmark value>) */
+    Method (M680, 5, NotSerialized)
+    {
+        Local0 = ObjectType (Arg3)
+        Local1 = ObjectType (Arg4)
+        If ((Local0 != Local1))
+        {
+            ERR (Concatenate (Arg0, "-OType"), Z122, 0x0148, Arg2, 0x00, Local0, Local1)
+            Return (0x01)
+        }
+        ElseIf (DerefOf (B679 [Local0]))
+        {
+            If ((Arg3 != Arg4))
+            {
+                ERR (Arg0, Z122, 0x014C, Arg2, 0x00, Arg3, Arg4)
+                Return (0x01)
+            }
+        }
+
+        Return (0x00)
+    }
+
+    /* Return Indexed reference */
+    /* m681(<source>, <index>) */
+    Method (M681, 2, NotSerialized)
+    {
+        Return (Arg0 [Arg1])
+    }
+
+    /* Return the value of an Auxiliary Source Named Object */
+    /* m682(<type>, <index>) */
+    Method (M682, 2, Serialized)
+    {
+        Switch (ToInteger (Arg0))
+        {
+            Case (0x01)
+            {
+                Switch (ToInteger (Arg1))
+                {
+                    Case (0x00)
+                    {
+                        Return (I6E0) /* \I6E0 */
+                    }
+                    Case (0x01)
+                    {
+                        Return (I6E1) /* \I6E1 */
+                    }
+                    Case (0x02)
+                    {
+                        Return (I6E2) /* \I6E2 */
+                    }
+                    Case (0x03)
+                    {
+                        Return (I6E3) /* \I6E3 */
+                    }
+                    Case (0x04)
+                    {
+                        Return (I6E4) /* \I6E4 */
+                    }
+                    Case (0x05)
+                    {
+                        Return (I6E5) /* \I6E5 */
+                    }
+                    Case (0x06)
+                    {
+                        Return (I6E6) /* \I6E6 */
+                    }
+                    Case (0x07)
+                    {
+                        Return (I6E7) /* \I6E7 */
+                    }
+                    Case (0x08)
+                    {
+                        Return (I6E8) /* \I6E8 */
+                    }
+                    Case (0x09)
+                    {
+                        Return (I6E9) /* \I6E9 */
+                    }
+
+                }
+            }
+            Case (0x02)
+            {
+                Switch (ToInteger (Arg1))
+                {
+                    Case (0x00)
+                    {
+                        Return (S6E0) /* \S6E0 */
+                    }
+                    Case (0x01)
+                    {
+                        Return (S6E1) /* \S6E1 */
+                    }
+                    Case (0x02)
+                    {
+                        Return (S6E2) /* \S6E2 */
+                    }
+                    Case (0x03)
+                    {
+                        Return (S6E3) /* \S6E3 */
+                    }
+                    Case (0x04)
+                    {
+                        Return (S6E4) /* \S6E4 */
+                    }
+                    Case (0x05)
+                    {
+                        Return (S6E5) /* \S6E5 */
+                    }
+                    Case (0x06)
+                    {
+                        Return (S6E6) /* \S6E6 */
+                    }
+                    Case (0x07)
+                    {
+                        Return (S6E7) /* \S6E7 */
+                    }
+                    Case (0x08)
+                    {
+                        Return (S6E8) /* \S6E8 */
+                    }
+                    Case (0x09)
+                    {
+                        Return (S6E9) /* \S6E9 */
+                    }
+
+                }
+            }
+            Case (0x03)
+            {
+                Switch (ToInteger (Arg1))
+                {
+                    Case (0x00)
+                    {
+                        Return (B6E0) /* \B6E0 */
+                    }
+                    Case (0x01)
+                    {
+                        Return (B6E1) /* \B6E1 */
+                    }
+                    Case (0x02)
+                    {
+                        Return (B6E2) /* \B6E2 */
+                    }
+                    Case (0x03)
+                    {
+                        Return (B6E3) /* \B6E3 */
+                    }
+                    Case (0x04)
+                    {
+                        Return (B6E4) /* \B6E4 */
+                    }
+                    Case (0x05)
+                    {
+                        Return (B6E5) /* \B6E5 */
+                    }
+                    Case (0x06)
+                    {
+                        Return (B6E6) /* \B6E6 */
+                    }
+                    Case (0x07)
+                    {
+                        Return (B6E7) /* \B6E7 */
+                    }
+                    Case (0x08)
+                    {
+                        Return (B6E8) /* \B6E8 */
+                    }
+                    Case (0x09)
+                    {
+                        Return (B6E9) /* \B6E9 */
+                    }
+
+                }
+            }
+            Case (0xFF)
+            {
+                Local0 = 0x00
+            }
+
+        }
+
+        Return (Local0)
+    }
+
+    /* Initialize the bytes of the buffer in the range of bits */
+    /* m683(<buffer>, <bit1>, <length>, <byte>) */
+    Method (M683, 4, NotSerialized)
+    {
+        /* First byte */
+
+        Local1 = (Arg1 / 0x08)
+        /*Last byte */
+
+        Local2 = (((Arg1 + Arg2) - 0x01) / 0x08)
+        Local0 = ((Local2 + 0x01) - Local1)
+        While (Local0)
+        {
+            Arg0 [Local1] = Arg3
+            Local1++
+            Local0--
+        }
+    }
+
+    /* Return the number of the type group */
+
+    Method (M684, 1, NotSerialized)
+    {
+        Return (DerefOf (B67A [Arg0]))
+    }
+
+    /* Return flag of exception on storing */
+    /* m685(<opcode>, <target type>, <result type>, */
+    /*      <flag of being Named Source>, <flag of being Named Target>) */
+    Method (M685, 5, NotSerialized)
+    {
+        If (Arg0)
+        {
+            /* CopyObject issue */
+
+            Return (DerefOf (DerefOf (P6A1 [M684 (Arg1)]) [M684 (Arg2)]))
+        }
+        Else
+        {
+            /* Store issue */
+
+            If ((Arg3 && (Arg2 == 0x08)))
+            {
+                /* Store Named of type Method causes invocation of the Method */
+                /* which returns a String in the test */
+                Arg2 = 0x02
+            }
+
+            If (DerefOf (B67F [Arg2]))
+            {
+                /* Data can be stored */
+
+                If ((Arg4 || DerefOf (B678 [Arg1])))
+                {
+                    /* Store to Named or to Fixed Type */
+                    /* Result Object Conversion issue */
+                    Return (DerefOf (DerefOf (P6A0 [M684 (Arg1)]) [M684 (Arg2)]))
+                }
+                Else
+                {
+                    Return (0x00)
+                }
+            }
+            Else
+            {
+                Return (0x01)
+            }
+        }
+    }
+
+    /* Return flag of type saving on storing */
+    /* m686(<opcode>, <target type>, <result type>) */
+    Method (M686, 3, NotSerialized)
+    {
+        If (Arg0)
+        {
+            If ((Arg0 == 0x02))
+            {
+                /* CopyObject to Named Object issue */
+
+                Return (DerefOf (DerefOf (P6A3 [M684 (Arg1)]) [M684 (Arg2)]))
+            }
+            Else
+            {
+                Return (0x00)
+            }
+        }
+        Else
+        {
+            /* Store to Named Object issue */
+
+            Return (DerefOf (DerefOf (P6A2 [M684 (Arg1)]) [M684 (Arg2)]))
+        }
+    }
+
+    /* Store the Object by the reference */
+    /* m687(<source>, <reference>) */
+    Method (M687, 2, NotSerialized)
+    {
+        Arg1 = Arg0
+    }
+
+    /* Gathers simple statistics of Store/CopyObject operators */
+    /* m688(<name>) */
+    Method (M688, 1, Serialized)
+    {
+        /* Objects are used as Source */
+        /* Integer */
+        Name (INT0, 0xFEDCBA9876543210)
+        /* String */
+
+        Name (STR0, "source string")
+        /* Buffer */
+
+        Name (BUF0, Buffer (0x09)
+        {
+            /* 0000 */  0x09, 0x08, 0x07, 0x06, 0x05, 0x04, 0x03, 0x02,  // ........
+            /* 0008 */  0x01                                             // .
+        })
+        /* Base of Buffer Fields */
+
+        Name (BUFZ, Buffer (0x14){})
+        /* Package */
+
+        Name (PAC0, Package (0x03)
+        {
+            0xFEDCBA987654321F, 
+            "test package", 
+            Buffer (0x09)
+            {
+                /* 0000 */  0x13, 0x12, 0x11, 0x10, 0x0F, 0x0E, 0x0D, 0x0C,  // ........
+                /* 0008 */  0x0B                                             // .
+            }
+        })
+        If (Y361)
+        {
+            /* Field Unit */
+
+            Field (OPR0, ByteAcc, NoLock, Preserve)
+            {
+                FLU0,   69
+            }
+        }
+
+        /* Device */
+
+        Device (DEV0)
+        {
+            Name (S000, "DEV0")
+        }
+
+        /* Event */
+
+        Event (EVE0)
+        /* Method */
+
+        Name (MM00, "ff0X")  /* Value, returned from MMMX */
+        Method (MMM0, 0, NotSerialized)
+        {
+            Return (MM00) /* \M688.MM00 */
+        }
+
+        /* Mutex */
+
+        Mutex (MTX0, 0x00)
+        If (Y361)
+        {
+            /* Operation Region */
+
+            OperationRegion (OPR0, SystemMemory, 0x00, 0x14)
+        }
+
+        /* Power Resource */
+
+        PowerResource (PWR0, 0x00, 0x0000)
+        {
+            Name (S000, "PWR0")
+        }
+
+        /* Processor */
+
+        Processor (CPU0, 0x00, 0xFFFFFFFF, 0x00)
+        {
+            Name (S000, "CPU0")
+        }
+
+        /* Thermal Zone */
+
+        ThermalZone (TZN0)
+        {
+            Name (S000, "TZN0")
+        }
+
+        /* Buffer Field */
+
+        CreateField (BUFZ, 0x00, 0x45, BFL0)
+        /* Data to gather statistics */
+
+        Name (STCS, 0x00)
+        Name (INDM, 0xFF)
+        Name (PAC2, Package (0x01){})
+        Name (IND2, 0x00)
+        Name (PAC3, Package (0x01){})
+        Name (IND3, 0x00)
+        /* Update statistics */
+        /* m000(<type>, <shift>, <low>, <up>) */
+        Method (M000, 4, NotSerialized)
+        {
+            If ((Arg0 == 0x02))
+            {
+                If ((IND2 < INDM))
+                {
+                    Store (((Arg3 * Arg1) + Arg2), PAC2 [IND2])
+                    IND2++
+                }
+            }
+            ElseIf ((Arg0 == 0x03))
+            {
+                If ((IND3 < INDM))
+                {
+                    Store (((Arg3 * Arg1) + Arg2), PAC3 [IND3])
+                    IND3++
+                }
+            }
+        }
+
+        /* Initialize statistics */
+
+        Method (M001, 0, NotSerialized)
+        {
+            If (STCS)
+            {
+                PAC2 = Package (0xFF){}
+                IND2 = 0x00
+                PAC3 = Package (0xFF){}
+                IND3 = 0x00
+            }
+        }
+
+        /* Output statistics */
+
+        Method (M002, 1, Serialized)
+        {
+            Name (LPN0, 0x00)
+            Name (LPC0, 0x00)
+            If (STCS)
+            {
+                Debug = Arg0
+                If (IND2)
+                {
+                    Debug = "Run-time exceptions:"
+                    Debug = IND2 /* \M688.IND2 */
+                    Debug = "Types:"
+                    LPN0 = IND2 /* \M688.IND2 */
+                    LPC0 = 0x00
+                    While (LPN0)
+                    {
+                        Debug = DerefOf (PAC2 [LPC0])
+                        LPN0--
+                        LPC0++
+                    }
+                }
+
+                If (IND3)
+                {
+                    Debug = "Type mismatch:"
+                    Debug = IND3 /* \M688.IND3 */
+                    LPN0 = IND3 /* \M688.IND3 */
+                    LPC0 = 0x00
+                    While (LPN0)
+                    {
+                        Debug = DerefOf (PAC3 [LPC0])
+                        LPN0--
+                        LPC0++
+                    }
+                }
+            }
+        }
+
+        /* Check exceptions */
+
+        Method (M003, 1, NotSerialized)
+        {
+            If (CH03 (Arg0, Z122, 0x01, 0x026F, 0x00))
+            {
+                If (STCS)
+                {
+                    If ((IND2 < INDM))
+                    {
+                        PAC2 [IND2] = Arg0
+                        IND2++
+                    }
+                }
+            }
+        }
+
+        /* Check equality */
+
+        Method (M004, 3, NotSerialized)
+        {
+            If ((Arg0 != Arg1))
+            {
+                ERR (Arg0, Z122, 0x027D, 0x00, 0x00, Arg0, Arg1)
+                If (STCS)
+                {
+                    M000 (0x03, 0x0100, Arg2, Arg1)
+                }
+            }
+        }
+
+        /* Gathers statistics of Store to Local */
+
+        Method (M010, 2, NotSerialized)
+        {
+            /* Initialize statistics */
+
+            M001 ()
+            If (Arg1)
+            {
+                Local1 = 0x00
+            }
+
+            Local0 = Local1
+            M003 (ObjectType (Local1))
+            Local0 = INT0 /* \M688.INT0 */
+            M003 (ObjectType (INT0))
+            Local0 = STR0 /* \M688.STR0 */
+            M003 (ObjectType (STR0))
+            Local0 = BUF0 /* \M688.BUF0 */
+            M003 (ObjectType (BUF0))
+            Local0 = PAC0 /* \M688.PAC0 */
+            M003 (ObjectType (PAC0))
+            Local0 = FLU0 /* \M688.FLU0 */
+            M003 (ObjectType (FLU0))
+            /*
+             // Removed 09/2015: iASL now disallows stores to these objects
+             Store(DEV0, Local0)
+             m003(ObjectType(DEV0))
+             Store(EVE0, Local0)
+             m003(ObjectType(EVE0))
+             Store(MTX0, Local0)
+             m003(ObjectType(MTX0))
+             Store(OPR0, Local0)
+             m003(ObjectType(OPR0))
+             Store(PWR0, Local0)
+             m003(ObjectType(PWR0))
+             Store(CPU0, Local0)
+             m003(ObjectType(CPU0))
+             Store(TZN0, Local0)
+             m003(ObjectType(TZN0))
+             */
+            Local0 = BFL0 /* \M688.BFL0 */
+            M003 (ObjectType (BFL0))
+            /* Output statistics */
+
+            M002 ("Store to LocalX")
+        }
+
+        /* Gathers statistics of CopyObject to Local */
+
+        Method (M011, 2, NotSerialized)
+        {
+            /* Initialize statistics */
+
+            M001 ()
+            If (Arg1)
+            {
+                Local1 = 0x00
+            }
+
+            CopyObject (Local1, Local0)
+            M003 (ObjectType (Local1))
+            CopyObject (INT0, Local0)
+            M003 (ObjectType (INT0))
+            CopyObject (STR0, Local0)
+            M003 (ObjectType (STR0))
+            CopyObject (BUF0, Local0)
+            M003 (ObjectType (BUF0))
+            CopyObject (PAC0, Local0)
+            M003 (ObjectType (PAC0))
+            CopyObject (FLU0, Local0)
+            M003 (ObjectType (FLU0))
+            CopyObject (DEV0, Local0)
+            M003 (ObjectType (DEV0))
+            CopyObject (EVE0, Local0)
+            M003 (ObjectType (EVE0))
+            CopyObject (MMM0 (), Local0)
+            M003 (ObjectType (MMM0))
+            CopyObject (MTX0, Local0)
+            M003 (ObjectType (MTX0))
+            CopyObject (OPR0, Local0)
+            M003 (ObjectType (OPR0))
+            CopyObject (PWR0, Local0)
+            M003 (ObjectType (PWR0))
+            CopyObject (CPU0, Local0)
+            M003 (ObjectType (CPU0))
+            CopyObject (TZN0, Local0)
+            M003 (ObjectType (TZN0))
+            CopyObject (BFL0, Local0)
+            M003 (ObjectType (BFL0))
+            /* Output statistics */
+
+            M002 ("CopyObject to LocalX")
+        }
+
+        /* Gathers statistics of CopyObject to Integer */
+
+        Method (M012, 2, Serialized)
+        {
+            /* Integer */
+
+            Name (INT1, 0xFEDCBA9876543211)
+            Name (INT2, 0xFEDCBA9876543212)
+            Name (INT3, 0xFEDCBA9876543213)
+            Name (INT4, 0xFEDCBA9876543214)
+            Name (INT5, 0xFEDCBA9876543215)
+            Name (INT6, 0xFEDCBA9876543216)
+            Name (INT7, 0xFEDCBA9876543217)
+            Name (INT8, 0xFEDCBA9876543218)
+            Name (INT9, 0xFEDCBA9876543219)
+            Name (INTA, 0xFEDCBA987654321A)
+            Name (INTB, 0xFEDCBA987654321B)
+            Name (INTC, 0xFEDCBA987654321C)
+            Name (INTD, 0xFEDCBA987654321D)
+            Name (INTE, 0xFEDCBA987654321E)
+            Name (INTF, 0xFEDCBA987654321F)
+            /* Initialize statistics */
+
+            M001 ()
+            If (Arg1)
+            {
+                Local1 = 0x00
+            }
+
+            CopyObject (Local1, INTF) /* \M688.M012.INTF */
+            M003 (ObjectType (Local1))
+            M004 (Arg0, ObjectType (INTF), 0x00)
+            CopyObject (INT0, INT1) /* \M688.M012.INT1 */
+            M003 (ObjectType (INT0))
+            M004 (Arg0, ObjectType (INT1), 0x01)
+            CopyObject (STR0, INT2) /* \M688.M012.INT2 */
+            M003 (ObjectType (STR0))
+            M004 (Arg0, ObjectType (INT2), 0x02)
+            CopyObject (BUF0, INT3) /* \M688.M012.INT3 */
+            M003 (ObjectType (BUF0))
+            M004 (Arg0, ObjectType (INT3), 0x03)
+            CopyObject (PAC0, INT4) /* \M688.M012.INT4 */
+            M003 (ObjectType (PAC0))
+            M004 (Arg0, ObjectType (INT4), 0x04)
+            CopyObject (FLU0, INT5) /* \M688.M012.INT5 */
+            M003 (ObjectType (FLU0))
+            M004 (Arg0, ObjectType (INT5), 0x05)
+            CopyObject (DEV0, INT6) /* \M688.M012.INT6 */
+            M003 (ObjectType (DEV0))
+            M004 (Arg0, ObjectType (INT6), 0x06)
+            CopyObject (EVE0, INT7) /* \M688.M012.INT7 */
+            M003 (ObjectType (EVE0))
+            M004 (Arg0, ObjectType (INT7), 0x07)
+            CopyObject (MMM0 (), INT8) /* \M688.M012.INT8 */
+            M003 (ObjectType (MMM0))
+            M004 (Arg0, ObjectType (INT8), 0x08)
+            CopyObject (MTX0, INT9) /* \M688.M012.INT9 */
+            M003 (ObjectType (MTX0))
+            M004 (Arg0, ObjectType (INT9), 0x09)
+            CopyObject (OPR0, INTA) /* \M688.M012.INTA */
+            M003 (ObjectType (OPR0))
+            M004 (Arg0, ObjectType (INTA), 0x0A)
+            CopyObject (PWR0, INTB) /* \M688.M012.INTB */
+            M003 (ObjectType (PWR0))
+            M004 (Arg0, ObjectType (INTB), 0x0B)
+            CopyObject (CPU0, INTC) /* \M688.M012.INTC */
+            M003 (ObjectType (CPU0))
+            M004 (Arg0, ObjectType (INTC), 0x0C)
+            CopyObject (TZN0, INTD) /* \M688.M012.INTD */
+            M003 (ObjectType (TZN0))
+            M004 (Arg0, ObjectType (INTD), 0x0D)
+            CopyObject (BFL0, INTE) /* \M688.M012.INTE */
+            M003 (ObjectType (BFL0))
+            M004 (Arg0, ObjectType (INTE), 0x0E)
+            /* Output statistics */
+
+            M002 ("CopyObject to Integer Named Object")
+        }
+
+        M010 (Concatenate (Arg0, "-m010"), 0x00)
+        M011 (Concatenate (Arg0, "-m011"), 0x00)
+        M012 (Concatenate (Arg0, "-m012"), 0x00)
+    }
+
+    /* Verify storing of an immediate Source Object into different kinds */
+    /* of Target Objects by means of the specified operator (Store/CopyObject) */
+    /* m689(<name>, <store op>, <exc. conditions>) */
+    Method (M689, 3, Serialized)
+    {
+        /* Object-initializers are used either with Source or Target */
+        /* (names ended by 0 and 1 respectively) */
+        /* Integer */
+        Name (INT0, 0xFEDCBA9876543210)
+        Name (INT1, 0xFEDCBA9876543211)
+        /* String */
+
+        Name (STR0, "source string")
+        Name (STR1, "target string")
+        /* Buffer */
+
+        Name (BUF0, Buffer (0x09)
+        {
+            /* 0000 */  0x09, 0x08, 0x07, 0x06, 0x05, 0x04, 0x03, 0x02,  // ........
+            /* 0008 */  0x01                                             // .
+        })
+        Name (BUF1, Buffer (0x11)
+        {
+             0xC3                                             // .
+        })
+        /* Initializer of Fields */
+
+        Name (BUF2, Buffer (0x09)
+        {
+            /* 0000 */  0x95, 0x85, 0x75, 0x65, 0x55, 0x45, 0x35, 0x25,  // ..ueUE5%
+            /* 0008 */  0x15                                             // .
+        })
+        /* Base of Buffer Fields */
+
+        Name (BUFZ, Buffer (0x30){})
+        /* Package */
+
+        Name (PAC0, Package (0x03)
+        {
+            0xFEDCBA987654321F, 
+            "test package", 
+            Buffer (0x09)
+            {
+                /* 0000 */  0x13, 0x12, 0x11, 0x10, 0x0F, 0x0E, 0x0D, 0x0C,  // ........
+                /* 0008 */  0x0B                                             // .
+            }
+        })
+        Name (PAC1, Package (0x01)
+        {
+            "target package"
+        })
+        If (Y361)
+        {
+            /* Field Unit */
+
+            Field (OPR0, ByteAcc, NoLock, Preserve)
+            {
+                FLU0,   69, 
+                FLU2,   64, 
+                FLU4,   32
+            }
+        }
+
+        /* Device */
+
+        Device (DEV0)
+        {
+            Name (S000, "DEV0")
+        }
+
+        Device (DEV1)
+        {
+            Name (S000, "DEV1")
+        }
+
+        /* Event */
+
+        Event (EVE0)
+        Event (EVE1)
+        /* Method */
+
+        Name (MM00, "ff0X")  /* Value, returned from MMMX */
+        Name (MM01, "ff1Y")  /* Value, returned from MMMY */
+        Name (MMM0, 0x00)   /* Method as Source Object */
+        Name (MMM1, 0x00)   /* Method as Target Object */
+        Method (MMMX, 0, NotSerialized)
+        {
+            Return (MM00) /* \M689.MM00 */
+        }
+
+        Method (MMMY, 0, NotSerialized)
+        {
+            Return (MM01) /* \M689.MM01 */
+        }
+
+        /* Mutex */
+
+        Mutex (MTX0, 0x00)
+        Mutex (MTX1, 0x00)
+        If (Y361)
+        {
+            /* Operation Region */
+
+            OperationRegion (OPR0, SystemMemory, 0x00, 0x30)
+            OperationRegion (OPR1, SystemMemory, 0x00, 0x18)
+        }
+
+        /* Power Resource */
+
+        PowerResource (PWR0, 0x00, 0x0000)
+        {
+            Name (S000, "PWR0")
+        }
+
+        PowerResource (PWR1, 0x00, 0x0000)
+        {
+            Name (S000, "PWR1")
+        }
+
+        /* Processor */
+
+        Processor (CPU0, 0x00, 0xFFFFFFFF, 0x00)
+        {
+            Name (S000, "CPU0")
+        }
+
+        Processor (CPU1, 0x00, 0xFFFFFFFF, 0x00)
+        {
+            Name (S000, "CPU1")
+        }
+
+        /* Thermal Zone */
+
+        ThermalZone (TZN0)
+        {
+            Name (S000, "TZN0")
+        }
+
+        ThermalZone (TZN1)
+        {
+            Name (S000, "TZN1")
+        }
+
+        /* Buffer Field */
+
+        CreateField (BUFZ, 0x00, 0x45, BFL0)
+        CreateField (BUFZ, 0x50, 0x40, BFL2)
+        CreateField (BUFZ, 0xA0, 0x20, BFL4)
+        /* Reference */
+
+        Name (ORF0, "ORF0")
+        Name (REF0, Package (0x01){})
+        Name (ORF1, "ORF0")
+        Name (REF1, Package (0x01){})
+        /* Data to gather statistics */
+
+        Name (STCS, 0x00)
+        Name (INDM, 0xFF)
+        Name (PAC2, Package (0x01){})
+        Name (IND2, 0x00)
+        Name (PAC3, Package (0x01){})
+        Name (IND3, 0x00)
+        Name (PAC4, Package (0x02)
+        {
+            "Store", 
+            "Copyobject"
+        })
+        Name (PAC5, Package (0x07)
+        {
+            "Storing Named-Named with ", 
+            "Storing Named-LocalX with ", 
+            "Storing LocalX-Named with ", 
+            "Storing LocalX-LocalX with ", 
+            "Storing Named-ArgX(Named on read-only argument rule) with ", 
+            "Storing Named-ArgX(Named by reference) with ", 
+            "Storing LocalX-Element of Package with "
+        })
+        Name (TERR, "-test error")
+        /* Update statistics */
+        /* m000(<type>, <shift>, <low>, <up>) */
+        Method (M000, 4, NotSerialized)
+        {
+            If ((Arg0 == 0x02))
+            {
+                If ((IND2 < INDM))
+                {
+                    Store (((Arg3 * Arg1) + Arg2), PAC2 [IND2])
+                    IND2++
+                }
+            }
+            ElseIf ((Arg0 == 0x03))
+            {
+                If ((IND3 < INDM))
+                {
+                    Store (((Arg3 * Arg1) + Arg2), PAC3 [IND3])
+                    IND3++
+                }
+            }
+        }
+
+        /* Initialize statistics */
+
+        Method (M001, 0, NotSerialized)
+        {
+            If (STCS)
+            {
+                PAC2 = Package (INDM){}
+                IND2 = 0x00
+                PAC3 = Package (INDM){}
+                IND3 = 0x00
+            }
+        }
+
+        /* Output statistics */
+
+        Method (M002, 1, Serialized)
+        {
+            Name (LPN0, 0x00)
+            Name (LPC0, 0x00)
+            If (STCS)
+            {
+                Debug = Arg0
+                If (IND2)
+                {
+                    Debug = "Run-time exceptions:"
+                    Debug = IND2 /* \M689.IND2 */
+                    Debug = "Types:"
+                    LPN0 = IND2 /* \M689.IND2 */
+                    LPC0 = 0x00
+                    While (LPN0)
+                    {
+                        Debug = DerefOf (PAC2 [LPC0])
+                        LPN0--
+                        LPC0++
+                    }
+                }
+
+                If (IND3)
+                {
+                    Debug = "Type mismatch:"
+                    Debug = IND3 /* \M689.IND3 */
+                    LPN0 = IND3 /* \M689.IND3 */
+                    LPC0 = 0x00
+                    While (LPN0)
+                    {
+                        Debug = DerefOf (PAC3 [LPC0])
+                        LPN0--
+                        LPC0++
+                    }
+                }
+            }
+        }
+
+        /* Prepare Target of specified type */
+
+        Method (M003, 4, Serialized)
+        {
+            Switch (ToInteger (Arg1))
+            {
+                Case (0x00)
+                {
+                                /* Only check */
+                }
+                Case (0x01)
+                {
+                    CopyObject (DerefOf (Arg3), INT1) /* \M689.INT1 */
+                    CopyObject (INT1, Arg2)
+                }
+                Case (0x02)
+                {
+                    CopyObject (DerefOf (Arg3), STR1) /* \M689.STR1 */
+                    CopyObject (STR1, Arg2)
+                }
+                Case (0x03)
+                {
+                    If (Y136)
+                    {
+                        CopyObject (DerefOf (Arg3), BUF1) /* \M689.BUF1 */
+                    }
+                    Else
+                    {
+                        M687 (DerefOf (Arg3), RefOf (BUF1))
+                    }
+
+                    CopyObject (BUF1, Arg2)
+                }
+                Case (0x04)
+                {
+                    CopyObject (DerefOf (Arg3), PAC1) /* \M689.PAC1 */
+                    CopyObject (PAC1, Arg2)
+                }
+                Case (0x05)
+                {
+                                /* Check only */
+                }
+                Case (0x06)
+                {
+                    CopyObject (DEV1, Arg2)
+                }
+                Case (0x07)
+                {
+                    CopyObject (EVE1, Arg2)
+                }
+                Case (0x08)
+                {
+                    CopyObject (DerefOf (DerefOf (Arg3) [0x00]), MMM1) /* \M689.MMM1 */
+                    CopyObject (DerefOf (DerefOf (Arg3) [0x01]), MM01) /* \M689.MM01 */
+                    CopyObject (DerefOf (RefOf (MMM1)), Arg2)
+                }
+                Case (0x09)
+                {
+                    CopyObject (MTX1, Arg2)
+                }
+                Case (0x0A)
+                {
+                    CopyObject (OPR1, Arg2)
+                }
+                Case (0x0B)
+                {
+                    CopyObject (PWR1, Arg2)
+                }
+                Case (0x0C)
+                {
+                    CopyObject (CPU1, Arg2)
+                }
+                Case (0x0D)
+                {
+                    CopyObject (TZN1, Arg2)
+                }
+                Case (0x0E)
+                {
+                                /* Check only */
+                }
+                Case (0x11)
+                {
+                    CopyObject (RefOf (ORF1), REF1) /* \M689.REF1 */
+                    /*if (y522) { */
+
+                    CopyObject (REF1, Arg2)
+                                /*} else { */
+                /*	CopyObject(DeRefof(REF1), arg2) */
+                /*} */
+                }
+                /* Unexpected Target Type */
+
+                Default
+                {
+                    ERR (Concatenate (Arg0, TERR), Z122, 0x0452, 0x00, 0x00, Arg1, 0x00)
+                    Return (0x01)
+                }
+
+            }
+
+            If (CH03 (Arg0, Z122, 0x05, 0x0456, 0x00))
+            {
+                /*Exception during preparing of Target Object */
+
+                Return (0x01)
+            }
+
+            If ((Arg1 == 0x11))
+            {
+                /* Reference */
+
+                Return (0x00)
+            }
+
+            Local0 = ObjectType (Arg2)
+            If ((Local0 != Arg1))
+            {
+                /* ObjectType of Target can not be set up */
+
+                ERR (Arg0, Z122, 0x0463, 0x00, 0x00, Local0, Arg1)
+                Return (0x01)
+            }
+
+            Return (0x00)
+        }
+
+        /* Prepare Source of specified type */
+
+        Method (M004, 4, Serialized)
+        {
+            Switch (ToInteger (Arg1))
+            {
+                Case (0x00)
+                {
+                }
+                Case (0x01)
+                {
+                    CopyObject (DerefOf (Arg3), INT0) /* \M689.INT0 */
+                    CopyObject (INT0, Arg2)
+                }
+                Case (0x02)
+                {
+                    CopyObject (DerefOf (Arg3), STR0) /* \M689.STR0 */
+                    CopyObject (STR0, Arg2)
+                }
+                Case (0x03)
+                {
+                    If (Y136)
+                    {
+                        CopyObject (DerefOf (Arg3), BUF0) /* \M689.BUF0 */
+                    }
+                    Else
+                    {
+                        M687 (DerefOf (Arg3), RefOf (BUF0))
+                    }
+
+                    CopyObject (BUF0, Arg2)
+                }
+                Case (0x04)
+                {
+                    CopyObject (DerefOf (Arg3), PAC0) /* \M689.PAC0 */
+                    CopyObject (PAC0, Arg2)
+                }
+                Case (0x05)
+                {
+                    Local0 = DerefOf (DerefOf (Arg3) [0x00])
+                    If ((Local0 == 0x00))
+                    {
+                        FLU0 = DerefOf (DerefOf (Arg3) [0x01])
+                    }
+                    ElseIf ((Local0 == 0x01))
+                    {
+                        FLU2 = DerefOf (DerefOf (Arg3) [0x01])
+                    }
+                    Else
+                    {
+                        FLU4 = DerefOf (DerefOf (Arg3) [0x01])
+                    }
+                }
+                Case (0x06)
+                {
+                    CopyObject (DEV0, Arg2)
+                }
+                Case (0x07)
+                {
+                    CopyObject (EVE0, Arg2)
+                }
+                Case (0x08)
+                {
+                    CopyObject (DerefOf (DerefOf (Arg3) [0x00]), MMM0) /* \M689.MMM0 */
+                    CopyObject (DerefOf (DerefOf (Arg3) [0x01]), MM00) /* \M689.MM00 */
+                    CopyObject (DerefOf (RefOf (MMM0)), Arg2)
+                }
+                Case (0x09)
+                {
+                    CopyObject (MTX0, Arg2)
+                }
+                Case (0x0A)
+                {
+                    CopyObject (OPR0, Arg2)
+                }
+                Case (0x0B)
+                {
+                    CopyObject (PWR0, Arg2)
+                }
+                Case (0x0C)
+                {
+                    CopyObject (CPU0, Arg2)
+                }
+                Case (0x0D)
+                {
+                    CopyObject (TZN0, Arg2)
+                }
+                Case (0x0E)
+                {
+                    Local0 = DerefOf (DerefOf (Arg3) [0x00])
+                    If ((Local0 == 0x00))
+                    {
+                        BFL0 = DerefOf (DerefOf (Arg3) [0x01])
+                    }
+                    ElseIf ((Local0 == 0x01))
+                    {
+                        BFL2 = DerefOf (DerefOf (Arg3) [0x01])
+                    }
+                    Else
+                    {
+                        BFL4 = DerefOf (DerefOf (Arg3) [0x01])
+                    }
+                }
+                Case (0x11)
+                {
+                    CopyObject (RefOf (ORF0), REF0) /* \M689.REF0 */
+                    /*if (y522) { */
+
+                    CopyObject (REF0, Arg2)
+                                /*} else { */
+                /*	CopyObject(DeRefof(REF0), arg2) */
+                /*} */
+                }
+                /* Unexpected Source Type */
+
+                Default
+                {
+                    ERR (Concatenate (Arg0, TERR), Z122, 0x04BC, 0x00, 0x00, Arg1, 0x00)
+                    Return (0x01)
+                }
+
+            }
+
+            If (CH03 (Arg0, Z122, 0x08, 0x04C0, 0x00))
+            {
+                /* Exception during preparing of Source Object */
+
+                Return (0x01)
+            }
+
+            If ((Arg1 == 0x11))
+            {
+                /* Reference */
+
+                Return (0x00)
+            }
+
+            Local0 = ObjectType (Arg2)
+            If ((Local0 != Arg1))
+            {
+                /* ObjectType of Source can not be set up */
+
+                ERR (Arg0, Z122, 0x04CD, 0x00, 0x00, Local0, Arg1)
+                Return (0x01)
+            }
+
+            Return (0x00)
+        }
+
+        /* Check Source Object type is not corrupted after storing, */
+        /* for the computational data types verify its value against */
+        /* the Object-initializer value */
+        Method (M005, 4, Serialized)
+        {
+            Name (MMM2, 0x00) /* An auxiliary Object to invoke Method */
+            If ((Arg1 == 0x11))
+            {
+                /* Source object is a reference */
+                /* Check that it can be used as reference */
+                Local0 = DerefOf (Arg2)
+                Local3 = DerefOf (Local0)
+                If (CH03 (Arg0, Z122, 0x0A, 0x04E0, Local0))
+                {
+                    /* Derefof caused unexpected exception */
+
+                    Return (0x01)
+                }
+
+                Return (0x00)
+            }
+
+            Local0 = ObjectType (Arg2)
+            If ((Local0 != Arg1))
+            {
+                /* ObjectType of Source object is corrupted */
+
+                ERR (Arg0, Z122, 0x04EA, 0x00, 0x00, Local0, Arg1)
+                Return (0x01)
+            }
+
+            Switch (ToInteger (Arg1))
+            {
+                Case (0x00)
+                {
+                    Return (0x00)
+                }
+                Case (0x01)
+                {
+                    Local0 = ObjectType (INT0)
+                }
+                Case (0x02)
+                {
+                    Local0 = ObjectType (STR0)
+                }
+                Case (0x03)
+                {
+                    Local0 = ObjectType (BUF0)
+                }
+                Case (0x04)
+                {
+                    Local0 = ObjectType (PAC0)
+                }
+                Case (0x05)
+                {
+                    Local0 = DerefOf (DerefOf (Arg3) [0x00])
+                    If ((Local0 == 0x00))
+                    {
+                        Local0 = ObjectType (FLU0)
+                    }
+                    ElseIf ((Local0 == 0x01))
+                    {
+                        Local0 = ObjectType (FLU2)
+                    }
+                    Else
+                    {
+                        Local0 = ObjectType (FLU4)
+                    }
+                }
+                Case (0x06)
+                {
+                    Local0 = ObjectType (DEV0)
+                }
+                Case (0x07)
+                {
+                    Local0 = ObjectType (EVE0)
+                }
+                Case (0x08)
+                {
+                    Local0 = ObjectType (MMM0)
+                }
+                Case (0x09)
+                {
+                    Local0 = ObjectType (MTX0)
+                }
+                Case (0x0A)
+                {
+                    Local0 = ObjectType (OPR0)
+                }
+                Case (0x0B)
+                {
+                    Local0 = ObjectType (PWR0)
+                }
+                Case (0x0C)
+                {
+                    Local0 = ObjectType (CPU0)
+                }
+                Case (0x0D)
+                {
+                    Local0 = ObjectType (TZN0)
+                }
+                Case (0x0E)
+                {
+                    Local0 = DerefOf (DerefOf (Arg3) [0x00])
+                    If ((Local0 == 0x00))
+                    {
+                        Local0 = ObjectType (BFL0)
+                    }
+                    ElseIf ((Local0 == 0x01))
+                    {
+                        Local0 = ObjectType (BFL2)
+                    }
+                    Else
+                    {
+                        Local0 = ObjectType (BFL4)
+                    }
+                }
+                /* Unexpected Result Type */
+
+                Default
+                {
+                    ERR (Arg0, Z122, 0x052C, 0x00, 0x00, Arg1, 0x00)
+                    Return (0x01)
+                }
+
+            }
+
+            If ((Local0 != Arg1))
+            {
+                /* Mismatch of Source Type against specified Result Type */
+
+                ERR (Arg0, Z122, 0x0533, 0x00, 0x00, Local0, Arg1)
+                If (STCS)
+                {
+                    M000 (0x03, 0x01000000, Local0, Arg1)
+                }
+
+                Return (0x01)
+            }
+            Else
+            {
+                /* Check equality of the Source value to the Object-initializer one */
+
+                Switch (ToInteger (Arg1))
+                {
+                    Case (0x01)
+                    {
+                        If ((INT0 != DerefOf (Arg3)))
+                        {
+                            ERR (Arg0, Z122, 0x053D, 0x00, 0x00, INT0, DerefOf (Arg3))
+                            Return (0x01)
+                        }
+
+                        If ((DerefOf (Arg2) != INT0))
+                        {
+                            ERR (Arg0, Z122, 0x0541, 0x00, 0x00, DerefOf (Arg2), INT0)
+                            Return (0x01)
+                        }
+                    }
+                    Case (0x02)
+                    {
+                        If ((STR0 != DerefOf (Arg3)))
+                        {
+                            ERR (Arg0, Z122, 0x0547, 0x00, 0x00, STR0, DerefOf (Arg3))
+                            Return (0x01)
+                        }
+
+                        If ((DerefOf (Arg2) != STR0))
+                        {
+                            ERR (Arg0, Z122, 0x054B, 0x00, 0x00, DerefOf (Arg2), STR0)
+                            Return (0x01)
+                        }
+                    }
+                    Case (0x03)
+                    {
+                        If ((BUF0 != DerefOf (Arg3)))
+                        {
+                            ERR (Arg0, Z122, 0x0551, 0x00, 0x00, BUF0, DerefOf (Arg3))
+                            Return (0x01)
+                        }
+
+                        If ((DerefOf (Arg2) != BUF0))
+                        {
+                            ERR (Arg0, Z122, 0x0555, 0x00, 0x00, DerefOf (Arg2), BUF0)
+                            Return (0x01)
+                        }
+                    }
+                    Case (0x04)
+                    {
+                        Local0 = SizeOf (PAC0)
+                        If ((SizeOf (Arg3) != Local0))
+                        {
+                            ERR (Arg0, Z122, 0x055D, 0x00, 0x00, SizeOf (Arg3), Local0)
+                            Return (0x01)
+                        }
+
+                        While (Local0)
+                        {
+                            Local0--
+                            Local1 = ObjectType (DerefOf (DerefOf (Arg3) [Local0]))
+                            Local2 = ObjectType (DerefOf (PAC0 [Local0]))
+                            If ((Local1 != Local2))
+                            {
+                                /* ObjectType is corrupted */
+
+                                ERR (Arg0, Z122, 0x0566, 0x00, 0x00, Local1, Local2)
+                                Return (0x01)
+                            }
+                            ElseIf (DerefOf (B679 [Local1]))
+                            {
+                                /* the computational data type */
+
+                                If ((DerefOf (DerefOf (Arg3) [Local0]) != DerefOf (PAC0 [
+                                    Local0])))
+                                {
+                                    /* The value is corrupted */
+
+                                    ERR (Arg0, Z122, 0x056E, 0x00, 0x00, DerefOf (DerefOf (Arg3) [Local0]), 
+                                        Local0)
+                                    Return (0x01)
+                                }
+                            }
+                        }
+
+                        Local0 = SizeOf (PAC0)
+                        If ((SizeOf (Arg2) != Local0))
+                        {
+                            ERR (Arg0, Z122, 0x0576, 0x00, 0x00, SizeOf (Arg2), Local0)
+                            Return (0x01)
+                        }
+
+                        While (Local0)
+                        {
+                            Local0--
+                            Local1 = ObjectType (DerefOf (DerefOf (Arg2) [Local0]))
+                            Local2 = ObjectType (DerefOf (PAC0 [Local0]))
+                            If ((Local1 != Local2))
+                            {
+                                /* ObjectType is corrupted */
+
+                                ERR (Arg0, Z122, 0x057F, 0x00, 0x00, Local1, Local2)
+                                Return (0x01)
+                            }
+                            ElseIf (DerefOf (B679 [Local1]))
+                            {
+                                /* the computational data type */
+
+                                If ((DerefOf (DerefOf (Arg2) [Local0]) != DerefOf (PAC0 [
+                                    Local0])))
+                                {
+                                    /* The value is corrupted */
+
+                                    ERR (Arg0, Z122, 0x0587, 0x00, 0x00, DerefOf (DerefOf (Arg2) [Local0]), 
+                                        Local0)
+                                    Return (0x01)
+                                }
+                            }
+                        }
+                    }
+                    Case (0x05)
+                    {
+                        Local0 = DerefOf (DerefOf (Arg3) [0x00])
+                        If ((Local0 == 0x00))
+                        {
+                            If ((FLU0 != DerefOf (DerefOf (Arg3) [0x01])))
+                            {
+                                ERR (Arg0, Z122, 0x0591, 0x00, 0x00, FLU0, DerefOf (DerefOf (Arg3) [0x01]
+                                    ))
+                                Return (0x01)
+                            }
+
+                            If ((DerefOf (Arg2) != FLU0))
+                            {
+                                ERR (Arg0, Z122, 0x0595, 0x00, 0x00, DerefOf (Arg2), FLU0)
+                                Return (0x01)
+                            }
+                        }
+                        ElseIf ((Local0 == 0x01))
+                        {
+                            If ((FLU2 != DerefOf (DerefOf (Arg3) [0x01])))
+                            {
+                                ERR (Arg0, Z122, 0x059A, 0x00, 0x00, FLU2, DerefOf (DerefOf (Arg3) [0x01]
+                                    ))
+                                Return (0x01)
+                            }
+
+                            If ((DerefOf (Arg2) != FLU2))
+                            {
+                                ERR (Arg0, Z122, 0x059E, 0x00, 0x00, DerefOf (Arg2), FLU2)
+                                Return (0x01)
+                            }
+                        }
+                        Else
+                        {
+                            If ((FLU4 != DerefOf (DerefOf (Arg3) [0x01])))
+                            {
+                                ERR (Arg0, Z122, 0x05A3, 0x00, 0x00, FLU4, DerefOf (DerefOf (Arg3) [0x01]
+                                    ))
+                                Return (0x01)
+                            }
+
+                            If ((DerefOf (Arg2) != FLU4))
+                            {
+                                ERR (Arg0, Z122, 0x05A7, 0x00, 0x00, DerefOf (Arg2), FLU4)
+                                Return (0x01)
+                            }
+                        }
+                    }
+                    Case (0x08)
+                    {
+                        CopyObject (DerefOf (Arg2), MMM2) /* \M689.M005.MMM2 */
+                        If ((MMM2 != MMM0))
+                        {
+                            ERR (Arg0, Z122, 0x05AF, 0x00, 0x00, MMM2, MMM0)
+                            Return (0x01)
+                        }
+                    }
+                    Case (0x0E)
+                    {
+                        Local0 = DerefOf (DerefOf (Arg3) [0x00])
+                        If ((Local0 == 0x00))
+                        {
+                            If ((BFL0 != DerefOf (DerefOf (Arg3) [0x01])))
+                            {
+                                ERR (Arg0, Z122, 0x05B7, 0x00, 0x00, BFL0, DerefOf (DerefOf (Arg3) [0x01]
+                                    ))
+                                Return (0x01)
+                            }
+
+                            If ((DerefOf (Arg2) != BFL0))
+                            {
+                                ERR (Arg0, Z122, 0x05BB, 0x00, 0x00, DerefOf (Arg2), BFL0)
+                                Return (0x01)
+                            }
+                        }
+                        ElseIf ((Local0 == 0x01))
+                        {
+                            If ((BFL2 != DerefOf (DerefOf (Arg3) [0x01])))
+                            {
+                                ERR (Arg0, Z122, 0x05C0, 0x00, 0x00, BFL2, DerefOf (DerefOf (Arg3) [0x01]
+                                    ))
+                                Return (0x01)
+                            }
+
+                            If ((DerefOf (Arg2) != BFL2))
+                            {
+                                ERR (Arg0, Z122, 0x05C4, 0x00, 0x00, DerefOf (Arg2), BFL2)
+                                Return (0x01)
+                            }
+                        }
+                        Else
+                        {
+                            If ((BFL4 != DerefOf (DerefOf (Arg3) [0x01])))
+                            {
+                                ERR (Arg0, Z122, 0x05C9, 0x00, 0x00, BFL4, DerefOf (DerefOf (Arg3) [0x01]
+                                    ))
+                                Return (0x01)
+                            }
+
+                            If ((DerefOf (Arg2) != BFL4))
+                            {
+                                ERR (Arg0, Z122, 0x05CD, 0x00, 0x00, DerefOf (Arg2), BFL4)
+                                Return (0x01)
+                            }
+                        }
+                    }
+
+                }
+            }
+
+            Return (0x00)
+        }
+
+        /* Check Target Object to have the expected type and value */
+        /* m006(<msg>, <ref to target>, <target type>, <result object type>, */
+        /*      <op>, <target save type>, <test data package>) */
+        Method (M006, 7, Serialized)
+        {
+            Name (MMM2, 0x00) /* An auxiliary Object to invoke Method */
+            Local2 = ObjectType (Arg1)
+            If ((Local2 != Arg2))
+            {
+                If (STCS)
+                {
+                    M000 (0x03, 0x00010000, Arg2, Local2)
+                }
+            }
+
+            If (M686 (Arg5, Arg2, Arg3))
+            {
+                /* Target must save type */
+
+                If ((Local2 != Arg2))
+                {
+                    /* Types mismatch Target/Target on storing */
+
+                    If ((Arg2 == C016))
+                    {
+                        If (X170){                        /*this sentence is for m00d and invalid, removed. */
+                        /*err(arg0, z122, __LINE__, 0, 0, Local2, arg2) */
+                        }
+                    }
+                    Else
+                    {
+                        ERR (Arg0, Z122, 0x05EE, 0x00, 0x00, Local2, Arg2)
+                    }
+
+                    If (STCS)
+                    {
+                        M000 (0x03, 0x0100, Arg2, Local2)
+                    }
+
+                    Return (0x01)
+                }
+            }
+            ElseIf            /* Target if it is not of fixed type */
+            /* must accept type of the Result Object */
+ ((Local2 != Arg3))
+            {
+                If ((M684 (Arg3) == 0x06))
+                {
+                    /* Result object is a reference */
+                    /* Check that Target can be used as reference */
+                    Local0 = DerefOf (Arg1)
+                    Local3 = DerefOf (Local0)
+                    If (CH03 (Arg0, Z122, 0x28, 0x05FF, Arg3))
+                    {
+                        /* Derefof caused unexpected exception */
+
+                        Return (0x01)
+                    }
+                }
+                ElseIf ((M684 (Arg3) != 0x01))
+                {
+                    /* Types mismatch Result/Target on storing */
+
+                    ERR (Arg0, Z122, 0x0605, 0x00, 0x00, Local2, Arg3)
+                    Return (0x01)
+                }
+                ElseIf ((Local2 != 0x03))
+                {
+                    /* Types mismatch Result/Target on storing */
+                    /* Test fixed type Objects are converted to Buffer */
+                    ERR (Arg0, Z122, 0x060A, 0x00, 0x00, Local2, 0x03)
+                    Return (0x01)
+                }
+
+                If (STCS)
+                {
+                    M000 (0x03, 0x0100, Arg3, Local2)
+                }
+            }
+
+            /* Retrieve the benchmark value */
+
+            If (M686 (Arg5, Arg2, Arg3))
+            {
+                /* Save type of Target */
+
+                If (DerefOf (B67C [Arg2]))
+                {
+                    /* Types that can be verified only by ObjectType */
+
+                    Return (0x00)
+                }
+
+                /* Retrieve the benchmark value */
+
+                Local7 = DerefOf (DerefOf (Arg6 [0x05]) [Arg2])
+            }
+            Else
+            {
+                /* Accept type of Result */
+
+                If (DerefOf (B67C [Arg3]))
+                {
+                    /* Types that can be verified only by ObjectType */
+
+                    Return (0x00)
+                }
+
+                Local7 = DerefOf (Arg6 [0x04])
+            }
+
+            If ((Arg3 == 0x08))
+            {
+                /* Method */
+
+                CopyObject (DerefOf (Arg1), MMM2) /* \M689.M006.MMM2 */
+                If ((MMM2 != Local7))
+                {
+                    ERR (Arg0, Z122, 0x062B, 0x00, 0x00, MMM2, Local7)
+                    Return (0x01)
+                }
+            }
+            ElseIf ((Arg3 != 0x04))
+            {
+                /* Not Package */
+
+                If ((DerefOf (Arg1) != Local7))
+                {
+                    ERR (Arg0, Z122, 0x0630, 0x00, 0x00, DerefOf (Arg1), Local7)
+                    Return (0x01)
+                }
+            }
+            Else
+            {
+                /* Package */
+
+                Local0 = SizeOf (Local7)
+                If ((SizeOf (Arg1) != Local0))
+                {
+                    ERR (Arg0, Z122, 0x0636, 0x00, 0x00, SizeOf (Arg1), Local0)
+                    Return (0x01)
+                }
+
+                While (Local0)
+                {
+                    Local0--
+                    Local1 = ObjectType (DerefOf (DerefOf (Arg1) [Local0]))
+                    Local2 = ObjectType (DerefOf (Local7 [Local0]))
+                    If ((Local1 != Local2))
+                    {
+                        /* ObjectType is corrupted */
+
+                        ERR (Arg0, Z122, 0x063F, 0x00, 0x00, Local1, Local2)
+                        Return (0x01)
+                    }
+                    ElseIf (DerefOf (B679 [Local1]))
+                    {
+                        /* the computational data type */
+
+                        If ((DerefOf (DerefOf (Arg1) [Local0]) != DerefOf (Local7 [
+                            Local0])))
+                        {
+                            /* The value is corrupted */
+
+                            ERR (Arg0, Z122, 0x0647, 0x00, 0x00, DerefOf (DerefOf (Arg1) [Local0]), 
+                                DerefOf (Local7 [Local0]))
+                            Return (0x01)
+                        }
+                    }
+                }
+            }
+
+            Return (0x00)
+        }
+
+        /* Update specified Object */
+        /* m007(<msg>, <ref to target>) */
+        Method (M007, 2, NotSerialized)
+        {
+            Local0 = ObjectType (Arg1)
+            If (DerefOf (B66F [Local0]))
+            {
+                /* Can be used in Index Operator */
+
+                Local1 = SizeOf (Arg1)
+                If (Local1)
+                {
+                    /* Update the last Member Object */
+
+                    Local1--
+                    Local2 = DerefOf (Arg1) [Local1]
+                    Local3 = RefOf (Local2)
+                    Local4 = DerefOf (Local2)
+                    If ((ObjectType (Local4) == 0x01))
+                    {
+                        /* Integer */
+
+                        Store (~Local4, DerefOf (Local3))
+                    }
+                    Else
+                    {
+                        DerefOf (Local3) = Ones
+                        If (CH03 (Arg0, Z122, 0x30, 0x0665, Arg1))
+                        {
+                            /* Store caused unexpected exception */
+
+                            Return (0x01)
+                        }
+                    }
+
+                    If (Local1)
+                    {
+                        /* Update the First Member Object */
+
+                        Local2 = DerefOf (Arg1) [0x00]
+                        Local4 = DerefOf (Local2)
+                        If ((ObjectType (Local4) == 0x01))
+                        {
+                            /* Integer */
+
+                            Store (~Local4, DerefOf (Local3))
+                        }
+                        Else
+                        {
+                            DerefOf (Local3) = Ones
+                            If (CH03 (Arg0, Z122, 0x31, 0x0673, Arg1))
+                            {
+                                /* Store caused unexpected exception */
+
+                                Return (0x01)
+                            }
+                        }
+                    }
+                }
+                ElseIf ((Local0 == 0x04))
+                {
+                    /* Empty Package */
+
+                    Arg1 = Package (0x01)
+                        {
+                            "update string"
+                        }
+                }
+                Else
+                {
+                    /* Empty String/Buffer */
+
+                    Arg1 = "update string"
+                }
+            }
+            ElseIf (DerefOf (B674 [Local0]))
+            {
+                /* Non-Computational Data Objects */
+
+                CopyObject ("update string", Arg1)
+            }
+            Else
+            {
+                Store (~ToInteger (DerefOf (Arg1)), Arg1)
+            }
+
+            If (CH03 (Arg0, Z122, 0x32, 0x0687, Arg1))
+            {
+                /* Update caused unexpected exception */
+
+                Return (0x01)
+            }
+
+            Return (0x00)
+        }
+
+        /* Check processing of an Source Named Object of the specified type */
+        /* on immediate storing to a Target Named Object of the specified type */
+        /* m008(<msg>, <aux>, <target type>, <source type>, */
+        /*      <op>, <exc. condition>, <test data package>) */
+        Method (M008, 7, Serialized)
+        {
+            /* Source Named Object */
+
+            Name (SRC0, 0x00)
+            /* Target Named Object */
+
+            Name (DST0, 0x00)
+            Name (SCL0, Buffer (0x12)
+            {
+                /* 0000 */  0x00, 0x00, 0x01, 0x01, 0x01, 0x00, 0x00, 0x00,  // ........
+                /* 0008 */  0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00,  // ........
+                /* 0010 */  0x00, 0x00                                       // ..
+            })
+            Name (SCL1, Buffer (0x12)
+            {
+                /* 0000 */  0x00, 0x00, 0x00, 0x00, 0x01, 0x00, 0x01, 0x01,  // ........
+                /* 0008 */  0x01, 0x01, 0x00, 0x01, 0x01, 0x00, 0x00, 0x00,  // ........
+                /* 0010 */  0x00, 0x00                                       // ..
+            })
+            Concatenate (Arg0, "-", Arg0)
+            Concatenate (Arg0, Concatenate (Mid (Arg4, 0x00, 0x02), Concatenate (Mid (Arg2, 0x00, 
+                0x02), Mid (Arg3, 0x00, 0x02))), Arg0)
+            If (STCS)
+            {
+                Debug = Arg0
+            }
+
+            /* Choose expected Result Object type */
+            /*		if (LAnd(LEqual(arg4, 0), LEqual(arg3, 8))) { */
+            If ((Arg3 == 0x08))
+            {
+                /* Method expected to be invoked and result in String */
+
+                Local5 = 0x02
+            }
+            Else
+            {
+                Local5 = Arg3
+            }
+
+            /* Prepare Source of specified type */
+
+            Store (Arg6 [0x02], Local7)
+            If ((Arg3 == 0x05))
+            {
+                /* Field Unit Source */
+
+                Local0 = DerefOf (DerefOf (Local7) [0x00])
+                If ((Local0 == 0x00))
+                {
+                    Local6 = RefOf (FLU0)
+                    Local5 = 0x03
+                }
+                ElseIf ((Local0 == 0x01))
+                {
+                    Local6 = RefOf (FLU2)
+                    If (F64)
+                    {
+                        Local5 = 0x01
+                    }
+                    Else
+                    {
+                        Local5 = 0x03
+                    }
+                }
+                Else
+                {
+                    Local6 = RefOf (FLU4)
+                    Local5 = 0x01
+                }
+            }
+            ElseIf ((Arg3 == 0x0E))
+            {
+                /* Buffer Field Source */
+
+                Local0 = DerefOf (DerefOf (Local7) [0x00])
+                If ((Local0 == 0x00))
+                {
+                    Local6 = RefOf (BFL0)
+                    Local5 = 0x03
+                }
+                ElseIf ((Local0 == 0x01))
+                {
+                    Local6 = RefOf (BFL2)
+                    If (F64)
+                    {
+                        Local5 = 0x01
+                    }
+                    Else
+                    {
+                        Local5 = 0x03
+                    }
+                }
+                Else
+                {
+                    Local6 = RefOf (BFL4)
+                    Local5 = 0x01
+                }
+            }
+            Else
+            {
+                Local6 = RefOf (SRC0)
+            }
+
+            If (M004 (Concatenate (Arg0, "-m004"), Arg3, Local6, Local7))
+            {
+                /* Source Object can not be prepared */
+
+                ERR (Concatenate (Arg0, TERR), Z122, 0x06D1, 0x00, 0x00, Arg3, 0x00)
+                Return (0x01)
+            }
+
+            /* Prepare Target of specified type */
+
+            Store (DerefOf (Arg6 [0x03]) [Arg2], Local7)
+            If ((Arg2 == 0x05))
+            {
+                /* Field Unit Target */
+
+                Field (OPR0, ByteAcc, NoLock, Preserve)
+                {
+                    FLUX,   192, 
+                    FLU1,   69
+                }
+
+                Local1 = RefOf (FLU1)
+            }
+            ElseIf ((Arg2 == 0x0E))
+            {
+                /* Buffer Field Target */
+
+                CreateField (BUFZ, 0xC0, 0x45, BFL1)
+                Local1 = RefOf (BFL1)
+            }
+            Else
+            {
+                Local1 = RefOf (DST0)
+            }
+
+            If (M003 (Concatenate (Arg0, "-m003"), Arg2, Local1, Local7))
+            {
+                /* Target Object can not be prepared */
+
+                ERR (Concatenate (Arg0, TERR), Z122, 0x06E2, 0x00, 0x00, Arg2, 0x00)
+                Return (0x01)
+            }
+
+            If (CH03 (Arg0, Z122, 0x35, 0x06E6, Arg2))
+            {
+                /* Unexpected exception during preparation */
+
+                Return (0x01)
+            }
+
+            /* Use a Source Object to immediately store into the Target */
+
+            Store (Arg6 [0x02], Local7)
+            If ((Arg2 == 0x05))
+            {
+                /* Field Unit Target */
+
+                If ((Arg4 == 0x00))
+                {
+                    /* Store */
+
+                    If ((Arg3 == 0x05))
+                    {
+                        /* Field Unit Source */
+
+                        Local0 = DerefOf (DerefOf (Local7) [0x00])
+                        If ((Local0 == 0x00))
+                        {
+                            FLU1 = FLU0 /* \M689.FLU0 */
+                        }
+                        ElseIf ((Local0 == 0x01))
+                        {
+                            FLU1 = FLU2 /* \M689.FLU2 */
+                        }
+                        Else
+                        {
+                            FLU1 = FLU4 /* \M689.FLU4 */
+                        }
+                    }
+                    ElseIf ((Arg3 == 0x0E))
+                    {
+                        /* Buffer Field Source */
+
+                        Local0 = DerefOf (DerefOf (Local7) [0x00])
+                        If ((Local0 == 0x00))
+                        {
+                            FLU1 = BFL0 /* \M689.BFL0 */
+                        }
+                        ElseIf ((Local0 == 0x01))
+                        {
+                            FLU1 = BFL2 /* \M689.BFL2 */
+                        }
+                        Else
+                        {
+                            FLU1 = BFL4 /* \M689.BFL4 */
+                        }
+                    }
+                    Else
+                    {
+                        FLU1 = SRC0 /* \M689.M008.SRC0 */
+                    }
+                }
+                ElseIf ((Arg4 == 0x01))
+                {
+                    /* CopyObject */
+
+                    If ((Arg3 == 0x05))
+                    {
+                        /* Field Unit Source */
+
+                        Local0 = DerefOf (DerefOf (Local7) [0x00])
+                        If ((Local0 == 0x00))
+                        {
+                            CopyObject (FLU0, FLU1) /* \M689.M008.FLU1 */
+                        }
+                        ElseIf ((Local0 == 0x01))
+                        {
+                            CopyObject (FLU2, FLU1) /* \M689.M008.FLU1 */
+                        }
+                        Else
+                        {
+                            CopyObject (FLU4, FLU1) /* \M689.M008.FLU1 */
+                        }
+                    }
+                    ElseIf ((Arg3 == 0x0E))
+                    {
+                        /* Buffer Field Source */
+
+                        Local0 = DerefOf (DerefOf (Local7) [0x00])
+                        If ((Local0 == 0x00))
+                        {
+                            CopyObject (BFL0, FLU1) /* \M689.M008.FLU1 */
+                        }
+                        ElseIf ((Local0 == 0x01))
+                        {
+                            CopyObject (BFL2, FLU1) /* \M689.M008.FLU1 */
+                        }
+                        Else
+                        {
+                            CopyObject (BFL4, FLU1) /* \M689.M008.FLU1 */
+                        }
+                    }
+                    Else
+                    {
+                        CopyObject (SRC0, FLU1) /* \M689.M008.FLU1 */
+                    }
+                }
+                Else
+                {
+                    /* Unexpected Kind of Op (0 - Store, ...) */
+
+                    ERR (Concatenate (Arg0, TERR), Z122, 0x071C, 0x00, 0x00, Arg4, 0x00)
+                    Return (0x01)
+                }
+            }
+            ElseIf ((Arg2 == 0x0E))
+            {
+                /* Buffer Field Target */
+
+                If ((Arg4 == 0x00))
+                {
+                    /* Store */
+
+                    If ((Arg3 == 0x05))
+                    {
+                        /* Field Unit Source */
+
+                        Local0 = DerefOf (DerefOf (Local7) [0x00])
+                        If ((Local0 == 0x00))
+                        {
+                            BFL1 = FLU0 /* \M689.FLU0 */
+                        }
+                        ElseIf ((Local0 == 0x01))
+                        {
+                            BFL1 = FLU2 /* \M689.FLU2 */
+                        }
+                        Else
+                        {
+                            BFL1 = FLU4 /* \M689.FLU4 */
+                        }
+                    }
+                    ElseIf ((Arg3 == 0x0E))
+                    {
+                        /* Buffer Field Source */
+
+                        Local0 = DerefOf (DerefOf (Local7) [0x00])
+                        If ((Local0 == 0x00))
+                        {
+                            BFL1 = BFL0 /* \M689.BFL0 */
+                        }
+                        ElseIf ((Local0 == 0x01))
+                        {
+                            BFL1 = BFL2 /* \M689.BFL2 */
+                        }
+                        Else
+                        {
+                            BFL1 = BFL4 /* \M689.BFL4 */
+                        }
+                    }
+                    Else
+                    {
+                        BFL1 = SRC0 /* \M689.M008.SRC0 */
+                    }
+                }
+                ElseIf ((Arg4 == 0x01))
+                {
+                    /* CopyObject */
+
+                    If ((Arg3 == 0x05))
+                    {
+                        /* Field Unit Source */
+
+                        Local0 = DerefOf (DerefOf (Local7) [0x00])
+                        If ((Local0 == 0x00))
+                        {
+                            CopyObject (FLU0, BFL1) /* \M689.M008.BFL1 */
+                        }
+                        ElseIf ((Local0 == 0x01))
+                        {
+                            CopyObject (FLU2, BFL1) /* \M689.M008.BFL1 */
+                        }
+                        Else
+                        {
+                            CopyObject (FLU4, BFL1) /* \M689.M008.BFL1 */
+                        }
+                    }
+                    ElseIf ((Arg3 == 0x0E))
+                    {
+                        /* Buffer Field Source */
+
+                        Local0 = DerefOf (DerefOf (Local7) [0x00])
+                        If ((Local0 == 0x00))
+                        {
+                            CopyObject (BFL0, BFL1) /* \M689.M008.BFL1 */
+                        }
+                        ElseIf ((Local0 == 0x01))
+                        {
+                            CopyObject (BFL2, BFL1) /* \M689.M008.BFL1 */
+                        }
+                        Else
+                        {
+                            CopyObject (BFL4, BFL1) /* \M689.M008.BFL1 */
+                        }
+                    }
+                    Else
+                    {
+                        CopyObject (SRC0, BFL1) /* \M689.M008.BFL1 */
+                    }
+                }
+                Else
+                {
+                    /* Unexpected Kind of Op (0 - Store, ...) */
+
+                    ERR (Concatenate (Arg0, TERR), Z122, 0x074E, 0x00, 0x00, Arg4, 0x00)
+                    Return (0x01)
+                }
+            }
+            ElseIf ((Arg4 == 0x00))
+            {
+                /* Store */
+
+                If ((Arg3 == 0x05))
+                {
+                    /* Field Unit Source */
+
+                    Local0 = DerefOf (DerefOf (Local7) [0x00])
+                    If ((Local0 == 0x00))
+                    {
+                        DST0 = FLU0 /* \M689.FLU0 */
+                    }
+                    ElseIf ((Local0 == 0x01))
+                    {
+                        DST0 = FLU2 /* \M689.FLU2 */
+                    }
+                    Else
+                    {
+                        DST0 = FLU4 /* \M689.FLU4 */
+                    }
+                }
+                ElseIf ((Arg3 == 0x0E))
+                {
+                    /* Buffer Field Source */
+
+                    Local0 = DerefOf (DerefOf (Local7) [0x00])
+                    If ((Local0 == 0x00))
+                    {
+                        DST0 = BFL0 /* \M689.BFL0 */
+                    }
+                    ElseIf ((Local0 == 0x01))
+                    {
+                        DST0 = BFL2 /* \M689.BFL2 */
+                    }
+                    Else
+                    {
+                        DST0 = BFL4 /* \M689.BFL4 */
+                    }
+                }
+                Else
+                {
+                    DST0 = SRC0 /* \M689.M008.SRC0 */
+                }
+            }
+            ElseIf ((Arg4 == 0x01))
+            {
+                /* CopyObject */
+
+                If ((Arg3 == 0x05))
+                {
+                    /* Field Unit Source */
+
+                    Local0 = DerefOf (DerefOf (Local7) [0x00])
+                    If ((Local0 == 0x00))
+                    {
+                        CopyObject (FLU0, DST0) /* \M689.M008.DST0 */
+                    }
+                    ElseIf ((Local0 == 0x01))
+                    {
+                        CopyObject (FLU2, DST0) /* \M689.M008.DST0 */
+                    }
+                    Else
+                    {
+                        CopyObject (FLU4, DST0) /* \M689.M008.DST0 */
+                    }
+                }
+                ElseIf ((Arg3 == 0x0E))
+                {
+                    /* Buffer Field Source */
+
+                    Local0 = DerefOf (DerefOf (Local7) [0x00])
+                    If ((Local0 == 0x00))
+                    {
+                        CopyObject (BFL0, DST0) /* \M689.M008.DST0 */
+                    }
+                    ElseIf ((Local0 == 0x01))
+                    {
+                        CopyObject (BFL2, DST0) /* \M689.M008.DST0 */
+                    }
+                    Else
+                    {
+                        CopyObject (BFL4, DST0) /* \M689.M008.DST0 */
+                    }
+                }
+                Else
+                {
+                    CopyObject (SRC0, DST0) /* \M689.M008.DST0 */
+                }
+            }
+            Else
+            {
+                /* Unexpected Kind of Op (0 - Store, ...) */
+
+                ERR (Concatenate (Arg0, TERR), Z122, 0x0782, 0x00, 0x00, Arg4, 0x00)
+                Return (0x01)
+            }
+
+            If (Arg5)
+            {
+                /* Exception is expected */
+
+                If (((Arg4 == 0x01) && (Arg2 == C016)))
+                {
+                    If (X170)
+                    {
+                        If (!CH06 (Arg0, 0x39, 0xFF))
+                        {
+                            If (STCS)
+                            {
+                                M000 (0x02, 0x0100, Arg2, Arg3)
+                            }
+                        }
+                    }
+                    Else
+                    {
+                        CH03 (Arg0, Z122, 0x39, 0x078E, Arg2)
+                    }
+                }
+                ElseIf (!CH06 (Arg0, 0x39, 0xFF))
+                {
+                    If (STCS)
+                    {
+                        M000 (0x02, 0x0100, Arg2, Arg3)
+                    }
+                }
+
+                /* No further test if exception is expected */
+
+                Return (0x00)
+            }
+            ElseIf (CH03 (Arg0, Z122, 0x3A, 0x0797, Arg2))
+            {
+                /* Storing caused unexpected exception */
+
+                If (STCS)
+                {
+                    M000 (0x02, 0x0100, Arg2, Arg3)
+                }
+            }
+            Else
+            {
+                /* Check Target Object to have the expected type and value */
+                /* Target accept type on storing to Named by Store operator is 0 */
+                If (Arg4)
+                {
+                    Local0 = 0x02
+                }
+                Else
+                {
+                    Local0 = 0x00
+                }
+
+                M006 (Concatenate (Arg0, "-m006"), Local1, Arg2, Local5, Arg4, Local0, Arg6)
+            }
+
+            /* Check Source Object value and type is not corrupted after storing */
+
+            Store (Arg6 [0x02], Local7)
+            If (M005 (Concatenate (Arg0, "-m005"), Arg3, Local6, Local7))
+            {
+                If (STCS)
+                {
+                    Debug = "m008, Source Object has been corrupted during storing"
+                }
+
+                Return (0x01)
+            }
+
+            /* Check auxiliary Target Object to have the initial type and value */
+
+            Store (DerefOf (Arg6 [0x03]) [Arg2], Local7)
+            If (M016 (Concatenate (Arg0, "-m016"), Arg2, 0x00, Local7))
+            {
+                If (STCS)
+                {
+                    Debug = "m008, auxiliary Target Object has been corrupted during storing"
+                }
+
+                Return (0x01)
+            }
+
+            /* Update Target Object */
+
+            If (M007 (Concatenate (Arg0, "-m007"), Local1))
+            {
+                If (STCS)
+                {
+                    Debug = "m008, Error during update of Target"
+                }
+
+                Return (0x01)
+            }
+
+            /* Check Source Object value and type is not corrupted after updating the copy */
+
+            Store (Arg6 [0x02], Local7)
+            If (Y900)
+            {
+                If (((Arg4 == 0x00) &&                         /* Source type is 2-4 */
+
+(DerefOf (Index (Buffer (0x12)
+                                    {
+                                        /* 0000 */  0x00, 0x00, 0x01, 0x01, 0x01, 0x00, 0x00, 0x00,  // ........
+                                        /* 0008 */  0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00,  // ........
+                                        /* 0010 */  0x00, 0x00                                       // ..
+                                    }, Arg3
+                    )) &&                             /* Target type is 4, 6-9, 11-12 */
+
+DerefOf (Index (Buffer (0x12)
+                                    {
+                                        /* 0000 */  0x00, 0x00, 0x00, 0x00, 0x01, 0x00, 0x01, 0x01,  // ........
+                                        /* 0008 */  0x01, 0x01, 0x00, 0x01, 0x01, 0x00, 0x00, 0x00,  // ........
+                                        /* 0010 */  0x00, 0x00                                       // ..
+                                    }, Arg2))) /* Store */))
+                {
+                    If (X153)
+                    {
+                        If (M005 (Concatenate (Arg0, "-m005"), Arg3, Local6, Local7))
+                        {
+                            If (STCS)
+                            {
+                                Debug = "m008, Source Object has been corrupted during update of Target"
+                            }
+                        }
+                    }
+                }
+                ElseIf (M005 (Concatenate (Arg0, "-m005"), Arg3, Local6, Local7))
+                {
+                    If (STCS)
+                    {
+                        Debug = "m008, Source Object has been corrupted during update of Target"
+                    }
+                }
+            }
+            ElseIf (((Arg4 == 0x00) &&                     /* Source type is 2-4 */
+
+(DerefOf (SCL0 [Arg3]) &&                         /* Target type is 4, 6-9, 11-12 */
+
+
+                DerefOf (SCL1 [Arg2])) /* Store */))
+            {
+                If (X153)
+                {
+                    If (M005 (Concatenate (Arg0, "-m005"), Arg3, Local6, Local7))
+                    {
+                        If (STCS)
+                        {
+                            Debug = "m008, Source Object has been corrupted during update of Target"
+                        }
+                    }
+                }
+            }
+            ElseIf (M005 (Concatenate (Arg0, "-m005"), Arg3, Local6, Local7))
+            {
+                If (STCS)
+                {
+                    Debug = "m008, Source Object has been corrupted during update of Target"
+                }
+            }
+
+            /* Check auxiliary Target Object to have the initial type and value */
+
+            Store (DerefOf (Arg6 [0x03]) [Arg2], Local7)
+            If (M016 (Concatenate (Arg0, "-m016"), Arg2, 0x00, Local7))
+            {
+                If (STCS)
+                {
+                    Debug = "m008, auxiliary Target Object has been corrupted during update of Target"
+                }
+
+                Return (0x01)
+            }
+
+            Return (0x00)
+        }
+
+        /* Check processing of an Source Named Object of the specified type */
+        /* on immediate storing to a Target LocalX Object of the specified type */
+        /* m009(<msg>, <aux>, <target type>, <source type>, */
+        /*      <op>, <exc. condition>, <test data package>) */
+        Method (M009, 7, Serialized)
+        {
+            /* Source Named Object */
+
+            Name (SRC0, 0x00)
+            /* Target LocalX Object: Local4 */
+
+            Concatenate (Arg0, "-", Arg0)
+            Concatenate (Arg0, Concatenate (Mid (Arg4, 0x00, 0x02), Concatenate (Mid (Arg2, 0x00, 
+                0x02), Mid (Arg3, 0x00, 0x02))), Arg0)
+            If (STCS)
+            {
+                Debug = Arg0
+            }
+
+            /* Choose expected Result Object type */
+            /*		if (LAnd(LEqual(arg4, 0), LEqual(arg3, 8))) { */
+            If ((Arg3 == 0x08))
+            {
+                /* Method expected to be invoked and result in String */
+
+                Local5 = 0x02
+            }
+            Else
+            {
+                Local5 = Arg3
+            }
+
+            /* Prepare Source of specified type */
+
+            Store (Arg6 [0x02], Local7)
+            If ((Arg3 == 0x05))
+            {
+                /* Field Unit Source */
+
+                Local0 = DerefOf (DerefOf (Local7) [0x00])
+                If ((Local0 == 0x00))
+                {
+                    Local6 = RefOf (FLU0)
+                }
+                ElseIf ((Local0 == 0x01))
+                {
+                    Local6 = RefOf (FLU2)
+                    Local5 = 0x03
+                    If (F64)
+                    {
+                        Local5 = 0x01
+                    }
+                    Else
+                    {
+                        Local5 = 0x03
+                    }
+                }
+                Else
+                {
+                    Local6 = RefOf (FLU4)
+                    Local5 = 0x01
+                }
+            }
+            ElseIf ((Arg3 == 0x0E))
+            {
+                /* Buffer Field Source */
+
+                Local0 = DerefOf (DerefOf (Local7) [0x00])
+                If ((Local0 == 0x00))
+                {
+                    Local6 = RefOf (BFL0)
+                    Local5 = 0x03
+                }
+                ElseIf ((Local0 == 0x01))
+                {
+                    Local6 = RefOf (BFL2)
+                    If (F64)
+                    {
+                        Local5 = 0x01
+                    }
+                    Else
+                    {
+                        Local5 = 0x03
+                    }
+                }
+                Else
+                {
+                    Local6 = RefOf (BFL4)
+                    Local5 = 0x01
+                }
+            }
+            Else
+            {
+                Local6 = RefOf (SRC0)
+            }
+
+            If (M004 (Concatenate (Arg0, "-m004"), Arg3, Local6, Local7))
+            {
+                /* Source Object can not be prepared */
+
+                ERR (Concatenate (Arg0, TERR), Z122, 0x0839, 0x00, 0x00, Arg3, 0x00)
+                Return (0x01)
+            }
+
+            /* Prepare Target of specified type */
+
+            Store (DerefOf (Arg6 [0x03]) [Arg2], Local7)
+            If (M003 (Concatenate (Arg0, "-m003"), Arg2, RefOf (Local4), Local7))
+            {
+                /* Target Object can not be prepared */
+
+                ERR (Concatenate (Arg0, TERR), Z122, 0x0841, 0x00, 0x00, Arg2, 0x00)
+                Return (0x01)
+            }
+
+            If (CH03 (Arg0, Z122, 0x3D, 0x0845, Arg2))
+            {
+                /* Unexpected exception during preparation */
+
+                Return (0x01)
+            }
+
+            /* Use a Source Object to immediately store into the Target */
+
+            Store (Arg6 [0x02], Local7)
+            If ((Arg4 == 0x00))
+            {
+                /* Store */
+
+                If ((Arg3 == 0x05))
+                {
+                    /* Field Unit Source */
+
+                    Local0 = DerefOf (DerefOf (Local7) [0x00])
+                    If ((Local0 == 0x00))
+                    {
+                        Local4 = FLU0 /* \M689.FLU0 */
+                    }
+                    ElseIf ((Local0 == 0x01))
+                    {
+                        Local4 = FLU2 /* \M689.FLU2 */
+                    }
+                    Else
+                    {
+                        Local4 = FLU4 /* \M689.FLU4 */
+                    }
+                }
+                ElseIf ((Arg3 == 0x0E))
+                {
+                    /* Buffer Field Source */
+
+                    Local0 = DerefOf (DerefOf (Local7) [0x00])
+                    If ((Local0 == 0x00))
+                    {
+                        Local4 = BFL0 /* \M689.BFL0 */
+                    }
+                    ElseIf ((Local0 == 0x01))
+                    {
+                        Local4 = BFL2 /* \M689.BFL2 */
+                    }
+                    Else
+                    {
+                        Local4 = BFL4 /* \M689.BFL4 */
+                    }
+                }
+                Else
+                {
+                    Local4 = SRC0 /* \M689.M009.SRC0 */
+                }
+            }
+            ElseIf ((Arg4 == 0x01))
+            {
+                /* CopyObject */
+
+                If ((Arg3 == 0x05))
+                {
+                    /* Field Unit Source */
+
+                    Local0 = DerefOf (DerefOf (Local7) [0x00])
+                    If ((Local0 == 0x00))
+                    {
+                        CopyObject (FLU0, Local4)
+                    }
+                    ElseIf ((Local0 == 0x01))
+                    {
+                        CopyObject (FLU2, Local4)
+                    }
+                    Else
+                    {
+                        CopyObject (FLU4, Local4)
+                    }
+                }
+                ElseIf ((Arg3 == 0x0E))
+                {
+                    /* Buffer Field Source */
+
+                    Local0 = DerefOf (DerefOf (Local7) [0x00])
+                    If ((Local0 == 0x00))
+                    {
+                        CopyObject (BFL0, Local4)
+                    }
+                    ElseIf ((Local0 == 0x01))
+                    {
+                        CopyObject (BFL2, Local4)
+                    }
+                    Else
+                    {
+                        CopyObject (BFL4, Local4)
+                    }
+                }
+                Else
+                {
+                    CopyObject (SRC0, Local4)
+                }
+            }
+            Else
+            {
+                /* Unexpected Kind of Op (0 - Store, ...) */
+
+                ERR (Concatenate (Arg0, TERR), Z122, 0x087A, 0x00, 0x00, Arg4, 0x00)
+                Return (0x01)
+            }
+
+            If (Arg5)
+            {
+                /* Exception is expected */
+
+                If (!CH06 (Arg0, 0x0F, 0xFF))
+                {
+                    If (STCS)
+                    {
+                        M000 (0x02, 0x0100, Arg2, Arg3)
+                    }
+                }
+            }
+            ElseIf (CH03 (Arg0, Z122, 0x3F, 0x0883, Arg2))
+            {
+                /* Storing caused unexpected exception */
+
+                If (STCS)
+                {
+                    M000 (0x02, 0x0100, Arg2, Arg3)
+                }
+            }
+            Else
+            {
+                /* Check Target Object to have the expected type and value */
+                /* Target accept type on storing to LocalX is 1 */
+                Local0 = 0x01
+                M006 (Concatenate (Arg0, "-m006"), RefOf (Local4), Arg2, Local5, Arg4, Local0, Arg6)
+            }
+
+            /* Check Source Object value and type is not corrupted after storing */
+
+            Store (Arg6 [0x02], Local7)
+            If (M005 (Concatenate (Arg0, "-m005"), Arg3, Local6, Local7))
+            {
+                If (STCS)
+                {
+                    Debug = "m009, Source Object has been corrupted during storing"
+                }
+            }
+
+            /* Check auxiliary Target Object to have the initial type and value */
+
+            Store (DerefOf (Arg6 [0x03]) [Arg2], Local7)
+            If (M016 (Concatenate (Arg0, "-m016"), Arg2, 0x00, Local7))
+            {
+                If (STCS)
+                {
+                    Debug = "m009, auxiliary Target Object has been corrupted during storing"
+                }
+
+                Return (0x01)
+            }
+
+            /* Update Target Object */
+
+            If (M007 (Concatenate (Arg0, "-m007"), RefOf (Local4)))
+            {
+                If (STCS)
+                {
+                    Debug = "m009, Error during update of Target"
+                }
+
+                Return (0x01)
+            }
+
+            /* Check Source Object value and type is not corrupted after updating the copy */
+
+            Store (Arg6 [0x02], Local7)
+            If (M005 (Concatenate (Arg0, "-m005"), Arg3, Local6, Local7))
+            {
+                If (STCS)
+                {
+                    Debug = "m009, Source Object has been corrupted during update of Target"
+                }
+            }
+
+            /* Check auxiliary Target Object to have the initial type and value */
+
+            Store (DerefOf (Arg6 [0x03]) [Arg2], Local7)
+            If (M016 (Concatenate (Arg0, "-m016"), Arg2, 0x00, Local7))
+            {
+                If (STCS)
+                {
+                    Debug = "m009, auxiliary Target Object has been corrupted during update of Target"
+                }
+
+                Return (0x01)
+            }
+
+            Return (0x00)
+        }
+
+        /* Check processing of an Source LocalX Object of the specified type */
+        /* on immediate storing to a Target Named Object of the specified type */
+        /* m00a(<msg>, <aux>, <target type>, <source type>, */
+        /*      <op>, <exc. condition>, <test data package>) */
+        Method (M00A, 7, Serialized)
+        {
+            /* Source Object: Local1 */
+            /* Target Named Object (or the reference to it in case of Fields) */
+            Name (DST0, 0x00)
+            Name (SCL0, Buffer (0x12)
+            {
+                /* 0000 */  0x00, 0x00, 0x01, 0x01, 0x01, 0x00, 0x00, 0x00,  // ........
+                /* 0008 */  0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00,  // ........
+                /* 0010 */  0x00, 0x00                                       // ..
+            })
+            Name (SCL1, Buffer (0x12)
+            {
+                /* 0000 */  0x00, 0x00, 0x00, 0x00, 0x01, 0x00, 0x01, 0x01,  // ........
+                /* 0008 */  0x01, 0x01, 0x00, 0x01, 0x01, 0x00, 0x00, 0x00,  // ........
+                /* 0010 */  0x00, 0x00                                       // ..
+            })
+            Concatenate (Arg0, "-", Arg0)
+            Concatenate (Arg0, Concatenate (Mid (Arg4, 0x00, 0x02), Concatenate (Mid (Arg2, 0x00, 
+                0x02), Mid (Arg3, 0x00, 0x02))), Arg0)
+            If (STCS)
+            {
+                Debug = Arg0
+            }
+
+            /* Prepare Source of specified type */
+
+            Store (Arg6 [0x02], Local7)
+            If (M004 (Concatenate (Arg0, "-m004"), Arg3, RefOf (Local1), Local7))
+            {
+                /* Source Object can not be prepared */
+
+                ERR (Concatenate (Arg0, TERR), Z122, 0x08D1, 0x00, 0x00, Arg3, 0x00)
+                Return (0x01)
+            }
+
+            /* Prepare Target of specified type */
+
+            Store (DerefOf (Arg6 [0x03]) [Arg2], Local7)
+            If ((Arg2 == 0x05))
+            {
+                /* Field Unit Target */
+
+                Field (OPR0, ByteAcc, NoLock, Preserve)
+                {
+                    FLUX,   192, 
+                    FLU1,   69
+                }
+
+                Local4 = RefOf (FLU1)
+            }
+            ElseIf ((Arg2 == 0x0E))
+            {
+                /* Buffer Field Target */
+
+                CreateField (BUFZ, 0xC0, 0x45, BFL1)
+                Local4 = RefOf (BFL1)
+            }
+            Else
+            {
+                Local4 = RefOf (DST0)
+            }
+
+            If (M003 (Concatenate (Arg0, "-m003"), Arg2, Local4, Local7))
+            {
+                /* Target Object can not be prepared */
+
+                ERR (Concatenate (Arg0, TERR), Z122, 0x08E2, 0x00, 0x00, Arg2, 0x00)
+                Return (0x01)
+            }
+
+            If (CH03 (Arg0, Z122, 0x42, 0x08E6, Arg2))
+            {
+                /* Unexpected exception during preparation */
+
+                Return (0x01)
+            }
+
+            /* Use a Source Object to immediately store into the Target */
+
+            If ((Arg2 == 0x05))
+            {
+                /* Field Unit Target */
+
+                If ((Arg4 == 0x00))
+                {
+                    /* Store */
+
+                    FLU1 = Local1
+                }
+                ElseIf ((Arg4 == 0x01))
+                {
+                    /* CopyObject */
+
+                    CopyObject (Local1, FLU1) /* \M689.M00A.FLU1 */
+                }
+                Else
+                {
+                    /* Unexpected Kind of Op (0 - Store, ...) */
+
+                    ERR (Concatenate (Arg0, TERR), Z122, 0x08F3, 0x00, 0x00, Arg4, 0x00)
+                    Return (0x01)
+                }
+            }
+            ElseIf ((Arg2 == 0x0E))
+            {
+                /* Buffer Field Target */
+
+                If ((Arg4 == 0x00))
+                {
+                    /* Store */
+
+                    BFL1 = Local1
+                }
+                ElseIf ((Arg4 == 0x01))
+                {
+                    /* CopyObject */
+
+                    CopyObject (Local1, BFL1) /* \M689.M00A.BFL1 */
+                }
+                Else
+                {
+                    /* Unexpected Kind of Op (0 - Store, ...) */
+
+                    ERR (Concatenate (Arg0, TERR), Z122, 0x08FD, 0x00, 0x00, Arg4, 0x00)
+                    Return (0x01)
+                }
+            }
+            ElseIf ((Arg4 == 0x00))
+            {
+                /* Store */
+
+                DST0 = Local1
+            }
+            ElseIf ((Arg4 == 0x01))
+            {
+                /* CopyObject */
+
+                CopyObject (Local1, DST0) /* \M689.M00A.DST0 */
+            }
+            Else
+            {
+                /* Unexpected Kind of Op (0 - Store, ...) */
+
+                ERR (Concatenate (Arg0, TERR), Z122, 0x0909, 0x00, 0x00, Arg4, 0x00)
+                Return (0x01)
+            }
+
+            If (Arg5)
+            {
+                /* Exception is expected */
+
+                If (((Arg4 == 0x01) && ((Arg2 == C016) && (Arg3 != 
+                    C008))))
+                {
+                    If (X170)
+                    {
+                        If (!CH06 (Arg0, 0x46, 0xFF))
+                        {
+                            If (STCS)
+                            {
+                                M000 (0x02, 0x0100, Arg2, Arg3)
+                            }
+                        }
+                    }
+                    Else
+                    {
+                        CH03 (Arg0, Z122, 0x46, 0x0915, Arg2)
+                    }
+                }
+                ElseIf (!CH06 (Arg0, 0x46, 0xFF))
+                {
+                    If (STCS)
+                    {
+                        M000 (0x02, 0x0100, Arg2, Arg3)
+                    }
+                }
+
+                /* No further test if exception is expected */
+
+                Return (0x00)
+            }
+            ElseIf (CH03 (Arg0, Z122, 0x47, 0x091E, Arg2))
+            {
+                /* Storing caused unexpected exception */
+
+                If (STCS)
+                {
+                    M000 (0x02, 0x0100, Arg2, Arg3)
+                }
+            }
+            Else
+            {
+                /* Check Target Object to have the expected type and value */
+                /* Target accept type on storing to Named of Store operator is 0 */
+                If (Arg4)
+                {
+                    Local0 = 0x02
+                }
+                Else
+                {
+                    Local0 = 0x00
+                }
+
+                M006 (Concatenate (Arg0, "-m006"), Local4, Arg2, Arg3, Arg4, Local0, Arg6)
+            }
+
+            /* Check Source Object value and type is not corrupted after storing */
+
+            Store (Arg6 [0x02], Local7)
+            If (M005 (Concatenate (Arg0, "-m005"), Arg3, RefOf (Local1), Local7))
+            {
+                If (STCS)
+                {
+                    Debug = "m00a, Source Object has been corrupted during storing"
+                }
+            }
+
+            /* Check auxiliary Target Object to have the initial type and value */
+
+            Store (DerefOf (Arg6 [0x03]) [Arg2], Local7)
+            If (M016 (Concatenate (Arg0, "-m016"), Arg2, 0x00, Local7))
+            {
+                If (STCS)
+                {
+                    Debug = "m00a, auxiliary Target Object has been corrupted during storing"
+                }
+
+                Return (0x01)
+            }
+
+            /* Update Target Object */
+
+            If (M007 (Concatenate (Arg0, "-m007"), Local4))
+            {
+                If (STCS)
+                {
+                    Debug = "m00a, Error during update of Target"
+                }
+
+                Return (0x01)
+            }
+
+            /* Check Source Object value and type is not corrupted after updating the copy */
+
+            Store (Arg6 [0x02], Local7)
+            If (Y900)
+            {
+                If (((Arg4 == 0x00) &&                         /* Source type is 2-4 */
+
+(DerefOf (Index (Buffer (0x12)
+                                    {
+                                        /* 0000 */  0x00, 0x00, 0x01, 0x01, 0x01, 0x00, 0x00, 0x00,  // ........
+                                        /* 0008 */  0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00,  // ........
+                                        /* 0010 */  0x00, 0x00                                       // ..
+                                    }, Arg3
+                    )) &&                             /* Target type is 4, 6-9, 11-12 */
+
+DerefOf (Index (Buffer (0x12)
+                                    {
+                                        /* 0000 */  0x00, 0x00, 0x00, 0x00, 0x01, 0x00, 0x01, 0x01,  // ........
+                                        /* 0008 */  0x01, 0x01, 0x00, 0x01, 0x01, 0x00, 0x00, 0x00,  // ........
+                                        /* 0010 */  0x00, 0x00                                       // ..
+                                    }, Arg2))) /* Store */))
+                {
+                    If (X153)
+                    {
+                        If (M005 (Concatenate (Arg0, "-m005"), Arg3, RefOf (Local1), Local7))
+                        {
+                            If (STCS)
+                            {
+                                Debug = "m00a, Source Object has been corrupted during update of Target"
+                            }
+                        }
+                    }
+                }
+                ElseIf (M005 (Concatenate (Arg0, "-m005"), Arg3, RefOf (Local1), Local7))
+                {
+                    If (STCS)
+                    {
+                        Debug = "m00a, Source Object has been corrupted during update of Target"
+                    }
+                }
+            }
+            ElseIf            /* if (y900) */
+
+ (((Arg4 == 0x00) &&                     /* Source type is 2-4 */
+
+(DerefOf (SCL0 [Arg3]) &&                         /* Target type is 4, 6-9, 11-12 */
+
+
+                DerefOf (SCL1 [Arg2])) /* Store */))
+            {
+                If (X153)
+                {
+                    If (M005 (Concatenate (Arg0, "-m005"), Arg3, RefOf (Local1), Local7))
+                    {
+                        If (STCS)
+                        {
+                            Debug = "m00a, Source Object has been corrupted during update of Target"
+                        }
+                    }
+                }
+            }
+            ElseIf (M005 (Concatenate (Arg0, "-m005"), Arg3, RefOf (Local1), Local7))
+            {
+                If (STCS)
+                {
+                    Debug = "m00a, Source Object has been corrupted during update of Target"
+                }
+            }
+
+            /* Check auxiliary Target Object to have the initial type and value */
+
+            Store (DerefOf (Arg6 [0x03]) [Arg2], Local7)
+            If (M016 (Concatenate (Arg0, "-m016"), Arg2, 0x00, Local7))
+            {
+                If (STCS)
+                {
+                    Debug = "m00a, auxiliary Target Object has been corrupted during update of Target"
+                }
+
+                Return (0x01)
+            }
+
+            Return (0x00)
+        }
+
+        /* Check processing of an Source LocalX Object of the specified type */
+        /* on immediate storing to a Target LocalX Object of the specified type */
+        /* m00b(<msg>, <aux>, <target type>, <source type>, */
+        /*      <op>, <exc. condition>, <test data package>) */
+        Method (M00B, 7, NotSerialized)
+        {
+            /* Source LocalX Object: Local1 */
+            /* Target LocalX Object: Local4 */
+            Concatenate (Arg0, "-", Arg0)
+            Concatenate (Arg0, Concatenate (Mid (Arg4, 0x00, 0x02), Concatenate (Mid (Arg2, 0x00, 
+                0x02), Mid (Arg3, 0x00, 0x02))), Arg0)
+            If (STCS)
+            {
+                Debug = Arg0
+            }
+
+            /* Prepare Source of specified type */
+
+            Store (Arg6 [0x02], Local7)
+            If (M004 (Concatenate (Arg0, "-m004"), Arg3, RefOf (Local1), Local7))
+            {
+                /* Source Object can not be prepared */
+
+                ERR (Concatenate (Arg0, TERR), Z122, 0x0995, 0x00, 0x00, Arg3, 0x00)
+                Return (0x01)
+            }
+
+            /* Prepare Target of specified type */
+
+            Store (DerefOf (Arg6 [0x03]) [Arg2], Local7)
+            If (M003 (Concatenate (Arg0, "-m003"), Arg2, RefOf (Local4), Local7))
+            {
+                /* Target Object can not be prepared */
+
+                ERR (Concatenate (Arg0, TERR), Z122, 0x099D, 0x00, 0x00, Arg2, 0x00)
+                Return (0x01)
+            }
+
+            If (CH03 (Arg0, Z122, 0x4A, 0x09A1, Arg2))
+            {
+                /* Unexpected exception during preparation */
+
+                Return (0x01)
+            }
+
+            /* Use a Source Object to immediately store into the Target */
+
+            If ((Arg4 == 0x00))
+            {
+                /* Store */
+
+                Local4 = Local1
+            }
+            ElseIf ((Arg4 == 0x01))
+            {
+                /* CopyObject */
+
+                CopyObject (Local1, Local4)
+            }
+            Else
+            {
+                /* Unexpected Kind of Op (0 - Store, ...) */
+
+                ERR (Concatenate (Arg0, TERR), Z122, 0x09AD, 0x00, 0x00, Arg4, 0x00)
+                Return (0x01)
+            }
+
+            If (Arg5)
+            {
+                /* Exception is expected */
+
+                If (!CH06 (Arg0, 0x0F, 0xFF))
+                {
+                    If (STCS)
+                    {
+                        M000 (0x02, 0x0100, Arg2, Arg3)
+                    }
+                }
+            }
+            ElseIf (CH03 (Arg0, Z122, 0x4C, 0x09B6, Arg2))
+            {
+                /* Storing caused unexpected exception */
+
+                If (STCS)
+                {
+                    M000 (0x02, 0x0100, Arg2, Arg3)
+                }
+            }
+            Else
+            {
+                /* Check Target Object to have the expected type and value */
+                /* Target accept type on storing to LocalX is 1 */
+                Local0 = 0x01
+                M006 (Concatenate (Arg0, "-m006"), RefOf (Local4), Arg2, Arg3, Arg4, Local0, Arg6)
+            }
+
+            /* Check Source Object value and type is not corrupted after storing */
+
+            Store (Arg6 [0x02], Local7)
+            If (M005 (Concatenate (Arg0, "-m005"), Arg3, RefOf (Local1), Local7))
+            {
+                If (STCS)
+                {
+                    Debug = "m00b, Source Object has been corrupted during storing"
+                }
+            }
+
+            /* Check auxiliary Target Object to have the initial type and value */
+
+            Store (DerefOf (Arg6 [0x03]) [Arg2], Local7)
+            If (M016 (Concatenate (Arg0, "-m016"), Arg2, 0x00, Local7))
+            {
+                If (STCS)
+                {
+                    Debug = "m00b, auxiliary Target Object has been corrupted during storing"
+                }
+
+                Return (0x01)
+            }
+
+            /* Update Target Object */
+
+            If (M007 (Concatenate (Arg0, "-m007"), RefOf (Local4)))
+            {
+                If (STCS)
+                {
+                    Debug = "m00b, Error during update of Target"
+                }
+
+                Return (0x01)
+            }
+
+            /* Check Source Object value and type is not corrupted after updating the copy */
+
+            Store (Arg6 [0x02], Local7)
+            If (M005 (Concatenate (Arg0, "-m005"), Arg3, RefOf (Local1), Local7))
+            {
+                If (STCS)
+                {
+                    Debug = "m00b, Source Object has been corrupted during update of Target"
+                }
+            }
+
+            /* Check auxiliary Target Object to have the initial type and value */
+
+            Store (DerefOf (Arg6 [0x03]) [Arg2], Local7)
+            If (M016 (Concatenate (Arg0, "-m016"), Arg2, 0x00, Local7))
+            {
+                If (STCS)
+                {
+                    Debug = "m00b, auxiliary Target Object has been corrupted during update of Target"
+                }
+
+                Return (0x01)
+            }
+
+            Return (0x00)
+        }
+
+        /* Check processing of an Source Named Object of the specified type */
+        /* on immediate storing to an argument of Method passed to as immediate */
+        /* Named Object of another specified type */
+        /* m00c(<msg>, <aux>, <target type>, <source type>, */
+        /*      <op>, <exc. condition>, <test data package>) */
+        Method (M00C, 7, Serialized)
+        {
+            Method (M10C, 7, Serialized)
+            {
+                /* Source Named Object */
+
+                Name (SRC0, 0x00)
+                /* Target Named Object: ARG1 */
+                /* Choose expected Result Object type */
+                /*			if (LAnd(LEqual(arg4, 0), LEqual(arg3, 8))) { */
+                If ((Arg3 == 0x08))
+                {
+                    /* Method expected to be invoked and result in String */
+
+                    Local5 = 0x02
+                }
+                Else
+                {
+                    Local5 = Arg3
+                }
+
+                /* Prepare Source of specified type */
+
+                Store (Arg6 [0x02], Local7)
+                If ((Arg3 == 0x05))
+                {
+                    /* Field Unit Source */
+
+                    Local0 = DerefOf (DerefOf (Local7) [0x00])
+                    If ((Local0 == 0x00))
+                    {
+                        Local6 = RefOf (FLU0)
+                        Local5 = 0x03
+                    }
+                    ElseIf ((Local0 == 0x01))
+                    {
+                        Local6 = RefOf (FLU2)
+                        If (F64)
+                        {
+                            Local5 = 0x01
+                        }
+                        Else
+                        {
+                            Local5 = 0x03
+                        }
+                    }
+                    Else
+                    {
+                        Local6 = RefOf (FLU4)
+                        Local5 = 0x01
+                    }
+                }
+                ElseIf ((Arg3 == 0x0E))
+                {
+                    /* Buffer Field Source */
+
+                    Local0 = DerefOf (DerefOf (Local7) [0x00])
+                    If ((Local0 == 0x00))
+                    {
+                        Local6 = RefOf (BFL0)
+                        Local5 = 0x03
+                    }
+                    ElseIf ((Local0 == 0x01))
+                    {
+                        Local6 = RefOf (BFL2)
+                        If (F64)
+                        {
+                            Local5 = 0x01
+                        }
+                        Else
+                        {
+                            Local5 = 0x03
+                        }
+                    }
+                    Else
+                    {
+                        Local6 = RefOf (BFL4)
+                        Local5 = 0x01
+                    }
+                }
+                Else
+                {
+                    Local6 = RefOf (SRC0)
+                }
+
+                If (M004 (Concatenate (Arg0, "-m004"), Arg3, Local6, Local7))
+                {
+                    /* Source Object can not be prepared */
+
+                    ERR (Concatenate (Arg0, TERR), Z122, 0x0A2C, 0x00, 0x00, Arg3, 0x00)
+                    Return (0x01)
+                }
+
+                Local1 = RefOf (Arg1)
+                If (CH03 (Arg0, Z122, 0x4E, 0x0A32, Arg2))
+                {
+                    /* Unexpected exception during preparation */
+
+                    Return (0x01)
+                }
+
+                /* Use a Source Object to immediately store into the Target */
+
+                Store (Arg6 [0x02], Local7)
+                If ((Arg4 == 0x00))
+                {
+                    /* Store */
+
+                    If ((Arg3 == 0x05))
+                    {
+                        /* Field Unit Source */
+
+                        Local0 = DerefOf (DerefOf (Local7) [0x00])
+                        If ((Local0 == 0x00))
+                        {
+                            Arg1 = FLU0 /* \M689.FLU0 */
+                        }
+                        ElseIf ((Local0 == 0x01))
+                        {
+                            Arg1 = FLU2 /* \M689.FLU2 */
+                        }
+                        Else
+                        {
+                            Arg1 = FLU4 /* \M689.FLU4 */
+                        }
+                    }
+                    ElseIf ((Arg3 == 0x0E))
+                    {
+                        /* Buffer Field Source */
+
+                        Local0 = DerefOf (DerefOf (Local7) [0x00])
+                        If ((Local0 == 0x00))
+                        {
+                            Arg1 = BFL0 /* \M689.BFL0 */
+                        }
+                        ElseIf ((Local0 == 0x01))
+                        {
+                            Arg1 = BFL2 /* \M689.BFL2 */
+                        }
+                        Else
+                        {
+                            Arg1 = BFL4 /* \M689.BFL4 */
+                        }
+                    }
+                    Else
+                    {
+                        Arg1 = SRC0 /* \M689.M00C.M10C.SRC0 */
+                    }
+                }
+                ElseIf ((Arg4 == 0x01))
+                {
+                    /* CopyObject */
+
+                    If ((Arg3 == 0x05))
+                    {
+                        /* Field Unit Source */
+
+                        Local0 = DerefOf (DerefOf (Local7) [0x00])
+                        If ((Local0 == 0x00))
+                        {
+                            CopyObject (FLU0, Arg1)
+                        }
+                        ElseIf ((Local0 == 0x01))
+                        {
+                            CopyObject (FLU2, Arg1)
+                        }
+                        Else
+                        {
+                            CopyObject (FLU4, Arg1)
+                        }
+                    }
+                    ElseIf ((Arg3 == 0x0E))
+                    {
+                        /* Buffer Field Source */
+
+                        Local0 = DerefOf (DerefOf (Local7) [0x00])
+                        If ((Local0 == 0x00))
+                        {
+                            CopyObject (BFL0, Arg1)
+                        }
+                        ElseIf ((Local0 == 0x01))
+                        {
+                            CopyObject (BFL2, Arg1)
+                        }
+                        Else
+                        {
+                            CopyObject (BFL4, Arg1)
+                        }
+                    }
+                    Else
+                    {
+                        CopyObject (SRC0, Arg1)
+                    }
+                }
+                Else
+                {
+                    /* Unexpected Kind of Op (0 - Store, ...) */
+
+                    ERR (Concatenate (Arg0, TERR), Z122, 0x0A69, 0x00, 0x00, Arg4, 0x00)
+                    Return (0x01)
+                }
+
+                If (Arg5)
+                {
+                    /* Exception is expected */
+
+                    If ((((Arg4 == 0x00) && ((Arg2 == C016) && (Arg3 == 
+                        C00C))) || ((Arg4 == 0x01) && ((Arg2 == C016) && (Arg3 != C008)))))
+                    {
+                        If (X170)
+                        {
+                            If (!CH06 (Arg0, 0x50, 0xFF))
+                            {
+                                If (STCS)
+                                {
+                                    M000 (0x02, 0x0100, Arg2, Arg3)
+                                }
+                            }
+                        }
+                        Else
+                        {
+                            CH03 (Arg0, Z122, 0x50, 0x0A77, Arg2)
+                        }
+                    }
+                    ElseIf (!CH06 (Arg0, 0x50, 0xFF))
+                    {
+                        If (STCS)
+                        {
+                            M000 (0x02, 0x0100, Arg2, Arg3)
+                        }
+                    }
+                }
+                ElseIf (CH03 (Arg0, Z122, 0x51, 0x0A7E, Arg2))
+                {
+                    /* Storing caused unexpected exception */
+
+                    If (STCS)
+                    {
+                        M000 (0x02, 0x0100, Arg2, Arg3)
+                    }
+                }
+                Else
+                {
+                    /* Check Target Object to have the expected type and value */
+                    /* Target accept type on storing to read-only ArgX is 1 */
+                    Local0 = 0x01
+                    M006 (Concatenate (Arg0, "-m006"), Local1, Arg2, Local5, Arg4, Local0, Arg6)
+                }
+
+                /* Check Source Object value and type is not corrupted after storing */
+
+                Store (Arg6 [0x02], Local7)
+                If (M005 (Concatenate (Arg0, "-m005"), Arg3, Local6, Local7))
+                {
+                    If (STCS)
+                    {
+                        Debug = "m00c, Source Object has been corrupted during storing"
+                    }
+
+                    Return (0x01)
+                }
+
+                /* Check auxiliary Target Object to have the initial type and value */
+
+                Store (DerefOf (Arg6 [0x03]) [Arg2], Local7)
+                If (M016 (Concatenate (Arg0, "-m016"), Arg2, 0x00, Local7))
+                {
+                    If (STCS)
+                    {
+                        Debug = "m00c, auxiliary Target Object has been corrupted during storing"
+                    }
+
+                    Return (0x01)
+                }
+
+                /* Update Target Object */
+
+                If (M007 (Concatenate (Arg0, "-m007"), Local1))
+                {
+                    If (STCS)
+                    {
+                        Debug = "m00c, Error during update of Target"
+                    }
+
+                    Return (0x01)
+                }
+
+                /* Check Source Object value and type is not corrupted after updating the copy */
+
+                Store (Arg6 [0x02], Local7)
+                If (M005 (Concatenate (Arg0, "-m005"), Arg3, Local6, Local7))
+                {
+                    If (STCS)
+                    {
+                        Debug = "m00c, Source Object has been corrupted during update of Target"
+                    }
+                }
+
+                /* Check auxiliary Target Object to have the initial type and value */
+
+                Store (DerefOf (Arg6 [0x03]) [Arg2], Local7)
+                If (M016 (Concatenate (Arg0, "-m016"), Arg2, 0x00, Local7))
+                {
+                    If (STCS)
+                    {
+                        Debug = "m00c, auxiliary Target Object has been corrupted during update of Target"
+                    }
+
+                    Return (0x01)
+                }
+
+                Return (0x00)
+            }
+
+            /* Target Named Object */
+
+            Name (DST0, 0x00)
+            Concatenate (Arg0, "-", Arg0)
+            Concatenate (Arg0, Concatenate (Mid (Arg4, 0x00, 0x02), Concatenate (Mid (Arg2, 0x00, 
+                0x02), Mid (Arg3, 0x00, 0x02))), Arg0)
+            If (STCS)
+            {
+                Debug = Arg0
+            }
+
+            /* Prepare Target of specified type */
+
+            Store (DerefOf (Arg6 [0x03]) [Arg2], Local7)
+            If ((Arg2 == 0x05))
+            {
+                /* Field Unit Target */
+
+                Field (OPR0, ByteAcc, NoLock, Preserve)
+                {
+                    FLUX,   192, 
+                    FLU1,   69
+                }
+
+                Local1 = RefOf (FLU1)
+                FLU1 = DerefOf (Local7)
+            }
+            ElseIf ((Arg2 == 0x0E))
+            {
+                /* Buffer Field Target */
+
+                CreateField (BUFZ, 0xC0, 0x45, BFL1)
+                Local1 = RefOf (BFL1)
+                BFL1 = DerefOf (Local7)
+            }
+            Else
+            {
+                Local1 = RefOf (DST0)
+            }
+
+            If (M003 (Concatenate (Arg0, "-m003"), Arg2, Local1, Local7))
+            {
+                /* Target Object can not be prepared */
+
+                ERR (Concatenate (Arg0, TERR), Z122, 0x0ACE, 0x00, 0x00, Arg2, 0x00)
+                Return (0x01)
+            }
+
+            If (CH03 (Arg0, Z122, 0x53, 0x0AD2, Arg2))
+            {
+                /* Unexpected exception during preparation */
+
+                Return (0x01)
+            }
+
+            /* Use the Target Object to be the ArgX Object */
+
+            If (M10C (Concatenate (Arg0, "-m10c"), DST0, Arg2, Arg3, Arg4, Arg5, Arg6))
+            {
+                If (STCS)
+                {
+                    Debug = "m00c, error on using the Target Object as the ArgX Object"
+                }
+
+                Return (0x01)
+            }
+
+            If (Arg5)
+            {
+                /* Exception is expected */
+
+                Return (0x00)
+            }
+
+            /* Check Target Object to be saving the initial type and value */
+
+            Store (DerefOf (Arg6 [0x03]) [Arg2], Local7)
+            If (M015 (Concatenate (Arg0, "-m015"), Arg2, Local1, Local7))
+            {
+                If (STCS)
+                {
+                    Debug = "m00c, Target Object has been corrupted during storing to ArgX"
+                }
+
+                Return (0x01)
+            }
+
+            Return (0x00)
+        }
+
+        /* Check processing of an Source Named Object of the specified type */
+        /* on immediate storing to an argument of Method passed to as reference */
+        /* to the Named Object of another specified type */
+        /* m00d(<msg>, <aux>, <target type>, <source type>, */
+        /*      <op>, <exc. condition>, <test data package>) */
+        Method (M00D, 7, Serialized)
+        {
+            Method (M10D, 7, Serialized)
+            {
+                /* Source Named Object */
+
+                Name (SRC0, 0x00)
+                /* Target Named Object: ARG1 */
+                /* Choose expected Result Object type */
+                /*			if (LAnd(LEqual(arg4, 0), LEqual(arg3, 8))) { */
+                If ((Arg3 == 0x08))
+                {
+                    /* Method expected to be invoked and result in String */
+
+                    Local5 = 0x02
+                }
+                Else
+                {
+                    Local5 = Arg3
+                }
+
+                /* Prepare Source of specified type */
+
+                Store (Arg6 [0x02], Local7)
+                If ((Arg3 == 0x05))
+                {
+                    /* Field Unit Source */
+
+                    Local0 = DerefOf (DerefOf (Local7) [0x00])
+                    If ((Local0 == 0x00))
+                    {
+                        Local6 = RefOf (FLU0)
+                        Local5 = 0x03
+                    }
+                    ElseIf ((Local0 == 0x01))
+                    {
+                        Local6 = RefOf (FLU2)
+                        If (F64)
+                        {
+                            Local5 = 0x01
+                        }
+                        Else
+                        {
+                            Local5 = 0x03
+                        }
+                    }
+                    Else
+                    {
+                        Local6 = RefOf (FLU4)
+                        Local5 = 0x01
+                    }
+                }
+                ElseIf ((Arg3 == 0x0E))
+                {
+                    /* Buffer Field Source */
+
+                    Local0 = DerefOf (DerefOf (Local7) [0x00])
+                    If ((Local0 == 0x00))
+                    {
+                        Local6 = RefOf (BFL0)
+                        Local5 = 0x03
+                    }
+                    ElseIf ((Local0 == 0x01))
+                    {
+                        Local6 = RefOf (BFL2)
+                        If (F64)
+                        {
+                            Local5 = 0x01
+                        }
+                        Else
+                        {
+                            Local5 = 0x03
+                        }
+                    }
+                    Else
+                    {
+                        Local6 = RefOf (BFL4)
+                        Local5 = 0x01
+                    }
+                }
+                Else
+                {
+                    Local6 = RefOf (SRC0)
+                }
+
+                If (M004 (Concatenate (Arg0, "-m004"), Arg3, Local6, Local7))
+                {
+                    /* Source Object can not be prepared */
+
+                    ERR (Concatenate (Arg0, TERR), Z122, 0x0B2D, 0x00, 0x00, Arg3, 0x00)
+                    Return (0x01)
+                }
+
+                If (CH03 (Arg0, Z122, 0x55, 0x0B31, Arg2))
+                {
+                    /* Unexpected exception during preparation */
+
+                    Return (0x01)
+                }
+
+                /* Use a Source Object to immediately store into the Target */
+
+                Store (Arg6 [0x02], Local7)
+                If ((Arg4 == 0x00))
+                {
+                    /* Store */
+
+                    If ((Arg3 == 0x05))
+                    {
+                        /* Field Unit Source */
+
+                        Local0 = DerefOf (DerefOf (Local7) [0x00])
+                        If ((Local0 == 0x00))
+                        {
+                            Arg1 = FLU0 /* \M689.FLU0 */
+                        }
+                        ElseIf ((Local0 == 0x01))
+                        {
+                            Arg1 = FLU2 /* \M689.FLU2 */
+                        }
+                        Else
+                        {
+                            Arg1 = FLU4 /* \M689.FLU4 */
+                        }
+                    }
+                    ElseIf ((Arg3 == 0x0E))
+                    {
+                        /* Buffer Field Source */
+
+                        Local0 = DerefOf (DerefOf (Local7) [0x00])
+                        If ((Local0 == 0x00))
+                        {
+                            Arg1 = BFL0 /* \M689.BFL0 */
+                        }
+                        ElseIf ((Local0 == 0x01))
+                        {
+                            Arg1 = BFL2 /* \M689.BFL2 */
+                        }
+                        Else
+                        {
+                            Arg1 = BFL4 /* \M689.BFL4 */
+                        }
+                    }
+                    Else
+                    {
+                        Arg1 = SRC0 /* \M689.M00D.M10D.SRC0 */
+                    }
+                }
+                ElseIf ((Arg4 == 0x01))
+                {
+                    /* CopyObject */
+
+                    If ((Arg3 == 0x05))
+                    {
+                        /* Field Unit Source */
+
+                        Local0 = DerefOf (DerefOf (Local7) [0x00])
+                        If ((Local0 == 0x00))
+                        {
+                            CopyObject (FLU0, Arg1)
+                        }
+                        ElseIf ((Local0 == 0x01))
+                        {
+                            CopyObject (FLU2, Arg1)
+                        }
+                        Else
+                        {
+                            CopyObject (FLU4, Arg1)
+                        }
+                    }
+                    ElseIf ((Arg3 == 0x0E))
+                    {
+                        /* Buffer Field Source */
+
+                        Local0 = DerefOf (DerefOf (Local7) [0x00])
+                        If ((Local0 == 0x00))
+                        {
+                            CopyObject (BFL0, Arg1)
+                        }
+                        ElseIf ((Local0 == 0x01))
+                        {
+                            CopyObject (BFL2, Arg1)
+                        }
+                        Else
+                        {
+                            CopyObject (BFL4, Arg1)
+                        }
+                    }
+                    Else
+                    {
+                        CopyObject (SRC0, Arg1)
+                    }
+                }
+                Else
+                {
+                    /* Unexpected Kind of Op (0 - Store, ...) */
+
+                    ERR (Concatenate (Arg0, TERR), Z122, 0x0B68, 0x00, 0x00, Arg4, 0x00)
+                    Return (0x01)
+                }
+
+                If (Arg5)
+                {
+                    /* Exception is expected */
+
+                    If (((Arg4 == 0x01) && (Arg2 == C016)))
+                    {
+                        If (X170)
+                        {
+                            If (!CH06 (Arg0, 0x57, 0xFF))
+                            {
+                                If (STCS)
+                                {
+                                    M000 (0x02, 0x0100, Arg2, Arg3)
+                                }
+                            }
+                        }
+                        Else
+                        {
+                            CH03 (Arg0, Z122, 0x57, 0x0B74, Arg2)
+                        }
+                    }
+                    ElseIf (!CH06 (Arg0, 0x57, 0xFF))
+                    {
+                        If (STCS)
+                        {
+                            M000 (0x02, 0x0100, Arg2, Arg3)
+                        }
+                    }
+                }
+                ElseIf (CH03 (Arg0, Z122, 0x58, 0x0B7B, Arg2))
+                {
+                    /* Storing caused unexpected exception */
+
+                    If (STCS)
+                    {
+                        M000 (0x02, 0x0100, Arg2, Arg3)
+                    }
+                }
+                Else
+                {
+                    /* Check Target Object to have the expected type and value */
+                    /* Target accept type on storing to ArgX containing reference is 1 */
+                    /* (besides Store() to fixed types) */
+                    If (((Arg4 == 0x00) && DerefOf (B678 [Arg2])))
+                    {
+                        Local0 = 0x00
+                    }
+                    Else
+                    {
+                        Local0 = 0x01
+                    }
+
+                    M006 (Concatenate (Arg0, "-m006"), Arg1, Arg2, Local5, Arg4, Local0, Arg6)
+                }
+
+                /* Check Source Object value and type is not corrupted after storing */
+
+                Store (Arg6 [0x02], Local7)
+                If (M005 (Concatenate (Arg0, "-m005"), Arg3, Local6, Local7))
+                {
+                    If (STCS)
+                    {
+                        Debug = "m00d, Source Object has been corrupted during storing"
+                    }
+
+                    Return (0x01)
+                }
+
+                /* Check auxiliary Target Object to have the initial type and value */
+
+                Store (DerefOf (Arg6 [0x03]) [Arg2], Local7)
+                If (M016 (Concatenate (Arg0, "-m016"), Arg2, 0x00, Local7))
+                {
+                    If (STCS)
+                    {
+                        Debug = "m00d, auxiliary Target Object has been corrupted during storing"
+                    }
+
+                    Return (0x01)
+                }
+
+                /* Update Target Object */
+
+                If (M007 (Concatenate (Arg0, "-m007"), Arg1))
+                {
+                    If (STCS)
+                    {
+                        Debug = "m00d, Error during update of Target"
+                    }
+
+                    Return (0x01)
+                }
+
+                /* Check Source Object value and type is not corrupted after updating the copy */
+
+                Store (Arg6 [0x02], Local7)
+                If (M005 (Concatenate (Arg0, "-m005"), Arg3, Local6, Local7))
+                {
+                    If (STCS)
+                    {
+                        Debug = "m00d, Source Object has been corrupted during update of Target"
+                    }
+                }
+
+                /* Check auxiliary Target Object to have the initial type and value */
+
+                Store (DerefOf (Arg6 [0x03]) [Arg2], Local7)
+                If (M016 (Concatenate (Arg0, "-m016"), Arg2, 0x00, Local7))
+                {
+                    If (STCS)
+                    {
+                        Debug = "m00d, auxiliary Target Object has been corrupted during update of Target"
+                    }
+
+                    Return (0x01)
+                }
+
+                Return (0x00)
+            }
+
+            /* Target Named Object */
+
+            Name (DST0, 0x00)
+            Concatenate (Arg0, "-", Arg0)
+            Concatenate (Arg0, Concatenate (Mid (Arg4, 0x00, 0x02), Concatenate (Mid (Arg2, 0x00, 
+                0x02), Mid (Arg3, 0x00, 0x02))), Arg0)
+            If (STCS)
+            {
+                Debug = Arg0
+            }
+
+            /* Prepare Target of specified type */
+
+            Store (DerefOf (Arg6 [0x03]) [Arg2], Local7)
+            If ((Arg2 == 0x05))
+            {
+                /* Field Unit Target */
+
+                Field (OPR0, ByteAcc, NoLock, Preserve)
+                {
+                    FLUX,   192, 
+                    FLU1,   69
+                }
+
+                Local1 = RefOf (FLU1)
+                FLU1 = DerefOf (Local7)
+            }
+            ElseIf ((Arg2 == 0x0E))
+            {
+                /* Buffer Field Target */
+
+                CreateField (BUFZ, 0xC0, 0x45, BFL1)
+                Local1 = RefOf (BFL1)
+                BFL1 = DerefOf (Local7)
+            }
+            Else
+            {
+                Local1 = RefOf (DST0)
+            }
+
+            If (M003 (Concatenate (Arg0, "-m003"), Arg2, Local1, Local7))
+            {
+                /* Target Object can not be prepared */
+
+                ERR (Concatenate (Arg0, TERR), Z122, 0x0BD0, 0x00, 0x00, Arg2, 0x00)
+                Return (0x01)
+            }
+
+            If (CH03 (Arg0, Z122, 0x5A, 0x0BD4, Arg2))
+            {
+                /* Unexpected exception during preparation */
+
+                Return (0x01)
+            }
+
+            /* Use the reference to Target Object to be the ArgX Object */
+
+            If (M10D (Concatenate (Arg0, "-m10d"), RefOf (DST0), Arg2, Arg3, Arg4, Arg5, 
+                Arg6))
+            {
+                If (STCS)
+                {
+                    Debug = "m00d, error on using the Target Object as the ArgX Object"
+                }
+
+                Return (0x01)
+            }
+
+            Return (0x00)
+        }
+
+        /* Check processing of an Source LocalX Object of the specified type */
+        /* on immediate storing to an Element of Package of the specified type */
+        /* m00e(<msg>, <aux>, <target type>, <source type>, */
+        /*      <op>, <exc. condition>, <test data package>) */
+        Method (M00E, 7, Serialized)
+        {
+            /* Source LocalX Object: Local1 */
+            /* Target Package */
+            Name (DST0, Package (0x01){})
+            Concatenate (Arg0, "-", Arg0)
+            Concatenate (Arg0, Concatenate (Mid (Arg4, 0x00, 0x02), Concatenate (Mid (Arg2, 0x00, 
+                0x02), Mid (Arg3, 0x00, 0x02))), Arg0)
+            If (STCS)
+            {
+                Debug = Arg0
+            }
+
+            /* Prepare Source of specified type */
+
+            Store (Arg6 [0x02], Local7)
+            If (M004 (Concatenate (Arg0, "-m004"), Arg3, RefOf (Local1), Local7))
+            {
+                /* Source Object can not be prepared */
+
+                ERR (Concatenate (Arg0, TERR), Z122, 0x0BF6, 0x00, 0x00, Arg3, 0x00)
+                Return (0x01)
+            }
+
+            /* Prepare Target of specified type */
+
+            Local4 = DST0 [0x00]
+            Store (DerefOf (Arg6 [0x03]) [Arg2], Local7)
+            If (M013 (Concatenate (Arg0, "-m003"), Arg2, DST0, Local7))
+            {
+                /* Target Object can not be prepared */
+
+                ERR (Concatenate (Arg0, TERR), Z122, 0x0BFF, 0x00, 0x00, Arg2, 0x00)
+                Return (0x01)
+            }
+
+            If (CH03 (Arg0, Z122, 0x5D, 0x0C03, Arg2))
+            {
+                /* Unexpected exception during preparation */
+
+                Return (0x01)
+            }
+
+            /* Check Target Object to have the initial type and value */
+
+            If (M015 (Concatenate (Arg0, "-m015"), Arg2, Local4, Local7))
+            {
+                /* Target Object can not be prepared */
+
+                ERR (Concatenate (Arg0, TERR), Z122, 0x0C0B, 0x00, 0x00, Arg2, 0x00)
+                Return (0x01)
+            }
+
+            /* Use a Source Object to immediately store into the Target */
+
+            If ((Arg4 == 0x00))
+            {
+                /* Store */
+
+                DST0 [0x00] = Local1
+                        /*} elseif (LEqual(arg4, 1)) {	// CopyObject */
+            /*		CopyObject(Local1, Index(DST0, 0)) */
+            }
+            Else
+            {
+                /* Unexpected Kind of Op (0 - Store, ...) */
+
+                ERR (Concatenate (Arg0, TERR), Z122, 0x0C16, 0x00, 0x00, Arg4, 0x00)
+                Return (0x01)
+            }
+
+            If (Arg5)
+            {
+                /* Exception is expected */
+
+                If (!CH06 (Arg0, 0x60, 0xFF))
+                {
+                    If (STCS)
+                    {
+                        M000 (0x02, 0x0100, Arg2, Arg3)
+                    }
+                }
+            }
+            ElseIf (CH03 (Arg0, Z122, 0x61, 0x0C1F, Arg2))
+            {
+                /* Storing caused unexpected exception */
+
+                If (STCS)
+                {
+                    M000 (0x02, 0x0100, Arg2, Arg3)
+                }
+            }
+            Else
+            {
+                /* Check Target Object to have the expected type and value */
+                /* Target accept type on storing to an Element of Package is 1 */
+                Local0 = 0x01
+                M006 (Concatenate (Arg0, "-m006"), Local4, Arg2, Arg3, Arg4, Local0, Arg6)
+            }
+
+            /* Check Source Object value and type is not corrupted after storing */
+
+            Store (Arg6 [0x02], Local7)
+            If (M005 (Concatenate (Arg0, "-m005"), Arg3, RefOf (Local1), Local7))
+            {
+                If (STCS)
+                {
+                    Debug = "m00e, Source Object has been corrupted during storing"
+                }
+            }
+
+            /* Check auxiliary Target Object to have the initial type and value */
+
+            Store (DerefOf (Arg6 [0x03]) [Arg2], Local7)
+            If (M016 (Concatenate (Arg0, "-m016"), Arg2, 0x00, Local7))
+            {
+                If (STCS)
+                {
+                    Debug = "m00e, auxiliary Target Object has been corrupted during storing"
+                }
+
+                Return (0x01)
+            }
+
+            /* Update Target Object */
+
+            If (M017 (Concatenate (Arg0, "-m007"), DST0))
+            {
+                If (STCS)
+                {
+                    Debug = "m00e, Error during update of Target"
+                }
+
+                Return (0x01)
+            }
+
+            /* Check Source Object value and type is not corrupted after updating the copy */
+
+            Store (Arg6 [0x02], Local7)
+            If (M005 (Concatenate (Arg0, "-m005"), Arg3, RefOf (Local1), Local7))
+            {
+                If (STCS)
+                {
+                    Debug = "m00e, Source Object has been corrupted during update of Target"
+                }
+            }
+
+            /* Check auxiliary Target Object to have the initial type and value */
+
+            Store (DerefOf (Arg6 [0x03]) [Arg2], Local7)
+            If (M016 (Concatenate (Arg0, "-m016"), Arg2, 0x00, Local7))
+            {
+                If (STCS)
+                {
+                    Debug = "m00e, auxiliary Target Object has been corrupted during update of Target"
+                }
+
+                Return (0x01)
+            }
+
+            Return (0x00)
+        }
+
+        /* Prepare Target as Package Element of specified type */
+
+        Method (M013, 4, Serialized)
+        {
+            Switch (ToInteger (Arg1))
+            {
+                Case (0x00)
+                {
+                                /* Only check */
+                }
+                Case (0x01)
+                {
+                    CopyObject (DerefOf (Arg3), INT1) /* \M689.INT1 */
+                    Arg2 [0x00] = INT1 /* \M689.INT1 */
+                }
+                Case (0x02)
+                {
+                    CopyObject (DerefOf (Arg3), STR1) /* \M689.STR1 */
+                    Arg2 [0x00] = STR1 /* \M689.STR1 */
+                }
+                Case (0x03)
+                {
+                    If (Y136)
+                    {
+                        CopyObject (DerefOf (Arg3), BUF1) /* \M689.BUF1 */
+                    }
+                    Else
+                    {
+                        M687 (DerefOf (Arg3), RefOf (BUF1))
+                    }
+
+                    Arg2 [0x00] = BUF1 /* \M689.BUF1 */
+                }
+                Case (0x04)
+                {
+                    CopyObject (DerefOf (Arg3), PAC1) /* \M689.PAC1 */
+                    Arg2 [0x00] = PAC1 /* \M689.PAC1 */
+                }
+                Case (0x11)
+                {
+                    CopyObject (RefOf (ORF1), REF1) /* \M689.REF1 */
+                    /*if (y522) { */
+
+                    Arg2 [0x00] = REF1 /* \M689.REF1 */
+                                /*} else { */
+                /*	Store(DeRefof(REF1), Index(arg2, 0)) */
+                /*} */
+                }
+                /* Unexpected Target Type */
+
+                Default
+                {
+                    ERR (Concatenate (Arg0, TERR), Z122, 0x0C7C, 0x00, 0x00, Arg1, 0x00)
+                    Return (0x01)
+                }
+
+            }
+
+            If (CH03 (Arg0, Z122, 0x63, 0x0C80, 0x00))
+            {
+                /*Exception during preparing of Target Object */
+
+                Return (0x01)
+            }
+
+            If ((Arg1 == 0x11))
+            {
+                /* Reference */
+
+                Return (0x00)
+            }
+
+            Local0 = ObjectType (Arg2 [0x00])
+            If ((Local0 != Arg1))
+            {
+                /* ObjectType of Target can not be set up */
+
+                ERR (Arg0, Z122, 0x0C8D, 0x00, 0x00, Local0, Arg1)
+                Return (0x01)
+            }
+
+            Return (0x00)
+        }
+
+        /* Check Target Object type is not corrupted after storing, */
+        /* for the computational data types verify its value against */
+        /* the Object-initializer value */
+        Method (M015, 4, Serialized)
+        {
+            Name (MMM2, 0x00) /* An auxiliary Object to invoke Method */
+            If ((Arg1 == 0x11))
+            {
+                /* Target object is a reference */
+                /* Check that it can be used as reference */
+                Local0 = DerefOf (Arg2)
+                Local3 = DerefOf (Local0)
+                If (CH03 (Arg0, Z122, 0x65, 0x0CA0, Local0))
+                {
+                    /* Derefof caused unexpected exception */
+
+                    Return (0x01)
+                }
+            }
+            Else
+            {
+                Local0 = ObjectType (Arg2)
+                If ((Local0 != Arg1))
+                {
+                    /* ObjectType of Target object is corrupted */
+
+                    ERR (Arg0, Z122, 0x0CA8, 0x00, 0x00, Local0, Arg1)
+                    Return (0x01)
+                }
+            }
+
+            Switch (ToInteger (Arg1))
+            {
+                Case (0x00)
+                {
+                    Return (0x00)
+                }
+                Case (0x01)
+                {
+                    Local0 = ObjectType (INT1)
+                }
+                Case (0x02)
+                {
+                    Local0 = ObjectType (STR1)
+                }
+                Case (0x03)
+                {
+                    Local0 = ObjectType (BUF1)
+                }
+                Case (0x04)
+                {
+                    Local0 = ObjectType (PAC1)
+                }
+                Case (0x05)
+                {
+                    Local0 = 0x05
+                }
+                Case (0x06)
+                {
+                    Local0 = ObjectType (DEV1)
+                }
+                Case (0x07)
+                {
+                    Local0 = ObjectType (EVE1)
+                }
+                Case (0x08)
+                {
+                    Local0 = ObjectType (MMM1)
+                }
+                Case (0x09)
+                {
+                    Local0 = ObjectType (MTX1)
+                }
+                Case (0x0A)
+                {
+                    Local0 = ObjectType (OPR1)
+                }
+                Case (0x0B)
+                {
+                    Local0 = ObjectType (PWR1)
+                }
+                Case (0x0C)
+                {
+                    Local0 = ObjectType (CPU1)
+                }
+                Case (0x0D)
+                {
+                    Local0 = ObjectType (TZN1)
+                }
+                Case (0x0E)
+                {
+                    Local0 = 0x0E
+                }
+                Case (0x11)
+                {
+                    /*Store(Derefof(REF1), Local3) */
+
+                    Local3 = REF1 /* \M689.REF1 */
+                    If (CH03 (Arg0, Z122, 0x67, 0x0CDE, Local0))
+                    {
+                        /* Derefof caused unexpected exception */
+
+                        Return (0x01)
+                    }
+
+                    Return (0x00)
+                }
+                /* Unexpected Result Type */
+
+                Default
+                {
+                    ERR (Arg0, Z122, 0x0CE6, 0x00, 0x00, Arg1, 0x00)
+                    Return (0x01)
+                }
+
+            }
+
+            If ((Local0 != Arg1))
+            {
+                /* Mismatch of Target Type against the specified one */
+
+                ERR (Arg0, Z122, 0x0CED, 0x00, 0x00, Local0, Arg1)
+                If (STCS)
+                {
+                    M000 (0x03, 0x01000000, Local0, Arg1)
+                }
+
+                Return (0x01)
+            }
+            Else
+            {
+                /* Check equality of the Source value to the Object-initializer one */
+
+                Switch (ToInteger (Arg1))
+                {
+                    Case (0x01)
+                    {
+                        If ((INT1 != DerefOf (Arg3)))
+                        {
+                            ERR (Arg0, Z122, 0x0CF7, 0x00, 0x00, INT1, DerefOf (Arg3))
+                            Return (0x01)
+                        }
+
+                        If ((DerefOf (Arg2) != INT1))
+                        {
+                            ERR (Arg0, Z122, 0x0CFB, 0x00, 0x00, DerefOf (Arg2), INT1)
+                            Return (0x01)
+                        }
+                    }
+                    Case (0x02)
+                    {
+                        If ((STR1 != DerefOf (Arg3)))
+                        {
+                            ERR (Arg0, Z122, 0x0D01, 0x00, 0x00, STR1, DerefOf (Arg3))
+                            Return (0x01)
+                        }
+
+                        If ((DerefOf (Arg2) != STR1))
+                        {
+                            ERR (Arg0, Z122, 0x0D05, 0x00, 0x00, DerefOf (Arg2), STR1)
+                            Return (0x01)
+                        }
+                    }
+                    Case (0x03)
+                    {
+                        If ((BUF1 != DerefOf (Arg3)))
+                        {
+                            ERR (Arg0, Z122, 0x0D0B, 0x00, 0x00, BUF1, DerefOf (Arg3))
+                            Return (0x01)
+                        }
+
+                        If ((DerefOf (Arg2) != BUF1))
+                        {
+                            ERR (Arg0, Z122, 0x0D0F, 0x00, 0x00, DerefOf (Arg2), BUF1)
+                            Return (0x01)
+                        }
+                    }
+                    Case (0x04)
+                    {
+                        Local0 = SizeOf (PAC1)
+                        If ((SizeOf (Arg3) != Local0))
+                        {
+                            ERR (Arg0, Z122, 0x0D17, 0x00, 0x00, SizeOf (Arg3), Local0)
+                            Return (0x01)
+                        }
+
+                        While (Local0)
+                        {
+                            Local0--
+                            Local1 = ObjectType (DerefOf (DerefOf (Arg3) [Local0]))
+                            Local2 = ObjectType (DerefOf (PAC1 [Local0]))
+                            If ((Local1 != Local2))
+                            {
+                                /* ObjectType is corrupted */
+
+                                ERR (Arg0, Z122, 0x0D20, 0x00, 0x00, Local1, Local2)
+                                Return (0x01)
+                            }
+                            ElseIf (DerefOf (B679 [Local1]))
+                            {
+                                /* the computational data type */
+
+                                If ((DerefOf (DerefOf (Arg3) [Local0]) != DerefOf (PAC1 [
+                                    Local0])))
+                                {
+                                    /* The value is corrupted */
+
+                                    ERR (Arg0, Z122, 0x0D28, 0x00, 0x00, DerefOf (DerefOf (Arg3) [Local0]), 
+                                        Local0)
+                                    Return (0x01)
+                                }
+                            }
+                        }
+
+                        Local0 = SizeOf (PAC1)
+                        If ((SizeOf (Arg2) != Local0))
+                        {
+                            ERR (Arg0, Z122, 0x0D30, 0x00, 0x00, SizeOf (Arg2), Local0)
+                            Return (0x01)
+                        }
+
+                        While (Local0)
+                        {
+                            Local0--
+                            Local1 = ObjectType (DerefOf (DerefOf (Arg2) [Local0]))
+                            Local2 = ObjectType (DerefOf (PAC1 [Local0]))
+                            If ((Local1 != Local2))
+                            {
+                                /* ObjectType is corrupted */
+
+                                ERR (Arg0, Z122, 0x0D39, 0x00, 0x00, Local1, Local2)
+                                Return (0x01)
+                            }
+                            ElseIf (DerefOf (B679 [Local1]))
+                            {
+                                /* the computational data type */
+
+                                If ((DerefOf (DerefOf (Arg2) [Local0]) != DerefOf (PAC1 [
+                                    Local0])))
+                                {
+                                    /* The value is corrupted */
+
+                                    ERR (Arg0, Z122, 0x0D41, 0x00, 0x00, DerefOf (DerefOf (Arg2) [Local0]), 
+                                        Local0)
+                                    Return (0x01)
+                                }
+                            }
+                        }
+                    }
+                    Case (0x05)
+                    {
+                        If ((DerefOf (Arg2) != DerefOf (Arg3)))
+                        {
+                            ERR (Arg0, Z122, 0x0D49, 0x00, 0x00, DerefOf (Arg2), DerefOf (Arg3))
+                            Return (0x01)
+                        }
+                    }
+                    Case (0x08)
+                    {
+                        CopyObject (DerefOf (Arg2), MMM2) /* \M689.M015.MMM2 */
+                        If ((MMM2 != MMM1))
+                        {
+                            ERR (Arg0, Z122, 0x0D50, 0x00, 0x00, MMM2, MMM1)
+                            Return (0x01)
+                        }
+                    }
+                    Case (0x0E)
+                    {
+                        If ((DerefOf (Arg2) != DerefOf (Arg3)))
+                        {
+                            ERR (Arg0, Z122, 0x0D56, 0x00, 0x00, DerefOf (Arg2), DerefOf (Arg3))
+                            Return (0x01)
+                        }
+                    }
+
+                }
+            }
+
+            Return (0x00)
+        }
+
+        /* Check auxiliary Target Named Object type is not corrupted, */
+        /* for the computational data types verify its value against */
+        /* the Object-initializer value */
+        Method (M016, 4, Serialized)
+        {
+            Switch (ToInteger (Arg1))
+            {
+                Case (0x00)
+                {
+                    Return (0x00)
+                }
+                Case (0x01)
+                {
+                    Local0 = ObjectType (INT1)
+                }
+                Case (0x02)
+                {
+                    Local0 = ObjectType (STR1)
+                }
+                Case (0x03)
+                {
+                    Local0 = ObjectType (BUF1)
+                }
+                Case (0x04)
+                {
+                    Local0 = ObjectType (PAC1)
+                }
+                Case (0x05)
+                {
+                    Local0 = 0x05
+                }
+                Case (0x06)
+                {
+                    Local0 = ObjectType (DEV1)
+                }
+                Case (0x07)
+                {
+                    Local0 = ObjectType (EVE1)
+                }
+                Case (0x08)
+                {
+                    Local0 = ObjectType (MMM1)
+                }
+                Case (0x09)
+                {
+                    Local0 = ObjectType (MTX1)
+                }
+                Case (0x0A)
+                {
+                    Local0 = ObjectType (OPR1)
+                }
+                Case (0x0B)
+                {
+                    Local0 = ObjectType (PWR1)
+                }
+                Case (0x0C)
+                {
+                    Local0 = ObjectType (CPU1)
+                }
+                Case (0x0D)
+                {
+                    Local0 = ObjectType (TZN1)
+                }
+                Case (0x0E)
+                {
+                    Local0 = 0x0E
+                }
+                Case (0x11)
+                {
+                    /*Store(Derefof(REF1), Local3) */
+
+                    Local3 = REF1 /* \M689.REF1 */
+                    If (CH03 (Arg0, Z122, 0x79, 0x0D95, 0x00))
+                    {
+                        /* Derefof caused unexpected exception */
+
+                        Return (0x01)
+                    }
+
+                    Return (0x00)
+                }
+                /* Unexpected Result Type */
+
+                Default
+                {
+                    ERR (Arg0, Z122, 0x0D9D, 0x00, 0x00, Arg1, 0x00)
+                    Return (0x01)
+                }
+
+            }
+
+            If ((Local0 != Arg1))
+            {
+                /* Mismatch of Target Type against the specified one */
+
+                ERR (Arg0, Z122, 0x0DA4, 0x00, 0x00, Local0, Arg1)
+                If (STCS)
+                {
+                    M000 (0x03, 0x01000000, Local0, Arg1)
+                }
+
+                Return (0x01)
+            }
+            Else
+            {
+                /* Check equality of the Source value to the Object-initializer one */
+
+                Switch (ToInteger (Arg1))
+                {
+                    Case (0x01)
+                    {
+                        If ((INT1 != DerefOf (Arg3)))
+                        {
+                            ERR (Arg0, Z122, 0x0DAE, 0x00, 0x00, INT1, DerefOf (Arg3))
+                            Return (0x01)
+                        }
+                    }
+                    Case (0x02)
+                    {
+                        If ((STR1 != DerefOf (Arg3)))
+                        {
+                            ERR (Arg0, Z122, 0x0DB4, 0x00, 0x00, STR1, DerefOf (Arg3))
+                            Return (0x01)
+                        }
+                    }
+                    Case (0x03)
+                    {
+                        If ((BUF1 != DerefOf (Arg3)))
+                        {
+                            ERR (Arg0, Z122, 0x0DBA, 0x00, 0x00, BUF1, DerefOf (Arg3))
+                            Return (0x01)
+                        }
+                    }
+                    Case (0x04)
+                    {
+                        Local0 = SizeOf (PAC1)
+                        If ((SizeOf (Arg3) != Local0))
+                        {
+                            ERR (Arg0, Z122, 0x0DC2, 0x00, 0x00, SizeOf (Arg3), Local0)
+                            Return (0x01)
+                        }
+
+                        While (Local0)
+                        {
+                            Local0--
+                            Local1 = ObjectType (DerefOf (DerefOf (Arg3) [Local0]))
+                            Local2 = ObjectType (DerefOf (PAC1 [Local0]))
+                            If ((Local1 != Local2))
+                            {
+                                /* ObjectType is corrupted */
+
+                                ERR (Arg0, Z122, 0x0DCB, 0x00, 0x00, Local1, Local2)
+                                Return (0x01)
+                            }
+                            ElseIf (DerefOf (B679 [Local1]))
+                            {
+                                /* the computational data type */
+
+                                If ((DerefOf (DerefOf (Arg3) [Local0]) != DerefOf (PAC1 [
+                                    Local0])))
+                                {
+                                    /* The value is corrupted */
+
+                                    ERR (Arg0, Z122, 0x0DD3, 0x00, 0x00, DerefOf (DerefOf (Arg3) [Local0]), 
+                                        Local0)
+                                    Return (0x01)
+                                }
+                            }
+                        }
+                    }
+
+                }
+            }
+
+            Return (0x00)
+        }
+
+        /* Update the first element of specified Package */
+        /* m017(<msg>, <Package>) */
+        Method (M017, 2, NotSerialized)
+        {
+            Local0 = ObjectType (Arg1 [0x00])
+            If (DerefOf (B66F [Local0]))
+            {
+                /* Can be used in Index Operator */
+
+                Local1 = SizeOf (Arg1 [0x00])
+                If (Local1)
+                {
+                    /* Update the last Member Object */
+
+                    Local1--
+                    Local2 = DerefOf (Arg1 [0x00]) [Local1]
+                    Local3 = RefOf (Local2)
+                    Local4 = DerefOf (Local2)
+                    If ((ObjectType (Local4) == 0x01))
+                    {
+                        /* Integer */
+
+                        Store (~Local4, DerefOf (Local3))
+                    }
+                    Else
+                    {
+                        DerefOf (Local3) = Ones
+                        If (CH03 (Arg0, Z122, 0x82, 0x0DF2, Arg1 [0x00]))
+                        {
+                            /* Store caused unexpected exception */
+
+                            Return (0x01)
+                        }
+                    }
+
+                    If (Local1)
+                    {
+                        /* Update the First Member Object */
+
+                        Local2 = DerefOf (Arg1 [0x00]) [0x00]
+                        Local4 = DerefOf (Local2)
+                        If ((ObjectType (Local4) == 0x01))
+                        {
+                            /* Integer */
+
+                            Store (~Local4, DerefOf (Local3))
+                        }
+                        Else
+                        {
+                            DerefOf (Local3) = Ones
+                            If (CH03 (Arg0, Z122, 0x83, 0x0E00, Arg1 [0x00]))
+                            {
+                                /* Store caused unexpected exception */
+
+                                Return (0x01)
+                            }
+                        }
+                    }
+                }
+                ElseIf ((Local0 == 0x04))
+                {
+                    /* Empty Package */
+
+                    Arg1 [0x00] = Package (0x01)
+                        {
+                            "update string"
+                        }
+                }
+                Else
+                {
+                    /* Empty String/Buffer */
+
+                    Arg1 [0x00] = "update string"
+                }
+            }
+            ElseIf (DerefOf (B674 [Local0]))
+            {
+                /* Non-Computational Data Objects */
+
+                Arg1 [0x00] = "update string"
+            }
+            Else
+            {
+                Store (~ToInteger (DerefOf (Arg1 [0x00])), Arg1 [
+                    0x00])
+            }
+
+            If (CH03 (Arg0, Z122, 0x84, 0x0E14, Arg1 [0x00]))
+            {
+                /* Update caused unexpected exception */
+
+                Return (0x01)
+            }
+
+            Return (0x00)
+        }
+
+        /* Test data packages for each type of the Result Object */
+        /* Empty Package */
+        Name (P000, Package (0x12){})
+        /* Target Objects initial values for common use */
+
+        Name (P001, Package (0x12)
+        {
+            0x00, 
+            0xFEDCBA9876543211, 
+            "target string", 
+            Buffer (0x11)
+            {
+                /* 0000 */  0xC3, 0xC4, 0xC5, 0x00, 0xC6, 0xC7, 0xC8, 0xC9,  // ........
+                /* 0008 */  0xCA, 0xCB, 0xCC, 0xCD, 0xCE, 0xCF, 0xC0, 0xC1,  // ........
+                /* 0010 */  0xC2                                             // .
+            }, 
+
+            Package (0x02)
+            {
+                "target package", 
+                0xFEDCBA9876543210
+            }, 
+
+            Buffer (0x09)
+            {
+                /* 0000 */  0x9A, 0x8A, 0x7A, 0x6A, 0x5A, 0x4A, 0x3A, 0x2A,  // ..zjZJ:*
+                /* 0008 */  0x1A                                             // .
+            }, 
+
+            0x00, 
+            0x00, 
+            Package (0x02)
+            {
+                MMMY, 
+                "ff0Y"
+            }, 
+
+            0x00, 
+            0x00, 
+            0x00, 
+            0x00, 
+            0x00, 
+            Buffer (0x09)
+            {
+                /* 0000 */  0x9A, 0x8A, 0x7A, 0x6A, 0x5A, 0x4A, 0x3A, 0x2A,  // ..zjZJ:*
+                /* 0008 */  0x1A                                             // .
+            }, 
+
+            0x00, 
+            0x00, 
+            0x00
+        })
+        /* Uninitialized */
+
+        Name (P002, Package (0x06)
+        {
+            /* Type of the Result(Source) Object */
+
+            0x00, 
+            /* Number of different initial values */
+
+            0x01, 
+            /* SRC0 initial value */
+
+            0x00, 
+            /* Target Objects initial values */
+
+            P001, 
+            /* Benchmark Result object value */
+
+            0x00, 
+            /* Benchmark Result object converted to Target type values */
+
+            P000
+        })
+        /* Integer */
+
+        Name (P132, Package (0x06)
+        {
+            /* Type of the Result(Source) Object */
+
+            0x01, 
+            /* Number of different initial values */
+
+            0x01, 
+            /* SRC0 initial value */
+
+            0xFEDCBA9876543210, 
+            /* Target Objects initial values */
+
+            P001, 
+            /* Benchmark Result object value */
+
+            0xFEDCBA9876543210, 
+            /* Benchmark Result object converted to Target type values */
+
+            Package (0x12)
+            {
+                0x00, 
+                0xFEDCBA9876543210, 
+                "76543210", 
+                Buffer (0x11)
+                {
+                     0x10, 0x32, 0x54, 0x76                           // .2Tv
+                }, 
+
+                0x00, 
+                Buffer (0x09)
+                {
+                     0x10, 0x32, 0x54, 0x76                           // .2Tv
+                }, 
+
+                0x00, 
+                0x00, 
+                0x00, 
+                0x00, 
+                0x00, 
+                0x00, 
+                0x00, 
+                0x00, 
+                Buffer (0x09)
+                {
+                     0x10, 0x32, 0x54, 0x76                           // .2Tv
+                }, 
+
+                0x00, 
+                0x00, 
+                0x00
+            }
+        })
+        Name (P164, Package (0x06)
+        {
+            /* Type of the Result(Source) Object */
+
+            0x01, 
+            /* Number of different initial values */
+
+            0x01, 
+            /* SRC0 initial value */
+
+            0xFEDCBA9876543210, 
+            /* Target Objects initial values */
+
+            P001, 
+            /* Benchmark Result object value */
+
+            0xFEDCBA9876543210, 
+            /* Benchmark Result object converted to Target type values */
+
+            Package (0x12)
+            {
+                0x00, 
+                0xFEDCBA9876543210, 
+                "FEDCBA9876543210", 
+                Buffer (0x11)
+                {
+                     0x10, 0x32, 0x54, 0x76, 0x98, 0xBA, 0xDC, 0xFE   // .2Tv....
+                }, 
+
+                0x00, 
+                Buffer (0x09)
+                {
+                     0x10, 0x32, 0x54, 0x76, 0x98, 0xBA, 0xDC, 0xFE   // .2Tv....
+                }, 
+
+                0x00, 
+                0x00, 
+                0x00, 
+                0x00, 
+                0x00, 
+                0x00, 
+                0x00, 
+                0x00, 
+                Buffer (0x09)
+                {
+                     0x10, 0x32, 0x54, 0x76, 0x98, 0xBA, 0xDC, 0xFE   // .2Tv....
+                }, 
+
+                0x00, 
+                0x00, 
+                0x00
+            }
+        })
+        /* String */
+
+        Name (P201, Package (0x06)
+        {
+            /* Type of the Result(Source) Object */
+
+            0x02, 
+            /* Number of different initial values */
+
+            0x01, 
+            /* SRC0 initial value */
+
+            "\x01", 
+            /* Target Objects initial values */
+
+            P001, 
+            /* Benchmark Result object value */
+
+            "\x01", 
+            /* Benchmark Result object converted to Target type values */
+
+            Package (0x12)
+            {
+                0x00, 
+                0x00, 
+                "\x01", 
+                Buffer (0x11)
+                {
+                     0x01                                             // .
+                }, 
+
+                0x00, 
+                Buffer (0x09)
+                {
+                     0x01                                             // .
+                }, 
+
+                0x00, 
+                0x00, 
+                0x00, 
+                0x00, 
+                0x00, 
+                0x00, 
+                0x00, 
+                0x00, 
+                Buffer (0x09)
+                {
+                     0x01                                             // .
+                }, 
+
+                0x00, 
+                0x00, 
+                0x00
+            }
+        })
+        Name (P202, Package (0x06)
+        {
+            /* Type of the Result(Source) Object */
+
+            0x02, 
+            /* Number of different initial values */
+
+            0x02, 
+            /* SRC0 initial value */
+
+            "!\"#$%&\'()*+,-./0123456789:;<=>?@ABCDEFGHIJKLMNOPQRSTUVWXYZ[\\]^_`abcdefghijklmnopqrstuvwxyz{|}~ !\"#$%&\'()*+,-./0123456789:;<=>?@ABCDEFGHIJKLMNOPQRSTUVWXYZ[\\]^_`abcdefghijklmnopqrstuvwxyz{|}~ !\"#$%&\'()*", 
+            /* Target Objects initial values */
+
+            P001, 
+            /* Benchmark Result object value */
+
+            "!\"#$%&\'()*+,-./0123456789:;<=>?@ABCDEFGHIJKLMNOPQRSTUVWXYZ[\\]^_`abcdefghijklmnopqrstuvwxyz{|}~ !\"#$%&\'()*+,-./0123456789:;<=>?@ABCDEFGHIJKLMNOPQRSTUVWXYZ[\\]^_`abcdefghijklmnopqrstuvwxyz{|}~ !\"#$%&\'()*", 
+            /* Benchmark Result object converted to Target type values */
+
+            Package (0x12)
+            {
+                0x00, 
+                0x00, 
+                "!\"#$%&\'()*+,-./0123456789:;<=>?@ABCDEFGHIJKLMNOPQRSTUVWXYZ[\\]^_`abcdefghijklmnopqrstuvwxyz{|}~ !\"#$%&\'()*+,-./0123456789:;<=>?@ABCDEFGHIJKLMNOPQRSTUVWXYZ[\\]^_`abcdefghijklmnopqrstuvwxyz{|}~ !\"#$%&\'()*", 
+                Buffer (0x11)
+                {
+                    /* 0000 */  0x21, 0x22, 0x23, 0x24, 0x25, 0x26, 0x27, 0x28,  // !"#$%&'(
+                    /* 0008 */  0x29, 0x2A, 0x2B, 0x2C, 0x2D, 0x2E, 0x2F, 0x30,  // )*+,-./0
+                    /* 0010 */  0x31                                             // 1
+                }, 
+
+                0x00, 
+                Buffer (0x09)
+                {
+                    /* 0000 */  0x21, 0x22, 0x23, 0x24, 0x25, 0x26, 0x27, 0x28,  // !"#$%&'(
+                    /* 0008 */  0x09                                             // .
+                }, 
+
+                0x00, 
+                0x00, 
+                0x00, 
+                0x00, 
+                0x00, 
+                0x00, 
+                0x00, 
+                0x00, 
+                Buffer (0x09)
+                {
+                    /* 0000 */  0x21, 0x22, 0x23, 0x24, 0x25, 0x26, 0x27, 0x28,  // !"#$%&'(
+                    /* 0008 */  0x09                                             // .
+                }, 
+
+                0x00, 
+                0x00, 
+                0x00
+            }
+        })
+        Name (P232, Package (0x05)
+        {
+            /* Type of the Result(Source) Object */
+
+            0x02, 
+            /* Number of different initial values */
+
+            0x02, 
+            Package (0x06)
+            {
+                /* Type of the Result(Source) Object */
+
+                0x03, 
+                /* Number of different initial values */
+
+                0x00, 
+                /* SRC0 initial value */
+
+                "fedcba98 string", 
+                /* Target Objects initial values */
+
+                P001, 
+                /* Benchmark Result object value */
+
+                "fedcba98 string", 
+                /* Benchmark Result object converted to Target type values */
+
+                Package (0x12)
+                {
+                    0x00, 
+                    0xFEDCBA98, 
+                    "fedcba98 string", 
+                    Buffer (0x11)
+                    {
+                        /* 0000 */  0x66, 0x65, 0x64, 0x63, 0x62, 0x61, 0x39, 0x38,  // fedcba98
+                        /* 0008 */  0x20, 0x73, 0x74, 0x72, 0x69, 0x6E, 0x67         //  string
+                    }, 
+
+                    0x00, 
+                    Buffer (0x09)
+                    {
+                         0x66, 0x65, 0x64, 0x63, 0x62, 0x61, 0x39, 0x38   // fedcba98
+                    }, 
+
+                    0x00, 
+                    0x00, 
+                    0x00, 
+                    0x00, 
+                    0x00, 
+                    0x00, 
+                    0x00, 
+                    0x00, 
+                    Buffer (0x09)
+                    {
+                         0x66, 0x65, 0x64, 0x63, 0x62, 0x61, 0x39, 0x38   // fedcba98
+                    }, 
+
+                    0x00, 
+                    0x00, 
+                    0x00
+                }
+            }, 
+
+            P201, 
+            P202
+        })
+        Name (P264, Package (0x05)
+        {
+            /* Type of the Result(Source) Object */
+
+            0x02, 
+            /* Number of different initial values */
+
+            0x03, 
+            Package (0x06)
+            {
+                /* Type of the Result(Source) Object */
+
+                0x02, 
+                /* Number of different initial values */
+
+                0x00, 
+                /* SRC0 initial value */
+
+                "fedcba9876543210 string", 
+                /* Target Objects initial values */
+
+                P001, 
+                /* Benchmark Result object value */
+
+                "fedcba9876543210 string", 
+                /* Benchmark Result object converted to Target type values */
+
+                Package (0x12)
+                {
+                    0x00, 
+                    0xFEDCBA9876543210, 
+                    "fedcba9876543210 string", 
+                    Buffer (0x11)
+                    {
+                        /* 0000 */  0x66, 0x65, 0x64, 0x63, 0x62, 0x61, 0x39, 0x38,  // fedcba98
+                        /* 0008 */  0x37, 0x36, 0x35, 0x34, 0x33, 0x32, 0x31, 0x30,  // 76543210
+                        /* 0010 */  0x20                                             //  
+                    }, 
+
+                    0x00, 
+                    Buffer (0x09)
+                    {
+                        /* 0000 */  0x66, 0x65, 0x64, 0x63, 0x62, 0x61, 0x39, 0x38,  // fedcba98
+                        /* 0008 */  0x17                                             // .
+                    }, 
+
+                    0x00, 
+                    0x00, 
+                    0x00, 
+                    0x00, 
+                    0x00, 
+                    0x00, 
+                    0x00, 
+                    0x00, 
+                    Buffer (0x09)
+                    {
+                        /* 0000 */  0x66, 0x65, 0x64, 0x63, 0x62, 0x61, 0x39, 0x38,  // fedcba98
+                        /* 0008 */  0x17                                             // .
+                    }, 
+
+                    0x00, 
+                    0x00, 
+                    0x00
+                }
+            }, 
+
+            P201, 
+            P202
+        })
+        /* Buffer */
+
+        Name (P301, Package (0x06)
+        {
+            /* Type of the Result(Source) Object */
+
+            0x03, 
+            /* Number of different initial values */
+
+            0x01, 
+            /* SRC0 initial value */
+
+            Buffer (0x43)
+            {
+                /* 0000 */  0x01, 0x02, 0x03, 0x04, 0x05, 0x06, 0x07, 0x08,  // ........
+                /* 0008 */  0x09, 0x0A, 0x0B, 0x0C, 0x0D, 0x0E, 0x0F, 0x10,  // ........
+                /* 0010 */  0x11, 0x12, 0x13, 0x14, 0x15, 0x16, 0x17, 0x18,  // ........
+                /* 0018 */  0x19, 0x1A, 0x1B, 0x1C, 0x1D, 0x1E, 0x1F, 0x20,  // ....... 
+                /* 0020 */  0x21, 0x22, 0x23, 0x24, 0x25, 0x26, 0x27, 0x28,  // !"#$%&'(
+                /* 0028 */  0x29, 0x2A, 0x2B, 0x2C, 0x2D, 0x2E, 0x2F, 0x30,  // )*+,-./0
+                /* 0030 */  0x31, 0x32, 0x33, 0x34, 0x35, 0x36, 0x37, 0x38,  // 12345678
+                /* 0038 */  0x39, 0x3A, 0x3B, 0x3C, 0x3D, 0x3E, 0x3F, 0x40,  // 9:;<=>?@
+                /* 0040 */  0x41, 0x42, 0x43                                 // ABC
+            }, 
+
+            /* Target Objects initial values */
+
+            P001, 
+            /* Benchmark Result object value */
+
+            Buffer (0x43)
+            {
+                /* 0000 */  0x01, 0x02, 0x03, 0x04, 0x05, 0x06, 0x07, 0x08,  // ........
+                /* 0008 */  0x09, 0x0A, 0x0B, 0x0C, 0x0D, 0x0E, 0x0F, 0x10,  // ........
+                /* 0010 */  0x11, 0x12, 0x13, 0x14, 0x15, 0x16, 0x17, 0x18,  // ........
+                /* 0018 */  0x19, 0x1A, 0x1B, 0x1C, 0x1D, 0x1E, 0x1F, 0x20,  // ....... 
+                /* 0020 */  0x21, 0x22, 0x23, 0x24, 0x25, 0x26, 0x27, 0x28,  // !"#$%&'(
+                /* 0028 */  0x29, 0x2A, 0x2B, 0x2C, 0x2D, 0x2E, 0x2F, 0x30,  // )*+,-./0
+                /* 0030 */  0x31, 0x32, 0x33, 0x34, 0x35, 0x36, 0x37, 0x38,  // 12345678
+                /* 0038 */  0x39, 0x3A, 0x3B, 0x3C, 0x3D, 0x3E, 0x3F, 0x40,  // 9:;<=>?@
+                /* 0040 */  0x41, 0x42, 0x43                                 // ABC
+            }, 
+
+            /* Benchmark Result object converted to Target type values */
+
+            Package (0x12)
+            {
+                0x00, 
+                0x0807060504030201, 
+                "01 02 03 04 05 06 07 08 09 0A 0B 0C 0D 0E 0F 10 11 12 13 14 15 16 17 18 19 1A 1B 1C 1D 1E 1F 20 21 22 23 24 25 26 27 28 29 2A 2B 2C 2D 2E 2F 30 31 32 33 34 35 36 37 38 39 3A 3B 3C 3D 3E 3F 40 41 42 43", 
+                Buffer (0x11)
+                {
+                    /* 0000 */  0x01, 0x02, 0x03, 0x04, 0x05, 0x06, 0x07, 0x08,  // ........
+                    /* 0008 */  0x09, 0x0A, 0x0B, 0x0C, 0x0D, 0x0E, 0x0F, 0x10,  // ........
+                    /* 0010 */  0x11                                             // .
+                }, 
+
+                0x00, 
+                Buffer (0x09)
+                {
+                    /* 0000 */  0x01, 0x02, 0x03, 0x04, 0x05, 0x06, 0x07, 0x08,  // ........
+                    /* 0008 */  0x09                                             // .
+                }, 
+
+                0x00, 
+                0x00, 
+                0x00, 
+                0x00, 
+                0x00, 
+                0x00, 
+                0x00, 
+                0x00, 
+                Buffer (0x09)
+                {
+                    /* 0000 */  0x01, 0x02, 0x03, 0x04, 0x05, 0x06, 0x07, 0x08,  // ........
+                    /* 0008 */  0x09                                             // .
+                }, 
+
+                0x00, 
+                0x00, 
+                0x00
+            }
+        })
+        Name (P300, Package (0x04)
+        {
+            /* Type of the Result(Source) Object */
+
+            0x03, 
+            /* Number of different initial values */
+
+            0x02, 
+            Package (0x06)
+            {
+                /* Type of the Result(Source) Object */
+
+                0x03, 
+                /* Number of different initial values */
+
+                0x00, 
+                /* SRC0 initial value */
+
+                Buffer (0x09)
+                {
+                    /* 0000 */  0xF8, 0xF7, 0xF6, 0xF5, 0xF4, 0xF3, 0xF2, 0xF1,  // ........
+                    /* 0008 */  0x88                                             // .
+                }, 
+
+                /* Target Objects initial values */
+
+                P001, 
+                /* Benchmark Result object value */
+
+                Buffer (0x09)
+                {
+                    /* 0000 */  0xF8, 0xF7, 0xF6, 0xF5, 0xF4, 0xF3, 0xF2, 0xF1,  // ........
+                    /* 0008 */  0x88                                             // .
+                }, 
+
+                /* Benchmark Result object converted to Target type values */
+
+                Package (0x12)
+                {
+                    0x00, 
+                    0xF1F2F3F4F5F6F7F8, 
+                    "F8 F7 F6 F5 F4 F3 F2 F1 88", 
+                    Buffer (0x11)
+                    {
+                        /* 0000 */  0xF8, 0xF7, 0xF6, 0xF5, 0xF4, 0xF3, 0xF2, 0xF1,  // ........
+                        /* 0008 */  0x88                                             // .
+                    }, 
+
+                    0x00, 
+                    Buffer (0x09)
+                    {
+                        /* 0000 */  0xF8, 0xF7, 0xF6, 0xF5, 0xF4, 0xF3, 0xF2, 0xF1,  // ........
+                        /* 0008 */  0x08                                             // .
+                    }, 
+
+                    0x00, 
+                    0x00, 
+                    0x00, 
+                    0x00, 
+                    0x00, 
+                    0x00, 
+                    0x00, 
+                    0x00, 
+                    Buffer (0x09)
+                    {
+                        /* 0000 */  0xF8, 0xF7, 0xF6, 0xF5, 0xF4, 0xF3, 0xF2, 0xF1,  // ........
+                        /* 0008 */  0x08                                             // .
+                    }, 
+
+                    0x00, 
+                    0x00, 
+                    0x00
+                }
+            }, 
+
+            P301
+        })
+        /* Package */
+
+        Name (P401, Package (0x06)
+        {
+            /* Type of the Result(Source) Object */
+
+            0x04, 
+            /* Number of different initial values */
+
+            0x01, 
+            /* SRC0 initial value */
+
+            Package (0x01)
+            {
+                "test p401 package"
+            }, 
+
+            /* Target Objects initial values */
+
+            P001, 
+            /* Benchmark Result object value */
+
+            Package (0x01)
+            {
+                "test p401 package"
+            }, 
+
+            /* Benchmark Result object converted to Target type values */
+
+            Package (0x12)
+            {
+                0x00, 
+                0x00, 
+                0x00, 
+                0x00, 
+                Package (0x01)
+                {
+                    "test p401 package"
+                }, 
+
+                0x00, 
+                0x00, 
+                0x00, 
+                0x00, 
+                0x00, 
+                0x00, 
+                0x00, 
+                0x00, 
+                0x00, 
+                0x00, 
+                0x00, 
+                0x00, 
+                0x00
+            }
+        })
+        Name (P400, Package (0x04)
+        {
+            /* Type of the Result(Source) Object */
+
+            0x04, 
+            /* Number of different initial values */
+
+            0x02, 
+            Package (0x06)
+            {
+                /* Type of the Result(Source) Object */
+
+                0x04, 
+                /* Number of different initial values */
+
+                0x00, 
+                /* SRC0 initial value */
+
+                Package (0x03)
+                {
+                    0xFEDCBA987654321F, 
+                    "test package", 
+                    Buffer (0x09)
+                    {
+                        /* 0000 */  0x13, 0x12, 0x11, 0x10, 0x0F, 0x0E, 0x0D, 0x0C,  // ........
+                        /* 0008 */  0x0B                                             // .
+                    }
+                }, 
+
+                /* Target Objects initial values */
+
+                P001, 
+                /* Benchmark Result object value */
+
+                Package (0x03)
+                {
+                    0xFEDCBA987654321F, 
+                    "test package", 
+                    Buffer (0x09)
+                    {
+                        /* 0000 */  0x13, 0x12, 0x11, 0x10, 0x0F, 0x0E, 0x0D, 0x0C,  // ........
+                        /* 0008 */  0x0B                                             // .
+                    }
+                }, 
+
+                /* Benchmark Result object converted to Target type values */
+
+                Package (0x12)
+                {
+                    0x00, 
+                    0x00, 
+                    0x00, 
+                    0x00, 
+                    Package (0x03)
+                    {
+                        0xFEDCBA987654321F, 
+                        "test package", 
+                        Buffer (0x09)
+                        {
+                            /* 0000 */  0x13, 0x12, 0x11, 0x10, 0x0F, 0x0E, 0x0D, 0x0C,  // ........
+                            /* 0008 */  0x0B                                             // .
+                        }
+                    }, 
+
+                    0x00, 
+                    0x00, 
+                    0x00, 
+                    0x00, 
+                    0x00, 
+                    0x00, 
+                    0x00, 
+                    0x00, 
+                    0x00, 
+                    0x00, 
+                    0x00, 
+                    0x00, 
+                    0x00
+                }
+            }, 
+
+            P401
+        })
+        /* Field Unit */
+
+        Name (P500, Package (0x06)
+        {
+            /* Type of the Result(Source) Object */
+
+            0x05, 
+            /* Number of different initial values */
+
+            0x01, 
+            /* SRC0 initial value */
+
+            Package (0x02)
+            {
+                0x00, 
+                Buffer (0x09)
+                {
+                    /* 0000 */  0x95, 0x85, 0x75, 0x65, 0x55, 0x45, 0x35, 0x25,  // ..ueUE5%
+                    /* 0008 */  0x15                                             // .
+                }
+            }, 
+
+            /* Target Objects initial values */
+
+            P001, 
+            /* Benchmark Result object value */
+
+            Buffer (0x09)
+            {
+                /* 0000 */  0x95, 0x85, 0x75, 0x65, 0x55, 0x45, 0x35, 0x25,  // ..ueUE5%
+                /* 0008 */  0x15                                             // .
+            }, 
+
+            /* Benchmark Result object converted to Target type values */
+
+            Package (0x12)
+            {
+                0x00, 
+                0x2535455565758595, 
+                "95 85 75 65 55 45 35 25 15", 
+                Buffer (0x11)
+                {
+                    /* 0000 */  0x95, 0x85, 0x75, 0x65, 0x55, 0x45, 0x35, 0x25,  // ..ueUE5%
+                    /* 0008 */  0x15                                             // .
+                }, 
+
+                0x00, 
+                Buffer (0x09)
+                {
+                    /* 0000 */  0x95, 0x85, 0x75, 0x65, 0x55, 0x45, 0x35, 0x25,  // ..ueUE5%
+                    /* 0008 */  0x15                                             // .
+                }, 
+
+                0x00, 
+                0x00, 
+                0x00, 
+                0x00, 
+                0x00, 
+                0x00, 
+                0x00, 
+                0x00, 
+                Buffer (0x09)
+                {
+                    /* 0000 */  0x95, 0x85, 0x75, 0x65, 0x55, 0x45, 0x35, 0x25,  // ..ueUE5%
+                    /* 0008 */  0x15                                             // .
+                }, 
+
+                0x00, 
+                0x00, 
+                0x00
+            }
+        })
+        /* Device */
+
+        Name (P600, Package (0x06)
+        {
+            /* Type of the Result(Source) Object */
+
+            0x06, 
+            /* Number of different initial values */
+
+            0x01, 
+            /* SRC0 initial value */
+
+            Buffer (0x02)
+            {
+                 0x79, 0x00                                       // y.
+            }, 
+
+            /* Target Objects initial values */
+
+            P001, 
+            /* Benchmark Result object value */
+
+            0x00, 
+            /* Benchmark Result object converted to Target type values */
+
+            P000
+        })
+        /* Event */
+
+        Name (P700, Package (0x06)
+        {
+            /* Type of the Result(Source) Object */
+
+            0x07, 
+            /* Number of different initial values */
+
+            0x01, 
+            /* SRC0 initial value */
+
+            0x00, 
+            /* Target Objects initial values */
+
+            P001, 
+            /* Benchmark Result object value */
+
+            0x00, 
+            /* Benchmark Result object converted to Target type values */
+
+            P000
+        })
+        /* Method */
+
+        Name (P800, Package (0x06)
+        {
+            /* Type of the Result(Source) Object */
+
+            0x08, 
+            /* Number of different initial values */
+
+            0x01, 
+            /* SRC0 initial value */
+
+            Package (0x02)
+            {
+                MMMX, 
+                "ff0X"
+            }, 
+
+            /* Target Objects initial values */
+
+            P001, 
+            /* Benchmark Result object value */
+
+            "ff0X", 
+            /* Benchmark Result object converted to Target type values */
+
+            Package (0x12)
+            {
+                0x00, 
+                0x0FF0, 
+                "ff0X", 
+                Buffer (0x11)
+                {
+                     0x66, 0x66, 0x30, 0x58                           // ff0X
+                }, 
+
+                0x00, 
+                Buffer (0x09)
+                {
+                     0x66, 0x66, 0x30, 0x58                           // ff0X
+                }, 
+
+                0x00, 
+                0x00, 
+                "ff0X", 
+                0x00, 
+                0x00, 
+                0x00, 
+                0x00, 
+                0x00, 
+                Buffer (0x09)
+                {
+                     0x66, 0x66, 0x30, 0x58                           // ff0X
+                }, 
+
+                0x00, 
+                0x00, 
+                0x00
+            }
+        })
+        /* Mutex */
+
+        Name (P900, Package (0x06)
+        {
+            /* Type of the Result(Source) Object */
+
+            0x09, 
+            /* Number of different initial values */
+
+            0x01, 
+            /* SRC0 initial value */
+
+            0x00, 
+            /* Target Objects initial values */
+
+            P001, 
+            /* Benchmark Result object value */
+
+            0x00, 
+            /* Benchmark Result object converted to Target type values */
+
+            P000
+        })
+        /* Operation Region */
+
+        Name (PA00, Package (0x06)
+        {
+            /* Type of the Result(Source) Object */
+
+            0x0A, 
+            /* Number of different initial values */
+
+            0x01, 
+            /* SRC0 initial value */
+
+            0x00, 
+            /* Target Objects initial values */
+
+            P001, 
+            /* Benchmark Result object value */
+
+            0x00, 
+            /* Benchmark Result object converted to Target type values */
+
+            P000
+        })
+        /* Power Resource */
+
+        Name (PB00, Package (0x06)
+        {
+            /* Type of the Result(Source) Object */
+
+            0x0B, 
+            /* Number of different initial values */
+
+            0x01, 
+            /* SRC0 initial value */
+
+            0x00, 
+            /* Target Objects initial values */
+
+            P001, 
+            /* Benchmark Result object value */
+
+            0x00, 
+            /* Benchmark Result object converted to Target type values */
+
+            P000
+        })
+        /* Processor */
+
+        Name (PC00, Package (0x06)
+        {
+            /* Type of the Result(Source) Object */
+
+            0x0C, 
+            /* Number of different initial values */
+
+            0x01, 
+            /* SRC0 initial value */
+
+            0x00, 
+            /* Target Objects initial values */
+
+            P001, 
+            /* Benchmark Result object value */
+
+            0x00, 
+            /* Benchmark Result object converted to Target type values */
+
+            P000
+        })
+        /* Thermal Zone */
+
+        Name (PD00, Package (0x06)
+        {
+            /* Type of the Result(Source) Object */
+
+            0x0D, 
+            /* Number of different initial values */
+
+            0x01, 
+            /* SRC0 initial value */
+
+            0x00, 
+            /* Target Objects initial values */
+
+            P001, 
+            /* Benchmark Result object value */
+
+            0x00, 
+            /* Benchmark Result object converted to Target type values */
+
+            P000
+        })
+        /* Buffer Field */
+
+        Name (PE00, Package (0x06)
+        {
+            /* Type of the Result(Source) Object */
+
+            0x0E, 
+            /* Number of different initial values */
+
+            0x00, 
+            /* SRC0 initial value */
+
+            Package (0x02)
+            {
+                0x00, 
+                Buffer (0x09)
+                {
+                    /* 0000 */  0x95, 0x85, 0x75, 0x65, 0x55, 0x45, 0x35, 0x25,  // ..ueUE5%
+                    /* 0008 */  0x15                                             // .
+                }
+            }, 
+
+            /* Target Objects initial values */
+
+            P001, 
+            /* Benchmark Result object value */
+
+            Buffer (0x09)
+            {
+                /* 0000 */  0x95, 0x85, 0x75, 0x65, 0x55, 0x45, 0x35, 0x25,  // ..ueUE5%
+                /* 0008 */  0x15                                             // .
+            }, 
+
+            /* Benchmark Result object converted to Target type values */
+
+            Package (0x12)
+            {
+                0x00, 
+                0x2535455565758595, 
+                "95 85 75 65 55 45 35 25 15", 
+                Buffer (0x11)
+                {
+                    /* 0000 */  0x95, 0x85, 0x75, 0x65, 0x55, 0x45, 0x35, 0x25,  // ..ueUE5%
+                    /* 0008 */  0x15                                             // .
+                }, 
+
+                0x00, 
+                Buffer (0x09)
+                {
+                    /* 0000 */  0x95, 0x85, 0x75, 0x65, 0x55, 0x45, 0x35, 0x25,  // ..ueUE5%
+                    /* 0008 */  0x15                                             // .
+                }, 
+
+                0x00, 
+                0x00, 
+                0x00, 
+                0x00, 
+                0x00, 
+                0x00, 
+                0x00, 
+                0x00, 
+                Buffer (0x09)
+                {
+                    /* 0000 */  0x95, 0x85, 0x75, 0x65, 0x55, 0x45, 0x35, 0x25,  // ..ueUE5%
+                    /* 0008 */  0x15                                             // .
+                }, 
+
+                0x00, 
+                0x00, 
+                0x00
+            }
+        })
+        Name (PE01, Package (0x06)
+        {
+            /* Type of the Result(Source) Object */
+
+            0x0E, 
+            /* Number of different initial values */
+
+            0x01, 
+            /* SRC0 initial value */
+
+            Package (0x02)
+            {
+                0x01, 
+                Buffer (0x08)
+                {
+                     0x95, 0x85, 0x75, 0x65, 0x55, 0x45, 0x35, 0x25   // ..ueUE5%
+                }
+            }, 
+
+            /* Target Objects initial values */
+
+            P001, 
+            /* Benchmark Result object value */
+
+            Buffer (0x08)
+            {
+                 0x95, 0x85, 0x75, 0x65, 0x55, 0x45, 0x35, 0x25   // ..ueUE5%
+            }, 
+
+            /* Benchmark Result object converted to Target type values */
+
+            Package (0x12)
+            {
+                0x00, 
+                0x2535455565758595, 
+                "95 85 75 65 55 45 35 25", 
+                Buffer (0x11)
+                {
+                     0x95, 0x85, 0x75, 0x65, 0x55, 0x45, 0x35, 0x25   // ..ueUE5%
+                }, 
+
+                0x00, 
+                Buffer (0x09)
+                {
+                     0x95, 0x85, 0x75, 0x65, 0x55, 0x45, 0x35, 0x25   // ..ueUE5%
+                }, 
+
+                0x00, 
+                0x00, 
+                0x00, 
+                0x00, 
+                0x00, 
+                0x00, 
+                0x00, 
+                0x00, 
+                Buffer (0x09)
+                {
+                     0x95, 0x85, 0x75, 0x65, 0x55, 0x45, 0x35, 0x25   // ..ueUE5%
+                }, 
+
+                0x00, 
+                0x00, 
+                0x00
+            }
+        })
+        Name (PE02, Package (0x06)
+        {
+            /* Type of the Result(Source) Object */
+
+            0x0E, 
+            /* Number of different initial values */
+
+            0x01, 
+            /* SRC0 initial value */
+
+            Package (0x02)
+            {
+                0x01, 
+                Buffer (0x08)
+                {
+                     0x95, 0x85, 0x75, 0x65, 0x55, 0x45, 0x35, 0x25   // ..ueUE5%
+                }
+            }, 
+
+            /* Target Objects initial values */
+
+            P001, 
+            /* Benchmark Result object value */
+
+            0x2535455565758595, 
+            /* Benchmark Result object converted to Target type values */
+
+            Package (0x12)
+            {
+                0x00, 
+                0x2535455565758595, 
+                "2535455565758595", 
+                Buffer (0x11)
+                {
+                     0x95, 0x85, 0x75, 0x65, 0x55, 0x45, 0x35, 0x25   // ..ueUE5%
+                }, 
+
+                0x00, 
+                Buffer (0x09)
+                {
+                     0x95, 0x85, 0x75, 0x65, 0x55, 0x45, 0x35, 0x25   // ..ueUE5%
+                }, 
+
+                0x00, 
+                0x00, 
+                0x00, 
+                0x00, 
+                0x00, 
+                0x00, 
+                0x00, 
+                0x00, 
+                Buffer (0x09)
+                {
+                     0x95, 0x85, 0x75, 0x65, 0x55, 0x45, 0x35, 0x25   // ..ueUE5%
+                }, 
+
+                0x00, 
+                0x00, 
+                0x00
+            }
+        })
+        Name (PE03, Package (0x06)
+        {
+            /* Type of the Result(Source) Object */
+
+            0x0E, 
+            /* Number of different initial values */
+
+            0x02, 
+            /* SRC0 initial value */
+
+            Package (0x02)
+            {
+                0x02, 
+                Buffer (0x04)
+                {
+                     0x95, 0x85, 0x75, 0x65                           // ..ue
+                }
+            }, 
+
+            /* Target Objects initial values */
+
+            P001, 
+            /* Benchmark Result object value */
+
+            0x65758595, 
+            /* Benchmark Result object converted to Target type values */
+
+            Package (0x12)
+            {
+                0x00, 
+                0x65758595, 
+                "65758595", 
+                Buffer (0x11)
+                {
+                     0x95, 0x85, 0x75, 0x65                           // ..ue
+                }, 
+
+                0x00, 
+                Buffer (0x09)
+                {
+                     0x95, 0x85, 0x75, 0x65                           // ..ue
+                }, 
+
+                0x00, 
+                0x00, 
+                0x00, 
+                0x00, 
+                0x00, 
+                0x00, 
+                0x00, 
+                0x00, 
+                Buffer (0x09)
+                {
+                     0x95, 0x85, 0x75, 0x65                           // ..ue
+                }, 
+
+                0x00, 
+                0x00, 
+                0x00
+            }
+        })
+        Name (PE04, Package (0x06)
+        {
+            /* Type of the Result(Source) Object */
+
+            0x0E, 
+            /* Number of different initial values */
+
+            0x02, 
+            /* SRC0 initial value */
+
+            Package (0x02)
+            {
+                0x02, 
+                Buffer (0x04)
+                {
+                     0x95, 0x85, 0x75, 0x65                           // ..ue
+                }
+            }, 
+
+            /* Target Objects initial values */
+
+            P001, 
+            /* Benchmark Result object value */
+
+            0x65758595, 
+            /* Benchmark Result object converted to Target type values */
+
+            Package (0x12)
+            {
+                0x00, 
+                0x65758595, 
+                "0000000065758595", 
+                Buffer (0x11)
+                {
+                     0x95, 0x85, 0x75, 0x65                           // ..ue
+                }, 
+
+                0x00, 
+                Buffer (0x09)
+                {
+                     0x95, 0x85, 0x75, 0x65                           // ..ue
+                }, 
+
+                0x00, 
+                0x00, 
+                0x00, 
+                0x00, 
+                0x00, 
+                0x00, 
+                0x00, 
+                0x00, 
+                Buffer (0x09)
+                {
+                     0x95, 0x85, 0x75, 0x65                           // ..ue
+                }, 
+
+                0x00, 
+                0x00, 
+                0x00
+            }
+        })
+        Name (PE32, Package (0x05)
+        {
+            /* Type of the Result(Source) Object */
+
+            0x0E, 
+            /* Number of different initial values */
+
+            0x03, 
+            /* Data */
+
+            PE00, 
+            PE01, 
+            PE03
+        })
+        Name (PE64, Package (0x05)
+        {
+            /* Type of the Result(Source) Object */
+
+            0x0E, 
+            /* Number of different initial values */
+
+            0x03, 
+            /* Data */
+
+            PE00, 
+            PE02, 
+            PE04
+        })
+        /* DDB Handle */
+
+        Name (PF00, Package (0x06)
+        {
+            /* Type of the Result(Source) Object */
+
+            0x0F, 
+            /* Number of different initial values */
+
+            0x01, 
+            /* SRC0 initial value */
+
+            0x00, 
+            /* Target Objects initial values */
+
+            P001, 
+            /* Benchmark Result object value */
+
+            0x00, 
+            /* Benchmark Result object converted to Target type values */
+
+            P000
+        })
+        /* Debug */
+
+        Name (PG00, Package (0x06)
+        {
+            /* Type of the Result(Source) Object */
+
+            0x10, 
+            /* Number of different initial values */
+
+            0x01, 
+            /* SRC0 initial value */
+
+            0x00, 
+            /* Target Objects initial values */
+
+            P001, 
+            /* Benchmark Result object value */
+
+            0x00, 
+            /* Benchmark Result object converted to Target type values */
+
+            P000
+        })
+        /* Reference */
+
+        Name (PH00, Package (0x06)
+        {
+            /* Type of the Result(Source) Object */
+
+            0x11, 
+            /* Number of different initial values */
+
+            0x01, 
+            /* SRC0 initial value */
+
+            0x00, 
+            /* Target Objects initial values */
+
+            P001, 
+            /* Benchmark Result object value */
+
+            0x00, 
+            /* Benchmark Result object converted to Target type values */
+
+            P000
+        })
+        Name (P320, Package (0x12)
+        {
+            P002, 
+            P132, 
+            P232, 
+            P300, 
+            P400, 
+            P500, 
+            P600, 
+            P700, 
+            P800, 
+            P900, 
+            PA00, 
+            PB00, 
+            PC00, 
+            PD00, 
+            PE32, 
+            PF00, 
+            PG00, 
+            PH00
+        })
+        Name (P640, Package (0x12)
+        {
+            P002, 
+            P164, 
+            P264, 
+            P300, 
+            P400, 
+            P500, 
+            P600, 
+            P700, 
+            P800, 
+            P900, 
+            PA00, 
+            PB00, 
+            PC00, 
+            PD00, 
+            PE64, 
+            PF00, 
+            PG00, 
+            PH00
+        })
+        /* m020(<msg>, <store op>, <exc. conditions>, */
+        /*      <Target scale>, <Result scale>, <kind of Source-Target pair>) */
+        Method (M020, 6, Serialized)
+        {
+            /* Initialize statistics */
+
+            M001 ()
+            Name (SCL0, Buffer (0x12)
+            {
+                /* 0000 */  0x00, 0x01, 0x01, 0x01, 0x00, 0x00, 0x00, 0x00,  // ........
+                /* 0008 */  0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00,  // ........
+                /* 0010 */  0x00, 0x00                                       // ..
+            })
+            Name (LPN0, 0x12)
+            Name (LPC0, 0x00)
+            Name (LPN1, 0x00)
+            Name (LPC1, 0x00)
+            Name (LPN2, 0x00)
+            Name (LPC2, 0x00)
+            SRMT (Arg0)
+            If ((Arg1 > 0x01))
+            {
+                /* Unexpected Kind of Op (0 - Store, ...) */
+
+                ERR (Concatenate (Arg0, TERR), Z122, 0x10F7, 0x00, 0x00, Arg1, 0x00)
+                Return (0x01)
+            }
+
+            If ((Arg5 > 0x06))
+            {
+                /* Unexpected Kind of Source-Target pair */
+
+                ERR (Concatenate (Arg0, TERR), Z122, 0x10FD, 0x00, 0x00, Arg5, 0x00)
+                Return (0x01)
+            }
+
+            /* Flags of Store from and to Named to check */
+            /* exceptional conditions on storing */
+            If (Arg1)
+            {
+                Local0 = 0x00
+                Local1 = 0x00
+            }
+            Else
+            {
+                Local0 = ((Arg5 == 0x00) || (Arg5 == 0x01))
+                Local0 = (Local0 || (Arg5 == 0x04))
+                Local0 = (Local0 || (Arg5 == 0x05))
+                Local1 = ((Arg5 == 0x00) || (Arg5 == 0x02))
+            }
+
+            /* Enumerate Target types */
+
+            While (LPN0)
+            {
+                If ((DerefOf (B670 [LPC0]) && DerefOf (Arg3 [LPC0])))
+                {
+                    /* Not invalid type of the Target Object to store in */
+
+                    LPN1 = 0x12
+                    LPC1 = 0x00
+                    /* Enumerate Source types */
+
+                    While (LPN1)
+                    {
+                        If ((DerefOf (B671 [LPC1]) && DerefOf (Arg4 [LPC1])))
+                        {
+                            /* Not invalid type of the result Object to be stored */
+
+                            If (Arg2)
+                            {
+                                /* Skip cases without exceptional conditions */
+
+                                If (!M685 (Arg1, LPC0, LPC1, Local0, Local1))
+                                {
+                                    LPN1--
+                                    LPC1++
+                                    Continue
+                                }
+                            }
+                            ElseIf                            /* Skip cases with exceptional conditions */
+
+ (M685 (Arg1, LPC0, LPC1, Local0, Local1))
+                            {
+                                LPN1--
+                                LPC1++
+                                Continue
+                            }
+
+                            If (F64)
+                            {
+                                Local2 = DerefOf (P640 [LPC1])
+                            }
+                            Else
+                            {
+                                Local2 = DerefOf (P320 [LPC1])
+                            }
+
+                            Local3 = DerefOf (Local2 [0x00])
+                            If ((Local3 != LPC1))
+                            {
+                                /* Unexpected data package */
+
+                                ERR (Concatenate (Arg0, TERR), Z122, 0x1130, 0x00, 0x00, Arg1, LPC1)
+                                Return (0x01)
+                            }
+
+                            Local3 = DerefOf (Local2 [0x01])
+                            LPN2 = Local3
+                            LPC2 = 0x00
+                            /* Enumerate Result values */
+
+                            While (LPN2)
+                            {
+                                If ((Local3 > 0x01))
+                                {
+                                    /* Complex test data */
+
+                                    Local4 = Local2 [(LPC2 + 0x02)]
+                                }
+                                Else
+                                {
+                                    Local4 = RefOf (Local2)
+                                }
+
+                                If ((Arg5 == 0x00))
+                                {
+                                    /* Named-Named */
+
+                                    M008 (Concatenate (Arg0, "-m008"), 0x00, LPC0, LPC1, Arg1, Arg2, DerefOf (Local4))
+                                }
+                                ElseIf ((Arg5 == 0x01))
+                                {
+                                    /* Named-LocalX */
+
+                                    M009 (Concatenate (Arg0, "-m009"), 0x00, LPC0, LPC1, Arg1, Arg2, DerefOf (Local4))
+                                }
+                                ElseIf ((Arg5 == 0x02))
+                                {
+                                    /* LocalX-Named */
+
+                                    M00A (Concatenate (Arg0, "-m00a"), 0x00, LPC0, LPC1, Arg1, Arg2, DerefOf (Local4))
+                                }
+                                ElseIf ((Arg5 == 0x03))
+                                {
+                                    /* LocalX-LocalX */
+
+                                    M00B (Concatenate (Arg0, "-m00b"), 0x00, LPC0, LPC1, Arg1, Arg2, DerefOf (Local4))
+                                }
+                                ElseIf ((Arg5 == 0x04))
+                                {
+                                    /* Named-ArgX(Named read-only) */
+
+                                    M00C (Concatenate (Arg0, "-m00c"), 0x00, LPC0, LPC1, Arg1, Arg2, DerefOf (Local4))
+                                }
+                                ElseIf ((Arg5 == 0x05))
+                                {
+                                    /* Named-ArgX(Named by reference) */
+
+                                    If (Y900)
+                                    {
+                                        If (((LPC1 == 0x04) &&                                                 /* Target type is 1-3 */
+
+DerefOf (Index (Buffer (0x12)
+                                                        {
+                                                            /* 0000 */  0x00, 0x01, 0x01, 0x01, 0x00, 0x00, 0x00, 0x00,  // ........
+                                                            /* 0008 */  0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00,  // ........
+                                                            /* 0010 */  0x00, 0x00                                       // ..
+                                                        }, LPC0))))
+                                        {
+                                            If (Y366)
+                                            {
+                                                M00D (Concatenate (Arg0, "-m00d"), 0x00, LPC0, LPC1, Arg1, Arg2, DerefOf (Local4))
+                                            }
+                                        }
+                                        Else
+                                        {
+                                            M00D (Concatenate (Arg0, "-m00d"), 0x00, LPC0, LPC1, Arg1, Arg2, DerefOf (Local4))
+                                        }
+                                    }
+                                    ElseIf                                    /* if (y900) */
+
+ (((LPC1 == 0x04) &&                                             /* Target type is 1-3 */
+
+DerefOf (SCL0 [LPC0])))
+                                    {
+                                        If (Y366)
+                                        {
+                                            M00D (Concatenate (Arg0, "-m00d"), 0x00, LPC0, LPC1, Arg1, Arg2, DerefOf (Local4))
+                                        }
+                                    }
+                                    Else
+                                    {
+                                        M00D (Concatenate (Arg0, "-m00d"), 0x00, LPC0, LPC1, Arg1, Arg2, DerefOf (Local4))
+                                    }
+                                }
+                                ElseIf ((Arg5 == 0x06))
+                                {
+                                    /* LocalX-Element of Package */
+
+                                    M00E (Concatenate (Arg0, "-m00e"), 0x00, LPC0, LPC1, Arg1, Arg2, DerefOf (Local4))
+                                }
+
+                                LPN2--
+                                LPC2++
+                            }
+                        }
+
+                        LPN1--
+                        LPC1++
+                    }
+                }
+
+                LPN0--
+                LPC0++
+            }
+
+            /* Output statistics */
+
+            M002 (Concatenate (DerefOf (PAC5 [Arg5]), DerefOf (PAC4 [Arg1])
+                ))
+            Return (0x00)
+        }
+
+        Concatenate (Arg0, "-m020", Arg0)
+        /* Named-Named */
+
+        M020 (Concatenate (Arg0, "-NN"), Arg1, Arg2, B676, B676, 0x00)
+        /* Named-LocalX */
+
+        M020 (Concatenate (Arg0, "-NL"), Arg1, Arg2, B677, B676, 0x01)
+        /* LocalX-Named */
+
+        M020 (Concatenate (Arg0, "-LN"), Arg1, Arg2, B676, B677, 0x02)
+        /* LocalX-LocalX */
+
+        M020 (Concatenate (Arg0, "-LL"), Arg1, Arg2, B677, B677, 0x03)
+        /* Named-ArgX(Named read-only) */
+
+        M020 (Concatenate (Arg0, "-NA-RO"), Arg1, Arg2, B676, B676, 0x04)
+        /* Named-ArgX(Named by reference) */
+
+        M020 (Concatenate (Arg0, "-NA-REF"), Arg1, Arg2, B676, B676, 0x05)
+        /* LocalX-Element of Package */
+
+        If ((Arg1 == 0x00))
+        {
+            M020 (Concatenate (Arg0, "-LP"), Arg1, Arg2, B67D, B677, 0x06)
+        }
+    }
+

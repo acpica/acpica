@@ -1,1340 +1,1492 @@
-/*
- * Some or all of this work - Copyright (c) 2006 - 2017, Intel Corp.
- * All rights reserved.
- *
- * Redistribution and use in source and binary forms, with or without modification,
- * are permitted provided that the following conditions are met:
- *
- * Redistributions of source code must retain the above copyright notice,
- * this list of conditions and the following disclaimer.
- * Redistributions in binary form must reproduce the above copyright notice,
- * this list of conditions and the following disclaimer in the documentation
- * and/or other materials provided with the distribution.
- * Neither the name of Intel Corporation nor the names of its contributors
- * may be used to endorse or promote products derived from this software
- * without specific prior written permission.
- *
- * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS"
- * AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE
- * IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE
- * ARE DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT OWNER OR CONTRIBUTORS BE
- * LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL
- * DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES;
- * LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY
- * THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING
- * NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE,
- * EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
- */
-
-/*
- * Miscellaneous not systematized tests
- */
-
-Name(z054, 54)
-
-// Looks like Default is at all not implemented
-
-Method(m110, 1, Serialized)
-{
-	Store(0, Local0)
-	Store(0, Local1)
-
-	// Bug XXX. This Switch code below causes ASL-compiler to fail
-	// for full.asl file with the diagnostics like this:
-	// nssearch-0397: *** Error: NsSearchAndEnter:
-	//                    Bad character in ACPI Name: 5B5F545F
-	// and fall into recursion:
-	// Remark   3040 -     Recursive method call ^  (ERR_)
-	// Note: (0x5B5F545F is equal to "[_T_")
-	Switch (ToInteger (Local1)) {
-		Case (5) {
-			Store(5, Local0)
-		}
-		Default {
-			Store(1, Local0)
-		}
-	}
-
-	if (LNotEqual(Local0, 1)) {
-		err(arg0, z054, __LINE__, 0, 0, Local0, 0)
-	}
-}
-
-// Concatenate operator affects the object passed as Source2 parameter
-
-Method(m111, 1) {
-	Store(Concatenate("qwertyuiop", arg0), Local5)
-}
-
-Method(m112, 1)
-{
-	Store(0, Local0)
-	m111(Local0)
-	if (LNotequal(Local0, 0)) {
-		err(arg0, z054, __LINE__, 0, 0, Local0, 0)
-	}
-
-	Store(0, Local0)
-	Store(Concatenate("qwertyuiop", Local0), Local5)
-	if (LNotequal(Local0, 0)) {
-		err(arg0, z054, __LINE__, 0, 0, Local0, 0)
-	}
-}
-
-// Unexpected value returned by ObjectType for Field Unit objects
-
-// The field passed as explicit reference (RefOf)
-Method(m113, 1, Serialized)
-{
-	OperationRegion(r000, SystemMemory, 0x100, 0x100)
-	Field (r000, ByteAcc, NoLock, Preserve) {
-		f000, 32
-	}
-
-	Store(ObjectType(RefOf(f000)), Local0)
-	if (LNotEqual(Local0, 5)) {
-		err(arg0, z054, __LINE__, 0, 0, Local0, 0)
-	}
-}
-
-// The BankField corrupts the contents of OperationRegion
-
-Method(m114, 1, Serialized)
-{
-	OperationRegion(r000, SystemMemory, 0x100, 0x100)
-	Field (r000, ByteAcc, NoLock, Preserve) {
-		bnk0, 8
-	}
-
-	BankField (r000, bnk0, 0, ByteAcc, NoLock, Preserve) {
-		Offset(16),
-		bf00, 8,
-	}
-
-	BankField (r000, bnk0, 1, ByteAcc, NoLock, Preserve) {
-		Offset(17),
-		bf01, 8,
-	}
-
-	// Deal with 0-th bank layout:
-
-	Store(0, bnk0)
-	if (LNotEqual(bnk0, 0)) {
-		err(arg0, z054, __LINE__, 0, 0, bnk0, 0)
-	}
-
-	Store(0x87, bf00)
-	if (LNotEqual(bnk0, 0)) {
-		err(arg0, z054, __LINE__, 0, 0, bnk0, 0)
-	}
-
-	if (LNotEqual(bf00, 0x87)) {
-		err(arg0, z054, __LINE__, 0, 0, bf00, 0x87)
-	}
-
-	// Deal with 1-th bank layout:
-
-	Store(1, bnk0)
-	if (LNotEqual(bnk0, 1)) {
-		err(arg0, z054, __LINE__, 0, 0, bnk0, 1)
-	}
-
-	Store(0x96, bf01)
-
-	if (X192) {
-		if (LNotEqual(bnk0, 1)) {
-			err(arg0, z054, __LINE__, 0, 0, bnk0, 1)
-		}
-	}
-
-	if (LNotEqual(bf01, 0x96)) {
-		err(arg0, z054, __LINE__, 0, 0, bf01, 0x96)
-	}
-}
-
-// ToBuffer caused destroying of source buffer passed by Data parameter
-Method(m115, 1)
-{
-	Store(Buffer(4){10, 11, 12, 13}, Local0)
-	Store(ObjectType(Local0), Local1)
-
-	if (LNotEqual(Local1, c00b)) {
-		err(arg0, z054, __LINE__, 0, 0, Local1, 0)
-	}
-
-	ToBuffer(Local0, Local2)
-
-	Store(0xaa, Local3)
-
-	Store(ObjectType(Local0), Local3)
-
-	if (LNotEqual(Local3, c00b)) {
-		err(arg0, z054, __LINE__, 0, 0, Local3, 0)
-	}
-}
-
-// ObjectType() operator should be allowed to deal with the
-// uninitialized objects.
-
-// Uncomment this when the problem will be fixed and compile
-// will not fail in this case like it do now: "Method local
-// variable is not initialized (Local0)".
-Method(m116, 1)
-{
-	Store(ObjectType(Local0), Local1)
-}
-
-// Now, this cause exception but should not
-Method(m117, 2, Serialized)
-{
-	Name(ts, "m117")
-
-	if (arg1) {
-		Store(0, Local0)
-	}
-
-	CH03(ts, z054, 0x100, __LINE__, 0)
-
-	Store(ObjectType(Local0), Local1)
-
-	if (LNotEqual(Local1, 0)) {
-		err(arg0, z054, __LINE__, 0, 0, Local1, 0)
-	}
-
-	CH03(ts, z054, 0x101, __LINE__, 0)
-}
-
-Method(m118, 1)
-{
-	m117(arg0, 0)
-}
-
-/*
- * Bug 12, Bugzilla 5360.
- * DerefOf. If the Source evaluates to a string, the string is evaluated
- * as an ASL name (relative to the current scope) and the contents of that
- * object are returned.
- */
-Method(m119, 1, Serialized)
-{
-	Name(b000, Buffer(){ 1, 2, 3, 4, 5, 6, 7, 8 })
-
-	Store("b000", Local0)
-
-	Store("================ 0:", Debug)
-
-	Store(DerefOf(Local0), Local1)
-
-	Store("================ 1:", Debug)
-
-	Store(ObjectType(Local1), Local2)
-
-	if (LNotEqual(Local2, 3)) {
-		err(arg0, z054, __LINE__, 0, 0, Local2, 0)
-	}
-
-	Store("================ 2:", Debug)
-
-	Store(Local1, Debug)
-	Store(Local2, Debug)
-
-	CH03(arg0, z054, 0x102, __LINE__, 0)
-
-	return (0)
-}
-
-/*
-// Currently, incorrect test
-// The size of Strings in Package is determined incorrectly
-Method(m11a, 1)
-{
-	Name(p000, Package() {
-		"012",
-		"0123456789abcdef",
-		Buffer() {17,28,69,11,22,34,35,56,67,11},
-		"012345",
-	})
-
-	Store(DeRefOf(Index(p000, 1)), Local0)
-	Store(0, Index(Local0, 5))
-
-	Store(0, Index(p000, 1))
-
-	Store(DeRefOf(Index(p000, 1)), Local0)
-//	Store(0, Index(Local0, 5))
-
-	Store("=================:", Debug)
-	Store(Local0, Debug)
-
-	// 0
-	Store(DeRefOf(Index(p000, 0)), Local2)
-	Store(SizeOf(Local2), Local3)
-
-	Store(Local3, Debug)
-
-	if (LNotEqual(Local3, 3)) {
-		err(arg0, z054, __LINE__, 0, 0, Local3, 3)
-	}
-
-	// 1
-	Store(DeRefOf(Index(p000, 1)), Local2)
-	Store(SizeOf(Local2), Local3)
-
-	Store(Local3, Debug)
-
-	if (LNotEqual(Local3, 9)) {
-		err(arg0, z054, __LINE__, 0, 0, Local3, 9)
-	}
-
-	// 2
-	Store(DeRefOf(Index(p000, 2)), Local2)
-	Store(SizeOf(Local2), Local3)
-
-	Store(Local3, Debug)
-
-	if (LNotEqual(Local3, 6)) {
-		err(arg0, z054, __LINE__, 0, 0, Local3, 6)
-	}
-
-	Store(SizeOf(p000), Local0)
-
-	Store(Local0, Debug)
-
-	if (LNotEqual(Local0, 3)) {
-		err(arg0, z054, __LINE__, 0, 0, Local0, 3)
-	}
-}
-*/
-
-/*
-// ATTENTION: such type tests have to be added and extended
-Method(m11b, 1)
-{
-	Name(p000, Package() {
-		0x12345678, 0x90abcdef,
-	})
-	Name(b000, Buffer() {0x78,0x56,0x34,0x12, 0xef,0xcd,0xab,0x90})
-
-	Store(DeRefOf(Index(p000, 0)), Local7)
-
-	if (LEqual(b000, Local7)) {
-		err(arg0, z054, __LINE__, 0, 0, b000, Local7)
-	}
-
-	if (LEqual(Local7, b000)) {
-		err(arg0, z054, __LINE__, 0, 0, Local7, b000)
-	}
-
-	return (0)
-}
-*/
-
-
-// Bug 54: All the ASL Operators which deal with at least two Buffer type
-// objects cause unexpected exceptions in cases when both Buffer type objects
-// are passed immediately
-Method(m11c, 1, Serialized)
-{
-	Name(ts, "m11c")
-
-	CH03(ts, z054, 0x103, __LINE__, 0)
-
-	Store(Add( Buffer() {0x79}, Buffer() {0x79} ), Local5)
-
-	CH03(ts, z054, 0x104, __LINE__, 0)
-}
-
-// Bug 57: The empty Return operator (without specifying the returning value)
-// is processed incorrectly
-Method(m11d, 1) {
-
-	Method(m11e, 2) {
-
-		if (arg1) {
-			return (0x1234)
-
-			// ASL-compiler report Warning in this case
-			// Store("ERROR 0: m121, after Return !!!", Debug)
-		}
-		err(arg0, z054, __LINE__, 0, 0, 0, 0)
-
-		return (0x5678)
-	}
-
-	Method(m11f, 2) {
-
-		if (arg1) {
-
-			return
-
-			// ASL-compiler DOESN'T report Warning in this case!!!
-			// And the Store operator below is actually processed!!!
-
-			err(arg0, z054, __LINE__, 0, 0, 0, 0)
-		}
-
-		err(arg0, z054, __LINE__, 0, 0, 0, 0)
-
-		return
-	}
-
-	Store(m11e(arg0, 1), Local7)
-
-	m11f(arg0, 1)
-
-	return (0)
-}
-
-/*
- * Obsolete:
- * Bug 59: The String to Buffer Rule from the Table 17-8 "Object Conversion
- * Rules" says "If the string is shorter than the buffer, the buffer size is
- * reduced".
- * Updated specs 12.03.05:
- * "If the string is shorter than the buffer,
- * the remaining buffer bytes are set to zero".
- */
-Method(m11e, 1, Serialized) {
-	Name(str0, "\x01\x02")
-	Name(buf0, Buffer(){0x03, 0x04, 0x05, 0x06})
-
-	Store(str0, buf0)
-
-	/*
-	 * Obsolete:
-	 *
-	 * if (LNotEqual(Sizeof(buf0), 3)) {
-	 *	// Error: length of the buffer not reduced to the stored string
-	 *	err(arg0, z054, __LINE__, 0, 0, 0, 0)
-	 * }
-	 *
-	 * New:
-	 */
-	if (LNotEqual(buf0, Buffer(){0x01, 0x02, 0, 0})) {
-		err(arg0, z054, __LINE__, 0, 0, buf0, Buffer(){0x01, 0x02, 0, 0})
-	}
-	return (0)
-}
-
-// Bug 65: The Buffer Field type objects should be passed
-// to Methods without any conversion, but instead
-// they are converted to Buffers or Integers depending
-// on the size of the Buffer Field object and the
-// run mode (32-bit or 64/bit mode).
-//
-// CANCELED: now it should perform opposite assertion because
-// this bug was canceled.
-Method(m11f, 1, Serialized) {
-	Name(b000, Buffer(200) {})
-	CreateField(b000, 0,  31, bf00)
-	CreateField(b000, 31, 32, bf01)
-	CreateField(b000, 63, 33, bf02)
-
-	CreateField(b000, 96,  63, bf03)
-	CreateField(b000, 159, 64, bf04)
-	CreateField(b000, 223, 65, bf05)
-
-	Method(m000, 4)
-	{
-		Store(ObjectType(arg1), Local0)
-		if (LNotEqual(Local0, arg2)) {
-			err(arg0, z054, __LINE__, 0, 0, Local0, arg2)
-		}
-
-		Store(SizeOf(arg1), Local0)
-		if (LNotEqual(Local0, arg3)) {
-			err(arg0, z054, __LINE__, 0, 0, Local0, arg3)
-		}
-	}
-
-	Method(m001, 1)
-	{
-		Store(ObjectType(bf00), Local0)
-		if (LNotEqual(Local0, 14)) {
-			err(arg0, z054, __LINE__, 0, 0, Local0, 14)
-		}
-		Store(ObjectType(bf01), Local0)
-		if (LNotEqual(Local0, 14)) {
-			err(arg0, z054, __LINE__, 0, 0, Local0, 14)
-		}
-		Store(ObjectType(bf02), Local0)
-		if (LNotEqual(Local0, 14)) {
-			err(arg0, z054, __LINE__, 0, 0, Local0, 14)
-		}
-		Store(ObjectType(bf03), Local0)
-		if (LNotEqual(Local0, 14)) {
-			err(arg0, z054, __LINE__, 0, 0, Local0, 14)
-		}
-		Store(ObjectType(bf04), Local0)
-		if (LNotEqual(Local0, 14)) {
-			err(arg0, z054, __LINE__, 0, 0, Local0, 14)
-		}
-		Store(ObjectType(bf05), Local0)
-		if (LNotEqual(Local0, 14)) {
-			err(arg0, z054, __LINE__, 0, 0, Local0, 14)
-		}
-
-		if (F64) {
-			m000(arg0, bf00, 1, 8)
-			m000(arg0, bf01, 1, 8)
-			m000(arg0, bf02, 1, 8)
-			m000(arg0, bf03, 1, 8)
-			m000(arg0, bf04, 1, 8)
-			m000(arg0, bf05, 3, 9)
-		} else {
-			m000(arg0, bf00, 1, 4)
-			m000(arg0, bf01, 1, 4)
-			m000(arg0, bf02, 3, 5)
-			m000(arg0, bf03, 3, 8)
-			m000(arg0, bf04, 3, 8)
-			m000(arg0, bf05, 3, 9)
-		}
-	}
-
-	m001(arg0)
-}
-
-// Bug 66: The Field Unit type objects should be passed
-// to Methods without any conversion, but instead
-// they are converted to Buffers or Integers depending
-// on the size of the Buffer Field object and the
-// run mode (32-bit or 64/bit mode).
-//
-// CANCELED: now it should perform opposite assertion because
-// this bug was canceled.
-Method(m120, 1, Serialized) {
-	OperationRegion(r000, SystemMemory, 0x100, 0x100)
-	Field(r000, ByteAcc, NoLock, Preserve) {
-		f000, 31,
-		f001, 32,
-		f002, 33,
-		f003, 63,
-		f004, 64,
-		f005, 65
-	}
-
-	Method(m000, 4)
-	{
-		Store(ObjectType(arg1), Local0)
-		if (LNotEqual(Local0, arg2)) {
-			err(arg0, z054, __LINE__, 0, 0, Local0, arg2)
-		}
-
-		Store(SizeOf(arg1), Local0)
-		if (LNotEqual(Local0, arg3)) {
-			err(arg0, z054, __LINE__, 0, 0, Local0, arg3)
-		}
-	}
-
-	Method(m001, 1)
-	{
-		Store(ObjectType(f000), Local0)
-		if (LNotEqual(Local0, 5)) {
-			err(arg0, z054, __LINE__, 0, 0, Local0, 5)
-		}
-		Store(ObjectType(f001), Local0)
-		if (LNotEqual(Local0, 5)) {
-			err(arg0, z054, __LINE__, 0, 0, Local0, 5)
-		}
-		Store(ObjectType(f002), Local0)
-		if (LNotEqual(Local0, 5)) {
-			err(arg0, z054, __LINE__, 0, 0, Local0, 5)
-		}
-		Store(ObjectType(f003), Local0)
-		if (LNotEqual(Local0, 5)) {
-			err(arg0, z054, __LINE__, 0, 0, Local0, 5)
-		}
-		Store(ObjectType(f004), Local0)
-		if (LNotEqual(Local0, 5)) {
-			err(arg0, z054, __LINE__, 0, 0, Local0, 5)
-		}
-		Store(ObjectType(f005), Local0)
-		if (LNotEqual(Local0, 5)) {
-			err(arg0, z054, __LINE__, 0, 0, Local0, 5)
-		}
-
-		if (F64) {
-			m000(arg0, f000, 1, 8)
-			m000(arg0, f001, 1, 8)
-			m000(arg0, f002, 1, 8)
-			m000(arg0, f003, 1, 8)
-			m000(arg0, f004, 1, 8)
-			m000(arg0, f005, 3, 9)
-		} else {
-			m000(arg0, f000, 1, 4)
-			m000(arg0, f001, 1, 4)
-			m000(arg0, f002, 3, 5)
-			m000(arg0, f003, 3, 8)
-			m000(arg0, f004, 3, 8)
-			m000(arg0, f005, 3, 9)
-		}
-	}
-
-	m001(arg0)
-}
-
-// Bug 67: The Buffer Field type objects should be RETURNED
-// by Methods without any conversion, but instead
-// they are converted to Buffers or Integers depending
-// on the size of the Buffer Field object and the
-// run mode (32-bit or 64/bit mode).
-//
-// CANCELED: now it should perform opposite assertion because
-// this bug was canceled.
-Method(m121, 1, Serialized) {
-	Name(b000, Buffer(200) {})
-	CreateField(b000, 0,  31, bf00)
-	CreateField(b000, 31, 32, bf01)
-	CreateField(b000, 63, 33, bf02)
-
-	CreateField(b000, 96,  63, bf03)
-	CreateField(b000, 159, 64, bf04)
-	CreateField(b000, 223, 65, bf05)
-
-	Method(m000, 1)
-	{
-		if (LEqual(arg0, 0)) {
-			return (bf00)
-		} elseif (LEqual(arg0, 1)) {
-			return (bf01)
-		} elseif (LEqual(arg0, 2)) {
-			return (bf02)
-		} elseif (LEqual(arg0, 3)) {
-			return (bf03)
-		} elseif (LEqual(arg0, 4)) {
-			return (bf04)
-		} elseif (LEqual(arg0, 5)) {
-			return (bf05)
-		}
-		return ("qw")
-	}
-
-	Method(m001, 4)
-	{
-		Store(m000(arg1), Local1)
-		Store(ObjectType(Local1), Local0)
-		if (LNotEqual(Local0, arg2)) {
-			err(arg0, z054, __LINE__, 0, 0, Local0, arg2)
-		}
-
-		Store(SizeOf(Local1), Local0)
-		if (LNotEqual(Local0, arg3)) {
-			err(arg0, z054, __LINE__, 0, 0, Local0, arg3)
-		}
-	}
-
-	Method(m002, 1)
-	{
-		if (F64) {
-			m001(arg0, 0, 1, 8)
-			m001(arg0, 1, 1, 8)
-			m001(arg0, 2, 1, 8)
-			m001(arg0, 3, 1, 8)
-			m001(arg0, 4, 1, 8)
-			m001(arg0, 5, 3, 9)
-		} else {
-			m001(arg0, 0, 1, 4)
-			m001(arg0, 1, 1, 4)
-			m001(arg0, 2, 3, 5)
-			m001(arg0, 3, 3, 8)
-			m001(arg0, 4, 3, 8)
-			m001(arg0, 5, 3, 9)
-		}
-	}
-
-	m002(arg0)
-}
-
-// Bug 68: The Field Unit type objects should be RETURNED
-// by Methods without any conversion, but instead
-// they are converted to Buffers or Integers depending
-// on the size of the Buffer Field object and the
-// run mode (32-bit or 64/bit mode).
-//
-// CANCELED: now it should perform opposite assertion because
-// this bug was canceled.
-Method(m122, 1, Serialized) {
-	OperationRegion(r000, SystemMemory, 0x100, 0x100)
-	Field(r000, ByteAcc, NoLock, Preserve) {
-		f000, 31,
-		f001, 32,
-		f002, 33,
-		f003, 63,
-		f004, 64,
-		f005, 65
-	}
-
-	Method(m000, 1)
-	{
-		if (LEqual(arg0, 0)) {
-			return (f000)
-		} elseif (LEqual(arg0, 1)) {
-			return (f001)
-		} elseif (LEqual(arg0, 2)) {
-			return (f002)
-		} elseif (LEqual(arg0, 3)) {
-			return (f003)
-		} elseif (LEqual(arg0, 4)) {
-			return (f004)
-		} elseif (LEqual(arg0, 5)) {
-			return (f005)
-		}
-		return ("qw")
-	}
-
-	Method(m001, 4)
-	{
-		Store(m000(arg1), Local1)
-		Store(ObjectType(Local1), Local0)
-		if (LNotEqual(Local0, arg2)) {
-			err(arg0, z054, __LINE__, 0, 0, Local0, arg2)
-		}
-
-		Store(SizeOf(Local1), Local0)
-		if (LNotEqual(Local0, arg3)) {
-			err(arg0, z054, __LINE__, 0, 0, Local0, arg3)
-		}
-	}
-
-	Method(m002, 1)
-	{
-		if (F64) {
-			m001(arg0, 0, 1, 8)
-			m001(arg0, 1, 1, 8)
-			m001(arg0, 2, 1, 8)
-			m001(arg0, 3, 1, 8)
-			m001(arg0, 4, 1, 8)
-			m001(arg0, 5, 3, 9)
-		} else {
-			m001(arg0, 0, 1, 4)
-			m001(arg0, 1, 1, 4)
-			m001(arg0, 2, 3, 5)
-			m001(arg0, 3, 3, 8)
-			m001(arg0, 4, 3, 8)
-			m001(arg0, 5, 3, 9)
-		}
-	}
-
-	m002(arg0)
-}
-
-// Bug 30. This test may be removed there after
-// the Field relative tests will be implemented.
-// Caused crash.
-Method(m123, 1)
-{
-	Method(m000,, Serialized)
-	{
-		// Field Unit
-		OperationRegion(r000, SystemMemory, 0x100, 0x100)
-		Field(r000, ByteAcc, NoLock, Preserve) {
-			f000, 8,
-			f001, 16,
-			f002, 32,
-			f003, 33,
-			f004, 1,
-			f005, 64,
-		}
-
-		Store("------------ Fields:", Debug)
-		Store(f000, Debug)
-		Store(f001, Debug)
-		Store(f002, Debug)
-		Store(f003, Debug)
-		Store(f004, Debug)
-		Store(f005, Debug)
-		Store("------------.", Debug)
-
-		return (0)
-	}
-
-	Method(m001,, Serialized)
-	{
-		// Field Unit
-		OperationRegion(r000, SystemMemory, 0x100, 0x100)
-		Field(r000, ByteAcc, NoLock, Preserve) {
-			f000, 8,
-			f001, 16,
-			f002, 32,
-			f003, 33,
-			f004, 7,
-			f005, 64,
-		}
-
-		Store("------------ Fields:", Debug)
-		Store(f000, Debug)
-		Store(f001, Debug)
-		Store(f002, Debug)
-		Store(f003, Debug)
-		Store(f004, Debug)
-		Store(f005, Debug)
-		Store("------------.", Debug)
-
-		return (0)
-	}
-
-	m000()
-	m001()
-	return (0)
-}
-
-// Bug 81.
-Method(m124, 1)
-{
-	Method(m000)
-	{
-		return (0x12345678)
-	}
-
-	Method(m001, 1)
-	{
-		return (0x12345678)
-	}
-
-	CH03(arg0, z054, 0x105, __LINE__, 0)
-
-	Store(ObjectType(m000), Local0)
-	if (LNotEqual(Local0, c010)) {
-		err(arg0, z054, __LINE__, 0, 0, Local0, c010)
-	}
-
-	// Bug 81.
-	/*
-	 * Removed, invalid test.
-	 * Compiler disallow method invocation as an operand to ObjectType.
-	 */
+    /*
+     * Some or all of this work - Copyright (c) 2006 - 2017, Intel Corp.
+     * All rights reserved.
+     *
+     * Redistribution and use in source and binary forms, with or without modification,
+     * are permitted provided that the following conditions are met:
+     *
+     * Redistributions of source code must retain the above copyright notice,
+     * this list of conditions and the following disclaimer.
+     * Redistributions in binary form must reproduce the above copyright notice,
+     * this list of conditions and the following disclaimer in the documentation
+     * and/or other materials provided with the distribution.
+     * Neither the name of Intel Corporation nor the names of its contributors
+     * may be used to endorse or promote products derived from this software
+     * without specific prior written permission.
+     *
+     * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS"
+     * AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE
+     * IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE
+     * ARE DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT OWNER OR CONTRIBUTORS BE
+     * LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL
+     * DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES;
+     * LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY
+     * THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING
+     * NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE,
+     * EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
+     */
+    /*
+     * Miscellaneous not systematized tests
+     */
+    Name (Z054, 0x36)
+    /* Looks like Default is at all not implemented */
+
+    Method (M110, 1, Serialized)
+    {
+        Local0 = 0x00
+        Local1 = 0x00
+        /* Bug XXX. This Switch code below causes ASL-compiler to fail */
+        /* for full.asl file with the diagnostics like this: */
+        /* nssearch-0397: *** Error: NsSearchAndEnter: */
+        /*                    Bad character in ACPI Name: 5B5F545F */
+        /* and fall into recursion: */
+        /* Remark   3040 -     Recursive method call ^  (ERR_) */
+        /* Note: (0x5B5F545F is equal to "[_T_") */
+        Switch (ToInteger (Local1))
+        {
+            Case (0x05)
+            {
+                Local0 = 0x05
+            }
+            Default
+            {
+                Local0 = 0x01
+            }
+
+        }
+
+        If ((Local0 != 0x01))
+        {
+            ERR (Arg0, Z054, 0x3B, 0x00, 0x00, Local0, 0x00)
+        }
+    }
+
+    /* Concatenate operator affects the object passed as Source2 parameter */
+
+    Method (M111, 1, NotSerialized)
+    {
+        Local5 = Concatenate ("qwertyuiop", Arg0)
+    }
+
+    Method (M112, 1, NotSerialized)
+    {
+        Local0 = 0x00
+        M111 (Local0)
+        If ((Local0 != 0x00))
+        {
+            ERR (Arg0, Z054, 0x4A, 0x00, 0x00, Local0, 0x00)
+        }
+
+        Local0 = 0x00
+        Local5 = Concatenate ("qwertyuiop", Local0)
+        If ((Local0 != 0x00))
+        {
+            ERR (Arg0, Z054, 0x50, 0x00, 0x00, Local0, 0x00)
+        }
+    }
+
+    /* Unexpected value returned by ObjectType for Field Unit objects */
+    /* The field passed as explicit reference (RefOf) */
+    Method (M113, 1, Serialized)
+    {
+        OperationRegion (R000, SystemMemory, 0x0100, 0x0100)
+        Field (R000, ByteAcc, NoLock, Preserve)
+        {
+            F000,   32
+        }
+
+        Local0 = ObjectType (RefOf (F000))
+        If ((Local0 != 0x05))
+        {
+            ERR (Arg0, Z054, 0x60, 0x00, 0x00, Local0, 0x00)
+        }
+    }
+
+    /* The BankField corrupts the contents of OperationRegion */
+
+    Method (M114, 1, Serialized)
+    {
+        OperationRegion (R000, SystemMemory, 0x0100, 0x0100)
+        Field (R000, ByteAcc, NoLock, Preserve)
+        {
+            BNK0,   8
+        }
+
+        BankField (R000, BNK0, 0x00, ByteAcc, NoLock, Preserve)
+        {
+            Offset (0x10), 
+            BF00,   8
+        }
+
+        BankField (R000, BNK0, 0x01, ByteAcc, NoLock, Preserve)
+        {
+            Offset (0x11), 
+            BF01,   8
+        }
+
+        /* Deal with 0-th bank layout: */
+
+        BNK0 = 0x00
+        If ((BNK0 != 0x00))
+        {
+            ERR (Arg0, Z054, 0x7B, 0x00, 0x00, BNK0, 0x00)
+        }
+
+        BF00 = 0x87
+        If ((BNK0 != 0x00))
+        {
+            ERR (Arg0, Z054, 0x80, 0x00, 0x00, BNK0, 0x00)
+        }
+
+        If ((BF00 != 0x87))
+        {
+            ERR (Arg0, Z054, 0x84, 0x00, 0x00, BF00, 0x87)
+        }
+
+        /* Deal with 1-th bank layout: */
+
+        BNK0 = 0x01
+        If ((BNK0 != 0x01))
+        {
+            ERR (Arg0, Z054, 0x8B, 0x00, 0x00, BNK0, 0x01)
+        }
+
+        BF01 = 0x96
+        If (X192)
+        {
+            If ((BNK0 != 0x01))
+            {
+                ERR (Arg0, Z054, 0x92, 0x00, 0x00, BNK0, 0x01)
+            }
+        }
+
+        If ((BF01 != 0x96))
+        {
+            ERR (Arg0, Z054, 0x97, 0x00, 0x00, BF01, 0x96)
+        }
+    }
+
+    /* ToBuffer caused destroying of source buffer passed by Data parameter */
+
+    Method (M115, 1, NotSerialized)
+    {
+        Local0 = Buffer (0x04)
+            {
+                 0x0A, 0x0B, 0x0C, 0x0D                           // ....
+            }
+        Local1 = ObjectType (Local0)
+        If ((Local1 != C00B))
+        {
+            ERR (Arg0, Z054, 0xA2, 0x00, 0x00, Local1, 0x00)
+        }
+
+        ToBuffer (Local0, Local2)
+        Local3 = 0xAA
+        Local3 = ObjectType (Local0)
+        If ((Local3 != C00B))
+        {
+            ERR (Arg0, Z054, 0xAC, 0x00, 0x00, Local3, 0x00)
+        }
+    }
+
+    /* ObjectType() operator should be allowed to deal with the */
+    /* uninitialized objects. */
+    /* Uncomment this when the problem will be fixed and compile */
+    /* will not fail in this case like it do now: "Method local */
+    /* variable is not initialized (Local0)". */
+    Method (M116, 1, NotSerialized)
+    {
+        Local1 = ObjectType (Local0)
+    }
+
+    /* Now, this cause exception but should not */
+
+    Method (M117, 2, Serialized)
+    {
+        Name (TS, "m117")
+        If (Arg1)
+        {
+            Local0 = 0x00
+        }
+
+        CH03 (TS, Z054, 0x0100, 0xC4, 0x00)
+        Local1 = ObjectType (Local0)
+        If ((Local1 != 0x00))
+        {
+            ERR (Arg0, Z054, 0xC9, 0x00, 0x00, Local1, 0x00)
+        }
+
+        CH03 (TS, Z054, 0x0101, 0xCC, 0x00)
+    }
+
+    Method (M118, 1, NotSerialized)
+    {
+        M117 (Arg0, 0x00)
+    }
+
+    /*
+     * Bug 12, Bugzilla 5360.
+     * DerefOf. If the Source evaluates to a string, the string is evaluated
+     * as an ASL name (relative to the current scope) and the contents of that
+     * object are returned.
+     */
+    Method (M119, 1, Serialized)
+    {
+        Name (B000, Buffer (0x08)
+        {
+             0x01, 0x02, 0x03, 0x04, 0x05, 0x06, 0x07, 0x08   // ........
+        })
+        Local0 = "b000"
+        Debug = "================ 0:"
+        Local1 = DerefOf (Local0)
+        Debug = "================ 1:"
+        Local2 = ObjectType (Local1)
+        If ((Local2 != 0x03))
+        {
+            ERR (Arg0, Z054, 0xE9, 0x00, 0x00, Local2, 0x00)
+        }
+
+        Debug = "================ 2:"
+        Debug = Local1
+        Debug = Local2
+        CH03 (Arg0, Z054, 0x0102, 0xF1, 0x00)
+        Return (0x00)
+    }
+
+    /*
+     // Currently, incorrect test
+     // The size of Strings in Package is determined incorrectly
+     Method(m11a, 1)
+     {
+     Name(p000, Package() {
+     "012",
+     "0123456789abcdef",
+     Buffer() {17,28,69,11,22,34,35,56,67,11},
+     "012345",
+     })
+     Store(DeRefOf(Index(p000, 1)), Local0)
+     Store(0, Index(Local0, 5))
+     Store(0, Index(p000, 1))
+     Store(DeRefOf(Index(p000, 1)), Local0)
+     //	Store(0, Index(Local0, 5))
+     Store("=================:", Debug)
+     Store(Local0, Debug)
+     // 0
+     Store(DeRefOf(Index(p000, 0)), Local2)
+     Store(SizeOf(Local2), Local3)
+     Store(Local3, Debug)
+     if (LNotEqual(Local3, 3)) {
+     err(arg0, z054, __LINE__, 0, 0, Local3, 3)
+     }
+     // 1
+     Store(DeRefOf(Index(p000, 1)), Local2)
+     Store(SizeOf(Local2), Local3)
+     Store(Local3, Debug)
+     if (LNotEqual(Local3, 9)) {
+     err(arg0, z054, __LINE__, 0, 0, Local3, 9)
+     }
+     // 2
+     Store(DeRefOf(Index(p000, 2)), Local2)
+     Store(SizeOf(Local2), Local3)
+     Store(Local3, Debug)
+     if (LNotEqual(Local3, 6)) {
+     err(arg0, z054, __LINE__, 0, 0, Local3, 6)
+     }
+     Store(SizeOf(p000), Local0)
+     Store(Local0, Debug)
+     if (LNotEqual(Local0, 3)) {
+     err(arg0, z054, __LINE__, 0, 0, Local0, 3)
+     }
+     }
+     */
+    /*
+     // ATTENTION: such type tests have to be added and extended
+     Method(m11b, 1)
+     {
+     Name(p000, Package() {
+     0x12345678, 0x90abcdef,
+     })
+     Name(b000, Buffer() {0x78,0x56,0x34,0x12, 0xef,0xcd,0xab,0x90})
+     Store(DeRefOf(Index(p000, 0)), Local7)
+     if (LEqual(b000, Local7)) {
+     err(arg0, z054, __LINE__, 0, 0, b000, Local7)
+     }
+     if (LEqual(Local7, b000)) {
+     err(arg0, z054, __LINE__, 0, 0, Local7, b000)
+     }
+     return (0)
+     }
+     */
+    /* Bug 54: All the ASL Operators which deal with at least two Buffer type */
+    /* objects cause unexpected exceptions in cases when both Buffer type objects */
+    /* are passed immediately */
+    Method (M11C, 1, Serialized)
+    {
+        Name (TS, "m11c")
+        CH03 (TS, Z054, 0x0103, 0x0154, 0x00)
+        Store ((Buffer (0x01)
+                {
+                     0x79                                             // y
+                } + Buffer (0x01)
+                {
+                     0x79                                             // y
+                }), Local5)
+        CH03 (TS, Z054, 0x0104, 0x0158, 0x00)
+    }
+
+    /* Bug 57: The empty Return operator (without specifying the returning value) */
+    /* is processed incorrectly */
+    Method (M11D, 1, NotSerialized)
+    {
+        Method (M11E, 2, NotSerialized)
+        {
+            If (Arg1)
+            {
+                Return (0x1234)
+                        /* ASL-compiler report Warning in this case */
+            /* Store("ERROR 0: m121, after Return !!!", Debug) */
+            }
+
+            ERR (Arg0, Z054, 0x0167, 0x00, 0x00, 0x00, 0x00)
+            Return (0x5678)
+        }
+
+        Method (M11F, 2, NotSerialized)
+        {
+            If (Arg1)
+            {
+                Return (                /* ASL-compiler DOESN'T report Warning in this case!!! */
+                /* And the Store operator below is actually processed!!! */
+Zero)
+                ERR (Arg0, Z054, 0x0175, 0x00, 0x00, 0x00, 0x00)
+            }
+
+            ERR (Arg0, Z054, 0x0178, 0x00, 0x00, 0x00, 0x00)
+            Return (Zero)
+        }
+
+        Local7 = M11E (Arg0, 0x01)
+        M11F (Arg0, 0x01)
+        Return (0x00)
+    }
+
+    /*
+     * Obsolete:
+     * Bug 59: The String to Buffer Rule from the Table 17-8 "Object Conversion
+     * Rules" says "If the string is shorter than the buffer, the buffer size is
+     * reduced".
+     * Updated specs 12.03.05:
+     * "If the string is shorter than the buffer,
+     * the remaining buffer bytes are set to zero".
+     */
+    Method (M11E, 1, Serialized)
+    {
+        Name (STR0, "\x01\x02")
+        Name (BUF0, Buffer (0x04)
+        {
+             0x03, 0x04, 0x05, 0x06                           // ....
+        })
+        BUF0 = STR0 /* \M11E.STR0 */
+        /*
+         * Obsolete:
+         *
+         * if (LNotEqual(Sizeof(buf0), 3)) {
+         *	// Error: length of the buffer not reduced to the stored string
+         *	err(arg0, z054, __LINE__, 0, 0, 0, 0)
+         * }
+         *
+         * New:
+         */
+        If ((BUF0 != Buffer (0x04)
+                    {
+                         0x01, 0x02, 0x00, 0x00                           // ....
+                    }))
+        {
+            ERR (Arg0, Z054, 0x019E, 0x00, 0x00, BUF0, Buffer (0x04)
+                {
+                     0x01, 0x02, 0x00, 0x00                           // ....
+                })
+        }
+
+        Return (0x00)
+    }
+
+    /* Bug 65: The Buffer Field type objects should be passed */
+    /* to Methods without any conversion, but instead */
+    /* they are converted to Buffers or Integers depending */
+    /* on the size of the Buffer Field object and the */
+    /* run mode (32-bit or 64/bit mode). */
+    /* */
+    /* CANCELED: now it should perform opposite assertion because */
+    /* this bug was canceled. */
+    Method (M11F, 1, Serialized)
+    {
+        Name (B000, Buffer (0xC8){})
+        CreateField (B000, 0x00, 0x1F, BF00)
+        CreateField (B000, 0x1F, 0x20, BF01)
+        CreateField (B000, 0x3F, 0x21, BF02)
+        CreateField (B000, 0x60, 0x3F, BF03)
+        CreateField (B000, 0x9F, 0x40, BF04)
+        CreateField (B000, 0xDF, 0x41, BF05)
+        Method (M000, 4, NotSerialized)
+        {
+            Local0 = ObjectType (Arg1)
+            If ((Local0 != Arg2))
+            {
+                ERR (Arg0, Z054, 0x01B9, 0x00, 0x00, Local0, Arg2)
+            }
+
+            Local0 = SizeOf (Arg1)
+            If ((Local0 != Arg3))
+            {
+                ERR (Arg0, Z054, 0x01BE, 0x00, 0x00, Local0, Arg3)
+            }
+        }
+
+        Method (M001, 1, NotSerialized)
+        {
+            Local0 = ObjectType (BF00)
+            If ((Local0 != 0x0E))
+            {
+                ERR (Arg0, Z054, 0x01C6, 0x00, 0x00, Local0, 0x0E)
+            }
+
+            Local0 = ObjectType (BF01)
+            If ((Local0 != 0x0E))
+            {
+                ERR (Arg0, Z054, 0x01CA, 0x00, 0x00, Local0, 0x0E)
+            }
+
+            Local0 = ObjectType (BF02)
+            If ((Local0 != 0x0E))
+            {
+                ERR (Arg0, Z054, 0x01CE, 0x00, 0x00, Local0, 0x0E)
+            }
+
+            Local0 = ObjectType (BF03)
+            If ((Local0 != 0x0E))
+            {
+                ERR (Arg0, Z054, 0x01D2, 0x00, 0x00, Local0, 0x0E)
+            }
+
+            Local0 = ObjectType (BF04)
+            If ((Local0 != 0x0E))
+            {
+                ERR (Arg0, Z054, 0x01D6, 0x00, 0x00, Local0, 0x0E)
+            }
+
+            Local0 = ObjectType (BF05)
+            If ((Local0 != 0x0E))
+            {
+                ERR (Arg0, Z054, 0x01DA, 0x00, 0x00, Local0, 0x0E)
+            }
+
+            If (F64)
+            {
+                M000 (Arg0, BF00, 0x01, 0x08)
+                M000 (Arg0, BF01, 0x01, 0x08)
+                M000 (Arg0, BF02, 0x01, 0x08)
+                M000 (Arg0, BF03, 0x01, 0x08)
+                M000 (Arg0, BF04, 0x01, 0x08)
+                M000 (Arg0, BF05, 0x03, 0x09)
+            }
+            Else
+            {
+                M000 (Arg0, BF00, 0x01, 0x04)
+                M000 (Arg0, BF01, 0x01, 0x04)
+                M000 (Arg0, BF02, 0x03, 0x05)
+                M000 (Arg0, BF03, 0x03, 0x08)
+                M000 (Arg0, BF04, 0x03, 0x08)
+                M000 (Arg0, BF05, 0x03, 0x09)
+            }
+        }
+
+        M001 (Arg0)
+    }
+
+    /* Bug 66: The Field Unit type objects should be passed */
+    /* to Methods without any conversion, but instead */
+    /* they are converted to Buffers or Integers depending */
+    /* on the size of the Buffer Field object and the */
+    /* run mode (32-bit or 64/bit mode). */
+    /* */
+    /* CANCELED: now it should perform opposite assertion because */
+    /* this bug was canceled. */
+    Method (M120, 1, Serialized)
+    {
+        OperationRegion (R000, SystemMemory, 0x0100, 0x0100)
+        Field (R000, ByteAcc, NoLock, Preserve)
+        {
+            F000,   31, 
+            F001,   32, 
+            F002,   33, 
+            F003,   63, 
+            F004,   64, 
+            F005,   65
+        }
+
+        Method (M000, 4, NotSerialized)
+        {
+            Local0 = ObjectType (Arg1)
+            If ((Local0 != Arg2))
+            {
+                ERR (Arg0, Z054, 0x0208, 0x00, 0x00, Local0, Arg2)
+            }
+
+            Local0 = SizeOf (Arg1)
+            If ((Local0 != Arg3))
+            {
+                ERR (Arg0, Z054, 0x020D, 0x00, 0x00, Local0, Arg3)
+            }
+        }
+
+        Method (M001, 1, NotSerialized)
+        {
+            Local0 = ObjectType (F000)
+            If ((Local0 != 0x05))
+            {
+                ERR (Arg0, Z054, 0x0215, 0x00, 0x00, Local0, 0x05)
+            }
+
+            Local0 = ObjectType (F001)
+            If ((Local0 != 0x05))
+            {
+                ERR (Arg0, Z054, 0x0219, 0x00, 0x00, Local0, 0x05)
+            }
+
+            Local0 = ObjectType (F002)
+            If ((Local0 != 0x05))
+            {
+                ERR (Arg0, Z054, 0x021D, 0x00, 0x00, Local0, 0x05)
+            }
+
+            Local0 = ObjectType (F003)
+            If ((Local0 != 0x05))
+            {
+                ERR (Arg0, Z054, 0x0221, 0x00, 0x00, Local0, 0x05)
+            }
+
+            Local0 = ObjectType (F004)
+            If ((Local0 != 0x05))
+            {
+                ERR (Arg0, Z054, 0x0225, 0x00, 0x00, Local0, 0x05)
+            }
+
+            Local0 = ObjectType (F005)
+            If ((Local0 != 0x05))
+            {
+                ERR (Arg0, Z054, 0x0229, 0x00, 0x00, Local0, 0x05)
+            }
+
+            If (F64)
+            {
+                M000 (Arg0, F000, 0x01, 0x08)
+                M000 (Arg0, F001, 0x01, 0x08)
+                M000 (Arg0, F002, 0x01, 0x08)
+                M000 (Arg0, F003, 0x01, 0x08)
+                M000 (Arg0, F004, 0x01, 0x08)
+                M000 (Arg0, F005, 0x03, 0x09)
+            }
+            Else
+            {
+                M000 (Arg0, F000, 0x01, 0x04)
+                M000 (Arg0, F001, 0x01, 0x04)
+                M000 (Arg0, F002, 0x03, 0x05)
+                M000 (Arg0, F003, 0x03, 0x08)
+                M000 (Arg0, F004, 0x03, 0x08)
+                M000 (Arg0, F005, 0x03, 0x09)
+            }
+        }
+
+        M001 (Arg0)
+    }
+
+    /* Bug 67: The Buffer Field type objects should be RETURNED */
+    /* by Methods without any conversion, but instead */
+    /* they are converted to Buffers or Integers depending */
+    /* on the size of the Buffer Field object and the */
+    /* run mode (32-bit or 64/bit mode). */
+    /* */
+    /* CANCELED: now it should perform opposite assertion because */
+    /* this bug was canceled. */
+    Method (M121, 1, Serialized)
+    {
+        Name (B000, Buffer (0xC8){})
+        CreateField (B000, 0x00, 0x1F, BF00)
+        CreateField (B000, 0x1F, 0x20, BF01)
+        CreateField (B000, 0x3F, 0x21, BF02)
+        CreateField (B000, 0x60, 0x3F, BF03)
+        CreateField (B000, 0x9F, 0x40, BF04)
+        CreateField (B000, 0xDF, 0x41, BF05)
+        Method (M000, 1, NotSerialized)
+        {
+            If ((Arg0 == 0x00))
+            {
+                Return (BF00) /* \M121.BF00 */
+            }
+            ElseIf ((Arg0 == 0x01))
+            {
+                Return (BF01) /* \M121.BF01 */
+            }
+            ElseIf ((Arg0 == 0x02))
+            {
+                Return (BF02) /* \M121.BF02 */
+            }
+            ElseIf ((Arg0 == 0x03))
+            {
+                Return (BF03) /* \M121.BF03 */
+            }
+            ElseIf ((Arg0 == 0x04))
+            {
+                Return (BF04) /* \M121.BF04 */
+            }
+            ElseIf ((Arg0 == 0x05))
+            {
+                Return (BF05) /* \M121.BF05 */
+            }
+
+            Return ("qw")
+        }
+
+        Method (M001, 4, NotSerialized)
+        {
+            Local1 = M000 (Arg1)
+            Local0 = ObjectType (Local1)
+            If ((Local0 != Arg2))
+            {
+                ERR (Arg0, Z054, 0x0269, 0x00, 0x00, Local0, Arg2)
+            }
+
+            Local0 = SizeOf (Local1)
+            If ((Local0 != Arg3))
+            {
+                ERR (Arg0, Z054, 0x026E, 0x00, 0x00, Local0, Arg3)
+            }
+        }
+
+        Method (M002, 1, NotSerialized)
+        {
+            If (F64)
+            {
+                M001 (Arg0, 0x00, 0x01, 0x08)
+                M001 (Arg0, 0x01, 0x01, 0x08)
+                M001 (Arg0, 0x02, 0x01, 0x08)
+                M001 (Arg0, 0x03, 0x01, 0x08)
+                M001 (Arg0, 0x04, 0x01, 0x08)
+                M001 (Arg0, 0x05, 0x03, 0x09)
+            }
+            Else
+            {
+                M001 (Arg0, 0x00, 0x01, 0x04)
+                M001 (Arg0, 0x01, 0x01, 0x04)
+                M001 (Arg0, 0x02, 0x03, 0x05)
+                M001 (Arg0, 0x03, 0x03, 0x08)
+                M001 (Arg0, 0x04, 0x03, 0x08)
+                M001 (Arg0, 0x05, 0x03, 0x09)
+            }
+        }
+
+        M002 (Arg0)
+    }
+
+    /* Bug 68: The Field Unit type objects should be RETURNED */
+    /* by Methods without any conversion, but instead */
+    /* they are converted to Buffers or Integers depending */
+    /* on the size of the Buffer Field object and the */
+    /* run mode (32-bit or 64/bit mode). */
+    /* */
+    /* CANCELED: now it should perform opposite assertion because */
+    /* this bug was canceled. */
+    Method (M122, 1, Serialized)
+    {
+        OperationRegion (R000, SystemMemory, 0x0100, 0x0100)
+        Field (R000, ByteAcc, NoLock, Preserve)
+        {
+            F000,   31, 
+            F001,   32, 
+            F002,   33, 
+            F003,   63, 
+            F004,   64, 
+            F005,   65
+        }
+
+        Method (M000, 1, NotSerialized)
+        {
+            If ((Arg0 == 0x00))
+            {
+                Return (F000) /* \M122.F000 */
+            }
+            ElseIf ((Arg0 == 0x01))
+            {
+                Return (F001) /* \M122.F001 */
+            }
+            ElseIf ((Arg0 == 0x02))
+            {
+                Return (F002) /* \M122.F002 */
+            }
+            ElseIf ((Arg0 == 0x03))
+            {
+                Return (F003) /* \M122.F003 */
+            }
+            ElseIf ((Arg0 == 0x04))
+            {
+                Return (F004) /* \M122.F004 */
+            }
+            ElseIf ((Arg0 == 0x05))
+            {
+                Return (F005) /* \M122.F005 */
+            }
+
+            Return ("qw")
+        }
+
+        Method (M001, 4, NotSerialized)
+        {
+            Local1 = M000 (Arg1)
+            Local0 = ObjectType (Local1)
+            If ((Local0 != Arg2))
+            {
+                ERR (Arg0, Z054, 0x02B2, 0x00, 0x00, Local0, Arg2)
+            }
+
+            Local0 = SizeOf (Local1)
+            If ((Local0 != Arg3))
+            {
+                ERR (Arg0, Z054, 0x02B7, 0x00, 0x00, Local0, Arg3)
+            }
+        }
+
+        Method (M002, 1, NotSerialized)
+        {
+            If (F64)
+            {
+                M001 (Arg0, 0x00, 0x01, 0x08)
+                M001 (Arg0, 0x01, 0x01, 0x08)
+                M001 (Arg0, 0x02, 0x01, 0x08)
+                M001 (Arg0, 0x03, 0x01, 0x08)
+                M001 (Arg0, 0x04, 0x01, 0x08)
+                M001 (Arg0, 0x05, 0x03, 0x09)
+            }
+            Else
+            {
+                M001 (Arg0, 0x00, 0x01, 0x04)
+                M001 (Arg0, 0x01, 0x01, 0x04)
+                M001 (Arg0, 0x02, 0x03, 0x05)
+                M001 (Arg0, 0x03, 0x03, 0x08)
+                M001 (Arg0, 0x04, 0x03, 0x08)
+                M001 (Arg0, 0x05, 0x03, 0x09)
+            }
+        }
+
+        M002 (Arg0)
+    }
+
+    /* Bug 30. This test may be removed there after */
+    /* the Field relative tests will be implemented. */
+    /* Caused crash. */
+    Method (M123, 1, NotSerialized)
+    {
+        Method (M000, 0, Serialized)
+        {
+            /* Field Unit */
+
+            OperationRegion (R000, SystemMemory, 0x0100, 0x0100)
+            Field (R000, ByteAcc, NoLock, Preserve)
+            {
+                F000,   8, 
+                F001,   16, 
+                F002,   32, 
+                F003,   33, 
+                F004,   1, 
+                F005,   64
+            }
+
+            Debug = "------------ Fields:"
+            Debug = F000 /* \M123.M000.F000 */
+            Debug = F001 /* \M123.M000.F001 */
+            Debug = F002 /* \M123.M000.F002 */
+            Debug = F003 /* \M123.M000.F003 */
+            Debug = F004 /* \M123.M000.F004 */
+            Debug = F005 /* \M123.M000.F005 */
+            Debug = "------------."
+            Return (0x00)
+        }
+
+        Method (M001, 0, Serialized)
+        {
+            /* Field Unit */
+
+            OperationRegion (R000, SystemMemory, 0x0100, 0x0100)
+            Field (R000, ByteAcc, NoLock, Preserve)
+            {
+                F000,   8, 
+                F001,   16, 
+                F002,   32, 
+                F003,   33, 
+                F004,   7, 
+                F005,   64
+            }
+
+            Debug = "------------ Fields:"
+            Debug = F000 /* \M123.M001.F000 */
+            Debug = F001 /* \M123.M001.F001 */
+            Debug = F002 /* \M123.M001.F002 */
+            Debug = F003 /* \M123.M001.F003 */
+            Debug = F004 /* \M123.M001.F004 */
+            Debug = F005 /* \M123.M001.F005 */
+            Debug = "------------."
+            Return (0x00)
+        }
+
+        M000 ()
+        M001 ()
+        Return (0x00)
+    }
+
+    /* Bug 81. */
+
+    Method (M124, 1, NotSerialized)
+    {
+        Method (M000, 0, NotSerialized)
+        {
+            Return (0x12345678)
+        }
+
+        Method (M001, 1, NotSerialized)
+        {
+            Return (0x12345678)
+        }
+
+        CH03 (Arg0, Z054, 0x0105, 0x031A, 0x00)
+        Local0 = ObjectType (M000)
+        If ((Local0 != C010))
+        {
+            ERR (Arg0, Z054, 0x031E, 0x00, 0x00, Local0, C010)
+        }
+        /* Bug 81. */
+    /*
+     * Removed, invalid test.
+     * Compiler disallow method invocation as an operand to ObjectType.
+     */
     /* Nov. 2012: Method invocation as arg to ObjectType is now illegal */
-
-	//Store(ObjectType(m000()), Local0)
-	//if (LNotEqual(Local0, c009)) {
-	//	err(arg0, z054, __LINE__, 0, 0, Local0, c009)
-	//}
-	//
-	//Store(ObjectType(m001(123)), Local1)
-	//if (LNotEqual(Local1, c009)) {
-	//	err(arg0, z054, __LINE__, 0, 0, Local1, c009)
-	//}
-	//
-	//CH03(arg0, z054, 0x106, __LINE__, 0)
-}
-
-/*
- * Bug 117. Modification of the duplicated String
- * modifies the initial String Object also.
- *
- * This test should be a part of another complex test.
- *
- * New objects creation and safety of the source
- * objects referred as parameters to operators.
- */
-Method(m125, 1)
-{
-	Method(m001, 1, Serialized)
-	{
-		Name(s000, "String")
-
-		Store(s000, Local0)
-
-		Store(0x61, Index(Local0, 3))
-
-		if (LNotEqual(Local0, "Strang")) {
-			err(arg0, z054, __LINE__, 0, 0, Local0, "Strang")
-		}
-		if (LNotEqual(s000, "String")) {
-			err(arg0, z054, __LINE__, 0, 0, s000, "String")
-		}
-	}
-
-	Method(m002, 1, Serialized)
-	{
-		Name(b000, Buffer(){0xa0, 0xa1, 0xa2, 0xa3, 0xa4, 0xa5})
-
-		Store(b000, Local0)
-
-		Store(0x61, Index(Local0, 3))
-
-		if (LNotEqual(Local0, Buffer(){0xa0, 0xa1, 0xa2, 0x61, 0xa4, 0xa5})) {
-			err(arg0, z054, __LINE__, 0, 0, Local0, Buffer(){0xa0, 0xa1, 0xa2, 0x61, 0xa4, 0xa5})
-		}
-		if (LNotEqual(b000, Buffer(){0xa0, 0xa1, 0xa2, 0xa3, 0xa4, 0xa5})) {
-			err(arg0, z054, __LINE__, 0, 0, b000, Buffer(){0xa0, 0xa1, 0xa2, 0xa3, 0xa4, 0xa5})
-		}
-	}
-
-	Method(m003, 1, Serialized)
-	{
-		Name(p000, Package(){0xfff0, 0xfff1, 0xfff2, 0xfff3, 0xfff4, 0xfff5})
-
-		Store(p000, Local0)
-
-		Store(0x61, Index(Local0, 3))
-
-		if (LNotEqual(Derefof(Index(Local0, 0)), 0xfff0)) {
-			err(arg0, z054, __LINE__, 0, 0, Derefof(Index(Local0, 0)), 0xfff0)
-		}
-		if (LNotEqual(Derefof(Index(Local0, 1)), 0xfff1)) {
-			err(arg0, z054, __LINE__, 0, 0, Derefof(Index(Local0, 1)), 0xfff1)
-		}
-		if (LNotEqual(Derefof(Index(Local0, 2)), 0xfff2)) {
-			err(arg0, z054, __LINE__, 0, 0, Derefof(Index(Local0, 2)), 0xfff2)
-		}
-		if (LNotEqual(Derefof(Index(Local0, 3)), 0x61)) {
-			err(arg0, z054, __LINE__, 0, 0, Derefof(Index(Local0, 3)), 0x61)
-		}
-		if (LNotEqual(Derefof(Index(Local0, 4)), 0xfff4)) {
-			err(arg0, z054, __LINE__, 0, 0, Derefof(Index(Local0, 4)), 0xfff4)
-		}
-		if (LNotEqual(Derefof(Index(Local0, 5)), 0xfff5)) {
-			err(arg0, z054, __LINE__, 0, 0, Derefof(Index(Local0, 5)), 0xfff5)
-		}
-
-		if (LNotEqual(Derefof(Index(p000, 0)), 0xfff0)) {
-			err(arg0, z054, __LINE__, 0, 0, Derefof(Index(p000, 0)), 0xfff0)
-		}
-		if (LNotEqual(Derefof(Index(p000, 1)), 0xfff1)) {
-			err(arg0, z054, __LINE__, 0, 0, Derefof(Index(p000, 1)), 0xfff1)
-		}
-		if (LNotEqual(Derefof(Index(p000, 2)), 0xfff2)) {
-			err(arg0, z054, __LINE__, 0, 0, Derefof(Index(p000, 2)), 0xfff2)
-		}
-		if (LNotEqual(Derefof(Index(p000, 3)), 0xfff3)) {
-			err(arg0, z054, __LINE__, 0, 0, Derefof(Index(p000, 3)), 0xfff3)
-		}
-		if (LNotEqual(Derefof(Index(p000, 4)), 0xfff4)) {
-			err(arg0, z054, __LINE__, 0, 0, Derefof(Index(p000, 4)), 0xfff4)
-		}
-		if (LNotEqual(Derefof(Index(p000, 5)), 0xfff5)) {
-			err(arg0, z054, __LINE__, 0, 0, Derefof(Index(p000, 5)), 0xfff5)
-		}
-	}
-
-	m001(arg0)
-	m002(arg0)
-	m003(arg0)
-}
-
-// No exception should arisen.
-Method(mf74, , Serialized)
-{
-	Store(0, Local0)
-	switch (ToInteger (Local0)) {
-		case (101) {
-			Device(d000) {}
-			Method(m002) {}
-		}
-	}
-}
-
-Method(mf75, 1)
-{
-	Method(mm00, ,Serialized)
-	{
-		Store(0, Local0)
-		switch (ToInteger (Local0)) {
-			case (101) {
-				Method(m000) {}
-				Method(m001) {}
-			}
-		}
-	}
-
-	Method(mm01, ,Serialized)
-	{
-		Store(0, Local0)
-		switch (ToInteger (Local0)) {
-			case (101) {
-				Method(m002) {}
-				Device(dv00) {}
-			}
-		}
-	}
-
-	Method(mm02, ,Serialized)
-	{
-		Store(0, Local0)
-		switch (ToInteger (Local0)) {
-			case (101) {
-				Device(dv01) {}
-				Method(m003) {}
-			}
-		}
-	}
-
-	Method(mm03, ,Serialized)
-	{
-		Store(0, Local0)
-		switch (ToInteger (Local0)) {
-			case (101) {
-				Device(dv02) {}
-				Device(dv03) {}
-			}
-		}
-	}
-
-	CH03(arg0, z054, 0x107, __LINE__, 0)
-	mf74()
-	CH03(arg0, z054, 0x108, __LINE__, 0)
-
-	CH03(arg0, z054, 0x109, __LINE__, 0)
-	mm00()
-	CH03(arg0, z054, 0x10a, __LINE__, 0)
-
-	CH03(arg0, z054, 0x10b, __LINE__, 0)
-	mm01()
-	CH03(arg0, z054, 0x10c, __LINE__, 0)
-
-	CH03(arg0, z054, 0x10d, __LINE__, 0)
-	mm02()
-	CH03(arg0, z054, 0x10e, __LINE__, 0)
-
-	CH03(arg0, z054, 0x10f, __LINE__, 0)
-	mm03()
-	CH03(arg0, z054, 0x110, __LINE__, 0)
-}
-
-
-/*
- * Bug 153, Bugzilla 5314.
- * The corresponding bug has been fixed.
- * This is an invalid test, should be removed from test suite.
- * Method mf77 will fail on ABBU unexpectedly even without Method mf76.
- *
- * Method(mf76, 1)
- * {
- *	if (LNotEqual(arg0, "Strang")) {
- *		err(arg0, z054, __LINE__, 0, 0, arg0, "Strang")
- *	}
- * }
- *
- * Method(mf77, 1)
- * {
- *	Name(s000, "String")
- *	Name(p000, Package(){0})
- *
- *	Store(s000, p000)
- *
- *	Store(s000, Debug)
- *	Store(p000, Debug)
- *
- *	Store (0x61, Index(p000, 3))
- *
- *	mf76(p000)
- *	if (LNotEqual(s000, "String")) {
- *		err(arg0, z054, __LINE__, 0, 0, s000, "String")
- *	}
- * }
- */
-
-/* Bug 196 */
-Method(mf86, 1)
-{
-	CH03("mf86", z054, 74, __LINE__, 0)
-
-	Store("0x0x12345678", Local1)
-	ToInteger(Local1, Local0)
-	if (LNotEqual(Local0, 0)) {
-		err(arg0, z054, __LINE__, 0, 0, Local0, 0)
-	}
-
-	CH04("mf86", 0, 0xff, z054, __LINE__, 0, 0)
-}
-
-Method(mf87, 1)
-{
-	CH03("mf87", z054, 0, __LINE__, 0)
-
-	Add("0x0xabcdef", 0x10234, Local0)
-	if (LNotEqual(Local0, 0x10234)) {
-		err(arg0, z054, __LINE__, 0, 0, Local0, 0x10234)
-	}
-
-	CH03("mf87", z054, 1, __LINE__, 0)
-
-	Add(0x10234, "0x0xabcdef", Local0)
-	if (LNotEqual(Local0, 0x10234)) {
-		err(arg0, z054, __LINE__, 0, 0, Local0, 0x10234)
-	}
-
-	CH03("mf87", z054, 2, __LINE__, 0)
-}
-
-Method(m15b,, Serialized)
-{
-	Name(ts, "m15b")
-
-	/* **************** Definitions **************** */
-
-	Method(mm00)
-	{
-		return (0xabcd0000)
-	}
-
-	Name(p000, Package() {0xabcd0001, mm00, 0xabcd0002})
-
-	/* **************** Run checkings **************** */
-
-	/* Store */
-
-	Method(m000)
-	{
-		Store(mm00, Local0)
-		if (LNotEqual(Local0, 0xabcd0000)) {
-			err(ts, z054, __LINE__, 0, 0, Local0, 0xabcd0000)
-		}
-	}
-
-	Method(m001)
-	{
-		CH03(ts, z054, 0x001, __LINE__, 0)
-		Store(DerefOf(RefOf(mm00)), Local0)
-		if (SLCK) {
-			CH03(ts, z054, 0x002, __LINE__, 0)
-			Store(ObjectType(Local0), Local1)
-			if (LNotEqual(Local1, c010)) {
-				err(ts, z054, __LINE__, 0, 0, Local1, c010)
-			}
-		} else {
-			CH04(ts, 0, 47, z054, __LINE__, 0, 0) // AE_AML_OPERAND_TYPE
-		}
-	}
-
-	Method(m002)
-	{
-		CH03(ts, z054, 0x005, __LINE__, 0)
-		Store(DerefOf(Index(p000, 1)), Local0)
-		if (SLCK) {
-			CH03(ts, z054, 0x006, __LINE__, 0)
-			Store(ObjectType(Local0), Local1)
-			if (LNotEqual(Local1, c010)) {
-				err(ts, z054, __LINE__, 0, 0, Local1, c010)
-			}
-		} else {
-			CH04(ts, 0, 47, z054, __LINE__, 0, 0) // AE_AML_OPERAND_TYPE
-		}
-	}
-
-	Method(m003)
-	{
-// 10/2016: Compiler now catches illegal DerefOf(StringConstant)
-//		CH03(ts, z054, 0x009, __LINE__, 0)
-//		Store(DerefOf("mm00"), Local0)
-//		if (SLCK) {
-//			CH03(ts, z054, 0x00a, __LINE__, 0)
-//			Store(ObjectType(Local0), Local1)
-//			if (LNotEqual(Local1, c010)) {
-//				err(ts, z054, __LINE__, 0, 0, Local1, c010)
-//			}
-//		} else {
-//			CH04(ts, 0, 47, z054, __LINE__, 0, 0) // AE_AML_OPERAND_TYPE
-//		}
-	}
-
-	/* CopyObject */
-
-	Method(m004)
-	{
-		CopyObject(mm00, Local0)
-		if (LNotEqual(Local0, 0xabcd0000)) {
-			err(ts, z054, __LINE__, 0, 0, Local0, 0xabcd0000)
-		}
-	}
-
-	Method(m005)
-	{
-		CH03(ts, z054, 0x00e, __LINE__, 0)
-		CopyObject(DerefOf(RefOf(mm00)), Local0)
-		CH03(ts, z054, 0x00f, __LINE__, 0)
-
-		Store(ObjectType(Local0), Local1)
-		if (LNotEqual(Local1, c010)) {
-			err(ts, z054, __LINE__, 0, 0, Local1, c010)
-		}
-	}
-
-	Method(m006)
-	{
-		CH03(ts, z054, 0x011, __LINE__, 0)
-		CopyObject(DerefOf(Index(p000, 1)), Local0)
-		CH03(ts, z054, 0x012, __LINE__, 0)
-
-		Store(ObjectType(Local0), Local1)
-		if (LNotEqual(Local1, c010)) {
-			err(ts, z054, __LINE__, 0, 0, Local1, c010)
-		}
-	}
-
-	Method(m007)
-	{
-// 10/2016: Compiler now catches illegal DerefOf(StringConstant)
-
-//		CH03(ts, z054, 0x014, __LINE__, 0)
-//		CopyObject(DerefOf("mm00"), Local0)
-//		CH03(ts, z054, 0x015, __LINE__, 0)
-//
-//		Store(ObjectType(Local0), Local1)
-//		if (LNotEqual(Local1, c010)) {
-//			err(ts, z054, __LINE__, 0, 0, Local1, c010)
-//		}
-	}
-
-	/* Add */
-
-	Method(m008)
-	{
-		Add(mm00, 1, Local0)
-		if (LNotEqual(Local0, 0xabcd0001)) {
-			err(ts, z054, __LINE__, 0, 0, Local0, 0xabcd0001)
-		}
-	}
-
-	Method(m009)
-	{
-		CH03(ts, z054, 0x018, __LINE__, 0)
-		Add(DerefOf(RefOf(mm00)), 2, Local0)
-		CH04(ts, 0, 47, z054, __LINE__, 0, 0) // AE_AML_OPERAND_TYPE
-	}
-
-	Method(m00a)
-	{
-		CH03(ts, z054, 0x01a, __LINE__, 0)
-		Add(DerefOf(Index(p000, 1)), 3, Local0)
-		CH04(ts, 0, 47, z054, __LINE__, 0, 0) // AE_AML_OPERAND_TYPE
-	}
-
-	Method(m00b)
-	{
-// 10/2016: Compiler now catches illegal DerefOf(StringConstant)
-
-//		CH03(ts, z054, 0x01c, __LINE__, 0)
-//		Add(DerefOf("mm00"), 4, Local0)
-//		CH04(ts, 0, 47, z054, __LINE__, 0, 0) // AE_AML_OPERAND_TYPE
-	}
-
-	/* ObjectType */
-
-	Method(m00c)
-	{
-		Store(ObjectType(mm00), Local0)
-		if (LNotEqual(Local0, c010)) {
-			err(ts, z054, __LINE__, 0, 0, Local0, c010)
-		}
-	}
-
-	Method(m00d)
-	{
-		Store(ObjectType(DerefOf(RefOf(mm00))), Local0)
-		if (LNotEqual(Local0, c010)) {
-			err(ts, z054, __LINE__, 0, 0, Local0, c010)
-		}
-	}
-
-	Method(m00e)
-	{
-		Store(ObjectType(DerefOf(Index(p000, 1))), Local0)
-		if (LNotEqual(Local0, c010)) {
-			err(ts, z054, __LINE__, 0, 0, Local0, c010)
-		}
-	}
-
-	Method(m00f)
-	{
-// 10/2016: Compiler now catches illegal DerefOf(StringConstant)
-
-//		Store(ObjectType(DerefOf("mm00")), Local0)
-//		if (LNotEqual(Local0, c010)) {
-//			err(ts, z054, __LINE__, 0, 0, Local0, c010)
-//		}
-	}
-
-	Method(m100)
-	{
-		SRMT("m15b-0")
-		m000()
-		SRMT("m15b-1")
-		m001()
-		SRMT("m15b-2")
-		m002()
-		SRMT("m15b-3")
-		m003()
-		SRMT("m15b-4")
-		m004()
-		SRMT("m15b-5")
-		m005()
-		SRMT("m15b-6")
-		m006()
-		SRMT("m15b-7")
-		m007()
-		SRMT("m15b-8")
-		m008()
-		SRMT("m15b-9")
-		m009()
-		SRMT("m15b-a")
-		m00a()
-		SRMT("m15b-b")
-		m00b()
-		SRMT("m15b-c")
-		m00c()
-		SRMT("m15b-d")
-		m00d()
-		SRMT("m15b-e")
-		m00e()
-		SRMT("m15b-f")
-		m00f()
-	}
-
-	m100()
-}
-
-// Run-method
-Method(MSC0,, Serialized)
-{
-	Name(ts, "MSC0")
-
-	SRMT("m110")
-	m110(ts)
-	SRMT("m112")
-	m112(ts)
-	SRMT("m113")
-	m113(ts)
-	SRMT("m114")
-	m114(ts)
-	SRMT("m115")
-	m115(ts)
-	SRMT("m116")
-	m116(ts)
-	SRMT("m118")
-	m118(ts)
-	SRMT("m119")
-	m119(ts)
-	SRMT("m11c")
-	m11c(ts)
-	SRMT("m11d")
-	m11d(ts)
-	SRMT("m11e")
-	m11e(ts)
-	SRMT("m11f")
-	m11f(ts)
-	SRMT("m120")
-	m120(ts)
-	SRMT("m121")
-	m121(ts)
-	SRMT("m122")
-	m122(ts)
-	SRMT("m123")
-	m123(ts)
-	SRMT("m124")
-	m124(ts)
-	SRMT("m125")
-	m125(ts)
-	SRMT("mf75")
-	mf75(ts)
-	//SRMT("mf77")
-	//mf77(ts)
-	SRMT("mf86")
-	mf86(ts)
-	SRMT("mf87")
-	mf87(ts)
-
-	m15b()
-}
+    /*Store(ObjectType(m000()), Local0) */
+    /*if (LNotEqual(Local0, c009)) { */
+    /*	err(arg0, z054, __LINE__, 0, 0, Local0, c009) */
+    /*} */
+    /* */
+    /*Store(ObjectType(m001(123)), Local1) */
+    /*if (LNotEqual(Local1, c009)) { */
+    /*	err(arg0, z054, __LINE__, 0, 0, Local1, c009) */
+    /*} */
+    /* */
+    /*CH03(arg0, z054, 0x106, __LINE__, 0) */
+    }
+
+    /*
+     * Bug 117. Modification of the duplicated String
+     * modifies the initial String Object also.
+     *
+     * This test should be a part of another complex test.
+     *
+     * New objects creation and safety of the source
+     * objects referred as parameters to operators.
+     */
+    Method (M125, 1, NotSerialized)
+    {
+        Method (M001, 1, Serialized)
+        {
+            Name (S000, "String")
+            Local0 = S000 /* \M125.M001.S000 */
+            Local0 [0x03] = 0x61
+            If ((Local0 != "Strang"))
+            {
+                ERR (Arg0, Z054, 0x0349, 0x00, 0x00, Local0, "Strang")
+            }
+
+            If ((S000 != "String"))
+            {
+                ERR (Arg0, Z054, 0x034C, 0x00, 0x00, S000, "String")
+            }
+        }
+
+        Method (M002, 1, Serialized)
+        {
+            Name (B000, Buffer (0x06)
+            {
+                 0xA0, 0xA1, 0xA2, 0xA3, 0xA4, 0xA5               // ......
+            })
+            Local0 = B000 /* \M125.M002.B000 */
+            Local0 [0x03] = 0x61
+            If ((Local0 != Buffer (0x06)
+                        {
+                             0xA0, 0xA1, 0xA2, 0x61, 0xA4, 0xA5               // ...a..
+                        }))
+            {
+                ERR (Arg0, Z054, 0x0359, 0x00, 0x00, Local0, Buffer (0x06)
+                    {
+                         0xA0, 0xA1, 0xA2, 0x61, 0xA4, 0xA5               // ...a..
+                    })
+            }
+
+            If ((B000 != Buffer (0x06)
+                        {
+                             0xA0, 0xA1, 0xA2, 0xA3, 0xA4, 0xA5               // ......
+                        }))
+            {
+                ERR (Arg0, Z054, 0x035C, 0x00, 0x00, B000, Buffer (0x06)
+                    {
+                         0xA0, 0xA1, 0xA2, 0xA3, 0xA4, 0xA5               // ......
+                    })
+            }
+        }
+
+        Method (M003, 1, Serialized)
+        {
+            Name (P000, Package (0x06)
+            {
+                0xFFF0, 
+                0xFFF1, 
+                0xFFF2, 
+                0xFFF3, 
+                0xFFF4, 
+                0xFFF5
+            })
+            Local0 = P000 /* \M125.M003.P000 */
+            Local0 [0x03] = 0x61
+            If ((DerefOf (Local0 [0x00]) != 0xFFF0))
+            {
+                ERR (Arg0, Z054, 0x0369, 0x00, 0x00, DerefOf (Local0 [0x00]), 0xFFF0)
+            }
+
+            If ((DerefOf (Local0 [0x01]) != 0xFFF1))
+            {
+                ERR (Arg0, Z054, 0x036C, 0x00, 0x00, DerefOf (Local0 [0x01]), 0xFFF1)
+            }
+
+            If ((DerefOf (Local0 [0x02]) != 0xFFF2))
+            {
+                ERR (Arg0, Z054, 0x036F, 0x00, 0x00, DerefOf (Local0 [0x02]), 0xFFF2)
+            }
+
+            If ((DerefOf (Local0 [0x03]) != 0x61))
+            {
+                ERR (Arg0, Z054, 0x0372, 0x00, 0x00, DerefOf (Local0 [0x03]), 0x61)
+            }
+
+            If ((DerefOf (Local0 [0x04]) != 0xFFF4))
+            {
+                ERR (Arg0, Z054, 0x0375, 0x00, 0x00, DerefOf (Local0 [0x04]), 0xFFF4)
+            }
+
+            If ((DerefOf (Local0 [0x05]) != 0xFFF5))
+            {
+                ERR (Arg0, Z054, 0x0378, 0x00, 0x00, DerefOf (Local0 [0x05]), 0xFFF5)
+            }
+
+            If ((DerefOf (P000 [0x00]) != 0xFFF0))
+            {
+                ERR (Arg0, Z054, 0x037C, 0x00, 0x00, DerefOf (P000 [0x00]), 0xFFF0)
+            }
+
+            If ((DerefOf (P000 [0x01]) != 0xFFF1))
+            {
+                ERR (Arg0, Z054, 0x037F, 0x00, 0x00, DerefOf (P000 [0x01]), 0xFFF1)
+            }
+
+            If ((DerefOf (P000 [0x02]) != 0xFFF2))
+            {
+                ERR (Arg0, Z054, 0x0382, 0x00, 0x00, DerefOf (P000 [0x02]), 0xFFF2)
+            }
+
+            If ((DerefOf (P000 [0x03]) != 0xFFF3))
+            {
+                ERR (Arg0, Z054, 0x0385, 0x00, 0x00, DerefOf (P000 [0x03]), 0xFFF3)
+            }
+
+            If ((DerefOf (P000 [0x04]) != 0xFFF4))
+            {
+                ERR (Arg0, Z054, 0x0388, 0x00, 0x00, DerefOf (P000 [0x04]), 0xFFF4)
+            }
+
+            If ((DerefOf (P000 [0x05]) != 0xFFF5))
+            {
+                ERR (Arg0, Z054, 0x038B, 0x00, 0x00, DerefOf (P000 [0x05]), 0xFFF5)
+            }
+        }
+
+        M001 (Arg0)
+        M002 (Arg0)
+        M003 (Arg0)
+    }
+
+    /* No exception should arisen. */
+
+    Method (MF74, 0, Serialized)
+    {
+        Local0 = 0x00
+        Switch (ToInteger (Local0))
+        {
+            Case (0x65)
+            {
+                Device (D000)
+                {
+                }
+
+                Method (M002, 0, NotSerialized)
+                {
+                }
+            }
+
+        }
+    }
+
+    Method (MF75, 1, NotSerialized)
+    {
+        Method (MM00, 0, Serialized)
+        {
+            Local0 = 0x00
+            Switch (ToInteger (Local0))
+            {
+                Case (0x65)
+                {
+                    Method (M000, 0, NotSerialized)
+                    {
+                    }
+
+                    Method (M001, 0, NotSerialized)
+                    {
+                    }
+                }
+
+            }
+        }
+
+        Method (MM01, 0, Serialized)
+        {
+            Local0 = 0x00
+            Switch (ToInteger (Local0))
+            {
+                Case (0x65)
+                {
+                    Method (M002, 0, NotSerialized)
+                    {
+                    }
+
+                    Device (DV00)
+                    {
+                    }
+                }
+
+            }
+        }
+
+        Method (MM02, 0, Serialized)
+        {
+            Local0 = 0x00
+            Switch (ToInteger (Local0))
+            {
+                Case (0x65)
+                {
+                    Device (DV01)
+                    {
+                    }
+
+                    Method (M003, 0, NotSerialized)
+                    {
+                    }
+                }
+
+            }
+        }
+
+        Method (MM03, 0, Serialized)
+        {
+            Local0 = 0x00
+            Switch (ToInteger (Local0))
+            {
+                Case (0x65)
+                {
+                    Device (DV02)
+                    {
+                    }
+
+                    Device (DV03)
+                    {
+                    }
+                }
+
+            }
+        }
+
+        CH03 (Arg0, Z054, 0x0107, 0x03CE, 0x00)
+        MF74 ()
+        CH03 (Arg0, Z054, 0x0108, 0x03D0, 0x00)
+        CH03 (Arg0, Z054, 0x0109, 0x03D2, 0x00)
+        MM00 ()
+        CH03 (Arg0, Z054, 0x010A, 0x03D4, 0x00)
+        CH03 (Arg0, Z054, 0x010B, 0x03D6, 0x00)
+        MM01 ()
+        CH03 (Arg0, Z054, 0x010C, 0x03D8, 0x00)
+        CH03 (Arg0, Z054, 0x010D, 0x03DA, 0x00)
+        MM02 ()
+        CH03 (Arg0, Z054, 0x010E, 0x03DC, 0x00)
+        CH03 (Arg0, Z054, 0x010F, 0x03DE, 0x00)
+        MM03 ()
+        CH03 (Arg0, Z054, 0x0110, 0x03E0, 0x00)
+    }
+
+    /*
+     * Bug 153, Bugzilla 5314.
+     * The corresponding bug has been fixed.
+     * This is an invalid test, should be removed from test suite.
+     * Method mf77 will fail on ABBU unexpectedly even without Method mf76.
+     *
+     * Method(mf76, 1)
+     * {
+     *	if (LNotEqual(arg0, "Strang")) {
+     *		err(arg0, z054, __LINE__, 0, 0, arg0, "Strang")
+     *	}
+     * }
+     *
+     * Method(mf77, 1)
+     * {
+     *	Name(s000, "String")
+     *	Name(p000, Package(){0})
+     *
+     *	Store(s000, p000)
+     *
+     *	Store(s000, Debug)
+     *	Store(p000, Debug)
+     *
+     *	Store (0x61, Index(p000, 3))
+     *
+     *	mf76(p000)
+     *	if (LNotEqual(s000, "String")) {
+     *		err(arg0, z054, __LINE__, 0, 0, s000, "String")
+     *	}
+     * }
+     */
+    /* Bug 196 */
+    Method (MF86, 1, NotSerialized)
+    {
+        CH03 ("mf86", Z054, 0x4A, 0x0407, 0x00)
+        Local1 = "0x0x12345678"
+        ToInteger (Local1, Local0)
+        If ((Local0 != 0x00))
+        {
+            ERR (Arg0, Z054, 0x040C, 0x00, 0x00, Local0, 0x00)
+        }
+
+        CH04 ("mf86", 0x00, 0xFF, Z054, 0x040F, 0x00, 0x00)
+    }
+
+    Method (MF87, 1, NotSerialized)
+    {
+        CH03 ("mf87", Z054, 0x00, 0x0414, 0x00)
+        Local0 = ("0x0xabcdef" + 0x00010234)
+        If ((Local0 != 0x00010234))
+        {
+            ERR (Arg0, Z054, 0x0418, 0x00, 0x00, Local0, 0x00010234)
+        }
+
+        CH03 ("mf87", Z054, 0x01, 0x041B, 0x00)
+        Local0 = (0x00010234 + "0x0xabcdef")
+        If ((Local0 != 0x00010234))
+        {
+            ERR (Arg0, Z054, 0x041F, 0x00, 0x00, Local0, 0x00010234)
+        }
+
+        CH03 ("mf87", Z054, 0x02, 0x0422, 0x00)
+    }
+
+    Method (M15B, 0, Serialized)
+    {
+        Name (TS, "m15b")
+        /* **************** Definitions **************** */
+
+        Method (MM00, 0, NotSerialized)
+        {
+            Return (0xABCD0000)
+        }
+
+        Name (P000, Package (0x03)
+        {
+            0xABCD0001, 
+            MM00, 
+            0xABCD0002
+        })
+        /* **************** Run checkings **************** */
+        /* Store */
+        Method (M000, 0, NotSerialized)
+        {
+            Local0 = MM00 ()
+            If ((Local0 != 0xABCD0000))
+            {
+                ERR (TS, Z054, 0x043A, 0x00, 0x00, Local0, 0xABCD0000)
+            }
+        }
+
+        Method (M001, 0, NotSerialized)
+        {
+            CH03 (TS, Z054, 0x01, 0x0440, 0x00)
+            Local0 = DerefOf (RefOf (MM00))
+            If (SLCK)
+            {
+                CH03 (TS, Z054, 0x02, 0x0443, 0x00)
+                Local1 = ObjectType (Local0)
+                If ((Local1 != C010))
+                {
+                    ERR (TS, Z054, 0x0446, 0x00, 0x00, Local1, C010)
+                }
+            }
+            Else
+            {
+                CH04 (TS, 0x00, 0x2F, Z054, 0x0449, 0x00, 0x00) /* AE_AML_OPERAND_TYPE */
+            }
+        }
+
+        Method (M002, 0, NotSerialized)
+        {
+            CH03 (TS, Z054, 0x05, 0x044F, 0x00)
+            Local0 = DerefOf (P000 [0x01])
+            If (SLCK)
+            {
+                CH03 (TS, Z054, 0x06, 0x0452, 0x00)
+                Local1 = ObjectType (Local0)
+                If ((Local1 != C010))
+                {
+                    ERR (TS, Z054, 0x0455, 0x00, 0x00, Local1, C010)
+                }
+            }
+            Else
+            {
+                CH04 (TS, 0x00, 0x2F, Z054, 0x0458, 0x00, 0x00) /* AE_AML_OPERAND_TYPE */
+            }
+        }
+
+        Method (M003, 0, NotSerialized)
+        {
+                /* 10/2016: Compiler now catches illegal DerefOf(StringConstant) */
+        /*		CH03(ts, z054, 0x009, __LINE__, 0) */
+        /*		Store(DerefOf("mm00"), Local0) */
+        /*		if (SLCK) { */
+        /*			CH03(ts, z054, 0x00a, __LINE__, 0) */
+        /*			Store(ObjectType(Local0), Local1) */
+        /*			if (LNotEqual(Local1, c010)) { */
+        /*				err(ts, z054, __LINE__, 0, 0, Local1, c010) */
+        /*			} */
+        /*		} else { */
+        /*			CH04(ts, 0, 47, z054, __LINE__, 0, 0) // AE_AML_OPERAND_TYPE */
+        /*		} */
+        }
+
+        /* CopyObject */
+
+        Method (M004, 0, NotSerialized)
+        {
+            CopyObject (MM00 (), Local0)
+            If ((Local0 != 0xABCD0000))
+            {
+                ERR (TS, Z054, 0x0472, 0x00, 0x00, Local0, 0xABCD0000)
+            }
+        }
+
+        Method (M005, 0, NotSerialized)
+        {
+            CH03 (TS, Z054, 0x0E, 0x0478, 0x00)
+            CopyObject (DerefOf (RefOf (MM00)), Local0)
+            CH03 (TS, Z054, 0x0F, 0x047A, 0x00)
+            Local1 = ObjectType (Local0)
+            If ((Local1 != C010))
+            {
+                ERR (TS, Z054, 0x047E, 0x00, 0x00, Local1, C010)
+            }
+        }
+
+        Method (M006, 0, NotSerialized)
+        {
+            CH03 (TS, Z054, 0x11, 0x0484, 0x00)
+            CopyObject (DerefOf (P000 [0x01]), Local0)
+            CH03 (TS, Z054, 0x12, 0x0486, 0x00)
+            Local1 = ObjectType (Local0)
+            If ((Local1 != C010))
+            {
+                ERR (TS, Z054, 0x048A, 0x00, 0x00, Local1, C010)
+            }
+        }
+
+        Method (M007, 0, NotSerialized)
+        {
+                /* 10/2016: Compiler now catches illegal DerefOf(StringConstant) */
+        /*		CH03(ts, z054, 0x014, __LINE__, 0) */
+        /*		CopyObject(DerefOf("mm00"), Local0) */
+        /*		CH03(ts, z054, 0x015, __LINE__, 0) */
+        /* */
+        /*		Store(ObjectType(Local0), Local1) */
+        /*		if (LNotEqual(Local1, c010)) { */
+        /*			err(ts, z054, __LINE__, 0, 0, Local1, c010) */
+        /*		} */
+        }
+
+        /* Add */
+
+        Method (M008, 0, NotSerialized)
+        {
+            Local0 = (MM00 () + 0x01)
+            If ((Local0 != 0xABCD0001))
+            {
+                ERR (TS, Z054, 0x04A2, 0x00, 0x00, Local0, 0xABCD0001)
+            }
+        }
+
+        Method (M009, 0, NotSerialized)
+        {
+            CH03 (TS, Z054, 0x18, 0x04A8, 0x00)
+            Local0 = (DerefOf (RefOf (MM00)) + 0x02)
+            CH04 (TS, 0x00, 0x2F, Z054, 0x04AA, 0x00, 0x00) /* AE_AML_OPERAND_TYPE */
+        }
+
+        Method (M00A, 0, NotSerialized)
+        {
+            CH03 (TS, Z054, 0x1A, 0x04AF, 0x00)
+            Local0 = (DerefOf (P000 [0x01]) + 0x03)
+            CH04 (TS, 0x00, 0x2F, Z054, 0x04B1, 0x00, 0x00) /* AE_AML_OPERAND_TYPE */
+        }
+
+        Method (M00B, 0, NotSerialized)
+        {
+                /* 10/2016: Compiler now catches illegal DerefOf(StringConstant) */
+        /*		CH03(ts, z054, 0x01c, __LINE__, 0) */
+        /*		Add(DerefOf("mm00"), 4, Local0) */
+        /*		CH04(ts, 0, 47, z054, __LINE__, 0, 0) // AE_AML_OPERAND_TYPE */
+        }
+
+        /* ObjectType */
+
+        Method (M00C, 0, NotSerialized)
+        {
+            Local0 = ObjectType (MM00)
+            If ((Local0 != C010))
+            {
+                ERR (TS, Z054, 0x04C3, 0x00, 0x00, Local0, C010)
+            }
+        }
+
+        Method (M00D, 0, NotSerialized)
+        {
+            Local0 = ObjectType (DerefOf (RefOf (MM00)))
+            If ((Local0 != C010))
+            {
+                ERR (TS, Z054, 0x04CB, 0x00, 0x00, Local0, C010)
+            }
+        }
+
+        Method (M00E, 0, NotSerialized)
+        {
+            Local0 = ObjectType (DerefOf (P000 [0x01]))
+            If ((Local0 != C010))
+            {
+                ERR (TS, Z054, 0x04D3, 0x00, 0x00, Local0, C010)
+            }
+        }
+
+        Method (M00F, 0, NotSerialized)
+        {
+                /* 10/2016: Compiler now catches illegal DerefOf(StringConstant) */
+        /*		Store(ObjectType(DerefOf("mm00")), Local0) */
+        /*		if (LNotEqual(Local0, c010)) { */
+        /*			err(ts, z054, __LINE__, 0, 0, Local0, c010) */
+        /*		} */
+        }
+
+        Method (M100, 0, NotSerialized)
+        {
+            SRMT ("m15b-0")
+            M000 ()
+            SRMT ("m15b-1")
+            M001 ()
+            SRMT ("m15b-2")
+            M002 ()
+            SRMT ("m15b-3")
+            M003 ()
+            SRMT ("m15b-4")
+            M004 ()
+            SRMT ("m15b-5")
+            M005 ()
+            SRMT ("m15b-6")
+            M006 ()
+            SRMT ("m15b-7")
+            M007 ()
+            SRMT ("m15b-8")
+            M008 ()
+            SRMT ("m15b-9")
+            M009 ()
+            SRMT ("m15b-a")
+            M00A ()
+            SRMT ("m15b-b")
+            M00B ()
+            SRMT ("m15b-c")
+            M00C ()
+            SRMT ("m15b-d")
+            M00D ()
+            SRMT ("m15b-e")
+            M00E ()
+            SRMT ("m15b-f")
+            M00F ()
+        }
+
+        M100 ()
+    }
+
+    /* Run-method */
+
+    Method (MSC0, 0, Serialized)
+    {
+        Name (TS, "MSC0")
+        SRMT ("m110")
+        M110 (TS)
+        SRMT ("m112")
+        M112 (TS)
+        SRMT ("m113")
+        M113 (TS)
+        SRMT ("m114")
+        M114 (TS)
+        SRMT ("m115")
+        M115 (TS)
+        SRMT ("m116")
+        M116 (TS)
+        SRMT ("m118")
+        M118 (TS)
+        SRMT ("m119")
+        M119 (TS)
+        SRMT ("m11c")
+        M11C (TS)
+        SRMT ("m11d")
+        M11D (TS)
+        SRMT ("m11e")
+        M11E (TS)
+        SRMT ("m11f")
+        M11F (TS)
+        SRMT ("m120")
+        M120 (TS)
+        SRMT ("m121")
+        M121 (TS)
+        SRMT ("m122")
+        M122 (TS)
+        SRMT ("m123")
+        M123 (TS)
+        SRMT ("m124")
+        M124 (TS)
+        SRMT ("m125")
+        M125 (TS)
+        SRMT ("mf75")
+        MF75 (TS)
+        /*SRMT("mf77") */
+        /*mf77(ts) */
+        SRMT ("mf86")
+        MF86 (TS)
+        SRMT ("mf87")
+        MF87 (TS)
+        M15B ()
+    }
 

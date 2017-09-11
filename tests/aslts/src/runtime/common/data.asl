@@ -1,279 +1,921 @@
-/*
- * Some or all of this work - Copyright (c) 2006 - 2017, Intel Corp.
- * All rights reserved.
- *
- * Redistribution and use in source and binary forms, with or without modification,
- * are permitted provided that the following conditions are met:
- *
- * Redistributions of source code must retain the above copyright notice,
- * this list of conditions and the following disclaimer.
- * Redistributions in binary form must reproduce the above copyright notice,
- * this list of conditions and the following disclaimer in the documentation
- * and/or other materials provided with the distribution.
- * Neither the name of Intel Corporation nor the names of its contributors
- * may be used to endorse or promote products derived from this software
- * without specific prior written permission.
- *
- * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS"
- * AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE
- * IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE
- * ARE DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT OWNER OR CONTRIBUTORS BE
- * LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL
- * DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES;
- * LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY
- * THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING
- * NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE,
- * EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
- */
+    /*
+     * Some or all of this work - Copyright (c) 2006 - 2017, Intel Corp.
+     * All rights reserved.
+     *
+     * Redistribution and use in source and binary forms, with or without modification,
+     * are permitted provided that the following conditions are met:
+     *
+     * Redistributions of source code must retain the above copyright notice,
+     * this list of conditions and the following disclaimer.
+     * Redistributions in binary form must reproduce the above copyright notice,
+     * this list of conditions and the following disclaimer in the documentation
+     * and/or other materials provided with the distribution.
+     * Neither the name of Intel Corporation nor the names of its contributors
+     * may be used to endorse or promote products derived from this software
+     * without specific prior written permission.
+     *
+     * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS"
+     * AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE
+     * IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE
+     * ARE DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT OWNER OR CONTRIBUTORS BE
+     * LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL
+     * DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES;
+     * LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY
+     * THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING
+     * NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE,
+     * EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
+     */
+    /*
+     *
+     * Different type data for different needs
+     *
+     */
+    /*
+     SEE: uncomment m918 after fixing bug (?) of ACPICA
+     SEE: uncomment below:
+     //	Method(m918) { return (tz90) }
+     */
+    Name (Z113, 0x71)
+    /* Not Computational Data */
 
-/*
- *
- * Different type data for different needs
- *
- */
+    Event (E900)
+    Event (E9Z0)
+    Mutex (MX90, 0x00)
+    Mutex (MX91, 0x00)
+    Device (D900)
+    {
+        Name (I900, 0xABCD0017)
+    }
 
-/*
-SEE: uncomment m918 after fixing bug (?) of ACPICA
-SEE: uncomment below:
-//	Method(m918) { return (tz90) }
-*/
+    Device (D9Z0)
+    {
+        Name (I900, 0xABCD0017)
+    }
 
-Name(z113, 113)
+    ThermalZone (TZ90)
+    {
+    }
 
-	// Not Computational Data
+    ThermalZone (TZ91)
+    {
+    }
 
-	Event(e900)
-	Event(e9Z0)
-	Mutex(mx90, 0)
-	Mutex(mx91, 0)
-	Device(d900) { Name(i900, 0xabcd0017) }
-	Device(d9Z0) { Name(i900, 0xabcd0017) }
-	ThermalZone(tz90) {}
-	ThermalZone(tz91) {}
-	Processor(pr90, 0, 0xFFFFFFFF, 0) {}
-	Processor(pr91, 0, 0xFFFFFFFF, 0) {}
-	OperationRegion(r900, SystemMemory, 0x100, 0x100)
-	OperationRegion(r9Z0, SystemMemory, 0x100, 0x100)
-	PowerResource(pw90, 1, 0) {Method(mmmm){return (0)}}
-	PowerResource(pw91, 1, 0) {Method(mmmm){return (0)}}
+    Processor (PR90, 0x00, 0xFFFFFFFF, 0x00){}
+    Processor (PR91, 0x00, 0xFFFFFFFF, 0x00){}
+    OperationRegion (R900, SystemMemory, 0x0100, 0x0100)
+    OperationRegion (R9Z0, SystemMemory, 0x0100, 0x0100)
+    PowerResource (PW90, 0x01, 0x0000)
+    {
+        Method (MMMM, 0, NotSerialized)
+        {
+            Return (0x00)
+        }
+    }
 
-	// Computational Data
+    PowerResource (PW91, 0x01, 0x0000)
+    {
+        Method (MMMM, 0, NotSerialized)
+        {
+            Return (0x00)
+        }
+    }
 
-	Name(i900, 0xfe7cb391d65a0000)
-	Name(i9Z0, 0xfe7cb391d65a0000)
-	Name(i901, 0xc1790001)
-	Name(i9Z1, 0xc1790001)
-	Name(i902, 0)
-	Name(i903, 0xffffffffffffffff)
-	Name(i904, 0xffffffff)
-	Name(s900, "12340002")
-	Name(s9Z0, "12340002")
-	Name(s901, "qwrtyu0003")
-	Name(s9Z1, "qwrtyu0003")
-	Name(b900, Buffer() {0xb0,0xb1,0xb2,0xb3,0xb4})
-	Name(b9Z0, Buffer() {0xb0,0xb1,0xb2,0xb3,0xb4})
+    /* Computational Data */
 
-	CreateField(b9Z0, 0, 8, bf90)
-	Field(r9Z0, ByteAcc, NoLock, Preserve) {f900,8,f901,8,f902,8,f903,8}
-	BankField(r9Z0, f901, 0, ByteAcc, NoLock, Preserve) {bn90,4}
-	IndexField(f902, f903, ByteAcc, NoLock, Preserve) {if90,8,if91,8}
+    Name (I900, 0xFE7CB391D65A0000)
+    Name (I9Z0, 0xFE7CB391D65A0000)
+    Name (I901, 0xC1790001)
+    Name (I9Z1, 0xC1790001)
+    Name (I902, 0x00)
+    Name (I903, 0xFFFFFFFFFFFFFFFF)
+    Name (I904, 0xFFFFFFFF)
+    Name (S900, "12340002")
+    Name (S9Z0, "12340002")
+    Name (S901, "qwrtyu0003")
+    Name (S9Z1, "qwrtyu0003")
+    Name (B900, Buffer (0x05)
+    {
+         0xB0, 0xB1, 0xB2, 0xB3, 0xB4                     // .....
+    })
+    Name (B9Z0, Buffer (0x05)
+    {
+         0xB0, 0xB1, 0xB2, 0xB3, 0xB4                     // .....
+    })
+    CreateField (B9Z0, 0x00, 0x08, BF90)
+    Field (R9Z0, ByteAcc, NoLock, Preserve)
+    {
+        F900,   8, 
+        F901,   8, 
+        F902,   8, 
+        F903,   8
+    }
 
-	// Elements of Package are Uninitialized
+    BankField (R9Z0, F901, 0x00, ByteAcc, NoLock, Preserve)
+    {
+        BN90,   4
+    }
 
-	Name(p900, Package(1) {})
+    IndexField (F902, F903, ByteAcc, NoLock, Preserve)
+    {
+        IF90,   8, 
+        IF91,   8
+    }
 
-	// Elements of Package are Computational Data
+    /* Elements of Package are Uninitialized */
 
-	Name(p901, Package() {0xabcd0004, 0x1122334455660005})
-	Name(p902, Package() {"12340006", "q1w2e3r4t5y6u7i80007"})
-	Name(p903, Package() {"qwrtyuiop0008", "1234567890abdef0250009"})
-	Name(p904, Package() {Buffer() {0xb5,0xb6,0xb7}, Buffer() {0xb8,0xb9}})
-	Name(p905, Package() {Package() {0xabc000a, "0xabc000b", "abc000c"}})
-	Name(p906, Package() {Package() {"abc000d"}})
-	Name(p907, Package() {Package() {"aqwevbgnm000e"}})
-	Name(p908, Package() {Package() {Buffer() {0xba,0xbb,0xbc,0xbd,0xbe}}})
-	Name(p909, Package() {Package() {Package() {0xabc000f}}})
-	Name(p90a, Package() {Package() {Package() {"12340010"}}})
-	Name(p90b, Package() {Package() {Package() {"zxswefas0011"}}})
-	Name(p90c, Package() {Package() {Package() {Buffer() {0xbf,0xc0,0xc1}}}})
+    Name (P900, Package (0x01){})
+    /* Elements of Package are Computational Data */
 
-	Name(p90d, Package() {i900})
-	Name(p90e, Package() {i901})
-	Name(p90f, Package() {s900})
-	Name(p910, Package() {s901})
-	Name(p911, Package() {b9Z0})
-	Name(p912, Package() {f900})
-	Name(p913, Package() {bn90})
-	Name(p914, Package() {if90})
-	Name(p915, Package() {bf90})
+    Name (P901, Package (0x02)
+    {
+        0xABCD0004, 
+        0x1122334455660005
+    })
+    Name (P902, Package (0x02)
+    {
+        "12340006", 
+        "q1w2e3r4t5y6u7i80007"
+    })
+    Name (P903, Package (0x02)
+    {
+        "qwrtyuiop0008", 
+        "1234567890abdef0250009"
+    })
+    Name (P904, Package (0x02)
+    {
+        Buffer (0x03)
+        {
+             0xB5, 0xB6, 0xB7                                 // ...
+        }, 
 
-	// Elements of Package are NOT Computational Data
+        Buffer (0x02)
+        {
+             0xB8, 0xB9                                       // ..
+        }
+    })
+    Name (P905, Package (0x01)
+    {
+        Package (0x03)
+        {
+            0x0ABC000A, 
+            "0xabc000b", 
+            "abc000c"
+        }
+    })
+    Name (P906, Package (0x01)
+    {
+        Package (0x01)
+        {
+            "abc000d"
+        }
+    })
+    Name (P907, Package (0x01)
+    {
+        Package (0x01)
+        {
+            "aqwevbgnm000e"
+        }
+    })
+    Name (P908, Package (0x01)
+    {
+        Package (0x01)
+        {
+            Buffer (0x05)
+            {
+                 0xBA, 0xBB, 0xBC, 0xBD, 0xBE                     // .....
+            }
+        }
+    })
+    Name (P909, Package (0x01)
+    {
+        Package (0x01)
+        {
+            Package (0x01)
+            {
+                0x0ABC000F
+            }
+        }
+    })
+    Name (P90A, Package (0x01)
+    {
+        Package (0x01)
+        {
+            Package (0x01)
+            {
+                "12340010"
+            }
+        }
+    })
+    Name (P90B, Package (0x01)
+    {
+        Package (0x01)
+        {
+            Package (0x01)
+            {
+                "zxswefas0011"
+            }
+        }
+    })
+    Name (P90C, Package (0x01)
+    {
+        Package (0x01)
+        {
+            Package (0x01)
+            {
+                Buffer (0x03)
+                {
+                     0xBF, 0xC0, 0xC1                                 // ...
+                }
+            }
+        }
+    })
+    Name (P90D, Package (0x01)
+    {
+        I900
+    })
+    Name (P90E, Package (0x01)
+    {
+        I901
+    })
+    Name (P90F, Package (0x01)
+    {
+        S900
+    })
+    Name (P910, Package (0x01)
+    {
+        S901
+    })
+    Name (P911, Package (0x01)
+    {
+        B9Z0
+    })
+    Name (P912, Package (0x01)
+    {
+        F900
+    })
+    Name (P913, Package (0x01)
+    {
+        BN90
+    })
+    Name (P914, Package (0x01)
+    {
+        IF90
+    })
+    Name (P915, Package (0x01)
+    {
+        BF90
+    })
+    /* Elements of Package are NOT Computational Data */
 
-	Name(p916, Package() {d900})
-	Name(p917, Package() {e900})
-	Name(p918, Package() {mx90})
-	Name(p919, Package() {r9Z0})
-	Name(p91a, Package() {pw90})
-	Name(p91b, Package() {pr90})
-	Name(p91c, Package() {tz90})
+    Name (P916, Package (0x01)
+    {
+        D900
+    })
+    Name (P917, Package (0x01)
+    {
+        E900
+    })
+    Name (P918, Package (0x01)
+    {
+        MX90
+    })
+    Name (P919, Package (0x01)
+    {
+        R9Z0
+    })
+    Name (P91A, Package (0x01)
+    {
+        PW90
+    })
+    Name (P91B, Package (0x01)
+    {
+        PR90
+    })
+    Name (P91C, Package (0x01)
+    {
+        TZ90
+    })
+    /* Methods */
 
-	// Methods
+    Method (M900, 0, NotSerialized)
+    {
+    }
 
-	Method(m900) {}
-	Method(m901) { return (0xabc0012) }
-	Method(m902) { return ("zxvgswquiy0013") }
-	Method(m903) { return (Buffer() {0xc2}) }
-	Method(m904) { return (Package() {0xabc0014}) }
-	Method(m905) { return (Package() {"lkjhgtre0015"}) }
-	Method(m906) { return (Package() {Buffer() {0xc3}}) }
-	Method(m907) { return (Package() {Package() {0xabc0016}}) }
+    Method (M901, 0, NotSerialized)
+    {
+        Return (0x0ABC0012)
+    }
 
-	Method(m908) { return (i900) }
-	Method(m909) { return (i901) }
-	Method(m90a) { return (s900) }
-	Method(m90b) { return (s901) }
-	Method(m90c) { return (b9Z0) }
-	Method(m90d) { return (f900) }
-	Method(m90e) { return (bn90) }
-	Method(m90f) { return (if90) }
-	Method(m910) { return (bf90) }
+    Method (M902, 0, NotSerialized)
+    {
+        Return ("zxvgswquiy0013")
+    }
 
-	Method(m911) { return (d900) }
-	Method(m912) { return (e900) }
-	Method(m913) { return (m901) }
-	Method(m914) { return (mx90) }
-	Method(m915) { return (r9Z0) }
-	Method(m916) { return (pw90) }
-	Method(m917) { return (pr90) }
-//	Method(m918) { return (tz90) }
- Method(m918) { return (0) }
+    Method (M903, 0, NotSerialized)
+    {
+        Return (Buffer (0x01)
+        {
+             0xC2                                             // .
+        })
+    }
 
-	Method(m919) { return (p900) }
-	Method(m91a) { return (p901) }
-	Method(m91b) { return (p902) }
-	Method(m91c) { return (p903) }
-	Method(m91d) { return (p904) }
-	Method(m91e) { return (p905) }
-	Method(m91f) { return (p906) }
-	Method(m920) { return (p907) }
-	Method(m921) { return (p908) }
-	Method(m922) { return (p909) }
-	Method(m923) { return (p90a) }
-	Method(m924) { return (p90b) }
-	Method(m925) { return (p90c) }
-	Method(m926) { return (p90d) }
-	Method(m927) { return (p90e) }
-	Method(m928) { return (p90f) }
-	Method(m929) { return (p910) }
-	Method(m92a) { return (p911) }
-	Method(m92b) { return (p912) }
-	Method(m92c) { return (p913) }
-	Method(m92d) { return (p914) }
-	Method(m92e) { return (p915) }
-	Method(m92f) { return (p916) }
-	Method(m930) { return (p917) }
-	Method(m931) { return (p918) }
-	Method(m932) { return (p919) }
-	Method(m933) { return (p91a) }
-	Method(m934) { return (p91b) }
-	Method(m935) { return (p91c) }
+    Method (M904, 0, NotSerialized)
+    {
+        Return (Package (0x01)
+        {
+            0x0ABC0014
+        })
+    }
 
-	// Elements of Package are Methods
+    Method (M905, 0, NotSerialized)
+    {
+        Return (Package (0x01)
+        {
+            "lkjhgtre0015"
+        })
+    }
 
-	Name(p91d, Package() {m900})
-	Name(p91e, Package() {m901})
-	Name(p91f, Package() {m902})
-	Name(p920, Package() {m903})
-	Name(p921, Package() {m904})
-	Name(p922, Package() {m905})
-	Name(p923, Package() {m906})
-	Name(p924, Package() {m907})
-	Name(p925, Package() {m908})
-	Name(p926, Package() {m909})
-	Name(p927, Package() {m90a})
-	Name(p928, Package() {m90b})
-	Name(p929, Package() {m90c})
-	Name(p92a, Package() {m90d})
-	Name(p92b, Package() {m90e})
-	Name(p92c, Package() {m90f})
-	Name(p92d, Package() {m910})
-	Name(p92e, Package() {m911})
-	Name(p92f, Package() {m912})
-	Name(p930, Package() {m913})
-	Name(p931, Package() {m914})
-	Name(p932, Package() {m915})
-	Name(p933, Package() {m916})
-	Name(p934, Package() {m917})
-	if (y103) {
-		Name(p935, Package() {m918})
-	}
-	Name(p936, Package() {m919})
-	Name(p937, Package() {m91a})
-	Name(p938, Package() {m91b})
-	Name(p939, Package() {m91c})
-	Name(p93a, Package() {m91d})
-	Name(p93b, Package() {m91e})
-	Name(p93c, Package() {m91f})
-	Name(p93d, Package() {m920})
-	Name(p93e, Package() {m921})
-	Name(p93f, Package() {m922})
-	Name(p940, Package() {m923})
-	Name(p941, Package() {m924})
-	Name(p942, Package() {m925})
-	Name(p943, Package() {m926})
-	Name(p944, Package() {m927})
-	Name(p945, Package() {m928})
-	Name(p946, Package() {m929})
-	Name(p947, Package() {m92a})
-	Name(p948, Package() {m92b})
-	Name(p949, Package() {m92c})
-	Name(p94a, Package() {m92d})
-	Name(p94b, Package() {m92e})
-	Name(p94c, Package() {m92f})
-	Name(p94d, Package() {m930})
-	Name(p94e, Package() {m931})
-	Name(p94f, Package() {m932})
-	Name(p950, Package() {m933})
-	Name(p951, Package() {m934})
-	Name(p952, Package() {m935})
+    Method (M906, 0, NotSerialized)
+    {
+        Return (Package (0x01)
+        {
+            Buffer (0x01)
+            {
+                 0xC3                                             // .
+            }
+        })
+    }
 
-	Name(p953, Package() {0xabcd0018, 0xabcd0019})
-	Name(p954, Package() {0xabcd0018, 0xabcd0019})
+    Method (M907, 0, NotSerialized)
+    {
+        Return (Package (0x01)
+        {
+            Package (0x01)
+            {
+                0x0ABC0016
+            }
+        })
+    }
 
-	Name(i905, 0xabcd001a)
-	Name(i9Z5, 0xabcd001a)
+    Method (M908, 0, NotSerialized)
+    {
+        Return (I900) /* \I900 */
+    }
 
-	Method(m936) {
-		Store(0, i905)
-		return (mx90)
-	}
+    Method (M909, 0, NotSerialized)
+    {
+        Return (I901) /* \I901 */
+    }
 
-	Name(p955, Package(18) {
-		0,i900,s900,b900,p953,f900,d900,e900,
-		m936,mx90,r900,pw90,pr90,tz90,bf90,15,16})
-	Name(p956, Package(18) {
-		0,i900,s900,b900,p953,f900,d900,e900,
-		m936,mx90,r900,pw90,pr90,tz90,bf90,15,16})
+    Method (M90A, 0, NotSerialized)
+    {
+        Return (S900) /* \S900 */
+    }
 
-	// Global Standard Data
+    Method (M90B, 0, NotSerialized)
+    {
+        Return (S901) /* \S901 */
+    }
 
-	Name(ia00, 0x77)
-	Name(sa00, "qwer0000")
-	Name(ba00, Buffer(4) {1,0x77,3,4})
-	Name(pa00, Package(3) {5,0x77,7})
+    Method (M90C, 0, NotSerialized)
+    {
+        Return (B9Z0) /* \B9Z0 */
+    }
 
-	Name(ia10, 0x77)
-	Name(sa10, "qwer0000")
-	Name(ba10, Buffer(4) {1,0x77,3,4})
-	Name(pa10, Package(3) {5,0x77,7})
+    Method (M90D, 0, NotSerialized)
+    {
+        Return (F900) /* \F900 */
+    }
 
-	Name(ia01, 0x2b)
-	Name(sa01, "qw+r0000")
-	Name(ba01, Buffer(4) {1,0x2b,3,4})
-	Name(pa01, Package(3) {5,0x2b,7})
+    Method (M90E, 0, NotSerialized)
+    {
+        Return (BN90) /* \BN90 */
+    }
 
-	Name(ia11, 0x2b)
-	Name(sa11, "qw+r0000")
-	Name(ba11, Buffer(4) {1,0x2b,3,4})
-	Name(pa11, Package(3) {5,0x2b,7})
+    Method (M90F, 0, NotSerialized)
+    {
+        Return (IF90) /* \IF90 */
+    }
 
+    Method (M910, 0, NotSerialized)
+    {
+        Return (BF90) /* \BF90 */
+    }
+
+    Method (M911, 0, NotSerialized)
+    {
+        Return (D900) /* \D900 */
+    }
+
+    Method (M912, 0, NotSerialized)
+    {
+        Return (E900) /* \E900 */
+    }
+
+    Method (M913, 0, NotSerialized)
+    {
+        Return (M901 ())
+    }
+
+    Method (M914, 0, NotSerialized)
+    {
+        Return (MX90) /* \MX90 */
+    }
+
+    Method (M915, 0, NotSerialized)
+    {
+        Return (R9Z0) /* \R9Z0 */
+    }
+
+    Method (M916, 0, NotSerialized)
+    {
+        Return (PW90) /* \PW90 */
+    }
+
+    Method (M917, 0, NotSerialized)
+    {
+        Return (PR90) /* \PR90 */
+    }
+
+    /*	Method(m918) { return (tz90) } */
+
+    Method (M918, 0, NotSerialized)
+    {
+        Return (0x00)
+    }
+
+    Method (M919, 0, NotSerialized)
+    {
+        Return (P900) /* \P900 */
+    }
+
+    Method (M91A, 0, NotSerialized)
+    {
+        Return (P901) /* \P901 */
+    }
+
+    Method (M91B, 0, NotSerialized)
+    {
+        Return (P902) /* \P902 */
+    }
+
+    Method (M91C, 0, NotSerialized)
+    {
+        Return (P903) /* \P903 */
+    }
+
+    Method (M91D, 0, NotSerialized)
+    {
+        Return (P904) /* \P904 */
+    }
+
+    Method (M91E, 0, NotSerialized)
+    {
+        Return (P905) /* \P905 */
+    }
+
+    Method (M91F, 0, NotSerialized)
+    {
+        Return (P906) /* \P906 */
+    }
+
+    Method (M920, 0, NotSerialized)
+    {
+        Return (P907) /* \P907 */
+    }
+
+    Method (M921, 0, NotSerialized)
+    {
+        Return (P908) /* \P908 */
+    }
+
+    Method (M922, 0, NotSerialized)
+    {
+        Return (P909) /* \P909 */
+    }
+
+    Method (M923, 0, NotSerialized)
+    {
+        Return (P90A) /* \P90A */
+    }
+
+    Method (M924, 0, NotSerialized)
+    {
+        Return (P90B) /* \P90B */
+    }
+
+    Method (M925, 0, NotSerialized)
+    {
+        Return (P90C) /* \P90C */
+    }
+
+    Method (M926, 0, NotSerialized)
+    {
+        Return (P90D) /* \P90D */
+    }
+
+    Method (M927, 0, NotSerialized)
+    {
+        Return (P90E) /* \P90E */
+    }
+
+    Method (M928, 0, NotSerialized)
+    {
+        Return (P90F) /* \P90F */
+    }
+
+    Method (M929, 0, NotSerialized)
+    {
+        Return (P910) /* \P910 */
+    }
+
+    Method (M92A, 0, NotSerialized)
+    {
+        Return (P911) /* \P911 */
+    }
+
+    Method (M92B, 0, NotSerialized)
+    {
+        Return (P912) /* \P912 */
+    }
+
+    Method (M92C, 0, NotSerialized)
+    {
+        Return (P913) /* \P913 */
+    }
+
+    Method (M92D, 0, NotSerialized)
+    {
+        Return (P914) /* \P914 */
+    }
+
+    Method (M92E, 0, NotSerialized)
+    {
+        Return (P915) /* \P915 */
+    }
+
+    Method (M92F, 0, NotSerialized)
+    {
+        Return (P916) /* \P916 */
+    }
+
+    Method (M930, 0, NotSerialized)
+    {
+        Return (P917) /* \P917 */
+    }
+
+    Method (M931, 0, NotSerialized)
+    {
+        Return (P918) /* \P918 */
+    }
+
+    Method (M932, 0, NotSerialized)
+    {
+        Return (P919) /* \P919 */
+    }
+
+    Method (M933, 0, NotSerialized)
+    {
+        Return (P91A) /* \P91A */
+    }
+
+    Method (M934, 0, NotSerialized)
+    {
+        Return (P91B) /* \P91B */
+    }
+
+    Method (M935, 0, NotSerialized)
+    {
+        Return (P91C) /* \P91C */
+    }
+
+    /* Elements of Package are Methods */
+
+    Name (P91D, Package (0x01)
+    {
+        M900
+    })
+    Name (P91E, Package (0x01)
+    {
+        M901
+    })
+    Name (P91F, Package (0x01)
+    {
+        M902
+    })
+    Name (P920, Package (0x01)
+    {
+        M903
+    })
+    Name (P921, Package (0x01)
+    {
+        M904
+    })
+    Name (P922, Package (0x01)
+    {
+        M905
+    })
+    Name (P923, Package (0x01)
+    {
+        M906
+    })
+    Name (P924, Package (0x01)
+    {
+        M907
+    })
+    Name (P925, Package (0x01)
+    {
+        M908
+    })
+    Name (P926, Package (0x01)
+    {
+        M909
+    })
+    Name (P927, Package (0x01)
+    {
+        M90A
+    })
+    Name (P928, Package (0x01)
+    {
+        M90B
+    })
+    Name (P929, Package (0x01)
+    {
+        M90C
+    })
+    Name (P92A, Package (0x01)
+    {
+        M90D
+    })
+    Name (P92B, Package (0x01)
+    {
+        M90E
+    })
+    Name (P92C, Package (0x01)
+    {
+        M90F
+    })
+    Name (P92D, Package (0x01)
+    {
+        M910
+    })
+    Name (P92E, Package (0x01)
+    {
+        M911
+    })
+    Name (P92F, Package (0x01)
+    {
+        M912
+    })
+    Name (P930, Package (0x01)
+    {
+        M913
+    })
+    Name (P931, Package (0x01)
+    {
+        M914
+    })
+    Name (P932, Package (0x01)
+    {
+        M915
+    })
+    Name (P933, Package (0x01)
+    {
+        M916
+    })
+    Name (P934, Package (0x01)
+    {
+        M917
+    })
+    If (Y103)
+    {
+        Name (P935, Package (0x01)
+        {
+            M918
+        })
+    }
+
+    Name (P936, Package (0x01)
+    {
+        M919
+    })
+    Name (P937, Package (0x01)
+    {
+        M91A
+    })
+    Name (P938, Package (0x01)
+    {
+        M91B
+    })
+    Name (P939, Package (0x01)
+    {
+        M91C
+    })
+    Name (P93A, Package (0x01)
+    {
+        M91D
+    })
+    Name (P93B, Package (0x01)
+    {
+        M91E
+    })
+    Name (P93C, Package (0x01)
+    {
+        M91F
+    })
+    Name (P93D, Package (0x01)
+    {
+        M920
+    })
+    Name (P93E, Package (0x01)
+    {
+        M921
+    })
+    Name (P93F, Package (0x01)
+    {
+        M922
+    })
+    Name (P940, Package (0x01)
+    {
+        M923
+    })
+    Name (P941, Package (0x01)
+    {
+        M924
+    })
+    Name (P942, Package (0x01)
+    {
+        M925
+    })
+    Name (P943, Package (0x01)
+    {
+        M926
+    })
+    Name (P944, Package (0x01)
+    {
+        M927
+    })
+    Name (P945, Package (0x01)
+    {
+        M928
+    })
+    Name (P946, Package (0x01)
+    {
+        M929
+    })
+    Name (P947, Package (0x01)
+    {
+        M92A
+    })
+    Name (P948, Package (0x01)
+    {
+        M92B
+    })
+    Name (P949, Package (0x01)
+    {
+        M92C
+    })
+    Name (P94A, Package (0x01)
+    {
+        M92D
+    })
+    Name (P94B, Package (0x01)
+    {
+        M92E
+    })
+    Name (P94C, Package (0x01)
+    {
+        M92F
+    })
+    Name (P94D, Package (0x01)
+    {
+        M930
+    })
+    Name (P94E, Package (0x01)
+    {
+        M931
+    })
+    Name (P94F, Package (0x01)
+    {
+        M932
+    })
+    Name (P950, Package (0x01)
+    {
+        M933
+    })
+    Name (P951, Package (0x01)
+    {
+        M934
+    })
+    Name (P952, Package (0x01)
+    {
+        M935
+    })
+    Name (P953, Package (0x02)
+    {
+        0xABCD0018, 
+        0xABCD0019
+    })
+    Name (P954, Package (0x02)
+    {
+        0xABCD0018, 
+        0xABCD0019
+    })
+    Name (I905, 0xABCD001A)
+    Name (I9Z5, 0xABCD001A)
+    Method (M936, 0, NotSerialized)
+    {
+        I905 = 0x00
+        Return (MX90) /* \MX90 */
+    }
+
+    Name (P955, Package (0x12)
+    {
+        0x00, 
+        I900, 
+        S900, 
+        B900, 
+        P953, 
+        F900, 
+        D900, 
+        E900, 
+        M936, 
+        MX90, 
+        R900, 
+        PW90, 
+        PR90, 
+        TZ90, 
+        BF90, 
+        0x0F, 
+        0x10
+    })
+    Name (P956, Package (0x12)
+    {
+        0x00, 
+        I900, 
+        S900, 
+        B900, 
+        P953, 
+        F900, 
+        D900, 
+        E900, 
+        M936, 
+        MX90, 
+        R900, 
+        PW90, 
+        PR90, 
+        TZ90, 
+        BF90, 
+        0x0F, 
+        0x10
+    })
+    /* Global Standard Data */
+
+    Name (IA00, 0x77)
+    Name (SA00, "qwer0000")
+    Name (BA00, Buffer (0x04)
+    {
+         0x01, 0x77, 0x03, 0x04                           // .w..
+    })
+    Name (PA00, Package (0x03)
+    {
+        0x05, 
+        0x77, 
+        0x07
+    })
+    Name (IA10, 0x77)
+    Name (SA10, "qwer0000")
+    Name (BA10, Buffer (0x04)
+    {
+         0x01, 0x77, 0x03, 0x04                           // .w..
+    })
+    Name (PA10, Package (0x03)
+    {
+        0x05, 
+        0x77, 
+        0x07
+    })
+    Name (IA01, 0x2B)
+    Name (SA01, "qw+r0000")
+    Name (BA01, Buffer (0x04)
+    {
+         0x01, 0x2B, 0x03, 0x04                           // .+..
+    })
+    Name (PA01, Package (0x03)
+    {
+        0x05, 
+        0x2B, 
+        0x07
+    })
+    Name (IA11, 0x2B)
+    Name (SA11, "qw+r0000")
+    Name (BA11, Buffer (0x04)
+    {
+         0x01, 0x2B, 0x03, 0x04                           // .+..
+    })
+    Name (PA11, Package (0x03)
+    {
+        0x05, 
+        0x2B, 
+        0x07
+    })

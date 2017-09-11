@@ -1,373 +1,459 @@
-/*
- * Some or all of this work - Copyright (c) 2006 - 2017, Intel Corp.
- * All rights reserved.
- *
- * Redistribution and use in source and binary forms, with or without modification,
- * are permitted provided that the following conditions are met:
- *
- * Redistributions of source code must retain the above copyright notice,
- * this list of conditions and the following disclaimer.
- * Redistributions in binary form must reproduce the above copyright notice,
- * this list of conditions and the following disclaimer in the documentation
- * and/or other materials provided with the distribution.
- * Neither the name of Intel Corporation nor the names of its contributors
- * may be used to endorse or promote products derived from this software
- * without specific prior written permission.
- *
- * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS"
- * AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE
- * IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE
- * ARE DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT OWNER OR CONTRIBUTORS BE
- * LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL
- * DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES;
- * LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY
- * THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING
- * NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE,
- * EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
- */
+    /*
+     * Some or all of this work - Copyright (c) 2006 - 2017, Intel Corp.
+     * All rights reserved.
+     *
+     * Redistribution and use in source and binary forms, with or without modification,
+     * are permitted provided that the following conditions are met:
+     *
+     * Redistributions of source code must retain the above copyright notice,
+     * this list of conditions and the following disclaimer.
+     * Redistributions in binary form must reproduce the above copyright notice,
+     * this list of conditions and the following disclaimer in the documentation
+     * and/or other materials provided with the distribution.
+     * Neither the name of Intel Corporation nor the names of its contributors
+     * may be used to endorse or promote products derived from this software
+     * without specific prior written permission.
+     *
+     * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS"
+     * AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE
+     * IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE
+     * ARE DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT OWNER OR CONTRIBUTORS BE
+     * LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL
+     * DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES;
+     * LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY
+     * THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING
+     * NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE,
+     * EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
+     */
+    /*
+     * ns0 originated but has names from root
+     */
+    /*
+     * Internal Integer of Device instead of i000 (in m001)
+     */
+    Method (M006, 1, Serialized)
+    {
+        Name (TS, "m006")
+        Device (D000)
+        {
+            Name (I000, 0x01)
+        }
 
-/*
- * ns0 originated but has names from root
- */
+        Name (I001, 0x00)
+        Name (P000, Package (0x04)
+        {
+            0x01, 
+            0x02, 
+            0x03, 
+            0x04
+        })
+        I001 = Arg0
+        CH03 (TS, Z154, 0x14, 0x30, 0x00)
+        Method (M001, 0, NotSerialized)
+        {
+            Method (M002, 0, NotSerialized)
+            {
+                Method (M003, 0, NotSerialized)
+                {
+                    Method (M004, 0, NotSerialized)
+                    {
+                        Method (M005, 0, NotSerialized)
+                        {
+                            Method (M006, 0, NotSerialized)
+                            {
+                                Method (M007, 0, NotSerialized)
+                                {
+                                    Method (M008, 0, NotSerialized)
+                                    {
+                                        If (I001)
+                                        {
+                                            CopyObject (P000, \M006.D000.I000)
+                                        }
 
-/*
- * Internal Integer of Device instead of i000 (in m001)
- */
-Method(m006, 1, Serialized)
-{
-	Name(ts, "m006")
-	Device(d000)
-	{
-		Name(i000, 0x00000001)
-	}
-	Name(i001, 0)
-	Name(p000, Package() {1,2,3,4})
+                                        Return (0x00)
+                                    }
 
-	Store(arg0, i001)
+                                    \M006.D000.I000 = 0x80000000
+                                    Return ((\M006.D000.I000 + M008 ()))
+                                }
 
-	CH03(ts, z154, 0x014, __LINE__, 0)
+                                \M006.D000.I000 = 0x07000000
+                                Return ((\M006.D000.I000 + M007 ()))
+                            }
 
-	Method(m001)
-	{
-		Method(m002)
-		{
-			Method(m003)
-			{
-				Method(m004)
-				{
-					Method(m005)
-					{
-						Method(m006)
-						{
-							Method(m007)
-							{
-								Method(m008)
-								{
-									if (i001)
-									{
-										CopyObject(p000, \m006.d000.i000)
-									}
-									Return (0)
-								}
-								Store(0x80000000, \m006.d000.i000)
-								Return (Add(\m006.d000.i000, m008()))
-							}
-							Store(0x07000000, \m006.d000.i000)
-							Return (Add(\m006.d000.i000, m007()))
-						}
-						Store(0x00600000, \m006.d000.i000)
-						Return (Add(\m006.d000.i000, m006()))
-					}
-					Store(0x00050000, \m006.d000.i000)
-					Return (Add(\m006.d000.i000, m005()))
-				}
-				Store(0x00004000, \m006.d000.i000)
-				Return (Add(\m006.d000.i000, m004()))
-			}
-			Store(0x00000300, \m006.d000.i000)
-			Return (Add(\m006.d000.i000, m003()))
-		}
-		Store(0x00000020, ^d000.i000)
-		Return (Add(^d000.i000, m002()))
-	}
+                            \M006.D000.I000 = 0x00600000
+                            Return ((\M006.D000.I000 + M006 ()))
+                        }
 
-	Store(Add(d000.i000, m001()), Local0)
+                        \M006.D000.I000 = 0x00050000
+                        Return ((\M006.D000.I000 + M005 ()))
+                    }
 
-	if (FLG9) {
-		CH03(ts, z154, 0x014, __LINE__, 0)
-		if (LNotEqual(Local0, 0x87654321)) {
-			err(ts, z154, __LINE__, 0, 0, Local0, 0x87654321)
-		}
-		if (LNotEqual(d000.i000, 0x80000000)) {
-			err(ts, z154, __LINE__, 0, 0, d000.i000, 0x80000000)
-		}
-	} else {
-		CH04(ts, 1, 5, z154, __LINE__, 0, 0)	// AE_NOT_FOUND
-	}
-}
+                    \M006.D000.I000 = 0x4000
+                    Return ((\M006.D000.I000 + M004 ()))
+                }
 
-/*
- * Internal Integer of ThermalZone instead of i000 (in m001)
- */
-Method(m007, 1, Serialized)
-{
-	Name(ts, "m007")
-	ThermalZone(tz00)
-	{
-		Name(i000, 0x00000001)
-	}
-	Name(i001, 0)
-	Name(p000, Package() {1,2,3,4})
+                \M006.D000.I000 = 0x0300
+                Return ((\M006.D000.I000 + M003 ()))
+            }
 
-	Store(arg0, i001)
+            ^D000.I000 = 0x20
+            Return ((^D000.I000 + M002 ()))
+        }
 
-	CH03(ts, z154, 0x014, __LINE__, 0)
+        Store ((D000.I000 + M001 ()), Local0)
+        If (FLG9)
+        {
+            CH03 (TS, Z154, 0x14, 0x61, 0x00)
+            If ((Local0 != 0x87654321))
+            {
+                ERR (TS, Z154, 0x63, 0x00, 0x00, Local0, 0x87654321)
+            }
 
-	Method(m001)
-	{
-		Method(m002)
-		{
-			Method(m003)
-			{
-				Method(m004)
-				{
-					Method(m005)
-					{
-						Method(m006)
-						{
-							Method(m007)
-							{
-								Method(m008)
-								{
-									if (i001)
-									{
-										CopyObject(p000, \m007.tz00.i000)
-									}
-									Return (0)
-								}
-								Store(0x80000000, \m007.tz00.i000)
-								Return (Add(\m007.tz00.i000, m008()))
-							}
-							Store(0x07000000, \m007.tz00.i000)
-							Return (Add(\m007.tz00.i000, m007()))
-						}
-						Store(0x00600000, \m007.tz00.i000)
-						Return (Add(\m007.tz00.i000, m006()))
-					}
-					Store(0x00050000, \m007.tz00.i000)
-					Return (Add(\m007.tz00.i000, m005()))
-				}
-				Store(0x00004000, \m007.tz00.i000)
-				Return (Add(\m007.tz00.i000, m004()))
-			}
-			Store(0x00000300, \m007.tz00.i000)
-			Return (Add(\m007.tz00.i000, m003()))
-		}
-		Store(0x00000020, ^tz00.i000)
-		Return (Add(^tz00.i000, m002()))
-	}
-	Store(Add(tz00.i000, m001()), Local0)
+            If ((D000.I000 != 0x80000000))
+            {
+                ERR (TS, Z154, 0x66, 0x00, 0x00, D000.I000, 0x80000000)
+            }
+        }
+        Else
+        {
+            CH04 (TS, 0x01, 0x05, Z154, 0x69, 0x00, 0x00)    /* AE_NOT_FOUND */
+        }
+    }
 
-	if (FLG9) {
-		CH03(ts, z154, 0x014, __LINE__, 0)
-		if (LNotEqual(Local0, 0x87654321)) {
-			err(ts, z154, __LINE__, 0, 0, Local0, 0x87654321)
-		}
-		if (LNotEqual(tz00.i000, 0x80000000)) {
-			err(ts, z154, __LINE__, 0, 0, tz00.i000, 0x80000000)
-		}
-	} else {
-		CH04(ts, 1, 5, z154, __LINE__, 0, 0)	// AE_NOT_FOUND
-	}
-}
+    /*
+     * Internal Integer of ThermalZone instead of i000 (in m001)
+     */
+    Method (M007, 1, Serialized)
+    {
+        Name (TS, "m007")
+        ThermalZone (TZ00)
+        {
+            Name (I000, 0x01)
+        }
 
-/*
- * Internal Integer of Processor instead of i000 (in m001)
- */
-Method(m008, 1, Serialized)
-{
-	Name(ts, "m008")
-	Processor(pr00, 0, 0xFFFFFFFF, 0)
-	{
-		Name(i000, 0x00000001)
-	}
-	Name(i001, 0)
-	Name(p000, Package() {1,2,3,4})
+        Name (I001, 0x00)
+        Name (P000, Package (0x04)
+        {
+            0x01, 
+            0x02, 
+            0x03, 
+            0x04
+        })
+        I001 = Arg0
+        CH03 (TS, Z154, 0x14, 0x7C, 0x00)
+        Method (M001, 0, NotSerialized)
+        {
+            Method (M002, 0, NotSerialized)
+            {
+                Method (M003, 0, NotSerialized)
+                {
+                    Method (M004, 0, NotSerialized)
+                    {
+                        Method (M005, 0, NotSerialized)
+                        {
+                            Method (M006, 0, NotSerialized)
+                            {
+                                Method (M007, 0, NotSerialized)
+                                {
+                                    Method (M008, 0, NotSerialized)
+                                    {
+                                        If (I001)
+                                        {
+                                            CopyObject (P000, \M007.TZ00.I000)
+                                        }
 
-	Store(arg0, i001)
+                                        Return (0x00)
+                                    }
 
-	CH03(ts, z154, 0x014, __LINE__, 0)
+                                    \M007.TZ00.I000 = 0x80000000
+                                    Return ((\M007.TZ00.I000 + M008 ()))
+                                }
 
-	Method(m001)
-	{
-		Method(m002)
-		{
-			Method(m003)
-			{
-				Method(m004)
-				{
-					Method(m005)
-					{
-						Method(m006)
-						{
-							Method(m007)
-							{
-								Method(m008)
-								{
-									if (i001)
-									{
-										CopyObject(p000, \m008.pr00.i000)
-									}
-									Return (0)
-								}
-								Store(0x80000000, \m008.pr00.i000)
-								Return (Add(\m008.pr00.i000, m008()))
-							}
-							Store(0x07000000, \m008.pr00.i000)
-							Return (Add(\m008.pr00.i000, m007()))
-						}
-						Store(0x00600000, \m008.pr00.i000)
-						Return (Add(\m008.pr00.i000, m006()))
-					}
-					Store(0x00050000, \m008.pr00.i000)
-					Return (Add(\m008.pr00.i000, m005()))
-				}
-				Store(0x00004000, \m008.pr00.i000)
-				Return (Add(\m008.pr00.i000, m004()))
-			}
-			Store(0x00000300, \m008.pr00.i000)
-			Return (Add(\m008.pr00.i000, m003()))
-		}
-		Store(0x00000020, ^pr00.i000)
-		Return (Add(^pr00.i000, m002()))
-	}
+                                \M007.TZ00.I000 = 0x07000000
+                                Return ((\M007.TZ00.I000 + M007 ()))
+                            }
 
-	Store(Add(pr00.i000, m001()), Local0)
+                            \M007.TZ00.I000 = 0x00600000
+                            Return ((\M007.TZ00.I000 + M006 ()))
+                        }
 
-	if (FLG9) {
-		CH03(ts, z154, 0x014, __LINE__, 0)
-		if (LNotEqual(Local0, 0x87654321)) {
-			err(ts, z154, __LINE__, 0, 0, Local0, 0x87654321)
-		}
-		if (LNotEqual(pr00.i000, 0x80000000)) {
-			err(ts, z154, __LINE__, 0, 0, pr00.i000, 0x80000000)
-		}
-	} else {
-		CH04(ts, 1, 5, z154, __LINE__, 0, 0)	// AE_NOT_FOUND
-	}
-}
+                        \M007.TZ00.I000 = 0x00050000
+                        Return ((\M007.TZ00.I000 + M005 ()))
+                    }
 
-/*
- * Internal Integer of PowerResource instead of i000 (in m001)
- */
-Method(m009, 1, Serialized)
-{
-	Name(ts, "m009")
-	PowerResource(pw00, 1, 0)
-	{
-		Name(i000, 0x00000001)
-	}
-	Name(i001, 0)
-	Name(p000, Package() {1,2,3,4})
+                    \M007.TZ00.I000 = 0x4000
+                    Return ((\M007.TZ00.I000 + M004 ()))
+                }
 
-	Store(arg0, i001)
+                \M007.TZ00.I000 = 0x0300
+                Return ((\M007.TZ00.I000 + M003 ()))
+            }
 
-	CH03(ts, z154, 0x01d, __LINE__, 0)
+            ^TZ00.I000 = 0x20
+            Return ((^TZ00.I000 + M002 ()))
+        }
 
-	Method(m001)
-	{
-		Method(m002)
-		{
-			Method(m003)
-			{
-				Method(m004)
-				{
-					Method(m005)
-					{
-						Method(m006)
-						{
-							Method(m007)
-							{
-								Method(m008)
-								{
-									if (i001)
-									{
-										CopyObject(p000, \m009.pw00.i000)
-									}
-									Return (0)
-								}
-								Store(0x80000000, \m009.pw00.i000)
-								Return (Add(\m009.pw00.i000, m008()))
-							}
-							Store(0x07000000, \m009.pw00.i000)
-							Return (Add(\m009.pw00.i000, m007()))
-						}
-						Store(0x00600000, \m009.pw00.i000)
-						Return (Add(\m009.pw00.i000, m006()))
-					}
-					Store(0x00050000, \m009.pw00.i000)
-					Return (Add(\m009.pw00.i000, m005()))
-				}
-				Store(0x00004000, \m009.pw00.i000)
-				Return (Add(\m009.pw00.i000, m004()))
-			}
-			Store(0x00000300, \m009.pw00.i000)
-			Return (Add(\m009.pw00.i000, m003()))
-		}
-		Store(0x00000020, ^pw00.i000)
-		Return (Add(^pw00.i000, m002()))
-	}
+        Store ((TZ00.I000 + M001 ()), Local0)
+        If (FLG9)
+        {
+            CH03 (TS, Z154, 0x14, 0xAC, 0x00)
+            If ((Local0 != 0x87654321))
+            {
+                ERR (TS, Z154, 0xAE, 0x00, 0x00, Local0, 0x87654321)
+            }
 
-	Store(Add(pw00.i000, m001()), Local0)
+            If ((TZ00.I000 != 0x80000000))
+            {
+                ERR (TS, Z154, 0xB1, 0x00, 0x00, TZ00.I000, 0x80000000)
+            }
+        }
+        Else
+        {
+            CH04 (TS, 0x01, 0x05, Z154, 0xB4, 0x00, 0x00)    /* AE_NOT_FOUND */
+        }
+    }
 
-	if (FLG9) {
-		CH03(ts, z154, 0x014, __LINE__, 0)
-		if (LNotEqual(Local0, 0x87654321)) {
-			err(ts, z154, __LINE__, 0, 0, Local0, 0x87654321)
-		}
-		if (LNotEqual(pw00.i000, 0x80000000)) {
-			err(ts, z154, __LINE__, 0, 0, pw00.i000, 0x80000000)
-		}
-	} else {
-		CH04(ts, 1, 5, z154, __LINE__, 0, 0)	// AE_NOT_FOUND
-	}
-}
+    /*
+     * Internal Integer of Processor instead of i000 (in m001)
+     */
+    Method (M008, 1, Serialized)
+    {
+        Name (TS, "m008")
+        Processor (PR00, 0x00, 0xFFFFFFFF, 0x00)
+        {
+            Name (I000, 0x01)
+        }
 
-Method(n100)
-{
-if (1) {
-	SRMT("m006-0")
-	m006(0)
-	SRMT("m006-1")
-	if (y200) {
-		m006(1)
-	} else {
-		BLCK()
-	}
-	SRMT("m007-0")
-	m007(0)
-	SRMT("m007-1")
-	if (y200) {
-		m007(1)
-	} else {
-		BLCK()
-	}
-	SRMT("m008-0")
-	m008(0)
-	SRMT("m008-1")
-	if (y200) {
-		m008(1)
-	} else {
-		BLCK()
-	}
-	SRMT("m009-0")
-	m009(0)
-	SRMT("m009-1")
-	if (y200) {
-		m009(1)
-	} else {
-		BLCK()
-	}
-} else {
-}
-}
+        Name (I001, 0x00)
+        Name (P000, Package (0x04)
+        {
+            0x01, 
+            0x02, 
+            0x03, 
+            0x04
+        })
+        I001 = Arg0
+        CH03 (TS, Z154, 0x14, 0xC7, 0x00)
+        Method (M001, 0, NotSerialized)
+        {
+            Method (M002, 0, NotSerialized)
+            {
+                Method (M003, 0, NotSerialized)
+                {
+                    Method (M004, 0, NotSerialized)
+                    {
+                        Method (M005, 0, NotSerialized)
+                        {
+                            Method (M006, 0, NotSerialized)
+                            {
+                                Method (M007, 0, NotSerialized)
+                                {
+                                    Method (M008, 0, NotSerialized)
+                                    {
+                                        If (I001)
+                                        {
+                                            CopyObject (P000, \M008.PR00.I000)
+                                        }
+
+                                        Return (0x00)
+                                    }
+
+                                    \M008.PR00.I000 = 0x80000000
+                                    Return ((\M008.PR00.I000 + M008 ()))
+                                }
+
+                                \M008.PR00.I000 = 0x07000000
+                                Return ((\M008.PR00.I000 + M007 ()))
+                            }
+
+                            \M008.PR00.I000 = 0x00600000
+                            Return ((\M008.PR00.I000 + M006 ()))
+                        }
+
+                        \M008.PR00.I000 = 0x00050000
+                        Return ((\M008.PR00.I000 + M005 ()))
+                    }
+
+                    \M008.PR00.I000 = 0x4000
+                    Return ((\M008.PR00.I000 + M004 ()))
+                }
+
+                \M008.PR00.I000 = 0x0300
+                Return ((\M008.PR00.I000 + M003 ()))
+            }
+
+            ^PR00.I000 = 0x20
+            Return ((^PR00.I000 + M002 ()))
+        }
+
+        Store ((PR00.I000 + M001 ()), Local0)
+        If (FLG9)
+        {
+            CH03 (TS, Z154, 0x14, 0xF8, 0x00)
+            If ((Local0 != 0x87654321))
+            {
+                ERR (TS, Z154, 0xFA, 0x00, 0x00, Local0, 0x87654321)
+            }
+
+            If ((PR00.I000 != 0x80000000))
+            {
+                ERR (TS, Z154, 0xFD, 0x00, 0x00, PR00.I000, 0x80000000)
+            }
+        }
+        Else
+        {
+            CH04 (TS, 0x01, 0x05, Z154, 0x0100, 0x00, 0x00)    /* AE_NOT_FOUND */
+        }
+    }
+
+    /*
+     * Internal Integer of PowerResource instead of i000 (in m001)
+     */
+    Method (M009, 1, Serialized)
+    {
+        Name (TS, "m009")
+        PowerResource (PW00, 0x01, 0x0000)
+        {
+            Name (I000, 0x01)
+        }
+
+        Name (I001, 0x00)
+        Name (P000, Package (0x04)
+        {
+            0x01, 
+            0x02, 
+            0x03, 
+            0x04
+        })
+        I001 = Arg0
+        CH03 (TS, Z154, 0x1D, 0x0113, 0x00)
+        Method (M001, 0, NotSerialized)
+        {
+            Method (M002, 0, NotSerialized)
+            {
+                Method (M003, 0, NotSerialized)
+                {
+                    Method (M004, 0, NotSerialized)
+                    {
+                        Method (M005, 0, NotSerialized)
+                        {
+                            Method (M006, 0, NotSerialized)
+                            {
+                                Method (M007, 0, NotSerialized)
+                                {
+                                    Method (M008, 0, NotSerialized)
+                                    {
+                                        If (I001)
+                                        {
+                                            CopyObject (P000, \M009.PW00.I000)
+                                        }
+
+                                        Return (0x00)
+                                    }
+
+                                    \M009.PW00.I000 = 0x80000000
+                                    Return ((\M009.PW00.I000 + M008 ()))
+                                }
+
+                                \M009.PW00.I000 = 0x07000000
+                                Return ((\M009.PW00.I000 + M007 ()))
+                            }
+
+                            \M009.PW00.I000 = 0x00600000
+                            Return ((\M009.PW00.I000 + M006 ()))
+                        }
+
+                        \M009.PW00.I000 = 0x00050000
+                        Return ((\M009.PW00.I000 + M005 ()))
+                    }
+
+                    \M009.PW00.I000 = 0x4000
+                    Return ((\M009.PW00.I000 + M004 ()))
+                }
+
+                \M009.PW00.I000 = 0x0300
+                Return ((\M009.PW00.I000 + M003 ()))
+            }
+
+            ^PW00.I000 = 0x20
+            Return ((^PW00.I000 + M002 ()))
+        }
+
+        Store ((PW00.I000 + M001 ()), Local0)
+        If (FLG9)
+        {
+            CH03 (TS, Z154, 0x14, 0x0144, 0x00)
+            If ((Local0 != 0x87654321))
+            {
+                ERR (TS, Z154, 0x0146, 0x00, 0x00, Local0, 0x87654321)
+            }
+
+            If ((PW00.I000 != 0x80000000))
+            {
+                ERR (TS, Z154, 0x0149, 0x00, 0x00, PW00.I000, 0x80000000)
+            }
+        }
+        Else
+        {
+            CH04 (TS, 0x01, 0x05, Z154, 0x014C, 0x00, 0x00)    /* AE_NOT_FOUND */
+        }
+    }
+
+    Method (N100, 0, NotSerialized)
+    {
+        If (0x01)
+        {
+            SRMT ("m006-0")
+            M006 (0x00)
+            SRMT ("m006-1")
+            If (Y200)
+            {
+                M006 (0x01)
+            }
+            Else
+            {
+                BLCK ()
+            }
+
+            SRMT ("m007-0")
+            M007 (0x00)
+            SRMT ("m007-1")
+            If (Y200)
+            {
+                M007 (0x01)
+            }
+            Else
+            {
+                BLCK ()
+            }
+
+            SRMT ("m008-0")
+            M008 (0x00)
+            SRMT ("m008-1")
+            If (Y200)
+            {
+                M008 (0x01)
+            }
+            Else
+            {
+                BLCK ()
+            }
+
+            SRMT ("m009-0")
+            M009 (0x00)
+            SRMT ("m009-1")
+            If (Y200)
+            {
+                M009 (0x01)
+            }
+            Else
+            {
+                BLCK ()
+            }
+        }
+        Else
+        {
+        }
+    }
+

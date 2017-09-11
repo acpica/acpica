@@ -25,110 +25,89 @@
  * NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE,
  * EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
-DefinitionBlock(
-	"external.aml",   // Output filename
-	"DSDT",     // Signature
-	0x02,       // DSDT Revision
-	"Intel",    // OEMID
-	"Many",     // TABLE ID
-	0x00000001  // OEM Revision
-	) {
+DefinitionBlock ("external", "SSDT", 2, "Intel", "Many", 0x00000001)
+{
+    /* All declarations */
+    Include ("../../../../runtime/cntl/DECL.asl")
+    Include ("../../../../runtime/collections/functional/external/DECL.asl")
+    Method (MAIN, 0, NotSerialized)
+    {
+        /* Initialization */
 
-	// All declarations
-	Include("../../../../runtime/cntl/DECL.asl")
-	Include("../../../../runtime/collections/functional/external/DECL.asl")
+        STRT (0x00)
+        /* Run verification methods */
+        Include ("../../../../runtime/collections/functional/external/RUN.asl")
+        /* Final actions */
 
-	Method(MAIN) {
-
-		// Initialization
-		STRT(0)
-
-		// Run verification methods
-		Include("../../../../runtime/collections/functional/external/RUN.asl")
-
-		// Final actions
-		Store(FNSH(), Local7)
-
-		return (Local7)
-	}
+        Store (FNSH (), Local7)
+        Return (Local7)
+    }
 }
 
-DefinitionBlock(
-	"external.aml",   // Output filename
-	"SSDT",     // Signature
-	0x02,       // DSDT Revision
-	"Intel",    // OEMID
-	"Many",     // TABLE ID
-	0x00000001  // OEM Revision
-	) {
-	// Name(EX00, UnknownObj)
+DefinitionBlock ("external", "SSDT", 2, "Intel", "Many", 0x00000001)
+{
+    /* Name(EX00, UnknownObj) */
 
-        Name(E000, 0)
-	Name(E001, 1)
-	Name(E002, "test string")
+    Name (E000, 0x00)
+    Name (E001, 0x01)
+    Name (E002, "test string")
+    Name (E003, Buffer (0x01)
+    {
+         0x00                                             // .
+    })
+    Name (E004, Package (0x00){})
+    OperationRegion (E010, PCI_Config, Zero, 0xFF)
+    Field (E010, AnyAcc, NoLock, Preserve)
+    {
+        E005,   8
+    }
 
-	Name (E003, Buffer(1){0})
-	Name (E004, Package(){})
+    Device (E006)
+    {
+    }
 
-	OperationRegion (E010, PCI_Config, Zero, 0xFF)
-	Field (E010, AnyAcc, NoLock, Preserve)
-	{
-		E005, 8
-	}
+    Event (E007)
+    Method (E008, 0, NotSerialized)
+    {
+        Return (0x01F4)
+    }
 
-	Device(E006){}
-	Event(E007)
-	Method (E008)
-	{
-		return (500)
-	}
-	Mutex(E009, 0)
-	PowerResource(E011, 0, 0){}
-	Processor(E012, 0, 1, 2){}
-	ThermalZone(E013){}
-	CreateBitField(E003, 0, E014)
+    Mutex (E009, 0x00)
+    PowerResource (E011, 0x00, 0x0000){}
+    Processor (E012, 0x00, 0x00000001, 0x02){}
+    ThermalZone (E013)
+    {
+    }
+
+    CreateBitField (E003, 0x00, E014)
 }
-
 
 /*
  * bz 1389 test case provided by racerrehabman@gmail.com
  * This table should compile without error
  */
-DefinitionBlock(
-	"external.aml",   // Output filename
-	"SSDT",     // Signature
-	0x02,       // DSDT Revision
-	"Intel",    // OEMID
-	"Many",     // TABLE ID
-	0x00000001  // OEM Revision
-	){
-
-	External(RMCF.XPEE, IntObj)
-	Device(RMCF)
-	{
-		Name(_ADR, 0)
-	}
+DefinitionBlock ("external", "SSDT", 2, "Intel", "Many", 0x00000001)
+{
+    External (RMCF.XPEE, IntObj)
+    Device (RMCF)
+    {
+        Name (_ADR, 0x00)  // _ADR: Address
+    }
 }
 
 /*
  * This is a variation on the table above. This should compile.
  */
-DefinitionBlock(
-	"external.aml",   // Output filename
-	"SSDT",     // Signature
-	0x02,       // DSDT Revision
-	"Intel",    // OEMID
-	"Many",     // TABLE ID
-	0x00000001  // OEM Revision
-	){
+DefinitionBlock ("external", "SSDT", 2, "Intel", "Many", 0x00000001)
+{
+    External (ABCD.XPEE, IntObj)
+    External (ABCD.XPED, IntObj)
+    Device (ABCD)
+    {
+        Name (_ADR, 0x00)  // _ADR: Address
+        Name (XPEF, 0x00)
+    }
 
-	External(ABCD.XPEE, IntObj)
-	External(ABCD.XPED, IntObj)
-	Device(ABCD)
-	{
-		Name(_ADR, 0)
-		Name(XPEF, 0)
-	}
-	External(ABCD.XPEG, IntObj)
+    External (ABCD.XPEG, IntObj)
 }
 

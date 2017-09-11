@@ -1,72 +1,64 @@
-/*
- * Some or all of this work - Copyright (c) 2006 - 2017, Intel Corp.
- * All rights reserved.
- *
- * Redistribution and use in source and binary forms, with or without modification,
- * are permitted provided that the following conditions are met:
- *
- * Redistributions of source code must retain the above copyright notice,
- * this list of conditions and the following disclaimer.
- * Redistributions in binary form must reproduce the above copyright notice,
- * this list of conditions and the following disclaimer in the documentation
- * and/or other materials provided with the distribution.
- * Neither the name of Intel Corporation nor the names of its contributors
- * may be used to endorse or promote products derived from this software
- * without specific prior written permission.
- *
- * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS"
- * AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE
- * IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE
- * ARE DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT OWNER OR CONTRIBUTORS BE
- * LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL
- * DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES;
- * LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY
- * THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING
- * NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE,
- * EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
- */
+    /*
+     * Some or all of this work - Copyright (c) 2006 - 2017, Intel Corp.
+     * All rights reserved.
+     *
+     * Redistribution and use in source and binary forms, with or without modification,
+     * are permitted provided that the following conditions are met:
+     *
+     * Redistributions of source code must retain the above copyright notice,
+     * this list of conditions and the following disclaimer.
+     * Redistributions in binary form must reproduce the above copyright notice,
+     * this list of conditions and the following disclaimer in the documentation
+     * and/or other materials provided with the distribution.
+     * Neither the name of Intel Corporation nor the names of its contributors
+     * may be used to endorse or promote products derived from this software
+     * without specific prior written permission.
+     *
+     * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS"
+     * AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE
+     * IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE
+     * ARE DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT OWNER OR CONTRIBUTORS BE
+     * LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL
+     * DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES;
+     * LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY
+     * THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING
+     * NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE,
+     * EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
+     */
+    /*
+     * DynObj: Exceptions
+     */
+    Name (Z132, 0x84)
+    /* Check exceptions */
 
-/*
- * DynObj: Exceptions
- */
+    Method (M374, 0, Serialized)
+    {
+        Name (TS, "m374")
+        /* Package for _TCI-begin statistics */
+        /* (use NamedX, dont use ArgX/LocalX). */
+        Name (PP0A, Package (0x01){})
+        Method (M000, 1, NotSerialized)
+        {
+            Divide (0x01, Arg0, Local0, Local1)
+        }
 
-Name(z132, 132)
+        /* Create and initialize the Memory Consumption Statistics Packages */
 
-// Check exceptions
-Method(m374,, Serialized)
-{
-	Name(ts, "m374")
+        Local1 = M3A0 (C200)   /* _TCI-end statistics */
+        PP0A = M3A0 (C201)     /* _TCI-begin statistics */
+        Local3 = M3A0 (0x00)      /* difference */
+        SET0 (Z132, TS, 0x00)
+        If (RN00)
+        {
+            CH03 (TS, Z132, 0x00, 0x3B, 0x00)
+            _TCI (C200, Local1)
+            M000 (0x00)
+            _TCI (C201, PP0A)
+            CH04 (TS, 0x00, 0xFF, Z132, 0x41, 0x00, 0x00)
+            M3A3 (Local1, PP0A, Local3)
+            M3A4 (Local1, PP0A, Local3, 0x00, 0x00, 0x00, 0x00)
+        }
 
-	// Package for _TCI-begin statistics
-	// (use NamedX, dont use ArgX/LocalX).
-	Name(pp0a, Package(1) {})
+        RST0 ()
+    }
 
-	Method(m000, 1)
-	{
-		Divide(1, arg0, Local0, Local1)
-	}
-
-	// Create and initialize the Memory Consumption Statistics Packages
-
-	Store(m3a0(c200), Local1)	// _TCI-end statistics
-	Store(m3a0(c201), pp0a)		// _TCI-begin statistics
-	Store(m3a0(0), Local3)		// difference
-
-	SET0(z132, ts, 0)
-
-if (rn00) {
-
-	CH03(ts, z132, 0, __LINE__, 0)
-
-	_TCI(c200, Local1)
-	m000(0)
-	_TCI(c201, pp0a)
-
-	CH04(ts, 0, 0xff, z132, __LINE__, 0, 0)
-
-	m3a3(Local1, pp0a, Local3)
-	m3a4(Local1, pp0a, Local3, 0, 0, 0, 0)
-}
-
-	RST0()
-}

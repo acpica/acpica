@@ -1,2841 +1,5379 @@
-/*
- * Some or all of this work - Copyright (c) 2006 - 2017, Intel Corp.
- * All rights reserved.
- *
- * Redistribution and use in source and binary forms, with or without modification,
- * are permitted provided that the following conditions are met:
- *
- * Redistributions of source code must retain the above copyright notice,
- * this list of conditions and the following disclaimer.
- * Redistributions in binary form must reproduce the above copyright notice,
- * this list of conditions and the following disclaimer in the documentation
- * and/or other materials provided with the distribution.
- * Neither the name of Intel Corporation nor the names of its contributors
- * may be used to endorse or promote products derived from this software
- * without specific prior written permission.
- *
- * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS"
- * AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE
- * IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE
- * ARE DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT OWNER OR CONTRIBUTORS BE
- * LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL
- * DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES;
- * LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY
- * THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING
- * NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE,
- * EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
- */
-
-/*
- * Resource Descriptor macros
- *
- * GpioIO Resource Descriptor Macro
- */
-
-Device (GPIO) {}
-
-Name (p454, Package() {
-	ResourceTemplate () {
-        GpioIo (Exclusive, PullUp, 0x0DEB, 0xABCD, IoRestrictionNone,
-            "\\GPIO", 0xEE, ResourceConsumer, ,
-            RawDataBuffer (0x04) {0xC1, 0xC2, 0xC3, 0xC4})
-            {0x11E1, 0x22E2, 0x33E3}
-    },
-	ResourceTemplate () {
-        GpioIo (Exclusive, PullUp, 0x0DEB, 0xABCD, IoRestrictionInputOnly,
-            "\\GPIO", 0xEE, ResourceConsumer, ,
-            RawDataBuffer (0x04) {0xC1, 0xC2, 0xC3, 0xC4})
-            {0x11E1, 0x22E2, 0x33E3}
-    },
-	ResourceTemplate () {
-        GpioIo (Exclusive, PullUp, 0x0DEB, 0xABCD, IoRestrictionOutputOnly,
-            "\\GPIO", 0xEE, ResourceConsumer, ,
-            RawDataBuffer (0x04) {0xC1, 0xC2, 0xC3, 0xC4})
-            {0x11E1, 0x22E2, 0x33E3}
-    },
-	ResourceTemplate () {
-        GpioIo (Exclusive, PullDown, 0x0DEB, 0xABCD, IoRestrictionNone,
-            "\\GPIO", 0xEE, ResourceConsumer, ,
-            RawDataBuffer (0x04) {0xC1, 0xC2, 0xC3, 0xC4})
-            {0x11E1, 0x22E2, 0x33E3}
-    },
-	ResourceTemplate () {
-        GpioIo (Exclusive, PullDown, 0x0DEB, 0xABCD, IoRestrictionInputOnly,
-            "\\GPIO", 0xEE, ResourceConsumer, ,
-            RawDataBuffer (0x04) {0xC1, 0xC2, 0xC3, 0xC4})
-            {0x11E1, 0x22E2, 0x33E3}
-    },
-	ResourceTemplate () {
-        GpioIo (Exclusive, PullDown, 0x0DEB, 0xABCD, IoRestrictionOutputOnly,
-            "\\GPIO", 0xEE, ResourceConsumer, ,
-            RawDataBuffer (0x04) {0xC1, 0xC2, 0xC3, 0xC4})
-            {0x11E1, 0x22E2, 0x33E3}
-    },
-	ResourceTemplate () {
-        GpioIo (Exclusive, PullNone, 0x0DEB, 0xABCD, IoRestrictionNone,
-            "\\GPIO", 0xEE, ResourceConsumer, ,
-            RawDataBuffer (0x04) {0xC1, 0xC2, 0xC3, 0xC4})
-            {0x11E1, 0x22E2, 0x33E3}
-    },
-	ResourceTemplate () {
-        GpioIo (Exclusive, PullNone, 0x0DEB, 0xABCD, IoRestrictionInputOnly,
-            "\\GPIO", 0xEE, ResourceConsumer, ,
-            RawDataBuffer (0x04) {0xC1, 0xC2, 0xC3, 0xC4})
-            {0x11E1, 0x22E2, 0x33E3}
-    },
-	ResourceTemplate () {
-        GpioIo (Exclusive, PullNone, 0x0DEB, 0xABCD, IoRestrictionOutputOnly,
-            "\\GPIO", 0xEE, ResourceConsumer, ,
-            RawDataBuffer (0x04) {0xC1, 0xC2, 0xC3, 0xC4})
-            {0x11E1, 0x22E2, 0x33E3}
-    },
-	ResourceTemplate () {
-        GpioIo (Exclusive, PullDefault, 0x0DEB, 0xABCD, IoRestrictionNone,
-            "\\GPIO", 0xEE, ResourceConsumer, ,
-            RawDataBuffer (0x04) {0xC1, 0xC2, 0xC3, 0xC4})
-            {0x11E1, 0x22E2, 0x33E3}
-    },
-	ResourceTemplate () {
-        GpioIo (Exclusive, PullDefault, 0x0DEB, 0xABCD, IoRestrictionInputOnly,
-            "\\GPIO", 0xEE, ResourceConsumer, ,
-            RawDataBuffer (0x04) {0xC1, 0xC2, 0xC3, 0xC4})
-            {0x11E1, 0x22E2, 0x33E3}
-    },
-	ResourceTemplate () {
-        GpioIo (Exclusive, PullDefault, 0x0DEB, 0xABCD, IoRestrictionOutputOnly,
-            "\\GPIO", 0xEE, ResourceConsumer, ,
-            RawDataBuffer (0x04) {0xC1, 0xC2, 0xC3, 0xC4})
-            {0x11E1, 0x22E2, 0x33E3}
-    },
-	ResourceTemplate () {
-        GpioIo (Shared, PullUp, 0x0DEB, 0xABCD, IoRestrictionNone,
-            "\\GPIO", 0xEE, ResourceConsumer, ,
-            RawDataBuffer (0x04) {0xC1, 0xC2, 0xC3, 0xC4})
-            {0x11E1, 0x22E2, 0x33E3}
-    },
-	ResourceTemplate () {
-        GpioIo (Shared, PullUp, 0x0DEB, 0xABCD, IoRestrictionInputOnly,
-            "\\GPIO", 0xEE, ResourceConsumer, ,
-            RawDataBuffer (0x04) {0xC1, 0xC2, 0xC3, 0xC4})
-            {0x11E1, 0x22E2, 0x33E3}
-    },
-	ResourceTemplate () {
-        GpioIo (Shared, PullUp, 0x0DEB, 0xABCD, IoRestrictionOutputOnly,
-            "\\GPIO", 0xEE, ResourceConsumer, ,
-            RawDataBuffer (0x04) {0xC1, 0xC2, 0xC3, 0xC4})
-            {0x11E1, 0x22E2, 0x33E3}
-    },
-	ResourceTemplate () {
-        GpioIo (Shared, PullDown, 0x0DEB, 0xABCD, IoRestrictionNone,
-            "\\GPIO", 0xEE, ResourceConsumer, ,
-            RawDataBuffer (0x04) {0xC1, 0xC2, 0xC3, 0xC4})
-            {0x11E1, 0x22E2, 0x33E3}
-    },
-	ResourceTemplate () {
-        GpioIo (Shared, PullDown, 0x0DEB, 0xABCD, IoRestrictionInputOnly,
-            "\\GPIO", 0xEE, ResourceConsumer, ,
-            RawDataBuffer (0x04) {0xC1, 0xC2, 0xC3, 0xC4})
-            {0x11E1, 0x22E2, 0x33E3}
-    },
-	ResourceTemplate () {
-        GpioIo (Shared, PullDown, 0x0DEB, 0xABCD, IoRestrictionOutputOnly,
-            "\\GPIO", 0xEE, ResourceConsumer, ,
-            RawDataBuffer (0x04) {0xC1, 0xC2, 0xC3, 0xC4})
-            {0x11E1, 0x22E2, 0x33E3}
-    },
-	ResourceTemplate () {
-        GpioIo (Shared, PullNone, 0x0DEB, 0xABCD, IoRestrictionNone,
-            "\\GPIO", 0xEE, ResourceConsumer, ,
-            RawDataBuffer (0x04) {0xC1, 0xC2, 0xC3, 0xC4})
-            {0x11E1, 0x22E2, 0x33E3}
-    },
-	ResourceTemplate () {
-        GpioIo (Shared, PullNone, 0x0DEB, 0xABCD, IoRestrictionInputOnly,
-            "\\GPIO", 0xEE, ResourceConsumer, ,
-            RawDataBuffer (0x04) {0xC1, 0xC2, 0xC3, 0xC4})
-            {0x11E1, 0x22E2, 0x33E3}
-    },
-	ResourceTemplate () {
-        GpioIo (Shared, PullNone, 0x0DEB, 0xABCD, IoRestrictionOutputOnly,
-            "\\GPIO", 0xEE, ResourceConsumer, ,
-            RawDataBuffer (0x04) {0xC1, 0xC2, 0xC3, 0xC4})
-            {0x11E1, 0x22E2, 0x33E3}
-    },
-	ResourceTemplate () {
-        GpioIo (Shared, PullDefault, 0x0DEB, 0xABCD, IoRestrictionNone,
-            "\\GPIO", 0xEE, ResourceConsumer, ,
-            RawDataBuffer (0x04) {0xC1, 0xC2, 0xC3, 0xC4})
-            {0x11E1, 0x22E2, 0x33E3}
-    },
-	ResourceTemplate () {
-        GpioIo (Shared, PullDefault, 0x0DEB, 0xABCD, IoRestrictionInputOnly,
-            "\\GPIO", 0xEE, ResourceConsumer, ,
-            RawDataBuffer (0x04) {0xC1, 0xC2, 0xC3, 0xC4})
-            {0x11E1, 0x22E2, 0x33E3}
-    },
-	ResourceTemplate () {
-        GpioIo (Shared, PullDefault, 0x0DEB, 0xABCD, IoRestrictionOutputOnly,
-            "\\GPIO", 0xEE, ResourceConsumer, ,
-            RawDataBuffer (0x04) {0xC1, 0xC2, 0xC3, 0xC4})
-            {0x11E1, 0x22E2, 0x33E3}
-    },
-	ResourceTemplate () {
-        GpioIo (ExclusiveAndWake, PullUp, 0x0DEB, 0xABCD, IoRestrictionNone,
-            "\\GPIO", 0xEE, ResourceConsumer, ,
-            RawDataBuffer (0x04) {0xC1, 0xC2, 0xC3, 0xC4})
-            {0x11E1, 0x22E2, 0x33E3}
-    },
-	ResourceTemplate () {
-        GpioIo (ExclusiveAndWake, PullUp, 0x0DEB, 0xABCD, IoRestrictionInputOnly,
-            "\\GPIO", 0xEE, ResourceConsumer, ,
-            RawDataBuffer (0x04) {0xC1, 0xC2, 0xC3, 0xC4})
-            {0x11E1, 0x22E2, 0x33E3}
-    },
-	ResourceTemplate () {
-        GpioIo (ExclusiveAndWake, PullUp, 0x0DEB, 0xABCD, IoRestrictionOutputOnly,
-            "\\GPIO", 0xEE, ResourceConsumer, ,
-            RawDataBuffer (0x04) {0xC1, 0xC2, 0xC3, 0xC4})
-            {0x11E1, 0x22E2, 0x33E3}
-    },
-	ResourceTemplate () {
-        GpioIo (ExclusiveAndWake, PullDown, 0x0DEB, 0xABCD, IoRestrictionNone,
-            "\\GPIO", 0xEE, ResourceConsumer, ,
-            RawDataBuffer (0x04) {0xC1, 0xC2, 0xC3, 0xC4})
-            {0x11E1, 0x22E2, 0x33E3}
-    },
-	ResourceTemplate () {
-        GpioIo (ExclusiveAndWake, PullDown, 0x0DEB, 0xABCD, IoRestrictionInputOnly,
-            "\\GPIO", 0xEE, ResourceConsumer, ,
-            RawDataBuffer (0x04) {0xC1, 0xC2, 0xC3, 0xC4})
-            {0x11E1, 0x22E2, 0x33E3}
-    },
-	ResourceTemplate () {
-        GpioIo (ExclusiveAndWake, PullDown, 0x0DEB, 0xABCD, IoRestrictionOutputOnly,
-            "\\GPIO", 0xEE, ResourceConsumer, ,
-            RawDataBuffer (0x04) {0xC1, 0xC2, 0xC3, 0xC4})
-            {0x11E1, 0x22E2, 0x33E3}
-    },
-	ResourceTemplate () {
-        GpioIo (ExclusiveAndWake, PullNone, 0x0DEB, 0xABCD, IoRestrictionNone,
-            "\\GPIO", 0xEE, ResourceConsumer, ,
-            RawDataBuffer (0x04) {0xC1, 0xC2, 0xC3, 0xC4})
-            {0x11E1, 0x22E2, 0x33E3}
-    },
-	ResourceTemplate () {
-        GpioIo (ExclusiveAndWake, PullNone, 0x0DEB, 0xABCD, IoRestrictionInputOnly,
-            "\\GPIO", 0xEE, ResourceConsumer, ,
-            RawDataBuffer (0x04) {0xC1, 0xC2, 0xC3, 0xC4})
-            {0x11E1, 0x22E2, 0x33E3}
-    },
-	ResourceTemplate () {
-        GpioIo (ExclusiveAndWake, PullNone, 0x0DEB, 0xABCD, IoRestrictionOutputOnly,
-            "\\GPIO", 0xEE, ResourceConsumer, ,
-            RawDataBuffer (0x04) {0xC1, 0xC2, 0xC3, 0xC4})
-            {0x11E1, 0x22E2, 0x33E3}
-    },
-	ResourceTemplate () {
-        GpioIo (ExclusiveAndWake, PullDefault, 0x0DEB, 0xABCD, IoRestrictionNone,
-            "\\GPIO", 0xEE, ResourceConsumer, ,
-            RawDataBuffer (0x04) {0xC1, 0xC2, 0xC3, 0xC4})
-            {0x11E1, 0x22E2, 0x33E3}
-    },
-	ResourceTemplate () {
-        GpioIo (ExclusiveAndWake, PullDefault, 0x0DEB, 0xABCD, IoRestrictionInputOnly,
-            "\\GPIO", 0xEE, ResourceConsumer, ,
-            RawDataBuffer (0x04) {0xC1, 0xC2, 0xC3, 0xC4})
-            {0x11E1, 0x22E2, 0x33E3}
-    },
-	ResourceTemplate () {
-        GpioIo (ExclusiveAndWake, PullDefault, 0x0DEB, 0xABCD, IoRestrictionOutputOnly,
-            "\\GPIO", 0xEE, ResourceConsumer, ,
-            RawDataBuffer (0x04) {0xC1, 0xC2, 0xC3, 0xC4})
-            {0x11E1, 0x22E2, 0x33E3}
-    },
-	ResourceTemplate () {
-        GpioIo (SharedAndWake, PullUp, 0x0DEB, 0xABCD, IoRestrictionNone,
-            "\\GPIO", 0xEE, ResourceConsumer, ,
-            RawDataBuffer (0x04) {0xC1, 0xC2, 0xC3, 0xC4})
-            {0x11E1, 0x22E2, 0x33E3}
-    },
-	ResourceTemplate () {
-        GpioIo (SharedAndWake, PullUp, 0x0DEB, 0xABCD, IoRestrictionInputOnly,
-            "\\GPIO", 0xEE, ResourceConsumer, ,
-            RawDataBuffer (0x04) {0xC1, 0xC2, 0xC3, 0xC4})
-            {0x11E1, 0x22E2, 0x33E3}
-    },
-	ResourceTemplate () {
-        GpioIo (SharedAndWake, PullUp, 0x0DEB, 0xABCD, IoRestrictionOutputOnly,
-            "\\GPIO", 0xEE, ResourceConsumer, ,
-            RawDataBuffer (0x04) {0xC1, 0xC2, 0xC3, 0xC4})
-            {0x11E1, 0x22E2, 0x33E3}
-    },
-	ResourceTemplate () {
-        GpioIo (SharedAndWake, PullDown, 0x0DEB, 0xABCD, IoRestrictionNone,
-            "\\GPIO", 0xEE, ResourceConsumer, ,
-            RawDataBuffer (0x04) {0xC1, 0xC2, 0xC3, 0xC4})
-            {0x11E1, 0x22E2, 0x33E3}
-    },
-	ResourceTemplate () {
-        GpioIo (SharedAndWake, PullDown, 0x0DEB, 0xABCD, IoRestrictionInputOnly,
-            "\\GPIO", 0xEE, ResourceConsumer, ,
-            RawDataBuffer (0x04) {0xC1, 0xC2, 0xC3, 0xC4})
-            {0x11E1, 0x22E2, 0x33E3}
-    },
-	ResourceTemplate () {
-        GpioIo (SharedAndWake, PullDown, 0x0DEB, 0xABCD, IoRestrictionOutputOnly,
-            "\\GPIO", 0xEE, ResourceConsumer, ,
-            RawDataBuffer (0x04) {0xC1, 0xC2, 0xC3, 0xC4})
-            {0x11E1, 0x22E2, 0x33E3}
-    },
-	ResourceTemplate () {
-        GpioIo (SharedAndWake, PullNone, 0x0DEB, 0xABCD, IoRestrictionNone,
-            "\\GPIO", 0xEE, ResourceConsumer, ,
-            RawDataBuffer (0x04) {0xC1, 0xC2, 0xC3, 0xC4})
-            {0x11E1, 0x22E2, 0x33E3}
-    },
-	ResourceTemplate () {
-        GpioIo (SharedAndWake, PullNone, 0x0DEB, 0xABCD, IoRestrictionInputOnly,
-            "\\GPIO", 0xEE, ResourceConsumer, ,
-            RawDataBuffer (0x04) {0xC1, 0xC2, 0xC3, 0xC4})
-            {0x11E1, 0x22E2, 0x33E3}
-    },
-	ResourceTemplate () {
-        GpioIo (SharedAndWake, PullNone, 0x0DEB, 0xABCD, IoRestrictionOutputOnly,
-            "\\GPIO", 0xEE, ResourceConsumer, ,
-            RawDataBuffer (0x04) {0xC1, 0xC2, 0xC3, 0xC4})
-            {0x11E1, 0x22E2, 0x33E3}
-    },
-	ResourceTemplate () {
-        GpioIo (SharedAndWake, PullDefault, 0x0DEB, 0xABCD, IoRestrictionNone,
-            "\\GPIO", 0xEE, ResourceConsumer, ,
-            RawDataBuffer (0x04) {0xC1, 0xC2, 0xC3, 0xC4})
-            {0x11E1, 0x22E2, 0x33E3}
-    },
-	ResourceTemplate () {
-        GpioIo (SharedAndWake, PullDefault, 0x0DEB, 0xABCD, IoRestrictionInputOnly,
-            "\\GPIO", 0xEE, ResourceConsumer, ,
-            RawDataBuffer (0x04) {0xC1, 0xC2, 0xC3, 0xC4})
-            {0x11E1, 0x22E2, 0x33E3}
-    },
-	ResourceTemplate () {
-        GpioIo (SharedAndWake, PullDefault, 0x0DEB, 0xABCD, IoRestrictionOutputOnly,
-            "\\GPIO", 0xEE, ResourceConsumer, ,
-            RawDataBuffer (0x04) {0xC1, 0xC2, 0xC3, 0xC4})
-            {0x11E1, 0x22E2, 0x33E3}
-    },
-
-
- 	ResourceTemplate () {
-        GpioIo (Exclusive, PullUp, 0x0DEB, 0xABCD, IoRestrictionNone,
-            "\\GPIO", 0xEE, ResourceProducer, ,
-            RawDataBuffer (0x04) {0xC1, 0xC2, 0xC3, 0xC4})
-            {0x11E1, 0x22E2, 0x33E3}
-    },
-	ResourceTemplate () {
-        GpioIo (Exclusive, PullUp, 0x0DEB, 0xABCD, IoRestrictionInputOnly,
-            "\\GPIO", 0xEE, ResourceProducer, ,
-            RawDataBuffer (0x04) {0xC1, 0xC2, 0xC3, 0xC4})
-            {0x11E1, 0x22E2, 0x33E3}
-    },
-	ResourceTemplate () {
-        GpioIo (Exclusive, PullUp, 0x0DEB, 0xABCD, IoRestrictionOutputOnly,
-            "\\GPIO", 0xEE, ResourceProducer, ,
-            RawDataBuffer (0x04) {0xC1, 0xC2, 0xC3, 0xC4})
-            {0x11E1, 0x22E2, 0x33E3}
-    },
-	ResourceTemplate () {
-        GpioIo (Exclusive, PullDown, 0x0DEB, 0xABCD, IoRestrictionNone,
-            "\\GPIO", 0xEE, ResourceProducer, ,
-            RawDataBuffer (0x04) {0xC1, 0xC2, 0xC3, 0xC4})
-            {0x11E1, 0x22E2, 0x33E3}
-    },
-	ResourceTemplate () {
-        GpioIo (Exclusive, PullDown, 0x0DEB, 0xABCD, IoRestrictionInputOnly,
-            "\\GPIO", 0xEE, ResourceProducer, ,
-            RawDataBuffer (0x04) {0xC1, 0xC2, 0xC3, 0xC4})
-            {0x11E1, 0x22E2, 0x33E3}
-    },
-	ResourceTemplate () {
-        GpioIo (Exclusive, PullDown, 0x0DEB, 0xABCD, IoRestrictionOutputOnly,
-            "\\GPIO", 0xEE, ResourceProducer, ,
-            RawDataBuffer (0x04) {0xC1, 0xC2, 0xC3, 0xC4})
-            {0x11E1, 0x22E2, 0x33E3}
-    },
-	ResourceTemplate () {
-        GpioIo (Exclusive, PullNone, 0x0DEB, 0xABCD, IoRestrictionNone,
-            "\\GPIO", 0xEE, ResourceProducer, ,
-            RawDataBuffer (0x04) {0xC1, 0xC2, 0xC3, 0xC4})
-            {0x11E1, 0x22E2, 0x33E3}
-    },
-	ResourceTemplate () {
-        GpioIo (Exclusive, PullNone, 0x0DEB, 0xABCD, IoRestrictionInputOnly,
-            "\\GPIO", 0xEE, ResourceProducer, ,
-            RawDataBuffer (0x04) {0xC1, 0xC2, 0xC3, 0xC4})
-            {0x11E1, 0x22E2, 0x33E3}
-    },
-	ResourceTemplate () {
-        GpioIo (Exclusive, PullNone, 0x0DEB, 0xABCD, IoRestrictionOutputOnly,
-            "\\GPIO", 0xEE, ResourceProducer, ,
-            RawDataBuffer (0x04) {0xC1, 0xC2, 0xC3, 0xC4})
-            {0x11E1, 0x22E2, 0x33E3}
-    },
-	ResourceTemplate () {
-        GpioIo (Exclusive, PullDefault, 0x0DEB, 0xABCD, IoRestrictionNone,
-            "\\GPIO", 0xEE, ResourceProducer, ,
-            RawDataBuffer (0x04) {0xC1, 0xC2, 0xC3, 0xC4})
-            {0x11E1, 0x22E2, 0x33E3}
-    },
-	ResourceTemplate () {
-        GpioIo (Exclusive, PullDefault, 0x0DEB, 0xABCD, IoRestrictionInputOnly,
-            "\\GPIO", 0xEE, ResourceProducer, ,
-            RawDataBuffer (0x04) {0xC1, 0xC2, 0xC3, 0xC4})
-            {0x11E1, 0x22E2, 0x33E3}
-    },
-	ResourceTemplate () {
-        GpioIo (Exclusive, PullDefault, 0x0DEB, 0xABCD, IoRestrictionOutputOnly,
-            "\\GPIO", 0xEE, ResourceProducer, ,
-            RawDataBuffer (0x04) {0xC1, 0xC2, 0xC3, 0xC4})
-            {0x11E1, 0x22E2, 0x33E3}
-    },
-	ResourceTemplate () {
-        GpioIo (Shared, PullUp, 0x0DEB, 0xABCD, IoRestrictionNone,
-            "\\GPIO", 0xEE, ResourceProducer, ,
-            RawDataBuffer (0x04) {0xC1, 0xC2, 0xC3, 0xC4})
-            {0x11E1, 0x22E2, 0x33E3}
-    },
-	ResourceTemplate () {
-        GpioIo (Shared, PullUp, 0x0DEB, 0xABCD, IoRestrictionInputOnly,
-            "\\GPIO", 0xEE, ResourceProducer, ,
-            RawDataBuffer (0x04) {0xC1, 0xC2, 0xC3, 0xC4})
-            {0x11E1, 0x22E2, 0x33E3}
-    },
-	ResourceTemplate () {
-        GpioIo (Shared, PullUp, 0x0DEB, 0xABCD, IoRestrictionOutputOnly,
-            "\\GPIO", 0xEE, ResourceProducer, ,
-            RawDataBuffer (0x04) {0xC1, 0xC2, 0xC3, 0xC4})
-            {0x11E1, 0x22E2, 0x33E3}
-    },
-	ResourceTemplate () {
-        GpioIo (Shared, PullDown, 0x0DEB, 0xABCD, IoRestrictionNone,
-            "\\GPIO", 0xEE, ResourceProducer, ,
-            RawDataBuffer (0x04) {0xC1, 0xC2, 0xC3, 0xC4})
-            {0x11E1, 0x22E2, 0x33E3}
-    },
-	ResourceTemplate () {
-        GpioIo (Shared, PullDown, 0x0DEB, 0xABCD, IoRestrictionInputOnly,
-            "\\GPIO", 0xEE, ResourceProducer, ,
-            RawDataBuffer (0x04) {0xC1, 0xC2, 0xC3, 0xC4})
-            {0x11E1, 0x22E2, 0x33E3}
-    },
-	ResourceTemplate () {
-        GpioIo (Shared, PullDown, 0x0DEB, 0xABCD, IoRestrictionOutputOnly,
-            "\\GPIO", 0xEE, ResourceProducer, ,
-            RawDataBuffer (0x04) {0xC1, 0xC2, 0xC3, 0xC4})
-            {0x11E1, 0x22E2, 0x33E3}
-    },
-	ResourceTemplate () {
-        GpioIo (Shared, PullNone, 0x0DEB, 0xABCD, IoRestrictionNone,
-            "\\GPIO", 0xEE, ResourceProducer, ,
-            RawDataBuffer (0x04) {0xC1, 0xC2, 0xC3, 0xC4})
-            {0x11E1, 0x22E2, 0x33E3}
-    },
-	ResourceTemplate () {
-        GpioIo (Shared, PullNone, 0x0DEB, 0xABCD, IoRestrictionInputOnly,
-            "\\GPIO", 0xEE, ResourceProducer, ,
-            RawDataBuffer (0x04) {0xC1, 0xC2, 0xC3, 0xC4})
-            {0x11E1, 0x22E2, 0x33E3}
-    },
-	ResourceTemplate () {
-        GpioIo (Shared, PullNone, 0x0DEB, 0xABCD, IoRestrictionOutputOnly,
-            "\\GPIO", 0xEE, ResourceProducer, ,
-            RawDataBuffer (0x04) {0xC1, 0xC2, 0xC3, 0xC4})
-            {0x11E1, 0x22E2, 0x33E3}
-    },
-	ResourceTemplate () {
-        GpioIo (Shared, PullDefault, 0x0DEB, 0xABCD, IoRestrictionNone,
-            "\\GPIO", 0xEE, ResourceProducer, ,
-            RawDataBuffer (0x04) {0xC1, 0xC2, 0xC3, 0xC4})
-            {0x11E1, 0x22E2, 0x33E3}
-    },
-	ResourceTemplate () {
-        GpioIo (Shared, PullDefault, 0x0DEB, 0xABCD, IoRestrictionInputOnly,
-            "\\GPIO", 0xEE, ResourceProducer, ,
-            RawDataBuffer (0x04) {0xC1, 0xC2, 0xC3, 0xC4})
-            {0x11E1, 0x22E2, 0x33E3}
-    },
-	ResourceTemplate () {
-        GpioIo (Shared, PullDefault, 0x0DEB, 0xABCD, IoRestrictionOutputOnly,
-            "\\GPIO", 0xEE, ResourceProducer, ,
-            RawDataBuffer (0x04) {0xC1, 0xC2, 0xC3, 0xC4})
-            {0x11E1, 0x22E2, 0x33E3}
-    },
-	ResourceTemplate () {
-        GpioIo (ExclusiveAndWake, PullUp, 0x0DEB, 0xABCD, IoRestrictionNone,
-            "\\GPIO", 0xEE, ResourceProducer, ,
-            RawDataBuffer (0x04) {0xC1, 0xC2, 0xC3, 0xC4})
-            {0x11E1, 0x22E2, 0x33E3}
-    },
-	ResourceTemplate () {
-        GpioIo (ExclusiveAndWake, PullUp, 0x0DEB, 0xABCD, IoRestrictionInputOnly,
-            "\\GPIO", 0xEE, ResourceProducer, ,
-            RawDataBuffer (0x04) {0xC1, 0xC2, 0xC3, 0xC4})
-            {0x11E1, 0x22E2, 0x33E3}
-    },
-	ResourceTemplate () {
-        GpioIo (ExclusiveAndWake, PullUp, 0x0DEB, 0xABCD, IoRestrictionOutputOnly,
-            "\\GPIO", 0xEE, ResourceProducer, ,
-            RawDataBuffer (0x04) {0xC1, 0xC2, 0xC3, 0xC4})
-            {0x11E1, 0x22E2, 0x33E3}
-    },
-	ResourceTemplate () {
-        GpioIo (ExclusiveAndWake, PullDown, 0x0DEB, 0xABCD, IoRestrictionNone,
-            "\\GPIO", 0xEE, ResourceProducer, ,
-            RawDataBuffer (0x04) {0xC1, 0xC2, 0xC3, 0xC4})
-            {0x11E1, 0x22E2, 0x33E3}
-    },
-	ResourceTemplate () {
-        GpioIo (ExclusiveAndWake, PullDown, 0x0DEB, 0xABCD, IoRestrictionInputOnly,
-            "\\GPIO", 0xEE, ResourceProducer, ,
-            RawDataBuffer (0x04) {0xC1, 0xC2, 0xC3, 0xC4})
-            {0x11E1, 0x22E2, 0x33E3}
-    },
-	ResourceTemplate () {
-        GpioIo (ExclusiveAndWake, PullDown, 0x0DEB, 0xABCD, IoRestrictionOutputOnly,
-            "\\GPIO", 0xEE, ResourceProducer, ,
-            RawDataBuffer (0x04) {0xC1, 0xC2, 0xC3, 0xC4})
-            {0x11E1, 0x22E2, 0x33E3}
-    },
-	ResourceTemplate () {
-        GpioIo (ExclusiveAndWake, PullNone, 0x0DEB, 0xABCD, IoRestrictionNone,
-            "\\GPIO", 0xEE, ResourceProducer, ,
-            RawDataBuffer (0x04) {0xC1, 0xC2, 0xC3, 0xC4})
-            {0x11E1, 0x22E2, 0x33E3}
-    },
-	ResourceTemplate () {
-        GpioIo (ExclusiveAndWake, PullNone, 0x0DEB, 0xABCD, IoRestrictionInputOnly,
-            "\\GPIO", 0xEE, ResourceProducer, ,
-            RawDataBuffer (0x04) {0xC1, 0xC2, 0xC3, 0xC4})
-            {0x11E1, 0x22E2, 0x33E3}
-    },
-	ResourceTemplate () {
-        GpioIo (ExclusiveAndWake, PullNone, 0x0DEB, 0xABCD, IoRestrictionOutputOnly,
-            "\\GPIO", 0xEE, ResourceProducer, ,
-            RawDataBuffer (0x04) {0xC1, 0xC2, 0xC3, 0xC4})
-            {0x11E1, 0x22E2, 0x33E3}
-    },
-	ResourceTemplate () {
-        GpioIo (ExclusiveAndWake, PullDefault, 0x0DEB, 0xABCD, IoRestrictionNone,
-            "\\GPIO", 0xEE, ResourceProducer, ,
-            RawDataBuffer (0x04) {0xC1, 0xC2, 0xC3, 0xC4})
-            {0x11E1, 0x22E2, 0x33E3}
-    },
-	ResourceTemplate () {
-        GpioIo (ExclusiveAndWake, PullDefault, 0x0DEB, 0xABCD, IoRestrictionInputOnly,
-            "\\GPIO", 0xEE, ResourceProducer, ,
-            RawDataBuffer (0x04) {0xC1, 0xC2, 0xC3, 0xC4})
-            {0x11E1, 0x22E2, 0x33E3}
-    },
-	ResourceTemplate () {
-        GpioIo (ExclusiveAndWake, PullDefault, 0x0DEB, 0xABCD, IoRestrictionOutputOnly,
-            "\\GPIO", 0xEE, ResourceProducer, ,
-            RawDataBuffer (0x04) {0xC1, 0xC2, 0xC3, 0xC4})
-            {0x11E1, 0x22E2, 0x33E3}
-    },
-	ResourceTemplate () {
-        GpioIo (SharedAndWake, PullUp, 0x0DEB, 0xABCD, IoRestrictionNone,
-            "\\GPIO", 0xEE, ResourceProducer, ,
-            RawDataBuffer (0x04) {0xC1, 0xC2, 0xC3, 0xC4})
-            {0x11E1, 0x22E2, 0x33E3}
-    },
-	ResourceTemplate () {
-        GpioIo (SharedAndWake, PullUp, 0x0DEB, 0xABCD, IoRestrictionInputOnly,
-            "\\GPIO", 0xEE, ResourceProducer, ,
-            RawDataBuffer (0x04) {0xC1, 0xC2, 0xC3, 0xC4})
-            {0x11E1, 0x22E2, 0x33E3}
-    },
-	ResourceTemplate () {
-        GpioIo (SharedAndWake, PullUp, 0x0DEB, 0xABCD, IoRestrictionOutputOnly,
-            "\\GPIO", 0xEE, ResourceProducer, ,
-            RawDataBuffer (0x04) {0xC1, 0xC2, 0xC3, 0xC4})
-            {0x11E1, 0x22E2, 0x33E3}
-    },
-	ResourceTemplate () {
-        GpioIo (SharedAndWake, PullDown, 0x0DEB, 0xABCD, IoRestrictionNone,
-            "\\GPIO", 0xEE, ResourceProducer, ,
-            RawDataBuffer (0x04) {0xC1, 0xC2, 0xC3, 0xC4})
-            {0x11E1, 0x22E2, 0x33E3}
-    },
-	ResourceTemplate () {
-        GpioIo (SharedAndWake, PullDown, 0x0DEB, 0xABCD, IoRestrictionInputOnly,
-            "\\GPIO", 0xEE, ResourceProducer, ,
-            RawDataBuffer (0x04) {0xC1, 0xC2, 0xC3, 0xC4})
-            {0x11E1, 0x22E2, 0x33E3}
-    },
-	ResourceTemplate () {
-        GpioIo (SharedAndWake, PullDown, 0x0DEB, 0xABCD, IoRestrictionOutputOnly,
-            "\\GPIO", 0xEE, ResourceProducer, ,
-            RawDataBuffer (0x04) {0xC1, 0xC2, 0xC3, 0xC4})
-            {0x11E1, 0x22E2, 0x33E3}
-    },
-	ResourceTemplate () {
-        GpioIo (SharedAndWake, PullNone, 0x0DEB, 0xABCD, IoRestrictionNone,
-            "\\GPIO", 0xEE, ResourceProducer, ,
-            RawDataBuffer (0x04) {0xC1, 0xC2, 0xC3, 0xC4})
-            {0x11E1, 0x22E2, 0x33E3}
-    },
-	ResourceTemplate () {
-        GpioIo (SharedAndWake, PullNone, 0x0DEB, 0xABCD, IoRestrictionInputOnly,
-            "\\GPIO", 0xEE, ResourceProducer, ,
-            RawDataBuffer (0x04) {0xC1, 0xC2, 0xC3, 0xC4})
-            {0x11E1, 0x22E2, 0x33E3}
-    },
-	ResourceTemplate () {
-        GpioIo (SharedAndWake, PullNone, 0x0DEB, 0xABCD, IoRestrictionOutputOnly,
-            "\\GPIO", 0xEE, ResourceProducer, ,
-            RawDataBuffer (0x04) {0xC1, 0xC2, 0xC3, 0xC4})
-            {0x11E1, 0x22E2, 0x33E3}
-    },
-	ResourceTemplate () {
-        GpioIo (SharedAndWake, PullDefault, 0x0DEB, 0xABCD, IoRestrictionNone,
-            "\\GPIO", 0xEE, ResourceProducer, ,
-            RawDataBuffer (0x04) {0xC1, 0xC2, 0xC3, 0xC4})
-            {0x11E1, 0x22E2, 0x33E3}
-    },
-	ResourceTemplate () {
-        GpioIo (SharedAndWake, PullDefault, 0x0DEB, 0xABCD, IoRestrictionInputOnly,
-            "\\GPIO", 0xEE, ResourceProducer, ,
-            RawDataBuffer (0x04) {0xC1, 0xC2, 0xC3, 0xC4})
-            {0x11E1, 0x22E2, 0x33E3}
-    },
-	ResourceTemplate () {
-        GpioIo (SharedAndWake, PullDefault, 0x0DEB, 0xABCD, IoRestrictionOutputOnly,
-            "\\GPIO", 0xEE, ResourceProducer, ,
-            RawDataBuffer (0x04) {0xC1, 0xC2, 0xC3, 0xC4})
-            {0x11E1, 0x22E2, 0x33E3}
-    },
-
-
-	ResourceTemplate () {
-        GpioIo (Exclusive, PullUp, 0x0DEB, 0xABCD, IoRestrictionNone,
-            "\\GPIO", 0xEE, ResourceConsumer, ,)
-            {0x11E1, 0x22E2, 0x33E3}
-    },
-	ResourceTemplate () {
-        GpioIo (Exclusive, PullUp, 0x0DEB, 0xABCD, IoRestrictionInputOnly,
-            "\\GPIO", 0xEE, ResourceConsumer, ,)
-            {0x11E1, 0x22E2, 0x33E3}
-    },
-	ResourceTemplate () {
-        GpioIo (Exclusive, PullUp, 0x0DEB, 0xABCD, IoRestrictionOutputOnly,
-            "\\GPIO", 0xEE, ResourceConsumer, ,)
-            {0x11E1, 0x22E2, 0x33E3}
-    },
-	ResourceTemplate () {
-        GpioIo (Exclusive, PullDown, 0x0DEB, 0xABCD, IoRestrictionNone,
-            "\\GPIO", 0xEE, ResourceConsumer, ,)
-            {0x11E1, 0x22E2, 0x33E3}
-    },
-	ResourceTemplate () {
-        GpioIo (Exclusive, PullDown, 0x0DEB, 0xABCD, IoRestrictionInputOnly,
-            "\\GPIO", 0xEE, ResourceConsumer, ,)
-            {0x11E1, 0x22E2, 0x33E3}
-    },
-	ResourceTemplate () {
-        GpioIo (Exclusive, PullDown, 0x0DEB, 0xABCD, IoRestrictionOutputOnly,
-            "\\GPIO", 0xEE, ResourceConsumer)
-            {0x11E1, 0x22E2, 0x33E3}
-    },
-	ResourceTemplate () {
-        GpioIo (Exclusive, PullNone, 0x0DEB, 0xABCD, IoRestrictionNone,
-            "\\GPIO", 0xEE, ResourceConsumer)
-            {0x11E1, 0x22E2, 0x33E3}
-    },
-	ResourceTemplate () {
-        GpioIo (Exclusive, PullNone, 0x0DEB, 0xABCD, IoRestrictionInputOnly,
-            "\\GPIO", 0xEE, ResourceConsumer)
-            {0x11E1, 0x22E2, 0x33E3}
-    },
-	ResourceTemplate () {
-        GpioIo (Exclusive, PullNone, 0x0DEB, 0xABCD, IoRestrictionOutputOnly,
-            "\\GPIO", 0xEE, ResourceConsumer)
-            {0x11E1, 0x22E2, 0x33E3}
-    },
-	ResourceTemplate () {
-        GpioIo (Exclusive, PullDefault, 0x0DEB, 0xABCD, IoRestrictionNone,
-            "\\GPIO", 0xEE, ResourceConsumer)
-            {0x11E1, 0x22E2, 0x33E3}
-    },
-	ResourceTemplate () {
-        GpioIo (Exclusive, PullDefault, 0x0DEB, 0xABCD, IoRestrictionInputOnly,
-            "\\GPIO", 0xEE, ResourceConsumer)
-            {0x11E1, 0x22E2, 0x33E3}
-    },
-	ResourceTemplate () {
-        GpioIo (Exclusive, PullDefault, 0x0DEB, 0xABCD, IoRestrictionOutputOnly,
-            "\\GPIO", 0xEE, ResourceConsumer)
-            {0x11E1, 0x22E2, 0x33E3}
-    },
-	ResourceTemplate () {
-        GpioIo (Shared, PullUp, 0x0DEB, 0xABCD, IoRestrictionNone,
-            "\\GPIO", 0xEE, ResourceConsumer)
-            {0x11E1, 0x22E2, 0x33E3}
-    },
-	ResourceTemplate () {
-        GpioIo (Shared, PullUp, 0x0DEB, 0xABCD, IoRestrictionInputOnly,
-            "\\GPIO", 0xEE, ResourceConsumer)
-            {0x11E1, 0x22E2, 0x33E3}
-    },
-	ResourceTemplate () {
-        GpioIo (Shared, PullUp, 0x0DEB, 0xABCD, IoRestrictionOutputOnly,
-            "\\GPIO", 0xEE, ResourceConsumer)
-            {0x11E1, 0x22E2, 0x33E3}
-    },
-	ResourceTemplate () {
-        GpioIo (Shared, PullDown, 0x0DEB, 0xABCD, IoRestrictionNone,
-            "\\GPIO", 0xEE, ResourceConsumer)
-            {0x11E1, 0x22E2, 0x33E3}
-    },
-	ResourceTemplate () {
-        GpioIo (Shared, PullDown, 0x0DEB, 0xABCD, IoRestrictionInputOnly,
-            "\\GPIO", 0xEE, ResourceConsumer)
-            {0x11E1, 0x22E2, 0x33E3}
-    },
-	ResourceTemplate () {
-        GpioIo (Shared, PullDown, 0x0DEB, 0xABCD, IoRestrictionOutputOnly,
-            "\\GPIO", 0xEE, ResourceConsumer)
-            {0x11E1, 0x22E2, 0x33E3}
-    },
-	ResourceTemplate () {
-        GpioIo (Shared, PullNone, 0x0DEB, 0xABCD, IoRestrictionNone,
-            "\\GPIO", 0xEE, ResourceConsumer,)
-            {0x11E1, 0x22E2, 0x33E3}
-    },
-	ResourceTemplate () {
-        GpioIo (Shared, PullNone, 0x0DEB, 0xABCD, IoRestrictionInputOnly,
-            "\\GPIO", 0xEE, ResourceConsumer,)
-            {0x11E1, 0x22E2, 0x33E3}
-    },
-	ResourceTemplate () {
-        GpioIo (Shared, PullNone, 0x0DEB, 0xABCD, IoRestrictionOutputOnly,
-            "\\GPIO", 0xEE, ResourceConsumer,)
-            {0x11E1, 0x22E2, 0x33E3}
-    },
-	ResourceTemplate () {
-        GpioIo (Shared, PullDefault, 0x0DEB, 0xABCD, IoRestrictionNone,
-            "\\GPIO", 0xEE, ResourceConsumer,)
-            {0x11E1, 0x22E2, 0x33E3}
-    },
-	ResourceTemplate () {
-        GpioIo (Shared, PullDefault, 0x0DEB, 0xABCD, IoRestrictionInputOnly,
-            "\\GPIO", 0xEE, ResourceConsumer,)
-            {0x11E1, 0x22E2, 0x33E3}
-    },
-	ResourceTemplate () {
-        GpioIo (Shared, PullDefault, 0x0DEB, 0xABCD, IoRestrictionOutputOnly,
-            "\\GPIO", 0xEE, ResourceConsumer,)
-            {0x11E1, 0x22E2, 0x33E3}
-    },
-	ResourceTemplate () {
-        GpioIo (ExclusiveAndWake, PullUp, 0x0DEB, 0xABCD, IoRestrictionNone,
-            "\\GPIO", 0xEE, ResourceConsumer,)
-            {0x11E1, 0x22E2, 0x33E3}
-    },
-	ResourceTemplate () {
-        GpioIo (ExclusiveAndWake, PullUp, 0x0DEB, 0xABCD, IoRestrictionInputOnly,
-            "\\GPIO", 0xEE, ResourceConsumer,)
-            {0x11E1, 0x22E2, 0x33E3}
-    },
-	ResourceTemplate () {
-        GpioIo (ExclusiveAndWake, PullUp, 0x0DEB, 0xABCD, IoRestrictionOutputOnly,
-            "\\GPIO", 0xEE, ResourceConsumer,)
-            {0x11E1, 0x22E2, 0x33E3}
-    },
-	ResourceTemplate () {
-        GpioIo (ExclusiveAndWake, PullDown, 0x0DEB, 0xABCD, IoRestrictionNone,
-            "\\GPIO", 0xEE, ResourceConsumer,)
-            {0x11E1, 0x22E2, 0x33E3}
-    },
-	ResourceTemplate () {
-        GpioIo (ExclusiveAndWake, PullDown, 0x0DEB, 0xABCD, IoRestrictionInputOnly,
-            "\\GPIO", 0xEE, ResourceConsumer, ,
-            RawDataBuffer (0x04) {0xC1, 0xC2, 0xC3, 0xC4})
-            {0x11E1, 0x22E2, 0x33E3}
-    },
-	ResourceTemplate () {
-        GpioIo (ExclusiveAndWake, PullDown, 0x0DEB, 0xABCD, IoRestrictionOutputOnly,
-            "\\GPIO", 0xEE, ResourceConsumer,)
-            {0x11E1, 0x22E2, 0x33E3}
-    },
-	ResourceTemplate () {
-        GpioIo (ExclusiveAndWake, PullNone, 0x0DEB, 0xABCD, IoRestrictionNone,
-            "\\GPIO", 0xEE, ResourceConsumer,)
-            {0x11E1, 0x22E2, 0x33E3}
-    },
-	ResourceTemplate () {
-        GpioIo (ExclusiveAndWake, PullNone, 0x0DEB, 0xABCD, IoRestrictionInputOnly,
-            "\\GPIO", 0xEE, ResourceConsumer,)
-            {0x11E1, 0x22E2, 0x33E3}
-    },
-	ResourceTemplate () {
-        GpioIo (ExclusiveAndWake, PullNone, 0x0DEB, 0xABCD, IoRestrictionOutputOnly,
-            "\\GPIO", 0xEE, ResourceConsumer,)
-            {0x11E1, 0x22E2, 0x33E3}
-    },
-	ResourceTemplate () {
-        GpioIo (ExclusiveAndWake, PullDefault, 0x0DEB, 0xABCD, IoRestrictionNone,
-            "\\GPIO", 0xEE, ResourceConsumer,)
-            {0x11E1, 0x22E2, 0x33E3}
-    },
-	ResourceTemplate () {
-        GpioIo (ExclusiveAndWake, PullDefault, 0x0DEB, 0xABCD, IoRestrictionInputOnly,
-            "\\GPIO", 0xEE, ResourceConsumer,)
-            {0x11E1, 0x22E2, 0x33E3}
-    },
-	ResourceTemplate () {
-        GpioIo (ExclusiveAndWake, PullDefault, 0x0DEB, 0xABCD, IoRestrictionOutputOnly,
-            "\\GPIO", 0xEE, ResourceConsumer,)
-            {0x11E1, 0x22E2, 0x33E3}
-    },
-	ResourceTemplate () {
-        GpioIo (SharedAndWake, PullUp, 0x0DEB, 0xABCD, IoRestrictionNone,
-            "\\GPIO", 0xEE, ResourceConsumer,)
-            {0x11E1, 0x22E2, 0x33E3}
-    },
-	ResourceTemplate () {
-        GpioIo (SharedAndWake, PullUp, 0x0DEB, 0xABCD, IoRestrictionInputOnly,
-            "\\GPIO", 0xEE, ResourceConsumer,)
-            {0x11E1, 0x22E2, 0x33E3}
-    },
-	ResourceTemplate () {
-        GpioIo (SharedAndWake, PullUp, 0x0DEB, 0xABCD, IoRestrictionOutputOnly,
-            "\\GPIO", 0xEE, ResourceConsumer,)
-            {0x11E1, 0x22E2, 0x33E3}
-    },
-	ResourceTemplate () {
-        GpioIo (SharedAndWake, PullDown, 0x0DEB, 0xABCD, IoRestrictionNone,
-            "\\GPIO", 0xEE, ResourceConsumer,)
-            {0x11E1, 0x22E2, 0x33E3}
-    },
-	ResourceTemplate () {
-        GpioIo (SharedAndWake, PullDown, 0x0DEB, 0xABCD, IoRestrictionInputOnly,
-            "\\GPIO", 0xEE, ResourceConsumer,)
-            {0x11E1, 0x22E2, 0x33E3}
-    },
-	ResourceTemplate () {
-        GpioIo (SharedAndWake, PullDown, 0x0DEB, 0xABCD, IoRestrictionOutputOnly,
-            "\\GPIO", 0xEE, ResourceConsumer,)
-            {0x11E1, 0x22E2, 0x33E3}
-    },
-	ResourceTemplate () {
-        GpioIo (SharedAndWake, PullNone, 0x0DEB, 0xABCD, IoRestrictionNone,
-            "\\GPIO", 0xEE, ResourceConsumer, ,)
-            {0x11E1, 0x22E2, 0x33E3}
-    },
-	ResourceTemplate () {
-        GpioIo (SharedAndWake, PullNone, 0x0DEB, 0xABCD, IoRestrictionInputOnly,
-            "\\GPIO", 0xEE, ResourceConsumer, ,)
-            {0x11E1, 0x22E2, 0x33E3}
-    },
-	ResourceTemplate () {
-        GpioIo (SharedAndWake, PullNone, 0x0DEB, 0xABCD, IoRestrictionOutputOnly,
-            "\\GPIO", 0xEE, ResourceConsumer, ,)
-            {0x11E1, 0x22E2, 0x33E3}
-    },
-	ResourceTemplate () {
-        GpioIo (SharedAndWake, PullDefault, 0x0DEB, 0xABCD, IoRestrictionNone,
-            "\\GPIO", 0xEE, ResourceConsumer, ,)
-            {0x11E1, 0x22E2, 0x33E3}
-    },
-	ResourceTemplate () {
-        GpioIo (SharedAndWake, PullDefault, 0x0DEB, 0xABCD, IoRestrictionInputOnly,
-            "\\GPIO", 0xEE, ResourceConsumer, ,)
-            {0x11E1, 0x22E2, 0x33E3}
-    },
-	ResourceTemplate () {
-        GpioIo (SharedAndWake, PullDefault, 0x0DEB, 0xABCD, IoRestrictionOutputOnly,
-            "\\GPIO", 0xEE, ResourceConsumer, ,)
-            {0x11E1, 0x22E2, 0x33E3}
-    },
-
-
- 	ResourceTemplate () {
-        GpioIo (Exclusive, PullUp, 0x0DEB, 0xABCD, IoRestrictionNone,
-            "\\GPIO", 0xEE, ResourceProducer)
-            {0x11E1, 0x22E2, 0x33E3}
-    },
-	ResourceTemplate () {
-        GpioIo (Exclusive, PullUp, 0x0DEB, 0xABCD, IoRestrictionInputOnly,
-            "\\GPIO", 0xEE, ResourceProducer)
-            {0x11E1, 0x22E2, 0x33E3}
-    },
-	ResourceTemplate () {
-        GpioIo (Exclusive, PullUp, 0x0DEB, 0xABCD, IoRestrictionOutputOnly,
-            "\\GPIO", 0xEE, ResourceProducer)
-            {0x11E1, 0x22E2, 0x33E3}
-    },
-	ResourceTemplate () {
-        GpioIo (Exclusive, PullDown, 0x0DEB, 0xABCD, IoRestrictionNone,
-            "\\GPIO", 0xEE, ResourceProducer)
-            {0x11E1, 0x22E2, 0x33E3}
-    },
-	ResourceTemplate () {
-        GpioIo (Exclusive, PullDown, 0x0DEB, 0xABCD, IoRestrictionInputOnly,
-            "\\GPIO", 0xEE, ResourceProducer)
-            {0x11E1, 0x22E2, 0x33E3}
-    },
-	ResourceTemplate () {
-        GpioIo (Exclusive, PullDown, 0x0DEB, 0xABCD, IoRestrictionOutputOnly,
-            "\\GPIO", 0xEE, ResourceProducer)
-            {0x11E1, 0x22E2, 0x33E3}
-    },
-	ResourceTemplate () {
-        GpioIo (Exclusive, PullNone, 0x0DEB, 0xABCD, IoRestrictionNone,
-            "\\GPIO", 0xEE, ResourceProducer)
-            {0x11E1, 0x22E2, 0x33E3}
-    },
-	ResourceTemplate () {
-        GpioIo (Exclusive, PullNone, 0x0DEB, 0xABCD, IoRestrictionInputOnly,
-            "\\GPIO", 0xEE, ResourceProducer)
-            {0x11E1, 0x22E2, 0x33E3}
-    },
-	ResourceTemplate () {
-        GpioIo (Exclusive, PullNone, 0x0DEB, 0xABCD, IoRestrictionOutputOnly,
-            "\\GPIO", 0xEE, ResourceProducer)
-            {0x11E1, 0x22E2, 0x33E3}
-    },
-	ResourceTemplate () {
-        GpioIo (Exclusive, PullDefault, 0x0DEB, 0xABCD, IoRestrictionNone,
-            "\\GPIO", 0xEE, ResourceProducer)
-            {0x11E1, 0x22E2, 0x33E3}
-    },
-	ResourceTemplate () {
-        GpioIo (Exclusive, PullDefault, 0x0DEB, 0xABCD, IoRestrictionInputOnly,
-            "\\GPIO", 0xEE, ResourceProducer)
-            {0x11E1, 0x22E2, 0x33E3}
-    },
-	ResourceTemplate () {
-        GpioIo (Exclusive, PullDefault, 0x0DEB, 0xABCD, IoRestrictionOutputOnly,
-            "\\GPIO", 0xEE, ResourceProducer,)
-            {0x11E1, 0x22E2, 0x33E3}
-    },
-	ResourceTemplate () {
-        GpioIo (Shared, PullUp, 0x0DEB, 0xABCD, IoRestrictionNone,
-            "\\GPIO", 0xEE, ResourceProducer,)
-            {0x11E1, 0x22E2, 0x33E3}
-    },
-	ResourceTemplate () {
-        GpioIo (Shared, PullUp, 0x0DEB, 0xABCD, IoRestrictionInputOnly,
-            "\\GPIO", 0xEE, ResourceProducer,)
-            {0x11E1, 0x22E2, 0x33E3}
-    },
-	ResourceTemplate () {
-        GpioIo (Shared, PullUp, 0x0DEB, 0xABCD, IoRestrictionOutputOnly,
-            "\\GPIO", 0xEE, ResourceProducer,)
-            {0x11E1, 0x22E2, 0x33E3}
-    },
-	ResourceTemplate () {
-        GpioIo (Shared, PullDown, 0x0DEB, 0xABCD, IoRestrictionNone,
-            "\\GPIO", 0xEE, ResourceProducer,)
-            {0x11E1, 0x22E2, 0x33E3}
-    },
-	ResourceTemplate () {
-        GpioIo (Shared, PullDown, 0x0DEB, 0xABCD, IoRestrictionInputOnly,
-            "\\GPIO", 0xEE, ResourceProducer,)
-            {0x11E1, 0x22E2, 0x33E3}
-    },
-	ResourceTemplate () {
-        GpioIo (Shared, PullDown, 0x0DEB, 0xABCD, IoRestrictionOutputOnly,
-            "\\GPIO", 0xEE, ResourceProducer,)
-            {0x11E1, 0x22E2, 0x33E3}
-    },
-	ResourceTemplate () {
-        GpioIo (Shared, PullNone, 0x0DEB, 0xABCD, IoRestrictionNone,
-            "\\GPIO", 0xEE, ResourceProducer,)
-            {0x11E1, 0x22E2, 0x33E3}
-    },
-	ResourceTemplate () {
-        GpioIo (Shared, PullNone, 0x0DEB, 0xABCD, IoRestrictionInputOnly,
-            "\\GPIO", 0xEE, ResourceProducer,)
-            {0x11E1, 0x22E2, 0x33E3}
-    },
-	ResourceTemplate () {
-        GpioIo (Shared, PullNone, 0x0DEB, 0xABCD, IoRestrictionOutputOnly,
-            "\\GPIO", 0xEE, ResourceProducer,)
-            {0x11E1, 0x22E2, 0x33E3}
-    },
-	ResourceTemplate () {
-        GpioIo (Shared, PullDefault, 0x0DEB, 0xABCD, IoRestrictionNone,
-            "\\GPIO", 0xEE, ResourceProducer,)
-            {0x11E1, 0x22E2, 0x33E3}
-    },
-	ResourceTemplate () {
-        GpioIo (Shared, PullDefault, 0x0DEB, 0xABCD, IoRestrictionInputOnly,
-            "\\GPIO", 0xEE, ResourceProducer,)
-            {0x11E1, 0x22E2, 0x33E3}
-    },
-	ResourceTemplate () {
-        GpioIo (Shared, PullDefault, 0x0DEB, 0xABCD, IoRestrictionOutputOnly,
-            "\\GPIO", 0xEE, ResourceProducer,)
-            {0x11E1, 0x22E2, 0x33E3}
-    },
-	ResourceTemplate () {
-        GpioIo (ExclusiveAndWake, PullUp, 0x0DEB, 0xABCD, IoRestrictionNone,
-            "\\GPIO", 0xEE, ResourceProducer,)
-            {0x11E1, 0x22E2, 0x33E3}
-    },
-	ResourceTemplate () {
-        GpioIo (ExclusiveAndWake, PullUp, 0x0DEB, 0xABCD, IoRestrictionInputOnly,
-            "\\GPIO", 0xEE, ResourceProducer,)
-            {0x11E1, 0x22E2, 0x33E3}
-    },
-	ResourceTemplate () {
-        GpioIo (ExclusiveAndWake, PullUp, 0x0DEB, 0xABCD, IoRestrictionOutputOnly,
-            "\\GPIO", 0xEE, ResourceProducer,)
-            {0x11E1, 0x22E2, 0x33E3}
-    },
-	ResourceTemplate () {
-        GpioIo (ExclusiveAndWake, PullDown, 0x0DEB, 0xABCD, IoRestrictionNone,
-            "\\GPIO", 0xEE, ResourceProducer,)
-            {0x11E1, 0x22E2, 0x33E3}
-    },
-	ResourceTemplate () {
-        GpioIo (ExclusiveAndWake, PullDown, 0x0DEB, 0xABCD, IoRestrictionInputOnly,
-            "\\GPIO", 0xEE, ResourceProducer,)
-            {0x11E1, 0x22E2, 0x33E3}
-    },
-	ResourceTemplate () {
-        GpioIo (ExclusiveAndWake, PullDown, 0x0DEB, 0xABCD, IoRestrictionOutputOnly,
-            "\\GPIO", 0xEE, ResourceProducer,)
-            {0x11E1, 0x22E2, 0x33E3}
-    },
-	ResourceTemplate () {
-        GpioIo (ExclusiveAndWake, PullNone, 0x0DEB, 0xABCD, IoRestrictionNone,
-            "\\GPIO", 0xEE, ResourceProducer,)
-            {0x11E1, 0x22E2, 0x33E3}
-    },
-	ResourceTemplate () {
-        GpioIo (ExclusiveAndWake, PullNone, 0x0DEB, 0xABCD, IoRestrictionInputOnly,
-            "\\GPIO", 0xEE, ResourceProducer,)
-            {0x11E1, 0x22E2, 0x33E3}
-    },
-	ResourceTemplate () {
-        GpioIo (ExclusiveAndWake, PullNone, 0x0DEB, 0xABCD, IoRestrictionOutputOnly,
-            "\\GPIO", 0xEE, ResourceProducer,)
-            {0x11E1, 0x22E2, 0x33E3}
-    },
-	ResourceTemplate () {
-        GpioIo (ExclusiveAndWake, PullDefault, 0x0DEB, 0xABCD, IoRestrictionNone,
-            "\\GPIO", 0xEE, ResourceProducer,)
-            {0x11E1, 0x22E2, 0x33E3}
-    },
-	ResourceTemplate () {
-        GpioIo (ExclusiveAndWake, PullDefault, 0x0DEB, 0xABCD, IoRestrictionInputOnly,
-            "\\GPIO", 0xEE, ResourceProducer,)
-            {0x11E1, 0x22E2, 0x33E3}
-    },
-	ResourceTemplate () {
-        GpioIo (ExclusiveAndWake, PullDefault, 0x0DEB, 0xABCD, IoRestrictionOutputOnly,
-            "\\GPIO", 0xEE, ResourceProducer,)
-            {0x11E1, 0x22E2, 0x33E3}
-    },
-	ResourceTemplate () {
-        GpioIo (SharedAndWake, PullUp, 0x0DEB, 0xABCD, IoRestrictionNone,
-            "\\GPIO", 0xEE, ResourceProducer,)
-            {0x11E1, 0x22E2, 0x33E3}
-    },
-	ResourceTemplate () {
-        GpioIo (SharedAndWake, PullUp, 0x0DEB, 0xABCD, IoRestrictionInputOnly,
-            "\\GPIO", 0xEE, ResourceProducer,)
-            {0x11E1, 0x22E2, 0x33E3}
-    },
-	ResourceTemplate () {
-        GpioIo (SharedAndWake, PullUp, 0x0DEB, 0xABCD, IoRestrictionOutputOnly,
-            "\\GPIO", 0xEE, ResourceProducer,)
-            {0x11E1, 0x22E2, 0x33E3}
-    },
-	ResourceTemplate () {
-        GpioIo (SharedAndWake, PullDown, 0x0DEB, 0xABCD, IoRestrictionNone,
-            "\\GPIO", 0xEE, ResourceProducer,)
-            {0x11E1, 0x22E2, 0x33E3}
-    },
-	ResourceTemplate () {
-        GpioIo (SharedAndWake, PullDown, 0x0DEB, 0xABCD, IoRestrictionInputOnly,
-            "\\GPIO", 0xEE, ResourceProducer,)
-            {0x11E1, 0x22E2, 0x33E3}
-    },
-	ResourceTemplate () {
-        GpioIo (SharedAndWake, PullDown, 0x0DEB, 0xABCD, IoRestrictionOutputOnly,
-            "\\GPIO", 0xEE, ResourceProducer,)
-            {0x11E1, 0x22E2, 0x33E3}
-    },
-	ResourceTemplate () {
-        GpioIo (SharedAndWake, PullNone, 0x0DEB, 0xABCD, IoRestrictionNone,
-            "\\GPIO", 0xEE, ResourceProducer,)
-            {0x11E1, 0x22E2, 0x33E3}
-    },
-	ResourceTemplate () {
-        GpioIo (SharedAndWake, PullNone, 0x0DEB, 0xABCD, IoRestrictionInputOnly,
-            "\\GPIO", 0xEE, ResourceProducer,)
-            {0x11E1, 0x22E2, 0x33E3}
-    },
-	ResourceTemplate () {
-        GpioIo (SharedAndWake, PullNone, 0x0DEB, 0xABCD, IoRestrictionOutputOnly,
-            "\\GPIO", 0xEE, ResourceProducer,)
-            {0x11E1, 0x22E2, 0x33E3}
-    },
-	ResourceTemplate () {
-        GpioIo (SharedAndWake, PullDefault, 0x0DEB, 0xABCD, IoRestrictionNone,
-            "\\GPIO", 0xEE, ResourceProducer,)
-            {0x11E1, 0x22E2, 0x33E3}
-    },
-	ResourceTemplate () {
-        GpioIo (SharedAndWake, PullDefault, 0x0DEB, 0xABCD, IoRestrictionInputOnly,
-            "\\GPIO", 0xEE, ResourceProducer,)
-            {0x11E1, 0x22E2, 0x33E3}
-    },
-	ResourceTemplate () {
-        GpioIo (SharedAndWake, PullDefault, 0x0DEB, 0xABCD, IoRestrictionOutputOnly,
-            "\\GPIO", 0xEE, ResourceProducer,)
-            {0x11E1, 0x22E2, 0x33E3}
-    },
-
-    // Late addition: IoRestrictionNoneAndPreserve keyword
-
-	ResourceTemplate () {
-        GpioIo (Exclusive, PullUp, 0x0DEB, 0xABCD, IoRestrictionNoneAndPreserve,
-            "\\GPIO", 0xEE, ResourceConsumer, ,
-            RawDataBuffer (0x04) {0xC1, 0xC2, 0xC3, 0xC4})
-            {0x11E1, 0x22E2, 0x33E3}
-    },
-	ResourceTemplate () {
-        GpioIo (SharedAndWake, PullDefault, 0x0DEB, 0xABCD, IoRestrictionNoneAndPreserve,
-            "\\GPIO", 0xEE)
-            {0x11E1, 0x22E2}
-    },
-	ResourceTemplate () {
-        GpioIo (Shared, PullUp, 0x0DEB, 0xABCD, IoRestrictionNoneAndPreserve,
-            "\\GPIO", 0xEE, ResourceConsumer)
-            {0x11E1}
-    },
-
-     // Minimal invocation
-	ResourceTemplate () {
-        GpioIo (, PullUp, , , , "\\GPIO", , ,)
-            {0x11E1, 0x22E2, 0x33E3}
-    }
-})
-
-Name (p455, Package() {
-    Buffer (0x29)
+    /*
+     * Some or all of this work - Copyright (c) 2006 - 2017, Intel Corp.
+     * All rights reserved.
+     *
+     * Redistribution and use in source and binary forms, with or without modification,
+     * are permitted provided that the following conditions are met:
+     *
+     * Redistributions of source code must retain the above copyright notice,
+     * this list of conditions and the following disclaimer.
+     * Redistributions in binary form must reproduce the above copyright notice,
+     * this list of conditions and the following disclaimer in the documentation
+     * and/or other materials provided with the distribution.
+     * Neither the name of Intel Corporation nor the names of its contributors
+     * may be used to endorse or promote products derived from this software
+     * without specific prior written permission.
+     *
+     * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS"
+     * AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE
+     * IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE
+     * ARE DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT OWNER OR CONTRIBUTORS BE
+     * LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL
+     * DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES;
+     * LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY
+     * THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING
+     * NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE,
+     * EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
+     */
+    /*
+     * Resource Descriptor macros
+     *
+     * GpioIO Resource Descriptor Macro
+     */
+    Device (GPIO)
     {
-        /* 0000 */    0x8C, 0x24, 0x00, 0x01, 0x01, 0x01, 0x00, 0x00,
-        /* 0008 */    0x00, 0x01, 0xCD, 0xAB, 0xEB, 0x0D, 0x17, 0x00,
-        /* 0010 */    0xEE, 0x1D, 0x00, 0x23, 0x00, 0x04, 0x00, 0xE1,
-        /* 0018 */    0x11, 0xE2, 0x22, 0xE3, 0x33, 0x5C, 0x47, 0x50,
-        /* 0020 */    0x49, 0x4F, 0x00, 0xC1, 0xC2, 0xC3, 0xC4, 0x79,
-        /* 0028 */    0x00
-    },
-    Buffer (0x29)
-    {
-        /* 0000 */    0x8C, 0x24, 0x00, 0x01, 0x01, 0x01, 0x00, 0x01,
-        /* 0008 */    0x00, 0x01, 0xCD, 0xAB, 0xEB, 0x0D, 0x17, 0x00,
-        /* 0010 */    0xEE, 0x1D, 0x00, 0x23, 0x00, 0x04, 0x00, 0xE1,
-        /* 0018 */    0x11, 0xE2, 0x22, 0xE3, 0x33, 0x5C, 0x47, 0x50,
-        /* 0020 */    0x49, 0x4F, 0x00, 0xC1, 0xC2, 0xC3, 0xC4, 0x79,
-        /* 0028 */    0x00
-    },
-    Buffer (0x29)
-    {
-        /* 0000 */    0x8C, 0x24, 0x00, 0x01, 0x01, 0x01, 0x00, 0x02,
-        /* 0008 */    0x00, 0x01, 0xCD, 0xAB, 0xEB, 0x0D, 0x17, 0x00,
-        /* 0010 */    0xEE, 0x1D, 0x00, 0x23, 0x00, 0x04, 0x00, 0xE1,
-        /* 0018 */    0x11, 0xE2, 0x22, 0xE3, 0x33, 0x5C, 0x47, 0x50,
-        /* 0020 */    0x49, 0x4F, 0x00, 0xC1, 0xC2, 0xC3, 0xC4, 0x79,
-        /* 0028 */    0x00
-    },
-    Buffer (0x29)
-    {
-        /* 0000 */    0x8C, 0x24, 0x00, 0x01, 0x01, 0x01, 0x00, 0x00,
-        /* 0008 */    0x00, 0x02, 0xCD, 0xAB, 0xEB, 0x0D, 0x17, 0x00,
-        /* 0010 */    0xEE, 0x1D, 0x00, 0x23, 0x00, 0x04, 0x00, 0xE1,
-        /* 0018 */    0x11, 0xE2, 0x22, 0xE3, 0x33, 0x5C, 0x47, 0x50,
-        /* 0020 */    0x49, 0x4F, 0x00, 0xC1, 0xC2, 0xC3, 0xC4, 0x79,
-        /* 0028 */    0x00
-    },
-    Buffer (0x29)
-    {
-        /* 0000 */    0x8C, 0x24, 0x00, 0x01, 0x01, 0x01, 0x00, 0x01,
-        /* 0008 */    0x00, 0x02, 0xCD, 0xAB, 0xEB, 0x0D, 0x17, 0x00,
-        /* 0010 */    0xEE, 0x1D, 0x00, 0x23, 0x00, 0x04, 0x00, 0xE1,
-        /* 0018 */    0x11, 0xE2, 0x22, 0xE3, 0x33, 0x5C, 0x47, 0x50,
-        /* 0020 */    0x49, 0x4F, 0x00, 0xC1, 0xC2, 0xC3, 0xC4, 0x79,
-        /* 0028 */    0x00
-    },
-    Buffer (0x29)
-    {
-        /* 0000 */    0x8C, 0x24, 0x00, 0x01, 0x01, 0x01, 0x00, 0x02,
-        /* 0008 */    0x00, 0x02, 0xCD, 0xAB, 0xEB, 0x0D, 0x17, 0x00,
-        /* 0010 */    0xEE, 0x1D, 0x00, 0x23, 0x00, 0x04, 0x00, 0xE1,
-        /* 0018 */    0x11, 0xE2, 0x22, 0xE3, 0x33, 0x5C, 0x47, 0x50,
-        /* 0020 */    0x49, 0x4F, 0x00, 0xC1, 0xC2, 0xC3, 0xC4, 0x79,
-        /* 0028 */    0x00
-    },
-    Buffer (0x29)
-    {
-        /* 0000 */    0x8C, 0x24, 0x00, 0x01, 0x01, 0x01, 0x00, 0x00,
-        /* 0008 */    0x00, 0x03, 0xCD, 0xAB, 0xEB, 0x0D, 0x17, 0x00,
-        /* 0010 */    0xEE, 0x1D, 0x00, 0x23, 0x00, 0x04, 0x00, 0xE1,
-        /* 0018 */    0x11, 0xE2, 0x22, 0xE3, 0x33, 0x5C, 0x47, 0x50,
-        /* 0020 */    0x49, 0x4F, 0x00, 0xC1, 0xC2, 0xC3, 0xC4, 0x79,
-        /* 0028 */    0x00
-    },
-    Buffer (0x29)
-    {
-        /* 0000 */    0x8C, 0x24, 0x00, 0x01, 0x01, 0x01, 0x00, 0x01,
-        /* 0008 */    0x00, 0x03, 0xCD, 0xAB, 0xEB, 0x0D, 0x17, 0x00,
-        /* 0010 */    0xEE, 0x1D, 0x00, 0x23, 0x00, 0x04, 0x00, 0xE1,
-        /* 0018 */    0x11, 0xE2, 0x22, 0xE3, 0x33, 0x5C, 0x47, 0x50,
-        /* 0020 */    0x49, 0x4F, 0x00, 0xC1, 0xC2, 0xC3, 0xC4, 0x79,
-        /* 0028 */    0x00
-    },
-    Buffer (0x29)
-    {
-        /* 0000 */    0x8C, 0x24, 0x00, 0x01, 0x01, 0x01, 0x00, 0x02,
-        /* 0008 */    0x00, 0x03, 0xCD, 0xAB, 0xEB, 0x0D, 0x17, 0x00,
-        /* 0010 */    0xEE, 0x1D, 0x00, 0x23, 0x00, 0x04, 0x00, 0xE1,
-        /* 0018 */    0x11, 0xE2, 0x22, 0xE3, 0x33, 0x5C, 0x47, 0x50,
-        /* 0020 */    0x49, 0x4F, 0x00, 0xC1, 0xC2, 0xC3, 0xC4, 0x79,
-        /* 0028 */    0x00
-    },
-    Buffer (0x29)
-    {
-        /* 0000 */    0x8C, 0x24, 0x00, 0x01, 0x01, 0x01, 0x00, 0x00,
-        /* 0008 */    0x00, 0x00, 0xCD, 0xAB, 0xEB, 0x0D, 0x17, 0x00,
-        /* 0010 */    0xEE, 0x1D, 0x00, 0x23, 0x00, 0x04, 0x00, 0xE1,
-        /* 0018 */    0x11, 0xE2, 0x22, 0xE3, 0x33, 0x5C, 0x47, 0x50,
-        /* 0020 */    0x49, 0x4F, 0x00, 0xC1, 0xC2, 0xC3, 0xC4, 0x79,
-        /* 0028 */    0x00
-    },
-    Buffer (0x29)
-    {
-        /* 0000 */    0x8C, 0x24, 0x00, 0x01, 0x01, 0x01, 0x00, 0x01,
-        /* 0008 */    0x00, 0x00, 0xCD, 0xAB, 0xEB, 0x0D, 0x17, 0x00,
-        /* 0010 */    0xEE, 0x1D, 0x00, 0x23, 0x00, 0x04, 0x00, 0xE1,
-        /* 0018 */    0x11, 0xE2, 0x22, 0xE3, 0x33, 0x5C, 0x47, 0x50,
-        /* 0020 */    0x49, 0x4F, 0x00, 0xC1, 0xC2, 0xC3, 0xC4, 0x79,
-        /* 0028 */    0x00
-    },
-    Buffer (0x29)
-    {
-        /* 0000 */    0x8C, 0x24, 0x00, 0x01, 0x01, 0x01, 0x00, 0x02,
-        /* 0008 */    0x00, 0x00, 0xCD, 0xAB, 0xEB, 0x0D, 0x17, 0x00,
-        /* 0010 */    0xEE, 0x1D, 0x00, 0x23, 0x00, 0x04, 0x00, 0xE1,
-        /* 0018 */    0x11, 0xE2, 0x22, 0xE3, 0x33, 0x5C, 0x47, 0x50,
-        /* 0020 */    0x49, 0x4F, 0x00, 0xC1, 0xC2, 0xC3, 0xC4, 0x79,
-        /* 0028 */    0x00
-    },
-    Buffer (0x29)
-    {
-        /* 0000 */    0x8C, 0x24, 0x00, 0x01, 0x01, 0x01, 0x00, 0x08,
-        /* 0008 */    0x00, 0x01, 0xCD, 0xAB, 0xEB, 0x0D, 0x17, 0x00,
-        /* 0010 */    0xEE, 0x1D, 0x00, 0x23, 0x00, 0x04, 0x00, 0xE1,
-        /* 0018 */    0x11, 0xE2, 0x22, 0xE3, 0x33, 0x5C, 0x47, 0x50,
-        /* 0020 */    0x49, 0x4F, 0x00, 0xC1, 0xC2, 0xC3, 0xC4, 0x79,
-        /* 0028 */    0x00
-    },
-    Buffer (0x29)
-    {
-        /* 0000 */    0x8C, 0x24, 0x00, 0x01, 0x01, 0x01, 0x00, 0x09,
-        /* 0008 */    0x00, 0x01, 0xCD, 0xAB, 0xEB, 0x0D, 0x17, 0x00,
-        /* 0010 */    0xEE, 0x1D, 0x00, 0x23, 0x00, 0x04, 0x00, 0xE1,
-        /* 0018 */    0x11, 0xE2, 0x22, 0xE3, 0x33, 0x5C, 0x47, 0x50,
-        /* 0020 */    0x49, 0x4F, 0x00, 0xC1, 0xC2, 0xC3, 0xC4, 0x79,
-        /* 0028 */    0x00
-    },
-    Buffer (0x29)
-    {
-        /* 0000 */    0x8C, 0x24, 0x00, 0x01, 0x01, 0x01, 0x00, 0x0A,
-        /* 0008 */    0x00, 0x01, 0xCD, 0xAB, 0xEB, 0x0D, 0x17, 0x00,
-        /* 0010 */    0xEE, 0x1D, 0x00, 0x23, 0x00, 0x04, 0x00, 0xE1,
-        /* 0018 */    0x11, 0xE2, 0x22, 0xE3, 0x33, 0x5C, 0x47, 0x50,
-        /* 0020 */    0x49, 0x4F, 0x00, 0xC1, 0xC2, 0xC3, 0xC4, 0x79,
-        /* 0028 */    0x00
-    },
-    Buffer (0x29)
-    {
-        /* 0000 */    0x8C, 0x24, 0x00, 0x01, 0x01, 0x01, 0x00, 0x08,
-        /* 0008 */    0x00, 0x02, 0xCD, 0xAB, 0xEB, 0x0D, 0x17, 0x00,
-        /* 0010 */    0xEE, 0x1D, 0x00, 0x23, 0x00, 0x04, 0x00, 0xE1,
-        /* 0018 */    0x11, 0xE2, 0x22, 0xE3, 0x33, 0x5C, 0x47, 0x50,
-        /* 0020 */    0x49, 0x4F, 0x00, 0xC1, 0xC2, 0xC3, 0xC4, 0x79,
-        /* 0028 */    0x00
-    },
-    Buffer (0x29)
-    {
-        /* 0000 */    0x8C, 0x24, 0x00, 0x01, 0x01, 0x01, 0x00, 0x09,
-        /* 0008 */    0x00, 0x02, 0xCD, 0xAB, 0xEB, 0x0D, 0x17, 0x00,
-        /* 0010 */    0xEE, 0x1D, 0x00, 0x23, 0x00, 0x04, 0x00, 0xE1,
-        /* 0018 */    0x11, 0xE2, 0x22, 0xE3, 0x33, 0x5C, 0x47, 0x50,
-        /* 0020 */    0x49, 0x4F, 0x00, 0xC1, 0xC2, 0xC3, 0xC4, 0x79,
-        /* 0028 */    0x00
-    },
-    Buffer (0x29)
-    {
-        /* 0000 */    0x8C, 0x24, 0x00, 0x01, 0x01, 0x01, 0x00, 0x0A,
-        /* 0008 */    0x00, 0x02, 0xCD, 0xAB, 0xEB, 0x0D, 0x17, 0x00,
-        /* 0010 */    0xEE, 0x1D, 0x00, 0x23, 0x00, 0x04, 0x00, 0xE1,
-        /* 0018 */    0x11, 0xE2, 0x22, 0xE3, 0x33, 0x5C, 0x47, 0x50,
-        /* 0020 */    0x49, 0x4F, 0x00, 0xC1, 0xC2, 0xC3, 0xC4, 0x79,
-        /* 0028 */    0x00
-    },
-    Buffer (0x29)
-    {
-        /* 0000 */    0x8C, 0x24, 0x00, 0x01, 0x01, 0x01, 0x00, 0x08,
-        /* 0008 */    0x00, 0x03, 0xCD, 0xAB, 0xEB, 0x0D, 0x17, 0x00,
-        /* 0010 */    0xEE, 0x1D, 0x00, 0x23, 0x00, 0x04, 0x00, 0xE1,
-        /* 0018 */    0x11, 0xE2, 0x22, 0xE3, 0x33, 0x5C, 0x47, 0x50,
-        /* 0020 */    0x49, 0x4F, 0x00, 0xC1, 0xC2, 0xC3, 0xC4, 0x79,
-        /* 0028 */    0x00
-    },
-    Buffer (0x29)
-    {
-        /* 0000 */    0x8C, 0x24, 0x00, 0x01, 0x01, 0x01, 0x00, 0x09,
-        /* 0008 */    0x00, 0x03, 0xCD, 0xAB, 0xEB, 0x0D, 0x17, 0x00,
-        /* 0010 */    0xEE, 0x1D, 0x00, 0x23, 0x00, 0x04, 0x00, 0xE1,
-        /* 0018 */    0x11, 0xE2, 0x22, 0xE3, 0x33, 0x5C, 0x47, 0x50,
-        /* 0020 */    0x49, 0x4F, 0x00, 0xC1, 0xC2, 0xC3, 0xC4, 0x79,
-        /* 0028 */    0x00
-    },
-    Buffer (0x29)
-    {
-        /* 0000 */    0x8C, 0x24, 0x00, 0x01, 0x01, 0x01, 0x00, 0x0A,
-        /* 0008 */    0x00, 0x03, 0xCD, 0xAB, 0xEB, 0x0D, 0x17, 0x00,
-        /* 0010 */    0xEE, 0x1D, 0x00, 0x23, 0x00, 0x04, 0x00, 0xE1,
-        /* 0018 */    0x11, 0xE2, 0x22, 0xE3, 0x33, 0x5C, 0x47, 0x50,
-        /* 0020 */    0x49, 0x4F, 0x00, 0xC1, 0xC2, 0xC3, 0xC4, 0x79,
-        /* 0028 */    0x00
-    },
-    Buffer (0x29)
-    {
-        /* 0000 */    0x8C, 0x24, 0x00, 0x01, 0x01, 0x01, 0x00, 0x08,
-        /* 0008 */    0x00, 0x00, 0xCD, 0xAB, 0xEB, 0x0D, 0x17, 0x00,
-        /* 0010 */    0xEE, 0x1D, 0x00, 0x23, 0x00, 0x04, 0x00, 0xE1,
-        /* 0018 */    0x11, 0xE2, 0x22, 0xE3, 0x33, 0x5C, 0x47, 0x50,
-        /* 0020 */    0x49, 0x4F, 0x00, 0xC1, 0xC2, 0xC3, 0xC4, 0x79,
-        /* 0028 */    0x00
-    },
-    Buffer (0x29)
-    {
-        /* 0000 */    0x8C, 0x24, 0x00, 0x01, 0x01, 0x01, 0x00, 0x09,
-        /* 0008 */    0x00, 0x00, 0xCD, 0xAB, 0xEB, 0x0D, 0x17, 0x00,
-        /* 0010 */    0xEE, 0x1D, 0x00, 0x23, 0x00, 0x04, 0x00, 0xE1,
-        /* 0018 */    0x11, 0xE2, 0x22, 0xE3, 0x33, 0x5C, 0x47, 0x50,
-        /* 0020 */    0x49, 0x4F, 0x00, 0xC1, 0xC2, 0xC3, 0xC4, 0x79,
-        /* 0028 */    0x00
-    },
-    Buffer (0x29)
-    {
-        /* 0000 */    0x8C, 0x24, 0x00, 0x01, 0x01, 0x01, 0x00, 0x0A,
-        /* 0008 */    0x00, 0x00, 0xCD, 0xAB, 0xEB, 0x0D, 0x17, 0x00,
-        /* 0010 */    0xEE, 0x1D, 0x00, 0x23, 0x00, 0x04, 0x00, 0xE1,
-        /* 0018 */    0x11, 0xE2, 0x22, 0xE3, 0x33, 0x5C, 0x47, 0x50,
-        /* 0020 */    0x49, 0x4F, 0x00, 0xC1, 0xC2, 0xC3, 0xC4, 0x79,
-        /* 0028 */    0x00
-    },
-    Buffer (0x29)
-    {
-        /* 0000 */    0x8C, 0x24, 0x00, 0x01, 0x01, 0x01, 0x00, 0x10,
-        /* 0008 */    0x00, 0x01, 0xCD, 0xAB, 0xEB, 0x0D, 0x17, 0x00,
-        /* 0010 */    0xEE, 0x1D, 0x00, 0x23, 0x00, 0x04, 0x00, 0xE1,
-        /* 0018 */    0x11, 0xE2, 0x22, 0xE3, 0x33, 0x5C, 0x47, 0x50,
-        /* 0020 */    0x49, 0x4F, 0x00, 0xC1, 0xC2, 0xC3, 0xC4, 0x79,
-        /* 0028 */    0x00
-    },
-    Buffer (0x29)
-    {
-        /* 0000 */    0x8C, 0x24, 0x00, 0x01, 0x01, 0x01, 0x00, 0x11,
-        /* 0008 */    0x00, 0x01, 0xCD, 0xAB, 0xEB, 0x0D, 0x17, 0x00,
-        /* 0010 */    0xEE, 0x1D, 0x00, 0x23, 0x00, 0x04, 0x00, 0xE1,
-        /* 0018 */    0x11, 0xE2, 0x22, 0xE3, 0x33, 0x5C, 0x47, 0x50,
-        /* 0020 */    0x49, 0x4F, 0x00, 0xC1, 0xC2, 0xC3, 0xC4, 0x79,
-        /* 0028 */    0x00
-    },
-    Buffer (0x29)
-    {
-        /* 0000 */    0x8C, 0x24, 0x00, 0x01, 0x01, 0x01, 0x00, 0x12,
-        /* 0008 */    0x00, 0x01, 0xCD, 0xAB, 0xEB, 0x0D, 0x17, 0x00,
-        /* 0010 */    0xEE, 0x1D, 0x00, 0x23, 0x00, 0x04, 0x00, 0xE1,
-        /* 0018 */    0x11, 0xE2, 0x22, 0xE3, 0x33, 0x5C, 0x47, 0x50,
-        /* 0020 */    0x49, 0x4F, 0x00, 0xC1, 0xC2, 0xC3, 0xC4, 0x79,
-        /* 0028 */    0x00
-    },
-    Buffer (0x29)
-    {
-        /* 0000 */    0x8C, 0x24, 0x00, 0x01, 0x01, 0x01, 0x00, 0x10,
-        /* 0008 */    0x00, 0x02, 0xCD, 0xAB, 0xEB, 0x0D, 0x17, 0x00,
-        /* 0010 */    0xEE, 0x1D, 0x00, 0x23, 0x00, 0x04, 0x00, 0xE1,
-        /* 0018 */    0x11, 0xE2, 0x22, 0xE3, 0x33, 0x5C, 0x47, 0x50,
-        /* 0020 */    0x49, 0x4F, 0x00, 0xC1, 0xC2, 0xC3, 0xC4, 0x79,
-        /* 0028 */    0x00
-    },
-    Buffer (0x29)
-    {
-        /* 0000 */    0x8C, 0x24, 0x00, 0x01, 0x01, 0x01, 0x00, 0x11,
-        /* 0008 */    0x00, 0x02, 0xCD, 0xAB, 0xEB, 0x0D, 0x17, 0x00,
-        /* 0010 */    0xEE, 0x1D, 0x00, 0x23, 0x00, 0x04, 0x00, 0xE1,
-        /* 0018 */    0x11, 0xE2, 0x22, 0xE3, 0x33, 0x5C, 0x47, 0x50,
-        /* 0020 */    0x49, 0x4F, 0x00, 0xC1, 0xC2, 0xC3, 0xC4, 0x79,
-        /* 0028 */    0x00
-    },
-    Buffer (0x29)
-    {
-        /* 0000 */    0x8C, 0x24, 0x00, 0x01, 0x01, 0x01, 0x00, 0x12,
-        /* 0008 */    0x00, 0x02, 0xCD, 0xAB, 0xEB, 0x0D, 0x17, 0x00,
-        /* 0010 */    0xEE, 0x1D, 0x00, 0x23, 0x00, 0x04, 0x00, 0xE1,
-        /* 0018 */    0x11, 0xE2, 0x22, 0xE3, 0x33, 0x5C, 0x47, 0x50,
-        /* 0020 */    0x49, 0x4F, 0x00, 0xC1, 0xC2, 0xC3, 0xC4, 0x79,
-        /* 0028 */    0x00
-    },
-    Buffer (0x29)
-    {
-        /* 0000 */    0x8C, 0x24, 0x00, 0x01, 0x01, 0x01, 0x00, 0x10,
-        /* 0008 */    0x00, 0x03, 0xCD, 0xAB, 0xEB, 0x0D, 0x17, 0x00,
-        /* 0010 */    0xEE, 0x1D, 0x00, 0x23, 0x00, 0x04, 0x00, 0xE1,
-        /* 0018 */    0x11, 0xE2, 0x22, 0xE3, 0x33, 0x5C, 0x47, 0x50,
-        /* 0020 */    0x49, 0x4F, 0x00, 0xC1, 0xC2, 0xC3, 0xC4, 0x79,
-        /* 0028 */    0x00
-    },
-    Buffer (0x29)
-    {
-        /* 0000 */    0x8C, 0x24, 0x00, 0x01, 0x01, 0x01, 0x00, 0x11,
-        /* 0008 */    0x00, 0x03, 0xCD, 0xAB, 0xEB, 0x0D, 0x17, 0x00,
-        /* 0010 */    0xEE, 0x1D, 0x00, 0x23, 0x00, 0x04, 0x00, 0xE1,
-        /* 0018 */    0x11, 0xE2, 0x22, 0xE3, 0x33, 0x5C, 0x47, 0x50,
-        /* 0020 */    0x49, 0x4F, 0x00, 0xC1, 0xC2, 0xC3, 0xC4, 0x79,
-        /* 0028 */    0x00
-    },
-    Buffer (0x29)
-    {
-        /* 0000 */    0x8C, 0x24, 0x00, 0x01, 0x01, 0x01, 0x00, 0x12,
-        /* 0008 */    0x00, 0x03, 0xCD, 0xAB, 0xEB, 0x0D, 0x17, 0x00,
-        /* 0010 */    0xEE, 0x1D, 0x00, 0x23, 0x00, 0x04, 0x00, 0xE1,
-        /* 0018 */    0x11, 0xE2, 0x22, 0xE3, 0x33, 0x5C, 0x47, 0x50,
-        /* 0020 */    0x49, 0x4F, 0x00, 0xC1, 0xC2, 0xC3, 0xC4, 0x79,
-        /* 0028 */    0x00
-    },
-    Buffer (0x29)
-    {
-        /* 0000 */    0x8C, 0x24, 0x00, 0x01, 0x01, 0x01, 0x00, 0x10,
-        /* 0008 */    0x00, 0x00, 0xCD, 0xAB, 0xEB, 0x0D, 0x17, 0x00,
-        /* 0010 */    0xEE, 0x1D, 0x00, 0x23, 0x00, 0x04, 0x00, 0xE1,
-        /* 0018 */    0x11, 0xE2, 0x22, 0xE3, 0x33, 0x5C, 0x47, 0x50,
-        /* 0020 */    0x49, 0x4F, 0x00, 0xC1, 0xC2, 0xC3, 0xC4, 0x79,
-        /* 0028 */    0x00
-    },
-    Buffer (0x29)
-    {
-        /* 0000 */    0x8C, 0x24, 0x00, 0x01, 0x01, 0x01, 0x00, 0x11,
-        /* 0008 */    0x00, 0x00, 0xCD, 0xAB, 0xEB, 0x0D, 0x17, 0x00,
-        /* 0010 */    0xEE, 0x1D, 0x00, 0x23, 0x00, 0x04, 0x00, 0xE1,
-        /* 0018 */    0x11, 0xE2, 0x22, 0xE3, 0x33, 0x5C, 0x47, 0x50,
-        /* 0020 */    0x49, 0x4F, 0x00, 0xC1, 0xC2, 0xC3, 0xC4, 0x79,
-        /* 0028 */    0x00
-    },
-    Buffer (0x29)
-    {
-        /* 0000 */    0x8C, 0x24, 0x00, 0x01, 0x01, 0x01, 0x00, 0x12,
-        /* 0008 */    0x00, 0x00, 0xCD, 0xAB, 0xEB, 0x0D, 0x17, 0x00,
-        /* 0010 */    0xEE, 0x1D, 0x00, 0x23, 0x00, 0x04, 0x00, 0xE1,
-        /* 0018 */    0x11, 0xE2, 0x22, 0xE3, 0x33, 0x5C, 0x47, 0x50,
-        /* 0020 */    0x49, 0x4F, 0x00, 0xC1, 0xC2, 0xC3, 0xC4, 0x79,
-        /* 0028 */    0x00
-    },
-    Buffer (0x29)
-    {
-        /* 0000 */    0x8C, 0x24, 0x00, 0x01, 0x01, 0x01, 0x00, 0x18,
-        /* 0008 */    0x00, 0x01, 0xCD, 0xAB, 0xEB, 0x0D, 0x17, 0x00,
-        /* 0010 */    0xEE, 0x1D, 0x00, 0x23, 0x00, 0x04, 0x00, 0xE1,
-        /* 0018 */    0x11, 0xE2, 0x22, 0xE3, 0x33, 0x5C, 0x47, 0x50,
-        /* 0020 */    0x49, 0x4F, 0x00, 0xC1, 0xC2, 0xC3, 0xC4, 0x79,
-        /* 0028 */    0x00
-    },
-    Buffer (0x29)
-    {
-        /* 0000 */    0x8C, 0x24, 0x00, 0x01, 0x01, 0x01, 0x00, 0x19,
-        /* 0008 */    0x00, 0x01, 0xCD, 0xAB, 0xEB, 0x0D, 0x17, 0x00,
-        /* 0010 */    0xEE, 0x1D, 0x00, 0x23, 0x00, 0x04, 0x00, 0xE1,
-        /* 0018 */    0x11, 0xE2, 0x22, 0xE3, 0x33, 0x5C, 0x47, 0x50,
-        /* 0020 */    0x49, 0x4F, 0x00, 0xC1, 0xC2, 0xC3, 0xC4, 0x79,
-        /* 0028 */    0x00
-    },
-    Buffer (0x29)
-    {
-        /* 0000 */    0x8C, 0x24, 0x00, 0x01, 0x01, 0x01, 0x00, 0x1A,
-        /* 0008 */    0x00, 0x01, 0xCD, 0xAB, 0xEB, 0x0D, 0x17, 0x00,
-        /* 0010 */    0xEE, 0x1D, 0x00, 0x23, 0x00, 0x04, 0x00, 0xE1,
-        /* 0018 */    0x11, 0xE2, 0x22, 0xE3, 0x33, 0x5C, 0x47, 0x50,
-        /* 0020 */    0x49, 0x4F, 0x00, 0xC1, 0xC2, 0xC3, 0xC4, 0x79,
-        /* 0028 */    0x00
-    },
-    Buffer (0x29)
-    {
-        /* 0000 */    0x8C, 0x24, 0x00, 0x01, 0x01, 0x01, 0x00, 0x18,
-        /* 0008 */    0x00, 0x02, 0xCD, 0xAB, 0xEB, 0x0D, 0x17, 0x00,
-        /* 0010 */    0xEE, 0x1D, 0x00, 0x23, 0x00, 0x04, 0x00, 0xE1,
-        /* 0018 */    0x11, 0xE2, 0x22, 0xE3, 0x33, 0x5C, 0x47, 0x50,
-        /* 0020 */    0x49, 0x4F, 0x00, 0xC1, 0xC2, 0xC3, 0xC4, 0x79,
-        /* 0028 */    0x00
-    },
-    Buffer (0x29)
-    {
-        /* 0000 */    0x8C, 0x24, 0x00, 0x01, 0x01, 0x01, 0x00, 0x19,
-        /* 0008 */    0x00, 0x02, 0xCD, 0xAB, 0xEB, 0x0D, 0x17, 0x00,
-        /* 0010 */    0xEE, 0x1D, 0x00, 0x23, 0x00, 0x04, 0x00, 0xE1,
-        /* 0018 */    0x11, 0xE2, 0x22, 0xE3, 0x33, 0x5C, 0x47, 0x50,
-        /* 0020 */    0x49, 0x4F, 0x00, 0xC1, 0xC2, 0xC3, 0xC4, 0x79,
-        /* 0028 */    0x00
-    },
-    Buffer (0x29)
-    {
-        /* 0000 */    0x8C, 0x24, 0x00, 0x01, 0x01, 0x01, 0x00, 0x1A,
-        /* 0008 */    0x00, 0x02, 0xCD, 0xAB, 0xEB, 0x0D, 0x17, 0x00,
-        /* 0010 */    0xEE, 0x1D, 0x00, 0x23, 0x00, 0x04, 0x00, 0xE1,
-        /* 0018 */    0x11, 0xE2, 0x22, 0xE3, 0x33, 0x5C, 0x47, 0x50,
-        /* 0020 */    0x49, 0x4F, 0x00, 0xC1, 0xC2, 0xC3, 0xC4, 0x79,
-        /* 0028 */    0x00
-    },
-    Buffer (0x29)
-    {
-        /* 0000 */    0x8C, 0x24, 0x00, 0x01, 0x01, 0x01, 0x00, 0x18,
-        /* 0008 */    0x00, 0x03, 0xCD, 0xAB, 0xEB, 0x0D, 0x17, 0x00,
-        /* 0010 */    0xEE, 0x1D, 0x00, 0x23, 0x00, 0x04, 0x00, 0xE1,
-        /* 0018 */    0x11, 0xE2, 0x22, 0xE3, 0x33, 0x5C, 0x47, 0x50,
-        /* 0020 */    0x49, 0x4F, 0x00, 0xC1, 0xC2, 0xC3, 0xC4, 0x79,
-        /* 0028 */    0x00
-    },
-    Buffer (0x29)
-    {
-        /* 0000 */    0x8C, 0x24, 0x00, 0x01, 0x01, 0x01, 0x00, 0x19,
-        /* 0008 */    0x00, 0x03, 0xCD, 0xAB, 0xEB, 0x0D, 0x17, 0x00,
-        /* 0010 */    0xEE, 0x1D, 0x00, 0x23, 0x00, 0x04, 0x00, 0xE1,
-        /* 0018 */    0x11, 0xE2, 0x22, 0xE3, 0x33, 0x5C, 0x47, 0x50,
-        /* 0020 */    0x49, 0x4F, 0x00, 0xC1, 0xC2, 0xC3, 0xC4, 0x79,
-        /* 0028 */    0x00
-    },
-    Buffer (0x29)
-    {
-        /* 0000 */    0x8C, 0x24, 0x00, 0x01, 0x01, 0x01, 0x00, 0x1A,
-        /* 0008 */    0x00, 0x03, 0xCD, 0xAB, 0xEB, 0x0D, 0x17, 0x00,
-        /* 0010 */    0xEE, 0x1D, 0x00, 0x23, 0x00, 0x04, 0x00, 0xE1,
-        /* 0018 */    0x11, 0xE2, 0x22, 0xE3, 0x33, 0x5C, 0x47, 0x50,
-        /* 0020 */    0x49, 0x4F, 0x00, 0xC1, 0xC2, 0xC3, 0xC4, 0x79,
-        /* 0028 */    0x00
-    },
-    Buffer (0x29)
-    {
-        /* 0000 */    0x8C, 0x24, 0x00, 0x01, 0x01, 0x01, 0x00, 0x18,
-        /* 0008 */    0x00, 0x00, 0xCD, 0xAB, 0xEB, 0x0D, 0x17, 0x00,
-        /* 0010 */    0xEE, 0x1D, 0x00, 0x23, 0x00, 0x04, 0x00, 0xE1,
-        /* 0018 */    0x11, 0xE2, 0x22, 0xE3, 0x33, 0x5C, 0x47, 0x50,
-        /* 0020 */    0x49, 0x4F, 0x00, 0xC1, 0xC2, 0xC3, 0xC4, 0x79,
-        /* 0028 */    0x00
-    },
-    Buffer (0x29)
-    {
-        /* 0000 */    0x8C, 0x24, 0x00, 0x01, 0x01, 0x01, 0x00, 0x19,
-        /* 0008 */    0x00, 0x00, 0xCD, 0xAB, 0xEB, 0x0D, 0x17, 0x00,
-        /* 0010 */    0xEE, 0x1D, 0x00, 0x23, 0x00, 0x04, 0x00, 0xE1,
-        /* 0018 */    0x11, 0xE2, 0x22, 0xE3, 0x33, 0x5C, 0x47, 0x50,
-        /* 0020 */    0x49, 0x4F, 0x00, 0xC1, 0xC2, 0xC3, 0xC4, 0x79,
-        /* 0028 */    0x00
-    },
-    Buffer (0x29)
-    {
-        /* 0000 */    0x8C, 0x24, 0x00, 0x01, 0x01, 0x01, 0x00, 0x1A,
-        /* 0008 */    0x00, 0x00, 0xCD, 0xAB, 0xEB, 0x0D, 0x17, 0x00,
-        /* 0010 */    0xEE, 0x1D, 0x00, 0x23, 0x00, 0x04, 0x00, 0xE1,
-        /* 0018 */    0x11, 0xE2, 0x22, 0xE3, 0x33, 0x5C, 0x47, 0x50,
-        /* 0020 */    0x49, 0x4F, 0x00, 0xC1, 0xC2, 0xC3, 0xC4, 0x79,
-        /* 0028 */    0x00
-    },
-    Buffer (0x29)
-    {
-        /* 0000 */    0x8C, 0x24, 0x00, 0x01, 0x01, 0x00, 0x00, 0x00,
-        /* 0008 */    0x00, 0x01, 0xCD, 0xAB, 0xEB, 0x0D, 0x17, 0x00,
-        /* 0010 */    0xEE, 0x1D, 0x00, 0x23, 0x00, 0x04, 0x00, 0xE1,
-        /* 0018 */    0x11, 0xE2, 0x22, 0xE3, 0x33, 0x5C, 0x47, 0x50,
-        /* 0020 */    0x49, 0x4F, 0x00, 0xC1, 0xC2, 0xC3, 0xC4, 0x79,
-        /* 0028 */    0x00
-    },
-    Buffer (0x29)
-    {
-        /* 0000 */    0x8C, 0x24, 0x00, 0x01, 0x01, 0x00, 0x00, 0x01,
-        /* 0008 */    0x00, 0x01, 0xCD, 0xAB, 0xEB, 0x0D, 0x17, 0x00,
-        /* 0010 */    0xEE, 0x1D, 0x00, 0x23, 0x00, 0x04, 0x00, 0xE1,
-        /* 0018 */    0x11, 0xE2, 0x22, 0xE3, 0x33, 0x5C, 0x47, 0x50,
-        /* 0020 */    0x49, 0x4F, 0x00, 0xC1, 0xC2, 0xC3, 0xC4, 0x79,
-        /* 0028 */    0x00
-    },
-    Buffer (0x29)
-    {
-        /* 0000 */    0x8C, 0x24, 0x00, 0x01, 0x01, 0x00, 0x00, 0x02,
-        /* 0008 */    0x00, 0x01, 0xCD, 0xAB, 0xEB, 0x0D, 0x17, 0x00,
-        /* 0010 */    0xEE, 0x1D, 0x00, 0x23, 0x00, 0x04, 0x00, 0xE1,
-        /* 0018 */    0x11, 0xE2, 0x22, 0xE3, 0x33, 0x5C, 0x47, 0x50,
-        /* 0020 */    0x49, 0x4F, 0x00, 0xC1, 0xC2, 0xC3, 0xC4, 0x79,
-        /* 0028 */    0x00
-    },
-    Buffer (0x29)
-    {
-        /* 0000 */    0x8C, 0x24, 0x00, 0x01, 0x01, 0x00, 0x00, 0x00,
-        /* 0008 */    0x00, 0x02, 0xCD, 0xAB, 0xEB, 0x0D, 0x17, 0x00,
-        /* 0010 */    0xEE, 0x1D, 0x00, 0x23, 0x00, 0x04, 0x00, 0xE1,
-        /* 0018 */    0x11, 0xE2, 0x22, 0xE3, 0x33, 0x5C, 0x47, 0x50,
-        /* 0020 */    0x49, 0x4F, 0x00, 0xC1, 0xC2, 0xC3, 0xC4, 0x79,
-        /* 0028 */    0x00
-    },
-    Buffer (0x29)
-    {
-        /* 0000 */    0x8C, 0x24, 0x00, 0x01, 0x01, 0x00, 0x00, 0x01,
-        /* 0008 */    0x00, 0x02, 0xCD, 0xAB, 0xEB, 0x0D, 0x17, 0x00,
-        /* 0010 */    0xEE, 0x1D, 0x00, 0x23, 0x00, 0x04, 0x00, 0xE1,
-        /* 0018 */    0x11, 0xE2, 0x22, 0xE3, 0x33, 0x5C, 0x47, 0x50,
-        /* 0020 */    0x49, 0x4F, 0x00, 0xC1, 0xC2, 0xC3, 0xC4, 0x79,
-        /* 0028 */    0x00
-    },
-    Buffer (0x29)
-    {
-        /* 0000 */    0x8C, 0x24, 0x00, 0x01, 0x01, 0x00, 0x00, 0x02,
-        /* 0008 */    0x00, 0x02, 0xCD, 0xAB, 0xEB, 0x0D, 0x17, 0x00,
-        /* 0010 */    0xEE, 0x1D, 0x00, 0x23, 0x00, 0x04, 0x00, 0xE1,
-        /* 0018 */    0x11, 0xE2, 0x22, 0xE3, 0x33, 0x5C, 0x47, 0x50,
-        /* 0020 */    0x49, 0x4F, 0x00, 0xC1, 0xC2, 0xC3, 0xC4, 0x79,
-        /* 0028 */    0x00
-    },
-    Buffer (0x29)
-    {
-        /* 0000 */    0x8C, 0x24, 0x00, 0x01, 0x01, 0x00, 0x00, 0x00,
-        /* 0008 */    0x00, 0x03, 0xCD, 0xAB, 0xEB, 0x0D, 0x17, 0x00,
-        /* 0010 */    0xEE, 0x1D, 0x00, 0x23, 0x00, 0x04, 0x00, 0xE1,
-        /* 0018 */    0x11, 0xE2, 0x22, 0xE3, 0x33, 0x5C, 0x47, 0x50,
-        /* 0020 */    0x49, 0x4F, 0x00, 0xC1, 0xC2, 0xC3, 0xC4, 0x79,
-        /* 0028 */    0x00
-    },
-    Buffer (0x29)
-    {
-        /* 0000 */    0x8C, 0x24, 0x00, 0x01, 0x01, 0x00, 0x00, 0x01,
-        /* 0008 */    0x00, 0x03, 0xCD, 0xAB, 0xEB, 0x0D, 0x17, 0x00,
-        /* 0010 */    0xEE, 0x1D, 0x00, 0x23, 0x00, 0x04, 0x00, 0xE1,
-        /* 0018 */    0x11, 0xE2, 0x22, 0xE3, 0x33, 0x5C, 0x47, 0x50,
-        /* 0020 */    0x49, 0x4F, 0x00, 0xC1, 0xC2, 0xC3, 0xC4, 0x79,
-        /* 0028 */    0x00
-    },
-    Buffer (0x29)
-    {
-        /* 0000 */    0x8C, 0x24, 0x00, 0x01, 0x01, 0x00, 0x00, 0x02,
-        /* 0008 */    0x00, 0x03, 0xCD, 0xAB, 0xEB, 0x0D, 0x17, 0x00,
-        /* 0010 */    0xEE, 0x1D, 0x00, 0x23, 0x00, 0x04, 0x00, 0xE1,
-        /* 0018 */    0x11, 0xE2, 0x22, 0xE3, 0x33, 0x5C, 0x47, 0x50,
-        /* 0020 */    0x49, 0x4F, 0x00, 0xC1, 0xC2, 0xC3, 0xC4, 0x79,
-        /* 0028 */    0x00
-    },
-    Buffer (0x29)
-    {
-        /* 0000 */    0x8C, 0x24, 0x00, 0x01, 0x01, 0x00, 0x00, 0x00,
-        /* 0008 */    0x00, 0x00, 0xCD, 0xAB, 0xEB, 0x0D, 0x17, 0x00,
-        /* 0010 */    0xEE, 0x1D, 0x00, 0x23, 0x00, 0x04, 0x00, 0xE1,
-        /* 0018 */    0x11, 0xE2, 0x22, 0xE3, 0x33, 0x5C, 0x47, 0x50,
-        /* 0020 */    0x49, 0x4F, 0x00, 0xC1, 0xC2, 0xC3, 0xC4, 0x79,
-        /* 0028 */    0x00
-    },
-    Buffer (0x29)
-    {
-        /* 0000 */    0x8C, 0x24, 0x00, 0x01, 0x01, 0x00, 0x00, 0x01,
-        /* 0008 */    0x00, 0x00, 0xCD, 0xAB, 0xEB, 0x0D, 0x17, 0x00,
-        /* 0010 */    0xEE, 0x1D, 0x00, 0x23, 0x00, 0x04, 0x00, 0xE1,
-        /* 0018 */    0x11, 0xE2, 0x22, 0xE3, 0x33, 0x5C, 0x47, 0x50,
-        /* 0020 */    0x49, 0x4F, 0x00, 0xC1, 0xC2, 0xC3, 0xC4, 0x79,
-        /* 0028 */    0x00
-    },
-    Buffer (0x29)
-    {
-        /* 0000 */    0x8C, 0x24, 0x00, 0x01, 0x01, 0x00, 0x00, 0x02,
-        /* 0008 */    0x00, 0x00, 0xCD, 0xAB, 0xEB, 0x0D, 0x17, 0x00,
-        /* 0010 */    0xEE, 0x1D, 0x00, 0x23, 0x00, 0x04, 0x00, 0xE1,
-        /* 0018 */    0x11, 0xE2, 0x22, 0xE3, 0x33, 0x5C, 0x47, 0x50,
-        /* 0020 */    0x49, 0x4F, 0x00, 0xC1, 0xC2, 0xC3, 0xC4, 0x79,
-        /* 0028 */    0x00
-    },
-    Buffer (0x29)
-    {
-        /* 0000 */    0x8C, 0x24, 0x00, 0x01, 0x01, 0x00, 0x00, 0x08,
-        /* 0008 */    0x00, 0x01, 0xCD, 0xAB, 0xEB, 0x0D, 0x17, 0x00,
-        /* 0010 */    0xEE, 0x1D, 0x00, 0x23, 0x00, 0x04, 0x00, 0xE1,
-        /* 0018 */    0x11, 0xE2, 0x22, 0xE3, 0x33, 0x5C, 0x47, 0x50,
-        /* 0020 */    0x49, 0x4F, 0x00, 0xC1, 0xC2, 0xC3, 0xC4, 0x79,
-        /* 0028 */    0x00
-    },
-    Buffer (0x29)
-    {
-        /* 0000 */    0x8C, 0x24, 0x00, 0x01, 0x01, 0x00, 0x00, 0x09,
-        /* 0008 */    0x00, 0x01, 0xCD, 0xAB, 0xEB, 0x0D, 0x17, 0x00,
-        /* 0010 */    0xEE, 0x1D, 0x00, 0x23, 0x00, 0x04, 0x00, 0xE1,
-        /* 0018 */    0x11, 0xE2, 0x22, 0xE3, 0x33, 0x5C, 0x47, 0x50,
-        /* 0020 */    0x49, 0x4F, 0x00, 0xC1, 0xC2, 0xC3, 0xC4, 0x79,
-        /* 0028 */    0x00
-    },
-    Buffer (0x29)
-    {
-        /* 0000 */    0x8C, 0x24, 0x00, 0x01, 0x01, 0x00, 0x00, 0x0A,
-        /* 0008 */    0x00, 0x01, 0xCD, 0xAB, 0xEB, 0x0D, 0x17, 0x00,
-        /* 0010 */    0xEE, 0x1D, 0x00, 0x23, 0x00, 0x04, 0x00, 0xE1,
-        /* 0018 */    0x11, 0xE2, 0x22, 0xE3, 0x33, 0x5C, 0x47, 0x50,
-        /* 0020 */    0x49, 0x4F, 0x00, 0xC1, 0xC2, 0xC3, 0xC4, 0x79,
-        /* 0028 */    0x00
-    },
-    Buffer (0x29)
-    {
-        /* 0000 */    0x8C, 0x24, 0x00, 0x01, 0x01, 0x00, 0x00, 0x08,
-        /* 0008 */    0x00, 0x02, 0xCD, 0xAB, 0xEB, 0x0D, 0x17, 0x00,
-        /* 0010 */    0xEE, 0x1D, 0x00, 0x23, 0x00, 0x04, 0x00, 0xE1,
-        /* 0018 */    0x11, 0xE2, 0x22, 0xE3, 0x33, 0x5C, 0x47, 0x50,
-        /* 0020 */    0x49, 0x4F, 0x00, 0xC1, 0xC2, 0xC3, 0xC4, 0x79,
-        /* 0028 */    0x00
-    },
-    Buffer (0x29)
-    {
-        /* 0000 */    0x8C, 0x24, 0x00, 0x01, 0x01, 0x00, 0x00, 0x09,
-        /* 0008 */    0x00, 0x02, 0xCD, 0xAB, 0xEB, 0x0D, 0x17, 0x00,
-        /* 0010 */    0xEE, 0x1D, 0x00, 0x23, 0x00, 0x04, 0x00, 0xE1,
-        /* 0018 */    0x11, 0xE2, 0x22, 0xE3, 0x33, 0x5C, 0x47, 0x50,
-        /* 0020 */    0x49, 0x4F, 0x00, 0xC1, 0xC2, 0xC3, 0xC4, 0x79,
-        /* 0028 */    0x00
-    },
-    Buffer (0x29)
-    {
-        /* 0000 */    0x8C, 0x24, 0x00, 0x01, 0x01, 0x00, 0x00, 0x0A,
-        /* 0008 */    0x00, 0x02, 0xCD, 0xAB, 0xEB, 0x0D, 0x17, 0x00,
-        /* 0010 */    0xEE, 0x1D, 0x00, 0x23, 0x00, 0x04, 0x00, 0xE1,
-        /* 0018 */    0x11, 0xE2, 0x22, 0xE3, 0x33, 0x5C, 0x47, 0x50,
-        /* 0020 */    0x49, 0x4F, 0x00, 0xC1, 0xC2, 0xC3, 0xC4, 0x79,
-        /* 0028 */    0x00
-    },
-    Buffer (0x29)
-    {
-        /* 0000 */    0x8C, 0x24, 0x00, 0x01, 0x01, 0x00, 0x00, 0x08,
-        /* 0008 */    0x00, 0x03, 0xCD, 0xAB, 0xEB, 0x0D, 0x17, 0x00,
-        /* 0010 */    0xEE, 0x1D, 0x00, 0x23, 0x00, 0x04, 0x00, 0xE1,
-        /* 0018 */    0x11, 0xE2, 0x22, 0xE3, 0x33, 0x5C, 0x47, 0x50,
-        /* 0020 */    0x49, 0x4F, 0x00, 0xC1, 0xC2, 0xC3, 0xC4, 0x79,
-        /* 0028 */    0x00
-    },
-    Buffer (0x29)
-    {
-        /* 0000 */    0x8C, 0x24, 0x00, 0x01, 0x01, 0x00, 0x00, 0x09,
-        /* 0008 */    0x00, 0x03, 0xCD, 0xAB, 0xEB, 0x0D, 0x17, 0x00,
-        /* 0010 */    0xEE, 0x1D, 0x00, 0x23, 0x00, 0x04, 0x00, 0xE1,
-        /* 0018 */    0x11, 0xE2, 0x22, 0xE3, 0x33, 0x5C, 0x47, 0x50,
-        /* 0020 */    0x49, 0x4F, 0x00, 0xC1, 0xC2, 0xC3, 0xC4, 0x79,
-        /* 0028 */    0x00
-    },
-    Buffer (0x29)
-    {
-        /* 0000 */    0x8C, 0x24, 0x00, 0x01, 0x01, 0x00, 0x00, 0x0A,
-        /* 0008 */    0x00, 0x03, 0xCD, 0xAB, 0xEB, 0x0D, 0x17, 0x00,
-        /* 0010 */    0xEE, 0x1D, 0x00, 0x23, 0x00, 0x04, 0x00, 0xE1,
-        /* 0018 */    0x11, 0xE2, 0x22, 0xE3, 0x33, 0x5C, 0x47, 0x50,
-        /* 0020 */    0x49, 0x4F, 0x00, 0xC1, 0xC2, 0xC3, 0xC4, 0x79,
-        /* 0028 */    0x00
-    },
-    Buffer (0x29)
-    {
-        /* 0000 */    0x8C, 0x24, 0x00, 0x01, 0x01, 0x00, 0x00, 0x08,
-        /* 0008 */    0x00, 0x00, 0xCD, 0xAB, 0xEB, 0x0D, 0x17, 0x00,
-        /* 0010 */    0xEE, 0x1D, 0x00, 0x23, 0x00, 0x04, 0x00, 0xE1,
-        /* 0018 */    0x11, 0xE2, 0x22, 0xE3, 0x33, 0x5C, 0x47, 0x50,
-        /* 0020 */    0x49, 0x4F, 0x00, 0xC1, 0xC2, 0xC3, 0xC4, 0x79,
-        /* 0028 */    0x00
-    },
-    Buffer (0x29)
-    {
-        /* 0000 */    0x8C, 0x24, 0x00, 0x01, 0x01, 0x00, 0x00, 0x09,
-        /* 0008 */    0x00, 0x00, 0xCD, 0xAB, 0xEB, 0x0D, 0x17, 0x00,
-        /* 0010 */    0xEE, 0x1D, 0x00, 0x23, 0x00, 0x04, 0x00, 0xE1,
-        /* 0018 */    0x11, 0xE2, 0x22, 0xE3, 0x33, 0x5C, 0x47, 0x50,
-        /* 0020 */    0x49, 0x4F, 0x00, 0xC1, 0xC2, 0xC3, 0xC4, 0x79,
-        /* 0028 */    0x00
-    },
-    Buffer (0x29)
-    {
-        /* 0000 */    0x8C, 0x24, 0x00, 0x01, 0x01, 0x00, 0x00, 0x0A,
-        /* 0008 */    0x00, 0x00, 0xCD, 0xAB, 0xEB, 0x0D, 0x17, 0x00,
-        /* 0010 */    0xEE, 0x1D, 0x00, 0x23, 0x00, 0x04, 0x00, 0xE1,
-        /* 0018 */    0x11, 0xE2, 0x22, 0xE3, 0x33, 0x5C, 0x47, 0x50,
-        /* 0020 */    0x49, 0x4F, 0x00, 0xC1, 0xC2, 0xC3, 0xC4, 0x79,
-        /* 0028 */    0x00
-    },
-    Buffer (0x29)
-    {
-        /* 0000 */    0x8C, 0x24, 0x00, 0x01, 0x01, 0x00, 0x00, 0x10,
-        /* 0008 */    0x00, 0x01, 0xCD, 0xAB, 0xEB, 0x0D, 0x17, 0x00,
-        /* 0010 */    0xEE, 0x1D, 0x00, 0x23, 0x00, 0x04, 0x00, 0xE1,
-        /* 0018 */    0x11, 0xE2, 0x22, 0xE3, 0x33, 0x5C, 0x47, 0x50,
-        /* 0020 */    0x49, 0x4F, 0x00, 0xC1, 0xC2, 0xC3, 0xC4, 0x79,
-        /* 0028 */    0x00
-    },
-    Buffer (0x29)
-    {
-        /* 0000 */    0x8C, 0x24, 0x00, 0x01, 0x01, 0x00, 0x00, 0x11,
-        /* 0008 */    0x00, 0x01, 0xCD, 0xAB, 0xEB, 0x0D, 0x17, 0x00,
-        /* 0010 */    0xEE, 0x1D, 0x00, 0x23, 0x00, 0x04, 0x00, 0xE1,
-        /* 0018 */    0x11, 0xE2, 0x22, 0xE3, 0x33, 0x5C, 0x47, 0x50,
-        /* 0020 */    0x49, 0x4F, 0x00, 0xC1, 0xC2, 0xC3, 0xC4, 0x79,
-        /* 0028 */    0x00
-    },
-    Buffer (0x29)
-    {
-        /* 0000 */    0x8C, 0x24, 0x00, 0x01, 0x01, 0x00, 0x00, 0x12,
-        /* 0008 */    0x00, 0x01, 0xCD, 0xAB, 0xEB, 0x0D, 0x17, 0x00,
-        /* 0010 */    0xEE, 0x1D, 0x00, 0x23, 0x00, 0x04, 0x00, 0xE1,
-        /* 0018 */    0x11, 0xE2, 0x22, 0xE3, 0x33, 0x5C, 0x47, 0x50,
-        /* 0020 */    0x49, 0x4F, 0x00, 0xC1, 0xC2, 0xC3, 0xC4, 0x79,
-        /* 0028 */    0x00
-    },
-    Buffer (0x29)
-    {
-        /* 0000 */    0x8C, 0x24, 0x00, 0x01, 0x01, 0x00, 0x00, 0x10,
-        /* 0008 */    0x00, 0x02, 0xCD, 0xAB, 0xEB, 0x0D, 0x17, 0x00,
-        /* 0010 */    0xEE, 0x1D, 0x00, 0x23, 0x00, 0x04, 0x00, 0xE1,
-        /* 0018 */    0x11, 0xE2, 0x22, 0xE3, 0x33, 0x5C, 0x47, 0x50,
-        /* 0020 */    0x49, 0x4F, 0x00, 0xC1, 0xC2, 0xC3, 0xC4, 0x79,
-        /* 0028 */    0x00
-    },
-    Buffer (0x29)
-    {
-        /* 0000 */    0x8C, 0x24, 0x00, 0x01, 0x01, 0x00, 0x00, 0x11,
-        /* 0008 */    0x00, 0x02, 0xCD, 0xAB, 0xEB, 0x0D, 0x17, 0x00,
-        /* 0010 */    0xEE, 0x1D, 0x00, 0x23, 0x00, 0x04, 0x00, 0xE1,
-        /* 0018 */    0x11, 0xE2, 0x22, 0xE3, 0x33, 0x5C, 0x47, 0x50,
-        /* 0020 */    0x49, 0x4F, 0x00, 0xC1, 0xC2, 0xC3, 0xC4, 0x79,
-        /* 0028 */    0x00
-    },
-    Buffer (0x29)
-    {
-        /* 0000 */    0x8C, 0x24, 0x00, 0x01, 0x01, 0x00, 0x00, 0x12,
-        /* 0008 */    0x00, 0x02, 0xCD, 0xAB, 0xEB, 0x0D, 0x17, 0x00,
-        /* 0010 */    0xEE, 0x1D, 0x00, 0x23, 0x00, 0x04, 0x00, 0xE1,
-        /* 0018 */    0x11, 0xE2, 0x22, 0xE3, 0x33, 0x5C, 0x47, 0x50,
-        /* 0020 */    0x49, 0x4F, 0x00, 0xC1, 0xC2, 0xC3, 0xC4, 0x79,
-        /* 0028 */    0x00
-    },
-    Buffer (0x29)
-    {
-        /* 0000 */    0x8C, 0x24, 0x00, 0x01, 0x01, 0x00, 0x00, 0x10,
-        /* 0008 */    0x00, 0x03, 0xCD, 0xAB, 0xEB, 0x0D, 0x17, 0x00,
-        /* 0010 */    0xEE, 0x1D, 0x00, 0x23, 0x00, 0x04, 0x00, 0xE1,
-        /* 0018 */    0x11, 0xE2, 0x22, 0xE3, 0x33, 0x5C, 0x47, 0x50,
-        /* 0020 */    0x49, 0x4F, 0x00, 0xC1, 0xC2, 0xC3, 0xC4, 0x79,
-        /* 0028 */    0x00
-    },
-    Buffer (0x29)
-    {
-        /* 0000 */    0x8C, 0x24, 0x00, 0x01, 0x01, 0x00, 0x00, 0x11,
-        /* 0008 */    0x00, 0x03, 0xCD, 0xAB, 0xEB, 0x0D, 0x17, 0x00,
-        /* 0010 */    0xEE, 0x1D, 0x00, 0x23, 0x00, 0x04, 0x00, 0xE1,
-        /* 0018 */    0x11, 0xE2, 0x22, 0xE3, 0x33, 0x5C, 0x47, 0x50,
-        /* 0020 */    0x49, 0x4F, 0x00, 0xC1, 0xC2, 0xC3, 0xC4, 0x79,
-        /* 0028 */    0x00
-    },
-    Buffer (0x29)
-    {
-        /* 0000 */    0x8C, 0x24, 0x00, 0x01, 0x01, 0x00, 0x00, 0x12,
-        /* 0008 */    0x00, 0x03, 0xCD, 0xAB, 0xEB, 0x0D, 0x17, 0x00,
-        /* 0010 */    0xEE, 0x1D, 0x00, 0x23, 0x00, 0x04, 0x00, 0xE1,
-        /* 0018 */    0x11, 0xE2, 0x22, 0xE3, 0x33, 0x5C, 0x47, 0x50,
-        /* 0020 */    0x49, 0x4F, 0x00, 0xC1, 0xC2, 0xC3, 0xC4, 0x79,
-        /* 0028 */    0x00
-    },
-    Buffer (0x29)
-    {
-        /* 0000 */    0x8C, 0x24, 0x00, 0x01, 0x01, 0x00, 0x00, 0x10,
-        /* 0008 */    0x00, 0x00, 0xCD, 0xAB, 0xEB, 0x0D, 0x17, 0x00,
-        /* 0010 */    0xEE, 0x1D, 0x00, 0x23, 0x00, 0x04, 0x00, 0xE1,
-        /* 0018 */    0x11, 0xE2, 0x22, 0xE3, 0x33, 0x5C, 0x47, 0x50,
-        /* 0020 */    0x49, 0x4F, 0x00, 0xC1, 0xC2, 0xC3, 0xC4, 0x79,
-        /* 0028 */    0x00
-    },
-    Buffer (0x29)
-    {
-        /* 0000 */    0x8C, 0x24, 0x00, 0x01, 0x01, 0x00, 0x00, 0x11,
-        /* 0008 */    0x00, 0x00, 0xCD, 0xAB, 0xEB, 0x0D, 0x17, 0x00,
-        /* 0010 */    0xEE, 0x1D, 0x00, 0x23, 0x00, 0x04, 0x00, 0xE1,
-        /* 0018 */    0x11, 0xE2, 0x22, 0xE3, 0x33, 0x5C, 0x47, 0x50,
-        /* 0020 */    0x49, 0x4F, 0x00, 0xC1, 0xC2, 0xC3, 0xC4, 0x79,
-        /* 0028 */    0x00
-    },
-    Buffer (0x29)
-    {
-        /* 0000 */    0x8C, 0x24, 0x00, 0x01, 0x01, 0x00, 0x00, 0x12,
-        /* 0008 */    0x00, 0x00, 0xCD, 0xAB, 0xEB, 0x0D, 0x17, 0x00,
-        /* 0010 */    0xEE, 0x1D, 0x00, 0x23, 0x00, 0x04, 0x00, 0xE1,
-        /* 0018 */    0x11, 0xE2, 0x22, 0xE3, 0x33, 0x5C, 0x47, 0x50,
-        /* 0020 */    0x49, 0x4F, 0x00, 0xC1, 0xC2, 0xC3, 0xC4, 0x79,
-        /* 0028 */    0x00
-    },
-    Buffer (0x29)
-    {
-        /* 0000 */    0x8C, 0x24, 0x00, 0x01, 0x01, 0x00, 0x00, 0x18,
-        /* 0008 */    0x00, 0x01, 0xCD, 0xAB, 0xEB, 0x0D, 0x17, 0x00,
-        /* 0010 */    0xEE, 0x1D, 0x00, 0x23, 0x00, 0x04, 0x00, 0xE1,
-        /* 0018 */    0x11, 0xE2, 0x22, 0xE3, 0x33, 0x5C, 0x47, 0x50,
-        /* 0020 */    0x49, 0x4F, 0x00, 0xC1, 0xC2, 0xC3, 0xC4, 0x79,
-        /* 0028 */    0x00
-    },
-    Buffer (0x29)
-    {
-        /* 0000 */    0x8C, 0x24, 0x00, 0x01, 0x01, 0x00, 0x00, 0x19,
-        /* 0008 */    0x00, 0x01, 0xCD, 0xAB, 0xEB, 0x0D, 0x17, 0x00,
-        /* 0010 */    0xEE, 0x1D, 0x00, 0x23, 0x00, 0x04, 0x00, 0xE1,
-        /* 0018 */    0x11, 0xE2, 0x22, 0xE3, 0x33, 0x5C, 0x47, 0x50,
-        /* 0020 */    0x49, 0x4F, 0x00, 0xC1, 0xC2, 0xC3, 0xC4, 0x79,
-        /* 0028 */    0x00
-    },
-    Buffer (0x29)
-    {
-        /* 0000 */    0x8C, 0x24, 0x00, 0x01, 0x01, 0x00, 0x00, 0x1A,
-        /* 0008 */    0x00, 0x01, 0xCD, 0xAB, 0xEB, 0x0D, 0x17, 0x00,
-        /* 0010 */    0xEE, 0x1D, 0x00, 0x23, 0x00, 0x04, 0x00, 0xE1,
-        /* 0018 */    0x11, 0xE2, 0x22, 0xE3, 0x33, 0x5C, 0x47, 0x50,
-        /* 0020 */    0x49, 0x4F, 0x00, 0xC1, 0xC2, 0xC3, 0xC4, 0x79,
-        /* 0028 */    0x00
-    },
-    Buffer (0x29)
-    {
-        /* 0000 */    0x8C, 0x24, 0x00, 0x01, 0x01, 0x00, 0x00, 0x18,
-        /* 0008 */    0x00, 0x02, 0xCD, 0xAB, 0xEB, 0x0D, 0x17, 0x00,
-        /* 0010 */    0xEE, 0x1D, 0x00, 0x23, 0x00, 0x04, 0x00, 0xE1,
-        /* 0018 */    0x11, 0xE2, 0x22, 0xE3, 0x33, 0x5C, 0x47, 0x50,
-        /* 0020 */    0x49, 0x4F, 0x00, 0xC1, 0xC2, 0xC3, 0xC4, 0x79,
-        /* 0028 */    0x00
-    },
-    Buffer (0x29)
-    {
-        /* 0000 */    0x8C, 0x24, 0x00, 0x01, 0x01, 0x00, 0x00, 0x19,
-        /* 0008 */    0x00, 0x02, 0xCD, 0xAB, 0xEB, 0x0D, 0x17, 0x00,
-        /* 0010 */    0xEE, 0x1D, 0x00, 0x23, 0x00, 0x04, 0x00, 0xE1,
-        /* 0018 */    0x11, 0xE2, 0x22, 0xE3, 0x33, 0x5C, 0x47, 0x50,
-        /* 0020 */    0x49, 0x4F, 0x00, 0xC1, 0xC2, 0xC3, 0xC4, 0x79,
-        /* 0028 */    0x00
-    },
-    Buffer (0x29)
-    {
-        /* 0000 */    0x8C, 0x24, 0x00, 0x01, 0x01, 0x00, 0x00, 0x1A,
-        /* 0008 */    0x00, 0x02, 0xCD, 0xAB, 0xEB, 0x0D, 0x17, 0x00,
-        /* 0010 */    0xEE, 0x1D, 0x00, 0x23, 0x00, 0x04, 0x00, 0xE1,
-        /* 0018 */    0x11, 0xE2, 0x22, 0xE3, 0x33, 0x5C, 0x47, 0x50,
-        /* 0020 */    0x49, 0x4F, 0x00, 0xC1, 0xC2, 0xC3, 0xC4, 0x79,
-        /* 0028 */    0x00
-    },
-    Buffer (0x29)
-    {
-        /* 0000 */    0x8C, 0x24, 0x00, 0x01, 0x01, 0x00, 0x00, 0x18,
-        /* 0008 */    0x00, 0x03, 0xCD, 0xAB, 0xEB, 0x0D, 0x17, 0x00,
-        /* 0010 */    0xEE, 0x1D, 0x00, 0x23, 0x00, 0x04, 0x00, 0xE1,
-        /* 0018 */    0x11, 0xE2, 0x22, 0xE3, 0x33, 0x5C, 0x47, 0x50,
-        /* 0020 */    0x49, 0x4F, 0x00, 0xC1, 0xC2, 0xC3, 0xC4, 0x79,
-        /* 0028 */    0x00
-    },
-    Buffer (0x29)
-    {
-        /* 0000 */    0x8C, 0x24, 0x00, 0x01, 0x01, 0x00, 0x00, 0x19,
-        /* 0008 */    0x00, 0x03, 0xCD, 0xAB, 0xEB, 0x0D, 0x17, 0x00,
-        /* 0010 */    0xEE, 0x1D, 0x00, 0x23, 0x00, 0x04, 0x00, 0xE1,
-        /* 0018 */    0x11, 0xE2, 0x22, 0xE3, 0x33, 0x5C, 0x47, 0x50,
-        /* 0020 */    0x49, 0x4F, 0x00, 0xC1, 0xC2, 0xC3, 0xC4, 0x79,
-        /* 0028 */    0x00
-    },
-    Buffer (0x29)
-    {
-        /* 0000 */    0x8C, 0x24, 0x00, 0x01, 0x01, 0x00, 0x00, 0x1A,
-        /* 0008 */    0x00, 0x03, 0xCD, 0xAB, 0xEB, 0x0D, 0x17, 0x00,
-        /* 0010 */    0xEE, 0x1D, 0x00, 0x23, 0x00, 0x04, 0x00, 0xE1,
-        /* 0018 */    0x11, 0xE2, 0x22, 0xE3, 0x33, 0x5C, 0x47, 0x50,
-        /* 0020 */    0x49, 0x4F, 0x00, 0xC1, 0xC2, 0xC3, 0xC4, 0x79,
-        /* 0028 */    0x00
-    },
-    Buffer (0x29)
-    {
-        /* 0000 */    0x8C, 0x24, 0x00, 0x01, 0x01, 0x00, 0x00, 0x18,
-        /* 0008 */    0x00, 0x00, 0xCD, 0xAB, 0xEB, 0x0D, 0x17, 0x00,
-        /* 0010 */    0xEE, 0x1D, 0x00, 0x23, 0x00, 0x04, 0x00, 0xE1,
-        /* 0018 */    0x11, 0xE2, 0x22, 0xE3, 0x33, 0x5C, 0x47, 0x50,
-        /* 0020 */    0x49, 0x4F, 0x00, 0xC1, 0xC2, 0xC3, 0xC4, 0x79,
-        /* 0028 */    0x00
-    },
-    Buffer (0x29)
-    {
-        /* 0000 */    0x8C, 0x24, 0x00, 0x01, 0x01, 0x00, 0x00, 0x19,
-        /* 0008 */    0x00, 0x00, 0xCD, 0xAB, 0xEB, 0x0D, 0x17, 0x00,
-        /* 0010 */    0xEE, 0x1D, 0x00, 0x23, 0x00, 0x04, 0x00, 0xE1,
-        /* 0018 */    0x11, 0xE2, 0x22, 0xE3, 0x33, 0x5C, 0x47, 0x50,
-        /* 0020 */    0x49, 0x4F, 0x00, 0xC1, 0xC2, 0xC3, 0xC4, 0x79,
-        /* 0028 */    0x00
-    },
-    Buffer (0x29)
-    {
-        /* 0000 */    0x8C, 0x24, 0x00, 0x01, 0x01, 0x00, 0x00, 0x1A,
-        /* 0008 */    0x00, 0x00, 0xCD, 0xAB, 0xEB, 0x0D, 0x17, 0x00,
-        /* 0010 */    0xEE, 0x1D, 0x00, 0x23, 0x00, 0x04, 0x00, 0xE1,
-        /* 0018 */    0x11, 0xE2, 0x22, 0xE3, 0x33, 0x5C, 0x47, 0x50,
-        /* 0020 */    0x49, 0x4F, 0x00, 0xC1, 0xC2, 0xC3, 0xC4, 0x79,
-        /* 0028 */    0x00
-    },
-    Buffer (0x25)
-    {
-        /* 0000 */    0x8C, 0x20, 0x00, 0x01, 0x01, 0x01, 0x00, 0x00,
-        /* 0008 */    0x00, 0x01, 0xCD, 0xAB, 0xEB, 0x0D, 0x17, 0x00,
-        /* 0010 */    0xEE, 0x1D, 0x00, 0x23, 0x00, 0x00, 0x00, 0xE1,
-        /* 0018 */    0x11, 0xE2, 0x22, 0xE3, 0x33, 0x5C, 0x47, 0x50,
-        /* 0020 */    0x49, 0x4F, 0x00, 0x79, 0x00
-    },
-    Buffer (0x25)
-    {
-        /* 0000 */    0x8C, 0x20, 0x00, 0x01, 0x01, 0x01, 0x00, 0x01,
-        /* 0008 */    0x00, 0x01, 0xCD, 0xAB, 0xEB, 0x0D, 0x17, 0x00,
-        /* 0010 */    0xEE, 0x1D, 0x00, 0x23, 0x00, 0x00, 0x00, 0xE1,
-        /* 0018 */    0x11, 0xE2, 0x22, 0xE3, 0x33, 0x5C, 0x47, 0x50,
-        /* 0020 */    0x49, 0x4F, 0x00, 0x79, 0x00
-    },
-    Buffer (0x25)
-    {
-        /* 0000 */    0x8C, 0x20, 0x00, 0x01, 0x01, 0x01, 0x00, 0x02,
-        /* 0008 */    0x00, 0x01, 0xCD, 0xAB, 0xEB, 0x0D, 0x17, 0x00,
-        /* 0010 */    0xEE, 0x1D, 0x00, 0x23, 0x00, 0x00, 0x00, 0xE1,
-        /* 0018 */    0x11, 0xE2, 0x22, 0xE3, 0x33, 0x5C, 0x47, 0x50,
-        /* 0020 */    0x49, 0x4F, 0x00, 0x79, 0x00
-    },
-    Buffer (0x25)
-    {
-        /* 0000 */    0x8C, 0x20, 0x00, 0x01, 0x01, 0x01, 0x00, 0x00,
-        /* 0008 */    0x00, 0x02, 0xCD, 0xAB, 0xEB, 0x0D, 0x17, 0x00,
-        /* 0010 */    0xEE, 0x1D, 0x00, 0x23, 0x00, 0x00, 0x00, 0xE1,
-        /* 0018 */    0x11, 0xE2, 0x22, 0xE3, 0x33, 0x5C, 0x47, 0x50,
-        /* 0020 */    0x49, 0x4F, 0x00, 0x79, 0x00
-    },
-    Buffer (0x25)
-    {
-        /* 0000 */    0x8C, 0x20, 0x00, 0x01, 0x01, 0x01, 0x00, 0x01,
-        /* 0008 */    0x00, 0x02, 0xCD, 0xAB, 0xEB, 0x0D, 0x17, 0x00,
-        /* 0010 */    0xEE, 0x1D, 0x00, 0x23, 0x00, 0x00, 0x00, 0xE1,
-        /* 0018 */    0x11, 0xE2, 0x22, 0xE3, 0x33, 0x5C, 0x47, 0x50,
-        /* 0020 */    0x49, 0x4F, 0x00, 0x79, 0x00
-    },
-    Buffer (0x25)
-    {
-        /* 0000 */    0x8C, 0x20, 0x00, 0x01, 0x01, 0x01, 0x00, 0x02,
-        /* 0008 */    0x00, 0x02, 0xCD, 0xAB, 0xEB, 0x0D, 0x17, 0x00,
-        /* 0010 */    0xEE, 0x1D, 0x00, 0x23, 0x00, 0x00, 0x00, 0xE1,
-        /* 0018 */    0x11, 0xE2, 0x22, 0xE3, 0x33, 0x5C, 0x47, 0x50,
-        /* 0020 */    0x49, 0x4F, 0x00, 0x79, 0x00
-    },
-    Buffer (0x25)
-    {
-        /* 0000 */    0x8C, 0x20, 0x00, 0x01, 0x01, 0x01, 0x00, 0x00,
-        /* 0008 */    0x00, 0x03, 0xCD, 0xAB, 0xEB, 0x0D, 0x17, 0x00,
-        /* 0010 */    0xEE, 0x1D, 0x00, 0x23, 0x00, 0x00, 0x00, 0xE1,
-        /* 0018 */    0x11, 0xE2, 0x22, 0xE3, 0x33, 0x5C, 0x47, 0x50,
-        /* 0020 */    0x49, 0x4F, 0x00, 0x79, 0x00
-    },
-    Buffer (0x25)
-    {
-        /* 0000 */    0x8C, 0x20, 0x00, 0x01, 0x01, 0x01, 0x00, 0x01,
-        /* 0008 */    0x00, 0x03, 0xCD, 0xAB, 0xEB, 0x0D, 0x17, 0x00,
-        /* 0010 */    0xEE, 0x1D, 0x00, 0x23, 0x00, 0x00, 0x00, 0xE1,
-        /* 0018 */    0x11, 0xE2, 0x22, 0xE3, 0x33, 0x5C, 0x47, 0x50,
-        /* 0020 */    0x49, 0x4F, 0x00, 0x79, 0x00
-    },
-    Buffer (0x25)
-    {
-        /* 0000 */    0x8C, 0x20, 0x00, 0x01, 0x01, 0x01, 0x00, 0x02,
-        /* 0008 */    0x00, 0x03, 0xCD, 0xAB, 0xEB, 0x0D, 0x17, 0x00,
-        /* 0010 */    0xEE, 0x1D, 0x00, 0x23, 0x00, 0x00, 0x00, 0xE1,
-        /* 0018 */    0x11, 0xE2, 0x22, 0xE3, 0x33, 0x5C, 0x47, 0x50,
-        /* 0020 */    0x49, 0x4F, 0x00, 0x79, 0x00
-    },
-    Buffer (0x25)
-    {
-        /* 0000 */    0x8C, 0x20, 0x00, 0x01, 0x01, 0x01, 0x00, 0x00,
-        /* 0008 */    0x00, 0x00, 0xCD, 0xAB, 0xEB, 0x0D, 0x17, 0x00,
-        /* 0010 */    0xEE, 0x1D, 0x00, 0x23, 0x00, 0x00, 0x00, 0xE1,
-        /* 0018 */    0x11, 0xE2, 0x22, 0xE3, 0x33, 0x5C, 0x47, 0x50,
-        /* 0020 */    0x49, 0x4F, 0x00, 0x79, 0x00
-    },
-    Buffer (0x25)
-    {
-        /* 0000 */    0x8C, 0x20, 0x00, 0x01, 0x01, 0x01, 0x00, 0x01,
-        /* 0008 */    0x00, 0x00, 0xCD, 0xAB, 0xEB, 0x0D, 0x17, 0x00,
-        /* 0010 */    0xEE, 0x1D, 0x00, 0x23, 0x00, 0x00, 0x00, 0xE1,
-        /* 0018 */    0x11, 0xE2, 0x22, 0xE3, 0x33, 0x5C, 0x47, 0x50,
-        /* 0020 */    0x49, 0x4F, 0x00, 0x79, 0x00
-    },
-    Buffer (0x25)
-    {
-        /* 0000 */    0x8C, 0x20, 0x00, 0x01, 0x01, 0x01, 0x00, 0x02,
-        /* 0008 */    0x00, 0x00, 0xCD, 0xAB, 0xEB, 0x0D, 0x17, 0x00,
-        /* 0010 */    0xEE, 0x1D, 0x00, 0x23, 0x00, 0x00, 0x00, 0xE1,
-        /* 0018 */    0x11, 0xE2, 0x22, 0xE3, 0x33, 0x5C, 0x47, 0x50,
-        /* 0020 */    0x49, 0x4F, 0x00, 0x79, 0x00
-    },
-    Buffer (0x25)
-    {
-        /* 0000 */    0x8C, 0x20, 0x00, 0x01, 0x01, 0x01, 0x00, 0x08,
-        /* 0008 */    0x00, 0x01, 0xCD, 0xAB, 0xEB, 0x0D, 0x17, 0x00,
-        /* 0010 */    0xEE, 0x1D, 0x00, 0x23, 0x00, 0x00, 0x00, 0xE1,
-        /* 0018 */    0x11, 0xE2, 0x22, 0xE3, 0x33, 0x5C, 0x47, 0x50,
-        /* 0020 */    0x49, 0x4F, 0x00, 0x79, 0x00
-    },
-    Buffer (0x25)
-    {
-        /* 0000 */    0x8C, 0x20, 0x00, 0x01, 0x01, 0x01, 0x00, 0x09,
-        /* 0008 */    0x00, 0x01, 0xCD, 0xAB, 0xEB, 0x0D, 0x17, 0x00,
-        /* 0010 */    0xEE, 0x1D, 0x00, 0x23, 0x00, 0x00, 0x00, 0xE1,
-        /* 0018 */    0x11, 0xE2, 0x22, 0xE3, 0x33, 0x5C, 0x47, 0x50,
-        /* 0020 */    0x49, 0x4F, 0x00, 0x79, 0x00
-    },
-    Buffer (0x25)
-    {
-        /* 0000 */    0x8C, 0x20, 0x00, 0x01, 0x01, 0x01, 0x00, 0x0A,
-        /* 0008 */    0x00, 0x01, 0xCD, 0xAB, 0xEB, 0x0D, 0x17, 0x00,
-        /* 0010 */    0xEE, 0x1D, 0x00, 0x23, 0x00, 0x00, 0x00, 0xE1,
-        /* 0018 */    0x11, 0xE2, 0x22, 0xE3, 0x33, 0x5C, 0x47, 0x50,
-        /* 0020 */    0x49, 0x4F, 0x00, 0x79, 0x00
-    },
-    Buffer (0x25)
-    {
-        /* 0000 */    0x8C, 0x20, 0x00, 0x01, 0x01, 0x01, 0x00, 0x08,
-        /* 0008 */    0x00, 0x02, 0xCD, 0xAB, 0xEB, 0x0D, 0x17, 0x00,
-        /* 0010 */    0xEE, 0x1D, 0x00, 0x23, 0x00, 0x00, 0x00, 0xE1,
-        /* 0018 */    0x11, 0xE2, 0x22, 0xE3, 0x33, 0x5C, 0x47, 0x50,
-        /* 0020 */    0x49, 0x4F, 0x00, 0x79, 0x00
-    },
-    Buffer (0x25)
-    {
-        /* 0000 */    0x8C, 0x20, 0x00, 0x01, 0x01, 0x01, 0x00, 0x09,
-        /* 0008 */    0x00, 0x02, 0xCD, 0xAB, 0xEB, 0x0D, 0x17, 0x00,
-        /* 0010 */    0xEE, 0x1D, 0x00, 0x23, 0x00, 0x00, 0x00, 0xE1,
-        /* 0018 */    0x11, 0xE2, 0x22, 0xE3, 0x33, 0x5C, 0x47, 0x50,
-        /* 0020 */    0x49, 0x4F, 0x00, 0x79, 0x00
-    },
-    Buffer (0x25)
-    {
-        /* 0000 */    0x8C, 0x20, 0x00, 0x01, 0x01, 0x01, 0x00, 0x0A,
-        /* 0008 */    0x00, 0x02, 0xCD, 0xAB, 0xEB, 0x0D, 0x17, 0x00,
-        /* 0010 */    0xEE, 0x1D, 0x00, 0x23, 0x00, 0x00, 0x00, 0xE1,
-        /* 0018 */    0x11, 0xE2, 0x22, 0xE3, 0x33, 0x5C, 0x47, 0x50,
-        /* 0020 */    0x49, 0x4F, 0x00, 0x79, 0x00
-    },
-    Buffer (0x25)
-    {
-        /* 0000 */    0x8C, 0x20, 0x00, 0x01, 0x01, 0x01, 0x00, 0x08,
-        /* 0008 */    0x00, 0x03, 0xCD, 0xAB, 0xEB, 0x0D, 0x17, 0x00,
-        /* 0010 */    0xEE, 0x1D, 0x00, 0x23, 0x00, 0x00, 0x00, 0xE1,
-        /* 0018 */    0x11, 0xE2, 0x22, 0xE3, 0x33, 0x5C, 0x47, 0x50,
-        /* 0020 */    0x49, 0x4F, 0x00, 0x79, 0x00
-    },
-    Buffer (0x25)
-    {
-        /* 0000 */    0x8C, 0x20, 0x00, 0x01, 0x01, 0x01, 0x00, 0x09,
-        /* 0008 */    0x00, 0x03, 0xCD, 0xAB, 0xEB, 0x0D, 0x17, 0x00,
-        /* 0010 */    0xEE, 0x1D, 0x00, 0x23, 0x00, 0x00, 0x00, 0xE1,
-        /* 0018 */    0x11, 0xE2, 0x22, 0xE3, 0x33, 0x5C, 0x47, 0x50,
-        /* 0020 */    0x49, 0x4F, 0x00, 0x79, 0x00
-    },
-    Buffer (0x25)
-    {
-        /* 0000 */    0x8C, 0x20, 0x00, 0x01, 0x01, 0x01, 0x00, 0x0A,
-        /* 0008 */    0x00, 0x03, 0xCD, 0xAB, 0xEB, 0x0D, 0x17, 0x00,
-        /* 0010 */    0xEE, 0x1D, 0x00, 0x23, 0x00, 0x00, 0x00, 0xE1,
-        /* 0018 */    0x11, 0xE2, 0x22, 0xE3, 0x33, 0x5C, 0x47, 0x50,
-        /* 0020 */    0x49, 0x4F, 0x00, 0x79, 0x00
-    },
-    Buffer (0x25)
-    {
-        /* 0000 */    0x8C, 0x20, 0x00, 0x01, 0x01, 0x01, 0x00, 0x08,
-        /* 0008 */    0x00, 0x00, 0xCD, 0xAB, 0xEB, 0x0D, 0x17, 0x00,
-        /* 0010 */    0xEE, 0x1D, 0x00, 0x23, 0x00, 0x00, 0x00, 0xE1,
-        /* 0018 */    0x11, 0xE2, 0x22, 0xE3, 0x33, 0x5C, 0x47, 0x50,
-        /* 0020 */    0x49, 0x4F, 0x00, 0x79, 0x00
-    },
-    Buffer (0x25)
-    {
-        /* 0000 */    0x8C, 0x20, 0x00, 0x01, 0x01, 0x01, 0x00, 0x09,
-        /* 0008 */    0x00, 0x00, 0xCD, 0xAB, 0xEB, 0x0D, 0x17, 0x00,
-        /* 0010 */    0xEE, 0x1D, 0x00, 0x23, 0x00, 0x00, 0x00, 0xE1,
-        /* 0018 */    0x11, 0xE2, 0x22, 0xE3, 0x33, 0x5C, 0x47, 0x50,
-        /* 0020 */    0x49, 0x4F, 0x00, 0x79, 0x00
-    },
-    Buffer (0x25)
-    {
-        /* 0000 */    0x8C, 0x20, 0x00, 0x01, 0x01, 0x01, 0x00, 0x0A,
-        /* 0008 */    0x00, 0x00, 0xCD, 0xAB, 0xEB, 0x0D, 0x17, 0x00,
-        /* 0010 */    0xEE, 0x1D, 0x00, 0x23, 0x00, 0x00, 0x00, 0xE1,
-        /* 0018 */    0x11, 0xE2, 0x22, 0xE3, 0x33, 0x5C, 0x47, 0x50,
-        /* 0020 */    0x49, 0x4F, 0x00, 0x79, 0x00
-    },
-    Buffer (0x25)
-    {
-        /* 0000 */    0x8C, 0x20, 0x00, 0x01, 0x01, 0x01, 0x00, 0x10,
-        /* 0008 */    0x00, 0x01, 0xCD, 0xAB, 0xEB, 0x0D, 0x17, 0x00,
-        /* 0010 */    0xEE, 0x1D, 0x00, 0x23, 0x00, 0x00, 0x00, 0xE1,
-        /* 0018 */    0x11, 0xE2, 0x22, 0xE3, 0x33, 0x5C, 0x47, 0x50,
-        /* 0020 */    0x49, 0x4F, 0x00, 0x79, 0x00
-    },
-    Buffer (0x25)
-    {
-        /* 0000 */    0x8C, 0x20, 0x00, 0x01, 0x01, 0x01, 0x00, 0x11,
-        /* 0008 */    0x00, 0x01, 0xCD, 0xAB, 0xEB, 0x0D, 0x17, 0x00,
-        /* 0010 */    0xEE, 0x1D, 0x00, 0x23, 0x00, 0x00, 0x00, 0xE1,
-        /* 0018 */    0x11, 0xE2, 0x22, 0xE3, 0x33, 0x5C, 0x47, 0x50,
-        /* 0020 */    0x49, 0x4F, 0x00, 0x79, 0x00
-    },
-    Buffer (0x25)
-    {
-        /* 0000 */    0x8C, 0x20, 0x00, 0x01, 0x01, 0x01, 0x00, 0x12,
-        /* 0008 */    0x00, 0x01, 0xCD, 0xAB, 0xEB, 0x0D, 0x17, 0x00,
-        /* 0010 */    0xEE, 0x1D, 0x00, 0x23, 0x00, 0x00, 0x00, 0xE1,
-        /* 0018 */    0x11, 0xE2, 0x22, 0xE3, 0x33, 0x5C, 0x47, 0x50,
-        /* 0020 */    0x49, 0x4F, 0x00, 0x79, 0x00
-    },
-    Buffer (0x25)
-    {
-        /* 0000 */    0x8C, 0x20, 0x00, 0x01, 0x01, 0x01, 0x00, 0x10,
-        /* 0008 */    0x00, 0x02, 0xCD, 0xAB, 0xEB, 0x0D, 0x17, 0x00,
-        /* 0010 */    0xEE, 0x1D, 0x00, 0x23, 0x00, 0x00, 0x00, 0xE1,
-        /* 0018 */    0x11, 0xE2, 0x22, 0xE3, 0x33, 0x5C, 0x47, 0x50,
-        /* 0020 */    0x49, 0x4F, 0x00, 0x79, 0x00
-    },
-    Buffer (0x29)
-    {
-        /* 0000 */    0x8C, 0x24, 0x00, 0x01, 0x01, 0x01, 0x00, 0x11,
-        /* 0008 */    0x00, 0x02, 0xCD, 0xAB, 0xEB, 0x0D, 0x17, 0x00,
-        /* 0010 */    0xEE, 0x1D, 0x00, 0x23, 0x00, 0x04, 0x00, 0xE1,
-        /* 0018 */    0x11, 0xE2, 0x22, 0xE3, 0x33, 0x5C, 0x47, 0x50,
-        /* 0020 */    0x49, 0x4F, 0x00, 0xC1, 0xC2, 0xC3, 0xC4, 0x79,
-        /* 0028 */    0x00
-    },
-    Buffer (0x25)
-    {
-        /* 0000 */    0x8C, 0x20, 0x00, 0x01, 0x01, 0x01, 0x00, 0x12,
-        /* 0008 */    0x00, 0x02, 0xCD, 0xAB, 0xEB, 0x0D, 0x17, 0x00,
-        /* 0010 */    0xEE, 0x1D, 0x00, 0x23, 0x00, 0x00, 0x00, 0xE1,
-        /* 0018 */    0x11, 0xE2, 0x22, 0xE3, 0x33, 0x5C, 0x47, 0x50,
-        /* 0020 */    0x49, 0x4F, 0x00, 0x79, 0x00
-    },
-    Buffer (0x25)
-    {
-        /* 0000 */    0x8C, 0x20, 0x00, 0x01, 0x01, 0x01, 0x00, 0x10,
-        /* 0008 */    0x00, 0x03, 0xCD, 0xAB, 0xEB, 0x0D, 0x17, 0x00,
-        /* 0010 */    0xEE, 0x1D, 0x00, 0x23, 0x00, 0x00, 0x00, 0xE1,
-        /* 0018 */    0x11, 0xE2, 0x22, 0xE3, 0x33, 0x5C, 0x47, 0x50,
-        /* 0020 */    0x49, 0x4F, 0x00, 0x79, 0x00
-    },
-    Buffer (0x25)
-    {
-        /* 0000 */    0x8C, 0x20, 0x00, 0x01, 0x01, 0x01, 0x00, 0x11,
-        /* 0008 */    0x00, 0x03, 0xCD, 0xAB, 0xEB, 0x0D, 0x17, 0x00,
-        /* 0010 */    0xEE, 0x1D, 0x00, 0x23, 0x00, 0x00, 0x00, 0xE1,
-        /* 0018 */    0x11, 0xE2, 0x22, 0xE3, 0x33, 0x5C, 0x47, 0x50,
-        /* 0020 */    0x49, 0x4F, 0x00, 0x79, 0x00
-    },
-    Buffer (0x25)
-    {
-        /* 0000 */    0x8C, 0x20, 0x00, 0x01, 0x01, 0x01, 0x00, 0x12,
-        /* 0008 */    0x00, 0x03, 0xCD, 0xAB, 0xEB, 0x0D, 0x17, 0x00,
-        /* 0010 */    0xEE, 0x1D, 0x00, 0x23, 0x00, 0x00, 0x00, 0xE1,
-        /* 0018 */    0x11, 0xE2, 0x22, 0xE3, 0x33, 0x5C, 0x47, 0x50,
-        /* 0020 */    0x49, 0x4F, 0x00, 0x79, 0x00
-    },
-    Buffer (0x25)
-    {
-        /* 0000 */    0x8C, 0x20, 0x00, 0x01, 0x01, 0x01, 0x00, 0x10,
-        /* 0008 */    0x00, 0x00, 0xCD, 0xAB, 0xEB, 0x0D, 0x17, 0x00,
-        /* 0010 */    0xEE, 0x1D, 0x00, 0x23, 0x00, 0x00, 0x00, 0xE1,
-        /* 0018 */    0x11, 0xE2, 0x22, 0xE3, 0x33, 0x5C, 0x47, 0x50,
-        /* 0020 */    0x49, 0x4F, 0x00, 0x79, 0x00
-    },
-    Buffer (0x25)
-    {
-        /* 0000 */    0x8C, 0x20, 0x00, 0x01, 0x01, 0x01, 0x00, 0x11,
-        /* 0008 */    0x00, 0x00, 0xCD, 0xAB, 0xEB, 0x0D, 0x17, 0x00,
-        /* 0010 */    0xEE, 0x1D, 0x00, 0x23, 0x00, 0x00, 0x00, 0xE1,
-        /* 0018 */    0x11, 0xE2, 0x22, 0xE3, 0x33, 0x5C, 0x47, 0x50,
-        /* 0020 */    0x49, 0x4F, 0x00, 0x79, 0x00
-    },
-    Buffer (0x25)
-    {
-        /* 0000 */    0x8C, 0x20, 0x00, 0x01, 0x01, 0x01, 0x00, 0x12,
-        /* 0008 */    0x00, 0x00, 0xCD, 0xAB, 0xEB, 0x0D, 0x17, 0x00,
-        /* 0010 */    0xEE, 0x1D, 0x00, 0x23, 0x00, 0x00, 0x00, 0xE1,
-        /* 0018 */    0x11, 0xE2, 0x22, 0xE3, 0x33, 0x5C, 0x47, 0x50,
-        /* 0020 */    0x49, 0x4F, 0x00, 0x79, 0x00
-    },
-    Buffer (0x25)
-    {
-        /* 0000 */    0x8C, 0x20, 0x00, 0x01, 0x01, 0x01, 0x00, 0x18,
-        /* 0008 */    0x00, 0x01, 0xCD, 0xAB, 0xEB, 0x0D, 0x17, 0x00,
-        /* 0010 */    0xEE, 0x1D, 0x00, 0x23, 0x00, 0x00, 0x00, 0xE1,
-        /* 0018 */    0x11, 0xE2, 0x22, 0xE3, 0x33, 0x5C, 0x47, 0x50,
-        /* 0020 */    0x49, 0x4F, 0x00, 0x79, 0x00
-    },
-    Buffer (0x25)
-    {
-        /* 0000 */    0x8C, 0x20, 0x00, 0x01, 0x01, 0x01, 0x00, 0x19,
-        /* 0008 */    0x00, 0x01, 0xCD, 0xAB, 0xEB, 0x0D, 0x17, 0x00,
-        /* 0010 */    0xEE, 0x1D, 0x00, 0x23, 0x00, 0x00, 0x00, 0xE1,
-        /* 0018 */    0x11, 0xE2, 0x22, 0xE3, 0x33, 0x5C, 0x47, 0x50,
-        /* 0020 */    0x49, 0x4F, 0x00, 0x79, 0x00
-    },
-    Buffer (0x25)
-    {
-        /* 0000 */    0x8C, 0x20, 0x00, 0x01, 0x01, 0x01, 0x00, 0x1A,
-        /* 0008 */    0x00, 0x01, 0xCD, 0xAB, 0xEB, 0x0D, 0x17, 0x00,
-        /* 0010 */    0xEE, 0x1D, 0x00, 0x23, 0x00, 0x00, 0x00, 0xE1,
-        /* 0018 */    0x11, 0xE2, 0x22, 0xE3, 0x33, 0x5C, 0x47, 0x50,
-        /* 0020 */    0x49, 0x4F, 0x00, 0x79, 0x00
-    },
-    Buffer (0x25)
-    {
-        /* 0000 */    0x8C, 0x20, 0x00, 0x01, 0x01, 0x01, 0x00, 0x18,
-        /* 0008 */    0x00, 0x02, 0xCD, 0xAB, 0xEB, 0x0D, 0x17, 0x00,
-        /* 0010 */    0xEE, 0x1D, 0x00, 0x23, 0x00, 0x00, 0x00, 0xE1,
-        /* 0018 */    0x11, 0xE2, 0x22, 0xE3, 0x33, 0x5C, 0x47, 0x50,
-        /* 0020 */    0x49, 0x4F, 0x00, 0x79, 0x00
-    },
-    Buffer (0x25)
-    {
-        /* 0000 */    0x8C, 0x20, 0x00, 0x01, 0x01, 0x01, 0x00, 0x19,
-        /* 0008 */    0x00, 0x02, 0xCD, 0xAB, 0xEB, 0x0D, 0x17, 0x00,
-        /* 0010 */    0xEE, 0x1D, 0x00, 0x23, 0x00, 0x00, 0x00, 0xE1,
-        /* 0018 */    0x11, 0xE2, 0x22, 0xE3, 0x33, 0x5C, 0x47, 0x50,
-        /* 0020 */    0x49, 0x4F, 0x00, 0x79, 0x00
-    },
-    Buffer (0x25)
-    {
-        /* 0000 */    0x8C, 0x20, 0x00, 0x01, 0x01, 0x01, 0x00, 0x1A,
-        /* 0008 */    0x00, 0x02, 0xCD, 0xAB, 0xEB, 0x0D, 0x17, 0x00,
-        /* 0010 */    0xEE, 0x1D, 0x00, 0x23, 0x00, 0x00, 0x00, 0xE1,
-        /* 0018 */    0x11, 0xE2, 0x22, 0xE3, 0x33, 0x5C, 0x47, 0x50,
-        /* 0020 */    0x49, 0x4F, 0x00, 0x79, 0x00
-    },
-    Buffer (0x25)
-    {
-        /* 0000 */    0x8C, 0x20, 0x00, 0x01, 0x01, 0x01, 0x00, 0x18,
-        /* 0008 */    0x00, 0x03, 0xCD, 0xAB, 0xEB, 0x0D, 0x17, 0x00,
-        /* 0010 */    0xEE, 0x1D, 0x00, 0x23, 0x00, 0x00, 0x00, 0xE1,
-        /* 0018 */    0x11, 0xE2, 0x22, 0xE3, 0x33, 0x5C, 0x47, 0x50,
-        /* 0020 */    0x49, 0x4F, 0x00, 0x79, 0x00
-    },
-    Buffer (0x25)
-    {
-        /* 0000 */    0x8C, 0x20, 0x00, 0x01, 0x01, 0x01, 0x00, 0x19,
-        /* 0008 */    0x00, 0x03, 0xCD, 0xAB, 0xEB, 0x0D, 0x17, 0x00,
-        /* 0010 */    0xEE, 0x1D, 0x00, 0x23, 0x00, 0x00, 0x00, 0xE1,
-        /* 0018 */    0x11, 0xE2, 0x22, 0xE3, 0x33, 0x5C, 0x47, 0x50,
-        /* 0020 */    0x49, 0x4F, 0x00, 0x79, 0x00
-    },
-    Buffer (0x25)
-    {
-        /* 0000 */    0x8C, 0x20, 0x00, 0x01, 0x01, 0x01, 0x00, 0x1A,
-        /* 0008 */    0x00, 0x03, 0xCD, 0xAB, 0xEB, 0x0D, 0x17, 0x00,
-        /* 0010 */    0xEE, 0x1D, 0x00, 0x23, 0x00, 0x00, 0x00, 0xE1,
-        /* 0018 */    0x11, 0xE2, 0x22, 0xE3, 0x33, 0x5C, 0x47, 0x50,
-        /* 0020 */    0x49, 0x4F, 0x00, 0x79, 0x00
-    },
-    Buffer (0x25)
-    {
-        /* 0000 */    0x8C, 0x20, 0x00, 0x01, 0x01, 0x01, 0x00, 0x18,
-        /* 0008 */    0x00, 0x00, 0xCD, 0xAB, 0xEB, 0x0D, 0x17, 0x00,
-        /* 0010 */    0xEE, 0x1D, 0x00, 0x23, 0x00, 0x00, 0x00, 0xE1,
-        /* 0018 */    0x11, 0xE2, 0x22, 0xE3, 0x33, 0x5C, 0x47, 0x50,
-        /* 0020 */    0x49, 0x4F, 0x00, 0x79, 0x00
-    },
-    Buffer (0x25)
-    {
-        /* 0000 */    0x8C, 0x20, 0x00, 0x01, 0x01, 0x01, 0x00, 0x19,
-        /* 0008 */    0x00, 0x00, 0xCD, 0xAB, 0xEB, 0x0D, 0x17, 0x00,
-        /* 0010 */    0xEE, 0x1D, 0x00, 0x23, 0x00, 0x00, 0x00, 0xE1,
-        /* 0018 */    0x11, 0xE2, 0x22, 0xE3, 0x33, 0x5C, 0x47, 0x50,
-        /* 0020 */    0x49, 0x4F, 0x00, 0x79, 0x00
-    },
-    Buffer (0x25)
-    {
-        /* 0000 */    0x8C, 0x20, 0x00, 0x01, 0x01, 0x01, 0x00, 0x1A,
-        /* 0008 */    0x00, 0x00, 0xCD, 0xAB, 0xEB, 0x0D, 0x17, 0x00,
-        /* 0010 */    0xEE, 0x1D, 0x00, 0x23, 0x00, 0x00, 0x00, 0xE1,
-        /* 0018 */    0x11, 0xE2, 0x22, 0xE3, 0x33, 0x5C, 0x47, 0x50,
-        /* 0020 */    0x49, 0x4F, 0x00, 0x79, 0x00
-    },
-    Buffer (0x25)
-    {
-        /* 0000 */    0x8C, 0x20, 0x00, 0x01, 0x01, 0x00, 0x00, 0x00,
-        /* 0008 */    0x00, 0x01, 0xCD, 0xAB, 0xEB, 0x0D, 0x17, 0x00,
-        /* 0010 */    0xEE, 0x1D, 0x00, 0x23, 0x00, 0x00, 0x00, 0xE1,
-        /* 0018 */    0x11, 0xE2, 0x22, 0xE3, 0x33, 0x5C, 0x47, 0x50,
-        /* 0020 */    0x49, 0x4F, 0x00, 0x79, 0x00
-    },
-    Buffer (0x25)
-    {
-        /* 0000 */    0x8C, 0x20, 0x00, 0x01, 0x01, 0x00, 0x00, 0x01,
-        /* 0008 */    0x00, 0x01, 0xCD, 0xAB, 0xEB, 0x0D, 0x17, 0x00,
-        /* 0010 */    0xEE, 0x1D, 0x00, 0x23, 0x00, 0x00, 0x00, 0xE1,
-        /* 0018 */    0x11, 0xE2, 0x22, 0xE3, 0x33, 0x5C, 0x47, 0x50,
-        /* 0020 */    0x49, 0x4F, 0x00, 0x79, 0x00
-    },
-    Buffer (0x25)
-    {
-        /* 0000 */    0x8C, 0x20, 0x00, 0x01, 0x01, 0x00, 0x00, 0x02,
-        /* 0008 */    0x00, 0x01, 0xCD, 0xAB, 0xEB, 0x0D, 0x17, 0x00,
-        /* 0010 */    0xEE, 0x1D, 0x00, 0x23, 0x00, 0x00, 0x00, 0xE1,
-        /* 0018 */    0x11, 0xE2, 0x22, 0xE3, 0x33, 0x5C, 0x47, 0x50,
-        /* 0020 */    0x49, 0x4F, 0x00, 0x79, 0x00
-    },
-    Buffer (0x25)
-    {
-        /* 0000 */    0x8C, 0x20, 0x00, 0x01, 0x01, 0x00, 0x00, 0x00,
-        /* 0008 */    0x00, 0x02, 0xCD, 0xAB, 0xEB, 0x0D, 0x17, 0x00,
-        /* 0010 */    0xEE, 0x1D, 0x00, 0x23, 0x00, 0x00, 0x00, 0xE1,
-        /* 0018 */    0x11, 0xE2, 0x22, 0xE3, 0x33, 0x5C, 0x47, 0x50,
-        /* 0020 */    0x49, 0x4F, 0x00, 0x79, 0x00
-    },
-    Buffer (0x25)
-    {
-        /* 0000 */    0x8C, 0x20, 0x00, 0x01, 0x01, 0x00, 0x00, 0x01,
-        /* 0008 */    0x00, 0x02, 0xCD, 0xAB, 0xEB, 0x0D, 0x17, 0x00,
-        /* 0010 */    0xEE, 0x1D, 0x00, 0x23, 0x00, 0x00, 0x00, 0xE1,
-        /* 0018 */    0x11, 0xE2, 0x22, 0xE3, 0x33, 0x5C, 0x47, 0x50,
-        /* 0020 */    0x49, 0x4F, 0x00, 0x79, 0x00
-    },
-    Buffer (0x25)
-    {
-        /* 0000 */    0x8C, 0x20, 0x00, 0x01, 0x01, 0x00, 0x00, 0x02,
-        /* 0008 */    0x00, 0x02, 0xCD, 0xAB, 0xEB, 0x0D, 0x17, 0x00,
-        /* 0010 */    0xEE, 0x1D, 0x00, 0x23, 0x00, 0x00, 0x00, 0xE1,
-        /* 0018 */    0x11, 0xE2, 0x22, 0xE3, 0x33, 0x5C, 0x47, 0x50,
-        /* 0020 */    0x49, 0x4F, 0x00, 0x79, 0x00
-    },
-    Buffer (0x25)
-    {
-        /* 0000 */    0x8C, 0x20, 0x00, 0x01, 0x01, 0x00, 0x00, 0x00,
-        /* 0008 */    0x00, 0x03, 0xCD, 0xAB, 0xEB, 0x0D, 0x17, 0x00,
-        /* 0010 */    0xEE, 0x1D, 0x00, 0x23, 0x00, 0x00, 0x00, 0xE1,
-        /* 0018 */    0x11, 0xE2, 0x22, 0xE3, 0x33, 0x5C, 0x47, 0x50,
-        /* 0020 */    0x49, 0x4F, 0x00, 0x79, 0x00
-    },
-    Buffer (0x25)
-    {
-        /* 0000 */    0x8C, 0x20, 0x00, 0x01, 0x01, 0x00, 0x00, 0x01,
-        /* 0008 */    0x00, 0x03, 0xCD, 0xAB, 0xEB, 0x0D, 0x17, 0x00,
-        /* 0010 */    0xEE, 0x1D, 0x00, 0x23, 0x00, 0x00, 0x00, 0xE1,
-        /* 0018 */    0x11, 0xE2, 0x22, 0xE3, 0x33, 0x5C, 0x47, 0x50,
-        /* 0020 */    0x49, 0x4F, 0x00, 0x79, 0x00
-    },
-    Buffer (0x25)
-    {
-        /* 0000 */    0x8C, 0x20, 0x00, 0x01, 0x01, 0x00, 0x00, 0x02,
-        /* 0008 */    0x00, 0x03, 0xCD, 0xAB, 0xEB, 0x0D, 0x17, 0x00,
-        /* 0010 */    0xEE, 0x1D, 0x00, 0x23, 0x00, 0x00, 0x00, 0xE1,
-        /* 0018 */    0x11, 0xE2, 0x22, 0xE3, 0x33, 0x5C, 0x47, 0x50,
-        /* 0020 */    0x49, 0x4F, 0x00, 0x79, 0x00
-    },
-    Buffer (0x25)
-    {
-        /* 0000 */    0x8C, 0x20, 0x00, 0x01, 0x01, 0x00, 0x00, 0x00,
-        /* 0008 */    0x00, 0x00, 0xCD, 0xAB, 0xEB, 0x0D, 0x17, 0x00,
-        /* 0010 */    0xEE, 0x1D, 0x00, 0x23, 0x00, 0x00, 0x00, 0xE1,
-        /* 0018 */    0x11, 0xE2, 0x22, 0xE3, 0x33, 0x5C, 0x47, 0x50,
-        /* 0020 */    0x49, 0x4F, 0x00, 0x79, 0x00
-    },
-    Buffer (0x25)
-    {
-        /* 0000 */    0x8C, 0x20, 0x00, 0x01, 0x01, 0x00, 0x00, 0x01,
-        /* 0008 */    0x00, 0x00, 0xCD, 0xAB, 0xEB, 0x0D, 0x17, 0x00,
-        /* 0010 */    0xEE, 0x1D, 0x00, 0x23, 0x00, 0x00, 0x00, 0xE1,
-        /* 0018 */    0x11, 0xE2, 0x22, 0xE3, 0x33, 0x5C, 0x47, 0x50,
-        /* 0020 */    0x49, 0x4F, 0x00, 0x79, 0x00
-    },
-    Buffer (0x25)
-    {
-        /* 0000 */    0x8C, 0x20, 0x00, 0x01, 0x01, 0x00, 0x00, 0x02,
-        /* 0008 */    0x00, 0x00, 0xCD, 0xAB, 0xEB, 0x0D, 0x17, 0x00,
-        /* 0010 */    0xEE, 0x1D, 0x00, 0x23, 0x00, 0x00, 0x00, 0xE1,
-        /* 0018 */    0x11, 0xE2, 0x22, 0xE3, 0x33, 0x5C, 0x47, 0x50,
-        /* 0020 */    0x49, 0x4F, 0x00, 0x79, 0x00
-    },
-    Buffer (0x25)
-    {
-        /* 0000 */    0x8C, 0x20, 0x00, 0x01, 0x01, 0x00, 0x00, 0x08,
-        /* 0008 */    0x00, 0x01, 0xCD, 0xAB, 0xEB, 0x0D, 0x17, 0x00,
-        /* 0010 */    0xEE, 0x1D, 0x00, 0x23, 0x00, 0x00, 0x00, 0xE1,
-        /* 0018 */    0x11, 0xE2, 0x22, 0xE3, 0x33, 0x5C, 0x47, 0x50,
-        /* 0020 */    0x49, 0x4F, 0x00, 0x79, 0x00
-    },
-    Buffer (0x25)
-    {
-        /* 0000 */    0x8C, 0x20, 0x00, 0x01, 0x01, 0x00, 0x00, 0x09,
-        /* 0008 */    0x00, 0x01, 0xCD, 0xAB, 0xEB, 0x0D, 0x17, 0x00,
-        /* 0010 */    0xEE, 0x1D, 0x00, 0x23, 0x00, 0x00, 0x00, 0xE1,
-        /* 0018 */    0x11, 0xE2, 0x22, 0xE3, 0x33, 0x5C, 0x47, 0x50,
-        /* 0020 */    0x49, 0x4F, 0x00, 0x79, 0x00
-    },
-    Buffer (0x25)
-    {
-        /* 0000 */    0x8C, 0x20, 0x00, 0x01, 0x01, 0x00, 0x00, 0x0A,
-        /* 0008 */    0x00, 0x01, 0xCD, 0xAB, 0xEB, 0x0D, 0x17, 0x00,
-        /* 0010 */    0xEE, 0x1D, 0x00, 0x23, 0x00, 0x00, 0x00, 0xE1,
-        /* 0018 */    0x11, 0xE2, 0x22, 0xE3, 0x33, 0x5C, 0x47, 0x50,
-        /* 0020 */    0x49, 0x4F, 0x00, 0x79, 0x00
-    },
-    Buffer (0x25)
-    {
-        /* 0000 */    0x8C, 0x20, 0x00, 0x01, 0x01, 0x00, 0x00, 0x08,
-        /* 0008 */    0x00, 0x02, 0xCD, 0xAB, 0xEB, 0x0D, 0x17, 0x00,
-        /* 0010 */    0xEE, 0x1D, 0x00, 0x23, 0x00, 0x00, 0x00, 0xE1,
-        /* 0018 */    0x11, 0xE2, 0x22, 0xE3, 0x33, 0x5C, 0x47, 0x50,
-        /* 0020 */    0x49, 0x4F, 0x00, 0x79, 0x00
-    },
-    Buffer (0x25)
-    {
-        /* 0000 */    0x8C, 0x20, 0x00, 0x01, 0x01, 0x00, 0x00, 0x09,
-        /* 0008 */    0x00, 0x02, 0xCD, 0xAB, 0xEB, 0x0D, 0x17, 0x00,
-        /* 0010 */    0xEE, 0x1D, 0x00, 0x23, 0x00, 0x00, 0x00, 0xE1,
-        /* 0018 */    0x11, 0xE2, 0x22, 0xE3, 0x33, 0x5C, 0x47, 0x50,
-        /* 0020 */    0x49, 0x4F, 0x00, 0x79, 0x00
-    },
-    Buffer (0x25)
-    {
-        /* 0000 */    0x8C, 0x20, 0x00, 0x01, 0x01, 0x00, 0x00, 0x0A,
-        /* 0008 */    0x00, 0x02, 0xCD, 0xAB, 0xEB, 0x0D, 0x17, 0x00,
-        /* 0010 */    0xEE, 0x1D, 0x00, 0x23, 0x00, 0x00, 0x00, 0xE1,
-        /* 0018 */    0x11, 0xE2, 0x22, 0xE3, 0x33, 0x5C, 0x47, 0x50,
-        /* 0020 */    0x49, 0x4F, 0x00, 0x79, 0x00
-    },
-    Buffer (0x25)
-    {
-        /* 0000 */    0x8C, 0x20, 0x00, 0x01, 0x01, 0x00, 0x00, 0x08,
-        /* 0008 */    0x00, 0x03, 0xCD, 0xAB, 0xEB, 0x0D, 0x17, 0x00,
-        /* 0010 */    0xEE, 0x1D, 0x00, 0x23, 0x00, 0x00, 0x00, 0xE1,
-        /* 0018 */    0x11, 0xE2, 0x22, 0xE3, 0x33, 0x5C, 0x47, 0x50,
-        /* 0020 */    0x49, 0x4F, 0x00, 0x79, 0x00
-    },
-    Buffer (0x25)
-    {
-        /* 0000 */    0x8C, 0x20, 0x00, 0x01, 0x01, 0x00, 0x00, 0x09,
-        /* 0008 */    0x00, 0x03, 0xCD, 0xAB, 0xEB, 0x0D, 0x17, 0x00,
-        /* 0010 */    0xEE, 0x1D, 0x00, 0x23, 0x00, 0x00, 0x00, 0xE1,
-        /* 0018 */    0x11, 0xE2, 0x22, 0xE3, 0x33, 0x5C, 0x47, 0x50,
-        /* 0020 */    0x49, 0x4F, 0x00, 0x79, 0x00
-    },
-    Buffer (0x25)
-    {
-        /* 0000 */    0x8C, 0x20, 0x00, 0x01, 0x01, 0x00, 0x00, 0x0A,
-        /* 0008 */    0x00, 0x03, 0xCD, 0xAB, 0xEB, 0x0D, 0x17, 0x00,
-        /* 0010 */    0xEE, 0x1D, 0x00, 0x23, 0x00, 0x00, 0x00, 0xE1,
-        /* 0018 */    0x11, 0xE2, 0x22, 0xE3, 0x33, 0x5C, 0x47, 0x50,
-        /* 0020 */    0x49, 0x4F, 0x00, 0x79, 0x00
-    },
-    Buffer (0x25)
-    {
-        /* 0000 */    0x8C, 0x20, 0x00, 0x01, 0x01, 0x00, 0x00, 0x08,
-        /* 0008 */    0x00, 0x00, 0xCD, 0xAB, 0xEB, 0x0D, 0x17, 0x00,
-        /* 0010 */    0xEE, 0x1D, 0x00, 0x23, 0x00, 0x00, 0x00, 0xE1,
-        /* 0018 */    0x11, 0xE2, 0x22, 0xE3, 0x33, 0x5C, 0x47, 0x50,
-        /* 0020 */    0x49, 0x4F, 0x00, 0x79, 0x00
-    },
-    Buffer (0x25)
-    {
-        /* 0000 */    0x8C, 0x20, 0x00, 0x01, 0x01, 0x00, 0x00, 0x09,
-        /* 0008 */    0x00, 0x00, 0xCD, 0xAB, 0xEB, 0x0D, 0x17, 0x00,
-        /* 0010 */    0xEE, 0x1D, 0x00, 0x23, 0x00, 0x00, 0x00, 0xE1,
-        /* 0018 */    0x11, 0xE2, 0x22, 0xE3, 0x33, 0x5C, 0x47, 0x50,
-        /* 0020 */    0x49, 0x4F, 0x00, 0x79, 0x00
-    },
-    Buffer (0x25)
-    {
-        /* 0000 */    0x8C, 0x20, 0x00, 0x01, 0x01, 0x00, 0x00, 0x0A,
-        /* 0008 */    0x00, 0x00, 0xCD, 0xAB, 0xEB, 0x0D, 0x17, 0x00,
-        /* 0010 */    0xEE, 0x1D, 0x00, 0x23, 0x00, 0x00, 0x00, 0xE1,
-        /* 0018 */    0x11, 0xE2, 0x22, 0xE3, 0x33, 0x5C, 0x47, 0x50,
-        /* 0020 */    0x49, 0x4F, 0x00, 0x79, 0x00
-    },
-    Buffer (0x25)
-    {
-        /* 0000 */    0x8C, 0x20, 0x00, 0x01, 0x01, 0x00, 0x00, 0x10,
-        /* 0008 */    0x00, 0x01, 0xCD, 0xAB, 0xEB, 0x0D, 0x17, 0x00,
-        /* 0010 */    0xEE, 0x1D, 0x00, 0x23, 0x00, 0x00, 0x00, 0xE1,
-        /* 0018 */    0x11, 0xE2, 0x22, 0xE3, 0x33, 0x5C, 0x47, 0x50,
-        /* 0020 */    0x49, 0x4F, 0x00, 0x79, 0x00
-    },
-    Buffer (0x25)
-    {
-        /* 0000 */    0x8C, 0x20, 0x00, 0x01, 0x01, 0x00, 0x00, 0x11,
-        /* 0008 */    0x00, 0x01, 0xCD, 0xAB, 0xEB, 0x0D, 0x17, 0x00,
-        /* 0010 */    0xEE, 0x1D, 0x00, 0x23, 0x00, 0x00, 0x00, 0xE1,
-        /* 0018 */    0x11, 0xE2, 0x22, 0xE3, 0x33, 0x5C, 0x47, 0x50,
-        /* 0020 */    0x49, 0x4F, 0x00, 0x79, 0x00
-    },
-    Buffer (0x25)
-    {
-        /* 0000 */    0x8C, 0x20, 0x00, 0x01, 0x01, 0x00, 0x00, 0x12,
-        /* 0008 */    0x00, 0x01, 0xCD, 0xAB, 0xEB, 0x0D, 0x17, 0x00,
-        /* 0010 */    0xEE, 0x1D, 0x00, 0x23, 0x00, 0x00, 0x00, 0xE1,
-        /* 0018 */    0x11, 0xE2, 0x22, 0xE3, 0x33, 0x5C, 0x47, 0x50,
-        /* 0020 */    0x49, 0x4F, 0x00, 0x79, 0x00
-    },
-    Buffer (0x25)
-    {
-        /* 0000 */    0x8C, 0x20, 0x00, 0x01, 0x01, 0x00, 0x00, 0x10,
-        /* 0008 */    0x00, 0x02, 0xCD, 0xAB, 0xEB, 0x0D, 0x17, 0x00,
-        /* 0010 */    0xEE, 0x1D, 0x00, 0x23, 0x00, 0x00, 0x00, 0xE1,
-        /* 0018 */    0x11, 0xE2, 0x22, 0xE3, 0x33, 0x5C, 0x47, 0x50,
-        /* 0020 */    0x49, 0x4F, 0x00, 0x79, 0x00
-    },
-    Buffer (0x25)
-    {
-        /* 0000 */    0x8C, 0x20, 0x00, 0x01, 0x01, 0x00, 0x00, 0x11,
-        /* 0008 */    0x00, 0x02, 0xCD, 0xAB, 0xEB, 0x0D, 0x17, 0x00,
-        /* 0010 */    0xEE, 0x1D, 0x00, 0x23, 0x00, 0x00, 0x00, 0xE1,
-        /* 0018 */    0x11, 0xE2, 0x22, 0xE3, 0x33, 0x5C, 0x47, 0x50,
-        /* 0020 */    0x49, 0x4F, 0x00, 0x79, 0x00
-    },
-    Buffer (0x25)
-    {
-        /* 0000 */    0x8C, 0x20, 0x00, 0x01, 0x01, 0x00, 0x00, 0x12,
-        /* 0008 */    0x00, 0x02, 0xCD, 0xAB, 0xEB, 0x0D, 0x17, 0x00,
-        /* 0010 */    0xEE, 0x1D, 0x00, 0x23, 0x00, 0x00, 0x00, 0xE1,
-        /* 0018 */    0x11, 0xE2, 0x22, 0xE3, 0x33, 0x5C, 0x47, 0x50,
-        /* 0020 */    0x49, 0x4F, 0x00, 0x79, 0x00
-    },
-    Buffer (0x25)
-    {
-        /* 0000 */    0x8C, 0x20, 0x00, 0x01, 0x01, 0x00, 0x00, 0x10,
-        /* 0008 */    0x00, 0x03, 0xCD, 0xAB, 0xEB, 0x0D, 0x17, 0x00,
-        /* 0010 */    0xEE, 0x1D, 0x00, 0x23, 0x00, 0x00, 0x00, 0xE1,
-        /* 0018 */    0x11, 0xE2, 0x22, 0xE3, 0x33, 0x5C, 0x47, 0x50,
-        /* 0020 */    0x49, 0x4F, 0x00, 0x79, 0x00
-    },
-    Buffer (0x25)
-    {
-        /* 0000 */    0x8C, 0x20, 0x00, 0x01, 0x01, 0x00, 0x00, 0x11,
-        /* 0008 */    0x00, 0x03, 0xCD, 0xAB, 0xEB, 0x0D, 0x17, 0x00,
-        /* 0010 */    0xEE, 0x1D, 0x00, 0x23, 0x00, 0x00, 0x00, 0xE1,
-        /* 0018 */    0x11, 0xE2, 0x22, 0xE3, 0x33, 0x5C, 0x47, 0x50,
-        /* 0020 */    0x49, 0x4F, 0x00, 0x79, 0x00
-    },
-    Buffer (0x25)
-    {
-        /* 0000 */    0x8C, 0x20, 0x00, 0x01, 0x01, 0x00, 0x00, 0x12,
-        /* 0008 */    0x00, 0x03, 0xCD, 0xAB, 0xEB, 0x0D, 0x17, 0x00,
-        /* 0010 */    0xEE, 0x1D, 0x00, 0x23, 0x00, 0x00, 0x00, 0xE1,
-        /* 0018 */    0x11, 0xE2, 0x22, 0xE3, 0x33, 0x5C, 0x47, 0x50,
-        /* 0020 */    0x49, 0x4F, 0x00, 0x79, 0x00
-    },
-    Buffer (0x25)
-    {
-        /* 0000 */    0x8C, 0x20, 0x00, 0x01, 0x01, 0x00, 0x00, 0x10,
-        /* 0008 */    0x00, 0x00, 0xCD, 0xAB, 0xEB, 0x0D, 0x17, 0x00,
-        /* 0010 */    0xEE, 0x1D, 0x00, 0x23, 0x00, 0x00, 0x00, 0xE1,
-        /* 0018 */    0x11, 0xE2, 0x22, 0xE3, 0x33, 0x5C, 0x47, 0x50,
-        /* 0020 */    0x49, 0x4F, 0x00, 0x79, 0x00
-    },
-    Buffer (0x25)
-    {
-        /* 0000 */    0x8C, 0x20, 0x00, 0x01, 0x01, 0x00, 0x00, 0x11,
-        /* 0008 */    0x00, 0x00, 0xCD, 0xAB, 0xEB, 0x0D, 0x17, 0x00,
-        /* 0010 */    0xEE, 0x1D, 0x00, 0x23, 0x00, 0x00, 0x00, 0xE1,
-        /* 0018 */    0x11, 0xE2, 0x22, 0xE3, 0x33, 0x5C, 0x47, 0x50,
-        /* 0020 */    0x49, 0x4F, 0x00, 0x79, 0x00
-    },
-    Buffer (0x25)
-    {
-        /* 0000 */    0x8C, 0x20, 0x00, 0x01, 0x01, 0x00, 0x00, 0x12,
-        /* 0008 */    0x00, 0x00, 0xCD, 0xAB, 0xEB, 0x0D, 0x17, 0x00,
-        /* 0010 */    0xEE, 0x1D, 0x00, 0x23, 0x00, 0x00, 0x00, 0xE1,
-        /* 0018 */    0x11, 0xE2, 0x22, 0xE3, 0x33, 0x5C, 0x47, 0x50,
-        /* 0020 */    0x49, 0x4F, 0x00, 0x79, 0x00
-    },
-    Buffer (0x25)
-    {
-        /* 0000 */    0x8C, 0x20, 0x00, 0x01, 0x01, 0x00, 0x00, 0x18,
-        /* 0008 */    0x00, 0x01, 0xCD, 0xAB, 0xEB, 0x0D, 0x17, 0x00,
-        /* 0010 */    0xEE, 0x1D, 0x00, 0x23, 0x00, 0x00, 0x00, 0xE1,
-        /* 0018 */    0x11, 0xE2, 0x22, 0xE3, 0x33, 0x5C, 0x47, 0x50,
-        /* 0020 */    0x49, 0x4F, 0x00, 0x79, 0x00
-    },
-    Buffer (0x25)
-    {
-        /* 0000 */    0x8C, 0x20, 0x00, 0x01, 0x01, 0x00, 0x00, 0x19,
-        /* 0008 */    0x00, 0x01, 0xCD, 0xAB, 0xEB, 0x0D, 0x17, 0x00,
-        /* 0010 */    0xEE, 0x1D, 0x00, 0x23, 0x00, 0x00, 0x00, 0xE1,
-        /* 0018 */    0x11, 0xE2, 0x22, 0xE3, 0x33, 0x5C, 0x47, 0x50,
-        /* 0020 */    0x49, 0x4F, 0x00, 0x79, 0x00
-    },
-    Buffer (0x25)
-    {
-        /* 0000 */    0x8C, 0x20, 0x00, 0x01, 0x01, 0x00, 0x00, 0x1A,
-        /* 0008 */    0x00, 0x01, 0xCD, 0xAB, 0xEB, 0x0D, 0x17, 0x00,
-        /* 0010 */    0xEE, 0x1D, 0x00, 0x23, 0x00, 0x00, 0x00, 0xE1,
-        /* 0018 */    0x11, 0xE2, 0x22, 0xE3, 0x33, 0x5C, 0x47, 0x50,
-        /* 0020 */    0x49, 0x4F, 0x00, 0x79, 0x00
-    },
-    Buffer (0x25)
-    {
-        /* 0000 */    0x8C, 0x20, 0x00, 0x01, 0x01, 0x00, 0x00, 0x18,
-        /* 0008 */    0x00, 0x02, 0xCD, 0xAB, 0xEB, 0x0D, 0x17, 0x00,
-        /* 0010 */    0xEE, 0x1D, 0x00, 0x23, 0x00, 0x00, 0x00, 0xE1,
-        /* 0018 */    0x11, 0xE2, 0x22, 0xE3, 0x33, 0x5C, 0x47, 0x50,
-        /* 0020 */    0x49, 0x4F, 0x00, 0x79, 0x00
-    },
-    Buffer (0x25)
-    {
-        /* 0000 */    0x8C, 0x20, 0x00, 0x01, 0x01, 0x00, 0x00, 0x19,
-        /* 0008 */    0x00, 0x02, 0xCD, 0xAB, 0xEB, 0x0D, 0x17, 0x00,
-        /* 0010 */    0xEE, 0x1D, 0x00, 0x23, 0x00, 0x00, 0x00, 0xE1,
-        /* 0018 */    0x11, 0xE2, 0x22, 0xE3, 0x33, 0x5C, 0x47, 0x50,
-        /* 0020 */    0x49, 0x4F, 0x00, 0x79, 0x00
-    },
-    Buffer (0x25)
-    {
-        /* 0000 */    0x8C, 0x20, 0x00, 0x01, 0x01, 0x00, 0x00, 0x1A,
-        /* 0008 */    0x00, 0x02, 0xCD, 0xAB, 0xEB, 0x0D, 0x17, 0x00,
-        /* 0010 */    0xEE, 0x1D, 0x00, 0x23, 0x00, 0x00, 0x00, 0xE1,
-        /* 0018 */    0x11, 0xE2, 0x22, 0xE3, 0x33, 0x5C, 0x47, 0x50,
-        /* 0020 */    0x49, 0x4F, 0x00, 0x79, 0x00
-    },
-    Buffer (0x25)
-    {
-        /* 0000 */    0x8C, 0x20, 0x00, 0x01, 0x01, 0x00, 0x00, 0x18,
-        /* 0008 */    0x00, 0x03, 0xCD, 0xAB, 0xEB, 0x0D, 0x17, 0x00,
-        /* 0010 */    0xEE, 0x1D, 0x00, 0x23, 0x00, 0x00, 0x00, 0xE1,
-        /* 0018 */    0x11, 0xE2, 0x22, 0xE3, 0x33, 0x5C, 0x47, 0x50,
-        /* 0020 */    0x49, 0x4F, 0x00, 0x79, 0x00
-    },
-    Buffer (0x25)
-    {
-        /* 0000 */    0x8C, 0x20, 0x00, 0x01, 0x01, 0x00, 0x00, 0x19,
-        /* 0008 */    0x00, 0x03, 0xCD, 0xAB, 0xEB, 0x0D, 0x17, 0x00,
-        /* 0010 */    0xEE, 0x1D, 0x00, 0x23, 0x00, 0x00, 0x00, 0xE1,
-        /* 0018 */    0x11, 0xE2, 0x22, 0xE3, 0x33, 0x5C, 0x47, 0x50,
-        /* 0020 */    0x49, 0x4F, 0x00, 0x79, 0x00
-    },
-    Buffer (0x25)
-    {
-        /* 0000 */    0x8C, 0x20, 0x00, 0x01, 0x01, 0x00, 0x00, 0x1A,
-        /* 0008 */    0x00, 0x03, 0xCD, 0xAB, 0xEB, 0x0D, 0x17, 0x00,
-        /* 0010 */    0xEE, 0x1D, 0x00, 0x23, 0x00, 0x00, 0x00, 0xE1,
-        /* 0018 */    0x11, 0xE2, 0x22, 0xE3, 0x33, 0x5C, 0x47, 0x50,
-        /* 0020 */    0x49, 0x4F, 0x00, 0x79, 0x00
-    },
-    Buffer (0x25)
-    {
-        /* 0000 */    0x8C, 0x20, 0x00, 0x01, 0x01, 0x00, 0x00, 0x18,
-        /* 0008 */    0x00, 0x00, 0xCD, 0xAB, 0xEB, 0x0D, 0x17, 0x00,
-        /* 0010 */    0xEE, 0x1D, 0x00, 0x23, 0x00, 0x00, 0x00, 0xE1,
-        /* 0018 */    0x11, 0xE2, 0x22, 0xE3, 0x33, 0x5C, 0x47, 0x50,
-        /* 0020 */    0x49, 0x4F, 0x00, 0x79, 0x00
-    },
-    Buffer (0x25)
-    {
-        /* 0000 */    0x8C, 0x20, 0x00, 0x01, 0x01, 0x00, 0x00, 0x19,
-        /* 0008 */    0x00, 0x00, 0xCD, 0xAB, 0xEB, 0x0D, 0x17, 0x00,
-        /* 0010 */    0xEE, 0x1D, 0x00, 0x23, 0x00, 0x00, 0x00, 0xE1,
-        /* 0018 */    0x11, 0xE2, 0x22, 0xE3, 0x33, 0x5C, 0x47, 0x50,
-        /* 0020 */    0x49, 0x4F, 0x00, 0x79, 0x00
-    },
-    Buffer (0x25)
-    {
-        /* 0000 */    0x8C, 0x20, 0x00, 0x01, 0x01, 0x00, 0x00, 0x1A,
-        /* 0008 */    0x00, 0x00, 0xCD, 0xAB, 0xEB, 0x0D, 0x17, 0x00,
-        /* 0010 */    0xEE, 0x1D, 0x00, 0x23, 0x00, 0x00, 0x00, 0xE1,
-        /* 0018 */    0x11, 0xE2, 0x22, 0xE3, 0x33, 0x5C, 0x47, 0x50,
-        /* 0020 */    0x49, 0x4F, 0x00, 0x79, 0x00
-    },
-    Buffer (0x29)
-    {
-        /* 0000 */   0x8C, 0x24, 0x00, 0x01, 0x01, 0x01, 0x00, 0x03,
-        /* 0008 */   0x00, 0x01, 0xCD, 0xAB, 0xEB, 0x0D, 0x17, 0x00,
-        /* 0010 */   0xEE, 0x1D, 0x00, 0x23, 0x00, 0x04, 0x00, 0xE1,
-        /* 0018 */   0x11, 0xE2, 0x22, 0xE3, 0x33, 0x5C, 0x47, 0x50,
-        /* 0020 */   0x49, 0x4F, 0x00, 0xC1, 0xC2, 0xC3, 0xC4, 0x79,
-        /* 0028 */   0x00
-    },
-    Buffer (0x23)
-    {
-        /* 0000 */   0x8C, 0x1E, 0x00, 0x01, 0x01, 0x01, 0x00, 0x1B,
-        /* 0008 */   0x00, 0x00, 0xCD, 0xAB, 0xEB, 0x0D, 0x17, 0x00,
-        /* 0010 */   0xEE, 0x1B, 0x00, 0x21, 0x00, 0x00, 0x00, 0xE1,
-        /* 0018 */   0x11, 0xE2, 0x22, 0x5C, 0x47, 0x50, 0x49, 0x4F,
-        /* 0020 */   0x00, 0x79, 0x00
-    },
-
-    Buffer (0x21)
-    {
-        /* 0000 */   0x8C, 0x1C, 0x00, 0x01, 0x01, 0x01, 0x00, 0x0B,
-        /* 0008 */   0x00, 0x01, 0xCD, 0xAB, 0xEB, 0x0D, 0x17, 0x00,
-        /* 0010 */   0xEE, 0x19, 0x00, 0x1F, 0x00, 0x00, 0x00, 0xE1,
-        /* 0018 */   0x11, 0x5C, 0x47, 0x50, 0x49, 0x4F, 0x00, 0x79,
-        /* 0020 */   0x00
-    },
-    Buffer (0x25)
-    {
-        /* 0000 */    0x8C, 0x20, 0x00, 0x01, 0x01, 0x01, 0x00, 0x00,
-        /* 0008 */    0x00, 0x01, 0x00, 0x00, 0x00, 0x00, 0x17, 0x00,
-        /* 0010 */    0x00, 0x1D, 0x00, 0x23, 0x00, 0x00, 0x00, 0xE1,
-        /* 0018 */    0x11, 0xE2, 0x22, 0xE3, 0x33, 0x5C, 0x47, 0x50,
-        /* 0020 */    0x49, 0x4F, 0x00, 0x79, 0x00
-    }
-})
-
-Method(RT22,, Serialized)
-{
-	Name(ts, "RT22")
-
-	// Emit test header, set the filename
-
-	THDR (ts, "GpioIO Resource Descriptor Macro", __FILE__)
-
-    // The main test packages must have the same number of entries
-
-    If (LNotEqual (SizeOf (p454), SizeOf (p455)))
-    {
-        err (ts, 179, 0, 0, 0, 0, "Incorrect package length")
-        Return ()
     }
 
-    // Main test case for packages above
+    Name (P454, Package (0xC4)
+    {
+        ResourceTemplate ()
+        {
+            GpioIo (Exclusive, PullUp, 0x0DEB, 0xABCD, IoRestrictionNone,
+                "\\GPIO", 0xEE, ResourceConsumer, ,
+                RawDataBuffer (0x04)  // Vendor Data
+                {
+                    0xC1, 0xC2, 0xC3, 0xC4
+                })
+                {   // Pin list
+                    0x11E1,
+                    0x22E2,
+                    0x33E3
+                }
+        }, 
 
-	m330(ts, SizeOf (p454), "p454", p454, p455)
+        ResourceTemplate ()
+        {
+            GpioIo (Exclusive, PullUp, 0x0DEB, 0xABCD, IoRestrictionInputOnly,
+                "\\GPIO", 0xEE, ResourceConsumer, ,
+                RawDataBuffer (0x04)  // Vendor Data
+                {
+                    0xC1, 0xC2, 0xC3, 0xC4
+                })
+                {   // Pin list
+                    0x11E1,
+                    0x22E2,
+                    0x33E3
+                }
+        }, 
 
-    // Check resource descriptor tag offsets
-
-	Store (
-		ResourceTemplate () {
+        ResourceTemplate ()
+        {
             GpioIo (Exclusive, PullUp, 0x0DEB, 0xABCD, IoRestrictionOutputOnly,
-                "\\GPIO", 0xEE, ResourceConsumer, GIO0,
-                RawDataBuffer (0x04) {0xC1, 0xC2, 0xC3, 0xC4})
-                {0x11E1, 0x22E2, 0x33E3}
+                "\\GPIO", 0xEE, ResourceConsumer, ,
+                RawDataBuffer (0x04)  // Vendor Data
+                {
+                    0xC1, 0xC2, 0xC3, 0xC4
+                })
+                {   // Pin list
+                    0x11E1,
+                    0x22E2,
+                    0x33E3
+                }
+        }, 
+
+        ResourceTemplate ()
+        {
+            GpioIo (Exclusive, PullDown, 0x0DEB, 0xABCD, IoRestrictionNone,
+                "\\GPIO", 0xEE, ResourceConsumer, ,
+                RawDataBuffer (0x04)  // Vendor Data
+                {
+                    0xC1, 0xC2, 0xC3, 0xC4
+                })
+                {   // Pin list
+                    0x11E1,
+                    0x22E2,
+                    0x33E3
+                }
+        }, 
+
+        ResourceTemplate ()
+        {
+            GpioIo (Exclusive, PullDown, 0x0DEB, 0xABCD, IoRestrictionInputOnly,
+                "\\GPIO", 0xEE, ResourceConsumer, ,
+                RawDataBuffer (0x04)  // Vendor Data
+                {
+                    0xC1, 0xC2, 0xC3, 0xC4
+                })
+                {   // Pin list
+                    0x11E1,
+                    0x22E2,
+                    0x33E3
+                }
+        }, 
+
+        ResourceTemplate ()
+        {
+            GpioIo (Exclusive, PullDown, 0x0DEB, 0xABCD, IoRestrictionOutputOnly,
+                "\\GPIO", 0xEE, ResourceConsumer, ,
+                RawDataBuffer (0x04)  // Vendor Data
+                {
+                    0xC1, 0xC2, 0xC3, 0xC4
+                })
+                {   // Pin list
+                    0x11E1,
+                    0x22E2,
+                    0x33E3
+                }
+        }, 
+
+        ResourceTemplate ()
+        {
+            GpioIo (Exclusive, PullNone, 0x0DEB, 0xABCD, IoRestrictionNone,
+                "\\GPIO", 0xEE, ResourceConsumer, ,
+                RawDataBuffer (0x04)  // Vendor Data
+                {
+                    0xC1, 0xC2, 0xC3, 0xC4
+                })
+                {   // Pin list
+                    0x11E1,
+                    0x22E2,
+                    0x33E3
+                }
+        }, 
+
+        ResourceTemplate ()
+        {
+            GpioIo (Exclusive, PullNone, 0x0DEB, 0xABCD, IoRestrictionInputOnly,
+                "\\GPIO", 0xEE, ResourceConsumer, ,
+                RawDataBuffer (0x04)  // Vendor Data
+                {
+                    0xC1, 0xC2, 0xC3, 0xC4
+                })
+                {   // Pin list
+                    0x11E1,
+                    0x22E2,
+                    0x33E3
+                }
+        }, 
+
+        ResourceTemplate ()
+        {
+            GpioIo (Exclusive, PullNone, 0x0DEB, 0xABCD, IoRestrictionOutputOnly,
+                "\\GPIO", 0xEE, ResourceConsumer, ,
+                RawDataBuffer (0x04)  // Vendor Data
+                {
+                    0xC1, 0xC2, 0xC3, 0xC4
+                })
+                {   // Pin list
+                    0x11E1,
+                    0x22E2,
+                    0x33E3
+                }
+        }, 
+
+        ResourceTemplate ()
+        {
+            GpioIo (Exclusive, PullDefault, 0x0DEB, 0xABCD, IoRestrictionNone,
+                "\\GPIO", 0xEE, ResourceConsumer, ,
+                RawDataBuffer (0x04)  // Vendor Data
+                {
+                    0xC1, 0xC2, 0xC3, 0xC4
+                })
+                {   // Pin list
+                    0x11E1,
+                    0x22E2,
+                    0x33E3
+                }
+        }, 
+
+        ResourceTemplate ()
+        {
+            GpioIo (Exclusive, PullDefault, 0x0DEB, 0xABCD, IoRestrictionInputOnly,
+                "\\GPIO", 0xEE, ResourceConsumer, ,
+                RawDataBuffer (0x04)  // Vendor Data
+                {
+                    0xC1, 0xC2, 0xC3, 0xC4
+                })
+                {   // Pin list
+                    0x11E1,
+                    0x22E2,
+                    0x33E3
+                }
+        }, 
+
+        ResourceTemplate ()
+        {
+            GpioIo (Exclusive, PullDefault, 0x0DEB, 0xABCD, IoRestrictionOutputOnly,
+                "\\GPIO", 0xEE, ResourceConsumer, ,
+                RawDataBuffer (0x04)  // Vendor Data
+                {
+                    0xC1, 0xC2, 0xC3, 0xC4
+                })
+                {   // Pin list
+                    0x11E1,
+                    0x22E2,
+                    0x33E3
+                }
+        }, 
+
+        ResourceTemplate ()
+        {
+            GpioIo (Shared, PullUp, 0x0DEB, 0xABCD, IoRestrictionNone,
+                "\\GPIO", 0xEE, ResourceConsumer, ,
+                RawDataBuffer (0x04)  // Vendor Data
+                {
+                    0xC1, 0xC2, 0xC3, 0xC4
+                })
+                {   // Pin list
+                    0x11E1,
+                    0x22E2,
+                    0x33E3
+                }
+        }, 
+
+        ResourceTemplate ()
+        {
+            GpioIo (Shared, PullUp, 0x0DEB, 0xABCD, IoRestrictionInputOnly,
+                "\\GPIO", 0xEE, ResourceConsumer, ,
+                RawDataBuffer (0x04)  // Vendor Data
+                {
+                    0xC1, 0xC2, 0xC3, 0xC4
+                })
+                {   // Pin list
+                    0x11E1,
+                    0x22E2,
+                    0x33E3
+                }
+        }, 
+
+        ResourceTemplate ()
+        {
+            GpioIo (Shared, PullUp, 0x0DEB, 0xABCD, IoRestrictionOutputOnly,
+                "\\GPIO", 0xEE, ResourceConsumer, ,
+                RawDataBuffer (0x04)  // Vendor Data
+                {
+                    0xC1, 0xC2, 0xC3, 0xC4
+                })
+                {   // Pin list
+                    0x11E1,
+                    0x22E2,
+                    0x33E3
+                }
+        }, 
+
+        ResourceTemplate ()
+        {
+            GpioIo (Shared, PullDown, 0x0DEB, 0xABCD, IoRestrictionNone,
+                "\\GPIO", 0xEE, ResourceConsumer, ,
+                RawDataBuffer (0x04)  // Vendor Data
+                {
+                    0xC1, 0xC2, 0xC3, 0xC4
+                })
+                {   // Pin list
+                    0x11E1,
+                    0x22E2,
+                    0x33E3
+                }
+        }, 
+
+        ResourceTemplate ()
+        {
+            GpioIo (Shared, PullDown, 0x0DEB, 0xABCD, IoRestrictionInputOnly,
+                "\\GPIO", 0xEE, ResourceConsumer, ,
+                RawDataBuffer (0x04)  // Vendor Data
+                {
+                    0xC1, 0xC2, 0xC3, 0xC4
+                })
+                {   // Pin list
+                    0x11E1,
+                    0x22E2,
+                    0x33E3
+                }
+        }, 
+
+        ResourceTemplate ()
+        {
+            GpioIo (Shared, PullDown, 0x0DEB, 0xABCD, IoRestrictionOutputOnly,
+                "\\GPIO", 0xEE, ResourceConsumer, ,
+                RawDataBuffer (0x04)  // Vendor Data
+                {
+                    0xC1, 0xC2, 0xC3, 0xC4
+                })
+                {   // Pin list
+                    0x11E1,
+                    0x22E2,
+                    0x33E3
+                }
+        }, 
+
+        ResourceTemplate ()
+        {
+            GpioIo (Shared, PullNone, 0x0DEB, 0xABCD, IoRestrictionNone,
+                "\\GPIO", 0xEE, ResourceConsumer, ,
+                RawDataBuffer (0x04)  // Vendor Data
+                {
+                    0xC1, 0xC2, 0xC3, 0xC4
+                })
+                {   // Pin list
+                    0x11E1,
+                    0x22E2,
+                    0x33E3
+                }
+        }, 
+
+        ResourceTemplate ()
+        {
+            GpioIo (Shared, PullNone, 0x0DEB, 0xABCD, IoRestrictionInputOnly,
+                "\\GPIO", 0xEE, ResourceConsumer, ,
+                RawDataBuffer (0x04)  // Vendor Data
+                {
+                    0xC1, 0xC2, 0xC3, 0xC4
+                })
+                {   // Pin list
+                    0x11E1,
+                    0x22E2,
+                    0x33E3
+                }
+        }, 
+
+        ResourceTemplate ()
+        {
+            GpioIo (Shared, PullNone, 0x0DEB, 0xABCD, IoRestrictionOutputOnly,
+                "\\GPIO", 0xEE, ResourceConsumer, ,
+                RawDataBuffer (0x04)  // Vendor Data
+                {
+                    0xC1, 0xC2, 0xC3, 0xC4
+                })
+                {   // Pin list
+                    0x11E1,
+                    0x22E2,
+                    0x33E3
+                }
+        }, 
+
+        ResourceTemplate ()
+        {
+            GpioIo (Shared, PullDefault, 0x0DEB, 0xABCD, IoRestrictionNone,
+                "\\GPIO", 0xEE, ResourceConsumer, ,
+                RawDataBuffer (0x04)  // Vendor Data
+                {
+                    0xC1, 0xC2, 0xC3, 0xC4
+                })
+                {   // Pin list
+                    0x11E1,
+                    0x22E2,
+                    0x33E3
+                }
+        }, 
+
+        ResourceTemplate ()
+        {
+            GpioIo (Shared, PullDefault, 0x0DEB, 0xABCD, IoRestrictionInputOnly,
+                "\\GPIO", 0xEE, ResourceConsumer, ,
+                RawDataBuffer (0x04)  // Vendor Data
+                {
+                    0xC1, 0xC2, 0xC3, 0xC4
+                })
+                {   // Pin list
+                    0x11E1,
+                    0x22E2,
+                    0x33E3
+                }
+        }, 
+
+        ResourceTemplate ()
+        {
+            GpioIo (Shared, PullDefault, 0x0DEB, 0xABCD, IoRestrictionOutputOnly,
+                "\\GPIO", 0xEE, ResourceConsumer, ,
+                RawDataBuffer (0x04)  // Vendor Data
+                {
+                    0xC1, 0xC2, 0xC3, 0xC4
+                })
+                {   // Pin list
+                    0x11E1,
+                    0x22E2,
+                    0x33E3
+                }
+        }, 
+
+        ResourceTemplate ()
+        {
+            GpioIo (ExclusiveAndWake, PullUp, 0x0DEB, 0xABCD, IoRestrictionNone,
+                "\\GPIO", 0xEE, ResourceConsumer, ,
+                RawDataBuffer (0x04)  // Vendor Data
+                {
+                    0xC1, 0xC2, 0xC3, 0xC4
+                })
+                {   // Pin list
+                    0x11E1,
+                    0x22E2,
+                    0x33E3
+                }
+        }, 
+
+        ResourceTemplate ()
+        {
+            GpioIo (ExclusiveAndWake, PullUp, 0x0DEB, 0xABCD, IoRestrictionInputOnly,
+                "\\GPIO", 0xEE, ResourceConsumer, ,
+                RawDataBuffer (0x04)  // Vendor Data
+                {
+                    0xC1, 0xC2, 0xC3, 0xC4
+                })
+                {   // Pin list
+                    0x11E1,
+                    0x22E2,
+                    0x33E3
+                }
+        }, 
+
+        ResourceTemplate ()
+        {
+            GpioIo (ExclusiveAndWake, PullUp, 0x0DEB, 0xABCD, IoRestrictionOutputOnly,
+                "\\GPIO", 0xEE, ResourceConsumer, ,
+                RawDataBuffer (0x04)  // Vendor Data
+                {
+                    0xC1, 0xC2, 0xC3, 0xC4
+                })
+                {   // Pin list
+                    0x11E1,
+                    0x22E2,
+                    0x33E3
+                }
+        }, 
+
+        ResourceTemplate ()
+        {
+            GpioIo (ExclusiveAndWake, PullDown, 0x0DEB, 0xABCD, IoRestrictionNone,
+                "\\GPIO", 0xEE, ResourceConsumer, ,
+                RawDataBuffer (0x04)  // Vendor Data
+                {
+                    0xC1, 0xC2, 0xC3, 0xC4
+                })
+                {   // Pin list
+                    0x11E1,
+                    0x22E2,
+                    0x33E3
+                }
+        }, 
+
+        ResourceTemplate ()
+        {
+            GpioIo (ExclusiveAndWake, PullDown, 0x0DEB, 0xABCD, IoRestrictionInputOnly,
+                "\\GPIO", 0xEE, ResourceConsumer, ,
+                RawDataBuffer (0x04)  // Vendor Data
+                {
+                    0xC1, 0xC2, 0xC3, 0xC4
+                })
+                {   // Pin list
+                    0x11E1,
+                    0x22E2,
+                    0x33E3
+                }
+        }, 
+
+        ResourceTemplate ()
+        {
+            GpioIo (ExclusiveAndWake, PullDown, 0x0DEB, 0xABCD, IoRestrictionOutputOnly,
+                "\\GPIO", 0xEE, ResourceConsumer, ,
+                RawDataBuffer (0x04)  // Vendor Data
+                {
+                    0xC1, 0xC2, 0xC3, 0xC4
+                })
+                {   // Pin list
+                    0x11E1,
+                    0x22E2,
+                    0x33E3
+                }
+        }, 
+
+        ResourceTemplate ()
+        {
+            GpioIo (ExclusiveAndWake, PullNone, 0x0DEB, 0xABCD, IoRestrictionNone,
+                "\\GPIO", 0xEE, ResourceConsumer, ,
+                RawDataBuffer (0x04)  // Vendor Data
+                {
+                    0xC1, 0xC2, 0xC3, 0xC4
+                })
+                {   // Pin list
+                    0x11E1,
+                    0x22E2,
+                    0x33E3
+                }
+        }, 
+
+        ResourceTemplate ()
+        {
+            GpioIo (ExclusiveAndWake, PullNone, 0x0DEB, 0xABCD, IoRestrictionInputOnly,
+                "\\GPIO", 0xEE, ResourceConsumer, ,
+                RawDataBuffer (0x04)  // Vendor Data
+                {
+                    0xC1, 0xC2, 0xC3, 0xC4
+                })
+                {   // Pin list
+                    0x11E1,
+                    0x22E2,
+                    0x33E3
+                }
+        }, 
+
+        ResourceTemplate ()
+        {
+            GpioIo (ExclusiveAndWake, PullNone, 0x0DEB, 0xABCD, IoRestrictionOutputOnly,
+                "\\GPIO", 0xEE, ResourceConsumer, ,
+                RawDataBuffer (0x04)  // Vendor Data
+                {
+                    0xC1, 0xC2, 0xC3, 0xC4
+                })
+                {   // Pin list
+                    0x11E1,
+                    0x22E2,
+                    0x33E3
+                }
+        }, 
+
+        ResourceTemplate ()
+        {
+            GpioIo (ExclusiveAndWake, PullDefault, 0x0DEB, 0xABCD, IoRestrictionNone,
+                "\\GPIO", 0xEE, ResourceConsumer, ,
+                RawDataBuffer (0x04)  // Vendor Data
+                {
+                    0xC1, 0xC2, 0xC3, 0xC4
+                })
+                {   // Pin list
+                    0x11E1,
+                    0x22E2,
+                    0x33E3
+                }
+        }, 
+
+        ResourceTemplate ()
+        {
+            GpioIo (ExclusiveAndWake, PullDefault, 0x0DEB, 0xABCD, IoRestrictionInputOnly,
+                "\\GPIO", 0xEE, ResourceConsumer, ,
+                RawDataBuffer (0x04)  // Vendor Data
+                {
+                    0xC1, 0xC2, 0xC3, 0xC4
+                })
+                {   // Pin list
+                    0x11E1,
+                    0x22E2,
+                    0x33E3
+                }
+        }, 
+
+        ResourceTemplate ()
+        {
+            GpioIo (ExclusiveAndWake, PullDefault, 0x0DEB, 0xABCD, IoRestrictionOutputOnly,
+                "\\GPIO", 0xEE, ResourceConsumer, ,
+                RawDataBuffer (0x04)  // Vendor Data
+                {
+                    0xC1, 0xC2, 0xC3, 0xC4
+                })
+                {   // Pin list
+                    0x11E1,
+                    0x22E2,
+                    0x33E3
+                }
+        }, 
+
+        ResourceTemplate ()
+        {
+            GpioIo (SharedAndWake, PullUp, 0x0DEB, 0xABCD, IoRestrictionNone,
+                "\\GPIO", 0xEE, ResourceConsumer, ,
+                RawDataBuffer (0x04)  // Vendor Data
+                {
+                    0xC1, 0xC2, 0xC3, 0xC4
+                })
+                {   // Pin list
+                    0x11E1,
+                    0x22E2,
+                    0x33E3
+                }
+        }, 
+
+        ResourceTemplate ()
+        {
+            GpioIo (SharedAndWake, PullUp, 0x0DEB, 0xABCD, IoRestrictionInputOnly,
+                "\\GPIO", 0xEE, ResourceConsumer, ,
+                RawDataBuffer (0x04)  // Vendor Data
+                {
+                    0xC1, 0xC2, 0xC3, 0xC4
+                })
+                {   // Pin list
+                    0x11E1,
+                    0x22E2,
+                    0x33E3
+                }
+        }, 
+
+        ResourceTemplate ()
+        {
+            GpioIo (SharedAndWake, PullUp, 0x0DEB, 0xABCD, IoRestrictionOutputOnly,
+                "\\GPIO", 0xEE, ResourceConsumer, ,
+                RawDataBuffer (0x04)  // Vendor Data
+                {
+                    0xC1, 0xC2, 0xC3, 0xC4
+                })
+                {   // Pin list
+                    0x11E1,
+                    0x22E2,
+                    0x33E3
+                }
+        }, 
+
+        ResourceTemplate ()
+        {
+            GpioIo (SharedAndWake, PullDown, 0x0DEB, 0xABCD, IoRestrictionNone,
+                "\\GPIO", 0xEE, ResourceConsumer, ,
+                RawDataBuffer (0x04)  // Vendor Data
+                {
+                    0xC1, 0xC2, 0xC3, 0xC4
+                })
+                {   // Pin list
+                    0x11E1,
+                    0x22E2,
+                    0x33E3
+                }
+        }, 
+
+        ResourceTemplate ()
+        {
+            GpioIo (SharedAndWake, PullDown, 0x0DEB, 0xABCD, IoRestrictionInputOnly,
+                "\\GPIO", 0xEE, ResourceConsumer, ,
+                RawDataBuffer (0x04)  // Vendor Data
+                {
+                    0xC1, 0xC2, 0xC3, 0xC4
+                })
+                {   // Pin list
+                    0x11E1,
+                    0x22E2,
+                    0x33E3
+                }
+        }, 
+
+        ResourceTemplate ()
+        {
+            GpioIo (SharedAndWake, PullDown, 0x0DEB, 0xABCD, IoRestrictionOutputOnly,
+                "\\GPIO", 0xEE, ResourceConsumer, ,
+                RawDataBuffer (0x04)  // Vendor Data
+                {
+                    0xC1, 0xC2, 0xC3, 0xC4
+                })
+                {   // Pin list
+                    0x11E1,
+                    0x22E2,
+                    0x33E3
+                }
+        }, 
+
+        ResourceTemplate ()
+        {
+            GpioIo (SharedAndWake, PullNone, 0x0DEB, 0xABCD, IoRestrictionNone,
+                "\\GPIO", 0xEE, ResourceConsumer, ,
+                RawDataBuffer (0x04)  // Vendor Data
+                {
+                    0xC1, 0xC2, 0xC3, 0xC4
+                })
+                {   // Pin list
+                    0x11E1,
+                    0x22E2,
+                    0x33E3
+                }
+        }, 
+
+        ResourceTemplate ()
+        {
+            GpioIo (SharedAndWake, PullNone, 0x0DEB, 0xABCD, IoRestrictionInputOnly,
+                "\\GPIO", 0xEE, ResourceConsumer, ,
+                RawDataBuffer (0x04)  // Vendor Data
+                {
+                    0xC1, 0xC2, 0xC3, 0xC4
+                })
+                {   // Pin list
+                    0x11E1,
+                    0x22E2,
+                    0x33E3
+                }
+        }, 
+
+        ResourceTemplate ()
+        {
+            GpioIo (SharedAndWake, PullNone, 0x0DEB, 0xABCD, IoRestrictionOutputOnly,
+                "\\GPIO", 0xEE, ResourceConsumer, ,
+                RawDataBuffer (0x04)  // Vendor Data
+                {
+                    0xC1, 0xC2, 0xC3, 0xC4
+                })
+                {   // Pin list
+                    0x11E1,
+                    0x22E2,
+                    0x33E3
+                }
+        }, 
+
+        ResourceTemplate ()
+        {
+            GpioIo (SharedAndWake, PullDefault, 0x0DEB, 0xABCD, IoRestrictionNone,
+                "\\GPIO", 0xEE, ResourceConsumer, ,
+                RawDataBuffer (0x04)  // Vendor Data
+                {
+                    0xC1, 0xC2, 0xC3, 0xC4
+                })
+                {   // Pin list
+                    0x11E1,
+                    0x22E2,
+                    0x33E3
+                }
+        }, 
+
+        ResourceTemplate ()
+        {
+            GpioIo (SharedAndWake, PullDefault, 0x0DEB, 0xABCD, IoRestrictionInputOnly,
+                "\\GPIO", 0xEE, ResourceConsumer, ,
+                RawDataBuffer (0x04)  // Vendor Data
+                {
+                    0xC1, 0xC2, 0xC3, 0xC4
+                })
+                {   // Pin list
+                    0x11E1,
+                    0x22E2,
+                    0x33E3
+                }
+        }, 
+
+        ResourceTemplate ()
+        {
+            GpioIo (SharedAndWake, PullDefault, 0x0DEB, 0xABCD, IoRestrictionOutputOnly,
+                "\\GPIO", 0xEE, ResourceConsumer, ,
+                RawDataBuffer (0x04)  // Vendor Data
+                {
+                    0xC1, 0xC2, 0xC3, 0xC4
+                })
+                {   // Pin list
+                    0x11E1,
+                    0x22E2,
+                    0x33E3
+                }
+        }, 
+
+        ResourceTemplate ()
+        {
+            GpioIo (Exclusive, PullUp, 0x0DEB, 0xABCD, IoRestrictionNone,
+                "\\GPIO", 0xEE, ResourceProducer, ,
+                RawDataBuffer (0x04)  // Vendor Data
+                {
+                    0xC1, 0xC2, 0xC3, 0xC4
+                })
+                {   // Pin list
+                    0x11E1,
+                    0x22E2,
+                    0x33E3
+                }
+        }, 
+
+        ResourceTemplate ()
+        {
+            GpioIo (Exclusive, PullUp, 0x0DEB, 0xABCD, IoRestrictionInputOnly,
+                "\\GPIO", 0xEE, ResourceProducer, ,
+                RawDataBuffer (0x04)  // Vendor Data
+                {
+                    0xC1, 0xC2, 0xC3, 0xC4
+                })
+                {   // Pin list
+                    0x11E1,
+                    0x22E2,
+                    0x33E3
+                }
+        }, 
+
+        ResourceTemplate ()
+        {
             GpioIo (Exclusive, PullUp, 0x0DEB, 0xABCD, IoRestrictionOutputOnly,
-                "\\GPIO", 0xEE, ResourceConsumer, GIO1,
-                RawDataBuffer (0x04) {0xC1, 0xC2, 0xC3, 0xC4})
-                {0x11E1, 0x22E2, 0x33E3}
-		}, Local0)
+                "\\GPIO", 0xEE, ResourceProducer, ,
+                RawDataBuffer (0x04)  // Vendor Data
+                {
+                    0xC1, 0xC2, 0xC3, 0xC4
+                })
+                {   // Pin list
+                    0x11E1,
+                    0x22E2,
+                    0x33E3
+                }
+        }, 
 
-    m331(ts, 1, GIO0._SHR, 0x3b, GIO1._SHR, 0x173, "_SHR")
-    m331(ts, 2, GIO0._PPI, 0x48, GIO1._PPI, 0x180, "_PPI")
-    m331(ts, 3, GIO0._DBT, 0x60, GIO1._DBT, 0x198, "_DBT")
-    m331(ts, 4, GIO0._DRS, 0x50, GIO1._DRS, 0x188, "_DRS")
-    m331(ts, 5, GIO0._IOR, 0x38, GIO1._IOR, 0x170, "_IOR")
-    m331(ts, 6, GIO0._PIN, 0xB8, GIO1._PIN, 0x1f0, "_PIN")
-    m331(ts, 7, GIO0._VEN, 0x118, GIO1._VEN, 0x250, "_VEN")
-}
+        ResourceTemplate ()
+        {
+            GpioIo (Exclusive, PullDown, 0x0DEB, 0xABCD, IoRestrictionNone,
+                "\\GPIO", 0xEE, ResourceProducer, ,
+                RawDataBuffer (0x04)  // Vendor Data
+                {
+                    0xC1, 0xC2, 0xC3, 0xC4
+                })
+                {   // Pin list
+                    0x11E1,
+                    0x22E2,
+                    0x33E3
+                }
+        }, 
 
+        ResourceTemplate ()
+        {
+            GpioIo (Exclusive, PullDown, 0x0DEB, 0xABCD, IoRestrictionInputOnly,
+                "\\GPIO", 0xEE, ResourceProducer, ,
+                RawDataBuffer (0x04)  // Vendor Data
+                {
+                    0xC1, 0xC2, 0xC3, 0xC4
+                })
+                {   // Pin list
+                    0x11E1,
+                    0x22E2,
+                    0x33E3
+                }
+        }, 
+
+        ResourceTemplate ()
+        {
+            GpioIo (Exclusive, PullDown, 0x0DEB, 0xABCD, IoRestrictionOutputOnly,
+                "\\GPIO", 0xEE, ResourceProducer, ,
+                RawDataBuffer (0x04)  // Vendor Data
+                {
+                    0xC1, 0xC2, 0xC3, 0xC4
+                })
+                {   // Pin list
+                    0x11E1,
+                    0x22E2,
+                    0x33E3
+                }
+        }, 
+
+        ResourceTemplate ()
+        {
+            GpioIo (Exclusive, PullNone, 0x0DEB, 0xABCD, IoRestrictionNone,
+                "\\GPIO", 0xEE, ResourceProducer, ,
+                RawDataBuffer (0x04)  // Vendor Data
+                {
+                    0xC1, 0xC2, 0xC3, 0xC4
+                })
+                {   // Pin list
+                    0x11E1,
+                    0x22E2,
+                    0x33E3
+                }
+        }, 
+
+        ResourceTemplate ()
+        {
+            GpioIo (Exclusive, PullNone, 0x0DEB, 0xABCD, IoRestrictionInputOnly,
+                "\\GPIO", 0xEE, ResourceProducer, ,
+                RawDataBuffer (0x04)  // Vendor Data
+                {
+                    0xC1, 0xC2, 0xC3, 0xC4
+                })
+                {   // Pin list
+                    0x11E1,
+                    0x22E2,
+                    0x33E3
+                }
+        }, 
+
+        ResourceTemplate ()
+        {
+            GpioIo (Exclusive, PullNone, 0x0DEB, 0xABCD, IoRestrictionOutputOnly,
+                "\\GPIO", 0xEE, ResourceProducer, ,
+                RawDataBuffer (0x04)  // Vendor Data
+                {
+                    0xC1, 0xC2, 0xC3, 0xC4
+                })
+                {   // Pin list
+                    0x11E1,
+                    0x22E2,
+                    0x33E3
+                }
+        }, 
+
+        ResourceTemplate ()
+        {
+            GpioIo (Exclusive, PullDefault, 0x0DEB, 0xABCD, IoRestrictionNone,
+                "\\GPIO", 0xEE, ResourceProducer, ,
+                RawDataBuffer (0x04)  // Vendor Data
+                {
+                    0xC1, 0xC2, 0xC3, 0xC4
+                })
+                {   // Pin list
+                    0x11E1,
+                    0x22E2,
+                    0x33E3
+                }
+        }, 
+
+        ResourceTemplate ()
+        {
+            GpioIo (Exclusive, PullDefault, 0x0DEB, 0xABCD, IoRestrictionInputOnly,
+                "\\GPIO", 0xEE, ResourceProducer, ,
+                RawDataBuffer (0x04)  // Vendor Data
+                {
+                    0xC1, 0xC2, 0xC3, 0xC4
+                })
+                {   // Pin list
+                    0x11E1,
+                    0x22E2,
+                    0x33E3
+                }
+        }, 
+
+        ResourceTemplate ()
+        {
+            GpioIo (Exclusive, PullDefault, 0x0DEB, 0xABCD, IoRestrictionOutputOnly,
+                "\\GPIO", 0xEE, ResourceProducer, ,
+                RawDataBuffer (0x04)  // Vendor Data
+                {
+                    0xC1, 0xC2, 0xC3, 0xC4
+                })
+                {   // Pin list
+                    0x11E1,
+                    0x22E2,
+                    0x33E3
+                }
+        }, 
+
+        ResourceTemplate ()
+        {
+            GpioIo (Shared, PullUp, 0x0DEB, 0xABCD, IoRestrictionNone,
+                "\\GPIO", 0xEE, ResourceProducer, ,
+                RawDataBuffer (0x04)  // Vendor Data
+                {
+                    0xC1, 0xC2, 0xC3, 0xC4
+                })
+                {   // Pin list
+                    0x11E1,
+                    0x22E2,
+                    0x33E3
+                }
+        }, 
+
+        ResourceTemplate ()
+        {
+            GpioIo (Shared, PullUp, 0x0DEB, 0xABCD, IoRestrictionInputOnly,
+                "\\GPIO", 0xEE, ResourceProducer, ,
+                RawDataBuffer (0x04)  // Vendor Data
+                {
+                    0xC1, 0xC2, 0xC3, 0xC4
+                })
+                {   // Pin list
+                    0x11E1,
+                    0x22E2,
+                    0x33E3
+                }
+        }, 
+
+        ResourceTemplate ()
+        {
+            GpioIo (Shared, PullUp, 0x0DEB, 0xABCD, IoRestrictionOutputOnly,
+                "\\GPIO", 0xEE, ResourceProducer, ,
+                RawDataBuffer (0x04)  // Vendor Data
+                {
+                    0xC1, 0xC2, 0xC3, 0xC4
+                })
+                {   // Pin list
+                    0x11E1,
+                    0x22E2,
+                    0x33E3
+                }
+        }, 
+
+        ResourceTemplate ()
+        {
+            GpioIo (Shared, PullDown, 0x0DEB, 0xABCD, IoRestrictionNone,
+                "\\GPIO", 0xEE, ResourceProducer, ,
+                RawDataBuffer (0x04)  // Vendor Data
+                {
+                    0xC1, 0xC2, 0xC3, 0xC4
+                })
+                {   // Pin list
+                    0x11E1,
+                    0x22E2,
+                    0x33E3
+                }
+        }, 
+
+        ResourceTemplate ()
+        {
+            GpioIo (Shared, PullDown, 0x0DEB, 0xABCD, IoRestrictionInputOnly,
+                "\\GPIO", 0xEE, ResourceProducer, ,
+                RawDataBuffer (0x04)  // Vendor Data
+                {
+                    0xC1, 0xC2, 0xC3, 0xC4
+                })
+                {   // Pin list
+                    0x11E1,
+                    0x22E2,
+                    0x33E3
+                }
+        }, 
+
+        ResourceTemplate ()
+        {
+            GpioIo (Shared, PullDown, 0x0DEB, 0xABCD, IoRestrictionOutputOnly,
+                "\\GPIO", 0xEE, ResourceProducer, ,
+                RawDataBuffer (0x04)  // Vendor Data
+                {
+                    0xC1, 0xC2, 0xC3, 0xC4
+                })
+                {   // Pin list
+                    0x11E1,
+                    0x22E2,
+                    0x33E3
+                }
+        }, 
+
+        ResourceTemplate ()
+        {
+            GpioIo (Shared, PullNone, 0x0DEB, 0xABCD, IoRestrictionNone,
+                "\\GPIO", 0xEE, ResourceProducer, ,
+                RawDataBuffer (0x04)  // Vendor Data
+                {
+                    0xC1, 0xC2, 0xC3, 0xC4
+                })
+                {   // Pin list
+                    0x11E1,
+                    0x22E2,
+                    0x33E3
+                }
+        }, 
+
+        ResourceTemplate ()
+        {
+            GpioIo (Shared, PullNone, 0x0DEB, 0xABCD, IoRestrictionInputOnly,
+                "\\GPIO", 0xEE, ResourceProducer, ,
+                RawDataBuffer (0x04)  // Vendor Data
+                {
+                    0xC1, 0xC2, 0xC3, 0xC4
+                })
+                {   // Pin list
+                    0x11E1,
+                    0x22E2,
+                    0x33E3
+                }
+        }, 
+
+        ResourceTemplate ()
+        {
+            GpioIo (Shared, PullNone, 0x0DEB, 0xABCD, IoRestrictionOutputOnly,
+                "\\GPIO", 0xEE, ResourceProducer, ,
+                RawDataBuffer (0x04)  // Vendor Data
+                {
+                    0xC1, 0xC2, 0xC3, 0xC4
+                })
+                {   // Pin list
+                    0x11E1,
+                    0x22E2,
+                    0x33E3
+                }
+        }, 
+
+        ResourceTemplate ()
+        {
+            GpioIo (Shared, PullDefault, 0x0DEB, 0xABCD, IoRestrictionNone,
+                "\\GPIO", 0xEE, ResourceProducer, ,
+                RawDataBuffer (0x04)  // Vendor Data
+                {
+                    0xC1, 0xC2, 0xC3, 0xC4
+                })
+                {   // Pin list
+                    0x11E1,
+                    0x22E2,
+                    0x33E3
+                }
+        }, 
+
+        ResourceTemplate ()
+        {
+            GpioIo (Shared, PullDefault, 0x0DEB, 0xABCD, IoRestrictionInputOnly,
+                "\\GPIO", 0xEE, ResourceProducer, ,
+                RawDataBuffer (0x04)  // Vendor Data
+                {
+                    0xC1, 0xC2, 0xC3, 0xC4
+                })
+                {   // Pin list
+                    0x11E1,
+                    0x22E2,
+                    0x33E3
+                }
+        }, 
+
+        ResourceTemplate ()
+        {
+            GpioIo (Shared, PullDefault, 0x0DEB, 0xABCD, IoRestrictionOutputOnly,
+                "\\GPIO", 0xEE, ResourceProducer, ,
+                RawDataBuffer (0x04)  // Vendor Data
+                {
+                    0xC1, 0xC2, 0xC3, 0xC4
+                })
+                {   // Pin list
+                    0x11E1,
+                    0x22E2,
+                    0x33E3
+                }
+        }, 
+
+        ResourceTemplate ()
+        {
+            GpioIo (ExclusiveAndWake, PullUp, 0x0DEB, 0xABCD, IoRestrictionNone,
+                "\\GPIO", 0xEE, ResourceProducer, ,
+                RawDataBuffer (0x04)  // Vendor Data
+                {
+                    0xC1, 0xC2, 0xC3, 0xC4
+                })
+                {   // Pin list
+                    0x11E1,
+                    0x22E2,
+                    0x33E3
+                }
+        }, 
+
+        ResourceTemplate ()
+        {
+            GpioIo (ExclusiveAndWake, PullUp, 0x0DEB, 0xABCD, IoRestrictionInputOnly,
+                "\\GPIO", 0xEE, ResourceProducer, ,
+                RawDataBuffer (0x04)  // Vendor Data
+                {
+                    0xC1, 0xC2, 0xC3, 0xC4
+                })
+                {   // Pin list
+                    0x11E1,
+                    0x22E2,
+                    0x33E3
+                }
+        }, 
+
+        ResourceTemplate ()
+        {
+            GpioIo (ExclusiveAndWake, PullUp, 0x0DEB, 0xABCD, IoRestrictionOutputOnly,
+                "\\GPIO", 0xEE, ResourceProducer, ,
+                RawDataBuffer (0x04)  // Vendor Data
+                {
+                    0xC1, 0xC2, 0xC3, 0xC4
+                })
+                {   // Pin list
+                    0x11E1,
+                    0x22E2,
+                    0x33E3
+                }
+        }, 
+
+        ResourceTemplate ()
+        {
+            GpioIo (ExclusiveAndWake, PullDown, 0x0DEB, 0xABCD, IoRestrictionNone,
+                "\\GPIO", 0xEE, ResourceProducer, ,
+                RawDataBuffer (0x04)  // Vendor Data
+                {
+                    0xC1, 0xC2, 0xC3, 0xC4
+                })
+                {   // Pin list
+                    0x11E1,
+                    0x22E2,
+                    0x33E3
+                }
+        }, 
+
+        ResourceTemplate ()
+        {
+            GpioIo (ExclusiveAndWake, PullDown, 0x0DEB, 0xABCD, IoRestrictionInputOnly,
+                "\\GPIO", 0xEE, ResourceProducer, ,
+                RawDataBuffer (0x04)  // Vendor Data
+                {
+                    0xC1, 0xC2, 0xC3, 0xC4
+                })
+                {   // Pin list
+                    0x11E1,
+                    0x22E2,
+                    0x33E3
+                }
+        }, 
+
+        ResourceTemplate ()
+        {
+            GpioIo (ExclusiveAndWake, PullDown, 0x0DEB, 0xABCD, IoRestrictionOutputOnly,
+                "\\GPIO", 0xEE, ResourceProducer, ,
+                RawDataBuffer (0x04)  // Vendor Data
+                {
+                    0xC1, 0xC2, 0xC3, 0xC4
+                })
+                {   // Pin list
+                    0x11E1,
+                    0x22E2,
+                    0x33E3
+                }
+        }, 
+
+        ResourceTemplate ()
+        {
+            GpioIo (ExclusiveAndWake, PullNone, 0x0DEB, 0xABCD, IoRestrictionNone,
+                "\\GPIO", 0xEE, ResourceProducer, ,
+                RawDataBuffer (0x04)  // Vendor Data
+                {
+                    0xC1, 0xC2, 0xC3, 0xC4
+                })
+                {   // Pin list
+                    0x11E1,
+                    0x22E2,
+                    0x33E3
+                }
+        }, 
+
+        ResourceTemplate ()
+        {
+            GpioIo (ExclusiveAndWake, PullNone, 0x0DEB, 0xABCD, IoRestrictionInputOnly,
+                "\\GPIO", 0xEE, ResourceProducer, ,
+                RawDataBuffer (0x04)  // Vendor Data
+                {
+                    0xC1, 0xC2, 0xC3, 0xC4
+                })
+                {   // Pin list
+                    0x11E1,
+                    0x22E2,
+                    0x33E3
+                }
+        }, 
+
+        ResourceTemplate ()
+        {
+            GpioIo (ExclusiveAndWake, PullNone, 0x0DEB, 0xABCD, IoRestrictionOutputOnly,
+                "\\GPIO", 0xEE, ResourceProducer, ,
+                RawDataBuffer (0x04)  // Vendor Data
+                {
+                    0xC1, 0xC2, 0xC3, 0xC4
+                })
+                {   // Pin list
+                    0x11E1,
+                    0x22E2,
+                    0x33E3
+                }
+        }, 
+
+        ResourceTemplate ()
+        {
+            GpioIo (ExclusiveAndWake, PullDefault, 0x0DEB, 0xABCD, IoRestrictionNone,
+                "\\GPIO", 0xEE, ResourceProducer, ,
+                RawDataBuffer (0x04)  // Vendor Data
+                {
+                    0xC1, 0xC2, 0xC3, 0xC4
+                })
+                {   // Pin list
+                    0x11E1,
+                    0x22E2,
+                    0x33E3
+                }
+        }, 
+
+        ResourceTemplate ()
+        {
+            GpioIo (ExclusiveAndWake, PullDefault, 0x0DEB, 0xABCD, IoRestrictionInputOnly,
+                "\\GPIO", 0xEE, ResourceProducer, ,
+                RawDataBuffer (0x04)  // Vendor Data
+                {
+                    0xC1, 0xC2, 0xC3, 0xC4
+                })
+                {   // Pin list
+                    0x11E1,
+                    0x22E2,
+                    0x33E3
+                }
+        }, 
+
+        ResourceTemplate ()
+        {
+            GpioIo (ExclusiveAndWake, PullDefault, 0x0DEB, 0xABCD, IoRestrictionOutputOnly,
+                "\\GPIO", 0xEE, ResourceProducer, ,
+                RawDataBuffer (0x04)  // Vendor Data
+                {
+                    0xC1, 0xC2, 0xC3, 0xC4
+                })
+                {   // Pin list
+                    0x11E1,
+                    0x22E2,
+                    0x33E3
+                }
+        }, 
+
+        ResourceTemplate ()
+        {
+            GpioIo (SharedAndWake, PullUp, 0x0DEB, 0xABCD, IoRestrictionNone,
+                "\\GPIO", 0xEE, ResourceProducer, ,
+                RawDataBuffer (0x04)  // Vendor Data
+                {
+                    0xC1, 0xC2, 0xC3, 0xC4
+                })
+                {   // Pin list
+                    0x11E1,
+                    0x22E2,
+                    0x33E3
+                }
+        }, 
+
+        ResourceTemplate ()
+        {
+            GpioIo (SharedAndWake, PullUp, 0x0DEB, 0xABCD, IoRestrictionInputOnly,
+                "\\GPIO", 0xEE, ResourceProducer, ,
+                RawDataBuffer (0x04)  // Vendor Data
+                {
+                    0xC1, 0xC2, 0xC3, 0xC4
+                })
+                {   // Pin list
+                    0x11E1,
+                    0x22E2,
+                    0x33E3
+                }
+        }, 
+
+        ResourceTemplate ()
+        {
+            GpioIo (SharedAndWake, PullUp, 0x0DEB, 0xABCD, IoRestrictionOutputOnly,
+                "\\GPIO", 0xEE, ResourceProducer, ,
+                RawDataBuffer (0x04)  // Vendor Data
+                {
+                    0xC1, 0xC2, 0xC3, 0xC4
+                })
+                {   // Pin list
+                    0x11E1,
+                    0x22E2,
+                    0x33E3
+                }
+        }, 
+
+        ResourceTemplate ()
+        {
+            GpioIo (SharedAndWake, PullDown, 0x0DEB, 0xABCD, IoRestrictionNone,
+                "\\GPIO", 0xEE, ResourceProducer, ,
+                RawDataBuffer (0x04)  // Vendor Data
+                {
+                    0xC1, 0xC2, 0xC3, 0xC4
+                })
+                {   // Pin list
+                    0x11E1,
+                    0x22E2,
+                    0x33E3
+                }
+        }, 
+
+        ResourceTemplate ()
+        {
+            GpioIo (SharedAndWake, PullDown, 0x0DEB, 0xABCD, IoRestrictionInputOnly,
+                "\\GPIO", 0xEE, ResourceProducer, ,
+                RawDataBuffer (0x04)  // Vendor Data
+                {
+                    0xC1, 0xC2, 0xC3, 0xC4
+                })
+                {   // Pin list
+                    0x11E1,
+                    0x22E2,
+                    0x33E3
+                }
+        }, 
+
+        ResourceTemplate ()
+        {
+            GpioIo (SharedAndWake, PullDown, 0x0DEB, 0xABCD, IoRestrictionOutputOnly,
+                "\\GPIO", 0xEE, ResourceProducer, ,
+                RawDataBuffer (0x04)  // Vendor Data
+                {
+                    0xC1, 0xC2, 0xC3, 0xC4
+                })
+                {   // Pin list
+                    0x11E1,
+                    0x22E2,
+                    0x33E3
+                }
+        }, 
+
+        ResourceTemplate ()
+        {
+            GpioIo (SharedAndWake, PullNone, 0x0DEB, 0xABCD, IoRestrictionNone,
+                "\\GPIO", 0xEE, ResourceProducer, ,
+                RawDataBuffer (0x04)  // Vendor Data
+                {
+                    0xC1, 0xC2, 0xC3, 0xC4
+                })
+                {   // Pin list
+                    0x11E1,
+                    0x22E2,
+                    0x33E3
+                }
+        }, 
+
+        ResourceTemplate ()
+        {
+            GpioIo (SharedAndWake, PullNone, 0x0DEB, 0xABCD, IoRestrictionInputOnly,
+                "\\GPIO", 0xEE, ResourceProducer, ,
+                RawDataBuffer (0x04)  // Vendor Data
+                {
+                    0xC1, 0xC2, 0xC3, 0xC4
+                })
+                {   // Pin list
+                    0x11E1,
+                    0x22E2,
+                    0x33E3
+                }
+        }, 
+
+        ResourceTemplate ()
+        {
+            GpioIo (SharedAndWake, PullNone, 0x0DEB, 0xABCD, IoRestrictionOutputOnly,
+                "\\GPIO", 0xEE, ResourceProducer, ,
+                RawDataBuffer (0x04)  // Vendor Data
+                {
+                    0xC1, 0xC2, 0xC3, 0xC4
+                })
+                {   // Pin list
+                    0x11E1,
+                    0x22E2,
+                    0x33E3
+                }
+        }, 
+
+        ResourceTemplate ()
+        {
+            GpioIo (SharedAndWake, PullDefault, 0x0DEB, 0xABCD, IoRestrictionNone,
+                "\\GPIO", 0xEE, ResourceProducer, ,
+                RawDataBuffer (0x04)  // Vendor Data
+                {
+                    0xC1, 0xC2, 0xC3, 0xC4
+                })
+                {   // Pin list
+                    0x11E1,
+                    0x22E2,
+                    0x33E3
+                }
+        }, 
+
+        ResourceTemplate ()
+        {
+            GpioIo (SharedAndWake, PullDefault, 0x0DEB, 0xABCD, IoRestrictionInputOnly,
+                "\\GPIO", 0xEE, ResourceProducer, ,
+                RawDataBuffer (0x04)  // Vendor Data
+                {
+                    0xC1, 0xC2, 0xC3, 0xC4
+                })
+                {   // Pin list
+                    0x11E1,
+                    0x22E2,
+                    0x33E3
+                }
+        }, 
+
+        ResourceTemplate ()
+        {
+            GpioIo (SharedAndWake, PullDefault, 0x0DEB, 0xABCD, IoRestrictionOutputOnly,
+                "\\GPIO", 0xEE, ResourceProducer, ,
+                RawDataBuffer (0x04)  // Vendor Data
+                {
+                    0xC1, 0xC2, 0xC3, 0xC4
+                })
+                {   // Pin list
+                    0x11E1,
+                    0x22E2,
+                    0x33E3
+                }
+        }, 
+
+        ResourceTemplate ()
+        {
+            GpioIo (Exclusive, PullUp, 0x0DEB, 0xABCD, IoRestrictionNone,
+                "\\GPIO", 0xEE, ResourceConsumer, ,
+                )
+                {   // Pin list
+                    0x11E1,
+                    0x22E2,
+                    0x33E3
+                }
+        }, 
+
+        ResourceTemplate ()
+        {
+            GpioIo (Exclusive, PullUp, 0x0DEB, 0xABCD, IoRestrictionInputOnly,
+                "\\GPIO", 0xEE, ResourceConsumer, ,
+                )
+                {   // Pin list
+                    0x11E1,
+                    0x22E2,
+                    0x33E3
+                }
+        }, 
+
+        ResourceTemplate ()
+        {
+            GpioIo (Exclusive, PullUp, 0x0DEB, 0xABCD, IoRestrictionOutputOnly,
+                "\\GPIO", 0xEE, ResourceConsumer, ,
+                )
+                {   // Pin list
+                    0x11E1,
+                    0x22E2,
+                    0x33E3
+                }
+        }, 
+
+        ResourceTemplate ()
+        {
+            GpioIo (Exclusive, PullDown, 0x0DEB, 0xABCD, IoRestrictionNone,
+                "\\GPIO", 0xEE, ResourceConsumer, ,
+                )
+                {   // Pin list
+                    0x11E1,
+                    0x22E2,
+                    0x33E3
+                }
+        }, 
+
+        ResourceTemplate ()
+        {
+            GpioIo (Exclusive, PullDown, 0x0DEB, 0xABCD, IoRestrictionInputOnly,
+                "\\GPIO", 0xEE, ResourceConsumer, ,
+                )
+                {   // Pin list
+                    0x11E1,
+                    0x22E2,
+                    0x33E3
+                }
+        }, 
+
+        ResourceTemplate ()
+        {
+            GpioIo (Exclusive, PullDown, 0x0DEB, 0xABCD, IoRestrictionOutputOnly,
+                "\\GPIO", 0xEE, ResourceConsumer, ,
+                )
+                {   // Pin list
+                    0x11E1,
+                    0x22E2,
+                    0x33E3
+                }
+        }, 
+
+        ResourceTemplate ()
+        {
+            GpioIo (Exclusive, PullNone, 0x0DEB, 0xABCD, IoRestrictionNone,
+                "\\GPIO", 0xEE, ResourceConsumer, ,
+                )
+                {   // Pin list
+                    0x11E1,
+                    0x22E2,
+                    0x33E3
+                }
+        }, 
+
+        ResourceTemplate ()
+        {
+            GpioIo (Exclusive, PullNone, 0x0DEB, 0xABCD, IoRestrictionInputOnly,
+                "\\GPIO", 0xEE, ResourceConsumer, ,
+                )
+                {   // Pin list
+                    0x11E1,
+                    0x22E2,
+                    0x33E3
+                }
+        }, 
+
+        ResourceTemplate ()
+        {
+            GpioIo (Exclusive, PullNone, 0x0DEB, 0xABCD, IoRestrictionOutputOnly,
+                "\\GPIO", 0xEE, ResourceConsumer, ,
+                )
+                {   // Pin list
+                    0x11E1,
+                    0x22E2,
+                    0x33E3
+                }
+        }, 
+
+        ResourceTemplate ()
+        {
+            GpioIo (Exclusive, PullDefault, 0x0DEB, 0xABCD, IoRestrictionNone,
+                "\\GPIO", 0xEE, ResourceConsumer, ,
+                )
+                {   // Pin list
+                    0x11E1,
+                    0x22E2,
+                    0x33E3
+                }
+        }, 
+
+        ResourceTemplate ()
+        {
+            GpioIo (Exclusive, PullDefault, 0x0DEB, 0xABCD, IoRestrictionInputOnly,
+                "\\GPIO", 0xEE, ResourceConsumer, ,
+                )
+                {   // Pin list
+                    0x11E1,
+                    0x22E2,
+                    0x33E3
+                }
+        }, 
+
+        ResourceTemplate ()
+        {
+            GpioIo (Exclusive, PullDefault, 0x0DEB, 0xABCD, IoRestrictionOutputOnly,
+                "\\GPIO", 0xEE, ResourceConsumer, ,
+                )
+                {   // Pin list
+                    0x11E1,
+                    0x22E2,
+                    0x33E3
+                }
+        }, 
+
+        ResourceTemplate ()
+        {
+            GpioIo (Shared, PullUp, 0x0DEB, 0xABCD, IoRestrictionNone,
+                "\\GPIO", 0xEE, ResourceConsumer, ,
+                )
+                {   // Pin list
+                    0x11E1,
+                    0x22E2,
+                    0x33E3
+                }
+        }, 
+
+        ResourceTemplate ()
+        {
+            GpioIo (Shared, PullUp, 0x0DEB, 0xABCD, IoRestrictionInputOnly,
+                "\\GPIO", 0xEE, ResourceConsumer, ,
+                )
+                {   // Pin list
+                    0x11E1,
+                    0x22E2,
+                    0x33E3
+                }
+        }, 
+
+        ResourceTemplate ()
+        {
+            GpioIo (Shared, PullUp, 0x0DEB, 0xABCD, IoRestrictionOutputOnly,
+                "\\GPIO", 0xEE, ResourceConsumer, ,
+                )
+                {   // Pin list
+                    0x11E1,
+                    0x22E2,
+                    0x33E3
+                }
+        }, 
+
+        ResourceTemplate ()
+        {
+            GpioIo (Shared, PullDown, 0x0DEB, 0xABCD, IoRestrictionNone,
+                "\\GPIO", 0xEE, ResourceConsumer, ,
+                )
+                {   // Pin list
+                    0x11E1,
+                    0x22E2,
+                    0x33E3
+                }
+        }, 
+
+        ResourceTemplate ()
+        {
+            GpioIo (Shared, PullDown, 0x0DEB, 0xABCD, IoRestrictionInputOnly,
+                "\\GPIO", 0xEE, ResourceConsumer, ,
+                )
+                {   // Pin list
+                    0x11E1,
+                    0x22E2,
+                    0x33E3
+                }
+        }, 
+
+        ResourceTemplate ()
+        {
+            GpioIo (Shared, PullDown, 0x0DEB, 0xABCD, IoRestrictionOutputOnly,
+                "\\GPIO", 0xEE, ResourceConsumer, ,
+                )
+                {   // Pin list
+                    0x11E1,
+                    0x22E2,
+                    0x33E3
+                }
+        }, 
+
+        ResourceTemplate ()
+        {
+            GpioIo (Shared, PullNone, 0x0DEB, 0xABCD, IoRestrictionNone,
+                "\\GPIO", 0xEE, ResourceConsumer, ,
+                )
+                {   // Pin list
+                    0x11E1,
+                    0x22E2,
+                    0x33E3
+                }
+        }, 
+
+        ResourceTemplate ()
+        {
+            GpioIo (Shared, PullNone, 0x0DEB, 0xABCD, IoRestrictionInputOnly,
+                "\\GPIO", 0xEE, ResourceConsumer, ,
+                )
+                {   // Pin list
+                    0x11E1,
+                    0x22E2,
+                    0x33E3
+                }
+        }, 
+
+        ResourceTemplate ()
+        {
+            GpioIo (Shared, PullNone, 0x0DEB, 0xABCD, IoRestrictionOutputOnly,
+                "\\GPIO", 0xEE, ResourceConsumer, ,
+                )
+                {   // Pin list
+                    0x11E1,
+                    0x22E2,
+                    0x33E3
+                }
+        }, 
+
+        ResourceTemplate ()
+        {
+            GpioIo (Shared, PullDefault, 0x0DEB, 0xABCD, IoRestrictionNone,
+                "\\GPIO", 0xEE, ResourceConsumer, ,
+                )
+                {   // Pin list
+                    0x11E1,
+                    0x22E2,
+                    0x33E3
+                }
+        }, 
+
+        ResourceTemplate ()
+        {
+            GpioIo (Shared, PullDefault, 0x0DEB, 0xABCD, IoRestrictionInputOnly,
+                "\\GPIO", 0xEE, ResourceConsumer, ,
+                )
+                {   // Pin list
+                    0x11E1,
+                    0x22E2,
+                    0x33E3
+                }
+        }, 
+
+        ResourceTemplate ()
+        {
+            GpioIo (Shared, PullDefault, 0x0DEB, 0xABCD, IoRestrictionOutputOnly,
+                "\\GPIO", 0xEE, ResourceConsumer, ,
+                )
+                {   // Pin list
+                    0x11E1,
+                    0x22E2,
+                    0x33E3
+                }
+        }, 
+
+        ResourceTemplate ()
+        {
+            GpioIo (ExclusiveAndWake, PullUp, 0x0DEB, 0xABCD, IoRestrictionNone,
+                "\\GPIO", 0xEE, ResourceConsumer, ,
+                )
+                {   // Pin list
+                    0x11E1,
+                    0x22E2,
+                    0x33E3
+                }
+        }, 
+
+        ResourceTemplate ()
+        {
+            GpioIo (ExclusiveAndWake, PullUp, 0x0DEB, 0xABCD, IoRestrictionInputOnly,
+                "\\GPIO", 0xEE, ResourceConsumer, ,
+                )
+                {   // Pin list
+                    0x11E1,
+                    0x22E2,
+                    0x33E3
+                }
+        }, 
+
+        ResourceTemplate ()
+        {
+            GpioIo (ExclusiveAndWake, PullUp, 0x0DEB, 0xABCD, IoRestrictionOutputOnly,
+                "\\GPIO", 0xEE, ResourceConsumer, ,
+                )
+                {   // Pin list
+                    0x11E1,
+                    0x22E2,
+                    0x33E3
+                }
+        }, 
+
+        ResourceTemplate ()
+        {
+            GpioIo (ExclusiveAndWake, PullDown, 0x0DEB, 0xABCD, IoRestrictionNone,
+                "\\GPIO", 0xEE, ResourceConsumer, ,
+                )
+                {   // Pin list
+                    0x11E1,
+                    0x22E2,
+                    0x33E3
+                }
+        }, 
+
+        ResourceTemplate ()
+        {
+            GpioIo (ExclusiveAndWake, PullDown, 0x0DEB, 0xABCD, IoRestrictionInputOnly,
+                "\\GPIO", 0xEE, ResourceConsumer, ,
+                RawDataBuffer (0x04)  // Vendor Data
+                {
+                    0xC1, 0xC2, 0xC3, 0xC4
+                })
+                {   // Pin list
+                    0x11E1,
+                    0x22E2,
+                    0x33E3
+                }
+        }, 
+
+        ResourceTemplate ()
+        {
+            GpioIo (ExclusiveAndWake, PullDown, 0x0DEB, 0xABCD, IoRestrictionOutputOnly,
+                "\\GPIO", 0xEE, ResourceConsumer, ,
+                )
+                {   // Pin list
+                    0x11E1,
+                    0x22E2,
+                    0x33E3
+                }
+        }, 
+
+        ResourceTemplate ()
+        {
+            GpioIo (ExclusiveAndWake, PullNone, 0x0DEB, 0xABCD, IoRestrictionNone,
+                "\\GPIO", 0xEE, ResourceConsumer, ,
+                )
+                {   // Pin list
+                    0x11E1,
+                    0x22E2,
+                    0x33E3
+                }
+        }, 
+
+        ResourceTemplate ()
+        {
+            GpioIo (ExclusiveAndWake, PullNone, 0x0DEB, 0xABCD, IoRestrictionInputOnly,
+                "\\GPIO", 0xEE, ResourceConsumer, ,
+                )
+                {   // Pin list
+                    0x11E1,
+                    0x22E2,
+                    0x33E3
+                }
+        }, 
+
+        ResourceTemplate ()
+        {
+            GpioIo (ExclusiveAndWake, PullNone, 0x0DEB, 0xABCD, IoRestrictionOutputOnly,
+                "\\GPIO", 0xEE, ResourceConsumer, ,
+                )
+                {   // Pin list
+                    0x11E1,
+                    0x22E2,
+                    0x33E3
+                }
+        }, 
+
+        ResourceTemplate ()
+        {
+            GpioIo (ExclusiveAndWake, PullDefault, 0x0DEB, 0xABCD, IoRestrictionNone,
+                "\\GPIO", 0xEE, ResourceConsumer, ,
+                )
+                {   // Pin list
+                    0x11E1,
+                    0x22E2,
+                    0x33E3
+                }
+        }, 
+
+        ResourceTemplate ()
+        {
+            GpioIo (ExclusiveAndWake, PullDefault, 0x0DEB, 0xABCD, IoRestrictionInputOnly,
+                "\\GPIO", 0xEE, ResourceConsumer, ,
+                )
+                {   // Pin list
+                    0x11E1,
+                    0x22E2,
+                    0x33E3
+                }
+        }, 
+
+        ResourceTemplate ()
+        {
+            GpioIo (ExclusiveAndWake, PullDefault, 0x0DEB, 0xABCD, IoRestrictionOutputOnly,
+                "\\GPIO", 0xEE, ResourceConsumer, ,
+                )
+                {   // Pin list
+                    0x11E1,
+                    0x22E2,
+                    0x33E3
+                }
+        }, 
+
+        ResourceTemplate ()
+        {
+            GpioIo (SharedAndWake, PullUp, 0x0DEB, 0xABCD, IoRestrictionNone,
+                "\\GPIO", 0xEE, ResourceConsumer, ,
+                )
+                {   // Pin list
+                    0x11E1,
+                    0x22E2,
+                    0x33E3
+                }
+        }, 
+
+        ResourceTemplate ()
+        {
+            GpioIo (SharedAndWake, PullUp, 0x0DEB, 0xABCD, IoRestrictionInputOnly,
+                "\\GPIO", 0xEE, ResourceConsumer, ,
+                )
+                {   // Pin list
+                    0x11E1,
+                    0x22E2,
+                    0x33E3
+                }
+        }, 
+
+        ResourceTemplate ()
+        {
+            GpioIo (SharedAndWake, PullUp, 0x0DEB, 0xABCD, IoRestrictionOutputOnly,
+                "\\GPIO", 0xEE, ResourceConsumer, ,
+                )
+                {   // Pin list
+                    0x11E1,
+                    0x22E2,
+                    0x33E3
+                }
+        }, 
+
+        ResourceTemplate ()
+        {
+            GpioIo (SharedAndWake, PullDown, 0x0DEB, 0xABCD, IoRestrictionNone,
+                "\\GPIO", 0xEE, ResourceConsumer, ,
+                )
+                {   // Pin list
+                    0x11E1,
+                    0x22E2,
+                    0x33E3
+                }
+        }, 
+
+        ResourceTemplate ()
+        {
+            GpioIo (SharedAndWake, PullDown, 0x0DEB, 0xABCD, IoRestrictionInputOnly,
+                "\\GPIO", 0xEE, ResourceConsumer, ,
+                )
+                {   // Pin list
+                    0x11E1,
+                    0x22E2,
+                    0x33E3
+                }
+        }, 
+
+        ResourceTemplate ()
+        {
+            GpioIo (SharedAndWake, PullDown, 0x0DEB, 0xABCD, IoRestrictionOutputOnly,
+                "\\GPIO", 0xEE, ResourceConsumer, ,
+                )
+                {   // Pin list
+                    0x11E1,
+                    0x22E2,
+                    0x33E3
+                }
+        }, 
+
+        ResourceTemplate ()
+        {
+            GpioIo (SharedAndWake, PullNone, 0x0DEB, 0xABCD, IoRestrictionNone,
+                "\\GPIO", 0xEE, ResourceConsumer, ,
+                )
+                {   // Pin list
+                    0x11E1,
+                    0x22E2,
+                    0x33E3
+                }
+        }, 
+
+        ResourceTemplate ()
+        {
+            GpioIo (SharedAndWake, PullNone, 0x0DEB, 0xABCD, IoRestrictionInputOnly,
+                "\\GPIO", 0xEE, ResourceConsumer, ,
+                )
+                {   // Pin list
+                    0x11E1,
+                    0x22E2,
+                    0x33E3
+                }
+        }, 
+
+        ResourceTemplate ()
+        {
+            GpioIo (SharedAndWake, PullNone, 0x0DEB, 0xABCD, IoRestrictionOutputOnly,
+                "\\GPIO", 0xEE, ResourceConsumer, ,
+                )
+                {   // Pin list
+                    0x11E1,
+                    0x22E2,
+                    0x33E3
+                }
+        }, 
+
+        ResourceTemplate ()
+        {
+            GpioIo (SharedAndWake, PullDefault, 0x0DEB, 0xABCD, IoRestrictionNone,
+                "\\GPIO", 0xEE, ResourceConsumer, ,
+                )
+                {   // Pin list
+                    0x11E1,
+                    0x22E2,
+                    0x33E3
+                }
+        }, 
+
+        ResourceTemplate ()
+        {
+            GpioIo (SharedAndWake, PullDefault, 0x0DEB, 0xABCD, IoRestrictionInputOnly,
+                "\\GPIO", 0xEE, ResourceConsumer, ,
+                )
+                {   // Pin list
+                    0x11E1,
+                    0x22E2,
+                    0x33E3
+                }
+        }, 
+
+        ResourceTemplate ()
+        {
+            GpioIo (SharedAndWake, PullDefault, 0x0DEB, 0xABCD, IoRestrictionOutputOnly,
+                "\\GPIO", 0xEE, ResourceConsumer, ,
+                )
+                {   // Pin list
+                    0x11E1,
+                    0x22E2,
+                    0x33E3
+                }
+        }, 
+
+        ResourceTemplate ()
+        {
+            GpioIo (Exclusive, PullUp, 0x0DEB, 0xABCD, IoRestrictionNone,
+                "\\GPIO", 0xEE, ResourceProducer, ,
+                )
+                {   // Pin list
+                    0x11E1,
+                    0x22E2,
+                    0x33E3
+                }
+        }, 
+
+        ResourceTemplate ()
+        {
+            GpioIo (Exclusive, PullUp, 0x0DEB, 0xABCD, IoRestrictionInputOnly,
+                "\\GPIO", 0xEE, ResourceProducer, ,
+                )
+                {   // Pin list
+                    0x11E1,
+                    0x22E2,
+                    0x33E3
+                }
+        }, 
+
+        ResourceTemplate ()
+        {
+            GpioIo (Exclusive, PullUp, 0x0DEB, 0xABCD, IoRestrictionOutputOnly,
+                "\\GPIO", 0xEE, ResourceProducer, ,
+                )
+                {   // Pin list
+                    0x11E1,
+                    0x22E2,
+                    0x33E3
+                }
+        }, 
+
+        ResourceTemplate ()
+        {
+            GpioIo (Exclusive, PullDown, 0x0DEB, 0xABCD, IoRestrictionNone,
+                "\\GPIO", 0xEE, ResourceProducer, ,
+                )
+                {   // Pin list
+                    0x11E1,
+                    0x22E2,
+                    0x33E3
+                }
+        }, 
+
+        ResourceTemplate ()
+        {
+            GpioIo (Exclusive, PullDown, 0x0DEB, 0xABCD, IoRestrictionInputOnly,
+                "\\GPIO", 0xEE, ResourceProducer, ,
+                )
+                {   // Pin list
+                    0x11E1,
+                    0x22E2,
+                    0x33E3
+                }
+        }, 
+
+        ResourceTemplate ()
+        {
+            GpioIo (Exclusive, PullDown, 0x0DEB, 0xABCD, IoRestrictionOutputOnly,
+                "\\GPIO", 0xEE, ResourceProducer, ,
+                )
+                {   // Pin list
+                    0x11E1,
+                    0x22E2,
+                    0x33E3
+                }
+        }, 
+
+        ResourceTemplate ()
+        {
+            GpioIo (Exclusive, PullNone, 0x0DEB, 0xABCD, IoRestrictionNone,
+                "\\GPIO", 0xEE, ResourceProducer, ,
+                )
+                {   // Pin list
+                    0x11E1,
+                    0x22E2,
+                    0x33E3
+                }
+        }, 
+
+        ResourceTemplate ()
+        {
+            GpioIo (Exclusive, PullNone, 0x0DEB, 0xABCD, IoRestrictionInputOnly,
+                "\\GPIO", 0xEE, ResourceProducer, ,
+                )
+                {   // Pin list
+                    0x11E1,
+                    0x22E2,
+                    0x33E3
+                }
+        }, 
+
+        ResourceTemplate ()
+        {
+            GpioIo (Exclusive, PullNone, 0x0DEB, 0xABCD, IoRestrictionOutputOnly,
+                "\\GPIO", 0xEE, ResourceProducer, ,
+                )
+                {   // Pin list
+                    0x11E1,
+                    0x22E2,
+                    0x33E3
+                }
+        }, 
+
+        ResourceTemplate ()
+        {
+            GpioIo (Exclusive, PullDefault, 0x0DEB, 0xABCD, IoRestrictionNone,
+                "\\GPIO", 0xEE, ResourceProducer, ,
+                )
+                {   // Pin list
+                    0x11E1,
+                    0x22E2,
+                    0x33E3
+                }
+        }, 
+
+        ResourceTemplate ()
+        {
+            GpioIo (Exclusive, PullDefault, 0x0DEB, 0xABCD, IoRestrictionInputOnly,
+                "\\GPIO", 0xEE, ResourceProducer, ,
+                )
+                {   // Pin list
+                    0x11E1,
+                    0x22E2,
+                    0x33E3
+                }
+        }, 
+
+        ResourceTemplate ()
+        {
+            GpioIo (Exclusive, PullDefault, 0x0DEB, 0xABCD, IoRestrictionOutputOnly,
+                "\\GPIO", 0xEE, ResourceProducer, ,
+                )
+                {   // Pin list
+                    0x11E1,
+                    0x22E2,
+                    0x33E3
+                }
+        }, 
+
+        ResourceTemplate ()
+        {
+            GpioIo (Shared, PullUp, 0x0DEB, 0xABCD, IoRestrictionNone,
+                "\\GPIO", 0xEE, ResourceProducer, ,
+                )
+                {   // Pin list
+                    0x11E1,
+                    0x22E2,
+                    0x33E3
+                }
+        }, 
+
+        ResourceTemplate ()
+        {
+            GpioIo (Shared, PullUp, 0x0DEB, 0xABCD, IoRestrictionInputOnly,
+                "\\GPIO", 0xEE, ResourceProducer, ,
+                )
+                {   // Pin list
+                    0x11E1,
+                    0x22E2,
+                    0x33E3
+                }
+        }, 
+
+        ResourceTemplate ()
+        {
+            GpioIo (Shared, PullUp, 0x0DEB, 0xABCD, IoRestrictionOutputOnly,
+                "\\GPIO", 0xEE, ResourceProducer, ,
+                )
+                {   // Pin list
+                    0x11E1,
+                    0x22E2,
+                    0x33E3
+                }
+        }, 
+
+        ResourceTemplate ()
+        {
+            GpioIo (Shared, PullDown, 0x0DEB, 0xABCD, IoRestrictionNone,
+                "\\GPIO", 0xEE, ResourceProducer, ,
+                )
+                {   // Pin list
+                    0x11E1,
+                    0x22E2,
+                    0x33E3
+                }
+        }, 
+
+        ResourceTemplate ()
+        {
+            GpioIo (Shared, PullDown, 0x0DEB, 0xABCD, IoRestrictionInputOnly,
+                "\\GPIO", 0xEE, ResourceProducer, ,
+                )
+                {   // Pin list
+                    0x11E1,
+                    0x22E2,
+                    0x33E3
+                }
+        }, 
+
+        ResourceTemplate ()
+        {
+            GpioIo (Shared, PullDown, 0x0DEB, 0xABCD, IoRestrictionOutputOnly,
+                "\\GPIO", 0xEE, ResourceProducer, ,
+                )
+                {   // Pin list
+                    0x11E1,
+                    0x22E2,
+                    0x33E3
+                }
+        }, 
+
+        ResourceTemplate ()
+        {
+            GpioIo (Shared, PullNone, 0x0DEB, 0xABCD, IoRestrictionNone,
+                "\\GPIO", 0xEE, ResourceProducer, ,
+                )
+                {   // Pin list
+                    0x11E1,
+                    0x22E2,
+                    0x33E3
+                }
+        }, 
+
+        ResourceTemplate ()
+        {
+            GpioIo (Shared, PullNone, 0x0DEB, 0xABCD, IoRestrictionInputOnly,
+                "\\GPIO", 0xEE, ResourceProducer, ,
+                )
+                {   // Pin list
+                    0x11E1,
+                    0x22E2,
+                    0x33E3
+                }
+        }, 
+
+        ResourceTemplate ()
+        {
+            GpioIo (Shared, PullNone, 0x0DEB, 0xABCD, IoRestrictionOutputOnly,
+                "\\GPIO", 0xEE, ResourceProducer, ,
+                )
+                {   // Pin list
+                    0x11E1,
+                    0x22E2,
+                    0x33E3
+                }
+        }, 
+
+        ResourceTemplate ()
+        {
+            GpioIo (Shared, PullDefault, 0x0DEB, 0xABCD, IoRestrictionNone,
+                "\\GPIO", 0xEE, ResourceProducer, ,
+                )
+                {   // Pin list
+                    0x11E1,
+                    0x22E2,
+                    0x33E3
+                }
+        }, 
+
+        ResourceTemplate ()
+        {
+            GpioIo (Shared, PullDefault, 0x0DEB, 0xABCD, IoRestrictionInputOnly,
+                "\\GPIO", 0xEE, ResourceProducer, ,
+                )
+                {   // Pin list
+                    0x11E1,
+                    0x22E2,
+                    0x33E3
+                }
+        }, 
+
+        ResourceTemplate ()
+        {
+            GpioIo (Shared, PullDefault, 0x0DEB, 0xABCD, IoRestrictionOutputOnly,
+                "\\GPIO", 0xEE, ResourceProducer, ,
+                )
+                {   // Pin list
+                    0x11E1,
+                    0x22E2,
+                    0x33E3
+                }
+        }, 
+
+        ResourceTemplate ()
+        {
+            GpioIo (ExclusiveAndWake, PullUp, 0x0DEB, 0xABCD, IoRestrictionNone,
+                "\\GPIO", 0xEE, ResourceProducer, ,
+                )
+                {   // Pin list
+                    0x11E1,
+                    0x22E2,
+                    0x33E3
+                }
+        }, 
+
+        ResourceTemplate ()
+        {
+            GpioIo (ExclusiveAndWake, PullUp, 0x0DEB, 0xABCD, IoRestrictionInputOnly,
+                "\\GPIO", 0xEE, ResourceProducer, ,
+                )
+                {   // Pin list
+                    0x11E1,
+                    0x22E2,
+                    0x33E3
+                }
+        }, 
+
+        ResourceTemplate ()
+        {
+            GpioIo (ExclusiveAndWake, PullUp, 0x0DEB, 0xABCD, IoRestrictionOutputOnly,
+                "\\GPIO", 0xEE, ResourceProducer, ,
+                )
+                {   // Pin list
+                    0x11E1,
+                    0x22E2,
+                    0x33E3
+                }
+        }, 
+
+        ResourceTemplate ()
+        {
+            GpioIo (ExclusiveAndWake, PullDown, 0x0DEB, 0xABCD, IoRestrictionNone,
+                "\\GPIO", 0xEE, ResourceProducer, ,
+                )
+                {   // Pin list
+                    0x11E1,
+                    0x22E2,
+                    0x33E3
+                }
+        }, 
+
+        ResourceTemplate ()
+        {
+            GpioIo (ExclusiveAndWake, PullDown, 0x0DEB, 0xABCD, IoRestrictionInputOnly,
+                "\\GPIO", 0xEE, ResourceProducer, ,
+                )
+                {   // Pin list
+                    0x11E1,
+                    0x22E2,
+                    0x33E3
+                }
+        }, 
+
+        ResourceTemplate ()
+        {
+            GpioIo (ExclusiveAndWake, PullDown, 0x0DEB, 0xABCD, IoRestrictionOutputOnly,
+                "\\GPIO", 0xEE, ResourceProducer, ,
+                )
+                {   // Pin list
+                    0x11E1,
+                    0x22E2,
+                    0x33E3
+                }
+        }, 
+
+        ResourceTemplate ()
+        {
+            GpioIo (ExclusiveAndWake, PullNone, 0x0DEB, 0xABCD, IoRestrictionNone,
+                "\\GPIO", 0xEE, ResourceProducer, ,
+                )
+                {   // Pin list
+                    0x11E1,
+                    0x22E2,
+                    0x33E3
+                }
+        }, 
+
+        ResourceTemplate ()
+        {
+            GpioIo (ExclusiveAndWake, PullNone, 0x0DEB, 0xABCD, IoRestrictionInputOnly,
+                "\\GPIO", 0xEE, ResourceProducer, ,
+                )
+                {   // Pin list
+                    0x11E1,
+                    0x22E2,
+                    0x33E3
+                }
+        }, 
+
+        ResourceTemplate ()
+        {
+            GpioIo (ExclusiveAndWake, PullNone, 0x0DEB, 0xABCD, IoRestrictionOutputOnly,
+                "\\GPIO", 0xEE, ResourceProducer, ,
+                )
+                {   // Pin list
+                    0x11E1,
+                    0x22E2,
+                    0x33E3
+                }
+        }, 
+
+        ResourceTemplate ()
+        {
+            GpioIo (ExclusiveAndWake, PullDefault, 0x0DEB, 0xABCD, IoRestrictionNone,
+                "\\GPIO", 0xEE, ResourceProducer, ,
+                )
+                {   // Pin list
+                    0x11E1,
+                    0x22E2,
+                    0x33E3
+                }
+        }, 
+
+        ResourceTemplate ()
+        {
+            GpioIo (ExclusiveAndWake, PullDefault, 0x0DEB, 0xABCD, IoRestrictionInputOnly,
+                "\\GPIO", 0xEE, ResourceProducer, ,
+                )
+                {   // Pin list
+                    0x11E1,
+                    0x22E2,
+                    0x33E3
+                }
+        }, 
+
+        ResourceTemplate ()
+        {
+            GpioIo (ExclusiveAndWake, PullDefault, 0x0DEB, 0xABCD, IoRestrictionOutputOnly,
+                "\\GPIO", 0xEE, ResourceProducer, ,
+                )
+                {   // Pin list
+                    0x11E1,
+                    0x22E2,
+                    0x33E3
+                }
+        }, 
+
+        ResourceTemplate ()
+        {
+            GpioIo (SharedAndWake, PullUp, 0x0DEB, 0xABCD, IoRestrictionNone,
+                "\\GPIO", 0xEE, ResourceProducer, ,
+                )
+                {   // Pin list
+                    0x11E1,
+                    0x22E2,
+                    0x33E3
+                }
+        }, 
+
+        ResourceTemplate ()
+        {
+            GpioIo (SharedAndWake, PullUp, 0x0DEB, 0xABCD, IoRestrictionInputOnly,
+                "\\GPIO", 0xEE, ResourceProducer, ,
+                )
+                {   // Pin list
+                    0x11E1,
+                    0x22E2,
+                    0x33E3
+                }
+        }, 
+
+        ResourceTemplate ()
+        {
+            GpioIo (SharedAndWake, PullUp, 0x0DEB, 0xABCD, IoRestrictionOutputOnly,
+                "\\GPIO", 0xEE, ResourceProducer, ,
+                )
+                {   // Pin list
+                    0x11E1,
+                    0x22E2,
+                    0x33E3
+                }
+        }, 
+
+        ResourceTemplate ()
+        {
+            GpioIo (SharedAndWake, PullDown, 0x0DEB, 0xABCD, IoRestrictionNone,
+                "\\GPIO", 0xEE, ResourceProducer, ,
+                )
+                {   // Pin list
+                    0x11E1,
+                    0x22E2,
+                    0x33E3
+                }
+        }, 
+
+        ResourceTemplate ()
+        {
+            GpioIo (SharedAndWake, PullDown, 0x0DEB, 0xABCD, IoRestrictionInputOnly,
+                "\\GPIO", 0xEE, ResourceProducer, ,
+                )
+                {   // Pin list
+                    0x11E1,
+                    0x22E2,
+                    0x33E3
+                }
+        }, 
+
+        ResourceTemplate ()
+        {
+            GpioIo (SharedAndWake, PullDown, 0x0DEB, 0xABCD, IoRestrictionOutputOnly,
+                "\\GPIO", 0xEE, ResourceProducer, ,
+                )
+                {   // Pin list
+                    0x11E1,
+                    0x22E2,
+                    0x33E3
+                }
+        }, 
+
+        ResourceTemplate ()
+        {
+            GpioIo (SharedAndWake, PullNone, 0x0DEB, 0xABCD, IoRestrictionNone,
+                "\\GPIO", 0xEE, ResourceProducer, ,
+                )
+                {   // Pin list
+                    0x11E1,
+                    0x22E2,
+                    0x33E3
+                }
+        }, 
+
+        ResourceTemplate ()
+        {
+            GpioIo (SharedAndWake, PullNone, 0x0DEB, 0xABCD, IoRestrictionInputOnly,
+                "\\GPIO", 0xEE, ResourceProducer, ,
+                )
+                {   // Pin list
+                    0x11E1,
+                    0x22E2,
+                    0x33E3
+                }
+        }, 
+
+        ResourceTemplate ()
+        {
+            GpioIo (SharedAndWake, PullNone, 0x0DEB, 0xABCD, IoRestrictionOutputOnly,
+                "\\GPIO", 0xEE, ResourceProducer, ,
+                )
+                {   // Pin list
+                    0x11E1,
+                    0x22E2,
+                    0x33E3
+                }
+        }, 
+
+        ResourceTemplate ()
+        {
+            GpioIo (SharedAndWake, PullDefault, 0x0DEB, 0xABCD, IoRestrictionNone,
+                "\\GPIO", 0xEE, ResourceProducer, ,
+                )
+                {   // Pin list
+                    0x11E1,
+                    0x22E2,
+                    0x33E3
+                }
+        }, 
+
+        ResourceTemplate ()
+        {
+            GpioIo (SharedAndWake, PullDefault, 0x0DEB, 0xABCD, IoRestrictionInputOnly,
+                "\\GPIO", 0xEE, ResourceProducer, ,
+                )
+                {   // Pin list
+                    0x11E1,
+                    0x22E2,
+                    0x33E3
+                }
+        }, 
+
+        ResourceTemplate ()
+        {
+            GpioIo (SharedAndWake, PullDefault, 0x0DEB, 0xABCD, IoRestrictionOutputOnly,
+                "\\GPIO", 0xEE, ResourceProducer, ,
+                )
+                {   // Pin list
+                    0x11E1,
+                    0x22E2,
+                    0x33E3
+                }
+        }, 
+
+        ResourceTemplate ()
+        {
+            GpioIo (Exclusive, PullUp, 0x0DEB, 0xABCD, IoRestrictionNoneAndPreserve,
+                "\\GPIO", 0xEE, ResourceConsumer, ,
+                RawDataBuffer (0x04)  // Vendor Data
+                {
+                    0xC1, 0xC2, 0xC3, 0xC4
+                })
+                {   // Pin list
+                    0x11E1,
+                    0x22E2,
+                    0x33E3
+                }
+        }, 
+
+        ResourceTemplate ()
+        {
+            GpioIo (SharedAndWake, PullDefault, 0x0DEB, 0xABCD, IoRestrictionNoneAndPreserve,
+                "\\GPIO", 0xEE, ResourceConsumer, ,
+                )
+                {   // Pin list
+                    0x11E1,
+                    0x22E2
+                }
+        }, 
+
+        ResourceTemplate ()
+        {
+            GpioIo (Shared, PullUp, 0x0DEB, 0xABCD, IoRestrictionNoneAndPreserve,
+                "\\GPIO", 0xEE, ResourceConsumer, ,
+                )
+                {   // Pin list
+                    0x11E1
+                }
+        }, 
+
+        ResourceTemplate ()
+        {
+            GpioIo (Exclusive, PullUp, 0x0000, 0x0000, IoRestrictionNone,
+                "\\GPIO", 0x00, ResourceConsumer, ,
+                )
+                {   // Pin list
+                    0x11E1,
+                    0x22E2,
+                    0x33E3
+                }
+        }
+    })
+    Name (P455, Package (0xC4)
+    {
+        ResourceTemplate ()
+        {
+            GpioIo (Exclusive, PullUp, 0x0DEB, 0xABCD, IoRestrictionNone,
+                "\\GPIO", 0xEE, ResourceConsumer, ,
+                RawDataBuffer (0x04)  // Vendor Data
+                {
+                    0xC1, 0xC2, 0xC3, 0xC4
+                })
+                {   // Pin list
+                    0x11E1,
+                    0x22E2,
+                    0x33E3
+                }
+        }, 
+
+        ResourceTemplate ()
+        {
+            GpioIo (Exclusive, PullUp, 0x0DEB, 0xABCD, IoRestrictionInputOnly,
+                "\\GPIO", 0xEE, ResourceConsumer, ,
+                RawDataBuffer (0x04)  // Vendor Data
+                {
+                    0xC1, 0xC2, 0xC3, 0xC4
+                })
+                {   // Pin list
+                    0x11E1,
+                    0x22E2,
+                    0x33E3
+                }
+        }, 
+
+        ResourceTemplate ()
+        {
+            GpioIo (Exclusive, PullUp, 0x0DEB, 0xABCD, IoRestrictionOutputOnly,
+                "\\GPIO", 0xEE, ResourceConsumer, ,
+                RawDataBuffer (0x04)  // Vendor Data
+                {
+                    0xC1, 0xC2, 0xC3, 0xC4
+                })
+                {   // Pin list
+                    0x11E1,
+                    0x22E2,
+                    0x33E3
+                }
+        }, 
+
+        ResourceTemplate ()
+        {
+            GpioIo (Exclusive, PullDown, 0x0DEB, 0xABCD, IoRestrictionNone,
+                "\\GPIO", 0xEE, ResourceConsumer, ,
+                RawDataBuffer (0x04)  // Vendor Data
+                {
+                    0xC1, 0xC2, 0xC3, 0xC4
+                })
+                {   // Pin list
+                    0x11E1,
+                    0x22E2,
+                    0x33E3
+                }
+        }, 
+
+        ResourceTemplate ()
+        {
+            GpioIo (Exclusive, PullDown, 0x0DEB, 0xABCD, IoRestrictionInputOnly,
+                "\\GPIO", 0xEE, ResourceConsumer, ,
+                RawDataBuffer (0x04)  // Vendor Data
+                {
+                    0xC1, 0xC2, 0xC3, 0xC4
+                })
+                {   // Pin list
+                    0x11E1,
+                    0x22E2,
+                    0x33E3
+                }
+        }, 
+
+        ResourceTemplate ()
+        {
+            GpioIo (Exclusive, PullDown, 0x0DEB, 0xABCD, IoRestrictionOutputOnly,
+                "\\GPIO", 0xEE, ResourceConsumer, ,
+                RawDataBuffer (0x04)  // Vendor Data
+                {
+                    0xC1, 0xC2, 0xC3, 0xC4
+                })
+                {   // Pin list
+                    0x11E1,
+                    0x22E2,
+                    0x33E3
+                }
+        }, 
+
+        ResourceTemplate ()
+        {
+            GpioIo (Exclusive, PullNone, 0x0DEB, 0xABCD, IoRestrictionNone,
+                "\\GPIO", 0xEE, ResourceConsumer, ,
+                RawDataBuffer (0x04)  // Vendor Data
+                {
+                    0xC1, 0xC2, 0xC3, 0xC4
+                })
+                {   // Pin list
+                    0x11E1,
+                    0x22E2,
+                    0x33E3
+                }
+        }, 
+
+        ResourceTemplate ()
+        {
+            GpioIo (Exclusive, PullNone, 0x0DEB, 0xABCD, IoRestrictionInputOnly,
+                "\\GPIO", 0xEE, ResourceConsumer, ,
+                RawDataBuffer (0x04)  // Vendor Data
+                {
+                    0xC1, 0xC2, 0xC3, 0xC4
+                })
+                {   // Pin list
+                    0x11E1,
+                    0x22E2,
+                    0x33E3
+                }
+        }, 
+
+        ResourceTemplate ()
+        {
+            GpioIo (Exclusive, PullNone, 0x0DEB, 0xABCD, IoRestrictionOutputOnly,
+                "\\GPIO", 0xEE, ResourceConsumer, ,
+                RawDataBuffer (0x04)  // Vendor Data
+                {
+                    0xC1, 0xC2, 0xC3, 0xC4
+                })
+                {   // Pin list
+                    0x11E1,
+                    0x22E2,
+                    0x33E3
+                }
+        }, 
+
+        ResourceTemplate ()
+        {
+            GpioIo (Exclusive, PullDefault, 0x0DEB, 0xABCD, IoRestrictionNone,
+                "\\GPIO", 0xEE, ResourceConsumer, ,
+                RawDataBuffer (0x04)  // Vendor Data
+                {
+                    0xC1, 0xC2, 0xC3, 0xC4
+                })
+                {   // Pin list
+                    0x11E1,
+                    0x22E2,
+                    0x33E3
+                }
+        }, 
+
+        ResourceTemplate ()
+        {
+            GpioIo (Exclusive, PullDefault, 0x0DEB, 0xABCD, IoRestrictionInputOnly,
+                "\\GPIO", 0xEE, ResourceConsumer, ,
+                RawDataBuffer (0x04)  // Vendor Data
+                {
+                    0xC1, 0xC2, 0xC3, 0xC4
+                })
+                {   // Pin list
+                    0x11E1,
+                    0x22E2,
+                    0x33E3
+                }
+        }, 
+
+        ResourceTemplate ()
+        {
+            GpioIo (Exclusive, PullDefault, 0x0DEB, 0xABCD, IoRestrictionOutputOnly,
+                "\\GPIO", 0xEE, ResourceConsumer, ,
+                RawDataBuffer (0x04)  // Vendor Data
+                {
+                    0xC1, 0xC2, 0xC3, 0xC4
+                })
+                {   // Pin list
+                    0x11E1,
+                    0x22E2,
+                    0x33E3
+                }
+        }, 
+
+        ResourceTemplate ()
+        {
+            GpioIo (Shared, PullUp, 0x0DEB, 0xABCD, IoRestrictionNone,
+                "\\GPIO", 0xEE, ResourceConsumer, ,
+                RawDataBuffer (0x04)  // Vendor Data
+                {
+                    0xC1, 0xC2, 0xC3, 0xC4
+                })
+                {   // Pin list
+                    0x11E1,
+                    0x22E2,
+                    0x33E3
+                }
+        }, 
+
+        ResourceTemplate ()
+        {
+            GpioIo (Shared, PullUp, 0x0DEB, 0xABCD, IoRestrictionInputOnly,
+                "\\GPIO", 0xEE, ResourceConsumer, ,
+                RawDataBuffer (0x04)  // Vendor Data
+                {
+                    0xC1, 0xC2, 0xC3, 0xC4
+                })
+                {   // Pin list
+                    0x11E1,
+                    0x22E2,
+                    0x33E3
+                }
+        }, 
+
+        ResourceTemplate ()
+        {
+            GpioIo (Shared, PullUp, 0x0DEB, 0xABCD, IoRestrictionOutputOnly,
+                "\\GPIO", 0xEE, ResourceConsumer, ,
+                RawDataBuffer (0x04)  // Vendor Data
+                {
+                    0xC1, 0xC2, 0xC3, 0xC4
+                })
+                {   // Pin list
+                    0x11E1,
+                    0x22E2,
+                    0x33E3
+                }
+        }, 
+
+        ResourceTemplate ()
+        {
+            GpioIo (Shared, PullDown, 0x0DEB, 0xABCD, IoRestrictionNone,
+                "\\GPIO", 0xEE, ResourceConsumer, ,
+                RawDataBuffer (0x04)  // Vendor Data
+                {
+                    0xC1, 0xC2, 0xC3, 0xC4
+                })
+                {   // Pin list
+                    0x11E1,
+                    0x22E2,
+                    0x33E3
+                }
+        }, 
+
+        ResourceTemplate ()
+        {
+            GpioIo (Shared, PullDown, 0x0DEB, 0xABCD, IoRestrictionInputOnly,
+                "\\GPIO", 0xEE, ResourceConsumer, ,
+                RawDataBuffer (0x04)  // Vendor Data
+                {
+                    0xC1, 0xC2, 0xC3, 0xC4
+                })
+                {   // Pin list
+                    0x11E1,
+                    0x22E2,
+                    0x33E3
+                }
+        }, 
+
+        ResourceTemplate ()
+        {
+            GpioIo (Shared, PullDown, 0x0DEB, 0xABCD, IoRestrictionOutputOnly,
+                "\\GPIO", 0xEE, ResourceConsumer, ,
+                RawDataBuffer (0x04)  // Vendor Data
+                {
+                    0xC1, 0xC2, 0xC3, 0xC4
+                })
+                {   // Pin list
+                    0x11E1,
+                    0x22E2,
+                    0x33E3
+                }
+        }, 
+
+        ResourceTemplate ()
+        {
+            GpioIo (Shared, PullNone, 0x0DEB, 0xABCD, IoRestrictionNone,
+                "\\GPIO", 0xEE, ResourceConsumer, ,
+                RawDataBuffer (0x04)  // Vendor Data
+                {
+                    0xC1, 0xC2, 0xC3, 0xC4
+                })
+                {   // Pin list
+                    0x11E1,
+                    0x22E2,
+                    0x33E3
+                }
+        }, 
+
+        ResourceTemplate ()
+        {
+            GpioIo (Shared, PullNone, 0x0DEB, 0xABCD, IoRestrictionInputOnly,
+                "\\GPIO", 0xEE, ResourceConsumer, ,
+                RawDataBuffer (0x04)  // Vendor Data
+                {
+                    0xC1, 0xC2, 0xC3, 0xC4
+                })
+                {   // Pin list
+                    0x11E1,
+                    0x22E2,
+                    0x33E3
+                }
+        }, 
+
+        ResourceTemplate ()
+        {
+            GpioIo (Shared, PullNone, 0x0DEB, 0xABCD, IoRestrictionOutputOnly,
+                "\\GPIO", 0xEE, ResourceConsumer, ,
+                RawDataBuffer (0x04)  // Vendor Data
+                {
+                    0xC1, 0xC2, 0xC3, 0xC4
+                })
+                {   // Pin list
+                    0x11E1,
+                    0x22E2,
+                    0x33E3
+                }
+        }, 
+
+        ResourceTemplate ()
+        {
+            GpioIo (Shared, PullDefault, 0x0DEB, 0xABCD, IoRestrictionNone,
+                "\\GPIO", 0xEE, ResourceConsumer, ,
+                RawDataBuffer (0x04)  // Vendor Data
+                {
+                    0xC1, 0xC2, 0xC3, 0xC4
+                })
+                {   // Pin list
+                    0x11E1,
+                    0x22E2,
+                    0x33E3
+                }
+        }, 
+
+        ResourceTemplate ()
+        {
+            GpioIo (Shared, PullDefault, 0x0DEB, 0xABCD, IoRestrictionInputOnly,
+                "\\GPIO", 0xEE, ResourceConsumer, ,
+                RawDataBuffer (0x04)  // Vendor Data
+                {
+                    0xC1, 0xC2, 0xC3, 0xC4
+                })
+                {   // Pin list
+                    0x11E1,
+                    0x22E2,
+                    0x33E3
+                }
+        }, 
+
+        ResourceTemplate ()
+        {
+            GpioIo (Shared, PullDefault, 0x0DEB, 0xABCD, IoRestrictionOutputOnly,
+                "\\GPIO", 0xEE, ResourceConsumer, ,
+                RawDataBuffer (0x04)  // Vendor Data
+                {
+                    0xC1, 0xC2, 0xC3, 0xC4
+                })
+                {   // Pin list
+                    0x11E1,
+                    0x22E2,
+                    0x33E3
+                }
+        }, 
+
+        ResourceTemplate ()
+        {
+            GpioIo (ExclusiveAndWake, PullUp, 0x0DEB, 0xABCD, IoRestrictionNone,
+                "\\GPIO", 0xEE, ResourceConsumer, ,
+                RawDataBuffer (0x04)  // Vendor Data
+                {
+                    0xC1, 0xC2, 0xC3, 0xC4
+                })
+                {   // Pin list
+                    0x11E1,
+                    0x22E2,
+                    0x33E3
+                }
+        }, 
+
+        ResourceTemplate ()
+        {
+            GpioIo (ExclusiveAndWake, PullUp, 0x0DEB, 0xABCD, IoRestrictionInputOnly,
+                "\\GPIO", 0xEE, ResourceConsumer, ,
+                RawDataBuffer (0x04)  // Vendor Data
+                {
+                    0xC1, 0xC2, 0xC3, 0xC4
+                })
+                {   // Pin list
+                    0x11E1,
+                    0x22E2,
+                    0x33E3
+                }
+        }, 
+
+        ResourceTemplate ()
+        {
+            GpioIo (ExclusiveAndWake, PullUp, 0x0DEB, 0xABCD, IoRestrictionOutputOnly,
+                "\\GPIO", 0xEE, ResourceConsumer, ,
+                RawDataBuffer (0x04)  // Vendor Data
+                {
+                    0xC1, 0xC2, 0xC3, 0xC4
+                })
+                {   // Pin list
+                    0x11E1,
+                    0x22E2,
+                    0x33E3
+                }
+        }, 
+
+        ResourceTemplate ()
+        {
+            GpioIo (ExclusiveAndWake, PullDown, 0x0DEB, 0xABCD, IoRestrictionNone,
+                "\\GPIO", 0xEE, ResourceConsumer, ,
+                RawDataBuffer (0x04)  // Vendor Data
+                {
+                    0xC1, 0xC2, 0xC3, 0xC4
+                })
+                {   // Pin list
+                    0x11E1,
+                    0x22E2,
+                    0x33E3
+                }
+        }, 
+
+        ResourceTemplate ()
+        {
+            GpioIo (ExclusiveAndWake, PullDown, 0x0DEB, 0xABCD, IoRestrictionInputOnly,
+                "\\GPIO", 0xEE, ResourceConsumer, ,
+                RawDataBuffer (0x04)  // Vendor Data
+                {
+                    0xC1, 0xC2, 0xC3, 0xC4
+                })
+                {   // Pin list
+                    0x11E1,
+                    0x22E2,
+                    0x33E3
+                }
+        }, 
+
+        ResourceTemplate ()
+        {
+            GpioIo (ExclusiveAndWake, PullDown, 0x0DEB, 0xABCD, IoRestrictionOutputOnly,
+                "\\GPIO", 0xEE, ResourceConsumer, ,
+                RawDataBuffer (0x04)  // Vendor Data
+                {
+                    0xC1, 0xC2, 0xC3, 0xC4
+                })
+                {   // Pin list
+                    0x11E1,
+                    0x22E2,
+                    0x33E3
+                }
+        }, 
+
+        ResourceTemplate ()
+        {
+            GpioIo (ExclusiveAndWake, PullNone, 0x0DEB, 0xABCD, IoRestrictionNone,
+                "\\GPIO", 0xEE, ResourceConsumer, ,
+                RawDataBuffer (0x04)  // Vendor Data
+                {
+                    0xC1, 0xC2, 0xC3, 0xC4
+                })
+                {   // Pin list
+                    0x11E1,
+                    0x22E2,
+                    0x33E3
+                }
+        }, 
+
+        ResourceTemplate ()
+        {
+            GpioIo (ExclusiveAndWake, PullNone, 0x0DEB, 0xABCD, IoRestrictionInputOnly,
+                "\\GPIO", 0xEE, ResourceConsumer, ,
+                RawDataBuffer (0x04)  // Vendor Data
+                {
+                    0xC1, 0xC2, 0xC3, 0xC4
+                })
+                {   // Pin list
+                    0x11E1,
+                    0x22E2,
+                    0x33E3
+                }
+        }, 
+
+        ResourceTemplate ()
+        {
+            GpioIo (ExclusiveAndWake, PullNone, 0x0DEB, 0xABCD, IoRestrictionOutputOnly,
+                "\\GPIO", 0xEE, ResourceConsumer, ,
+                RawDataBuffer (0x04)  // Vendor Data
+                {
+                    0xC1, 0xC2, 0xC3, 0xC4
+                })
+                {   // Pin list
+                    0x11E1,
+                    0x22E2,
+                    0x33E3
+                }
+        }, 
+
+        ResourceTemplate ()
+        {
+            GpioIo (ExclusiveAndWake, PullDefault, 0x0DEB, 0xABCD, IoRestrictionNone,
+                "\\GPIO", 0xEE, ResourceConsumer, ,
+                RawDataBuffer (0x04)  // Vendor Data
+                {
+                    0xC1, 0xC2, 0xC3, 0xC4
+                })
+                {   // Pin list
+                    0x11E1,
+                    0x22E2,
+                    0x33E3
+                }
+        }, 
+
+        ResourceTemplate ()
+        {
+            GpioIo (ExclusiveAndWake, PullDefault, 0x0DEB, 0xABCD, IoRestrictionInputOnly,
+                "\\GPIO", 0xEE, ResourceConsumer, ,
+                RawDataBuffer (0x04)  // Vendor Data
+                {
+                    0xC1, 0xC2, 0xC3, 0xC4
+                })
+                {   // Pin list
+                    0x11E1,
+                    0x22E2,
+                    0x33E3
+                }
+        }, 
+
+        ResourceTemplate ()
+        {
+            GpioIo (ExclusiveAndWake, PullDefault, 0x0DEB, 0xABCD, IoRestrictionOutputOnly,
+                "\\GPIO", 0xEE, ResourceConsumer, ,
+                RawDataBuffer (0x04)  // Vendor Data
+                {
+                    0xC1, 0xC2, 0xC3, 0xC4
+                })
+                {   // Pin list
+                    0x11E1,
+                    0x22E2,
+                    0x33E3
+                }
+        }, 
+
+        ResourceTemplate ()
+        {
+            GpioIo (SharedAndWake, PullUp, 0x0DEB, 0xABCD, IoRestrictionNone,
+                "\\GPIO", 0xEE, ResourceConsumer, ,
+                RawDataBuffer (0x04)  // Vendor Data
+                {
+                    0xC1, 0xC2, 0xC3, 0xC4
+                })
+                {   // Pin list
+                    0x11E1,
+                    0x22E2,
+                    0x33E3
+                }
+        }, 
+
+        ResourceTemplate ()
+        {
+            GpioIo (SharedAndWake, PullUp, 0x0DEB, 0xABCD, IoRestrictionInputOnly,
+                "\\GPIO", 0xEE, ResourceConsumer, ,
+                RawDataBuffer (0x04)  // Vendor Data
+                {
+                    0xC1, 0xC2, 0xC3, 0xC4
+                })
+                {   // Pin list
+                    0x11E1,
+                    0x22E2,
+                    0x33E3
+                }
+        }, 
+
+        ResourceTemplate ()
+        {
+            GpioIo (SharedAndWake, PullUp, 0x0DEB, 0xABCD, IoRestrictionOutputOnly,
+                "\\GPIO", 0xEE, ResourceConsumer, ,
+                RawDataBuffer (0x04)  // Vendor Data
+                {
+                    0xC1, 0xC2, 0xC3, 0xC4
+                })
+                {   // Pin list
+                    0x11E1,
+                    0x22E2,
+                    0x33E3
+                }
+        }, 
+
+        ResourceTemplate ()
+        {
+            GpioIo (SharedAndWake, PullDown, 0x0DEB, 0xABCD, IoRestrictionNone,
+                "\\GPIO", 0xEE, ResourceConsumer, ,
+                RawDataBuffer (0x04)  // Vendor Data
+                {
+                    0xC1, 0xC2, 0xC3, 0xC4
+                })
+                {   // Pin list
+                    0x11E1,
+                    0x22E2,
+                    0x33E3
+                }
+        }, 
+
+        ResourceTemplate ()
+        {
+            GpioIo (SharedAndWake, PullDown, 0x0DEB, 0xABCD, IoRestrictionInputOnly,
+                "\\GPIO", 0xEE, ResourceConsumer, ,
+                RawDataBuffer (0x04)  // Vendor Data
+                {
+                    0xC1, 0xC2, 0xC3, 0xC4
+                })
+                {   // Pin list
+                    0x11E1,
+                    0x22E2,
+                    0x33E3
+                }
+        }, 
+
+        ResourceTemplate ()
+        {
+            GpioIo (SharedAndWake, PullDown, 0x0DEB, 0xABCD, IoRestrictionOutputOnly,
+                "\\GPIO", 0xEE, ResourceConsumer, ,
+                RawDataBuffer (0x04)  // Vendor Data
+                {
+                    0xC1, 0xC2, 0xC3, 0xC4
+                })
+                {   // Pin list
+                    0x11E1,
+                    0x22E2,
+                    0x33E3
+                }
+        }, 
+
+        ResourceTemplate ()
+        {
+            GpioIo (SharedAndWake, PullNone, 0x0DEB, 0xABCD, IoRestrictionNone,
+                "\\GPIO", 0xEE, ResourceConsumer, ,
+                RawDataBuffer (0x04)  // Vendor Data
+                {
+                    0xC1, 0xC2, 0xC3, 0xC4
+                })
+                {   // Pin list
+                    0x11E1,
+                    0x22E2,
+                    0x33E3
+                }
+        }, 
+
+        ResourceTemplate ()
+        {
+            GpioIo (SharedAndWake, PullNone, 0x0DEB, 0xABCD, IoRestrictionInputOnly,
+                "\\GPIO", 0xEE, ResourceConsumer, ,
+                RawDataBuffer (0x04)  // Vendor Data
+                {
+                    0xC1, 0xC2, 0xC3, 0xC4
+                })
+                {   // Pin list
+                    0x11E1,
+                    0x22E2,
+                    0x33E3
+                }
+        }, 
+
+        ResourceTemplate ()
+        {
+            GpioIo (SharedAndWake, PullNone, 0x0DEB, 0xABCD, IoRestrictionOutputOnly,
+                "\\GPIO", 0xEE, ResourceConsumer, ,
+                RawDataBuffer (0x04)  // Vendor Data
+                {
+                    0xC1, 0xC2, 0xC3, 0xC4
+                })
+                {   // Pin list
+                    0x11E1,
+                    0x22E2,
+                    0x33E3
+                }
+        }, 
+
+        ResourceTemplate ()
+        {
+            GpioIo (SharedAndWake, PullDefault, 0x0DEB, 0xABCD, IoRestrictionNone,
+                "\\GPIO", 0xEE, ResourceConsumer, ,
+                RawDataBuffer (0x04)  // Vendor Data
+                {
+                    0xC1, 0xC2, 0xC3, 0xC4
+                })
+                {   // Pin list
+                    0x11E1,
+                    0x22E2,
+                    0x33E3
+                }
+        }, 
+
+        ResourceTemplate ()
+        {
+            GpioIo (SharedAndWake, PullDefault, 0x0DEB, 0xABCD, IoRestrictionInputOnly,
+                "\\GPIO", 0xEE, ResourceConsumer, ,
+                RawDataBuffer (0x04)  // Vendor Data
+                {
+                    0xC1, 0xC2, 0xC3, 0xC4
+                })
+                {   // Pin list
+                    0x11E1,
+                    0x22E2,
+                    0x33E3
+                }
+        }, 
+
+        ResourceTemplate ()
+        {
+            GpioIo (SharedAndWake, PullDefault, 0x0DEB, 0xABCD, IoRestrictionOutputOnly,
+                "\\GPIO", 0xEE, ResourceConsumer, ,
+                RawDataBuffer (0x04)  // Vendor Data
+                {
+                    0xC1, 0xC2, 0xC3, 0xC4
+                })
+                {   // Pin list
+                    0x11E1,
+                    0x22E2,
+                    0x33E3
+                }
+        }, 
+
+        ResourceTemplate ()
+        {
+            GpioIo (Exclusive, PullUp, 0x0DEB, 0xABCD, IoRestrictionNone,
+                "\\GPIO", 0xEE, ResourceProducer, ,
+                RawDataBuffer (0x04)  // Vendor Data
+                {
+                    0xC1, 0xC2, 0xC3, 0xC4
+                })
+                {   // Pin list
+                    0x11E1,
+                    0x22E2,
+                    0x33E3
+                }
+        }, 
+
+        ResourceTemplate ()
+        {
+            GpioIo (Exclusive, PullUp, 0x0DEB, 0xABCD, IoRestrictionInputOnly,
+                "\\GPIO", 0xEE, ResourceProducer, ,
+                RawDataBuffer (0x04)  // Vendor Data
+                {
+                    0xC1, 0xC2, 0xC3, 0xC4
+                })
+                {   // Pin list
+                    0x11E1,
+                    0x22E2,
+                    0x33E3
+                }
+        }, 
+
+        ResourceTemplate ()
+        {
+            GpioIo (Exclusive, PullUp, 0x0DEB, 0xABCD, IoRestrictionOutputOnly,
+                "\\GPIO", 0xEE, ResourceProducer, ,
+                RawDataBuffer (0x04)  // Vendor Data
+                {
+                    0xC1, 0xC2, 0xC3, 0xC4
+                })
+                {   // Pin list
+                    0x11E1,
+                    0x22E2,
+                    0x33E3
+                }
+        }, 
+
+        ResourceTemplate ()
+        {
+            GpioIo (Exclusive, PullDown, 0x0DEB, 0xABCD, IoRestrictionNone,
+                "\\GPIO", 0xEE, ResourceProducer, ,
+                RawDataBuffer (0x04)  // Vendor Data
+                {
+                    0xC1, 0xC2, 0xC3, 0xC4
+                })
+                {   // Pin list
+                    0x11E1,
+                    0x22E2,
+                    0x33E3
+                }
+        }, 
+
+        ResourceTemplate ()
+        {
+            GpioIo (Exclusive, PullDown, 0x0DEB, 0xABCD, IoRestrictionInputOnly,
+                "\\GPIO", 0xEE, ResourceProducer, ,
+                RawDataBuffer (0x04)  // Vendor Data
+                {
+                    0xC1, 0xC2, 0xC3, 0xC4
+                })
+                {   // Pin list
+                    0x11E1,
+                    0x22E2,
+                    0x33E3
+                }
+        }, 
+
+        ResourceTemplate ()
+        {
+            GpioIo (Exclusive, PullDown, 0x0DEB, 0xABCD, IoRestrictionOutputOnly,
+                "\\GPIO", 0xEE, ResourceProducer, ,
+                RawDataBuffer (0x04)  // Vendor Data
+                {
+                    0xC1, 0xC2, 0xC3, 0xC4
+                })
+                {   // Pin list
+                    0x11E1,
+                    0x22E2,
+                    0x33E3
+                }
+        }, 
+
+        ResourceTemplate ()
+        {
+            GpioIo (Exclusive, PullNone, 0x0DEB, 0xABCD, IoRestrictionNone,
+                "\\GPIO", 0xEE, ResourceProducer, ,
+                RawDataBuffer (0x04)  // Vendor Data
+                {
+                    0xC1, 0xC2, 0xC3, 0xC4
+                })
+                {   // Pin list
+                    0x11E1,
+                    0x22E2,
+                    0x33E3
+                }
+        }, 
+
+        ResourceTemplate ()
+        {
+            GpioIo (Exclusive, PullNone, 0x0DEB, 0xABCD, IoRestrictionInputOnly,
+                "\\GPIO", 0xEE, ResourceProducer, ,
+                RawDataBuffer (0x04)  // Vendor Data
+                {
+                    0xC1, 0xC2, 0xC3, 0xC4
+                })
+                {   // Pin list
+                    0x11E1,
+                    0x22E2,
+                    0x33E3
+                }
+        }, 
+
+        ResourceTemplate ()
+        {
+            GpioIo (Exclusive, PullNone, 0x0DEB, 0xABCD, IoRestrictionOutputOnly,
+                "\\GPIO", 0xEE, ResourceProducer, ,
+                RawDataBuffer (0x04)  // Vendor Data
+                {
+                    0xC1, 0xC2, 0xC3, 0xC4
+                })
+                {   // Pin list
+                    0x11E1,
+                    0x22E2,
+                    0x33E3
+                }
+        }, 
+
+        ResourceTemplate ()
+        {
+            GpioIo (Exclusive, PullDefault, 0x0DEB, 0xABCD, IoRestrictionNone,
+                "\\GPIO", 0xEE, ResourceProducer, ,
+                RawDataBuffer (0x04)  // Vendor Data
+                {
+                    0xC1, 0xC2, 0xC3, 0xC4
+                })
+                {   // Pin list
+                    0x11E1,
+                    0x22E2,
+                    0x33E3
+                }
+        }, 
+
+        ResourceTemplate ()
+        {
+            GpioIo (Exclusive, PullDefault, 0x0DEB, 0xABCD, IoRestrictionInputOnly,
+                "\\GPIO", 0xEE, ResourceProducer, ,
+                RawDataBuffer (0x04)  // Vendor Data
+                {
+                    0xC1, 0xC2, 0xC3, 0xC4
+                })
+                {   // Pin list
+                    0x11E1,
+                    0x22E2,
+                    0x33E3
+                }
+        }, 
+
+        ResourceTemplate ()
+        {
+            GpioIo (Exclusive, PullDefault, 0x0DEB, 0xABCD, IoRestrictionOutputOnly,
+                "\\GPIO", 0xEE, ResourceProducer, ,
+                RawDataBuffer (0x04)  // Vendor Data
+                {
+                    0xC1, 0xC2, 0xC3, 0xC4
+                })
+                {   // Pin list
+                    0x11E1,
+                    0x22E2,
+                    0x33E3
+                }
+        }, 
+
+        ResourceTemplate ()
+        {
+            GpioIo (Shared, PullUp, 0x0DEB, 0xABCD, IoRestrictionNone,
+                "\\GPIO", 0xEE, ResourceProducer, ,
+                RawDataBuffer (0x04)  // Vendor Data
+                {
+                    0xC1, 0xC2, 0xC3, 0xC4
+                })
+                {   // Pin list
+                    0x11E1,
+                    0x22E2,
+                    0x33E3
+                }
+        }, 
+
+        ResourceTemplate ()
+        {
+            GpioIo (Shared, PullUp, 0x0DEB, 0xABCD, IoRestrictionInputOnly,
+                "\\GPIO", 0xEE, ResourceProducer, ,
+                RawDataBuffer (0x04)  // Vendor Data
+                {
+                    0xC1, 0xC2, 0xC3, 0xC4
+                })
+                {   // Pin list
+                    0x11E1,
+                    0x22E2,
+                    0x33E3
+                }
+        }, 
+
+        ResourceTemplate ()
+        {
+            GpioIo (Shared, PullUp, 0x0DEB, 0xABCD, IoRestrictionOutputOnly,
+                "\\GPIO", 0xEE, ResourceProducer, ,
+                RawDataBuffer (0x04)  // Vendor Data
+                {
+                    0xC1, 0xC2, 0xC3, 0xC4
+                })
+                {   // Pin list
+                    0x11E1,
+                    0x22E2,
+                    0x33E3
+                }
+        }, 
+
+        ResourceTemplate ()
+        {
+            GpioIo (Shared, PullDown, 0x0DEB, 0xABCD, IoRestrictionNone,
+                "\\GPIO", 0xEE, ResourceProducer, ,
+                RawDataBuffer (0x04)  // Vendor Data
+                {
+                    0xC1, 0xC2, 0xC3, 0xC4
+                })
+                {   // Pin list
+                    0x11E1,
+                    0x22E2,
+                    0x33E3
+                }
+        }, 
+
+        ResourceTemplate ()
+        {
+            GpioIo (Shared, PullDown, 0x0DEB, 0xABCD, IoRestrictionInputOnly,
+                "\\GPIO", 0xEE, ResourceProducer, ,
+                RawDataBuffer (0x04)  // Vendor Data
+                {
+                    0xC1, 0xC2, 0xC3, 0xC4
+                })
+                {   // Pin list
+                    0x11E1,
+                    0x22E2,
+                    0x33E3
+                }
+        }, 
+
+        ResourceTemplate ()
+        {
+            GpioIo (Shared, PullDown, 0x0DEB, 0xABCD, IoRestrictionOutputOnly,
+                "\\GPIO", 0xEE, ResourceProducer, ,
+                RawDataBuffer (0x04)  // Vendor Data
+                {
+                    0xC1, 0xC2, 0xC3, 0xC4
+                })
+                {   // Pin list
+                    0x11E1,
+                    0x22E2,
+                    0x33E3
+                }
+        }, 
+
+        ResourceTemplate ()
+        {
+            GpioIo (Shared, PullNone, 0x0DEB, 0xABCD, IoRestrictionNone,
+                "\\GPIO", 0xEE, ResourceProducer, ,
+                RawDataBuffer (0x04)  // Vendor Data
+                {
+                    0xC1, 0xC2, 0xC3, 0xC4
+                })
+                {   // Pin list
+                    0x11E1,
+                    0x22E2,
+                    0x33E3
+                }
+        }, 
+
+        ResourceTemplate ()
+        {
+            GpioIo (Shared, PullNone, 0x0DEB, 0xABCD, IoRestrictionInputOnly,
+                "\\GPIO", 0xEE, ResourceProducer, ,
+                RawDataBuffer (0x04)  // Vendor Data
+                {
+                    0xC1, 0xC2, 0xC3, 0xC4
+                })
+                {   // Pin list
+                    0x11E1,
+                    0x22E2,
+                    0x33E3
+                }
+        }, 
+
+        ResourceTemplate ()
+        {
+            GpioIo (Shared, PullNone, 0x0DEB, 0xABCD, IoRestrictionOutputOnly,
+                "\\GPIO", 0xEE, ResourceProducer, ,
+                RawDataBuffer (0x04)  // Vendor Data
+                {
+                    0xC1, 0xC2, 0xC3, 0xC4
+                })
+                {   // Pin list
+                    0x11E1,
+                    0x22E2,
+                    0x33E3
+                }
+        }, 
+
+        ResourceTemplate ()
+        {
+            GpioIo (Shared, PullDefault, 0x0DEB, 0xABCD, IoRestrictionNone,
+                "\\GPIO", 0xEE, ResourceProducer, ,
+                RawDataBuffer (0x04)  // Vendor Data
+                {
+                    0xC1, 0xC2, 0xC3, 0xC4
+                })
+                {   // Pin list
+                    0x11E1,
+                    0x22E2,
+                    0x33E3
+                }
+        }, 
+
+        ResourceTemplate ()
+        {
+            GpioIo (Shared, PullDefault, 0x0DEB, 0xABCD, IoRestrictionInputOnly,
+                "\\GPIO", 0xEE, ResourceProducer, ,
+                RawDataBuffer (0x04)  // Vendor Data
+                {
+                    0xC1, 0xC2, 0xC3, 0xC4
+                })
+                {   // Pin list
+                    0x11E1,
+                    0x22E2,
+                    0x33E3
+                }
+        }, 
+
+        ResourceTemplate ()
+        {
+            GpioIo (Shared, PullDefault, 0x0DEB, 0xABCD, IoRestrictionOutputOnly,
+                "\\GPIO", 0xEE, ResourceProducer, ,
+                RawDataBuffer (0x04)  // Vendor Data
+                {
+                    0xC1, 0xC2, 0xC3, 0xC4
+                })
+                {   // Pin list
+                    0x11E1,
+                    0x22E2,
+                    0x33E3
+                }
+        }, 
+
+        ResourceTemplate ()
+        {
+            GpioIo (ExclusiveAndWake, PullUp, 0x0DEB, 0xABCD, IoRestrictionNone,
+                "\\GPIO", 0xEE, ResourceProducer, ,
+                RawDataBuffer (0x04)  // Vendor Data
+                {
+                    0xC1, 0xC2, 0xC3, 0xC4
+                })
+                {   // Pin list
+                    0x11E1,
+                    0x22E2,
+                    0x33E3
+                }
+        }, 
+
+        ResourceTemplate ()
+        {
+            GpioIo (ExclusiveAndWake, PullUp, 0x0DEB, 0xABCD, IoRestrictionInputOnly,
+                "\\GPIO", 0xEE, ResourceProducer, ,
+                RawDataBuffer (0x04)  // Vendor Data
+                {
+                    0xC1, 0xC2, 0xC3, 0xC4
+                })
+                {   // Pin list
+                    0x11E1,
+                    0x22E2,
+                    0x33E3
+                }
+        }, 
+
+        ResourceTemplate ()
+        {
+            GpioIo (ExclusiveAndWake, PullUp, 0x0DEB, 0xABCD, IoRestrictionOutputOnly,
+                "\\GPIO", 0xEE, ResourceProducer, ,
+                RawDataBuffer (0x04)  // Vendor Data
+                {
+                    0xC1, 0xC2, 0xC3, 0xC4
+                })
+                {   // Pin list
+                    0x11E1,
+                    0x22E2,
+                    0x33E3
+                }
+        }, 
+
+        ResourceTemplate ()
+        {
+            GpioIo (ExclusiveAndWake, PullDown, 0x0DEB, 0xABCD, IoRestrictionNone,
+                "\\GPIO", 0xEE, ResourceProducer, ,
+                RawDataBuffer (0x04)  // Vendor Data
+                {
+                    0xC1, 0xC2, 0xC3, 0xC4
+                })
+                {   // Pin list
+                    0x11E1,
+                    0x22E2,
+                    0x33E3
+                }
+        }, 
+
+        ResourceTemplate ()
+        {
+            GpioIo (ExclusiveAndWake, PullDown, 0x0DEB, 0xABCD, IoRestrictionInputOnly,
+                "\\GPIO", 0xEE, ResourceProducer, ,
+                RawDataBuffer (0x04)  // Vendor Data
+                {
+                    0xC1, 0xC2, 0xC3, 0xC4
+                })
+                {   // Pin list
+                    0x11E1,
+                    0x22E2,
+                    0x33E3
+                }
+        }, 
+
+        ResourceTemplate ()
+        {
+            GpioIo (ExclusiveAndWake, PullDown, 0x0DEB, 0xABCD, IoRestrictionOutputOnly,
+                "\\GPIO", 0xEE, ResourceProducer, ,
+                RawDataBuffer (0x04)  // Vendor Data
+                {
+                    0xC1, 0xC2, 0xC3, 0xC4
+                })
+                {   // Pin list
+                    0x11E1,
+                    0x22E2,
+                    0x33E3
+                }
+        }, 
+
+        ResourceTemplate ()
+        {
+            GpioIo (ExclusiveAndWake, PullNone, 0x0DEB, 0xABCD, IoRestrictionNone,
+                "\\GPIO", 0xEE, ResourceProducer, ,
+                RawDataBuffer (0x04)  // Vendor Data
+                {
+                    0xC1, 0xC2, 0xC3, 0xC4
+                })
+                {   // Pin list
+                    0x11E1,
+                    0x22E2,
+                    0x33E3
+                }
+        }, 
+
+        ResourceTemplate ()
+        {
+            GpioIo (ExclusiveAndWake, PullNone, 0x0DEB, 0xABCD, IoRestrictionInputOnly,
+                "\\GPIO", 0xEE, ResourceProducer, ,
+                RawDataBuffer (0x04)  // Vendor Data
+                {
+                    0xC1, 0xC2, 0xC3, 0xC4
+                })
+                {   // Pin list
+                    0x11E1,
+                    0x22E2,
+                    0x33E3
+                }
+        }, 
+
+        ResourceTemplate ()
+        {
+            GpioIo (ExclusiveAndWake, PullNone, 0x0DEB, 0xABCD, IoRestrictionOutputOnly,
+                "\\GPIO", 0xEE, ResourceProducer, ,
+                RawDataBuffer (0x04)  // Vendor Data
+                {
+                    0xC1, 0xC2, 0xC3, 0xC4
+                })
+                {   // Pin list
+                    0x11E1,
+                    0x22E2,
+                    0x33E3
+                }
+        }, 
+
+        ResourceTemplate ()
+        {
+            GpioIo (ExclusiveAndWake, PullDefault, 0x0DEB, 0xABCD, IoRestrictionNone,
+                "\\GPIO", 0xEE, ResourceProducer, ,
+                RawDataBuffer (0x04)  // Vendor Data
+                {
+                    0xC1, 0xC2, 0xC3, 0xC4
+                })
+                {   // Pin list
+                    0x11E1,
+                    0x22E2,
+                    0x33E3
+                }
+        }, 
+
+        ResourceTemplate ()
+        {
+            GpioIo (ExclusiveAndWake, PullDefault, 0x0DEB, 0xABCD, IoRestrictionInputOnly,
+                "\\GPIO", 0xEE, ResourceProducer, ,
+                RawDataBuffer (0x04)  // Vendor Data
+                {
+                    0xC1, 0xC2, 0xC3, 0xC4
+                })
+                {   // Pin list
+                    0x11E1,
+                    0x22E2,
+                    0x33E3
+                }
+        }, 
+
+        ResourceTemplate ()
+        {
+            GpioIo (ExclusiveAndWake, PullDefault, 0x0DEB, 0xABCD, IoRestrictionOutputOnly,
+                "\\GPIO", 0xEE, ResourceProducer, ,
+                RawDataBuffer (0x04)  // Vendor Data
+                {
+                    0xC1, 0xC2, 0xC3, 0xC4
+                })
+                {   // Pin list
+                    0x11E1,
+                    0x22E2,
+                    0x33E3
+                }
+        }, 
+
+        ResourceTemplate ()
+        {
+            GpioIo (SharedAndWake, PullUp, 0x0DEB, 0xABCD, IoRestrictionNone,
+                "\\GPIO", 0xEE, ResourceProducer, ,
+                RawDataBuffer (0x04)  // Vendor Data
+                {
+                    0xC1, 0xC2, 0xC3, 0xC4
+                })
+                {   // Pin list
+                    0x11E1,
+                    0x22E2,
+                    0x33E3
+                }
+        }, 
+
+        ResourceTemplate ()
+        {
+            GpioIo (SharedAndWake, PullUp, 0x0DEB, 0xABCD, IoRestrictionInputOnly,
+                "\\GPIO", 0xEE, ResourceProducer, ,
+                RawDataBuffer (0x04)  // Vendor Data
+                {
+                    0xC1, 0xC2, 0xC3, 0xC4
+                })
+                {   // Pin list
+                    0x11E1,
+                    0x22E2,
+                    0x33E3
+                }
+        }, 
+
+        ResourceTemplate ()
+        {
+            GpioIo (SharedAndWake, PullUp, 0x0DEB, 0xABCD, IoRestrictionOutputOnly,
+                "\\GPIO", 0xEE, ResourceProducer, ,
+                RawDataBuffer (0x04)  // Vendor Data
+                {
+                    0xC1, 0xC2, 0xC3, 0xC4
+                })
+                {   // Pin list
+                    0x11E1,
+                    0x22E2,
+                    0x33E3
+                }
+        }, 
+
+        ResourceTemplate ()
+        {
+            GpioIo (SharedAndWake, PullDown, 0x0DEB, 0xABCD, IoRestrictionNone,
+                "\\GPIO", 0xEE, ResourceProducer, ,
+                RawDataBuffer (0x04)  // Vendor Data
+                {
+                    0xC1, 0xC2, 0xC3, 0xC4
+                })
+                {   // Pin list
+                    0x11E1,
+                    0x22E2,
+                    0x33E3
+                }
+        }, 
+
+        ResourceTemplate ()
+        {
+            GpioIo (SharedAndWake, PullDown, 0x0DEB, 0xABCD, IoRestrictionInputOnly,
+                "\\GPIO", 0xEE, ResourceProducer, ,
+                RawDataBuffer (0x04)  // Vendor Data
+                {
+                    0xC1, 0xC2, 0xC3, 0xC4
+                })
+                {   // Pin list
+                    0x11E1,
+                    0x22E2,
+                    0x33E3
+                }
+        }, 
+
+        ResourceTemplate ()
+        {
+            GpioIo (SharedAndWake, PullDown, 0x0DEB, 0xABCD, IoRestrictionOutputOnly,
+                "\\GPIO", 0xEE, ResourceProducer, ,
+                RawDataBuffer (0x04)  // Vendor Data
+                {
+                    0xC1, 0xC2, 0xC3, 0xC4
+                })
+                {   // Pin list
+                    0x11E1,
+                    0x22E2,
+                    0x33E3
+                }
+        }, 
+
+        ResourceTemplate ()
+        {
+            GpioIo (SharedAndWake, PullNone, 0x0DEB, 0xABCD, IoRestrictionNone,
+                "\\GPIO", 0xEE, ResourceProducer, ,
+                RawDataBuffer (0x04)  // Vendor Data
+                {
+                    0xC1, 0xC2, 0xC3, 0xC4
+                })
+                {   // Pin list
+                    0x11E1,
+                    0x22E2,
+                    0x33E3
+                }
+        }, 
+
+        ResourceTemplate ()
+        {
+            GpioIo (SharedAndWake, PullNone, 0x0DEB, 0xABCD, IoRestrictionInputOnly,
+                "\\GPIO", 0xEE, ResourceProducer, ,
+                RawDataBuffer (0x04)  // Vendor Data
+                {
+                    0xC1, 0xC2, 0xC3, 0xC4
+                })
+                {   // Pin list
+                    0x11E1,
+                    0x22E2,
+                    0x33E3
+                }
+        }, 
+
+        ResourceTemplate ()
+        {
+            GpioIo (SharedAndWake, PullNone, 0x0DEB, 0xABCD, IoRestrictionOutputOnly,
+                "\\GPIO", 0xEE, ResourceProducer, ,
+                RawDataBuffer (0x04)  // Vendor Data
+                {
+                    0xC1, 0xC2, 0xC3, 0xC4
+                })
+                {   // Pin list
+                    0x11E1,
+                    0x22E2,
+                    0x33E3
+                }
+        }, 
+
+        ResourceTemplate ()
+        {
+            GpioIo (SharedAndWake, PullDefault, 0x0DEB, 0xABCD, IoRestrictionNone,
+                "\\GPIO", 0xEE, ResourceProducer, ,
+                RawDataBuffer (0x04)  // Vendor Data
+                {
+                    0xC1, 0xC2, 0xC3, 0xC4
+                })
+                {   // Pin list
+                    0x11E1,
+                    0x22E2,
+                    0x33E3
+                }
+        }, 
+
+        ResourceTemplate ()
+        {
+            GpioIo (SharedAndWake, PullDefault, 0x0DEB, 0xABCD, IoRestrictionInputOnly,
+                "\\GPIO", 0xEE, ResourceProducer, ,
+                RawDataBuffer (0x04)  // Vendor Data
+                {
+                    0xC1, 0xC2, 0xC3, 0xC4
+                })
+                {   // Pin list
+                    0x11E1,
+                    0x22E2,
+                    0x33E3
+                }
+        }, 
+
+        ResourceTemplate ()
+        {
+            GpioIo (SharedAndWake, PullDefault, 0x0DEB, 0xABCD, IoRestrictionOutputOnly,
+                "\\GPIO", 0xEE, ResourceProducer, ,
+                RawDataBuffer (0x04)  // Vendor Data
+                {
+                    0xC1, 0xC2, 0xC3, 0xC4
+                })
+                {   // Pin list
+                    0x11E1,
+                    0x22E2,
+                    0x33E3
+                }
+        }, 
+
+        ResourceTemplate ()
+        {
+            GpioIo (Exclusive, PullUp, 0x0DEB, 0xABCD, IoRestrictionNone,
+                "\\GPIO", 0xEE, ResourceConsumer, ,
+                )
+                {   // Pin list
+                    0x11E1,
+                    0x22E2,
+                    0x33E3
+                }
+        }, 
+
+        ResourceTemplate ()
+        {
+            GpioIo (Exclusive, PullUp, 0x0DEB, 0xABCD, IoRestrictionInputOnly,
+                "\\GPIO", 0xEE, ResourceConsumer, ,
+                )
+                {   // Pin list
+                    0x11E1,
+                    0x22E2,
+                    0x33E3
+                }
+        }, 
+
+        ResourceTemplate ()
+        {
+            GpioIo (Exclusive, PullUp, 0x0DEB, 0xABCD, IoRestrictionOutputOnly,
+                "\\GPIO", 0xEE, ResourceConsumer, ,
+                )
+                {   // Pin list
+                    0x11E1,
+                    0x22E2,
+                    0x33E3
+                }
+        }, 
+
+        ResourceTemplate ()
+        {
+            GpioIo (Exclusive, PullDown, 0x0DEB, 0xABCD, IoRestrictionNone,
+                "\\GPIO", 0xEE, ResourceConsumer, ,
+                )
+                {   // Pin list
+                    0x11E1,
+                    0x22E2,
+                    0x33E3
+                }
+        }, 
+
+        ResourceTemplate ()
+        {
+            GpioIo (Exclusive, PullDown, 0x0DEB, 0xABCD, IoRestrictionInputOnly,
+                "\\GPIO", 0xEE, ResourceConsumer, ,
+                )
+                {   // Pin list
+                    0x11E1,
+                    0x22E2,
+                    0x33E3
+                }
+        }, 
+
+        ResourceTemplate ()
+        {
+            GpioIo (Exclusive, PullDown, 0x0DEB, 0xABCD, IoRestrictionOutputOnly,
+                "\\GPIO", 0xEE, ResourceConsumer, ,
+                )
+                {   // Pin list
+                    0x11E1,
+                    0x22E2,
+                    0x33E3
+                }
+        }, 
+
+        ResourceTemplate ()
+        {
+            GpioIo (Exclusive, PullNone, 0x0DEB, 0xABCD, IoRestrictionNone,
+                "\\GPIO", 0xEE, ResourceConsumer, ,
+                )
+                {   // Pin list
+                    0x11E1,
+                    0x22E2,
+                    0x33E3
+                }
+        }, 
+
+        ResourceTemplate ()
+        {
+            GpioIo (Exclusive, PullNone, 0x0DEB, 0xABCD, IoRestrictionInputOnly,
+                "\\GPIO", 0xEE, ResourceConsumer, ,
+                )
+                {   // Pin list
+                    0x11E1,
+                    0x22E2,
+                    0x33E3
+                }
+        }, 
+
+        ResourceTemplate ()
+        {
+            GpioIo (Exclusive, PullNone, 0x0DEB, 0xABCD, IoRestrictionOutputOnly,
+                "\\GPIO", 0xEE, ResourceConsumer, ,
+                )
+                {   // Pin list
+                    0x11E1,
+                    0x22E2,
+                    0x33E3
+                }
+        }, 
+
+        ResourceTemplate ()
+        {
+            GpioIo (Exclusive, PullDefault, 0x0DEB, 0xABCD, IoRestrictionNone,
+                "\\GPIO", 0xEE, ResourceConsumer, ,
+                )
+                {   // Pin list
+                    0x11E1,
+                    0x22E2,
+                    0x33E3
+                }
+        }, 
+
+        ResourceTemplate ()
+        {
+            GpioIo (Exclusive, PullDefault, 0x0DEB, 0xABCD, IoRestrictionInputOnly,
+                "\\GPIO", 0xEE, ResourceConsumer, ,
+                )
+                {   // Pin list
+                    0x11E1,
+                    0x22E2,
+                    0x33E3
+                }
+        }, 
+
+        ResourceTemplate ()
+        {
+            GpioIo (Exclusive, PullDefault, 0x0DEB, 0xABCD, IoRestrictionOutputOnly,
+                "\\GPIO", 0xEE, ResourceConsumer, ,
+                )
+                {   // Pin list
+                    0x11E1,
+                    0x22E2,
+                    0x33E3
+                }
+        }, 
+
+        ResourceTemplate ()
+        {
+            GpioIo (Shared, PullUp, 0x0DEB, 0xABCD, IoRestrictionNone,
+                "\\GPIO", 0xEE, ResourceConsumer, ,
+                )
+                {   // Pin list
+                    0x11E1,
+                    0x22E2,
+                    0x33E3
+                }
+        }, 
+
+        ResourceTemplate ()
+        {
+            GpioIo (Shared, PullUp, 0x0DEB, 0xABCD, IoRestrictionInputOnly,
+                "\\GPIO", 0xEE, ResourceConsumer, ,
+                )
+                {   // Pin list
+                    0x11E1,
+                    0x22E2,
+                    0x33E3
+                }
+        }, 
+
+        ResourceTemplate ()
+        {
+            GpioIo (Shared, PullUp, 0x0DEB, 0xABCD, IoRestrictionOutputOnly,
+                "\\GPIO", 0xEE, ResourceConsumer, ,
+                )
+                {   // Pin list
+                    0x11E1,
+                    0x22E2,
+                    0x33E3
+                }
+        }, 
+
+        ResourceTemplate ()
+        {
+            GpioIo (Shared, PullDown, 0x0DEB, 0xABCD, IoRestrictionNone,
+                "\\GPIO", 0xEE, ResourceConsumer, ,
+                )
+                {   // Pin list
+                    0x11E1,
+                    0x22E2,
+                    0x33E3
+                }
+        }, 
+
+        ResourceTemplate ()
+        {
+            GpioIo (Shared, PullDown, 0x0DEB, 0xABCD, IoRestrictionInputOnly,
+                "\\GPIO", 0xEE, ResourceConsumer, ,
+                )
+                {   // Pin list
+                    0x11E1,
+                    0x22E2,
+                    0x33E3
+                }
+        }, 
+
+        ResourceTemplate ()
+        {
+            GpioIo (Shared, PullDown, 0x0DEB, 0xABCD, IoRestrictionOutputOnly,
+                "\\GPIO", 0xEE, ResourceConsumer, ,
+                )
+                {   // Pin list
+                    0x11E1,
+                    0x22E2,
+                    0x33E3
+                }
+        }, 
+
+        ResourceTemplate ()
+        {
+            GpioIo (Shared, PullNone, 0x0DEB, 0xABCD, IoRestrictionNone,
+                "\\GPIO", 0xEE, ResourceConsumer, ,
+                )
+                {   // Pin list
+                    0x11E1,
+                    0x22E2,
+                    0x33E3
+                }
+        }, 
+
+        ResourceTemplate ()
+        {
+            GpioIo (Shared, PullNone, 0x0DEB, 0xABCD, IoRestrictionInputOnly,
+                "\\GPIO", 0xEE, ResourceConsumer, ,
+                )
+                {   // Pin list
+                    0x11E1,
+                    0x22E2,
+                    0x33E3
+                }
+        }, 
+
+        ResourceTemplate ()
+        {
+            GpioIo (Shared, PullNone, 0x0DEB, 0xABCD, IoRestrictionOutputOnly,
+                "\\GPIO", 0xEE, ResourceConsumer, ,
+                )
+                {   // Pin list
+                    0x11E1,
+                    0x22E2,
+                    0x33E3
+                }
+        }, 
+
+        ResourceTemplate ()
+        {
+            GpioIo (Shared, PullDefault, 0x0DEB, 0xABCD, IoRestrictionNone,
+                "\\GPIO", 0xEE, ResourceConsumer, ,
+                )
+                {   // Pin list
+                    0x11E1,
+                    0x22E2,
+                    0x33E3
+                }
+        }, 
+
+        ResourceTemplate ()
+        {
+            GpioIo (Shared, PullDefault, 0x0DEB, 0xABCD, IoRestrictionInputOnly,
+                "\\GPIO", 0xEE, ResourceConsumer, ,
+                )
+                {   // Pin list
+                    0x11E1,
+                    0x22E2,
+                    0x33E3
+                }
+        }, 
+
+        ResourceTemplate ()
+        {
+            GpioIo (Shared, PullDefault, 0x0DEB, 0xABCD, IoRestrictionOutputOnly,
+                "\\GPIO", 0xEE, ResourceConsumer, ,
+                )
+                {   // Pin list
+                    0x11E1,
+                    0x22E2,
+                    0x33E3
+                }
+        }, 
+
+        ResourceTemplate ()
+        {
+            GpioIo (ExclusiveAndWake, PullUp, 0x0DEB, 0xABCD, IoRestrictionNone,
+                "\\GPIO", 0xEE, ResourceConsumer, ,
+                )
+                {   // Pin list
+                    0x11E1,
+                    0x22E2,
+                    0x33E3
+                }
+        }, 
+
+        ResourceTemplate ()
+        {
+            GpioIo (ExclusiveAndWake, PullUp, 0x0DEB, 0xABCD, IoRestrictionInputOnly,
+                "\\GPIO", 0xEE, ResourceConsumer, ,
+                )
+                {   // Pin list
+                    0x11E1,
+                    0x22E2,
+                    0x33E3
+                }
+        }, 
+
+        ResourceTemplate ()
+        {
+            GpioIo (ExclusiveAndWake, PullUp, 0x0DEB, 0xABCD, IoRestrictionOutputOnly,
+                "\\GPIO", 0xEE, ResourceConsumer, ,
+                )
+                {   // Pin list
+                    0x11E1,
+                    0x22E2,
+                    0x33E3
+                }
+        }, 
+
+        ResourceTemplate ()
+        {
+            GpioIo (ExclusiveAndWake, PullDown, 0x0DEB, 0xABCD, IoRestrictionNone,
+                "\\GPIO", 0xEE, ResourceConsumer, ,
+                )
+                {   // Pin list
+                    0x11E1,
+                    0x22E2,
+                    0x33E3
+                }
+        }, 
+
+        ResourceTemplate ()
+        {
+            GpioIo (ExclusiveAndWake, PullDown, 0x0DEB, 0xABCD, IoRestrictionInputOnly,
+                "\\GPIO", 0xEE, ResourceConsumer, ,
+                RawDataBuffer (0x04)  // Vendor Data
+                {
+                    0xC1, 0xC2, 0xC3, 0xC4
+                })
+                {   // Pin list
+                    0x11E1,
+                    0x22E2,
+                    0x33E3
+                }
+        }, 
+
+        ResourceTemplate ()
+        {
+            GpioIo (ExclusiveAndWake, PullDown, 0x0DEB, 0xABCD, IoRestrictionOutputOnly,
+                "\\GPIO", 0xEE, ResourceConsumer, ,
+                )
+                {   // Pin list
+                    0x11E1,
+                    0x22E2,
+                    0x33E3
+                }
+        }, 
+
+        ResourceTemplate ()
+        {
+            GpioIo (ExclusiveAndWake, PullNone, 0x0DEB, 0xABCD, IoRestrictionNone,
+                "\\GPIO", 0xEE, ResourceConsumer, ,
+                )
+                {   // Pin list
+                    0x11E1,
+                    0x22E2,
+                    0x33E3
+                }
+        }, 
+
+        ResourceTemplate ()
+        {
+            GpioIo (ExclusiveAndWake, PullNone, 0x0DEB, 0xABCD, IoRestrictionInputOnly,
+                "\\GPIO", 0xEE, ResourceConsumer, ,
+                )
+                {   // Pin list
+                    0x11E1,
+                    0x22E2,
+                    0x33E3
+                }
+        }, 
+
+        ResourceTemplate ()
+        {
+            GpioIo (ExclusiveAndWake, PullNone, 0x0DEB, 0xABCD, IoRestrictionOutputOnly,
+                "\\GPIO", 0xEE, ResourceConsumer, ,
+                )
+                {   // Pin list
+                    0x11E1,
+                    0x22E2,
+                    0x33E3
+                }
+        }, 
+
+        ResourceTemplate ()
+        {
+            GpioIo (ExclusiveAndWake, PullDefault, 0x0DEB, 0xABCD, IoRestrictionNone,
+                "\\GPIO", 0xEE, ResourceConsumer, ,
+                )
+                {   // Pin list
+                    0x11E1,
+                    0x22E2,
+                    0x33E3
+                }
+        }, 
+
+        ResourceTemplate ()
+        {
+            GpioIo (ExclusiveAndWake, PullDefault, 0x0DEB, 0xABCD, IoRestrictionInputOnly,
+                "\\GPIO", 0xEE, ResourceConsumer, ,
+                )
+                {   // Pin list
+                    0x11E1,
+                    0x22E2,
+                    0x33E3
+                }
+        }, 
+
+        ResourceTemplate ()
+        {
+            GpioIo (ExclusiveAndWake, PullDefault, 0x0DEB, 0xABCD, IoRestrictionOutputOnly,
+                "\\GPIO", 0xEE, ResourceConsumer, ,
+                )
+                {   // Pin list
+                    0x11E1,
+                    0x22E2,
+                    0x33E3
+                }
+        }, 
+
+        ResourceTemplate ()
+        {
+            GpioIo (SharedAndWake, PullUp, 0x0DEB, 0xABCD, IoRestrictionNone,
+                "\\GPIO", 0xEE, ResourceConsumer, ,
+                )
+                {   // Pin list
+                    0x11E1,
+                    0x22E2,
+                    0x33E3
+                }
+        }, 
+
+        ResourceTemplate ()
+        {
+            GpioIo (SharedAndWake, PullUp, 0x0DEB, 0xABCD, IoRestrictionInputOnly,
+                "\\GPIO", 0xEE, ResourceConsumer, ,
+                )
+                {   // Pin list
+                    0x11E1,
+                    0x22E2,
+                    0x33E3
+                }
+        }, 
+
+        ResourceTemplate ()
+        {
+            GpioIo (SharedAndWake, PullUp, 0x0DEB, 0xABCD, IoRestrictionOutputOnly,
+                "\\GPIO", 0xEE, ResourceConsumer, ,
+                )
+                {   // Pin list
+                    0x11E1,
+                    0x22E2,
+                    0x33E3
+                }
+        }, 
+
+        ResourceTemplate ()
+        {
+            GpioIo (SharedAndWake, PullDown, 0x0DEB, 0xABCD, IoRestrictionNone,
+                "\\GPIO", 0xEE, ResourceConsumer, ,
+                )
+                {   // Pin list
+                    0x11E1,
+                    0x22E2,
+                    0x33E3
+                }
+        }, 
+
+        ResourceTemplate ()
+        {
+            GpioIo (SharedAndWake, PullDown, 0x0DEB, 0xABCD, IoRestrictionInputOnly,
+                "\\GPIO", 0xEE, ResourceConsumer, ,
+                )
+                {   // Pin list
+                    0x11E1,
+                    0x22E2,
+                    0x33E3
+                }
+        }, 
+
+        ResourceTemplate ()
+        {
+            GpioIo (SharedAndWake, PullDown, 0x0DEB, 0xABCD, IoRestrictionOutputOnly,
+                "\\GPIO", 0xEE, ResourceConsumer, ,
+                )
+                {   // Pin list
+                    0x11E1,
+                    0x22E2,
+                    0x33E3
+                }
+        }, 
+
+        ResourceTemplate ()
+        {
+            GpioIo (SharedAndWake, PullNone, 0x0DEB, 0xABCD, IoRestrictionNone,
+                "\\GPIO", 0xEE, ResourceConsumer, ,
+                )
+                {   // Pin list
+                    0x11E1,
+                    0x22E2,
+                    0x33E3
+                }
+        }, 
+
+        ResourceTemplate ()
+        {
+            GpioIo (SharedAndWake, PullNone, 0x0DEB, 0xABCD, IoRestrictionInputOnly,
+                "\\GPIO", 0xEE, ResourceConsumer, ,
+                )
+                {   // Pin list
+                    0x11E1,
+                    0x22E2,
+                    0x33E3
+                }
+        }, 
+
+        ResourceTemplate ()
+        {
+            GpioIo (SharedAndWake, PullNone, 0x0DEB, 0xABCD, IoRestrictionOutputOnly,
+                "\\GPIO", 0xEE, ResourceConsumer, ,
+                )
+                {   // Pin list
+                    0x11E1,
+                    0x22E2,
+                    0x33E3
+                }
+        }, 
+
+        ResourceTemplate ()
+        {
+            GpioIo (SharedAndWake, PullDefault, 0x0DEB, 0xABCD, IoRestrictionNone,
+                "\\GPIO", 0xEE, ResourceConsumer, ,
+                )
+                {   // Pin list
+                    0x11E1,
+                    0x22E2,
+                    0x33E3
+                }
+        }, 
+
+        ResourceTemplate ()
+        {
+            GpioIo (SharedAndWake, PullDefault, 0x0DEB, 0xABCD, IoRestrictionInputOnly,
+                "\\GPIO", 0xEE, ResourceConsumer, ,
+                )
+                {   // Pin list
+                    0x11E1,
+                    0x22E2,
+                    0x33E3
+                }
+        }, 
+
+        ResourceTemplate ()
+        {
+            GpioIo (SharedAndWake, PullDefault, 0x0DEB, 0xABCD, IoRestrictionOutputOnly,
+                "\\GPIO", 0xEE, ResourceConsumer, ,
+                )
+                {   // Pin list
+                    0x11E1,
+                    0x22E2,
+                    0x33E3
+                }
+        }, 
+
+        ResourceTemplate ()
+        {
+            GpioIo (Exclusive, PullUp, 0x0DEB, 0xABCD, IoRestrictionNone,
+                "\\GPIO", 0xEE, ResourceProducer, ,
+                )
+                {   // Pin list
+                    0x11E1,
+                    0x22E2,
+                    0x33E3
+                }
+        }, 
+
+        ResourceTemplate ()
+        {
+            GpioIo (Exclusive, PullUp, 0x0DEB, 0xABCD, IoRestrictionInputOnly,
+                "\\GPIO", 0xEE, ResourceProducer, ,
+                )
+                {   // Pin list
+                    0x11E1,
+                    0x22E2,
+                    0x33E3
+                }
+        }, 
+
+        ResourceTemplate ()
+        {
+            GpioIo (Exclusive, PullUp, 0x0DEB, 0xABCD, IoRestrictionOutputOnly,
+                "\\GPIO", 0xEE, ResourceProducer, ,
+                )
+                {   // Pin list
+                    0x11E1,
+                    0x22E2,
+                    0x33E3
+                }
+        }, 
+
+        ResourceTemplate ()
+        {
+            GpioIo (Exclusive, PullDown, 0x0DEB, 0xABCD, IoRestrictionNone,
+                "\\GPIO", 0xEE, ResourceProducer, ,
+                )
+                {   // Pin list
+                    0x11E1,
+                    0x22E2,
+                    0x33E3
+                }
+        }, 
+
+        ResourceTemplate ()
+        {
+            GpioIo (Exclusive, PullDown, 0x0DEB, 0xABCD, IoRestrictionInputOnly,
+                "\\GPIO", 0xEE, ResourceProducer, ,
+                )
+                {   // Pin list
+                    0x11E1,
+                    0x22E2,
+                    0x33E3
+                }
+        }, 
+
+        ResourceTemplate ()
+        {
+            GpioIo (Exclusive, PullDown, 0x0DEB, 0xABCD, IoRestrictionOutputOnly,
+                "\\GPIO", 0xEE, ResourceProducer, ,
+                )
+                {   // Pin list
+                    0x11E1,
+                    0x22E2,
+                    0x33E3
+                }
+        }, 
+
+        ResourceTemplate ()
+        {
+            GpioIo (Exclusive, PullNone, 0x0DEB, 0xABCD, IoRestrictionNone,
+                "\\GPIO", 0xEE, ResourceProducer, ,
+                )
+                {   // Pin list
+                    0x11E1,
+                    0x22E2,
+                    0x33E3
+                }
+        }, 
+
+        ResourceTemplate ()
+        {
+            GpioIo (Exclusive, PullNone, 0x0DEB, 0xABCD, IoRestrictionInputOnly,
+                "\\GPIO", 0xEE, ResourceProducer, ,
+                )
+                {   // Pin list
+                    0x11E1,
+                    0x22E2,
+                    0x33E3
+                }
+        }, 
+
+        ResourceTemplate ()
+        {
+            GpioIo (Exclusive, PullNone, 0x0DEB, 0xABCD, IoRestrictionOutputOnly,
+                "\\GPIO", 0xEE, ResourceProducer, ,
+                )
+                {   // Pin list
+                    0x11E1,
+                    0x22E2,
+                    0x33E3
+                }
+        }, 
+
+        ResourceTemplate ()
+        {
+            GpioIo (Exclusive, PullDefault, 0x0DEB, 0xABCD, IoRestrictionNone,
+                "\\GPIO", 0xEE, ResourceProducer, ,
+                )
+                {   // Pin list
+                    0x11E1,
+                    0x22E2,
+                    0x33E3
+                }
+        }, 
+
+        ResourceTemplate ()
+        {
+            GpioIo (Exclusive, PullDefault, 0x0DEB, 0xABCD, IoRestrictionInputOnly,
+                "\\GPIO", 0xEE, ResourceProducer, ,
+                )
+                {   // Pin list
+                    0x11E1,
+                    0x22E2,
+                    0x33E3
+                }
+        }, 
+
+        ResourceTemplate ()
+        {
+            GpioIo (Exclusive, PullDefault, 0x0DEB, 0xABCD, IoRestrictionOutputOnly,
+                "\\GPIO", 0xEE, ResourceProducer, ,
+                )
+                {   // Pin list
+                    0x11E1,
+                    0x22E2,
+                    0x33E3
+                }
+        }, 
+
+        ResourceTemplate ()
+        {
+            GpioIo (Shared, PullUp, 0x0DEB, 0xABCD, IoRestrictionNone,
+                "\\GPIO", 0xEE, ResourceProducer, ,
+                )
+                {   // Pin list
+                    0x11E1,
+                    0x22E2,
+                    0x33E3
+                }
+        }, 
+
+        ResourceTemplate ()
+        {
+            GpioIo (Shared, PullUp, 0x0DEB, 0xABCD, IoRestrictionInputOnly,
+                "\\GPIO", 0xEE, ResourceProducer, ,
+                )
+                {   // Pin list
+                    0x11E1,
+                    0x22E2,
+                    0x33E3
+                }
+        }, 
+
+        ResourceTemplate ()
+        {
+            GpioIo (Shared, PullUp, 0x0DEB, 0xABCD, IoRestrictionOutputOnly,
+                "\\GPIO", 0xEE, ResourceProducer, ,
+                )
+                {   // Pin list
+                    0x11E1,
+                    0x22E2,
+                    0x33E3
+                }
+        }, 
+
+        ResourceTemplate ()
+        {
+            GpioIo (Shared, PullDown, 0x0DEB, 0xABCD, IoRestrictionNone,
+                "\\GPIO", 0xEE, ResourceProducer, ,
+                )
+                {   // Pin list
+                    0x11E1,
+                    0x22E2,
+                    0x33E3
+                }
+        }, 
+
+        ResourceTemplate ()
+        {
+            GpioIo (Shared, PullDown, 0x0DEB, 0xABCD, IoRestrictionInputOnly,
+                "\\GPIO", 0xEE, ResourceProducer, ,
+                )
+                {   // Pin list
+                    0x11E1,
+                    0x22E2,
+                    0x33E3
+                }
+        }, 
+
+        ResourceTemplate ()
+        {
+            GpioIo (Shared, PullDown, 0x0DEB, 0xABCD, IoRestrictionOutputOnly,
+                "\\GPIO", 0xEE, ResourceProducer, ,
+                )
+                {   // Pin list
+                    0x11E1,
+                    0x22E2,
+                    0x33E3
+                }
+        }, 
+
+        ResourceTemplate ()
+        {
+            GpioIo (Shared, PullNone, 0x0DEB, 0xABCD, IoRestrictionNone,
+                "\\GPIO", 0xEE, ResourceProducer, ,
+                )
+                {   // Pin list
+                    0x11E1,
+                    0x22E2,
+                    0x33E3
+                }
+        }, 
+
+        ResourceTemplate ()
+        {
+            GpioIo (Shared, PullNone, 0x0DEB, 0xABCD, IoRestrictionInputOnly,
+                "\\GPIO", 0xEE, ResourceProducer, ,
+                )
+                {   // Pin list
+                    0x11E1,
+                    0x22E2,
+                    0x33E3
+                }
+        }, 
+
+        ResourceTemplate ()
+        {
+            GpioIo (Shared, PullNone, 0x0DEB, 0xABCD, IoRestrictionOutputOnly,
+                "\\GPIO", 0xEE, ResourceProducer, ,
+                )
+                {   // Pin list
+                    0x11E1,
+                    0x22E2,
+                    0x33E3
+                }
+        }, 
+
+        ResourceTemplate ()
+        {
+            GpioIo (Shared, PullDefault, 0x0DEB, 0xABCD, IoRestrictionNone,
+                "\\GPIO", 0xEE, ResourceProducer, ,
+                )
+                {   // Pin list
+                    0x11E1,
+                    0x22E2,
+                    0x33E3
+                }
+        }, 
+
+        ResourceTemplate ()
+        {
+            GpioIo (Shared, PullDefault, 0x0DEB, 0xABCD, IoRestrictionInputOnly,
+                "\\GPIO", 0xEE, ResourceProducer, ,
+                )
+                {   // Pin list
+                    0x11E1,
+                    0x22E2,
+                    0x33E3
+                }
+        }, 
+
+        ResourceTemplate ()
+        {
+            GpioIo (Shared, PullDefault, 0x0DEB, 0xABCD, IoRestrictionOutputOnly,
+                "\\GPIO", 0xEE, ResourceProducer, ,
+                )
+                {   // Pin list
+                    0x11E1,
+                    0x22E2,
+                    0x33E3
+                }
+        }, 
+
+        ResourceTemplate ()
+        {
+            GpioIo (ExclusiveAndWake, PullUp, 0x0DEB, 0xABCD, IoRestrictionNone,
+                "\\GPIO", 0xEE, ResourceProducer, ,
+                )
+                {   // Pin list
+                    0x11E1,
+                    0x22E2,
+                    0x33E3
+                }
+        }, 
+
+        ResourceTemplate ()
+        {
+            GpioIo (ExclusiveAndWake, PullUp, 0x0DEB, 0xABCD, IoRestrictionInputOnly,
+                "\\GPIO", 0xEE, ResourceProducer, ,
+                )
+                {   // Pin list
+                    0x11E1,
+                    0x22E2,
+                    0x33E3
+                }
+        }, 
+
+        ResourceTemplate ()
+        {
+            GpioIo (ExclusiveAndWake, PullUp, 0x0DEB, 0xABCD, IoRestrictionOutputOnly,
+                "\\GPIO", 0xEE, ResourceProducer, ,
+                )
+                {   // Pin list
+                    0x11E1,
+                    0x22E2,
+                    0x33E3
+                }
+        }, 
+
+        ResourceTemplate ()
+        {
+            GpioIo (ExclusiveAndWake, PullDown, 0x0DEB, 0xABCD, IoRestrictionNone,
+                "\\GPIO", 0xEE, ResourceProducer, ,
+                )
+                {   // Pin list
+                    0x11E1,
+                    0x22E2,
+                    0x33E3
+                }
+        }, 
+
+        ResourceTemplate ()
+        {
+            GpioIo (ExclusiveAndWake, PullDown, 0x0DEB, 0xABCD, IoRestrictionInputOnly,
+                "\\GPIO", 0xEE, ResourceProducer, ,
+                )
+                {   // Pin list
+                    0x11E1,
+                    0x22E2,
+                    0x33E3
+                }
+        }, 
+
+        ResourceTemplate ()
+        {
+            GpioIo (ExclusiveAndWake, PullDown, 0x0DEB, 0xABCD, IoRestrictionOutputOnly,
+                "\\GPIO", 0xEE, ResourceProducer, ,
+                )
+                {   // Pin list
+                    0x11E1,
+                    0x22E2,
+                    0x33E3
+                }
+        }, 
+
+        ResourceTemplate ()
+        {
+            GpioIo (ExclusiveAndWake, PullNone, 0x0DEB, 0xABCD, IoRestrictionNone,
+                "\\GPIO", 0xEE, ResourceProducer, ,
+                )
+                {   // Pin list
+                    0x11E1,
+                    0x22E2,
+                    0x33E3
+                }
+        }, 
+
+        ResourceTemplate ()
+        {
+            GpioIo (ExclusiveAndWake, PullNone, 0x0DEB, 0xABCD, IoRestrictionInputOnly,
+                "\\GPIO", 0xEE, ResourceProducer, ,
+                )
+                {   // Pin list
+                    0x11E1,
+                    0x22E2,
+                    0x33E3
+                }
+        }, 
+
+        ResourceTemplate ()
+        {
+            GpioIo (ExclusiveAndWake, PullNone, 0x0DEB, 0xABCD, IoRestrictionOutputOnly,
+                "\\GPIO", 0xEE, ResourceProducer, ,
+                )
+                {   // Pin list
+                    0x11E1,
+                    0x22E2,
+                    0x33E3
+                }
+        }, 
+
+        ResourceTemplate ()
+        {
+            GpioIo (ExclusiveAndWake, PullDefault, 0x0DEB, 0xABCD, IoRestrictionNone,
+                "\\GPIO", 0xEE, ResourceProducer, ,
+                )
+                {   // Pin list
+                    0x11E1,
+                    0x22E2,
+                    0x33E3
+                }
+        }, 
+
+        ResourceTemplate ()
+        {
+            GpioIo (ExclusiveAndWake, PullDefault, 0x0DEB, 0xABCD, IoRestrictionInputOnly,
+                "\\GPIO", 0xEE, ResourceProducer, ,
+                )
+                {   // Pin list
+                    0x11E1,
+                    0x22E2,
+                    0x33E3
+                }
+        }, 
+
+        ResourceTemplate ()
+        {
+            GpioIo (ExclusiveAndWake, PullDefault, 0x0DEB, 0xABCD, IoRestrictionOutputOnly,
+                "\\GPIO", 0xEE, ResourceProducer, ,
+                )
+                {   // Pin list
+                    0x11E1,
+                    0x22E2,
+                    0x33E3
+                }
+        }, 
+
+        ResourceTemplate ()
+        {
+            GpioIo (SharedAndWake, PullUp, 0x0DEB, 0xABCD, IoRestrictionNone,
+                "\\GPIO", 0xEE, ResourceProducer, ,
+                )
+                {   // Pin list
+                    0x11E1,
+                    0x22E2,
+                    0x33E3
+                }
+        }, 
+
+        ResourceTemplate ()
+        {
+            GpioIo (SharedAndWake, PullUp, 0x0DEB, 0xABCD, IoRestrictionInputOnly,
+                "\\GPIO", 0xEE, ResourceProducer, ,
+                )
+                {   // Pin list
+                    0x11E1,
+                    0x22E2,
+                    0x33E3
+                }
+        }, 
+
+        ResourceTemplate ()
+        {
+            GpioIo (SharedAndWake, PullUp, 0x0DEB, 0xABCD, IoRestrictionOutputOnly,
+                "\\GPIO", 0xEE, ResourceProducer, ,
+                )
+                {   // Pin list
+                    0x11E1,
+                    0x22E2,
+                    0x33E3
+                }
+        }, 
+
+        ResourceTemplate ()
+        {
+            GpioIo (SharedAndWake, PullDown, 0x0DEB, 0xABCD, IoRestrictionNone,
+                "\\GPIO", 0xEE, ResourceProducer, ,
+                )
+                {   // Pin list
+                    0x11E1,
+                    0x22E2,
+                    0x33E3
+                }
+        }, 
+
+        ResourceTemplate ()
+        {
+            GpioIo (SharedAndWake, PullDown, 0x0DEB, 0xABCD, IoRestrictionInputOnly,
+                "\\GPIO", 0xEE, ResourceProducer, ,
+                )
+                {   // Pin list
+                    0x11E1,
+                    0x22E2,
+                    0x33E3
+                }
+        }, 
+
+        ResourceTemplate ()
+        {
+            GpioIo (SharedAndWake, PullDown, 0x0DEB, 0xABCD, IoRestrictionOutputOnly,
+                "\\GPIO", 0xEE, ResourceProducer, ,
+                )
+                {   // Pin list
+                    0x11E1,
+                    0x22E2,
+                    0x33E3
+                }
+        }, 
+
+        ResourceTemplate ()
+        {
+            GpioIo (SharedAndWake, PullNone, 0x0DEB, 0xABCD, IoRestrictionNone,
+                "\\GPIO", 0xEE, ResourceProducer, ,
+                )
+                {   // Pin list
+                    0x11E1,
+                    0x22E2,
+                    0x33E3
+                }
+        }, 
+
+        ResourceTemplate ()
+        {
+            GpioIo (SharedAndWake, PullNone, 0x0DEB, 0xABCD, IoRestrictionInputOnly,
+                "\\GPIO", 0xEE, ResourceProducer, ,
+                )
+                {   // Pin list
+                    0x11E1,
+                    0x22E2,
+                    0x33E3
+                }
+        }, 
+
+        ResourceTemplate ()
+        {
+            GpioIo (SharedAndWake, PullNone, 0x0DEB, 0xABCD, IoRestrictionOutputOnly,
+                "\\GPIO", 0xEE, ResourceProducer, ,
+                )
+                {   // Pin list
+                    0x11E1,
+                    0x22E2,
+                    0x33E3
+                }
+        }, 
+
+        ResourceTemplate ()
+        {
+            GpioIo (SharedAndWake, PullDefault, 0x0DEB, 0xABCD, IoRestrictionNone,
+                "\\GPIO", 0xEE, ResourceProducer, ,
+                )
+                {   // Pin list
+                    0x11E1,
+                    0x22E2,
+                    0x33E3
+                }
+        }, 
+
+        ResourceTemplate ()
+        {
+            GpioIo (SharedAndWake, PullDefault, 0x0DEB, 0xABCD, IoRestrictionInputOnly,
+                "\\GPIO", 0xEE, ResourceProducer, ,
+                )
+                {   // Pin list
+                    0x11E1,
+                    0x22E2,
+                    0x33E3
+                }
+        }, 
+
+        ResourceTemplate ()
+        {
+            GpioIo (SharedAndWake, PullDefault, 0x0DEB, 0xABCD, IoRestrictionOutputOnly,
+                "\\GPIO", 0xEE, ResourceProducer, ,
+                )
+                {   // Pin list
+                    0x11E1,
+                    0x22E2,
+                    0x33E3
+                }
+        }, 
+
+        ResourceTemplate ()
+        {
+            GpioIo (Exclusive, PullUp, 0x0DEB, 0xABCD, IoRestrictionNoneAndPreserve,
+                "\\GPIO", 0xEE, ResourceConsumer, ,
+                RawDataBuffer (0x04)  // Vendor Data
+                {
+                    0xC1, 0xC2, 0xC3, 0xC4
+                })
+                {   // Pin list
+                    0x11E1,
+                    0x22E2,
+                    0x33E3
+                }
+        }, 
+
+        ResourceTemplate ()
+        {
+            GpioIo (SharedAndWake, PullDefault, 0x0DEB, 0xABCD, IoRestrictionNoneAndPreserve,
+                "\\GPIO", 0xEE, ResourceConsumer, ,
+                )
+                {   // Pin list
+                    0x11E1,
+                    0x22E2
+                }
+        }, 
+
+        ResourceTemplate ()
+        {
+            GpioIo (Shared, PullUp, 0x0DEB, 0xABCD, IoRestrictionNoneAndPreserve,
+                "\\GPIO", 0xEE, ResourceConsumer, ,
+                )
+                {   // Pin list
+                    0x11E1
+                }
+        }, 
+
+        ResourceTemplate ()
+        {
+            GpioIo (Exclusive, PullUp, 0x0000, 0x0000, IoRestrictionNone,
+                "\\GPIO", 0x00, ResourceConsumer, ,
+                )
+                {   // Pin list
+                    0x11E1,
+                    0x22E2,
+                    0x33E3
+                }
+        }
+    })
+    Method (RT22, 0, Serialized)
+    {
+        Name (TS, "RT22")
+        /* Emit test header, set the filename */
+
+        THDR (TS, "GpioIO Resource Descriptor Macro", "gpioio.asl")
+        /* The main test packages must have the same number of entries */
+
+        If ((SizeOf (P454) != SizeOf (P455)))
+        {
+            ERR (TS, 0xB3, 0x00, 0x00, 0x00, 0x00, "Incorrect package length")
+            Return (Zero)
+        }
+
+        /* Main test case for packages above */
+
+        M330 (TS, SizeOf (P454), "p454", P454, P455)
+        /* Check resource descriptor tag offsets */
+
+        Local0 = ResourceTemplate ()
+            {
+                GpioIo (Exclusive, PullUp, 0x0DEB, 0xABCD, IoRestrictionOutputOnly,
+                    "\\GPIO", 0xEE, ResourceConsumer, ,
+                    RawDataBuffer (0x04)  // Vendor Data
+                    {
+                        0xC1, 0xC2, 0xC3, 0xC4
+                    })
+                    {   // Pin list
+                        0x11E1,
+                        0x22E2,
+                        0x33E3
+                    }
+                GpioIo (Exclusive, PullUp, 0x0DEB, 0xABCD, IoRestrictionOutputOnly,
+                    "\\GPIO", 0xEE, ResourceConsumer, ,
+                    RawDataBuffer (0x04)  // Vendor Data
+                    {
+                        0xC1, 0xC2, 0xC3, 0xC4
+                    })
+                    {   // Pin list
+                        0x11E1,
+                        0x22E2,
+                        0x33E3
+                    }
+            }
+        M331 (TS, 0x01, 0x3B, 0x3B, 0x0173, 0x0173, "_SHR")
+        M331 (TS, 0x02, 0x48, 0x48, 0x0180, 0x0180, "_PPI")
+        M331 (TS, 0x03, 0x60, 0x60, 0x0198, 0x0198, "_DBT")
+        M331 (TS, 0x04, 0x50, 0x50, 0x0188, 0x0188, "_DRS")
+        M331 (TS, 0x05, 0x38, 0x38, 0x0170, 0x0170, "_IOR")
+        M331 (TS, 0x06, 0xB8, 0xB8, 0x01F0, 0x01F0, "_PIN")
+        M331 (TS, 0x07, 0x0118, 0x0118, 0x0250, 0x0250, "_VEN")
+    }
 

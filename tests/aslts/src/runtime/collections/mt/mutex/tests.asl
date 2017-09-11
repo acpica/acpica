@@ -1,2393 +1,2641 @@
-/*
- * Some or all of this work - Copyright (c) 2006 - 2017, Intel Corp.
- * All rights reserved.
- *
- * Redistribution and use in source and binary forms, with or without modification,
- * are permitted provided that the following conditions are met:
- *
- * Redistributions of source code must retain the above copyright notice,
- * this list of conditions and the following disclaimer.
- * Redistributions in binary form must reproduce the above copyright notice,
- * this list of conditions and the following disclaimer in the documentation
- * and/or other materials provided with the distribution.
- * Neither the name of Intel Corporation nor the names of its contributors
- * may be used to endorse or promote products derived from this software
- * without specific prior written permission.
- *
- * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS"
- * AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE
- * IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE
- * ARE DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT OWNER OR CONTRIBUTORS BE
- * LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL
- * DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES;
- * LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY
- * THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING
- * NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE,
- * EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
- */
-
-/*
- * The test strategies to be managed and controled by the
- * Control Thread and fulfilled by the Slave Threads (Slaves).
- */
-
-Name(z152, 152)
-
-
-/*
- * Acquire/Sleep/Release
- *
- * All slaves:
- * - Acquire the same mutex
- * - increment global counter
- * - set up another global to its Index
- * - sleep for the specified period
- * - check that the global contains just its Index
- * - Release mutex
- * Control thread:
- * - check after all threads complete that counter is correct
- *
- * arg0 - number of threads
- * arg1 - Level of mutex
- * arg2 - Index of mutex
- * arg3 - Number of mutexes of the same level
- */
-Method(m801, 4, Serialized)
-{
-	Name(lpN0, 0)
-	Name(lpC0, 0)
-	Name(numW, 0) // number of threads in work
-
-	/* Number of threads to be actually in work */
-	Store(m213(arg0, 5, 4), numW)
-
-	/* Set up per-thread set of mutexes */
-	m334(numW, c300, arg1, 0, arg2, arg3)
-
-	// c103 for all first num threads
-	m210(bs00, arg0, c103, 0, numW, 1, c102) // cmd: Acquire/Sleep/Release
-	m114(arg0) // run
-
-	/* Wait for all Slave threads */
-	m103(arg0)
-
-	/* Check up the values of counters of all Mutexes */
-
-	/* lpC0 - Index of mutex */
-
-	Subtract(numW, 1, Local0) // exclude the Control thread
-	Store(arg3, lpN0)
-	Store(arg2, lpC0)
-	While (lpN0) {
-		m333(arg1, lpC0, Local0)
-		Decrement(lpN0)
-		Increment(lpC0)
-	}
-}
-
-/*
- * <Acquire/Sleep>(0-15 levels)/Release(15-0 levels)
- *
- * arg0 - number of threads
- * arg1 - Index of mutex
- * arg2 - Number of mutexes of the same level
- */
-Method(m802, 3, Serialized)
-{
-	Name(numW, 0) // number of threads in work
-	Name(lpN0, 0)
-	Name(lpC0, 0)
-
-	Name(lpN1, 0)
-	Name(lpC1, 0)
-
-	/* Number of threads to be actually in work */
-	Store(m213(arg0, 5, 5), numW)
-
-	/* Set up per-thread set of mutexes */
-	m334(numW, c300, 0, 0, arg1, arg2)
-
-	// c104 for all first num threads
-	m210(bs00, arg0, c104, 0, numW, 1, c102) // cmd: <Acquire/Sleep>(0-15 levels)/Release(15-0 levels)
-	m114(arg0) // run
-
-	/* Wait for all Slave threads */
-	m103(arg0)
-
-	/* Check up the values of counters of all Mutexs */
-
-	Subtract(numW, 1, Local0)
-	Store(max0, lpN0)
-	Store(0, lpC0)
-	While (lpN0) {
-
-		/* lpC0 - Level */
-
-		Store(arg2, lpN1)
-		Store(arg1, lpC1)
-		While (lpN1) {
-
-			/* lpC1 - Index of mutex */
-
-			m333(lpC0, lpC1, Local0)
-
-			Decrement(lpN1)
-			Increment(lpC1)
-		}
-
-		Decrement(lpN0)
-		Increment(lpC0)
-	}
-}
-
-/*
- * Example 0
- *
- * arg0 - number of threads
- * arg1 - Index of mutex
- * arg2 - Number of mutexes of the same level
- */
-Method(m803, 1, Serialized)
-{
-	Name(numW, 0) // number of threads in work
-	Name(lpN0, 0)
-	Name(lpC0, 0)
-
-	/* Number of threads to be actually in work */
-	Store(m213(arg0, 6, 6), numW)
-
-	// c105 for all first num threads
-	m210(bs00, arg0, c105, 0, numW, 1, c102) // cmd: Example 0
-	m114(arg0) // run
-
-	/* Wait for all Slave threads */
-	m103(arg0)
-}
-
-/*
- * Manage the test m804
- *
- * arg0 - number of threads
- * arg1 - 0        - thread_2 Releases than thread_1 Releases
- *        non-zero - thread_1 Releases than thread_2 Releases
- * Thread_1:
- * arg2 - Level of mutex (initial)
- * arg3 - Number of levels of mutexes
- * Thread_2:
- * arg4 - Level of mutex (initial)
- * arg5 - Number of levels of mutexes
- */
-Method(m8ff, 6, Serialized)
-{
-	Name(lpN0, 0)
-	Name(lpC0, 0)
-	Name(thr, 0)
-
-
-	/* ACQUIRING */
-
-
-	/* === Thread 1 === */
-
-	Store(1, thr)
-
-	/* Set up per-thread set of mutexes */
-	m334(arg0, c300, arg2, arg3, 0, 1)
-
-	m200(bs00, arg0, c102) // cmd: Sleep
-	m208(bs00, thr, c106)  // cmd: Acquire specified set of mutexes
-	m215(arg0)             // Reset TimeOutValue and exceptional condition flags
-	m114(arg0)
-
-	/* Wait for all Slave threads */
-	m103(arg0)
-
-	/* Check up the values of counters of all Mutexs */
-	Store(arg3, lpN0)
-	Store(arg2, lpC0)
-	While (lpN0) {
-		m333(lpC0, 0, 1)
-		Decrement(lpN0)
-		Increment(lpC0)
-	}
-
-	/* === Thread 2 === */
-
-	Store(2, thr)
-
-	/* Set up per-thread set of mutexes */
-	m334(arg0, c300, arg4, arg5, 1, 1)
-
-	m200(bs00, arg0, c102) // cmd: Sleep
-	m208(bs00, thr, c106)  // cmd: Acquire specified set of mutexes
-	m215(arg0)             // Reset TimeOutValue and exceptional condition flags
-	m114(arg0)
-
-	/* Wait for all Slave threads */
-	m103(arg0)
-
-	/* Check up the values of counters of all Mutexs */
-	Store(arg5, lpN0)
-	Store(arg4, lpC0)
-	While (lpN0) {
-		m333(lpC0, 1, 1)
-		Decrement(lpN0)
-		Increment(lpC0)
-	}
-
-
-	/* RELEASING */
-
-
-	if (LNot(arg1)) {
-
-		/* === Thread 2 === */
-
-		Store(2, thr)
-
-		/* Set up per-thread set of mutexes */
-		m334(arg0, c300, arg4, arg5, 1, 1)
-
-		m200(bs00, arg0, c102) // cmd: Sleep
-		m208(bs00, thr, c107)  // cmd: Release specified set of mutexes
-		m114(arg0)
-
-		/* Wait for all Slave threads */
-		m103(arg0)
-	}
-
-	/* === Thread 1 === */
-
-	Store(1, thr)
-
-	/* Set up per-thread set of mutexes */
-	m334(arg0, c300, arg2, arg3, 0, 1)
-
-	m200(bs00, arg0, c102) // cmd: Sleep
-	m208(bs00, thr, c107)  // cmd: Release specified set of mutexes
-	m114(arg0)
-
-	/* Wait for all Slave threads */
-	m103(arg0)
-
-	if (arg1) {
-
-		/* === Thread 2 === */
-
-		Store(2, thr)
-
-		/* Set up per-thread set of mutexes */
-		m334(arg0, c300, arg4, arg5, 1, 1)
-
-		m200(bs00, arg0, c102) // cmd: Sleep
-		m208(bs00, thr, c107)  // cmd: Release specified set of mutexes
-		m114(arg0)
-
-		/* Wait for all Slave threads */
-		m103(arg0)
-	}
-}
-
-/*
- * arg0 - number of threads
- */
-Method(m804, 1)
-{
-	/* I */
-	m8ff(arg0, 0, 0, max0, 0, max0)
-
-	/* Reset all counters (cnt0) and flags (fl00) corresponding to all Mutexes */
-	m330()
-
-	/* II */
-	m8ff(arg0, 1, 0, max0, 0, max0)
-
-	/* Reset all counters (cnt0) and flags (fl00) corresponding to all Mutexes */
-	m330()
-
-	/* III */
-	m8ff(arg0, 1, 7, 1, 0, max0)
-}
-
-/*
- * arg0 - number of threads
- */
-Method(m805, 1, Serialized)
-{
-	Name(lpN0, 0)
-	Name(lpC0, 0)
-	Name(thr, 0)
-
-	Name(ee01, Buffer(arg0) {0, 63,   0}) // AE_AML_NOT_OWNER
-	Name(ee02, Buffer(arg0) {0,  0,  63}) // AE_AML_NOT_OWNER
-
-
-	/* 1. Thread_1 owns its set of all-level mutexes and falls into sleeping */
-
-	Store(1, thr)
-
-	/* Set up per-thread set of mutexes */
-	m334(arg0, c300, 0, max0, 0, 1)
-
-	m200(bs00, arg0, c102) // cmd: Sleep
-	m208(bs00, thr, c106)  // cmd: Acquire specified set of mutexes
-	m215(arg0)             // Reset TimeOutValue and exceptional condition flags
-	m114(arg0)
-
-	/* Wait for all Slave threads */
-	m103(arg0)
-
-	/* Check up the values of counters of all Mutexs */
-	Store(max0, lpN0)
-	Store(0, lpC0)
-	While (lpN0) {
-		m333(lpC0, 0, 1)
-		Decrement(lpN0)
-		Increment(lpC0)
-	}
-
-
-	/* 2,3. Thread_2 tries to Release all those mutexes owned by Thread_1 */
-
-	Store(2, thr)
-
-	/* Set up exception expectation on Release operation */
-	m215(arg0)             // Reset TimeOutValue and exceptional condition flags
-	m20f(arg0, ee02, 0)    // Init the exceptional conditions flags (AE_AML_NOT_OWNER)
-
-	/* Set up per-thread set of mutexes */
-	m334(arg0, c300, 0, max0, 0, 1)
-
-	m200(bs00, arg0, c102) // cmd: Sleep
-	m208(bs00, thr, c107)  // cmd: Release specified set of mutexes
-	m114(arg0)
-
-	/* Wait for all Slave threads */
-	m103(arg0)
-
-	/* Reset exception expectation */
-	m336(arg0, 1)
-
-
-	/* 4. Thread_2 owns its set of all-level mutexes (not intersecting with Thread_1) */
-
-	Store(2, thr)
-
-	/* Set up per-thread set of mutexes */
-	m334(arg0, c300, 0, max0, 1, 1)
-
-	m200(bs00, arg0, c102) // cmd: Sleep
-	m208(bs00, thr, c106)  // cmd: Acquire specified set of mutexes
-	m215(arg0)             // Reset TimeOutValue and exceptional condition flags
-	m114(arg0)
-
-	/* Wait for all Slave threads */
-	m103(arg0)
-
-	/* Check up the values of counters of all Mutexs */
-	Store(max0, lpN0)
-	Store(0, lpC0)
-	While (lpN0) {
-		m333(lpC0, 0, 1)
-		Decrement(lpN0)
-		Increment(lpC0)
-	}
-
-
-	/* 5,6. Thread_2 tries again to Release mutexes owned by Thread_1 */
-
-	Store(2, thr)
-
-	/* Set up exception expectation on Release operation */
-	m215(arg0)             // Reset TimeOutValue and exceptional condition flags
-	m20f(arg0, ee02, 0)    // Init the exceptional conditions flags (AE_AML_NOT_OWNER)
-
-	/* Set up per-thread set of mutexes */
-	m334(arg0, c300, 0, max0, 0, 1)
-
-	m200(bs00, arg0, c102) // cmd: Sleep
-	m208(bs00, thr, c107)  // cmd: Release specified set of mutexes
-	m114(arg0)
-
-	/* Wait for all Slave threads */
-	m103(arg0)
-
-	/* Reset exception expectation */
-	m336(arg0, 1)
-
-
-	/* 7,8. Thread_1 tries to Release mutexes owned by Thread_2 */
-
-	Store(1, thr)
-
-	/* Set up exception expectation on Release operation */
-	m215(arg0)             // Reset TimeOutValue and exceptional condition flags
-	m20f(arg0, ee01, 0)    // Init the exceptional conditions flags (AE_AML_NOT_OWNER)
-
-	/* Set up per-thread set of mutexes */
-	m334(arg0, c300, 0, max0, 1, 1)
-
-	m200(bs00, arg0, c102) // cmd: Sleep
-	m208(bs00, thr, c107)  // cmd: Release specified set of mutexes
-	m114(arg0)
-
-	/* Wait for all Slave threads */
-	m103(arg0)
-
-	/* Reset exception expectation */
-	m336(arg0, 1)
-
-
-	/* 9. Thread_1 Releases its mutexes */
-
-	Store(1, thr)
-
-	/* Set up per-thread set of mutexes */
-	m334(arg0, c300, 0, max0, 0, 1)
-
-	m200(bs00, arg0, c102) // cmd: Sleep
-	m208(bs00, thr, c107)  // cmd: Release specified set of mutexes
-	m215(arg0)             // Reset TimeOutValue and exceptional condition flags
-	m114(arg0)
-
-	/* Wait for all Slave threads */
-	m103(arg0)
-
-
-	/* 10. Thread_2 Releases its mutexes */
-
-	Store(2, thr)
-
-	/* Set up per-thread set of mutexes */
-	m334(arg0, c300, 0, max0, 1, 1)
-
-	m200(bs00, arg0, c102) // cmd: Sleep
-	m208(bs00, thr, c107)  // cmd: Release specified set of mutexes
-	m114(arg0)
-
-	/* Wait for all Slave threads */
-	m103(arg0)
-}
-
-/*
- * arg0 - number of threads (total)
- */
-Method(m806, 1, Serialized)
-{
-	Name(numW, 0) // number of threads in work
-	Name(lpN0, 0)
-	Name(lpC0, 0)
-	Name(nth0, Buffer(2) {})
-	Name(ix00, Buffer(Multiply(min1, 2)) {0,0,   0,1,   1,1,   2,1,   3,1})
-
-	/*
-	 * arg0-arg5 - same as m33f
-	 * arg6 - index of thread according to the test scenario
-	 */
-	Method(m000, 7, Serialized)
-	{
-		Name(nth1, 0) // actually in work
-
-		Store(DerefOf(Index(arg0, 1)), nth1)
-		if (LLess(arg6, nth1)) {
-			m33f(arg0, arg1, arg2, arg3, arg4, arg5, 0)
-		}
-	}
-
-	/* Number of threads to be actually in work */
-	Store(m213(arg0, min1, 4), numW)
-
-	/* Pack numbers of threads */
-	Store(m20d(arg0, numW), nth0)
-
-	/* Data */
-
-	Name(b001, Buffer(Multiply(min1, 2)) {0,0,     0,0,   0,1,   0,1,   0,1})
-	Name(b002, Buffer(Multiply(min1, 2)) {0,0,     1,1,   0,0,   1,1,   1,1})
-	Name(b003, Buffer(Multiply(min1, 2)) {0,0,     2,1,   2,1,   0,0,   2,1})
-	Name(b004, Buffer(Multiply(min1, 2)) {0,0,     3,1,   3,1,   3,1,   0,0})
-
-	Name(cm01, Package(min1) {0,   c107, 0,    0,    0})
-	Name(ee01, Buffer(min1)  {0,   63,   0,    0,    0}) // AE_AML_NOT_OWNER
-
-	Name(cm02, Package(min1) {0,   0,    c107, 0,    0})
-	Name(ee02, Buffer(min1)  {0,   0,    63,   0,    0}) // AE_AML_NOT_OWNER
-
-	Name(cm03, Package(min1) {0,   0,    0,    c107, 0})
-	Name(ee03, Buffer(min1)  {0,   0,    0,    63,   0}) // AE_AML_NOT_OWNER
-
-	Name(cm04, Package(min1) {0,   0,    0,    0,    c107})
-	Name(ee04, Buffer(min1)  {0,   0,    0,    0,    63}) // AE_AML_NOT_OWNER
-
-
-	/* Acquire */
-
-	Store(max0, lpN0)
-	Store(0, lpC0)
-	While (lpN0) {
-
-		/* All threads Acquire their mutexes */
-
-		m33f(nth0,  // numbers of threads           (buffer/Integer)
-			c106, // Commands                     (buffer/Integer)
-			0,    // Exceptional conditions flags (buffer/Integer)
-			lpC0, // Levels of mutexes            (buffer/Integer)
-			ix00, // Indexes of mutexes           (buffer/Integer)
-			c106, // Expected completion statuses (buffer/Integer)
-			0)    // Expected hang statuses       (buffer/Integer)
-
-		/* 2. Threads thr-2, thr-3, thr-4 attempt to Release mutex of thr-1 */
-
-		if (LGreater(numW, 1)) {
-			m000(nth0, cm02, ee02, lpC0, b001, cm02, 2)
-			m000(nth0, cm03, ee03, lpC0, b001, cm03, 3)
-			m000(nth0, cm04, ee04, lpC0, b001, cm04, 4)
-		}
-
-		/* 3. Threads thr-1, thr-3, thr-4 attempt to Release mutex of thr-2 */
-
-		if (LGreater(numW, 2)) {
-			m000(nth0, cm01, ee01, lpC0, b002, cm01, 1)
-			m000(nth0, cm03, ee03, lpC0, b002, cm03, 3)
-			m000(nth0, cm04, ee04, lpC0, b002, cm04, 4)
-		}
-
-		/* 4. Threads thr-1, thr-2, thr-4 attempt to Release mutex of thr-3 */
-
-		if (LGreater(numW, 3)) {
-			m000(nth0, cm01, ee01, lpC0, b003, cm01, 1)
-			m000(nth0, cm02, ee02, lpC0, b003, cm02, 2)
-			m000(nth0, cm04, ee04, lpC0, b003, cm04, 4)
-		}
-
-		/* 5. Threads thr-1, thr-2, thr-3 attempt to Release mutex of thr-4 */
-
-		if (LGreater(numW, 4)) {
-			m000(nth0, cm01, ee01, lpC0, b004, cm01, 1)
-			m000(nth0, cm02, ee02, lpC0, b004, cm02, 2)
-			m000(nth0, cm03, ee03, lpC0, b004, cm03, 3)
-		}
-
-
-		/* All threads Release their mutexes */
-
-		m33f(nth0,  // numbers of threads           (buffer/Integer)
-			c107, // Commands                     (buffer/Integer)
-			0,    // Exceptional conditions flags (buffer/Integer)
-			lpC0, // Levels of mutexes            (buffer/Integer)
-			ix00, // Indexes of mutexes           (buffer/Integer)
-			c107, // Expected completion statuses (buffer/Integer)
-			0)    // Expected hang statuses       (buffer/Integer)
-
-		Decrement(lpN0)
-		Increment(lpC0)
-	}
-}
-
-/*
- * arg0 - number of threads
- */
-Method(m807, 1, Serialized)
-{
-	Name(lpN0, 0)
-	Name(lpC0, 0)
-	Name(lpN1, 0)
-	Name(lpC1, 0)
-	Name(ix00, 0)
-	Name(numW, 0) // number of threads in work
-
-	/* Number of threads to be actually in work */
-	Store(m213(arg0, min1, 3), numW)
-
-
-	/* From 15 to 0 */
-
-	Store(max0, lpN0)
-	Store(max0, ix00)
-	Decrement(ix00)
-	Store(ix00, lpC0)
-
-
-	While (lpN0) {
-		if (LNotEqual(lpC0, 0)) {
-			/*
-			 * 3. Acquire mutexes from 0 to (N-1) levels:
-			 *	- Set up per-thread set of mutexes
-			 *	- Acquire specified set of mutexes
-			 *	- Wait for all Slave threads
-			 *	- Check up the values of counters of all Mutexs
-			 */
-			m337(arg0, numW, 0, lpC0, 1, 0)
-
-			/*
-			 * 4. Release mutexes from 0 to (N-1) levels:
-			 *	- Set up per-thread set of mutexes
-			 *	- Release specified set of mutexes
-			 *	- Wait for all Slave threads
-			 */
-			m338(arg0, numW, 0, lpC0)
-
-			/* Reset all counters (cnt0) and flags (fl00) corresponding to all Mutexes */
-			m330()
-		}
-
-		/* 5. Acquire mutex of level N */
-		m337(arg0, numW, lpC0, 1, 1, 0)
-
-		if (LNotEqual(lpC0, 0)) {
-			/*
-			 * 6. Attempt to Acquire mutexes from 0 to (N-1) levels
-			 * 7. Exception is expected
-			 */
-			m337(arg0, numW, 0, lpC0, 0, 64) // With exceptional conditions flags (AE_AML_MUTEX_ORDER)
-
-			/* Reset exception expectation */
-			m336(arg0, 1)
-		}
-
-		if (LNotEqual(lpC0, ix00)) {
-			/*
-			 * 8. Acquire mutexes from (N+1) to 15 levels
-			 *	- Set up per-thread set of mutexes
-			 *	- Acquire specified set of mutexes
-			 *	- Wait for all Slave threads
-			 *	- Check up the values of counters of all Mutexs
-			 */
-			Add(lpC0, 1, Local0)
-			Subtract(ix00, lpC0, Local1)
-			m337(arg0, numW, Local0, Local1, 1, 0)
-		}
-
-		/*
-		 * 9. Release all mutexes (starting with lpC0 up to 15 level):
-		 *	- Set up per-thread set of mutexes
-		 *	- Release specified set of mutexes
-		 *	- Wait for all Slave threads
-		 */
-		Subtract(max0, lpC0, Local1)
-		m338(arg0, numW, lpC0, Local1)
-
-		/* Reset all counters (cnt0) and flags (fl00) corresponding to all Mutexes */
-		m330()
-
-		if (LNotEqual(lpC0, 0)) {
-			/*
-			 * 10. Acquire mutexes from 0 to (N-1) levels:
-			 *	- Set up per-thread set of mutexes
-			 *	- Acquire specified set of mutexes
-			 *	- Wait for all Slave threads
-			 *	- Check up the values of counters of all Mutexs
-			 */
-			m337(arg0, numW, 0, lpC0, 1, 0)
-
-			/*
-			 * 11. Release mutexes (from 0 to (N-1) levels):
-			 *	- Set up per-thread set of mutexes
-			 *	- Release specified set of mutexes
-			 *	- Wait for all Slave threads
-			 */
-			m338(arg0, numW, 0, lpC0)
-
-			/* Reset all counters (cnt0) and flags (fl00) corresponding to all Mutexes */
-			m330()
-		}
-
-		Decrement(lpN0)
-		Decrement(lpC0)
-	}
-}
-
-/*
- * arg0 - number of threads (total)
- */
-Method(m808, 1, Serialized)
-{
-	Name(pr, 0)
-	Name(L000, 0)
-	Name(nth0, Buffer(2) {})
-
-	/*
-	 * Per-thread indexes of mutexes
-	 *
-	 * Ctl-thr,   thr-1, thr-2, thr-3, thr-4
-	 */
-	Name(b000, Buffer(Multiply(min1, 2)) {0,0,  0,1, 1,1, 2,1, 3,1})
-	Name(b001, Buffer(Multiply(min1, 2)) {0,0,  1,1, 2,1, 3,1, 0,1})
-	Name(b002, Buffer(Multiply(min1, 2)) {0,0,  2,1, 3,1, 0,1, 1,1})
-	Name(b003, Buffer(Multiply(min1, 2)) {0,0,  3,1, 0,1, 1,1, 2,1})
-
-
-	/* Pack numbers of threads */
-	Store(m20d(arg0, min1), nth0)
-
-	/* x-0-123 */
-
-	/*
-	 * Acquire all x-0-123 and check owning
-	 *
-	 * Threads thr-1, thr-2, thr-3, thr-4
-	 * acquire respectively all x-0-123 mutexes
-	 * and check owning of all those mutexes.
-	 */
-	m33f(nth0,  // numbers of threads           (buffer/Integer)
-		c106, // Commands                     (buffer/Integer)
-		0,    // Exceptional conditions flags (buffer/Integer)
-		L000, // Levels of mutexes            (buffer/Integer)
-		b000, // Indexes of mutexes           (buffer/Integer)
-		c106, // Expected completion statuses (buffer/Integer)
-		0)    // Expected hang statuses       (buffer/Integer)
-
-	if (pr) {
-		m20b(0, "Acquire all x-0-123")
-	}
-
-	/* At this point threads have Acquired: x-0-123 */
-
-	m8fe(nth0, L000, b000, b001, pr)
-	m8fe(nth0, L000, b001, b002, pr)
-	m8fe(nth0, L000, b002, b003, pr)
-	m8fe(nth0, L000, b003, b000, pr)
-
-	/* At this point threads have Acquired: x-0-123 */
-
-	/* Release mutexes on all threads */
-
-	Name(cm00, Package(min1) {0, c107, c107, c107, c107})
-	Name(cp00, Package(min1) {0, c107, c107, c107, c107})
-
-	m33f(nth0,  // numbers of threads           (buffer/Integer)
-		cm00, // Commands                     (buffer/Integer)
-		0,    // Exceptional conditions flags (buffer/Integer)
-		L000, // Levels of mutexes            (buffer/Integer)
-		b000, // Indexes of mutexes           (buffer/Integer)
-		cp00, // Expected completion statuses (buffer/Integer)
-		0)    // Expected hang statuses       (buffer/Integer)
-	if (pr) {
-		m20b(0, "Release all")
-	}
-}
-
-/*
- * Manage the test m808
- *
- * agr0 - numbers of threads (buffer/Integer)
- * arg1 - levels of mutexes  (buffer/Integer)
- * arg2 - indexes of mutexes (buffer/Integer) - start point
- * arg3 - indexes of mutexes (buffer/Integer) - target point
- * arg4 - printing flag
- */
-Method(m8fe, 5, Serialized)
-{
-	/*
-	 * Comments are for one particular transfer step from
-	 * x-0-123 to x-1-230, other steps are identical.
-	 */
-
-	/* At this point threads have Acquired: x-0-123 */
-
-	/* x-1-230 */
-
-	/* Acquire x-x-230 and check that all -230- hang */
-
-	Name(cm00, Package(min1) {0, 0, c106, c106, c106})
-
-	m33f(arg0,  // numbers of threads           (buffer/Integer)
-		cm00, // Commands                     (buffer/Integer)
-		0,    // Exceptional conditions flags (buffer/Integer)
-		arg1, // Levels of mutexes            (buffer/Integer)
-		arg3, // Indexes of mutexes           (buffer/Integer)
-		0,    // Expected completion statuses (buffer/Integer)
-		cm00) // Expected hang statuses       (buffer/Integer)
-	if (arg4) {
-		m20b(0, "Acquire x-x-230")
-	}
-
-	/* Release x-0-xxx, this frees mux for thr-4 */
-
-	Name(cm01, Package(min1) {0, c107, 0,    0,    0})
-	Name(cp01, Package(min1) {0, c107, 0,    0,    c106})
-	Name(hg01, Package(min1) {0, 0,    c106, c106, 0})
-
-	m33f(arg0,  // numbers of threads           (buffer/Integer)
-		cm01, // Commands                     (buffer/Integer)
-		0,    // Exceptional conditions flags (buffer/Integer)
-		arg1, // Levels of mutexes            (buffer/Integer)
-		arg2, // Indexes of mutexes           (buffer/Integer)
-		cp01, // Expected completion statuses (buffer/Integer)
-		hg01) // Expected hang statuses       (buffer/Integer)
-	if (arg4) {
-		m20b(0, "Release x-0-xxx")
-	}
-
-	/* Acquire x-1-xxx and check that it hangs too */
-
-	Name(cm02, Package(min1) {0, c106, 0,    0,    0})
-	Name(hg02, Package(min1) {0, c106, c106, c106, 0})
-
-	m33f(arg0,  // numbers of threads           (buffer/Integer)
-		cm02, // Commands                     (buffer/Integer)
-		0,    // Exceptional conditions flags (buffer/Integer)
-		arg1, // Levels of mutexes            (buffer/Integer)
-		arg3, // Indexes of mutexes           (buffer/Integer)
-		0,    // Expected completion statuses (buffer/Integer)
-		hg02) // Expected hang statuses       (buffer/Integer)
-	if (arg4) {
-		m20b(0, "Acquire x-1-xxx")
-	}
-
-	/* Release x-x-xx3, this frees mux for thr-3 */
-
-	Name(cm03, Package(min1) {0, 0,    0,    0,    c107})
-	Name(cp03, Package(min1) {0, 0,    0,    c106, c107})
-	Name(hg03, Package(min1) {0, c106, c106, 0,    0})
-
-	m33f(arg0,  // numbers of threads           (buffer/Integer)
-		cm03, // Commands                     (buffer/Integer)
-		0,    // Exceptional conditions flags (buffer/Integer)
-		arg1, // Levels of mutexes            (buffer/Integer)
-		arg2, // Indexes of mutexes           (buffer/Integer)
-		cp03, // Expected completion statuses (buffer/Integer)
-		hg03) // Expected hang statuses       (buffer/Integer)
-	if (arg4) {
-		m20b(0, "Release x-x-xx3")
-	}
-
-	/* Release x-x-x2x, this frees mux for thr-2 */
-
-	Name(cm04, Package(min1) {0, 0,    0,    c107, 0})
-	Name(cp04, Package(min1) {0, 0,    c106, c107, 0})
-	Name(hg04, Package(min1) {0, c106, 0,    0,    0})
-
-	m33f(arg0,  // numbers of threads           (buffer/Integer)
-		cm04, // Commands                     (buffer/Integer)
-		0,    // Exceptional conditions flags (buffer/Integer)
-		arg1, // Levels of mutexes            (buffer/Integer)
-		arg2, // Indexes of mutexes           (buffer/Integer)
-		cp04, // Expected completion statuses (buffer/Integer)
-		hg04) // Expected hang statuses       (buffer/Integer)
-	if (arg4) {
-		m20b(0, "Release x-x-x2x")
-	}
-
-	/* Release x-x-1xx, this frees mux for thr-1 */
-
-	Name(cm05, Package(min1) {0, 0,    c107, 0, 0})
-	Name(cp05, Package(min1) {0, c106, c107, 0, 0})
-
-	m33f(arg0,  // numbers of threads           (buffer/Integer)
-		cm05, // Commands                     (buffer/Integer)
-		0,    // Exceptional conditions flags (buffer/Integer)
-		arg1, // Levels of mutexes            (buffer/Integer)
-		arg2, // Indexes of mutexes           (buffer/Integer)
-		cp05, // Expected completion statuses (buffer/Integer)
-		0)    // Expected hang statuses       (buffer/Integer)
-	if (arg4) {
-		m20b(0, "Release x-x-1xx")
-	}
-
-	/* At this point threads have Acquired: x-1-230 */
-}
-
-/*
- * arg0 - number of threads (total)
- */
-Method(m809, 1)
-{
-	m80c(arg0, 1)
-}
-
-/*
- * arg0 - number of threads (total)
- * arg1 - variant (of parameters passed to m8fd):
- *        0:
- *           arg1 - indexes of mutexes (buffer/Integer)
- *           arg2 - levels of mutexes  (buffer/Integer) - start point
- *           arg3 - levels of mutexes  (buffer/Integer) - target point
- *        1:
- *           arg1 - levels of mutexes  (buffer/Integer)
- *           arg2 - indexes of mutexes (buffer/Integer) - start point
- *           arg3 - indexes of mutexes (buffer/Integer) - target point
- */
-Method(m80c, 2, Serialized)
-{
-
-	Name(pr, 0)
-	Name(ixll, 0)
-	Name(nth0, Buffer(2) {})
-
-	/*
-	 * Per-thread indexes/levels (depending on arg1) of mutexes
-	 *
-	 * Ctl-thr,   thr-1, thr-2, thr-3, thr-4
-	 */
-	Name(b000, Buffer(Multiply(min1, 2)) {0,0,   0,1,  1,1,  2,1,  3,1})
-	Name(b001, Buffer(Multiply(min1, 2)) {0,0,   1,1,  2,1,  3,1,  4,1})
-	Name(b002, Buffer(Multiply(min1, 2)) {0,0,   2,1,  3,1,  4,1,  5,1})
-	Name(b003, Buffer(Multiply(min1, 2)) {0,0,   3,1,  4,1,  5,1,  6,1})
-	Name(b004, Buffer(Multiply(min1, 2)) {0,0,   4,1,  5,1,  6,1,  7,1})
-	Name(b005, Buffer(Multiply(min1, 2)) {0,0,   5,1,  6,1,  7,1,  8,1})
-	Name(b006, Buffer(Multiply(min1, 2)) {0,0,   6,1,  7,1,  8,1,  9,1})
-	Name(b007, Buffer(Multiply(min1, 2)) {0,0,   7,1,  8,1,  9,1, 10,1})
-	Name(b008, Buffer(Multiply(min1, 2)) {0,0,   8,1,  9,1, 10,1, 11,1})
-	Name(b009, Buffer(Multiply(min1, 2)) {0,0,   9,1, 10,1, 11,1, 12,1})
-	Name(b00a, Buffer(Multiply(min1, 2)) {0,0,  10,1, 11,1, 12,1, 13,1})
-	Name(b00b, Buffer(Multiply(min1, 2)) {0,0,  11,1, 12,1, 13,1, 14,1})
-	Name(b00c, Buffer(Multiply(min1, 2)) {0,0,  12,1, 13,1, 14,1, 15,1})
-
-	if (arg1) {
-		/* The same level of mutexes */
-		Store(0, ixll)
-	} else {
-		/* The same index of mutexes */
-		Store(0, ixll)
-	}
-
-	/* Pack numbers of threads */
-	Store(m20d(arg0, min1), nth0)
-
-	/* x-0123 */
-
-	/*
-	 * x-0-1-2-3
-	 * Acquire all x-0123 and check owning
-	 *
-	 * Threads thr-1, thr-2, thr-3, thr-4
-	 * acquire respectively all x-0123 mutexes
-	 * and check owning of all those mutexes.
-	 */
-	if (arg1) {
-		Store(ixll, Local6)
-		Store(b000, Local7)
-	} else {
-		Store(b000, Local6)
-		Store(ixll, Local7)
-	}
-	m33f(nth0,    // numbers of threads           (buffer/Integer)
-		c106,   // Commands                     (buffer/Integer)
-		0,      // Exceptional conditions flags (buffer/Integer)
-		Local6, // Levels of mutexes            (buffer/Integer)
-		Local7, // Indexes of mutexes           (buffer/Integer)
-		c106,   // Expected completion statuses (buffer/Integer)
-		0)      // Expected hang statuses       (buffer/Integer)
-
-	if (pr) {
-		m20b(0, "Acquire all x-0123")
-	}
-
-
-	m8fd(nth0, ixll, b000, b001, pr, arg1)
-	m8fd(nth0, ixll, b001, b002, pr, arg1)
-	m8fd(nth0, ixll, b002, b003, pr, arg1)
-	m8fd(nth0, ixll, b003, b004, pr, arg1)
-	m8fd(nth0, ixll, b004, b005, pr, arg1)
-	m8fd(nth0, ixll, b005, b006, pr, arg1)
-	m8fd(nth0, ixll, b006, b007, pr, arg1)
-	m8fd(nth0, ixll, b007, b008, pr, arg1)
-	m8fd(nth0, ixll, b008, b009, pr, arg1)
-	m8fd(nth0, ixll, b009, b00a, pr, arg1)
-	m8fd(nth0, ixll, b00a, b00b, pr, arg1)
-	m8fd(nth0, ixll, b00b, b00c, pr, arg1)
-
-
-	/* x-(12)-(13)-(14)-(15), Release=x-(12)(13)(14)(15), hang=x-xxxx, success=x-(12)(13)(14)(15) */
-
-	if (arg1) {
-		Store(ixll, Local6)
-		Store(b00c, Local7)
-	} else {
-		Store(b00c, Local6)
-		Store(ixll, Local7)
-	}
-	m33f(nth0,  // numbers of threads           (buffer/Integer)
-		c107, // Commands                     (buffer/Integer)
-		0,    // Exceptional conditions flags (buffer/Integer)
-		Local6, // Levels of mutexes            (buffer/Integer)
-		Local7, // Indexes of mutexes           (buffer/Integer)
-		c107, // Expected completion statuses (buffer/Integer)
-		0)    // Expected hang statuses       (buffer/Integer)
-
-	if (pr) {
-		m20b(0, "Release x-(12)(13)(14)(15)")
-	}
-}
-
-/*
- * arg0 - numbers of threads (buffer/Integer)
- * arg1 - indexes/levels of mutexes (buffer/Integer)
- * arg2 - levels/indexes of mutexes (buffer/Integer) - start point
- * arg3 - levels/indexes of mutexes (buffer/Integer) - target point
- * arg4 - printing flag
- * arg5 - variant (see m80c)
- */
-Method(m8fd, 6, Serialized)
-{
-	/* At this point threads have Acquired: x-0123 */
-
-	/*
-	 * Comments are given for one particular transfer step
-	 * from x-0-123 to x-1-230, other steps are identical.
-	 */
-
-	/* x-01-12-23-34, Acquire=x-1234, hang=x-123x, success=x-xxx4 */
-
-	Name(cm00, Package(min1) {0, c106, c106, c106, c106})
-	Name(cp00, Package(min1) {0, 0,    0,    0,    c106})
-	Name(hg00, Package(min1) {0, c106, c106, c106, 0})
-
-	if (arg5) {
-		Store(arg1, Local6)
-		Store(arg3, Local7)
-	} else {
-		Store(arg3, Local6)
-		Store(arg1, Local7)
-	}
-	m33f(arg0,    // numbers of threads           (buffer/Integer)
-		cm00,   // Commands                     (buffer/Integer)
-		0,      // Exceptional conditions flags (buffer/Integer)
-		Local6, // Levels of mutexes            (buffer/Integer)
-		Local7, // Indexes of mutexes           (buffer/Integer)
-		cp00,   // Expected completion statuses (buffer/Integer)
-		hg00)   // Expected hang statuses       (buffer/Integer)
-	if (arg4) {
-		m20b(0, "Acquire x-1234")
-	}
-
-	/* x-01-12-23-3, Release=x-xxx4, hang=x-123x, success=x-xxx4 */
-
-	Name(cm01, Package(min1) {0, 0,    0,    0,    c107})
-	Name(cp01, Package(min1) {0, 0,    0,    0,    c107})
-	Name(hg01, Package(min1) {0, c106, c106, c106, 0})
-
-	if (arg5) {
-		Store(arg1, Local6)
-		Store(arg3, Local7)
-	} else {
-		Store(arg3, Local6)
-		Store(arg1, Local7)
-	}
-	m33f(arg0,    // numbers of threads           (buffer/Integer)
-		cm01,   // Commands                     (buffer/Integer)
-		0,      // Exceptional conditions flags (buffer/Integer)
-		Local6, // Levels of mutexes            (buffer/Integer)
-		Local7, // Indexes of mutexes           (buffer/Integer)
-		cp01,   // Expected completion statuses (buffer/Integer)
-		hg01)   // Expected hang statuses       (buffer/Integer)
-	if (arg4) {
-		m20b(0, "Release x-xxx4")
-	}
-
-	/* x-01-12-23-x, Release=x-xxx3, hang=x-12xx, success=x-xx33 */
-
-	Name(cm02, Package(min1) {0, 0,    0,    0,    c107})
-	Name(cp02, Package(min1) {0, 0,    0,    c106, c107})
-	Name(hg02, Package(min1) {0, c106, c106, 0,    0})
-
-	if (arg5) {
-		Store(arg1, Local6)
-		Store(arg2, Local7)
-	} else {
-		Store(arg2, Local6)
-		Store(arg1, Local7)
-	}
-	m33f(arg0,    // numbers of threads           (buffer/Integer)
-		cm02,   // Commands                     (buffer/Integer)
-		0,      // Exceptional conditions flags (buffer/Integer)
-		Local6, // Levels of mutexes            (buffer/Integer)
-		Local7, // Indexes of mutexes           (buffer/Integer)
-		cp02,   // Expected completion statuses (buffer/Integer)
-		hg02)   // Expected hang statuses       (buffer/Integer)
-	if (arg4) {
-		m20b(0, "Release x-xxx3")
-	}
-
-	/* x-01-12-23-4, Acquire=x-xxx4, hang=x-12xx, success=x-xxx4 */
-
-	Name(cm03, Package(min1) {0, 0,    0,    0,    c106})
-	Name(cp03, Package(min1) {0, 0,    0,    0,    c106})
-	Name(hg03, Package(min1) {0, c106, c106, 0,    0})
-
-	if (arg5) {
-		Store(arg1, Local6)
-		Store(arg3, Local7)
-	} else {
-		Store(arg3, Local6)
-		Store(arg1, Local7)
-	}
-	m33f(arg0,    // numbers of threads           (buffer/Integer)
-		cm03,   // Commands                     (buffer/Integer)
-		0,      // Exceptional conditions flags (buffer/Integer)
-		Local6, // Levels of mutexes            (buffer/Integer)
-		Local7, // Indexes of mutexes           (buffer/Integer)
-		cp03,   // Expected completion statuses (buffer/Integer)
-		hg03)   // Expected hang statuses       (buffer/Integer)
-	if (arg4) {
-		m20b(0, "Acquire x-xxx4")
-	}
-
-	/* x-01-12-2-4, Release=x-xx3x, hang=x-12xx, success=x-xx3x */
-
-	Name(cm05, Package(min1) {0, 0,    0,    c107, 0})
-	Name(cp05, Package(min1) {0, 0,    0,    c107, 0})
-	Name(hg05, Package(min1) {0, c106, c106, 0,    0})
-
-	if (arg5) {
-		Store(arg1, Local6)
-		Store(arg3, Local7)
-	} else {
-		Store(arg3, Local6)
-		Store(arg1, Local7)
-	}
-	m33f(arg0,    // numbers of threads           (buffer/Integer)
-		cm05,   // Commands                     (buffer/Integer)
-		0,      // Exceptional conditions flags (buffer/Integer)
-		Local6, // Levels of mutexes            (buffer/Integer)
-		Local7, // Indexes of mutexes           (buffer/Integer)
-		cp05,   // Expected completion statuses (buffer/Integer)
-		hg05)   // Expected hang statuses       (buffer/Integer)
-	if (arg4) {
-		m20b(0, "Release x-xx3x")
-	}
-
-	/* x-01-12-x-4, Release=x-xx2x, hang=x-1xxx, success=x-x22x */
-
-	Name(cm06, Package(min1) {0, 0,    0,    c107, 0})
-	Name(cp06, Package(min1) {0, 0,    c106, c107, 0})
-	Name(hg06, Package(min1) {0, c106, 0,    0,    0})
-
-	if (arg5) {
-		Store(arg1, Local6)
-		Store(arg2, Local7)
-	} else {
-		Store(arg2, Local6)
-		Store(arg1, Local7)
-	}
-	m33f(arg0,    // numbers of threads           (buffer/Integer)
-		cm06,   // Commands                     (buffer/Integer)
-		0,      // Exceptional conditions flags (buffer/Integer)
-		Local6, // Levels of mutexes            (buffer/Integer)
-		Local7, // Indexes of mutexes           (buffer/Integer)
-		cp06,   // Expected completion statuses (buffer/Integer)
-		hg06)   // Expected hang statuses       (buffer/Integer)
-	if (arg4) {
-		m20b(0, "Release x-xx2x")
-	}
-
-	/* x-01-12-3-4, Acquire=x-xx3x, hang=x-1xxx, success=x-xx3x */
-
-	Name(cm07, Package(min1) {0, 0,    0,    c106, 0})
-	Name(cp07, Package(min1) {0, 0,    0,    c106, 0})
-	Name(hg07, Package(min1) {0, c106, 0,    0,    0})
-
-	if (arg5) {
-		Store(arg1, Local6)
-		Store(arg3, Local7)
-	} else {
-		Store(arg3, Local6)
-		Store(arg1, Local7)
-	}
-	m33f(arg0,    // numbers of threads           (buffer/Integer)
-		cm07,   // Commands                     (buffer/Integer)
-		0,      // Exceptional conditions flags (buffer/Integer)
-		Local6, // Levels of mutexes            (buffer/Integer)
-		Local7, // Indexes of mutexes           (buffer/Integer)
-		cp07,   // Expected completion statuses (buffer/Integer)
-		hg07)   // Expected hang statuses       (buffer/Integer)
-	if (arg4) {
-		m20b(0, "Acquire x-xx3x")
-	}
-
-	/* x-01-1-3-4, Release=x-x2xx, hang=x-1xxx, success=x-x2xx */
-
-	Name(cm08, Package(min1) {0, 0,    c107, 0,    0})
-	Name(cp08, Package(min1) {0, 0,    c107, 0,    0})
-	Name(hg08, Package(min1) {0, c106, 0,    0,    0})
-
-	if (arg5) {
-		Store(arg1, Local6)
-		Store(arg3, Local7)
-	} else {
-		Store(arg3, Local6)
-		Store(arg1, Local7)
-	}
-	m33f(arg0,    // numbers of threads           (buffer/Integer)
-		cm08,   // Commands                     (buffer/Integer)
-		0,      // Exceptional conditions flags (buffer/Integer)
-		Local6, // Levels of mutexes            (buffer/Integer)
-		Local7, // Indexes of mutexes           (buffer/Integer)
-		cp08,   // Expected completion statuses (buffer/Integer)
-		hg08)   // Expected hang statuses       (buffer/Integer)
-	if (arg4) {
-		m20b(0, "Release x-x2xx")
-	}
-
-	/* x-01-x-3-4, Release=x-x1xx, hang=x-xxxx, success=x-11xx */
-
-	Name(cm09, Package(min1) {0, 0,    c107, 0,    0})
-	Name(cp09, Package(min1) {0, c106, c107, 0,    0})
-
-	if (arg5) {
-		Store(arg1, Local6)
-		Store(arg2, Local7)
-	} else {
-		Store(arg2, Local6)
-		Store(arg1, Local7)
-	}
-	m33f(arg0,    // numbers of threads           (buffer/Integer)
-		cm09,   // Commands                     (buffer/Integer)
-		0,      // Exceptional conditions flags (buffer/Integer)
-		Local6, // Levels of mutexes            (buffer/Integer)
-		Local7, // Indexes of mutexes           (buffer/Integer)
-		cp09,   // Expected completion statuses (buffer/Integer)
-		0)      // Expected hang statuses       (buffer/Integer)
-	if (arg4) {
-		m20b(0, "Release x-x1xx")
-	}
-
-	/* x-01-2-3-4, Acquire=x-x2xx, hang=x-xxxx, success=x-x2xx */
-
-	Name(cm0a, Package(min1) {0, 0,    c106, 0,    0})
-	Name(cp0a, Package(min1) {0, 0,    c106, 0,    0})
-
-	if (arg5) {
-		Store(arg1, Local6)
-		Store(arg3, Local7)
-	} else {
-		Store(arg3, Local6)
-		Store(arg1, Local7)
-	}
-	m33f(arg0,    // numbers of threads           (buffer/Integer)
-		cm0a,   // Commands                     (buffer/Integer)
-		0,      // Exceptional conditions flags (buffer/Integer)
-		Local6, // Levels of mutexes            (buffer/Integer)
-		Local7, // Indexes of mutexes           (buffer/Integer)
-		cp0a,   // Expected completion statuses (buffer/Integer)
-		0)      // Expected hang statuses       (buffer/Integer)
-	if (arg4) {
-		m20b(0, "Acquire x-x2xx")
-	}
-
-	/* x-0-2-3-4, Release=x-1xxx, hang=x-xxxx, success=x-1xxx */
-
-	Name(cm0b, Package(min1) {0, c107, 0,    0,    0})
-	Name(cp0b, Package(min1) {0, c107, 0,    0,    0})
-
-	if (arg5) {
-		Store(arg1, Local6)
-		Store(arg3, Local7)
-	} else {
-		Store(arg3, Local6)
-		Store(arg1, Local7)
-	}
-	m33f(arg0,    // numbers of threads           (buffer/Integer)
-		cm0b,   // Commands                     (buffer/Integer)
-		0,      // Exceptional conditions flags (buffer/Integer)
-		Local6, // Levels of mutexes            (buffer/Integer)
-		Local7, // Indexes of mutexes           (buffer/Integer)
-		cp0b,   // Expected completion statuses (buffer/Integer)
-		0)      // Expected hang statuses       (buffer/Integer)
-	if (arg4) {
-		m20b(0, "Release x-1xxx")
-	}
-
-	/* x-x-2-3-4, Release=x-0xxx, hang=x-xxxx, success=x-0xxx */
-
-	Name(cm0c, Package(min1) {0, c107, 0,    0,    0})
-	Name(cp0c, Package(min1) {0, c107, 0,    0,    0})
-
-	if (arg5) {
-		Store(arg1, Local6)
-		Store(arg2, Local7)
-	} else {
-		Store(arg2, Local6)
-		Store(arg1, Local7)
-	}
-	m33f(arg0,    // numbers of threads           (buffer/Integer)
-		cm0c,   // Commands                     (buffer/Integer)
-		0,      // Exceptional conditions flags (buffer/Integer)
-		Local6, // Levels of mutexes            (buffer/Integer)
-		Local7, // Indexes of mutexes           (buffer/Integer)
-		cp0c,   // Expected completion statuses (buffer/Integer)
-		0)      // Expected hang statuses       (buffer/Integer)
-	if (arg4) {
-		m20b(0, "Release x-0xxx")
-	}
-
-	/* x-1-2-3-4, Acquire=x-1xxx, hang=x-xxxx, success=x-1xxx */
-
-	Name(cm0d, Package(min1) {0, c106, 0,    0,    0})
-	Name(cp0d, Package(min1) {0, c106, 0,    0,    0})
-
-	if (arg5) {
-		Store(arg1, Local6)
-		Store(arg3, Local7)
-	} else {
-		Store(arg3, Local6)
-		Store(arg1, Local7)
-	}
-	m33f(arg0,    // numbers of threads           (buffer/Integer)
-		cm0d,   // Commands                     (buffer/Integer)
-		0,      // Exceptional conditions flags (buffer/Integer)
-		Local6, // Levels of mutexes            (buffer/Integer)
-		Local7, // Indexes of mutexes           (buffer/Integer)
-		cp0d,   // Expected completion statuses (buffer/Integer)
-		0)      // Expected hang statuses       (buffer/Integer)
-	if (arg4) {
-		m20b(0, "Acquire x-1xxx")
-	}
-
-	/* At this point threads have Acquired: x-1234 */
-}
-
-/*
- * arg0 - number of threads (total)
- */
-Method(m810, 1)
-{
-	m80c(arg0, 0)
-}
-
-/*
- * arg0 - number of threads (total)
- */
-Method(m811, 1, Serialized)
-{
-	Name(rpt, 4)
-	Name(lpN0, 0)
-	Name(lpC0, 0)
-	Name(lpN1, 0)
-	Name(lpC1, 0)
-	Name(nth0, Buffer(2) {})
-	Name(ix00, Buffer(Multiply(min1, 2)) {0,0,   0,1,   1,1,   2,1,   3,1})
-	Name(numW, 0) // number of threads in work
-
-	/* Number of threads to be actually in work */
-	Store(m213(arg0, min1, 4), numW)
-
-	/* Pack numbers of threads */
-	Store(m20d(arg0, numW), nth0)
-
-
-	/* Each thread Acquires successfully its mutex N times */
-
-	Store(max0, lpN0)
-	Store(0, lpC0)
-	While (lpN0) {
-
-		Store(rpt, lpN1)
-		Store(0, lpC1)
-
-		/* Repetition */
-		While (lpN1) {
-			m33f(nth0,  // numbers of threads           (buffer/Integer)
-				c106, // Commands                     (buffer/Integer)
-				0,    // Exceptional conditions flags (buffer/Integer)
-				lpC0, // Levels of mutexes            (buffer/Integer)
-				ix00, // Indexes of mutexes           (buffer/Integer)
-				c106, // Expected completion statuses (buffer/Integer)
-				0)    // Expected hang statuses       (buffer/Integer)
-			Decrement(lpN1)
-			Increment(lpC1)
-		}
-		Decrement(lpN0)
-		Increment(lpC0)
-	}
-
-
-	/* Each thread Releases successfully its mutex N times */
-
-	Store(max0, lpN0)
-	Subtract(max0, 1, lpC0)
-	While (lpN0) {
-
-		Store(rpt, lpN1)
-		Store(0, lpC1)
-
-		/* Repetition */
-		While (lpN1) {
-			m33f(nth0,  // numbers of threads           (buffer/Integer)
-				c107, // Commands                     (buffer/Integer)
-				0,    // Exceptional conditions flags (buffer/Integer)
-				lpC0, // Levels of mutexes            (buffer/Integer)
-				ix00, // Indexes of mutexes           (buffer/Integer)
-				c107, // Expected completion statuses (buffer/Integer)
-				0)    // Expected hang statuses       (buffer/Integer)
-			Decrement(lpN1)
-			Increment(lpC1)
-		}
-		Decrement(lpN0)
-		Decrement(lpC0)
-	}
-
-
-	/*
-	 * Each thread gets exception AE_AML_MUTEX_NOT_ACQUIRED (65)
-	 * on additional Release.
-	 */
-
-	Store(max0, lpN0)
-	Subtract(max0, 1, lpC0)
-	While (lpN0) {
-		m33f(nth0,  // numbers of threads           (buffer/Integer)
-			c107, // Commands                     (buffer/Integer)
-			65,   // Exceptional conditions flags (buffer/Integer)
-			lpC0, // Levels of mutexes            (buffer/Integer)
-			ix00, // Indexes of mutexes           (buffer/Integer)
-			c107, // Expected completion statuses (buffer/Integer)
-			0)    // Expected hang statuses       (buffer/Integer)
-		Decrement(lpN0)
-		Decrement(lpC0)
-	}
-}
-
-/*
- * arg0 - number of threads (total)
- */
-Method(m812, 1, Serialized)
-{
-	Name(rpt, 3)  // number of repetition
-	Name(lpN0, 0) // level
-	Name(lpC0, 0)
-	Name(lpN1, 0) // index-thread
-	Name(lpC1, 0)
-	Name(indt, 0) // index of thread
-	Name(lpN2, 0) // repetition
-	Name(lpC2, 0)
-	Name(lls0, 0)
-	Name(num2, 0)
-	Name(ixsz, 0)
-	Name(numW, 0) // number of threads in work
-
-	Store(Multiply(min1, 2), ixsz)
-
-	Name(nth0, Buffer(2) {})
-
-	// Buffers of indexes of mutexes
-	Name(pixs, Package(min1) {
-		0,
-		Buffer(ixsz) {0,0,   0,1,   0,1,   0,1,   0,1},
-		Buffer(ixsz) {0,0,   1,1,   1,1,   1,1,   1,1},
-		Buffer(ixsz) {0,0,   2,1,   2,1,   2,1,   2,1},
-		Buffer(ixsz) {0,0,   3,1,   3,1,   3,1,   3,1},
-	})
-
-	Name(bixs, Buffer(ixsz) {})
-
-	Name(cm00, Buffer(min1) {})
-	Name(cp00, Buffer(min1) {})
-	Name(hg00, Buffer(min1) {})
-
-
-	/*
-	 * Determine num - number of threads actually in work
-	 *
-	 * Note: maximum for num is min1 here but it can be diminished
-	 * to reduce the time of execution.
-	 */
-	Store(m213(arg0, min1, 3), numW)
-	Subtract(numW, 1, num2) // except the control thread
-
-	/* Pack numbers of threads */
-	Store(m20d(arg0, numW), nth0)
-
-	/*
-	 * Determine lls0 - number of levels to be in work
-	 *
-	 * Note: maximum for lls0 is max0 here but it can be diminished
-	 * to reduce the time of execution.
-	 */
-	if (redm) {
-		Store(3, lls0)
-	} else {
-		Store(max0, lls0)
-	}
-
-
-	/* 9. Do 1-8 for all Levels of mutex one by one */
-	Store(lls0, lpN0)
-	Store(0, lpC0)
-	While (lpN0) {
-
-		/*
-		 * 8. Do 1-7 for all threads one by one (so, for 0-3 Indexes of mutex as well)
-		 */
-		Store(num2, lpN1)
-		Store(0, lpC1)
-		While (lpN1) {
-
-		Add(lpC1, 1, indt)
-
-		Store(DerefOf(Index(pixs, indt)), bixs)
-
-
-		/* 1. Thread thr-i Acquires successfully mutex M0 of (i-1)-th index for N times */
-
-
-		// c106 for indt-th thread
-		m210(cm00, numW, c106, indt, 1, 1, 0)
-
-		/* Repetition */
-		Store(rpt, lpN2)
-		Store(0, lpC2)
-		While (lpN2) {
-			m33f(nth0,  // numbers of threads           (buffer/Integer)
-				cm00, // Commands                     (buffer/Integer)
-				0,    // Exceptional conditions flags (buffer/Integer)
-				lpC0, // Levels of mutexes            (buffer/Integer)
-				bixs, // Indexes of mutexes           (buffer/Integer)
-				cm00, // Expected completion statuses (buffer/Integer)
-				0)    // Expected hang statuses       (buffer/Integer)
-			Decrement(lpN2)
-			Increment(lpC2)
-		}
-
-		/* 2. Other threads Acquire M0 too and hang */
-
-		/*
-		 * c103 for all except indt-th thread
-		 * (and except 0-th thread naturally,
-		 * not mentioned more below)
-		 */
-		m200(cm00, numW, c103)
-		m208(cm00, indt, 0)
-
-		m33f(nth0, cm00, 0, lpC0, bixs, 0, cm00)
-
-		/* 3. Thread thr-i Acquires successfully mutex M0 for N times again */
-
-		// c106 for indt-th thread
-		m210(cm00, numW, c106, indt, 1, 1, 0)
-
-		// c103 for all except indt-th thread
-		m200(hg00, numW, c103)
-		m208(hg00, indt, 0)
-
-		/* Repetition */
-		Store(rpt, lpN2)
-		Store(0, lpC2)
-		While (lpN2) {
-			m33f(nth0, cm00, 0, lpC0, bixs, cm00, hg00)
-			Decrement(lpN2)
-			Increment(lpC2)
-		}
-
-		/* 4. Thread thr-i Releases mutex M0 for 2*N times */
-
-		// c107 for indt-th thread
-		m210(cm00, numW, c107, indt, 1, 1, 0)
-
-		// c103 for all except indt-th thread
-		m200(hg00, numW, c103)
-		m208(hg00, indt, 0)
-
-		/* Repetition */
-		Multiply(rpt, 2, lpN2)
-		Decrement(lpN2)
-		Store(0, lpC2)
-		While (lpN2) {
-			m33f(nth0, cm00, 0, lpC0, bixs, cm00, hg00)
-			Decrement(lpN2)
-			Increment(lpC2)
-		}
-
-		/*
-		 * 5. One of other threads (thr-j) owns M0
-		 * 6. Thread thr-j Release M0
-		 * 7. Do 5-6 items for all 'other' threads
-		 */
-
-		// c107 for indt-th thread
-		m210(cm00, numW, c107, indt, 1, 1, 0)
-
-		// c103 for all except indt-th thread, and c107 for indt-th thread
-		m200(cp00, numW, c103)
-		m208(cp00, indt, c107)
-
-		m33f(nth0, cm00, 0, lpC0, bixs, cp00, 0)
-
-		Decrement(lpN1)
-		Increment(lpC1)
-		}
-		Decrement(lpN0)
-		Increment(lpC0)
-	}
-}
-
-/*
- * arg0 - number of threads (total)
- */
-Method(m813, 1, Serialized)
-{
-	Name(rpt, 256) // number of repetition
-	Name(lpN0, 0) // level
-	Name(lpC0, 0)
-	Name(lpN1, 0) // index-thread
-	Name(lpC1, 0)
-	Name(indt, 0) // index of thread
-	Name(lpN2, 0) // repetition
-	Name(lpC2, 0)
-	Name(lls0, 0) // number of levels
-	Name(num2, 0)
-	Name(ixsz, 0)
-	Name(numW, 0) // number of threads in work
-
-	Store(Multiply(min1, 2), ixsz)
-
-	Name(nth0, Buffer(2) {})
-
-	// Buffer of per-thread indexes of mutexes
-	Name(ix00, Buffer(ixsz) {0,0,   0,1,   1,1,   2,1,   3,1})
-
-	Name(cm00, Buffer(min1) {})
-
-	/*
-	 * Determine num - number of threads actually in work
-	 * See input control on arg0 (before m813)
-	 *
-	 * Note: maximum for num is min1 here but it can be diminished
-	 * to reduce the time of execution.
-	 */
-	Store(m213(arg0, 3, 2), numW)
-	Subtract(numW, 1, num2) // except the control thread
-
-	/* Pack numbers of threads */
-	Store(m20d(arg0, numW), nth0)
-
-	/*
-	 * Determine lls0 - number of levels to be in work
-	 *
-	 * Note: maximum for lls0 is max0 here but it can be diminished
-	 * to reduce the time of execution.
-	 */
-	if (redm) {
-		Store(1, lls0)
-	} else {
-		Store(max0, lls0)
-	}
-
-
-	/* For all Levels of mutex one by one */
-	Store(lls0, lpN0)
-	Store(0, lpC0)
-	While (lpN0) {
-
-		/* For different indexes-threads one by one */
-		Store(num2, lpN1)
-		Store(0, lpC1)
-		While (lpN1) {
-
-		Add(lpC1, 1, indt)
-
-
-		/* Thread thr-i Acquires successfully mutex M0 of (i-1)-th index for N times */
-
-
-		// c106 for indt-th thread
-		m210(cm00, numW, c106, indt, 1, 1, 0)
-
-		/* Repetition */
-		Store(rpt, lpN2)
-		Store(0, lpC2)
-		While (lpN2) {
-			m33f(nth0,  // numbers of threads           (buffer/Integer)
-				cm00, // Commands                     (buffer/Integer)
-				0,    // Exceptional conditions flags (buffer/Integer)
-				lpC0, // Levels of mutexes            (buffer/Integer)
-				ix00, // Indexes of mutexes           (buffer/Integer)
-				cm00, // Expected completion statuses (buffer/Integer)
-				0)    // Expected hang statuses       (buffer/Integer)
-			Decrement(lpN2)
-			Increment(lpC2)
-		}
-
-		/* Thread thr-i Releases mutex M0 for N times */
-
-		// c107 for indt-th thread
-		m210(cm00, numW, c107, indt, 1, 1, 0)
-
-		/* Repetition */
-		Store(rpt, lpN2)
-		Store(0, lpC2)
-		While (lpN2) {
-			m33f(nth0, cm00, 0, lpC0, ix00, cm00, 0)
-			Decrement(lpN2)
-			Increment(lpC2)
-		}
-
-
-		Decrement(lpN1)
-		Increment(lpC1)
-		}
-		Decrement(lpN0)
-		Increment(lpC0)
-	}
-}
-
-/*
- * arg0 - number of threads (total)
- */
-Method(m814, 1, Serialized)
-{
-	Name(lpN0, 0) // level
-	Name(lpC0, 0)
-	Name(lpN1, 0) // index
-	Name(lpC1, 0)
-	Name(thr1, 0)
-	Name(thr2, 0)
-
-
-	Store(1, thr1)
-	Store(m115(arg0), thr2) // thread with the greatest index
-
-	if (LGreaterEqual(thr2, arg0)) {
-		Store("No alive threads for Test!", Debug)
-		Store("Test mf14 skipped!", Debug)
-		SKIP()
-		return
-	}
-
-	if (LLessEqual(thr2, thr1)) {
-		Store("Insufficient number of threads for Test!", Debug)
-		Store("Test mf14 skipped!", Debug)
-		SKIP()
-		return
-	}
-
-
-	/* 1. Thread thr-N Acquires all the mutexes on all levels */
-
-	/* Set up per-thread set of mutexes */
-	m334(arg0, c300, 0, max0, 0, min0)
-
-	m200(bs00, arg0, c102) // cmd: Sleep
-	m208(bs00, thr2, c106) // cmd: Acquire specified set of mutexes
-	m215(arg0)             // Reset TimeOutValue and exceptional condition flags
-	m114(arg0) // run
-
-	/* Wait for all Slave threads */
-	m103(arg0)
-
-	/* Check up the values of counters of all Mutexs */
-	Store(max0, lpN0)
-	Store(0, lpC0)
-	While (lpN0) {
-		Store(min0, lpN1)
-		Store(0, lpC1)
-		While (lpN1) {
-			m333(lpC0, lpC1, 1)
-			Decrement(lpN1)
-			Increment(lpC1)
-		}
-		Decrement(lpN0)
-		Increment(lpC0)
-	}
-
-
-	/*
-	 * 2. Thread thr-1 tries to Acquire all the same mutexes
-	 *    and gets FAIL (TimeOutValue is not 0xFFFF).
-	 */
-
-	m200(bs00, arg0, c102) // cmd: Sleep
-	m208(bs00, thr1, c106) // cmd: Acquire specified set of mutexes
-	m215(arg0)             // Reset TimeOutValue and exceptional condition flags
-	m214(arg0, arg0, TOV1) // TimeOutValue equal to 1 msec
-	m20f(arg0, EX0D, 0)    // Init the exceptional conditions flags (FAIL)
-	m114(arg0) // run
-
-	/* Wait for all Slave threads */
-	m103(arg0)
-
-
-	/* 3. Thread thr-N terminates */
-
-	m200(bs00, arg0, c102) // cmd: Sleep
-	m208(bs00, thr2, c108) // cmd: Terminate thread
-	m215(arg0)             // Reset TimeOutValue and exceptional condition flags
-	m114(arg0) // run
-
-	/* Wait for all Slave threads */
-	m103(arg0)
-
-
-	/*
-	 * 4. Thread thr-1 Acquire all those mutexes again
-	 *    and gets success (TimeOutValue is 0xFFFF)
-	 */
-
-	/* Sleep, to ensure the thread thr-N terminates */
-	m206(0, 200)
-
-	/*
-	 * Reset all counters (cnt0) and flags (fl00) corresponding
-	 * to all Mutexes which were set up by thread thr-N.
-	 */
-	m330()
-
-	m200(bs00, arg0, c102) // cmd: Sleep
-	m208(bs00, thr1, c106) // cmd: Acquire specified set of mutexes
-	m215(arg0)             // Reset TimeOutValue and exceptional condition flags
-	m114(arg0) // run
-
-	/* Wait for all Slave threads */
-	m103(arg0)
-
-
-	/* 5. Thread thr-1 Releases all mutexes */
-
-	m200(bs00, arg0, c102) // cmd: Sleep
-	m208(bs00, thr1, c107) // cmd: Release specified set of mutexes
-	m215(arg0)             // Reset TimeOutValue and exceptional condition flags
-	m114(arg0) // run
-
-	/* Wait for all Slave threads */
-	m103(arg0)
-}
-
-/*
- * arg0 - number of threads (total)
- */
-Method(m815, 1, Serialized)
-{
-	Name(lpN0, 0) // level
-	Name(lpC0, 0)
-	Name(lpN1, 0) // index
-	Name(lpC1, 0)
-	Name(thr1, 0)
-	Name(thr2, 0)
-
-
-	Store(1, thr1)
-	Store(m115(arg0), thr2) // thread with the greatest index
-
-	if (LGreaterEqual(thr2, arg0)) {
-		Store("No alive threads for Test!", Debug)
-		Store("Test mf14 skipped!", Debug)
-		SKIP()
-		return
-	}
-
-	if (LLessEqual(thr2, thr1)) {
-		Store("Insufficient number of threads for Test!", Debug)
-		Store("Test mf15 skipped!", Debug)
-		SKIP()
-		return
-	}
-
-
-	/* 1. Thread thr-N Acquires all the mutexes on all levels */
-
-	/* Set up per-thread set of mutexes */
-	m334(arg0, c300, 0, max0, 0, min0)
-
-	m200(bs00, arg0, c102) // cmd: Sleep
-	m208(bs00, thr2, c106) // cmd: Acquire specified set of mutexes
-	m215(arg0)             // Reset TimeOutValue and exceptional condition flags
-	m114(arg0) // run
-
-	/* Wait for all Slave threads */
-	m103(arg0)
-
-	/* Check up the values of counters of all Mutexs */
-	Store(max0, lpN0)
-	Store(0, lpC0)
-	While (lpN0) {
-		Store(min0, lpN1)
-		Store(0, lpC1)
-		While (lpN1) {
-			m333(lpC0, lpC1, 1)
-			Decrement(lpN1)
-			Increment(lpC1)
-		}
-		Decrement(lpN0)
-		Increment(lpC0)
-	}
-
-
-	/*
-	 * 2. Thread thr-1 tries to Acquire all the same mutexes
-	 *    and gets FAIL (TimeOutValue is not 0xFFFF).
-	 */
-
-	m200(bs00, arg0, c102) // cmd: Sleep
-	m208(bs00, thr1, c106) // cmd: Acquire specified set of mutexes
-	m215(arg0)             // Reset TimeOutValue and exceptional condition flags
-	m214(arg0, arg0, TOV1) // TimeOutValue equal to 1 msec
-	m20f(arg0, EX0D, 0)    // Init the exceptional conditions flags (FAIL)
-	m114(arg0) // run
-
-	/* Wait for all Slave threads */
-	m103(arg0)
-
-
-	/*
-	 * 3. Thread thr-1 tries to Acquire all the same mutexes
-	 * and hang (TimeOutValue is 0xFFFF).
-	 */
-
-	/*
-	 * Reset all counters (cnt0) and flags (fl00) corresponding
-	 * to all Mutexes which were set up by thread thr-N.
-	 */
-	m330()
-
-	m200(bs00, arg0, c102) // cmd: Sleep
-	m208(bs00, thr1, c106) // cmd: Acquire specified set of mutexes
-	m215(arg0)             // Reset TimeOutValue and exceptional condition flags
-	m114(arg0) // run
-
-	/* Wait for all Slave threads */
-
-	Name(cp00, Buffer(arg0) {})
-	Name(hg00, Buffer(arg0) {})
-	Name(id00, Buffer(arg0) {})
-
-	CopyObject(bs00, cp00)
-	Store(0, Index(cp00, thr1))
-	Store(c106, Index(hg00, thr1))
-	m110(arg0, cp00, hg00, id00)
-
-
-	/*
-	 * 4. Thread thr-N terminates
-	 * 5. Thread thr-1 owns all those mutexes
-	 */
-
-	m200(bs00, arg0, c102) // cmd: Sleep
-	m208(bs00, thr2, c108) // cmd: Terminate thread
-	m215(arg0)             // Reset TimeOutValue and exceptional condition flags
-	m114(arg0) // run
-
-	/* Wait for all Slave threads */
-
-	Name(cp01, Buffer(arg0) {})
-	Name(hg01, Buffer(arg0) {})
-	Name(id01, Buffer(arg0) {})
-
-	Store(c106, Index(bs00, thr1)) // thr-1 hangs on c106
-	CopyObject(bs00, cp01)
-	m110(arg0, cp01, hg01, id01)
-
-
-	/* 6. Thread thr-1 Releases all mutexes */
-
-	m200(bs00, arg0, c102) // cmd: Sleep
-	m208(bs00, thr1, c107) // cmd: Release specified set of mutexes
-	m215(arg0)             // Reset TimeOutValue and exceptional condition flags
-	m114(arg0) // run
-
-	/* Wait for all Slave threads */
-	m103(arg0)
-}
-
-/*
- * Serialized method to be executed by Slave thread
- *
- * arg0 - number of threads
- * arg1 - ID of current thread
- * arg2 - Index of current thread
- */
-Method(m8fc, 3, Serialized, 0)
-{
-	if (FLG2) {
-		se00(arg2, er10, , "Error er10")
-	}
-
-	Store(arg1, FLG2)
-
-	m201(arg2, vb03, "Execution of Serialized method started")
-	m206(arg2, sl01) // Sleep
-
-	/*
-	 * NOTE: it is a recurcive second call to m101:
-	 *
-	 *       MAIN
-	 *         mf00
-	 *           mf16
-	 *             m101
-	 *               m8fc
-	 *                 m101
-	 *
-	 * So, additional command c101 is needed for it to exit that second call to m101.
-	 */
-	m201(arg2, vb03, "Call recursively m101")
-	m101(arg0, arg1, arg2, 1)
-
-	m206(arg2, sl01) // Sleep
-
-	m201(arg2, vb03, "Execution of Serialized method completed")
-
-	if (LNotEqual(FLG2, arg1)) {
-		se00(arg2, er11, , "Error er11")
-	}
-
-	Store(0, FLG2)
-}
-
-/*
- * Non-serialized method to be executed by Slave thread,
- * use mutex for exclusive access to critical section.
- *
- * arg0 - number of threads
- * arg1 - ID of current thread
- * arg2 - Index of current thread
- */
-Method(m8fa, 3)
-{
-	Store(ma00(0, 0, 0xffff), Local0)
-	if (Local0) {
-		se00(arg2, er00, , "Error er00")
-	}
-
-	if (FLG2) {
-		se00(arg2, er10, , "Error er10")
-	}
-
-	Store(arg1, FLG2)
-
-	m201(arg2, vb03, "Execution of critical section started")
-	m206(arg2, sl01) // Sleep
-
-	/*
-	 * NOTE: it is a recurcive second call to m101:
-	 *
-	 *       MAIN
-	 *         mf00
-	 *           mf16
-	 *             m101
-	 *               m8fc
-	 *                 m101
-	 *
-	 * So, additional command c101 is needed for it to exit that second call to m101.
-	 */
-	m201(arg2, vb03, "Call recursively m101")
-	m101(arg0, arg1, arg2, 1)
-
-	m206(arg2, sl01) // Sleep
-
-	m201(arg2, vb03, "Execution of critical section completed")
-
-	if (LNotEqual(FLG2, arg1)) {
-		se00(arg2, er11, , "Error er11")
-	}
-
-	Store(0, FLG2)
-
-	if (LNot(Local0)) {
-		ma10(0)
-	}
-}
-
-/*
- * Non-serialized method to be executed by Slave thread
- *
- * non-serialized method is grabbed simultaneously by several threads
- *
- * arg0 - number of threads
- * arg1 - ID of current thread
- * arg2 - Index of current thread
- */
-Method(m8f9, 3)
-{
-	/*
-	 * Index of one of two threads participating in test is 1
-	 */
-	if (LEqual(arg2, 1)) {
-		if (FLG2) {
-			se00(arg2, er12, , "Error er12")
-		} else {
-			Store(arg2, FLG2)
-		}
-	} else {
-		if (FLG3) {
-			se00(arg2, er12, , "Error er12")
-		} else {
-			Store(arg2, FLG3)
-		}
-	}
-
-
-	m201(arg2, vb03, "Execution of non-serialized method started")
-	m206(arg2, sl01) // Sleep
-
-	/*
-	 * NOTE: it is a recurcive second call to m101:
-	 *
-	 *       MAIN
-	 *         mf00
-	 *           mf16
-	 *             m101
-	 *               m8fc
-	 *                 m101
-	 *
-	 * So, additional command c101 is needed for it to exit that second call to m101.
-	 */
-	m201(arg2, vb03, "Call recursively m101")
-	m101(arg0, arg1, arg2, 1)
-
-	m206(arg2, sl01) // Sleep
-
-	m201(arg2, vb03, "Execution of non-serialized method completed")
-
-	if (LNot(FLG2)) {
-		se00(arg2, er12, , "Error er12")
-	}
-	if (LNot(FLG3)) {
-		se00(arg2, er13, , "Error er13")
-	}
-}
-
-/*
- * arg0 - number of threads (total)
- * arg1 - main command for slave thread
- */
-Method(m8fb, 2, Serialized)
-{
-	Name(lpN0, 0) // level
-	Name(lpC0, 0)
-	Name(lpN1, 0) // index
-	Name(lpC1, 0)
-	Name(thr1, 0)
-	Name(thr2, 0)
-
-
-	Store(1, thr1)
-	Store(m115(arg0), thr2) // thread with the greatest index
-
-	if (LGreaterEqual(thr2, arg0)) {
-		Store("No alive threads for Test!", Debug)
-		Store("Test mf14 skipped!", Debug)
-		SKIP()
-		return
-	}
-
-	if (LLessEqual(thr2, thr1)) {
-		Store("Insufficient number of threads for Test!", Debug)
-		Store("Test mf15 skipped!", Debug)
-		SKIP()
-		return
-	}
-
-
-	/*
-	 * 1. Thread thr-1 invokes method MXXX (by c109/c10a) which allows
-	 *    exclusive access to the critical section.
-	 *    Then it calls recursively m101 (infinite loop of slave threads)
-	 *    so becomes identical to other threads for managing it.
-	 */
-
-	m200(bs00, arg0, c102) // cmd: Sleep
-	m208(bs00, thr1, arg1) // cmd: c109/c10a
-	m20f(arg0, 0, 0)       // Init (Reset) the exceptional conditions flags (SUCCESS)
-	m114(arg0) // run
-
-	/* Wait for all Slave threads */
-	m103(arg0)
-
-
-	/*
-	 * 2. Thread thr-2 invokes the same method MXXX (by c109/c10a) and hangs
-	 *    because method MXXX provides exclusive access and is already grabbed by thr-1.
-	 */
-
-	m200(bs00, arg0, c102) // cmd: Sleep
-	m208(bs00, thr2, arg1) // cmd: c109/c10a
-	m20f(arg0, 0, 0)       // Init (Reset) the exceptional conditions flags (SUCCESS)
-	m114(arg0) // run
-
-	/* Wait for all Slave threads */
-
-	Name(cp00, Buffer(arg0) {})
-	Name(hg00, Buffer(arg0) {})
-	Name(id00, Buffer(arg0) {})
-
-	CopyObject(bs00, cp00)
-	Store(0, Index(cp00, thr2))
-	Store(arg1, Index(hg00, thr2))
-	m110(arg0, cp00, hg00, id00)
-
-
-	/*
-	 * 3. Sleep for all
-	 */
-
-	m200(bs00, arg0, c102) // cmd: Sleep
-	m114(arg0) // run
-
-	/* Wait for all Slave threads */
-
-	Name(cp01, Buffer(arg0) {})
-	Name(hg01, Buffer(arg0) {})
-	Name(id01, Buffer(arg0) {})
-
-	CopyObject(bs00, cp01)
-	Store(0, Index(cp01, thr2))
-	Store(arg1, Index(hg01, thr2))
-	m110(arg0, cp01, hg01, id01)
-
-
-	/*
-	 * 4. Thread thr-1 is directed to exit recursive (second) call to m101
-	 *    (infinite loop of slave threads).
-	 */
-
-	m200(bs00, arg0, c102) // cmd: Sleep
-	m208(bs00, thr1, c101) // cmd: Exit the infinite loop
-	m114(arg0) // run
-
-	/* Wait for all Slave threads */
-
-	Name(cp02, Buffer(arg0) {})
-	Name(hg02, Buffer(arg0) {})
-	Name(id02, Buffer(arg0) {})
-
-	CopyObject(bs00, cp02)
-	Store(0, Index(cp02, thr2))
-	Store(arg1, Index(hg02, thr2))
-	m110(arg0, cp02, hg02, id02)
-
-
-	/*
-	 * 5. Thread thr-2 is directed to exit recursive (second) call to m101
-	 *    (infinite loop of slave threads).
-	 */
-
-	m200(bs00, arg0, c102) // cmd: Sleep
-	m208(bs00, thr2, c101) // cmd: Exit the infinite loop
-	m114(arg0) // run
-
-	/* Wait for all Slave threads */
-	m103(arg0)
-}
-
-/*
- * Use Serialized method for exclusive access to critical section
- *
- * arg0 - number of threads (total)
- */
-Method(m816, 1)
-{
-	m8fb(arg0, c109)
-}
-
-/*
- * Use Mutex for exclusive access to critical section, invoke non-Serialized method
- *
- * arg0 - number of threads (total)
- */
-Method(m817, 1)
-{
-	m8fb(arg0, c10a)
-}
-
-/*
- * Non-serialized method is grabbed simultaneously
- *
- * arg0 - number of threads (total)
- */
-Method(m818, 1, Serialized)
-{
-	Name(lpN0, 0) // level
-	Name(lpC0, 0)
-	Name(lpN1, 0) // index
-	Name(lpC1, 0)
-	Name(thr1, 0)
-	Name(thr2, 0)
-
-
-	Store(0, FLG2)
-	Store(0, FLG3)
-
-	Store(1, thr1)
-	Store(m115(arg0), thr2) // thread with the greatest index
-
-	if (LGreaterEqual(thr2, arg0)) {
-		Store("No alive threads for Test!", Debug)
-		Store("Test mf14 skipped!", Debug)
-		SKIP()
-		return
-	}
-
-	if (LLessEqual(thr2, thr1)) {
-		Store("Insufficient number of threads for Test!", Debug)
-		Store("Test mf15 skipped!", Debug)
-		SKIP()
-		return
-	}
-
-
-	/*
-	 * 1. Thread thr-1 invokes non-Serialized method MXXX.
-	 *    Then it calls recursively m101 (infinite loop of slave threads)
-	 *    so becomes identical to other threads for managing it.
-	 */
-
-	m200(bs00, arg0, c102) // cmd: Sleep
-	m208(bs00, thr1, c10b) // cmd: Invoke non-Serialized method
-	m20f(arg0, 0, 0)       // Init (Reset) the exceptional conditions flags (SUCCESS)
-	m114(arg0) // run
-
-	/* Wait for all Slave threads */
-	m103(arg0)
-
-
-	/*
-	 * 2. Sleep for all
-	 */
-
-	m200(bs00, arg0, c102) // cmd: Sleep
-	m20f(arg0, 0, 0)       // Init (Reset) the exceptional conditions flags (SUCCESS)
-	m114(arg0) // run
-
-	/* Wait for all Slave threads */
-	m103(arg0)
-
-
-	/*
-	 * 3. Thread thr-N invokes non-Serialized method MXXX.
-	 *    Then it calls recursively m101 (infinite loop of slave threads)
-	 *    so becomes identical to other threads for managing it.
-	 */
-
-	m200(bs00, arg0, c102) // cmd: Sleep
-	m208(bs00, thr2, c10b) // cmd: Invoke non-Serialized method
-	m20f(arg0, 0, 0)       // Init (Reset) the exceptional conditions flags (SUCCESS)
-	m114(arg0) // run
-
-	/* Wait for all Slave threads */
-	m103(arg0)
-
-
-	/*
-	 * 4. Sleep for all
-	 */
-
-	m200(bs00, arg0, c102) // cmd: Sleep
-	m20f(arg0, 0, 0)       // Init (Reset) the exceptional conditions flags (SUCCESS)
-	m114(arg0) // run
-
-	/* Wait for all Slave threads */
-	m103(arg0)
-
-
-	/*
-	 * 5. Both threads thr-1 and thr-N are directed to exit recursive (second) calls to m101
-	 *    (infinite loops of slave threads).
-	 */
-
-	m200(bs00, arg0, c102) // cmd: Sleep
-	m208(bs00, thr1, c101) // cmd: Exit the infinite loop
-	m208(bs00, thr2, c101) // cmd: Exit the infinite loop
-	m20f(arg0, 0, 0)       // Init (Reset) the exceptional conditions flags (SUCCESS)
-	m114(arg0) // run
-
-	/* Wait for all Slave threads */
-	m103(arg0)
-
-	if (LNotequal(FLG2, thr1)) {
-		err(arg0, z152, __LINE__, 0, 0, FLG2, thr1)
-	}
-	if (LNotequal(FLG3, thr2)) {
-		err(arg0, z152, __LINE__, 0, 0, FLG3, thr2)
-	}
-}
+    /*
+     * Some or all of this work - Copyright (c) 2006 - 2017, Intel Corp.
+     * All rights reserved.
+     *
+     * Redistribution and use in source and binary forms, with or without modification,
+     * are permitted provided that the following conditions are met:
+     *
+     * Redistributions of source code must retain the above copyright notice,
+     * this list of conditions and the following disclaimer.
+     * Redistributions in binary form must reproduce the above copyright notice,
+     * this list of conditions and the following disclaimer in the documentation
+     * and/or other materials provided with the distribution.
+     * Neither the name of Intel Corporation nor the names of its contributors
+     * may be used to endorse or promote products derived from this software
+     * without specific prior written permission.
+     *
+     * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS"
+     * AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE
+     * IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE
+     * ARE DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT OWNER OR CONTRIBUTORS BE
+     * LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL
+     * DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES;
+     * LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY
+     * THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING
+     * NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE,
+     * EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
+     */
+    /*
+     * The test strategies to be managed and controled by the
+     * Control Thread and fulfilled by the Slave Threads (Slaves).
+     */
+    Name (Z152, 0x98)
+    /*
+     * Acquire/Sleep/Release
+     *
+     * All slaves:
+     * - Acquire the same mutex
+     * - increment global counter
+     * - set up another global to its Index
+     * - sleep for the specified period
+     * - check that the global contains just its Index
+     * - Release mutex
+     * Control thread:
+     * - check after all threads complete that counter is correct
+     *
+     * arg0 - number of threads
+     * arg1 - Level of mutex
+     * arg2 - Index of mutex
+     * arg3 - Number of mutexes of the same level
+     */
+    Method (M801, 4, Serialized)
+    {
+        Name (LPN0, 0x00)
+        Name (LPC0, 0x00)
+        Name (NUMW, 0x00) /* number of threads in work */
+        /* Number of threads to be actually in work */
+
+        NUMW = M213 (Arg0, 0x05, 0x04)
+        /* Set up per-thread set of mutexes */
+
+        M334 (NUMW, C300, Arg1, 0x00, Arg2, Arg3)
+        /* c103 for all first num threads */
+
+        M210 (BS00, Arg0, C103, 0x00, NUMW, 0x01, C102) /* cmd: Acquire/Sleep/Release */
+        M114 (Arg0) /* run */
+        /* Wait for all Slave threads */
+
+        M103 (Arg0)
+        /* Check up the values of counters of all Mutexes */
+        /* lpC0 - Index of mutex */
+        Local0 = (NUMW - 0x01) /* exclude the Control thread */
+        LPN0 = Arg3
+        LPC0 = Arg2
+        While (LPN0)
+        {
+            M333 (Arg1, LPC0, Local0)
+            LPN0--
+            LPC0++
+        }
+    }
+
+    /*
+     * <Acquire/Sleep>(0-15 levels)/Release(15-0 levels)
+     *
+     * arg0 - number of threads
+     * arg1 - Index of mutex
+     * arg2 - Number of mutexes of the same level
+     */
+    Method (M802, 3, Serialized)
+    {
+        Name (NUMW, 0x00) /* number of threads in work */
+        Name (LPN0, 0x00)
+        Name (LPC0, 0x00)
+        Name (LPN1, 0x00)
+        Name (LPC1, 0x00)
+        /* Number of threads to be actually in work */
+
+        NUMW = M213 (Arg0, 0x05, 0x05)
+        /* Set up per-thread set of mutexes */
+
+        M334 (NUMW, C300, 0x00, 0x00, Arg1, Arg2)
+        /* c104 for all first num threads */
+
+        M210 (BS00, Arg0, C104, 0x00, NUMW, 0x01, C102) /* cmd: <Acquire/Sleep>(0-15 levels)/Release(15-0 levels) */
+        M114 (Arg0) /* run */
+        /* Wait for all Slave threads */
+
+        M103 (Arg0)
+        /* Check up the values of counters of all Mutexs */
+
+        Local0 = (NUMW - 0x01)
+        LPN0 = MAX0 /* \MAX0 */
+        LPC0 = 0x00
+        While (LPN0)
+        {
+            /* lpC0 - Level */
+
+            LPN1 = Arg2
+            LPC1 = Arg1
+            While (LPN1)
+            {
+                /* lpC1 - Index of mutex */
+
+                M333 (LPC0, LPC1, Local0)
+                LPN1--
+                LPC1++
+            }
+
+            LPN0--
+            LPC0++
+        }
+    }
+
+    /*
+     * Example 0
+     *
+     * arg0 - number of threads
+     * arg1 - Index of mutex
+     * arg2 - Number of mutexes of the same level
+     */
+    Method (M803, 1, Serialized)
+    {
+        Name (NUMW, 0x00) /* number of threads in work */
+        Name (LPN0, 0x00)
+        Name (LPC0, 0x00)
+        /* Number of threads to be actually in work */
+
+        NUMW = M213 (Arg0, 0x06, 0x06)
+        /* c105 for all first num threads */
+
+        M210 (BS00, Arg0, C105, 0x00, NUMW, 0x01, C102) /* cmd: Example 0 */
+        M114 (Arg0) /* run */
+        /* Wait for all Slave threads */
+
+        M103 (Arg0)
+    }
+
+    /*
+     * Manage the test m804
+     *
+     * arg0 - number of threads
+     * arg1 - 0        - thread_2 Releases than thread_1 Releases
+     *        non-zero - thread_1 Releases than thread_2 Releases
+     * Thread_1:
+     * arg2 - Level of mutex (initial)
+     * arg3 - Number of levels of mutexes
+     * Thread_2:
+     * arg4 - Level of mutex (initial)
+     * arg5 - Number of levels of mutexes
+     */
+    Method (M8FF, 6, Serialized)
+    {
+        Name (LPN0, 0x00)
+        Name (LPC0, 0x00)
+        Name (THR, 0x00)
+        /* ACQUIRING */
+        /* === Thread 1 === */
+        THR = 0x01
+        /* Set up per-thread set of mutexes */
+
+        M334 (Arg0, C300, Arg2, Arg3, 0x00, 0x01)
+        M200 (BS00, Arg0, C102) /* cmd: Sleep */
+        M208 (BS00, THR, C106)  /* cmd: Acquire specified set of mutexes */
+        M215 (Arg0)             /* Reset TimeOutValue and exceptional condition flags */
+        M114 (Arg0)
+        /* Wait for all Slave threads */
+
+        M103 (Arg0)
+        /* Check up the values of counters of all Mutexs */
+
+        LPN0 = Arg3
+        LPC0 = Arg2
+        While (LPN0)
+        {
+            M333 (LPC0, 0x00, 0x01)
+            LPN0--
+            LPC0++
+        }
+
+        /* === Thread 2 === */
+
+        THR = 0x02
+        /* Set up per-thread set of mutexes */
+
+        M334 (Arg0, C300, Arg4, Arg5, 0x01, 0x01)
+        M200 (BS00, Arg0, C102) /* cmd: Sleep */
+        M208 (BS00, THR, C106)  /* cmd: Acquire specified set of mutexes */
+        M215 (Arg0)             /* Reset TimeOutValue and exceptional condition flags */
+        M114 (Arg0)
+        /* Wait for all Slave threads */
+
+        M103 (Arg0)
+        /* Check up the values of counters of all Mutexs */
+
+        LPN0 = Arg5
+        LPC0 = Arg4
+        While (LPN0)
+        {
+            M333 (LPC0, 0x01, 0x01)
+            LPN0--
+            LPC0++
+        }
+
+        /* RELEASING */
+
+        If (!Arg1)
+        {
+            /* === Thread 2 === */
+
+            THR = 0x02
+            /* Set up per-thread set of mutexes */
+
+            M334 (Arg0, C300, Arg4, Arg5, 0x01, 0x01)
+            M200 (BS00, Arg0, C102) /* cmd: Sleep */
+            M208 (BS00, THR, C107)  /* cmd: Release specified set of mutexes */
+            M114 (Arg0)
+            /* Wait for all Slave threads */
+
+            M103 (Arg0)
+        }
+
+        /* === Thread 1 === */
+
+        THR = 0x01
+        /* Set up per-thread set of mutexes */
+
+        M334 (Arg0, C300, Arg2, Arg3, 0x00, 0x01)
+        M200 (BS00, Arg0, C102) /* cmd: Sleep */
+        M208 (BS00, THR, C107)  /* cmd: Release specified set of mutexes */
+        M114 (Arg0)
+        /* Wait for all Slave threads */
+
+        M103 (Arg0)
+        If (Arg1)
+        {
+            /* === Thread 2 === */
+
+            THR = 0x02
+            /* Set up per-thread set of mutexes */
+
+            M334 (Arg0, C300, Arg4, Arg5, 0x01, 0x01)
+            M200 (BS00, Arg0, C102) /* cmd: Sleep */
+            M208 (BS00, THR, C107)  /* cmd: Release specified set of mutexes */
+            M114 (Arg0)
+            /* Wait for all Slave threads */
+
+            M103 (Arg0)
+        }
+    }
+
+    /*
+     * arg0 - number of threads
+     */
+    Method (M804, 1, NotSerialized)
+    {
+        /* I */
+
+        M8FF (Arg0, 0x00, 0x00, MAX0, 0x00, MAX0)
+        /* Reset all counters (cnt0) and flags (fl00) corresponding to all Mutexes */
+
+        M330 ()
+        /* II */
+
+        M8FF (Arg0, 0x01, 0x00, MAX0, 0x00, MAX0)
+        /* Reset all counters (cnt0) and flags (fl00) corresponding to all Mutexes */
+
+        M330 ()
+        /* III */
+
+        M8FF (Arg0, 0x01, 0x07, 0x01, 0x00, MAX0)
+    }
+
+    /*
+     * arg0 - number of threads
+     */
+    Method (M805, 1, Serialized)
+    {
+        Name (LPN0, 0x00)
+        Name (LPC0, 0x00)
+        Name (THR, 0x00)
+        Name (EE01, Buffer (Arg0)
+        {
+             0x00, 0x3F, 0x00                                 // .?.
+        }) /* AE_AML_NOT_OWNER */
+        Name (EE02, Buffer (Arg0)
+        {
+             0x00, 0x00, 0x3F                                 // ..?
+        }) /* AE_AML_NOT_OWNER */
+        /* 1. Thread_1 owns its set of all-level mutexes and falls into sleeping */
+
+        THR = 0x01
+        /* Set up per-thread set of mutexes */
+
+        M334 (Arg0, C300, 0x00, MAX0, 0x00, 0x01)
+        M200 (BS00, Arg0, C102) /* cmd: Sleep */
+        M208 (BS00, THR, C106)  /* cmd: Acquire specified set of mutexes */
+        M215 (Arg0)             /* Reset TimeOutValue and exceptional condition flags */
+        M114 (Arg0)
+        /* Wait for all Slave threads */
+
+        M103 (Arg0)
+        /* Check up the values of counters of all Mutexs */
+
+        LPN0 = MAX0 /* \MAX0 */
+        LPC0 = 0x00
+        While (LPN0)
+        {
+            M333 (LPC0, 0x00, 0x01)
+            LPN0--
+            LPC0++
+        }
+
+        /* 2,3. Thread_2 tries to Release all those mutexes owned by Thread_1 */
+
+        THR = 0x02
+        /* Set up exception expectation on Release operation */
+
+        M215 (Arg0)             /* Reset TimeOutValue and exceptional condition flags */
+        M20F (Arg0, EE02, 0x00)    /* Init the exceptional conditions flags (AE_AML_NOT_OWNER) */
+        /* Set up per-thread set of mutexes */
+
+        M334 (Arg0, C300, 0x00, MAX0, 0x00, 0x01)
+        M200 (BS00, Arg0, C102) /* cmd: Sleep */
+        M208 (BS00, THR, C107)  /* cmd: Release specified set of mutexes */
+        M114 (Arg0)
+        /* Wait for all Slave threads */
+
+        M103 (Arg0)
+        /* Reset exception expectation */
+
+        M336 (Arg0, 0x01)
+        /* 4. Thread_2 owns its set of all-level mutexes (not intersecting with Thread_1) */
+
+        THR = 0x02
+        /* Set up per-thread set of mutexes */
+
+        M334 (Arg0, C300, 0x00, MAX0, 0x01, 0x01)
+        M200 (BS00, Arg0, C102) /* cmd: Sleep */
+        M208 (BS00, THR, C106)  /* cmd: Acquire specified set of mutexes */
+        M215 (Arg0)             /* Reset TimeOutValue and exceptional condition flags */
+        M114 (Arg0)
+        /* Wait for all Slave threads */
+
+        M103 (Arg0)
+        /* Check up the values of counters of all Mutexs */
+
+        LPN0 = MAX0 /* \MAX0 */
+        LPC0 = 0x00
+        While (LPN0)
+        {
+            M333 (LPC0, 0x00, 0x01)
+            LPN0--
+            LPC0++
+        }
+
+        /* 5,6. Thread_2 tries again to Release mutexes owned by Thread_1 */
+
+        THR = 0x02
+        /* Set up exception expectation on Release operation */
+
+        M215 (Arg0)             /* Reset TimeOutValue and exceptional condition flags */
+        M20F (Arg0, EE02, 0x00)    /* Init the exceptional conditions flags (AE_AML_NOT_OWNER) */
+        /* Set up per-thread set of mutexes */
+
+        M334 (Arg0, C300, 0x00, MAX0, 0x00, 0x01)
+        M200 (BS00, Arg0, C102) /* cmd: Sleep */
+        M208 (BS00, THR, C107)  /* cmd: Release specified set of mutexes */
+        M114 (Arg0)
+        /* Wait for all Slave threads */
+
+        M103 (Arg0)
+        /* Reset exception expectation */
+
+        M336 (Arg0, 0x01)
+        /* 7,8. Thread_1 tries to Release mutexes owned by Thread_2 */
+
+        THR = 0x01
+        /* Set up exception expectation on Release operation */
+
+        M215 (Arg0)             /* Reset TimeOutValue and exceptional condition flags */
+        M20F (Arg0, EE01, 0x00)    /* Init the exceptional conditions flags (AE_AML_NOT_OWNER) */
+        /* Set up per-thread set of mutexes */
+
+        M334 (Arg0, C300, 0x00, MAX0, 0x01, 0x01)
+        M200 (BS00, Arg0, C102) /* cmd: Sleep */
+        M208 (BS00, THR, C107)  /* cmd: Release specified set of mutexes */
+        M114 (Arg0)
+        /* Wait for all Slave threads */
+
+        M103 (Arg0)
+        /* Reset exception expectation */
+
+        M336 (Arg0, 0x01)
+        /* 9. Thread_1 Releases its mutexes */
+
+        THR = 0x01
+        /* Set up per-thread set of mutexes */
+
+        M334 (Arg0, C300, 0x00, MAX0, 0x00, 0x01)
+        M200 (BS00, Arg0, C102) /* cmd: Sleep */
+        M208 (BS00, THR, C107)  /* cmd: Release specified set of mutexes */
+        M215 (Arg0)             /* Reset TimeOutValue and exceptional condition flags */
+        M114 (Arg0)
+        /* Wait for all Slave threads */
+
+        M103 (Arg0)
+        /* 10. Thread_2 Releases its mutexes */
+
+        THR = 0x02
+        /* Set up per-thread set of mutexes */
+
+        M334 (Arg0, C300, 0x00, MAX0, 0x01, 0x01)
+        M200 (BS00, Arg0, C102) /* cmd: Sleep */
+        M208 (BS00, THR, C107)  /* cmd: Release specified set of mutexes */
+        M114 (Arg0)
+        /* Wait for all Slave threads */
+
+        M103 (Arg0)
+    }
+
+    /*
+     * arg0 - number of threads (total)
+     */
+    Method (M806, 1, Serialized)
+    {
+        Name (NUMW, 0x00) /* number of threads in work */
+        Name (LPN0, 0x00)
+        Name (LPC0, 0x00)
+        Name (NTH0, Buffer (0x02){})
+        Name (IX00, Buffer ((MIN1 * 0x02))
+        {
+            /* 0000 */  0x00, 0x00, 0x00, 0x01, 0x01, 0x01, 0x02, 0x01,  // ........
+            /* 0008 */  0x03, 0x01                                       // ..
+        })
+        /*
+         * arg0-arg5 - same as m33f
+         * arg6 - index of thread according to the test scenario
+         */
+        Method (M000, 7, Serialized)
+        {
+            Name (NTH1, 0x00) /* actually in work */
+            NTH1 = DerefOf (Arg0 [0x01])
+            If ((Arg6 < NTH1))
+            {
+                M33F (Arg0, Arg1, Arg2, Arg3, Arg4, Arg5, 0x00)
+            }
+        }
+
+        /* Number of threads to be actually in work */
+
+        NUMW = M213 (Arg0, MIN1, 0x04)
+        /* Pack numbers of threads */
+
+        NTH0 = M20D (Arg0, NUMW)
+        /* Data */
+
+        Name (B001, Buffer ((MIN1 * 0x02))
+        {
+            /* 0000 */  0x00, 0x00, 0x00, 0x00, 0x00, 0x01, 0x00, 0x01,  // ........
+            /* 0008 */  0x00, 0x01                                       // ..
+        })
+        Name (B002, Buffer ((MIN1 * 0x02))
+        {
+            /* 0000 */  0x00, 0x00, 0x01, 0x01, 0x00, 0x00, 0x01, 0x01,  // ........
+            /* 0008 */  0x01, 0x01                                       // ..
+        })
+        Name (B003, Buffer ((MIN1 * 0x02))
+        {
+            /* 0000 */  0x00, 0x00, 0x02, 0x01, 0x02, 0x01, 0x00, 0x00,  // ........
+            /* 0008 */  0x02, 0x01                                       // ..
+        })
+        Name (B004, Buffer ((MIN1 * 0x02))
+        {
+            /* 0000 */  0x00, 0x00, 0x03, 0x01, 0x03, 0x01, 0x03, 0x01,  // ........
+            /* 0008 */  0x00, 0x00                                       // ..
+        })
+        Name (CM01, Package (MIN1)
+        {
+            0x00, 
+            C107, 
+            0x00, 
+            0x00, 
+            0x00
+        })
+        Name (EE01, Buffer (MIN1)
+        {
+             0x00, 0x3F, 0x00, 0x00, 0x00                     // .?...
+        }) /* AE_AML_NOT_OWNER */
+        Name (CM02, Package (MIN1)
+        {
+            0x00, 
+            0x00, 
+            C107, 
+            0x00, 
+            0x00
+        })
+        Name (EE02, Buffer (MIN1)
+        {
+             0x00, 0x00, 0x3F, 0x00, 0x00                     // ..?..
+        }) /* AE_AML_NOT_OWNER */
+        Name (CM03, Package (MIN1)
+        {
+            0x00, 
+            0x00, 
+            0x00, 
+            C107, 
+            0x00
+        })
+        Name (EE03, Buffer (MIN1)
+        {
+             0x00, 0x00, 0x00, 0x3F, 0x00                     // ...?.
+        }) /* AE_AML_NOT_OWNER */
+        Name (CM04, Package (MIN1)
+        {
+            0x00, 
+            0x00, 
+            0x00, 
+            0x00, 
+            C107
+        })
+        Name (EE04, Buffer (MIN1)
+        {
+             0x00, 0x00, 0x00, 0x00, 0x3F                     // ....?
+        }) /* AE_AML_NOT_OWNER */
+        /* Acquire */
+
+        LPN0 = MAX0 /* \MAX0 */
+        LPC0 = 0x00
+        While (LPN0)
+        {
+            /* All threads Acquire their mutexes */
+
+            M33F (NTH0, C106, 0x00, LPC0, IX00, C106, 0x00)    /* Expected hang statuses       (buffer/Integer) */
+            /* 2. Threads thr-2, thr-3, thr-4 attempt to Release mutex of thr-1 */
+
+            If ((NUMW > 0x01))
+            {
+                M000 (NTH0, CM02, EE02, LPC0, B001, CM02, 0x02)
+                M000 (NTH0, CM03, EE03, LPC0, B001, CM03, 0x03)
+                M000 (NTH0, CM04, EE04, LPC0, B001, CM04, 0x04)
+            }
+
+            /* 3. Threads thr-1, thr-3, thr-4 attempt to Release mutex of thr-2 */
+
+            If ((NUMW > 0x02))
+            {
+                M000 (NTH0, CM01, EE01, LPC0, B002, CM01, 0x01)
+                M000 (NTH0, CM03, EE03, LPC0, B002, CM03, 0x03)
+                M000 (NTH0, CM04, EE04, LPC0, B002, CM04, 0x04)
+            }
+
+            /* 4. Threads thr-1, thr-2, thr-4 attempt to Release mutex of thr-3 */
+
+            If ((NUMW > 0x03))
+            {
+                M000 (NTH0, CM01, EE01, LPC0, B003, CM01, 0x01)
+                M000 (NTH0, CM02, EE02, LPC0, B003, CM02, 0x02)
+                M000 (NTH0, CM04, EE04, LPC0, B003, CM04, 0x04)
+            }
+
+            /* 5. Threads thr-1, thr-2, thr-3 attempt to Release mutex of thr-4 */
+
+            If ((NUMW > 0x04))
+            {
+                M000 (NTH0, CM01, EE01, LPC0, B004, CM01, 0x01)
+                M000 (NTH0, CM02, EE02, LPC0, B004, CM02, 0x02)
+                M000 (NTH0, CM03, EE03, LPC0, B004, CM03, 0x03)
+            }
+
+            /* All threads Release their mutexes */
+
+            M33F (NTH0, C107, 0x00, LPC0, IX00, C107, 0x00)    /* Expected hang statuses       (buffer/Integer) */
+            LPN0--
+            LPC0++
+        }
+    }
+
+    /*
+     * arg0 - number of threads
+     */
+    Method (M807, 1, Serialized)
+    {
+        Name (LPN0, 0x00)
+        Name (LPC0, 0x00)
+        Name (LPN1, 0x00)
+        Name (LPC1, 0x00)
+        Name (IX00, 0x00)
+        Name (NUMW, 0x00) /* number of threads in work */
+        /* Number of threads to be actually in work */
+
+        NUMW = M213 (Arg0, MIN1, 0x03)
+        /* From 15 to 0 */
+
+        LPN0 = MAX0 /* \MAX0 */
+        IX00 = MAX0 /* \MAX0 */
+        IX00--
+        LPC0 = IX00 /* \M807.IX00 */
+        While (LPN0)
+        {
+            If ((LPC0 != 0x00))
+            {
+                /*
+                 * 3. Acquire mutexes from 0 to (N-1) levels:
+                 *	- Set up per-thread set of mutexes
+                 *	- Acquire specified set of mutexes
+                 *	- Wait for all Slave threads
+                 *	- Check up the values of counters of all Mutexs
+                 */
+                M337 (Arg0, NUMW, 0x00, LPC0, 0x01, 0x00)
+                /*
+                 * 4. Release mutexes from 0 to (N-1) levels:
+                 *	- Set up per-thread set of mutexes
+                 *	- Release specified set of mutexes
+                 *	- Wait for all Slave threads
+                 */
+                M338 (Arg0, NUMW, 0x00, LPC0)
+                /* Reset all counters (cnt0) and flags (fl00) corresponding to all Mutexes */
+
+                M330 ()
+            }
+
+            /* 5. Acquire mutex of level N */
+
+            M337 (Arg0, NUMW, LPC0, 0x01, 0x01, 0x00)
+            If ((LPC0 != 0x00))
+            {
+                /*
+                 * 6. Attempt to Acquire mutexes from 0 to (N-1) levels
+                 * 7. Exception is expected
+                 */
+                M337 (Arg0, NUMW, 0x00, LPC0, 0x00, 0x40) /* With exceptional conditions flags (AE_AML_MUTEX_ORDER) */
+                /* Reset exception expectation */
+
+                M336 (Arg0, 0x01)
+            }
+
+            If ((LPC0 != IX00))
+            {
+                /*
+                 * 8. Acquire mutexes from (N+1) to 15 levels
+                 *	- Set up per-thread set of mutexes
+                 *	- Acquire specified set of mutexes
+                 *	- Wait for all Slave threads
+                 *	- Check up the values of counters of all Mutexs
+                 */
+                Local0 = (LPC0 + 0x01)
+                Local1 = (IX00 - LPC0) /* \M807.LPC0 */
+                M337 (Arg0, NUMW, Local0, Local1, 0x01, 0x00)
+            }
+
+            /*
+             * 9. Release all mutexes (starting with lpC0 up to 15 level):
+             *	- Set up per-thread set of mutexes
+             *	- Release specified set of mutexes
+             *	- Wait for all Slave threads
+             */
+            Local1 = (MAX0 - LPC0) /* \M807.LPC0 */
+            M338 (Arg0, NUMW, LPC0, Local1)
+            /* Reset all counters (cnt0) and flags (fl00) corresponding to all Mutexes */
+
+            M330 ()
+            If ((LPC0 != 0x00))
+            {
+                /*
+                 * 10. Acquire mutexes from 0 to (N-1) levels:
+                 *	- Set up per-thread set of mutexes
+                 *	- Acquire specified set of mutexes
+                 *	- Wait for all Slave threads
+                 *	- Check up the values of counters of all Mutexs
+                 */
+                M337 (Arg0, NUMW, 0x00, LPC0, 0x01, 0x00)
+                /*
+                 * 11. Release mutexes (from 0 to (N-1) levels):
+                 *	- Set up per-thread set of mutexes
+                 *	- Release specified set of mutexes
+                 *	- Wait for all Slave threads
+                 */
+                M338 (Arg0, NUMW, 0x00, LPC0)
+                /* Reset all counters (cnt0) and flags (fl00) corresponding to all Mutexes */
+
+                M330 ()
+            }
+
+            LPN0--
+            LPC0--
+        }
+    }
+
+    /*
+     * arg0 - number of threads (total)
+     */
+    Method (M808, 1, Serialized)
+    {
+        Name (PR, 0x00)
+        Name (L000, 0x00)
+        Name (NTH0, Buffer (0x02){})
+        /*
+         * Per-thread indexes of mutexes
+         *
+         * Ctl-thr,   thr-1, thr-2, thr-3, thr-4
+         */
+        Name (B000, Buffer ((MIN1 * 0x02))
+        {
+            /* 0000 */  0x00, 0x00, 0x00, 0x01, 0x01, 0x01, 0x02, 0x01,  // ........
+            /* 0008 */  0x03, 0x01                                       // ..
+        })
+        Name (B001, Buffer ((MIN1 * 0x02))
+        {
+            /* 0000 */  0x00, 0x00, 0x01, 0x01, 0x02, 0x01, 0x03, 0x01,  // ........
+            /* 0008 */  0x00, 0x01                                       // ..
+        })
+        Name (B002, Buffer ((MIN1 * 0x02))
+        {
+            /* 0000 */  0x00, 0x00, 0x02, 0x01, 0x03, 0x01, 0x00, 0x01,  // ........
+            /* 0008 */  0x01, 0x01                                       // ..
+        })
+        Name (B003, Buffer ((MIN1 * 0x02))
+        {
+            /* 0000 */  0x00, 0x00, 0x03, 0x01, 0x00, 0x01, 0x01, 0x01,  // ........
+            /* 0008 */  0x02, 0x01                                       // ..
+        })
+        /* Pack numbers of threads */
+
+        NTH0 = M20D (Arg0, MIN1)
+        /* x-0-123 */
+        /*
+         * Acquire all x-0-123 and check owning
+         *
+         * Threads thr-1, thr-2, thr-3, thr-4
+         * acquire respectively all x-0-123 mutexes
+         * and check owning of all those mutexes.
+         */
+        M33F (NTH0, C106, 0x00, L000, B000, C106, 0x00)    /* Expected hang statuses       (buffer/Integer) */
+        If (PR)
+        {
+            M20B (0x00, "Acquire all x-0-123")
+        }
+
+        /* At this point threads have Acquired: x-0-123 */
+
+        M8FE (NTH0, L000, B000, B001, PR)
+        M8FE (NTH0, L000, B001, B002, PR)
+        M8FE (NTH0, L000, B002, B003, PR)
+        M8FE (NTH0, L000, B003, B000, PR)
+        /* At this point threads have Acquired: x-0-123 */
+        /* Release mutexes on all threads */
+        Name (CM00, Package (MIN1)
+        {
+            0x00, 
+            C107, 
+            C107, 
+            C107, 
+            C107
+        })
+        Name (CP00, Package (MIN1)
+        {
+            0x00, 
+            C107, 
+            C107, 
+            C107, 
+            C107
+        })
+        M33F (NTH0, CM00, 0x00, L000, B000, CP00, 0x00)    /* Expected hang statuses       (buffer/Integer) */
+        If (PR)
+        {
+            M20B (0x00, "Release all")
+        }
+    }
+
+    /*
+     * Manage the test m808
+     *
+     * agr0 - numbers of threads (buffer/Integer)
+     * arg1 - levels of mutexes  (buffer/Integer)
+     * arg2 - indexes of mutexes (buffer/Integer) - start point
+     * arg3 - indexes of mutexes (buffer/Integer) - target point
+     * arg4 - printing flag
+     */
+    Method (M8FE, 5, Serialized)
+    {
+        /*
+         * Comments are for one particular transfer step from
+         * x-0-123 to x-1-230, other steps are identical.
+         */
+        /* At this point threads have Acquired: x-0-123 */
+        /* x-1-230 */
+        /* Acquire x-x-230 and check that all -230- hang */
+        Name (CM00, Package (MIN1)
+        {
+            0x00, 
+            0x00, 
+            C106, 
+            C106, 
+            C106
+        })
+        M33F (Arg0, CM00, 0x00, Arg1, Arg3, 0x00, CM00) /* Expected hang statuses       (buffer/Integer) */
+        If (Arg4)
+        {
+            M20B (0x00, "Acquire x-x-230")
+        }
+
+        /* Release x-0-xxx, this frees mux for thr-4 */
+
+        Name (CM01, Package (MIN1)
+        {
+            0x00, 
+            C107, 
+            0x00, 
+            0x00, 
+            0x00
+        })
+        Name (CP01, Package (MIN1)
+        {
+            0x00, 
+            C107, 
+            0x00, 
+            0x00, 
+            C106
+        })
+        Name (HG01, Package (MIN1)
+        {
+            0x00, 
+            0x00, 
+            C106, 
+            C106, 
+            0x00
+        })
+        M33F (Arg0, CM01, 0x00, Arg1, Arg2, CP01, HG01) /* Expected hang statuses       (buffer/Integer) */
+        If (Arg4)
+        {
+            M20B (0x00, "Release x-0-xxx")
+        }
+
+        /* Acquire x-1-xxx and check that it hangs too */
+
+        Name (CM02, Package (MIN1)
+        {
+            0x00, 
+            C106, 
+            0x00, 
+            0x00, 
+            0x00
+        })
+        Name (HG02, Package (MIN1)
+        {
+            0x00, 
+            C106, 
+            C106, 
+            C106, 
+            0x00
+        })
+        M33F (Arg0, CM02, 0x00, Arg1, Arg3, 0x00, HG02) /* Expected hang statuses       (buffer/Integer) */
+        If (Arg4)
+        {
+            M20B (0x00, "Acquire x-1-xxx")
+        }
+
+        /* Release x-x-xx3, this frees mux for thr-3 */
+
+        Name (CM03, Package (MIN1)
+        {
+            0x00, 
+            0x00, 
+            0x00, 
+            0x00, 
+            C107
+        })
+        Name (CP03, Package (MIN1)
+        {
+            0x00, 
+            0x00, 
+            0x00, 
+            C106, 
+            C107
+        })
+        Name (HG03, Package (MIN1)
+        {
+            0x00, 
+            C106, 
+            C106, 
+            0x00, 
+            0x00
+        })
+        M33F (Arg0, CM03, 0x00, Arg1, Arg2, CP03, HG03) /* Expected hang statuses       (buffer/Integer) */
+        If (Arg4)
+        {
+            M20B (0x00, "Release x-x-xx3")
+        }
+
+        /* Release x-x-x2x, this frees mux for thr-2 */
+
+        Name (CM04, Package (MIN1)
+        {
+            0x00, 
+            0x00, 
+            0x00, 
+            C107, 
+            0x00
+        })
+        Name (CP04, Package (MIN1)
+        {
+            0x00, 
+            0x00, 
+            C106, 
+            C107, 
+            0x00
+        })
+        Name (HG04, Package (MIN1)
+        {
+            0x00, 
+            C106, 
+            0x00, 
+            0x00, 
+            0x00
+        })
+        M33F (Arg0, CM04, 0x00, Arg1, Arg2, CP04, HG04) /* Expected hang statuses       (buffer/Integer) */
+        If (Arg4)
+        {
+            M20B (0x00, "Release x-x-x2x")
+        }
+
+        /* Release x-x-1xx, this frees mux for thr-1 */
+
+        Name (CM05, Package (MIN1)
+        {
+            0x00, 
+            0x00, 
+            C107, 
+            0x00, 
+            0x00
+        })
+        Name (CP05, Package (MIN1)
+        {
+            0x00, 
+            C106, 
+            C107, 
+            0x00, 
+            0x00
+        })
+        M33F (Arg0, CM05, 0x00, Arg1, Arg2, CP05, 0x00)    /* Expected hang statuses       (buffer/Integer) */
+        If (Arg4)
+        {
+            M20B (0x00, "Release x-x-1xx")
+        }
+        /* At this point threads have Acquired: x-1-230 */
+    }
+
+    /*
+     * arg0 - number of threads (total)
+     */
+    Method (M809, 1, NotSerialized)
+    {
+        M80C (Arg0, 0x01)
+    }
+
+    /*
+     * arg0 - number of threads (total)
+     * arg1 - variant (of parameters passed to m8fd):
+     *        0:
+     *           arg1 - indexes of mutexes (buffer/Integer)
+     *           arg2 - levels of mutexes  (buffer/Integer) - start point
+     *           arg3 - levels of mutexes  (buffer/Integer) - target point
+     *        1:
+     *           arg1 - levels of mutexes  (buffer/Integer)
+     *           arg2 - indexes of mutexes (buffer/Integer) - start point
+     *           arg3 - indexes of mutexes (buffer/Integer) - target point
+     */
+    Method (M80C, 2, Serialized)
+    {
+        Name (PR, 0x00)
+        Name (IXLL, 0x00)
+        Name (NTH0, Buffer (0x02){})
+        /*
+         * Per-thread indexes/levels (depending on arg1) of mutexes
+         *
+         * Ctl-thr,   thr-1, thr-2, thr-3, thr-4
+         */
+        Name (B000, Buffer ((MIN1 * 0x02))
+        {
+            /* 0000 */  0x00, 0x00, 0x00, 0x01, 0x01, 0x01, 0x02, 0x01,  // ........
+            /* 0008 */  0x03, 0x01                                       // ..
+        })
+        Name (B001, Buffer ((MIN1 * 0x02))
+        {
+            /* 0000 */  0x00, 0x00, 0x01, 0x01, 0x02, 0x01, 0x03, 0x01,  // ........
+            /* 0008 */  0x04, 0x01                                       // ..
+        })
+        Name (B002, Buffer ((MIN1 * 0x02))
+        {
+            /* 0000 */  0x00, 0x00, 0x02, 0x01, 0x03, 0x01, 0x04, 0x01,  // ........
+            /* 0008 */  0x05, 0x01                                       // ..
+        })
+        Name (B003, Buffer ((MIN1 * 0x02))
+        {
+            /* 0000 */  0x00, 0x00, 0x03, 0x01, 0x04, 0x01, 0x05, 0x01,  // ........
+            /* 0008 */  0x06, 0x01                                       // ..
+        })
+        Name (B004, Buffer ((MIN1 * 0x02))
+        {
+            /* 0000 */  0x00, 0x00, 0x04, 0x01, 0x05, 0x01, 0x06, 0x01,  // ........
+            /* 0008 */  0x07, 0x01                                       // ..
+        })
+        Name (B005, Buffer ((MIN1 * 0x02))
+        {
+            /* 0000 */  0x00, 0x00, 0x05, 0x01, 0x06, 0x01, 0x07, 0x01,  // ........
+            /* 0008 */  0x08, 0x01                                       // ..
+        })
+        Name (B006, Buffer ((MIN1 * 0x02))
+        {
+            /* 0000 */  0x00, 0x00, 0x06, 0x01, 0x07, 0x01, 0x08, 0x01,  // ........
+            /* 0008 */  0x09, 0x01                                       // ..
+        })
+        Name (B007, Buffer ((MIN1 * 0x02))
+        {
+            /* 0000 */  0x00, 0x00, 0x07, 0x01, 0x08, 0x01, 0x09, 0x01,  // ........
+            /* 0008 */  0x0A, 0x01                                       // ..
+        })
+        Name (B008, Buffer ((MIN1 * 0x02))
+        {
+            /* 0000 */  0x00, 0x00, 0x08, 0x01, 0x09, 0x01, 0x0A, 0x01,  // ........
+            /* 0008 */  0x0B, 0x01                                       // ..
+        })
+        Name (B009, Buffer ((MIN1 * 0x02))
+        {
+            /* 0000 */  0x00, 0x00, 0x09, 0x01, 0x0A, 0x01, 0x0B, 0x01,  // ........
+            /* 0008 */  0x0C, 0x01                                       // ..
+        })
+        Name (B00A, Buffer ((MIN1 * 0x02))
+        {
+            /* 0000 */  0x00, 0x00, 0x0A, 0x01, 0x0B, 0x01, 0x0C, 0x01,  // ........
+            /* 0008 */  0x0D, 0x01                                       // ..
+        })
+        Name (B00B, Buffer ((MIN1 * 0x02))
+        {
+            /* 0000 */  0x00, 0x00, 0x0B, 0x01, 0x0C, 0x01, 0x0D, 0x01,  // ........
+            /* 0008 */  0x0E, 0x01                                       // ..
+        })
+        Name (B00C, Buffer ((MIN1 * 0x02))
+        {
+            /* 0000 */  0x00, 0x00, 0x0C, 0x01, 0x0D, 0x01, 0x0E, 0x01,  // ........
+            /* 0008 */  0x0F, 0x01                                       // ..
+        })
+        If (Arg1)
+        {
+            /* The same level of mutexes */
+
+            IXLL = 0x00
+        }
+        Else
+        {
+            /* The same index of mutexes */
+
+            IXLL = 0x00
+        }
+
+        /* Pack numbers of threads */
+
+        NTH0 = M20D (Arg0, MIN1)
+        /* x-0123 */
+        /*
+         * x-0-1-2-3
+         * Acquire all x-0123 and check owning
+         *
+         * Threads thr-1, thr-2, thr-3, thr-4
+         * acquire respectively all x-0123 mutexes
+         * and check owning of all those mutexes.
+         */
+        If (Arg1)
+        {
+            Local6 = IXLL /* \M80C.IXLL */
+            Local7 = B000 /* \M80C.B000 */
+        }
+        Else
+        {
+            Local6 = B000 /* \M80C.B000 */
+            Local7 = IXLL /* \M80C.IXLL */
+        }
+
+        M33F (NTH0, C106, 0x00, Local6, Local7, C106, 0x00)      /* Expected hang statuses       (buffer/Integer) */
+        If (PR)
+        {
+            M20B (0x00, "Acquire all x-0123")
+        }
+
+        M8FD (NTH0, IXLL, B000, B001, PR, Arg1)
+        M8FD (NTH0, IXLL, B001, B002, PR, Arg1)
+        M8FD (NTH0, IXLL, B002, B003, PR, Arg1)
+        M8FD (NTH0, IXLL, B003, B004, PR, Arg1)
+        M8FD (NTH0, IXLL, B004, B005, PR, Arg1)
+        M8FD (NTH0, IXLL, B005, B006, PR, Arg1)
+        M8FD (NTH0, IXLL, B006, B007, PR, Arg1)
+        M8FD (NTH0, IXLL, B007, B008, PR, Arg1)
+        M8FD (NTH0, IXLL, B008, B009, PR, Arg1)
+        M8FD (NTH0, IXLL, B009, B00A, PR, Arg1)
+        M8FD (NTH0, IXLL, B00A, B00B, PR, Arg1)
+        M8FD (NTH0, IXLL, B00B, B00C, PR, Arg1)
+        /* x-(12)-(13)-(14)-(15), Release=x-(12)(13)(14)(15), hang=x-xxxx, success=x-(12)(13)(14)(15) */
+
+        If (Arg1)
+        {
+            Local6 = IXLL /* \M80C.IXLL */
+            Local7 = B00C /* \M80C.B00C */
+        }
+        Else
+        {
+            Local6 = B00C /* \M80C.B00C */
+            Local7 = IXLL /* \M80C.IXLL */
+        }
+
+        M33F (NTH0, C107, 0x00, Local6, Local7, C107, 0x00)    /* Expected hang statuses       (buffer/Integer) */
+        If (PR)
+        {
+            M20B (0x00, "Release x-(12)(13)(14)(15)")
+        }
+    }
+
+    /*
+     * arg0 - numbers of threads (buffer/Integer)
+     * arg1 - indexes/levels of mutexes (buffer/Integer)
+     * arg2 - levels/indexes of mutexes (buffer/Integer) - start point
+     * arg3 - levels/indexes of mutexes (buffer/Integer) - target point
+     * arg4 - printing flag
+     * arg5 - variant (see m80c)
+     */
+    Method (M8FD, 6, Serialized)
+    {
+        /* At this point threads have Acquired: x-0123 */
+        /*
+         * Comments are given for one particular transfer step
+         * from x-0-123 to x-1-230, other steps are identical.
+         */
+        /* x-01-12-23-34, Acquire=x-1234, hang=x-123x, success=x-xxx4 */
+        Name (CM00, Package (MIN1)
+        {
+            0x00, 
+            C106, 
+            C106, 
+            C106, 
+            C106
+        })
+        Name (CP00, Package (MIN1)
+        {
+            0x00, 
+            0x00, 
+            0x00, 
+            0x00, 
+            C106
+        })
+        Name (HG00, Package (MIN1)
+        {
+            0x00, 
+            C106, 
+            C106, 
+            C106, 
+            0x00
+        })
+        If (Arg5)
+        {
+            Local6 = Arg1
+            Local7 = Arg3
+        }
+        Else
+        {
+            Local6 = Arg3
+            Local7 = Arg1
+        }
+
+        M33F (Arg0, CM00, 0x00, Local6, Local7, CP00, HG00)   /* Expected hang statuses       (buffer/Integer) */
+        If (Arg4)
+        {
+            M20B (0x00, "Acquire x-1234")
+        }
+
+        /* x-01-12-23-3, Release=x-xxx4, hang=x-123x, success=x-xxx4 */
+
+        Name (CM01, Package (MIN1)
+        {
+            0x00, 
+            0x00, 
+            0x00, 
+            0x00, 
+            C107
+        })
+        Name (CP01, Package (MIN1)
+        {
+            0x00, 
+            0x00, 
+            0x00, 
+            0x00, 
+            C107
+        })
+        Name (HG01, Package (MIN1)
+        {
+            0x00, 
+            C106, 
+            C106, 
+            C106, 
+            0x00
+        })
+        If (Arg5)
+        {
+            Local6 = Arg1
+            Local7 = Arg3
+        }
+        Else
+        {
+            Local6 = Arg3
+            Local7 = Arg1
+        }
+
+        M33F (Arg0, CM01, 0x00, Local6, Local7, CP01, HG01)   /* Expected hang statuses       (buffer/Integer) */
+        If (Arg4)
+        {
+            M20B (0x00, "Release x-xxx4")
+        }
+
+        /* x-01-12-23-x, Release=x-xxx3, hang=x-12xx, success=x-xx33 */
+
+        Name (CM02, Package (MIN1)
+        {
+            0x00, 
+            0x00, 
+            0x00, 
+            0x00, 
+            C107
+        })
+        Name (CP02, Package (MIN1)
+        {
+            0x00, 
+            0x00, 
+            0x00, 
+            C106, 
+            C107
+        })
+        Name (HG02, Package (MIN1)
+        {
+            0x00, 
+            C106, 
+            C106, 
+            0x00, 
+            0x00
+        })
+        If (Arg5)
+        {
+            Local6 = Arg1
+            Local7 = Arg2
+        }
+        Else
+        {
+            Local6 = Arg2
+            Local7 = Arg1
+        }
+
+        M33F (Arg0, CM02, 0x00, Local6, Local7, CP02, HG02)   /* Expected hang statuses       (buffer/Integer) */
+        If (Arg4)
+        {
+            M20B (0x00, "Release x-xxx3")
+        }
+
+        /* x-01-12-23-4, Acquire=x-xxx4, hang=x-12xx, success=x-xxx4 */
+
+        Name (CM03, Package (MIN1)
+        {
+            0x00, 
+            0x00, 
+            0x00, 
+            0x00, 
+            C106
+        })
+        Name (CP03, Package (MIN1)
+        {
+            0x00, 
+            0x00, 
+            0x00, 
+            0x00, 
+            C106
+        })
+        Name (HG03, Package (MIN1)
+        {
+            0x00, 
+            C106, 
+            C106, 
+            0x00, 
+            0x00
+        })
+        If (Arg5)
+        {
+            Local6 = Arg1
+            Local7 = Arg3
+        }
+        Else
+        {
+            Local6 = Arg3
+            Local7 = Arg1
+        }
+
+        M33F (Arg0, CM03, 0x00, Local6, Local7, CP03, HG03)   /* Expected hang statuses       (buffer/Integer) */
+        If (Arg4)
+        {
+            M20B (0x00, "Acquire x-xxx4")
+        }
+
+        /* x-01-12-2-4, Release=x-xx3x, hang=x-12xx, success=x-xx3x */
+
+        Name (CM05, Package (MIN1)
+        {
+            0x00, 
+            0x00, 
+            0x00, 
+            C107, 
+            0x00
+        })
+        Name (CP05, Package (MIN1)
+        {
+            0x00, 
+            0x00, 
+            0x00, 
+            C107, 
+            0x00
+        })
+        Name (HG05, Package (MIN1)
+        {
+            0x00, 
+            C106, 
+            C106, 
+            0x00, 
+            0x00
+        })
+        If (Arg5)
+        {
+            Local6 = Arg1
+            Local7 = Arg3
+        }
+        Else
+        {
+            Local6 = Arg3
+            Local7 = Arg1
+        }
+
+        M33F (Arg0, CM05, 0x00, Local6, Local7, CP05, HG05)   /* Expected hang statuses       (buffer/Integer) */
+        If (Arg4)
+        {
+            M20B (0x00, "Release x-xx3x")
+        }
+
+        /* x-01-12-x-4, Release=x-xx2x, hang=x-1xxx, success=x-x22x */
+
+        Name (CM06, Package (MIN1)
+        {
+            0x00, 
+            0x00, 
+            0x00, 
+            C107, 
+            0x00
+        })
+        Name (CP06, Package (MIN1)
+        {
+            0x00, 
+            0x00, 
+            C106, 
+            C107, 
+            0x00
+        })
+        Name (HG06, Package (MIN1)
+        {
+            0x00, 
+            C106, 
+            0x00, 
+            0x00, 
+            0x00
+        })
+        If (Arg5)
+        {
+            Local6 = Arg1
+            Local7 = Arg2
+        }
+        Else
+        {
+            Local6 = Arg2
+            Local7 = Arg1
+        }
+
+        M33F (Arg0, CM06, 0x00, Local6, Local7, CP06, HG06)   /* Expected hang statuses       (buffer/Integer) */
+        If (Arg4)
+        {
+            M20B (0x00, "Release x-xx2x")
+        }
+
+        /* x-01-12-3-4, Acquire=x-xx3x, hang=x-1xxx, success=x-xx3x */
+
+        Name (CM07, Package (MIN1)
+        {
+            0x00, 
+            0x00, 
+            0x00, 
+            C106, 
+            0x00
+        })
+        Name (CP07, Package (MIN1)
+        {
+            0x00, 
+            0x00, 
+            0x00, 
+            C106, 
+            0x00
+        })
+        Name (HG07, Package (MIN1)
+        {
+            0x00, 
+            C106, 
+            0x00, 
+            0x00, 
+            0x00
+        })
+        If (Arg5)
+        {
+            Local6 = Arg1
+            Local7 = Arg3
+        }
+        Else
+        {
+            Local6 = Arg3
+            Local7 = Arg1
+        }
+
+        M33F (Arg0, CM07, 0x00, Local6, Local7, CP07, HG07)   /* Expected hang statuses       (buffer/Integer) */
+        If (Arg4)
+        {
+            M20B (0x00, "Acquire x-xx3x")
+        }
+
+        /* x-01-1-3-4, Release=x-x2xx, hang=x-1xxx, success=x-x2xx */
+
+        Name (CM08, Package (MIN1)
+        {
+            0x00, 
+            0x00, 
+            C107, 
+            0x00, 
+            0x00
+        })
+        Name (CP08, Package (MIN1)
+        {
+            0x00, 
+            0x00, 
+            C107, 
+            0x00, 
+            0x00
+        })
+        Name (HG08, Package (MIN1)
+        {
+            0x00, 
+            C106, 
+            0x00, 
+            0x00, 
+            0x00
+        })
+        If (Arg5)
+        {
+            Local6 = Arg1
+            Local7 = Arg3
+        }
+        Else
+        {
+            Local6 = Arg3
+            Local7 = Arg1
+        }
+
+        M33F (Arg0, CM08, 0x00, Local6, Local7, CP08, HG08)   /* Expected hang statuses       (buffer/Integer) */
+        If (Arg4)
+        {
+            M20B (0x00, "Release x-x2xx")
+        }
+
+        /* x-01-x-3-4, Release=x-x1xx, hang=x-xxxx, success=x-11xx */
+
+        Name (CM09, Package (MIN1)
+        {
+            0x00, 
+            0x00, 
+            C107, 
+            0x00, 
+            0x00
+        })
+        Name (CP09, Package (MIN1)
+        {
+            0x00, 
+            C106, 
+            C107, 
+            0x00, 
+            0x00
+        })
+        If (Arg5)
+        {
+            Local6 = Arg1
+            Local7 = Arg2
+        }
+        Else
+        {
+            Local6 = Arg2
+            Local7 = Arg1
+        }
+
+        M33F (Arg0, CM09, 0x00, Local6, Local7, CP09, 0x00)      /* Expected hang statuses       (buffer/Integer) */
+        If (Arg4)
+        {
+            M20B (0x00, "Release x-x1xx")
+        }
+
+        /* x-01-2-3-4, Acquire=x-x2xx, hang=x-xxxx, success=x-x2xx */
+
+        Name (CM0A, Package (MIN1)
+        {
+            0x00, 
+            0x00, 
+            C106, 
+            0x00, 
+            0x00
+        })
+        Name (CP0A, Package (MIN1)
+        {
+            0x00, 
+            0x00, 
+            C106, 
+            0x00, 
+            0x00
+        })
+        If (Arg5)
+        {
+            Local6 = Arg1
+            Local7 = Arg3
+        }
+        Else
+        {
+            Local6 = Arg3
+            Local7 = Arg1
+        }
+
+        M33F (Arg0, CM0A, 0x00, Local6, Local7, CP0A, 0x00)      /* Expected hang statuses       (buffer/Integer) */
+        If (Arg4)
+        {
+            M20B (0x00, "Acquire x-x2xx")
+        }
+
+        /* x-0-2-3-4, Release=x-1xxx, hang=x-xxxx, success=x-1xxx */
+
+        Name (CM0B, Package (MIN1)
+        {
+            0x00, 
+            C107, 
+            0x00, 
+            0x00, 
+            0x00
+        })
+        Name (CP0B, Package (MIN1)
+        {
+            0x00, 
+            C107, 
+            0x00, 
+            0x00, 
+            0x00
+        })
+        If (Arg5)
+        {
+            Local6 = Arg1
+            Local7 = Arg3
+        }
+        Else
+        {
+            Local6 = Arg3
+            Local7 = Arg1
+        }
+
+        M33F (Arg0, CM0B, 0x00, Local6, Local7, CP0B, 0x00)      /* Expected hang statuses       (buffer/Integer) */
+        If (Arg4)
+        {
+            M20B (0x00, "Release x-1xxx")
+        }
+
+        /* x-x-2-3-4, Release=x-0xxx, hang=x-xxxx, success=x-0xxx */
+
+        Name (CM0C, Package (MIN1)
+        {
+            0x00, 
+            C107, 
+            0x00, 
+            0x00, 
+            0x00
+        })
+        Name (CP0C, Package (MIN1)
+        {
+            0x00, 
+            C107, 
+            0x00, 
+            0x00, 
+            0x00
+        })
+        If (Arg5)
+        {
+            Local6 = Arg1
+            Local7 = Arg2
+        }
+        Else
+        {
+            Local6 = Arg2
+            Local7 = Arg1
+        }
+
+        M33F (Arg0, CM0C, 0x00, Local6, Local7, CP0C, 0x00)      /* Expected hang statuses       (buffer/Integer) */
+        If (Arg4)
+        {
+            M20B (0x00, "Release x-0xxx")
+        }
+
+        /* x-1-2-3-4, Acquire=x-1xxx, hang=x-xxxx, success=x-1xxx */
+
+        Name (CM0D, Package (MIN1)
+        {
+            0x00, 
+            C106, 
+            0x00, 
+            0x00, 
+            0x00
+        })
+        Name (CP0D, Package (MIN1)
+        {
+            0x00, 
+            C106, 
+            0x00, 
+            0x00, 
+            0x00
+        })
+        If (Arg5)
+        {
+            Local6 = Arg1
+            Local7 = Arg3
+        }
+        Else
+        {
+            Local6 = Arg3
+            Local7 = Arg1
+        }
+
+        M33F (Arg0, CM0D, 0x00, Local6, Local7, CP0D, 0x00)      /* Expected hang statuses       (buffer/Integer) */
+        If (Arg4)
+        {
+            M20B (0x00, "Acquire x-1xxx")
+        }
+        /* At this point threads have Acquired: x-1234 */
+    }
+
+    /*
+     * arg0 - number of threads (total)
+     */
+    Method (M810, 1, NotSerialized)
+    {
+        M80C (Arg0, 0x00)
+    }
+
+    /*
+     * arg0 - number of threads (total)
+     */
+    Method (M811, 1, Serialized)
+    {
+        Name (RPT, 0x04)
+        Name (LPN0, 0x00)
+        Name (LPC0, 0x00)
+        Name (LPN1, 0x00)
+        Name (LPC1, 0x00)
+        Name (NTH0, Buffer (0x02){})
+        Name (IX00, Buffer ((MIN1 * 0x02))
+        {
+            /* 0000 */  0x00, 0x00, 0x00, 0x01, 0x01, 0x01, 0x02, 0x01,  // ........
+            /* 0008 */  0x03, 0x01                                       // ..
+        })
+        Name (NUMW, 0x00) /* number of threads in work */
+        /* Number of threads to be actually in work */
+
+        NUMW = M213 (Arg0, MIN1, 0x04)
+        /* Pack numbers of threads */
+
+        NTH0 = M20D (Arg0, NUMW)
+        /* Each thread Acquires successfully its mutex N times */
+
+        LPN0 = MAX0 /* \MAX0 */
+        LPC0 = 0x00
+        While (LPN0)
+        {
+            LPN1 = RPT /* \M811.RPT_ */
+            LPC1 = 0x00
+            /* Repetition */
+
+            While (LPN1)
+            {
+                M33F (NTH0, C106, 0x00, LPC0, IX00, C106, 0x00)    /* Expected hang statuses       (buffer/Integer) */
+                LPN1--
+                LPC1++
+            }
+
+            LPN0--
+            LPC0++
+        }
+
+        /* Each thread Releases successfully its mutex N times */
+
+        LPN0 = MAX0 /* \MAX0 */
+        LPC0 = (MAX0 - 0x01)
+        While (LPN0)
+        {
+            LPN1 = RPT /* \M811.RPT_ */
+            LPC1 = 0x00
+            /* Repetition */
+
+            While (LPN1)
+            {
+                M33F (NTH0, C107, 0x00, LPC0, IX00, C107, 0x00)    /* Expected hang statuses       (buffer/Integer) */
+                LPN1--
+                LPC1++
+            }
+
+            LPN0--
+            LPC0--
+        }
+
+        /*
+         * Each thread gets exception AE_AML_MUTEX_NOT_ACQUIRED (65)
+         * on additional Release.
+         */
+        LPN0 = MAX0 /* \MAX0 */
+        LPC0 = (MAX0 - 0x01)
+        While (LPN0)
+        {
+            M33F (NTH0, C107, 0x41, LPC0, IX00, C107, 0x00)    /* Expected hang statuses       (buffer/Integer) */
+            LPN0--
+            LPC0--
+        }
+    }
+
+    /*
+     * arg0 - number of threads (total)
+     */
+    Method (M812, 1, Serialized)
+    {
+        Name (RPT, 0x03)  /* number of repetition */
+        Name (LPN0, 0x00) /* level */
+        Name (LPC0, 0x00)
+        Name (LPN1, 0x00) /* index-thread */
+        Name (LPC1, 0x00)
+        Name (INDT, 0x00) /* index of thread */
+        Name (LPN2, 0x00) /* repetition */
+        Name (LPC2, 0x00)
+        Name (LLS0, 0x00)
+        Name (NUM2, 0x00)
+        Name (IXSZ, 0x00)
+        Name (NUMW, 0x00) /* number of threads in work */
+        Store ((MIN1 * 0x02), IXSZ) /* \M812.IXSZ */
+        Name (NTH0, Buffer (0x02){})
+        /* Buffers of indexes of mutexes */
+
+        Name (PIXS, Package (MIN1)
+        {
+            0x00, 
+            Buffer (IXSZ)
+            {
+                /* 0000 */  0x00, 0x00, 0x00, 0x01, 0x00, 0x01, 0x00, 0x01,  // ........
+                /* 0008 */  0x00, 0x01                                       // ..
+            }, 
+
+            Buffer (IXSZ)
+            {
+                /* 0000 */  0x00, 0x00, 0x01, 0x01, 0x01, 0x01, 0x01, 0x01,  // ........
+                /* 0008 */  0x01, 0x01                                       // ..
+            }, 
+
+            Buffer (IXSZ)
+            {
+                /* 0000 */  0x00, 0x00, 0x02, 0x01, 0x02, 0x01, 0x02, 0x01,  // ........
+                /* 0008 */  0x02, 0x01                                       // ..
+            }, 
+
+            Buffer (IXSZ)
+            {
+                /* 0000 */  0x00, 0x00, 0x03, 0x01, 0x03, 0x01, 0x03, 0x01,  // ........
+                /* 0008 */  0x03, 0x01                                       // ..
+            }
+        })
+        Name (BIXS, Buffer (IXSZ){})
+        Name (CM00, Buffer (MIN1){})
+        Name (CP00, Buffer (MIN1){})
+        Name (HG00, Buffer (MIN1){})
+        /*
+         * Determine num - number of threads actually in work
+         *
+         * Note: maximum for num is min1 here but it can be diminished
+         * to reduce the time of execution.
+         */
+        NUMW = M213 (Arg0, MIN1, 0x03)
+        NUM2 = (NUMW - 0x01) /* except the control thread */
+        /* Pack numbers of threads */
+
+        NTH0 = M20D (Arg0, NUMW)
+        /*
+         * Determine lls0 - number of levels to be in work
+         *
+         * Note: maximum for lls0 is max0 here but it can be diminished
+         * to reduce the time of execution.
+         */
+        If (REDM)
+        {
+            LLS0 = 0x03
+        }
+        Else
+        {
+            LLS0 = MAX0 /* \MAX0 */
+        }
+
+        /* 9. Do 1-8 for all Levels of mutex one by one */
+
+        LPN0 = LLS0 /* \M812.LLS0 */
+        LPC0 = 0x00
+        While (LPN0)
+        {
+            /*
+             * 8. Do 1-7 for all threads one by one (so, for 0-3 Indexes of mutex as well)
+             */
+            LPN1 = NUM2 /* \M812.NUM2 */
+            LPC1 = 0x00
+            While (LPN1)
+            {
+                INDT = (LPC1 + 0x01)
+                BIXS = DerefOf (PIXS [INDT])
+                /* 1. Thread thr-i Acquires successfully mutex M0 of (i-1)-th index for N times */
+                /* c106 for indt-th thread */
+                M210 (CM00, NUMW, C106, INDT, 0x01, 0x01, 0x00)
+                /* Repetition */
+
+                LPN2 = RPT /* \M812.RPT_ */
+                LPC2 = 0x00
+                While (LPN2)
+                {
+                    M33F (NTH0, CM00, 0x00, LPC0, BIXS, CM00, 0x00)    /* Expected hang statuses       (buffer/Integer) */
+                    LPN2--
+                    LPC2++
+                }
+
+                /* 2. Other threads Acquire M0 too and hang */
+                /*
+                 * c103 for all except indt-th thread
+                 * (and except 0-th thread naturally,
+                 * not mentioned more below)
+                 */
+                M200 (CM00, NUMW, C103)
+                M208 (CM00, INDT, 0x00)
+                M33F (NTH0, CM00, 0x00, LPC0, BIXS, 0x00, CM00)
+                /* 3. Thread thr-i Acquires successfully mutex M0 for N times again */
+                /* c106 for indt-th thread */
+                M210 (CM00, NUMW, C106, INDT, 0x01, 0x01, 0x00)
+                /* c103 for all except indt-th thread */
+
+                M200 (HG00, NUMW, C103)
+                M208 (HG00, INDT, 0x00)
+                /* Repetition */
+
+                LPN2 = RPT /* \M812.RPT_ */
+                LPC2 = 0x00
+                While (LPN2)
+                {
+                    M33F (NTH0, CM00, 0x00, LPC0, BIXS, CM00, HG00)
+                    LPN2--
+                    LPC2++
+                }
+
+                /* 4. Thread thr-i Releases mutex M0 for 2*N times */
+                /* c107 for indt-th thread */
+                M210 (CM00, NUMW, C107, INDT, 0x01, 0x01, 0x00)
+                /* c103 for all except indt-th thread */
+
+                M200 (HG00, NUMW, C103)
+                M208 (HG00, INDT, 0x00)
+                /* Repetition */
+
+                LPN2 = (RPT * 0x02)
+                LPN2--
+                LPC2 = 0x00
+                While (LPN2)
+                {
+                    M33F (NTH0, CM00, 0x00, LPC0, BIXS, CM00, HG00)
+                    LPN2--
+                    LPC2++
+                }
+
+                /*
+                 * 5. One of other threads (thr-j) owns M0
+                 * 6. Thread thr-j Release M0
+                 * 7. Do 5-6 items for all 'other' threads
+                 */
+                /* c107 for indt-th thread */
+                M210 (CM00, NUMW, C107, INDT, 0x01, 0x01, 0x00)
+                /* c103 for all except indt-th thread, and c107 for indt-th thread */
+
+                M200 (CP00, NUMW, C103)
+                M208 (CP00, INDT, C107)
+                M33F (NTH0, CM00, 0x00, LPC0, BIXS, CP00, 0x00)
+                LPN1--
+                LPC1++
+            }
+
+            LPN0--
+            LPC0++
+        }
+    }
+
+    /*
+     * arg0 - number of threads (total)
+     */
+    Method (M813, 1, Serialized)
+    {
+        Name (RPT, 0x0100) /* number of repetition */
+        Name (LPN0, 0x00) /* level */
+        Name (LPC0, 0x00)
+        Name (LPN1, 0x00) /* index-thread */
+        Name (LPC1, 0x00)
+        Name (INDT, 0x00) /* index of thread */
+        Name (LPN2, 0x00) /* repetition */
+        Name (LPC2, 0x00)
+        Name (LLS0, 0x00) /* number of levels */
+        Name (NUM2, 0x00)
+        Name (IXSZ, 0x00)
+        Name (NUMW, 0x00) /* number of threads in work */
+        Store ((MIN1 * 0x02), IXSZ) /* \M813.IXSZ */
+        Name (NTH0, Buffer (0x02){})
+        /* Buffer of per-thread indexes of mutexes */
+
+        Name (IX00, Buffer (IXSZ)
+        {
+            /* 0000 */  0x00, 0x00, 0x00, 0x01, 0x01, 0x01, 0x02, 0x01,  // ........
+            /* 0008 */  0x03, 0x01                                       // ..
+        })
+        Name (CM00, Buffer (MIN1){})
+        /*
+         * Determine num - number of threads actually in work
+         * See input control on arg0 (before m813)
+         *
+         * Note: maximum for num is min1 here but it can be diminished
+         * to reduce the time of execution.
+         */
+        NUMW = M213 (Arg0, 0x03, 0x02)
+        NUM2 = (NUMW - 0x01) /* except the control thread */
+        /* Pack numbers of threads */
+
+        NTH0 = M20D (Arg0, NUMW)
+        /*
+         * Determine lls0 - number of levels to be in work
+         *
+         * Note: maximum for lls0 is max0 here but it can be diminished
+         * to reduce the time of execution.
+         */
+        If (REDM)
+        {
+            LLS0 = 0x01
+        }
+        Else
+        {
+            LLS0 = MAX0 /* \MAX0 */
+        }
+
+        /* For all Levels of mutex one by one */
+
+        LPN0 = LLS0 /* \M813.LLS0 */
+        LPC0 = 0x00
+        While (LPN0)
+        {
+            /* For different indexes-threads one by one */
+
+            LPN1 = NUM2 /* \M813.NUM2 */
+            LPC1 = 0x00
+            While (LPN1)
+            {
+                INDT = (LPC1 + 0x01)
+                /* Thread thr-i Acquires successfully mutex M0 of (i-1)-th index for N times */
+                /* c106 for indt-th thread */
+                M210 (CM00, NUMW, C106, INDT, 0x01, 0x01, 0x00)
+                /* Repetition */
+
+                LPN2 = RPT /* \M813.RPT_ */
+                LPC2 = 0x00
+                While (LPN2)
+                {
+                    M33F (NTH0, CM00, 0x00, LPC0, IX00, CM00, 0x00)    /* Expected hang statuses       (buffer/Integer) */
+                    LPN2--
+                    LPC2++
+                }
+
+                /* Thread thr-i Releases mutex M0 for N times */
+                /* c107 for indt-th thread */
+                M210 (CM00, NUMW, C107, INDT, 0x01, 0x01, 0x00)
+                /* Repetition */
+
+                LPN2 = RPT /* \M813.RPT_ */
+                LPC2 = 0x00
+                While (LPN2)
+                {
+                    M33F (NTH0, CM00, 0x00, LPC0, IX00, CM00, 0x00)
+                    LPN2--
+                    LPC2++
+                }
+
+                LPN1--
+                LPC1++
+            }
+
+            LPN0--
+            LPC0++
+        }
+    }
+
+    /*
+     * arg0 - number of threads (total)
+     */
+    Method (M814, 1, Serialized)
+    {
+        Name (LPN0, 0x00) /* level */
+        Name (LPC0, 0x00)
+        Name (LPN1, 0x00) /* index */
+        Name (LPC1, 0x00)
+        Name (THR1, 0x00)
+        Name (THR2, 0x00)
+        THR1 = 0x01
+        THR2 = M115 (Arg0) /* thread with the greatest index */
+        If ((THR2 >= Arg0))
+        {
+            Debug = "No alive threads for Test!"
+            Debug = "Test mf14 skipped!"
+            SKIP ()
+            Return (Zero)
+        }
+
+        If ((THR2 <= THR1))
+        {
+            Debug = "Insufficient number of threads for Test!"
+            Debug = "Test mf14 skipped!"
+            SKIP ()
+            Return (Zero)
+        }
+
+        /* 1. Thread thr-N Acquires all the mutexes on all levels */
+        /* Set up per-thread set of mutexes */
+        M334 (Arg0, C300, 0x00, MAX0, 0x00, MIN0)
+        M200 (BS00, Arg0, C102) /* cmd: Sleep */
+        M208 (BS00, THR2, C106) /* cmd: Acquire specified set of mutexes */
+        M215 (Arg0)             /* Reset TimeOutValue and exceptional condition flags */
+        M114 (Arg0) /* run */
+        /* Wait for all Slave threads */
+
+        M103 (Arg0)
+        /* Check up the values of counters of all Mutexs */
+
+        LPN0 = MAX0 /* \MAX0 */
+        LPC0 = 0x00
+        While (LPN0)
+        {
+            LPN1 = MIN0 /* \MIN0 */
+            LPC1 = 0x00
+            While (LPN1)
+            {
+                M333 (LPC0, LPC1, 0x01)
+                LPN1--
+                LPC1++
+            }
+
+            LPN0--
+            LPC0++
+        }
+
+        /*
+         * 2. Thread thr-1 tries to Acquire all the same mutexes
+         *    and gets FAIL (TimeOutValue is not 0xFFFF).
+         */
+        M200 (BS00, Arg0, C102) /* cmd: Sleep */
+        M208 (BS00, THR1, C106) /* cmd: Acquire specified set of mutexes */
+        M215 (Arg0)             /* Reset TimeOutValue and exceptional condition flags */
+        M214 (Arg0, Arg0, TOV1) /* TimeOutValue equal to 1 msec */
+        M20F (Arg0, EX0D, 0x00)    /* Init the exceptional conditions flags (FAIL) */
+        M114 (Arg0) /* run */
+        /* Wait for all Slave threads */
+
+        M103 (Arg0)
+        /* 3. Thread thr-N terminates */
+
+        M200 (BS00, Arg0, C102) /* cmd: Sleep */
+        M208 (BS00, THR2, C108) /* cmd: Terminate thread */
+        M215 (Arg0)             /* Reset TimeOutValue and exceptional condition flags */
+        M114 (Arg0) /* run */
+        /* Wait for all Slave threads */
+
+        M103 (Arg0)
+        /*
+         * 4. Thread thr-1 Acquire all those mutexes again
+         *    and gets success (TimeOutValue is 0xFFFF)
+         */
+        /* Sleep, to ensure the thread thr-N terminates */
+        M206 (0x00, 0xC8)
+        /*
+         * Reset all counters (cnt0) and flags (fl00) corresponding
+         * to all Mutexes which were set up by thread thr-N.
+         */
+        M330 ()
+        M200 (BS00, Arg0, C102) /* cmd: Sleep */
+        M208 (BS00, THR1, C106) /* cmd: Acquire specified set of mutexes */
+        M215 (Arg0)             /* Reset TimeOutValue and exceptional condition flags */
+        M114 (Arg0) /* run */
+        /* Wait for all Slave threads */
+
+        M103 (Arg0)
+        /* 5. Thread thr-1 Releases all mutexes */
+
+        M200 (BS00, Arg0, C102) /* cmd: Sleep */
+        M208 (BS00, THR1, C107) /* cmd: Release specified set of mutexes */
+        M215 (Arg0)             /* Reset TimeOutValue and exceptional condition flags */
+        M114 (Arg0) /* run */
+        /* Wait for all Slave threads */
+
+        M103 (Arg0)
+    }
+
+    /*
+     * arg0 - number of threads (total)
+     */
+    Method (M815, 1, Serialized)
+    {
+        Name (LPN0, 0x00) /* level */
+        Name (LPC0, 0x00)
+        Name (LPN1, 0x00) /* index */
+        Name (LPC1, 0x00)
+        Name (THR1, 0x00)
+        Name (THR2, 0x00)
+        THR1 = 0x01
+        THR2 = M115 (Arg0) /* thread with the greatest index */
+        If ((THR2 >= Arg0))
+        {
+            Debug = "No alive threads for Test!"
+            Debug = "Test mf14 skipped!"
+            SKIP ()
+            Return (Zero)
+        }
+
+        If ((THR2 <= THR1))
+        {
+            Debug = "Insufficient number of threads for Test!"
+            Debug = "Test mf15 skipped!"
+            SKIP ()
+            Return (Zero)
+        }
+
+        /* 1. Thread thr-N Acquires all the mutexes on all levels */
+        /* Set up per-thread set of mutexes */
+        M334 (Arg0, C300, 0x00, MAX0, 0x00, MIN0)
+        M200 (BS00, Arg0, C102) /* cmd: Sleep */
+        M208 (BS00, THR2, C106) /* cmd: Acquire specified set of mutexes */
+        M215 (Arg0)             /* Reset TimeOutValue and exceptional condition flags */
+        M114 (Arg0) /* run */
+        /* Wait for all Slave threads */
+
+        M103 (Arg0)
+        /* Check up the values of counters of all Mutexs */
+
+        LPN0 = MAX0 /* \MAX0 */
+        LPC0 = 0x00
+        While (LPN0)
+        {
+            LPN1 = MIN0 /* \MIN0 */
+            LPC1 = 0x00
+            While (LPN1)
+            {
+                M333 (LPC0, LPC1, 0x01)
+                LPN1--
+                LPC1++
+            }
+
+            LPN0--
+            LPC0++
+        }
+
+        /*
+         * 2. Thread thr-1 tries to Acquire all the same mutexes
+         *    and gets FAIL (TimeOutValue is not 0xFFFF).
+         */
+        M200 (BS00, Arg0, C102) /* cmd: Sleep */
+        M208 (BS00, THR1, C106) /* cmd: Acquire specified set of mutexes */
+        M215 (Arg0)             /* Reset TimeOutValue and exceptional condition flags */
+        M214 (Arg0, Arg0, TOV1) /* TimeOutValue equal to 1 msec */
+        M20F (Arg0, EX0D, 0x00)    /* Init the exceptional conditions flags (FAIL) */
+        M114 (Arg0) /* run */
+        /* Wait for all Slave threads */
+
+        M103 (Arg0)
+        /*
+         * 3. Thread thr-1 tries to Acquire all the same mutexes
+         * and hang (TimeOutValue is 0xFFFF).
+         */
+        /*
+         * Reset all counters (cnt0) and flags (fl00) corresponding
+         * to all Mutexes which were set up by thread thr-N.
+         */
+        M330 ()
+        M200 (BS00, Arg0, C102) /* cmd: Sleep */
+        M208 (BS00, THR1, C106) /* cmd: Acquire specified set of mutexes */
+        M215 (Arg0)             /* Reset TimeOutValue and exceptional condition flags */
+        M114 (Arg0) /* run */
+        /* Wait for all Slave threads */
+
+        Name (CP00, Buffer (Arg0){})
+        Name (HG00, Buffer (Arg0){})
+        Name (ID00, Buffer (Arg0){})
+        CopyObject (BS00, CP00) /* \M815.CP00 */
+        CP00 [THR1] = 0x00
+        HG00 [THR1] = C106 /* \C106 */
+        M110 (Arg0, CP00, HG00, ID00)
+        /*
+         * 4. Thread thr-N terminates
+         * 5. Thread thr-1 owns all those mutexes
+         */
+        M200 (BS00, Arg0, C102) /* cmd: Sleep */
+        M208 (BS00, THR2, C108) /* cmd: Terminate thread */
+        M215 (Arg0)             /* Reset TimeOutValue and exceptional condition flags */
+        M114 (Arg0) /* run */
+        /* Wait for all Slave threads */
+
+        Name (CP01, Buffer (Arg0){})
+        Name (HG01, Buffer (Arg0){})
+        Name (ID01, Buffer (Arg0){})
+        BS00 [THR1] = C106 /* thr-1 hangs on c106 */ /* \C106 */
+        CopyObject (BS00, CP01) /* \M815.CP01 */
+        M110 (Arg0, CP01, HG01, ID01)
+        /* 6. Thread thr-1 Releases all mutexes */
+
+        M200 (BS00, Arg0, C102) /* cmd: Sleep */
+        M208 (BS00, THR1, C107) /* cmd: Release specified set of mutexes */
+        M215 (Arg0)             /* Reset TimeOutValue and exceptional condition flags */
+        M114 (Arg0) /* run */
+        /* Wait for all Slave threads */
+
+        M103 (Arg0)
+    }
+
+    /*
+     * Serialized method to be executed by Slave thread
+     *
+     * arg0 - number of threads
+     * arg1 - ID of current thread
+     * arg2 - Index of current thread
+     */
+    Method (M8FC, 3, Serialized)
+    {
+        If (FLG2)
+        {
+            SE00 (Arg2, ER10, "Error er10")
+        }
+
+        FLG2 = Arg1
+        M201 (Arg2, VB03, "Execution of Serialized method started")
+        M206 (Arg2, SL01) /* Sleep */
+        /*
+         * NOTE: it is a recurcive second call to m101:
+         *
+         *       MAIN
+         *         mf00
+         *           mf16
+         *             m101
+         *               m8fc
+         *                 m101
+         *
+         * So, additional command c101 is needed for it to exit that second call to m101.
+         */
+        M201 (Arg2, VB03, "Call recursively m101")
+        M101 (Arg0, Arg1, Arg2, 0x01)
+        M206 (Arg2, SL01) /* Sleep */
+        M201 (Arg2, VB03, "Execution of Serialized method completed")
+        If ((FLG2 != Arg1))
+        {
+            SE00 (Arg2, ER11, "Error er11")
+        }
+
+        FLG2 = 0x00
+    }
+
+    /*
+     * Non-serialized method to be executed by Slave thread,
+     * use mutex for exclusive access to critical section.
+     *
+     * arg0 - number of threads
+     * arg1 - ID of current thread
+     * arg2 - Index of current thread
+     */
+    Method (M8FA, 3, NotSerialized)
+    {
+        Local0 = MA00 (0x00, 0x00, 0xFFFF)
+        If (Local0)
+        {
+            SE00 (Arg2, ER00, "Error er00")
+        }
+
+        If (FLG2)
+        {
+            SE00 (Arg2, ER10, "Error er10")
+        }
+
+        FLG2 = Arg1
+        M201 (Arg2, VB03, "Execution of critical section started")
+        M206 (Arg2, SL01) /* Sleep */
+        /*
+         * NOTE: it is a recurcive second call to m101:
+         *
+         *       MAIN
+         *         mf00
+         *           mf16
+         *             m101
+         *               m8fc
+         *                 m101
+         *
+         * So, additional command c101 is needed for it to exit that second call to m101.
+         */
+        M201 (Arg2, VB03, "Call recursively m101")
+        M101 (Arg0, Arg1, Arg2, 0x01)
+        M206 (Arg2, SL01) /* Sleep */
+        M201 (Arg2, VB03, "Execution of critical section completed")
+        If ((FLG2 != Arg1))
+        {
+            SE00 (Arg2, ER11, "Error er11")
+        }
+
+        FLG2 = 0x00
+        If (!Local0)
+        {
+            MA10 (0x00)
+        }
+    }
+
+    /*
+     * Non-serialized method to be executed by Slave thread
+     *
+     * non-serialized method is grabbed simultaneously by several threads
+     *
+     * arg0 - number of threads
+     * arg1 - ID of current thread
+     * arg2 - Index of current thread
+     */
+    Method (M8F9, 3, NotSerialized)
+    {
+        /*
+         * Index of one of two threads participating in test is 1
+         */
+        If ((Arg2 == 0x01))
+        {
+            If (FLG2)
+            {
+                SE00 (Arg2, ER12, "Error er12")
+            }
+            Else
+            {
+                FLG2 = Arg2
+            }
+        }
+        ElseIf (FLG3)
+        {
+            SE00 (Arg2, ER12, "Error er12")
+        }
+        Else
+        {
+            FLG3 = Arg2
+        }
+
+        M201 (Arg2, VB03, "Execution of non-serialized method started")
+        M206 (Arg2, SL01) /* Sleep */
+        /*
+         * NOTE: it is a recurcive second call to m101:
+         *
+         *       MAIN
+         *         mf00
+         *           mf16
+         *             m101
+         *               m8fc
+         *                 m101
+         *
+         * So, additional command c101 is needed for it to exit that second call to m101.
+         */
+        M201 (Arg2, VB03, "Call recursively m101")
+        M101 (Arg0, Arg1, Arg2, 0x01)
+        M206 (Arg2, SL01) /* Sleep */
+        M201 (Arg2, VB03, "Execution of non-serialized method completed")
+        If (!FLG2)
+        {
+            SE00 (Arg2, ER12, "Error er12")
+        }
+
+        If (!FLG3)
+        {
+            SE00 (Arg2, ER13, "Error er13")
+        }
+    }
+
+    /*
+     * arg0 - number of threads (total)
+     * arg1 - main command for slave thread
+     */
+    Method (M8FB, 2, Serialized)
+    {
+        Name (LPN0, 0x00) /* level */
+        Name (LPC0, 0x00)
+        Name (LPN1, 0x00) /* index */
+        Name (LPC1, 0x00)
+        Name (THR1, 0x00)
+        Name (THR2, 0x00)
+        THR1 = 0x01
+        THR2 = M115 (Arg0) /* thread with the greatest index */
+        If ((THR2 >= Arg0))
+        {
+            Debug = "No alive threads for Test!"
+            Debug = "Test mf14 skipped!"
+            SKIP ()
+            Return (Zero)
+        }
+
+        If ((THR2 <= THR1))
+        {
+            Debug = "Insufficient number of threads for Test!"
+            Debug = "Test mf15 skipped!"
+            SKIP ()
+            Return (Zero)
+        }
+
+        /*
+         * 1. Thread thr-1 invokes method MXXX (by c109/c10a) which allows
+         *    exclusive access to the critical section.
+         *    Then it calls recursively m101 (infinite loop of slave threads)
+         *    so becomes identical to other threads for managing it.
+         */
+        M200 (BS00, Arg0, C102) /* cmd: Sleep */
+        M208 (BS00, THR1, Arg1) /* cmd: c109/c10a */
+        M20F (Arg0, 0x00, 0x00)       /* Init (Reset) the exceptional conditions flags (SUCCESS) */
+        M114 (Arg0) /* run */
+        /* Wait for all Slave threads */
+
+        M103 (Arg0)
+        /*
+         * 2. Thread thr-2 invokes the same method MXXX (by c109/c10a) and hangs
+         *    because method MXXX provides exclusive access and is already grabbed by thr-1.
+         */
+        M200 (BS00, Arg0, C102) /* cmd: Sleep */
+        M208 (BS00, THR2, Arg1) /* cmd: c109/c10a */
+        M20F (Arg0, 0x00, 0x00)       /* Init (Reset) the exceptional conditions flags (SUCCESS) */
+        M114 (Arg0) /* run */
+        /* Wait for all Slave threads */
+
+        Name (CP00, Buffer (Arg0){})
+        Name (HG00, Buffer (Arg0){})
+        Name (ID00, Buffer (Arg0){})
+        CopyObject (BS00, CP00) /* \M8FB.CP00 */
+        CP00 [THR2] = 0x00
+        HG00 [THR2] = Arg1
+        M110 (Arg0, CP00, HG00, ID00)
+        /*
+         * 3. Sleep for all
+         */
+        M200 (BS00, Arg0, C102) /* cmd: Sleep */
+        M114 (Arg0) /* run */
+        /* Wait for all Slave threads */
+
+        Name (CP01, Buffer (Arg0){})
+        Name (HG01, Buffer (Arg0){})
+        Name (ID01, Buffer (Arg0){})
+        CopyObject (BS00, CP01) /* \M8FB.CP01 */
+        CP01 [THR2] = 0x00
+        HG01 [THR2] = Arg1
+        M110 (Arg0, CP01, HG01, ID01)
+        /*
+         * 4. Thread thr-1 is directed to exit recursive (second) call to m101
+         *    (infinite loop of slave threads).
+         */
+        M200 (BS00, Arg0, C102) /* cmd: Sleep */
+        M208 (BS00, THR1, C101) /* cmd: Exit the infinite loop */
+        M114 (Arg0) /* run */
+        /* Wait for all Slave threads */
+
+        Name (CP02, Buffer (Arg0){})
+        Name (HG02, Buffer (Arg0){})
+        Name (ID02, Buffer (Arg0){})
+        CopyObject (BS00, CP02) /* \M8FB.CP02 */
+        CP02 [THR2] = 0x00
+        HG02 [THR2] = Arg1
+        M110 (Arg0, CP02, HG02, ID02)
+        /*
+         * 5. Thread thr-2 is directed to exit recursive (second) call to m101
+         *    (infinite loop of slave threads).
+         */
+        M200 (BS00, Arg0, C102) /* cmd: Sleep */
+        M208 (BS00, THR2, C101) /* cmd: Exit the infinite loop */
+        M114 (Arg0) /* run */
+        /* Wait for all Slave threads */
+
+        M103 (Arg0)
+    }
+
+    /*
+     * Use Serialized method for exclusive access to critical section
+     *
+     * arg0 - number of threads (total)
+     */
+    Method (M816, 1, NotSerialized)
+    {
+        M8FB (Arg0, C109)
+    }
+
+    /*
+     * Use Mutex for exclusive access to critical section, invoke non-Serialized method
+     *
+     * arg0 - number of threads (total)
+     */
+    Method (M817, 1, NotSerialized)
+    {
+        M8FB (Arg0, C10A)
+    }
+
+    /*
+     * Non-serialized method is grabbed simultaneously
+     *
+     * arg0 - number of threads (total)
+     */
+    Method (M818, 1, Serialized)
+    {
+        Name (LPN0, 0x00) /* level */
+        Name (LPC0, 0x00)
+        Name (LPN1, 0x00) /* index */
+        Name (LPC1, 0x00)
+        Name (THR1, 0x00)
+        Name (THR2, 0x00)
+        FLG2 = 0x00
+        FLG3 = 0x00
+        THR1 = 0x01
+        THR2 = M115 (Arg0) /* thread with the greatest index */
+        If ((THR2 >= Arg0))
+        {
+            Debug = "No alive threads for Test!"
+            Debug = "Test mf14 skipped!"
+            SKIP ()
+            Return (Zero)
+        }
+
+        If ((THR2 <= THR1))
+        {
+            Debug = "Insufficient number of threads for Test!"
+            Debug = "Test mf15 skipped!"
+            SKIP ()
+            Return (Zero)
+        }
+
+        /*
+         * 1. Thread thr-1 invokes non-Serialized method MXXX.
+         *    Then it calls recursively m101 (infinite loop of slave threads)
+         *    so becomes identical to other threads for managing it.
+         */
+        M200 (BS00, Arg0, C102) /* cmd: Sleep */
+        M208 (BS00, THR1, C10B) /* cmd: Invoke non-Serialized method */
+        M20F (Arg0, 0x00, 0x00)       /* Init (Reset) the exceptional conditions flags (SUCCESS) */
+        M114 (Arg0) /* run */
+        /* Wait for all Slave threads */
+
+        M103 (Arg0)
+        /*
+         * 2. Sleep for all
+         */
+        M200 (BS00, Arg0, C102) /* cmd: Sleep */
+        M20F (Arg0, 0x00, 0x00)       /* Init (Reset) the exceptional conditions flags (SUCCESS) */
+        M114 (Arg0) /* run */
+        /* Wait for all Slave threads */
+
+        M103 (Arg0)
+        /*
+         * 3. Thread thr-N invokes non-Serialized method MXXX.
+         *    Then it calls recursively m101 (infinite loop of slave threads)
+         *    so becomes identical to other threads for managing it.
+         */
+        M200 (BS00, Arg0, C102) /* cmd: Sleep */
+        M208 (BS00, THR2, C10B) /* cmd: Invoke non-Serialized method */
+        M20F (Arg0, 0x00, 0x00)       /* Init (Reset) the exceptional conditions flags (SUCCESS) */
+        M114 (Arg0) /* run */
+        /* Wait for all Slave threads */
+
+        M103 (Arg0)
+        /*
+         * 4. Sleep for all
+         */
+        M200 (BS00, Arg0, C102) /* cmd: Sleep */
+        M20F (Arg0, 0x00, 0x00)       /* Init (Reset) the exceptional conditions flags (SUCCESS) */
+        M114 (Arg0) /* run */
+        /* Wait for all Slave threads */
+
+        M103 (Arg0)
+        /*
+         * 5. Both threads thr-1 and thr-N are directed to exit recursive (second) calls to m101
+         *    (infinite loops of slave threads).
+         */
+        M200 (BS00, Arg0, C102) /* cmd: Sleep */
+        M208 (BS00, THR1, C101) /* cmd: Exit the infinite loop */
+        M208 (BS00, THR2, C101) /* cmd: Exit the infinite loop */
+        M20F (Arg0, 0x00, 0x00)       /* Init (Reset) the exceptional conditions flags (SUCCESS) */
+        M114 (Arg0) /* run */
+        /* Wait for all Slave threads */
+
+        M103 (Arg0)
+        If ((FLG2 != THR1))
+        {
+            ERR (Arg0, Z152, 0x0953, 0x00, 0x00, FLG2, THR1)
+        }
+
+        If ((FLG3 != THR2))
+        {
+            ERR (Arg0, Z152, 0x0956, 0x00, 0x00, FLG3, THR2)
+        }
+    }
 

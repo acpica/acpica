@@ -1,387 +1,392 @@
-/*
- * Some or all of this work - Copyright (c) 2006 - 2017, Intel Corp.
- * All rights reserved.
- *
- * Redistribution and use in source and binary forms, with or without modification,
- * are permitted provided that the following conditions are met:
- *
- * Redistributions of source code must retain the above copyright notice,
- * this list of conditions and the following disclaimer.
- * Redistributions in binary form must reproduce the above copyright notice,
- * this list of conditions and the following disclaimer in the documentation
- * and/or other materials provided with the distribution.
- * Neither the name of Intel Corporation nor the names of its contributors
- * may be used to endorse or promote products derived from this software
- * without specific prior written permission.
- *
- * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS"
- * AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE
- * IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE
- * ARE DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT OWNER OR CONTRIBUTORS BE
- * LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL
- * DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES;
- * LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY
- * THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING
- * NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE,
- * EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
- */
-
-/*
- *  Buffer
- *
- * (verify exceptions caused by the imprope use of Buffer type objects)
- */
-
-Name(z095, 95)
-
-Name(b100, Buffer(){0x61})
-
-// Expected exceptions:
-//
-// 47 - AE_AML_OPERAND_TYPE
-// Note: Buffer can be used with Index
-Method(m4b3, 1, Serialized)
-{
-	Name(ts, "m4b3")
-
-	Name(b000, Buffer(){0x62})
-
-	// Local Named Object
-	Method(m000, 1, Serialized)
-	{
-		Name(b000, Buffer(){0x63})
-
-		if (y083) {
-			Store (DerefOf(b000), Local1)
-			CH06(arg0, 0, 47)
-		}
-
-		Store (Index(b000, 0), Local1)
-		CH03(ts, z095, 0, __LINE__, 0)
-	}
-
-	// Global Named Object
-	Method(m001, 1)
-	{
-		if (y083) {
-			Store (DerefOf(b100), Local1)
-			CH06(arg0, 1, 47)
-		}
-
-		Store (Index(b100, 0), Local1)
-		CH03(ts, z095, 1, __LINE__, 0)
-	}
-
-	// Argument
-	Method(m002, 2)
-	{
-		Store (DerefOf(arg1), Local1)
-		CH06(arg0, 2, 47)
-
-		Release(arg1)
-		CH06(arg0, 3, 47)
-
-		Reset(arg1)
-		CH06(arg0, 4, 47)
-
-		Signal(arg1)
-		CH06(arg0, 5, 47)
-
-		Store(Acquire(arg1, 0), Local1)
-		CH06(arg0, 6, 47)
-
-		Store (Index(arg1, 0), Local1)
-		CH03(ts, z095, 2, __LINE__, 0)
-
-		Store(Wait(arg1, 0), Local1)
-		CH06(arg0, 7, 47)
-
-		Store (Match(arg1, MTR, 0, MTR, 0, 0), Local1)
-		CH06(arg0, 8, 47)
-	}
+    /*
+     * Some or all of this work - Copyright (c) 2006 - 2017, Intel Corp.
+     * All rights reserved.
+     *
+     * Redistribution and use in source and binary forms, with or without modification,
+     * are permitted provided that the following conditions are met:
+     *
+     * Redistributions of source code must retain the above copyright notice,
+     * this list of conditions and the following disclaimer.
+     * Redistributions in binary form must reproduce the above copyright notice,
+     * this list of conditions and the following disclaimer in the documentation
+     * and/or other materials provided with the distribution.
+     * Neither the name of Intel Corporation nor the names of its contributors
+     * may be used to endorse or promote products derived from this software
+     * without specific prior written permission.
+     *
+     * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS"
+     * AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE
+     * IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE
+     * ARE DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT OWNER OR CONTRIBUTORS BE
+     * LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL
+     * DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES;
+     * LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY
+     * THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING
+     * NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE,
+     * EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
+     */
+    /*
+     *  Buffer
+     *
+     * (verify exceptions caused by the imprope use of Buffer type objects)
+     */
+    Name (Z095, 0x5F)
+    Name (B100, Buffer (0x01)
+    {
+         0x61                                             // a
+    })
+    /* Expected exceptions: */
+    /* */
+    /* 47 - AE_AML_OPERAND_TYPE */
+    /* Note: Buffer can be used with Index */
+    Method (M4B3, 1, Serialized)
+    {
+        Name (TS, "m4b3")
+        Name (B000, Buffer (0x01)
+        {
+             0x62                                             // b
+        })
+        /* Local Named Object */
+
+        Method (M000, 1, Serialized)
+        {
+            Name (B000, Buffer (0x01)
+            {
+                 0x63                                             // c
+            })
+            If (Y083)
+            {
+                Local1 = DerefOf (B000)
+                CH06 (Arg0, 0x00, 0x2F)
+            }
+
+            Store (B000 [0x00], Local1)
+            CH03 (TS, Z095, 0x00, 0x3C, 0x00)
+        }
+
+        /* Global Named Object */
+
+        Method (M001, 1, NotSerialized)
+        {
+            If (Y083)
+            {
+                Local1 = DerefOf (B100)
+                CH06 (Arg0, 0x01, 0x2F)
+            }
+
+            Store (B100 [0x00], Local1)
+            CH03 (TS, Z095, 0x01, 0x48, 0x00)
+        }
+
+        /* Argument */
+
+        Method (M002, 2, NotSerialized)
+        {
+            Local1 = DerefOf (Arg1)
+            CH06 (Arg0, 0x02, 0x2F)
+            Release (Arg1)
+            CH06 (Arg0, 0x03, 0x2F)
+            Reset (Arg1)
+            CH06 (Arg0, 0x04, 0x2F)
+            Signal (Arg1)
+            CH06 (Arg0, 0x05, 0x2F)
+            Local1 = Acquire (Arg1, 0x0000)
+            CH06 (Arg0, 0x06, 0x2F)
+            Store (Arg1 [0x00], Local1)
+            CH03 (TS, Z095, 0x02, 0x5E, 0x00)
+            Local1 = Wait (Arg1, 0x00)
+            CH06 (Arg0, 0x07, 0x2F)
+            Local1 = Match (Arg1, MTR, 0x00, MTR, 0x00, 0x00)
+            CH06 (Arg0, 0x08, 0x2F)
+        }
+
+        /* Local */
+
+        Method (M003, 1, NotSerialized)
+        {
+            Local0 = Buffer (0x01)
+                {
+                     0x63                                             // c
+                }
+            Local1 = DerefOf (Local0)
+            CH06 (Arg0, 0x09, 0x2F)
+            Release (Local0)
+            CH06 (Arg0, 0x0A, 0x2F)
+            Reset (Local0)
+            CH06 (Arg0, 0x0B, 0x2F)
+            Signal (Local0)
+            CH06 (Arg0, 0x0C, 0x2F)
+            Local1 = Acquire (Local0, 0x0000)
+            CH06 (Arg0, 0x0D, 0x2F)
+            Store (Local0 [0x00], Local1)
+            CH03 (TS, Z095, 0x03, 0x7C, 0x00)
+            Local1 = Wait (Local0, 0x00)
+            CH06 (Arg0, 0x0E, 0x2F)
+            Local1 = Match (Local0, MTR, 0x00, MTR, 0x00, 0x00)
+            CH06 (Arg0, 0x0F, 0x2F)
+        }
+
+        /* An element of Package */
+
+        Method (M004, 1, Serialized)
+        {
+            Name (P000, Package (0x01)
+            {
+                Buffer (0x01)
+                {
+                     0x63                                             // c
+                }
+            })
+            /* DeRefOf(Index(Package, Ind, Dest)) */
+
+            Local1 = DerefOf (DerefOf (Local0 = P000 [0x00]))
+            CH06 (Arg0, 0x12, 0x2F)
+            Store (DerefOf (Local0 = P000 [0x00]) [0x00], Local1)
+            CH03 (TS, Z095, 0x05, 0x90, 0x00)
+            Local1 = Match (DerefOf (Local0 = P000 [0x00]), MTR, 0x00, MTR, 0x00, 
+                0x00)
+            CH06 (Arg0, 0x13, 0x2F)
+        }
+
+        /* Reference to Object */
+
+        Method (M005, 2, NotSerialized)
+        {
+            Debug = Arg0
+            Debug = Arg1
+            Local0 = ObjectType (Arg1)
+            If ((Local0 != 0x03))
+            {
+                ERR (Arg0, Z095, 0x9E, 0x00, 0x00, Local0, 0x03)
+                Return (0x01)
+            }
+
+            Local1 = DerefOf (Arg1)
+            CH03 (TS, Z095, 0x06, 0xA3, 0x00)
+            Local1 = DerefOf (DerefOf (Arg1))
+            CH06 (Arg0, 0x15, 0x2F)
+            Store (DerefOf (Arg1) [0x00], Local1)
+            CH03 (TS, Z095, 0x07, 0xA9, 0x00)
+            Local1 = Match (DerefOf (Arg1), MTR, 0x00, MTR, 0x00, 0x00)
+            CH06 (Arg0, 0x16, 0x2F)
+            Return (0x00)
+        }
+
+        /* Result of Method invocation */
+
+        Method (M006, 1, Serialized)
+        {
+            Name (I000, 0x00) /* Label to check m000 invocations */
+            Method (M000, 1, NotSerialized)
+            {
+                I000 = Arg0
+                Local0 = Buffer (0x01)
+                    {
+                         0x63                                             // c
+                    }
+                Return (Local0)
+            }
+
+            Method (CH00, 2, NotSerialized)
+            {
+                If ((I000 != Arg1))
+                {
+                    ERR (Arg0, Z095, 0xC0, 0x00, 0x00, I000, Arg1)
+                }
+            }
+
+            Local1 = DerefOf (M000 (0x01))
+            CH06 (Arg0, 0x18, 0x2F)
+            CH00 (Arg0, 0x01)
+            Release (M000 (0x02))
+            CH06 (Arg0, 0x19, 0x2F)
+            If (Y600)
+            {
+                CH00 (Arg0, 0x02)
+            }
+
+            Reset (M000 (0x03))
+            CH06 (Arg0, 0x1A, 0x2F)
+            If (Y600)
+            {
+                CH00 (Arg0, 0x03)
+            }
+
+            Signal (M000 (0x04))
+            CH06 (Arg0, 0x1B, 0x2F)
+            If (Y600)
+            {
+                CH00 (Arg0, 0x04)
+            }
+
+            Local1 = Acquire (M000 (0x05), 0x0000)
+            CH06 (Arg0, 0x1C, 0x2F)
+            If (Y600)
+            {
+                CH00 (Arg0, 0x05)
+            }
+
+            CH03 (TS, Z095, 0x0C, 0xE0, 0x00)
+            Store (M000 (0x06) [0x00], Local1)
+            If (Y900)
+            {
+                CH03 (TS, Z095, 0x08, 0xE3, 0x00)
+                CH00 (Arg0, 0x06)
+            }
+            Else
+            {
+                CH04 (TS, 0x00, 0x55, Z095, 0xE6, 0x00, 0x00) /* AE_INDEX_TO_NOT_ATTACHED */
+            }
+
+            Local1 = Wait (M000 (0x07), 0x00)
+            CH06 (Arg0, 0x1D, 0x2F)
+            If (Y600)
+            {
+                CH00 (Arg0, 0x07)
+            }
+
+            Local1 = Match (M000 (0x08), MTR, 0x00, MTR, 0x00, 0x00)
+            CH06 (Arg0, 0x1E, 0x2F)
+            CH00 (Arg0, 0x08)
+        }
+
+        /* Reference to Object as Result of Method invocation */
+
+        Method (M007, 1, Serialized)
+        {
+            Name (B000, Buffer (0x01)
+            {
+                 0x63                                             // c
+            })
+            Name (I000, 0x00) /* Label to check m000 invocations */
+            Method (M000, 2, NotSerialized)
+            {
+                I000 = Arg0
+                If ((Arg1 == 0x00))
+                {
+                    Local0 = RefOf (B100)
+                }
+                ElseIf ((Arg1 == 0x01))
+                {
+                    Local0 = RefOf (B000)
+                }
+
+                Return (Local0)
+            }
+
+            Method (CH00, 2, NotSerialized)
+            {
+                If ((I000 != Arg1))
+                {
+                    ERR (Arg0, Z095, 0x0109, 0x00, 0x00, I000, Arg1)
+                }
+            }
+
+            Name (LPN0, 0x02)
+            Name (LPC0, 0x00)
+            While (LPN0)
+            {
+                Local0 = (0x03 * LPC0) /* \M4B3.M007.LPC0 */
+                I000 = 0x00
+                Local1 = DerefOf (M000 (0x01, LPC0))
+                CH03 (TS, Z095, 0x0116, 0x00, 0x00)
+                CH00 (Arg0, 0x01)
+                Local1 = DerefOf (DerefOf (M000 (0x02, LPC0)))
+                CH06 (Arg0, (0x20 + Local0), 0x2F)
+                CH00 (Arg0, 0x02)
+                Store (DerefOf (M000 (0x03, LPC0)) [0x00], Local1)
+                CH06 (Arg0, (0x21 + Local0), 0x2F)
+                CH00 (Arg0, 0x03)
+                Local1 = Match (DerefOf (M000 (0x04, LPC0)), MTR, 0x00, MTR, 0x00, 0x00)
+                CH06 (Arg0, (0x22 + Local0), 0x2F)
+                CH00 (Arg0, 0x04)
+                LPN0--
+                LPC0++
+            }
+        }
+
+        CH03 (TS, Z095, 0x0B, 0x012A, 0x00)
+        /* Local Named Object */
+
+        M000 (TS)
+        /* Global Named Object */
+
+        M001 (TS)
+        /* Argument */
+
+        M002 (TS, Buffer (0x01)
+            {
+                 0x62                                             // b
+            })
+        /* Local */
+
+        M003 (TS)
+        /* An element of Package */
+
+        M004 (TS)
+        /* Reference to Local Named Object */
+
+        M005 (Concatenate (TS, "-m005-RefLocName"), RefOf (B000))
+        Local0 = RefOf (B000)
+        M005 (Concatenate (TS, "-m005-RefLocName2"), Local0)
+        CondRefOf (B000, Local0)
+        M005 (Concatenate (TS, "-m005-CondRefLocName"), Local0)
+        M005 (Concatenate (TS, "-m005-RefGlobName"), RefOf (B100))
+        Local0 = RefOf (B100)
+        M005 (Concatenate (TS, "-m005-RefGlobName2"), Local0)
+        CondRefOf (B100, Local0)
+        M005 (Concatenate (TS, "-m005-CondRefGlobName"), Local0)
+        /* Reference to Local */
+
+        Local0 = Buffer (0x01)
+            {
+                 0x62                                             // b
+            }
+        M005 (Concatenate (TS, "-m005-RefLocal"), RefOf (Local0))
+        Local1 = RefOf (Local0)
+        M005 (Concatenate (TS, "-m005-RefLocal2"), Local1)
+        CondRefOf (Local0, Local1)
+        M005 (Concatenate (TS, "-m005-CondRefLocal"), Local1)
+        /* Reference to Arg */
+
+        M005 (Concatenate (TS, "-m005-RefArg"), RefOf (Arg0))
+        Local0 = RefOf (Arg0)
+        M005 (Concatenate (TS, "-m005-RefArg2"), Local0)
+        CondRefOf (Arg0, Local0)
+        M005 (Concatenate (TS, "-m005-CondRefArg"), Local0)
+        /* Index to Package */
+
+        Name (P000, Package (0x01)
+        {
+            Buffer (0x01)
+            {
+                 0x62                                             // b
+            }
+        })
+        If (Y113)
+        {
+            M005 (Concatenate (TS, "-m005-Index"), P000 [0x00])
+        }
+
+        Store (P000 [0x00], Local0)
+        M005 (Concatenate (TS, "-m005-Index2"), Local0)
+        If (Y113)
+        {
+            M005 (Concatenate (TS, "-m005-Index3"), Local0 = P000 [0x00])
+        }
+
+        Local0 = P000 [0x00]
+        M005 (Concatenate (TS, "-m005-Index4"), Local0)
+        Local1 = Local0 = P000 [0x00]
+        M005 (Concatenate (TS, "-m005-Index5"), Local1)
+        /* Result of Method invocation */
+
+        M006 (TS)
+        /* Reference to Object as Result of Method invocation */
+
+        If (Y500)
+        {
+            M007 (TS)
+        }
+    }
 
-	// Local
-	Method(m003, 1)
-	{
-		Store(Buffer(){0x63}, Local0)
-
-		Store (DerefOf(Local0), Local1)
-		CH06(arg0, 9, 47)
-
-		Release(Local0)
-		CH06(arg0, 10, 47)
-
-		Reset(Local0)
-		CH06(arg0, 11, 47)
-
-		Signal(Local0)
-		CH06(arg0, 12, 47)
-
-		Store(Acquire(Local0, 0), Local1)
-		CH06(arg0, 13, 47)
-
-		Store (Index(Local0, 0), Local1)
-		CH03(ts, z095, 3, __LINE__, 0)
-
-		Store(Wait(Local0, 0), Local1)
-		CH06(arg0, 14, 47)
-
-		Store (Match(Local0, MTR, 0, MTR, 0, 0), Local1)
-		CH06(arg0, 15, 47)
-	}
-
-	// An element of Package
-	Method(m004, 1, Serialized)
-	{
-		Name(p000, Package(){Buffer(){0x63}})
-
-		// DeRefOf(Index(Package, Ind, Dest))
-
-		Store (DerefOf(DeRefOf(Index(p000, 0, Local0))), Local1)
-		CH06(arg0, 18, 47)
-
-		Store (Index(DeRefOf(Index(p000, 0, Local0)), 0), Local1)
-		CH03(ts, z095, 5, __LINE__, 0)
-
-		Store (Match(DeRefOf(Index(p000, 0, Local0)), MTR, 0, MTR, 0, 0), Local1)
-		CH06(arg0, 19, 47)
-	}
-
-	// Reference to Object
-	Method(m005, 2)
-	{
-		Store(arg0, Debug)
-		Store(arg1, Debug)
-
-		Store(ObjectType(arg1), Local0)
-		if (LNotEqual(Local0, 3)) {
-			err(arg0, z095, __LINE__, 0, 0, Local0, 3)
-			return (1)
-		}
-
-		Store (DerefOf(arg1), Local1)
-		CH03(ts, z095, 6, __LINE__, 0)
-
-		Store (DerefOf(DerefOf(arg1)), Local1)
-		CH06(arg0, 21, 47)
-
-		Store (Index(DerefOf(arg1), 0), Local1)
-		CH03(ts, z095, 7, __LINE__, 0)
-
-		Store (Match(DerefOf(arg1), MTR, 0, MTR, 0, 0), Local1)
-		CH06(arg0, 22, 47)
-
-		return (0)
-	}
-
-	// Result of Method invocation
-	Method(m006, 1, Serialized)
-	{
-		Name(i000, 0) // Label to check m000 invocations
-
-		Method(m000, 1)
-		{
-			Store(arg0, i000)
-			Store(Buffer(){0x63}, Local0)
-			Return (Local0)
-		}
-
-		Method(CH00, 2)
-		{
-			if (LNotEqual(i000, arg1)) {
-				err(arg0, z095, __LINE__, 0, 0, i000, arg1)
-			}
-		}
-
-		Store (DerefOf(m000(1)), Local1)
-		CH06(arg0, 24, 47)
-		CH00(arg0, 1)
-
-		Release(m000(2))
-		CH06(arg0, 25, 47)
-		if (y600) {
-			CH00(arg0, 2)
-		}
-
-		Reset(m000(3))
-		CH06(arg0, 26, 47)
-		if (y600) {
-			CH00(arg0, 3)
-		}
-
-		Signal(m000(4))
-		CH06(arg0, 27, 47)
-		if (y600) {
-			CH00(arg0, 4)
-		}
-
-		Store(Acquire(m000(5), 0), Local1)
-		CH06(arg0, 28, 47)
-		if (y600) {
-			CH00(arg0, 5)
-		}
-
-		CH03(ts, z095, 12, __LINE__, 0)
-		Store (Index(m000(6), 0), Local1)
-		if (y900) {
-			CH03(ts, z095, 8, __LINE__, 0)
-			CH00(arg0, 6)
-		} else {
-			CH04(ts, 0, 85, z095, __LINE__, 0, 0) // AE_INDEX_TO_NOT_ATTACHED
-		}
-
-		Store(Wait(m000(7), 0), Local1)
-		CH06(arg0, 29, 47)
-		if (y600) {
-			CH00(arg0, 7)
-		}
-
-		Store (Match(m000(8), MTR, 0, MTR, 0, 0), Local1)
-		CH06(arg0, 30, 47)
-		CH00(arg0, 8)
-	}
-
-	// Reference to Object as Result of Method invocation
-	Method(m007, 1, Serialized)
-	{
-		Name(b000, Buffer(){0x63})
-
-		Name(i000, 0) // Label to check m000 invocations
-
-		Method(m000, 2)
-		{
-			Store(arg0, i000)
-			if (LEqual(arg1, 0)) {
-				Store(Refof(b100), Local0)
-			} elseif (LEqual(arg1, 1)) {
-				Store(Refof(b000), Local0)
-			}
-			Return (Local0)
-		}
-
-		Method(CH00, 2)
-		{
-			if (LNotEqual(i000, arg1)) {
-				err(arg0, z095, __LINE__, 0, 0, i000, arg1)
-			}
-		}
-
-		Name(lpN0, 2)
-		Name(lpC0, 0)
-
-		While (lpN0) {
-			Multiply(3, lpC0, Local0)
-
-			Store(0, i000)
-
-			Store (DerefOf(m000(1, lpC0)), Local1)
-			CH03(ts, z095, __LINE__, 0, 0)
-			CH00(arg0, 1)
-
-			Store (DerefOf(DerefOf(m000(2, lpC0))), Local1)
-			CH06(arg0, Add(32, Local0), 47)
-			CH00(arg0, 2)
-
-			Store (Index(DerefOf(m000(3, lpC0)), 0), Local1)
-			CH06(arg0, Add(33, Local0), 47)
-			CH00(arg0, 3)
-
-			Store (Match(DerefOf(m000(4, lpC0)), MTR, 0, MTR, 0, 0), Local1)
-			CH06(arg0, Add(34, Local0), 47)
-			CH00(arg0, 4)
-
-			Decrement(lpN0)
-			Increment(lpC0)
-		}
-	}
-
-	CH03(ts, z095, 11, __LINE__, 0)
-
-	// Local Named Object
-	m000(ts)
-
-	// Global Named Object
-	m001(ts)
-
-	// Argument
-	m002(ts, Buffer(){0x62})
-
-	// Local
-	m003(ts)
-
-	// An element of Package
-	m004(ts)
-
-
-	// Reference to Local Named Object
-
-	m005(Concatenate(ts, "-m005-RefLocName"), RefOf(b000))
-
-	Store(RefOf(b000), Local0)
-	m005(Concatenate(ts, "-m005-RefLocName2"), Local0)
-
-	CondRefOf(b000, Local0)
-	m005(Concatenate(ts, "-m005-CondRefLocName"), Local0)
-
-	m005(Concatenate(ts, "-m005-RefGlobName"), RefOf(b100))
-
-	Store(RefOf(b100), Local0)
-	m005(Concatenate(ts, "-m005-RefGlobName2"), Local0)
-
-	CondRefOf(b100, Local0)
-	m005(Concatenate(ts, "-m005-CondRefGlobName"), Local0)
-
-
-	// Reference to Local
-
-	Store(Buffer(){0x62}, Local0)
-
-	m005(Concatenate(ts, "-m005-RefLocal"), RefOf(Local0))
-
-	Store(RefOf(Local0), Local1)
-	m005(Concatenate(ts, "-m005-RefLocal2"), Local1)
-
-	CondRefOf(Local0, Local1)
-	m005(Concatenate(ts, "-m005-CondRefLocal"), Local1)
-
-
-	// Reference to Arg
-
-	m005(Concatenate(ts, "-m005-RefArg"), RefOf(arg0))
-
-	Store(RefOf(arg0), Local0)
-	m005(Concatenate(ts, "-m005-RefArg2"), Local0)
-
-	CondRefOf(arg0, Local0)
-	m005(Concatenate(ts, "-m005-CondRefArg"), Local0)
-
-
-	// Index to Package
-
-	Name(p000, Package(){Buffer(){0x62}})
-
-	if (y113) {
-		m005(Concatenate(ts, "-m005-Index"), Index(p000, 0))
-	}
-
-	Store(Index(p000, 0), Local0)
-	m005(Concatenate(ts, "-m005-Index2"), Local0)
-
-	if (y113) {
-		m005(Concatenate(ts, "-m005-Index3"), Index(p000, 0, Local0))
-	}
-
-	Index(p000, 0, Local0)
-	m005(Concatenate(ts, "-m005-Index4"), Local0)
-
-	Store(Index(p000, 0, Local0), Local1)
-	m005(Concatenate(ts, "-m005-Index5"), Local1)
-
-	// Result of Method invocation
-	m006(ts)
-
-	// Reference to Object as Result of Method invocation
-	if (y500) {
-		m007(ts)
-	}
-}

@@ -1,472 +1,459 @@
-/*
- * Some or all of this work - Copyright (c) 2006 - 2017, Intel Corp.
- * All rights reserved.
- *
- * Redistribution and use in source and binary forms, with or without modification,
- * are permitted provided that the following conditions are met:
- *
- * Redistributions of source code must retain the above copyright notice,
- * this list of conditions and the following disclaimer.
- * Redistributions in binary form must reproduce the above copyright notice,
- * this list of conditions and the following disclaimer in the documentation
- * and/or other materials provided with the distribution.
- * Neither the name of Intel Corporation nor the names of its contributors
- * may be used to endorse or promote products derived from this software
- * without specific prior written permission.
- *
- * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS"
- * AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE
- * IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE
- * ARE DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT OWNER OR CONTRIBUTORS BE
- * LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL
- * DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES;
- * LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY
- * THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING
- * NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE,
- * EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
- */
-
-/*
- *  String
- *
- * (verify exceptions caused by the imprope use of String type objects)
- */
+    /*
+     * Some or all of this work - Copyright (c) 2006 - 2017, Intel Corp.
+     * All rights reserved.
+     *
+     * Redistribution and use in source and binary forms, with or without modification,
+     * are permitted provided that the following conditions are met:
+     *
+     * Redistributions of source code must retain the above copyright notice,
+     * this list of conditions and the following disclaimer.
+     * Redistributions in binary form must reproduce the above copyright notice,
+     * this list of conditions and the following disclaimer in the documentation
+     * and/or other materials provided with the distribution.
+     * Neither the name of Intel Corporation nor the names of its contributors
+     * may be used to endorse or promote products derived from this software
+     * without specific prior written permission.
+     *
+     * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS"
+     * AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE
+     * IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE
+     * ARE DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT OWNER OR CONTRIBUTORS BE
+     * LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL
+     * DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES;
+     * LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY
+     * THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING
+     * NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE,
+     * EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
+     */
+    /*
+     *  String
+     *
+     * (verify exceptions caused by the imprope use of String type objects)
+     */
+    Name (Z094, 0x5E)
+    Name (S100, "1")
+    /* Expected exceptions: */
+    /* */
+    /* 47 - AE_AML_OPERAND_TYPE */
+    /*  5 - AE_NOT_FOUND (when DerefOf(String)) */
+    /* */
+    /* Note: String can be used with DerefOf and Index */
+    Method (M4B2, 1, Serialized)
+    {
+        Name (TS, "m4b2")
+        Name (S000, "2")
+        /* Local Named Object */
+
+        Method (M000, 1, Serialized)
+        {
+            Name (S000, "3")
+            /* DerefOf */
+
+            If (Y083)
+            {
+                Local1 = DerefOf (S000)
+                CH06 (Arg0, 0x00, 0x2F)
+            }
+
+            /* Index */
+
+            Local1 = S000 [0x00]
+            CH03 (TS, Z094, 0x01, 0x42, 0x00)
+            /* ConcatenateResTemplate */
+
+            ConcatenateResTemplate (S000, Buffer (0x02)
+                {
+                     0x79, 0x00                                       // y.
+                }, Local1)
+            CH06 (Arg0, 0x03, 0x2F)
+            ConcatenateResTemplate (Buffer (0x02)
+                {
+                     0x79, 0x00                                       // y.
+                }, S000, Local1)
+            CH06 (Arg0, 0x04, 0x2F)
+        }
+
+        /* Global Named Object */
+
+        Method (M001, 1, NotSerialized)
+        {
+            If (Y083)
+            {
+                Local1 = DerefOf (S100)
+                CH06 (Arg0, 0x05, 0x2F)
+            }
+
+            /* Index */
+
+            Local1 = S100 [0x00]
+            CH03 (TS, Z094, 0x03, 0x59, 0x00)
+            /* ConcatenateResTemplate */
+
+            ConcatenateResTemplate (S100, Buffer (0x02)
+                {
+                     0x79, 0x00                                       // y.
+                }, Local1)
+            CH06 (Arg0, 0x08, 0x2F)
+            ConcatenateResTemplate (Buffer (0x02)
+                {
+                     0x79, 0x00                                       // y.
+                }, S100, Local1)
+            CH06 (Arg0, 0x09, 0x2F)
+        }
+
+        /* Argument */
+
+        Method (M002, 2, NotSerialized)
+        {
+            /* DerefOf */
+
+            Local1 = DerefOf (Arg1)
+            CH06 (Arg0, 0x0A, 0x2F)
+            /* Release */
+
+            Release (Arg1)
+            CH06 (Arg0, 0x0B, 0x2F)
+            /* Reset */
+
+            Reset (Arg1)
+            CH06 (Arg0, 0x0C, 0x2F)
+            /* Signal */
+
+            Signal (Arg1)
+            CH06 (Arg0, 0x0D, 0x2F)
+            /* Acquire */
+
+            Local1 = Acquire (Arg1, 0x0000)
+            CH06 (Arg0, 0x0E, 0x2F)
+            /* ConcatenateResTemplate */
+
+            ConcatenateResTemplate (Arg1, Buffer (0x02)
+                {
+                     0x79, 0x00                                       // y.
+                }, Local1)
+            CH06 (Arg0, 0x11, 0x2F)
+            ConcatenateResTemplate (Buffer (0x02)
+                {
+                     0x79, 0x00                                       // y.
+                }, Arg1, Local1)
+            CH06 (Arg0, 0x12, 0x2F)
+            /* Index */
+
+            Local1 = Arg1 [0x00]
+            CH03 (TS, Z094, 0x05, 0x8C, 0x00)
+            /* Wait */
+
+            Local1 = Wait (Arg1, 0x00)
+            CH06 (Arg0, 0x13, 0x2F)
+            /* Match */
+
+            Local1 = Match (Arg1, MTR, 0x00, MTR, 0x00, 0x00)
+            CH06 (Arg0, 0x14, 0x2F)
+        }
+
+        /* Local */
+
+        Method (M003, 1, NotSerialized)
+        {
+            Local0 = "3"
+            /* DerefOf */
+
+            Local1 = DerefOf (Local0)
+            CH06 (Arg0, 0x15, 0x2F)
+            /* Release */
+
+            Release (Local0)
+            CH06 (Arg0, 0x16, 0x2F)
+            /* Reset */
+
+            Reset (Local0)
+            CH06 (Arg0, 0x17, 0x2F)
+            /* Signal */
+
+            Signal (Local0)
+            CH06 (Arg0, 0x18, 0x2F)
+            /* Acquire */
+
+            Local1 = Acquire (Local0, 0x0000)
+            CH06 (Arg0, 0x19, 0x2F)
+            /* ConcatenateResTemplate */
+
+            ConcatenateResTemplate (Local0, Buffer (0x02)
+                {
+                     0x79, 0x00                                       // y.
+                }, Local1)
+            CH06 (Arg0, 0x1C, 0x2F)
+            ConcatenateResTemplate (Buffer (0x02)
+                {
+                     0x79, 0x00                                       // y.
+                }, Local0, Local1)
+            CH06 (Arg0, 0x1D, 0x2F)
+            /* Index */
+
+            Local1 = Local0 [0x00]
+            CH03 (TS, Z094, 0x07, 0xC2, 0x00)
+            /* Wait */
+
+            Local1 = Wait (Local0, 0x00)
+            CH06 (Arg0, 0x1E, 0x2F)
+            /* Match */
+
+            Local1 = Match (Local0, MTR, 0x00, MTR, 0x00, 0x00)
+            CH06 (Arg0, 0x1F, 0x2F)
+        }
+
+        /* An element of Package */
+
+        Method (M004, 1, Serialized)
+        {
+            Name (P000, Package (0x01)
+            {
+                "3"
+            })
+            /* DeRefOf(Index(Package, Ind)) */
+
+            Local1 = DerefOf (DerefOf (P000 [0x00]))
+            CH06 (Arg0, 0x20, 0x05)
+            Store (DerefOf (P000 [0x00]) [0x00], Local1)
+            CH03 (TS, Z094, 0x08, 0xDA, 0x00)
+            Local1 = Match (DerefOf (P000 [0x00]), MTR, 0x00, MTR, 0x00, 
+                0x00)
+            CH06 (Arg0, 0x21, 0x2F)
+            /* DeRefOf(Index(Package, Ind, Dest)) */
+
+            Local1 = DerefOf (DerefOf (Local0 = P000 [0x00]))
+            CH06 (Arg0, 0x22, 0x05)
+            Store (DerefOf (Local0 = P000 [0x00]) [0x00], Local1)
+            CH03 (TS, Z094, 0x09, 0xE5, 0x00)
+            Local1 = Match (DerefOf (Local0 = P000 [0x00]), MTR, 0x00, MTR, 0x00, 
+                0x00)
+            CH06 (Arg0, 0x23, 0x2F)
+        }
+
+        /* Reference to Object */
+
+        Method (M005, 2, NotSerialized)
+        {
+            Debug = Arg0
+            Debug = Arg1
+            Local0 = ObjectType (Arg1)
+            If ((Local0 != 0x02))
+            {
+                ERR (Arg0, Z094, 0xF3, 0x00, 0x00, Local0, 0x02)
+                Return (0x01)
+            }
+
+            Local1 = DerefOf (Arg1)
+            CH03 (TS, Z094, 0x0A, 0xF8, 0x00)
+            Local1 = DerefOf (DerefOf (Arg1))
+            CH06 (Arg0, 0x25, 0x05)
+            Store (DerefOf (Arg1) [0x00], Local1)
+            CH03 (TS, Z094, 0x0B, 0xFE, 0x00)
+            Local1 = Match (DerefOf (Arg1), MTR, 0x00, MTR, 0x00, 0x00)
+            CH06 (Arg0, 0x26, 0x2F)
+            Return (0x00)
+        }
+
+        /* Result of Method invocation */
+
+        Method (M006, 1, Serialized)
+        {
+            Name (I000, 0x00) /* Label to check m000 invocations */
+            Method (M000, 1, NotSerialized)
+            {
+                I000 = Arg0
+                Local0 = "3"
+                Return (Local0)
+            }
+
+            Method (CH00, 2, NotSerialized)
+            {
+                If ((I000 != Arg1))
+                {
+                    ERR (Arg0, Z094, 0x0115, 0x00, 0x00, I000, Arg1)
+                }
+            }
+
+            Local1 = DerefOf (M000 (0x01))
+            CH06 (Arg0, 0x28, 0x05)
+            CH00 (Arg0, 0x01)
+            Release (M000 (0x02))
+            CH06 (Arg0, 0x29, 0x2F)
+            If (Y600)
+            {
+                CH00 (Arg0, 0x02)
+            }
+
+            Reset (M000 (0x03))
+            CH06 (Arg0, 0x2A, 0x2F)
+            If (Y600)
+            {
+                CH00 (Arg0, 0x03)
+            }
+
+            Signal (M000 (0x04))
+            CH06 (Arg0, 0x2B, 0x2F)
+            If (Y600)
+            {
+                CH00 (Arg0, 0x04)
+            }
+
+            Local1 = Acquire (M000 (0x05), 0x0000)
+            CH06 (Arg0, 0x2C, 0x2F)
+            If (Y600)
+            {
+                CH00 (Arg0, 0x05)
+            }
+
+            CH03 (TS, Z094, 0x0C, 0x0135, 0x00)
+            Store (M000 (0x06) [0x00], Local1)
+            If (Y900)
+            {
+                CH03 (TS, Z094, 0x0C, 0x0138, 0x00)
+                CH00 (Arg0, 0x06)
+            }
+            Else
+            {
+                CH04 (TS, 0x00, 0x55, Z094, 0x013B, 0x00, 0x00) /* AE_INDEX_TO_NOT_ATTACHED */
+            }
+
+            Local1 = Wait (M000 (0x07), 0x00)
+            CH06 (Arg0, 0x2D, 0x2F)
+            If (Y600)
+            {
+                CH00 (Arg0, 0x07)
+            }
+
+            Local1 = Match (M000 (0x08), MTR, 0x00, MTR, 0x00, 0x00)
+            CH06 (Arg0, 0x2E, 0x2F)
+            CH00 (Arg0, 0x08)
+        }
+
+        /* Reference to Object as Result of Method invocation */
+
+        Method (M007, 1, Serialized)
+        {
+            Name (S000, "3")
+            Name (I000, 0x00) /* Label to check m000 invocations */
+            Method (M000, 2, NotSerialized)
+            {
+                I000 = Arg0
+                If ((Arg1 == 0x00))
+                {
+                    Local0 = RefOf (S100)
+                }
+                ElseIf ((Arg1 == 0x01))
+                {
+                    Local0 = RefOf (S000)
+                }
+
+                Return (Local0)
+            }
+
+            Method (CH00, 2, NotSerialized)
+            {
+                If ((I000 != Arg1))
+                {
+                    ERR (Arg0, Z094, 0x015E, 0x00, 0x00, I000, Arg1)
+                }
+            }
+
+            Name (LPN0, 0x02)
+            Name (LPC0, 0x00)
+            While (LPN0)
+            {
+                Local0 = (0x03 * LPC0) /* \M4B2.M007.LPC0 */
+                I000 = 0x00
+                Local1 = DerefOf (M000 (0x01, LPC0))
+                CH03 (TS, Z094, 0x016B, 0x00, 0x00)
+                CH00 (Arg0, 0x01)
+                Local1 = DerefOf (DerefOf (M000 (0x02, LPC0)))
+                CH06 (Arg0, (0x30 + Local0), 0x2F)
+                CH00 (Arg0, 0x02)
+                Store (DerefOf (M000 (0x03, LPC0)) [0x00], Local1)
+                CH06 (Arg0, (0x31 + Local0), 0x2F)
+                CH00 (Arg0, 0x03)
+                Local1 = Match (DerefOf (M000 (0x04, LPC0)), MTR, 0x00, MTR, 0x00, 0x00)
+                CH06 (Arg0, (0x32 + Local0), 0x2F)
+                CH00 (Arg0, 0x04)
+                LPN0--
+                LPC0++
+            }
+        }
+
+        CH03 (TS, Z094, 0x0F, 0x017F, 0x00)
+        /* Local Named Object */
+
+        M000 (TS)
+        /* Global Named Object */
+
+        M001 (TS)
+        /* Argument */
+
+        M002 (TS, "2")
+        /* Local */
+
+        M003 (TS)
+        /* An element of Package */
+
+        M004 (TS)
+        /* Reference to Local Named Object */
+
+        M005 (Concatenate (TS, "-m005-RefLocName"), RefOf (S000))
+        Local0 = RefOf (S000)
+        M005 (Concatenate (TS, "-m005-RefLocName2"), Local0)
+        CondRefOf (S000, Local0)
+        M005 (Concatenate (TS, "-m005-CondRefLocName"), Local0)
+        M005 (Concatenate (TS, "-m005-RefGlobName"), RefOf (S100))
+        Local0 = RefOf (S100)
+        M005 (Concatenate (TS, "-m005-RefGlobName2"), Local0)
+        CondRefOf (S100, Local0)
+        M005 (Concatenate (TS, "-m005-CondRefGlobName"), Local0)
+        /* Reference to Local */
+
+        Local0 = "2"
+        M005 (Concatenate (TS, "-m005-RefLocal"), RefOf (Local0))
+        Local1 = RefOf (Local0)
+        M005 (Concatenate (TS, "-m005-RefLocal2"), Local1)
+        CondRefOf (Local0, Local1)
+        M005 (Concatenate (TS, "-m005-CondRefLocal"), Local1)
+        /* Reference to Arg */
+
+        M005 (Concatenate (TS, "-m005-RefArg"), RefOf (Arg0))
+        Local0 = RefOf (Arg0)
+        M005 (Concatenate (TS, "-m005-RefArg2"), Local0)
+        CondRefOf (Arg0, Local0)
+        M005 (Concatenate (TS, "-m005-CondRefArg"), Local0)
+        /* Index to Package */
+
+        Name (P000, Package (0x01)
+        {
+            "2"
+        })
+        If (Y113)
+        {
+            M005 (Concatenate (TS, "-m005-Index"), P000 [0x00])
+        }
+
+        Store (P000 [0x00], Local0)
+        M005 (Concatenate (TS, "-m005-Index2"), Local0)
+        If (Y113)
+        {
+            M005 (Concatenate (TS, "-m005-Index3"), Local0 = P000 [0x00])
+        }
+
+        Local0 = P000 [0x00]
+        M005 (Concatenate (TS, "-m005-Index4"), Local0)
+        Local1 = Local0 = P000 [0x00]
+        M005 (Concatenate (TS, "-m005-Index5"), Local1)
+        /* Result of Method invocation */
+
+        M006 (TS)
+        /* Reference to Object as Result of Method invocation */
+
+        If (Y500)
+        {
+            M007 (TS)
+        }
+    }
 
-Name(z094, 94)
-
-Name(s100, "1")
-
-// Expected exceptions:
-//
-// 47 - AE_AML_OPERAND_TYPE
-//  5 - AE_NOT_FOUND (when DerefOf(String))
-//
-// Note: String can be used with DerefOf and Index
-Method(m4b2, 1, Serialized)
-{
-	Name(ts, "m4b2")
-
-	Name(s000, "2")
-
-	// Local Named Object
-	Method(m000, 1, Serialized)
-	{
-		Name(s000, "3")
-
-		// DerefOf
-
-		if (y083) {
-			Store (DerefOf(s000), Local1)
-			CH06(arg0, 0, 47)
-		}
-
-		// Index
-
-		Index(s000, 0, Local1)
-		CH03(ts, z094, 1, __LINE__, 0)
-
-		// ConcatenateResTemplate
-
-		ConcatenateResTemplate(s000, ResourceTemplate(){}, Local1)
-		CH06(arg0, 3, 47)
-
-		ConcatenateResTemplate(ResourceTemplate(){}, s000, Local1)
-		CH06(arg0, 4, 47)
-
-	}
-
-	// Global Named Object
-	Method(m001, 1)
-	{
-		if (y083) {
-			Store (DerefOf(s100), Local1)
-			CH06(arg0, 5, 47)
-		}
-
-		// Index
-
-		Index(s100, 0, Local1)
-		CH03(ts, z094, 3, __LINE__, 0)
-
-		// ConcatenateResTemplate
-
-		ConcatenateResTemplate(s100, ResourceTemplate(){}, Local1)
-		CH06(arg0, 8, 47)
-
-		ConcatenateResTemplate(ResourceTemplate(){}, s100, Local1)
-		CH06(arg0, 9, 47)
-
-	}
-
-	// Argument
-	Method(m002, 2)
-	{
-		// DerefOf
-
-		Store (DerefOf(arg1), Local1)
-		CH06(arg0, 10, 47)
-
-		// Release
-
-		Release(arg1)
-		CH06(arg0, 11, 47)
-
-		// Reset
-
-		Reset(arg1)
-		CH06(arg0, 12, 47)
-
-		// Signal
-
-		Signal(arg1)
-		CH06(arg0, 13, 47)
-
-		// Acquire
-
-		Store(Acquire(arg1, 0), Local1)
-		CH06(arg0, 14, 47)
-
-		// ConcatenateResTemplate
-
-		ConcatenateResTemplate(arg1, ResourceTemplate(){}, Local1)
-		CH06(arg0, 17, 47)
-
-		ConcatenateResTemplate(ResourceTemplate(){}, arg1, Local1)
-		CH06(arg0, 18, 47)
-
-		// Index
-
-		Index(arg1, 0, Local1)
-		CH03(ts, z094, 5, __LINE__, 0)
-
-		// Wait
-
-		Store(Wait(arg1, 0), Local1)
-		CH06(arg0, 19, 47)
-
-		// Match
-
-		Store (Match(arg1, MTR, 0, MTR, 0, 0), Local1)
-		CH06(arg0, 20, 47)
-	}
-
-	// Local
-	Method(m003, 1)
-	{
-		Store("3", Local0)
-
-		// DerefOf
-
-		Store (DerefOf(Local0), Local1)
-		CH06(arg0, 21, 47)
-
-		// Release
-
-		Release(Local0)
-		CH06(arg0, 22, 47)
-
-		// Reset
-
-		Reset(Local0)
-		CH06(arg0, 23, 47)
-
-		// Signal
-
-		Signal(Local0)
-		CH06(arg0, 24, 47)
-
-		// Acquire
-
-		Store(Acquire(Local0, 0), Local1)
-		CH06(arg0, 25, 47)
-
-		// ConcatenateResTemplate
-
-		ConcatenateResTemplate(Local0, ResourceTemplate(){}, Local1)
-		CH06(arg0, 28, 47)
-
-		ConcatenateResTemplate(ResourceTemplate(){}, Local0, Local1)
-		CH06(arg0, 29, 47)
-
-		// Index
-
-		Index(Local0, 0, Local1)
-		CH03(ts, z094, 7, __LINE__, 0)
-
-		// Wait
-
-		Store(Wait(Local0, 0), Local1)
-		CH06(arg0, 30, 47)
-
-		// Match
-
-		Store (Match(Local0, MTR, 0, MTR, 0, 0), Local1)
-		CH06(arg0, 31, 47)
-	}
-
-	// An element of Package
-	Method(m004, 1, Serialized)
-	{
-		Name(p000, Package(){"3"})
-
-		// DeRefOf(Index(Package, Ind))
-
-		Store (DerefOf(DeRefOf(Index(p000, 0))), Local1)
-		CH06(arg0, 32, 5)
-
-		Store (Index(DeRefOf(Index(p000, 0)), 0), Local1)
-		CH03(ts, z094, 8, __LINE__, 0)
-
-		Store (Match(DeRefOf(Index(p000, 0)), MTR, 0, MTR, 0, 0), Local1)
-		CH06(arg0, 33, 47)
-
-		// DeRefOf(Index(Package, Ind, Dest))
-
-		Store (DerefOf(DeRefOf(Index(p000, 0, Local0))), Local1)
-		CH06(arg0, 34, 5)
-
-		Store (Index(DeRefOf(Index(p000, 0, Local0)), 0), Local1)
-		CH03(ts, z094, 9, __LINE__, 0)
-
-		Store (Match(DeRefOf(Index(p000, 0, Local0)), MTR, 0, MTR, 0, 0), Local1)
-		CH06(arg0, 35, 47)
-	}
-
-	// Reference to Object
-	Method(m005, 2)
-	{
-		Store(arg0, Debug)
-		Store(arg1, Debug)
-
-		Store(ObjectType(arg1), Local0)
-		if (LNotEqual(Local0, 2)) {
-			err(arg0, z094, __LINE__, 0, 0, Local0, 2)
-			return (1)
-		}
-
-		Store (DerefOf(arg1), Local1)
-		CH03(ts, z094, 10, __LINE__, 0)
-
-		Store (DerefOf(DerefOf(arg1)), Local1)
-		CH06(arg0, 37, 5)
-
-		Store (Index(DerefOf(arg1), 0), Local1)
-		CH03(ts, z094, 11, __LINE__, 0)
-
-		Store (Match(DerefOf(arg1), MTR, 0, MTR, 0, 0), Local1)
-		CH06(arg0, 38, 47)
-
-		return (0)
-	}
-
-	// Result of Method invocation
-	Method(m006, 1, Serialized)
-	{
-		Name(i000, 0) // Label to check m000 invocations
-
-		Method(m000, 1)
-		{
-			Store(arg0, i000)
-			Store("3", Local0)
-			Return (Local0)
-		}
-
-		Method(CH00, 2)
-		{
-			if (LNotEqual(i000, arg1)) {
-				err(arg0, z094, __LINE__, 0, 0, i000, arg1)
-			}
-		}
-
-		Store (DerefOf(m000(1)), Local1)
-		CH06(arg0, 40, 5)
-		CH00(arg0, 1)
-
-		Release(m000(2))
-		CH06(arg0, 41, 47)
-		if (y600) {
-			CH00(arg0, 2)
-		}
-
-		Reset(m000(3))
-		CH06(arg0, 42, 47)
-		if (y600) {
-			CH00(arg0, 3)
-		}
-
-		Signal(m000(4))
-		CH06(arg0, 43, 47)
-		if (y600) {
-			CH00(arg0, 4)
-		}
-
-		Store(Acquire(m000(5), 0), Local1)
-		CH06(arg0, 44, 47)
-		if (y600) {
-			CH00(arg0, 5)
-		}
-
-		CH03(ts, z094, 12, __LINE__, 0)
-		Store (Index(m000(6), 0), Local1)
-		if (y900) {
-			CH03(ts, z094, 12, __LINE__, 0)
-			CH00(arg0, 6)
-		} else {
-			CH04(ts, 0, 85, z094, __LINE__, 0, 0) // AE_INDEX_TO_NOT_ATTACHED
-		}
-
-		Store(Wait(m000(7), 0), Local1)
-		CH06(arg0, 45, 47)
-		if (y600) {
-			CH00(arg0, 7)
-		}
-
-		Store (Match(m000(8), MTR, 0, MTR, 0, 0), Local1)
-		CH06(arg0, 46, 47)
-		CH00(arg0, 8)
-	}
-
-	// Reference to Object as Result of Method invocation
-	Method(m007, 1, Serialized)
-	{
-		Name(s000, "3")
-
-		Name(i000, 0) // Label to check m000 invocations
-
-		Method(m000, 2)
-		{
-			Store(arg0, i000)
-			if (LEqual(arg1, 0)) {
-				Store(Refof(s100), Local0)
-			} elseif (LEqual(arg1, 1)) {
-				Store(Refof(s000), Local0)
-			}
-			Return (Local0)
-		}
-
-		Method(CH00, 2)
-		{
-			if (LNotEqual(i000, arg1)) {
-				err(arg0, z094, __LINE__, 0, 0, i000, arg1)
-			}
-		}
-
-		Name(lpN0, 2)
-		Name(lpC0, 0)
-
-		While (lpN0) {
-			Multiply(3, lpC0, Local0)
-
-			Store(0, i000)
-
-			Store (DerefOf(m000(1, lpC0)), Local1)
-			CH03(ts, z094, __LINE__, 0, 0)
-			CH00(arg0, 1)
-
-			Store (DerefOf(DerefOf(m000(2, lpC0))), Local1)
-			CH06(arg0, Add(48, Local0), 47)
-			CH00(arg0, 2)
-
-			Store (Index(DerefOf(m000(3, lpC0)), 0), Local1)
-			CH06(arg0, Add(49, Local0), 47)
-			CH00(arg0, 3)
-
-			Store (Match(DerefOf(m000(4, lpC0)), MTR, 0, MTR, 0, 0), Local1)
-			CH06(arg0, Add(50, Local0), 47)
-			CH00(arg0, 4)
-
-			Decrement(lpN0)
-			Increment(lpC0)
-		}
-	}
-
-	CH03(ts, z094, 15, __LINE__, 0)
-
-	// Local Named Object
-	m000(ts)
-
-	// Global Named Object
-	m001(ts)
-
-	// Argument
-	m002(ts, "2")
-
-	// Local
-	m003(ts)
-
-	// An element of Package
-	m004(ts)
-
-
-	// Reference to Local Named Object
-
-	m005(Concatenate(ts, "-m005-RefLocName"), RefOf(s000))
-
-	Store(RefOf(s000), Local0)
-	m005(Concatenate(ts, "-m005-RefLocName2"), Local0)
-
-	CondRefOf(s000, Local0)
-	m005(Concatenate(ts, "-m005-CondRefLocName"), Local0)
-
-	m005(Concatenate(ts, "-m005-RefGlobName"), RefOf(s100))
-
-	Store(RefOf(s100), Local0)
-	m005(Concatenate(ts, "-m005-RefGlobName2"), Local0)
-
-	CondRefOf(s100, Local0)
-	m005(Concatenate(ts, "-m005-CondRefGlobName"), Local0)
-
-
-	// Reference to Local
-
-	Store("2", Local0)
-
-	m005(Concatenate(ts, "-m005-RefLocal"), RefOf(Local0))
-
-	Store(RefOf(Local0), Local1)
-	m005(Concatenate(ts, "-m005-RefLocal2"), Local1)
-
-	CondRefOf(Local0, Local1)
-	m005(Concatenate(ts, "-m005-CondRefLocal"), Local1)
-
-
-	// Reference to Arg
-
-	m005(Concatenate(ts, "-m005-RefArg"), RefOf(arg0))
-
-	Store(RefOf(arg0), Local0)
-	m005(Concatenate(ts, "-m005-RefArg2"), Local0)
-
-	CondRefOf(arg0, Local0)
-	m005(Concatenate(ts, "-m005-CondRefArg"), Local0)
-
-
-	// Index to Package
-
-	Name(p000, Package(){"2"})
-
-	if (y113) {
-		m005(Concatenate(ts, "-m005-Index"), Index(p000, 0))
-	}
-
-	Store(Index(p000, 0), Local0)
-	m005(Concatenate(ts, "-m005-Index2"), Local0)
-
-	if (y113) {
-		m005(Concatenate(ts, "-m005-Index3"), Index(p000, 0, Local0))
-	}
-
-	Index(p000, 0, Local0)
-	m005(Concatenate(ts, "-m005-Index4"), Local0)
-
-	Store(Index(p000, 0, Local0), Local1)
-	m005(Concatenate(ts, "-m005-Index5"), Local1)
-
-	// Result of Method invocation
-	m006(ts)
-
-	// Reference to Object as Result of Method invocation
-	if (y500) {
-		m007(ts)
-	}
-}

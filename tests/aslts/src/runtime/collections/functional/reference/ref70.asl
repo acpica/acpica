@@ -1,919 +1,903 @@
-/*
- * Some or all of this work - Copyright (c) 2006 - 2017, Intel Corp.
- * All rights reserved.
- *
- * Redistribution and use in source and binary forms, with or without modification,
- * are permitted provided that the following conditions are met:
- *
- * Redistributions of source code must retain the above copyright notice,
- * this list of conditions and the following disclaimer.
- * Redistributions in binary form must reproduce the above copyright notice,
- * this list of conditions and the following disclaimer in the documentation
- * and/or other materials provided with the distribution.
- * Neither the name of Intel Corporation nor the names of its contributors
- * may be used to endorse or promote products derived from this software
- * without specific prior written permission.
- *
- * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS"
- * AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE
- * IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE
- * ARE DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT OWNER OR CONTRIBUTORS BE
- * LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL
- * DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES;
- * LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY
- * THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING
- * NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE,
- * EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
- */
-
-/*
- * References
- *
- * Verify exceptions for different operators dealing with references
- */
-
-/*
-SEE: FILE BUG: hangs without printing error
-SEE: FILE BUG: CondRefOf doesnt cause exception but only under some conditions
-*/
-
-Name(z081, 81)
-
-// Run operator and expect ANY exception(s)
-Method(m1a7, 7, Serialized)
-{
-	Name(ts, "m1a7")
-
-	Store(1, FLG3)
-	Store(1, FLG4)
-
-	// flag, run test till the first error
-	if (c086) {
-		// Get current indicator of errors
-		if (GET2()) {
-			return
-		}
-	}
-
-	CH03(ts, z081, 0x200, __LINE__, arg6)
-/*
-	// FILE BUG: hangs without printing error
-	Store(CH03(ts, z081, 0x200, __LINE__, arg6), Local0)
-	if (Local0) {
-		Concatenate("Operation: 0x", arg6, Local0)
-		Store(Local0, Debug)
-	}
-*/
-
-	Switch (ToInteger (Arg6)) {
-		Case (7) {
-			Store(Acquire(arg0, 100), Local7)
-		}
-		Default {
-			m480(arg0, arg1, arg2, arg3, arg4, arg5, arg6)
-		}
-	}
-
-	CH04(c080, 0, 0xff, z081, __LINE__, arg6, arg6)
-
-/*
-	// FILE BUG: hangs without printing error
-	Store(CH04(c080, 0, 0xff, z081, __LINE__, arg6, arg6), Local0)
-	if (Local0) {
-		Concatenate("Operation: 0x", arg6, Local0)
-		Store(Local0, Debug)
-	}
-*/
-
-	Store(0, FLG3)
-	Store(0, FLG4)
-}
-
-/*
- * Switch
- *
- * This sub-test causes break of exc_ref due to the bug 248
- * (lose path after exception or hang).
- * So, it is blocked, and in order to show 'Test is blocked'
- * it is run also additionally separately.
- */
-Method(m167, 1, Serialized)
-{
-	CH03("m167", z081, 0x206, __LINE__, 56)
-	Switch (ToInteger (arg0)) {
-		Case (0) {
-			Store(0, Local7)
-		}
-		Default {
-			Store(1, Local7)
-		}
-	}
-	CH04(c080, 0, 0xff, z081, __LINE__, 56, 56)
-}
-
-// Check reaction on OPERAND-REFERENCE (exceptions are expected in most cases)
-// arg0 - reference to the value of arbitrary type
-// arg1 - absolute index of file initiating the checking
-// arg2 - index of checking (inside the file)
-Method(m1a8, 3, Serialized)
-{
-	Name(ts, "m1a8")
-
-	// Return
-	Method(m000, 1)
-	{
-		return (arg0)
-	}
-
-	// If
-	Method(m001, 1)
-	{
-		CH03(ts, z081, 0x202, __LINE__, 54)
-		if (arg0) {
-			Store(0, Local7)
-		}
-		CH04(c080, 0, 0xff, z081, __LINE__, 54, 54)
-	}
-
-	// ElseIf
-	Method(m002, 1)
-	{
-		CH03(ts, z081, 0x204, __LINE__, 55)
-		if (0) {
-			Store(0, Local7)
-		} elseif (arg0) {
-			Store(1, Local7)
-		}
-		CH04(c080, 0, 0xff, z081, __LINE__, 55, 55)
-	}
-
-	// While
-	Method(m004, 1)
-	{
-		CH03(ts, z081, 0x208, __LINE__, 58)
-		While (arg0) {
-			Store(0, Local7)
-			Break
-		}
-		CH04(c080, 0, 0xff, z081, __LINE__, 58, 58)
-	}
-
-	// Set parameters of current checking
-	if (arg1) {
-		SET0(arg1, 0, arg2)
-	}
-
-	// flag, run test till the first error
-	if (c086) {
-		// Get current indicator of errors
-		if (GET2()) {
-			return
-		}
-	}
-
-	// Split into groups for debugging: some of them
-	// were crashing the system.
-
-	Name(rn00, 1) // CondRefOf
-	Name(rn01, 0) // DerefOf
-	if (y506) {
-		// Crash
-		Store(1, rn01)
-	}
-	Name(rn02, 1) // ObjectType
-	Name(rn03, 1) // RefOf
-	Name(rn04, 1) // SizeOf
-	Name(rn05, 1) // CopyObject
-	Name(rn06, 1) // Return
-	Name(rn07, 1) // If,ElseIf,Switch,While
-	Name(rn08, 1) // All other operators
-
-	Name(b000, Buffer(10) {})
-	Name(s000, "qwertyuiopasdfghjklz")
-	Name(p000, Package() {1,2,3,4,5,6,7,8,9})
-
-	Store(1, FLG4)
-
-	if (rn00) {
-		// CondRefOf
-
-		CH03(ts, z081, 0x20a, __LINE__, 0)
-		m480(arg0, 0, 0, 0, 0, 0, 5)
-		CH03(ts, z081, 0x20b, __LINE__, 0)
-	}
-
-	if (rn01) {
-		// DerefOf
-
-		CH03(ts, z081, 0x20c, __LINE__, 0)
-		m480(arg0, 0, 0, 0, 0, 0, 8)
-		CH03(ts, z081, 0x20d, __LINE__, 0)
-	}
-
-	if (rn02) {
-		// ObjectType
-
-		CH03(ts, z081, 0x20e, __LINE__, 0)
-		m480(arg0, 0, 0, 0, 0, 0, 32)
-		CH03(ts, z081, 0x20f, __LINE__, 0)
-	}
-
-	if (rn03) {
-		// RefOf
-
-		CH03(ts, z081, 0x210, __LINE__, 0)
-		m480(arg0, 0, 0, 0, 0, 0, 34)
-		CH03(ts, z081, 0x211, __LINE__, 0)
-	}
-
-	if (rn04) {
-
-		// SizeOf
-
-		Store(0, Local0)
-		Store(ObjectType(arg0), Local1)
-
-		Switch (ToInteger (Local1)) {
-			Case (1) {	// Integer
-				Store(1, Local0)
-			}
-			Case (2) {	// String
-				Store(1, Local0)
-			}
-			Case (3) {	// Buffer
-				Store(1, Local0)
-			}
-			Case (4) {	// Package
-				Store(1, Local0)
-			}
-		}
-
-		if (y505) {
-
-			// Buffer Field and Field Unit types should allow SizeOf()
-
-			Switch (ToInteger (Local1)) {
-				Case (5) {	// Field Unit
-					Store(1, Local0)
-				}
-				Case (14) {	// Buffer Field
-					Store(1, Local0)
-				}
-			}
-		}
-
-		if (Local0) {
-			CH03(ts, z081, 0x212, __LINE__, 0)
-			m480(arg0, 0, 0, 0, 0, 0, 41)
-			CH03(ts, z081, 0x213, __LINE__, 0)
-		} else {
-			m1a7(arg0, 0, 0, 0, 0, 0, 41)
-		}
-
-	} /* if(rn04) */
-
-	if (rn05) {
-
-		// CopyObject
-
-		CH03(ts, z081, 0x214, __LINE__, 0)
-		CopyObject(arg0, Local7)
-		CH03(ts, z081, 0x215, __LINE__, 0)
-	}
-
-	if (rn06) {
-
-		// Return
-
-		CH03(ts, z081, 0x216, __LINE__, 0)
-		m000(arg0)
-		CH03(ts, z081, 0x217, __LINE__, 0)
-	}
-
-	if (rn07) {
-
-		// If
-
-		m001(arg0)
-
-		// ElseIf
-
-		m002(arg0)
-
-		// Switch
-
-		if (y248) {
-			m167(arg0)
-		} else {
-			Store("WARNING: test m1a8:m1a8 blocked due to the bug 248!", Debug)
-		}
-
-		// While
-
-		m004(arg0)
-
-	} /* if(rn07) */
-
-	if (rn08) {
-
-	// Acquire
-
-	m1a7(arg0, 0, 0, 0, 0, 0, 0)
-
-	// Add
-
-	m1a7(arg0, 0, 0, 0, 0, 0, 1)
-	m1a7(0, arg0, 0, 0, 0, 0, 1)
-
-	// And
-
-	m1a7(arg0, 0, 0, 0, 0, 0, 2)
-	m1a7(0, arg0, 0, 0, 0, 0, 2)
-
-	// Concatenate
-
-	m1a7(arg0, 0, 0, 0, 0, 0, 3)
-	m1a7(0, arg0, 0, 0, 0, 0, 3)
-
-	// ConcatenateResTemplate
-
-	m1a7(arg0, 0, 0, 0, 0, 0, 4)
-	m1a7(0, arg0, 0, 0, 0, 0, 4)
-
-	// Decrement
-
-	m1a7(arg0, 0, 0, 0, 0, 0, 7)
-
-	// Divide
-
-	m1a7(arg0, 1, 0, 0, 0, 0, 9)
-	m1a7(1, arg0, 0, 0, 0, 0, 9)
-
-	// Fatal
-
-	// FindSetLeftBit
-
-	m1a7(arg0, 0, 0, 0, 0, 0, 11)
-
-	// FindSetRightBit
-
-	m1a7(arg0, 0, 0, 0, 0, 0, 12)
-
-	// FromBCD
-
-	m1a7(arg0, 0, 0, 0, 0, 0, 13)
-
-	// Increment
-
-	m1a7(arg0, 0, 0, 0, 0, 0, 14)
-
-	// Index
-
-	m1a7(arg0, 0, 0, 0, 0, 0, 15)
-	m1a7(b000, arg0, 0, 0, 0, 0, 15)
-
-	// LAnd
-
-	m1a7(arg0, 0, 0, 0, 0, 0, 16)
-	m1a7(0, arg0, 0, 0, 0, 0, 16)
-
-	// LEqual
-
-	m1a7(arg0, 0, 0, 0, 0, 0, 17)
-	m1a7(0, arg0, 0, 0, 0, 0, 17)
-
-	// LGreater
-
-	m1a7(arg0, 0, 0, 0, 0, 0, 18)
-	m1a7(0, arg0, 0, 0, 0, 0, 18)
-
-	// LGreaterEqual
-
-	m1a7(arg0, 0, 0, 0, 0, 0, 19)
-	m1a7(0, arg0, 0, 0, 0, 0, 19)
-
-	// LLess
-
-	m1a7(arg0, 0, 0, 0, 0, 0, 20)
-	m1a7(0, arg0, 0, 0, 0, 0, 20)
-
-	// LLessEqual
-
-	m1a7(arg0, 0, 0, 0, 0, 0, 21)
-	m1a7(0, arg0, 0, 0, 0, 0, 21)
-
-	// LNot
-
-	m1a7(arg0, 0, 0, 0, 0, 0, 22)
-
-	// LNotEqual
-
-	m1a7(arg0, 0, 0, 0, 0, 0, 23)
-	m1a7(0, arg0, 0, 0, 0, 0, 23)
-
-	// LOr
-
-	m1a7(arg0, 0, 0, 0, 0, 0, 24)
-	m1a7(0, arg0, 0, 0, 0, 0, 24)
-
-	// Match
-
-	m1a7(arg0, 0,    1,    1,    1, 0, 25)
-	m1a7(p000, 0, arg0,    1,    1, 0, 25)
-	m1a7(p000, 0,    1, arg0,    1, 0, 25)
-	m1a7(p000, 0,    1,    1, arg0, 0, 25)
-
-	// Mid
-
-	m1a7(arg0,    0,    5, 0, 0, 0, 26)
-	m1a7(s000, arg0,    5, 0, 0, 0, 26)
-	m1a7(s000,    0, arg0, 0, 0, 0, 26)
-
-	// Mod
-
-	m1a7(arg0, 1, 0, 0, 0, 0, 27)
-	m1a7(1, arg0, 0, 0, 0, 0, 27)
-
-	// Multiply
-
-	m1a7(arg0, 1, 0, 0, 0, 0, 28)
-	m1a7(1, arg0, 0, 0, 0, 0, 28)
-
-	// NAnd
-
-	m1a7(arg0, 1, 0, 0, 0, 0, 29)
-	m1a7(1, arg0, 0, 0, 0, 0, 29)
-
-	// NOr
-
-	m1a7(arg0, 1, 0, 0, 0, 0, 30)
-	m1a7(1, arg0, 0, 0, 0, 0, 30)
-
-	// Not
-
-	m1a7(arg0, 1, 0, 0, 0, 0, 31)
-
-	// Or
-
-	m1a7(arg0, 1, 0, 0, 0, 0, 33)
-	m1a7(1, arg0, 0, 0, 0, 0, 33)
-
-	// Release
-
-	m1a7(arg0, 0, 0, 0, 0, 0, 35)
-
-	// Reset
-
-	m1a7(arg0, 0, 0, 0, 0, 0, 36)
-
-	// ShiftLeft
-
-	m1a7(arg0, 1, 0, 0, 0, 0, 38)
-	m1a7(1, arg0, 0, 0, 0, 0, 38)
-
-	// ShiftRight
-
-	m1a7(arg0, 1, 0, 0, 0, 0, 39)
-	m1a7(1, arg0, 0, 0, 0, 0, 39)
-
-	// Signal
-
-	m1a7(arg0, 0, 0, 0, 0, 0, 40)
-
-	// Sleep
-
-	m1a7(arg0, 0, 0, 0, 0, 0, 42)
-
-	// Stall
-
-	m1a7(arg0, 0, 0, 0, 0, 0, 43)
-
-	// Store
-
-	CH03(ts, z081, 0x218, __LINE__, 0)
-	Store(arg0, Local7)
-	CH03(ts, z081, 0x219, __LINE__, 0)
-
-	// Subtract
-
-	m1a7(arg0, 1, 0, 0, 0, 0, 45)
-	m1a7(1, arg0, 0, 0, 0, 0, 45)
-
-	// ToBCD
-
-	m1a7(arg0, 0, 0, 0, 0, 0, 46)
-
-	// ToBuffer
-
-	m1a7(arg0, 0, 0, 0, 0, 0, 47)
-
-	// ToDecimalString
-
-	m1a7(arg0, 0, 0, 0, 0, 0, 48)
-
-	// ToHexString
-
-	m1a7(arg0, 0, 0, 0, 0, 0, 49)
-
-	// ToInteger
-
-	m1a7(arg0, 0, 0, 0, 0, 0, 50)
-
-	// ToString
-
-	m1a7(arg0,    1, 0, 0, 0, 0, 51)
-	m1a7(b000, arg0, 0, 0, 0, 0, 51)
-
-	// Wait
-
-	m1a7(arg0,    1, 0, 0, 0, 0, 52)
-	m1a7(b000, arg0, 0, 0, 0, 0, 52)
-
-	// XOr
-
-	m1a7(arg0,    1, 0, 0, 0, 0, 53)
-	m1a7(b000, arg0, 0, 0, 0, 0, 53)
-
-	} // if(rn08)
-
-	Store(0, FLG4)
-
-	RST0()
-
-	return
-}
-
-// Simple test, only some particular ways of obtaining references
-Method(m1a9,, Serialized)
-{
-	// FILE BUG: CondRefOf doesnt cause exception but only under some conditions,
-	// namely for rn00 == 2.
-
-	Name(rn00, 2) // Simplest modes, for debugging
-	Name(rn01, 1) // Crash
-
-	if (LEqual(rn00, 0)) {
-
-		// Simplest mode, ONE-TWO operations of those below
-
-		Store(RefOf(i900), Local0)
-		m1a8(Local0, z081, 15)
-
-		Store(CondRefOf(i900, Local0), Local1)
-		if (m1a4(Local1, 34)) {
-			m1a8(Local0, z081, 35)
-		}
-
-	} elseif (LEqual(rn00, 1)) {
-
-
-		// Simplest mode, SOME of operations below
-
-		Store(Index(s900, 0), Local0)
-		m1a8(Local0, z081, 0)
-
-		Store(Index(b900, 3), Local0)
-		m1a8(Local0, z081, 1)
-
-		Store(Index(p901, 0), Local0)
-		m1a8(Local0, z081, 2)
-
-		Store(Index(p91e, 0), Local0)
-		m1a8(Local0, z081, 4)
-
-		Store(Index(p901, 0, Local1), Local0)
-		m1a8(Local1, z081, 10)
-
-		Store(Index(p91e, 0, Local1), Local0)
-		m1a8(Local1, z081, 14)
-
-		Store(RefOf(i900), Local0)
-		m1a8(Local0, z081, 15)
-
-		Store(RefOf(f900), Local0)
-		m1a8(Local0, z081, 18)
-
-		Store(RefOf(bn90), Local0)
-		m1a8(Local0, z081, 19)
-
-		Store(RefOf(if90), Local0)
-		m1a8(Local0, z081, 20)
-
-		Store(RefOf(bf90), Local0)
-		m1a8(Local0, z081, 21)
-
-		Store(CondRefOf(i900, Local0), Local1)
-		if (m1a4(Local1, 34)) {
-			m1a8(Local0, z081, 35)
-		}
-
-	} else {
-
-		// Index
-
-		Store(Index(s900, 0), Local0)
-		m1a8(Local0, z081, 0)
-
-		Store(Index(b900, 3), Local0)
-		m1a8(Local0, z081, 1)
-
-		Store(Index(p901, 0), Local0)
-		m1a8(Local0, z081, 2)
-
-		if (rn01) {
-			Store(Index(p916, 0), Local0)
-			m1a8(Local0, z081, 3)
-		}
-
-		Store(Index(p91e, 0), Local0)
-		m1a8(Local0, z081, 4)
-
-		Store(Index(s900, 0, Local1), Local0)
-		m1a8(Local0, z081, 5)
-		m1a8(Local1, z081, 6)
-
-		Store(Index(b900, 3, Local1), Local0)
-		m1a8(Local0, z081, 7)
-		m1a8(Local1, z081, 8)
-
-		Store(Index(p901, 0, Local1), Local0)
-		m1a8(Local0, z081, 9)
-		m1a8(Local1, z081, 10)
-
-		if (rn01) {
-			Store(Index(p916, 0, Local1), Local0)
-			m1a8(Local0, z081, 11)
-			m1a8(Local1, z081, 12)
-		}
-
-		Store(Index(p91e, 0, Local1), Local0)
-		m1a8(Local0, z081, 13)
-		m1a8(Local1, z081, 14)
-
-		// RefOf
-
-		Store(RefOf(i900), Local0)
-		m1a8(Local0, z081, 15)
-
-		Store(RefOf(s900), Local0)
-		m1a8(Local0, z081, 16)
-
-		Store(RefOf(b900), Local0)
-		m1a8(Local0, z081, 17)
-
-		Store(RefOf(f900), Local0)
-		m1a8(Local0, z081, 18)
-
-		Store(RefOf(bn90), Local0)
-		m1a8(Local0, z081, 19)
-
-		Store(RefOf(if90), Local0)
-		m1a8(Local0, z081, 20)
-
-		Store(RefOf(bf90), Local0)
-		m1a8(Local0, z081, 21)
-
-		Store(RefOf(e900), Local0)
-		m1a8(Local0, z081, 22)
-
-		Store(RefOf(mx90), Local0)
-		m1a8(Local0, z081, 23)
-
-		Store(RefOf(d900), Local0)
-		m1a8(Local0, z081, 24)
-
-		Store(RefOf(tz90), Local0)
-		m1a8(Local0, z081, 25)
-
-		Store(RefOf(pr90), Local0)
-		m1a8(Local0, z081, 26)
-
-		Store(RefOf(r900), Local0)
-		m1a8(Local0, z081, 27)
-
-		Store(RefOf(pw90), Local0)
-		m1a8(Local0, z081, 28)
-
-		Store(RefOf(p900), Local0)
-		m1a8(Local0, z081, 29)
-
-		Store(RefOf(p901), Local0)
-		m1a8(Local0, z081, 30)
-
-		Store(RefOf(p916), Local0)
-		m1a8(Local0, z081, 31)
-
-		Store(RefOf(p91d), Local0)
-		m1a8(Local0, z081, 32)
-
-		Store(RefOf(p91e), Local0)
-		m1a8(Local0, z081, 33)
-
-		// CondRefOf
-
-		Store(CondRefOf(i900, Local0), Local1)
-		if (m1a4(Local1, 34)) {
-			m1a8(Local0, z081, 35)
-		}
-
-		Store(CondRefOf(s900, Local0), Local1)
-		if (m1a4(Local1, 36)) {
-			m1a8(Local0, z081, 37)
-		}
-
-		Store(CondRefOf(b900, Local0), Local1)
-		if (m1a4(Local1, 38)) {
-			m1a8(Local0, z081, 39)
-		}
-
-		Store(CondRefOf(f900, Local0), Local1)
-		if (m1a4(Local1, 40)) {
-			m1a8(Local0, z081, 41)
-		}
-
-		Store(CondRefOf(bn90, Local0), Local1)
-		if (m1a4(Local1, 42)) {
-			m1a8(Local0, z081, 43)
-		}
-
-		Store(CondRefOf(if90, Local0), Local1)
-		if (m1a4(Local1, 44)) {
-			m1a8(Local0, z081, 45)
-		}
-
-		Store(CondRefOf(bf90, Local0), Local1)
-		if (m1a4(Local1, 46)) {
-			m1a8(Local0, z081, 47)
-		}
-
-		Store(CondRefOf(e900, Local0), Local1)
-		if (m1a4(Local1, 48)) {
-			m1a8(Local0, z081, 49)
-		}
-
-		Store(CondRefOf(mx90, Local0), Local1)
-		if (m1a4(Local1, 50)) {
-			m1a8(Local0, z081, 51)
-		}
-
-		Store(CondRefOf(d900, Local0), Local1)
-		if (m1a4(Local1, 52)) {
-			m1a8(Local0, z081, 53)
-		}
-
-		Store(CondRefOf(tz90, Local0), Local1)
-		if (m1a4(Local1, 54)) {
-			m1a8(Local0, z081, 55)
-		}
-
-		Store(CondRefOf(pr90, Local0), Local1)
-		if (m1a4(Local1, 56)) {
-			m1a8(Local0, z081, 57)
-		}
-
-		Store(CondRefOf(r900, Local0), Local1)
-		if (m1a4(Local1, 58)) {
-			m1a8(Local0, z081, 59)
-		}
-
-		Store(CondRefOf(pw90, Local0), Local1)
-		if (m1a4(Local1, 60)) {
-			m1a8(Local0, z081, 61)
-		}
-
-		Store(CondRefOf(p900, Local0), Local1)
-		if (m1a4(Local1, 62)) {
-			m1a8(Local0, z081, 63)
-		}
-
-		Store(CondRefOf(p901, Local0), Local1)
-		if (m1a4(Local1, 64)) {
-			m1a8(Local0, z081, 65)
-		}
-
-		Store(CondRefOf(p916, Local0), Local1)
-		if (m1a4(Local1, 66)) {
-			m1a8(Local0, z081, 67)
-		}
-
-		Store(CondRefOf(p91d, Local0), Local1)
-		if (m1a4(Local1, 68)) {
-			m1a8(Local0, z081, 69)
-		}
-
-		Store(CondRefOf(p91e, Local0), Local1)
-		if (m1a4(Local1, 70)) {
-			m1a8(Local0, z081, 71)
-		}
-
-	} // if(rn00)
-}
-
-Method(m106,, Serialized)
-{
-	Name(ts, "m106")
-
-	Name(i000, 0xabcd0000)
-
-	Method(m000, 1)
-	{
-		CH03(ts, z081, 72, __LINE__, 0)
-
-		Store(DerefOf(RefOf(DerefOf(RefOf(arg0)))), Debug)
-
-		CH04(c080, 0, 0xff, z081, __LINE__, 0, 0)
-	}
-
-	m000(i000)
-}
-
-
-// Run-method
-Method(REF5,, Serialized)
-{
-	Name(p91e, Package() {0xabcd0000})
-
-	Store("TEST: REF5, References, check exceptions", Debug)
-
-	Store("REF5", c080)	// name of test
-	Store(z081, c081)		// absolute index of file initiating the checking
-	Store(1, c082)		// flag of test of exceptions
-	Store(0, c083)		// run verification of references (write/read)
-	Store(0, c084)		// run verification of references (reading)
-	Store(0, c085)		// create the chain of references to LocalX, then dereference them
-	Store(0, c086)		// flag, run test till the first error
-	Store(1, c087)		// apply DeRefOf to ArgX-ObjectReference
-	Store(1, c089)		// flag of Reference, object otherwise
-
-	if (0) {
-
-		// This mode of test run takes much time, moreover,
-		// due to the bug 95 of ACPICA it fails to complete.
-		// So, if run it then do it with the flag c086 set up
-		// - run test till the first error.
-
-		Store(1, c086) // flag, run test till the first error
-
-		// For local data (methods of ref1.asl)
-
-		// Reset current indicator of errors
-		RST2()
-
-		Store(z077, c081) // absolute index of file initiating the checking
-
-		SRMT("m168")
-		m168()
-		SRMT("m169")
-		m169()
-		SRMT("m16a")
-		m16a(0)
-		SRMT("m16b")
-		m16b()
-		SRMT("m16c")
-		m16c(0)
-		SRMT("m16d")
-		m16d()
-		SRMT("m16e")
-		m16e()
-
-		// For global data (methods of ref4.asl)
-
-		Store(z080, c081) // absolute index of file initiating the checking
-
-		SRMT("m190")
-		m190()
-		SRMT("m191")
-		m191(0)
-		SRMT("m192")
-		m192()
-		SRMT("m193")
-		m193(0)
-		SRMT("m194")
-		m194()
-
-	} else {
-
-		// Run simple test only for some particular ways of
-		// obtaining references.
-
-		Store(0, c086) // dont break testing on error appearance
-
-		SRMT("m1a9")
-		m1a9()
-	}
-
-	// Particular tests
-
-	SRMT("m106")
-	m106()
-	SRMT("m167")
-	if (y248) {
-		/* This code here only to not forget to run m1a8:m167 */
-		Store(Index(p91e, 0, Local1), Local0)
-		m167(Local0)
-	} else {
-		BLCK()
-	}
-}
-
+    /*
+     * Some or all of this work - Copyright (c) 2006 - 2017, Intel Corp.
+     * All rights reserved.
+     *
+     * Redistribution and use in source and binary forms, with or without modification,
+     * are permitted provided that the following conditions are met:
+     *
+     * Redistributions of source code must retain the above copyright notice,
+     * this list of conditions and the following disclaimer.
+     * Redistributions in binary form must reproduce the above copyright notice,
+     * this list of conditions and the following disclaimer in the documentation
+     * and/or other materials provided with the distribution.
+     * Neither the name of Intel Corporation nor the names of its contributors
+     * may be used to endorse or promote products derived from this software
+     * without specific prior written permission.
+     *
+     * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS"
+     * AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE
+     * IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE
+     * ARE DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT OWNER OR CONTRIBUTORS BE
+     * LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL
+     * DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES;
+     * LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY
+     * THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING
+     * NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE,
+     * EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
+     */
+    /*
+     * References
+     *
+     * Verify exceptions for different operators dealing with references
+     */
+    /*
+     SEE: FILE BUG: hangs without printing error
+     SEE: FILE BUG: CondRefOf doesnt cause exception but only under some conditions
+     */
+    Name (Z081, 0x51)
+    /* Run operator and expect ANY exception(s) */
+
+    Method (M1A7, 7, Serialized)
+    {
+        Name (TS, "m1a7")
+        FLG3 = 0x01
+        FLG4 = 0x01
+        /* flag, run test till the first error */
+
+        If (C086)
+        {
+            /* Get current indicator of errors */
+
+            If (GET2 ())
+            {
+                Return (Zero)
+            }
+        }
+
+        CH03 (TS, Z081, 0x0200, 0x3A, Arg6)
+        /*
+         // FILE BUG: hangs without printing error
+         Store(CH03(ts, z081, 0x200, __LINE__, arg6), Local0)
+         if (Local0) {
+         Concatenate("Operation: 0x", arg6, Local0)
+         Store(Local0, Debug)
+         }
+         */
+        Switch (ToInteger (Arg6))
+        {
+            Case (0x07)
+            {
+                Local7 = Acquire (Arg0, 0x0064)
+            }
+            Default
+            {
+                M480 (Arg0, Arg1, Arg2, Arg3, Arg4, Arg5, Arg6)
+            }
+
+        }
+
+        CH04 (C080, 0x00, 0xFF, Z081, 0x4D, Arg6, Arg6)
+        /*
+         // FILE BUG: hangs without printing error
+         Store(CH04(c080, 0, 0xff, z081, __LINE__, arg6, arg6), Local0)
+         if (Local0) {
+         Concatenate("Operation: 0x", arg6, Local0)
+         Store(Local0, Debug)
+         }
+         */
+        FLG3 = 0x00
+        FLG4 = 0x00
+    }
+
+    /*
+     * Switch
+     *
+     * This sub-test causes break of exc_ref due to the bug 248
+     * (lose path after exception or hang).
+     * So, it is blocked, and in order to show 'Test is blocked'
+     * it is run also additionally separately.
+     */
+    Method (M167, 1, Serialized)
+    {
+        CH03 ("m167", Z081, 0x0206, 0x66, 0x38)
+        Switch (ToInteger (Arg0))
+        {
+            Case (0x00)
+            {
+                Local7 = 0x00
+            }
+            Default
+            {
+                Local7 = 0x01
+            }
+
+        }
+
+        CH04 (C080, 0x00, 0xFF, Z081, 0x6F, 0x38, 0x38)
+    }
+
+    /* Check reaction on OPERAND-REFERENCE (exceptions are expected in most cases) */
+    /* arg0 - reference to the value of arbitrary type */
+    /* arg1 - absolute index of file initiating the checking */
+    /* arg2 - index of checking (inside the file) */
+    Method (M1A8, 3, Serialized)
+    {
+        Name (TS, "m1a8")
+        /* Return */
+
+        Method (M000, 1, NotSerialized)
+        {
+            Return (Arg0)
+        }
+
+        /* If */
+
+        Method (M001, 1, NotSerialized)
+        {
+            CH03 (TS, Z081, 0x0202, 0x83, 0x36)
+            If (Arg0)
+            {
+                Local7 = 0x00
+            }
+
+            CH04 (C080, 0x00, 0xFF, Z081, 0x87, 0x36, 0x36)
+        }
+
+        /* ElseIf */
+
+        Method (M002, 1, NotSerialized)
+        {
+            CH03 (TS, Z081, 0x0204, 0x8D, 0x37)
+            If (0x00)
+            {
+                Local7 = 0x00
+            }
+            ElseIf (Arg0)
+            {
+                Local7 = 0x01
+            }
+
+            CH04 (C080, 0x00, 0xFF, Z081, 0x93, 0x37, 0x37)
+        }
+
+        /* While */
+
+        Method (M004, 1, NotSerialized)
+        {
+            CH03 (TS, Z081, 0x0208, 0x99, 0x3A)
+            While (Arg0)
+            {
+                Local7 = 0x00
+                Break
+            }
+
+            CH04 (C080, 0x00, 0xFF, Z081, 0x9E, 0x3A, 0x3A)
+        }
+
+        /* Set parameters of current checking */
+
+        If (Arg1)
+        {
+            SET0 (Arg1, 0x00, Arg2)
+        }
+
+        /* flag, run test till the first error */
+
+        If (C086)
+        {
+            /* Get current indicator of errors */
+
+            If (GET2 ())
+            {
+                Return (Zero)
+            }
+        }
+
+        /* Split into groups for debugging: some of them */
+        /* were crashing the system. */
+        Name (RN00, 0x01) /* CondRefOf */
+        Name (RN01, 0x00) /* DerefOf */
+        If (Y506)
+        {
+            /* Crash */
+
+            RN01 = 0x01
+        }
+
+        Name (RN02, 0x01) /* ObjectType */
+        Name (RN03, 0x01) /* RefOf */
+        Name (RN04, 0x01) /* SizeOf */
+        Name (RN05, 0x01) /* CopyObject */
+        Name (RN06, 0x01) /* Return */
+        Name (RN07, 0x01) /* If,ElseIf,Switch,While */
+        Name (RN08, 0x01) /* All other operators */
+        Name (B000, Buffer (0x0A){})
+        Name (S000, "qwertyuiopasdfghjklz")
+        Name (P000, Package (0x09)
+        {
+            0x01, 
+            0x02, 
+            0x03, 
+            0x04, 
+            0x05, 
+            0x06, 
+            0x07, 
+            0x08, 
+            0x09
+        })
+        FLG4 = 0x01
+        If (RN00)
+        {
+            /* CondRefOf */
+
+            CH03 (TS, Z081, 0x020A, 0xC8, 0x00)
+            M480 (Arg0, 0x00, 0x00, 0x00, 0x00, 0x00, 0x05)
+            CH03 (TS, Z081, 0x020B, 0xCA, 0x00)
+        }
+
+        If (RN01)
+        {
+            /* DerefOf */
+
+            CH03 (TS, Z081, 0x020C, 0xD0, 0x00)
+            M480 (Arg0, 0x00, 0x00, 0x00, 0x00, 0x00, 0x08)
+            CH03 (TS, Z081, 0x020D, 0xD2, 0x00)
+        }
+
+        If (RN02)
+        {
+            /* ObjectType */
+
+            CH03 (TS, Z081, 0x020E, 0xD8, 0x00)
+            M480 (Arg0, 0x00, 0x00, 0x00, 0x00, 0x00, 0x20)
+            CH03 (TS, Z081, 0x020F, 0xDA, 0x00)
+        }
+
+        If (RN03)
+        {
+            /* RefOf */
+
+            CH03 (TS, Z081, 0x0210, 0xE0, 0x00)
+            M480 (Arg0, 0x00, 0x00, 0x00, 0x00, 0x00, 0x22)
+            CH03 (TS, Z081, 0x0211, 0xE2, 0x00)
+        }
+
+        If (RN04)
+        {
+            /* SizeOf */
+
+            Local0 = 0x00
+            Local1 = ObjectType (Arg0)
+            Switch (ToInteger (Local1))
+            {
+                Case (0x01)
+                {
+                    /* Integer */
+
+                    Local0 = 0x01
+                }
+                Case (0x02)
+                {
+                    /* String */
+
+                    Local0 = 0x01
+                }
+                Case (0x03)
+                {
+                    /* Buffer */
+
+                    Local0 = 0x01
+                }
+                Case (0x04)
+                {
+                    /* Package */
+
+                    Local0 = 0x01
+                }
+
+            }
+
+            If (Y505)
+            {
+                /* Buffer Field and Field Unit types should allow SizeOf() */
+
+                Switch (ToInteger (Local1))
+                {
+                    Case (0x05)
+                    {
+                        /* Field Unit */
+
+                        Local0 = 0x01
+                    }
+                    Case (0x0E)
+                    {
+                        /* Buffer Field */
+
+                        Local0 = 0x01
+                    }
+
+                }
+            }
+
+            If (Local0)
+            {
+                CH03 (TS, Z081, 0x0212, 0x010A, 0x00)
+                M480 (Arg0, 0x00, 0x00, 0x00, 0x00, 0x00, 0x29)
+                CH03 (TS, Z081, 0x0213, 0x010C, 0x00)
+            }
+            Else
+            {
+                M1A7 (Arg0, 0x00, 0x00, 0x00, 0x00, 0x00, 0x29)
+            }
+        }
+
+        /* if(rn04) */
+
+        If (RN05)
+        {
+            /* CopyObject */
+
+            CH03 (TS, Z081, 0x0214, 0x0117, 0x00)
+            CopyObject (Arg0, Local7)
+            CH03 (TS, Z081, 0x0215, 0x0119, 0x00)
+        }
+
+        If (RN06)
+        {
+            /* Return */
+
+            CH03 (TS, Z081, 0x0216, 0x0120, 0x00)
+            M000 (Arg0)
+            CH03 (TS, Z081, 0x0217, 0x0122, 0x00)
+        }
+
+        If (RN07)
+        {
+            /* If */
+
+            M001 (Arg0)
+            /* ElseIf */
+
+            M002 (Arg0)
+            /* Switch */
+
+            If (Y248)
+            {
+                M167 (Arg0)
+            }
+            Else
+            {
+                Debug = "WARNING: test m1a8:m1a8 blocked due to the bug 248!"
+            }
+
+            /* While */
+
+            M004 (Arg0)
+        }
+
+        /* if(rn07) */
+
+        If (RN08)
+        {
+            /* Acquire */
+
+            M1A7 (Arg0, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00)
+            /* Add */
+
+            M1A7 (Arg0, 0x00, 0x00, 0x00, 0x00, 0x00, 0x01)
+            M1A7 (0x00, Arg0, 0x00, 0x00, 0x00, 0x00, 0x01)
+            /* And */
+
+            M1A7 (Arg0, 0x00, 0x00, 0x00, 0x00, 0x00, 0x02)
+            M1A7 (0x00, Arg0, 0x00, 0x00, 0x00, 0x00, 0x02)
+            /* Concatenate */
+
+            M1A7 (Arg0, 0x00, 0x00, 0x00, 0x00, 0x00, 0x03)
+            M1A7 (0x00, Arg0, 0x00, 0x00, 0x00, 0x00, 0x03)
+            /* ConcatenateResTemplate */
+
+            M1A7 (Arg0, 0x00, 0x00, 0x00, 0x00, 0x00, 0x04)
+            M1A7 (0x00, Arg0, 0x00, 0x00, 0x00, 0x00, 0x04)
+            /* Decrement */
+
+            M1A7 (Arg0, 0x00, 0x00, 0x00, 0x00, 0x00, 0x07)
+            /* Divide */
+
+            M1A7 (Arg0, 0x01, 0x00, 0x00, 0x00, 0x00, 0x09)
+            M1A7 (0x01, Arg0, 0x00, 0x00, 0x00, 0x00, 0x09)
+            /* Fatal */
+            /* FindSetLeftBit */
+            M1A7 (Arg0, 0x00, 0x00, 0x00, 0x00, 0x00, 0x0B)
+            /* FindSetRightBit */
+
+            M1A7 (Arg0, 0x00, 0x00, 0x00, 0x00, 0x00, 0x0C)
+            /* FromBCD */
+
+            M1A7 (Arg0, 0x00, 0x00, 0x00, 0x00, 0x00, 0x0D)
+            /* Increment */
+
+            M1A7 (Arg0, 0x00, 0x00, 0x00, 0x00, 0x00, 0x0E)
+            /* Index */
+
+            M1A7 (Arg0, 0x00, 0x00, 0x00, 0x00, 0x00, 0x0F)
+            M1A7 (B000, Arg0, 0x00, 0x00, 0x00, 0x00, 0x0F)
+            /* LAnd */
+
+            M1A7 (Arg0, 0x00, 0x00, 0x00, 0x00, 0x00, 0x10)
+            M1A7 (0x00, Arg0, 0x00, 0x00, 0x00, 0x00, 0x10)
+            /* LEqual */
+
+            M1A7 (Arg0, 0x00, 0x00, 0x00, 0x00, 0x00, 0x11)
+            M1A7 (0x00, Arg0, 0x00, 0x00, 0x00, 0x00, 0x11)
+            /* LGreater */
+
+            M1A7 (Arg0, 0x00, 0x00, 0x00, 0x00, 0x00, 0x12)
+            M1A7 (0x00, Arg0, 0x00, 0x00, 0x00, 0x00, 0x12)
+            /* LGreaterEqual */
+
+            M1A7 (Arg0, 0x00, 0x00, 0x00, 0x00, 0x00, 0x13)
+            M1A7 (0x00, Arg0, 0x00, 0x00, 0x00, 0x00, 0x13)
+            /* LLess */
+
+            M1A7 (Arg0, 0x00, 0x00, 0x00, 0x00, 0x00, 0x14)
+            M1A7 (0x00, Arg0, 0x00, 0x00, 0x00, 0x00, 0x14)
+            /* LLessEqual */
+
+            M1A7 (Arg0, 0x00, 0x00, 0x00, 0x00, 0x00, 0x15)
+            M1A7 (0x00, Arg0, 0x00, 0x00, 0x00, 0x00, 0x15)
+            /* LNot */
+
+            M1A7 (Arg0, 0x00, 0x00, 0x00, 0x00, 0x00, 0x16)
+            /* LNotEqual */
+
+            M1A7 (Arg0, 0x00, 0x00, 0x00, 0x00, 0x00, 0x17)
+            M1A7 (0x00, Arg0, 0x00, 0x00, 0x00, 0x00, 0x17)
+            /* LOr */
+
+            M1A7 (Arg0, 0x00, 0x00, 0x00, 0x00, 0x00, 0x18)
+            M1A7 (0x00, Arg0, 0x00, 0x00, 0x00, 0x00, 0x18)
+            /* Match */
+
+            M1A7 (Arg0, 0x00, 0x01, 0x01, 0x01, 0x00, 0x19)
+            M1A7 (P000, 0x00, Arg0, 0x01, 0x01, 0x00, 0x19)
+            M1A7 (P000, 0x00, 0x01, Arg0, 0x01, 0x00, 0x19)
+            M1A7 (P000, 0x00, 0x01, 0x01, Arg0, 0x00, 0x19)
+            /* Mid */
+
+            M1A7 (Arg0, 0x00, 0x05, 0x00, 0x00, 0x00, 0x1A)
+            M1A7 (S000, Arg0, 0x05, 0x00, 0x00, 0x00, 0x1A)
+            M1A7 (S000, 0x00, Arg0, 0x00, 0x00, 0x00, 0x1A)
+            /* Mod */
+
+            M1A7 (Arg0, 0x01, 0x00, 0x00, 0x00, 0x00, 0x1B)
+            M1A7 (0x01, Arg0, 0x00, 0x00, 0x00, 0x00, 0x1B)
+            /* Multiply */
+
+            M1A7 (Arg0, 0x01, 0x00, 0x00, 0x00, 0x00, 0x1C)
+            M1A7 (0x01, Arg0, 0x00, 0x00, 0x00, 0x00, 0x1C)
+            /* NAnd */
+
+            M1A7 (Arg0, 0x01, 0x00, 0x00, 0x00, 0x00, 0x1D)
+            M1A7 (0x01, Arg0, 0x00, 0x00, 0x00, 0x00, 0x1D)
+            /* NOr */
+
+            M1A7 (Arg0, 0x01, 0x00, 0x00, 0x00, 0x00, 0x1E)
+            M1A7 (0x01, Arg0, 0x00, 0x00, 0x00, 0x00, 0x1E)
+            /* Not */
+
+            M1A7 (Arg0, 0x01, 0x00, 0x00, 0x00, 0x00, 0x1F)
+            /* Or */
+
+            M1A7 (Arg0, 0x01, 0x00, 0x00, 0x00, 0x00, 0x21)
+            M1A7 (0x01, Arg0, 0x00, 0x00, 0x00, 0x00, 0x21)
+            /* Release */
+
+            M1A7 (Arg0, 0x00, 0x00, 0x00, 0x00, 0x00, 0x23)
+            /* Reset */
+
+            M1A7 (Arg0, 0x00, 0x00, 0x00, 0x00, 0x00, 0x24)
+            /* ShiftLeft */
+
+            M1A7 (Arg0, 0x01, 0x00, 0x00, 0x00, 0x00, 0x26)
+            M1A7 (0x01, Arg0, 0x00, 0x00, 0x00, 0x00, 0x26)
+            /* ShiftRight */
+
+            M1A7 (Arg0, 0x01, 0x00, 0x00, 0x00, 0x00, 0x27)
+            M1A7 (0x01, Arg0, 0x00, 0x00, 0x00, 0x00, 0x27)
+            /* Signal */
+
+            M1A7 (Arg0, 0x00, 0x00, 0x00, 0x00, 0x00, 0x28)
+            /* Sleep */
+
+            M1A7 (Arg0, 0x00, 0x00, 0x00, 0x00, 0x00, 0x2A)
+            /* Stall */
+
+            M1A7 (Arg0, 0x00, 0x00, 0x00, 0x00, 0x00, 0x2B)
+            /* Store */
+
+            CH03 (TS, Z081, 0x0218, 0x01ED, 0x00)
+            Local7 = Arg0
+            CH03 (TS, Z081, 0x0219, 0x01EF, 0x00)
+            /* Subtract */
+
+            M1A7 (Arg0, 0x01, 0x00, 0x00, 0x00, 0x00, 0x2D)
+            M1A7 (0x01, Arg0, 0x00, 0x00, 0x00, 0x00, 0x2D)
+            /* ToBCD */
+
+            M1A7 (Arg0, 0x00, 0x00, 0x00, 0x00, 0x00, 0x2E)
+            /* ToBuffer */
+
+            M1A7 (Arg0, 0x00, 0x00, 0x00, 0x00, 0x00, 0x2F)
+            /* ToDecimalString */
+
+            M1A7 (Arg0, 0x00, 0x00, 0x00, 0x00, 0x00, 0x30)
+            /* ToHexString */
+
+            M1A7 (Arg0, 0x00, 0x00, 0x00, 0x00, 0x00, 0x31)
+            /* ToInteger */
+
+            M1A7 (Arg0, 0x00, 0x00, 0x00, 0x00, 0x00, 0x32)
+            /* ToString */
+
+            M1A7 (Arg0, 0x01, 0x00, 0x00, 0x00, 0x00, 0x33)
+            M1A7 (B000, Arg0, 0x00, 0x00, 0x00, 0x00, 0x33)
+            /* Wait */
+
+            M1A7 (Arg0, 0x01, 0x00, 0x00, 0x00, 0x00, 0x34)
+            M1A7 (B000, Arg0, 0x00, 0x00, 0x00, 0x00, 0x34)
+            /* XOr */
+
+            M1A7 (Arg0, 0x01, 0x00, 0x00, 0x00, 0x00, 0x35)
+            M1A7 (B000, Arg0, 0x00, 0x00, 0x00, 0x00, 0x35)
+        } /* if(rn08) */
+
+        FLG4 = 0x00
+        RST0 ()
+        Return (Zero)
+    }
+
+    /* Simple test, only some particular ways of obtaining references */
+
+    Method (M1A9, 0, Serialized)
+    {
+        /* FILE BUG: CondRefOf doesnt cause exception but only under some conditions, */
+        /* namely for rn00 == 2. */
+        Name (RN00, 0x02) /* Simplest modes, for debugging */
+        Name (RN01, 0x01) /* Crash */
+        If ((RN00 == 0x00))
+        {
+            /* Simplest mode, ONE-TWO operations of those below */
+
+            Local0 = RefOf (I900)
+            M1A8 (Local0, Z081, 0x0F)
+            Local1 = CondRefOf (I900, Local0)
+            If (M1A4 (Local1, 0x22))
+            {
+                M1A8 (Local0, Z081, 0x23)
+            }
+        }
+        ElseIf ((RN00 == 0x01))
+        {
+            /* Simplest mode, SOME of operations below */
+
+            Store (S900 [0x00], Local0)
+            M1A8 (Local0, Z081, 0x00)
+            Store (B900 [0x03], Local0)
+            M1A8 (Local0, Z081, 0x01)
+            Store (P901 [0x00], Local0)
+            M1A8 (Local0, Z081, 0x02)
+            Store (P91E [0x00], Local0)
+            M1A8 (Local0, Z081, 0x04)
+            Local0 = Local1 = P901 [0x00]
+            M1A8 (Local1, Z081, 0x0A)
+            Local0 = Local1 = P91E [0x00]
+            M1A8 (Local1, Z081, 0x0E)
+            Local0 = RefOf (I900)
+            M1A8 (Local0, Z081, 0x0F)
+            Local0 = RefOf (F900)
+            M1A8 (Local0, Z081, 0x12)
+            Local0 = RefOf (BN90)
+            M1A8 (Local0, Z081, 0x13)
+            Local0 = RefOf (IF90)
+            M1A8 (Local0, Z081, 0x14)
+            Local0 = RefOf (BF90)
+            M1A8 (Local0, Z081, 0x15)
+            Local1 = CondRefOf (I900, Local0)
+            If (M1A4 (Local1, 0x22))
+            {
+                M1A8 (Local0, Z081, 0x23)
+            }
+        }
+        Else
+        {
+            /* Index */
+
+            Store (S900 [0x00], Local0)
+            M1A8 (Local0, Z081, 0x00)
+            Store (B900 [0x03], Local0)
+            M1A8 (Local0, Z081, 0x01)
+            Store (P901 [0x00], Local0)
+            M1A8 (Local0, Z081, 0x02)
+            If (RN01)
+            {
+                Store (P916 [0x00], Local0)
+                M1A8 (Local0, Z081, 0x03)
+            }
+
+            Store (P91E [0x00], Local0)
+            M1A8 (Local0, Z081, 0x04)
+            Local0 = Local1 = S900 [0x00]
+            M1A8 (Local0, Z081, 0x05)
+            M1A8 (Local1, Z081, 0x06)
+            Local0 = Local1 = B900 [0x03]
+            M1A8 (Local0, Z081, 0x07)
+            M1A8 (Local1, Z081, 0x08)
+            Local0 = Local1 = P901 [0x00]
+            M1A8 (Local0, Z081, 0x09)
+            M1A8 (Local1, Z081, 0x0A)
+            If (RN01)
+            {
+                Local0 = Local1 = P916 [0x00]
+                M1A8 (Local0, Z081, 0x0B)
+                M1A8 (Local1, Z081, 0x0C)
+            }
+
+            Local0 = Local1 = P91E [0x00]
+            M1A8 (Local0, Z081, 0x0D)
+            M1A8 (Local1, Z081, 0x0E)
+            /* RefOf */
+
+            Local0 = RefOf (I900)
+            M1A8 (Local0, Z081, 0x0F)
+            Local0 = RefOf (S900)
+            M1A8 (Local0, Z081, 0x10)
+            Local0 = RefOf (B900)
+            M1A8 (Local0, Z081, 0x11)
+            Local0 = RefOf (F900)
+            M1A8 (Local0, Z081, 0x12)
+            Local0 = RefOf (BN90)
+            M1A8 (Local0, Z081, 0x13)
+            Local0 = RefOf (IF90)
+            M1A8 (Local0, Z081, 0x14)
+            Local0 = RefOf (BF90)
+            M1A8 (Local0, Z081, 0x15)
+            Local0 = RefOf (E900)
+            M1A8 (Local0, Z081, 0x16)
+            Local0 = RefOf (MX90)
+            M1A8 (Local0, Z081, 0x17)
+            Local0 = RefOf (D900)
+            M1A8 (Local0, Z081, 0x18)
+            Local0 = RefOf (TZ90)
+            M1A8 (Local0, Z081, 0x19)
+            Local0 = RefOf (PR90)
+            M1A8 (Local0, Z081, 0x1A)
+            Local0 = RefOf (R900)
+            M1A8 (Local0, Z081, 0x1B)
+            Local0 = RefOf (PW90)
+            M1A8 (Local0, Z081, 0x1C)
+            Local0 = RefOf (P900)
+            M1A8 (Local0, Z081, 0x1D)
+            Local0 = RefOf (P901)
+            M1A8 (Local0, Z081, 0x1E)
+            Local0 = RefOf (P916)
+            M1A8 (Local0, Z081, 0x1F)
+            Local0 = RefOf (P91D)
+            M1A8 (Local0, Z081, 0x20)
+            Local0 = RefOf (P91E)
+            M1A8 (Local0, Z081, 0x21)
+            /* CondRefOf */
+
+            Local1 = CondRefOf (I900, Local0)
+            If (M1A4 (Local1, 0x22))
+            {
+                M1A8 (Local0, Z081, 0x23)
+            }
+
+            Local1 = CondRefOf (S900, Local0)
+            If (M1A4 (Local1, 0x24))
+            {
+                M1A8 (Local0, Z081, 0x25)
+            }
+
+            Local1 = CondRefOf (B900, Local0)
+            If (M1A4 (Local1, 0x26))
+            {
+                M1A8 (Local0, Z081, 0x27)
+            }
+
+            Local1 = CondRefOf (F900, Local0)
+            If (M1A4 (Local1, 0x28))
+            {
+                M1A8 (Local0, Z081, 0x29)
+            }
+
+            Local1 = CondRefOf (BN90, Local0)
+            If (M1A4 (Local1, 0x2A))
+            {
+                M1A8 (Local0, Z081, 0x2B)
+            }
+
+            Local1 = CondRefOf (IF90, Local0)
+            If (M1A4 (Local1, 0x2C))
+            {
+                M1A8 (Local0, Z081, 0x2D)
+            }
+
+            Local1 = CondRefOf (BF90, Local0)
+            If (M1A4 (Local1, 0x2E))
+            {
+                M1A8 (Local0, Z081, 0x2F)
+            }
+
+            Local1 = CondRefOf (E900, Local0)
+            If (M1A4 (Local1, 0x30))
+            {
+                M1A8 (Local0, Z081, 0x31)
+            }
+
+            Local1 = CondRefOf (MX90, Local0)
+            If (M1A4 (Local1, 0x32))
+            {
+                M1A8 (Local0, Z081, 0x33)
+            }
+
+            Local1 = CondRefOf (D900, Local0)
+            If (M1A4 (Local1, 0x34))
+            {
+                M1A8 (Local0, Z081, 0x35)
+            }
+
+            Local1 = CondRefOf (TZ90, Local0)
+            If (M1A4 (Local1, 0x36))
+            {
+                M1A8 (Local0, Z081, 0x37)
+            }
+
+            Local1 = CondRefOf (PR90, Local0)
+            If (M1A4 (Local1, 0x38))
+            {
+                M1A8 (Local0, Z081, 0x39)
+            }
+
+            Local1 = CondRefOf (R900, Local0)
+            If (M1A4 (Local1, 0x3A))
+            {
+                M1A8 (Local0, Z081, 0x3B)
+            }
+
+            Local1 = CondRefOf (PW90, Local0)
+            If (M1A4 (Local1, 0x3C))
+            {
+                M1A8 (Local0, Z081, 0x3D)
+            }
+
+            Local1 = CondRefOf (P900, Local0)
+            If (M1A4 (Local1, 0x3E))
+            {
+                M1A8 (Local0, Z081, 0x3F)
+            }
+
+            Local1 = CondRefOf (P901, Local0)
+            If (M1A4 (Local1, 0x40))
+            {
+                M1A8 (Local0, Z081, 0x41)
+            }
+
+            Local1 = CondRefOf (P916, Local0)
+            If (M1A4 (Local1, 0x42))
+            {
+                M1A8 (Local0, Z081, 0x43)
+            }
+
+            Local1 = CondRefOf (P91D, Local0)
+            If (M1A4 (Local1, 0x44))
+            {
+                M1A8 (Local0, Z081, 0x45)
+            }
+
+            Local1 = CondRefOf (P91E, Local0)
+            If (M1A4 (Local1, 0x46))
+            {
+                M1A8 (Local0, Z081, 0x47)
+            }
+        }
+    }
+
+    Method (M106, 0, Serialized)
+    {
+        Name (TS, "m106")
+        Name (I000, 0xABCD0000)
+        Method (M000, 1, NotSerialized)
+        {
+            CH03 (TS, Z081, 0x48, 0x0334, 0x00)
+            Debug = DerefOf (RefOf (DerefOf (RefOf (Arg0))))
+            CH04 (C080, 0x00, 0xFF, Z081, 0x0338, 0x00, 0x00)
+        }
+
+        M000 (I000)
+    }
+
+    /* Run-method */
+
+    Method (REF5, 0, Serialized)
+    {
+        Name (P91E, Package (0x01)
+        {
+            0xABCD0000
+        })
+        Debug = "TEST: REF5, References, check exceptions"
+        C080 = "REF5" /* name of test */
+        C081 = Z081       /* absolute index of file initiating the checking */ /* \Z081 */
+        C082 = 0x01      /* flag of test of exceptions */
+        C083 = 0x00      /* run verification of references (write/read) */
+        C084 = 0x00      /* run verification of references (reading) */
+        C085 = 0x00      /* create the chain of references to LocalX, then dereference them */
+        C086 = 0x00      /* flag, run test till the first error */
+        C087 = 0x01      /* apply DeRefOf to ArgX-ObjectReference */
+        C089 = 0x01      /* flag of Reference, object otherwise */
+        If (0x00)
+        {
+            /* This mode of test run takes much time, moreover, */
+            /* due to the bug 95 of ACPICA it fails to complete. */
+            /* So, if run it then do it with the flag c086 set up */
+            /* - run test till the first error. */
+            C086 = 0x01 /* flag, run test till the first error */
+            /* For local data (methods of ref1.asl) */
+            /* Reset current indicator of errors */
+            RST2 ()
+            C081 = Z077 /* absolute index of file initiating the checking */ /* \Z077 */
+            SRMT ("m168")
+            M168 ()
+            SRMT ("m169")
+            M169 ()
+            SRMT ("m16a")
+            M16A (0x00)
+            SRMT ("m16b")
+            M16B ()
+            SRMT ("m16c")
+            M16C (0x00)
+            SRMT ("m16d")
+            M16D ()
+            SRMT ("m16e")
+            M16E ()
+            /* For global data (methods of ref4.asl) */
+
+            C081 = Z080 /* absolute index of file initiating the checking */ /* \Z080 */
+            SRMT ("m190")
+            M190 ()
+            SRMT ("m191")
+            M191 (0x00)
+            SRMT ("m192")
+            M192 ()
+            SRMT ("m193")
+            M193 (0x00)
+            SRMT ("m194")
+            M194 ()
+        }
+        Else
+        {
+            /* Run simple test only for some particular ways of */
+            /* obtaining references. */
+            C086 = 0x00 /* dont break testing on error appearance */
+            SRMT ("m1a9")
+            M1A9 ()
+        }
+
+        /* Particular tests */
+
+        SRMT ("m106")
+        M106 ()
+        SRMT ("m167")
+        If (Y248)
+        {
+            /* This code here only to not forget to run m1a8:m167 */
+
+            Local0 = Local1 = P91E [0x00]
+            M167 (Local0)
+        }
+        Else
+        {
+            BLCK ()
+        }
+    }
 

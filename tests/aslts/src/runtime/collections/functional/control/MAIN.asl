@@ -25,7 +25,14 @@
  * NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE,
  * EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
-
+/*
+ * NOTE: this control test case will stay unconverted. This is because this test case
+ * contains a lot of nested control statements (if, case, while). The indentation in
+ * this testcase does not follow standard indentation rules to maintain readability.
+ * If this file were to be converted, it will result in insertion of many whitespaces
+ * at the beginning of the line for code that has very deep nesting. Therefore we will
+ * leave this test case unconverted.
+ */
 DefinitionBlock(
 	"control.aml",   // Output filename
 	"DSDT",     // Signature

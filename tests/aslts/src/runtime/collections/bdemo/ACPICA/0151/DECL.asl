@@ -1,115 +1,124 @@
-/*
- * Some or all of this work - Copyright (c) 2006 - 2017, Intel Corp.
- * All rights reserved.
- *
- * Redistribution and use in source and binary forms, with or without modification,
- * are permitted provided that the following conditions are met:
- *
- * Redistributions of source code must retain the above copyright notice,
- * this list of conditions and the following disclaimer.
- * Redistributions in binary form must reproduce the above copyright notice,
- * this list of conditions and the following disclaimer in the documentation
- * and/or other materials provided with the distribution.
- * Neither the name of Intel Corporation nor the names of its contributors
- * may be used to endorse or promote products derived from this software
- * without specific prior written permission.
- *
- * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS"
- * AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE
- * IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE
- * ARE DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT OWNER OR CONTRIBUTORS BE
- * LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL
- * DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES;
- * LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY
- * THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING
- * NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE,
- * EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
- */
+    /*
+     * Some or all of this work - Copyright (c) 2006 - 2017, Intel Corp.
+     * All rights reserved.
+     *
+     * Redistribution and use in source and binary forms, with or without modification,
+     * are permitted provided that the following conditions are met:
+     *
+     * Redistributions of source code must retain the above copyright notice,
+     * this list of conditions and the following disclaimer.
+     * Redistributions in binary form must reproduce the above copyright notice,
+     * this list of conditions and the following disclaimer in the documentation
+     * and/or other materials provided with the distribution.
+     * Neither the name of Intel Corporation nor the names of its contributors
+     * may be used to endorse or promote products derived from this software
+     * without specific prior written permission.
+     *
+     * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS"
+     * AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE
+     * IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE
+     * ARE DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT OWNER OR CONTRIBUTORS BE
+     * LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL
+     * DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES;
+     * LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY
+     * THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING
+     * NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE,
+     * EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
+     */
+    /*
+     * Bug 151:
+     *
+     * SUMMARY: The zero-length resulting String of Mid operator passed to Concatenate operator causes crash
+     *
+     * Check absence of crash..
+     */
+    Method (MF3F, 1, Serialized)
+    {
+        Name (B000, Buffer (Arg0){})
+        Name (B001, Buffer (0x07)
+        {
+             0x01, 0x02, 0x03, 0x04, 0x05, 0x06, 0x07         // .......
+        })
+        Name (B002, Buffer (0x07)
+        {
+             0x08, 0x09, 0x0A, 0x0B, 0x0C, 0x0D, 0x0E         // .......
+        })
+        Debug = "Buffer case"
+        Debug = B000 /* \MF3F.B000 */
+        Debug = SizeOf (B000)
+        /* 1. */
 
-/*
- * Bug 151:
- *
- * SUMMARY: The zero-length resulting String of Mid operator passed to Concatenate operator causes crash
- *
- * Check absence of crash..
- */
+        Local1 = Concatenate (B000, B001)
+        Debug = "Ok: Concatenate(<Default empty buffer>, ...)"
+        Concatenate (B000, B001, Local0)
+        If ((Local0 != Buffer (0x07)
+                    {
+                         0x01, 0x02, 0x03, 0x04, 0x05, 0x06, 0x07         // .......
+                    }))
+        {
+            ERR ("", ZFFF, 0x37, 0x00, 0x00, Local0, Buffer (0x07)
+                {
+                     0x01, 0x02, 0x03, 0x04, 0x05, 0x06, 0x07         // .......
+                })
+        }
 
-	Method(mf3f, 1, Serialized)
-	{
-		Name(b000, Buffer(arg0){})
-		Name(b001, Buffer(7){1,2,3,4,5,6,7})
-		Name(b002, Buffer(7){8,9,10,11,12,13,14})
+        /* 2. */
 
-		Store("Buffer case", Debug)
+        Local0 = Mid (B002, 0x07, 0x01)
+        Debug = Local0
+        Debug = SizeOf (Local0)
+        Debug = "Try: Concatenate(<Mid empty buffer result object>, ...)"
+        Local1 = Concatenate (Local0, B001)
+        Debug = "Ok: Concatenate(<Mid empty buffer result object>, ...)"
+        Concatenate (Local0, B001, Local0)
+        If ((Local0 != Buffer (0x07)
+                    {
+                         0x01, 0x02, 0x03, 0x04, 0x05, 0x06, 0x07         // .......
+                    }))
+        {
+            ERR ("", ZFFF, 0x46, 0x00, 0x00, Local0, Buffer (0x07)
+                {
+                     0x01, 0x02, 0x03, 0x04, 0x05, 0x06, 0x07         // .......
+                })
+        }
+    }
 
-		Store(b000, Debug)
-		Store(Sizeof(b000), Debug)
+    Method (MF40, 0, Serialized)
+    {
+        Name (S000, "")
+        Name (S001, "String1")
+        Name (S002, "String2")
+        Debug = "String case"
+        Debug = S000 /* \MF40.S000 */
+        Debug = SizeOf (S000)
+        /* 3. */
 
-		// 1.
+        Local1 = Concatenate (S000, S001)
+        Debug = "Ok: Concatenate(<Default empty string>, ...)"
+        Concatenate (S000, S001, Local0)
+        If ((Local0 != "String1"))
+        {
+            ERR ("", ZFFF, 0x5C, 0x00, 0x00, Local0, "String1")
+        }
 
-		Store(Concatenate(b000, b001), Local1)
-		Store("Ok: Concatenate(<Default empty buffer>, ...)", Debug)
+        /* 4. */
 
-		Concatenate(b000, b001, Local0)
-		if (LNotEqual(Local0, Buffer(7){1,2,3,4,5,6,7})) {
-			err("", zFFF, __LINE__, 0, 0, Local0, Buffer(7){1,2,3,4,5,6,7})
-		}
+        Local0 = Mid (S002, 0x07, 0x01)
+        Debug = Local0
+        Debug = SizeOf (Local0)
+        Debug = "Try: Concatenate(<Mid empty string result object>, ...)"
+        Local1 = Concatenate (Local0, S001)
+        Debug = "Ok: Concatenate(<Mid empty string result object>, ...)"
+        Concatenate (Local0, S001, Local0)
+        If ((Local0 != "String1"))
+        {
+            ERR ("", ZFFF, 0x6B, 0x00, 0x00, Local0, "String1")
+        }
+    }
 
-		// 2.
+    Method (MF41, 0, NotSerialized)
+    {
+        MF3F (0x00)
+        MF40 ()
+    }
 
-		Store(Mid(b002, 7, 1), Local0)
-		Store(Local0, Debug)
-		Store(Sizeof(Local0), Debug)
-
-		Store("Try: Concatenate(<Mid empty buffer result object>, ...)", Debug)
-		Store(Concatenate(Local0, b001), Local1)
-		Store("Ok: Concatenate(<Mid empty buffer result object>, ...)", Debug)
-
-		Concatenate(Local0, b001, Local0)
-		if (LNotEqual(Local0, Buffer(7){1,2,3,4,5,6,7})) {
-			err("", zFFF, __LINE__, 0, 0, Local0, Buffer(7){1,2,3,4,5,6,7})
-		}
-	}
-
-	Method(mf40,, Serialized)
-	{
-		Name(s000, "")
-		Name(s001, "String1")
-		Name(s002, "String2")
-
-		Store("String case", Debug)
-
-		Store(s000, Debug)
-		Store(Sizeof(s000), Debug)
-
-		// 3.
-
-		Store(Concatenate(s000, s001), Local1)
-		Store("Ok: Concatenate(<Default empty string>, ...)", Debug)
-
-		Concatenate(s000, s001, Local0)
-		if (LNotEqual(Local0, "String1")) {
-			err("", zFFF, __LINE__, 0, 0, Local0, "String1")
-		}
-
-		// 4.
-
-		Store(Mid(s002, 7, 1), Local0)
-		Store(Local0, Debug)
-		Store(Sizeof(Local0), Debug)
-
-		Store("Try: Concatenate(<Mid empty string result object>, ...)", Debug)
-		Store(Concatenate(Local0, s001), Local1)
-		Store("Ok: Concatenate(<Mid empty string result object>, ...)", Debug)
-
-		Concatenate(Local0, s001, Local0)
-		if (LNotEqual(Local0, "String1")) {
-			err("", zFFF, __LINE__, 0, 0, Local0, "String1")
-		}
-	}
-
-	Method(mf41)
-	{
-		mf3f(0)
-		mf40()
-	}

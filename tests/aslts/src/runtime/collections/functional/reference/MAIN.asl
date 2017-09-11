@@ -25,41 +25,33 @@
  * NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE,
  * EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
+DefinitionBlock ("reference", "DSDT", 2, "Intel", "Many", 0x00000001)
+{
+    /* All declarations */
+    Include ("../../../../runtime/cntl/DECL.asl")
+    Include ("../../../../runtime/common/data.asl")
+    Include ("../../../../runtime/common/dataproc.asl")
+    Include ("../../../../runtime/common/datastproc.asl")
+    Include ("../../../../runtime/common/operations.asl")
+    Include ("../../../../runtime/collections/functional/reference/DECL.asl")
+    /*	Include("../../../../runtime/collections/IMPL/ACPICA/common/icommon.asl") */
 
-DefinitionBlock(
-	"reference.aml",   // Output filename
-	"DSDT",     // Signature
-	0x02,       // DSDT Revision
-	"Intel",    // OEMID
-	"Many",     // TABLE ID
-	0x00000001  // OEM Revision
-	) {
+    Method (M1A8, 3, NotSerialized)
+    {
+        Debug = "It is implemented in exc_ref.asl, not used here"
+    }
 
-	// All declarations
-	Include("../../../../runtime/cntl/DECL.asl")
-	Include("../../../../runtime/common/data.asl")
-	Include("../../../../runtime/common/dataproc.asl")
-	Include("../../../../runtime/common/datastproc.asl")
-	Include("../../../../runtime/common/operations.asl")
-	Include("../../../../runtime/collections/functional/reference/DECL.asl")
-//	Include("../../../../runtime/collections/IMPL/ACPICA/common/icommon.asl")
+    Method (MAIN, 0, NotSerialized)
+    {
+        /* Initialization */
 
-	Method(m1a8, 3)
-	{
-		Store("It is implemented in exc_ref.asl, not used here", Debug)
-	}
+        STRT (0x00)
+        /* Run verification methods */
+        Include ("../../../../runtime/collections/functional/reference/RUN.asl")
+        /* Final actions */
 
-	Method(MAIN) {
-
-		// Initialization
-		STRT(0)
-
-		// Run verification methods
-		Include("../../../../runtime/collections/functional/reference/RUN.asl")
-
-		// Final actions
-		Store(FNSH(), Local7)
-
-		return (Local7)
-	}
+        Store (FNSH (), Local7)
+        Return (Local7)
+    }
 }
+

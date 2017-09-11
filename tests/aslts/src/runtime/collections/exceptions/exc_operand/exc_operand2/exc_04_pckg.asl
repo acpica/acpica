@@ -1,2752 +1,2239 @@
-/*
- * Some or all of this work - Copyright (c) 2006 - 2017, Intel Corp.
- * All rights reserved.
- *
- * Redistribution and use in source and binary forms, with or without modification,
- * are permitted provided that the following conditions are met:
- *
- * Redistributions of source code must retain the above copyright notice,
- * this list of conditions and the following disclaimer.
- * Redistributions in binary form must reproduce the above copyright notice,
- * this list of conditions and the following disclaimer in the documentation
- * and/or other materials provided with the distribution.
- * Neither the name of Intel Corporation nor the names of its contributors
- * may be used to endorse or promote products derived from this software
- * without specific prior written permission.
- *
- * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS"
- * AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE
- * IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE
- * ARE DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT OWNER OR CONTRIBUTORS BE
- * LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL
- * DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES;
- * LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY
- * THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING
- * NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE,
- * EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
- */
+    /*
+     * Some or all of this work - Copyright (c) 2006 - 2017, Intel Corp.
+     * All rights reserved.
+     *
+     * Redistribution and use in source and binary forms, with or without modification,
+     * are permitted provided that the following conditions are met:
+     *
+     * Redistributions of source code must retain the above copyright notice,
+     * this list of conditions and the following disclaimer.
+     * Redistributions in binary form must reproduce the above copyright notice,
+     * this list of conditions and the following disclaimer in the documentation
+     * and/or other materials provided with the distribution.
+     * Neither the name of Intel Corporation nor the names of its contributors
+     * may be used to endorse or promote products derived from this software
+     * without specific prior written permission.
+     *
+     * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS"
+     * AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE
+     * IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE
+     * ARE DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT OWNER OR CONTRIBUTORS BE
+     * LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL
+     * DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES;
+     * LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY
+     * THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING
+     * NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE,
+     * EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
+     */
+    /*
+     *  Package
+     *
+     * (verify exceptions caused by the imprope use of Package type objects)
+     */
+    Name (Z096, 0x60)
+    Name (P100, Package (0x01)
+    {
+        0x61
+    })
+    /* Expected exceptions: */
+    /* */
+    /* 47 - AE_AML_OPERAND_TYPE */
+    /* Note: Package can be used with Index */
+    Method (M4B4, 1, Serialized)
+    {
+        Name (TS, "m4b4")
+        Name (P000, Package (0x01)
+        {
+            0x62
+        })
+        Event (E000)
+        Name (I000, 0x00)
+        /* Local Named Object */
+        /* ASL compiler prohibits to use Pakage */
+        /* Named Objects in the most of operators */
+        Method (M000, 1, Serialized)
+        {
+            Name (P000, Package (0x01)
+            {
+                0x63
+            })
+            /* CondRefOf */
+
+            Local1 = CondRefOf (P000)
+            CH03 (TS, Z096, 0x00, 0x3F, 0x00)
+            CondRefOf (P000, Local1)
+            CH03 (TS, Z096, 0x01, 0x42, 0x00)
+            /* CopyObject */
+
+            CopyObject (P000, Local1)
+            CH03 (TS, Z096, 0x02, 0x47, 0x00)
+            /* Decrement */
+            /* DerefOf */
+            /* These are now caught by the compiler - Aug 2015
+             if (y083) {
+             Store (DerefOf(p000), Local1)
+             CH06(arg0, 0, 47)
+             }
+             */
+            /* FindSetLeftBit */
+            /* FindSetRightBit */
+            /* FromBCD */
+            /* Increment */
+            /* LNot */
+            /* Not */
+            /* ObjectType */
+            Local1 = ObjectType (P000)
+            CH03 (TS, Z096, 0x03, 0x63, 0x00)
+            /* RefOf */
+
+            Local1 = RefOf (P000)
+            CH03 (TS, Z096, 0x04, 0x68, 0x00)
+            /* Release */
+            /* Reset */
+            /* Signal */
+            /* SizeOf */
+            Local1 = SizeOf (P000)
+            CH03 (TS, Z096, 0x05, 0x73, 0x00)
+            /* Sleep */
+            /* Stall */
+            /* Store */
+            Local1 = P000 /* \M4B4.M000.P000 */
+            CH03 (TS, Z096, 0x06, 0x7C, 0x00)
+            /* ToBCD */
+            /* ToBuffer */
+            /* ToDecimalString */
+            /* ToHexString */
+            /* ToInteger */
+            /* Acquire */
+            /* Add */
+            /* And */
+            /* Concatenate */
+            /* ConcatenateResTemplate */
+            /* Divide */
+            /* Fatal */
+            /* Index */
+            Local1 = P000 [0x00]
+            CH03 (TS, Z096, 0x07, 0x99, 0x00)
+            Store (P000 [0x00], Local1)
+            CH03 (TS, Z096, 0x08, 0x9C, 0x00)
+            /* LEqual */
+            /* LGreater */
+            /* LGreaterEqual */
+            /* LLess */
+            /* LLessEqual */
+            /* LNotEqual */
+            /* LOr */
+            /* Mod */
+            /* Multiply */
+            /* NAnd */
+            /* NOr */
+            /* Or */
+            /* ShiftLeft */
+            /* ShiftRight */
+            /* Subtract */
+            /* ToString */
+            /* Wait */
+            /* XOr */
+            /* Mid */
+            /* Match */
+            Local1 = Match (P000, MTR, 0x00, MTR, 0x00, 0x00)
+            CH03 (TS, Z096, 0x09, 0xC7, 0x00)
+        }
+
+        /* Global Named Object */
+
+        Method (M001, 1, NotSerialized)
+        {
+            /* CondRefOf */
+
+            CondRefOf (P100, Local1)
+            CH03 (TS, Z096, 0x0B, 0xD0, 0x00)
+            /* CopyObject */
+
+            CopyObject (P100, Local1)
+            CH03 (TS, Z096, 0x0C, 0xD5, 0x00)
+            /* Decrement */
+            /* DerefOf */
+            /* These are now caught by the compiler - Aug 2015
+             if (y083) {
+             Store (DerefOf(p100), Local1)
+             CH06(arg0, 1, 47)
+             }
+             */
+            /* FindSetLeftBit */
+            /* FindSetRightBit */
+            /* FromBCD */
+            /* Increment */
+            /* LNot */
+            /* Not */
+            /* ObjectType */
+            Local1 = ObjectType (P100)
+            CH03 (TS, Z096, 0x0D, 0xF0, 0x00)
+            /* RefOf */
+
+            Local1 = RefOf (P100)
+            CH03 (TS, Z096, 0x0E, 0xF5, 0x00)
+            /* Release */
+            /* Reset */
+            /* Signal */
+            /* SizeOf */
+            Local1 = SizeOf (P100)
+            CH03 (TS, Z096, 0x0F, 0x0100, 0x00)
+            /* Sleep */
+            /* Stall */
+            /* Store */
+            Local1 = P100 /* \P100 */
+            CH03 (TS, Z096, 0x10, 0x0109, 0x00)
+            /* ToBCD */
+            /* ToBuffer */
+            /* ToDecimalString */
+            /* ToHexString */
+            /* ToInteger */
+            /* Acquire */
+            /* Add */
+            /* And */
+            /* Concatenate */
+            /* ConcatenateResTemplate */
+            /* Divide */
+            /* Fatal */
+            /* Index */
+            Store (P100 [0x00], Local1)
+            CH03 (TS, Z096, 0x12, 0x0126, 0x00)
+            /* LEqual */
+            /* LGreater */
+            /* LGreaterEqual */
+            /* LLess */
+            /* LLessEqual */
+            /* LNotEqual */
+            /* LOr */
+            /* Mod */
+            /* Multiply */
+            /* NAnd */
+            /* NOr */
+            /* Or */
+            /* ShiftLeft */
+            /* ShiftRight */
+            /* Subtract */
+            /* ToString */
+            /* Wait */
+            /* XOr */
+            /* Mid */
+            /* Match */
+            Local1 = Match (P100, MTR, 0x00, MTR, 0x00, 0x00)
+            CH03 (TS, Z096, 0x13, 0x0151, 0x00)
+        }
+
+        /* Argument */
+
+        Method (M002, 2, Serialized)
+        {
+            Event (E000)
+            /* CondRefOf */
+
+            CondRefOf (Arg1, Local1)
+            CH03 (TS, Z096, 0x15, 0x015C, 0x00)
+            /* CopyObject */
+
+            CopyObject (Arg1, Local1)
+            CH03 (TS, Z096, 0x16, 0x0161, 0x00)
+            /* Decrement */
+
+            Arg1--
+            CH06 (Arg0, 0x02, 0x2F)
+            /* DerefOf */
+
+            Local1 = DerefOf (Arg1)
+            CH06 (Arg0, 0x03, 0x2F)
+            /* FindSetLeftBit */
+
+            FindSetLeftBit (Arg1, Local1)
+            CH06 (Arg0, 0x05, 0x2F)
+            /* FindSetRightBit */
+
+            FindSetRightBit (Arg1, Local1)
+            CH06 (Arg0, 0x07, 0x2F)
+            /* FromBCD */
+
+            FromBCD (Arg1, Local1)
+            CH06 (Arg0, 0x09, 0x2F)
+            /* Increment */
+
+            Arg1++
+            CH06 (Arg0, 0x0A, 0x2F)
+            /* LNot */
+
+            Local1 = !Arg1
+            CH06 (Arg0, 0x0B, 0x2F)
+            /* Not */
+
+            Local1 = ~Arg1
+            CH06 (Arg0, 0x0D, 0x2F)
+            /* ObjectType */
+
+            Local1 = ObjectType (Arg1)
+            CH03 (TS, Z096, 0x17, 0x018E, 0x00)
+            /* RefOf */
+
+            Local1 = RefOf (Arg1)
+            CH03 (TS, Z096, 0x18, 0x0193, 0x00)
+            /* Release */
+
+            Release (Arg1)
+            CH06 (Arg0, 0x0E, 0x2F)
+            /* Reset */
+
+            Reset (Arg1)
+            CH06 (Arg0, 0x0F, 0x2F)
+            /* Signal */
+
+            Signal (Arg1)
+            CH06 (Arg0, 0x10, 0x2F)
+            /* SizeOf */
+
+            Local1 = SizeOf (Arg1)
+            CH03 (TS, Z096, 0x19, 0x01A7, 0x00)
+            /* Sleep */
+
+            Sleep (Arg1)
+            CH06 (Arg0, 0x11, 0x2F)
+            /* Stall */
+
+            Stall (Arg1)
+            CH06 (Arg0, 0x12, 0x2F)
+            /* Store */
+
+            Local1 = Arg1
+            CH03 (TS, Z096, 0x1A, 0x01B6, 0x00)
+            /* ToBCD */
+
+            ToBCD (Arg1, Local1)
+            CH06 (Arg0, 0x15, 0x2F)
+            /* ToBuffer */
+
+            ToBuffer (Arg1, Local1)
+            CH06 (Arg0, 0x17, 0x2F)
+            /* ToDecimalString */
+
+            ToDecimalString (Arg1, Local1)
+            CH06 (Arg0, 0x19, 0x2F)
+            /* ToHexString */
+
+            ToHexString (Arg1, Local1)
+            CH06 (Arg0, 0x1B, 0x2F)
+            /* ToInteger */
+
+            ToInteger (Arg1, Local1)
+            CH06 (Arg0, 0x1D, 0x2F)
+            /* Acquire */
+
+            Local1 = Acquire (Arg1, 0x0064)
+            CH06 (Arg0, 0x1E, 0x2F)
+            /* Add */
+
+            Local1 = (Arg1 + I000) /* \M4B4.I000 */
+            CH06 (Arg0, 0x21, 0x2F)
+            Local1 = (I000 + Arg1)
+            CH06 (Arg0, 0x22, 0x2F)
+            /* And */
+
+            Local1 = (Arg1 & I000) /* \M4B4.I000 */
+            CH06 (Arg0, 0x25, 0x2F)
+            Local1 = (I000 & Arg1)
+            CH06 (Arg0, 0x26, 0x2F)
+            /* Concatenate */
+
+            Concatenate (Arg1, I000, Local1)
+            CH06 (Arg0, 0x29, 0x2F)
+            Concatenate (I000, Arg1, Local1)
+            CH06 (Arg0, 0x2A, 0x2F)
+            /* ConcatenateResTemplate */
+
+            ConcatenateResTemplate (Arg1, Buffer (0x02)
+                {
+                     0x79, 0x00                                       // y.
+                }, Local1)
+            CH06 (Arg0, 0x2D, 0x2F)
+            ConcatenateResTemplate (Buffer (0x02)
+                {
+                     0x79, 0x00                                       // y.
+                }, Arg1, Local1)
+            CH06 (Arg0, 0x2E, 0x2F)
+            /* Divide */
+
+            Divide (Arg1, I000, Local2)
+            CH06 (Arg0, 0x31, 0x2F)
+            Divide (I000, Arg1, Local2)
+            CH06 (Arg0, 0x32, 0x2F)
+            Divide (Arg1, I000, Local2, Local1)
+            CH06 (Arg0, 0x33, 0x2F)
+            Divide (I000, Arg1, Local2, Local1)
+            CH06 (Arg0, 0x34, 0x2F)
+            /* Fatal */
+
+            Fatal (0xFF, 0xFFFFFFFF, Arg1)
+            CH06 (Arg0, 0x35, 0x2F)
+            /* Index */
+
+            Local1 = Arg1 [0x00]
+            CH03 (TS, Z096, 0x1C, 0x020C, 0x00)
+            Index ("0", Arg1, Local1)
+            CH06 (Arg0, 0x39, 0x2F)
+            /* LEqual */
+
+            Local1 = (Arg1 == I000)
+            CH06 (Arg0, 0x3A, 0x2F)
+            Local1 = (I000 == Arg1)
+            CH06 (Arg0, 0x3B, 0x2F)
+            /* LGreater */
+
+            Local1 = (Arg1 > I000)
+            CH06 (Arg0, 0x3C, 0x2F)
+            Local1 = (I000 > Arg1)
+            CH06 (Arg0, 0x3D, 0x2F)
+            /* LGreaterEqual */
+
+            Local1 = (Arg1 >= I000)
+            CH06 (Arg0, 0x3E, 0xFF)
+            Local1 = (I000 >= Arg1)
+            CH06 (Arg0, 0x3F, 0xFF)
+            /* LLess */
+
+            Local1 = (Arg1 < I000)
+            CH06 (Arg0, 0x40, 0x2F)
+            Local1 = (I000 < Arg1)
+            CH06 (Arg0, 0x41, 0x2F)
+            /* LLessEqual */
+
+            Local1 = (Arg1 <= I000)
+            CH06 (Arg0, 0x42, 0xFF)
+            Local1 = (I000 <= Arg1)
+            CH06 (Arg0, 0x43, 0xFF)
+            /* LNotEqual */
+
+            Local1 = (Arg1 != I000)
+            CH06 (Arg0, 0x44, 0xFF)
+            Local1 = (I000 != Arg1)
+            CH06 (Arg0, 0x45, 0xFF)
+            /* LOr */
+
+            Local1 = (Arg1 || I000)
+            CH06 (Arg0, 0x46, 0x2F)
+            Local1 = (I000 || Arg1)
+            CH06 (Arg0, 0x47, 0x2F)
+            /* Mod */
+
+            Local1 = (Arg1 % I000) /* \M4B4.I000 */
+            CH06 (Arg0, 0x4A, 0x2F)
+            Local1 = (I000 % Arg1)
+            CH06 (Arg0, 0x4B, 0x2F)
+            /* Multiply */
+
+            Local1 = (Arg1 * I000) /* \M4B4.I000 */
+            CH06 (Arg0, 0x4E, 0x2F)
+            Local1 = (I000 * Arg1)
+            CH06 (Arg0, 0x4F, 0x2F)
+            /* NAnd */
+
+            NAnd (Arg1, I000, Local1)
+            CH06 (Arg0, 0x52, 0x2F)
+            NAnd (I000, Arg1, Local1)
+            CH06 (Arg0, 0x53, 0x2F)
+            /* NOr */
+
+            NOr (Arg1, I000, Local1)
+            CH06 (Arg0, 0x56, 0x2F)
+            NOr (I000, Arg1, Local1)
+            CH06 (Arg0, 0x57, 0x2F)
+            /* Or */
+
+            Local1 = (Arg1 | I000) /* \M4B4.I000 */
+            CH06 (Arg0, 0x5A, 0x2F)
+            Local1 = (I000 | Arg1)
+            CH06 (Arg0, 0x5B, 0x2F)
+            /* ShiftLeft */
+
+            Local1 = (Arg1 << I000) /* \M4B4.I000 */
+            CH06 (Arg0, 0x5E, 0x2F)
+            Local1 = (I000 << Arg1)
+            CH06 (Arg0, 0x5F, 0x2F)
+            /* ShiftRight */
+
+            Local1 = (Arg1 >> I000) /* \M4B4.I000 */
+            CH06 (Arg0, 0x62, 0x2F)
+            Local1 = (I000 >> Arg1)
+            CH06 (Arg0, 0x63, 0x2F)
+            /* Subtract */
+
+            Local1 = (Arg1 - I000) /* \M4B4.I000 */
+            CH06 (Arg0, 0x66, 0x2F)
+            Local1 = (I000 - Arg1)
+            CH06 (Arg0, 0x67, 0x2F)
+            /* ToString */
+
+            ToString (Arg1, 0x01, Local1)
+            CH06 (Arg0, 0x6A, 0x2F)
+            ToString (I000, Arg1, Local1)
+            CH06 (Arg0, 0x6B, 0x2F)
+            /* Wait */
+
+            Local1 = Wait (Arg1, I000)
+            CH06 (Arg0, 0x6C, 0x2F)
+            Local1 = Wait (E000, Arg1)
+            CH06 (Arg0, 0x6D, 0x2F)
+            /* XOr */
+
+            Local1 = (Arg1 ^ I000) /* \M4B4.I000 */
+            CH06 (Arg0, 0x70, 0x2F)
+            Local1 = (I000 ^ Arg1)
+            CH06 (Arg0, 0x71, 0x2F)
+            /* Mid */
+
+            Mid (Arg1, 0x01, 0x01, Local1)
+            CH06 (Arg0, 0x75, 0x2F)
+            Mid ("123", Arg1, 0x01, Local1)
+            CH06 (Arg0, 0x76, 0x2F)
+            Mid ("123", 0x01, Arg1, Local1)
+            CH06 (Arg0, 0x77, 0x2F)
+            /* Match */
+
+            Local1 = Match (Arg1, MTR, 0x00, MTR, 0x00, 0x00)
+            CH03 (TS, Z096, 0x1D, 0x02AF, 0x00)
+            Local1 = Match (Package (0x01)
+                    {
+                        0x01
+                    }, MTR, Arg1, MTR, 0x00, 0x00)
+            CH06 (Arg0, 0x79, 0x2F)
+            Local1 = Match (Package (0x01)
+                    {
+                        0x01
+                    }, MTR, 0x00, MTR, Arg1, 0x00)
+            CH06 (Arg0, 0x7A, 0x2F)
+            Local1 = Match (Package (0x01)
+                    {
+                        0x01
+                    }, MTR, 0x00, MTR, 0x00, Arg1)
+            CH06 (Arg0, 0x7B, 0x2F)
+        }
+
+        /* Local */
+
+        Method (M003, 1, NotSerialized)
+        {
+            Local0 = Package (0x01)
+                {
+                    0x63
+                }
+            /* CondRefOf */
+
+            CondRefOf (Local0, Local1)
+            CH03 (TS, Z096, 0x1F, 0x02C3, 0x00)
+            /* CopyObject */
+
+            CopyObject (Local0, Local1)
+            CH03 (TS, Z096, 0x20, 0x02C8, 0x00)
+            /* Decrement */
+
+            Local0--
+            CH06 (Arg0, 0x01, 0x2F)
+            /* DerefOf */
+
+            Local1 = DerefOf (Local0)
+            CH06 (Arg0, 0x02, 0x2F)
+            /* FindSetLeftBit */
+
+            FindSetLeftBit (Local0, Local1)
+            CH06 (Arg0, 0x04, 0x2F)
+            /* FindSetRightBit */
+
+            FindSetRightBit (Local0, Local1)
+            CH06 (Arg0, 0x06, 0x2F)
+            /* FromBCD */
+
+            FromBCD (Local0, Local1)
+            CH06 (Arg0, 0x08, 0x2F)
+            /* Increment */
+
+            Local0++
+            CH06 (Arg0, 0x09, 0x2F)
+            /* LNot */
+
+            Local1 = !Local0
+            CH06 (Arg0, 0x0A, 0x2F)
+            /* Not */
+
+            Local1 = ~Local0
+            CH06 (Arg0, 0x0C, 0x2F)
+            /* ObjectType */
+
+            Local1 = ObjectType (Local0)
+            CH03 (TS, Z096, 0x21, 0x02F5, 0x00)
+            /* RefOf */
+
+            Local1 = RefOf (Local0)
+            CH03 (TS, Z096, 0x22, 0x02FA, 0x00)
+            /* Release */
+
+            Release (Local0)
+            CH06 (Arg0, 0x0D, 0x2F)
+            /* Reset */
+
+            Reset (Local0)
+            CH06 (Arg0, 0x0E, 0x2F)
+            /* Signal */
+
+            Signal (Local0)
+            CH06 (Arg0, 0x0F, 0x2F)
+            /* SizeOf */
+
+            Local1 = SizeOf (Local0)
+            CH03 (TS, Z096, 0x23, 0x030E, 0x00)
+            /* Sleep */
+
+            Sleep (Local0)
+            CH06 (Arg0, 0x11, 0x2F)
+            /* Stall */
+
+            Stall (Local0)
+            CH06 (Arg0, 0x12, 0x2F)
+            /* Store */
+
+            Local1 = Local0
+            CH03 (TS, Z096, 0x24, 0x031D, 0x00)
+            /* ToBCD */
+
+            ToBCD (Local0, Local1)
+            CH06 (Arg0, 0x15, 0x2F)
+            /* ToBuffer */
+
+            ToBuffer (Local0, Local1)
+            CH06 (Arg0, 0x17, 0x2F)
+            /* ToDecimalString */
+
+            ToDecimalString (Local0, Local1)
+            CH06 (Arg0, 0x19, 0x2F)
+            /* ToHexString */
+
+            ToHexString (Local0, Local1)
+            CH06 (Arg0, 0x1B, 0x2F)
+            /* ToInteger */
+
+            ToInteger (Local0, Local1)
+            CH06 (Arg0, 0x1D, 0x2F)
+            /* Acquire */
+
+            Local1 = Acquire (Local0, 0x0064)
+            CH06 (Arg0, 0x1E, 0x2F)
+            /* Add */
+
+            Local1 = (I000 + Local0)
+            CH06 (Arg0, 0x22, 0x2F)
+            /* And */
+
+            Local1 = (Local0 & I000) /* \M4B4.I000 */
+            CH06 (Arg0, 0x25, 0x2F)
+            Local1 = (I000 & Local0)
+            CH06 (Arg0, 0x26, 0x2F)
+            /* Concatenate */
+
+            Concatenate (Local0, I000, Local1)
+            CH06 (Arg0, 0x29, 0x2F)
+            Concatenate (I000, Local0, Local1)
+            CH06 (Arg0, 0x2A, 0x2F)
+            /* ConcatenateResTemplate */
+
+            ConcatenateResTemplate (Local0, Buffer (0x02)
+                {
+                     0x79, 0x00                                       // y.
+                }, Local1)
+            CH06 (Arg0, 0x2D, 0x2F)
+            ConcatenateResTemplate (Buffer (0x02)
+                {
+                     0x79, 0x00                                       // y.
+                }, Local0, Local1)
+            CH06 (Arg0, 0x2E, 0x2F)
+            /* Divide */
+
+            Divide (Local0, I000, Local2)
+            CH06 (Arg0, 0x31, 0x2F)
+            Divide (I000, Local0, Local2)
+            CH06 (Arg0, 0x32, 0x2F)
+            Divide (Local0, I000, Local2, Local1)
+            CH06 (Arg0, 0x33, 0x2F)
+            Divide (I000, Local0, Local2, Local1)
+            CH06 (Arg0, 0x34, 0x2F)
+            /* Fatal */
+
+            Fatal (0xFF, 0xFFFFFFFF, Local0)
+            CH06 (Arg0, 0x35, 0x2F)
+            /* Index */
+
+            Local1 = Local0 [0x00]
+            CH03 (TS, Z096, 0x26, 0x0370, 0x00)
+            Index ("0", Local0, Local1)
+            CH06 (Arg0, 0x39, 0x2F)
+            /* LEqual */
+
+            Local1 = (Local0 == I000)
+            CH06 (Arg0, 0x3A, 0x2F)
+            Local1 = (I000 == Local0)
+            CH06 (Arg0, 0x3B, 0x2F)
+            /* LGreater */
+
+            Local1 = (Local0 > I000)
+            CH06 (Arg0, 0x3C, 0x2F)
+            Local1 = (I000 > Local0)
+            CH06 (Arg0, 0x3D, 0x2F)
+            /* LGreaterEqual */
+
+            Local1 = (Local0 >= I000)
+            CH06 (Arg0, 0x3E, 0xFF)
+            Local1 = (I000 >= Local0)
+            CH06 (Arg0, 0x3F, 0xFF)
+            /* LLess */
+
+            Local1 = (Local0 < I000)
+            CH06 (Arg0, 0x40, 0x2F)
+            Local1 = (I000 < Local0)
+            CH06 (Arg0, 0x41, 0x2F)
+            /* LLessEqual */
+
+            Local1 = (Local0 <= I000)
+            CH06 (Arg0, 0x42, 0xFF)
+            Local1 = (I000 <= Local0)
+            CH06 (Arg0, 0x43, 0xFF)
+            /* LNotEqual */
+
+            Local1 = (Local0 != I000)
+            CH06 (Arg0, 0x44, 0xFF)
+            Local1 = (I000 != Local0)
+            CH06 (Arg0, 0x45, 0xFF)
+            /* LOr */
+
+            Local1 = (Local0 || I000)
+            CH06 (Arg0, 0x46, 0x2F)
+            Local1 = (I000 || Local0)
+            CH06 (Arg0, 0x47, 0x2F)
+            /* Mod */
+
+            Local1 = (Local0 % I000) /* \M4B4.I000 */
+            CH06 (Arg0, 0x4A, 0x2F)
+            Local1 = (I000 % Local0)
+            CH06 (Arg0, 0x4B, 0x2F)
+            /* Multiply */
+
+            Local1 = (Local0 * I000) /* \M4B4.I000 */
+            CH06 (Arg0, 0x4E, 0x2F)
+            Local1 = (I000 * Local0)
+            CH06 (Arg0, 0x4F, 0x2F)
+            /* NAnd */
+
+            NAnd (Local0, I000, Local1)
+            CH06 (Arg0, 0x52, 0x2F)
+            NAnd (I000, Local0, Local1)
+            CH06 (Arg0, 0x53, 0x2F)
+            /* NOr */
+
+            NOr (Local0, I000, Local1)
+            CH06 (Arg0, 0x56, 0x2F)
+            NOr (I000, Local0, Local1)
+            CH06 (Arg0, 0x57, 0x2F)
+            /* Or */
+
+            Local1 = (Local0 | I000) /* \M4B4.I000 */
+            CH06 (Arg0, 0x5A, 0x2F)
+            Local1 = (I000 | Local0)
+            CH06 (Arg0, 0x5B, 0x2F)
+            /* ShiftLeft */
+
+            Local1 = (Local0 << I000) /* \M4B4.I000 */
+            CH06 (Arg0, 0x5E, 0x2F)
+            Local1 = (I000 << Local0)
+            CH06 (Arg0, 0x5F, 0x2F)
+            /* ShiftRight */
+
+            Local1 = (Local0 >> I000) /* \M4B4.I000 */
+            CH06 (Arg0, 0x62, 0x2F)
+            Local1 = (I000 >> Local0)
+            CH06 (Arg0, 0x63, 0x2F)
+            /* Subtract */
+
+            Local1 = (Local0 - I000) /* \M4B4.I000 */
+            CH06 (Arg0, 0x66, 0x2F)
+            Local1 = (I000 - Local0)
+            CH06 (Arg0, 0x67, 0x2F)
+            /* ToString */
+
+            ToString (Local0, 0x01, Local1)
+            CH06 (Arg0, 0x6A, 0x2F)
+            ToString (I000, Local0, Local1)
+            CH06 (Arg0, 0x6B, 0x2F)
+            /* Wait */
+
+            Local1 = Wait (Local0, I000)
+            CH06 (Arg0, 0x6C, 0x2F)
+            Local1 = Wait (E000, Local0)
+            CH06 (Arg0, 0x6D, 0x2F)
+            /* XOr */
+
+            Local1 = (Local0 ^ I000) /* \M4B4.I000 */
+            CH06 (Arg0, 0x70, 0x2F)
+            Local1 = (I000 ^ Local0)
+            CH06 (Arg0, 0x71, 0x2F)
+            /* Mid */
+
+            Mid (Local0, 0x01, 0x01, Local1)
+            CH06 (Arg0, 0x75, 0x2F)
+            Mid ("123", Local0, 0x01, Local1)
+            CH06 (Arg0, 0x76, 0x2F)
+            Mid ("123", 0x01, Local0, Local1)
+            CH06 (Arg0, 0x77, 0x2F)
+            /* Match */
+
+            Local1 = Match (Local0, MTR, 0x00, MTR, 0x00, 0x00)
+            CH03 (TS, Z096, 0x27, 0x0413, 0x00)
+            Local1 = Match (Package (0x01)
+                    {
+                        0x01
+                    }, MTR, Local0, MTR, 0x00, 0x00)
+            CH06 (Arg0, 0x79, 0x2F)
+            Local1 = Match (Package (0x01)
+                    {
+                        0x01
+                    }, MTR, 0x00, MTR, Local0, 0x00)
+            CH06 (Arg0, 0x7A, 0x2F)
+            Local1 = Match (Package (0x01)
+                    {
+                        0x01
+                    }, MTR, 0x00, MTR, 0x00, Local0)
+            CH06 (Arg0, 0x7B, 0x2F)
+        }
+
+        /* An element of Package */
+
+        Method (M004, 1, Serialized)
+        {
+            Name (P000, Package (0x01)
+            {
+                Package (0x01)
+                {
+                    0x63
+                }
+            })
+            /* DeRefOf(Index(Package, Ind)) */
+            /* CondRefOf */
+            CondRefOf (DerefOf (P000 [0x00]), Local1)
+            CH06 (Arg0, 0x01, 0x2F)
+            /* CopyObject */
+
+            CopyObject (DerefOf (P000 [0x00]), Local1)
+            CH03 (TS, Z096, 0x28, 0x042E, 0x00)
+            /* Decrement */
+
+            DerefOf (P000 [0x00])--
+            CH06 (Arg0, 0x02, 0x2F)
+            /* DerefOf */
+
+            Local1 = DerefOf (DerefOf (P000 [0x00]))
+            CH06 (Arg0, 0x03, 0x2F)
+            /* FindSetLeftBit */
+
+            FindSetLeftBit (DerefOf (P000 [0x00]), Local1)
+            CH06 (Arg0, 0x05, 0x2F)
+            /* FindSetRightBit */
+
+            FindSetRightBit (DerefOf (P000 [0x00]), Local1)
+            CH06 (Arg0, 0x07, 0x2F)
+            /* FromBCD */
+
+            FromBCD (DerefOf (P000 [0x00]), Local1)
+            CH06 (Arg0, 0x09, 0x2F)
+            /* Increment */
+
+            DerefOf (P000 [0x00])++
+            CH06 (Arg0, 0x0A, 0x2F)
+            /* LNot */
+
+            Local1 = !DerefOf (P000 [0x00])
+            CH06 (Arg0, 0x0B, 0x2F)
+            /* Not */
+
+            Local1 = ~DerefOf (P000 [0x00])
+            CH06 (Arg0, 0x0D, 0x2F)
+            /* ObjectType */
+
+            Local1 = ObjectType (DerefOf (P000 [0x00]))
+            CH03 (TS, Z096, 0x29, 0x045B, 0x00)
+            /* RefOf */
+
+            Local1 = RefOf (DerefOf (P000 [0x00]))
+            CH06 (Arg0, 0x0E, 0x2F)
+            /* Release */
+            /* Reset */
+            /* Signal */
+            /* SizeOf */
+            Local1 = SizeOf (DerefOf (P000 [0x00]))
+            CH03 (TS, Z096, 0x2A, 0x046B, 0x00)
+            /* Sleep */
+
+            Sleep (DerefOf (P000 [0x00]))
+            CH06 (Arg0, 0x11, 0x2F)
+            /* Stall */
+
+            Stall (DerefOf (P000 [0x00]))
+            CH06 (Arg0, 0x12, 0x2F)
+            /* Store */
+
+            Local1 = DerefOf (P000 [0x00])
+            CH03 (TS, Z096, 0x2B, 0x047A, 0x00)
+            /* ToBCD */
+
+            ToBCD (DerefOf (P000 [0x00]), Local1)
+            CH06 (Arg0, 0x15, 0x2F)
+            /* ToBuffer */
+
+            ToBuffer (DerefOf (P000 [0x00]), Local1)
+            CH06 (Arg0, 0x17, 0x2F)
+            /* ToDecimalString */
+
+            ToDecimalString (DerefOf (P000 [0x00]), Local1)
+            CH06 (Arg0, 0x19, 0x2F)
+            /* ToHexString */
+
+            ToHexString (DerefOf (P000 [0x00]), Local1)
+            CH06 (Arg0, 0x1B, 0x2F)
+            /* ToInteger */
+
+            ToInteger (DerefOf (P000 [0x00]), Local1)
+            CH06 (Arg0, 0x1D, 0x2F)
+            /* Acquire */
+            /* Add */
+            Local1 = (DerefOf (P000 [0x00]) + I000) /* \M4B4.I000 */
+            CH06 (Arg0, 0x21, 0x2F)
+            Local1 = (I000 + DerefOf (P000 [0x00]))
+            CH06 (Arg0, 0x22, 0x2F)
+            /* And */
+
+            Local1 = (DerefOf (P000 [0x00]) & I000) /* \M4B4.I000 */
+            CH06 (Arg0, 0x25, 0x2F)
+            Local1 = (I000 & DerefOf (P000 [0x00]))
+            CH06 (Arg0, 0x26, 0x2F)
+            /* Concatenate */
+
+            Concatenate (DerefOf (P000 [0x00]), I000, Local1)
+            CH06 (Arg0, 0x29, 0x2F)
+            Concatenate (I000, DerefOf (P000 [0x00]), Local1)
+            CH06 (Arg0, 0x2A, 0x2F)
+            /* ConcatenateResTemplate */
+
+            ConcatenateResTemplate (DerefOf (P000 [0x00]), Buffer (0x02)
+                {
+                     0x79, 0x00                                       // y.
+                }, Local1)
+            CH06 (Arg0, 0x2D, 0x2F)
+            ConcatenateResTemplate (Buffer (0x02)
+                {
+                     0x79, 0x00                                       // y.
+                }, DerefOf (P000 [0x00]), Local1)
+            CH06 (Arg0, 0x2E, 0x2F)
+            /* Divide */
+
+            Divide (DerefOf (P000 [0x00]), I000, Local2)
+            CH06 (Arg0, 0x31, 0x2F)
+            Divide (I000, DerefOf (P000 [0x00]), Local2)
+            CH06 (Arg0, 0x32, 0x2F)
+            Divide (DerefOf (P000 [0x00]), I000, Local2, Local1)
+            CH06 (Arg0, 0x33, 0x2F)
+            Divide (I000, DerefOf (P000 [0x00]), Local2, Local1)
+            CH06 (Arg0, 0x34, 0x2F)
+            /* Fatal */
+
+            Fatal (0xFF, 0xFFFFFFFF, DerefOf (P000 [0x00]))
+            CH06 (Arg0, 0x35, 0x2F)
+            /* Index */
+
+            Local1 = DerefOf (P000 [0x00]) [0x00]
+            CH03 (TS, Z096, 0x2D, 0x04CD, 0x00)
+            Index ("0", DerefOf (P000 [0x00]), Local1)
+            CH06 (Arg0, 0x39, 0x2F)
+            /* LEqual */
+
+            Local1 = (DerefOf (P000 [0x00]) == I000)
+            CH06 (Arg0, 0x3A, 0x2F)
+            Local1 = (I000 == DerefOf (P000 [0x00]))
+            CH06 (Arg0, 0x3B, 0x2F)
+            /* LGreater */
+
+            Local1 = (DerefOf (P000 [0x00]) > I000)
+            CH06 (Arg0, 0x3C, 0x2F)
+            Local1 = (I000 > DerefOf (P000 [0x00]))
+            CH06 (Arg0, 0x3D, 0x2F)
+            /* LGreaterEqual */
+
+            Local1 = (DerefOf (P000 [0x00]) >= I000)
+            CH06 (Arg0, 0x3E, 0xFF)
+            Local1 = (I000 >= DerefOf (P000 [0x00]))
+            CH06 (Arg0, 0x3F, 0xFF)
+            /* LLess */
+
+            Local1 = (DerefOf (P000 [0x00]) < I000)
+            CH06 (Arg0, 0x40, 0x2F)
+            Local1 = (I000 < DerefOf (P000 [0x00]))
+            CH06 (Arg0, 0x41, 0x2F)
+            /* LLessEqual */
+
+            Local1 = (DerefOf (P000 [0x00]) <= I000)
+            CH06 (Arg0, 0x42, 0xFF)
+            Local1 = (I000 <= DerefOf (P000 [0x00]))
+            CH06 (Arg0, 0x43, 0xFF)
+            /* LNotEqual */
+
+            Local1 = (DerefOf (P000 [0x00]) != I000)
+            CH06 (Arg0, 0x44, 0xFF)
+            Local1 = (I000 != DerefOf (P000 [0x00]))
+            CH06 (Arg0, 0x45, 0xFF)
+            /* LOr */
+
+            Local1 = (DerefOf (P000 [0x00]) || I000)
+            CH06 (Arg0, 0x46, 0x2F)
+            Local1 = (I000 || DerefOf (P000 [0x00]))
+            CH06 (Arg0, 0x47, 0x2F)
+            /* Mod */
+
+            Local1 = (DerefOf (P000 [0x00]) % I000) /* \M4B4.I000 */
+            CH06 (Arg0, 0x4A, 0x2F)
+            Local1 = (I000 % DerefOf (P000 [0x00]))
+            CH06 (Arg0, 0x4B, 0x2F)
+            /* Multiply */
+
+            Local1 = (DerefOf (P000 [0x00]) * I000) /* \M4B4.I000 */
+            CH06 (Arg0, 0x4E, 0x2F)
+            Local1 = (I000 * DerefOf (P000 [0x00]))
+            CH06 (Arg0, 0x4F, 0x2F)
+            /* NAnd */
+
+            NAnd (DerefOf (P000 [0x00]), I000, Local1)
+            CH06 (Arg0, 0x52, 0x2F)
+            NAnd (I000, DerefOf (P000 [0x00]), Local1)
+            CH06 (Arg0, 0x53, 0x2F)
+            /* NOr */
+
+            NOr (DerefOf (P000 [0x00]), I000, Local1)
+            CH06 (Arg0, 0x56, 0x2F)
+            NOr (I000, DerefOf (P000 [0x00]), Local1)
+            CH06 (Arg0, 0x57, 0x2F)
+            /* Or */
+
+            Local1 = (DerefOf (P000 [0x00]) | I000) /* \M4B4.I000 */
+            CH06 (Arg0, 0x5A, 0x2F)
+            Local1 = (I000 | DerefOf (P000 [0x00]))
+            CH06 (Arg0, 0x5B, 0x2F)
+            /* ShiftLeft */
+
+            Local1 = (DerefOf (P000 [0x00]) << I000) /* \M4B4.I000 */
+            CH06 (Arg0, 0x5E, 0x2F)
+            Local1 = (I000 << DerefOf (P000 [0x00]))
+            CH06 (Arg0, 0x5F, 0x2F)
+            /* ShiftRight */
+
+            Local1 = (DerefOf (P000 [0x00]) >> I000) /* \M4B4.I000 */
+            CH06 (Arg0, 0x62, 0x2F)
+            Local1 = (I000 >> DerefOf (P000 [0x00]))
+            CH06 (Arg0, 0x63, 0x2F)
+            /* Subtract */
+
+            Local1 = (DerefOf (P000 [0x00]) - I000) /* \M4B4.I000 */
+            CH06 (Arg0, 0x66, 0x2F)
+            Local1 = (I000 - DerefOf (P000 [0x00]))
+            CH06 (Arg0, 0x67, 0x2F)
+            /* ToString */
+
+            ToString (DerefOf (P000 [0x00]), 0x01, Local1)
+            CH06 (Arg0, 0x6A, 0x2F)
+            ToString (I000, DerefOf (P000 [0x00]), Local1)
+            CH06 (Arg0, 0x6B, 0x2F)
+            /* Wait */
+
+            Local1 = Wait (E000, DerefOf (P000 [0x00]))
+            CH06 (Arg0, 0x6D, 0x2F)
+            /* XOr */
+
+            Local1 = (DerefOf (P000 [0x00]) ^ I000) /* \M4B4.I000 */
+            CH06 (Arg0, 0x70, 0x2F)
+            Local1 = (I000 ^ DerefOf (P000 [0x00]))
+            CH06 (Arg0, 0x71, 0x2F)
+            /* Mid */
+
+            Mid (DerefOf (P000 [0x00]), 0x01, 0x01, Local1)
+            CH06 (Arg0, 0x75, 0x2F)
+            Mid ("123", DerefOf (P000 [0x00]), 0x01, Local1)
+            CH06 (Arg0, 0x76, 0x2F)
+            Mid ("123", 0x01, DerefOf (P000 [0x00]), Local1)
+            CH06 (Arg0, 0x77, 0x2F)
+            /* Match */
+
+            Local1 = Match (DerefOf (P000 [0x00]), MTR, 0x00, MTR, 0x00, 
+                0x00)
+            CH03 (TS, Z096, 0x2E, 0x056D, 0x00)
+            Local1 = Match (Package (0x01)
+                    {
+                        0x01
+                    }, MTR, DerefOf (P000 [0x00]), MTR, 0x00, 0x00)
+            CH06 (Arg0, 0x79, 0x2F)
+            Local1 = Match (Package (0x01)
+                    {
+                        0x01
+                    }, MTR, 0x00, MTR, DerefOf (P000 [0x00]), 0x00)
+            CH06 (Arg0, 0x7A, 0x2F)
+            Local1 = Match (Package (0x01)
+                    {
+                        0x01
+                    }, MTR, 0x00, MTR, 0x00, DerefOf (P000 [0x00]))
+            CH06 (Arg0, 0x7B, 0x2F)
+            /* DeRefOf(Index(Package, Ind, Dest)) */
+            /* CondRefOf */
+            CondRefOf (DerefOf (Local0 = P000 [0x00]), Local1)
+            CH06 (Arg0, 0xCC, 0x2F)
+            /* CopyObject */
+
+            CopyObject (DerefOf (Local0 = P000 [0x00]), Local1)
+            CH03 (TS, Z096, 0x2F, 0x0583, 0x00)
+            /* Decrement */
+
+            DerefOf (Local0 = P000 [0x00])--
+            CH06 (Arg0, 0x01, 0x2F)
+            /* DerefOf */
+
+            Local1 = DerefOf (DerefOf (Local0 = P000 [0x00]))
+            CH06 (Arg0, 0x02, 0x2F)
+            /* FindSetLeftBit */
+
+            FindSetLeftBit (DerefOf (Local0 = P000 [0x00]), Local1)
+            CH06 (Arg0, 0x04, 0x2F)
+            /* FindSetRightBit */
+
+            FindSetRightBit (DerefOf (Local0 = P000 [0x00]), Local1)
+            CH06 (Arg0, 0x06, 0x2F)
+            /* FromBCD */
+
+            FromBCD (DerefOf (Local0 = P000 [0x00]), Local1)
+            CH06 (Arg0, 0x08, 0x2F)
+            /* Increment */
+
+            DerefOf (Local0 = P000 [0x00])++
+            CH06 (Arg0, 0x09, 0x2F)
+            /* LNot */
+
+            Local1 = !DerefOf (Local0 = P000 [0x00])
+            CH06 (Arg0, 0x0A, 0x2F)
+            /* Not */
+
+            Local1 = ~DerefOf (Local0 = P000 [0x00])
+            CH06 (Arg0, 0x0C, 0x2F)
+            /* ObjectType */
+
+            Local1 = ObjectType (DerefOf (Local0 = P000 [0x00]))
+            CH03 (TS, Z096, 0x30, 0x05B0, 0x00)
+            /* RefOf */
+
+            Local1 = RefOf (DerefOf (Local0 = P000 [0x00]))
+            CH06 (Arg0, 0xCD, 0x2F)
+            /* Release */
+            /* Reset */
+            /* Signal */
+            /* SizeOf */
+            Local1 = SizeOf (DerefOf (Local0 = P000 [0x00]))
+            CH03 (TS, Z096, 0x31, 0x05C0, 0x00)
+            /* Sleep */
+
+            Sleep (DerefOf (Local0 = P000 [0x00]))
+            CH06 (Arg0, 0x11, 0x2F)
+            /* Stall */
+
+            Stall (DerefOf (Local0 = P000 [0x00]))
+            CH06 (Arg0, 0x12, 0x2F)
+            /* Store */
+
+            Local1 = DerefOf (Local0 = P000 [0x00])
+            CH03 (TS, Z096, 0x32, 0x05CF, 0x00)
+            /* ToBCD */
+
+            ToBCD (DerefOf (Local0 = P000 [0x00]), Local1)
+            CH06 (Arg0, 0x15, 0x2F)
+            /* ToBuffer */
+
+            ToBuffer (DerefOf (Local0 = P000 [0x00]), Local1)
+            CH06 (Arg0, 0x17, 0x2F)
+            /* ToDecimalString */
+
+            ToDecimalString (DerefOf (Local0 = P000 [0x00]), Local1)
+            CH06 (Arg0, 0x19, 0x2F)
+            /* ToHexString */
+
+            ToHexString (DerefOf (Local0 = P000 [0x00]), Local1)
+            CH06 (Arg0, 0x1B, 0x2F)
+            /* ToInteger */
+
+            ToInteger (DerefOf (Local0 = P000 [0x00]), Local1)
+            CH06 (Arg0, 0x1D, 0x2F)
+            /* Acquire */
+            /* Add */
+            Local1 = (DerefOf (Local0 = P000 [0x00]) + I000) /* \M4B4.I000 */
+            CH06 (Arg0, 0x21, 0x2F)
+            Local1 = (I000 + DerefOf (Local0 = P000 [0x00]))
+            CH06 (Arg0, 0x22, 0x2F)
+            /* And */
+
+            Local1 = (DerefOf (Local0 = P000 [0x00]) & I000) /* \M4B4.I000 */
+            CH06 (Arg0, 0x25, 0x2F)
+            Local1 = (I000 & DerefOf (Local0 = P000 [0x00]))
+            CH06 (Arg0, 0x26, 0x2F)
+            /* Concatenate */
+
+            Concatenate (DerefOf (Local0 = P000 [0x00]), I000, Local1)
+            CH06 (Arg0, 0x29, 0x2F)
+            Concatenate (I000, DerefOf (Local0 = P000 [0x00]), Local1)
+            CH06 (Arg0, 0x2A, 0x2F)
+            /* ConcatenateResTemplate */
+
+            ConcatenateResTemplate (DerefOf (Local0 = P000 [0x00]), Buffer (0x02)
+                {
+                     0x79, 0x00                                       // y.
+                }, Local1)
+            CH06 (Arg0, 0x2D, 0x2F)
+            ConcatenateResTemplate (Buffer (0x02)
+                {
+                     0x79, 0x00                                       // y.
+                }, DerefOf (Local0 = P000 [0x00]), Local1)
+            CH06 (Arg0, 0x2E, 0x2F)
+            /* Divide */
+
+            Divide (DerefOf (Local0 = P000 [0x00]), I000, Local2)
+            CH06 (Arg0, 0x31, 0x2F)
+            Divide (I000, DerefOf (Local0 = P000 [0x00]), Local2)
+            CH06 (Arg0, 0x32, 0x2F)
+            Divide (DerefOf (Local0 = P000 [0x00]), I000, Local2, Local1)
+            CH06 (Arg0, 0x33, 0x2F)
+            Divide (I000, DerefOf (Local0 = P000 [0x00]), Local2, Local1)
+            CH06 (Arg0, 0x34, 0x2F)
+            /* Fatal */
+
+            Fatal (0xFF, 0xFFFFFFFF, DerefOf (Local0 = P000 [0x00]))
+            CH06 (Arg0, 0x35, 0x2F)
+            /* Index */
+
+            Local1 = DerefOf (Local0 = P000 [0x00]) [0x00]
+            CH03 (TS, Z096, 0x34, 0x0622, 0x00)
+            Index ("0", DerefOf (Local0 = P000 [0x00]), Local1)
+            CH06 (Arg0, 0x39, 0x2F)
+            /* LEqual */
+
+            Local1 = (DerefOf (Local0 = P000 [0x00]) == I000)
+            CH06 (Arg0, 0x3A, 0x2F)
+            Local1 = (I000 == DerefOf (Local0 = P000 [0x00]))
+            CH06 (Arg0, 0x3B, 0x2F)
+            /* LGreater */
+
+            Local1 = (DerefOf (Local0 = P000 [0x00]) > I000)
+            CH06 (Arg0, 0x3C, 0x2F)
+            Local1 = (I000 > DerefOf (Local0 = P000 [0x00]))
+            CH06 (Arg0, 0x3D, 0x2F)
+            /* LGreaterEqual */
+
+            Local1 = (DerefOf (Local0 = P000 [0x00]) >= I000)
+            CH06 (Arg0, 0x3E, 0xFF)
+            Local1 = (I000 >= DerefOf (Local0 = P000 [0x00]))
+            CH06 (Arg0, 0x3F, 0xFF)
+            /* LLess */
+
+            Local1 = (DerefOf (Local0 = P000 [0x00]) < I000)
+            CH06 (Arg0, 0x40, 0x2F)
+            Local1 = (I000 < DerefOf (Local0 = P000 [0x00]))
+            CH06 (Arg0, 0x41, 0x2F)
+            /* LLessEqual */
+
+            Local1 = (DerefOf (Local0 = P000 [0x00]) <= I000)
+            CH06 (Arg0, 0x42, 0xFF)
+            Local1 = (I000 <= DerefOf (Local0 = P000 [0x00]))
+            CH06 (Arg0, 0x43, 0xFF)
+            /* LNotEqual */
+
+            Local1 = (DerefOf (Local0 = P000 [0x00]) != I000)
+            CH06 (Arg0, 0x44, 0xFF)
+            Local1 = (I000 != DerefOf (Local0 = P000 [0x00]))
+            CH06 (Arg0, 0x45, 0xFF)
+            /* LOr */
+
+            Local1 = (DerefOf (Local0 = P000 [0x00]) || I000)
+            CH06 (Arg0, 0x46, 0x2F)
+            Local1 = (I000 || DerefOf (Local0 = P000 [0x00]))
+            CH06 (Arg0, 0x47, 0x2F)
+            /* Mod */
+
+            Local1 = (DerefOf (Local0 = P000 [0x00]) % I000) /* \M4B4.I000 */
+            CH06 (Arg0, 0x4A, 0x2F)
+            Local1 = (I000 % DerefOf (Local0 = P000 [0x00]))
+            CH06 (Arg0, 0x4B, 0x2F)
+            /* Multiply */
+
+            Local1 = (DerefOf (Local0 = P000 [0x00]) * I000) /* \M4B4.I000 */
+            CH06 (Arg0, 0x4E, 0x2F)
+            Local1 = (I000 * DerefOf (Local0 = P000 [0x00]))
+            CH06 (Arg0, 0x4F, 0x2F)
+            /* NAnd */
+
+            NAnd (DerefOf (Local0 = P000 [0x00]), I000, Local1)
+            CH06 (Arg0, 0x52, 0x2F)
+            NAnd (I000, DerefOf (Local0 = P000 [0x00]), Local1)
+            CH06 (Arg0, 0x53, 0x2F)
+            /* NOr */
+
+            NOr (DerefOf (Local0 = P000 [0x00]), I000, Local1)
+            CH06 (Arg0, 0x56, 0x2F)
+            NOr (I000, DerefOf (Local0 = P000 [0x00]), Local1)
+            CH06 (Arg0, 0x57, 0x2F)
+            /* Or */
+
+            Local1 = (DerefOf (Local0 = P000 [0x00]) | I000) /* \M4B4.I000 */
+            CH06 (Arg0, 0x5A, 0x2F)
+            Local1 = (I000 | DerefOf (Local0 = P000 [0x00]))
+            CH06 (Arg0, 0x5B, 0x2F)
+            /* ShiftLeft */
+
+            Local1 = (DerefOf (Local0 = P000 [0x00]) << I000) /* \M4B4.I000 */
+            CH06 (Arg0, 0x5E, 0x2F)
+            Local1 = (I000 << DerefOf (Local0 = P000 [0x00]))
+            CH06 (Arg0, 0x5F, 0x2F)
+            /* ShiftRight */
+
+            Local1 = (DerefOf (Local0 = P000 [0x00]) >> I000) /* \M4B4.I000 */
+            CH06 (Arg0, 0x62, 0x2F)
+            Local1 = (I000 >> DerefOf (Local0 = P000 [0x00]))
+            CH06 (Arg0, 0x63, 0x2F)
+            /* Subtract */
+
+            Local1 = (DerefOf (Local0 = P000 [0x00]) - I000) /* \M4B4.I000 */
+            CH06 (Arg0, 0x66, 0x2F)
+            Local1 = (I000 - DerefOf (Local0 = P000 [0x00]))
+            CH06 (Arg0, 0x67, 0x2F)
+            /* ToString */
+
+            ToString (DerefOf (Local0 = P000 [0x00]), 0x01, Local1)
+            CH06 (Arg0, 0x6A, 0x2F)
+            ToString (I000, DerefOf (Local0 = P000 [0x00]), Local1)
+            CH06 (Arg0, 0x6B, 0x2F)
+            /* Wait */
+
+            Local1 = Wait (E000, DerefOf (Local0 = P000 [0x00]))
+            CH06 (Arg0, 0x6D, 0x2F)
+            /* XOr */
+
+            Local1 = (DerefOf (Local0 = P000 [0x00]) ^ I000) /* \M4B4.I000 */
+            CH06 (Arg0, 0x70, 0x2F)
+            Local1 = (I000 ^ DerefOf (Local0 = P000 [0x00]))
+            CH06 (Arg0, 0x71, 0x2F)
+            /* Mid */
+
+            Mid (DerefOf (Local0 = P000 [0x00]), 0x01, 0x01, Local1)
+            CH06 (Arg0, 0x75, 0x2F)
+            Mid ("123", DerefOf (Local0 = P000 [0x00]), 0x01, Local1)
+            CH06 (Arg0, 0x76, 0x2F)
+            Mid ("123", 0x01, DerefOf (Local0 = P000 [0x00]), Local1)
+            CH06 (Arg0, 0x77, 0x2F)
+            /* Match */
+
+            Local1 = Match (DerefOf (Local0 = P000 [0x00]), MTR, 0x00, MTR, 0x00, 
+                0x00)
+            CH03 (TS, Z096, 0x35, 0x06C2, 0x00)
+            Local1 = Match (Package (0x01)
+                    {
+                        0x01
+                    }, MTR, DerefOf (Local0 = P000 [0x00]), MTR, 0x00, 0x00)
+            CH06 (Arg0, 0x79, 0x2F)
+            Local1 = Match (Package (0x01)
+                    {
+                        0x01
+                    }, MTR, 0x00, MTR, DerefOf (Local0 = P000 [0x00]), 0x00)
+            CH06 (Arg0, 0x7A, 0x2F)
+            Local1 = Match (Package (0x01)
+                    {
+                        0x01
+                    }, MTR, 0x00, MTR, 0x00, DerefOf (Local0 = P000 [0x00]))
+            CH06 (Arg0, 0x7B, 0x2F)
+        }
+
+        /* Reference to Object */
+
+        Method (M005, 2, NotSerialized)
+        {
+            Debug = Arg0
+            Debug = Arg1
+            Local0 = ObjectType (Arg1)
+            If ((Local0 != 0x04))
+            {
+                ERR (Arg0, Z096, 0x06D6, 0x00, 0x00, Local0, 0x04)
+                Return (0x01)
+            }
+
+            Local1 = DerefOf (Arg1)
+            CH03 (TS, Z096, 0x36, 0x06DB, 0x00)
+            /* CondRefOf */
+
+            Local1 = CondRefOf (DerefOf (Arg1))
+            CH06 (Arg0, 0x01, 0x2F)
+            Local1 = CondRefOf (DerefOf (Arg1), Local1)
+            CH06 (Arg0, 0x02, 0x2F)
+            /* CopyObject */
+
+            CopyObject (DerefOf (Arg1), Local1)
+            CH03 (TS, Z096, 0x37, 0x06E8, 0x00)
+            /* Decrement */
+
+            DerefOf (Arg1)--
+            CH06 (Arg0, 0x03, 0x2F)
+            /* DerefOf */
+
+            Local1 = DerefOf (DerefOf (Arg1))
+            CH06 (Arg0, 0x04, 0x2F)
+            /* FindSetLeftBit */
+
+            FindSetLeftBit (DerefOf (Arg1), Local1)
+            CH06 (Arg0, 0x06, 0x2F)
+            /* FindSetRightBit */
+
+            FindSetRightBit (DerefOf (Arg1), Local1)
+            CH06 (Arg0, 0x08, 0x2F)
+            /* FromBCD */
+
+            FromBCD (DerefOf (Arg1), Local1)
+            CH06 (Arg0, 0x0A, 0x2F)
+            /* Increment */
+
+            DerefOf (Arg1)++
+            CH06 (Arg0, 0x0B, 0x2F)
+            /* LNot */
+
+            Local1 = !DerefOf (Arg1)
+            CH06 (Arg0, 0x0C, 0x2F)
+            /* Not */
+
+            Local1 = ~DerefOf (Arg1)
+            CH06 (Arg0, 0x0E, 0x2F)
+            /* ObjectType */
+
+            Local1 = ObjectType (DerefOf (Arg1))
+            CH03 (TS, Z096, 0x38, 0x0715, 0x00)
+            /* RefOf */
+
+            Local1 = RefOf (DerefOf (Arg1))
+            CH06 (Arg0, 0x0F, 0x2F)
+            /* Release */
+            /* Reset */
+            /* Signal */
+            /* SizeOf */
+            Local1 = SizeOf (DerefOf (Arg1))
+            CH03 (TS, Z096, 0x39, 0x0725, 0x00)
+            /* Sleep */
+
+            Sleep (DerefOf (Arg1))
+            CH06 (Arg0, 0x11, 0x2F)
+            /* Stall */
+
+            Stall (DerefOf (Arg1))
+            CH06 (Arg0, 0x12, 0x2F)
+            /* Store */
+
+            Local1 = DerefOf (Arg1)
+            CH03 (TS, Z096, 0x3A, 0x0734, 0x00)
+            /* ToBCD */
+
+            ToBCD (DerefOf (Arg1), Local1)
+            CH06 (Arg0, 0x15, 0x2F)
+            /* ToBuffer */
+
+            ToBuffer (DerefOf (Arg1), Local1)
+            CH06 (Arg0, 0x17, 0x2F)
+            /* ToDecimalString */
+
+            ToDecimalString (DerefOf (Arg1), Local1)
+            CH06 (Arg0, 0x19, 0x2F)
+            /* ToHexString */
+
+            ToHexString (DerefOf (Arg1), Local1)
+            CH06 (Arg0, 0x1B, 0x2F)
+            /* ToInteger */
+
+            ToInteger (DerefOf (Arg1), Local1)
+            CH06 (Arg0, 0x1D, 0x2F)
+            /* Acquire */
+            /* Add */
+            Local1 = (DerefOf (Arg1) + I000) /* \M4B4.I000 */
+            CH06 (Arg0, 0x21, 0x2F)
+            Local1 = (I000 + DerefOf (Arg1))
+            CH06 (Arg0, 0x22, 0x2F)
+            /* And */
+
+            Local1 = (DerefOf (Arg1) & I000) /* \M4B4.I000 */
+            CH06 (Arg0, 0x25, 0x2F)
+            Local1 = (I000 & DerefOf (Arg1))
+            CH06 (Arg0, 0x26, 0x2F)
+            /* Concatenate */
+
+            Concatenate (DerefOf (Arg1), I000, Local1)
+            CH06 (Arg0, 0x29, 0x2F)
+            Concatenate (I000, DerefOf (Arg1), Local1)
+            CH06 (Arg0, 0x2A, 0x2F)
+            /* ConcatenateResTemplate */
+
+            ConcatenateResTemplate (DerefOf (Arg1), Buffer (0x02)
+                {
+                     0x79, 0x00                                       // y.
+                }, Local1)
+            CH06 (Arg0, 0x2D, 0x2F)
+            ConcatenateResTemplate (Buffer (0x02)
+                {
+                     0x79, 0x00                                       // y.
+                }, DerefOf (Arg1), Local1)
+            CH06 (Arg0, 0x2E, 0x2F)
+            /* Divide */
+
+            Divide (DerefOf (Arg1), I000, Local2)
+            CH06 (Arg0, 0x31, 0x2F)
+            Divide (I000, DerefOf (Arg1), Local2)
+            CH06 (Arg0, 0x32, 0x2F)
+            Divide (DerefOf (Arg1), I000, Local2, Local1)
+            CH06 (Arg0, 0x33, 0x2F)
+            Divide (I000, DerefOf (Arg1), Local2, Local1)
+            CH06 (Arg0, 0x34, 0x2F)
+            /* Fatal */
+
+            Fatal (0xFF, 0xFFFFFFFF, DerefOf (Arg1))
+            CH06 (Arg0, 0x35, 0x2F)
+            /* Index */
+
+            Local1 = DerefOf (Arg1) [0x00]
+            CH03 (TS, Z096, 0x3C, 0x0787, 0x00)
+            Index ("0", DerefOf (Arg1), Local1)
+            CH06 (Arg0, 0x39, 0x2F)
+            /* LEqual */
+
+            Local1 = (DerefOf (Arg1) == I000)
+            CH06 (Arg0, 0x3A, 0x2F)
+            Local1 = (I000 == DerefOf (Arg1))
+            CH06 (Arg0, 0x3B, 0x2F)
+            /* LGreater */
+
+            Local1 = (DerefOf (Arg1) > I000)
+            CH06 (Arg0, 0x3C, 0x2F)
+            Local1 = (I000 > DerefOf (Arg1))
+            CH06 (Arg0, 0x3D, 0x2F)
+            /* LGreaterEqual */
+
+            Local1 = (DerefOf (Arg1) >= I000)
+            CH06 (Arg0, 0x3E, 0xFF)
+            Local1 = (I000 >= DerefOf (Arg1))
+            CH06 (Arg0, 0x3F, 0xFF)
+            /* LLess */
+
+            Local1 = (DerefOf (Arg1) < I000)
+            CH06 (Arg0, 0x40, 0x2F)
+            Local1 = (I000 < DerefOf (Arg1))
+            CH06 (Arg0, 0x41, 0x2F)
+            /* LLessEqual */
+
+            Local1 = (DerefOf (Arg1) <= I000)
+            CH06 (Arg0, 0x42, 0xFF)
+            Local1 = (I000 <= DerefOf (Arg1))
+            CH06 (Arg0, 0x43, 0xFF)
+            /* LNotEqual */
+
+            Local1 = (DerefOf (Arg1) != I000)
+            CH06 (Arg0, 0x44, 0xFF)
+            Local1 = (I000 != DerefOf (Arg1))
+            CH06 (Arg0, 0x45, 0xFF)
+            /* LOr */
+
+            Local1 = (DerefOf (Arg1) || I000)
+            CH06 (Arg0, 0x46, 0x2F)
+            Local1 = (I000 || DerefOf (Arg1))
+            CH06 (Arg0, 0x47, 0x2F)
+            /* Mod */
+
+            Local1 = (DerefOf (Arg1) % I000) /* \M4B4.I000 */
+            CH06 (Arg0, 0x4A, 0x2F)
+            Local1 = (I000 % DerefOf (Arg1))
+            CH06 (Arg0, 0x4B, 0x2F)
+            /* Multiply */
+
+            Local1 = (DerefOf (Arg1) * I000) /* \M4B4.I000 */
+            CH06 (Arg0, 0x4E, 0x2F)
+            Local1 = (I000 * DerefOf (Arg1))
+            CH06 (Arg0, 0x4F, 0x2F)
+            /* NAnd */
+
+            NAnd (DerefOf (Arg1), I000, Local1)
+            CH06 (Arg0, 0x52, 0x2F)
+            NAnd (I000, DerefOf (Arg1), Local1)
+            CH06 (Arg0, 0x53, 0x2F)
+            /* NOr */
+
+            NOr (DerefOf (Arg1), I000, Local1)
+            CH06 (Arg0, 0x56, 0x2F)
+            NOr (I000, DerefOf (Arg1), Local1)
+            CH06 (Arg0, 0x57, 0x2F)
+            /* Or */
+
+            Local1 = (DerefOf (Arg1) | I000) /* \M4B4.I000 */
+            CH06 (Arg0, 0x5A, 0x2F)
+            Local1 = (I000 | DerefOf (Arg1))
+            CH06 (Arg0, 0x5B, 0x2F)
+            /* ShiftLeft */
+
+            Local1 = (DerefOf (Arg1) << I000) /* \M4B4.I000 */
+            CH06 (Arg0, 0x5E, 0x2F)
+            Local1 = (I000 << DerefOf (Arg1))
+            CH06 (Arg0, 0x5F, 0x2F)
+            /* ShiftRight */
+
+            Local1 = (DerefOf (Arg1) >> I000) /* \M4B4.I000 */
+            CH06 (Arg0, 0x62, 0x2F)
+            Local1 = (I000 >> DerefOf (Arg1))
+            CH06 (Arg0, 0x63, 0x2F)
+            /* Subtract */
+
+            Local1 = (DerefOf (Arg1) - I000) /* \M4B4.I000 */
+            CH06 (Arg0, 0x66, 0x2F)
+            Local1 = (I000 - DerefOf (Arg1))
+            CH06 (Arg0, 0x67, 0x2F)
+            /* ToString */
+
+            ToString (DerefOf (Arg1), 0x01, Local1)
+            CH06 (Arg0, 0x6A, 0x2F)
+            ToString (I000, DerefOf (Arg1), Local1)
+            CH06 (Arg0, 0x6B, 0x2F)
+            /* Wait */
+
+            Local1 = Wait (E000, DerefOf (Arg1))
+            CH06 (Arg0, 0x6D, 0x2F)
+            /* XOr */
+
+            Local1 = (DerefOf (Arg1) ^ I000) /* \M4B4.I000 */
+            CH06 (Arg0, 0x70, 0x2F)
+            Local1 = (I000 ^ DerefOf (Arg1))
+            CH06 (Arg0, 0x71, 0x2F)
+            /* Mid */
+
+            Mid (DerefOf (Arg1), 0x01, 0x01, Local1)
+            CH06 (Arg0, 0x75, 0x2F)
+            Mid ("123", DerefOf (Arg1), 0x01, Local1)
+            CH06 (Arg0, 0x76, 0x2F)
+            Mid ("123", 0x01, DerefOf (Arg1), Local1)
+            CH06 (Arg0, 0x77, 0x2F)
+            /* Match */
+
+            Local1 = Match (DerefOf (Arg1), MTR, 0x00, MTR, 0x00, 0x00)
+            CH03 (TS, Z096, 0x3D, 0x0827, 0x00)
+            Local1 = Match (Package (0x01)
+                    {
+                        0x01
+                    }, MTR, DerefOf (Arg1), MTR, 0x00, 0x00)
+            CH06 (Arg0, 0x79, 0x2F)
+            Local1 = Match (Package (0x01)
+                    {
+                        0x01
+                    }, MTR, 0x00, MTR, DerefOf (Arg1), 0x00)
+            CH06 (Arg0, 0x7A, 0x2F)
+            Local1 = Match (Package (0x01)
+                    {
+                        0x01
+                    }, MTR, 0x00, MTR, 0x00, DerefOf (Arg1))
+            CH06 (Arg0, 0x7B, 0x2F)
+            Return (0x00)
+        }
+
+        /* Result of Method invocation */
+
+        Method (M006, 1, Serialized)
+        {
+            Method (M000, 0, NotSerialized)
+            {
+                /* intermediate storing to force ASL compiler */
+                /* not report "Invalid type (Method returns)" */
+                Local0 = Package (0x01)
+                    {
+                        0x63
+                    }
+                Return (Local0)
+            }
+
+            Name (SS00, "0")
+            /* CondRefOf */
+            /* **** 10/2016 changed method invocation to just a namestring */
+            /* CondRefOf no longer invokes the method */
+            If (Y601)
+            {
+                Local1 = CondRefOf (M000)
+                CH06 (Arg0, 0x00, 0x2F)
+                CondRefOf (M000, Local1)
+                CH06 (Arg0, 0x01, 0x2F)
+            }
+
+            /* CopyObject */
+
+            CopyObject (M000 (), Local1)
+            CH03 (TS, Z096, 0x3E, 0x0852, 0x00)
+            /* Decrement */
+
+            M000 ()--
+            CH06 (Arg0, 0x02, 0x2F)
+            /* DerefOf */
+
+            Local1 = DerefOf (M000 ())
+            CH06 (Arg0, 0x03, 0x2F)
+            /* FindSetLeftBit */
+
+            FindSetLeftBit (M000 (), Local1)
+            CH06 (Arg0, 0x05, 0x2F)
+            /* FindSetRightBit */
+
+            FindSetRightBit (M000 (), Local1)
+            CH06 (Arg0, 0x07, 0x2F)
+            /* FromBCD */
+
+            FromBCD (M000 (), Local1)
+            CH06 (Arg0, 0x09, 0x2F)
+            /* Increment */
+
+            M000 ()++
+            CH06 (Arg0, 0x0A, 0x2F)
+            /* LNot */
+
+            Local1 = !M000 ()
+            CH06 (Arg0, 0x0B, 0x2F)
+            /* Not */
+
+            Local1 = ~M000 ()
+            CH06 (Arg0, 0x0D, 0x2F)
+            /* **** ObjectType */
+            /* Nov. 2012: Method invocation as arg to ObjectType is now illegal */
+            Local0 = ObjectType (M000)
+            CH03 (TS, Z096, 0x3F, 0x0880, 0x00)
+            /* RefOf */
+            /* **** Oct. 2016: Method invocation as arg to RefOf is now illegal */
+            /*		if (y601) { */
+            /*			Store (RefOf(m000()), Local1) */
+            /*			CH06(arg0, 14, 47) */
+            /*		} */
+            /* Release */
+            Release (M000 ())
+            CH06 (Arg0, 0x0D, 0x2F)
+            /* Reset */
+
+            Reset (M000 ())
+            CH06 (Arg0, 0x0E, 0x2F)
+            /* Signal */
+
+            Signal (M000 ())
+            CH06 (Arg0, 0x0F, 0x2F)
+            /* SizeOf */
+
+            Local1 = SizeOf (M000 ())
+            CH06 (Arg0, 0x10, 0x2F)
+            /* Sleep */
+
+            Sleep (M000 ())
+            CH06 (Arg0, 0x11, 0x2F)
+            /* Stall */
+
+            Stall (M000 ())
+            CH06 (Arg0, 0x12, 0x2F)
+            /* Store */
+            /* ToBCD */
+            ToBCD (M000 (), Local1)
+            CH06 (Arg0, 0x15, 0x2F)
+            /* ToBuffer */
+
+            ToBuffer (M000 (), Local1)
+            CH06 (Arg0, 0x17, 0x2F)
+            /* ToDecimalString */
+
+            ToDecimalString (M000 (), Local1)
+            CH06 (Arg0, 0x19, 0x2F)
+            /* ToHexString */
+
+            ToHexString (M000 (), Local1)
+            CH06 (Arg0, 0x1B, 0x2F)
+            /* ToInteger */
+
+            ToInteger (M000 (), Local1)
+            CH06 (Arg0, 0x1D, 0x2F)
+            /* Acquire */
+
+            Local1 = Acquire (M000 (), 0x0064)
+            CH06 (Arg0, 0x1E, 0x2F)
+            /* Add */
+
+            Local1 = (M000 () + I000) /* \M4B4.I000 */
+            CH06 (Arg0, 0x21, 0x2F)
+            Local1 = (I000 + M000 ())
+            CH06 (Arg0, 0x22, 0x2F)
+            /* And */
+
+            Local1 = (M000 () & I000) /* \M4B4.I000 */
+            CH06 (Arg0, 0x25, 0x2F)
+            Local1 = (I000 & M000 ())
+            CH06 (Arg0, 0x26, 0x2F)
+            /* Concatenate */
+
+            Concatenate (M000 (), I000, Local1)
+            CH06 (Arg0, 0x29, 0x2F)
+            Concatenate (I000, M000 (), Local1)
+            CH06 (Arg0, 0x2A, 0x2F)
+            /* ConcatenateResTemplate */
+
+            ConcatenateResTemplate (M000 (), Buffer (0x02)
+                {
+                     0x79, 0x00                                       // y.
+                }, Local1)
+            CH06 (Arg0, 0x2D, 0x2F)
+            ConcatenateResTemplate (Buffer (0x02)
+                {
+                     0x79, 0x00                                       // y.
+                }, M000 (), Local1)
+            CH06 (Arg0, 0x2E, 0x2F)
+            /* Divide */
+
+            Divide (M000 (), I000, Local2)
+            CH06 (Arg0, 0x31, 0x2F)
+            Divide (I000, M000 (), Local2)
+            CH06 (Arg0, 0x32, 0x2F)
+            Divide (M000 (), I000, Local2, Local1)
+            CH06 (Arg0, 0x33, 0x2F)
+            Divide (I000, M000 (), Local2, Local1)
+            CH06 (Arg0, 0x34, 0x2F)
+            /* Fatal */
+
+            Fatal (0xFF, 0xFFFFFFFF, M000 ())
+            CH06 (Arg0, 0x35, 0x2F)
+            /* Index */
+
+            If (Y900)
+            {
+                Local1 = M000 () [0x00]
+                CH03 (TS, Z096, 0x41, 0x08FF, 0x00)
+                Index ("0", M000 (), Local1)
+                CH06 (Arg0, 0x39, 0x2F)
+            }
+            Else
+            {
+                CH03 (TS, Z096, 0x0123, 0x0904, 0x00)
+                CH03 (TS, Z096, 0x0127, 0x0905, 0x00)
+                Local1 = M000 () [0x00]
+                CH04 (TS, 0x00, 0x55, Z094, 0x0907, 0x00, 0x00) /* AE_INDEX_TO_NOT_ATTACHED */
+                CH03 (TS, Z096, 0x0129, 0x0909, 0x00)
+                Index ("0", M000 (), Local1)
+                CH04 (TS, 0x00, 0xFF, Z094, 0x090B, 0x00, 0x00) /* AE_INDEX_TO_NOT_ATTACHED */
+                CH03 (TS, Z096, 0x0129, 0x090D, 0x00)
+                Local1 = SS00 [M000 ()]
+                CH04 (TS, 0x00, 0x2F, Z094, 0x090F, 0x00, 0x00) /* AE_INDEX_TO_NOT_ATTACHED */
+            }
+
+            /* LEqual */
+
+            Local1 = (M000 () == I000)
+            CH06 (Arg0, 0x3A, 0x2F)
+            Local1 = (I000 == M000 ())
+            CH06 (Arg0, 0x3B, 0x2F)
+            /* LGreater */
+
+            Local1 = (M000 () > I000)
+            CH06 (Arg0, 0x3C, 0x2F)
+            Local1 = (I000 > M000 ())
+            CH06 (Arg0, 0x3D, 0x2F)
+            /* LGreaterEqual */
+
+            Local1 = (M000 () >= I000)
+            CH06 (Arg0, 0x3E, 0xFF)
+            Local1 = (I000 >= M000 ())
+            CH06 (Arg0, 0x3F, 0xFF)
+            /* LLess */
+
+            Local1 = (M000 () < I000)
+            CH06 (Arg0, 0x40, 0x2F)
+            Local1 = (I000 < M000 ())
+            CH06 (Arg0, 0x41, 0x2F)
+            /* LLessEqual */
+
+            Local1 = (M000 () <= I000)
+            CH06 (Arg0, 0x42, 0xFF)
+            Local1 = (I000 <= M000 ())
+            CH06 (Arg0, 0x43, 0xFF)
+            /* LNotEqual */
+
+            Local1 = (M000 () != I000)
+            CH06 (Arg0, 0x44, 0xFF)
+            Local1 = (I000 != M000 ())
+            CH06 (Arg0, 0x45, 0xFF)
+            /* LOr */
+
+            Local1 = (M000 () || I000)
+            CH06 (Arg0, 0x46, 0x2F)
+            Local1 = (I000 || M000 ())
+            CH06 (Arg0, 0x47, 0x2F)
+            /* Mod */
+
+            Local1 = (M000 () % I000) /* \M4B4.I000 */
+            CH06 (Arg0, 0x4A, 0x2F)
+            Local1 = (I000 % M000 ())
+            CH06 (Arg0, 0x4B, 0x2F)
+            /* Multiply */
+
+            Local1 = (M000 () * I000) /* \M4B4.I000 */
+            CH06 (Arg0, 0x4E, 0x2F)
+            Local1 = (I000 * M000 ())
+            CH06 (Arg0, 0x4F, 0x2F)
+            /* NAnd */
+
+            NAnd (M000 (), I000, Local1)
+            CH06 (Arg0, 0x52, 0x2F)
+            NAnd (I000, M000 (), Local1)
+            CH06 (Arg0, 0x53, 0x2F)
+            /* NOr */
+
+            NOr (M000 (), I000, Local1)
+            CH06 (Arg0, 0x56, 0x2F)
+            NOr (I000, M000 (), Local1)
+            CH06 (Arg0, 0x57, 0x2F)
+            /* Or */
+
+            Local1 = (M000 () | I000) /* \M4B4.I000 */
+            CH06 (Arg0, 0x5A, 0x2F)
+            Local1 = (I000 | M000 ())
+            CH06 (Arg0, 0x5B, 0x2F)
+            /* ShiftLeft */
+
+            Local1 = (M000 () << I000) /* \M4B4.I000 */
+            CH06 (Arg0, 0x5E, 0x2F)
+            Local1 = (I000 << M000 ())
+            CH06 (Arg0, 0x5F, 0x2F)
+            /* ShiftRight */
+
+            Local1 = (M000 () >> I000) /* \M4B4.I000 */
+            CH06 (Arg0, 0x62, 0x2F)
+            Local1 = (I000 >> M000 ())
+            CH06 (Arg0, 0x63, 0x2F)
+            /* Subtract */
+
+            Local1 = (M000 () - I000) /* \M4B4.I000 */
+            CH06 (Arg0, 0x66, 0x2F)
+            Local1 = (I000 - M000 ())
+            CH06 (Arg0, 0x67, 0x2F)
+            /* ToString */
+
+            ToString (M000 (), 0x01, Local1)
+            CH06 (Arg0, 0x6A, 0x2F)
+            ToString (I000, M000 (), Local1)
+            CH06 (Arg0, 0x6B, 0x2F)
+            /* Wait */
+
+            Local1 = Wait (M000 (), I000)
+            CH06 (Arg0, 0x6C, 0x2F)
+            Local1 = Wait (E000, M000 ())
+            CH06 (Arg0, 0x6D, 0x2F)
+            /* XOr */
+
+            Local1 = (M000 () ^ I000) /* \M4B4.I000 */
+            CH06 (Arg0, 0x70, 0x2F)
+            Local1 = (I000 ^ M000 ())
+            CH06 (Arg0, 0x71, 0x2F)
+            /* Mid */
+
+            Mid (M000 (), 0x01, 0x01, Local1)
+            CH06 (Arg0, 0x75, 0x2F)
+            Mid ("123", M000 (), 0x01, Local1)
+            CH06 (Arg0, 0x76, 0x2F)
+            Mid ("123", 0x01, M000 (), Local1)
+            CH06 (Arg0, 0x77, 0x2F)
+            /* Match */
+
+            Local1 = Match (M000 (), MTR, 0x00, MTR, 0x00, 0x00)
+            CH03 (TS, Z096, 0x42, 0x09B0, 0x00)
+            Local1 = Match (Package (0x01)
+                    {
+                        0x01
+                    }, MTR, M000 (), MTR, 0x00, 0x00)
+            CH06 (Arg0, 0x79, 0x2F)
+            Local1 = Match (Package (0x01)
+                    {
+                        0x01
+                    }, MTR, 0x00, MTR, M000 (), 0x00)
+            CH06 (Arg0, 0x7A, 0x2F)
+            Local1 = Match (Package (0x01)
+                    {
+                        0x01
+                    }, MTR, 0x00, MTR, 0x00, M000 ())
+            CH06 (Arg0, 0x7B, 0x2F)
+        }
+
+        /* Reference to Object as Result of Method invocation */
+
+        Method (M007, 1, Serialized)
+        {
+            Name (P000, Package (0x01)
+            {
+                0x63
+            })
+            Name (I000, 0x00) /* Label to check m000 invocations */
+            Method (M000, 2, NotSerialized)
+            {
+                I000 = Arg0
+                If ((Arg1 == 0x00))
+                {
+                    Local0 = RefOf (P100)
+                }
+                ElseIf ((Arg1 == 0x01))
+                {
+                    Local0 = RefOf (P000)
+                }
+
+                Return (Local0)
+            }
+
+            Method (CH00, 2, NotSerialized)
+            {
+                If ((I000 != Arg1))
+                {
+                    ERR (Arg0, Z096, 0x09D1, 0x00, 0x00, I000, Arg1)
+                }
+            }
+
+            Name (LPN0, 0x02)
+            Name (LPC0, 0x00)
+            While (LPN0)
+            {
+                Local0 = (0x03 * LPC0) /* \M4B4.M007.LPC0 */
+                I000 = 0x00
+                Local1 = DerefOf (M000 (0x01, LPC0))
+                CH03 (TS, Z096, 0x09DE, 0x00, 0x00)
+                CH00 (Arg0, 0x01)
+                Local1 = DerefOf (DerefOf (M000 (0x02, LPC0)))
+                CH06 (Arg0, (0x01 + Local0), 0x2F)
+                CH00 (Arg0, 0x02)
+                Store (DerefOf (M000 (0x03, LPC0)) [0x00], Local1)
+                CH06 (Arg0, (0x02 + Local0), 0x2F)
+                CH00 (Arg0, 0x03)
+                Local1 = Match (DerefOf (M000 (0x04, LPC0)), MTR, 0x00, MTR, 0x00, 0x00)
+                CH06 (Arg0, (0x03 + Local0), 0x2F)
+                CH00 (Arg0, 0x04)
+                LPN0--
+                LPC0++
+            }
+        }
+
+        /* Result of Method with checking of invocation */
+
+        Method (M008, 1, Serialized)
+        {
+            Name (I000, 0x00) /* Label to check m000 invocations */
+            Method (M000, 1, NotSerialized)
+            {
+                I000 = Arg0
+                Local0 = Package (0x01)
+                    {
+                        0x63
+                    }
+                Return (Local0)
+            }
+
+            Method (CH00, 2, NotSerialized)
+            {
+                If ((I000 != Arg1))
+                {
+                    ERR (Arg0, Z096, 0x0A01, 0x00, 0x00, I000, Arg1)
+                }
+            }
+
+            /* CondRefOf */
+            /* **** 10/2016 changed method invocation to just a namestring */
+            /* CondRefOf no longer invokes the method */
+            If (Y601)
+            {
+                Local1 = CondRefOf (M000)
+                CH06 (Arg0, 0x01, 0x2F)
+                CH00 (Arg0, 0x01)
+            }
+
+            Local1 = CondRefOf (M000)
+            CH06 (Arg0, 0x02, 0x2F)
+            If (Y600)
+            {
+                CH00 (Arg0, 0x02)
+            }
+
+            /* DerefOf */
+
+            Local1 = DerefOf (M000 (0x03))
+            CH06 (Arg0, 0x03, 0x2F)
+            CH00 (Arg0, 0x03)
+            /* RefOf */
+            /* Oct. 2016: Method invocation as arg to RefOf is now illegal */
+            /*		if (y601) { */
+            /*			Store (RefOf(m000(4)), Local1) */
+            /*			CH06(arg0, 4, 47) */
+            /*			CH00(arg0, 4) */
+            /*		} */
+            /* Release */
+            Release (M000 (0x05))
+            CH06 (Arg0, 0x05, 0x2F)
+            If (Y600)
+            {
+                CH00 (Arg0, 0x05)
+            }
+
+            /* Reset */
+
+            Reset (M000 (0x06))
+            CH06 (Arg0, 0x06, 0x2F)
+            If (Y600)
+            {
+                CH00 (Arg0, 0x06)
+            }
+
+            /* Signal */
+
+            Signal (M000 (0x07))
+            CH06 (Arg0, 0x07, 0x2F)
+            If (Y600)
+            {
+                CH00 (Arg0, 0x07)
+            }
+
+            /* Acquire */
+
+            Local1 = Acquire (M000 (0x08), 0x0000)
+            CH06 (Arg0, 0x08, 0x2F)
+            If (Y600)
+            {
+                CH00 (Arg0, 0x08)
+            }
+
+            /* Index */
+
+            CH03 (TS, Z094, 0x0123, 0x0A48, 0x00)
+            Store (M000 (0x09) [0x00], Local1)
+            If (Y900)
+            {
+                CH03 (TS, Z096, 0x45, 0x0A4B, 0x00)
+                CH00 (Arg0, 0x09)
+            }
+            Else
+            {
+                CH04 (TS, 0x00, 0x55, Z094, 0x0A4E, 0x00, 0x00) /* AE_INDEX_TO_NOT_ATTACHED */
+            }
+
+            /* Wait */
+
+            Local1 = Wait (M000 (0x0A), 0x00)
+            CH06 (Arg0, 0x09, 0x2F)
+            If (Y600)
+            {
+                CH00 (Arg0, 0x0A)
+            }
+
+            /* Match */
+
+            Local1 = Match (M000 (0x0B), MTR, 0x00, MTR, 0x00, 0x00)
+            CH03 (TS, Z096, 0x46, 0x0A5C, 0x00)
+            CH00 (Arg0, 0x0B)
+        }
+
+        SET0 (Z096, TS, 0x00)
+        CH03 (TS, Z096, 0x46, 0x0A62, 0x00)
+        /* Local Named Object */
+
+        M000 (TS)
+        /* Global Named Object */
+
+        M001 (TS)
+        /* Argument */
+
+        M002 (TS, Package (0x01)
+            {
+                0x62
+            })
+        /* Local */
+
+        M003 (Concatenate (TS, "-m003"))
+        /* An element of Package */
+
+        M004 (Concatenate (TS, "-m004"))
+        /* Reference to Local Named Object */
+
+        M005 (Concatenate (TS, "-m005-RefLocName"), RefOf (P000))
+        Local0 = RefOf (P000)
+        M005 (Concatenate (TS, "-m005-RefLocName2"), Local0)
+        CondRefOf (P000, Local0)
+        M005 (Concatenate (TS, "-m005-CondRefLocName"), Local0)
+        M005 (Concatenate (TS, "-m005-RefGlobName"), RefOf (P100))
+        Local0 = RefOf (P100)
+        M005 (Concatenate (TS, "-m005-RefGlobName2"), Local0)
+        CondRefOf (P100, Local0)
+        M005 (Concatenate (TS, "-m005-CondRefGlobName"), Local0)
+        /* Reference to Local */
+
+        Local0 = Package (0x01)
+            {
+                0x62
+            }
+        M005 (Concatenate (TS, "-m005-RefLocal"), RefOf (Local0))
+        Local1 = RefOf (Local0)
+        M005 (Concatenate (TS, "-m005-RefLocal2"), Local1)
+        CondRefOf (Local0, Local1)
+        M005 (Concatenate (TS, "-m005-CondRefLocal"), Local1)
+        /* Reference to Arg */
+
+        M005 (Concatenate (TS, "-m005-RefArg"), RefOf (Arg0))
+        Local0 = RefOf (Arg0)
+        M005 (Concatenate (TS, "-m005-RefArg2"), Local0)
+        CondRefOf (Arg0, Local0)
+        M005 (Concatenate (TS, "-m005-CondRefArg"), Local0)
+        /* Index to Package */
+
+        Name (PP00, Package (0x01)
+        {
+            Package (0x01)
+            {
+                0x62
+            }
+        })
+        If (Y113)
+        {
+            M005 (Concatenate (TS, "-m005-Index"), PP00 [0x00])
+        }
+
+        Store (PP00 [0x00], Local0)
+        M005 (Concatenate (TS, "-m005-Index2"), Local0)
+        If (Y113)
+        {
+            M005 (Concatenate (TS, "-m005-Index3"), Local0 = PP00 [0x00])
+        }
+
+        Local0 = PP00 [0x00]
+        M005 (Concatenate (TS, "-m005-Index4"), Local0)
+        Local1 = Local0 = PP00 [0x00]
+        M005 (Concatenate (TS, "-m005-Index5"), Local1)
+        /* Result of Method invocation */
+
+        M006 (Concatenate (TS, "-m006"))
+        /* Reference to Object as Result of Method invocation */
+
+        If (Y500)
+        {
+            M007 (Concatenate (TS, "-m007"))
+        }
+
+        /* Result of Method with checking of invocation */
+
+        M008 (Concatenate (TS, "-m008"))
+        RST0 ()
+    }
 
-/*
- *  Package
- *
- * (verify exceptions caused by the imprope use of Package type objects)
- */
-
-Name(z096, 96)
-
-Name(p100, Package(){0x61})
-
-// Expected exceptions:
-//
-// 47 - AE_AML_OPERAND_TYPE
-// Note: Package can be used with Index
-Method(m4b4, 1, Serialized)
-{
-	Name(ts, "m4b4")
-
-	Name(p000, Package(){0x62})
-
-	Event(e000)
-
-	Name(i000, 0)
-
-	// Local Named Object
-	// ASL compiler prohibits to use Pakage
-	// Named Objects in the most of operators
-	Method(m000, 1, Serialized)
-	{
-		Name(p000, Package(){0x63})
-
-		// CondRefOf
-		
-		Store (CondRefOf(p000), Local1)
-		CH03(ts, z096, 0, __LINE__, 0)
-
-		CondRefOf(p000, Local1)
-		CH03(ts, z096, 1, __LINE__, 0)
-
-		// CopyObject
-
-		CopyObject(p000, Local1)
-		CH03(ts, z096, 2, __LINE__, 0)
-
-		// Decrement
-
-		// DerefOf
-
-/* These are now caught by the compiler - Aug 2015
-
-		if (y083) {
-			Store (DerefOf(p000), Local1)
-			CH06(arg0, 0, 47)
-		}
-*/
-		// FindSetLeftBit
-
-		// FindSetRightBit
-
-		// FromBCD
-
-		// Increment
-
-		// LNot
-
-		// Not
-
-		// ObjectType
-
-		Store (ObjectType(p000), Local1)
-		CH03(ts, z096, 3, __LINE__, 0)
-
-		// RefOf
-
-		Store (RefOf(p000), Local1)
-		CH03(ts, z096, 4, __LINE__, 0)
-
-		// Release
-
-		// Reset
-
-		// Signal
-
-		// SizeOf
-
-		Store (SizeOf(p000), Local1)
-		CH03(ts, z096, 5, __LINE__, 0)
-
-		// Sleep
-
-		// Stall
-
-		// Store
-
-		Store(p000, Local1)
-		CH03(ts, z096, 6, __LINE__, 0)
-
-		// ToBCD
-
-		// ToBuffer
-
-		// ToDecimalString
-
-		// ToHexString
-
-		// ToInteger
-
-		// Acquire
-
-		// Add
-
-		// And
-
-		// Concatenate
-
-		// ConcatenateResTemplate
-
-		// Divide
-
-		// Fatal
-
-		// Index
-
-		Index(p000, 0, Local1)
-		CH03(ts, z096, 7, __LINE__, 0)
-
-		Store (Index(p000, 0), Local1)
-		CH03(ts, z096, 8, __LINE__, 0)
-
-		// LEqual
-
-		// LGreater
-
-		// LGreaterEqual
-
-		// LLess
-
-		// LLessEqual
-
-		// LNotEqual
-
-		// LOr
-
-		// Mod
-
-		// Multiply
-
-		// NAnd
-
-		// NOr
-
-		// Or
-
-		// ShiftLeft
-
-		// ShiftRight
-
-		// Subtract
-
-		// ToString
-
-		// Wait
-
-		// XOr
-
-		// Mid
-
-		// Match
-
-		Store (Match(p000, MTR, 0, MTR, 0, 0), Local1)
-		CH03(ts, z096, 9, __LINE__, 0)
-	}
-
-	// Global Named Object
-	Method(m001, 1)
-	{
-		// CondRefOf
-		
-		CondRefOf(p100, Local1)
-		CH03(ts, z096, 11, __LINE__, 0)
-
-		// CopyObject
-
-		CopyObject(p100, Local1)
-		CH03(ts, z096, 12, __LINE__, 0)
-
-		// Decrement
-
-		// DerefOf
-/* These are now caught by the compiler - Aug 2015
-
-		if (y083) {
-			Store (DerefOf(p100), Local1)
-			CH06(arg0, 1, 47)
-		}
-*/
-		// FindSetLeftBit
-
-		// FindSetRightBit
-
-		// FromBCD
-
-		// Increment
-
-		// LNot
-
-		// Not
-
-		// ObjectType
-
-		Store (ObjectType(p100), Local1)
-		CH03(ts, z096, 13, __LINE__, 0)
-
-		// RefOf
-
-		Store (RefOf(p100), Local1)
-		CH03(ts, z096, 14, __LINE__, 0)
-
-		// Release
-
-		// Reset
-
-		// Signal
-
-		// SizeOf
-
-		Store (SizeOf(p100), Local1)
-		CH03(ts, z096, 15, __LINE__, 0)
-
-		// Sleep
-
-		// Stall
-
-		// Store
-
-		Store(p100, Local1)
-		CH03(ts, z096, 16, __LINE__, 0)
-
-		// ToBCD
-
-		// ToBuffer
-
-		// ToDecimalString
-
-		// ToHexString
-
-		// ToInteger
-
-		// Acquire
-
-		// Add
-
-		// And
-
-		// Concatenate
-
-		// ConcatenateResTemplate
-
-		// Divide
-
-		// Fatal
-
-		// Index
-
-		Store (Index(p100, 0), Local1)
-		CH03(ts, z096, 18, __LINE__, 0)
-
-		// LEqual
-
-		// LGreater
-
-		// LGreaterEqual
-
-		// LLess
-
-		// LLessEqual
-
-		// LNotEqual
-
-		// LOr
-
-		// Mod
-
-		// Multiply
-
-		// NAnd
-
-		// NOr
-
-		// Or
-
-		// ShiftLeft
-
-		// ShiftRight
-
-		// Subtract
-
-		// ToString
-
-		// Wait
-
-		// XOr
-
-		// Mid
-
-		// Match
-
-		Store (Match(p100, MTR, 0, MTR, 0, 0), Local1)
-		CH03(ts, z096, 19, __LINE__, 0)
-	}
-
-	// Argument
-	Method(m002, 2, Serialized)
-	{
-		Event(e000)
-
-		// CondRefOf
-		
-		CondRefOf(arg1, Local1)
-		CH03(ts, z096, 21, __LINE__, 0)
-
-		// CopyObject
-
-		CopyObject(arg1, Local1)
-		CH03(ts, z096, 22, __LINE__, 0)
-
-		// Decrement
-
-		Decrement(arg1)
-		CH06(arg0, 2, 47)
-
-		// DerefOf
-
-		Store (DerefOf(arg1), Local1)
-		CH06(arg0, 3, 47)
-
-		// FindSetLeftBit
-
-		FindSetLeftBit(arg1, Local1)
-		CH06(arg0, 5, 47)
-
-		// FindSetRightBit
-
-		FindSetRightBit(arg1, Local1)
-		CH06(arg0, 7, 47)
-
-		// FromBCD
-
-		FromBCD(arg1, Local1)
-		CH06(arg0, 9, 47)
-
-		// Increment
-
-		Increment(arg1)
-		CH06(arg0, 10, 47)
-
-		// LNot
-
-		Store (LNot(arg1), Local1)
-		CH06(arg0, 11, 47)
-
-		// Not
-
-		Not(arg1, Local1)
-		CH06(arg0, 13, 47)
-
-		// ObjectType
-
-		Store (ObjectType(arg1), Local1)
-		CH03(ts, z096, 23, __LINE__, 0)
-
-		// RefOf
-
-		Store (RefOf(arg1), Local1)
-		CH03(ts, z096, 24, __LINE__, 0)
-
-		// Release
-
-		Release(arg1)
-		CH06(arg0, 14, 47)
-
-		// Reset
-
-		Reset(arg1)
-		CH06(arg0, 15, 47)
-
-		// Signal
-
-		Signal(arg1)
-		CH06(arg0, 16, 47)
-
-		// SizeOf
-
-		Store (SizeOf(arg1), Local1)
-		CH03(ts, z096, 25, __LINE__, 0)
-
-		// Sleep
-
-		Sleep(arg1)
-		CH06(arg0, 17, 47)
-
-		// Stall
-
-		Stall(arg1)
-		CH06(arg0, 18, 47)
-
-		// Store
-
-		Store(arg1, Local1)
-		CH03(ts, z096, 26, __LINE__, 0)
-
-		// ToBCD
-
-		ToBCD(arg1, Local1)
-		CH06(arg0, 21, 47)
-
-		// ToBuffer
-
-		ToBuffer(arg1, Local1)
-		CH06(arg0, 23, 47)
-
-		// ToDecimalString
-
-		ToDecimalString(arg1, Local1)
-		CH06(arg0, 25, 47)
-
-		// ToHexString
-
-		ToHexString(arg1, Local1)
-		CH06(arg0, 27, 47)
-
-		// ToInteger
-
-		ToInteger(arg1, Local1)
-		CH06(arg0, 29, 47)
-
-		// Acquire
-
-		Store(Acquire(arg1, 100), Local1)
-		CH06(arg0, 30, 47)
-
-		// Add
-
-		Add(arg1, i000, Local1)
-		CH06(arg0, 33, 47)
-
-		Add(i000, arg1, Local1)
-		CH06(arg0, 34, 47)
-
-		// And
-
-		And(arg1, i000, Local1)
-		CH06(arg0, 37, 47)
-
-		And(i000, arg1, Local1)
-		CH06(arg0, 38, 47)
-
-		// Concatenate
-
-		Concatenate(arg1, i000, Local1)
-		CH06(arg0, 41, 47)
-
-		Concatenate(i000, arg1, Local1)
-		CH06(arg0, 42, 47)
-
-		// ConcatenateResTemplate
-
-		ConcatenateResTemplate(arg1, ResourceTemplate(){}, Local1)
-		CH06(arg0, 45, 47)
-
-		ConcatenateResTemplate(ResourceTemplate(){}, arg1, Local1)
-		CH06(arg0, 46, 47)
-
-		// Divide
-
-		Divide(arg1, i000, Local2)
-		CH06(arg0, 49, 47)
-
-		Divide(i000, arg1, Local2)
-		CH06(arg0, 50, 47)
-
-		Divide(arg1, i000, Local2, Local1)
-		CH06(arg0, 51, 47)
-
-		Divide(i000, arg1, Local2, Local1)
-		CH06(arg0, 52, 47)
-
-		// Fatal
-
-		Fatal(0xff, 0xffffffff, arg1)
-		CH06(arg0, 53, 47)
-
-		// Index
-
-		Index(arg1, 0, Local1)
-		CH03(ts, z096, 28, __LINE__, 0)
-
-		Index("0", arg1, Local1)
-		CH06(arg0, 57, 47)
-
-		// LEqual
-
-		Store (LEqual(arg1, i000), Local1)
-		CH06(arg0, 58, 47)
-
-		Store (LEqual(i000, arg1), Local1)
-		CH06(arg0, 59, 47)
-
-		// LGreater
-
-		Store (LGreater(arg1, i000), Local1)
-		CH06(arg0, 60, 47)
-
-		Store (LGreater(i000, arg1), Local1)
-		CH06(arg0, 61, 47)
-
-		// LGreaterEqual
-
-		Store (LGreaterEqual(arg1, i000), Local1)
-		CH06(arg0, 62, 0xff)
-
-		Store (LGreaterEqual(i000, arg1), Local1)
-		CH06(arg0, 63, 0xff)
-
-		// LLess
-
-		Store (LLess(arg1, i000), Local1)
-		CH06(arg0, 64, 47)
-
-		Store (LLess(i000, arg1), Local1)
-		CH06(arg0, 65, 47)
-
-		// LLessEqual
-
-		Store (LLessEqual(arg1, i000), Local1)
-		CH06(arg0, 66, 0xff)
-
-		Store (LLessEqual(i000, arg1), Local1)
-		CH06(arg0, 67, 0xff)
-
-		// LNotEqual
-
-		Store (LNotEqual(arg1, i000), Local1)
-		CH06(arg0, 68, 0xff)
-
-		Store (LNotEqual(i000, arg1), Local1)
-		CH06(arg0, 69, 0xff)
-
-		// LOr
-
-		Store (LOr(arg1, i000), Local1)
-		CH06(arg0, 70, 47)
-
-		Store (LOr(i000, arg1), Local1)
-		CH06(arg0, 71, 47)
-
-		// Mod
-
-		Mod(arg1, i000, Local1)
-		CH06(arg0, 74, 47)
-
-		Mod(i000, arg1, Local1)
-		CH06(arg0, 75, 47)
-
-		// Multiply
-
-		Multiply(arg1, i000, Local1)
-		CH06(arg0, 78, 47)
-
-		Multiply(i000, arg1, Local1)
-		CH06(arg0, 79, 47)
-
-		// NAnd
-
-		NAnd(arg1, i000, Local1)
-		CH06(arg0, 82, 47)
-
-		NAnd(i000, arg1, Local1)
-		CH06(arg0, 83, 47)
-
-		// NOr
-
-		NOr(arg1, i000, Local1)
-		CH06(arg0, 86, 47)
-
-		NOr(i000, arg1, Local1)
-		CH06(arg0, 87, 47)
-
-		// Or
-
-		Or(arg1, i000, Local1)
-		CH06(arg0, 90, 47)
-
-		Or(i000, arg1, Local1)
-		CH06(arg0, 91, 47)
-
-		// ShiftLeft
-
-		ShiftLeft(arg1, i000, Local1)
-		CH06(arg0, 94, 47)
-
-		ShiftLeft(i000, arg1, Local1)
-		CH06(arg0, 95, 47)
-
-		// ShiftRight
-
-		ShiftRight(arg1, i000, Local1)
-		CH06(arg0, 98, 47)
-
-		ShiftRight(i000, arg1, Local1)
-		CH06(arg0, 99, 47)
-
-		// Subtract
-
-		Subtract(arg1, i000, Local1)
-		CH06(arg0, 102, 47)
-
-		Subtract(i000, arg1, Local1)
-		CH06(arg0, 103, 47)
-
-		// ToString
-
-		ToString(arg1, 1, Local1)
-		CH06(arg0, 106, 47)
-
-		ToString(i000, arg1, Local1)
-		CH06(arg0, 107, 47)
-
-		// Wait
-
-		Store(Wait(arg1, i000), Local1)
-		CH06(arg0, 108, 47)
-
-		Store(Wait(e000, arg1), Local1)
-		CH06(arg0, 109, 47)
-
-		// XOr
-
-		XOr(arg1, i000, Local1)
-		CH06(arg0, 112, 47)
-
-		XOr(i000, arg1, Local1)
-		CH06(arg0, 113, 47)
-
-		// Mid
-
-		Mid(arg1, 1, 1, Local1)
-		CH06(arg0, 117, 47)
-
-		Mid("123", arg1, 1, Local1)
-		CH06(arg0, 118, 47)
-
-		Mid("123", 1, arg1, Local1)
-		CH06(arg0, 119, 47)
-
-		// Match
-
-		Store (Match(arg1, MTR, 0, MTR, 0, 0), Local1)
-		CH03(ts, z096, 29, __LINE__, 0)
-
-		Store (Match(Package(){1}, MTR, arg1, MTR, 0, 0), Local1)
-		CH06(arg0, 121, 47)
-
-		Store (Match(Package(){1}, MTR, 0, MTR, arg1, 0), Local1)
-		CH06(arg0, 122, 47)
-
-		Store (Match(Package(){1}, MTR, 0, MTR, 0, arg1), Local1)
-		CH06(arg0, 123, 47)
-	}
-
-	// Local
-	Method(m003, 1)
-	{
-		Store(Package(){0x63}, Local0)
-
-		// CondRefOf
-		
-		CondRefOf(Local0, Local1)
-		CH03(ts, z096, 31, __LINE__, 0)
-
-		// CopyObject
-
-		CopyObject(Local0, Local1)
-		CH03(ts, z096, 32, __LINE__, 0)
-
-		// Decrement
-
-		Decrement(Local0)
-		CH06(arg0, 1, 47)
-
-		// DerefOf
-
-		Store (DerefOf(Local0), Local1)
-		CH06(arg0, 2, 47)
-
-		// FindSetLeftBit
-
-		FindSetLeftBit(Local0, Local1)
-		CH06(arg0, 4, 47)
-
-		// FindSetRightBit
-
-		FindSetRightBit(Local0, Local1)
-		CH06(arg0, 6, 47)
-
-		// FromBCD
-
-		FromBCD(Local0, Local1)
-		CH06(arg0, 8, 47)
-
-		// Increment
-
-		Increment(Local0)
-		CH06(arg0, 9, 47)
-
-		// LNot
-
-		Store (LNot(Local0), Local1)
-		CH06(arg0, 10, 47)
-
-		// Not
-
-		Not(Local0, Local1)
-		CH06(arg0, 12, 47)
-
-		// ObjectType
-
-		Store (ObjectType(Local0), Local1)
-		CH03(ts, z096, 33, __LINE__, 0)
-
-		// RefOf
-
-		Store (RefOf(Local0), Local1)
-		CH03(ts, z096, 34, __LINE__, 0)
-
-		// Release
-
-		Release(Local0)
-		CH06(arg0, 13, 47)
-
-		// Reset
-
-		Reset(Local0)
-		CH06(arg0, 14, 47)
-
-		// Signal
-
-		Signal(Local0)
-		CH06(arg0, 15, 47)
-
-		// SizeOf
-
-		Store (SizeOf(Local0), Local1)
-		CH03(ts, z096, 35, __LINE__, 0)
-
-		// Sleep
-
-		Sleep(Local0)
-		CH06(arg0, 17, 47)
-
-		// Stall
-
-		Stall(Local0)
-		CH06(arg0, 18, 47)
-
-		// Store
-
-		Store(Local0, Local1)
-		CH03(ts, z096, 36, __LINE__, 0)
-
-		// ToBCD
-
-		ToBCD(Local0, Local1)
-		CH06(arg0, 21, 47)
-
-		// ToBuffer
-
-		ToBuffer(Local0, Local1)
-		CH06(arg0, 23, 47)
-
-		// ToDecimalString
-
-		ToDecimalString(Local0, Local1)
-		CH06(arg0, 25, 47)
-
-		// ToHexString
-
-		ToHexString(Local0, Local1)
-		CH06(arg0, 27, 47)
-
-		// ToInteger
-
-		ToInteger(Local0, Local1)
-		CH06(arg0, 29, 47)
-
-		// Acquire
-
-		Store(Acquire(Local0, 100), Local1)
-		CH06(arg0, 30, 47)
-
-		// Add
-
-		Add(i000, Local0, Local1)
-		CH06(arg0, 34, 47)
-
-		// And
-
-		And(Local0, i000, Local1)
-		CH06(arg0, 37, 47)
-
-		And(i000, Local0, Local1)
-		CH06(arg0, 38, 47)
-
-		// Concatenate
-
-		Concatenate(Local0, i000, Local1)
-		CH06(arg0, 41, 47)
-
-		Concatenate(i000, Local0, Local1)
-		CH06(arg0, 42, 47)
-
-		// ConcatenateResTemplate
-
-		ConcatenateResTemplate(Local0, ResourceTemplate(){}, Local1)
-		CH06(arg0, 45, 47)
-
-		ConcatenateResTemplate(ResourceTemplate(){}, Local0, Local1)
-		CH06(arg0, 46, 47)
-
-		// Divide
-
-		Divide(Local0, i000, Local2)
-		CH06(arg0, 49, 47)
-
-		Divide(i000, Local0, Local2)
-		CH06(arg0, 50, 47)
-
-		Divide(Local0, i000, Local2, Local1)
-		CH06(arg0, 51, 47)
-
-		Divide(i000, Local0, Local2, Local1)
-		CH06(arg0, 52, 47)
-
-		// Fatal
-
-		Fatal(0xff, 0xffffffff, Local0)
-		CH06(arg0, 53, 47)
-
-		// Index
-
-		Index(Local0, 0, Local1)
-		CH03(ts, z096, 38, __LINE__, 0)
-
-		Index("0", Local0, Local1)
-		CH06(arg0, 57, 47)
-
-		// LEqual
-
-		Store (LEqual(Local0, i000), Local1)
-		CH06(arg0, 58, 47)
-
-		Store (LEqual(i000, Local0), Local1)
-		CH06(arg0, 59, 47)
-
-		// LGreater
-
-		Store (LGreater(Local0, i000), Local1)
-		CH06(arg0, 60, 47)
-
-		Store (LGreater(i000, Local0), Local1)
-		CH06(arg0, 61, 47)
-
-		// LGreaterEqual
-
-		Store (LGreaterEqual(Local0, i000), Local1)
-		CH06(arg0, 62, 0xff)
-
-		Store (LGreaterEqual(i000, Local0), Local1)
-		CH06(arg0, 63, 0xff)
-
-		// LLess
-
-		Store (LLess(Local0, i000), Local1)
-		CH06(arg0, 64, 47)
-
-		Store (LLess(i000, Local0), Local1)
-		CH06(arg0, 65, 47)
-
-		// LLessEqual
-
-		Store (LLessEqual(Local0, i000), Local1)
-		CH06(arg0, 66, 0xff)
-
-		Store (LLessEqual(i000, Local0), Local1)
-		CH06(arg0, 67, 0xff)
-
-		// LNotEqual
-
-		Store (LNotEqual(Local0, i000), Local1)
-		CH06(arg0, 68, 0xff)
-
-		Store (LNotEqual(i000, Local0), Local1)
-		CH06(arg0, 69, 0xff)
-
-		// LOr
-
-		Store (LOr(Local0, i000), Local1)
-		CH06(arg0, 70, 47)
-
-		Store (LOr(i000, Local0), Local1)
-		CH06(arg0, 71, 47)
-
-		// Mod
-
-		Mod(Local0, i000, Local1)
-		CH06(arg0, 74, 47)
-
-		Mod(i000, Local0, Local1)
-		CH06(arg0, 75, 47)
-
-		// Multiply
-
-		Multiply(Local0, i000, Local1)
-		CH06(arg0, 78, 47)
-
-		Multiply(i000, Local0, Local1)
-		CH06(arg0, 79, 47)
-
-		// NAnd
-
-		NAnd(Local0, i000, Local1)
-		CH06(arg0, 82, 47)
-
-		NAnd(i000, Local0, Local1)
-		CH06(arg0, 83, 47)
-
-		// NOr
-
-		NOr(Local0, i000, Local1)
-		CH06(arg0, 86, 47)
-
-		NOr(i000, Local0, Local1)
-		CH06(arg0, 87, 47)
-
-		// Or
-
-		Or(Local0, i000, Local1)
-		CH06(arg0, 90, 47)
-
-		Or(i000, Local0, Local1)
-		CH06(arg0, 91, 47)
-
-		// ShiftLeft
-
-		ShiftLeft(Local0, i000, Local1)
-		CH06(arg0, 94, 47)
-
-		ShiftLeft(i000, Local0, Local1)
-		CH06(arg0, 95, 47)
-
-		// ShiftRight
-
-		ShiftRight(Local0, i000, Local1)
-		CH06(arg0, 98, 47)
-
-		ShiftRight(i000, Local0, Local1)
-		CH06(arg0, 99, 47)
-
-		// Subtract
-
-		Subtract(Local0, i000, Local1)
-		CH06(arg0, 102, 47)
-
-		Subtract(i000, Local0, Local1)
-		CH06(arg0, 103, 47)
-
-		// ToString
-
-		ToString(Local0, 1, Local1)
-		CH06(arg0, 106, 47)
-
-		ToString(i000, Local0, Local1)
-		CH06(arg0, 107, 47)
-
-		// Wait
-
-		Store(Wait(Local0, i000), Local1)
-		CH06(arg0, 108, 47)
-
-		Store(Wait(e000, Local0), Local1)
-		CH06(arg0, 109, 47)
-
-		// XOr
-
-		XOr(Local0, i000, Local1)
-		CH06(arg0, 112, 47)
-
-		XOr(i000, Local0, Local1)
-		CH06(arg0, 113, 47)
-
-		// Mid
-
-		Mid(Local0, 1, 1, Local1)
-		CH06(arg0, 117, 47)
-
-		Mid("123", Local0, 1, Local1)
-		CH06(arg0, 118, 47)
-
-		Mid("123", 1, Local0, Local1)
-		CH06(arg0, 119, 47)
-
-		// Match
-
-		Store (Match(Local0, MTR, 0, MTR, 0, 0), Local1)
-		CH03(ts, z096, 39, __LINE__, 0)
-
-		Store (Match(Package(){1}, MTR, Local0, MTR, 0, 0), Local1)
-		CH06(arg0, 121, 47)
-
-		Store (Match(Package(){1}, MTR, 0, MTR, Local0, 0), Local1)
-		CH06(arg0, 122, 47)
-
-		Store (Match(Package(){1}, MTR, 0, MTR, 0, Local0), Local1)
-		CH06(arg0, 123, 47)
-	}
-
-	// An element of Package
-	Method(m004, 1, Serialized)
-	{
-		Name(p000, Package(){Package(){0x63}})
-
-		// DeRefOf(Index(Package, Ind))
-
-		// CondRefOf
-		
-		CondRefOf(DeRefOf(Index(p000, 0)), Local1)
-		CH06(arg0, 1, 47)
-
-		// CopyObject
-
-		CopyObject(DeRefOf(Index(p000, 0)), Local1)
-		CH03(ts, z096, 40, __LINE__, 0)
-
-		// Decrement
-
-		Decrement(DeRefOf(Index(p000, 0)))
-		CH06(arg0, 2, 47)
-
-		// DerefOf
-
-		Store (DerefOf(DeRefOf(Index(p000, 0))), Local1)
-		CH06(arg0, 3, 47)
-
-		// FindSetLeftBit
-
-		FindSetLeftBit(DeRefOf(Index(p000, 0)), Local1)
-		CH06(arg0, 5, 47)
-
-		// FindSetRightBit
-
-		FindSetRightBit(DeRefOf(Index(p000, 0)), Local1)
-		CH06(arg0, 7, 47)
-
-		// FromBCD
-
-		FromBCD(DeRefOf(Index(p000, 0)), Local1)
-		CH06(arg0, 9, 47)
-
-		// Increment
-
-		Increment(DeRefOf(Index(p000, 0)))
-		CH06(arg0, 10, 47)
-
-		// LNot
-
-		Store (LNot(DeRefOf(Index(p000, 0))), Local1)
-		CH06(arg0, 11, 47)
-
-		// Not
-
-		Not(DeRefOf(Index(p000, 0)), Local1)
-		CH06(arg0, 13, 47)
-
-		// ObjectType
-
-		Store (ObjectType(DeRefOf(Index(p000, 0))), Local1)
-		CH03(ts, z096, 41, __LINE__, 0)
-
-		// RefOf
-
-		Store (RefOf(DeRefOf(Index(p000, 0))), Local1)
-		CH06(arg0, 14, 47)
-
-		// Release
-
-		// Reset
-
-		// Signal
-
-		// SizeOf
-
-		Store (SizeOf(DeRefOf(Index(p000, 0))), Local1)
-		CH03(ts, z096, 42, __LINE__, 0)
-
-		// Sleep
-
-		Sleep(DeRefOf(Index(p000, 0)))
-		CH06(arg0, 17, 47)
-
-		// Stall
-
-		Stall(DeRefOf(Index(p000, 0)))
-		CH06(arg0, 18, 47)
-
-		// Store
-
-		Store(DeRefOf(Index(p000, 0)), Local1)
-		CH03(ts, z096, 43, __LINE__, 0)
-
-		// ToBCD
-
-		ToBCD(DeRefOf(Index(p000, 0)), Local1)
-		CH06(arg0, 21, 47)
-
-		// ToBuffer
-
-		ToBuffer(DeRefOf(Index(p000, 0)), Local1)
-		CH06(arg0, 23, 47)
-
-		// ToDecimalString
-
-		ToDecimalString(DeRefOf(Index(p000, 0)), Local1)
-		CH06(arg0, 25, 47)
-
-		// ToHexString
-
-		ToHexString(DeRefOf(Index(p000, 0)), Local1)
-		CH06(arg0, 27, 47)
-
-		// ToInteger
-
-		ToInteger(DeRefOf(Index(p000, 0)), Local1)
-		CH06(arg0, 29, 47)
-
-		// Acquire
-
-		// Add
-
-		Add(DeRefOf(Index(p000, 0)), i000, Local1)
-		CH06(arg0, 33, 47)
-
-		Add(i000, DeRefOf(Index(p000, 0)), Local1)
-		CH06(arg0, 34, 47)
-
-		// And
-
-		And(DeRefOf(Index(p000, 0)), i000, Local1)
-		CH06(arg0, 37, 47)
-
-		And(i000, DeRefOf(Index(p000, 0)), Local1)
-		CH06(arg0, 38, 47)
-
-		// Concatenate
-
-		Concatenate(DeRefOf(Index(p000, 0)), i000, Local1)
-		CH06(arg0, 41, 47)
-
-		Concatenate(i000, DeRefOf(Index(p000, 0)), Local1)
-		CH06(arg0, 42, 47)
-
-		// ConcatenateResTemplate
-
-		ConcatenateResTemplate(DeRefOf(Index(p000, 0)), ResourceTemplate(){}, Local1)
-		CH06(arg0, 45, 47)
-
-		ConcatenateResTemplate(ResourceTemplate(){}, DeRefOf(Index(p000, 0)), Local1)
-		CH06(arg0, 46, 47)
-
-		// Divide
-
-		Divide(DeRefOf(Index(p000, 0)), i000, Local2)
-		CH06(arg0, 49, 47)
-
-		Divide(i000, DeRefOf(Index(p000, 0)), Local2)
-		CH06(arg0, 50, 47)
-
-		Divide(DeRefOf(Index(p000, 0)), i000, Local2, Local1)
-		CH06(arg0, 51, 47)
-
-		Divide(i000, DeRefOf(Index(p000, 0)), Local2, Local1)
-		CH06(arg0, 52, 47)
-
-		// Fatal
-
-		Fatal(0xff, 0xffffffff, DeRefOf(Index(p000, 0)))
-		CH06(arg0, 53, 47)
-
-		// Index
-
-		Index(DeRefOf(Index(p000, 0)), 0, Local1)
-		CH03(ts, z096, 45, __LINE__, 0)
-
-		Index("0", DeRefOf(Index(p000, 0)), Local1)
-		CH06(arg0, 57, 47)
-
-		// LEqual
-
-		Store (LEqual(DeRefOf(Index(p000, 0)), i000), Local1)
-		CH06(arg0, 58, 47)
-
-		Store (LEqual(i000, DeRefOf(Index(p000, 0))), Local1)
-		CH06(arg0, 59, 47)
-
-		// LGreater
-
-		Store (LGreater(DeRefOf(Index(p000, 0)), i000), Local1)
-		CH06(arg0, 60, 47)
-
-		Store (LGreater(i000, DeRefOf(Index(p000, 0))), Local1)
-		CH06(arg0, 61, 47)
-
-		// LGreaterEqual
-
-		Store (LGreaterEqual(DeRefOf(Index(p000, 0)), i000), Local1)
-		CH06(arg0, 62, 0xff)
-
-		Store (LGreaterEqual(i000, DeRefOf(Index(p000, 0))), Local1)
-		CH06(arg0, 63, 0xff)
-
-		// LLess
-
-		Store (LLess(DeRefOf(Index(p000, 0)), i000), Local1)
-		CH06(arg0, 64, 47)
-
-		Store (LLess(i000, DeRefOf(Index(p000, 0))), Local1)
-		CH06(arg0, 65, 47)
-
-		// LLessEqual
-
-		Store (LLessEqual(DeRefOf(Index(p000, 0)), i000), Local1)
-		CH06(arg0, 66, 0xff)
-
-		Store (LLessEqual(i000, DeRefOf(Index(p000, 0))), Local1)
-		CH06(arg0, 67, 0xff)
-
-		// LNotEqual
-
-		Store (LNotEqual(DeRefOf(Index(p000, 0)), i000), Local1)
-		CH06(arg0, 68, 0xff)
-
-		Store (LNotEqual(i000, DeRefOf(Index(p000, 0))), Local1)
-		CH06(arg0, 69, 0xff)
-
-		// LOr
-
-		Store (LOr(DeRefOf(Index(p000, 0)), i000), Local1)
-		CH06(arg0, 70, 47)
-
-		Store (LOr(i000, DeRefOf(Index(p000, 0))), Local1)
-		CH06(arg0, 71, 47)
-
-		// Mod
-
-		Mod(DeRefOf(Index(p000, 0)), i000, Local1)
-		CH06(arg0, 74, 47)
-
-		Mod(i000, DeRefOf(Index(p000, 0)), Local1)
-		CH06(arg0, 75, 47)
-
-		// Multiply
-
-		Multiply(DeRefOf(Index(p000, 0)), i000, Local1)
-		CH06(arg0, 78, 47)
-
-		Multiply(i000, DeRefOf(Index(p000, 0)), Local1)
-		CH06(arg0, 79, 47)
-
-		// NAnd
-
-		NAnd(DeRefOf(Index(p000, 0)), i000, Local1)
-		CH06(arg0, 82, 47)
-
-		NAnd(i000, DeRefOf(Index(p000, 0)), Local1)
-		CH06(arg0, 83, 47)
-
-		// NOr
-
-		NOr(DeRefOf(Index(p000, 0)), i000, Local1)
-		CH06(arg0, 86, 47)
-
-		NOr(i000, DeRefOf(Index(p000, 0)), Local1)
-		CH06(arg0, 87, 47)
-
-		// Or
-
-		Or(DeRefOf(Index(p000, 0)), i000, Local1)
-		CH06(arg0, 90, 47)
-
-		Or(i000, DeRefOf(Index(p000, 0)), Local1)
-		CH06(arg0, 91, 47)
-
-		// ShiftLeft
-
-		ShiftLeft(DeRefOf(Index(p000, 0)), i000, Local1)
-		CH06(arg0, 94, 47)
-
-		ShiftLeft(i000, DeRefOf(Index(p000, 0)), Local1)
-		CH06(arg0, 95, 47)
-
-		// ShiftRight
-
-		ShiftRight(DeRefOf(Index(p000, 0)), i000, Local1)
-		CH06(arg0, 98, 47)
-
-		ShiftRight(i000, DeRefOf(Index(p000, 0)), Local1)
-		CH06(arg0, 99, 47)
-
-		// Subtract
-
-		Subtract(DeRefOf(Index(p000, 0)), i000, Local1)
-		CH06(arg0, 102, 47)
-
-		Subtract(i000, DeRefOf(Index(p000, 0)), Local1)
-		CH06(arg0, 103, 47)
-
-		// ToString
-
-		ToString(DeRefOf(Index(p000, 0)), 1, Local1)
-		CH06(arg0, 106, 47)
-
-		ToString(i000, DeRefOf(Index(p000, 0)), Local1)
-		CH06(arg0, 107, 47)
-
-		// Wait
-
-		Store(Wait(e000, DeRefOf(Index(p000, 0))), Local1)
-		CH06(arg0, 109, 47)
-
-		// XOr
-
-		XOr(DeRefOf(Index(p000, 0)), i000, Local1)
-		CH06(arg0, 112, 47)
-
-		XOr(i000, DeRefOf(Index(p000, 0)), Local1)
-		CH06(arg0, 113, 47)
-
-		// Mid
-
-		Mid(DeRefOf(Index(p000, 0)), 1, 1, Local1)
-		CH06(arg0, 117, 47)
-
-		Mid("123", DeRefOf(Index(p000, 0)), 1, Local1)
-		CH06(arg0, 118, 47)
-
-		Mid("123", 1, DeRefOf(Index(p000, 0)), Local1)
-		CH06(arg0, 119, 47)
-
-		// Match
-
-		Store (Match(DeRefOf(Index(p000, 0)), MTR, 0, MTR, 0, 0), Local1)
-		CH03(ts, z096, 46, __LINE__, 0)
-
-		Store (Match(Package(){1}, MTR, DeRefOf(Index(p000, 0)), MTR, 0, 0), Local1)
-		CH06(arg0, 121, 47)
-
-		Store (Match(Package(){1}, MTR, 0, MTR, DeRefOf(Index(p000, 0)), 0), Local1)
-		CH06(arg0, 122, 47)
-
-		Store (Match(Package(){1}, MTR, 0, MTR, 0, DeRefOf(Index(p000, 0))), Local1)
-		CH06(arg0, 123, 47)
-
-
-		// DeRefOf(Index(Package, Ind, Dest))
-
-		// CondRefOf
-		
-		CondRefOf(DeRefOf(Index(p000, 0, Local0)), Local1)
-		CH06(arg0, 204, 47)
-
-		// CopyObject
-
-		CopyObject(DeRefOf(Index(p000, 0, Local0)), Local1)
-		CH03(ts, z096, 47, __LINE__, 0)
-
-		// Decrement
-
-		Decrement(DeRefOf(Index(p000, 0, Local0)))
-		CH06(arg0, 1, 47)
-
-		// DerefOf
-
-		Store (DerefOf(DeRefOf(Index(p000, 0, Local0))), Local1)
-		CH06(arg0, 2, 47)
-
-		// FindSetLeftBit
-
-		FindSetLeftBit(DeRefOf(Index(p000, 0, Local0)), Local1)
-		CH06(arg0, 4, 47)
-
-		// FindSetRightBit
-
-		FindSetRightBit(DeRefOf(Index(p000, 0, Local0)), Local1)
-		CH06(arg0, 6, 47)
-
-		// FromBCD
-
-		FromBCD(DeRefOf(Index(p000, 0, Local0)), Local1)
-		CH06(arg0, 8, 47)
-
-		// Increment
-
-		Increment(DeRefOf(Index(p000, 0, Local0)))
-		CH06(arg0, 9, 47)
-
-		// LNot
-
-		Store (LNot(DeRefOf(Index(p000, 0, Local0))), Local1)
-		CH06(arg0, 10, 47)
-
-		// Not
-
-		Not(DeRefOf(Index(p000, 0, Local0)), Local1)
-		CH06(arg0, 12, 47)
-
-		// ObjectType
-
-		Store (ObjectType(DeRefOf(Index(p000, 0, Local0))), Local1)
-		CH03(ts, z096, 48, __LINE__, 0)
-
-		// RefOf
-
-		Store (RefOf(DeRefOf(Index(p000, 0, Local0))), Local1)
-		CH06(arg0, 205, 47)
-
-		// Release
-
-		// Reset
-
-		// Signal
-
-		// SizeOf
-
-		Store (SizeOf(DeRefOf(Index(p000, 0, Local0))), Local1)
-		CH03(ts, z096, 49, __LINE__, 0)
-
-		// Sleep
-
-		Sleep(DeRefOf(Index(p000, 0, Local0)))
-		CH06(arg0, 17, 47)
-
-		// Stall
-
-		Stall(DeRefOf(Index(p000, 0, Local0)))
-		CH06(arg0, 18, 47)
-
-		// Store
-
-		Store(DeRefOf(Index(p000, 0, Local0)), Local1)
-		CH03(ts, z096, 50, __LINE__, 0)
-
-		// ToBCD
-
-		ToBCD(DeRefOf(Index(p000, 0, Local0)), Local1)
-		CH06(arg0, 21, 47)
-
-		// ToBuffer
-
-		ToBuffer(DeRefOf(Index(p000, 0, Local0)), Local1)
-		CH06(arg0, 23, 47)
-
-		// ToDecimalString
-
-		ToDecimalString(DeRefOf(Index(p000, 0, Local0)), Local1)
-		CH06(arg0, 25, 47)
-
-		// ToHexString
-
-		ToHexString(DeRefOf(Index(p000, 0, Local0)), Local1)
-		CH06(arg0, 27, 47)
-
-		// ToInteger
-
-		ToInteger(DeRefOf(Index(p000, 0, Local0)), Local1)
-		CH06(arg0, 29, 47)
-
-		// Acquire
-
-		// Add
-
-		Add(DeRefOf(Index(p000, 0, Local0)), i000, Local1)
-		CH06(arg0, 33, 47)
-
-		Add(i000, DeRefOf(Index(p000, 0, Local0)), Local1)
-		CH06(arg0, 34, 47)
-
-		// And
-
-		And(DeRefOf(Index(p000, 0, Local0)), i000, Local1)
-		CH06(arg0, 37, 47)
-
-		And(i000, DeRefOf(Index(p000, 0, Local0)), Local1)
-		CH06(arg0, 38, 47)
-
-		// Concatenate
-
-		Concatenate(DeRefOf(Index(p000, 0, Local0)), i000, Local1)
-		CH06(arg0, 41, 47)
-
-		Concatenate(i000, DeRefOf(Index(p000, 0, Local0)), Local1)
-		CH06(arg0, 42, 47)
-
-		// ConcatenateResTemplate
-
-		ConcatenateResTemplate(DeRefOf(Index(p000, 0, Local0)), ResourceTemplate(){}, Local1)
-		CH06(arg0, 45, 47)
-
-		ConcatenateResTemplate(ResourceTemplate(){}, DeRefOf(Index(p000, 0, Local0)), Local1)
-		CH06(arg0, 46, 47)
-
-		// Divide
-
-		Divide(DeRefOf(Index(p000, 0, Local0)), i000, Local2)
-		CH06(arg0, 49, 47)
-
-		Divide(i000, DeRefOf(Index(p000, 0, Local0)), Local2)
-		CH06(arg0, 50, 47)
-
-		Divide(DeRefOf(Index(p000, 0, Local0)), i000, Local2, Local1)
-		CH06(arg0, 51, 47)
-
-		Divide(i000, DeRefOf(Index(p000, 0, Local0)), Local2, Local1)
-		CH06(arg0, 52, 47)
-
-		// Fatal
-
-		Fatal(0xff, 0xffffffff, DeRefOf(Index(p000, 0, Local0)))
-		CH06(arg0, 53, 47)
-
-		// Index
-
-		Index(DeRefOf(Index(p000, 0, Local0)), 0, Local1)
-		CH03(ts, z096, 52, __LINE__, 0)
-
-		Index("0", DeRefOf(Index(p000, 0, Local0)), Local1)
-		CH06(arg0, 57, 47)
-
-		// LEqual
-
-		Store (LEqual(DeRefOf(Index(p000, 0, Local0)), i000), Local1)
-		CH06(arg0, 58, 47)
-
-		Store (LEqual(i000, DeRefOf(Index(p000, 0, Local0))), Local1)
-		CH06(arg0, 59, 47)
-
-		// LGreater
-
-		Store (LGreater(DeRefOf(Index(p000, 0, Local0)), i000), Local1)
-		CH06(arg0, 60, 47)
-
-		Store (LGreater(i000, DeRefOf(Index(p000, 0, Local0))), Local1)
-		CH06(arg0, 61, 47)
-
-		// LGreaterEqual
-
-		Store (LGreaterEqual(DeRefOf(Index(p000, 0, Local0)), i000), Local1)
-		CH06(arg0, 62, 0xff)
-
-		Store (LGreaterEqual(i000, DeRefOf(Index(p000, 0, Local0))), Local1)
-		CH06(arg0, 63, 0xff)
-
-		// LLess
-
-		Store (LLess(DeRefOf(Index(p000, 0, Local0)), i000), Local1)
-		CH06(arg0, 64, 47)
-
-		Store (LLess(i000, DeRefOf(Index(p000, 0, Local0))), Local1)
-		CH06(arg0, 65, 47)
-
-		// LLessEqual
-
-		Store (LLessEqual(DeRefOf(Index(p000, 0, Local0)), i000), Local1)
-		CH06(arg0, 66, 0xff)
-
-		Store (LLessEqual(i000, DeRefOf(Index(p000, 0, Local0))), Local1)
-		CH06(arg0, 67, 0xff)
-
-		// LNotEqual
-
-		Store (LNotEqual(DeRefOf(Index(p000, 0, Local0)), i000), Local1)
-		CH06(arg0, 68, 0xff)
-
-		Store (LNotEqual(i000, DeRefOf(Index(p000, 0, Local0))), Local1)
-		CH06(arg0, 69, 0xff)
-
-		// LOr
-
-		Store (LOr(DeRefOf(Index(p000, 0, Local0)), i000), Local1)
-		CH06(arg0, 70, 47)
-
-		Store (LOr(i000, DeRefOf(Index(p000, 0, Local0))), Local1)
-		CH06(arg0, 71, 47)
-
-		// Mod
-
-		Mod(DeRefOf(Index(p000, 0, Local0)), i000, Local1)
-		CH06(arg0, 74, 47)
-
-		Mod(i000, DeRefOf(Index(p000, 0, Local0)), Local1)
-		CH06(arg0, 75, 47)
-
-		// Multiply
-
-		Multiply(DeRefOf(Index(p000, 0, Local0)), i000, Local1)
-		CH06(arg0, 78, 47)
-
-		Multiply(i000, DeRefOf(Index(p000, 0, Local0)), Local1)
-		CH06(arg0, 79, 47)
-
-		// NAnd
-
-		NAnd(DeRefOf(Index(p000, 0, Local0)), i000, Local1)
-		CH06(arg0, 82, 47)
-
-		NAnd(i000, DeRefOf(Index(p000, 0, Local0)), Local1)
-		CH06(arg0, 83, 47)
-
-		// NOr
-
-		NOr(DeRefOf(Index(p000, 0, Local0)), i000, Local1)
-		CH06(arg0, 86, 47)
-
-		NOr(i000, DeRefOf(Index(p000, 0, Local0)), Local1)
-		CH06(arg0, 87, 47)
-
-		// Or
-
-		Or(DeRefOf(Index(p000, 0, Local0)), i000, Local1)
-		CH06(arg0, 90, 47)
-
-		Or(i000, DeRefOf(Index(p000, 0, Local0)), Local1)
-		CH06(arg0, 91, 47)
-
-		// ShiftLeft
-
-		ShiftLeft(DeRefOf(Index(p000, 0, Local0)), i000, Local1)
-		CH06(arg0, 94, 47)
-
-		ShiftLeft(i000, DeRefOf(Index(p000, 0, Local0)), Local1)
-		CH06(arg0, 95, 47)
-
-		// ShiftRight
-
-		ShiftRight(DeRefOf(Index(p000, 0, Local0)), i000, Local1)
-		CH06(arg0, 98, 47)
-
-		ShiftRight(i000, DeRefOf(Index(p000, 0, Local0)), Local1)
-		CH06(arg0, 99, 47)
-
-		// Subtract
-
-		Subtract(DeRefOf(Index(p000, 0, Local0)), i000, Local1)
-		CH06(arg0, 102, 47)
-
-		Subtract(i000, DeRefOf(Index(p000, 0, Local0)), Local1)
-		CH06(arg0, 103, 47)
-
-		// ToString
-
-		ToString(DeRefOf(Index(p000, 0, Local0)), 1, Local1)
-		CH06(arg0, 106, 47)
-
-		ToString(i000, DeRefOf(Index(p000, 0, Local0)), Local1)
-		CH06(arg0, 107, 47)
-
-		// Wait
-
-		Store(Wait(e000, DeRefOf(Index(p000, 0, Local0))), Local1)
-		CH06(arg0, 109, 47)
-
-		// XOr
-
-		XOr(DeRefOf(Index(p000, 0, Local0)), i000, Local1)
-		CH06(arg0, 112, 47)
-
-		XOr(i000, DeRefOf(Index(p000, 0, Local0)), Local1)
-		CH06(arg0, 113, 47)
-
-		// Mid
-
-		Mid(DeRefOf(Index(p000, 0, Local0)), 1, 1, Local1)
-		CH06(arg0, 117, 47)
-
-		Mid("123", DeRefOf(Index(p000, 0, Local0)), 1, Local1)
-		CH06(arg0, 118, 47)
-
-		Mid("123", 1, DeRefOf(Index(p000, 0, Local0)), Local1)
-		CH06(arg0, 119, 47)
-
-		// Match
-
-		Store (Match(DeRefOf(Index(p000, 0, Local0)), MTR, 0, MTR, 0, 0), Local1)
-		CH03(ts, z096, 53, __LINE__, 0)
-
-		Store (Match(Package(){1}, MTR, DeRefOf(Index(p000, 0, Local0)), MTR, 0, 0), Local1)
-		CH06(arg0, 121, 47)
-
-		Store (Match(Package(){1}, MTR, 0, MTR, DeRefOf(Index(p000, 0, Local0)), 0), Local1)
-		CH06(arg0, 122, 47)
-
-		Store (Match(Package(){1}, MTR, 0, MTR, 0, DeRefOf(Index(p000, 0, Local0))), Local1)
-		CH06(arg0, 123, 47)
-	}
-
-	// Reference to Object
-	Method(m005, 2)
-	{
-		Store(arg0, Debug)
-		Store(arg1, Debug)
-
-		Store(ObjectType(arg1), Local0)
-		if (LNotEqual(Local0, 4)) {
-			err(arg0, z096, __LINE__, 0, 0, Local0, 4)
-			return (1)
-		}
-
-		Store (DerefOf(arg1), Local1)
-		CH03(ts, z096, 54, __LINE__, 0)
-
-		// CondRefOf
-		
-		Store (CondRefOf(DerefOf(arg1)), Local1)
-		CH06(arg0, 1, 47)
-
-		Store (CondRefOf(DerefOf(arg1), Local1), Local1)
-		CH06(arg0, 2, 47)
-
-		// CopyObject
-
-		CopyObject(DerefOf(arg1), Local1)
-		CH03(ts, z096, 55, __LINE__, 0)
-
-		// Decrement
-
-		Decrement(DerefOf(arg1))
-		CH06(arg0, 3, 47)
-
-		// DerefOf
-
-		Store (DerefOf(DerefOf(arg1)), Local1)
-		CH06(arg0, 4, 47)
-
-		// FindSetLeftBit
-
-		FindSetLeftBit(DerefOf(arg1), Local1)
-		CH06(arg0, 6, 47)
-
-		// FindSetRightBit
-
-		FindSetRightBit(DerefOf(arg1), Local1)
-		CH06(arg0, 8, 47)
-
-		// FromBCD
-
-		FromBCD(DerefOf(arg1), Local1)
-		CH06(arg0, 10, 47)
-
-		// Increment
-
-		Increment(DerefOf(arg1))
-		CH06(arg0, 11, 47)
-
-		// LNot
-
-		Store (LNot(DerefOf(arg1)), Local1)
-		CH06(arg0, 12, 47)
-
-		// Not
-
-		Not(DerefOf(arg1), Local1)
-		CH06(arg0, 14, 47)
-
-		// ObjectType
-
-		Store (ObjectType(DerefOf(arg1)), Local1)
-		CH03(ts, z096, 56, __LINE__, 0)
-
-		// RefOf
-
-		Store (RefOf(DerefOf(arg1)), Local1)
-		CH06(arg0, 15, 47)
-
-		// Release
-
-		// Reset
-
-		// Signal
-
-		// SizeOf
-
-		Store (SizeOf(DerefOf(arg1)), Local1)
-		CH03(ts, z096, 57, __LINE__, 0)
-
-		// Sleep
-
-		Sleep(DerefOf(arg1))
-		CH06(arg0, 17, 47)
-
-		// Stall
-
-		Stall(DerefOf(arg1))
-		CH06(arg0, 18, 47)
-
-		// Store
-
-		Store(DerefOf(arg1), Local1)
-		CH03(ts, z096, 58, __LINE__, 0)
-
-		// ToBCD
-
-		ToBCD(DerefOf(arg1), Local1)
-		CH06(arg0, 21, 47)
-
-		// ToBuffer
-
-		ToBuffer(DerefOf(arg1), Local1)
-		CH06(arg0, 23, 47)
-
-		// ToDecimalString
-
-		ToDecimalString(DerefOf(arg1), Local1)
-		CH06(arg0, 25, 47)
-
-		// ToHexString
-
-		ToHexString(DerefOf(arg1), Local1)
-		CH06(arg0, 27, 47)
-
-		// ToInteger
-
-		ToInteger(DerefOf(arg1), Local1)
-		CH06(arg0, 29, 47)
-
-		// Acquire
-
-		// Add
-
-		Add(DerefOf(arg1), i000, Local1)
-		CH06(arg0, 33, 47)
-
-		Add(i000, DerefOf(arg1), Local1)
-		CH06(arg0, 34, 47)
-
-		// And
-
-		And(DerefOf(arg1), i000, Local1)
-		CH06(arg0, 37, 47)
-
-		And(i000, DerefOf(arg1), Local1)
-		CH06(arg0, 38, 47)
-
-		// Concatenate
-
-		Concatenate(DerefOf(arg1), i000, Local1)
-		CH06(arg0, 41, 47)
-
-		Concatenate(i000, DerefOf(arg1), Local1)
-		CH06(arg0, 42, 47)
-
-		// ConcatenateResTemplate
-
-		ConcatenateResTemplate(DerefOf(arg1), ResourceTemplate(){}, Local1)
-		CH06(arg0, 45, 47)
-
-		ConcatenateResTemplate(ResourceTemplate(){}, DerefOf(arg1), Local1)
-		CH06(arg0, 46, 47)
-
-		// Divide
-
-		Divide(DerefOf(arg1), i000, Local2)
-		CH06(arg0, 49, 47)
-
-		Divide(i000, DerefOf(arg1), Local2)
-		CH06(arg0, 50, 47)
-
-		Divide(DerefOf(arg1), i000, Local2, Local1)
-		CH06(arg0, 51, 47)
-
-		Divide(i000, DerefOf(arg1), Local2, Local1)
-		CH06(arg0, 52, 47)
-
-		// Fatal
-
-		Fatal(0xff, 0xffffffff, DerefOf(arg1))
-		CH06(arg0, 53, 47)
-
-		// Index
-
-		Index(DerefOf(arg1), 0, Local1)
-		CH03(ts, z096, 60, __LINE__, 0)
-
-		Index("0", DerefOf(arg1), Local1)
-		CH06(arg0, 57, 47)
-
-		// LEqual
-
-		Store (LEqual(DerefOf(arg1), i000), Local1)
-		CH06(arg0, 58, 47)
-
-		Store (LEqual(i000, DerefOf(arg1)), Local1)
-		CH06(arg0, 59, 47)
-
-		// LGreater
-
-		Store (LGreater(DerefOf(arg1), i000), Local1)
-		CH06(arg0, 60, 47)
-
-		Store (LGreater(i000, DerefOf(arg1)), Local1)
-		CH06(arg0, 61, 47)
-
-		// LGreaterEqual
-
-		Store (LGreaterEqual(DerefOf(arg1), i000), Local1)
-		CH06(arg0, 62, 0xff)
-
-		Store (LGreaterEqual(i000, DerefOf(arg1)), Local1)
-		CH06(arg0, 63, 0xff)
-
-		// LLess
-
-		Store (LLess(DerefOf(arg1), i000), Local1)
-		CH06(arg0, 64, 47)
-
-		Store (LLess(i000, DerefOf(arg1)), Local1)
-		CH06(arg0, 65, 47)
-
-		// LLessEqual
-
-		Store (LLessEqual(DerefOf(arg1), i000), Local1)
-		CH06(arg0, 66, 0xff)
-
-		Store (LLessEqual(i000, DerefOf(arg1)), Local1)
-		CH06(arg0, 67, 0xff)
-
-		// LNotEqual
-
-		Store (LNotEqual(DerefOf(arg1), i000), Local1)
-		CH06(arg0, 68, 0xff)
-
-		Store (LNotEqual(i000, DerefOf(arg1)), Local1)
-		CH06(arg0, 69, 0xff)
-
-		// LOr
-
-		Store (LOr(DerefOf(arg1), i000), Local1)
-		CH06(arg0, 70, 47)
-
-		Store (LOr(i000, DerefOf(arg1)), Local1)
-		CH06(arg0, 71, 47)
-
-		// Mod
-
-		Mod(DerefOf(arg1), i000, Local1)
-		CH06(arg0, 74, 47)
-
-		Mod(i000, DerefOf(arg1), Local1)
-		CH06(arg0, 75, 47)
-
-		// Multiply
-
-		Multiply(DerefOf(arg1), i000, Local1)
-		CH06(arg0, 78, 47)
-
-		Multiply(i000, DerefOf(arg1), Local1)
-		CH06(arg0, 79, 47)
-
-		// NAnd
-
-		NAnd(DerefOf(arg1), i000, Local1)
-		CH06(arg0, 82, 47)
-
-		NAnd(i000, DerefOf(arg1), Local1)
-		CH06(arg0, 83, 47)
-
-		// NOr
-
-		NOr(DerefOf(arg1), i000, Local1)
-		CH06(arg0, 86, 47)
-
-		NOr(i000, DerefOf(arg1), Local1)
-		CH06(arg0, 87, 47)
-
-		// Or
-
-		Or(DerefOf(arg1), i000, Local1)
-		CH06(arg0, 90, 47)
-
-		Or(i000, DerefOf(arg1), Local1)
-		CH06(arg0, 91, 47)
-
-		// ShiftLeft
-
-		ShiftLeft(DerefOf(arg1), i000, Local1)
-		CH06(arg0, 94, 47)
-
-		ShiftLeft(i000, DerefOf(arg1), Local1)
-		CH06(arg0, 95, 47)
-
-		// ShiftRight
-
-		ShiftRight(DerefOf(arg1), i000, Local1)
-		CH06(arg0, 98, 47)
-
-		ShiftRight(i000, DerefOf(arg1), Local1)
-		CH06(arg0, 99, 47)
-
-		// Subtract
-
-		Subtract(DerefOf(arg1), i000, Local1)
-		CH06(arg0, 102, 47)
-
-		Subtract(i000, DerefOf(arg1), Local1)
-		CH06(arg0, 103, 47)
-
-		// ToString
-
-		ToString(DerefOf(arg1), 1, Local1)
-		CH06(arg0, 106, 47)
-
-		ToString(i000, DerefOf(arg1), Local1)
-		CH06(arg0, 107, 47)
-
-		// Wait
-
-		Store(Wait(e000, DerefOf(arg1)), Local1)
-		CH06(arg0, 109, 47)
-
-		// XOr
-
-		XOr(DerefOf(arg1), i000, Local1)
-		CH06(arg0, 112, 47)
-
-		XOr(i000, DerefOf(arg1), Local1)
-		CH06(arg0, 113, 47)
-
-		// Mid
-
-		Mid(DerefOf(arg1), 1, 1, Local1)
-		CH06(arg0, 117, 47)
-
-		Mid("123", DerefOf(arg1), 1, Local1)
-		CH06(arg0, 118, 47)
-
-		Mid("123", 1, DerefOf(arg1), Local1)
-		CH06(arg0, 119, 47)
-
-		// Match
-
-		Store (Match(DerefOf(arg1), MTR, 0, MTR, 0, 0), Local1)
-		CH03(ts, z096, 61, __LINE__, 0)
-
-		Store (Match(Package(){1}, MTR, DerefOf(arg1), MTR, 0, 0), Local1)
-		CH06(arg0, 121, 47)
-
-		Store (Match(Package(){1}, MTR, 0, MTR, DerefOf(arg1), 0), Local1)
-		CH06(arg0, 122, 47)
-
-		Store (Match(Package(){1}, MTR, 0, MTR, 0, DerefOf(arg1)), Local1)
-		CH06(arg0, 123, 47)
-
-		return (0)
-	}
-
-	// Result of Method invocation
-	Method(m006, 1, Serialized)
-	{
-		Method(m000)
-		{
-			// intermediate storing to force ASL compiler
-			// not report "Invalid type (Method returns)"
-			Store(Package(){0x63}, Local0)
-			Return (Local0)
-		}
-
-		Name(ss00, "0")
-
-		// CondRefOf
-
-// **** 10/2016 changed method invocation to just a namestring
-// CondRefOf no longer invokes the method
-
-		if (y601) {
-			Store (CondRefOf(m000), Local1)
-			CH06(arg0, 0, 47)
-
-			CondRefOf(m000, Local1)
-			CH06(arg0, 1, 47)
-		}
-
-		// CopyObject
-
-		CopyObject(m000(), Local1)
-		CH03(ts, z096, 62, __LINE__, 0)
-
-		// Decrement
-
-		Decrement(m000())
-		CH06(arg0, 2, 47)
-
-		// DerefOf
-
-		Store (DerefOf(m000()), Local1)
-		CH06(arg0, 3, 47)
-
-		// FindSetLeftBit
-
-		FindSetLeftBit(m000(), Local1)
-		CH06(arg0, 5, 47)
-
-		// FindSetRightBit
-
-		FindSetRightBit(m000(), Local1)
-		CH06(arg0, 7, 47)
-
-		// FromBCD
-
-		FromBCD(m000(), Local1)
-		CH06(arg0, 9, 47)
-
-		// Increment
-
-		Increment(m000())
-		CH06(arg0, 10, 47)
-
-		// LNot
-
-		Store (LNot(m000()), Local1)
-		CH06(arg0, 11, 47)
-
-		// Not
-
-		Not(m000(), Local1)
-		CH06(arg0, 13, 47)
-
-		// **** ObjectType
-        /* Nov. 2012: Method invocation as arg to ObjectType is now illegal */
-
-		Store (ObjectType(m000), Local0)
-		CH03(ts, z096, 63, __LINE__, 0)
-
-		// RefOf
-        /* **** Oct. 2016: Method invocation as arg to RefOf is now illegal */
-
-//		if (y601) {
-//			Store (RefOf(m000()), Local1)
-//			CH06(arg0, 14, 47)
-//		}
-
-		// Release
-
-		Release(m000())
-		CH06(arg0, 13, 47)
-
-		// Reset
-
-		Reset(m000())
-		CH06(arg0, 14, 47)
-
-		// Signal
-
-		Signal(m000())
-		CH06(arg0, 15, 47)
-
-		// SizeOf
-
-		Store (SizeOf(m000()), Local1)
-		CH06(arg0, 16, 47)
-
-		// Sleep
-
-		Sleep(m000())
-		CH06(arg0, 17, 47)
-
-		// Stall
-
-		Stall(m000())
-		CH06(arg0, 18, 47)
-
-		// Store
-
-		// ToBCD
-
-		ToBCD(m000(), Local1)
-		CH06(arg0, 21, 47)
-
-		// ToBuffer
-
-		ToBuffer(m000(), Local1)
-		CH06(arg0, 23, 47)
-
-		// ToDecimalString
-
-		ToDecimalString(m000(), Local1)
-		CH06(arg0, 25, 47)
-
-		// ToHexString
-
-		ToHexString(m000(), Local1)
-		CH06(arg0, 27, 47)
-
-		// ToInteger
-
-		ToInteger(m000(), Local1)
-		CH06(arg0, 29, 47)
-
-		// Acquire
-
-		Store(Acquire(m000(), 100), Local1)
-		CH06(arg0, 30, 47)
-
-		// Add
-
-		Add(m000(), i000, Local1)
-		CH06(arg0, 33, 47)
-
-		Add(i000, m000(), Local1)
-		CH06(arg0, 34, 47)
-
-		// And
-
-		And(m000(), i000, Local1)
-		CH06(arg0, 37, 47)
-
-		And(i000, m000(), Local1)
-		CH06(arg0, 38, 47)
-
-		// Concatenate
-
-		Concatenate(m000(), i000, Local1)
-		CH06(arg0, 41, 47)
-
-		Concatenate(i000, m000(), Local1)
-		CH06(arg0, 42, 47)
-
-		// ConcatenateResTemplate
-
-		ConcatenateResTemplate(m000(), ResourceTemplate(){}, Local1)
-		CH06(arg0, 45, 47)
-
-		ConcatenateResTemplate(ResourceTemplate(){}, m000(), Local1)
-		CH06(arg0, 46, 47)
-
-		// Divide
-
-		Divide(m000(), i000, Local2)
-		CH06(arg0, 49, 47)
-
-		Divide(i000, m000(), Local2)
-		CH06(arg0, 50, 47)
-
-		Divide(m000(), i000, Local2, Local1)
-		CH06(arg0, 51, 47)
-
-		Divide(i000, m000(), Local2, Local1)
-		CH06(arg0, 52, 47)
-
-		// Fatal
-
-		Fatal(0xff, 0xffffffff, m000())
-		CH06(arg0, 53, 47)
-
-		// Index
-
-		if (y900) {
-			Index(m000(), 0, Local1)
-			CH03(ts, z096, 65, __LINE__, 0)
-
-			Index("0", m000(), Local1)
-			CH06(arg0, 57, 47)
-		} else {
-			CH03(ts, z096, 0x123, __LINE__, 0)
-			CH03(ts, z096, 0x127, __LINE__, 0)
-			Index(m000(), 0, Local1)
-			CH04(ts, 0, 85, z094, __LINE__, 0, 0) // AE_INDEX_TO_NOT_ATTACHED
-
-			CH03(ts, z096, 0x129, __LINE__, 0)
-			Index("0", m000(), Local1)
-			CH04(ts, 0, 0xff, z094, __LINE__, 0, 0) // AE_INDEX_TO_NOT_ATTACHED
-
-			CH03(ts, z096, 0x129, __LINE__, 0)
-			Index(ss00, m000(), Local1)
-			CH04(ts, 0, 47, z094, __LINE__, 0, 0) // AE_INDEX_TO_NOT_ATTACHED
-		}
-
-		// LEqual
-
-		Store (LEqual(m000(), i000), Local1)
-		CH06(arg0, 58, 47)
-
-		Store (LEqual(i000, m000()), Local1)
-		CH06(arg0, 59, 47)
-
-		// LGreater
-
-		Store (LGreater(m000(), i000), Local1)
-		CH06(arg0, 60, 47)
-
-		Store (LGreater(i000, m000()), Local1)
-		CH06(arg0, 61, 47)
-
-		// LGreaterEqual
-
-		Store (LGreaterEqual(m000(), i000), Local1)
-		CH06(arg0, 62, 0xff)
-
-		Store (LGreaterEqual(i000, m000()), Local1)
-		CH06(arg0, 63, 0xff)
-
-		// LLess
-
-		Store (LLess(m000(), i000), Local1)
-		CH06(arg0, 64, 47)
-
-		Store (LLess(i000, m000()), Local1)
-		CH06(arg0, 65, 47)
-
-		// LLessEqual
-
-		Store (LLessEqual(m000(), i000), Local1)
-		CH06(arg0, 66, 0xff)
-
-		Store (LLessEqual(i000, m000()), Local1)
-		CH06(arg0, 67, 0xff)
-
-		// LNotEqual
-
-		Store (LNotEqual(m000(), i000), Local1)
-		CH06(arg0, 68, 0xff)
-
-		Store (LNotEqual(i000, m000()), Local1)
-		CH06(arg0, 69, 0xff)
-
-		// LOr
-
-		Store (LOr(m000(), i000), Local1)
-		CH06(arg0, 70, 47)
-
-		Store (LOr(i000, m000()), Local1)
-		CH06(arg0, 71, 47)
-
-		// Mod
-
-		Mod(m000(), i000, Local1)
-		CH06(arg0, 74, 47)
-
-		Mod(i000, m000(), Local1)
-		CH06(arg0, 75, 47)
-
-		// Multiply
-
-		Multiply(m000(), i000, Local1)
-		CH06(arg0, 78, 47)
-
-		Multiply(i000, m000(), Local1)
-		CH06(arg0, 79, 47)
-
-		// NAnd
-
-		NAnd(m000(), i000, Local1)
-		CH06(arg0, 82, 47)
-
-		NAnd(i000, m000(), Local1)
-		CH06(arg0, 83, 47)
-
-		// NOr
-
-		NOr(m000(), i000, Local1)
-		CH06(arg0, 86, 47)
-
-		NOr(i000, m000(), Local1)
-		CH06(arg0, 87, 47)
-
-		// Or
-
-		Or(m000(), i000, Local1)
-		CH06(arg0, 90, 47)
-
-		Or(i000, m000(), Local1)
-		CH06(arg0, 91, 47)
-
-		// ShiftLeft
-
-		ShiftLeft(m000(), i000, Local1)
-		CH06(arg0, 94, 47)
-
-		ShiftLeft(i000, m000(), Local1)
-		CH06(arg0, 95, 47)
-
-		// ShiftRight
-
-		ShiftRight(m000(), i000, Local1)
-		CH06(arg0, 98, 47)
-
-		ShiftRight(i000, m000(), Local1)
-		CH06(arg0, 99, 47)
-
-		// Subtract
-
-		Subtract(m000(), i000, Local1)
-		CH06(arg0, 102, 47)
-
-		Subtract(i000, m000(), Local1)
-		CH06(arg0, 103, 47)
-
-		// ToString
-
-		ToString(m000(), 1, Local1)
-		CH06(arg0, 106, 47)
-
-		ToString(i000, m000(), Local1)
-		CH06(arg0, 107, 47)
-
-		// Wait
-
-		Store(Wait(m000(), i000), Local1)
-		CH06(arg0, 108, 47)
-
-		Store(Wait(e000, m000()), Local1)
-		CH06(arg0, 109, 47)
-
-		// XOr
-
-		XOr(m000(), i000, Local1)
-		CH06(arg0, 112, 47)
-
-		XOr(i000, m000(), Local1)
-		CH06(arg0, 113, 47)
-
-		// Mid
-
-		Mid(m000(), 1, 1, Local1)
-		CH06(arg0, 117, 47)
-
-		Mid("123", m000(), 1, Local1)
-		CH06(arg0, 118, 47)
-
-		Mid("123", 1, m000(), Local1)
-		CH06(arg0, 119, 47)
-
-		// Match
-
-		Store (Match(m000(), MTR, 0, MTR, 0, 0), Local1)
-		CH03(ts, z096, 66, __LINE__, 0)
-
-		Store (Match(Package(){1}, MTR, m000(), MTR, 0, 0), Local1)
-		CH06(arg0, 121, 47)
-
-		Store (Match(Package(){1}, MTR, 0, MTR, m000(), 0), Local1)
-		CH06(arg0, 122, 47)
-
-		Store (Match(Package(){1}, MTR, 0, MTR, 0, m000()), Local1)
-		CH06(arg0, 123, 47)
-	}
-
-	// Reference to Object as Result of Method invocation
-	Method(m007, 1, Serialized)
-	{
-		Name(p000, Package(){0x63})
-
-		Name(i000, 0) // Label to check m000 invocations
-
-		Method(m000, 2)
-		{
-			Store(arg0, i000)
-			if (LEqual(arg1, 0)) {
-				Store(Refof(p100), Local0)
-			} elseif (LEqual(arg1, 1)) {
-				Store(Refof(p000), Local0)
-			}
-			Return (Local0)
-		}
-
-		Method(CH00, 2)
-		{
-			if (LNotEqual(i000, arg1)) {
-				err(arg0, z096, __LINE__, 0, 0, i000, arg1)
-			}
-		}
-
-		Name(lpN0, 2)
-		Name(lpC0, 0)
-
-		While (lpN0) {
-			Multiply(3, lpC0, Local0)
-
-			Store(0, i000)
-
-			Store (DerefOf(m000(1, lpC0)), Local1)
-			CH03(ts, z096, __LINE__, 0, 0)
-			CH00(arg0, 1)
-
-			Store (DerefOf(DerefOf(m000(2, lpC0))), Local1)
-			CH06(arg0, Add(1, Local0), 47)
-			CH00(arg0, 2)
-
-			Store (Index(DerefOf(m000(3, lpC0)), 0), Local1)
-			CH06(arg0, Add(2, Local0), 47)
-			CH00(arg0, 3)
-
-			Store (Match(DerefOf(m000(4, lpC0)), MTR, 0, MTR, 0, 0), Local1)
-			CH06(arg0, Add(3, Local0), 47)
-			CH00(arg0, 4)
-
-			Decrement(lpN0)
-			Increment(lpC0)
-		}
-	}
-
-	// Result of Method with checking of invocation
-	Method(m008, 1, Serialized)
-	{
-		Name(i000, 0) // Label to check m000 invocations
-
-		Method(m000, 1)
-		{
-			Store(arg0, i000)
-			Store(Package(){0x63}, Local0)
-			Return (Local0)
-		}
-
-		Method(CH00, 2)
-		{
-			if (LNotEqual(i000, arg1)) {
-				err(arg0, z096, __LINE__, 0, 0, i000, arg1)
-			}
-		}
-
-		// CondRefOf
-
-
-// **** 10/2016 changed method invocation to just a namestring
-// CondRefOf no longer invokes the method
-		
-		if (y601) {
-			Store (CondRefOf(m000), Local1)
-			CH06(arg0, 1, 47)
-			CH00(arg0, 1)
-		}
-
-		Store (CondRefOf(m000), Local1)
-		CH06(arg0, 2, 47)
-		if (y600) {
-			CH00(arg0, 2)
-		}
-
-		// DerefOf
-
-		Store (DerefOf(m000(3)), Local1)
-		CH06(arg0, 3, 47)
-		CH00(arg0, 3)
-
-		// RefOf
-        /* Oct. 2016: Method invocation as arg to RefOf is now illegal */
-
-//		if (y601) {
-//			Store (RefOf(m000(4)), Local1)
-//			CH06(arg0, 4, 47)
-//			CH00(arg0, 4)
-//		}
-
-		// Release
-
-		Release(m000(5))
-		CH06(arg0, 5, 47)
-		if (y600) {
-			CH00(arg0, 5)
-		}
-
-		// Reset
-
-		Reset(m000(6))
-		CH06(arg0, 6, 47)
-		if (y600) {
-			CH00(arg0, 6)
-		}
-
-		// Signal
-
-		Signal(m000(7))
-		CH06(arg0, 7, 47)
-		if (y600) {
-			CH00(arg0, 7)
-		}
-
-		// Acquire
-
-		Store(Acquire(m000(8), 0), Local1)
-		CH06(arg0, 8, 47)
-		if (y600) {
-			CH00(arg0, 8)
-		}
-
-		// Index
-
-		CH03(ts, z094, 0x123, __LINE__, 0)
-		Store (Index(m000(9), 0), Local1)
-		if (y900) {
-			CH03(ts, z096, 69, __LINE__, 0)
-			CH00(arg0, 9)
-		} else {
-			CH04(ts, 0, 85, z094, __LINE__, 0, 0) // AE_INDEX_TO_NOT_ATTACHED
-		}
-
-		// Wait
-
-		Store(Wait(m000(10), 0), Local1)
-		CH06(arg0, 9, 47)
-		if (y600) {
-			CH00(arg0, 10)
-		}
-
-		// Match
-
-		Store (Match(m000(11), MTR, 0, MTR, 0, 0), Local1)
-		CH03(ts, z096, 70, __LINE__, 0)
-		CH00(arg0, 11)
-	}
-
-	SET0(z096, ts, 0)
-
-	CH03(ts, z096, 70, __LINE__, 0)
-
-	// Local Named Object
-	m000(ts)
-
-	// Global Named Object
-	m001(ts)
-
-	// Argument
-	m002(ts, Package(){0x62})
-
-	// Local
-	m003(Concatenate(ts, "-m003"))
-
-	// An element of Package
-	m004(Concatenate(ts, "-m004"))
-
-
-	// Reference to Local Named Object
-
-	m005(Concatenate(ts, "-m005-RefLocName"), RefOf(p000))
-
-	Store(RefOf(p000), Local0)
-	m005(Concatenate(ts, "-m005-RefLocName2"), Local0)
-
-	CondRefOf(p000, Local0)
-	m005(Concatenate(ts, "-m005-CondRefLocName"), Local0)
-
-	m005(Concatenate(ts, "-m005-RefGlobName"), RefOf(p100))
-
-	Store(RefOf(p100), Local0)
-	m005(Concatenate(ts, "-m005-RefGlobName2"), Local0)
-
-	CondRefOf(p100, Local0)
-	m005(Concatenate(ts, "-m005-CondRefGlobName"), Local0)
-
-
-	// Reference to Local
-
-	Store(Package(){0x62}, Local0)
-
-	m005(Concatenate(ts, "-m005-RefLocal"), RefOf(Local0))
-
-	Store(RefOf(Local0), Local1)
-	m005(Concatenate(ts, "-m005-RefLocal2"), Local1)
-
-	CondRefOf(Local0, Local1)
-	m005(Concatenate(ts, "-m005-CondRefLocal"), Local1)
-
-
-	// Reference to Arg
-
-	m005(Concatenate(ts, "-m005-RefArg"), RefOf(arg0))
-
-	Store(RefOf(arg0), Local0)
-	m005(Concatenate(ts, "-m005-RefArg2"), Local0)
-
-	CondRefOf(arg0, Local0)
-	m005(Concatenate(ts, "-m005-CondRefArg"), Local0)
-
-
-	// Index to Package
-
-	Name(pp00, Package(){Package(){0x62}})
-
-	if (y113) {
-		m005(Concatenate(ts, "-m005-Index"), Index(pp00, 0))
-	}
-
-	Store(Index(pp00, 0), Local0)
-	m005(Concatenate(ts, "-m005-Index2"), Local0)
-
-	if (y113) {
-		m005(Concatenate(ts, "-m005-Index3"), Index(pp00, 0, Local0))
-	}
-
-	Index(pp00, 0, Local0)
-	m005(Concatenate(ts, "-m005-Index4"), Local0)
-
-	Store(Index(pp00, 0, Local0), Local1)
-	m005(Concatenate(ts, "-m005-Index5"), Local1)
-
-	// Result of Method invocation
-	m006(Concatenate(ts, "-m006"))
-
-	// Reference to Object as Result of Method invocation
-	if (y500) {
-		m007(Concatenate(ts, "-m007"))
-	}
-
-	// Result of Method with checking of invocation
-	m008(Concatenate(ts, "-m008"))
-
-	RST0()
-}

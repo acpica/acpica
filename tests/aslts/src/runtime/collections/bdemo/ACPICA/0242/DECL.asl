@@ -1,261 +1,271 @@
-/*
- * Some or all of this work - Copyright (c) 2006 - 2017, Intel Corp.
- * All rights reserved.
- *
- * Redistribution and use in source and binary forms, with or without modification,
- * are permitted provided that the following conditions are met:
- *
- * Redistributions of source code must retain the above copyright notice,
- * this list of conditions and the following disclaimer.
- * Redistributions in binary form must reproduce the above copyright notice,
- * this list of conditions and the following disclaimer in the documentation
- * and/or other materials provided with the distribution.
- * Neither the name of Intel Corporation nor the names of its contributors
- * may be used to endorse or promote products derived from this software
- * without specific prior written permission.
- *
- * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS"
- * AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE
- * IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE
- * ARE DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT OWNER OR CONTRIBUTORS BE
- * LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL
- * DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES;
- * LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY
- * THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING
- * NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE,
- * EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
- */
+    /*
+     * Some or all of this work - Copyright (c) 2006 - 2017, Intel Corp.
+     * All rights reserved.
+     *
+     * Redistribution and use in source and binary forms, with or without modification,
+     * are permitted provided that the following conditions are met:
+     *
+     * Redistributions of source code must retain the above copyright notice,
+     * this list of conditions and the following disclaimer.
+     * Redistributions in binary form must reproduce the above copyright notice,
+     * this list of conditions and the following disclaimer in the documentation
+     * and/or other materials provided with the distribution.
+     * Neither the name of Intel Corporation nor the names of its contributors
+     * may be used to endorse or promote products derived from this software
+     * without specific prior written permission.
+     *
+     * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS"
+     * AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE
+     * IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE
+     * ARE DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT OWNER OR CONTRIBUTORS BE
+     * LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL
+     * DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES;
+     * LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY
+     * THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING
+     * NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE,
+     * EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
+     */
+    /*
+     * Bug 242:
+     *
+     * SUMMARY: Releasing the mutex the first Acquired on the non-zero level makes Releasing the residuary mutexes of that level impossible
+     */
+    Method (M031, 0, Serialized)
+    {
+        Mutex (T000, 0x00)
+        Mutex (T001, 0x00)
+        Mutex (T002, 0x00)
+        Mutex (T003, 0x00)
+        Mutex (T100, 0x01)
+        Mutex (T101, 0x01)
+        Mutex (T102, 0x01)
+        Mutex (T103, 0x01)
+        /*
+         * Direct order for mutexes of level 0
+         *
+         * STATUS: works correctly - no exceptions
+         */
+        Method (M000, 0, NotSerialized)
+        {
+            Debug = "******** Test 0, for mutexes of level 0"
+            Debug = "Acquiring mutexes of level 0:"
+            Local0 = Acquire (T000, 0xFFFF)
+            If (Local0)
+            {
+                Debug = "ERROR: Acquire T000 (Level 0, index 0)"
+                ERR ("", ZFFF, 0x3E, 0x00, 0x00, 0x00, 0x00)
+            }
+            Else
+            {
+                Debug = "Ok: Acquire T000 (Level 0, index 0)"
+            }
 
-/*
- * Bug 242:
- *
- * SUMMARY: Releasing the mutex the first Acquired on the non-zero level makes Releasing the residuary mutexes of that level impossible
- */
+            Local0 = Acquire (T001, 0xFFFF)
+            If (Local0)
+            {
+                Debug = "ERROR: Acquire T001 (Level 0, index 1)"
+                ERR ("", ZFFF, 0x46, 0x00, 0x00, 0x00, 0x00)
+            }
+            Else
+            {
+                Debug = "Ok: Acquire T001 (Level 0, index 1)"
+            }
 
-Method(m031,, Serialized)
-{
-	Mutex(T000, 0)
-	Mutex(T001, 0)
-	Mutex(T002, 0)
-	Mutex(T003, 0)
+            Local0 = Acquire (T002, 0xFFFF)
+            If (Local0)
+            {
+                Debug = "ERROR: Acquire T002 (Level 0, index 2)"
+                ERR ("", ZFFF, 0x4E, 0x00, 0x00, 0x00, 0x00)
+            }
+            Else
+            {
+                Debug = "Ok: Acquire T002 (Level 0, index 2)"
+            }
 
-	Mutex(T100, 1)
-	Mutex(T101, 1)
-	Mutex(T102, 1)
-	Mutex(T103, 1)
+            Local0 = Acquire (T003, 0xFFFF)
+            If (Local0)
+            {
+                Debug = "ERROR: Acquire T003 (Level 0, index 3)"
+                ERR ("", ZFFF, 0x56, 0x00, 0x00, 0x00, 0x00)
+            }
+            Else
+            {
+                Debug = "Ok: Acquire T003 (Level 0, index 3)"
+            }
 
+            Debug = "Releasing mutexes of level 0:"
+            Debug = "Release T000 (Level 0, index 0)"
+            CH03 ("", 0x00, 0x04, 0x5F, 0x00)
+            Release (T000)
+            CH03 ("", 0x00, 0x05, 0x61, 0x00)
+            Debug = "Release T001 (Level 0, index 1)"
+            CH03 ("", 0x00, 0x06, 0x64, 0x00)
+            Release (T001)
+            CH03 ("", 0x00, 0x07, 0x66, 0x00)
+            Debug = "Release T002 (Level 0, index 2)"
+            CH03 ("", 0x00, 0x08, 0x69, 0x00)
+            Release (T002)
+            CH03 ("", 0x00, 0x09, 0x6B, 0x00)
+            Debug = "Release T003 (Level 0, index 3)"
+            CH03 ("", 0x00, 0x0A, 0x6E, 0x00)
+            Release (T003)
+            CH03 ("", 0x00, 0x0B, 0x70, 0x00)
+        }
 
-	/*
-	 * Direct order for mutexes of level 0
-	 *
-	 * STATUS: works correctly - no exceptions
-	 */
-	Method(m000)
-	{
-		Store("******** Test 0, for mutexes of level 0", Debug)
+        /*
+         * Direct order for mutexes of level 1
+         *
+         * STATUS: works incorrectly - has exceptions
+         */
+        Method (M001, 0, NotSerialized)
+        {
+            Debug = "******** Test 1, for mutexes of level 1"
+            Debug = "Acquiring mutexes of level 1:"
+            Local0 = Acquire (T100, 0xFFFF)
+            If (Local0)
+            {
+                Debug = "ERROR: Acquire T100 (Level 1, index 0)"
+                ERR ("", ZFFF, 0x81, 0x00, 0x00, 0x00, 0x00)
+            }
+            Else
+            {
+                Debug = "Ok: Acquire T100 (Level 1, index 0)"
+            }
 
-		Store("Acquiring mutexes of level 0:", Debug)
+            Local0 = Acquire (T101, 0xFFFF)
+            If (Local0)
+            {
+                Debug = "ERROR: Acquire T101 (Level 1, index 1)"
+                ERR ("", ZFFF, 0x89, 0x00, 0x00, 0x00, 0x00)
+            }
+            Else
+            {
+                Debug = "Ok: Acquire T101 (Level 1, index 1)"
+            }
 
-		Store(Acquire(T000, 0xffff), Local0)
-		if (Local0) {
-			Store("ERROR: Acquire T000 (Level 0, index 0)", Debug)
-			err("", zFFF, __LINE__, 0, 0, 0, 0)
-		} else {
-			Store("Ok: Acquire T000 (Level 0, index 0)", Debug)
-		}
+            Local0 = Acquire (T102, 0xFFFF)
+            If (Local0)
+            {
+                Debug = "ERROR: Acquire T102 (Level 1, index 2)"
+                ERR ("", ZFFF, 0x91, 0x00, 0x00, 0x00, 0x00)
+            }
+            Else
+            {
+                Debug = "Ok: Acquire T102 (Level 1, index 2)"
+            }
 
-		Store(Acquire(T001, 0xffff), Local0)
-		if (Local0) {
-			Store("ERROR: Acquire T001 (Level 0, index 1)", Debug)
-			err("", zFFF, __LINE__, 0, 0, 0, 0)
-		} else {
-			Store("Ok: Acquire T001 (Level 0, index 1)", Debug)
-		}
+            Local0 = Acquire (T103, 0xFFFF)
+            If (Local0)
+            {
+                Debug = "ERROR: Acquire T103 (Level 1, index 3)"
+                ERR ("", ZFFF, 0x99, 0x00, 0x00, 0x00, 0x00)
+            }
+            Else
+            {
+                Debug = "Ok: Acquire T103 (Level 1, index 3)"
+            }
 
-		Store(Acquire(T002, 0xffff), Local0)
-		if (Local0) {
-			Store("ERROR: Acquire T002 (Level 0, index 2)", Debug)
-			err("", zFFF, __LINE__, 0, 0, 0, 0)
-		} else {
-			Store("Ok: Acquire T002 (Level 0, index 2)", Debug)
-		}
+            Debug = "Releasing mutexes of Level 1:"
+            Debug = "Release T100 (Level 1, index 0)"
+            CH03 ("", 0x00, 0x10, 0xA2, 0x00)
+            Release (T100)
+            CH03 ("", 0x00, 0x11, 0xA4, 0x00)
+            Debug = "Release T101 (Level 1, index 1)"
+            CH03 ("", 0x00, 0x12, 0xA7, 0x00)
+            Release (T101)
+            CH03 ("", 0x00, 0x13, 0xA9, 0x00)
+            Debug = "Release T102 (Level 1, index 2)"
+            CH03 ("", 0x00, 0x14, 0xAC, 0x00)
+            Release (T102)
+            CH03 ("", 0x00, 0x15, 0xAE, 0x00)
+            Debug = "Release T103 (Level 1, index 3)"
+            CH03 ("", 0x00, 0x16, 0xB1, 0x00)
+            Release (T103)
+            CH03 ("", 0x00, 0x17, 0xB3, 0x00)
+        }
 
-		Store(Acquire(T003, 0xffff), Local0)
-		if (Local0) {
-			Store("ERROR: Acquire T003 (Level 0, index 3)", Debug)
-			err("", zFFF, __LINE__, 0, 0, 0, 0)
-		} else {
-			Store("Ok: Acquire T003 (Level 0, index 3)", Debug)
-		}
+        /*
+         * The test shows that no exception when the first
+         * Acquired mutex is Released in the last turn.
+         *
+         * STATUS: works correctly - no exception
+         */
+        Method (M002, 0, NotSerialized)
+        {
+            Debug = "******** Test 2, for mutexes of level 1"
+            Debug = "Acquiring mutexes of level 1:"
+            Local0 = Acquire (T100, 0xFFFF)
+            If (Local0)
+            {
+                Debug = "ERROR: Acquire T100 (Level 1, index 0)"
+                ERR ("", ZFFF, 0xC5, 0x00, 0x00, 0x00, 0x00)
+            }
+            Else
+            {
+                Debug = "Ok: Acquire T100 (Level 1, index 0)"
+            }
 
+            Local0 = Acquire (T101, 0xFFFF)
+            If (Local0)
+            {
+                Debug = "ERROR: Acquire T101 (Level 1, index 1)"
+                ERR ("", ZFFF, 0xCD, 0x00, 0x00, 0x00, 0x00)
+            }
+            Else
+            {
+                Debug = "Ok: Acquire T101 (Level 1, index 1)"
+            }
 
-		Store("Releasing mutexes of level 0:", Debug)
+            Local0 = Acquire (T102, 0xFFFF)
+            If (Local0)
+            {
+                Debug = "ERROR: Acquire T102 (Level 1, index 2)"
+                ERR ("", ZFFF, 0xD5, 0x00, 0x00, 0x00, 0x00)
+            }
+            Else
+            {
+                Debug = "Ok: Acquire T102 (Level 1, index 2)"
+            }
 
-		Store("Release T000 (Level 0, index 0)", Debug)
-		CH03("", 0, 0x004, __LINE__, 0)
-		Release(T000)
-		CH03("", 0, 0x005, __LINE__, 0)
+            Local0 = Acquire (T103, 0xFFFF)
+            If (Local0)
+            {
+                Debug = "ERROR: Acquire T103 (Level 1, index 3)"
+                ERR ("", ZFFF, 0xDD, 0x00, 0x00, 0x00, 0x00)
+            }
+            Else
+            {
+                Debug = "Ok: Acquire T103 (Level 1, index 3)"
+            }
 
-		Store("Release T001 (Level 0, index 1)", Debug)
-		CH03("", 0, 0x006, __LINE__, 0)
-		Release(T001)
-		CH03("", 0, 0x007, __LINE__, 0)
+            Debug = "Releasing mutexes of Level 1:"
+            Debug = "Release T101 (Level 1, index 1)"
+            CH03 ("", 0x00, 0x1C, 0xE6, 0x00)
+            Release (T101)
+            CH03 ("", 0x00, 0x1D, 0xE8, 0x00)
+            Debug = "Release T102 (Level 1, index 2)"
+            CH03 ("", 0x00, 0x1E, 0xEB, 0x00)
+            Release (T102)
+            CH03 ("", 0x00, 0x1F, 0xED, 0x00)
+            Debug = "Release T103 (Level 1, index 3)"
+            CH03 ("", 0x00, 0x20, 0xF0, 0x00)
+            Release (T103)
+            CH03 ("", 0x00, 0x21, 0xF2, 0x00)
+            Debug = "Release T100 (Level 1, index 0)"
+            CH03 ("", 0x00, 0x22, 0xF5, 0x00)
+            Release (T100)
+            CH03 ("", 0x00, 0x23, 0xF7, 0x00)
+        }
 
-		Store("Release T002 (Level 0, index 2)", Debug)
-		CH03("", 0, 0x008, __LINE__, 0)
-		Release(T002)
-		CH03("", 0, 0x009, __LINE__, 0)
+        Method (MM00, 0, NotSerialized)
+        {
+            M000 ()
+            M001 ()
+            M002 ()
+        }
 
-		Store("Release T003 (Level 0, index 3)", Debug)
-		CH03("", 0, 0x00a, __LINE__, 0)
-		Release(T003)
-		CH03("", 0, 0x00b, __LINE__, 0)
-	}
-
-	/*
-	 * Direct order for mutexes of level 1
-	 *
-	 * STATUS: works incorrectly - has exceptions
-	 */
-	Method(m001)
-	{
-		Store("******** Test 1, for mutexes of level 1", Debug)
-
-		Store("Acquiring mutexes of level 1:", Debug)
-
-		Store(Acquire(T100, 0xffff), Local0)
-		if (Local0) {
-			Store("ERROR: Acquire T100 (Level 1, index 0)", Debug)
-			err("", zFFF, __LINE__, 0, 0, 0, 0)
-		} else {
-			Store("Ok: Acquire T100 (Level 1, index 0)", Debug)
-		}
-
-		Store(Acquire(T101, 0xffff), Local0)
-		if (Local0) {
-			Store("ERROR: Acquire T101 (Level 1, index 1)", Debug)
-			err("", zFFF, __LINE__, 0, 0, 0, 0)
-		} else {
-			Store("Ok: Acquire T101 (Level 1, index 1)", Debug)
-		}
-
-		Store(Acquire(T102, 0xffff), Local0)
-		if (Local0) {
-			Store("ERROR: Acquire T102 (Level 1, index 2)", Debug)
-			err("", zFFF, __LINE__, 0, 0, 0, 0)
-		} else {
-			Store("Ok: Acquire T102 (Level 1, index 2)", Debug)
-		}
-
-		Store(Acquire(T103, 0xffff), Local0)
-		if (Local0) {
-			Store("ERROR: Acquire T103 (Level 1, index 3)", Debug)
-			err("", zFFF, __LINE__, 0, 0, 0, 0)
-		} else {
-			Store("Ok: Acquire T103 (Level 1, index 3)", Debug)
-		}
-
-
-		Store("Releasing mutexes of Level 1:", Debug)
-
-		Store("Release T100 (Level 1, index 0)", Debug)
-		CH03("", 0, 0x010, __LINE__, 0)
-		Release(T100)
-		CH03("", 0, 0x011, __LINE__, 0)
-
-		Store("Release T101 (Level 1, index 1)", Debug)
-		CH03("", 0, 0x012, __LINE__, 0)
-		Release(T101)
-		CH03("", 0, 0x013, __LINE__, 0)
-
-		Store("Release T102 (Level 1, index 2)", Debug)
-		CH03("", 0, 0x014, __LINE__, 0)
-		Release(T102)
-		CH03("", 0, 0x015, __LINE__, 0)
-
-		Store("Release T103 (Level 1, index 3)", Debug)
-		CH03("", 0, 0x016, __LINE__, 0)
-		Release(T103)
-		CH03("", 0, 0x017, __LINE__, 0)
-	}
-
-	/*
-	 * The test shows that no exception when the first
-	 * Acquired mutex is Released in the last turn.
-	 *
-	 * STATUS: works correctly - no exception
-	 */
-	Method(m002)
-	{
-		Store("******** Test 2, for mutexes of level 1", Debug)
-
-		Store("Acquiring mutexes of level 1:", Debug)
-
-		Store(Acquire(T100, 0xffff), Local0)
-		if (Local0) {
-			Store("ERROR: Acquire T100 (Level 1, index 0)", Debug)
-			err("", zFFF, __LINE__, 0, 0, 0, 0)
-		} else {
-			Store("Ok: Acquire T100 (Level 1, index 0)", Debug)
-		}
-
-		Store(Acquire(T101, 0xffff), Local0)
-		if (Local0) {
-			Store("ERROR: Acquire T101 (Level 1, index 1)", Debug)
-			err("", zFFF, __LINE__, 0, 0, 0, 0)
-		} else {
-			Store("Ok: Acquire T101 (Level 1, index 1)", Debug)
-		}
-
-		Store(Acquire(T102, 0xffff), Local0)
-		if (Local0) {
-			Store("ERROR: Acquire T102 (Level 1, index 2)", Debug)
-			err("", zFFF, __LINE__, 0, 0, 0, 0)
-		} else {
-			Store("Ok: Acquire T102 (Level 1, index 2)", Debug)
-		}
-
-		Store(Acquire(T103, 0xffff), Local0)
-		if (Local0) {
-			Store("ERROR: Acquire T103 (Level 1, index 3)", Debug)
-			err("", zFFF, __LINE__, 0, 0, 0, 0)
-		} else {
-			Store("Ok: Acquire T103 (Level 1, index 3)", Debug)
-		}
-
-
-		Store("Releasing mutexes of Level 1:", Debug)
-
-		Store("Release T101 (Level 1, index 1)", Debug)
-		CH03("", 0, 0x01c, __LINE__, 0)
-		Release(T101)
-		CH03("", 0, 0x01d, __LINE__, 0)
-
-		Store("Release T102 (Level 1, index 2)", Debug)
-		CH03("", 0, 0x01e, __LINE__, 0)
-		Release(T102)
-		CH03("", 0, 0x01f, __LINE__, 0)
-
-		Store("Release T103 (Level 1, index 3)", Debug)
-		CH03("", 0, 0x020, __LINE__, 0)
-		Release(T103)
-		CH03("", 0, 0x021, __LINE__, 0)
-
-		Store("Release T100 (Level 1, index 0)", Debug)
-		CH03("", 0, 0x022, __LINE__, 0)
-		Release(T100)
-		CH03("", 0, 0x023, __LINE__, 0)
-	}
-
-	Method(mm00)
-	{
-		m000()
-		m001()
-		m002()
-	}
-
-	CH03("", 0, 0x024, __LINE__, 0)
-	mm00()
-	CH03("", 0, 0x025, __LINE__, 0)
-}
+        CH03 ("", 0x00, 0x24, 0x0101, 0x00)
+        MM00 ()
+        CH03 ("", 0x00, 0x25, 0x0103, 0x00)
+    }
 

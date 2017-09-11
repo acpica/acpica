@@ -1,362 +1,547 @@
-/*
- * Some or all of this work - Copyright (c) 2006 - 2017, Intel Corp.
- * All rights reserved.
- *
- * Redistribution and use in source and binary forms, with or without modification,
- * are permitted provided that the following conditions are met:
- *
- * Redistributions of source code must retain the above copyright notice,
- * this list of conditions and the following disclaimer.
- * Redistributions in binary form must reproduce the above copyright notice,
- * this list of conditions and the following disclaimer in the documentation
- * and/or other materials provided with the distribution.
- * Neither the name of Intel Corporation nor the names of its contributors
- * may be used to endorse or promote products derived from this software
- * without specific prior written permission.
- *
- * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS"
- * AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE
- * IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE
- * ARE DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT OWNER OR CONTRIBUTORS BE
- * LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL
- * DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES;
- * LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY
- * THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING
- * NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE,
- * EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
- */
+    /*
+     * Some or all of this work - Copyright (c) 2006 - 2017, Intel Corp.
+     * All rights reserved.
+     *
+     * Redistribution and use in source and binary forms, with or without modification,
+     * are permitted provided that the following conditions are met:
+     *
+     * Redistributions of source code must retain the above copyright notice,
+     * this list of conditions and the following disclaimer.
+     * Redistributions in binary form must reproduce the above copyright notice,
+     * this list of conditions and the following disclaimer in the documentation
+     * and/or other materials provided with the distribution.
+     * Neither the name of Intel Corporation nor the names of its contributors
+     * may be used to endorse or promote products derived from this software
+     * without specific prior written permission.
+     *
+     * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS"
+     * AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE
+     * IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE
+     * ARE DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT OWNER OR CONTRIBUTORS BE
+     * LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL
+     * DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES;
+     * LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY
+     * THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING
+     * NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE,
+     * EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
+     */
+    /*
+     * Data type conversion and manipulation
+     *
+     * Concatenate two strings, integers or buffers
+     */
+    /*
+     // !!!!!!!!!!!!!!!!!!!!!!!!!! ???????????????????
+     // SEE: (Compare two buffers)
+     // Remove (?) this method and replace it with the
+     // LNotEqual, LEqual............ ????? !!!!!!!!!!
+     // !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+     */
+    Name (Z036, 0x24)
+    /* Compare two buffers */
+    /* */
+    /* Arg0 - name */
+    /* Arg1 - buffer1 */
+    /* Arg2 - buffer2 */
+    /* Arg3 - length */
+    Method (M310, 4, NotSerialized)
+    {
+        Local0 = 0x00
+        While ((Local0 < Arg3))
+        {
+            Local1 = DerefOf (Arg1 [Local0])
+            Local2 = DerefOf (Arg2 [Local0])
+            If ((Local1 != Local2))
+            {
+                Return (Ones)
+            }
 
-/*
- * Data type conversion and manipulation
- *
- * Concatenate two strings, integers or buffers
- */
+            Local0++
+        }
 
-/*
-// !!!!!!!!!!!!!!!!!!!!!!!!!! ???????????????????
-// SEE: (Compare two buffers)
-// Remove (?) this method and replace it with the
-// LNotEqual, LEqual............ ????? !!!!!!!!!!
-// !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
-*/
+        Return (Zero)
+    }
 
-Name(z036, 36)
+    /* Compare two buffers */
+    /* */
+    /* Arg0 - name */
+    /* Arg1 - buffer1 */
+    /* Arg2 - buffer2 */
+    Method (M311, 3, NotSerialized)
+    {
+        If ((ObjectType (Arg1) != 0x03))
+        {
+            ERR ("m311: unexpected type of Arg1", Z036, 0x4B, 0x00, 0x00, 0x00, 0x00)
+            Return (Ones)
+        }
 
+        If ((ObjectType (Arg2) != 0x03))
+        {
+            ERR ("m311: unexpected type of Arg2", Z036, 0x50, 0x00, 0x00, 0x00, 0x00)
+            Return (Ones)
+        }
 
-// Compare two buffers
-//
-// Arg0 - name
-// Arg1 - buffer1
-// Arg2 - buffer2
-// Arg3 - length
-Method(m310, 4)
-{
-	Store(0, Local0)
-	While (LLess(Local0, arg3)) {
-		Store(Derefof(Index(arg1, Local0)), Local1)
-		Store(Derefof(Index(arg2, Local0)), Local2)
-		if (LNotEqual(Local1, Local2)) {
-			return (Ones)
-		}
-		Increment(Local0)
-	}
+        Local0 = SizeOf (Arg1)
+        If ((Local0 != SizeOf (Arg2)))
+        {
+            Return (Ones)
+        }
 
-	return (Zero)
-}
+        If (M310 (Arg0, Arg1, Arg2, Local0))
+        {
+            Return (Ones)
+        }
 
-// Compare two buffers
-//
-// Arg0 - name
-// Arg1 - buffer1
-// Arg2 - buffer2
-Method(m311, 3)
-{
-	if (LNotequal(ObjectType(arg1), 3)) {
-		err("m311: unexpected type of Arg1", z036, __LINE__, 0, 0, 0, 0)
-		return (Ones)
-	}
+        Return (Zero)
+    }
 
-	if (LNotequal(ObjectType(arg2), 3)) {
-		err("m311: unexpected type of Arg2", z036, __LINE__, 0, 0, 0, 0)
-		return (Ones)
-	}
+    /* Verifying 2-parameters, 1-result operator */
 
-	Store(Sizeof(arg1), Local0)
+    Method (M312, 6, Serialized)
+    {
+        Local5 = 0x00
+        Local3 = Arg1
+        While (Local3)
+        {
+            /* Operands */
 
-	if (LNotEqual(Local0, Sizeof(arg2))) {
-		return (Ones)
-	}
+            Local6 = (Local5 * 0x02)
+            Local0 = DerefOf (Arg3 [Local6])
+            Local6++
+            Local1 = DerefOf (Arg3 [Local6])
+            /* Expected result */
 
-	if (m310(Arg0, Arg1, Arg2, Local0)) {
-		return (Ones)
-	}
+            Local2 = DerefOf (Arg4 [Local5])
+            Switch (ToInteger (Arg5))
+            {
+                Case (0x00)
+                {
+                    /* Results in buffer */
 
-	return (Zero)
-}
+                    Concatenate (Local0, Local1, Local7)
+                    If (M311 (Arg0, Local7, Local2))
+                    {
+                        ERR (Arg0, Z036, 0x7A, 0x00, 0x00, Local5, Arg2)
+                    }
+                }
+                Case (0x01)
+                {
+                    /* Results in string */
 
-// Verifying 2-parameters, 1-result operator
-Method(m312, 6, Serialized)
-{
-	Store(0, Local5)
-	Store(arg1, Local3)
+                    Concatenate (Local0, Local1, Local7)
+                    If ((ObjectType (Local7) != 0x02))
+                    {
+                        ERR (Arg0, Z036, 0x83, 0x00, 0x00, Local7, Arg2)
+                    }
+                    ElseIf ((ObjectType (Local2) != 0x02))
+                    {
+                        ERR (Arg0, Z036, 0x85, 0x00, 0x00, Local2, Arg2)
+                    }
+                    ElseIf ((Local7 != Local2))
+                    {
+                        ERR (Arg0, Z036, 0x87, 0x00, 0x00, Local7, Arg2)
+                    }
+                }
 
-	While(Local3) {
+            }
 
-		// Operands
+            Local5++
+            Local3--
+        }
+    }
 
-		Multiply(Local5, 2, Local6)
-		Store(DeRefOf(Index(arg3, Local6)), Local0)
-		Increment(Local6)
-		Store(DeRefOf(Index(arg3, Local6)), Local1)
+    /* Integers */
 
-		// Expected result
+    Method (M313, 0, Serialized)
+    {
+        Name (TS, "m313")
+        Name (P000, Package (0x18)
+        {
+            0x00, 
+            0x00, 
+            0xFFFFFFFF, 
+            0xFFFFFFFF, 
+            0x00, 
+            0xFFFFFFFF, 
+            0x00, 
+            0x81, 
+            0x00, 
+            0x9AC6, 
+            0x00, 
+            0xAB012345, 
+            0x92, 
+            0x81, 
+            0x93, 
+            0x8476, 
+            0xAB, 
+            0xDC816778, 
+            0xAC93, 
+            0x8476, 
+            0xF63B, 
+            0x8C8FC2DA, 
+            0x8790F6A4, 
+            0x98DE45BA
+        })
+        Name (P001, Package (0x0C)
+        {
+            Buffer (0x08)
+            {
+                 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00   // ........
+            }, 
 
-		Store(DeRefOf(Index(arg4, Local5)), Local2)
+            Buffer (0x08)
+            {
+                 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF   // ........
+            }, 
 
-		switch (ToInteger (arg5)) {
-			case (0) {
-				// Results in buffer
-				Concatenate(Local0, Local1, Local7)
+            Buffer (0x08)
+            {
+                 0x00, 0x00, 0x00, 0x00, 0xFF, 0xFF, 0xFF, 0xFF   // ........
+            }, 
 
-				if (m311(Arg0, Local7, Local2)) {
-					err(arg0, z036, __LINE__, 0, 0, Local5, arg2)
-				}
-			}
-			case (1) {
-				// Results in string
+            Buffer (0x08)
+            {
+                 0x00, 0x00, 0x00, 0x00, 0x81, 0x00, 0x00, 0x00   // ........
+            }, 
 
-				Concatenate(Local0, Local1, Local7)
+            Buffer (0x08)
+            {
+                 0x00, 0x00, 0x00, 0x00, 0xC6, 0x9A, 0x00, 0x00   // ........
+            }, 
 
-				if (LNotequal(ObjectType(Local7), 2)) {
-					err(arg0, z036, __LINE__, 0, 0, Local7, arg2)
-				} elseif (LNotequal(ObjectType(Local2), 2)) {
-					err(arg0, z036, __LINE__, 0, 0, Local2, arg2)
-				} elseif (LNotEqual(Local7, Local2)) {
-					err(arg0, z036, __LINE__, 0, 0, Local7, arg2)
-				}
-			}
-		}
+            Buffer (0x08)
+            {
+                 0x00, 0x00, 0x00, 0x00, 0x45, 0x23, 0x01, 0xAB   // ....E#..
+            }, 
 
-		Increment(Local5)
-		Decrement(Local3)
-	}
-}
+            Buffer (0x08)
+            {
+                 0x92, 0x00, 0x00, 0x00, 0x81, 0x00, 0x00, 0x00   // ........
+            }, 
 
-// Integers
-Method(m313,, Serialized)
-{
-	Name(ts, "m313")
+            Buffer (0x08)
+            {
+                 0x93, 0x00, 0x00, 0x00, 0x76, 0x84, 0x00, 0x00   // ....v...
+            }, 
 
-	Name(p000, Package()
-	{
-		0, 0,
-		0xffffffff, 0xffffffff,
-		0, 0xffffffff,
-		0, 0x81,
-		0, 0x9ac6,
-		0, 0xab012345,
-		0x92, 0x81,
-		0x93, 0x8476,
-		0xab, 0xdc816778,
-		0xac93, 0x8476,
-		0xf63b, 0x8c8fc2da,
-		0x8790f6a4, 0x98de45ba,
-	})
+            Buffer (0x08)
+            {
+                 0xAB, 0x00, 0x00, 0x00, 0x78, 0x67, 0x81, 0xDC   // ....xg..
+            }, 
 
-	Name(p001, Package()
-	{
-		Buffer() { 0, 0, 0, 0, 0, 0, 0, 0 },
-		Buffer() { 0xff, 0xff, 0xff, 0xff, 0xff, 0xff, 0xff, 0xff },
-		Buffer() { 0, 0, 0, 0, 0xff, 0xff, 0xff, 0xff },
-		Buffer() { 0, 0, 0, 0, 0x81, 0, 0, 0 },
-		Buffer() { 0, 0, 0, 0, 0xc6, 0x9a, 0, 0 },
-		Buffer() { 0, 0, 0, 0, 0x45, 0x23, 0x01, 0xab },
-		Buffer() { 0x92, 0, 0, 0, 0x81, 0, 0, 0 },
-		Buffer() { 0x93, 0, 0, 0, 0x76, 0x84, 0, 0 },
-		Buffer() { 0xab, 0, 0, 0, 0x78, 0x67, 0x81, 0xdc },
-		Buffer() { 0x93, 0xac, 0, 0, 0x76, 0x84, 0, 0 },
-		Buffer() { 0x3b, 0xf6, 0, 0, 0xda, 0xc2, 0x8f, 0x8c },
-		Buffer() { 0xa4, 0xf6, 0x90, 0x87, 0xba, 0x45, 0xde, 0x98 },
-	})
+            Buffer (0x08)
+            {
+                 0x93, 0xAC, 0x00, 0x00, 0x76, 0x84, 0x00, 0x00   // ....v...
+            }, 
 
-	Name(p002, Package()
-	{
-		Buffer() { 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 },
-		Buffer() { 0xff, 0xff, 0xff, 0xff, 0, 0, 0, 0, 0xff, 0xff, 0xff, 0xff, 0, 0, 0, 0 },
-		Buffer() { 0, 0, 0, 0, 0, 0, 0, 0, 0xff, 0xff, 0xff, 0xff, 0, 0, 0, 0 },
-		Buffer() { 0, 0, 0, 0, 0, 0, 0, 0, 0x81, 0, 0, 0, 0, 0, 0, 0 },
-		Buffer() { 0, 0, 0, 0, 0, 0, 0, 0, 0xc6, 0x9a, 0, 0, 0, 0, 0, 0 },
-		Buffer() { 0, 0, 0, 0, 0, 0, 0, 0, 0x45, 0x23, 0x01, 0xab, 0, 0, 0, 0 },
-		Buffer() { 0x92, 0, 0, 0, 0, 0, 0, 0, 0x81, 0, 0, 0, 0, 0, 0, 0 },
-		Buffer() { 0x93, 0, 0, 0, 0, 0, 0, 0, 0x76, 0x84, 0, 0, 0, 0, 0, 0 },
-		Buffer() { 0xab, 0, 0, 0, 0, 0, 0, 0, 0x78, 0x67, 0x81, 0xdc, 0, 0, 0, 0 },
-		Buffer() { 0x93, 0xac, 0, 0, 0, 0, 0, 0, 0x76, 0x84, 0, 0, 0, 0, 0, 0 },
-		Buffer() { 0x3b, 0xf6, 0, 0, 0, 0, 0, 0, 0xda, 0xc2, 0x8f, 0x8c, 0, 0, 0, 0 },
-		Buffer() { 0xa4, 0xf6, 0x90, 0x87, 0, 0, 0, 0, 0xba, 0x45, 0xde, 0x98, 0, 0, 0, 0 },
-	})
+            Buffer (0x08)
+            {
+                 0x3B, 0xF6, 0x00, 0x00, 0xDA, 0xC2, 0x8F, 0x8C   // ;.......
+            }, 
 
-	Name(p003, Package()
-	{
-		0xffffffffffffffff, 0xffffffffffffffff,
-		0x1234567890abcdef, 0x1122334455667788,
-	})
+            Buffer (0x08)
+            {
+                 0xA4, 0xF6, 0x90, 0x87, 0xBA, 0x45, 0xDE, 0x98   // .....E..
+            }
+        })
+        Name (P002, Package (0x0C)
+        {
+            Buffer (0x10)
+            {
+                /* 0000 */  0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00,  // ........
+                /* 0008 */  0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00   // ........
+            }, 
 
-	Name(p004, Package()
-	{
-		Buffer() { 0xff, 0xff, 0xff, 0xff, 0xff, 0xff, 0xff, 0xff,
-				0xff, 0xff, 0xff, 0xff, 0xff, 0xff, 0xff, 0xff },
-		Buffer() { 0xef, 0xcd, 0xab, 0x90, 0x78, 0x56, 0x34, 0x12,
-				0x88, 0x77, 0x66, 0x55, 0x44, 0x33, 0x22, 0x11 },
-	})
+            Buffer (0x10)
+            {
+                /* 0000 */  0xFF, 0xFF, 0xFF, 0xFF, 0x00, 0x00, 0x00, 0x00,  // ........
+                /* 0008 */  0xFF, 0xFF, 0xFF, 0xFF, 0x00, 0x00, 0x00, 0x00   // ........
+            }, 
 
+            Buffer (0x10)
+            {
+                /* 0000 */  0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00,  // ........
+                /* 0008 */  0xFF, 0xFF, 0xFF, 0xFF, 0x00, 0x00, 0x00, 0x00   // ........
+            }, 
 
-	if (LEqual(F64, 1)) {
-		m312(ts, 12, "p000", p000, p002, 0)
-		m312(ts, 2, "p003", p003, p004, 0)
-	} else {
-		m312(ts, 12, "p000", p000, p001, 0)
-	}
-}
+            Buffer (0x10)
+            {
+                /* 0000 */  0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00,  // ........
+                /* 0008 */  0x81, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00   // ........
+            }, 
 
-// Strings
-Method(m314,, Serialized)
-{
-	Name(ts, "m314")
+            Buffer (0x10)
+            {
+                /* 0000 */  0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00,  // ........
+                /* 0008 */  0xC6, 0x9A, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00   // ........
+            }, 
 
-	Name(p000, Package()
-	{
-		"qwertyuiop", "qwertyuiop",
-		"qwertyuiop", "qwertyuiop0",
-		"qwertyuiop", "qwertyuio",
+            Buffer (0x10)
+            {
+                /* 0000 */  0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00,  // ........
+                /* 0008 */  0x45, 0x23, 0x01, 0xAB, 0x00, 0x00, 0x00, 0x00   // E#......
+            }, 
 
-		"", "",
-		" ", "",
-		"", " ",
-		" ", " ",
-		"  ", " ",
-		" ", "  ",
+            Buffer (0x10)
+            {
+                /* 0000 */  0x92, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00,  // ........
+                /* 0008 */  0x81, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00   // ........
+            }, 
 
-		"a", "",
-		"", "a",
-		" a", "a",
-		"a", " a",
-		"a ", "a",
-		"a", "a ",
-		"a b", "ab",
-		"ab", "a b",
-		"a  b", "a b",
-		"a b", "a  b",
-		"abcDef", "abcdef",
+            Buffer (0x10)
+            {
+                /* 0000 */  0x93, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00,  // ........
+                /* 0008 */  0x76, 0x84, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00   // v.......
+            }, 
 
-		// 100 + 100
-		"0123456789012345678901234567890123456789012345678901234567890123456789012345678901234567890123456789",
-		"0123456789012345678901234567890123456789012345678901234567890123456789012345678901234567890123456789",
+            Buffer (0x10)
+            {
+                /* 0000 */  0xAB, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00,  // ........
+                /* 0008 */  0x78, 0x67, 0x81, 0xDC, 0x00, 0x00, 0x00, 0x00   // xg......
+            }, 
 
-		"0", "",
-	})
+            Buffer (0x10)
+            {
+                /* 0000 */  0x93, 0xAC, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00,  // ........
+                /* 0008 */  0x76, 0x84, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00   // v.......
+            }, 
 
-	Name(p001, Package()
-	{
-		"qwertyuiopqwertyuiop",
-		"qwertyuiopqwertyuiop0",
-		"qwertyuiopqwertyuio",
+            Buffer (0x10)
+            {
+                /* 0000 */  0x3B, 0xF6, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00,  // ;.......
+                /* 0008 */  0xDA, 0xC2, 0x8F, 0x8C, 0x00, 0x00, 0x00, 0x00   // ........
+            }, 
 
-		"",
-		" ",
-		" ",
-		"  ",
-		"   ",
-		"   ",
+            Buffer (0x10)
+            {
+                /* 0000 */  0xA4, 0xF6, 0x90, 0x87, 0x00, 0x00, 0x00, 0x00,  // ........
+                /* 0008 */  0xBA, 0x45, 0xDE, 0x98, 0x00, 0x00, 0x00, 0x00   // .E......
+            }
+        })
+        Name (P003, Package (0x04)
+        {
+            0xFFFFFFFFFFFFFFFF, 
+            0xFFFFFFFFFFFFFFFF, 
+            0x1234567890ABCDEF, 
+            0x1122334455667788
+        })
+        Name (P004, Package (0x02)
+        {
+            Buffer (0x10)
+            {
+                /* 0000 */  0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF,  // ........
+                /* 0008 */  0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF   // ........
+            }, 
 
-		"a",
-		"a",
-		" aa",
-		"a a",
-		"a a",
-		"aa ",
-		"a bab",
-		"aba b",
-		"a  ba b",
-		"a ba  b",
-		"abcDefabcdef",
-		"01234567890123456789012345678901234567890123456789012345678901234567890123456789012345678901234567890123456789012345678901234567890123456789012345678901234567890123456789012345678901234567890123456789",
-	})
+            ToUUID ("90abcdef-5678-1234-8877-665544332211")
+        })
+        If ((F64 == 0x01))
+        {
+            M312 (TS, 0x0C, "p000", P000, P002, 0x00)
+            M312 (TS, 0x02, "p003", P003, P004, 0x00)
+        }
+        Else
+        {
+            M312 (TS, 0x0C, "p000", P000, P001, 0x00)
+        }
+    }
 
-	m312(ts, 21, "p000", p000, p001, 1)
-}
+    /* Strings */
 
-// Buffers
-Method(m315,, Serialized)
-{
-	Name(ts, "m314")
+    Method (M314, 0, Serialized)
+    {
+        Name (TS, "m314")
+        Name (P000, Package (0x2C)
+        {
+            "qwertyuiop", 
+            "qwertyuiop", 
+            "qwertyuiop", 
+            "qwertyuiop0", 
+            "qwertyuiop", 
+            "qwertyuio", 
+            "", 
+            "", 
+            " ", 
+            "", 
+            "", 
+            " ", 
+            " ", 
+            " ", 
+            "  ", 
+            " ", 
+            " ", 
+            "  ", 
+            "a", 
+            "", 
+            "", 
+            "a", 
+            " a", 
+            "a", 
+            "a", 
+            " a", 
+            "a ", 
+            "a", 
+            "a", 
+            "a ", 
+            "a b", 
+            "ab", 
+            "ab", 
+            "a b", 
+            "a  b", 
+            "a b", 
+            "a b", 
+            "a  b", 
+            "abcDef", 
+            "abcdef", 
+            /* 100 + 100 */
 
-	Name(p000, Package()
-	{
-		Buffer(100){},
-		Buffer(101){},
-	})
+            "0123456789012345678901234567890123456789012345678901234567890123456789012345678901234567890123456789", 
+            "0123456789012345678901234567890123456789012345678901234567890123456789012345678901234567890123456789", 
+            "0", 
+            ""
+        })
+        Name (P001, Package (0x15)
+        {
+            "qwertyuiopqwertyuiop", 
+            "qwertyuiopqwertyuiop0", 
+            "qwertyuiopqwertyuio", 
+            "", 
+            " ", 
+            " ", 
+            "  ", 
+            "   ", 
+            "   ", 
+            "a", 
+            "a", 
+            " aa", 
+            "a a", 
+            "a a", 
+            "aa ", 
+            "a bab", 
+            "aba b", 
+            "a  ba b", 
+            "a ba  b", 
+            "abcDefabcdef", 
+            "01234567890123456789012345678901234567890123456789012345678901234567890123456789012345678901234567890123456789012345678901234567890123456789012345678901234567890123456789012345678901234567890123456789"
+        })
+        M312 (TS, 0x15, "p000", P000, P001, 0x01)
+    }
 
-	Name(p001, Package()
-	{
-		Buffer(201){},
-	})
+    /* Buffers */
 
-	Name(p002, Package()
-	{
-	Buffer() {1, 1,  2,  3,  4},
-	Buffer() {1,  2,  3,  4,  5,  6,  7,  8,
-		  1,  2,  3,  4,  5,  6,  7,  8,  9, 10, 11, 12, 13, 14, 15, 16,
-		 17, 18, 19, 20, 21, 22, 23, 24, 25, 26, 27, 28, 29, 30, 31, 32,
-		 33, 34, 35, 36, 37, 38, 39, 40, 41, 42, 43, 44, 45, 46, 47, 48,
-		 49, 50, 51, 52, 53, 54, 55, 56, 57, 58, 59, 60, 61, 62, 63, 64,
-		 65, 66, 67, 68, 69, 70, 71, 72, 73, 74, 75, 76, 77, 78, 79, 80,
-		 81, 82, 83, 84, 85, 86, 87, 88, 89, 90, 91, 92, 93, 94, 95, 96,
-		 97, 98, 99,100,101,102,103,104,105,106,107,108,109,110,111,112,
-		113,114,115,116,117,118,119,120,121,122,123,124,125,126,127,128},
-	Buffer() {
-		  1,  2,  3,  4,  5,  6,  7,  8,  9, 10, 11, 12, 13, 14, 15, 16,
-		 17, 18, 19, 20, 21, 22, 23, 24, 25, 26, 27, 28, 29, 30, 31, 32,
-		 33, 34, 35, 36, 37, 38, 39, 40, 41, 42, 43, 44, 45, 46, 47, 48,
-		 49, 50, 51, 52, 53, 54, 55, 56, 57, 58, 59, 60, 61, 62, 63, 64,
-		 65, 66, 67, 68, 69, 70, 71, 72, 73, 74, 75, 76, 77, 78, 79, 80,
-		 81, 82, 83, 84, 85, 86, 87, 88, 89, 90, 91, 92, 93, 94, 95, 96,
-		 97, 98, 99,100,101,102,103,104,105,106,107,108,109,110,111,112,
-		113,114,115,116,117,118,119,120,121,122,123,124,125,126,127,128,
-		129,130,131,132,133,134,135,136,137,138,139,140,141,142,143,144,
-		145,146,147,148,149,150,151,152,153,154,155,156,157,158,159,160,
-		161,162,163,164,165,166,167,168,169,170,171,172,173,174,175,176,
-		177,178,179,180,181,182,183,184,185,186,187,188,189,190,191,192,
-		193,194,195,196,197,198,199,200,
-		  1,  2,  3,  4,  5,  6,  7,  8,  9, 10, 11, 12, 13, 14, 15, 16,
-		 17, 18, 19, 20, 21, 22, 23, 24, 25, 26, 27, 28, 29, 30, 31, 32,
-		 33, 34, 35, 36, 37, 38, 39, 40, 41, 42, 43, 44, 45, 46, 47, 48,
-		 49, 50, 51, 52, 53, 54, 55, 56, 57, 58, 59, 60, 61, 62, 63, 64,
-		 65, 66, 67, 68, 69, 70, 71, 72, 73, 74, 75, 76, 77, 78, 79, 80,
-		 81, 82, 83, 84, 85, 86, 87, 88, 89, 90, 91, 92, 93, 94, 95, 96,
-		 97, 98, 99,100,101,102,103,104,105,106,107,108,109,110,111,112,
-		113,114,115,116,117,118,119,120,121,122,123,124,125,126,127,128,
-		129,130,131,132,133,134,135,136,137,138,139,140,141,142,143,144,
-		145,146,147,148,149,150,151,152,153,154,155,156,157,158,159,160,
-		161,162,163,164,165,166,167,168,169,170,171,172,173,174,175,176,
-		177,178,179,180,181,182,183,184,185,186,187,188,189,190,191,192,
-		193,194,195,196,197,198,199,200,201,202,203,204,205,206,207,208,
-		209,210,211,212,213,214,215,216,217,218,219,220,221,222,223,224,
-		225,226,227,228,229,230,231,232,233,234,235,236,237,238,239,240,
-		241,242,243,244,245,246,247,248,249,250,251,252,253,254,255, 0, 1},
-	})
+    Method (M315, 0, Serialized)
+    {
+        Name (TS, "m314")
+        Name (P000, Package (0x02)
+        {
+            Buffer (0x64){}, 
+            Buffer (0x65){}
+        })
+        Name (P001, Package (0x01)
+        {
+            Buffer (0xC9){}
+        })
+        Name (P002, Package (0x03)
+        {
+            Buffer (0x05)
+            {
+                 0x01, 0x01, 0x02, 0x03, 0x04                     // .....
+            }, 
 
-	m312(ts, 1, "p000", p000, p001, 0)
-	m312(ts, 3, "p325", p325, p002, 0)
-}
+            Buffer (0x88)
+            {
+                /* 0000 */  0x01, 0x02, 0x03, 0x04, 0x05, 0x06, 0x07, 0x08,  // ........
+                /* 0008 */  0x01, 0x02, 0x03, 0x04, 0x05, 0x06, 0x07, 0x08,  // ........
+                /* 0010 */  0x09, 0x0A, 0x0B, 0x0C, 0x0D, 0x0E, 0x0F, 0x10,  // ........
+                /* 0018 */  0x11, 0x12, 0x13, 0x14, 0x15, 0x16, 0x17, 0x18,  // ........
+                /* 0020 */  0x19, 0x1A, 0x1B, 0x1C, 0x1D, 0x1E, 0x1F, 0x20,  // ....... 
+                /* 0028 */  0x21, 0x22, 0x23, 0x24, 0x25, 0x26, 0x27, 0x28,  // !"#$%&'(
+                /* 0030 */  0x29, 0x2A, 0x2B, 0x2C, 0x2D, 0x2E, 0x2F, 0x30,  // )*+,-./0
+                /* 0038 */  0x31, 0x32, 0x33, 0x34, 0x35, 0x36, 0x37, 0x38,  // 12345678
+                /* 0040 */  0x39, 0x3A, 0x3B, 0x3C, 0x3D, 0x3E, 0x3F, 0x40,  // 9:;<=>?@
+                /* 0048 */  0x41, 0x42, 0x43, 0x44, 0x45, 0x46, 0x47, 0x48,  // ABCDEFGH
+                /* 0050 */  0x49, 0x4A, 0x4B, 0x4C, 0x4D, 0x4E, 0x4F, 0x50,  // IJKLMNOP
+                /* 0058 */  0x51, 0x52, 0x53, 0x54, 0x55, 0x56, 0x57, 0x58,  // QRSTUVWX
+                /* 0060 */  0x59, 0x5A, 0x5B, 0x5C, 0x5D, 0x5E, 0x5F, 0x60,  // YZ[\]^_`
+                /* 0068 */  0x61, 0x62, 0x63, 0x64, 0x65, 0x66, 0x67, 0x68,  // abcdefgh
+                /* 0070 */  0x69, 0x6A, 0x6B, 0x6C, 0x6D, 0x6E, 0x6F, 0x70,  // ijklmnop
+                /* 0078 */  0x71, 0x72, 0x73, 0x74, 0x75, 0x76, 0x77, 0x78,  // qrstuvwx
+                /* 0080 */  0x79, 0x7A, 0x7B, 0x7C, 0x7D, 0x7E, 0x7F, 0x80   // yz{|}~..
+            }, 
 
-// Run-method
-Method(CCT0)
-{
-	Store("TEST: CCT0, Concatenate two strings, integers or buffers", Debug)
+            Buffer (0x01C9)
+            {
+                /* 0000 */  0x01, 0x02, 0x03, 0x04, 0x05, 0x06, 0x07, 0x08,  // ........
+                /* 0008 */  0x09, 0x0A, 0x0B, 0x0C, 0x0D, 0x0E, 0x0F, 0x10,  // ........
+                /* 0010 */  0x11, 0x12, 0x13, 0x14, 0x15, 0x16, 0x17, 0x18,  // ........
+                /* 0018 */  0x19, 0x1A, 0x1B, 0x1C, 0x1D, 0x1E, 0x1F, 0x20,  // ....... 
+                /* 0020 */  0x21, 0x22, 0x23, 0x24, 0x25, 0x26, 0x27, 0x28,  // !"#$%&'(
+                /* 0028 */  0x29, 0x2A, 0x2B, 0x2C, 0x2D, 0x2E, 0x2F, 0x30,  // )*+,-./0
+                /* 0030 */  0x31, 0x32, 0x33, 0x34, 0x35, 0x36, 0x37, 0x38,  // 12345678
+                /* 0038 */  0x39, 0x3A, 0x3B, 0x3C, 0x3D, 0x3E, 0x3F, 0x40,  // 9:;<=>?@
+                /* 0040 */  0x41, 0x42, 0x43, 0x44, 0x45, 0x46, 0x47, 0x48,  // ABCDEFGH
+                /* 0048 */  0x49, 0x4A, 0x4B, 0x4C, 0x4D, 0x4E, 0x4F, 0x50,  // IJKLMNOP
+                /* 0050 */  0x51, 0x52, 0x53, 0x54, 0x55, 0x56, 0x57, 0x58,  // QRSTUVWX
+                /* 0058 */  0x59, 0x5A, 0x5B, 0x5C, 0x5D, 0x5E, 0x5F, 0x60,  // YZ[\]^_`
+                /* 0060 */  0x61, 0x62, 0x63, 0x64, 0x65, 0x66, 0x67, 0x68,  // abcdefgh
+                /* 0068 */  0x69, 0x6A, 0x6B, 0x6C, 0x6D, 0x6E, 0x6F, 0x70,  // ijklmnop
+                /* 0070 */  0x71, 0x72, 0x73, 0x74, 0x75, 0x76, 0x77, 0x78,  // qrstuvwx
+                /* 0078 */  0x79, 0x7A, 0x7B, 0x7C, 0x7D, 0x7E, 0x7F, 0x80,  // yz{|}~..
+                /* 0080 */  0x81, 0x82, 0x83, 0x84, 0x85, 0x86, 0x87, 0x88,  // ........
+                /* 0088 */  0x89, 0x8A, 0x8B, 0x8C, 0x8D, 0x8E, 0x8F, 0x90,  // ........
+                /* 0090 */  0x91, 0x92, 0x93, 0x94, 0x95, 0x96, 0x97, 0x98,  // ........
+                /* 0098 */  0x99, 0x9A, 0x9B, 0x9C, 0x9D, 0x9E, 0x9F, 0xA0,  // ........
+                /* 00A0 */  0xA1, 0xA2, 0xA3, 0xA4, 0xA5, 0xA6, 0xA7, 0xA8,  // ........
+                /* 00A8 */  0xA9, 0xAA, 0xAB, 0xAC, 0xAD, 0xAE, 0xAF, 0xB0,  // ........
+                /* 00B0 */  0xB1, 0xB2, 0xB3, 0xB4, 0xB5, 0xB6, 0xB7, 0xB8,  // ........
+                /* 00B8 */  0xB9, 0xBA, 0xBB, 0xBC, 0xBD, 0xBE, 0xBF, 0xC0,  // ........
+                /* 00C0 */  0xC1, 0xC2, 0xC3, 0xC4, 0xC5, 0xC6, 0xC7, 0xC8,  // ........
+                /* 00C8 */  0x01, 0x02, 0x03, 0x04, 0x05, 0x06, 0x07, 0x08,  // ........
+                /* 00D0 */  0x09, 0x0A, 0x0B, 0x0C, 0x0D, 0x0E, 0x0F, 0x10,  // ........
+                /* 00D8 */  0x11, 0x12, 0x13, 0x14, 0x15, 0x16, 0x17, 0x18,  // ........
+                /* 00E0 */  0x19, 0x1A, 0x1B, 0x1C, 0x1D, 0x1E, 0x1F, 0x20,  // ....... 
+                /* 00E8 */  0x21, 0x22, 0x23, 0x24, 0x25, 0x26, 0x27, 0x28,  // !"#$%&'(
+                /* 00F0 */  0x29, 0x2A, 0x2B, 0x2C, 0x2D, 0x2E, 0x2F, 0x30,  // )*+,-./0
+                /* 00F8 */  0x31, 0x32, 0x33, 0x34, 0x35, 0x36, 0x37, 0x38,  // 12345678
+                /* 0100 */  0x39, 0x3A, 0x3B, 0x3C, 0x3D, 0x3E, 0x3F, 0x40,  // 9:;<=>?@
+                /* 0108 */  0x41, 0x42, 0x43, 0x44, 0x45, 0x46, 0x47, 0x48,  // ABCDEFGH
+                /* 0110 */  0x49, 0x4A, 0x4B, 0x4C, 0x4D, 0x4E, 0x4F, 0x50,  // IJKLMNOP
+                /* 0118 */  0x51, 0x52, 0x53, 0x54, 0x55, 0x56, 0x57, 0x58,  // QRSTUVWX
+                /* 0120 */  0x59, 0x5A, 0x5B, 0x5C, 0x5D, 0x5E, 0x5F, 0x60,  // YZ[\]^_`
+                /* 0128 */  0x61, 0x62, 0x63, 0x64, 0x65, 0x66, 0x67, 0x68,  // abcdefgh
+                /* 0130 */  0x69, 0x6A, 0x6B, 0x6C, 0x6D, 0x6E, 0x6F, 0x70,  // ijklmnop
+                /* 0138 */  0x71, 0x72, 0x73, 0x74, 0x75, 0x76, 0x77, 0x78,  // qrstuvwx
+                /* 0140 */  0x79, 0x7A, 0x7B, 0x7C, 0x7D, 0x7E, 0x7F, 0x80,  // yz{|}~..
+                /* 0148 */  0x81, 0x82, 0x83, 0x84, 0x85, 0x86, 0x87, 0x88,  // ........
+                /* 0150 */  0x89, 0x8A, 0x8B, 0x8C, 0x8D, 0x8E, 0x8F, 0x90,  // ........
+                /* 0158 */  0x91, 0x92, 0x93, 0x94, 0x95, 0x96, 0x97, 0x98,  // ........
+                /* 0160 */  0x99, 0x9A, 0x9B, 0x9C, 0x9D, 0x9E, 0x9F, 0xA0,  // ........
+                /* 0168 */  0xA1, 0xA2, 0xA3, 0xA4, 0xA5, 0xA6, 0xA7, 0xA8,  // ........
+                /* 0170 */  0xA9, 0xAA, 0xAB, 0xAC, 0xAD, 0xAE, 0xAF, 0xB0,  // ........
+                /* 0178 */  0xB1, 0xB2, 0xB3, 0xB4, 0xB5, 0xB6, 0xB7, 0xB8,  // ........
+                /* 0180 */  0xB9, 0xBA, 0xBB, 0xBC, 0xBD, 0xBE, 0xBF, 0xC0,  // ........
+                /* 0188 */  0xC1, 0xC2, 0xC3, 0xC4, 0xC5, 0xC6, 0xC7, 0xC8,  // ........
+                /* 0190 */  0xC9, 0xCA, 0xCB, 0xCC, 0xCD, 0xCE, 0xCF, 0xD0,  // ........
+                /* 0198 */  0xD1, 0xD2, 0xD3, 0xD4, 0xD5, 0xD6, 0xD7, 0xD8,  // ........
+                /* 01A0 */  0xD9, 0xDA, 0xDB, 0xDC, 0xDD, 0xDE, 0xDF, 0xE0,  // ........
+                /* 01A8 */  0xE1, 0xE2, 0xE3, 0xE4, 0xE5, 0xE6, 0xE7, 0xE8,  // ........
+                /* 01B0 */  0xE9, 0xEA, 0xEB, 0xEC, 0xED, 0xEE, 0xEF, 0xF0,  // ........
+                /* 01B8 */  0xF1, 0xF2, 0xF3, 0xF4, 0xF5, 0xF6, 0xF7, 0xF8,  // ........
+                /* 01C0 */  0xF9, 0xFA, 0xFB, 0xFC, 0xFD, 0xFE, 0xFF, 0x00,  // ........
+                /* 01C8 */  0x01                                             // .
+            }
+        })
+        M312 (TS, 0x01, "p000", P000, P001, 0x00)
+        M312 (TS, 0x03, "p325", P325, P002, 0x00)
+    }
 
-	m313()
-	m314()
-	m315()
-}
+    /* Run-method */
 
+    Method (CCT0, 0, NotSerialized)
+    {
+        Debug = "TEST: CCT0, Concatenate two strings, integers or buffers"
+        M313 ()
+        M314 ()
+        M315 ()
+    }
 

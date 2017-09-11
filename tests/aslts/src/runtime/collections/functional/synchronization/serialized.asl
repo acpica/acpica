@@ -1,1321 +1,2730 @@
-/*
- * Some or all of this work - Copyright (c) 2006 - 2017, Intel Corp.
- * All rights reserved.
- *
- * Redistribution and use in source and binary forms, with or without modification,
- * are permitted provided that the following conditions are met:
- *
- * Redistributions of source code must retain the above copyright notice,
- * this list of conditions and the following disclaimer.
- * Redistributions in binary form must reproduce the above copyright notice,
- * this list of conditions and the following disclaimer in the documentation
- * and/or other materials provided with the distribution.
- * Neither the name of Intel Corporation nor the names of its contributors
- * may be used to endorse or promote products derived from this software
- * without specific prior written permission.
- *
- * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS"
- * AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE
- * IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE
- * ARE DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT OWNER OR CONTRIBUTORS BE
- * LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL
- * DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES;
- * LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY
- * THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING
- * NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE,
- * EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
- */
-
-/*
- * Check for serialized methods
- */
-
-Name(z173, 173)
-
-/*
- * Proper sequence of calls to Serialized methods with different levels, 0-15, all Serialized
- */
-Method(m3b0, 0, Serialized, 0)
-{
-	Name(ts, "m3b0")
-	Name(i000, 0)
-
-	Method(m000, 0, Serialized,  0) { Increment(i000) m001() }
-	Method(m001, 0, Serialized,  1) { Increment(i000) m002() }
-	Method(m002, 0, Serialized,  2) { Increment(i000) m003() }
-	Method(m003, 0, Serialized,  3) { Increment(i000) m004() }
-	Method(m004, 0, Serialized,  4) { Increment(i000) m005() }
-	Method(m005, 0, Serialized,  5) { Increment(i000) m006() }
-	Method(m006, 0, Serialized,  6) { Increment(i000) m007() }
-	Method(m007, 0, Serialized,  7) { Increment(i000) m008() }
-	Method(m008, 0, Serialized,  8) { Increment(i000) m009() }
-	Method(m009, 0, Serialized,  9) { Increment(i000) m010() }
-	Method(m010, 0, Serialized, 10) { Increment(i000) m011() }
-	Method(m011, 0, Serialized, 11) { Increment(i000) m012() }
-	Method(m012, 0, Serialized, 12) { Increment(i000) m013() }
-	Method(m013, 0, Serialized, 13) { Increment(i000) m014() }
-	Method(m014, 0, Serialized, 14) { Increment(i000) m015() }
-	Method(m015, 0, Serialized, 15) { Increment(i000) m016() }
-	Method(m016, 0, Serialized, 15) {
-		Increment(i000)
-		Store("m016", Debug)
-		if (LNotEqual(i000, 17)) {
-			err(ts, z173, __LINE__, 0, 0, i000, 17)
-		}
-	}
-
-	CH03(ts, z173, 0x001, __LINE__, 0)
-	m000()
-	CH03(ts, z173, 0x002, __LINE__, 0)
-}
-
-/*
- * Proper sequence of calls to Serialized methods with different levels, 0-15,
- * alternating Serialized and not-Serialized
- */
-Method(m3b1,, Serialized)
-{
-	Name(ts, "m3b1")
-	Name(i000, 0)
-
-	Method(m000, 0, Serialized,  0) { Increment(i000) m001() }
-	Method(m001                   ) { Increment(i000) m002() }
-	Method(m002, 0, Serialized,  2) { Increment(i000) m003() }
-	Method(m003                   ) { Increment(i000) m004() }
-	Method(m004                   ) { Increment(i000) m005() }
-	Method(m005, 0, Serialized,  5) { Increment(i000) m006() }
-	Method(m006, 0, Serialized,  6) { Increment(i000) m007() }
-	Method(m007                   ) { Increment(i000) m008() }
-	Method(m008, 0, Serialized,  8) { Increment(i000) m009() }
-	Method(m009, 0, Serialized,  9) { Increment(i000) m010() }
-	Method(m010                   ) { Increment(i000) m011() }
-	Method(m011                   ) { Increment(i000) m012() }
-	Method(m012, 0, Serialized, 12) { Increment(i000) m013() }
-	Method(m013, 0, Serialized, 13) { Increment(i000) m014() }
-	Method(m014, 0, Serialized, 14) { Increment(i000) m015() }
-	Method(m015                   ) { Increment(i000) m016() }
-	Method(m016, 0, Serialized, 15) {
-		Increment(i000)
-		Store("m016", Debug)
-		if (LNotEqual(i000, 17)) {
-			err(ts, z173, __LINE__, 0, 0, i000, 17)
-		}
-	}
-
-	CH03(ts, z173, 0x004, __LINE__, 0)
-	m000()
-	CH03(ts, z173, 0x005, __LINE__, 0)
-}
-
-/*
- * Proper sequence of calls to Serialized methods with different levels, 0-15, all Serialized,
- * 1-3 on each level
- */
-Method(m3b2, 0, Serialized, 0)
-{
-	Name(ts, "m3b2")
-	Name(i000, 0)
-	Name(i001, 0)
-
-	Method(m000, 0, Serialized,   0) { Increment(i000) m100() }
-	Method(m100, 0, Serialized,   0) { Increment(i000) m001() }
-
-	Method(m001, 0, Serialized,   1) { Increment(i000) m002() }
-
-	Method(m002, 0, Serialized,   2) { Increment(i000) m102() }
-	Method(m102, 0, Serialized,   2) { Increment(i000) m003() }
-
-	Method(m003, 0, Serialized,   3) { Increment(i000) m004() }
-
-	Method(m004, 0, Serialized,   4) { Increment(i000) m104() }
-	Method(m104, 0, Serialized,   4) { Increment(i000) m005() }
-
-	Method(m005, 0, Serialized,   5) { Increment(i000) m006() }
-
-	Method(m006, 0, Serialized,   6) { Increment(i000) m106() }
-	Method(m106, 0, Serialized,   6) { Increment(i000) m007() }
-
-	Method(m007, 0, Serialized,   7) { Increment(i000) m107() }
-	Method(m107, 0, Serialized,   7) { Increment(i000) m008() }
-
-	Method(m008, 0, Serialized,   8) { Increment(i000) m108() }
-	Method(m108, 0, Serialized,   8) { Increment(i000) m009() }
-
-	Method(m009, 0, Serialized,   9) { Increment(i000) m109() }
-	Method(m109, 0, Serialized,   9) { Increment(i000) m209() }
-	Method(m209, 0, Serialized,   9) { Increment(i000) m010() }
-
-	Method(m010, 0, Serialized,  10) { Increment(i000) m110() }
-	Method(m110, 0, Serialized,  10) { Increment(i000) m011() }
-
-	Method(m011, 0, Serialized,  11) { Increment(i000) m111() }
-	Method(m111, 0, Serialized,  11) { Increment(i000) m012() }
-
-	Method(m012, 0, Serialized,  12) { Increment(i000) m112() }
-	Method(m112, 0, Serialized,  12) { Increment(i000) m013() }
-
-	Method(m013, 0, Serialized,  13) { Increment(i000) m014() }
-
-	Method(m014, 0, Serialized,  14) { Increment(i000) m015() }
-
-	Method(m015, 0, Serialized,  15) { Increment(i000) m115() }
-	Method(m115, 0, Serialized, 15) {
-		Increment(i000)
-		Store("m016", Debug)
-		if (LNotEqual(i000, 28)) {
-			err(ts, z173, __LINE__, 0, 0, i000, 28)
-		}
-		Store(0xabcd0000, i001)
-	}
-
-	CH03(ts, z173, 0x007, __LINE__, 0)
-	m000()
-
-	if (LNotEqual(i001, 0xabcd0000)) {
-		err(ts, z173, __LINE__, 0, 0, i001, 0xabcd0000)
-	}
-	CH03(ts, z173, 0x009, __LINE__, 0)
-}
-
-/*
- * Check pairs of calls to Serialized methods,
- * the second method is invoked from the first method.
- *
- * All the 256 combinations are verified (16*16):
- * - the level of the first  method in pair changes in range from 0 up to 15
- * - the level of the second method in pair changes in range from 0 up to 15
- *
- * So all the checkings are provided:
- *
- * -   proper sequence of levels (from i-th level to all possible correct levels)
- * -   proper sequence of levels (from i-th level to i-th level (in particular))
- * - improper sequence of levels (from i-th level to all possible incorrect levels)
- *
- * arg0 - level of first call
- * arg1 - level of second call
- * arg2 - how many calls to do
- */
-Method(m3b3, 3, Serialized)
-{
-	Name(ts, "m3b3")
-
-	Name(i000, 0)
-	Name(i001, 0)
-	Name(i002, 0)
-	Name(i003, 0xabcd0003)
-	Name(i004, 0xabcd0004)
-	Name(i005, 0)
-
-	Method(m000,1,Serialized, 0) {if (arg0) {Store( 0,i004)} else {Store( 0,i003)} mm00(1,i000,i001)}
-	Method(m001,1,Serialized, 1) {if (arg0) {Store( 1,i004)} else {Store( 1,i003)} mm00(1,i000,i001)}
-	Method(m002,1,Serialized, 2) {if (arg0) {Store( 2,i004)} else {Store( 2,i003)} mm00(1,i000,i001)}
-	Method(m003,1,Serialized, 3) {if (arg0) {Store( 3,i004)} else {Store( 3,i003)} mm00(1,i000,i001)}
-	Method(m004,1,Serialized, 4) {if (arg0) {Store( 4,i004)} else {Store( 4,i003)} mm00(1,i000,i001)}
-	Method(m005,1,Serialized, 5) {if (arg0) {Store( 5,i004)} else {Store( 5,i003)} mm00(1,i000,i001)}
-	Method(m006,1,Serialized, 6) {if (arg0) {Store( 6,i004)} else {Store( 6,i003)} mm00(1,i000,i001)}
-	Method(m007,1,Serialized, 7) {if (arg0) {Store( 7,i004)} else {Store( 7,i003)} mm00(1,i000,i001)}
-	Method(m008,1,Serialized, 8) {if (arg0) {Store( 8,i004)} else {Store( 8,i003)} mm00(1,i000,i001)}
-	Method(m009,1,Serialized, 9) {if (arg0) {Store( 9,i004)} else {Store( 9,i003)} mm00(1,i000,i001)}
-	Method(m010,1,Serialized,10) {if (arg0) {Store(10,i004)} else {Store(10,i003)} mm00(1,i000,i001)}
-	Method(m011,1,Serialized,11) {if (arg0) {Store(11,i004)} else {Store(11,i003)} mm00(1,i000,i001)}
-	Method(m012,1,Serialized,12) {if (arg0) {Store(12,i004)} else {Store(12,i003)} mm00(1,i000,i001)}
-	Method(m013,1,Serialized,13) {if (arg0) {Store(13,i004)} else {Store(13,i003)} mm00(1,i000,i001)}
-	Method(m014,1,Serialized,14) {if (arg0) {Store(14,i004)} else {Store(14,i003)} mm00(1,i000,i001)}
-	Method(m015,1,Serialized,15) {if (arg0) {Store(15,i004)} else {Store(15,i003)} mm00(1,i000,i001)}
-
-
-	Method(mm00, 3, Serialized)
-	{
-		Name(iii0, 0)
-		Name(iii1, 0)
-		Name(iii2, 0)
-		Name(iii3, 0)
-
-		Store(i002, Local0)
-		Increment(i002)
-
-		if (LGreater(i002, i005)) {
-			Return
-		}
-
-		if (arg0) {
-			Store(arg2, Local1)
-		} else {
-			Store(arg1, Local1)
-		}
-
-		Switch (ToInteger (Local1)) {
-			Case (0) {
-				m000(Local0)
-			}
-			Case (1) {
-				m001(Local0)
-			}
-			Case (2) {
-				m002(Local0)
-			}
-			Case (3) {
-				m003(Local0)
-			}
-			Case (4) {
-				m004(Local0)
-			}
-			Case (5) {
-				m005(Local0)
-			}
-			Case (6) {
-				m006(Local0)
-			}
-			Case (7) {
-				m007(Local0)
-			}
-			Case (8) {
-				m008(Local0)
-			}
-			Case (9) {
-				m009(Local0)
-			}
-			Case (10) {
-				m010(Local0)
-			}
-			Case (11) {
-				m011(Local0)
-			}
-			Case (12) {
-				m012(Local0)
-			}
-			Case (13) {
-				m013(Local0)
-			}
-			Case (14) {
-				m014(Local0)
-			}
-			Case (15) {
-				m015(Local0)
-			}
-		}
-	}
-
-	CH03(ts, z173, 0x00a, __LINE__, 0)
-
-	Store(arg0, i000)
-	Store(arg1, i001)
-	Store(arg2, i005)
-
-	mm00(0, i000, i001)
-
-	if (LGreater(arg0, arg1)) {
-		CH04(ts, 0, 64, z173, __LINE__, 0, 0) // AE_AML_MUTEX_ORDER
-	} else {
-		if (LNotEqual(i003, arg0)) {
-			err(ts, z173, __LINE__, 0, 0, i003, arg0)
-		}
-		if (LNotEqual(i004, arg1)) {
-			err(ts, z173, __LINE__, 0, 0, i004, arg1)
-		}
-	}
-
-	CH03(ts, z173, 0x00e, __LINE__, 0)
-}
-
-Method(m3b4,, Serialized)
-{
-	Name(ts, "m3b4")
-
-	Name(lpN0, 0)
-	Name(lpC0, 0)
-	Name(lpN1, 0)
-	Name(lpC1, 0)
-
-	Store(16, lpN0)
-	Store(0, lpC0)
-
-	While (lpN0) {
-		Store(16, lpN1)
-		Store(0, lpC1)
-		While (lpN1) {
-
-			m3b3(lpC0, lpC1, 2)
-
-			Decrement(lpN1)
-			Increment(lpC1)
-		}
-		Decrement(lpN0)
-		Increment(lpC0)
-	}
-}
-
-/*
- * The same as m3b3 but without Switch
- *
- * arg0 - level of first call
- * arg1 - level of second call
- */
-Method(m3b5, 2, Serialized)
-{
-	Name(ts, "m3b5")
-
-	Name(i000, 0)
-	Name(i001, 0)
-	Name(i002, 0)
-	Name(i003, 0xabcd0003)
-	Name(i004, 0xabcd0004)
-
-	Method(m000,1,Serialized, 0) {if (arg0) {Store( 0,i004)} else {Store( 0,i003)} mm00(1,i000,i001)}
-	Method(m001,1,Serialized, 1) {if (arg0) {Store( 1,i004)} else {Store( 1,i003)} mm00(1,i000,i001)}
-	Method(m002,1,Serialized, 2) {if (arg0) {Store( 2,i004)} else {Store( 2,i003)} mm00(1,i000,i001)}
-	Method(m003,1,Serialized, 3) {if (arg0) {Store( 3,i004)} else {Store( 3,i003)} mm00(1,i000,i001)}
-	Method(m004,1,Serialized, 4) {if (arg0) {Store( 4,i004)} else {Store( 4,i003)} mm00(1,i000,i001)}
-	Method(m005,1,Serialized, 5) {if (arg0) {Store( 5,i004)} else {Store( 5,i003)} mm00(1,i000,i001)}
-	Method(m006,1,Serialized, 6) {if (arg0) {Store( 6,i004)} else {Store( 6,i003)} mm00(1,i000,i001)}
-	Method(m007,1,Serialized, 7) {if (arg0) {Store( 7,i004)} else {Store( 7,i003)} mm00(1,i000,i001)}
-	Method(m008,1,Serialized, 8) {if (arg0) {Store( 8,i004)} else {Store( 8,i003)} mm00(1,i000,i001)}
-	Method(m009,1,Serialized, 9) {if (arg0) {Store( 9,i004)} else {Store( 9,i003)} mm00(1,i000,i001)}
-	Method(m010,1,Serialized,10) {if (arg0) {Store(10,i004)} else {Store(10,i003)} mm00(1,i000,i001)}
-	Method(m011,1,Serialized,11) {if (arg0) {Store(11,i004)} else {Store(11,i003)} mm00(1,i000,i001)}
-	Method(m012,1,Serialized,12) {if (arg0) {Store(12,i004)} else {Store(12,i003)} mm00(1,i000,i001)}
-	Method(m013,1,Serialized,13) {if (arg0) {Store(13,i004)} else {Store(13,i003)} mm00(1,i000,i001)}
-	Method(m014,1,Serialized,14) {if (arg0) {Store(14,i004)} else {Store(14,i003)} mm00(1,i000,i001)}
-	Method(m015,1,Serialized,15) {if (arg0) {Store(15,i004)} else {Store(15,i003)} mm00(1,i000,i001)}
-
-
-	Method(mm00, 3)
-	{
-		Store(i002, Local0)
-		Increment(i002)
-
-		if (LGreater(i002, 2)) {
-			Return
-		}
-
-		if (arg0) {
-			Store(arg2, Local1)
-		} else {
-			Store(arg1, Local1)
-		}
-
-		if (LEqual(Local1, 0)) {
-			m000(Local0)
-		} elseif (LEqual(Local1, 1)) {
-			m001(Local0)
-		} elseif (LEqual(Local1, 2)) {
-			m002(Local0)
-		} elseif (LEqual(Local1, 3)) {
-			m003(Local0)
-		} elseif (LEqual(Local1, 4)) {
-			m004(Local0)
-		} elseif (LEqual(Local1, 5)) {
-			m005(Local0)
-		} elseif (LEqual(Local1, 6)) {
-			m006(Local0)
-		} elseif (LEqual(Local1, 7)) {
-			m007(Local0)
-		} elseif (LEqual(Local1, 8)) {
-			m008(Local0)
-		} elseif (LEqual(Local1, 9)) {
-			m009(Local0)
-		} elseif (LEqual(Local1, 10)) {
-			m010(Local0)
-		} elseif (LEqual(Local1, 11)) {
-			m011(Local0)
-		} elseif (LEqual(Local1, 12)) {
-			m012(Local0)
-		} elseif (LEqual(Local1, 13)) {
-			m013(Local0)
-		} elseif (LEqual(Local1, 14)) {
-			m014(Local0)
-		} elseif (LEqual(Local1, 15)) {
-			m015(Local0)
-		}
-	}
-
-	CH03(ts, z173, 0x00f, __LINE__, 0)
-
-	Store(arg0, i000)
-	Store(arg1, i001)
-
-	mm00(0, i000, i001)
-
-	if (LGreater(arg0, arg1)) {
-		CH04(ts, 0, 64, z173, __LINE__, 0, 0) // AE_AML_MUTEX_ORDER
-	} else {
-		if (LNotEqual(i003, arg0)) {
-			err(ts, z173, __LINE__, 0, 0, i003, arg0)
-		}
-		if (LNotEqual(i004, arg1)) {
-			err(ts, z173, __LINE__, 0, 0, i004, arg1)
-		}
-	}
-
-	CH03(ts, z173, 0x013, __LINE__, 0)
-}
-
-Method(m3b6,, Serialized)
-{
-	Name(ts, "m3b6")
-
-	Name(lpN0, 0)
-	Name(lpC0, 0)
-	Name(lpN1, 0)
-	Name(lpC1, 0)
-
-	Store(16, lpN0)
-	Store(0, lpC0)
-
-	While (lpN0) {
-		Store(16, lpN1)
-		Store(0, lpC1)
-		While (lpN1) {
-
-			m3b5(lpC0, lpC1)
-
-			Decrement(lpN1)
-			Increment(lpC1)
-		}
-		Decrement(lpN0)
-		Increment(lpC0)
-	}
-}
-
-/*
- * The same as m3b5 but
- * between two Serialized calls non-Serialized calls are performed
- *
- * arg0 - level of first call
- * arg1 - level of second call
- * arg2 - how many calls to do
- */
-Method(m3b7, 3, Serialized)
-{
-	Name(ts, "m3b5")
-
-	Name(i000, 0)
-	Name(i001, 0)
-	Name(i002, 0)
-	Name(i003, 0xabcd0003)
-	Name(i004, 0xabcd0004)
-	Name(i005, 0)
-
-	Method(m000,1,Serialized, 0) {if (arg0) {Store( 0,i004)} else {Store( 0,i003)} mm00(1,i000,i001)}
-	Method(m001,1,Serialized, 1) {if (arg0) {Store( 1,i004)} else {Store( 1,i003)} mm00(1,i000,i001)}
-	Method(m002,1,Serialized, 2) {if (arg0) {Store( 2,i004)} else {Store( 2,i003)} mm00(1,i000,i001)}
-	Method(m003,1,Serialized, 3) {if (arg0) {Store( 3,i004)} else {Store( 3,i003)} mm00(1,i000,i001)}
-	Method(m004,1,Serialized, 4) {if (arg0) {Store( 4,i004)} else {Store( 4,i003)} mm00(1,i000,i001)}
-	Method(m005,1,Serialized, 5) {if (arg0) {Store( 5,i004)} else {Store( 5,i003)} mm00(1,i000,i001)}
-	Method(m006,1,Serialized, 6) {if (arg0) {Store( 6,i004)} else {Store( 6,i003)} mm00(1,i000,i001)}
-	Method(m007,1,Serialized, 7) {if (arg0) {Store( 7,i004)} else {Store( 7,i003)} mm00(1,i000,i001)}
-	Method(m008,1,Serialized, 8) {if (arg0) {Store( 8,i004)} else {Store( 8,i003)} mm00(1,i000,i001)}
-	Method(m009,1,Serialized, 9) {if (arg0) {Store( 9,i004)} else {Store( 9,i003)} mm00(1,i000,i001)}
-	Method(m010,1,Serialized,10) {if (arg0) {Store(10,i004)} else {Store(10,i003)} mm00(1,i000,i001)}
-	Method(m011,1,Serialized,11) {if (arg0) {Store(11,i004)} else {Store(11,i003)} mm00(1,i000,i001)}
-	Method(m012,1,Serialized,12) {if (arg0) {Store(12,i004)} else {Store(12,i003)} mm00(1,i000,i001)}
-	Method(m013,1,Serialized,13) {if (arg0) {Store(13,i004)} else {Store(13,i003)} mm00(1,i000,i001)}
-	Method(m014,1,Serialized,14) {if (arg0) {Store(14,i004)} else {Store(14,i003)} mm00(1,i000,i001)}
-	Method(m015,1,Serialized,15) {if (arg0) {Store(15,i004)} else {Store(15,i003)} mm00(1,i000,i001)}
-
-	Method(mm01, 7)
-	{
-		Store(0, Local0)
-	}
-
-
-	Method(mm00, 3)
-	{
-		Store(i002, Local0)
-		Increment(i002)
-
-		if (LGreater(i002, i005)) {
-			Return
-		}
-
-		if (arg0) {
-			Store(arg2, Local1)
-		} else {
-			Store(arg1, Local1)
-		}
-
-		if (LEqual(Local1, 0)) {
-			mm01(0,1,2,3,4,5,6)
-			m000(Local0)
-			mm01(0,1,2,3,4,5,6)
-		} elseif (LEqual(Local1, 1)) {
-			mm01(0,1,2,3,4,5,6)
-			m001(Local0)
-			mm01(0,1,2,3,4,5,6)
-		} elseif (LEqual(Local1, 2)) {
-			mm01(0,1,2,3,4,5,6)
-			m002(Local0)
-			mm01(0,1,2,3,4,5,6)
-		} elseif (LEqual(Local1, 3)) {
-			mm01(0,1,2,3,4,5,6)
-			m003(Local0)
-			mm01(0,1,2,3,4,5,6)
-		} elseif (LEqual(Local1, 4)) {
-			mm01(0,1,2,3,4,5,6)
-			m004(Local0)
-			mm01(0,1,2,3,4,5,6)
-		} elseif (LEqual(Local1, 5)) {
-			mm01(0,1,2,3,4,5,6)
-			m005(Local0)
-			mm01(0,1,2,3,4,5,6)
-		} elseif (LEqual(Local1, 6)) {
-			mm01(0,1,2,3,4,5,6)
-			m006(Local0)
-			mm01(0,1,2,3,4,5,6)
-		} elseif (LEqual(Local1, 7)) {
-			mm01(0,1,2,3,4,5,6)
-			m007(Local0)
-			mm01(0,1,2,3,4,5,6)
-		} elseif (LEqual(Local1, 8)) {
-			mm01(0,1,2,3,4,5,6)
-			m008(Local0)
-			mm01(0,1,2,3,4,5,6)
-		} elseif (LEqual(Local1, 9)) {
-			mm01(0,1,2,3,4,5,6)
-			m009(Local0)
-			mm01(0,1,2,3,4,5,6)
-		} elseif (LEqual(Local1, 10)) {
-			mm01(0,1,2,3,4,5,6)
-			m010(Local0)
-			mm01(0,1,2,3,4,5,6)
-		} elseif (LEqual(Local1, 11)) {
-			mm01(0,1,2,3,4,5,6)
-			m011(Local0)
-			mm01(0,1,2,3,4,5,6)
-		} elseif (LEqual(Local1, 12)) {
-			mm01(0,1,2,3,4,5,6)
-			m012(Local0)
-			mm01(0,1,2,3,4,5,6)
-		} elseif (LEqual(Local1, 13)) {
-			mm01(0,1,2,3,4,5,6)
-			m013(Local0)
-			mm01(0,1,2,3,4,5,6)
-		} elseif (LEqual(Local1, 14)) {
-			mm01(0,1,2,3,4,5,6)
-			m014(Local0)
-			mm01(0,1,2,3,4,5,6)
-		} elseif (LEqual(Local1, 15)) {
-			mm01(0,1,2,3,4,5,6)
-			m015(Local0)
-			mm01(0,1,2,3,4,5,6)
-		}
-	}
-
-	CH03(ts, z173, 0x014, __LINE__, 0)
-
-	Store(arg0, i000)
-	Store(arg1, i001)
-	Store(arg2, i005)
-
-	mm00(0, i000, i001)
-
-	if (LGreater(arg0, arg1)) {
-		CH04(ts, 0, 64, z173, __LINE__, 0, 0) // AE_AML_MUTEX_ORDER
-	} else {
-		if (LNotEqual(i003, arg0)) {
-			err(ts, z173, __LINE__, 0, 0, i003, arg0)
-		}
-		if (LNotEqual(i004, arg1)) {
-			err(ts, z173, __LINE__, 0, 0, i004, arg1)
-		}
-	}
-
-	CH03(ts, z173, 0x018, __LINE__, 0)
-}
-
-Method(m3b8,, Serialized)
-{
-	Name(ts, "m3b6")
-
-	Name(lpN0, 0)
-	Name(lpC0, 0)
-	Name(lpN1, 0)
-	Name(lpC1, 0)
-
-	Store(16, lpN0)
-	Store(0, lpC0)
-
-	While (lpN0) {
-		Store(16, lpN1)
-		Store(0, lpC1)
-		While (lpN1) {
-
-			m3b7(lpC0, lpC1, 2)
-
-			Decrement(lpN1)
-			Increment(lpC1)
-		}
-		Decrement(lpN0)
-		Increment(lpC0)
-	}
-}
-
-/*
- * Check that Serialized method can be invoked repeatedly
- *
- * (Serialized method without internal objects (including Methods) and Switches)
- *
- * Method is invoked 2 times, then 3 times, then 4 times,...
- * Then do it for next Method.
- */
-Method(m3b9,, Serialized)
-{
-	Name(ts, "m3b9")
-
-	Name(lpN0, 0)
-	Name(lpC0, 0)
-	Name(lpN1, 0)
-	Name(lpC1, 0)
-
-	Store(16, lpN0)
-	Store(0, lpC0)
-
-	While (lpN0) {
-		Store(16, lpN1)
-		Store(2, lpC1)
-		While (lpN1) {
-
-			m3b3(lpC0, lpC0, lpC1)
-
-			Decrement(lpN1)
-			Increment(lpC1)
-		}
-		Decrement(lpN0)
-		Increment(lpC0)
-	}
-}
-
-/*
- * Check that Serialized method can be invoked repeatedly
- *
- * (Serialized method without internal objects (including Methods) and Switches)
- *
- * between two Serialized calls non-Serialized calls are performed
- *
- * Method is invoked 2 times, then 3 times, then 4 times,...
- * Then do it for next Method.
- */
-Method(m3ba,, Serialized)
-{
-	Name(ts, "m3ba")
-
-	Name(lpN0, 0)
-	Name(lpC0, 0)
-	Name(lpN1, 0)
-	Name(lpC1, 0)
-
-	Store(16, lpN0)
-	Store(0, lpC0)
-
-	While (lpN0) {
-		Store(16, lpN1)
-		Store(2, lpC1)
-		While (lpN1) {
-
-			m3b7(lpC0, lpC0, lpC1)
-
-			Decrement(lpN1)
-			Increment(lpC1)
-		}
-		Decrement(lpN0)
-		Increment(lpC0)
-	}
-}
-
-/*
- * The level is set up by either call to Serialized method or Acquire mutex of that level
- *
- * Check pairs of calls to methods which provide exclusive access to critical sections
- * either by 'Serialized method' technique or AML mutexes (Acquire/Release) framework.
- * The second method is invoked from the first method.
- *
- * All the 1024 combinations are verified (32*32):
- *
- * The first call to method in pair is call to:
- * - Serialized method with level in range from 0 up to 15
- * - non-Serialized method Acquiring mutex with level in range from 0 up to 15
- *
- * Identically, the second call to method in pair is call to:
- * - Serialized method with level in range from 0 up to 15
- * - non-Serialized method Acquiring mutex with level in range from 0 up to 15
- *
- * So all the checkings are provided:
- *
- * -   proper sequence of levels (from i-th level to all possible correct levels)
- * -   proper sequence of levels (from i-th level to i-th level (in particular))
- * - improper sequence of levels (from i-th level to all possible incorrect levels)
- *
- * arg0 - level of first call
- * arg1 - level of second call
- * arg2 - how many calls to do
- */
-Method(m3bb, 3, Serialized)
-{
-	Name(ts, "m3bb")
-
-	Name(i000, 0)
-	Name(i001, 0)
-	Name(i002, 0)
-	Name(i003, 0xabcd0003)
-	Name(i004, 0xabcd0004)
-	Name(i005, 0)
-
-	Mutex(MT00, 0)
-	Mutex(MT10, 1)
-	Mutex(MT20, 2)
-	Mutex(MT30, 3)
-	Mutex(MT40, 4)
-	Mutex(MT50, 5)
-	Mutex(MT60, 6)
-	Mutex(MT70, 7)
-	Mutex(MT80, 8)
-	Mutex(MT90, 9)
-	Mutex(MTa0, 10)
-	Mutex(MTb0, 11)
-	Mutex(MTc0, 12)
-	Mutex(MTd0, 13)
-	Mutex(MTe0, 14)
-	Mutex(MTf0, 15)
-
-	Method(m000,1,Serialized, 0) {if (arg0) {Store( 0,i004)} else {Store( 0,i003)} mm00(1,i000,i001)}
-	Method(m001,1,Serialized, 1) {if (arg0) {Store( 1,i004)} else {Store( 1,i003)} mm00(1,i000,i001)}
-	Method(m002,1,Serialized, 2) {if (arg0) {Store( 2,i004)} else {Store( 2,i003)} mm00(1,i000,i001)}
-	Method(m003,1,Serialized, 3) {if (arg0) {Store( 3,i004)} else {Store( 3,i003)} mm00(1,i000,i001)}
-	Method(m004,1,Serialized, 4) {if (arg0) {Store( 4,i004)} else {Store( 4,i003)} mm00(1,i000,i001)}
-	Method(m005,1,Serialized, 5) {if (arg0) {Store( 5,i004)} else {Store( 5,i003)} mm00(1,i000,i001)}
-	Method(m006,1,Serialized, 6) {if (arg0) {Store( 6,i004)} else {Store( 6,i003)} mm00(1,i000,i001)}
-	Method(m007,1,Serialized, 7) {if (arg0) {Store( 7,i004)} else {Store( 7,i003)} mm00(1,i000,i001)}
-	Method(m008,1,Serialized, 8) {if (arg0) {Store( 8,i004)} else {Store( 8,i003)} mm00(1,i000,i001)}
-	Method(m009,1,Serialized, 9) {if (arg0) {Store( 9,i004)} else {Store( 9,i003)} mm00(1,i000,i001)}
-	Method(m010,1,Serialized,10) {if (arg0) {Store(10,i004)} else {Store(10,i003)} mm00(1,i000,i001)}
-	Method(m011,1,Serialized,11) {if (arg0) {Store(11,i004)} else {Store(11,i003)} mm00(1,i000,i001)}
-	Method(m012,1,Serialized,12) {if (arg0) {Store(12,i004)} else {Store(12,i003)} mm00(1,i000,i001)}
-	Method(m013,1,Serialized,13) {if (arg0) {Store(13,i004)} else {Store(13,i003)} mm00(1,i000,i001)}
-	Method(m014,1,Serialized,14) {if (arg0) {Store(14,i004)} else {Store(14,i003)} mm00(1,i000,i001)}
-	Method(m015,1,Serialized,15) {if (arg0) {Store(15,i004)} else {Store(15,i003)} mm00(1,i000,i001)}
-
-	Method(m100, 2) {
-		if (arg0) {
-			Store(16, i004)
-		} else {
-			Store(16, i003)
-		}
-		Store(Acquire(MT00, 0xffff), Local0)
-		mm00(1, i000, i001)
-		if (arg1) {
-			if (Local0) {
-				err(ts, z173, __LINE__, 0, 0, 0, Local0)
-			}
-		}
-		if (LNot(Local0)) {
-			Release(MT00)
-		}
-	}
-	Method(m101, 2) {
-		if (arg0) {
-			Store(17, i004)
-		} else {
-			Store(17, i003)
-		}
-		Store(Acquire(MT10, 0xffff), Local0)
-		mm00(1, i000, i001)
-		if (arg1) {
-			if (Local0) {
-				err(ts, z173, __LINE__, 0, 0, 0, Local0)
-			}
-		}
-		if (LNot(Local0)) {
-			Release(MT10)
-		}
-	}
-	Method(m102, 2) {
-		if (arg0) {
-			Store(18, i004)
-		} else {
-			Store(18, i003)
-		}
-		Store(Acquire(MT20, 0xffff), Local0)
-		mm00(1, i000, i001)
-		if (arg1) {
-			if (Local0) {
-				err(ts, z173, __LINE__, 0, 0, 0, Local0)
-			}
-		}
-		if (LNot(Local0)) {
-			Release(MT20)
-		}
-	}
-	Method(m103, 2) {
-		if (arg0) {
-			Store(19, i004)
-		} else {
-			Store(19, i003)
-		}
-		Store(Acquire(MT30, 0xffff), Local0)
-		mm00(1, i000, i001)
-		if (arg1) {
-			if (Local0) {
-				err(ts, z173, __LINE__, 0, 0, 0, Local0)
-			}
-		}
-		if (LNot(Local0)) {
-			Release(MT30)
-		}
-	}
-	Method(m104, 2) {
-		if (arg0) {
-			Store(20, i004)
-		} else {
-			Store(20, i003)
-		}
-		Store(Acquire(MT40, 0xffff), Local0)
-		mm00(1, i000, i001)
-		if (arg1) {
-			if (Local0) {
-				err(ts, z173, __LINE__, 0, 0, 0, Local0)
-			}
-		}
-		if (LNot(Local0)) {
-			Release(MT40)
-		}
-	}
-	Method(m105, 2) {
-		if (arg0) {
-			Store(21, i004)
-		} else {
-			Store(21, i003)
-		}
-		Store(Acquire(MT50, 0xffff), Local0)
-		mm00(1, i000, i001)
-		if (arg1) {
-			if (Local0) {
-				err(ts, z173, __LINE__, 0, 0, 0, Local0)
-			}
-		}
-		if (LNot(Local0)) {
-			Release(MT50)
-		}
-	}
-	Method(m106, 2) {
-		if (arg0) {
-			Store(22, i004)
-		} else {
-			Store(22, i003)
-		}
-		Store(Acquire(MT60, 0xffff), Local0)
-		mm00(1, i000, i001)
-		if (arg1) {
-			if (Local0) {
-				err(ts, z173, __LINE__, 0, 0, 0, Local0)
-			}
-		}
-		if (LNot(Local0)) {
-			Release(MT60)
-		}
-	}
-	Method(m107, 2) {
-		if (arg0) {
-			Store(23, i004)
-		} else {
-			Store(23, i003)
-		}
-		Store(Acquire(MT70, 0xffff), Local0)
-		mm00(1, i000, i001)
-		if (arg1) {
-			if (Local0) {
-				err(ts, z173, __LINE__, 0, 0, 0, Local0)
-			}
-		}
-		if (LNot(Local0)) {
-			Release(MT70)
-		}
-	}
-	Method(m108, 2) {
-		if (arg0) {
-			Store(24, i004)
-		} else {
-			Store(24, i003)
-		}
-		Store(Acquire(MT80, 0xffff), Local0)
-		mm00(1, i000, i001)
-		if (arg1) {
-			if (Local0) {
-				err(ts, z173, __LINE__, 0, 0, 0, Local0)
-			}
-		}
-		if (LNot(Local0)) {
-			Release(MT80)
-		}
-	}
-	Method(m109, 2) {
-		if (arg0) {
-			Store(25, i004)
-		} else {
-			Store(25, i003)
-		}
-		Store(Acquire(MT90, 0xffff), Local0)
-		mm00(1, i000, i001)
-		if (arg1) {
-			if (Local0) {
-				err(ts, z173, __LINE__, 0, 0, 0, Local0)
-			}
-		}
-		if (LNot(Local0)) {
-			Release(MT90)
-		}
-	}
-	Method(m110, 2) {
-		if (arg0) {
-			Store(26, i004)
-		} else {
-			Store(26, i003)
-		}
-		Store(Acquire(MTa0, 0xffff), Local0)
-		mm00(1, i000, i001)
-		if (arg1) {
-			if (Local0) {
-				err(ts, z173, __LINE__, 0, 0, 0, Local0)
-			}
-		}
-		if (LNot(Local0)) {
-			Release(MTa0)
-		}
-	}
-	Method(m111, 2) {
-		if (arg0) {
-			Store(27, i004)
-		} else {
-			Store(27, i003)
-		}
-		Store(Acquire(MTb0, 0xffff), Local0)
-		mm00(1, i000, i001)
-		if (arg1) {
-			if (Local0) {
-				err(ts, z173, __LINE__, 0, 0, 0, Local0)
-			}
-		}
-		if (LNot(Local0)) {
-			Release(MTb0)
-		}
-	}
-	Method(m112, 2) {
-		if (arg0) {
-			Store(28, i004)
-		} else {
-			Store(28, i003)
-		}
-		Store(Acquire(MTc0, 0xffff), Local0)
-		mm00(1, i000, i001)
-		if (arg1) {
-			if (Local0) {
-				err(ts, z173, __LINE__, 0, 0, 0, Local0)
-			}
-		}
-		if (LNot(Local0)) {
-			Release(MTc0)
-		}
-	}
-	Method(m113, 2) {
-		if (arg0) {
-			Store(29, i004)
-		} else {
-			Store(29, i003)
-		}
-		Store(Acquire(MTd0, 0xffff), Local0)
-		mm00(1, i000, i001)
-		if (arg1) {
-			if (Local0) {
-				err(ts, z173, __LINE__, 0, 0, 0, Local0)
-			}
-		}
-		if (LNot(Local0)) {
-			Release(MTd0)
-		}
-	}
-	Method(m114, 2) {
-		if (arg0) {
-			Store(30, i004)
-		} else {
-			Store(30, i003)
-		}
-		Store(Acquire(MTe0, 0xffff), Local0)
-		mm00(1, i000, i001)
-		if (arg1) {
-			if (Local0) {
-				err(ts, z173, __LINE__, 0, 0, 0, Local0)
-			}
-		}
-		if (LNot(Local0)) {
-			Release(MTe0)
-		}
-	}
-	Method(m115, 2) {
-		if (arg0) {
-			Store(31, i004)
-		} else {
-			Store(31, i003)
-		}
-		Store(Acquire(MTf0, 0xffff), Local0)
-		mm00(1, i000, i001)
-		if (arg1) {
-			if (Local0) {
-				err(ts, z173, __LINE__, 0, 0, 0, Local0)
-			}
-		}
-		if (LNot(Local0)) {
-			Release(MTf0)
-		}
-	}
-
-	/*
-	 * arg0 - 0 - first call, otherwise - non-first call
-	 * arg1 - level of first call
-	 * arg2 - level of second call
-	 */
-	Method(mm00, 3, Serialized)
-	{
-		Store(i002, Local0)
-		Increment(i002)
-
-		if (LGreater(i002, i005)) {
-			Return
-		}
-
-		if (arg0) {
-			Store(arg2, Local1)
-		} else {
-			Store(arg1, Local1)
-		}
-
-		if (arg0) {
-			// non-first call
-			if (LGreaterEqual(arg1, 16)) {
-				Subtract(arg1, 16, Local2)
-			} else {
-				Store(arg1, Local2)
-			}
-			if (LGreaterEqual(arg2, 16)) {
-				Subtract(arg2, 16, Local3)
-			} else {
-				Store(arg2, Local3)
-			}
-			if (LGreater(Local2, Local3)) {
-				Store(0, Local4)
-			} else {
-				Store(1, Local4) // Check return of Acquire, success is expected
-			}
-		} else {
-			// first call
-			Store(1, Local4) // Check return of Acquire, success is expected
-		}
-
-		Switch (ToInteger (Local1)) {
-			Case (0) {
-				m000(Local0)
-			}
-			Case (1) {
-				m001(Local0)
-			}
-			Case (2) {
-				m002(Local0)
-			}
-			Case (3) {
-				m003(Local0)
-			}
-			Case (4) {
-				m004(Local0)
-			}
-			Case (5) {
-				m005(Local0)
-			}
-			Case (6) {
-				m006(Local0)
-			}
-			Case (7) {
-				m007(Local0)
-			}
-			Case (8) {
-				m008(Local0)
-			}
-			Case (9) {
-				m009(Local0)
-			}
-			Case (10) {
-				m010(Local0)
-			}
-			Case (11) {
-				m011(Local0)
-			}
-			Case (12) {
-				m012(Local0)
-			}
-			Case (13) {
-				m013(Local0)
-			}
-			Case (14) {
-				m014(Local0)
-			}
-			Case (15) {
-				m015(Local0)
-			}
-
-
-			Case (16) {
-				m100(Local0, Local4)
-			}
-			Case (17) {
-				m101(Local0, Local4)
-			}
-			Case (18) {
-				m102(Local0, Local4)
-			}
-			Case (19) {
-				m103(Local0, Local4)
-			}
-			Case (20) {
-				m104(Local0, Local4)
-			}
-			Case (21) {
-				m105(Local0, Local4)
-			}
-			Case (22) {
-				m106(Local0, Local4)
-			}
-			Case (23) {
-				m107(Local0, Local4)
-			}
-			Case (24) {
-				m108(Local0, Local4)
-			}
-			Case (25) {
-				m109(Local0, Local4)
-			}
-			Case (26) {
-				m110(Local0, Local4)
-			}
-			Case (27) {
-				m111(Local0, Local4)
-			}
-			Case (28) {
-				m112(Local0, Local4)
-			}
-			Case (29) {
-				m113(Local0, Local4)
-			}
-			Case (30) {
-				m114(Local0, Local4)
-			}
-			Case (31) {
-				m115(Local0, Local4)
-			}
-		}
-	}
-
-	CH03(ts, z173, 0x00a, __LINE__, 0)
-
-	Store(arg0, i000)
-	Store(arg1, i001)
-	Store(arg2, i005)
-
-	mm00(0, i000, i001)
-
-	if (LGreaterEqual(arg0, 16)) {
-		Subtract(arg0, 16, Local2)
-	} else {
-		Store(arg0, Local2)
-	}
-	if (LGreaterEqual(arg1, 16)) {
-		Subtract(arg1, 16, Local3)
-	} else {
-		Store(arg1, Local3)
-	}
-	if (LGreater(Local2, Local3)) {
-		Store(0, Local4)
-	} else {
-		Store(1, Local4) // Success is expected, no exceptions
-	}
-
-	if (LNot(Local4)) {
-		CH04(ts, 1, 64, z173, __LINE__, 0, 0) // AE_AML_MUTEX_ORDER
-	} else {
-		if (LNotEqual(i003, arg0)) {
-			err(ts, z173, __LINE__, 0, 0, i003, arg0)
-		}
-		if (LNotEqual(i004, arg1)) {
-			err(ts, z173, __LINE__, 0, 0, i004, arg1)
-		}
-	}
-
-	CH03(ts, z173, 0x00e, __LINE__, 0)
-}
-
-Method(m3bc,, Serialized)
-{
-	Name(ts, "m3bc")
-
-	Name(lpN0, 0)
-	Name(lpC0, 0)
-	Name(lpN1, 0)
-	Name(lpC1, 0)
-
-	Store(32, lpN0)
-	Store(0, lpC0)
-
-	While (lpN0) {
-		Store(32, lpN1)
-		Store(0, lpC1)
-		While (lpN1) {
-
-			m3bb(lpC0, lpC1, 2)
-
-			Decrement(lpN1)
-			Increment(lpC1)
-		}
-		Decrement(lpN0)
-		Increment(lpC0)
-	}
-}
-
-Method(m3bd)
-{
-	SRMT("m3b0")
-	m3b0()
-
-	SRMT("m3b1")
-	m3b1()
-
-	SRMT("m3b2")
-	m3b2()
-
-	SRMT("m3b4")
-	if (y300) {
-		m3b4()
-	} else {
-		BLCK()
-	}
-
-	SRMT("m3b6")
-	m3b6()
-
-	SRMT("m3b8")
-	m3b8()
-
-	SRMT("m3b9")
-	if (y300) {
-		m3b9()
-	} else {
-		BLCK()
-	}
-
-	SRMT("m3ba")
-	m3ba()
-
-	SRMT("m3bc")
-	if (y300) {
-		m3bc()
-	} else {
-		BLCK()
-	}
-}
-
+    /*
+     * Some or all of this work - Copyright (c) 2006 - 2017, Intel Corp.
+     * All rights reserved.
+     *
+     * Redistribution and use in source and binary forms, with or without modification,
+     * are permitted provided that the following conditions are met:
+     *
+     * Redistributions of source code must retain the above copyright notice,
+     * this list of conditions and the following disclaimer.
+     * Redistributions in binary form must reproduce the above copyright notice,
+     * this list of conditions and the following disclaimer in the documentation
+     * and/or other materials provided with the distribution.
+     * Neither the name of Intel Corporation nor the names of its contributors
+     * may be used to endorse or promote products derived from this software
+     * without specific prior written permission.
+     *
+     * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS"
+     * AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE
+     * IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE
+     * ARE DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT OWNER OR CONTRIBUTORS BE
+     * LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL
+     * DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES;
+     * LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY
+     * THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING
+     * NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE,
+     * EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
+     */
+    /*
+     * Check for serialized methods
+     */
+    Name (Z173, 0xAD)
+    /*
+     * Proper sequence of calls to Serialized methods with different levels, 0-15, all Serialized
+     */
+    Method (M3B0, 0, Serialized)
+    {
+        Name (TS, "m3b0")
+        Name (I000, 0x00)
+        Method (M000, 0, Serialized)
+        {
+            I000++
+            M001 ()
+        }
+
+        Method (M001, 0, Serialized, 1)
+        {
+            I000++
+            M002 ()
+        }
+
+        Method (M002, 0, Serialized, 2)
+        {
+            I000++
+            M003 ()
+        }
+
+        Method (M003, 0, Serialized, 3)
+        {
+            I000++
+            M004 ()
+        }
+
+        Method (M004, 0, Serialized, 4)
+        {
+            I000++
+            M005 ()
+        }
+
+        Method (M005, 0, Serialized, 5)
+        {
+            I000++
+            M006 ()
+        }
+
+        Method (M006, 0, Serialized, 6)
+        {
+            I000++
+            M007 ()
+        }
+
+        Method (M007, 0, Serialized, 7)
+        {
+            I000++
+            M008 ()
+        }
+
+        Method (M008, 0, Serialized, 8)
+        {
+            I000++
+            M009 ()
+        }
+
+        Method (M009, 0, Serialized, 9)
+        {
+            I000++
+            M010 ()
+        }
+
+        Method (M010, 0, Serialized, 10)
+        {
+            I000++
+            M011 ()
+        }
+
+        Method (M011, 0, Serialized, 11)
+        {
+            I000++
+            M012 ()
+        }
+
+        Method (M012, 0, Serialized, 12)
+        {
+            I000++
+            M013 ()
+        }
+
+        Method (M013, 0, Serialized, 13)
+        {
+            I000++
+            M014 ()
+        }
+
+        Method (M014, 0, Serialized, 14)
+        {
+            I000++
+            M015 ()
+        }
+
+        Method (M015, 0, Serialized, 15)
+        {
+            I000++
+            M016 ()
+        }
+
+        Method (M016, 0, Serialized, 15)
+        {
+            I000++
+            Debug = "m016"
+            If ((I000 != 0x11))
+            {
+                ERR (TS, Z173, 0x3F, 0x00, 0x00, I000, 0x11)
+            }
+        }
+
+        CH03 (TS, Z173, 0x01, 0x43, 0x00)
+        M000 ()
+        CH03 (TS, Z173, 0x02, 0x45, 0x00)
+    }
+
+    /*
+     * Proper sequence of calls to Serialized methods with different levels, 0-15,
+     * alternating Serialized and not-Serialized
+     */
+    Method (M3B1, 0, Serialized)
+    {
+        Name (TS, "m3b1")
+        Name (I000, 0x00)
+        Method (M000, 0, Serialized)
+        {
+            I000++
+            M001 ()
+        }
+
+        Method (M001, 0, NotSerialized)
+        {
+            I000++
+            M002 ()
+        }
+
+        Method (M002, 0, Serialized, 2)
+        {
+            I000++
+            M003 ()
+        }
+
+        Method (M003, 0, NotSerialized)
+        {
+            I000++
+            M004 ()
+        }
+
+        Method (M004, 0, NotSerialized)
+        {
+            I000++
+            M005 ()
+        }
+
+        Method (M005, 0, Serialized, 5)
+        {
+            I000++
+            M006 ()
+        }
+
+        Method (M006, 0, Serialized, 6)
+        {
+            I000++
+            M007 ()
+        }
+
+        Method (M007, 0, NotSerialized)
+        {
+            I000++
+            M008 ()
+        }
+
+        Method (M008, 0, Serialized, 8)
+        {
+            I000++
+            M009 ()
+        }
+
+        Method (M009, 0, Serialized, 9)
+        {
+            I000++
+            M010 ()
+        }
+
+        Method (M010, 0, NotSerialized)
+        {
+            I000++
+            M011 ()
+        }
+
+        Method (M011, 0, NotSerialized)
+        {
+            I000++
+            M012 ()
+        }
+
+        Method (M012, 0, Serialized, 12)
+        {
+            I000++
+            M013 ()
+        }
+
+        Method (M013, 0, Serialized, 13)
+        {
+            I000++
+            M014 ()
+        }
+
+        Method (M014, 0, Serialized, 14)
+        {
+            I000++
+            M015 ()
+        }
+
+        Method (M015, 0, NotSerialized)
+        {
+            I000++
+            M016 ()
+        }
+
+        Method (M016, 0, Serialized, 15)
+        {
+            I000++
+            Debug = "m016"
+            If ((I000 != 0x11))
+            {
+                ERR (TS, Z173, 0x65, 0x00, 0x00, I000, 0x11)
+            }
+        }
+
+        CH03 (TS, Z173, 0x04, 0x69, 0x00)
+        M000 ()
+        CH03 (TS, Z173, 0x05, 0x6B, 0x00)
+    }
+
+    /*
+     * Proper sequence of calls to Serialized methods with different levels, 0-15, all Serialized,
+     * 1-3 on each level
+     */
+    Method (M3B2, 0, Serialized)
+    {
+        Name (TS, "m3b2")
+        Name (I000, 0x00)
+        Name (I001, 0x00)
+        Method (M000, 0, Serialized)
+        {
+            I000++
+            M100 ()
+        }
+
+        Method (M100, 0, Serialized)
+        {
+            I000++
+            M001 ()
+        }
+
+        Method (M001, 0, Serialized, 1)
+        {
+            I000++
+            M002 ()
+        }
+
+        Method (M002, 0, Serialized, 2)
+        {
+            I000++
+            M102 ()
+        }
+
+        Method (M102, 0, Serialized, 2)
+        {
+            I000++
+            M003 ()
+        }
+
+        Method (M003, 0, Serialized, 3)
+        {
+            I000++
+            M004 ()
+        }
+
+        Method (M004, 0, Serialized, 4)
+        {
+            I000++
+            M104 ()
+        }
+
+        Method (M104, 0, Serialized, 4)
+        {
+            I000++
+            M005 ()
+        }
+
+        Method (M005, 0, Serialized, 5)
+        {
+            I000++
+            M006 ()
+        }
+
+        Method (M006, 0, Serialized, 6)
+        {
+            I000++
+            M106 ()
+        }
+
+        Method (M106, 0, Serialized, 6)
+        {
+            I000++
+            M007 ()
+        }
+
+        Method (M007, 0, Serialized, 7)
+        {
+            I000++
+            M107 ()
+        }
+
+        Method (M107, 0, Serialized, 7)
+        {
+            I000++
+            M008 ()
+        }
+
+        Method (M008, 0, Serialized, 8)
+        {
+            I000++
+            M108 ()
+        }
+
+        Method (M108, 0, Serialized, 8)
+        {
+            I000++
+            M009 ()
+        }
+
+        Method (M009, 0, Serialized, 9)
+        {
+            I000++
+            M109 ()
+        }
+
+        Method (M109, 0, Serialized, 9)
+        {
+            I000++
+            M209 ()
+        }
+
+        Method (M209, 0, Serialized, 9)
+        {
+            I000++
+            M010 ()
+        }
+
+        Method (M010, 0, Serialized, 10)
+        {
+            I000++
+            M110 ()
+        }
+
+        Method (M110, 0, Serialized, 10)
+        {
+            I000++
+            M011 ()
+        }
+
+        Method (M011, 0, Serialized, 11)
+        {
+            I000++
+            M111 ()
+        }
+
+        Method (M111, 0, Serialized, 11)
+        {
+            I000++
+            M012 ()
+        }
+
+        Method (M012, 0, Serialized, 12)
+        {
+            I000++
+            M112 ()
+        }
+
+        Method (M112, 0, Serialized, 12)
+        {
+            I000++
+            M013 ()
+        }
+
+        Method (M013, 0, Serialized, 13)
+        {
+            I000++
+            M014 ()
+        }
+
+        Method (M014, 0, Serialized, 14)
+        {
+            I000++
+            M015 ()
+        }
+
+        Method (M015, 0, Serialized, 15)
+        {
+            I000++
+            M115 ()
+        }
+
+        Method (M115, 0, Serialized, 15)
+        {
+            I000++
+            Debug = "m016"
+            If ((I000 != 0x1C))
+            {
+                ERR (TS, Z173, 0xA6, 0x00, 0x00, I000, 0x1C)
+            }
+
+            I001 = 0xABCD0000
+        }
+
+        CH03 (TS, Z173, 0x07, 0xAB, 0x00)
+        M000 ()
+        If ((I001 != 0xABCD0000))
+        {
+            ERR (TS, Z173, 0xAF, 0x00, 0x00, I001, 0xABCD0000)
+        }
+
+        CH03 (TS, Z173, 0x09, 0xB1, 0x00)
+    }
+
+    /*
+     * Check pairs of calls to Serialized methods,
+     * the second method is invoked from the first method.
+     *
+     * All the 256 combinations are verified (16*16):
+     * - the level of the first  method in pair changes in range from 0 up to 15
+     * - the level of the second method in pair changes in range from 0 up to 15
+     *
+     * So all the checkings are provided:
+     *
+     * -   proper sequence of levels (from i-th level to all possible correct levels)
+     * -   proper sequence of levels (from i-th level to i-th level (in particular))
+     * - improper sequence of levels (from i-th level to all possible incorrect levels)
+     *
+     * arg0 - level of first call
+     * arg1 - level of second call
+     * arg2 - how many calls to do
+     */
+    Method (M3B3, 3, Serialized)
+    {
+        Name (TS, "m3b3")
+        Name (I000, 0x00)
+        Name (I001, 0x00)
+        Name (I002, 0x00)
+        Name (I003, 0xABCD0003)
+        Name (I004, 0xABCD0004)
+        Name (I005, 0x00)
+        Method (M000, 1, Serialized)
+        {
+            If (Arg0)
+            {
+                I004 = 0x00
+            }
+            Else
+            {
+                I003 = 0x00
+            }
+
+            MM00 (0x01, I000, I001)
+        }
+
+        Method (M001, 1, Serialized, 1)
+        {
+            If (Arg0)
+            {
+                I004 = 0x01
+            }
+            Else
+            {
+                I003 = 0x01
+            }
+
+            MM00 (0x01, I000, I001)
+        }
+
+        Method (M002, 1, Serialized, 2)
+        {
+            If (Arg0)
+            {
+                I004 = 0x02
+            }
+            Else
+            {
+                I003 = 0x02
+            }
+
+            MM00 (0x01, I000, I001)
+        }
+
+        Method (M003, 1, Serialized, 3)
+        {
+            If (Arg0)
+            {
+                I004 = 0x03
+            }
+            Else
+            {
+                I003 = 0x03
+            }
+
+            MM00 (0x01, I000, I001)
+        }
+
+        Method (M004, 1, Serialized, 4)
+        {
+            If (Arg0)
+            {
+                I004 = 0x04
+            }
+            Else
+            {
+                I003 = 0x04
+            }
+
+            MM00 (0x01, I000, I001)
+        }
+
+        Method (M005, 1, Serialized, 5)
+        {
+            If (Arg0)
+            {
+                I004 = 0x05
+            }
+            Else
+            {
+                I003 = 0x05
+            }
+
+            MM00 (0x01, I000, I001)
+        }
+
+        Method (M006, 1, Serialized, 6)
+        {
+            If (Arg0)
+            {
+                I004 = 0x06
+            }
+            Else
+            {
+                I003 = 0x06
+            }
+
+            MM00 (0x01, I000, I001)
+        }
+
+        Method (M007, 1, Serialized, 7)
+        {
+            If (Arg0)
+            {
+                I004 = 0x07
+            }
+            Else
+            {
+                I003 = 0x07
+            }
+
+            MM00 (0x01, I000, I001)
+        }
+
+        Method (M008, 1, Serialized, 8)
+        {
+            If (Arg0)
+            {
+                I004 = 0x08
+            }
+            Else
+            {
+                I003 = 0x08
+            }
+
+            MM00 (0x01, I000, I001)
+        }
+
+        Method (M009, 1, Serialized, 9)
+        {
+            If (Arg0)
+            {
+                I004 = 0x09
+            }
+            Else
+            {
+                I003 = 0x09
+            }
+
+            MM00 (0x01, I000, I001)
+        }
+
+        Method (M010, 1, Serialized, 10)
+        {
+            If (Arg0)
+            {
+                I004 = 0x0A
+            }
+            Else
+            {
+                I003 = 0x0A
+            }
+
+            MM00 (0x01, I000, I001)
+        }
+
+        Method (M011, 1, Serialized, 11)
+        {
+            If (Arg0)
+            {
+                I004 = 0x0B
+            }
+            Else
+            {
+                I003 = 0x0B
+            }
+
+            MM00 (0x01, I000, I001)
+        }
+
+        Method (M012, 1, Serialized, 12)
+        {
+            If (Arg0)
+            {
+                I004 = 0x0C
+            }
+            Else
+            {
+                I003 = 0x0C
+            }
+
+            MM00 (0x01, I000, I001)
+        }
+
+        Method (M013, 1, Serialized, 13)
+        {
+            If (Arg0)
+            {
+                I004 = 0x0D
+            }
+            Else
+            {
+                I003 = 0x0D
+            }
+
+            MM00 (0x01, I000, I001)
+        }
+
+        Method (M014, 1, Serialized, 14)
+        {
+            If (Arg0)
+            {
+                I004 = 0x0E
+            }
+            Else
+            {
+                I003 = 0x0E
+            }
+
+            MM00 (0x01, I000, I001)
+        }
+
+        Method (M015, 1, Serialized, 15)
+        {
+            If (Arg0)
+            {
+                I004 = 0x0F
+            }
+            Else
+            {
+                I003 = 0x0F
+            }
+
+            MM00 (0x01, I000, I001)
+        }
+
+        Method (MM00, 3, Serialized)
+        {
+            Name (III0, 0x00)
+            Name (III1, 0x00)
+            Name (III2, 0x00)
+            Name (III3, 0x00)
+            Local0 = I002 /* \M3B3.I002 */
+            I002++
+            If ((I002 > I005))
+            {
+                Return (Zero)
+            }
+
+            If (Arg0)
+            {
+                Local1 = Arg2
+            }
+            Else
+            {
+                Local1 = Arg1
+            }
+
+            Switch (ToInteger (Local1))
+            {
+                Case (0x00)
+                {
+                    M000 (Local0)
+                }
+                Case (0x01)
+                {
+                    M001 (Local0)
+                }
+                Case (0x02)
+                {
+                    M002 (Local0)
+                }
+                Case (0x03)
+                {
+                    M003 (Local0)
+                }
+                Case (0x04)
+                {
+                    M004 (Local0)
+                }
+                Case (0x05)
+                {
+                    M005 (Local0)
+                }
+                Case (0x06)
+                {
+                    M006 (Local0)
+                }
+                Case (0x07)
+                {
+                    M007 (Local0)
+                }
+                Case (0x08)
+                {
+                    M008 (Local0)
+                }
+                Case (0x09)
+                {
+                    M009 (Local0)
+                }
+                Case (0x0A)
+                {
+                    M010 (Local0)
+                }
+                Case (0x0B)
+                {
+                    M011 (Local0)
+                }
+                Case (0x0C)
+                {
+                    M012 (Local0)
+                }
+                Case (0x0D)
+                {
+                    M013 (Local0)
+                }
+                Case (0x0E)
+                {
+                    M014 (Local0)
+                }
+                Case (0x0F)
+                {
+                    M015 (Local0)
+                }
+
+            }
+        }
+
+        CH03 (TS, Z173, 0x0A, 0x012B, 0x00)
+        I000 = Arg0
+        I001 = Arg1
+        I005 = Arg2
+        MM00 (0x00, I000, I001)
+        If ((Arg0 > Arg1))
+        {
+            CH04 (TS, 0x00, 0x40, Z173, 0x0134, 0x00, 0x00) /* AE_AML_MUTEX_ORDER */
+        }
+        Else
+        {
+            If ((I003 != Arg0))
+            {
+                ERR (TS, Z173, 0x0137, 0x00, 0x00, I003, Arg0)
+            }
+
+            If ((I004 != Arg1))
+            {
+                ERR (TS, Z173, 0x013A, 0x00, 0x00, I004, Arg1)
+            }
+        }
+
+        CH03 (TS, Z173, 0x0E, 0x013E, 0x00)
+    }
+
+    Method (M3B4, 0, Serialized)
+    {
+        Name (TS, "m3b4")
+        Name (LPN0, 0x00)
+        Name (LPC0, 0x00)
+        Name (LPN1, 0x00)
+        Name (LPC1, 0x00)
+        LPN0 = 0x10
+        LPC0 = 0x00
+        While (LPN0)
+        {
+            LPN1 = 0x10
+            LPC1 = 0x00
+            While (LPN1)
+            {
+                M3B3 (LPC0, LPC1, 0x02)
+                LPN1--
+                LPC1++
+            }
+
+            LPN0--
+            LPC0++
+        }
+    }
+
+    /*
+     * The same as m3b3 but without Switch
+     *
+     * arg0 - level of first call
+     * arg1 - level of second call
+     */
+    Method (M3B5, 2, Serialized)
+    {
+        Name (TS, "m3b5")
+        Name (I000, 0x00)
+        Name (I001, 0x00)
+        Name (I002, 0x00)
+        Name (I003, 0xABCD0003)
+        Name (I004, 0xABCD0004)
+        Method (M000, 1, Serialized)
+        {
+            If (Arg0)
+            {
+                I004 = 0x00
+            }
+            Else
+            {
+                I003 = 0x00
+            }
+
+            MM00 (0x01, I000, I001)
+        }
+
+        Method (M001, 1, Serialized, 1)
+        {
+            If (Arg0)
+            {
+                I004 = 0x01
+            }
+            Else
+            {
+                I003 = 0x01
+            }
+
+            MM00 (0x01, I000, I001)
+        }
+
+        Method (M002, 1, Serialized, 2)
+        {
+            If (Arg0)
+            {
+                I004 = 0x02
+            }
+            Else
+            {
+                I003 = 0x02
+            }
+
+            MM00 (0x01, I000, I001)
+        }
+
+        Method (M003, 1, Serialized, 3)
+        {
+            If (Arg0)
+            {
+                I004 = 0x03
+            }
+            Else
+            {
+                I003 = 0x03
+            }
+
+            MM00 (0x01, I000, I001)
+        }
+
+        Method (M004, 1, Serialized, 4)
+        {
+            If (Arg0)
+            {
+                I004 = 0x04
+            }
+            Else
+            {
+                I003 = 0x04
+            }
+
+            MM00 (0x01, I000, I001)
+        }
+
+        Method (M005, 1, Serialized, 5)
+        {
+            If (Arg0)
+            {
+                I004 = 0x05
+            }
+            Else
+            {
+                I003 = 0x05
+            }
+
+            MM00 (0x01, I000, I001)
+        }
+
+        Method (M006, 1, Serialized, 6)
+        {
+            If (Arg0)
+            {
+                I004 = 0x06
+            }
+            Else
+            {
+                I003 = 0x06
+            }
+
+            MM00 (0x01, I000, I001)
+        }
+
+        Method (M007, 1, Serialized, 7)
+        {
+            If (Arg0)
+            {
+                I004 = 0x07
+            }
+            Else
+            {
+                I003 = 0x07
+            }
+
+            MM00 (0x01, I000, I001)
+        }
+
+        Method (M008, 1, Serialized, 8)
+        {
+            If (Arg0)
+            {
+                I004 = 0x08
+            }
+            Else
+            {
+                I003 = 0x08
+            }
+
+            MM00 (0x01, I000, I001)
+        }
+
+        Method (M009, 1, Serialized, 9)
+        {
+            If (Arg0)
+            {
+                I004 = 0x09
+            }
+            Else
+            {
+                I003 = 0x09
+            }
+
+            MM00 (0x01, I000, I001)
+        }
+
+        Method (M010, 1, Serialized, 10)
+        {
+            If (Arg0)
+            {
+                I004 = 0x0A
+            }
+            Else
+            {
+                I003 = 0x0A
+            }
+
+            MM00 (0x01, I000, I001)
+        }
+
+        Method (M011, 1, Serialized, 11)
+        {
+            If (Arg0)
+            {
+                I004 = 0x0B
+            }
+            Else
+            {
+                I003 = 0x0B
+            }
+
+            MM00 (0x01, I000, I001)
+        }
+
+        Method (M012, 1, Serialized, 12)
+        {
+            If (Arg0)
+            {
+                I004 = 0x0C
+            }
+            Else
+            {
+                I003 = 0x0C
+            }
+
+            MM00 (0x01, I000, I001)
+        }
+
+        Method (M013, 1, Serialized, 13)
+        {
+            If (Arg0)
+            {
+                I004 = 0x0D
+            }
+            Else
+            {
+                I003 = 0x0D
+            }
+
+            MM00 (0x01, I000, I001)
+        }
+
+        Method (M014, 1, Serialized, 14)
+        {
+            If (Arg0)
+            {
+                I004 = 0x0E
+            }
+            Else
+            {
+                I003 = 0x0E
+            }
+
+            MM00 (0x01, I000, I001)
+        }
+
+        Method (M015, 1, Serialized, 15)
+        {
+            If (Arg0)
+            {
+                I004 = 0x0F
+            }
+            Else
+            {
+                I003 = 0x0F
+            }
+
+            MM00 (0x01, I000, I001)
+        }
+
+        Method (MM00, 3, NotSerialized)
+        {
+            Local0 = I002 /* \M3B5.I002 */
+            I002++
+            If ((I002 > 0x02))
+            {
+                Return (Zero)
+            }
+
+            If (Arg0)
+            {
+                Local1 = Arg2
+            }
+            Else
+            {
+                Local1 = Arg1
+            }
+
+            If ((Local1 == 0x00))
+            {
+                M000 (Local0)
+            }
+            ElseIf ((Local1 == 0x01))
+            {
+                M001 (Local0)
+            }
+            ElseIf ((Local1 == 0x02))
+            {
+                M002 (Local0)
+            }
+            ElseIf ((Local1 == 0x03))
+            {
+                M003 (Local0)
+            }
+            ElseIf ((Local1 == 0x04))
+            {
+                M004 (Local0)
+            }
+            ElseIf ((Local1 == 0x05))
+            {
+                M005 (Local0)
+            }
+            ElseIf ((Local1 == 0x06))
+            {
+                M006 (Local0)
+            }
+            ElseIf ((Local1 == 0x07))
+            {
+                M007 (Local0)
+            }
+            ElseIf ((Local1 == 0x08))
+            {
+                M008 (Local0)
+            }
+            ElseIf ((Local1 == 0x09))
+            {
+                M009 (Local0)
+            }
+            ElseIf ((Local1 == 0x0A))
+            {
+                M010 (Local0)
+            }
+            ElseIf ((Local1 == 0x0B))
+            {
+                M011 (Local0)
+            }
+            ElseIf ((Local1 == 0x0C))
+            {
+                M012 (Local0)
+            }
+            ElseIf ((Local1 == 0x0D))
+            {
+                M013 (Local0)
+            }
+            ElseIf ((Local1 == 0x0E))
+            {
+                M014 (Local0)
+            }
+            ElseIf ((Local1 == 0x0F))
+            {
+                M015 (Local0)
+            }
+        }
+
+        CH03 (TS, Z173, 0x0F, 0x01B0, 0x00)
+        I000 = Arg0
+        I001 = Arg1
+        MM00 (0x00, I000, I001)
+        If ((Arg0 > Arg1))
+        {
+            CH04 (TS, 0x00, 0x40, Z173, 0x01B8, 0x00, 0x00) /* AE_AML_MUTEX_ORDER */
+        }
+        Else
+        {
+            If ((I003 != Arg0))
+            {
+                ERR (TS, Z173, 0x01BB, 0x00, 0x00, I003, Arg0)
+            }
+
+            If ((I004 != Arg1))
+            {
+                ERR (TS, Z173, 0x01BE, 0x00, 0x00, I004, Arg1)
+            }
+        }
+
+        CH03 (TS, Z173, 0x13, 0x01C2, 0x00)
+    }
+
+    Method (M3B6, 0, Serialized)
+    {
+        Name (TS, "m3b6")
+        Name (LPN0, 0x00)
+        Name (LPC0, 0x00)
+        Name (LPN1, 0x00)
+        Name (LPC1, 0x00)
+        LPN0 = 0x10
+        LPC0 = 0x00
+        While (LPN0)
+        {
+            LPN1 = 0x10
+            LPC1 = 0x00
+            While (LPN1)
+            {
+                M3B5 (LPC0, LPC1)
+                LPN1--
+                LPC1++
+            }
+
+            LPN0--
+            LPC0++
+        }
+    }
+
+    /*
+     * The same as m3b5 but
+     * between two Serialized calls non-Serialized calls are performed
+     *
+     * arg0 - level of first call
+     * arg1 - level of second call
+     * arg2 - how many calls to do
+     */
+    Method (M3B7, 3, Serialized)
+    {
+        Name (TS, "m3b5")
+        Name (I000, 0x00)
+        Name (I001, 0x00)
+        Name (I002, 0x00)
+        Name (I003, 0xABCD0003)
+        Name (I004, 0xABCD0004)
+        Name (I005, 0x00)
+        Method (M000, 1, Serialized)
+        {
+            If (Arg0)
+            {
+                I004 = 0x00
+            }
+            Else
+            {
+                I003 = 0x00
+            }
+
+            MM00 (0x01, I000, I001)
+        }
+
+        Method (M001, 1, Serialized, 1)
+        {
+            If (Arg0)
+            {
+                I004 = 0x01
+            }
+            Else
+            {
+                I003 = 0x01
+            }
+
+            MM00 (0x01, I000, I001)
+        }
+
+        Method (M002, 1, Serialized, 2)
+        {
+            If (Arg0)
+            {
+                I004 = 0x02
+            }
+            Else
+            {
+                I003 = 0x02
+            }
+
+            MM00 (0x01, I000, I001)
+        }
+
+        Method (M003, 1, Serialized, 3)
+        {
+            If (Arg0)
+            {
+                I004 = 0x03
+            }
+            Else
+            {
+                I003 = 0x03
+            }
+
+            MM00 (0x01, I000, I001)
+        }
+
+        Method (M004, 1, Serialized, 4)
+        {
+            If (Arg0)
+            {
+                I004 = 0x04
+            }
+            Else
+            {
+                I003 = 0x04
+            }
+
+            MM00 (0x01, I000, I001)
+        }
+
+        Method (M005, 1, Serialized, 5)
+        {
+            If (Arg0)
+            {
+                I004 = 0x05
+            }
+            Else
+            {
+                I003 = 0x05
+            }
+
+            MM00 (0x01, I000, I001)
+        }
+
+        Method (M006, 1, Serialized, 6)
+        {
+            If (Arg0)
+            {
+                I004 = 0x06
+            }
+            Else
+            {
+                I003 = 0x06
+            }
+
+            MM00 (0x01, I000, I001)
+        }
+
+        Method (M007, 1, Serialized, 7)
+        {
+            If (Arg0)
+            {
+                I004 = 0x07
+            }
+            Else
+            {
+                I003 = 0x07
+            }
+
+            MM00 (0x01, I000, I001)
+        }
+
+        Method (M008, 1, Serialized, 8)
+        {
+            If (Arg0)
+            {
+                I004 = 0x08
+            }
+            Else
+            {
+                I003 = 0x08
+            }
+
+            MM00 (0x01, I000, I001)
+        }
+
+        Method (M009, 1, Serialized, 9)
+        {
+            If (Arg0)
+            {
+                I004 = 0x09
+            }
+            Else
+            {
+                I003 = 0x09
+            }
+
+            MM00 (0x01, I000, I001)
+        }
+
+        Method (M010, 1, Serialized, 10)
+        {
+            If (Arg0)
+            {
+                I004 = 0x0A
+            }
+            Else
+            {
+                I003 = 0x0A
+            }
+
+            MM00 (0x01, I000, I001)
+        }
+
+        Method (M011, 1, Serialized, 11)
+        {
+            If (Arg0)
+            {
+                I004 = 0x0B
+            }
+            Else
+            {
+                I003 = 0x0B
+            }
+
+            MM00 (0x01, I000, I001)
+        }
+
+        Method (M012, 1, Serialized, 12)
+        {
+            If (Arg0)
+            {
+                I004 = 0x0C
+            }
+            Else
+            {
+                I003 = 0x0C
+            }
+
+            MM00 (0x01, I000, I001)
+        }
+
+        Method (M013, 1, Serialized, 13)
+        {
+            If (Arg0)
+            {
+                I004 = 0x0D
+            }
+            Else
+            {
+                I003 = 0x0D
+            }
+
+            MM00 (0x01, I000, I001)
+        }
+
+        Method (M014, 1, Serialized, 14)
+        {
+            If (Arg0)
+            {
+                I004 = 0x0E
+            }
+            Else
+            {
+                I003 = 0x0E
+            }
+
+            MM00 (0x01, I000, I001)
+        }
+
+        Method (M015, 1, Serialized, 15)
+        {
+            If (Arg0)
+            {
+                I004 = 0x0F
+            }
+            Else
+            {
+                I003 = 0x0F
+            }
+
+            MM00 (0x01, I000, I001)
+        }
+
+        Method (MM01, 7, NotSerialized)
+        {
+            Local0 = 0x00
+        }
+
+        Method (MM00, 3, NotSerialized)
+        {
+            Local0 = I002 /* \M3B7.I002 */
+            I002++
+            If ((I002 > I005))
+            {
+                Return (Zero)
+            }
+
+            If (Arg0)
+            {
+                Local1 = Arg2
+            }
+            Else
+            {
+                Local1 = Arg1
+            }
+
+            If ((Local1 == 0x00))
+            {
+                MM01 (0x00, 0x01, 0x02, 0x03, 0x04, 0x05, 0x06)
+                M000 (Local0)
+                MM01 (0x00, 0x01, 0x02, 0x03, 0x04, 0x05, 0x06)
+            }
+            ElseIf ((Local1 == 0x01))
+            {
+                MM01 (0x00, 0x01, 0x02, 0x03, 0x04, 0x05, 0x06)
+                M001 (Local0)
+                MM01 (0x00, 0x01, 0x02, 0x03, 0x04, 0x05, 0x06)
+            }
+            ElseIf ((Local1 == 0x02))
+            {
+                MM01 (0x00, 0x01, 0x02, 0x03, 0x04, 0x05, 0x06)
+                M002 (Local0)
+                MM01 (0x00, 0x01, 0x02, 0x03, 0x04, 0x05, 0x06)
+            }
+            ElseIf ((Local1 == 0x03))
+            {
+                MM01 (0x00, 0x01, 0x02, 0x03, 0x04, 0x05, 0x06)
+                M003 (Local0)
+                MM01 (0x00, 0x01, 0x02, 0x03, 0x04, 0x05, 0x06)
+            }
+            ElseIf ((Local1 == 0x04))
+            {
+                MM01 (0x00, 0x01, 0x02, 0x03, 0x04, 0x05, 0x06)
+                M004 (Local0)
+                MM01 (0x00, 0x01, 0x02, 0x03, 0x04, 0x05, 0x06)
+            }
+            ElseIf ((Local1 == 0x05))
+            {
+                MM01 (0x00, 0x01, 0x02, 0x03, 0x04, 0x05, 0x06)
+                M005 (Local0)
+                MM01 (0x00, 0x01, 0x02, 0x03, 0x04, 0x05, 0x06)
+            }
+            ElseIf ((Local1 == 0x06))
+            {
+                MM01 (0x00, 0x01, 0x02, 0x03, 0x04, 0x05, 0x06)
+                M006 (Local0)
+                MM01 (0x00, 0x01, 0x02, 0x03, 0x04, 0x05, 0x06)
+            }
+            ElseIf ((Local1 == 0x07))
+            {
+                MM01 (0x00, 0x01, 0x02, 0x03, 0x04, 0x05, 0x06)
+                M007 (Local0)
+                MM01 (0x00, 0x01, 0x02, 0x03, 0x04, 0x05, 0x06)
+            }
+            ElseIf ((Local1 == 0x08))
+            {
+                MM01 (0x00, 0x01, 0x02, 0x03, 0x04, 0x05, 0x06)
+                M008 (Local0)
+                MM01 (0x00, 0x01, 0x02, 0x03, 0x04, 0x05, 0x06)
+            }
+            ElseIf ((Local1 == 0x09))
+            {
+                MM01 (0x00, 0x01, 0x02, 0x03, 0x04, 0x05, 0x06)
+                M009 (Local0)
+                MM01 (0x00, 0x01, 0x02, 0x03, 0x04, 0x05, 0x06)
+            }
+            ElseIf ((Local1 == 0x0A))
+            {
+                MM01 (0x00, 0x01, 0x02, 0x03, 0x04, 0x05, 0x06)
+                M010 (Local0)
+                MM01 (0x00, 0x01, 0x02, 0x03, 0x04, 0x05, 0x06)
+            }
+            ElseIf ((Local1 == 0x0B))
+            {
+                MM01 (0x00, 0x01, 0x02, 0x03, 0x04, 0x05, 0x06)
+                M011 (Local0)
+                MM01 (0x00, 0x01, 0x02, 0x03, 0x04, 0x05, 0x06)
+            }
+            ElseIf ((Local1 == 0x0C))
+            {
+                MM01 (0x00, 0x01, 0x02, 0x03, 0x04, 0x05, 0x06)
+                M012 (Local0)
+                MM01 (0x00, 0x01, 0x02, 0x03, 0x04, 0x05, 0x06)
+            }
+            ElseIf ((Local1 == 0x0D))
+            {
+                MM01 (0x00, 0x01, 0x02, 0x03, 0x04, 0x05, 0x06)
+                M013 (Local0)
+                MM01 (0x00, 0x01, 0x02, 0x03, 0x04, 0x05, 0x06)
+            }
+            ElseIf ((Local1 == 0x0E))
+            {
+                MM01 (0x00, 0x01, 0x02, 0x03, 0x04, 0x05, 0x06)
+                M014 (Local0)
+                MM01 (0x00, 0x01, 0x02, 0x03, 0x04, 0x05, 0x06)
+            }
+            ElseIf ((Local1 == 0x0F))
+            {
+                MM01 (0x00, 0x01, 0x02, 0x03, 0x04, 0x05, 0x06)
+                M015 (Local0)
+                MM01 (0x00, 0x01, 0x02, 0x03, 0x04, 0x05, 0x06)
+            }
+        }
+
+        CH03 (TS, Z173, 0x14, 0x025C, 0x00)
+        I000 = Arg0
+        I001 = Arg1
+        I005 = Arg2
+        MM00 (0x00, I000, I001)
+        If ((Arg0 > Arg1))
+        {
+            CH04 (TS, 0x00, 0x40, Z173, 0x0265, 0x00, 0x00) /* AE_AML_MUTEX_ORDER */
+        }
+        Else
+        {
+            If ((I003 != Arg0))
+            {
+                ERR (TS, Z173, 0x0268, 0x00, 0x00, I003, Arg0)
+            }
+
+            If ((I004 != Arg1))
+            {
+                ERR (TS, Z173, 0x026B, 0x00, 0x00, I004, Arg1)
+            }
+        }
+
+        CH03 (TS, Z173, 0x18, 0x026F, 0x00)
+    }
+
+    Method (M3B8, 0, Serialized)
+    {
+        Name (TS, "m3b6")
+        Name (LPN0, 0x00)
+        Name (LPC0, 0x00)
+        Name (LPN1, 0x00)
+        Name (LPC1, 0x00)
+        LPN0 = 0x10
+        LPC0 = 0x00
+        While (LPN0)
+        {
+            LPN1 = 0x10
+            LPC1 = 0x00
+            While (LPN1)
+            {
+                M3B7 (LPC0, LPC1, 0x02)
+                LPN1--
+                LPC1++
+            }
+
+            LPN0--
+            LPC0++
+        }
+    }
+
+    /*
+     * Check that Serialized method can be invoked repeatedly
+     *
+     * (Serialized method without internal objects (including Methods) and Switches)
+     *
+     * Method is invoked 2 times, then 3 times, then 4 times,...
+     * Then do it for next Method.
+     */
+    Method (M3B9, 0, Serialized)
+    {
+        Name (TS, "m3b9")
+        Name (LPN0, 0x00)
+        Name (LPC0, 0x00)
+        Name (LPN1, 0x00)
+        Name (LPC1, 0x00)
+        LPN0 = 0x10
+        LPC0 = 0x00
+        While (LPN0)
+        {
+            LPN1 = 0x10
+            LPC1 = 0x02
+            While (LPN1)
+            {
+                M3B3 (LPC0, LPC0, LPC1)
+                LPN1--
+                LPC1++
+            }
+
+            LPN0--
+            LPC0++
+        }
+    }
+
+    /*
+     * Check that Serialized method can be invoked repeatedly
+     *
+     * (Serialized method without internal objects (including Methods) and Switches)
+     *
+     * between two Serialized calls non-Serialized calls are performed
+     *
+     * Method is invoked 2 times, then 3 times, then 4 times,...
+     * Then do it for next Method.
+     */
+    Method (M3BA, 0, Serialized)
+    {
+        Name (TS, "m3ba")
+        Name (LPN0, 0x00)
+        Name (LPC0, 0x00)
+        Name (LPN1, 0x00)
+        Name (LPC1, 0x00)
+        LPN0 = 0x10
+        LPC0 = 0x00
+        While (LPN0)
+        {
+            LPN1 = 0x10
+            LPC1 = 0x02
+            While (LPN1)
+            {
+                M3B7 (LPC0, LPC0, LPC1)
+                LPN1--
+                LPC1++
+            }
+
+            LPN0--
+            LPC0++
+        }
+    }
+
+    /*
+     * The level is set up by either call to Serialized method or Acquire mutex of that level
+     *
+     * Check pairs of calls to methods which provide exclusive access to critical sections
+     * either by 'Serialized method' technique or AML mutexes (Acquire/Release) framework.
+     * The second method is invoked from the first method.
+     *
+     * All the 1024 combinations are verified (32*32):
+     *
+     * The first call to method in pair is call to:
+     * - Serialized method with level in range from 0 up to 15
+     * - non-Serialized method Acquiring mutex with level in range from 0 up to 15
+     *
+     * Identically, the second call to method in pair is call to:
+     * - Serialized method with level in range from 0 up to 15
+     * - non-Serialized method Acquiring mutex with level in range from 0 up to 15
+     *
+     * So all the checkings are provided:
+     *
+     * -   proper sequence of levels (from i-th level to all possible correct levels)
+     * -   proper sequence of levels (from i-th level to i-th level (in particular))
+     * - improper sequence of levels (from i-th level to all possible incorrect levels)
+     *
+     * arg0 - level of first call
+     * arg1 - level of second call
+     * arg2 - how many calls to do
+     */
+    Method (M3BB, 3, Serialized)
+    {
+        Name (TS, "m3bb")
+        Name (I000, 0x00)
+        Name (I001, 0x00)
+        Name (I002, 0x00)
+        Name (I003, 0xABCD0003)
+        Name (I004, 0xABCD0004)
+        Name (I005, 0x00)
+        Mutex (MT00, 0x00)
+        Mutex (MT10, 0x01)
+        Mutex (MT20, 0x02)
+        Mutex (MT30, 0x03)
+        Mutex (MT40, 0x04)
+        Mutex (MT50, 0x05)
+        Mutex (MT60, 0x06)
+        Mutex (MT70, 0x07)
+        Mutex (MT80, 0x08)
+        Mutex (MT90, 0x09)
+        Mutex (MTA0, 0x0A)
+        Mutex (MTB0, 0x0B)
+        Mutex (MTC0, 0x0C)
+        Mutex (MTD0, 0x0D)
+        Mutex (MTE0, 0x0E)
+        Mutex (MTF0, 0x0F)
+        Method (M000, 1, Serialized)
+        {
+            If (Arg0)
+            {
+                I004 = 0x00
+            }
+            Else
+            {
+                I003 = 0x00
+            }
+
+            MM00 (0x01, I000, I001)
+        }
+
+        Method (M001, 1, Serialized, 1)
+        {
+            If (Arg0)
+            {
+                I004 = 0x01
+            }
+            Else
+            {
+                I003 = 0x01
+            }
+
+            MM00 (0x01, I000, I001)
+        }
+
+        Method (M002, 1, Serialized, 2)
+        {
+            If (Arg0)
+            {
+                I004 = 0x02
+            }
+            Else
+            {
+                I003 = 0x02
+            }
+
+            MM00 (0x01, I000, I001)
+        }
+
+        Method (M003, 1, Serialized, 3)
+        {
+            If (Arg0)
+            {
+                I004 = 0x03
+            }
+            Else
+            {
+                I003 = 0x03
+            }
+
+            MM00 (0x01, I000, I001)
+        }
+
+        Method (M004, 1, Serialized, 4)
+        {
+            If (Arg0)
+            {
+                I004 = 0x04
+            }
+            Else
+            {
+                I003 = 0x04
+            }
+
+            MM00 (0x01, I000, I001)
+        }
+
+        Method (M005, 1, Serialized, 5)
+        {
+            If (Arg0)
+            {
+                I004 = 0x05
+            }
+            Else
+            {
+                I003 = 0x05
+            }
+
+            MM00 (0x01, I000, I001)
+        }
+
+        Method (M006, 1, Serialized, 6)
+        {
+            If (Arg0)
+            {
+                I004 = 0x06
+            }
+            Else
+            {
+                I003 = 0x06
+            }
+
+            MM00 (0x01, I000, I001)
+        }
+
+        Method (M007, 1, Serialized, 7)
+        {
+            If (Arg0)
+            {
+                I004 = 0x07
+            }
+            Else
+            {
+                I003 = 0x07
+            }
+
+            MM00 (0x01, I000, I001)
+        }
+
+        Method (M008, 1, Serialized, 8)
+        {
+            If (Arg0)
+            {
+                I004 = 0x08
+            }
+            Else
+            {
+                I003 = 0x08
+            }
+
+            MM00 (0x01, I000, I001)
+        }
+
+        Method (M009, 1, Serialized, 9)
+        {
+            If (Arg0)
+            {
+                I004 = 0x09
+            }
+            Else
+            {
+                I003 = 0x09
+            }
+
+            MM00 (0x01, I000, I001)
+        }
+
+        Method (M010, 1, Serialized, 10)
+        {
+            If (Arg0)
+            {
+                I004 = 0x0A
+            }
+            Else
+            {
+                I003 = 0x0A
+            }
+
+            MM00 (0x01, I000, I001)
+        }
+
+        Method (M011, 1, Serialized, 11)
+        {
+            If (Arg0)
+            {
+                I004 = 0x0B
+            }
+            Else
+            {
+                I003 = 0x0B
+            }
+
+            MM00 (0x01, I000, I001)
+        }
+
+        Method (M012, 1, Serialized, 12)
+        {
+            If (Arg0)
+            {
+                I004 = 0x0C
+            }
+            Else
+            {
+                I003 = 0x0C
+            }
+
+            MM00 (0x01, I000, I001)
+        }
+
+        Method (M013, 1, Serialized, 13)
+        {
+            If (Arg0)
+            {
+                I004 = 0x0D
+            }
+            Else
+            {
+                I003 = 0x0D
+            }
+
+            MM00 (0x01, I000, I001)
+        }
+
+        Method (M014, 1, Serialized, 14)
+        {
+            If (Arg0)
+            {
+                I004 = 0x0E
+            }
+            Else
+            {
+                I003 = 0x0E
+            }
+
+            MM00 (0x01, I000, I001)
+        }
+
+        Method (M015, 1, Serialized, 15)
+        {
+            If (Arg0)
+            {
+                I004 = 0x0F
+            }
+            Else
+            {
+                I003 = 0x0F
+            }
+
+            MM00 (0x01, I000, I001)
+        }
+
+        Method (M100, 2, NotSerialized)
+        {
+            If (Arg0)
+            {
+                I004 = 0x10
+            }
+            Else
+            {
+                I003 = 0x10
+            }
+
+            Local0 = Acquire (MT00, 0xFFFF)
+            MM00 (0x01, I000, I001)
+            If (Arg1)
+            {
+                If (Local0)
+                {
+                    ERR (TS, Z173, 0x0327, 0x00, 0x00, 0x00, Local0)
+                }
+            }
+
+            If (!Local0)
+            {
+                Release (MT00)
+            }
+        }
+
+        Method (M101, 2, NotSerialized)
+        {
+            If (Arg0)
+            {
+                I004 = 0x11
+            }
+            Else
+            {
+                I003 = 0x11
+            }
+
+            Local0 = Acquire (MT10, 0xFFFF)
+            MM00 (0x01, I000, I001)
+            If (Arg1)
+            {
+                If (Local0)
+                {
+                    ERR (TS, Z173, 0x0338, 0x00, 0x00, 0x00, Local0)
+                }
+            }
+
+            If (!Local0)
+            {
+                Release (MT10)
+            }
+        }
+
+        Method (M102, 2, NotSerialized)
+        {
+            If (Arg0)
+            {
+                I004 = 0x12
+            }
+            Else
+            {
+                I003 = 0x12
+            }
+
+            Local0 = Acquire (MT20, 0xFFFF)
+            MM00 (0x01, I000, I001)
+            If (Arg1)
+            {
+                If (Local0)
+                {
+                    ERR (TS, Z173, 0x0349, 0x00, 0x00, 0x00, Local0)
+                }
+            }
+
+            If (!Local0)
+            {
+                Release (MT20)
+            }
+        }
+
+        Method (M103, 2, NotSerialized)
+        {
+            If (Arg0)
+            {
+                I004 = 0x13
+            }
+            Else
+            {
+                I003 = 0x13
+            }
+
+            Local0 = Acquire (MT30, 0xFFFF)
+            MM00 (0x01, I000, I001)
+            If (Arg1)
+            {
+                If (Local0)
+                {
+                    ERR (TS, Z173, 0x035A, 0x00, 0x00, 0x00, Local0)
+                }
+            }
+
+            If (!Local0)
+            {
+                Release (MT30)
+            }
+        }
+
+        Method (M104, 2, NotSerialized)
+        {
+            If (Arg0)
+            {
+                I004 = 0x14
+            }
+            Else
+            {
+                I003 = 0x14
+            }
+
+            Local0 = Acquire (MT40, 0xFFFF)
+            MM00 (0x01, I000, I001)
+            If (Arg1)
+            {
+                If (Local0)
+                {
+                    ERR (TS, Z173, 0x036B, 0x00, 0x00, 0x00, Local0)
+                }
+            }
+
+            If (!Local0)
+            {
+                Release (MT40)
+            }
+        }
+
+        Method (M105, 2, NotSerialized)
+        {
+            If (Arg0)
+            {
+                I004 = 0x15
+            }
+            Else
+            {
+                I003 = 0x15
+            }
+
+            Local0 = Acquire (MT50, 0xFFFF)
+            MM00 (0x01, I000, I001)
+            If (Arg1)
+            {
+                If (Local0)
+                {
+                    ERR (TS, Z173, 0x037C, 0x00, 0x00, 0x00, Local0)
+                }
+            }
+
+            If (!Local0)
+            {
+                Release (MT50)
+            }
+        }
+
+        Method (M106, 2, NotSerialized)
+        {
+            If (Arg0)
+            {
+                I004 = 0x16
+            }
+            Else
+            {
+                I003 = 0x16
+            }
+
+            Local0 = Acquire (MT60, 0xFFFF)
+            MM00 (0x01, I000, I001)
+            If (Arg1)
+            {
+                If (Local0)
+                {
+                    ERR (TS, Z173, 0x038D, 0x00, 0x00, 0x00, Local0)
+                }
+            }
+
+            If (!Local0)
+            {
+                Release (MT60)
+            }
+        }
+
+        Method (M107, 2, NotSerialized)
+        {
+            If (Arg0)
+            {
+                I004 = 0x17
+            }
+            Else
+            {
+                I003 = 0x17
+            }
+
+            Local0 = Acquire (MT70, 0xFFFF)
+            MM00 (0x01, I000, I001)
+            If (Arg1)
+            {
+                If (Local0)
+                {
+                    ERR (TS, Z173, 0x039E, 0x00, 0x00, 0x00, Local0)
+                }
+            }
+
+            If (!Local0)
+            {
+                Release (MT70)
+            }
+        }
+
+        Method (M108, 2, NotSerialized)
+        {
+            If (Arg0)
+            {
+                I004 = 0x18
+            }
+            Else
+            {
+                I003 = 0x18
+            }
+
+            Local0 = Acquire (MT80, 0xFFFF)
+            MM00 (0x01, I000, I001)
+            If (Arg1)
+            {
+                If (Local0)
+                {
+                    ERR (TS, Z173, 0x03AF, 0x00, 0x00, 0x00, Local0)
+                }
+            }
+
+            If (!Local0)
+            {
+                Release (MT80)
+            }
+        }
+
+        Method (M109, 2, NotSerialized)
+        {
+            If (Arg0)
+            {
+                I004 = 0x19
+            }
+            Else
+            {
+                I003 = 0x19
+            }
+
+            Local0 = Acquire (MT90, 0xFFFF)
+            MM00 (0x01, I000, I001)
+            If (Arg1)
+            {
+                If (Local0)
+                {
+                    ERR (TS, Z173, 0x03C0, 0x00, 0x00, 0x00, Local0)
+                }
+            }
+
+            If (!Local0)
+            {
+                Release (MT90)
+            }
+        }
+
+        Method (M110, 2, NotSerialized)
+        {
+            If (Arg0)
+            {
+                I004 = 0x1A
+            }
+            Else
+            {
+                I003 = 0x1A
+            }
+
+            Local0 = Acquire (MTA0, 0xFFFF)
+            MM00 (0x01, I000, I001)
+            If (Arg1)
+            {
+                If (Local0)
+                {
+                    ERR (TS, Z173, 0x03D1, 0x00, 0x00, 0x00, Local0)
+                }
+            }
+
+            If (!Local0)
+            {
+                Release (MTA0)
+            }
+        }
+
+        Method (M111, 2, NotSerialized)
+        {
+            If (Arg0)
+            {
+                I004 = 0x1B
+            }
+            Else
+            {
+                I003 = 0x1B
+            }
+
+            Local0 = Acquire (MTB0, 0xFFFF)
+            MM00 (0x01, I000, I001)
+            If (Arg1)
+            {
+                If (Local0)
+                {
+                    ERR (TS, Z173, 0x03E2, 0x00, 0x00, 0x00, Local0)
+                }
+            }
+
+            If (!Local0)
+            {
+                Release (MTB0)
+            }
+        }
+
+        Method (M112, 2, NotSerialized)
+        {
+            If (Arg0)
+            {
+                I004 = 0x1C
+            }
+            Else
+            {
+                I003 = 0x1C
+            }
+
+            Local0 = Acquire (MTC0, 0xFFFF)
+            MM00 (0x01, I000, I001)
+            If (Arg1)
+            {
+                If (Local0)
+                {
+                    ERR (TS, Z173, 0x03F3, 0x00, 0x00, 0x00, Local0)
+                }
+            }
+
+            If (!Local0)
+            {
+                Release (MTC0)
+            }
+        }
+
+        Method (M113, 2, NotSerialized)
+        {
+            If (Arg0)
+            {
+                I004 = 0x1D
+            }
+            Else
+            {
+                I003 = 0x1D
+            }
+
+            Local0 = Acquire (MTD0, 0xFFFF)
+            MM00 (0x01, I000, I001)
+            If (Arg1)
+            {
+                If (Local0)
+                {
+                    ERR (TS, Z173, 0x0404, 0x00, 0x00, 0x00, Local0)
+                }
+            }
+
+            If (!Local0)
+            {
+                Release (MTD0)
+            }
+        }
+
+        Method (M114, 2, NotSerialized)
+        {
+            If (Arg0)
+            {
+                I004 = 0x1E
+            }
+            Else
+            {
+                I003 = 0x1E
+            }
+
+            Local0 = Acquire (MTE0, 0xFFFF)
+            MM00 (0x01, I000, I001)
+            If (Arg1)
+            {
+                If (Local0)
+                {
+                    ERR (TS, Z173, 0x0415, 0x00, 0x00, 0x00, Local0)
+                }
+            }
+
+            If (!Local0)
+            {
+                Release (MTE0)
+            }
+        }
+
+        Method (M115, 2, NotSerialized)
+        {
+            If (Arg0)
+            {
+                I004 = 0x1F
+            }
+            Else
+            {
+                I003 = 0x1F
+            }
+
+            Local0 = Acquire (MTF0, 0xFFFF)
+            MM00 (0x01, I000, I001)
+            If (Arg1)
+            {
+                If (Local0)
+                {
+                    ERR (TS, Z173, 0x0426, 0x00, 0x00, 0x00, Local0)
+                }
+            }
+
+            If (!Local0)
+            {
+                Release (MTF0)
+            }
+        }
+
+        /*
+         * arg0 - 0 - first call, otherwise - non-first call
+         * arg1 - level of first call
+         * arg2 - level of second call
+         */
+        Method (MM00, 3, Serialized)
+        {
+            Local0 = I002 /* \M3BB.I002 */
+            I002++
+            If ((I002 > I005))
+            {
+                Return (Zero)
+            }
+
+            If (Arg0)
+            {
+                Local1 = Arg2
+            }
+            Else
+            {
+                Local1 = Arg1
+            }
+
+            If (Arg0)
+            {
+                /* non-first call */
+
+                If ((Arg1 >= 0x10))
+                {
+                    Local2 = (Arg1 - 0x10)
+                }
+                Else
+                {
+                    Local2 = Arg1
+                }
+
+                If ((Arg2 >= 0x10))
+                {
+                    Local3 = (Arg2 - 0x10)
+                }
+                Else
+                {
+                    Local3 = Arg2
+                }
+
+                If ((Local2 > Local3))
+                {
+                    Local4 = 0x00
+                }
+                Else
+                {
+                    Local4 = 0x01 /* Check return of Acquire, success is expected */
+                }
+            }
+            Else
+            {
+                /* first call */
+
+                Local4 = 0x01 /* Check return of Acquire, success is expected */
+            }
+
+            Switch (ToInteger (Local1))
+            {
+                Case (0x00)
+                {
+                    M000 (Local0)
+                }
+                Case (0x01)
+                {
+                    M001 (Local0)
+                }
+                Case (0x02)
+                {
+                    M002 (Local0)
+                }
+                Case (0x03)
+                {
+                    M003 (Local0)
+                }
+                Case (0x04)
+                {
+                    M004 (Local0)
+                }
+                Case (0x05)
+                {
+                    M005 (Local0)
+                }
+                Case (0x06)
+                {
+                    M006 (Local0)
+                }
+                Case (0x07)
+                {
+                    M007 (Local0)
+                }
+                Case (0x08)
+                {
+                    M008 (Local0)
+                }
+                Case (0x09)
+                {
+                    M009 (Local0)
+                }
+                Case (0x0A)
+                {
+                    M010 (Local0)
+                }
+                Case (0x0B)
+                {
+                    M011 (Local0)
+                }
+                Case (0x0C)
+                {
+                    M012 (Local0)
+                }
+                Case (0x0D)
+                {
+                    M013 (Local0)
+                }
+                Case (0x0E)
+                {
+                    M014 (Local0)
+                }
+                Case (0x0F)
+                {
+                    M015 (Local0)
+                }
+                Case (0x10)
+                {
+                    M100 (Local0, Local4)
+                }
+                Case (0x11)
+                {
+                    M101 (Local0, Local4)
+                }
+                Case (0x12)
+                {
+                    M102 (Local0, Local4)
+                }
+                Case (0x13)
+                {
+                    M103 (Local0, Local4)
+                }
+                Case (0x14)
+                {
+                    M104 (Local0, Local4)
+                }
+                Case (0x15)
+                {
+                    M105 (Local0, Local4)
+                }
+                Case (0x16)
+                {
+                    M106 (Local0, Local4)
+                }
+                Case (0x17)
+                {
+                    M107 (Local0, Local4)
+                }
+                Case (0x18)
+                {
+                    M108 (Local0, Local4)
+                }
+                Case (0x19)
+                {
+                    M109 (Local0, Local4)
+                }
+                Case (0x1A)
+                {
+                    M110 (Local0, Local4)
+                }
+                Case (0x1B)
+                {
+                    M111 (Local0, Local4)
+                }
+                Case (0x1C)
+                {
+                    M112 (Local0, Local4)
+                }
+                Case (0x1D)
+                {
+                    M113 (Local0, Local4)
+                }
+                Case (0x1E)
+                {
+                    M114 (Local0, Local4)
+                }
+                Case (0x1F)
+                {
+                    M115 (Local0, Local4)
+                }
+
+            }
+        }
+
+        CH03 (TS, Z173, 0x0A, 0x04BE, 0x00)
+        I000 = Arg0
+        I001 = Arg1
+        I005 = Arg2
+        MM00 (0x00, I000, I001)
+        If ((Arg0 >= 0x10))
+        {
+            Local2 = (Arg0 - 0x10)
+        }
+        Else
+        {
+            Local2 = Arg0
+        }
+
+        If ((Arg1 >= 0x10))
+        {
+            Local3 = (Arg1 - 0x10)
+        }
+        Else
+        {
+            Local3 = Arg1
+        }
+
+        If ((Local2 > Local3))
+        {
+            Local4 = 0x00
+        }
+        Else
+        {
+            Local4 = 0x01 /* Success is expected, no exceptions */
+        }
+
+        If (!Local4)
+        {
+            CH04 (TS, 0x01, 0x40, Z173, 0x04D7, 0x00, 0x00) /* AE_AML_MUTEX_ORDER */
+        }
+        Else
+        {
+            If ((I003 != Arg0))
+            {
+                ERR (TS, Z173, 0x04DA, 0x00, 0x00, I003, Arg0)
+            }
+
+            If ((I004 != Arg1))
+            {
+                ERR (TS, Z173, 0x04DD, 0x00, 0x00, I004, Arg1)
+            }
+        }
+
+        CH03 (TS, Z173, 0x0E, 0x04E1, 0x00)
+    }
+
+    Method (M3BC, 0, Serialized)
+    {
+        Name (TS, "m3bc")
+        Name (LPN0, 0x00)
+        Name (LPC0, 0x00)
+        Name (LPN1, 0x00)
+        Name (LPC1, 0x00)
+        LPN0 = 0x20
+        LPC0 = 0x00
+        While (LPN0)
+        {
+            LPN1 = 0x20
+            LPC1 = 0x00
+            While (LPN1)
+            {
+                M3BB (LPC0, LPC1, 0x02)
+                LPN1--
+                LPC1++
+            }
+
+            LPN0--
+            LPC0++
+        }
+    }
+
+    Method (M3BD, 0, NotSerialized)
+    {
+        SRMT ("m3b0")
+        M3B0 ()
+        SRMT ("m3b1")
+        M3B1 ()
+        SRMT ("m3b2")
+        M3B2 ()
+        SRMT ("m3b4")
+        If (Y300)
+        {
+            M3B4 ()
+        }
+        Else
+        {
+            BLCK ()
+        }
+
+        SRMT ("m3b6")
+        M3B6 ()
+        SRMT ("m3b8")
+        M3B8 ()
+        SRMT ("m3b9")
+        If (Y300)
+        {
+            M3B9 ()
+        }
+        Else
+        {
+            BLCK ()
+        }
+
+        SRMT ("m3ba")
+        M3BA ()
+        SRMT ("m3bc")
+        If (Y300)
+        {
+            M3BC ()
+        }
+        Else
+        {
+            BLCK ()
+        }
+    }
 

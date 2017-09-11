@@ -1,64 +1,61 @@
-// in progress
+    /* in progress */
 
-Name(z160, 160)
+    Name (Z160, 0xA0)
+    Method (M600, 0, Serialized)
+    {
+        Name (TS, "m600")
+        Name (I000, 0xABCD0000)
+        Method (M000, 1, NotSerialized)
+        {
+            I000 = 0x11223344
+            If ((Arg0 != 0xABCD0000))
+            {
+                ERR (TS, Z160, 0x0D, 0x00, 0x00, Arg0, 0xABCD0000)
+            }
+        }
 
-Method(m600,, Serialized)
-{
-	Name(ts, "m600")
-	Name(i000, 0xabcd0000)
-	Method(m000, 1)
-	{
-		Store(0x11223344, i000)
-		if (LNotEqual(arg0, 0xabcd0000)) {
-			err(ts, z160, __LINE__, 0, 0, arg0, 0xabcd0000)
-		}
-	}
+        M000 (I000)
+        If ((I000 != 0x11223344))
+        {
+            ERR (TS, Z160, 0x14, 0x00, 0x00, I000, 0x11223344)
+        }
+    }
 
-	m000(i000)
-
-	if (LNotEqual(i000, 0x11223344)) {
-		err(ts, z160, __LINE__, 0, 0, i000, 0x11223344)
-	}
-}
-
-/*
-do these
-
-	Method(m003)
-	{
-		Name(i000, 0x00000001)
-
-		Method(m001, 1)
-		{
-			Store(0x00000020, i000)
-			Return (arg0)
-		}
-		Store(Add(i000, m001(i000)), Local0)
-
-		if (LNotEqual(Local0, 0x00000002)) {
-			Store("Error 2", Debug)
-			Store(Local0, Debug)
-		} else {
-			Store("Ok 2", Debug)
-		}
-
-		if (LNotEqual(i000, 0x00000020)) {
-			Store("Error 3", Debug)
-		} else {
-			Store("Ok 3", Debug)
-		}
-	}
-*/
-
-Method(n006)
-{
-if (1) {
-	SRMT("m600")
-	m600()
-} else {
-	SRMT("m600")
-	m600()
-}
-}
-
+    /*
+     do these
+     Method(m003)
+     {
+     Name(i000, 0x00000001)
+     Method(m001, 1)
+     {
+     Store(0x00000020, i000)
+     Return (arg0)
+     }
+     Store(Add(i000, m001(i000)), Local0)
+     if (LNotEqual(Local0, 0x00000002)) {
+     Store("Error 2", Debug)
+     Store(Local0, Debug)
+     } else {
+     Store("Ok 2", Debug)
+     }
+     if (LNotEqual(i000, 0x00000020)) {
+     Store("Error 3", Debug)
+     } else {
+     Store("Ok 3", Debug)
+     }
+     }
+     */
+    Method (N006, 0, NotSerialized)
+    {
+        If (0x01)
+        {
+            SRMT ("m600")
+            M600 ()
+        }
+        Else
+        {
+            SRMT ("m600")
+            M600 ()
+        }
+    }
 

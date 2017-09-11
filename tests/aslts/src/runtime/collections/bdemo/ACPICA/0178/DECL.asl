@@ -1,110 +1,139 @@
-/*
- * Some or all of this work - Copyright (c) 2006 - 2017, Intel Corp.
- * All rights reserved.
- *
- * Redistribution and use in source and binary forms, with or without modification,
- * are permitted provided that the following conditions are met:
- *
- * Redistributions of source code must retain the above copyright notice,
- * this list of conditions and the following disclaimer.
- * Redistributions in binary form must reproduce the above copyright notice,
- * this list of conditions and the following disclaimer in the documentation
- * and/or other materials provided with the distribution.
- * Neither the name of Intel Corporation nor the names of its contributors
- * may be used to endorse or promote products derived from this software
- * without specific prior written permission.
- *
- * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS"
- * AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE
- * IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE
- * ARE DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT OWNER OR CONTRIBUTORS BE
- * LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL
- * DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES;
- * LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY
- * THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING
- * NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE,
- * EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
- */
+    /*
+     * Some or all of this work - Copyright (c) 2006 - 2017, Intel Corp.
+     * All rights reserved.
+     *
+     * Redistribution and use in source and binary forms, with or without modification,
+     * are permitted provided that the following conditions are met:
+     *
+     * Redistributions of source code must retain the above copyright notice,
+     * this list of conditions and the following disclaimer.
+     * Redistributions in binary form must reproduce the above copyright notice,
+     * this list of conditions and the following disclaimer in the documentation
+     * and/or other materials provided with the distribution.
+     * Neither the name of Intel Corporation nor the names of its contributors
+     * may be used to endorse or promote products derived from this software
+     * without specific prior written permission.
+     *
+     * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS"
+     * AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE
+     * IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE
+     * ARE DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT OWNER OR CONTRIBUTORS BE
+     * LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL
+     * DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES;
+     * LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY
+     * THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING
+     * NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE,
+     * EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
+     */
+    /*
+     * Bug 178:
+     *
+     * SUMMARY: Unexpected exception occurs on access to the Fields specified by BankField
+     */
+    Method (MF0A, 0, Serialized)
+    {
+        OperationRegion (R000, SystemMemory, 0x0100, 0x0100)
+        Field (R000, ByteAcc, NoLock, Preserve)
+        {
+            BNK0,   2
+        }
 
-/*
- * Bug 178:
- *
- * SUMMARY: Unexpected exception occurs on access to the Fields specified by BankField
- */
+        BankField (R000, BNK0, 0x04, ByteAcc, NoLock, Preserve)
+        {
+            BKF0,   9
+        }
 
-	Method(mf0a,, Serialized)
-	{
-		OperationRegion(r000, SystemMemory, 0x100, 0x100)
-		Field(r000, ByteAcc, NoLock, Preserve) { bnk0, 2 }
-		BankField(r000, bnk0, 4, ByteAcc, NoLock, Preserve) { bkf0, 9 }
+        CH03 ("", 0x00, 0x00, 0x2A, 0x00)
+        Local0 = BKF0 /* \MF0A.BKF0 */
+        If (Y263)
+        {
+            /*
+             * After the bug 263 fixed we started actually
+             * have there several exceptions:
+             * - on evaluation of f001 stage
+             * - and on Store-to-debug stage
+             * Check opcode of the last exception.
+             */
+            CH04 ("", 0x02, 0x44, 0x00, 0x35, 0x00, 0x00) /* AE_AML_REGISTER_LIMIT */
+        }
+        Else
+        {
+            CH04 ("", 0x00, 0x44, 0x00, 0x37, 0x00, 0x00) /* AE_AML_REGISTER_LIMIT */
+        }
+    }
 
+    Method (MF0B, 0, Serialized)
+    {
+        Name (I000, 0x04)
+        OperationRegion (R000, SystemMemory, 0x0100, 0x0100)
+        Field (R000, ByteAcc, NoLock, Preserve)
+        {
+            BNK0,   2
+        }
 
-		CH03("", 0, 0x000, __LINE__, 0)
-		Store(bkf0, Local0)
+        BankField (R000, BNK0, I000, ByteAcc, NoLock, Preserve)
+        {
+            BKF0,   9
+        }
 
-		if (y263) {
-			/*
-			 * After the bug 263 fixed we started actually
-			 * have there several exceptions:
-			 * - on evaluation of f001 stage
-			 * - and on Store-to-debug stage
-			 * Check opcode of the last exception.
-			 */
-			CH04("", 2, 68, 0, __LINE__, 0, 0) // AE_AML_REGISTER_LIMIT
-		} else {
-			CH04("", 0, 68, 0, __LINE__, 0, 0) // AE_AML_REGISTER_LIMIT
-		}
-	}
+        CH03 ("", 0x00, 0x02, 0x43, 0x00)
+        Local0 = BKF0 /* \MF0B.BKF0 */
+        CH04 ("", 0x00, 0x44, 0x00, 0x45, 0x00, 0x00) /* AE_AML_REGISTER_LIMIT */
+    }
 
-	Method(mf0b,, Serialized)
-	{
-		Name(i000, 4)
-		OperationRegion(r000, SystemMemory, 0x100, 0x100)
-		Field(r000, ByteAcc, NoLock, Preserve) { bnk0, 2 }
-		BankField(r000, bnk0, i000, ByteAcc, NoLock, Preserve) { bkf0, 9 }
+    Method (MF0C, 0, Serialized)
+    {
+        OperationRegion (R000, SystemMemory, 0x0100, 0x0100)
+        Field (R000, ByteAcc, NoLock, Preserve)
+        {
+            BNK0,   2
+        }
 
+        BankField (R000, BNK0, 0x00, ByteAcc, NoLock, Preserve)
+        {
+            BKF0,   9
+        }
 
-		CH03("", 0, 0x002, __LINE__, 0)
-		Store(bkf0, Local0)
-		CH04("", 0, 68, 0, __LINE__, 0, 0) // AE_AML_REGISTER_LIMIT
-	}
+        CH03 ("", 0x00, 0x04, 0x4F, 0x00)
+        Local0 = BKF0 /* \MF0C.BKF0 */
+        CH03 ("", 0x00, 0x05, 0x51, 0x00)
+    }
 
-	Method(mf0c,, Serialized)
-	{
-		OperationRegion(r000, SystemMemory, 0x100, 0x100)
-		Field(r000, ByteAcc, NoLock, Preserve) { bnk0, 2 }
-		BankField(r000, bnk0, 0, ByteAcc, NoLock, Preserve) { bkf0, 9 }
+    Method (MF0D, 0, Serialized)
+    {
+        Name (I000, 0x00)
+        OperationRegion (R000, SystemMemory, 0x0100, 0x0100)
+        Field (R000, ByteAcc, NoLock, Preserve)
+        {
+            BNK0,   2
+        }
 
+        BankField (R000, BNK0, (I000 + 0x00), ByteAcc, NoLock, Preserve)
+        {
+            BKF0,   9
+        }
 
-		CH03("", 0, 0x004, __LINE__, 0)
-		Store(bkf0, Local0)
-		CH03("", 0, 0x005, __LINE__, 0)
-	}
+        CH03 ("", 0x00, 0x06, 0x5C, 0x00)
+        Local0 = BKF0 /* \MF0D.BKF0 */
+        CH03 ("", 0x00, 0x07, 0x5E, 0x00)
+    }
 
-	Method(mf0d,, Serialized)
-	{
-		Name(i000, 0)
-		OperationRegion(r000, SystemMemory, 0x100, 0x100)
-		Field(r000, ByteAcc, NoLock, Preserve) { bnk0, 2 }
-		BankField(r000, bnk0, Add(i000, 0), ByteAcc, NoLock, Preserve) { bkf0, 9 }
+    Method (MF0E, 0, Serialized)
+    {
+        Name (I000, 0x00)
+        OperationRegion (R000, SystemMemory, 0x0100, 0x0100)
+        Field (R000, ByteAcc, NoLock, Preserve)
+        {
+            BNK0,   2
+        }
 
+        BankField (R000, BNK0, I000, ByteAcc, NoLock, Preserve)
+        {
+            BKF0,   9
+        }
 
-		CH03("", 0, 0x006, __LINE__, 0)
-		Store(bkf0, Local0)
-		CH03("", 0, 0x007, __LINE__, 0)
-	}
-
-	Method(mf0e,, Serialized)
-	{
-		Name(i000, 0)
-		OperationRegion(r000, SystemMemory, 0x100, 0x100)
-		Field(r000, ByteAcc, NoLock, Preserve) { bnk0, 2 }
-		BankField(r000, bnk0, i000, ByteAcc, NoLock, Preserve) { bkf0, 9 }
-
-
-		CH03("", 0, 0x008, __LINE__, 0)
-		Store(bkf0, Local0)
-		CH03("", 0, 0x009, __LINE__, 0)
-	}
-
+        CH03 ("", 0x00, 0x08, 0x69, 0x00)
+        Local0 = BKF0 /* \MF0E.BKF0 */
+        CH03 ("", 0x00, 0x09, 0x6B, 0x00)
+    }
 

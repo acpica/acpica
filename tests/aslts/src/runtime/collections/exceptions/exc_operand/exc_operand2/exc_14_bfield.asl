@@ -1,288 +1,292 @@
-/*
- * Some or all of this work - Copyright (c) 2006 - 2017, Intel Corp.
- * All rights reserved.
- *
- * Redistribution and use in source and binary forms, with or without modification,
- * are permitted provided that the following conditions are met:
- *
- * Redistributions of source code must retain the above copyright notice,
- * this list of conditions and the following disclaimer.
- * Redistributions in binary form must reproduce the above copyright notice,
- * this list of conditions and the following disclaimer in the documentation
- * and/or other materials provided with the distribution.
- * Neither the name of Intel Corporation nor the names of its contributors
- * may be used to endorse or promote products derived from this software
- * without specific prior written permission.
- *
- * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS"
- * AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE
- * IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE
- * ARE DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT OWNER OR CONTRIBUTORS BE
- * LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL
- * DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES;
- * LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY
- * THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING
- * NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE,
- * EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
- */
+    /*
+     * Some or all of this work - Copyright (c) 2006 - 2017, Intel Corp.
+     * All rights reserved.
+     *
+     * Redistribution and use in source and binary forms, with or without modification,
+     * are permitted provided that the following conditions are met:
+     *
+     * Redistributions of source code must retain the above copyright notice,
+     * this list of conditions and the following disclaimer.
+     * Redistributions in binary form must reproduce the above copyright notice,
+     * this list of conditions and the following disclaimer in the documentation
+     * and/or other materials provided with the distribution.
+     * Neither the name of Intel Corporation nor the names of its contributors
+     * may be used to endorse or promote products derived from this software
+     * without specific prior written permission.
+     *
+     * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS"
+     * AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE
+     * IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE
+     * ARE DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT OWNER OR CONTRIBUTORS BE
+     * LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL
+     * DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES;
+     * LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY
+     * THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING
+     * NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE,
+     * EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
+     */
+    /*
+     *  Buffer Field
+     *
+     * (verify exceptions caused by the imprope use of Buffer Field type objects)
+     */
+    Name (Z106, 0x6A)
+    Name (B700, Buffer (0x14){})
+    CreateField (B700, 0x0B, 0x1F, BF20)
+    CreateField (B700, 0x3A, 0x41, BF21)
+    Name (II71, 0xABCD1234)
+    Name (BI01, Buffer (0x09)
+    {
+        /* 0000 */  0xA4, 0xA5, 0xA6, 0xA7, 0xB8, 0xB9, 0xBA, 0xBB,  // ........
+        /* 0008 */  0xBC                                             // .
+    })
+    /* Expected exceptions: */
+    /* */
+    /* 47 - AE_AML_OPERAND_TYPE */
+    /* See notes to m4b1 and m4b3 */
+    /* */
+    Method (M4BE, 0, Serialized)
+    {
+        Name (TS, "m4be")
+        Name (BBF1, Buffer (0x14){})
+        CreateField (BBF1, 0x0B, 0x1F, BF02)
+        CreateField (BBF1, 0x3A, 0x41, BF03)
+        /* Local Named Object */
 
-/*
- *  Buffer Field
- *
- * (verify exceptions caused by the imprope use of Buffer Field type objects)
- */
+        Method (M000, 1, Serialized)
+        {
+            Name (BBF1, Buffer (0x14){})
+            CreateField (BBF1, 0x0B, 0x1F, BF02)
+            CreateField (BBF1, 0x3A, 0x41, BF03)
+            BF02 = II71 /* \II71 */
+            BF03 = BI01 /* \BI01 */
+            /* Like Integer behaviour */
 
-Name(z106, 106)
+            If (Y083)
+            {
+                Local1 = DerefOf (BF02)
+                CH06 (Arg0, 0x00, 0x2F)
+            }
 
-Name(b700, Buffer(20) {})
-CreateField(b700, 11, 31, bf20)
-CreateField(b700, 58, 65, bf21)
+            Store (BF02 [0x00], Local1)
+            CH06 (Arg0, 0x01, 0x2F)
+            /* Like Buffer behaviour */
 
-Name(ii71, 0xabcd1234)
-Name(bi01, Buffer() {0xa4,0xa5,0xa6,0xa7,0xb8,0xb9,0xba,0xbb,0xbc})
+            If (Y083)
+            {
+                Local1 = DerefOf (BF03)
+                CH06 (Arg0, 0x02, 0x2F)
+            }
 
-// Expected exceptions:
-//
-// 47 - AE_AML_OPERAND_TYPE
-// See notes to m4b1 and m4b3
-//
-Method(m4be,, Serialized)
-{
-	Name(ts, "m4be")
+            Store (BF03 [0x00], Local1)
+            If (Y900)
+            {
+                CH03 (TS, Z106, 0x00, 0x56, 0x00)
+            }
+            Else
+            {
+                CH04 (TS, 0x00, 0x55, Z106, 0x58, 0x00, 0x00) /* AE_INDEX_TO_NOT_ATTACHED */
+            }
+        }
 
-	Name(bbf1, Buffer(20) {})
-	CreateField(bbf1, 11, 31, bf02)
-	CreateField(bbf1, 58, 65, bf03)
+        /* Global Named Object */
 
-	// Local Named Object
-	Method(m000, 1, Serialized)
-	{
-		Name(bbf1, Buffer(20) {})
-		CreateField(bbf1, 11, 31, bf02)
-		CreateField(bbf1, 58, 65, bf03)
+        Method (M001, 1, NotSerialized)
+        {
+            BF20 = II71 /* \II71 */
+            BF21 = BI01 /* \BI01 */
+            /* Like Integer behaviour */
 
-		Store(ii71, bf02)
-		Store(bi01, bf03)
+            If (Y083)
+            {
+                Local1 = DerefOf (BF20)
+                CH06 (Arg0, 0x03, 0x2F)
+            }
 
-		// Like Integer behaviour
+            Store (BF20 [0x00], Local1)
+            CH06 (Arg0, 0x04, 0x2F)
+            /* Like Buffer behaviour */
 
-		if (y083) {
-			Store (DerefOf(bf02), Local1)
-			CH06(arg0, 0, 47)
-		}
+            If (Y083)
+            {
+                Local1 = DerefOf (BF21)
+                CH06 (Arg0, 0x05, 0x2F)
+            }
 
-		Store (Index(bf02, 0), Local1)
-		CH06(arg0, 1, 47)
+            Store (BF21 [0x00], Local1)
+            If (Y900)
+            {
+                CH03 (TS, Z106, 0x01, 0x75, 0x00)
+            }
+            Else
+            {
+                CH04 (TS, 0x00, 0x55, Z106, 0x77, 0x00, 0x00) /* AE_INDEX_TO_NOT_ATTACHED */
+            }
+        }
 
-		// Like Buffer behaviour
+        /* Reference to Object */
 
-		if (y083) {
-			Store (DerefOf(bf03), Local1)
-			CH06(arg0, 2, 47)
-		}
+        Method (M002, 3, NotSerialized)
+        {
+            Debug = Arg0
+            Debug = Arg1
+            Local0 = ObjectType (Arg1)
+            If ((Local0 != 0x0E))
+            {
+                ERR (Arg0, Z106, 0x84, 0x00, 0x00, Local0, 0x0E)
+                Return (0x01)
+            }
 
-		Store (Index(bf03, 0), Local1)
-		if (y900) {
-			CH03(ts, z106, 0, __LINE__, 0)
-		} else {
-			CH04(ts, 0, 85, z106, __LINE__, 0, 0) // AE_INDEX_TO_NOT_ATTACHED
-		}
-	}
+            Local1 = DerefOf (Arg1)
+            CH03 (TS, Z106, 0x02, 0x89, 0x00)
+            Local1 = DerefOf (DerefOf (Arg1))
+            CH06 (Arg0, 0x07, 0x2F)
+            Store (DerefOf (Arg1) [0x00], Local1)
+            If (Arg2)
+            {
+                /* Like Buffer behaviour */
 
-	// Global Named Object
-	Method(m001, 1)
-	{
-		Store(ii71, bf20)
-		Store(bi01, bf21)
+                If (Y900)
+                {
+                    CH03 (TS, Z106, 0x03, 0x93, 0x00)
+                }
+                Else
+                {
+                    CH04 (TS, 0x00, 0x55, Z106, 0x95, 0x00, 0x00) /* AE_INDEX_TO_NOT_ATTACHED */
+                }
+            }
+            Else
+            {
+                /* Like Integer behaviour */
 
-		// Like Integer behaviour
+                CH06 (Arg0, 0x08, 0x2F)
+            }
 
-		if (y083) {
-			Store (DerefOf(bf20), Local1)
-			CH06(arg0, 3, 47)
-		}
+            Local1 = Match (DerefOf (Arg1), MTR, 0x00, MTR, 0x00, 0x00)
+            CH06 (Arg0, 0x09, 0x2F)
+            Return (0x00)
+        }
 
-		Store (Index(bf20, 0), Local1)
-		CH06(arg0, 4, 47)
+        /* Reference to Object as Result of Method invocation */
 
-		// Like Buffer behaviour
+        Method (M003, 1, Serialized)
+        {
+            Name (BBF1, Buffer (0x14){})
+            CreateField (BBF1, 0x0B, 0x1F, BF02)
+            CreateField (BBF1, 0x3A, 0x41, BF03)
+            Name (I000, 0x00) /* Label to check m000 invocations */
+            Method (M000, 2, NotSerialized)
+            {
+                I000 = Arg0
+                If ((Arg1 == 0x00))
+                {
+                    Local0 = RefOf (BF20)
+                }
+                ElseIf ((Arg1 == 0x01))
+                {
+                    Local0 = RefOf (BF21)
+                }
+                ElseIf ((Arg1 == 0x02))
+                {
+                    Local0 = RefOf (BF02)
+                }
+                ElseIf ((Arg1 == 0x03))
+                {
+                    Local0 = RefOf (BF03)
+                }
 
-		if (y083) {
-			Store (DerefOf(bf21), Local1)
-			CH06(arg0, 5, 47)
-		}
+                Return (Local0)
+            }
 
-		Store (Index(bf21, 0), Local1)
-		if (y900) {
-			CH03(ts, z106, 1, __LINE__, 0)
-		} else {
-			CH04(ts, 0, 85, z106, __LINE__, 0, 0) // AE_INDEX_TO_NOT_ATTACHED
-		}
+            Method (CH00, 2, NotSerialized)
+            {
+                If ((I000 != Arg1))
+                {
+                    ERR (Arg0, Z106, 0xBD, 0x00, 0x00, I000, Arg1)
+                }
+            }
 
-	}
+            Name (LPN0, 0x04)
+            Name (LPC0, 0x00)
+            BF20 = II71 /* \II71 */
+            BF21 = BI01 /* \BI01 */
+            BF02 = II71 /* \II71 */
+            BF03 = BI01 /* \BI01 */
+            While (LPN0)
+            {
+                Local0 = (0x03 * LPC0) /* \M4BE.M003.LPC0 */
+                I000 = 0x00
+                Local1 = DerefOf (M000 (0x01, LPC0))
+                CH03 (TS, Z106, (0x04 + LPC0), 0x00, 0x00)
+                CH00 (Arg0, 0x01)
+                Local1 = DerefOf (DerefOf (M000 (0x02, LPC0)))
+                CH06 (Arg0, (0x0B + Local0), 0x2F)
+                CH00 (Arg0, 0x02)
+                Store (DerefOf (M000 (0x03, LPC0)) [0x00], Local1)
+                If ((LPC0 % 0x02))
+                {
+                    /* Like Buffer behaviour */
 
-	// Reference to Object
-	Method(m002, 3)
-	{
-		Store(arg0, Debug)
-		Store(arg1, Debug)
+                    If (Y900)
+                    {
+                        CH03 (TS, Z106, (0x08 + LPC0), 0x00, 0x00)
+                    }
+                    Else
+                    {
+                        CH04 (TS, 0x00, 0x55, Z106, 0xDD, 0x00, 0x00) /* AE_INDEX_TO_NOT_ATTACHED */
+                    }
+                }
+                Else
+                {
+                    /* Like Integer behaviour */
 
-		Store(ObjectType(arg1), Local0)
-		if (LNotEqual(Local0, 14)) {
-			err(arg0, z106, __LINE__, 0, 0, Local0, 14)
-			return (1)
-		}
+                    CH06 (Arg0, (0x0C + Local0), 0x2F)
+                }
 
-		Store (DerefOf(arg1), Local1)
-		CH03(ts, z106, 2, __LINE__, 0)
+                CH00 (Arg0, 0x03)
+                Local1 = Match (DerefOf (M000 (0x04, LPC0)), MTR, 0x00, MTR, 0x00, 0x00)
+                CH06 (Arg0, (0x0D + Local0), 0x2F)
+                CH00 (Arg0, 0x04)
+                LPN0--
+                LPC0++
+            }
+        }
 
-		Store (DerefOf(DerefOf(arg1)), Local1)
-		CH06(arg0, 7, 47)
+        CH03 (TS, Z106, 0x0C, 0xEE, 0x00)
+        /* Local Named Object */
 
-		Store (Index(DerefOf(arg1), 0), Local1)
+        M000 (TS)
+        /* Global Named Object */
 
-		if (arg2) {
-			// Like Buffer behaviour
-			if (y900) {
-				CH03(ts, z106, 3, __LINE__, 0)
-			} else {
-				CH04(ts, 0, 85, z106, __LINE__, 0, 0) // AE_INDEX_TO_NOT_ATTACHED
-			}
-		} else {
-			// Like Integer behaviour
-			CH06(arg0, 8, 47)
-		}
+        M001 (TS)
+        /* Reference to Local Named Object */
 
-		Store (Match(DerefOf(arg1), MTR, 0, MTR, 0, 0), Local1)
-		CH06(arg0, 9, 47)
+        BF02 = II71 /* \II71 */
+        BF03 = BI01 /* \BI01 */
+        M002 (Concatenate (TS, "-m002-RefLocNameI"), RefOf (BF02), 0x00)
+        Local0 = RefOf (BF02)
+        M002 (Concatenate (TS, "-m002-RefLocName2I"), Local0, 0x00)
+        CondRefOf (BF02, Local0)
+        M002 (Concatenate (TS, "-m002-CondRefLocNameI"), Local0, 0x00)
+        M002 (Concatenate (TS, "-m002-RefLocNameB"), RefOf (BF03), 0x01)
+        Local0 = RefOf (BF03)
+        M002 (Concatenate (TS, "-m002-RefLocName2B"), Local0, 0x01)
+        CondRefOf (BF03, Local0)
+        M002 (Concatenate (TS, "-m002-CondRefLocNameB"), Local0, 0x01)
+        BF20 = II71 /* \II71 */
+        BF21 = BI01 /* \BI01 */
+        M002 (Concatenate (TS, "-m002-RefGlobNameI"), RefOf (BF20), 0x00)
+        Local0 = RefOf (BF20)
+        M002 (Concatenate (TS, "-m002-RefGlobName2I"), Local0, 0x00)
+        CondRefOf (BF20, Local0)
+        M002 (Concatenate (TS, "-m002-CondRefGlobNameI"), Local0, 0x00)
+        M002 (Concatenate (TS, "-m002-RefGlobNameB"), RefOf (BF21), 0x01)
+        Local0 = RefOf (BF21)
+        M002 (Concatenate (TS, "-m002-RefGlobName2B"), Local0, 0x01)
+        CondRefOf (BF21, Local0)
+        M002 (Concatenate (TS, "-m002-CondRefGlobNameB"), Local0, 0x01)
+        /* Reference to Object as Result of Method invocation */
 
-		return (0)
-	}
+        M003 (TS)
+    }
 
-	// Reference to Object as Result of Method invocation
-	Method(m003, 1, Serialized)
-	{
-		Name(bbf1, Buffer(20) {})
-		CreateField(bbf1, 11, 31, bf02)
-		CreateField(bbf1, 58, 65, bf03)
-
-		Name(i000, 0) // Label to check m000 invocations
-
-		Method(m000, 2)
-		{
-			Store(arg0, i000)
-			if (LEqual(arg1, 0)) {
-				Store(Refof(bf20), Local0)
-			} elseif (LEqual(arg1, 1)) {
-				Store(Refof(bf21), Local0)
-			} elseif (LEqual(arg1, 2)) {
-				Store(Refof(bf02), Local0)
-			} elseif (LEqual(arg1, 3)) {
-				Store(Refof(bf03), Local0)
-			}
-			Return (Local0)
-		}
-
-		Method(CH00, 2)
-		{
-			if (LNotEqual(i000, arg1)) {
-				err(arg0, z106, __LINE__, 0, 0, i000, arg1)
-			}
-		}
-
-		Name(lpN0, 4)
-		Name(lpC0, 0)
-
-		Store(ii71, bf20)
-		Store(bi01, bf21)
-		Store(ii71, bf02)
-		Store(bi01, bf03)
-
-		While (lpN0) {
-			Multiply(3, lpC0, Local0)
-
-			Store(0, i000)
-
-			Store (DerefOf(m000(1, lpC0)), Local1)
-			CH03(ts, z106, Add(4, lpC0), 0, 0)
-			CH00(arg0, 1)
-
-
-			Store (DerefOf(DerefOf(m000(2, lpC0))), Local1)
-			CH06(arg0, Add(11, Local0), 47)
-			CH00(arg0, 2)
-
-			Store (Index(DerefOf(m000(3, lpC0)), 0), Local1)
-			if (Mod(lpC0, 2)) {
-				// Like Buffer behaviour
-				if (y900) {
-					CH03(ts, z106, Add(8, lpC0), 0, 0)
-				} else {
-					CH04(ts, 0, 85, z106, __LINE__, 0, 0) // AE_INDEX_TO_NOT_ATTACHED
-				}
-			} else {
-				// Like Integer behaviour
-				CH06(arg0, Add(12, Local0), 47)
-			}
-			CH00(arg0, 3)
-
-			Store (Match(DerefOf(m000(4, lpC0)), MTR, 0, MTR, 0, 0), Local1)
-			CH06(arg0, Add(13, Local0), 47)
-			CH00(arg0, 4)
-
-			Decrement(lpN0)
-			Increment(lpC0)
-		}
-	}
-
-	CH03(ts, z106, 12, __LINE__, 0)
-
-	// Local Named Object
-	m000(ts)
-
-	// Global Named Object
-	m001(ts)
-
-	// Reference to Local Named Object
-
-	Store(ii71, bf02)
-	Store(bi01, bf03)
-
-	m002(Concatenate(ts, "-m002-RefLocNameI"), RefOf(bf02), 0)
-
-	Store(RefOf(bf02), Local0)
-	m002(Concatenate(ts, "-m002-RefLocName2I"), Local0, 0)
-
-	CondRefOf(bf02, Local0)
-	m002(Concatenate(ts, "-m002-CondRefLocNameI"), Local0, 0)
-
-	m002(Concatenate(ts, "-m002-RefLocNameB"), RefOf(bf03), 1)
-
-	Store(RefOf(bf03), Local0)
-	m002(Concatenate(ts, "-m002-RefLocName2B"), Local0, 1)
-
-	CondRefOf(bf03, Local0)
-	m002(Concatenate(ts, "-m002-CondRefLocNameB"), Local0, 1)
-
-	Store(ii71, bf20)
-	Store(bi01, bf21)
-
-	m002(Concatenate(ts, "-m002-RefGlobNameI"), RefOf(bf20), 0)
-
-	Store(RefOf(bf20), Local0)
-	m002(Concatenate(ts, "-m002-RefGlobName2I"), Local0, 0)
-
-	CondRefOf(bf20, Local0)
-	m002(Concatenate(ts, "-m002-CondRefGlobNameI"), Local0, 0)
-
-	m002(Concatenate(ts, "-m002-RefGlobNameB"), RefOf(bf21), 1)
-
-	Store(RefOf(bf21), Local0)
-	m002(Concatenate(ts, "-m002-RefGlobName2B"), Local0, 1)
-
-	CondRefOf(bf21, Local0)
-	m002(Concatenate(ts, "-m002-CondRefGlobNameB"), Local0, 1)
-
-	// Reference to Object as Result of Method invocation
-	m003(ts)
-}
