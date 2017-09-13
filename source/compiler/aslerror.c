@@ -251,6 +251,7 @@ AeClearErrorLog (
     ASL_ERROR_MSG           *Enode = Gbl_ErrorLog;
     ASL_ERROR_MSG           *Next;
 
+
     /* Walk the error node list */
 
     while (Enode)
@@ -301,8 +302,7 @@ AeAddToErrorLog (
     Prev = NULL;
     Next = Gbl_ErrorLog;
 
-    while ((Next) &&
-           (Next->LogicalLineNumber <= Enode->LogicalLineNumber))
+    while ((Next) && (Next->LogicalLineNumber <= Enode->LogicalLineNumber))
     {
         Prev = Next;
         Next = Next->Next;
@@ -327,9 +327,9 @@ AeAddToErrorLog (
  *
  * FUNCTION:    AeDecodeErrorMessageId
  *
- * PARAMETERS:  FileId          - ID of output file
+ * PARAMETERS:  OutputFile      - Output file
  *              Enode           - Error node to print
- *              Header          - Additional text before each message
+ *              PrematureEOF    - True = PrematureEOF has been reached
  *              Total           - Total legth of line
  *
  * RETURN:      None
@@ -437,11 +437,13 @@ AeDecodeErrorMessageId (
  *
  * FUNCTION:    AePrintErrorSourceLine
  *
- * PARAMETERS:  FileId          - ID of output file
+ * PARAMETERS:  OutputFile      - Output file
  *              Enode           - Error node to print
- *              Header          - Additional text before each message
+ *              PrematureEOF    - True = PrematureEOF has been reached
+ *              Total           - amount of characters printed so far
  *
- * RETURN:      None
+ *
+ * RETURN:      Status
  *
  * DESCRIPTION: Print the source line of an error.
  *
@@ -521,8 +523,8 @@ AePrintErrorSourceLine (
             /*
              * Seek to the offset in the combined source file,
              * read the source line, and write it to the output.
-         */
-        Actual = fseek (SourceFile,
+             */
+            Actual = fseek (SourceFile,
                 (long) Enode->LogicalByteOffset, (int) SEEK_SET);
             if (Actual)
             {
@@ -707,7 +709,7 @@ AePrintException (
 
     while (Child)
     {
-        Total = 0;
+        fprintf (OutputFile, "\n");
         AePrintSubError (OutputFile, Child);
         Child = Child->SubError;
     }
@@ -718,9 +720,8 @@ AePrintException (
  *
  * FUNCTION:    AePrintSubError
  *
- * PARAMETERS:  FileId          - ID of output file
+ * PARAMETERS:  OutputFile      - Output file
  *              Enode           - Error node to print
- *              Header          - Additional text before each message
  *
  * RETURN:      None
  *
@@ -734,23 +735,16 @@ AePrintSubError (
     FILE                    *OutputFile,
     ASL_ERROR_MSG           *Enode)
 {
-    ACPI_STATUS             Status;
     UINT32                  Total = 0;
     BOOLEAN                 PrematureEOF = FALSE;
-    UINT32                  ErrorColumn;
     const char              *MainMessage;
 
 
     MainMessage = AeDecodeMessageId (Enode->MessageId);
-    ErrorColumn = Enode->FilenameLength + 5 + 2 + 1;
-    fprintf (OutputFile, "%*c", ErrorColumn, ' ');
-    fprintf (OutputFile, "%s%s", MainMessage, "\n");
-    Status = AePrintErrorSourceLine (OutputFile, Enode, &PrematureEOF, &Total);
+
+    fprintf (OutputFile, "    %s%s", MainMessage, "\n    ");
+    (void) AePrintErrorSourceLine (OutputFile, Enode, &PrematureEOF, &Total);
     fprintf (OutputFile, "\n");
-    if (ACPI_FAILURE (Status))
-    {
-        return;
-    }
 }
 
 
@@ -787,7 +781,8 @@ AePrintErrorLog (
  *
  * FUNCTION:    AslInitEnode
  *
- * PARAMETERS:  Level               - Seriousness (Warning/error, etc.)
+ * PARAMETERS:  InputEnode          - Input Error node to initialize
+ *              Level               - Seriousness (Warning/error, etc.)
  *              MessageId           - Index into global message buffer
  *              CurrentLineNumber   - Actual file line number
  *              LogicalLineNumber   - Cumulative line number
@@ -795,6 +790,8 @@ AePrintErrorLog (
  *              Column              - Column in current line
  *              Filename            - source filename
  *              ExtraMessage        - additional error message
+ *              SourceLine          - Line of error source code
+ *              SubError            - SubError of this InputEnode
  *
  * RETURN:      None
  *
@@ -816,6 +813,7 @@ static void AslInitEnode (
     ASL_ERROR_MSG           *SubError)
 {
     ASL_ERROR_MSG           *Enode;
+
 
     *InputEnode = UtLocalCalloc (sizeof (ASL_ERROR_MSG));
     Enode = *InputEnode;
@@ -889,7 +887,7 @@ AslCommonError2 (
     char                    *ExtraMessage)
 {
     AslLogNewError (Level, MessageId, LineNumber, LineNumber, 0, Column,
-                    Filename, ExtraMessage, SourceLine, NULL);
+        Filename, ExtraMessage, SourceLine, NULL);
 }
 
 
@@ -924,8 +922,8 @@ AslCommonError (
     char                    *ExtraMessage)
 {
     AslLogNewError (Level, MessageId, CurrentLineNumber, LogicalLineNumber,
-                    LogicalByteOffset, Column, Filename, ExtraMessage,
-                    NULL, NULL);
+        LogicalByteOffset, Column, Filename, ExtraMessage,
+        NULL, NULL);
 }
 
 
@@ -940,7 +938,9 @@ AslCommonError (
  *              LogicalByteOffset   - Byte offset in source file
  *              Column              - Column in current line
  *              Filename            - source filename
- *              ExtraMessage        - additional error message
+ *              Message             - additional error message
+ *              SourceLine          - Actual line of source code
+ *              SubError            - Sub-error associated with this error
  *
  * RETURN:      None
  *
@@ -964,8 +964,8 @@ AslLogNewError (
 
 
     AslInitEnode (&Enode, Level, MessageId, LineNumber, LogicalLineNumber,
-                  LogicalByteOffset, Column, Filename, Message, SourceLine,
-                  SubError);
+        LogicalByteOffset, Column, Filename, Message, SourceLine,
+        SubError);
 
     /* Add the new node to the error node list */
 
@@ -996,8 +996,8 @@ AslLogNewError (
  *
  * FUNCTION:    AslIsExceptionIgnored
  *
- * PARAMETERS:  Level               - Seriousness (Warning/error, etc.)
- *              MessageId           - Index into global message buffer
+ * PARAMETERS:  Level           - Seriousness (Warning/error, etc.)
+ *              MessageId       - Index into global message buffer
  *
  * RETURN:      BOOLEAN
  *
@@ -1011,7 +1011,7 @@ AslIsExceptionIgnored (
     UINT8                   Level,
     UINT16                  MessageId)
 {
-    BOOLEAN ExceptionIgnored;
+    BOOLEAN                 ExceptionIgnored;
 
 
     /* Note: this allows exception to be disabled and expected */
@@ -1040,7 +1040,8 @@ void
 AslCheckExpectedExceptions (
     void)
 {
-    UINT8 i;
+    UINT8                   i;
+
 
     for (i = 0; i < Gbl_ExpectedMessagesIndex; ++i)
     {
@@ -1151,8 +1152,8 @@ AslDisableException (
  *
  * FUNCTION:    AslIsExceptionDisabled
  *
- * PARAMETERS:  Level               - Seriousness (Warning/error, etc.)
- *              MessageId           - Index into global message buffer
+ * PARAMETERS:  Level           - Seriousness (Warning/error, etc.)
+ *              MessageId       - Index into global message buffer
  *
  * RETURN:      TRUE if exception/message should be ignored
  *
@@ -1170,9 +1171,8 @@ AslIsExceptionExpected (
     UINT32                  i;
 
 
-    /*
-     * Mark this exception as received
-     */
+    /* Mark this exception as received */
+
     EncodedMessageId = AeBuildFullExceptionCode (Level, MessageId);
     for (i = 0; i < Gbl_ExpectedMessagesIndex; i++)
     {
@@ -1255,12 +1255,13 @@ AslIsExceptionDisabled (
  *
  * FUNCTION:    AslDualParseOpError
  *
- * PARAMETERS:  Level               - Seriousness (Warning/error, etc.)
- *              MessageId           - Index into global message buffer
- *              MainOp              - Parse node where error happened
+ * PARAMETERS:  Level           - Seriousness (Warning/error, etc.)
+ *              MainMsgId       - Index into global message buffer
+ *              MainOp          - Parse node where error happened
  *              MainMsg         - Message pertaining to the MainOp
- *              SubOp            - Additional parse node for better message
- *              SubMsg    - Message pertainint to SubOp
+ *              SubMsgId        - Index into global message buffer
+ *              SubOp           - Additional parse node for better message
+ *              SubMsg          - Message pertainint to SubOp
  *
  *
  * RETURN:      None
@@ -1293,14 +1294,15 @@ AslDualParseOpError (
     if (SubOp)
     {
         AslInitEnode (&SubEnode, Level, SubMsgId, SubOp->Asl.LineNumber,
-                      SubOp->Asl.LogicalLineNumber, SubOp->Asl.LogicalByteOffset,
-                      SubOp->Asl.Column, SubOp->Asl.Filename, SubMsg,
-                      NULL, NULL);
+            SubOp->Asl.LogicalLineNumber, SubOp->Asl.LogicalByteOffset,
+            SubOp->Asl.Column, SubOp->Asl.Filename, SubMsg,
+            NULL, NULL);
     }
+
     AslLogNewError (Level, MainMsgId, MainOp->Asl.LineNumber,
-                    MainOp->Asl.LogicalLineNumber, MainOp->Asl.LogicalByteOffset,
-                    MainOp->Asl.Column, MainOp->Asl.Filename, MainMsg,
-                    NULL, SubEnode);
+        MainOp->Asl.LogicalLineNumber, MainOp->Asl.LogicalByteOffset,
+        MainOp->Asl.Column, MainOp->Asl.Filename, MainMsg,
+        NULL, SubEnode);
 }
 
 
