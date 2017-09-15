@@ -202,6 +202,7 @@ typedef struct asl_method_info
     UINT8                   ArgInitialized[ACPI_METHOD_NUM_ARGS];
     UINT8                   HasBeenTyped;
     UINT8                   ShouldBeSerialized;
+    UINT8                   CreatesNamedObjects;
 
 } ASL_METHOD_INFO;
 
