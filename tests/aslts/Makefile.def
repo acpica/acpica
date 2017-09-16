@@ -109,11 +109,10 @@ install_all_modes_of_test_case:	$(TOP)/tmp/aml/$(ASLTS_VER)/$(ASLTS_AMLDIR)
 			rm $$j.nsp; \
 			rm $$j.offset.h; \
 			rm $$j.src; \
-			>&2 printf " => Done"; \
+			>&2 printf " => Done "; \
 			if [ $$ret != 0 ]; then \
 				rval=1; \
 				>&2 echo "**** Unexpected iASL failure in $$dd/$$j.asl!"; \
-				exit 1; \
 			fi; \
 		done; \
 		>&2 echo ""; \
@@ -127,9 +126,8 @@ install_all_modes_of_test_case:	$(TOP)/tmp/aml/$(ASLTS_VER)/$(ASLTS_AMLDIR)
 		done; \
 	else \
 		echo "Bad iASL 0: <$(ASL)> does not exist"; \
-		rval=1; \
-	fi; \
-	if [ $$rval != 0 ]; then exit 1; fi
+		exit 1; \
+	fi;
 
 # Make-install one particular Test Case for all modes.
 
@@ -148,19 +146,19 @@ install_test_case:
 	fi
 
 
-TEST_SEQUENCE_ASL_FLAGS="$(ASLTS_ASLFLAGS) $(COMMON_NO_OUTPUT_ASL_FLAGS) $(ADD_ASLFLAGS)"
+TEST_SEQUENCE_ASL_FLAGS="$(ASLTS_ASLFLAGS) $(COMMON_NO_OUTPUT_ASL_FLAGS)"
 
 disasm_test_compile: $(TOP)/tmp/aml/$(ASLTS_VER)/$(ASLTS_AMLDIR)
 	@rval=0; \
 	for j in ${ASLMOD} $(ASLMODADD); do \
 		for k in ${AMLMOD}; do \
 			>&2 printf  " => Compile with externals in place"; \
-			"$(ASL)" -p $$k-extInPlace -oE $(TEST_SEQUENCE_ASL_FLAGS) $$j.asl >> $(COMPILER_LOG) 2>> $(COMPILER_ERROR_LOG); \
+			"$(ASL)" -p $$k-extInPlace -oE $(ADD_ASLFLAGS) $(TEST_SEQUENCE_ASL_FLAGS) $$j.asl >> $(COMPILER_LOG) 2>> $(COMPILER_ERROR_LOG); \
 			ret=$$?; \
 			if [ $$ret != 0 ]; then \
 				rval=2; \
 				>&2 printf " [[ Error: compiling $$k.aml with externals in place failed ]]\n"; \
-				>&2 printf "          Flags used: -p $$k-extInPlace -oE $(TEST_SEQUENCE_ASL_FLAGS)\n\n"; \
+				>&2 printf "          Flags used: -p $$k-extInPlace -oE $(ADD_ASLFLAGS) $(TEST_SEQUENCE_ASL_FLAGS)\n\n"; \
 			fi; \
 		done; \
 	done; \
@@ -184,12 +182,12 @@ disasm_test_recompile: disasm_test_disassemble
 	@rval=0; \
 	for k in ${AMLMOD}; do \
 		>&2 printf " => Recompile\n"; \
-		"$(ASL)" $(TEST_SEQUENCE_ASL_FLAGS) $$k.dsl >> $(COMPILER_LOG) 2>> $(COMPILER_ERROR_LOG); \
+		"$(ASL)" $(ADD_ASLFLAGS) $(TEST_SEQUENCE_ASL_FLAGS) $$k.dsl >> $(COMPILER_LOG) 2>> $(COMPILER_ERROR_LOG); \
 		ret=$$?; \
 		if [ $$ret != 0 ]; then \
 			rval=2; \
 			>&2 printf " [[ Error: re-compilation of $$k-$$l.dsl failed]]\n"; \
-			>&2 printf "          Flags used: $(TEST_SEQUENCE_ASL_FLAGS)\n\n"; \
+			>&2 printf "          Flags used: $(ADD_ASLFLAGS) $(TEST_SEQUENCE_ASL_FLAGS)\n\n"; \
 		fi; \
 		rm $$k.dsl; \
 		echo "---- Move: $$k.aml $(TOP)/tmp/aml/$(ASLTS_VER)/$(ASLTS_AMLDIR)" >> $(COMPILER_LOG); \
@@ -210,7 +208,7 @@ converter_test_convert: $(TOP)/tmp/aml/$(ASLTS_VER)/$(ASLTS_AMLDIR)
 	@rval=0; \
 	for j in ${ASLMOD} $(ASLMODADD); do \
 		>&2 printf  "  Convert"; \
-		"$(ASL)" -cr -ca $$j.asl >> $(COMPILER_LOG) 2>> $(COMPILER_ERROR_LOG); \
+		"$(ASL)" $(ADD_ASLFLAGS) -cr -ca $$j.asl >> $(COMPILER_LOG) 2>> $(COMPILER_ERROR_LOG); \
 		ret=$$?; \
 		if [ $$ret != 0 ]; then \
 			rval=2; \
@@ -225,12 +223,12 @@ converter_test_recompile: converter_test_convert
 	for j in ${ASLMOD} $(ASLMODADD); do \
 		for k in ${AMLMOD}; do \
 			>&2 printf " => Recompile"; \
-			"$(ASL)" $(TEST_SEQUENCE_ASL_FLAGS) -p $$k $$j.dsl >> $(COMPILER_LOG) 2>> $(COMPILER_ERROR_LOG); \
+			"$(ASL)" $(ADD_ASLFLAGS) $(TEST_SEQUENCE_ASL_FLAGS) -p $$k $$j.dsl >> $(COMPILER_LOG) 2>> $(COMPILER_ERROR_LOG); \
 			ret=$$?; \
 			if [ $$ret != 0 ]; then \
 				rval=2; \
 				>&2 printf " [[ Error: re-compilation of $$j.dsl failed]]\n"; \
-				>&2 printf "          Flags used: $(TEST_SEQUENCE_ASL_FLAGS) -p $$k\n\n"; \
+				>&2 printf "          Flags used: $(ADD_ASLFLAGS) $(TEST_SEQUENCE_ASL_FLAGS) -p $$k\n\n"; \
 			else \
 				>&2 printf " => Done\n"; \
 			fi; \

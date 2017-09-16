@@ -333,21 +333,25 @@ binary_compare()
 	echo "    $disasm_compile_dir"
 
 	if [ ! -d $disasm_compile_dir ]; then
-		echo "$dism_compile_dir does not exist. Aborting binary compare"
+		echo "  $dism_compile_dir does not exist. Aborting binary compare"
 		return;
 	fi
 	if [ ! -d $normal_compile_dir ]; then
-		echo "$normal_compile_dir does not exist. Aborting binary compare"
+		echo "  $normal_compile_dir does not exist. Aborting binary compare"
 		return;
 	fi
 	for f in $disasm_compile_dir/*
 	do
 		filename=`basename $f`
-		acpibin -a "$f" "$normal_compile_dir/$filename" > /dev/null
-		if [ $? -ne 0 ]; then
-			echo "[[ Error: $mode Binary compare for $filename failed ]]"
+                if [ ! -f "$normal_compile_dir/$filename" ]; then
+			echo "  binary compare $mode the following file does not exist: $normal_compile_dir/$filename"
 		else
-			echo "$mode Binary compare for $filename passed"
+			acpibin -a "$f" "$normal_compile_dir/$filename" > /dev/null
+			if [ $? -ne 0 ]; then
+				echo " [[ Error: $mode Binary compare for $filename failed ]]"
+			else
+				echo "  $mode Binary compare for $filename passed"
+			fi
 		fi
 	done
 }
