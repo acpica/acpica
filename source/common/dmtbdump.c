@@ -3252,6 +3252,60 @@ AcpiDmDumpPcct (
 
 /*******************************************************************************
  *
+ * FUNCTION:    AcpiDmDumpPdtt
+ *
+ * PARAMETERS:  Table               - A PDTT table
+ *
+ * RETURN:      None
+ *
+ * DESCRIPTION: Format the contents of a Pdtt. This is a variable-length
+ *              table that contains an open-ended number of IDs
+ *              at the end of the table.
+ *
+ ******************************************************************************/
+
+void
+AcpiDmDumpPdtt (
+    ACPI_TABLE_HEADER       *Table)
+{
+    ACPI_STATUS             Status;
+    ACPI_PDTT_CHANNEL       *SubTable;
+    UINT32                  Length = Table->Length;
+    UINT32                  Offset = sizeof (ACPI_TABLE_PDTT);
+
+
+    /* Main table */
+
+    Status = AcpiDmDumpTable (Length, 0, Table, 0, AcpiDmTableInfoPdtt);
+    if (ACPI_FAILURE (Status))
+    {
+        return;
+    }
+
+    /* Subtables. Currently there is only one type, but can be multiples */
+
+    SubTable = ACPI_ADD_PTR (ACPI_PDTT_CHANNEL, Table, Offset);
+    while (Offset < Table->Length)
+    {
+        AcpiOsPrintf ("\n");
+        Status = AcpiDmDumpTable (Length, Offset, SubTable,
+            sizeof (ACPI_PDTT_CHANNEL), AcpiDmTableInfoPdtt0);
+        if (ACPI_FAILURE (Status))
+        {
+            return;
+        }
+
+        /* Point to next subtable */
+
+        Offset += sizeof (ACPI_PDTT_CHANNEL);
+        SubTable = ACPI_ADD_PTR (ACPI_PDTT_CHANNEL, SubTable,
+            sizeof (ACPI_PDTT_CHANNEL));
+    }
+}
+
+
+/*******************************************************************************
+ *
  * FUNCTION:    AcpiDmDumpPmtt
  *
  * PARAMETERS:  Table               - A PMTT table
@@ -3675,6 +3729,174 @@ NextSubTable:
 }
 
 
+
+/*******************************************************************************
+ *
+ * FUNCTION:    AcpiDmDumpSdev
+ *
+ * PARAMETERS:  Table               - A SDEV table
+ *
+ * RETURN:      None
+ *
+ * DESCRIPTION: Format the contents of a SDEV. This is a variable-length
+ *              table that contains variable strings and vendor data.
+ *
+ ******************************************************************************/
+
+void
+AcpiDmDumpSdev (
+    ACPI_TABLE_HEADER       *Table)
+{
+    ACPI_STATUS             Status;
+    ACPI_SDEV_HEADER        *SubTable;
+    ACPI_SDEV_PCIE          *Pcie;
+    ACPI_SDEV_NAMESPACE     *Namesp;
+    ACPI_DMTABLE_INFO       *InfoTable;
+    UINT32                  Length = Table->Length;
+    UINT32                  Offset = sizeof (ACPI_TABLE_SDEV);
+    UINT16                  PathOffset;
+    UINT16                  PathLength;
+    UINT16                  VendorDataOffset;
+    UINT16                  VendorDataLength;
+
+
+    /* Main table */
+
+    Status = AcpiDmDumpTable (Length, 0, Table, 0, AcpiDmTableInfoSdev);
+    if (ACPI_FAILURE (Status))
+    {
+        return;
+    }
+
+    /* Subtables */
+
+    SubTable = ACPI_ADD_PTR (ACPI_SDEV_HEADER, Table, Offset);
+    while (Offset < Table->Length)
+    {
+        /* Common subtable header */
+
+        AcpiOsPrintf ("\n");
+        Status = AcpiDmDumpTable (Table->Length, Offset, SubTable,
+            SubTable->Length, AcpiDmTableInfoSdevHdr);
+        if (ACPI_FAILURE (Status))
+        {
+            return;
+        }
+
+        switch (SubTable->Type)
+        {
+        case ACPI_SDEV_TYPE_NAMESPACE_DEVICE:
+
+            InfoTable = AcpiDmTableInfoSdev0;
+            break;
+
+        case ACPI_SDEV_TYPE_PCIE_ENDPOINT_DEVICE:
+
+            InfoTable = AcpiDmTableInfoSdev1;
+            break;
+
+        default:
+            goto NextSubTable;
+        }
+
+        AcpiOsPrintf ("\n");
+        Status = AcpiDmDumpTable (Table->Length, Offset, SubTable,
+            SubTable->Length, InfoTable);
+        if (ACPI_FAILURE (Status))
+        {
+            return;
+        }
+
+        switch (SubTable->Type)
+        {
+        case ACPI_SDEV_TYPE_NAMESPACE_DEVICE:
+
+            /* Dump the PCIe device ID(s) */
+
+            Namesp = ACPI_CAST_PTR (ACPI_SDEV_NAMESPACE, SubTable);
+            PathOffset = Namesp->DeviceIdOffset;
+            PathLength = Namesp->DeviceIdLength;
+
+            if (PathLength)
+            {
+                Status = AcpiDmDumpTable (Table->Length, 0,
+                    ACPI_ADD_PTR (UINT8, Namesp, PathOffset),
+                    PathLength, AcpiDmTableInfoSdev0a);
+                if (ACPI_FAILURE (Status))
+                {
+                    return;
+                }
+            }
+
+            /* Dump the vendor-specific data */
+
+            VendorDataLength =
+                Namesp->VendorDataLength;
+            VendorDataOffset =
+                Namesp->DeviceIdOffset + Namesp->DeviceIdLength;
+
+            if (VendorDataLength)
+            {
+                Status = AcpiDmDumpTable (Table->Length, 0,
+                    ACPI_ADD_PTR (UINT8, Namesp, VendorDataOffset),
+                    VendorDataLength, AcpiDmTableInfoSdev1b);
+                if (ACPI_FAILURE (Status))
+                {
+                    return;
+                }
+            }
+            break;
+
+        case ACPI_SDEV_TYPE_PCIE_ENDPOINT_DEVICE:
+
+            /* PCI path substructures */
+
+            Pcie = ACPI_CAST_PTR (ACPI_SDEV_PCIE, SubTable);
+            PathOffset = Pcie->PathOffset;
+            PathLength = Pcie->PathLength;
+
+            while (PathLength)
+            {
+                Status = AcpiDmDumpTable (Table->Length,
+                    PathOffset + Offset,
+                    ACPI_ADD_PTR (UINT8, Pcie, PathOffset),
+                    sizeof (ACPI_SDEV_PCIE_PATH), AcpiDmTableInfoSdev1a);
+                if (ACPI_FAILURE (Status))
+                {
+                    return;
+                }
+
+                PathOffset += sizeof (ACPI_SDEV_PCIE_PATH);
+                PathLength -= sizeof (ACPI_SDEV_PCIE_PATH);
+            }
+
+            /* VendorData */
+
+            VendorDataLength = Pcie->VendorDataLength;
+            VendorDataOffset = Pcie->PathOffset + Pcie->PathLength;
+
+            if (VendorDataLength)
+            {
+                Status = AcpiDmDumpTable (Table->Length, 0,
+                    ACPI_ADD_PTR (UINT8, Pcie, VendorDataOffset),
+                    VendorDataLength, AcpiDmTableInfoSdev1b);
+            }
+            break;
+
+        default:
+            goto NextSubTable;
+        }
+
+NextSubTable:
+        /* Point to next subtable */
+
+        Offset += SubTable->Length;
+        SubTable = ACPI_ADD_PTR (ACPI_SDEV_HEADER, SubTable,
+            SubTable->Length);
+    }
+}
+
+
 /*******************************************************************************
  *
  * FUNCTION:    AcpiDmDumpSlic
@@ -3997,6 +4219,64 @@ AcpiDmDumpTcpa (
     if (ACPI_FAILURE (Status))
     {
         AcpiOsPrintf ("\n**** Cannot disassemble TCPA table\n");
+    }
+}
+
+
+/*******************************************************************************
+ *
+ * FUNCTION:    AcpiDmDumpTpm2
+ *
+ * PARAMETERS:  Table               - A TPM2 table
+ *
+ * RETURN:      None
+ *
+ * DESCRIPTION: Format the contents of a TPM2.
+ *
+ ******************************************************************************/
+
+void
+AcpiDmDumpTpm2 (
+    ACPI_TABLE_HEADER       *Table)
+{
+    UINT32                  Offset = sizeof (ACPI_TABLE_TPM2);
+    ACPI_TABLE_TPM2         *CommonHeader = ACPI_CAST_PTR (ACPI_TABLE_TPM2, Table);
+    ACPI_TPM2_TRAILER       *SubTable = ACPI_ADD_PTR (ACPI_TPM2_TRAILER, Table, Offset);
+    ACPI_TPM2_ARM_SMC       *ArmSubTable;
+    ACPI_STATUS             Status;
+
+
+    /* Main table */
+
+    Status = AcpiDmDumpTable (Table->Length, 0, Table, 0, AcpiDmTableInfoTpm2);
+    if (ACPI_FAILURE (Status))
+    {
+        return;
+    }
+
+    AcpiOsPrintf ("\n");
+    Status = AcpiDmDumpTable (Table->Length, Offset, SubTable,
+        Table->Length - Offset, AcpiDmTableInfoTpm2a);
+    if (ACPI_FAILURE (Status))
+    {
+        return;
+    }
+
+    switch (CommonHeader->StartMethod)
+    {
+    case ACPI_TPM2_COMMAND_BUFFER_WITH_ARM_SMC:
+
+        ArmSubTable = ACPI_ADD_PTR (ACPI_TPM2_ARM_SMC, SubTable,
+            sizeof (ACPI_TPM2_TRAILER));
+        Offset += sizeof (ACPI_TPM2_TRAILER);
+
+        AcpiOsPrintf ("\n");
+        Status = AcpiDmDumpTable (Table->Length, Offset, ArmSubTable,
+            Table->Length - Offset, AcpiDmTableInfoTpm211);
+        break;
+
+    default:
+        break;
     }
 }
 
