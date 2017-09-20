@@ -808,8 +808,8 @@ LdNamespace1Begin (
                 /*
                  * Allow one create on an object or segment that was
                  * previously declared External only if WalkState->OwnerId and
-                 * Node->OwnerId are found in different tables (meaning that
-                 * they have differnt OwnerIds).
+                 * Node->OwnerId are different (meaning that the current WalkState
+                 * and the Node are in different tables).
                  */
                 Node->Flags &= ~ANOBJ_IS_EXTERNAL;
                 Node->Type = (UINT8) ObjectType;
