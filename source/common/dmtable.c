@@ -289,9 +289,9 @@ static const char           *AcpiDmHestSubnames[] =
     "IA-32 Machine Check Exception",
     "IA-32 Corrected Machine Check",
     "IA-32 Non-Maskable Interrupt",
-    "Unknown SubTable Type",        /* 3 - Reserved */
-    "Unknown SubTable Type",        /* 4 - Reserved */
-    "Unknown SubTable Type",        /* 5 - Reserved */
+    "Unknown Subtable Type",        /* 3 - Reserved */
+    "Unknown Subtable Type",        /* 4 - Reserved */
+    "Unknown Subtable Type",        /* 5 - Reserved */
     "PCI Express Root Port AER",
     "PCI Express AER (AER Endpoint)",
     "PCI Express/PCI-X Bridge AER",

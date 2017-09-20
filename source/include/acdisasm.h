@@ -599,7 +599,7 @@ AcpiDmDumpTable (
     UINT32                  TableLength,
     UINT32                  TableOffset,
     void                    *Table,
-    UINT32                  SubTableLength,
+    UINT32                  SubtableLength,
     ACPI_DMTABLE_INFO        *Info);
 
 void
