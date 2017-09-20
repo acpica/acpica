@@ -43,6 +43,7 @@
   components/utilities/utnonansi.c
   components/utilities/utprint.c
   components/utilities/utstring.c
+  components/utilities/utstrsuppt.c
   components/utilities/utstrtoul64.c
   components/utilities/utxferror.c
 
