@@ -588,7 +588,6 @@ AcpiEvInitializeGpeBlock (
     void                    *Ignored)
 {
     ACPI_STATUS             Status;
-    ACPI_EVENT_STATUS       EventStatus;
     ACPI_GPE_EVENT_INFO     *GpeEventInfo;
     UINT32                  GpeEnabledCount;
     UINT32                  GpeIndex;
@@ -636,9 +635,6 @@ AcpiEvInitializeGpeBlock (
                 continue;
             }
 
-            EventStatus = 0;
-            (void) AcpiHwGetGpeStatus (GpeEventInfo, &EventStatus);
-
             Status = AcpiEvAddGpeReference (GpeEventInfo);
             if (ACPI_FAILURE (Status))
             {
@@ -649,16 +645,6 @@ AcpiEvInitializeGpeBlock (
             }
 
             GpeEventInfo->Flags |= ACPI_GPE_AUTO_ENABLED;
-
-            if (EventStatus & ACPI_EVENT_FLAG_STATUS_SET)
-            {
-                ACPI_INFO (("GPE 0x%02X active on init",
-                            GpeNumber));
-                (void) AcpiEvGpeDispatch (GpeBlock->Node,
-                                          GpeEventInfo,
-                                          GpeNumber);
-            }
-
             GpeEnabledCount++;
         }
     }
