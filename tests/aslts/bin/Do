@@ -20,12 +20,13 @@
 #
 #     ASL      - iASL compiler
 #     acpiexec - AcpiExec utility
+#     acpibin  - AcpiBin utility
 #     ASLTSDIR - pathname of root directory of aslts test suite
 #
 # External definitions required for particular command:
 #
 #     0 - ASLTSDIR, ASL
-#     1 - ASLTSDIR, acpiexec
+#     1 - ASLTSDIR, acpiexec, acpibin
 #     2 - ASLTSDIR
 #     3 - none
 #     4 - ASLTSDIR
@@ -346,7 +347,7 @@ binary_compare()
                 if [ ! -f "$normal_compile_dir/$filename" ]; then
 			echo "  binary compare $mode the following file does not exist: $normal_compile_dir/$filename"
 		else
-			acpibin -a "$f" "$normal_compile_dir/$filename" > /dev/null
+			$acpibin -a "$f" "$normal_compile_dir/$filename" > /dev/null
 			if [ $? -ne 0 ]; then
 				echo " [[ Error: $mode Binary compare for $filename failed ]]"
 			else
@@ -807,6 +808,12 @@ elif [ $CMD == $RUNTESTS ]; then
 
 	if [ ! -f "$acpiexec" ]; then
 		do_exit 1 "Undefined acpiexec variable! Set it to pathname of AcpiExec utility."
+	fi
+
+	# Check access to AcpiBin utility
+
+	if [ ! -f "$acpibin" ]; then
+		do_exit 1 "Undefined acpibin variable! Set it to pathname of AcpiBin utility."
 	fi
 
 	shift 1

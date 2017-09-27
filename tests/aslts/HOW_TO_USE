@@ -32,6 +32,10 @@ How to execute the run-time tests
 
             > export acpiexec="c:/acpica/libraries/acpiexec.exe"
 
+        acpibin - path to acpibin utility: (example)
+
+            > export acpibin="c:/acpica/libraries/acpibin.exe"
+
         ASLTSDIR - path to the aslts directory: (example)
 
             > export ASLTSDIR="c:/acpica/tests/aslts"
