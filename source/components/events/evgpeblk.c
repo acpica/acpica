@@ -591,7 +591,6 @@ AcpiEvInitializeGpeBlock (
     ACPI_GPE_EVENT_INFO     *GpeEventInfo;
     UINT32                  GpeEnabledCount;
     UINT32                  GpeIndex;
-    UINT32                  GpeNumber;
     UINT32                  i;
     UINT32                  j;
 
@@ -623,13 +622,14 @@ AcpiEvInitializeGpeBlock (
 
             GpeIndex = (i * ACPI_GPE_REGISTER_WIDTH) + j;
             GpeEventInfo = &GpeBlock->EventInfo[GpeIndex];
-            GpeNumber = GpeBlock->BlockBaseNumber + GpeIndex;
 
             /*
              * Ignore GPEs that have no corresponding _Lxx/_Exx method
              * and GPEs that are used to wake the system
              */
-            if ((ACPI_GPE_DISPATCH_TYPE (GpeEventInfo->Flags) != ACPI_GPE_DISPATCH_METHOD) ||
+            if ((ACPI_GPE_DISPATCH_TYPE (GpeEventInfo->Flags) == ACPI_GPE_DISPATCH_NONE) ||
+                (ACPI_GPE_DISPATCH_TYPE (GpeEventInfo->Flags) == ACPI_GPE_DISPATCH_HANDLER) ||
+                (ACPI_GPE_DISPATCH_TYPE (GpeEventInfo->Flags) == ACPI_GPE_DISPATCH_RAW_HANDLER) ||
                 (GpeEventInfo->Flags & ACPI_GPE_CAN_WAKE))
             {
                 continue;
@@ -640,11 +640,10 @@ AcpiEvInitializeGpeBlock (
             {
                 ACPI_EXCEPTION ((AE_INFO, Status,
                     "Could not enable GPE 0x%02X",
-                    GpeNumber));
+                    GpeIndex + GpeBlock->BlockBaseNumber));
                 continue;
             }
 
-            GpeEventInfo->Flags |= ACPI_GPE_AUTO_ENABLED;
             GpeEnabledCount++;
         }
     }

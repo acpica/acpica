@@ -906,7 +906,7 @@ typedef UINT32                          ACPI_EVENT_STATUS;
  *   |  | | |  +-- Type of dispatch:to method, handler, notify, or none
  *   |  | | +----- Interrupt type: edge or level triggered
  *   |  | +------- Is a Wake GPE
- *   |  +--------- Has been enabled automatically at init time
+ *   |  +--------- Is GPE masked by the software GPE masking mechanism
  *   +------------ <Reserved>
  */
 #define ACPI_GPE_DISPATCH_NONE          (UINT8) 0x00
@@ -922,7 +922,6 @@ typedef UINT32                          ACPI_EVENT_STATUS;
 #define ACPI_GPE_XRUPT_TYPE_MASK        (UINT8) 0x08
 
 #define ACPI_GPE_CAN_WAKE               (UINT8) 0x10
-#define ACPI_GPE_AUTO_ENABLED           (UINT8) 0x20
 
 /*
  * Flags for GPE and Lock interfaces

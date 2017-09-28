@@ -658,6 +658,7 @@ AcpiHwDisableAllGpes (
 
 
     Status = AcpiEvWalkGpeList (AcpiHwDisableGpeBlock, NULL);
+    Status = AcpiEvWalkGpeList (AcpiHwClearGpeBlock, NULL);
     return_ACPI_STATUS (Status);
 }
 
