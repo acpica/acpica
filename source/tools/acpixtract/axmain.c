@@ -296,7 +296,7 @@ main (
 
     case AX_LIST_ALL:
 
-        Status = AxListTables (Filename);
+        Status = AxListAllTables (Filename);
         break;
 
     case AX_EXTRACT_SIGNATURE:
