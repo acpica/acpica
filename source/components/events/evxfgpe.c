@@ -212,6 +212,16 @@ AcpiUpdateAllGpes (
 
 UnlockAndExit:
     (void) AcpiUtReleaseMutex (ACPI_MTX_EVENTS);
+
+    /*
+     * Poll GPEs to handle already triggered events.
+     * It is not sufficient to trigger edge-triggered GPE with specific
+     * GPE chips, software need to poll once after enabling.
+     */
+    if (AcpiGbl_AllGpesInitialized)
+    {
+        AcpiEvGpeDetect (AcpiGbl_GpeXruptListHead);
+    }
     return_ACPI_STATUS (Status);
 }
 
@@ -259,6 +269,21 @@ AcpiEnableGpe (
             ACPI_GPE_DISPATCH_NONE)
         {
             Status = AcpiEvAddGpeReference (GpeEventInfo);
+            if (ACPI_SUCCESS (Status) &&
+                GpeEventInfo->RuntimeCount == 1 &&
+                AcpiGbl_AllGpesInitialized)
+            {
+                /*
+                 * Poll GPEs to handle already triggered events.
+                 * It is not sufficient to trigger edge-triggered GPE with
+                 * specific GPE chips, software need to poll once after
+                 * enabling.
+                 */
+                AcpiOsReleaseLock (AcpiGbl_GpeLock, Flags);
+                (void) AcpiEvDetectGpe (
+                    GpeDevice, GpeEventInfo, GpeNumber);
+                Flags = AcpiOsAcquireLock (AcpiGbl_GpeLock);
+            }
         }
         else
         {
@@ -608,6 +633,16 @@ AcpiSetupGpeForWake (
          */
         GpeEventInfo->Flags =
             (ACPI_GPE_DISPATCH_NOTIFY | ACPI_GPE_LEVEL_TRIGGERED);
+    }
+    else if (GpeEventInfo->Flags & ACPI_GPE_AUTO_ENABLED)
+    {
+        /*
+         * A reference to this GPE has been added during the GPE block
+         * initialization, so drop it now to prevent the GPE from being
+         * permanently enabled and clear its ACPI_GPE_AUTO_ENABLED flag.
+         */
+        (void) AcpiEvRemoveGpeReference (GpeEventInfo);
+        GpeEventInfo->Flags &= ~~ACPI_GPE_AUTO_ENABLED;
     }
 
     /*

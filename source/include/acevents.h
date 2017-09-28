@@ -250,6 +250,12 @@ ACPI_STATUS
 AcpiEvFinishGpe (
     ACPI_GPE_EVENT_INFO     *GpeEventInfo);
 
+UINT32
+AcpiEvDetectGpe (
+    ACPI_NAMESPACE_NODE     *GpeDevice,
+    ACPI_GPE_EVENT_INFO     *GpeEventInfo,
+    UINT32                  GpeNumber);
+
 
 /*
  * evgpeblk - Upper-level GPE block support

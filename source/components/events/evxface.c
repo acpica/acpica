@@ -1257,6 +1257,20 @@ AcpiRemoveGpeHandler (
         Handler->OriginallyEnabled)
     {
         (void) AcpiEvAddGpeReference (GpeEventInfo);
+        if (GpeEventInfo->RuntimeCount == 1 &&
+            AcpiGbl_AllGpesInitialized)
+        {
+            /*
+             * Poll GPEs to handle already triggered events.
+             * It is not sufficient to trigger edge-triggered GPE with
+             * specific GPE chips, software need to poll once after
+             * enabling.
+             */
+            AcpiOsReleaseLock (AcpiGbl_GpeLock, Flags);
+            (void) AcpiEvDetectGpe (
+                GpeDevice, GpeEventInfo, GpeNumber);
+            Flags = AcpiOsAcquireLock (AcpiGbl_GpeLock);
+        }
     }
 
     AcpiOsReleaseLock (AcpiGbl_GpeLock, Flags);
