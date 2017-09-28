@@ -7,6 +7,7 @@
 postfix=`date +%H%M%S`
 tmp_iasl=/tmp/iasl-$postfix
 tmp_acpiexec=/tmp/acpiexec-$postfix
+tmp_acpibin=/tmp/acpibin-$postfix
 
 TEST_CASES=
 TEST_MODES=
@@ -65,6 +66,7 @@ setup_environment() {
 
 	export ASL=$tmp_iasl
 	export acpiexec=$tmp_acpiexec		
+	export acpibin=$tmp_acpibin
 	export ASLTSDIR=$aslts_dir
 	export PATH=$ASLTSDIR/bin:$PATH
 }
@@ -75,7 +77,7 @@ build_acpi_tools() {
 
 	restore_dir=$PWD
 	cd ${generation_dir}
-	rm -f $tmp_iasl $tmp_acpiexec
+	rm -f $tmp_iasl $tmp_acpiexec $tmp_acpibin
 
 	# Build native-width iASL compiler and acpiexec
 	if [ ! -e bin/iasl -o ! -e bin/acpiexec ]; then
@@ -91,6 +93,7 @@ build_acpi_tools() {
 		echo "Installing ACPICA tools"
 		cp bin/iasl $tmp_iasl
 		cp bin/acpiexec $tmp_acpiexec
+		cp bin/acpibin $tmp_acpibin
 	else
 		echo "Could not find iASL/acpiexec tools"
 		exit
@@ -102,6 +105,9 @@ build_acpi_tools() {
 		exit
 	elif [ ! -f $tmp_acpiexec ] ; then
 		echo "acpiexec utility not found"
+		exit
+	elif [ ! -f $tmp_acpibin ] ; then
+		echo "acpibin utility not found"
 		exit
 	fi
 
@@ -140,7 +146,7 @@ run_aslts() {
 		echo "ASL Test Suite Finished: `date`"
 		echo "                Started: $start_time"
 
-		rm -f $tmp_iasl $tmp_acpiexec
+		rm -f $tmp_iasl $tmp_acpiexec $tmp_acpibin
 	fi;
 }
 
