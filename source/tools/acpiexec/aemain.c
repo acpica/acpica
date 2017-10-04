@@ -808,6 +808,7 @@ EnterDebugger:
 
     /* Shut down the debugger and ACPICA */
 
+    AcpiTerminate();
     AcpiTerminateDebugger ();
 
 NormalExit:
