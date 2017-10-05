@@ -290,6 +290,7 @@ typedef struct acpi_pkg_info
 
 #define REF_INCREMENT       (UINT16) 0
 #define REF_DECREMENT       (UINT16) 1
+#define REF_FORCE_DELETE    (UINT16) 2
 
 /* AcpiUtDumpBuffer */
 

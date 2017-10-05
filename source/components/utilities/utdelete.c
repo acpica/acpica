@@ -593,6 +593,16 @@ AcpiUtUpdateRefCount (
         }
         break;
 
+    case REF_FORCE_DELETE:
+
+        ACPI_DEBUG_PRINT ((ACPI_DB_ALLOCATIONS,
+            "Obj %p Force delete! (Set to 0)\n", Object));
+
+        Object->Common.ReferenceCount = 1;
+        AcpiUtDeleteInternalObj (Object);
+        AcpiOsReleaseLock (AcpiGbl_ReferenceCountLock, LockFlags);
+        return;
+
     default:
 
         AcpiOsReleaseLock (AcpiGbl_ReferenceCountLock, LockFlags);
