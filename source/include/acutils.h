@@ -227,9 +227,6 @@ extern const char                       *AcpiGbl_PtypDecode[];
 #ifndef ACPI_MSG_ERROR
 #define ACPI_MSG_ERROR          "ACPI Error: "
 #endif
-#ifndef ACPI_MSG_EXCEPTION
-#define ACPI_MSG_EXCEPTION      "ACPI Exception: "
-#endif
 #ifndef ACPI_MSG_WARNING
 #define ACPI_MSG_WARNING        "ACPI Warning: "
 #endif
