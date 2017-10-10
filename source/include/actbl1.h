@@ -1463,7 +1463,7 @@ typedef struct acpi_nfit_system_address
     ACPI_NFIT_HEADER        Header;
     UINT16                  RangeIndex;
     UINT16                  Flags;
-    UINT32                  Reserved;           /* Reseved, must be zero */
+    UINT32                  Reserved;           /* Reserved, must be zero */
     UINT32                  ProximityDomain;
     UINT8                   RangeGuid[16];
     UINT64                  Address;
