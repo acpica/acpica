@@ -789,5 +789,20 @@ AcpiPsParseLoop (
     } /* while ParserState->Aml */
 
     Status = AcpiPsCompleteFinalOp (WalkState, Op, Status);
+    if (ACPI_FAILURE(Status)) 
+	{
+        /* Flush pushed op objects */
+
+        do 
+        {
+            AcpiPsPopScope (&(WalkState->ParserState), &Op,
+                &WalkState->ArgTypes, &WalkState->ArgCount);
+            if (Op) 
+            {
+                AcpiPsCompleteThisOp (WalkState, Op);
+            }
+        } while (Op);
+    }
+
     return_ACPI_STATUS (Status);
 }
