@@ -1861,6 +1861,7 @@ ACPI_DMTABLE_INFO           AcpiDmTableInfoIort4[] =
     {ACPI_DMT_UINT8,    ACPI_IORT4_OFFSET (Pxm),                    "Proximity Domain", 0},
     {ACPI_DMT_UINT8,    ACPI_IORT4_OFFSET (Reserved1),              "Reserved", 0},
     {ACPI_DMT_UINT16,   ACPI_IORT4_OFFSET (Reserved2),              "Reserved", 0},
+    {ACPI_DMT_UINT32,   ACPI_IORT4_OFFSET (IdMappingIndex),         "Device ID Mapping Index", 0},
     ACPI_DMT_TERMINATOR
 };
 
