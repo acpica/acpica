@@ -431,12 +431,9 @@ ObjectRepaired:
             AcpiUtGetObjectTypeName (NewObject)));
     }
 
-    /*
-     * Force-delete the original object, then install the new return object.
-     * Note: Can delete the original because the method has exited and the
-     * Locals and Arguments are gone.
-     */
-    AcpiUtUpdateObjectReference (ReturnObject, REF_FORCE_DELETE);
+    /* Delete old object, install the new return object */
+
+    AcpiUtRemoveReference (ReturnObject);
     *ReturnObjectPtr = NewObject;
     Info->ReturnFlags |= ACPI_OBJECT_REPAIRED;
     return (AE_OK);

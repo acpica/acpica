@@ -751,12 +751,7 @@ AcpiNsRepair_HID (
         *Dest = (char) toupper ((int) *Source);
     }
 
-    /*
-     * Force-delete the original object, install the new return object.
-     * Note: Can delete the original because the method has exited and the
-     * Locals and Arguments are gone.
-     */
-    AcpiUtUpdateObjectReference (ReturnObject, REF_FORCE_DELETE);
+    AcpiUtRemoveReference (ReturnObject);
     *ReturnObjectPtr = NewString;
     return (AE_OK);
 }
