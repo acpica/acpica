@@ -756,6 +756,7 @@ ACPI_TYPED_IDENTIFIER_TABLE           AcpiIdentifiers[] = {
     {"ACPI_IORT_MEMORY_ACCESS",             SRC_TYPE_STRUCT},
     {"ACPI_IORT_NAMED_COMPONENT",           SRC_TYPE_STRUCT},
     {"ACPI_IORT_NODE",                      SRC_TYPE_STRUCT},
+    {"ACPI_IORT_PMCG",                      SRC_TYPE_STRUCT},
     {"ACPI_IORT_ROOT_COMPLEX",              SRC_TYPE_STRUCT},
     {"ACPI_IORT_SMMU",                      SRC_TYPE_STRUCT},
     {"ACPI_IORT_SMMU_GSI",                  SRC_TYPE_STRUCT},
