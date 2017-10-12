@@ -291,6 +291,7 @@
 #define ACPI_IORT3_OFFSET(f)            (UINT16) ACPI_OFFSET (ACPI_IORT_SMMU,f)
 #define ACPI_IORT3A_OFFSET(f)           (UINT16) ACPI_OFFSET (ACPI_IORT_SMMU_GSI,f)
 #define ACPI_IORT4_OFFSET(f)            (UINT16) ACPI_OFFSET (ACPI_IORT_SMMU_V3,f)
+#define ACPI_IORT5_OFFSET(f)            (UINT16) ACPI_OFFSET (ACPI_IORT_PMCG,f)
 #define ACPI_IORTA_OFFSET(f)            (UINT16) ACPI_OFFSET (ACPI_IORT_MEMORY_ACCESS,f)
 #define ACPI_IORTH_OFFSET(f)            (UINT16) ACPI_OFFSET (ACPI_IORT_NODE,f)
 #define ACPI_IORTM_OFFSET(f)            (UINT16) ACPI_OFFSET (ACPI_IORT_ID_MAPPING,f)
@@ -1865,6 +1866,15 @@ ACPI_DMTABLE_INFO           AcpiDmTableInfoIort4[] =
     ACPI_DMT_TERMINATOR
 };
 
+/* 0x05: PMCG */
+
+ACPI_DMTABLE_INFO           AcpiDmTableInfoIort5[] =
+{
+    {ACPI_DMT_UINT64,   ACPI_IORT5_OFFSET (BaseAddress),            "Base Address", 0},
+    {ACPI_DMT_UINT32,   ACPI_IORT5_OFFSET (OverflowGsiv),           "Overflow Interrupt GSIV", 0},
+    {ACPI_DMT_UINT32,   ACPI_IORT5_OFFSET (NodeReference),          "Node Reference", 0},
+    ACPI_DMT_TERMINATOR
+};
 
 /*******************************************************************************
  *
