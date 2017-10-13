@@ -235,10 +235,10 @@ extern const char                       *AcpiGbl_PtypDecode[];
 #endif
 
 #ifndef ACPI_MSG_BIOS_ERROR
-#define ACPI_MSG_BIOS_ERROR     "ACPI BIOS Error (bug): "
+#define ACPI_MSG_BIOS_ERROR     "Firmware Error (ACPI): "
 #endif
 #ifndef ACPI_MSG_BIOS_WARNING
-#define ACPI_MSG_BIOS_WARNING   "ACPI BIOS Warning (bug): "
+#define ACPI_MSG_BIOS_WARNING   "Firmware Warning (ACPI): "
 #endif
 
 /*
@@ -1212,9 +1212,10 @@ AcpiUtPredefinedBiosError (
     ...);
 
 void
-AcpiUtNamespaceError (
+AcpiUtPrefixedNamespaceError (
     const char              *ModuleName,
     UINT32                  LineNumber,
+    ACPI_GENERIC_STATE      *PrefixScope,
     const char              *InternalName,
     ACPI_STATUS             LookupStatus);
 
