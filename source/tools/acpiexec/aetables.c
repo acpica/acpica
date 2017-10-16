@@ -497,12 +497,12 @@ AeBuildLocalTables (
 
         /* Miscellaneous FADT fields */
 
-        LocalFADT.Gpe0BlockLength = 0x08;
-        LocalFADT.Gpe0Block = 0x00001234;
+        LocalFADT.Gpe0BlockLength = 0x20;
+        LocalFADT.Gpe0Block = 0x00003210;
 
-        LocalFADT.Gpe1BlockLength = 0x80;
-        LocalFADT.Gpe1Block = 0x00005678;
-        LocalFADT.Gpe1Base = 100;
+        LocalFADT.Gpe1BlockLength = 0x20;
+        LocalFADT.Gpe1Block = 0x0000BA98;
+        LocalFADT.Gpe1Base = 0x80;
 
         LocalFADT.Pm1EventLength = 4;
         LocalFADT.Pm1aEventBlock = 0x00001aaa;
