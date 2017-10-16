@@ -537,7 +537,7 @@ AcpiNsBuildPrefixedPathname (
 {
     ACPI_STATUS             Status;
     char                    *FullPath = NULL;
-    char                    *ExternalPath;
+    char                    *ExternalPath = NULL;
     char                    *PrefixPath = NULL;
     UINT32                  PrefixPathLength = 0;
 
@@ -589,6 +589,10 @@ Cleanup:
     if (PrefixPath)
     {
         ACPI_FREE (PrefixPath);
+    }
+    if (ExternalPath)
+    {
+        ACPI_FREE (ExternalPath);
     }
 
     return (FullPath);
