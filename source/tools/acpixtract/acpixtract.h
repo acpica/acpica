@@ -180,7 +180,7 @@
 #define AX_REQUIRED_TABLE           1
 
 #define AX_UTILITY_NAME             "ACPI Binary Table Extraction Utility"
-#define AX_SUPPORTED_OPTIONS        "ahlms:v^"
+#define AX_SUPPORTED_OPTIONS        "afhlms:v^"
 #define AX_MULTI_TABLE_FILENAME     "amltables.dat"
 #define AX_TABLE_INFO_FORMAT        "  %4.4s - %7u bytes written (0x%8.8X) - %s\n"
 
@@ -216,6 +216,7 @@ ACPI_GLOBAL (AX_TABLE_INFO, *Gbl_TableListHead);
 ACPI_GLOBAL (char,           Gbl_OutputFilename[32]);
 ACPI_GLOBAL (unsigned char,  Gbl_BinaryData[16]);
 ACPI_GLOBAL (unsigned int,   Gbl_TableCount);
+ACPI_GLOBAL (BOOLEAN,        Gbl_ForceExtraction);
 
 
 /*
