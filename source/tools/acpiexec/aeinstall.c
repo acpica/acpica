@@ -1,6 +1,6 @@
 /******************************************************************************
  *
- * Module Name: aecommon - common include for the AcpiExec utility
+ * Module Name: aeinstall - Installation of operation region handlers
  *
  *****************************************************************************/
 
@@ -149,223 +149,309 @@
  *
  *****************************************************************************/
 
-#ifndef _AECOMMON
-#define _AECOMMON
+#include "aecommon.h"
 
-#ifdef _MSC_VER                 /* disable some level-4 warnings */
-#pragma warning(disable:4100)   /* warning C4100: unreferenced formal parameter */
-#endif
-
-#include "acpi.h"
-#include "accommon.h"
-#include "acparser.h"
-#include "amlcode.h"
-#include "acnamesp.h"
-#include "acdebug.h"
-#include "actables.h"
-#include "acinterp.h"
-#include "amlresrc.h"
-#include "acapps.h"
+#define _COMPONENT          ACPI_TOOLS
+        ACPI_MODULE_NAME    ("aeinstall")
 
 
-/*
- * Debug Regions
- */
-typedef struct ae_region
-{
-    ACPI_PHYSICAL_ADDRESS   Address;
-    UINT32                  Length;
-    void                    *Buffer;
-    void                    *NextRegion;
-    UINT8                   SpaceId;
-
-} AE_REGION;
-
-typedef struct ae_debug_regions
-{
-    UINT32                  NumberOfRegions;
-    AE_REGION               *RegionList;
-
-} AE_DEBUG_REGIONS;
-
-
-extern BOOLEAN              AcpiGbl_IgnoreErrors;
-extern BOOLEAN              AcpiGbl_AbortLoopOnTimeout;
-extern UINT8                AcpiGbl_RegionFillValue;
-extern UINT8                AcpiGbl_UseHwReducedFadt;
-extern BOOLEAN              AcpiGbl_DisplayRegionAccess;
-extern BOOLEAN              AcpiGbl_DoInterfaceTests;
-extern BOOLEAN              AcpiGbl_LoadTestTables;
-extern FILE                 *AcpiGbl_NamespaceInitFile;
-extern ACPI_CONNECTION_INFO AeMyContext;
-
-extern UINT8                Ssdt2Code[];
-extern UINT8                Ssdt3Code[];
-extern UINT8                Ssdt4Code[];
-
-
-#define TEST_OUTPUT_LEVEL(lvl)          if ((lvl) & OutputLevel)
-
-#define OSD_PRINT(lvl,fp)               TEST_OUTPUT_LEVEL(lvl) {\
-                                            AcpiOsPrintf PARAM_LIST(fp);}
-
-#define AE_PREFIX                       "ACPI Exec: "
-
-void ACPI_SYSTEM_XFACE
-AeSignalHandler (
-    int                     Sig);
-
-ACPI_STATUS
-AeExceptionHandler (
-    ACPI_STATUS             AmlStatus,
-    ACPI_NAME               Name,
-    UINT16                  Opcode,
-    UINT32                  AmlOffset,
-    void                    *Context);
-
-ACPI_STATUS
-AeBuildLocalTables (
-    ACPI_NEW_TABLE_DESC     *TableList);
-
-ACPI_STATUS
-AeInstallTables (
-    void);
-
-ACPI_STATUS
-AeLoadTables (
-    void);
-
-void
-AeDumpNamespace (
-    void);
-
-void
-AeDumpObject (
-    char                    *MethodName,
-    ACPI_BUFFER             *ReturnObj);
-
-void
-AeDumpBuffer (
-    UINT32                  Address);
-
-void
-AeExecute (
-    char                    *Name);
-
-void
-AeSetScope (
-    char                    *Name);
-
-void
-AeCloseDebugFile (
-    void);
-
-void
-AeOpenDebugFile (
-    char                    *Name);
-
-ACPI_STATUS
-AeDisplayAllMethods (
-    UINT32                  DisplayCount);
-
-/* aetests */
-
-void
-AeMiscellaneousTests (
-    void);
-
-/* aeregion */
-
-ACPI_STATUS
-AeRegionHandler (
+static ACPI_STATUS
+AeRegionInit (
+    ACPI_HANDLE             RegionHandle,
     UINT32                  Function,
-    ACPI_PHYSICAL_ADDRESS   Address,
-    UINT32                  BitWidth,
-    UINT64                  *Value,
     void                    *HandlerContext,
-    void                    *RegionContext);
+    void                    **RegionContext);
 
-/* aeinstall */
-
-ACPI_STATUS
-AeInstallDeviceHandlers (
-    void);
-
-void
-AeInstallRegionHandlers (
-    void);
-
-void
-AeOverrideRegionHandlers (
-    void);
-
-/* aehandlers */
-
-ACPI_STATUS
-AeInstallEarlyHandlers (
-    void);
-
-ACPI_STATUS
-AeInstallLateHandlers (
-    void);
-
-UINT32
-AeGpeHandler (
-    ACPI_HANDLE             GpeDevice,
-    UINT32                  GpeNumber,
-    void                    *Context);
-
-void
-AeGlobalEventHandler (
-    UINT32                  Type,
-    ACPI_HANDLE             GpeDevice,
-    UINT32                  EventNumber,
-    void                    *Context);
-
-/* aeinitfile */
-
-int
-AeOpenInitializationFile (
-    char                    *Filename);
-
-void
-AeDoObjectOverrides (
-    void);
-
-ACPI_STATUS
-AeSetupConfiguration (
-    void                    *RegionAddr);
-
-/* aeexec */
-
-void
-AeTestBufferArgument (
-    void);
-
-void
-AeTestPackageArgument (
-    void);
-
-ACPI_STATUS
-AeGetDevices (
+static ACPI_STATUS
+AeInstallEcHandler (
     ACPI_HANDLE             ObjHandle,
-    UINT32                  NestingLevel,
+    UINT32                  Level,
     void                    *Context,
     void                    **ReturnValue);
 
+static ACPI_STATUS
+AeInstallPciHandler (
+    ACPI_HANDLE             ObjHandle,
+    UINT32                  Level,
+    void                    *Context,
+    void                    **ReturnValue);
+
+
+BOOLEAN                     AcpiGbl_DisplayRegionAccess = FALSE;
+ACPI_CONNECTION_INFO        AeMyContext;
+
+
+/*
+ * We will override some of the default region handlers, especially
+ * the SystemMemory handler, which must be implemented locally.
+ * These handlers are installed "early" - before any _REG methods
+ * are executed - since they are special in the sense that the ACPI spec
+ * declares that they must "always be available". Cannot override the
+ * DataTable region handler either -- needed for test execution.
+ *
+ * NOTE: The local region handler will simulate access to these address
+ * spaces by creating a memory buffer behind each operation region.
+ */
+static ACPI_ADR_SPACE_TYPE  DefaultSpaceIdList[] =
+{
+    ACPI_ADR_SPACE_SYSTEM_MEMORY,
+    ACPI_ADR_SPACE_SYSTEM_IO,
+    ACPI_ADR_SPACE_PCI_CONFIG,
+    ACPI_ADR_SPACE_EC
+};
+
+/*
+ * We will install handlers for some of the various address space IDs.
+ * Test one user-defined address space (used by aslts).
+ */
+#define ACPI_ADR_SPACE_USER_DEFINED1        0x80
+#define ACPI_ADR_SPACE_USER_DEFINED2        0xE4
+
+static ACPI_ADR_SPACE_TYPE  SpaceIdList[] =
+{
+    ACPI_ADR_SPACE_SMBUS,
+    ACPI_ADR_SPACE_CMOS,
+    ACPI_ADR_SPACE_PCI_BAR_TARGET,
+    ACPI_ADR_SPACE_IPMI,
+    ACPI_ADR_SPACE_GPIO,
+    ACPI_ADR_SPACE_GSBUS,
+    ACPI_ADR_SPACE_FIXED_HARDWARE,
+    ACPI_ADR_SPACE_USER_DEFINED1,
+    ACPI_ADR_SPACE_USER_DEFINED2
+};
+
+
+/******************************************************************************
+ *
+ * FUNCTION:    AeRegionInit
+ *
+ * PARAMETERS:  Region init handler
+ *
+ * RETURN:      Status
+ *
+ * DESCRIPTION: Opregion init function.
+ *
+ *****************************************************************************/
+
+static ACPI_STATUS
+AeRegionInit (
+    ACPI_HANDLE                 RegionHandle,
+    UINT32                      Function,
+    void                        *HandlerContext,
+    void                        **RegionContext)
+{
+
+    if (Function == ACPI_REGION_DEACTIVATE)
+    {
+        *RegionContext = NULL;
+    }
+    else
+    {
+        *RegionContext = RegionHandle;
+    }
+
+    return (AE_OK);
+}
+
+
+/******************************************************************************
+ *
+ * FUNCTION:    AeOverrideRegionHandlers
+ *
+ * PARAMETERS:  None
+ *
+ * RETURN:      None
+ *
+ * DESCRIPTION: Override the default region handlers for memory, i/o, and
+ *              pci_config. Also install a handler for EC. This is part of
+ *              the "install early handlers" functionality.
+ *
+ *****************************************************************************/
+
+void
+AeOverrideRegionHandlers (
+    void)
+{
+    UINT32                  i;
+    ACPI_STATUS             Status;
+
+    /*
+     * Install handlers that will override the default handlers for some of
+     * the space IDs.
+     */
+    for (i = 0; i < ACPI_ARRAY_LENGTH (DefaultSpaceIdList); i++)
+    {
+        /* Install handler at the root object */
+
+        Status = AcpiInstallAddressSpaceHandler (ACPI_ROOT_OBJECT,
+            DefaultSpaceIdList[i], AeRegionHandler, AeRegionInit,
+            &AeMyContext);
+
+        if (ACPI_FAILURE (Status))
+        {
+            ACPI_EXCEPTION ((AE_INFO, Status,
+                "Could not install an OpRegion handler for %s space(%u)",
+                AcpiUtGetRegionName ((UINT8) DefaultSpaceIdList[i]),
+                DefaultSpaceIdList[i]));
+        }
+    }
+}
+
+
+/******************************************************************************
+ *
+ * FUNCTION:    AeInstallRegionHandlers
+ *
+ * PARAMETERS:  None
+ *
+ * RETURN:      None
+ *
+ * DESCRIPTION: Install handlers for the address spaces other than
+ *              SystemMemory, SystemIO, and PCI_CONFIG.
+ *
+ *****************************************************************************/
+
+void
+AeInstallRegionHandlers (
+    void)
+{
+    UINT32                  i;
+    ACPI_STATUS             Status;
+
+
+    /*
+     * Install handlers for some of the "device driver" address spaces
+     * such as SMBus, etc.
+     */
+    for (i = 0; i < ACPI_ARRAY_LENGTH (SpaceIdList); i++)
+    {
+        /* Install handler at the root object */
+
+        Status = AcpiInstallAddressSpaceHandler (ACPI_ROOT_OBJECT,
+            SpaceIdList[i], AeRegionHandler, AeRegionInit,
+            &AeMyContext);
+
+        if (ACPI_FAILURE (Status))
+        {
+            ACPI_EXCEPTION ((AE_INFO, Status,
+                "Could not install an OpRegion handler for %s space(%u)",
+                AcpiUtGetRegionName((UINT8) SpaceIdList[i]), SpaceIdList[i]));
+            return;
+        }
+    }
+}
+
+
+/*******************************************************************************
+ *
+ * FUNCTION:    AeInstallDeviceHandlers
+ *
+ * PARAMETERS:  None
+ *
+ * RETURN:      Status
+ *
+ * DESCRIPTION: Install handlers for all EC and PCI devices in the namespace
+ *
+ ******************************************************************************/
+
 ACPI_STATUS
-ExecuteOSI (
-    char                    *OsiString,
-    UINT64                  ExpectedResult);
+AeInstallDeviceHandlers (
+    void)
+{
 
-void
-AeGenericRegisters (
-    void);
+    /* Find all Embedded Controller devices */
 
-#if (!ACPI_REDUCED_HARDWARE)
-void
-AfInstallGpeBlock (
-    void);
-#endif /* !ACPI_REDUCED_HARDWARE */
+    AcpiGetDevices ("PNP0C09", AeInstallEcHandler, NULL, NULL);
 
-#endif /* _AECOMMON */
+    /* Install a PCI handler */
+
+    AcpiGetDevices ("PNP0A08", AeInstallPciHandler, NULL, NULL);
+    return (AE_OK);
+}
+
+
+/*******************************************************************************
+ *
+ * FUNCTION:    AeInstallEcHandler
+ *
+ * PARAMETERS:  ACPI_WALK_NAMESPACE callback
+ *
+ * RETURN:      Status
+ *
+ * DESCRIPTION: Walk entire namespace, install a handler for every EC
+ *              device found.
+ *
+ ******************************************************************************/
+
+static ACPI_STATUS
+AeInstallEcHandler (
+    ACPI_HANDLE             ObjHandle,
+    UINT32                  Level,
+    void                    *Context,
+    void                    **ReturnValue)
+{
+    ACPI_STATUS             Status;
+
+
+    /* Install the handler for this EC device */
+
+    Status = AcpiInstallAddressSpaceHandler (ObjHandle,
+        ACPI_ADR_SPACE_EC, AeRegionHandler, AeRegionInit, &AeMyContext);
+    if (ACPI_FAILURE (Status))
+    {
+        ACPI_EXCEPTION ((AE_INFO, Status,
+            "Could not install an OpRegion handler for EC device (%p)",
+            ObjHandle));
+    }
+
+    return (Status);
+}
+
+
+/*******************************************************************************
+ *
+ * FUNCTION:    AeInstallPciHandler
+ *
+ * PARAMETERS:  ACPI_WALK_NAMESPACE callback
+ *
+ * RETURN:      Status
+ *
+ * DESCRIPTION: Walk entire namespace, install a handler for every PCI
+ *              device found.
+ *
+ ******************************************************************************/
+
+static ACPI_STATUS
+AeInstallPciHandler (
+    ACPI_HANDLE             ObjHandle,
+    UINT32                  Level,
+    void                    *Context,
+    void                    **ReturnValue)
+{
+    ACPI_STATUS             Status;
+
+
+    /* Install memory and I/O handlers for the PCI device */
+
+    Status = AcpiInstallAddressSpaceHandler (ObjHandle,
+        ACPI_ADR_SPACE_SYSTEM_IO, AeRegionHandler, AeRegionInit,
+        &AeMyContext);
+    if (ACPI_FAILURE (Status))
+    {
+        ACPI_EXCEPTION ((AE_INFO, Status,
+            "Could not install an OpRegion handler for PCI device (%p)",
+            ObjHandle));
+    }
+
+    Status = AcpiInstallAddressSpaceHandler (ObjHandle,
+        ACPI_ADR_SPACE_SYSTEM_MEMORY, AeRegionHandler, AeRegionInit,
+        &AeMyContext);
+    if (ACPI_FAILURE (Status))
+    {
+        ACPI_EXCEPTION ((AE_INFO, Status,
+            "Could not install an OpRegion handler for PCI device (%p)",
+            ObjHandle));
+    }
+
+    return (AE_CTRL_TERMINATE);
+}

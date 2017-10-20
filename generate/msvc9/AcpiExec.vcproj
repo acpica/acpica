@@ -1272,6 +1272,10 @@
 				>
 			</File>
 			<File
+				RelativePath="..\..\source\tools\acpiexec\aeinstall.c"
+				>
+			</File>
+			<File
 				RelativePath="..\..\source\Tools\AcpiExec\aemain.c"
 				>
 			</File>
@@ -1281,6 +1285,10 @@
 			</File>
 			<File
 				RelativePath="..\..\source\tools\acpiexec\aetables.c"
+				>
+			</File>
+			<File
+				RelativePath="..\..\source\tools\acpiexec\aetests.c"
 				>
 			</File>
 		</Filter>
