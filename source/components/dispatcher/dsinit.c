@@ -281,6 +281,32 @@ AcpiDsInitOneObject (
         Info->DeviceCount++;
         break;
 
+    case ACPI_TYPE_PACKAGE:
+
+        Info->PackageCount++;
+
+        ObjDesc = AcpiNsGetAttachedObject (Node);
+        if (!ObjDesc)
+        {
+            break;
+        }
+
+        /*
+         * Resolve all named references in package objects (and all
+         * sub-packages). This action has been deferred until the table
+         * has been loaded, in order to support external and forward
+         * references from individual package elements (10/2017).
+         */
+        Status = AcpiDsGetPackageArguments (ObjDesc);
+        if (ACPI_FAILURE (Status))
+        {
+            break;
+        }
+        Status = AcpiUtWalkPackageTree (ObjDesc, NULL,
+            AcpiDsInitPackageElement, NULL);
+        ObjDesc->Package.Flags |= AOPOBJ_DATA_VALID;
+        break;
+
     default:
 
         break;

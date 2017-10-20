@@ -277,6 +277,7 @@ ACPI_GLOBAL (UINT8,                     AcpiGbl_NextOwnerIdOffset);
 /* Initialization sequencing */
 
 ACPI_INIT_GLOBAL (BOOLEAN,              AcpiGbl_NamespaceInitialized, FALSE);
+ACPI_INIT_GLOBAL (BOOLEAN,              AcpiGbl_NamespaceLoaded, FALSE);
 
 /* Misc */
 

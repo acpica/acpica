@@ -458,7 +458,7 @@ AcpiDsInitPackageElement (
     {
         /* Attempt to resolve the (named) reference to a namespace node */
 
-        AcpiDsResolvePackageElement (ElementPtr, TRUE);
+        AcpiDsResolvePackageElement (ElementPtr, AcpiGbl_NamespaceLoaded);
     }
     else if (SourceObject->Common.Type == ACPI_TYPE_PACKAGE)
     {
