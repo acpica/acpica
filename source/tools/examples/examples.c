@@ -213,7 +213,7 @@ static void
 ExecuteMAIN (void);
 
 static void
-ExecuteOSI (void);
+ExecuteExampleOSI (void);
 
 ACPI_STATUS
 InitializeAcpiTables (
@@ -263,7 +263,7 @@ main (
     ACPI_EXCEPTION   ((AE_INFO, AE_AML_OPERAND_TYPE,
         "Example ACPICA exception message"));
 
-    ExecuteOSI ();
+    ExecuteExampleOSI ();
     ExecuteMAIN ();
     return (0);
 }
@@ -541,7 +541,7 @@ InstallHandlers (void)
  *****************************************************************************/
 
 static void
-ExecuteOSI (void)
+ExecuteExampleOSI (void)
 {
     ACPI_STATUS             Status;
     ACPI_OBJECT_LIST        ArgList;
