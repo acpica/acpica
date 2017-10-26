@@ -391,11 +391,11 @@ ACPI_STATUS
 AcpiUtInitGlobals (
     void);
 
-#if defined(ACPI_DEBUG_OUTPUT) || defined(ACPI_DEBUGGER)
-
 const char *
 AcpiUtGetMutexName (
     UINT32                  MutexId);
+
+#if defined(ACPI_DEBUG_OUTPUT) || defined(ACPI_DEBUGGER)
 
 const char *
 AcpiUtGetNotifyName (
