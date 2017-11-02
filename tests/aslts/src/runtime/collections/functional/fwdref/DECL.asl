@@ -27,8 +27,4 @@
  */
 
 
-if (STTT("External", TCLF, 15, W023)) {
-	SRMT("EXT1")
-	EXT1()
-}
-FTTT()
+Include("../../../../runtime/collections/functional/fwdref/fwdref.asl")

@@ -26,9 +26,30 @@
  * EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
+DefinitionBlock(
+	"fwdref.aml",   // Output filename
+	"DSDT",     // Signature
+	0x02,       // DSDT Revision
+	"Intel",    // OEMID
+	"Many",     // TABLE ID
+	0x00000001  // OEM Revision
+	) {
 
-if (STTT("External", TCLF, 15, W023)) {
-	SRMT("EXT1")
-	EXT1()
+	// All declarations
+	Include("../../../../runtime/cntl/DECL.asl")
+	Include("../../../../runtime/collections/functional/fwdref/DECL.asl")
+
+	Method(MAIN) {
+
+		// Initialization
+		STRT(0)
+
+		// Run verification methods
+		Include("../../../../runtime/collections/functional/fwdref/RUN.asl")
+
+		// Final actions
+		Store(FNSH(), Local7)
+
+		return (Local7)
+	}
 }
-FTTT()

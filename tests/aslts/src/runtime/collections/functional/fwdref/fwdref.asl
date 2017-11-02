@@ -26,9 +26,23 @@
  * EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
+/*
+ * forward references
+ */
 
-if (STTT("External", TCLF, 15, W023)) {
-	SRMT("EXT1")
-	EXT1()
+Name(z205, 205)
+
+// Run-method
+
+Name(PKG0, Package(){ELT0})
+Name(ELT0, "forward reference within methods")
+
+if (1){
+	Name(PKG1, Package(){ELT1})
+	Name(ELT1, "forward reference within methods")
 }
-FTTT()
+
+// forward references within methods
+Method(fwd1,, Serialized)
+{
+}
