@@ -585,16 +585,16 @@ ACPI_STATUS
 AcpiEvInitializeGpeBlock (
     ACPI_GPE_XRUPT_INFO     *GpeXruptInfo,
     ACPI_GPE_BLOCK_INFO     *GpeBlock,
-    void                    *Ignored)
+    void                    *Context)
 {
     ACPI_STATUS             Status;
-    ACPI_EVENT_STATUS       EventStatus;
     ACPI_GPE_EVENT_INFO     *GpeEventInfo;
     UINT32                  GpeEnabledCount;
     UINT32                  GpeIndex;
     UINT32                  GpeNumber;
     UINT32                  i;
     UINT32                  j;
+    BOOLEAN                 *IsPollingNeeded = Context;
 
 
     ACPI_FUNCTION_TRACE (EvInitializeGpeBlock);
@@ -625,6 +625,7 @@ AcpiEvInitializeGpeBlock (
             GpeIndex = (i * ACPI_GPE_REGISTER_WIDTH) + j;
             GpeEventInfo = &GpeBlock->EventInfo[GpeIndex];
             GpeNumber = GpeBlock->BlockBaseNumber + GpeIndex;
+            GpeEventInfo->Flags |= ACPI_GPE_INITIALIZED;
 
             /*
              * Ignore GPEs that have no corresponding _Lxx/_Exx method
@@ -635,9 +636,6 @@ AcpiEvInitializeGpeBlock (
             {
                 continue;
             }
-
-            EventStatus = 0;
-            (void) AcpiHwGetGpeStatus (GpeEventInfo, &EventStatus);
 
             Status = AcpiEvAddGpeReference (GpeEventInfo);
             if (ACPI_FAILURE (Status))
@@ -650,13 +648,10 @@ AcpiEvInitializeGpeBlock (
 
             GpeEventInfo->Flags |= ACPI_GPE_AUTO_ENABLED;
 
-            if (EventStatus & ACPI_EVENT_FLAG_STATUS_SET)
+            if (IsPollingNeeded &&
+                ACPI_GPE_IS_POLLING_NEEDED (GpeEventInfo))
             {
-                ACPI_INFO (("GPE 0x%02X active on init",
-                            GpeNumber));
-                (void) AcpiEvGpeDispatch (GpeBlock->Node,
-                                          GpeEventInfo,
-                                          GpeNumber);
+                *IsPollingNeeded = TRUE;
             }
 
             GpeEnabledCount++;
