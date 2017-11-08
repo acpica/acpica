@@ -609,6 +609,16 @@ AcpiSetupGpeForWake (
         GpeEventInfo->Flags =
             (ACPI_GPE_DISPATCH_NOTIFY | ACPI_GPE_LEVEL_TRIGGERED);
     }
+    else if (GpeEventInfo->Flags & ACPI_GPE_AUTO_ENABLED)
+    {
+        /*
+         * A reference to this GPE has been added during the GPE block
+         * initialization, so drop it now to prevent the GPE from being
+         * permanently enabled and clear its ACPI_GPE_AUTO_ENABLED flag.
+         */
+        (void) AcpiEvRemoveGpeReference (GpeEventInfo);
+        GpeEventInfo->Flags &= ~~ACPI_GPE_AUTO_ENABLED;
+    }
 
     /*
      * If we already have an implicit notify on this GPE, add
