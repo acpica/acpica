@@ -1,750 +1,894 @@
-/*
- * Some or all of this work - Copyright (c) 2006 - 2017, Intel Corp.
- * All rights reserved.
- *
- * Redistribution and use in source and binary forms, with or without modification,
- * are permitted provided that the following conditions are met:
- *
- * Redistributions of source code must retain the above copyright notice,
- * this list of conditions and the following disclaimer.
- * Redistributions in binary form must reproduce the above copyright notice,
- * this list of conditions and the following disclaimer in the documentation
- * and/or other materials provided with the distribution.
- * Neither the name of Intel Corporation nor the names of its contributors
- * may be used to endorse or promote products derived from this software
- * without specific prior written permission.
- *
- * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS"
- * AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE
- * IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE
- * ARE DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT OWNER OR CONTRIBUTORS BE
- * LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL
- * DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES;
- * LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY
- * THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING
- * NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE,
- * EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
- */
-
-
-Name(z114, 114)
-
-// Check the type of Object
-// arg0 - Object
-// arg1 - expected type
-// arg2 - absolute index of file initiating the checking
-// arg3 - the name of Method initiating the checking
-// arg4 - index of checking (inside the file)
-Method(m1a3, 5)
-{
-	Store(1, Local7)
-
-	Store(ObjectType(arg0), Local0)
-
-	if (LNotEqual(Local0, arg1)) {
-		err("m1a3", z114, __LINE__, arg2, arg4, Local0, arg1)
-		Store(0, Local7)
-	}
-
-	return (Local7)
-}
-
-// Check that all the data (global) are not corrupted
-Method(m1a6,, Serialized)
-{
-	Name(ts, "m1a6")
-
-	// Computational Data
-
-	// Integer
-
-	Store(ObjectType(i900), Local0)
-	if (LNotEqual(Local0, c009)) {
-		err(ts, z114, __LINE__, 0, 0, Local0, c009)
-	}
-	if (LNotEqual(i900, 0xfe7cb391d65a0000)) {
-		err(ts, z114, __LINE__, 0, 0, i900, 0xfe7cb391d65a0000)
-	}
-
-	Store(ObjectType(i901), Local0)
-	if (LNotEqual(Local0, c009)) {
-		err(ts, z114, __LINE__, 0, 0, Local0, c009)
-	}
-	if (LNotEqual(i901, 0xc1790001)) {
-		err(ts, z114, __LINE__, 0, 0, i901, 0xc1790001)
-	}
-
-	Store(ObjectType(i902), Local0)
-	if (LNotEqual(Local0, c009)) {
-		err(ts, z114, __LINE__, 0, 0, Local0, c009)
-	}
-	if (LNotEqual(i902, 0)) {
-		err(ts, z114, __LINE__, 0, 0, i902, 0)
-	}
-
-	Store(ObjectType(i903), Local0)
-	if (LNotEqual(Local0, c009)) {
-		err(ts, z114, __LINE__, 0, 0, Local0, c009)
-	}
-	if (LNotEqual(i903, 0xffffffffffffffff)) {
-		err(ts, z114, __LINE__, 0, 0, i903, 0xffffffffffffffff)
-	}
-
-	Store(ObjectType(i904), Local0)
-	if (LNotEqual(Local0, c009)) {
-		err(ts, z114, __LINE__, 0, 0, Local0, c009)
-	}
-	if (LNotEqual(i904, 0xffffffff)) {
-		err(ts, z114, __LINE__, 0, 0, i904, 0xffffffff)
-	}
-
-	// String
-
-	Store(ObjectType(s900), Local0)
-	if (LNotEqual(Local0, c00a)) {
-		err(ts, z114, __LINE__, 0, 0, Local0, c00a)
-	}
-	if (LNotEqual(s900, "12340002")) {
-		err(ts, z114, __LINE__, 0, 0, s900, "12340002")
-	}
-
-	Store(ObjectType(s901), Local0)
-	if (LNotEqual(Local0, c00a)) {
-		err(ts, z114, __LINE__, 0, 0, Local0, c00a)
-	}
-	if (LNotEqual(s901, "qwrtyu0003")) {
-		err(ts, z114, __LINE__, 0, 0, s901, "qwrtyu0003")
-	}
-
-	// Buffer
-
-	Store(ObjectType(b900), Local0)
-	if (LNotEqual(Local0, c00b)) {
-		err(ts, z114, __LINE__, 0, 0, Local0, c00b)
-	}
-	if (LNotEqual(b900, Buffer() {0xb0,0xb1,0xb2,0xb3,0xb4})) {
-		err(ts, z114, __LINE__, 0, 0, b900, Buffer() {0xb0,0xb1,0xb2,0xb3,0xb4})
-	}
-
-	// Buffer Field
-
-	Store(ObjectType(bf90), Local0)
-	if (LNotEqual(Local0, c016)) {
-		err(ts, z114, __LINE__, 0, 0, Local0, c016)
-	}
-	if (LNotEqual(bf90, 0xb0)) {
-		err(ts, z114, __LINE__, 0, 0, bf90, 0xb0)
-	}
-
-	// One level Package
-
-	Store(Index(p900, 0), Local0)
-	Store(ObjectType(Local0), Local1)
-	if (LNotEqual(Local1, c008)) {
-		err(ts, z114, __LINE__, 0, 0, Local1, c008)
-	}
-
-	Store(Index(p901, 0), Local0)
-	Store(DerefOf(Local0), Local1)
-	Store(ObjectType(Local1), Local2)
-	if (LNotEqual(Local2, c009)) {
-		err(ts, z114, __LINE__, 0, 0, Local2, c009)
-	}
-	if (LNotEqual(Local1, 0xabcd0004)) {
-		err(ts, z114, __LINE__, 0, 0, Local1, 0xabcd0004)
-	}
-
-	Store(Index(p901, 1), Local0)
-	Store(DerefOf(Local0), Local1)
-	Store(ObjectType(Local1), Local2)
-	if (LNotEqual(Local2, c009)) {
-		err(ts, z114, __LINE__, 0, 0, Local2, c009)
-	}
-	if (LNotEqual(Local1, 0x1122334455660005)) {
-		err(ts, z114, __LINE__, 0, 0, Local1, 0x1122334455660005)
-	}
-
-	Store(Index(p902, 0), Local0)
-	Store(DerefOf(Local0), Local1)
-	Store(ObjectType(Local1), Local2)
-	if (LNotEqual(Local2, c00a)) {
-		err(ts, z114, __LINE__, 0, 0, Local2, c00a)
-	}
-	if (LNotEqual(Local1, "12340006")) {
-		err(ts, z114, __LINE__, 0, 0, Local1, "12340006")
-	}
-
-	Store(Index(p902, 1), Local0)
-	Store(DerefOf(Local0), Local1)
-	Store(ObjectType(Local1), Local2)
-	if (LNotEqual(Local2, c00a)) {
-		err(ts, z114, __LINE__, 0, 0, Local2, c00a)
-	}
-	if (LNotEqual(Local1, "q1w2e3r4t5y6u7i80007")) {
-		err(ts, z114, __LINE__, 0, 0, Local1, "q1w2e3r4t5y6u7i80007")
-	}
-
-	Store(Index(p903, 0), Local0)
-	Store(DerefOf(Local0), Local1)
-	Store(ObjectType(Local1), Local2)
-	if (LNotEqual(Local2, c00a)) {
-		err(ts, z114, __LINE__, 0, 0, Local2, c00a)
-	}
-	if (LNotEqual(Local1, "qwrtyuiop0008")) {
-		err(ts, z114, __LINE__, 0, 0, Local1, "qwrtyuiop0008")
-	}
-
-	Store(Index(p903, 1), Local0)
-	Store(DerefOf(Local0), Local1)
-	Store(ObjectType(Local1), Local2)
-	if (LNotEqual(Local2, c00a)) {
-		err(ts, z114, __LINE__, 0, 0, Local2, c00a)
-	}
-	if (LNotEqual(Local1, "1234567890abdef0250009")) {
-		err(ts, z114, __LINE__, 0, 0, Local1, "1234567890abdef0250009")
-	}
-
-	Store(Index(p904, 0), Local0)
-	Store(DerefOf(Local0), Local1)
-	Store(ObjectType(Local1), Local2)
-	if (LNotEqual(Local2, c00b)) {
-		err(ts, z114, __LINE__, 0, 0, Local2, c00b)
-	}
-	if (LNotEqual(Local1, Buffer() {0xb5,0xb6,0xb7})) {
-		err(ts, z114, __LINE__, 0, 0, Local1, Buffer() {0xb5,0xb6,0xb7})
-	}
-
-	Store(Index(p904, 1), Local0)
-	Store(DerefOf(Local0), Local1)
-	Store(ObjectType(Local1), Local2)
-	if (LNotEqual(Local2, c00b)) {
-		err(ts, z114, __LINE__, 0, 0, Local2, c00b)
-	}
-	if (LNotEqual(Local1, Buffer() {0xb8,0xb9})) {
-		err(ts, z114, __LINE__, 0, 0, Local1, Buffer() {0xb8,0xb9})
-	}
-
-	// Two level Package
-
-	Store(Index(p905, 0), Local0)
-	Store(DerefOf(Local0), Local1)
-	Store(Index(Local1, 0), Local2)
-	Store(DerefOf(Local2), Local3)
-	Store(ObjectType(Local3), Local4)
-	if (LNotEqual(Local4, c009)) {
-		err(ts, z114, __LINE__, 0, 0, Local4, c009)
-	}
-	if (LNotEqual(Local3, 0xabc000a)) {
-		err(ts, z114, __LINE__, 0, 0, Local3, 0xabc000a)
-	}
-
-	Store(Index(p905, 0), Local0)
-	Store(DerefOf(Local0), Local1)
-	Store(Index(Local1, 1), Local2)
-	Store(DerefOf(Local2), Local3)
-	Store(ObjectType(Local3), Local4)
-	if (LNotEqual(Local4, c00a)) {
-		err(ts, z114, __LINE__, 0, 0, Local4, c00a)
-	}
-	if (LNotEqual(Local3, "0xabc000b")) {
-		err(ts, z114, __LINE__, 0, 0, Local3, "0xabc000b")
-	}
-
-	Store(Index(p905, 0), Local0)
-	Store(DerefOf(Local0), Local1)
-	Store(Index(Local1, 2), Local2)
-	Store(DerefOf(Local2), Local3)
-	Store(ObjectType(Local3), Local4)
-	if (LNotEqual(Local4, c00a)) {
-		err(ts, z114, __LINE__, 0, 0, Local4, c00a)
-	}
-	if (LNotEqual(Local3, "abc000c")) {
-		err(ts, z114, __LINE__, 0, 0, Local3, "abc000c")
-	}
-
-	Store(Index(p906, 0), Local0)
-	Store(DerefOf(Local0), Local1)
-	Store(Index(Local1, 0), Local2)
-	Store(DerefOf(Local2), Local3)
-	Store(ObjectType(Local3), Local4)
-	if (LNotEqual(Local4, c00a)) {
-		err(ts, z114, __LINE__, 0, 0, Local4, c00a)
-	}
-	if (LNotEqual(Local3, "abc000d")) {
-		err(ts, z114, __LINE__, 0, 0, Local3, "abc000d")
-	}
-
-	Store(Index(p907, 0), Local0)
-	Store(DerefOf(Local0), Local1)
-	Store(Index(Local1, 0), Local2)
-	Store(DerefOf(Local2), Local3)
-	Store(ObjectType(Local3), Local4)
-	if (LNotEqual(Local4, c00a)) {
-		err(ts, z114, __LINE__, 0, 0, Local4, c00a)
-	}
-	if (LNotEqual(Local3, "aqwevbgnm000e")) {
-		err(ts, z114, __LINE__, 0, 0, Local3, "aqwevbgnm000e")
-	}
-
-	Store(Index(p908, 0), Local0)
-	Store(DerefOf(Local0), Local1)
-	Store(Index(Local1, 0), Local2)
-	Store(DerefOf(Local2), Local3)
-	Store(ObjectType(Local3), Local4)
-	if (LNotEqual(Local4, c00b)) {
-		err(ts, z114, __LINE__, 0, 0, Local4, c00b)
-	}
-	if (LNotEqual(Local3, Buffer() {0xba,0xbb,0xbc,0xbd,0xbe})) {
-		err(ts, z114, __LINE__, 0, 0, Local3, Buffer() {0xba,0xbb,0xbc,0xbd,0xbe})
-	}
-
-	// Three level Package
-
-	Store(Index(p909, 0), Local0)
-	Store(DerefOf(Local0), Local1)
-	Store(Index(Local1, 0), Local2)
-	Store(DerefOf(Local2), Local3)
-	Store(Index(Local3, 0), Local4)
-	Store(DerefOf(Local4), Local5)
-	Store(ObjectType(Local5), Local6)
-	if (LNotEqual(Local6, c009)) {
-		err(ts, z114, __LINE__, 0, 0, Local6, c009)
-	}
-	if (LNotEqual(Local5, 0xabc000f)) {
-		err(ts, z114, __LINE__, 0, 0, Local5, 0xabc000f)
-	}
-
-	Store(Index(p90a, 0), Local0)
-	Store(DerefOf(Local0), Local1)
-	Store(Index(Local1, 0), Local2)
-	Store(DerefOf(Local2), Local3)
-	Store(Index(Local3, 0), Local4)
-	Store(DerefOf(Local4), Local5)
-	Store(ObjectType(Local5), Local6)
-	if (LNotEqual(Local6, c00a)) {
-		err(ts, z114, __LINE__, 0, 0, Local6, c00a)
-	}
-	if (LNotEqual(Local5, "12340010")) {
-		err(ts, z114, __LINE__, 0, 0, Local5, "12340010")
-	}
-
-	Store(Index(p90b, 0), Local0)
-	Store(DerefOf(Local0), Local1)
-	Store(Index(Local1, 0), Local2)
-	Store(DerefOf(Local2), Local3)
-	Store(Index(Local3, 0), Local4)
-	Store(DerefOf(Local4), Local5)
-	Store(ObjectType(Local5), Local6)
-	if (LNotEqual(Local6, c00a)) {
-		err(ts, z114, __LINE__, 0, 0, Local6, c00a)
-	}
-	if (LNotEqual(Local5, "zxswefas0011")) {
-		err(ts, z114, __LINE__, 0, 0, Local5, "zxswefas0011")
-	}
-
-	Store(Index(p90c, 0), Local0)
-	Store(DerefOf(Local0), Local1)
-	Store(Index(Local1, 0), Local2)
-	Store(DerefOf(Local2), Local3)
-	Store(Index(Local3, 0), Local4)
-	Store(DerefOf(Local4), Local5)
-	Store(ObjectType(Local5), Local6)
-	if (LNotEqual(Local6, c00b)) {
-		err(ts, z114, __LINE__, 0, 0, Local6, c00b)
-	}
-	if (LNotEqual(Local5, Buffer() {0xbf,0xc0,0xc1})) {
-		err(ts, z114, __LINE__, 0, 0, Local5, Buffer() {0xbf,0xc0,0xc1})
-	}
-
-	// Additional Packages
-
-	// p953
-
-	Store(Index(p953, 0), Local0)
-	Store(DerefOf(Local0), Local1)
-	Store(ObjectType(Local1), Local2)
-	if (LNotEqual(Local2, c009)) {
-		err(ts, z114, __LINE__, 0, 0, Local2, c009)
-	}
-	if (LNotEqual(Local1, 0xabcd0018)) {
-		err(ts, z114, __LINE__, 0, 0, Local1, 0xabcd0018)
-	}
-
-	Store(Index(p953, 1), Local0)
-	Store(DerefOf(Local0), Local1)
-	Store(ObjectType(Local1), Local2)
-	if (LNotEqual(Local2, c009)) {
-		err(ts, z114, __LINE__, 0, 0, Local2, c009)
-	}
-	if (LNotEqual(Local1, 0xabcd0019)) {
-		err(ts, z114, __LINE__, 0, 0, Local1, 0xabcd0019)
-	}
-
-	// p955
-
-	m1af(p955, 1, 1, 0)
-
-	// Not Computational Data
-
-	m1aa(ts, e900, c00f, 0, 0x13b)
-	m1aa(ts, mx90, c011, 0, 0x13c)
-	m1aa(ts, d900, c00e, 0, 0x13d)
-	if (y508) {
-		m1aa(ts, tz90, c015, 0, 0x13e)
-	}
-	m1aa(ts, pr90, c014, 0, 0x13f)
-	m1aa(ts, r900, c012, 0, 0x140)
-	m1aa(ts, pw90, c013, 0, 0x141)
-
-	// Field Unit (Field)
-
-	Store(ObjectType(f900), Local0)
-	if (LNotEqual(Local0, c00d)) {
-		err(ts, z114, __LINE__, 0, 0, Local0, c00d)
-	}
-	Store(ObjectType(f901), Local0)
-	if (LNotEqual(Local0, c00d)) {
-		err(ts, z114, __LINE__, 0, 0, Local0, c00d)
-	}
-	Store(ObjectType(f902), Local0)
-	if (LNotEqual(Local0, c00d)) {
-		err(ts, z114, __LINE__, 0, 0, Local0, c00d)
-	}
-	Store(ObjectType(f903), Local0)
-	if (LNotEqual(Local0, c00d)) {
-		err(ts, z114, __LINE__, 0, 0, Local0, c00d)
-	}
-
-	// Field Unit (IndexField)
-
-	Store(ObjectType(if90), Local0)
-	if (LNotEqual(Local0, c00d)) {
-		err(ts, z114, __LINE__, 0, 0, Local0, c00d)
-	}
-	Store(ObjectType(if91), Local0)
-	if (LNotEqual(Local0, c00d)) {
-		err(ts, z114, __LINE__, 0, 0, Local0, c00d)
-	}
-
-	// Field Unit (BankField)
-
-	Store(ObjectType(bn90), Local0)
-	if (LNotEqual(Local0, c00d)) {
-		err(ts, z114, __LINE__, 0, 0, Local0, c00d)
-	}
-
-/*
- *	if (LNotEqual(f900, 0xd7)) {
- *		err(ts, z114, __LINE__, 0, 0, f900, 0xd7)
- *	}
- *
- *	if (LNotEqual(if90, 0xd7)) {
- *		err(ts, z114, __LINE__, 0, 0, if90, 0xd7)
- *	}
- */
-}
-
-// Verifying result
-// arg0 - test name
-// arg1 - object
-// arg2 - expected type of object
-// arg3 - expected value of object
-// arg4 - index of checking (inside the file)
-Method(m1aa, 5)
-{
-	Store(0, Local7)
-
-	Store(ObjectType(arg1), Local0)
-
-	if (LNotEqual(Local0, arg2)) {
-		err(arg0, z114, __LINE__, 0, arg4, Local0, arg2)
-		Store(1, Local7)
-	} elseif (LLess(arg2, c00c)) {
-		if (LNotEqual(arg1, arg3)) {
-			err(arg0, z114, __LINE__, 0, arg4, arg1, arg3)
-			Store(1, Local7)
-		}
-	}
-
-	Return (Local7)
-}
-
-// Check and restore the global data after writing into them
-
-Method(m1ab,, Serialized)
-{
-	Name(ts, "m1ab")
-
-	// Computational Data
-
-	m1aa(ts, i900, c009, c08a, 0x144)
-	m1aa(ts, i901, c009, c08a, 0x145)
-	m1aa(ts, s900, c009, c08a, 0x146)
-	m1aa(ts, s901, c009, c08a, 0x147)
-	m1aa(ts, b900, c009, c08a, 0x148)
-
-	// Package
-
-	m1aa(ts, p953, c009, c08a, 0x149)
-
-	// Not Computational Data
-
-	m1aa(ts, e900, c009, c08a, 0x14a)
-	m1aa(ts, mx90, c009, c08a, 0x14b)
-	m1aa(ts, d900, c009, c08a, 0x14c)
-
-	if (y508) {
-		m1aa(ts, tz90, c009, c08a, 0x14d)
-	}
-
-	m1aa(ts, pr90, c009, c08a, 0x14e)
-
-	if (y510) {
-		m1aa(ts, r900, c009, c08a, 0x14f)
-	}
-
-	m1aa(ts, pw90, c009, c08a, 0x150)
-
-	m1ac()
-
-	m1a6()
-}
-
-// Restore the global data after writing into them
-Method(m1ac)
-{
-
-	// Computational Data
-
-	CopyObject(i9Z0, i900)
-	CopyObject(i9Z1, i901)
-	CopyObject(s9Z0, s900)
-	CopyObject(s9Z1, s901)
-	CopyObject(b9Z0, b900)
-
-	// Package
-
-	CopyObject(p954, p953)
-
-	// Restore p955 Package
-	m1c6()
-
-	// Not Computational Data
-
-	CopyObject(e9Z0, e900)
-	CopyObject(mx91, mx90)
-	CopyObject(d9Z0, d900)
-
-	if (y508) {
-		CopyObject(tz91, tz90)
-	}
-
-	CopyObject(pr91, pr90)
-
-	if (y510) {
-		CopyObject(r9Z0, r900)
-	}
-
-	CopyObject(pw91, pw90)
-}
-
-// Verify p955-like Package
-// arg0 - Package
-// arg1 - check for non-computational data
-// arg2 - check Field Unit and Buffer Field
-// arg3 - elements of Package are RefOf_References
-Method(m1af, 4, Serialized)
-{
-	Name(ts, "m1af")
-
-	Store(Index(arg0, 0), Local0)
-	Store(ObjectType(Local0), Local1)
-
-	if (LNotEqual(Local1, c009)) {
-		err(ts, z114, __LINE__, 0, 0, Local1, c009)
-	} else {
-		Store(DerefOf(Local0), Local1)
-		if (LNotEqual(Local1, 0)) {
-			err(ts, z113, __LINE__, 0, 0, Local1, 0)
-		}
-	}
-
-	Store(Index(arg0, 1), Local0)
-	Store(ObjectType(Local0), Local1)
-
-	if (LNotEqual(Local1, c009)) {
-		err(ts, z114, __LINE__, 0, 0, Local1, c009)
-	} else {
-		Store(DerefOf(Local0), Local1)
-		if (arg3) {
-			Store(DerefOf(Local1), Local2)
-			Store(Local2, Local1)
-		}
-		if (LNotEqual(Local1, 0xfe7cb391d65a0000)) {
-			err(ts, z114, __LINE__, 0, 0, Local1, 0xfe7cb391d65a0000)
-		}
-	}
-
-	Store(Index(arg0, 2), Local0)
-	Store(ObjectType(Local0), Local1)
-
-	if (LNotEqual(Local1, c00a)) {
-		err(ts, z114, __LINE__, 0, 0, Local1, c00a)
-	} else {
-		Store(DerefOf(Local0), Local1)
-		if (arg3) {
-			Store(DerefOf(Local1), Local2)
-			Store(Local2, Local1)
-		}
-		if (LNotEqual(Local1, "12340002")) {
-			err(ts, z114, __LINE__, 0, 0, Local1, "12340002")
-		}
-	}
-
-	Store(Index(arg0, 3), Local0)
-	Store(ObjectType(Local0), Local1)
-
-	if (LNotEqual(Local1, c00b)) {
-		err(ts, z114, __LINE__, 0, 0, Local1, c00a)
-	} else {
-		Store(DerefOf(Local0), Local1)
-		if (arg3) {
-			Store(DerefOf(Local1), Local2)
-			Store(Local2, Local1)
-		}
-		if (LNotEqual(Local1, Buffer() {0xb0,0xb1,0xb2,0xb3,0xb4})) {
-			err(ts, z114, __LINE__, 0, 0, Local1, Buffer() {0xb0,0xb1,0xb2,0xb3,0xb4})
-		}
-	}
-
-	Store(Index(arg0, 4), Local0)
-	m1aa(ts, Local0, c00c, 0, 0x13f)
-
-
-    // 5th element is a region field, which will be resolved to an integer
-
-	if (arg2) {
-	    Store(Index(arg0, 5), Local0)
-	    Store(ObjectType(Local0), Local1)
-		Store(DerefOf(Local0), Local7)
-
-        if (arg3) {
-	        if (LNotEqual(Local1, c00d)) {
-		        err(ts, z114, __LINE__, 0, 0, Local1, c00d)
-	        } else {
-			    Store(DerefOf(Local7), Local6)
-			    Store(Local6, Local7)
+    /*
+     * Some or all of this work - Copyright (c) 2006 - 2017, Intel Corp.
+     * All rights reserved.
+     *
+     * Redistribution and use in source and binary forms, with or without modification,
+     * are permitted provided that the following conditions are met:
+     *
+     * Redistributions of source code must retain the above copyright notice,
+     * this list of conditions and the following disclaimer.
+     * Redistributions in binary form must reproduce the above copyright notice,
+     * this list of conditions and the following disclaimer in the documentation
+     * and/or other materials provided with the distribution.
+     * Neither the name of Intel Corporation nor the names of its contributors
+     * may be used to endorse or promote products derived from this software
+     * without specific prior written permission.
+     *
+     * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS"
+     * AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE
+     * IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE
+     * ARE DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT OWNER OR CONTRIBUTORS BE
+     * LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL
+     * DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES;
+     * LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY
+     * THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING
+     * NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE,
+     * EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
+     */
+    Name (Z114, 0x72)
+    /* Check the type of Object */
+    /* arg0 - Object */
+    /* arg1 - expected type */
+    /* arg2 - absolute index of file initiating the checking */
+    /* arg3 - the name of Method initiating the checking */
+    /* arg4 - index of checking (inside the file) */
+    Method (M1A3, 5, NotSerialized)
+    {
+        Local7 = 0x01
+        Local0 = ObjectType (Arg0)
+        If ((Local0 != Arg1))
+        {
+            ERR ("m1a3", Z114, 0x2D, Arg2, Arg4, Local0, Arg1)
+            Local7 = 0x00
+        }
+
+        Return (Local7)
+    }
+
+    /* Check that all the data (global) are not corrupted */
+
+    Method (M1A6, 0, Serialized)
+    {
+        Name (TS, "m1a6")
+        /* Computational Data */
+        /* Integer */
+        Local0 = ObjectType (I900)
+        If ((Local0 != C009))
+        {
+            ERR (TS, Z114, 0x3F, 0x00, 0x00, Local0, C009)
+        }
+
+        If ((I900 != 0xFE7CB391D65A0000))
+        {
+            ERR (TS, Z114, 0x42, 0x00, 0x00, I900, 0xFE7CB391D65A0000)
+        }
+
+        Local0 = ObjectType (I901)
+        If ((Local0 != C009))
+        {
+            ERR (TS, Z114, 0x47, 0x00, 0x00, Local0, C009)
+        }
+
+        If ((I901 != 0xC1790001))
+        {
+            ERR (TS, Z114, 0x4A, 0x00, 0x00, I901, 0xC1790001)
+        }
+
+        Local0 = ObjectType (I902)
+        If ((Local0 != C009))
+        {
+            ERR (TS, Z114, 0x4F, 0x00, 0x00, Local0, C009)
+        }
+
+        If ((I902 != 0x00))
+        {
+            ERR (TS, Z114, 0x52, 0x00, 0x00, I902, 0x00)
+        }
+
+        Local0 = ObjectType (I903)
+        If ((Local0 != C009))
+        {
+            ERR (TS, Z114, 0x57, 0x00, 0x00, Local0, C009)
+        }
+
+        If ((I903 != 0xFFFFFFFFFFFFFFFF))
+        {
+            ERR (TS, Z114, 0x5A, 0x00, 0x00, I903, 0xFFFFFFFFFFFFFFFF)
+        }
+
+        Local0 = ObjectType (I904)
+        If ((Local0 != C009))
+        {
+            ERR (TS, Z114, 0x5F, 0x00, 0x00, Local0, C009)
+        }
+
+        If ((I904 != 0xFFFFFFFF))
+        {
+            ERR (TS, Z114, 0x62, 0x00, 0x00, I904, 0xFFFFFFFF)
+        }
+
+        /* String */
+
+        Local0 = ObjectType (S900)
+        If ((Local0 != C00A))
+        {
+            ERR (TS, Z114, 0x69, 0x00, 0x00, Local0, C00A)
+        }
+
+        If ((S900 != "12340002"))
+        {
+            ERR (TS, Z114, 0x6C, 0x00, 0x00, S900, "12340002")
+        }
+
+        Local0 = ObjectType (S901)
+        If ((Local0 != C00A))
+        {
+            ERR (TS, Z114, 0x71, 0x00, 0x00, Local0, C00A)
+        }
+
+        If ((S901 != "qwrtyu0003"))
+        {
+            ERR (TS, Z114, 0x74, 0x00, 0x00, S901, "qwrtyu0003")
+        }
+
+        /* Buffer */
+
+        Local0 = ObjectType (B900)
+        If ((Local0 != C00B))
+        {
+            ERR (TS, Z114, 0x7B, 0x00, 0x00, Local0, C00B)
+        }
+
+        If ((B900 != Buffer (0x05)
+                    {
+                         0xB0, 0xB1, 0xB2, 0xB3, 0xB4                     // .....
+                    }))
+        {
+            ERR (TS, Z114, 0x7E, 0x00, 0x00, B900, Buffer (0x05)
+                {
+                     0xB0, 0xB1, 0xB2, 0xB3, 0xB4                     // .....
+                })
+        }
+
+        /* Buffer Field */
+
+        Local0 = ObjectType (BF90)
+        If ((Local0 != C016))
+        {
+            ERR (TS, Z114, 0x85, 0x00, 0x00, Local0, C016)
+        }
+
+        If ((BF90 != 0xB0))
+        {
+            ERR (TS, Z114, 0x88, 0x00, 0x00, BF90, 0xB0)
+        }
+
+        /* One level Package */
+
+        Store (P900 [0x00], Local0)
+        Local1 = ObjectType (Local0)
+        If ((Local1 != C008))
+        {
+            ERR (TS, Z114, 0x90, 0x00, 0x00, Local1, C008)
+        }
+
+        Store (P901 [0x00], Local0)
+        Local1 = DerefOf (Local0)
+        Local2 = ObjectType (Local1)
+        If ((Local2 != C009))
+        {
+            ERR (TS, Z114, 0x97, 0x00, 0x00, Local2, C009)
+        }
+
+        If ((Local1 != 0xABCD0004))
+        {
+            ERR (TS, Z114, 0x9A, 0x00, 0x00, Local1, 0xABCD0004)
+        }
+
+        Store (P901 [0x01], Local0)
+        Local1 = DerefOf (Local0)
+        Local2 = ObjectType (Local1)
+        If ((Local2 != C009))
+        {
+            ERR (TS, Z114, 0xA1, 0x00, 0x00, Local2, C009)
+        }
+
+        If ((Local1 != 0x1122334455660005))
+        {
+            ERR (TS, Z114, 0xA4, 0x00, 0x00, Local1, 0x1122334455660005)
+        }
+
+        Store (P902 [0x00], Local0)
+        Local1 = DerefOf (Local0)
+        Local2 = ObjectType (Local1)
+        If ((Local2 != C00A))
+        {
+            ERR (TS, Z114, 0xAB, 0x00, 0x00, Local2, C00A)
+        }
+
+        If ((Local1 != "12340006"))
+        {
+            ERR (TS, Z114, 0xAE, 0x00, 0x00, Local1, "12340006")
+        }
+
+        Store (P902 [0x01], Local0)
+        Local1 = DerefOf (Local0)
+        Local2 = ObjectType (Local1)
+        If ((Local2 != C00A))
+        {
+            ERR (TS, Z114, 0xB5, 0x00, 0x00, Local2, C00A)
+        }
+
+        If ((Local1 != "q1w2e3r4t5y6u7i80007"))
+        {
+            ERR (TS, Z114, 0xB8, 0x00, 0x00, Local1, "q1w2e3r4t5y6u7i80007")
+        }
+
+        Store (P903 [0x00], Local0)
+        Local1 = DerefOf (Local0)
+        Local2 = ObjectType (Local1)
+        If ((Local2 != C00A))
+        {
+            ERR (TS, Z114, 0xBF, 0x00, 0x00, Local2, C00A)
+        }
+
+        If ((Local1 != "qwrtyuiop0008"))
+        {
+            ERR (TS, Z114, 0xC2, 0x00, 0x00, Local1, "qwrtyuiop0008")
+        }
+
+        Store (P903 [0x01], Local0)
+        Local1 = DerefOf (Local0)
+        Local2 = ObjectType (Local1)
+        If ((Local2 != C00A))
+        {
+            ERR (TS, Z114, 0xC9, 0x00, 0x00, Local2, C00A)
+        }
+
+        If ((Local1 != "1234567890abdef0250009"))
+        {
+            ERR (TS, Z114, 0xCC, 0x00, 0x00, Local1, "1234567890abdef0250009")
+        }
+
+        Store (P904 [0x00], Local0)
+        Local1 = DerefOf (Local0)
+        Local2 = ObjectType (Local1)
+        If ((Local2 != C00B))
+        {
+            ERR (TS, Z114, 0xD3, 0x00, 0x00, Local2, C00B)
+        }
+
+        If ((Local1 != Buffer (0x03)
+                    {
+                         0xB5, 0xB6, 0xB7                                 // ...
+                    }))
+        {
+            ERR (TS, Z114, 0xD6, 0x00, 0x00, Local1, Buffer (0x03)
+                {
+                     0xB5, 0xB6, 0xB7                                 // ...
+                })
+        }
+
+        Store (P904 [0x01], Local0)
+        Local1 = DerefOf (Local0)
+        Local2 = ObjectType (Local1)
+        If ((Local2 != C00B))
+        {
+            ERR (TS, Z114, 0xDD, 0x00, 0x00, Local2, C00B)
+        }
+
+        If ((Local1 != Buffer (0x02)
+                    {
+                         0xB8, 0xB9                                       // ..
+                    }))
+        {
+            ERR (TS, Z114, 0xE0, 0x00, 0x00, Local1, Buffer (0x02)
+                {
+                     0xB8, 0xB9                                       // ..
+                })
+        }
+
+        /* Two level Package */
+
+        Store (P905 [0x00], Local0)
+        Local1 = DerefOf (Local0)
+        Store (Local1 [0x00], Local2)
+        Local3 = DerefOf (Local2)
+        Local4 = ObjectType (Local3)
+        If ((Local4 != C009))
+        {
+            ERR (TS, Z114, 0xEB, 0x00, 0x00, Local4, C009)
+        }
+
+        If ((Local3 != 0x0ABC000A))
+        {
+            ERR (TS, Z114, 0xEE, 0x00, 0x00, Local3, 0x0ABC000A)
+        }
+
+        Store (P905 [0x00], Local0)
+        Local1 = DerefOf (Local0)
+        Store (Local1 [0x01], Local2)
+        Local3 = DerefOf (Local2)
+        Local4 = ObjectType (Local3)
+        If ((Local4 != C00A))
+        {
+            ERR (TS, Z114, 0xF7, 0x00, 0x00, Local4, C00A)
+        }
+
+        If ((Local3 != "0xabc000b"))
+        {
+            ERR (TS, Z114, 0xFA, 0x00, 0x00, Local3, "0xabc000b")
+        }
+
+        Store (P905 [0x00], Local0)
+        Local1 = DerefOf (Local0)
+        Store (Local1 [0x02], Local2)
+        Local3 = DerefOf (Local2)
+        Local4 = ObjectType (Local3)
+        If ((Local4 != C00A))
+        {
+            ERR (TS, Z114, 0x0103, 0x00, 0x00, Local4, C00A)
+        }
+
+        If ((Local3 != "abc000c"))
+        {
+            ERR (TS, Z114, 0x0106, 0x00, 0x00, Local3, "abc000c")
+        }
+
+        Store (P906 [0x00], Local0)
+        Local1 = DerefOf (Local0)
+        Store (Local1 [0x00], Local2)
+        Local3 = DerefOf (Local2)
+        Local4 = ObjectType (Local3)
+        If ((Local4 != C00A))
+        {
+            ERR (TS, Z114, 0x010F, 0x00, 0x00, Local4, C00A)
+        }
+
+        If ((Local3 != "abc000d"))
+        {
+            ERR (TS, Z114, 0x0112, 0x00, 0x00, Local3, "abc000d")
+        }
+
+        Store (P907 [0x00], Local0)
+        Local1 = DerefOf (Local0)
+        Store (Local1 [0x00], Local2)
+        Local3 = DerefOf (Local2)
+        Local4 = ObjectType (Local3)
+        If ((Local4 != C00A))
+        {
+            ERR (TS, Z114, 0x011B, 0x00, 0x00, Local4, C00A)
+        }
+
+        If ((Local3 != "aqwevbgnm000e"))
+        {
+            ERR (TS, Z114, 0x011E, 0x00, 0x00, Local3, "aqwevbgnm000e")
+        }
+
+        Store (P908 [0x00], Local0)
+        Local1 = DerefOf (Local0)
+        Store (Local1 [0x00], Local2)
+        Local3 = DerefOf (Local2)
+        Local4 = ObjectType (Local3)
+        If ((Local4 != C00B))
+        {
+            ERR (TS, Z114, 0x0127, 0x00, 0x00, Local4, C00B)
+        }
+
+        If ((Local3 != Buffer (0x05)
+                    {
+                         0xBA, 0xBB, 0xBC, 0xBD, 0xBE                     // .....
+                    }))
+        {
+            ERR (TS, Z114, 0x012A, 0x00, 0x00, Local3, Buffer (0x05)
+                {
+                     0xBA, 0xBB, 0xBC, 0xBD, 0xBE                     // .....
+                })
+        }
+
+        /* Three level Package */
+
+        Store (P909 [0x00], Local0)
+        Local1 = DerefOf (Local0)
+        Store (Local1 [0x00], Local2)
+        Local3 = DerefOf (Local2)
+        Store (Local3 [0x00], Local4)
+        Local5 = DerefOf (Local4)
+        Local6 = ObjectType (Local5)
+        If ((Local6 != C009))
+        {
+            ERR (TS, Z114, 0x0137, 0x00, 0x00, Local6, C009)
+        }
+
+        If ((Local5 != 0x0ABC000F))
+        {
+            ERR (TS, Z114, 0x013A, 0x00, 0x00, Local5, 0x0ABC000F)
+        }
+
+        Store (P90A [0x00], Local0)
+        Local1 = DerefOf (Local0)
+        Store (Local1 [0x00], Local2)
+        Local3 = DerefOf (Local2)
+        Store (Local3 [0x00], Local4)
+        Local5 = DerefOf (Local4)
+        Local6 = ObjectType (Local5)
+        If ((Local6 != C00A))
+        {
+            ERR (TS, Z114, 0x0145, 0x00, 0x00, Local6, C00A)
+        }
+
+        If ((Local5 != "12340010"))
+        {
+            ERR (TS, Z114, 0x0148, 0x00, 0x00, Local5, "12340010")
+        }
+
+        Store (P90B [0x00], Local0)
+        Local1 = DerefOf (Local0)
+        Store (Local1 [0x00], Local2)
+        Local3 = DerefOf (Local2)
+        Store (Local3 [0x00], Local4)
+        Local5 = DerefOf (Local4)
+        Local6 = ObjectType (Local5)
+        If ((Local6 != C00A))
+        {
+            ERR (TS, Z114, 0x0153, 0x00, 0x00, Local6, C00A)
+        }
+
+        If ((Local5 != "zxswefas0011"))
+        {
+            ERR (TS, Z114, 0x0156, 0x00, 0x00, Local5, "zxswefas0011")
+        }
+
+        Store (P90C [0x00], Local0)
+        Local1 = DerefOf (Local0)
+        Store (Local1 [0x00], Local2)
+        Local3 = DerefOf (Local2)
+        Store (Local3 [0x00], Local4)
+        Local5 = DerefOf (Local4)
+        Local6 = ObjectType (Local5)
+        If ((Local6 != C00B))
+        {
+            ERR (TS, Z114, 0x0161, 0x00, 0x00, Local6, C00B)
+        }
+
+        If ((Local5 != Buffer (0x03)
+                    {
+                         0xBF, 0xC0, 0xC1                                 // ...
+                    }))
+        {
+            ERR (TS, Z114, 0x0164, 0x00, 0x00, Local5, Buffer (0x03)
+                {
+                     0xBF, 0xC0, 0xC1                                 // ...
+                })
+        }
+
+        /* Additional Packages */
+        /* p953 */
+        Store (P953 [0x00], Local0)
+        Local1 = DerefOf (Local0)
+        Local2 = ObjectType (Local1)
+        If ((Local2 != C009))
+        {
+            ERR (TS, Z114, 0x016F, 0x00, 0x00, Local2, C009)
+        }
+
+        If ((Local1 != 0xABCD0018))
+        {
+            ERR (TS, Z114, 0x0172, 0x00, 0x00, Local1, 0xABCD0018)
+        }
+
+        Store (P953 [0x01], Local0)
+        Local1 = DerefOf (Local0)
+        Local2 = ObjectType (Local1)
+        If ((Local2 != C009))
+        {
+            ERR (TS, Z114, 0x0179, 0x00, 0x00, Local2, C009)
+        }
+
+        If ((Local1 != 0xABCD0019))
+        {
+            ERR (TS, Z114, 0x017C, 0x00, 0x00, Local1, 0xABCD0019)
+        }
+
+        /* p955 */
+
+        M1AF (P955, 0x01, 0x01, 0x00)
+        /* Not Computational Data */
+
+        M1AA (TS, E900, C00F, 0x00, 0x013B)
+        M1AA (TS, MX90, C011, 0x00, 0x013C)
+        M1AA (TS, D900, C00E, 0x00, 0x013D)
+        If (Y508)
+        {
+            M1AA (TS, TZ90, C015, 0x00, 0x013E)
+        }
+
+        M1AA (TS, PR90, C014, 0x00, 0x013F)
+        M1AA (TS, R900, C012, 0x00, 0x0140)
+        M1AA (TS, PW90, C013, 0x00, 0x0141)
+        /* Field Unit (Field) */
+
+        Local0 = ObjectType (F900)
+        If ((Local0 != C00D))
+        {
+            ERR (TS, Z114, 0x0193, 0x00, 0x00, Local0, C00D)
+        }
+
+        Local0 = ObjectType (F901)
+        If ((Local0 != C00D))
+        {
+            ERR (TS, Z114, 0x0197, 0x00, 0x00, Local0, C00D)
+        }
+
+        Local0 = ObjectType (F902)
+        If ((Local0 != C00D))
+        {
+            ERR (TS, Z114, 0x019B, 0x00, 0x00, Local0, C00D)
+        }
+
+        Local0 = ObjectType (F903)
+        If ((Local0 != C00D))
+        {
+            ERR (TS, Z114, 0x019F, 0x00, 0x00, Local0, C00D)
+        }
+
+        /* Field Unit (IndexField) */
+
+        Local0 = ObjectType (IF90)
+        If ((Local0 != C00D))
+        {
+            ERR (TS, Z114, 0x01A6, 0x00, 0x00, Local0, C00D)
+        }
+
+        Local0 = ObjectType (IF91)
+        If ((Local0 != C00D))
+        {
+            ERR (TS, Z114, 0x01AA, 0x00, 0x00, Local0, C00D)
+        }
+
+        /* Field Unit (BankField) */
+
+        Local0 = ObjectType (BN90)
+        If ((Local0 != C00D))
+        {
+            ERR (TS, Z114, 0x01B1, 0x00, 0x00, Local0, C00D)
+        }
+        /*
+     *	if (LNotEqual(f900, 0xd7)) {
+     *		err(ts, z114, __LINE__, 0, 0, f900, 0xd7)
+     *	}
+     *
+     *	if (LNotEqual(if90, 0xd7)) {
+     *		err(ts, z114, __LINE__, 0, 0, if90, 0xd7)
+     *	}
+     */
+    }
+
+    /* Verifying result */
+    /* arg0 - test name */
+    /* arg1 - object */
+    /* arg2 - expected type of object */
+    /* arg3 - expected value of object */
+    /* arg4 - index of checking (inside the file) */
+    Method (M1AA, 5, NotSerialized)
+    {
+        Local7 = 0x00
+        Local0 = ObjectType (Arg1)
+        If ((Local0 != Arg2))
+        {
+            ERR (Arg0, Z114, 0x01CC, 0x00, Arg4, Local0, Arg2)
+            Local7 = 0x01
+        }
+        ElseIf ((Arg2 < C00C))
+        {
+            If ((Arg1 != Arg3))
+            {
+                ERR (Arg0, Z114, 0x01D0, 0x00, Arg4, Arg1, Arg3)
+                Local7 = 0x01
             }
         }
 
-	    Store(ObjectType(Local7), Local5)
-
-	    if (LNotEqual(Local5, c009)) {
-		    err(ts, z114, __LINE__, 0, 0, Local5, c009)
-	    } else {
-		    if (LNotEqual(Local7, 0)) {
-			    err(ts, z114, __LINE__, 0, 0, Local7, 0)
-            }
-		}
+        Return (Local7)
     }
 
-	if (arg1) {
+    /* Check and restore the global data after writing into them */
 
-		Store(Index(arg0, 6), Local0)
-		m1aa(ts, Local0, c00e, 0, 0x13f)
+    Method (M1AB, 0, Serialized)
+    {
+        Name (TS, "m1ab")
+        /* Computational Data */
 
-		Store(Index(arg0, 7), Local0)
-		m1aa(ts, Local0, c00f, 0, 0x13f)
+        M1AA (TS, I900, C009, C08A, 0x0144)
+        M1AA (TS, I901, C009, C08A, 0x0145)
+        M1AA (TS, S900, C009, C08A, 0x0146)
+        M1AA (TS, S901, C009, C08A, 0x0147)
+        M1AA (TS, B900, C009, C08A, 0x0148)
+        /* Package */
 
-		Store(Index(arg0, 8), Local0)
-		m1aa(ts, Local0, c010, 0, 0x13f)
+        M1AA (TS, P953, C009, C08A, 0x0149)
+        /* Not Computational Data */
 
-		Store(Index(arg0, 9), Local0)
-		m1aa(ts, Local0, c011, 0, 0x13f)
+        M1AA (TS, E900, C009, C08A, 0x014A)
+        M1AA (TS, MX90, C009, C08A, 0x014B)
+        M1AA (TS, D900, C009, C08A, 0x014C)
+        If (Y508)
+        {
+            M1AA (TS, TZ90, C009, C08A, 0x014D)
+        }
 
-		Store(Index(arg0, 10), Local0)
-		m1aa(ts, Local0, c012, 0, 0x13f)
+        M1AA (TS, PR90, C009, C08A, 0x014E)
+        If (Y510)
+        {
+            M1AA (TS, R900, C009, C08A, 0x014F)
+        }
 
-		Store(Index(arg0, 11), Local0)
-		m1aa(ts, Local0, c013, 0, 0x13f)
+        M1AA (TS, PW90, C009, C08A, 0x0150)
+        M1AC ()
+        M1A6 ()
+    }
 
-		Store(Index(arg0, 12), Local0)
-		m1aa(ts, Local0, c014, 0, 0x13f)
+    /* Restore the global data after writing into them */
 
-		Store(Index(arg0, 13), Local0)
-		m1aa(ts, Local0, c015, 0, 0x13f)
-	}
+    Method (M1AC, 0, NotSerialized)
+    {
+        /* Computational Data */
 
-    // 14th element is a buffer field, which will be resolved to an integer
+        CopyObject (I9Z0, I900) /* \I900 */
+        CopyObject (I9Z1, I901) /* \I901 */
+        CopyObject (S9Z0, S900) /* \S900 */
+        CopyObject (S9Z1, S901) /* \S901 */
+        CopyObject (B9Z0, B900) /* \B900 */
+        /* Package */
 
-	if (arg2) {
-	    Store(Index(arg0, 14), Local0)
-	    Store(ObjectType(Local0), Local1)
-		Store(DerefOf(Local0), Local7)
+        CopyObject (P954, P953) /* \P953 */
+        /* Restore p955 Package */
 
-        if (arg3) {
-	        if (LNotEqual(Local1, c016)) {
-		        err(ts, z114, __LINE__, 0, 0, Local1, c016)
-	        } else {
-			    Store(DerefOf(Local7), Local6)
-			    Store(Local6, Local7)
+        M1C6 ()
+        /* Not Computational Data */
+
+        CopyObject (E9Z0, E900) /* \E900 */
+        CopyObject (MX91, MX90) /* \MX90 */
+        CopyObject (D9Z0, D900) /* \D900 */
+        If (Y508)
+        {
+            CopyObject (TZ91, TZ90) /* \TZ90 */
+        }
+
+        CopyObject (PR91, PR90) /* \PR90 */
+        If (Y510)
+        {
+            CopyObject (R9Z0, R900) /* \R900 */
+        }
+
+        CopyObject (PW91, PW90) /* \PW90 */
+    }
+
+    /* Verify p955-like Package */
+    /* arg0 - Package */
+    /* arg1 - check for non-computational data */
+    /* arg2 - check Field Unit and Buffer Field */
+    /* arg3 - elements of Package are RefOf_References */
+    Method (M1AF, 4, Serialized)
+    {
+        Name (TS, "m1af")
+        Store (Arg0 [0x00], Local0)
+        Local1 = ObjectType (Local0)
+        If ((Local1 != C009))
+        {
+            ERR (TS, Z114, 0x0234, 0x00, 0x00, Local1, C009)
+        }
+        Else
+        {
+            Local1 = DerefOf (Local0)
+            If ((Local1 != 0x00))
+            {
+                ERR (TS, Z113, 0x0238, 0x00, 0x00, Local1, 0x00)
             }
         }
 
-	    Store(ObjectType(Local7), Local5)
-
-	    if (LNotEqual(Local5, c009)) {
-		    err(ts, z114, __LINE__, 0, 0, Local5, c009)
-	    } else {
-		    if (LNotEqual(Local7, 0xb0)) {
-			    err(ts, z114, __LINE__, 0, 0, Local7, 0)
+        Store (Arg0 [0x01], Local0)
+        Local1 = ObjectType (Local0)
+        If ((Local1 != C009))
+        {
+            ERR (TS, Z114, 0x0240, 0x00, 0x00, Local1, C009)
+        }
+        Else
+        {
+            Local1 = DerefOf (Local0)
+            If (Arg3)
+            {
+                Local2 = DerefOf (Local1)
+                Local1 = Local2
             }
-		}
+
+            If ((Local1 != 0xFE7CB391D65A0000))
+            {
+                ERR (TS, Z114, 0x0248, 0x00, 0x00, Local1, 0xFE7CB391D65A0000)
+            }
+        }
+
+        Store (Arg0 [0x02], Local0)
+        Local1 = ObjectType (Local0)
+        If ((Local1 != C00A))
+        {
+            ERR (TS, Z114, 0x0250, 0x00, 0x00, Local1, C00A)
+        }
+        Else
+        {
+            Local1 = DerefOf (Local0)
+            If (Arg3)
+            {
+                Local2 = DerefOf (Local1)
+                Local1 = Local2
+            }
+
+            If ((Local1 != "12340002"))
+            {
+                ERR (TS, Z114, 0x0258, 0x00, 0x00, Local1, "12340002")
+            }
+        }
+
+        Store (Arg0 [0x03], Local0)
+        Local1 = ObjectType (Local0)
+        If ((Local1 != C00B))
+        {
+            ERR (TS, Z114, 0x0260, 0x00, 0x00, Local1, C00A)
+        }
+        Else
+        {
+            Local1 = DerefOf (Local0)
+            If (Arg3)
+            {
+                Local2 = DerefOf (Local1)
+                Local1 = Local2
+            }
+
+            If ((Local1 != Buffer (0x05)
+                        {
+                             0xB0, 0xB1, 0xB2, 0xB3, 0xB4                     // .....
+                        }))
+            {
+                ERR (TS, Z114, 0x0268, 0x00, 0x00, Local1, Buffer (0x05)
+                    {
+                         0xB0, 0xB1, 0xB2, 0xB3, 0xB4                     // .....
+                    })
+            }
+        }
+
+        Store (Arg0 [0x04], Local0)
+        M1AA (TS, Local0, C00C, 0x00, 0x013F)
+        /* 5th element is a region field, which will be resolved to an integer */
+
+        If (Arg2)
+        {
+            Store (Arg0 [0x05], Local0)
+            Local1 = ObjectType (Local0)
+            Local7 = DerefOf (Local0)
+            If (Arg3)
+            {
+                If ((Local1 != C00D))
+                {
+                    ERR (TS, Z114, 0x0279, 0x00, 0x00, Local1, C00D)
+                }
+                Else
+                {
+                    Local6 = DerefOf (Local7)
+                    Local7 = Local6
+                }
+            }
+
+            Local5 = ObjectType (Local7)
+            If ((Local5 != C009))
+            {
+                ERR (TS, Z114, 0x0283, 0x00, 0x00, Local5, C009)
+            }
+            ElseIf ((Local7 != 0x00))
+            {
+                ERR (TS, Z114, 0x0286, 0x00, 0x00, Local7, 0x00)
+            }
+        }
+
+        If (Arg1)
+        {
+            Store (Arg0 [0x06], Local0)
+            M1AA (TS, Local0, C00E, 0x00, 0x013F)
+            Store (Arg0 [0x07], Local0)
+            M1AA (TS, Local0, C00F, 0x00, 0x013F)
+            Store (Arg0 [0x08], Local0)
+            M1AA (TS, Local0, C010, 0x00, 0x013F)
+            Store (Arg0 [0x09], Local0)
+            M1AA (TS, Local0, C011, 0x00, 0x013F)
+            Store (Arg0 [0x0A], Local0)
+            M1AA (TS, Local0, C012, 0x00, 0x013F)
+            Store (Arg0 [0x0B], Local0)
+            M1AA (TS, Local0, C013, 0x00, 0x013F)
+            Store (Arg0 [0x0C], Local0)
+            M1AA (TS, Local0, C014, 0x00, 0x013F)
+            Store (Arg0 [0x0D], Local0)
+            M1AA (TS, Local0, C015, 0x00, 0x013F)
+        }
+
+        /* 14th element is a buffer field, which will be resolved to an integer */
+
+        If (Arg2)
+        {
+            Store (Arg0 [0x0E], Local0)
+            Local1 = ObjectType (Local0)
+            Local7 = DerefOf (Local0)
+            If (Arg3)
+            {
+                If ((Local1 != C016))
+                {
+                    ERR (TS, Z114, 0x02AF, 0x00, 0x00, Local1, C016)
+                }
+                Else
+                {
+                    Local6 = DerefOf (Local7)
+                    Local7 = Local6
+                }
+            }
+
+            Local5 = ObjectType (Local7)
+            If ((Local5 != C009))
+            {
+                ERR (TS, Z114, 0x02B9, 0x00, 0x00, Local5, C009)
+            }
+            ElseIf ((Local7 != 0xB0))
+            {
+                ERR (TS, Z114, 0x02BC, 0x00, 0x00, Local7, 0x00)
+            }
+        }
+
+        Store (Arg0 [0x0F], Local0)
+        Local1 = ObjectType (Local0)
+        If ((Local1 != C009))
+        {
+            ERR (TS, Z114, 0x02C5, 0x00, 0x00, Local1, C009)
+        }
+        Else
+        {
+            Local1 = DerefOf (Local0)
+            If ((Local1 != 0x0F))
+            {
+                ERR (TS, Z114, 0x02C9, 0x00, 0x00, Local1, 0x0F)
+            }
+        }
+
+        Store (Arg0 [0x10], Local0)
+        Local1 = ObjectType (Local0)
+        If ((Local1 != C009))
+        {
+            ERR (TS, Z114, 0x02D1, 0x00, 0x00, Local1, C009)
+        }
+        Else
+        {
+            Local1 = DerefOf (Local0)
+            If ((Local1 != 0x10))
+            {
+                ERR (TS, Z114, 0x02D5, 0x00, 0x00, Local1, 0x10)
+            }
+        }
+
+        Store (Arg0 [0x11], Local0)
+        Local1 = ObjectType (Local0)
+        If ((Local1 != C008))
+        {
+            ERR (TS, Z114, 0x02DD, 0x00, 0x00, Local1, C008)
+        }
+
+        /* Evaluation of Method m936 takes place */
+
+        If ((I905 != 0xABCD001A))
+        {
+            ERR (TS, Z114, 0x02E3, 0x00, 0x00, I905, 0xABCD001A)
+        }
     }
 
-	Store(Index(arg0, 15), Local0)
-	Store(ObjectType(Local0), Local1)
+    /* Restore p955 Package */
 
-	if (LNotEqual(Local1, c009)) {
-		err(ts, z114, __LINE__, 0, 0, Local1, c009)
-	} else {
-		Store(DerefOf(Local0), Local1)
-		if (LNotEqual(Local1, 15)) {
-			err(ts, z114, __LINE__, 0, 0, Local1, 15)
-		}
-	}
-
-	Store(Index(arg0, 16), Local0)
-	Store(ObjectType(Local0), Local1)
-
-	if (LNotEqual(Local1, c009)) {
-		err(ts, z114, __LINE__, 0, 0, Local1, c009)
-	} else {
-		Store(DerefOf(Local0), Local1)
-		if (LNotEqual(Local1, 16)) {
-			err(ts, z114, __LINE__, 0, 0, Local1, 16)
-		}
-	}
-
-	Store(Index(arg0, 17), Local0)
-	Store(ObjectType(Local0), Local1)
-
-	if (LNotEqual(Local1, c008)) {
-		err(ts, z114, __LINE__, 0, 0, Local1, c008)
-	}
-
-	// Evaluation of Method m936 takes place
-
-	if (LNotEqual(i905, 0xabcd001a)) {
-		err(ts, z114, __LINE__, 0, 0, i905, 0xabcd001a)
-	}
-}
-
-// Restore p955 Package
-Method(m1c6)
-{
-	CopyObject(p956, p955)
-	Store(i9Z5, i905)
-}
-
+    Method (M1C6, 0, NotSerialized)
+    {
+        CopyObject (P956, P955) /* \P955 */
+        I905 = I9Z5 /* \I9Z5 */
+    }
 

@@ -1,11674 +1,18931 @@
-/*
- * Some or all of this work - Copyright (c) 2006 - 2017, Intel Corp.
- * All rights reserved.
- *
- * Redistribution and use in source and binary forms, with or without modification,
- * are permitted provided that the following conditions are met:
- *
- * Redistributions of source code must retain the above copyright notice,
- * this list of conditions and the following disclaimer.
- * Redistributions in binary form must reproduce the above copyright notice,
- * this list of conditions and the following disclaimer in the documentation
- * and/or other materials provided with the distribution.
- * Neither the name of Intel Corporation nor the names of its contributors
- * may be used to endorse or promote products derived from this software
- * without specific prior written permission.
- *
- * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS"
- * AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE
- * IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE
- * ARE DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT OWNER OR CONTRIBUTORS BE
- * LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL
- * DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES;
- * LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY
- * THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING
- * NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE,
- * EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
- */
-
-/*
- * BankField objects definition and processing
- */
-
-/*
- * On testing following issues should be covered:
- * - Operation Regions of different Region Space types application
- *   for BankField objects definition,
- * - Operation Regions of different Region Space types application
- *   for definition of bank selection register Field object used in
- *   BankField objects definition,
- * - application of any TermArg as a BankValue Integer,
- * - application of any allowed AccessType Keywords,
- * - application of any allowed LockRule Keywords,
- * - application of any allowed UpdateRule Keywords,
- * - application of the Offset macros in the FieldUnitList,
- * - application of the AccessAs macros in the FieldUnitList,
- * - on writing taking into account the Access Type in accord with
+    /*
+     * Some or all of this work - Copyright (c) 2006 - 2017, Intel Corp.
+     * All rights reserved.
+     *
+     * Redistribution and use in source and binary forms, with or without modification,
+     * are permitted provided that the following conditions are met:
+     *
+     * Redistributions of source code must retain the above copyright notice,
+     * this list of conditions and the following disclaimer.
+     * Redistributions in binary form must reproduce the above copyright notice,
+     * this list of conditions and the following disclaimer in the documentation
+     * and/or other materials provided with the distribution.
+     * Neither the name of Intel Corporation nor the names of its contributors
+     * may be used to endorse or promote products derived from this software
+     * without specific prior written permission.
+     *
+     * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS"
+     * AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE
+     * IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE
+     * ARE DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT OWNER OR CONTRIBUTORS BE
+     * LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL
+     * DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES;
+     * LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY
+     * THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING
+     * NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE,
+     * EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
+     */
+    /*
+     * BankField objects definition and processing
+     */
+    /*
+     * On testing following issues should be covered:
+     * - Operation Regions of different Region Space types application
+     *   for BankField objects definition,
+     * - Operation Regions of different Region Space types application
+     *   for definition of bank selection register Field object used in
+     *   BankField objects definition,
+     * - application of any TermArg as a BankValue Integer,
+     * - application of any allowed AccessType Keywords,
+     * - application of any allowed LockRule Keywords,
+     * - application of any allowed UpdateRule Keywords,
+     * - application of the Offset macros in the FieldUnitList,
+     * - application of the AccessAs macros in the FieldUnitList,
+     * - on writing taking into account the Access Type in accord with
      the Update Rule,
- * - AccessAs macros influence on the remaining Field Units within the list,
- * - access to BankField objects in accord with the bank selection register
- *   functionality,
- * - integer/buffer representation of the Unit contents as depends on its
- *   Length and DSDT ComplianceRevision (32/64-bit Integer),
- * - Data Type Conversion Rules on storing to BankFields,
- * - check that Bank value can be computational data.
- *
- * Can not be tested following issues:
- * - exact use of given Access Type alignment on Access to Unit data,
- * - exact functioning of data exchange based on BankField functionality,
- * - exact use of specific Conversion Rules on storing of Buffers or Strings.
- */
-
-Name(z145, 145)
-
-OperationRegion(OPRi, SystemIO, 0x200, 0x10)
-OperationRegion(OPRj, SystemIO, 0x230, 0x133)
-
-// Check against benchmark value
-// m7bf(msg, result, benchmark, errnum)
-Method(m7bf, 4)
-{
-	if (LNotEqual(ObjectType(arg1), ObjectType(arg2))) {
-		err(arg0, z145, __LINE__, 0, 0, ObjectType(arg1), ObjectType(arg2))
-	} elseif (LNotEqual(arg1, arg2)) {
-		err(arg0, z145, __LINE__, 0, 0, arg1, arg2)
-	}
-}
-
-// Simple BankField test
-Method(m7c0, 1, Serialized)
-{
-	Field (OPRi, ByteAcc, NoLock, Preserve) {
-		bnk0, 8
-	}
-
-	BankField (OPRj, bnk0, 2, ByteAcc, NoLock, Preserve) {
-		Offset(8),
-		bf00, 8,
-	}
-
-	BankField (OPRj, bnk0, 3, ByteAcc, NoLock, Preserve) {
-		Offset(8),
-		bf01, 8,
-	}
-
-	Concatenate(arg0, "-m7c0", arg0)
-
-//
-// Full support for bank fields not implemented in acpiexec, so
-// we have to perform write/reads in order. Otherwise, we would
-// interleave them.
-
-	// Write bf00
-
-	Store(0xff, bnk0)
-	m7bf(arg0, bnk0, 0xff, 1)
-
-	Store(0x67, bf00)
-	m7bf(arg0, bnk0, 2, 2)
-
-	// Read bf00
-
-	Store(0xff, bnk0)
-	m7bf(arg0, bnk0, 0xff, 5)
-
-	Store(bf00, Local1)
-	m7bf(arg0, Local1, 0x67, 6)
-	m7bf(arg0, bnk0, 2, 7)
-
-	// Write bf01
-
-	Store(0xff, bnk0)
-	m7bf(arg0, bnk0, 0xff, 3)
-
-	Store(0x89, bf01)
-	m7bf(arg0, bnk0, 3, 4)
-
-	// Read bf01
-
-	Store(0xff, bnk0)
-	m7bf(arg0, bnk0, 0xff, 8)
-
-	Store(bf01, Local1)
-	m7bf(arg0, Local1, 0x89, 9)
-	m7bf(arg0, bnk0, 3, 10)
-}
-
-// Testing parameters Packages
-// Layout see in regionfield.asl
-
-// (ByteAcc, NoLock, Preserve)
-Name(pp20, Package() {
-		0, 8, 0, 8, Package(6){0, 1, 1, 0, 1, "m7d0"},
-})
-
-// (WordAcc, NoLock, WriteAsOnes)
-Name(pp21, Package() {
-		0, 8, 8, 8, Package(6){0, 2, 2, 1, 1, "m7d1"},
-})
-
-// (DWordAcc, NoLock, WriteAsZeros)
-Name(pp22, Package() {
-		8, 8, 0, 8, Package(6){1, 2, 3, 2, 1, "m7d2"},
-})
-
-// (QWordAcc, NoLock, Preserve)
-Name(pp23, Package() {
-		8, 4, 8, 8, Package(6){1, 0, 3, 0, 1, "m7d3"},
-})
-
-// (AnyAcc, Lock, Preserve)
-Name(pp24, Package() {
-		12, 4, 8, 8, Package(6){0, 1, 0, 0, 0, "m7d4"},
-})
-
-// Check BankField access: ByteAcc, NoLock, Preserve
-// m7c1(CallChain)
-Method(m7c1, 1)
-{
-	Concatenate(arg0, "-m7c1", arg0)
-
-	Store("TEST: m7c1, Check BankFields specified as (ByteAcc, NoLock, Preserve)", Debug)
-
-	m72f(arg0, 1, "pp20", pp20)
-}
-
-// Check BankField access: WordAcc, NoLock, WriteAsOnes
-// m7c2(CallChain)
-Method(m7c2, 1)
-{
-	Concatenate(arg0, "-m7c2", arg0)
-
-	Store("TEST: m7c2, Check BankFields specified as (WordAcc, NoLock, WriteAsOnes)", Debug)
-
-	m72f(arg0, 1, "pp21", pp21)
-}
-
-// Check BankField access: DWordAcc, NoLock, WriteAsZeros
-// m7c3(CallChain)
-Method(m7c3, 1)
-{
-	Concatenate(arg0, "-m7c3", arg0)
-
-	Store("TEST: m7c3, Check BankFields specified as (DWordAcc, NoLock, WriteAsZeros)", Debug)
-
-	m72f(arg0, 1, "pp22", pp22)
-}
-
-// Check BankField access: QWordAcc, NoLock, Preserve
-// m7c4(CallChain)
-Method(m7c4, 1)
-{
-	Concatenate(arg0, "-m7c4", arg0)
-
-	Store("TEST: m7c4, Check BankFields specified as (QWordAcc, NoLock, Preserve)", Debug)
-
-	m72f(arg0, 1, "pp23", pp23)
-}
-
-// Check BankField access: AnyAcc, Lock, Preserve
-// m7c5(CallChain)
-Method(m7c5, 1)
-{
-	Concatenate(arg0, "-m7c5", arg0)
-
-	Store("TEST: m7c5, Check BankFields specified as (AnyAcc, Lock, Preserve)", Debug)
-
-	m72f(arg0, 1, "pp24", pp24)
-}
-
-// Create BankField Unit
-// (ByteAcc, NoLock, Preserve)
-Method(m7d0, 6, Serialized)
-{
-	OperationRegion(OPRb, SystemIO, 0, 9)
-	OperationRegion(OPR0, SystemIO, 11, 256)
-
-	Field(OPRb, ByteAcc, NoLock, Preserve) {
-		BNK0, 8,
-	}
-	BankField(OPR0, BNK0, 0, ByteAcc, NoLock, Preserve) {
-		g000, 2048,
-	}
-	BankField(OPR0, BNK0, 1, ByteAcc, NoLock, Preserve) {
-		g001, 2048,
-	}
-	BankField(OPR0, BNK0, 2, ByteAcc, NoLock, Preserve) {
-		g002, 2048,
-	}
-	BankField(OPR0, BNK0, 3, ByteAcc, NoLock, Preserve) {
-		g003, 2048,
-	}
-	BankField(OPR0, BNK0, 4, ByteAcc, NoLock, Preserve) {
-		g004, 2048,
-	}
-	BankField(OPR0, BNK0, 5, ByteAcc, NoLock, Preserve) {
-		g005, 2048,
-	}
-	BankField(OPR0, BNK0, 6, ByteAcc, NoLock, Preserve) {
-		g006, 2048,
-	}
-	BankField(OPR0, BNK0, 7, ByteAcc, NoLock, Preserve) {
-		g007, 2048,
-	}
-	BankField(OPR0, BNK0, 8, ByteAcc, NoLock, Preserve) {
-		g008, 2048,
-	}
-	BankField(OPR0, BNK0, 9, ByteAcc, NoLock, Preserve) {
-		g009, 2048,
-	}
-	BankField(OPR0, BNK0, 63, ByteAcc, NoLock, Preserve) {
-		g00a, 2048,
-	}
-	BankField(OPR0, BNK0, 64, ByteAcc, NoLock, Preserve) {
-		g00b, 2048,
-	}
-	BankField(OPR0, BNK0, 127, ByteAcc, NoLock, Preserve) {
-		g00c, 2048,
-	}
-	BankField(OPR0, BNK0, 128, ByteAcc, NoLock, Preserve) {
-		g00d, 2048,
-	}
-	BankField(OPR0, BNK0, 255, ByteAcc, NoLock, Preserve) {
-		g00e, 2048,
-	}
-
-
-	Concatenate(arg0, "-m7d0", arg0)
-
-	switch(ToInteger (arg2)) {
-	case (0) {
-		switch(ToInteger (arg3)) {
-			case (1) {
-				Store(0, Local2)
-				BankField(OPR0, BNK0, 0, ByteAcc, NoLock, Preserve) {
-					, 0, f000, 1}
-				Store(Refof(f000), Local3)
-				Store(Refof(g000), Local4)
-			}
-			case (6) {
-				Store(1, Local2)
-				BankField(OPR0, BNK0, 1, WordAcc, NoLock, Preserve) {
-					AccessAs(ByteAcc),
-					, 0, f001, 6}
-				Store(Refof(f001), Local3)
-				Store(Refof(g001), Local4)
-			}
-			case (7) {
-				Store(2, Local2)
-				BankField(OPR0, BNK0, 2, ByteAcc, NoLock, Preserve) {
-					, 0, f002, 7}
-				Store(Refof(f002), Local3)
-				Store(Refof(g002), Local4)
-			}
-			case (8) {
-				Store(3, Local2)
-				BankField(OPR0, BNK0, 3, DWordAcc, NoLock, Preserve) {
-					AccessAs(ByteAcc),
-					, 0, f003, 8}
-				Store(Refof(f003), Local3)
-				Store(Refof(g003), Local4)
-			}
-			case (9) {
-				Store(4, Local2)
-				BankField(OPR0, BNK0, 4, ByteAcc, NoLock, Preserve) {
-					, 0, f004, 9}
-				Store(Refof(f004), Local3)
-				Store(Refof(g004), Local4)
-			}
-			case (31) {
-				Store(5, Local2)
-				BankField(OPR0, BNK0, 5, QWordAcc, NoLock, Preserve) {
-					AccessAs(ByteAcc),
-					, 0, f005, 31}
-				Store(Refof(f005), Local3)
-				Store(Refof(g005), Local4)
-			}
-			case (32) {
-				Store(6, Local2)
-				BankField(OPR0, BNK0, 6, ByteAcc, NoLock, Preserve) {
-					, 0, f006, 32}
-				Store(Refof(f006), Local3)
-				Store(Refof(g006), Local4)
-			}
-			case (33) {
-				Store(7, Local2)
-				BankField(OPR0, BNK0, 7, AnyAcc, NoLock, Preserve) {
-					AccessAs(ByteAcc),
-					, 0, f007, 33}
-				Store(Refof(f007), Local3)
-				Store(Refof(g007), Local4)
-			}
-			case (63) {
-				Store(8, Local2)
-				BankField(OPR0, BNK0, 8, ByteAcc, NoLock, Preserve) {
-					, 0, f008, 63}
-				Store(Refof(f008), Local3)
-				Store(Refof(g008), Local4)
-			}
-			case (64) {
-				Store(9, Local2)
-				BankField(OPR0, BNK0, 9, ByteAcc, NoLock, Preserve) {
-					AccessAs(ByteAcc),
-					, 0, f009, 64}
-				Store(Refof(f009), Local3)
-				Store(Refof(g009), Local4)
-			}
-			case (65) {
-				Store(63, Local2)
-				BankField(OPR0, BNK0, 63, ByteAcc, NoLock, Preserve) {
-					, 0, f00a, 65}
-				Store(Refof(f00a), Local3)
-				Store(Refof(g00a), Local4)
-			}
-			case (69) {
-				Store(64, Local2)
-				BankField(OPR0, BNK0, 64, WordAcc, NoLock, Preserve) {
-					AccessAs(ByteAcc),
-					, 0, f00b, 69}
-				Store(Refof(f00b), Local3)
-				Store(Refof(g00b), Local4)
-			}
-			case (129) {
-				Store(127, Local2)
-				BankField(OPR0, BNK0, 127, ByteAcc, NoLock, Preserve) {
-					, 0, f00c, 129}
-				Store(Refof(f00c), Local3)
-				Store(Refof(g00c), Local4)
-			}
-			case (256) {
-				Store(128, Local2)
-				BankField(OPR0, BNK0, 128, DWordAcc, NoLock, Preserve) {
-					AccessAs(ByteAcc),
-					, 0, f00d, 256}
-				Store(Refof(f00d), Local3)
-				Store(Refof(g00d), Local4)
-			}
-			case (1023) {
-				Store(255, Local2)
-				BankField(OPR0, BNK0, 255, ByteAcc, NoLock, Preserve) {
-					, 0, f00e, 1023}
-				Store(Refof(f00e), Local3)
-				Store(Refof(g00e), Local4)
-			}
-			case (1983) {
-				Store(0, Local2)
-				BankField(OPR0, BNK0, 0, QWordAcc, NoLock, Preserve) {
-					AccessAs(ByteAcc),
-					, 0, f00f, 1983}
-				Store(Refof(f00f), Local3)
-				Store(Refof(g000), Local4)
-			}
-			default {
-				err(arg0, z145, __LINE__, 0, 0, arg2, arg3)
-				return
-			}
-		}
-	}
-	case (1) {
-		switch(ToInteger (arg3)) {
-			case (1) {
-				Store(1, Local2)
-				BankField(OPR0, BNK0, 1, AnyAcc, NoLock, Preserve) {
-					AccessAs(ByteAcc),
-					, 1, f010, 1}
-				Store(Refof(f010), Local3)
-				Store(Refof(g001), Local4)
-			}
-			case (6) {
-				Store(2, Local2)
-				BankField(OPR0, BNK0, 2, ByteAcc, NoLock, Preserve) {
-					, 1, f011, 6}
-				Store(Refof(f011), Local3)
-				Store(Refof(g002), Local4)
-			}
-			case (7) {
-				Store(3, Local2)
-				BankField(OPR0, BNK0, 3, ByteAcc, NoLock, Preserve) {
-					AccessAs(ByteAcc),
-					, 1, f012, 7}
-				Store(Refof(f012), Local3)
-				Store(Refof(g003), Local4)
-			}
-			case (8) {
-				Store(4, Local2)
-				BankField(OPR0, BNK0, 4, ByteAcc, NoLock, Preserve) {
-					, 1, f013, 8}
-				Store(Refof(f013), Local3)
-				Store(Refof(g004), Local4)
-			}
-			case (9) {
-				Store(5, Local2)
-				BankField(OPR0, BNK0, 5, WordAcc, NoLock, Preserve) {
-					AccessAs(ByteAcc),
-					, 1, f014, 9}
-				Store(Refof(f014), Local3)
-				Store(Refof(g005), Local4)
-			}
-			case (31) {
-				Store(6, Local2)
-				BankField(OPR0, BNK0, 6, ByteAcc, NoLock, Preserve) {
-					, 1, f015, 31}
-				Store(Refof(f015), Local3)
-				Store(Refof(g006), Local4)
-			}
-			case (32) {
-				Store(7, Local2)
-				BankField(OPR0, BNK0, 7, DWordAcc, NoLock, Preserve) {
-					AccessAs(ByteAcc),
-					, 1, f016, 32}
-				Store(Refof(f016), Local3)
-				Store(Refof(g007), Local4)
-			}
-			case (33) {
-				Store(8, Local2)
-				BankField(OPR0, BNK0, 8, ByteAcc, NoLock, Preserve) {
-					, 1, f017, 33}
-				Store(Refof(f017), Local3)
-				Store(Refof(g008), Local4)
-			}
-			case (63) {
-				Store(9, Local2)
-				BankField(OPR0, BNK0, 9, QWordAcc, NoLock, Preserve) {
-					AccessAs(ByteAcc),
-					, 1, f018, 63}
-				Store(Refof(f018), Local3)
-				Store(Refof(g009), Local4)
-			}
-			case (64) {
-				Store(63, Local2)
-				BankField(OPR0, BNK0, 63, ByteAcc, NoLock, Preserve) {
-					, 1, f019, 64}
-				Store(Refof(f019), Local3)
-				Store(Refof(g00a), Local4)
-			}
-			case (65) {
-				Store(64, Local2)
-				BankField(OPR0, BNK0, 64, AnyAcc, NoLock, Preserve) {
-					AccessAs(ByteAcc),
-					, 1, f01a, 65}
-				Store(Refof(f01a), Local3)
-				Store(Refof(g00b), Local4)
-			}
-			case (69) {
-				Store(127, Local2)
-				BankField(OPR0, BNK0, 127, ByteAcc, NoLock, Preserve) {
-					, 1, f01b, 69}
-				Store(Refof(f01b), Local3)
-				Store(Refof(g00c), Local4)
-			}
-			case (129) {
-				Store(128, Local2)
-				BankField(OPR0, BNK0, 128, ByteAcc, NoLock, Preserve) {
-					AccessAs(ByteAcc),
-					, 1, f01c, 129}
-				Store(Refof(f01c), Local3)
-				Store(Refof(g00d), Local4)
-			}
-			case (256) {
-				Store(255, Local2)
-				BankField(OPR0, BNK0, 255, ByteAcc, NoLock, Preserve) {
-					, 1, f01d, 256}
-				Store(Refof(f01d), Local3)
-				Store(Refof(g00e), Local4)
-			}
-			case (1023) {
-				Store(0, Local2)
-				BankField(OPR0, BNK0, 0, WordAcc, NoLock, Preserve) {
-					AccessAs(ByteAcc),
-					, 1, f01e, 1023}
-				Store(Refof(f01e), Local3)
-				Store(Refof(g000), Local4)
-			}
-			case (1983) {
-				Store(1, Local2)
-				BankField(OPR0, BNK0, 1, ByteAcc, NoLock, Preserve) {
-					, 1, f01f, 1983}
-				Store(Refof(f01f), Local3)
-				Store(Refof(g001), Local4)
-			}
-			default {
-				err(arg0, z145, __LINE__, 0, 0, arg2, arg3)
-				return
-			}
-		}
-	}
-	case (2) {
-		switch(ToInteger (arg3)) {
-			case (1) {
-				Store(2, Local2)
-				BankField(OPR0, BNK0, 2, ByteAcc, NoLock, Preserve) {
-					, 2, f020, 1}
-				Store(Refof(f020), Local3)
-				Store(Refof(g002), Local4)
-			}
-			case (6) {
-				Store(3, Local2)
-				BankField(OPR0, BNK0, 3, DWordAcc, NoLock, Preserve) {
-					AccessAs(ByteAcc),
-					, 2, f021, 6}
-				Store(Refof(f021), Local3)
-				Store(Refof(g003), Local4)
-			}
-			case (7) {
-				Store(4, Local2)
-				BankField(OPR0, BNK0, 4, ByteAcc, NoLock, Preserve) {
-					, 2, f022, 7}
-				Store(Refof(f022), Local3)
-				Store(Refof(g004), Local4)
-			}
-			case (8) {
-				Store(5, Local2)
-				BankField(OPR0, BNK0, 5, QWordAcc, NoLock, Preserve) {
-					AccessAs(ByteAcc),
-					, 2, f023, 8}
-				Store(Refof(f023), Local3)
-				Store(Refof(g005), Local4)
-			}
-			case (9) {
-				Store(6, Local2)
-				BankField(OPR0, BNK0, 6, ByteAcc, NoLock, Preserve) {
-					, 2, f024, 9}
-				Store(Refof(f024), Local3)
-				Store(Refof(g006), Local4)
-			}
-			case (31) {
-				Store(7, Local2)
-				BankField(OPR0, BNK0, 7, AnyAcc, NoLock, Preserve) {
-					AccessAs(ByteAcc),
-					, 2, f025, 31}
-				Store(Refof(f025), Local3)
-				Store(Refof(g007), Local4)
-			}
-			case (32) {
-				Store(8, Local2)
-				BankField(OPR0, BNK0, 8, ByteAcc, NoLock, Preserve) {
-					, 2, f026, 32}
-				Store(Refof(f026), Local3)
-				Store(Refof(g008), Local4)
-			}
-			case (33) {
-				Store(9, Local2)
-				BankField(OPR0, BNK0, 9, ByteAcc, NoLock, Preserve) {
-					AccessAs(ByteAcc),
-					, 2, f027, 33}
-				Store(Refof(f027), Local3)
-				Store(Refof(g009), Local4)
-			}
-			case (63) {
-				Store(63, Local2)
-				BankField(OPR0, BNK0, 63, ByteAcc, NoLock, Preserve) {
-					, 2, f028, 63}
-				Store(Refof(f028), Local3)
-				Store(Refof(g00a), Local4)
-			}
-			case (64) {
-				Store(64, Local2)
-				BankField(OPR0, BNK0, 64, WordAcc, NoLock, Preserve) {
-					AccessAs(ByteAcc),
-					, 2, f029, 64}
-				Store(Refof(f029), Local3)
-				Store(Refof(g00b), Local4)
-			}
-			case (65) {
-				Store(127, Local2)
-				BankField(OPR0, BNK0, 127, ByteAcc, NoLock, Preserve) {
-					, 2, f02a, 65}
-				Store(Refof(f02a), Local3)
-				Store(Refof(g00c), Local4)
-			}
-			case (69) {
-				Store(128, Local2)
-				BankField(OPR0, BNK0, 128, DWordAcc, NoLock, Preserve) {
-					AccessAs(ByteAcc),
-					, 2, f02b, 69}
-				Store(Refof(f02b), Local3)
-				Store(Refof(g00d), Local4)
-			}
-			case (129) {
-				Store(255, Local2)
-				BankField(OPR0, BNK0, 255, ByteAcc, NoLock, Preserve) {
-					, 2, f02c, 129}
-				Store(Refof(f02c), Local3)
-				Store(Refof(g00e), Local4)
-			}
-			case (256) {
-				Store(0, Local2)
-				BankField(OPR0, BNK0, 0, QWordAcc, NoLock, Preserve) {
-					AccessAs(ByteAcc),
-					, 2, f02d, 256}
-				Store(Refof(f02d), Local3)
-				Store(Refof(g000), Local4)
-			}
-			case (1023) {
-				Store(1, Local2)
-				BankField(OPR0, BNK0, 1, ByteAcc, NoLock, Preserve) {
-					, 2, f02e, 1023}
-				Store(Refof(f02e), Local3)
-				Store(Refof(g001), Local4)
-			}
-			case (1983) {
-				Store(2, Local2)
-				BankField(OPR0, BNK0, 2, AnyAcc, NoLock, Preserve) {
-					AccessAs(ByteAcc),
-					, 2, f02f, 1983}
-				Store(Refof(f02f), Local3)
-				Store(Refof(g002), Local4)
-			}
-			default {
-				err(arg0, z145, __LINE__, 0, 0, arg2, arg3)
-				return
-			}
-		}
-	}
-	case (3) {
-		switch(ToInteger (arg3)) {
-			case (1) {
-				Store(3, Local2)
-				BankField(OPR0, BNK0, 3, ByteAcc, NoLock, Preserve) {
-					AccessAs(ByteAcc),
-					, 3, f030, 1}
-				Store(Refof(f030), Local3)
-				Store(Refof(g003), Local4)
-			}
-			case (6) {
-				Store(4, Local2)
-				BankField(OPR0, BNK0, 4, ByteAcc, NoLock, Preserve) {
-					, 3, f031, 6}
-				Store(Refof(f031), Local3)
-				Store(Refof(g004), Local4)
-			}
-			case (7) {
-				Store(5, Local2)
-				BankField(OPR0, BNK0, 5, WordAcc, NoLock, Preserve) {
-					AccessAs(ByteAcc),
-					, 3, f032, 7}
-				Store(Refof(f032), Local3)
-				Store(Refof(g005), Local4)
-			}
-			case (8) {
-				Store(6, Local2)
-				BankField(OPR0, BNK0, 6, ByteAcc, NoLock, Preserve) {
-					, 3, f033, 8}
-				Store(Refof(f033), Local3)
-				Store(Refof(g006), Local4)
-			}
-			case (9) {
-				Store(7, Local2)
-				BankField(OPR0, BNK0, 7, DWordAcc, NoLock, Preserve) {
-					AccessAs(ByteAcc),
-					, 3, f034, 9}
-				Store(Refof(f034), Local3)
-				Store(Refof(g007), Local4)
-			}
-			case (31) {
-				Store(8, Local2)
-				BankField(OPR0, BNK0, 8, ByteAcc, NoLock, Preserve) {
-					, 3, f035, 31}
-				Store(Refof(f035), Local3)
-				Store(Refof(g008), Local4)
-			}
-			case (32) {
-				Store(9, Local2)
-				BankField(OPR0, BNK0, 9, QWordAcc, NoLock, Preserve) {
-					AccessAs(ByteAcc),
-					, 3, f036, 32}
-				Store(Refof(f036), Local3)
-				Store(Refof(g009), Local4)
-			}
-			case (33) {
-				Store(63, Local2)
-				BankField(OPR0, BNK0, 63, ByteAcc, NoLock, Preserve) {
-					, 3, f037, 33}
-				Store(Refof(f037), Local3)
-				Store(Refof(g00a), Local4)
-			}
-			case (63) {
-				Store(64, Local2)
-				BankField(OPR0, BNK0, 64, AnyAcc, NoLock, Preserve) {
-					AccessAs(ByteAcc),
-					, 3, f038, 63}
-				Store(Refof(f038), Local3)
-				Store(Refof(g00b), Local4)
-			}
-			case (64) {
-				Store(127, Local2)
-				BankField(OPR0, BNK0, 127, ByteAcc, NoLock, Preserve) {
-					, 3, f039, 64}
-				Store(Refof(f039), Local3)
-				Store(Refof(g00c), Local4)
-			}
-			case (65) {
-				Store(128, Local2)
-				BankField(OPR0, BNK0, 128, ByteAcc, NoLock, Preserve) {
-					AccessAs(ByteAcc),
-					, 3, f03a, 65}
-				Store(Refof(f03a), Local3)
-				Store(Refof(g00d), Local4)
-			}
-			case (69) {
-				Store(255, Local2)
-				BankField(OPR0, BNK0, 255, ByteAcc, NoLock, Preserve) {
-					, 3, f03b, 69}
-				Store(Refof(f03b), Local3)
-				Store(Refof(g00e), Local4)
-			}
-			case (129) {
-				Store(0, Local2)
-				BankField(OPR0, BNK0, 0, WordAcc, NoLock, Preserve) {
-					AccessAs(ByteAcc),
-					, 3, f03c, 129}
-				Store(Refof(f03c), Local3)
-				Store(Refof(g000), Local4)
-			}
-			case (256) {
-				Store(1, Local2)
-				BankField(OPR0, BNK0, 1, ByteAcc, NoLock, Preserve) {
-					, 3, f03d, 256}
-				Store(Refof(f03d), Local3)
-				Store(Refof(g001), Local4)
-			}
-			case (1023) {
-				Store(2, Local2)
-				BankField(OPR0, BNK0, 2, DWordAcc, NoLock, Preserve) {
-					AccessAs(ByteAcc),
-					, 3, f03e, 1023}
-				Store(Refof(f03e), Local3)
-				Store(Refof(g002), Local4)
-			}
-			case (1983) {
-				Store(3, Local2)
-				BankField(OPR0, BNK0, 3, ByteAcc, NoLock, Preserve) {
-					, 3, f03f, 1983}
-				Store(Refof(f03f), Local3)
-				Store(Refof(g003), Local4)
-			}
-			default {
-				err(arg0, z145, __LINE__, 0, 0, arg2, arg3)
-				return
-			}
-		}
-	}
-	case (4) {
-		switch(ToInteger (arg3)) {
-			case (1) {
-				Store(4, Local2)
-				BankField(OPR0, BNK0, 4, ByteAcc, NoLock, Preserve) {
-					, 4, f040, 1}
-				Store(Refof(f040), Local3)
-				Store(Refof(g004), Local4)
-			}
-			case (6) {
-				Store(5, Local2)
-				BankField(OPR0, BNK0, 5, QWordAcc, NoLock, Preserve) {
-					AccessAs(ByteAcc),
-					, 4, f041, 6}
-				Store(Refof(f041), Local3)
-				Store(Refof(g005), Local4)
-			}
-			case (7) {
-				Store(6, Local2)
-				BankField(OPR0, BNK0, 6, ByteAcc, NoLock, Preserve) {
-					, 4, f042, 7}
-				Store(Refof(f042), Local3)
-				Store(Refof(g006), Local4)
-			}
-			case (8) {
-				Store(7, Local2)
-				BankField(OPR0, BNK0, 7, AnyAcc, NoLock, Preserve) {
-					AccessAs(ByteAcc),
-					, 4, f043, 8}
-				Store(Refof(f043), Local3)
-				Store(Refof(g007), Local4)
-			}
-			case (9) {
-				Store(8, Local2)
-				BankField(OPR0, BNK0, 8, ByteAcc, NoLock, Preserve) {
-					, 4, f044, 9}
-				Store(Refof(f044), Local3)
-				Store(Refof(g008), Local4)
-			}
-			case (31) {
-				Store(9, Local2)
-				BankField(OPR0, BNK0, 9, ByteAcc, NoLock, Preserve) {
-					AccessAs(ByteAcc),
-					, 4, f045, 31}
-				Store(Refof(f045), Local3)
-				Store(Refof(g009), Local4)
-			}
-			case (32) {
-				Store(63, Local2)
-				BankField(OPR0, BNK0, 63, ByteAcc, NoLock, Preserve) {
-					, 4, f046, 32}
-				Store(Refof(f046), Local3)
-				Store(Refof(g00a), Local4)
-			}
-			case (33) {
-				Store(64, Local2)
-				BankField(OPR0, BNK0, 64, WordAcc, NoLock, Preserve) {
-					AccessAs(ByteAcc),
-					, 4, f047, 33}
-				Store(Refof(f047), Local3)
-				Store(Refof(g00b), Local4)
-			}
-			case (63) {
-				Store(127, Local2)
-				BankField(OPR0, BNK0, 127, ByteAcc, NoLock, Preserve) {
-					, 4, f048, 63}
-				Store(Refof(f048), Local3)
-				Store(Refof(g00c), Local4)
-			}
-			case (64) {
-				Store(128, Local2)
-				BankField(OPR0, BNK0, 128, DWordAcc, NoLock, Preserve) {
-					AccessAs(ByteAcc),
-					, 4, f049, 64}
-				Store(Refof(f049), Local3)
-				Store(Refof(g00d), Local4)
-			}
-			case (65) {
-				Store(255, Local2)
-				BankField(OPR0, BNK0, 255, ByteAcc, NoLock, Preserve) {
-					, 4, f04a, 65}
-				Store(Refof(f04a), Local3)
-				Store(Refof(g00e), Local4)
-			}
-			case (69) {
-				Store(0, Local2)
-				BankField(OPR0, BNK0, 0, QWordAcc, NoLock, Preserve) {
-					AccessAs(ByteAcc),
-					, 4, f04b, 69}
-				Store(Refof(f04b), Local3)
-				Store(Refof(g000), Local4)
-			}
-			case (129) {
-				Store(1, Local2)
-				BankField(OPR0, BNK0, 1, ByteAcc, NoLock, Preserve) {
-					, 4, f04c, 129}
-				Store(Refof(f04c), Local3)
-				Store(Refof(g001), Local4)
-			}
-			case (256) {
-				Store(2, Local2)
-				BankField(OPR0, BNK0, 2, AnyAcc, NoLock, Preserve) {
-					AccessAs(ByteAcc),
-					, 4, f04d, 256}
-				Store(Refof(f04d), Local3)
-				Store(Refof(g002), Local4)
-			}
-			case (1023) {
-				Store(3, Local2)
-				BankField(OPR0, BNK0, 3, ByteAcc, NoLock, Preserve) {
-					, 4, f04e, 1023}
-				Store(Refof(f04e), Local3)
-				Store(Refof(g003), Local4)
-			}
-			case (1983) {
-				Store(4, Local2)
-				BankField(OPR0, BNK0, 4, ByteAcc, NoLock, Preserve) {
-					AccessAs(ByteAcc),
-					, 4, f04f, 1983}
-				Store(Refof(f04f), Local3)
-				Store(Refof(g004), Local4)
-			}
-			default {
-				err(arg0, z145, __LINE__, 0, 0, arg2, arg3)
-				return
-			}
-		}
-	}
-	case (5) {
-		switch(ToInteger (arg3)) {
-			case (1) {
-				Store(5, Local2)
-				BankField(OPR0, BNK0, 5, WordAcc, NoLock, Preserve) {
-					AccessAs(ByteAcc),
-					, 5, f050, 1}
-				Store(Refof(f050), Local3)
-				Store(Refof(g005), Local4)
-			}
-			case (6) {
-				Store(6, Local2)
-				BankField(OPR0, BNK0, 6, ByteAcc, NoLock, Preserve) {
-					, 5, f051, 6}
-				Store(Refof(f051), Local3)
-				Store(Refof(g006), Local4)
-			}
-			case (7) {
-				Store(7, Local2)
-				BankField(OPR0, BNK0, 7, DWordAcc, NoLock, Preserve) {
-					AccessAs(ByteAcc),
-					, 5, f052, 7}
-				Store(Refof(f052), Local3)
-				Store(Refof(g007), Local4)
-			}
-			case (8) {
-				Store(8, Local2)
-				BankField(OPR0, BNK0, 8, ByteAcc, NoLock, Preserve) {
-					, 5, f053, 8}
-				Store(Refof(f053), Local3)
-				Store(Refof(g008), Local4)
-			}
-			case (9) {
-				Store(9, Local2)
-				BankField(OPR0, BNK0, 9, QWordAcc, NoLock, Preserve) {
-					AccessAs(ByteAcc),
-					, 5, f054, 9}
-				Store(Refof(f054), Local3)
-				Store(Refof(g009), Local4)
-			}
-			case (31) {
-				Store(63, Local2)
-				BankField(OPR0, BNK0, 63, ByteAcc, NoLock, Preserve) {
-					, 5, f055, 31}
-				Store(Refof(f055), Local3)
-				Store(Refof(g00a), Local4)
-			}
-			case (32) {
-				Store(64, Local2)
-				BankField(OPR0, BNK0, 64, AnyAcc, NoLock, Preserve) {
-					AccessAs(ByteAcc),
-					, 5, f056, 32}
-				Store(Refof(f056), Local3)
-				Store(Refof(g00b), Local4)
-			}
-			case (33) {
-				Store(127, Local2)
-				BankField(OPR0, BNK0, 127, ByteAcc, NoLock, Preserve) {
-					, 5, f057, 33}
-				Store(Refof(f057), Local3)
-				Store(Refof(g00c), Local4)
-			}
-			case (63) {
-				Store(128, Local2)
-				BankField(OPR0, BNK0, 128, ByteAcc, NoLock, Preserve) {
-					AccessAs(ByteAcc),
-					, 5, f058, 63}
-				Store(Refof(f058), Local3)
-				Store(Refof(g00d), Local4)
-			}
-			case (64) {
-				Store(255, Local2)
-				BankField(OPR0, BNK0, 255, ByteAcc, NoLock, Preserve) {
-					, 5, f059, 64}
-				Store(Refof(f059), Local3)
-				Store(Refof(g00e), Local4)
-			}
-			case (65) {
-				Store(0, Local2)
-				BankField(OPR0, BNK0, 0, WordAcc, NoLock, Preserve) {
-					AccessAs(ByteAcc),
-					, 5, f05a, 65}
-				Store(Refof(f05a), Local3)
-				Store(Refof(g000), Local4)
-			}
-			case (69) {
-				Store(1, Local2)
-				BankField(OPR0, BNK0, 1, ByteAcc, NoLock, Preserve) {
-					, 5, f05b, 69}
-				Store(Refof(f05b), Local3)
-				Store(Refof(g001), Local4)
-			}
-			case (129) {
-				Store(2, Local2)
-				BankField(OPR0, BNK0, 2, DWordAcc, NoLock, Preserve) {
-					AccessAs(ByteAcc),
-					, 5, f05c, 129}
-				Store(Refof(f05c), Local3)
-				Store(Refof(g002), Local4)
-			}
-			case (256) {
-				Store(3, Local2)
-				BankField(OPR0, BNK0, 3, ByteAcc, NoLock, Preserve) {
-					, 5, f05d, 256}
-				Store(Refof(f05d), Local3)
-				Store(Refof(g003), Local4)
-			}
-			case (1023) {
-				Store(4, Local2)
-				BankField(OPR0, BNK0, 4, QWordAcc, NoLock, Preserve) {
-					AccessAs(ByteAcc),
-					, 5, f05e, 1023}
-				Store(Refof(f05e), Local3)
-				Store(Refof(g004), Local4)
-			}
-			case (1983) {
-				Store(5, Local2)
-				BankField(OPR0, BNK0, 5, ByteAcc, NoLock, Preserve) {
-					, 5, f05f, 1983}
-				Store(Refof(f05f), Local3)
-				Store(Refof(g005), Local4)
-			}
-			default {
-				err(arg0, z145, __LINE__, 0, 0, arg2, arg3)
-				return
-			}
-		}
-	}
-	case (6) {
-		switch(ToInteger (arg3)) {
-			case (1) {
-				Store(6, Local2)
-				BankField(OPR0, BNK0, 6, ByteAcc, NoLock, Preserve) {
-					, 6, f060, 1}
-				Store(Refof(f060), Local3)
-				Store(Refof(g006), Local4)
-			}
-			case (6) {
-				Store(7, Local2)
-				BankField(OPR0, BNK0, 7, AnyAcc, NoLock, Preserve) {
-					AccessAs(ByteAcc),
-					, 6, f061, 6}
-				Store(Refof(f061), Local3)
-				Store(Refof(g007), Local4)
-			}
-			case (7) {
-				Store(8, Local2)
-				BankField(OPR0, BNK0, 8, ByteAcc, NoLock, Preserve) {
-					, 6, f062, 7}
-				Store(Refof(f062), Local3)
-				Store(Refof(g008), Local4)
-			}
-			case (8) {
-				Store(9, Local2)
-				BankField(OPR0, BNK0, 9, ByteAcc, NoLock, Preserve) {
-					AccessAs(ByteAcc),
-					, 6, f063, 8}
-				Store(Refof(f063), Local3)
-				Store(Refof(g009), Local4)
-			}
-			case (9) {
-				Store(63, Local2)
-				BankField(OPR0, BNK0, 63, ByteAcc, NoLock, Preserve) {
-					, 6, f064, 9}
-				Store(Refof(f064), Local3)
-				Store(Refof(g00a), Local4)
-			}
-			case (31) {
-				Store(64, Local2)
-				BankField(OPR0, BNK0, 64, WordAcc, NoLock, Preserve) {
-					AccessAs(ByteAcc),
-					, 6, f065, 31}
-				Store(Refof(f065), Local3)
-				Store(Refof(g00b), Local4)
-			}
-			case (32) {
-				Store(127, Local2)
-				BankField(OPR0, BNK0, 127, ByteAcc, NoLock, Preserve) {
-					, 6, f066, 32}
-				Store(Refof(f066), Local3)
-				Store(Refof(g00c), Local4)
-			}
-			case (33) {
-				Store(128, Local2)
-				BankField(OPR0, BNK0, 128, DWordAcc, NoLock, Preserve) {
-					AccessAs(ByteAcc),
-					, 6, f067, 33}
-				Store(Refof(f067), Local3)
-				Store(Refof(g00d), Local4)
-			}
-			case (63) {
-				Store(255, Local2)
-				BankField(OPR0, BNK0, 255, ByteAcc, NoLock, Preserve) {
-					, 6, f068, 63}
-				Store(Refof(f068), Local3)
-				Store(Refof(g00e), Local4)
-			}
-			case (64) {
-				Store(0, Local2)
-				BankField(OPR0, BNK0, 0, QWordAcc, NoLock, Preserve) {
-					AccessAs(ByteAcc),
-					, 6, f069, 64}
-				Store(Refof(f069), Local3)
-				Store(Refof(g000), Local4)
-			}
-			case (65) {
-				Store(1, Local2)
-				BankField(OPR0, BNK0, 1, ByteAcc, NoLock, Preserve) {
-					, 6, f06a, 65}
-				Store(Refof(f06a), Local3)
-				Store(Refof(g001), Local4)
-			}
-			case (69) {
-				Store(2, Local2)
-				BankField(OPR0, BNK0, 2, AnyAcc, NoLock, Preserve) {
-					AccessAs(ByteAcc),
-					, 6, f06b, 69}
-				Store(Refof(f06b), Local3)
-				Store(Refof(g002), Local4)
-			}
-			case (129) {
-				Store(3, Local2)
-				BankField(OPR0, BNK0, 3, ByteAcc, NoLock, Preserve) {
-					, 6, f06c, 129}
-				Store(Refof(f06c), Local3)
-				Store(Refof(g003), Local4)
-			}
-			case (256) {
-				Store(4, Local2)
-				BankField(OPR0, BNK0, 4, ByteAcc, NoLock, Preserve) {
-					AccessAs(ByteAcc),
-					, 6, f06d, 256}
-				Store(Refof(f06d), Local3)
-				Store(Refof(g004), Local4)
-			}
-			case (1023) {
-				Store(5, Local2)
-				BankField(OPR0, BNK0, 5, ByteAcc, NoLock, Preserve) {
-					, 6, f06e, 1023}
-				Store(Refof(f06e), Local3)
-				Store(Refof(g005), Local4)
-			}
-			case (1983) {
-				Store(6, Local2)
-				BankField(OPR0, BNK0, 6, WordAcc, NoLock, Preserve) {
-					AccessAs(ByteAcc),
-					, 6, f06f, 1983}
-				Store(Refof(f06f), Local3)
-				Store(Refof(g006), Local4)
-			}
-			default {
-				err(arg0, z145, __LINE__, 0, 0, arg2, arg3)
-				return
-			}
-		}
-	}
-	case (7) {
-		switch(ToInteger (arg3)) {
-			case (1) {
-				Store(7, Local2)
-				BankField(OPR0, BNK0, 7, DWordAcc, NoLock, Preserve) {
-					AccessAs(ByteAcc),
-					, 7, f070, 1}
-				Store(Refof(f070), Local3)
-				Store(Refof(g007), Local4)
-			}
-			case (6) {
-				Store(8, Local2)
-				BankField(OPR0, BNK0, 8, ByteAcc, NoLock, Preserve) {
-					, 7, f071, 6}
-				Store(Refof(f071), Local3)
-				Store(Refof(g008), Local4)
-			}
-			case (7) {
-				Store(9, Local2)
-				BankField(OPR0, BNK0, 9, QWordAcc, NoLock, Preserve) {
-					AccessAs(ByteAcc),
-					, 7, f072, 7}
-				Store(Refof(f072), Local3)
-				Store(Refof(g009), Local4)
-			}
-			case (8) {
-				Store(63, Local2)
-				BankField(OPR0, BNK0, 63, ByteAcc, NoLock, Preserve) {
-					, 7, f073, 8}
-				Store(Refof(f073), Local3)
-				Store(Refof(g00a), Local4)
-			}
-			case (9) {
-				Store(64, Local2)
-				BankField(OPR0, BNK0, 64, AnyAcc, NoLock, Preserve) {
-					AccessAs(ByteAcc),
-					, 7, f074, 9}
-				Store(Refof(f074), Local3)
-				Store(Refof(g00b), Local4)
-			}
-			case (31) {
-				Store(127, Local2)
-				BankField(OPR0, BNK0, 127, ByteAcc, NoLock, Preserve) {
-					, 7, f075, 31}
-				Store(Refof(f075), Local3)
-				Store(Refof(g00c), Local4)
-			}
-			case (32) {
-				Store(128, Local2)
-				BankField(OPR0, BNK0, 128, ByteAcc, NoLock, Preserve) {
-					AccessAs(ByteAcc),
-					, 7, f076, 32}
-				Store(Refof(f076), Local3)
-				Store(Refof(g00d), Local4)
-			}
-			case (33) {
-				Store(255, Local2)
-				BankField(OPR0, BNK0, 255, ByteAcc, NoLock, Preserve) {
-					, 7, f077, 33}
-				Store(Refof(f077), Local3)
-				Store(Refof(g00e), Local4)
-			}
-			case (63) {
-				Store(0, Local2)
-				BankField(OPR0, BNK0, 0, WordAcc, NoLock, Preserve) {
-					AccessAs(ByteAcc),
-					, 7, f078, 63}
-				Store(Refof(f078), Local3)
-				Store(Refof(g000), Local4)
-			}
-			case (64) {
-				Store(1, Local2)
-				BankField(OPR0, BNK0, 1, ByteAcc, NoLock, Preserve) {
-					, 7, f079, 64}
-				Store(Refof(f079), Local3)
-				Store(Refof(g001), Local4)
-			}
-			case (65) {
-				Store(2, Local2)
-				BankField(OPR0, BNK0, 2, DWordAcc, NoLock, Preserve) {
-					AccessAs(ByteAcc),
-					, 7, f07a, 65}
-				Store(Refof(f07a), Local3)
-				Store(Refof(g002), Local4)
-			}
-			case (69) {
-				Store(3, Local2)
-				BankField(OPR0, BNK0, 3, ByteAcc, NoLock, Preserve) {
-					, 7, f07b, 69}
-				Store(Refof(f07b), Local3)
-				Store(Refof(g003), Local4)
-			}
-			case (129) {
-				Store(4, Local2)
-				BankField(OPR0, BNK0, 4, QWordAcc, NoLock, Preserve) {
-					AccessAs(ByteAcc),
-					, 7, f07c, 129}
-				Store(Refof(f07c), Local3)
-				Store(Refof(g004), Local4)
-			}
-			case (256) {
-				Store(5, Local2)
-				BankField(OPR0, BNK0, 5, ByteAcc, NoLock, Preserve) {
-					, 7, f07d, 256}
-				Store(Refof(f07d), Local3)
-				Store(Refof(g005), Local4)
-			}
-			case (1023) {
-				Store(6, Local2)
-				BankField(OPR0, BNK0, 6, AnyAcc, NoLock, Preserve) {
-					AccessAs(ByteAcc),
-					, 7, f07e, 1023}
-				Store(Refof(f07e), Local3)
-				Store(Refof(g006), Local4)
-			}
-			case (1983) {
-				Store(7, Local2)
-				BankField(OPR0, BNK0, 7, ByteAcc, NoLock, Preserve) {
-					, 7, f07f, 1983}
-				Store(Refof(f07f), Local3)
-				Store(Refof(g007), Local4)
-			}
-			default {
-				err(arg0, z145, __LINE__, 0, 0, arg2, arg3)
-				return
-			}
-		}
-	}
-	case (8) {
-		switch(ToInteger (arg3)) {
-			case (1) {
-				Store(8, Local2)
-				BankField(OPR0, BNK0, 8, ByteAcc, NoLock, Preserve) {
-					Offset(1), f080, 1}
-				Store(Refof(f080), Local3)
-				Store(Refof(g008), Local4)
-			}
-			case (6) {
-				Store(9, Local2)
-				BankField(OPR0, BNK0, 9, ByteAcc, NoLock, Preserve) {
-					AccessAs(ByteAcc),
-					Offset(1), f081, 6}
-				Store(Refof(f081), Local3)
-				Store(Refof(g009), Local4)
-			}
-			case (7) {
-				Store(63, Local2)
-				BankField(OPR0, BNK0, 63, ByteAcc, NoLock, Preserve) {
-					Offset(1), f082, 7}
-				Store(Refof(f082), Local3)
-				Store(Refof(g00a), Local4)
-			}
-			case (8) {
-				Store(64, Local2)
-				BankField(OPR0, BNK0, 64, WordAcc, NoLock, Preserve) {
-					AccessAs(ByteAcc),
-					Offset(1), f083, 8}
-				Store(Refof(f083), Local3)
-				Store(Refof(g00b), Local4)
-			}
-			case (9) {
-				Store(127, Local2)
-				BankField(OPR0, BNK0, 127, ByteAcc, NoLock, Preserve) {
-					Offset(1), f084, 9}
-				Store(Refof(f084), Local3)
-				Store(Refof(g00c), Local4)
-			}
-			case (31) {
-				Store(128, Local2)
-				BankField(OPR0, BNK0, 128, DWordAcc, NoLock, Preserve) {
-					AccessAs(ByteAcc),
-					Offset(1), f085, 31}
-				Store(Refof(f085), Local3)
-				Store(Refof(g00d), Local4)
-			}
-			case (32) {
-				Store(255, Local2)
-				BankField(OPR0, BNK0, 255, ByteAcc, NoLock, Preserve) {
-					Offset(1), f086, 32}
-				Store(Refof(f086), Local3)
-				Store(Refof(g00e), Local4)
-			}
-			case (33) {
-				Store(0, Local2)
-				BankField(OPR0, BNK0, 0, QWordAcc, NoLock, Preserve) {
-					AccessAs(ByteAcc),
-					Offset(1), f087, 33}
-				Store(Refof(f087), Local3)
-				Store(Refof(g000), Local4)
-			}
-			case (63) {
-				Store(1, Local2)
-				BankField(OPR0, BNK0, 1, ByteAcc, NoLock, Preserve) {
-					Offset(1), f088, 63}
-				Store(Refof(f088), Local3)
-				Store(Refof(g001), Local4)
-			}
-			case (64) {
-				Store(2, Local2)
-				BankField(OPR0, BNK0, 2, AnyAcc, NoLock, Preserve) {
-					AccessAs(ByteAcc),
-					Offset(1), f089, 64}
-				Store(Refof(f089), Local3)
-				Store(Refof(g002), Local4)
-			}
-			case (65) {
-				Store(3, Local2)
-				BankField(OPR0, BNK0, 3, ByteAcc, NoLock, Preserve) {
-					Offset(1), f08a, 65}
-				Store(Refof(f08a), Local3)
-				Store(Refof(g003), Local4)
-			}
-			case (69) {
-				Store(4, Local2)
-				BankField(OPR0, BNK0, 4, ByteAcc, NoLock, Preserve) {
-					AccessAs(ByteAcc),
-					Offset(1), f08b, 69}
-				Store(Refof(f08b), Local3)
-				Store(Refof(g004), Local4)
-			}
-			case (129) {
-				Store(5, Local2)
-				BankField(OPR0, BNK0, 5, ByteAcc, NoLock, Preserve) {
-					Offset(1), f08c, 129}
-				Store(Refof(f08c), Local3)
-				Store(Refof(g005), Local4)
-			}
-			case (256) {
-				Store(6, Local2)
-				BankField(OPR0, BNK0, 6, WordAcc, NoLock, Preserve) {
-					AccessAs(ByteAcc),
-					Offset(1), f08d, 256}
-				Store(Refof(f08d), Local3)
-				Store(Refof(g006), Local4)
-			}
-			case (1023) {
-				Store(7, Local2)
-				BankField(OPR0, BNK0, 7, ByteAcc, NoLock, Preserve) {
-					Offset(1), f08e, 1023}
-				Store(Refof(f08e), Local3)
-				Store(Refof(g007), Local4)
-			}
-			case (1983) {
-				Store(8, Local2)
-				BankField(OPR0, BNK0, 8, DWordAcc, NoLock, Preserve) {
-					AccessAs(ByteAcc),
-					Offset(1), f08f, 1983}
-				Store(Refof(f08f), Local3)
-				Store(Refof(g008), Local4)
-			}
-			default {
-				err(arg0, z145, __LINE__, 0, 0, arg2, arg3)
-				return
-			}
-		}
-	}
-	case (9) {
-		switch(ToInteger (arg3)) {
-			case (1) {
-				Store(9, Local2)
-				BankField(OPR0, BNK0, 9, QWordAcc, NoLock, Preserve) {
-					AccessAs(ByteAcc),
-					, 9, f090, 1}
-				Store(Refof(f090), Local3)
-				Store(Refof(g009), Local4)
-			}
-			case (6) {
-				Store(63, Local2)
-				BankField(OPR0, BNK0, 63, ByteAcc, NoLock, Preserve) {
-					, 9, f091, 6}
-				Store(Refof(f091), Local3)
-				Store(Refof(g00a), Local4)
-			}
-			case (7) {
-				Store(64, Local2)
-				BankField(OPR0, BNK0, 64, AnyAcc, NoLock, Preserve) {
-					AccessAs(ByteAcc),
-					, 9, f092, 7}
-				Store(Refof(f092), Local3)
-				Store(Refof(g00b), Local4)
-			}
-			case (8) {
-				Store(127, Local2)
-				BankField(OPR0, BNK0, 127, ByteAcc, NoLock, Preserve) {
-					, 9, f093, 8}
-				Store(Refof(f093), Local3)
-				Store(Refof(g00c), Local4)
-			}
-			case (9) {
-				Store(128, Local2)
-				BankField(OPR0, BNK0, 128, ByteAcc, NoLock, Preserve) {
-					AccessAs(ByteAcc),
-					, 9, f094, 9}
-				Store(Refof(f094), Local3)
-				Store(Refof(g00d), Local4)
-			}
-			case (31) {
-				Store(255, Local2)
-				BankField(OPR0, BNK0, 255, ByteAcc, NoLock, Preserve) {
-					, 9, f095, 31}
-				Store(Refof(f095), Local3)
-				Store(Refof(g00e), Local4)
-			}
-			case (32) {
-				Store(0, Local2)
-				BankField(OPR0, BNK0, 0, WordAcc, NoLock, Preserve) {
-					AccessAs(ByteAcc),
-					, 9, f096, 32}
-				Store(Refof(f096), Local3)
-				Store(Refof(g000), Local4)
-			}
-			case (33) {
-				Store(1, Local2)
-				BankField(OPR0, BNK0, 1, ByteAcc, NoLock, Preserve) {
-					, 9, f097, 33}
-				Store(Refof(f097), Local3)
-				Store(Refof(g001), Local4)
-			}
-			case (63) {
-				Store(2, Local2)
-				BankField(OPR0, BNK0, 2, DWordAcc, NoLock, Preserve) {
-					AccessAs(ByteAcc),
-					, 9, f098, 63}
-				Store(Refof(f098), Local3)
-				Store(Refof(g002), Local4)
-			}
-			case (64) {
-				Store(3, Local2)
-				BankField(OPR0, BNK0, 3, ByteAcc, NoLock, Preserve) {
-					, 9, f099, 64}
-				Store(Refof(f099), Local3)
-				Store(Refof(g003), Local4)
-			}
-			case (65) {
-				Store(4, Local2)
-				BankField(OPR0, BNK0, 4, QWordAcc, NoLock, Preserve) {
-					AccessAs(ByteAcc),
-					, 9, f09a, 65}
-				Store(Refof(f09a), Local3)
-				Store(Refof(g004), Local4)
-			}
-			case (69) {
-				Store(5, Local2)
-				BankField(OPR0, BNK0, 5, ByteAcc, NoLock, Preserve) {
-					, 9, f09b, 69}
-				Store(Refof(f09b), Local3)
-				Store(Refof(g005), Local4)
-			}
-			case (129) {
-				Store(6, Local2)
-				BankField(OPR0, BNK0, 6, AnyAcc, NoLock, Preserve) {
-					AccessAs(ByteAcc),
-					, 9, f09c, 129}
-				Store(Refof(f09c), Local3)
-				Store(Refof(g006), Local4)
-			}
-			case (256) {
-				Store(7, Local2)
-				BankField(OPR0, BNK0, 7, ByteAcc, NoLock, Preserve) {
-					, 9, f09d, 256}
-				Store(Refof(f09d), Local3)
-				Store(Refof(g007), Local4)
-			}
-			case (1023) {
-				Store(8, Local2)
-				BankField(OPR0, BNK0, 8, ByteAcc, NoLock, Preserve) {
-					AccessAs(ByteAcc),
-					, 9, f09e, 1023}
-				Store(Refof(f09e), Local3)
-				Store(Refof(g008), Local4)
-			}
-			case (1983) {
-				Store(9, Local2)
-				BankField(OPR0, BNK0, 9, ByteAcc, NoLock, Preserve) {
-					, 9, f09f, 1983}
-				Store(Refof(f09f), Local3)
-				Store(Refof(g009), Local4)
-			}
-			default {
-				err(arg0, z145, __LINE__, 0, 0, arg2, arg3)
-				return
-			}
-		}
-	}
-	case (31) {
-		switch(ToInteger (arg3)) {
-			case (1) {
-				Store(63, Local2)
-				BankField(OPR0, BNK0, 63, ByteAcc, NoLock, Preserve) {
-					Offset(3), , 7, f0a0, 1}
-				Store(Refof(f0a0), Local3)
-				Store(Refof(g00a), Local4)
-			}
-			case (6) {
-				Store(64, Local2)
-				BankField(OPR0, BNK0, 64, WordAcc, NoLock, Preserve) {
-					AccessAs(ByteAcc),
-					Offset(3), , 7, f0a1, 6}
-				Store(Refof(f0a1), Local3)
-				Store(Refof(g00b), Local4)
-			}
-			case (7) {
-				Store(127, Local2)
-				BankField(OPR0, BNK0, 127, ByteAcc, NoLock, Preserve) {
-					Offset(3), , 7, f0a2, 7}
-				Store(Refof(f0a2), Local3)
-				Store(Refof(g00c), Local4)
-			}
-			case (8) {
-				Store(128, Local2)
-				BankField(OPR0, BNK0, 128, DWordAcc, NoLock, Preserve) {
-					AccessAs(ByteAcc),
-					Offset(3), , 7, f0a3, 8}
-				Store(Refof(f0a3), Local3)
-				Store(Refof(g00d), Local4)
-			}
-			case (9) {
-				Store(255, Local2)
-				BankField(OPR0, BNK0, 255, ByteAcc, NoLock, Preserve) {
-					Offset(3), , 7, f0a4, 9}
-				Store(Refof(f0a4), Local3)
-				Store(Refof(g00e), Local4)
-			}
-			case (31) {
-				Store(0, Local2)
-				BankField(OPR0, BNK0, 0, QWordAcc, NoLock, Preserve) {
-					AccessAs(ByteAcc),
-					Offset(3), , 7, f0a5, 31}
-				Store(Refof(f0a5), Local3)
-				Store(Refof(g000), Local4)
-			}
-			case (32) {
-				Store(1, Local2)
-				BankField(OPR0, BNK0, 1, ByteAcc, NoLock, Preserve) {
-					Offset(3), , 7, f0a6, 32}
-				Store(Refof(f0a6), Local3)
-				Store(Refof(g001), Local4)
-			}
-			case (33) {
-				Store(2, Local2)
-				BankField(OPR0, BNK0, 2, AnyAcc, NoLock, Preserve) {
-					AccessAs(ByteAcc),
-					Offset(3), , 7, f0a7, 33}
-				Store(Refof(f0a7), Local3)
-				Store(Refof(g002), Local4)
-			}
-			case (63) {
-				Store(3, Local2)
-				BankField(OPR0, BNK0, 3, ByteAcc, NoLock, Preserve) {
-					Offset(3), , 7, f0a8, 63}
-				Store(Refof(f0a8), Local3)
-				Store(Refof(g003), Local4)
-			}
-			case (64) {
-				Store(4, Local2)
-				BankField(OPR0, BNK0, 4, ByteAcc, NoLock, Preserve) {
-					AccessAs(ByteAcc),
-					Offset(3), , 7, f0a9, 64}
-				Store(Refof(f0a9), Local3)
-				Store(Refof(g004), Local4)
-			}
-			case (65) {
-				Store(5, Local2)
-				BankField(OPR0, BNK0, 5, ByteAcc, NoLock, Preserve) {
-					Offset(3), , 7, f0aa, 65}
-				Store(Refof(f0aa), Local3)
-				Store(Refof(g005), Local4)
-			}
-			case (69) {
-				Store(6, Local2)
-				BankField(OPR0, BNK0, 6, WordAcc, NoLock, Preserve) {
-					AccessAs(ByteAcc),
-					Offset(3), , 7, f0ab, 69}
-				Store(Refof(f0ab), Local3)
-				Store(Refof(g006), Local4)
-			}
-			case (129) {
-				Store(7, Local2)
-				BankField(OPR0, BNK0, 7, ByteAcc, NoLock, Preserve) {
-					Offset(3), , 7, f0ac, 129}
-				Store(Refof(f0ac), Local3)
-				Store(Refof(g007), Local4)
-			}
-			case (256) {
-				Store(8, Local2)
-				BankField(OPR0, BNK0, 8, DWordAcc, NoLock, Preserve) {
-					AccessAs(ByteAcc),
-					Offset(3), , 7, f0ad, 256}
-				Store(Refof(f0ad), Local3)
-				Store(Refof(g008), Local4)
-			}
-			case (1023) {
-				Store(9, Local2)
-				BankField(OPR0, BNK0, 9, ByteAcc, NoLock, Preserve) {
-					Offset(3), , 7, f0ae, 1023}
-				Store(Refof(f0ae), Local3)
-				Store(Refof(g009), Local4)
-			}
-			case (1983) {
-				Store(63, Local2)
-				BankField(OPR0, BNK0, 63, QWordAcc, NoLock, Preserve) {
-					AccessAs(ByteAcc),
-					Offset(3), , 7, f0af, 1983}
-				Store(Refof(f0af), Local3)
-				Store(Refof(g00a), Local4)
-			}
-			default {
-				err(arg0, z145, __LINE__, 0, 0, arg2, arg3)
-				return
-			}
-		}
-	}
-	case (32) {
-		switch(ToInteger (arg3)) {
-			case (1) {
-				Store(64, Local2)
-				BankField(OPR0, BNK0, 64, AnyAcc, NoLock, Preserve) {
-					AccessAs(ByteAcc),
-					, 32, f0b0, 1}
-				Store(Refof(f0b0), Local3)
-				Store(Refof(g00b), Local4)
-			}
-			case (6) {
-				Store(127, Local2)
-				BankField(OPR0, BNK0, 127, ByteAcc, NoLock, Preserve) {
-					, 32, f0b1, 6}
-				Store(Refof(f0b1), Local3)
-				Store(Refof(g00c), Local4)
-			}
-			case (7) {
-				Store(128, Local2)
-				BankField(OPR0, BNK0, 128, ByteAcc, NoLock, Preserve) {
-					AccessAs(ByteAcc),
-					, 32, f0b2, 7}
-				Store(Refof(f0b2), Local3)
-				Store(Refof(g00d), Local4)
-			}
-			case (8) {
-				Store(255, Local2)
-				BankField(OPR0, BNK0, 255, ByteAcc, NoLock, Preserve) {
-					, 32, f0b3, 8}
-				Store(Refof(f0b3), Local3)
-				Store(Refof(g00e), Local4)
-			}
-			case (9) {
-				Store(0, Local2)
-				BankField(OPR0, BNK0, 0, WordAcc, NoLock, Preserve) {
-					AccessAs(ByteAcc),
-					, 32, f0b4, 9}
-				Store(Refof(f0b4), Local3)
-				Store(Refof(g000), Local4)
-			}
-			case (31) {
-				Store(1, Local2)
-				BankField(OPR0, BNK0, 1, ByteAcc, NoLock, Preserve) {
-					, 32, f0b5, 31}
-				Store(Refof(f0b5), Local3)
-				Store(Refof(g001), Local4)
-			}
-			case (32) {
-				Store(2, Local2)
-				BankField(OPR0, BNK0, 2, DWordAcc, NoLock, Preserve) {
-					AccessAs(ByteAcc),
-					, 32, f0b6, 32}
-				Store(Refof(f0b6), Local3)
-				Store(Refof(g002), Local4)
-			}
-			case (33) {
-				Store(3, Local2)
-				BankField(OPR0, BNK0, 3, ByteAcc, NoLock, Preserve) {
-					, 32, f0b7, 33}
-				Store(Refof(f0b7), Local3)
-				Store(Refof(g003), Local4)
-			}
-			case (63) {
-				Store(4, Local2)
-				BankField(OPR0, BNK0, 4, QWordAcc, NoLock, Preserve) {
-					AccessAs(ByteAcc),
-					, 32, f0b8, 63}
-				Store(Refof(f0b8), Local3)
-				Store(Refof(g004), Local4)
-			}
-			case (64) {
-				Store(5, Local2)
-				BankField(OPR0, BNK0, 5, ByteAcc, NoLock, Preserve) {
-					, 32, f0b9, 64}
-				Store(Refof(f0b9), Local3)
-				Store(Refof(g005), Local4)
-			}
-			case (65) {
-				Store(6, Local2)
-				BankField(OPR0, BNK0, 6, AnyAcc, NoLock, Preserve) {
-					AccessAs(ByteAcc),
-					, 32, f0ba, 65}
-				Store(Refof(f0ba), Local3)
-				Store(Refof(g006), Local4)
-			}
-			case (69) {
-				Store(7, Local2)
-				BankField(OPR0, BNK0, 7, ByteAcc, NoLock, Preserve) {
-					, 32, f0bb, 69}
-				Store(Refof(f0bb), Local3)
-				Store(Refof(g007), Local4)
-			}
-			case (129) {
-				Store(8, Local2)
-				BankField(OPR0, BNK0, 8, ByteAcc, NoLock, Preserve) {
-					AccessAs(ByteAcc),
-					, 32, f0bc, 129}
-				Store(Refof(f0bc), Local3)
-				Store(Refof(g008), Local4)
-			}
-			case (256) {
-				Store(9, Local2)
-				BankField(OPR0, BNK0, 9, ByteAcc, NoLock, Preserve) {
-					, 32, f0bd, 256}
-				Store(Refof(f0bd), Local3)
-				Store(Refof(g009), Local4)
-			}
-			case (1023) {
-				Store(63, Local2)
-				BankField(OPR0, BNK0, 63, WordAcc, NoLock, Preserve) {
-					AccessAs(ByteAcc),
-					, 32, f0be, 1023}
-				Store(Refof(f0be), Local3)
-				Store(Refof(g00a), Local4)
-			}
-			case (1983) {
-				Store(64, Local2)
-				BankField(OPR0, BNK0, 64, ByteAcc, NoLock, Preserve) {
-					, 32, f0bf, 1983}
-				Store(Refof(f0bf), Local3)
-				Store(Refof(g00b), Local4)
-			}
-			default {
-				err(arg0, z145, __LINE__, 0, 0, arg2, arg3)
-				return
-			}
-		}
-	}
-	case (33) {
-		switch(ToInteger (arg3)) {
-			case (1) {
-				Store(127, Local2)
-				BankField(OPR0, BNK0, 127, ByteAcc, NoLock, Preserve) {
-					, 33, f0c0, 1}
-				Store(Refof(f0c0), Local3)
-				Store(Refof(g00c), Local4)
-			}
-			case (6) {
-				Store(128, Local2)
-				BankField(OPR0, BNK0, 128, DWordAcc, NoLock, Preserve) {
-					AccessAs(ByteAcc),
-					, 33, f0c1, 6}
-				Store(Refof(f0c1), Local3)
-				Store(Refof(g00d), Local4)
-			}
-			case (7) {
-				Store(255, Local2)
-				BankField(OPR0, BNK0, 255, ByteAcc, NoLock, Preserve) {
-					, 33, f0c2, 7}
-				Store(Refof(f0c2), Local3)
-				Store(Refof(g00e), Local4)
-			}
-			case (8) {
-				Store(0, Local2)
-				BankField(OPR0, BNK0, 0, QWordAcc, NoLock, Preserve) {
-					AccessAs(ByteAcc),
-					, 33, f0c3, 8}
-				Store(Refof(f0c3), Local3)
-				Store(Refof(g000), Local4)
-			}
-			case (9) {
-				Store(1, Local2)
-				BankField(OPR0, BNK0, 1, ByteAcc, NoLock, Preserve) {
-					, 33, f0c4, 9}
-				Store(Refof(f0c4), Local3)
-				Store(Refof(g001), Local4)
-			}
-			case (31) {
-				Store(2, Local2)
-				BankField(OPR0, BNK0, 2, AnyAcc, NoLock, Preserve) {
-					AccessAs(ByteAcc),
-					, 33, f0c5, 31}
-				Store(Refof(f0c5), Local3)
-				Store(Refof(g002), Local4)
-			}
-			case (32) {
-				Store(3, Local2)
-				BankField(OPR0, BNK0, 3, ByteAcc, NoLock, Preserve) {
-					, 33, f0c6, 32}
-				Store(Refof(f0c6), Local3)
-				Store(Refof(g003), Local4)
-			}
-			case (33) {
-				Store(4, Local2)
-				BankField(OPR0, BNK0, 4, ByteAcc, NoLock, Preserve) {
-					AccessAs(ByteAcc),
-					, 33, f0c7, 33}
-				Store(Refof(f0c7), Local3)
-				Store(Refof(g004), Local4)
-			}
-			case (63) {
-				Store(5, Local2)
-				BankField(OPR0, BNK0, 5, ByteAcc, NoLock, Preserve) {
-					, 33, f0c8, 63}
-				Store(Refof(f0c8), Local3)
-				Store(Refof(g005), Local4)
-			}
-			case (64) {
-				Store(6, Local2)
-				BankField(OPR0, BNK0, 6, WordAcc, NoLock, Preserve) {
-					AccessAs(ByteAcc),
-					, 33, f0c9, 64}
-				Store(Refof(f0c9), Local3)
-				Store(Refof(g006), Local4)
-			}
-			case (65) {
-				Store(7, Local2)
-				BankField(OPR0, BNK0, 7, ByteAcc, NoLock, Preserve) {
-					, 33, f0ca, 65}
-				Store(Refof(f0ca), Local3)
-				Store(Refof(g007), Local4)
-			}
-			case (69) {
-				Store(8, Local2)
-				BankField(OPR0, BNK0, 8, DWordAcc, NoLock, Preserve) {
-					AccessAs(ByteAcc),
-					, 33, f0cb, 69}
-				Store(Refof(f0cb), Local3)
-				Store(Refof(g008), Local4)
-			}
-			case (129) {
-				Store(9, Local2)
-				BankField(OPR0, BNK0, 9, ByteAcc, NoLock, Preserve) {
-					, 33, f0cc, 129}
-				Store(Refof(f0cc), Local3)
-				Store(Refof(g009), Local4)
-			}
-			case (256) {
-				Store(63, Local2)
-				BankField(OPR0, BNK0, 63, QWordAcc, NoLock, Preserve) {
-					AccessAs(ByteAcc),
-					, 33, f0cd, 256}
-				Store(Refof(f0cd), Local3)
-				Store(Refof(g00a), Local4)
-			}
-			case (1023) {
-				Store(64, Local2)
-				BankField(OPR0, BNK0, 64, ByteAcc, NoLock, Preserve) {
-					, 33, f0ce, 1023}
-				Store(Refof(f0ce), Local3)
-				Store(Refof(g00b), Local4)
-			}
-			case (1983) {
-				Store(127, Local2)
-				BankField(OPR0, BNK0, 127, AnyAcc, NoLock, Preserve) {
-					AccessAs(ByteAcc),
-					, 33, f0cf, 1983}
-				Store(Refof(f0cf), Local3)
-				Store(Refof(g00c), Local4)
-			}
-			default {
-				err(arg0, z145, __LINE__, 0, 0, arg2, arg3)
-				return
-			}
-		}
-	}
-	case (63) {
-		switch(ToInteger (arg3)) {
-			case (1) {
-				Store(128, Local2)
-				BankField(OPR0, BNK0, 128, ByteAcc, NoLock, Preserve) {
-					AccessAs(ByteAcc),
-					, 63, f0d0, 1}
-				Store(Refof(f0d0), Local3)
-				Store(Refof(g00d), Local4)
-			}
-			case (6) {
-				Store(255, Local2)
-				BankField(OPR0, BNK0, 255, ByteAcc, NoLock, Preserve) {
-					, 63, f0d1, 6}
-				Store(Refof(f0d1), Local3)
-				Store(Refof(g00e), Local4)
-			}
-			case (7) {
-				Store(0, Local2)
-				BankField(OPR0, BNK0, 0, WordAcc, NoLock, Preserve) {
-					AccessAs(ByteAcc),
-					, 63, f0d2, 7}
-				Store(Refof(f0d2), Local3)
-				Store(Refof(g000), Local4)
-			}
-			case (8) {
-				Store(1, Local2)
-				BankField(OPR0, BNK0, 1, ByteAcc, NoLock, Preserve) {
-					, 63, f0d3, 8}
-				Store(Refof(f0d3), Local3)
-				Store(Refof(g001), Local4)
-			}
-			case (9) {
-				Store(2, Local2)
-				BankField(OPR0, BNK0, 2, DWordAcc, NoLock, Preserve) {
-					AccessAs(ByteAcc),
-					, 63, f0d4, 9}
-				Store(Refof(f0d4), Local3)
-				Store(Refof(g002), Local4)
-			}
-			case (31) {
-				Store(3, Local2)
-				BankField(OPR0, BNK0, 3, ByteAcc, NoLock, Preserve) {
-					, 63, f0d5, 31}
-				Store(Refof(f0d5), Local3)
-				Store(Refof(g003), Local4)
-			}
-			case (32) {
-				Store(4, Local2)
-				BankField(OPR0, BNK0, 4, QWordAcc, NoLock, Preserve) {
-					AccessAs(ByteAcc),
-					, 63, f0d6, 32}
-				Store(Refof(f0d6), Local3)
-				Store(Refof(g004), Local4)
-			}
-			case (33) {
-				Store(5, Local2)
-				BankField(OPR0, BNK0, 5, ByteAcc, NoLock, Preserve) {
-					, 63, f0d7, 33}
-				Store(Refof(f0d7), Local3)
-				Store(Refof(g005), Local4)
-			}
-			case (63) {
-				Store(6, Local2)
-				BankField(OPR0, BNK0, 6, AnyAcc, NoLock, Preserve) {
-					AccessAs(ByteAcc),
-					, 63, f0d8, 63}
-				Store(Refof(f0d8), Local3)
-				Store(Refof(g006), Local4)
-			}
-			case (64) {
-				Store(7, Local2)
-				BankField(OPR0, BNK0, 7, ByteAcc, NoLock, Preserve) {
-					, 63, f0d9, 64}
-				Store(Refof(f0d9), Local3)
-				Store(Refof(g007), Local4)
-			}
-			case (65) {
-				Store(8, Local2)
-				BankField(OPR0, BNK0, 8, ByteAcc, NoLock, Preserve) {
-					AccessAs(ByteAcc),
-					, 63, f0da, 65}
-				Store(Refof(f0da), Local3)
-				Store(Refof(g008), Local4)
-			}
-			case (69) {
-				Store(9, Local2)
-				BankField(OPR0, BNK0, 9, ByteAcc, NoLock, Preserve) {
-					, 63, f0db, 69}
-				Store(Refof(f0db), Local3)
-				Store(Refof(g009), Local4)
-			}
-			case (129) {
-				Store(63, Local2)
-				BankField(OPR0, BNK0, 63, WordAcc, NoLock, Preserve) {
-					AccessAs(ByteAcc),
-					, 63, f0dc, 129}
-				Store(Refof(f0dc), Local3)
-				Store(Refof(g00a), Local4)
-			}
-			case (256) {
-				Store(64, Local2)
-				BankField(OPR0, BNK0, 64, ByteAcc, NoLock, Preserve) {
-					, 63, f0dd, 256}
-				Store(Refof(f0dd), Local3)
-				Store(Refof(g00b), Local4)
-			}
-			case (1023) {
-				Store(127, Local2)
-				BankField(OPR0, BNK0, 127, DWordAcc, NoLock, Preserve) {
-					AccessAs(ByteAcc),
-					, 63, f0de, 1023}
-				Store(Refof(f0de), Local3)
-				Store(Refof(g00c), Local4)
-			}
-			case (1983) {
-				Store(128, Local2)
-				BankField(OPR0, BNK0, 128, ByteAcc, NoLock, Preserve) {
-					, 63, f0df, 1983}
-				Store(Refof(f0df), Local3)
-				Store(Refof(g00d), Local4)
-			}
-			default {
-				err(arg0, z145, __LINE__, 0, 0, arg2, arg3)
-				return
-			}
-		}
-	}
-	case (64) {
-		switch(ToInteger (arg3)) {
-			case (1) {
-				Store(255, Local2)
-				BankField(OPR0, BNK0, 255, ByteAcc, NoLock, Preserve) {
-					, 64, f0e0, 1}
-				Store(Refof(f0e0), Local3)
-				Store(Refof(g00e), Local4)
-			}
-			case (6) {
-				Store(0, Local2)
-				BankField(OPR0, BNK0, 0, QWordAcc, NoLock, Preserve) {
-					AccessAs(ByteAcc),
-					, 64, f0e1, 6}
-				Store(Refof(f0e1), Local3)
-				Store(Refof(g000), Local4)
-			}
-			case (7) {
-				Store(1, Local2)
-				BankField(OPR0, BNK0, 1, ByteAcc, NoLock, Preserve) {
-					, 64, f0e2, 7}
-				Store(Refof(f0e2), Local3)
-				Store(Refof(g001), Local4)
-			}
-			case (8) {
-				Store(2, Local2)
-				BankField(OPR0, BNK0, 2, AnyAcc, NoLock, Preserve) {
-					AccessAs(ByteAcc),
-					, 64, f0e3, 8}
-				Store(Refof(f0e3), Local3)
-				Store(Refof(g002), Local4)
-			}
-			case (9) {
-				Store(3, Local2)
-				BankField(OPR0, BNK0, 3, ByteAcc, NoLock, Preserve) {
-					, 64, f0e4, 9}
-				Store(Refof(f0e4), Local3)
-				Store(Refof(g003), Local4)
-			}
-			case (31) {
-				Store(4, Local2)
-				BankField(OPR0, BNK0, 4, ByteAcc, NoLock, Preserve) {
-					AccessAs(ByteAcc),
-					, 64, f0e5, 31}
-				Store(Refof(f0e5), Local3)
-				Store(Refof(g004), Local4)
-			}
-			case (32) {
-				Store(5, Local2)
-				BankField(OPR0, BNK0, 5, ByteAcc, NoLock, Preserve) {
-					, 64, f0e6, 32}
-				Store(Refof(f0e6), Local3)
-				Store(Refof(g005), Local4)
-			}
-			case (33) {
-				Store(6, Local2)
-				BankField(OPR0, BNK0, 6, WordAcc, NoLock, Preserve) {
-					AccessAs(ByteAcc),
-					, 64, f0e7, 33}
-				Store(Refof(f0e7), Local3)
-				Store(Refof(g006), Local4)
-			}
-			case (63) {
-				Store(7, Local2)
-				BankField(OPR0, BNK0, 7, ByteAcc, NoLock, Preserve) {
-					, 64, f0e8, 63}
-				Store(Refof(f0e8), Local3)
-				Store(Refof(g007), Local4)
-			}
-			case (64) {
-				Store(8, Local2)
-				BankField(OPR0, BNK0, 8, DWordAcc, NoLock, Preserve) {
-					AccessAs(ByteAcc),
-					, 64, f0e9, 64}
-				Store(Refof(f0e9), Local3)
-				Store(Refof(g008), Local4)
-			}
-			case (65) {
-				Store(9, Local2)
-				BankField(OPR0, BNK0, 9, ByteAcc, NoLock, Preserve) {
-					, 64, f0ea, 65}
-				Store(Refof(f0ea), Local3)
-				Store(Refof(g009), Local4)
-			}
-			case (69) {
-				Store(63, Local2)
-				BankField(OPR0, BNK0, 63, QWordAcc, NoLock, Preserve) {
-					AccessAs(ByteAcc),
-					, 64, f0eb, 69}
-				Store(Refof(f0eb), Local3)
-				Store(Refof(g00a), Local4)
-			}
-			case (129) {
-				Store(64, Local2)
-				BankField(OPR0, BNK0, 64, ByteAcc, NoLock, Preserve) {
-					, 64, f0ec, 129}
-				Store(Refof(f0ec), Local3)
-				Store(Refof(g00b), Local4)
-			}
-			case (256) {
-				Store(127, Local2)
-				BankField(OPR0, BNK0, 127, AnyAcc, NoLock, Preserve) {
-					AccessAs(ByteAcc),
-					, 64, f0ed, 256}
-				Store(Refof(f0ed), Local3)
-				Store(Refof(g00c), Local4)
-			}
-			case (1023) {
-				Store(128, Local2)
-				BankField(OPR0, BNK0, 128, ByteAcc, NoLock, Preserve) {
-					, 64, f0ee, 1023}
-				Store(Refof(f0ee), Local3)
-				Store(Refof(g00d), Local4)
-			}
-			case (1983) {
-				Store(255, Local2)
-				BankField(OPR0, BNK0, 255, ByteAcc, NoLock, Preserve) {
-					AccessAs(ByteAcc),
-					, 64, f0ef, 1983}
-				Store(Refof(f0ef), Local3)
-				Store(Refof(g00e), Local4)
-			}
-			default {
-				err(arg0, z145, __LINE__, 0, 0, arg2, arg3)
-				return
-			}
-		}
-	}
-	case (65) {
-		switch(ToInteger (arg3)) {
-			case (1) {
-				Store(0, Local2)
-				BankField(OPR0, BNK0, 0, WordAcc, NoLock, Preserve) {
-					AccessAs(ByteAcc),
-					Offset(8), , 1, f0f0, 1}
-				Store(Refof(f0f0), Local3)
-				Store(Refof(g000), Local4)
-			}
-			case (6) {
-				Store(1, Local2)
-				BankField(OPR0, BNK0, 1, ByteAcc, NoLock, Preserve) {
-					Offset(8), , 1, f0f1, 6}
-				Store(Refof(f0f1), Local3)
-				Store(Refof(g001), Local4)
-			}
-			case (7) {
-				Store(2, Local2)
-				BankField(OPR0, BNK0, 2, DWordAcc, NoLock, Preserve) {
-					AccessAs(ByteAcc),
-					Offset(8), , 1, f0f2, 7}
-				Store(Refof(f0f2), Local3)
-				Store(Refof(g002), Local4)
-			}
-			case (8) {
-				Store(3, Local2)
-				BankField(OPR0, BNK0, 3, ByteAcc, NoLock, Preserve) {
-					Offset(8), , 1, f0f3, 8}
-				Store(Refof(f0f3), Local3)
-				Store(Refof(g003), Local4)
-			}
-			case (9) {
-				Store(4, Local2)
-				BankField(OPR0, BNK0, 4, QWordAcc, NoLock, Preserve) {
-					AccessAs(ByteAcc),
-					Offset(8), , 1, f0f4, 9}
-				Store(Refof(f0f4), Local3)
-				Store(Refof(g004), Local4)
-			}
-			case (31) {
-				Store(5, Local2)
-				BankField(OPR0, BNK0, 5, ByteAcc, NoLock, Preserve) {
-					Offset(8), , 1, f0f5, 31}
-				Store(Refof(f0f5), Local3)
-				Store(Refof(g005), Local4)
-			}
-			case (32) {
-				Store(6, Local2)
-				BankField(OPR0, BNK0, 6, AnyAcc, NoLock, Preserve) {
-					AccessAs(ByteAcc),
-					Offset(8), , 1, f0f6, 32}
-				Store(Refof(f0f6), Local3)
-				Store(Refof(g006), Local4)
-			}
-			case (33) {
-				Store(7, Local2)
-				BankField(OPR0, BNK0, 7, ByteAcc, NoLock, Preserve) {
-					Offset(8), , 1, f0f7, 33}
-				Store(Refof(f0f7), Local3)
-				Store(Refof(g007), Local4)
-			}
-			case (63) {
-				Store(8, Local2)
-				BankField(OPR0, BNK0, 8, ByteAcc, NoLock, Preserve) {
-					AccessAs(ByteAcc),
-					Offset(8), , 1, f0f8, 63}
-				Store(Refof(f0f8), Local3)
-				Store(Refof(g008), Local4)
-			}
-			case (64) {
-				Store(9, Local2)
-				BankField(OPR0, BNK0, 9, ByteAcc, NoLock, Preserve) {
-					Offset(8), , 1, f0f9, 64}
-				Store(Refof(f0f9), Local3)
-				Store(Refof(g009), Local4)
-			}
-			case (65) {
-				Store(63, Local2)
-				BankField(OPR0, BNK0, 63, WordAcc, NoLock, Preserve) {
-					AccessAs(ByteAcc),
-					Offset(8), , 1, f0fa, 65}
-				Store(Refof(f0fa), Local3)
-				Store(Refof(g00a), Local4)
-			}
-			case (69) {
-				Store(64, Local2)
-				BankField(OPR0, BNK0, 64, ByteAcc, NoLock, Preserve) {
-					Offset(8), , 1, f0fb, 69}
-				Store(Refof(f0fb), Local3)
-				Store(Refof(g00b), Local4)
-			}
-			case (129) {
-				Store(127, Local2)
-				BankField(OPR0, BNK0, 127, DWordAcc, NoLock, Preserve) {
-					AccessAs(ByteAcc),
-					Offset(8), , 1, f0fc, 129}
-				Store(Refof(f0fc), Local3)
-				Store(Refof(g00c), Local4)
-			}
-			case (256) {
-				Store(128, Local2)
-				BankField(OPR0, BNK0, 128, ByteAcc, NoLock, Preserve) {
-					Offset(8), , 1, f0fd, 256}
-				Store(Refof(f0fd), Local3)
-				Store(Refof(g00d), Local4)
-			}
-			case (1023) {
-				Store(255, Local2)
-				BankField(OPR0, BNK0, 255, QWordAcc, NoLock, Preserve) {
-					AccessAs(ByteAcc),
-					Offset(8), , 1, f0fe, 1023}
-				Store(Refof(f0fe), Local3)
-				Store(Refof(g00e), Local4)
-			}
-			case (1983) {
-				Store(0, Local2)
-				BankField(OPR0, BNK0, 0, ByteAcc, NoLock, Preserve) {
-					Offset(8), , 1, f0ff, 1983}
-				Store(Refof(f0ff), Local3)
-				Store(Refof(g000), Local4)
-			}
-			default {
-				err(arg0, z145, __LINE__, 0, 0, arg2, arg3)
-				return
-			}
-		}
-	}
-	default {
-		err(arg0, z145, __LINE__, 0, 0, arg2, arg3)
-		return}
-	}
-
-	Store(2, Index(fcp0, 0))
-	Store(Refof(BNK0), Index(fcp0, 1))
-	Store(Local2, Index(fcp0, 2))
-	m72d(arg0, Local3, arg2, arg3, arg4, arg5, Local4)
-	Store(0, Index(fcp0, 0))
-}
-
-// Create BankField Unit
-// (WordAcc, NoLock, WriteAsOnes)
-Method(m7d1, 6, Serialized)
-{
-	OperationRegion(OPRb, SystemIO, 0, 9)
-	OperationRegion(OPR0, SystemIO, 11, 256)
-
-	Field(OPRb, ByteAcc, NoLock, Preserve) {
-		BNK0, 8,
-	}
-	BankField(OPR0, BNK0, 0, ByteAcc, NoLock, Preserve) {
-		g000, 2048,
-	}
-	BankField(OPR0, BNK0, 1, ByteAcc, NoLock, Preserve) {
-		g001, 2048,
-	}
-	BankField(OPR0, BNK0, 2, ByteAcc, NoLock, Preserve) {
-		g002, 2048,
-	}
-	BankField(OPR0, BNK0, 3, ByteAcc, NoLock, Preserve) {
-		g003, 2048,
-	}
-	BankField(OPR0, BNK0, 4, ByteAcc, NoLock, Preserve) {
-		g004, 2048,
-	}
-	BankField(OPR0, BNK0, 5, ByteAcc, NoLock, Preserve) {
-		g005, 2048,
-	}
-	BankField(OPR0, BNK0, 6, ByteAcc, NoLock, Preserve) {
-		g006, 2048,
-	}
-	BankField(OPR0, BNK0, 7, ByteAcc, NoLock, Preserve) {
-		g007, 2048,
-	}
-	BankField(OPR0, BNK0, 8, ByteAcc, NoLock, Preserve) {
-		g008, 2048,
-	}
-	BankField(OPR0, BNK0, 9, ByteAcc, NoLock, Preserve) {
-		g009, 2048,
-	}
-	BankField(OPR0, BNK0, 63, ByteAcc, NoLock, Preserve) {
-		g00a, 2048,
-	}
-	BankField(OPR0, BNK0, 64, ByteAcc, NoLock, Preserve) {
-		g00b, 2048,
-	}
-	BankField(OPR0, BNK0, 127, ByteAcc, NoLock, Preserve) {
-		g00c, 2048,
-	}
-	BankField(OPR0, BNK0, 128, ByteAcc, NoLock, Preserve) {
-		g00d, 2048,
-	}
-	BankField(OPR0, BNK0, 255, DwordAcc, NoLock, Preserve) {
-		g00e, 2048,
-	}
-
-
-	Concatenate(arg0, "-m7d1", arg0)
-
-	switch(ToInteger (arg2)) {
-	case (0) {
-		switch(ToInteger (arg3)) {
-			case (1) {
-				Store(0, Local2)
-				BankField(OPR0, BNK0, 0, WordAcc, NoLock, WriteAsOnes) {
-					, 0, f000, 1}
-				Store(Refof(f000), Local3)
-				Store(Refof(g000), Local4)
-			}
-			case (6) {
-				Store(1, Local2)
-				BankField(OPR0, BNK0, 1, WordAcc, NoLock, WriteAsOnes) {
-					AccessAs(WordAcc),
-					, 0, f001, 6}
-				Store(Refof(f001), Local3)
-				Store(Refof(g001), Local4)
-			}
-			case (7) {
-				Store(2, Local2)
-				BankField(OPR0, BNK0, 2, WordAcc, NoLock, WriteAsOnes) {
-					, 0, f002, 7}
-				Store(Refof(f002), Local3)
-				Store(Refof(g002), Local4)
-			}
-			case (8) {
-				Store(3, Local2)
-				BankField(OPR0, BNK0, 3, DWordAcc, NoLock, WriteAsOnes) {
-					AccessAs(WordAcc),
-					, 0, f003, 8}
-				Store(Refof(f003), Local3)
-				Store(Refof(g003), Local4)
-			}
-			case (9) {
-				Store(4, Local2)
-				BankField(OPR0, BNK0, 4, WordAcc, NoLock, WriteAsOnes) {
-					, 0, f004, 9}
-				Store(Refof(f004), Local3)
-				Store(Refof(g004), Local4)
-			}
-			case (31) {
-				Store(5, Local2)
-				BankField(OPR0, BNK0, 5, QWordAcc, NoLock, WriteAsOnes) {
-					AccessAs(WordAcc),
-					, 0, f005, 31}
-				Store(Refof(f005), Local3)
-				Store(Refof(g005), Local4)
-			}
-			case (32) {
-				Store(6, Local2)
-				BankField(OPR0, BNK0, 6, WordAcc, NoLock, WriteAsOnes) {
-					, 0, f006, 32}
-				Store(Refof(f006), Local3)
-				Store(Refof(g006), Local4)
-			}
-			case (33) {
-				Store(7, Local2)
-				BankField(OPR0, BNK0, 7, AnyAcc, NoLock, WriteAsOnes) {
-					AccessAs(WordAcc),
-					, 0, f007, 33}
-				Store(Refof(f007), Local3)
-				Store(Refof(g007), Local4)
-			}
-			case (63) {
-				Store(8, Local2)
-				BankField(OPR0, BNK0, 8, WordAcc, NoLock, WriteAsOnes) {
-					, 0, f008, 63}
-				Store(Refof(f008), Local3)
-				Store(Refof(g008), Local4)
-			}
-			case (64) {
-				Store(9, Local2)
-				BankField(OPR0, BNK0, 9, ByteAcc, NoLock, WriteAsOnes) {
-					AccessAs(WordAcc),
-					, 0, f009, 64}
-				Store(Refof(f009), Local3)
-				Store(Refof(g009), Local4)
-			}
-			case (65) {
-				Store(63, Local2)
-				BankField(OPR0, BNK0, 63, WordAcc, NoLock, WriteAsOnes) {
-					, 0, f00a, 65}
-				Store(Refof(f00a), Local3)
-				Store(Refof(g00a), Local4)
-			}
-			case (69) {
-				Store(64, Local2)
-				BankField(OPR0, BNK0, 64, WordAcc, NoLock, WriteAsOnes) {
-					AccessAs(WordAcc),
-					, 0, f00b, 69}
-				Store(Refof(f00b), Local3)
-				Store(Refof(g00b), Local4)
-			}
-			case (129) {
-				Store(127, Local2)
-				BankField(OPR0, BNK0, 127, WordAcc, NoLock, WriteAsOnes) {
-					, 0, f00c, 129}
-				Store(Refof(f00c), Local3)
-				Store(Refof(g00c), Local4)
-			}
-			case (256) {
-				Store(128, Local2)
-				BankField(OPR0, BNK0, 128, DWordAcc, NoLock, WriteAsOnes) {
-					AccessAs(WordAcc),
-					, 0, f00d, 256}
-				Store(Refof(f00d), Local3)
-				Store(Refof(g00d), Local4)
-			}
-			case (1023) {
-				Store(255, Local2)
-				BankField(OPR0, BNK0, 255, WordAcc, NoLock, WriteAsOnes) {
-					, 0, f00e, 1023}
-				Store(Refof(f00e), Local3)
-				Store(Refof(g00e), Local4)
-			}
-			case (1983) {
-				Store(0, Local2)
-				BankField(OPR0, BNK0, 0, QWordAcc, NoLock, WriteAsOnes) {
-					AccessAs(WordAcc),
-					, 0, f00f, 1983}
-				Store(Refof(f00f), Local3)
-				Store(Refof(g000), Local4)
-			}
-			default {
-				err(arg0, z145, __LINE__, 0, 0, arg2, arg3)
-				return
-			}
-		}
-	}
-	case (1) {
-		switch(ToInteger (arg3)) {
-			case (1) {
-				Store(1, Local2)
-				BankField(OPR0, BNK0, 1, AnyAcc, NoLock, WriteAsOnes) {
-					AccessAs(WordAcc),
-					, 1, f010, 1}
-				Store(Refof(f010), Local3)
-				Store(Refof(g001), Local4)
-			}
-			case (6) {
-				Store(2, Local2)
-				BankField(OPR0, BNK0, 2, WordAcc, NoLock, WriteAsOnes) {
-					, 1, f011, 6}
-				Store(Refof(f011), Local3)
-				Store(Refof(g002), Local4)
-			}
-			case (7) {
-				Store(3, Local2)
-				BankField(OPR0, BNK0, 3, ByteAcc, NoLock, WriteAsOnes) {
-					AccessAs(WordAcc),
-					, 1, f012, 7}
-				Store(Refof(f012), Local3)
-				Store(Refof(g003), Local4)
-			}
-			case (8) {
-				Store(4, Local2)
-				BankField(OPR0, BNK0, 4, WordAcc, NoLock, WriteAsOnes) {
-					, 1, f013, 8}
-				Store(Refof(f013), Local3)
-				Store(Refof(g004), Local4)
-			}
-			case (9) {
-				Store(5, Local2)
-				BankField(OPR0, BNK0, 5, WordAcc, NoLock, WriteAsOnes) {
-					AccessAs(WordAcc),
-					, 1, f014, 9}
-				Store(Refof(f014), Local3)
-				Store(Refof(g005), Local4)
-			}
-			case (31) {
-				Store(6, Local2)
-				BankField(OPR0, BNK0, 6, WordAcc, NoLock, WriteAsOnes) {
-					, 1, f015, 31}
-				Store(Refof(f015), Local3)
-				Store(Refof(g006), Local4)
-			}
-			case (32) {
-				Store(7, Local2)
-				BankField(OPR0, BNK0, 7, DWordAcc, NoLock, WriteAsOnes) {
-					AccessAs(WordAcc),
-					, 1, f016, 32}
-				Store(Refof(f016), Local3)
-				Store(Refof(g007), Local4)
-			}
-			case (33) {
-				Store(8, Local2)
-				BankField(OPR0, BNK0, 8, WordAcc, NoLock, WriteAsOnes) {
-					, 1, f017, 33}
-				Store(Refof(f017), Local3)
-				Store(Refof(g008), Local4)
-			}
-			case (63) {
-				Store(9, Local2)
-				BankField(OPR0, BNK0, 9, QWordAcc, NoLock, WriteAsOnes) {
-					AccessAs(WordAcc),
-					, 1, f018, 63}
-				Store(Refof(f018), Local3)
-				Store(Refof(g009), Local4)
-			}
-			case (64) {
-				Store(63, Local2)
-				BankField(OPR0, BNK0, 63, WordAcc, NoLock, WriteAsOnes) {
-					, 1, f019, 64}
-				Store(Refof(f019), Local3)
-				Store(Refof(g00a), Local4)
-			}
-			case (65) {
-				Store(64, Local2)
-				BankField(OPR0, BNK0, 64, AnyAcc, NoLock, WriteAsOnes) {
-					AccessAs(WordAcc),
-					, 1, f01a, 65}
-				Store(Refof(f01a), Local3)
-				Store(Refof(g00b), Local4)
-			}
-			case (69) {
-				Store(127, Local2)
-				BankField(OPR0, BNK0, 127, WordAcc, NoLock, WriteAsOnes) {
-					, 1, f01b, 69}
-				Store(Refof(f01b), Local3)
-				Store(Refof(g00c), Local4)
-			}
-			case (129) {
-				Store(128, Local2)
-				BankField(OPR0, BNK0, 128, ByteAcc, NoLock, WriteAsOnes) {
-					AccessAs(WordAcc),
-					, 1, f01c, 129}
-				Store(Refof(f01c), Local3)
-				Store(Refof(g00d), Local4)
-			}
-			case (256) {
-				Store(255, Local2)
-				BankField(OPR0, BNK0, 255, WordAcc, NoLock, WriteAsOnes) {
-					, 1, f01d, 256}
-				Store(Refof(f01d), Local3)
-				Store(Refof(g00e), Local4)
-			}
-			case (1023) {
-				Store(0, Local2)
-				BankField(OPR0, BNK0, 0, WordAcc, NoLock, WriteAsOnes) {
-					AccessAs(WordAcc),
-					, 1, f01e, 1023}
-				Store(Refof(f01e), Local3)
-				Store(Refof(g000), Local4)
-			}
-			case (1983) {
-				Store(1, Local2)
-				BankField(OPR0, BNK0, 1, WordAcc, NoLock, WriteAsOnes) {
-					, 1, f01f, 1983}
-				Store(Refof(f01f), Local3)
-				Store(Refof(g001), Local4)
-			}
-			default {
-				err(arg0, z145, __LINE__, 0, 0, arg2, arg3)
-				return
-			}
-		}
-	}
-	case (2) {
-		switch(ToInteger (arg3)) {
-			case (1) {
-				Store(2, Local2)
-				BankField(OPR0, BNK0, 2, WordAcc, NoLock, WriteAsOnes) {
-					, 2, f020, 1}
-				Store(Refof(f020), Local3)
-				Store(Refof(g002), Local4)
-			}
-			case (6) {
-				Store(3, Local2)
-				BankField(OPR0, BNK0, 3, DWordAcc, NoLock, WriteAsOnes) {
-					AccessAs(WordAcc),
-					, 2, f021, 6}
-				Store(Refof(f021), Local3)
-				Store(Refof(g003), Local4)
-			}
-			case (7) {
-				Store(4, Local2)
-				BankField(OPR0, BNK0, 4, WordAcc, NoLock, WriteAsOnes) {
-					, 2, f022, 7}
-				Store(Refof(f022), Local3)
-				Store(Refof(g004), Local4)
-			}
-			case (8) {
-				Store(5, Local2)
-				BankField(OPR0, BNK0, 5, QWordAcc, NoLock, WriteAsOnes) {
-					AccessAs(WordAcc),
-					, 2, f023, 8}
-				Store(Refof(f023), Local3)
-				Store(Refof(g005), Local4)
-			}
-			case (9) {
-				Store(6, Local2)
-				BankField(OPR0, BNK0, 6, WordAcc, NoLock, WriteAsOnes) {
-					, 2, f024, 9}
-				Store(Refof(f024), Local3)
-				Store(Refof(g006), Local4)
-			}
-			case (31) {
-				Store(7, Local2)
-				BankField(OPR0, BNK0, 7, AnyAcc, NoLock, WriteAsOnes) {
-					AccessAs(WordAcc),
-					, 2, f025, 31}
-				Store(Refof(f025), Local3)
-				Store(Refof(g007), Local4)
-			}
-			case (32) {
-				Store(8, Local2)
-				BankField(OPR0, BNK0, 8, WordAcc, NoLock, WriteAsOnes) {
-					, 2, f026, 32}
-				Store(Refof(f026), Local3)
-				Store(Refof(g008), Local4)
-			}
-			case (33) {
-				Store(9, Local2)
-				BankField(OPR0, BNK0, 9, ByteAcc, NoLock, WriteAsOnes) {
-					AccessAs(WordAcc),
-					, 2, f027, 33}
-				Store(Refof(f027), Local3)
-				Store(Refof(g009), Local4)
-			}
-			case (63) {
-				Store(63, Local2)
-				BankField(OPR0, BNK0, 63, WordAcc, NoLock, WriteAsOnes) {
-					, 2, f028, 63}
-				Store(Refof(f028), Local3)
-				Store(Refof(g00a), Local4)
-			}
-			case (64) {
-				Store(64, Local2)
-				BankField(OPR0, BNK0, 64, WordAcc, NoLock, WriteAsOnes) {
-					AccessAs(WordAcc),
-					, 2, f029, 64}
-				Store(Refof(f029), Local3)
-				Store(Refof(g00b), Local4)
-			}
-			case (65) {
-				Store(127, Local2)
-				BankField(OPR0, BNK0, 127, WordAcc, NoLock, WriteAsOnes) {
-					, 2, f02a, 65}
-				Store(Refof(f02a), Local3)
-				Store(Refof(g00c), Local4)
-			}
-			case (69) {
-				Store(128, Local2)
-				BankField(OPR0, BNK0, 128, DWordAcc, NoLock, WriteAsOnes) {
-					AccessAs(WordAcc),
-					, 2, f02b, 69}
-				Store(Refof(f02b), Local3)
-				Store(Refof(g00d), Local4)
-			}
-			case (129) {
-				Store(255, Local2)
-				BankField(OPR0, BNK0, 255, WordAcc, NoLock, WriteAsOnes) {
-					, 2, f02c, 129}
-				Store(Refof(f02c), Local3)
-				Store(Refof(g00e), Local4)
-			}
-			case (256) {
-				Store(0, Local2)
-				BankField(OPR0, BNK0, 0, QWordAcc, NoLock, WriteAsOnes) {
-					AccessAs(WordAcc),
-					, 2, f02d, 256}
-				Store(Refof(f02d), Local3)
-				Store(Refof(g000), Local4)
-			}
-			case (1023) {
-				Store(1, Local2)
-				BankField(OPR0, BNK0, 1, WordAcc, NoLock, WriteAsOnes) {
-					, 2, f02e, 1023}
-				Store(Refof(f02e), Local3)
-				Store(Refof(g001), Local4)
-			}
-			case (1983) {
-				Store(2, Local2)
-				BankField(OPR0, BNK0, 2, AnyAcc, NoLock, WriteAsOnes) {
-					AccessAs(WordAcc),
-					, 2, f02f, 1983}
-				Store(Refof(f02f), Local3)
-				Store(Refof(g002), Local4)
-			}
-			default {
-				err(arg0, z145, __LINE__, 0, 0, arg2, arg3)
-				return
-			}
-		}
-	}
-	case (3) {
-		switch(ToInteger (arg3)) {
-			case (1) {
-				Store(3, Local2)
-				BankField(OPR0, BNK0, 3, ByteAcc, NoLock, WriteAsOnes) {
-					AccessAs(WordAcc),
-					, 3, f030, 1}
-				Store(Refof(f030), Local3)
-				Store(Refof(g003), Local4)
-			}
-			case (6) {
-				Store(4, Local2)
-				BankField(OPR0, BNK0, 4, WordAcc, NoLock, WriteAsOnes) {
-					, 3, f031, 6}
-				Store(Refof(f031), Local3)
-				Store(Refof(g004), Local4)
-			}
-			case (7) {
-				Store(5, Local2)
-				BankField(OPR0, BNK0, 5, WordAcc, NoLock, WriteAsOnes) {
-					AccessAs(WordAcc),
-					, 3, f032, 7}
-				Store(Refof(f032), Local3)
-				Store(Refof(g005), Local4)
-			}
-			case (8) {
-				Store(6, Local2)
-				BankField(OPR0, BNK0, 6, WordAcc, NoLock, WriteAsOnes) {
-					, 3, f033, 8}
-				Store(Refof(f033), Local3)
-				Store(Refof(g006), Local4)
-			}
-			case (9) {
-				Store(7, Local2)
-				BankField(OPR0, BNK0, 7, DWordAcc, NoLock, WriteAsOnes) {
-					AccessAs(WordAcc),
-					, 3, f034, 9}
-				Store(Refof(f034), Local3)
-				Store(Refof(g007), Local4)
-			}
-			case (31) {
-				Store(8, Local2)
-				BankField(OPR0, BNK0, 8, WordAcc, NoLock, WriteAsOnes) {
-					, 3, f035, 31}
-				Store(Refof(f035), Local3)
-				Store(Refof(g008), Local4)
-			}
-			case (32) {
-				Store(9, Local2)
-				BankField(OPR0, BNK0, 9, QWordAcc, NoLock, WriteAsOnes) {
-					AccessAs(WordAcc),
-					, 3, f036, 32}
-				Store(Refof(f036), Local3)
-				Store(Refof(g009), Local4)
-			}
-			case (33) {
-				Store(63, Local2)
-				BankField(OPR0, BNK0, 63, WordAcc, NoLock, WriteAsOnes) {
-					, 3, f037, 33}
-				Store(Refof(f037), Local3)
-				Store(Refof(g00a), Local4)
-			}
-			case (63) {
-				Store(64, Local2)
-				BankField(OPR0, BNK0, 64, AnyAcc, NoLock, WriteAsOnes) {
-					AccessAs(WordAcc),
-					, 3, f038, 63}
-				Store(Refof(f038), Local3)
-				Store(Refof(g00b), Local4)
-			}
-			case (64) {
-				Store(127, Local2)
-				BankField(OPR0, BNK0, 127, WordAcc, NoLock, WriteAsOnes) {
-					, 3, f039, 64}
-				Store(Refof(f039), Local3)
-				Store(Refof(g00c), Local4)
-			}
-			case (65) {
-				Store(128, Local2)
-				BankField(OPR0, BNK0, 128, ByteAcc, NoLock, WriteAsOnes) {
-					AccessAs(WordAcc),
-					, 3, f03a, 65}
-				Store(Refof(f03a), Local3)
-				Store(Refof(g00d), Local4)
-			}
-			case (69) {
-				Store(255, Local2)
-				BankField(OPR0, BNK0, 255, WordAcc, NoLock, WriteAsOnes) {
-					, 3, f03b, 69}
-				Store(Refof(f03b), Local3)
-				Store(Refof(g00e), Local4)
-			}
-			case (129) {
-				Store(0, Local2)
-				BankField(OPR0, BNK0, 0, WordAcc, NoLock, WriteAsOnes) {
-					AccessAs(WordAcc),
-					, 3, f03c, 129}
-				Store(Refof(f03c), Local3)
-				Store(Refof(g000), Local4)
-			}
-			case (256) {
-				Store(1, Local2)
-				BankField(OPR0, BNK0, 1, WordAcc, NoLock, WriteAsOnes) {
-					, 3, f03d, 256}
-				Store(Refof(f03d), Local3)
-				Store(Refof(g001), Local4)
-			}
-			case (1023) {
-				Store(2, Local2)
-				BankField(OPR0, BNK0, 2, DWordAcc, NoLock, WriteAsOnes) {
-					AccessAs(WordAcc),
-					, 3, f03e, 1023}
-				Store(Refof(f03e), Local3)
-				Store(Refof(g002), Local4)
-			}
-			case (1983) {
-				Store(3, Local2)
-				BankField(OPR0, BNK0, 3, WordAcc, NoLock, WriteAsOnes) {
-					, 3, f03f, 1983}
-				Store(Refof(f03f), Local3)
-				Store(Refof(g003), Local4)
-			}
-			default {
-				err(arg0, z145, __LINE__, 0, 0, arg2, arg3)
-				return
-			}
-		}
-	}
-	case (4) {
-		switch(ToInteger (arg3)) {
-			case (1) {
-				Store(4, Local2)
-				BankField(OPR0, BNK0, 4, WordAcc, NoLock, WriteAsOnes) {
-					, 4, f040, 1}
-				Store(Refof(f040), Local3)
-				Store(Refof(g004), Local4)
-			}
-			case (6) {
-				Store(5, Local2)
-				BankField(OPR0, BNK0, 5, QWordAcc, NoLock, WriteAsOnes) {
-					AccessAs(WordAcc),
-					, 4, f041, 6}
-				Store(Refof(f041), Local3)
-				Store(Refof(g005), Local4)
-			}
-			case (7) {
-				Store(6, Local2)
-				BankField(OPR0, BNK0, 6, WordAcc, NoLock, WriteAsOnes) {
-					, 4, f042, 7}
-				Store(Refof(f042), Local3)
-				Store(Refof(g006), Local4)
-			}
-			case (8) {
-				Store(7, Local2)
-				BankField(OPR0, BNK0, 7, AnyAcc, NoLock, WriteAsOnes) {
-					AccessAs(WordAcc),
-					, 4, f043, 8}
-				Store(Refof(f043), Local3)
-				Store(Refof(g007), Local4)
-			}
-			case (9) {
-				Store(8, Local2)
-				BankField(OPR0, BNK0, 8, WordAcc, NoLock, WriteAsOnes) {
-					, 4, f044, 9}
-				Store(Refof(f044), Local3)
-				Store(Refof(g008), Local4)
-			}
-			case (31) {
-				Store(9, Local2)
-				BankField(OPR0, BNK0, 9, ByteAcc, NoLock, WriteAsOnes) {
-					AccessAs(WordAcc),
-					, 4, f045, 31}
-				Store(Refof(f045), Local3)
-				Store(Refof(g009), Local4)
-			}
-			case (32) {
-				Store(63, Local2)
-				BankField(OPR0, BNK0, 63, WordAcc, NoLock, WriteAsOnes) {
-					, 4, f046, 32}
-				Store(Refof(f046), Local3)
-				Store(Refof(g00a), Local4)
-			}
-			case (33) {
-				Store(64, Local2)
-				BankField(OPR0, BNK0, 64, WordAcc, NoLock, WriteAsOnes) {
-					AccessAs(WordAcc),
-					, 4, f047, 33}
-				Store(Refof(f047), Local3)
-				Store(Refof(g00b), Local4)
-			}
-			case (63) {
-				Store(127, Local2)
-				BankField(OPR0, BNK0, 127, WordAcc, NoLock, WriteAsOnes) {
-					, 4, f048, 63}
-				Store(Refof(f048), Local3)
-				Store(Refof(g00c), Local4)
-			}
-			case (64) {
-				Store(128, Local2)
-				BankField(OPR0, BNK0, 128, DWordAcc, NoLock, WriteAsOnes) {
-					AccessAs(WordAcc),
-					, 4, f049, 64}
-				Store(Refof(f049), Local3)
-				Store(Refof(g00d), Local4)
-			}
-			case (65) {
-				Store(255, Local2)
-				BankField(OPR0, BNK0, 255, WordAcc, NoLock, WriteAsOnes) {
-					, 4, f04a, 65}
-				Store(Refof(f04a), Local3)
-				Store(Refof(g00e), Local4)
-			}
-			case (69) {
-				Store(0, Local2)
-				BankField(OPR0, BNK0, 0, QWordAcc, NoLock, WriteAsOnes) {
-					AccessAs(WordAcc),
-					, 4, f04b, 69}
-				Store(Refof(f04b), Local3)
-				Store(Refof(g000), Local4)
-			}
-			case (129) {
-				Store(1, Local2)
-				BankField(OPR0, BNK0, 1, WordAcc, NoLock, WriteAsOnes) {
-					, 4, f04c, 129}
-				Store(Refof(f04c), Local3)
-				Store(Refof(g001), Local4)
-			}
-			case (256) {
-				Store(2, Local2)
-				BankField(OPR0, BNK0, 2, AnyAcc, NoLock, WriteAsOnes) {
-					AccessAs(WordAcc),
-					, 4, f04d, 256}
-				Store(Refof(f04d), Local3)
-				Store(Refof(g002), Local4)
-			}
-			case (1023) {
-				Store(3, Local2)
-				BankField(OPR0, BNK0, 3, WordAcc, NoLock, WriteAsOnes) {
-					, 4, f04e, 1023}
-				Store(Refof(f04e), Local3)
-				Store(Refof(g003), Local4)
-			}
-			case (1983) {
-				Store(4, Local2)
-				BankField(OPR0, BNK0, 4, ByteAcc, NoLock, WriteAsOnes) {
-					AccessAs(WordAcc),
-					, 4, f04f, 1983}
-				Store(Refof(f04f), Local3)
-				Store(Refof(g004), Local4)
-			}
-			default {
-				err(arg0, z145, __LINE__, 0, 0, arg2, arg3)
-				return
-			}
-		}
-	}
-	case (5) {
-		switch(ToInteger (arg3)) {
-			case (1) {
-				Store(5, Local2)
-				BankField(OPR0, BNK0, 5, WordAcc, NoLock, WriteAsOnes) {
-					AccessAs(WordAcc),
-					, 5, f050, 1}
-				Store(Refof(f050), Local3)
-				Store(Refof(g005), Local4)
-			}
-			case (6) {
-				Store(6, Local2)
-				BankField(OPR0, BNK0, 6, WordAcc, NoLock, WriteAsOnes) {
-					, 5, f051, 6}
-				Store(Refof(f051), Local3)
-				Store(Refof(g006), Local4)
-			}
-			case (7) {
-				Store(7, Local2)
-				BankField(OPR0, BNK0, 7, DWordAcc, NoLock, WriteAsOnes) {
-					AccessAs(WordAcc),
-					, 5, f052, 7}
-				Store(Refof(f052), Local3)
-				Store(Refof(g007), Local4)
-			}
-			case (8) {
-				Store(8, Local2)
-				BankField(OPR0, BNK0, 8, WordAcc, NoLock, WriteAsOnes) {
-					, 5, f053, 8}
-				Store(Refof(f053), Local3)
-				Store(Refof(g008), Local4)
-			}
-			case (9) {
-				Store(9, Local2)
-				BankField(OPR0, BNK0, 9, QWordAcc, NoLock, WriteAsOnes) {
-					AccessAs(WordAcc),
-					, 5, f054, 9}
-				Store(Refof(f054), Local3)
-				Store(Refof(g009), Local4)
-			}
-			case (31) {
-				Store(63, Local2)
-				BankField(OPR0, BNK0, 63, WordAcc, NoLock, WriteAsOnes) {
-					, 5, f055, 31}
-				Store(Refof(f055), Local3)
-				Store(Refof(g00a), Local4)
-			}
-			case (32) {
-				Store(64, Local2)
-				BankField(OPR0, BNK0, 64, AnyAcc, NoLock, WriteAsOnes) {
-					AccessAs(WordAcc),
-					, 5, f056, 32}
-				Store(Refof(f056), Local3)
-				Store(Refof(g00b), Local4)
-			}
-			case (33) {
-				Store(127, Local2)
-				BankField(OPR0, BNK0, 127, WordAcc, NoLock, WriteAsOnes) {
-					, 5, f057, 33}
-				Store(Refof(f057), Local3)
-				Store(Refof(g00c), Local4)
-			}
-			case (63) {
-				Store(128, Local2)
-				BankField(OPR0, BNK0, 128, ByteAcc, NoLock, WriteAsOnes) {
-					AccessAs(WordAcc),
-					, 5, f058, 63}
-				Store(Refof(f058), Local3)
-				Store(Refof(g00d), Local4)
-			}
-			case (64) {
-				Store(255, Local2)
-				BankField(OPR0, BNK0, 255, WordAcc, NoLock, WriteAsOnes) {
-					, 5, f059, 64}
-				Store(Refof(f059), Local3)
-				Store(Refof(g00e), Local4)
-			}
-			case (65) {
-				Store(0, Local2)
-				BankField(OPR0, BNK0, 0, WordAcc, NoLock, WriteAsOnes) {
-					AccessAs(WordAcc),
-					, 5, f05a, 65}
-				Store(Refof(f05a), Local3)
-				Store(Refof(g000), Local4)
-			}
-			case (69) {
-				Store(1, Local2)
-				BankField(OPR0, BNK0, 1, WordAcc, NoLock, WriteAsOnes) {
-					, 5, f05b, 69}
-				Store(Refof(f05b), Local3)
-				Store(Refof(g001), Local4)
-			}
-			case (129) {
-				Store(2, Local2)
-				BankField(OPR0, BNK0, 2, DWordAcc, NoLock, WriteAsOnes) {
-					AccessAs(WordAcc),
-					, 5, f05c, 129}
-				Store(Refof(f05c), Local3)
-				Store(Refof(g002), Local4)
-			}
-			case (256) {
-				Store(3, Local2)
-				BankField(OPR0, BNK0, 3, WordAcc, NoLock, WriteAsOnes) {
-					, 5, f05d, 256}
-				Store(Refof(f05d), Local3)
-				Store(Refof(g003), Local4)
-			}
-			case (1023) {
-				Store(4, Local2)
-				BankField(OPR0, BNK0, 4, QWordAcc, NoLock, WriteAsOnes) {
-					AccessAs(WordAcc),
-					, 5, f05e, 1023}
-				Store(Refof(f05e), Local3)
-				Store(Refof(g004), Local4)
-			}
-			case (1983) {
-				Store(5, Local2)
-				BankField(OPR0, BNK0, 5, WordAcc, NoLock, WriteAsOnes) {
-					, 5, f05f, 1983}
-				Store(Refof(f05f), Local3)
-				Store(Refof(g005), Local4)
-			}
-			default {
-				err(arg0, z145, __LINE__, 0, 0, arg2, arg3)
-				return
-			}
-		}
-	}
-	case (6) {
-		switch(ToInteger (arg3)) {
-			case (1) {
-				Store(6, Local2)
-				BankField(OPR0, BNK0, 6, WordAcc, NoLock, WriteAsOnes) {
-					, 6, f060, 1}
-				Store(Refof(f060), Local3)
-				Store(Refof(g006), Local4)
-			}
-			case (6) {
-				Store(7, Local2)
-				BankField(OPR0, BNK0, 7, AnyAcc, NoLock, WriteAsOnes) {
-					AccessAs(WordAcc),
-					, 6, f061, 6}
-				Store(Refof(f061), Local3)
-				Store(Refof(g007), Local4)
-			}
-			case (7) {
-				Store(8, Local2)
-				BankField(OPR0, BNK0, 8, WordAcc, NoLock, WriteAsOnes) {
-					, 6, f062, 7}
-				Store(Refof(f062), Local3)
-				Store(Refof(g008), Local4)
-			}
-			case (8) {
-				Store(9, Local2)
-				BankField(OPR0, BNK0, 9, ByteAcc, NoLock, WriteAsOnes) {
-					AccessAs(WordAcc),
-					, 6, f063, 8}
-				Store(Refof(f063), Local3)
-				Store(Refof(g009), Local4)
-			}
-			case (9) {
-				Store(63, Local2)
-				BankField(OPR0, BNK0, 63, WordAcc, NoLock, WriteAsOnes) {
-					, 6, f064, 9}
-				Store(Refof(f064), Local3)
-				Store(Refof(g00a), Local4)
-			}
-			case (31) {
-				Store(64, Local2)
-				BankField(OPR0, BNK0, 64, WordAcc, NoLock, WriteAsOnes) {
-					AccessAs(WordAcc),
-					, 6, f065, 31}
-				Store(Refof(f065), Local3)
-				Store(Refof(g00b), Local4)
-			}
-			case (32) {
-				Store(127, Local2)
-				BankField(OPR0, BNK0, 127, WordAcc, NoLock, WriteAsOnes) {
-					, 6, f066, 32}
-				Store(Refof(f066), Local3)
-				Store(Refof(g00c), Local4)
-			}
-			case (33) {
-				Store(128, Local2)
-				BankField(OPR0, BNK0, 128, DWordAcc, NoLock, WriteAsOnes) {
-					AccessAs(WordAcc),
-					, 6, f067, 33}
-				Store(Refof(f067), Local3)
-				Store(Refof(g00d), Local4)
-			}
-			case (63) {
-				Store(255, Local2)
-				BankField(OPR0, BNK0, 255, WordAcc, NoLock, WriteAsOnes) {
-					, 6, f068, 63}
-				Store(Refof(f068), Local3)
-				Store(Refof(g00e), Local4)
-			}
-			case (64) {
-				Store(0, Local2)
-				BankField(OPR0, BNK0, 0, QWordAcc, NoLock, WriteAsOnes) {
-					AccessAs(WordAcc),
-					, 6, f069, 64}
-				Store(Refof(f069), Local3)
-				Store(Refof(g000), Local4)
-			}
-			case (65) {
-				Store(1, Local2)
-				BankField(OPR0, BNK0, 1, WordAcc, NoLock, WriteAsOnes) {
-					, 6, f06a, 65}
-				Store(Refof(f06a), Local3)
-				Store(Refof(g001), Local4)
-			}
-			case (69) {
-				Store(2, Local2)
-				BankField(OPR0, BNK0, 2, AnyAcc, NoLock, WriteAsOnes) {
-					AccessAs(WordAcc),
-					, 6, f06b, 69}
-				Store(Refof(f06b), Local3)
-				Store(Refof(g002), Local4)
-			}
-			case (129) {
-				Store(3, Local2)
-				BankField(OPR0, BNK0, 3, WordAcc, NoLock, WriteAsOnes) {
-					, 6, f06c, 129}
-				Store(Refof(f06c), Local3)
-				Store(Refof(g003), Local4)
-			}
-			case (256) {
-				Store(4, Local2)
-				BankField(OPR0, BNK0, 4, ByteAcc, NoLock, WriteAsOnes) {
-					AccessAs(WordAcc),
-					, 6, f06d, 256}
-				Store(Refof(f06d), Local3)
-				Store(Refof(g004), Local4)
-			}
-			case (1023) {
-				Store(5, Local2)
-				BankField(OPR0, BNK0, 5, WordAcc, NoLock, WriteAsOnes) {
-					, 6, f06e, 1023}
-				Store(Refof(f06e), Local3)
-				Store(Refof(g005), Local4)
-			}
-			case (1983) {
-				Store(6, Local2)
-				BankField(OPR0, BNK0, 6, WordAcc, NoLock, WriteAsOnes) {
-					AccessAs(WordAcc),
-					, 6, f06f, 1983}
-				Store(Refof(f06f), Local3)
-				Store(Refof(g006), Local4)
-			}
-			default {
-				err(arg0, z145, __LINE__, 0, 0, arg2, arg3)
-				return
-			}
-		}
-	}
-	case (7) {
-		switch(ToInteger (arg3)) {
-			case (1) {
-				Store(7, Local2)
-				BankField(OPR0, BNK0, 7, DWordAcc, NoLock, WriteAsOnes) {
-					AccessAs(WordAcc),
-					, 7, f070, 1}
-				Store(Refof(f070), Local3)
-				Store(Refof(g007), Local4)
-			}
-			case (6) {
-				Store(8, Local2)
-				BankField(OPR0, BNK0, 8, WordAcc, NoLock, WriteAsOnes) {
-					, 7, f071, 6}
-				Store(Refof(f071), Local3)
-				Store(Refof(g008), Local4)
-			}
-			case (7) {
-				Store(9, Local2)
-				BankField(OPR0, BNK0, 9, QWordAcc, NoLock, WriteAsOnes) {
-					AccessAs(WordAcc),
-					, 7, f072, 7}
-				Store(Refof(f072), Local3)
-				Store(Refof(g009), Local4)
-			}
-			case (8) {
-				Store(63, Local2)
-				BankField(OPR0, BNK0, 63, WordAcc, NoLock, WriteAsOnes) {
-					, 7, f073, 8}
-				Store(Refof(f073), Local3)
-				Store(Refof(g00a), Local4)
-			}
-			case (9) {
-				Store(64, Local2)
-				BankField(OPR0, BNK0, 64, AnyAcc, NoLock, WriteAsOnes) {
-					AccessAs(WordAcc),
-					, 7, f074, 9}
-				Store(Refof(f074), Local3)
-				Store(Refof(g00b), Local4)
-			}
-			case (31) {
-				Store(127, Local2)
-				BankField(OPR0, BNK0, 127, WordAcc, NoLock, WriteAsOnes) {
-					, 7, f075, 31}
-				Store(Refof(f075), Local3)
-				Store(Refof(g00c), Local4)
-			}
-			case (32) {
-				Store(128, Local2)
-				BankField(OPR0, BNK0, 128, ByteAcc, NoLock, WriteAsOnes) {
-					AccessAs(WordAcc),
-					, 7, f076, 32}
-				Store(Refof(f076), Local3)
-				Store(Refof(g00d), Local4)
-			}
-			case (33) {
-				Store(255, Local2)
-				BankField(OPR0, BNK0, 255, WordAcc, NoLock, WriteAsOnes) {
-					, 7, f077, 33}
-				Store(Refof(f077), Local3)
-				Store(Refof(g00e), Local4)
-			}
-			case (63) {
-				Store(0, Local2)
-				BankField(OPR0, BNK0, 0, WordAcc, NoLock, WriteAsOnes) {
-					AccessAs(WordAcc),
-					, 7, f078, 63}
-				Store(Refof(f078), Local3)
-				Store(Refof(g000), Local4)
-			}
-			case (64) {
-				Store(1, Local2)
-				BankField(OPR0, BNK0, 1, WordAcc, NoLock, WriteAsOnes) {
-					, 7, f079, 64}
-				Store(Refof(f079), Local3)
-				Store(Refof(g001), Local4)
-			}
-			case (65) {
-				Store(2, Local2)
-				BankField(OPR0, BNK0, 2, DWordAcc, NoLock, WriteAsOnes) {
-					AccessAs(WordAcc),
-					, 7, f07a, 65}
-				Store(Refof(f07a), Local3)
-				Store(Refof(g002), Local4)
-			}
-			case (69) {
-				Store(3, Local2)
-				BankField(OPR0, BNK0, 3, WordAcc, NoLock, WriteAsOnes) {
-					, 7, f07b, 69}
-				Store(Refof(f07b), Local3)
-				Store(Refof(g003), Local4)
-			}
-			case (129) {
-				Store(4, Local2)
-				BankField(OPR0, BNK0, 4, QWordAcc, NoLock, WriteAsOnes) {
-					AccessAs(WordAcc),
-					, 7, f07c, 129}
-				Store(Refof(f07c), Local3)
-				Store(Refof(g004), Local4)
-			}
-			case (256) {
-				Store(5, Local2)
-				BankField(OPR0, BNK0, 5, WordAcc, NoLock, WriteAsOnes) {
-					, 7, f07d, 256}
-				Store(Refof(f07d), Local3)
-				Store(Refof(g005), Local4)
-			}
-			case (1023) {
-				Store(6, Local2)
-				BankField(OPR0, BNK0, 6, AnyAcc, NoLock, WriteAsOnes) {
-					AccessAs(WordAcc),
-					, 7, f07e, 1023}
-				Store(Refof(f07e), Local3)
-				Store(Refof(g006), Local4)
-			}
-			case (1983) {
-				Store(7, Local2)
-				BankField(OPR0, BNK0, 7, WordAcc, NoLock, WriteAsOnes) {
-					, 7, f07f, 1983}
-				Store(Refof(f07f), Local3)
-				Store(Refof(g007), Local4)
-			}
-			default {
-				err(arg0, z145, __LINE__, 0, 0, arg2, arg3)
-				return
-			}
-		}
-	}
-	case (8) {
-		switch(ToInteger (arg3)) {
-			case (1) {
-				Store(8, Local2)
-				BankField(OPR0, BNK0, 8, WordAcc, NoLock, WriteAsOnes) {
-					Offset(1), f080, 1}
-				Store(Refof(f080), Local3)
-				Store(Refof(g008), Local4)
-			}
-			case (6) {
-				Store(9, Local2)
-				BankField(OPR0, BNK0, 9, ByteAcc, NoLock, WriteAsOnes) {
-					AccessAs(WordAcc),
-					Offset(1), f081, 6}
-				Store(Refof(f081), Local3)
-				Store(Refof(g009), Local4)
-			}
-			case (7) {
-				Store(63, Local2)
-				BankField(OPR0, BNK0, 63, WordAcc, NoLock, WriteAsOnes) {
-					Offset(1), f082, 7}
-				Store(Refof(f082), Local3)
-				Store(Refof(g00a), Local4)
-			}
-			case (8) {
-				Store(64, Local2)
-				BankField(OPR0, BNK0, 64, WordAcc, NoLock, WriteAsOnes) {
-					AccessAs(WordAcc),
-					Offset(1), f083, 8}
-				Store(Refof(f083), Local3)
-				Store(Refof(g00b), Local4)
-			}
-			case (9) {
-				Store(127, Local2)
-				BankField(OPR0, BNK0, 127, WordAcc, NoLock, WriteAsOnes) {
-					Offset(1), f084, 9}
-				Store(Refof(f084), Local3)
-				Store(Refof(g00c), Local4)
-			}
-			case (31) {
-				Store(128, Local2)
-				BankField(OPR0, BNK0, 128, DWordAcc, NoLock, WriteAsOnes) {
-					AccessAs(WordAcc),
-					Offset(1), f085, 31}
-				Store(Refof(f085), Local3)
-				Store(Refof(g00d), Local4)
-			}
-			case (32) {
-				Store(255, Local2)
-				BankField(OPR0, BNK0, 255, WordAcc, NoLock, WriteAsOnes) {
-					Offset(1), f086, 32}
-				Store(Refof(f086), Local3)
-				Store(Refof(g00e), Local4)
-			}
-			case (33) {
-				Store(0, Local2)
-				BankField(OPR0, BNK0, 0, QWordAcc, NoLock, WriteAsOnes) {
-					AccessAs(WordAcc),
-					Offset(1), f087, 33}
-				Store(Refof(f087), Local3)
-				Store(Refof(g000), Local4)
-			}
-			case (63) {
-				Store(1, Local2)
-				BankField(OPR0, BNK0, 1, WordAcc, NoLock, WriteAsOnes) {
-					Offset(1), f088, 63}
-				Store(Refof(f088), Local3)
-				Store(Refof(g001), Local4)
-			}
-			case (64) {
-				Store(2, Local2)
-				BankField(OPR0, BNK0, 2, AnyAcc, NoLock, WriteAsOnes) {
-					AccessAs(WordAcc),
-					Offset(1), f089, 64}
-				Store(Refof(f089), Local3)
-				Store(Refof(g002), Local4)
-			}
-			case (65) {
-				Store(3, Local2)
-				BankField(OPR0, BNK0, 3, WordAcc, NoLock, WriteAsOnes) {
-					Offset(1), f08a, 65}
-				Store(Refof(f08a), Local3)
-				Store(Refof(g003), Local4)
-			}
-			case (69) {
-				Store(4, Local2)
-				BankField(OPR0, BNK0, 4, ByteAcc, NoLock, WriteAsOnes) {
-					AccessAs(WordAcc),
-					Offset(1), f08b, 69}
-				Store(Refof(f08b), Local3)
-				Store(Refof(g004), Local4)
-			}
-			case (129) {
-				Store(5, Local2)
-				BankField(OPR0, BNK0, 5, WordAcc, NoLock, WriteAsOnes) {
-					Offset(1), f08c, 129}
-				Store(Refof(f08c), Local3)
-				Store(Refof(g005), Local4)
-			}
-			case (256) {
-				Store(6, Local2)
-				BankField(OPR0, BNK0, 6, WordAcc, NoLock, WriteAsOnes) {
-					AccessAs(WordAcc),
-					Offset(1), f08d, 256}
-				Store(Refof(f08d), Local3)
-				Store(Refof(g006), Local4)
-			}
-			case (1023) {
-				Store(7, Local2)
-				BankField(OPR0, BNK0, 7, WordAcc, NoLock, WriteAsOnes) {
-					Offset(1), f08e, 1023}
-				Store(Refof(f08e), Local3)
-				Store(Refof(g007), Local4)
-			}
-			case (1983) {
-				Store(8, Local2)
-				BankField(OPR0, BNK0, 8, DWordAcc, NoLock, WriteAsOnes) {
-					AccessAs(WordAcc),
-					Offset(1), f08f, 1983}
-				Store(Refof(f08f), Local3)
-				Store(Refof(g008), Local4)
-			}
-			default {
-				err(arg0, z145, __LINE__, 0, 0, arg2, arg3)
-				return
-			}
-		}
-	}
-	case (9) {
-		switch(ToInteger (arg3)) {
-			case (1) {
-				Store(9, Local2)
-				BankField(OPR0, BNK0, 9, QWordAcc, NoLock, WriteAsOnes) {
-					AccessAs(WordAcc),
-					, 9, f090, 1}
-				Store(Refof(f090), Local3)
-				Store(Refof(g009), Local4)
-			}
-			case (6) {
-				Store(63, Local2)
-				BankField(OPR0, BNK0, 63, WordAcc, NoLock, WriteAsOnes) {
-					, 9, f091, 6}
-				Store(Refof(f091), Local3)
-				Store(Refof(g00a), Local4)
-			}
-			case (7) {
-				Store(64, Local2)
-				BankField(OPR0, BNK0, 64, AnyAcc, NoLock, WriteAsOnes) {
-					AccessAs(WordAcc),
-					, 9, f092, 7}
-				Store(Refof(f092), Local3)
-				Store(Refof(g00b), Local4)
-			}
-			case (8) {
-				Store(127, Local2)
-				BankField(OPR0, BNK0, 127, WordAcc, NoLock, WriteAsOnes) {
-					, 9, f093, 8}
-				Store(Refof(f093), Local3)
-				Store(Refof(g00c), Local4)
-			}
-			case (9) {
-				Store(128, Local2)
-				BankField(OPR0, BNK0, 128, ByteAcc, NoLock, WriteAsOnes) {
-					AccessAs(WordAcc),
-					, 9, f094, 9}
-				Store(Refof(f094), Local3)
-				Store(Refof(g00d), Local4)
-			}
-			case (31) {
-				Store(255, Local2)
-				BankField(OPR0, BNK0, 255, WordAcc, NoLock, WriteAsOnes) {
-					, 9, f095, 31}
-				Store(Refof(f095), Local3)
-				Store(Refof(g00e), Local4)
-			}
-			case (32) {
-				Store(0, Local2)
-				BankField(OPR0, BNK0, 0, WordAcc, NoLock, WriteAsOnes) {
-					AccessAs(WordAcc),
-					, 9, f096, 32}
-				Store(Refof(f096), Local3)
-				Store(Refof(g000), Local4)
-			}
-			case (33) {
-				Store(1, Local2)
-				BankField(OPR0, BNK0, 1, WordAcc, NoLock, WriteAsOnes) {
-					, 9, f097, 33}
-				Store(Refof(f097), Local3)
-				Store(Refof(g001), Local4)
-			}
-			case (63) {
-				Store(2, Local2)
-				BankField(OPR0, BNK0, 2, DWordAcc, NoLock, WriteAsOnes) {
-					AccessAs(WordAcc),
-					, 9, f098, 63}
-				Store(Refof(f098), Local3)
-				Store(Refof(g002), Local4)
-			}
-			case (64) {
-				Store(3, Local2)
-				BankField(OPR0, BNK0, 3, WordAcc, NoLock, WriteAsOnes) {
-					, 9, f099, 64}
-				Store(Refof(f099), Local3)
-				Store(Refof(g003), Local4)
-			}
-			case (65) {
-				Store(4, Local2)
-				BankField(OPR0, BNK0, 4, QWordAcc, NoLock, WriteAsOnes) {
-					AccessAs(WordAcc),
-					, 9, f09a, 65}
-				Store(Refof(f09a), Local3)
-				Store(Refof(g004), Local4)
-			}
-			case (69) {
-				Store(5, Local2)
-				BankField(OPR0, BNK0, 5, WordAcc, NoLock, WriteAsOnes) {
-					, 9, f09b, 69}
-				Store(Refof(f09b), Local3)
-				Store(Refof(g005), Local4)
-			}
-			case (129) {
-				Store(6, Local2)
-				BankField(OPR0, BNK0, 6, AnyAcc, NoLock, WriteAsOnes) {
-					AccessAs(WordAcc),
-					, 9, f09c, 129}
-				Store(Refof(f09c), Local3)
-				Store(Refof(g006), Local4)
-			}
-			case (256) {
-				Store(7, Local2)
-				BankField(OPR0, BNK0, 7, WordAcc, NoLock, WriteAsOnes) {
-					, 9, f09d, 256}
-				Store(Refof(f09d), Local3)
-				Store(Refof(g007), Local4)
-			}
-			case (1023) {
-				Store(8, Local2)
-				BankField(OPR0, BNK0, 8, ByteAcc, NoLock, WriteAsOnes) {
-					AccessAs(WordAcc),
-					, 9, f09e, 1023}
-				Store(Refof(f09e), Local3)
-				Store(Refof(g008), Local4)
-			}
-			case (1983) {
-				Store(9, Local2)
-				BankField(OPR0, BNK0, 9, WordAcc, NoLock, WriteAsOnes) {
-					, 9, f09f, 1983}
-				Store(Refof(f09f), Local3)
-				Store(Refof(g009), Local4)
-			}
-			default {
-				err(arg0, z145, __LINE__, 0, 0, arg2, arg3)
-				return
-			}
-		}
-	}
-	case (31) {
-		switch(ToInteger (arg3)) {
-			case (1) {
-				Store(63, Local2)
-				BankField(OPR0, BNK0, 63, WordAcc, NoLock, WriteAsOnes) {
-					Offset(3), , 7, f0a0, 1}
-				Store(Refof(f0a0), Local3)
-				Store(Refof(g00a), Local4)
-			}
-			case (6) {
-				Store(64, Local2)
-				BankField(OPR0, BNK0, 64, WordAcc, NoLock, WriteAsOnes) {
-					AccessAs(WordAcc),
-					Offset(3), , 7, f0a1, 6}
-				Store(Refof(f0a1), Local3)
-				Store(Refof(g00b), Local4)
-			}
-			case (7) {
-				Store(127, Local2)
-				BankField(OPR0, BNK0, 127, WordAcc, NoLock, WriteAsOnes) {
-					Offset(3), , 7, f0a2, 7}
-				Store(Refof(f0a2), Local3)
-				Store(Refof(g00c), Local4)
-			}
-			case (8) {
-				Store(128, Local2)
-				BankField(OPR0, BNK0, 128, DWordAcc, NoLock, WriteAsOnes) {
-					AccessAs(WordAcc),
-					Offset(3), , 7, f0a3, 8}
-				Store(Refof(f0a3), Local3)
-				Store(Refof(g00d), Local4)
-			}
-			case (9) {
-				Store(255, Local2)
-				BankField(OPR0, BNK0, 255, WordAcc, NoLock, WriteAsOnes) {
-					Offset(3), , 7, f0a4, 9}
-				Store(Refof(f0a4), Local3)
-				Store(Refof(g00e), Local4)
-			}
-			case (31) {
-				Store(0, Local2)
-				BankField(OPR0, BNK0, 0, QWordAcc, NoLock, WriteAsOnes) {
-					AccessAs(WordAcc),
-					Offset(3), , 7, f0a5, 31}
-				Store(Refof(f0a5), Local3)
-				Store(Refof(g000), Local4)
-			}
-			case (32) {
-				Store(1, Local2)
-				BankField(OPR0, BNK0, 1, WordAcc, NoLock, WriteAsOnes) {
-					Offset(3), , 7, f0a6, 32}
-				Store(Refof(f0a6), Local3)
-				Store(Refof(g001), Local4)
-			}
-			case (33) {
-				Store(2, Local2)
-				BankField(OPR0, BNK0, 2, AnyAcc, NoLock, WriteAsOnes) {
-					AccessAs(WordAcc),
-					Offset(3), , 7, f0a7, 33}
-				Store(Refof(f0a7), Local3)
-				Store(Refof(g002), Local4)
-			}
-			case (63) {
-				Store(3, Local2)
-				BankField(OPR0, BNK0, 3, WordAcc, NoLock, WriteAsOnes) {
-					Offset(3), , 7, f0a8, 63}
-				Store(Refof(f0a8), Local3)
-				Store(Refof(g003), Local4)
-			}
-			case (64) {
-				Store(4, Local2)
-				BankField(OPR0, BNK0, 4, ByteAcc, NoLock, WriteAsOnes) {
-					AccessAs(WordAcc),
-					Offset(3), , 7, f0a9, 64}
-				Store(Refof(f0a9), Local3)
-				Store(Refof(g004), Local4)
-			}
-			case (65) {
-				Store(5, Local2)
-				BankField(OPR0, BNK0, 5, WordAcc, NoLock, WriteAsOnes) {
-					Offset(3), , 7, f0aa, 65}
-				Store(Refof(f0aa), Local3)
-				Store(Refof(g005), Local4)
-			}
-			case (69) {
-				Store(6, Local2)
-				BankField(OPR0, BNK0, 6, WordAcc, NoLock, WriteAsOnes) {
-					AccessAs(WordAcc),
-					Offset(3), , 7, f0ab, 69}
-				Store(Refof(f0ab), Local3)
-				Store(Refof(g006), Local4)
-			}
-			case (129) {
-				Store(7, Local2)
-				BankField(OPR0, BNK0, 7, WordAcc, NoLock, WriteAsOnes) {
-					Offset(3), , 7, f0ac, 129}
-				Store(Refof(f0ac), Local3)
-				Store(Refof(g007), Local4)
-			}
-			case (256) {
-				Store(8, Local2)
-				BankField(OPR0, BNK0, 8, DWordAcc, NoLock, WriteAsOnes) {
-					AccessAs(WordAcc),
-					Offset(3), , 7, f0ad, 256}
-				Store(Refof(f0ad), Local3)
-				Store(Refof(g008), Local4)
-			}
-			case (1023) {
-				Store(9, Local2)
-				BankField(OPR0, BNK0, 9, WordAcc, NoLock, WriteAsOnes) {
-					Offset(3), , 7, f0ae, 1023}
-				Store(Refof(f0ae), Local3)
-				Store(Refof(g009), Local4)
-			}
-			case (1983) {
-				Store(63, Local2)
-				BankField(OPR0, BNK0, 63, QWordAcc, NoLock, WriteAsOnes) {
-					AccessAs(WordAcc),
-					Offset(3), , 7, f0af, 1983}
-				Store(Refof(f0af), Local3)
-				Store(Refof(g00a), Local4)
-			}
-			default {
-				err(arg0, z145, __LINE__, 0, 0, arg2, arg3)
-				return
-			}
-		}
-	}
-	case (32) {
-		switch(ToInteger (arg3)) {
-			case (1) {
-				Store(64, Local2)
-				BankField(OPR0, BNK0, 64, AnyAcc, NoLock, WriteAsOnes) {
-					AccessAs(WordAcc),
-					, 32, f0b0, 1}
-				Store(Refof(f0b0), Local3)
-				Store(Refof(g00b), Local4)
-			}
-			case (6) {
-				Store(127, Local2)
-				BankField(OPR0, BNK0, 127, WordAcc, NoLock, WriteAsOnes) {
-					, 32, f0b1, 6}
-				Store(Refof(f0b1), Local3)
-				Store(Refof(g00c), Local4)
-			}
-			case (7) {
-				Store(128, Local2)
-				BankField(OPR0, BNK0, 128, ByteAcc, NoLock, WriteAsOnes) {
-					AccessAs(WordAcc),
-					, 32, f0b2, 7}
-				Store(Refof(f0b2), Local3)
-				Store(Refof(g00d), Local4)
-			}
-			case (8) {
-				Store(255, Local2)
-				BankField(OPR0, BNK0, 255, WordAcc, NoLock, WriteAsOnes) {
-					, 32, f0b3, 8}
-				Store(Refof(f0b3), Local3)
-				Store(Refof(g00e), Local4)
-			}
-			case (9) {
-				Store(0, Local2)
-				BankField(OPR0, BNK0, 0, WordAcc, NoLock, WriteAsOnes) {
-					AccessAs(WordAcc),
-					, 32, f0b4, 9}
-				Store(Refof(f0b4), Local3)
-				Store(Refof(g000), Local4)
-			}
-			case (31) {
-				Store(1, Local2)
-				BankField(OPR0, BNK0, 1, WordAcc, NoLock, WriteAsOnes) {
-					, 32, f0b5, 31}
-				Store(Refof(f0b5), Local3)
-				Store(Refof(g001), Local4)
-			}
-			case (32) {
-				Store(2, Local2)
-				BankField(OPR0, BNK0, 2, DWordAcc, NoLock, WriteAsOnes) {
-					AccessAs(WordAcc),
-					, 32, f0b6, 32}
-				Store(Refof(f0b6), Local3)
-				Store(Refof(g002), Local4)
-			}
-			case (33) {
-				Store(3, Local2)
-				BankField(OPR0, BNK0, 3, WordAcc, NoLock, WriteAsOnes) {
-					, 32, f0b7, 33}
-				Store(Refof(f0b7), Local3)
-				Store(Refof(g003), Local4)
-			}
-			case (63) {
-				Store(4, Local2)
-				BankField(OPR0, BNK0, 4, QWordAcc, NoLock, WriteAsOnes) {
-					AccessAs(WordAcc),
-					, 32, f0b8, 63}
-				Store(Refof(f0b8), Local3)
-				Store(Refof(g004), Local4)
-			}
-			case (64) {
-				Store(5, Local2)
-				BankField(OPR0, BNK0, 5, WordAcc, NoLock, WriteAsOnes) {
-					, 32, f0b9, 64}
-				Store(Refof(f0b9), Local3)
-				Store(Refof(g005), Local4)
-			}
-			case (65) {
-				Store(6, Local2)
-				BankField(OPR0, BNK0, 6, AnyAcc, NoLock, WriteAsOnes) {
-					AccessAs(WordAcc),
-					, 32, f0ba, 65}
-				Store(Refof(f0ba), Local3)
-				Store(Refof(g006), Local4)
-			}
-			case (69) {
-				Store(7, Local2)
-				BankField(OPR0, BNK0, 7, WordAcc, NoLock, WriteAsOnes) {
-					, 32, f0bb, 69}
-				Store(Refof(f0bb), Local3)
-				Store(Refof(g007), Local4)
-			}
-			case (129) {
-				Store(8, Local2)
-				BankField(OPR0, BNK0, 8, ByteAcc, NoLock, WriteAsOnes) {
-					AccessAs(WordAcc),
-					, 32, f0bc, 129}
-				Store(Refof(f0bc), Local3)
-				Store(Refof(g008), Local4)
-			}
-			case (256) {
-				Store(9, Local2)
-				BankField(OPR0, BNK0, 9, WordAcc, NoLock, WriteAsOnes) {
-					, 32, f0bd, 256}
-				Store(Refof(f0bd), Local3)
-				Store(Refof(g009), Local4)
-			}
-			case (1023) {
-				Store(63, Local2)
-				BankField(OPR0, BNK0, 63, WordAcc, NoLock, WriteAsOnes) {
-					AccessAs(WordAcc),
-					, 32, f0be, 1023}
-				Store(Refof(f0be), Local3)
-				Store(Refof(g00a), Local4)
-			}
-			case (1983) {
-				Store(64, Local2)
-				BankField(OPR0, BNK0, 64, WordAcc, NoLock, WriteAsOnes) {
-					, 32, f0bf, 1983}
-				Store(Refof(f0bf), Local3)
-				Store(Refof(g00b), Local4)
-			}
-			default {
-				err(arg0, z145, __LINE__, 0, 0, arg2, arg3)
-				return
-			}
-		}
-	}
-	case (33) {
-		switch(ToInteger (arg3)) {
-			case (1) {
-				Store(127, Local2)
-				BankField(OPR0, BNK0, 127, WordAcc, NoLock, WriteAsOnes) {
-					, 33, f0c0, 1}
-				Store(Refof(f0c0), Local3)
-				Store(Refof(g00c), Local4)
-			}
-			case (6) {
-				Store(128, Local2)
-				BankField(OPR0, BNK0, 128, DWordAcc, NoLock, WriteAsOnes) {
-					AccessAs(WordAcc),
-					, 33, f0c1, 6}
-				Store(Refof(f0c1), Local3)
-				Store(Refof(g00d), Local4)
-			}
-			case (7) {
-				Store(255, Local2)
-				BankField(OPR0, BNK0, 255, WordAcc, NoLock, WriteAsOnes) {
-					, 33, f0c2, 7}
-				Store(Refof(f0c2), Local3)
-				Store(Refof(g00e), Local4)
-			}
-			case (8) {
-				Store(0, Local2)
-				BankField(OPR0, BNK0, 0, QWordAcc, NoLock, WriteAsOnes) {
-					AccessAs(WordAcc),
-					, 33, f0c3, 8}
-				Store(Refof(f0c3), Local3)
-				Store(Refof(g000), Local4)
-			}
-			case (9) {
-				Store(1, Local2)
-				BankField(OPR0, BNK0, 1, WordAcc, NoLock, WriteAsOnes) {
-					, 33, f0c4, 9}
-				Store(Refof(f0c4), Local3)
-				Store(Refof(g001), Local4)
-			}
-			case (31) {
-				Store(2, Local2)
-				BankField(OPR0, BNK0, 2, AnyAcc, NoLock, WriteAsOnes) {
-					AccessAs(WordAcc),
-					, 33, f0c5, 31}
-				Store(Refof(f0c5), Local3)
-				Store(Refof(g002), Local4)
-			}
-			case (32) {
-				Store(3, Local2)
-				BankField(OPR0, BNK0, 3, WordAcc, NoLock, WriteAsOnes) {
-					, 33, f0c6, 32}
-				Store(Refof(f0c6), Local3)
-				Store(Refof(g003), Local4)
-			}
-			case (33) {
-				Store(4, Local2)
-				BankField(OPR0, BNK0, 4, ByteAcc, NoLock, WriteAsOnes) {
-					AccessAs(WordAcc),
-					, 33, f0c7, 33}
-				Store(Refof(f0c7), Local3)
-				Store(Refof(g004), Local4)
-			}
-			case (63) {
-				Store(5, Local2)
-				BankField(OPR0, BNK0, 5, WordAcc, NoLock, WriteAsOnes) {
-					, 33, f0c8, 63}
-				Store(Refof(f0c8), Local3)
-				Store(Refof(g005), Local4)
-			}
-			case (64) {
-				Store(6, Local2)
-				BankField(OPR0, BNK0, 6, WordAcc, NoLock, WriteAsOnes) {
-					AccessAs(WordAcc),
-					, 33, f0c9, 64}
-				Store(Refof(f0c9), Local3)
-				Store(Refof(g006), Local4)
-			}
-			case (65) {
-				Store(7, Local2)
-				BankField(OPR0, BNK0, 7, WordAcc, NoLock, WriteAsOnes) {
-					, 33, f0ca, 65}
-				Store(Refof(f0ca), Local3)
-				Store(Refof(g007), Local4)
-			}
-			case (69) {
-				Store(8, Local2)
-				BankField(OPR0, BNK0, 8, DWordAcc, NoLock, WriteAsOnes) {
-					AccessAs(WordAcc),
-					, 33, f0cb, 69}
-				Store(Refof(f0cb), Local3)
-				Store(Refof(g008), Local4)
-			}
-			case (129) {
-				Store(9, Local2)
-				BankField(OPR0, BNK0, 9, WordAcc, NoLock, WriteAsOnes) {
-					, 33, f0cc, 129}
-				Store(Refof(f0cc), Local3)
-				Store(Refof(g009), Local4)
-			}
-			case (256) {
-				Store(63, Local2)
-				BankField(OPR0, BNK0, 63, QWordAcc, NoLock, WriteAsOnes) {
-					AccessAs(WordAcc),
-					, 33, f0cd, 256}
-				Store(Refof(f0cd), Local3)
-				Store(Refof(g00a), Local4)
-			}
-			case (1023) {
-				Store(64, Local2)
-				BankField(OPR0, BNK0, 64, WordAcc, NoLock, WriteAsOnes) {
-					, 33, f0ce, 1023}
-				Store(Refof(f0ce), Local3)
-				Store(Refof(g00b), Local4)
-			}
-			case (1983) {
-				Store(127, Local2)
-				BankField(OPR0, BNK0, 127, AnyAcc, NoLock, WriteAsOnes) {
-					AccessAs(WordAcc),
-					, 33, f0cf, 1983}
-				Store(Refof(f0cf), Local3)
-				Store(Refof(g00c), Local4)
-			}
-			default {
-				err(arg0, z145, __LINE__, 0, 0, arg2, arg3)
-				return
-			}
-		}
-	}
-	case (63) {
-		switch(ToInteger (arg3)) {
-			case (1) {
-				Store(128, Local2)
-				BankField(OPR0, BNK0, 128, WordAcc, NoLock, WriteAsOnes) {
-					AccessAs(WordAcc),
-					, 63, f0d0, 1}
-				Store(Refof(f0d0), Local3)
-				Store(Refof(g00d), Local4)
-			}
-			case (6) {
-				Store(255, Local2)
-				BankField(OPR0, BNK0, 255, ByteAcc, NoLock, WriteAsOnes) {
-					, 63, f0d1, 6}
-				Store(Refof(f0d1), Local3)
-				Store(Refof(g00e), Local4)
-			}
-			case (7) {
-				Store(0, Local2)
-				BankField(OPR0, BNK0, 0, WordAcc, NoLock, WriteAsOnes) {
-					AccessAs(WordAcc),
-					, 63, f0d2, 7}
-				Store(Refof(f0d2), Local3)
-				Store(Refof(g000), Local4)
-			}
-			case (8) {
-				Store(1, Local2)
-				BankField(OPR0, BNK0, 1, WordAcc, NoLock, WriteAsOnes) {
-					, 63, f0d3, 8}
-				Store(Refof(f0d3), Local3)
-				Store(Refof(g001), Local4)
-			}
-			case (9) {
-				Store(2, Local2)
-				BankField(OPR0, BNK0, 2, DWordAcc, NoLock, WriteAsOnes) {
-					AccessAs(WordAcc),
-					, 63, f0d4, 9}
-				Store(Refof(f0d4), Local3)
-				Store(Refof(g002), Local4)
-			}
-			case (31) {
-				Store(3, Local2)
-				BankField(OPR0, BNK0, 3, WordAcc, NoLock, WriteAsOnes) {
-					, 63, f0d5, 31}
-				Store(Refof(f0d5), Local3)
-				Store(Refof(g003), Local4)
-			}
-			case (32) {
-				Store(4, Local2)
-				BankField(OPR0, BNK0, 4, QWordAcc, NoLock, WriteAsOnes) {
-					AccessAs(WordAcc),
-					, 63, f0d6, 32}
-				Store(Refof(f0d6), Local3)
-				Store(Refof(g004), Local4)
-			}
-			case (33) {
-				Store(5, Local2)
-				BankField(OPR0, BNK0, 5, WordAcc, NoLock, WriteAsOnes) {
-					, 63, f0d7, 33}
-				Store(Refof(f0d7), Local3)
-				Store(Refof(g005), Local4)
-			}
-			case (63) {
-				Store(6, Local2)
-				BankField(OPR0, BNK0, 6, AnyAcc, NoLock, WriteAsOnes) {
-					AccessAs(WordAcc),
-					, 63, f0d8, 63}
-				Store(Refof(f0d8), Local3)
-				Store(Refof(g006), Local4)
-			}
-			case (64) {
-				Store(7, Local2)
-				BankField(OPR0, BNK0, 7, WordAcc, NoLock, WriteAsOnes) {
-					, 63, f0d9, 64}
-				Store(Refof(f0d9), Local3)
-				Store(Refof(g007), Local4)
-			}
-			case (65) {
-				Store(8, Local2)
-				BankField(OPR0, BNK0, 8, ByteAcc, NoLock, WriteAsOnes) {
-					AccessAs(WordAcc),
-					, 63, f0da, 65}
-				Store(Refof(f0da), Local3)
-				Store(Refof(g008), Local4)
-			}
-			case (69) {
-				Store(9, Local2)
-				BankField(OPR0, BNK0, 9, WordAcc, NoLock, WriteAsOnes) {
-					, 63, f0db, 69}
-				Store(Refof(f0db), Local3)
-				Store(Refof(g009), Local4)
-			}
-			case (129) {
-				Store(63, Local2)
-				BankField(OPR0, BNK0, 63, WordAcc, NoLock, WriteAsOnes) {
-					AccessAs(WordAcc),
-					, 63, f0dc, 129}
-				Store(Refof(f0dc), Local3)
-				Store(Refof(g00a), Local4)
-			}
-			case (256) {
-				Store(64, Local2)
-				BankField(OPR0, BNK0, 64, WordAcc, NoLock, WriteAsOnes) {
-					, 63, f0dd, 256}
-				Store(Refof(f0dd), Local3)
-				Store(Refof(g00b), Local4)
-			}
-			case (1023) {
-				Store(127, Local2)
-				BankField(OPR0, BNK0, 127, DWordAcc, NoLock, WriteAsOnes) {
-					AccessAs(WordAcc),
-					, 63, f0de, 1023}
-				Store(Refof(f0de), Local3)
-				Store(Refof(g00c), Local4)
-			}
-			case (1983) {
-				Store(128, Local2)
-				BankField(OPR0, BNK0, 128, WordAcc, NoLock, WriteAsOnes) {
-					, 63, f0df, 1983}
-				Store(Refof(f0df), Local3)
-				Store(Refof(g00d), Local4)
-			}
-			default {
-				err(arg0, z145, __LINE__, 0, 0, arg2, arg3)
-				return
-			}
-		}
-	}
-	case (64) {
-		switch(ToInteger (arg3)) {
-			case (1) {
-				Store(255, Local2)
-				BankField(OPR0, BNK0, 255, WordAcc, NoLock, WriteAsOnes) {
-					, 64, f0e0, 1}
-				Store(Refof(f0e0), Local3)
-				Store(Refof(g00e), Local4)
-			}
-			case (6) {
-				Store(0, Local2)
-				BankField(OPR0, BNK0, 0, QWordAcc, NoLock, WriteAsOnes) {
-					AccessAs(WordAcc),
-					, 64, f0e1, 6}
-				Store(Refof(f0e1), Local3)
-				Store(Refof(g000), Local4)
-			}
-			case (7) {
-				Store(1, Local2)
-				BankField(OPR0, BNK0, 1, WordAcc, NoLock, WriteAsOnes) {
-					, 64, f0e2, 7}
-				Store(Refof(f0e2), Local3)
-				Store(Refof(g001), Local4)
-			}
-			case (8) {
-				Store(2, Local2)
-				BankField(OPR0, BNK0, 2, AnyAcc, NoLock, WriteAsOnes) {
-					AccessAs(WordAcc),
-					, 64, f0e3, 8}
-				Store(Refof(f0e3), Local3)
-				Store(Refof(g002), Local4)
-			}
-			case (9) {
-				Store(3, Local2)
-				BankField(OPR0, BNK0, 3, WordAcc, NoLock, WriteAsOnes) {
-					, 64, f0e4, 9}
-				Store(Refof(f0e4), Local3)
-				Store(Refof(g003), Local4)
-			}
-			case (31) {
-				Store(4, Local2)
-				BankField(OPR0, BNK0, 4, ByteAcc, NoLock, WriteAsOnes) {
-					AccessAs(WordAcc),
-					, 64, f0e5, 31}
-				Store(Refof(f0e5), Local3)
-				Store(Refof(g004), Local4)
-			}
-			case (32) {
-				Store(5, Local2)
-				BankField(OPR0, BNK0, 5, WordAcc, NoLock, WriteAsOnes) {
-					, 64, f0e6, 32}
-				Store(Refof(f0e6), Local3)
-				Store(Refof(g005), Local4)
-			}
-			case (33) {
-				Store(6, Local2)
-				BankField(OPR0, BNK0, 6, WordAcc, NoLock, WriteAsOnes) {
-					AccessAs(WordAcc),
-					, 64, f0e7, 33}
-				Store(Refof(f0e7), Local3)
-				Store(Refof(g006), Local4)
-			}
-			case (63) {
-				Store(7, Local2)
-				BankField(OPR0, BNK0, 7, WordAcc, NoLock, WriteAsOnes) {
-					, 64, f0e8, 63}
-				Store(Refof(f0e8), Local3)
-				Store(Refof(g007), Local4)
-			}
-			case (64) {
-				Store(8, Local2)
-				BankField(OPR0, BNK0, 8, DWordAcc, NoLock, WriteAsOnes) {
-					AccessAs(WordAcc),
-					, 64, f0e9, 64}
-				Store(Refof(f0e9), Local3)
-				Store(Refof(g008), Local4)
-			}
-			case (65) {
-				Store(9, Local2)
-				BankField(OPR0, BNK0, 9, WordAcc, NoLock, WriteAsOnes) {
-					, 64, f0ea, 65}
-				Store(Refof(f0ea), Local3)
-				Store(Refof(g009), Local4)
-			}
-			case (69) {
-				Store(63, Local2)
-				BankField(OPR0, BNK0, 63, QWordAcc, NoLock, WriteAsOnes) {
-					AccessAs(WordAcc),
-					, 64, f0eb, 69}
-				Store(Refof(f0eb), Local3)
-				Store(Refof(g00a), Local4)
-			}
-			case (129) {
-				Store(64, Local2)
-				BankField(OPR0, BNK0, 64, WordAcc, NoLock, WriteAsOnes) {
-					, 64, f0ec, 129}
-				Store(Refof(f0ec), Local3)
-				Store(Refof(g00b), Local4)
-			}
-			case (256) {
-				Store(127, Local2)
-				BankField(OPR0, BNK0, 127, AnyAcc, NoLock, WriteAsOnes) {
-					AccessAs(WordAcc),
-					, 64, f0ed, 256}
-				Store(Refof(f0ed), Local3)
-				Store(Refof(g00c), Local4)
-			}
-			case (1023) {
-				Store(128, Local2)
-				BankField(OPR0, BNK0, 128, WordAcc, NoLock, WriteAsOnes) {
-					, 64, f0ee, 1023}
-				Store(Refof(f0ee), Local3)
-				Store(Refof(g00d), Local4)
-			}
-			case (1983) {
-				Store(255, Local2)
-				BankField(OPR0, BNK0, 255, ByteAcc, NoLock, WriteAsOnes) {
-					AccessAs(WordAcc),
-					, 64, f0ef, 1983}
-				Store(Refof(f0ef), Local3)
-				Store(Refof(g00e), Local4)
-			}
-			default {
-				err(arg0, z145, __LINE__, 0, 0, arg2, arg3)
-				return
-			}
-		}
-	}
-	case (65) {
-		switch(ToInteger (arg3)) {
-			case (1) {
-				Store(0, Local2)
-				BankField(OPR0, BNK0, 0, WordAcc, NoLock, WriteAsOnes) {
-					AccessAs(WordAcc),
-					Offset(8), , 1, f0f0, 1}
-				Store(Refof(f0f0), Local3)
-				Store(Refof(g000), Local4)
-			}
-			case (6) {
-				Store(1, Local2)
-				BankField(OPR0, BNK0, 1, WordAcc, NoLock, WriteAsOnes) {
-					Offset(8), , 1, f0f1, 6}
-				Store(Refof(f0f1), Local3)
-				Store(Refof(g001), Local4)
-			}
-			case (7) {
-				Store(2, Local2)
-				BankField(OPR0, BNK0, 2, DWordAcc, NoLock, WriteAsOnes) {
-					AccessAs(WordAcc),
-					Offset(8), , 1, f0f2, 7}
-				Store(Refof(f0f2), Local3)
-				Store(Refof(g002), Local4)
-			}
-			case (8) {
-				Store(3, Local2)
-				BankField(OPR0, BNK0, 3, WordAcc, NoLock, WriteAsOnes) {
-					Offset(8), , 1, f0f3, 8}
-				Store(Refof(f0f3), Local3)
-				Store(Refof(g003), Local4)
-			}
-			case (9) {
-				Store(4, Local2)
-				BankField(OPR0, BNK0, 4, QWordAcc, NoLock, WriteAsOnes) {
-					AccessAs(WordAcc),
-					Offset(8), , 1, f0f4, 9}
-				Store(Refof(f0f4), Local3)
-				Store(Refof(g004), Local4)
-			}
-			case (31) {
-				Store(5, Local2)
-				BankField(OPR0, BNK0, 5, WordAcc, NoLock, WriteAsOnes) {
-					Offset(8), , 1, f0f5, 31}
-				Store(Refof(f0f5), Local3)
-				Store(Refof(g005), Local4)
-			}
-			case (32) {
-				Store(6, Local2)
-				BankField(OPR0, BNK0, 6, AnyAcc, NoLock, WriteAsOnes) {
-					AccessAs(WordAcc),
-					Offset(8), , 1, f0f6, 32}
-				Store(Refof(f0f6), Local3)
-				Store(Refof(g006), Local4)
-			}
-			case (33) {
-				Store(7, Local2)
-				BankField(OPR0, BNK0, 7, WordAcc, NoLock, WriteAsOnes) {
-					Offset(8), , 1, f0f7, 33}
-				Store(Refof(f0f7), Local3)
-				Store(Refof(g007), Local4)
-			}
-			case (63) {
-				Store(8, Local2)
-				BankField(OPR0, BNK0, 8, ByteAcc, NoLock, WriteAsOnes) {
-					AccessAs(WordAcc),
-					Offset(8), , 1, f0f8, 63}
-				Store(Refof(f0f8), Local3)
-				Store(Refof(g008), Local4)
-			}
-			case (64) {
-				Store(9, Local2)
-				BankField(OPR0, BNK0, 9, WordAcc, NoLock, WriteAsOnes) {
-					Offset(8), , 1, f0f9, 64}
-				Store(Refof(f0f9), Local3)
-				Store(Refof(g009), Local4)
-			}
-			case (65) {
-				Store(63, Local2)
-				BankField(OPR0, BNK0, 63, WordAcc, NoLock, WriteAsOnes) {
-					AccessAs(WordAcc),
-					Offset(8), , 1, f0fa, 65}
-				Store(Refof(f0fa), Local3)
-				Store(Refof(g00a), Local4)
-			}
-			case (69) {
-				Store(64, Local2)
-				BankField(OPR0, BNK0, 64, WordAcc, NoLock, WriteAsOnes) {
-					Offset(8), , 1, f0fb, 69}
-				Store(Refof(f0fb), Local3)
-				Store(Refof(g00b), Local4)
-			}
-			case (129) {
-				Store(127, Local2)
-				BankField(OPR0, BNK0, 127, DWordAcc, NoLock, WriteAsOnes) {
-					AccessAs(WordAcc),
-					Offset(8), , 1, f0fc, 129}
-				Store(Refof(f0fc), Local3)
-				Store(Refof(g00c), Local4)
-			}
-			case (256) {
-				Store(128, Local2)
-				BankField(OPR0, BNK0, 128, WordAcc, NoLock, WriteAsOnes) {
-					Offset(8), , 1, f0fd, 256}
-				Store(Refof(f0fd), Local3)
-				Store(Refof(g00d), Local4)
-			}
-			case (1023) {
-				Store(255, Local2)
-				BankField(OPR0, BNK0, 255, QWordAcc, NoLock, WriteAsOnes) {
-					AccessAs(WordAcc),
-					Offset(8), , 1, f0fe, 1023}
-				Store(Refof(f0fe), Local3)
-				Store(Refof(g00e), Local4)
-			}
-			case (1983) {
-				Store(0, Local2)
-				BankField(OPR0, BNK0, 0, WordAcc, NoLock, WriteAsOnes) {
-					Offset(8), , 1, f0ff, 1983}
-				Store(Refof(f0ff), Local3)
-				Store(Refof(g000), Local4)
-			}
-			default {
-				err(arg0, z145, __LINE__, 0, 0, arg2, arg3)
-				return
-			}
-		}
-	}
-	default {
-		err(arg0, z145, __LINE__, 0, 0, arg2, arg3)
-		return}
-	}
-
-	Store(2, Index(fcp0, 0))
-	Store(Refof(BNK0), Index(fcp0, 1))
-	Store(Local2, Index(fcp0, 2))
-	m72d(arg0, Local3, arg2, arg3, arg4, arg5, Local4)
-	Store(0, Index(fcp0, 0))
-}
-
-// Create BankField Unit
-// (DWordAcc, NoLock, WriteAsZeros)
-Method(m7d2, 6, Serialized)
-{
-	OperationRegion(OPRb, SystemIO, 0, 9)
-	OperationRegion(OPR0, SystemIO, 11, 256)
-
-	Field(OPRb, ByteAcc, NoLock, Preserve) {
-		BNK0, 8,
-	}
-	BankField(OPR0, BNK0, 0, ByteAcc, NoLock, Preserve) {
-		g000, 2048,
-	}
-	BankField(OPR0, BNK0, 1, ByteAcc, NoLock, Preserve) {
-		g001, 2048,
-	}
-	BankField(OPR0, BNK0, 2, ByteAcc, NoLock, Preserve) {
-		g002, 2048,
-	}
-	BankField(OPR0, BNK0, 3, ByteAcc, NoLock, Preserve) {
-		g003, 2048,
-	}
-	BankField(OPR0, BNK0, 4, ByteAcc, NoLock, Preserve) {
-		g004, 2048,
-	}
-	BankField(OPR0, BNK0, 5, ByteAcc, NoLock, Preserve) {
-		g005, 2048,
-	}
-	BankField(OPR0, BNK0, 6, ByteAcc, NoLock, Preserve) {
-		g006, 2048,
-	}
-	BankField(OPR0, BNK0, 7, ByteAcc, NoLock, Preserve) {
-		g007, 2048,
-	}
-	BankField(OPR0, BNK0, 8, ByteAcc, NoLock, Preserve) {
-		g008, 2048,
-	}
-	BankField(OPR0, BNK0, 9, ByteAcc, NoLock, Preserve) {
-		g009, 2048,
-	}
-	BankField(OPR0, BNK0, 63, ByteAcc, NoLock, Preserve) {
-		g00a, 2048,
-	}
-	BankField(OPR0, BNK0, 64, ByteAcc, NoLock, Preserve) {
-		g00b, 2048,
-	}
-	BankField(OPR0, BNK0, 127, ByteAcc, NoLock, Preserve) {
-		g00c, 2048,
-	}
-	BankField(OPR0, BNK0, 128, ByteAcc, NoLock, Preserve) {
-		g00d, 2048,
-	}
-	BankField(OPR0, BNK0, 255, ByteAcc, NoLock, Preserve) {
-		g00e, 2048,
-	}
-
-
-	Concatenate(arg0, "-m7d2", arg0)
-
-	switch(ToInteger (arg2)) {
-	case (0) {
-		switch(ToInteger (arg3)) {
-			case (1) {
-				Store(0, Local2)
-				BankField(OPR0, BNK0, 0, DWordAcc, NoLock, WriteAsZeros) {
-					, 0, f000, 1}
-				Store(Refof(f000), Local3)
-				Store(Refof(g000), Local4)
-			}
-			case (6) {
-				Store(1, Local2)
-				BankField(OPR0, BNK0, 1, WordAcc, NoLock, WriteAsZeros) {
-					AccessAs(DWordAcc),
-					, 0, f001, 6}
-				Store(Refof(f001), Local3)
-				Store(Refof(g001), Local4)
-			}
-			case (7) {
-				Store(2, Local2)
-				BankField(OPR0, BNK0, 2, DWordAcc, NoLock, WriteAsZeros) {
-					, 0, f002, 7}
-				Store(Refof(f002), Local3)
-				Store(Refof(g002), Local4)
-			}
-			case (8) {
-				Store(3, Local2)
-				BankField(OPR0, BNK0, 3, DWordAcc, NoLock, WriteAsZeros) {
-					AccessAs(DWordAcc),
-					, 0, f003, 8}
-				Store(Refof(f003), Local3)
-				Store(Refof(g003), Local4)
-			}
-			case (9) {
-				Store(4, Local2)
-				BankField(OPR0, BNK0, 4, DWordAcc, NoLock, WriteAsZeros) {
-					, 0, f004, 9}
-				Store(Refof(f004), Local3)
-				Store(Refof(g004), Local4)
-			}
-			case (31) {
-				Store(5, Local2)
-				BankField(OPR0, BNK0, 5, QWordAcc, NoLock, WriteAsZeros) {
-					AccessAs(DWordAcc),
-					, 0, f005, 31}
-				Store(Refof(f005), Local3)
-				Store(Refof(g005), Local4)
-			}
-			case (32) {
-				Store(6, Local2)
-				BankField(OPR0, BNK0, 6, DWordAcc, NoLock, WriteAsZeros) {
-					, 0, f006, 32}
-				Store(Refof(f006), Local3)
-				Store(Refof(g006), Local4)
-			}
-			case (33) {
-				Store(7, Local2)
-				BankField(OPR0, BNK0, 7, AnyAcc, NoLock, WriteAsZeros) {
-					AccessAs(DWordAcc),
-					, 0, f007, 33}
-				Store(Refof(f007), Local3)
-				Store(Refof(g007), Local4)
-			}
-			case (63) {
-				Store(8, Local2)
-				BankField(OPR0, BNK0, 8, DWordAcc, NoLock, WriteAsZeros) {
-					, 0, f008, 63}
-				Store(Refof(f008), Local3)
-				Store(Refof(g008), Local4)
-			}
-			case (64) {
-				Store(9, Local2)
-				BankField(OPR0, BNK0, 9, ByteAcc, NoLock, WriteAsZeros) {
-					AccessAs(DWordAcc),
-					, 0, f009, 64}
-				Store(Refof(f009), Local3)
-				Store(Refof(g009), Local4)
-			}
-			case (65) {
-				Store(63, Local2)
-				BankField(OPR0, BNK0, 63, DWordAcc, NoLock, WriteAsZeros) {
-					, 0, f00a, 65}
-				Store(Refof(f00a), Local3)
-				Store(Refof(g00a), Local4)
-			}
-			case (69) {
-				Store(64, Local2)
-				BankField(OPR0, BNK0, 64, WordAcc, NoLock, WriteAsZeros) {
-					AccessAs(DWordAcc),
-					, 0, f00b, 69}
-				Store(Refof(f00b), Local3)
-				Store(Refof(g00b), Local4)
-			}
-			case (129) {
-				Store(127, Local2)
-				BankField(OPR0, BNK0, 127, DWordAcc, NoLock, WriteAsZeros) {
-					, 0, f00c, 129}
-				Store(Refof(f00c), Local3)
-				Store(Refof(g00c), Local4)
-			}
-			case (256) {
-				Store(128, Local2)
-				BankField(OPR0, BNK0, 128, DWordAcc, NoLock, WriteAsZeros) {
-					AccessAs(DWordAcc),
-					, 0, f00d, 256}
-				Store(Refof(f00d), Local3)
-				Store(Refof(g00d), Local4)
-			}
-			case (1023) {
-				Store(255, Local2)
-				BankField(OPR0, BNK0, 255, DWordAcc, NoLock, WriteAsZeros) {
-					, 0, f00e, 1023}
-				Store(Refof(f00e), Local3)
-				Store(Refof(g00e), Local4)
-			}
-			case (1983) {
-				Store(0, Local2)
-				BankField(OPR0, BNK0, 0, QWordAcc, NoLock, WriteAsZeros) {
-					AccessAs(DWordAcc),
-					, 0, f00f, 1983}
-				Store(Refof(f00f), Local3)
-				Store(Refof(g000), Local4)
-			}
-			default {
-				err(arg0, z145, __LINE__, 0, 0, arg2, arg3)
-				return
-			}
-		}
-	}
-	case (1) {
-		switch(ToInteger (arg3)) {
-			case (1) {
-				Store(1, Local2)
-				BankField(OPR0, BNK0, 1, AnyAcc, NoLock, WriteAsZeros) {
-					AccessAs(DWordAcc),
-					, 1, f010, 1}
-				Store(Refof(f010), Local3)
-				Store(Refof(g001), Local4)
-			}
-			case (6) {
-				Store(2, Local2)
-				BankField(OPR0, BNK0, 2, DWordAcc, NoLock, WriteAsZeros) {
-					, 1, f011, 6}
-				Store(Refof(f011), Local3)
-				Store(Refof(g002), Local4)
-			}
-			case (7) {
-				Store(3, Local2)
-				BankField(OPR0, BNK0, 3, ByteAcc, NoLock, WriteAsZeros) {
-					AccessAs(DWordAcc),
-					, 1, f012, 7}
-				Store(Refof(f012), Local3)
-				Store(Refof(g003), Local4)
-			}
-			case (8) {
-				Store(4, Local2)
-				BankField(OPR0, BNK0, 4, DWordAcc, NoLock, WriteAsZeros) {
-					, 1, f013, 8}
-				Store(Refof(f013), Local3)
-				Store(Refof(g004), Local4)
-			}
-			case (9) {
-				Store(5, Local2)
-				BankField(OPR0, BNK0, 5, WordAcc, NoLock, WriteAsZeros) {
-					AccessAs(DWordAcc),
-					, 1, f014, 9}
-				Store(Refof(f014), Local3)
-				Store(Refof(g005), Local4)
-			}
-			case (31) {
-				Store(6, Local2)
-				BankField(OPR0, BNK0, 6, DWordAcc, NoLock, WriteAsZeros) {
-					, 1, f015, 31}
-				Store(Refof(f015), Local3)
-				Store(Refof(g006), Local4)
-			}
-			case (32) {
-				Store(7, Local2)
-				BankField(OPR0, BNK0, 7, DWordAcc, NoLock, WriteAsZeros) {
-					AccessAs(DWordAcc),
-					, 1, f016, 32}
-				Store(Refof(f016), Local3)
-				Store(Refof(g007), Local4)
-			}
-			case (33) {
-				Store(8, Local2)
-				BankField(OPR0, BNK0, 8, DWordAcc, NoLock, WriteAsZeros) {
-					, 1, f017, 33}
-				Store(Refof(f017), Local3)
-				Store(Refof(g008), Local4)
-			}
-			case (63) {
-				Store(9, Local2)
-				BankField(OPR0, BNK0, 9, QWordAcc, NoLock, WriteAsZeros) {
-					AccessAs(DWordAcc),
-					, 1, f018, 63}
-				Store(Refof(f018), Local3)
-				Store(Refof(g009), Local4)
-			}
-			case (64) {
-				Store(63, Local2)
-				BankField(OPR0, BNK0, 63, DWordAcc, NoLock, WriteAsZeros) {
-					, 1, f019, 64}
-				Store(Refof(f019), Local3)
-				Store(Refof(g00a), Local4)
-			}
-			case (65) {
-				Store(64, Local2)
-				BankField(OPR0, BNK0, 64, AnyAcc, NoLock, WriteAsZeros) {
-					AccessAs(DWordAcc),
-					, 1, f01a, 65}
-				Store(Refof(f01a), Local3)
-				Store(Refof(g00b), Local4)
-			}
-			case (69) {
-				Store(127, Local2)
-				BankField(OPR0, BNK0, 127, DWordAcc, NoLock, WriteAsZeros) {
-					, 1, f01b, 69}
-				Store(Refof(f01b), Local3)
-				Store(Refof(g00c), Local4)
-			}
-			case (129) {
-				Store(128, Local2)
-				BankField(OPR0, BNK0, 128, ByteAcc, NoLock, WriteAsZeros) {
-					AccessAs(DWordAcc),
-					, 1, f01c, 129}
-				Store(Refof(f01c), Local3)
-				Store(Refof(g00d), Local4)
-			}
-			case (256) {
-				Store(255, Local2)
-				BankField(OPR0, BNK0, 255, DWordAcc, NoLock, WriteAsZeros) {
-					, 1, f01d, 256}
-				Store(Refof(f01d), Local3)
-				Store(Refof(g00e), Local4)
-			}
-			case (1023) {
-				Store(0, Local2)
-				BankField(OPR0, BNK0, 0, WordAcc, NoLock, WriteAsZeros) {
-					AccessAs(DWordAcc),
-					, 1, f01e, 1023}
-				Store(Refof(f01e), Local3)
-				Store(Refof(g000), Local4)
-			}
-			case (1983) {
-				Store(1, Local2)
-				BankField(OPR0, BNK0, 1, DWordAcc, NoLock, WriteAsZeros) {
-					, 1, f01f, 1983}
-				Store(Refof(f01f), Local3)
-				Store(Refof(g001), Local4)
-			}
-			default {
-				err(arg0, z145, __LINE__, 0, 0, arg2, arg3)
-				return
-			}
-		}
-	}
-	case (2) {
-		switch(ToInteger (arg3)) {
-			case (1) {
-				Store(2, Local2)
-				BankField(OPR0, BNK0, 2, DWordAcc, NoLock, WriteAsZeros) {
-					, 2, f020, 1}
-				Store(Refof(f020), Local3)
-				Store(Refof(g002), Local4)
-			}
-			case (6) {
-				Store(3, Local2)
-				BankField(OPR0, BNK0, 3, DWordAcc, NoLock, WriteAsZeros) {
-					AccessAs(DWordAcc),
-					, 2, f021, 6}
-				Store(Refof(f021), Local3)
-				Store(Refof(g003), Local4)
-			}
-			case (7) {
-				Store(4, Local2)
-				BankField(OPR0, BNK0, 4, DWordAcc, NoLock, WriteAsZeros) {
-					, 2, f022, 7}
-				Store(Refof(f022), Local3)
-				Store(Refof(g004), Local4)
-			}
-			case (8) {
-				Store(5, Local2)
-				BankField(OPR0, BNK0, 5, QWordAcc, NoLock, WriteAsZeros) {
-					AccessAs(DWordAcc),
-					, 2, f023, 8}
-				Store(Refof(f023), Local3)
-				Store(Refof(g005), Local4)
-			}
-			case (9) {
-				Store(6, Local2)
-				BankField(OPR0, BNK0, 6, DWordAcc, NoLock, WriteAsZeros) {
-					, 2, f024, 9}
-				Store(Refof(f024), Local3)
-				Store(Refof(g006), Local4)
-			}
-			case (31) {
-				Store(7, Local2)
-				BankField(OPR0, BNK0, 7, AnyAcc, NoLock, WriteAsZeros) {
-					AccessAs(DWordAcc),
-					, 2, f025, 31}
-				Store(Refof(f025), Local3)
-				Store(Refof(g007), Local4)
-			}
-			case (32) {
-				Store(8, Local2)
-				BankField(OPR0, BNK0, 8, DWordAcc, NoLock, WriteAsZeros) {
-					, 2, f026, 32}
-				Store(Refof(f026), Local3)
-				Store(Refof(g008), Local4)
-			}
-			case (33) {
-				Store(9, Local2)
-				BankField(OPR0, BNK0, 9, ByteAcc, NoLock, WriteAsZeros) {
-					AccessAs(DWordAcc),
-					, 2, f027, 33}
-				Store(Refof(f027), Local3)
-				Store(Refof(g009), Local4)
-			}
-			case (63) {
-				Store(63, Local2)
-				BankField(OPR0, BNK0, 63, DWordAcc, NoLock, WriteAsZeros) {
-					, 2, f028, 63}
-				Store(Refof(f028), Local3)
-				Store(Refof(g00a), Local4)
-			}
-			case (64) {
-				Store(64, Local2)
-				BankField(OPR0, BNK0, 64, WordAcc, NoLock, WriteAsZeros) {
-					AccessAs(DWordAcc),
-					, 2, f029, 64}
-				Store(Refof(f029), Local3)
-				Store(Refof(g00b), Local4)
-			}
-			case (65) {
-				Store(127, Local2)
-				BankField(OPR0, BNK0, 127, DWordAcc, NoLock, WriteAsZeros) {
-					, 2, f02a, 65}
-				Store(Refof(f02a), Local3)
-				Store(Refof(g00c), Local4)
-			}
-			case (69) {
-				Store(128, Local2)
-				BankField(OPR0, BNK0, 128, DWordAcc, NoLock, WriteAsZeros) {
-					AccessAs(DWordAcc),
-					, 2, f02b, 69}
-				Store(Refof(f02b), Local3)
-				Store(Refof(g00d), Local4)
-			}
-			case (129) {
-				Store(255, Local2)
-				BankField(OPR0, BNK0, 255, DWordAcc, NoLock, WriteAsZeros) {
-					, 2, f02c, 129}
-				Store(Refof(f02c), Local3)
-				Store(Refof(g00e), Local4)
-			}
-			case (256) {
-				Store(0, Local2)
-				BankField(OPR0, BNK0, 0, QWordAcc, NoLock, WriteAsZeros) {
-					AccessAs(DWordAcc),
-					, 2, f02d, 256}
-				Store(Refof(f02d), Local3)
-				Store(Refof(g000), Local4)
-			}
-			case (1023) {
-				Store(1, Local2)
-				BankField(OPR0, BNK0, 1, DWordAcc, NoLock, WriteAsZeros) {
-					, 2, f02e, 1023}
-				Store(Refof(f02e), Local3)
-				Store(Refof(g001), Local4)
-			}
-			case (1983) {
-				Store(2, Local2)
-				BankField(OPR0, BNK0, 2, AnyAcc, NoLock, WriteAsZeros) {
-					AccessAs(DWordAcc),
-					, 2, f02f, 1983}
-				Store(Refof(f02f), Local3)
-				Store(Refof(g002), Local4)
-			}
-			default {
-				err(arg0, z145, __LINE__, 0, 0, arg2, arg3)
-				return
-			}
-		}
-	}
-	case (3) {
-		switch(ToInteger (arg3)) {
-			case (1) {
-				Store(3, Local2)
-				BankField(OPR0, BNK0, 3, ByteAcc, NoLock, WriteAsZeros) {
-					AccessAs(DWordAcc),
-					, 3, f030, 1}
-				Store(Refof(f030), Local3)
-				Store(Refof(g003), Local4)
-			}
-			case (6) {
-				Store(4, Local2)
-				BankField(OPR0, BNK0, 4, DWordAcc, NoLock, WriteAsZeros) {
-					, 3, f031, 6}
-				Store(Refof(f031), Local3)
-				Store(Refof(g004), Local4)
-			}
-			case (7) {
-				Store(5, Local2)
-				BankField(OPR0, BNK0, 5, WordAcc, NoLock, WriteAsZeros) {
-					AccessAs(DWordAcc),
-					, 3, f032, 7}
-				Store(Refof(f032), Local3)
-				Store(Refof(g005), Local4)
-			}
-			case (8) {
-				Store(6, Local2)
-				BankField(OPR0, BNK0, 6, DWordAcc, NoLock, WriteAsZeros) {
-					, 3, f033, 8}
-				Store(Refof(f033), Local3)
-				Store(Refof(g006), Local4)
-			}
-			case (9) {
-				Store(7, Local2)
-				BankField(OPR0, BNK0, 7, DWordAcc, NoLock, WriteAsZeros) {
-					AccessAs(DWordAcc),
-					, 3, f034, 9}
-				Store(Refof(f034), Local3)
-				Store(Refof(g007), Local4)
-			}
-			case (31) {
-				Store(8, Local2)
-				BankField(OPR0, BNK0, 8, DWordAcc, NoLock, WriteAsZeros) {
-					, 3, f035, 31}
-				Store(Refof(f035), Local3)
-				Store(Refof(g008), Local4)
-			}
-			case (32) {
-				Store(9, Local2)
-				BankField(OPR0, BNK0, 9, QWordAcc, NoLock, WriteAsZeros) {
-					AccessAs(DWordAcc),
-					, 3, f036, 32}
-				Store(Refof(f036), Local3)
-				Store(Refof(g009), Local4)
-			}
-			case (33) {
-				Store(63, Local2)
-				BankField(OPR0, BNK0, 63, DWordAcc, NoLock, WriteAsZeros) {
-					, 3, f037, 33}
-				Store(Refof(f037), Local3)
-				Store(Refof(g00a), Local4)
-			}
-			case (63) {
-				Store(64, Local2)
-				BankField(OPR0, BNK0, 64, AnyAcc, NoLock, WriteAsZeros) {
-					AccessAs(DWordAcc),
-					, 3, f038, 63}
-				Store(Refof(f038), Local3)
-				Store(Refof(g00b), Local4)
-			}
-			case (64) {
-				Store(127, Local2)
-				BankField(OPR0, BNK0, 127, DWordAcc, NoLock, WriteAsZeros) {
-					, 3, f039, 64}
-				Store(Refof(f039), Local3)
-				Store(Refof(g00c), Local4)
-			}
-			case (65) {
-				Store(128, Local2)
-				BankField(OPR0, BNK0, 128, ByteAcc, NoLock, WriteAsZeros) {
-					AccessAs(DWordAcc),
-					, 3, f03a, 65}
-				Store(Refof(f03a), Local3)
-				Store(Refof(g00d), Local4)
-			}
-			case (69) {
-				Store(255, Local2)
-				BankField(OPR0, BNK0, 255, DWordAcc, NoLock, WriteAsZeros) {
-					, 3, f03b, 69}
-				Store(Refof(f03b), Local3)
-				Store(Refof(g00e), Local4)
-			}
-			case (129) {
-				Store(0, Local2)
-				BankField(OPR0, BNK0, 0, WordAcc, NoLock, WriteAsZeros) {
-					AccessAs(DWordAcc),
-					, 3, f03c, 129}
-				Store(Refof(f03c), Local3)
-				Store(Refof(g000), Local4)
-			}
-			case (256) {
-				Store(1, Local2)
-				BankField(OPR0, BNK0, 1, DWordAcc, NoLock, WriteAsZeros) {
-					, 3, f03d, 256}
-				Store(Refof(f03d), Local3)
-				Store(Refof(g001), Local4)
-			}
-			case (1023) {
-				Store(2, Local2)
-				BankField(OPR0, BNK0, 2, DWordAcc, NoLock, WriteAsZeros) {
-					AccessAs(DWordAcc),
-					, 3, f03e, 1023}
-				Store(Refof(f03e), Local3)
-				Store(Refof(g002), Local4)
-			}
-			case (1983) {
-				Store(3, Local2)
-				BankField(OPR0, BNK0, 3, DWordAcc, NoLock, WriteAsZeros) {
-					, 3, f03f, 1983}
-				Store(Refof(f03f), Local3)
-				Store(Refof(g003), Local4)
-			}
-			default {
-				err(arg0, z145, __LINE__, 0, 0, arg2, arg3)
-				return
-			}
-		}
-	}
-	case (4) {
-		switch(ToInteger (arg3)) {
-			case (1) {
-				Store(4, Local2)
-				BankField(OPR0, BNK0, 4, DWordAcc, NoLock, WriteAsZeros) {
-					, 4, f040, 1}
-				Store(Refof(f040), Local3)
-				Store(Refof(g004), Local4)
-			}
-			case (6) {
-				Store(5, Local2)
-				BankField(OPR0, BNK0, 5, QWordAcc, NoLock, WriteAsZeros) {
-					AccessAs(DWordAcc),
-					, 4, f041, 6}
-				Store(Refof(f041), Local3)
-				Store(Refof(g005), Local4)
-			}
-			case (7) {
-				Store(6, Local2)
-				BankField(OPR0, BNK0, 6, DWordAcc, NoLock, WriteAsZeros) {
-					, 4, f042, 7}
-				Store(Refof(f042), Local3)
-				Store(Refof(g006), Local4)
-			}
-			case (8) {
-				Store(7, Local2)
-				BankField(OPR0, BNK0, 7, AnyAcc, NoLock, WriteAsZeros) {
-					AccessAs(DWordAcc),
-					, 4, f043, 8}
-				Store(Refof(f043), Local3)
-				Store(Refof(g007), Local4)
-			}
-			case (9) {
-				Store(8, Local2)
-				BankField(OPR0, BNK0, 8, DWordAcc, NoLock, WriteAsZeros) {
-					, 4, f044, 9}
-				Store(Refof(f044), Local3)
-				Store(Refof(g008), Local4)
-			}
-			case (31) {
-				Store(9, Local2)
-				BankField(OPR0, BNK0, 9, ByteAcc, NoLock, WriteAsZeros) {
-					AccessAs(DWordAcc),
-					, 4, f045, 31}
-				Store(Refof(f045), Local3)
-				Store(Refof(g009), Local4)
-			}
-			case (32) {
-				Store(63, Local2)
-				BankField(OPR0, BNK0, 63, DWordAcc, NoLock, WriteAsZeros) {
-					, 4, f046, 32}
-				Store(Refof(f046), Local3)
-				Store(Refof(g00a), Local4)
-			}
-			case (33) {
-				Store(64, Local2)
-				BankField(OPR0, BNK0, 64, WordAcc, NoLock, WriteAsZeros) {
-					AccessAs(DWordAcc),
-					, 4, f047, 33}
-				Store(Refof(f047), Local3)
-				Store(Refof(g00b), Local4)
-			}
-			case (63) {
-				Store(127, Local2)
-				BankField(OPR0, BNK0, 127, DWordAcc, NoLock, WriteAsZeros) {
-					, 4, f048, 63}
-				Store(Refof(f048), Local3)
-				Store(Refof(g00c), Local4)
-			}
-			case (64) {
-				Store(128, Local2)
-				BankField(OPR0, BNK0, 128, DWordAcc, NoLock, WriteAsZeros) {
-					AccessAs(DWordAcc),
-					, 4, f049, 64}
-				Store(Refof(f049), Local3)
-				Store(Refof(g00d), Local4)
-			}
-			case (65) {
-				Store(255, Local2)
-				BankField(OPR0, BNK0, 255, DWordAcc, NoLock, WriteAsZeros) {
-					, 4, f04a, 65}
-				Store(Refof(f04a), Local3)
-				Store(Refof(g00e), Local4)
-			}
-			case (69) {
-				Store(0, Local2)
-				BankField(OPR0, BNK0, 0, QWordAcc, NoLock, WriteAsZeros) {
-					AccessAs(DWordAcc),
-					, 4, f04b, 69}
-				Store(Refof(f04b), Local3)
-				Store(Refof(g000), Local4)
-			}
-			case (129) {
-				Store(1, Local2)
-				BankField(OPR0, BNK0, 1, DWordAcc, NoLock, WriteAsZeros) {
-					, 4, f04c, 129}
-				Store(Refof(f04c), Local3)
-				Store(Refof(g001), Local4)
-			}
-			case (256) {
-				Store(2, Local2)
-				BankField(OPR0, BNK0, 2, AnyAcc, NoLock, WriteAsZeros) {
-					AccessAs(DWordAcc),
-					, 4, f04d, 256}
-				Store(Refof(f04d), Local3)
-				Store(Refof(g002), Local4)
-			}
-			case (1023) {
-				Store(3, Local2)
-				BankField(OPR0, BNK0, 3, DWordAcc, NoLock, WriteAsZeros) {
-					, 4, f04e, 1023}
-				Store(Refof(f04e), Local3)
-				Store(Refof(g003), Local4)
-			}
-			case (1983) {
-				Store(4, Local2)
-				BankField(OPR0, BNK0, 4, ByteAcc, NoLock, WriteAsZeros) {
-					AccessAs(DWordAcc),
-					, 4, f04f, 1983}
-				Store(Refof(f04f), Local3)
-				Store(Refof(g004), Local4)
-			}
-			default {
-				err(arg0, z145, __LINE__, 0, 0, arg2, arg3)
-				return
-			}
-		}
-	}
-	case (5) {
-		switch(ToInteger (arg3)) {
-			case (1) {
-				Store(5, Local2)
-				BankField(OPR0, BNK0, 5, WordAcc, NoLock, WriteAsZeros) {
-					AccessAs(DWordAcc),
-					, 5, f050, 1}
-				Store(Refof(f050), Local3)
-				Store(Refof(g005), Local4)
-			}
-			case (6) {
-				Store(6, Local2)
-				BankField(OPR0, BNK0, 6, DWordAcc, NoLock, WriteAsZeros) {
-					, 5, f051, 6}
-				Store(Refof(f051), Local3)
-				Store(Refof(g006), Local4)
-			}
-			case (7) {
-				Store(7, Local2)
-				BankField(OPR0, BNK0, 7, DWordAcc, NoLock, WriteAsZeros) {
-					AccessAs(DWordAcc),
-					, 5, f052, 7}
-				Store(Refof(f052), Local3)
-				Store(Refof(g007), Local4)
-			}
-			case (8) {
-				Store(8, Local2)
-				BankField(OPR0, BNK0, 8, DWordAcc, NoLock, WriteAsZeros) {
-					, 5, f053, 8}
-				Store(Refof(f053), Local3)
-				Store(Refof(g008), Local4)
-			}
-			case (9) {
-				Store(9, Local2)
-				BankField(OPR0, BNK0, 9, QWordAcc, NoLock, WriteAsZeros) {
-					AccessAs(DWordAcc),
-					, 5, f054, 9}
-				Store(Refof(f054), Local3)
-				Store(Refof(g009), Local4)
-			}
-			case (31) {
-				Store(63, Local2)
-				BankField(OPR0, BNK0, 63, DWordAcc, NoLock, WriteAsZeros) {
-					, 5, f055, 31}
-				Store(Refof(f055), Local3)
-				Store(Refof(g00a), Local4)
-			}
-			case (32) {
-				Store(64, Local2)
-				BankField(OPR0, BNK0, 64, AnyAcc, NoLock, WriteAsZeros) {
-					AccessAs(DWordAcc),
-					, 5, f056, 32}
-				Store(Refof(f056), Local3)
-				Store(Refof(g00b), Local4)
-			}
-			case (33) {
-				Store(127, Local2)
-				BankField(OPR0, BNK0, 127, DWordAcc, NoLock, WriteAsZeros) {
-					, 5, f057, 33}
-				Store(Refof(f057), Local3)
-				Store(Refof(g00c), Local4)
-			}
-			case (63) {
-				Store(128, Local2)
-				BankField(OPR0, BNK0, 128, ByteAcc, NoLock, WriteAsZeros) {
-					AccessAs(DWordAcc),
-					, 5, f058, 63}
-				Store(Refof(f058), Local3)
-				Store(Refof(g00d), Local4)
-			}
-			case (64) {
-				Store(255, Local2)
-				BankField(OPR0, BNK0, 255, DWordAcc, NoLock, WriteAsZeros) {
-					, 5, f059, 64}
-				Store(Refof(f059), Local3)
-				Store(Refof(g00e), Local4)
-			}
-			case (65) {
-				Store(0, Local2)
-				BankField(OPR0, BNK0, 0, WordAcc, NoLock, WriteAsZeros) {
-					AccessAs(DWordAcc),
-					, 5, f05a, 65}
-				Store(Refof(f05a), Local3)
-				Store(Refof(g000), Local4)
-			}
-			case (69) {
-				Store(1, Local2)
-				BankField(OPR0, BNK0, 1, DWordAcc, NoLock, WriteAsZeros) {
-					, 5, f05b, 69}
-				Store(Refof(f05b), Local3)
-				Store(Refof(g001), Local4)
-			}
-			case (129) {
-				Store(2, Local2)
-				BankField(OPR0, BNK0, 2, DWordAcc, NoLock, WriteAsZeros) {
-					AccessAs(DWordAcc),
-					, 5, f05c, 129}
-				Store(Refof(f05c), Local3)
-				Store(Refof(g002), Local4)
-			}
-			case (256) {
-				Store(3, Local2)
-				BankField(OPR0, BNK0, 3, DWordAcc, NoLock, WriteAsZeros) {
-					, 5, f05d, 256}
-				Store(Refof(f05d), Local3)
-				Store(Refof(g003), Local4)
-			}
-			case (1023) {
-				Store(4, Local2)
-				BankField(OPR0, BNK0, 4, QWordAcc, NoLock, WriteAsZeros) {
-					AccessAs(DWordAcc),
-					, 5, f05e, 1023}
-				Store(Refof(f05e), Local3)
-				Store(Refof(g004), Local4)
-			}
-			case (1983) {
-				Store(5, Local2)
-				BankField(OPR0, BNK0, 5, DWordAcc, NoLock, WriteAsZeros) {
-					, 5, f05f, 1983}
-				Store(Refof(f05f), Local3)
-				Store(Refof(g005), Local4)
-			}
-			default {
-				err(arg0, z145, __LINE__, 0, 0, arg2, arg3)
-				return
-			}
-		}
-	}
-	case (6) {
-		switch(ToInteger (arg3)) {
-			case (1) {
-				Store(6, Local2)
-				BankField(OPR0, BNK0, 6, DWordAcc, NoLock, WriteAsZeros) {
-					, 6, f060, 1}
-				Store(Refof(f060), Local3)
-				Store(Refof(g006), Local4)
-			}
-			case (6) {
-				Store(7, Local2)
-				BankField(OPR0, BNK0, 7, AnyAcc, NoLock, WriteAsZeros) {
-					AccessAs(DWordAcc),
-					, 6, f061, 6}
-				Store(Refof(f061), Local3)
-				Store(Refof(g007), Local4)
-			}
-			case (7) {
-				Store(8, Local2)
-				BankField(OPR0, BNK0, 8, DWordAcc, NoLock, WriteAsZeros) {
-					, 6, f062, 7}
-				Store(Refof(f062), Local3)
-				Store(Refof(g008), Local4)
-			}
-			case (8) {
-				Store(9, Local2)
-				BankField(OPR0, BNK0, 9, ByteAcc, NoLock, WriteAsZeros) {
-					AccessAs(DWordAcc),
-					, 6, f063, 8}
-				Store(Refof(f063), Local3)
-				Store(Refof(g009), Local4)
-			}
-			case (9) {
-				Store(63, Local2)
-				BankField(OPR0, BNK0, 63, DWordAcc, NoLock, WriteAsZeros) {
-					, 6, f064, 9}
-				Store(Refof(f064), Local3)
-				Store(Refof(g00a), Local4)
-			}
-			case (31) {
-				Store(64, Local2)
-				BankField(OPR0, BNK0, 64, WordAcc, NoLock, WriteAsZeros) {
-					AccessAs(DWordAcc),
-					, 6, f065, 31}
-				Store(Refof(f065), Local3)
-				Store(Refof(g00b), Local4)
-			}
-			case (32) {
-				Store(127, Local2)
-				BankField(OPR0, BNK0, 127, DWordAcc, NoLock, WriteAsZeros) {
-					, 6, f066, 32}
-				Store(Refof(f066), Local3)
-				Store(Refof(g00c), Local4)
-			}
-			case (33) {
-				Store(128, Local2)
-				BankField(OPR0, BNK0, 128, DWordAcc, NoLock, WriteAsZeros) {
-					AccessAs(DWordAcc),
-					, 6, f067, 33}
-				Store(Refof(f067), Local3)
-				Store(Refof(g00d), Local4)
-			}
-			case (63) {
-				Store(255, Local2)
-				BankField(OPR0, BNK0, 255, DWordAcc, NoLock, WriteAsZeros) {
-					, 6, f068, 63}
-				Store(Refof(f068), Local3)
-				Store(Refof(g00e), Local4)
-			}
-			case (64) {
-				Store(0, Local2)
-				BankField(OPR0, BNK0, 0, QWordAcc, NoLock, WriteAsZeros) {
-					AccessAs(DWordAcc),
-					, 6, f069, 64}
-				Store(Refof(f069), Local3)
-				Store(Refof(g000), Local4)
-			}
-			case (65) {
-				Store(1, Local2)
-				BankField(OPR0, BNK0, 1, DWordAcc, NoLock, WriteAsZeros) {
-					, 6, f06a, 65}
-				Store(Refof(f06a), Local3)
-				Store(Refof(g001), Local4)
-			}
-			case (69) {
-				Store(2, Local2)
-				BankField(OPR0, BNK0, 2, AnyAcc, NoLock, WriteAsZeros) {
-					AccessAs(DWordAcc),
-					, 6, f06b, 69}
-				Store(Refof(f06b), Local3)
-				Store(Refof(g002), Local4)
-			}
-			case (129) {
-				Store(3, Local2)
-				BankField(OPR0, BNK0, 3, DWordAcc, NoLock, WriteAsZeros) {
-					, 6, f06c, 129}
-				Store(Refof(f06c), Local3)
-				Store(Refof(g003), Local4)
-			}
-			case (256) {
-				Store(4, Local2)
-				BankField(OPR0, BNK0, 4, ByteAcc, NoLock, WriteAsZeros) {
-					AccessAs(DWordAcc),
-					, 6, f06d, 256}
-				Store(Refof(f06d), Local3)
-				Store(Refof(g004), Local4)
-			}
-			case (1023) {
-				Store(5, Local2)
-				BankField(OPR0, BNK0, 5, DWordAcc, NoLock, WriteAsZeros) {
-					, 6, f06e, 1023}
-				Store(Refof(f06e), Local3)
-				Store(Refof(g005), Local4)
-			}
-			case (1983) {
-				Store(6, Local2)
-				BankField(OPR0, BNK0, 6, WordAcc, NoLock, WriteAsZeros) {
-					AccessAs(DWordAcc),
-					, 6, f06f, 1983}
-				Store(Refof(f06f), Local3)
-				Store(Refof(g006), Local4)
-			}
-			default {
-				err(arg0, z145, __LINE__, 0, 0, arg2, arg3)
-				return
-			}
-		}
-	}
-	case (7) {
-		switch(ToInteger (arg3)) {
-			case (1) {
-				Store(7, Local2)
-				BankField(OPR0, BNK0, 7, DWordAcc, NoLock, WriteAsZeros) {
-					AccessAs(DWordAcc),
-					, 7, f070, 1}
-				Store(Refof(f070), Local3)
-				Store(Refof(g007), Local4)
-			}
-			case (6) {
-				Store(8, Local2)
-				BankField(OPR0, BNK0, 8, DWordAcc, NoLock, WriteAsZeros) {
-					, 7, f071, 6}
-				Store(Refof(f071), Local3)
-				Store(Refof(g008), Local4)
-			}
-			case (7) {
-				Store(9, Local2)
-				BankField(OPR0, BNK0, 9, QWordAcc, NoLock, WriteAsZeros) {
-					AccessAs(DWordAcc),
-					, 7, f072, 7}
-				Store(Refof(f072), Local3)
-				Store(Refof(g009), Local4)
-			}
-			case (8) {
-				Store(63, Local2)
-				BankField(OPR0, BNK0, 63, DWordAcc, NoLock, WriteAsZeros) {
-					, 7, f073, 8}
-				Store(Refof(f073), Local3)
-				Store(Refof(g00a), Local4)
-			}
-			case (9) {
-				Store(64, Local2)
-				BankField(OPR0, BNK0, 64, AnyAcc, NoLock, WriteAsZeros) {
-					AccessAs(DWordAcc),
-					, 7, f074, 9}
-				Store(Refof(f074), Local3)
-				Store(Refof(g00b), Local4)
-			}
-			case (31) {
-				Store(127, Local2)
-				BankField(OPR0, BNK0, 127, DWordAcc, NoLock, WriteAsZeros) {
-					, 7, f075, 31}
-				Store(Refof(f075), Local3)
-				Store(Refof(g00c), Local4)
-			}
-			case (32) {
-				Store(128, Local2)
-				BankField(OPR0, BNK0, 128, ByteAcc, NoLock, WriteAsZeros) {
-					AccessAs(DWordAcc),
-					, 7, f076, 32}
-				Store(Refof(f076), Local3)
-				Store(Refof(g00d), Local4)
-			}
-			case (33) {
-				Store(255, Local2)
-				BankField(OPR0, BNK0, 255, DWordAcc, NoLock, WriteAsZeros) {
-					, 7, f077, 33}
-				Store(Refof(f077), Local3)
-				Store(Refof(g00e), Local4)
-			}
-			case (63) {
-				Store(0, Local2)
-				BankField(OPR0, BNK0, 0, WordAcc, NoLock, WriteAsZeros) {
-					AccessAs(DWordAcc),
-					, 7, f078, 63}
-				Store(Refof(f078), Local3)
-				Store(Refof(g000), Local4)
-			}
-			case (64) {
-				Store(1, Local2)
-				BankField(OPR0, BNK0, 1, DWordAcc, NoLock, WriteAsZeros) {
-					, 7, f079, 64}
-				Store(Refof(f079), Local3)
-				Store(Refof(g001), Local4)
-			}
-			case (65) {
-				Store(2, Local2)
-				BankField(OPR0, BNK0, 2, DWordAcc, NoLock, WriteAsZeros) {
-					AccessAs(DWordAcc),
-					, 7, f07a, 65}
-				Store(Refof(f07a), Local3)
-				Store(Refof(g002), Local4)
-			}
-			case (69) {
-				Store(3, Local2)
-				BankField(OPR0, BNK0, 3, DWordAcc, NoLock, WriteAsZeros) {
-					, 7, f07b, 69}
-				Store(Refof(f07b), Local3)
-				Store(Refof(g003), Local4)
-			}
-			case (129) {
-				Store(4, Local2)
-				BankField(OPR0, BNK0, 4, QWordAcc, NoLock, WriteAsZeros) {
-					AccessAs(DWordAcc),
-					, 7, f07c, 129}
-				Store(Refof(f07c), Local3)
-				Store(Refof(g004), Local4)
-			}
-			case (256) {
-				Store(5, Local2)
-				BankField(OPR0, BNK0, 5, DWordAcc, NoLock, WriteAsZeros) {
-					, 7, f07d, 256}
-				Store(Refof(f07d), Local3)
-				Store(Refof(g005), Local4)
-			}
-			case (1023) {
-				Store(6, Local2)
-				BankField(OPR0, BNK0, 6, AnyAcc, NoLock, WriteAsZeros) {
-					AccessAs(DWordAcc),
-					, 7, f07e, 1023}
-				Store(Refof(f07e), Local3)
-				Store(Refof(g006), Local4)
-			}
-			case (1983) {
-				Store(7, Local2)
-				BankField(OPR0, BNK0, 7, DWordAcc, NoLock, WriteAsZeros) {
-					, 7, f07f, 1983}
-				Store(Refof(f07f), Local3)
-				Store(Refof(g007), Local4)
-			}
-			default {
-				err(arg0, z145, __LINE__, 0, 0, arg2, arg3)
-				return
-			}
-		}
-	}
-	case (8) {
-		switch(ToInteger (arg3)) {
-			case (1) {
-				Store(8, Local2)
-				BankField(OPR0, BNK0, 8, DWordAcc, NoLock, WriteAsZeros) {
-					Offset(1), f080, 1}
-				Store(Refof(f080), Local3)
-				Store(Refof(g008), Local4)
-			}
-			case (6) {
-				Store(9, Local2)
-				BankField(OPR0, BNK0, 9, ByteAcc, NoLock, WriteAsZeros) {
-					AccessAs(DWordAcc),
-					Offset(1), f081, 6}
-				Store(Refof(f081), Local3)
-				Store(Refof(g009), Local4)
-			}
-			case (7) {
-				Store(63, Local2)
-				BankField(OPR0, BNK0, 63, DWordAcc, NoLock, WriteAsZeros) {
-					Offset(1), f082, 7}
-				Store(Refof(f082), Local3)
-				Store(Refof(g00a), Local4)
-			}
-			case (8) {
-				Store(64, Local2)
-				BankField(OPR0, BNK0, 64, WordAcc, NoLock, WriteAsZeros) {
-					AccessAs(DWordAcc),
-					Offset(1), f083, 8}
-				Store(Refof(f083), Local3)
-				Store(Refof(g00b), Local4)
-			}
-			case (9) {
-				Store(127, Local2)
-				BankField(OPR0, BNK0, 127, DWordAcc, NoLock, WriteAsZeros) {
-					Offset(1), f084, 9}
-				Store(Refof(f084), Local3)
-				Store(Refof(g00c), Local4)
-			}
-			case (31) {
-				Store(128, Local2)
-				BankField(OPR0, BNK0, 128, DWordAcc, NoLock, WriteAsZeros) {
-					AccessAs(DWordAcc),
-					Offset(1), f085, 31}
-				Store(Refof(f085), Local3)
-				Store(Refof(g00d), Local4)
-			}
-			case (32) {
-				Store(255, Local2)
-				BankField(OPR0, BNK0, 255, DWordAcc, NoLock, WriteAsZeros) {
-					Offset(1), f086, 32}
-				Store(Refof(f086), Local3)
-				Store(Refof(g00e), Local4)
-			}
-			case (33) {
-				Store(0, Local2)
-				BankField(OPR0, BNK0, 0, QWordAcc, NoLock, WriteAsZeros) {
-					AccessAs(DWordAcc),
-					Offset(1), f087, 33}
-				Store(Refof(f087), Local3)
-				Store(Refof(g000), Local4)
-			}
-			case (63) {
-				Store(1, Local2)
-				BankField(OPR0, BNK0, 1, DWordAcc, NoLock, WriteAsZeros) {
-					Offset(1), f088, 63}
-				Store(Refof(f088), Local3)
-				Store(Refof(g001), Local4)
-			}
-			case (64) {
-				Store(2, Local2)
-				BankField(OPR0, BNK0, 2, AnyAcc, NoLock, WriteAsZeros) {
-					AccessAs(DWordAcc),
-					Offset(1), f089, 64}
-				Store(Refof(f089), Local3)
-				Store(Refof(g002), Local4)
-			}
-			case (65) {
-				Store(3, Local2)
-				BankField(OPR0, BNK0, 3, DWordAcc, NoLock, WriteAsZeros) {
-					Offset(1), f08a, 65}
-				Store(Refof(f08a), Local3)
-				Store(Refof(g003), Local4)
-			}
-			case (69) {
-				Store(4, Local2)
-				BankField(OPR0, BNK0, 4, ByteAcc, NoLock, WriteAsZeros) {
-					AccessAs(DWordAcc),
-					Offset(1), f08b, 69}
-				Store(Refof(f08b), Local3)
-				Store(Refof(g004), Local4)
-			}
-			case (129) {
-				Store(5, Local2)
-				BankField(OPR0, BNK0, 5, DWordAcc, NoLock, WriteAsZeros) {
-					Offset(1), f08c, 129}
-				Store(Refof(f08c), Local3)
-				Store(Refof(g005), Local4)
-			}
-			case (256) {
-				Store(6, Local2)
-				BankField(OPR0, BNK0, 6, WordAcc, NoLock, WriteAsZeros) {
-					AccessAs(DWordAcc),
-					Offset(1), f08d, 256}
-				Store(Refof(f08d), Local3)
-				Store(Refof(g006), Local4)
-			}
-			case (1023) {
-				Store(7, Local2)
-				BankField(OPR0, BNK0, 7, DWordAcc, NoLock, WriteAsZeros) {
-					Offset(1), f08e, 1023}
-				Store(Refof(f08e), Local3)
-				Store(Refof(g007), Local4)
-			}
-			case (1983) {
-				Store(8, Local2)
-				BankField(OPR0, BNK0, 8, DWordAcc, NoLock, WriteAsZeros) {
-					AccessAs(DWordAcc),
-					Offset(1), f08f, 1983}
-				Store(Refof(f08f), Local3)
-				Store(Refof(g008), Local4)
-			}
-			default {
-				err(arg0, z145, __LINE__, 0, 0, arg2, arg3)
-				return
-			}
-		}
-	}
-	case (9) {
-		switch(ToInteger (arg3)) {
-			case (1) {
-				Store(9, Local2)
-				BankField(OPR0, BNK0, 9, QWordAcc, NoLock, WriteAsZeros) {
-					AccessAs(DWordAcc),
-					, 9, f090, 1}
-				Store(Refof(f090), Local3)
-				Store(Refof(g009), Local4)
-			}
-			case (6) {
-				Store(63, Local2)
-				BankField(OPR0, BNK0, 63, DWordAcc, NoLock, WriteAsZeros) {
-					, 9, f091, 6}
-				Store(Refof(f091), Local3)
-				Store(Refof(g00a), Local4)
-			}
-			case (7) {
-				Store(64, Local2)
-				BankField(OPR0, BNK0, 64, AnyAcc, NoLock, WriteAsZeros) {
-					AccessAs(DWordAcc),
-					, 9, f092, 7}
-				Store(Refof(f092), Local3)
-				Store(Refof(g00b), Local4)
-			}
-			case (8) {
-				Store(127, Local2)
-				BankField(OPR0, BNK0, 127, DWordAcc, NoLock, WriteAsZeros) {
-					, 9, f093, 8}
-				Store(Refof(f093), Local3)
-				Store(Refof(g00c), Local4)
-			}
-			case (9) {
-				Store(128, Local2)
-				BankField(OPR0, BNK0, 128, ByteAcc, NoLock, WriteAsZeros) {
-					AccessAs(DWordAcc),
-					, 9, f094, 9}
-				Store(Refof(f094), Local3)
-				Store(Refof(g00d), Local4)
-			}
-			case (31) {
-				Store(255, Local2)
-				BankField(OPR0, BNK0, 255, DWordAcc, NoLock, WriteAsZeros) {
-					, 9, f095, 31}
-				Store(Refof(f095), Local3)
-				Store(Refof(g00e), Local4)
-			}
-			case (32) {
-				Store(0, Local2)
-				BankField(OPR0, BNK0, 0, WordAcc, NoLock, WriteAsZeros) {
-					AccessAs(DWordAcc),
-					, 9, f096, 32}
-				Store(Refof(f096), Local3)
-				Store(Refof(g000), Local4)
-			}
-			case (33) {
-				Store(1, Local2)
-				BankField(OPR0, BNK0, 1, DWordAcc, NoLock, WriteAsZeros) {
-					, 9, f097, 33}
-				Store(Refof(f097), Local3)
-				Store(Refof(g001), Local4)
-			}
-			case (63) {
-				Store(2, Local2)
-				BankField(OPR0, BNK0, 2, DWordAcc, NoLock, WriteAsZeros) {
-					AccessAs(DWordAcc),
-					, 9, f098, 63}
-				Store(Refof(f098), Local3)
-				Store(Refof(g002), Local4)
-			}
-			case (64) {
-				Store(3, Local2)
-				BankField(OPR0, BNK0, 3, DWordAcc, NoLock, WriteAsZeros) {
-					, 9, f099, 64}
-				Store(Refof(f099), Local3)
-				Store(Refof(g003), Local4)
-			}
-			case (65) {
-				Store(4, Local2)
-				BankField(OPR0, BNK0, 4, QWordAcc, NoLock, WriteAsZeros) {
-					AccessAs(DWordAcc),
-					, 9, f09a, 65}
-				Store(Refof(f09a), Local3)
-				Store(Refof(g004), Local4)
-			}
-			case (69) {
-				Store(5, Local2)
-				BankField(OPR0, BNK0, 5, DWordAcc, NoLock, WriteAsZeros) {
-					, 9, f09b, 69}
-				Store(Refof(f09b), Local3)
-				Store(Refof(g005), Local4)
-			}
-			case (129) {
-				Store(6, Local2)
-				BankField(OPR0, BNK0, 6, AnyAcc, NoLock, WriteAsZeros) {
-					AccessAs(DWordAcc),
-					, 9, f09c, 129}
-				Store(Refof(f09c), Local3)
-				Store(Refof(g006), Local4)
-			}
-			case (256) {
-				Store(7, Local2)
-				BankField(OPR0, BNK0, 7, DWordAcc, NoLock, WriteAsZeros) {
-					, 9, f09d, 256}
-				Store(Refof(f09d), Local3)
-				Store(Refof(g007), Local4)
-			}
-			case (1023) {
-				Store(8, Local2)
-				BankField(OPR0, BNK0, 8, ByteAcc, NoLock, WriteAsZeros) {
-					AccessAs(DWordAcc),
-					, 9, f09e, 1023}
-				Store(Refof(f09e), Local3)
-				Store(Refof(g008), Local4)
-			}
-			case (1983) {
-				Store(9, Local2)
-				BankField(OPR0, BNK0, 9, DWordAcc, NoLock, WriteAsZeros) {
-					, 9, f09f, 1983}
-				Store(Refof(f09f), Local3)
-				Store(Refof(g009), Local4)
-			}
-			default {
-				err(arg0, z145, __LINE__, 0, 0, arg2, arg3)
-				return
-			}
-		}
-	}
-	case (31) {
-		switch(ToInteger (arg3)) {
-			case (1) {
-				Store(63, Local2)
-				BankField(OPR0, BNK0, 63, DWordAcc, NoLock, WriteAsZeros) {
-					Offset(3), , 7, f0a0, 1}
-				Store(Refof(f0a0), Local3)
-				Store(Refof(g00a), Local4)
-			}
-			case (6) {
-				Store(64, Local2)
-				BankField(OPR0, BNK0, 64, WordAcc, NoLock, WriteAsZeros) {
-					AccessAs(DWordAcc),
-					Offset(3), , 7, f0a1, 6}
-				Store(Refof(f0a1), Local3)
-				Store(Refof(g00b), Local4)
-			}
-			case (7) {
-				Store(127, Local2)
-				BankField(OPR0, BNK0, 127, DWordAcc, NoLock, WriteAsZeros) {
-					Offset(3), , 7, f0a2, 7}
-				Store(Refof(f0a2), Local3)
-				Store(Refof(g00c), Local4)
-			}
-			case (8) {
-				Store(128, Local2)
-				BankField(OPR0, BNK0, 128, DWordAcc, NoLock, WriteAsZeros) {
-					AccessAs(DWordAcc),
-					Offset(3), , 7, f0a3, 8}
-				Store(Refof(f0a3), Local3)
-				Store(Refof(g00d), Local4)
-			}
-			case (9) {
-				Store(255, Local2)
-				BankField(OPR0, BNK0, 255, DWordAcc, NoLock, WriteAsZeros) {
-					Offset(3), , 7, f0a4, 9}
-				Store(Refof(f0a4), Local3)
-				Store(Refof(g00e), Local4)
-			}
-			case (31) {
-				Store(0, Local2)
-				BankField(OPR0, BNK0, 0, QWordAcc, NoLock, WriteAsZeros) {
-					AccessAs(DWordAcc),
-					Offset(3), , 7, f0a5, 31}
-				Store(Refof(f0a5), Local3)
-				Store(Refof(g000), Local4)
-			}
-			case (32) {
-				Store(1, Local2)
-				BankField(OPR0, BNK0, 1, DWordAcc, NoLock, WriteAsZeros) {
-					Offset(3), , 7, f0a6, 32}
-				Store(Refof(f0a6), Local3)
-				Store(Refof(g001), Local4)
-			}
-			case (33) {
-				Store(2, Local2)
-				BankField(OPR0, BNK0, 2, AnyAcc, NoLock, WriteAsZeros) {
-					AccessAs(DWordAcc),
-					Offset(3), , 7, f0a7, 33}
-				Store(Refof(f0a7), Local3)
-				Store(Refof(g002), Local4)
-			}
-			case (63) {
-				Store(3, Local2)
-				BankField(OPR0, BNK0, 3, DWordAcc, NoLock, WriteAsZeros) {
-					Offset(3), , 7, f0a8, 63}
-				Store(Refof(f0a8), Local3)
-				Store(Refof(g003), Local4)
-			}
-			case (64) {
-				Store(4, Local2)
-				BankField(OPR0, BNK0, 4, ByteAcc, NoLock, WriteAsZeros) {
-					AccessAs(DWordAcc),
-					Offset(3), , 7, f0a9, 64}
-				Store(Refof(f0a9), Local3)
-				Store(Refof(g004), Local4)
-			}
-			case (65) {
-				Store(5, Local2)
-				BankField(OPR0, BNK0, 5, DWordAcc, NoLock, WriteAsZeros) {
-					Offset(3), , 7, f0aa, 65}
-				Store(Refof(f0aa), Local3)
-				Store(Refof(g005), Local4)
-			}
-			case (69) {
-				Store(6, Local2)
-				BankField(OPR0, BNK0, 6, WordAcc, NoLock, WriteAsZeros) {
-					AccessAs(DWordAcc),
-					Offset(3), , 7, f0ab, 69}
-				Store(Refof(f0ab), Local3)
-				Store(Refof(g006), Local4)
-			}
-			case (129) {
-				Store(7, Local2)
-				BankField(OPR0, BNK0, 7, DWordAcc, NoLock, WriteAsZeros) {
-					Offset(3), , 7, f0ac, 129}
-				Store(Refof(f0ac), Local3)
-				Store(Refof(g007), Local4)
-			}
-			case (256) {
-				Store(8, Local2)
-				BankField(OPR0, BNK0, 8, DWordAcc, NoLock, WriteAsZeros) {
-					AccessAs(DWordAcc),
-					Offset(3), , 7, f0ad, 256}
-				Store(Refof(f0ad), Local3)
-				Store(Refof(g008), Local4)
-			}
-			case (1023) {
-				Store(9, Local2)
-				BankField(OPR0, BNK0, 9, DWordAcc, NoLock, WriteAsZeros) {
-					Offset(3), , 7, f0ae, 1023}
-				Store(Refof(f0ae), Local3)
-				Store(Refof(g009), Local4)
-			}
-			case (1983) {
-				Store(63, Local2)
-				BankField(OPR0, BNK0, 63, QWordAcc, NoLock, WriteAsZeros) {
-					AccessAs(DWordAcc),
-					Offset(3), , 7, f0af, 1983}
-				Store(Refof(f0af), Local3)
-				Store(Refof(g00a), Local4)
-			}
-			default {
-				err(arg0, z145, __LINE__, 0, 0, arg2, arg3)
-				return
-			}
-		}
-	}
-	case (32) {
-		switch(ToInteger (arg3)) {
-			case (1) {
-				Store(64, Local2)
-				BankField(OPR0, BNK0, 64, AnyAcc, NoLock, WriteAsZeros) {
-					AccessAs(DWordAcc),
-					, 32, f0b0, 1}
-				Store(Refof(f0b0), Local3)
-				Store(Refof(g00b), Local4)
-			}
-			case (6) {
-				Store(127, Local2)
-				BankField(OPR0, BNK0, 127, DWordAcc, NoLock, WriteAsZeros) {
-					, 32, f0b1, 6}
-				Store(Refof(f0b1), Local3)
-				Store(Refof(g00c), Local4)
-			}
-			case (7) {
-				Store(128, Local2)
-				BankField(OPR0, BNK0, 128, ByteAcc, NoLock, WriteAsZeros) {
-					AccessAs(DWordAcc),
-					, 32, f0b2, 7}
-				Store(Refof(f0b2), Local3)
-				Store(Refof(g00d), Local4)
-			}
-			case (8) {
-				Store(255, Local2)
-				BankField(OPR0, BNK0, 255, DWordAcc, NoLock, WriteAsZeros) {
-					, 32, f0b3, 8}
-				Store(Refof(f0b3), Local3)
-				Store(Refof(g00e), Local4)
-			}
-			case (9) {
-				Store(0, Local2)
-				BankField(OPR0, BNK0, 0, WordAcc, NoLock, WriteAsZeros) {
-					AccessAs(DWordAcc),
-					, 32, f0b4, 9}
-				Store(Refof(f0b4), Local3)
-				Store(Refof(g000), Local4)
-			}
-			case (31) {
-				Store(1, Local2)
-				BankField(OPR0, BNK0, 1, DWordAcc, NoLock, WriteAsZeros) {
-					, 32, f0b5, 31}
-				Store(Refof(f0b5), Local3)
-				Store(Refof(g001), Local4)
-			}
-			case (32) {
-				Store(2, Local2)
-				BankField(OPR0, BNK0, 2, DWordAcc, NoLock, WriteAsZeros) {
-					AccessAs(DWordAcc),
-					, 32, f0b6, 32}
-				Store(Refof(f0b6), Local3)
-				Store(Refof(g002), Local4)
-			}
-			case (33) {
-				Store(3, Local2)
-				BankField(OPR0, BNK0, 3, DWordAcc, NoLock, WriteAsZeros) {
-					, 32, f0b7, 33}
-				Store(Refof(f0b7), Local3)
-				Store(Refof(g003), Local4)
-			}
-			case (63) {
-				Store(4, Local2)
-				BankField(OPR0, BNK0, 4, QWordAcc, NoLock, WriteAsZeros) {
-					AccessAs(DWordAcc),
-					, 32, f0b8, 63}
-				Store(Refof(f0b8), Local3)
-				Store(Refof(g004), Local4)
-			}
-			case (64) {
-				Store(5, Local2)
-				BankField(OPR0, BNK0, 5, DWordAcc, NoLock, WriteAsZeros) {
-					, 32, f0b9, 64}
-				Store(Refof(f0b9), Local3)
-				Store(Refof(g005), Local4)
-			}
-			case (65) {
-				Store(6, Local2)
-				BankField(OPR0, BNK0, 6, AnyAcc, NoLock, WriteAsZeros) {
-					AccessAs(DWordAcc),
-					, 32, f0ba, 65}
-				Store(Refof(f0ba), Local3)
-				Store(Refof(g006), Local4)
-			}
-			case (69) {
-				Store(7, Local2)
-				BankField(OPR0, BNK0, 7, DWordAcc, NoLock, WriteAsZeros) {
-					, 32, f0bb, 69}
-				Store(Refof(f0bb), Local3)
-				Store(Refof(g007), Local4)
-			}
-			case (129) {
-				Store(8, Local2)
-				BankField(OPR0, BNK0, 8, ByteAcc, NoLock, WriteAsZeros) {
-					AccessAs(DWordAcc),
-					, 32, f0bc, 129}
-				Store(Refof(f0bc), Local3)
-				Store(Refof(g008), Local4)
-			}
-			case (256) {
-				Store(9, Local2)
-				BankField(OPR0, BNK0, 9, DWordAcc, NoLock, WriteAsZeros) {
-					, 32, f0bd, 256}
-				Store(Refof(f0bd), Local3)
-				Store(Refof(g009), Local4)
-			}
-			case (1023) {
-				Store(63, Local2)
-				BankField(OPR0, BNK0, 63, WordAcc, NoLock, WriteAsZeros) {
-					AccessAs(DWordAcc),
-					, 32, f0be, 1023}
-				Store(Refof(f0be), Local3)
-				Store(Refof(g00a), Local4)
-			}
-			case (1983) {
-				Store(64, Local2)
-				BankField(OPR0, BNK0, 64, DWordAcc, NoLock, WriteAsZeros) {
-					, 32, f0bf, 1983}
-				Store(Refof(f0bf), Local3)
-				Store(Refof(g00b), Local4)
-			}
-			default {
-				err(arg0, z145, __LINE__, 0, 0, arg2, arg3)
-				return
-			}
-		}
-	}
-	case (33) {
-		switch(ToInteger (arg3)) {
-			case (1) {
-				Store(127, Local2)
-				BankField(OPR0, BNK0, 127, DWordAcc, NoLock, WriteAsZeros) {
-					, 33, f0c0, 1}
-				Store(Refof(f0c0), Local3)
-				Store(Refof(g00c), Local4)
-			}
-			case (6) {
-				Store(128, Local2)
-				BankField(OPR0, BNK0, 128, DWordAcc, NoLock, WriteAsZeros) {
-					AccessAs(DWordAcc),
-					, 33, f0c1, 6}
-				Store(Refof(f0c1), Local3)
-				Store(Refof(g00d), Local4)
-			}
-			case (7) {
-				Store(255, Local2)
-				BankField(OPR0, BNK0, 255, DWordAcc, NoLock, WriteAsZeros) {
-					, 33, f0c2, 7}
-				Store(Refof(f0c2), Local3)
-				Store(Refof(g00e), Local4)
-			}
-			case (8) {
-				Store(0, Local2)
-				BankField(OPR0, BNK0, 0, QWordAcc, NoLock, WriteAsZeros) {
-					AccessAs(DWordAcc),
-					, 33, f0c3, 8}
-				Store(Refof(f0c3), Local3)
-				Store(Refof(g000), Local4)
-			}
-			case (9) {
-				Store(1, Local2)
-				BankField(OPR0, BNK0, 1, DWordAcc, NoLock, WriteAsZeros) {
-					, 33, f0c4, 9}
-				Store(Refof(f0c4), Local3)
-				Store(Refof(g001), Local4)
-			}
-			case (31) {
-				Store(2, Local2)
-				BankField(OPR0, BNK0, 2, AnyAcc, NoLock, WriteAsZeros) {
-					AccessAs(DWordAcc),
-					, 33, f0c5, 31}
-				Store(Refof(f0c5), Local3)
-				Store(Refof(g002), Local4)
-			}
-			case (32) {
-				Store(3, Local2)
-				BankField(OPR0, BNK0, 3, DWordAcc, NoLock, WriteAsZeros) {
-					, 33, f0c6, 32}
-				Store(Refof(f0c6), Local3)
-				Store(Refof(g003), Local4)
-			}
-			case (33) {
-				Store(4, Local2)
-				BankField(OPR0, BNK0, 4, ByteAcc, NoLock, WriteAsZeros) {
-					AccessAs(DWordAcc),
-					, 33, f0c7, 33}
-				Store(Refof(f0c7), Local3)
-				Store(Refof(g004), Local4)
-			}
-			case (63) {
-				Store(5, Local2)
-				BankField(OPR0, BNK0, 5, DWordAcc, NoLock, WriteAsZeros) {
-					, 33, f0c8, 63}
-				Store(Refof(f0c8), Local3)
-				Store(Refof(g005), Local4)
-			}
-			case (64) {
-				Store(6, Local2)
-				BankField(OPR0, BNK0, 6, WordAcc, NoLock, WriteAsZeros) {
-					AccessAs(DWordAcc),
-					, 33, f0c9, 64}
-				Store(Refof(f0c9), Local3)
-				Store(Refof(g006), Local4)
-			}
-			case (65) {
-				Store(7, Local2)
-				BankField(OPR0, BNK0, 7, DWordAcc, NoLock, WriteAsZeros) {
-					, 33, f0ca, 65}
-				Store(Refof(f0ca), Local3)
-				Store(Refof(g007), Local4)
-			}
-			case (69) {
-				Store(8, Local2)
-				BankField(OPR0, BNK0, 8, DWordAcc, NoLock, WriteAsZeros) {
-					AccessAs(DWordAcc),
-					, 33, f0cb, 69}
-				Store(Refof(f0cb), Local3)
-				Store(Refof(g008), Local4)
-			}
-			case (129) {
-				Store(9, Local2)
-				BankField(OPR0, BNK0, 9, DWordAcc, NoLock, WriteAsZeros) {
-					, 33, f0cc, 129}
-				Store(Refof(f0cc), Local3)
-				Store(Refof(g009), Local4)
-			}
-			case (256) {
-				Store(63, Local2)
-				BankField(OPR0, BNK0, 63, QWordAcc, NoLock, WriteAsZeros) {
-					AccessAs(DWordAcc),
-					, 33, f0cd, 256}
-				Store(Refof(f0cd), Local3)
-				Store(Refof(g00a), Local4)
-			}
-			case (1023) {
-				Store(64, Local2)
-				BankField(OPR0, BNK0, 64, DWordAcc, NoLock, WriteAsZeros) {
-					, 33, f0ce, 1023}
-				Store(Refof(f0ce), Local3)
-				Store(Refof(g00b), Local4)
-			}
-			case (1983) {
-				Store(127, Local2)
-				BankField(OPR0, BNK0, 127, AnyAcc, NoLock, WriteAsZeros) {
-					AccessAs(DWordAcc),
-					, 33, f0cf, 1983}
-				Store(Refof(f0cf), Local3)
-				Store(Refof(g00c), Local4)
-			}
-			default {
-				err(arg0, z145, __LINE__, 0, 0, arg2, arg3)
-				return
-			}
-		}
-	}
-	case (63) {
-		switch(ToInteger (arg3)) {
-			case (1) {
-				Store(128, Local2)
-				BankField(OPR0, BNK0, 128, DWordAcc, NoLock, WriteAsZeros) {
-					AccessAs(DWordAcc),
-					, 63, f0d0, 1}
-				Store(Refof(f0d0), Local3)
-				Store(Refof(g00d), Local4)
-			}
-			case (6) {
-
-			    // November 2011: Changed to DWordAcc from ByteAcc to enable
-			    // correct operation ("Expected" buffer assumes DWordAcc)
-
-				Store(255, Local2)
-				BankField(OPR0, BNK0, 255, DWordAcc, NoLock, WriteAsZeros) {
-					, 63, f0d1, 6}
-				Store(Refof(f0d1), Local3)
-				Store(Refof(g00e), Local4)
-			}
-			case (7) {
-				Store(0, Local2)
-				BankField(OPR0, BNK0, 0, DWordAcc, NoLock, WriteAsZeros) {
-					AccessAs(DWordAcc),
-					, 63, f0d2, 7}
-				Store(Refof(f0d2), Local3)
-				Store(Refof(g000), Local4)
-			}
-			case (8) {
-
-			    // November 2011: Changed to DWordAcc from WordAcc to enable
-			    // correct operation ("Expected" buffer assumes DWordAcc)
-
-				Store(1, Local2)
-				BankField(OPR0, BNK0, 1, DWordAcc, NoLock, WriteAsZeros) {
-					, 63, f0d3, 8}
-				Store(Refof(f0d3), Local3)
-				Store(Refof(g001), Local4)
-			}
-			case (9) {
-				Store(2, Local2)
-				BankField(OPR0, BNK0, 2, DWordAcc, NoLock, WriteAsZeros) {
-					AccessAs(DWordAcc),
-					, 63, f0d4, 9}
-				Store(Refof(f0d4), Local3)
-				Store(Refof(g002), Local4)
-			}
-			case (31) {
-				Store(3, Local2)
-				BankField(OPR0, BNK0, 3, DWordAcc, NoLock, WriteAsZeros) {
-					, 63, f0d5, 31}
-				Store(Refof(f0d5), Local3)
-				Store(Refof(g003), Local4)
-			}
-			case (32) {
-				Store(4, Local2)
-				BankField(OPR0, BNK0, 4, QWordAcc, NoLock, WriteAsZeros) {
-					AccessAs(DWordAcc),
-					, 63, f0d6, 32}
-				Store(Refof(f0d6), Local3)
-				Store(Refof(g004), Local4)
-			}
-			case (33) {
-				Store(5, Local2)
-				BankField(OPR0, BNK0, 5, DWordAcc, NoLock, WriteAsZeros) {
-					, 63, f0d7, 33}
-				Store(Refof(f0d7), Local3)
-				Store(Refof(g005), Local4)
-			}
-			case (63) {
-				Store(6, Local2)
-				BankField(OPR0, BNK0, 6, AnyAcc, NoLock, WriteAsZeros) {
-					AccessAs(DWordAcc),
-					, 63, f0d8, 63}
-				Store(Refof(f0d8), Local3)
-				Store(Refof(g006), Local4)
-			}
-			case (64) {
-				Store(7, Local2)
-				BankField(OPR0, BNK0, 7, DWordAcc, NoLock, WriteAsZeros) {
-					, 63, f0d9, 64}
-				Store(Refof(f0d9), Local3)
-				Store(Refof(g007), Local4)
-			}
-			case (65) {
-				Store(8, Local2)
-				BankField(OPR0, BNK0, 8, ByteAcc, NoLock, WriteAsZeros) {
-					AccessAs(DWordAcc),
-					, 63, f0da, 65}
-				Store(Refof(f0da), Local3)
-				Store(Refof(g008), Local4)
-			}
-			case (69) {
-				Store(9, Local2)
-				BankField(OPR0, BNK0, 9, DWordAcc, NoLock, WriteAsZeros) {
-					, 63, f0db, 69}
-				Store(Refof(f0db), Local3)
-				Store(Refof(g009), Local4)
-			}
-			case (129) {
-				Store(63, Local2)
-				BankField(OPR0, BNK0, 63, WordAcc, NoLock, WriteAsZeros) {
-					AccessAs(DWordAcc),
-					, 63, f0dc, 129}
-				Store(Refof(f0dc), Local3)
-				Store(Refof(g00a), Local4)
-			}
-			case (256) {
-				Store(64, Local2)
-				BankField(OPR0, BNK0, 64, DWordAcc, NoLock, WriteAsZeros) {
-					, 63, f0dd, 256}
-				Store(Refof(f0dd), Local3)
-				Store(Refof(g00b), Local4)
-			}
-			case (1023) {
-				Store(127, Local2)
-				BankField(OPR0, BNK0, 127, DWordAcc, NoLock, WriteAsZeros) {
-					AccessAs(DWordAcc),
-					, 63, f0de, 1023}
-				Store(Refof(f0de), Local3)
-				Store(Refof(g00c), Local4)
-			}
-			case (1983) {
-				Store(128, Local2)
-				BankField(OPR0, BNK0, 128, DWordAcc, NoLock, WriteAsZeros) {
-					, 63, f0df, 1983}
-				Store(Refof(f0df), Local3)
-				Store(Refof(g00d), Local4)
-			}
-			default {
-				err(arg0, z145, __LINE__, 0, 0, arg2, arg3)
-				return
-			}
-		}
-	}
-	case (64) {
-		switch(ToInteger (arg3)) {
-			case (1) {
-				Store(255, Local2)
-				BankField(OPR0, BNK0, 255, DWordAcc, NoLock, WriteAsZeros) {
-					, 64, f0e0, 1}
-				Store(Refof(f0e0), Local3)
-				Store(Refof(g00e), Local4)
-			}
-			case (6) {
-				Store(0, Local2)
-				BankField(OPR0, BNK0, 0, QWordAcc, NoLock, WriteAsZeros) {
-					AccessAs(DWordAcc),
-					, 64, f0e1, 6}
-				Store(Refof(f0e1), Local3)
-				Store(Refof(g000), Local4)
-			}
-			case (7) {
-				Store(1, Local2)
-				BankField(OPR0, BNK0, 1, DWordAcc, NoLock, WriteAsZeros) {
-					, 64, f0e2, 7}
-				Store(Refof(f0e2), Local3)
-				Store(Refof(g001), Local4)
-			}
-			case (8) {
-				Store(2, Local2)
-				BankField(OPR0, BNK0, 2, AnyAcc, NoLock, WriteAsZeros) {
-					AccessAs(DWordAcc),
-					, 64, f0e3, 8}
-				Store(Refof(f0e3), Local3)
-				Store(Refof(g002), Local4)
-			}
-			case (9) {
-				Store(3, Local2)
-				BankField(OPR0, BNK0, 3, DWordAcc, NoLock, WriteAsZeros) {
-					, 64, f0e4, 9}
-				Store(Refof(f0e4), Local3)
-				Store(Refof(g003), Local4)
-			}
-			case (31) {
-				Store(4, Local2)
-				BankField(OPR0, BNK0, 4, ByteAcc, NoLock, WriteAsZeros) {
-					AccessAs(DWordAcc),
-					, 64, f0e5, 31}
-				Store(Refof(f0e5), Local3)
-				Store(Refof(g004), Local4)
-			}
-			case (32) {
-				Store(5, Local2)
-				BankField(OPR0, BNK0, 5, DWordAcc, NoLock, WriteAsZeros) {
-					, 64, f0e6, 32}
-				Store(Refof(f0e6), Local3)
-				Store(Refof(g005), Local4)
-			}
-			case (33) {
-				Store(6, Local2)
-				BankField(OPR0, BNK0, 6, WordAcc, NoLock, WriteAsZeros) {
-					AccessAs(DWordAcc),
-					, 64, f0e7, 33}
-				Store(Refof(f0e7), Local3)
-				Store(Refof(g006), Local4)
-			}
-			case (63) {
-				Store(7, Local2)
-				BankField(OPR0, BNK0, 7, DWordAcc, NoLock, WriteAsZeros) {
-					, 64, f0e8, 63}
-				Store(Refof(f0e8), Local3)
-				Store(Refof(g007), Local4)
-			}
-			case (64) {
-				Store(8, Local2)
-				BankField(OPR0, BNK0, 8, DWordAcc, NoLock, WriteAsZeros) {
-					AccessAs(DWordAcc),
-					, 64, f0e9, 64}
-				Store(Refof(f0e9), Local3)
-				Store(Refof(g008), Local4)
-			}
-			case (65) {
-				Store(9, Local2)
-				BankField(OPR0, BNK0, 9, DWordAcc, NoLock, WriteAsZeros) {
-					, 64, f0ea, 65}
-				Store(Refof(f0ea), Local3)
-				Store(Refof(g009), Local4)
-			}
-			case (69) {
-				Store(63, Local2)
-				BankField(OPR0, BNK0, 63, QWordAcc, NoLock, WriteAsZeros) {
-					AccessAs(DWordAcc),
-					, 64, f0eb, 69}
-				Store(Refof(f0eb), Local3)
-				Store(Refof(g00a), Local4)
-			}
-			case (129) {
-				Store(64, Local2)
-				BankField(OPR0, BNK0, 64, DWordAcc, NoLock, WriteAsZeros) {
-					, 64, f0ec, 129}
-				Store(Refof(f0ec), Local3)
-				Store(Refof(g00b), Local4)
-			}
-			case (256) {
-				Store(127, Local2)
-				BankField(OPR0, BNK0, 127, AnyAcc, NoLock, WriteAsZeros) {
-					AccessAs(DWordAcc),
-					, 64, f0ed, 256}
-				Store(Refof(f0ed), Local3)
-				Store(Refof(g00c), Local4)
-			}
-			case (1023) {
-				Store(128, Local2)
-				BankField(OPR0, BNK0, 128, DWordAcc, NoLock, WriteAsZeros) {
-					, 64, f0ee, 1023}
-				Store(Refof(f0ee), Local3)
-				Store(Refof(g00d), Local4)
-			}
-			case (1983) {
-				Store(255, Local2)
-				BankField(OPR0, BNK0, 255, ByteAcc, NoLock, WriteAsZeros) {
-					AccessAs(DWordAcc),
-					, 64, f0ef, 1983}
-				Store(Refof(f0ef), Local3)
-				Store(Refof(g00e), Local4)
-			}
-			default {
-				err(arg0, z145, __LINE__, 0, 0, arg2, arg3)
-				return
-			}
-		}
-	}
-	case (65) {
-		switch(ToInteger (arg3)) {
-			case (1) {
-				Store(0, Local2)
-				BankField(OPR0, BNK0, 0, WordAcc, NoLock, WriteAsZeros) {
-					AccessAs(DWordAcc),
-					Offset(8), , 1, f0f0, 1}
-				Store(Refof(f0f0), Local3)
-				Store(Refof(g000), Local4)
-			}
-			case (6) {
-				Store(1, Local2)
-				BankField(OPR0, BNK0, 1, DWordAcc, NoLock, WriteAsZeros) {
-					Offset(8), , 1, f0f1, 6}
-				Store(Refof(f0f1), Local3)
-				Store(Refof(g001), Local4)
-			}
-			case (7) {
-				Store(2, Local2)
-				BankField(OPR0, BNK0, 2, DWordAcc, NoLock, WriteAsZeros) {
-					AccessAs(DWordAcc),
-					Offset(8), , 1, f0f2, 7}
-				Store(Refof(f0f2), Local3)
-				Store(Refof(g002), Local4)
-			}
-			case (8) {
-				Store(3, Local2)
-				BankField(OPR0, BNK0, 3, DWordAcc, NoLock, WriteAsZeros) {
-					Offset(8), , 1, f0f3, 8}
-				Store(Refof(f0f3), Local3)
-				Store(Refof(g003), Local4)
-			}
-			case (9) {
-				Store(4, Local2)
-				BankField(OPR0, BNK0, 4, QWordAcc, NoLock, WriteAsZeros) {
-					AccessAs(DWordAcc),
-					Offset(8), , 1, f0f4, 9}
-				Store(Refof(f0f4), Local3)
-				Store(Refof(g004), Local4)
-			}
-			case (31) {
-				Store(5, Local2)
-				BankField(OPR0, BNK0, 5, DWordAcc, NoLock, WriteAsZeros) {
-					Offset(8), , 1, f0f5, 31}
-				Store(Refof(f0f5), Local3)
-				Store(Refof(g005), Local4)
-			}
-			case (32) {
-				Store(6, Local2)
-				BankField(OPR0, BNK0, 6, AnyAcc, NoLock, WriteAsZeros) {
-					AccessAs(DWordAcc),
-					Offset(8), , 1, f0f6, 32}
-				Store(Refof(f0f6), Local3)
-				Store(Refof(g006), Local4)
-			}
-			case (33) {
-				Store(7, Local2)
-				BankField(OPR0, BNK0, 7, DWordAcc, NoLock, WriteAsZeros) {
-					Offset(8), , 1, f0f7, 33}
-				Store(Refof(f0f7), Local3)
-				Store(Refof(g007), Local4)
-			}
-			case (63) {
-				Store(8, Local2)
-				BankField(OPR0, BNK0, 8, ByteAcc, NoLock, WriteAsZeros) {
-					AccessAs(DWordAcc),
-					Offset(8), , 1, f0f8, 63}
-				Store(Refof(f0f8), Local3)
-				Store(Refof(g008), Local4)
-			}
-			case (64) {
-				Store(9, Local2)
-				BankField(OPR0, BNK0, 9, DWordAcc, NoLock, WriteAsZeros) {
-					Offset(8), , 1, f0f9, 64}
-				Store(Refof(f0f9), Local3)
-				Store(Refof(g009), Local4)
-			}
-			case (65) {
-				Store(63, Local2)
-				BankField(OPR0, BNK0, 63, WordAcc, NoLock, WriteAsZeros) {
-					AccessAs(DWordAcc),
-					Offset(8), , 1, f0fa, 65}
-				Store(Refof(f0fa), Local3)
-				Store(Refof(g00a), Local4)
-			}
-			case (69) {
-				Store(64, Local2)
-				BankField(OPR0, BNK0, 64, DWordAcc, NoLock, WriteAsZeros) {
-					Offset(8), , 1, f0fb, 69}
-				Store(Refof(f0fb), Local3)
-				Store(Refof(g00b), Local4)
-			}
-			case (129) {
-				Store(127, Local2)
-				BankField(OPR0, BNK0, 127, DWordAcc, NoLock, WriteAsZeros) {
-					AccessAs(DWordAcc),
-					Offset(8), , 1, f0fc, 129}
-				Store(Refof(f0fc), Local3)
-				Store(Refof(g00c), Local4)
-			}
-			case (256) {
-				Store(128, Local2)
-				BankField(OPR0, BNK0, 128, DWordAcc, NoLock, WriteAsZeros) {
-					Offset(8), , 1, f0fd, 256}
-				Store(Refof(f0fd), Local3)
-				Store(Refof(g00d), Local4)
-			}
-			case (1023) {
-				Store(255, Local2)
-				BankField(OPR0, BNK0, 255, QWordAcc, NoLock, WriteAsZeros) {
-					AccessAs(DWordAcc),
-					Offset(8), , 1, f0fe, 1023}
-				Store(Refof(f0fe), Local3)
-				Store(Refof(g00e), Local4)
-			}
-			case (1983) {
-				Store(0, Local2)
-				BankField(OPR0, BNK0, 0, DWordAcc, NoLock, WriteAsZeros) {
-					Offset(8), , 1, f0ff, 1983}
-				Store(Refof(f0ff), Local3)
-				Store(Refof(g000), Local4)
-			}
-			default {
-				err(arg0, z145, __LINE__, 0, 0, arg2, arg3)
-				return
-			}
-		}
-	}
-	default {
-		err(arg0, z145, __LINE__, 0, 0, arg2, arg3)
-		return}
-	}
-
-	Store(2, Index(fcp0, 0))
-	Store(Refof(BNK0), Index(fcp0, 1))
-	Store(Local2, Index(fcp0, 2))
-	m72d(arg0, Local3, arg2, arg3, arg4, arg5, Local4)
-	Store(0, Index(fcp0, 0))
-}
-
-// Create BankField Unit
-// (QWordAcc, NoLock, Preserve)
-Method(m7d3, 6, Serialized)
-{
-	OperationRegion(OPRb, SystemIO, 0, 9)
-	OperationRegion(OPR0, SystemIO, 11, 256)
-
-	Field(OPRb, ByteAcc, NoLock, Preserve) {
-		BNK0, 8,
-	}
-	BankField(OPR0, BNK0, 0, ByteAcc, NoLock, Preserve) {
-		g000, 2048,
-	}
-	BankField(OPR0, BNK0, 1, ByteAcc, NoLock, Preserve) {
-		g001, 2048,
-	}
-	BankField(OPR0, BNK0, 2, ByteAcc, NoLock, Preserve) {
-		g002, 2048,
-	}
-	BankField(OPR0, BNK0, 3, ByteAcc, NoLock, Preserve) {
-		g003, 2048,
-	}
-	BankField(OPR0, BNK0, 4, ByteAcc, NoLock, Preserve) {
-		g004, 2048,
-	}
-	BankField(OPR0, BNK0, 5, ByteAcc, NoLock, Preserve) {
-		g005, 2048,
-	}
-	BankField(OPR0, BNK0, 6, ByteAcc, NoLock, Preserve) {
-		g006, 2048,
-	}
-	BankField(OPR0, BNK0, 7, ByteAcc, NoLock, Preserve) {
-		g007, 2048,
-	}
-	BankField(OPR0, BNK0, 8, ByteAcc, NoLock, Preserve) {
-		g008, 2048,
-	}
-	BankField(OPR0, BNK0, 9, ByteAcc, NoLock, Preserve) {
-		g009, 2048,
-	}
-	BankField(OPR0, BNK0, 63, ByteAcc, NoLock, Preserve) {
-		g00a, 2048,
-	}
-	BankField(OPR0, BNK0, 64, ByteAcc, NoLock, Preserve) {
-		g00b, 2048,
-	}
-	BankField(OPR0, BNK0, 127, ByteAcc, NoLock, Preserve) {
-		g00c, 2048,
-	}
-	BankField(OPR0, BNK0, 128, ByteAcc, NoLock, Preserve) {
-		g00d, 2048,
-	}
-	BankField(OPR0, BNK0, 255, ByteAcc, NoLock, Preserve) {
-		g00e, 2048,
-	}
-
-
-	Concatenate(arg0, "-m7d3", arg0)
-
-	switch(ToInteger (arg2)) {
-	case (0) {
-		switch(ToInteger (arg3)) {
-			case (1) {
-				Store(0, Local2)
-				BankField(OPR0, BNK0, 0, QWordAcc, NoLock, Preserve) {
-					, 0, f000, 1}
-				Store(Refof(f000), Local3)
-				Store(Refof(g000), Local4)
-			}
-			case (6) {
-				Store(1, Local2)
-				BankField(OPR0, BNK0, 1, WordAcc, NoLock, Preserve) {
-					AccessAs(QWordAcc),
-					, 0, f001, 6}
-				Store(Refof(f001), Local3)
-				Store(Refof(g001), Local4)
-			}
-			case (7) {
-				Store(2, Local2)
-				BankField(OPR0, BNK0, 2, QWordAcc, NoLock, Preserve) {
-					, 0, f002, 7}
-				Store(Refof(f002), Local3)
-				Store(Refof(g002), Local4)
-			}
-			case (8) {
-				Store(3, Local2)
-				BankField(OPR0, BNK0, 3, DWordAcc, NoLock, Preserve) {
-					AccessAs(QWordAcc),
-					, 0, f003, 8}
-				Store(Refof(f003), Local3)
-				Store(Refof(g003), Local4)
-			}
-			case (9) {
-				Store(4, Local2)
-				BankField(OPR0, BNK0, 4, QWordAcc, NoLock, Preserve) {
-					, 0, f004, 9}
-				Store(Refof(f004), Local3)
-				Store(Refof(g004), Local4)
-			}
-			case (31) {
-				Store(5, Local2)
-				BankField(OPR0, BNK0, 5, QWordAcc, NoLock, Preserve) {
-					AccessAs(QWordAcc),
-					, 0, f005, 31}
-				Store(Refof(f005), Local3)
-				Store(Refof(g005), Local4)
-			}
-			case (32) {
-				Store(6, Local2)
-				BankField(OPR0, BNK0, 6, QWordAcc, NoLock, Preserve) {
-					, 0, f006, 32}
-				Store(Refof(f006), Local3)
-				Store(Refof(g006), Local4)
-			}
-			case (33) {
-				Store(7, Local2)
-				BankField(OPR0, BNK0, 7, AnyAcc, NoLock, Preserve) {
-					AccessAs(QWordAcc),
-					, 0, f007, 33}
-				Store(Refof(f007), Local3)
-				Store(Refof(g007), Local4)
-			}
-			case (63) {
-				Store(8, Local2)
-				BankField(OPR0, BNK0, 8, QWordAcc, NoLock, Preserve) {
-					, 0, f008, 63}
-				Store(Refof(f008), Local3)
-				Store(Refof(g008), Local4)
-			}
-			case (64) {
-				Store(9, Local2)
-				BankField(OPR0, BNK0, 9, ByteAcc, NoLock, Preserve) {
-					AccessAs(QWordAcc),
-					, 0, f009, 64}
-				Store(Refof(f009), Local3)
-				Store(Refof(g009), Local4)
-			}
-			case (65) {
-				Store(63, Local2)
-				BankField(OPR0, BNK0, 63, QWordAcc, NoLock, Preserve) {
-					, 0, f00a, 65}
-				Store(Refof(f00a), Local3)
-				Store(Refof(g00a), Local4)
-			}
-			case (69) {
-				Store(64, Local2)
-				BankField(OPR0, BNK0, 64, WordAcc, NoLock, Preserve) {
-					AccessAs(QWordAcc),
-					, 0, f00b, 69}
-				Store(Refof(f00b), Local3)
-				Store(Refof(g00b), Local4)
-			}
-			case (129) {
-				Store(127, Local2)
-				BankField(OPR0, BNK0, 127, QWordAcc, NoLock, Preserve) {
-					, 0, f00c, 129}
-				Store(Refof(f00c), Local3)
-				Store(Refof(g00c), Local4)
-			}
-			case (256) {
-				Store(128, Local2)
-				BankField(OPR0, BNK0, 128, DWordAcc, NoLock, Preserve) {
-					AccessAs(QWordAcc),
-					, 0, f00d, 256}
-				Store(Refof(f00d), Local3)
-				Store(Refof(g00d), Local4)
-			}
-			case (1023) {
-				Store(255, Local2)
-				BankField(OPR0, BNK0, 255, QWordAcc, NoLock, Preserve) {
-					, 0, f00e, 1023}
-				Store(Refof(f00e), Local3)
-				Store(Refof(g00e), Local4)
-			}
-			case (1983) {
-				Store(0, Local2)
-				BankField(OPR0, BNK0, 0, QWordAcc, NoLock, Preserve) {
-					AccessAs(QWordAcc),
-					, 0, f00f, 1983}
-				Store(Refof(f00f), Local3)
-				Store(Refof(g000), Local4)
-			}
-			default {
-				err(arg0, z145, __LINE__, 0, 0, arg2, arg3)
-				return
-			}
-		}
-	}
-	case (1) {
-		switch(ToInteger (arg3)) {
-			case (1) {
-				Store(1, Local2)
-				BankField(OPR0, BNK0, 1, AnyAcc, NoLock, Preserve) {
-					AccessAs(QWordAcc),
-					, 1, f010, 1}
-				Store(Refof(f010), Local3)
-				Store(Refof(g001), Local4)
-			}
-			case (6) {
-				Store(2, Local2)
-				BankField(OPR0, BNK0, 2, QWordAcc, NoLock, Preserve) {
-					, 1, f011, 6}
-				Store(Refof(f011), Local3)
-				Store(Refof(g002), Local4)
-			}
-			case (7) {
-				Store(3, Local2)
-				BankField(OPR0, BNK0, 3, ByteAcc, NoLock, Preserve) {
-					AccessAs(QWordAcc),
-					, 1, f012, 7}
-				Store(Refof(f012), Local3)
-				Store(Refof(g003), Local4)
-			}
-			case (8) {
-				Store(4, Local2)
-				BankField(OPR0, BNK0, 4, QWordAcc, NoLock, Preserve) {
-					, 1, f013, 8}
-				Store(Refof(f013), Local3)
-				Store(Refof(g004), Local4)
-			}
-			case (9) {
-				Store(5, Local2)
-				BankField(OPR0, BNK0, 5, WordAcc, NoLock, Preserve) {
-					AccessAs(QWordAcc),
-					, 1, f014, 9}
-				Store(Refof(f014), Local3)
-				Store(Refof(g005), Local4)
-			}
-			case (31) {
-				Store(6, Local2)
-				BankField(OPR0, BNK0, 6, QWordAcc, NoLock, Preserve) {
-					, 1, f015, 31}
-				Store(Refof(f015), Local3)
-				Store(Refof(g006), Local4)
-			}
-			case (32) {
-				Store(7, Local2)
-				BankField(OPR0, BNK0, 7, DWordAcc, NoLock, Preserve) {
-					AccessAs(QWordAcc),
-					, 1, f016, 32}
-				Store(Refof(f016), Local3)
-				Store(Refof(g007), Local4)
-			}
-			case (33) {
-				Store(8, Local2)
-				BankField(OPR0, BNK0, 8, QWordAcc, NoLock, Preserve) {
-					, 1, f017, 33}
-				Store(Refof(f017), Local3)
-				Store(Refof(g008), Local4)
-			}
-			case (63) {
-				Store(9, Local2)
-				BankField(OPR0, BNK0, 9, QWordAcc, NoLock, Preserve) {
-					AccessAs(QWordAcc),
-					, 1, f018, 63}
-				Store(Refof(f018), Local3)
-				Store(Refof(g009), Local4)
-			}
-			case (64) {
-				Store(63, Local2)
-				BankField(OPR0, BNK0, 63, QWordAcc, NoLock, Preserve) {
-					, 1, f019, 64}
-				Store(Refof(f019), Local3)
-				Store(Refof(g00a), Local4)
-			}
-			case (65) {
-				Store(64, Local2)
-				BankField(OPR0, BNK0, 64, AnyAcc, NoLock, Preserve) {
-					AccessAs(QWordAcc),
-					, 1, f01a, 65}
-				Store(Refof(f01a), Local3)
-				Store(Refof(g00b), Local4)
-			}
-			case (69) {
-				Store(127, Local2)
-				BankField(OPR0, BNK0, 127, QWordAcc, NoLock, Preserve) {
-					, 1, f01b, 69}
-				Store(Refof(f01b), Local3)
-				Store(Refof(g00c), Local4)
-			}
-			case (129) {
-				Store(128, Local2)
-				BankField(OPR0, BNK0, 128, ByteAcc, NoLock, Preserve) {
-					AccessAs(QWordAcc),
-					, 1, f01c, 129}
-				Store(Refof(f01c), Local3)
-				Store(Refof(g00d), Local4)
-			}
-			case (256) {
-				Store(255, Local2)
-				BankField(OPR0, BNK0, 255, QWordAcc, NoLock, Preserve) {
-					, 1, f01d, 256}
-				Store(Refof(f01d), Local3)
-				Store(Refof(g00e), Local4)
-			}
-			case (1023) {
-				Store(0, Local2)
-				BankField(OPR0, BNK0, 0, WordAcc, NoLock, Preserve) {
-					AccessAs(QWordAcc),
-					, 1, f01e, 1023}
-				Store(Refof(f01e), Local3)
-				Store(Refof(g000), Local4)
-			}
-			case (1983) {
-				Store(1, Local2)
-				BankField(OPR0, BNK0, 1, QWordAcc, NoLock, Preserve) {
-					, 1, f01f, 1983}
-				Store(Refof(f01f), Local3)
-				Store(Refof(g001), Local4)
-			}
-			default {
-				err(arg0, z145, __LINE__, 0, 0, arg2, arg3)
-				return
-			}
-		}
-	}
-	case (2) {
-		switch(ToInteger (arg3)) {
-			case (1) {
-				Store(2, Local2)
-				BankField(OPR0, BNK0, 2, QWordAcc, NoLock, Preserve) {
-					, 2, f020, 1}
-				Store(Refof(f020), Local3)
-				Store(Refof(g002), Local4)
-			}
-			case (6) {
-				Store(3, Local2)
-				BankField(OPR0, BNK0, 3, DWordAcc, NoLock, Preserve) {
-					AccessAs(QWordAcc),
-					, 2, f021, 6}
-				Store(Refof(f021), Local3)
-				Store(Refof(g003), Local4)
-			}
-			case (7) {
-				Store(4, Local2)
-				BankField(OPR0, BNK0, 4, QWordAcc, NoLock, Preserve) {
-					, 2, f022, 7}
-				Store(Refof(f022), Local3)
-				Store(Refof(g004), Local4)
-			}
-			case (8) {
-				Store(5, Local2)
-				BankField(OPR0, BNK0, 5, QWordAcc, NoLock, Preserve) {
-					AccessAs(QWordAcc),
-					, 2, f023, 8}
-				Store(Refof(f023), Local3)
-				Store(Refof(g005), Local4)
-			}
-			case (9) {
-				Store(6, Local2)
-				BankField(OPR0, BNK0, 6, QWordAcc, NoLock, Preserve) {
-					, 2, f024, 9}
-				Store(Refof(f024), Local3)
-				Store(Refof(g006), Local4)
-			}
-			case (31) {
-				Store(7, Local2)
-				BankField(OPR0, BNK0, 7, AnyAcc, NoLock, Preserve) {
-					AccessAs(QWordAcc),
-					, 2, f025, 31}
-				Store(Refof(f025), Local3)
-				Store(Refof(g007), Local4)
-			}
-			case (32) {
-				Store(8, Local2)
-				BankField(OPR0, BNK0, 8, QWordAcc, NoLock, Preserve) {
-					, 2, f026, 32}
-				Store(Refof(f026), Local3)
-				Store(Refof(g008), Local4)
-			}
-			case (33) {
-				Store(9, Local2)
-				BankField(OPR0, BNK0, 9, ByteAcc, NoLock, Preserve) {
-					AccessAs(QWordAcc),
-					, 2, f027, 33}
-				Store(Refof(f027), Local3)
-				Store(Refof(g009), Local4)
-			}
-			case (63) {
-				Store(63, Local2)
-				BankField(OPR0, BNK0, 63, QWordAcc, NoLock, Preserve) {
-					, 2, f028, 63}
-				Store(Refof(f028), Local3)
-				Store(Refof(g00a), Local4)
-			}
-			case (64) {
-				Store(64, Local2)
-				BankField(OPR0, BNK0, 64, WordAcc, NoLock, Preserve) {
-					AccessAs(QWordAcc),
-					, 2, f029, 64}
-				Store(Refof(f029), Local3)
-				Store(Refof(g00b), Local4)
-			}
-			case (65) {
-				Store(127, Local2)
-				BankField(OPR0, BNK0, 127, QWordAcc, NoLock, Preserve) {
-					, 2, f02a, 65}
-				Store(Refof(f02a), Local3)
-				Store(Refof(g00c), Local4)
-			}
-			case (69) {
-				Store(128, Local2)
-				BankField(OPR0, BNK0, 128, DWordAcc, NoLock, Preserve) {
-					AccessAs(QWordAcc),
-					, 2, f02b, 69}
-				Store(Refof(f02b), Local3)
-				Store(Refof(g00d), Local4)
-			}
-			case (129) {
-				Store(255, Local2)
-				BankField(OPR0, BNK0, 255, QWordAcc, NoLock, Preserve) {
-					, 2, f02c, 129}
-				Store(Refof(f02c), Local3)
-				Store(Refof(g00e), Local4)
-			}
-			case (256) {
-				Store(0, Local2)
-				BankField(OPR0, BNK0, 0, QWordAcc, NoLock, Preserve) {
-					AccessAs(QWordAcc),
-					, 2, f02d, 256}
-				Store(Refof(f02d), Local3)
-				Store(Refof(g000), Local4)
-			}
-			case (1023) {
-				Store(1, Local2)
-				BankField(OPR0, BNK0, 1, QWordAcc, NoLock, Preserve) {
-					, 2, f02e, 1023}
-				Store(Refof(f02e), Local3)
-				Store(Refof(g001), Local4)
-			}
-			case (1983) {
-				Store(2, Local2)
-				BankField(OPR0, BNK0, 2, AnyAcc, NoLock, Preserve) {
-					AccessAs(QWordAcc),
-					, 2, f02f, 1983}
-				Store(Refof(f02f), Local3)
-				Store(Refof(g002), Local4)
-			}
-			default {
-				err(arg0, z145, __LINE__, 0, 0, arg2, arg3)
-				return
-			}
-		}
-	}
-	case (3) {
-		switch(ToInteger (arg3)) {
-			case (1) {
-				Store(3, Local2)
-				BankField(OPR0, BNK0, 3, ByteAcc, NoLock, Preserve) {
-					AccessAs(QWordAcc),
-					, 3, f030, 1}
-				Store(Refof(f030), Local3)
-				Store(Refof(g003), Local4)
-			}
-			case (6) {
-				Store(4, Local2)
-				BankField(OPR0, BNK0, 4, QWordAcc, NoLock, Preserve) {
-					, 3, f031, 6}
-				Store(Refof(f031), Local3)
-				Store(Refof(g004), Local4)
-			}
-			case (7) {
-				Store(5, Local2)
-				BankField(OPR0, BNK0, 5, WordAcc, NoLock, Preserve) {
-					AccessAs(QWordAcc),
-					, 3, f032, 7}
-				Store(Refof(f032), Local3)
-				Store(Refof(g005), Local4)
-			}
-			case (8) {
-				Store(6, Local2)
-				BankField(OPR0, BNK0, 6, QWordAcc, NoLock, Preserve) {
-					, 3, f033, 8}
-				Store(Refof(f033), Local3)
-				Store(Refof(g006), Local4)
-			}
-			case (9) {
-				Store(7, Local2)
-				BankField(OPR0, BNK0, 7, DWordAcc, NoLock, Preserve) {
-					AccessAs(QWordAcc),
-					, 3, f034, 9}
-				Store(Refof(f034), Local3)
-				Store(Refof(g007), Local4)
-			}
-			case (31) {
-				Store(8, Local2)
-				BankField(OPR0, BNK0, 8, QWordAcc, NoLock, Preserve) {
-					, 3, f035, 31}
-				Store(Refof(f035), Local3)
-				Store(Refof(g008), Local4)
-			}
-			case (32) {
-				Store(9, Local2)
-				BankField(OPR0, BNK0, 9, QWordAcc, NoLock, Preserve) {
-					AccessAs(QWordAcc),
-					, 3, f036, 32}
-				Store(Refof(f036), Local3)
-				Store(Refof(g009), Local4)
-			}
-			case (33) {
-				Store(63, Local2)
-				BankField(OPR0, BNK0, 63, QWordAcc, NoLock, Preserve) {
-					, 3, f037, 33}
-				Store(Refof(f037), Local3)
-				Store(Refof(g00a), Local4)
-			}
-			case (63) {
-				Store(64, Local2)
-				BankField(OPR0, BNK0, 64, AnyAcc, NoLock, Preserve) {
-					AccessAs(QWordAcc),
-					, 3, f038, 63}
-				Store(Refof(f038), Local3)
-				Store(Refof(g00b), Local4)
-			}
-			case (64) {
-				Store(127, Local2)
-				BankField(OPR0, BNK0, 127, QWordAcc, NoLock, Preserve) {
-					, 3, f039, 64}
-				Store(Refof(f039), Local3)
-				Store(Refof(g00c), Local4)
-			}
-			case (65) {
-				Store(128, Local2)
-				BankField(OPR0, BNK0, 128, ByteAcc, NoLock, Preserve) {
-					AccessAs(QWordAcc),
-					, 3, f03a, 65}
-				Store(Refof(f03a), Local3)
-				Store(Refof(g00d), Local4)
-			}
-			case (69) {
-				Store(255, Local2)
-				BankField(OPR0, BNK0, 255, QWordAcc, NoLock, Preserve) {
-					, 3, f03b, 69}
-				Store(Refof(f03b), Local3)
-				Store(Refof(g00e), Local4)
-			}
-			case (129) {
-				Store(0, Local2)
-				BankField(OPR0, BNK0, 0, WordAcc, NoLock, Preserve) {
-					AccessAs(QWordAcc),
-					, 3, f03c, 129}
-				Store(Refof(f03c), Local3)
-				Store(Refof(g000), Local4)
-			}
-			case (256) {
-				Store(1, Local2)
-				BankField(OPR0, BNK0, 1, QWordAcc, NoLock, Preserve) {
-					, 3, f03d, 256}
-				Store(Refof(f03d), Local3)
-				Store(Refof(g001), Local4)
-			}
-			case (1023) {
-				Store(2, Local2)
-				BankField(OPR0, BNK0, 2, DWordAcc, NoLock, Preserve) {
-					AccessAs(QWordAcc),
-					, 3, f03e, 1023}
-				Store(Refof(f03e), Local3)
-				Store(Refof(g002), Local4)
-			}
-			case (1983) {
-				Store(3, Local2)
-				BankField(OPR0, BNK0, 3, QWordAcc, NoLock, Preserve) {
-					, 3, f03f, 1983}
-				Store(Refof(f03f), Local3)
-				Store(Refof(g003), Local4)
-			}
-			default {
-				err(arg0, z145, __LINE__, 0, 0, arg2, arg3)
-				return
-			}
-		}
-	}
-	case (4) {
-		switch(ToInteger (arg3)) {
-			case (1) {
-				Store(4, Local2)
-				BankField(OPR0, BNK0, 4, QWordAcc, NoLock, Preserve) {
-					, 4, f040, 1}
-				Store(Refof(f040), Local3)
-				Store(Refof(g004), Local4)
-			}
-			case (6) {
-				Store(5, Local2)
-				BankField(OPR0, BNK0, 5, QWordAcc, NoLock, Preserve) {
-					AccessAs(QWordAcc),
-					, 4, f041, 6}
-				Store(Refof(f041), Local3)
-				Store(Refof(g005), Local4)
-			}
-			case (7) {
-				Store(6, Local2)
-				BankField(OPR0, BNK0, 6, QWordAcc, NoLock, Preserve) {
-					, 4, f042, 7}
-				Store(Refof(f042), Local3)
-				Store(Refof(g006), Local4)
-			}
-			case (8) {
-				Store(7, Local2)
-				BankField(OPR0, BNK0, 7, AnyAcc, NoLock, Preserve) {
-					AccessAs(QWordAcc),
-					, 4, f043, 8}
-				Store(Refof(f043), Local3)
-				Store(Refof(g007), Local4)
-			}
-			case (9) {
-				Store(8, Local2)
-				BankField(OPR0, BNK0, 8, QWordAcc, NoLock, Preserve) {
-					, 4, f044, 9}
-				Store(Refof(f044), Local3)
-				Store(Refof(g008), Local4)
-			}
-			case (31) {
-				Store(9, Local2)
-				BankField(OPR0, BNK0, 9, ByteAcc, NoLock, Preserve) {
-					AccessAs(QWordAcc),
-					, 4, f045, 31}
-				Store(Refof(f045), Local3)
-				Store(Refof(g009), Local4)
-			}
-			case (32) {
-				Store(63, Local2)
-				BankField(OPR0, BNK0, 63, QWordAcc, NoLock, Preserve) {
-					, 4, f046, 32}
-				Store(Refof(f046), Local3)
-				Store(Refof(g00a), Local4)
-			}
-			case (33) {
-				Store(64, Local2)
-				BankField(OPR0, BNK0, 64, WordAcc, NoLock, Preserve) {
-					AccessAs(QWordAcc),
-					, 4, f047, 33}
-				Store(Refof(f047), Local3)
-				Store(Refof(g00b), Local4)
-			}
-			case (63) {
-				Store(127, Local2)
-				BankField(OPR0, BNK0, 127, QWordAcc, NoLock, Preserve) {
-					, 4, f048, 63}
-				Store(Refof(f048), Local3)
-				Store(Refof(g00c), Local4)
-			}
-			case (64) {
-				Store(128, Local2)
-				BankField(OPR0, BNK0, 128, DWordAcc, NoLock, Preserve) {
-					AccessAs(QWordAcc),
-					, 4, f049, 64}
-				Store(Refof(f049), Local3)
-				Store(Refof(g00d), Local4)
-			}
-			case (65) {
-				Store(255, Local2)
-				BankField(OPR0, BNK0, 255, QWordAcc, NoLock, Preserve) {
-					, 4, f04a, 65}
-				Store(Refof(f04a), Local3)
-				Store(Refof(g00e), Local4)
-			}
-			case (69) {
-				Store(0, Local2)
-				BankField(OPR0, BNK0, 0, QWordAcc, NoLock, Preserve) {
-					AccessAs(QWordAcc),
-					, 4, f04b, 69}
-				Store(Refof(f04b), Local3)
-				Store(Refof(g000), Local4)
-			}
-			case (129) {
-				Store(1, Local2)
-				BankField(OPR0, BNK0, 1, QWordAcc, NoLock, Preserve) {
-					, 4, f04c, 129}
-				Store(Refof(f04c), Local3)
-				Store(Refof(g001), Local4)
-			}
-			case (256) {
-				Store(2, Local2)
-				BankField(OPR0, BNK0, 2, AnyAcc, NoLock, Preserve) {
-					AccessAs(QWordAcc),
-					, 4, f04d, 256}
-				Store(Refof(f04d), Local3)
-				Store(Refof(g002), Local4)
-			}
-			case (1023) {
-				Store(3, Local2)
-				BankField(OPR0, BNK0, 3, QWordAcc, NoLock, Preserve) {
-					, 4, f04e, 1023}
-				Store(Refof(f04e), Local3)
-				Store(Refof(g003), Local4)
-			}
-			case (1983) {
-				Store(4, Local2)
-				BankField(OPR0, BNK0, 4, ByteAcc, NoLock, Preserve) {
-					AccessAs(QWordAcc),
-					, 4, f04f, 1983}
-				Store(Refof(f04f), Local3)
-				Store(Refof(g004), Local4)
-			}
-			default {
-				err(arg0, z145, __LINE__, 0, 0, arg2, arg3)
-				return
-			}
-		}
-	}
-	case (5) {
-		switch(ToInteger (arg3)) {
-			case (1) {
-				Store(5, Local2)
-				BankField(OPR0, BNK0, 5, WordAcc, NoLock, Preserve) {
-					AccessAs(QWordAcc),
-					, 5, f050, 1}
-				Store(Refof(f050), Local3)
-				Store(Refof(g005), Local4)
-			}
-			case (6) {
-				Store(6, Local2)
-				BankField(OPR0, BNK0, 6, QWordAcc, NoLock, Preserve) {
-					, 5, f051, 6}
-				Store(Refof(f051), Local3)
-				Store(Refof(g006), Local4)
-			}
-			case (7) {
-				Store(7, Local2)
-				BankField(OPR0, BNK0, 7, DWordAcc, NoLock, Preserve) {
-					AccessAs(QWordAcc),
-					, 5, f052, 7}
-				Store(Refof(f052), Local3)
-				Store(Refof(g007), Local4)
-			}
-			case (8) {
-				Store(8, Local2)
-				BankField(OPR0, BNK0, 8, QWordAcc, NoLock, Preserve) {
-					, 5, f053, 8}
-				Store(Refof(f053), Local3)
-				Store(Refof(g008), Local4)
-			}
-			case (9) {
-				Store(9, Local2)
-				BankField(OPR0, BNK0, 9, QWordAcc, NoLock, Preserve) {
-					AccessAs(QWordAcc),
-					, 5, f054, 9}
-				Store(Refof(f054), Local3)
-				Store(Refof(g009), Local4)
-			}
-			case (31) {
-				Store(63, Local2)
-				BankField(OPR0, BNK0, 63, QWordAcc, NoLock, Preserve) {
-					, 5, f055, 31}
-				Store(Refof(f055), Local3)
-				Store(Refof(g00a), Local4)
-			}
-			case (32) {
-				Store(64, Local2)
-				BankField(OPR0, BNK0, 64, AnyAcc, NoLock, Preserve) {
-					AccessAs(QWordAcc),
-					, 5, f056, 32}
-				Store(Refof(f056), Local3)
-				Store(Refof(g00b), Local4)
-			}
-			case (33) {
-				Store(127, Local2)
-				BankField(OPR0, BNK0, 127, QWordAcc, NoLock, Preserve) {
-					, 5, f057, 33}
-				Store(Refof(f057), Local3)
-				Store(Refof(g00c), Local4)
-			}
-			case (63) {
-				Store(128, Local2)
-				BankField(OPR0, BNK0, 128, ByteAcc, NoLock, Preserve) {
-					AccessAs(QWordAcc),
-					, 5, f058, 63}
-				Store(Refof(f058), Local3)
-				Store(Refof(g00d), Local4)
-			}
-			case (64) {
-				Store(255, Local2)
-				BankField(OPR0, BNK0, 255, QWordAcc, NoLock, Preserve) {
-					, 5, f059, 64}
-				Store(Refof(f059), Local3)
-				Store(Refof(g00e), Local4)
-			}
-			case (65) {
-				Store(0, Local2)
-				BankField(OPR0, BNK0, 0, WordAcc, NoLock, Preserve) {
-					AccessAs(QWordAcc),
-					, 5, f05a, 65}
-				Store(Refof(f05a), Local3)
-				Store(Refof(g000), Local4)
-			}
-			case (69) {
-				Store(1, Local2)
-				BankField(OPR0, BNK0, 1, QWordAcc, NoLock, Preserve) {
-					, 5, f05b, 69}
-				Store(Refof(f05b), Local3)
-				Store(Refof(g001), Local4)
-			}
-			case (129) {
-				Store(2, Local2)
-				BankField(OPR0, BNK0, 2, DWordAcc, NoLock, Preserve) {
-					AccessAs(QWordAcc),
-					, 5, f05c, 129}
-				Store(Refof(f05c), Local3)
-				Store(Refof(g002), Local4)
-			}
-			case (256) {
-				Store(3, Local2)
-				BankField(OPR0, BNK0, 3, QWordAcc, NoLock, Preserve) {
-					, 5, f05d, 256}
-				Store(Refof(f05d), Local3)
-				Store(Refof(g003), Local4)
-			}
-			case (1023) {
-				Store(4, Local2)
-				BankField(OPR0, BNK0, 4, QWordAcc, NoLock, Preserve) {
-					AccessAs(QWordAcc),
-					, 5, f05e, 1023}
-				Store(Refof(f05e), Local3)
-				Store(Refof(g004), Local4)
-			}
-			case (1983) {
-				Store(5, Local2)
-				BankField(OPR0, BNK0, 5, QWordAcc, NoLock, Preserve) {
-					, 5, f05f, 1983}
-				Store(Refof(f05f), Local3)
-				Store(Refof(g005), Local4)
-			}
-			default {
-				err(arg0, z145, __LINE__, 0, 0, arg2, arg3)
-				return
-			}
-		}
-	}
-	case (6) {
-		switch(ToInteger (arg3)) {
-			case (1) {
-				Store(6, Local2)
-				BankField(OPR0, BNK0, 6, QWordAcc, NoLock, Preserve) {
-					, 6, f060, 1}
-				Store(Refof(f060), Local3)
-				Store(Refof(g006), Local4)
-			}
-			case (6) {
-				Store(7, Local2)
-				BankField(OPR0, BNK0, 7, AnyAcc, NoLock, Preserve) {
-					AccessAs(QWordAcc),
-					, 6, f061, 6}
-				Store(Refof(f061), Local3)
-				Store(Refof(g007), Local4)
-			}
-			case (7) {
-				Store(8, Local2)
-				BankField(OPR0, BNK0, 8, QWordAcc, NoLock, Preserve) {
-					, 6, f062, 7}
-				Store(Refof(f062), Local3)
-				Store(Refof(g008), Local4)
-			}
-			case (8) {
-				Store(9, Local2)
-				BankField(OPR0, BNK0, 9, ByteAcc, NoLock, Preserve) {
-					AccessAs(QWordAcc),
-					, 6, f063, 8}
-				Store(Refof(f063), Local3)
-				Store(Refof(g009), Local4)
-			}
-			case (9) {
-				Store(63, Local2)
-				BankField(OPR0, BNK0, 63, QWordAcc, NoLock, Preserve) {
-					, 6, f064, 9}
-				Store(Refof(f064), Local3)
-				Store(Refof(g00a), Local4)
-			}
-			case (31) {
-				Store(64, Local2)
-				BankField(OPR0, BNK0, 64, WordAcc, NoLock, Preserve) {
-					AccessAs(QWordAcc),
-					, 6, f065, 31}
-				Store(Refof(f065), Local3)
-				Store(Refof(g00b), Local4)
-			}
-			case (32) {
-				Store(127, Local2)
-				BankField(OPR0, BNK0, 127, QWordAcc, NoLock, Preserve) {
-					, 6, f066, 32}
-				Store(Refof(f066), Local3)
-				Store(Refof(g00c), Local4)
-			}
-			case (33) {
-				Store(128, Local2)
-				BankField(OPR0, BNK0, 128, DWordAcc, NoLock, Preserve) {
-					AccessAs(QWordAcc),
-					, 6, f067, 33}
-				Store(Refof(f067), Local3)
-				Store(Refof(g00d), Local4)
-			}
-			case (63) {
-				Store(255, Local2)
-				BankField(OPR0, BNK0, 255, QWordAcc, NoLock, Preserve) {
-					, 6, f068, 63}
-				Store(Refof(f068), Local3)
-				Store(Refof(g00e), Local4)
-			}
-			case (64) {
-				Store(0, Local2)
-				BankField(OPR0, BNK0, 0, QWordAcc, NoLock, Preserve) {
-					AccessAs(QWordAcc),
-					, 6, f069, 64}
-				Store(Refof(f069), Local3)
-				Store(Refof(g000), Local4)
-			}
-			case (65) {
-				Store(1, Local2)
-				BankField(OPR0, BNK0, 1, QWordAcc, NoLock, Preserve) {
-					, 6, f06a, 65}
-				Store(Refof(f06a), Local3)
-				Store(Refof(g001), Local4)
-			}
-			case (69) {
-				Store(2, Local2)
-				BankField(OPR0, BNK0, 2, AnyAcc, NoLock, Preserve) {
-					AccessAs(QWordAcc),
-					, 6, f06b, 69}
-				Store(Refof(f06b), Local3)
-				Store(Refof(g002), Local4)
-			}
-			case (129) {
-				Store(3, Local2)
-				BankField(OPR0, BNK0, 3, QWordAcc, NoLock, Preserve) {
-					, 6, f06c, 129}
-				Store(Refof(f06c), Local3)
-				Store(Refof(g003), Local4)
-			}
-			case (256) {
-				Store(4, Local2)
-				BankField(OPR0, BNK0, 4, ByteAcc, NoLock, Preserve) {
-					AccessAs(QWordAcc),
-					, 6, f06d, 256}
-				Store(Refof(f06d), Local3)
-				Store(Refof(g004), Local4)
-			}
-			case (1023) {
-				Store(5, Local2)
-				BankField(OPR0, BNK0, 5, QWordAcc, NoLock, Preserve) {
-					, 6, f06e, 1023}
-				Store(Refof(f06e), Local3)
-				Store(Refof(g005), Local4)
-			}
-			case (1983) {
-				Store(6, Local2)
-				BankField(OPR0, BNK0, 6, WordAcc, NoLock, Preserve) {
-					AccessAs(QWordAcc),
-					, 6, f06f, 1983}
-				Store(Refof(f06f), Local3)
-				Store(Refof(g006), Local4)
-			}
-			default {
-				err(arg0, z145, __LINE__, 0, 0, arg2, arg3)
-				return
-			}
-		}
-	}
-	case (7) {
-		switch(ToInteger (arg3)) {
-			case (1) {
-				Store(7, Local2)
-				BankField(OPR0, BNK0, 7, DWordAcc, NoLock, Preserve) {
-					AccessAs(QWordAcc),
-					, 7, f070, 1}
-				Store(Refof(f070), Local3)
-				Store(Refof(g007), Local4)
-			}
-			case (6) {
-				Store(8, Local2)
-				BankField(OPR0, BNK0, 8, QWordAcc, NoLock, Preserve) {
-					, 7, f071, 6}
-				Store(Refof(f071), Local3)
-				Store(Refof(g008), Local4)
-			}
-			case (7) {
-				Store(9, Local2)
-				BankField(OPR0, BNK0, 9, QWordAcc, NoLock, Preserve) {
-					AccessAs(QWordAcc),
-					, 7, f072, 7}
-				Store(Refof(f072), Local3)
-				Store(Refof(g009), Local4)
-			}
-			case (8) {
-				Store(63, Local2)
-				BankField(OPR0, BNK0, 63, QWordAcc, NoLock, Preserve) {
-					, 7, f073, 8}
-				Store(Refof(f073), Local3)
-				Store(Refof(g00a), Local4)
-			}
-			case (9) {
-				Store(64, Local2)
-				BankField(OPR0, BNK0, 64, AnyAcc, NoLock, Preserve) {
-					AccessAs(QWordAcc),
-					, 7, f074, 9}
-				Store(Refof(f074), Local3)
-				Store(Refof(g00b), Local4)
-			}
-			case (31) {
-				Store(127, Local2)
-				BankField(OPR0, BNK0, 127, QWordAcc, NoLock, Preserve) {
-					, 7, f075, 31}
-				Store(Refof(f075), Local3)
-				Store(Refof(g00c), Local4)
-			}
-			case (32) {
-				Store(128, Local2)
-				BankField(OPR0, BNK0, 128, ByteAcc, NoLock, Preserve) {
-					AccessAs(QWordAcc),
-					, 7, f076, 32}
-				Store(Refof(f076), Local3)
-				Store(Refof(g00d), Local4)
-			}
-			case (33) {
-				Store(255, Local2)
-				BankField(OPR0, BNK0, 255, QWordAcc, NoLock, Preserve) {
-					, 7, f077, 33}
-				Store(Refof(f077), Local3)
-				Store(Refof(g00e), Local4)
-			}
-			case (63) {
-				Store(0, Local2)
-				BankField(OPR0, BNK0, 0, WordAcc, NoLock, Preserve) {
-					AccessAs(QWordAcc),
-					, 7, f078, 63}
-				Store(Refof(f078), Local3)
-				Store(Refof(g000), Local4)
-			}
-			case (64) {
-				Store(1, Local2)
-				BankField(OPR0, BNK0, 1, QWordAcc, NoLock, Preserve) {
-					, 7, f079, 64}
-				Store(Refof(f079), Local3)
-				Store(Refof(g001), Local4)
-			}
-			case (65) {
-				Store(2, Local2)
-				BankField(OPR0, BNK0, 2, DWordAcc, NoLock, Preserve) {
-					AccessAs(QWordAcc),
-					, 7, f07a, 65}
-				Store(Refof(f07a), Local3)
-				Store(Refof(g002), Local4)
-			}
-			case (69) {
-				Store(3, Local2)
-				BankField(OPR0, BNK0, 3, QWordAcc, NoLock, Preserve) {
-					, 7, f07b, 69}
-				Store(Refof(f07b), Local3)
-				Store(Refof(g003), Local4)
-			}
-			case (129) {
-				Store(4, Local2)
-				BankField(OPR0, BNK0, 4, QWordAcc, NoLock, Preserve) {
-					AccessAs(QWordAcc),
-					, 7, f07c, 129}
-				Store(Refof(f07c), Local3)
-				Store(Refof(g004), Local4)
-			}
-			case (256) {
-				Store(5, Local2)
-				BankField(OPR0, BNK0, 5, QWordAcc, NoLock, Preserve) {
-					, 7, f07d, 256}
-				Store(Refof(f07d), Local3)
-				Store(Refof(g005), Local4)
-			}
-			case (1023) {
-				Store(6, Local2)
-				BankField(OPR0, BNK0, 6, AnyAcc, NoLock, Preserve) {
-					AccessAs(QWordAcc),
-					, 7, f07e, 1023}
-				Store(Refof(f07e), Local3)
-				Store(Refof(g006), Local4)
-			}
-			case (1983) {
-				Store(7, Local2)
-				BankField(OPR0, BNK0, 7, QWordAcc, NoLock, Preserve) {
-					, 7, f07f, 1983}
-				Store(Refof(f07f), Local3)
-				Store(Refof(g007), Local4)
-			}
-			default {
-				err(arg0, z145, __LINE__, 0, 0, arg2, arg3)
-				return
-			}
-		}
-	}
-	case (8) {
-		switch(ToInteger (arg3)) {
-			case (1) {
-				Store(8, Local2)
-				BankField(OPR0, BNK0, 8, QWordAcc, NoLock, Preserve) {
-					Offset(1), f080, 1}
-				Store(Refof(f080), Local3)
-				Store(Refof(g008), Local4)
-			}
-			case (6) {
-				Store(9, Local2)
-				BankField(OPR0, BNK0, 9, ByteAcc, NoLock, Preserve) {
-					AccessAs(QWordAcc),
-					Offset(1), f081, 6}
-				Store(Refof(f081), Local3)
-				Store(Refof(g009), Local4)
-			}
-			case (7) {
-				Store(63, Local2)
-				BankField(OPR0, BNK0, 63, QWordAcc, NoLock, Preserve) {
-					Offset(1), f082, 7}
-				Store(Refof(f082), Local3)
-				Store(Refof(g00a), Local4)
-			}
-			case (8) {
-				Store(64, Local2)
-				BankField(OPR0, BNK0, 64, WordAcc, NoLock, Preserve) {
-					AccessAs(QWordAcc),
-					Offset(1), f083, 8}
-				Store(Refof(f083), Local3)
-				Store(Refof(g00b), Local4)
-			}
-			case (9) {
-				Store(127, Local2)
-				BankField(OPR0, BNK0, 127, QWordAcc, NoLock, Preserve) {
-					Offset(1), f084, 9}
-				Store(Refof(f084), Local3)
-				Store(Refof(g00c), Local4)
-			}
-			case (31) {
-				Store(128, Local2)
-				BankField(OPR0, BNK0, 128, DWordAcc, NoLock, Preserve) {
-					AccessAs(QWordAcc),
-					Offset(1), f085, 31}
-				Store(Refof(f085), Local3)
-				Store(Refof(g00d), Local4)
-			}
-			case (32) {
-				Store(255, Local2)
-				BankField(OPR0, BNK0, 255, QWordAcc, NoLock, Preserve) {
-					Offset(1), f086, 32}
-				Store(Refof(f086), Local3)
-				Store(Refof(g00e), Local4)
-			}
-			case (33) {
-				Store(0, Local2)
-				BankField(OPR0, BNK0, 0, QWordAcc, NoLock, Preserve) {
-					AccessAs(QWordAcc),
-					Offset(1), f087, 33}
-				Store(Refof(f087), Local3)
-				Store(Refof(g000), Local4)
-			}
-			case (63) {
-				Store(1, Local2)
-				BankField(OPR0, BNK0, 1, QWordAcc, NoLock, Preserve) {
-					Offset(1), f088, 63}
-				Store(Refof(f088), Local3)
-				Store(Refof(g001), Local4)
-			}
-			case (64) {
-				Store(2, Local2)
-				BankField(OPR0, BNK0, 2, AnyAcc, NoLock, Preserve) {
-					AccessAs(QWordAcc),
-					Offset(1), f089, 64}
-				Store(Refof(f089), Local3)
-				Store(Refof(g002), Local4)
-			}
-			case (65) {
-				Store(3, Local2)
-				BankField(OPR0, BNK0, 3, QWordAcc, NoLock, Preserve) {
-					Offset(1), f08a, 65}
-				Store(Refof(f08a), Local3)
-				Store(Refof(g003), Local4)
-			}
-			case (69) {
-				Store(4, Local2)
-				BankField(OPR0, BNK0, 4, ByteAcc, NoLock, Preserve) {
-					AccessAs(QWordAcc),
-					Offset(1), f08b, 69}
-				Store(Refof(f08b), Local3)
-				Store(Refof(g004), Local4)
-			}
-			case (129) {
-				Store(5, Local2)
-				BankField(OPR0, BNK0, 5, QWordAcc, NoLock, Preserve) {
-					Offset(1), f08c, 129}
-				Store(Refof(f08c), Local3)
-				Store(Refof(g005), Local4)
-			}
-			case (256) {
-				Store(6, Local2)
-				BankField(OPR0, BNK0, 6, WordAcc, NoLock, Preserve) {
-					AccessAs(QWordAcc),
-					Offset(1), f08d, 256}
-				Store(Refof(f08d), Local3)
-				Store(Refof(g006), Local4)
-			}
-			case (1023) {
-				Store(7, Local2)
-				BankField(OPR0, BNK0, 7, QWordAcc, NoLock, Preserve) {
-					Offset(1), f08e, 1023}
-				Store(Refof(f08e), Local3)
-				Store(Refof(g007), Local4)
-			}
-			case (1983) {
-				Store(8, Local2)
-				BankField(OPR0, BNK0, 8, DWordAcc, NoLock, Preserve) {
-					AccessAs(QWordAcc),
-					Offset(1), f08f, 1983}
-				Store(Refof(f08f), Local3)
-				Store(Refof(g008), Local4)
-			}
-			default {
-				err(arg0, z145, __LINE__, 0, 0, arg2, arg3)
-				return
-			}
-		}
-	}
-	case (9) {
-		switch(ToInteger (arg3)) {
-			case (1) {
-				Store(9, Local2)
-				BankField(OPR0, BNK0, 9, QWordAcc, NoLock, Preserve) {
-					AccessAs(QWordAcc),
-					, 9, f090, 1}
-				Store(Refof(f090), Local3)
-				Store(Refof(g009), Local4)
-			}
-			case (6) {
-				Store(63, Local2)
-				BankField(OPR0, BNK0, 63, QWordAcc, NoLock, Preserve) {
-					, 9, f091, 6}
-				Store(Refof(f091), Local3)
-				Store(Refof(g00a), Local4)
-			}
-			case (7) {
-				Store(64, Local2)
-				BankField(OPR0, BNK0, 64, AnyAcc, NoLock, Preserve) {
-					AccessAs(QWordAcc),
-					, 9, f092, 7}
-				Store(Refof(f092), Local3)
-				Store(Refof(g00b), Local4)
-			}
-			case (8) {
-				Store(127, Local2)
-				BankField(OPR0, BNK0, 127, QWordAcc, NoLock, Preserve) {
-					, 9, f093, 8}
-				Store(Refof(f093), Local3)
-				Store(Refof(g00c), Local4)
-			}
-			case (9) {
-				Store(128, Local2)
-				BankField(OPR0, BNK0, 128, ByteAcc, NoLock, Preserve) {
-					AccessAs(QWordAcc),
-					, 9, f094, 9}
-				Store(Refof(f094), Local3)
-				Store(Refof(g00d), Local4)
-			}
-			case (31) {
-				Store(255, Local2)
-				BankField(OPR0, BNK0, 255, QWordAcc, NoLock, Preserve) {
-					, 9, f095, 31}
-				Store(Refof(f095), Local3)
-				Store(Refof(g00e), Local4)
-			}
-			case (32) {
-				Store(0, Local2)
-				BankField(OPR0, BNK0, 0, WordAcc, NoLock, Preserve) {
-					AccessAs(QWordAcc),
-					, 9, f096, 32}
-				Store(Refof(f096), Local3)
-				Store(Refof(g000), Local4)
-			}
-			case (33) {
-				Store(1, Local2)
-				BankField(OPR0, BNK0, 1, QWordAcc, NoLock, Preserve) {
-					, 9, f097, 33}
-				Store(Refof(f097), Local3)
-				Store(Refof(g001), Local4)
-			}
-			case (63) {
-				Store(2, Local2)
-				BankField(OPR0, BNK0, 2, DWordAcc, NoLock, Preserve) {
-					AccessAs(QWordAcc),
-					, 9, f098, 63}
-				Store(Refof(f098), Local3)
-				Store(Refof(g002), Local4)
-			}
-			case (64) {
-				Store(3, Local2)
-				BankField(OPR0, BNK0, 3, QWordAcc, NoLock, Preserve) {
-					, 9, f099, 64}
-				Store(Refof(f099), Local3)
-				Store(Refof(g003), Local4)
-			}
-			case (65) {
-				Store(4, Local2)
-				BankField(OPR0, BNK0, 4, QWordAcc, NoLock, Preserve) {
-					AccessAs(QWordAcc),
-					, 9, f09a, 65}
-				Store(Refof(f09a), Local3)
-				Store(Refof(g004), Local4)
-			}
-			case (69) {
-				Store(5, Local2)
-				BankField(OPR0, BNK0, 5, QWordAcc, NoLock, Preserve) {
-					, 9, f09b, 69}
-				Store(Refof(f09b), Local3)
-				Store(Refof(g005), Local4)
-			}
-			case (129) {
-				Store(6, Local2)
-				BankField(OPR0, BNK0, 6, AnyAcc, NoLock, Preserve) {
-					AccessAs(QWordAcc),
-					, 9, f09c, 129}
-				Store(Refof(f09c), Local3)
-				Store(Refof(g006), Local4)
-			}
-			case (256) {
-				Store(7, Local2)
-				BankField(OPR0, BNK0, 7, QWordAcc, NoLock, Preserve) {
-					, 9, f09d, 256}
-				Store(Refof(f09d), Local3)
-				Store(Refof(g007), Local4)
-			}
-			case (1023) {
-				Store(8, Local2)
-				BankField(OPR0, BNK0, 8, ByteAcc, NoLock, Preserve) {
-					AccessAs(QWordAcc),
-					, 9, f09e, 1023}
-				Store(Refof(f09e), Local3)
-				Store(Refof(g008), Local4)
-			}
-			case (1983) {
-				Store(9, Local2)
-				BankField(OPR0, BNK0, 9, QWordAcc, NoLock, Preserve) {
-					, 9, f09f, 1983}
-				Store(Refof(f09f), Local3)
-				Store(Refof(g009), Local4)
-			}
-			default {
-				err(arg0, z145, __LINE__, 0, 0, arg2, arg3)
-				return
-			}
-		}
-	}
-	case (31) {
-		switch(ToInteger (arg3)) {
-			case (1) {
-				Store(63, Local2)
-				BankField(OPR0, BNK0, 63, QWordAcc, NoLock, Preserve) {
-					Offset(3), , 7, f0a0, 1}
-				Store(Refof(f0a0), Local3)
-				Store(Refof(g00a), Local4)
-			}
-			case (6) {
-				Store(64, Local2)
-				BankField(OPR0, BNK0, 64, WordAcc, NoLock, Preserve) {
-					AccessAs(QWordAcc),
-					Offset(3), , 7, f0a1, 6}
-				Store(Refof(f0a1), Local3)
-				Store(Refof(g00b), Local4)
-			}
-			case (7) {
-				Store(127, Local2)
-				BankField(OPR0, BNK0, 127, QWordAcc, NoLock, Preserve) {
-					Offset(3), , 7, f0a2, 7}
-				Store(Refof(f0a2), Local3)
-				Store(Refof(g00c), Local4)
-			}
-			case (8) {
-				Store(128, Local2)
-				BankField(OPR0, BNK0, 128, DWordAcc, NoLock, Preserve) {
-					AccessAs(QWordAcc),
-					Offset(3), , 7, f0a3, 8}
-				Store(Refof(f0a3), Local3)
-				Store(Refof(g00d), Local4)
-			}
-			case (9) {
-				Store(255, Local2)
-				BankField(OPR0, BNK0, 255, QWordAcc, NoLock, Preserve) {
-					Offset(3), , 7, f0a4, 9}
-				Store(Refof(f0a4), Local3)
-				Store(Refof(g00e), Local4)
-			}
-			case (31) {
-				Store(0, Local2)
-				BankField(OPR0, BNK0, 0, QWordAcc, NoLock, Preserve) {
-					AccessAs(QWordAcc),
-					Offset(3), , 7, f0a5, 31}
-				Store(Refof(f0a5), Local3)
-				Store(Refof(g000), Local4)
-			}
-			case (32) {
-				Store(1, Local2)
-				BankField(OPR0, BNK0, 1, QWordAcc, NoLock, Preserve) {
-					Offset(3), , 7, f0a6, 32}
-				Store(Refof(f0a6), Local3)
-				Store(Refof(g001), Local4)
-			}
-			case (33) {
-				Store(2, Local2)
-				BankField(OPR0, BNK0, 2, AnyAcc, NoLock, Preserve) {
-					AccessAs(QWordAcc),
-					Offset(3), , 7, f0a7, 33}
-				Store(Refof(f0a7), Local3)
-				Store(Refof(g002), Local4)
-			}
-			case (63) {
-				Store(3, Local2)
-				BankField(OPR0, BNK0, 3, QWordAcc, NoLock, Preserve) {
-					Offset(3), , 7, f0a8, 63}
-				Store(Refof(f0a8), Local3)
-				Store(Refof(g003), Local4)
-			}
-			case (64) {
-				Store(4, Local2)
-				BankField(OPR0, BNK0, 4, ByteAcc, NoLock, Preserve) {
-					AccessAs(QWordAcc),
-					Offset(3), , 7, f0a9, 64}
-				Store(Refof(f0a9), Local3)
-				Store(Refof(g004), Local4)
-			}
-			case (65) {
-				Store(5, Local2)
-				BankField(OPR0, BNK0, 5, QWordAcc, NoLock, Preserve) {
-					Offset(3), , 7, f0aa, 65}
-				Store(Refof(f0aa), Local3)
-				Store(Refof(g005), Local4)
-			}
-			case (69) {
-				Store(6, Local2)
-				BankField(OPR0, BNK0, 6, WordAcc, NoLock, Preserve) {
-					AccessAs(QWordAcc),
-					Offset(3), , 7, f0ab, 69}
-				Store(Refof(f0ab), Local3)
-				Store(Refof(g006), Local4)
-			}
-			case (129) {
-				Store(7, Local2)
-				BankField(OPR0, BNK0, 7, QWordAcc, NoLock, Preserve) {
-					Offset(3), , 7, f0ac, 129}
-				Store(Refof(f0ac), Local3)
-				Store(Refof(g007), Local4)
-			}
-			case (256) {
-				Store(8, Local2)
-				BankField(OPR0, BNK0, 8, DWordAcc, NoLock, Preserve) {
-					AccessAs(QWordAcc),
-					Offset(3), , 7, f0ad, 256}
-				Store(Refof(f0ad), Local3)
-				Store(Refof(g008), Local4)
-			}
-			case (1023) {
-				Store(9, Local2)
-				BankField(OPR0, BNK0, 9, QWordAcc, NoLock, Preserve) {
-					Offset(3), , 7, f0ae, 1023}
-				Store(Refof(f0ae), Local3)
-				Store(Refof(g009), Local4)
-			}
-			case (1983) {
-				Store(63, Local2)
-				BankField(OPR0, BNK0, 63, QWordAcc, NoLock, Preserve) {
-					AccessAs(QWordAcc),
-					Offset(3), , 7, f0af, 1983}
-				Store(Refof(f0af), Local3)
-				Store(Refof(g00a), Local4)
-			}
-			default {
-				err(arg0, z145, __LINE__, 0, 0, arg2, arg3)
-				return
-			}
-		}
-	}
-	case (32) {
-		switch(ToInteger (arg3)) {
-			case (1) {
-				Store(64, Local2)
-				BankField(OPR0, BNK0, 64, AnyAcc, NoLock, Preserve) {
-					AccessAs(QWordAcc),
-					, 32, f0b0, 1}
-				Store(Refof(f0b0), Local3)
-				Store(Refof(g00b), Local4)
-			}
-			case (6) {
-				Store(127, Local2)
-				BankField(OPR0, BNK0, 127, QWordAcc, NoLock, Preserve) {
-					, 32, f0b1, 6}
-				Store(Refof(f0b1), Local3)
-				Store(Refof(g00c), Local4)
-			}
-			case (7) {
-				Store(128, Local2)
-				BankField(OPR0, BNK0, 128, ByteAcc, NoLock, Preserve) {
-					AccessAs(QWordAcc),
-					, 32, f0b2, 7}
-				Store(Refof(f0b2), Local3)
-				Store(Refof(g00d), Local4)
-			}
-			case (8) {
-				Store(255, Local2)
-				BankField(OPR0, BNK0, 255, QWordAcc, NoLock, Preserve) {
-					, 32, f0b3, 8}
-				Store(Refof(f0b3), Local3)
-				Store(Refof(g00e), Local4)
-			}
-			case (9) {
-				Store(0, Local2)
-				BankField(OPR0, BNK0, 0, WordAcc, NoLock, Preserve) {
-					AccessAs(QWordAcc),
-					, 32, f0b4, 9}
-				Store(Refof(f0b4), Local3)
-				Store(Refof(g000), Local4)
-			}
-			case (31) {
-				Store(1, Local2)
-				BankField(OPR0, BNK0, 1, QWordAcc, NoLock, Preserve) {
-					, 32, f0b5, 31}
-				Store(Refof(f0b5), Local3)
-				Store(Refof(g001), Local4)
-			}
-			case (32) {
-				Store(2, Local2)
-				BankField(OPR0, BNK0, 2, DWordAcc, NoLock, Preserve) {
-					AccessAs(QWordAcc),
-					, 32, f0b6, 32}
-				Store(Refof(f0b6), Local3)
-				Store(Refof(g002), Local4)
-			}
-			case (33) {
-				Store(3, Local2)
-				BankField(OPR0, BNK0, 3, QWordAcc, NoLock, Preserve) {
-					, 32, f0b7, 33}
-				Store(Refof(f0b7), Local3)
-				Store(Refof(g003), Local4)
-			}
-			case (63) {
-				Store(4, Local2)
-				BankField(OPR0, BNK0, 4, QWordAcc, NoLock, Preserve) {
-					AccessAs(QWordAcc),
-					, 32, f0b8, 63}
-				Store(Refof(f0b8), Local3)
-				Store(Refof(g004), Local4)
-			}
-			case (64) {
-				Store(5, Local2)
-				BankField(OPR0, BNK0, 5, QWordAcc, NoLock, Preserve) {
-					, 32, f0b9, 64}
-				Store(Refof(f0b9), Local3)
-				Store(Refof(g005), Local4)
-			}
-			case (65) {
-				Store(6, Local2)
-				BankField(OPR0, BNK0, 6, AnyAcc, NoLock, Preserve) {
-					AccessAs(QWordAcc),
-					, 32, f0ba, 65}
-				Store(Refof(f0ba), Local3)
-				Store(Refof(g006), Local4)
-			}
-			case (69) {
-				Store(7, Local2)
-				BankField(OPR0, BNK0, 7, QWordAcc, NoLock, Preserve) {
-					, 32, f0bb, 69}
-				Store(Refof(f0bb), Local3)
-				Store(Refof(g007), Local4)
-			}
-			case (129) {
-				Store(8, Local2)
-				BankField(OPR0, BNK0, 8, ByteAcc, NoLock, Preserve) {
-					AccessAs(QWordAcc),
-					, 32, f0bc, 129}
-				Store(Refof(f0bc), Local3)
-				Store(Refof(g008), Local4)
-			}
-			case (256) {
-				Store(9, Local2)
-				BankField(OPR0, BNK0, 9, QWordAcc, NoLock, Preserve) {
-					, 32, f0bd, 256}
-				Store(Refof(f0bd), Local3)
-				Store(Refof(g009), Local4)
-			}
-			case (1023) {
-				Store(63, Local2)
-				BankField(OPR0, BNK0, 63, WordAcc, NoLock, Preserve) {
-					AccessAs(QWordAcc),
-					, 32, f0be, 1023}
-				Store(Refof(f0be), Local3)
-				Store(Refof(g00a), Local4)
-			}
-			case (1983) {
-				Store(64, Local2)
-				BankField(OPR0, BNK0, 64, QWordAcc, NoLock, Preserve) {
-					, 32, f0bf, 1983}
-				Store(Refof(f0bf), Local3)
-				Store(Refof(g00b), Local4)
-			}
-			default {
-				err(arg0, z145, __LINE__, 0, 0, arg2, arg3)
-				return
-			}
-		}
-	}
-	case (33) {
-		switch(ToInteger (arg3)) {
-			case (1) {
-				Store(127, Local2)
-				BankField(OPR0, BNK0, 127, QWordAcc, NoLock, Preserve) {
-					, 33, f0c0, 1}
-				Store(Refof(f0c0), Local3)
-				Store(Refof(g00c), Local4)
-			}
-			case (6) {
-				Store(128, Local2)
-				BankField(OPR0, BNK0, 128, DWordAcc, NoLock, Preserve) {
-					AccessAs(QWordAcc),
-					, 33, f0c1, 6}
-				Store(Refof(f0c1), Local3)
-				Store(Refof(g00d), Local4)
-			}
-			case (7) {
-				Store(255, Local2)
-				BankField(OPR0, BNK0, 255, QWordAcc, NoLock, Preserve) {
-					, 33, f0c2, 7}
-				Store(Refof(f0c2), Local3)
-				Store(Refof(g00e), Local4)
-			}
-			case (8) {
-				Store(0, Local2)
-				BankField(OPR0, BNK0, 0, QWordAcc, NoLock, Preserve) {
-					AccessAs(QWordAcc),
-					, 33, f0c3, 8}
-				Store(Refof(f0c3), Local3)
-				Store(Refof(g000), Local4)
-			}
-			case (9) {
-				Store(1, Local2)
-				BankField(OPR0, BNK0, 1, QWordAcc, NoLock, Preserve) {
-					, 33, f0c4, 9}
-				Store(Refof(f0c4), Local3)
-				Store(Refof(g001), Local4)
-			}
-			case (31) {
-				Store(2, Local2)
-				BankField(OPR0, BNK0, 2, AnyAcc, NoLock, Preserve) {
-					AccessAs(QWordAcc),
-					, 33, f0c5, 31}
-				Store(Refof(f0c5), Local3)
-				Store(Refof(g002), Local4)
-			}
-			case (32) {
-				Store(3, Local2)
-				BankField(OPR0, BNK0, 3, QWordAcc, NoLock, Preserve) {
-					, 33, f0c6, 32}
-				Store(Refof(f0c6), Local3)
-				Store(Refof(g003), Local4)
-			}
-			case (33) {
-				Store(4, Local2)
-				BankField(OPR0, BNK0, 4, ByteAcc, NoLock, Preserve) {
-					AccessAs(QWordAcc),
-					, 33, f0c7, 33}
-				Store(Refof(f0c7), Local3)
-				Store(Refof(g004), Local4)
-			}
-			case (63) {
-				Store(5, Local2)
-				BankField(OPR0, BNK0, 5, QWordAcc, NoLock, Preserve) {
-					, 33, f0c8, 63}
-				Store(Refof(f0c8), Local3)
-				Store(Refof(g005), Local4)
-			}
-			case (64) {
-				Store(6, Local2)
-				BankField(OPR0, BNK0, 6, WordAcc, NoLock, Preserve) {
-					AccessAs(QWordAcc),
-					, 33, f0c9, 64}
-				Store(Refof(f0c9), Local3)
-				Store(Refof(g006), Local4)
-			}
-			case (65) {
-				Store(7, Local2)
-				BankField(OPR0, BNK0, 7, QWordAcc, NoLock, Preserve) {
-					, 33, f0ca, 65}
-				Store(Refof(f0ca), Local3)
-				Store(Refof(g007), Local4)
-			}
-			case (69) {
-				Store(8, Local2)
-				BankField(OPR0, BNK0, 8, DWordAcc, NoLock, Preserve) {
-					AccessAs(QWordAcc),
-					, 33, f0cb, 69}
-				Store(Refof(f0cb), Local3)
-				Store(Refof(g008), Local4)
-			}
-			case (129) {
-				Store(9, Local2)
-				BankField(OPR0, BNK0, 9, QWordAcc, NoLock, Preserve) {
-					, 33, f0cc, 129}
-				Store(Refof(f0cc), Local3)
-				Store(Refof(g009), Local4)
-			}
-			case (256) {
-				Store(63, Local2)
-				BankField(OPR0, BNK0, 63, QWordAcc, NoLock, Preserve) {
-					AccessAs(QWordAcc),
-					, 33, f0cd, 256}
-				Store(Refof(f0cd), Local3)
-				Store(Refof(g00a), Local4)
-			}
-			case (1023) {
-				Store(64, Local2)
-				BankField(OPR0, BNK0, 64, QWordAcc, NoLock, Preserve) {
-					, 33, f0ce, 1023}
-				Store(Refof(f0ce), Local3)
-				Store(Refof(g00b), Local4)
-			}
-			case (1983) {
-				Store(127, Local2)
-				BankField(OPR0, BNK0, 127, AnyAcc, NoLock, Preserve) {
-					AccessAs(QWordAcc),
-					, 33, f0cf, 1983}
-				Store(Refof(f0cf), Local3)
-				Store(Refof(g00c), Local4)
-			}
-			default {
-				err(arg0, z145, __LINE__, 0, 0, arg2, arg3)
-				return
-			}
-		}
-	}
-	case (63) {
-		switch(ToInteger (arg3)) {
-			case (1) {
-				Store(128, Local2)
-				BankField(OPR0, BNK0, 128, QWordAcc, NoLock, Preserve) {
-					AccessAs(QWordAcc),
-					, 63, f0d0, 1}
-				Store(Refof(f0d0), Local3)
-				Store(Refof(g00d), Local4)
-			}
-			case (6) {
-				Store(255, Local2)
-				BankField(OPR0, BNK0, 255, ByteAcc, NoLock, Preserve) {
-					, 63, f0d1, 6}
-				Store(Refof(f0d1), Local3)
-				Store(Refof(g00e), Local4)
-			}
-			case (7) {
-				Store(0, Local2)
-				BankField(OPR0, BNK0, 0, QWordAcc, NoLock, Preserve) {
-					AccessAs(QWordAcc),
-					, 63, f0d2, 7}
-				Store(Refof(f0d2), Local3)
-				Store(Refof(g000), Local4)
-			}
-			case (8) {
-				Store(1, Local2)
-				BankField(OPR0, BNK0, 1, WordAcc, NoLock, Preserve) {
-					, 63, f0d3, 8}
-				Store(Refof(f0d3), Local3)
-				Store(Refof(g001), Local4)
-			}
-			case (9) {
-				Store(2, Local2)
-				BankField(OPR0, BNK0, 2, QWordAcc, NoLock, Preserve) {
-					AccessAs(QWordAcc),
-					, 63, f0d4, 9}
-				Store(Refof(f0d4), Local3)
-				Store(Refof(g002), Local4)
-			}
-			case (31) {
-				Store(3, Local2)
-				BankField(OPR0, BNK0, 3, DWordAcc, NoLock, Preserve) {
-					, 63, f0d5, 31}
-				Store(Refof(f0d5), Local3)
-				Store(Refof(g003), Local4)
-			}
-			case (32) {
-				Store(4, Local2)
-				BankField(OPR0, BNK0, 4, QWordAcc, NoLock, Preserve) {
-					AccessAs(QWordAcc),
-					, 63, f0d6, 32}
-				Store(Refof(f0d6), Local3)
-				Store(Refof(g004), Local4)
-			}
-			case (33) {
-				Store(5, Local2)
-				BankField(OPR0, BNK0, 5, QWordAcc, NoLock, Preserve) {
-					, 63, f0d7, 33}
-				Store(Refof(f0d7), Local3)
-				Store(Refof(g005), Local4)
-			}
-			case (63) {
-				Store(6, Local2)
-				BankField(OPR0, BNK0, 6, AnyAcc, NoLock, Preserve) {
-					AccessAs(QWordAcc),
-					, 63, f0d8, 63}
-				Store(Refof(f0d8), Local3)
-				Store(Refof(g006), Local4)
-			}
-			case (64) {
-				Store(7, Local2)
-				BankField(OPR0, BNK0, 7, QWordAcc, NoLock, Preserve) {
-					, 63, f0d9, 64}
-				Store(Refof(f0d9), Local3)
-				Store(Refof(g007), Local4)
-			}
-			case (65) {
-				Store(8, Local2)
-				BankField(OPR0, BNK0, 8, ByteAcc, NoLock, Preserve) {
-					AccessAs(QWordAcc),
-					, 63, f0da, 65}
-				Store(Refof(f0da), Local3)
-				Store(Refof(g008), Local4)
-			}
-			case (69) {
-				Store(9, Local2)
-				BankField(OPR0, BNK0, 9, QWordAcc, NoLock, Preserve) {
-					, 63, f0db, 69}
-				Store(Refof(f0db), Local3)
-				Store(Refof(g009), Local4)
-			}
-			case (129) {
-				Store(63, Local2)
-				BankField(OPR0, BNK0, 63, WordAcc, NoLock, Preserve) {
-					AccessAs(QWordAcc),
-					, 63, f0dc, 129}
-				Store(Refof(f0dc), Local3)
-				Store(Refof(g00a), Local4)
-			}
-			case (256) {
-				Store(64, Local2)
-				BankField(OPR0, BNK0, 64, QWordAcc, NoLock, Preserve) {
-					, 63, f0dd, 256}
-				Store(Refof(f0dd), Local3)
-				Store(Refof(g00b), Local4)
-			}
-			case (1023) {
-				Store(127, Local2)
-				BankField(OPR0, BNK0, 127, DWordAcc, NoLock, Preserve) {
-					AccessAs(QWordAcc),
-					, 63, f0de, 1023}
-				Store(Refof(f0de), Local3)
-				Store(Refof(g00c), Local4)
-			}
-			case (1983) {
-				Store(128, Local2)
-				BankField(OPR0, BNK0, 128, QWordAcc, NoLock, Preserve) {
-					, 63, f0df, 1983}
-				Store(Refof(f0df), Local3)
-				Store(Refof(g00d), Local4)
-			}
-			default {
-				err(arg0, z145, __LINE__, 0, 0, arg2, arg3)
-				return
-			}
-		}
-	}
-	case (64) {
-		switch(ToInteger (arg3)) {
-			case (1) {
-				Store(255, Local2)
-				BankField(OPR0, BNK0, 255, QWordAcc, NoLock, Preserve) {
-					, 64, f0e0, 1}
-				Store(Refof(f0e0), Local3)
-				Store(Refof(g00e), Local4)
-			}
-			case (6) {
-				Store(0, Local2)
-				BankField(OPR0, BNK0, 0, QWordAcc, NoLock, Preserve) {
-					AccessAs(QWordAcc),
-					, 64, f0e1, 6}
-				Store(Refof(f0e1), Local3)
-				Store(Refof(g000), Local4)
-			}
-			case (7) {
-				Store(1, Local2)
-				BankField(OPR0, BNK0, 1, QWordAcc, NoLock, Preserve) {
-					, 64, f0e2, 7}
-				Store(Refof(f0e2), Local3)
-				Store(Refof(g001), Local4)
-			}
-			case (8) {
-				Store(2, Local2)
-				BankField(OPR0, BNK0, 2, AnyAcc, NoLock, Preserve) {
-					AccessAs(QWordAcc),
-					, 64, f0e3, 8}
-				Store(Refof(f0e3), Local3)
-				Store(Refof(g002), Local4)
-			}
-			case (9) {
-				Store(3, Local2)
-				BankField(OPR0, BNK0, 3, QWordAcc, NoLock, Preserve) {
-					, 64, f0e4, 9}
-				Store(Refof(f0e4), Local3)
-				Store(Refof(g003), Local4)
-			}
-			case (31) {
-				Store(4, Local2)
-				BankField(OPR0, BNK0, 4, ByteAcc, NoLock, Preserve) {
-					AccessAs(QWordAcc),
-					, 64, f0e5, 31}
-				Store(Refof(f0e5), Local3)
-				Store(Refof(g004), Local4)
-			}
-			case (32) {
-				Store(5, Local2)
-				BankField(OPR0, BNK0, 5, QWordAcc, NoLock, Preserve) {
-					, 64, f0e6, 32}
-				Store(Refof(f0e6), Local3)
-				Store(Refof(g005), Local4)
-			}
-			case (33) {
-				Store(6, Local2)
-				BankField(OPR0, BNK0, 6, WordAcc, NoLock, Preserve) {
-					AccessAs(QWordAcc),
-					, 64, f0e7, 33}
-				Store(Refof(f0e7), Local3)
-				Store(Refof(g006), Local4)
-			}
-			case (63) {
-				Store(7, Local2)
-				BankField(OPR0, BNK0, 7, QWordAcc, NoLock, Preserve) {
-					, 64, f0e8, 63}
-				Store(Refof(f0e8), Local3)
-				Store(Refof(g007), Local4)
-			}
-			case (64) {
-				Store(8, Local2)
-				BankField(OPR0, BNK0, 8, DWordAcc, NoLock, Preserve) {
-					AccessAs(QWordAcc),
-					, 64, f0e9, 64}
-				Store(Refof(f0e9), Local3)
-				Store(Refof(g008), Local4)
-			}
-			case (65) {
-				Store(9, Local2)
-				BankField(OPR0, BNK0, 9, QWordAcc, NoLock, Preserve) {
-					, 64, f0ea, 65}
-				Store(Refof(f0ea), Local3)
-				Store(Refof(g009), Local4)
-			}
-			case (69) {
-				Store(63, Local2)
-				BankField(OPR0, BNK0, 63, QWordAcc, NoLock, Preserve) {
-					AccessAs(QWordAcc),
-					, 64, f0eb, 69}
-				Store(Refof(f0eb), Local3)
-				Store(Refof(g00a), Local4)
-			}
-			case (129) {
-				Store(64, Local2)
-				BankField(OPR0, BNK0, 64, QWordAcc, NoLock, Preserve) {
-					, 64, f0ec, 129}
-				Store(Refof(f0ec), Local3)
-				Store(Refof(g00b), Local4)
-			}
-			case (256) {
-				Store(127, Local2)
-				BankField(OPR0, BNK0, 127, AnyAcc, NoLock, Preserve) {
-					AccessAs(QWordAcc),
-					, 64, f0ed, 256}
-				Store(Refof(f0ed), Local3)
-				Store(Refof(g00c), Local4)
-			}
-			case (1023) {
-				Store(128, Local2)
-				BankField(OPR0, BNK0, 128, QWordAcc, NoLock, Preserve) {
-					, 64, f0ee, 1023}
-				Store(Refof(f0ee), Local3)
-				Store(Refof(g00d), Local4)
-			}
-			case (1983) {
-				Store(255, Local2)
-				BankField(OPR0, BNK0, 255, ByteAcc, NoLock, Preserve) {
-					AccessAs(QWordAcc),
-					, 64, f0ef, 1983}
-				Store(Refof(f0ef), Local3)
-				Store(Refof(g00e), Local4)
-			}
-			default {
-				err(arg0, z145, __LINE__, 0, 0, arg2, arg3)
-				return
-			}
-		}
-	}
-	case (65) {
-		switch(ToInteger (arg3)) {
-			case (1) {
-				Store(0, Local2)
-				BankField(OPR0, BNK0, 0, WordAcc, NoLock, Preserve) {
-					AccessAs(QWordAcc),
-					Offset(8), , 1, f0f0, 1}
-				Store(Refof(f0f0), Local3)
-				Store(Refof(g000), Local4)
-			}
-			case (6) {
-				Store(1, Local2)
-				BankField(OPR0, BNK0, 1, QWordAcc, NoLock, Preserve) {
-					Offset(8), , 1, f0f1, 6}
-				Store(Refof(f0f1), Local3)
-				Store(Refof(g001), Local4)
-			}
-			case (7) {
-				Store(2, Local2)
-				BankField(OPR0, BNK0, 2, DWordAcc, NoLock, Preserve) {
-					AccessAs(QWordAcc),
-					Offset(8), , 1, f0f2, 7}
-				Store(Refof(f0f2), Local3)
-				Store(Refof(g002), Local4)
-			}
-			case (8) {
-				Store(3, Local2)
-				BankField(OPR0, BNK0, 3, QWordAcc, NoLock, Preserve) {
-					Offset(8), , 1, f0f3, 8}
-				Store(Refof(f0f3), Local3)
-				Store(Refof(g003), Local4)
-			}
-			case (9) {
-				Store(4, Local2)
-				BankField(OPR0, BNK0, 4, QWordAcc, NoLock, Preserve) {
-					AccessAs(QWordAcc),
-					Offset(8), , 1, f0f4, 9}
-				Store(Refof(f0f4), Local3)
-				Store(Refof(g004), Local4)
-			}
-			case (31) {
-				Store(5, Local2)
-				BankField(OPR0, BNK0, 5, QWordAcc, NoLock, Preserve) {
-					Offset(8), , 1, f0f5, 31}
-				Store(Refof(f0f5), Local3)
-				Store(Refof(g005), Local4)
-			}
-			case (32) {
-				Store(6, Local2)
-				BankField(OPR0, BNK0, 6, AnyAcc, NoLock, Preserve) {
-					AccessAs(QWordAcc),
-					Offset(8), , 1, f0f6, 32}
-				Store(Refof(f0f6), Local3)
-				Store(Refof(g006), Local4)
-			}
-			case (33) {
-				Store(7, Local2)
-				BankField(OPR0, BNK0, 7, QWordAcc, NoLock, Preserve) {
-					Offset(8), , 1, f0f7, 33}
-				Store(Refof(f0f7), Local3)
-				Store(Refof(g007), Local4)
-			}
-			case (63) {
-				Store(8, Local2)
-				BankField(OPR0, BNK0, 8, ByteAcc, NoLock, Preserve) {
-					AccessAs(QWordAcc),
-					Offset(8), , 1, f0f8, 63}
-				Store(Refof(f0f8), Local3)
-				Store(Refof(g008), Local4)
-			}
-			case (64) {
-				Store(9, Local2)
-				BankField(OPR0, BNK0, 9, QWordAcc, NoLock, Preserve) {
-					Offset(8), , 1, f0f9, 64}
-				Store(Refof(f0f9), Local3)
-				Store(Refof(g009), Local4)
-			}
-			case (65) {
-				Store(63, Local2)
-				BankField(OPR0, BNK0, 63, WordAcc, NoLock, Preserve) {
-					AccessAs(QWordAcc),
-					Offset(8), , 1, f0fa, 65}
-				Store(Refof(f0fa), Local3)
-				Store(Refof(g00a), Local4)
-			}
-			case (69) {
-				Store(64, Local2)
-				BankField(OPR0, BNK0, 64, QWordAcc, NoLock, Preserve) {
-					Offset(8), , 1, f0fb, 69}
-				Store(Refof(f0fb), Local3)
-				Store(Refof(g00b), Local4)
-			}
-			case (129) {
-				Store(127, Local2)
-				BankField(OPR0, BNK0, 127, DWordAcc, NoLock, Preserve) {
-					AccessAs(QWordAcc),
-					Offset(8), , 1, f0fc, 129}
-				Store(Refof(f0fc), Local3)
-				Store(Refof(g00c), Local4)
-			}
-			case (256) {
-				Store(128, Local2)
-				BankField(OPR0, BNK0, 128, QWordAcc, NoLock, Preserve) {
-					Offset(8), , 1, f0fd, 256}
-				Store(Refof(f0fd), Local3)
-				Store(Refof(g00d), Local4)
-			}
-			case (1023) {
-				Store(255, Local2)
-				BankField(OPR0, BNK0, 255, QWordAcc, NoLock, Preserve) {
-					AccessAs(QWordAcc),
-					Offset(8), , 1, f0fe, 1023}
-				Store(Refof(f0fe), Local3)
-				Store(Refof(g00e), Local4)
-			}
-			case (1983) {
-				Store(0, Local2)
-				BankField(OPR0, BNK0, 0, QWordAcc, NoLock, Preserve) {
-					Offset(8), , 1, f0ff, 1983}
-				Store(Refof(f0ff), Local3)
-				Store(Refof(g000), Local4)
-			}
-			default {
-				err(arg0, z145, __LINE__, 0, 0, arg2, arg3)
-				return
-			}
-		}
-	}
-	default {
-		err(arg0, z145, __LINE__, 0, 0, arg2, arg3)
-		return}
-	}
-
-	Store(2, Index(fcp0, 0))
-	Store(Refof(BNK0), Index(fcp0, 1))
-	Store(Local2, Index(fcp0, 2))
-	m72d(arg0, Local3, arg2, arg3, arg4, arg5, Local4)
-	Store(0, Index(fcp0, 0))
-}
-
-// Create BankField Unit
-// (AnyAcc, Lock, Preserve)
-Method(m7d4, 6, Serialized)
-{
-	OperationRegion(OPRb, SystemIO, 0, 9)
-	OperationRegion(OPR0, SystemIO, 11, 256)
-
-	Field(OPRb, ByteAcc, NoLock, Preserve) {
-		BNK0, 8,
-	}
-	BankField(OPR0, BNK0, 0, ByteAcc, NoLock, Preserve) {
-		g000, 2048,
-	}
-	BankField(OPR0, BNK0, 1, ByteAcc, NoLock, Preserve) {
-		g001, 2048,
-	}
-	BankField(OPR0, BNK0, 2, ByteAcc, NoLock, Preserve) {
-		g002, 2048,
-	}
-	BankField(OPR0, BNK0, 3, ByteAcc, NoLock, Preserve) {
-		g003, 2048,
-	}
-	BankField(OPR0, BNK0, 4, ByteAcc, NoLock, Preserve) {
-		g004, 2048,
-	}
-	BankField(OPR0, BNK0, 5, ByteAcc, NoLock, Preserve) {
-		g005, 2048,
-	}
-	BankField(OPR0, BNK0, 6, ByteAcc, NoLock, Preserve) {
-		g006, 2048,
-	}
-	BankField(OPR0, BNK0, 7, ByteAcc, NoLock, Preserve) {
-		g007, 2048,
-	}
-	BankField(OPR0, BNK0, 8, ByteAcc, NoLock, Preserve) {
-		g008, 2048,
-	}
-	BankField(OPR0, BNK0, 9, ByteAcc, NoLock, Preserve) {
-		g009, 2048,
-	}
-	BankField(OPR0, BNK0, 63, ByteAcc, NoLock, Preserve) {
-		g00a, 2048,
-	}
-	BankField(OPR0, BNK0, 64, ByteAcc, NoLock, Preserve) {
-		g00b, 2048,
-	}
-	BankField(OPR0, BNK0, 127, ByteAcc, NoLock, Preserve) {
-		g00c, 2048,
-	}
-	BankField(OPR0, BNK0, 128, ByteAcc, NoLock, Preserve) {
-		g00d, 2048,
-	}
-	BankField(OPR0, BNK0, 255, ByteAcc, NoLock, Preserve) {
-		g00e, 2048,
-	}
-
-
-	Concatenate(arg0, "-m7d4", arg0)
-
-	switch(ToInteger (arg2)) {
-	case (0) {
-		switch(ToInteger (arg3)) {
-			case (1) {
-				Store(0, Local2)
-				BankField(OPR0, BNK0, 0, AnyAcc, Lock, Preserve) {
-					, 0, f000, 1}
-				Store(Refof(f000), Local3)
-				Store(Refof(g000), Local4)
-			}
-			case (6) {
-				Store(1, Local2)
-				BankField(OPR0, BNK0, 1, WordAcc, Lock, Preserve) {
-					AccessAs(AnyAcc),
-					, 0, f001, 6}
-				Store(Refof(f001), Local3)
-				Store(Refof(g001), Local4)
-			}
-			case (7) {
-				Store(2, Local2)
-				BankField(OPR0, BNK0, 2, AnyAcc, Lock, Preserve) {
-					, 0, f002, 7}
-				Store(Refof(f002), Local3)
-				Store(Refof(g002), Local4)
-			}
-			case (8) {
-				Store(3, Local2)
-				BankField(OPR0, BNK0, 3, DWordAcc, Lock, Preserve) {
-					AccessAs(AnyAcc),
-					, 0, f003, 8}
-				Store(Refof(f003), Local3)
-				Store(Refof(g003), Local4)
-			}
-			case (9) {
-				Store(4, Local2)
-				BankField(OPR0, BNK0, 4, AnyAcc, Lock, Preserve) {
-					, 0, f004, 9}
-				Store(Refof(f004), Local3)
-				Store(Refof(g004), Local4)
-			}
-			case (31) {
-				Store(5, Local2)
-				BankField(OPR0, BNK0, 5, QWordAcc, Lock, Preserve) {
-					AccessAs(AnyAcc),
-					, 0, f005, 31}
-				Store(Refof(f005), Local3)
-				Store(Refof(g005), Local4)
-			}
-			case (32) {
-				Store(6, Local2)
-				BankField(OPR0, BNK0, 6, AnyAcc, Lock, Preserve) {
-					, 0, f006, 32}
-				Store(Refof(f006), Local3)
-				Store(Refof(g006), Local4)
-			}
-			case (33) {
-				Store(7, Local2)
-				BankField(OPR0, BNK0, 7, AnyAcc, Lock, Preserve) {
-					AccessAs(AnyAcc),
-					, 0, f007, 33}
-				Store(Refof(f007), Local3)
-				Store(Refof(g007), Local4)
-			}
-			case (63) {
-				Store(8, Local2)
-				BankField(OPR0, BNK0, 8, AnyAcc, Lock, Preserve) {
-					, 0, f008, 63}
-				Store(Refof(f008), Local3)
-				Store(Refof(g008), Local4)
-			}
-			case (64) {
-				Store(9, Local2)
-				BankField(OPR0, BNK0, 9, ByteAcc, Lock, Preserve) {
-					AccessAs(AnyAcc),
-					, 0, f009, 64}
-				Store(Refof(f009), Local3)
-				Store(Refof(g009), Local4)
-			}
-			case (65) {
-				Store(63, Local2)
-				BankField(OPR0, BNK0, 63, AnyAcc, Lock, Preserve) {
-					, 0, f00a, 65}
-				Store(Refof(f00a), Local3)
-				Store(Refof(g00a), Local4)
-			}
-			case (69) {
-				Store(64, Local2)
-				BankField(OPR0, BNK0, 64, WordAcc, Lock, Preserve) {
-					AccessAs(AnyAcc),
-					, 0, f00b, 69}
-				Store(Refof(f00b), Local3)
-				Store(Refof(g00b), Local4)
-			}
-			case (129) {
-				Store(127, Local2)
-				BankField(OPR0, BNK0, 127, AnyAcc, Lock, Preserve) {
-					, 0, f00c, 129}
-				Store(Refof(f00c), Local3)
-				Store(Refof(g00c), Local4)
-			}
-			case (256) {
-				Store(128, Local2)
-				BankField(OPR0, BNK0, 128, DWordAcc, Lock, Preserve) {
-					AccessAs(AnyAcc),
-					, 0, f00d, 256}
-				Store(Refof(f00d), Local3)
-				Store(Refof(g00d), Local4)
-			}
-			case (1023) {
-				Store(255, Local2)
-				BankField(OPR0, BNK0, 255, AnyAcc, Lock, Preserve) {
-					, 0, f00e, 1023}
-				Store(Refof(f00e), Local3)
-				Store(Refof(g00e), Local4)
-			}
-			case (1983) {
-				Store(0, Local2)
-				BankField(OPR0, BNK0, 0, QWordAcc, Lock, Preserve) {
-					AccessAs(AnyAcc),
-					, 0, f00f, 1983}
-				Store(Refof(f00f), Local3)
-				Store(Refof(g000), Local4)
-			}
-			default {
-				err(arg0, z145, __LINE__, 0, 0, arg2, arg3)
-				return
-			}
-		}
-	}
-	case (1) {
-		switch(ToInteger (arg3)) {
-			case (1) {
-				Store(1, Local2)
-				BankField(OPR0, BNK0, 1, AnyAcc, Lock, Preserve) {
-					AccessAs(AnyAcc),
-					, 1, f010, 1}
-				Store(Refof(f010), Local3)
-				Store(Refof(g001), Local4)
-			}
-			case (6) {
-				Store(2, Local2)
-				BankField(OPR0, BNK0, 2, AnyAcc, Lock, Preserve) {
-					, 1, f011, 6}
-				Store(Refof(f011), Local3)
-				Store(Refof(g002), Local4)
-			}
-			case (7) {
-				Store(3, Local2)
-				BankField(OPR0, BNK0, 3, AnyAcc, Lock, Preserve) {
-					AccessAs(AnyAcc),
-					, 1, f012, 7}
-				Store(Refof(f012), Local3)
-				Store(Refof(g003), Local4)
-			}
-			case (8) {
-				Store(4, Local2)
-				BankField(OPR0, BNK0, 4, ByteAcc, Lock, Preserve) {
-					, 1, f013, 8}
-				Store(Refof(f013), Local3)
-				Store(Refof(g004), Local4)
-			}
-			case (9) {
-				Store(5, Local2)
-				BankField(OPR0, BNK0, 5, WordAcc, Lock, Preserve) {
-					AccessAs(AnyAcc),
-					, 1, f014, 9}
-				Store(Refof(f014), Local3)
-				Store(Refof(g005), Local4)
-			}
-			case (31) {
-				Store(6, Local2)
-				BankField(OPR0, BNK0, 6, AnyAcc, Lock, Preserve) {
-					, 1, f015, 31}
-				Store(Refof(f015), Local3)
-				Store(Refof(g006), Local4)
-			}
-			case (32) {
-				Store(7, Local2)
-				BankField(OPR0, BNK0, 7, DWordAcc, Lock, Preserve) {
-					AccessAs(AnyAcc),
-					, 1, f016, 32}
-				Store(Refof(f016), Local3)
-				Store(Refof(g007), Local4)
-			}
-			case (33) {
-				Store(8, Local2)
-				BankField(OPR0, BNK0, 8, AnyAcc, Lock, Preserve) {
-					, 1, f017, 33}
-				Store(Refof(f017), Local3)
-				Store(Refof(g008), Local4)
-			}
-			case (63) {
-				Store(9, Local2)
-				BankField(OPR0, BNK0, 9, QWordAcc, Lock, Preserve) {
-					AccessAs(AnyAcc),
-					, 1, f018, 63}
-				Store(Refof(f018), Local3)
-				Store(Refof(g009), Local4)
-			}
-			case (64) {
-				Store(63, Local2)
-				BankField(OPR0, BNK0, 63, AnyAcc, Lock, Preserve) {
-					, 1, f019, 64}
-				Store(Refof(f019), Local3)
-				Store(Refof(g00a), Local4)
-			}
-			case (65) {
-				Store(64, Local2)
-				BankField(OPR0, BNK0, 64, AnyAcc, Lock, Preserve) {
-					AccessAs(AnyAcc),
-					, 1, f01a, 65}
-				Store(Refof(f01a), Local3)
-				Store(Refof(g00b), Local4)
-			}
-			case (69) {
-				Store(127, Local2)
-				BankField(OPR0, BNK0, 127, AnyAcc, Lock, Preserve) {
-					, 1, f01b, 69}
-				Store(Refof(f01b), Local3)
-				Store(Refof(g00c), Local4)
-			}
-			case (129) {
-				Store(128, Local2)
-				BankField(OPR0, BNK0, 128, ByteAcc, Lock, Preserve) {
-					AccessAs(AnyAcc),
-					, 1, f01c, 129}
-				Store(Refof(f01c), Local3)
-				Store(Refof(g00d), Local4)
-			}
-			case (256) {
-				Store(255, Local2)
-				BankField(OPR0, BNK0, 255, AnyAcc, Lock, Preserve) {
-					, 1, f01d, 256}
-				Store(Refof(f01d), Local3)
-				Store(Refof(g00e), Local4)
-			}
-			case (1023) {
-				Store(0, Local2)
-				BankField(OPR0, BNK0, 0, WordAcc, Lock, Preserve) {
-					AccessAs(AnyAcc),
-					, 1, f01e, 1023}
-				Store(Refof(f01e), Local3)
-				Store(Refof(g000), Local4)
-			}
-			case (1983) {
-				Store(1, Local2)
-				BankField(OPR0, BNK0, 1, AnyAcc, Lock, Preserve) {
-					, 1, f01f, 1983}
-				Store(Refof(f01f), Local3)
-				Store(Refof(g001), Local4)
-			}
-			default {
-				err(arg0, z145, __LINE__, 0, 0, arg2, arg3)
-				return
-			}
-		}
-	}
-	case (2) {
-		switch(ToInteger (arg3)) {
-			case (1) {
-				Store(2, Local2)
-				BankField(OPR0, BNK0, 2, AnyAcc, Lock, Preserve) {
-					, 2, f020, 1}
-				Store(Refof(f020), Local3)
-				Store(Refof(g002), Local4)
-			}
-			case (6) {
-				Store(3, Local2)
-				BankField(OPR0, BNK0, 3, DWordAcc, Lock, Preserve) {
-					AccessAs(AnyAcc),
-					, 2, f021, 6}
-				Store(Refof(f021), Local3)
-				Store(Refof(g003), Local4)
-			}
-			case (7) {
-				Store(4, Local2)
-				BankField(OPR0, BNK0, 4, AnyAcc, Lock, Preserve) {
-					, 2, f022, 7}
-				Store(Refof(f022), Local3)
-				Store(Refof(g004), Local4)
-			}
-			case (8) {
-				Store(5, Local2)
-				BankField(OPR0, BNK0, 5, QWordAcc, Lock, Preserve) {
-					AccessAs(AnyAcc),
-					, 2, f023, 8}
-				Store(Refof(f023), Local3)
-				Store(Refof(g005), Local4)
-			}
-			case (9) {
-				Store(6, Local2)
-				BankField(OPR0, BNK0, 6, AnyAcc, Lock, Preserve) {
-					, 2, f024, 9}
-				Store(Refof(f024), Local3)
-				Store(Refof(g006), Local4)
-			}
-			case (31) {
-				Store(7, Local2)
-				BankField(OPR0, BNK0, 7, AnyAcc, Lock, Preserve) {
-					AccessAs(AnyAcc),
-					, 2, f025, 31}
-				Store(Refof(f025), Local3)
-				Store(Refof(g007), Local4)
-			}
-			case (32) {
-				Store(8, Local2)
-				BankField(OPR0, BNK0, 8, AnyAcc, Lock, Preserve) {
-					, 2, f026, 32}
-				Store(Refof(f026), Local3)
-				Store(Refof(g008), Local4)
-			}
-			case (33) {
-				Store(9, Local2)
-				BankField(OPR0, BNK0, 9, ByteAcc, Lock, Preserve) {
-					AccessAs(AnyAcc),
-					, 2, f027, 33}
-				Store(Refof(f027), Local3)
-				Store(Refof(g009), Local4)
-			}
-			case (63) {
-				Store(63, Local2)
-				BankField(OPR0, BNK0, 63, AnyAcc, Lock, Preserve) {
-					, 2, f028, 63}
-				Store(Refof(f028), Local3)
-				Store(Refof(g00a), Local4)
-			}
-			case (64) {
-				Store(64, Local2)
-				BankField(OPR0, BNK0, 64, WordAcc, Lock, Preserve) {
-					AccessAs(AnyAcc),
-					, 2, f029, 64}
-				Store(Refof(f029), Local3)
-				Store(Refof(g00b), Local4)
-			}
-			case (65) {
-				Store(127, Local2)
-				BankField(OPR0, BNK0, 127, AnyAcc, Lock, Preserve) {
-					, 2, f02a, 65}
-				Store(Refof(f02a), Local3)
-				Store(Refof(g00c), Local4)
-			}
-			case (69) {
-				Store(128, Local2)
-				BankField(OPR0, BNK0, 128, DWordAcc, Lock, Preserve) {
-					AccessAs(AnyAcc),
-					, 2, f02b, 69}
-				Store(Refof(f02b), Local3)
-				Store(Refof(g00d), Local4)
-			}
-			case (129) {
-				Store(255, Local2)
-				BankField(OPR0, BNK0, 255, AnyAcc, Lock, Preserve) {
-					, 2, f02c, 129}
-				Store(Refof(f02c), Local3)
-				Store(Refof(g00e), Local4)
-			}
-			case (256) {
-				Store(0, Local2)
-				BankField(OPR0, BNK0, 0, QWordAcc, Lock, Preserve) {
-					AccessAs(AnyAcc),
-					, 2, f02d, 256}
-				Store(Refof(f02d), Local3)
-				Store(Refof(g000), Local4)
-			}
-			case (1023) {
-				Store(1, Local2)
-				BankField(OPR0, BNK0, 1, AnyAcc, Lock, Preserve) {
-					, 2, f02e, 1023}
-				Store(Refof(f02e), Local3)
-				Store(Refof(g001), Local4)
-			}
-			case (1983) {
-				Store(2, Local2)
-				BankField(OPR0, BNK0, 2, AnyAcc, Lock, Preserve) {
-					AccessAs(AnyAcc),
-					, 2, f02f, 1983}
-				Store(Refof(f02f), Local3)
-				Store(Refof(g002), Local4)
-			}
-			default {
-				err(arg0, z145, __LINE__, 0, 0, arg2, arg3)
-				return
-			}
-		}
-	}
-	case (3) {
-		switch(ToInteger (arg3)) {
-			case (1) {
-				Store(3, Local2)
-				BankField(OPR0, BNK0, 3, ByteAcc, Lock, Preserve) {
-					AccessAs(AnyAcc),
-					, 3, f030, 1}
-				Store(Refof(f030), Local3)
-				Store(Refof(g003), Local4)
-			}
-			case (6) {
-				Store(4, Local2)
-				BankField(OPR0, BNK0, 4, AnyAcc, Lock, Preserve) {
-					, 3, f031, 6}
-				Store(Refof(f031), Local3)
-				Store(Refof(g004), Local4)
-			}
-			case (7) {
-				Store(5, Local2)
-				BankField(OPR0, BNK0, 5, WordAcc, Lock, Preserve) {
-					AccessAs(AnyAcc),
-					, 3, f032, 7}
-				Store(Refof(f032), Local3)
-				Store(Refof(g005), Local4)
-			}
-			case (8) {
-				Store(6, Local2)
-				BankField(OPR0, BNK0, 6, AnyAcc, Lock, Preserve) {
-					, 3, f033, 8}
-				Store(Refof(f033), Local3)
-				Store(Refof(g006), Local4)
-			}
-			case (9) {
-				Store(7, Local2)
-				BankField(OPR0, BNK0, 7, DWordAcc, Lock, Preserve) {
-					AccessAs(AnyAcc),
-					, 3, f034, 9}
-				Store(Refof(f034), Local3)
-				Store(Refof(g007), Local4)
-			}
-			case (31) {
-				Store(8, Local2)
-				BankField(OPR0, BNK0, 8, AnyAcc, Lock, Preserve) {
-					, 3, f035, 31}
-				Store(Refof(f035), Local3)
-				Store(Refof(g008), Local4)
-			}
-			case (32) {
-				Store(9, Local2)
-				BankField(OPR0, BNK0, 9, QWordAcc, Lock, Preserve) {
-					AccessAs(AnyAcc),
-					, 3, f036, 32}
-				Store(Refof(f036), Local3)
-				Store(Refof(g009), Local4)
-			}
-			case (33) {
-				Store(63, Local2)
-				BankField(OPR0, BNK0, 63, AnyAcc, Lock, Preserve) {
-					, 3, f037, 33}
-				Store(Refof(f037), Local3)
-				Store(Refof(g00a), Local4)
-			}
-			case (63) {
-				Store(64, Local2)
-				BankField(OPR0, BNK0, 64, AnyAcc, Lock, Preserve) {
-					AccessAs(AnyAcc),
-					, 3, f038, 63}
-				Store(Refof(f038), Local3)
-				Store(Refof(g00b), Local4)
-			}
-			case (64) {
-				Store(127, Local2)
-				BankField(OPR0, BNK0, 127, AnyAcc, Lock, Preserve) {
-					, 3, f039, 64}
-				Store(Refof(f039), Local3)
-				Store(Refof(g00c), Local4)
-			}
-			case (65) {
-				Store(128, Local2)
-				BankField(OPR0, BNK0, 128, ByteAcc, Lock, Preserve) {
-					AccessAs(AnyAcc),
-					, 3, f03a, 65}
-				Store(Refof(f03a), Local3)
-				Store(Refof(g00d), Local4)
-			}
-			case (69) {
-				Store(255, Local2)
-				BankField(OPR0, BNK0, 255, AnyAcc, Lock, Preserve) {
-					, 3, f03b, 69}
-				Store(Refof(f03b), Local3)
-				Store(Refof(g00e), Local4)
-			}
-			case (129) {
-				Store(0, Local2)
-				BankField(OPR0, BNK0, 0, WordAcc, Lock, Preserve) {
-					AccessAs(AnyAcc),
-					, 3, f03c, 129}
-				Store(Refof(f03c), Local3)
-				Store(Refof(g000), Local4)
-			}
-			case (256) {
-				Store(1, Local2)
-				BankField(OPR0, BNK0, 1, AnyAcc, Lock, Preserve) {
-					, 3, f03d, 256}
-				Store(Refof(f03d), Local3)
-				Store(Refof(g001), Local4)
-			}
-			case (1023) {
-				Store(2, Local2)
-				BankField(OPR0, BNK0, 2, DWordAcc, Lock, Preserve) {
-					AccessAs(AnyAcc),
-					, 3, f03e, 1023}
-				Store(Refof(f03e), Local3)
-				Store(Refof(g002), Local4)
-			}
-			case (1983) {
-				Store(3, Local2)
-				BankField(OPR0, BNK0, 3, AnyAcc, Lock, Preserve) {
-					, 3, f03f, 1983}
-				Store(Refof(f03f), Local3)
-				Store(Refof(g003), Local4)
-			}
-			default {
-				err(arg0, z145, __LINE__, 0, 0, arg2, arg3)
-				return
-			}
-		}
-	}
-	case (4) {
-		switch(ToInteger (arg3)) {
-			case (1) {
-				Store(4, Local2)
-				BankField(OPR0, BNK0, 4, AnyAcc, Lock, Preserve) {
-					, 4, f040, 1}
-				Store(Refof(f040), Local3)
-				Store(Refof(g004), Local4)
-			}
-			case (6) {
-				Store(5, Local2)
-				BankField(OPR0, BNK0, 5, QWordAcc, Lock, Preserve) {
-					AccessAs(AnyAcc),
-					, 4, f041, 6}
-				Store(Refof(f041), Local3)
-				Store(Refof(g005), Local4)
-			}
-			case (7) {
-				Store(6, Local2)
-				BankField(OPR0, BNK0, 6, AnyAcc, Lock, Preserve) {
-					, 4, f042, 7}
-				Store(Refof(f042), Local3)
-				Store(Refof(g006), Local4)
-			}
-			case (8) {
-				Store(7, Local2)
-				BankField(OPR0, BNK0, 7, AnyAcc, Lock, Preserve) {
-					AccessAs(AnyAcc),
-					, 4, f043, 8}
-				Store(Refof(f043), Local3)
-				Store(Refof(g007), Local4)
-			}
-			case (9) {
-				Store(8, Local2)
-				BankField(OPR0, BNK0, 8, AnyAcc, Lock, Preserve) {
-					, 4, f044, 9}
-				Store(Refof(f044), Local3)
-				Store(Refof(g008), Local4)
-			}
-			case (31) {
-				Store(9, Local2)
-				BankField(OPR0, BNK0, 9, ByteAcc, Lock, Preserve) {
-					AccessAs(AnyAcc),
-					, 4, f045, 31}
-				Store(Refof(f045), Local3)
-				Store(Refof(g009), Local4)
-			}
-			case (32) {
-				Store(63, Local2)
-				BankField(OPR0, BNK0, 63, AnyAcc, Lock, Preserve) {
-					, 4, f046, 32}
-				Store(Refof(f046), Local3)
-				Store(Refof(g00a), Local4)
-			}
-			case (33) {
-				Store(64, Local2)
-				BankField(OPR0, BNK0, 64, WordAcc, Lock, Preserve) {
-					AccessAs(AnyAcc),
-					, 4, f047, 33}
-				Store(Refof(f047), Local3)
-				Store(Refof(g00b), Local4)
-			}
-			case (63) {
-				Store(127, Local2)
-				BankField(OPR0, BNK0, 127, AnyAcc, Lock, Preserve) {
-					, 4, f048, 63}
-				Store(Refof(f048), Local3)
-				Store(Refof(g00c), Local4)
-			}
-			case (64) {
-				Store(128, Local2)
-				BankField(OPR0, BNK0, 128, DWordAcc, Lock, Preserve) {
-					AccessAs(AnyAcc),
-					, 4, f049, 64}
-				Store(Refof(f049), Local3)
-				Store(Refof(g00d), Local4)
-			}
-			case (65) {
-				Store(255, Local2)
-				BankField(OPR0, BNK0, 255, AnyAcc, Lock, Preserve) {
-					, 4, f04a, 65}
-				Store(Refof(f04a), Local3)
-				Store(Refof(g00e), Local4)
-			}
-			case (69) {
-				Store(0, Local2)
-				BankField(OPR0, BNK0, 0, QWordAcc, Lock, Preserve) {
-					AccessAs(AnyAcc),
-					, 4, f04b, 69}
-				Store(Refof(f04b), Local3)
-				Store(Refof(g000), Local4)
-			}
-			case (129) {
-				Store(1, Local2)
-				BankField(OPR0, BNK0, 1, AnyAcc, Lock, Preserve) {
-					, 4, f04c, 129}
-				Store(Refof(f04c), Local3)
-				Store(Refof(g001), Local4)
-			}
-			case (256) {
-				Store(2, Local2)
-				BankField(OPR0, BNK0, 2, AnyAcc, Lock, Preserve) {
-					AccessAs(AnyAcc),
-					, 4, f04d, 256}
-				Store(Refof(f04d), Local3)
-				Store(Refof(g002), Local4)
-			}
-			case (1023) {
-				Store(3, Local2)
-				BankField(OPR0, BNK0, 3, AnyAcc, Lock, Preserve) {
-					, 4, f04e, 1023}
-				Store(Refof(f04e), Local3)
-				Store(Refof(g003), Local4)
-			}
-			case (1983) {
-				Store(4, Local2)
-				BankField(OPR0, BNK0, 4, ByteAcc, Lock, Preserve) {
-					AccessAs(AnyAcc),
-					, 4, f04f, 1983}
-				Store(Refof(f04f), Local3)
-				Store(Refof(g004), Local4)
-			}
-			default {
-				err(arg0, z145, __LINE__, 0, 0, arg2, arg3)
-				return
-			}
-		}
-	}
-	case (5) {
-		switch(ToInteger (arg3)) {
-			case (1) {
-				Store(5, Local2)
-				BankField(OPR0, BNK0, 5, WordAcc, Lock, Preserve) {
-					AccessAs(AnyAcc),
-					, 5, f050, 1}
-				Store(Refof(f050), Local3)
-				Store(Refof(g005), Local4)
-			}
-			case (6) {
-				Store(6, Local2)
-				BankField(OPR0, BNK0, 6, AnyAcc, Lock, Preserve) {
-					, 5, f051, 6}
-				Store(Refof(f051), Local3)
-				Store(Refof(g006), Local4)
-			}
-			case (7) {
-				Store(7, Local2)
-				BankField(OPR0, BNK0, 7, DWordAcc, Lock, Preserve) {
-					AccessAs(AnyAcc),
-					, 5, f052, 7}
-				Store(Refof(f052), Local3)
-				Store(Refof(g007), Local4)
-			}
-			case (8) {
-				Store(8, Local2)
-				BankField(OPR0, BNK0, 8, AnyAcc, Lock, Preserve) {
-					, 5, f053, 8}
-				Store(Refof(f053), Local3)
-				Store(Refof(g008), Local4)
-			}
-			case (9) {
-				Store(9, Local2)
-				BankField(OPR0, BNK0, 9, QWordAcc, Lock, Preserve) {
-					AccessAs(AnyAcc),
-					, 5, f054, 9}
-				Store(Refof(f054), Local3)
-				Store(Refof(g009), Local4)
-			}
-			case (31) {
-				Store(63, Local2)
-				BankField(OPR0, BNK0, 63, AnyAcc, Lock, Preserve) {
-					, 5, f055, 31}
-				Store(Refof(f055), Local3)
-				Store(Refof(g00a), Local4)
-			}
-			case (32) {
-				Store(64, Local2)
-				BankField(OPR0, BNK0, 64, AnyAcc, Lock, Preserve) {
-					AccessAs(AnyAcc),
-					, 5, f056, 32}
-				Store(Refof(f056), Local3)
-				Store(Refof(g00b), Local4)
-			}
-			case (33) {
-				Store(127, Local2)
-				BankField(OPR0, BNK0, 127, AnyAcc, Lock, Preserve) {
-					, 5, f057, 33}
-				Store(Refof(f057), Local3)
-				Store(Refof(g00c), Local4)
-			}
-			case (63) {
-				Store(128, Local2)
-				BankField(OPR0, BNK0, 128, ByteAcc, Lock, Preserve) {
-					AccessAs(AnyAcc),
-					, 5, f058, 63}
-				Store(Refof(f058), Local3)
-				Store(Refof(g00d), Local4)
-			}
-			case (64) {
-				Store(255, Local2)
-				BankField(OPR0, BNK0, 255, AnyAcc, Lock, Preserve) {
-					, 5, f059, 64}
-				Store(Refof(f059), Local3)
-				Store(Refof(g00e), Local4)
-			}
-			case (65) {
-				Store(0, Local2)
-				BankField(OPR0, BNK0, 0, WordAcc, Lock, Preserve) {
-					AccessAs(AnyAcc),
-					, 5, f05a, 65}
-				Store(Refof(f05a), Local3)
-				Store(Refof(g000), Local4)
-			}
-			case (69) {
-				Store(1, Local2)
-				BankField(OPR0, BNK0, 1, AnyAcc, Lock, Preserve) {
-					, 5, f05b, 69}
-				Store(Refof(f05b), Local3)
-				Store(Refof(g001), Local4)
-			}
-			case (129) {
-				Store(2, Local2)
-				BankField(OPR0, BNK0, 2, DWordAcc, Lock, Preserve) {
-					AccessAs(AnyAcc),
-					, 5, f05c, 129}
-				Store(Refof(f05c), Local3)
-				Store(Refof(g002), Local4)
-			}
-			case (256) {
-				Store(3, Local2)
-				BankField(OPR0, BNK0, 3, AnyAcc, Lock, Preserve) {
-					, 5, f05d, 256}
-				Store(Refof(f05d), Local3)
-				Store(Refof(g003), Local4)
-			}
-			case (1023) {
-				Store(4, Local2)
-				BankField(OPR0, BNK0, 4, QWordAcc, Lock, Preserve) {
-					AccessAs(AnyAcc),
-					, 5, f05e, 1023}
-				Store(Refof(f05e), Local3)
-				Store(Refof(g004), Local4)
-			}
-			case (1983) {
-				Store(5, Local2)
-				BankField(OPR0, BNK0, 5, AnyAcc, Lock, Preserve) {
-					, 5, f05f, 1983}
-				Store(Refof(f05f), Local3)
-				Store(Refof(g005), Local4)
-			}
-			default {
-				err(arg0, z145, __LINE__, 0, 0, arg2, arg3)
-				return
-			}
-		}
-	}
-	case (6) {
-		switch(ToInteger (arg3)) {
-			case (1) {
-				Store(6, Local2)
-				BankField(OPR0, BNK0, 6, AnyAcc, Lock, Preserve) {
-					, 6, f060, 1}
-				Store(Refof(f060), Local3)
-				Store(Refof(g006), Local4)
-			}
-			case (6) {
-				Store(7, Local2)
-				BankField(OPR0, BNK0, 7, AnyAcc, Lock, Preserve) {
-					AccessAs(AnyAcc),
-					, 6, f061, 6}
-				Store(Refof(f061), Local3)
-				Store(Refof(g007), Local4)
-			}
-			case (7) {
-				Store(8, Local2)
-				BankField(OPR0, BNK0, 8, AnyAcc, Lock, Preserve) {
-					, 6, f062, 7}
-				Store(Refof(f062), Local3)
-				Store(Refof(g008), Local4)
-			}
-			case (8) {
-				Store(9, Local2)
-				BankField(OPR0, BNK0, 9, ByteAcc, Lock, Preserve) {
-					AccessAs(AnyAcc),
-					, 6, f063, 8}
-				Store(Refof(f063), Local3)
-				Store(Refof(g009), Local4)
-			}
-			case (9) {
-				Store(63, Local2)
-				BankField(OPR0, BNK0, 63, AnyAcc, Lock, Preserve) {
-					, 6, f064, 9}
-				Store(Refof(f064), Local3)
-				Store(Refof(g00a), Local4)
-			}
-			case (31) {
-				Store(64, Local2)
-				BankField(OPR0, BNK0, 64, WordAcc, Lock, Preserve) {
-					AccessAs(AnyAcc),
-					, 6, f065, 31}
-				Store(Refof(f065), Local3)
-				Store(Refof(g00b), Local4)
-			}
-			case (32) {
-				Store(127, Local2)
-				BankField(OPR0, BNK0, 127, AnyAcc, Lock, Preserve) {
-					, 6, f066, 32}
-				Store(Refof(f066), Local3)
-				Store(Refof(g00c), Local4)
-			}
-			case (33) {
-				Store(128, Local2)
-				BankField(OPR0, BNK0, 128, DWordAcc, Lock, Preserve) {
-					AccessAs(AnyAcc),
-					, 6, f067, 33}
-				Store(Refof(f067), Local3)
-				Store(Refof(g00d), Local4)
-			}
-			case (63) {
-				Store(255, Local2)
-				BankField(OPR0, BNK0, 255, AnyAcc, Lock, Preserve) {
-					, 6, f068, 63}
-				Store(Refof(f068), Local3)
-				Store(Refof(g00e), Local4)
-			}
-			case (64) {
-				Store(0, Local2)
-				BankField(OPR0, BNK0, 0, QWordAcc, Lock, Preserve) {
-					AccessAs(AnyAcc),
-					, 6, f069, 64}
-				Store(Refof(f069), Local3)
-				Store(Refof(g000), Local4)
-			}
-			case (65) {
-				Store(1, Local2)
-				BankField(OPR0, BNK0, 1, AnyAcc, Lock, Preserve) {
-					, 6, f06a, 65}
-				Store(Refof(f06a), Local3)
-				Store(Refof(g001), Local4)
-			}
-			case (69) {
-				Store(2, Local2)
-				BankField(OPR0, BNK0, 2, AnyAcc, Lock, Preserve) {
-					AccessAs(AnyAcc),
-					, 6, f06b, 69}
-				Store(Refof(f06b), Local3)
-				Store(Refof(g002), Local4)
-			}
-			case (129) {
-				Store(3, Local2)
-				BankField(OPR0, BNK0, 3, AnyAcc, Lock, Preserve) {
-					, 6, f06c, 129}
-				Store(Refof(f06c), Local3)
-				Store(Refof(g003), Local4)
-			}
-			case (256) {
-				Store(4, Local2)
-				BankField(OPR0, BNK0, 4, ByteAcc, Lock, Preserve) {
-					AccessAs(AnyAcc),
-					, 6, f06d, 256}
-				Store(Refof(f06d), Local3)
-				Store(Refof(g004), Local4)
-			}
-			case (1023) {
-				Store(5, Local2)
-				BankField(OPR0, BNK0, 5, AnyAcc, Lock, Preserve) {
-					, 6, f06e, 1023}
-				Store(Refof(f06e), Local3)
-				Store(Refof(g005), Local4)
-			}
-			case (1983) {
-				Store(6, Local2)
-				BankField(OPR0, BNK0, 6, WordAcc, Lock, Preserve) {
-					AccessAs(AnyAcc),
-					, 6, f06f, 1983}
-				Store(Refof(f06f), Local3)
-				Store(Refof(g006), Local4)
-			}
-			default {
-				err(arg0, z145, __LINE__, 0, 0, arg2, arg3)
-				return
-			}
-		}
-	}
-	case (7) {
-		switch(ToInteger (arg3)) {
-			case (1) {
-				Store(7, Local2)
-				BankField(OPR0, BNK0, 7, DWordAcc, Lock, Preserve) {
-					AccessAs(AnyAcc),
-					, 7, f070, 1}
-				Store(Refof(f070), Local3)
-				Store(Refof(g007), Local4)
-			}
-			case (6) {
-				Store(8, Local2)
-				BankField(OPR0, BNK0, 8, AnyAcc, Lock, Preserve) {
-					, 7, f071, 6}
-				Store(Refof(f071), Local3)
-				Store(Refof(g008), Local4)
-			}
-			case (7) {
-				Store(9, Local2)
-				BankField(OPR0, BNK0, 9, QWordAcc, Lock, Preserve) {
-					AccessAs(AnyAcc),
-					, 7, f072, 7}
-				Store(Refof(f072), Local3)
-				Store(Refof(g009), Local4)
-			}
-			case (8) {
-				Store(63, Local2)
-				BankField(OPR0, BNK0, 63, AnyAcc, Lock, Preserve) {
-					, 7, f073, 8}
-				Store(Refof(f073), Local3)
-				Store(Refof(g00a), Local4)
-			}
-			case (9) {
-				Store(64, Local2)
-				BankField(OPR0, BNK0, 64, AnyAcc, Lock, Preserve) {
-					AccessAs(AnyAcc),
-					, 7, f074, 9}
-				Store(Refof(f074), Local3)
-				Store(Refof(g00b), Local4)
-			}
-			case (31) {
-				Store(127, Local2)
-				BankField(OPR0, BNK0, 127, AnyAcc, Lock, Preserve) {
-					, 7, f075, 31}
-				Store(Refof(f075), Local3)
-				Store(Refof(g00c), Local4)
-			}
-			case (32) {
-				Store(128, Local2)
-				BankField(OPR0, BNK0, 128, ByteAcc, Lock, Preserve) {
-					AccessAs(AnyAcc),
-					, 7, f076, 32}
-				Store(Refof(f076), Local3)
-				Store(Refof(g00d), Local4)
-			}
-			case (33) {
-				Store(255, Local2)
-				BankField(OPR0, BNK0, 255, AnyAcc, Lock, Preserve) {
-					, 7, f077, 33}
-				Store(Refof(f077), Local3)
-				Store(Refof(g00e), Local4)
-			}
-			case (63) {
-				Store(0, Local2)
-				BankField(OPR0, BNK0, 0, WordAcc, Lock, Preserve) {
-					AccessAs(AnyAcc),
-					, 7, f078, 63}
-				Store(Refof(f078), Local3)
-				Store(Refof(g000), Local4)
-			}
-			case (64) {
-				Store(1, Local2)
-				BankField(OPR0, BNK0, 1, AnyAcc, Lock, Preserve) {
-					, 7, f079, 64}
-				Store(Refof(f079), Local3)
-				Store(Refof(g001), Local4)
-			}
-			case (65) {
-				Store(2, Local2)
-				BankField(OPR0, BNK0, 2, DWordAcc, Lock, Preserve) {
-					AccessAs(AnyAcc),
-					, 7, f07a, 65}
-				Store(Refof(f07a), Local3)
-				Store(Refof(g002), Local4)
-			}
-			case (69) {
-				Store(3, Local2)
-				BankField(OPR0, BNK0, 3, AnyAcc, Lock, Preserve) {
-					, 7, f07b, 69}
-				Store(Refof(f07b), Local3)
-				Store(Refof(g003), Local4)
-			}
-			case (129) {
-				Store(4, Local2)
-				BankField(OPR0, BNK0, 4, QWordAcc, Lock, Preserve) {
-					AccessAs(AnyAcc),
-					, 7, f07c, 129}
-				Store(Refof(f07c), Local3)
-				Store(Refof(g004), Local4)
-			}
-			case (256) {
-				Store(5, Local2)
-				BankField(OPR0, BNK0, 5, AnyAcc, Lock, Preserve) {
-					, 7, f07d, 256}
-				Store(Refof(f07d), Local3)
-				Store(Refof(g005), Local4)
-			}
-			case (1023) {
-				Store(6, Local2)
-				BankField(OPR0, BNK0, 6, AnyAcc, Lock, Preserve) {
-					AccessAs(AnyAcc),
-					, 7, f07e, 1023}
-				Store(Refof(f07e), Local3)
-				Store(Refof(g006), Local4)
-			}
-			case (1983) {
-				Store(7, Local2)
-				BankField(OPR0, BNK0, 7, AnyAcc, Lock, Preserve) {
-					, 7, f07f, 1983}
-				Store(Refof(f07f), Local3)
-				Store(Refof(g007), Local4)
-			}
-			default {
-				err(arg0, z145, __LINE__, 0, 0, arg2, arg3)
-				return
-			}
-		}
-	}
-	case (8) {
-		switch(ToInteger (arg3)) {
-			case (1) {
-				Store(8, Local2)
-				BankField(OPR0, BNK0, 8, AnyAcc, Lock, Preserve) {
-					Offset(1), f080, 1}
-				Store(Refof(f080), Local3)
-				Store(Refof(g008), Local4)
-			}
-			case (6) {
-				Store(9, Local2)
-				BankField(OPR0, BNK0, 9, ByteAcc, Lock, Preserve) {
-					AccessAs(AnyAcc),
-					Offset(1), f081, 6}
-				Store(Refof(f081), Local3)
-				Store(Refof(g009), Local4)
-			}
-			case (7) {
-				Store(63, Local2)
-				BankField(OPR0, BNK0, 63, AnyAcc, Lock, Preserve) {
-					Offset(1), f082, 7}
-				Store(Refof(f082), Local3)
-				Store(Refof(g00a), Local4)
-			}
-			case (8) {
-				Store(64, Local2)
-				BankField(OPR0, BNK0, 64, WordAcc, Lock, Preserve) {
-					AccessAs(AnyAcc),
-					Offset(1), f083, 8}
-				Store(Refof(f083), Local3)
-				Store(Refof(g00b), Local4)
-			}
-			case (9) {
-				Store(127, Local2)
-				BankField(OPR0, BNK0, 127, AnyAcc, Lock, Preserve) {
-					Offset(1), f084, 9}
-				Store(Refof(f084), Local3)
-				Store(Refof(g00c), Local4)
-			}
-			case (31) {
-				Store(128, Local2)
-				BankField(OPR0, BNK0, 128, DWordAcc, Lock, Preserve) {
-					AccessAs(AnyAcc),
-					Offset(1), f085, 31}
-				Store(Refof(f085), Local3)
-				Store(Refof(g00d), Local4)
-			}
-			case (32) {
-				Store(255, Local2)
-				BankField(OPR0, BNK0, 255, AnyAcc, Lock, Preserve) {
-					Offset(1), f086, 32}
-				Store(Refof(f086), Local3)
-				Store(Refof(g00e), Local4)
-			}
-			case (33) {
-				Store(0, Local2)
-				BankField(OPR0, BNK0, 0, QWordAcc, Lock, Preserve) {
-					AccessAs(AnyAcc),
-					Offset(1), f087, 33}
-				Store(Refof(f087), Local3)
-				Store(Refof(g000), Local4)
-			}
-			case (63) {
-				Store(1, Local2)
-				BankField(OPR0, BNK0, 1, AnyAcc, Lock, Preserve) {
-					Offset(1), f088, 63}
-				Store(Refof(f088), Local3)
-				Store(Refof(g001), Local4)
-			}
-			case (64) {
-				Store(2, Local2)
-				BankField(OPR0, BNK0, 2, AnyAcc, Lock, Preserve) {
-					AccessAs(AnyAcc),
-					Offset(1), f089, 64}
-				Store(Refof(f089), Local3)
-				Store(Refof(g002), Local4)
-			}
-			case (65) {
-				Store(3, Local2)
-				BankField(OPR0, BNK0, 3, AnyAcc, Lock, Preserve) {
-					Offset(1), f08a, 65}
-				Store(Refof(f08a), Local3)
-				Store(Refof(g003), Local4)
-			}
-			case (69) {
-				Store(4, Local2)
-				BankField(OPR0, BNK0, 4, ByteAcc, Lock, Preserve) {
-					AccessAs(AnyAcc),
-					Offset(1), f08b, 69}
-				Store(Refof(f08b), Local3)
-				Store(Refof(g004), Local4)
-			}
-			case (129) {
-				Store(5, Local2)
-				BankField(OPR0, BNK0, 5, AnyAcc, Lock, Preserve) {
-					Offset(1), f08c, 129}
-				Store(Refof(f08c), Local3)
-				Store(Refof(g005), Local4)
-			}
-			case (256) {
-				Store(6, Local2)
-				BankField(OPR0, BNK0, 6, WordAcc, Lock, Preserve) {
-					AccessAs(AnyAcc),
-					Offset(1), f08d, 256}
-				Store(Refof(f08d), Local3)
-				Store(Refof(g006), Local4)
-			}
-			case (1023) {
-				Store(7, Local2)
-				BankField(OPR0, BNK0, 7, AnyAcc, Lock, Preserve) {
-					Offset(1), f08e, 1023}
-				Store(Refof(f08e), Local3)
-				Store(Refof(g007), Local4)
-			}
-			case (1983) {
-				Store(8, Local2)
-				BankField(OPR0, BNK0, 8, DWordAcc, Lock, Preserve) {
-					AccessAs(AnyAcc),
-					Offset(1), f08f, 1983}
-				Store(Refof(f08f), Local3)
-				Store(Refof(g008), Local4)
-			}
-			default {
-				err(arg0, z145, __LINE__, 0, 0, arg2, arg3)
-				return
-			}
-		}
-	}
-	case (9) {
-		switch(ToInteger (arg3)) {
-			case (1) {
-				Store(9, Local2)
-				BankField(OPR0, BNK0, 9, QWordAcc, Lock, Preserve) {
-					AccessAs(AnyAcc),
-					, 9, f090, 1}
-				Store(Refof(f090), Local3)
-				Store(Refof(g009), Local4)
-			}
-			case (6) {
-				Store(63, Local2)
-				BankField(OPR0, BNK0, 63, AnyAcc, Lock, Preserve) {
-					, 9, f091, 6}
-				Store(Refof(f091), Local3)
-				Store(Refof(g00a), Local4)
-			}
-			case (7) {
-				Store(64, Local2)
-				BankField(OPR0, BNK0, 64, AnyAcc, Lock, Preserve) {
-					AccessAs(AnyAcc),
-					, 9, f092, 7}
-				Store(Refof(f092), Local3)
-				Store(Refof(g00b), Local4)
-			}
-			case (8) {
-				Store(127, Local2)
-				BankField(OPR0, BNK0, 127, AnyAcc, Lock, Preserve) {
-					, 9, f093, 8}
-				Store(Refof(f093), Local3)
-				Store(Refof(g00c), Local4)
-			}
-			case (9) {
-				Store(128, Local2)
-				BankField(OPR0, BNK0, 128, ByteAcc, Lock, Preserve) {
-					AccessAs(AnyAcc),
-					, 9, f094, 9}
-				Store(Refof(f094), Local3)
-				Store(Refof(g00d), Local4)
-			}
-			case (31) {
-				Store(255, Local2)
-				BankField(OPR0, BNK0, 255, AnyAcc, Lock, Preserve) {
-					, 9, f095, 31}
-				Store(Refof(f095), Local3)
-				Store(Refof(g00e), Local4)
-			}
-			case (32) {
-				Store(0, Local2)
-				BankField(OPR0, BNK0, 0, WordAcc, Lock, Preserve) {
-					AccessAs(AnyAcc),
-					, 9, f096, 32}
-				Store(Refof(f096), Local3)
-				Store(Refof(g000), Local4)
-			}
-			case (33) {
-				Store(1, Local2)
-				BankField(OPR0, BNK0, 1, AnyAcc, Lock, Preserve) {
-					, 9, f097, 33}
-				Store(Refof(f097), Local3)
-				Store(Refof(g001), Local4)
-			}
-			case (63) {
-				Store(2, Local2)
-				BankField(OPR0, BNK0, 2, DWordAcc, Lock, Preserve) {
-					AccessAs(AnyAcc),
-					, 9, f098, 63}
-				Store(Refof(f098), Local3)
-				Store(Refof(g002), Local4)
-			}
-			case (64) {
-				Store(3, Local2)
-				BankField(OPR0, BNK0, 3, AnyAcc, Lock, Preserve) {
-					, 9, f099, 64}
-				Store(Refof(f099), Local3)
-				Store(Refof(g003), Local4)
-			}
-			case (65) {
-				Store(4, Local2)
-				BankField(OPR0, BNK0, 4, QWordAcc, Lock, Preserve) {
-					AccessAs(AnyAcc),
-					, 9, f09a, 65}
-				Store(Refof(f09a), Local3)
-				Store(Refof(g004), Local4)
-			}
-			case (69) {
-				Store(5, Local2)
-				BankField(OPR0, BNK0, 5, AnyAcc, Lock, Preserve) {
-					, 9, f09b, 69}
-				Store(Refof(f09b), Local3)
-				Store(Refof(g005), Local4)
-			}
-			case (129) {
-				Store(6, Local2)
-				BankField(OPR0, BNK0, 6, AnyAcc, Lock, Preserve) {
-					AccessAs(AnyAcc),
-					, 9, f09c, 129}
-				Store(Refof(f09c), Local3)
-				Store(Refof(g006), Local4)
-			}
-			case (256) {
-				Store(7, Local2)
-				BankField(OPR0, BNK0, 7, AnyAcc, Lock, Preserve) {
-					, 9, f09d, 256}
-				Store(Refof(f09d), Local3)
-				Store(Refof(g007), Local4)
-			}
-			case (1023) {
-				Store(8, Local2)
-				BankField(OPR0, BNK0, 8, ByteAcc, Lock, Preserve) {
-					AccessAs(AnyAcc),
-					, 9, f09e, 1023}
-				Store(Refof(f09e), Local3)
-				Store(Refof(g008), Local4)
-			}
-			case (1983) {
-				Store(9, Local2)
-				BankField(OPR0, BNK0, 9, AnyAcc, Lock, Preserve) {
-					, 9, f09f, 1983}
-				Store(Refof(f09f), Local3)
-				Store(Refof(g009), Local4)
-			}
-			default {
-				err(arg0, z145, __LINE__, 0, 0, arg2, arg3)
-				return
-			}
-		}
-	}
-	case (31) {
-		switch(ToInteger (arg3)) {
-			case (1) {
-				Store(63, Local2)
-				BankField(OPR0, BNK0, 63, AnyAcc, Lock, Preserve) {
-					Offset(3), , 7, f0a0, 1}
-				Store(Refof(f0a0), Local3)
-				Store(Refof(g00a), Local4)
-			}
-			case (6) {
-				Store(64, Local2)
-				BankField(OPR0, BNK0, 64, WordAcc, Lock, Preserve) {
-					AccessAs(AnyAcc),
-					Offset(3), , 7, f0a1, 6}
-				Store(Refof(f0a1), Local3)
-				Store(Refof(g00b), Local4)
-			}
-			case (7) {
-				Store(127, Local2)
-				BankField(OPR0, BNK0, 127, AnyAcc, Lock, Preserve) {
-					Offset(3), , 7, f0a2, 7}
-				Store(Refof(f0a2), Local3)
-				Store(Refof(g00c), Local4)
-			}
-			case (8) {
-				Store(128, Local2)
-				BankField(OPR0, BNK0, 128, DWordAcc, Lock, Preserve) {
-					AccessAs(AnyAcc),
-					Offset(3), , 7, f0a3, 8}
-				Store(Refof(f0a3), Local3)
-				Store(Refof(g00d), Local4)
-			}
-			case (9) {
-				Store(255, Local2)
-				BankField(OPR0, BNK0, 255, AnyAcc, Lock, Preserve) {
-					Offset(3), , 7, f0a4, 9}
-				Store(Refof(f0a4), Local3)
-				Store(Refof(g00e), Local4)
-			}
-			case (31) {
-				Store(0, Local2)
-				BankField(OPR0, BNK0, 0, QWordAcc, Lock, Preserve) {
-					AccessAs(AnyAcc),
-					Offset(3), , 7, f0a5, 31}
-				Store(Refof(f0a5), Local3)
-				Store(Refof(g000), Local4)
-			}
-			case (32) {
-				Store(1, Local2)
-				BankField(OPR0, BNK0, 1, AnyAcc, Lock, Preserve) {
-					Offset(3), , 7, f0a6, 32}
-				Store(Refof(f0a6), Local3)
-				Store(Refof(g001), Local4)
-			}
-			case (33) {
-				Store(2, Local2)
-				BankField(OPR0, BNK0, 2, AnyAcc, Lock, Preserve) {
-					AccessAs(AnyAcc),
-					Offset(3), , 7, f0a7, 33}
-				Store(Refof(f0a7), Local3)
-				Store(Refof(g002), Local4)
-			}
-			case (63) {
-				Store(3, Local2)
-				BankField(OPR0, BNK0, 3, AnyAcc, Lock, Preserve) {
-					Offset(3), , 7, f0a8, 63}
-				Store(Refof(f0a8), Local3)
-				Store(Refof(g003), Local4)
-			}
-			case (64) {
-				Store(4, Local2)
-				BankField(OPR0, BNK0, 4, ByteAcc, Lock, Preserve) {
-					AccessAs(AnyAcc),
-					Offset(3), , 7, f0a9, 64}
-				Store(Refof(f0a9), Local3)
-				Store(Refof(g004), Local4)
-			}
-			case (65) {
-				Store(5, Local2)
-				BankField(OPR0, BNK0, 5, AnyAcc, Lock, Preserve) {
-					Offset(3), , 7, f0aa, 65}
-				Store(Refof(f0aa), Local3)
-				Store(Refof(g005), Local4)
-			}
-			case (69) {
-				Store(6, Local2)
-				BankField(OPR0, BNK0, 6, WordAcc, Lock, Preserve) {
-					AccessAs(AnyAcc),
-					Offset(3), , 7, f0ab, 69}
-				Store(Refof(f0ab), Local3)
-				Store(Refof(g006), Local4)
-			}
-			case (129) {
-				Store(7, Local2)
-				BankField(OPR0, BNK0, 7, AnyAcc, Lock, Preserve) {
-					Offset(3), , 7, f0ac, 129}
-				Store(Refof(f0ac), Local3)
-				Store(Refof(g007), Local4)
-			}
-			case (256) {
-				Store(8, Local2)
-				BankField(OPR0, BNK0, 8, DWordAcc, Lock, Preserve) {
-					AccessAs(AnyAcc),
-					Offset(3), , 7, f0ad, 256}
-				Store(Refof(f0ad), Local3)
-				Store(Refof(g008), Local4)
-			}
-			case (1023) {
-				Store(9, Local2)
-				BankField(OPR0, BNK0, 9, AnyAcc, Lock, Preserve) {
-					Offset(3), , 7, f0ae, 1023}
-				Store(Refof(f0ae), Local3)
-				Store(Refof(g009), Local4)
-			}
-			case (1983) {
-				Store(63, Local2)
-				BankField(OPR0, BNK0, 63, QWordAcc, Lock, Preserve) {
-					AccessAs(AnyAcc),
-					Offset(3), , 7, f0af, 1983}
-				Store(Refof(f0af), Local3)
-				Store(Refof(g00a), Local4)
-			}
-			default {
-				err(arg0, z145, __LINE__, 0, 0, arg2, arg3)
-				return
-			}
-		}
-	}
-	case (32) {
-		switch(ToInteger (arg3)) {
-			case (1) {
-				Store(64, Local2)
-				BankField(OPR0, BNK0, 64, AnyAcc, Lock, Preserve) {
-					AccessAs(AnyAcc),
-					, 32, f0b0, 1}
-				Store(Refof(f0b0), Local3)
-				Store(Refof(g00b), Local4)
-			}
-			case (6) {
-				Store(127, Local2)
-				BankField(OPR0, BNK0, 127, AnyAcc, Lock, Preserve) {
-					, 32, f0b1, 6}
-				Store(Refof(f0b1), Local3)
-				Store(Refof(g00c), Local4)
-			}
-			case (7) {
-				Store(128, Local2)
-				BankField(OPR0, BNK0, 128, ByteAcc, Lock, Preserve) {
-					AccessAs(AnyAcc),
-					, 32, f0b2, 7}
-				Store(Refof(f0b2), Local3)
-				Store(Refof(g00d), Local4)
-			}
-			case (8) {
-				Store(255, Local2)
-				BankField(OPR0, BNK0, 255, AnyAcc, Lock, Preserve) {
-					, 32, f0b3, 8}
-				Store(Refof(f0b3), Local3)
-				Store(Refof(g00e), Local4)
-			}
-			case (9) {
-				Store(0, Local2)
-				BankField(OPR0, BNK0, 0, WordAcc, Lock, Preserve) {
-					AccessAs(AnyAcc),
-					, 32, f0b4, 9}
-				Store(Refof(f0b4), Local3)
-				Store(Refof(g000), Local4)
-			}
-			case (31) {
-				Store(1, Local2)
-				BankField(OPR0, BNK0, 1, AnyAcc, Lock, Preserve) {
-					, 32, f0b5, 31}
-				Store(Refof(f0b5), Local3)
-				Store(Refof(g001), Local4)
-			}
-			case (32) {
-				Store(2, Local2)
-				BankField(OPR0, BNK0, 2, DWordAcc, Lock, Preserve) {
-					AccessAs(AnyAcc),
-					, 32, f0b6, 32}
-				Store(Refof(f0b6), Local3)
-				Store(Refof(g002), Local4)
-			}
-			case (33) {
-				Store(3, Local2)
-				BankField(OPR0, BNK0, 3, AnyAcc, Lock, Preserve) {
-					, 32, f0b7, 33}
-				Store(Refof(f0b7), Local3)
-				Store(Refof(g003), Local4)
-			}
-			case (63) {
-				Store(4, Local2)
-				BankField(OPR0, BNK0, 4, QWordAcc, Lock, Preserve) {
-					AccessAs(AnyAcc),
-					, 32, f0b8, 63}
-				Store(Refof(f0b8), Local3)
-				Store(Refof(g004), Local4)
-			}
-			case (64) {
-				Store(5, Local2)
-				BankField(OPR0, BNK0, 5, AnyAcc, Lock, Preserve) {
-					, 32, f0b9, 64}
-				Store(Refof(f0b9), Local3)
-				Store(Refof(g005), Local4)
-			}
-			case (65) {
-				Store(6, Local2)
-				BankField(OPR0, BNK0, 6, AnyAcc, Lock, Preserve) {
-					AccessAs(AnyAcc),
-					, 32, f0ba, 65}
-				Store(Refof(f0ba), Local3)
-				Store(Refof(g006), Local4)
-			}
-			case (69) {
-				Store(7, Local2)
-				BankField(OPR0, BNK0, 7, AnyAcc, Lock, Preserve) {
-					, 32, f0bb, 69}
-				Store(Refof(f0bb), Local3)
-				Store(Refof(g007), Local4)
-			}
-			case (129) {
-				Store(8, Local2)
-				BankField(OPR0, BNK0, 8, ByteAcc, Lock, Preserve) {
-					AccessAs(AnyAcc),
-					, 32, f0bc, 129}
-				Store(Refof(f0bc), Local3)
-				Store(Refof(g008), Local4)
-			}
-			case (256) {
-				Store(9, Local2)
-				BankField(OPR0, BNK0, 9, AnyAcc, Lock, Preserve) {
-					, 32, f0bd, 256}
-				Store(Refof(f0bd), Local3)
-				Store(Refof(g009), Local4)
-			}
-			case (1023) {
-				Store(63, Local2)
-				BankField(OPR0, BNK0, 63, WordAcc, Lock, Preserve) {
-					AccessAs(AnyAcc),
-					, 32, f0be, 1023}
-				Store(Refof(f0be), Local3)
-				Store(Refof(g00a), Local4)
-			}
-			case (1983) {
-				Store(64, Local2)
-				BankField(OPR0, BNK0, 64, AnyAcc, Lock, Preserve) {
-					, 32, f0bf, 1983}
-				Store(Refof(f0bf), Local3)
-				Store(Refof(g00b), Local4)
-			}
-			default {
-				err(arg0, z145, __LINE__, 0, 0, arg2, arg3)
-				return
-			}
-		}
-	}
-	case (33) {
-		switch(ToInteger (arg3)) {
-			case (1) {
-				Store(127, Local2)
-				BankField(OPR0, BNK0, 127, AnyAcc, Lock, Preserve) {
-					, 33, f0c0, 1}
-				Store(Refof(f0c0), Local3)
-				Store(Refof(g00c), Local4)
-			}
-			case (6) {
-				Store(128, Local2)
-				BankField(OPR0, BNK0, 128, DWordAcc, Lock, Preserve) {
-					AccessAs(AnyAcc),
-					, 33, f0c1, 6}
-				Store(Refof(f0c1), Local3)
-				Store(Refof(g00d), Local4)
-			}
-			case (7) {
-				Store(255, Local2)
-				BankField(OPR0, BNK0, 255, AnyAcc, Lock, Preserve) {
-					, 33, f0c2, 7}
-				Store(Refof(f0c2), Local3)
-				Store(Refof(g00e), Local4)
-			}
-			case (8) {
-				Store(0, Local2)
-				BankField(OPR0, BNK0, 0, QWordAcc, Lock, Preserve) {
-					AccessAs(AnyAcc),
-					, 33, f0c3, 8}
-				Store(Refof(f0c3), Local3)
-				Store(Refof(g000), Local4)
-			}
-			case (9) {
-				Store(1, Local2)
-				BankField(OPR0, BNK0, 1, AnyAcc, Lock, Preserve) {
-					, 33, f0c4, 9}
-				Store(Refof(f0c4), Local3)
-				Store(Refof(g001), Local4)
-			}
-			case (31) {
-				Store(2, Local2)
-				BankField(OPR0, BNK0, 2, AnyAcc, Lock, Preserve) {
-					AccessAs(AnyAcc),
-					, 33, f0c5, 31}
-				Store(Refof(f0c5), Local3)
-				Store(Refof(g002), Local4)
-			}
-			case (32) {
-				Store(3, Local2)
-				BankField(OPR0, BNK0, 3, AnyAcc, Lock, Preserve) {
-					, 33, f0c6, 32}
-				Store(Refof(f0c6), Local3)
-				Store(Refof(g003), Local4)
-			}
-			case (33) {
-				Store(4, Local2)
-				BankField(OPR0, BNK0, 4, ByteAcc, Lock, Preserve) {
-					AccessAs(AnyAcc),
-					, 33, f0c7, 33}
-				Store(Refof(f0c7), Local3)
-				Store(Refof(g004), Local4)
-			}
-			case (63) {
-				Store(5, Local2)
-				BankField(OPR0, BNK0, 5, AnyAcc, Lock, Preserve) {
-					, 33, f0c8, 63}
-				Store(Refof(f0c8), Local3)
-				Store(Refof(g005), Local4)
-			}
-			case (64) {
-				Store(6, Local2)
-				BankField(OPR0, BNK0, 6, WordAcc, Lock, Preserve) {
-					AccessAs(AnyAcc),
-					, 33, f0c9, 64}
-				Store(Refof(f0c9), Local3)
-				Store(Refof(g006), Local4)
-			}
-			case (65) {
-				Store(7, Local2)
-				BankField(OPR0, BNK0, 7, AnyAcc, Lock, Preserve) {
-					, 33, f0ca, 65}
-				Store(Refof(f0ca), Local3)
-				Store(Refof(g007), Local4)
-			}
-			case (69) {
-				Store(8, Local2)
-				BankField(OPR0, BNK0, 8, DWordAcc, Lock, Preserve) {
-					AccessAs(AnyAcc),
-					, 33, f0cb, 69}
-				Store(Refof(f0cb), Local3)
-				Store(Refof(g008), Local4)
-			}
-			case (129) {
-				Store(9, Local2)
-				BankField(OPR0, BNK0, 9, AnyAcc, Lock, Preserve) {
-					, 33, f0cc, 129}
-				Store(Refof(f0cc), Local3)
-				Store(Refof(g009), Local4)
-			}
-			case (256) {
-				Store(63, Local2)
-				BankField(OPR0, BNK0, 63, QWordAcc, Lock, Preserve) {
-					AccessAs(AnyAcc),
-					, 33, f0cd, 256}
-				Store(Refof(f0cd), Local3)
-				Store(Refof(g00a), Local4)
-			}
-			case (1023) {
-				Store(64, Local2)
-				BankField(OPR0, BNK0, 64, AnyAcc, Lock, Preserve) {
-					, 33, f0ce, 1023}
-				Store(Refof(f0ce), Local3)
-				Store(Refof(g00b), Local4)
-			}
-			case (1983) {
-				Store(127, Local2)
-				BankField(OPR0, BNK0, 127, AnyAcc, Lock, Preserve) {
-					AccessAs(AnyAcc),
-					, 33, f0cf, 1983}
-				Store(Refof(f0cf), Local3)
-				Store(Refof(g00c), Local4)
-			}
-			default {
-				err(arg0, z145, __LINE__, 0, 0, arg2, arg3)
-				return
-			}
-		}
-	}
-	case (63) {
-		switch(ToInteger (arg3)) {
-			case (1) {
-				Store(128, Local2)
-				BankField(OPR0, BNK0, 128, ByteAcc, Lock, Preserve) {
-					AccessAs(AnyAcc),
-					, 63, f0d0, 1}
-				Store(Refof(f0d0), Local3)
-				Store(Refof(g00d), Local4)
-			}
-			case (6) {
-				Store(255, Local2)
-				BankField(OPR0, BNK0, 255, AnyAcc, Lock, Preserve) {
-					, 63, f0d1, 6}
-				Store(Refof(f0d1), Local3)
-				Store(Refof(g00e), Local4)
-			}
-			case (7) {
-				Store(0, Local2)
-				BankField(OPR0, BNK0, 0, WordAcc, Lock, Preserve) {
-					AccessAs(AnyAcc),
-					, 63, f0d2, 7}
-				Store(Refof(f0d2), Local3)
-				Store(Refof(g000), Local4)
-			}
-			case (8) {
-				Store(1, Local2)
-				BankField(OPR0, BNK0, 1, AnyAcc, Lock, Preserve) {
-					, 63, f0d3, 8}
-				Store(Refof(f0d3), Local3)
-				Store(Refof(g001), Local4)
-			}
-			case (9) {
-				Store(2, Local2)
-				BankField(OPR0, BNK0, 2, DWordAcc, Lock, Preserve) {
-					AccessAs(AnyAcc),
-					, 63, f0d4, 9}
-				Store(Refof(f0d4), Local3)
-				Store(Refof(g002), Local4)
-			}
-			case (31) {
-				Store(3, Local2)
-				BankField(OPR0, BNK0, 3, AnyAcc, Lock, Preserve) {
-					, 63, f0d5, 31}
-				Store(Refof(f0d5), Local3)
-				Store(Refof(g003), Local4)
-			}
-			case (32) {
-				Store(4, Local2)
-				BankField(OPR0, BNK0, 4, QWordAcc, Lock, Preserve) {
-					AccessAs(AnyAcc),
-					, 63, f0d6, 32}
-				Store(Refof(f0d6), Local3)
-				Store(Refof(g004), Local4)
-			}
-			case (33) {
-				Store(5, Local2)
-				BankField(OPR0, BNK0, 5, AnyAcc, Lock, Preserve) {
-					, 63, f0d7, 33}
-				Store(Refof(f0d7), Local3)
-				Store(Refof(g005), Local4)
-			}
-			case (63) {
-				Store(6, Local2)
-				BankField(OPR0, BNK0, 6, AnyAcc, Lock, Preserve) {
-					AccessAs(AnyAcc),
-					, 63, f0d8, 63}
-				Store(Refof(f0d8), Local3)
-				Store(Refof(g006), Local4)
-			}
-			case (64) {
-				Store(7, Local2)
-				BankField(OPR0, BNK0, 7, AnyAcc, Lock, Preserve) {
-					, 63, f0d9, 64}
-				Store(Refof(f0d9), Local3)
-				Store(Refof(g007), Local4)
-			}
-			case (65) {
-				Store(8, Local2)
-				BankField(OPR0, BNK0, 8, ByteAcc, Lock, Preserve) {
-					AccessAs(AnyAcc),
-					, 63, f0da, 65}
-				Store(Refof(f0da), Local3)
-				Store(Refof(g008), Local4)
-			}
-			case (69) {
-				Store(9, Local2)
-				BankField(OPR0, BNK0, 9, AnyAcc, Lock, Preserve) {
-					, 63, f0db, 69}
-				Store(Refof(f0db), Local3)
-				Store(Refof(g009), Local4)
-			}
-			case (129) {
-				Store(63, Local2)
-				BankField(OPR0, BNK0, 63, WordAcc, Lock, Preserve) {
-					AccessAs(AnyAcc),
-					, 63, f0dc, 129}
-				Store(Refof(f0dc), Local3)
-				Store(Refof(g00a), Local4)
-			}
-			case (256) {
-				Store(64, Local2)
-				BankField(OPR0, BNK0, 64, AnyAcc, Lock, Preserve) {
-					, 63, f0dd, 256}
-				Store(Refof(f0dd), Local3)
-				Store(Refof(g00b), Local4)
-			}
-			case (1023) {
-				Store(127, Local2)
-				BankField(OPR0, BNK0, 127, DWordAcc, Lock, Preserve) {
-					AccessAs(AnyAcc),
-					, 63, f0de, 1023}
-				Store(Refof(f0de), Local3)
-				Store(Refof(g00c), Local4)
-			}
-			case (1983) {
-				Store(128, Local2)
-				BankField(OPR0, BNK0, 128, AnyAcc, Lock, Preserve) {
-					, 63, f0df, 1983}
-				Store(Refof(f0df), Local3)
-				Store(Refof(g00d), Local4)
-			}
-			default {
-				err(arg0, z145, __LINE__, 0, 0, arg2, arg3)
-				return
-			}
-		}
-	}
-	case (64) {
-		switch(ToInteger (arg3)) {
-			case (1) {
-				Store(255, Local2)
-				BankField(OPR0, BNK0, 255, AnyAcc, Lock, Preserve) {
-					, 64, f0e0, 1}
-				Store(Refof(f0e0), Local3)
-				Store(Refof(g00e), Local4)
-			}
-			case (6) {
-				Store(0, Local2)
-				BankField(OPR0, BNK0, 0, QWordAcc, Lock, Preserve) {
-					AccessAs(AnyAcc),
-					, 64, f0e1, 6}
-				Store(Refof(f0e1), Local3)
-				Store(Refof(g000), Local4)
-			}
-			case (7) {
-				Store(1, Local2)
-				BankField(OPR0, BNK0, 1, AnyAcc, Lock, Preserve) {
-					, 64, f0e2, 7}
-				Store(Refof(f0e2), Local3)
-				Store(Refof(g001), Local4)
-			}
-			case (8) {
-				Store(2, Local2)
-				BankField(OPR0, BNK0, 2, AnyAcc, Lock, Preserve) {
-					AccessAs(AnyAcc),
-					, 64, f0e3, 8}
-				Store(Refof(f0e3), Local3)
-				Store(Refof(g002), Local4)
-			}
-			case (9) {
-				Store(3, Local2)
-				BankField(OPR0, BNK0, 3, AnyAcc, Lock, Preserve) {
-					, 64, f0e4, 9}
-				Store(Refof(f0e4), Local3)
-				Store(Refof(g003), Local4)
-			}
-			case (31) {
-				Store(4, Local2)
-				BankField(OPR0, BNK0, 4, ByteAcc, Lock, Preserve) {
-					AccessAs(AnyAcc),
-					, 64, f0e5, 31}
-				Store(Refof(f0e5), Local3)
-				Store(Refof(g004), Local4)
-			}
-			case (32) {
-				Store(5, Local2)
-				BankField(OPR0, BNK0, 5, AnyAcc, Lock, Preserve) {
-					, 64, f0e6, 32}
-				Store(Refof(f0e6), Local3)
-				Store(Refof(g005), Local4)
-			}
-			case (33) {
-				Store(6, Local2)
-				BankField(OPR0, BNK0, 6, WordAcc, Lock, Preserve) {
-					AccessAs(AnyAcc),
-					, 64, f0e7, 33}
-				Store(Refof(f0e7), Local3)
-				Store(Refof(g006), Local4)
-			}
-			case (63) {
-				Store(7, Local2)
-				BankField(OPR0, BNK0, 7, AnyAcc, Lock, Preserve) {
-					, 64, f0e8, 63}
-				Store(Refof(f0e8), Local3)
-				Store(Refof(g007), Local4)
-			}
-			case (64) {
-				Store(8, Local2)
-				BankField(OPR0, BNK0, 8, DWordAcc, Lock, Preserve) {
-					AccessAs(AnyAcc),
-					, 64, f0e9, 64}
-				Store(Refof(f0e9), Local3)
-				Store(Refof(g008), Local4)
-			}
-			case (65) {
-				Store(9, Local2)
-				BankField(OPR0, BNK0, 9, AnyAcc, Lock, Preserve) {
-					, 64, f0ea, 65}
-				Store(Refof(f0ea), Local3)
-				Store(Refof(g009), Local4)
-			}
-			case (69) {
-				Store(63, Local2)
-				BankField(OPR0, BNK0, 63, QWordAcc, Lock, Preserve) {
-					AccessAs(AnyAcc),
-					, 64, f0eb, 69}
-				Store(Refof(f0eb), Local3)
-				Store(Refof(g00a), Local4)
-			}
-			case (129) {
-				Store(64, Local2)
-				BankField(OPR0, BNK0, 64, AnyAcc, Lock, Preserve) {
-					, 64, f0ec, 129}
-				Store(Refof(f0ec), Local3)
-				Store(Refof(g00b), Local4)
-			}
-			case (256) {
-				Store(127, Local2)
-				BankField(OPR0, BNK0, 127, AnyAcc, Lock, Preserve) {
-					AccessAs(AnyAcc),
-					, 64, f0ed, 256}
-				Store(Refof(f0ed), Local3)
-				Store(Refof(g00c), Local4)
-			}
-			case (1023) {
-				Store(128, Local2)
-				BankField(OPR0, BNK0, 128, AnyAcc, Lock, Preserve) {
-					, 64, f0ee, 1023}
-				Store(Refof(f0ee), Local3)
-				Store(Refof(g00d), Local4)
-			}
-			case (1983) {
-				Store(255, Local2)
-				BankField(OPR0, BNK0, 255, ByteAcc, Lock, Preserve) {
-					AccessAs(AnyAcc),
-					, 64, f0ef, 1983}
-				Store(Refof(f0ef), Local3)
-				Store(Refof(g00e), Local4)
-			}
-			default {
-				err(arg0, z145, __LINE__, 0, 0, arg2, arg3)
-				return
-			}
-		}
-	}
-	case (65) {
-		switch(ToInteger (arg3)) {
-			case (1) {
-				Store(0, Local2)
-				BankField(OPR0, BNK0, 0, WordAcc, Lock, Preserve) {
-					AccessAs(AnyAcc),
-					Offset(8), , 1, f0f0, 1}
-				Store(Refof(f0f0), Local3)
-				Store(Refof(g000), Local4)
-			}
-			case (6) {
-				Store(1, Local2)
-				BankField(OPR0, BNK0, 1, AnyAcc, Lock, Preserve) {
-					Offset(8), , 1, f0f1, 6}
-				Store(Refof(f0f1), Local3)
-				Store(Refof(g001), Local4)
-			}
-			case (7) {
-				Store(2, Local2)
-				BankField(OPR0, BNK0, 2, DWordAcc, Lock, Preserve) {
-					AccessAs(AnyAcc),
-					Offset(8), , 1, f0f2, 7}
-				Store(Refof(f0f2), Local3)
-				Store(Refof(g002), Local4)
-			}
-			case (8) {
-				Store(3, Local2)
-				BankField(OPR0, BNK0, 3, AnyAcc, Lock, Preserve) {
-					Offset(8), , 1, f0f3, 8}
-				Store(Refof(f0f3), Local3)
-				Store(Refof(g003), Local4)
-			}
-			case (9) {
-				Store(4, Local2)
-				BankField(OPR0, BNK0, 4, QWordAcc, Lock, Preserve) {
-					AccessAs(AnyAcc),
-					Offset(8), , 1, f0f4, 9}
-				Store(Refof(f0f4), Local3)
-				Store(Refof(g004), Local4)
-			}
-			case (31) {
-				Store(5, Local2)
-				BankField(OPR0, BNK0, 5, AnyAcc, Lock, Preserve) {
-					Offset(8), , 1, f0f5, 31}
-				Store(Refof(f0f5), Local3)
-				Store(Refof(g005), Local4)
-			}
-			case (32) {
-				Store(6, Local2)
-				BankField(OPR0, BNK0, 6, AnyAcc, Lock, Preserve) {
-					AccessAs(AnyAcc),
-					Offset(8), , 1, f0f6, 32}
-				Store(Refof(f0f6), Local3)
-				Store(Refof(g006), Local4)
-			}
-			case (33) {
-				Store(7, Local2)
-				BankField(OPR0, BNK0, 7, AnyAcc, Lock, Preserve) {
-					Offset(8), , 1, f0f7, 33}
-				Store(Refof(f0f7), Local3)
-				Store(Refof(g007), Local4)
-			}
-			case (63) {
-				Store(8, Local2)
-				BankField(OPR0, BNK0, 8, ByteAcc, Lock, Preserve) {
-					AccessAs(AnyAcc),
-					Offset(8), , 1, f0f8, 63}
-				Store(Refof(f0f8), Local3)
-				Store(Refof(g008), Local4)
-			}
-			case (64) {
-				Store(9, Local2)
-				BankField(OPR0, BNK0, 9, AnyAcc, Lock, Preserve) {
-					Offset(8), , 1, f0f9, 64}
-				Store(Refof(f0f9), Local3)
-				Store(Refof(g009), Local4)
-			}
-			case (65) {
-				Store(63, Local2)
-				BankField(OPR0, BNK0, 63, WordAcc, Lock, Preserve) {
-					AccessAs(AnyAcc),
-					Offset(8), , 1, f0fa, 65}
-				Store(Refof(f0fa), Local3)
-				Store(Refof(g00a), Local4)
-			}
-			case (69) {
-				Store(64, Local2)
-				BankField(OPR0, BNK0, 64, AnyAcc, Lock, Preserve) {
-					Offset(8), , 1, f0fb, 69}
-				Store(Refof(f0fb), Local3)
-				Store(Refof(g00b), Local4)
-			}
-			case (129) {
-				Store(127, Local2)
-				BankField(OPR0, BNK0, 127, DWordAcc, Lock, Preserve) {
-					AccessAs(AnyAcc),
-					Offset(8), , 1, f0fc, 129}
-				Store(Refof(f0fc), Local3)
-				Store(Refof(g00c), Local4)
-			}
-			case (256) {
-				Store(128, Local2)
-				BankField(OPR0, BNK0, 128, AnyAcc, Lock, Preserve) {
-					Offset(8), , 1, f0fd, 256}
-				Store(Refof(f0fd), Local3)
-				Store(Refof(g00d), Local4)
-			}
-			case (1023) {
-				Store(255, Local2)
-				BankField(OPR0, BNK0, 255, QWordAcc, Lock, Preserve) {
-					AccessAs(AnyAcc),
-					Offset(8), , 1, f0fe, 1023}
-				Store(Refof(f0fe), Local3)
-				Store(Refof(g00e), Local4)
-			}
-			case (1983) {
-				Store(0, Local2)
-				BankField(OPR0, BNK0, 0, AnyAcc, Lock, Preserve) {
-					Offset(8), , 1, f0ff, 1983}
-				Store(Refof(f0ff), Local3)
-				Store(Refof(g000), Local4)
-			}
-			default {
-				err(arg0, z145, __LINE__, 0, 0, arg2, arg3)
-				return
-			}
-		}
-	}
-	default {
-		err(arg0, z145, __LINE__, 0, 0, arg2, arg3)
-		return}
-	}
-
-	Store(2, Index(fcp0, 0))
-	Store(Refof(BNK0), Index(fcp0, 1))
-	Store(Local2, Index(fcp0, 2))
-	m72d(arg0, Local3, arg2, arg3, arg4, arg5, Local4)
-	Store(0, Index(fcp0, 0))
-}
-
-// Splitting of BankFields
-// m7c6(CallChain)
-Method(m7c6, 1, Serialized)
-{
-	OperationRegion(OPR0, SystemIO, 1000, 0x101)
-
-	Store("TEST: m7c6, Check Splitting of BankFields", Debug)
-
-	Concatenate(arg0, "-m7c6", arg0)
-
-	m7e0(arg0, OPR0, 0x4)
-	m7e1(arg0, OPR0, 0x400)
-	m7e2(arg0, OPR0, 0x4000)
-	m7e3(arg0, OPR0, 0xf000)
-	m7e4(arg0, OPR0, 0xf004)
-	m7e5(arg0, OPR0, 0xf400)
-	m7e6(arg0, OPR0, 0xff00)
-	m7e7(arg0, OPR0, 0xfff0)
-	m7e8(arg0, OPR0, 0xffff)
-	m7e9(arg0, OPR0, 0x4)
-}
-
-// Create BankFields that spans the same bits
-// and check possible inconsistence, 0-bit offset.
-// m7e0(CallChain, OpRegion, BankNum)
-Method(m7e0, 3, Serialized)
-{
-	OperationRegion(OPRm, 0xff, 0x100, 0x08)
-	OperationRegion(OPRn, SystemIO, 0x10, 0x02)
-
-	Field(OPRn, ByteAcc, NoLock, Preserve) {
-		BNK0, 16,
-	}
-
-	Concatenate(arg0, "-m7e0", arg0)
-
-	CopyObject(arg1, OPRm)
-
-	BankField(OPRm, BNK0, arg2, ByteAcc, NoLock, Preserve) {
-			, 0, // 0-bit offset
-			BF00, 0x3}
-
-	BankField(OPRm, BNK0, arg2, ByteAcc, NoLock, Preserve) {
-			, 0,
-			BF10, 0x1,
-			BF11, 0x1,
-			BF12, 0x1}
-
-	BankField(OPRm, BNK0, arg2, ByteAcc, NoLock, Preserve) {
-			, 0,
-			BF20, 0x1,
-			BF21, 0x2}
-
-	BankField(OPRm, BNK0, arg2, ByteAcc, NoLock, Preserve) {
-			, 0,
-			BF30, 0x2,
-			BF31, 0x1}
-
-	Store(8, Local0)
-
-	Store(Package(){BF10, BF11, BF12, BF20, BF21, BF30, BF31}, Local1)
-
-	while(Local0) {
-		Decrement(Local0)
-
-		Store(Local0, BF00)
-
-		if (y118) {
-		} else {
-			Store(BF10, Index(Local1, 0))
-			Store(BF11, Index(Local1, 1))
-			Store(BF12, Index(Local1, 2))
-			Store(BF20, Index(Local1, 3))
-			Store(BF21, Index(Local1, 4))
-			Store(BF30, Index(Local1, 5))
-			Store(BF31, Index(Local1, 6))
-		}
-
-		m72a(arg0, Local0, Local1)
-	}
-}
-
-// Create BankFields that spans the same bits
-// and check possible inconsistence, 1-bit offset.
-// m7e1(CallChain, OpRegion, BankNum)
-Method(m7e1, 3, Serialized)
-{
-	OperationRegion(OPRm, 0xff, 0, 0x08)
-	OperationRegion(OPRn, SystemIO, 0x10, 0x02)
-
-	Field(OPRn, ByteAcc, NoLock, Preserve) {
-		BNK0, 16,
-	}
-
-	Concatenate(arg0, "-m7e1", arg0)
-
-	CopyObject(arg1, OPRm)
-
-	BankField(OPRm, BNK0, arg2, ByteAcc, NoLock, Preserve) {
-			, 1, // 1-bit offset
-			BF00, 0x3}
-
-	BankField(OPRm, BNK0, arg2, ByteAcc, NoLock, Preserve) {
-			, 1,
-			BF10, 0x1,
-			BF11, 0x1,
-			BF12, 0x1}
-
-	BankField(OPRm, BNK0, arg2, ByteAcc, NoLock, Preserve) {
-			, 1,
-			BF20, 0x1,
-			BF21, 0x2}
-
-	BankField(OPRm, BNK0, arg2, ByteAcc, NoLock, Preserve) {
-			, 1,
-			BF30, 0x2,
-			BF31, 0x1}
-
-	Store(8, Local0)
-
-	Store(Package(){BF10, BF11, BF12, BF20, BF21, BF30, BF31}, Local1)
-
-	while(Local0) {
-		Decrement(Local0)
-
-		Store(Local0, BF00)
-
-		if (y118) {
-		} else {
-			Store(BF10, Index(Local1, 0))
-			Store(BF11, Index(Local1, 1))
-			Store(BF12, Index(Local1, 2))
-			Store(BF20, Index(Local1, 3))
-			Store(BF21, Index(Local1, 4))
-			Store(BF30, Index(Local1, 5))
-			Store(BF31, Index(Local1, 6))
-		}
-
-		m72a(arg0, Local0, Local1)
-	}
-}
-
-// Create BankFields that spans the same bits
-// and check possible inconsistence, 2-bit offset.
-// m7e2(CallChain, OpRegion, BankNum)
-Method(m7e2, 3, Serialized)
-{
-	OperationRegion(OPRm, 0xff, 0, 0x08)
-	OperationRegion(OPRn, SystemIO, 0x10, 0x02)
-
-	Field(OPRn, ByteAcc, NoLock, Preserve) {
-		BNK0, 16,
-	}
-
-	Concatenate(arg0, "-m7e2", arg0)
-
-	CopyObject(arg1, OPRm)
-
-	BankField(OPRm, BNK0, arg2, ByteAcc, NoLock, Preserve) {
-			, 2, // 2-bit offset
-			BF00, 0x3}
-
-	BankField(OPRm, BNK0, arg2, ByteAcc, NoLock, Preserve) {
-			, 2,
-			BF10, 0x1,
-			BF11, 0x1,
-			BF12, 0x1}
-
-	BankField(OPRm, BNK0, arg2, ByteAcc, NoLock, Preserve) {
-			, 2,
-			BF20, 0x1,
-			BF21, 0x2}
-
-	BankField(OPRm, BNK0, arg2, ByteAcc, NoLock, Preserve) {
-			, 2,
-			BF30, 0x2,
-			BF31, 0x1}
-
-	Store(8, Local0)
-
-	Store(Package(){BF10, BF11, BF12, BF20, BF21, BF30, BF31}, Local1)
-
-	while(Local0) {
-		Decrement(Local0)
-
-		Store(Local0, BF00)
-
-		if (y118) {
-		} else {
-			Store(BF10, Index(Local1, 0))
-			Store(BF11, Index(Local1, 1))
-			Store(BF12, Index(Local1, 2))
-			Store(BF20, Index(Local1, 3))
-			Store(BF21, Index(Local1, 4))
-			Store(BF30, Index(Local1, 5))
-			Store(BF31, Index(Local1, 6))
-		}
-
-		m72a(arg0, Local0, Local1)
-	}
-}
-
-// Create BankFields that spans the same bits
-// and check possible inconsistence, 3-bit offset.
-// m7e3(CallChain, OpRegion, BankNum)
-Method(m7e3, 3, Serialized)
-{
-	OperationRegion(OPRm, 0xff, 0, 0x08)
-	OperationRegion(OPRn, SystemIO, 0x10, 0x02)
-
-	Field(OPRn, ByteAcc, NoLock, Preserve) {
-		BNK0, 16,
-	}
-
-	Concatenate(arg0, "-m7e3", arg0)
-
-	CopyObject(arg1, OPRm)
-
-	BankField(OPRm, BNK0, arg2, ByteAcc, NoLock, Preserve) {
-			, 3, // 3-bit offset
-			BF00, 0x3}
-
-	BankField(OPRm, BNK0, arg2, ByteAcc, NoLock, Preserve) {
-			, 3,
-			BF10, 0x1,
-			BF11, 0x1,
-			BF12, 0x1}
-
-	BankField(OPRm, BNK0, arg2, ByteAcc, NoLock, Preserve) {
-			, 3,
-			BF20, 0x1,
-			BF21, 0x2}
-
-	BankField(OPRm, BNK0, arg2, ByteAcc, NoLock, Preserve) {
-			, 3,
-			BF30, 0x2,
-			BF31, 0x1}
-
-	Store(8, Local0)
-
-	Store(Package(){BF10, BF11, BF12, BF20, BF21, BF30, BF31}, Local1)
-
-	while(Local0) {
-		Decrement(Local0)
-
-		Store(Local0, BF00)
-
-		if (y118) {
-		} else {
-			Store(BF10, Index(Local1, 0))
-			Store(BF11, Index(Local1, 1))
-			Store(BF12, Index(Local1, 2))
-			Store(BF20, Index(Local1, 3))
-			Store(BF21, Index(Local1, 4))
-			Store(BF30, Index(Local1, 5))
-			Store(BF31, Index(Local1, 6))
-		}
-
-		m72a(arg0, Local0, Local1)
-	}
-}
-
-// Create BankFields that spans the same bits
-// and check possible inconsistence, 4-bit offset.
-// m7e4(CallChain, OpRegion, BankNum)
-Method(m7e4, 3, Serialized)
-{
-	OperationRegion(OPRm, 0xff, 0, 0x08)
-	OperationRegion(OPRn, SystemIO, 0x10, 0x02)
-
-	Field(OPRn, ByteAcc, NoLock, Preserve) {
-		BNK0, 16,
-	}
-
-	Concatenate(arg0, "-m7e4", arg0)
-
-	CopyObject(arg1, OPRm)
-
-	BankField(OPRm, BNK0, arg2, ByteAcc, NoLock, Preserve) {
-			, 4, // 4-bit offset
-			BF00, 0x3}
-
-	BankField(OPRm, BNK0, arg2, ByteAcc, NoLock, Preserve) {
-			, 4,
-			BF10, 0x1,
-			BF11, 0x1,
-			BF12, 0x1}
-
-	BankField(OPRm, BNK0, arg2, ByteAcc, NoLock, Preserve) {
-			, 4,
-			BF20, 0x1,
-			BF21, 0x2}
-
-	BankField(OPRm, BNK0, arg2, ByteAcc, NoLock, Preserve) {
-			, 4,
-			BF30, 0x2,
-			BF31, 0x1}
-
-	Store(8, Local0)
-
-	Store(Package(){BF10, BF11, BF12, BF20, BF21, BF30, BF31}, Local1)
-
-	while(Local0) {
-		Decrement(Local0)
-
-		Store(Local0, BF00)
-
-		if (y118) {
-		} else {
-			Store(BF10, Index(Local1, 0))
-			Store(BF11, Index(Local1, 1))
-			Store(BF12, Index(Local1, 2))
-			Store(BF20, Index(Local1, 3))
-			Store(BF21, Index(Local1, 4))
-			Store(BF30, Index(Local1, 5))
-			Store(BF31, Index(Local1, 6))
-		}
-
-		m72a(arg0, Local0, Local1)
-	}
-}
-
-// Create BankFields that spans the same bits
-// and check possible inconsistence, 5-bit offset.
-// m7e5(CallChain, OpRegion, BankNum)
-Method(m7e5, 3, Serialized)
-{
-	OperationRegion(OPRm, 0xff, 0, 0x08)
-	OperationRegion(OPRn, SystemIO, 0x10, 0x02)
-
-	Field(OPRn, ByteAcc, NoLock, Preserve) {
-		BNK0, 16,
-	}
-
-	Concatenate(arg0, "-m7e5", arg0)
-
-	CopyObject(arg1, OPRm)
-
-	BankField(OPRm, BNK0, arg2, ByteAcc, NoLock, Preserve) {
-			, 5, // 5-bit offset
-			BF00, 0x3}
-
-	BankField(OPRm, BNK0, arg2, ByteAcc, NoLock, Preserve) {
-			, 5,
-			BF10, 0x1,
-			BF11, 0x1,
-			BF12, 0x1}
-
-	BankField(OPRm, BNK0, arg2, ByteAcc, NoLock, Preserve) {
-			, 5,
-			BF20, 0x1,
-			BF21, 0x2}
-
-	BankField(OPRm, BNK0, arg2, ByteAcc, NoLock, Preserve) {
-			, 5,
-			BF30, 0x2,
-			BF31, 0x1}
-
-	Store(8, Local0)
-
-	Store(Package(){BF10, BF11, BF12, BF20, BF21, BF30, BF31}, Local1)
-
-	while(Local0) {
-		Decrement(Local0)
-
-		Store(Local0, BF00)
-
-		if (y118) {
-		} else {
-			Store(BF10, Index(Local1, 0))
-			Store(BF11, Index(Local1, 1))
-			Store(BF12, Index(Local1, 2))
-			Store(BF20, Index(Local1, 3))
-			Store(BF21, Index(Local1, 4))
-			Store(BF30, Index(Local1, 5))
-			Store(BF31, Index(Local1, 6))
-		}
-
-		m72a(arg0, Local0, Local1)
-	}
-}
-
-// Create BankFields that spans the same bits
-// and check possible inconsistence, 6-bit offset.
-// m7e6(CallChain, OpRegion, BankNum)
-Method(m7e6, 3, Serialized)
-{
-	OperationRegion(OPRm, 0xff, 0, 0x08)
-	OperationRegion(OPRn, SystemIO, 0x10, 0x02)
-
-	Field(OPRn, ByteAcc, NoLock, Preserve) {
-		BNK0, 16,
-	}
-
-	Concatenate(arg0, "-m7e6", arg0)
-
-	CopyObject(arg1, OPRm)
-
-	BankField(OPRm, BNK0, arg2, ByteAcc, NoLock, Preserve) {
-			, 6, // 6-bit offset
-			BF00, 0x3}
-
-	BankField(OPRm, BNK0, arg2, ByteAcc, NoLock, Preserve) {
-			, 6,
-			BF10, 0x1,
-			BF11, 0x1,
-			BF12, 0x1}
-
-	BankField(OPRm, BNK0, arg2, ByteAcc, NoLock, Preserve) {
-			, 6,
-			BF20, 0x1,
-			BF21, 0x2}
-
-	BankField(OPRm, BNK0, arg2, ByteAcc, NoLock, Preserve) {
-			, 6,
-			BF30, 0x2,
-			BF31, 0x1}
-
-	Store(8, Local0)
-
-	Store(Package(){BF10, BF11, BF12, BF20, BF21, BF30, BF31}, Local1)
-
-	while(Local0) {
-		Decrement(Local0)
-
-		Store(Local0, BF00)
-
-		if (y118) {
-		} else {
-			Store(BF10, Index(Local1, 0))
-			Store(BF11, Index(Local1, 1))
-			Store(BF12, Index(Local1, 2))
-			Store(BF20, Index(Local1, 3))
-			Store(BF21, Index(Local1, 4))
-			Store(BF30, Index(Local1, 5))
-			Store(BF31, Index(Local1, 6))
-		}
-
-		m72a(arg0, Local0, Local1)
-	}
-}
-
-// Create BankFields that spans the same bits
-// and check possible inconsistence, 7-bit offset.
-// m7e7(CallChain, OpRegion, BankNum)
-Method(m7e7, 3, Serialized)
-{
-	OperationRegion(OPRm, 0xff, 0, 0x08)
-	OperationRegion(OPRn, SystemIO, 0x10, 0x02)
-
-	Field(OPRn, ByteAcc, NoLock, Preserve) {
-		BNK0, 16,
-	}
-
-	Concatenate(arg0, "-m7e7", arg0)
-
-	CopyObject(arg1, OPRm)
-
-	BankField(OPRm, BNK0, arg2, ByteAcc, NoLock, Preserve) {
-			, 7, // 7-bit offset
-			BF00, 0x3}
-
-	BankField(OPRm, BNK0, arg2, ByteAcc, NoLock, Preserve) {
-			, 7,
-			BF10, 0x1,
-			BF11, 0x1,
-			BF12, 0x1}
-
-	BankField(OPRm, BNK0, arg2, ByteAcc, NoLock, Preserve) {
-			, 7,
-			BF20, 0x1,
-			BF21, 0x2}
-
-	BankField(OPRm, BNK0, arg2, ByteAcc, NoLock, Preserve) {
-			, 7,
-			BF30, 0x2,
-			BF31, 0x1}
-
-	Store(8, Local0)
-
-	Store(Package(){BF10, BF11, BF12, BF20, BF21, BF30, BF31}, Local1)
-
-	while(Local0) {
-		Decrement(Local0)
-
-		Store(Local0, BF00)
-
-		if (y118) {
-		} else {
-			Store(BF10, Index(Local1, 0))
-			Store(BF11, Index(Local1, 1))
-			Store(BF12, Index(Local1, 2))
-			Store(BF20, Index(Local1, 3))
-			Store(BF21, Index(Local1, 4))
-			Store(BF30, Index(Local1, 5))
-			Store(BF31, Index(Local1, 6))
-		}
-
-		m72a(arg0, Local0, Local1)
-	}
-}
-
-// Create BankFields that spans the same bits
-// and check possible inconsistence, 8-bit offset.
-// m7e8(CallChain, OpRegion, BankNum)
-Method(m7e8, 3, Serialized)
-{
-	OperationRegion(OPRm, 0xff, 0, 0x08)
-	OperationRegion(OPRn, SystemIO, 0x10, 0x02)
-
-	Field(OPRn, ByteAcc, NoLock, Preserve) {
-		BNK0, 16,
-	}
-
-	Concatenate(arg0, "-m7e8", arg0)
-
-	CopyObject(arg1, OPRm)
-
-	BankField(OPRm, BNK0, arg2, ByteAcc, NoLock, Preserve) {
-			, 8, // 8-bit offset
-			BF00, 0x3}
-
-	BankField(OPRm, BNK0, arg2, ByteAcc, NoLock, Preserve) {
-			, 8,
-			BF10, 0x1,
-			BF11, 0x1,
-			BF12, 0x1}
-
-	BankField(OPRm, BNK0, arg2, ByteAcc, NoLock, Preserve) {
-			, 8,
-			BF20, 0x1,
-			BF21, 0x2}
-
-	BankField(OPRm, BNK0, arg2, ByteAcc, NoLock, Preserve) {
-			, 8,
-			BF30, 0x2,
-			BF31, 0x1}
-
-	Store(8, Local0)
-
-	Store(Package(){BF10, BF11, BF12, BF20, BF21, BF30, BF31}, Local1)
-
-	while(Local0) {
-		Decrement(Local0)
-
-		Store(Local0, BF00)
-
-		if (y118) {
-		} else {
-			Store(BF10, Index(Local1, 0))
-			Store(BF11, Index(Local1, 1))
-			Store(BF12, Index(Local1, 2))
-			Store(BF20, Index(Local1, 3))
-			Store(BF21, Index(Local1, 4))
-			Store(BF30, Index(Local1, 5))
-			Store(BF31, Index(Local1, 6))
-		}
-
-		m72a(arg0, Local0, Local1)
-	}
-}
-
-// Create BankFields that spans the same bits
-// and check possible inconsistence, 2046-bit offset.
-// m7e9(CallChain, OpRegion, BankNum)
-Method(m7e9, 3, Serialized)
-{
-	OperationRegion(OPRm, 0xff, 0, 0x101)
-	OperationRegion(OPRn, SystemIO, 0x10, 0x02)
-
-	Field(OPRn, ByteAcc, NoLock, Preserve) {
-		BNK0, 16,
-	}
-
-	Concatenate(arg0, "-m7e9", arg0)
-
-	CopyObject(arg1, OPRm)
-
-	BankField(OPRm, BNK0, arg2, ByteAcc, NoLock, Preserve) {
-			, 2046, // 2046-bit offset
-			BF00, 0x3}
-
-	BankField(OPRm, BNK0, arg2, ByteAcc, NoLock, Preserve) {
-			, 2046,
-			BF10, 0x1,
-			BF11, 0x1,
-			BF12, 0x1}
-
-	BankField(OPRm, BNK0, arg2, ByteAcc, NoLock, Preserve) {
-			, 2046,
-			BF20, 0x1,
-			BF21, 0x2}
-
-	BankField(OPRm, BNK0, arg2, ByteAcc, NoLock, Preserve) {
-			, 2046,
-			BF30, 0x2,
-			BF31, 0x1}
-
-	Store(8, Local0)
-
-	Store(Package(){BF10, BF11, BF12, BF20, BF21, BF30, BF31}, Local1)
-
-	while(Local0) {
-		Decrement(Local0)
-
-		Store(Local0, BF00)
-
-		if (y118) {
-		} else {
-			Store(BF10, Index(Local1, 0))
-			Store(BF11, Index(Local1, 1))
-			Store(BF12, Index(Local1, 2))
-			Store(BF20, Index(Local1, 3))
-			Store(BF21, Index(Local1, 4))
-			Store(BF30, Index(Local1, 5))
-			Store(BF31, Index(Local1, 6))
-		}
-
-		m72a(arg0, Local0, Local1)
-	}
-}
-
-// Check non-constant Bank value
-Method(m7c7, 1, Serialized)
-{
-	Field (OPRi, ByteAcc, NoLock, Preserve) {
-		bnk0, 8
-	}
-
-	Name(BVAL, 2)
-
-	Method(CHCK, 3)
-	{
-		Store(Refof(arg1), Local0)
-
-		// Write
-
-		Store(0xff, bnk0)
-		m7bf(arg0, bnk0, 0xff, Add(arg2, 0))
-
-		Store(0x67, Derefof(Local0))
-		m7bf(arg0, bnk0, 2, Add(arg2, 1))
-
-		// Read
-
-		Store(0xff, bnk0)
-		m7bf(arg0, bnk0, 0xff, Add(arg2, 2))
-
-		Store(Derefof(arg1), Local1)
-		m7bf(arg0, Local1, 0x67, Add(arg2, 3))
-		m7bf(arg0, bnk0, 2, Add(arg2, 4))
-	}
-
-	// ArgX
-	Method(m000, 2, Serialized)
-	{
-		BankField (OPRj, bnk0, arg1, ByteAcc, NoLock, Preserve) {
-			Offset(8),
-			bf00, 8,
-		}
-
-		CHCK(arg0, Refof(bf00), 95)
-	}
-
-	// Named
-	Method(m001, 1, Serialized)
-	{
-		BankField (OPRj, bnk0, BVAL, ByteAcc, NoLock, Preserve) {
-			Offset(8),
-			bf00, 8,
-		}
-
-		CHCK(arg0, Refof(bf00), 100)
-	}
-
-	// LocalX
-	Method(m002, 1, Serialized)
-	{
-		Store(BVAL, Local0)
-
-		BankField (OPRj, bnk0, Local0, ByteAcc, NoLock, Preserve) {
-			Offset(8),
-			bf00, 8,
-		}
-
-		CHCK(arg0, Refof(bf00), 105)
-	}
-
-	// Expression
-	Method(m003, 1, Serialized)
-	{
-		Store(1, Local0)
-
-		BankField (OPRj, bnk0, Add(Local0, 1), ByteAcc, NoLock, Preserve) {
-			Offset(8),
-			bf00, 8,
-		}
-
-		CHCK(arg0, Refof(bf00), 110)
-	}
-
-	Concatenate(arg0, "-m7c7", arg0)
-
-	m000(arg0, 2)
-	m001(arg0)
-	m002(arg0)
-	m003(arg0)
-}
-
-// Check non-Integer Bank value
-Method(m7c8, 1, Serialized)
-{
-	Field (OPRi, ByteAcc, NoLock, Preserve) {
-		bnk0, 8
-	}
-
-	Name(val0, 2)
-	Name(valb, Buffer(1){2})
-	Name(vals, "2")
-
-	BankField (OPRj, bnk0, 2, ByteAcc, NoLock, Preserve) {
-		Offset(8), bf00, 32,
-	}
-
-    //
-    // BUG: ToInteger should not be necessary. The buffer and string
-    // arguments should be implicitly converted to integers.
-    //
-	BankField (OPRj, bnk0, ToInteger (valb), ByteAcc, NoLock, Preserve) {
-		Offset(8), bf01, 32,
-	}
-
-	BankField (OPRj, bnk0, ToInteger (vals), ByteAcc, NoLock, Preserve) {
-		Offset(8), bf02, 32,
-	}
-
-	Name(i000, 0x12345678)
-
-	Method(m000, 3, Serialized)
-	{
-		Store(1, Local0)
-
-		BankField (OPRj, bnk0, arg1, ByteAcc, NoLock, Preserve) {
-			Offset(8), bf03, 32,
-		}
-
-		if (LNotEqual(bf03, i000)) {
-			err(arg0, z145, __LINE__, 0, 0, bf03, i000)
-		}
-	}
-
-	Concatenate(arg0, "-m7c8", arg0)
-
-	Store(i000, bf00)
-
-	if (LNotEqual(bf00, i000)) {
-		err(arg0, z145, __LINE__, 0, 0, bf00, i000)
-	}
-	if (LNotEqual(bf01, i000)) {
-		err(arg0, z145, __LINE__, 0, 0, bf00, i000)
-	}
-	if (LNotEqual(bf02, i000)) {
-		err(arg0, z145, __LINE__, 0, 0, bf00, i000)
-	}
-
-    //
-    // BUG: ToInteger should not be necessary. The buffer and string
-    // arguments should be implicitly converted to integers.
-    //
-	m000(arg0, val0, 118)
-	m000(arg0, ToInteger (valb), 119)
-	m000(arg0, ToInteger (vals), 120)
-}
-
-// Run-method
-Method(BFC0,, Serialized)
-{
-	Name(ts, "BFC0")
-
-	// Simple BankField test
-	SRMT("m7c0")
-	m7c0(ts)
-
-	// Check BankField access: ByteAcc, NoLock, Preserve
-	SRMT("m7c1")
-	if (y192) {
-		m7c1(ts)
-	} else {
-		BLCK()
-	}
-
-	// Check BankField access: WordAcc, NoLock, WriteAsOnes
-	SRMT("m7c2")
-	if (y192) {
-		m7c2(ts)
-	} else {
-		BLCK()
-	}
-
-	// Check BankField access: DWordAcc, NoLock, WriteAsZeros
-	SRMT("m7c3")
-	if (y192) {
-		m7c3(ts)
-	} else {
-		BLCK()
-	}
-
-	// Check BankField access: QWordAcc, NoLock, Preserve
-	SRMT("m7c4")
-	if (y192) {
-		m7c4(ts)
-	} else {
-		BLCK()
-	}
-
-	// Check BankField access: AnyAcc, Lock, Preserve
-	SRMT("m7c5")
-	if (y192) {
-		m7c5(ts)
-	} else {
-		BLCK()
-	}
-
-	// Splitting of BankFields
-	SRMT("m7c6")
-	if (y192) {
-		m7c6(ts)
-	} else {
-		BLCK()
-	}
-
-	// Non-constant Bank value
-	SRMT("m7c7")
-	if (y178) {
-		m7c7(ts)
-	} else {
-		BLCK()
-	}
-
-	// Non-Integer Bank value
-	SRMT("m7c8")
-	if (y178) {
-		m7c8(ts)
-	} else {
-		BLCK()
-	}
-}
+     * - AccessAs macros influence on the remaining Field Units within the list,
+     * - access to BankField objects in accord with the bank selection register
+     *   functionality,
+     * - integer/buffer representation of the Unit contents as depends on its
+     *   Length and DSDT ComplianceRevision (32/64-bit Integer),
+     * - Data Type Conversion Rules on storing to BankFields,
+     * - check that Bank value can be computational data.
+     *
+     * Can not be tested following issues:
+     * - exact use of given Access Type alignment on Access to Unit data,
+     * - exact functioning of data exchange based on BankField functionality,
+     * - exact use of specific Conversion Rules on storing of Buffers or Strings.
+     */
+    Name (Z145, 0x91)
+    OperationRegion (OPRI, SystemIO, 0x0200, 0x10)
+    OperationRegion (OPRJ, SystemIO, 0x0230, 0x0133)
+    /* Check against benchmark value */
+    /* m7bf(msg, result, benchmark, errnum) */
+    Method (M7BF, 4, NotSerialized)
+    {
+        If ((ObjectType (Arg1) != ObjectType (Arg2)))
+        {
+            ERR (Arg0, Z145, 0x48, 0x00, 0x00, ObjectType (Arg1), ObjectType (Arg2))
+        }
+        ElseIf ((Arg1 != Arg2))
+        {
+            ERR (Arg0, Z145, 0x4A, 0x00, 0x00, Arg1, Arg2)
+        }
+    }
+
+    /* Simple BankField test */
+
+    Method (M7C0, 1, Serialized)
+    {
+        Field (OPRI, ByteAcc, NoLock, Preserve)
+        {
+            BNK0,   8
+        }
+
+        BankField (OPRJ, BNK0, 0x02, ByteAcc, NoLock, Preserve)
+        {
+            Offset (0x08), 
+            BF00,   8
+        }
+
+        BankField (OPRJ, BNK0, 0x03, ByteAcc, NoLock, Preserve)
+        {
+            Offset (0x08), 
+            BF01,   8
+        }
+
+        Concatenate (Arg0, "-m7c0", Arg0)
+        /* */
+        /* Full support for bank fields not implemented in acpiexec, so */
+        /* we have to perform write/reads in order. Otherwise, we would */
+        /* interleave them. */
+        /* Write bf00 */
+        BNK0 = 0xFF
+        M7BF (Arg0, BNK0, 0xFF, 0x01)
+        BF00 = 0x67
+        M7BF (Arg0, BNK0, 0x02, 0x02)
+        /* Read bf00 */
+
+        BNK0 = 0xFF
+        M7BF (Arg0, BNK0, 0xFF, 0x05)
+        Local1 = BF00 /* \M7C0.BF00 */
+        M7BF (Arg0, Local1, 0x67, 0x06)
+        M7BF (Arg0, BNK0, 0x02, 0x07)
+        /* Write bf01 */
+
+        BNK0 = 0xFF
+        M7BF (Arg0, BNK0, 0xFF, 0x03)
+        BF01 = 0x89
+        M7BF (Arg0, BNK0, 0x03, 0x04)
+        /* Read bf01 */
+
+        BNK0 = 0xFF
+        M7BF (Arg0, BNK0, 0xFF, 0x08)
+        Local1 = BF01 /* \M7C0.BF01 */
+        M7BF (Arg0, Local1, 0x89, 0x09)
+        M7BF (Arg0, BNK0, 0x03, 0x0A)
+    }
+
+    /* Testing parameters Packages */
+    /* Layout see in regionfield.asl */
+    /* (ByteAcc, NoLock, Preserve) */
+    Name (PP20, Package (0x05)
+    {
+        0x00, 
+        0x08, 
+        0x00, 
+        0x08, 
+        Package (0x06)
+        {
+            0x00, 
+            0x01, 
+            0x01, 
+            0x00, 
+            0x01, 
+            "m7d0"
+        }
+    })
+    /* (WordAcc, NoLock, WriteAsOnes) */
+
+    Name (PP21, Package (0x05)
+    {
+        0x00, 
+        0x08, 
+        0x08, 
+        0x08, 
+        Package (0x06)
+        {
+            0x00, 
+            0x02, 
+            0x02, 
+            0x01, 
+            0x01, 
+            "m7d1"
+        }
+    })
+    /* (DWordAcc, NoLock, WriteAsZeros) */
+
+    Name (PP22, Package (0x05)
+    {
+        0x08, 
+        0x08, 
+        0x00, 
+        0x08, 
+        Package (0x06)
+        {
+            0x01, 
+            0x02, 
+            0x03, 
+            0x02, 
+            0x01, 
+            "m7d2"
+        }
+    })
+    /* (QWordAcc, NoLock, Preserve) */
+
+    Name (PP23, Package (0x05)
+    {
+        0x08, 
+        0x04, 
+        0x08, 
+        0x08, 
+        Package (0x06)
+        {
+            0x01, 
+            0x00, 
+            0x03, 
+            0x00, 
+            0x01, 
+            "m7d3"
+        }
+    })
+    /* (AnyAcc, Lock, Preserve) */
+
+    Name (PP24, Package (0x05)
+    {
+        0x0C, 
+        0x04, 
+        0x08, 
+        0x08, 
+        Package (0x06)
+        {
+            0x00, 
+            0x01, 
+            0x00, 
+            0x00, 
+            0x00, 
+            "m7d4"
+        }
+    })
+    /* Check BankField access: ByteAcc, NoLock, Preserve */
+    /* m7c1(CallChain) */
+    Method (M7C1, 1, NotSerialized)
+    {
+        Concatenate (Arg0, "-m7c1", Arg0)
+        Debug = "TEST: m7c1, Check BankFields specified as (ByteAcc, NoLock, Preserve)"
+        M72F (Arg0, 0x01, "pp20", PP20)
+    }
+
+    /* Check BankField access: WordAcc, NoLock, WriteAsOnes */
+    /* m7c2(CallChain) */
+    Method (M7C2, 1, NotSerialized)
+    {
+        Concatenate (Arg0, "-m7c2", Arg0)
+        Debug = "TEST: m7c2, Check BankFields specified as (WordAcc, NoLock, WriteAsOnes)"
+        M72F (Arg0, 0x01, "pp21", PP21)
+    }
+
+    /* Check BankField access: DWordAcc, NoLock, WriteAsZeros */
+    /* m7c3(CallChain) */
+    Method (M7C3, 1, NotSerialized)
+    {
+        Concatenate (Arg0, "-m7c3", Arg0)
+        Debug = "TEST: m7c3, Check BankFields specified as (DWordAcc, NoLock, WriteAsZeros)"
+        M72F (Arg0, 0x01, "pp22", PP22)
+    }
+
+    /* Check BankField access: QWordAcc, NoLock, Preserve */
+    /* m7c4(CallChain) */
+    Method (M7C4, 1, NotSerialized)
+    {
+        Concatenate (Arg0, "-m7c4", Arg0)
+        Debug = "TEST: m7c4, Check BankFields specified as (QWordAcc, NoLock, Preserve)"
+        M72F (Arg0, 0x01, "pp23", PP23)
+    }
+
+    /* Check BankField access: AnyAcc, Lock, Preserve */
+    /* m7c5(CallChain) */
+    Method (M7C5, 1, NotSerialized)
+    {
+        Concatenate (Arg0, "-m7c5", Arg0)
+        Debug = "TEST: m7c5, Check BankFields specified as (AnyAcc, Lock, Preserve)"
+        M72F (Arg0, 0x01, "pp24", PP24)
+    }
+
+    /* Create BankField Unit */
+    /* (ByteAcc, NoLock, Preserve) */
+    Method (M7D0, 6, Serialized)
+    {
+        OperationRegion (OPRB, SystemIO, 0x00, 0x09)
+        OperationRegion (OPR0, SystemIO, 0x0B, 0x0100)
+        Field (OPRB, ByteAcc, NoLock, Preserve)
+        {
+            BNK0,   8
+        }
+
+        BankField (OPR0, BNK0, 0x00, ByteAcc, NoLock, Preserve)
+        {
+            G000,   2048
+        }
+
+        BankField (OPR0, BNK0, 0x01, ByteAcc, NoLock, Preserve)
+        {
+            G001,   2048
+        }
+
+        BankField (OPR0, BNK0, 0x02, ByteAcc, NoLock, Preserve)
+        {
+            G002,   2048
+        }
+
+        BankField (OPR0, BNK0, 0x03, ByteAcc, NoLock, Preserve)
+        {
+            G003,   2048
+        }
+
+        BankField (OPR0, BNK0, 0x04, ByteAcc, NoLock, Preserve)
+        {
+            G004,   2048
+        }
+
+        BankField (OPR0, BNK0, 0x05, ByteAcc, NoLock, Preserve)
+        {
+            G005,   2048
+        }
+
+        BankField (OPR0, BNK0, 0x06, ByteAcc, NoLock, Preserve)
+        {
+            G006,   2048
+        }
+
+        BankField (OPR0, BNK0, 0x07, ByteAcc, NoLock, Preserve)
+        {
+            G007,   2048
+        }
+
+        BankField (OPR0, BNK0, 0x08, ByteAcc, NoLock, Preserve)
+        {
+            G008,   2048
+        }
+
+        BankField (OPR0, BNK0, 0x09, ByteAcc, NoLock, Preserve)
+        {
+            G009,   2048
+        }
+
+        BankField (OPR0, BNK0, 0x3F, ByteAcc, NoLock, Preserve)
+        {
+            G00A,   2048
+        }
+
+        BankField (OPR0, BNK0, 0x40, ByteAcc, NoLock, Preserve)
+        {
+            G00B,   2048
+        }
+
+        BankField (OPR0, BNK0, 0x7F, ByteAcc, NoLock, Preserve)
+        {
+            G00C,   2048
+        }
+
+        BankField (OPR0, BNK0, 0x80, ByteAcc, NoLock, Preserve)
+        {
+            G00D,   2048
+        }
+
+        BankField (OPR0, BNK0, 0xFF, ByteAcc, NoLock, Preserve)
+        {
+            G00E,   2048
+        }
+
+        Concatenate (Arg0, "-m7d0", Arg0)
+        Switch (ToInteger (Arg2))
+        {
+            Case (0x00)
+            {
+                Switch (ToInteger (Arg3))
+                {
+                    Case (0x01)
+                    {
+                        Local2 = 0x00
+                        BankField (OPR0, BNK0, 0x00, ByteAcc, NoLock, Preserve)
+                        {
+                            Offset (0x00), 
+                            F000,   1
+                        }
+
+                        Local3 = RefOf (F000)
+                        Local4 = RefOf (G000)
+                    }
+                    Case (0x06)
+                    {
+                        Local2 = 0x01
+                        BankField (OPR0, BNK0, 0x01, WordAcc, NoLock, Preserve)
+                        {
+                            AccessAs (ByteAcc, 0x00), 
+                            Offset (0x00), 
+                            F001,   6
+                        }
+
+                        Local3 = RefOf (F001)
+                        Local4 = RefOf (G001)
+                    }
+                    Case (0x07)
+                    {
+                        Local2 = 0x02
+                        BankField (OPR0, BNK0, 0x02, ByteAcc, NoLock, Preserve)
+                        {
+                            Offset (0x00), 
+                            F002,   7
+                        }
+
+                        Local3 = RefOf (F002)
+                        Local4 = RefOf (G002)
+                    }
+                    Case (0x08)
+                    {
+                        Local2 = 0x03
+                        BankField (OPR0, BNK0, 0x03, DWordAcc, NoLock, Preserve)
+                        {
+                            AccessAs (ByteAcc, 0x00), 
+                            Offset (0x00), 
+                            F003,   8
+                        }
+
+                        Local3 = RefOf (F003)
+                        Local4 = RefOf (G003)
+                    }
+                    Case (0x09)
+                    {
+                        Local2 = 0x04
+                        BankField (OPR0, BNK0, 0x04, ByteAcc, NoLock, Preserve)
+                        {
+                            Offset (0x00), 
+                            F004,   9
+                        }
+
+                        Local3 = RefOf (F004)
+                        Local4 = RefOf (G004)
+                    }
+                    Case (0x1F)
+                    {
+                        Local2 = 0x05
+                        BankField (OPR0, BNK0, 0x05, QWordAcc, NoLock, Preserve)
+                        {
+                            AccessAs (ByteAcc, 0x00), 
+                            Offset (0x00), 
+                            F005,   31
+                        }
+
+                        Local3 = RefOf (F005)
+                        Local4 = RefOf (G005)
+                    }
+                    Case (0x20)
+                    {
+                        Local2 = 0x06
+                        BankField (OPR0, BNK0, 0x06, ByteAcc, NoLock, Preserve)
+                        {
+                            Offset (0x00), 
+                            F006,   32
+                        }
+
+                        Local3 = RefOf (F006)
+                        Local4 = RefOf (G006)
+                    }
+                    Case (0x21)
+                    {
+                        Local2 = 0x07
+                        BankField (OPR0, BNK0, 0x07, AnyAcc, NoLock, Preserve)
+                        {
+                            AccessAs (ByteAcc, 0x00), 
+                            Offset (0x00), 
+                            F007,   33
+                        }
+
+                        Local3 = RefOf (F007)
+                        Local4 = RefOf (G007)
+                    }
+                    Case (0x3F)
+                    {
+                        Local2 = 0x08
+                        BankField (OPR0, BNK0, 0x08, ByteAcc, NoLock, Preserve)
+                        {
+                            Offset (0x00), 
+                            F008,   63
+                        }
+
+                        Local3 = RefOf (F008)
+                        Local4 = RefOf (G008)
+                    }
+                    Case (0x40)
+                    {
+                        Local2 = 0x09
+                        BankField (OPR0, BNK0, 0x09, ByteAcc, NoLock, Preserve)
+                        {
+                            AccessAs (ByteAcc, 0x00), 
+                            Offset (0x00), 
+                            F009,   64
+                        }
+
+                        Local3 = RefOf (F009)
+                        Local4 = RefOf (G009)
+                    }
+                    Case (0x41)
+                    {
+                        Local2 = 0x3F
+                        BankField (OPR0, BNK0, 0x3F, ByteAcc, NoLock, Preserve)
+                        {
+                            Offset (0x00), 
+                            F00A,   65
+                        }
+
+                        Local3 = RefOf (F00A)
+                        Local4 = RefOf (G00A)
+                    }
+                    Case (0x45)
+                    {
+                        Local2 = 0x40
+                        BankField (OPR0, BNK0, 0x40, WordAcc, NoLock, Preserve)
+                        {
+                            AccessAs (ByteAcc, 0x00), 
+                            Offset (0x00), 
+                            F00B,   69
+                        }
+
+                        Local3 = RefOf (F00B)
+                        Local4 = RefOf (G00B)
+                    }
+                    Case (0x81)
+                    {
+                        Local2 = 0x7F
+                        BankField (OPR0, BNK0, 0x7F, ByteAcc, NoLock, Preserve)
+                        {
+                            Offset (0x00), 
+                            F00C,   129
+                        }
+
+                        Local3 = RefOf (F00C)
+                        Local4 = RefOf (G00C)
+                    }
+                    Case (0x0100)
+                    {
+                        Local2 = 0x80
+                        BankField (OPR0, BNK0, 0x80, DWordAcc, NoLock, Preserve)
+                        {
+                            AccessAs (ByteAcc, 0x00), 
+                            Offset (0x00), 
+                            F00D,   256
+                        }
+
+                        Local3 = RefOf (F00D)
+                        Local4 = RefOf (G00D)
+                    }
+                    Case (0x03FF)
+                    {
+                        Local2 = 0xFF
+                        BankField (OPR0, BNK0, 0xFF, ByteAcc, NoLock, Preserve)
+                        {
+                            Offset (0x00), 
+                            F00E,   1023
+                        }
+
+                        Local3 = RefOf (F00E)
+                        Local4 = RefOf (G00E)
+                    }
+                    Case (0x07BF)
+                    {
+                        Local2 = 0x00
+                        BankField (OPR0, BNK0, 0x00, QWordAcc, NoLock, Preserve)
+                        {
+                            AccessAs (ByteAcc, 0x00), 
+                            Offset (0x00), 
+                            F00F,   1983
+                        }
+
+                        Local3 = RefOf (F00F)
+                        Local4 = RefOf (G000)
+                    }
+                    Default
+                    {
+                        ERR (Arg0, Z145, 0x0193, 0x00, 0x00, Arg2, Arg3)
+                        Return (Zero)
+                    }
+
+                }
+            }
+            Case (0x01)
+            {
+                Switch (ToInteger (Arg3))
+                {
+                    Case (0x01)
+                    {
+                        Local2 = 0x01
+                        BankField (OPR0, BNK0, 0x01, AnyAcc, NoLock, Preserve)
+                        {
+                            AccessAs (ByteAcc, 0x00), 
+                                ,   1, 
+                            F010,   1
+                        }
+
+                        Local3 = RefOf (F010)
+                        Local4 = RefOf (G001)
+                    }
+                    Case (0x06)
+                    {
+                        Local2 = 0x02
+                        BankField (OPR0, BNK0, 0x02, ByteAcc, NoLock, Preserve)
+                        {
+                                ,   1, 
+                            F011,   6
+                        }
+
+                        Local3 = RefOf (F011)
+                        Local4 = RefOf (G002)
+                    }
+                    Case (0x07)
+                    {
+                        Local2 = 0x03
+                        BankField (OPR0, BNK0, 0x03, ByteAcc, NoLock, Preserve)
+                        {
+                            AccessAs (ByteAcc, 0x00), 
+                                ,   1, 
+                            F012,   7
+                        }
+
+                        Local3 = RefOf (F012)
+                        Local4 = RefOf (G003)
+                    }
+                    Case (0x08)
+                    {
+                        Local2 = 0x04
+                        BankField (OPR0, BNK0, 0x04, ByteAcc, NoLock, Preserve)
+                        {
+                                ,   1, 
+                            F013,   8
+                        }
+
+                        Local3 = RefOf (F013)
+                        Local4 = RefOf (G004)
+                    }
+                    Case (0x09)
+                    {
+                        Local2 = 0x05
+                        BankField (OPR0, BNK0, 0x05, WordAcc, NoLock, Preserve)
+                        {
+                            AccessAs (ByteAcc, 0x00), 
+                                ,   1, 
+                            F014,   9
+                        }
+
+                        Local3 = RefOf (F014)
+                        Local4 = RefOf (G005)
+                    }
+                    Case (0x1F)
+                    {
+                        Local2 = 0x06
+                        BankField (OPR0, BNK0, 0x06, ByteAcc, NoLock, Preserve)
+                        {
+                                ,   1, 
+                            F015,   31
+                        }
+
+                        Local3 = RefOf (F015)
+                        Local4 = RefOf (G006)
+                    }
+                    Case (0x20)
+                    {
+                        Local2 = 0x07
+                        BankField (OPR0, BNK0, 0x07, DWordAcc, NoLock, Preserve)
+                        {
+                            AccessAs (ByteAcc, 0x00), 
+                                ,   1, 
+                            F016,   32
+                        }
+
+                        Local3 = RefOf (F016)
+                        Local4 = RefOf (G007)
+                    }
+                    Case (0x21)
+                    {
+                        Local2 = 0x08
+                        BankField (OPR0, BNK0, 0x08, ByteAcc, NoLock, Preserve)
+                        {
+                                ,   1, 
+                            F017,   33
+                        }
+
+                        Local3 = RefOf (F017)
+                        Local4 = RefOf (G008)
+                    }
+                    Case (0x3F)
+                    {
+                        Local2 = 0x09
+                        BankField (OPR0, BNK0, 0x09, QWordAcc, NoLock, Preserve)
+                        {
+                            AccessAs (ByteAcc, 0x00), 
+                                ,   1, 
+                            F018,   63
+                        }
+
+                        Local3 = RefOf (F018)
+                        Local4 = RefOf (G009)
+                    }
+                    Case (0x40)
+                    {
+                        Local2 = 0x3F
+                        BankField (OPR0, BNK0, 0x3F, ByteAcc, NoLock, Preserve)
+                        {
+                                ,   1, 
+                            F019,   64
+                        }
+
+                        Local3 = RefOf (F019)
+                        Local4 = RefOf (G00A)
+                    }
+                    Case (0x41)
+                    {
+                        Local2 = 0x40
+                        BankField (OPR0, BNK0, 0x40, AnyAcc, NoLock, Preserve)
+                        {
+                            AccessAs (ByteAcc, 0x00), 
+                                ,   1, 
+                            F01A,   65
+                        }
+
+                        Local3 = RefOf (F01A)
+                        Local4 = RefOf (G00B)
+                    }
+                    Case (0x45)
+                    {
+                        Local2 = 0x7F
+                        BankField (OPR0, BNK0, 0x7F, ByteAcc, NoLock, Preserve)
+                        {
+                                ,   1, 
+                            F01B,   69
+                        }
+
+                        Local3 = RefOf (F01B)
+                        Local4 = RefOf (G00C)
+                    }
+                    Case (0x81)
+                    {
+                        Local2 = 0x80
+                        BankField (OPR0, BNK0, 0x80, ByteAcc, NoLock, Preserve)
+                        {
+                            AccessAs (ByteAcc, 0x00), 
+                                ,   1, 
+                            F01C,   129
+                        }
+
+                        Local3 = RefOf (F01C)
+                        Local4 = RefOf (G00D)
+                    }
+                    Case (0x0100)
+                    {
+                        Local2 = 0xFF
+                        BankField (OPR0, BNK0, 0xFF, ByteAcc, NoLock, Preserve)
+                        {
+                                ,   1, 
+                            F01D,   256
+                        }
+
+                        Local3 = RefOf (F01D)
+                        Local4 = RefOf (G00E)
+                    }
+                    Case (0x03FF)
+                    {
+                        Local2 = 0x00
+                        BankField (OPR0, BNK0, 0x00, WordAcc, NoLock, Preserve)
+                        {
+                            AccessAs (ByteAcc, 0x00), 
+                                ,   1, 
+                            F01E,   1023
+                        }
+
+                        Local3 = RefOf (F01E)
+                        Local4 = RefOf (G000)
+                    }
+                    Case (0x07BF)
+                    {
+                        Local2 = 0x01
+                        BankField (OPR0, BNK0, 0x01, ByteAcc, NoLock, Preserve)
+                        {
+                                ,   1, 
+                            F01F,   1983
+                        }
+
+                        Local3 = RefOf (F01F)
+                        Local4 = RefOf (G001)
+                    }
+                    Default
+                    {
+                        ERR (Arg0, Z145, 0x0213, 0x00, 0x00, Arg2, Arg3)
+                        Return (Zero)
+                    }
+
+                }
+            }
+            Case (0x02)
+            {
+                Switch (ToInteger (Arg3))
+                {
+                    Case (0x01)
+                    {
+                        Local2 = 0x02
+                        BankField (OPR0, BNK0, 0x02, ByteAcc, NoLock, Preserve)
+                        {
+                                ,   2, 
+                            F020,   1
+                        }
+
+                        Local3 = RefOf (F020)
+                        Local4 = RefOf (G002)
+                    }
+                    Case (0x06)
+                    {
+                        Local2 = 0x03
+                        BankField (OPR0, BNK0, 0x03, DWordAcc, NoLock, Preserve)
+                        {
+                            AccessAs (ByteAcc, 0x00), 
+                                ,   2, 
+                            F021,   6
+                        }
+
+                        Local3 = RefOf (F021)
+                        Local4 = RefOf (G003)
+                    }
+                    Case (0x07)
+                    {
+                        Local2 = 0x04
+                        BankField (OPR0, BNK0, 0x04, ByteAcc, NoLock, Preserve)
+                        {
+                                ,   2, 
+                            F022,   7
+                        }
+
+                        Local3 = RefOf (F022)
+                        Local4 = RefOf (G004)
+                    }
+                    Case (0x08)
+                    {
+                        Local2 = 0x05
+                        BankField (OPR0, BNK0, 0x05, QWordAcc, NoLock, Preserve)
+                        {
+                            AccessAs (ByteAcc, 0x00), 
+                                ,   2, 
+                            F023,   8
+                        }
+
+                        Local3 = RefOf (F023)
+                        Local4 = RefOf (G005)
+                    }
+                    Case (0x09)
+                    {
+                        Local2 = 0x06
+                        BankField (OPR0, BNK0, 0x06, ByteAcc, NoLock, Preserve)
+                        {
+                                ,   2, 
+                            F024,   9
+                        }
+
+                        Local3 = RefOf (F024)
+                        Local4 = RefOf (G006)
+                    }
+                    Case (0x1F)
+                    {
+                        Local2 = 0x07
+                        BankField (OPR0, BNK0, 0x07, AnyAcc, NoLock, Preserve)
+                        {
+                            AccessAs (ByteAcc, 0x00), 
+                                ,   2, 
+                            F025,   31
+                        }
+
+                        Local3 = RefOf (F025)
+                        Local4 = RefOf (G007)
+                    }
+                    Case (0x20)
+                    {
+                        Local2 = 0x08
+                        BankField (OPR0, BNK0, 0x08, ByteAcc, NoLock, Preserve)
+                        {
+                                ,   2, 
+                            F026,   32
+                        }
+
+                        Local3 = RefOf (F026)
+                        Local4 = RefOf (G008)
+                    }
+                    Case (0x21)
+                    {
+                        Local2 = 0x09
+                        BankField (OPR0, BNK0, 0x09, ByteAcc, NoLock, Preserve)
+                        {
+                            AccessAs (ByteAcc, 0x00), 
+                                ,   2, 
+                            F027,   33
+                        }
+
+                        Local3 = RefOf (F027)
+                        Local4 = RefOf (G009)
+                    }
+                    Case (0x3F)
+                    {
+                        Local2 = 0x3F
+                        BankField (OPR0, BNK0, 0x3F, ByteAcc, NoLock, Preserve)
+                        {
+                                ,   2, 
+                            F028,   63
+                        }
+
+                        Local3 = RefOf (F028)
+                        Local4 = RefOf (G00A)
+                    }
+                    Case (0x40)
+                    {
+                        Local2 = 0x40
+                        BankField (OPR0, BNK0, 0x40, WordAcc, NoLock, Preserve)
+                        {
+                            AccessAs (ByteAcc, 0x00), 
+                                ,   2, 
+                            F029,   64
+                        }
+
+                        Local3 = RefOf (F029)
+                        Local4 = RefOf (G00B)
+                    }
+                    Case (0x41)
+                    {
+                        Local2 = 0x7F
+                        BankField (OPR0, BNK0, 0x7F, ByteAcc, NoLock, Preserve)
+                        {
+                                ,   2, 
+                            F02A,   65
+                        }
+
+                        Local3 = RefOf (F02A)
+                        Local4 = RefOf (G00C)
+                    }
+                    Case (0x45)
+                    {
+                        Local2 = 0x80
+                        BankField (OPR0, BNK0, 0x80, DWordAcc, NoLock, Preserve)
+                        {
+                            AccessAs (ByteAcc, 0x00), 
+                                ,   2, 
+                            F02B,   69
+                        }
+
+                        Local3 = RefOf (F02B)
+                        Local4 = RefOf (G00D)
+                    }
+                    Case (0x81)
+                    {
+                        Local2 = 0xFF
+                        BankField (OPR0, BNK0, 0xFF, ByteAcc, NoLock, Preserve)
+                        {
+                                ,   2, 
+                            F02C,   129
+                        }
+
+                        Local3 = RefOf (F02C)
+                        Local4 = RefOf (G00E)
+                    }
+                    Case (0x0100)
+                    {
+                        Local2 = 0x00
+                        BankField (OPR0, BNK0, 0x00, QWordAcc, NoLock, Preserve)
+                        {
+                            AccessAs (ByteAcc, 0x00), 
+                                ,   2, 
+                            F02D,   256
+                        }
+
+                        Local3 = RefOf (F02D)
+                        Local4 = RefOf (G000)
+                    }
+                    Case (0x03FF)
+                    {
+                        Local2 = 0x01
+                        BankField (OPR0, BNK0, 0x01, ByteAcc, NoLock, Preserve)
+                        {
+                                ,   2, 
+                            F02E,   1023
+                        }
+
+                        Local3 = RefOf (F02E)
+                        Local4 = RefOf (G001)
+                    }
+                    Case (0x07BF)
+                    {
+                        Local2 = 0x02
+                        BankField (OPR0, BNK0, 0x02, AnyAcc, NoLock, Preserve)
+                        {
+                            AccessAs (ByteAcc, 0x00), 
+                                ,   2, 
+                            F02F,   1983
+                        }
+
+                        Local3 = RefOf (F02F)
+                        Local4 = RefOf (G002)
+                    }
+                    Default
+                    {
+                        ERR (Arg0, Z145, 0x0293, 0x00, 0x00, Arg2, Arg3)
+                        Return (Zero)
+                    }
+
+                }
+            }
+            Case (0x03)
+            {
+                Switch (ToInteger (Arg3))
+                {
+                    Case (0x01)
+                    {
+                        Local2 = 0x03
+                        BankField (OPR0, BNK0, 0x03, ByteAcc, NoLock, Preserve)
+                        {
+                            AccessAs (ByteAcc, 0x00), 
+                                ,   3, 
+                            F030,   1
+                        }
+
+                        Local3 = RefOf (F030)
+                        Local4 = RefOf (G003)
+                    }
+                    Case (0x06)
+                    {
+                        Local2 = 0x04
+                        BankField (OPR0, BNK0, 0x04, ByteAcc, NoLock, Preserve)
+                        {
+                                ,   3, 
+                            F031,   6
+                        }
+
+                        Local3 = RefOf (F031)
+                        Local4 = RefOf (G004)
+                    }
+                    Case (0x07)
+                    {
+                        Local2 = 0x05
+                        BankField (OPR0, BNK0, 0x05, WordAcc, NoLock, Preserve)
+                        {
+                            AccessAs (ByteAcc, 0x00), 
+                                ,   3, 
+                            F032,   7
+                        }
+
+                        Local3 = RefOf (F032)
+                        Local4 = RefOf (G005)
+                    }
+                    Case (0x08)
+                    {
+                        Local2 = 0x06
+                        BankField (OPR0, BNK0, 0x06, ByteAcc, NoLock, Preserve)
+                        {
+                                ,   3, 
+                            F033,   8
+                        }
+
+                        Local3 = RefOf (F033)
+                        Local4 = RefOf (G006)
+                    }
+                    Case (0x09)
+                    {
+                        Local2 = 0x07
+                        BankField (OPR0, BNK0, 0x07, DWordAcc, NoLock, Preserve)
+                        {
+                            AccessAs (ByteAcc, 0x00), 
+                                ,   3, 
+                            F034,   9
+                        }
+
+                        Local3 = RefOf (F034)
+                        Local4 = RefOf (G007)
+                    }
+                    Case (0x1F)
+                    {
+                        Local2 = 0x08
+                        BankField (OPR0, BNK0, 0x08, ByteAcc, NoLock, Preserve)
+                        {
+                                ,   3, 
+                            F035,   31
+                        }
+
+                        Local3 = RefOf (F035)
+                        Local4 = RefOf (G008)
+                    }
+                    Case (0x20)
+                    {
+                        Local2 = 0x09
+                        BankField (OPR0, BNK0, 0x09, QWordAcc, NoLock, Preserve)
+                        {
+                            AccessAs (ByteAcc, 0x00), 
+                                ,   3, 
+                            F036,   32
+                        }
+
+                        Local3 = RefOf (F036)
+                        Local4 = RefOf (G009)
+                    }
+                    Case (0x21)
+                    {
+                        Local2 = 0x3F
+                        BankField (OPR0, BNK0, 0x3F, ByteAcc, NoLock, Preserve)
+                        {
+                                ,   3, 
+                            F037,   33
+                        }
+
+                        Local3 = RefOf (F037)
+                        Local4 = RefOf (G00A)
+                    }
+                    Case (0x3F)
+                    {
+                        Local2 = 0x40
+                        BankField (OPR0, BNK0, 0x40, AnyAcc, NoLock, Preserve)
+                        {
+                            AccessAs (ByteAcc, 0x00), 
+                                ,   3, 
+                            F038,   63
+                        }
+
+                        Local3 = RefOf (F038)
+                        Local4 = RefOf (G00B)
+                    }
+                    Case (0x40)
+                    {
+                        Local2 = 0x7F
+                        BankField (OPR0, BNK0, 0x7F, ByteAcc, NoLock, Preserve)
+                        {
+                                ,   3, 
+                            F039,   64
+                        }
+
+                        Local3 = RefOf (F039)
+                        Local4 = RefOf (G00C)
+                    }
+                    Case (0x41)
+                    {
+                        Local2 = 0x80
+                        BankField (OPR0, BNK0, 0x80, ByteAcc, NoLock, Preserve)
+                        {
+                            AccessAs (ByteAcc, 0x00), 
+                                ,   3, 
+                            F03A,   65
+                        }
+
+                        Local3 = RefOf (F03A)
+                        Local4 = RefOf (G00D)
+                    }
+                    Case (0x45)
+                    {
+                        Local2 = 0xFF
+                        BankField (OPR0, BNK0, 0xFF, ByteAcc, NoLock, Preserve)
+                        {
+                                ,   3, 
+                            F03B,   69
+                        }
+
+                        Local3 = RefOf (F03B)
+                        Local4 = RefOf (G00E)
+                    }
+                    Case (0x81)
+                    {
+                        Local2 = 0x00
+                        BankField (OPR0, BNK0, 0x00, WordAcc, NoLock, Preserve)
+                        {
+                            AccessAs (ByteAcc, 0x00), 
+                                ,   3, 
+                            F03C,   129
+                        }
+
+                        Local3 = RefOf (F03C)
+                        Local4 = RefOf (G000)
+                    }
+                    Case (0x0100)
+                    {
+                        Local2 = 0x01
+                        BankField (OPR0, BNK0, 0x01, ByteAcc, NoLock, Preserve)
+                        {
+                                ,   3, 
+                            F03D,   256
+                        }
+
+                        Local3 = RefOf (F03D)
+                        Local4 = RefOf (G001)
+                    }
+                    Case (0x03FF)
+                    {
+                        Local2 = 0x02
+                        BankField (OPR0, BNK0, 0x02, DWordAcc, NoLock, Preserve)
+                        {
+                            AccessAs (ByteAcc, 0x00), 
+                                ,   3, 
+                            F03E,   1023
+                        }
+
+                        Local3 = RefOf (F03E)
+                        Local4 = RefOf (G002)
+                    }
+                    Case (0x07BF)
+                    {
+                        Local2 = 0x03
+                        BankField (OPR0, BNK0, 0x03, ByteAcc, NoLock, Preserve)
+                        {
+                                ,   3, 
+                            F03F,   1983
+                        }
+
+                        Local3 = RefOf (F03F)
+                        Local4 = RefOf (G003)
+                    }
+                    Default
+                    {
+                        ERR (Arg0, Z145, 0x0313, 0x00, 0x00, Arg2, Arg3)
+                        Return (Zero)
+                    }
+
+                }
+            }
+            Case (0x04)
+            {
+                Switch (ToInteger (Arg3))
+                {
+                    Case (0x01)
+                    {
+                        Local2 = 0x04
+                        BankField (OPR0, BNK0, 0x04, ByteAcc, NoLock, Preserve)
+                        {
+                                ,   4, 
+                            F040,   1
+                        }
+
+                        Local3 = RefOf (F040)
+                        Local4 = RefOf (G004)
+                    }
+                    Case (0x06)
+                    {
+                        Local2 = 0x05
+                        BankField (OPR0, BNK0, 0x05, QWordAcc, NoLock, Preserve)
+                        {
+                            AccessAs (ByteAcc, 0x00), 
+                                ,   4, 
+                            F041,   6
+                        }
+
+                        Local3 = RefOf (F041)
+                        Local4 = RefOf (G005)
+                    }
+                    Case (0x07)
+                    {
+                        Local2 = 0x06
+                        BankField (OPR0, BNK0, 0x06, ByteAcc, NoLock, Preserve)
+                        {
+                                ,   4, 
+                            F042,   7
+                        }
+
+                        Local3 = RefOf (F042)
+                        Local4 = RefOf (G006)
+                    }
+                    Case (0x08)
+                    {
+                        Local2 = 0x07
+                        BankField (OPR0, BNK0, 0x07, AnyAcc, NoLock, Preserve)
+                        {
+                            AccessAs (ByteAcc, 0x00), 
+                                ,   4, 
+                            F043,   8
+                        }
+
+                        Local3 = RefOf (F043)
+                        Local4 = RefOf (G007)
+                    }
+                    Case (0x09)
+                    {
+                        Local2 = 0x08
+                        BankField (OPR0, BNK0, 0x08, ByteAcc, NoLock, Preserve)
+                        {
+                                ,   4, 
+                            F044,   9
+                        }
+
+                        Local3 = RefOf (F044)
+                        Local4 = RefOf (G008)
+                    }
+                    Case (0x1F)
+                    {
+                        Local2 = 0x09
+                        BankField (OPR0, BNK0, 0x09, ByteAcc, NoLock, Preserve)
+                        {
+                            AccessAs (ByteAcc, 0x00), 
+                                ,   4, 
+                            F045,   31
+                        }
+
+                        Local3 = RefOf (F045)
+                        Local4 = RefOf (G009)
+                    }
+                    Case (0x20)
+                    {
+                        Local2 = 0x3F
+                        BankField (OPR0, BNK0, 0x3F, ByteAcc, NoLock, Preserve)
+                        {
+                                ,   4, 
+                            F046,   32
+                        }
+
+                        Local3 = RefOf (F046)
+                        Local4 = RefOf (G00A)
+                    }
+                    Case (0x21)
+                    {
+                        Local2 = 0x40
+                        BankField (OPR0, BNK0, 0x40, WordAcc, NoLock, Preserve)
+                        {
+                            AccessAs (ByteAcc, 0x00), 
+                                ,   4, 
+                            F047,   33
+                        }
+
+                        Local3 = RefOf (F047)
+                        Local4 = RefOf (G00B)
+                    }
+                    Case (0x3F)
+                    {
+                        Local2 = 0x7F
+                        BankField (OPR0, BNK0, 0x7F, ByteAcc, NoLock, Preserve)
+                        {
+                                ,   4, 
+                            F048,   63
+                        }
+
+                        Local3 = RefOf (F048)
+                        Local4 = RefOf (G00C)
+                    }
+                    Case (0x40)
+                    {
+                        Local2 = 0x80
+                        BankField (OPR0, BNK0, 0x80, DWordAcc, NoLock, Preserve)
+                        {
+                            AccessAs (ByteAcc, 0x00), 
+                                ,   4, 
+                            F049,   64
+                        }
+
+                        Local3 = RefOf (F049)
+                        Local4 = RefOf (G00D)
+                    }
+                    Case (0x41)
+                    {
+                        Local2 = 0xFF
+                        BankField (OPR0, BNK0, 0xFF, ByteAcc, NoLock, Preserve)
+                        {
+                                ,   4, 
+                            F04A,   65
+                        }
+
+                        Local3 = RefOf (F04A)
+                        Local4 = RefOf (G00E)
+                    }
+                    Case (0x45)
+                    {
+                        Local2 = 0x00
+                        BankField (OPR0, BNK0, 0x00, QWordAcc, NoLock, Preserve)
+                        {
+                            AccessAs (ByteAcc, 0x00), 
+                                ,   4, 
+                            F04B,   69
+                        }
+
+                        Local3 = RefOf (F04B)
+                        Local4 = RefOf (G000)
+                    }
+                    Case (0x81)
+                    {
+                        Local2 = 0x01
+                        BankField (OPR0, BNK0, 0x01, ByteAcc, NoLock, Preserve)
+                        {
+                                ,   4, 
+                            F04C,   129
+                        }
+
+                        Local3 = RefOf (F04C)
+                        Local4 = RefOf (G001)
+                    }
+                    Case (0x0100)
+                    {
+                        Local2 = 0x02
+                        BankField (OPR0, BNK0, 0x02, AnyAcc, NoLock, Preserve)
+                        {
+                            AccessAs (ByteAcc, 0x00), 
+                                ,   4, 
+                            F04D,   256
+                        }
+
+                        Local3 = RefOf (F04D)
+                        Local4 = RefOf (G002)
+                    }
+                    Case (0x03FF)
+                    {
+                        Local2 = 0x03
+                        BankField (OPR0, BNK0, 0x03, ByteAcc, NoLock, Preserve)
+                        {
+                                ,   4, 
+                            F04E,   1023
+                        }
+
+                        Local3 = RefOf (F04E)
+                        Local4 = RefOf (G003)
+                    }
+                    Case (0x07BF)
+                    {
+                        Local2 = 0x04
+                        BankField (OPR0, BNK0, 0x04, ByteAcc, NoLock, Preserve)
+                        {
+                            AccessAs (ByteAcc, 0x00), 
+                                ,   4, 
+                            F04F,   1983
+                        }
+
+                        Local3 = RefOf (F04F)
+                        Local4 = RefOf (G004)
+                    }
+                    Default
+                    {
+                        ERR (Arg0, Z145, 0x0393, 0x00, 0x00, Arg2, Arg3)
+                        Return (Zero)
+                    }
+
+                }
+            }
+            Case (0x05)
+            {
+                Switch (ToInteger (Arg3))
+                {
+                    Case (0x01)
+                    {
+                        Local2 = 0x05
+                        BankField (OPR0, BNK0, 0x05, WordAcc, NoLock, Preserve)
+                        {
+                            AccessAs (ByteAcc, 0x00), 
+                                ,   5, 
+                            F050,   1
+                        }
+
+                        Local3 = RefOf (F050)
+                        Local4 = RefOf (G005)
+                    }
+                    Case (0x06)
+                    {
+                        Local2 = 0x06
+                        BankField (OPR0, BNK0, 0x06, ByteAcc, NoLock, Preserve)
+                        {
+                                ,   5, 
+                            F051,   6
+                        }
+
+                        Local3 = RefOf (F051)
+                        Local4 = RefOf (G006)
+                    }
+                    Case (0x07)
+                    {
+                        Local2 = 0x07
+                        BankField (OPR0, BNK0, 0x07, DWordAcc, NoLock, Preserve)
+                        {
+                            AccessAs (ByteAcc, 0x00), 
+                                ,   5, 
+                            F052,   7
+                        }
+
+                        Local3 = RefOf (F052)
+                        Local4 = RefOf (G007)
+                    }
+                    Case (0x08)
+                    {
+                        Local2 = 0x08
+                        BankField (OPR0, BNK0, 0x08, ByteAcc, NoLock, Preserve)
+                        {
+                                ,   5, 
+                            F053,   8
+                        }
+
+                        Local3 = RefOf (F053)
+                        Local4 = RefOf (G008)
+                    }
+                    Case (0x09)
+                    {
+                        Local2 = 0x09
+                        BankField (OPR0, BNK0, 0x09, QWordAcc, NoLock, Preserve)
+                        {
+                            AccessAs (ByteAcc, 0x00), 
+                                ,   5, 
+                            F054,   9
+                        }
+
+                        Local3 = RefOf (F054)
+                        Local4 = RefOf (G009)
+                    }
+                    Case (0x1F)
+                    {
+                        Local2 = 0x3F
+                        BankField (OPR0, BNK0, 0x3F, ByteAcc, NoLock, Preserve)
+                        {
+                                ,   5, 
+                            F055,   31
+                        }
+
+                        Local3 = RefOf (F055)
+                        Local4 = RefOf (G00A)
+                    }
+                    Case (0x20)
+                    {
+                        Local2 = 0x40
+                        BankField (OPR0, BNK0, 0x40, AnyAcc, NoLock, Preserve)
+                        {
+                            AccessAs (ByteAcc, 0x00), 
+                                ,   5, 
+                            F056,   32
+                        }
+
+                        Local3 = RefOf (F056)
+                        Local4 = RefOf (G00B)
+                    }
+                    Case (0x21)
+                    {
+                        Local2 = 0x7F
+                        BankField (OPR0, BNK0, 0x7F, ByteAcc, NoLock, Preserve)
+                        {
+                                ,   5, 
+                            F057,   33
+                        }
+
+                        Local3 = RefOf (F057)
+                        Local4 = RefOf (G00C)
+                    }
+                    Case (0x3F)
+                    {
+                        Local2 = 0x80
+                        BankField (OPR0, BNK0, 0x80, ByteAcc, NoLock, Preserve)
+                        {
+                            AccessAs (ByteAcc, 0x00), 
+                                ,   5, 
+                            F058,   63
+                        }
+
+                        Local3 = RefOf (F058)
+                        Local4 = RefOf (G00D)
+                    }
+                    Case (0x40)
+                    {
+                        Local2 = 0xFF
+                        BankField (OPR0, BNK0, 0xFF, ByteAcc, NoLock, Preserve)
+                        {
+                                ,   5, 
+                            F059,   64
+                        }
+
+                        Local3 = RefOf (F059)
+                        Local4 = RefOf (G00E)
+                    }
+                    Case (0x41)
+                    {
+                        Local2 = 0x00
+                        BankField (OPR0, BNK0, 0x00, WordAcc, NoLock, Preserve)
+                        {
+                            AccessAs (ByteAcc, 0x00), 
+                                ,   5, 
+                            F05A,   65
+                        }
+
+                        Local3 = RefOf (F05A)
+                        Local4 = RefOf (G000)
+                    }
+                    Case (0x45)
+                    {
+                        Local2 = 0x01
+                        BankField (OPR0, BNK0, 0x01, ByteAcc, NoLock, Preserve)
+                        {
+                                ,   5, 
+                            F05B,   69
+                        }
+
+                        Local3 = RefOf (F05B)
+                        Local4 = RefOf (G001)
+                    }
+                    Case (0x81)
+                    {
+                        Local2 = 0x02
+                        BankField (OPR0, BNK0, 0x02, DWordAcc, NoLock, Preserve)
+                        {
+                            AccessAs (ByteAcc, 0x00), 
+                                ,   5, 
+                            F05C,   129
+                        }
+
+                        Local3 = RefOf (F05C)
+                        Local4 = RefOf (G002)
+                    }
+                    Case (0x0100)
+                    {
+                        Local2 = 0x03
+                        BankField (OPR0, BNK0, 0x03, ByteAcc, NoLock, Preserve)
+                        {
+                                ,   5, 
+                            F05D,   256
+                        }
+
+                        Local3 = RefOf (F05D)
+                        Local4 = RefOf (G003)
+                    }
+                    Case (0x03FF)
+                    {
+                        Local2 = 0x04
+                        BankField (OPR0, BNK0, 0x04, QWordAcc, NoLock, Preserve)
+                        {
+                            AccessAs (ByteAcc, 0x00), 
+                                ,   5, 
+                            F05E,   1023
+                        }
+
+                        Local3 = RefOf (F05E)
+                        Local4 = RefOf (G004)
+                    }
+                    Case (0x07BF)
+                    {
+                        Local2 = 0x05
+                        BankField (OPR0, BNK0, 0x05, ByteAcc, NoLock, Preserve)
+                        {
+                                ,   5, 
+                            F05F,   1983
+                        }
+
+                        Local3 = RefOf (F05F)
+                        Local4 = RefOf (G005)
+                    }
+                    Default
+                    {
+                        ERR (Arg0, Z145, 0x0413, 0x00, 0x00, Arg2, Arg3)
+                        Return (Zero)
+                    }
+
+                }
+            }
+            Case (0x06)
+            {
+                Switch (ToInteger (Arg3))
+                {
+                    Case (0x01)
+                    {
+                        Local2 = 0x06
+                        BankField (OPR0, BNK0, 0x06, ByteAcc, NoLock, Preserve)
+                        {
+                                ,   6, 
+                            F060,   1
+                        }
+
+                        Local3 = RefOf (F060)
+                        Local4 = RefOf (G006)
+                    }
+                    Case (0x06)
+                    {
+                        Local2 = 0x07
+                        BankField (OPR0, BNK0, 0x07, AnyAcc, NoLock, Preserve)
+                        {
+                            AccessAs (ByteAcc, 0x00), 
+                                ,   6, 
+                            F061,   6
+                        }
+
+                        Local3 = RefOf (F061)
+                        Local4 = RefOf (G007)
+                    }
+                    Case (0x07)
+                    {
+                        Local2 = 0x08
+                        BankField (OPR0, BNK0, 0x08, ByteAcc, NoLock, Preserve)
+                        {
+                                ,   6, 
+                            F062,   7
+                        }
+
+                        Local3 = RefOf (F062)
+                        Local4 = RefOf (G008)
+                    }
+                    Case (0x08)
+                    {
+                        Local2 = 0x09
+                        BankField (OPR0, BNK0, 0x09, ByteAcc, NoLock, Preserve)
+                        {
+                            AccessAs (ByteAcc, 0x00), 
+                                ,   6, 
+                            F063,   8
+                        }
+
+                        Local3 = RefOf (F063)
+                        Local4 = RefOf (G009)
+                    }
+                    Case (0x09)
+                    {
+                        Local2 = 0x3F
+                        BankField (OPR0, BNK0, 0x3F, ByteAcc, NoLock, Preserve)
+                        {
+                                ,   6, 
+                            F064,   9
+                        }
+
+                        Local3 = RefOf (F064)
+                        Local4 = RefOf (G00A)
+                    }
+                    Case (0x1F)
+                    {
+                        Local2 = 0x40
+                        BankField (OPR0, BNK0, 0x40, WordAcc, NoLock, Preserve)
+                        {
+                            AccessAs (ByteAcc, 0x00), 
+                                ,   6, 
+                            F065,   31
+                        }
+
+                        Local3 = RefOf (F065)
+                        Local4 = RefOf (G00B)
+                    }
+                    Case (0x20)
+                    {
+                        Local2 = 0x7F
+                        BankField (OPR0, BNK0, 0x7F, ByteAcc, NoLock, Preserve)
+                        {
+                                ,   6, 
+                            F066,   32
+                        }
+
+                        Local3 = RefOf (F066)
+                        Local4 = RefOf (G00C)
+                    }
+                    Case (0x21)
+                    {
+                        Local2 = 0x80
+                        BankField (OPR0, BNK0, 0x80, DWordAcc, NoLock, Preserve)
+                        {
+                            AccessAs (ByteAcc, 0x00), 
+                                ,   6, 
+                            F067,   33
+                        }
+
+                        Local3 = RefOf (F067)
+                        Local4 = RefOf (G00D)
+                    }
+                    Case (0x3F)
+                    {
+                        Local2 = 0xFF
+                        BankField (OPR0, BNK0, 0xFF, ByteAcc, NoLock, Preserve)
+                        {
+                                ,   6, 
+                            F068,   63
+                        }
+
+                        Local3 = RefOf (F068)
+                        Local4 = RefOf (G00E)
+                    }
+                    Case (0x40)
+                    {
+                        Local2 = 0x00
+                        BankField (OPR0, BNK0, 0x00, QWordAcc, NoLock, Preserve)
+                        {
+                            AccessAs (ByteAcc, 0x00), 
+                                ,   6, 
+                            F069,   64
+                        }
+
+                        Local3 = RefOf (F069)
+                        Local4 = RefOf (G000)
+                    }
+                    Case (0x41)
+                    {
+                        Local2 = 0x01
+                        BankField (OPR0, BNK0, 0x01, ByteAcc, NoLock, Preserve)
+                        {
+                                ,   6, 
+                            F06A,   65
+                        }
+
+                        Local3 = RefOf (F06A)
+                        Local4 = RefOf (G001)
+                    }
+                    Case (0x45)
+                    {
+                        Local2 = 0x02
+                        BankField (OPR0, BNK0, 0x02, AnyAcc, NoLock, Preserve)
+                        {
+                            AccessAs (ByteAcc, 0x00), 
+                                ,   6, 
+                            F06B,   69
+                        }
+
+                        Local3 = RefOf (F06B)
+                        Local4 = RefOf (G002)
+                    }
+                    Case (0x81)
+                    {
+                        Local2 = 0x03
+                        BankField (OPR0, BNK0, 0x03, ByteAcc, NoLock, Preserve)
+                        {
+                                ,   6, 
+                            F06C,   129
+                        }
+
+                        Local3 = RefOf (F06C)
+                        Local4 = RefOf (G003)
+                    }
+                    Case (0x0100)
+                    {
+                        Local2 = 0x04
+                        BankField (OPR0, BNK0, 0x04, ByteAcc, NoLock, Preserve)
+                        {
+                            AccessAs (ByteAcc, 0x00), 
+                                ,   6, 
+                            F06D,   256
+                        }
+
+                        Local3 = RefOf (F06D)
+                        Local4 = RefOf (G004)
+                    }
+                    Case (0x03FF)
+                    {
+                        Local2 = 0x05
+                        BankField (OPR0, BNK0, 0x05, ByteAcc, NoLock, Preserve)
+                        {
+                                ,   6, 
+                            F06E,   1023
+                        }
+
+                        Local3 = RefOf (F06E)
+                        Local4 = RefOf (G005)
+                    }
+                    Case (0x07BF)
+                    {
+                        Local2 = 0x06
+                        BankField (OPR0, BNK0, 0x06, WordAcc, NoLock, Preserve)
+                        {
+                            AccessAs (ByteAcc, 0x00), 
+                                ,   6, 
+                            F06F,   1983
+                        }
+
+                        Local3 = RefOf (F06F)
+                        Local4 = RefOf (G006)
+                    }
+                    Default
+                    {
+                        ERR (Arg0, Z145, 0x0493, 0x00, 0x00, Arg2, Arg3)
+                        Return (Zero)
+                    }
+
+                }
+            }
+            Case (0x07)
+            {
+                Switch (ToInteger (Arg3))
+                {
+                    Case (0x01)
+                    {
+                        Local2 = 0x07
+                        BankField (OPR0, BNK0, 0x07, DWordAcc, NoLock, Preserve)
+                        {
+                            AccessAs (ByteAcc, 0x00), 
+                                ,   7, 
+                            F070,   1
+                        }
+
+                        Local3 = RefOf (F070)
+                        Local4 = RefOf (G007)
+                    }
+                    Case (0x06)
+                    {
+                        Local2 = 0x08
+                        BankField (OPR0, BNK0, 0x08, ByteAcc, NoLock, Preserve)
+                        {
+                                ,   7, 
+                            F071,   6
+                        }
+
+                        Local3 = RefOf (F071)
+                        Local4 = RefOf (G008)
+                    }
+                    Case (0x07)
+                    {
+                        Local2 = 0x09
+                        BankField (OPR0, BNK0, 0x09, QWordAcc, NoLock, Preserve)
+                        {
+                            AccessAs (ByteAcc, 0x00), 
+                                ,   7, 
+                            F072,   7
+                        }
+
+                        Local3 = RefOf (F072)
+                        Local4 = RefOf (G009)
+                    }
+                    Case (0x08)
+                    {
+                        Local2 = 0x3F
+                        BankField (OPR0, BNK0, 0x3F, ByteAcc, NoLock, Preserve)
+                        {
+                                ,   7, 
+                            F073,   8
+                        }
+
+                        Local3 = RefOf (F073)
+                        Local4 = RefOf (G00A)
+                    }
+                    Case (0x09)
+                    {
+                        Local2 = 0x40
+                        BankField (OPR0, BNK0, 0x40, AnyAcc, NoLock, Preserve)
+                        {
+                            AccessAs (ByteAcc, 0x00), 
+                                ,   7, 
+                            F074,   9
+                        }
+
+                        Local3 = RefOf (F074)
+                        Local4 = RefOf (G00B)
+                    }
+                    Case (0x1F)
+                    {
+                        Local2 = 0x7F
+                        BankField (OPR0, BNK0, 0x7F, ByteAcc, NoLock, Preserve)
+                        {
+                                ,   7, 
+                            F075,   31
+                        }
+
+                        Local3 = RefOf (F075)
+                        Local4 = RefOf (G00C)
+                    }
+                    Case (0x20)
+                    {
+                        Local2 = 0x80
+                        BankField (OPR0, BNK0, 0x80, ByteAcc, NoLock, Preserve)
+                        {
+                            AccessAs (ByteAcc, 0x00), 
+                                ,   7, 
+                            F076,   32
+                        }
+
+                        Local3 = RefOf (F076)
+                        Local4 = RefOf (G00D)
+                    }
+                    Case (0x21)
+                    {
+                        Local2 = 0xFF
+                        BankField (OPR0, BNK0, 0xFF, ByteAcc, NoLock, Preserve)
+                        {
+                                ,   7, 
+                            F077,   33
+                        }
+
+                        Local3 = RefOf (F077)
+                        Local4 = RefOf (G00E)
+                    }
+                    Case (0x3F)
+                    {
+                        Local2 = 0x00
+                        BankField (OPR0, BNK0, 0x00, WordAcc, NoLock, Preserve)
+                        {
+                            AccessAs (ByteAcc, 0x00), 
+                                ,   7, 
+                            F078,   63
+                        }
+
+                        Local3 = RefOf (F078)
+                        Local4 = RefOf (G000)
+                    }
+                    Case (0x40)
+                    {
+                        Local2 = 0x01
+                        BankField (OPR0, BNK0, 0x01, ByteAcc, NoLock, Preserve)
+                        {
+                                ,   7, 
+                            F079,   64
+                        }
+
+                        Local3 = RefOf (F079)
+                        Local4 = RefOf (G001)
+                    }
+                    Case (0x41)
+                    {
+                        Local2 = 0x02
+                        BankField (OPR0, BNK0, 0x02, DWordAcc, NoLock, Preserve)
+                        {
+                            AccessAs (ByteAcc, 0x00), 
+                                ,   7, 
+                            F07A,   65
+                        }
+
+                        Local3 = RefOf (F07A)
+                        Local4 = RefOf (G002)
+                    }
+                    Case (0x45)
+                    {
+                        Local2 = 0x03
+                        BankField (OPR0, BNK0, 0x03, ByteAcc, NoLock, Preserve)
+                        {
+                                ,   7, 
+                            F07B,   69
+                        }
+
+                        Local3 = RefOf (F07B)
+                        Local4 = RefOf (G003)
+                    }
+                    Case (0x81)
+                    {
+                        Local2 = 0x04
+                        BankField (OPR0, BNK0, 0x04, QWordAcc, NoLock, Preserve)
+                        {
+                            AccessAs (ByteAcc, 0x00), 
+                                ,   7, 
+                            F07C,   129
+                        }
+
+                        Local3 = RefOf (F07C)
+                        Local4 = RefOf (G004)
+                    }
+                    Case (0x0100)
+                    {
+                        Local2 = 0x05
+                        BankField (OPR0, BNK0, 0x05, ByteAcc, NoLock, Preserve)
+                        {
+                                ,   7, 
+                            F07D,   256
+                        }
+
+                        Local3 = RefOf (F07D)
+                        Local4 = RefOf (G005)
+                    }
+                    Case (0x03FF)
+                    {
+                        Local2 = 0x06
+                        BankField (OPR0, BNK0, 0x06, AnyAcc, NoLock, Preserve)
+                        {
+                            AccessAs (ByteAcc, 0x00), 
+                                ,   7, 
+                            F07E,   1023
+                        }
+
+                        Local3 = RefOf (F07E)
+                        Local4 = RefOf (G006)
+                    }
+                    Case (0x07BF)
+                    {
+                        Local2 = 0x07
+                        BankField (OPR0, BNK0, 0x07, ByteAcc, NoLock, Preserve)
+                        {
+                                ,   7, 
+                            F07F,   1983
+                        }
+
+                        Local3 = RefOf (F07F)
+                        Local4 = RefOf (G007)
+                    }
+                    Default
+                    {
+                        ERR (Arg0, Z145, 0x0513, 0x00, 0x00, Arg2, Arg3)
+                        Return (Zero)
+                    }
+
+                }
+            }
+            Case (0x08)
+            {
+                Switch (ToInteger (Arg3))
+                {
+                    Case (0x01)
+                    {
+                        Local2 = 0x08
+                        BankField (OPR0, BNK0, 0x08, ByteAcc, NoLock, Preserve)
+                        {
+                            Offset (0x01), 
+                            F080,   1
+                        }
+
+                        Local3 = RefOf (F080)
+                        Local4 = RefOf (G008)
+                    }
+                    Case (0x06)
+                    {
+                        Local2 = 0x09
+                        BankField (OPR0, BNK0, 0x09, ByteAcc, NoLock, Preserve)
+                        {
+                            AccessAs (ByteAcc, 0x00), 
+                            Offset (0x01), 
+                            F081,   6
+                        }
+
+                        Local3 = RefOf (F081)
+                        Local4 = RefOf (G009)
+                    }
+                    Case (0x07)
+                    {
+                        Local2 = 0x3F
+                        BankField (OPR0, BNK0, 0x3F, ByteAcc, NoLock, Preserve)
+                        {
+                            Offset (0x01), 
+                            F082,   7
+                        }
+
+                        Local3 = RefOf (F082)
+                        Local4 = RefOf (G00A)
+                    }
+                    Case (0x08)
+                    {
+                        Local2 = 0x40
+                        BankField (OPR0, BNK0, 0x40, WordAcc, NoLock, Preserve)
+                        {
+                            AccessAs (ByteAcc, 0x00), 
+                            Offset (0x01), 
+                            F083,   8
+                        }
+
+                        Local3 = RefOf (F083)
+                        Local4 = RefOf (G00B)
+                    }
+                    Case (0x09)
+                    {
+                        Local2 = 0x7F
+                        BankField (OPR0, BNK0, 0x7F, ByteAcc, NoLock, Preserve)
+                        {
+                            Offset (0x01), 
+                            F084,   9
+                        }
+
+                        Local3 = RefOf (F084)
+                        Local4 = RefOf (G00C)
+                    }
+                    Case (0x1F)
+                    {
+                        Local2 = 0x80
+                        BankField (OPR0, BNK0, 0x80, DWordAcc, NoLock, Preserve)
+                        {
+                            AccessAs (ByteAcc, 0x00), 
+                            Offset (0x01), 
+                            F085,   31
+                        }
+
+                        Local3 = RefOf (F085)
+                        Local4 = RefOf (G00D)
+                    }
+                    Case (0x20)
+                    {
+                        Local2 = 0xFF
+                        BankField (OPR0, BNK0, 0xFF, ByteAcc, NoLock, Preserve)
+                        {
+                            Offset (0x01), 
+                            F086,   32
+                        }
+
+                        Local3 = RefOf (F086)
+                        Local4 = RefOf (G00E)
+                    }
+                    Case (0x21)
+                    {
+                        Local2 = 0x00
+                        BankField (OPR0, BNK0, 0x00, QWordAcc, NoLock, Preserve)
+                        {
+                            AccessAs (ByteAcc, 0x00), 
+                            Offset (0x01), 
+                            F087,   33
+                        }
+
+                        Local3 = RefOf (F087)
+                        Local4 = RefOf (G000)
+                    }
+                    Case (0x3F)
+                    {
+                        Local2 = 0x01
+                        BankField (OPR0, BNK0, 0x01, ByteAcc, NoLock, Preserve)
+                        {
+                            Offset (0x01), 
+                            F088,   63
+                        }
+
+                        Local3 = RefOf (F088)
+                        Local4 = RefOf (G001)
+                    }
+                    Case (0x40)
+                    {
+                        Local2 = 0x02
+                        BankField (OPR0, BNK0, 0x02, AnyAcc, NoLock, Preserve)
+                        {
+                            AccessAs (ByteAcc, 0x00), 
+                            Offset (0x01), 
+                            F089,   64
+                        }
+
+                        Local3 = RefOf (F089)
+                        Local4 = RefOf (G002)
+                    }
+                    Case (0x41)
+                    {
+                        Local2 = 0x03
+                        BankField (OPR0, BNK0, 0x03, ByteAcc, NoLock, Preserve)
+                        {
+                            Offset (0x01), 
+                            F08A,   65
+                        }
+
+                        Local3 = RefOf (F08A)
+                        Local4 = RefOf (G003)
+                    }
+                    Case (0x45)
+                    {
+                        Local2 = 0x04
+                        BankField (OPR0, BNK0, 0x04, ByteAcc, NoLock, Preserve)
+                        {
+                            AccessAs (ByteAcc, 0x00), 
+                            Offset (0x01), 
+                            F08B,   69
+                        }
+
+                        Local3 = RefOf (F08B)
+                        Local4 = RefOf (G004)
+                    }
+                    Case (0x81)
+                    {
+                        Local2 = 0x05
+                        BankField (OPR0, BNK0, 0x05, ByteAcc, NoLock, Preserve)
+                        {
+                            Offset (0x01), 
+                            F08C,   129
+                        }
+
+                        Local3 = RefOf (F08C)
+                        Local4 = RefOf (G005)
+                    }
+                    Case (0x0100)
+                    {
+                        Local2 = 0x06
+                        BankField (OPR0, BNK0, 0x06, WordAcc, NoLock, Preserve)
+                        {
+                            AccessAs (ByteAcc, 0x00), 
+                            Offset (0x01), 
+                            F08D,   256
+                        }
+
+                        Local3 = RefOf (F08D)
+                        Local4 = RefOf (G006)
+                    }
+                    Case (0x03FF)
+                    {
+                        Local2 = 0x07
+                        BankField (OPR0, BNK0, 0x07, ByteAcc, NoLock, Preserve)
+                        {
+                            Offset (0x01), 
+                            F08E,   1023
+                        }
+
+                        Local3 = RefOf (F08E)
+                        Local4 = RefOf (G007)
+                    }
+                    Case (0x07BF)
+                    {
+                        Local2 = 0x08
+                        BankField (OPR0, BNK0, 0x08, DWordAcc, NoLock, Preserve)
+                        {
+                            AccessAs (ByteAcc, 0x00), 
+                            Offset (0x01), 
+                            F08F,   1983
+                        }
+
+                        Local3 = RefOf (F08F)
+                        Local4 = RefOf (G008)
+                    }
+                    Default
+                    {
+                        ERR (Arg0, Z145, 0x0593, 0x00, 0x00, Arg2, Arg3)
+                        Return (Zero)
+                    }
+
+                }
+            }
+            Case (0x09)
+            {
+                Switch (ToInteger (Arg3))
+                {
+                    Case (0x01)
+                    {
+                        Local2 = 0x09
+                        BankField (OPR0, BNK0, 0x09, QWordAcc, NoLock, Preserve)
+                        {
+                            AccessAs (ByteAcc, 0x00), 
+                                ,   9, 
+                            F090,   1
+                        }
+
+                        Local3 = RefOf (F090)
+                        Local4 = RefOf (G009)
+                    }
+                    Case (0x06)
+                    {
+                        Local2 = 0x3F
+                        BankField (OPR0, BNK0, 0x3F, ByteAcc, NoLock, Preserve)
+                        {
+                                ,   9, 
+                            F091,   6
+                        }
+
+                        Local3 = RefOf (F091)
+                        Local4 = RefOf (G00A)
+                    }
+                    Case (0x07)
+                    {
+                        Local2 = 0x40
+                        BankField (OPR0, BNK0, 0x40, AnyAcc, NoLock, Preserve)
+                        {
+                            AccessAs (ByteAcc, 0x00), 
+                                ,   9, 
+                            F092,   7
+                        }
+
+                        Local3 = RefOf (F092)
+                        Local4 = RefOf (G00B)
+                    }
+                    Case (0x08)
+                    {
+                        Local2 = 0x7F
+                        BankField (OPR0, BNK0, 0x7F, ByteAcc, NoLock, Preserve)
+                        {
+                                ,   9, 
+                            F093,   8
+                        }
+
+                        Local3 = RefOf (F093)
+                        Local4 = RefOf (G00C)
+                    }
+                    Case (0x09)
+                    {
+                        Local2 = 0x80
+                        BankField (OPR0, BNK0, 0x80, ByteAcc, NoLock, Preserve)
+                        {
+                            AccessAs (ByteAcc, 0x00), 
+                                ,   9, 
+                            F094,   9
+                        }
+
+                        Local3 = RefOf (F094)
+                        Local4 = RefOf (G00D)
+                    }
+                    Case (0x1F)
+                    {
+                        Local2 = 0xFF
+                        BankField (OPR0, BNK0, 0xFF, ByteAcc, NoLock, Preserve)
+                        {
+                                ,   9, 
+                            F095,   31
+                        }
+
+                        Local3 = RefOf (F095)
+                        Local4 = RefOf (G00E)
+                    }
+                    Case (0x20)
+                    {
+                        Local2 = 0x00
+                        BankField (OPR0, BNK0, 0x00, WordAcc, NoLock, Preserve)
+                        {
+                            AccessAs (ByteAcc, 0x00), 
+                                ,   9, 
+                            F096,   32
+                        }
+
+                        Local3 = RefOf (F096)
+                        Local4 = RefOf (G000)
+                    }
+                    Case (0x21)
+                    {
+                        Local2 = 0x01
+                        BankField (OPR0, BNK0, 0x01, ByteAcc, NoLock, Preserve)
+                        {
+                                ,   9, 
+                            F097,   33
+                        }
+
+                        Local3 = RefOf (F097)
+                        Local4 = RefOf (G001)
+                    }
+                    Case (0x3F)
+                    {
+                        Local2 = 0x02
+                        BankField (OPR0, BNK0, 0x02, DWordAcc, NoLock, Preserve)
+                        {
+                            AccessAs (ByteAcc, 0x00), 
+                                ,   9, 
+                            F098,   63
+                        }
+
+                        Local3 = RefOf (F098)
+                        Local4 = RefOf (G002)
+                    }
+                    Case (0x40)
+                    {
+                        Local2 = 0x03
+                        BankField (OPR0, BNK0, 0x03, ByteAcc, NoLock, Preserve)
+                        {
+                                ,   9, 
+                            F099,   64
+                        }
+
+                        Local3 = RefOf (F099)
+                        Local4 = RefOf (G003)
+                    }
+                    Case (0x41)
+                    {
+                        Local2 = 0x04
+                        BankField (OPR0, BNK0, 0x04, QWordAcc, NoLock, Preserve)
+                        {
+                            AccessAs (ByteAcc, 0x00), 
+                                ,   9, 
+                            F09A,   65
+                        }
+
+                        Local3 = RefOf (F09A)
+                        Local4 = RefOf (G004)
+                    }
+                    Case (0x45)
+                    {
+                        Local2 = 0x05
+                        BankField (OPR0, BNK0, 0x05, ByteAcc, NoLock, Preserve)
+                        {
+                                ,   9, 
+                            F09B,   69
+                        }
+
+                        Local3 = RefOf (F09B)
+                        Local4 = RefOf (G005)
+                    }
+                    Case (0x81)
+                    {
+                        Local2 = 0x06
+                        BankField (OPR0, BNK0, 0x06, AnyAcc, NoLock, Preserve)
+                        {
+                            AccessAs (ByteAcc, 0x00), 
+                                ,   9, 
+                            F09C,   129
+                        }
+
+                        Local3 = RefOf (F09C)
+                        Local4 = RefOf (G006)
+                    }
+                    Case (0x0100)
+                    {
+                        Local2 = 0x07
+                        BankField (OPR0, BNK0, 0x07, ByteAcc, NoLock, Preserve)
+                        {
+                                ,   9, 
+                            F09D,   256
+                        }
+
+                        Local3 = RefOf (F09D)
+                        Local4 = RefOf (G007)
+                    }
+                    Case (0x03FF)
+                    {
+                        Local2 = 0x08
+                        BankField (OPR0, BNK0, 0x08, ByteAcc, NoLock, Preserve)
+                        {
+                            AccessAs (ByteAcc, 0x00), 
+                                ,   9, 
+                            F09E,   1023
+                        }
+
+                        Local3 = RefOf (F09E)
+                        Local4 = RefOf (G008)
+                    }
+                    Case (0x07BF)
+                    {
+                        Local2 = 0x09
+                        BankField (OPR0, BNK0, 0x09, ByteAcc, NoLock, Preserve)
+                        {
+                                ,   9, 
+                            F09F,   1983
+                        }
+
+                        Local3 = RefOf (F09F)
+                        Local4 = RefOf (G009)
+                    }
+                    Default
+                    {
+                        ERR (Arg0, Z145, 0x0613, 0x00, 0x00, Arg2, Arg3)
+                        Return (Zero)
+                    }
+
+                }
+            }
+            Case (0x1F)
+            {
+                Switch (ToInteger (Arg3))
+                {
+                    Case (0x01)
+                    {
+                        Local2 = 0x3F
+                        BankField (OPR0, BNK0, 0x3F, ByteAcc, NoLock, Preserve)
+                        {
+                            Offset (0x03), 
+                                ,   7, 
+                            F0A0,   1
+                        }
+
+                        Local3 = RefOf (F0A0)
+                        Local4 = RefOf (G00A)
+                    }
+                    Case (0x06)
+                    {
+                        Local2 = 0x40
+                        BankField (OPR0, BNK0, 0x40, WordAcc, NoLock, Preserve)
+                        {
+                            AccessAs (ByteAcc, 0x00), 
+                            Offset (0x03), 
+                                ,   7, 
+                            F0A1,   6
+                        }
+
+                        Local3 = RefOf (F0A1)
+                        Local4 = RefOf (G00B)
+                    }
+                    Case (0x07)
+                    {
+                        Local2 = 0x7F
+                        BankField (OPR0, BNK0, 0x7F, ByteAcc, NoLock, Preserve)
+                        {
+                            Offset (0x03), 
+                                ,   7, 
+                            F0A2,   7
+                        }
+
+                        Local3 = RefOf (F0A2)
+                        Local4 = RefOf (G00C)
+                    }
+                    Case (0x08)
+                    {
+                        Local2 = 0x80
+                        BankField (OPR0, BNK0, 0x80, DWordAcc, NoLock, Preserve)
+                        {
+                            AccessAs (ByteAcc, 0x00), 
+                            Offset (0x03), 
+                                ,   7, 
+                            F0A3,   8
+                        }
+
+                        Local3 = RefOf (F0A3)
+                        Local4 = RefOf (G00D)
+                    }
+                    Case (0x09)
+                    {
+                        Local2 = 0xFF
+                        BankField (OPR0, BNK0, 0xFF, ByteAcc, NoLock, Preserve)
+                        {
+                            Offset (0x03), 
+                                ,   7, 
+                            F0A4,   9
+                        }
+
+                        Local3 = RefOf (F0A4)
+                        Local4 = RefOf (G00E)
+                    }
+                    Case (0x1F)
+                    {
+                        Local2 = 0x00
+                        BankField (OPR0, BNK0, 0x00, QWordAcc, NoLock, Preserve)
+                        {
+                            AccessAs (ByteAcc, 0x00), 
+                            Offset (0x03), 
+                                ,   7, 
+                            F0A5,   31
+                        }
+
+                        Local3 = RefOf (F0A5)
+                        Local4 = RefOf (G000)
+                    }
+                    Case (0x20)
+                    {
+                        Local2 = 0x01
+                        BankField (OPR0, BNK0, 0x01, ByteAcc, NoLock, Preserve)
+                        {
+                            Offset (0x03), 
+                                ,   7, 
+                            F0A6,   32
+                        }
+
+                        Local3 = RefOf (F0A6)
+                        Local4 = RefOf (G001)
+                    }
+                    Case (0x21)
+                    {
+                        Local2 = 0x02
+                        BankField (OPR0, BNK0, 0x02, AnyAcc, NoLock, Preserve)
+                        {
+                            AccessAs (ByteAcc, 0x00), 
+                            Offset (0x03), 
+                                ,   7, 
+                            F0A7,   33
+                        }
+
+                        Local3 = RefOf (F0A7)
+                        Local4 = RefOf (G002)
+                    }
+                    Case (0x3F)
+                    {
+                        Local2 = 0x03
+                        BankField (OPR0, BNK0, 0x03, ByteAcc, NoLock, Preserve)
+                        {
+                            Offset (0x03), 
+                                ,   7, 
+                            F0A8,   63
+                        }
+
+                        Local3 = RefOf (F0A8)
+                        Local4 = RefOf (G003)
+                    }
+                    Case (0x40)
+                    {
+                        Local2 = 0x04
+                        BankField (OPR0, BNK0, 0x04, ByteAcc, NoLock, Preserve)
+                        {
+                            AccessAs (ByteAcc, 0x00), 
+                            Offset (0x03), 
+                                ,   7, 
+                            F0A9,   64
+                        }
+
+                        Local3 = RefOf (F0A9)
+                        Local4 = RefOf (G004)
+                    }
+                    Case (0x41)
+                    {
+                        Local2 = 0x05
+                        BankField (OPR0, BNK0, 0x05, ByteAcc, NoLock, Preserve)
+                        {
+                            Offset (0x03), 
+                                ,   7, 
+                            F0AA,   65
+                        }
+
+                        Local3 = RefOf (F0AA)
+                        Local4 = RefOf (G005)
+                    }
+                    Case (0x45)
+                    {
+                        Local2 = 0x06
+                        BankField (OPR0, BNK0, 0x06, WordAcc, NoLock, Preserve)
+                        {
+                            AccessAs (ByteAcc, 0x00), 
+                            Offset (0x03), 
+                                ,   7, 
+                            F0AB,   69
+                        }
+
+                        Local3 = RefOf (F0AB)
+                        Local4 = RefOf (G006)
+                    }
+                    Case (0x81)
+                    {
+                        Local2 = 0x07
+                        BankField (OPR0, BNK0, 0x07, ByteAcc, NoLock, Preserve)
+                        {
+                            Offset (0x03), 
+                                ,   7, 
+                            F0AC,   129
+                        }
+
+                        Local3 = RefOf (F0AC)
+                        Local4 = RefOf (G007)
+                    }
+                    Case (0x0100)
+                    {
+                        Local2 = 0x08
+                        BankField (OPR0, BNK0, 0x08, DWordAcc, NoLock, Preserve)
+                        {
+                            AccessAs (ByteAcc, 0x00), 
+                            Offset (0x03), 
+                                ,   7, 
+                            F0AD,   256
+                        }
+
+                        Local3 = RefOf (F0AD)
+                        Local4 = RefOf (G008)
+                    }
+                    Case (0x03FF)
+                    {
+                        Local2 = 0x09
+                        BankField (OPR0, BNK0, 0x09, ByteAcc, NoLock, Preserve)
+                        {
+                            Offset (0x03), 
+                                ,   7, 
+                            F0AE,   1023
+                        }
+
+                        Local3 = RefOf (F0AE)
+                        Local4 = RefOf (G009)
+                    }
+                    Case (0x07BF)
+                    {
+                        Local2 = 0x3F
+                        BankField (OPR0, BNK0, 0x3F, QWordAcc, NoLock, Preserve)
+                        {
+                            AccessAs (ByteAcc, 0x00), 
+                            Offset (0x03), 
+                                ,   7, 
+                            F0AF,   1983
+                        }
+
+                        Local3 = RefOf (F0AF)
+                        Local4 = RefOf (G00A)
+                    }
+                    Default
+                    {
+                        ERR (Arg0, Z145, 0x0693, 0x00, 0x00, Arg2, Arg3)
+                        Return (Zero)
+                    }
+
+                }
+            }
+            Case (0x20)
+            {
+                Switch (ToInteger (Arg3))
+                {
+                    Case (0x01)
+                    {
+                        Local2 = 0x40
+                        BankField (OPR0, BNK0, 0x40, AnyAcc, NoLock, Preserve)
+                        {
+                            AccessAs (ByteAcc, 0x00), 
+                            Offset (0x04), 
+                            F0B0,   1
+                        }
+
+                        Local3 = RefOf (F0B0)
+                        Local4 = RefOf (G00B)
+                    }
+                    Case (0x06)
+                    {
+                        Local2 = 0x7F
+                        BankField (OPR0, BNK0, 0x7F, ByteAcc, NoLock, Preserve)
+                        {
+                            Offset (0x04), 
+                            F0B1,   6
+                        }
+
+                        Local3 = RefOf (F0B1)
+                        Local4 = RefOf (G00C)
+                    }
+                    Case (0x07)
+                    {
+                        Local2 = 0x80
+                        BankField (OPR0, BNK0, 0x80, ByteAcc, NoLock, Preserve)
+                        {
+                            AccessAs (ByteAcc, 0x00), 
+                            Offset (0x04), 
+                            F0B2,   7
+                        }
+
+                        Local3 = RefOf (F0B2)
+                        Local4 = RefOf (G00D)
+                    }
+                    Case (0x08)
+                    {
+                        Local2 = 0xFF
+                        BankField (OPR0, BNK0, 0xFF, ByteAcc, NoLock, Preserve)
+                        {
+                            Offset (0x04), 
+                            F0B3,   8
+                        }
+
+                        Local3 = RefOf (F0B3)
+                        Local4 = RefOf (G00E)
+                    }
+                    Case (0x09)
+                    {
+                        Local2 = 0x00
+                        BankField (OPR0, BNK0, 0x00, WordAcc, NoLock, Preserve)
+                        {
+                            AccessAs (ByteAcc, 0x00), 
+                            Offset (0x04), 
+                            F0B4,   9
+                        }
+
+                        Local3 = RefOf (F0B4)
+                        Local4 = RefOf (G000)
+                    }
+                    Case (0x1F)
+                    {
+                        Local2 = 0x01
+                        BankField (OPR0, BNK0, 0x01, ByteAcc, NoLock, Preserve)
+                        {
+                            Offset (0x04), 
+                            F0B5,   31
+                        }
+
+                        Local3 = RefOf (F0B5)
+                        Local4 = RefOf (G001)
+                    }
+                    Case (0x20)
+                    {
+                        Local2 = 0x02
+                        BankField (OPR0, BNK0, 0x02, DWordAcc, NoLock, Preserve)
+                        {
+                            AccessAs (ByteAcc, 0x00), 
+                            Offset (0x04), 
+                            F0B6,   32
+                        }
+
+                        Local3 = RefOf (F0B6)
+                        Local4 = RefOf (G002)
+                    }
+                    Case (0x21)
+                    {
+                        Local2 = 0x03
+                        BankField (OPR0, BNK0, 0x03, ByteAcc, NoLock, Preserve)
+                        {
+                            Offset (0x04), 
+                            F0B7,   33
+                        }
+
+                        Local3 = RefOf (F0B7)
+                        Local4 = RefOf (G003)
+                    }
+                    Case (0x3F)
+                    {
+                        Local2 = 0x04
+                        BankField (OPR0, BNK0, 0x04, QWordAcc, NoLock, Preserve)
+                        {
+                            AccessAs (ByteAcc, 0x00), 
+                            Offset (0x04), 
+                            F0B8,   63
+                        }
+
+                        Local3 = RefOf (F0B8)
+                        Local4 = RefOf (G004)
+                    }
+                    Case (0x40)
+                    {
+                        Local2 = 0x05
+                        BankField (OPR0, BNK0, 0x05, ByteAcc, NoLock, Preserve)
+                        {
+                            Offset (0x04), 
+                            F0B9,   64
+                        }
+
+                        Local3 = RefOf (F0B9)
+                        Local4 = RefOf (G005)
+                    }
+                    Case (0x41)
+                    {
+                        Local2 = 0x06
+                        BankField (OPR0, BNK0, 0x06, AnyAcc, NoLock, Preserve)
+                        {
+                            AccessAs (ByteAcc, 0x00), 
+                            Offset (0x04), 
+                            F0BA,   65
+                        }
+
+                        Local3 = RefOf (F0BA)
+                        Local4 = RefOf (G006)
+                    }
+                    Case (0x45)
+                    {
+                        Local2 = 0x07
+                        BankField (OPR0, BNK0, 0x07, ByteAcc, NoLock, Preserve)
+                        {
+                            Offset (0x04), 
+                            F0BB,   69
+                        }
+
+                        Local3 = RefOf (F0BB)
+                        Local4 = RefOf (G007)
+                    }
+                    Case (0x81)
+                    {
+                        Local2 = 0x08
+                        BankField (OPR0, BNK0, 0x08, ByteAcc, NoLock, Preserve)
+                        {
+                            AccessAs (ByteAcc, 0x00), 
+                            Offset (0x04), 
+                            F0BC,   129
+                        }
+
+                        Local3 = RefOf (F0BC)
+                        Local4 = RefOf (G008)
+                    }
+                    Case (0x0100)
+                    {
+                        Local2 = 0x09
+                        BankField (OPR0, BNK0, 0x09, ByteAcc, NoLock, Preserve)
+                        {
+                            Offset (0x04), 
+                            F0BD,   256
+                        }
+
+                        Local3 = RefOf (F0BD)
+                        Local4 = RefOf (G009)
+                    }
+                    Case (0x03FF)
+                    {
+                        Local2 = 0x3F
+                        BankField (OPR0, BNK0, 0x3F, WordAcc, NoLock, Preserve)
+                        {
+                            AccessAs (ByteAcc, 0x00), 
+                            Offset (0x04), 
+                            F0BE,   1023
+                        }
+
+                        Local3 = RefOf (F0BE)
+                        Local4 = RefOf (G00A)
+                    }
+                    Case (0x07BF)
+                    {
+                        Local2 = 0x40
+                        BankField (OPR0, BNK0, 0x40, ByteAcc, NoLock, Preserve)
+                        {
+                            Offset (0x04), 
+                            F0BF,   1983
+                        }
+
+                        Local3 = RefOf (F0BF)
+                        Local4 = RefOf (G00B)
+                    }
+                    Default
+                    {
+                        ERR (Arg0, Z145, 0x0713, 0x00, 0x00, Arg2, Arg3)
+                        Return (Zero)
+                    }
+
+                }
+            }
+            Case (0x21)
+            {
+                Switch (ToInteger (Arg3))
+                {
+                    Case (0x01)
+                    {
+                        Local2 = 0x7F
+                        BankField (OPR0, BNK0, 0x7F, ByteAcc, NoLock, Preserve)
+                        {
+                                ,   33, 
+                            F0C0,   1
+                        }
+
+                        Local3 = RefOf (F0C0)
+                        Local4 = RefOf (G00C)
+                    }
+                    Case (0x06)
+                    {
+                        Local2 = 0x80
+                        BankField (OPR0, BNK0, 0x80, DWordAcc, NoLock, Preserve)
+                        {
+                            AccessAs (ByteAcc, 0x00), 
+                                ,   33, 
+                            F0C1,   6
+                        }
+
+                        Local3 = RefOf (F0C1)
+                        Local4 = RefOf (G00D)
+                    }
+                    Case (0x07)
+                    {
+                        Local2 = 0xFF
+                        BankField (OPR0, BNK0, 0xFF, ByteAcc, NoLock, Preserve)
+                        {
+                                ,   33, 
+                            F0C2,   7
+                        }
+
+                        Local3 = RefOf (F0C2)
+                        Local4 = RefOf (G00E)
+                    }
+                    Case (0x08)
+                    {
+                        Local2 = 0x00
+                        BankField (OPR0, BNK0, 0x00, QWordAcc, NoLock, Preserve)
+                        {
+                            AccessAs (ByteAcc, 0x00), 
+                                ,   33, 
+                            F0C3,   8
+                        }
+
+                        Local3 = RefOf (F0C3)
+                        Local4 = RefOf (G000)
+                    }
+                    Case (0x09)
+                    {
+                        Local2 = 0x01
+                        BankField (OPR0, BNK0, 0x01, ByteAcc, NoLock, Preserve)
+                        {
+                                ,   33, 
+                            F0C4,   9
+                        }
+
+                        Local3 = RefOf (F0C4)
+                        Local4 = RefOf (G001)
+                    }
+                    Case (0x1F)
+                    {
+                        Local2 = 0x02
+                        BankField (OPR0, BNK0, 0x02, AnyAcc, NoLock, Preserve)
+                        {
+                            AccessAs (ByteAcc, 0x00), 
+                                ,   33, 
+                            F0C5,   31
+                        }
+
+                        Local3 = RefOf (F0C5)
+                        Local4 = RefOf (G002)
+                    }
+                    Case (0x20)
+                    {
+                        Local2 = 0x03
+                        BankField (OPR0, BNK0, 0x03, ByteAcc, NoLock, Preserve)
+                        {
+                                ,   33, 
+                            F0C6,   32
+                        }
+
+                        Local3 = RefOf (F0C6)
+                        Local4 = RefOf (G003)
+                    }
+                    Case (0x21)
+                    {
+                        Local2 = 0x04
+                        BankField (OPR0, BNK0, 0x04, ByteAcc, NoLock, Preserve)
+                        {
+                            AccessAs (ByteAcc, 0x00), 
+                                ,   33, 
+                            F0C7,   33
+                        }
+
+                        Local3 = RefOf (F0C7)
+                        Local4 = RefOf (G004)
+                    }
+                    Case (0x3F)
+                    {
+                        Local2 = 0x05
+                        BankField (OPR0, BNK0, 0x05, ByteAcc, NoLock, Preserve)
+                        {
+                                ,   33, 
+                            F0C8,   63
+                        }
+
+                        Local3 = RefOf (F0C8)
+                        Local4 = RefOf (G005)
+                    }
+                    Case (0x40)
+                    {
+                        Local2 = 0x06
+                        BankField (OPR0, BNK0, 0x06, WordAcc, NoLock, Preserve)
+                        {
+                            AccessAs (ByteAcc, 0x00), 
+                                ,   33, 
+                            F0C9,   64
+                        }
+
+                        Local3 = RefOf (F0C9)
+                        Local4 = RefOf (G006)
+                    }
+                    Case (0x41)
+                    {
+                        Local2 = 0x07
+                        BankField (OPR0, BNK0, 0x07, ByteAcc, NoLock, Preserve)
+                        {
+                                ,   33, 
+                            F0CA,   65
+                        }
+
+                        Local3 = RefOf (F0CA)
+                        Local4 = RefOf (G007)
+                    }
+                    Case (0x45)
+                    {
+                        Local2 = 0x08
+                        BankField (OPR0, BNK0, 0x08, DWordAcc, NoLock, Preserve)
+                        {
+                            AccessAs (ByteAcc, 0x00), 
+                                ,   33, 
+                            F0CB,   69
+                        }
+
+                        Local3 = RefOf (F0CB)
+                        Local4 = RefOf (G008)
+                    }
+                    Case (0x81)
+                    {
+                        Local2 = 0x09
+                        BankField (OPR0, BNK0, 0x09, ByteAcc, NoLock, Preserve)
+                        {
+                                ,   33, 
+                            F0CC,   129
+                        }
+
+                        Local3 = RefOf (F0CC)
+                        Local4 = RefOf (G009)
+                    }
+                    Case (0x0100)
+                    {
+                        Local2 = 0x3F
+                        BankField (OPR0, BNK0, 0x3F, QWordAcc, NoLock, Preserve)
+                        {
+                            AccessAs (ByteAcc, 0x00), 
+                                ,   33, 
+                            F0CD,   256
+                        }
+
+                        Local3 = RefOf (F0CD)
+                        Local4 = RefOf (G00A)
+                    }
+                    Case (0x03FF)
+                    {
+                        Local2 = 0x40
+                        BankField (OPR0, BNK0, 0x40, ByteAcc, NoLock, Preserve)
+                        {
+                                ,   33, 
+                            F0CE,   1023
+                        }
+
+                        Local3 = RefOf (F0CE)
+                        Local4 = RefOf (G00B)
+                    }
+                    Case (0x07BF)
+                    {
+                        Local2 = 0x7F
+                        BankField (OPR0, BNK0, 0x7F, AnyAcc, NoLock, Preserve)
+                        {
+                            AccessAs (ByteAcc, 0x00), 
+                                ,   33, 
+                            F0CF,   1983
+                        }
+
+                        Local3 = RefOf (F0CF)
+                        Local4 = RefOf (G00C)
+                    }
+                    Default
+                    {
+                        ERR (Arg0, Z145, 0x0793, 0x00, 0x00, Arg2, Arg3)
+                        Return (Zero)
+                    }
+
+                }
+            }
+            Case (0x3F)
+            {
+                Switch (ToInteger (Arg3))
+                {
+                    Case (0x01)
+                    {
+                        Local2 = 0x80
+                        BankField (OPR0, BNK0, 0x80, ByteAcc, NoLock, Preserve)
+                        {
+                            AccessAs (ByteAcc, 0x00), 
+                                ,   63, 
+                            F0D0,   1
+                        }
+
+                        Local3 = RefOf (F0D0)
+                        Local4 = RefOf (G00D)
+                    }
+                    Case (0x06)
+                    {
+                        Local2 = 0xFF
+                        BankField (OPR0, BNK0, 0xFF, ByteAcc, NoLock, Preserve)
+                        {
+                                ,   63, 
+                            F0D1,   6
+                        }
+
+                        Local3 = RefOf (F0D1)
+                        Local4 = RefOf (G00E)
+                    }
+                    Case (0x07)
+                    {
+                        Local2 = 0x00
+                        BankField (OPR0, BNK0, 0x00, WordAcc, NoLock, Preserve)
+                        {
+                            AccessAs (ByteAcc, 0x00), 
+                                ,   63, 
+                            F0D2,   7
+                        }
+
+                        Local3 = RefOf (F0D2)
+                        Local4 = RefOf (G000)
+                    }
+                    Case (0x08)
+                    {
+                        Local2 = 0x01
+                        BankField (OPR0, BNK0, 0x01, ByteAcc, NoLock, Preserve)
+                        {
+                                ,   63, 
+                            F0D3,   8
+                        }
+
+                        Local3 = RefOf (F0D3)
+                        Local4 = RefOf (G001)
+                    }
+                    Case (0x09)
+                    {
+                        Local2 = 0x02
+                        BankField (OPR0, BNK0, 0x02, DWordAcc, NoLock, Preserve)
+                        {
+                            AccessAs (ByteAcc, 0x00), 
+                                ,   63, 
+                            F0D4,   9
+                        }
+
+                        Local3 = RefOf (F0D4)
+                        Local4 = RefOf (G002)
+                    }
+                    Case (0x1F)
+                    {
+                        Local2 = 0x03
+                        BankField (OPR0, BNK0, 0x03, ByteAcc, NoLock, Preserve)
+                        {
+                                ,   63, 
+                            F0D5,   31
+                        }
+
+                        Local3 = RefOf (F0D5)
+                        Local4 = RefOf (G003)
+                    }
+                    Case (0x20)
+                    {
+                        Local2 = 0x04
+                        BankField (OPR0, BNK0, 0x04, QWordAcc, NoLock, Preserve)
+                        {
+                            AccessAs (ByteAcc, 0x00), 
+                                ,   63, 
+                            F0D6,   32
+                        }
+
+                        Local3 = RefOf (F0D6)
+                        Local4 = RefOf (G004)
+                    }
+                    Case (0x21)
+                    {
+                        Local2 = 0x05
+                        BankField (OPR0, BNK0, 0x05, ByteAcc, NoLock, Preserve)
+                        {
+                                ,   63, 
+                            F0D7,   33
+                        }
+
+                        Local3 = RefOf (F0D7)
+                        Local4 = RefOf (G005)
+                    }
+                    Case (0x3F)
+                    {
+                        Local2 = 0x06
+                        BankField (OPR0, BNK0, 0x06, AnyAcc, NoLock, Preserve)
+                        {
+                            AccessAs (ByteAcc, 0x00), 
+                                ,   63, 
+                            F0D8,   63
+                        }
+
+                        Local3 = RefOf (F0D8)
+                        Local4 = RefOf (G006)
+                    }
+                    Case (0x40)
+                    {
+                        Local2 = 0x07
+                        BankField (OPR0, BNK0, 0x07, ByteAcc, NoLock, Preserve)
+                        {
+                                ,   63, 
+                            F0D9,   64
+                        }
+
+                        Local3 = RefOf (F0D9)
+                        Local4 = RefOf (G007)
+                    }
+                    Case (0x41)
+                    {
+                        Local2 = 0x08
+                        BankField (OPR0, BNK0, 0x08, ByteAcc, NoLock, Preserve)
+                        {
+                            AccessAs (ByteAcc, 0x00), 
+                                ,   63, 
+                            F0DA,   65
+                        }
+
+                        Local3 = RefOf (F0DA)
+                        Local4 = RefOf (G008)
+                    }
+                    Case (0x45)
+                    {
+                        Local2 = 0x09
+                        BankField (OPR0, BNK0, 0x09, ByteAcc, NoLock, Preserve)
+                        {
+                                ,   63, 
+                            F0DB,   69
+                        }
+
+                        Local3 = RefOf (F0DB)
+                        Local4 = RefOf (G009)
+                    }
+                    Case (0x81)
+                    {
+                        Local2 = 0x3F
+                        BankField (OPR0, BNK0, 0x3F, WordAcc, NoLock, Preserve)
+                        {
+                            AccessAs (ByteAcc, 0x00), 
+                                ,   63, 
+                            F0DC,   129
+                        }
+
+                        Local3 = RefOf (F0DC)
+                        Local4 = RefOf (G00A)
+                    }
+                    Case (0x0100)
+                    {
+                        Local2 = 0x40
+                        BankField (OPR0, BNK0, 0x40, ByteAcc, NoLock, Preserve)
+                        {
+                                ,   63, 
+                            F0DD,   256
+                        }
+
+                        Local3 = RefOf (F0DD)
+                        Local4 = RefOf (G00B)
+                    }
+                    Case (0x03FF)
+                    {
+                        Local2 = 0x7F
+                        BankField (OPR0, BNK0, 0x7F, DWordAcc, NoLock, Preserve)
+                        {
+                            AccessAs (ByteAcc, 0x00), 
+                                ,   63, 
+                            F0DE,   1023
+                        }
+
+                        Local3 = RefOf (F0DE)
+                        Local4 = RefOf (G00C)
+                    }
+                    Case (0x07BF)
+                    {
+                        Local2 = 0x80
+                        BankField (OPR0, BNK0, 0x80, ByteAcc, NoLock, Preserve)
+                        {
+                                ,   63, 
+                            F0DF,   1983
+                        }
+
+                        Local3 = RefOf (F0DF)
+                        Local4 = RefOf (G00D)
+                    }
+                    Default
+                    {
+                        ERR (Arg0, Z145, 0x0813, 0x00, 0x00, Arg2, Arg3)
+                        Return (Zero)
+                    }
+
+                }
+            }
+            Case (0x40)
+            {
+                Switch (ToInteger (Arg3))
+                {
+                    Case (0x01)
+                    {
+                        Local2 = 0xFF
+                        BankField (OPR0, BNK0, 0xFF, ByteAcc, NoLock, Preserve)
+                        {
+                            Offset (0x08), 
+                            F0E0,   1
+                        }
+
+                        Local3 = RefOf (F0E0)
+                        Local4 = RefOf (G00E)
+                    }
+                    Case (0x06)
+                    {
+                        Local2 = 0x00
+                        BankField (OPR0, BNK0, 0x00, QWordAcc, NoLock, Preserve)
+                        {
+                            AccessAs (ByteAcc, 0x00), 
+                            Offset (0x08), 
+                            F0E1,   6
+                        }
+
+                        Local3 = RefOf (F0E1)
+                        Local4 = RefOf (G000)
+                    }
+                    Case (0x07)
+                    {
+                        Local2 = 0x01
+                        BankField (OPR0, BNK0, 0x01, ByteAcc, NoLock, Preserve)
+                        {
+                            Offset (0x08), 
+                            F0E2,   7
+                        }
+
+                        Local3 = RefOf (F0E2)
+                        Local4 = RefOf (G001)
+                    }
+                    Case (0x08)
+                    {
+                        Local2 = 0x02
+                        BankField (OPR0, BNK0, 0x02, AnyAcc, NoLock, Preserve)
+                        {
+                            AccessAs (ByteAcc, 0x00), 
+                            Offset (0x08), 
+                            F0E3,   8
+                        }
+
+                        Local3 = RefOf (F0E3)
+                        Local4 = RefOf (G002)
+                    }
+                    Case (0x09)
+                    {
+                        Local2 = 0x03
+                        BankField (OPR0, BNK0, 0x03, ByteAcc, NoLock, Preserve)
+                        {
+                            Offset (0x08), 
+                            F0E4,   9
+                        }
+
+                        Local3 = RefOf (F0E4)
+                        Local4 = RefOf (G003)
+                    }
+                    Case (0x1F)
+                    {
+                        Local2 = 0x04
+                        BankField (OPR0, BNK0, 0x04, ByteAcc, NoLock, Preserve)
+                        {
+                            AccessAs (ByteAcc, 0x00), 
+                            Offset (0x08), 
+                            F0E5,   31
+                        }
+
+                        Local3 = RefOf (F0E5)
+                        Local4 = RefOf (G004)
+                    }
+                    Case (0x20)
+                    {
+                        Local2 = 0x05
+                        BankField (OPR0, BNK0, 0x05, ByteAcc, NoLock, Preserve)
+                        {
+                            Offset (0x08), 
+                            F0E6,   32
+                        }
+
+                        Local3 = RefOf (F0E6)
+                        Local4 = RefOf (G005)
+                    }
+                    Case (0x21)
+                    {
+                        Local2 = 0x06
+                        BankField (OPR0, BNK0, 0x06, WordAcc, NoLock, Preserve)
+                        {
+                            AccessAs (ByteAcc, 0x00), 
+                            Offset (0x08), 
+                            F0E7,   33
+                        }
+
+                        Local3 = RefOf (F0E7)
+                        Local4 = RefOf (G006)
+                    }
+                    Case (0x3F)
+                    {
+                        Local2 = 0x07
+                        BankField (OPR0, BNK0, 0x07, ByteAcc, NoLock, Preserve)
+                        {
+                            Offset (0x08), 
+                            F0E8,   63
+                        }
+
+                        Local3 = RefOf (F0E8)
+                        Local4 = RefOf (G007)
+                    }
+                    Case (0x40)
+                    {
+                        Local2 = 0x08
+                        BankField (OPR0, BNK0, 0x08, DWordAcc, NoLock, Preserve)
+                        {
+                            AccessAs (ByteAcc, 0x00), 
+                            Offset (0x08), 
+                            F0E9,   64
+                        }
+
+                        Local3 = RefOf (F0E9)
+                        Local4 = RefOf (G008)
+                    }
+                    Case (0x41)
+                    {
+                        Local2 = 0x09
+                        BankField (OPR0, BNK0, 0x09, ByteAcc, NoLock, Preserve)
+                        {
+                            Offset (0x08), 
+                            F0EA,   65
+                        }
+
+                        Local3 = RefOf (F0EA)
+                        Local4 = RefOf (G009)
+                    }
+                    Case (0x45)
+                    {
+                        Local2 = 0x3F
+                        BankField (OPR0, BNK0, 0x3F, QWordAcc, NoLock, Preserve)
+                        {
+                            AccessAs (ByteAcc, 0x00), 
+                            Offset (0x08), 
+                            F0EB,   69
+                        }
+
+                        Local3 = RefOf (F0EB)
+                        Local4 = RefOf (G00A)
+                    }
+                    Case (0x81)
+                    {
+                        Local2 = 0x40
+                        BankField (OPR0, BNK0, 0x40, ByteAcc, NoLock, Preserve)
+                        {
+                            Offset (0x08), 
+                            F0EC,   129
+                        }
+
+                        Local3 = RefOf (F0EC)
+                        Local4 = RefOf (G00B)
+                    }
+                    Case (0x0100)
+                    {
+                        Local2 = 0x7F
+                        BankField (OPR0, BNK0, 0x7F, AnyAcc, NoLock, Preserve)
+                        {
+                            AccessAs (ByteAcc, 0x00), 
+                            Offset (0x08), 
+                            F0ED,   256
+                        }
+
+                        Local3 = RefOf (F0ED)
+                        Local4 = RefOf (G00C)
+                    }
+                    Case (0x03FF)
+                    {
+                        Local2 = 0x80
+                        BankField (OPR0, BNK0, 0x80, ByteAcc, NoLock, Preserve)
+                        {
+                            Offset (0x08), 
+                            F0EE,   1023
+                        }
+
+                        Local3 = RefOf (F0EE)
+                        Local4 = RefOf (G00D)
+                    }
+                    Case (0x07BF)
+                    {
+                        Local2 = 0xFF
+                        BankField (OPR0, BNK0, 0xFF, ByteAcc, NoLock, Preserve)
+                        {
+                            AccessAs (ByteAcc, 0x00), 
+                            Offset (0x08), 
+                            F0EF,   1983
+                        }
+
+                        Local3 = RefOf (F0EF)
+                        Local4 = RefOf (G00E)
+                    }
+                    Default
+                    {
+                        ERR (Arg0, Z145, 0x0893, 0x00, 0x00, Arg2, Arg3)
+                        Return (Zero)
+                    }
+
+                }
+            }
+            Case (0x41)
+            {
+                Switch (ToInteger (Arg3))
+                {
+                    Case (0x01)
+                    {
+                        Local2 = 0x00
+                        BankField (OPR0, BNK0, 0x00, WordAcc, NoLock, Preserve)
+                        {
+                            AccessAs (ByteAcc, 0x00), 
+                            Offset (0x08), 
+                                ,   1, 
+                            F0F0,   1
+                        }
+
+                        Local3 = RefOf (F0F0)
+                        Local4 = RefOf (G000)
+                    }
+                    Case (0x06)
+                    {
+                        Local2 = 0x01
+                        BankField (OPR0, BNK0, 0x01, ByteAcc, NoLock, Preserve)
+                        {
+                            Offset (0x08), 
+                                ,   1, 
+                            F0F1,   6
+                        }
+
+                        Local3 = RefOf (F0F1)
+                        Local4 = RefOf (G001)
+                    }
+                    Case (0x07)
+                    {
+                        Local2 = 0x02
+                        BankField (OPR0, BNK0, 0x02, DWordAcc, NoLock, Preserve)
+                        {
+                            AccessAs (ByteAcc, 0x00), 
+                            Offset (0x08), 
+                                ,   1, 
+                            F0F2,   7
+                        }
+
+                        Local3 = RefOf (F0F2)
+                        Local4 = RefOf (G002)
+                    }
+                    Case (0x08)
+                    {
+                        Local2 = 0x03
+                        BankField (OPR0, BNK0, 0x03, ByteAcc, NoLock, Preserve)
+                        {
+                            Offset (0x08), 
+                                ,   1, 
+                            F0F3,   8
+                        }
+
+                        Local3 = RefOf (F0F3)
+                        Local4 = RefOf (G003)
+                    }
+                    Case (0x09)
+                    {
+                        Local2 = 0x04
+                        BankField (OPR0, BNK0, 0x04, QWordAcc, NoLock, Preserve)
+                        {
+                            AccessAs (ByteAcc, 0x00), 
+                            Offset (0x08), 
+                                ,   1, 
+                            F0F4,   9
+                        }
+
+                        Local3 = RefOf (F0F4)
+                        Local4 = RefOf (G004)
+                    }
+                    Case (0x1F)
+                    {
+                        Local2 = 0x05
+                        BankField (OPR0, BNK0, 0x05, ByteAcc, NoLock, Preserve)
+                        {
+                            Offset (0x08), 
+                                ,   1, 
+                            F0F5,   31
+                        }
+
+                        Local3 = RefOf (F0F5)
+                        Local4 = RefOf (G005)
+                    }
+                    Case (0x20)
+                    {
+                        Local2 = 0x06
+                        BankField (OPR0, BNK0, 0x06, AnyAcc, NoLock, Preserve)
+                        {
+                            AccessAs (ByteAcc, 0x00), 
+                            Offset (0x08), 
+                                ,   1, 
+                            F0F6,   32
+                        }
+
+                        Local3 = RefOf (F0F6)
+                        Local4 = RefOf (G006)
+                    }
+                    Case (0x21)
+                    {
+                        Local2 = 0x07
+                        BankField (OPR0, BNK0, 0x07, ByteAcc, NoLock, Preserve)
+                        {
+                            Offset (0x08), 
+                                ,   1, 
+                            F0F7,   33
+                        }
+
+                        Local3 = RefOf (F0F7)
+                        Local4 = RefOf (G007)
+                    }
+                    Case (0x3F)
+                    {
+                        Local2 = 0x08
+                        BankField (OPR0, BNK0, 0x08, ByteAcc, NoLock, Preserve)
+                        {
+                            AccessAs (ByteAcc, 0x00), 
+                            Offset (0x08), 
+                                ,   1, 
+                            F0F8,   63
+                        }
+
+                        Local3 = RefOf (F0F8)
+                        Local4 = RefOf (G008)
+                    }
+                    Case (0x40)
+                    {
+                        Local2 = 0x09
+                        BankField (OPR0, BNK0, 0x09, ByteAcc, NoLock, Preserve)
+                        {
+                            Offset (0x08), 
+                                ,   1, 
+                            F0F9,   64
+                        }
+
+                        Local3 = RefOf (F0F9)
+                        Local4 = RefOf (G009)
+                    }
+                    Case (0x41)
+                    {
+                        Local2 = 0x3F
+                        BankField (OPR0, BNK0, 0x3F, WordAcc, NoLock, Preserve)
+                        {
+                            AccessAs (ByteAcc, 0x00), 
+                            Offset (0x08), 
+                                ,   1, 
+                            F0FA,   65
+                        }
+
+                        Local3 = RefOf (F0FA)
+                        Local4 = RefOf (G00A)
+                    }
+                    Case (0x45)
+                    {
+                        Local2 = 0x40
+                        BankField (OPR0, BNK0, 0x40, ByteAcc, NoLock, Preserve)
+                        {
+                            Offset (0x08), 
+                                ,   1, 
+                            F0FB,   69
+                        }
+
+                        Local3 = RefOf (F0FB)
+                        Local4 = RefOf (G00B)
+                    }
+                    Case (0x81)
+                    {
+                        Local2 = 0x7F
+                        BankField (OPR0, BNK0, 0x7F, DWordAcc, NoLock, Preserve)
+                        {
+                            AccessAs (ByteAcc, 0x00), 
+                            Offset (0x08), 
+                                ,   1, 
+                            F0FC,   129
+                        }
+
+                        Local3 = RefOf (F0FC)
+                        Local4 = RefOf (G00C)
+                    }
+                    Case (0x0100)
+                    {
+                        Local2 = 0x80
+                        BankField (OPR0, BNK0, 0x80, ByteAcc, NoLock, Preserve)
+                        {
+                            Offset (0x08), 
+                                ,   1, 
+                            F0FD,   256
+                        }
+
+                        Local3 = RefOf (F0FD)
+                        Local4 = RefOf (G00D)
+                    }
+                    Case (0x03FF)
+                    {
+                        Local2 = 0xFF
+                        BankField (OPR0, BNK0, 0xFF, QWordAcc, NoLock, Preserve)
+                        {
+                            AccessAs (ByteAcc, 0x00), 
+                            Offset (0x08), 
+                                ,   1, 
+                            F0FE,   1023
+                        }
+
+                        Local3 = RefOf (F0FE)
+                        Local4 = RefOf (G00E)
+                    }
+                    Case (0x07BF)
+                    {
+                        Local2 = 0x00
+                        BankField (OPR0, BNK0, 0x00, ByteAcc, NoLock, Preserve)
+                        {
+                            Offset (0x08), 
+                                ,   1, 
+                            F0FF,   1983
+                        }
+
+                        Local3 = RefOf (F0FF)
+                        Local4 = RefOf (G000)
+                    }
+                    Default
+                    {
+                        ERR (Arg0, Z145, 0x0913, 0x00, 0x00, Arg2, Arg3)
+                        Return (Zero)
+                    }
+
+                }
+            }
+            Default
+            {
+                ERR (Arg0, Z145, 0x0919, 0x00, 0x00, Arg2, Arg3)
+                Return (Zero)
+            }
+
+        }
+
+        FCP0 [0x00] = 0x02
+        FCP0 [0x01] = RefOf (BNK0)
+        FCP0 [0x02] = Local2
+        M72D (Arg0, Local3, Arg2, Arg3, Arg4, Arg5, Local4)
+        FCP0 [0x00] = 0x00
+    }
+
+    /* Create BankField Unit */
+    /* (WordAcc, NoLock, WriteAsOnes) */
+    Method (M7D1, 6, Serialized)
+    {
+        OperationRegion (OPRB, SystemIO, 0x00, 0x09)
+        OperationRegion (OPR0, SystemIO, 0x0B, 0x0100)
+        Field (OPRB, ByteAcc, NoLock, Preserve)
+        {
+            BNK0,   8
+        }
+
+        BankField (OPR0, BNK0, 0x00, ByteAcc, NoLock, Preserve)
+        {
+            G000,   2048
+        }
+
+        BankField (OPR0, BNK0, 0x01, ByteAcc, NoLock, Preserve)
+        {
+            G001,   2048
+        }
+
+        BankField (OPR0, BNK0, 0x02, ByteAcc, NoLock, Preserve)
+        {
+            G002,   2048
+        }
+
+        BankField (OPR0, BNK0, 0x03, ByteAcc, NoLock, Preserve)
+        {
+            G003,   2048
+        }
+
+        BankField (OPR0, BNK0, 0x04, ByteAcc, NoLock, Preserve)
+        {
+            G004,   2048
+        }
+
+        BankField (OPR0, BNK0, 0x05, ByteAcc, NoLock, Preserve)
+        {
+            G005,   2048
+        }
+
+        BankField (OPR0, BNK0, 0x06, ByteAcc, NoLock, Preserve)
+        {
+            G006,   2048
+        }
+
+        BankField (OPR0, BNK0, 0x07, ByteAcc, NoLock, Preserve)
+        {
+            G007,   2048
+        }
+
+        BankField (OPR0, BNK0, 0x08, ByteAcc, NoLock, Preserve)
+        {
+            G008,   2048
+        }
+
+        BankField (OPR0, BNK0, 0x09, ByteAcc, NoLock, Preserve)
+        {
+            G009,   2048
+        }
+
+        BankField (OPR0, BNK0, 0x3F, ByteAcc, NoLock, Preserve)
+        {
+            G00A,   2048
+        }
+
+        BankField (OPR0, BNK0, 0x40, ByteAcc, NoLock, Preserve)
+        {
+            G00B,   2048
+        }
+
+        BankField (OPR0, BNK0, 0x7F, ByteAcc, NoLock, Preserve)
+        {
+            G00C,   2048
+        }
+
+        BankField (OPR0, BNK0, 0x80, ByteAcc, NoLock, Preserve)
+        {
+            G00D,   2048
+        }
+
+        BankField (OPR0, BNK0, 0xFF, DWordAcc, NoLock, Preserve)
+        {
+            G00E,   2048
+        }
+
+        Concatenate (Arg0, "-m7d1", Arg0)
+        Switch (ToInteger (Arg2))
+        {
+            Case (0x00)
+            {
+                Switch (ToInteger (Arg3))
+                {
+                    Case (0x01)
+                    {
+                        Local2 = 0x00
+                        BankField (OPR0, BNK0, 0x00, WordAcc, NoLock, WriteAsOnes)
+                        {
+                            Offset (0x00), 
+                            F000,   1
+                        }
+
+                        Local3 = RefOf (F000)
+                        Local4 = RefOf (G000)
+                    }
+                    Case (0x06)
+                    {
+                        Local2 = 0x01
+                        BankField (OPR0, BNK0, 0x01, WordAcc, NoLock, WriteAsOnes)
+                        {
+                            AccessAs (WordAcc, 0x00), 
+                            Offset (0x00), 
+                            F001,   6
+                        }
+
+                        Local3 = RefOf (F001)
+                        Local4 = RefOf (G001)
+                    }
+                    Case (0x07)
+                    {
+                        Local2 = 0x02
+                        BankField (OPR0, BNK0, 0x02, WordAcc, NoLock, WriteAsOnes)
+                        {
+                            Offset (0x00), 
+                            F002,   7
+                        }
+
+                        Local3 = RefOf (F002)
+                        Local4 = RefOf (G002)
+                    }
+                    Case (0x08)
+                    {
+                        Local2 = 0x03
+                        BankField (OPR0, BNK0, 0x03, DWordAcc, NoLock, WriteAsOnes)
+                        {
+                            AccessAs (WordAcc, 0x00), 
+                            Offset (0x00), 
+                            F003,   8
+                        }
+
+                        Local3 = RefOf (F003)
+                        Local4 = RefOf (G003)
+                    }
+                    Case (0x09)
+                    {
+                        Local2 = 0x04
+                        BankField (OPR0, BNK0, 0x04, WordAcc, NoLock, WriteAsOnes)
+                        {
+                            Offset (0x00), 
+                            F004,   9
+                        }
+
+                        Local3 = RefOf (F004)
+                        Local4 = RefOf (G004)
+                    }
+                    Case (0x1F)
+                    {
+                        Local2 = 0x05
+                        BankField (OPR0, BNK0, 0x05, QWordAcc, NoLock, WriteAsOnes)
+                        {
+                            AccessAs (WordAcc, 0x00), 
+                            Offset (0x00), 
+                            F005,   31
+                        }
+
+                        Local3 = RefOf (F005)
+                        Local4 = RefOf (G005)
+                    }
+                    Case (0x20)
+                    {
+                        Local2 = 0x06
+                        BankField (OPR0, BNK0, 0x06, WordAcc, NoLock, WriteAsOnes)
+                        {
+                            Offset (0x00), 
+                            F006,   32
+                        }
+
+                        Local3 = RefOf (F006)
+                        Local4 = RefOf (G006)
+                    }
+                    Case (0x21)
+                    {
+                        Local2 = 0x07
+                        BankField (OPR0, BNK0, 0x07, AnyAcc, NoLock, WriteAsOnes)
+                        {
+                            AccessAs (WordAcc, 0x00), 
+                            Offset (0x00), 
+                            F007,   33
+                        }
+
+                        Local3 = RefOf (F007)
+                        Local4 = RefOf (G007)
+                    }
+                    Case (0x3F)
+                    {
+                        Local2 = 0x08
+                        BankField (OPR0, BNK0, 0x08, WordAcc, NoLock, WriteAsOnes)
+                        {
+                            Offset (0x00), 
+                            F008,   63
+                        }
+
+                        Local3 = RefOf (F008)
+                        Local4 = RefOf (G008)
+                    }
+                    Case (0x40)
+                    {
+                        Local2 = 0x09
+                        BankField (OPR0, BNK0, 0x09, ByteAcc, NoLock, WriteAsOnes)
+                        {
+                            AccessAs (WordAcc, 0x00), 
+                            Offset (0x00), 
+                            F009,   64
+                        }
+
+                        Local3 = RefOf (F009)
+                        Local4 = RefOf (G009)
+                    }
+                    Case (0x41)
+                    {
+                        Local2 = 0x3F
+                        BankField (OPR0, BNK0, 0x3F, WordAcc, NoLock, WriteAsOnes)
+                        {
+                            Offset (0x00), 
+                            F00A,   65
+                        }
+
+                        Local3 = RefOf (F00A)
+                        Local4 = RefOf (G00A)
+                    }
+                    Case (0x45)
+                    {
+                        Local2 = 0x40
+                        BankField (OPR0, BNK0, 0x40, WordAcc, NoLock, WriteAsOnes)
+                        {
+                            AccessAs (WordAcc, 0x00), 
+                            Offset (0x00), 
+                            F00B,   69
+                        }
+
+                        Local3 = RefOf (F00B)
+                        Local4 = RefOf (G00B)
+                    }
+                    Case (0x81)
+                    {
+                        Local2 = 0x7F
+                        BankField (OPR0, BNK0, 0x7F, WordAcc, NoLock, WriteAsOnes)
+                        {
+                            Offset (0x00), 
+                            F00C,   129
+                        }
+
+                        Local3 = RefOf (F00C)
+                        Local4 = RefOf (G00C)
+                    }
+                    Case (0x0100)
+                    {
+                        Local2 = 0x80
+                        BankField (OPR0, BNK0, 0x80, DWordAcc, NoLock, WriteAsOnes)
+                        {
+                            AccessAs (WordAcc, 0x00), 
+                            Offset (0x00), 
+                            F00D,   256
+                        }
+
+                        Local3 = RefOf (F00D)
+                        Local4 = RefOf (G00D)
+                    }
+                    Case (0x03FF)
+                    {
+                        Local2 = 0xFF
+                        BankField (OPR0, BNK0, 0xFF, WordAcc, NoLock, WriteAsOnes)
+                        {
+                            Offset (0x00), 
+                            F00E,   1023
+                        }
+
+                        Local3 = RefOf (F00E)
+                        Local4 = RefOf (G00E)
+                    }
+                    Case (0x07BF)
+                    {
+                        Local2 = 0x00
+                        BankField (OPR0, BNK0, 0x00, QWordAcc, NoLock, WriteAsOnes)
+                        {
+                            AccessAs (WordAcc, 0x00), 
+                            Offset (0x00), 
+                            F00F,   1983
+                        }
+
+                        Local3 = RefOf (F00F)
+                        Local4 = RefOf (G000)
+                    }
+                    Default
+                    {
+                        ERR (Arg0, Z145, 0x09DB, 0x00, 0x00, Arg2, Arg3)
+                        Return (Zero)
+                    }
+
+                }
+            }
+            Case (0x01)
+            {
+                Switch (ToInteger (Arg3))
+                {
+                    Case (0x01)
+                    {
+                        Local2 = 0x01
+                        BankField (OPR0, BNK0, 0x01, AnyAcc, NoLock, WriteAsOnes)
+                        {
+                            AccessAs (WordAcc, 0x00), 
+                                ,   1, 
+                            F010,   1
+                        }
+
+                        Local3 = RefOf (F010)
+                        Local4 = RefOf (G001)
+                    }
+                    Case (0x06)
+                    {
+                        Local2 = 0x02
+                        BankField (OPR0, BNK0, 0x02, WordAcc, NoLock, WriteAsOnes)
+                        {
+                                ,   1, 
+                            F011,   6
+                        }
+
+                        Local3 = RefOf (F011)
+                        Local4 = RefOf (G002)
+                    }
+                    Case (0x07)
+                    {
+                        Local2 = 0x03
+                        BankField (OPR0, BNK0, 0x03, ByteAcc, NoLock, WriteAsOnes)
+                        {
+                            AccessAs (WordAcc, 0x00), 
+                                ,   1, 
+                            F012,   7
+                        }
+
+                        Local3 = RefOf (F012)
+                        Local4 = RefOf (G003)
+                    }
+                    Case (0x08)
+                    {
+                        Local2 = 0x04
+                        BankField (OPR0, BNK0, 0x04, WordAcc, NoLock, WriteAsOnes)
+                        {
+                                ,   1, 
+                            F013,   8
+                        }
+
+                        Local3 = RefOf (F013)
+                        Local4 = RefOf (G004)
+                    }
+                    Case (0x09)
+                    {
+                        Local2 = 0x05
+                        BankField (OPR0, BNK0, 0x05, WordAcc, NoLock, WriteAsOnes)
+                        {
+                            AccessAs (WordAcc, 0x00), 
+                                ,   1, 
+                            F014,   9
+                        }
+
+                        Local3 = RefOf (F014)
+                        Local4 = RefOf (G005)
+                    }
+                    Case (0x1F)
+                    {
+                        Local2 = 0x06
+                        BankField (OPR0, BNK0, 0x06, WordAcc, NoLock, WriteAsOnes)
+                        {
+                                ,   1, 
+                            F015,   31
+                        }
+
+                        Local3 = RefOf (F015)
+                        Local4 = RefOf (G006)
+                    }
+                    Case (0x20)
+                    {
+                        Local2 = 0x07
+                        BankField (OPR0, BNK0, 0x07, DWordAcc, NoLock, WriteAsOnes)
+                        {
+                            AccessAs (WordAcc, 0x00), 
+                                ,   1, 
+                            F016,   32
+                        }
+
+                        Local3 = RefOf (F016)
+                        Local4 = RefOf (G007)
+                    }
+                    Case (0x21)
+                    {
+                        Local2 = 0x08
+                        BankField (OPR0, BNK0, 0x08, WordAcc, NoLock, WriteAsOnes)
+                        {
+                                ,   1, 
+                            F017,   33
+                        }
+
+                        Local3 = RefOf (F017)
+                        Local4 = RefOf (G008)
+                    }
+                    Case (0x3F)
+                    {
+                        Local2 = 0x09
+                        BankField (OPR0, BNK0, 0x09, QWordAcc, NoLock, WriteAsOnes)
+                        {
+                            AccessAs (WordAcc, 0x00), 
+                                ,   1, 
+                            F018,   63
+                        }
+
+                        Local3 = RefOf (F018)
+                        Local4 = RefOf (G009)
+                    }
+                    Case (0x40)
+                    {
+                        Local2 = 0x3F
+                        BankField (OPR0, BNK0, 0x3F, WordAcc, NoLock, WriteAsOnes)
+                        {
+                                ,   1, 
+                            F019,   64
+                        }
+
+                        Local3 = RefOf (F019)
+                        Local4 = RefOf (G00A)
+                    }
+                    Case (0x41)
+                    {
+                        Local2 = 0x40
+                        BankField (OPR0, BNK0, 0x40, AnyAcc, NoLock, WriteAsOnes)
+                        {
+                            AccessAs (WordAcc, 0x00), 
+                                ,   1, 
+                            F01A,   65
+                        }
+
+                        Local3 = RefOf (F01A)
+                        Local4 = RefOf (G00B)
+                    }
+                    Case (0x45)
+                    {
+                        Local2 = 0x7F
+                        BankField (OPR0, BNK0, 0x7F, WordAcc, NoLock, WriteAsOnes)
+                        {
+                                ,   1, 
+                            F01B,   69
+                        }
+
+                        Local3 = RefOf (F01B)
+                        Local4 = RefOf (G00C)
+                    }
+                    Case (0x81)
+                    {
+                        Local2 = 0x80
+                        BankField (OPR0, BNK0, 0x80, ByteAcc, NoLock, WriteAsOnes)
+                        {
+                            AccessAs (WordAcc, 0x00), 
+                                ,   1, 
+                            F01C,   129
+                        }
+
+                        Local3 = RefOf (F01C)
+                        Local4 = RefOf (G00D)
+                    }
+                    Case (0x0100)
+                    {
+                        Local2 = 0xFF
+                        BankField (OPR0, BNK0, 0xFF, WordAcc, NoLock, WriteAsOnes)
+                        {
+                                ,   1, 
+                            F01D,   256
+                        }
+
+                        Local3 = RefOf (F01D)
+                        Local4 = RefOf (G00E)
+                    }
+                    Case (0x03FF)
+                    {
+                        Local2 = 0x00
+                        BankField (OPR0, BNK0, 0x00, WordAcc, NoLock, WriteAsOnes)
+                        {
+                            AccessAs (WordAcc, 0x00), 
+                                ,   1, 
+                            F01E,   1023
+                        }
+
+                        Local3 = RefOf (F01E)
+                        Local4 = RefOf (G000)
+                    }
+                    Case (0x07BF)
+                    {
+                        Local2 = 0x01
+                        BankField (OPR0, BNK0, 0x01, WordAcc, NoLock, WriteAsOnes)
+                        {
+                                ,   1, 
+                            F01F,   1983
+                        }
+
+                        Local3 = RefOf (F01F)
+                        Local4 = RefOf (G001)
+                    }
+                    Default
+                    {
+                        ERR (Arg0, Z145, 0x0A5B, 0x00, 0x00, Arg2, Arg3)
+                        Return (Zero)
+                    }
+
+                }
+            }
+            Case (0x02)
+            {
+                Switch (ToInteger (Arg3))
+                {
+                    Case (0x01)
+                    {
+                        Local2 = 0x02
+                        BankField (OPR0, BNK0, 0x02, WordAcc, NoLock, WriteAsOnes)
+                        {
+                                ,   2, 
+                            F020,   1
+                        }
+
+                        Local3 = RefOf (F020)
+                        Local4 = RefOf (G002)
+                    }
+                    Case (0x06)
+                    {
+                        Local2 = 0x03
+                        BankField (OPR0, BNK0, 0x03, DWordAcc, NoLock, WriteAsOnes)
+                        {
+                            AccessAs (WordAcc, 0x00), 
+                                ,   2, 
+                            F021,   6
+                        }
+
+                        Local3 = RefOf (F021)
+                        Local4 = RefOf (G003)
+                    }
+                    Case (0x07)
+                    {
+                        Local2 = 0x04
+                        BankField (OPR0, BNK0, 0x04, WordAcc, NoLock, WriteAsOnes)
+                        {
+                                ,   2, 
+                            F022,   7
+                        }
+
+                        Local3 = RefOf (F022)
+                        Local4 = RefOf (G004)
+                    }
+                    Case (0x08)
+                    {
+                        Local2 = 0x05
+                        BankField (OPR0, BNK0, 0x05, QWordAcc, NoLock, WriteAsOnes)
+                        {
+                            AccessAs (WordAcc, 0x00), 
+                                ,   2, 
+                            F023,   8
+                        }
+
+                        Local3 = RefOf (F023)
+                        Local4 = RefOf (G005)
+                    }
+                    Case (0x09)
+                    {
+                        Local2 = 0x06
+                        BankField (OPR0, BNK0, 0x06, WordAcc, NoLock, WriteAsOnes)
+                        {
+                                ,   2, 
+                            F024,   9
+                        }
+
+                        Local3 = RefOf (F024)
+                        Local4 = RefOf (G006)
+                    }
+                    Case (0x1F)
+                    {
+                        Local2 = 0x07
+                        BankField (OPR0, BNK0, 0x07, AnyAcc, NoLock, WriteAsOnes)
+                        {
+                            AccessAs (WordAcc, 0x00), 
+                                ,   2, 
+                            F025,   31
+                        }
+
+                        Local3 = RefOf (F025)
+                        Local4 = RefOf (G007)
+                    }
+                    Case (0x20)
+                    {
+                        Local2 = 0x08
+                        BankField (OPR0, BNK0, 0x08, WordAcc, NoLock, WriteAsOnes)
+                        {
+                                ,   2, 
+                            F026,   32
+                        }
+
+                        Local3 = RefOf (F026)
+                        Local4 = RefOf (G008)
+                    }
+                    Case (0x21)
+                    {
+                        Local2 = 0x09
+                        BankField (OPR0, BNK0, 0x09, ByteAcc, NoLock, WriteAsOnes)
+                        {
+                            AccessAs (WordAcc, 0x00), 
+                                ,   2, 
+                            F027,   33
+                        }
+
+                        Local3 = RefOf (F027)
+                        Local4 = RefOf (G009)
+                    }
+                    Case (0x3F)
+                    {
+                        Local2 = 0x3F
+                        BankField (OPR0, BNK0, 0x3F, WordAcc, NoLock, WriteAsOnes)
+                        {
+                                ,   2, 
+                            F028,   63
+                        }
+
+                        Local3 = RefOf (F028)
+                        Local4 = RefOf (G00A)
+                    }
+                    Case (0x40)
+                    {
+                        Local2 = 0x40
+                        BankField (OPR0, BNK0, 0x40, WordAcc, NoLock, WriteAsOnes)
+                        {
+                            AccessAs (WordAcc, 0x00), 
+                                ,   2, 
+                            F029,   64
+                        }
+
+                        Local3 = RefOf (F029)
+                        Local4 = RefOf (G00B)
+                    }
+                    Case (0x41)
+                    {
+                        Local2 = 0x7F
+                        BankField (OPR0, BNK0, 0x7F, WordAcc, NoLock, WriteAsOnes)
+                        {
+                                ,   2, 
+                            F02A,   65
+                        }
+
+                        Local3 = RefOf (F02A)
+                        Local4 = RefOf (G00C)
+                    }
+                    Case (0x45)
+                    {
+                        Local2 = 0x80
+                        BankField (OPR0, BNK0, 0x80, DWordAcc, NoLock, WriteAsOnes)
+                        {
+                            AccessAs (WordAcc, 0x00), 
+                                ,   2, 
+                            F02B,   69
+                        }
+
+                        Local3 = RefOf (F02B)
+                        Local4 = RefOf (G00D)
+                    }
+                    Case (0x81)
+                    {
+                        Local2 = 0xFF
+                        BankField (OPR0, BNK0, 0xFF, WordAcc, NoLock, WriteAsOnes)
+                        {
+                                ,   2, 
+                            F02C,   129
+                        }
+
+                        Local3 = RefOf (F02C)
+                        Local4 = RefOf (G00E)
+                    }
+                    Case (0x0100)
+                    {
+                        Local2 = 0x00
+                        BankField (OPR0, BNK0, 0x00, QWordAcc, NoLock, WriteAsOnes)
+                        {
+                            AccessAs (WordAcc, 0x00), 
+                                ,   2, 
+                            F02D,   256
+                        }
+
+                        Local3 = RefOf (F02D)
+                        Local4 = RefOf (G000)
+                    }
+                    Case (0x03FF)
+                    {
+                        Local2 = 0x01
+                        BankField (OPR0, BNK0, 0x01, WordAcc, NoLock, WriteAsOnes)
+                        {
+                                ,   2, 
+                            F02E,   1023
+                        }
+
+                        Local3 = RefOf (F02E)
+                        Local4 = RefOf (G001)
+                    }
+                    Case (0x07BF)
+                    {
+                        Local2 = 0x02
+                        BankField (OPR0, BNK0, 0x02, AnyAcc, NoLock, WriteAsOnes)
+                        {
+                            AccessAs (WordAcc, 0x00), 
+                                ,   2, 
+                            F02F,   1983
+                        }
+
+                        Local3 = RefOf (F02F)
+                        Local4 = RefOf (G002)
+                    }
+                    Default
+                    {
+                        ERR (Arg0, Z145, 0x0ADB, 0x00, 0x00, Arg2, Arg3)
+                        Return (Zero)
+                    }
+
+                }
+            }
+            Case (0x03)
+            {
+                Switch (ToInteger (Arg3))
+                {
+                    Case (0x01)
+                    {
+                        Local2 = 0x03
+                        BankField (OPR0, BNK0, 0x03, ByteAcc, NoLock, WriteAsOnes)
+                        {
+                            AccessAs (WordAcc, 0x00), 
+                                ,   3, 
+                            F030,   1
+                        }
+
+                        Local3 = RefOf (F030)
+                        Local4 = RefOf (G003)
+                    }
+                    Case (0x06)
+                    {
+                        Local2 = 0x04
+                        BankField (OPR0, BNK0, 0x04, WordAcc, NoLock, WriteAsOnes)
+                        {
+                                ,   3, 
+                            F031,   6
+                        }
+
+                        Local3 = RefOf (F031)
+                        Local4 = RefOf (G004)
+                    }
+                    Case (0x07)
+                    {
+                        Local2 = 0x05
+                        BankField (OPR0, BNK0, 0x05, WordAcc, NoLock, WriteAsOnes)
+                        {
+                            AccessAs (WordAcc, 0x00), 
+                                ,   3, 
+                            F032,   7
+                        }
+
+                        Local3 = RefOf (F032)
+                        Local4 = RefOf (G005)
+                    }
+                    Case (0x08)
+                    {
+                        Local2 = 0x06
+                        BankField (OPR0, BNK0, 0x06, WordAcc, NoLock, WriteAsOnes)
+                        {
+                                ,   3, 
+                            F033,   8
+                        }
+
+                        Local3 = RefOf (F033)
+                        Local4 = RefOf (G006)
+                    }
+                    Case (0x09)
+                    {
+                        Local2 = 0x07
+                        BankField (OPR0, BNK0, 0x07, DWordAcc, NoLock, WriteAsOnes)
+                        {
+                            AccessAs (WordAcc, 0x00), 
+                                ,   3, 
+                            F034,   9
+                        }
+
+                        Local3 = RefOf (F034)
+                        Local4 = RefOf (G007)
+                    }
+                    Case (0x1F)
+                    {
+                        Local2 = 0x08
+                        BankField (OPR0, BNK0, 0x08, WordAcc, NoLock, WriteAsOnes)
+                        {
+                                ,   3, 
+                            F035,   31
+                        }
+
+                        Local3 = RefOf (F035)
+                        Local4 = RefOf (G008)
+                    }
+                    Case (0x20)
+                    {
+                        Local2 = 0x09
+                        BankField (OPR0, BNK0, 0x09, QWordAcc, NoLock, WriteAsOnes)
+                        {
+                            AccessAs (WordAcc, 0x00), 
+                                ,   3, 
+                            F036,   32
+                        }
+
+                        Local3 = RefOf (F036)
+                        Local4 = RefOf (G009)
+                    }
+                    Case (0x21)
+                    {
+                        Local2 = 0x3F
+                        BankField (OPR0, BNK0, 0x3F, WordAcc, NoLock, WriteAsOnes)
+                        {
+                                ,   3, 
+                            F037,   33
+                        }
+
+                        Local3 = RefOf (F037)
+                        Local4 = RefOf (G00A)
+                    }
+                    Case (0x3F)
+                    {
+                        Local2 = 0x40
+                        BankField (OPR0, BNK0, 0x40, AnyAcc, NoLock, WriteAsOnes)
+                        {
+                            AccessAs (WordAcc, 0x00), 
+                                ,   3, 
+                            F038,   63
+                        }
+
+                        Local3 = RefOf (F038)
+                        Local4 = RefOf (G00B)
+                    }
+                    Case (0x40)
+                    {
+                        Local2 = 0x7F
+                        BankField (OPR0, BNK0, 0x7F, WordAcc, NoLock, WriteAsOnes)
+                        {
+                                ,   3, 
+                            F039,   64
+                        }
+
+                        Local3 = RefOf (F039)
+                        Local4 = RefOf (G00C)
+                    }
+                    Case (0x41)
+                    {
+                        Local2 = 0x80
+                        BankField (OPR0, BNK0, 0x80, ByteAcc, NoLock, WriteAsOnes)
+                        {
+                            AccessAs (WordAcc, 0x00), 
+                                ,   3, 
+                            F03A,   65
+                        }
+
+                        Local3 = RefOf (F03A)
+                        Local4 = RefOf (G00D)
+                    }
+                    Case (0x45)
+                    {
+                        Local2 = 0xFF
+                        BankField (OPR0, BNK0, 0xFF, WordAcc, NoLock, WriteAsOnes)
+                        {
+                                ,   3, 
+                            F03B,   69
+                        }
+
+                        Local3 = RefOf (F03B)
+                        Local4 = RefOf (G00E)
+                    }
+                    Case (0x81)
+                    {
+                        Local2 = 0x00
+                        BankField (OPR0, BNK0, 0x00, WordAcc, NoLock, WriteAsOnes)
+                        {
+                            AccessAs (WordAcc, 0x00), 
+                                ,   3, 
+                            F03C,   129
+                        }
+
+                        Local3 = RefOf (F03C)
+                        Local4 = RefOf (G000)
+                    }
+                    Case (0x0100)
+                    {
+                        Local2 = 0x01
+                        BankField (OPR0, BNK0, 0x01, WordAcc, NoLock, WriteAsOnes)
+                        {
+                                ,   3, 
+                            F03D,   256
+                        }
+
+                        Local3 = RefOf (F03D)
+                        Local4 = RefOf (G001)
+                    }
+                    Case (0x03FF)
+                    {
+                        Local2 = 0x02
+                        BankField (OPR0, BNK0, 0x02, DWordAcc, NoLock, WriteAsOnes)
+                        {
+                            AccessAs (WordAcc, 0x00), 
+                                ,   3, 
+                            F03E,   1023
+                        }
+
+                        Local3 = RefOf (F03E)
+                        Local4 = RefOf (G002)
+                    }
+                    Case (0x07BF)
+                    {
+                        Local2 = 0x03
+                        BankField (OPR0, BNK0, 0x03, WordAcc, NoLock, WriteAsOnes)
+                        {
+                                ,   3, 
+                            F03F,   1983
+                        }
+
+                        Local3 = RefOf (F03F)
+                        Local4 = RefOf (G003)
+                    }
+                    Default
+                    {
+                        ERR (Arg0, Z145, 0x0B5B, 0x00, 0x00, Arg2, Arg3)
+                        Return (Zero)
+                    }
+
+                }
+            }
+            Case (0x04)
+            {
+                Switch (ToInteger (Arg3))
+                {
+                    Case (0x01)
+                    {
+                        Local2 = 0x04
+                        BankField (OPR0, BNK0, 0x04, WordAcc, NoLock, WriteAsOnes)
+                        {
+                                ,   4, 
+                            F040,   1
+                        }
+
+                        Local3 = RefOf (F040)
+                        Local4 = RefOf (G004)
+                    }
+                    Case (0x06)
+                    {
+                        Local2 = 0x05
+                        BankField (OPR0, BNK0, 0x05, QWordAcc, NoLock, WriteAsOnes)
+                        {
+                            AccessAs (WordAcc, 0x00), 
+                                ,   4, 
+                            F041,   6
+                        }
+
+                        Local3 = RefOf (F041)
+                        Local4 = RefOf (G005)
+                    }
+                    Case (0x07)
+                    {
+                        Local2 = 0x06
+                        BankField (OPR0, BNK0, 0x06, WordAcc, NoLock, WriteAsOnes)
+                        {
+                                ,   4, 
+                            F042,   7
+                        }
+
+                        Local3 = RefOf (F042)
+                        Local4 = RefOf (G006)
+                    }
+                    Case (0x08)
+                    {
+                        Local2 = 0x07
+                        BankField (OPR0, BNK0, 0x07, AnyAcc, NoLock, WriteAsOnes)
+                        {
+                            AccessAs (WordAcc, 0x00), 
+                                ,   4, 
+                            F043,   8
+                        }
+
+                        Local3 = RefOf (F043)
+                        Local4 = RefOf (G007)
+                    }
+                    Case (0x09)
+                    {
+                        Local2 = 0x08
+                        BankField (OPR0, BNK0, 0x08, WordAcc, NoLock, WriteAsOnes)
+                        {
+                                ,   4, 
+                            F044,   9
+                        }
+
+                        Local3 = RefOf (F044)
+                        Local4 = RefOf (G008)
+                    }
+                    Case (0x1F)
+                    {
+                        Local2 = 0x09
+                        BankField (OPR0, BNK0, 0x09, ByteAcc, NoLock, WriteAsOnes)
+                        {
+                            AccessAs (WordAcc, 0x00), 
+                                ,   4, 
+                            F045,   31
+                        }
+
+                        Local3 = RefOf (F045)
+                        Local4 = RefOf (G009)
+                    }
+                    Case (0x20)
+                    {
+                        Local2 = 0x3F
+                        BankField (OPR0, BNK0, 0x3F, WordAcc, NoLock, WriteAsOnes)
+                        {
+                                ,   4, 
+                            F046,   32
+                        }
+
+                        Local3 = RefOf (F046)
+                        Local4 = RefOf (G00A)
+                    }
+                    Case (0x21)
+                    {
+                        Local2 = 0x40
+                        BankField (OPR0, BNK0, 0x40, WordAcc, NoLock, WriteAsOnes)
+                        {
+                            AccessAs (WordAcc, 0x00), 
+                                ,   4, 
+                            F047,   33
+                        }
+
+                        Local3 = RefOf (F047)
+                        Local4 = RefOf (G00B)
+                    }
+                    Case (0x3F)
+                    {
+                        Local2 = 0x7F
+                        BankField (OPR0, BNK0, 0x7F, WordAcc, NoLock, WriteAsOnes)
+                        {
+                                ,   4, 
+                            F048,   63
+                        }
+
+                        Local3 = RefOf (F048)
+                        Local4 = RefOf (G00C)
+                    }
+                    Case (0x40)
+                    {
+                        Local2 = 0x80
+                        BankField (OPR0, BNK0, 0x80, DWordAcc, NoLock, WriteAsOnes)
+                        {
+                            AccessAs (WordAcc, 0x00), 
+                                ,   4, 
+                            F049,   64
+                        }
+
+                        Local3 = RefOf (F049)
+                        Local4 = RefOf (G00D)
+                    }
+                    Case (0x41)
+                    {
+                        Local2 = 0xFF
+                        BankField (OPR0, BNK0, 0xFF, WordAcc, NoLock, WriteAsOnes)
+                        {
+                                ,   4, 
+                            F04A,   65
+                        }
+
+                        Local3 = RefOf (F04A)
+                        Local4 = RefOf (G00E)
+                    }
+                    Case (0x45)
+                    {
+                        Local2 = 0x00
+                        BankField (OPR0, BNK0, 0x00, QWordAcc, NoLock, WriteAsOnes)
+                        {
+                            AccessAs (WordAcc, 0x00), 
+                                ,   4, 
+                            F04B,   69
+                        }
+
+                        Local3 = RefOf (F04B)
+                        Local4 = RefOf (G000)
+                    }
+                    Case (0x81)
+                    {
+                        Local2 = 0x01
+                        BankField (OPR0, BNK0, 0x01, WordAcc, NoLock, WriteAsOnes)
+                        {
+                                ,   4, 
+                            F04C,   129
+                        }
+
+                        Local3 = RefOf (F04C)
+                        Local4 = RefOf (G001)
+                    }
+                    Case (0x0100)
+                    {
+                        Local2 = 0x02
+                        BankField (OPR0, BNK0, 0x02, AnyAcc, NoLock, WriteAsOnes)
+                        {
+                            AccessAs (WordAcc, 0x00), 
+                                ,   4, 
+                            F04D,   256
+                        }
+
+                        Local3 = RefOf (F04D)
+                        Local4 = RefOf (G002)
+                    }
+                    Case (0x03FF)
+                    {
+                        Local2 = 0x03
+                        BankField (OPR0, BNK0, 0x03, WordAcc, NoLock, WriteAsOnes)
+                        {
+                                ,   4, 
+                            F04E,   1023
+                        }
+
+                        Local3 = RefOf (F04E)
+                        Local4 = RefOf (G003)
+                    }
+                    Case (0x07BF)
+                    {
+                        Local2 = 0x04
+                        BankField (OPR0, BNK0, 0x04, ByteAcc, NoLock, WriteAsOnes)
+                        {
+                            AccessAs (WordAcc, 0x00), 
+                                ,   4, 
+                            F04F,   1983
+                        }
+
+                        Local3 = RefOf (F04F)
+                        Local4 = RefOf (G004)
+                    }
+                    Default
+                    {
+                        ERR (Arg0, Z145, 0x0BDB, 0x00, 0x00, Arg2, Arg3)
+                        Return (Zero)
+                    }
+
+                }
+            }
+            Case (0x05)
+            {
+                Switch (ToInteger (Arg3))
+                {
+                    Case (0x01)
+                    {
+                        Local2 = 0x05
+                        BankField (OPR0, BNK0, 0x05, WordAcc, NoLock, WriteAsOnes)
+                        {
+                            AccessAs (WordAcc, 0x00), 
+                                ,   5, 
+                            F050,   1
+                        }
+
+                        Local3 = RefOf (F050)
+                        Local4 = RefOf (G005)
+                    }
+                    Case (0x06)
+                    {
+                        Local2 = 0x06
+                        BankField (OPR0, BNK0, 0x06, WordAcc, NoLock, WriteAsOnes)
+                        {
+                                ,   5, 
+                            F051,   6
+                        }
+
+                        Local3 = RefOf (F051)
+                        Local4 = RefOf (G006)
+                    }
+                    Case (0x07)
+                    {
+                        Local2 = 0x07
+                        BankField (OPR0, BNK0, 0x07, DWordAcc, NoLock, WriteAsOnes)
+                        {
+                            AccessAs (WordAcc, 0x00), 
+                                ,   5, 
+                            F052,   7
+                        }
+
+                        Local3 = RefOf (F052)
+                        Local4 = RefOf (G007)
+                    }
+                    Case (0x08)
+                    {
+                        Local2 = 0x08
+                        BankField (OPR0, BNK0, 0x08, WordAcc, NoLock, WriteAsOnes)
+                        {
+                                ,   5, 
+                            F053,   8
+                        }
+
+                        Local3 = RefOf (F053)
+                        Local4 = RefOf (G008)
+                    }
+                    Case (0x09)
+                    {
+                        Local2 = 0x09
+                        BankField (OPR0, BNK0, 0x09, QWordAcc, NoLock, WriteAsOnes)
+                        {
+                            AccessAs (WordAcc, 0x00), 
+                                ,   5, 
+                            F054,   9
+                        }
+
+                        Local3 = RefOf (F054)
+                        Local4 = RefOf (G009)
+                    }
+                    Case (0x1F)
+                    {
+                        Local2 = 0x3F
+                        BankField (OPR0, BNK0, 0x3F, WordAcc, NoLock, WriteAsOnes)
+                        {
+                                ,   5, 
+                            F055,   31
+                        }
+
+                        Local3 = RefOf (F055)
+                        Local4 = RefOf (G00A)
+                    }
+                    Case (0x20)
+                    {
+                        Local2 = 0x40
+                        BankField (OPR0, BNK0, 0x40, AnyAcc, NoLock, WriteAsOnes)
+                        {
+                            AccessAs (WordAcc, 0x00), 
+                                ,   5, 
+                            F056,   32
+                        }
+
+                        Local3 = RefOf (F056)
+                        Local4 = RefOf (G00B)
+                    }
+                    Case (0x21)
+                    {
+                        Local2 = 0x7F
+                        BankField (OPR0, BNK0, 0x7F, WordAcc, NoLock, WriteAsOnes)
+                        {
+                                ,   5, 
+                            F057,   33
+                        }
+
+                        Local3 = RefOf (F057)
+                        Local4 = RefOf (G00C)
+                    }
+                    Case (0x3F)
+                    {
+                        Local2 = 0x80
+                        BankField (OPR0, BNK0, 0x80, ByteAcc, NoLock, WriteAsOnes)
+                        {
+                            AccessAs (WordAcc, 0x00), 
+                                ,   5, 
+                            F058,   63
+                        }
+
+                        Local3 = RefOf (F058)
+                        Local4 = RefOf (G00D)
+                    }
+                    Case (0x40)
+                    {
+                        Local2 = 0xFF
+                        BankField (OPR0, BNK0, 0xFF, WordAcc, NoLock, WriteAsOnes)
+                        {
+                                ,   5, 
+                            F059,   64
+                        }
+
+                        Local3 = RefOf (F059)
+                        Local4 = RefOf (G00E)
+                    }
+                    Case (0x41)
+                    {
+                        Local2 = 0x00
+                        BankField (OPR0, BNK0, 0x00, WordAcc, NoLock, WriteAsOnes)
+                        {
+                            AccessAs (WordAcc, 0x00), 
+                                ,   5, 
+                            F05A,   65
+                        }
+
+                        Local3 = RefOf (F05A)
+                        Local4 = RefOf (G000)
+                    }
+                    Case (0x45)
+                    {
+                        Local2 = 0x01
+                        BankField (OPR0, BNK0, 0x01, WordAcc, NoLock, WriteAsOnes)
+                        {
+                                ,   5, 
+                            F05B,   69
+                        }
+
+                        Local3 = RefOf (F05B)
+                        Local4 = RefOf (G001)
+                    }
+                    Case (0x81)
+                    {
+                        Local2 = 0x02
+                        BankField (OPR0, BNK0, 0x02, DWordAcc, NoLock, WriteAsOnes)
+                        {
+                            AccessAs (WordAcc, 0x00), 
+                                ,   5, 
+                            F05C,   129
+                        }
+
+                        Local3 = RefOf (F05C)
+                        Local4 = RefOf (G002)
+                    }
+                    Case (0x0100)
+                    {
+                        Local2 = 0x03
+                        BankField (OPR0, BNK0, 0x03, WordAcc, NoLock, WriteAsOnes)
+                        {
+                                ,   5, 
+                            F05D,   256
+                        }
+
+                        Local3 = RefOf (F05D)
+                        Local4 = RefOf (G003)
+                    }
+                    Case (0x03FF)
+                    {
+                        Local2 = 0x04
+                        BankField (OPR0, BNK0, 0x04, QWordAcc, NoLock, WriteAsOnes)
+                        {
+                            AccessAs (WordAcc, 0x00), 
+                                ,   5, 
+                            F05E,   1023
+                        }
+
+                        Local3 = RefOf (F05E)
+                        Local4 = RefOf (G004)
+                    }
+                    Case (0x07BF)
+                    {
+                        Local2 = 0x05
+                        BankField (OPR0, BNK0, 0x05, WordAcc, NoLock, WriteAsOnes)
+                        {
+                                ,   5, 
+                            F05F,   1983
+                        }
+
+                        Local3 = RefOf (F05F)
+                        Local4 = RefOf (G005)
+                    }
+                    Default
+                    {
+                        ERR (Arg0, Z145, 0x0C5B, 0x00, 0x00, Arg2, Arg3)
+                        Return (Zero)
+                    }
+
+                }
+            }
+            Case (0x06)
+            {
+                Switch (ToInteger (Arg3))
+                {
+                    Case (0x01)
+                    {
+                        Local2 = 0x06
+                        BankField (OPR0, BNK0, 0x06, WordAcc, NoLock, WriteAsOnes)
+                        {
+                                ,   6, 
+                            F060,   1
+                        }
+
+                        Local3 = RefOf (F060)
+                        Local4 = RefOf (G006)
+                    }
+                    Case (0x06)
+                    {
+                        Local2 = 0x07
+                        BankField (OPR0, BNK0, 0x07, AnyAcc, NoLock, WriteAsOnes)
+                        {
+                            AccessAs (WordAcc, 0x00), 
+                                ,   6, 
+                            F061,   6
+                        }
+
+                        Local3 = RefOf (F061)
+                        Local4 = RefOf (G007)
+                    }
+                    Case (0x07)
+                    {
+                        Local2 = 0x08
+                        BankField (OPR0, BNK0, 0x08, WordAcc, NoLock, WriteAsOnes)
+                        {
+                                ,   6, 
+                            F062,   7
+                        }
+
+                        Local3 = RefOf (F062)
+                        Local4 = RefOf (G008)
+                    }
+                    Case (0x08)
+                    {
+                        Local2 = 0x09
+                        BankField (OPR0, BNK0, 0x09, ByteAcc, NoLock, WriteAsOnes)
+                        {
+                            AccessAs (WordAcc, 0x00), 
+                                ,   6, 
+                            F063,   8
+                        }
+
+                        Local3 = RefOf (F063)
+                        Local4 = RefOf (G009)
+                    }
+                    Case (0x09)
+                    {
+                        Local2 = 0x3F
+                        BankField (OPR0, BNK0, 0x3F, WordAcc, NoLock, WriteAsOnes)
+                        {
+                                ,   6, 
+                            F064,   9
+                        }
+
+                        Local3 = RefOf (F064)
+                        Local4 = RefOf (G00A)
+                    }
+                    Case (0x1F)
+                    {
+                        Local2 = 0x40
+                        BankField (OPR0, BNK0, 0x40, WordAcc, NoLock, WriteAsOnes)
+                        {
+                            AccessAs (WordAcc, 0x00), 
+                                ,   6, 
+                            F065,   31
+                        }
+
+                        Local3 = RefOf (F065)
+                        Local4 = RefOf (G00B)
+                    }
+                    Case (0x20)
+                    {
+                        Local2 = 0x7F
+                        BankField (OPR0, BNK0, 0x7F, WordAcc, NoLock, WriteAsOnes)
+                        {
+                                ,   6, 
+                            F066,   32
+                        }
+
+                        Local3 = RefOf (F066)
+                        Local4 = RefOf (G00C)
+                    }
+                    Case (0x21)
+                    {
+                        Local2 = 0x80
+                        BankField (OPR0, BNK0, 0x80, DWordAcc, NoLock, WriteAsOnes)
+                        {
+                            AccessAs (WordAcc, 0x00), 
+                                ,   6, 
+                            F067,   33
+                        }
+
+                        Local3 = RefOf (F067)
+                        Local4 = RefOf (G00D)
+                    }
+                    Case (0x3F)
+                    {
+                        Local2 = 0xFF
+                        BankField (OPR0, BNK0, 0xFF, WordAcc, NoLock, WriteAsOnes)
+                        {
+                                ,   6, 
+                            F068,   63
+                        }
+
+                        Local3 = RefOf (F068)
+                        Local4 = RefOf (G00E)
+                    }
+                    Case (0x40)
+                    {
+                        Local2 = 0x00
+                        BankField (OPR0, BNK0, 0x00, QWordAcc, NoLock, WriteAsOnes)
+                        {
+                            AccessAs (WordAcc, 0x00), 
+                                ,   6, 
+                            F069,   64
+                        }
+
+                        Local3 = RefOf (F069)
+                        Local4 = RefOf (G000)
+                    }
+                    Case (0x41)
+                    {
+                        Local2 = 0x01
+                        BankField (OPR0, BNK0, 0x01, WordAcc, NoLock, WriteAsOnes)
+                        {
+                                ,   6, 
+                            F06A,   65
+                        }
+
+                        Local3 = RefOf (F06A)
+                        Local4 = RefOf (G001)
+                    }
+                    Case (0x45)
+                    {
+                        Local2 = 0x02
+                        BankField (OPR0, BNK0, 0x02, AnyAcc, NoLock, WriteAsOnes)
+                        {
+                            AccessAs (WordAcc, 0x00), 
+                                ,   6, 
+                            F06B,   69
+                        }
+
+                        Local3 = RefOf (F06B)
+                        Local4 = RefOf (G002)
+                    }
+                    Case (0x81)
+                    {
+                        Local2 = 0x03
+                        BankField (OPR0, BNK0, 0x03, WordAcc, NoLock, WriteAsOnes)
+                        {
+                                ,   6, 
+                            F06C,   129
+                        }
+
+                        Local3 = RefOf (F06C)
+                        Local4 = RefOf (G003)
+                    }
+                    Case (0x0100)
+                    {
+                        Local2 = 0x04
+                        BankField (OPR0, BNK0, 0x04, ByteAcc, NoLock, WriteAsOnes)
+                        {
+                            AccessAs (WordAcc, 0x00), 
+                                ,   6, 
+                            F06D,   256
+                        }
+
+                        Local3 = RefOf (F06D)
+                        Local4 = RefOf (G004)
+                    }
+                    Case (0x03FF)
+                    {
+                        Local2 = 0x05
+                        BankField (OPR0, BNK0, 0x05, WordAcc, NoLock, WriteAsOnes)
+                        {
+                                ,   6, 
+                            F06E,   1023
+                        }
+
+                        Local3 = RefOf (F06E)
+                        Local4 = RefOf (G005)
+                    }
+                    Case (0x07BF)
+                    {
+                        Local2 = 0x06
+                        BankField (OPR0, BNK0, 0x06, WordAcc, NoLock, WriteAsOnes)
+                        {
+                            AccessAs (WordAcc, 0x00), 
+                                ,   6, 
+                            F06F,   1983
+                        }
+
+                        Local3 = RefOf (F06F)
+                        Local4 = RefOf (G006)
+                    }
+                    Default
+                    {
+                        ERR (Arg0, Z145, 0x0CDB, 0x00, 0x00, Arg2, Arg3)
+                        Return (Zero)
+                    }
+
+                }
+            }
+            Case (0x07)
+            {
+                Switch (ToInteger (Arg3))
+                {
+                    Case (0x01)
+                    {
+                        Local2 = 0x07
+                        BankField (OPR0, BNK0, 0x07, DWordAcc, NoLock, WriteAsOnes)
+                        {
+                            AccessAs (WordAcc, 0x00), 
+                                ,   7, 
+                            F070,   1
+                        }
+
+                        Local3 = RefOf (F070)
+                        Local4 = RefOf (G007)
+                    }
+                    Case (0x06)
+                    {
+                        Local2 = 0x08
+                        BankField (OPR0, BNK0, 0x08, WordAcc, NoLock, WriteAsOnes)
+                        {
+                                ,   7, 
+                            F071,   6
+                        }
+
+                        Local3 = RefOf (F071)
+                        Local4 = RefOf (G008)
+                    }
+                    Case (0x07)
+                    {
+                        Local2 = 0x09
+                        BankField (OPR0, BNK0, 0x09, QWordAcc, NoLock, WriteAsOnes)
+                        {
+                            AccessAs (WordAcc, 0x00), 
+                                ,   7, 
+                            F072,   7
+                        }
+
+                        Local3 = RefOf (F072)
+                        Local4 = RefOf (G009)
+                    }
+                    Case (0x08)
+                    {
+                        Local2 = 0x3F
+                        BankField (OPR0, BNK0, 0x3F, WordAcc, NoLock, WriteAsOnes)
+                        {
+                                ,   7, 
+                            F073,   8
+                        }
+
+                        Local3 = RefOf (F073)
+                        Local4 = RefOf (G00A)
+                    }
+                    Case (0x09)
+                    {
+                        Local2 = 0x40
+                        BankField (OPR0, BNK0, 0x40, AnyAcc, NoLock, WriteAsOnes)
+                        {
+                            AccessAs (WordAcc, 0x00), 
+                                ,   7, 
+                            F074,   9
+                        }
+
+                        Local3 = RefOf (F074)
+                        Local4 = RefOf (G00B)
+                    }
+                    Case (0x1F)
+                    {
+                        Local2 = 0x7F
+                        BankField (OPR0, BNK0, 0x7F, WordAcc, NoLock, WriteAsOnes)
+                        {
+                                ,   7, 
+                            F075,   31
+                        }
+
+                        Local3 = RefOf (F075)
+                        Local4 = RefOf (G00C)
+                    }
+                    Case (0x20)
+                    {
+                        Local2 = 0x80
+                        BankField (OPR0, BNK0, 0x80, ByteAcc, NoLock, WriteAsOnes)
+                        {
+                            AccessAs (WordAcc, 0x00), 
+                                ,   7, 
+                            F076,   32
+                        }
+
+                        Local3 = RefOf (F076)
+                        Local4 = RefOf (G00D)
+                    }
+                    Case (0x21)
+                    {
+                        Local2 = 0xFF
+                        BankField (OPR0, BNK0, 0xFF, WordAcc, NoLock, WriteAsOnes)
+                        {
+                                ,   7, 
+                            F077,   33
+                        }
+
+                        Local3 = RefOf (F077)
+                        Local4 = RefOf (G00E)
+                    }
+                    Case (0x3F)
+                    {
+                        Local2 = 0x00
+                        BankField (OPR0, BNK0, 0x00, WordAcc, NoLock, WriteAsOnes)
+                        {
+                            AccessAs (WordAcc, 0x00), 
+                                ,   7, 
+                            F078,   63
+                        }
+
+                        Local3 = RefOf (F078)
+                        Local4 = RefOf (G000)
+                    }
+                    Case (0x40)
+                    {
+                        Local2 = 0x01
+                        BankField (OPR0, BNK0, 0x01, WordAcc, NoLock, WriteAsOnes)
+                        {
+                                ,   7, 
+                            F079,   64
+                        }
+
+                        Local3 = RefOf (F079)
+                        Local4 = RefOf (G001)
+                    }
+                    Case (0x41)
+                    {
+                        Local2 = 0x02
+                        BankField (OPR0, BNK0, 0x02, DWordAcc, NoLock, WriteAsOnes)
+                        {
+                            AccessAs (WordAcc, 0x00), 
+                                ,   7, 
+                            F07A,   65
+                        }
+
+                        Local3 = RefOf (F07A)
+                        Local4 = RefOf (G002)
+                    }
+                    Case (0x45)
+                    {
+                        Local2 = 0x03
+                        BankField (OPR0, BNK0, 0x03, WordAcc, NoLock, WriteAsOnes)
+                        {
+                                ,   7, 
+                            F07B,   69
+                        }
+
+                        Local3 = RefOf (F07B)
+                        Local4 = RefOf (G003)
+                    }
+                    Case (0x81)
+                    {
+                        Local2 = 0x04
+                        BankField (OPR0, BNK0, 0x04, QWordAcc, NoLock, WriteAsOnes)
+                        {
+                            AccessAs (WordAcc, 0x00), 
+                                ,   7, 
+                            F07C,   129
+                        }
+
+                        Local3 = RefOf (F07C)
+                        Local4 = RefOf (G004)
+                    }
+                    Case (0x0100)
+                    {
+                        Local2 = 0x05
+                        BankField (OPR0, BNK0, 0x05, WordAcc, NoLock, WriteAsOnes)
+                        {
+                                ,   7, 
+                            F07D,   256
+                        }
+
+                        Local3 = RefOf (F07D)
+                        Local4 = RefOf (G005)
+                    }
+                    Case (0x03FF)
+                    {
+                        Local2 = 0x06
+                        BankField (OPR0, BNK0, 0x06, AnyAcc, NoLock, WriteAsOnes)
+                        {
+                            AccessAs (WordAcc, 0x00), 
+                                ,   7, 
+                            F07E,   1023
+                        }
+
+                        Local3 = RefOf (F07E)
+                        Local4 = RefOf (G006)
+                    }
+                    Case (0x07BF)
+                    {
+                        Local2 = 0x07
+                        BankField (OPR0, BNK0, 0x07, WordAcc, NoLock, WriteAsOnes)
+                        {
+                                ,   7, 
+                            F07F,   1983
+                        }
+
+                        Local3 = RefOf (F07F)
+                        Local4 = RefOf (G007)
+                    }
+                    Default
+                    {
+                        ERR (Arg0, Z145, 0x0D5B, 0x00, 0x00, Arg2, Arg3)
+                        Return (Zero)
+                    }
+
+                }
+            }
+            Case (0x08)
+            {
+                Switch (ToInteger (Arg3))
+                {
+                    Case (0x01)
+                    {
+                        Local2 = 0x08
+                        BankField (OPR0, BNK0, 0x08, WordAcc, NoLock, WriteAsOnes)
+                        {
+                            Offset (0x01), 
+                            F080,   1
+                        }
+
+                        Local3 = RefOf (F080)
+                        Local4 = RefOf (G008)
+                    }
+                    Case (0x06)
+                    {
+                        Local2 = 0x09
+                        BankField (OPR0, BNK0, 0x09, ByteAcc, NoLock, WriteAsOnes)
+                        {
+                            AccessAs (WordAcc, 0x00), 
+                            Offset (0x01), 
+                            F081,   6
+                        }
+
+                        Local3 = RefOf (F081)
+                        Local4 = RefOf (G009)
+                    }
+                    Case (0x07)
+                    {
+                        Local2 = 0x3F
+                        BankField (OPR0, BNK0, 0x3F, WordAcc, NoLock, WriteAsOnes)
+                        {
+                            Offset (0x01), 
+                            F082,   7
+                        }
+
+                        Local3 = RefOf (F082)
+                        Local4 = RefOf (G00A)
+                    }
+                    Case (0x08)
+                    {
+                        Local2 = 0x40
+                        BankField (OPR0, BNK0, 0x40, WordAcc, NoLock, WriteAsOnes)
+                        {
+                            AccessAs (WordAcc, 0x00), 
+                            Offset (0x01), 
+                            F083,   8
+                        }
+
+                        Local3 = RefOf (F083)
+                        Local4 = RefOf (G00B)
+                    }
+                    Case (0x09)
+                    {
+                        Local2 = 0x7F
+                        BankField (OPR0, BNK0, 0x7F, WordAcc, NoLock, WriteAsOnes)
+                        {
+                            Offset (0x01), 
+                            F084,   9
+                        }
+
+                        Local3 = RefOf (F084)
+                        Local4 = RefOf (G00C)
+                    }
+                    Case (0x1F)
+                    {
+                        Local2 = 0x80
+                        BankField (OPR0, BNK0, 0x80, DWordAcc, NoLock, WriteAsOnes)
+                        {
+                            AccessAs (WordAcc, 0x00), 
+                            Offset (0x01), 
+                            F085,   31
+                        }
+
+                        Local3 = RefOf (F085)
+                        Local4 = RefOf (G00D)
+                    }
+                    Case (0x20)
+                    {
+                        Local2 = 0xFF
+                        BankField (OPR0, BNK0, 0xFF, WordAcc, NoLock, WriteAsOnes)
+                        {
+                            Offset (0x01), 
+                            F086,   32
+                        }
+
+                        Local3 = RefOf (F086)
+                        Local4 = RefOf (G00E)
+                    }
+                    Case (0x21)
+                    {
+                        Local2 = 0x00
+                        BankField (OPR0, BNK0, 0x00, QWordAcc, NoLock, WriteAsOnes)
+                        {
+                            AccessAs (WordAcc, 0x00), 
+                            Offset (0x01), 
+                            F087,   33
+                        }
+
+                        Local3 = RefOf (F087)
+                        Local4 = RefOf (G000)
+                    }
+                    Case (0x3F)
+                    {
+                        Local2 = 0x01
+                        BankField (OPR0, BNK0, 0x01, WordAcc, NoLock, WriteAsOnes)
+                        {
+                            Offset (0x01), 
+                            F088,   63
+                        }
+
+                        Local3 = RefOf (F088)
+                        Local4 = RefOf (G001)
+                    }
+                    Case (0x40)
+                    {
+                        Local2 = 0x02
+                        BankField (OPR0, BNK0, 0x02, AnyAcc, NoLock, WriteAsOnes)
+                        {
+                            AccessAs (WordAcc, 0x00), 
+                            Offset (0x01), 
+                            F089,   64
+                        }
+
+                        Local3 = RefOf (F089)
+                        Local4 = RefOf (G002)
+                    }
+                    Case (0x41)
+                    {
+                        Local2 = 0x03
+                        BankField (OPR0, BNK0, 0x03, WordAcc, NoLock, WriteAsOnes)
+                        {
+                            Offset (0x01), 
+                            F08A,   65
+                        }
+
+                        Local3 = RefOf (F08A)
+                        Local4 = RefOf (G003)
+                    }
+                    Case (0x45)
+                    {
+                        Local2 = 0x04
+                        BankField (OPR0, BNK0, 0x04, ByteAcc, NoLock, WriteAsOnes)
+                        {
+                            AccessAs (WordAcc, 0x00), 
+                            Offset (0x01), 
+                            F08B,   69
+                        }
+
+                        Local3 = RefOf (F08B)
+                        Local4 = RefOf (G004)
+                    }
+                    Case (0x81)
+                    {
+                        Local2 = 0x05
+                        BankField (OPR0, BNK0, 0x05, WordAcc, NoLock, WriteAsOnes)
+                        {
+                            Offset (0x01), 
+                            F08C,   129
+                        }
+
+                        Local3 = RefOf (F08C)
+                        Local4 = RefOf (G005)
+                    }
+                    Case (0x0100)
+                    {
+                        Local2 = 0x06
+                        BankField (OPR0, BNK0, 0x06, WordAcc, NoLock, WriteAsOnes)
+                        {
+                            AccessAs (WordAcc, 0x00), 
+                            Offset (0x01), 
+                            F08D,   256
+                        }
+
+                        Local3 = RefOf (F08D)
+                        Local4 = RefOf (G006)
+                    }
+                    Case (0x03FF)
+                    {
+                        Local2 = 0x07
+                        BankField (OPR0, BNK0, 0x07, WordAcc, NoLock, WriteAsOnes)
+                        {
+                            Offset (0x01), 
+                            F08E,   1023
+                        }
+
+                        Local3 = RefOf (F08E)
+                        Local4 = RefOf (G007)
+                    }
+                    Case (0x07BF)
+                    {
+                        Local2 = 0x08
+                        BankField (OPR0, BNK0, 0x08, DWordAcc, NoLock, WriteAsOnes)
+                        {
+                            AccessAs (WordAcc, 0x00), 
+                            Offset (0x01), 
+                            F08F,   1983
+                        }
+
+                        Local3 = RefOf (F08F)
+                        Local4 = RefOf (G008)
+                    }
+                    Default
+                    {
+                        ERR (Arg0, Z145, 0x0DDB, 0x00, 0x00, Arg2, Arg3)
+                        Return (Zero)
+                    }
+
+                }
+            }
+            Case (0x09)
+            {
+                Switch (ToInteger (Arg3))
+                {
+                    Case (0x01)
+                    {
+                        Local2 = 0x09
+                        BankField (OPR0, BNK0, 0x09, QWordAcc, NoLock, WriteAsOnes)
+                        {
+                            AccessAs (WordAcc, 0x00), 
+                                ,   9, 
+                            F090,   1
+                        }
+
+                        Local3 = RefOf (F090)
+                        Local4 = RefOf (G009)
+                    }
+                    Case (0x06)
+                    {
+                        Local2 = 0x3F
+                        BankField (OPR0, BNK0, 0x3F, WordAcc, NoLock, WriteAsOnes)
+                        {
+                                ,   9, 
+                            F091,   6
+                        }
+
+                        Local3 = RefOf (F091)
+                        Local4 = RefOf (G00A)
+                    }
+                    Case (0x07)
+                    {
+                        Local2 = 0x40
+                        BankField (OPR0, BNK0, 0x40, AnyAcc, NoLock, WriteAsOnes)
+                        {
+                            AccessAs (WordAcc, 0x00), 
+                                ,   9, 
+                            F092,   7
+                        }
+
+                        Local3 = RefOf (F092)
+                        Local4 = RefOf (G00B)
+                    }
+                    Case (0x08)
+                    {
+                        Local2 = 0x7F
+                        BankField (OPR0, BNK0, 0x7F, WordAcc, NoLock, WriteAsOnes)
+                        {
+                                ,   9, 
+                            F093,   8
+                        }
+
+                        Local3 = RefOf (F093)
+                        Local4 = RefOf (G00C)
+                    }
+                    Case (0x09)
+                    {
+                        Local2 = 0x80
+                        BankField (OPR0, BNK0, 0x80, ByteAcc, NoLock, WriteAsOnes)
+                        {
+                            AccessAs (WordAcc, 0x00), 
+                                ,   9, 
+                            F094,   9
+                        }
+
+                        Local3 = RefOf (F094)
+                        Local4 = RefOf (G00D)
+                    }
+                    Case (0x1F)
+                    {
+                        Local2 = 0xFF
+                        BankField (OPR0, BNK0, 0xFF, WordAcc, NoLock, WriteAsOnes)
+                        {
+                                ,   9, 
+                            F095,   31
+                        }
+
+                        Local3 = RefOf (F095)
+                        Local4 = RefOf (G00E)
+                    }
+                    Case (0x20)
+                    {
+                        Local2 = 0x00
+                        BankField (OPR0, BNK0, 0x00, WordAcc, NoLock, WriteAsOnes)
+                        {
+                            AccessAs (WordAcc, 0x00), 
+                                ,   9, 
+                            F096,   32
+                        }
+
+                        Local3 = RefOf (F096)
+                        Local4 = RefOf (G000)
+                    }
+                    Case (0x21)
+                    {
+                        Local2 = 0x01
+                        BankField (OPR0, BNK0, 0x01, WordAcc, NoLock, WriteAsOnes)
+                        {
+                                ,   9, 
+                            F097,   33
+                        }
+
+                        Local3 = RefOf (F097)
+                        Local4 = RefOf (G001)
+                    }
+                    Case (0x3F)
+                    {
+                        Local2 = 0x02
+                        BankField (OPR0, BNK0, 0x02, DWordAcc, NoLock, WriteAsOnes)
+                        {
+                            AccessAs (WordAcc, 0x00), 
+                                ,   9, 
+                            F098,   63
+                        }
+
+                        Local3 = RefOf (F098)
+                        Local4 = RefOf (G002)
+                    }
+                    Case (0x40)
+                    {
+                        Local2 = 0x03
+                        BankField (OPR0, BNK0, 0x03, WordAcc, NoLock, WriteAsOnes)
+                        {
+                                ,   9, 
+                            F099,   64
+                        }
+
+                        Local3 = RefOf (F099)
+                        Local4 = RefOf (G003)
+                    }
+                    Case (0x41)
+                    {
+                        Local2 = 0x04
+                        BankField (OPR0, BNK0, 0x04, QWordAcc, NoLock, WriteAsOnes)
+                        {
+                            AccessAs (WordAcc, 0x00), 
+                                ,   9, 
+                            F09A,   65
+                        }
+
+                        Local3 = RefOf (F09A)
+                        Local4 = RefOf (G004)
+                    }
+                    Case (0x45)
+                    {
+                        Local2 = 0x05
+                        BankField (OPR0, BNK0, 0x05, WordAcc, NoLock, WriteAsOnes)
+                        {
+                                ,   9, 
+                            F09B,   69
+                        }
+
+                        Local3 = RefOf (F09B)
+                        Local4 = RefOf (G005)
+                    }
+                    Case (0x81)
+                    {
+                        Local2 = 0x06
+                        BankField (OPR0, BNK0, 0x06, AnyAcc, NoLock, WriteAsOnes)
+                        {
+                            AccessAs (WordAcc, 0x00), 
+                                ,   9, 
+                            F09C,   129
+                        }
+
+                        Local3 = RefOf (F09C)
+                        Local4 = RefOf (G006)
+                    }
+                    Case (0x0100)
+                    {
+                        Local2 = 0x07
+                        BankField (OPR0, BNK0, 0x07, WordAcc, NoLock, WriteAsOnes)
+                        {
+                                ,   9, 
+                            F09D,   256
+                        }
+
+                        Local3 = RefOf (F09D)
+                        Local4 = RefOf (G007)
+                    }
+                    Case (0x03FF)
+                    {
+                        Local2 = 0x08
+                        BankField (OPR0, BNK0, 0x08, ByteAcc, NoLock, WriteAsOnes)
+                        {
+                            AccessAs (WordAcc, 0x00), 
+                                ,   9, 
+                            F09E,   1023
+                        }
+
+                        Local3 = RefOf (F09E)
+                        Local4 = RefOf (G008)
+                    }
+                    Case (0x07BF)
+                    {
+                        Local2 = 0x09
+                        BankField (OPR0, BNK0, 0x09, WordAcc, NoLock, WriteAsOnes)
+                        {
+                                ,   9, 
+                            F09F,   1983
+                        }
+
+                        Local3 = RefOf (F09F)
+                        Local4 = RefOf (G009)
+                    }
+                    Default
+                    {
+                        ERR (Arg0, Z145, 0x0E5B, 0x00, 0x00, Arg2, Arg3)
+                        Return (Zero)
+                    }
+
+                }
+            }
+            Case (0x1F)
+            {
+                Switch (ToInteger (Arg3))
+                {
+                    Case (0x01)
+                    {
+                        Local2 = 0x3F
+                        BankField (OPR0, BNK0, 0x3F, WordAcc, NoLock, WriteAsOnes)
+                        {
+                            Offset (0x03), 
+                                ,   7, 
+                            F0A0,   1
+                        }
+
+                        Local3 = RefOf (F0A0)
+                        Local4 = RefOf (G00A)
+                    }
+                    Case (0x06)
+                    {
+                        Local2 = 0x40
+                        BankField (OPR0, BNK0, 0x40, WordAcc, NoLock, WriteAsOnes)
+                        {
+                            AccessAs (WordAcc, 0x00), 
+                            Offset (0x03), 
+                                ,   7, 
+                            F0A1,   6
+                        }
+
+                        Local3 = RefOf (F0A1)
+                        Local4 = RefOf (G00B)
+                    }
+                    Case (0x07)
+                    {
+                        Local2 = 0x7F
+                        BankField (OPR0, BNK0, 0x7F, WordAcc, NoLock, WriteAsOnes)
+                        {
+                            Offset (0x03), 
+                                ,   7, 
+                            F0A2,   7
+                        }
+
+                        Local3 = RefOf (F0A2)
+                        Local4 = RefOf (G00C)
+                    }
+                    Case (0x08)
+                    {
+                        Local2 = 0x80
+                        BankField (OPR0, BNK0, 0x80, DWordAcc, NoLock, WriteAsOnes)
+                        {
+                            AccessAs (WordAcc, 0x00), 
+                            Offset (0x03), 
+                                ,   7, 
+                            F0A3,   8
+                        }
+
+                        Local3 = RefOf (F0A3)
+                        Local4 = RefOf (G00D)
+                    }
+                    Case (0x09)
+                    {
+                        Local2 = 0xFF
+                        BankField (OPR0, BNK0, 0xFF, WordAcc, NoLock, WriteAsOnes)
+                        {
+                            Offset (0x03), 
+                                ,   7, 
+                            F0A4,   9
+                        }
+
+                        Local3 = RefOf (F0A4)
+                        Local4 = RefOf (G00E)
+                    }
+                    Case (0x1F)
+                    {
+                        Local2 = 0x00
+                        BankField (OPR0, BNK0, 0x00, QWordAcc, NoLock, WriteAsOnes)
+                        {
+                            AccessAs (WordAcc, 0x00), 
+                            Offset (0x03), 
+                                ,   7, 
+                            F0A5,   31
+                        }
+
+                        Local3 = RefOf (F0A5)
+                        Local4 = RefOf (G000)
+                    }
+                    Case (0x20)
+                    {
+                        Local2 = 0x01
+                        BankField (OPR0, BNK0, 0x01, WordAcc, NoLock, WriteAsOnes)
+                        {
+                            Offset (0x03), 
+                                ,   7, 
+                            F0A6,   32
+                        }
+
+                        Local3 = RefOf (F0A6)
+                        Local4 = RefOf (G001)
+                    }
+                    Case (0x21)
+                    {
+                        Local2 = 0x02
+                        BankField (OPR0, BNK0, 0x02, AnyAcc, NoLock, WriteAsOnes)
+                        {
+                            AccessAs (WordAcc, 0x00), 
+                            Offset (0x03), 
+                                ,   7, 
+                            F0A7,   33
+                        }
+
+                        Local3 = RefOf (F0A7)
+                        Local4 = RefOf (G002)
+                    }
+                    Case (0x3F)
+                    {
+                        Local2 = 0x03
+                        BankField (OPR0, BNK0, 0x03, WordAcc, NoLock, WriteAsOnes)
+                        {
+                            Offset (0x03), 
+                                ,   7, 
+                            F0A8,   63
+                        }
+
+                        Local3 = RefOf (F0A8)
+                        Local4 = RefOf (G003)
+                    }
+                    Case (0x40)
+                    {
+                        Local2 = 0x04
+                        BankField (OPR0, BNK0, 0x04, ByteAcc, NoLock, WriteAsOnes)
+                        {
+                            AccessAs (WordAcc, 0x00), 
+                            Offset (0x03), 
+                                ,   7, 
+                            F0A9,   64
+                        }
+
+                        Local3 = RefOf (F0A9)
+                        Local4 = RefOf (G004)
+                    }
+                    Case (0x41)
+                    {
+                        Local2 = 0x05
+                        BankField (OPR0, BNK0, 0x05, WordAcc, NoLock, WriteAsOnes)
+                        {
+                            Offset (0x03), 
+                                ,   7, 
+                            F0AA,   65
+                        }
+
+                        Local3 = RefOf (F0AA)
+                        Local4 = RefOf (G005)
+                    }
+                    Case (0x45)
+                    {
+                        Local2 = 0x06
+                        BankField (OPR0, BNK0, 0x06, WordAcc, NoLock, WriteAsOnes)
+                        {
+                            AccessAs (WordAcc, 0x00), 
+                            Offset (0x03), 
+                                ,   7, 
+                            F0AB,   69
+                        }
+
+                        Local3 = RefOf (F0AB)
+                        Local4 = RefOf (G006)
+                    }
+                    Case (0x81)
+                    {
+                        Local2 = 0x07
+                        BankField (OPR0, BNK0, 0x07, WordAcc, NoLock, WriteAsOnes)
+                        {
+                            Offset (0x03), 
+                                ,   7, 
+                            F0AC,   129
+                        }
+
+                        Local3 = RefOf (F0AC)
+                        Local4 = RefOf (G007)
+                    }
+                    Case (0x0100)
+                    {
+                        Local2 = 0x08
+                        BankField (OPR0, BNK0, 0x08, DWordAcc, NoLock, WriteAsOnes)
+                        {
+                            AccessAs (WordAcc, 0x00), 
+                            Offset (0x03), 
+                                ,   7, 
+                            F0AD,   256
+                        }
+
+                        Local3 = RefOf (F0AD)
+                        Local4 = RefOf (G008)
+                    }
+                    Case (0x03FF)
+                    {
+                        Local2 = 0x09
+                        BankField (OPR0, BNK0, 0x09, WordAcc, NoLock, WriteAsOnes)
+                        {
+                            Offset (0x03), 
+                                ,   7, 
+                            F0AE,   1023
+                        }
+
+                        Local3 = RefOf (F0AE)
+                        Local4 = RefOf (G009)
+                    }
+                    Case (0x07BF)
+                    {
+                        Local2 = 0x3F
+                        BankField (OPR0, BNK0, 0x3F, QWordAcc, NoLock, WriteAsOnes)
+                        {
+                            AccessAs (WordAcc, 0x00), 
+                            Offset (0x03), 
+                                ,   7, 
+                            F0AF,   1983
+                        }
+
+                        Local3 = RefOf (F0AF)
+                        Local4 = RefOf (G00A)
+                    }
+                    Default
+                    {
+                        ERR (Arg0, Z145, 0x0EDB, 0x00, 0x00, Arg2, Arg3)
+                        Return (Zero)
+                    }
+
+                }
+            }
+            Case (0x20)
+            {
+                Switch (ToInteger (Arg3))
+                {
+                    Case (0x01)
+                    {
+                        Local2 = 0x40
+                        BankField (OPR0, BNK0, 0x40, AnyAcc, NoLock, WriteAsOnes)
+                        {
+                            AccessAs (WordAcc, 0x00), 
+                            Offset (0x04), 
+                            F0B0,   1
+                        }
+
+                        Local3 = RefOf (F0B0)
+                        Local4 = RefOf (G00B)
+                    }
+                    Case (0x06)
+                    {
+                        Local2 = 0x7F
+                        BankField (OPR0, BNK0, 0x7F, WordAcc, NoLock, WriteAsOnes)
+                        {
+                            Offset (0x04), 
+                            F0B1,   6
+                        }
+
+                        Local3 = RefOf (F0B1)
+                        Local4 = RefOf (G00C)
+                    }
+                    Case (0x07)
+                    {
+                        Local2 = 0x80
+                        BankField (OPR0, BNK0, 0x80, ByteAcc, NoLock, WriteAsOnes)
+                        {
+                            AccessAs (WordAcc, 0x00), 
+                            Offset (0x04), 
+                            F0B2,   7
+                        }
+
+                        Local3 = RefOf (F0B2)
+                        Local4 = RefOf (G00D)
+                    }
+                    Case (0x08)
+                    {
+                        Local2 = 0xFF
+                        BankField (OPR0, BNK0, 0xFF, WordAcc, NoLock, WriteAsOnes)
+                        {
+                            Offset (0x04), 
+                            F0B3,   8
+                        }
+
+                        Local3 = RefOf (F0B3)
+                        Local4 = RefOf (G00E)
+                    }
+                    Case (0x09)
+                    {
+                        Local2 = 0x00
+                        BankField (OPR0, BNK0, 0x00, WordAcc, NoLock, WriteAsOnes)
+                        {
+                            AccessAs (WordAcc, 0x00), 
+                            Offset (0x04), 
+                            F0B4,   9
+                        }
+
+                        Local3 = RefOf (F0B4)
+                        Local4 = RefOf (G000)
+                    }
+                    Case (0x1F)
+                    {
+                        Local2 = 0x01
+                        BankField (OPR0, BNK0, 0x01, WordAcc, NoLock, WriteAsOnes)
+                        {
+                            Offset (0x04), 
+                            F0B5,   31
+                        }
+
+                        Local3 = RefOf (F0B5)
+                        Local4 = RefOf (G001)
+                    }
+                    Case (0x20)
+                    {
+                        Local2 = 0x02
+                        BankField (OPR0, BNK0, 0x02, DWordAcc, NoLock, WriteAsOnes)
+                        {
+                            AccessAs (WordAcc, 0x00), 
+                            Offset (0x04), 
+                            F0B6,   32
+                        }
+
+                        Local3 = RefOf (F0B6)
+                        Local4 = RefOf (G002)
+                    }
+                    Case (0x21)
+                    {
+                        Local2 = 0x03
+                        BankField (OPR0, BNK0, 0x03, WordAcc, NoLock, WriteAsOnes)
+                        {
+                            Offset (0x04), 
+                            F0B7,   33
+                        }
+
+                        Local3 = RefOf (F0B7)
+                        Local4 = RefOf (G003)
+                    }
+                    Case (0x3F)
+                    {
+                        Local2 = 0x04
+                        BankField (OPR0, BNK0, 0x04, QWordAcc, NoLock, WriteAsOnes)
+                        {
+                            AccessAs (WordAcc, 0x00), 
+                            Offset (0x04), 
+                            F0B8,   63
+                        }
+
+                        Local3 = RefOf (F0B8)
+                        Local4 = RefOf (G004)
+                    }
+                    Case (0x40)
+                    {
+                        Local2 = 0x05
+                        BankField (OPR0, BNK0, 0x05, WordAcc, NoLock, WriteAsOnes)
+                        {
+                            Offset (0x04), 
+                            F0B9,   64
+                        }
+
+                        Local3 = RefOf (F0B9)
+                        Local4 = RefOf (G005)
+                    }
+                    Case (0x41)
+                    {
+                        Local2 = 0x06
+                        BankField (OPR0, BNK0, 0x06, AnyAcc, NoLock, WriteAsOnes)
+                        {
+                            AccessAs (WordAcc, 0x00), 
+                            Offset (0x04), 
+                            F0BA,   65
+                        }
+
+                        Local3 = RefOf (F0BA)
+                        Local4 = RefOf (G006)
+                    }
+                    Case (0x45)
+                    {
+                        Local2 = 0x07
+                        BankField (OPR0, BNK0, 0x07, WordAcc, NoLock, WriteAsOnes)
+                        {
+                            Offset (0x04), 
+                            F0BB,   69
+                        }
+
+                        Local3 = RefOf (F0BB)
+                        Local4 = RefOf (G007)
+                    }
+                    Case (0x81)
+                    {
+                        Local2 = 0x08
+                        BankField (OPR0, BNK0, 0x08, ByteAcc, NoLock, WriteAsOnes)
+                        {
+                            AccessAs (WordAcc, 0x00), 
+                            Offset (0x04), 
+                            F0BC,   129
+                        }
+
+                        Local3 = RefOf (F0BC)
+                        Local4 = RefOf (G008)
+                    }
+                    Case (0x0100)
+                    {
+                        Local2 = 0x09
+                        BankField (OPR0, BNK0, 0x09, WordAcc, NoLock, WriteAsOnes)
+                        {
+                            Offset (0x04), 
+                            F0BD,   256
+                        }
+
+                        Local3 = RefOf (F0BD)
+                        Local4 = RefOf (G009)
+                    }
+                    Case (0x03FF)
+                    {
+                        Local2 = 0x3F
+                        BankField (OPR0, BNK0, 0x3F, WordAcc, NoLock, WriteAsOnes)
+                        {
+                            AccessAs (WordAcc, 0x00), 
+                            Offset (0x04), 
+                            F0BE,   1023
+                        }
+
+                        Local3 = RefOf (F0BE)
+                        Local4 = RefOf (G00A)
+                    }
+                    Case (0x07BF)
+                    {
+                        Local2 = 0x40
+                        BankField (OPR0, BNK0, 0x40, WordAcc, NoLock, WriteAsOnes)
+                        {
+                            Offset (0x04), 
+                            F0BF,   1983
+                        }
+
+                        Local3 = RefOf (F0BF)
+                        Local4 = RefOf (G00B)
+                    }
+                    Default
+                    {
+                        ERR (Arg0, Z145, 0x0F5B, 0x00, 0x00, Arg2, Arg3)
+                        Return (Zero)
+                    }
+
+                }
+            }
+            Case (0x21)
+            {
+                Switch (ToInteger (Arg3))
+                {
+                    Case (0x01)
+                    {
+                        Local2 = 0x7F
+                        BankField (OPR0, BNK0, 0x7F, WordAcc, NoLock, WriteAsOnes)
+                        {
+                                ,   33, 
+                            F0C0,   1
+                        }
+
+                        Local3 = RefOf (F0C0)
+                        Local4 = RefOf (G00C)
+                    }
+                    Case (0x06)
+                    {
+                        Local2 = 0x80
+                        BankField (OPR0, BNK0, 0x80, DWordAcc, NoLock, WriteAsOnes)
+                        {
+                            AccessAs (WordAcc, 0x00), 
+                                ,   33, 
+                            F0C1,   6
+                        }
+
+                        Local3 = RefOf (F0C1)
+                        Local4 = RefOf (G00D)
+                    }
+                    Case (0x07)
+                    {
+                        Local2 = 0xFF
+                        BankField (OPR0, BNK0, 0xFF, WordAcc, NoLock, WriteAsOnes)
+                        {
+                                ,   33, 
+                            F0C2,   7
+                        }
+
+                        Local3 = RefOf (F0C2)
+                        Local4 = RefOf (G00E)
+                    }
+                    Case (0x08)
+                    {
+                        Local2 = 0x00
+                        BankField (OPR0, BNK0, 0x00, QWordAcc, NoLock, WriteAsOnes)
+                        {
+                            AccessAs (WordAcc, 0x00), 
+                                ,   33, 
+                            F0C3,   8
+                        }
+
+                        Local3 = RefOf (F0C3)
+                        Local4 = RefOf (G000)
+                    }
+                    Case (0x09)
+                    {
+                        Local2 = 0x01
+                        BankField (OPR0, BNK0, 0x01, WordAcc, NoLock, WriteAsOnes)
+                        {
+                                ,   33, 
+                            F0C4,   9
+                        }
+
+                        Local3 = RefOf (F0C4)
+                        Local4 = RefOf (G001)
+                    }
+                    Case (0x1F)
+                    {
+                        Local2 = 0x02
+                        BankField (OPR0, BNK0, 0x02, AnyAcc, NoLock, WriteAsOnes)
+                        {
+                            AccessAs (WordAcc, 0x00), 
+                                ,   33, 
+                            F0C5,   31
+                        }
+
+                        Local3 = RefOf (F0C5)
+                        Local4 = RefOf (G002)
+                    }
+                    Case (0x20)
+                    {
+                        Local2 = 0x03
+                        BankField (OPR0, BNK0, 0x03, WordAcc, NoLock, WriteAsOnes)
+                        {
+                                ,   33, 
+                            F0C6,   32
+                        }
+
+                        Local3 = RefOf (F0C6)
+                        Local4 = RefOf (G003)
+                    }
+                    Case (0x21)
+                    {
+                        Local2 = 0x04
+                        BankField (OPR0, BNK0, 0x04, ByteAcc, NoLock, WriteAsOnes)
+                        {
+                            AccessAs (WordAcc, 0x00), 
+                                ,   33, 
+                            F0C7,   33
+                        }
+
+                        Local3 = RefOf (F0C7)
+                        Local4 = RefOf (G004)
+                    }
+                    Case (0x3F)
+                    {
+                        Local2 = 0x05
+                        BankField (OPR0, BNK0, 0x05, WordAcc, NoLock, WriteAsOnes)
+                        {
+                                ,   33, 
+                            F0C8,   63
+                        }
+
+                        Local3 = RefOf (F0C8)
+                        Local4 = RefOf (G005)
+                    }
+                    Case (0x40)
+                    {
+                        Local2 = 0x06
+                        BankField (OPR0, BNK0, 0x06, WordAcc, NoLock, WriteAsOnes)
+                        {
+                            AccessAs (WordAcc, 0x00), 
+                                ,   33, 
+                            F0C9,   64
+                        }
+
+                        Local3 = RefOf (F0C9)
+                        Local4 = RefOf (G006)
+                    }
+                    Case (0x41)
+                    {
+                        Local2 = 0x07
+                        BankField (OPR0, BNK0, 0x07, WordAcc, NoLock, WriteAsOnes)
+                        {
+                                ,   33, 
+                            F0CA,   65
+                        }
+
+                        Local3 = RefOf (F0CA)
+                        Local4 = RefOf (G007)
+                    }
+                    Case (0x45)
+                    {
+                        Local2 = 0x08
+                        BankField (OPR0, BNK0, 0x08, DWordAcc, NoLock, WriteAsOnes)
+                        {
+                            AccessAs (WordAcc, 0x00), 
+                                ,   33, 
+                            F0CB,   69
+                        }
+
+                        Local3 = RefOf (F0CB)
+                        Local4 = RefOf (G008)
+                    }
+                    Case (0x81)
+                    {
+                        Local2 = 0x09
+                        BankField (OPR0, BNK0, 0x09, WordAcc, NoLock, WriteAsOnes)
+                        {
+                                ,   33, 
+                            F0CC,   129
+                        }
+
+                        Local3 = RefOf (F0CC)
+                        Local4 = RefOf (G009)
+                    }
+                    Case (0x0100)
+                    {
+                        Local2 = 0x3F
+                        BankField (OPR0, BNK0, 0x3F, QWordAcc, NoLock, WriteAsOnes)
+                        {
+                            AccessAs (WordAcc, 0x00), 
+                                ,   33, 
+                            F0CD,   256
+                        }
+
+                        Local3 = RefOf (F0CD)
+                        Local4 = RefOf (G00A)
+                    }
+                    Case (0x03FF)
+                    {
+                        Local2 = 0x40
+                        BankField (OPR0, BNK0, 0x40, WordAcc, NoLock, WriteAsOnes)
+                        {
+                                ,   33, 
+                            F0CE,   1023
+                        }
+
+                        Local3 = RefOf (F0CE)
+                        Local4 = RefOf (G00B)
+                    }
+                    Case (0x07BF)
+                    {
+                        Local2 = 0x7F
+                        BankField (OPR0, BNK0, 0x7F, AnyAcc, NoLock, WriteAsOnes)
+                        {
+                            AccessAs (WordAcc, 0x00), 
+                                ,   33, 
+                            F0CF,   1983
+                        }
+
+                        Local3 = RefOf (F0CF)
+                        Local4 = RefOf (G00C)
+                    }
+                    Default
+                    {
+                        ERR (Arg0, Z145, 0x0FDB, 0x00, 0x00, Arg2, Arg3)
+                        Return (Zero)
+                    }
+
+                }
+            }
+            Case (0x3F)
+            {
+                Switch (ToInteger (Arg3))
+                {
+                    Case (0x01)
+                    {
+                        Local2 = 0x80
+                        BankField (OPR0, BNK0, 0x80, WordAcc, NoLock, WriteAsOnes)
+                        {
+                            AccessAs (WordAcc, 0x00), 
+                                ,   63, 
+                            F0D0,   1
+                        }
+
+                        Local3 = RefOf (F0D0)
+                        Local4 = RefOf (G00D)
+                    }
+                    Case (0x06)
+                    {
+                        Local2 = 0xFF
+                        BankField (OPR0, BNK0, 0xFF, ByteAcc, NoLock, WriteAsOnes)
+                        {
+                                ,   63, 
+                            F0D1,   6
+                        }
+
+                        Local3 = RefOf (F0D1)
+                        Local4 = RefOf (G00E)
+                    }
+                    Case (0x07)
+                    {
+                        Local2 = 0x00
+                        BankField (OPR0, BNK0, 0x00, WordAcc, NoLock, WriteAsOnes)
+                        {
+                            AccessAs (WordAcc, 0x00), 
+                                ,   63, 
+                            F0D2,   7
+                        }
+
+                        Local3 = RefOf (F0D2)
+                        Local4 = RefOf (G000)
+                    }
+                    Case (0x08)
+                    {
+                        Local2 = 0x01
+                        BankField (OPR0, BNK0, 0x01, WordAcc, NoLock, WriteAsOnes)
+                        {
+                                ,   63, 
+                            F0D3,   8
+                        }
+
+                        Local3 = RefOf (F0D3)
+                        Local4 = RefOf (G001)
+                    }
+                    Case (0x09)
+                    {
+                        Local2 = 0x02
+                        BankField (OPR0, BNK0, 0x02, DWordAcc, NoLock, WriteAsOnes)
+                        {
+                            AccessAs (WordAcc, 0x00), 
+                                ,   63, 
+                            F0D4,   9
+                        }
+
+                        Local3 = RefOf (F0D4)
+                        Local4 = RefOf (G002)
+                    }
+                    Case (0x1F)
+                    {
+                        Local2 = 0x03
+                        BankField (OPR0, BNK0, 0x03, WordAcc, NoLock, WriteAsOnes)
+                        {
+                                ,   63, 
+                            F0D5,   31
+                        }
+
+                        Local3 = RefOf (F0D5)
+                        Local4 = RefOf (G003)
+                    }
+                    Case (0x20)
+                    {
+                        Local2 = 0x04
+                        BankField (OPR0, BNK0, 0x04, QWordAcc, NoLock, WriteAsOnes)
+                        {
+                            AccessAs (WordAcc, 0x00), 
+                                ,   63, 
+                            F0D6,   32
+                        }
+
+                        Local3 = RefOf (F0D6)
+                        Local4 = RefOf (G004)
+                    }
+                    Case (0x21)
+                    {
+                        Local2 = 0x05
+                        BankField (OPR0, BNK0, 0x05, WordAcc, NoLock, WriteAsOnes)
+                        {
+                                ,   63, 
+                            F0D7,   33
+                        }
+
+                        Local3 = RefOf (F0D7)
+                        Local4 = RefOf (G005)
+                    }
+                    Case (0x3F)
+                    {
+                        Local2 = 0x06
+                        BankField (OPR0, BNK0, 0x06, AnyAcc, NoLock, WriteAsOnes)
+                        {
+                            AccessAs (WordAcc, 0x00), 
+                                ,   63, 
+                            F0D8,   63
+                        }
+
+                        Local3 = RefOf (F0D8)
+                        Local4 = RefOf (G006)
+                    }
+                    Case (0x40)
+                    {
+                        Local2 = 0x07
+                        BankField (OPR0, BNK0, 0x07, WordAcc, NoLock, WriteAsOnes)
+                        {
+                                ,   63, 
+                            F0D9,   64
+                        }
+
+                        Local3 = RefOf (F0D9)
+                        Local4 = RefOf (G007)
+                    }
+                    Case (0x41)
+                    {
+                        Local2 = 0x08
+                        BankField (OPR0, BNK0, 0x08, ByteAcc, NoLock, WriteAsOnes)
+                        {
+                            AccessAs (WordAcc, 0x00), 
+                                ,   63, 
+                            F0DA,   65
+                        }
+
+                        Local3 = RefOf (F0DA)
+                        Local4 = RefOf (G008)
+                    }
+                    Case (0x45)
+                    {
+                        Local2 = 0x09
+                        BankField (OPR0, BNK0, 0x09, WordAcc, NoLock, WriteAsOnes)
+                        {
+                                ,   63, 
+                            F0DB,   69
+                        }
+
+                        Local3 = RefOf (F0DB)
+                        Local4 = RefOf (G009)
+                    }
+                    Case (0x81)
+                    {
+                        Local2 = 0x3F
+                        BankField (OPR0, BNK0, 0x3F, WordAcc, NoLock, WriteAsOnes)
+                        {
+                            AccessAs (WordAcc, 0x00), 
+                                ,   63, 
+                            F0DC,   129
+                        }
+
+                        Local3 = RefOf (F0DC)
+                        Local4 = RefOf (G00A)
+                    }
+                    Case (0x0100)
+                    {
+                        Local2 = 0x40
+                        BankField (OPR0, BNK0, 0x40, WordAcc, NoLock, WriteAsOnes)
+                        {
+                                ,   63, 
+                            F0DD,   256
+                        }
+
+                        Local3 = RefOf (F0DD)
+                        Local4 = RefOf (G00B)
+                    }
+                    Case (0x03FF)
+                    {
+                        Local2 = 0x7F
+                        BankField (OPR0, BNK0, 0x7F, DWordAcc, NoLock, WriteAsOnes)
+                        {
+                            AccessAs (WordAcc, 0x00), 
+                                ,   63, 
+                            F0DE,   1023
+                        }
+
+                        Local3 = RefOf (F0DE)
+                        Local4 = RefOf (G00C)
+                    }
+                    Case (0x07BF)
+                    {
+                        Local2 = 0x80
+                        BankField (OPR0, BNK0, 0x80, WordAcc, NoLock, WriteAsOnes)
+                        {
+                                ,   63, 
+                            F0DF,   1983
+                        }
+
+                        Local3 = RefOf (F0DF)
+                        Local4 = RefOf (G00D)
+                    }
+                    Default
+                    {
+                        ERR (Arg0, Z145, 0x105B, 0x00, 0x00, Arg2, Arg3)
+                        Return (Zero)
+                    }
+
+                }
+            }
+            Case (0x40)
+            {
+                Switch (ToInteger (Arg3))
+                {
+                    Case (0x01)
+                    {
+                        Local2 = 0xFF
+                        BankField (OPR0, BNK0, 0xFF, WordAcc, NoLock, WriteAsOnes)
+                        {
+                            Offset (0x08), 
+                            F0E0,   1
+                        }
+
+                        Local3 = RefOf (F0E0)
+                        Local4 = RefOf (G00E)
+                    }
+                    Case (0x06)
+                    {
+                        Local2 = 0x00
+                        BankField (OPR0, BNK0, 0x00, QWordAcc, NoLock, WriteAsOnes)
+                        {
+                            AccessAs (WordAcc, 0x00), 
+                            Offset (0x08), 
+                            F0E1,   6
+                        }
+
+                        Local3 = RefOf (F0E1)
+                        Local4 = RefOf (G000)
+                    }
+                    Case (0x07)
+                    {
+                        Local2 = 0x01
+                        BankField (OPR0, BNK0, 0x01, WordAcc, NoLock, WriteAsOnes)
+                        {
+                            Offset (0x08), 
+                            F0E2,   7
+                        }
+
+                        Local3 = RefOf (F0E2)
+                        Local4 = RefOf (G001)
+                    }
+                    Case (0x08)
+                    {
+                        Local2 = 0x02
+                        BankField (OPR0, BNK0, 0x02, AnyAcc, NoLock, WriteAsOnes)
+                        {
+                            AccessAs (WordAcc, 0x00), 
+                            Offset (0x08), 
+                            F0E3,   8
+                        }
+
+                        Local3 = RefOf (F0E3)
+                        Local4 = RefOf (G002)
+                    }
+                    Case (0x09)
+                    {
+                        Local2 = 0x03
+                        BankField (OPR0, BNK0, 0x03, WordAcc, NoLock, WriteAsOnes)
+                        {
+                            Offset (0x08), 
+                            F0E4,   9
+                        }
+
+                        Local3 = RefOf (F0E4)
+                        Local4 = RefOf (G003)
+                    }
+                    Case (0x1F)
+                    {
+                        Local2 = 0x04
+                        BankField (OPR0, BNK0, 0x04, ByteAcc, NoLock, WriteAsOnes)
+                        {
+                            AccessAs (WordAcc, 0x00), 
+                            Offset (0x08), 
+                            F0E5,   31
+                        }
+
+                        Local3 = RefOf (F0E5)
+                        Local4 = RefOf (G004)
+                    }
+                    Case (0x20)
+                    {
+                        Local2 = 0x05
+                        BankField (OPR0, BNK0, 0x05, WordAcc, NoLock, WriteAsOnes)
+                        {
+                            Offset (0x08), 
+                            F0E6,   32
+                        }
+
+                        Local3 = RefOf (F0E6)
+                        Local4 = RefOf (G005)
+                    }
+                    Case (0x21)
+                    {
+                        Local2 = 0x06
+                        BankField (OPR0, BNK0, 0x06, WordAcc, NoLock, WriteAsOnes)
+                        {
+                            AccessAs (WordAcc, 0x00), 
+                            Offset (0x08), 
+                            F0E7,   33
+                        }
+
+                        Local3 = RefOf (F0E7)
+                        Local4 = RefOf (G006)
+                    }
+                    Case (0x3F)
+                    {
+                        Local2 = 0x07
+                        BankField (OPR0, BNK0, 0x07, WordAcc, NoLock, WriteAsOnes)
+                        {
+                            Offset (0x08), 
+                            F0E8,   63
+                        }
+
+                        Local3 = RefOf (F0E8)
+                        Local4 = RefOf (G007)
+                    }
+                    Case (0x40)
+                    {
+                        Local2 = 0x08
+                        BankField (OPR0, BNK0, 0x08, DWordAcc, NoLock, WriteAsOnes)
+                        {
+                            AccessAs (WordAcc, 0x00), 
+                            Offset (0x08), 
+                            F0E9,   64
+                        }
+
+                        Local3 = RefOf (F0E9)
+                        Local4 = RefOf (G008)
+                    }
+                    Case (0x41)
+                    {
+                        Local2 = 0x09
+                        BankField (OPR0, BNK0, 0x09, WordAcc, NoLock, WriteAsOnes)
+                        {
+                            Offset (0x08), 
+                            F0EA,   65
+                        }
+
+                        Local3 = RefOf (F0EA)
+                        Local4 = RefOf (G009)
+                    }
+                    Case (0x45)
+                    {
+                        Local2 = 0x3F
+                        BankField (OPR0, BNK0, 0x3F, QWordAcc, NoLock, WriteAsOnes)
+                        {
+                            AccessAs (WordAcc, 0x00), 
+                            Offset (0x08), 
+                            F0EB,   69
+                        }
+
+                        Local3 = RefOf (F0EB)
+                        Local4 = RefOf (G00A)
+                    }
+                    Case (0x81)
+                    {
+                        Local2 = 0x40
+                        BankField (OPR0, BNK0, 0x40, WordAcc, NoLock, WriteAsOnes)
+                        {
+                            Offset (0x08), 
+                            F0EC,   129
+                        }
+
+                        Local3 = RefOf (F0EC)
+                        Local4 = RefOf (G00B)
+                    }
+                    Case (0x0100)
+                    {
+                        Local2 = 0x7F
+                        BankField (OPR0, BNK0, 0x7F, AnyAcc, NoLock, WriteAsOnes)
+                        {
+                            AccessAs (WordAcc, 0x00), 
+                            Offset (0x08), 
+                            F0ED,   256
+                        }
+
+                        Local3 = RefOf (F0ED)
+                        Local4 = RefOf (G00C)
+                    }
+                    Case (0x03FF)
+                    {
+                        Local2 = 0x80
+                        BankField (OPR0, BNK0, 0x80, WordAcc, NoLock, WriteAsOnes)
+                        {
+                            Offset (0x08), 
+                            F0EE,   1023
+                        }
+
+                        Local3 = RefOf (F0EE)
+                        Local4 = RefOf (G00D)
+                    }
+                    Case (0x07BF)
+                    {
+                        Local2 = 0xFF
+                        BankField (OPR0, BNK0, 0xFF, ByteAcc, NoLock, WriteAsOnes)
+                        {
+                            AccessAs (WordAcc, 0x00), 
+                            Offset (0x08), 
+                            F0EF,   1983
+                        }
+
+                        Local3 = RefOf (F0EF)
+                        Local4 = RefOf (G00E)
+                    }
+                    Default
+                    {
+                        ERR (Arg0, Z145, 0x10DB, 0x00, 0x00, Arg2, Arg3)
+                        Return (Zero)
+                    }
+
+                }
+            }
+            Case (0x41)
+            {
+                Switch (ToInteger (Arg3))
+                {
+                    Case (0x01)
+                    {
+                        Local2 = 0x00
+                        BankField (OPR0, BNK0, 0x00, WordAcc, NoLock, WriteAsOnes)
+                        {
+                            AccessAs (WordAcc, 0x00), 
+                            Offset (0x08), 
+                                ,   1, 
+                            F0F0,   1
+                        }
+
+                        Local3 = RefOf (F0F0)
+                        Local4 = RefOf (G000)
+                    }
+                    Case (0x06)
+                    {
+                        Local2 = 0x01
+                        BankField (OPR0, BNK0, 0x01, WordAcc, NoLock, WriteAsOnes)
+                        {
+                            Offset (0x08), 
+                                ,   1, 
+                            F0F1,   6
+                        }
+
+                        Local3 = RefOf (F0F1)
+                        Local4 = RefOf (G001)
+                    }
+                    Case (0x07)
+                    {
+                        Local2 = 0x02
+                        BankField (OPR0, BNK0, 0x02, DWordAcc, NoLock, WriteAsOnes)
+                        {
+                            AccessAs (WordAcc, 0x00), 
+                            Offset (0x08), 
+                                ,   1, 
+                            F0F2,   7
+                        }
+
+                        Local3 = RefOf (F0F2)
+                        Local4 = RefOf (G002)
+                    }
+                    Case (0x08)
+                    {
+                        Local2 = 0x03
+                        BankField (OPR0, BNK0, 0x03, WordAcc, NoLock, WriteAsOnes)
+                        {
+                            Offset (0x08), 
+                                ,   1, 
+                            F0F3,   8
+                        }
+
+                        Local3 = RefOf (F0F3)
+                        Local4 = RefOf (G003)
+                    }
+                    Case (0x09)
+                    {
+                        Local2 = 0x04
+                        BankField (OPR0, BNK0, 0x04, QWordAcc, NoLock, WriteAsOnes)
+                        {
+                            AccessAs (WordAcc, 0x00), 
+                            Offset (0x08), 
+                                ,   1, 
+                            F0F4,   9
+                        }
+
+                        Local3 = RefOf (F0F4)
+                        Local4 = RefOf (G004)
+                    }
+                    Case (0x1F)
+                    {
+                        Local2 = 0x05
+                        BankField (OPR0, BNK0, 0x05, WordAcc, NoLock, WriteAsOnes)
+                        {
+                            Offset (0x08), 
+                                ,   1, 
+                            F0F5,   31
+                        }
+
+                        Local3 = RefOf (F0F5)
+                        Local4 = RefOf (G005)
+                    }
+                    Case (0x20)
+                    {
+                        Local2 = 0x06
+                        BankField (OPR0, BNK0, 0x06, AnyAcc, NoLock, WriteAsOnes)
+                        {
+                            AccessAs (WordAcc, 0x00), 
+                            Offset (0x08), 
+                                ,   1, 
+                            F0F6,   32
+                        }
+
+                        Local3 = RefOf (F0F6)
+                        Local4 = RefOf (G006)
+                    }
+                    Case (0x21)
+                    {
+                        Local2 = 0x07
+                        BankField (OPR0, BNK0, 0x07, WordAcc, NoLock, WriteAsOnes)
+                        {
+                            Offset (0x08), 
+                                ,   1, 
+                            F0F7,   33
+                        }
+
+                        Local3 = RefOf (F0F7)
+                        Local4 = RefOf (G007)
+                    }
+                    Case (0x3F)
+                    {
+                        Local2 = 0x08
+                        BankField (OPR0, BNK0, 0x08, ByteAcc, NoLock, WriteAsOnes)
+                        {
+                            AccessAs (WordAcc, 0x00), 
+                            Offset (0x08), 
+                                ,   1, 
+                            F0F8,   63
+                        }
+
+                        Local3 = RefOf (F0F8)
+                        Local4 = RefOf (G008)
+                    }
+                    Case (0x40)
+                    {
+                        Local2 = 0x09
+                        BankField (OPR0, BNK0, 0x09, WordAcc, NoLock, WriteAsOnes)
+                        {
+                            Offset (0x08), 
+                                ,   1, 
+                            F0F9,   64
+                        }
+
+                        Local3 = RefOf (F0F9)
+                        Local4 = RefOf (G009)
+                    }
+                    Case (0x41)
+                    {
+                        Local2 = 0x3F
+                        BankField (OPR0, BNK0, 0x3F, WordAcc, NoLock, WriteAsOnes)
+                        {
+                            AccessAs (WordAcc, 0x00), 
+                            Offset (0x08), 
+                                ,   1, 
+                            F0FA,   65
+                        }
+
+                        Local3 = RefOf (F0FA)
+                        Local4 = RefOf (G00A)
+                    }
+                    Case (0x45)
+                    {
+                        Local2 = 0x40
+                        BankField (OPR0, BNK0, 0x40, WordAcc, NoLock, WriteAsOnes)
+                        {
+                            Offset (0x08), 
+                                ,   1, 
+                            F0FB,   69
+                        }
+
+                        Local3 = RefOf (F0FB)
+                        Local4 = RefOf (G00B)
+                    }
+                    Case (0x81)
+                    {
+                        Local2 = 0x7F
+                        BankField (OPR0, BNK0, 0x7F, DWordAcc, NoLock, WriteAsOnes)
+                        {
+                            AccessAs (WordAcc, 0x00), 
+                            Offset (0x08), 
+                                ,   1, 
+                            F0FC,   129
+                        }
+
+                        Local3 = RefOf (F0FC)
+                        Local4 = RefOf (G00C)
+                    }
+                    Case (0x0100)
+                    {
+                        Local2 = 0x80
+                        BankField (OPR0, BNK0, 0x80, WordAcc, NoLock, WriteAsOnes)
+                        {
+                            Offset (0x08), 
+                                ,   1, 
+                            F0FD,   256
+                        }
+
+                        Local3 = RefOf (F0FD)
+                        Local4 = RefOf (G00D)
+                    }
+                    Case (0x03FF)
+                    {
+                        Local2 = 0xFF
+                        BankField (OPR0, BNK0, 0xFF, QWordAcc, NoLock, WriteAsOnes)
+                        {
+                            AccessAs (WordAcc, 0x00), 
+                            Offset (0x08), 
+                                ,   1, 
+                            F0FE,   1023
+                        }
+
+                        Local3 = RefOf (F0FE)
+                        Local4 = RefOf (G00E)
+                    }
+                    Case (0x07BF)
+                    {
+                        Local2 = 0x00
+                        BankField (OPR0, BNK0, 0x00, WordAcc, NoLock, WriteAsOnes)
+                        {
+                            Offset (0x08), 
+                                ,   1, 
+                            F0FF,   1983
+                        }
+
+                        Local3 = RefOf (F0FF)
+                        Local4 = RefOf (G000)
+                    }
+                    Default
+                    {
+                        ERR (Arg0, Z145, 0x115B, 0x00, 0x00, Arg2, Arg3)
+                        Return (Zero)
+                    }
+
+                }
+            }
+            Default
+            {
+                ERR (Arg0, Z145, 0x1161, 0x00, 0x00, Arg2, Arg3)
+                Return (Zero)
+            }
+
+        }
+
+        FCP0 [0x00] = 0x02
+        FCP0 [0x01] = RefOf (BNK0)
+        FCP0 [0x02] = Local2
+        M72D (Arg0, Local3, Arg2, Arg3, Arg4, Arg5, Local4)
+        FCP0 [0x00] = 0x00
+    }
+
+    /* Create BankField Unit */
+    /* (DWordAcc, NoLock, WriteAsZeros) */
+    Method (M7D2, 6, Serialized)
+    {
+        OperationRegion (OPRB, SystemIO, 0x00, 0x09)
+        OperationRegion (OPR0, SystemIO, 0x0B, 0x0100)
+        Field (OPRB, ByteAcc, NoLock, Preserve)
+        {
+            BNK0,   8
+        }
+
+        BankField (OPR0, BNK0, 0x00, ByteAcc, NoLock, Preserve)
+        {
+            G000,   2048
+        }
+
+        BankField (OPR0, BNK0, 0x01, ByteAcc, NoLock, Preserve)
+        {
+            G001,   2048
+        }
+
+        BankField (OPR0, BNK0, 0x02, ByteAcc, NoLock, Preserve)
+        {
+            G002,   2048
+        }
+
+        BankField (OPR0, BNK0, 0x03, ByteAcc, NoLock, Preserve)
+        {
+            G003,   2048
+        }
+
+        BankField (OPR0, BNK0, 0x04, ByteAcc, NoLock, Preserve)
+        {
+            G004,   2048
+        }
+
+        BankField (OPR0, BNK0, 0x05, ByteAcc, NoLock, Preserve)
+        {
+            G005,   2048
+        }
+
+        BankField (OPR0, BNK0, 0x06, ByteAcc, NoLock, Preserve)
+        {
+            G006,   2048
+        }
+
+        BankField (OPR0, BNK0, 0x07, ByteAcc, NoLock, Preserve)
+        {
+            G007,   2048
+        }
+
+        BankField (OPR0, BNK0, 0x08, ByteAcc, NoLock, Preserve)
+        {
+            G008,   2048
+        }
+
+        BankField (OPR0, BNK0, 0x09, ByteAcc, NoLock, Preserve)
+        {
+            G009,   2048
+        }
+
+        BankField (OPR0, BNK0, 0x3F, ByteAcc, NoLock, Preserve)
+        {
+            G00A,   2048
+        }
+
+        BankField (OPR0, BNK0, 0x40, ByteAcc, NoLock, Preserve)
+        {
+            G00B,   2048
+        }
+
+        BankField (OPR0, BNK0, 0x7F, ByteAcc, NoLock, Preserve)
+        {
+            G00C,   2048
+        }
+
+        BankField (OPR0, BNK0, 0x80, ByteAcc, NoLock, Preserve)
+        {
+            G00D,   2048
+        }
+
+        BankField (OPR0, BNK0, 0xFF, ByteAcc, NoLock, Preserve)
+        {
+            G00E,   2048
+        }
+
+        Concatenate (Arg0, "-m7d2", Arg0)
+        Switch (ToInteger (Arg2))
+        {
+            Case (0x00)
+            {
+                Switch (ToInteger (Arg3))
+                {
+                    Case (0x01)
+                    {
+                        Local2 = 0x00
+                        BankField (OPR0, BNK0, 0x00, DWordAcc, NoLock, WriteAsZeros)
+                        {
+                            Offset (0x00), 
+                            F000,   1
+                        }
+
+                        Local3 = RefOf (F000)
+                        Local4 = RefOf (G000)
+                    }
+                    Case (0x06)
+                    {
+                        Local2 = 0x01
+                        BankField (OPR0, BNK0, 0x01, WordAcc, NoLock, WriteAsZeros)
+                        {
+                            AccessAs (DWordAcc, 0x00), 
+                            Offset (0x00), 
+                            F001,   6
+                        }
+
+                        Local3 = RefOf (F001)
+                        Local4 = RefOf (G001)
+                    }
+                    Case (0x07)
+                    {
+                        Local2 = 0x02
+                        BankField (OPR0, BNK0, 0x02, DWordAcc, NoLock, WriteAsZeros)
+                        {
+                            Offset (0x00), 
+                            F002,   7
+                        }
+
+                        Local3 = RefOf (F002)
+                        Local4 = RefOf (G002)
+                    }
+                    Case (0x08)
+                    {
+                        Local2 = 0x03
+                        BankField (OPR0, BNK0, 0x03, DWordAcc, NoLock, WriteAsZeros)
+                        {
+                            AccessAs (DWordAcc, 0x00), 
+                            Offset (0x00), 
+                            F003,   8
+                        }
+
+                        Local3 = RefOf (F003)
+                        Local4 = RefOf (G003)
+                    }
+                    Case (0x09)
+                    {
+                        Local2 = 0x04
+                        BankField (OPR0, BNK0, 0x04, DWordAcc, NoLock, WriteAsZeros)
+                        {
+                            Offset (0x00), 
+                            F004,   9
+                        }
+
+                        Local3 = RefOf (F004)
+                        Local4 = RefOf (G004)
+                    }
+                    Case (0x1F)
+                    {
+                        Local2 = 0x05
+                        BankField (OPR0, BNK0, 0x05, QWordAcc, NoLock, WriteAsZeros)
+                        {
+                            AccessAs (DWordAcc, 0x00), 
+                            Offset (0x00), 
+                            F005,   31
+                        }
+
+                        Local3 = RefOf (F005)
+                        Local4 = RefOf (G005)
+                    }
+                    Case (0x20)
+                    {
+                        Local2 = 0x06
+                        BankField (OPR0, BNK0, 0x06, DWordAcc, NoLock, WriteAsZeros)
+                        {
+                            Offset (0x00), 
+                            F006,   32
+                        }
+
+                        Local3 = RefOf (F006)
+                        Local4 = RefOf (G006)
+                    }
+                    Case (0x21)
+                    {
+                        Local2 = 0x07
+                        BankField (OPR0, BNK0, 0x07, AnyAcc, NoLock, WriteAsZeros)
+                        {
+                            AccessAs (DWordAcc, 0x00), 
+                            Offset (0x00), 
+                            F007,   33
+                        }
+
+                        Local3 = RefOf (F007)
+                        Local4 = RefOf (G007)
+                    }
+                    Case (0x3F)
+                    {
+                        Local2 = 0x08
+                        BankField (OPR0, BNK0, 0x08, DWordAcc, NoLock, WriteAsZeros)
+                        {
+                            Offset (0x00), 
+                            F008,   63
+                        }
+
+                        Local3 = RefOf (F008)
+                        Local4 = RefOf (G008)
+                    }
+                    Case (0x40)
+                    {
+                        Local2 = 0x09
+                        BankField (OPR0, BNK0, 0x09, ByteAcc, NoLock, WriteAsZeros)
+                        {
+                            AccessAs (DWordAcc, 0x00), 
+                            Offset (0x00), 
+                            F009,   64
+                        }
+
+                        Local3 = RefOf (F009)
+                        Local4 = RefOf (G009)
+                    }
+                    Case (0x41)
+                    {
+                        Local2 = 0x3F
+                        BankField (OPR0, BNK0, 0x3F, DWordAcc, NoLock, WriteAsZeros)
+                        {
+                            Offset (0x00), 
+                            F00A,   65
+                        }
+
+                        Local3 = RefOf (F00A)
+                        Local4 = RefOf (G00A)
+                    }
+                    Case (0x45)
+                    {
+                        Local2 = 0x40
+                        BankField (OPR0, BNK0, 0x40, WordAcc, NoLock, WriteAsZeros)
+                        {
+                            AccessAs (DWordAcc, 0x00), 
+                            Offset (0x00), 
+                            F00B,   69
+                        }
+
+                        Local3 = RefOf (F00B)
+                        Local4 = RefOf (G00B)
+                    }
+                    Case (0x81)
+                    {
+                        Local2 = 0x7F
+                        BankField (OPR0, BNK0, 0x7F, DWordAcc, NoLock, WriteAsZeros)
+                        {
+                            Offset (0x00), 
+                            F00C,   129
+                        }
+
+                        Local3 = RefOf (F00C)
+                        Local4 = RefOf (G00C)
+                    }
+                    Case (0x0100)
+                    {
+                        Local2 = 0x80
+                        BankField (OPR0, BNK0, 0x80, DWordAcc, NoLock, WriteAsZeros)
+                        {
+                            AccessAs (DWordAcc, 0x00), 
+                            Offset (0x00), 
+                            F00D,   256
+                        }
+
+                        Local3 = RefOf (F00D)
+                        Local4 = RefOf (G00D)
+                    }
+                    Case (0x03FF)
+                    {
+                        Local2 = 0xFF
+                        BankField (OPR0, BNK0, 0xFF, DWordAcc, NoLock, WriteAsZeros)
+                        {
+                            Offset (0x00), 
+                            F00E,   1023
+                        }
+
+                        Local3 = RefOf (F00E)
+                        Local4 = RefOf (G00E)
+                    }
+                    Case (0x07BF)
+                    {
+                        Local2 = 0x00
+                        BankField (OPR0, BNK0, 0x00, QWordAcc, NoLock, WriteAsZeros)
+                        {
+                            AccessAs (DWordAcc, 0x00), 
+                            Offset (0x00), 
+                            F00F,   1983
+                        }
+
+                        Local3 = RefOf (F00F)
+                        Local4 = RefOf (G000)
+                    }
+                    Default
+                    {
+                        ERR (Arg0, Z145, 0x1223, 0x00, 0x00, Arg2, Arg3)
+                        Return (Zero)
+                    }
+
+                }
+            }
+            Case (0x01)
+            {
+                Switch (ToInteger (Arg3))
+                {
+                    Case (0x01)
+                    {
+                        Local2 = 0x01
+                        BankField (OPR0, BNK0, 0x01, AnyAcc, NoLock, WriteAsZeros)
+                        {
+                            AccessAs (DWordAcc, 0x00), 
+                                ,   1, 
+                            F010,   1
+                        }
+
+                        Local3 = RefOf (F010)
+                        Local4 = RefOf (G001)
+                    }
+                    Case (0x06)
+                    {
+                        Local2 = 0x02
+                        BankField (OPR0, BNK0, 0x02, DWordAcc, NoLock, WriteAsZeros)
+                        {
+                                ,   1, 
+                            F011,   6
+                        }
+
+                        Local3 = RefOf (F011)
+                        Local4 = RefOf (G002)
+                    }
+                    Case (0x07)
+                    {
+                        Local2 = 0x03
+                        BankField (OPR0, BNK0, 0x03, ByteAcc, NoLock, WriteAsZeros)
+                        {
+                            AccessAs (DWordAcc, 0x00), 
+                                ,   1, 
+                            F012,   7
+                        }
+
+                        Local3 = RefOf (F012)
+                        Local4 = RefOf (G003)
+                    }
+                    Case (0x08)
+                    {
+                        Local2 = 0x04
+                        BankField (OPR0, BNK0, 0x04, DWordAcc, NoLock, WriteAsZeros)
+                        {
+                                ,   1, 
+                            F013,   8
+                        }
+
+                        Local3 = RefOf (F013)
+                        Local4 = RefOf (G004)
+                    }
+                    Case (0x09)
+                    {
+                        Local2 = 0x05
+                        BankField (OPR0, BNK0, 0x05, WordAcc, NoLock, WriteAsZeros)
+                        {
+                            AccessAs (DWordAcc, 0x00), 
+                                ,   1, 
+                            F014,   9
+                        }
+
+                        Local3 = RefOf (F014)
+                        Local4 = RefOf (G005)
+                    }
+                    Case (0x1F)
+                    {
+                        Local2 = 0x06
+                        BankField (OPR0, BNK0, 0x06, DWordAcc, NoLock, WriteAsZeros)
+                        {
+                                ,   1, 
+                            F015,   31
+                        }
+
+                        Local3 = RefOf (F015)
+                        Local4 = RefOf (G006)
+                    }
+                    Case (0x20)
+                    {
+                        Local2 = 0x07
+                        BankField (OPR0, BNK0, 0x07, DWordAcc, NoLock, WriteAsZeros)
+                        {
+                            AccessAs (DWordAcc, 0x00), 
+                                ,   1, 
+                            F016,   32
+                        }
+
+                        Local3 = RefOf (F016)
+                        Local4 = RefOf (G007)
+                    }
+                    Case (0x21)
+                    {
+                        Local2 = 0x08
+                        BankField (OPR0, BNK0, 0x08, DWordAcc, NoLock, WriteAsZeros)
+                        {
+                                ,   1, 
+                            F017,   33
+                        }
+
+                        Local3 = RefOf (F017)
+                        Local4 = RefOf (G008)
+                    }
+                    Case (0x3F)
+                    {
+                        Local2 = 0x09
+                        BankField (OPR0, BNK0, 0x09, QWordAcc, NoLock, WriteAsZeros)
+                        {
+                            AccessAs (DWordAcc, 0x00), 
+                                ,   1, 
+                            F018,   63
+                        }
+
+                        Local3 = RefOf (F018)
+                        Local4 = RefOf (G009)
+                    }
+                    Case (0x40)
+                    {
+                        Local2 = 0x3F
+                        BankField (OPR0, BNK0, 0x3F, DWordAcc, NoLock, WriteAsZeros)
+                        {
+                                ,   1, 
+                            F019,   64
+                        }
+
+                        Local3 = RefOf (F019)
+                        Local4 = RefOf (G00A)
+                    }
+                    Case (0x41)
+                    {
+                        Local2 = 0x40
+                        BankField (OPR0, BNK0, 0x40, AnyAcc, NoLock, WriteAsZeros)
+                        {
+                            AccessAs (DWordAcc, 0x00), 
+                                ,   1, 
+                            F01A,   65
+                        }
+
+                        Local3 = RefOf (F01A)
+                        Local4 = RefOf (G00B)
+                    }
+                    Case (0x45)
+                    {
+                        Local2 = 0x7F
+                        BankField (OPR0, BNK0, 0x7F, DWordAcc, NoLock, WriteAsZeros)
+                        {
+                                ,   1, 
+                            F01B,   69
+                        }
+
+                        Local3 = RefOf (F01B)
+                        Local4 = RefOf (G00C)
+                    }
+                    Case (0x81)
+                    {
+                        Local2 = 0x80
+                        BankField (OPR0, BNK0, 0x80, ByteAcc, NoLock, WriteAsZeros)
+                        {
+                            AccessAs (DWordAcc, 0x00), 
+                                ,   1, 
+                            F01C,   129
+                        }
+
+                        Local3 = RefOf (F01C)
+                        Local4 = RefOf (G00D)
+                    }
+                    Case (0x0100)
+                    {
+                        Local2 = 0xFF
+                        BankField (OPR0, BNK0, 0xFF, DWordAcc, NoLock, WriteAsZeros)
+                        {
+                                ,   1, 
+                            F01D,   256
+                        }
+
+                        Local3 = RefOf (F01D)
+                        Local4 = RefOf (G00E)
+                    }
+                    Case (0x03FF)
+                    {
+                        Local2 = 0x00
+                        BankField (OPR0, BNK0, 0x00, WordAcc, NoLock, WriteAsZeros)
+                        {
+                            AccessAs (DWordAcc, 0x00), 
+                                ,   1, 
+                            F01E,   1023
+                        }
+
+                        Local3 = RefOf (F01E)
+                        Local4 = RefOf (G000)
+                    }
+                    Case (0x07BF)
+                    {
+                        Local2 = 0x01
+                        BankField (OPR0, BNK0, 0x01, DWordAcc, NoLock, WriteAsZeros)
+                        {
+                                ,   1, 
+                            F01F,   1983
+                        }
+
+                        Local3 = RefOf (F01F)
+                        Local4 = RefOf (G001)
+                    }
+                    Default
+                    {
+                        ERR (Arg0, Z145, 0x12A3, 0x00, 0x00, Arg2, Arg3)
+                        Return (Zero)
+                    }
+
+                }
+            }
+            Case (0x02)
+            {
+                Switch (ToInteger (Arg3))
+                {
+                    Case (0x01)
+                    {
+                        Local2 = 0x02
+                        BankField (OPR0, BNK0, 0x02, DWordAcc, NoLock, WriteAsZeros)
+                        {
+                                ,   2, 
+                            F020,   1
+                        }
+
+                        Local3 = RefOf (F020)
+                        Local4 = RefOf (G002)
+                    }
+                    Case (0x06)
+                    {
+                        Local2 = 0x03
+                        BankField (OPR0, BNK0, 0x03, DWordAcc, NoLock, WriteAsZeros)
+                        {
+                            AccessAs (DWordAcc, 0x00), 
+                                ,   2, 
+                            F021,   6
+                        }
+
+                        Local3 = RefOf (F021)
+                        Local4 = RefOf (G003)
+                    }
+                    Case (0x07)
+                    {
+                        Local2 = 0x04
+                        BankField (OPR0, BNK0, 0x04, DWordAcc, NoLock, WriteAsZeros)
+                        {
+                                ,   2, 
+                            F022,   7
+                        }
+
+                        Local3 = RefOf (F022)
+                        Local4 = RefOf (G004)
+                    }
+                    Case (0x08)
+                    {
+                        Local2 = 0x05
+                        BankField (OPR0, BNK0, 0x05, QWordAcc, NoLock, WriteAsZeros)
+                        {
+                            AccessAs (DWordAcc, 0x00), 
+                                ,   2, 
+                            F023,   8
+                        }
+
+                        Local3 = RefOf (F023)
+                        Local4 = RefOf (G005)
+                    }
+                    Case (0x09)
+                    {
+                        Local2 = 0x06
+                        BankField (OPR0, BNK0, 0x06, DWordAcc, NoLock, WriteAsZeros)
+                        {
+                                ,   2, 
+                            F024,   9
+                        }
+
+                        Local3 = RefOf (F024)
+                        Local4 = RefOf (G006)
+                    }
+                    Case (0x1F)
+                    {
+                        Local2 = 0x07
+                        BankField (OPR0, BNK0, 0x07, AnyAcc, NoLock, WriteAsZeros)
+                        {
+                            AccessAs (DWordAcc, 0x00), 
+                                ,   2, 
+                            F025,   31
+                        }
+
+                        Local3 = RefOf (F025)
+                        Local4 = RefOf (G007)
+                    }
+                    Case (0x20)
+                    {
+                        Local2 = 0x08
+                        BankField (OPR0, BNK0, 0x08, DWordAcc, NoLock, WriteAsZeros)
+                        {
+                                ,   2, 
+                            F026,   32
+                        }
+
+                        Local3 = RefOf (F026)
+                        Local4 = RefOf (G008)
+                    }
+                    Case (0x21)
+                    {
+                        Local2 = 0x09
+                        BankField (OPR0, BNK0, 0x09, ByteAcc, NoLock, WriteAsZeros)
+                        {
+                            AccessAs (DWordAcc, 0x00), 
+                                ,   2, 
+                            F027,   33
+                        }
+
+                        Local3 = RefOf (F027)
+                        Local4 = RefOf (G009)
+                    }
+                    Case (0x3F)
+                    {
+                        Local2 = 0x3F
+                        BankField (OPR0, BNK0, 0x3F, DWordAcc, NoLock, WriteAsZeros)
+                        {
+                                ,   2, 
+                            F028,   63
+                        }
+
+                        Local3 = RefOf (F028)
+                        Local4 = RefOf (G00A)
+                    }
+                    Case (0x40)
+                    {
+                        Local2 = 0x40
+                        BankField (OPR0, BNK0, 0x40, WordAcc, NoLock, WriteAsZeros)
+                        {
+                            AccessAs (DWordAcc, 0x00), 
+                                ,   2, 
+                            F029,   64
+                        }
+
+                        Local3 = RefOf (F029)
+                        Local4 = RefOf (G00B)
+                    }
+                    Case (0x41)
+                    {
+                        Local2 = 0x7F
+                        BankField (OPR0, BNK0, 0x7F, DWordAcc, NoLock, WriteAsZeros)
+                        {
+                                ,   2, 
+                            F02A,   65
+                        }
+
+                        Local3 = RefOf (F02A)
+                        Local4 = RefOf (G00C)
+                    }
+                    Case (0x45)
+                    {
+                        Local2 = 0x80
+                        BankField (OPR0, BNK0, 0x80, DWordAcc, NoLock, WriteAsZeros)
+                        {
+                            AccessAs (DWordAcc, 0x00), 
+                                ,   2, 
+                            F02B,   69
+                        }
+
+                        Local3 = RefOf (F02B)
+                        Local4 = RefOf (G00D)
+                    }
+                    Case (0x81)
+                    {
+                        Local2 = 0xFF
+                        BankField (OPR0, BNK0, 0xFF, DWordAcc, NoLock, WriteAsZeros)
+                        {
+                                ,   2, 
+                            F02C,   129
+                        }
+
+                        Local3 = RefOf (F02C)
+                        Local4 = RefOf (G00E)
+                    }
+                    Case (0x0100)
+                    {
+                        Local2 = 0x00
+                        BankField (OPR0, BNK0, 0x00, QWordAcc, NoLock, WriteAsZeros)
+                        {
+                            AccessAs (DWordAcc, 0x00), 
+                                ,   2, 
+                            F02D,   256
+                        }
+
+                        Local3 = RefOf (F02D)
+                        Local4 = RefOf (G000)
+                    }
+                    Case (0x03FF)
+                    {
+                        Local2 = 0x01
+                        BankField (OPR0, BNK0, 0x01, DWordAcc, NoLock, WriteAsZeros)
+                        {
+                                ,   2, 
+                            F02E,   1023
+                        }
+
+                        Local3 = RefOf (F02E)
+                        Local4 = RefOf (G001)
+                    }
+                    Case (0x07BF)
+                    {
+                        Local2 = 0x02
+                        BankField (OPR0, BNK0, 0x02, AnyAcc, NoLock, WriteAsZeros)
+                        {
+                            AccessAs (DWordAcc, 0x00), 
+                                ,   2, 
+                            F02F,   1983
+                        }
+
+                        Local3 = RefOf (F02F)
+                        Local4 = RefOf (G002)
+                    }
+                    Default
+                    {
+                        ERR (Arg0, Z145, 0x1323, 0x00, 0x00, Arg2, Arg3)
+                        Return (Zero)
+                    }
+
+                }
+            }
+            Case (0x03)
+            {
+                Switch (ToInteger (Arg3))
+                {
+                    Case (0x01)
+                    {
+                        Local2 = 0x03
+                        BankField (OPR0, BNK0, 0x03, ByteAcc, NoLock, WriteAsZeros)
+                        {
+                            AccessAs (DWordAcc, 0x00), 
+                                ,   3, 
+                            F030,   1
+                        }
+
+                        Local3 = RefOf (F030)
+                        Local4 = RefOf (G003)
+                    }
+                    Case (0x06)
+                    {
+                        Local2 = 0x04
+                        BankField (OPR0, BNK0, 0x04, DWordAcc, NoLock, WriteAsZeros)
+                        {
+                                ,   3, 
+                            F031,   6
+                        }
+
+                        Local3 = RefOf (F031)
+                        Local4 = RefOf (G004)
+                    }
+                    Case (0x07)
+                    {
+                        Local2 = 0x05
+                        BankField (OPR0, BNK0, 0x05, WordAcc, NoLock, WriteAsZeros)
+                        {
+                            AccessAs (DWordAcc, 0x00), 
+                                ,   3, 
+                            F032,   7
+                        }
+
+                        Local3 = RefOf (F032)
+                        Local4 = RefOf (G005)
+                    }
+                    Case (0x08)
+                    {
+                        Local2 = 0x06
+                        BankField (OPR0, BNK0, 0x06, DWordAcc, NoLock, WriteAsZeros)
+                        {
+                                ,   3, 
+                            F033,   8
+                        }
+
+                        Local3 = RefOf (F033)
+                        Local4 = RefOf (G006)
+                    }
+                    Case (0x09)
+                    {
+                        Local2 = 0x07
+                        BankField (OPR0, BNK0, 0x07, DWordAcc, NoLock, WriteAsZeros)
+                        {
+                            AccessAs (DWordAcc, 0x00), 
+                                ,   3, 
+                            F034,   9
+                        }
+
+                        Local3 = RefOf (F034)
+                        Local4 = RefOf (G007)
+                    }
+                    Case (0x1F)
+                    {
+                        Local2 = 0x08
+                        BankField (OPR0, BNK0, 0x08, DWordAcc, NoLock, WriteAsZeros)
+                        {
+                                ,   3, 
+                            F035,   31
+                        }
+
+                        Local3 = RefOf (F035)
+                        Local4 = RefOf (G008)
+                    }
+                    Case (0x20)
+                    {
+                        Local2 = 0x09
+                        BankField (OPR0, BNK0, 0x09, QWordAcc, NoLock, WriteAsZeros)
+                        {
+                            AccessAs (DWordAcc, 0x00), 
+                                ,   3, 
+                            F036,   32
+                        }
+
+                        Local3 = RefOf (F036)
+                        Local4 = RefOf (G009)
+                    }
+                    Case (0x21)
+                    {
+                        Local2 = 0x3F
+                        BankField (OPR0, BNK0, 0x3F, DWordAcc, NoLock, WriteAsZeros)
+                        {
+                                ,   3, 
+                            F037,   33
+                        }
+
+                        Local3 = RefOf (F037)
+                        Local4 = RefOf (G00A)
+                    }
+                    Case (0x3F)
+                    {
+                        Local2 = 0x40
+                        BankField (OPR0, BNK0, 0x40, AnyAcc, NoLock, WriteAsZeros)
+                        {
+                            AccessAs (DWordAcc, 0x00), 
+                                ,   3, 
+                            F038,   63
+                        }
+
+                        Local3 = RefOf (F038)
+                        Local4 = RefOf (G00B)
+                    }
+                    Case (0x40)
+                    {
+                        Local2 = 0x7F
+                        BankField (OPR0, BNK0, 0x7F, DWordAcc, NoLock, WriteAsZeros)
+                        {
+                                ,   3, 
+                            F039,   64
+                        }
+
+                        Local3 = RefOf (F039)
+                        Local4 = RefOf (G00C)
+                    }
+                    Case (0x41)
+                    {
+                        Local2 = 0x80
+                        BankField (OPR0, BNK0, 0x80, ByteAcc, NoLock, WriteAsZeros)
+                        {
+                            AccessAs (DWordAcc, 0x00), 
+                                ,   3, 
+                            F03A,   65
+                        }
+
+                        Local3 = RefOf (F03A)
+                        Local4 = RefOf (G00D)
+                    }
+                    Case (0x45)
+                    {
+                        Local2 = 0xFF
+                        BankField (OPR0, BNK0, 0xFF, DWordAcc, NoLock, WriteAsZeros)
+                        {
+                                ,   3, 
+                            F03B,   69
+                        }
+
+                        Local3 = RefOf (F03B)
+                        Local4 = RefOf (G00E)
+                    }
+                    Case (0x81)
+                    {
+                        Local2 = 0x00
+                        BankField (OPR0, BNK0, 0x00, WordAcc, NoLock, WriteAsZeros)
+                        {
+                            AccessAs (DWordAcc, 0x00), 
+                                ,   3, 
+                            F03C,   129
+                        }
+
+                        Local3 = RefOf (F03C)
+                        Local4 = RefOf (G000)
+                    }
+                    Case (0x0100)
+                    {
+                        Local2 = 0x01
+                        BankField (OPR0, BNK0, 0x01, DWordAcc, NoLock, WriteAsZeros)
+                        {
+                                ,   3, 
+                            F03D,   256
+                        }
+
+                        Local3 = RefOf (F03D)
+                        Local4 = RefOf (G001)
+                    }
+                    Case (0x03FF)
+                    {
+                        Local2 = 0x02
+                        BankField (OPR0, BNK0, 0x02, DWordAcc, NoLock, WriteAsZeros)
+                        {
+                            AccessAs (DWordAcc, 0x00), 
+                                ,   3, 
+                            F03E,   1023
+                        }
+
+                        Local3 = RefOf (F03E)
+                        Local4 = RefOf (G002)
+                    }
+                    Case (0x07BF)
+                    {
+                        Local2 = 0x03
+                        BankField (OPR0, BNK0, 0x03, DWordAcc, NoLock, WriteAsZeros)
+                        {
+                                ,   3, 
+                            F03F,   1983
+                        }
+
+                        Local3 = RefOf (F03F)
+                        Local4 = RefOf (G003)
+                    }
+                    Default
+                    {
+                        ERR (Arg0, Z145, 0x13A3, 0x00, 0x00, Arg2, Arg3)
+                        Return (Zero)
+                    }
+
+                }
+            }
+            Case (0x04)
+            {
+                Switch (ToInteger (Arg3))
+                {
+                    Case (0x01)
+                    {
+                        Local2 = 0x04
+                        BankField (OPR0, BNK0, 0x04, DWordAcc, NoLock, WriteAsZeros)
+                        {
+                                ,   4, 
+                            F040,   1
+                        }
+
+                        Local3 = RefOf (F040)
+                        Local4 = RefOf (G004)
+                    }
+                    Case (0x06)
+                    {
+                        Local2 = 0x05
+                        BankField (OPR0, BNK0, 0x05, QWordAcc, NoLock, WriteAsZeros)
+                        {
+                            AccessAs (DWordAcc, 0x00), 
+                                ,   4, 
+                            F041,   6
+                        }
+
+                        Local3 = RefOf (F041)
+                        Local4 = RefOf (G005)
+                    }
+                    Case (0x07)
+                    {
+                        Local2 = 0x06
+                        BankField (OPR0, BNK0, 0x06, DWordAcc, NoLock, WriteAsZeros)
+                        {
+                                ,   4, 
+                            F042,   7
+                        }
+
+                        Local3 = RefOf (F042)
+                        Local4 = RefOf (G006)
+                    }
+                    Case (0x08)
+                    {
+                        Local2 = 0x07
+                        BankField (OPR0, BNK0, 0x07, AnyAcc, NoLock, WriteAsZeros)
+                        {
+                            AccessAs (DWordAcc, 0x00), 
+                                ,   4, 
+                            F043,   8
+                        }
+
+                        Local3 = RefOf (F043)
+                        Local4 = RefOf (G007)
+                    }
+                    Case (0x09)
+                    {
+                        Local2 = 0x08
+                        BankField (OPR0, BNK0, 0x08, DWordAcc, NoLock, WriteAsZeros)
+                        {
+                                ,   4, 
+                            F044,   9
+                        }
+
+                        Local3 = RefOf (F044)
+                        Local4 = RefOf (G008)
+                    }
+                    Case (0x1F)
+                    {
+                        Local2 = 0x09
+                        BankField (OPR0, BNK0, 0x09, ByteAcc, NoLock, WriteAsZeros)
+                        {
+                            AccessAs (DWordAcc, 0x00), 
+                                ,   4, 
+                            F045,   31
+                        }
+
+                        Local3 = RefOf (F045)
+                        Local4 = RefOf (G009)
+                    }
+                    Case (0x20)
+                    {
+                        Local2 = 0x3F
+                        BankField (OPR0, BNK0, 0x3F, DWordAcc, NoLock, WriteAsZeros)
+                        {
+                                ,   4, 
+                            F046,   32
+                        }
+
+                        Local3 = RefOf (F046)
+                        Local4 = RefOf (G00A)
+                    }
+                    Case (0x21)
+                    {
+                        Local2 = 0x40
+                        BankField (OPR0, BNK0, 0x40, WordAcc, NoLock, WriteAsZeros)
+                        {
+                            AccessAs (DWordAcc, 0x00), 
+                                ,   4, 
+                            F047,   33
+                        }
+
+                        Local3 = RefOf (F047)
+                        Local4 = RefOf (G00B)
+                    }
+                    Case (0x3F)
+                    {
+                        Local2 = 0x7F
+                        BankField (OPR0, BNK0, 0x7F, DWordAcc, NoLock, WriteAsZeros)
+                        {
+                                ,   4, 
+                            F048,   63
+                        }
+
+                        Local3 = RefOf (F048)
+                        Local4 = RefOf (G00C)
+                    }
+                    Case (0x40)
+                    {
+                        Local2 = 0x80
+                        BankField (OPR0, BNK0, 0x80, DWordAcc, NoLock, WriteAsZeros)
+                        {
+                            AccessAs (DWordAcc, 0x00), 
+                                ,   4, 
+                            F049,   64
+                        }
+
+                        Local3 = RefOf (F049)
+                        Local4 = RefOf (G00D)
+                    }
+                    Case (0x41)
+                    {
+                        Local2 = 0xFF
+                        BankField (OPR0, BNK0, 0xFF, DWordAcc, NoLock, WriteAsZeros)
+                        {
+                                ,   4, 
+                            F04A,   65
+                        }
+
+                        Local3 = RefOf (F04A)
+                        Local4 = RefOf (G00E)
+                    }
+                    Case (0x45)
+                    {
+                        Local2 = 0x00
+                        BankField (OPR0, BNK0, 0x00, QWordAcc, NoLock, WriteAsZeros)
+                        {
+                            AccessAs (DWordAcc, 0x00), 
+                                ,   4, 
+                            F04B,   69
+                        }
+
+                        Local3 = RefOf (F04B)
+                        Local4 = RefOf (G000)
+                    }
+                    Case (0x81)
+                    {
+                        Local2 = 0x01
+                        BankField (OPR0, BNK0, 0x01, DWordAcc, NoLock, WriteAsZeros)
+                        {
+                                ,   4, 
+                            F04C,   129
+                        }
+
+                        Local3 = RefOf (F04C)
+                        Local4 = RefOf (G001)
+                    }
+                    Case (0x0100)
+                    {
+                        Local2 = 0x02
+                        BankField (OPR0, BNK0, 0x02, AnyAcc, NoLock, WriteAsZeros)
+                        {
+                            AccessAs (DWordAcc, 0x00), 
+                                ,   4, 
+                            F04D,   256
+                        }
+
+                        Local3 = RefOf (F04D)
+                        Local4 = RefOf (G002)
+                    }
+                    Case (0x03FF)
+                    {
+                        Local2 = 0x03
+                        BankField (OPR0, BNK0, 0x03, DWordAcc, NoLock, WriteAsZeros)
+                        {
+                                ,   4, 
+                            F04E,   1023
+                        }
+
+                        Local3 = RefOf (F04E)
+                        Local4 = RefOf (G003)
+                    }
+                    Case (0x07BF)
+                    {
+                        Local2 = 0x04
+                        BankField (OPR0, BNK0, 0x04, ByteAcc, NoLock, WriteAsZeros)
+                        {
+                            AccessAs (DWordAcc, 0x00), 
+                                ,   4, 
+                            F04F,   1983
+                        }
+
+                        Local3 = RefOf (F04F)
+                        Local4 = RefOf (G004)
+                    }
+                    Default
+                    {
+                        ERR (Arg0, Z145, 0x1423, 0x00, 0x00, Arg2, Arg3)
+                        Return (Zero)
+                    }
+
+                }
+            }
+            Case (0x05)
+            {
+                Switch (ToInteger (Arg3))
+                {
+                    Case (0x01)
+                    {
+                        Local2 = 0x05
+                        BankField (OPR0, BNK0, 0x05, WordAcc, NoLock, WriteAsZeros)
+                        {
+                            AccessAs (DWordAcc, 0x00), 
+                                ,   5, 
+                            F050,   1
+                        }
+
+                        Local3 = RefOf (F050)
+                        Local4 = RefOf (G005)
+                    }
+                    Case (0x06)
+                    {
+                        Local2 = 0x06
+                        BankField (OPR0, BNK0, 0x06, DWordAcc, NoLock, WriteAsZeros)
+                        {
+                                ,   5, 
+                            F051,   6
+                        }
+
+                        Local3 = RefOf (F051)
+                        Local4 = RefOf (G006)
+                    }
+                    Case (0x07)
+                    {
+                        Local2 = 0x07
+                        BankField (OPR0, BNK0, 0x07, DWordAcc, NoLock, WriteAsZeros)
+                        {
+                            AccessAs (DWordAcc, 0x00), 
+                                ,   5, 
+                            F052,   7
+                        }
+
+                        Local3 = RefOf (F052)
+                        Local4 = RefOf (G007)
+                    }
+                    Case (0x08)
+                    {
+                        Local2 = 0x08
+                        BankField (OPR0, BNK0, 0x08, DWordAcc, NoLock, WriteAsZeros)
+                        {
+                                ,   5, 
+                            F053,   8
+                        }
+
+                        Local3 = RefOf (F053)
+                        Local4 = RefOf (G008)
+                    }
+                    Case (0x09)
+                    {
+                        Local2 = 0x09
+                        BankField (OPR0, BNK0, 0x09, QWordAcc, NoLock, WriteAsZeros)
+                        {
+                            AccessAs (DWordAcc, 0x00), 
+                                ,   5, 
+                            F054,   9
+                        }
+
+                        Local3 = RefOf (F054)
+                        Local4 = RefOf (G009)
+                    }
+                    Case (0x1F)
+                    {
+                        Local2 = 0x3F
+                        BankField (OPR0, BNK0, 0x3F, DWordAcc, NoLock, WriteAsZeros)
+                        {
+                                ,   5, 
+                            F055,   31
+                        }
+
+                        Local3 = RefOf (F055)
+                        Local4 = RefOf (G00A)
+                    }
+                    Case (0x20)
+                    {
+                        Local2 = 0x40
+                        BankField (OPR0, BNK0, 0x40, AnyAcc, NoLock, WriteAsZeros)
+                        {
+                            AccessAs (DWordAcc, 0x00), 
+                                ,   5, 
+                            F056,   32
+                        }
+
+                        Local3 = RefOf (F056)
+                        Local4 = RefOf (G00B)
+                    }
+                    Case (0x21)
+                    {
+                        Local2 = 0x7F
+                        BankField (OPR0, BNK0, 0x7F, DWordAcc, NoLock, WriteAsZeros)
+                        {
+                                ,   5, 
+                            F057,   33
+                        }
+
+                        Local3 = RefOf (F057)
+                        Local4 = RefOf (G00C)
+                    }
+                    Case (0x3F)
+                    {
+                        Local2 = 0x80
+                        BankField (OPR0, BNK0, 0x80, ByteAcc, NoLock, WriteAsZeros)
+                        {
+                            AccessAs (DWordAcc, 0x00), 
+                                ,   5, 
+                            F058,   63
+                        }
+
+                        Local3 = RefOf (F058)
+                        Local4 = RefOf (G00D)
+                    }
+                    Case (0x40)
+                    {
+                        Local2 = 0xFF
+                        BankField (OPR0, BNK0, 0xFF, DWordAcc, NoLock, WriteAsZeros)
+                        {
+                                ,   5, 
+                            F059,   64
+                        }
+
+                        Local3 = RefOf (F059)
+                        Local4 = RefOf (G00E)
+                    }
+                    Case (0x41)
+                    {
+                        Local2 = 0x00
+                        BankField (OPR0, BNK0, 0x00, WordAcc, NoLock, WriteAsZeros)
+                        {
+                            AccessAs (DWordAcc, 0x00), 
+                                ,   5, 
+                            F05A,   65
+                        }
+
+                        Local3 = RefOf (F05A)
+                        Local4 = RefOf (G000)
+                    }
+                    Case (0x45)
+                    {
+                        Local2 = 0x01
+                        BankField (OPR0, BNK0, 0x01, DWordAcc, NoLock, WriteAsZeros)
+                        {
+                                ,   5, 
+                            F05B,   69
+                        }
+
+                        Local3 = RefOf (F05B)
+                        Local4 = RefOf (G001)
+                    }
+                    Case (0x81)
+                    {
+                        Local2 = 0x02
+                        BankField (OPR0, BNK0, 0x02, DWordAcc, NoLock, WriteAsZeros)
+                        {
+                            AccessAs (DWordAcc, 0x00), 
+                                ,   5, 
+                            F05C,   129
+                        }
+
+                        Local3 = RefOf (F05C)
+                        Local4 = RefOf (G002)
+                    }
+                    Case (0x0100)
+                    {
+                        Local2 = 0x03
+                        BankField (OPR0, BNK0, 0x03, DWordAcc, NoLock, WriteAsZeros)
+                        {
+                                ,   5, 
+                            F05D,   256
+                        }
+
+                        Local3 = RefOf (F05D)
+                        Local4 = RefOf (G003)
+                    }
+                    Case (0x03FF)
+                    {
+                        Local2 = 0x04
+                        BankField (OPR0, BNK0, 0x04, QWordAcc, NoLock, WriteAsZeros)
+                        {
+                            AccessAs (DWordAcc, 0x00), 
+                                ,   5, 
+                            F05E,   1023
+                        }
+
+                        Local3 = RefOf (F05E)
+                        Local4 = RefOf (G004)
+                    }
+                    Case (0x07BF)
+                    {
+                        Local2 = 0x05
+                        BankField (OPR0, BNK0, 0x05, DWordAcc, NoLock, WriteAsZeros)
+                        {
+                                ,   5, 
+                            F05F,   1983
+                        }
+
+                        Local3 = RefOf (F05F)
+                        Local4 = RefOf (G005)
+                    }
+                    Default
+                    {
+                        ERR (Arg0, Z145, 0x14A3, 0x00, 0x00, Arg2, Arg3)
+                        Return (Zero)
+                    }
+
+                }
+            }
+            Case (0x06)
+            {
+                Switch (ToInteger (Arg3))
+                {
+                    Case (0x01)
+                    {
+                        Local2 = 0x06
+                        BankField (OPR0, BNK0, 0x06, DWordAcc, NoLock, WriteAsZeros)
+                        {
+                                ,   6, 
+                            F060,   1
+                        }
+
+                        Local3 = RefOf (F060)
+                        Local4 = RefOf (G006)
+                    }
+                    Case (0x06)
+                    {
+                        Local2 = 0x07
+                        BankField (OPR0, BNK0, 0x07, AnyAcc, NoLock, WriteAsZeros)
+                        {
+                            AccessAs (DWordAcc, 0x00), 
+                                ,   6, 
+                            F061,   6
+                        }
+
+                        Local3 = RefOf (F061)
+                        Local4 = RefOf (G007)
+                    }
+                    Case (0x07)
+                    {
+                        Local2 = 0x08
+                        BankField (OPR0, BNK0, 0x08, DWordAcc, NoLock, WriteAsZeros)
+                        {
+                                ,   6, 
+                            F062,   7
+                        }
+
+                        Local3 = RefOf (F062)
+                        Local4 = RefOf (G008)
+                    }
+                    Case (0x08)
+                    {
+                        Local2 = 0x09
+                        BankField (OPR0, BNK0, 0x09, ByteAcc, NoLock, WriteAsZeros)
+                        {
+                            AccessAs (DWordAcc, 0x00), 
+                                ,   6, 
+                            F063,   8
+                        }
+
+                        Local3 = RefOf (F063)
+                        Local4 = RefOf (G009)
+                    }
+                    Case (0x09)
+                    {
+                        Local2 = 0x3F
+                        BankField (OPR0, BNK0, 0x3F, DWordAcc, NoLock, WriteAsZeros)
+                        {
+                                ,   6, 
+                            F064,   9
+                        }
+
+                        Local3 = RefOf (F064)
+                        Local4 = RefOf (G00A)
+                    }
+                    Case (0x1F)
+                    {
+                        Local2 = 0x40
+                        BankField (OPR0, BNK0, 0x40, WordAcc, NoLock, WriteAsZeros)
+                        {
+                            AccessAs (DWordAcc, 0x00), 
+                                ,   6, 
+                            F065,   31
+                        }
+
+                        Local3 = RefOf (F065)
+                        Local4 = RefOf (G00B)
+                    }
+                    Case (0x20)
+                    {
+                        Local2 = 0x7F
+                        BankField (OPR0, BNK0, 0x7F, DWordAcc, NoLock, WriteAsZeros)
+                        {
+                                ,   6, 
+                            F066,   32
+                        }
+
+                        Local3 = RefOf (F066)
+                        Local4 = RefOf (G00C)
+                    }
+                    Case (0x21)
+                    {
+                        Local2 = 0x80
+                        BankField (OPR0, BNK0, 0x80, DWordAcc, NoLock, WriteAsZeros)
+                        {
+                            AccessAs (DWordAcc, 0x00), 
+                                ,   6, 
+                            F067,   33
+                        }
+
+                        Local3 = RefOf (F067)
+                        Local4 = RefOf (G00D)
+                    }
+                    Case (0x3F)
+                    {
+                        Local2 = 0xFF
+                        BankField (OPR0, BNK0, 0xFF, DWordAcc, NoLock, WriteAsZeros)
+                        {
+                                ,   6, 
+                            F068,   63
+                        }
+
+                        Local3 = RefOf (F068)
+                        Local4 = RefOf (G00E)
+                    }
+                    Case (0x40)
+                    {
+                        Local2 = 0x00
+                        BankField (OPR0, BNK0, 0x00, QWordAcc, NoLock, WriteAsZeros)
+                        {
+                            AccessAs (DWordAcc, 0x00), 
+                                ,   6, 
+                            F069,   64
+                        }
+
+                        Local3 = RefOf (F069)
+                        Local4 = RefOf (G000)
+                    }
+                    Case (0x41)
+                    {
+                        Local2 = 0x01
+                        BankField (OPR0, BNK0, 0x01, DWordAcc, NoLock, WriteAsZeros)
+                        {
+                                ,   6, 
+                            F06A,   65
+                        }
+
+                        Local3 = RefOf (F06A)
+                        Local4 = RefOf (G001)
+                    }
+                    Case (0x45)
+                    {
+                        Local2 = 0x02
+                        BankField (OPR0, BNK0, 0x02, AnyAcc, NoLock, WriteAsZeros)
+                        {
+                            AccessAs (DWordAcc, 0x00), 
+                                ,   6, 
+                            F06B,   69
+                        }
+
+                        Local3 = RefOf (F06B)
+                        Local4 = RefOf (G002)
+                    }
+                    Case (0x81)
+                    {
+                        Local2 = 0x03
+                        BankField (OPR0, BNK0, 0x03, DWordAcc, NoLock, WriteAsZeros)
+                        {
+                                ,   6, 
+                            F06C,   129
+                        }
+
+                        Local3 = RefOf (F06C)
+                        Local4 = RefOf (G003)
+                    }
+                    Case (0x0100)
+                    {
+                        Local2 = 0x04
+                        BankField (OPR0, BNK0, 0x04, ByteAcc, NoLock, WriteAsZeros)
+                        {
+                            AccessAs (DWordAcc, 0x00), 
+                                ,   6, 
+                            F06D,   256
+                        }
+
+                        Local3 = RefOf (F06D)
+                        Local4 = RefOf (G004)
+                    }
+                    Case (0x03FF)
+                    {
+                        Local2 = 0x05
+                        BankField (OPR0, BNK0, 0x05, DWordAcc, NoLock, WriteAsZeros)
+                        {
+                                ,   6, 
+                            F06E,   1023
+                        }
+
+                        Local3 = RefOf (F06E)
+                        Local4 = RefOf (G005)
+                    }
+                    Case (0x07BF)
+                    {
+                        Local2 = 0x06
+                        BankField (OPR0, BNK0, 0x06, WordAcc, NoLock, WriteAsZeros)
+                        {
+                            AccessAs (DWordAcc, 0x00), 
+                                ,   6, 
+                            F06F,   1983
+                        }
+
+                        Local3 = RefOf (F06F)
+                        Local4 = RefOf (G006)
+                    }
+                    Default
+                    {
+                        ERR (Arg0, Z145, 0x1523, 0x00, 0x00, Arg2, Arg3)
+                        Return (Zero)
+                    }
+
+                }
+            }
+            Case (0x07)
+            {
+                Switch (ToInteger (Arg3))
+                {
+                    Case (0x01)
+                    {
+                        Local2 = 0x07
+                        BankField (OPR0, BNK0, 0x07, DWordAcc, NoLock, WriteAsZeros)
+                        {
+                            AccessAs (DWordAcc, 0x00), 
+                                ,   7, 
+                            F070,   1
+                        }
+
+                        Local3 = RefOf (F070)
+                        Local4 = RefOf (G007)
+                    }
+                    Case (0x06)
+                    {
+                        Local2 = 0x08
+                        BankField (OPR0, BNK0, 0x08, DWordAcc, NoLock, WriteAsZeros)
+                        {
+                                ,   7, 
+                            F071,   6
+                        }
+
+                        Local3 = RefOf (F071)
+                        Local4 = RefOf (G008)
+                    }
+                    Case (0x07)
+                    {
+                        Local2 = 0x09
+                        BankField (OPR0, BNK0, 0x09, QWordAcc, NoLock, WriteAsZeros)
+                        {
+                            AccessAs (DWordAcc, 0x00), 
+                                ,   7, 
+                            F072,   7
+                        }
+
+                        Local3 = RefOf (F072)
+                        Local4 = RefOf (G009)
+                    }
+                    Case (0x08)
+                    {
+                        Local2 = 0x3F
+                        BankField (OPR0, BNK0, 0x3F, DWordAcc, NoLock, WriteAsZeros)
+                        {
+                                ,   7, 
+                            F073,   8
+                        }
+
+                        Local3 = RefOf (F073)
+                        Local4 = RefOf (G00A)
+                    }
+                    Case (0x09)
+                    {
+                        Local2 = 0x40
+                        BankField (OPR0, BNK0, 0x40, AnyAcc, NoLock, WriteAsZeros)
+                        {
+                            AccessAs (DWordAcc, 0x00), 
+                                ,   7, 
+                            F074,   9
+                        }
+
+                        Local3 = RefOf (F074)
+                        Local4 = RefOf (G00B)
+                    }
+                    Case (0x1F)
+                    {
+                        Local2 = 0x7F
+                        BankField (OPR0, BNK0, 0x7F, DWordAcc, NoLock, WriteAsZeros)
+                        {
+                                ,   7, 
+                            F075,   31
+                        }
+
+                        Local3 = RefOf (F075)
+                        Local4 = RefOf (G00C)
+                    }
+                    Case (0x20)
+                    {
+                        Local2 = 0x80
+                        BankField (OPR0, BNK0, 0x80, ByteAcc, NoLock, WriteAsZeros)
+                        {
+                            AccessAs (DWordAcc, 0x00), 
+                                ,   7, 
+                            F076,   32
+                        }
+
+                        Local3 = RefOf (F076)
+                        Local4 = RefOf (G00D)
+                    }
+                    Case (0x21)
+                    {
+                        Local2 = 0xFF
+                        BankField (OPR0, BNK0, 0xFF, DWordAcc, NoLock, WriteAsZeros)
+                        {
+                                ,   7, 
+                            F077,   33
+                        }
+
+                        Local3 = RefOf (F077)
+                        Local4 = RefOf (G00E)
+                    }
+                    Case (0x3F)
+                    {
+                        Local2 = 0x00
+                        BankField (OPR0, BNK0, 0x00, WordAcc, NoLock, WriteAsZeros)
+                        {
+                            AccessAs (DWordAcc, 0x00), 
+                                ,   7, 
+                            F078,   63
+                        }
+
+                        Local3 = RefOf (F078)
+                        Local4 = RefOf (G000)
+                    }
+                    Case (0x40)
+                    {
+                        Local2 = 0x01
+                        BankField (OPR0, BNK0, 0x01, DWordAcc, NoLock, WriteAsZeros)
+                        {
+                                ,   7, 
+                            F079,   64
+                        }
+
+                        Local3 = RefOf (F079)
+                        Local4 = RefOf (G001)
+                    }
+                    Case (0x41)
+                    {
+                        Local2 = 0x02
+                        BankField (OPR0, BNK0, 0x02, DWordAcc, NoLock, WriteAsZeros)
+                        {
+                            AccessAs (DWordAcc, 0x00), 
+                                ,   7, 
+                            F07A,   65
+                        }
+
+                        Local3 = RefOf (F07A)
+                        Local4 = RefOf (G002)
+                    }
+                    Case (0x45)
+                    {
+                        Local2 = 0x03
+                        BankField (OPR0, BNK0, 0x03, DWordAcc, NoLock, WriteAsZeros)
+                        {
+                                ,   7, 
+                            F07B,   69
+                        }
+
+                        Local3 = RefOf (F07B)
+                        Local4 = RefOf (G003)
+                    }
+                    Case (0x81)
+                    {
+                        Local2 = 0x04
+                        BankField (OPR0, BNK0, 0x04, QWordAcc, NoLock, WriteAsZeros)
+                        {
+                            AccessAs (DWordAcc, 0x00), 
+                                ,   7, 
+                            F07C,   129
+                        }
+
+                        Local3 = RefOf (F07C)
+                        Local4 = RefOf (G004)
+                    }
+                    Case (0x0100)
+                    {
+                        Local2 = 0x05
+                        BankField (OPR0, BNK0, 0x05, DWordAcc, NoLock, WriteAsZeros)
+                        {
+                                ,   7, 
+                            F07D,   256
+                        }
+
+                        Local3 = RefOf (F07D)
+                        Local4 = RefOf (G005)
+                    }
+                    Case (0x03FF)
+                    {
+                        Local2 = 0x06
+                        BankField (OPR0, BNK0, 0x06, AnyAcc, NoLock, WriteAsZeros)
+                        {
+                            AccessAs (DWordAcc, 0x00), 
+                                ,   7, 
+                            F07E,   1023
+                        }
+
+                        Local3 = RefOf (F07E)
+                        Local4 = RefOf (G006)
+                    }
+                    Case (0x07BF)
+                    {
+                        Local2 = 0x07
+                        BankField (OPR0, BNK0, 0x07, DWordAcc, NoLock, WriteAsZeros)
+                        {
+                                ,   7, 
+                            F07F,   1983
+                        }
+
+                        Local3 = RefOf (F07F)
+                        Local4 = RefOf (G007)
+                    }
+                    Default
+                    {
+                        ERR (Arg0, Z145, 0x15A3, 0x00, 0x00, Arg2, Arg3)
+                        Return (Zero)
+                    }
+
+                }
+            }
+            Case (0x08)
+            {
+                Switch (ToInteger (Arg3))
+                {
+                    Case (0x01)
+                    {
+                        Local2 = 0x08
+                        BankField (OPR0, BNK0, 0x08, DWordAcc, NoLock, WriteAsZeros)
+                        {
+                            Offset (0x01), 
+                            F080,   1
+                        }
+
+                        Local3 = RefOf (F080)
+                        Local4 = RefOf (G008)
+                    }
+                    Case (0x06)
+                    {
+                        Local2 = 0x09
+                        BankField (OPR0, BNK0, 0x09, ByteAcc, NoLock, WriteAsZeros)
+                        {
+                            AccessAs (DWordAcc, 0x00), 
+                            Offset (0x01), 
+                            F081,   6
+                        }
+
+                        Local3 = RefOf (F081)
+                        Local4 = RefOf (G009)
+                    }
+                    Case (0x07)
+                    {
+                        Local2 = 0x3F
+                        BankField (OPR0, BNK0, 0x3F, DWordAcc, NoLock, WriteAsZeros)
+                        {
+                            Offset (0x01), 
+                            F082,   7
+                        }
+
+                        Local3 = RefOf (F082)
+                        Local4 = RefOf (G00A)
+                    }
+                    Case (0x08)
+                    {
+                        Local2 = 0x40
+                        BankField (OPR0, BNK0, 0x40, WordAcc, NoLock, WriteAsZeros)
+                        {
+                            AccessAs (DWordAcc, 0x00), 
+                            Offset (0x01), 
+                            F083,   8
+                        }
+
+                        Local3 = RefOf (F083)
+                        Local4 = RefOf (G00B)
+                    }
+                    Case (0x09)
+                    {
+                        Local2 = 0x7F
+                        BankField (OPR0, BNK0, 0x7F, DWordAcc, NoLock, WriteAsZeros)
+                        {
+                            Offset (0x01), 
+                            F084,   9
+                        }
+
+                        Local3 = RefOf (F084)
+                        Local4 = RefOf (G00C)
+                    }
+                    Case (0x1F)
+                    {
+                        Local2 = 0x80
+                        BankField (OPR0, BNK0, 0x80, DWordAcc, NoLock, WriteAsZeros)
+                        {
+                            AccessAs (DWordAcc, 0x00), 
+                            Offset (0x01), 
+                            F085,   31
+                        }
+
+                        Local3 = RefOf (F085)
+                        Local4 = RefOf (G00D)
+                    }
+                    Case (0x20)
+                    {
+                        Local2 = 0xFF
+                        BankField (OPR0, BNK0, 0xFF, DWordAcc, NoLock, WriteAsZeros)
+                        {
+                            Offset (0x01), 
+                            F086,   32
+                        }
+
+                        Local3 = RefOf (F086)
+                        Local4 = RefOf (G00E)
+                    }
+                    Case (0x21)
+                    {
+                        Local2 = 0x00
+                        BankField (OPR0, BNK0, 0x00, QWordAcc, NoLock, WriteAsZeros)
+                        {
+                            AccessAs (DWordAcc, 0x00), 
+                            Offset (0x01), 
+                            F087,   33
+                        }
+
+                        Local3 = RefOf (F087)
+                        Local4 = RefOf (G000)
+                    }
+                    Case (0x3F)
+                    {
+                        Local2 = 0x01
+                        BankField (OPR0, BNK0, 0x01, DWordAcc, NoLock, WriteAsZeros)
+                        {
+                            Offset (0x01), 
+                            F088,   63
+                        }
+
+                        Local3 = RefOf (F088)
+                        Local4 = RefOf (G001)
+                    }
+                    Case (0x40)
+                    {
+                        Local2 = 0x02
+                        BankField (OPR0, BNK0, 0x02, AnyAcc, NoLock, WriteAsZeros)
+                        {
+                            AccessAs (DWordAcc, 0x00), 
+                            Offset (0x01), 
+                            F089,   64
+                        }
+
+                        Local3 = RefOf (F089)
+                        Local4 = RefOf (G002)
+                    }
+                    Case (0x41)
+                    {
+                        Local2 = 0x03
+                        BankField (OPR0, BNK0, 0x03, DWordAcc, NoLock, WriteAsZeros)
+                        {
+                            Offset (0x01), 
+                            F08A,   65
+                        }
+
+                        Local3 = RefOf (F08A)
+                        Local4 = RefOf (G003)
+                    }
+                    Case (0x45)
+                    {
+                        Local2 = 0x04
+                        BankField (OPR0, BNK0, 0x04, ByteAcc, NoLock, WriteAsZeros)
+                        {
+                            AccessAs (DWordAcc, 0x00), 
+                            Offset (0x01), 
+                            F08B,   69
+                        }
+
+                        Local3 = RefOf (F08B)
+                        Local4 = RefOf (G004)
+                    }
+                    Case (0x81)
+                    {
+                        Local2 = 0x05
+                        BankField (OPR0, BNK0, 0x05, DWordAcc, NoLock, WriteAsZeros)
+                        {
+                            Offset (0x01), 
+                            F08C,   129
+                        }
+
+                        Local3 = RefOf (F08C)
+                        Local4 = RefOf (G005)
+                    }
+                    Case (0x0100)
+                    {
+                        Local2 = 0x06
+                        BankField (OPR0, BNK0, 0x06, WordAcc, NoLock, WriteAsZeros)
+                        {
+                            AccessAs (DWordAcc, 0x00), 
+                            Offset (0x01), 
+                            F08D,   256
+                        }
+
+                        Local3 = RefOf (F08D)
+                        Local4 = RefOf (G006)
+                    }
+                    Case (0x03FF)
+                    {
+                        Local2 = 0x07
+                        BankField (OPR0, BNK0, 0x07, DWordAcc, NoLock, WriteAsZeros)
+                        {
+                            Offset (0x01), 
+                            F08E,   1023
+                        }
+
+                        Local3 = RefOf (F08E)
+                        Local4 = RefOf (G007)
+                    }
+                    Case (0x07BF)
+                    {
+                        Local2 = 0x08
+                        BankField (OPR0, BNK0, 0x08, DWordAcc, NoLock, WriteAsZeros)
+                        {
+                            AccessAs (DWordAcc, 0x00), 
+                            Offset (0x01), 
+                            F08F,   1983
+                        }
+
+                        Local3 = RefOf (F08F)
+                        Local4 = RefOf (G008)
+                    }
+                    Default
+                    {
+                        ERR (Arg0, Z145, 0x1623, 0x00, 0x00, Arg2, Arg3)
+                        Return (Zero)
+                    }
+
+                }
+            }
+            Case (0x09)
+            {
+                Switch (ToInteger (Arg3))
+                {
+                    Case (0x01)
+                    {
+                        Local2 = 0x09
+                        BankField (OPR0, BNK0, 0x09, QWordAcc, NoLock, WriteAsZeros)
+                        {
+                            AccessAs (DWordAcc, 0x00), 
+                                ,   9, 
+                            F090,   1
+                        }
+
+                        Local3 = RefOf (F090)
+                        Local4 = RefOf (G009)
+                    }
+                    Case (0x06)
+                    {
+                        Local2 = 0x3F
+                        BankField (OPR0, BNK0, 0x3F, DWordAcc, NoLock, WriteAsZeros)
+                        {
+                                ,   9, 
+                            F091,   6
+                        }
+
+                        Local3 = RefOf (F091)
+                        Local4 = RefOf (G00A)
+                    }
+                    Case (0x07)
+                    {
+                        Local2 = 0x40
+                        BankField (OPR0, BNK0, 0x40, AnyAcc, NoLock, WriteAsZeros)
+                        {
+                            AccessAs (DWordAcc, 0x00), 
+                                ,   9, 
+                            F092,   7
+                        }
+
+                        Local3 = RefOf (F092)
+                        Local4 = RefOf (G00B)
+                    }
+                    Case (0x08)
+                    {
+                        Local2 = 0x7F
+                        BankField (OPR0, BNK0, 0x7F, DWordAcc, NoLock, WriteAsZeros)
+                        {
+                                ,   9, 
+                            F093,   8
+                        }
+
+                        Local3 = RefOf (F093)
+                        Local4 = RefOf (G00C)
+                    }
+                    Case (0x09)
+                    {
+                        Local2 = 0x80
+                        BankField (OPR0, BNK0, 0x80, ByteAcc, NoLock, WriteAsZeros)
+                        {
+                            AccessAs (DWordAcc, 0x00), 
+                                ,   9, 
+                            F094,   9
+                        }
+
+                        Local3 = RefOf (F094)
+                        Local4 = RefOf (G00D)
+                    }
+                    Case (0x1F)
+                    {
+                        Local2 = 0xFF
+                        BankField (OPR0, BNK0, 0xFF, DWordAcc, NoLock, WriteAsZeros)
+                        {
+                                ,   9, 
+                            F095,   31
+                        }
+
+                        Local3 = RefOf (F095)
+                        Local4 = RefOf (G00E)
+                    }
+                    Case (0x20)
+                    {
+                        Local2 = 0x00
+                        BankField (OPR0, BNK0, 0x00, WordAcc, NoLock, WriteAsZeros)
+                        {
+                            AccessAs (DWordAcc, 0x00), 
+                                ,   9, 
+                            F096,   32
+                        }
+
+                        Local3 = RefOf (F096)
+                        Local4 = RefOf (G000)
+                    }
+                    Case (0x21)
+                    {
+                        Local2 = 0x01
+                        BankField (OPR0, BNK0, 0x01, DWordAcc, NoLock, WriteAsZeros)
+                        {
+                                ,   9, 
+                            F097,   33
+                        }
+
+                        Local3 = RefOf (F097)
+                        Local4 = RefOf (G001)
+                    }
+                    Case (0x3F)
+                    {
+                        Local2 = 0x02
+                        BankField (OPR0, BNK0, 0x02, DWordAcc, NoLock, WriteAsZeros)
+                        {
+                            AccessAs (DWordAcc, 0x00), 
+                                ,   9, 
+                            F098,   63
+                        }
+
+                        Local3 = RefOf (F098)
+                        Local4 = RefOf (G002)
+                    }
+                    Case (0x40)
+                    {
+                        Local2 = 0x03
+                        BankField (OPR0, BNK0, 0x03, DWordAcc, NoLock, WriteAsZeros)
+                        {
+                                ,   9, 
+                            F099,   64
+                        }
+
+                        Local3 = RefOf (F099)
+                        Local4 = RefOf (G003)
+                    }
+                    Case (0x41)
+                    {
+                        Local2 = 0x04
+                        BankField (OPR0, BNK0, 0x04, QWordAcc, NoLock, WriteAsZeros)
+                        {
+                            AccessAs (DWordAcc, 0x00), 
+                                ,   9, 
+                            F09A,   65
+                        }
+
+                        Local3 = RefOf (F09A)
+                        Local4 = RefOf (G004)
+                    }
+                    Case (0x45)
+                    {
+                        Local2 = 0x05
+                        BankField (OPR0, BNK0, 0x05, DWordAcc, NoLock, WriteAsZeros)
+                        {
+                                ,   9, 
+                            F09B,   69
+                        }
+
+                        Local3 = RefOf (F09B)
+                        Local4 = RefOf (G005)
+                    }
+                    Case (0x81)
+                    {
+                        Local2 = 0x06
+                        BankField (OPR0, BNK0, 0x06, AnyAcc, NoLock, WriteAsZeros)
+                        {
+                            AccessAs (DWordAcc, 0x00), 
+                                ,   9, 
+                            F09C,   129
+                        }
+
+                        Local3 = RefOf (F09C)
+                        Local4 = RefOf (G006)
+                    }
+                    Case (0x0100)
+                    {
+                        Local2 = 0x07
+                        BankField (OPR0, BNK0, 0x07, DWordAcc, NoLock, WriteAsZeros)
+                        {
+                                ,   9, 
+                            F09D,   256
+                        }
+
+                        Local3 = RefOf (F09D)
+                        Local4 = RefOf (G007)
+                    }
+                    Case (0x03FF)
+                    {
+                        Local2 = 0x08
+                        BankField (OPR0, BNK0, 0x08, ByteAcc, NoLock, WriteAsZeros)
+                        {
+                            AccessAs (DWordAcc, 0x00), 
+                                ,   9, 
+                            F09E,   1023
+                        }
+
+                        Local3 = RefOf (F09E)
+                        Local4 = RefOf (G008)
+                    }
+                    Case (0x07BF)
+                    {
+                        Local2 = 0x09
+                        BankField (OPR0, BNK0, 0x09, DWordAcc, NoLock, WriteAsZeros)
+                        {
+                                ,   9, 
+                            F09F,   1983
+                        }
+
+                        Local3 = RefOf (F09F)
+                        Local4 = RefOf (G009)
+                    }
+                    Default
+                    {
+                        ERR (Arg0, Z145, 0x16A3, 0x00, 0x00, Arg2, Arg3)
+                        Return (Zero)
+                    }
+
+                }
+            }
+            Case (0x1F)
+            {
+                Switch (ToInteger (Arg3))
+                {
+                    Case (0x01)
+                    {
+                        Local2 = 0x3F
+                        BankField (OPR0, BNK0, 0x3F, DWordAcc, NoLock, WriteAsZeros)
+                        {
+                            Offset (0x03), 
+                                ,   7, 
+                            F0A0,   1
+                        }
+
+                        Local3 = RefOf (F0A0)
+                        Local4 = RefOf (G00A)
+                    }
+                    Case (0x06)
+                    {
+                        Local2 = 0x40
+                        BankField (OPR0, BNK0, 0x40, WordAcc, NoLock, WriteAsZeros)
+                        {
+                            AccessAs (DWordAcc, 0x00), 
+                            Offset (0x03), 
+                                ,   7, 
+                            F0A1,   6
+                        }
+
+                        Local3 = RefOf (F0A1)
+                        Local4 = RefOf (G00B)
+                    }
+                    Case (0x07)
+                    {
+                        Local2 = 0x7F
+                        BankField (OPR0, BNK0, 0x7F, DWordAcc, NoLock, WriteAsZeros)
+                        {
+                            Offset (0x03), 
+                                ,   7, 
+                            F0A2,   7
+                        }
+
+                        Local3 = RefOf (F0A2)
+                        Local4 = RefOf (G00C)
+                    }
+                    Case (0x08)
+                    {
+                        Local2 = 0x80
+                        BankField (OPR0, BNK0, 0x80, DWordAcc, NoLock, WriteAsZeros)
+                        {
+                            AccessAs (DWordAcc, 0x00), 
+                            Offset (0x03), 
+                                ,   7, 
+                            F0A3,   8
+                        }
+
+                        Local3 = RefOf (F0A3)
+                        Local4 = RefOf (G00D)
+                    }
+                    Case (0x09)
+                    {
+                        Local2 = 0xFF
+                        BankField (OPR0, BNK0, 0xFF, DWordAcc, NoLock, WriteAsZeros)
+                        {
+                            Offset (0x03), 
+                                ,   7, 
+                            F0A4,   9
+                        }
+
+                        Local3 = RefOf (F0A4)
+                        Local4 = RefOf (G00E)
+                    }
+                    Case (0x1F)
+                    {
+                        Local2 = 0x00
+                        BankField (OPR0, BNK0, 0x00, QWordAcc, NoLock, WriteAsZeros)
+                        {
+                            AccessAs (DWordAcc, 0x00), 
+                            Offset (0x03), 
+                                ,   7, 
+                            F0A5,   31
+                        }
+
+                        Local3 = RefOf (F0A5)
+                        Local4 = RefOf (G000)
+                    }
+                    Case (0x20)
+                    {
+                        Local2 = 0x01
+                        BankField (OPR0, BNK0, 0x01, DWordAcc, NoLock, WriteAsZeros)
+                        {
+                            Offset (0x03), 
+                                ,   7, 
+                            F0A6,   32
+                        }
+
+                        Local3 = RefOf (F0A6)
+                        Local4 = RefOf (G001)
+                    }
+                    Case (0x21)
+                    {
+                        Local2 = 0x02
+                        BankField (OPR0, BNK0, 0x02, AnyAcc, NoLock, WriteAsZeros)
+                        {
+                            AccessAs (DWordAcc, 0x00), 
+                            Offset (0x03), 
+                                ,   7, 
+                            F0A7,   33
+                        }
+
+                        Local3 = RefOf (F0A7)
+                        Local4 = RefOf (G002)
+                    }
+                    Case (0x3F)
+                    {
+                        Local2 = 0x03
+                        BankField (OPR0, BNK0, 0x03, DWordAcc, NoLock, WriteAsZeros)
+                        {
+                            Offset (0x03), 
+                                ,   7, 
+                            F0A8,   63
+                        }
+
+                        Local3 = RefOf (F0A8)
+                        Local4 = RefOf (G003)
+                    }
+                    Case (0x40)
+                    {
+                        Local2 = 0x04
+                        BankField (OPR0, BNK0, 0x04, ByteAcc, NoLock, WriteAsZeros)
+                        {
+                            AccessAs (DWordAcc, 0x00), 
+                            Offset (0x03), 
+                                ,   7, 
+                            F0A9,   64
+                        }
+
+                        Local3 = RefOf (F0A9)
+                        Local4 = RefOf (G004)
+                    }
+                    Case (0x41)
+                    {
+                        Local2 = 0x05
+                        BankField (OPR0, BNK0, 0x05, DWordAcc, NoLock, WriteAsZeros)
+                        {
+                            Offset (0x03), 
+                                ,   7, 
+                            F0AA,   65
+                        }
+
+                        Local3 = RefOf (F0AA)
+                        Local4 = RefOf (G005)
+                    }
+                    Case (0x45)
+                    {
+                        Local2 = 0x06
+                        BankField (OPR0, BNK0, 0x06, WordAcc, NoLock, WriteAsZeros)
+                        {
+                            AccessAs (DWordAcc, 0x00), 
+                            Offset (0x03), 
+                                ,   7, 
+                            F0AB,   69
+                        }
+
+                        Local3 = RefOf (F0AB)
+                        Local4 = RefOf (G006)
+                    }
+                    Case (0x81)
+                    {
+                        Local2 = 0x07
+                        BankField (OPR0, BNK0, 0x07, DWordAcc, NoLock, WriteAsZeros)
+                        {
+                            Offset (0x03), 
+                                ,   7, 
+                            F0AC,   129
+                        }
+
+                        Local3 = RefOf (F0AC)
+                        Local4 = RefOf (G007)
+                    }
+                    Case (0x0100)
+                    {
+                        Local2 = 0x08
+                        BankField (OPR0, BNK0, 0x08, DWordAcc, NoLock, WriteAsZeros)
+                        {
+                            AccessAs (DWordAcc, 0x00), 
+                            Offset (0x03), 
+                                ,   7, 
+                            F0AD,   256
+                        }
+
+                        Local3 = RefOf (F0AD)
+                        Local4 = RefOf (G008)
+                    }
+                    Case (0x03FF)
+                    {
+                        Local2 = 0x09
+                        BankField (OPR0, BNK0, 0x09, DWordAcc, NoLock, WriteAsZeros)
+                        {
+                            Offset (0x03), 
+                                ,   7, 
+                            F0AE,   1023
+                        }
+
+                        Local3 = RefOf (F0AE)
+                        Local4 = RefOf (G009)
+                    }
+                    Case (0x07BF)
+                    {
+                        Local2 = 0x3F
+                        BankField (OPR0, BNK0, 0x3F, QWordAcc, NoLock, WriteAsZeros)
+                        {
+                            AccessAs (DWordAcc, 0x00), 
+                            Offset (0x03), 
+                                ,   7, 
+                            F0AF,   1983
+                        }
+
+                        Local3 = RefOf (F0AF)
+                        Local4 = RefOf (G00A)
+                    }
+                    Default
+                    {
+                        ERR (Arg0, Z145, 0x1723, 0x00, 0x00, Arg2, Arg3)
+                        Return (Zero)
+                    }
+
+                }
+            }
+            Case (0x20)
+            {
+                Switch (ToInteger (Arg3))
+                {
+                    Case (0x01)
+                    {
+                        Local2 = 0x40
+                        BankField (OPR0, BNK0, 0x40, AnyAcc, NoLock, WriteAsZeros)
+                        {
+                            AccessAs (DWordAcc, 0x00), 
+                            Offset (0x04), 
+                            F0B0,   1
+                        }
+
+                        Local3 = RefOf (F0B0)
+                        Local4 = RefOf (G00B)
+                    }
+                    Case (0x06)
+                    {
+                        Local2 = 0x7F
+                        BankField (OPR0, BNK0, 0x7F, DWordAcc, NoLock, WriteAsZeros)
+                        {
+                            Offset (0x04), 
+                            F0B1,   6
+                        }
+
+                        Local3 = RefOf (F0B1)
+                        Local4 = RefOf (G00C)
+                    }
+                    Case (0x07)
+                    {
+                        Local2 = 0x80
+                        BankField (OPR0, BNK0, 0x80, ByteAcc, NoLock, WriteAsZeros)
+                        {
+                            AccessAs (DWordAcc, 0x00), 
+                            Offset (0x04), 
+                            F0B2,   7
+                        }
+
+                        Local3 = RefOf (F0B2)
+                        Local4 = RefOf (G00D)
+                    }
+                    Case (0x08)
+                    {
+                        Local2 = 0xFF
+                        BankField (OPR0, BNK0, 0xFF, DWordAcc, NoLock, WriteAsZeros)
+                        {
+                            Offset (0x04), 
+                            F0B3,   8
+                        }
+
+                        Local3 = RefOf (F0B3)
+                        Local4 = RefOf (G00E)
+                    }
+                    Case (0x09)
+                    {
+                        Local2 = 0x00
+                        BankField (OPR0, BNK0, 0x00, WordAcc, NoLock, WriteAsZeros)
+                        {
+                            AccessAs (DWordAcc, 0x00), 
+                            Offset (0x04), 
+                            F0B4,   9
+                        }
+
+                        Local3 = RefOf (F0B4)
+                        Local4 = RefOf (G000)
+                    }
+                    Case (0x1F)
+                    {
+                        Local2 = 0x01
+                        BankField (OPR0, BNK0, 0x01, DWordAcc, NoLock, WriteAsZeros)
+                        {
+                            Offset (0x04), 
+                            F0B5,   31
+                        }
+
+                        Local3 = RefOf (F0B5)
+                        Local4 = RefOf (G001)
+                    }
+                    Case (0x20)
+                    {
+                        Local2 = 0x02
+                        BankField (OPR0, BNK0, 0x02, DWordAcc, NoLock, WriteAsZeros)
+                        {
+                            AccessAs (DWordAcc, 0x00), 
+                            Offset (0x04), 
+                            F0B6,   32
+                        }
+
+                        Local3 = RefOf (F0B6)
+                        Local4 = RefOf (G002)
+                    }
+                    Case (0x21)
+                    {
+                        Local2 = 0x03
+                        BankField (OPR0, BNK0, 0x03, DWordAcc, NoLock, WriteAsZeros)
+                        {
+                            Offset (0x04), 
+                            F0B7,   33
+                        }
+
+                        Local3 = RefOf (F0B7)
+                        Local4 = RefOf (G003)
+                    }
+                    Case (0x3F)
+                    {
+                        Local2 = 0x04
+                        BankField (OPR0, BNK0, 0x04, QWordAcc, NoLock, WriteAsZeros)
+                        {
+                            AccessAs (DWordAcc, 0x00), 
+                            Offset (0x04), 
+                            F0B8,   63
+                        }
+
+                        Local3 = RefOf (F0B8)
+                        Local4 = RefOf (G004)
+                    }
+                    Case (0x40)
+                    {
+                        Local2 = 0x05
+                        BankField (OPR0, BNK0, 0x05, DWordAcc, NoLock, WriteAsZeros)
+                        {
+                            Offset (0x04), 
+                            F0B9,   64
+                        }
+
+                        Local3 = RefOf (F0B9)
+                        Local4 = RefOf (G005)
+                    }
+                    Case (0x41)
+                    {
+                        Local2 = 0x06
+                        BankField (OPR0, BNK0, 0x06, AnyAcc, NoLock, WriteAsZeros)
+                        {
+                            AccessAs (DWordAcc, 0x00), 
+                            Offset (0x04), 
+                            F0BA,   65
+                        }
+
+                        Local3 = RefOf (F0BA)
+                        Local4 = RefOf (G006)
+                    }
+                    Case (0x45)
+                    {
+                        Local2 = 0x07
+                        BankField (OPR0, BNK0, 0x07, DWordAcc, NoLock, WriteAsZeros)
+                        {
+                            Offset (0x04), 
+                            F0BB,   69
+                        }
+
+                        Local3 = RefOf (F0BB)
+                        Local4 = RefOf (G007)
+                    }
+                    Case (0x81)
+                    {
+                        Local2 = 0x08
+                        BankField (OPR0, BNK0, 0x08, ByteAcc, NoLock, WriteAsZeros)
+                        {
+                            AccessAs (DWordAcc, 0x00), 
+                            Offset (0x04), 
+                            F0BC,   129
+                        }
+
+                        Local3 = RefOf (F0BC)
+                        Local4 = RefOf (G008)
+                    }
+                    Case (0x0100)
+                    {
+                        Local2 = 0x09
+                        BankField (OPR0, BNK0, 0x09, DWordAcc, NoLock, WriteAsZeros)
+                        {
+                            Offset (0x04), 
+                            F0BD,   256
+                        }
+
+                        Local3 = RefOf (F0BD)
+                        Local4 = RefOf (G009)
+                    }
+                    Case (0x03FF)
+                    {
+                        Local2 = 0x3F
+                        BankField (OPR0, BNK0, 0x3F, WordAcc, NoLock, WriteAsZeros)
+                        {
+                            AccessAs (DWordAcc, 0x00), 
+                            Offset (0x04), 
+                            F0BE,   1023
+                        }
+
+                        Local3 = RefOf (F0BE)
+                        Local4 = RefOf (G00A)
+                    }
+                    Case (0x07BF)
+                    {
+                        Local2 = 0x40
+                        BankField (OPR0, BNK0, 0x40, DWordAcc, NoLock, WriteAsZeros)
+                        {
+                            Offset (0x04), 
+                            F0BF,   1983
+                        }
+
+                        Local3 = RefOf (F0BF)
+                        Local4 = RefOf (G00B)
+                    }
+                    Default
+                    {
+                        ERR (Arg0, Z145, 0x17A3, 0x00, 0x00, Arg2, Arg3)
+                        Return (Zero)
+                    }
+
+                }
+            }
+            Case (0x21)
+            {
+                Switch (ToInteger (Arg3))
+                {
+                    Case (0x01)
+                    {
+                        Local2 = 0x7F
+                        BankField (OPR0, BNK0, 0x7F, DWordAcc, NoLock, WriteAsZeros)
+                        {
+                                ,   33, 
+                            F0C0,   1
+                        }
+
+                        Local3 = RefOf (F0C0)
+                        Local4 = RefOf (G00C)
+                    }
+                    Case (0x06)
+                    {
+                        Local2 = 0x80
+                        BankField (OPR0, BNK0, 0x80, DWordAcc, NoLock, WriteAsZeros)
+                        {
+                            AccessAs (DWordAcc, 0x00), 
+                                ,   33, 
+                            F0C1,   6
+                        }
+
+                        Local3 = RefOf (F0C1)
+                        Local4 = RefOf (G00D)
+                    }
+                    Case (0x07)
+                    {
+                        Local2 = 0xFF
+                        BankField (OPR0, BNK0, 0xFF, DWordAcc, NoLock, WriteAsZeros)
+                        {
+                                ,   33, 
+                            F0C2,   7
+                        }
+
+                        Local3 = RefOf (F0C2)
+                        Local4 = RefOf (G00E)
+                    }
+                    Case (0x08)
+                    {
+                        Local2 = 0x00
+                        BankField (OPR0, BNK0, 0x00, QWordAcc, NoLock, WriteAsZeros)
+                        {
+                            AccessAs (DWordAcc, 0x00), 
+                                ,   33, 
+                            F0C3,   8
+                        }
+
+                        Local3 = RefOf (F0C3)
+                        Local4 = RefOf (G000)
+                    }
+                    Case (0x09)
+                    {
+                        Local2 = 0x01
+                        BankField (OPR0, BNK0, 0x01, DWordAcc, NoLock, WriteAsZeros)
+                        {
+                                ,   33, 
+                            F0C4,   9
+                        }
+
+                        Local3 = RefOf (F0C4)
+                        Local4 = RefOf (G001)
+                    }
+                    Case (0x1F)
+                    {
+                        Local2 = 0x02
+                        BankField (OPR0, BNK0, 0x02, AnyAcc, NoLock, WriteAsZeros)
+                        {
+                            AccessAs (DWordAcc, 0x00), 
+                                ,   33, 
+                            F0C5,   31
+                        }
+
+                        Local3 = RefOf (F0C5)
+                        Local4 = RefOf (G002)
+                    }
+                    Case (0x20)
+                    {
+                        Local2 = 0x03
+                        BankField (OPR0, BNK0, 0x03, DWordAcc, NoLock, WriteAsZeros)
+                        {
+                                ,   33, 
+                            F0C6,   32
+                        }
+
+                        Local3 = RefOf (F0C6)
+                        Local4 = RefOf (G003)
+                    }
+                    Case (0x21)
+                    {
+                        Local2 = 0x04
+                        BankField (OPR0, BNK0, 0x04, ByteAcc, NoLock, WriteAsZeros)
+                        {
+                            AccessAs (DWordAcc, 0x00), 
+                                ,   33, 
+                            F0C7,   33
+                        }
+
+                        Local3 = RefOf (F0C7)
+                        Local4 = RefOf (G004)
+                    }
+                    Case (0x3F)
+                    {
+                        Local2 = 0x05
+                        BankField (OPR0, BNK0, 0x05, DWordAcc, NoLock, WriteAsZeros)
+                        {
+                                ,   33, 
+                            F0C8,   63
+                        }
+
+                        Local3 = RefOf (F0C8)
+                        Local4 = RefOf (G005)
+                    }
+                    Case (0x40)
+                    {
+                        Local2 = 0x06
+                        BankField (OPR0, BNK0, 0x06, WordAcc, NoLock, WriteAsZeros)
+                        {
+                            AccessAs (DWordAcc, 0x00), 
+                                ,   33, 
+                            F0C9,   64
+                        }
+
+                        Local3 = RefOf (F0C9)
+                        Local4 = RefOf (G006)
+                    }
+                    Case (0x41)
+                    {
+                        Local2 = 0x07
+                        BankField (OPR0, BNK0, 0x07, DWordAcc, NoLock, WriteAsZeros)
+                        {
+                                ,   33, 
+                            F0CA,   65
+                        }
+
+                        Local3 = RefOf (F0CA)
+                        Local4 = RefOf (G007)
+                    }
+                    Case (0x45)
+                    {
+                        Local2 = 0x08
+                        BankField (OPR0, BNK0, 0x08, DWordAcc, NoLock, WriteAsZeros)
+                        {
+                            AccessAs (DWordAcc, 0x00), 
+                                ,   33, 
+                            F0CB,   69
+                        }
+
+                        Local3 = RefOf (F0CB)
+                        Local4 = RefOf (G008)
+                    }
+                    Case (0x81)
+                    {
+                        Local2 = 0x09
+                        BankField (OPR0, BNK0, 0x09, DWordAcc, NoLock, WriteAsZeros)
+                        {
+                                ,   33, 
+                            F0CC,   129
+                        }
+
+                        Local3 = RefOf (F0CC)
+                        Local4 = RefOf (G009)
+                    }
+                    Case (0x0100)
+                    {
+                        Local2 = 0x3F
+                        BankField (OPR0, BNK0, 0x3F, QWordAcc, NoLock, WriteAsZeros)
+                        {
+                            AccessAs (DWordAcc, 0x00), 
+                                ,   33, 
+                            F0CD,   256
+                        }
+
+                        Local3 = RefOf (F0CD)
+                        Local4 = RefOf (G00A)
+                    }
+                    Case (0x03FF)
+                    {
+                        Local2 = 0x40
+                        BankField (OPR0, BNK0, 0x40, DWordAcc, NoLock, WriteAsZeros)
+                        {
+                                ,   33, 
+                            F0CE,   1023
+                        }
+
+                        Local3 = RefOf (F0CE)
+                        Local4 = RefOf (G00B)
+                    }
+                    Case (0x07BF)
+                    {
+                        Local2 = 0x7F
+                        BankField (OPR0, BNK0, 0x7F, AnyAcc, NoLock, WriteAsZeros)
+                        {
+                            AccessAs (DWordAcc, 0x00), 
+                                ,   33, 
+                            F0CF,   1983
+                        }
+
+                        Local3 = RefOf (F0CF)
+                        Local4 = RefOf (G00C)
+                    }
+                    Default
+                    {
+                        ERR (Arg0, Z145, 0x1823, 0x00, 0x00, Arg2, Arg3)
+                        Return (Zero)
+                    }
+
+                }
+            }
+            Case (0x3F)
+            {
+                Switch (ToInteger (Arg3))
+                {
+                    Case (0x01)
+                    {
+                        Local2 = 0x80
+                        BankField (OPR0, BNK0, 0x80, DWordAcc, NoLock, WriteAsZeros)
+                        {
+                            AccessAs (DWordAcc, 0x00), 
+                                ,   63, 
+                            F0D0,   1
+                        }
+
+                        Local3 = RefOf (F0D0)
+                        Local4 = RefOf (G00D)
+                    }
+                    Case (0x06)
+                    {
+                        /* November 2011: Changed to DWordAcc from ByteAcc to enable */
+                        /* correct operation ("Expected" buffer assumes DWordAcc) */
+                        Local2 = 0xFF
+                        BankField (OPR0, BNK0, 0xFF, DWordAcc, NoLock, WriteAsZeros)
+                        {
+                                ,   63, 
+                            F0D1,   6
+                        }
+
+                        Local3 = RefOf (F0D1)
+                        Local4 = RefOf (G00E)
+                    }
+                    Case (0x07)
+                    {
+                        Local2 = 0x00
+                        BankField (OPR0, BNK0, 0x00, DWordAcc, NoLock, WriteAsZeros)
+                        {
+                            AccessAs (DWordAcc, 0x00), 
+                                ,   63, 
+                            F0D2,   7
+                        }
+
+                        Local3 = RefOf (F0D2)
+                        Local4 = RefOf (G000)
+                    }
+                    Case (0x08)
+                    {
+                        /* November 2011: Changed to DWordAcc from WordAcc to enable */
+                        /* correct operation ("Expected" buffer assumes DWordAcc) */
+                        Local2 = 0x01
+                        BankField (OPR0, BNK0, 0x01, DWordAcc, NoLock, WriteAsZeros)
+                        {
+                                ,   63, 
+                            F0D3,   8
+                        }
+
+                        Local3 = RefOf (F0D3)
+                        Local4 = RefOf (G001)
+                    }
+                    Case (0x09)
+                    {
+                        Local2 = 0x02
+                        BankField (OPR0, BNK0, 0x02, DWordAcc, NoLock, WriteAsZeros)
+                        {
+                            AccessAs (DWordAcc, 0x00), 
+                                ,   63, 
+                            F0D4,   9
+                        }
+
+                        Local3 = RefOf (F0D4)
+                        Local4 = RefOf (G002)
+                    }
+                    Case (0x1F)
+                    {
+                        Local2 = 0x03
+                        BankField (OPR0, BNK0, 0x03, DWordAcc, NoLock, WriteAsZeros)
+                        {
+                                ,   63, 
+                            F0D5,   31
+                        }
+
+                        Local3 = RefOf (F0D5)
+                        Local4 = RefOf (G003)
+                    }
+                    Case (0x20)
+                    {
+                        Local2 = 0x04
+                        BankField (OPR0, BNK0, 0x04, QWordAcc, NoLock, WriteAsZeros)
+                        {
+                            AccessAs (DWordAcc, 0x00), 
+                                ,   63, 
+                            F0D6,   32
+                        }
+
+                        Local3 = RefOf (F0D6)
+                        Local4 = RefOf (G004)
+                    }
+                    Case (0x21)
+                    {
+                        Local2 = 0x05
+                        BankField (OPR0, BNK0, 0x05, DWordAcc, NoLock, WriteAsZeros)
+                        {
+                                ,   63, 
+                            F0D7,   33
+                        }
+
+                        Local3 = RefOf (F0D7)
+                        Local4 = RefOf (G005)
+                    }
+                    Case (0x3F)
+                    {
+                        Local2 = 0x06
+                        BankField (OPR0, BNK0, 0x06, AnyAcc, NoLock, WriteAsZeros)
+                        {
+                            AccessAs (DWordAcc, 0x00), 
+                                ,   63, 
+                            F0D8,   63
+                        }
+
+                        Local3 = RefOf (F0D8)
+                        Local4 = RefOf (G006)
+                    }
+                    Case (0x40)
+                    {
+                        Local2 = 0x07
+                        BankField (OPR0, BNK0, 0x07, DWordAcc, NoLock, WriteAsZeros)
+                        {
+                                ,   63, 
+                            F0D9,   64
+                        }
+
+                        Local3 = RefOf (F0D9)
+                        Local4 = RefOf (G007)
+                    }
+                    Case (0x41)
+                    {
+                        Local2 = 0x08
+                        BankField (OPR0, BNK0, 0x08, ByteAcc, NoLock, WriteAsZeros)
+                        {
+                            AccessAs (DWordAcc, 0x00), 
+                                ,   63, 
+                            F0DA,   65
+                        }
+
+                        Local3 = RefOf (F0DA)
+                        Local4 = RefOf (G008)
+                    }
+                    Case (0x45)
+                    {
+                        Local2 = 0x09
+                        BankField (OPR0, BNK0, 0x09, DWordAcc, NoLock, WriteAsZeros)
+                        {
+                                ,   63, 
+                            F0DB,   69
+                        }
+
+                        Local3 = RefOf (F0DB)
+                        Local4 = RefOf (G009)
+                    }
+                    Case (0x81)
+                    {
+                        Local2 = 0x3F
+                        BankField (OPR0, BNK0, 0x3F, WordAcc, NoLock, WriteAsZeros)
+                        {
+                            AccessAs (DWordAcc, 0x00), 
+                                ,   63, 
+                            F0DC,   129
+                        }
+
+                        Local3 = RefOf (F0DC)
+                        Local4 = RefOf (G00A)
+                    }
+                    Case (0x0100)
+                    {
+                        Local2 = 0x40
+                        BankField (OPR0, BNK0, 0x40, DWordAcc, NoLock, WriteAsZeros)
+                        {
+                                ,   63, 
+                            F0DD,   256
+                        }
+
+                        Local3 = RefOf (F0DD)
+                        Local4 = RefOf (G00B)
+                    }
+                    Case (0x03FF)
+                    {
+                        Local2 = 0x7F
+                        BankField (OPR0, BNK0, 0x7F, DWordAcc, NoLock, WriteAsZeros)
+                        {
+                            AccessAs (DWordAcc, 0x00), 
+                                ,   63, 
+                            F0DE,   1023
+                        }
+
+                        Local3 = RefOf (F0DE)
+                        Local4 = RefOf (G00C)
+                    }
+                    Case (0x07BF)
+                    {
+                        Local2 = 0x80
+                        BankField (OPR0, BNK0, 0x80, DWordAcc, NoLock, WriteAsZeros)
+                        {
+                                ,   63, 
+                            F0DF,   1983
+                        }
+
+                        Local3 = RefOf (F0DF)
+                        Local4 = RefOf (G00D)
+                    }
+                    Default
+                    {
+                        ERR (Arg0, Z145, 0x18AB, 0x00, 0x00, Arg2, Arg3)
+                        Return (Zero)
+                    }
+
+                }
+            }
+            Case (0x40)
+            {
+                Switch (ToInteger (Arg3))
+                {
+                    Case (0x01)
+                    {
+                        Local2 = 0xFF
+                        BankField (OPR0, BNK0, 0xFF, DWordAcc, NoLock, WriteAsZeros)
+                        {
+                            Offset (0x08), 
+                            F0E0,   1
+                        }
+
+                        Local3 = RefOf (F0E0)
+                        Local4 = RefOf (G00E)
+                    }
+                    Case (0x06)
+                    {
+                        Local2 = 0x00
+                        BankField (OPR0, BNK0, 0x00, QWordAcc, NoLock, WriteAsZeros)
+                        {
+                            AccessAs (DWordAcc, 0x00), 
+                            Offset (0x08), 
+                            F0E1,   6
+                        }
+
+                        Local3 = RefOf (F0E1)
+                        Local4 = RefOf (G000)
+                    }
+                    Case (0x07)
+                    {
+                        Local2 = 0x01
+                        BankField (OPR0, BNK0, 0x01, DWordAcc, NoLock, WriteAsZeros)
+                        {
+                            Offset (0x08), 
+                            F0E2,   7
+                        }
+
+                        Local3 = RefOf (F0E2)
+                        Local4 = RefOf (G001)
+                    }
+                    Case (0x08)
+                    {
+                        Local2 = 0x02
+                        BankField (OPR0, BNK0, 0x02, AnyAcc, NoLock, WriteAsZeros)
+                        {
+                            AccessAs (DWordAcc, 0x00), 
+                            Offset (0x08), 
+                            F0E3,   8
+                        }
+
+                        Local3 = RefOf (F0E3)
+                        Local4 = RefOf (G002)
+                    }
+                    Case (0x09)
+                    {
+                        Local2 = 0x03
+                        BankField (OPR0, BNK0, 0x03, DWordAcc, NoLock, WriteAsZeros)
+                        {
+                            Offset (0x08), 
+                            F0E4,   9
+                        }
+
+                        Local3 = RefOf (F0E4)
+                        Local4 = RefOf (G003)
+                    }
+                    Case (0x1F)
+                    {
+                        Local2 = 0x04
+                        BankField (OPR0, BNK0, 0x04, ByteAcc, NoLock, WriteAsZeros)
+                        {
+                            AccessAs (DWordAcc, 0x00), 
+                            Offset (0x08), 
+                            F0E5,   31
+                        }
+
+                        Local3 = RefOf (F0E5)
+                        Local4 = RefOf (G004)
+                    }
+                    Case (0x20)
+                    {
+                        Local2 = 0x05
+                        BankField (OPR0, BNK0, 0x05, DWordAcc, NoLock, WriteAsZeros)
+                        {
+                            Offset (0x08), 
+                            F0E6,   32
+                        }
+
+                        Local3 = RefOf (F0E6)
+                        Local4 = RefOf (G005)
+                    }
+                    Case (0x21)
+                    {
+                        Local2 = 0x06
+                        BankField (OPR0, BNK0, 0x06, WordAcc, NoLock, WriteAsZeros)
+                        {
+                            AccessAs (DWordAcc, 0x00), 
+                            Offset (0x08), 
+                            F0E7,   33
+                        }
+
+                        Local3 = RefOf (F0E7)
+                        Local4 = RefOf (G006)
+                    }
+                    Case (0x3F)
+                    {
+                        Local2 = 0x07
+                        BankField (OPR0, BNK0, 0x07, DWordAcc, NoLock, WriteAsZeros)
+                        {
+                            Offset (0x08), 
+                            F0E8,   63
+                        }
+
+                        Local3 = RefOf (F0E8)
+                        Local4 = RefOf (G007)
+                    }
+                    Case (0x40)
+                    {
+                        Local2 = 0x08
+                        BankField (OPR0, BNK0, 0x08, DWordAcc, NoLock, WriteAsZeros)
+                        {
+                            AccessAs (DWordAcc, 0x00), 
+                            Offset (0x08), 
+                            F0E9,   64
+                        }
+
+                        Local3 = RefOf (F0E9)
+                        Local4 = RefOf (G008)
+                    }
+                    Case (0x41)
+                    {
+                        Local2 = 0x09
+                        BankField (OPR0, BNK0, 0x09, DWordAcc, NoLock, WriteAsZeros)
+                        {
+                            Offset (0x08), 
+                            F0EA,   65
+                        }
+
+                        Local3 = RefOf (F0EA)
+                        Local4 = RefOf (G009)
+                    }
+                    Case (0x45)
+                    {
+                        Local2 = 0x3F
+                        BankField (OPR0, BNK0, 0x3F, QWordAcc, NoLock, WriteAsZeros)
+                        {
+                            AccessAs (DWordAcc, 0x00), 
+                            Offset (0x08), 
+                            F0EB,   69
+                        }
+
+                        Local3 = RefOf (F0EB)
+                        Local4 = RefOf (G00A)
+                    }
+                    Case (0x81)
+                    {
+                        Local2 = 0x40
+                        BankField (OPR0, BNK0, 0x40, DWordAcc, NoLock, WriteAsZeros)
+                        {
+                            Offset (0x08), 
+                            F0EC,   129
+                        }
+
+                        Local3 = RefOf (F0EC)
+                        Local4 = RefOf (G00B)
+                    }
+                    Case (0x0100)
+                    {
+                        Local2 = 0x7F
+                        BankField (OPR0, BNK0, 0x7F, AnyAcc, NoLock, WriteAsZeros)
+                        {
+                            AccessAs (DWordAcc, 0x00), 
+                            Offset (0x08), 
+                            F0ED,   256
+                        }
+
+                        Local3 = RefOf (F0ED)
+                        Local4 = RefOf (G00C)
+                    }
+                    Case (0x03FF)
+                    {
+                        Local2 = 0x80
+                        BankField (OPR0, BNK0, 0x80, DWordAcc, NoLock, WriteAsZeros)
+                        {
+                            Offset (0x08), 
+                            F0EE,   1023
+                        }
+
+                        Local3 = RefOf (F0EE)
+                        Local4 = RefOf (G00D)
+                    }
+                    Case (0x07BF)
+                    {
+                        Local2 = 0xFF
+                        BankField (OPR0, BNK0, 0xFF, ByteAcc, NoLock, WriteAsZeros)
+                        {
+                            AccessAs (DWordAcc, 0x00), 
+                            Offset (0x08), 
+                            F0EF,   1983
+                        }
+
+                        Local3 = RefOf (F0EF)
+                        Local4 = RefOf (G00E)
+                    }
+                    Default
+                    {
+                        ERR (Arg0, Z145, 0x192B, 0x00, 0x00, Arg2, Arg3)
+                        Return (Zero)
+                    }
+
+                }
+            }
+            Case (0x41)
+            {
+                Switch (ToInteger (Arg3))
+                {
+                    Case (0x01)
+                    {
+                        Local2 = 0x00
+                        BankField (OPR0, BNK0, 0x00, WordAcc, NoLock, WriteAsZeros)
+                        {
+                            AccessAs (DWordAcc, 0x00), 
+                            Offset (0x08), 
+                                ,   1, 
+                            F0F0,   1
+                        }
+
+                        Local3 = RefOf (F0F0)
+                        Local4 = RefOf (G000)
+                    }
+                    Case (0x06)
+                    {
+                        Local2 = 0x01
+                        BankField (OPR0, BNK0, 0x01, DWordAcc, NoLock, WriteAsZeros)
+                        {
+                            Offset (0x08), 
+                                ,   1, 
+                            F0F1,   6
+                        }
+
+                        Local3 = RefOf (F0F1)
+                        Local4 = RefOf (G001)
+                    }
+                    Case (0x07)
+                    {
+                        Local2 = 0x02
+                        BankField (OPR0, BNK0, 0x02, DWordAcc, NoLock, WriteAsZeros)
+                        {
+                            AccessAs (DWordAcc, 0x00), 
+                            Offset (0x08), 
+                                ,   1, 
+                            F0F2,   7
+                        }
+
+                        Local3 = RefOf (F0F2)
+                        Local4 = RefOf (G002)
+                    }
+                    Case (0x08)
+                    {
+                        Local2 = 0x03
+                        BankField (OPR0, BNK0, 0x03, DWordAcc, NoLock, WriteAsZeros)
+                        {
+                            Offset (0x08), 
+                                ,   1, 
+                            F0F3,   8
+                        }
+
+                        Local3 = RefOf (F0F3)
+                        Local4 = RefOf (G003)
+                    }
+                    Case (0x09)
+                    {
+                        Local2 = 0x04
+                        BankField (OPR0, BNK0, 0x04, QWordAcc, NoLock, WriteAsZeros)
+                        {
+                            AccessAs (DWordAcc, 0x00), 
+                            Offset (0x08), 
+                                ,   1, 
+                            F0F4,   9
+                        }
+
+                        Local3 = RefOf (F0F4)
+                        Local4 = RefOf (G004)
+                    }
+                    Case (0x1F)
+                    {
+                        Local2 = 0x05
+                        BankField (OPR0, BNK0, 0x05, DWordAcc, NoLock, WriteAsZeros)
+                        {
+                            Offset (0x08), 
+                                ,   1, 
+                            F0F5,   31
+                        }
+
+                        Local3 = RefOf (F0F5)
+                        Local4 = RefOf (G005)
+                    }
+                    Case (0x20)
+                    {
+                        Local2 = 0x06
+                        BankField (OPR0, BNK0, 0x06, AnyAcc, NoLock, WriteAsZeros)
+                        {
+                            AccessAs (DWordAcc, 0x00), 
+                            Offset (0x08), 
+                                ,   1, 
+                            F0F6,   32
+                        }
+
+                        Local3 = RefOf (F0F6)
+                        Local4 = RefOf (G006)
+                    }
+                    Case (0x21)
+                    {
+                        Local2 = 0x07
+                        BankField (OPR0, BNK0, 0x07, DWordAcc, NoLock, WriteAsZeros)
+                        {
+                            Offset (0x08), 
+                                ,   1, 
+                            F0F7,   33
+                        }
+
+                        Local3 = RefOf (F0F7)
+                        Local4 = RefOf (G007)
+                    }
+                    Case (0x3F)
+                    {
+                        Local2 = 0x08
+                        BankField (OPR0, BNK0, 0x08, ByteAcc, NoLock, WriteAsZeros)
+                        {
+                            AccessAs (DWordAcc, 0x00), 
+                            Offset (0x08), 
+                                ,   1, 
+                            F0F8,   63
+                        }
+
+                        Local3 = RefOf (F0F8)
+                        Local4 = RefOf (G008)
+                    }
+                    Case (0x40)
+                    {
+                        Local2 = 0x09
+                        BankField (OPR0, BNK0, 0x09, DWordAcc, NoLock, WriteAsZeros)
+                        {
+                            Offset (0x08), 
+                                ,   1, 
+                            F0F9,   64
+                        }
+
+                        Local3 = RefOf (F0F9)
+                        Local4 = RefOf (G009)
+                    }
+                    Case (0x41)
+                    {
+                        Local2 = 0x3F
+                        BankField (OPR0, BNK0, 0x3F, WordAcc, NoLock, WriteAsZeros)
+                        {
+                            AccessAs (DWordAcc, 0x00), 
+                            Offset (0x08), 
+                                ,   1, 
+                            F0FA,   65
+                        }
+
+                        Local3 = RefOf (F0FA)
+                        Local4 = RefOf (G00A)
+                    }
+                    Case (0x45)
+                    {
+                        Local2 = 0x40
+                        BankField (OPR0, BNK0, 0x40, DWordAcc, NoLock, WriteAsZeros)
+                        {
+                            Offset (0x08), 
+                                ,   1, 
+                            F0FB,   69
+                        }
+
+                        Local3 = RefOf (F0FB)
+                        Local4 = RefOf (G00B)
+                    }
+                    Case (0x81)
+                    {
+                        Local2 = 0x7F
+                        BankField (OPR0, BNK0, 0x7F, DWordAcc, NoLock, WriteAsZeros)
+                        {
+                            AccessAs (DWordAcc, 0x00), 
+                            Offset (0x08), 
+                                ,   1, 
+                            F0FC,   129
+                        }
+
+                        Local3 = RefOf (F0FC)
+                        Local4 = RefOf (G00C)
+                    }
+                    Case (0x0100)
+                    {
+                        Local2 = 0x80
+                        BankField (OPR0, BNK0, 0x80, DWordAcc, NoLock, WriteAsZeros)
+                        {
+                            Offset (0x08), 
+                                ,   1, 
+                            F0FD,   256
+                        }
+
+                        Local3 = RefOf (F0FD)
+                        Local4 = RefOf (G00D)
+                    }
+                    Case (0x03FF)
+                    {
+                        Local2 = 0xFF
+                        BankField (OPR0, BNK0, 0xFF, QWordAcc, NoLock, WriteAsZeros)
+                        {
+                            AccessAs (DWordAcc, 0x00), 
+                            Offset (0x08), 
+                                ,   1, 
+                            F0FE,   1023
+                        }
+
+                        Local3 = RefOf (F0FE)
+                        Local4 = RefOf (G00E)
+                    }
+                    Case (0x07BF)
+                    {
+                        Local2 = 0x00
+                        BankField (OPR0, BNK0, 0x00, DWordAcc, NoLock, WriteAsZeros)
+                        {
+                            Offset (0x08), 
+                                ,   1, 
+                            F0FF,   1983
+                        }
+
+                        Local3 = RefOf (F0FF)
+                        Local4 = RefOf (G000)
+                    }
+                    Default
+                    {
+                        ERR (Arg0, Z145, 0x19AB, 0x00, 0x00, Arg2, Arg3)
+                        Return (Zero)
+                    }
+
+                }
+            }
+            Default
+            {
+                ERR (Arg0, Z145, 0x19B1, 0x00, 0x00, Arg2, Arg3)
+                Return (Zero)
+            }
+
+        }
+
+        FCP0 [0x00] = 0x02
+        FCP0 [0x01] = RefOf (BNK0)
+        FCP0 [0x02] = Local2
+        M72D (Arg0, Local3, Arg2, Arg3, Arg4, Arg5, Local4)
+        FCP0 [0x00] = 0x00
+    }
+
+    /* Create BankField Unit */
+    /* (QWordAcc, NoLock, Preserve) */
+    Method (M7D3, 6, Serialized)
+    {
+        OperationRegion (OPRB, SystemIO, 0x00, 0x09)
+        OperationRegion (OPR0, SystemIO, 0x0B, 0x0100)
+        Field (OPRB, ByteAcc, NoLock, Preserve)
+        {
+            BNK0,   8
+        }
+
+        BankField (OPR0, BNK0, 0x00, ByteAcc, NoLock, Preserve)
+        {
+            G000,   2048
+        }
+
+        BankField (OPR0, BNK0, 0x01, ByteAcc, NoLock, Preserve)
+        {
+            G001,   2048
+        }
+
+        BankField (OPR0, BNK0, 0x02, ByteAcc, NoLock, Preserve)
+        {
+            G002,   2048
+        }
+
+        BankField (OPR0, BNK0, 0x03, ByteAcc, NoLock, Preserve)
+        {
+            G003,   2048
+        }
+
+        BankField (OPR0, BNK0, 0x04, ByteAcc, NoLock, Preserve)
+        {
+            G004,   2048
+        }
+
+        BankField (OPR0, BNK0, 0x05, ByteAcc, NoLock, Preserve)
+        {
+            G005,   2048
+        }
+
+        BankField (OPR0, BNK0, 0x06, ByteAcc, NoLock, Preserve)
+        {
+            G006,   2048
+        }
+
+        BankField (OPR0, BNK0, 0x07, ByteAcc, NoLock, Preserve)
+        {
+            G007,   2048
+        }
+
+        BankField (OPR0, BNK0, 0x08, ByteAcc, NoLock, Preserve)
+        {
+            G008,   2048
+        }
+
+        BankField (OPR0, BNK0, 0x09, ByteAcc, NoLock, Preserve)
+        {
+            G009,   2048
+        }
+
+        BankField (OPR0, BNK0, 0x3F, ByteAcc, NoLock, Preserve)
+        {
+            G00A,   2048
+        }
+
+        BankField (OPR0, BNK0, 0x40, ByteAcc, NoLock, Preserve)
+        {
+            G00B,   2048
+        }
+
+        BankField (OPR0, BNK0, 0x7F, ByteAcc, NoLock, Preserve)
+        {
+            G00C,   2048
+        }
+
+        BankField (OPR0, BNK0, 0x80, ByteAcc, NoLock, Preserve)
+        {
+            G00D,   2048
+        }
+
+        BankField (OPR0, BNK0, 0xFF, ByteAcc, NoLock, Preserve)
+        {
+            G00E,   2048
+        }
+
+        Concatenate (Arg0, "-m7d3", Arg0)
+        Switch (ToInteger (Arg2))
+        {
+            Case (0x00)
+            {
+                Switch (ToInteger (Arg3))
+                {
+                    Case (0x01)
+                    {
+                        Local2 = 0x00
+                        BankField (OPR0, BNK0, 0x00, QWordAcc, NoLock, Preserve)
+                        {
+                            Offset (0x00), 
+                            F000,   1
+                        }
+
+                        Local3 = RefOf (F000)
+                        Local4 = RefOf (G000)
+                    }
+                    Case (0x06)
+                    {
+                        Local2 = 0x01
+                        BankField (OPR0, BNK0, 0x01, WordAcc, NoLock, Preserve)
+                        {
+                            AccessAs (QWordAcc, 0x00), 
+                            Offset (0x00), 
+                            F001,   6
+                        }
+
+                        Local3 = RefOf (F001)
+                        Local4 = RefOf (G001)
+                    }
+                    Case (0x07)
+                    {
+                        Local2 = 0x02
+                        BankField (OPR0, BNK0, 0x02, QWordAcc, NoLock, Preserve)
+                        {
+                            Offset (0x00), 
+                            F002,   7
+                        }
+
+                        Local3 = RefOf (F002)
+                        Local4 = RefOf (G002)
+                    }
+                    Case (0x08)
+                    {
+                        Local2 = 0x03
+                        BankField (OPR0, BNK0, 0x03, DWordAcc, NoLock, Preserve)
+                        {
+                            AccessAs (QWordAcc, 0x00), 
+                            Offset (0x00), 
+                            F003,   8
+                        }
+
+                        Local3 = RefOf (F003)
+                        Local4 = RefOf (G003)
+                    }
+                    Case (0x09)
+                    {
+                        Local2 = 0x04
+                        BankField (OPR0, BNK0, 0x04, QWordAcc, NoLock, Preserve)
+                        {
+                            Offset (0x00), 
+                            F004,   9
+                        }
+
+                        Local3 = RefOf (F004)
+                        Local4 = RefOf (G004)
+                    }
+                    Case (0x1F)
+                    {
+                        Local2 = 0x05
+                        BankField (OPR0, BNK0, 0x05, QWordAcc, NoLock, Preserve)
+                        {
+                            AccessAs (QWordAcc, 0x00), 
+                            Offset (0x00), 
+                            F005,   31
+                        }
+
+                        Local3 = RefOf (F005)
+                        Local4 = RefOf (G005)
+                    }
+                    Case (0x20)
+                    {
+                        Local2 = 0x06
+                        BankField (OPR0, BNK0, 0x06, QWordAcc, NoLock, Preserve)
+                        {
+                            Offset (0x00), 
+                            F006,   32
+                        }
+
+                        Local3 = RefOf (F006)
+                        Local4 = RefOf (G006)
+                    }
+                    Case (0x21)
+                    {
+                        Local2 = 0x07
+                        BankField (OPR0, BNK0, 0x07, AnyAcc, NoLock, Preserve)
+                        {
+                            AccessAs (QWordAcc, 0x00), 
+                            Offset (0x00), 
+                            F007,   33
+                        }
+
+                        Local3 = RefOf (F007)
+                        Local4 = RefOf (G007)
+                    }
+                    Case (0x3F)
+                    {
+                        Local2 = 0x08
+                        BankField (OPR0, BNK0, 0x08, QWordAcc, NoLock, Preserve)
+                        {
+                            Offset (0x00), 
+                            F008,   63
+                        }
+
+                        Local3 = RefOf (F008)
+                        Local4 = RefOf (G008)
+                    }
+                    Case (0x40)
+                    {
+                        Local2 = 0x09
+                        BankField (OPR0, BNK0, 0x09, ByteAcc, NoLock, Preserve)
+                        {
+                            AccessAs (QWordAcc, 0x00), 
+                            Offset (0x00), 
+                            F009,   64
+                        }
+
+                        Local3 = RefOf (F009)
+                        Local4 = RefOf (G009)
+                    }
+                    Case (0x41)
+                    {
+                        Local2 = 0x3F
+                        BankField (OPR0, BNK0, 0x3F, QWordAcc, NoLock, Preserve)
+                        {
+                            Offset (0x00), 
+                            F00A,   65
+                        }
+
+                        Local3 = RefOf (F00A)
+                        Local4 = RefOf (G00A)
+                    }
+                    Case (0x45)
+                    {
+                        Local2 = 0x40
+                        BankField (OPR0, BNK0, 0x40, WordAcc, NoLock, Preserve)
+                        {
+                            AccessAs (QWordAcc, 0x00), 
+                            Offset (0x00), 
+                            F00B,   69
+                        }
+
+                        Local3 = RefOf (F00B)
+                        Local4 = RefOf (G00B)
+                    }
+                    Case (0x81)
+                    {
+                        Local2 = 0x7F
+                        BankField (OPR0, BNK0, 0x7F, QWordAcc, NoLock, Preserve)
+                        {
+                            Offset (0x00), 
+                            F00C,   129
+                        }
+
+                        Local3 = RefOf (F00C)
+                        Local4 = RefOf (G00C)
+                    }
+                    Case (0x0100)
+                    {
+                        Local2 = 0x80
+                        BankField (OPR0, BNK0, 0x80, DWordAcc, NoLock, Preserve)
+                        {
+                            AccessAs (QWordAcc, 0x00), 
+                            Offset (0x00), 
+                            F00D,   256
+                        }
+
+                        Local3 = RefOf (F00D)
+                        Local4 = RefOf (G00D)
+                    }
+                    Case (0x03FF)
+                    {
+                        Local2 = 0xFF
+                        BankField (OPR0, BNK0, 0xFF, QWordAcc, NoLock, Preserve)
+                        {
+                            Offset (0x00), 
+                            F00E,   1023
+                        }
+
+                        Local3 = RefOf (F00E)
+                        Local4 = RefOf (G00E)
+                    }
+                    Case (0x07BF)
+                    {
+                        Local2 = 0x00
+                        BankField (OPR0, BNK0, 0x00, QWordAcc, NoLock, Preserve)
+                        {
+                            AccessAs (QWordAcc, 0x00), 
+                            Offset (0x00), 
+                            F00F,   1983
+                        }
+
+                        Local3 = RefOf (F00F)
+                        Local4 = RefOf (G000)
+                    }
+                    Default
+                    {
+                        ERR (Arg0, Z145, 0x1A73, 0x00, 0x00, Arg2, Arg3)
+                        Return (Zero)
+                    }
+
+                }
+            }
+            Case (0x01)
+            {
+                Switch (ToInteger (Arg3))
+                {
+                    Case (0x01)
+                    {
+                        Local2 = 0x01
+                        BankField (OPR0, BNK0, 0x01, AnyAcc, NoLock, Preserve)
+                        {
+                            AccessAs (QWordAcc, 0x00), 
+                                ,   1, 
+                            F010,   1
+                        }
+
+                        Local3 = RefOf (F010)
+                        Local4 = RefOf (G001)
+                    }
+                    Case (0x06)
+                    {
+                        Local2 = 0x02
+                        BankField (OPR0, BNK0, 0x02, QWordAcc, NoLock, Preserve)
+                        {
+                                ,   1, 
+                            F011,   6
+                        }
+
+                        Local3 = RefOf (F011)
+                        Local4 = RefOf (G002)
+                    }
+                    Case (0x07)
+                    {
+                        Local2 = 0x03
+                        BankField (OPR0, BNK0, 0x03, ByteAcc, NoLock, Preserve)
+                        {
+                            AccessAs (QWordAcc, 0x00), 
+                                ,   1, 
+                            F012,   7
+                        }
+
+                        Local3 = RefOf (F012)
+                        Local4 = RefOf (G003)
+                    }
+                    Case (0x08)
+                    {
+                        Local2 = 0x04
+                        BankField (OPR0, BNK0, 0x04, QWordAcc, NoLock, Preserve)
+                        {
+                                ,   1, 
+                            F013,   8
+                        }
+
+                        Local3 = RefOf (F013)
+                        Local4 = RefOf (G004)
+                    }
+                    Case (0x09)
+                    {
+                        Local2 = 0x05
+                        BankField (OPR0, BNK0, 0x05, WordAcc, NoLock, Preserve)
+                        {
+                            AccessAs (QWordAcc, 0x00), 
+                                ,   1, 
+                            F014,   9
+                        }
+
+                        Local3 = RefOf (F014)
+                        Local4 = RefOf (G005)
+                    }
+                    Case (0x1F)
+                    {
+                        Local2 = 0x06
+                        BankField (OPR0, BNK0, 0x06, QWordAcc, NoLock, Preserve)
+                        {
+                                ,   1, 
+                            F015,   31
+                        }
+
+                        Local3 = RefOf (F015)
+                        Local4 = RefOf (G006)
+                    }
+                    Case (0x20)
+                    {
+                        Local2 = 0x07
+                        BankField (OPR0, BNK0, 0x07, DWordAcc, NoLock, Preserve)
+                        {
+                            AccessAs (QWordAcc, 0x00), 
+                                ,   1, 
+                            F016,   32
+                        }
+
+                        Local3 = RefOf (F016)
+                        Local4 = RefOf (G007)
+                    }
+                    Case (0x21)
+                    {
+                        Local2 = 0x08
+                        BankField (OPR0, BNK0, 0x08, QWordAcc, NoLock, Preserve)
+                        {
+                                ,   1, 
+                            F017,   33
+                        }
+
+                        Local3 = RefOf (F017)
+                        Local4 = RefOf (G008)
+                    }
+                    Case (0x3F)
+                    {
+                        Local2 = 0x09
+                        BankField (OPR0, BNK0, 0x09, QWordAcc, NoLock, Preserve)
+                        {
+                            AccessAs (QWordAcc, 0x00), 
+                                ,   1, 
+                            F018,   63
+                        }
+
+                        Local3 = RefOf (F018)
+                        Local4 = RefOf (G009)
+                    }
+                    Case (0x40)
+                    {
+                        Local2 = 0x3F
+                        BankField (OPR0, BNK0, 0x3F, QWordAcc, NoLock, Preserve)
+                        {
+                                ,   1, 
+                            F019,   64
+                        }
+
+                        Local3 = RefOf (F019)
+                        Local4 = RefOf (G00A)
+                    }
+                    Case (0x41)
+                    {
+                        Local2 = 0x40
+                        BankField (OPR0, BNK0, 0x40, AnyAcc, NoLock, Preserve)
+                        {
+                            AccessAs (QWordAcc, 0x00), 
+                                ,   1, 
+                            F01A,   65
+                        }
+
+                        Local3 = RefOf (F01A)
+                        Local4 = RefOf (G00B)
+                    }
+                    Case (0x45)
+                    {
+                        Local2 = 0x7F
+                        BankField (OPR0, BNK0, 0x7F, QWordAcc, NoLock, Preserve)
+                        {
+                                ,   1, 
+                            F01B,   69
+                        }
+
+                        Local3 = RefOf (F01B)
+                        Local4 = RefOf (G00C)
+                    }
+                    Case (0x81)
+                    {
+                        Local2 = 0x80
+                        BankField (OPR0, BNK0, 0x80, ByteAcc, NoLock, Preserve)
+                        {
+                            AccessAs (QWordAcc, 0x00), 
+                                ,   1, 
+                            F01C,   129
+                        }
+
+                        Local3 = RefOf (F01C)
+                        Local4 = RefOf (G00D)
+                    }
+                    Case (0x0100)
+                    {
+                        Local2 = 0xFF
+                        BankField (OPR0, BNK0, 0xFF, QWordAcc, NoLock, Preserve)
+                        {
+                                ,   1, 
+                            F01D,   256
+                        }
+
+                        Local3 = RefOf (F01D)
+                        Local4 = RefOf (G00E)
+                    }
+                    Case (0x03FF)
+                    {
+                        Local2 = 0x00
+                        BankField (OPR0, BNK0, 0x00, WordAcc, NoLock, Preserve)
+                        {
+                            AccessAs (QWordAcc, 0x00), 
+                                ,   1, 
+                            F01E,   1023
+                        }
+
+                        Local3 = RefOf (F01E)
+                        Local4 = RefOf (G000)
+                    }
+                    Case (0x07BF)
+                    {
+                        Local2 = 0x01
+                        BankField (OPR0, BNK0, 0x01, QWordAcc, NoLock, Preserve)
+                        {
+                                ,   1, 
+                            F01F,   1983
+                        }
+
+                        Local3 = RefOf (F01F)
+                        Local4 = RefOf (G001)
+                    }
+                    Default
+                    {
+                        ERR (Arg0, Z145, 0x1AF3, 0x00, 0x00, Arg2, Arg3)
+                        Return (Zero)
+                    }
+
+                }
+            }
+            Case (0x02)
+            {
+                Switch (ToInteger (Arg3))
+                {
+                    Case (0x01)
+                    {
+                        Local2 = 0x02
+                        BankField (OPR0, BNK0, 0x02, QWordAcc, NoLock, Preserve)
+                        {
+                                ,   2, 
+                            F020,   1
+                        }
+
+                        Local3 = RefOf (F020)
+                        Local4 = RefOf (G002)
+                    }
+                    Case (0x06)
+                    {
+                        Local2 = 0x03
+                        BankField (OPR0, BNK0, 0x03, DWordAcc, NoLock, Preserve)
+                        {
+                            AccessAs (QWordAcc, 0x00), 
+                                ,   2, 
+                            F021,   6
+                        }
+
+                        Local3 = RefOf (F021)
+                        Local4 = RefOf (G003)
+                    }
+                    Case (0x07)
+                    {
+                        Local2 = 0x04
+                        BankField (OPR0, BNK0, 0x04, QWordAcc, NoLock, Preserve)
+                        {
+                                ,   2, 
+                            F022,   7
+                        }
+
+                        Local3 = RefOf (F022)
+                        Local4 = RefOf (G004)
+                    }
+                    Case (0x08)
+                    {
+                        Local2 = 0x05
+                        BankField (OPR0, BNK0, 0x05, QWordAcc, NoLock, Preserve)
+                        {
+                            AccessAs (QWordAcc, 0x00), 
+                                ,   2, 
+                            F023,   8
+                        }
+
+                        Local3 = RefOf (F023)
+                        Local4 = RefOf (G005)
+                    }
+                    Case (0x09)
+                    {
+                        Local2 = 0x06
+                        BankField (OPR0, BNK0, 0x06, QWordAcc, NoLock, Preserve)
+                        {
+                                ,   2, 
+                            F024,   9
+                        }
+
+                        Local3 = RefOf (F024)
+                        Local4 = RefOf (G006)
+                    }
+                    Case (0x1F)
+                    {
+                        Local2 = 0x07
+                        BankField (OPR0, BNK0, 0x07, AnyAcc, NoLock, Preserve)
+                        {
+                            AccessAs (QWordAcc, 0x00), 
+                                ,   2, 
+                            F025,   31
+                        }
+
+                        Local3 = RefOf (F025)
+                        Local4 = RefOf (G007)
+                    }
+                    Case (0x20)
+                    {
+                        Local2 = 0x08
+                        BankField (OPR0, BNK0, 0x08, QWordAcc, NoLock, Preserve)
+                        {
+                                ,   2, 
+                            F026,   32
+                        }
+
+                        Local3 = RefOf (F026)
+                        Local4 = RefOf (G008)
+                    }
+                    Case (0x21)
+                    {
+                        Local2 = 0x09
+                        BankField (OPR0, BNK0, 0x09, ByteAcc, NoLock, Preserve)
+                        {
+                            AccessAs (QWordAcc, 0x00), 
+                                ,   2, 
+                            F027,   33
+                        }
+
+                        Local3 = RefOf (F027)
+                        Local4 = RefOf (G009)
+                    }
+                    Case (0x3F)
+                    {
+                        Local2 = 0x3F
+                        BankField (OPR0, BNK0, 0x3F, QWordAcc, NoLock, Preserve)
+                        {
+                                ,   2, 
+                            F028,   63
+                        }
+
+                        Local3 = RefOf (F028)
+                        Local4 = RefOf (G00A)
+                    }
+                    Case (0x40)
+                    {
+                        Local2 = 0x40
+                        BankField (OPR0, BNK0, 0x40, WordAcc, NoLock, Preserve)
+                        {
+                            AccessAs (QWordAcc, 0x00), 
+                                ,   2, 
+                            F029,   64
+                        }
+
+                        Local3 = RefOf (F029)
+                        Local4 = RefOf (G00B)
+                    }
+                    Case (0x41)
+                    {
+                        Local2 = 0x7F
+                        BankField (OPR0, BNK0, 0x7F, QWordAcc, NoLock, Preserve)
+                        {
+                                ,   2, 
+                            F02A,   65
+                        }
+
+                        Local3 = RefOf (F02A)
+                        Local4 = RefOf (G00C)
+                    }
+                    Case (0x45)
+                    {
+                        Local2 = 0x80
+                        BankField (OPR0, BNK0, 0x80, DWordAcc, NoLock, Preserve)
+                        {
+                            AccessAs (QWordAcc, 0x00), 
+                                ,   2, 
+                            F02B,   69
+                        }
+
+                        Local3 = RefOf (F02B)
+                        Local4 = RefOf (G00D)
+                    }
+                    Case (0x81)
+                    {
+                        Local2 = 0xFF
+                        BankField (OPR0, BNK0, 0xFF, QWordAcc, NoLock, Preserve)
+                        {
+                                ,   2, 
+                            F02C,   129
+                        }
+
+                        Local3 = RefOf (F02C)
+                        Local4 = RefOf (G00E)
+                    }
+                    Case (0x0100)
+                    {
+                        Local2 = 0x00
+                        BankField (OPR0, BNK0, 0x00, QWordAcc, NoLock, Preserve)
+                        {
+                            AccessAs (QWordAcc, 0x00), 
+                                ,   2, 
+                            F02D,   256
+                        }
+
+                        Local3 = RefOf (F02D)
+                        Local4 = RefOf (G000)
+                    }
+                    Case (0x03FF)
+                    {
+                        Local2 = 0x01
+                        BankField (OPR0, BNK0, 0x01, QWordAcc, NoLock, Preserve)
+                        {
+                                ,   2, 
+                            F02E,   1023
+                        }
+
+                        Local3 = RefOf (F02E)
+                        Local4 = RefOf (G001)
+                    }
+                    Case (0x07BF)
+                    {
+                        Local2 = 0x02
+                        BankField (OPR0, BNK0, 0x02, AnyAcc, NoLock, Preserve)
+                        {
+                            AccessAs (QWordAcc, 0x00), 
+                                ,   2, 
+                            F02F,   1983
+                        }
+
+                        Local3 = RefOf (F02F)
+                        Local4 = RefOf (G002)
+                    }
+                    Default
+                    {
+                        ERR (Arg0, Z145, 0x1B73, 0x00, 0x00, Arg2, Arg3)
+                        Return (Zero)
+                    }
+
+                }
+            }
+            Case (0x03)
+            {
+                Switch (ToInteger (Arg3))
+                {
+                    Case (0x01)
+                    {
+                        Local2 = 0x03
+                        BankField (OPR0, BNK0, 0x03, ByteAcc, NoLock, Preserve)
+                        {
+                            AccessAs (QWordAcc, 0x00), 
+                                ,   3, 
+                            F030,   1
+                        }
+
+                        Local3 = RefOf (F030)
+                        Local4 = RefOf (G003)
+                    }
+                    Case (0x06)
+                    {
+                        Local2 = 0x04
+                        BankField (OPR0, BNK0, 0x04, QWordAcc, NoLock, Preserve)
+                        {
+                                ,   3, 
+                            F031,   6
+                        }
+
+                        Local3 = RefOf (F031)
+                        Local4 = RefOf (G004)
+                    }
+                    Case (0x07)
+                    {
+                        Local2 = 0x05
+                        BankField (OPR0, BNK0, 0x05, WordAcc, NoLock, Preserve)
+                        {
+                            AccessAs (QWordAcc, 0x00), 
+                                ,   3, 
+                            F032,   7
+                        }
+
+                        Local3 = RefOf (F032)
+                        Local4 = RefOf (G005)
+                    }
+                    Case (0x08)
+                    {
+                        Local2 = 0x06
+                        BankField (OPR0, BNK0, 0x06, QWordAcc, NoLock, Preserve)
+                        {
+                                ,   3, 
+                            F033,   8
+                        }
+
+                        Local3 = RefOf (F033)
+                        Local4 = RefOf (G006)
+                    }
+                    Case (0x09)
+                    {
+                        Local2 = 0x07
+                        BankField (OPR0, BNK0, 0x07, DWordAcc, NoLock, Preserve)
+                        {
+                            AccessAs (QWordAcc, 0x00), 
+                                ,   3, 
+                            F034,   9
+                        }
+
+                        Local3 = RefOf (F034)
+                        Local4 = RefOf (G007)
+                    }
+                    Case (0x1F)
+                    {
+                        Local2 = 0x08
+                        BankField (OPR0, BNK0, 0x08, QWordAcc, NoLock, Preserve)
+                        {
+                                ,   3, 
+                            F035,   31
+                        }
+
+                        Local3 = RefOf (F035)
+                        Local4 = RefOf (G008)
+                    }
+                    Case (0x20)
+                    {
+                        Local2 = 0x09
+                        BankField (OPR0, BNK0, 0x09, QWordAcc, NoLock, Preserve)
+                        {
+                            AccessAs (QWordAcc, 0x00), 
+                                ,   3, 
+                            F036,   32
+                        }
+
+                        Local3 = RefOf (F036)
+                        Local4 = RefOf (G009)
+                    }
+                    Case (0x21)
+                    {
+                        Local2 = 0x3F
+                        BankField (OPR0, BNK0, 0x3F, QWordAcc, NoLock, Preserve)
+                        {
+                                ,   3, 
+                            F037,   33
+                        }
+
+                        Local3 = RefOf (F037)
+                        Local4 = RefOf (G00A)
+                    }
+                    Case (0x3F)
+                    {
+                        Local2 = 0x40
+                        BankField (OPR0, BNK0, 0x40, AnyAcc, NoLock, Preserve)
+                        {
+                            AccessAs (QWordAcc, 0x00), 
+                                ,   3, 
+                            F038,   63
+                        }
+
+                        Local3 = RefOf (F038)
+                        Local4 = RefOf (G00B)
+                    }
+                    Case (0x40)
+                    {
+                        Local2 = 0x7F
+                        BankField (OPR0, BNK0, 0x7F, QWordAcc, NoLock, Preserve)
+                        {
+                                ,   3, 
+                            F039,   64
+                        }
+
+                        Local3 = RefOf (F039)
+                        Local4 = RefOf (G00C)
+                    }
+                    Case (0x41)
+                    {
+                        Local2 = 0x80
+                        BankField (OPR0, BNK0, 0x80, ByteAcc, NoLock, Preserve)
+                        {
+                            AccessAs (QWordAcc, 0x00), 
+                                ,   3, 
+                            F03A,   65
+                        }
+
+                        Local3 = RefOf (F03A)
+                        Local4 = RefOf (G00D)
+                    }
+                    Case (0x45)
+                    {
+                        Local2 = 0xFF
+                        BankField (OPR0, BNK0, 0xFF, QWordAcc, NoLock, Preserve)
+                        {
+                                ,   3, 
+                            F03B,   69
+                        }
+
+                        Local3 = RefOf (F03B)
+                        Local4 = RefOf (G00E)
+                    }
+                    Case (0x81)
+                    {
+                        Local2 = 0x00
+                        BankField (OPR0, BNK0, 0x00, WordAcc, NoLock, Preserve)
+                        {
+                            AccessAs (QWordAcc, 0x00), 
+                                ,   3, 
+                            F03C,   129
+                        }
+
+                        Local3 = RefOf (F03C)
+                        Local4 = RefOf (G000)
+                    }
+                    Case (0x0100)
+                    {
+                        Local2 = 0x01
+                        BankField (OPR0, BNK0, 0x01, QWordAcc, NoLock, Preserve)
+                        {
+                                ,   3, 
+                            F03D,   256
+                        }
+
+                        Local3 = RefOf (F03D)
+                        Local4 = RefOf (G001)
+                    }
+                    Case (0x03FF)
+                    {
+                        Local2 = 0x02
+                        BankField (OPR0, BNK0, 0x02, DWordAcc, NoLock, Preserve)
+                        {
+                            AccessAs (QWordAcc, 0x00), 
+                                ,   3, 
+                            F03E,   1023
+                        }
+
+                        Local3 = RefOf (F03E)
+                        Local4 = RefOf (G002)
+                    }
+                    Case (0x07BF)
+                    {
+                        Local2 = 0x03
+                        BankField (OPR0, BNK0, 0x03, QWordAcc, NoLock, Preserve)
+                        {
+                                ,   3, 
+                            F03F,   1983
+                        }
+
+                        Local3 = RefOf (F03F)
+                        Local4 = RefOf (G003)
+                    }
+                    Default
+                    {
+                        ERR (Arg0, Z145, 0x1BF3, 0x00, 0x00, Arg2, Arg3)
+                        Return (Zero)
+                    }
+
+                }
+            }
+            Case (0x04)
+            {
+                Switch (ToInteger (Arg3))
+                {
+                    Case (0x01)
+                    {
+                        Local2 = 0x04
+                        BankField (OPR0, BNK0, 0x04, QWordAcc, NoLock, Preserve)
+                        {
+                                ,   4, 
+                            F040,   1
+                        }
+
+                        Local3 = RefOf (F040)
+                        Local4 = RefOf (G004)
+                    }
+                    Case (0x06)
+                    {
+                        Local2 = 0x05
+                        BankField (OPR0, BNK0, 0x05, QWordAcc, NoLock, Preserve)
+                        {
+                            AccessAs (QWordAcc, 0x00), 
+                                ,   4, 
+                            F041,   6
+                        }
+
+                        Local3 = RefOf (F041)
+                        Local4 = RefOf (G005)
+                    }
+                    Case (0x07)
+                    {
+                        Local2 = 0x06
+                        BankField (OPR0, BNK0, 0x06, QWordAcc, NoLock, Preserve)
+                        {
+                                ,   4, 
+                            F042,   7
+                        }
+
+                        Local3 = RefOf (F042)
+                        Local4 = RefOf (G006)
+                    }
+                    Case (0x08)
+                    {
+                        Local2 = 0x07
+                        BankField (OPR0, BNK0, 0x07, AnyAcc, NoLock, Preserve)
+                        {
+                            AccessAs (QWordAcc, 0x00), 
+                                ,   4, 
+                            F043,   8
+                        }
+
+                        Local3 = RefOf (F043)
+                        Local4 = RefOf (G007)
+                    }
+                    Case (0x09)
+                    {
+                        Local2 = 0x08
+                        BankField (OPR0, BNK0, 0x08, QWordAcc, NoLock, Preserve)
+                        {
+                                ,   4, 
+                            F044,   9
+                        }
+
+                        Local3 = RefOf (F044)
+                        Local4 = RefOf (G008)
+                    }
+                    Case (0x1F)
+                    {
+                        Local2 = 0x09
+                        BankField (OPR0, BNK0, 0x09, ByteAcc, NoLock, Preserve)
+                        {
+                            AccessAs (QWordAcc, 0x00), 
+                                ,   4, 
+                            F045,   31
+                        }
+
+                        Local3 = RefOf (F045)
+                        Local4 = RefOf (G009)
+                    }
+                    Case (0x20)
+                    {
+                        Local2 = 0x3F
+                        BankField (OPR0, BNK0, 0x3F, QWordAcc, NoLock, Preserve)
+                        {
+                                ,   4, 
+                            F046,   32
+                        }
+
+                        Local3 = RefOf (F046)
+                        Local4 = RefOf (G00A)
+                    }
+                    Case (0x21)
+                    {
+                        Local2 = 0x40
+                        BankField (OPR0, BNK0, 0x40, WordAcc, NoLock, Preserve)
+                        {
+                            AccessAs (QWordAcc, 0x00), 
+                                ,   4, 
+                            F047,   33
+                        }
+
+                        Local3 = RefOf (F047)
+                        Local4 = RefOf (G00B)
+                    }
+                    Case (0x3F)
+                    {
+                        Local2 = 0x7F
+                        BankField (OPR0, BNK0, 0x7F, QWordAcc, NoLock, Preserve)
+                        {
+                                ,   4, 
+                            F048,   63
+                        }
+
+                        Local3 = RefOf (F048)
+                        Local4 = RefOf (G00C)
+                    }
+                    Case (0x40)
+                    {
+                        Local2 = 0x80
+                        BankField (OPR0, BNK0, 0x80, DWordAcc, NoLock, Preserve)
+                        {
+                            AccessAs (QWordAcc, 0x00), 
+                                ,   4, 
+                            F049,   64
+                        }
+
+                        Local3 = RefOf (F049)
+                        Local4 = RefOf (G00D)
+                    }
+                    Case (0x41)
+                    {
+                        Local2 = 0xFF
+                        BankField (OPR0, BNK0, 0xFF, QWordAcc, NoLock, Preserve)
+                        {
+                                ,   4, 
+                            F04A,   65
+                        }
+
+                        Local3 = RefOf (F04A)
+                        Local4 = RefOf (G00E)
+                    }
+                    Case (0x45)
+                    {
+                        Local2 = 0x00
+                        BankField (OPR0, BNK0, 0x00, QWordAcc, NoLock, Preserve)
+                        {
+                            AccessAs (QWordAcc, 0x00), 
+                                ,   4, 
+                            F04B,   69
+                        }
+
+                        Local3 = RefOf (F04B)
+                        Local4 = RefOf (G000)
+                    }
+                    Case (0x81)
+                    {
+                        Local2 = 0x01
+                        BankField (OPR0, BNK0, 0x01, QWordAcc, NoLock, Preserve)
+                        {
+                                ,   4, 
+                            F04C,   129
+                        }
+
+                        Local3 = RefOf (F04C)
+                        Local4 = RefOf (G001)
+                    }
+                    Case (0x0100)
+                    {
+                        Local2 = 0x02
+                        BankField (OPR0, BNK0, 0x02, AnyAcc, NoLock, Preserve)
+                        {
+                            AccessAs (QWordAcc, 0x00), 
+                                ,   4, 
+                            F04D,   256
+                        }
+
+                        Local3 = RefOf (F04D)
+                        Local4 = RefOf (G002)
+                    }
+                    Case (0x03FF)
+                    {
+                        Local2 = 0x03
+                        BankField (OPR0, BNK0, 0x03, QWordAcc, NoLock, Preserve)
+                        {
+                                ,   4, 
+                            F04E,   1023
+                        }
+
+                        Local3 = RefOf (F04E)
+                        Local4 = RefOf (G003)
+                    }
+                    Case (0x07BF)
+                    {
+                        Local2 = 0x04
+                        BankField (OPR0, BNK0, 0x04, ByteAcc, NoLock, Preserve)
+                        {
+                            AccessAs (QWordAcc, 0x00), 
+                                ,   4, 
+                            F04F,   1983
+                        }
+
+                        Local3 = RefOf (F04F)
+                        Local4 = RefOf (G004)
+                    }
+                    Default
+                    {
+                        ERR (Arg0, Z145, 0x1C73, 0x00, 0x00, Arg2, Arg3)
+                        Return (Zero)
+                    }
+
+                }
+            }
+            Case (0x05)
+            {
+                Switch (ToInteger (Arg3))
+                {
+                    Case (0x01)
+                    {
+                        Local2 = 0x05
+                        BankField (OPR0, BNK0, 0x05, WordAcc, NoLock, Preserve)
+                        {
+                            AccessAs (QWordAcc, 0x00), 
+                                ,   5, 
+                            F050,   1
+                        }
+
+                        Local3 = RefOf (F050)
+                        Local4 = RefOf (G005)
+                    }
+                    Case (0x06)
+                    {
+                        Local2 = 0x06
+                        BankField (OPR0, BNK0, 0x06, QWordAcc, NoLock, Preserve)
+                        {
+                                ,   5, 
+                            F051,   6
+                        }
+
+                        Local3 = RefOf (F051)
+                        Local4 = RefOf (G006)
+                    }
+                    Case (0x07)
+                    {
+                        Local2 = 0x07
+                        BankField (OPR0, BNK0, 0x07, DWordAcc, NoLock, Preserve)
+                        {
+                            AccessAs (QWordAcc, 0x00), 
+                                ,   5, 
+                            F052,   7
+                        }
+
+                        Local3 = RefOf (F052)
+                        Local4 = RefOf (G007)
+                    }
+                    Case (0x08)
+                    {
+                        Local2 = 0x08
+                        BankField (OPR0, BNK0, 0x08, QWordAcc, NoLock, Preserve)
+                        {
+                                ,   5, 
+                            F053,   8
+                        }
+
+                        Local3 = RefOf (F053)
+                        Local4 = RefOf (G008)
+                    }
+                    Case (0x09)
+                    {
+                        Local2 = 0x09
+                        BankField (OPR0, BNK0, 0x09, QWordAcc, NoLock, Preserve)
+                        {
+                            AccessAs (QWordAcc, 0x00), 
+                                ,   5, 
+                            F054,   9
+                        }
+
+                        Local3 = RefOf (F054)
+                        Local4 = RefOf (G009)
+                    }
+                    Case (0x1F)
+                    {
+                        Local2 = 0x3F
+                        BankField (OPR0, BNK0, 0x3F, QWordAcc, NoLock, Preserve)
+                        {
+                                ,   5, 
+                            F055,   31
+                        }
+
+                        Local3 = RefOf (F055)
+                        Local4 = RefOf (G00A)
+                    }
+                    Case (0x20)
+                    {
+                        Local2 = 0x40
+                        BankField (OPR0, BNK0, 0x40, AnyAcc, NoLock, Preserve)
+                        {
+                            AccessAs (QWordAcc, 0x00), 
+                                ,   5, 
+                            F056,   32
+                        }
+
+                        Local3 = RefOf (F056)
+                        Local4 = RefOf (G00B)
+                    }
+                    Case (0x21)
+                    {
+                        Local2 = 0x7F
+                        BankField (OPR0, BNK0, 0x7F, QWordAcc, NoLock, Preserve)
+                        {
+                                ,   5, 
+                            F057,   33
+                        }
+
+                        Local3 = RefOf (F057)
+                        Local4 = RefOf (G00C)
+                    }
+                    Case (0x3F)
+                    {
+                        Local2 = 0x80
+                        BankField (OPR0, BNK0, 0x80, ByteAcc, NoLock, Preserve)
+                        {
+                            AccessAs (QWordAcc, 0x00), 
+                                ,   5, 
+                            F058,   63
+                        }
+
+                        Local3 = RefOf (F058)
+                        Local4 = RefOf (G00D)
+                    }
+                    Case (0x40)
+                    {
+                        Local2 = 0xFF
+                        BankField (OPR0, BNK0, 0xFF, QWordAcc, NoLock, Preserve)
+                        {
+                                ,   5, 
+                            F059,   64
+                        }
+
+                        Local3 = RefOf (F059)
+                        Local4 = RefOf (G00E)
+                    }
+                    Case (0x41)
+                    {
+                        Local2 = 0x00
+                        BankField (OPR0, BNK0, 0x00, WordAcc, NoLock, Preserve)
+                        {
+                            AccessAs (QWordAcc, 0x00), 
+                                ,   5, 
+                            F05A,   65
+                        }
+
+                        Local3 = RefOf (F05A)
+                        Local4 = RefOf (G000)
+                    }
+                    Case (0x45)
+                    {
+                        Local2 = 0x01
+                        BankField (OPR0, BNK0, 0x01, QWordAcc, NoLock, Preserve)
+                        {
+                                ,   5, 
+                            F05B,   69
+                        }
+
+                        Local3 = RefOf (F05B)
+                        Local4 = RefOf (G001)
+                    }
+                    Case (0x81)
+                    {
+                        Local2 = 0x02
+                        BankField (OPR0, BNK0, 0x02, DWordAcc, NoLock, Preserve)
+                        {
+                            AccessAs (QWordAcc, 0x00), 
+                                ,   5, 
+                            F05C,   129
+                        }
+
+                        Local3 = RefOf (F05C)
+                        Local4 = RefOf (G002)
+                    }
+                    Case (0x0100)
+                    {
+                        Local2 = 0x03
+                        BankField (OPR0, BNK0, 0x03, QWordAcc, NoLock, Preserve)
+                        {
+                                ,   5, 
+                            F05D,   256
+                        }
+
+                        Local3 = RefOf (F05D)
+                        Local4 = RefOf (G003)
+                    }
+                    Case (0x03FF)
+                    {
+                        Local2 = 0x04
+                        BankField (OPR0, BNK0, 0x04, QWordAcc, NoLock, Preserve)
+                        {
+                            AccessAs (QWordAcc, 0x00), 
+                                ,   5, 
+                            F05E,   1023
+                        }
+
+                        Local3 = RefOf (F05E)
+                        Local4 = RefOf (G004)
+                    }
+                    Case (0x07BF)
+                    {
+                        Local2 = 0x05
+                        BankField (OPR0, BNK0, 0x05, QWordAcc, NoLock, Preserve)
+                        {
+                                ,   5, 
+                            F05F,   1983
+                        }
+
+                        Local3 = RefOf (F05F)
+                        Local4 = RefOf (G005)
+                    }
+                    Default
+                    {
+                        ERR (Arg0, Z145, 0x1CF3, 0x00, 0x00, Arg2, Arg3)
+                        Return (Zero)
+                    }
+
+                }
+            }
+            Case (0x06)
+            {
+                Switch (ToInteger (Arg3))
+                {
+                    Case (0x01)
+                    {
+                        Local2 = 0x06
+                        BankField (OPR0, BNK0, 0x06, QWordAcc, NoLock, Preserve)
+                        {
+                                ,   6, 
+                            F060,   1
+                        }
+
+                        Local3 = RefOf (F060)
+                        Local4 = RefOf (G006)
+                    }
+                    Case (0x06)
+                    {
+                        Local2 = 0x07
+                        BankField (OPR0, BNK0, 0x07, AnyAcc, NoLock, Preserve)
+                        {
+                            AccessAs (QWordAcc, 0x00), 
+                                ,   6, 
+                            F061,   6
+                        }
+
+                        Local3 = RefOf (F061)
+                        Local4 = RefOf (G007)
+                    }
+                    Case (0x07)
+                    {
+                        Local2 = 0x08
+                        BankField (OPR0, BNK0, 0x08, QWordAcc, NoLock, Preserve)
+                        {
+                                ,   6, 
+                            F062,   7
+                        }
+
+                        Local3 = RefOf (F062)
+                        Local4 = RefOf (G008)
+                    }
+                    Case (0x08)
+                    {
+                        Local2 = 0x09
+                        BankField (OPR0, BNK0, 0x09, ByteAcc, NoLock, Preserve)
+                        {
+                            AccessAs (QWordAcc, 0x00), 
+                                ,   6, 
+                            F063,   8
+                        }
+
+                        Local3 = RefOf (F063)
+                        Local4 = RefOf (G009)
+                    }
+                    Case (0x09)
+                    {
+                        Local2 = 0x3F
+                        BankField (OPR0, BNK0, 0x3F, QWordAcc, NoLock, Preserve)
+                        {
+                                ,   6, 
+                            F064,   9
+                        }
+
+                        Local3 = RefOf (F064)
+                        Local4 = RefOf (G00A)
+                    }
+                    Case (0x1F)
+                    {
+                        Local2 = 0x40
+                        BankField (OPR0, BNK0, 0x40, WordAcc, NoLock, Preserve)
+                        {
+                            AccessAs (QWordAcc, 0x00), 
+                                ,   6, 
+                            F065,   31
+                        }
+
+                        Local3 = RefOf (F065)
+                        Local4 = RefOf (G00B)
+                    }
+                    Case (0x20)
+                    {
+                        Local2 = 0x7F
+                        BankField (OPR0, BNK0, 0x7F, QWordAcc, NoLock, Preserve)
+                        {
+                                ,   6, 
+                            F066,   32
+                        }
+
+                        Local3 = RefOf (F066)
+                        Local4 = RefOf (G00C)
+                    }
+                    Case (0x21)
+                    {
+                        Local2 = 0x80
+                        BankField (OPR0, BNK0, 0x80, DWordAcc, NoLock, Preserve)
+                        {
+                            AccessAs (QWordAcc, 0x00), 
+                                ,   6, 
+                            F067,   33
+                        }
+
+                        Local3 = RefOf (F067)
+                        Local4 = RefOf (G00D)
+                    }
+                    Case (0x3F)
+                    {
+                        Local2 = 0xFF
+                        BankField (OPR0, BNK0, 0xFF, QWordAcc, NoLock, Preserve)
+                        {
+                                ,   6, 
+                            F068,   63
+                        }
+
+                        Local3 = RefOf (F068)
+                        Local4 = RefOf (G00E)
+                    }
+                    Case (0x40)
+                    {
+                        Local2 = 0x00
+                        BankField (OPR0, BNK0, 0x00, QWordAcc, NoLock, Preserve)
+                        {
+                            AccessAs (QWordAcc, 0x00), 
+                                ,   6, 
+                            F069,   64
+                        }
+
+                        Local3 = RefOf (F069)
+                        Local4 = RefOf (G000)
+                    }
+                    Case (0x41)
+                    {
+                        Local2 = 0x01
+                        BankField (OPR0, BNK0, 0x01, QWordAcc, NoLock, Preserve)
+                        {
+                                ,   6, 
+                            F06A,   65
+                        }
+
+                        Local3 = RefOf (F06A)
+                        Local4 = RefOf (G001)
+                    }
+                    Case (0x45)
+                    {
+                        Local2 = 0x02
+                        BankField (OPR0, BNK0, 0x02, AnyAcc, NoLock, Preserve)
+                        {
+                            AccessAs (QWordAcc, 0x00), 
+                                ,   6, 
+                            F06B,   69
+                        }
+
+                        Local3 = RefOf (F06B)
+                        Local4 = RefOf (G002)
+                    }
+                    Case (0x81)
+                    {
+                        Local2 = 0x03
+                        BankField (OPR0, BNK0, 0x03, QWordAcc, NoLock, Preserve)
+                        {
+                                ,   6, 
+                            F06C,   129
+                        }
+
+                        Local3 = RefOf (F06C)
+                        Local4 = RefOf (G003)
+                    }
+                    Case (0x0100)
+                    {
+                        Local2 = 0x04
+                        BankField (OPR0, BNK0, 0x04, ByteAcc, NoLock, Preserve)
+                        {
+                            AccessAs (QWordAcc, 0x00), 
+                                ,   6, 
+                            F06D,   256
+                        }
+
+                        Local3 = RefOf (F06D)
+                        Local4 = RefOf (G004)
+                    }
+                    Case (0x03FF)
+                    {
+                        Local2 = 0x05
+                        BankField (OPR0, BNK0, 0x05, QWordAcc, NoLock, Preserve)
+                        {
+                                ,   6, 
+                            F06E,   1023
+                        }
+
+                        Local3 = RefOf (F06E)
+                        Local4 = RefOf (G005)
+                    }
+                    Case (0x07BF)
+                    {
+                        Local2 = 0x06
+                        BankField (OPR0, BNK0, 0x06, WordAcc, NoLock, Preserve)
+                        {
+                            AccessAs (QWordAcc, 0x00), 
+                                ,   6, 
+                            F06F,   1983
+                        }
+
+                        Local3 = RefOf (F06F)
+                        Local4 = RefOf (G006)
+                    }
+                    Default
+                    {
+                        ERR (Arg0, Z145, 0x1D73, 0x00, 0x00, Arg2, Arg3)
+                        Return (Zero)
+                    }
+
+                }
+            }
+            Case (0x07)
+            {
+                Switch (ToInteger (Arg3))
+                {
+                    Case (0x01)
+                    {
+                        Local2 = 0x07
+                        BankField (OPR0, BNK0, 0x07, DWordAcc, NoLock, Preserve)
+                        {
+                            AccessAs (QWordAcc, 0x00), 
+                                ,   7, 
+                            F070,   1
+                        }
+
+                        Local3 = RefOf (F070)
+                        Local4 = RefOf (G007)
+                    }
+                    Case (0x06)
+                    {
+                        Local2 = 0x08
+                        BankField (OPR0, BNK0, 0x08, QWordAcc, NoLock, Preserve)
+                        {
+                                ,   7, 
+                            F071,   6
+                        }
+
+                        Local3 = RefOf (F071)
+                        Local4 = RefOf (G008)
+                    }
+                    Case (0x07)
+                    {
+                        Local2 = 0x09
+                        BankField (OPR0, BNK0, 0x09, QWordAcc, NoLock, Preserve)
+                        {
+                            AccessAs (QWordAcc, 0x00), 
+                                ,   7, 
+                            F072,   7
+                        }
+
+                        Local3 = RefOf (F072)
+                        Local4 = RefOf (G009)
+                    }
+                    Case (0x08)
+                    {
+                        Local2 = 0x3F
+                        BankField (OPR0, BNK0, 0x3F, QWordAcc, NoLock, Preserve)
+                        {
+                                ,   7, 
+                            F073,   8
+                        }
+
+                        Local3 = RefOf (F073)
+                        Local4 = RefOf (G00A)
+                    }
+                    Case (0x09)
+                    {
+                        Local2 = 0x40
+                        BankField (OPR0, BNK0, 0x40, AnyAcc, NoLock, Preserve)
+                        {
+                            AccessAs (QWordAcc, 0x00), 
+                                ,   7, 
+                            F074,   9
+                        }
+
+                        Local3 = RefOf (F074)
+                        Local4 = RefOf (G00B)
+                    }
+                    Case (0x1F)
+                    {
+                        Local2 = 0x7F
+                        BankField (OPR0, BNK0, 0x7F, QWordAcc, NoLock, Preserve)
+                        {
+                                ,   7, 
+                            F075,   31
+                        }
+
+                        Local3 = RefOf (F075)
+                        Local4 = RefOf (G00C)
+                    }
+                    Case (0x20)
+                    {
+                        Local2 = 0x80
+                        BankField (OPR0, BNK0, 0x80, ByteAcc, NoLock, Preserve)
+                        {
+                            AccessAs (QWordAcc, 0x00), 
+                                ,   7, 
+                            F076,   32
+                        }
+
+                        Local3 = RefOf (F076)
+                        Local4 = RefOf (G00D)
+                    }
+                    Case (0x21)
+                    {
+                        Local2 = 0xFF
+                        BankField (OPR0, BNK0, 0xFF, QWordAcc, NoLock, Preserve)
+                        {
+                                ,   7, 
+                            F077,   33
+                        }
+
+                        Local3 = RefOf (F077)
+                        Local4 = RefOf (G00E)
+                    }
+                    Case (0x3F)
+                    {
+                        Local2 = 0x00
+                        BankField (OPR0, BNK0, 0x00, WordAcc, NoLock, Preserve)
+                        {
+                            AccessAs (QWordAcc, 0x00), 
+                                ,   7, 
+                            F078,   63
+                        }
+
+                        Local3 = RefOf (F078)
+                        Local4 = RefOf (G000)
+                    }
+                    Case (0x40)
+                    {
+                        Local2 = 0x01
+                        BankField (OPR0, BNK0, 0x01, QWordAcc, NoLock, Preserve)
+                        {
+                                ,   7, 
+                            F079,   64
+                        }
+
+                        Local3 = RefOf (F079)
+                        Local4 = RefOf (G001)
+                    }
+                    Case (0x41)
+                    {
+                        Local2 = 0x02
+                        BankField (OPR0, BNK0, 0x02, DWordAcc, NoLock, Preserve)
+                        {
+                            AccessAs (QWordAcc, 0x00), 
+                                ,   7, 
+                            F07A,   65
+                        }
+
+                        Local3 = RefOf (F07A)
+                        Local4 = RefOf (G002)
+                    }
+                    Case (0x45)
+                    {
+                        Local2 = 0x03
+                        BankField (OPR0, BNK0, 0x03, QWordAcc, NoLock, Preserve)
+                        {
+                                ,   7, 
+                            F07B,   69
+                        }
+
+                        Local3 = RefOf (F07B)
+                        Local4 = RefOf (G003)
+                    }
+                    Case (0x81)
+                    {
+                        Local2 = 0x04
+                        BankField (OPR0, BNK0, 0x04, QWordAcc, NoLock, Preserve)
+                        {
+                            AccessAs (QWordAcc, 0x00), 
+                                ,   7, 
+                            F07C,   129
+                        }
+
+                        Local3 = RefOf (F07C)
+                        Local4 = RefOf (G004)
+                    }
+                    Case (0x0100)
+                    {
+                        Local2 = 0x05
+                        BankField (OPR0, BNK0, 0x05, QWordAcc, NoLock, Preserve)
+                        {
+                                ,   7, 
+                            F07D,   256
+                        }
+
+                        Local3 = RefOf (F07D)
+                        Local4 = RefOf (G005)
+                    }
+                    Case (0x03FF)
+                    {
+                        Local2 = 0x06
+                        BankField (OPR0, BNK0, 0x06, AnyAcc, NoLock, Preserve)
+                        {
+                            AccessAs (QWordAcc, 0x00), 
+                                ,   7, 
+                            F07E,   1023
+                        }
+
+                        Local3 = RefOf (F07E)
+                        Local4 = RefOf (G006)
+                    }
+                    Case (0x07BF)
+                    {
+                        Local2 = 0x07
+                        BankField (OPR0, BNK0, 0x07, QWordAcc, NoLock, Preserve)
+                        {
+                                ,   7, 
+                            F07F,   1983
+                        }
+
+                        Local3 = RefOf (F07F)
+                        Local4 = RefOf (G007)
+                    }
+                    Default
+                    {
+                        ERR (Arg0, Z145, 0x1DF3, 0x00, 0x00, Arg2, Arg3)
+                        Return (Zero)
+                    }
+
+                }
+            }
+            Case (0x08)
+            {
+                Switch (ToInteger (Arg3))
+                {
+                    Case (0x01)
+                    {
+                        Local2 = 0x08
+                        BankField (OPR0, BNK0, 0x08, QWordAcc, NoLock, Preserve)
+                        {
+                            Offset (0x01), 
+                            F080,   1
+                        }
+
+                        Local3 = RefOf (F080)
+                        Local4 = RefOf (G008)
+                    }
+                    Case (0x06)
+                    {
+                        Local2 = 0x09
+                        BankField (OPR0, BNK0, 0x09, ByteAcc, NoLock, Preserve)
+                        {
+                            AccessAs (QWordAcc, 0x00), 
+                            Offset (0x01), 
+                            F081,   6
+                        }
+
+                        Local3 = RefOf (F081)
+                        Local4 = RefOf (G009)
+                    }
+                    Case (0x07)
+                    {
+                        Local2 = 0x3F
+                        BankField (OPR0, BNK0, 0x3F, QWordAcc, NoLock, Preserve)
+                        {
+                            Offset (0x01), 
+                            F082,   7
+                        }
+
+                        Local3 = RefOf (F082)
+                        Local4 = RefOf (G00A)
+                    }
+                    Case (0x08)
+                    {
+                        Local2 = 0x40
+                        BankField (OPR0, BNK0, 0x40, WordAcc, NoLock, Preserve)
+                        {
+                            AccessAs (QWordAcc, 0x00), 
+                            Offset (0x01), 
+                            F083,   8
+                        }
+
+                        Local3 = RefOf (F083)
+                        Local4 = RefOf (G00B)
+                    }
+                    Case (0x09)
+                    {
+                        Local2 = 0x7F
+                        BankField (OPR0, BNK0, 0x7F, QWordAcc, NoLock, Preserve)
+                        {
+                            Offset (0x01), 
+                            F084,   9
+                        }
+
+                        Local3 = RefOf (F084)
+                        Local4 = RefOf (G00C)
+                    }
+                    Case (0x1F)
+                    {
+                        Local2 = 0x80
+                        BankField (OPR0, BNK0, 0x80, DWordAcc, NoLock, Preserve)
+                        {
+                            AccessAs (QWordAcc, 0x00), 
+                            Offset (0x01), 
+                            F085,   31
+                        }
+
+                        Local3 = RefOf (F085)
+                        Local4 = RefOf (G00D)
+                    }
+                    Case (0x20)
+                    {
+                        Local2 = 0xFF
+                        BankField (OPR0, BNK0, 0xFF, QWordAcc, NoLock, Preserve)
+                        {
+                            Offset (0x01), 
+                            F086,   32
+                        }
+
+                        Local3 = RefOf (F086)
+                        Local4 = RefOf (G00E)
+                    }
+                    Case (0x21)
+                    {
+                        Local2 = 0x00
+                        BankField (OPR0, BNK0, 0x00, QWordAcc, NoLock, Preserve)
+                        {
+                            AccessAs (QWordAcc, 0x00), 
+                            Offset (0x01), 
+                            F087,   33
+                        }
+
+                        Local3 = RefOf (F087)
+                        Local4 = RefOf (G000)
+                    }
+                    Case (0x3F)
+                    {
+                        Local2 = 0x01
+                        BankField (OPR0, BNK0, 0x01, QWordAcc, NoLock, Preserve)
+                        {
+                            Offset (0x01), 
+                            F088,   63
+                        }
+
+                        Local3 = RefOf (F088)
+                        Local4 = RefOf (G001)
+                    }
+                    Case (0x40)
+                    {
+                        Local2 = 0x02
+                        BankField (OPR0, BNK0, 0x02, AnyAcc, NoLock, Preserve)
+                        {
+                            AccessAs (QWordAcc, 0x00), 
+                            Offset (0x01), 
+                            F089,   64
+                        }
+
+                        Local3 = RefOf (F089)
+                        Local4 = RefOf (G002)
+                    }
+                    Case (0x41)
+                    {
+                        Local2 = 0x03
+                        BankField (OPR0, BNK0, 0x03, QWordAcc, NoLock, Preserve)
+                        {
+                            Offset (0x01), 
+                            F08A,   65
+                        }
+
+                        Local3 = RefOf (F08A)
+                        Local4 = RefOf (G003)
+                    }
+                    Case (0x45)
+                    {
+                        Local2 = 0x04
+                        BankField (OPR0, BNK0, 0x04, ByteAcc, NoLock, Preserve)
+                        {
+                            AccessAs (QWordAcc, 0x00), 
+                            Offset (0x01), 
+                            F08B,   69
+                        }
+
+                        Local3 = RefOf (F08B)
+                        Local4 = RefOf (G004)
+                    }
+                    Case (0x81)
+                    {
+                        Local2 = 0x05
+                        BankField (OPR0, BNK0, 0x05, QWordAcc, NoLock, Preserve)
+                        {
+                            Offset (0x01), 
+                            F08C,   129
+                        }
+
+                        Local3 = RefOf (F08C)
+                        Local4 = RefOf (G005)
+                    }
+                    Case (0x0100)
+                    {
+                        Local2 = 0x06
+                        BankField (OPR0, BNK0, 0x06, WordAcc, NoLock, Preserve)
+                        {
+                            AccessAs (QWordAcc, 0x00), 
+                            Offset (0x01), 
+                            F08D,   256
+                        }
+
+                        Local3 = RefOf (F08D)
+                        Local4 = RefOf (G006)
+                    }
+                    Case (0x03FF)
+                    {
+                        Local2 = 0x07
+                        BankField (OPR0, BNK0, 0x07, QWordAcc, NoLock, Preserve)
+                        {
+                            Offset (0x01), 
+                            F08E,   1023
+                        }
+
+                        Local3 = RefOf (F08E)
+                        Local4 = RefOf (G007)
+                    }
+                    Case (0x07BF)
+                    {
+                        Local2 = 0x08
+                        BankField (OPR0, BNK0, 0x08, DWordAcc, NoLock, Preserve)
+                        {
+                            AccessAs (QWordAcc, 0x00), 
+                            Offset (0x01), 
+                            F08F,   1983
+                        }
+
+                        Local3 = RefOf (F08F)
+                        Local4 = RefOf (G008)
+                    }
+                    Default
+                    {
+                        ERR (Arg0, Z145, 0x1E73, 0x00, 0x00, Arg2, Arg3)
+                        Return (Zero)
+                    }
+
+                }
+            }
+            Case (0x09)
+            {
+                Switch (ToInteger (Arg3))
+                {
+                    Case (0x01)
+                    {
+                        Local2 = 0x09
+                        BankField (OPR0, BNK0, 0x09, QWordAcc, NoLock, Preserve)
+                        {
+                            AccessAs (QWordAcc, 0x00), 
+                                ,   9, 
+                            F090,   1
+                        }
+
+                        Local3 = RefOf (F090)
+                        Local4 = RefOf (G009)
+                    }
+                    Case (0x06)
+                    {
+                        Local2 = 0x3F
+                        BankField (OPR0, BNK0, 0x3F, QWordAcc, NoLock, Preserve)
+                        {
+                                ,   9, 
+                            F091,   6
+                        }
+
+                        Local3 = RefOf (F091)
+                        Local4 = RefOf (G00A)
+                    }
+                    Case (0x07)
+                    {
+                        Local2 = 0x40
+                        BankField (OPR0, BNK0, 0x40, AnyAcc, NoLock, Preserve)
+                        {
+                            AccessAs (QWordAcc, 0x00), 
+                                ,   9, 
+                            F092,   7
+                        }
+
+                        Local3 = RefOf (F092)
+                        Local4 = RefOf (G00B)
+                    }
+                    Case (0x08)
+                    {
+                        Local2 = 0x7F
+                        BankField (OPR0, BNK0, 0x7F, QWordAcc, NoLock, Preserve)
+                        {
+                                ,   9, 
+                            F093,   8
+                        }
+
+                        Local3 = RefOf (F093)
+                        Local4 = RefOf (G00C)
+                    }
+                    Case (0x09)
+                    {
+                        Local2 = 0x80
+                        BankField (OPR0, BNK0, 0x80, ByteAcc, NoLock, Preserve)
+                        {
+                            AccessAs (QWordAcc, 0x00), 
+                                ,   9, 
+                            F094,   9
+                        }
+
+                        Local3 = RefOf (F094)
+                        Local4 = RefOf (G00D)
+                    }
+                    Case (0x1F)
+                    {
+                        Local2 = 0xFF
+                        BankField (OPR0, BNK0, 0xFF, QWordAcc, NoLock, Preserve)
+                        {
+                                ,   9, 
+                            F095,   31
+                        }
+
+                        Local3 = RefOf (F095)
+                        Local4 = RefOf (G00E)
+                    }
+                    Case (0x20)
+                    {
+                        Local2 = 0x00
+                        BankField (OPR0, BNK0, 0x00, WordAcc, NoLock, Preserve)
+                        {
+                            AccessAs (QWordAcc, 0x00), 
+                                ,   9, 
+                            F096,   32
+                        }
+
+                        Local3 = RefOf (F096)
+                        Local4 = RefOf (G000)
+                    }
+                    Case (0x21)
+                    {
+                        Local2 = 0x01
+                        BankField (OPR0, BNK0, 0x01, QWordAcc, NoLock, Preserve)
+                        {
+                                ,   9, 
+                            F097,   33
+                        }
+
+                        Local3 = RefOf (F097)
+                        Local4 = RefOf (G001)
+                    }
+                    Case (0x3F)
+                    {
+                        Local2 = 0x02
+                        BankField (OPR0, BNK0, 0x02, DWordAcc, NoLock, Preserve)
+                        {
+                            AccessAs (QWordAcc, 0x00), 
+                                ,   9, 
+                            F098,   63
+                        }
+
+                        Local3 = RefOf (F098)
+                        Local4 = RefOf (G002)
+                    }
+                    Case (0x40)
+                    {
+                        Local2 = 0x03
+                        BankField (OPR0, BNK0, 0x03, QWordAcc, NoLock, Preserve)
+                        {
+                                ,   9, 
+                            F099,   64
+                        }
+
+                        Local3 = RefOf (F099)
+                        Local4 = RefOf (G003)
+                    }
+                    Case (0x41)
+                    {
+                        Local2 = 0x04
+                        BankField (OPR0, BNK0, 0x04, QWordAcc, NoLock, Preserve)
+                        {
+                            AccessAs (QWordAcc, 0x00), 
+                                ,   9, 
+                            F09A,   65
+                        }
+
+                        Local3 = RefOf (F09A)
+                        Local4 = RefOf (G004)
+                    }
+                    Case (0x45)
+                    {
+                        Local2 = 0x05
+                        BankField (OPR0, BNK0, 0x05, QWordAcc, NoLock, Preserve)
+                        {
+                                ,   9, 
+                            F09B,   69
+                        }
+
+                        Local3 = RefOf (F09B)
+                        Local4 = RefOf (G005)
+                    }
+                    Case (0x81)
+                    {
+                        Local2 = 0x06
+                        BankField (OPR0, BNK0, 0x06, AnyAcc, NoLock, Preserve)
+                        {
+                            AccessAs (QWordAcc, 0x00), 
+                                ,   9, 
+                            F09C,   129
+                        }
+
+                        Local3 = RefOf (F09C)
+                        Local4 = RefOf (G006)
+                    }
+                    Case (0x0100)
+                    {
+                        Local2 = 0x07
+                        BankField (OPR0, BNK0, 0x07, QWordAcc, NoLock, Preserve)
+                        {
+                                ,   9, 
+                            F09D,   256
+                        }
+
+                        Local3 = RefOf (F09D)
+                        Local4 = RefOf (G007)
+                    }
+                    Case (0x03FF)
+                    {
+                        Local2 = 0x08
+                        BankField (OPR0, BNK0, 0x08, ByteAcc, NoLock, Preserve)
+                        {
+                            AccessAs (QWordAcc, 0x00), 
+                                ,   9, 
+                            F09E,   1023
+                        }
+
+                        Local3 = RefOf (F09E)
+                        Local4 = RefOf (G008)
+                    }
+                    Case (0x07BF)
+                    {
+                        Local2 = 0x09
+                        BankField (OPR0, BNK0, 0x09, QWordAcc, NoLock, Preserve)
+                        {
+                                ,   9, 
+                            F09F,   1983
+                        }
+
+                        Local3 = RefOf (F09F)
+                        Local4 = RefOf (G009)
+                    }
+                    Default
+                    {
+                        ERR (Arg0, Z145, 0x1EF3, 0x00, 0x00, Arg2, Arg3)
+                        Return (Zero)
+                    }
+
+                }
+            }
+            Case (0x1F)
+            {
+                Switch (ToInteger (Arg3))
+                {
+                    Case (0x01)
+                    {
+                        Local2 = 0x3F
+                        BankField (OPR0, BNK0, 0x3F, QWordAcc, NoLock, Preserve)
+                        {
+                            Offset (0x03), 
+                                ,   7, 
+                            F0A0,   1
+                        }
+
+                        Local3 = RefOf (F0A0)
+                        Local4 = RefOf (G00A)
+                    }
+                    Case (0x06)
+                    {
+                        Local2 = 0x40
+                        BankField (OPR0, BNK0, 0x40, WordAcc, NoLock, Preserve)
+                        {
+                            AccessAs (QWordAcc, 0x00), 
+                            Offset (0x03), 
+                                ,   7, 
+                            F0A1,   6
+                        }
+
+                        Local3 = RefOf (F0A1)
+                        Local4 = RefOf (G00B)
+                    }
+                    Case (0x07)
+                    {
+                        Local2 = 0x7F
+                        BankField (OPR0, BNK0, 0x7F, QWordAcc, NoLock, Preserve)
+                        {
+                            Offset (0x03), 
+                                ,   7, 
+                            F0A2,   7
+                        }
+
+                        Local3 = RefOf (F0A2)
+                        Local4 = RefOf (G00C)
+                    }
+                    Case (0x08)
+                    {
+                        Local2 = 0x80
+                        BankField (OPR0, BNK0, 0x80, DWordAcc, NoLock, Preserve)
+                        {
+                            AccessAs (QWordAcc, 0x00), 
+                            Offset (0x03), 
+                                ,   7, 
+                            F0A3,   8
+                        }
+
+                        Local3 = RefOf (F0A3)
+                        Local4 = RefOf (G00D)
+                    }
+                    Case (0x09)
+                    {
+                        Local2 = 0xFF
+                        BankField (OPR0, BNK0, 0xFF, QWordAcc, NoLock, Preserve)
+                        {
+                            Offset (0x03), 
+                                ,   7, 
+                            F0A4,   9
+                        }
+
+                        Local3 = RefOf (F0A4)
+                        Local4 = RefOf (G00E)
+                    }
+                    Case (0x1F)
+                    {
+                        Local2 = 0x00
+                        BankField (OPR0, BNK0, 0x00, QWordAcc, NoLock, Preserve)
+                        {
+                            AccessAs (QWordAcc, 0x00), 
+                            Offset (0x03), 
+                                ,   7, 
+                            F0A5,   31
+                        }
+
+                        Local3 = RefOf (F0A5)
+                        Local4 = RefOf (G000)
+                    }
+                    Case (0x20)
+                    {
+                        Local2 = 0x01
+                        BankField (OPR0, BNK0, 0x01, QWordAcc, NoLock, Preserve)
+                        {
+                            Offset (0x03), 
+                                ,   7, 
+                            F0A6,   32
+                        }
+
+                        Local3 = RefOf (F0A6)
+                        Local4 = RefOf (G001)
+                    }
+                    Case (0x21)
+                    {
+                        Local2 = 0x02
+                        BankField (OPR0, BNK0, 0x02, AnyAcc, NoLock, Preserve)
+                        {
+                            AccessAs (QWordAcc, 0x00), 
+                            Offset (0x03), 
+                                ,   7, 
+                            F0A7,   33
+                        }
+
+                        Local3 = RefOf (F0A7)
+                        Local4 = RefOf (G002)
+                    }
+                    Case (0x3F)
+                    {
+                        Local2 = 0x03
+                        BankField (OPR0, BNK0, 0x03, QWordAcc, NoLock, Preserve)
+                        {
+                            Offset (0x03), 
+                                ,   7, 
+                            F0A8,   63
+                        }
+
+                        Local3 = RefOf (F0A8)
+                        Local4 = RefOf (G003)
+                    }
+                    Case (0x40)
+                    {
+                        Local2 = 0x04
+                        BankField (OPR0, BNK0, 0x04, ByteAcc, NoLock, Preserve)
+                        {
+                            AccessAs (QWordAcc, 0x00), 
+                            Offset (0x03), 
+                                ,   7, 
+                            F0A9,   64
+                        }
+
+                        Local3 = RefOf (F0A9)
+                        Local4 = RefOf (G004)
+                    }
+                    Case (0x41)
+                    {
+                        Local2 = 0x05
+                        BankField (OPR0, BNK0, 0x05, QWordAcc, NoLock, Preserve)
+                        {
+                            Offset (0x03), 
+                                ,   7, 
+                            F0AA,   65
+                        }
+
+                        Local3 = RefOf (F0AA)
+                        Local4 = RefOf (G005)
+                    }
+                    Case (0x45)
+                    {
+                        Local2 = 0x06
+                        BankField (OPR0, BNK0, 0x06, WordAcc, NoLock, Preserve)
+                        {
+                            AccessAs (QWordAcc, 0x00), 
+                            Offset (0x03), 
+                                ,   7, 
+                            F0AB,   69
+                        }
+
+                        Local3 = RefOf (F0AB)
+                        Local4 = RefOf (G006)
+                    }
+                    Case (0x81)
+                    {
+                        Local2 = 0x07
+                        BankField (OPR0, BNK0, 0x07, QWordAcc, NoLock, Preserve)
+                        {
+                            Offset (0x03), 
+                                ,   7, 
+                            F0AC,   129
+                        }
+
+                        Local3 = RefOf (F0AC)
+                        Local4 = RefOf (G007)
+                    }
+                    Case (0x0100)
+                    {
+                        Local2 = 0x08
+                        BankField (OPR0, BNK0, 0x08, DWordAcc, NoLock, Preserve)
+                        {
+                            AccessAs (QWordAcc, 0x00), 
+                            Offset (0x03), 
+                                ,   7, 
+                            F0AD,   256
+                        }
+
+                        Local3 = RefOf (F0AD)
+                        Local4 = RefOf (G008)
+                    }
+                    Case (0x03FF)
+                    {
+                        Local2 = 0x09
+                        BankField (OPR0, BNK0, 0x09, QWordAcc, NoLock, Preserve)
+                        {
+                            Offset (0x03), 
+                                ,   7, 
+                            F0AE,   1023
+                        }
+
+                        Local3 = RefOf (F0AE)
+                        Local4 = RefOf (G009)
+                    }
+                    Case (0x07BF)
+                    {
+                        Local2 = 0x3F
+                        BankField (OPR0, BNK0, 0x3F, QWordAcc, NoLock, Preserve)
+                        {
+                            AccessAs (QWordAcc, 0x00), 
+                            Offset (0x03), 
+                                ,   7, 
+                            F0AF,   1983
+                        }
+
+                        Local3 = RefOf (F0AF)
+                        Local4 = RefOf (G00A)
+                    }
+                    Default
+                    {
+                        ERR (Arg0, Z145, 0x1F73, 0x00, 0x00, Arg2, Arg3)
+                        Return (Zero)
+                    }
+
+                }
+            }
+            Case (0x20)
+            {
+                Switch (ToInteger (Arg3))
+                {
+                    Case (0x01)
+                    {
+                        Local2 = 0x40
+                        BankField (OPR0, BNK0, 0x40, AnyAcc, NoLock, Preserve)
+                        {
+                            AccessAs (QWordAcc, 0x00), 
+                            Offset (0x04), 
+                            F0B0,   1
+                        }
+
+                        Local3 = RefOf (F0B0)
+                        Local4 = RefOf (G00B)
+                    }
+                    Case (0x06)
+                    {
+                        Local2 = 0x7F
+                        BankField (OPR0, BNK0, 0x7F, QWordAcc, NoLock, Preserve)
+                        {
+                            Offset (0x04), 
+                            F0B1,   6
+                        }
+
+                        Local3 = RefOf (F0B1)
+                        Local4 = RefOf (G00C)
+                    }
+                    Case (0x07)
+                    {
+                        Local2 = 0x80
+                        BankField (OPR0, BNK0, 0x80, ByteAcc, NoLock, Preserve)
+                        {
+                            AccessAs (QWordAcc, 0x00), 
+                            Offset (0x04), 
+                            F0B2,   7
+                        }
+
+                        Local3 = RefOf (F0B2)
+                        Local4 = RefOf (G00D)
+                    }
+                    Case (0x08)
+                    {
+                        Local2 = 0xFF
+                        BankField (OPR0, BNK0, 0xFF, QWordAcc, NoLock, Preserve)
+                        {
+                            Offset (0x04), 
+                            F0B3,   8
+                        }
+
+                        Local3 = RefOf (F0B3)
+                        Local4 = RefOf (G00E)
+                    }
+                    Case (0x09)
+                    {
+                        Local2 = 0x00
+                        BankField (OPR0, BNK0, 0x00, WordAcc, NoLock, Preserve)
+                        {
+                            AccessAs (QWordAcc, 0x00), 
+                            Offset (0x04), 
+                            F0B4,   9
+                        }
+
+                        Local3 = RefOf (F0B4)
+                        Local4 = RefOf (G000)
+                    }
+                    Case (0x1F)
+                    {
+                        Local2 = 0x01
+                        BankField (OPR0, BNK0, 0x01, QWordAcc, NoLock, Preserve)
+                        {
+                            Offset (0x04), 
+                            F0B5,   31
+                        }
+
+                        Local3 = RefOf (F0B5)
+                        Local4 = RefOf (G001)
+                    }
+                    Case (0x20)
+                    {
+                        Local2 = 0x02
+                        BankField (OPR0, BNK0, 0x02, DWordAcc, NoLock, Preserve)
+                        {
+                            AccessAs (QWordAcc, 0x00), 
+                            Offset (0x04), 
+                            F0B6,   32
+                        }
+
+                        Local3 = RefOf (F0B6)
+                        Local4 = RefOf (G002)
+                    }
+                    Case (0x21)
+                    {
+                        Local2 = 0x03
+                        BankField (OPR0, BNK0, 0x03, QWordAcc, NoLock, Preserve)
+                        {
+                            Offset (0x04), 
+                            F0B7,   33
+                        }
+
+                        Local3 = RefOf (F0B7)
+                        Local4 = RefOf (G003)
+                    }
+                    Case (0x3F)
+                    {
+                        Local2 = 0x04
+                        BankField (OPR0, BNK0, 0x04, QWordAcc, NoLock, Preserve)
+                        {
+                            AccessAs (QWordAcc, 0x00), 
+                            Offset (0x04), 
+                            F0B8,   63
+                        }
+
+                        Local3 = RefOf (F0B8)
+                        Local4 = RefOf (G004)
+                    }
+                    Case (0x40)
+                    {
+                        Local2 = 0x05
+                        BankField (OPR0, BNK0, 0x05, QWordAcc, NoLock, Preserve)
+                        {
+                            Offset (0x04), 
+                            F0B9,   64
+                        }
+
+                        Local3 = RefOf (F0B9)
+                        Local4 = RefOf (G005)
+                    }
+                    Case (0x41)
+                    {
+                        Local2 = 0x06
+                        BankField (OPR0, BNK0, 0x06, AnyAcc, NoLock, Preserve)
+                        {
+                            AccessAs (QWordAcc, 0x00), 
+                            Offset (0x04), 
+                            F0BA,   65
+                        }
+
+                        Local3 = RefOf (F0BA)
+                        Local4 = RefOf (G006)
+                    }
+                    Case (0x45)
+                    {
+                        Local2 = 0x07
+                        BankField (OPR0, BNK0, 0x07, QWordAcc, NoLock, Preserve)
+                        {
+                            Offset (0x04), 
+                            F0BB,   69
+                        }
+
+                        Local3 = RefOf (F0BB)
+                        Local4 = RefOf (G007)
+                    }
+                    Case (0x81)
+                    {
+                        Local2 = 0x08
+                        BankField (OPR0, BNK0, 0x08, ByteAcc, NoLock, Preserve)
+                        {
+                            AccessAs (QWordAcc, 0x00), 
+                            Offset (0x04), 
+                            F0BC,   129
+                        }
+
+                        Local3 = RefOf (F0BC)
+                        Local4 = RefOf (G008)
+                    }
+                    Case (0x0100)
+                    {
+                        Local2 = 0x09
+                        BankField (OPR0, BNK0, 0x09, QWordAcc, NoLock, Preserve)
+                        {
+                            Offset (0x04), 
+                            F0BD,   256
+                        }
+
+                        Local3 = RefOf (F0BD)
+                        Local4 = RefOf (G009)
+                    }
+                    Case (0x03FF)
+                    {
+                        Local2 = 0x3F
+                        BankField (OPR0, BNK0, 0x3F, WordAcc, NoLock, Preserve)
+                        {
+                            AccessAs (QWordAcc, 0x00), 
+                            Offset (0x04), 
+                            F0BE,   1023
+                        }
+
+                        Local3 = RefOf (F0BE)
+                        Local4 = RefOf (G00A)
+                    }
+                    Case (0x07BF)
+                    {
+                        Local2 = 0x40
+                        BankField (OPR0, BNK0, 0x40, QWordAcc, NoLock, Preserve)
+                        {
+                            Offset (0x04), 
+                            F0BF,   1983
+                        }
+
+                        Local3 = RefOf (F0BF)
+                        Local4 = RefOf (G00B)
+                    }
+                    Default
+                    {
+                        ERR (Arg0, Z145, 0x1FF3, 0x00, 0x00, Arg2, Arg3)
+                        Return (Zero)
+                    }
+
+                }
+            }
+            Case (0x21)
+            {
+                Switch (ToInteger (Arg3))
+                {
+                    Case (0x01)
+                    {
+                        Local2 = 0x7F
+                        BankField (OPR0, BNK0, 0x7F, QWordAcc, NoLock, Preserve)
+                        {
+                                ,   33, 
+                            F0C0,   1
+                        }
+
+                        Local3 = RefOf (F0C0)
+                        Local4 = RefOf (G00C)
+                    }
+                    Case (0x06)
+                    {
+                        Local2 = 0x80
+                        BankField (OPR0, BNK0, 0x80, DWordAcc, NoLock, Preserve)
+                        {
+                            AccessAs (QWordAcc, 0x00), 
+                                ,   33, 
+                            F0C1,   6
+                        }
+
+                        Local3 = RefOf (F0C1)
+                        Local4 = RefOf (G00D)
+                    }
+                    Case (0x07)
+                    {
+                        Local2 = 0xFF
+                        BankField (OPR0, BNK0, 0xFF, QWordAcc, NoLock, Preserve)
+                        {
+                                ,   33, 
+                            F0C2,   7
+                        }
+
+                        Local3 = RefOf (F0C2)
+                        Local4 = RefOf (G00E)
+                    }
+                    Case (0x08)
+                    {
+                        Local2 = 0x00
+                        BankField (OPR0, BNK0, 0x00, QWordAcc, NoLock, Preserve)
+                        {
+                            AccessAs (QWordAcc, 0x00), 
+                                ,   33, 
+                            F0C3,   8
+                        }
+
+                        Local3 = RefOf (F0C3)
+                        Local4 = RefOf (G000)
+                    }
+                    Case (0x09)
+                    {
+                        Local2 = 0x01
+                        BankField (OPR0, BNK0, 0x01, QWordAcc, NoLock, Preserve)
+                        {
+                                ,   33, 
+                            F0C4,   9
+                        }
+
+                        Local3 = RefOf (F0C4)
+                        Local4 = RefOf (G001)
+                    }
+                    Case (0x1F)
+                    {
+                        Local2 = 0x02
+                        BankField (OPR0, BNK0, 0x02, AnyAcc, NoLock, Preserve)
+                        {
+                            AccessAs (QWordAcc, 0x00), 
+                                ,   33, 
+                            F0C5,   31
+                        }
+
+                        Local3 = RefOf (F0C5)
+                        Local4 = RefOf (G002)
+                    }
+                    Case (0x20)
+                    {
+                        Local2 = 0x03
+                        BankField (OPR0, BNK0, 0x03, QWordAcc, NoLock, Preserve)
+                        {
+                                ,   33, 
+                            F0C6,   32
+                        }
+
+                        Local3 = RefOf (F0C6)
+                        Local4 = RefOf (G003)
+                    }
+                    Case (0x21)
+                    {
+                        Local2 = 0x04
+                        BankField (OPR0, BNK0, 0x04, ByteAcc, NoLock, Preserve)
+                        {
+                            AccessAs (QWordAcc, 0x00), 
+                                ,   33, 
+                            F0C7,   33
+                        }
+
+                        Local3 = RefOf (F0C7)
+                        Local4 = RefOf (G004)
+                    }
+                    Case (0x3F)
+                    {
+                        Local2 = 0x05
+                        BankField (OPR0, BNK0, 0x05, QWordAcc, NoLock, Preserve)
+                        {
+                                ,   33, 
+                            F0C8,   63
+                        }
+
+                        Local3 = RefOf (F0C8)
+                        Local4 = RefOf (G005)
+                    }
+                    Case (0x40)
+                    {
+                        Local2 = 0x06
+                        BankField (OPR0, BNK0, 0x06, WordAcc, NoLock, Preserve)
+                        {
+                            AccessAs (QWordAcc, 0x00), 
+                                ,   33, 
+                            F0C9,   64
+                        }
+
+                        Local3 = RefOf (F0C9)
+                        Local4 = RefOf (G006)
+                    }
+                    Case (0x41)
+                    {
+                        Local2 = 0x07
+                        BankField (OPR0, BNK0, 0x07, QWordAcc, NoLock, Preserve)
+                        {
+                                ,   33, 
+                            F0CA,   65
+                        }
+
+                        Local3 = RefOf (F0CA)
+                        Local4 = RefOf (G007)
+                    }
+                    Case (0x45)
+                    {
+                        Local2 = 0x08
+                        BankField (OPR0, BNK0, 0x08, DWordAcc, NoLock, Preserve)
+                        {
+                            AccessAs (QWordAcc, 0x00), 
+                                ,   33, 
+                            F0CB,   69
+                        }
+
+                        Local3 = RefOf (F0CB)
+                        Local4 = RefOf (G008)
+                    }
+                    Case (0x81)
+                    {
+                        Local2 = 0x09
+                        BankField (OPR0, BNK0, 0x09, QWordAcc, NoLock, Preserve)
+                        {
+                                ,   33, 
+                            F0CC,   129
+                        }
+
+                        Local3 = RefOf (F0CC)
+                        Local4 = RefOf (G009)
+                    }
+                    Case (0x0100)
+                    {
+                        Local2 = 0x3F
+                        BankField (OPR0, BNK0, 0x3F, QWordAcc, NoLock, Preserve)
+                        {
+                            AccessAs (QWordAcc, 0x00), 
+                                ,   33, 
+                            F0CD,   256
+                        }
+
+                        Local3 = RefOf (F0CD)
+                        Local4 = RefOf (G00A)
+                    }
+                    Case (0x03FF)
+                    {
+                        Local2 = 0x40
+                        BankField (OPR0, BNK0, 0x40, QWordAcc, NoLock, Preserve)
+                        {
+                                ,   33, 
+                            F0CE,   1023
+                        }
+
+                        Local3 = RefOf (F0CE)
+                        Local4 = RefOf (G00B)
+                    }
+                    Case (0x07BF)
+                    {
+                        Local2 = 0x7F
+                        BankField (OPR0, BNK0, 0x7F, AnyAcc, NoLock, Preserve)
+                        {
+                            AccessAs (QWordAcc, 0x00), 
+                                ,   33, 
+                            F0CF,   1983
+                        }
+
+                        Local3 = RefOf (F0CF)
+                        Local4 = RefOf (G00C)
+                    }
+                    Default
+                    {
+                        ERR (Arg0, Z145, 0x2073, 0x00, 0x00, Arg2, Arg3)
+                        Return (Zero)
+                    }
+
+                }
+            }
+            Case (0x3F)
+            {
+                Switch (ToInteger (Arg3))
+                {
+                    Case (0x01)
+                    {
+                        Local2 = 0x80
+                        BankField (OPR0, BNK0, 0x80, QWordAcc, NoLock, Preserve)
+                        {
+                            AccessAs (QWordAcc, 0x00), 
+                                ,   63, 
+                            F0D0,   1
+                        }
+
+                        Local3 = RefOf (F0D0)
+                        Local4 = RefOf (G00D)
+                    }
+                    Case (0x06)
+                    {
+                        Local2 = 0xFF
+                        BankField (OPR0, BNK0, 0xFF, ByteAcc, NoLock, Preserve)
+                        {
+                                ,   63, 
+                            F0D1,   6
+                        }
+
+                        Local3 = RefOf (F0D1)
+                        Local4 = RefOf (G00E)
+                    }
+                    Case (0x07)
+                    {
+                        Local2 = 0x00
+                        BankField (OPR0, BNK0, 0x00, QWordAcc, NoLock, Preserve)
+                        {
+                            AccessAs (QWordAcc, 0x00), 
+                                ,   63, 
+                            F0D2,   7
+                        }
+
+                        Local3 = RefOf (F0D2)
+                        Local4 = RefOf (G000)
+                    }
+                    Case (0x08)
+                    {
+                        Local2 = 0x01
+                        BankField (OPR0, BNK0, 0x01, WordAcc, NoLock, Preserve)
+                        {
+                                ,   63, 
+                            F0D3,   8
+                        }
+
+                        Local3 = RefOf (F0D3)
+                        Local4 = RefOf (G001)
+                    }
+                    Case (0x09)
+                    {
+                        Local2 = 0x02
+                        BankField (OPR0, BNK0, 0x02, QWordAcc, NoLock, Preserve)
+                        {
+                            AccessAs (QWordAcc, 0x00), 
+                                ,   63, 
+                            F0D4,   9
+                        }
+
+                        Local3 = RefOf (F0D4)
+                        Local4 = RefOf (G002)
+                    }
+                    Case (0x1F)
+                    {
+                        Local2 = 0x03
+                        BankField (OPR0, BNK0, 0x03, DWordAcc, NoLock, Preserve)
+                        {
+                                ,   63, 
+                            F0D5,   31
+                        }
+
+                        Local3 = RefOf (F0D5)
+                        Local4 = RefOf (G003)
+                    }
+                    Case (0x20)
+                    {
+                        Local2 = 0x04
+                        BankField (OPR0, BNK0, 0x04, QWordAcc, NoLock, Preserve)
+                        {
+                            AccessAs (QWordAcc, 0x00), 
+                                ,   63, 
+                            F0D6,   32
+                        }
+
+                        Local3 = RefOf (F0D6)
+                        Local4 = RefOf (G004)
+                    }
+                    Case (0x21)
+                    {
+                        Local2 = 0x05
+                        BankField (OPR0, BNK0, 0x05, QWordAcc, NoLock, Preserve)
+                        {
+                                ,   63, 
+                            F0D7,   33
+                        }
+
+                        Local3 = RefOf (F0D7)
+                        Local4 = RefOf (G005)
+                    }
+                    Case (0x3F)
+                    {
+                        Local2 = 0x06
+                        BankField (OPR0, BNK0, 0x06, AnyAcc, NoLock, Preserve)
+                        {
+                            AccessAs (QWordAcc, 0x00), 
+                                ,   63, 
+                            F0D8,   63
+                        }
+
+                        Local3 = RefOf (F0D8)
+                        Local4 = RefOf (G006)
+                    }
+                    Case (0x40)
+                    {
+                        Local2 = 0x07
+                        BankField (OPR0, BNK0, 0x07, QWordAcc, NoLock, Preserve)
+                        {
+                                ,   63, 
+                            F0D9,   64
+                        }
+
+                        Local3 = RefOf (F0D9)
+                        Local4 = RefOf (G007)
+                    }
+                    Case (0x41)
+                    {
+                        Local2 = 0x08
+                        BankField (OPR0, BNK0, 0x08, ByteAcc, NoLock, Preserve)
+                        {
+                            AccessAs (QWordAcc, 0x00), 
+                                ,   63, 
+                            F0DA,   65
+                        }
+
+                        Local3 = RefOf (F0DA)
+                        Local4 = RefOf (G008)
+                    }
+                    Case (0x45)
+                    {
+                        Local2 = 0x09
+                        BankField (OPR0, BNK0, 0x09, QWordAcc, NoLock, Preserve)
+                        {
+                                ,   63, 
+                            F0DB,   69
+                        }
+
+                        Local3 = RefOf (F0DB)
+                        Local4 = RefOf (G009)
+                    }
+                    Case (0x81)
+                    {
+                        Local2 = 0x3F
+                        BankField (OPR0, BNK0, 0x3F, WordAcc, NoLock, Preserve)
+                        {
+                            AccessAs (QWordAcc, 0x00), 
+                                ,   63, 
+                            F0DC,   129
+                        }
+
+                        Local3 = RefOf (F0DC)
+                        Local4 = RefOf (G00A)
+                    }
+                    Case (0x0100)
+                    {
+                        Local2 = 0x40
+                        BankField (OPR0, BNK0, 0x40, QWordAcc, NoLock, Preserve)
+                        {
+                                ,   63, 
+                            F0DD,   256
+                        }
+
+                        Local3 = RefOf (F0DD)
+                        Local4 = RefOf (G00B)
+                    }
+                    Case (0x03FF)
+                    {
+                        Local2 = 0x7F
+                        BankField (OPR0, BNK0, 0x7F, DWordAcc, NoLock, Preserve)
+                        {
+                            AccessAs (QWordAcc, 0x00), 
+                                ,   63, 
+                            F0DE,   1023
+                        }
+
+                        Local3 = RefOf (F0DE)
+                        Local4 = RefOf (G00C)
+                    }
+                    Case (0x07BF)
+                    {
+                        Local2 = 0x80
+                        BankField (OPR0, BNK0, 0x80, QWordAcc, NoLock, Preserve)
+                        {
+                                ,   63, 
+                            F0DF,   1983
+                        }
+
+                        Local3 = RefOf (F0DF)
+                        Local4 = RefOf (G00D)
+                    }
+                    Default
+                    {
+                        ERR (Arg0, Z145, 0x20F3, 0x00, 0x00, Arg2, Arg3)
+                        Return (Zero)
+                    }
+
+                }
+            }
+            Case (0x40)
+            {
+                Switch (ToInteger (Arg3))
+                {
+                    Case (0x01)
+                    {
+                        Local2 = 0xFF
+                        BankField (OPR0, BNK0, 0xFF, QWordAcc, NoLock, Preserve)
+                        {
+                            Offset (0x08), 
+                            F0E0,   1
+                        }
+
+                        Local3 = RefOf (F0E0)
+                        Local4 = RefOf (G00E)
+                    }
+                    Case (0x06)
+                    {
+                        Local2 = 0x00
+                        BankField (OPR0, BNK0, 0x00, QWordAcc, NoLock, Preserve)
+                        {
+                            AccessAs (QWordAcc, 0x00), 
+                            Offset (0x08), 
+                            F0E1,   6
+                        }
+
+                        Local3 = RefOf (F0E1)
+                        Local4 = RefOf (G000)
+                    }
+                    Case (0x07)
+                    {
+                        Local2 = 0x01
+                        BankField (OPR0, BNK0, 0x01, QWordAcc, NoLock, Preserve)
+                        {
+                            Offset (0x08), 
+                            F0E2,   7
+                        }
+
+                        Local3 = RefOf (F0E2)
+                        Local4 = RefOf (G001)
+                    }
+                    Case (0x08)
+                    {
+                        Local2 = 0x02
+                        BankField (OPR0, BNK0, 0x02, AnyAcc, NoLock, Preserve)
+                        {
+                            AccessAs (QWordAcc, 0x00), 
+                            Offset (0x08), 
+                            F0E3,   8
+                        }
+
+                        Local3 = RefOf (F0E3)
+                        Local4 = RefOf (G002)
+                    }
+                    Case (0x09)
+                    {
+                        Local2 = 0x03
+                        BankField (OPR0, BNK0, 0x03, QWordAcc, NoLock, Preserve)
+                        {
+                            Offset (0x08), 
+                            F0E4,   9
+                        }
+
+                        Local3 = RefOf (F0E4)
+                        Local4 = RefOf (G003)
+                    }
+                    Case (0x1F)
+                    {
+                        Local2 = 0x04
+                        BankField (OPR0, BNK0, 0x04, ByteAcc, NoLock, Preserve)
+                        {
+                            AccessAs (QWordAcc, 0x00), 
+                            Offset (0x08), 
+                            F0E5,   31
+                        }
+
+                        Local3 = RefOf (F0E5)
+                        Local4 = RefOf (G004)
+                    }
+                    Case (0x20)
+                    {
+                        Local2 = 0x05
+                        BankField (OPR0, BNK0, 0x05, QWordAcc, NoLock, Preserve)
+                        {
+                            Offset (0x08), 
+                            F0E6,   32
+                        }
+
+                        Local3 = RefOf (F0E6)
+                        Local4 = RefOf (G005)
+                    }
+                    Case (0x21)
+                    {
+                        Local2 = 0x06
+                        BankField (OPR0, BNK0, 0x06, WordAcc, NoLock, Preserve)
+                        {
+                            AccessAs (QWordAcc, 0x00), 
+                            Offset (0x08), 
+                            F0E7,   33
+                        }
+
+                        Local3 = RefOf (F0E7)
+                        Local4 = RefOf (G006)
+                    }
+                    Case (0x3F)
+                    {
+                        Local2 = 0x07
+                        BankField (OPR0, BNK0, 0x07, QWordAcc, NoLock, Preserve)
+                        {
+                            Offset (0x08), 
+                            F0E8,   63
+                        }
+
+                        Local3 = RefOf (F0E8)
+                        Local4 = RefOf (G007)
+                    }
+                    Case (0x40)
+                    {
+                        Local2 = 0x08
+                        BankField (OPR0, BNK0, 0x08, DWordAcc, NoLock, Preserve)
+                        {
+                            AccessAs (QWordAcc, 0x00), 
+                            Offset (0x08), 
+                            F0E9,   64
+                        }
+
+                        Local3 = RefOf (F0E9)
+                        Local4 = RefOf (G008)
+                    }
+                    Case (0x41)
+                    {
+                        Local2 = 0x09
+                        BankField (OPR0, BNK0, 0x09, QWordAcc, NoLock, Preserve)
+                        {
+                            Offset (0x08), 
+                            F0EA,   65
+                        }
+
+                        Local3 = RefOf (F0EA)
+                        Local4 = RefOf (G009)
+                    }
+                    Case (0x45)
+                    {
+                        Local2 = 0x3F
+                        BankField (OPR0, BNK0, 0x3F, QWordAcc, NoLock, Preserve)
+                        {
+                            AccessAs (QWordAcc, 0x00), 
+                            Offset (0x08), 
+                            F0EB,   69
+                        }
+
+                        Local3 = RefOf (F0EB)
+                        Local4 = RefOf (G00A)
+                    }
+                    Case (0x81)
+                    {
+                        Local2 = 0x40
+                        BankField (OPR0, BNK0, 0x40, QWordAcc, NoLock, Preserve)
+                        {
+                            Offset (0x08), 
+                            F0EC,   129
+                        }
+
+                        Local3 = RefOf (F0EC)
+                        Local4 = RefOf (G00B)
+                    }
+                    Case (0x0100)
+                    {
+                        Local2 = 0x7F
+                        BankField (OPR0, BNK0, 0x7F, AnyAcc, NoLock, Preserve)
+                        {
+                            AccessAs (QWordAcc, 0x00), 
+                            Offset (0x08), 
+                            F0ED,   256
+                        }
+
+                        Local3 = RefOf (F0ED)
+                        Local4 = RefOf (G00C)
+                    }
+                    Case (0x03FF)
+                    {
+                        Local2 = 0x80
+                        BankField (OPR0, BNK0, 0x80, QWordAcc, NoLock, Preserve)
+                        {
+                            Offset (0x08), 
+                            F0EE,   1023
+                        }
+
+                        Local3 = RefOf (F0EE)
+                        Local4 = RefOf (G00D)
+                    }
+                    Case (0x07BF)
+                    {
+                        Local2 = 0xFF
+                        BankField (OPR0, BNK0, 0xFF, ByteAcc, NoLock, Preserve)
+                        {
+                            AccessAs (QWordAcc, 0x00), 
+                            Offset (0x08), 
+                            F0EF,   1983
+                        }
+
+                        Local3 = RefOf (F0EF)
+                        Local4 = RefOf (G00E)
+                    }
+                    Default
+                    {
+                        ERR (Arg0, Z145, 0x2173, 0x00, 0x00, Arg2, Arg3)
+                        Return (Zero)
+                    }
+
+                }
+            }
+            Case (0x41)
+            {
+                Switch (ToInteger (Arg3))
+                {
+                    Case (0x01)
+                    {
+                        Local2 = 0x00
+                        BankField (OPR0, BNK0, 0x00, WordAcc, NoLock, Preserve)
+                        {
+                            AccessAs (QWordAcc, 0x00), 
+                            Offset (0x08), 
+                                ,   1, 
+                            F0F0,   1
+                        }
+
+                        Local3 = RefOf (F0F0)
+                        Local4 = RefOf (G000)
+                    }
+                    Case (0x06)
+                    {
+                        Local2 = 0x01
+                        BankField (OPR0, BNK0, 0x01, QWordAcc, NoLock, Preserve)
+                        {
+                            Offset (0x08), 
+                                ,   1, 
+                            F0F1,   6
+                        }
+
+                        Local3 = RefOf (F0F1)
+                        Local4 = RefOf (G001)
+                    }
+                    Case (0x07)
+                    {
+                        Local2 = 0x02
+                        BankField (OPR0, BNK0, 0x02, DWordAcc, NoLock, Preserve)
+                        {
+                            AccessAs (QWordAcc, 0x00), 
+                            Offset (0x08), 
+                                ,   1, 
+                            F0F2,   7
+                        }
+
+                        Local3 = RefOf (F0F2)
+                        Local4 = RefOf (G002)
+                    }
+                    Case (0x08)
+                    {
+                        Local2 = 0x03
+                        BankField (OPR0, BNK0, 0x03, QWordAcc, NoLock, Preserve)
+                        {
+                            Offset (0x08), 
+                                ,   1, 
+                            F0F3,   8
+                        }
+
+                        Local3 = RefOf (F0F3)
+                        Local4 = RefOf (G003)
+                    }
+                    Case (0x09)
+                    {
+                        Local2 = 0x04
+                        BankField (OPR0, BNK0, 0x04, QWordAcc, NoLock, Preserve)
+                        {
+                            AccessAs (QWordAcc, 0x00), 
+                            Offset (0x08), 
+                                ,   1, 
+                            F0F4,   9
+                        }
+
+                        Local3 = RefOf (F0F4)
+                        Local4 = RefOf (G004)
+                    }
+                    Case (0x1F)
+                    {
+                        Local2 = 0x05
+                        BankField (OPR0, BNK0, 0x05, QWordAcc, NoLock, Preserve)
+                        {
+                            Offset (0x08), 
+                                ,   1, 
+                            F0F5,   31
+                        }
+
+                        Local3 = RefOf (F0F5)
+                        Local4 = RefOf (G005)
+                    }
+                    Case (0x20)
+                    {
+                        Local2 = 0x06
+                        BankField (OPR0, BNK0, 0x06, AnyAcc, NoLock, Preserve)
+                        {
+                            AccessAs (QWordAcc, 0x00), 
+                            Offset (0x08), 
+                                ,   1, 
+                            F0F6,   32
+                        }
+
+                        Local3 = RefOf (F0F6)
+                        Local4 = RefOf (G006)
+                    }
+                    Case (0x21)
+                    {
+                        Local2 = 0x07
+                        BankField (OPR0, BNK0, 0x07, QWordAcc, NoLock, Preserve)
+                        {
+                            Offset (0x08), 
+                                ,   1, 
+                            F0F7,   33
+                        }
+
+                        Local3 = RefOf (F0F7)
+                        Local4 = RefOf (G007)
+                    }
+                    Case (0x3F)
+                    {
+                        Local2 = 0x08
+                        BankField (OPR0, BNK0, 0x08, ByteAcc, NoLock, Preserve)
+                        {
+                            AccessAs (QWordAcc, 0x00), 
+                            Offset (0x08), 
+                                ,   1, 
+                            F0F8,   63
+                        }
+
+                        Local3 = RefOf (F0F8)
+                        Local4 = RefOf (G008)
+                    }
+                    Case (0x40)
+                    {
+                        Local2 = 0x09
+                        BankField (OPR0, BNK0, 0x09, QWordAcc, NoLock, Preserve)
+                        {
+                            Offset (0x08), 
+                                ,   1, 
+                            F0F9,   64
+                        }
+
+                        Local3 = RefOf (F0F9)
+                        Local4 = RefOf (G009)
+                    }
+                    Case (0x41)
+                    {
+                        Local2 = 0x3F
+                        BankField (OPR0, BNK0, 0x3F, WordAcc, NoLock, Preserve)
+                        {
+                            AccessAs (QWordAcc, 0x00), 
+                            Offset (0x08), 
+                                ,   1, 
+                            F0FA,   65
+                        }
+
+                        Local3 = RefOf (F0FA)
+                        Local4 = RefOf (G00A)
+                    }
+                    Case (0x45)
+                    {
+                        Local2 = 0x40
+                        BankField (OPR0, BNK0, 0x40, QWordAcc, NoLock, Preserve)
+                        {
+                            Offset (0x08), 
+                                ,   1, 
+                            F0FB,   69
+                        }
+
+                        Local3 = RefOf (F0FB)
+                        Local4 = RefOf (G00B)
+                    }
+                    Case (0x81)
+                    {
+                        Local2 = 0x7F
+                        BankField (OPR0, BNK0, 0x7F, DWordAcc, NoLock, Preserve)
+                        {
+                            AccessAs (QWordAcc, 0x00), 
+                            Offset (0x08), 
+                                ,   1, 
+                            F0FC,   129
+                        }
+
+                        Local3 = RefOf (F0FC)
+                        Local4 = RefOf (G00C)
+                    }
+                    Case (0x0100)
+                    {
+                        Local2 = 0x80
+                        BankField (OPR0, BNK0, 0x80, QWordAcc, NoLock, Preserve)
+                        {
+                            Offset (0x08), 
+                                ,   1, 
+                            F0FD,   256
+                        }
+
+                        Local3 = RefOf (F0FD)
+                        Local4 = RefOf (G00D)
+                    }
+                    Case (0x03FF)
+                    {
+                        Local2 = 0xFF
+                        BankField (OPR0, BNK0, 0xFF, QWordAcc, NoLock, Preserve)
+                        {
+                            AccessAs (QWordAcc, 0x00), 
+                            Offset (0x08), 
+                                ,   1, 
+                            F0FE,   1023
+                        }
+
+                        Local3 = RefOf (F0FE)
+                        Local4 = RefOf (G00E)
+                    }
+                    Case (0x07BF)
+                    {
+                        Local2 = 0x00
+                        BankField (OPR0, BNK0, 0x00, QWordAcc, NoLock, Preserve)
+                        {
+                            Offset (0x08), 
+                                ,   1, 
+                            F0FF,   1983
+                        }
+
+                        Local3 = RefOf (F0FF)
+                        Local4 = RefOf (G000)
+                    }
+                    Default
+                    {
+                        ERR (Arg0, Z145, 0x21F3, 0x00, 0x00, Arg2, Arg3)
+                        Return (Zero)
+                    }
+
+                }
+            }
+            Default
+            {
+                ERR (Arg0, Z145, 0x21F9, 0x00, 0x00, Arg2, Arg3)
+                Return (Zero)
+            }
+
+        }
+
+        FCP0 [0x00] = 0x02
+        FCP0 [0x01] = RefOf (BNK0)
+        FCP0 [0x02] = Local2
+        M72D (Arg0, Local3, Arg2, Arg3, Arg4, Arg5, Local4)
+        FCP0 [0x00] = 0x00
+    }
+
+    /* Create BankField Unit */
+    /* (AnyAcc, Lock, Preserve) */
+    Method (M7D4, 6, Serialized)
+    {
+        OperationRegion (OPRB, SystemIO, 0x00, 0x09)
+        OperationRegion (OPR0, SystemIO, 0x0B, 0x0100)
+        Field (OPRB, ByteAcc, NoLock, Preserve)
+        {
+            BNK0,   8
+        }
+
+        BankField (OPR0, BNK0, 0x00, ByteAcc, NoLock, Preserve)
+        {
+            G000,   2048
+        }
+
+        BankField (OPR0, BNK0, 0x01, ByteAcc, NoLock, Preserve)
+        {
+            G001,   2048
+        }
+
+        BankField (OPR0, BNK0, 0x02, ByteAcc, NoLock, Preserve)
+        {
+            G002,   2048
+        }
+
+        BankField (OPR0, BNK0, 0x03, ByteAcc, NoLock, Preserve)
+        {
+            G003,   2048
+        }
+
+        BankField (OPR0, BNK0, 0x04, ByteAcc, NoLock, Preserve)
+        {
+            G004,   2048
+        }
+
+        BankField (OPR0, BNK0, 0x05, ByteAcc, NoLock, Preserve)
+        {
+            G005,   2048
+        }
+
+        BankField (OPR0, BNK0, 0x06, ByteAcc, NoLock, Preserve)
+        {
+            G006,   2048
+        }
+
+        BankField (OPR0, BNK0, 0x07, ByteAcc, NoLock, Preserve)
+        {
+            G007,   2048
+        }
+
+        BankField (OPR0, BNK0, 0x08, ByteAcc, NoLock, Preserve)
+        {
+            G008,   2048
+        }
+
+        BankField (OPR0, BNK0, 0x09, ByteAcc, NoLock, Preserve)
+        {
+            G009,   2048
+        }
+
+        BankField (OPR0, BNK0, 0x3F, ByteAcc, NoLock, Preserve)
+        {
+            G00A,   2048
+        }
+
+        BankField (OPR0, BNK0, 0x40, ByteAcc, NoLock, Preserve)
+        {
+            G00B,   2048
+        }
+
+        BankField (OPR0, BNK0, 0x7F, ByteAcc, NoLock, Preserve)
+        {
+            G00C,   2048
+        }
+
+        BankField (OPR0, BNK0, 0x80, ByteAcc, NoLock, Preserve)
+        {
+            G00D,   2048
+        }
+
+        BankField (OPR0, BNK0, 0xFF, ByteAcc, NoLock, Preserve)
+        {
+            G00E,   2048
+        }
+
+        Concatenate (Arg0, "-m7d4", Arg0)
+        Switch (ToInteger (Arg2))
+        {
+            Case (0x00)
+            {
+                Switch (ToInteger (Arg3))
+                {
+                    Case (0x01)
+                    {
+                        Local2 = 0x00
+                        BankField (OPR0, BNK0, 0x00, AnyAcc, Lock, Preserve)
+                        {
+                            Offset (0x00), 
+                            F000,   1
+                        }
+
+                        Local3 = RefOf (F000)
+                        Local4 = RefOf (G000)
+                    }
+                    Case (0x06)
+                    {
+                        Local2 = 0x01
+                        BankField (OPR0, BNK0, 0x01, WordAcc, Lock, Preserve)
+                        {
+                            AccessAs (AnyAcc, 0x00), 
+                            Offset (0x00), 
+                            F001,   6
+                        }
+
+                        Local3 = RefOf (F001)
+                        Local4 = RefOf (G001)
+                    }
+                    Case (0x07)
+                    {
+                        Local2 = 0x02
+                        BankField (OPR0, BNK0, 0x02, AnyAcc, Lock, Preserve)
+                        {
+                            Offset (0x00), 
+                            F002,   7
+                        }
+
+                        Local3 = RefOf (F002)
+                        Local4 = RefOf (G002)
+                    }
+                    Case (0x08)
+                    {
+                        Local2 = 0x03
+                        BankField (OPR0, BNK0, 0x03, DWordAcc, Lock, Preserve)
+                        {
+                            AccessAs (AnyAcc, 0x00), 
+                            Offset (0x00), 
+                            F003,   8
+                        }
+
+                        Local3 = RefOf (F003)
+                        Local4 = RefOf (G003)
+                    }
+                    Case (0x09)
+                    {
+                        Local2 = 0x04
+                        BankField (OPR0, BNK0, 0x04, AnyAcc, Lock, Preserve)
+                        {
+                            Offset (0x00), 
+                            F004,   9
+                        }
+
+                        Local3 = RefOf (F004)
+                        Local4 = RefOf (G004)
+                    }
+                    Case (0x1F)
+                    {
+                        Local2 = 0x05
+                        BankField (OPR0, BNK0, 0x05, QWordAcc, Lock, Preserve)
+                        {
+                            AccessAs (AnyAcc, 0x00), 
+                            Offset (0x00), 
+                            F005,   31
+                        }
+
+                        Local3 = RefOf (F005)
+                        Local4 = RefOf (G005)
+                    }
+                    Case (0x20)
+                    {
+                        Local2 = 0x06
+                        BankField (OPR0, BNK0, 0x06, AnyAcc, Lock, Preserve)
+                        {
+                            Offset (0x00), 
+                            F006,   32
+                        }
+
+                        Local3 = RefOf (F006)
+                        Local4 = RefOf (G006)
+                    }
+                    Case (0x21)
+                    {
+                        Local2 = 0x07
+                        BankField (OPR0, BNK0, 0x07, AnyAcc, Lock, Preserve)
+                        {
+                            AccessAs (AnyAcc, 0x00), 
+                            Offset (0x00), 
+                            F007,   33
+                        }
+
+                        Local3 = RefOf (F007)
+                        Local4 = RefOf (G007)
+                    }
+                    Case (0x3F)
+                    {
+                        Local2 = 0x08
+                        BankField (OPR0, BNK0, 0x08, AnyAcc, Lock, Preserve)
+                        {
+                            Offset (0x00), 
+                            F008,   63
+                        }
+
+                        Local3 = RefOf (F008)
+                        Local4 = RefOf (G008)
+                    }
+                    Case (0x40)
+                    {
+                        Local2 = 0x09
+                        BankField (OPR0, BNK0, 0x09, ByteAcc, Lock, Preserve)
+                        {
+                            AccessAs (AnyAcc, 0x00), 
+                            Offset (0x00), 
+                            F009,   64
+                        }
+
+                        Local3 = RefOf (F009)
+                        Local4 = RefOf (G009)
+                    }
+                    Case (0x41)
+                    {
+                        Local2 = 0x3F
+                        BankField (OPR0, BNK0, 0x3F, AnyAcc, Lock, Preserve)
+                        {
+                            Offset (0x00), 
+                            F00A,   65
+                        }
+
+                        Local3 = RefOf (F00A)
+                        Local4 = RefOf (G00A)
+                    }
+                    Case (0x45)
+                    {
+                        Local2 = 0x40
+                        BankField (OPR0, BNK0, 0x40, WordAcc, Lock, Preserve)
+                        {
+                            AccessAs (AnyAcc, 0x00), 
+                            Offset (0x00), 
+                            F00B,   69
+                        }
+
+                        Local3 = RefOf (F00B)
+                        Local4 = RefOf (G00B)
+                    }
+                    Case (0x81)
+                    {
+                        Local2 = 0x7F
+                        BankField (OPR0, BNK0, 0x7F, AnyAcc, Lock, Preserve)
+                        {
+                            Offset (0x00), 
+                            F00C,   129
+                        }
+
+                        Local3 = RefOf (F00C)
+                        Local4 = RefOf (G00C)
+                    }
+                    Case (0x0100)
+                    {
+                        Local2 = 0x80
+                        BankField (OPR0, BNK0, 0x80, DWordAcc, Lock, Preserve)
+                        {
+                            AccessAs (AnyAcc, 0x00), 
+                            Offset (0x00), 
+                            F00D,   256
+                        }
+
+                        Local3 = RefOf (F00D)
+                        Local4 = RefOf (G00D)
+                    }
+                    Case (0x03FF)
+                    {
+                        Local2 = 0xFF
+                        BankField (OPR0, BNK0, 0xFF, AnyAcc, Lock, Preserve)
+                        {
+                            Offset (0x00), 
+                            F00E,   1023
+                        }
+
+                        Local3 = RefOf (F00E)
+                        Local4 = RefOf (G00E)
+                    }
+                    Case (0x07BF)
+                    {
+                        Local2 = 0x00
+                        BankField (OPR0, BNK0, 0x00, QWordAcc, Lock, Preserve)
+                        {
+                            AccessAs (AnyAcc, 0x00), 
+                            Offset (0x00), 
+                            F00F,   1983
+                        }
+
+                        Local3 = RefOf (F00F)
+                        Local4 = RefOf (G000)
+                    }
+                    Default
+                    {
+                        ERR (Arg0, Z145, 0x22BB, 0x00, 0x00, Arg2, Arg3)
+                        Return (Zero)
+                    }
+
+                }
+            }
+            Case (0x01)
+            {
+                Switch (ToInteger (Arg3))
+                {
+                    Case (0x01)
+                    {
+                        Local2 = 0x01
+                        BankField (OPR0, BNK0, 0x01, AnyAcc, Lock, Preserve)
+                        {
+                            AccessAs (AnyAcc, 0x00), 
+                                ,   1, 
+                            F010,   1
+                        }
+
+                        Local3 = RefOf (F010)
+                        Local4 = RefOf (G001)
+                    }
+                    Case (0x06)
+                    {
+                        Local2 = 0x02
+                        BankField (OPR0, BNK0, 0x02, AnyAcc, Lock, Preserve)
+                        {
+                                ,   1, 
+                            F011,   6
+                        }
+
+                        Local3 = RefOf (F011)
+                        Local4 = RefOf (G002)
+                    }
+                    Case (0x07)
+                    {
+                        Local2 = 0x03
+                        BankField (OPR0, BNK0, 0x03, AnyAcc, Lock, Preserve)
+                        {
+                            AccessAs (AnyAcc, 0x00), 
+                                ,   1, 
+                            F012,   7
+                        }
+
+                        Local3 = RefOf (F012)
+                        Local4 = RefOf (G003)
+                    }
+                    Case (0x08)
+                    {
+                        Local2 = 0x04
+                        BankField (OPR0, BNK0, 0x04, ByteAcc, Lock, Preserve)
+                        {
+                                ,   1, 
+                            F013,   8
+                        }
+
+                        Local3 = RefOf (F013)
+                        Local4 = RefOf (G004)
+                    }
+                    Case (0x09)
+                    {
+                        Local2 = 0x05
+                        BankField (OPR0, BNK0, 0x05, WordAcc, Lock, Preserve)
+                        {
+                            AccessAs (AnyAcc, 0x00), 
+                                ,   1, 
+                            F014,   9
+                        }
+
+                        Local3 = RefOf (F014)
+                        Local4 = RefOf (G005)
+                    }
+                    Case (0x1F)
+                    {
+                        Local2 = 0x06
+                        BankField (OPR0, BNK0, 0x06, AnyAcc, Lock, Preserve)
+                        {
+                                ,   1, 
+                            F015,   31
+                        }
+
+                        Local3 = RefOf (F015)
+                        Local4 = RefOf (G006)
+                    }
+                    Case (0x20)
+                    {
+                        Local2 = 0x07
+                        BankField (OPR0, BNK0, 0x07, DWordAcc, Lock, Preserve)
+                        {
+                            AccessAs (AnyAcc, 0x00), 
+                                ,   1, 
+                            F016,   32
+                        }
+
+                        Local3 = RefOf (F016)
+                        Local4 = RefOf (G007)
+                    }
+                    Case (0x21)
+                    {
+                        Local2 = 0x08
+                        BankField (OPR0, BNK0, 0x08, AnyAcc, Lock, Preserve)
+                        {
+                                ,   1, 
+                            F017,   33
+                        }
+
+                        Local3 = RefOf (F017)
+                        Local4 = RefOf (G008)
+                    }
+                    Case (0x3F)
+                    {
+                        Local2 = 0x09
+                        BankField (OPR0, BNK0, 0x09, QWordAcc, Lock, Preserve)
+                        {
+                            AccessAs (AnyAcc, 0x00), 
+                                ,   1, 
+                            F018,   63
+                        }
+
+                        Local3 = RefOf (F018)
+                        Local4 = RefOf (G009)
+                    }
+                    Case (0x40)
+                    {
+                        Local2 = 0x3F
+                        BankField (OPR0, BNK0, 0x3F, AnyAcc, Lock, Preserve)
+                        {
+                                ,   1, 
+                            F019,   64
+                        }
+
+                        Local3 = RefOf (F019)
+                        Local4 = RefOf (G00A)
+                    }
+                    Case (0x41)
+                    {
+                        Local2 = 0x40
+                        BankField (OPR0, BNK0, 0x40, AnyAcc, Lock, Preserve)
+                        {
+                            AccessAs (AnyAcc, 0x00), 
+                                ,   1, 
+                            F01A,   65
+                        }
+
+                        Local3 = RefOf (F01A)
+                        Local4 = RefOf (G00B)
+                    }
+                    Case (0x45)
+                    {
+                        Local2 = 0x7F
+                        BankField (OPR0, BNK0, 0x7F, AnyAcc, Lock, Preserve)
+                        {
+                                ,   1, 
+                            F01B,   69
+                        }
+
+                        Local3 = RefOf (F01B)
+                        Local4 = RefOf (G00C)
+                    }
+                    Case (0x81)
+                    {
+                        Local2 = 0x80
+                        BankField (OPR0, BNK0, 0x80, ByteAcc, Lock, Preserve)
+                        {
+                            AccessAs (AnyAcc, 0x00), 
+                                ,   1, 
+                            F01C,   129
+                        }
+
+                        Local3 = RefOf (F01C)
+                        Local4 = RefOf (G00D)
+                    }
+                    Case (0x0100)
+                    {
+                        Local2 = 0xFF
+                        BankField (OPR0, BNK0, 0xFF, AnyAcc, Lock, Preserve)
+                        {
+                                ,   1, 
+                            F01D,   256
+                        }
+
+                        Local3 = RefOf (F01D)
+                        Local4 = RefOf (G00E)
+                    }
+                    Case (0x03FF)
+                    {
+                        Local2 = 0x00
+                        BankField (OPR0, BNK0, 0x00, WordAcc, Lock, Preserve)
+                        {
+                            AccessAs (AnyAcc, 0x00), 
+                                ,   1, 
+                            F01E,   1023
+                        }
+
+                        Local3 = RefOf (F01E)
+                        Local4 = RefOf (G000)
+                    }
+                    Case (0x07BF)
+                    {
+                        Local2 = 0x01
+                        BankField (OPR0, BNK0, 0x01, AnyAcc, Lock, Preserve)
+                        {
+                                ,   1, 
+                            F01F,   1983
+                        }
+
+                        Local3 = RefOf (F01F)
+                        Local4 = RefOf (G001)
+                    }
+                    Default
+                    {
+                        ERR (Arg0, Z145, 0x233B, 0x00, 0x00, Arg2, Arg3)
+                        Return (Zero)
+                    }
+
+                }
+            }
+            Case (0x02)
+            {
+                Switch (ToInteger (Arg3))
+                {
+                    Case (0x01)
+                    {
+                        Local2 = 0x02
+                        BankField (OPR0, BNK0, 0x02, AnyAcc, Lock, Preserve)
+                        {
+                                ,   2, 
+                            F020,   1
+                        }
+
+                        Local3 = RefOf (F020)
+                        Local4 = RefOf (G002)
+                    }
+                    Case (0x06)
+                    {
+                        Local2 = 0x03
+                        BankField (OPR0, BNK0, 0x03, DWordAcc, Lock, Preserve)
+                        {
+                            AccessAs (AnyAcc, 0x00), 
+                                ,   2, 
+                            F021,   6
+                        }
+
+                        Local3 = RefOf (F021)
+                        Local4 = RefOf (G003)
+                    }
+                    Case (0x07)
+                    {
+                        Local2 = 0x04
+                        BankField (OPR0, BNK0, 0x04, AnyAcc, Lock, Preserve)
+                        {
+                                ,   2, 
+                            F022,   7
+                        }
+
+                        Local3 = RefOf (F022)
+                        Local4 = RefOf (G004)
+                    }
+                    Case (0x08)
+                    {
+                        Local2 = 0x05
+                        BankField (OPR0, BNK0, 0x05, QWordAcc, Lock, Preserve)
+                        {
+                            AccessAs (AnyAcc, 0x00), 
+                                ,   2, 
+                            F023,   8
+                        }
+
+                        Local3 = RefOf (F023)
+                        Local4 = RefOf (G005)
+                    }
+                    Case (0x09)
+                    {
+                        Local2 = 0x06
+                        BankField (OPR0, BNK0, 0x06, AnyAcc, Lock, Preserve)
+                        {
+                                ,   2, 
+                            F024,   9
+                        }
+
+                        Local3 = RefOf (F024)
+                        Local4 = RefOf (G006)
+                    }
+                    Case (0x1F)
+                    {
+                        Local2 = 0x07
+                        BankField (OPR0, BNK0, 0x07, AnyAcc, Lock, Preserve)
+                        {
+                            AccessAs (AnyAcc, 0x00), 
+                                ,   2, 
+                            F025,   31
+                        }
+
+                        Local3 = RefOf (F025)
+                        Local4 = RefOf (G007)
+                    }
+                    Case (0x20)
+                    {
+                        Local2 = 0x08
+                        BankField (OPR0, BNK0, 0x08, AnyAcc, Lock, Preserve)
+                        {
+                                ,   2, 
+                            F026,   32
+                        }
+
+                        Local3 = RefOf (F026)
+                        Local4 = RefOf (G008)
+                    }
+                    Case (0x21)
+                    {
+                        Local2 = 0x09
+                        BankField (OPR0, BNK0, 0x09, ByteAcc, Lock, Preserve)
+                        {
+                            AccessAs (AnyAcc, 0x00), 
+                                ,   2, 
+                            F027,   33
+                        }
+
+                        Local3 = RefOf (F027)
+                        Local4 = RefOf (G009)
+                    }
+                    Case (0x3F)
+                    {
+                        Local2 = 0x3F
+                        BankField (OPR0, BNK0, 0x3F, AnyAcc, Lock, Preserve)
+                        {
+                                ,   2, 
+                            F028,   63
+                        }
+
+                        Local3 = RefOf (F028)
+                        Local4 = RefOf (G00A)
+                    }
+                    Case (0x40)
+                    {
+                        Local2 = 0x40
+                        BankField (OPR0, BNK0, 0x40, WordAcc, Lock, Preserve)
+                        {
+                            AccessAs (AnyAcc, 0x00), 
+                                ,   2, 
+                            F029,   64
+                        }
+
+                        Local3 = RefOf (F029)
+                        Local4 = RefOf (G00B)
+                    }
+                    Case (0x41)
+                    {
+                        Local2 = 0x7F
+                        BankField (OPR0, BNK0, 0x7F, AnyAcc, Lock, Preserve)
+                        {
+                                ,   2, 
+                            F02A,   65
+                        }
+
+                        Local3 = RefOf (F02A)
+                        Local4 = RefOf (G00C)
+                    }
+                    Case (0x45)
+                    {
+                        Local2 = 0x80
+                        BankField (OPR0, BNK0, 0x80, DWordAcc, Lock, Preserve)
+                        {
+                            AccessAs (AnyAcc, 0x00), 
+                                ,   2, 
+                            F02B,   69
+                        }
+
+                        Local3 = RefOf (F02B)
+                        Local4 = RefOf (G00D)
+                    }
+                    Case (0x81)
+                    {
+                        Local2 = 0xFF
+                        BankField (OPR0, BNK0, 0xFF, AnyAcc, Lock, Preserve)
+                        {
+                                ,   2, 
+                            F02C,   129
+                        }
+
+                        Local3 = RefOf (F02C)
+                        Local4 = RefOf (G00E)
+                    }
+                    Case (0x0100)
+                    {
+                        Local2 = 0x00
+                        BankField (OPR0, BNK0, 0x00, QWordAcc, Lock, Preserve)
+                        {
+                            AccessAs (AnyAcc, 0x00), 
+                                ,   2, 
+                            F02D,   256
+                        }
+
+                        Local3 = RefOf (F02D)
+                        Local4 = RefOf (G000)
+                    }
+                    Case (0x03FF)
+                    {
+                        Local2 = 0x01
+                        BankField (OPR0, BNK0, 0x01, AnyAcc, Lock, Preserve)
+                        {
+                                ,   2, 
+                            F02E,   1023
+                        }
+
+                        Local3 = RefOf (F02E)
+                        Local4 = RefOf (G001)
+                    }
+                    Case (0x07BF)
+                    {
+                        Local2 = 0x02
+                        BankField (OPR0, BNK0, 0x02, AnyAcc, Lock, Preserve)
+                        {
+                            AccessAs (AnyAcc, 0x00), 
+                                ,   2, 
+                            F02F,   1983
+                        }
+
+                        Local3 = RefOf (F02F)
+                        Local4 = RefOf (G002)
+                    }
+                    Default
+                    {
+                        ERR (Arg0, Z145, 0x23BB, 0x00, 0x00, Arg2, Arg3)
+                        Return (Zero)
+                    }
+
+                }
+            }
+            Case (0x03)
+            {
+                Switch (ToInteger (Arg3))
+                {
+                    Case (0x01)
+                    {
+                        Local2 = 0x03
+                        BankField (OPR0, BNK0, 0x03, ByteAcc, Lock, Preserve)
+                        {
+                            AccessAs (AnyAcc, 0x00), 
+                                ,   3, 
+                            F030,   1
+                        }
+
+                        Local3 = RefOf (F030)
+                        Local4 = RefOf (G003)
+                    }
+                    Case (0x06)
+                    {
+                        Local2 = 0x04
+                        BankField (OPR0, BNK0, 0x04, AnyAcc, Lock, Preserve)
+                        {
+                                ,   3, 
+                            F031,   6
+                        }
+
+                        Local3 = RefOf (F031)
+                        Local4 = RefOf (G004)
+                    }
+                    Case (0x07)
+                    {
+                        Local2 = 0x05
+                        BankField (OPR0, BNK0, 0x05, WordAcc, Lock, Preserve)
+                        {
+                            AccessAs (AnyAcc, 0x00), 
+                                ,   3, 
+                            F032,   7
+                        }
+
+                        Local3 = RefOf (F032)
+                        Local4 = RefOf (G005)
+                    }
+                    Case (0x08)
+                    {
+                        Local2 = 0x06
+                        BankField (OPR0, BNK0, 0x06, AnyAcc, Lock, Preserve)
+                        {
+                                ,   3, 
+                            F033,   8
+                        }
+
+                        Local3 = RefOf (F033)
+                        Local4 = RefOf (G006)
+                    }
+                    Case (0x09)
+                    {
+                        Local2 = 0x07
+                        BankField (OPR0, BNK0, 0x07, DWordAcc, Lock, Preserve)
+                        {
+                            AccessAs (AnyAcc, 0x00), 
+                                ,   3, 
+                            F034,   9
+                        }
+
+                        Local3 = RefOf (F034)
+                        Local4 = RefOf (G007)
+                    }
+                    Case (0x1F)
+                    {
+                        Local2 = 0x08
+                        BankField (OPR0, BNK0, 0x08, AnyAcc, Lock, Preserve)
+                        {
+                                ,   3, 
+                            F035,   31
+                        }
+
+                        Local3 = RefOf (F035)
+                        Local4 = RefOf (G008)
+                    }
+                    Case (0x20)
+                    {
+                        Local2 = 0x09
+                        BankField (OPR0, BNK0, 0x09, QWordAcc, Lock, Preserve)
+                        {
+                            AccessAs (AnyAcc, 0x00), 
+                                ,   3, 
+                            F036,   32
+                        }
+
+                        Local3 = RefOf (F036)
+                        Local4 = RefOf (G009)
+                    }
+                    Case (0x21)
+                    {
+                        Local2 = 0x3F
+                        BankField (OPR0, BNK0, 0x3F, AnyAcc, Lock, Preserve)
+                        {
+                                ,   3, 
+                            F037,   33
+                        }
+
+                        Local3 = RefOf (F037)
+                        Local4 = RefOf (G00A)
+                    }
+                    Case (0x3F)
+                    {
+                        Local2 = 0x40
+                        BankField (OPR0, BNK0, 0x40, AnyAcc, Lock, Preserve)
+                        {
+                            AccessAs (AnyAcc, 0x00), 
+                                ,   3, 
+                            F038,   63
+                        }
+
+                        Local3 = RefOf (F038)
+                        Local4 = RefOf (G00B)
+                    }
+                    Case (0x40)
+                    {
+                        Local2 = 0x7F
+                        BankField (OPR0, BNK0, 0x7F, AnyAcc, Lock, Preserve)
+                        {
+                                ,   3, 
+                            F039,   64
+                        }
+
+                        Local3 = RefOf (F039)
+                        Local4 = RefOf (G00C)
+                    }
+                    Case (0x41)
+                    {
+                        Local2 = 0x80
+                        BankField (OPR0, BNK0, 0x80, ByteAcc, Lock, Preserve)
+                        {
+                            AccessAs (AnyAcc, 0x00), 
+                                ,   3, 
+                            F03A,   65
+                        }
+
+                        Local3 = RefOf (F03A)
+                        Local4 = RefOf (G00D)
+                    }
+                    Case (0x45)
+                    {
+                        Local2 = 0xFF
+                        BankField (OPR0, BNK0, 0xFF, AnyAcc, Lock, Preserve)
+                        {
+                                ,   3, 
+                            F03B,   69
+                        }
+
+                        Local3 = RefOf (F03B)
+                        Local4 = RefOf (G00E)
+                    }
+                    Case (0x81)
+                    {
+                        Local2 = 0x00
+                        BankField (OPR0, BNK0, 0x00, WordAcc, Lock, Preserve)
+                        {
+                            AccessAs (AnyAcc, 0x00), 
+                                ,   3, 
+                            F03C,   129
+                        }
+
+                        Local3 = RefOf (F03C)
+                        Local4 = RefOf (G000)
+                    }
+                    Case (0x0100)
+                    {
+                        Local2 = 0x01
+                        BankField (OPR0, BNK0, 0x01, AnyAcc, Lock, Preserve)
+                        {
+                                ,   3, 
+                            F03D,   256
+                        }
+
+                        Local3 = RefOf (F03D)
+                        Local4 = RefOf (G001)
+                    }
+                    Case (0x03FF)
+                    {
+                        Local2 = 0x02
+                        BankField (OPR0, BNK0, 0x02, DWordAcc, Lock, Preserve)
+                        {
+                            AccessAs (AnyAcc, 0x00), 
+                                ,   3, 
+                            F03E,   1023
+                        }
+
+                        Local3 = RefOf (F03E)
+                        Local4 = RefOf (G002)
+                    }
+                    Case (0x07BF)
+                    {
+                        Local2 = 0x03
+                        BankField (OPR0, BNK0, 0x03, AnyAcc, Lock, Preserve)
+                        {
+                                ,   3, 
+                            F03F,   1983
+                        }
+
+                        Local3 = RefOf (F03F)
+                        Local4 = RefOf (G003)
+                    }
+                    Default
+                    {
+                        ERR (Arg0, Z145, 0x243B, 0x00, 0x00, Arg2, Arg3)
+                        Return (Zero)
+                    }
+
+                }
+            }
+            Case (0x04)
+            {
+                Switch (ToInteger (Arg3))
+                {
+                    Case (0x01)
+                    {
+                        Local2 = 0x04
+                        BankField (OPR0, BNK0, 0x04, AnyAcc, Lock, Preserve)
+                        {
+                                ,   4, 
+                            F040,   1
+                        }
+
+                        Local3 = RefOf (F040)
+                        Local4 = RefOf (G004)
+                    }
+                    Case (0x06)
+                    {
+                        Local2 = 0x05
+                        BankField (OPR0, BNK0, 0x05, QWordAcc, Lock, Preserve)
+                        {
+                            AccessAs (AnyAcc, 0x00), 
+                                ,   4, 
+                            F041,   6
+                        }
+
+                        Local3 = RefOf (F041)
+                        Local4 = RefOf (G005)
+                    }
+                    Case (0x07)
+                    {
+                        Local2 = 0x06
+                        BankField (OPR0, BNK0, 0x06, AnyAcc, Lock, Preserve)
+                        {
+                                ,   4, 
+                            F042,   7
+                        }
+
+                        Local3 = RefOf (F042)
+                        Local4 = RefOf (G006)
+                    }
+                    Case (0x08)
+                    {
+                        Local2 = 0x07
+                        BankField (OPR0, BNK0, 0x07, AnyAcc, Lock, Preserve)
+                        {
+                            AccessAs (AnyAcc, 0x00), 
+                                ,   4, 
+                            F043,   8
+                        }
+
+                        Local3 = RefOf (F043)
+                        Local4 = RefOf (G007)
+                    }
+                    Case (0x09)
+                    {
+                        Local2 = 0x08
+                        BankField (OPR0, BNK0, 0x08, AnyAcc, Lock, Preserve)
+                        {
+                                ,   4, 
+                            F044,   9
+                        }
+
+                        Local3 = RefOf (F044)
+                        Local4 = RefOf (G008)
+                    }
+                    Case (0x1F)
+                    {
+                        Local2 = 0x09
+                        BankField (OPR0, BNK0, 0x09, ByteAcc, Lock, Preserve)
+                        {
+                            AccessAs (AnyAcc, 0x00), 
+                                ,   4, 
+                            F045,   31
+                        }
+
+                        Local3 = RefOf (F045)
+                        Local4 = RefOf (G009)
+                    }
+                    Case (0x20)
+                    {
+                        Local2 = 0x3F
+                        BankField (OPR0, BNK0, 0x3F, AnyAcc, Lock, Preserve)
+                        {
+                                ,   4, 
+                            F046,   32
+                        }
+
+                        Local3 = RefOf (F046)
+                        Local4 = RefOf (G00A)
+                    }
+                    Case (0x21)
+                    {
+                        Local2 = 0x40
+                        BankField (OPR0, BNK0, 0x40, WordAcc, Lock, Preserve)
+                        {
+                            AccessAs (AnyAcc, 0x00), 
+                                ,   4, 
+                            F047,   33
+                        }
+
+                        Local3 = RefOf (F047)
+                        Local4 = RefOf (G00B)
+                    }
+                    Case (0x3F)
+                    {
+                        Local2 = 0x7F
+                        BankField (OPR0, BNK0, 0x7F, AnyAcc, Lock, Preserve)
+                        {
+                                ,   4, 
+                            F048,   63
+                        }
+
+                        Local3 = RefOf (F048)
+                        Local4 = RefOf (G00C)
+                    }
+                    Case (0x40)
+                    {
+                        Local2 = 0x80
+                        BankField (OPR0, BNK0, 0x80, DWordAcc, Lock, Preserve)
+                        {
+                            AccessAs (AnyAcc, 0x00), 
+                                ,   4, 
+                            F049,   64
+                        }
+
+                        Local3 = RefOf (F049)
+                        Local4 = RefOf (G00D)
+                    }
+                    Case (0x41)
+                    {
+                        Local2 = 0xFF
+                        BankField (OPR0, BNK0, 0xFF, AnyAcc, Lock, Preserve)
+                        {
+                                ,   4, 
+                            F04A,   65
+                        }
+
+                        Local3 = RefOf (F04A)
+                        Local4 = RefOf (G00E)
+                    }
+                    Case (0x45)
+                    {
+                        Local2 = 0x00
+                        BankField (OPR0, BNK0, 0x00, QWordAcc, Lock, Preserve)
+                        {
+                            AccessAs (AnyAcc, 0x00), 
+                                ,   4, 
+                            F04B,   69
+                        }
+
+                        Local3 = RefOf (F04B)
+                        Local4 = RefOf (G000)
+                    }
+                    Case (0x81)
+                    {
+                        Local2 = 0x01
+                        BankField (OPR0, BNK0, 0x01, AnyAcc, Lock, Preserve)
+                        {
+                                ,   4, 
+                            F04C,   129
+                        }
+
+                        Local3 = RefOf (F04C)
+                        Local4 = RefOf (G001)
+                    }
+                    Case (0x0100)
+                    {
+                        Local2 = 0x02
+                        BankField (OPR0, BNK0, 0x02, AnyAcc, Lock, Preserve)
+                        {
+                            AccessAs (AnyAcc, 0x00), 
+                                ,   4, 
+                            F04D,   256
+                        }
+
+                        Local3 = RefOf (F04D)
+                        Local4 = RefOf (G002)
+                    }
+                    Case (0x03FF)
+                    {
+                        Local2 = 0x03
+                        BankField (OPR0, BNK0, 0x03, AnyAcc, Lock, Preserve)
+                        {
+                                ,   4, 
+                            F04E,   1023
+                        }
+
+                        Local3 = RefOf (F04E)
+                        Local4 = RefOf (G003)
+                    }
+                    Case (0x07BF)
+                    {
+                        Local2 = 0x04
+                        BankField (OPR0, BNK0, 0x04, ByteAcc, Lock, Preserve)
+                        {
+                            AccessAs (AnyAcc, 0x00), 
+                                ,   4, 
+                            F04F,   1983
+                        }
+
+                        Local3 = RefOf (F04F)
+                        Local4 = RefOf (G004)
+                    }
+                    Default
+                    {
+                        ERR (Arg0, Z145, 0x24BB, 0x00, 0x00, Arg2, Arg3)
+                        Return (Zero)
+                    }
+
+                }
+            }
+            Case (0x05)
+            {
+                Switch (ToInteger (Arg3))
+                {
+                    Case (0x01)
+                    {
+                        Local2 = 0x05
+                        BankField (OPR0, BNK0, 0x05, WordAcc, Lock, Preserve)
+                        {
+                            AccessAs (AnyAcc, 0x00), 
+                                ,   5, 
+                            F050,   1
+                        }
+
+                        Local3 = RefOf (F050)
+                        Local4 = RefOf (G005)
+                    }
+                    Case (0x06)
+                    {
+                        Local2 = 0x06
+                        BankField (OPR0, BNK0, 0x06, AnyAcc, Lock, Preserve)
+                        {
+                                ,   5, 
+                            F051,   6
+                        }
+
+                        Local3 = RefOf (F051)
+                        Local4 = RefOf (G006)
+                    }
+                    Case (0x07)
+                    {
+                        Local2 = 0x07
+                        BankField (OPR0, BNK0, 0x07, DWordAcc, Lock, Preserve)
+                        {
+                            AccessAs (AnyAcc, 0x00), 
+                                ,   5, 
+                            F052,   7
+                        }
+
+                        Local3 = RefOf (F052)
+                        Local4 = RefOf (G007)
+                    }
+                    Case (0x08)
+                    {
+                        Local2 = 0x08
+                        BankField (OPR0, BNK0, 0x08, AnyAcc, Lock, Preserve)
+                        {
+                                ,   5, 
+                            F053,   8
+                        }
+
+                        Local3 = RefOf (F053)
+                        Local4 = RefOf (G008)
+                    }
+                    Case (0x09)
+                    {
+                        Local2 = 0x09
+                        BankField (OPR0, BNK0, 0x09, QWordAcc, Lock, Preserve)
+                        {
+                            AccessAs (AnyAcc, 0x00), 
+                                ,   5, 
+                            F054,   9
+                        }
+
+                        Local3 = RefOf (F054)
+                        Local4 = RefOf (G009)
+                    }
+                    Case (0x1F)
+                    {
+                        Local2 = 0x3F
+                        BankField (OPR0, BNK0, 0x3F, AnyAcc, Lock, Preserve)
+                        {
+                                ,   5, 
+                            F055,   31
+                        }
+
+                        Local3 = RefOf (F055)
+                        Local4 = RefOf (G00A)
+                    }
+                    Case (0x20)
+                    {
+                        Local2 = 0x40
+                        BankField (OPR0, BNK0, 0x40, AnyAcc, Lock, Preserve)
+                        {
+                            AccessAs (AnyAcc, 0x00), 
+                                ,   5, 
+                            F056,   32
+                        }
+
+                        Local3 = RefOf (F056)
+                        Local4 = RefOf (G00B)
+                    }
+                    Case (0x21)
+                    {
+                        Local2 = 0x7F
+                        BankField (OPR0, BNK0, 0x7F, AnyAcc, Lock, Preserve)
+                        {
+                                ,   5, 
+                            F057,   33
+                        }
+
+                        Local3 = RefOf (F057)
+                        Local4 = RefOf (G00C)
+                    }
+                    Case (0x3F)
+                    {
+                        Local2 = 0x80
+                        BankField (OPR0, BNK0, 0x80, ByteAcc, Lock, Preserve)
+                        {
+                            AccessAs (AnyAcc, 0x00), 
+                                ,   5, 
+                            F058,   63
+                        }
+
+                        Local3 = RefOf (F058)
+                        Local4 = RefOf (G00D)
+                    }
+                    Case (0x40)
+                    {
+                        Local2 = 0xFF
+                        BankField (OPR0, BNK0, 0xFF, AnyAcc, Lock, Preserve)
+                        {
+                                ,   5, 
+                            F059,   64
+                        }
+
+                        Local3 = RefOf (F059)
+                        Local4 = RefOf (G00E)
+                    }
+                    Case (0x41)
+                    {
+                        Local2 = 0x00
+                        BankField (OPR0, BNK0, 0x00, WordAcc, Lock, Preserve)
+                        {
+                            AccessAs (AnyAcc, 0x00), 
+                                ,   5, 
+                            F05A,   65
+                        }
+
+                        Local3 = RefOf (F05A)
+                        Local4 = RefOf (G000)
+                    }
+                    Case (0x45)
+                    {
+                        Local2 = 0x01
+                        BankField (OPR0, BNK0, 0x01, AnyAcc, Lock, Preserve)
+                        {
+                                ,   5, 
+                            F05B,   69
+                        }
+
+                        Local3 = RefOf (F05B)
+                        Local4 = RefOf (G001)
+                    }
+                    Case (0x81)
+                    {
+                        Local2 = 0x02
+                        BankField (OPR0, BNK0, 0x02, DWordAcc, Lock, Preserve)
+                        {
+                            AccessAs (AnyAcc, 0x00), 
+                                ,   5, 
+                            F05C,   129
+                        }
+
+                        Local3 = RefOf (F05C)
+                        Local4 = RefOf (G002)
+                    }
+                    Case (0x0100)
+                    {
+                        Local2 = 0x03
+                        BankField (OPR0, BNK0, 0x03, AnyAcc, Lock, Preserve)
+                        {
+                                ,   5, 
+                            F05D,   256
+                        }
+
+                        Local3 = RefOf (F05D)
+                        Local4 = RefOf (G003)
+                    }
+                    Case (0x03FF)
+                    {
+                        Local2 = 0x04
+                        BankField (OPR0, BNK0, 0x04, QWordAcc, Lock, Preserve)
+                        {
+                            AccessAs (AnyAcc, 0x00), 
+                                ,   5, 
+                            F05E,   1023
+                        }
+
+                        Local3 = RefOf (F05E)
+                        Local4 = RefOf (G004)
+                    }
+                    Case (0x07BF)
+                    {
+                        Local2 = 0x05
+                        BankField (OPR0, BNK0, 0x05, AnyAcc, Lock, Preserve)
+                        {
+                                ,   5, 
+                            F05F,   1983
+                        }
+
+                        Local3 = RefOf (F05F)
+                        Local4 = RefOf (G005)
+                    }
+                    Default
+                    {
+                        ERR (Arg0, Z145, 0x253B, 0x00, 0x00, Arg2, Arg3)
+                        Return (Zero)
+                    }
+
+                }
+            }
+            Case (0x06)
+            {
+                Switch (ToInteger (Arg3))
+                {
+                    Case (0x01)
+                    {
+                        Local2 = 0x06
+                        BankField (OPR0, BNK0, 0x06, AnyAcc, Lock, Preserve)
+                        {
+                                ,   6, 
+                            F060,   1
+                        }
+
+                        Local3 = RefOf (F060)
+                        Local4 = RefOf (G006)
+                    }
+                    Case (0x06)
+                    {
+                        Local2 = 0x07
+                        BankField (OPR0, BNK0, 0x07, AnyAcc, Lock, Preserve)
+                        {
+                            AccessAs (AnyAcc, 0x00), 
+                                ,   6, 
+                            F061,   6
+                        }
+
+                        Local3 = RefOf (F061)
+                        Local4 = RefOf (G007)
+                    }
+                    Case (0x07)
+                    {
+                        Local2 = 0x08
+                        BankField (OPR0, BNK0, 0x08, AnyAcc, Lock, Preserve)
+                        {
+                                ,   6, 
+                            F062,   7
+                        }
+
+                        Local3 = RefOf (F062)
+                        Local4 = RefOf (G008)
+                    }
+                    Case (0x08)
+                    {
+                        Local2 = 0x09
+                        BankField (OPR0, BNK0, 0x09, ByteAcc, Lock, Preserve)
+                        {
+                            AccessAs (AnyAcc, 0x00), 
+                                ,   6, 
+                            F063,   8
+                        }
+
+                        Local3 = RefOf (F063)
+                        Local4 = RefOf (G009)
+                    }
+                    Case (0x09)
+                    {
+                        Local2 = 0x3F
+                        BankField (OPR0, BNK0, 0x3F, AnyAcc, Lock, Preserve)
+                        {
+                                ,   6, 
+                            F064,   9
+                        }
+
+                        Local3 = RefOf (F064)
+                        Local4 = RefOf (G00A)
+                    }
+                    Case (0x1F)
+                    {
+                        Local2 = 0x40
+                        BankField (OPR0, BNK0, 0x40, WordAcc, Lock, Preserve)
+                        {
+                            AccessAs (AnyAcc, 0x00), 
+                                ,   6, 
+                            F065,   31
+                        }
+
+                        Local3 = RefOf (F065)
+                        Local4 = RefOf (G00B)
+                    }
+                    Case (0x20)
+                    {
+                        Local2 = 0x7F
+                        BankField (OPR0, BNK0, 0x7F, AnyAcc, Lock, Preserve)
+                        {
+                                ,   6, 
+                            F066,   32
+                        }
+
+                        Local3 = RefOf (F066)
+                        Local4 = RefOf (G00C)
+                    }
+                    Case (0x21)
+                    {
+                        Local2 = 0x80
+                        BankField (OPR0, BNK0, 0x80, DWordAcc, Lock, Preserve)
+                        {
+                            AccessAs (AnyAcc, 0x00), 
+                                ,   6, 
+                            F067,   33
+                        }
+
+                        Local3 = RefOf (F067)
+                        Local4 = RefOf (G00D)
+                    }
+                    Case (0x3F)
+                    {
+                        Local2 = 0xFF
+                        BankField (OPR0, BNK0, 0xFF, AnyAcc, Lock, Preserve)
+                        {
+                                ,   6, 
+                            F068,   63
+                        }
+
+                        Local3 = RefOf (F068)
+                        Local4 = RefOf (G00E)
+                    }
+                    Case (0x40)
+                    {
+                        Local2 = 0x00
+                        BankField (OPR0, BNK0, 0x00, QWordAcc, Lock, Preserve)
+                        {
+                            AccessAs (AnyAcc, 0x00), 
+                                ,   6, 
+                            F069,   64
+                        }
+
+                        Local3 = RefOf (F069)
+                        Local4 = RefOf (G000)
+                    }
+                    Case (0x41)
+                    {
+                        Local2 = 0x01
+                        BankField (OPR0, BNK0, 0x01, AnyAcc, Lock, Preserve)
+                        {
+                                ,   6, 
+                            F06A,   65
+                        }
+
+                        Local3 = RefOf (F06A)
+                        Local4 = RefOf (G001)
+                    }
+                    Case (0x45)
+                    {
+                        Local2 = 0x02
+                        BankField (OPR0, BNK0, 0x02, AnyAcc, Lock, Preserve)
+                        {
+                            AccessAs (AnyAcc, 0x00), 
+                                ,   6, 
+                            F06B,   69
+                        }
+
+                        Local3 = RefOf (F06B)
+                        Local4 = RefOf (G002)
+                    }
+                    Case (0x81)
+                    {
+                        Local2 = 0x03
+                        BankField (OPR0, BNK0, 0x03, AnyAcc, Lock, Preserve)
+                        {
+                                ,   6, 
+                            F06C,   129
+                        }
+
+                        Local3 = RefOf (F06C)
+                        Local4 = RefOf (G003)
+                    }
+                    Case (0x0100)
+                    {
+                        Local2 = 0x04
+                        BankField (OPR0, BNK0, 0x04, ByteAcc, Lock, Preserve)
+                        {
+                            AccessAs (AnyAcc, 0x00), 
+                                ,   6, 
+                            F06D,   256
+                        }
+
+                        Local3 = RefOf (F06D)
+                        Local4 = RefOf (G004)
+                    }
+                    Case (0x03FF)
+                    {
+                        Local2 = 0x05
+                        BankField (OPR0, BNK0, 0x05, AnyAcc, Lock, Preserve)
+                        {
+                                ,   6, 
+                            F06E,   1023
+                        }
+
+                        Local3 = RefOf (F06E)
+                        Local4 = RefOf (G005)
+                    }
+                    Case (0x07BF)
+                    {
+                        Local2 = 0x06
+                        BankField (OPR0, BNK0, 0x06, WordAcc, Lock, Preserve)
+                        {
+                            AccessAs (AnyAcc, 0x00), 
+                                ,   6, 
+                            F06F,   1983
+                        }
+
+                        Local3 = RefOf (F06F)
+                        Local4 = RefOf (G006)
+                    }
+                    Default
+                    {
+                        ERR (Arg0, Z145, 0x25BB, 0x00, 0x00, Arg2, Arg3)
+                        Return (Zero)
+                    }
+
+                }
+            }
+            Case (0x07)
+            {
+                Switch (ToInteger (Arg3))
+                {
+                    Case (0x01)
+                    {
+                        Local2 = 0x07
+                        BankField (OPR0, BNK0, 0x07, DWordAcc, Lock, Preserve)
+                        {
+                            AccessAs (AnyAcc, 0x00), 
+                                ,   7, 
+                            F070,   1
+                        }
+
+                        Local3 = RefOf (F070)
+                        Local4 = RefOf (G007)
+                    }
+                    Case (0x06)
+                    {
+                        Local2 = 0x08
+                        BankField (OPR0, BNK0, 0x08, AnyAcc, Lock, Preserve)
+                        {
+                                ,   7, 
+                            F071,   6
+                        }
+
+                        Local3 = RefOf (F071)
+                        Local4 = RefOf (G008)
+                    }
+                    Case (0x07)
+                    {
+                        Local2 = 0x09
+                        BankField (OPR0, BNK0, 0x09, QWordAcc, Lock, Preserve)
+                        {
+                            AccessAs (AnyAcc, 0x00), 
+                                ,   7, 
+                            F072,   7
+                        }
+
+                        Local3 = RefOf (F072)
+                        Local4 = RefOf (G009)
+                    }
+                    Case (0x08)
+                    {
+                        Local2 = 0x3F
+                        BankField (OPR0, BNK0, 0x3F, AnyAcc, Lock, Preserve)
+                        {
+                                ,   7, 
+                            F073,   8
+                        }
+
+                        Local3 = RefOf (F073)
+                        Local4 = RefOf (G00A)
+                    }
+                    Case (0x09)
+                    {
+                        Local2 = 0x40
+                        BankField (OPR0, BNK0, 0x40, AnyAcc, Lock, Preserve)
+                        {
+                            AccessAs (AnyAcc, 0x00), 
+                                ,   7, 
+                            F074,   9
+                        }
+
+                        Local3 = RefOf (F074)
+                        Local4 = RefOf (G00B)
+                    }
+                    Case (0x1F)
+                    {
+                        Local2 = 0x7F
+                        BankField (OPR0, BNK0, 0x7F, AnyAcc, Lock, Preserve)
+                        {
+                                ,   7, 
+                            F075,   31
+                        }
+
+                        Local3 = RefOf (F075)
+                        Local4 = RefOf (G00C)
+                    }
+                    Case (0x20)
+                    {
+                        Local2 = 0x80
+                        BankField (OPR0, BNK0, 0x80, ByteAcc, Lock, Preserve)
+                        {
+                            AccessAs (AnyAcc, 0x00), 
+                                ,   7, 
+                            F076,   32
+                        }
+
+                        Local3 = RefOf (F076)
+                        Local4 = RefOf (G00D)
+                    }
+                    Case (0x21)
+                    {
+                        Local2 = 0xFF
+                        BankField (OPR0, BNK0, 0xFF, AnyAcc, Lock, Preserve)
+                        {
+                                ,   7, 
+                            F077,   33
+                        }
+
+                        Local3 = RefOf (F077)
+                        Local4 = RefOf (G00E)
+                    }
+                    Case (0x3F)
+                    {
+                        Local2 = 0x00
+                        BankField (OPR0, BNK0, 0x00, WordAcc, Lock, Preserve)
+                        {
+                            AccessAs (AnyAcc, 0x00), 
+                                ,   7, 
+                            F078,   63
+                        }
+
+                        Local3 = RefOf (F078)
+                        Local4 = RefOf (G000)
+                    }
+                    Case (0x40)
+                    {
+                        Local2 = 0x01
+                        BankField (OPR0, BNK0, 0x01, AnyAcc, Lock, Preserve)
+                        {
+                                ,   7, 
+                            F079,   64
+                        }
+
+                        Local3 = RefOf (F079)
+                        Local4 = RefOf (G001)
+                    }
+                    Case (0x41)
+                    {
+                        Local2 = 0x02
+                        BankField (OPR0, BNK0, 0x02, DWordAcc, Lock, Preserve)
+                        {
+                            AccessAs (AnyAcc, 0x00), 
+                                ,   7, 
+                            F07A,   65
+                        }
+
+                        Local3 = RefOf (F07A)
+                        Local4 = RefOf (G002)
+                    }
+                    Case (0x45)
+                    {
+                        Local2 = 0x03
+                        BankField (OPR0, BNK0, 0x03, AnyAcc, Lock, Preserve)
+                        {
+                                ,   7, 
+                            F07B,   69
+                        }
+
+                        Local3 = RefOf (F07B)
+                        Local4 = RefOf (G003)
+                    }
+                    Case (0x81)
+                    {
+                        Local2 = 0x04
+                        BankField (OPR0, BNK0, 0x04, QWordAcc, Lock, Preserve)
+                        {
+                            AccessAs (AnyAcc, 0x00), 
+                                ,   7, 
+                            F07C,   129
+                        }
+
+                        Local3 = RefOf (F07C)
+                        Local4 = RefOf (G004)
+                    }
+                    Case (0x0100)
+                    {
+                        Local2 = 0x05
+                        BankField (OPR0, BNK0, 0x05, AnyAcc, Lock, Preserve)
+                        {
+                                ,   7, 
+                            F07D,   256
+                        }
+
+                        Local3 = RefOf (F07D)
+                        Local4 = RefOf (G005)
+                    }
+                    Case (0x03FF)
+                    {
+                        Local2 = 0x06
+                        BankField (OPR0, BNK0, 0x06, AnyAcc, Lock, Preserve)
+                        {
+                            AccessAs (AnyAcc, 0x00), 
+                                ,   7, 
+                            F07E,   1023
+                        }
+
+                        Local3 = RefOf (F07E)
+                        Local4 = RefOf (G006)
+                    }
+                    Case (0x07BF)
+                    {
+                        Local2 = 0x07
+                        BankField (OPR0, BNK0, 0x07, AnyAcc, Lock, Preserve)
+                        {
+                                ,   7, 
+                            F07F,   1983
+                        }
+
+                        Local3 = RefOf (F07F)
+                        Local4 = RefOf (G007)
+                    }
+                    Default
+                    {
+                        ERR (Arg0, Z145, 0x263B, 0x00, 0x00, Arg2, Arg3)
+                        Return (Zero)
+                    }
+
+                }
+            }
+            Case (0x08)
+            {
+                Switch (ToInteger (Arg3))
+                {
+                    Case (0x01)
+                    {
+                        Local2 = 0x08
+                        BankField (OPR0, BNK0, 0x08, AnyAcc, Lock, Preserve)
+                        {
+                            Offset (0x01), 
+                            F080,   1
+                        }
+
+                        Local3 = RefOf (F080)
+                        Local4 = RefOf (G008)
+                    }
+                    Case (0x06)
+                    {
+                        Local2 = 0x09
+                        BankField (OPR0, BNK0, 0x09, ByteAcc, Lock, Preserve)
+                        {
+                            AccessAs (AnyAcc, 0x00), 
+                            Offset (0x01), 
+                            F081,   6
+                        }
+
+                        Local3 = RefOf (F081)
+                        Local4 = RefOf (G009)
+                    }
+                    Case (0x07)
+                    {
+                        Local2 = 0x3F
+                        BankField (OPR0, BNK0, 0x3F, AnyAcc, Lock, Preserve)
+                        {
+                            Offset (0x01), 
+                            F082,   7
+                        }
+
+                        Local3 = RefOf (F082)
+                        Local4 = RefOf (G00A)
+                    }
+                    Case (0x08)
+                    {
+                        Local2 = 0x40
+                        BankField (OPR0, BNK0, 0x40, WordAcc, Lock, Preserve)
+                        {
+                            AccessAs (AnyAcc, 0x00), 
+                            Offset (0x01), 
+                            F083,   8
+                        }
+
+                        Local3 = RefOf (F083)
+                        Local4 = RefOf (G00B)
+                    }
+                    Case (0x09)
+                    {
+                        Local2 = 0x7F
+                        BankField (OPR0, BNK0, 0x7F, AnyAcc, Lock, Preserve)
+                        {
+                            Offset (0x01), 
+                            F084,   9
+                        }
+
+                        Local3 = RefOf (F084)
+                        Local4 = RefOf (G00C)
+                    }
+                    Case (0x1F)
+                    {
+                        Local2 = 0x80
+                        BankField (OPR0, BNK0, 0x80, DWordAcc, Lock, Preserve)
+                        {
+                            AccessAs (AnyAcc, 0x00), 
+                            Offset (0x01), 
+                            F085,   31
+                        }
+
+                        Local3 = RefOf (F085)
+                        Local4 = RefOf (G00D)
+                    }
+                    Case (0x20)
+                    {
+                        Local2 = 0xFF
+                        BankField (OPR0, BNK0, 0xFF, AnyAcc, Lock, Preserve)
+                        {
+                            Offset (0x01), 
+                            F086,   32
+                        }
+
+                        Local3 = RefOf (F086)
+                        Local4 = RefOf (G00E)
+                    }
+                    Case (0x21)
+                    {
+                        Local2 = 0x00
+                        BankField (OPR0, BNK0, 0x00, QWordAcc, Lock, Preserve)
+                        {
+                            AccessAs (AnyAcc, 0x00), 
+                            Offset (0x01), 
+                            F087,   33
+                        }
+
+                        Local3 = RefOf (F087)
+                        Local4 = RefOf (G000)
+                    }
+                    Case (0x3F)
+                    {
+                        Local2 = 0x01
+                        BankField (OPR0, BNK0, 0x01, AnyAcc, Lock, Preserve)
+                        {
+                            Offset (0x01), 
+                            F088,   63
+                        }
+
+                        Local3 = RefOf (F088)
+                        Local4 = RefOf (G001)
+                    }
+                    Case (0x40)
+                    {
+                        Local2 = 0x02
+                        BankField (OPR0, BNK0, 0x02, AnyAcc, Lock, Preserve)
+                        {
+                            AccessAs (AnyAcc, 0x00), 
+                            Offset (0x01), 
+                            F089,   64
+                        }
+
+                        Local3 = RefOf (F089)
+                        Local4 = RefOf (G002)
+                    }
+                    Case (0x41)
+                    {
+                        Local2 = 0x03
+                        BankField (OPR0, BNK0, 0x03, AnyAcc, Lock, Preserve)
+                        {
+                            Offset (0x01), 
+                            F08A,   65
+                        }
+
+                        Local3 = RefOf (F08A)
+                        Local4 = RefOf (G003)
+                    }
+                    Case (0x45)
+                    {
+                        Local2 = 0x04
+                        BankField (OPR0, BNK0, 0x04, ByteAcc, Lock, Preserve)
+                        {
+                            AccessAs (AnyAcc, 0x00), 
+                            Offset (0x01), 
+                            F08B,   69
+                        }
+
+                        Local3 = RefOf (F08B)
+                        Local4 = RefOf (G004)
+                    }
+                    Case (0x81)
+                    {
+                        Local2 = 0x05
+                        BankField (OPR0, BNK0, 0x05, AnyAcc, Lock, Preserve)
+                        {
+                            Offset (0x01), 
+                            F08C,   129
+                        }
+
+                        Local3 = RefOf (F08C)
+                        Local4 = RefOf (G005)
+                    }
+                    Case (0x0100)
+                    {
+                        Local2 = 0x06
+                        BankField (OPR0, BNK0, 0x06, WordAcc, Lock, Preserve)
+                        {
+                            AccessAs (AnyAcc, 0x00), 
+                            Offset (0x01), 
+                            F08D,   256
+                        }
+
+                        Local3 = RefOf (F08D)
+                        Local4 = RefOf (G006)
+                    }
+                    Case (0x03FF)
+                    {
+                        Local2 = 0x07
+                        BankField (OPR0, BNK0, 0x07, AnyAcc, Lock, Preserve)
+                        {
+                            Offset (0x01), 
+                            F08E,   1023
+                        }
+
+                        Local3 = RefOf (F08E)
+                        Local4 = RefOf (G007)
+                    }
+                    Case (0x07BF)
+                    {
+                        Local2 = 0x08
+                        BankField (OPR0, BNK0, 0x08, DWordAcc, Lock, Preserve)
+                        {
+                            AccessAs (AnyAcc, 0x00), 
+                            Offset (0x01), 
+                            F08F,   1983
+                        }
+
+                        Local3 = RefOf (F08F)
+                        Local4 = RefOf (G008)
+                    }
+                    Default
+                    {
+                        ERR (Arg0, Z145, 0x26BB, 0x00, 0x00, Arg2, Arg3)
+                        Return (Zero)
+                    }
+
+                }
+            }
+            Case (0x09)
+            {
+                Switch (ToInteger (Arg3))
+                {
+                    Case (0x01)
+                    {
+                        Local2 = 0x09
+                        BankField (OPR0, BNK0, 0x09, QWordAcc, Lock, Preserve)
+                        {
+                            AccessAs (AnyAcc, 0x00), 
+                                ,   9, 
+                            F090,   1
+                        }
+
+                        Local3 = RefOf (F090)
+                        Local4 = RefOf (G009)
+                    }
+                    Case (0x06)
+                    {
+                        Local2 = 0x3F
+                        BankField (OPR0, BNK0, 0x3F, AnyAcc, Lock, Preserve)
+                        {
+                                ,   9, 
+                            F091,   6
+                        }
+
+                        Local3 = RefOf (F091)
+                        Local4 = RefOf (G00A)
+                    }
+                    Case (0x07)
+                    {
+                        Local2 = 0x40
+                        BankField (OPR0, BNK0, 0x40, AnyAcc, Lock, Preserve)
+                        {
+                            AccessAs (AnyAcc, 0x00), 
+                                ,   9, 
+                            F092,   7
+                        }
+
+                        Local3 = RefOf (F092)
+                        Local4 = RefOf (G00B)
+                    }
+                    Case (0x08)
+                    {
+                        Local2 = 0x7F
+                        BankField (OPR0, BNK0, 0x7F, AnyAcc, Lock, Preserve)
+                        {
+                                ,   9, 
+                            F093,   8
+                        }
+
+                        Local3 = RefOf (F093)
+                        Local4 = RefOf (G00C)
+                    }
+                    Case (0x09)
+                    {
+                        Local2 = 0x80
+                        BankField (OPR0, BNK0, 0x80, ByteAcc, Lock, Preserve)
+                        {
+                            AccessAs (AnyAcc, 0x00), 
+                                ,   9, 
+                            F094,   9
+                        }
+
+                        Local3 = RefOf (F094)
+                        Local4 = RefOf (G00D)
+                    }
+                    Case (0x1F)
+                    {
+                        Local2 = 0xFF
+                        BankField (OPR0, BNK0, 0xFF, AnyAcc, Lock, Preserve)
+                        {
+                                ,   9, 
+                            F095,   31
+                        }
+
+                        Local3 = RefOf (F095)
+                        Local4 = RefOf (G00E)
+                    }
+                    Case (0x20)
+                    {
+                        Local2 = 0x00
+                        BankField (OPR0, BNK0, 0x00, WordAcc, Lock, Preserve)
+                        {
+                            AccessAs (AnyAcc, 0x00), 
+                                ,   9, 
+                            F096,   32
+                        }
+
+                        Local3 = RefOf (F096)
+                        Local4 = RefOf (G000)
+                    }
+                    Case (0x21)
+                    {
+                        Local2 = 0x01
+                        BankField (OPR0, BNK0, 0x01, AnyAcc, Lock, Preserve)
+                        {
+                                ,   9, 
+                            F097,   33
+                        }
+
+                        Local3 = RefOf (F097)
+                        Local4 = RefOf (G001)
+                    }
+                    Case (0x3F)
+                    {
+                        Local2 = 0x02
+                        BankField (OPR0, BNK0, 0x02, DWordAcc, Lock, Preserve)
+                        {
+                            AccessAs (AnyAcc, 0x00), 
+                                ,   9, 
+                            F098,   63
+                        }
+
+                        Local3 = RefOf (F098)
+                        Local4 = RefOf (G002)
+                    }
+                    Case (0x40)
+                    {
+                        Local2 = 0x03
+                        BankField (OPR0, BNK0, 0x03, AnyAcc, Lock, Preserve)
+                        {
+                                ,   9, 
+                            F099,   64
+                        }
+
+                        Local3 = RefOf (F099)
+                        Local4 = RefOf (G003)
+                    }
+                    Case (0x41)
+                    {
+                        Local2 = 0x04
+                        BankField (OPR0, BNK0, 0x04, QWordAcc, Lock, Preserve)
+                        {
+                            AccessAs (AnyAcc, 0x00), 
+                                ,   9, 
+                            F09A,   65
+                        }
+
+                        Local3 = RefOf (F09A)
+                        Local4 = RefOf (G004)
+                    }
+                    Case (0x45)
+                    {
+                        Local2 = 0x05
+                        BankField (OPR0, BNK0, 0x05, AnyAcc, Lock, Preserve)
+                        {
+                                ,   9, 
+                            F09B,   69
+                        }
+
+                        Local3 = RefOf (F09B)
+                        Local4 = RefOf (G005)
+                    }
+                    Case (0x81)
+                    {
+                        Local2 = 0x06
+                        BankField (OPR0, BNK0, 0x06, AnyAcc, Lock, Preserve)
+                        {
+                            AccessAs (AnyAcc, 0x00), 
+                                ,   9, 
+                            F09C,   129
+                        }
+
+                        Local3 = RefOf (F09C)
+                        Local4 = RefOf (G006)
+                    }
+                    Case (0x0100)
+                    {
+                        Local2 = 0x07
+                        BankField (OPR0, BNK0, 0x07, AnyAcc, Lock, Preserve)
+                        {
+                                ,   9, 
+                            F09D,   256
+                        }
+
+                        Local3 = RefOf (F09D)
+                        Local4 = RefOf (G007)
+                    }
+                    Case (0x03FF)
+                    {
+                        Local2 = 0x08
+                        BankField (OPR0, BNK0, 0x08, ByteAcc, Lock, Preserve)
+                        {
+                            AccessAs (AnyAcc, 0x00), 
+                                ,   9, 
+                            F09E,   1023
+                        }
+
+                        Local3 = RefOf (F09E)
+                        Local4 = RefOf (G008)
+                    }
+                    Case (0x07BF)
+                    {
+                        Local2 = 0x09
+                        BankField (OPR0, BNK0, 0x09, AnyAcc, Lock, Preserve)
+                        {
+                                ,   9, 
+                            F09F,   1983
+                        }
+
+                        Local3 = RefOf (F09F)
+                        Local4 = RefOf (G009)
+                    }
+                    Default
+                    {
+                        ERR (Arg0, Z145, 0x273B, 0x00, 0x00, Arg2, Arg3)
+                        Return (Zero)
+                    }
+
+                }
+            }
+            Case (0x1F)
+            {
+                Switch (ToInteger (Arg3))
+                {
+                    Case (0x01)
+                    {
+                        Local2 = 0x3F
+                        BankField (OPR0, BNK0, 0x3F, AnyAcc, Lock, Preserve)
+                        {
+                            Offset (0x03), 
+                                ,   7, 
+                            F0A0,   1
+                        }
+
+                        Local3 = RefOf (F0A0)
+                        Local4 = RefOf (G00A)
+                    }
+                    Case (0x06)
+                    {
+                        Local2 = 0x40
+                        BankField (OPR0, BNK0, 0x40, WordAcc, Lock, Preserve)
+                        {
+                            AccessAs (AnyAcc, 0x00), 
+                            Offset (0x03), 
+                                ,   7, 
+                            F0A1,   6
+                        }
+
+                        Local3 = RefOf (F0A1)
+                        Local4 = RefOf (G00B)
+                    }
+                    Case (0x07)
+                    {
+                        Local2 = 0x7F
+                        BankField (OPR0, BNK0, 0x7F, AnyAcc, Lock, Preserve)
+                        {
+                            Offset (0x03), 
+                                ,   7, 
+                            F0A2,   7
+                        }
+
+                        Local3 = RefOf (F0A2)
+                        Local4 = RefOf (G00C)
+                    }
+                    Case (0x08)
+                    {
+                        Local2 = 0x80
+                        BankField (OPR0, BNK0, 0x80, DWordAcc, Lock, Preserve)
+                        {
+                            AccessAs (AnyAcc, 0x00), 
+                            Offset (0x03), 
+                                ,   7, 
+                            F0A3,   8
+                        }
+
+                        Local3 = RefOf (F0A3)
+                        Local4 = RefOf (G00D)
+                    }
+                    Case (0x09)
+                    {
+                        Local2 = 0xFF
+                        BankField (OPR0, BNK0, 0xFF, AnyAcc, Lock, Preserve)
+                        {
+                            Offset (0x03), 
+                                ,   7, 
+                            F0A4,   9
+                        }
+
+                        Local3 = RefOf (F0A4)
+                        Local4 = RefOf (G00E)
+                    }
+                    Case (0x1F)
+                    {
+                        Local2 = 0x00
+                        BankField (OPR0, BNK0, 0x00, QWordAcc, Lock, Preserve)
+                        {
+                            AccessAs (AnyAcc, 0x00), 
+                            Offset (0x03), 
+                                ,   7, 
+                            F0A5,   31
+                        }
+
+                        Local3 = RefOf (F0A5)
+                        Local4 = RefOf (G000)
+                    }
+                    Case (0x20)
+                    {
+                        Local2 = 0x01
+                        BankField (OPR0, BNK0, 0x01, AnyAcc, Lock, Preserve)
+                        {
+                            Offset (0x03), 
+                                ,   7, 
+                            F0A6,   32
+                        }
+
+                        Local3 = RefOf (F0A6)
+                        Local4 = RefOf (G001)
+                    }
+                    Case (0x21)
+                    {
+                        Local2 = 0x02
+                        BankField (OPR0, BNK0, 0x02, AnyAcc, Lock, Preserve)
+                        {
+                            AccessAs (AnyAcc, 0x00), 
+                            Offset (0x03), 
+                                ,   7, 
+                            F0A7,   33
+                        }
+
+                        Local3 = RefOf (F0A7)
+                        Local4 = RefOf (G002)
+                    }
+                    Case (0x3F)
+                    {
+                        Local2 = 0x03
+                        BankField (OPR0, BNK0, 0x03, AnyAcc, Lock, Preserve)
+                        {
+                            Offset (0x03), 
+                                ,   7, 
+                            F0A8,   63
+                        }
+
+                        Local3 = RefOf (F0A8)
+                        Local4 = RefOf (G003)
+                    }
+                    Case (0x40)
+                    {
+                        Local2 = 0x04
+                        BankField (OPR0, BNK0, 0x04, ByteAcc, Lock, Preserve)
+                        {
+                            AccessAs (AnyAcc, 0x00), 
+                            Offset (0x03), 
+                                ,   7, 
+                            F0A9,   64
+                        }
+
+                        Local3 = RefOf (F0A9)
+                        Local4 = RefOf (G004)
+                    }
+                    Case (0x41)
+                    {
+                        Local2 = 0x05
+                        BankField (OPR0, BNK0, 0x05, AnyAcc, Lock, Preserve)
+                        {
+                            Offset (0x03), 
+                                ,   7, 
+                            F0AA,   65
+                        }
+
+                        Local3 = RefOf (F0AA)
+                        Local4 = RefOf (G005)
+                    }
+                    Case (0x45)
+                    {
+                        Local2 = 0x06
+                        BankField (OPR0, BNK0, 0x06, WordAcc, Lock, Preserve)
+                        {
+                            AccessAs (AnyAcc, 0x00), 
+                            Offset (0x03), 
+                                ,   7, 
+                            F0AB,   69
+                        }
+
+                        Local3 = RefOf (F0AB)
+                        Local4 = RefOf (G006)
+                    }
+                    Case (0x81)
+                    {
+                        Local2 = 0x07
+                        BankField (OPR0, BNK0, 0x07, AnyAcc, Lock, Preserve)
+                        {
+                            Offset (0x03), 
+                                ,   7, 
+                            F0AC,   129
+                        }
+
+                        Local3 = RefOf (F0AC)
+                        Local4 = RefOf (G007)
+                    }
+                    Case (0x0100)
+                    {
+                        Local2 = 0x08
+                        BankField (OPR0, BNK0, 0x08, DWordAcc, Lock, Preserve)
+                        {
+                            AccessAs (AnyAcc, 0x00), 
+                            Offset (0x03), 
+                                ,   7, 
+                            F0AD,   256
+                        }
+
+                        Local3 = RefOf (F0AD)
+                        Local4 = RefOf (G008)
+                    }
+                    Case (0x03FF)
+                    {
+                        Local2 = 0x09
+                        BankField (OPR0, BNK0, 0x09, AnyAcc, Lock, Preserve)
+                        {
+                            Offset (0x03), 
+                                ,   7, 
+                            F0AE,   1023
+                        }
+
+                        Local3 = RefOf (F0AE)
+                        Local4 = RefOf (G009)
+                    }
+                    Case (0x07BF)
+                    {
+                        Local2 = 0x3F
+                        BankField (OPR0, BNK0, 0x3F, QWordAcc, Lock, Preserve)
+                        {
+                            AccessAs (AnyAcc, 0x00), 
+                            Offset (0x03), 
+                                ,   7, 
+                            F0AF,   1983
+                        }
+
+                        Local3 = RefOf (F0AF)
+                        Local4 = RefOf (G00A)
+                    }
+                    Default
+                    {
+                        ERR (Arg0, Z145, 0x27BB, 0x00, 0x00, Arg2, Arg3)
+                        Return (Zero)
+                    }
+
+                }
+            }
+            Case (0x20)
+            {
+                Switch (ToInteger (Arg3))
+                {
+                    Case (0x01)
+                    {
+                        Local2 = 0x40
+                        BankField (OPR0, BNK0, 0x40, AnyAcc, Lock, Preserve)
+                        {
+                            AccessAs (AnyAcc, 0x00), 
+                            Offset (0x04), 
+                            F0B0,   1
+                        }
+
+                        Local3 = RefOf (F0B0)
+                        Local4 = RefOf (G00B)
+                    }
+                    Case (0x06)
+                    {
+                        Local2 = 0x7F
+                        BankField (OPR0, BNK0, 0x7F, AnyAcc, Lock, Preserve)
+                        {
+                            Offset (0x04), 
+                            F0B1,   6
+                        }
+
+                        Local3 = RefOf (F0B1)
+                        Local4 = RefOf (G00C)
+                    }
+                    Case (0x07)
+                    {
+                        Local2 = 0x80
+                        BankField (OPR0, BNK0, 0x80, ByteAcc, Lock, Preserve)
+                        {
+                            AccessAs (AnyAcc, 0x00), 
+                            Offset (0x04), 
+                            F0B2,   7
+                        }
+
+                        Local3 = RefOf (F0B2)
+                        Local4 = RefOf (G00D)
+                    }
+                    Case (0x08)
+                    {
+                        Local2 = 0xFF
+                        BankField (OPR0, BNK0, 0xFF, AnyAcc, Lock, Preserve)
+                        {
+                            Offset (0x04), 
+                            F0B3,   8
+                        }
+
+                        Local3 = RefOf (F0B3)
+                        Local4 = RefOf (G00E)
+                    }
+                    Case (0x09)
+                    {
+                        Local2 = 0x00
+                        BankField (OPR0, BNK0, 0x00, WordAcc, Lock, Preserve)
+                        {
+                            AccessAs (AnyAcc, 0x00), 
+                            Offset (0x04), 
+                            F0B4,   9
+                        }
+
+                        Local3 = RefOf (F0B4)
+                        Local4 = RefOf (G000)
+                    }
+                    Case (0x1F)
+                    {
+                        Local2 = 0x01
+                        BankField (OPR0, BNK0, 0x01, AnyAcc, Lock, Preserve)
+                        {
+                            Offset (0x04), 
+                            F0B5,   31
+                        }
+
+                        Local3 = RefOf (F0B5)
+                        Local4 = RefOf (G001)
+                    }
+                    Case (0x20)
+                    {
+                        Local2 = 0x02
+                        BankField (OPR0, BNK0, 0x02, DWordAcc, Lock, Preserve)
+                        {
+                            AccessAs (AnyAcc, 0x00), 
+                            Offset (0x04), 
+                            F0B6,   32
+                        }
+
+                        Local3 = RefOf (F0B6)
+                        Local4 = RefOf (G002)
+                    }
+                    Case (0x21)
+                    {
+                        Local2 = 0x03
+                        BankField (OPR0, BNK0, 0x03, AnyAcc, Lock, Preserve)
+                        {
+                            Offset (0x04), 
+                            F0B7,   33
+                        }
+
+                        Local3 = RefOf (F0B7)
+                        Local4 = RefOf (G003)
+                    }
+                    Case (0x3F)
+                    {
+                        Local2 = 0x04
+                        BankField (OPR0, BNK0, 0x04, QWordAcc, Lock, Preserve)
+                        {
+                            AccessAs (AnyAcc, 0x00), 
+                            Offset (0x04), 
+                            F0B8,   63
+                        }
+
+                        Local3 = RefOf (F0B8)
+                        Local4 = RefOf (G004)
+                    }
+                    Case (0x40)
+                    {
+                        Local2 = 0x05
+                        BankField (OPR0, BNK0, 0x05, AnyAcc, Lock, Preserve)
+                        {
+                            Offset (0x04), 
+                            F0B9,   64
+                        }
+
+                        Local3 = RefOf (F0B9)
+                        Local4 = RefOf (G005)
+                    }
+                    Case (0x41)
+                    {
+                        Local2 = 0x06
+                        BankField (OPR0, BNK0, 0x06, AnyAcc, Lock, Preserve)
+                        {
+                            AccessAs (AnyAcc, 0x00), 
+                            Offset (0x04), 
+                            F0BA,   65
+                        }
+
+                        Local3 = RefOf (F0BA)
+                        Local4 = RefOf (G006)
+                    }
+                    Case (0x45)
+                    {
+                        Local2 = 0x07
+                        BankField (OPR0, BNK0, 0x07, AnyAcc, Lock, Preserve)
+                        {
+                            Offset (0x04), 
+                            F0BB,   69
+                        }
+
+                        Local3 = RefOf (F0BB)
+                        Local4 = RefOf (G007)
+                    }
+                    Case (0x81)
+                    {
+                        Local2 = 0x08
+                        BankField (OPR0, BNK0, 0x08, ByteAcc, Lock, Preserve)
+                        {
+                            AccessAs (AnyAcc, 0x00), 
+                            Offset (0x04), 
+                            F0BC,   129
+                        }
+
+                        Local3 = RefOf (F0BC)
+                        Local4 = RefOf (G008)
+                    }
+                    Case (0x0100)
+                    {
+                        Local2 = 0x09
+                        BankField (OPR0, BNK0, 0x09, AnyAcc, Lock, Preserve)
+                        {
+                            Offset (0x04), 
+                            F0BD,   256
+                        }
+
+                        Local3 = RefOf (F0BD)
+                        Local4 = RefOf (G009)
+                    }
+                    Case (0x03FF)
+                    {
+                        Local2 = 0x3F
+                        BankField (OPR0, BNK0, 0x3F, WordAcc, Lock, Preserve)
+                        {
+                            AccessAs (AnyAcc, 0x00), 
+                            Offset (0x04), 
+                            F0BE,   1023
+                        }
+
+                        Local3 = RefOf (F0BE)
+                        Local4 = RefOf (G00A)
+                    }
+                    Case (0x07BF)
+                    {
+                        Local2 = 0x40
+                        BankField (OPR0, BNK0, 0x40, AnyAcc, Lock, Preserve)
+                        {
+                            Offset (0x04), 
+                            F0BF,   1983
+                        }
+
+                        Local3 = RefOf (F0BF)
+                        Local4 = RefOf (G00B)
+                    }
+                    Default
+                    {
+                        ERR (Arg0, Z145, 0x283B, 0x00, 0x00, Arg2, Arg3)
+                        Return (Zero)
+                    }
+
+                }
+            }
+            Case (0x21)
+            {
+                Switch (ToInteger (Arg3))
+                {
+                    Case (0x01)
+                    {
+                        Local2 = 0x7F
+                        BankField (OPR0, BNK0, 0x7F, AnyAcc, Lock, Preserve)
+                        {
+                                ,   33, 
+                            F0C0,   1
+                        }
+
+                        Local3 = RefOf (F0C0)
+                        Local4 = RefOf (G00C)
+                    }
+                    Case (0x06)
+                    {
+                        Local2 = 0x80
+                        BankField (OPR0, BNK0, 0x80, DWordAcc, Lock, Preserve)
+                        {
+                            AccessAs (AnyAcc, 0x00), 
+                                ,   33, 
+                            F0C1,   6
+                        }
+
+                        Local3 = RefOf (F0C1)
+                        Local4 = RefOf (G00D)
+                    }
+                    Case (0x07)
+                    {
+                        Local2 = 0xFF
+                        BankField (OPR0, BNK0, 0xFF, AnyAcc, Lock, Preserve)
+                        {
+                                ,   33, 
+                            F0C2,   7
+                        }
+
+                        Local3 = RefOf (F0C2)
+                        Local4 = RefOf (G00E)
+                    }
+                    Case (0x08)
+                    {
+                        Local2 = 0x00
+                        BankField (OPR0, BNK0, 0x00, QWordAcc, Lock, Preserve)
+                        {
+                            AccessAs (AnyAcc, 0x00), 
+                                ,   33, 
+                            F0C3,   8
+                        }
+
+                        Local3 = RefOf (F0C3)
+                        Local4 = RefOf (G000)
+                    }
+                    Case (0x09)
+                    {
+                        Local2 = 0x01
+                        BankField (OPR0, BNK0, 0x01, AnyAcc, Lock, Preserve)
+                        {
+                                ,   33, 
+                            F0C4,   9
+                        }
+
+                        Local3 = RefOf (F0C4)
+                        Local4 = RefOf (G001)
+                    }
+                    Case (0x1F)
+                    {
+                        Local2 = 0x02
+                        BankField (OPR0, BNK0, 0x02, AnyAcc, Lock, Preserve)
+                        {
+                            AccessAs (AnyAcc, 0x00), 
+                                ,   33, 
+                            F0C5,   31
+                        }
+
+                        Local3 = RefOf (F0C5)
+                        Local4 = RefOf (G002)
+                    }
+                    Case (0x20)
+                    {
+                        Local2 = 0x03
+                        BankField (OPR0, BNK0, 0x03, AnyAcc, Lock, Preserve)
+                        {
+                                ,   33, 
+                            F0C6,   32
+                        }
+
+                        Local3 = RefOf (F0C6)
+                        Local4 = RefOf (G003)
+                    }
+                    Case (0x21)
+                    {
+                        Local2 = 0x04
+                        BankField (OPR0, BNK0, 0x04, ByteAcc, Lock, Preserve)
+                        {
+                            AccessAs (AnyAcc, 0x00), 
+                                ,   33, 
+                            F0C7,   33
+                        }
+
+                        Local3 = RefOf (F0C7)
+                        Local4 = RefOf (G004)
+                    }
+                    Case (0x3F)
+                    {
+                        Local2 = 0x05
+                        BankField (OPR0, BNK0, 0x05, AnyAcc, Lock, Preserve)
+                        {
+                                ,   33, 
+                            F0C8,   63
+                        }
+
+                        Local3 = RefOf (F0C8)
+                        Local4 = RefOf (G005)
+                    }
+                    Case (0x40)
+                    {
+                        Local2 = 0x06
+                        BankField (OPR0, BNK0, 0x06, WordAcc, Lock, Preserve)
+                        {
+                            AccessAs (AnyAcc, 0x00), 
+                                ,   33, 
+                            F0C9,   64
+                        }
+
+                        Local3 = RefOf (F0C9)
+                        Local4 = RefOf (G006)
+                    }
+                    Case (0x41)
+                    {
+                        Local2 = 0x07
+                        BankField (OPR0, BNK0, 0x07, AnyAcc, Lock, Preserve)
+                        {
+                                ,   33, 
+                            F0CA,   65
+                        }
+
+                        Local3 = RefOf (F0CA)
+                        Local4 = RefOf (G007)
+                    }
+                    Case (0x45)
+                    {
+                        Local2 = 0x08
+                        BankField (OPR0, BNK0, 0x08, DWordAcc, Lock, Preserve)
+                        {
+                            AccessAs (AnyAcc, 0x00), 
+                                ,   33, 
+                            F0CB,   69
+                        }
+
+                        Local3 = RefOf (F0CB)
+                        Local4 = RefOf (G008)
+                    }
+                    Case (0x81)
+                    {
+                        Local2 = 0x09
+                        BankField (OPR0, BNK0, 0x09, AnyAcc, Lock, Preserve)
+                        {
+                                ,   33, 
+                            F0CC,   129
+                        }
+
+                        Local3 = RefOf (F0CC)
+                        Local4 = RefOf (G009)
+                    }
+                    Case (0x0100)
+                    {
+                        Local2 = 0x3F
+                        BankField (OPR0, BNK0, 0x3F, QWordAcc, Lock, Preserve)
+                        {
+                            AccessAs (AnyAcc, 0x00), 
+                                ,   33, 
+                            F0CD,   256
+                        }
+
+                        Local3 = RefOf (F0CD)
+                        Local4 = RefOf (G00A)
+                    }
+                    Case (0x03FF)
+                    {
+                        Local2 = 0x40
+                        BankField (OPR0, BNK0, 0x40, AnyAcc, Lock, Preserve)
+                        {
+                                ,   33, 
+                            F0CE,   1023
+                        }
+
+                        Local3 = RefOf (F0CE)
+                        Local4 = RefOf (G00B)
+                    }
+                    Case (0x07BF)
+                    {
+                        Local2 = 0x7F
+                        BankField (OPR0, BNK0, 0x7F, AnyAcc, Lock, Preserve)
+                        {
+                            AccessAs (AnyAcc, 0x00), 
+                                ,   33, 
+                            F0CF,   1983
+                        }
+
+                        Local3 = RefOf (F0CF)
+                        Local4 = RefOf (G00C)
+                    }
+                    Default
+                    {
+                        ERR (Arg0, Z145, 0x28BB, 0x00, 0x00, Arg2, Arg3)
+                        Return (Zero)
+                    }
+
+                }
+            }
+            Case (0x3F)
+            {
+                Switch (ToInteger (Arg3))
+                {
+                    Case (0x01)
+                    {
+                        Local2 = 0x80
+                        BankField (OPR0, BNK0, 0x80, ByteAcc, Lock, Preserve)
+                        {
+                            AccessAs (AnyAcc, 0x00), 
+                                ,   63, 
+                            F0D0,   1
+                        }
+
+                        Local3 = RefOf (F0D0)
+                        Local4 = RefOf (G00D)
+                    }
+                    Case (0x06)
+                    {
+                        Local2 = 0xFF
+                        BankField (OPR0, BNK0, 0xFF, AnyAcc, Lock, Preserve)
+                        {
+                                ,   63, 
+                            F0D1,   6
+                        }
+
+                        Local3 = RefOf (F0D1)
+                        Local4 = RefOf (G00E)
+                    }
+                    Case (0x07)
+                    {
+                        Local2 = 0x00
+                        BankField (OPR0, BNK0, 0x00, WordAcc, Lock, Preserve)
+                        {
+                            AccessAs (AnyAcc, 0x00), 
+                                ,   63, 
+                            F0D2,   7
+                        }
+
+                        Local3 = RefOf (F0D2)
+                        Local4 = RefOf (G000)
+                    }
+                    Case (0x08)
+                    {
+                        Local2 = 0x01
+                        BankField (OPR0, BNK0, 0x01, AnyAcc, Lock, Preserve)
+                        {
+                                ,   63, 
+                            F0D3,   8
+                        }
+
+                        Local3 = RefOf (F0D3)
+                        Local4 = RefOf (G001)
+                    }
+                    Case (0x09)
+                    {
+                        Local2 = 0x02
+                        BankField (OPR0, BNK0, 0x02, DWordAcc, Lock, Preserve)
+                        {
+                            AccessAs (AnyAcc, 0x00), 
+                                ,   63, 
+                            F0D4,   9
+                        }
+
+                        Local3 = RefOf (F0D4)
+                        Local4 = RefOf (G002)
+                    }
+                    Case (0x1F)
+                    {
+                        Local2 = 0x03
+                        BankField (OPR0, BNK0, 0x03, AnyAcc, Lock, Preserve)
+                        {
+                                ,   63, 
+                            F0D5,   31
+                        }
+
+                        Local3 = RefOf (F0D5)
+                        Local4 = RefOf (G003)
+                    }
+                    Case (0x20)
+                    {
+                        Local2 = 0x04
+                        BankField (OPR0, BNK0, 0x04, QWordAcc, Lock, Preserve)
+                        {
+                            AccessAs (AnyAcc, 0x00), 
+                                ,   63, 
+                            F0D6,   32
+                        }
+
+                        Local3 = RefOf (F0D6)
+                        Local4 = RefOf (G004)
+                    }
+                    Case (0x21)
+                    {
+                        Local2 = 0x05
+                        BankField (OPR0, BNK0, 0x05, AnyAcc, Lock, Preserve)
+                        {
+                                ,   63, 
+                            F0D7,   33
+                        }
+
+                        Local3 = RefOf (F0D7)
+                        Local4 = RefOf (G005)
+                    }
+                    Case (0x3F)
+                    {
+                        Local2 = 0x06
+                        BankField (OPR0, BNK0, 0x06, AnyAcc, Lock, Preserve)
+                        {
+                            AccessAs (AnyAcc, 0x00), 
+                                ,   63, 
+                            F0D8,   63
+                        }
+
+                        Local3 = RefOf (F0D8)
+                        Local4 = RefOf (G006)
+                    }
+                    Case (0x40)
+                    {
+                        Local2 = 0x07
+                        BankField (OPR0, BNK0, 0x07, AnyAcc, Lock, Preserve)
+                        {
+                                ,   63, 
+                            F0D9,   64
+                        }
+
+                        Local3 = RefOf (F0D9)
+                        Local4 = RefOf (G007)
+                    }
+                    Case (0x41)
+                    {
+                        Local2 = 0x08
+                        BankField (OPR0, BNK0, 0x08, ByteAcc, Lock, Preserve)
+                        {
+                            AccessAs (AnyAcc, 0x00), 
+                                ,   63, 
+                            F0DA,   65
+                        }
+
+                        Local3 = RefOf (F0DA)
+                        Local4 = RefOf (G008)
+                    }
+                    Case (0x45)
+                    {
+                        Local2 = 0x09
+                        BankField (OPR0, BNK0, 0x09, AnyAcc, Lock, Preserve)
+                        {
+                                ,   63, 
+                            F0DB,   69
+                        }
+
+                        Local3 = RefOf (F0DB)
+                        Local4 = RefOf (G009)
+                    }
+                    Case (0x81)
+                    {
+                        Local2 = 0x3F
+                        BankField (OPR0, BNK0, 0x3F, WordAcc, Lock, Preserve)
+                        {
+                            AccessAs (AnyAcc, 0x00), 
+                                ,   63, 
+                            F0DC,   129
+                        }
+
+                        Local3 = RefOf (F0DC)
+                        Local4 = RefOf (G00A)
+                    }
+                    Case (0x0100)
+                    {
+                        Local2 = 0x40
+                        BankField (OPR0, BNK0, 0x40, AnyAcc, Lock, Preserve)
+                        {
+                                ,   63, 
+                            F0DD,   256
+                        }
+
+                        Local3 = RefOf (F0DD)
+                        Local4 = RefOf (G00B)
+                    }
+                    Case (0x03FF)
+                    {
+                        Local2 = 0x7F
+                        BankField (OPR0, BNK0, 0x7F, DWordAcc, Lock, Preserve)
+                        {
+                            AccessAs (AnyAcc, 0x00), 
+                                ,   63, 
+                            F0DE,   1023
+                        }
+
+                        Local3 = RefOf (F0DE)
+                        Local4 = RefOf (G00C)
+                    }
+                    Case (0x07BF)
+                    {
+                        Local2 = 0x80
+                        BankField (OPR0, BNK0, 0x80, AnyAcc, Lock, Preserve)
+                        {
+                                ,   63, 
+                            F0DF,   1983
+                        }
+
+                        Local3 = RefOf (F0DF)
+                        Local4 = RefOf (G00D)
+                    }
+                    Default
+                    {
+                        ERR (Arg0, Z145, 0x293B, 0x00, 0x00, Arg2, Arg3)
+                        Return (Zero)
+                    }
+
+                }
+            }
+            Case (0x40)
+            {
+                Switch (ToInteger (Arg3))
+                {
+                    Case (0x01)
+                    {
+                        Local2 = 0xFF
+                        BankField (OPR0, BNK0, 0xFF, AnyAcc, Lock, Preserve)
+                        {
+                            Offset (0x08), 
+                            F0E0,   1
+                        }
+
+                        Local3 = RefOf (F0E0)
+                        Local4 = RefOf (G00E)
+                    }
+                    Case (0x06)
+                    {
+                        Local2 = 0x00
+                        BankField (OPR0, BNK0, 0x00, QWordAcc, Lock, Preserve)
+                        {
+                            AccessAs (AnyAcc, 0x00), 
+                            Offset (0x08), 
+                            F0E1,   6
+                        }
+
+                        Local3 = RefOf (F0E1)
+                        Local4 = RefOf (G000)
+                    }
+                    Case (0x07)
+                    {
+                        Local2 = 0x01
+                        BankField (OPR0, BNK0, 0x01, AnyAcc, Lock, Preserve)
+                        {
+                            Offset (0x08), 
+                            F0E2,   7
+                        }
+
+                        Local3 = RefOf (F0E2)
+                        Local4 = RefOf (G001)
+                    }
+                    Case (0x08)
+                    {
+                        Local2 = 0x02
+                        BankField (OPR0, BNK0, 0x02, AnyAcc, Lock, Preserve)
+                        {
+                            AccessAs (AnyAcc, 0x00), 
+                            Offset (0x08), 
+                            F0E3,   8
+                        }
+
+                        Local3 = RefOf (F0E3)
+                        Local4 = RefOf (G002)
+                    }
+                    Case (0x09)
+                    {
+                        Local2 = 0x03
+                        BankField (OPR0, BNK0, 0x03, AnyAcc, Lock, Preserve)
+                        {
+                            Offset (0x08), 
+                            F0E4,   9
+                        }
+
+                        Local3 = RefOf (F0E4)
+                        Local4 = RefOf (G003)
+                    }
+                    Case (0x1F)
+                    {
+                        Local2 = 0x04
+                        BankField (OPR0, BNK0, 0x04, ByteAcc, Lock, Preserve)
+                        {
+                            AccessAs (AnyAcc, 0x00), 
+                            Offset (0x08), 
+                            F0E5,   31
+                        }
+
+                        Local3 = RefOf (F0E5)
+                        Local4 = RefOf (G004)
+                    }
+                    Case (0x20)
+                    {
+                        Local2 = 0x05
+                        BankField (OPR0, BNK0, 0x05, AnyAcc, Lock, Preserve)
+                        {
+                            Offset (0x08), 
+                            F0E6,   32
+                        }
+
+                        Local3 = RefOf (F0E6)
+                        Local4 = RefOf (G005)
+                    }
+                    Case (0x21)
+                    {
+                        Local2 = 0x06
+                        BankField (OPR0, BNK0, 0x06, WordAcc, Lock, Preserve)
+                        {
+                            AccessAs (AnyAcc, 0x00), 
+                            Offset (0x08), 
+                            F0E7,   33
+                        }
+
+                        Local3 = RefOf (F0E7)
+                        Local4 = RefOf (G006)
+                    }
+                    Case (0x3F)
+                    {
+                        Local2 = 0x07
+                        BankField (OPR0, BNK0, 0x07, AnyAcc, Lock, Preserve)
+                        {
+                            Offset (0x08), 
+                            F0E8,   63
+                        }
+
+                        Local3 = RefOf (F0E8)
+                        Local4 = RefOf (G007)
+                    }
+                    Case (0x40)
+                    {
+                        Local2 = 0x08
+                        BankField (OPR0, BNK0, 0x08, DWordAcc, Lock, Preserve)
+                        {
+                            AccessAs (AnyAcc, 0x00), 
+                            Offset (0x08), 
+                            F0E9,   64
+                        }
+
+                        Local3 = RefOf (F0E9)
+                        Local4 = RefOf (G008)
+                    }
+                    Case (0x41)
+                    {
+                        Local2 = 0x09
+                        BankField (OPR0, BNK0, 0x09, AnyAcc, Lock, Preserve)
+                        {
+                            Offset (0x08), 
+                            F0EA,   65
+                        }
+
+                        Local3 = RefOf (F0EA)
+                        Local4 = RefOf (G009)
+                    }
+                    Case (0x45)
+                    {
+                        Local2 = 0x3F
+                        BankField (OPR0, BNK0, 0x3F, QWordAcc, Lock, Preserve)
+                        {
+                            AccessAs (AnyAcc, 0x00), 
+                            Offset (0x08), 
+                            F0EB,   69
+                        }
+
+                        Local3 = RefOf (F0EB)
+                        Local4 = RefOf (G00A)
+                    }
+                    Case (0x81)
+                    {
+                        Local2 = 0x40
+                        BankField (OPR0, BNK0, 0x40, AnyAcc, Lock, Preserve)
+                        {
+                            Offset (0x08), 
+                            F0EC,   129
+                        }
+
+                        Local3 = RefOf (F0EC)
+                        Local4 = RefOf (G00B)
+                    }
+                    Case (0x0100)
+                    {
+                        Local2 = 0x7F
+                        BankField (OPR0, BNK0, 0x7F, AnyAcc, Lock, Preserve)
+                        {
+                            AccessAs (AnyAcc, 0x00), 
+                            Offset (0x08), 
+                            F0ED,   256
+                        }
+
+                        Local3 = RefOf (F0ED)
+                        Local4 = RefOf (G00C)
+                    }
+                    Case (0x03FF)
+                    {
+                        Local2 = 0x80
+                        BankField (OPR0, BNK0, 0x80, AnyAcc, Lock, Preserve)
+                        {
+                            Offset (0x08), 
+                            F0EE,   1023
+                        }
+
+                        Local3 = RefOf (F0EE)
+                        Local4 = RefOf (G00D)
+                    }
+                    Case (0x07BF)
+                    {
+                        Local2 = 0xFF
+                        BankField (OPR0, BNK0, 0xFF, ByteAcc, Lock, Preserve)
+                        {
+                            AccessAs (AnyAcc, 0x00), 
+                            Offset (0x08), 
+                            F0EF,   1983
+                        }
+
+                        Local3 = RefOf (F0EF)
+                        Local4 = RefOf (G00E)
+                    }
+                    Default
+                    {
+                        ERR (Arg0, Z145, 0x29BB, 0x00, 0x00, Arg2, Arg3)
+                        Return (Zero)
+                    }
+
+                }
+            }
+            Case (0x41)
+            {
+                Switch (ToInteger (Arg3))
+                {
+                    Case (0x01)
+                    {
+                        Local2 = 0x00
+                        BankField (OPR0, BNK0, 0x00, WordAcc, Lock, Preserve)
+                        {
+                            AccessAs (AnyAcc, 0x00), 
+                            Offset (0x08), 
+                                ,   1, 
+                            F0F0,   1
+                        }
+
+                        Local3 = RefOf (F0F0)
+                        Local4 = RefOf (G000)
+                    }
+                    Case (0x06)
+                    {
+                        Local2 = 0x01
+                        BankField (OPR0, BNK0, 0x01, AnyAcc, Lock, Preserve)
+                        {
+                            Offset (0x08), 
+                                ,   1, 
+                            F0F1,   6
+                        }
+
+                        Local3 = RefOf (F0F1)
+                        Local4 = RefOf (G001)
+                    }
+                    Case (0x07)
+                    {
+                        Local2 = 0x02
+                        BankField (OPR0, BNK0, 0x02, DWordAcc, Lock, Preserve)
+                        {
+                            AccessAs (AnyAcc, 0x00), 
+                            Offset (0x08), 
+                                ,   1, 
+                            F0F2,   7
+                        }
+
+                        Local3 = RefOf (F0F2)
+                        Local4 = RefOf (G002)
+                    }
+                    Case (0x08)
+                    {
+                        Local2 = 0x03
+                        BankField (OPR0, BNK0, 0x03, AnyAcc, Lock, Preserve)
+                        {
+                            Offset (0x08), 
+                                ,   1, 
+                            F0F3,   8
+                        }
+
+                        Local3 = RefOf (F0F3)
+                        Local4 = RefOf (G003)
+                    }
+                    Case (0x09)
+                    {
+                        Local2 = 0x04
+                        BankField (OPR0, BNK0, 0x04, QWordAcc, Lock, Preserve)
+                        {
+                            AccessAs (AnyAcc, 0x00), 
+                            Offset (0x08), 
+                                ,   1, 
+                            F0F4,   9
+                        }
+
+                        Local3 = RefOf (F0F4)
+                        Local4 = RefOf (G004)
+                    }
+                    Case (0x1F)
+                    {
+                        Local2 = 0x05
+                        BankField (OPR0, BNK0, 0x05, AnyAcc, Lock, Preserve)
+                        {
+                            Offset (0x08), 
+                                ,   1, 
+                            F0F5,   31
+                        }
+
+                        Local3 = RefOf (F0F5)
+                        Local4 = RefOf (G005)
+                    }
+                    Case (0x20)
+                    {
+                        Local2 = 0x06
+                        BankField (OPR0, BNK0, 0x06, AnyAcc, Lock, Preserve)
+                        {
+                            AccessAs (AnyAcc, 0x00), 
+                            Offset (0x08), 
+                                ,   1, 
+                            F0F6,   32
+                        }
+
+                        Local3 = RefOf (F0F6)
+                        Local4 = RefOf (G006)
+                    }
+                    Case (0x21)
+                    {
+                        Local2 = 0x07
+                        BankField (OPR0, BNK0, 0x07, AnyAcc, Lock, Preserve)
+                        {
+                            Offset (0x08), 
+                                ,   1, 
+                            F0F7,   33
+                        }
+
+                        Local3 = RefOf (F0F7)
+                        Local4 = RefOf (G007)
+                    }
+                    Case (0x3F)
+                    {
+                        Local2 = 0x08
+                        BankField (OPR0, BNK0, 0x08, ByteAcc, Lock, Preserve)
+                        {
+                            AccessAs (AnyAcc, 0x00), 
+                            Offset (0x08), 
+                                ,   1, 
+                            F0F8,   63
+                        }
+
+                        Local3 = RefOf (F0F8)
+                        Local4 = RefOf (G008)
+                    }
+                    Case (0x40)
+                    {
+                        Local2 = 0x09
+                        BankField (OPR0, BNK0, 0x09, AnyAcc, Lock, Preserve)
+                        {
+                            Offset (0x08), 
+                                ,   1, 
+                            F0F9,   64
+                        }
+
+                        Local3 = RefOf (F0F9)
+                        Local4 = RefOf (G009)
+                    }
+                    Case (0x41)
+                    {
+                        Local2 = 0x3F
+                        BankField (OPR0, BNK0, 0x3F, WordAcc, Lock, Preserve)
+                        {
+                            AccessAs (AnyAcc, 0x00), 
+                            Offset (0x08), 
+                                ,   1, 
+                            F0FA,   65
+                        }
+
+                        Local3 = RefOf (F0FA)
+                        Local4 = RefOf (G00A)
+                    }
+                    Case (0x45)
+                    {
+                        Local2 = 0x40
+                        BankField (OPR0, BNK0, 0x40, AnyAcc, Lock, Preserve)
+                        {
+                            Offset (0x08), 
+                                ,   1, 
+                            F0FB,   69
+                        }
+
+                        Local3 = RefOf (F0FB)
+                        Local4 = RefOf (G00B)
+                    }
+                    Case (0x81)
+                    {
+                        Local2 = 0x7F
+                        BankField (OPR0, BNK0, 0x7F, DWordAcc, Lock, Preserve)
+                        {
+                            AccessAs (AnyAcc, 0x00), 
+                            Offset (0x08), 
+                                ,   1, 
+                            F0FC,   129
+                        }
+
+                        Local3 = RefOf (F0FC)
+                        Local4 = RefOf (G00C)
+                    }
+                    Case (0x0100)
+                    {
+                        Local2 = 0x80
+                        BankField (OPR0, BNK0, 0x80, AnyAcc, Lock, Preserve)
+                        {
+                            Offset (0x08), 
+                                ,   1, 
+                            F0FD,   256
+                        }
+
+                        Local3 = RefOf (F0FD)
+                        Local4 = RefOf (G00D)
+                    }
+                    Case (0x03FF)
+                    {
+                        Local2 = 0xFF
+                        BankField (OPR0, BNK0, 0xFF, QWordAcc, Lock, Preserve)
+                        {
+                            AccessAs (AnyAcc, 0x00), 
+                            Offset (0x08), 
+                                ,   1, 
+                            F0FE,   1023
+                        }
+
+                        Local3 = RefOf (F0FE)
+                        Local4 = RefOf (G00E)
+                    }
+                    Case (0x07BF)
+                    {
+                        Local2 = 0x00
+                        BankField (OPR0, BNK0, 0x00, AnyAcc, Lock, Preserve)
+                        {
+                            Offset (0x08), 
+                                ,   1, 
+                            F0FF,   1983
+                        }
+
+                        Local3 = RefOf (F0FF)
+                        Local4 = RefOf (G000)
+                    }
+                    Default
+                    {
+                        ERR (Arg0, Z145, 0x2A3B, 0x00, 0x00, Arg2, Arg3)
+                        Return (Zero)
+                    }
+
+                }
+            }
+            Default
+            {
+                ERR (Arg0, Z145, 0x2A41, 0x00, 0x00, Arg2, Arg3)
+                Return (Zero)
+            }
+
+        }
+
+        FCP0 [0x00] = 0x02
+        FCP0 [0x01] = RefOf (BNK0)
+        FCP0 [0x02] = Local2
+        M72D (Arg0, Local3, Arg2, Arg3, Arg4, Arg5, Local4)
+        FCP0 [0x00] = 0x00
+    }
+
+    /* Splitting of BankFields */
+    /* m7c6(CallChain) */
+    Method (M7C6, 1, Serialized)
+    {
+        OperationRegion (OPR0, SystemIO, 0x03E8, 0x0101)
+        Debug = "TEST: m7c6, Check Splitting of BankFields"
+        Concatenate (Arg0, "-m7c6", Arg0)
+        M7E0 (Arg0, OPR0, 0x04)
+        M7E1 (Arg0, OPR0, 0x0400)
+        M7E2 (Arg0, OPR0, 0x4000)
+        M7E3 (Arg0, OPR0, 0xF000)
+        M7E4 (Arg0, OPR0, 0xF004)
+        M7E5 (Arg0, OPR0, 0xF400)
+        M7E6 (Arg0, OPR0, 0xFF00)
+        M7E7 (Arg0, OPR0, 0xFFF0)
+        M7E8 (Arg0, OPR0, 0xFFFF)
+        M7E9 (Arg0, OPR0, 0x04)
+    }
+
+    /* Create BankFields that spans the same bits */
+    /* and check possible inconsistence, 0-bit offset. */
+    /* m7e0(CallChain, OpRegion, BankNum) */
+    Method (M7E0, 3, Serialized)
+    {
+        OperationRegion (OPRM, 0xFF, 0x0100, 0x08)
+        OperationRegion (OPRN, SystemIO, 0x10, 0x02)
+        Field (OPRN, ByteAcc, NoLock, Preserve)
+        {
+            BNK0,   16
+        }
+
+        Concatenate (Arg0, "-m7e0", Arg0)
+        CopyObject (Arg1, OPRM) /* \M7E0.OPRM */
+        BankField (OPRM, BNK0, Arg2, ByteAcc, NoLock, Preserve)
+        {
+            Offset (0x00), 
+            BF00,   3
+        }
+
+        BankField (OPRM, BNK0, Arg2, ByteAcc, NoLock, Preserve)
+        {
+            Offset (0x00), 
+            BF10,   1, 
+            BF11,   1, 
+            BF12,   1
+        }
+
+        BankField (OPRM, BNK0, Arg2, ByteAcc, NoLock, Preserve)
+        {
+            Offset (0x00), 
+            BF20,   1, 
+            BF21,   2
+        }
+
+        BankField (OPRM, BNK0, Arg2, ByteAcc, NoLock, Preserve)
+        {
+            Offset (0x00), 
+            BF30,   2, 
+            BF31,   1
+        }
+
+        Local0 = 0x08
+        Local1 = Package (0x07)
+            {
+                BF10, 
+                BF11, 
+                BF12, 
+                BF20, 
+                BF21, 
+                BF30, 
+                BF31
+            }
+        While (Local0)
+        {
+            Local0--
+            BF00 = Local0
+            If (Y118){}
+            Else
+            {
+                Local1 [0x00] = BF10 /* \M7E0.BF10 */
+                Local1 [0x01] = BF11 /* \M7E0.BF11 */
+                Local1 [0x02] = BF12 /* \M7E0.BF12 */
+                Local1 [0x03] = BF20 /* \M7E0.BF20 */
+                Local1 [0x04] = BF21 /* \M7E0.BF21 */
+                Local1 [0x05] = BF30 /* \M7E0.BF30 */
+                Local1 [0x06] = BF31 /* \M7E0.BF31 */
+            }
+
+            M72A (Arg0, Local0, Local1)
+        }
+    }
+
+    /* Create BankFields that spans the same bits */
+    /* and check possible inconsistence, 1-bit offset. */
+    /* m7e1(CallChain, OpRegion, BankNum) */
+    Method (M7E1, 3, Serialized)
+    {
+        OperationRegion (OPRM, 0xFF, 0x00, 0x08)
+        OperationRegion (OPRN, SystemIO, 0x10, 0x02)
+        Field (OPRN, ByteAcc, NoLock, Preserve)
+        {
+            BNK0,   16
+        }
+
+        Concatenate (Arg0, "-m7e1", Arg0)
+        CopyObject (Arg1, OPRM) /* \M7E1.OPRM */
+        BankField (OPRM, BNK0, Arg2, ByteAcc, NoLock, Preserve)
+        {
+                ,   1, 
+            BF00,   3
+        }
+
+        BankField (OPRM, BNK0, Arg2, ByteAcc, NoLock, Preserve)
+        {
+                ,   1, 
+            BF10,   1, 
+            BF11,   1, 
+            BF12,   1
+        }
+
+        BankField (OPRM, BNK0, Arg2, ByteAcc, NoLock, Preserve)
+        {
+                ,   1, 
+            BF20,   1, 
+            BF21,   2
+        }
+
+        BankField (OPRM, BNK0, Arg2, ByteAcc, NoLock, Preserve)
+        {
+                ,   1, 
+            BF30,   2, 
+            BF31,   1
+        }
+
+        Local0 = 0x08
+        Local1 = Package (0x07)
+            {
+                BF10, 
+                BF11, 
+                BF12, 
+                BF20, 
+                BF21, 
+                BF30, 
+                BF31
+            }
+        While (Local0)
+        {
+            Local0--
+            BF00 = Local0
+            If (Y118){}
+            Else
+            {
+                Local1 [0x00] = BF10 /* \M7E1.BF10 */
+                Local1 [0x01] = BF11 /* \M7E1.BF11 */
+                Local1 [0x02] = BF12 /* \M7E1.BF12 */
+                Local1 [0x03] = BF20 /* \M7E1.BF20 */
+                Local1 [0x04] = BF21 /* \M7E1.BF21 */
+                Local1 [0x05] = BF30 /* \M7E1.BF30 */
+                Local1 [0x06] = BF31 /* \M7E1.BF31 */
+            }
+
+            M72A (Arg0, Local0, Local1)
+        }
+    }
+
+    /* Create BankFields that spans the same bits */
+    /* and check possible inconsistence, 2-bit offset. */
+    /* m7e2(CallChain, OpRegion, BankNum) */
+    Method (M7E2, 3, Serialized)
+    {
+        OperationRegion (OPRM, 0xFF, 0x00, 0x08)
+        OperationRegion (OPRN, SystemIO, 0x10, 0x02)
+        Field (OPRN, ByteAcc, NoLock, Preserve)
+        {
+            BNK0,   16
+        }
+
+        Concatenate (Arg0, "-m7e2", Arg0)
+        CopyObject (Arg1, OPRM) /* \M7E2.OPRM */
+        BankField (OPRM, BNK0, Arg2, ByteAcc, NoLock, Preserve)
+        {
+                ,   2, 
+            BF00,   3
+        }
+
+        BankField (OPRM, BNK0, Arg2, ByteAcc, NoLock, Preserve)
+        {
+                ,   2, 
+            BF10,   1, 
+            BF11,   1, 
+            BF12,   1
+        }
+
+        BankField (OPRM, BNK0, Arg2, ByteAcc, NoLock, Preserve)
+        {
+                ,   2, 
+            BF20,   1, 
+            BF21,   2
+        }
+
+        BankField (OPRM, BNK0, Arg2, ByteAcc, NoLock, Preserve)
+        {
+                ,   2, 
+            BF30,   2, 
+            BF31,   1
+        }
+
+        Local0 = 0x08
+        Local1 = Package (0x07)
+            {
+                BF10, 
+                BF11, 
+                BF12, 
+                BF20, 
+                BF21, 
+                BF30, 
+                BF31
+            }
+        While (Local0)
+        {
+            Local0--
+            BF00 = Local0
+            If (Y118){}
+            Else
+            {
+                Local1 [0x00] = BF10 /* \M7E2.BF10 */
+                Local1 [0x01] = BF11 /* \M7E2.BF11 */
+                Local1 [0x02] = BF12 /* \M7E2.BF12 */
+                Local1 [0x03] = BF20 /* \M7E2.BF20 */
+                Local1 [0x04] = BF21 /* \M7E2.BF21 */
+                Local1 [0x05] = BF30 /* \M7E2.BF30 */
+                Local1 [0x06] = BF31 /* \M7E2.BF31 */
+            }
+
+            M72A (Arg0, Local0, Local1)
+        }
+    }
+
+    /* Create BankFields that spans the same bits */
+    /* and check possible inconsistence, 3-bit offset. */
+    /* m7e3(CallChain, OpRegion, BankNum) */
+    Method (M7E3, 3, Serialized)
+    {
+        OperationRegion (OPRM, 0xFF, 0x00, 0x08)
+        OperationRegion (OPRN, SystemIO, 0x10, 0x02)
+        Field (OPRN, ByteAcc, NoLock, Preserve)
+        {
+            BNK0,   16
+        }
+
+        Concatenate (Arg0, "-m7e3", Arg0)
+        CopyObject (Arg1, OPRM) /* \M7E3.OPRM */
+        BankField (OPRM, BNK0, Arg2, ByteAcc, NoLock, Preserve)
+        {
+                ,   3, 
+            BF00,   3
+        }
+
+        BankField (OPRM, BNK0, Arg2, ByteAcc, NoLock, Preserve)
+        {
+                ,   3, 
+            BF10,   1, 
+            BF11,   1, 
+            BF12,   1
+        }
+
+        BankField (OPRM, BNK0, Arg2, ByteAcc, NoLock, Preserve)
+        {
+                ,   3, 
+            BF20,   1, 
+            BF21,   2
+        }
+
+        BankField (OPRM, BNK0, Arg2, ByteAcc, NoLock, Preserve)
+        {
+                ,   3, 
+            BF30,   2, 
+            BF31,   1
+        }
+
+        Local0 = 0x08
+        Local1 = Package (0x07)
+            {
+                BF10, 
+                BF11, 
+                BF12, 
+                BF20, 
+                BF21, 
+                BF30, 
+                BF31
+            }
+        While (Local0)
+        {
+            Local0--
+            BF00 = Local0
+            If (Y118){}
+            Else
+            {
+                Local1 [0x00] = BF10 /* \M7E3.BF10 */
+                Local1 [0x01] = BF11 /* \M7E3.BF11 */
+                Local1 [0x02] = BF12 /* \M7E3.BF12 */
+                Local1 [0x03] = BF20 /* \M7E3.BF20 */
+                Local1 [0x04] = BF21 /* \M7E3.BF21 */
+                Local1 [0x05] = BF30 /* \M7E3.BF30 */
+                Local1 [0x06] = BF31 /* \M7E3.BF31 */
+            }
+
+            M72A (Arg0, Local0, Local1)
+        }
+    }
+
+    /* Create BankFields that spans the same bits */
+    /* and check possible inconsistence, 4-bit offset. */
+    /* m7e4(CallChain, OpRegion, BankNum) */
+    Method (M7E4, 3, Serialized)
+    {
+        OperationRegion (OPRM, 0xFF, 0x00, 0x08)
+        OperationRegion (OPRN, SystemIO, 0x10, 0x02)
+        Field (OPRN, ByteAcc, NoLock, Preserve)
+        {
+            BNK0,   16
+        }
+
+        Concatenate (Arg0, "-m7e4", Arg0)
+        CopyObject (Arg1, OPRM) /* \M7E4.OPRM */
+        BankField (OPRM, BNK0, Arg2, ByteAcc, NoLock, Preserve)
+        {
+                ,   4, 
+            BF00,   3
+        }
+
+        BankField (OPRM, BNK0, Arg2, ByteAcc, NoLock, Preserve)
+        {
+                ,   4, 
+            BF10,   1, 
+            BF11,   1, 
+            BF12,   1
+        }
+
+        BankField (OPRM, BNK0, Arg2, ByteAcc, NoLock, Preserve)
+        {
+                ,   4, 
+            BF20,   1, 
+            BF21,   2
+        }
+
+        BankField (OPRM, BNK0, Arg2, ByteAcc, NoLock, Preserve)
+        {
+                ,   4, 
+            BF30,   2, 
+            BF31,   1
+        }
+
+        Local0 = 0x08
+        Local1 = Package (0x07)
+            {
+                BF10, 
+                BF11, 
+                BF12, 
+                BF20, 
+                BF21, 
+                BF30, 
+                BF31
+            }
+        While (Local0)
+        {
+            Local0--
+            BF00 = Local0
+            If (Y118){}
+            Else
+            {
+                Local1 [0x00] = BF10 /* \M7E4.BF10 */
+                Local1 [0x01] = BF11 /* \M7E4.BF11 */
+                Local1 [0x02] = BF12 /* \M7E4.BF12 */
+                Local1 [0x03] = BF20 /* \M7E4.BF20 */
+                Local1 [0x04] = BF21 /* \M7E4.BF21 */
+                Local1 [0x05] = BF30 /* \M7E4.BF30 */
+                Local1 [0x06] = BF31 /* \M7E4.BF31 */
+            }
+
+            M72A (Arg0, Local0, Local1)
+        }
+    }
+
+    /* Create BankFields that spans the same bits */
+    /* and check possible inconsistence, 5-bit offset. */
+    /* m7e5(CallChain, OpRegion, BankNum) */
+    Method (M7E5, 3, Serialized)
+    {
+        OperationRegion (OPRM, 0xFF, 0x00, 0x08)
+        OperationRegion (OPRN, SystemIO, 0x10, 0x02)
+        Field (OPRN, ByteAcc, NoLock, Preserve)
+        {
+            BNK0,   16
+        }
+
+        Concatenate (Arg0, "-m7e5", Arg0)
+        CopyObject (Arg1, OPRM) /* \M7E5.OPRM */
+        BankField (OPRM, BNK0, Arg2, ByteAcc, NoLock, Preserve)
+        {
+                ,   5, 
+            BF00,   3
+        }
+
+        BankField (OPRM, BNK0, Arg2, ByteAcc, NoLock, Preserve)
+        {
+                ,   5, 
+            BF10,   1, 
+            BF11,   1, 
+            BF12,   1
+        }
+
+        BankField (OPRM, BNK0, Arg2, ByteAcc, NoLock, Preserve)
+        {
+                ,   5, 
+            BF20,   1, 
+            BF21,   2
+        }
+
+        BankField (OPRM, BNK0, Arg2, ByteAcc, NoLock, Preserve)
+        {
+                ,   5, 
+            BF30,   2, 
+            BF31,   1
+        }
+
+        Local0 = 0x08
+        Local1 = Package (0x07)
+            {
+                BF10, 
+                BF11, 
+                BF12, 
+                BF20, 
+                BF21, 
+                BF30, 
+                BF31
+            }
+        While (Local0)
+        {
+            Local0--
+            BF00 = Local0
+            If (Y118){}
+            Else
+            {
+                Local1 [0x00] = BF10 /* \M7E5.BF10 */
+                Local1 [0x01] = BF11 /* \M7E5.BF11 */
+                Local1 [0x02] = BF12 /* \M7E5.BF12 */
+                Local1 [0x03] = BF20 /* \M7E5.BF20 */
+                Local1 [0x04] = BF21 /* \M7E5.BF21 */
+                Local1 [0x05] = BF30 /* \M7E5.BF30 */
+                Local1 [0x06] = BF31 /* \M7E5.BF31 */
+            }
+
+            M72A (Arg0, Local0, Local1)
+        }
+    }
+
+    /* Create BankFields that spans the same bits */
+    /* and check possible inconsistence, 6-bit offset. */
+    /* m7e6(CallChain, OpRegion, BankNum) */
+    Method (M7E6, 3, Serialized)
+    {
+        OperationRegion (OPRM, 0xFF, 0x00, 0x08)
+        OperationRegion (OPRN, SystemIO, 0x10, 0x02)
+        Field (OPRN, ByteAcc, NoLock, Preserve)
+        {
+            BNK0,   16
+        }
+
+        Concatenate (Arg0, "-m7e6", Arg0)
+        CopyObject (Arg1, OPRM) /* \M7E6.OPRM */
+        BankField (OPRM, BNK0, Arg2, ByteAcc, NoLock, Preserve)
+        {
+                ,   6, 
+            BF00,   3
+        }
+
+        BankField (OPRM, BNK0, Arg2, ByteAcc, NoLock, Preserve)
+        {
+                ,   6, 
+            BF10,   1, 
+            BF11,   1, 
+            BF12,   1
+        }
+
+        BankField (OPRM, BNK0, Arg2, ByteAcc, NoLock, Preserve)
+        {
+                ,   6, 
+            BF20,   1, 
+            BF21,   2
+        }
+
+        BankField (OPRM, BNK0, Arg2, ByteAcc, NoLock, Preserve)
+        {
+                ,   6, 
+            BF30,   2, 
+            BF31,   1
+        }
+
+        Local0 = 0x08
+        Local1 = Package (0x07)
+            {
+                BF10, 
+                BF11, 
+                BF12, 
+                BF20, 
+                BF21, 
+                BF30, 
+                BF31
+            }
+        While (Local0)
+        {
+            Local0--
+            BF00 = Local0
+            If (Y118){}
+            Else
+            {
+                Local1 [0x00] = BF10 /* \M7E6.BF10 */
+                Local1 [0x01] = BF11 /* \M7E6.BF11 */
+                Local1 [0x02] = BF12 /* \M7E6.BF12 */
+                Local1 [0x03] = BF20 /* \M7E6.BF20 */
+                Local1 [0x04] = BF21 /* \M7E6.BF21 */
+                Local1 [0x05] = BF30 /* \M7E6.BF30 */
+                Local1 [0x06] = BF31 /* \M7E6.BF31 */
+            }
+
+            M72A (Arg0, Local0, Local1)
+        }
+    }
+
+    /* Create BankFields that spans the same bits */
+    /* and check possible inconsistence, 7-bit offset. */
+    /* m7e7(CallChain, OpRegion, BankNum) */
+    Method (M7E7, 3, Serialized)
+    {
+        OperationRegion (OPRM, 0xFF, 0x00, 0x08)
+        OperationRegion (OPRN, SystemIO, 0x10, 0x02)
+        Field (OPRN, ByteAcc, NoLock, Preserve)
+        {
+            BNK0,   16
+        }
+
+        Concatenate (Arg0, "-m7e7", Arg0)
+        CopyObject (Arg1, OPRM) /* \M7E7.OPRM */
+        BankField (OPRM, BNK0, Arg2, ByteAcc, NoLock, Preserve)
+        {
+                ,   7, 
+            BF00,   3
+        }
+
+        BankField (OPRM, BNK0, Arg2, ByteAcc, NoLock, Preserve)
+        {
+                ,   7, 
+            BF10,   1, 
+            BF11,   1, 
+            BF12,   1
+        }
+
+        BankField (OPRM, BNK0, Arg2, ByteAcc, NoLock, Preserve)
+        {
+                ,   7, 
+            BF20,   1, 
+            BF21,   2
+        }
+
+        BankField (OPRM, BNK0, Arg2, ByteAcc, NoLock, Preserve)
+        {
+                ,   7, 
+            BF30,   2, 
+            BF31,   1
+        }
+
+        Local0 = 0x08
+        Local1 = Package (0x07)
+            {
+                BF10, 
+                BF11, 
+                BF12, 
+                BF20, 
+                BF21, 
+                BF30, 
+                BF31
+            }
+        While (Local0)
+        {
+            Local0--
+            BF00 = Local0
+            If (Y118){}
+            Else
+            {
+                Local1 [0x00] = BF10 /* \M7E7.BF10 */
+                Local1 [0x01] = BF11 /* \M7E7.BF11 */
+                Local1 [0x02] = BF12 /* \M7E7.BF12 */
+                Local1 [0x03] = BF20 /* \M7E7.BF20 */
+                Local1 [0x04] = BF21 /* \M7E7.BF21 */
+                Local1 [0x05] = BF30 /* \M7E7.BF30 */
+                Local1 [0x06] = BF31 /* \M7E7.BF31 */
+            }
+
+            M72A (Arg0, Local0, Local1)
+        }
+    }
+
+    /* Create BankFields that spans the same bits */
+    /* and check possible inconsistence, 8-bit offset. */
+    /* m7e8(CallChain, OpRegion, BankNum) */
+    Method (M7E8, 3, Serialized)
+    {
+        OperationRegion (OPRM, 0xFF, 0x00, 0x08)
+        OperationRegion (OPRN, SystemIO, 0x10, 0x02)
+        Field (OPRN, ByteAcc, NoLock, Preserve)
+        {
+            BNK0,   16
+        }
+
+        Concatenate (Arg0, "-m7e8", Arg0)
+        CopyObject (Arg1, OPRM) /* \M7E8.OPRM */
+        BankField (OPRM, BNK0, Arg2, ByteAcc, NoLock, Preserve)
+        {
+            Offset (0x01), 
+            BF00,   3
+        }
+
+        BankField (OPRM, BNK0, Arg2, ByteAcc, NoLock, Preserve)
+        {
+            Offset (0x01), 
+            BF10,   1, 
+            BF11,   1, 
+            BF12,   1
+        }
+
+        BankField (OPRM, BNK0, Arg2, ByteAcc, NoLock, Preserve)
+        {
+            Offset (0x01), 
+            BF20,   1, 
+            BF21,   2
+        }
+
+        BankField (OPRM, BNK0, Arg2, ByteAcc, NoLock, Preserve)
+        {
+            Offset (0x01), 
+            BF30,   2, 
+            BF31,   1
+        }
+
+        Local0 = 0x08
+        Local1 = Package (0x07)
+            {
+                BF10, 
+                BF11, 
+                BF12, 
+                BF20, 
+                BF21, 
+                BF30, 
+                BF31
+            }
+        While (Local0)
+        {
+            Local0--
+            BF00 = Local0
+            If (Y118){}
+            Else
+            {
+                Local1 [0x00] = BF10 /* \M7E8.BF10 */
+                Local1 [0x01] = BF11 /* \M7E8.BF11 */
+                Local1 [0x02] = BF12 /* \M7E8.BF12 */
+                Local1 [0x03] = BF20 /* \M7E8.BF20 */
+                Local1 [0x04] = BF21 /* \M7E8.BF21 */
+                Local1 [0x05] = BF30 /* \M7E8.BF30 */
+                Local1 [0x06] = BF31 /* \M7E8.BF31 */
+            }
+
+            M72A (Arg0, Local0, Local1)
+        }
+    }
+
+    /* Create BankFields that spans the same bits */
+    /* and check possible inconsistence, 2046-bit offset. */
+    /* m7e9(CallChain, OpRegion, BankNum) */
+    Method (M7E9, 3, Serialized)
+    {
+        OperationRegion (OPRM, 0xFF, 0x00, 0x0101)
+        OperationRegion (OPRN, SystemIO, 0x10, 0x02)
+        Field (OPRN, ByteAcc, NoLock, Preserve)
+        {
+            BNK0,   16
+        }
+
+        Concatenate (Arg0, "-m7e9", Arg0)
+        CopyObject (Arg1, OPRM) /* \M7E9.OPRM */
+        BankField (OPRM, BNK0, Arg2, ByteAcc, NoLock, Preserve)
+        {
+                ,   2046, 
+            BF00,   3
+        }
+
+        BankField (OPRM, BNK0, Arg2, ByteAcc, NoLock, Preserve)
+        {
+                ,   2046, 
+            BF10,   1, 
+            BF11,   1, 
+            BF12,   1
+        }
+
+        BankField (OPRM, BNK0, Arg2, ByteAcc, NoLock, Preserve)
+        {
+                ,   2046, 
+            BF20,   1, 
+            BF21,   2
+        }
+
+        BankField (OPRM, BNK0, Arg2, ByteAcc, NoLock, Preserve)
+        {
+                ,   2046, 
+            BF30,   2, 
+            BF31,   1
+        }
+
+        Local0 = 0x08
+        Local1 = Package (0x07)
+            {
+                BF10, 
+                BF11, 
+                BF12, 
+                BF20, 
+                BF21, 
+                BF30, 
+                BF31
+            }
+        While (Local0)
+        {
+            Local0--
+            BF00 = Local0
+            If (Y118){}
+            Else
+            {
+                Local1 [0x00] = BF10 /* \M7E9.BF10 */
+                Local1 [0x01] = BF11 /* \M7E9.BF11 */
+                Local1 [0x02] = BF12 /* \M7E9.BF12 */
+                Local1 [0x03] = BF20 /* \M7E9.BF20 */
+                Local1 [0x04] = BF21 /* \M7E9.BF21 */
+                Local1 [0x05] = BF30 /* \M7E9.BF30 */
+                Local1 [0x06] = BF31 /* \M7E9.BF31 */
+            }
+
+            M72A (Arg0, Local0, Local1)
+        }
+    }
+
+    /* Check non-constant Bank value */
+
+    Method (M7C7, 1, Serialized)
+    {
+        Field (OPRI, ByteAcc, NoLock, Preserve)
+        {
+            BNK0,   8
+        }
+
+        Name (BVAL, 0x02)
+        Method (CHCK, 3, NotSerialized)
+        {
+            Local0 = RefOf (Arg1)
+            /* Write */
+
+            BNK0 = 0xFF
+            M7BF (Arg0, BNK0, 0xFF, (Arg2 + 0x00))
+            DerefOf (Local0) = 0x67
+            M7BF (Arg0, BNK0, 0x02, (Arg2 + 0x01))
+            /* Read */
+
+            BNK0 = 0xFF
+            M7BF (Arg0, BNK0, 0xFF, (Arg2 + 0x02))
+            Local1 = DerefOf (Arg1)
+            M7BF (Arg0, Local1, 0x67, (Arg2 + 0x03))
+            M7BF (Arg0, BNK0, 0x02, (Arg2 + 0x04))
+        }
+
+        /* ArgX */
+
+        Method (M000, 2, Serialized)
+        {
+            BankField (OPRJ, BNK0, Arg1, ByteAcc, NoLock, Preserve)
+            {
+                Offset (0x08), 
+                BF00,   8
+            }
+
+            CHCK (Arg0, RefOf (BF00), 0x5F)
+        }
+
+        /* Named */
+
+        Method (M001, 1, Serialized)
+        {
+            BankField (OPRJ, BNK0, BVAL, ByteAcc, NoLock, Preserve)
+            {
+                Offset (0x08), 
+                BF00,   8
+            }
+
+            CHCK (Arg0, RefOf (BF00), 0x64)
+        }
+
+        /* LocalX */
+
+        Method (M002, 1, Serialized)
+        {
+            Local0 = BVAL /* \M7C7.BVAL */
+            BankField (OPRJ, BNK0, Local0, ByteAcc, NoLock, Preserve)
+            {
+                Offset (0x08), 
+                BF00,   8
+            }
+
+            CHCK (Arg0, RefOf (BF00), 0x69)
+        }
+
+        /* Expression */
+
+        Method (M003, 1, Serialized)
+        {
+            Local0 = 0x01
+            BankField (OPRJ, BNK0, (Local0 + 0x01), ByteAcc, NoLock, Preserve)
+            {
+                Offset (0x08), 
+                BF00,   8
+            }
+
+            CHCK (Arg0, RefOf (BF00), 0x6E)
+        }
+
+        Concatenate (Arg0, "-m7c7", Arg0)
+        M000 (Arg0, 0x02)
+        M001 (Arg0)
+        M002 (Arg0)
+        M003 (Arg0)
+    }
+
+    /* Check non-Integer Bank value */
+
+    Method (M7C8, 1, Serialized)
+    {
+        Field (OPRI, ByteAcc, NoLock, Preserve)
+        {
+            BNK0,   8
+        }
+
+        Name (VAL0, 0x02)
+        Name (VALB, Buffer (0x01)
+        {
+             0x02                                             // .
+        })
+        Name (VALS, "2")
+        BankField (OPRJ, BNK0, 0x02, ByteAcc, NoLock, Preserve)
+        {
+            Offset (0x08), 
+            BF00,   32
+        }
+
+        /* */
+        /* BUG: ToInteger should not be necessary. The buffer and string */
+        /* arguments should be implicitly converted to integers. */
+        /* */
+        BankField (OPRJ, BNK0, ToInteger (VALB), ByteAcc, NoLock, Preserve)
+        {
+            Offset (0x08), 
+            BF01,   32
+        }
+
+        BankField (OPRJ, BNK0, ToInteger (VALS), ByteAcc, NoLock, Preserve)
+        {
+            Offset (0x08), 
+            BF02,   32
+        }
+
+        Name (I000, 0x12345678)
+        Method (M000, 3, Serialized)
+        {
+            Local0 = 0x01
+            BankField (OPRJ, BNK0, Arg1, ByteAcc, NoLock, Preserve)
+            {
+                Offset (0x08), 
+                BF03,   32
+            }
+
+            If ((BF03 != I000))
+            {
+                ERR (Arg0, Z145, 0x2D37, 0x00, 0x00, BF03, I000)
+            }
+        }
+
+        Concatenate (Arg0, "-m7c8", Arg0)
+        BF00 = I000 /* \M7C8.I000 */
+        If ((BF00 != I000))
+        {
+            ERR (Arg0, Z145, 0x2D40, 0x00, 0x00, BF00, I000)
+        }
+
+        If ((BF01 != I000))
+        {
+            ERR (Arg0, Z145, 0x2D43, 0x00, 0x00, BF00, I000)
+        }
+
+        If ((BF02 != I000))
+        {
+            ERR (Arg0, Z145, 0x2D46, 0x00, 0x00, BF00, I000)
+        }
+
+        /* */
+        /* BUG: ToInteger should not be necessary. The buffer and string */
+        /* arguments should be implicitly converted to integers. */
+        /* */
+        M000 (Arg0, VAL0, 0x76)
+        M000 (Arg0, ToInteger (VALB), 0x77)
+        M000 (Arg0, ToInteger (VALS), 0x78)
+    }
+
+    /* Run-method */
+
+    Method (BFC0, 0, Serialized)
+    {
+        Name (TS, "BFC0")
+        /* Simple BankField test */
+
+        SRMT ("m7c0")
+        M7C0 (TS)
+        /* Check BankField access: ByteAcc, NoLock, Preserve */
+
+        SRMT ("m7c1")
+        If (Y192)
+        {
+            M7C1 (TS)
+        }
+        Else
+        {
+            BLCK ()
+        }
+
+        /* Check BankField access: WordAcc, NoLock, WriteAsOnes */
+
+        SRMT ("m7c2")
+        If (Y192)
+        {
+            M7C2 (TS)
+        }
+        Else
+        {
+            BLCK ()
+        }
+
+        /* Check BankField access: DWordAcc, NoLock, WriteAsZeros */
+
+        SRMT ("m7c3")
+        If (Y192)
+        {
+            M7C3 (TS)
+        }
+        Else
+        {
+            BLCK ()
+        }
+
+        /* Check BankField access: QWordAcc, NoLock, Preserve */
+
+        SRMT ("m7c4")
+        If (Y192)
+        {
+            M7C4 (TS)
+        }
+        Else
+        {
+            BLCK ()
+        }
+
+        /* Check BankField access: AnyAcc, Lock, Preserve */
+
+        SRMT ("m7c5")
+        If (Y192)
+        {
+            M7C5 (TS)
+        }
+        Else
+        {
+            BLCK ()
+        }
+
+        /* Splitting of BankFields */
+
+        SRMT ("m7c6")
+        If (Y192)
+        {
+            M7C6 (TS)
+        }
+        Else
+        {
+            BLCK ()
+        }
+
+        /* Non-constant Bank value */
+
+        SRMT ("m7c7")
+        If (Y178)
+        {
+            M7C7 (TS)
+        }
+        Else
+        {
+            BLCK ()
+        }
+
+        /* Non-Integer Bank value */
+
+        SRMT ("m7c8")
+        If (Y178)
+        {
+            M7C8 (TS)
+        }
+        Else
+        {
+            BLCK ()
+        }
+    }
+

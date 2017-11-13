@@ -1,378 +1,436 @@
-/*
- * Some or all of this work - Copyright (c) 2006 - 2017, Intel Corp.
- * All rights reserved.
- *
- * Redistribution and use in source and binary forms, with or without modification,
- * are permitted provided that the following conditions are met:
- *
- * Redistributions of source code must retain the above copyright notice,
- * this list of conditions and the following disclaimer.
- * Redistributions in binary form must reproduce the above copyright notice,
- * this list of conditions and the following disclaimer in the documentation
- * and/or other materials provided with the distribution.
- * Neither the name of Intel Corporation nor the names of its contributors
- * may be used to endorse or promote products derived from this software
- * without specific prior written permission.
- *
- * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS"
- * AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE
- * IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE
- * ARE DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT OWNER OR CONTRIBUTORS BE
- * LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL
- * DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES;
- * LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY
- * THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING
- * NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE,
- * EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
- */
+    /*
+     * Some or all of this work - Copyright (c) 2006 - 2017, Intel Corp.
+     * All rights reserved.
+     *
+     * Redistribution and use in source and binary forms, with or without modification,
+     * are permitted provided that the following conditions are met:
+     *
+     * Redistributions of source code must retain the above copyright notice,
+     * this list of conditions and the following disclaimer.
+     * Redistributions in binary form must reproduce the above copyright notice,
+     * this list of conditions and the following disclaimer in the documentation
+     * and/or other materials provided with the distribution.
+     * Neither the name of Intel Corporation nor the names of its contributors
+     * may be used to endorse or promote products derived from this software
+     * without specific prior written permission.
+     *
+     * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS"
+     * AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE
+     * IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE
+     * ARE DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT OWNER OR CONTRIBUTORS BE
+     * LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL
+     * DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES;
+     * LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY
+     * THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING
+     * NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE,
+     * EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
+     */
+    /*
+     * Trying to get the chain of calls of methods such that
+     * sections of operative stack corresponding to different
+     * methods contain the internal object (itself, not a RefOf
+     * reference to it) of the same Name Space node.
+     *
+     * Then force (by Store/CopyObject):
+     *   1) changing the value of that internal object
+     *   2) replacing the internal object itself by some another one
+     *
+     * Check that the changing/replacing has no effect on the
+     * values evaluated on the lowest stages of calculation.
+     */
+    Name (Z154, 0x9A)
+    /*
+     * Named Integer i000
+     */
+    Method (M000, 1, Serialized)
+    {
+        Name (TS, "m000")
+        Name (I000, 0x01)
+        Name (P000, Package (0x04)
+        {
+            0x01, 
+            0x02, 
+            0x03, 
+            0x04
+        })
+        Name (I001, 0x00)
+        CH03 (TS, Z154, 0x00, 0x38, 0x00)
+        I001 = Arg0
+        Method (M001, 0, NotSerialized)
+        {
+            Method (M002, 0, NotSerialized)
+            {
+                Method (M003, 0, NotSerialized)
+                {
+                    If (I001)
+                    {
+                        CopyObject (P000, I000) /* \M000.I000 */
+                    }
 
-/*
- * Trying to get the chain of calls of methods such that
- * sections of operative stack corresponding to different
- * methods contain the internal object (itself, not a RefOf
- * reference to it) of the same Name Space node.
- *
- * Then force (by Store/CopyObject):
- *   1) changing the value of that internal object
- *   2) replacing the internal object itself by some another one
- *
- * Check that the changing/replacing has no effect on the
- * values evaluated on the lowest stages of calculation.
- */
-Name(z154, 154)
+                    Return (0xABCD0000)
+                }
 
-/*
- * Named Integer i000
- */
+                Return ((I000 + M003 ()))
+            }
 
-Method(m000, 1, Serialized)
-{
-	Name(ts, "m000")
-	Name(i000, 0x00000001)
-	Name(p000, Package() {1,2,3,4})
+            Return ((I000 + M002 ()))
+        }
 
-	Name(i001, 0)
+        Store ((I000 + M001 ()), Local0)
+        If ((Local0 != 0xABCD0003))
+        {
+            ERR (TS, Z154, 0x4D, 0x00, 0x00, Local0, 0xABCD0003)
+        }
 
-	CH03(ts, z154, 0x000, __LINE__, 0)
+        Debug = Local0
+        CH03 (TS, Z154, 0x02, 0x51, 0x00)
+    }
 
-	Store(arg0, i001)
+    Method (M001, 1, Serialized)
+    {
+        Name (TS, "m001")
+        Name (I000, 0x01)
+        Name (I001, 0x00)
+        Name (P000, Package (0x04)
+        {
+            0x01, 
+            0x02, 
+            0x03, 
+            0x04
+        })
+        I001 = Arg0
+        Method (M001, 0, NotSerialized)
+        {
+            Method (M002, 0, NotSerialized)
+            {
+                Method (M003, 0, NotSerialized)
+                {
+                    Method (M004, 0, NotSerialized)
+                    {
+                        Method (M005, 0, NotSerialized)
+                        {
+                            Method (M006, 0, NotSerialized)
+                            {
+                                Method (M007, 0, NotSerialized)
+                                {
+                                    Method (M008, 0, NotSerialized)
+                                    {
+                                        If (I001)
+                                        {
+                                            CopyObject (P000, I000) /* \M001.I000 */
+                                        }
 
-	Method(m001)
-	{
-		Method(m002)
-		{
-			Method(m003)
-			{
-				if (i001) {
-					CopyObject(p000, i000)
-				}
-				Return (0xabcd0000)
-			}
-			Return (Add(i000, m003()))
-		}
-		Return (Add(i000, m002()))
-	}
-	Store(Add(i000, m001()), Local0)
-	if (LNotEqual(Local0, 0xabcd0003)) {
-		err(ts, z154, __LINE__, 0, 0, Local0, 0xabcd0003)
-	}
-	Store(Local0, Debug)
+                                        Return (0x00)
+                                    }
 
-	CH03(ts, z154, 0x002, __LINE__, 0)
-}
+                                    I000 = 0x80000000
+                                    Return ((I000 + M008 ()))
+                                }
 
-Method(m001, 1, Serialized)
-{
-	Name(ts, "m001")
-	Name(i000, 0x00000001)
-	Name(i001, 0)
-	Name(p000, Package() {1,2,3,4})
+                                I000 = 0x07000000
+                                Return ((I000 + M007 ()))
+                            }
 
-	Store(arg0, i001)
+                            I000 = 0x00600000
+                            Return ((I000 + M006 ()))
+                        }
 
-	Method(m001)
-	{
-		Method(m002)
-		{
-			Method(m003)
-			{
-				Method(m004)
-				{
-					Method(m005)
-					{
-						Method(m006)
-						{
-							Method(m007)
-							{
-								Method(m008)
-								{
-									if (i001)
-									{
-										CopyObject(p000, i000)
-									}
-									Return (0)
-								}
-								Store(0x80000000, i000)
-								Return (Add(i000, m008()))
-							}
-							Store(0x07000000, i000)
-							Return (Add(i000, m007()))
-						}
-						Store(0x00600000, i000)
-						Return (Add(i000, m006()))
-					}
-					Store(0x00050000, i000)
-					Return (Add(i000, m005()))
-				}
-				Store(0x00004000, i000)
-				Return (Add(i000, m004()))
-			}
-			Store(0x00000300, i000)
-			Return (Add(i000, m003()))
-		}
-		Store(0x00000020, i000)
-		Return (Add(i000, m002()))
-	}
-	Store(Add(i000, m001()), Local0)
+                        I000 = 0x00050000
+                        Return ((I000 + M005 ()))
+                    }
 
-	if (LNotEqual(Local0, 0x87654321)) {
-		err(ts, z154, __LINE__, 0, 0, Local0, 0x87654321)
-	}
+                    I000 = 0x4000
+                    Return ((I000 + M004 ()))
+                }
 
-	if (LNotEqual(i000, 0x80000000)) {
-		err(ts, z154, __LINE__, 0, 0, i000, 0x80000000)
-	}
+                I000 = 0x0300
+                Return ((I000 + M003 ()))
+            }
 
-	CH03(ts, z154, 0x005, __LINE__, 0)
-}
+            I000 = 0x20
+            Return ((I000 + M002 ()))
+        }
 
-Method(m002,, Serialized)
-{
-	Name(ts, "m002")
-	Name(i000, 0x00100000)
-	Name(i001, 0)
+        Store ((I000 + M001 ()), Local0)
+        If ((Local0 != 0x87654321))
+        {
+            ERR (TS, Z154, 0x8B, 0x00, 0x00, Local0, 0x87654321)
+        }
 
-	Method(m001)
-	{
-		if (LLess(i001, 100)) {
-			Increment(i000)
-			Increment(i001)
-			Add(i000, m001(), Local0)
-			Return (Local0)
-		}
-		Return (0)
-	}
-	Store(Add(i000, m001()), Local0)
+        If ((I000 != 0x80000000))
+        {
+            ERR (TS, Z154, 0x8F, 0x00, 0x00, I000, 0x80000000)
+        }
 
-	if (LNotEqual(Local0, 0x065013BA)) {
-		err(ts, z154, __LINE__, 0, 0, Local0, 0x065013BA)
-	}
+        CH03 (TS, Z154, 0x05, 0x92, 0x00)
+    }
 
-	if (LNotEqual(i000, 0x00100064)) {
-		err(ts, z154, __LINE__, 0, 0, i000, 0x00100064)
-	}
+    Method (M002, 0, Serialized)
+    {
+        Name (TS, "m002")
+        Name (I000, 0x00100000)
+        Name (I001, 0x00)
+        Method (M001, 0, NotSerialized)
+        {
+            If ((I001 < 0x64))
+            {
+                I000++
+                I001++
+                Local0 = (I000 + M001 ())
+                Return (Local0)
+            }
 
-	CH03(ts, z154, 0x008, __LINE__, 0)
-}
+            Return (0x00)
+        }
 
-Method(m003,, Serialized)
-{
-	Name(ts, "m003")
-	Name(i000, 0x00100000)
-	Name(i001, 0)
+        Store ((I000 + M001 ()), Local0)
+        If ((Local0 != 0x065013BA))
+        {
+            ERR (TS, Z154, 0xA8, 0x00, 0x00, Local0, 0x065013BA)
+        }
 
-	Method(m001)
-	{
-		if (LLess(i001, 100)) {
-			Increment(i000)
-			Increment(i001)
-			Return (Add(i000, m001(), Local0))
-		}
-		Return (0)
-	}
-	Store(Add(i000, m001()), Local0)
+        If ((I000 != 0x00100064))
+        {
+            ERR (TS, Z154, 0xAC, 0x00, 0x00, I000, 0x00100064)
+        }
 
-	if (LNotEqual(Local0, 0x065013BA)) {
-		err(ts, z154, __LINE__, 0, 0, Local0, 0x065013BA)
-	}
+        CH03 (TS, Z154, 0x08, 0xAF, 0x00)
+    }
 
-	if (LNotEqual(i000, 0x00100064)) {
-		err(ts, z154, __LINE__, 0, 0, i000, 0x00100064)
-	}
+    Method (M003, 0, Serialized)
+    {
+        Name (TS, "m003")
+        Name (I000, 0x00100000)
+        Name (I001, 0x00)
+        Method (M001, 0, NotSerialized)
+        {
+            If ((I001 < 0x64))
+            {
+                I000++
+                I001++
+                Return (Local0 = (I000 + M001 ()))
+            }
 
-	CH03(ts, z154, 0x00b, __LINE__, 0)
-}
+            Return (0x00)
+        }
 
-/*
- * Local instead of i000 (in m001)
- */
-Method(m004, 1, Serialized)
-{
-	Name(ts, "m004")
-	Name(i001, 0)
-	Name(p000, Package() {1,2,3,4})
+        Store ((I000 + M001 ()), Local0)
+        If ((Local0 != 0x065013BA))
+        {
+            ERR (TS, Z154, 0xC4, 0x00, 0x00, Local0, 0x065013BA)
+        }
 
-	Store(arg0, i001)
+        If ((I000 != 0x00100064))
+        {
+            ERR (TS, Z154, 0xC8, 0x00, 0x00, I000, 0x00100064)
+        }
 
-	Store(0x00000001, Local7)
+        CH03 (TS, Z154, 0x0B, 0xCB, 0x00)
+    }
 
-	Method(m001)
-	{
-		Method(m002)
-		{
-			Method(m003)
-			{
-				Method(m004)
-				{
-					Method(m005)
-					{
-						Method(m006)
-						{
-							Method(m007)
-							{
-								Method(m008)
-								{
-									if (i001)
-									{
-										CopyObject(p000, Local7)
-									}
-									Return (0)
-								}
-								Store(0x80000000, Local7)
-								Return (Add(Local7, m008()))
-							}
-							Store(0x07000000, Local7)
-							Return (Add(Local7, m007()))
-						}
-						Store(0x00600000, Local7)
-						Return (Add(Local7, m006()))
-					}
-					Store(0x00050000, Local7)
-					Return (Add(Local7, m005()))
-				}
-				Store(0x00004000, Local7)
-				Return (Add(Local7, m004()))
-			}
-			Store(0x00000300, Local7)
-			Return (Add(Local7, m003()))
-		}
-		Store(0x00000020, Local7)
-		Return (Add(Local7, m002()))
-	}
-	Store(Add(Local7, m001()), Local0)
+    /*
+     * Local instead of i000 (in m001)
+     */
+    Method (M004, 1, Serialized)
+    {
+        Name (TS, "m004")
+        Name (I001, 0x00)
+        Name (P000, Package (0x04)
+        {
+            0x01, 
+            0x02, 
+            0x03, 
+            0x04
+        })
+        I001 = Arg0
+        Local7 = 0x01
+        Method (M001, 0, NotSerialized)
+        {
+            Method (M002, 0, NotSerialized)
+            {
+                Method (M003, 0, NotSerialized)
+                {
+                    Method (M004, 0, NotSerialized)
+                    {
+                        Method (M005, 0, NotSerialized)
+                        {
+                            Method (M006, 0, NotSerialized)
+                            {
+                                Method (M007, 0, NotSerialized)
+                                {
+                                    Method (M008, 0, NotSerialized)
+                                    {
+                                        If (I001)
+                                        {
+                                            CopyObject (P000, Local7)
+                                        }
 
-	if (LNotEqual(Local0, 0x87654321)) {
-		err(ts, z154, __LINE__, 0, 0, Local0, 0x87654321)
-	}
+                                        Return (0x00)
+                                    }
 
-	if (LNotEqual(Local7, 1)) {
-		err(ts, z154, __LINE__, 0, 0, Local7, 1)
-	}
+                                    Local7 = 0x80000000
+                                    Return ((Local7 + M008 ()))
+                                }
 
-	CH03(ts, z154, 0x00e, __LINE__, 0)
-}
+                                Local7 = 0x07000000
+                                Return ((Local7 + M007 ()))
+                            }
 
-/*
- * Arg instead of i000 (in m001)
- */
-Method(m005, 2, Serialized)
-{
-	Name(ts, "m005")
-	Name(i001, 0)
-	Name(p000, Package() {1,2,3,4})
+                            Local7 = 0x00600000
+                            Return ((Local7 + M006 ()))
+                        }
 
-	Store(arg0, i001)
+                        Local7 = 0x00050000
+                        Return ((Local7 + M005 ()))
+                    }
 
-	Store(0x00000001, arg1)
+                    Local7 = 0x4000
+                    Return ((Local7 + M004 ()))
+                }
 
-	Method(m001)
-	{
-		Method(m002)
-		{
-			Method(m003)
-			{
-				Method(m004)
-				{
-					Method(m005)
-					{
-						Method(m006)
-						{
-							Method(m007)
-							{
-								Method(m008)
-								{
-									if (i001)
-									{
-										CopyObject(p000, arg1)
-									}
-									Return (0)
-								}
-								Store(0x80000000, arg1)
-								Return (Add(arg1, m008()))
-							}
-							Store(0x07000000, arg1)
-							Return (Add(arg1, m007()))
-						}
-						Store(0x00600000, arg1)
-						Return (Add(arg1, m006()))
-					}
-					Store(0x00050000, arg1)
-					Return (Add(arg1, m005()))
-				}
-				Store(0x00004000, arg1)
-				Return (Add(arg1, m004()))
-			}
-			Store(0x00000300, arg1)
-			Return (Add(arg1, m003()))
-		}
-		Store(0x00000020, arg1)
-		Return (Add(arg1, m002()))
-	}
-	Store(Add(arg1, m001()), Local0)
+                Local7 = 0x0300
+                Return ((Local7 + M003 ()))
+            }
 
-	if (LNotEqual(Local0, 0x87654321)) {
-		err(ts, z154, __LINE__, 0, 0, Local0, 0x87654321)
-	}
+            Local7 = 0x20
+            Return ((Local7 + M002 ()))
+        }
 
-	if (LNotEqual(arg1, 1)) {
-		err(ts, z154, __LINE__, 0, 0, arg1, 1)
-	}
+        Store ((Local7 + M001 ()), Local0)
+        If ((Local0 != 0x87654321))
+        {
+            ERR (TS, Z154, 0x0109, 0x00, 0x00, Local0, 0x87654321)
+        }
 
-	CH03(ts, z154, 0x011, __LINE__, 0)
-}
+        If ((Local7 != 0x01))
+        {
+            ERR (TS, Z154, 0x010D, 0x00, 0x00, Local7, 0x01)
+        }
 
-Method(n000)
-{
-if (1) {
-	SRMT("m000-0")
-	m000(0)
-	SRMT("m000-1")
-	m000(1)
-	SRMT("m001-0")
-	m001(0)
-	SRMT("m001-1")
-	if (y200) {
-		m001(1)
-	} else {
-		BLCK()
-	}
-	SRMT("m002")
-	m002()
-	SRMT("m003")
-	m003()
-	SRMT("m004-0")
-	m004(0)
-	SRMT("m004-1")
-	m004(1)
-	SRMT("m005-0")
-	m005(0, 0)
-	SRMT("m005-1")
-	m005(1, 0)
-} else {
-	SRMT("m000-0")
-	m000(0)
-	SRMT("m000-1")
-	m000(1)
-}
-}
+        CH03 (TS, Z154, 0x0E, 0x0110, 0x00)
+    }
+
+    /*
+     * Arg instead of i000 (in m001)
+     */
+    Method (M005, 2, Serialized)
+    {
+        Name (TS, "m005")
+        Name (I001, 0x00)
+        Name (P000, Package (0x04)
+        {
+            0x01, 
+            0x02, 
+            0x03, 
+            0x04
+        })
+        I001 = Arg0
+        Arg1 = 0x01
+        Method (M001, 0, NotSerialized)
+        {
+            Method (M002, 0, NotSerialized)
+            {
+                Method (M003, 0, NotSerialized)
+                {
+                    Method (M004, 0, NotSerialized)
+                    {
+                        Method (M005, 0, NotSerialized)
+                        {
+                            Method (M006, 0, NotSerialized)
+                            {
+                                Method (M007, 0, NotSerialized)
+                                {
+                                    Method (M008, 0, NotSerialized)
+                                    {
+                                        If (I001)
+                                        {
+                                            CopyObject (P000, Arg1)
+                                        }
+
+                                        Return (0x00)
+                                    }
+
+                                    Arg1 = 0x80000000
+                                    Return ((Arg1 + M008 ()))
+                                }
+
+                                Arg1 = 0x07000000
+                                Return ((Arg1 + M007 ()))
+                            }
+
+                            Arg1 = 0x00600000
+                            Return ((Arg1 + M006 ()))
+                        }
+
+                        Arg1 = 0x00050000
+                        Return ((Arg1 + M005 ()))
+                    }
+
+                    Arg1 = 0x4000
+                    Return ((Arg1 + M004 ()))
+                }
+
+                Arg1 = 0x0300
+                Return ((Arg1 + M003 ()))
+            }
+
+            Arg1 = 0x20
+            Return ((Arg1 + M002 ()))
+        }
+
+        Store ((Arg1 + M001 ()), Local0)
+        If ((Local0 != 0x87654321))
+        {
+            ERR (TS, Z154, 0x014E, 0x00, 0x00, Local0, 0x87654321)
+        }
+
+        If ((Arg1 != 0x01))
+        {
+            ERR (TS, Z154, 0x0152, 0x00, 0x00, Arg1, 0x01)
+        }
+
+        CH03 (TS, Z154, 0x11, 0x0155, 0x00)
+    }
+
+    Method (N000, 0, NotSerialized)
+    {
+        If (0x01)
+        {
+            SRMT ("m000-0")
+            M000 (0x00)
+            SRMT ("m000-1")
+            M000 (0x01)
+            SRMT ("m001-0")
+            M001 (0x00)
+            SRMT ("m001-1")
+            If (Y200)
+            {
+                M001 (0x01)
+            }
+            Else
+            {
+                BLCK ()
+            }
+
+            SRMT ("m002")
+            M002 ()
+            SRMT ("m003")
+            M003 ()
+            SRMT ("m004-0")
+            M004 (0x00)
+            SRMT ("m004-1")
+            M004 (0x01)
+            SRMT ("m005-0")
+            M005 (0x00, 0x00)
+            SRMT ("m005-1")
+            M005 (0x01, 0x00)
+        }
+        Else
+        {
+            SRMT ("m000-0")
+            M000 (0x00)
+            SRMT ("m000-1")
+            M000 (0x01)
+        }
+    }
 

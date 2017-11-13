@@ -1,148 +1,157 @@
-/*
- * Some or all of this work - Copyright (c) 2006 - 2017, Intel Corp.
- * All rights reserved.
- *
- * Redistribution and use in source and binary forms, with or without modification,
- * are permitted provided that the following conditions are met:
- *
- * Redistributions of source code must retain the above copyright notice,
- * this list of conditions and the following disclaimer.
- * Redistributions in binary form must reproduce the above copyright notice,
- * this list of conditions and the following disclaimer in the documentation
- * and/or other materials provided with the distribution.
- * Neither the name of Intel Corporation nor the names of its contributors
- * may be used to endorse or promote products derived from this software
- * without specific prior written permission.
- *
- * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS"
- * AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE
- * IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE
- * ARE DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT OWNER OR CONTRIBUTORS BE
- * LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL
- * DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES;
- * LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY
- * THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING
- * NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE,
- * EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
- */
+    /*
+     * Some or all of this work - Copyright (c) 2006 - 2017, Intel Corp.
+     * All rights reserved.
+     *
+     * Redistribution and use in source and binary forms, with or without modification,
+     * are permitted provided that the following conditions are met:
+     *
+     * Redistributions of source code must retain the above copyright notice,
+     * this list of conditions and the following disclaimer.
+     * Redistributions in binary form must reproduce the above copyright notice,
+     * this list of conditions and the following disclaimer in the documentation
+     * and/or other materials provided with the distribution.
+     * Neither the name of Intel Corporation nor the names of its contributors
+     * may be used to endorse or promote products derived from this software
+     * without specific prior written permission.
+     *
+     * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS"
+     * AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE
+     * IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE
+     * ARE DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT OWNER OR CONTRIBUTORS BE
+     * LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL
+     * DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES;
+     * LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY
+     * THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING
+     * NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE,
+     * EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
+     */
+    /*
+     * Bug 128:
+     *
+     * SUMMARY: Copying the RefOf reference to Named object spoils that reference
+     */
+    Method (MF17, 0, Serialized)
+    {
+        Name (I000, 0x1234)
+        CopyObject (RefOf (I000), Local0)
+        Debug = Local0
+        Local1 = DerefOf (Local0)
+        Debug = Local1
+        If ((Local1 != 0x1234))
+        {
+            ERR ("", ZFFF, 0x2C, 0x00, 0x00, Local1, 0x1234)
+        }
+    }
 
-/*
- * Bug 128:
- *
- * SUMMARY: Copying the RefOf reference to Named object spoils that reference
- */
+    Method (MF18, 0, Serialized)
+    {
+        Name (REF0, 0x00)
+        Name (I000, 0x1234)
+        CH03 ("", 0x00, 0x00, 0x35, 0x00)
+        CopyObject (RefOf (I000), REF0) /* \MF18.REF0 */
+        Debug = "Before printing ref0"
+        Debug = REF0 /* \MF18.REF0 */
+        Debug = "Before DerefOf"
+        Local1 = DerefOf (REF0)
+        Debug = "Before printing Local1"
+        Debug = Local1
+        Debug = "Before LNotEqual"
+        If ((Local1 != 0x1234))
+        {
+            ERR ("", ZFFF, 0x41, 0x00, 0x00, Local1, 0x1234)
+        }
 
-Method(mf17,, Serialized)
-{
-	Name(i000, 0x1234)
+        CH03 ("", 0x00, 0x02, 0x44, 0x00)
+    }
 
-	CopyObject(RefOf(i000), Local0)
-	Store(Local0, Debug)
-	Store(DerefOf(Local0), Local1)
-	Store(Local1, Debug)
-	if (LNotEqual(Local1, 0x1234)) {
-		err("", zFFF, __LINE__, 0, 0, Local1, 0x1234)
-	}
-}
+    Method (MF9E, 0, Serialized)
+    {
+        Name (I000, 0xABBC0000)
+        Name (II00, 0xABBC0000)
+        Name (B000, Buffer (0x08)
+        {
+             0x01, 0x02, 0x03, 0x04, 0x95, 0x06, 0x07, 0x08   // ........
+        })
+        Name (BB00, Buffer (0x08)
+        {
+             0x01, 0x02, 0x03, 0x04, 0x95, 0x06, 0x07, 0x08   // ........
+        })
+        Name (S000, "String")
+        Name (SS00, "String")
+        Name (P000, Package (0x04)
+        {
+            0x01, 
+            0x02, 
+            0x03, 
+            0x04
+        })
+        Name (REF0, 0x00)
+        CH03 ("", 0x00, 0x00, 0x54, 0x00)
+        CopyObject (RefOf (I000), REF0) /* \MF9E.REF0 */
+        MF88 (DerefOf (REF0), C009, II00, 0x01, 0x02, 0x01)
+        CopyObject (RefOf (B000), REF0) /* \MF9E.REF0 */
+        MF88 (DerefOf (REF0), C00B, BB00, 0x03, 0x04, 0x01)
+        CopyObject (RefOf (S000), REF0) /* \MF9E.REF0 */
+        MF88 (DerefOf (REF0), C00A, SS00, 0x03, 0x04, 0x01)
+        CopyObject (RefOf (P000), REF0) /* \MF9E.REF0 */
+        MF88 (DerefOf (REF0), C00C, SS00, 0x05, 0x06, 0x00)
+        CH03 ("", 0x00, 0x07, 0x62, 0x00)
+    }
 
-Method(mf18,, Serialized)
-{
-	Name(ref0, 0)
-	Name(i000, 0x1234)
+    Method (MF9F, 0, Serialized)
+    {
+        Name (REF0, 0x00)
+        Event (E000)
+        Mutex (MX00, 0x00)
+        Device (D000)
+        {
+            Name (I900, 0xABCD0017)
+        }
 
-	CH03("", 0, 0x000, __LINE__, 0)
+        ThermalZone (TZ00)
+        {
+        }
 
-	CopyObject(RefOf(i000), ref0)
-	Store("Before printing ref0", Debug)
-	Store(ref0, Debug)
-	Store("Before DerefOf", Debug)
-	Store(DerefOf(ref0), Local1)
-	Store("Before printing Local1", Debug)
-	Store(Local1, Debug)
-	Store("Before LNotEqual", Debug)
+        Processor (PR00, 0x00, 0xFFFFFFFF, 0x00){}
+        OperationRegion (R000, SystemMemory, 0x0100, 0x0100)
+        PowerResource (PW00, 0x01, 0x0000)
+        {
+            Method (MMMM, 0, NotSerialized)
+            {
+                Return (0x00)
+            }
+        }
 
-	if (LNotEqual(Local1, 0x1234)) {
-		err("", zFFF, __LINE__, 0, 0, Local1, 0x1234)
-	}
+        /* Checkings */
 
-	CH03("", 0, 0x002, __LINE__, 0)
-}
+        CH03 ("", 0x00, 0x26, 0x73, 0x00)
+        CopyObject (RefOf (E000), REF0) /* \MF9F.REF0 */
+        MF88 (DerefOf (REF0), C00F, 0x00, 0x27, 0x28, 0x00)
+        CH03 ("", 0x00, 0x29, 0x77, 0x00)
+        CopyObject (RefOf (MX00), REF0) /* \MF9F.REF0 */
+        MF88 (DerefOf (REF0), C011, 0x00, 0x2A, 0x2B, 0x00)
+        If (Y511)
+        {
+            CH03 ("", 0x00, 0x2C, 0x7C, 0x00)
+            CopyObject (RefOf (D000), REF0) /* \MF9F.REF0 */
+            MF88 (DerefOf (REF0), C00E, 0x00, 0x2D, 0x2E, 0x00)
+        }
 
-Method(mf9e,, Serialized)
-{
-	Name(i000, 0xabbc0000)
-	Name(ii00, 0xabbc0000)
-	Name(b000, Buffer(){ 1, 2, 3, 4, 0x95, 6, 7, 8})
-	Name(bb00, Buffer(){ 1, 2, 3, 4, 0x95, 6, 7, 8})
-	Name(s000, "String")
-	Name(ss00, "String")
+        If (Y508)
+        {
+            CH03 ("", 0x00, 0x2F, 0x82, 0x00)
+            CopyObject (RefOf (TZ00), REF0) /* \MF9F.REF0 */
+            MF88 (DerefOf (REF0), C015, 0x00, 0x30, 0x31, 0x00)
+        }
 
-	Name(p000, Package() {1,2,3,4})
-
-	Name(ref0, 0)
-
-	CH03("", 0, 0x000, __LINE__, 0)
-
-	CopyObject(RefOf(i000), ref0)
-	mf88(DerefOf(ref0), c009, ii00, 1, 2, 1)
-
-	CopyObject(RefOf(b000), ref0)
-	mf88(DerefOf(ref0), c00b, bb00, 3, 4, 1)
-
-	CopyObject(RefOf(s000), ref0)
-	mf88(DerefOf(ref0), c00a, ss00, 3, 4, 1)
-
-	CopyObject(RefOf(p000), ref0)
-	mf88(DerefOf(ref0), c00c, ss00, 5, 6, 0)
-
-	CH03("", 0, 0x007, __LINE__, 0)
-}
-
-Method(mf9f,, Serialized)
-{
-	Name(ref0, 0)
-
-	Event(e000)
-	Mutex(mx00, 0)
-	Device(d000) { Name(i900, 0xabcd0017) }
-	ThermalZone(tz00) {}
-	Processor(pr00, 0, 0xFFFFFFFF, 0) {}
-	OperationRegion(r000, SystemMemory, 0x100, 0x100)
-	PowerResource(pw00, 1, 0) {Method(mmmm){return (0)}}
-
-	// Checkings
-
-	CH03("", 0, 0x026, __LINE__, 0)
-	CopyObject(RefOf(e000), ref0)
-	mf88(DerefOf(ref0), c00f, 0, 0x027, 0x028, 0)
-
-	CH03("", 0, 0x029, __LINE__, 0)
-	CopyObject(RefOf(mx00), ref0)
-	mf88(DerefOf(ref0), c011, 0, 0x02a, 0x02b, 0)
-
-	if (y511) {
-		CH03("", 0, 0x02c, __LINE__, 0)
-		CopyObject(RefOf(d000), ref0)
-		mf88(DerefOf(ref0), c00e, 0, 0x02d, 0x02e, 0)
-	}
-
-	if (y508) {
-		CH03("", 0, 0x02f, __LINE__, 0)
-		CopyObject(RefOf(tz00), ref0)
-		mf88(DerefOf(ref0), c015, 0, 0x030, 0x031, 0)
-	}
-
-	CH03("", 0, 0x032, __LINE__, 0)
-	CopyObject(RefOf(pr00), ref0)
-	mf88(DerefOf(ref0), c014, 0, 0x033, 0x034, 0)
-
-	CH03("", 0, 0x035, __LINE__, 0)
-	CopyObject(RefOf(r000), ref0)
-	mf88(DerefOf(ref0), c012, 0, 0x036, 0x037, 0)
-
-	CH03("", 0, 0x038, __LINE__, 0)
-	CopyObject(RefOf(pw00), ref0)
-	mf88(DerefOf(ref0), c013, 0, 0x039, 0x03a, 0)
-}
-
+        CH03 ("", 0x00, 0x32, 0x87, 0x00)
+        CopyObject (RefOf (PR00), REF0) /* \MF9F.REF0 */
+        MF88 (DerefOf (REF0), C014, 0x00, 0x33, 0x34, 0x00)
+        CH03 ("", 0x00, 0x35, 0x8B, 0x00)
+        CopyObject (RefOf (R000), REF0) /* \MF9F.REF0 */
+        MF88 (DerefOf (REF0), C012, 0x00, 0x36, 0x37, 0x00)
+        CH03 ("", 0x00, 0x38, 0x8F, 0x00)
+        CopyObject (RefOf (PW00), REF0) /* \MF9F.REF0 */
+        MF88 (DerefOf (REF0), C013, 0x00, 0x39, 0x3A, 0x00)
+    }
 

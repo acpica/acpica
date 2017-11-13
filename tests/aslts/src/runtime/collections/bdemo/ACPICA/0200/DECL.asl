@@ -1,222 +1,231 @@
-/*
- * Some or all of this work - Copyright (c) 2006 - 2017, Intel Corp.
- * All rights reserved.
- *
- * Redistribution and use in source and binary forms, with or without modification,
- * are permitted provided that the following conditions are met:
- *
- * Redistributions of source code must retain the above copyright notice,
- * this list of conditions and the following disclaimer.
- * Redistributions in binary form must reproduce the above copyright notice,
- * this list of conditions and the following disclaimer in the documentation
- * and/or other materials provided with the distribution.
- * Neither the name of Intel Corporation nor the names of its contributors
- * may be used to endorse or promote products derived from this software
- * without specific prior written permission.
- *
- * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS"
- * AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE
- * IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE
- * ARE DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT OWNER OR CONTRIBUTORS BE
- * LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL
- * DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES;
- * LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY
- * THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING
- * NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE,
- * EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
- */
+    /*
+     * Some or all of this work - Copyright (c) 2006 - 2017, Intel Corp.
+     * All rights reserved.
+     *
+     * Redistribution and use in source and binary forms, with or without modification,
+     * are permitted provided that the following conditions are met:
+     *
+     * Redistributions of source code must retain the above copyright notice,
+     * this list of conditions and the following disclaimer.
+     * Redistributions in binary form must reproduce the above copyright notice,
+     * this list of conditions and the following disclaimer in the documentation
+     * and/or other materials provided with the distribution.
+     * Neither the name of Intel Corporation nor the names of its contributors
+     * may be used to endorse or promote products derived from this software
+     * without specific prior written permission.
+     *
+     * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS"
+     * AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE
+     * IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE
+     * ARE DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT OWNER OR CONTRIBUTORS BE
+     * LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL
+     * DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES;
+     * LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY
+     * THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING
+     * NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE,
+     * EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
+     */
+    /*
+     * Bug 200 (local-bugzilla-352):
+     *
+     * SUMMARY: the code path taken after exception is incorrect
+     *
+     * AcpiPsParseLoop --> AcpiDsGetPredicateValue --> FAILURE -->>
+     * doesn't fall into AcpiDsMethodError routine after FAILURE (exception)
+     * (the ASLTS-testing stops after these FAILUREs).
+     */
+    Method (MFB4, 0, NotSerialized)
+    {
+        Debug = "Message from mfb4 -------------------------------!!!"
+    }
 
-/*
- * Bug 200 (local-bugzilla-352):
- *
- * SUMMARY: the code path taken after exception is incorrect
- *
- * AcpiPsParseLoop --> AcpiDsGetPredicateValue --> FAILURE -->>
- * doesn't fall into AcpiDsMethodError routine after FAILURE (exception)
- * (the ASLTS-testing stops after these FAILUREs).
- */
+    Method (MFB5, 0, NotSerialized)
+    {
+        Local7 = 0x00
+        Divide (0x01, Local7, Local2)
+        If ((Local2 != 0x00))
+        {
+            MFB4 ()
+        }
+    }
 
+    Method (MFB6, 0, NotSerialized)
+    {
+        Local7 = 0x00
+        Divide (0x01, Local7, Local2)
+        If ((Local2 != 0x00))
+        {
+            Debug = "Message 0 !!!!!!!!!!!!!!!!!!!!!!"
+            MFB4 ()
+        }
+    }
 
-Method(mfb4)
-{
-	Store("Message from mfb4 -------------------------------!!!", Debug)
-}
+    Method (MFB7, 0, NotSerialized)
+    {
+        Local7 = 0x00
+        Divide (0x01, Local7, Local2)
+    }
 
-Method(mfb5)
-{
-	Store(0, Local7)
-	Divide(1, Local7, Local2)
-	if (LNotEqual(Local2, 0)) {
-		mfb4()
-	}
-}
+    Method (MFB8, 0, NotSerialized)
+    {
+        Local7 = 0x00
+        Divide (0x01, Local7, Local2)
+        While ((Local2 != 0x00))
+        {
+            MFB4 ()
+            Break
+        }
+    }
 
-Method(mfb6)
-{
-	Store(0, Local7)
-	Divide(1, Local7, Local2)
-	if (LNotEqual(Local2, 0)) {
-		Store("Message 0 !!!!!!!!!!!!!!!!!!!!!!", Debug)
-		mfb4()
-	}
-}
+    Method (MFB9, 0, NotSerialized)
+    {
+        Local7 = 0x00
+        Divide (0x01, Local7, Local2)
+        While ((Local2 != 0x00))
+        {
+            Debug = "Message 1 !!!!!!!!!!!!!!!!!!!!!!"
+            MFB4 ()
+            Break
+        }
+    }
 
-Method(mfb7)
-{
-	Store(0, Local7)
-	Divide(1, Local7, Local2)
-}
+    Method (MFBA, 0, Serialized)
+    {
+        Local7 = 0x00
+        Divide (0x01, Local7, Local2)
+        Switch ((Local2 != 0x00))
+            {
+            Case (0x00)
+            {
+                MFB4 ()
+            }
 
-Method(mfb8)
-{
-	Store(0, Local7)
-	Divide(1, Local7, Local2)
-	while (LNotEqual(Local2, 0)) {
-		mfb4()
-		break
-	}
-}
+        }
+    }
 
-Method(mfb9)
-{
-	Store(0, Local7)
-	Divide(1, Local7, Local2)
-	while (LNotEqual(Local2, 0)) {
-		Store("Message 1 !!!!!!!!!!!!!!!!!!!!!!", Debug)
-		mfb4()
-		break
-	}
-}
+    Method (MFBB, 0, Serialized)
+    {
+        Local7 = 0x00
+        Divide (0x01, Local7, Local2)
+        Switch ((Local2 != 0x00))
+            {
+            Case (0x00)
+            {
+                Debug = "Message 2 !!!!!!!!!!!!!!!!!!!!!!"
+                MFB4 ()
+            }
 
-Method(mfba, 0, Serialized)
-{
-	Store(0, Local7)
-	Divide(1, Local7, Local2)
-	switch (LNotEqual(Local2, 0)) {
-		case (0)
-		{
-			mfb4()
-		}
-	}
-}
+        }
+    }
 
-Method(mfbb, 0, Serialized)
-{
-	Store(0, Local7)
-	Divide(1, Local7, Local2)
-	switch (LNotEqual(Local2, 0)) {
-		case (0)
-		{
-			Store("Message 2 !!!!!!!!!!!!!!!!!!!!!!", Debug)
-			mfb4()
-		}
-	}
-}
+    Method (MFBC, 0, NotSerialized)
+    {
+        Local7 = 0x00
+        Divide (0x01, Local7, Local2)
+        Return (Local2)
+    }
 
-Method(mfbc)
-{
-	Store(0, Local7)
-	Divide(1, Local7, Local2)
-	Return (Local2)
-}
+    Method (MFBD, 0, NotSerialized)
+    {
+        If (MFBC ())
+        {
+            Debug = "Message 3 !!!!!!!!!!!!!!!!!!!!!!"
+        }
+    }
 
-Method(mfbd)
-{
-	if (mfbc()) {
-		Store("Message 3 !!!!!!!!!!!!!!!!!!!!!!", Debug)
-	}
-}
+    Method (MFBE, 0, NotSerialized)
+    {
+        While (MFBC ())
+        {
+            Break
+        }
+    }
 
-Method(mfbe)
-{
-	while (mfbc()) {
-		break
-	}
-}
+    Method (MFBF, 0, Serialized)
+    {
+        Switch (ToInteger (MFBC ()))
+        {
+            Case (0x00)
+            {
+                Debug = "Message 4 !!!!!!!!!!!!!!!!!!!!!!"
+            }
 
-Method(mfbf, 0, Serialized)
-{
-	switch (ToInteger (mfbc())) {
-		case (0)
-		{
-			Store("Message 4 !!!!!!!!!!!!!!!!!!!!!!", Debug)
-		}
-	}
-}
+        }
+    }
 
-Method(mfc0)
-{
-	/*
-	 * The code path taken after the exception here
-	 * is not correct for each of these Method calls:
-	 */
+    Method (MFC0, 0, NotSerialized)
+    {
+        /*
+         * The code path taken after the exception here
+         * is not correct for each of these Method calls:
+         */
+        SRMT ("mfb5")
+        If (Y200)
+        {
+            CH03 ("", 0x00, 0x00, 0x9C, 0x00)
+            MFB5 ()
+            CH04 ("", 0x00, 0xFF, 0x00, 0x9E, 0x00, 0x00)
+        }
+        Else
+        {
+            BLCK ()
+        }
 
-	SRMT("mfb5")
-	if (y200) {
-		CH03("", 0, 0x000, __LINE__, 0)
-		mfb5()
-		CH04("", 0, 0xff, 0, __LINE__, 0, 0)
-	} else {
-		BLCK()
-	}
+        SRMT ("mfbd")
+        If (Y200)
+        {
+            CH03 ("", 0x00, 0x02, 0xA5, 0x00)
+            MFBD ()
+            CH04 ("", 0x00, 0xFF, 0x00, 0xA7, 0x00, 0x00)
+        }
+        Else
+        {
+            BLCK ()
+        }
 
-	SRMT("mfbd")
-	if (y200) {
-		CH03("", 0, 0x002, __LINE__, 0)
-		mfbd()
-		CH04("", 0, 0xff, 0, __LINE__, 0, 0)
-	} else {
-		BLCK()
-	}
+        SRMT ("mfbe")
+        If (Y200)
+        {
+            CH03 ("", 0x00, 0x04, 0xAE, 0x00)
+            MFBE ()
+            CH04 ("", 0x00, 0xFF, 0x00, 0xB0, 0x00, 0x00)
+        }
+        Else
+        {
+            BLCK ()
+        }
 
-	SRMT("mfbe")
-	if (y200) {
-		CH03("", 0, 0x004, __LINE__, 0)
-		mfbe()
-		CH04("", 0, 0xff, 0, __LINE__, 0, 0)
-	} else {
-		BLCK()
-	}
-
-	/*
-	 * These work Ok:
-	 */
-
-	SRMT("mfb6")
-	CH03("", 0, 0x006, __LINE__, 0)
-	mfb6()
-	CH04("", 0, 0xff, 0, __LINE__, 0, 0)
-
-	SRMT("mfb7")
-	CH03("", 0, 0x008, __LINE__, 0)
-	mfb7()
-	CH04("", 0, 0xff, 0, __LINE__, 0, 0)
-
-	SRMT("mfb8")
-	CH03("", 0, 0x00a, __LINE__, 0)
-	mfb8()
-	CH04("", 0, 0xff, 0, __LINE__, 0, 0)
-
-	SRMT("mfb9")
-	CH03("", 0, 0x00c, __LINE__, 0)
-	mfb9()
-	CH04("", 0, 0xff, 0, __LINE__, 0, 0)
-
-	SRMT("mfba")
-	CH03("", 0, 0x00e, __LINE__, 0)
-	mfba()
-	CH04("", 0, 0xff, 0, __LINE__, 0, 0)
-
-	SRMT("mfbb")
-	CH03("", 0, 0x010, __LINE__, 0)
-	mfbb()
-	CH04("", 0, 0xff, 0, __LINE__, 0, 0)
-
-	SRMT("mfbf")
-	CH03("", 0, 0x012, __LINE__, 0)
-	mfbf()
-	CH04("", 0, 0xff, 0, __LINE__, 0, 0)
-
-	Store("mfc0 ==== successfully returned to mfc0; finished !!!!!", Debug)
-}
+        /*
+         * These work Ok:
+         */
+        SRMT ("mfb6")
+        CH03 ("", 0x00, 0x06, 0xBA, 0x00)
+        MFB6 ()
+        CH04 ("", 0x00, 0xFF, 0x00, 0xBC, 0x00, 0x00)
+        SRMT ("mfb7")
+        CH03 ("", 0x00, 0x08, 0xBF, 0x00)
+        MFB7 ()
+        CH04 ("", 0x00, 0xFF, 0x00, 0xC1, 0x00, 0x00)
+        SRMT ("mfb8")
+        CH03 ("", 0x00, 0x0A, 0xC4, 0x00)
+        MFB8 ()
+        CH04 ("", 0x00, 0xFF, 0x00, 0xC6, 0x00, 0x00)
+        SRMT ("mfb9")
+        CH03 ("", 0x00, 0x0C, 0xC9, 0x00)
+        MFB9 ()
+        CH04 ("", 0x00, 0xFF, 0x00, 0xCB, 0x00, 0x00)
+        SRMT ("mfba")
+        CH03 ("", 0x00, 0x0E, 0xCE, 0x00)
+        MFBA ()
+        CH04 ("", 0x00, 0xFF, 0x00, 0xD0, 0x00, 0x00)
+        SRMT ("mfbb")
+        CH03 ("", 0x00, 0x10, 0xD3, 0x00)
+        MFBB ()
+        CH04 ("", 0x00, 0xFF, 0x00, 0xD5, 0x00, 0x00)
+        SRMT ("mfbf")
+        CH03 ("", 0x00, 0x12, 0xD8, 0x00)
+        MFBF ()
+        CH04 ("", 0x00, 0xFF, 0x00, 0xDA, 0x00, 0x00)
+        Debug = "mfc0 ==== successfully returned to mfc0; finished !!!!!"
+    }
 

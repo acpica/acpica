@@ -1,314 +1,369 @@
-/*
- * Some or all of this work - Copyright (c) 2006 - 2017, Intel Corp.
- * All rights reserved.
- *
- * Redistribution and use in source and binary forms, with or without modification,
- * are permitted provided that the following conditions are met:
- *
- * Redistributions of source code must retain the above copyright notice,
- * this list of conditions and the following disclaimer.
- * Redistributions in binary form must reproduce the above copyright notice,
- * this list of conditions and the following disclaimer in the documentation
- * and/or other materials provided with the distribution.
- * Neither the name of Intel Corporation nor the names of its contributors
- * may be used to endorse or promote products derived from this software
- * without specific prior written permission.
- *
- * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS"
- * AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE
- * IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE
- * ARE DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT OWNER OR CONTRIBUTORS BE
- * LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL
- * DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES;
- * LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY
- * THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING
- * NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE,
- * EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
- */
-
-/*
- * Data type conversion and manipulation
- *
- * Convert Buffer To String
- */
-
-Name(z048, 48)
-
-Name(p330, Package()
-{
-	Buffer(8) {0xff, 0xff, 0xff, 0xff, 0xff, 0xff, 0xff, 0xff},
-	Buffer(200) {
-		  1,  2,  3,  4,  5,  6,  7,  8,  9, 10, 11, 12, 13, 14, 15, 16,
-		 17, 18, 19, 20, 21, 22, 23, 24, 25, 26, 27, 28, 29, 30, 31, 32,
-		 33, 34, 35, 36, 37, 38, 39, 40, 41, 42, 43, 44, 45, 46, 47, 48,
-		 49, 50, 51, 52, 53, 54, 55, 56, 57, 58, 59, 60, 61, 62, 63, 64,
-		 65, 66, 67, 68, 69, 70, 71, 72, 73, 74, 75, 76, 77, 78, 79, 80,
-		 81, 82, 83, 84, 85, 86, 87, 88, 89, 90, 91, 92, 93, 94, 95, 96,
-		 97, 98, 99,100,101,102,103,104,105,106,107,108,109,110,111,112,
-		113,114,115,116,117,118,119,120,121,122,123,124,125,126,127,128,
-		129,130,131,132,133,134,135,136,137,138,139,140,141,142,143,144,
-		145,146,147,148,149,150,151,152,153,154,155,156,157,158,159,160,
-		161,162,163,164,165,166,167,168,169,170,171,172,173,174,175,176,
-		177,178,179,180,181,182,183,184,185,186,187,188,189,190,191,192,
-		193,194,195,196,197,198,199,200},
-	Buffer(8) {0xff, 0xff, 0xff, 0xff, 0xff, 0xff, 0xff, 0xff},
-	Buffer(128) {
-		  1,  2,  3,  4,  5,  6,  7,  8,  9, 10, 11, 12, 13, 14, 15, 16,
-		 17, 18, 19, 20, 21, 22, 23, 24, 25, 26, 27, 28, 29, 30, 31, 32,
-		 33, 34, 35, 36, 37, 38, 39, 40, 41, 42, 43, 44, 45, 46, 47, 48,
-		 49, 50, 51, 52, 53, 54, 55, 56, 57, 58, 59, 60, 61, 62, 63, 64,
-		 65, 66, 67, 68, 69, 70, 71, 72, 73, 74, 75, 76, 77, 78, 79, 80,
-		 81, 82, 83, 84, 85, 86, 87, 88, 89, 90, 91, 92, 93, 94, 95, 96,
-		 97, 98, 99,100,101,102,103,104,105,106,107,108,109,110,111,112,
-		113,114,115,116,117,118,119,120,121,122,123,124,125,126,127,128},
-	Buffer(8) {0xff, 0xff, 0xff, 0xff, 0xff, 0xff, 0xff, 0xff},
-	Buffer(16) {1,  2,  3,  4,  5,  6,  7,  8,  9, 10, 11, 12, 13, 14, 15, 16},
-	Buffer(8) {0xff, 0xff, 0xff, 0xff, 0xff, 0xff, 0xff, 0xff},
-	Buffer(8) {1,  2,  3,  4,  5,  6,  7,  8},
-	Buffer(8) {0xff, 0xff, 0xff, 0xff, 0xff, 0xff, 0xff, 0xff},
-	Buffer(4) {1,  2,  3,  4},
-	Buffer(8) {0xff, 0xff, 0xff, 0xff, 0xff, 0xff, 0xff, 0xff},
-	Buffer(1) {1},
-	Buffer(8) {0xff, 0xff, 0xff, 0xff, 0xff, 0xff, 0xff, 0xff},
-})
-
-Name(b330, Buffer(6) {200, 128, 16, 8, 4, 1})
-
-// Init buffer with the symbols 1-255
-Method(m303, 2)	// buf, len
-{
-	Store(0, Local0)
-	While (LLess(Local0, arg1)) {
-		Mod(Add(Local0, 1), 256, Local1)
-		Store(Local1, Index(arg0, Local0))
-		Increment(Local0)
-	}
-}
-
-// Verify the contents of result string
-Method(m305, 5)	// ts, string, len, err, case
-{
-	Store(0, Local0)
-	While (LLess(Local0, arg2)) {
-		Mod(Add(Local0, 1), 256, Local1)
-		if (LNotEqual(Derefof(Index(arg1, Local0)), Local1)) {
-			err(arg0, z048, __LINE__, 0, 0, Local0, arg4)
-		}
-		Increment(Local0)
-	}
-}
-
-// Verify type, length of the obtained string, call to m305
-Method(m307, 5)	// ts, string, len, ts, err, case
-{
-	if (LNotequal(ObjectType(arg1), 2)) {
-		err(arg0, z048, __LINE__, 0, 0, arg2, "Type")
-	} else {
-		if (LNotEqual(Sizeof(arg1), arg2)) {
-			err(arg0, z048, __LINE__, 0, 0, arg2, "Sizeof")
-		} else {
-			m305(arg0, arg1, arg2, arg3, arg4)
-		}
-	}
-}
-
-// Check the surrounding control buffers are safe
-Method(m309, 3)	// ts, indbuf, err
-{
-	// control buffer
-	Store(Derefof(Index(p330, arg1)), Local1)
-
-	Store(0, Local0)
-	While (LLess(Local0, 8)) {
-		if (LNotEqual(Derefof(Index(Local1, Local0)), 0xff)) {
-			err(arg0, z048, __LINE__, 0, 0, Local0, "buf8")
-		}
-		Increment(Local0)
-	}
-}
-
-// Check all positions of null character (0-200)
-Method(m30a, 1, Serialized)
-{
-	Name(LENS, Buffer() {200, 199, 129, 128, 127, 9, 8, 7, 1, 0})
-
-	Name(BUF0, Buffer(255){})
-
-	// Buffer (255 bytes) initialized with non-zero bytes
-
-	m303(BUF0, 255)
-
-	Store(0, Local1)
-
-	While (LLess(Local1, 10)) {
-
-		// Fill zero byte in position specified by LENS
-
-		Store(Derefof(Index(LENS, Local1)), Local0)
-		Store(Derefof(Index(BUF0, Local0)), Local5)
-		Store(0, Index(BUF0, Local0))
-
-		// The contents of buffer is not more changed in checkings below
-
-		// Checking for unspecified Length parameter
-
-		// Invoke ToString without Length
-
-		Store(ToString(BUF0), Local2)
-		m307(arg0, Local2, Local0, 1, "Omit")
-
-		// Invoke ToString with Ones
-
-		ToString(BUF0, Ones, Local2)
-		m307(arg0, Local2, Local0, 2, "Ones")
-
-		// Checking for particular values of Length parameter (0, 32, 64...)
-
-		Store(0, Local3) // Length
-		While (LLess(Local3, 401)) {
-
-			Store(Local0, Local4) // expected size
-			if (LLess(Local3, Local4)) {
-				Store(Local3, Local4)
-			}
-
-			ToString(BUF0, Local3, Local2)
-			m307(arg0, Local2, Local4, 3, "Size")
-
-			Add(Local3, 32, Local3)
-		}
-
-		// Restore position specified by LENS
-
-		Store(Local5, Index(BUF0, Local0))
-		Increment(Local1)
-	}
-}
-
-Method(m333, 1)
-{
-	Store(0, Local0)
-	Store(ToString(DerefOf(Arg0)), Local0)
-	Store(Local0, Debug)
-}
-
-// Check Buffer->Length effective condition.
-// Don't put null characters. Check the surrounding
-// control buffers are safe.
-Method(m30b, 1, Serialized)
-{
-	Name(Loc8, 0)
-
-	Store(0, Local5)	// index of control buffer 1
-
-	While (LLess(Loc8, 6)) {
-
-		// Choose the buffer from package
-
-		Store(Derefof(Index(b330, Loc8)), Local0)	// length
-		Multiply(Loc8, 2, Local1)			// index of a buffer
-		Add(Local1, 1, Local1)
-		Add(Local1, 1, Local6)				// index of control buffer 2
-		Store(Index(p330, Local1), Local4)		// ref to test buffer
-
-		// Checking for unspecified Length parameter
-
-		// Invoke ToString without Length
-
-		Store(ToString(Derefof(Local4)), Local2)
-		m307(arg0, Local2, Local0, 4, "Omit")
-		m309(arg0, Local5, 4)	// check control buffers
-		m309(arg0, Local6, 4)
-
-		// Invoke ToString with Ones
-
-		ToString(Derefof(Local4), Ones, Local2)
-		m307(arg0, Local2, Local0, 5, "Ones")
-		m309(arg0, Local5, 5)	// check control buffers
-		m309(arg0, Local6, 5)
-
-		// Checking for particular values of Length parameter
-		// exceeding (by 0, 1, 2, 3, ... 8) the actual lengths of Buffer
-
-		Add(Local0, 9, Local7) // Max. Length
-
-		Store(Local0, Local3) // Length
-		While (LLess(Local3, Local7)) {
-
-			ToString(Derefof(Local4), Local3, Local2)
-			m307(arg0, Local2, Local0, 6, "Size")
-
-			m309(arg0, Local5, 6)	// check control buffers
-			m309(arg0, Local6, 6)
-
-			Increment(Local3)
-		}
-		Store(Local6, Local5)
-
-		Increment(Loc8)
-	}
-}
-
-// Check zero length buffer, and, in passing,
-// dynamically allocated buffers.
-Method(m30c, 1, Serialized)
-{
-	Name(LENS, Buffer() {200, 199, 1, 0})
-
-	Store(0, Local1)
-	While (LLess(Local1, 4)) {
-
-
-		// Allocate buffer dynamically and initialize it,
-		// don't put null characters.
-
-		Store(Derefof(Index(LENS, Local1)), Local0)
-		Store(Buffer(Local0){}, Local4)
-		m303(Local4, Local0)
-
-		// Checking for unspecified Length parameter
-
-		// Invoke ToString without Length
-
-		Store(ToString(Local4), Local2)
-		m307(arg0, Local2, Local0, 7, "Omit")
-
-		// Invoke ToString with Ones
-
-		ToString(Local4, Ones, Local2)
-		m307(arg0, Local2, Local0, 8, "Ones")
-
-
-		// Allocate buffer of +1 size and put null characters
-		// into the last byte.
-
-		Store(Buffer(Add(Local0, 1)){}, Local4)
-		m303(Local4, Local0)
-		Store(0, Index(Local4, Local0))
-
-		// Invoke ToString without Length
-
-		Store(ToString(Local4), Local2)
-		m307(arg0, Local2, Local0, 9, "Omit")
-
-		// Invoke ToString with Ones
-
-		ToString(Local4, Ones, Local2)
-		m307(arg0, Local2, Local0, 10, "Ones")
-
-		Increment(Local1)
-	}
-}
-
-// Run-method
-Method(TOS0,, Serialized)
-{
-	Name(ts, "TOS0")
-
-	Store("TEST: TOS0, Convert Buffer To String", Debug)
-
-	m30a(ts)
-	m30b(ts)
-	m30c(ts)
-}
+    /*
+     * Some or all of this work - Copyright (c) 2006 - 2017, Intel Corp.
+     * All rights reserved.
+     *
+     * Redistribution and use in source and binary forms, with or without modification,
+     * are permitted provided that the following conditions are met:
+     *
+     * Redistributions of source code must retain the above copyright notice,
+     * this list of conditions and the following disclaimer.
+     * Redistributions in binary form must reproduce the above copyright notice,
+     * this list of conditions and the following disclaimer in the documentation
+     * and/or other materials provided with the distribution.
+     * Neither the name of Intel Corporation nor the names of its contributors
+     * may be used to endorse or promote products derived from this software
+     * without specific prior written permission.
+     *
+     * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS"
+     * AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE
+     * IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE
+     * ARE DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT OWNER OR CONTRIBUTORS BE
+     * LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL
+     * DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES;
+     * LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY
+     * THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING
+     * NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE,
+     * EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
+     */
+    /*
+     * Data type conversion and manipulation
+     *
+     * Convert Buffer To String
+     */
+    Name (Z048, 0x30)
+    Name (P330, Package (0x0D)
+    {
+        Buffer (0x08)
+        {
+             0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF   // ........
+        }, 
+
+        Buffer (0xC8)
+        {
+            /* 0000 */  0x01, 0x02, 0x03, 0x04, 0x05, 0x06, 0x07, 0x08,  // ........
+            /* 0008 */  0x09, 0x0A, 0x0B, 0x0C, 0x0D, 0x0E, 0x0F, 0x10,  // ........
+            /* 0010 */  0x11, 0x12, 0x13, 0x14, 0x15, 0x16, 0x17, 0x18,  // ........
+            /* 0018 */  0x19, 0x1A, 0x1B, 0x1C, 0x1D, 0x1E, 0x1F, 0x20,  // ....... 
+            /* 0020 */  0x21, 0x22, 0x23, 0x24, 0x25, 0x26, 0x27, 0x28,  // !"#$%&'(
+            /* 0028 */  0x29, 0x2A, 0x2B, 0x2C, 0x2D, 0x2E, 0x2F, 0x30,  // )*+,-./0
+            /* 0030 */  0x31, 0x32, 0x33, 0x34, 0x35, 0x36, 0x37, 0x38,  // 12345678
+            /* 0038 */  0x39, 0x3A, 0x3B, 0x3C, 0x3D, 0x3E, 0x3F, 0x40,  // 9:;<=>?@
+            /* 0040 */  0x41, 0x42, 0x43, 0x44, 0x45, 0x46, 0x47, 0x48,  // ABCDEFGH
+            /* 0048 */  0x49, 0x4A, 0x4B, 0x4C, 0x4D, 0x4E, 0x4F, 0x50,  // IJKLMNOP
+            /* 0050 */  0x51, 0x52, 0x53, 0x54, 0x55, 0x56, 0x57, 0x58,  // QRSTUVWX
+            /* 0058 */  0x59, 0x5A, 0x5B, 0x5C, 0x5D, 0x5E, 0x5F, 0x60,  // YZ[\]^_`
+            /* 0060 */  0x61, 0x62, 0x63, 0x64, 0x65, 0x66, 0x67, 0x68,  // abcdefgh
+            /* 0068 */  0x69, 0x6A, 0x6B, 0x6C, 0x6D, 0x6E, 0x6F, 0x70,  // ijklmnop
+            /* 0070 */  0x71, 0x72, 0x73, 0x74, 0x75, 0x76, 0x77, 0x78,  // qrstuvwx
+            /* 0078 */  0x79, 0x7A, 0x7B, 0x7C, 0x7D, 0x7E, 0x7F, 0x80,  // yz{|}~..
+            /* 0080 */  0x81, 0x82, 0x83, 0x84, 0x85, 0x86, 0x87, 0x88,  // ........
+            /* 0088 */  0x89, 0x8A, 0x8B, 0x8C, 0x8D, 0x8E, 0x8F, 0x90,  // ........
+            /* 0090 */  0x91, 0x92, 0x93, 0x94, 0x95, 0x96, 0x97, 0x98,  // ........
+            /* 0098 */  0x99, 0x9A, 0x9B, 0x9C, 0x9D, 0x9E, 0x9F, 0xA0,  // ........
+            /* 00A0 */  0xA1, 0xA2, 0xA3, 0xA4, 0xA5, 0xA6, 0xA7, 0xA8,  // ........
+            /* 00A8 */  0xA9, 0xAA, 0xAB, 0xAC, 0xAD, 0xAE, 0xAF, 0xB0,  // ........
+            /* 00B0 */  0xB1, 0xB2, 0xB3, 0xB4, 0xB5, 0xB6, 0xB7, 0xB8,  // ........
+            /* 00B8 */  0xB9, 0xBA, 0xBB, 0xBC, 0xBD, 0xBE, 0xBF, 0xC0,  // ........
+            /* 00C0 */  0xC1, 0xC2, 0xC3, 0xC4, 0xC5, 0xC6, 0xC7, 0xC8   // ........
+        }, 
+
+        Buffer (0x08)
+        {
+             0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF   // ........
+        }, 
+
+        Buffer (0x80)
+        {
+            /* 0000 */  0x01, 0x02, 0x03, 0x04, 0x05, 0x06, 0x07, 0x08,  // ........
+            /* 0008 */  0x09, 0x0A, 0x0B, 0x0C, 0x0D, 0x0E, 0x0F, 0x10,  // ........
+            /* 0010 */  0x11, 0x12, 0x13, 0x14, 0x15, 0x16, 0x17, 0x18,  // ........
+            /* 0018 */  0x19, 0x1A, 0x1B, 0x1C, 0x1D, 0x1E, 0x1F, 0x20,  // ....... 
+            /* 0020 */  0x21, 0x22, 0x23, 0x24, 0x25, 0x26, 0x27, 0x28,  // !"#$%&'(
+            /* 0028 */  0x29, 0x2A, 0x2B, 0x2C, 0x2D, 0x2E, 0x2F, 0x30,  // )*+,-./0
+            /* 0030 */  0x31, 0x32, 0x33, 0x34, 0x35, 0x36, 0x37, 0x38,  // 12345678
+            /* 0038 */  0x39, 0x3A, 0x3B, 0x3C, 0x3D, 0x3E, 0x3F, 0x40,  // 9:;<=>?@
+            /* 0040 */  0x41, 0x42, 0x43, 0x44, 0x45, 0x46, 0x47, 0x48,  // ABCDEFGH
+            /* 0048 */  0x49, 0x4A, 0x4B, 0x4C, 0x4D, 0x4E, 0x4F, 0x50,  // IJKLMNOP
+            /* 0050 */  0x51, 0x52, 0x53, 0x54, 0x55, 0x56, 0x57, 0x58,  // QRSTUVWX
+            /* 0058 */  0x59, 0x5A, 0x5B, 0x5C, 0x5D, 0x5E, 0x5F, 0x60,  // YZ[\]^_`
+            /* 0060 */  0x61, 0x62, 0x63, 0x64, 0x65, 0x66, 0x67, 0x68,  // abcdefgh
+            /* 0068 */  0x69, 0x6A, 0x6B, 0x6C, 0x6D, 0x6E, 0x6F, 0x70,  // ijklmnop
+            /* 0070 */  0x71, 0x72, 0x73, 0x74, 0x75, 0x76, 0x77, 0x78,  // qrstuvwx
+            /* 0078 */  0x79, 0x7A, 0x7B, 0x7C, 0x7D, 0x7E, 0x7F, 0x80   // yz{|}~..
+        }, 
+
+        Buffer (0x08)
+        {
+             0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF   // ........
+        }, 
+
+        Buffer (0x10)
+        {
+            /* 0000 */  0x01, 0x02, 0x03, 0x04, 0x05, 0x06, 0x07, 0x08,  // ........
+            /* 0008 */  0x09, 0x0A, 0x0B, 0x0C, 0x0D, 0x0E, 0x0F, 0x10   // ........
+        }, 
+
+        Buffer (0x08)
+        {
+             0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF   // ........
+        }, 
+
+        Buffer (0x08)
+        {
+             0x01, 0x02, 0x03, 0x04, 0x05, 0x06, 0x07, 0x08   // ........
+        }, 
+
+        Buffer (0x08)
+        {
+             0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF   // ........
+        }, 
+
+        Buffer (0x04)
+        {
+             0x01, 0x02, 0x03, 0x04                           // ....
+        }, 
+
+        Buffer (0x08)
+        {
+             0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF   // ........
+        }, 
+
+        Buffer (0x01)
+        {
+             0x01                                             // .
+        }, 
+
+        Buffer (0x08)
+        {
+             0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF   // ........
+        }
+    })
+    Name (B330, Buffer (0x06)
+    {
+         0xC8, 0x80, 0x10, 0x08, 0x04, 0x01               // ......
+    })
+    /* Init buffer with the symbols 1-255 */
+
+    Method (M303, 2, NotSerialized)
+    {
+        Local0 = 0x00
+        While ((Local0 < Arg1))
+        {
+            Local1 = ((Local0 + 0x01) % 0x0100)
+            Arg0 [Local0] = Local1
+            Local0++
+        }
+    }
+
+    /* Verify the contents of result string */
+
+    Method (M305, 5, NotSerialized)
+    {
+        Local0 = 0x00
+        While ((Local0 < Arg2))
+        {
+            Local1 = ((Local0 + 0x01) % 0x0100)
+            If ((DerefOf (Arg1 [Local0]) != Local1))
+            {
+                ERR (Arg0, Z048, 0x5F, 0x00, 0x00, Local0, Arg4)
+            }
+
+            Local0++
+        }
+    }
+
+    /* Verify type, length of the obtained string, call to m305 */
+
+    Method (M307, 5, NotSerialized)
+    {
+        If ((ObjectType (Arg1) != 0x02))
+        {
+            ERR (Arg0, Z048, 0x69, 0x00, 0x00, Arg2, "Type")
+        }
+        ElseIf ((SizeOf (Arg1) != Arg2))
+        {
+            ERR (Arg0, Z048, 0x6C, 0x00, 0x00, Arg2, "Sizeof")
+        }
+        Else
+        {
+            M305 (Arg0, Arg1, Arg2, Arg3, Arg4)
+        }
+    }
+
+    /* Check the surrounding control buffers are safe */
+
+    Method (M309, 3, NotSerialized)
+    {
+        /* control buffer */
+
+        Local1 = DerefOf (P330 [Arg1])
+        Local0 = 0x00
+        While ((Local0 < 0x08))
+        {
+            If ((DerefOf (Local1 [Local0]) != 0xFF))
+            {
+                ERR (Arg0, Z048, 0x7C, 0x00, 0x00, Local0, "buf8")
+            }
+
+            Local0++
+        }
+    }
+
+    /* Check all positions of null character (0-200) */
+
+    Method (M30A, 1, Serialized)
+    {
+        Name (LENS, Buffer (0x0A)
+        {
+            /* 0000 */  0xC8, 0xC7, 0x81, 0x80, 0x7F, 0x09, 0x08, 0x07,  // ........
+            /* 0008 */  0x01, 0x00                                       // ..
+        })
+        Name (BUF0, Buffer (0xFF){})
+        /* Buffer (255 bytes) initialized with non-zero bytes */
+
+        M303 (BUF0, 0xFF)
+        Local1 = 0x00
+        While ((Local1 < 0x0A))
+        {
+            /* Fill zero byte in position specified by LENS */
+
+            Local0 = DerefOf (LENS [Local1])
+            Local5 = DerefOf (BUF0 [Local0])
+            BUF0 [Local0] = 0x00
+            /* The contents of buffer is not more changed in checkings below */
+            /* Checking for unspecified Length parameter */
+            /* Invoke ToString without Length */
+            Local2 = ToString (BUF0, Ones)
+            M307 (Arg0, Local2, Local0, 0x01, "Omit")
+            /* Invoke ToString with Ones */
+
+            ToString (BUF0, Ones, Local2)
+            M307 (Arg0, Local2, Local0, 0x02, "Ones")
+            /* Checking for particular values of Length parameter (0, 32, 64...) */
+
+            Local3 = 0x00 /* Length */
+            While ((Local3 < 0x0191))
+            {
+                Local4 = Local0 /* expected size */
+                If ((Local3 < Local4))
+                {
+                    Local4 = Local3
+                }
+
+                ToString (BUF0, Local3, Local2)
+                M307 (Arg0, Local2, Local4, 0x03, "Size")
+                Local3 += 0x20
+            }
+
+            /* Restore position specified by LENS */
+
+            BUF0 [Local0] = Local5
+            Local1++
+        }
+    }
+
+    Method (M333, 1, NotSerialized)
+    {
+        Local0 = 0x00
+        Local0 = ToString (DerefOf (Arg0), Ones)
+        Debug = Local0
+    }
+
+    /* Check Buffer->Length effective condition. */
+    /* Don't put null characters. Check the surrounding */
+    /* control buffers are safe. */
+    Method (M30B, 1, Serialized)
+    {
+        Name (LOC8, 0x00)
+        Local5 = 0x00    /* index of control buffer 1 */
+        While ((LOC8 < 0x06))
+        {
+            /* Choose the buffer from package */
+
+            Local0 = DerefOf (B330 [LOC8])   /* length */
+            Local1 = (LOC8 * 0x02)           /* index of a buffer */
+            Local1 += 0x01
+            Local6 = (Local1 + 0x01)              /* index of control buffer 2 */
+            Store (P330 [Local1], Local4)      /* ref to test buffer */
+            /* Checking for unspecified Length parameter */
+            /* Invoke ToString without Length */
+            Local2 = ToString (DerefOf (Local4), Ones)
+            M307 (Arg0, Local2, Local0, 0x04, "Omit")
+            M309 (Arg0, Local5, 0x04)   /* check control buffers */
+            M309 (Arg0, Local6, 0x04)
+            /* Invoke ToString with Ones */
+
+            ToString (DerefOf (Local4), Ones, Local2)
+            M307 (Arg0, Local2, Local0, 0x05, "Ones")
+            M309 (Arg0, Local5, 0x05)   /* check control buffers */
+            M309 (Arg0, Local6, 0x05)
+            /* Checking for particular values of Length parameter */
+            /* exceeding (by 0, 1, 2, 3, ... 8) the actual lengths of Buffer */
+            Local7 = (Local0 + 0x09) /* Max. Length */
+            Local3 = Local0 /* Length */
+            While ((Local3 < Local7))
+            {
+                ToString (DerefOf (Local4), Local3, Local2)
+                M307 (Arg0, Local2, Local0, 0x06, "Size")
+                M309 (Arg0, Local5, 0x06)   /* check control buffers */
+                M309 (Arg0, Local6, 0x06)
+                Local3++
+            }
+
+            Local5 = Local6
+            LOC8++
+        }
+    }
+
+    /* Check zero length buffer, and, in passing, */
+    /* dynamically allocated buffers. */
+    Method (M30C, 1, Serialized)
+    {
+        Name (LENS, Buffer (0x04)
+        {
+             0xC8, 0xC7, 0x01, 0x00                           // ....
+        })
+        Local1 = 0x00
+        While ((Local1 < 0x04))
+        {
+            /* Allocate buffer dynamically and initialize it, */
+            /* don't put null characters. */
+            Local0 = DerefOf (LENS [Local1])
+            Local4 = Buffer (Local0){}
+            M303 (Local4, Local0)
+            /* Checking for unspecified Length parameter */
+            /* Invoke ToString without Length */
+            Local2 = ToString (Local4, Ones)
+            M307 (Arg0, Local2, Local0, 0x07, "Omit")
+            /* Invoke ToString with Ones */
+
+            ToString (Local4, Ones, Local2)
+            M307 (Arg0, Local2, Local0, 0x08, "Ones")
+            /* Allocate buffer of +1 size and put null characters */
+            /* into the last byte. */
+            Local4 = Buffer ((Local0 + 0x01)){}
+            M303 (Local4, Local0)
+            Local4 [Local0] = 0x00
+            /* Invoke ToString without Length */
+
+            Local2 = ToString (Local4, Ones)
+            M307 (Arg0, Local2, Local0, 0x09, "Omit")
+            /* Invoke ToString with Ones */
+
+            ToString (Local4, Ones, Local2)
+            M307 (Arg0, Local2, Local0, 0x0A, "Ones")
+            Local1++
+        }
+    }
+
+    /* Run-method */
+
+    Method (TOS0, 0, Serialized)
+    {
+        Name (TS, "TOS0")
+        Debug = "TEST: TOS0, Convert Buffer To String"
+        M30A (TS)
+        M30B (TS)
+        M30C (TS)
+    }
 

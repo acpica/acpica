@@ -1,377 +1,407 @@
-/*
- * Some or all of this work - Copyright (c) 2006 - 2017, Intel Corp.
- * All rights reserved.
- *
- * Redistribution and use in source and binary forms, with or without modification,
- * are permitted provided that the following conditions are met:
- *
- * Redistributions of source code must retain the above copyright notice,
- * this list of conditions and the following disclaimer.
- * Redistributions in binary form must reproduce the above copyright notice,
- * this list of conditions and the following disclaimer in the documentation
- * and/or other materials provided with the distribution.
- * Neither the name of Intel Corporation nor the names of its contributors
- * may be used to endorse or promote products derived from this software
- * without specific prior written permission.
- *
- * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS"
- * AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE
- * IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE
- * ARE DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT OWNER OR CONTRIBUTORS BE
- * LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL
- * DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES;
- * LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY
- * THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING
- * NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE,
- * EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
- */
+    /*
+     * Some or all of this work - Copyright (c) 2006 - 2017, Intel Corp.
+     * All rights reserved.
+     *
+     * Redistribution and use in source and binary forms, with or without modification,
+     * are permitted provided that the following conditions are met:
+     *
+     * Redistributions of source code must retain the above copyright notice,
+     * this list of conditions and the following disclaimer.
+     * Redistributions in binary form must reproduce the above copyright notice,
+     * this list of conditions and the following disclaimer in the documentation
+     * and/or other materials provided with the distribution.
+     * Neither the name of Intel Corporation nor the names of its contributors
+     * may be used to endorse or promote products derived from this software
+     * without specific prior written permission.
+     *
+     * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS"
+     * AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE
+     * IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE
+     * ARE DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT OWNER OR CONTRIBUTORS BE
+     * LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL
+     * DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES;
+     * LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY
+     * THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING
+     * NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE,
+     * EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
+     */
+    /*
+     * Common use Methods
+     */
+    /*
+     * Verification of Package
+     *
+     * arg0 - Package
+     * arg1 - size of Package
+     * arg2 - size of pre-initialized area
+     * arg3 - index of area to be written
+     * arg4 - size of area to be written
+     * arg5 - maximal number of pre-initialized elements to be verified
+     * arg6 - maximal number of written elements to be verified
+     */
+    Method (MD6A, 7, Serialized)
+    {
+        Name (LPN0, 0x00)
+        Name (LPC0, 0x00)
+        /* Writing */
 
-/*
- * Common use Methods
- */
+        If (Arg4)
+        {
+            LPN0 = Arg4
+            LPC0 = Arg3
+            While (LPN0)
+            {
+                TRC0 (Arg0, LPC0, LPC0)
+                Arg0 [LPC0] = LPC0 /* \MD6A.LPC0 */
+                LPN0--
+                LPC0++
+            }
+        }
 
-/*
- * Verification of Package
- *
- * arg0 - Package
- * arg1 - size of Package
- * arg2 - size of pre-initialized area
- * arg3 - index of area to be written
- * arg4 - size of area to be written
- * arg5 - maximal number of pre-initialized elements to be verified
- * arg6 - maximal number of written elements to be verified
- */
-Method(md6a, 7, Serialized)
-{
-	Name(lpN0, 0)
-	Name(lpC0, 0)
+        /* Verifying pre-initialized area */
 
+        If ((Arg2 && Arg5))
+        {
+            If ((Arg2 < Arg5))
+            {
+                Arg5 = Arg2
+            }
 
-	// Writing
+            LPN0 = Arg5
+            LPC0 = 0x00
+            While (LPN0)
+            {
+                Local0 = DerefOf (Arg0 [LPC0])
+                TRC1 (Arg0, LPC0, Local0)
+                If ((Local0 != LPC0))
+                {
+                    ERR ("", ZFFF, 0x4D, 0x00, 0x00, Local0, LPC0)
+                }
 
-	if (arg4) {
-		Store(arg4, lpN0)
-		Store(arg3, lpC0)
+                LPN0--
+                LPC0++
+            }
+        }
 
-		While (lpN0) {
-			TRC0(arg0, lpC0, lpC0)
-			Store(lpC0, Index(arg0, lpC0))
-			Decrement(lpN0)
-			Increment(lpC0)
-		}
-	}
+        If (Arg2)
+        {
+            /* First pre-initialized element */
 
-	// Verifying pre-initialized area
+            Local0 = DerefOf (Arg0 [0x00])
+            TRC1 (Arg0, 0x00, Local0)
+            If ((Local0 != 0x00))
+            {
+                ERR ("", ZFFF, 0x59, 0x00, 0x00, Local0, 0x00)
+            }
 
-	if (LAnd(arg2, arg5)) {
-		if (LLess(arg2, arg5)) {
-			Store(arg2, arg5)
-		}
-		Store(arg5, lpN0)
-		Store(0, lpC0)
+            /* Last pre-initialized element */
 
-		While (lpN0) {
-			Store(DerefOf(Index(arg0, lpC0)), Local0)
-			TRC1(arg0, lpC0, Local0)
-			if (LNotEqual(Local0, lpC0)) {
-				err("", zFFF, __LINE__, 0, 0, Local0, lpC0)
-			}
-			Decrement(lpN0)
-			Increment(lpC0)
-		}
-	}
+            Local0 = (Arg2 - 0x01)
+            Local1 = DerefOf (Arg0 [Local0])
+            TRC1 (Arg0, Local0, Local1)
+            If ((Local1 != Local0))
+            {
+                ERR ("", ZFFF, 0x61, 0x00, 0x00, Local1, Local0)
+            }
 
-	if (arg2) {
-		// First pre-initialized element
-		Store(DerefOf(Index(arg0, 0)), Local0)
-		TRC1(arg0, 0, Local0)
-		if (LNotEqual(Local0, 0)) {
-			err("", zFFF, __LINE__, 0, 0, Local0, 0)
-		}
+            /* Middle pre-initialized element */
 
-		// Last pre-initialized element
-		Subtract(arg2, 1, Local0)
-		Store(DerefOf(Index(arg0, Local0)), Local1)
-		TRC1(arg0, Local0, Local1)
-		if (LNotEqual(Local1, Local0)) {
-			err("", zFFF, __LINE__, 0, 0, Local1, Local0)
-		}
+            Divide (Arg2, 0x02, Local1, Local0)
+            Local1 = DerefOf (Arg0 [Local0])
+            TRC1 (Arg0, Local0, Local1)
+            If ((Local1 != Local0))
+            {
+                ERR ("", ZFFF, 0x69, 0x00, 0x00, Local1, Local0)
+            }
+        }
 
-		// Middle pre-initialized element
-		Divide(arg2, 2, Local1, Local0)
-		Store(DerefOf(Index(arg0, Local0)), Local1)
-		TRC1(arg0, Local0, Local1)
-		if (LNotEqual(Local1, Local0)) {
-			err("", zFFF, __LINE__, 0, 0, Local1, Local0)
-		}
-	}
+        /* Verifying written area */
 
-	// Verifying written area
+        If ((Arg4 && Arg6))
+        {
+            If ((Arg4 < Arg6))
+            {
+                Arg6 = Arg4
+            }
 
-	if (LAnd(arg4, arg6)) {
-		if (LLess(arg4, arg6)) {
-			Store(arg4, arg6)
-		}
-		Store(arg6, lpN0)
-		Store(arg3, lpC0)
+            LPN0 = Arg6
+            LPC0 = Arg3
+            While (LPN0)
+            {
+                Local0 = DerefOf (Arg0 [LPC0])
+                TRC1 (Arg0, LPC0, Local0)
+                If ((Local0 != LPC0))
+                {
+                    ERR ("", ZFFF, 0x7A, 0x00, 0x00, Local0, LPC0)
+                }
 
-		While (lpN0) {
-			Store(DerefOf(Index(arg0, lpC0)), Local0)
-			TRC1(arg0, lpC0, Local0)
-			if (LNotEqual(Local0, lpC0)) {
-				err("", zFFF, __LINE__, 0, 0, Local0, lpC0)
-			}
-			Decrement(lpN0)
-			Increment(lpC0)
-		}
-	}
+                LPN0--
+                LPC0++
+            }
+        }
 
-	if (arg4) {
-		// First written element
-		Store(DerefOf(Index(arg0, arg3)), Local0)
-		TRC1(arg0, arg3, Local0)
-		if (LNotEqual(Local0, arg3)) {
-			err("", zFFF, __LINE__, 0, 0, Local0, arg3)
-		}
+        If (Arg4)
+        {
+            /* First written element */
 
-		// Last written element
-		Add(arg3, arg4, Local0)
-		Decrement(Local0)
-		Store(DerefOf(Index(arg0, Local0)), Local1)
-		TRC1(arg0, Local0, Local1)
-		if (LNotEqual(Local1, Local0)) {
-			err("", zFFF, __LINE__, 0, 0, Local1, Local0)
-		}
+            Local0 = DerefOf (Arg0 [Arg3])
+            TRC1 (Arg0, Arg3, Local0)
+            If ((Local0 != Arg3))
+            {
+                ERR ("", ZFFF, 0x86, 0x00, 0x00, Local0, Arg3)
+            }
 
-		// Middle written element
-		Divide(arg4, 2, Local0, Local1)
-		Add(arg3, Local1, Local0)
-		Store(DerefOf(Index(arg0, Local0)), Local1)
-		TRC1(arg0, Local0, Local1)
-		if (LNotEqual(Local1, Local0)) {
-			err("", zFFF, __LINE__, 0, 0, Local1, Local0)
-		}
-	}
+            /* Last written element */
 
-	// Check exception on access to the uninitialized element
+            Local0 = (Arg3 + Arg4)
+            Local0--
+            Local1 = DerefOf (Arg0 [Local0])
+            TRC1 (Arg0, Local0, Local1)
+            If ((Local1 != Local0))
+            {
+                ERR ("", ZFFF, 0x8F, 0x00, 0x00, Local1, Local0)
+            }
 
-	if (LLess(arg2, arg1)) {
-		if (arg4) {
-			if (LGreater(arg3, arg2)) {
+            /* Middle written element */
 
-				// Just after pre-initialized area
+            Divide (Arg4, 0x02, Local0, Local1)
+            Local0 = (Arg3 + Local1)
+            Local1 = DerefOf (Arg0 [Local0])
+            TRC1 (Arg0, Local0, Local1)
+            If ((Local1 != Local0))
+            {
+                ERR ("", ZFFF, 0x98, 0x00, 0x00, Local1, Local0)
+            }
+        }
 
-				TRC1(arg0, arg2, 0xf0f0f0f0)
-				Store(Index(arg0, arg2), Local0)
-				CH03("", 0, 0x100, __LINE__, 0)
-				Store(DerefOf(Local0), Local1)
-				CH04("", 1, 51, 0, __LINE__, 0, 0) // AE_AML_UNINITIALIZED_ELEMENT
+        /* Check exception on access to the uninitialized element */
 
-				// Just before written area
+        If ((Arg2 < Arg1))
+        {
+            If (Arg4)
+            {
+                If ((Arg3 > Arg2))
+                {
+                    /* Just after pre-initialized area */
 
-				Subtract(arg3, 1, Local1)
-				TRC1(arg0, Local1, 0xf0f0f0f0)
-				Store(Index(arg0, Local1), Local0)
-				CH03("", 0, 0x102, __LINE__, 0)
-				Store(DerefOf(Local0), Local1)
-				CH04("", 1, 51, 0, __LINE__, 0, 0) // AE_AML_UNINITIALIZED_ELEMENT
-			}
+                    TRC1 (Arg0, Arg2, 0xF0F0F0F0)
+                    Store (Arg0 [Arg2], Local0)
+                    CH03 ("", 0x00, 0x0100, 0xA6, 0x00)
+                    Local1 = DerefOf (Local0)
+                    CH04 ("", 0x01, 0x33, 0x00, 0xA8, 0x00, 0x00) /* AE_AML_UNINITIALIZED_ELEMENT */
+                    /* Just before written area */
 
-			// Just after pre-initialized and written areas
+                    Local1 = (Arg3 - 0x01)
+                    TRC1 (Arg0, Local1, 0xF0F0F0F0)
+                    Store (Arg0 [Local1], Local0)
+                    CH03 ("", 0x00, 0x0102, 0xAF, 0x00)
+                    Local1 = DerefOf (Local0)
+                    CH04 ("", 0x01, 0x33, 0x00, 0xB1, 0x00, 0x00) /* AE_AML_UNINITIALIZED_ELEMENT */
+                }
 
-			Add(arg3, arg4, Local7)
-			if (LGreater(arg2, Local7)) {
-				Store(arg2, Local7)
-			}
+                /* Just after pre-initialized and written areas */
 
-			if (LLess(Local7, arg1)) {
-				TRC1(arg0, Local7, 0xf0f0f0f0)
-				Store(Index(arg0, Local7), Local0)
-				CH03("", 0, 0x104, __LINE__, 0)
-				Store(DerefOf(Local0), Local1)
-				CH04("", 1, 51, 0, __LINE__, 0, 0) // AE_AML_UNINITIALIZED_ELEMENT
+                Local7 = (Arg3 + Arg4)
+                If ((Arg2 > Local7))
+                {
+                    Local7 = Arg2
+                }
 
-				// Last element of Package
+                If ((Local7 < Arg1))
+                {
+                    TRC1 (Arg0, Local7, 0xF0F0F0F0)
+                    Store (Arg0 [Local7], Local0)
+                    CH03 ("", 0x00, 0x0104, 0xBE, 0x00)
+                    Local1 = DerefOf (Local0)
+                    CH04 ("", 0x01, 0x33, 0x00, 0xC0, 0x00, 0x00) /* AE_AML_UNINITIALIZED_ELEMENT */
+                    /* Last element of Package */
 
-				Subtract(arg1, 1, Local1)
-				TRC1(arg0, Local1, 0xf0f0f0f0)
-				Store(Index(arg0, Local1), Local0)
-				CH03("", 0, 0x106, __LINE__, 0)
-				Store(DerefOf(Local0), Local1)
-				CH04("", 1, 51, 0, __LINE__, 0, 0) // AE_AML_UNINITIALIZED_ELEMENT
-			}
-		} else {
-			// Just after pre-initialized area
+                    Local1 = (Arg1 - 0x01)
+                    TRC1 (Arg0, Local1, 0xF0F0F0F0)
+                    Store (Arg0 [Local1], Local0)
+                    CH03 ("", 0x00, 0x0106, 0xC7, 0x00)
+                    Local1 = DerefOf (Local0)
+                    CH04 ("", 0x01, 0x33, 0x00, 0xC9, 0x00, 0x00) /* AE_AML_UNINITIALIZED_ELEMENT */
+                }
+            }
+            Else
+            {
+                /* Just after pre-initialized area */
 
-			TRC1(arg0, arg2, 0xf0f0f0f0)
-			Store(Index(arg0, arg2), Local0)
-			CH03("", 0, 0x108, __LINE__, 0)
-			Store(DerefOf(Local0), Local1)
-			CH04("", 1, 51, 0, __LINE__, 0, 0) // AE_AML_UNINITIALIZED_ELEMENT
+                TRC1 (Arg0, Arg2, 0xF0F0F0F0)
+                Store (Arg0 [Arg2], Local0)
+                CH03 ("", 0x00, 0x0108, 0xD0, 0x00)
+                Local1 = DerefOf (Local0)
+                CH04 ("", 0x01, 0x33, 0x00, 0xD2, 0x00, 0x00) /* AE_AML_UNINITIALIZED_ELEMENT */
+                /* Last element of Package */
 
-			// Last element of Package
+                Local1 = (Arg1 - 0x01)
+                TRC1 (Arg0, Local1, 0xF0F0F0F0)
+                Store (Arg0 [Local1], Local0)
+                CH03 ("", 0x00, 0x010A, 0xD9, 0x00)
+                Local1 = DerefOf (Local0)
+                CH04 ("", 0x01, 0x33, 0x00, 0xDB, 0x00, 0x00) /* AE_AML_UNINITIALIZED_ELEMENT */
+            }
+        }
 
-			Subtract(arg1, 1, Local1)
-			TRC1(arg0, Local1, 0xf0f0f0f0)
-			Store(Index(arg0, Local1), Local0)
-			CH03("", 0, 0x10a, __LINE__, 0)
-			Store(DerefOf(Local0), Local1)
-			CH04("", 1, 51, 0, __LINE__, 0, 0) // AE_AML_UNINITIALIZED_ELEMENT
-		}
-	}
+        /* Check exception on out of Package access */
 
-	// Check exception on out of Package access
+        TRC1 (Arg0, Arg1, 0xF0F0F0F0)
+        CH03 ("", 0x00, 0x010C, 0xE2, 0x00)
+        Local0 = Arg0 [Arg1]
+        CH04 ("", 0x00, 0x37, 0x00, 0xE4, 0x00, 0x00) /* AE_AML_PACKAGE_LIMIT */
+        Local7 = (Arg1 + 0x01)
+        If ((Local7 >= Arg1))
+        {
+            TRC1 (Arg0, Local7, 0xF0F0F0F0)
+            CH03 ("", 0x00, 0x010E, 0xE9, 0x00)
+            Local0 = Arg0 [Local7]
+            CH04 ("", 0x00, 0x37, 0x00, 0xEB, 0x00, 0x00) /* AE_AML_PACKAGE_LIMIT */
+        }
 
-	TRC1(arg0, arg1, 0xf0f0f0f0)
-	CH03("", 0, 0x10c, __LINE__, 0)
-	Index(arg0, arg1, Local0)
-	CH04("", 0, 55, 0, __LINE__, 0, 0) // AE_AML_PACKAGE_LIMIT
+        If ((0xFFFFFFFFFFFFFFFF >= Arg1))
+        {
+            TRC1 (Arg0, 0xFFFFFFFFFFFFFFFF, 0xF0F0F0F0)
+            CH03 ("", 0x00, 0x0110, 0xF0, 0x00)
+            Local0 = Arg0 [0xFFFFFFFFFFFFFFFF]
+            CH04 ("", 0x00, 0x37, 0x00, 0xF2, 0x00, 0x00) /* AE_AML_PACKAGE_LIMIT */
+        }
 
-	Add(arg1, 1, Local7)
-	if (LGreaterEqual(Local7, arg1)) {
-		TRC1(arg0, Local7, 0xf0f0f0f0)
-		CH03("", 0, 0x10e, __LINE__, 0)
-		Index(arg0, Local7, Local0)
-		CH04("", 0, 55, 0, __LINE__, 0, 0) // AE_AML_PACKAGE_LIMIT
-	}
+        /* Check near the maximal bound of a simple Package */
+        /* (not VarPackage) - 254, 255, 256, 257 elements: */
+        MD6B (Arg0, Arg1, Arg2, Arg3, Arg4, 0xFE)
+        MD6B (Arg0, Arg1, Arg2, Arg3, Arg4, 0xFF)
+        MD6B (Arg0, Arg1, Arg2, Arg3, Arg4, 0x0100)
+        MD6B (Arg0, Arg1, Arg2, Arg3, Arg4, 0x0101)
+        TRC2 ("The test run up to the end")
+    }
 
-	if (LGreaterEqual(0xffffffffffffffff, arg1)) {
-		TRC1(arg0, 0xffffffffffffffff, 0xf0f0f0f0)
-		CH03("", 0, 0x110, __LINE__, 0)
-		Index(arg0, 0xffffffffffffffff, Local0)
-		CH04("", 0, 55, 0, __LINE__, 0, 0) // AE_AML_PACKAGE_LIMIT
-	}
+    /*
+     * Verification of Package
+     *
+     * arg0 - Package
+     * arg1 - size of Package
+     * arg2 - size of pre-initialized area
+     * arg3 - index of area to be written
+     * arg4 - size of area to be written
+     * arg5 - index of element of Package to be verified
+     */
+    Method (MD6B, 6, NotSerialized)
+    {
+        Local7 = 0x00
+        If ((Arg5 < Arg2))
+        {
+            Local7 = 0x01
+        }
+        ElseIf ((Arg5 >= Arg3))
+        {
+            Local0 = (Arg3 + Arg4)
+            If ((Arg5 < Local0))
+            {
+                Local7 = 0x01
+            }
+        }
 
-	// Check near the maximal bound of a simple Package
-	// (not VarPackage) - 254, 255, 256, 257 elements:
+        If (Local7)
+        {
+            /* Was initialized */
 
-	md6b(arg0, arg1,  arg2, arg3, arg4, 254)
-	md6b(arg0, arg1,  arg2, arg3, arg4, 255)
-	md6b(arg0, arg1,  arg2, arg3, arg4, 256)
-	md6b(arg0, arg1,  arg2, arg3, arg4, 257)
+            CH03 ("", 0x00, 0x0112, 0x011B, 0x00)
+            Local0 = DerefOf (Arg0 [Arg5])
+            TRC1 (Arg0, Arg5, Local0)
+            If ((Local0 != Arg5))
+            {
+                ERR ("", ZFFF, 0x011F, 0x00, 0x00, Local0, Arg5)
+            }
 
-	TRC2("The test run up to the end")
-}
+            CH03 ("", 0x00, 0x0113, 0x0121, 0x00)
+        }
+        ElseIf ((Arg5 < Arg1))
+        {
+            /* Check exception on access to the uninitialized element */
 
-/*
- * Verification of Package
- *
- * arg0 - Package
- * arg1 - size of Package
- * arg2 - size of pre-initialized area
- * arg3 - index of area to be written
- * arg4 - size of area to be written
- * arg5 - index of element of Package to be verified
- */
-Method(md6b, 6)
-{
-	Store(0, Local7)
+            TRC1 (Arg0, Arg5, 0xF0F0F0F0)
+            Store (Arg0 [Arg5], Local0)
+            CH03 ("", 0x00, 0x0114, 0x0129, 0x00)
+            Local1 = DerefOf (Local0)
+            CH04 ("", 0x01, 0x33, 0x00, 0x012B, 0x00, 0x00) /* AE_AML_UNINITIALIZED_ELEMENT */
+        }
+        Else
+        {
+            /* Check exception on out of Package access */
 
-	if (LLess(arg5, arg2)) {
-		Store(1, Local7)
-	} elseif (LGreaterEqual(arg5, arg3)) {
-		Add(arg3, arg4, Local0)
-		if (LLess(arg5, Local0)) {
-			Store(1, Local7)
-		}
-	}
+            TRC1 (Arg0, Arg5, 0xF0F0F0F0)
+            CH03 ("", 0x00, 0x0116, 0x0132, 0x00)
+            Local0 = Arg0 [Arg5]
+            CH04 ("", 0x00, 0x37, 0x00, 0x0134, 0x00, 0x00) /* AE_AML_PACKAGE_LIMIT */
+        }
+    }
 
-	if (Local7) {
+    /*
+     * Check, register errors and reset the global level
+     * execution exception AE_AML_DIVIDE_BY_ZERO caused in
+     * demo-test of bug 162.
+     */
+    Method (MD7D, 0, NotSerialized)
+    {
+        ID01 = 0x00
+        Local0 = ERRS /* \ERRS */
+        /*
+         * Slacken expectations:
+         *
+         * - check opcode of the FIRST exception
+         * - number of exceptions NOT GREATER than two
+         */
+        /* Check opcode of the first exception */
+        CH04 ("", 0x01, 0x38, 0x00, 0x014B, 0x00, 0x00) /* AE_AML_DIVIDE_BY_ZERO */
+        /* Number of exceptions not greater than two */
 
-		// Was initialized
+        If ((EXC1 > 0x02))
+        {
+            ID01 = 0x01
+        }
 
-		CH03("", 0, 0x112, __LINE__, 0)
-		Store(DerefOf(Index(arg0, arg5)), Local0)
-		TRC1(arg0, arg5, Local0)
-		if (LNotEqual(Local0, arg5)) {
-			err("", zFFF, __LINE__, 0, 0, Local0, arg5)
-		}
-		CH03("", 0, 0x113, __LINE__, 0)
+        /* Reset the number of exceptions */
 
-	} elseif (LLess(arg5, arg1)) {
+        EXC1 = 0x00
+        If ((ERRS != Local0))
+        {
+            ID01 = 0x01
+        }
 
-		// Check exception on access to the uninitialized element
+        CH03 ("", 0x00, 0x0119, 0x0159, 0x00)
+        Return (0x01)
+    }
 
-		TRC1(arg0, arg5, 0xf0f0f0f0)
-		Store(Index(arg0, arg5), Local0)
-		CH03("", 0, 0x114, __LINE__, 0)
-		Store(DerefOf(Local0), Local1)
-		CH04("", 1, 51, 0, __LINE__, 0, 0) // AE_AML_UNINITIALIZED_ELEMENT
+    /*
+     * Check result
+     * arg0 - result
+     * arg1 - expected type of result
+     * arg2 - expected result
+     * arg3 - index of checking
+     * arg4 - index of checking
+     * arg5 - tag, to check the value of object
+     */
+    Method (MF88, 6, NotSerialized)
+    {
+        Local0 = ObjectType (Arg0)
+        If ((Local0 != Arg1))
+        {
+            ERR ("", ZFFF, 0x016B, 0x00, 0x00, Local0, Arg1)
+        }
 
-	} else {
+        If (Arg5)
+        {
+            If ((Arg0 != Arg2))
+            {
+                ERR ("", ZFFF, 0x016F, 0x00, 0x00, Arg0, Arg2)
+            }
+        }
+    }
 
-		// Check exception on out of Package access
+    Method (M02A, 0, NotSerialized)
+    {
+        Debug = "Check the error manually and remove call to m02a() when the bug is fixed."
+        ERR ("", ZFFF, 0x0178, 0x00, 0x00, 0x00, 0x00)
+    }
 
-		TRC1(arg0, arg5, 0xf0f0f0f0)
-		CH03("", 0, 0x116, __LINE__, 0)
-		Index(arg0, arg5, Local0)
-		CH04("", 0, 55, 0, __LINE__, 0, 0) // AE_AML_PACKAGE_LIMIT
-
-	}
-}
-
-/*
- * Check, register errors and reset the global level
- * execution exception AE_AML_DIVIDE_BY_ZERO caused in
- * demo-test of bug 162.
- */
-Method(md7d)
-{
-	Store(0, id01)
-	Store(ERRS, Local0)
-
-	/*
-	 * Slacken expectations:
-	 *
-	 * - check opcode of the FIRST exception
-	 * - number of exceptions NOT GREATER than two
-	 */
-
-	/* Check opcode of the first exception */
-	CH04("", 1, 56, 0, __LINE__, 0, 0) // AE_AML_DIVIDE_BY_ZERO
-
-	/* Number of exceptions not greater than two */
-	if (LGreater(EXC1, 2)) {
-		Store(1, id01)
-	}
-
-	/* Reset the number of exceptions */
-	Store(0, EXC1)
-
-	if (LNotEqual(ERRS, Local0)) {
-		Store(1, id01)
-	}
-
-	CH03("", 0, 0x119, __LINE__, 0)
-	return (1)
-}
-
-/*
- * Check result
- * arg0 - result
- * arg1 - expected type of result
- * arg2 - expected result
- * arg3 - index of checking
- * arg4 - index of checking
- * arg5 - tag, to check the value of object
- */
-Method(mf88, 6)
-{
-	Store(ObjectType(arg0), Local0)
-
-	if (LNotEqual(Local0, arg1)) {
-		err("", zFFF, __LINE__, 0, 0, Local0, arg1)
-	}
-	if (arg5) {
-		if (LNotEqual(arg0, arg2)) {
-			err("", zFFF, __LINE__, 0, 0, arg0, arg2)
-		}
-	}
-}
-
-Method(m02a)
-{
-	Store("Check the error manually and remove call to m02a() when the bug is fixed.", Debug)
-
-	err("", zFFF, __LINE__, 0, 0, 0, 0)
-}

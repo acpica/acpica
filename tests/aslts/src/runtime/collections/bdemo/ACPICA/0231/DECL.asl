@@ -1,101 +1,149 @@
-/*
- * Some or all of this work - Copyright (c) 2006 - 2017, Intel Corp.
- * All rights reserved.
- *
- * Redistribution and use in source and binary forms, with or without modification,
- * are permitted provided that the following conditions are met:
- *
- * Redistributions of source code must retain the above copyright notice,
- * this list of conditions and the following disclaimer.
- * Redistributions in binary form must reproduce the above copyright notice,
- * this list of conditions and the following disclaimer in the documentation
- * and/or other materials provided with the distribution.
- * Neither the name of Intel Corporation nor the names of its contributors
- * may be used to endorse or promote products derived from this software
- * without specific prior written permission.
- *
- * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS"
- * AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE
- * IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE
- * ARE DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT OWNER OR CONTRIBUTORS BE
- * LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL
- * DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES;
- * LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY
- * THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING
- * NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE,
- * EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
- */
+    /*
+     * Some or all of this work - Copyright (c) 2006 - 2017, Intel Corp.
+     * All rights reserved.
+     *
+     * Redistribution and use in source and binary forms, with or without modification,
+     * are permitted provided that the following conditions are met:
+     *
+     * Redistributions of source code must retain the above copyright notice,
+     * this list of conditions and the following disclaimer.
+     * Redistributions in binary form must reproduce the above copyright notice,
+     * this list of conditions and the following disclaimer in the documentation
+     * and/or other materials provided with the distribution.
+     * Neither the name of Intel Corporation nor the names of its contributors
+     * may be used to endorse or promote products derived from this software
+     * without specific prior written permission.
+     *
+     * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS"
+     * AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE
+     * IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE
+     * ARE DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT OWNER OR CONTRIBUTORS BE
+     * LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL
+     * DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES;
+     * LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY
+     * THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING
+     * NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE,
+     * EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
+     */
+    /*
+     * Bug 231:
+     *
+     * SUMMARY: ParameterTypes argument of Method declaration is not supported
+     */
+    Method (M128, 0, Serialized)
+    {
+        /* Data to be passed to Method */
 
-/*
- * Bug 231:
- *
- * SUMMARY: ParameterTypes argument of Method declaration is not supported
- */
+        Name (I000, 0xFE7CB391D65A0000)
+        Name (S000, "12340002")
+        Name (B000, Buffer (0x04)
+        {
+             0x01, 0x02, 0x03, 0x04                           // ....
+        })
+        Name (B001, Buffer (0x05)
+        {
+             0xB0, 0xB1, 0xB2, 0xB3, 0xB4                     // .....
+        })
+        Name (P000, Package (0x04)
+        {
+            0x01, 
+            0x02, 
+            0x03, 
+            0x04
+        })
+        Event (E000)
+        Mutex (MX00, 0x00)
+        Device (D000)
+        {
+            Name (I000, 0xABCD0017)
+        }
 
-Method(m128,, Serialized)
-{
-	/* Data to be passed to Method */
+        ThermalZone (TZ00)
+        {
+        }
 
-	Name(i000, 0xfe7cb391d65a0000)
-	Name(s000, "12340002")
-	Name(b000, Buffer() {1,2,3,4})
-	Name(b001, Buffer() {0xb0,0xb1,0xb2,0xb3,0xb4})
-	Name(p000, Package() {1,2,3,4})
+        Processor (PR00, 0x00, 0xFFFFFFFF, 0x00){}
+        OperationRegion (R900, SystemMemory, 0x0100, 0x0100)
+        OperationRegion (R9Z0, SystemMemory, 0x0100, 0x0100)
+        PowerResource (PW90, 0x01, 0x0000)
+        {
+            Method (MMMM, 0, NotSerialized)
+            {
+                Return (0x00)
+            }
+        }
 
-	Event(e000)
-	Mutex(mx00, 0)
-	Device(d000) { Name(i000, 0xabcd0017) }
-	ThermalZone(tz00) {}
-	Processor(pr00, 0, 0xFFFFFFFF, 0) {}
-	OperationRegion(r900, SystemMemory, 0x100, 0x100)
-	OperationRegion(r9Z0, SystemMemory, 0x100, 0x100)
-	PowerResource(pw90, 1, 0) {Method(mmmm){return (0)}}
+        CreateField (B001, 0x00, 0x08, BF90)
+        Field (R9Z0, ByteAcc, NoLock, Preserve)
+        {
+            F900,   8, 
+            F901,   8, 
+            F902,   8, 
+            F903,   8
+        }
 
-	CreateField(b001, 0, 8, bf90)
-	Field(r9Z0, ByteAcc, NoLock, Preserve) {f900,8,f901,8,f902,8,f903,8}
-	BankField(r9Z0, f901, 0, ByteAcc, NoLock, Preserve) {bn90,4}
-	IndexField(f902, f903, ByteAcc, NoLock, Preserve) {if90,8,if91,8}
+        BankField (R9Z0, F901, 0x00, ByteAcc, NoLock, Preserve)
+        {
+            BN90,   4
+        }
 
-	Method(mmm0) {Return ("mmm0")}
+        IndexField (F902, F903, ByteAcc, NoLock, Preserve)
+        {
+            IF90,   8, 
+            IF91,   8
+        }
 
-	/* Method */
+        Method (MMM0, 0, NotSerialized)
+        {
+            Return ("mmm0")
+        }
 
-	Method(m000, 1, , , , IntObj) {
-		Store(arg0, Debug)
-	}
+        /* Method */
 
-	Method(m100)
-	{
-		Store("Start of test", Debug)
+        Method (M000, 1, NotSerialized)
+        {
+            Debug = Arg0
+        }
 
-		m000(i000)
-		m000(s000)
-		m000(b000)
-		m000(p000)
-		m000(e000)
-		m000(mx00)
-		m000(d000)
-		m000(tz00)
-		m000(pr00)
-		m000(r900)
-		m000(pw90)
-		m000(bf90)
-		m000(f900)
-		m000(bn90)
-		m000(if90)
-		m000(mmm0)
-		m000(0xfe7cb391d65a0000)
-		m000("12340002")
-		m000(Buffer() {1,2,3,4})
-		m000(Package() {1,2,3,4})
+        Method (M100, 0, NotSerialized)
+        {
+            Debug = "Start of test"
+            M000 (I000)
+            M000 (S000)
+            M000 (B000)
+            M000 (P000)
+            M000 (E000)
+            M000 (MX00)
+            M000 (D000)
+            M000 (TZ00)
+            M000 (PR00)
+            M000 (R900)
+            M000 (PW90)
+            M000 (BF90)
+            M000 (F900)
+            M000 (BN90)
+            M000 (IF90)
+            M000 (MMM0 ())
+            M000 (0xFE7CB391D65A0000)
+            M000 ("12340002")
+            M000 (Buffer (0x04)
+                {
+                     0x01, 0x02, 0x03, 0x04                           // ....
+                })
+            M000 (Package (0x04)
+                {
+                    0x01, 
+                    0x02, 
+                    0x03, 
+                    0x04
+                })
+            Debug = "Finish of test"
+        }
 
-		Store("Finish of test", Debug)
-	}
+        CH03 ("", 0x00, 0x00, 0x5F, 0x00)
+        M100 ()
+        /* Expect either ASL compiler error or any AML interpreter exception */
 
-	CH03("", 0, 0x000, __LINE__, 0)
-	m100()
+        CH04 ("", 0x00, 0xFF, 0x00, 0x64, 0x00, 0x00)
+    }
 
-	/* Expect either ASL compiler error or any AML interpreter exception */
-
-	CH04("", 0, 0xff, 0, __LINE__, 0, 0)
-}

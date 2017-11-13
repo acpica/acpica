@@ -25,48 +25,36 @@
  * NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE,
  * EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
-
 /*
  * Bug-demo collection
  */
-DefinitionBlock(
-	"bdemo.aml", // Output filename
-	"DSDT",     // Signature
-	0x02,       // DSDT Revision
-	"Intel",    // OEMID
-	"Many",     // TABLE ID
-	0x00000001  // OEM Revision
-	) {
+DefinitionBlock ("bdemo", "DSDT", 2, "Intel", "Many", 0x00000001)
+{
+    /* All declarations */
+    Include ("../../../../../runtime/cntl/DECL_5UP.asl")
+    Include ("../../../../../runtime/collections/bdemo/ACPICA/common/DECL.asl")
+    Include ("../../../../../runtime/collections/bdemo/ACPICA/bdemo/DECL.asl")
+    Method (MAIN, 0, NotSerialized)
+    {
+        /*
+         // Flag of presence of demo-162 test.
+         if (id02) {
+         // Check, register errors and reset the global level execution exception.
+         md7d()
+         }
+         // Check, register errors and reset the global level execution exception
+         // md7d() - do it while BUF1 creation just after BUF0,
+         //		otherwise, if doing that there, some other
+         //		exception may distort picture.
+         */
+        /* Initialization */
+        STRT (0x00)
+        /* Run verification methods */
+        Include ("../../../../../runtime/collections/bdemo/ACPICA/bdemo/RUN.asl")
+        /* Final actions */
 
-	// All declarations
-	Include("../../../../../runtime/cntl/DECL_5UP.asl")
-	Include("../../../../../runtime/collections/bdemo/ACPICA/common/DECL.asl")
-	Include("../../../../../runtime/collections/bdemo/ACPICA/bdemo/DECL.asl")
-
-	Method(MAIN) {
-
-/*
-		// Flag of presence of demo-162 test.
-		if (id02) {
-			// Check, register errors and reset the global level execution exception.
-			md7d()
-		}
-
-		// Check, register errors and reset the global level execution exception
-		// md7d() - do it while BUF1 creation just after BUF0,
-		//		otherwise, if doing that there, some other
-		//		exception may distort picture.
-*/
-
-		// Initialization
-		STRT(0)
-
-		// Run verification methods
-		Include("../../../../../runtime/collections/bdemo/ACPICA/bdemo/RUN.asl")
-
-		// Final actions
-		Store(FNSH(), Local7)
-
-		return (Local7)
-	}
+        Store (FNSH (), Local7)
+        Return (Local7)
+    }
 }
+

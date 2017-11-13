@@ -25,70 +25,64 @@
  * NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE,
  * EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
+DefinitionBlock ("mt_mutex", "DSDT", 2, "Intel", "Many", 0x00000001)
+{
+    /* All declarations */
+    Include ("../../../../runtime/cntl/MT_DECL.asl")
+    Include ("../../../../runtime/common/TCI/tcicmd.asl")
+    Include ("../../../../runtime/common/mx_objects.asl")
+    Include ("../../../../runtime/collections/mt/mutex/common.asl")
+    Include ("../../../../runtime/collections/mt/mutex/service.asl")
+    Include ("../../../../runtime/collections/mt/mutex/tests.asl")
+    Include ("../../../../runtime/collections/mt/mutex/mutex.asl")
+    Include ("../../../../runtime/collections/mt/mutex/mxs.asl")
+    Include ("../../../../runtime/collections/mt/mutex/example0.asl")
+    Include ("../../../../runtime/collections/mt/mutex/slave_thr.asl")
+    /*
+     * Arguments passed to MAIN method are:
+     *
+     *   arg0 - number of threads.
+     *   arg1 - ID of current thread.
+     *   arg2 - Index of current thread inside all participating threads.
+     *          The thread of Index 0 is considered as Control Thread.
+     */
+    Method (MAIN, 3, NotSerialized)
+    {
+        If ((Arg1 == "AML Debugger"))
+        {
+            Debug = "Either the Threads command is old,"
+            Debug = "or even some another command was initiated."
+            Return (0x00)
+        }
 
-DefinitionBlock(
-	"mt_mutex.aml", // Output filename
-	"DSDT",     // Signature
-	0x02,       // DSDT Revision
-	"Intel",    // OEMID
-	"Many",     // TABLE ID
-	0x00000001  // OEM Revision
-	) {
+        /* Non-zero Local0 means the current thread is a Control Thread */
 
-	// All declarations
-	Include("../../../../runtime/cntl/MT_DECL.asl")
-	Include("../../../../runtime/common/TCI/tcicmd.asl")
-	Include("../../../../runtime/common/mx_objects.asl")
-	Include("../../../../runtime/collections/mt/mutex/common.asl")
-	Include("../../../../runtime/collections/mt/mutex/service.asl")
-	Include("../../../../runtime/collections/mt/mutex/tests.asl")
-	Include("../../../../runtime/collections/mt/mutex/mutex.asl")
-	Include("../../../../runtime/collections/mt/mutex/mxs.asl")
-	Include("../../../../runtime/collections/mt/mutex/example0.asl")
-	Include("../../../../runtime/collections/mt/mutex/slave_thr.asl")
+        Local0 = 0x01
+        If (Arg2)
+        {
+            /* Wait for Control thread saying 'go further' */
 
-	/*
-	 * Arguments passed to MAIN method are:
-	 *
-	 *   arg0 - number of threads.
-	 *   arg1 - ID of current thread.
-	 *   arg2 - Index of current thread inside all participating threads.
-	 *          The thread of Index 0 is considered as Control Thread.
-	 */
-	Method(MAIN, 3) {
+            M116 (Arg2)
+            Local0 = 0x00
+        }
+        Else
+        {
+            /* Control thread */
+            /* Initialization */
+            STRT (0x00)
+        }
 
-		if (LEqual(arg1, "AML Debugger"))
-		{
-			Store("Either the Threads command is old,", Debug)
-			Store("or even some another command was initiated.", Debug)
-			return (0)
-		}
+        /* Run verification methods */
+        Include ("../../../../runtime/collections/mt/mutex/RUN.asl")
+        Store (0x00, Local7)
+        If (Local0)
+        {
+            /* Final actions */
 
-		/* Non-zero Local0 means the current thread is a Control Thread */
+            Store (FNSH (), Local7)
+        }
 
-		Store(1, Local0)
-		if (arg2) {
-			/* Wait for Control thread saying 'go further' */
-			m116(arg2)
-			Store(0, Local0)
-		} else {
-
-			/* Control thread */
-
-			// Initialization
-			STRT(0)
-		}
-
-		// Run verification methods
-
-		Include("../../../../runtime/collections/mt/mutex/RUN.asl")
-
-		Store(0, Local7)
-		if (Local0) {
-			// Final actions
-			Store(FNSH(), Local7)
-		}
-
-		return (Local7)
-	}
+        Return (Local7)
+    }
 }
+

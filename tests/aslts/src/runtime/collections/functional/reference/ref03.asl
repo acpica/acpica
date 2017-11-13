@@ -1,1870 +1,1645 @@
-/*
- * Some or all of this work - Copyright (c) 2006 - 2017, Intel Corp.
- * All rights reserved.
- *
- * Redistribution and use in source and binary forms, with or without modification,
- * are permitted provided that the following conditions are met:
- *
- * Redistributions of source code must retain the above copyright notice,
- * this list of conditions and the following disclaimer.
- * Redistributions in binary form must reproduce the above copyright notice,
- * this list of conditions and the following disclaimer in the documentation
- * and/or other materials provided with the distribution.
- * Neither the name of Intel Corporation nor the names of its contributors
- * may be used to endorse or promote products derived from this software
- * without specific prior written permission.
- *
- * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS"
- * AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE
- * IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE
- * ARE DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT OWNER OR CONTRIBUTORS BE
- * LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL
- * DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES;
- * LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY
- * THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING
- * NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE,
- * EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
- */
-
-/*
- * References
- *
- * TABLE 6: all the legal ways to generate references to ArgX
- *
- * Producing Reference operators:
- *
- *    Index, RefOf, CondRefOf
- */
-
-Name(z079, 79)
-
-// ///////////////////////////////////////////////////////////////////////////
-//
-// TABLE 6: all the legal ways to generate references to ArgX
-//
-// ///////////////////////////////////////////////////////////////////////////
-
-// m169,m190,m170
-Method(m180, 2)
-{
-	if (y100) {
-		ts00("m180")
-	} else {
-		Store("m180", Debug)
-	}
-
-	// T6:I2-I4
-
-	// Computational Data
-
-	Store(s900, arg1)
-	Store(Index(arg1, 0), Local0)
-	m1a2(Local0, c016, 0, 0, c009, 0x31, 1)
-
-	Store(s901, arg1)
-	Store(Index(arg1, 2), Local0)
-	m1a2(Local0, c016, 0, 0, c009, 0x72, 2)
-
-	Store(b900, arg1)
-	Store(Index(arg1, 3), Local0)
-	m1a2(Local0, c016, 0, 0, c009, 0xb3, 3)
-
-	// Elements of Package are Uninitialized
-
-	if (y104) {
-		Store(p900, arg1)
-		Store(Index(arg1, 0), Local0)
-		m1a0(Local0, c008, Ones, 4)
-	}
-
-	// Elements of Package are Computational Data
-
-	Store(p901, arg1)
-	Store(Index(arg1, 0), Local0)
-	m1a2(Local0, c009, 0, 0, c009, 0xabcd0004, 5)
-
-	Store(p901, arg1)
-	Store(Index(arg1, 1), Local0)
-	m1a2(Local0, c009, 0, 0, c009, 0x1122334455660005, 6)
-
-	Store(p902, arg1)
-	Store(Index(arg1, 0), Local0)
-	m1a2(Local0, c00a, 0, 0, c00a, "12340006", 7)
-
-	Store(p902, arg1)
-	Store(Index(arg1, 1), Local0)
-	m1a2(Local0, c00a, 0, 0, c00a, "q1w2e3r4t5y6u7i80007", 8)
-
-	Store(p903, arg1)
-	Store(Index(arg1, 0), Local0)
-	m1a2(Local0, c00a, 0, 0, c00a, "qwrtyuiop0008", 9)
-
-	Store(p903, arg1)
-	Store(Index(arg1, 1), Local0)
-	m1a2(Local0, c00a, 0, 0, c00a, "1234567890abdef0250009", 10)
+    /*
+     * Some or all of this work - Copyright (c) 2006 - 2017, Intel Corp.
+     * All rights reserved.
+     *
+     * Redistribution and use in source and binary forms, with or without modification,
+     * are permitted provided that the following conditions are met:
+     *
+     * Redistributions of source code must retain the above copyright notice,
+     * this list of conditions and the following disclaimer.
+     * Redistributions in binary form must reproduce the above copyright notice,
+     * this list of conditions and the following disclaimer in the documentation
+     * and/or other materials provided with the distribution.
+     * Neither the name of Intel Corporation nor the names of its contributors
+     * may be used to endorse or promote products derived from this software
+     * without specific prior written permission.
+     *
+     * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS"
+     * AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE
+     * IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE
+     * ARE DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT OWNER OR CONTRIBUTORS BE
+     * LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL
+     * DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES;
+     * LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY
+     * THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING
+     * NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE,
+     * EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
+     */
+    /*
+     * References
+     *
+     * TABLE 6: all the legal ways to generate references to ArgX
+     *
+     * Producing Reference operators:
+     *
+     *    Index, RefOf, CondRefOf
+     */
+    Name (Z079, 0x4F)
+    /* /////////////////////////////////////////////////////////////////////////// */
+    /* */
+    /* TABLE 6: all the legal ways to generate references to ArgX */
+    /* */
+    /* /////////////////////////////////////////////////////////////////////////// */
+    /* m169,m190,m170 */
+    Method (M180, 2, NotSerialized)
+    {
+        If (Y100)
+        {
+            TS00 ("m180")
+        }
+        Else
+        {
+            Debug = "m180"
+        }
+
+        /* T6:I2-I4 */
+        /* Computational Data */
+        Arg1 = S900 /* \S900 */
+        Store (Arg1 [0x00], Local0)
+        M1A2 (Local0, C016, 0x00, 0x00, C009, 0x31, 0x01)
+        Arg1 = S901 /* \S901 */
+        Store (Arg1 [0x02], Local0)
+        M1A2 (Local0, C016, 0x00, 0x00, C009, 0x72, 0x02)
+        Arg1 = B900 /* \B900 */
+        Store (Arg1 [0x03], Local0)
+        M1A2 (Local0, C016, 0x00, 0x00, C009, 0xB3, 0x03)
+        /* Elements of Package are Uninitialized */
+
+        If (Y104)
+        {
+            Arg1 = P900 /* \P900 */
+            Store (Arg1 [0x00], Local0)
+            M1A0 (Local0, C008, Ones, 0x04)
+        }
+
+        /* Elements of Package are Computational Data */
+
+        Arg1 = P901 /* \P901 */
+        Store (Arg1 [0x00], Local0)
+        M1A2 (Local0, C009, 0x00, 0x00, C009, 0xABCD0004, 0x05)
+        Arg1 = P901 /* \P901 */
+        Store (Arg1 [0x01], Local0)
+        M1A2 (Local0, C009, 0x00, 0x00, C009, 0x1122334455660005, 0x06)
+        Arg1 = P902 /* \P902 */
+        Store (Arg1 [0x00], Local0)
+        M1A2 (Local0, C00A, 0x00, 0x00, C00A, "12340006", 0x07)
+        Arg1 = P902 /* \P902 */
+        Store (Arg1 [0x01], Local0)
+        M1A2 (Local0, C00A, 0x00, 0x00, C00A, "q1w2e3r4t5y6u7i80007", 0x08)
+        Arg1 = P903 /* \P903 */
+        Store (Arg1 [0x00], Local0)
+        M1A2 (Local0, C00A, 0x00, 0x00, C00A, "qwrtyuiop0008", 0x09)
+        Arg1 = P903 /* \P903 */
+        Store (Arg1 [0x01], Local0)
+        M1A2 (Local0, C00A, 0x00, 0x00, C00A, "1234567890abdef0250009", 0x0A)
+        Arg1 = P904 /* \P904 */
+        Store (Arg1 [0x00], Local0)
+        M1A2 (Local0, C00B, 0x00, 0x00, C00B, Buffer (0x03)
+            {
+                 0xB5, 0xB6, 0xB7                                 // ...
+            }, 0x0B)
+        Arg1 = P905 /* \P905 */
+        Store (Arg1 [0x00], Local0)
+        M1A2 (Local0, C00C, 0x01, 0x00, C009, 0x0ABC000A, 0x0C)
+        Arg1 = P905 /* \P905 */
+        Store (Arg1 [0x00], Local0)
+        M1A2 (Local0, C00C, 0x01, 0x01, C00A, "0xabc000b", 0x0D)
+        Arg1 = P906 /* \P906 */
+        Store (Arg1 [0x00], Local0)
+        M1A2 (Local0, C00C, 0x01, 0x00, C00A, "abc000d", 0x0E)
+        Arg1 = P907 /* \P907 */
+        Store (Arg1 [0x00], Local0)
+        M1A2 (Local0, C00C, 0x01, 0x00, C00A, "aqwevbgnm000e", 0x0F)
+        Arg1 = P908 /* \P908 */
+        Store (Arg1 [0x00], Local0)
+        M1A2 (Local0, C00C, 0x01, 0x00, C00B, Buffer (0x05)
+            {
+                 0xBA, 0xBB, 0xBC, 0xBD, 0xBE                     // .....
+            }, 0x10)
+        Arg1 = P909 /* \P909 */
+        Store (Arg1 [0x00], Local0)
+        M1A2 (Local0, C00C, 0x02, 0x00, C009, 0x0ABC000F, 0x11)
+        Arg1 = P90A /* \P90A */
+        Store (Arg1 [0x00], Local0)
+        M1A2 (Local0, C00C, 0x02, 0x00, C00A, "12340010", 0x12)
+        Arg1 = P90B /* \P90B */
+        Store (Arg1 [0x00], Local0)
+        M1A2 (Local0, C00C, 0x02, 0x00, C00A, "zxswefas0011", 0x13)
+        Arg1 = P90C /* \P90C */
+        Store (Arg1 [0x00], Local0)
+        M1A2 (Local0, C00C, 0x02, 0x00, C00B, Buffer (0x03)
+            {
+                 0xBF, 0xC0, 0xC1                                 // ...
+            }, 0x14)
+        Arg1 = P90D /* \P90D */
+        Store (Arg1 [0x00], Local0)
+        M1A2 (Local0, C009, 0x00, 0x00, C009, 0xFE7CB391D65A0000, 0x15)
+        Arg1 = P90E /* \P90E */
+        Store (Arg1 [0x00], Local0)
+        M1A2 (Local0, C009, 0x00, 0x00, C009, 0xC1790001, 0x16)
+        Arg1 = P90F /* \P90F */
+        Store (Arg1 [0x00], Local0)
+        M1A2 (Local0, C00A, 0x00, 0x00, C00A, "12340002", 0x17)
+        Arg1 = P910 /* \P910 */
+        Store (Arg1 [0x00], Local0)
+        M1A2 (Local0, C00A, 0x00, 0x00, C00A, "qwrtyu0003", 0x18)
+        Arg1 = P911 /* \P911 */
+        Store (Arg1 [0x00], Local0)
+        M1A2 (Local0, C00B, 0x00, 0x00, C00B, Buffer (0x05)
+            {
+                 0xB0, 0xB1, 0xB2, 0xB3, 0xB4                     // .....
+            }, 0x19)
+        If (Y118)
+        {
+            Arg1 = P912 /* \P912 */
+            Store (Arg1 [0x00], Local0)
+            M1A2 (Local0, C00D, 0x00, 0x00, C00D, 0x00, 0x1A)
+            Arg1 = P913 /* \P913 */
+            Store (Arg1 [0x00], Local0)
+            M1A2 (Local0, C00D, 0x00, 0x00, C00D, 0x00, 0x1B)
+            Arg1 = P914 /* \P914 */
+            Store (Arg1 [0x00], Local0)
+            M1A2 (Local0, C00D, 0x00, 0x00, C00D, 0x00, 0x1C)
+            Arg1 = P915 /* \P915 */
+            Store (Arg1 [0x00], Local0)
+            M1A2 (Local0, C016, 0x00, 0x00, C016, 0xB0, 0x1D)
+        }
+
+        /* Elements of Package are NOT Computational Data */
+
+        Arg1 = P916 /* \P916 */
+        Store (Arg1 [0x00], Local0)
+        M1A0 (Local0, C00E, Ones, 0x1E)
+        Arg1 = P917 /* \P917 */
+        Store (Arg1 [0x00], Local0)
+        M1A0 (Local0, C00F, Ones, 0x1F)
+        Arg1 = P918 /* \P918 */
+        Store (Arg1 [0x00], Local0)
+        M1A0 (Local0, C011, Ones, 0x20)
+        Arg1 = P919 /* \P919 */
+        Store (Arg1 [0x00], Local0)
+        M1A0 (Local0, C012, Ones, 0x21)
+        Arg1 = P91A /* \P91A */
+        Store (Arg1 [0x00], Local0)
+        M1A0 (Local0, C013, Ones, 0x22)
+        Arg1 = P91B /* \P91B */
+        Store (Arg1 [0x00], Local0)
+        M1A0 (Local0, C014, Ones, 0x23)
+        Arg1 = P91C /* \P91C */
+        Store (Arg1 [0x00], Local0)
+        M1A0 (Local0, C015, Ones, 0x24)
+        /* Elements of Package are Methods */
+
+        If (Y105)
+        {
+            Arg1 = P91D /* \P91D */
+            Store (Arg1 [0x00], Local0)
+            M1A0 (Local0, C010, Ones, 0x25)
+            Arg1 = P91E /* \P91E */
+            Store (Arg1 [0x00], Local0)
+            M1A0 (Local0, C010, Ones, 0x26)
+            Arg1 = P91F /* \P91F */
+            Store (Arg1 [0x00], Local0)
+            M1A0 (Local0, C010, Ones, 0x27)
+            Arg1 = P920 /* \P920 */
+            Store (Arg1 [0x00], Local0)
+            M1A0 (Local0, C010, Ones, 0x28)
+            Arg1 = P921 /* \P921 */
+            Store (Arg1 [0x00], Local0)
+            M1A0 (Local0, C010, Ones, 0x29)
+            Arg1 = P922 /* \P922 */
+            Store (Arg1 [0x00], Local0)
+            M1A0 (Local0, C010, Ones, 0x2A)
+            Arg1 = P923 /* \P923 */
+            Store (Arg1 [0x00], Local0)
+            M1A0 (Local0, C010, Ones, 0x2B)
+            Arg1 = P924 /* \P924 */
+            Store (Arg1 [0x00], Local0)
+            M1A0 (Local0, C010, Ones, 0x2C)
+            Arg1 = P925 /* \P925 */
+            Store (Arg1 [0x00], Local0)
+            M1A0 (Local0, C010, Ones, 0x2D)
+            Arg1 = P926 /* \P926 */
+            Store (Arg1 [0x00], Local0)
+            M1A0 (Local0, C010, Ones, 0x2E)
+            Arg1 = P927 /* \P927 */
+            Store (Arg1 [0x00], Local0)
+            M1A0 (Local0, C010, Ones, 0x2F)
+            Arg1 = P928 /* \P928 */
+            Store (Arg1 [0x00], Local0)
+            M1A0 (Local0, C010, Ones, 0x30)
+            Arg1 = P929 /* \P929 */
+            Store (Arg1 [0x00], Local0)
+            M1A0 (Local0, C010, Ones, 0x31)
+            Arg1 = P92A /* \P92A */
+            Store (Arg1 [0x00], Local0)
+            M1A0 (Local0, C010, Ones, 0x32)
+            Arg1 = P92B /* \P92B */
+            Store (Arg1 [0x00], Local0)
+            M1A0 (Local0, C010, Ones, 0x33)
+            Arg1 = P92C /* \P92C */
+            Store (Arg1 [0x00], Local0)
+            M1A0 (Local0, C010, Ones, 0x34)
+            Arg1 = P92D /* \P92D */
+            Store (Arg1 [0x00], Local0)
+            M1A0 (Local0, C010, Ones, 0x35)
+            Arg1 = P92E /* \P92E */
+            Store (Arg1 [0x00], Local0)
+            M1A0 (Local0, C010, Ones, 0x36)
+            Arg1 = P92F /* \P92F */
+            Store (Arg1 [0x00], Local0)
+            M1A0 (Local0, C010, Ones, 0x37)
+            Arg1 = P930 /* \P930 */
+            Store (Arg1 [0x00], Local0)
+            M1A0 (Local0, C010, Ones, 0x38)
+            Arg1 = P931 /* \P931 */
+            Store (Arg1 [0x00], Local0)
+            M1A0 (Local0, C010, Ones, 0x39)
+            Arg1 = P932 /* \P932 */
+            Store (Arg1 [0x00], Local0)
+            M1A0 (Local0, C010, Ones, 0x3A)
+            Arg1 = P933 /* \P933 */
+            Store (Arg1 [0x00], Local0)
+            M1A0 (Local0, C010, Ones, 0x3B)
+            Arg1 = P934 /* \P934 */
+            Store (Arg1 [0x00], Local0)
+            M1A0 (Local0, C010, Ones, 0x3C)
+            If (Y103)
+            {
+                Arg1 = P935 /* \P935 */
+                Store (Arg1 [0x00], Local0)
+                M1A0 (Local0, C010, Ones, 0x3D)
+            }
+
+            Arg1 = P936 /* \P936 */
+            Store (Arg1 [0x00], Local0)
+            M1A0 (Local0, C010, Ones, 0x3E)
+            Arg1 = P937 /* \P937 */
+            Store (Arg1 [0x00], Local0)
+            M1A0 (Local0, C010, Ones, 0x3F)
+            Arg1 = P938 /* \P938 */
+            Store (Arg1 [0x00], Local0)
+            M1A0 (Local0, C010, Ones, 0x40)
+            Arg1 = P939 /* \P939 */
+            Store (Arg1 [0x00], Local0)
+            M1A0 (Local0, C010, Ones, 0x41)
+            Arg1 = P93A /* \P93A */
+            Store (Arg1 [0x00], Local0)
+            M1A0 (Local0, C010, Ones, 0x42)
+            Arg1 = P93B /* \P93B */
+            Store (Arg1 [0x00], Local0)
+            M1A0 (Local0, C010, Ones, 0x43)
+            Arg1 = P93C /* \P93C */
+            Store (Arg1 [0x00], Local0)
+            M1A0 (Local0, C010, Ones, 0x44)
+            Arg1 = P93D /* \P93D */
+            Store (Arg1 [0x00], Local0)
+            M1A0 (Local0, C010, Ones, 0x45)
+            Arg1 = P93E /* \P93E */
+            Store (Arg1 [0x00], Local0)
+            M1A0 (Local0, C010, Ones, 0x46)
+            Arg1 = P93F /* \P93F */
+            Store (Arg1 [0x00], Local0)
+            M1A0 (Local0, C010, Ones, 0x47)
+            Arg1 = P940 /* \P940 */
+            Store (Arg1 [0x00], Local0)
+            M1A0 (Local0, C010, Ones, 0x48)
+            Arg1 = P941 /* \P941 */
+            Store (Arg1 [0x00], Local0)
+            M1A0 (Local0, C010, Ones, 0x49)
+            Arg1 = P942 /* \P942 */
+            Store (Arg1 [0x00], Local0)
+            M1A0 (Local0, C010, Ones, 0x4A)
+            Arg1 = P943 /* \P943 */
+            Store (Arg1 [0x00], Local0)
+            M1A0 (Local0, C010, Ones, 0x4B)
+            Arg1 = P944 /* \P944 */
+            Store (Arg1 [0x00], Local0)
+            M1A0 (Local0, C010, Ones, 0x4C)
+            Arg1 = P945 /* \P945 */
+            Store (Arg1 [0x00], Local0)
+            M1A0 (Local0, C010, Ones, 0x4D)
+            Arg1 = P946 /* \P946 */
+            Store (Arg1 [0x00], Local0)
+            M1A0 (Local0, C010, Ones, 0x4E)
+            Arg1 = P947 /* \P947 */
+            Store (Arg1 [0x00], Local0)
+            M1A0 (Local0, C010, Ones, 0x4F)
+            Arg1 = P948 /* \P948 */
+            Store (Arg1 [0x00], Local0)
+            M1A0 (Local0, C010, Ones, 0x50)
+            Arg1 = P949 /* \P949 */
+            Store (Arg1 [0x00], Local0)
+            M1A0 (Local0, C010, Ones, 0x51)
+            Arg1 = P94A /* \P94A */
+            Store (Arg1 [0x00], Local0)
+            M1A0 (Local0, C010, Ones, 0x52)
+            Arg1 = P94B /* \P94B */
+            Store (Arg1 [0x00], Local0)
+            M1A0 (Local0, C010, Ones, 0x53)
+            Arg1 = P94C /* \P94C */
+            Store (Arg1 [0x00], Local0)
+            M1A0 (Local0, C010, Ones, 0x54)
+            Arg1 = P94D /* \P94D */
+            Store (Arg1 [0x00], Local0)
+            M1A0 (Local0, C010, Ones, 0x55)
+            Arg1 = P94E /* \P94E */
+            Store (Arg1 [0x00], Local0)
+            M1A0 (Local0, C010, Ones, 0x56)
+            Arg1 = P94F /* \P94F */
+            Store (Arg1 [0x00], Local0)
+            M1A0 (Local0, C010, Ones, 0x57)
+            Arg1 = P950 /* \P950 */
+            Store (Arg1 [0x00], Local0)
+            M1A0 (Local0, C010, Ones, 0x58)
+            Arg1 = P951 /* \P951 */
+            Store (Arg1 [0x00], Local0)
+            M1A0 (Local0, C010, Ones, 0x59)
+            Arg1 = P952 /* \P952 */
+            Store (Arg1 [0x00], Local0)
+            M1A0 (Local0, C010, Ones, 0x5A)
+        }
+
+        /* T6:IR2-IR4 */
+        /* Computational Data */
+        Arg1 = S900 /* \S900 */
+        Local0 = Local1 = Arg1 [0x00]
+        M1A2 (Local0, C016, 0x00, 0x00, C009, 0x31, 0x5B)
+        M1A2 (Local1, C016, 0x00, 0x00, C009, 0x31, 0x5C)
+        Arg1 = S901 /* \S901 */
+        Local0 = Local1 = Arg1 [0x02]
+        M1A2 (Local0, C016, 0x00, 0x00, C009, 0x72, 0x5D)
+        M1A2 (Local1, C016, 0x00, 0x00, C009, 0x72, 0x5E)
+        Arg1 = B900 /* \B900 */
+        Local0 = Local1 = Arg1 [0x04]
+        M1A2 (Local0, C016, 0x00, 0x00, C009, 0xB4, 0x5F)
+        M1A2 (Local1, C016, 0x00, 0x00, C009, 0xB4, 0x60)
+        /* Elements of Package are Uninitialized */
+
+        If (Y104)
+        {
+            Arg1 = P900 /* \P900 */
+            Local0 = Local1 = Arg1 [0x00]
+            M1A0 (Local0, C008, Ones, 0x61)
+            M1A0 (Local1, C008, Ones, 0x62)
+        }
+
+        /* Elements of Package are Computational Data */
+
+        Arg1 = P901 /* \P901 */
+        Local0 = Local1 = Arg1 [0x00]
+        M1A2 (Local0, C009, 0x00, 0x00, C009, 0xABCD0004, 0x63)
+        M1A2 (Local1, C009, 0x00, 0x00, C009, 0xABCD0004, 0x64)
+        Arg1 = P901 /* \P901 */
+        Local0 = Local1 = Arg1 [0x01]
+        M1A2 (Local0, C009, 0x00, 0x00, C009, 0x1122334455660005, 0x65)
+        M1A2 (Local1, C009, 0x00, 0x00, C009, 0x1122334455660005, 0x66)
+        Arg1 = P902 /* \P902 */
+        Local0 = Local1 = Arg1 [0x00]
+        M1A2 (Local0, C00A, 0x00, 0x00, C00A, "12340006", 0x67)
+        M1A2 (Local1, C00A, 0x00, 0x00, C00A, "12340006", 0x68)
+        Arg1 = P902 /* \P902 */
+        Local0 = Local1 = Arg1 [0x01]
+        M1A2 (Local0, C00A, 0x00, 0x00, C00A, "q1w2e3r4t5y6u7i80007", 0x69)
+        M1A2 (Local1, C00A, 0x00, 0x00, C00A, "q1w2e3r4t5y6u7i80007", 0x6A)
+        Arg1 = P903 /* \P903 */
+        Local0 = Local1 = Arg1 [0x00]
+        M1A2 (Local0, C00A, 0x00, 0x00, C00A, "qwrtyuiop0008", 0x6B)
+        M1A2 (Local1, C00A, 0x00, 0x00, C00A, "qwrtyuiop0008", 0x6C)
+        Arg1 = P903 /* \P903 */
+        Local0 = Local1 = Arg1 [0x01]
+        M1A2 (Local0, C00A, 0x00, 0x00, C00A, "1234567890abdef0250009", 0x6D)
+        M1A2 (Local1, C00A, 0x00, 0x00, C00A, "1234567890abdef0250009", 0x6E)
+        Arg1 = P904 /* \P904 */
+        Local0 = Local1 = Arg1 [0x00]
+        M1A2 (Local0, C00B, 0x00, 0x00, C00B, Buffer (0x03)
+            {
+                 0xB5, 0xB6, 0xB7                                 // ...
+            }, 0x6F)
+        M1A2 (Local1, C00B, 0x00, 0x00, C00B, Buffer (0x03)
+            {
+                 0xB5, 0xB6, 0xB7                                 // ...
+            }, 0x70)
+        Arg1 = P905 /* \P905 */
+        Local0 = Local1 = Arg1 [0x00]
+        M1A2 (Local0, C00C, 0x01, 0x00, C009, 0x0ABC000A, 0x71)
+        M1A2 (Local1, C00C, 0x01, 0x00, C009, 0x0ABC000A, 0x72)
+        Arg1 = P905 /* \P905 */
+        Local0 = Local1 = Arg1 [0x00]
+        M1A2 (Local0, C00C, 0x01, 0x01, C00A, "0xabc000b", 0x73)
+        M1A2 (Local1, C00C, 0x01, 0x01, C00A, "0xabc000b", 0x74)
+        Arg1 = P906 /* \P906 */
+        Local0 = Local1 = Arg1 [0x00]
+        M1A2 (Local0, C00C, 0x01, 0x00, C00A, "abc000d", 0x75)
+        M1A2 (Local1, C00C, 0x01, 0x00, C00A, "abc000d", 0x76)
+        Arg1 = P907 /* \P907 */
+        Local0 = Local1 = Arg1 [0x00]
+        M1A2 (Local0, C00C, 0x01, 0x00, C00A, "aqwevbgnm000e", 0x77)
+        M1A2 (Local1, C00C, 0x01, 0x00, C00A, "aqwevbgnm000e", 0x78)
+        Arg1 = P908 /* \P908 */
+        Local0 = Local1 = Arg1 [0x00]
+        M1A2 (Local0, C00C, 0x01, 0x00, C00B, Buffer (0x05)
+            {
+                 0xBA, 0xBB, 0xBC, 0xBD, 0xBE                     // .....
+            }, 0x79)
+        M1A2 (Local1, C00C, 0x01, 0x00, C00B, Buffer (0x05)
+            {
+                 0xBA, 0xBB, 0xBC, 0xBD, 0xBE                     // .....
+            }, 0x7A)
+        Arg1 = P909 /* \P909 */
+        Local0 = Local1 = Arg1 [0x00]
+        M1A2 (Local0, C00C, 0x02, 0x00, C009, 0x0ABC000F, 0x7B)
+        M1A2 (Local1, C00C, 0x02, 0x00, C009, 0x0ABC000F, 0x7C)
+        Arg1 = P90A /* \P90A */
+        Local0 = Local1 = Arg1 [0x00]
+        M1A2 (Local0, C00C, 0x02, 0x00, C00A, "12340010", 0x7D)
+        M1A2 (Local1, C00C, 0x02, 0x00, C00A, "12340010", 0x7E)
+        Arg1 = P90B /* \P90B */
+        Local0 = Local1 = Arg1 [0x00]
+        M1A2 (Local0, C00C, 0x02, 0x00, C00A, "zxswefas0011", 0x7F)
+        M1A2 (Local1, C00C, 0x02, 0x00, C00A, "zxswefas0011", 0x80)
+        Arg1 = P90C /* \P90C */
+        Local0 = Local1 = Arg1 [0x00]
+        M1A2 (Local0, C00C, 0x02, 0x00, C00B, Buffer (0x03)
+            {
+                 0xBF, 0xC0, 0xC1                                 // ...
+            }, 0x81)
+        M1A2 (Local1, C00C, 0x02, 0x00, C00B, Buffer (0x03)
+            {
+                 0xBF, 0xC0, 0xC1                                 // ...
+            }, 0x82)
+        Arg1 = P90D /* \P90D */
+        Local0 = Local1 = Arg1 [0x00]
+        M1A2 (Local0, C009, 0x00, 0x00, C009, 0xFE7CB391D65A0000, 0x83)
+        M1A2 (Local1, C009, 0x00, 0x00, C009, 0xFE7CB391D65A0000, 0x84)
+        Arg1 = P90E /* \P90E */
+        Local0 = Local1 = Arg1 [0x00]
+        M1A2 (Local0, C009, 0x00, 0x00, C009, 0xC1790001, 0x85)
+        M1A2 (Local1, C009, 0x00, 0x00, C009, 0xC1790001, 0x86)
+        Arg1 = P90F /* \P90F */
+        Local0 = Local1 = Arg1 [0x00]
+        M1A2 (Local0, C00A, 0x00, 0x00, C00A, "12340002", 0x87)
+        M1A2 (Local1, C00A, 0x00, 0x00, C00A, "12340002", 0x88)
+        Arg1 = P910 /* \P910 */
+        Local0 = Local1 = Arg1 [0x00]
+        M1A2 (Local0, C00A, 0x00, 0x00, C00A, "qwrtyu0003", 0x89)
+        M1A2 (Local1, C00A, 0x00, 0x00, C00A, "qwrtyu0003", 0x8A)
+        Arg1 = P911 /* \P911 */
+        Local0 = Local1 = Arg1 [0x00]
+        M1A2 (Local0, C00B, 0x00, 0x00, C00B, Buffer (0x05)
+            {
+                 0xB0, 0xB1, 0xB2, 0xB3, 0xB4                     // .....
+            }, 0x8B)
+        M1A2 (Local1, C00B, 0x00, 0x00, C00B, Buffer (0x05)
+            {
+                 0xB0, 0xB1, 0xB2, 0xB3, 0xB4                     // .....
+            }, 0x8C)
+        If (Y118)
+        {
+            Arg1 = P912 /* \P912 */
+            Local0 = Local1 = Arg1 [0x00]
+            M1A2 (Local0, C00D, 0x00, 0x00, C00D, 0x00, 0x8D)
+            M1A2 (Local1, C00D, 0x00, 0x00, C00D, 0x00, 0x8E)
+            Arg1 = P913 /* \P913 */
+            Local0 = Local1 = Arg1 [0x00]
+            M1A2 (Local0, C00D, 0x00, 0x00, C00D, 0x00, 0x8F)
+            M1A2 (Local1, C00D, 0x00, 0x00, C00D, 0x00, 0x90)
+            Arg1 = P914 /* \P914 */
+            Local0 = Local1 = Arg1 [0x00]
+            M1A2 (Local0, C00D, 0x00, 0x00, C00D, 0x00, 0x91)
+            M1A2 (Local1, C00D, 0x00, 0x00, C00D, 0x00, 0x92)
+            Arg1 = P915 /* \P915 */
+            Local0 = Local1 = Arg1 [0x00]
+            M1A2 (Local0, C016, 0x00, 0x00, C016, 0xB0, 0x93)
+            M1A2 (Local1, C016, 0x00, 0x00, C016, 0xB0, 0x94)
+        }
+
+        /* Elements of Package are NOT Computational Data */
+
+        Arg1 = P916 /* \P916 */
+        Local0 = Local1 = Arg1 [0x00]
+        M1A0 (Local0, C00E, Ones, 0x95)
+        M1A0 (Local1, C00E, Ones, 0x96)
+        Arg1 = P917 /* \P917 */
+        Local0 = Local1 = Arg1 [0x00]
+        M1A0 (Local0, C00F, Ones, 0x97)
+        M1A0 (Local1, C00F, Ones, 0x98)
+        Arg1 = P918 /* \P918 */
+        Local0 = Local1 = Arg1 [0x00]
+        M1A0 (Local0, C011, Ones, 0x99)
+        M1A0 (Local1, C011, Ones, 0x9A)
+        Arg1 = P919 /* \P919 */
+        Local0 = Local1 = Arg1 [0x00]
+        M1A0 (Local0, C012, Ones, 0x9B)
+        M1A0 (Local1, C012, Ones, 0x9C)
+        Arg1 = P91A /* \P91A */
+        Local0 = Local1 = Arg1 [0x00]
+        M1A0 (Local0, C013, Ones, 0x9D)
+        M1A0 (Local1, C013, Ones, 0x9E)
+        Arg1 = P91B /* \P91B */
+        Local0 = Local1 = Arg1 [0x00]
+        M1A0 (Local0, C014, Ones, 0x9F)
+        M1A0 (Local1, C014, Ones, 0xA0)
+        Arg1 = P91C /* \P91C */
+        Local0 = Local1 = Arg1 [0x00]
+        M1A0 (Local0, C015, Ones, 0xA1)
+        M1A0 (Local1, C015, Ones, 0xA2)
+        /* Elements of Package are Methods */
+
+        If (Y105)
+        {
+            Arg1 = P91D /* \P91D */
+            Local0 = Local1 = Arg1 [0x00]
+            M1A0 (Local0, C010, Ones, 0xA3)
+            M1A0 (Local1, C010, Ones, 0xA4)
+            Arg1 = P91E /* \P91E */
+            Local0 = Local1 = Arg1 [0x00]
+            M1A0 (Local0, C010, Ones, 0xA5)
+            M1A0 (Local1, C010, Ones, 0xA6)
+            Arg1 = P91F /* \P91F */
+            Local0 = Local1 = Arg1 [0x00]
+            M1A0 (Local0, C010, Ones, 0xA7)
+            M1A0 (Local1, C010, Ones, 0xA8)
+            Arg1 = P920 /* \P920 */
+            Local0 = Local1 = Arg1 [0x00]
+            M1A0 (Local0, C010, Ones, 0xA9)
+            M1A0 (Local1, C010, Ones, 0xAA)
+            Arg1 = P921 /* \P921 */
+            Local0 = Local1 = Arg1 [0x00]
+            M1A0 (Local0, C010, Ones, 0xAB)
+            M1A0 (Local1, C010, Ones, 0xAC)
+            Arg1 = P922 /* \P922 */
+            Local0 = Local1 = Arg1 [0x00]
+            M1A0 (Local0, C010, Ones, 0xAD)
+            M1A0 (Local1, C010, Ones, 0xAE)
+            Arg1 = P923 /* \P923 */
+            Local0 = Local1 = Arg1 [0x00]
+            M1A0 (Local0, C010, Ones, 0xAF)
+            M1A0 (Local1, C010, Ones, 0xB0)
+            Arg1 = P924 /* \P924 */
+            Local0 = Local1 = Arg1 [0x00]
+            M1A0 (Local0, C010, Ones, 0xB1)
+            M1A0 (Local1, C010, Ones, 0xB2)
+            Arg1 = P925 /* \P925 */
+            Local0 = Local1 = Arg1 [0x00]
+            M1A0 (Local0, C010, Ones, 0xB3)
+            M1A0 (Local1, C010, Ones, 0xB4)
+            Arg1 = P926 /* \P926 */
+            Local0 = Local1 = Arg1 [0x00]
+            M1A0 (Local0, C010, Ones, 0xB5)
+            M1A0 (Local1, C010, Ones, 0xB6)
+            Arg1 = P927 /* \P927 */
+            Local0 = Local1 = Arg1 [0x00]
+            M1A0 (Local0, C010, Ones, 0xB7)
+            M1A0 (Local1, C010, Ones, 0xB8)
+            Arg1 = P928 /* \P928 */
+            Local0 = Local1 = Arg1 [0x00]
+            M1A0 (Local0, C010, Ones, 0xB9)
+            M1A0 (Local1, C010, Ones, 0xBA)
+            Arg1 = P929 /* \P929 */
+            Local0 = Local1 = Arg1 [0x00]
+            M1A0 (Local0, C010, Ones, 0xBB)
+            M1A0 (Local1, C010, Ones, 0xBC)
+            Arg1 = P92A /* \P92A */
+            Local0 = Local1 = Arg1 [0x00]
+            M1A0 (Local0, C010, Ones, 0xBD)
+            M1A0 (Local1, C010, Ones, 0xBE)
+            Arg1 = P92B /* \P92B */
+            Local0 = Local1 = Arg1 [0x00]
+            M1A0 (Local0, C010, Ones, 0xBF)
+            M1A0 (Local1, C010, Ones, 0xC0)
+            Arg1 = P92C /* \P92C */
+            Local0 = Local1 = Arg1 [0x00]
+            M1A0 (Local0, C010, Ones, 0xC1)
+            M1A0 (Local1, C010, Ones, 0xC2)
+            Arg1 = P92D /* \P92D */
+            Local0 = Local1 = Arg1 [0x00]
+            M1A0 (Local0, C010, Ones, 0xC3)
+            M1A0 (Local1, C010, Ones, 0xC4)
+            Arg1 = P92E /* \P92E */
+            Local0 = Local1 = Arg1 [0x00]
+            M1A0 (Local0, C010, Ones, 0xC5)
+            M1A0 (Local1, C010, Ones, 0xC6)
+            Arg1 = P92F /* \P92F */
+            Local0 = Local1 = Arg1 [0x00]
+            M1A0 (Local0, C010, Ones, 0xC7)
+            M1A0 (Local1, C010, Ones, 0xC8)
+            Arg1 = P930 /* \P930 */
+            Local0 = Local1 = Arg1 [0x00]
+            M1A0 (Local0, C010, Ones, 0xC9)
+            M1A0 (Local1, C010, Ones, 0xCA)
+            Arg1 = P931 /* \P931 */
+            Local0 = Local1 = Arg1 [0x00]
+            M1A0 (Local0, C010, Ones, 0xCB)
+            M1A0 (Local1, C010, Ones, 0xCC)
+            Arg1 = P932 /* \P932 */
+            Local0 = Local1 = Arg1 [0x00]
+            M1A0 (Local0, C010, Ones, 0xCD)
+            M1A0 (Local1, C010, Ones, 0xCE)
+            Arg1 = P933 /* \P933 */
+            Local0 = Local1 = Arg1 [0x00]
+            M1A0 (Local0, C010, Ones, 0xCF)
+            M1A0 (Local1, C010, Ones, 0xD0)
+            Arg1 = P934 /* \P934 */
+            Local0 = Local1 = Arg1 [0x00]
+            M1A0 (Local0, C010, Ones, 0xD1)
+            M1A0 (Local1, C010, Ones, 0xD2)
+            If (Y103)
+            {
+                Arg1 = P935 /* \P935 */
+                Local0 = Local1 = Arg1 [0x00]
+                M1A0 (Local0, C010, Ones, 0xD3)
+                M1A0 (Local1, C010, Ones, 0xD4)
+            }
+
+            Arg1 = P936 /* \P936 */
+            Local0 = Local1 = Arg1 [0x00]
+            M1A0 (Local0, C010, Ones, 0xD5)
+            M1A0 (Local1, C010, Ones, 0xD6)
+            Arg1 = P937 /* \P937 */
+            Local0 = Local1 = Arg1 [0x00]
+            M1A0 (Local0, C010, Ones, 0xD7)
+            M1A0 (Local1, C010, Ones, 0xD8)
+            Arg1 = P938 /* \P938 */
+            Local0 = Local1 = Arg1 [0x00]
+            M1A0 (Local0, C010, Ones, 0xD9)
+            M1A0 (Local1, C010, Ones, 0xDA)
+            Arg1 = P939 /* \P939 */
+            Local0 = Local1 = Arg1 [0x00]
+            M1A0 (Local0, C010, Ones, 0xDB)
+            M1A0 (Local1, C010, Ones, 0xDC)
+            Arg1 = P93A /* \P93A */
+            Local0 = Local1 = Arg1 [0x00]
+            M1A0 (Local0, C010, Ones, 0xDD)
+            M1A0 (Local1, C010, Ones, 0xDE)
+            Arg1 = P93B /* \P93B */
+            Local0 = Local1 = Arg1 [0x00]
+            M1A0 (Local0, C010, Ones, 0xDF)
+            M1A0 (Local1, C010, Ones, 0xE0)
+            Arg1 = P93C /* \P93C */
+            Local0 = Local1 = Arg1 [0x00]
+            M1A0 (Local0, C010, Ones, 0xE1)
+            M1A0 (Local1, C010, Ones, 0xE2)
+            Arg1 = P93D /* \P93D */
+            Local0 = Local1 = Arg1 [0x00]
+            M1A0 (Local0, C010, Ones, 0xE3)
+            M1A0 (Local1, C010, Ones, 0xE4)
+            Arg1 = P93E /* \P93E */
+            Local0 = Local1 = Arg1 [0x00]
+            M1A0 (Local0, C010, Ones, 0xE5)
+            M1A0 (Local1, C010, Ones, 0xE6)
+            Arg1 = P93F /* \P93F */
+            Local0 = Local1 = Arg1 [0x00]
+            M1A0 (Local0, C010, Ones, 0xE7)
+            M1A0 (Local1, C010, Ones, 0xE8)
+            Arg1 = P940 /* \P940 */
+            Local0 = Local1 = Arg1 [0x00]
+            M1A0 (Local0, C010, Ones, 0xE9)
+            M1A0 (Local1, C010, Ones, 0xEA)
+            Arg1 = P941 /* \P941 */
+            Local0 = Local1 = Arg1 [0x00]
+            M1A0 (Local0, C010, Ones, 0xEB)
+            M1A0 (Local1, C010, Ones, 0xEC)
+            Arg1 = P942 /* \P942 */
+            Local0 = Local1 = Arg1 [0x00]
+            M1A0 (Local0, C010, Ones, 0xED)
+            M1A0 (Local1, C010, Ones, 0xEE)
+            Arg1 = P943 /* \P943 */
+            Local0 = Local1 = Arg1 [0x00]
+            M1A0 (Local0, C010, Ones, 0xEF)
+            M1A0 (Local1, C010, Ones, 0xF0)
+            Arg1 = P944 /* \P944 */
+            Local0 = Local1 = Arg1 [0x00]
+            M1A0 (Local0, C010, Ones, 0xF1)
+            M1A0 (Local1, C010, Ones, 0xF2)
+            Arg1 = P945 /* \P945 */
+            Local0 = Local1 = Arg1 [0x00]
+            M1A0 (Local0, C010, Ones, 0xF3)
+            M1A0 (Local1, C010, Ones, 0xF4)
+            Arg1 = P946 /* \P946 */
+            Local0 = Local1 = Arg1 [0x00]
+            M1A0 (Local0, C010, Ones, 0xF5)
+            M1A0 (Local1, C010, Ones, 0xF6)
+            Arg1 = P947 /* \P947 */
+            Local0 = Local1 = Arg1 [0x00]
+            M1A0 (Local0, C010, Ones, 0xF7)
+            M1A0 (Local1, C010, Ones, 0xF8)
+            Arg1 = P948 /* \P948 */
+            Local0 = Local1 = Arg1 [0x00]
+            M1A0 (Local0, C010, Ones, 0xF9)
+            M1A0 (Local1, C010, Ones, 0xFA)
+            Arg1 = P949 /* \P949 */
+            Local0 = Local1 = Arg1 [0x00]
+            M1A0 (Local0, C010, Ones, 0xFB)
+            M1A0 (Local1, C010, Ones, 0xFC)
+            Arg1 = P94A /* \P94A */
+            Local0 = Local1 = Arg1 [0x00]
+            M1A0 (Local0, C010, Ones, 0xFD)
+            M1A0 (Local1, C010, Ones, 0xFE)
+            Arg1 = P94B /* \P94B */
+            Local0 = Local1 = Arg1 [0x00]
+            M1A0 (Local0, C010, Ones, 0xFF)
+            M1A0 (Local1, C010, Ones, 0x0100)
+            Arg1 = P94C /* \P94C */
+            Local0 = Local1 = Arg1 [0x00]
+            M1A0 (Local0, C010, Ones, 0x0101)
+            M1A0 (Local1, C010, Ones, 0x0102)
+            Arg1 = P94D /* \P94D */
+            Local0 = Local1 = Arg1 [0x00]
+            M1A0 (Local0, C010, Ones, 0x0103)
+            M1A0 (Local1, C010, Ones, 0x0104)
+            Arg1 = P94E /* \P94E */
+            Local0 = Local1 = Arg1 [0x00]
+            M1A0 (Local0, C010, Ones, 0x0105)
+            M1A0 (Local1, C010, Ones, 0x0106)
+            Arg1 = P94F /* \P94F */
+            Local0 = Local1 = Arg1 [0x00]
+            M1A0 (Local0, C010, Ones, 0x0107)
+            M1A0 (Local1, C010, Ones, 0x0108)
+            Arg1 = P950 /* \P950 */
+            Local0 = Local1 = Arg1 [0x00]
+            M1A0 (Local0, C010, Ones, 0x0109)
+            M1A0 (Local1, C010, Ones, 0x010A)
+            Arg1 = P951 /* \P951 */
+            Local0 = Local1 = Arg1 [0x00]
+            M1A0 (Local0, C010, Ones, 0x010B)
+            M1A0 (Local1, C010, Ones, 0x010C)
+            Arg1 = P952 /* \P952 */
+            Local0 = Local1 = Arg1 [0x00]
+            M1A0 (Local0, C010, Ones, 0x010D)
+            M1A0 (Local1, C010, Ones, 0x010E)
+        }
+
+        M1A6 ()
+    }
+
+    /* m16a,m191,m171 */
+    /* arg2 - writing mode */
+    Method (M181, 3, NotSerialized)
+    {
+        If (Y100)
+        {
+            TS00 ("m181")
+        }
+        Else
+        {
+            Debug = "m181"
+        }
+
+        /* T6:R0-R5,R14 */
+        /* Uninitialized Local */
+        If (Arg0)
+        {
+            Arg6 = 0x00
+        }
+
+        Local0 = RefOf (Arg6)
+        M1A0 (Local0, C008, Ones, 0x03E8)
+        /* Computational Data */
+
+        Arg1 = I900 /* \I900 */
+        Local0 = RefOf (Arg1)
+        M1A2 (Local0, C009, 0x00, 0x00, C009, 0xFE7CB391D65A0000, 0x010F)
+        Arg1 = I901 /* \I901 */
+        Local0 = RefOf (Arg1)
+        M1A2 (Local0, C009, 0x00, 0x00, C009, 0xC1790001, 0x0110)
+        Arg1 = S900 /* \S900 */
+        Local0 = RefOf (Arg1)
+        M1A2 (Local0, C00A, 0x00, 0x00, C00A, "12340002", 0x0111)
+        Arg1 = S901 /* \S901 */
+        Local0 = RefOf (Arg1)
+        M1A2 (Local0, C00A, 0x00, 0x00, C00A, "qwrtyu0003", 0x0112)
+        Arg1 = B900 /* \B900 */
+        Local0 = RefOf (Arg1)
+        M1A2 (Local0, C00B, 0x00, 0x00, C00B, Buffer (0x05)
+            {
+                 0xB0, 0xB1, 0xB2, 0xB3, 0xB4                     // .....
+            }, 0x0113)
+        /* Not Computational Data */
+        /* Package */
+        Arg1 = P953 /* \P953 */
+        Local0 = RefOf (Arg1)
+        M1A2 (Local0, C00C, 0x01, 0x00, C009, 0xABCD0018, 0x03EF)
+        If (Arg2)
+        {
+            /* Data are unchanged, because writings were made */
+            /* into the new objects assosiated with arg1. */
+            M1A6 ()
+            Return (Zero)
+        }
+
+        /* Computational Data (Field Unit and Buffer Field) */
+
+        Arg1 = F900 /* \F900 */
+        Local0 = RefOf (Arg1)
+        M1A2 (Local0, C009, 0x00, 0x00, C009, 0x00, 0x0114)
+        Arg1 = BN90 /* \BN90 */
+        Local0 = RefOf (Arg1)
+        M1A2 (Local0, C009, 0x00, 0x00, C009, 0x00, 0x0115)
+        Arg1 = IF90 /* \IF90 */
+        Local0 = RefOf (Arg1)
+        M1A2 (Local0, C009, 0x00, 0x00, C009, 0x00, 0x0116)
+        Arg1 = BF90 /* \BF90 */
+        Local0 = RefOf (Arg1)
+        M1A2 (Local0, C009, 0x00, 0x00, C009, 0xB0, 0x0117)
+        /* Elements of Package are Uninitialized */
+
+        Arg1 = P900 /* \P900 */
+        Local0 = RefOf (Arg1)
+        M1A0 (Local0, C00C, Ones, 0x011F)
+        /* Elements of Package are Computational Data */
+
+        Arg1 = P901 /* \P901 */
+        Local0 = RefOf (Arg1)
+        M1A2 (Local0, C00C, 0x01, 0x00, C009, 0xABCD0004, 0x0120)
+        M1A2 (Local0, C00C, 0x01, 0x01, C009, 0x1122334455660005, 0x0121)
+        Arg1 = P902 /* \P902 */
+        Local0 = RefOf (Arg1)
+        M1A2 (Local0, C00C, 0x01, 0x00, C00A, "12340006", 0x0122)
+        M1A2 (Local0, C00C, 0x01, 0x01, C00A, "q1w2e3r4t5y6u7i80007", 0x0123)
+        Arg1 = P903 /* \P903 */
+        Local0 = RefOf (Arg1)
+        M1A2 (Local0, C00C, 0x01, 0x00, C00A, "qwrtyuiop0008", 0x0124)
+        M1A2 (Local0, C00C, 0x01, 0x01, C00A, "1234567890abdef0250009", 0x0125)
+        Arg1 = P904 /* \P904 */
+        Local0 = RefOf (Arg1)
+        M1A2 (Local0, C00C, 0x01, 0x00, C00B, Buffer (0x03)
+            {
+                 0xB5, 0xB6, 0xB7                                 // ...
+            }, 0x0126)
+        Arg1 = P905 /* \P905 */
+        Local0 = RefOf (Arg1)
+        M1A2 (Local0, C00C, 0x02, 0x00, C009, 0x0ABC000A, 0x0127)
+        M1A2 (Local0, C00C, 0x02, 0x01, C00A, "0xabc000b", 0x0128)
+        Arg1 = P906 /* \P906 */
+        Local0 = RefOf (Arg1)
+        M1A2 (Local0, C00C, 0x02, 0x00, C00A, "abc000d", 0x0129)
+        Arg1 = P907 /* \P907 */
+        Local0 = RefOf (Arg1)
+        M1A2 (Local0, C00C, 0x02, 0x00, C00A, "aqwevbgnm000e", 0x012A)
+        Arg1 = P908 /* \P908 */
+        Local0 = RefOf (Arg1)
+        M1A2 (Local0, C00C, 0x02, 0x00, C00B, Buffer (0x05)
+            {
+                 0xBA, 0xBB, 0xBC, 0xBD, 0xBE                     // .....
+            }, 0x012B)
+        Arg1 = P909 /* \P909 */
+        Local0 = RefOf (Arg1)
+        M1A2 (Local0, C00C, 0x03, 0x00, C009, 0x0ABC000F, 0x012C)
+        Arg1 = P90A /* \P90A */
+        Local0 = RefOf (Arg1)
+        M1A2 (Local0, C00C, 0x03, 0x00, C00A, "12340010", 0x012D)
+        Arg1 = P90B /* \P90B */
+        Local0 = RefOf (Arg1)
+        M1A2 (Local0, C00C, 0x03, 0x00, C00A, "zxswefas0011", 0x012E)
+        Arg1 = P90C /* \P90C */
+        Local0 = RefOf (Arg1)
+        M1A2 (Local0, C00C, 0x03, 0x00, C00B, Buffer (0x03)
+            {
+                 0xBF, 0xC0, 0xC1                                 // ...
+            }, 0x012F)
+        Arg1 = P90D /* \P90D */
+        Local0 = RefOf (Arg1)
+        M1A2 (Local0, C00C, 0x01, 0x00, C009, 0xFE7CB391D65A0000, 0x0130)
+        Arg1 = P90E /* \P90E */
+        Local0 = RefOf (Arg1)
+        M1A2 (Local0, C00C, 0x01, 0x00, C009, 0xC1790001, 0x0131)
+        Arg1 = P90F /* \P90F */
+        Local0 = RefOf (Arg1)
+        M1A2 (Local0, C00C, 0x01, 0x00, C00A, "12340002", 0x0132)
+        Arg1 = P910 /* \P910 */
+        Local0 = RefOf (Arg1)
+        M1A2 (Local0, C00C, 0x01, 0x00, C00A, "qwrtyu0003", 0x0133)
+        Arg1 = P911 /* \P911 */
+        Local0 = RefOf (Arg1)
+        M1A2 (Local0, C00C, 0x01, 0x00, C00B, Buffer (0x05)
+            {
+                 0xB0, 0xB1, 0xB2, 0xB3, 0xB4                     // .....
+            }, 0x0134)
+        If (Y118)
+        {
+            Arg1 = P912 /* \P912 */
+            Local0 = RefOf (Arg1)
+            M1A2 (Local0, C00C, 0x01, 0x00, C00D, 0x00, 0x0135)
+            Arg1 = P913 /* \P913 */
+            Local0 = RefOf (Arg1)
+            M1A2 (Local0, C00C, 0x01, 0x00, C00D, 0x00, 0x0136)
+            Arg1 = P914 /* \P914 */
+            Local0 = RefOf (Arg1)
+            M1A2 (Local0, C00C, 0x01, 0x00, C00D, 0x00, 0x0137)
+            Arg1 = P915 /* \P915 */
+            Local0 = RefOf (Arg1)
+            M1A2 (Local0, C00C, 0x01, 0x00, C016, 0xB0, 0x0138)
+        }
+
+        /* Elements of Package are NOT Computational Data */
+
+        Arg1 = P916 /* \P916 */
+        Local0 = RefOf (Arg1)
+        M1A0 (Local0, C00C, Ones, 0x0139)
+        Arg1 = P917 /* \P917 */
+        Local0 = RefOf (Arg1)
+        M1A0 (Local0, C00C, Ones, 0x013A)
+        Arg1 = P918 /* \P918 */
+        Local0 = RefOf (Arg1)
+        M1A0 (Local0, C00C, Ones, 0x013B)
+        Arg1 = P919 /* \P919 */
+        Local0 = RefOf (Arg1)
+        M1A0 (Local0, C00C, Ones, 0x013C)
+        Arg1 = P91A /* \P91A */
+        Local0 = RefOf (Arg1)
+        M1A0 (Local0, C00C, Ones, 0x013D)
+        Arg1 = P91B /* \P91B */
+        Local0 = RefOf (Arg1)
+        M1A0 (Local0, C00C, Ones, 0x013E)
+        Arg1 = P91C /* \P91C */
+        Local0 = RefOf (Arg1)
+        M1A0 (Local0, C00C, Ones, 0x013F)
+        /* Elements of Package are Methods */
+
+        Arg1 = P91D /* \P91D */
+        Local0 = RefOf (Arg1)
+        M1A0 (Local0, C00C, Ones, 0x0140)
+        Arg1 = P91E /* \P91E */
+        Local0 = RefOf (Arg1)
+        M1A0 (Local0, C00C, Ones, 0x0141)
+        Arg1 = P91F /* \P91F */
+        Local0 = RefOf (Arg1)
+        M1A0 (Local0, C00C, Ones, 0x0142)
+        Arg1 = P920 /* \P920 */
+        Local0 = RefOf (Arg1)
+        M1A0 (Local0, C00C, Ones, 0x0143)
+        Arg1 = P921 /* \P921 */
+        Local0 = RefOf (Arg1)
+        M1A0 (Local0, C00C, Ones, 0x0144)
+        Arg1 = P922 /* \P922 */
+        Local0 = RefOf (Arg1)
+        M1A0 (Local0, C00C, Ones, 0x0145)
+        Arg1 = P923 /* \P923 */
+        Local0 = RefOf (Arg1)
+        M1A0 (Local0, C00C, Ones, 0x0146)
+        Arg1 = P924 /* \P924 */
+        Local0 = RefOf (Arg1)
+        M1A0 (Local0, C00C, Ones, 0x0147)
+        Arg1 = P925 /* \P925 */
+        Local0 = RefOf (Arg1)
+        M1A0 (Local0, C00C, Ones, 0x0148)
+        Arg1 = P926 /* \P926 */
+        Local0 = RefOf (Arg1)
+        M1A0 (Local0, C00C, Ones, 0x0149)
+        Arg1 = P927 /* \P927 */
+        Local0 = RefOf (Arg1)
+        M1A0 (Local0, C00C, Ones, 0x014A)
+        Arg1 = P928 /* \P928 */
+        Local0 = RefOf (Arg1)
+        M1A0 (Local0, C00C, Ones, 0x014B)
+        Arg1 = P929 /* \P929 */
+        Local0 = RefOf (Arg1)
+        M1A0 (Local0, C00C, Ones, 0x014C)
+        Arg1 = P92A /* \P92A */
+        Local0 = RefOf (Arg1)
+        M1A0 (Local0, C00C, Ones, 0x014D)
+        Arg1 = P92B /* \P92B */
+        Local0 = RefOf (Arg1)
+        M1A0 (Local0, C00C, Ones, 0x014E)
+        Arg1 = P92C /* \P92C */
+        Local0 = RefOf (Arg1)
+        M1A0 (Local0, C00C, Ones, 0x014F)
+        Arg1 = P92D /* \P92D */
+        Local0 = RefOf (Arg1)
+        M1A0 (Local0, C00C, Ones, 0x0150)
+        Arg1 = P92E /* \P92E */
+        Local0 = RefOf (Arg1)
+        M1A0 (Local0, C00C, Ones, 0x0151)
+        Arg1 = P92F /* \P92F */
+        Local0 = RefOf (Arg1)
+        M1A0 (Local0, C00C, Ones, 0x0152)
+        Arg1 = P930 /* \P930 */
+        Local0 = RefOf (Arg1)
+        M1A0 (Local0, C00C, Ones, 0x0153)
+        Arg1 = P931 /* \P931 */
+        Local0 = RefOf (Arg1)
+        M1A0 (Local0, C00C, Ones, 0x0154)
+        Arg1 = P932 /* \P932 */
+        Local0 = RefOf (Arg1)
+        M1A0 (Local0, C00C, Ones, 0x0155)
+        Arg1 = P933 /* \P933 */
+        Local0 = RefOf (Arg1)
+        M1A0 (Local0, C00C, Ones, 0x0156)
+        Arg1 = P934 /* \P934 */
+        Local0 = RefOf (Arg1)
+        M1A0 (Local0, C00C, Ones, 0x0157)
+        Arg1 = P935 /* \P935 */
+        Local0 = RefOf (Arg1)
+        M1A0 (Local0, C00C, Ones, 0x0158)
+        Arg1 = P936 /* \P936 */
+        Local0 = RefOf (Arg1)
+        M1A0 (Local0, C00C, Ones, 0x0159)
+        Arg1 = P937 /* \P937 */
+        Local0 = RefOf (Arg1)
+        M1A0 (Local0, C00C, Ones, 0x015A)
+        Arg1 = P938 /* \P938 */
+        Local0 = RefOf (Arg1)
+        M1A0 (Local0, C00C, Ones, 0x015B)
+        Arg1 = P939 /* \P939 */
+        Local0 = RefOf (Arg1)
+        M1A0 (Local0, C00C, Ones, 0x015C)
+        Arg1 = P93A /* \P93A */
+        Local0 = RefOf (Arg1)
+        M1A0 (Local0, C00C, Ones, 0x015D)
+        Arg1 = P93B /* \P93B */
+        Local0 = RefOf (Arg1)
+        M1A0 (Local0, C00C, Ones, 0x015E)
+        Arg1 = P93C /* \P93C */
+        Local0 = RefOf (Arg1)
+        M1A0 (Local0, C00C, Ones, 0x015F)
+        Arg1 = P93D /* \P93D */
+        Local0 = RefOf (Arg1)
+        M1A0 (Local0, C00C, Ones, 0x0160)
+        Arg1 = P93E /* \P93E */
+        Local0 = RefOf (Arg1)
+        M1A0 (Local0, C00C, Ones, 0x0161)
+        Arg1 = P93F /* \P93F */
+        Local0 = RefOf (Arg1)
+        M1A0 (Local0, C00C, Ones, 0x0162)
+        Arg1 = P940 /* \P940 */
+        Local0 = RefOf (Arg1)
+        M1A0 (Local0, C00C, Ones, 0x0163)
+        Arg1 = P941 /* \P941 */
+        Local0 = RefOf (Arg1)
+        M1A0 (Local0, C00C, Ones, 0x0164)
+        Arg1 = P942 /* \P942 */
+        Local0 = RefOf (Arg1)
+        M1A0 (Local0, C00C, Ones, 0x0165)
+        Arg1 = P943 /* \P943 */
+        Local0 = RefOf (Arg1)
+        M1A0 (Local0, C00C, Ones, 0x0166)
+        Arg1 = P944 /* \P944 */
+        Local0 = RefOf (Arg1)
+        M1A0 (Local0, C00C, Ones, 0x0167)
+        Arg1 = P945 /* \P945 */
+        Local0 = RefOf (Arg1)
+        M1A0 (Local0, C00C, Ones, 0x0168)
+        Arg1 = P946 /* \P946 */
+        Local0 = RefOf (Arg1)
+        M1A0 (Local0, C00C, Ones, 0x0169)
+        Arg1 = P947 /* \P947 */
+        Local0 = RefOf (Arg1)
+        M1A0 (Local0, C00C, Ones, 0x016A)
+        Arg1 = P948 /* \P948 */
+        Local0 = RefOf (Arg1)
+        M1A0 (Local0, C00C, Ones, 0x016B)
+        Arg1 = P949 /* \P949 */
+        Local0 = RefOf (Arg1)
+        M1A0 (Local0, C00C, Ones, 0x016C)
+        Arg1 = P94A /* \P94A */
+        Local0 = RefOf (Arg1)
+        M1A0 (Local0, C00C, Ones, 0x016D)
+        Arg1 = P94B /* \P94B */
+        Local0 = RefOf (Arg1)
+        M1A0 (Local0, C00C, Ones, 0x016E)
+        Arg1 = P94C /* \P94C */
+        Local0 = RefOf (Arg1)
+        M1A0 (Local0, C00C, Ones, 0x016F)
+        Arg1 = P94D /* \P94D */
+        Local0 = RefOf (Arg1)
+        M1A0 (Local0, C00C, Ones, 0x0170)
+        Arg1 = P94E /* \P94E */
+        Local0 = RefOf (Arg1)
+        M1A0 (Local0, C00C, Ones, 0x0171)
+        Arg1 = P94F /* \P94F */
+        Local0 = RefOf (Arg1)
+        M1A0 (Local0, C00C, Ones, 0x0172)
+        Arg1 = P950 /* \P950 */
+        Local0 = RefOf (Arg1)
+        M1A0 (Local0, C00C, Ones, 0x0173)
+        Arg1 = P951 /* \P951 */
+        Local0 = RefOf (Arg1)
+        M1A0 (Local0, C00C, Ones, 0x0174)
+        Arg1 = P952 /* \P952 */
+        Local0 = RefOf (Arg1)
+        M1A0 (Local0, C00C, Ones, 0x0175)
+        M1A6 ()
+        Return (Zero)
+    }
+
+    /* m16c,m193,m172 */
+    /* arg2 - writing mode */
+    Method (M182, 3, NotSerialized)
+    {
+        If (Y100)
+        {
+            TS00 ("m182")
+        }
+        Else
+        {
+            Debug = "m182"
+        }
+
+        /* T6:CR0-CR5,CR14 */
+        /* Uninitialized Local */
+        If (Arg0)
+        {
+            Arg6 = 0x00
+        }
+
+        Local1 = CondRefOf (Arg6, Local0)
+        If (M1A4 (Local1, 0x024D))
+        {
+            M1A0 (Local0, C008, Ones, 0x024E)
+        }
+
+        /* Computational Data */
+
+        Arg1 = I900 /* \I900 */
+        Local1 = CondRefOf (Arg1, Local0)
+        If (M1A4 (Local1, 0x024F))
+        {
+            M1A2 (Local0, C009, 0x00, 0x00, C009, 0xFE7CB391D65A0000, 0x0250)
+        }
+
+        Arg1 = I901 /* \I901 */
+        Local1 = CondRefOf (Arg1, Local0)
+        If (M1A4 (Local1, 0x0251))
+        {
+            M1A2 (Local0, C009, 0x00, 0x00, C009, 0xC1790001, 0x0252)
+        }
+
+        Arg1 = S900 /* \S900 */
+        Local1 = CondRefOf (Arg1, Local0)
+        If (M1A4 (Local1, 0x0253))
+        {
+            M1A2 (Local0, C00A, 0x00, 0x00, C00A, "12340002", 0x0254)
+        }
+
+        Arg1 = S901 /* \S901 */
+        Local1 = CondRefOf (Arg1, Local0)
+        If (M1A4 (Local1, 0x0255))
+        {
+            M1A2 (Local0, C00A, 0x00, 0x00, C00A, "qwrtyu0003", 0x0256)
+        }
+
+        Arg1 = B900 /* \B900 */
+        Local1 = CondRefOf (Arg1, Local0)
+        If (M1A4 (Local1, 0x0257))
+        {
+            M1A2 (Local0, C00B, 0x00, 0x00, C00B, Buffer (0x05)
+                {
+                     0xB0, 0xB1, 0xB2, 0xB3, 0xB4                     // .....
+                }, 0x0258)
+        }
+
+        /* Not Computational Data */
+        /* Package */
+        Arg1 = P953 /* \P953 */
+        Local1 = CondRefOf (Arg1, Local0)
+        If (M1A4 (Local1, 0x03F0))
+        {
+            M1A2 (Local0, C00C, 0x01, 0x00, C009, 0xABCD0018, 0x03F1)
+        }
+
+        If (Arg2)
+        {
+            /* Data are unchanged, because writings were made */
+            /* into the new objects assosiated with arg1. */
+            M1A6 ()
+            Return (Zero)
+        }
+
+        /* Computational Data (Field Unit and Buffer Field) */
+
+        Arg1 = F900 /* \F900 */
+        Local1 = CondRefOf (Arg1, Local0)
+        If (M1A4 (Local1, 0x0259))
+        {
+            M1A2 (Local0, C009, 0x00, 0x00, C009, 0x00, 0x025A)
+        }
+
+        Arg1 = BN90 /* \BN90 */
+        Local1 = CondRefOf (Arg1, Local0)
+        If (M1A4 (Local1, 0x025B))
+        {
+            M1A2 (Local0, C009, 0x00, 0x00, C009, 0x00, 0x025C)
+        }
+
+        Arg1 = IF90 /* \IF90 */
+        Local1 = CondRefOf (Arg1, Local0)
+        If (M1A4 (Local1, 0x025D))
+        {
+            M1A2 (Local0, C009, 0x00, 0x00, C009, 0x00, 0x025E)
+        }
+
+        Arg1 = BF90 /* \BF90 */
+        Local1 = CondRefOf (Arg1, Local0)
+        If (M1A4 (Local1, 0x025F))
+        {
+            M1A2 (Local0, C009, 0x00, 0x00, C009, 0xB0, 0x0260)
+        }
+
+        /* Elements of Package are Uninitialized */
+
+        Arg1 = P900 /* \P900 */
+        Local1 = CondRefOf (Arg1, Local0)
+        M1A0 (Local0, C00C, Local1, 0x0268)
+        /* Elements of Package are Computational Data */
+
+        Arg1 = P901 /* \P901 */
+        Local1 = CondRefOf (Arg1, Local0)
+        If (M1A4 (Local1, 0x0269))
+        {
+            M1A2 (Local0, C00C, 0x01, 0x00, C009, 0xABCD0004, 0x026A)
+            M1A2 (Local0, C00C, 0x01, 0x01, C009, 0x1122334455660005, 0x026B)
+        }
+
+        Arg1 = P902 /* \P902 */
+        Local1 = CondRefOf (Arg1, Local0)
+        If (M1A4 (Local1, 0x026C))
+        {
+            M1A2 (Local0, C00C, 0x01, 0x00, C00A, "12340006", 0x026D)
+            M1A2 (Local0, C00C, 0x01, 0x01, C00A, "q1w2e3r4t5y6u7i80007", 0x026E)
+        }
+
+        Arg1 = P903 /* \P903 */
+        Local1 = CondRefOf (Arg1, Local0)
+        If (M1A4 (Local1, 0x026F))
+        {
+            M1A2 (Local0, C00C, 0x01, 0x00, C00A, "qwrtyuiop0008", 0x0270)
+            M1A2 (Local0, C00C, 0x01, 0x01, C00A, "1234567890abdef0250009", 0x0271)
+        }
+
+        Arg1 = P904 /* \P904 */
+        Local1 = CondRefOf (Arg1, Local0)
+        If (M1A4 (Local1, 0x0272))
+        {
+            M1A2 (Local0, C00C, 0x01, 0x00, C00B, Buffer (0x03)
+                {
+                     0xB5, 0xB6, 0xB7                                 // ...
+                }, 0x0273)
+        }
+
+        Arg1 = P905 /* \P905 */
+        Local1 = CondRefOf (Arg1, Local0)
+        If (M1A4 (Local1, 0x0274))
+        {
+            M1A2 (Local0, C00C, 0x02, 0x00, C009, 0x0ABC000A, 0x0275)
+            M1A2 (Local0, C00C, 0x02, 0x01, C00A, "0xabc000b", 0x0276)
+        }
+
+        Arg1 = P906 /* \P906 */
+        Local1 = CondRefOf (Arg1, Local0)
+        If (M1A4 (Local1, 0x0277))
+        {
+            M1A2 (Local0, C00C, 0x02, 0x00, C00A, "abc000d", 0x0278)
+        }
+
+        Arg1 = P907 /* \P907 */
+        Local1 = CondRefOf (Arg1, Local0)
+        If (M1A4 (Local1, 0x0279))
+        {
+            M1A2 (Local0, C00C, 0x02, 0x00, C00A, "aqwevbgnm000e", 0x027A)
+        }
+
+        Arg1 = P908 /* \P908 */
+        Local1 = CondRefOf (Arg1, Local0)
+        If (M1A4 (Local1, 0x027B))
+        {
+            M1A2 (Local0, C00C, 0x02, 0x00, C00B, Buffer (0x05)
+                {
+                     0xBA, 0xBB, 0xBC, 0xBD, 0xBE                     // .....
+                }, 0x027C)
+        }
+
+        Arg1 = P909 /* \P909 */
+        Local1 = CondRefOf (Arg1, Local0)
+        If (M1A4 (Local1, 0x027D))
+        {
+            M1A2 (Local0, C00C, 0x03, 0x00, C009, 0x0ABC000F, 0x027E)
+        }
+
+        Arg1 = P90A /* \P90A */
+        Local1 = CondRefOf (Arg1, Local0)
+        If (M1A4 (Local1, 0x027F))
+        {
+            M1A2 (Local0, C00C, 0x03, 0x00, C00A, "12340010", 0x0280)
+        }
+
+        Arg1 = P90B /* \P90B */
+        Local1 = CondRefOf (Arg1, Local0)
+        If (M1A4 (Local1, 0x0281))
+        {
+            M1A2 (Local0, C00C, 0x03, 0x00, C00A, "zxswefas0011", 0x0282)
+        }
+
+        Arg1 = P90C /* \P90C */
+        Local1 = CondRefOf (Arg1, Local0)
+        If (M1A4 (Local1, 0x0283))
+        {
+            M1A2 (Local0, C00C, 0x03, 0x00, C00B, Buffer (0x03)
+                {
+                     0xBF, 0xC0, 0xC1                                 // ...
+                }, 0x0284)
+        }
+
+        Arg1 = P90D /* \P90D */
+        Local1 = CondRefOf (Arg1, Local0)
+        If (M1A4 (Local1, 0x0285))
+        {
+            M1A2 (Local0, C00C, 0x01, 0x00, C009, 0xFE7CB391D65A0000, 0x0286)
+        }
+
+        Arg1 = P90E /* \P90E */
+        Local1 = CondRefOf (Arg1, Local0)
+        If (M1A4 (Local1, 0x0287))
+        {
+            M1A2 (Local0, C00C, 0x01, 0x00, C009, 0xC1790001, 0x0288)
+        }
+
+        Arg1 = P90F /* \P90F */
+        Local1 = CondRefOf (Arg1, Local0)
+        If (M1A4 (Local1, 0x0289))
+        {
+            M1A2 (Local0, C00C, 0x01, 0x00, C00A, "12340002", 0x028A)
+        }
+
+        Arg1 = P910 /* \P910 */
+        Local1 = CondRefOf (Arg1, Local0)
+        If (M1A4 (Local1, 0x028B))
+        {
+            M1A2 (Local0, C00C, 0x01, 0x00, C00A, "qwrtyu0003", 0x028C)
+        }
+
+        Arg1 = P911 /* \P911 */
+        Local1 = CondRefOf (Arg1, Local0)
+        If (M1A4 (Local1, 0x028D))
+        {
+            M1A2 (Local0, C00C, 0x01, 0x00, C00B, Buffer (0x05)
+                {
+                     0xB0, 0xB1, 0xB2, 0xB3, 0xB4                     // .....
+                }, 0x028E)
+        }
+
+        If (Y118)
+        {
+            Arg1 = P912 /* \P912 */
+            Local1 = CondRefOf (Arg1, Local0)
+            If (M1A4 (Local1, 0x028F))
+            {
+                M1A2 (Local0, C00C, 0x01, 0x00, C00D, 0x00, 0x0290)
+            }
+
+            Arg1 = P913 /* \P913 */
+            Local1 = CondRefOf (Arg1, Local0)
+            If (M1A4 (Local1, 0x0291))
+            {
+                M1A2 (Local0, C00C, 0x01, 0x00, C00D, 0x00, 0x0292)
+            }
+
+            Arg1 = P914 /* \P914 */
+            Local1 = CondRefOf (Arg1, Local0)
+            If (M1A4 (Local1, 0x0293))
+            {
+                M1A2 (Local0, C00C, 0x01, 0x00, C00D, 0x00, 0x0294)
+            }
+
+            Arg1 = P915 /* \P915 */
+            Local1 = CondRefOf (Arg1, Local0)
+            If (M1A4 (Local1, 0x0295))
+            {
+                M1A2 (Local0, C00C, 0x01, 0x00, C016, 0xB0, 0x0296)
+            }
+        }
+
+        /* Elements of Package are NOT Computational Data */
+
+        Arg1 = P916 /* \P916 */
+        Local1 = CondRefOf (Arg1, Local0)
+        M1A0 (Local0, C00C, Local1, 0x0297)
+        Arg1 = P917 /* \P917 */
+        Local1 = CondRefOf (Arg1, Local0)
+        M1A0 (Local0, C00C, Local1, 0x0298)
+        Arg1 = P918 /* \P918 */
+        Local1 = CondRefOf (Arg1, Local0)
+        M1A0 (Local0, C00C, Local1, 0x19FF)
+        Arg1 = P919 /* \P919 */
+        Local1 = CondRefOf (Arg1, Local0)
+        M1A0 (Local0, C00C, Local1, 0x029A)
+        Arg1 = P91A /* \P91A */
+        Local1 = CondRefOf (Arg1, Local0)
+        M1A0 (Local0, C00C, Local1, 0x029B)
+        Arg1 = P91B /* \P91B */
+        Local1 = CondRefOf (Arg1, Local0)
+        M1A0 (Local0, C00C, Local1, 0x029C)
+        Arg1 = P91C /* \P91C */
+        Local1 = CondRefOf (Arg1, Local0)
+        M1A0 (Local0, C00C, Local1, 0x029D)
+        /* Elements of Package are Methods */
+
+        Arg1 = P91D /* \P91D */
+        Local1 = CondRefOf (Arg1, Local0)
+        M1A0 (Local0, C00C, Local1, 0x029E)
+        Arg1 = P91E /* \P91E */
+        Local1 = CondRefOf (Arg1, Local0)
+        M1A0 (Local0, C00C, Local1, 0x029F)
+        Arg1 = P91F /* \P91F */
+        Local1 = CondRefOf (Arg1, Local0)
+        M1A0 (Local0, C00C, Local1, 0x02A0)
+        Arg1 = P920 /* \P920 */
+        Local1 = CondRefOf (Arg1, Local0)
+        M1A0 (Local0, C00C, Local1, 0x02A1)
+        Arg1 = P921 /* \P921 */
+        Local1 = CondRefOf (Arg1, Local0)
+        M1A0 (Local0, C00C, Local1, 0x02A2)
+        Arg1 = P922 /* \P922 */
+        Local1 = CondRefOf (Arg1, Local0)
+        M1A0 (Local0, C00C, Local1, 0x02A3)
+        Arg1 = P923 /* \P923 */
+        Local1 = CondRefOf (Arg1, Local0)
+        M1A0 (Local0, C00C, Local1, 0x02A4)
+        Arg1 = P924 /* \P924 */
+        Local1 = CondRefOf (Arg1, Local0)
+        M1A0 (Local0, C00C, Local1, 0x02A5)
+        Arg1 = P925 /* \P925 */
+        Local1 = CondRefOf (Arg1, Local0)
+        M1A0 (Local0, C00C, Local1, 0x02A6)
+        Arg1 = P926 /* \P926 */
+        Local1 = CondRefOf (Arg1, Local0)
+        M1A0 (Local0, C00C, Local1, 0x02A7)
+        Arg1 = P927 /* \P927 */
+        Local1 = CondRefOf (Arg1, Local0)
+        M1A0 (Local0, C00C, Local1, 0x02A8)
+        Arg1 = P928 /* \P928 */
+        Local1 = CondRefOf (Arg1, Local0)
+        M1A0 (Local0, C00C, Local1, 0x02A9)
+        Arg1 = P929 /* \P929 */
+        Local1 = CondRefOf (Arg1, Local0)
+        M1A0 (Local0, C00C, Local1, 0x02AA)
+        Arg1 = P92A /* \P92A */
+        Local1 = CondRefOf (Arg1, Local0)
+        M1A0 (Local0, C00C, Local1, 0x02AB)
+        Arg1 = P92B /* \P92B */
+        Local1 = CondRefOf (Arg1, Local0)
+        M1A0 (Local0, C00C, Local1, 0x02AC)
+        Arg1 = P92C /* \P92C */
+        Local1 = CondRefOf (Arg1, Local0)
+        M1A0 (Local0, C00C, Local1, 0x02AD)
+        Arg1 = P92D /* \P92D */
+        Local1 = CondRefOf (Arg1, Local0)
+        M1A0 (Local0, C00C, Local1, 0x02AE)
+        Arg1 = P92E /* \P92E */
+        Local1 = CondRefOf (Arg1, Local0)
+        M1A0 (Local0, C00C, Local1, 0x02AF)
+        Arg1 = P92F /* \P92F */
+        Local1 = CondRefOf (Arg1, Local0)
+        M1A0 (Local0, C00C, Local1, 0x02B0)
+        Arg1 = P930 /* \P930 */
+        Local1 = CondRefOf (Arg1, Local0)
+        M1A0 (Local0, C00C, Local1, 0x02B1)
+        Arg1 = P931 /* \P931 */
+        Local1 = CondRefOf (Arg1, Local0)
+        M1A0 (Local0, C00C, Local1, 0x02B2)
+        Arg1 = P932 /* \P932 */
+        Local1 = CondRefOf (Arg1, Local0)
+        M1A0 (Local0, C00C, Local1, 0x02B3)
+        Arg1 = P933 /* \P933 */
+        Local1 = CondRefOf (Arg1, Local0)
+        M1A0 (Local0, C00C, Local1, 0x02B4)
+        Arg1 = P934 /* \P934 */
+        Local1 = CondRefOf (Arg1, Local0)
+        M1A0 (Local0, C00C, Local1, 0x02B5)
+        Arg1 = P935 /* \P935 */
+        Local1 = CondRefOf (Arg1, Local0)
+        M1A0 (Local0, C00C, Local1, 0x02B6)
+        Arg1 = P936 /* \P936 */
+        Local1 = CondRefOf (Arg1, Local0)
+        M1A0 (Local0, C00C, Local1, 0x02B7)
+        Arg1 = P937 /* \P937 */
+        Local1 = CondRefOf (Arg1, Local0)
+        M1A0 (Local0, C00C, Local1, 0x02B8)
+        Arg1 = P938 /* \P938 */
+        Local1 = CondRefOf (Arg1, Local0)
+        M1A0 (Local0, C00C, Local1, 0x02B9)
+        Arg1 = P939 /* \P939 */
+        Local1 = CondRefOf (Arg1, Local0)
+        M1A0 (Local0, C00C, Local1, 0x02BA)
+        Arg1 = P93A /* \P93A */
+        Local1 = CondRefOf (Arg1, Local0)
+        M1A0 (Local0, C00C, Local1, 0x02BB)
+        Arg1 = P93B /* \P93B */
+        Local1 = CondRefOf (Arg1, Local0)
+        M1A0 (Local0, C00C, Local1, 0x02BC)
+        Arg1 = P93C /* \P93C */
+        Local1 = CondRefOf (Arg1, Local0)
+        M1A0 (Local0, C00C, Local1, 0x02BD)
+        Arg1 = P93D /* \P93D */
+        Local1 = CondRefOf (Arg1, Local0)
+        M1A0 (Local0, C00C, Local1, 0x02BE)
+        Arg1 = P93E /* \P93E */
+        Local1 = CondRefOf (Arg1, Local0)
+        M1A0 (Local0, C00C, Local1, 0x02BF)
+        Arg1 = P93F /* \P93F */
+        Local1 = CondRefOf (Arg1, Local0)
+        M1A0 (Local0, C00C, Local1, 0x02C0)
+        Arg1 = P940 /* \P940 */
+        Local1 = CondRefOf (Arg1, Local0)
+        M1A0 (Local0, C00C, Local1, 0x02C1)
+        Arg1 = P941 /* \P941 */
+        Local1 = CondRefOf (Arg1, Local0)
+        M1A0 (Local0, C00C, Local1, 0x02C2)
+        Arg1 = P942 /* \P942 */
+        Local1 = CondRefOf (Arg1, Local0)
+        M1A0 (Local0, C00C, Local1, 0x02C3)
+        Arg1 = P943 /* \P943 */
+        Local1 = CondRefOf (Arg1, Local0)
+        M1A0 (Local0, C00C, Local1, 0x02C4)
+        Arg1 = P944 /* \P944 */
+        Local1 = CondRefOf (Arg1, Local0)
+        M1A0 (Local0, C00C, Local1, 0x02C5)
+        Arg1 = P945 /* \P945 */
+        Local1 = CondRefOf (Arg1, Local0)
+        M1A0 (Local0, C00C, Local1, 0x02C6)
+        Arg1 = P946 /* \P946 */
+        Local1 = CondRefOf (Arg1, Local0)
+        M1A0 (Local0, C00C, Local1, 0x02C7)
+        Arg1 = P947 /* \P947 */
+        Local1 = CondRefOf (Arg1, Local0)
+        M1A0 (Local0, C00C, Local1, 0x02C8)
+        Arg1 = P948 /* \P948 */
+        Local1 = CondRefOf (Arg1, Local0)
+        M1A0 (Local0, C00C, Local1, 0x02C9)
+        Arg1 = P949 /* \P949 */
+        Local1 = CondRefOf (Arg1, Local0)
+        M1A0 (Local0, C00C, Local1, 0x02CA)
+        Arg1 = P94A /* \P94A */
+        Local1 = CondRefOf (Arg1, Local0)
+        M1A0 (Local0, C00C, Local1, 0x02CB)
+        Arg1 = P94B /* \P94B */
+        Local1 = CondRefOf (Arg1, Local0)
+        M1A0 (Local0, C00C, Local1, 0x02CC)
+        Arg1 = P94C /* \P94C */
+        Local1 = CondRefOf (Arg1, Local0)
+        M1A0 (Local0, C00C, Local1, 0x02CD)
+        Arg1 = P94D /* \P94D */
+        Local1 = CondRefOf (Arg1, Local0)
+        M1A0 (Local0, C00C, Local1, 0x02CE)
+        Arg1 = P94E /* \P94E */
+        Local1 = CondRefOf (Arg1, Local0)
+        M1A0 (Local0, C00C, Local1, 0x02CF)
+        Arg1 = P94F /* \P94F */
+        Local1 = CondRefOf (Arg1, Local0)
+        M1A0 (Local0, C00C, Local1, 0x02D0)
+        Arg1 = P950 /* \P950 */
+        Local1 = CondRefOf (Arg1, Local0)
+        M1A0 (Local0, C00C, Local1, 0x02D1)
+        Arg1 = P951 /* \P951 */
+        Local1 = CondRefOf (Arg1, Local0)
+        M1A0 (Local0, C00C, Local1, 0x02D2)
+        Arg1 = P952 /* \P952 */
+        Local1 = CondRefOf (Arg1, Local0)
+        M1A0 (Local0, C00C, Local1, 0x02D3)
+        M1A6 ()
+        Return (Zero)
+    }
+
+    Method (M185, 3, NotSerialized)
+    {
+        C081 = Z079       /* absolute index of file initiating the checking */ /* \Z079 */
+        C089 = 0x01      /* flag of Reference, object otherwise */
+        If (Arg0)
+        {
+            M180 (0x00, 0x00)
+        }
+
+        If (Arg1)
+        {
+            M181 (0x00, 0x00, C083)
+        }
+
+        If (Arg2)
+        {
+            M182 (0x00, 0x00, C083)
+        }
+    }
+
+    /* The mode with the chain of references to LocalX */
+
+    Method (M186, 0, NotSerialized)
+    {
+        C084 = 0x01  /* run verification of references (reading) */
+        C085 = 0x01  /* create the chain of references to LocalX, then dereference them */
+        Debug = "The mode with the chain of references to LocalX:"
+        M185 (0x01, 0x01, 0x01)
+    }
+
+    /* Run-method */
+
+    Method (REF3, 0, NotSerialized)
+    {
+        Debug = "TEST: REF3, References"
+        C080 = "REF3" /* name of test */
+        C082 = 0x00      /* flag of test of exceptions */
+        C083 = 0x00      /* run verification of references (write/read) */
+        C086 = 0x00      /* flag, run test till the first error */
+        C087 = 0x01      /* apply DeRefOf to ArgX-ObjectReference */
+        M186 ()
+    }
 
-	Store(p904, arg1)
-	Store(Index(arg1, 0), Local0)
-	m1a2(Local0, c00b, 0, 0, c00b, Buffer() {0xb5,0xb6,0xb7}, 11)
-
-	Store(p905, arg1)
-	Store(Index(arg1, 0), Local0)
-	m1a2(Local0, c00c, 1, 0, c009, 0xabc000a, 12)
-
-	Store(p905, arg1)
-	Store(Index(arg1, 0), Local0)
-	m1a2(Local0, c00c, 1, 1, c00a, "0xabc000b", 13)
-
-	Store(p906, arg1)
-	Store(Index(arg1, 0), Local0)
-	m1a2(Local0, c00c, 1, 0, c00a, "abc000d", 14)
-
-	Store(p907, arg1)
-	Store(Index(arg1, 0), Local0)
-	m1a2(Local0, c00c, 1, 0, c00a, "aqwevbgnm000e", 15)
-
-	Store(p908, arg1)
-	Store(Index(arg1, 0), Local0)
-	m1a2(Local0, c00c, 1, 0, c00b, Buffer() {0xba,0xbb,0xbc,0xbd,0xbe}, 16)
-
-	Store(p909, arg1)
-	Store(Index(arg1, 0), Local0)
-	m1a2(Local0, c00c, 2, 0, c009, 0xabc000f, 17)
-
-	Store(p90a, arg1)
-	Store(Index(arg1, 0), Local0)
-	m1a2(Local0, c00c, 2, 0, c00a, "12340010", 18)
-
-	Store(p90b, arg1)
-	Store(Index(arg1, 0), Local0)
-	m1a2(Local0, c00c, 2, 0, c00a, "zxswefas0011", 19)
-
-	Store(p90c, arg1)
-	Store(Index(arg1, 0), Local0)
-	m1a2(Local0, c00c, 2, 0, c00b, Buffer() {0xbf,0xc0,0xc1}, 20)
-
-	Store(p90d, arg1)
-	Store(Index(arg1, 0), Local0)
-	m1a2(Local0, c009, 0, 0, c009, 0xfe7cb391d65a0000, 21)
-
-	Store(p90e, arg1)
-	Store(Index(arg1, 0), Local0)
-	m1a2(Local0, c009, 0, 0, c009, 0xc1790001, 22)
-
-	Store(p90f, arg1)
-	Store(Index(arg1, 0), Local0)
-	m1a2(Local0, c00a, 0, 0, c00a, "12340002", 23)
-
-	Store(p910, arg1)
-	Store(Index(arg1, 0), Local0)
-	m1a2(Local0, c00a, 0, 0, c00a, "qwrtyu0003", 24)
-
-	Store(p911, arg1)
-	Store(Index(arg1, 0), Local0)
-	m1a2(Local0, c00b, 0, 0, c00b, Buffer() {0xb0,0xb1,0xb2,0xb3,0xb4}, 25)
-
-	if (y118) {
-		Store(p912, arg1)
-		Store(Index(arg1, 0), Local0)
-		m1a2(Local0, c00d, 0, 0, c00d, 0, 26)
-
-		Store(p913, arg1)
-		Store(Index(arg1, 0), Local0)
-		m1a2(Local0, c00d, 0, 0, c00d, 0, 27)
-
-		Store(p914, arg1)
-		Store(Index(arg1, 0), Local0)
-		m1a2(Local0, c00d, 0, 0, c00d, 0, 28)
-
-		Store(p915, arg1)
-		Store(Index(arg1, 0), Local0)
-		m1a2(Local0, c016, 0, 0, c016, 0xb0, 29)
-	}
-
-	// Elements of Package are NOT Computational Data
-
-	Store(p916, arg1)
-	Store(Index(arg1, 0), Local0)
-	m1a0(Local0, c00e, Ones, 30)
-
-	Store(p917, arg1)
-	Store(Index(arg1, 0), Local0)
-	m1a0(Local0, c00f, Ones, 31)
-
-	Store(p918, arg1)
-	Store(Index(arg1, 0), Local0)
-	m1a0(Local0, c011, Ones, 32)
-
-	Store(p919, arg1)
-	Store(Index(arg1, 0), Local0)
-	m1a0(Local0, c012, Ones, 33)
-
-	Store(p91a, arg1)
-	Store(Index(arg1, 0), Local0)
-	m1a0(Local0, c013, Ones, 34)
-
-	Store(p91b, arg1)
-	Store(Index(arg1, 0), Local0)
-	m1a0(Local0, c014, Ones, 35)
-
-	Store(p91c, arg1)
-	Store(Index(arg1, 0), Local0)
-	m1a0(Local0, c015, Ones, 36)
-
-	// Elements of Package are Methods
-
-	if (y105) {
-
-		Store(p91d, arg1)
-		Store(Index(arg1, 0), Local0)
-		m1a0(Local0, c010, Ones, 37)
-
-		Store(p91e, arg1)
-		Store(Index(arg1, 0), Local0)
-		m1a0(Local0, c010, Ones, 38)
-
-		Store(p91f, arg1)
-		Store(Index(arg1, 0), Local0)
-		m1a0(Local0, c010, Ones, 39)
-
-		Store(p920, arg1)
-		Store(Index(arg1, 0), Local0)
-		m1a0(Local0, c010, Ones, 40)
-
-		Store(p921, arg1)
-		Store(Index(arg1, 0), Local0)
-		m1a0(Local0, c010, Ones, 41)
-
-		Store(p922, arg1)
-		Store(Index(arg1, 0), Local0)
-		m1a0(Local0, c010, Ones, 42)
-
-		Store(p923, arg1)
-		Store(Index(arg1, 0), Local0)
-		m1a0(Local0, c010, Ones, 43)
-
-		Store(p924, arg1)
-		Store(Index(arg1, 0), Local0)
-		m1a0(Local0, c010, Ones, 44)
-
-		Store(p925, arg1)
-		Store(Index(arg1, 0), Local0)
-		m1a0(Local0, c010, Ones, 45)
-
-		Store(p926, arg1)
-		Store(Index(arg1, 0), Local0)
-		m1a0(Local0, c010, Ones, 46)
-
-		Store(p927, arg1)
-		Store(Index(arg1, 0), Local0)
-		m1a0(Local0, c010, Ones, 47)
-
-		Store(p928, arg1)
-		Store(Index(arg1, 0), Local0)
-		m1a0(Local0, c010, Ones, 48)
-
-		Store(p929, arg1)
-		Store(Index(arg1, 0), Local0)
-		m1a0(Local0, c010, Ones, 49)
-
-		Store(p92a, arg1)
-		Store(Index(arg1, 0), Local0)
-		m1a0(Local0, c010, Ones, 50)
-
-		Store(p92b, arg1)
-		Store(Index(arg1, 0), Local0)
-		m1a0(Local0, c010, Ones, 51)
-
-		Store(p92c, arg1)
-		Store(Index(arg1, 0), Local0)
-		m1a0(Local0, c010, Ones, 52)
-
-		Store(p92d, arg1)
-		Store(Index(arg1, 0), Local0)
-		m1a0(Local0, c010, Ones, 53)
-
-		Store(p92e, arg1)
-		Store(Index(arg1, 0), Local0)
-		m1a0(Local0, c010, Ones, 54)
-
-		Store(p92f, arg1)
-		Store(Index(arg1, 0), Local0)
-		m1a0(Local0, c010, Ones, 55)
-
-		Store(p930, arg1)
-		Store(Index(arg1, 0), Local0)
-		m1a0(Local0, c010, Ones, 56)
-
-		Store(p931, arg1)
-		Store(Index(arg1, 0), Local0)
-		m1a0(Local0, c010, Ones, 57)
-
-		Store(p932, arg1)
-		Store(Index(arg1, 0), Local0)
-		m1a0(Local0, c010, Ones, 58)
-
-		Store(p933, arg1)
-		Store(Index(arg1, 0), Local0)
-		m1a0(Local0, c010, Ones, 59)
-
-		Store(p934, arg1)
-		Store(Index(arg1, 0), Local0)
-		m1a0(Local0, c010, Ones, 60)
-
-		if (y103) {
-			Store(p935, arg1)
-			Store(Index(arg1, 0), Local0)
-			m1a0(Local0, c010, Ones, 61)
-		}
-
-		Store(p936, arg1)
-		Store(Index(arg1, 0), Local0)
-		m1a0(Local0, c010, Ones, 62)
-
-		Store(p937, arg1)
-		Store(Index(arg1, 0), Local0)
-		m1a0(Local0, c010, Ones, 63)
-
-		Store(p938, arg1)
-		Store(Index(arg1, 0), Local0)
-		m1a0(Local0, c010, Ones, 64)
-
-		Store(p939, arg1)
-		Store(Index(arg1, 0), Local0)
-		m1a0(Local0, c010, Ones, 65)
-
-		Store(p93a, arg1)
-		Store(Index(arg1, 0), Local0)
-		m1a0(Local0, c010, Ones, 66)
-
-		Store(p93b, arg1)
-		Store(Index(arg1, 0), Local0)
-		m1a0(Local0, c010, Ones, 67)
-
-		Store(p93c, arg1)
-		Store(Index(arg1, 0), Local0)
-		m1a0(Local0, c010, Ones, 68)
-
-		Store(p93d, arg1)
-		Store(Index(arg1, 0), Local0)
-		m1a0(Local0, c010, Ones, 69)
-
-		Store(p93e, arg1)
-		Store(Index(arg1, 0), Local0)
-		m1a0(Local0, c010, Ones, 70)
-
-		Store(p93f, arg1)
-		Store(Index(arg1, 0), Local0)
-		m1a0(Local0, c010, Ones, 71)
-
-		Store(p940, arg1)
-		Store(Index(arg1, 0), Local0)
-		m1a0(Local0, c010, Ones, 72)
-
-		Store(p941, arg1)
-		Store(Index(arg1, 0), Local0)
-		m1a0(Local0, c010, Ones, 73)
-
-		Store(p942, arg1)
-		Store(Index(arg1, 0), Local0)
-		m1a0(Local0, c010, Ones, 74)
-
-		Store(p943, arg1)
-		Store(Index(arg1, 0), Local0)
-		m1a0(Local0, c010, Ones, 75)
-
-		Store(p944, arg1)
-		Store(Index(arg1, 0), Local0)
-		m1a0(Local0, c010, Ones, 76)
-
-		Store(p945, arg1)
-		Store(Index(arg1, 0), Local0)
-		m1a0(Local0, c010, Ones, 77)
-
-		Store(p946, arg1)
-		Store(Index(arg1, 0), Local0)
-		m1a0(Local0, c010, Ones, 78)
-
-		Store(p947, arg1)
-		Store(Index(arg1, 0), Local0)
-		m1a0(Local0, c010, Ones, 79)
-
-		Store(p948, arg1)
-		Store(Index(arg1, 0), Local0)
-		m1a0(Local0, c010, Ones, 80)
-
-		Store(p949, arg1)
-		Store(Index(arg1, 0), Local0)
-		m1a0(Local0, c010, Ones, 81)
-
-		Store(p94a, arg1)
-		Store(Index(arg1, 0), Local0)
-		m1a0(Local0, c010, Ones, 82)
-
-		Store(p94b, arg1)
-		Store(Index(arg1, 0), Local0)
-		m1a0(Local0, c010, Ones, 83)
-
-		Store(p94c, arg1)
-		Store(Index(arg1, 0), Local0)
-		m1a0(Local0, c010, Ones, 84)
-
-		Store(p94d, arg1)
-		Store(Index(arg1, 0), Local0)
-		m1a0(Local0, c010, Ones, 85)
-
-		Store(p94e, arg1)
-		Store(Index(arg1, 0), Local0)
-		m1a0(Local0, c010, Ones, 86)
-
-		Store(p94f, arg1)
-		Store(Index(arg1, 0), Local0)
-		m1a0(Local0, c010, Ones, 87)
-
-		Store(p950, arg1)
-		Store(Index(arg1, 0), Local0)
-		m1a0(Local0, c010, Ones, 88)
-
-		Store(p951, arg1)
-		Store(Index(arg1, 0), Local0)
-		m1a0(Local0, c010, Ones, 89)
-
-		Store(p952, arg1)
-		Store(Index(arg1, 0), Local0)
-		m1a0(Local0, c010, Ones, 90)
-	}
-
-	// T6:IR2-IR4
-
-	// Computational Data
-
-	Store(s900, arg1)
-	Store(Index(arg1, 0, Local1), Local0)
-	m1a2(Local0, c016, 0, 0, c009, 0x31, 91)
-	m1a2(Local1, c016, 0, 0, c009, 0x31, 92)
-
-	Store(s901, arg1)
-	Store(Index(arg1, 2, Local1), Local0)
-	m1a2(Local0, c016, 0, 0, c009, 0x72, 93)
-	m1a2(Local1, c016, 0, 0, c009, 0x72, 94)
-
-	Store(b900, arg1)
-	Store(Index(arg1, 4, Local1), Local0)
-	m1a2(Local0, c016, 0, 0, c009, 0xb4, 95)
-	m1a2(Local1, c016, 0, 0, c009, 0xb4, 96)
-
-	// Elements of Package are Uninitialized
-
-	if (y104) {
-		Store(p900, arg1)
-		Store(Index(arg1, 0, Local1), Local0)
-		m1a0(Local0, c008, Ones, 97)
-		m1a0(Local1, c008, Ones, 98)
-	}
-
-	// Elements of Package are Computational Data
-
-	Store(p901, arg1)
-	Store(Index(arg1, 0, Local1), Local0)
-	m1a2(Local0, c009, 0, 0, c009, 0xabcd0004, 99)
-	m1a2(Local1, c009, 0, 0, c009, 0xabcd0004, 100)
-
-	Store(p901, arg1)
-	Store(Index(arg1, 1, Local1), Local0)
-	m1a2(Local0, c009, 0, 0, c009, 0x1122334455660005, 101)
-	m1a2(Local1, c009, 0, 0, c009, 0x1122334455660005, 102)
-
-	Store(p902, arg1)
-	Store(Index(arg1, 0, Local1), Local0)
-	m1a2(Local0, c00a, 0, 0, c00a, "12340006", 103)
-	m1a2(Local1, c00a, 0, 0, c00a, "12340006", 104)
-
-	Store(p902, arg1)
-	Store(Index(arg1, 1, Local1), Local0)
-	m1a2(Local0, c00a, 0, 0, c00a, "q1w2e3r4t5y6u7i80007", 105)
-	m1a2(Local1, c00a, 0, 0, c00a, "q1w2e3r4t5y6u7i80007", 106)
-
-	Store(p903, arg1)
-	Store(Index(arg1, 0, Local1), Local0)
-	m1a2(Local0, c00a, 0, 0, c00a, "qwrtyuiop0008", 107)
-	m1a2(Local1, c00a, 0, 0, c00a, "qwrtyuiop0008", 108)
-
-	Store(p903, arg1)
-	Store(Index(arg1, 1, Local1), Local0)
-	m1a2(Local0, c00a, 0, 0, c00a, "1234567890abdef0250009", 109)
-	m1a2(Local1, c00a, 0, 0, c00a, "1234567890abdef0250009", 110)
-
-	Store(p904, arg1)
-	Store(Index(arg1, 0, Local1), Local0)
-	m1a2(Local0, c00b, 0, 0, c00b, Buffer() {0xb5,0xb6,0xb7}, 111)
-	m1a2(Local1, c00b, 0, 0, c00b, Buffer() {0xb5,0xb6,0xb7}, 112)
-
-	Store(p905, arg1)
-	Store(Index(arg1, 0, Local1), Local0)
-	m1a2(Local0, c00c, 1, 0, c009, 0xabc000a, 113)
-	m1a2(Local1, c00c, 1, 0, c009, 0xabc000a, 114)
-
-	Store(p905, arg1)
-	Store(Index(arg1, 0, Local1), Local0)
-	m1a2(Local0, c00c, 1, 1, c00a, "0xabc000b", 115)
-	m1a2(Local1, c00c, 1, 1, c00a, "0xabc000b", 116)
-
-	Store(p906, arg1)
-	Store(Index(arg1, 0, Local1), Local0)
-	m1a2(Local0, c00c, 1, 0, c00a, "abc000d", 117)
-	m1a2(Local1, c00c, 1, 0, c00a, "abc000d", 118)
-
-	Store(p907, arg1)
-	Store(Index(arg1, 0, Local1), Local0)
-	m1a2(Local0, c00c, 1, 0, c00a, "aqwevbgnm000e", 119)
-	m1a2(Local1, c00c, 1, 0, c00a, "aqwevbgnm000e", 120)
-
-	Store(p908, arg1)
-	Store(Index(arg1, 0, Local1), Local0)
-	m1a2(Local0, c00c, 1, 0, c00b, Buffer() {0xba,0xbb,0xbc,0xbd,0xbe}, 121)
-	m1a2(Local1, c00c, 1, 0, c00b, Buffer() {0xba,0xbb,0xbc,0xbd,0xbe}, 122)
-
-	Store(p909, arg1)
-	Store(Index(arg1, 0, Local1), Local0)
-	m1a2(Local0, c00c, 2, 0, c009, 0xabc000f, 123)
-	m1a2(Local1, c00c, 2, 0, c009, 0xabc000f, 124)
-
-	Store(p90a, arg1)
-	Store(Index(arg1, 0, Local1), Local0)
-	m1a2(Local0, c00c, 2, 0, c00a, "12340010", 125)
-	m1a2(Local1, c00c, 2, 0, c00a, "12340010", 126)
-
-	Store(p90b, arg1)
-	Store(Index(arg1, 0, Local1), Local0)
-	m1a2(Local0, c00c, 2, 0, c00a, "zxswefas0011", 127)
-	m1a2(Local1, c00c, 2, 0, c00a, "zxswefas0011", 128)
-
-	Store(p90c, arg1)
-	Store(Index(arg1, 0, Local1), Local0)
-	m1a2(Local0, c00c, 2, 0, c00b, Buffer() {0xbf,0xc0,0xc1}, 129)
-	m1a2(Local1, c00c, 2, 0, c00b, Buffer() {0xbf,0xc0,0xc1}, 130)
-
-	Store(p90d, arg1)
-	Store(Index(arg1, 0, Local1), Local0)
-	m1a2(Local0, c009, 0, 0, c009, 0xfe7cb391d65a0000, 131)
-	m1a2(Local1, c009, 0, 0, c009, 0xfe7cb391d65a0000, 132)
-
-	Store(p90e, arg1)
-	Store(Index(arg1, 0, Local1), Local0)
-	m1a2(Local0, c009, 0, 0, c009, 0xc1790001, 133)
-	m1a2(Local1, c009, 0, 0, c009, 0xc1790001, 134)
-
-	Store(p90f, arg1)
-	Store(Index(arg1, 0, Local1), Local0)
-	m1a2(Local0, c00a, 0, 0, c00a, "12340002", 135)
-	m1a2(Local1, c00a, 0, 0, c00a, "12340002", 136)
-
-	Store(p910, arg1)
-	Store(Index(arg1, 0, Local1), Local0)
-	m1a2(Local0, c00a, 0, 0, c00a, "qwrtyu0003", 137)
-	m1a2(Local1, c00a, 0, 0, c00a, "qwrtyu0003", 138)
-
-	Store(p911, arg1)
-	Store(Index(arg1, 0, Local1), Local0)
-	m1a2(Local0, c00b, 0, 0, c00b, Buffer() {0xb0,0xb1,0xb2,0xb3,0xb4}, 139)
-	m1a2(Local1, c00b, 0, 0, c00b, Buffer() {0xb0,0xb1,0xb2,0xb3,0xb4}, 140)
-
-	if (y118) {
-		Store(p912, arg1)
-		Store(Index(arg1, 0, Local1), Local0)
-		m1a2(Local0, c00d, 0, 0, c00d, 0, 141)
-		m1a2(Local1, c00d, 0, 0, c00d, 0, 142)
-
-		Store(p913, arg1)
-		Store(Index(arg1, 0, Local1), Local0)
-		m1a2(Local0, c00d, 0, 0, c00d, 0, 143)
-		m1a2(Local1, c00d, 0, 0, c00d, 0, 144)
-
-		Store(p914, arg1)
-		Store(Index(arg1, 0, Local1), Local0)
-		m1a2(Local0, c00d, 0, 0, c00d, 0, 145)
-		m1a2(Local1, c00d, 0, 0, c00d, 0, 146)
-
-		Store(p915, arg1)
-		Store(Index(arg1, 0, Local1), Local0)
-		m1a2(Local0, c016, 0, 0, c016, 0xb0, 147)
-		m1a2(Local1, c016, 0, 0, c016, 0xb0, 148)
-	}
-
-	// Elements of Package are NOT Computational Data
-
-	Store(p916, arg1)
-	Store(Index(arg1, 0, Local1), Local0)
-	m1a0(Local0, c00e, Ones, 149)
-	m1a0(Local1, c00e, Ones, 150)
-
-	Store(p917, arg1)
-	Store(Index(arg1, 0, Local1), Local0)
-	m1a0(Local0, c00f, Ones, 151)
-	m1a0(Local1, c00f, Ones, 152)
-
-	Store(p918, arg1)
-	Store(Index(arg1, 0, Local1), Local0)
-	m1a0(Local0, c011, Ones, 153)
-	m1a0(Local1, c011, Ones, 154)
-
-	Store(p919, arg1)
-	Store(Index(arg1, 0, Local1), Local0)
-	m1a0(Local0, c012, Ones, 155)
-	m1a0(Local1, c012, Ones, 156)
-
-	Store(p91a, arg1)
-	Store(Index(arg1, 0, Local1), Local0)
-	m1a0(Local0, c013, Ones, 157)
-	m1a0(Local1, c013, Ones, 158)
-
-	Store(p91b, arg1)
-	Store(Index(arg1, 0, Local1), Local0)
-	m1a0(Local0, c014, Ones, 159)
-	m1a0(Local1, c014, Ones, 160)
-
-	Store(p91c, arg1)
-	Store(Index(arg1, 0, Local1), Local0)
-	m1a0(Local0, c015, Ones, 161)
-	m1a0(Local1, c015, Ones, 162)
-
-	// Elements of Package are Methods
-
-	if (y105) {
-
-		Store(p91d, arg1)
-		Store(Index(arg1, 0, Local1), Local0)
-		m1a0(Local0, c010, Ones, 163)
-		m1a0(Local1, c010, Ones, 164)
-
-		Store(p91e, arg1)
-		Store(Index(arg1, 0, Local1), Local0)
-		m1a0(Local0, c010, Ones, 165)
-		m1a0(Local1, c010, Ones, 166)
-
-		Store(p91f, arg1)
-		Store(Index(arg1, 0, Local1), Local0)
-		m1a0(Local0, c010, Ones, 167)
-		m1a0(Local1, c010, Ones, 168)
-
-		Store(p920, arg1)
-		Store(Index(arg1, 0, Local1), Local0)
-		m1a0(Local0, c010, Ones, 169)
-		m1a0(Local1, c010, Ones, 170)
-
-		Store(p921, arg1)
-		Store(Index(arg1, 0, Local1), Local0)
-		m1a0(Local0, c010, Ones, 171)
-		m1a0(Local1, c010, Ones, 172)
-
-		Store(p922, arg1)
-		Store(Index(arg1, 0, Local1), Local0)
-		m1a0(Local0, c010, Ones, 173)
-		m1a0(Local1, c010, Ones, 174)
-
-		Store(p923, arg1)
-		Store(Index(arg1, 0, Local1), Local0)
-		m1a0(Local0, c010, Ones, 175)
-		m1a0(Local1, c010, Ones, 176)
-
-		Store(p924, arg1)
-		Store(Index(arg1, 0, Local1), Local0)
-		m1a0(Local0, c010, Ones, 177)
-		m1a0(Local1, c010, Ones, 178)
-
-		Store(p925, arg1)
-		Store(Index(arg1, 0, Local1), Local0)
-		m1a0(Local0, c010, Ones, 179)
-		m1a0(Local1, c010, Ones, 180)
-
-		Store(p926, arg1)
-		Store(Index(arg1, 0, Local1), Local0)
-		m1a0(Local0, c010, Ones, 181)
-		m1a0(Local1, c010, Ones, 182)
-
-		Store(p927, arg1)
-		Store(Index(arg1, 0, Local1), Local0)
-		m1a0(Local0, c010, Ones, 183)
-		m1a0(Local1, c010, Ones, 184)
-
-		Store(p928, arg1)
-		Store(Index(arg1, 0, Local1), Local0)
-		m1a0(Local0, c010, Ones, 185)
-		m1a0(Local1, c010, Ones, 186)
-
-		Store(p929, arg1)
-		Store(Index(arg1, 0, Local1), Local0)
-		m1a0(Local0, c010, Ones, 187)
-		m1a0(Local1, c010, Ones, 188)
-
-		Store(p92a, arg1)
-		Store(Index(arg1, 0, Local1), Local0)
-		m1a0(Local0, c010, Ones, 189)
-		m1a0(Local1, c010, Ones, 190)
-
-		Store(p92b, arg1)
-		Store(Index(arg1, 0, Local1), Local0)
-		m1a0(Local0, c010, Ones, 191)
-		m1a0(Local1, c010, Ones, 192)
-
-		Store(p92c, arg1)
-		Store(Index(arg1, 0, Local1), Local0)
-		m1a0(Local0, c010, Ones, 193)
-		m1a0(Local1, c010, Ones, 194)
-
-		Store(p92d, arg1)
-		Store(Index(arg1, 0, Local1), Local0)
-		m1a0(Local0, c010, Ones, 195)
-		m1a0(Local1, c010, Ones, 196)
-
-		Store(p92e, arg1)
-		Store(Index(arg1, 0, Local1), Local0)
-		m1a0(Local0, c010, Ones, 197)
-		m1a0(Local1, c010, Ones, 198)
-
-		Store(p92f, arg1)
-		Store(Index(arg1, 0, Local1), Local0)
-		m1a0(Local0, c010, Ones, 199)
-		m1a0(Local1, c010, Ones, 200)
-
-		Store(p930, arg1)
-		Store(Index(arg1, 0, Local1), Local0)
-		m1a0(Local0, c010, Ones, 201)
-		m1a0(Local1, c010, Ones, 202)
-
-		Store(p931, arg1)
-		Store(Index(arg1, 0, Local1), Local0)
-		m1a0(Local0, c010, Ones, 203)
-		m1a0(Local1, c010, Ones, 204)
-
-		Store(p932, arg1)
-		Store(Index(arg1, 0, Local1), Local0)
-		m1a0(Local0, c010, Ones, 205)
-		m1a0(Local1, c010, Ones, 206)
-
-		Store(p933, arg1)
-		Store(Index(arg1, 0, Local1), Local0)
-		m1a0(Local0, c010, Ones, 207)
-		m1a0(Local1, c010, Ones, 208)
-
-		Store(p934, arg1)
-		Store(Index(arg1, 0, Local1), Local0)
-		m1a0(Local0, c010, Ones, 209)
-		m1a0(Local1, c010, Ones, 210)
-
-		if (y103) {
-			Store(p935, arg1)
-			Store(Index(arg1, 0, Local1), Local0)
-			m1a0(Local0, c010, Ones, 211)
-			m1a0(Local1, c010, Ones, 212)
-		}
-
-		Store(p936, arg1)
-		Store(Index(arg1, 0, Local1), Local0)
-		m1a0(Local0, c010, Ones, 213)
-		m1a0(Local1, c010, Ones, 214)
-
-		Store(p937, arg1)
-		Store(Index(arg1, 0, Local1), Local0)
-		m1a0(Local0, c010, Ones, 215)
-		m1a0(Local1, c010, Ones, 216)
-
-		Store(p938, arg1)
-		Store(Index(arg1, 0, Local1), Local0)
-		m1a0(Local0, c010, Ones, 217)
-		m1a0(Local1, c010, Ones, 218)
-
-		Store(p939, arg1)
-		Store(Index(arg1, 0, Local1), Local0)
-		m1a0(Local0, c010, Ones, 219)
-		m1a0(Local1, c010, Ones, 220)
-
-		Store(p93a, arg1)
-		Store(Index(arg1, 0, Local1), Local0)
-		m1a0(Local0, c010, Ones, 221)
-		m1a0(Local1, c010, Ones, 222)
-
-		Store(p93b, arg1)
-		Store(Index(arg1, 0, Local1), Local0)
-		m1a0(Local0, c010, Ones, 223)
-		m1a0(Local1, c010, Ones, 224)
-
-		Store(p93c, arg1)
-		Store(Index(arg1, 0, Local1), Local0)
-		m1a0(Local0, c010, Ones, 225)
-		m1a0(Local1, c010, Ones, 226)
-
-		Store(p93d, arg1)
-		Store(Index(arg1, 0, Local1), Local0)
-		m1a0(Local0, c010, Ones, 227)
-		m1a0(Local1, c010, Ones, 228)
-
-		Store(p93e, arg1)
-		Store(Index(arg1, 0, Local1), Local0)
-		m1a0(Local0, c010, Ones, 229)
-		m1a0(Local1, c010, Ones, 230)
-
-		Store(p93f, arg1)
-		Store(Index(arg1, 0, Local1), Local0)
-		m1a0(Local0, c010, Ones, 231)
-		m1a0(Local1, c010, Ones, 232)
-
-		Store(p940, arg1)
-		Store(Index(arg1, 0, Local1), Local0)
-		m1a0(Local0, c010, Ones, 233)
-		m1a0(Local1, c010, Ones, 234)
-
-		Store(p941, arg1)
-		Store(Index(arg1, 0, Local1), Local0)
-		m1a0(Local0, c010, Ones, 235)
-		m1a0(Local1, c010, Ones, 236)
-
-		Store(p942, arg1)
-		Store(Index(arg1, 0, Local1), Local0)
-		m1a0(Local0, c010, Ones, 237)
-		m1a0(Local1, c010, Ones, 238)
-
-		Store(p943, arg1)
-		Store(Index(arg1, 0, Local1), Local0)
-		m1a0(Local0, c010, Ones, 239)
-		m1a0(Local1, c010, Ones, 240)
-
-		Store(p944, arg1)
-		Store(Index(arg1, 0, Local1), Local0)
-		m1a0(Local0, c010, Ones, 241)
-		m1a0(Local1, c010, Ones, 242)
-
-		Store(p945, arg1)
-		Store(Index(arg1, 0, Local1), Local0)
-		m1a0(Local0, c010, Ones, 243)
-		m1a0(Local1, c010, Ones, 244)
-
-		Store(p946, arg1)
-		Store(Index(arg1, 0, Local1), Local0)
-		m1a0(Local0, c010, Ones, 245)
-		m1a0(Local1, c010, Ones, 246)
-
-		Store(p947, arg1)
-		Store(Index(arg1, 0, Local1), Local0)
-		m1a0(Local0, c010, Ones, 247)
-		m1a0(Local1, c010, Ones, 248)
-
-		Store(p948, arg1)
-		Store(Index(arg1, 0, Local1), Local0)
-		m1a0(Local0, c010, Ones, 249)
-		m1a0(Local1, c010, Ones, 250)
-
-		Store(p949, arg1)
-		Store(Index(arg1, 0, Local1), Local0)
-		m1a0(Local0, c010, Ones, 251)
-		m1a0(Local1, c010, Ones, 252)
-
-		Store(p94a, arg1)
-		Store(Index(arg1, 0, Local1), Local0)
-		m1a0(Local0, c010, Ones, 253)
-		m1a0(Local1, c010, Ones, 254)
-
-		Store(p94b, arg1)
-		Store(Index(arg1, 0, Local1), Local0)
-		m1a0(Local0, c010, Ones, 255)
-		m1a0(Local1, c010, Ones, 256)
-
-		Store(p94c, arg1)
-		Store(Index(arg1, 0, Local1), Local0)
-		m1a0(Local0, c010, Ones, 257)
-		m1a0(Local1, c010, Ones, 258)
-
-		Store(p94d, arg1)
-		Store(Index(arg1, 0, Local1), Local0)
-		m1a0(Local0, c010, Ones, 259)
-		m1a0(Local1, c010, Ones, 260)
-
-		Store(p94e, arg1)
-		Store(Index(arg1, 0, Local1), Local0)
-		m1a0(Local0, c010, Ones, 261)
-		m1a0(Local1, c010, Ones, 262)
-
-		Store(p94f, arg1)
-		Store(Index(arg1, 0, Local1), Local0)
-		m1a0(Local0, c010, Ones, 263)
-		m1a0(Local1, c010, Ones, 264)
-
-		Store(p950, arg1)
-		Store(Index(arg1, 0, Local1), Local0)
-		m1a0(Local0, c010, Ones, 265)
-		m1a0(Local1, c010, Ones, 266)
-
-		Store(p951, arg1)
-		Store(Index(arg1, 0, Local1), Local0)
-		m1a0(Local0, c010, Ones, 267)
-		m1a0(Local1, c010, Ones, 268)
-
-		Store(p952, arg1)
-		Store(Index(arg1, 0, Local1), Local0)
-		m1a0(Local0, c010, Ones, 269)
-		m1a0(Local1, c010, Ones, 270)
-	}
-
-	m1a6()
-}
-
-// m16a,m191,m171
-// arg2 - writing mode
-Method(m181, 3)
-{
-	if (y100) {
-		ts00("m181")
-	} else {
-		Store("m181", Debug)
-	}
-
-	// T6:R0-R5,R14
-
-	// Uninitialized Local
-
-	if (Arg0) {
-		Store(0, arg6)
-	}
-	Store(RefOf(arg6), Local0)
-	m1a0(Local0, c008, Ones, 1000)
-
-	// Computational Data
-
-	Store(i900, arg1)
-	Store(RefOf(arg1), Local0)
-	m1a2(Local0, c009, 0, 0, c009, 0xfe7cb391d65a0000, 271)
-
-	Store(i901, arg1)
-	Store(RefOf(arg1), Local0)
-	m1a2(Local0, c009, 0, 0, c009, 0xc1790001, 272)
-
-	Store(s900, arg1)
-	Store(RefOf(arg1), Local0)
-	m1a2(Local0, c00a, 0, 0, c00a, "12340002", 273)
-
-	Store(s901, arg1)
-	Store(RefOf(arg1), Local0)
-	m1a2(Local0, c00a, 0, 0, c00a, "qwrtyu0003", 274)
-
-	Store(b900, arg1)
-	Store(RefOf(arg1), Local0)
-	m1a2(Local0, c00b, 0, 0, c00b, Buffer() {0xb0,0xb1,0xb2,0xb3,0xb4}, 275)
-
-	// Not Computational Data
-
-	// Package
-
-	Store(p953, arg1)
-	Store(RefOf(arg1), Local0)
-	m1a2(Local0, c00c, 1, 0, c009, 0xabcd0018, 1007)
-
-	if (arg2) {
-
-		// Data are unchanged, because writings were made
-		// into the new objects assosiated with arg1.
-
-		m1a6()
-		return
-	}
-
-	// Computational Data (Field Unit and Buffer Field)
-
-	Store(f900, arg1)
-	Store(RefOf(arg1), Local0)
-	m1a2(Local0, c009, 0, 0, c009, 0, 276)
-
-	Store(bn90, arg1)
-	Store(RefOf(arg1), Local0)
-	m1a2(Local0, c009, 0, 0, c009, 0, 277)
-
-	Store(if90, arg1)
-	Store(RefOf(arg1), Local0)
-	m1a2(Local0, c009, 0, 0, c009, 0, 278)
-
-	Store(bf90, arg1)
-	Store(RefOf(arg1), Local0)
-	m1a2(Local0, c009, 0, 0, c009, 0xb0, 279)
-
-	// Elements of Package are Uninitialized
-
-	Store(p900, arg1)
-	Store(RefOf(arg1), Local0)
-	m1a0(Local0, c00c, Ones, 287)
-
-	// Elements of Package are Computational Data
-
-	Store(p901, arg1)
-	Store(RefOf(arg1), Local0)
-	m1a2(Local0, c00c, 1, 0, c009, 0xabcd0004, 288)
-	m1a2(Local0, c00c, 1, 1, c009, 0x1122334455660005, 289)
-
-	Store(p902, arg1)
-	Store(RefOf(arg1), Local0)
-	m1a2(Local0, c00c, 1, 0, c00a, "12340006", 290)
-	m1a2(Local0, c00c, 1, 1, c00a, "q1w2e3r4t5y6u7i80007", 291)
-
-	Store(p903, arg1)
-	Store(RefOf(arg1), Local0)
-	m1a2(Local0, c00c, 1, 0, c00a, "qwrtyuiop0008", 292)
-	m1a2(Local0, c00c, 1, 1, c00a, "1234567890abdef0250009", 293)
-
-	Store(p904, arg1)
-	Store(RefOf(arg1), Local0)
-	m1a2(Local0, c00c, 1, 0, c00b, Buffer() {0xb5,0xb6,0xb7}, 294)
-
-	Store(p905, arg1)
-	Store(RefOf(arg1), Local0)
-	m1a2(Local0, c00c, 2, 0, c009, 0xabc000a, 295)
-	m1a2(Local0, c00c, 2, 1, c00a, "0xabc000b", 296)
-
-	Store(p906, arg1)
-	Store(RefOf(arg1), Local0)
-	m1a2(Local0, c00c, 2, 0, c00a, "abc000d", 297)
-
-	Store(p907, arg1)
-	Store(RefOf(arg1), Local0)
-	m1a2(Local0, c00c, 2, 0, c00a, "aqwevbgnm000e", 298)
-
-	Store(p908, arg1)
-	Store(RefOf(arg1), Local0)
-	m1a2(Local0, c00c, 2, 0, c00b, Buffer() {0xba,0xbb,0xbc,0xbd,0xbe}, 299)
-
-	Store(p909, arg1)
-	Store(RefOf(arg1), Local0)
-	m1a2(Local0, c00c, 3, 0, c009, 0xabc000f, 300)
-
-	Store(p90a, arg1)
-	Store(RefOf(arg1), Local0)
-	m1a2(Local0, c00c, 3, 0, c00a, "12340010", 301)
-
-	Store(p90b, arg1)
-	Store(RefOf(arg1), Local0)
-	m1a2(Local0, c00c, 3, 0, c00a, "zxswefas0011", 302)
-
-	Store(p90c, arg1)
-	Store(RefOf(arg1), Local0)
-	m1a2(Local0, c00c, 3, 0, c00b, Buffer() {0xbf,0xc0,0xc1}, 303)
-
-	Store(p90d, arg1)
-	Store(RefOf(arg1), Local0)
-	m1a2(Local0, c00c, 1, 0, c009, 0xfe7cb391d65a0000, 304)
-
-	Store(p90e, arg1)
-	Store(RefOf(arg1), Local0)
-	m1a2(Local0, c00c, 1, 0, c009, 0xc1790001, 305)
-
-	Store(p90f, arg1)
-	Store(RefOf(arg1), Local0)
-	m1a2(Local0, c00c, 1, 0, c00a, "12340002", 306)
-
-	Store(p910, arg1)
-	Store(RefOf(arg1), Local0)
-	m1a2(Local0, c00c, 1, 0, c00a, "qwrtyu0003", 307)
-
-	Store(p911, arg1)
-	Store(RefOf(arg1), Local0)
-	m1a2(Local0, c00c, 1, 0, c00b, Buffer() {0xb0,0xb1,0xb2,0xb3,0xb4}, 308)
-
-	if (y118) {
-		Store(p912, arg1)
-		Store(RefOf(arg1), Local0)
-		m1a2(Local0, c00c, 1, 0, c00d, 0, 309)
-
-		Store(p913, arg1)
-		Store(RefOf(arg1), Local0)
-		m1a2(Local0, c00c, 1, 0, c00d, 0, 310)
-
-		Store(p914, arg1)
-		Store(RefOf(arg1), Local0)
-		m1a2(Local0, c00c, 1, 0, c00d, 0, 311)
-
-		Store(p915, arg1)
-		Store(RefOf(arg1), Local0)
-		m1a2(Local0, c00c, 1, 0, c016, 0xb0, 312)
-	}
-
-	// Elements of Package are NOT Computational Data
-
-	Store(p916, arg1)
-	Store(RefOf(arg1), Local0)
-	m1a0(Local0, c00c, Ones, 313)
-
-	Store(p917, arg1)
-	Store(RefOf(arg1), Local0)
-	m1a0(Local0, c00c, Ones, 314)
-
-	Store(p918, arg1)
-	Store(RefOf(arg1), Local0)
-	m1a0(Local0, c00c, Ones, 315)
-
-	Store(p919, arg1)
-	Store(RefOf(arg1), Local0)
-	m1a0(Local0, c00c, Ones, 316)
-
-	Store(p91a, arg1)
-	Store(RefOf(arg1), Local0)
-	m1a0(Local0, c00c, Ones, 317)
-
-	Store(p91b, arg1)
-	Store(RefOf(arg1), Local0)
-	m1a0(Local0, c00c, Ones, 318)
-
-	Store(p91c, arg1)
-	Store(RefOf(arg1), Local0)
-	m1a0(Local0, c00c, Ones, 319)
-
-	// Elements of Package are Methods
-
-	Store(p91d, arg1)
-	Store(RefOf(arg1), Local0)
-	m1a0(Local0, c00c, Ones, 320)
-
-	Store(p91e, arg1)
-	Store(RefOf(arg1), Local0)
-	m1a0(Local0, c00c, Ones, 321)
-
-	Store(p91f, arg1)
-	Store(RefOf(arg1), Local0)
-	m1a0(Local0, c00c, Ones, 322)
-
-	Store(p920, arg1)
-	Store(RefOf(arg1), Local0)
-	m1a0(Local0, c00c, Ones, 323)
-
-	Store(p921, arg1)
-	Store(RefOf(arg1), Local0)
-	m1a0(Local0, c00c, Ones, 324)
-
-	Store(p922, arg1)
-	Store(RefOf(arg1), Local0)
-	m1a0(Local0, c00c, Ones, 325)
-
-	Store(p923, arg1)
-	Store(RefOf(arg1), Local0)
-	m1a0(Local0, c00c, Ones, 326)
-
-	Store(p924, arg1)
-	Store(RefOf(arg1), Local0)
-	m1a0(Local0, c00c, Ones, 327)
-
-	Store(p925, arg1)
-	Store(RefOf(arg1), Local0)
-	m1a0(Local0, c00c, Ones, 328)
-
-	Store(p926, arg1)
-	Store(RefOf(arg1), Local0)
-	m1a0(Local0, c00c, Ones, 329)
-
-	Store(p927, arg1)
-	Store(RefOf(arg1), Local0)
-	m1a0(Local0, c00c, Ones, 330)
-
-	Store(p928, arg1)
-	Store(RefOf(arg1), Local0)
-	m1a0(Local0, c00c, Ones, 331)
-
-	Store(p929, arg1)
-	Store(RefOf(arg1), Local0)
-	m1a0(Local0, c00c, Ones, 332)
-
-	Store(p92a, arg1)
-	Store(RefOf(arg1), Local0)
-	m1a0(Local0, c00c, Ones, 333)
-
-	Store(p92b, arg1)
-	Store(RefOf(arg1), Local0)
-	m1a0(Local0, c00c, Ones, 334)
-
-	Store(p92c, arg1)
-	Store(RefOf(arg1), Local0)
-	m1a0(Local0, c00c, Ones, 335)
-
-	Store(p92d, arg1)
-	Store(RefOf(arg1), Local0)
-	m1a0(Local0, c00c, Ones, 336)
-
-	Store(p92e, arg1)
-	Store(RefOf(arg1), Local0)
-	m1a0(Local0, c00c, Ones, 337)
-
-	Store(p92f, arg1)
-	Store(RefOf(arg1), Local0)
-	m1a0(Local0, c00c, Ones, 338)
-
-	Store(p930, arg1)
-	Store(RefOf(arg1), Local0)
-	m1a0(Local0, c00c, Ones, 339)
-
-	Store(p931, arg1)
-	Store(RefOf(arg1), Local0)
-	m1a0(Local0, c00c, Ones, 340)
-
-	Store(p932, arg1)
-	Store(RefOf(arg1), Local0)
-	m1a0(Local0, c00c, Ones, 341)
-
-	Store(p933, arg1)
-	Store(RefOf(arg1), Local0)
-	m1a0(Local0, c00c, Ones, 342)
-
-	Store(p934, arg1)
-	Store(RefOf(arg1), Local0)
-	m1a0(Local0, c00c, Ones, 343)
-
-	Store(p935, arg1)
-	Store(RefOf(arg1), Local0)
-	m1a0(Local0, c00c, Ones, 344)
-
-	Store(p936, arg1)
-	Store(RefOf(arg1), Local0)
-	m1a0(Local0, c00c, Ones, 345)
-
-	Store(p937, arg1)
-	Store(RefOf(arg1), Local0)
-	m1a0(Local0, c00c, Ones, 346)
-
-	Store(p938, arg1)
-	Store(RefOf(arg1), Local0)
-	m1a0(Local0, c00c, Ones, 347)
-
-	Store(p939, arg1)
-	Store(RefOf(arg1), Local0)
-	m1a0(Local0, c00c, Ones, 348)
-
-	Store(p93a, arg1)
-	Store(RefOf(arg1), Local0)
-	m1a0(Local0, c00c, Ones, 349)
-
-	Store(p93b, arg1)
-	Store(RefOf(arg1), Local0)
-	m1a0(Local0, c00c, Ones, 350)
-
-	Store(p93c, arg1)
-	Store(RefOf(arg1), Local0)
-	m1a0(Local0, c00c, Ones, 351)
-
-	Store(p93d, arg1)
-	Store(RefOf(arg1), Local0)
-	m1a0(Local0, c00c, Ones, 352)
-
-	Store(p93e, arg1)
-	Store(RefOf(arg1), Local0)
-	m1a0(Local0, c00c, Ones, 353)
-
-	Store(p93f, arg1)
-	Store(RefOf(arg1), Local0)
-	m1a0(Local0, c00c, Ones, 354)
-
-	Store(p940, arg1)
-	Store(RefOf(arg1), Local0)
-	m1a0(Local0, c00c, Ones, 355)
-
-	Store(p941, arg1)
-	Store(RefOf(arg1), Local0)
-	m1a0(Local0, c00c, Ones, 356)
-
-	Store(p942, arg1)
-	Store(RefOf(arg1), Local0)
-	m1a0(Local0, c00c, Ones, 357)
-
-	Store(p943, arg1)
-	Store(RefOf(arg1), Local0)
-	m1a0(Local0, c00c, Ones, 358)
-
-	Store(p944, arg1)
-	Store(RefOf(arg1), Local0)
-	m1a0(Local0, c00c, Ones, 359)
-
-	Store(p945, arg1)
-	Store(RefOf(arg1), Local0)
-	m1a0(Local0, c00c, Ones, 360)
-
-	Store(p946, arg1)
-	Store(RefOf(arg1), Local0)
-	m1a0(Local0, c00c, Ones, 361)
-
-	Store(p947, arg1)
-	Store(RefOf(arg1), Local0)
-	m1a0(Local0, c00c, Ones, 362)
-
-	Store(p948, arg1)
-	Store(RefOf(arg1), Local0)
-	m1a0(Local0, c00c, Ones, 363)
-
-	Store(p949, arg1)
-	Store(RefOf(arg1), Local0)
-	m1a0(Local0, c00c, Ones, 364)
-
-	Store(p94a, arg1)
-	Store(RefOf(arg1), Local0)
-	m1a0(Local0, c00c, Ones, 365)
-
-	Store(p94b, arg1)
-	Store(RefOf(arg1), Local0)
-	m1a0(Local0, c00c, Ones, 366)
-
-	Store(p94c, arg1)
-	Store(RefOf(arg1), Local0)
-	m1a0(Local0, c00c, Ones, 367)
-
-	Store(p94d, arg1)
-	Store(RefOf(arg1), Local0)
-	m1a0(Local0, c00c, Ones, 368)
-
-	Store(p94e, arg1)
-	Store(RefOf(arg1), Local0)
-	m1a0(Local0, c00c, Ones, 369)
-
-	Store(p94f, arg1)
-	Store(RefOf(arg1), Local0)
-	m1a0(Local0, c00c, Ones, 370)
-
-	Store(p950, arg1)
-	Store(RefOf(arg1), Local0)
-	m1a0(Local0, c00c, Ones, 371)
-
-	Store(p951, arg1)
-	Store(RefOf(arg1), Local0)
-	m1a0(Local0, c00c, Ones, 372)
-
-	Store(p952, arg1)
-	Store(RefOf(arg1), Local0)
-	m1a0(Local0, c00c, Ones, 373)
-
-	m1a6()
-
-	return
-}
-
-// m16c,m193,m172
-// arg2 - writing mode
-Method(m182, 3)
-{
-	if (y100) {
-		ts00("m182")
-	} else {
-		Store("m182", Debug)
-	}
-
-	// T6:CR0-CR5,CR14
-
-	// Uninitialized Local
-
-	if (Arg0) {
-		Store(0, arg6)
-	}
-	Store(CondRefOf(arg6, Local0), Local1)
-	if (m1a4(Local1, 589)) {
-		m1a0(Local0, c008, Ones, 590)
-	}
-
-	// Computational Data
-
-	Store(i900, arg1)
-	Store(CondRefOf(arg1, Local0), Local1)
-	if (m1a4(Local1, 591)) {
-		m1a2(Local0, c009, 0, 0, c009, 0xfe7cb391d65a0000, 592)
-	}
-
-	Store(i901, arg1)
-	Store(CondRefOf(arg1, Local0), Local1)
-	if (m1a4(Local1, 593)) {
-		m1a2(Local0, c009, 0, 0, c009, 0xc1790001, 594)
-	}
-
-	Store(s900, arg1)
-	Store(CondRefOf(arg1, Local0), Local1)
-	if (m1a4(Local1, 595)) {
-		m1a2(Local0, c00a, 0, 0, c00a, "12340002", 596)
-	}
-
-	Store(s901, arg1)
-	Store(CondRefOf(arg1, Local0), Local1)
-	if (m1a4(Local1, 597)) {
-		m1a2(Local0, c00a, 0, 0, c00a, "qwrtyu0003", 598)
-	}
-
-	Store(b900, arg1)
-	Store(CondRefOf(arg1, Local0), Local1)
-	if (m1a4(Local1, 599)) {
-		m1a2(Local0, c00b, 0, 0, c00b, Buffer() {0xb0,0xb1,0xb2,0xb3,0xb4}, 600)
-	}
-
-	// Not Computational Data
-
-	// Package
-
-	Store(p953, arg1)
-	Store(CondRefOf(arg1, Local0), Local1)
-	if (m1a4(Local1, 1008)) {
-		m1a2(Local0, c00c, 1, 0, c009, 0xabcd0018, 1009)
-	}
-
-	if (arg2) {
-
-		// Data are unchanged, because writings were made
-		// into the new objects assosiated with arg1.
-
-		m1a6()
-		return
-	}
-
-	// Computational Data (Field Unit and Buffer Field)
-
-	Store(f900, arg1)
-	Store(CondRefOf(arg1, Local0), Local1)
-	if (m1a4(Local1, 601)) {
-		m1a2(Local0, c009, 0, 0, c009, 0, 602)
-	}
-
-	Store(bn90, arg1)
-	Store(CondRefOf(arg1, Local0), Local1)
-	if (m1a4(Local1, 603)) {
-		m1a2(Local0, c009, 0, 0, c009, 0, 604)
-	}
-
-	Store(if90, arg1)
-	Store(CondRefOf(arg1, Local0), Local1)
-	if (m1a4(Local1, 605)) {
-		m1a2(Local0, c009, 0, 0, c009, 0, 606)
-	}
-
-	Store(bf90, arg1)
-	Store(CondRefOf(arg1, Local0), Local1)
-	if (m1a4(Local1, 607)) {
-		m1a2(Local0, c009, 0, 0, c009, 0xb0, 608)
-	}
-
-	// Elements of Package are Uninitialized
-
-	Store(p900, arg1)
-	Store(CondRefOf(arg1, Local0), Local1)
-	m1a0(Local0, c00c, Local1, 616)
-
-	// Elements of Package are Computational Data
-
-	Store(p901, arg1)
-	Store(CondRefOf(arg1, Local0), Local1)
-	if (m1a4(Local1, 617)) {
-		m1a2(Local0, c00c, 1, 0, c009, 0xabcd0004, 618)
-		m1a2(Local0, c00c, 1, 1, c009, 0x1122334455660005, 619)
-	}
-
-	Store(p902, arg1)
-	Store(CondRefOf(arg1, Local0), Local1)
-	if (m1a4(Local1, 620)) {
-		m1a2(Local0, c00c, 1, 0, c00a, "12340006", 621)
-		m1a2(Local0, c00c, 1, 1, c00a, "q1w2e3r4t5y6u7i80007", 622)
-	}
-
-	Store(p903, arg1)
-	Store(CondRefOf(arg1, Local0), Local1)
-	if (m1a4(Local1, 623)) {
-		m1a2(Local0, c00c, 1, 0, c00a, "qwrtyuiop0008", 624)
-		m1a2(Local0, c00c, 1, 1, c00a, "1234567890abdef0250009", 625)
-	}
-
-	Store(p904, arg1)
-	Store(CondRefOf(arg1, Local0), Local1)
-	if (m1a4(Local1, 626)) {
-		m1a2(Local0, c00c, 1, 0, c00b, Buffer() {0xb5,0xb6,0xb7}, 627)
-	}
-
-	Store(p905, arg1)
-	Store(CondRefOf(arg1, Local0), Local1)
-	if (m1a4(Local1, 628)) {
-		m1a2(Local0, c00c, 2, 0, c009, 0xabc000a, 629)
-		m1a2(Local0, c00c, 2, 1, c00a, "0xabc000b", 630)
-	}
-
-	Store(p906, arg1)
-	Store(CondRefOf(arg1, Local0), Local1)
-	if (m1a4(Local1, 631)) {
-		m1a2(Local0, c00c, 2, 0, c00a, "abc000d", 632)
-	}
-
-	Store(p907, arg1)
-	Store(CondRefOf(arg1, Local0), Local1)
-	if (m1a4(Local1, 633)) {
-		m1a2(Local0, c00c, 2, 0, c00a, "aqwevbgnm000e", 634)
-	}
-
-	Store(p908, arg1)
-	Store(CondRefOf(arg1, Local0), Local1)
-	if (m1a4(Local1, 635)) {
-		m1a2(Local0, c00c, 2, 0, c00b, Buffer() {0xba,0xbb,0xbc,0xbd,0xbe}, 636)
-	}
-
-	Store(p909, arg1)
-	Store(CondRefOf(arg1, Local0), Local1)
-	if (m1a4(Local1, 637)) {
-		m1a2(Local0, c00c, 3, 0, c009, 0xabc000f, 638)
-	}
-
-	Store(p90a, arg1)
-	Store(CondRefOf(arg1, Local0), Local1)
-	if (m1a4(Local1, 639)) {
-		m1a2(Local0, c00c, 3, 0, c00a, "12340010", 640)
-	}
-
-	Store(p90b, arg1)
-	Store(CondRefOf(arg1, Local0), Local1)
-	if (m1a4(Local1, 641)) {
-		m1a2(Local0, c00c, 3, 0, c00a, "zxswefas0011", 642)
-	}
-
-	Store(p90c, arg1)
-	Store(CondRefOf(arg1, Local0), Local1)
-	if (m1a4(Local1, 643)) {
-		m1a2(Local0, c00c, 3, 0, c00b, Buffer() {0xbf,0xc0,0xc1}, 644)
-	}
-
-	Store(p90d, arg1)
-	Store(CondRefOf(arg1, Local0), Local1)
-	if (m1a4(Local1, 645)) {
-		m1a2(Local0, c00c, 1, 0, c009, 0xfe7cb391d65a0000, 646)
-	}
-
-	Store(p90e, arg1)
-	Store(CondRefOf(arg1, Local0), Local1)
-	if (m1a4(Local1, 647)) {
-		m1a2(Local0, c00c, 1, 0, c009, 0xc1790001, 648)
-	}
-
-	Store(p90f, arg1)
-	Store(CondRefOf(arg1, Local0), Local1)
-	if (m1a4(Local1, 649)) {
-		m1a2(Local0, c00c, 1, 0, c00a, "12340002", 650)
-	}
-
-	Store(p910, arg1)
-	Store(CondRefOf(arg1, Local0), Local1)
-	if (m1a4(Local1, 651)) {
-		m1a2(Local0, c00c, 1, 0, c00a, "qwrtyu0003", 652)
-	}
-
-	Store(p911, arg1)
-	Store(CondRefOf(arg1, Local0), Local1)
-	if (m1a4(Local1, 653)) {
-		m1a2(Local0, c00c, 1, 0, c00b, Buffer() {0xb0,0xb1,0xb2,0xb3,0xb4}, 654)
-	}
-
-	if (y118) {
-		Store(p912, arg1)
-		Store(CondRefOf(arg1, Local0), Local1)
-		if (m1a4(Local1, 655)) {
-			m1a2(Local0, c00c, 1, 0, c00d, 0, 656)
-		}
-
-		Store(p913, arg1)
-		Store(CondRefOf(arg1, Local0), Local1)
-		if (m1a4(Local1, 657)) {
-			m1a2(Local0, c00c, 1, 0, c00d, 0, 658)
-		}
-
-		Store(p914, arg1)
-		Store(CondRefOf(arg1, Local0), Local1)
-		if (m1a4(Local1, 659)) {
-			m1a2(Local0, c00c, 1, 0, c00d, 0, 660)
-		}
-
-		Store(p915, arg1)
-		Store(CondRefOf(arg1, Local0), Local1)
-		if (m1a4(Local1, 661)) {
-			m1a2(Local0, c00c, 1, 0, c016, 0xb0, 662)
-		}
-	}
-
-	// Elements of Package are NOT Computational Data
-
-	Store(p916, arg1)
-	Store(CondRefOf(arg1, Local0), Local1)
-	m1a0(Local0, c00c, Local1, 663)
-
-	Store(p917, arg1)
-	Store(CondRefOf(arg1, Local0), Local1)
-	m1a0(Local0, c00c, Local1, 664)
-
-	Store(p918, arg1)
-	Store(CondRefOf(arg1, Local0), Local1)
-	m1a0(Local0, c00c, Local1, 6655)
-
-	Store(p919, arg1)
-	Store(CondRefOf(arg1, Local0), Local1)
-	m1a0(Local0, c00c, Local1, 666)
-
-	Store(p91a, arg1)
-	Store(CondRefOf(arg1, Local0), Local1)
-	m1a0(Local0, c00c, Local1, 667)
-
-	Store(p91b, arg1)
-	Store(CondRefOf(arg1, Local0), Local1)
-	m1a0(Local0, c00c, Local1, 668)
-
-	Store(p91c, arg1)
-	Store(CondRefOf(arg1, Local0), Local1)
-	m1a0(Local0, c00c, Local1, 669)
-
-	// Elements of Package are Methods
-
-	Store(p91d, arg1)
-	Store(CondRefOf(arg1, Local0), Local1)
-	m1a0(Local0, c00c, Local1, 670)
-
-	Store(p91e, arg1)
-	Store(CondRefOf(arg1, Local0), Local1)
-	m1a0(Local0, c00c, Local1, 671)
-
-	Store(p91f, arg1)
-	Store(CondRefOf(arg1, Local0), Local1)
-	m1a0(Local0, c00c, Local1, 672)
-
-	Store(p920, arg1)
-	Store(CondRefOf(arg1, Local0), Local1)
-	m1a0(Local0, c00c, Local1, 673)
-
-	Store(p921, arg1)
-	Store(CondRefOf(arg1, Local0), Local1)
-	m1a0(Local0, c00c, Local1, 674)
-
-	Store(p922, arg1)
-	Store(CondRefOf(arg1, Local0), Local1)
-	m1a0(Local0, c00c, Local1, 675)
-
-	Store(p923, arg1)
-	Store(CondRefOf(arg1, Local0), Local1)
-	m1a0(Local0, c00c, Local1, 676)
-
-	Store(p924, arg1)
-	Store(CondRefOf(arg1, Local0), Local1)
-	m1a0(Local0, c00c, Local1, 677)
-
-	Store(p925, arg1)
-	Store(CondRefOf(arg1, Local0), Local1)
-	m1a0(Local0, c00c, Local1, 678)
-
-	Store(p926, arg1)
-	Store(CondRefOf(arg1, Local0), Local1)
-	m1a0(Local0, c00c, Local1, 679)
-
-	Store(p927, arg1)
-	Store(CondRefOf(arg1, Local0), Local1)
-	m1a0(Local0, c00c, Local1, 680)
-
-	Store(p928, arg1)
-	Store(CondRefOf(arg1, Local0), Local1)
-	m1a0(Local0, c00c, Local1, 681)
-
-	Store(p929, arg1)
-	Store(CondRefOf(arg1, Local0), Local1)
-	m1a0(Local0, c00c, Local1, 682)
-
-	Store(p92a, arg1)
-	Store(CondRefOf(arg1, Local0), Local1)
-	m1a0(Local0, c00c, Local1, 683)
-
-	Store(p92b, arg1)
-	Store(CondRefOf(arg1, Local0), Local1)
-	m1a0(Local0, c00c, Local1, 684)
-
-	Store(p92c, arg1)
-	Store(CondRefOf(arg1, Local0), Local1)
-	m1a0(Local0, c00c, Local1, 685)
-
-	Store(p92d, arg1)
-	Store(CondRefOf(arg1, Local0), Local1)
-	m1a0(Local0, c00c, Local1, 686)
-
-	Store(p92e, arg1)
-	Store(CondRefOf(arg1, Local0), Local1)
-	m1a0(Local0, c00c, Local1, 687)
-
-	Store(p92f, arg1)
-	Store(CondRefOf(arg1, Local0), Local1)
-	m1a0(Local0, c00c, Local1, 688)
-
-	Store(p930, arg1)
-	Store(CondRefOf(arg1, Local0), Local1)
-	m1a0(Local0, c00c, Local1, 689)
-
-	Store(p931, arg1)
-	Store(CondRefOf(arg1, Local0), Local1)
-	m1a0(Local0, c00c, Local1, 690)
-
-	Store(p932, arg1)
-	Store(CondRefOf(arg1, Local0), Local1)
-	m1a0(Local0, c00c, Local1, 691)
-
-	Store(p933, arg1)
-	Store(CondRefOf(arg1, Local0), Local1)
-	m1a0(Local0, c00c, Local1, 692)
-
-	Store(p934, arg1)
-	Store(CondRefOf(arg1, Local0), Local1)
-	m1a0(Local0, c00c, Local1, 693)
-
-	Store(p935, arg1)
-	Store(CondRefOf(arg1, Local0), Local1)
-	m1a0(Local0, c00c, Local1, 694)
-
-	Store(p936, arg1)
-	Store(CondRefOf(arg1, Local0), Local1)
-	m1a0(Local0, c00c, Local1, 695)
-
-	Store(p937, arg1)
-	Store(CondRefOf(arg1, Local0), Local1)
-	m1a0(Local0, c00c, Local1, 696)
-
-	Store(p938, arg1)
-	Store(CondRefOf(arg1, Local0), Local1)
-	m1a0(Local0, c00c, Local1, 697)
-
-	Store(p939, arg1)
-	Store(CondRefOf(arg1, Local0), Local1)
-	m1a0(Local0, c00c, Local1, 698)
-
-	Store(p93a, arg1)
-	Store(CondRefOf(arg1, Local0), Local1)
-	m1a0(Local0, c00c, Local1, 699)
-
-	Store(p93b, arg1)
-	Store(CondRefOf(arg1, Local0), Local1)
-	m1a0(Local0, c00c, Local1, 700)
-
-	Store(p93c, arg1)
-	Store(CondRefOf(arg1, Local0), Local1)
-	m1a0(Local0, c00c, Local1, 701)
-
-	Store(p93d, arg1)
-	Store(CondRefOf(arg1, Local0), Local1)
-	m1a0(Local0, c00c, Local1, 702)
-
-	Store(p93e, arg1)
-	Store(CondRefOf(arg1, Local0), Local1)
-	m1a0(Local0, c00c, Local1, 703)
-
-	Store(p93f, arg1)
-	Store(CondRefOf(arg1, Local0), Local1)
-	m1a0(Local0, c00c, Local1, 704)
-
-	Store(p940, arg1)
-	Store(CondRefOf(arg1, Local0), Local1)
-	m1a0(Local0, c00c, Local1, 705)
-
-	Store(p941, arg1)
-	Store(CondRefOf(arg1, Local0), Local1)
-	m1a0(Local0, c00c, Local1, 706)
-
-	Store(p942, arg1)
-	Store(CondRefOf(arg1, Local0), Local1)
-	m1a0(Local0, c00c, Local1, 707)
-
-	Store(p943, arg1)
-	Store(CondRefOf(arg1, Local0), Local1)
-	m1a0(Local0, c00c, Local1, 708)
-
-	Store(p944, arg1)
-	Store(CondRefOf(arg1, Local0), Local1)
-	m1a0(Local0, c00c, Local1, 709)
-
-	Store(p945, arg1)
-	Store(CondRefOf(arg1, Local0), Local1)
-	m1a0(Local0, c00c, Local1, 710)
-
-	Store(p946, arg1)
-	Store(CondRefOf(arg1, Local0), Local1)
-	m1a0(Local0, c00c, Local1, 711)
-
-	Store(p947, arg1)
-	Store(CondRefOf(arg1, Local0), Local1)
-	m1a0(Local0, c00c, Local1, 712)
-
-	Store(p948, arg1)
-	Store(CondRefOf(arg1, Local0), Local1)
-	m1a0(Local0, c00c, Local1, 713)
-
-	Store(p949, arg1)
-	Store(CondRefOf(arg1, Local0), Local1)
-	m1a0(Local0, c00c, Local1, 714)
-
-	Store(p94a, arg1)
-	Store(CondRefOf(arg1, Local0), Local1)
-	m1a0(Local0, c00c, Local1, 715)
-
-	Store(p94b, arg1)
-	Store(CondRefOf(arg1, Local0), Local1)
-	m1a0(Local0, c00c, Local1, 716)
-
-	Store(p94c, arg1)
-	Store(CondRefOf(arg1, Local0), Local1)
-	m1a0(Local0, c00c, Local1, 717)
-
-	Store(p94d, arg1)
-	Store(CondRefOf(arg1, Local0), Local1)
-	m1a0(Local0, c00c, Local1, 718)
-
-	Store(p94e, arg1)
-	Store(CondRefOf(arg1, Local0), Local1)
-	m1a0(Local0, c00c, Local1, 719)
-
-	Store(p94f, arg1)
-	Store(CondRefOf(arg1, Local0), Local1)
-	m1a0(Local0, c00c, Local1, 720)
-
-	Store(p950, arg1)
-	Store(CondRefOf(arg1, Local0), Local1)
-	m1a0(Local0, c00c, Local1, 721)
-
-	Store(p951, arg1)
-	Store(CondRefOf(arg1, Local0), Local1)
-	m1a0(Local0, c00c, Local1, 722)
-
-	Store(p952, arg1)
-	Store(CondRefOf(arg1, Local0), Local1)
-	m1a0(Local0, c00c, Local1, 723)
-
-	m1a6()
-
-	return
-}
-
-Method(m185, 3)
-{
-	Store(z079, c081)		// absolute index of file initiating the checking
-	Store(1, c089)		// flag of Reference, object otherwise
-
-	if (arg0) {
-		m180(0, 0)
-	}
-	if (arg1) {
-		m181(0, 0, c083)
-	}
-	if (arg2) {
-		m182(0, 0, c083)
-	}
-}
-
-// The mode with the chain of references to LocalX
-Method(m186)
-{
-	Store(1, c084)	// run verification of references (reading)
-	Store(1, c085)	// create the chain of references to LocalX, then dereference them
-
-	Store("The mode with the chain of references to LocalX:", Debug)
-
-	m185(1, 1, 1)
-}
-
-// Run-method
-Method(REF3)
-{
-	Store("TEST: REF3, References", Debug)
-
-	Store("REF3", c080)	// name of test
-	Store(0, c082)		// flag of test of exceptions
-	Store(0, c083)		// run verification of references (write/read)
-	Store(0, c086)		// flag, run test till the first error
-	Store(1, c087)		// apply DeRefOf to ArgX-ObjectReference
-
-	m186()
-}

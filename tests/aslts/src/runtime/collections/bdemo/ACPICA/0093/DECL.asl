@@ -1,91 +1,106 @@
-/*
- * Some or all of this work - Copyright (c) 2006 - 2017, Intel Corp.
- * All rights reserved.
- *
- * Redistribution and use in source and binary forms, with or without modification,
- * are permitted provided that the following conditions are met:
- *
- * Redistributions of source code must retain the above copyright notice,
- * this list of conditions and the following disclaimer.
- * Redistributions in binary form must reproduce the above copyright notice,
- * this list of conditions and the following disclaimer in the documentation
- * and/or other materials provided with the distribution.
- * Neither the name of Intel Corporation nor the names of its contributors
- * may be used to endorse or promote products derived from this software
- * without specific prior written permission.
- *
- * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS"
- * AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE
- * IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE
- * ARE DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT OWNER OR CONTRIBUTORS BE
- * LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL
- * DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES;
- * LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY
- * THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING
- * NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE,
- * EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
- */
+    /*
+     * Some or all of this work - Copyright (c) 2006 - 2017, Intel Corp.
+     * All rights reserved.
+     *
+     * Redistribution and use in source and binary forms, with or without modification,
+     * are permitted provided that the following conditions are met:
+     *
+     * Redistributions of source code must retain the above copyright notice,
+     * this list of conditions and the following disclaimer.
+     * Redistributions in binary form must reproduce the above copyright notice,
+     * this list of conditions and the following disclaimer in the documentation
+     * and/or other materials provided with the distribution.
+     * Neither the name of Intel Corporation nor the names of its contributors
+     * may be used to endorse or promote products derived from this software
+     * without specific prior written permission.
+     *
+     * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS"
+     * AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE
+     * IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE
+     * ARE DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT OWNER OR CONTRIBUTORS BE
+     * LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL
+     * DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES;
+     * LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY
+     * THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING
+     * NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE,
+     * EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
+     */
+    /*
+     * Bug 0093:
+     *
+     * SUMMARY: Invalid result of Index operator passed with the immediate image of Buffer
+     */
+    Method (ME42, 1, Serialized)
+    {
+        Name (B000, Buffer (0x08)
+        {
+             0x0B, 0x16, 0x21, 0x2C, 0x37, 0x42, 0x4D, 0x58   // ..!,7BMX
+        })
+        If ((Arg0 == 0x00))
+        {
+            Debug = "Buffer as a named object:"
+            CH03 ("", 0x00, 0x00, 0x2B, 0x00)
+            Local0 = DerefOf (B000 [0x05])
+            If ((Local0 != 0x42))
+            {
+                ERR ("", ZFFF, 0x2E, 0x00, 0x00, Local0, 0x42)
+            }
 
-/*
- * Bug 0093:
- *
- * SUMMARY: Invalid result of Index operator passed with the immediate image of Buffer
- */
+            CH03 ("", 0x00, 0x02, 0x30, 0x00)
+        }
+        ElseIf ((Arg0 == 0x01))
+        {
+            Debug = "The same Buffer but substituted immediately:"
+            CH03 ("", 0x00, 0x03, 0x36, 0x00)
+            Store (Index (Buffer (0x08)
+                    {
+                         0x0B, 0x16, 0x21, 0x2C, 0x37, 0x42, 0x4D, 0x58   // ..!,7BMX
+                    }, 0x05), Local1)
+            If (Y900)
+            {
+                Local0 = DerefOf (Local1)
+                If ((Local0 != 0x42))
+                {
+                    ERR ("", ZFFF, 0x3B, 0x00, 0x00, Local0, 0x42)
+                }
 
-	Method(me42, 1, Serialized)
-	{
-		Name(b000, Buffer() {11,22,33,44,55,66,77,88})
+                CH03 ("", 0x00, 0x05, 0x3D, 0x00)
+            }
+            Else
+            {
+                CH04 ("", 0x00, 0xFF, 0x00, 0x3F, 0x00, 0x00) /* AE_INDEX_TO_NOT_ATTACHED */
+            }
+        }
+        Else
+        {
+            CH03 ("", 0x00, 0x07, 0x44, 0x00)
+            Local0 = DerefOf (Index (Buffer (0x08)
+                        {
+                             0x0B, 0x16, 0x21, 0x2C, 0x37, 0x42, 0x4D, 0x58   // ..!,7BMX
+                        }, 0x05))
+            If (Y900)
+            {
+                If ((Local0 != 0x42))
+                {
+                    ERR ("", ZFFF, 0x48, 0x00, 0x00, Local0, 0x42)
+                }
 
-		if (LEqual(Arg0, 0)) {
+                CH03 ("", 0x00, 0x09, 0x4A, 0x00)
+            }
+            Else
+            {
+                CH04 ("", 0x00, 0xFF, 0x00, 0x4C, 0x00, 0x00) /* AE_INDEX_TO_NOT_ATTACHED */
+            }
+        }
+    }
 
-			Store("Buffer as a named object:", Debug)
+    Method (ME43, 0, NotSerialized)
+    {
+        /* 0,1 - success,   2 - crash */
 
-			CH03("", 0, 0x000, __LINE__, 0)
-			Store(DerefOf(Index(b000, 5)), Local0)
-			if (LNotEqual(Local0, 66)) {
-				err("", zFFF, __LINE__, 0, 0, Local0, 66)
-			}
-			CH03("", 0, 0x002, __LINE__, 0)
-
-		} elseif (LEqual(Arg0, 1)) {
-
-			Store("The same Buffer but substituted immediately:", Debug)
-
-			CH03("", 0, 0x003, __LINE__, 0)
-			Store(Index(Buffer() {11,22,33,44,55,66,77,88}, 5), Local1)
-			if (y900) {
-				Store(DerefOf(Local1), Local0)
-				if (LNotEqual(Local0, 66)) {
-					err("", zFFF, __LINE__, 0, 0, Local0, 66)
-				}
-				CH03("", 0, 0x005, __LINE__, 0)
-			} else {
-				CH04("", 0, 0xff, 0, __LINE__, 0, 0) // AE_INDEX_TO_NOT_ATTACHED
-			}
-
-		} else {
-
-			CH03("", 0, 0x007, __LINE__, 0)
-			Store(DerefOf(Index(Buffer() {11,22,33,44,55,66,77,88}, 5)), Local0)
-			if (y900) {
-				if (LNotEqual(Local0, 66)) {
-					err("", zFFF, __LINE__, 0, 0, Local0, 66)
-				}
-				CH03("", 0, 0x009, __LINE__, 0)
-			} else {
-				CH04("", 0, 0xff, 0, __LINE__, 0, 0) // AE_INDEX_TO_NOT_ATTACHED
-			}
-		}
-	}
-
-	Method(me43)
-	{
-		// 0,1 - success,   2 - crash
-		me42(0)
-		me42(1)
-		me42(2)
-
-		return (0)
-	}
-
+        ME42 (0x00)
+        ME42 (0x01)
+        ME42 (0x02)
+        Return (0x00)
+    }
 

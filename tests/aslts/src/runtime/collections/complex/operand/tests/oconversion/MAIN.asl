@@ -25,34 +25,25 @@
  * NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE,
  * EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
+DefinitionBlock ("oconversion", "DSDT", 2, "Intel", "Many", 0x00000001)
+{
+    /* All declarations */
+    Include ("../../../../../../runtime/cntl/DECL_6UP.asl")
+    Include ("../../../../../../runtime/common/operations.asl")
+    Include ("../../../../../../runtime/common/conversion/oproc.asl")
+    Include ("../../../../../../runtime/common/conversion/otest.asl")
+    Include ("../../../../../../runtime/collections/complex/operand/tests/oconversion/oconversion.asl")
+    Method (MAIN, 0, NotSerialized)
+    {
+        /* Initialization */
 
-DefinitionBlock(
-	"oconversion.aml",   // Output filename
-	"DSDT",     // Signature
-	0x02,       // DSDT Revision
-	"Intel",    // OEMID
-	"Many",     // TABLE ID
-	0x00000001  // OEM Revision
-	) {
+        STRT (0x00)
+        /* Run verification methods */
+        Include ("../../../../../../runtime/collections/complex/operand/tests/oconversion/RUN.asl")
+        /* Final actions */
 
-	// All declarations
-	Include("../../../../../../runtime/cntl/DECL_6UP.asl")
-	Include("../../../../../../runtime/common/operations.asl")
-	Include("../../../../../../runtime/common/conversion/oproc.asl")
-	Include("../../../../../../runtime/common/conversion/otest.asl")
-	Include("../../../../../../runtime/collections/complex/operand/tests/oconversion/oconversion.asl")
-
-	Method(MAIN) {
-
-		// Initialization
-		STRT(0)
-
-		// Run verification methods
-		Include("../../../../../../runtime/collections/complex/operand/tests/oconversion/RUN.asl")
-
-		// Final actions
-		Store(FNSH(), Local7)
-
-		return (Local7)
-	}
+        Store (FNSH (), Local7)
+        Return (Local7)
+    }
 }
+

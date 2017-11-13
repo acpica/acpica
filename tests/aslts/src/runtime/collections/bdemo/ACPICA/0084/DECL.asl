@@ -1,283 +1,293 @@
-/*
- * Some or all of this work - Copyright (c) 2006 - 2017, Intel Corp.
- * All rights reserved.
- *
- * Redistribution and use in source and binary forms, with or without modification,
- * are permitted provided that the following conditions are met:
- *
- * Redistributions of source code must retain the above copyright notice,
- * this list of conditions and the following disclaimer.
- * Redistributions in binary form must reproduce the above copyright notice,
- * this list of conditions and the following disclaimer in the documentation
- * and/or other materials provided with the distribution.
- * Neither the name of Intel Corporation nor the names of its contributors
- * may be used to endorse or promote products derived from this software
- * without specific prior written permission.
- *
- * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS"
- * AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE
- * IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE
- * ARE DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT OWNER OR CONTRIBUTORS BE
- * LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL
- * DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES;
- * LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY
- * THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING
- * NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE,
- * EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
- */
+    /*
+     * Some or all of this work - Copyright (c) 2006 - 2017, Intel Corp.
+     * All rights reserved.
+     *
+     * Redistribution and use in source and binary forms, with or without modification,
+     * are permitted provided that the following conditions are met:
+     *
+     * Redistributions of source code must retain the above copyright notice,
+     * this list of conditions and the following disclaimer.
+     * Redistributions in binary form must reproduce the above copyright notice,
+     * this list of conditions and the following disclaimer in the documentation
+     * and/or other materials provided with the distribution.
+     * Neither the name of Intel Corporation nor the names of its contributors
+     * may be used to endorse or promote products derived from this software
+     * without specific prior written permission.
+     *
+     * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS"
+     * AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE
+     * IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE
+     * ARE DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT OWNER OR CONTRIBUTORS BE
+     * LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL
+     * DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES;
+     * LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY
+     * THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING
+     * NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE,
+     * EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
+     */
+    /*
+     * Bug 0084:
+     *
+     * SUMMARY: Failed to interpret AML code alternated with Method declarations
+     */
+    Method (ME35, 1, NotSerialized)
+    {
+        Method (M001, 0, NotSerialized)
+        {
+            Return (0x00)
+        }
 
-/*
- * Bug 0084:
- *
- * SUMMARY: Failed to interpret AML code alternated with Method declarations
- */
+        Debug = "Before m001 run"
+        If (Arg0)
+        {
+            Debug = "m001 started"
+            M001 ()
+            Debug = "m001 finished"
+        }
 
-Method(me35, 1)
-{
-	Method(m001)
-	{
-		return (0)
-	}
+        Debug = "After m001 run"
+        Method (M002, 0, NotSerialized)
+        {
+            Return (0x00)
+        }
 
-	Store("Before m001 run", Debug)
+        Method (M003, 0, NotSerialized)
+        {
+            Return (0x00)
+        }
 
-	if (arg0) {
-		Store("m001 started", Debug)
-		m001()
-		Store("m001 finished", Debug)
-	}
+        Debug = "Before return from me35"
+        Return (0x00)
+    }
 
-	Store("After m001 run", Debug)
+    Method (ME36, 0, NotSerialized)
+    {
+        Debug = "Before me35(0) run"
+        ME35 (0x00)
+        Debug = "After me35(0) completion"
+        Debug = "Before me35(1) run"
+        ME35 (0x01)
+        Debug = "After me35(1) completion"
+    }
 
-	Method(m002)
-	{
-		return (0)
-	}
+    Method (M803, 0, Serialized)
+    {
+        Name (I000, 0xABCD0000)
+        Method (M000, 0, NotSerialized)
+        {
+            If ((I000 != 0xABCD0000))
+            {
+                ERR ("", ZFFF, 0x55, 0x00, 0x00, I000, 0xABCD0000)
+            }
 
-	Method(m003)
-	{
-		return (0)
-	}
+            I000 = 0xABCD0001
+            Return (0xABCD0002)
+        }
 
-	Store("Before return from me35", Debug)
+        M000 ()
+        Method (M001, 0, NotSerialized)
+        {
+            If ((I000 != 0xABCD0001))
+            {
+                ERR ("", ZFFF, 0x60, 0x00, 0x00, I000, 0xABCD0001)
+            }
 
-	return (0)
-}
+            I000 = 0xABCD0003
+            Return (0xABCD0004)
+        }
 
-Method(me36)
-{
-	Store("Before me35(0) run", Debug)
-	me35(0)
-	Store("After me35(0) completion", Debug)
+        M001 ()
+        Method (M002, 0, NotSerialized)
+        {
+            If ((I000 != 0xABCD0003))
+            {
+                ERR ("", ZFFF, 0x6B, 0x00, 0x00, I000, 0xABCD0003)
+            }
 
-	Store("Before me35(1) run", Debug)
-	me35(1)
-	Store("After me35(1) completion", Debug)
-}
+            I000 = 0xABCD0005
+            Return (0xABCD0006)
+        }
 
-Method(m803,, Serialized)
-{
-	Name(i000, 0xabcd0000)
+        M002 ()
+        Method (M003, 0, NotSerialized)
+        {
+            If ((I000 != 0xABCD0005))
+            {
+                ERR ("", ZFFF, 0x76, 0x00, 0x00, I000, 0xABCD0005)
+            }
 
-	Method(m000)
-	{
-		if (LNotEqual(i000, 0xabcd0000)) {
-			err("", zFFF, __LINE__, 0, 0, i000, 0xabcd0000)
-		}
-		Store(0xabcd0001, i000)
-		return (0xabcd0002)
-	}
+            I000 = 0xABCD0007
+            Return (0xABCD0008)
+        }
 
-	m000()
+        M003 ()
+    }
 
-	Method(m001)
-	{
-		if (LNotEqual(i000, 0xabcd0001)) {
-			err("", zFFF, __LINE__, 0, 0, i000, 0xabcd0001)
-		}
-		Store(0xabcd0003, i000)
-		return (0xabcd0004)
-	}
+    Method (M804, 0, Serialized)
+    {
+        Name (I000, 0xABCD0000)
+        Method (M000, 0, NotSerialized)
+        {
+            Method (M000, 0, NotSerialized)
+            {
+                If ((I000 != 0xABCD0000))
+                {
+                    ERR ("", ZFFF, 0x88, 0x00, 0x00, I000, 0xABCD0000)
+                }
 
-	m001()
+                I000 = 0xABCD0001
+                Return (0xABCD0002)
+            }
 
-	Method(m002)
-	{
-		if (LNotEqual(i000, 0xabcd0003)) {
-			err("", zFFF, __LINE__, 0, 0, i000, 0xabcd0003)
-		}
-		Store(0xabcd0005, i000)
-		return (0xabcd0006)
-	}
+            M000 ()
+            Method (M001, 0, NotSerialized)
+            {
+                If ((I000 != 0xABCD0001))
+                {
+                    ERR ("", ZFFF, 0x93, 0x00, 0x00, I000, 0xABCD0001)
+                }
 
-	m002()
+                I000 = 0xABCD0003
+                Return (0xABCD0004)
+            }
 
-	Method(m003)
-	{
-		if (LNotEqual(i000, 0xabcd0005)) {
-			err("", zFFF, __LINE__, 0, 0, i000, 0xabcd0005)
-		}
-		Store(0xabcd0007, i000)
-		return (0xabcd0008)
-	}
+            M001 ()
+            Method (M002, 0, NotSerialized)
+            {
+                If ((I000 != 0xABCD0003))
+                {
+                    ERR ("", ZFFF, 0x9E, 0x00, 0x00, I000, 0xABCD0003)
+                }
 
-	m003()
-}
+                I000 = 0xABCD0005
+                Return (0xABCD0006)
+            }
 
-Method(m804,, Serialized)
-{
-	Name(i000, 0xabcd0000)
+            M002 ()
+            Method (M003, 0, NotSerialized)
+            {
+                If ((I000 != 0xABCD0005))
+                {
+                    ERR ("", ZFFF, 0xA9, 0x00, 0x00, I000, 0xABCD0005)
+                }
 
-	Method(m000)
-	{
-		Method(m000)
-		{
-			if (LNotEqual(i000, 0xabcd0000)) {
-				err("", zFFF, __LINE__, 0, 0, i000, 0xabcd0000)
-			}
-			Store(0xabcd0001, i000)
-			return (0xabcd0002)
-		}
+                I000 = 0xABCD0007
+                Return (0xABCD0008)
+            }
 
-		m000()
+            M003 ()
+        }
 
-		Method(m001)
-		{
-			if (LNotEqual(i000, 0xabcd0001)) {
-				err("", zFFF, __LINE__, 0, 0, i000, 0xabcd0001)
-			}
-			Store(0xabcd0003, i000)
-			return (0xabcd0004)
-		}
+        M000 ()
+        Method (M001, 0, NotSerialized)
+        {
+            Method (M000, 0, NotSerialized)
+            {
+                If ((I000 != 0xABCD0007))
+                {
+                    ERR ("", ZFFF, 0xB9, 0x00, 0x00, I000, 0xABCD0007)
+                }
 
-		m001()
+                I000 = 0xABCD0008
+                Return (0xABCD0009)
+            }
 
-		Method(m002)
-		{
-			if (LNotEqual(i000, 0xabcd0003)) {
-				err("", zFFF, __LINE__, 0, 0, i000, 0xabcd0003)
-			}
-			Store(0xabcd0005, i000)
-			return (0xabcd0006)
-		}
+            M000 ()
+            Method (M001, 0, NotSerialized)
+            {
+                If ((I000 != 0xABCD0008))
+                {
+                    ERR ("", ZFFF, 0xC4, 0x00, 0x00, I000, 0xABCD0008)
+                }
 
-		m002()
+                I000 = 0xABCD000A
+                Return (0xABCD000B)
+            }
 
-		Method(m003)
-		{
-			if (LNotEqual(i000, 0xabcd0005)) {
-				err("", zFFF, __LINE__, 0, 0, i000, 0xabcd0005)
-			}
-			Store(0xabcd0007, i000)
-			return (0xabcd0008)
-		}
+            M001 ()
+            Method (M002, 0, NotSerialized)
+            {
+                If ((I000 != 0xABCD000A))
+                {
+                    ERR ("", ZFFF, 0xCF, 0x00, 0x00, I000, 0xABCD000A)
+                }
 
-		m003()
-	}
+                I000 = 0xABCD000C
+                Return (0xABCD000D)
+            }
 
-	m000()
+            M002 ()
+            Method (M003, 0, NotSerialized)
+            {
+                If ((I000 != 0xABCD000C))
+                {
+                    ERR ("", ZFFF, 0xDA, 0x00, 0x00, I000, 0xABCD000C)
+                }
 
-	Method(m001)
-	{
-		Method(m000)
-		{
-			if (LNotEqual(i000, 0xabcd0007)) {
-				err("", zFFF, __LINE__, 0, 0, i000, 0xabcd0007)
-			}
-			Store(0xabcd0008, i000)
-			return (0xabcd0009)
-		}
+                I000 = 0xABCD000E
+                Return (0xABCD000F)
+            }
 
-		m000()
+            M003 ()
+        }
 
-		Method(m001)
-		{
-			if (LNotEqual(i000, 0xabcd0008)) {
-				err("", zFFF, __LINE__, 0, 0, i000, 0xabcd0008)
-			}
-			Store(0xabcd000a, i000)
-			return (0xabcd000b)
-		}
+        M001 ()
+        Method (M002, 0, NotSerialized)
+        {
+            Method (M000, 0, NotSerialized)
+            {
+                If ((I000 != 0xABCD000E))
+                {
+                    ERR ("", ZFFF, 0xEA, 0x00, 0x00, I000, 0xABCD000E)
+                }
 
-		m001()
+                I000 = 0xABCD0010
+                Return (0xABCD0011)
+            }
 
-		Method(m002)
-		{
-			if (LNotEqual(i000, 0xabcd000a)) {
-				err("", zFFF, __LINE__, 0, 0, i000, 0xabcd000a)
-			}
-			Store(0xabcd000c, i000)
-			return (0xabcd000d)
-		}
+            M000 ()
+            Method (M001, 0, NotSerialized)
+            {
+                If ((I000 != 0xABCD0010))
+                {
+                    ERR ("", ZFFF, 0xF5, 0x00, 0x00, I000, 0xABCD0010)
+                }
 
-		m002()
+                I000 = 0xABCD0012
+                Return (0xABCD0013)
+            }
 
-		Method(m003)
-		{
-			if (LNotEqual(i000, 0xabcd000c)) {
-				err("", zFFF, __LINE__, 0, 0, i000, 0xabcd000c)
-			}
-			Store(0xabcd000e, i000)
-			return (0xabcd000f)
-		}
+            M001 ()
+            Method (M002, 0, NotSerialized)
+            {
+                If ((I000 != 0xABCD0012))
+                {
+                    ERR ("", ZFFF, 0x0100, 0x00, 0x00, I000, 0xABCD0012)
+                }
 
-		m003()
-	}
+                I000 = 0xABCD0014
+                Return (0xABCD0015)
+            }
 
-	m001()
+            M002 ()
+            Method (M003, 0, NotSerialized)
+            {
+                If ((I000 != 0xABCD0014))
+                {
+                    ERR ("", ZFFF, 0x010B, 0x00, 0x00, I000, 0xABCD0014)
+                }
 
-	Method(m002)
-	{
-		Method(m000)
-		{
-			if (LNotEqual(i000, 0xabcd000e)) {
-				err("", zFFF, __LINE__, 0, 0, i000, 0xabcd000e)
-			}
-			Store(0xabcd0010, i000)
-			return (0xabcd0011)
-		}
+                I000 = 0xABCD0016
+                Return (0xABCD0017)
+            }
 
-		m000()
+            M003 ()
+        }
 
-		Method(m001)
-		{
-			if (LNotEqual(i000, 0xabcd0010)) {
-				err("", zFFF, __LINE__, 0, 0, i000, 0xabcd0010)
-			}
-			Store(0xabcd0012, i000)
-			return (0xabcd0013)
-		}
-
-		m001()
-
-		Method(m002)
-		{
-			if (LNotEqual(i000, 0xabcd0012)) {
-				err("", zFFF, __LINE__, 0, 0, i000, 0xabcd0012)
-			}
-			Store(0xabcd0014, i000)
-			return (0xabcd0015)
-		}
-
-		m002()
-
-		Method(m003)
-		{
-			if (LNotEqual(i000, 0xabcd0014)) {
-				err("", zFFF, __LINE__, 0, 0, i000, 0xabcd0014)
-			}
-			Store(0xabcd0016, i000)
-			return (0xabcd0017)
-		}
-
-		m003()
-	}
-
-	m002()
-
-	if (LNotEqual(i000, 0xabcd0016)) {
-		err("", zFFF, __LINE__, 0, 0, i000, 0xabcd0016)
-	}
-}
-
+        M002 ()
+        If ((I000 != 0xABCD0016))
+        {
+            ERR ("", ZFFF, 0x0117, 0x00, 0x00, I000, 0xABCD0016)
+        }
+    }
 

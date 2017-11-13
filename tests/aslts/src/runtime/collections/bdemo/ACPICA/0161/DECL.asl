@@ -1,280 +1,304 @@
-/*
- * Some or all of this work - Copyright (c) 2006 - 2017, Intel Corp.
- * All rights reserved.
- *
- * Redistribution and use in source and binary forms, with or without modification,
- * are permitted provided that the following conditions are met:
- *
- * Redistributions of source code must retain the above copyright notice,
- * this list of conditions and the following disclaimer.
- * Redistributions in binary form must reproduce the above copyright notice,
- * this list of conditions and the following disclaimer in the documentation
- * and/or other materials provided with the distribution.
- * Neither the name of Intel Corporation nor the names of its contributors
- * may be used to endorse or promote products derived from this software
- * without specific prior written permission.
- *
- * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS"
- * AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE
- * IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE
- * ARE DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT OWNER OR CONTRIBUTORS BE
- * LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL
- * DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES;
- * LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY
- * THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING
- * NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE,
- * EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
- */
+    /*
+     * Some or all of this work - Copyright (c) 2006 - 2017, Intel Corp.
+     * All rights reserved.
+     *
+     * Redistribution and use in source and binary forms, with or without modification,
+     * are permitted provided that the following conditions are met:
+     *
+     * Redistributions of source code must retain the above copyright notice,
+     * this list of conditions and the following disclaimer.
+     * Redistributions in binary form must reproduce the above copyright notice,
+     * this list of conditions and the following disclaimer in the documentation
+     * and/or other materials provided with the distribution.
+     * Neither the name of Intel Corporation nor the names of its contributors
+     * may be used to endorse or promote products derived from this software
+     * without specific prior written permission.
+     *
+     * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS"
+     * AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE
+     * IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE
+     * ARE DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT OWNER OR CONTRIBUTORS BE
+     * LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL
+     * DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES;
+     * LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY
+     * THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING
+     * NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE,
+     * EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
+     */
+    /*
+     * Bug 161:
+     *
+     * SUMMARY: Named object passed as a BitIndex or NumBits to CreateField causes hang
+     *
+     * ROOT CAUSE
+     */
+    /* Global CreateField declarations */
+    Method (MD8F, 0, NotSerialized)
+    {
+        If ((BF32 != 0x14))
+        {
+            ERR ("", ZFFF, 0x2A, 0x00, 0x00, BF32, 0x14)
+        }
 
-/*
- * Bug 161:
- *
- * SUMMARY: Named object passed as a BitIndex or NumBits to CreateField causes hang
- *
- * ROOT CAUSE
- */
+        If ((BF33 != 0x1615))
+        {
+            ERR ("", ZFFF, 0x2D, 0x00, 0x00, BF33, 0x1615)
+        }
+    }
 
-// Global CreateField declarations
+    Method (MD90, 0, NotSerialized)
+    {
+        If ((BF34 != 0x18))
+        {
+            ERR ("", ZFFF, 0x34, 0x00, 0x00, BF34, 0x18)
+        }
 
-Method(md8f)
-{
-	if (LNotEqual(bf32, 0x14)) {
-		err("", zFFF, __LINE__, 0, 0, bf32, 0x14)
-	}
-	if (LNotEqual(bf33, 0x1615)) {
-		err("", zFFF, __LINE__, 0, 0, bf33, 0x1615)
-	}
-}
+        If ((BF35 != 0x19))
+        {
+            ERR ("", ZFFF, 0x37, 0x00, 0x00, BF35, 0x19)
+        }
+    }
 
-Method(md90)
-{
-	if (LNotEqual(bf34, 0x18)) {
-		err("", zFFF, __LINE__, 0, 0, bf34, 0x18)
-	}
-	if (LNotEqual(bf35, 0x19)) {
-		err("", zFFF, __LINE__, 0, 0, bf35, 0x19)
-	}
-}
+    Method (MD91, 0, NotSerialized)
+    {
+        If ((BF36 != 0x1A))
+        {
+            ERR ("", ZFFF, 0x3E, 0x00, 0x00, BF36, 0x1A)
+        }
 
-Method(md91)
-{
-	if (LNotEqual(bf36, 0x1a)) {
-		err("", zFFF, __LINE__, 0, 0, bf36, 0x1a)
-	}
-	if (LNotEqual(bf37, 0x1c1b)) {
-		err("", zFFF, __LINE__, 0, 0, bf37, 0x1c1b)
-	}
-}
+        If ((BF37 != 0x1C1B))
+        {
+            ERR ("", ZFFF, 0x41, 0x00, 0x00, BF37, 0x1C1B)
+        }
+    }
 
-// Local CreateField declarations, another buffer than used in md8f-md91
+    /* Local CreateField declarations, another buffer than used in md8f-md91 */
 
-Method(md92)
-{
-	CreateField(bd02, 32, id03, bf32)
-	CreateField(bd02, 40, Add(id03, 8), bf33)
+    Method (MD92, 0, NotSerialized)
+    {
+        CreateField (BD02, 0x20, ID03, BF32)
+        CreateField (BD02, 0x28, (ID03 + 0x08), BF33)
+        If ((BF32 != 0x14))
+        {
+            ERR ("", ZFFF, 0x4D, 0x00, 0x00, BF32, 0x14)
+        }
 
-	if (LNotEqual(bf32, 0x14)) {
-		err("", zFFF, __LINE__, 0, 0, bf32, 0x14)
-	}
-	if (LNotEqual(bf33, 0x1615)) {
-		err("", zFFF, __LINE__, 0, 0, bf33, 0x1615)
-	}
-}
+        If ((BF33 != 0x1615))
+        {
+            ERR ("", ZFFF, 0x50, 0x00, 0x00, BF33, 0x1615)
+        }
+    }
 
-Method(md93)
-{
-	CreateField(bd02, id04, 8, bf34)
-	CreateField(bd02, Add(id04, 8), 8, bf35)
+    Method (MD93, 0, NotSerialized)
+    {
+        CreateField (BD02, ID04, 0x08, BF34)
+        CreateField (BD02, (ID04 + 0x08), 0x08, BF35)
+        If ((BF34 != 0x18))
+        {
+            ERR ("", ZFFF, 0x5A, 0x00, 0x00, BF34, 0x18)
+        }
 
-	if (LNotEqual(bf34, 0x18)) {
-		err("", zFFF, __LINE__, 0, 0, bf34, 0x18)
-	}
-	if (LNotEqual(bf35, 0x19)) {
-		err("", zFFF, __LINE__, 0, 0, bf35, 0x19)
-	}
-}
+        If ((BF35 != 0x19))
+        {
+            ERR ("", ZFFF, 0x5D, 0x00, 0x00, BF35, 0x19)
+        }
+    }
 
-Method(md94)
-{
-	CreateField(bd02, id05, id06, bf36)
-	CreateField(bd02, Add(id07, 8), Add(id08, 8), bf37)
+    Method (MD94, 0, NotSerialized)
+    {
+        CreateField (BD02, ID05, ID06, BF36)
+        CreateField (BD02, (ID07 + 0x08), (ID08 + 0x08), BF37)
+        If ((BF36 != 0x1A))
+        {
+            ERR ("", ZFFF, 0x67, 0x00, 0x00, BF36, 0x1A)
+        }
 
-	if (LNotEqual(bf36, 0x1a)) {
-		err("", zFFF, __LINE__, 0, 0, bf36, 0x1a)
-	}
-	if (LNotEqual(bf37, 0x1c1b)) {
-		err("", zFFF, __LINE__, 0, 0, bf37, 0x1c1b)
-	}
-}
+        If ((BF37 != 0x1C1B))
+        {
+            ERR ("", ZFFF, 0x6A, 0x00, 0x00, BF37, 0x1C1B)
+        }
+    }
 
-// Local CreateField declarations, the same buffer that used in md8f-md91
+    /* Local CreateField declarations, the same buffer that used in md8f-md91 */
 
-Method(md95)
-{
-	CreateField(bd03, 32, id03, bf32)
-	CreateField(bd03, 40, Add(id03, 8), bf33)
+    Method (MD95, 0, NotSerialized)
+    {
+        CreateField (BD03, 0x20, ID03, BF32)
+        CreateField (BD03, 0x28, (ID03 + 0x08), BF33)
+        If ((BF32 != 0x14))
+        {
+            ERR ("", ZFFF, 0x76, 0x00, 0x00, BF32, 0x14)
+        }
 
-	if (LNotEqual(bf32, 0x14)) {
-		err("", zFFF, __LINE__, 0, 0, bf32, 0x14)
-	}
-	if (LNotEqual(bf33, 0x1615)) {
-		err("", zFFF, __LINE__, 0, 0, bf33, 0x1615)
-	}
-}
+        If ((BF33 != 0x1615))
+        {
+            ERR ("", ZFFF, 0x79, 0x00, 0x00, BF33, 0x1615)
+        }
+    }
 
-Method(md96)
-{
-	CreateField(bd03, id04, 8, bf34)
-	CreateField(bd03, Add(id04, 8), 8, bf35)
+    Method (MD96, 0, NotSerialized)
+    {
+        CreateField (BD03, ID04, 0x08, BF34)
+        CreateField (BD03, (ID04 + 0x08), 0x08, BF35)
+        If ((BF34 != 0x18))
+        {
+            ERR ("", ZFFF, 0x83, 0x00, 0x00, BF34, 0x18)
+        }
 
-	if (LNotEqual(bf34, 0x18)) {
-		err("", zFFF, __LINE__, 0, 0, bf34, 0x18)
-	}
-	if (LNotEqual(bf35, 0x19)) {
-		err("", zFFF, __LINE__, 0, 0, bf35, 0x19)
-	}
-}
+        If ((BF35 != 0x19))
+        {
+            ERR ("", ZFFF, 0x86, 0x00, 0x00, BF35, 0x19)
+        }
+    }
 
-Method(md97)
-{
-	CreateField(bd03, id05, id06, bf36)
-	CreateField(bd03, Add(id07, 8), Add(id08, 8), bf37)
+    Method (MD97, 0, NotSerialized)
+    {
+        CreateField (BD03, ID05, ID06, BF36)
+        CreateField (BD03, (ID07 + 0x08), (ID08 + 0x08), BF37)
+        If ((BF36 != 0x1A))
+        {
+            ERR ("", ZFFF, 0x90, 0x00, 0x00, BF36, 0x1A)
+        }
 
-	if (LNotEqual(bf36, 0x1a)) {
-		err("", zFFF, __LINE__, 0, 0, bf36, 0x1a)
-	}
-	if (LNotEqual(bf37, 0x1c1b)) {
-		err("", zFFF, __LINE__, 0, 0, bf37, 0x1c1b)
-	}
-}
+        If ((BF37 != 0x1C1B))
+        {
+            ERR ("", ZFFF, 0x93, 0x00, 0x00, BF37, 0x1C1B)
+        }
+    }
 
-Method(m075, 6, Serialized)
-{
-	Name(b000, Buffer() {0x5D, 0x12, 0x13, 0x14, 0x15, 0x16, 0x17, 0x18})
+    Method (M075, 6, Serialized)
+    {
+        Name (B000, Buffer (0x08)
+        {
+             0x5D, 0x12, 0x13, 0x14, 0x15, 0x16, 0x17, 0x18   // ].......
+        })
+        If ((Arg0 != 0x01))
+        {
+            ERR ("", ZFFF, 0x9C, 0x00, 0x00, Arg0, 0x01)
+        }
 
-	if (LNotEqual(arg0, 1)) {
-		err("", zFFF, __LINE__, 0, 0, arg0, 1)
-	}
-	if (LNotEqual(arg1, 0x5d)) {
-		err("", zFFF, __LINE__, 0, 0, arg1, 0x5d)
-	}
-	if (LNotEqual(arg2, 0x125D)) {
-		err("", zFFF, __LINE__, 0, 0, arg2, 0x125D)
-	}
-	if (LNotEqual(arg3, 0x1413125D)) {
-		err("", zFFF, __LINE__, 0, 0, arg3, 0x1413125D)
-	}
+        If ((Arg1 != 0x5D))
+        {
+            ERR ("", ZFFF, 0x9F, 0x00, 0x00, Arg1, 0x5D)
+        }
 
-	if (F64) {
-		if (LNotEqual(arg4, 0x181716151413125D)) {
-			err("", zFFF, __LINE__, 0, 0, arg4, 0x181716151413125D)
-		}
-	} else {
-		if (LNotEqual(arg4, b000)) {
-			err("", zFFF, __LINE__, 0, 0, arg4, b000)
-		}
-	}
+        If ((Arg2 != 0x125D))
+        {
+            ERR ("", ZFFF, 0xA2, 0x00, 0x00, Arg2, 0x125D)
+        }
 
-	if (LNotEqual(arg5, 0x5d)) {
-		err("", zFFF, __LINE__, 0, 0, arg5, 0x5d)
-	}
-}
+        If ((Arg3 != 0x1413125D))
+        {
+            ERR ("", ZFFF, 0xA5, 0x00, 0x00, Arg3, 0x1413125D)
+        }
 
-Method(m076, 2)
-{
-	if (LNotEqual(arg0, 0x5d)) {
-		err("", zFFF, __LINE__, 0, 0, arg0, 0x5d)
-	}
-	if (LNotEqual(arg1, 0x5d)) {
-		err("", zFFF, __LINE__, 0, 0, arg1, 0x5d)
-	}
-}
+        If (F64)
+        {
+            If ((Arg4 != 0x181716151413125D))
+            {
+                ERR ("", ZFFF, 0xAA, 0x00, 0x00, Arg4, 0x181716151413125D)
+            }
+        }
+        ElseIf ((Arg4 != B000))
+        {
+            ERR ("", ZFFF, 0xAE, 0x00, 0x00, Arg4, B000)
+        }
 
-Method(md98)
-{
-	md8f()
-	md90()
-	md91()
-	md92()
-	md93()
-	md94()
-	md95()
-	md96()
-	md97()
-}
+        If ((Arg5 != 0x5D))
+        {
+            ERR ("", ZFFF, 0xB3, 0x00, 0x00, Arg5, 0x5D)
+        }
+    }
 
-Method(mf7f)
-{
-	SRMT("mf7f-0")
-	m075(bf40, bf41, bf42, bf43, bf44, bf45)
+    Method (M076, 2, NotSerialized)
+    {
+        If ((Arg0 != 0x5D))
+        {
+            ERR ("", ZFFF, 0xBA, 0x00, 0x00, Arg0, 0x5D)
+        }
 
-	SRMT("mf7f-1")
-	m075(bf46, bf47, bf48, bf49, bf4a, bf4b)
-	m076(bf4c, bf4d)
-}
+        If ((Arg1 != 0x5D))
+        {
+            ERR ("", ZFFF, 0xBD, 0x00, 0x00, Arg1, 0x5D)
+        }
+    }
 
-Method(m077,, Serialized)
-{
-	CreateBitField(bd03, 8, bf40)
-	CreateByteField(bd03, 1, bf41)
-	CreateWordField(bd03, 1, bf42)
-	CreateDWordField(bd03, 1, bf43)
-	CreateQWordField(bd03, 1, bf44)
-	CreateField(bd03, 8, 8, bf45)
+    Method (MD98, 0, NotSerialized)
+    {
+        MD8F ()
+        MD90 ()
+        MD91 ()
+        MD92 ()
+        MD93 ()
+        MD94 ()
+        MD95 ()
+        MD96 ()
+        MD97 ()
+    }
 
-	Name(id21, 1)
-	Name(id22, 8)
+    Method (MF7F, 0, NotSerialized)
+    {
+        SRMT ("mf7f-0")
+        M075 (BF40, BF41, BF42, BF43, BF44, BF45)
+        SRMT ("mf7f-1")
+        M075 (BF46, BF47, BF48, BF49, BF4A, BF4B)
+        M076 (BF4C, BF4D)
+    }
 
-	CreateBitField(bd03, id22, bf46)
-	CreateByteField(bd03, id21, bf47)
-	CreateWordField(bd03, id21, bf48)
-	CreateDWordField(bd03, id21, bf49)
-	CreateQWordField(bd03, id21, bf4a)
-	CreateField(bd03, 8, id22, bf4b)
-	CreateField(bd03, id22, 8, bf4c)
-	CreateField(bd03, id22, id22, bf4d)
+    Method (M077, 0, Serialized)
+    {
+        CreateBitField (BD03, 0x08, BF40)
+        CreateByteField (BD03, 0x01, BF41)
+        CreateWordField (BD03, 0x01, BF42)
+        CreateDWordField (BD03, 0x01, BF43)
+        CreateQWordField (BD03, 0x01, BF44)
+        CreateField (BD03, 0x08, 0x08, BF45)
+        Name (ID21, 0x01)
+        Name (ID22, 0x08)
+        CreateBitField (BD03, ID22, BF46)
+        CreateByteField (BD03, ID21, BF47)
+        CreateWordField (BD03, ID21, BF48)
+        CreateDWordField (BD03, ID21, BF49)
+        CreateQWordField (BD03, ID21, BF4A)
+        CreateField (BD03, 0x08, ID22, BF4B)
+        CreateField (BD03, ID22, 0x08, BF4C)
+        CreateField (BD03, ID22, ID22, BF4D)
+        SRMT ("m077-0")
+        M075 (BF40, BF41, BF42, BF43, BF44, BF45)
+        SRMT ("m077-1")
+        M075 (BF46, BF47, BF48, BF49, BF4A, BF4B)
+        M076 (BF4C, BF4D)
+    }
 
-	SRMT("m077-0")
-	m075(bf40, bf41, bf42, bf43, bf44, bf45)
+    Method (MF83, 0, NotSerialized)
+    {
+        Local0 = 0x01
+        Local1 = 0x08
+        CreateBitField (BD03, Local1, BF46)
+        CreateByteField (BD03, Local0, BF47)
+        CreateWordField (BD03, Local0, BF48)
+        CreateDWordField (BD03, Local0, BF49)
+        CreateQWordField (BD03, Local0, BF4A)
+        CreateField (BD03, 0x08, Local1, BF4B)
+        CreateField (BD03, Local1, 0x08, BF4C)
+        CreateField (BD03, Local1, Local1, BF4D)
+        SRMT ("mf83")
+        M075 (BF46, BF47, BF48, BF49, BF4A, BF4B)
+        M076 (BF4C, BF4D)
+    }
 
-	SRMT("m077-1")
-	m075(bf46, bf47, bf48, bf49, bf4a, bf4b)
-	m076(bf4c, bf4d)
-}
-
-Method(mf83)
-{
-	Store(1, Local0)
-	Store(8, Local1)
-
-	CreateBitField(bd03, Local1, bf46)
-	CreateByteField(bd03, Local0, bf47)
-	CreateWordField(bd03, Local0, bf48)
-	CreateDWordField(bd03, Local0, bf49)
-	CreateQWordField(bd03, Local0, bf4a)
-	CreateField(bd03, 8, Local1, bf4b)
-	CreateField(bd03, Local1, 8, bf4c)
-	CreateField(bd03, Local1, Local1, bf4d)
-
-	SRMT("mf83")
-	m075(bf46, bf47, bf48, bf49, bf4a, bf4b)
-	m076(bf4c, bf4d)
-}
-
-Method(mf84, 2)
-{
-	CreateBitField(bd03, Arg1, bf46)
-	CreateByteField(bd03, Arg0, bf47)
-	CreateWordField(bd03, Arg0, bf48)
-	CreateDWordField(bd03, Arg0, bf49)
-	CreateQWordField(bd03, Arg0, bf4a)
-	CreateField(bd03, 8, Arg1, bf4b)
-	CreateField(bd03, Arg1, 8, bf4c)
-	CreateField(bd03, Arg1, Arg1, bf4d)
-
-	SRMT("mf84")
-	m075(bf46, bf47, bf48, bf49, bf4a, bf4b)
-	m076(bf4c, bf4d)
-}
-
+    Method (MF84, 2, NotSerialized)
+    {
+        CreateBitField (BD03, Arg1, BF46)
+        CreateByteField (BD03, Arg0, BF47)
+        CreateWordField (BD03, Arg0, BF48)
+        CreateDWordField (BD03, Arg0, BF49)
+        CreateQWordField (BD03, Arg0, BF4A)
+        CreateField (BD03, 0x08, Arg1, BF4B)
+        CreateField (BD03, Arg1, 0x08, BF4C)
+        CreateField (BD03, Arg1, Arg1, BF4D)
+        SRMT ("mf84")
+        M075 (BF46, BF47, BF48, BF49, BF4A, BF4B)
+        M076 (BF4C, BF4D)
+    }
 

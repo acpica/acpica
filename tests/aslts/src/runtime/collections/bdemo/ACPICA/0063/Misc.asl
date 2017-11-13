@@ -1,400 +1,462 @@
-/*
- * Some or all of this work - Copyright (c) 2006 - 2017, Intel Corp.
- * All rights reserved.
- *
- * Redistribution and use in source and binary forms, with or without modification,
- * are permitted provided that the following conditions are met:
- *
- * Redistributions of source code must retain the above copyright notice,
- * this list of conditions and the following disclaimer.
- * Redistributions in binary form must reproduce the above copyright notice,
- * this list of conditions and the following disclaimer in the documentation
- * and/or other materials provided with the distribution.
- * Neither the name of Intel Corporation nor the names of its contributors
- * may be used to endorse or promote products derived from this software
- * without specific prior written permission.
- *
- * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS"
- * AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE
- * IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE
- * ARE DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT OWNER OR CONTRIBUTORS BE
- * LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL
- * DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES;
- * LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY
- * THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING
- * NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE,
- * EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
- */
+    /*
+     * Some or all of this work - Copyright (c) 2006 - 2017, Intel Corp.
+     * All rights reserved.
+     *
+     * Redistribution and use in source and binary forms, with or without modification,
+     * are permitted provided that the following conditions are met:
+     *
+     * Redistributions of source code must retain the above copyright notice,
+     * this list of conditions and the following disclaimer.
+     * Redistributions in binary form must reproduce the above copyright notice,
+     * this list of conditions and the following disclaimer in the documentation
+     * and/or other materials provided with the distribution.
+     * Neither the name of Intel Corporation nor the names of its contributors
+     * may be used to endorse or promote products derived from this software
+     * without specific prior written permission.
+     *
+     * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS"
+     * AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE
+     * IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE
+     * ARE DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT OWNER OR CONTRIBUTORS BE
+     * LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL
+     * DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES;
+     * LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY
+     * THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING
+     * NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE,
+     * EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
+     */
+    /*
+     * Bug 63:
+     *
+     * SUMMARY
+     *
+     * String to Integer conversion contradicts new April 2005 Conversion Rules
+     *
+     * EXAMPLES
+     *
+     *    Add("0x1111", 0) returns 0x1111 but 0 is expected
+     *    Add("12345678901234560", 0x1111111111111111) causes AE_BAD_HEX_CONSTANT
+     *    Add("00000000000012345678", 0) returns 0x12345678 but 0x1234 is expected
+     *
+     * ROOT CAUSE
+     *
+     * SPECS (NEW, March 12 2005)
+     *
+     * String --> Integer
+     *
+     * If no integer object exists, a new integer is created.
+     * The integer is initialized to the value zero and the ASCII
+     * string is interpreted as a hexadecimal constant. Each string
+     * character is interpreted as a hexadecimal value (‘0’-‘9’, ‘A’-‘F’, ‘a’-‘f’),
+     * starting with the first character as the most significant digit and ending
+     * with the first non-hexadecimal character, end-of-string, or when the size
+     * of an integer is reached (8 characters for 32-bit integers and 16 characters
+     * for 64-bit integers). Note: the first non-hex character terminates the
+     * conversion without error, and a “0x” prefix is not allowed.	
+     */
+    /*
+     * To be completed !!!!!!!
+     *
+     * What to do else below:
+     *
+     * 1. Set correct results in 32 and 64 bit modes (now it is not done!)
+     * 2. Change places of operands, that is use both:
+     Add("12345678", 0x11111111, Local0)
+     Add(0x11111111, "12345678", Local0)
+     * 3. Pass operators by parameters !!!!
+     * 4. Issues:
+     *    1) octal - 01232211
+     *    2) zeros at the beginning - 0000000abcdef
+     *    3) large hex image - abcdef123456789123456789
+     */
+    /*
+     Store("VVVVVVVVVVVVVVVVVVVVVVVVVV", Debug)
+     Store(0123, Debug)
+     Store(83, Debug)
+     Add(0x1234, 83, Local0)
+     Store(Local0, Debug)
+     return
+     */
+    /*
+     * All the possible attempts to confuse calculation
+     */
+    Method (MD74, 0, Serialized)
+    {
+        Name (TS, "md74")
+        /* 8 decimal */
 
-/*
- * Bug 63:
- *
- * SUMMARY
- *
- * String to Integer conversion contradicts new April 2005 Conversion Rules
- *
- * EXAMPLES
- *
- *    Add("0x1111", 0) returns 0x1111 but 0 is expected
- *    Add("12345678901234560", 0x1111111111111111) causes AE_BAD_HEX_CONSTANT
- *    Add("00000000000012345678", 0) returns 0x12345678 but 0x1234 is expected
- *
- * ROOT CAUSE
- *
- * SPECS (NEW, March 12 2005)
- *
- * String --> Integer
- *
- * If no integer object exists, a new integer is created.
- * The integer is initialized to the value zero and the ASCII
- * string is interpreted as a hexadecimal constant. Each string
- * character is interpreted as a hexadecimal value (‘0’-‘9’, ‘A’-‘F’, ‘a’-‘f’),
- * starting with the first character as the most significant digit and ending
- * with the first non-hexadecimal character, end-of-string, or when the size
- * of an integer is reached (8 characters for 32-bit integers and 16 characters
- * for 64-bit integers). Note: the first non-hex character terminates the
- * conversion without error, and a “0x” prefix is not allowed.	
- */
+        Local0 = ("12345678" + 0x11111111)
+        If ((Local0 != 0x23456789))
+        {
+            ERR ("", ZFFF, 0x5E, 0x00, 0x00, Local0, 0x23456789)
+        }
 
-/*
- * To be completed !!!!!!!
- *
- * What to do else below:
- *
- * 1. Set correct results in 32 and 64 bit modes (now it is not done!)
- * 2. Change places of operands, that is use both:
-	Add("12345678", 0x11111111, Local0)
-	Add(0x11111111, "12345678", Local0)
+        /* 8 hex */
 
- * 3. Pass operators by parameters !!!!
- * 4. Issues:
- *    1) octal - 01232211
- *    2) zeros at the beginning - 0000000abcdef
- *    3) large hex image - abcdef123456789123456789
- */
-/*
-Store("VVVVVVVVVVVVVVVVVVVVVVVVVV", Debug)
-Store(0123, Debug)
-Store(83, Debug)
-Add(0x1234, 83, Local0)
-Store(Local0, Debug)
-return
-*/
+        Local0 = ("abcdefab" + 0x11111111)
+        If ((Local0 != 0xBCDF00BC))
+        {
+            ERR ("", ZFFF, 0x64, 0x00, 0x00, Local0, 0xBCDF00BC)
+        }
 
-/*
- * All the possible attempts to confuse calculation
- */
-Method(md74,, Serialized) {
+        /* 16 decimal */
 
-	Name(ts, "md74")
+        Local0 = ("1234567890876543" + 0x1111111111111111)
+        If ((Local0 != 0x23456789A1987654))
+        {
+            ERR ("", ZFFF, 0x6A, 0x00, 0x00, Local0, 0x23456789A1987654)
+        }
 
-	// 8 decimal
-	Add("12345678", 0x11111111, Local0)
-	if (LNotEqual(Local0, 0x23456789)) {
-		err("", zFFF, __LINE__, 0, 0, Local0, 0x23456789)
-	}
+        /* 16 hex */
 
-	// 8 hex
-	Add("abcdefab", 0x11111111, Local0)
-	if (LNotEqual(Local0, 0xbcdf00bc)) {
-		err("", zFFF, __LINE__, 0, 0, Local0, 0xbcdf00bc)
-	}
+        Local0 = ("abcdefababcdfead" + 0x1111111111111111)
+        If ((Local0 != 0xBCDF00BCBCDF0FBE))
+        {
+            ERR ("", ZFFF, 0x70, 0x00, 0x00, Local0, 0xBCDF00BCBCDF0FBE)
+        }
 
-	// 16 decimal
-	Add("1234567890876543", 0x1111111111111111, Local0)
-	if (LNotEqual(Local0, 0x23456789a1987654)) {
-		err("", zFFF, __LINE__, 0, 0, Local0, 0x23456789a1987654)
-	}
+        /* 17 hex */
 
-	// 16 hex
-	Add("abcdefababcdfead", 0x1111111111111111, Local0)
-	if (LNotEqual(Local0, 0xbcdf00bcbcdf0fbe)) {
-		err("", zFFF, __LINE__, 0, 0, Local0, 0xbcdf00bcbcdf0fbe)
-	}
+        Local0 = ("1234567890123456z" + 0x1111111111111111)
+        If ((Local0 != 0x23456789A1234567))
+        {
+            ERR ("", ZFFF, 0x76, 0x00, 0x00, Local0, 0x23456789A1234567)
+        }
 
-	// 17 hex
-	Add("1234567890123456z", 0x1111111111111111, Local0)
-	if (LNotEqual(Local0, 0x23456789a1234567)) {
-		err("", zFFF, __LINE__, 0, 0, Local0, 0x23456789a1234567)
-	}
+        /* 17 hex (caused AE_BAD_HEX_CONSTANT, 28.09.2005) */
 
-	// 17 hex (caused AE_BAD_HEX_CONSTANT, 28.09.2005)
-	Add("12345678901234560", 0x1111111111111111, Local0)
-	if (LNotEqual(Local0, 0x23456789a1234567)) {
-		err("", zFFF, __LINE__, 0, 0, Local0, 0x23456789a1234567)
-	}
+        Local0 = ("12345678901234560" + 0x1111111111111111)
+        If ((Local0 != 0x23456789A1234567))
+        {
+            ERR ("", ZFFF, 0x7C, 0x00, 0x00, Local0, 0x23456789A1234567)
+        }
 
-	// Looks like octal, but should be treated as hex
-	Add("01111", 0x2222, Local0)
-	if (LNotEqual(Local0, 0x3333)) {
-		err("", zFFF, __LINE__, 0, 0, Local0, 0x3333)
-	}
+        /* Looks like octal, but should be treated as hex */
 
-	// The first zeros each must be put into value
+        Local0 = ("01111" + 0x2222)
+        If ((Local0 != 0x3333))
+        {
+            ERR ("", ZFFF, 0x82, 0x00, 0x00, Local0, 0x3333)
+        }
 
-	Add("000010234", 0, Local0)
-	if (LNotEqual(Local0, 0x10234)) {
-		err("", zFFF, __LINE__, 0, 0, Local0, 0x10234)
-	}
+        /* The first zeros each must be put into value */
 
-	Add("000000000000000010234", 0, Local0)
-	if (LNotEqual(Local0, 0x10234)) {
-		err("", zFFF, __LINE__, 0, 0, Local0, 0x10234)
-	}
+        Local0 = ("000010234" + 0x00)
+        If ((Local0 != 0x00010234))
+        {
+            ERR ("", ZFFF, 0x89, 0x00, 0x00, Local0, 0x00010234)
+        }
 
-	Add("00000000000000010234", 0, Local0)
-	if (LNotEqual(Local0, 0x10234)) {
-		err("", zFFF, __LINE__, 0, 0, Local0, 0x10234)
-	}
+        Local0 = ("000000000000000010234" + 0x00)
+        If ((Local0 != 0x00010234))
+        {
+            ERR ("", ZFFF, 0x8E, 0x00, 0x00, Local0, 0x00010234)
+        }
 
-	Add("0000000010234", 0, Local0)
-	if (LNotEqual(Local0, 0x10234)) {
-		err("", zFFF, __LINE__, 0, 0, Local0, 0x10234)
-	}
+        Local0 = ("00000000000000010234" + 0x00)
+        If ((Local0 != 0x00010234))
+        {
+            ERR ("", ZFFF, 0x93, 0x00, 0x00, Local0, 0x00010234)
+        }
 
-	Add("000000010234", 0, Local0)
-	if (LNotEqual(Local0, 0x10234)) {
-		err("", zFFF, __LINE__, 0, 0, Local0, 0x10234)
-	}
+        Local0 = ("0000000010234" + 0x00)
+        If ((Local0 != 0x00010234))
+        {
+            ERR ("", ZFFF, 0x98, 0x00, 0x00, Local0, 0x00010234)
+        }
 
-	// Non-complete 4 hex, should be extended with zeros
-	Add("abcd", 0x1111, Local0)
-	if (LNotEqual(Local0, 0xbcde)) {
-		err("", zFFF, __LINE__, 0, 0, Local0, 0xbcde)
-	}
+        Local0 = ("000000010234" + 0x00)
+        If ((Local0 != 0x00010234))
+        {
+            ERR ("", ZFFF, 0x9D, 0x00, 0x00, Local0, 0x00010234)
+        }
 
-	// Non-complete 5 decimal, should be extended with zeros
-	Add("12345", 0x1111, Local0)
-	if (LNotEqual(Local0, 0x13456)) {
-		err("", zFFF, __LINE__, 0, 0, Local0, 0x13456)
-	}
+        /* Non-complete 4 hex, should be extended with zeros */
 
-	CH03(ts, zFFF, 0x100, __LINE__, 0)
+        Local0 = ("abcd" + 0x1111)
+        If ((Local0 != 0xBCDE))
+        {
+            ERR ("", ZFFF, 0xA3, 0x00, 0x00, Local0, 0xBCDE)
+        }
 
-	// Too large, all hex, should be trancated
-	Add("abcdef0123456789112233445566778890", 0, Local0)
-	if (F64) {
-		if (LNotEqual(Local0, 0xabcdef0123456789)) {
-			err("", zFFF, __LINE__, 0, 0, Local0, 0xabcdef0123456789)
-		}
-	} else {
-		if (LNotEqual(Local0, 0xabcdef01)) {
-			err("", zFFF, __LINE__, 0, 0, Local0, 0xabcdef01)
-		}
-	}
+        /* Non-complete 5 decimal, should be extended with zeros */
 
-	CH03(ts, zFFF, 0x101, __LINE__, 0)
+        Local0 = ("12345" + 0x1111)
+        If ((Local0 != 0x00013456))
+        {
+            ERR ("", ZFFF, 0xA9, 0x00, 0x00, Local0, 0x00013456)
+        }
 
-	// Large, all hex, looks like octal, should be trancated
-	Add("0abcdef0123456789112233445566778890", 0x1234, Local0)
-	if (F64) {
-		if (LNotEqual(Local0, 0xabcdef0123456789)) {
-			err("", zFFF, __LINE__, 0, 0, Local0, 0xabcdef0123456789)
-		}
-	} else {
-		if (LNotEqual(Local0, 0xabcdef01)) {
-			err("", zFFF, __LINE__, 0, 0, Local0, 0xabcdef01)
-		}
-	}
+        CH03 (TS, ZFFF, 0x0100, 0xAC, 0x00)
+        /* Too large, all hex, should be trancated */
 
-	CH03(ts, zFFF, 0x102, __LINE__, 0)
+        Local0 = ("abcdef0123456789112233445566778890" + 0x00)
+        If (F64)
+        {
+            If ((Local0 != 0xABCDEF0123456789))
+            {
+                ERR ("", ZFFF, 0xB2, 0x00, 0x00, Local0, 0xABCDEF0123456789)
+            }
+        }
+        ElseIf ((Local0 != 0xABCDEF01))
+        {
+            ERR ("", ZFFF, 0xB6, 0x00, 0x00, Local0, 0xABCDEF01)
+        }
 
-	// Looks like usual hex, but 'x' terminates conversion
-	Add("0x1111", 0x2222, Local0)
-	if (LNotEqual(Local0, 0x2222)) {
-		err("", zFFF, __LINE__, 0, 0, Local0, 0x2222)
-	}
+        CH03 (TS, ZFFF, 0x0101, 0xBA, 0x00)
+        /* Large, all hex, looks like octal, should be trancated */
 
-	CH03(ts, zFFF, 0x103, __LINE__, 0)
+        Local0 = ("0abcdef0123456789112233445566778890" + 0x1234)
+        If (F64)
+        {
+            If ((Local0 != 0xABCDEF0123456789))
+            {
+                ERR ("", ZFFF, 0xC0, 0x00, 0x00, Local0, 0xABCDEF0123456789)
+            }
+        }
+        ElseIf ((Local0 != 0xABCDEF01))
+        {
+            ERR ("", ZFFF, 0xC4, 0x00, 0x00, Local0, 0xABCDEF01)
+        }
 
-	// Empty string, no action - the relevant parameter of Add remains zero
-	Add("", 222, Local0)
-	if (LNotEqual(Local0, 222)) {
-		err("", zFFF, __LINE__, 0, 0, Local0, 222)
-	}
+        CH03 (TS, ZFFF, 0x0102, 0xC8, 0x00)
+        /* Looks like usual hex, but 'x' terminates conversion */
 
-	CH03(ts, zFFF, 0x104, __LINE__, 0)
+        Local0 = ("0x1111" + 0x2222)
+        If ((Local0 != 0x2222))
+        {
+            ERR ("", ZFFF, 0xCD, 0x00, 0x00, Local0, 0x2222)
+        }
 
-	// Blank string, no action - the relevant parameter of Add remains zero
-	Add(" ", 0x333, Local0)
-	if (LNotEqual(Local0, 0x333)) {
-		err("", zFFF, __LINE__, 0, 0, Local0, 0x333)
-	}
+        CH03 (TS, ZFFF, 0x0103, 0xD0, 0x00)
+        /* Empty string, no action - the relevant parameter of Add remains zero */
 
-	CH03(ts, zFFF, 0x105, __LINE__, 0)
+        Local0 = ("" + 0xDE)
+        If ((Local0 != 0xDE))
+        {
+            ERR ("", ZFFF, 0xD5, 0x00, 0x00, Local0, 0xDE)
+        }
 
-	// Blank string, no action - the relevant parameter of Add remains zero
-	Add("                                ", 0222, Local0)
-	if (LNotEqual(Local0, 0222)) {
-		err("", zFFF, __LINE__, 0, 0, Local0, 0222)
-	}
+        CH03 (TS, ZFFF, 0x0104, 0xD8, 0x00)
+        /* Blank string, no action - the relevant parameter of Add remains zero */
 
-	CH03(ts, zFFF, 0x106, __LINE__, 0)
+        Local0 = (" " + 0x0333)
+        If ((Local0 != 0x0333))
+        {
+            ERR ("", ZFFF, 0xDD, 0x00, 0x00, Local0, 0x0333)
+        }
 
-	// Conversion is terminated just by the first symbol (non-hex) though followed by hex-es, remains zero
-	Add("k1234567", 489, Local0)
-	if (LNotEqual(Local0, 489)) {
-		err("", zFFF, __LINE__, 0, 0, Local0, 489)
-	}
+        CH03 (TS, ZFFF, 0x0105, 0xE0, 0x00)
+        /* Blank string, no action - the relevant parameter of Add remains zero */
 
-	// Conversion is terminated just by the first symbol (non-hex), single
-	Add("k", 0xabcdef0000, Local0)
-	if (LNotEqual(Local0, 0xabcdef0000)) {
-		err("", zFFF, __LINE__, 0, 0, Local0, 0xabcdef0000)
-	}
+        Local0 = ("                                " + 0x92)
+        If ((Local0 != 0x92))
+        {
+            ERR ("", ZFFF, 0xE5, 0x00, 0x00, Local0, 0x92)
+        }
 
-	CH03(ts, zFFF, 0x107, __LINE__, 0)
+        CH03 (TS, ZFFF, 0x0106, 0xE8, 0x00)
+        /* Conversion is terminated just by the first symbol (non-hex) though followed by hex-es, remains zero */
 
-	// Looks like designation of hex (terminated by x)
-	Add("0x", 0x12345678, Local0)
-	if (LNotEqual(Local0, 0x12345678)) {
-		err("", zFFF, __LINE__, 0, 0, Local0, 0x12345678)
-	}
+        Local0 = ("k1234567" + 0x01E9)
+        If ((Local0 != 0x01E9))
+        {
+            ERR ("", ZFFF, 0xED, 0x00, 0x00, Local0, 0x01E9)
+        }
 
-	CH03(ts, zFFF, 0x108, __LINE__, 0)
+        /* Conversion is terminated just by the first symbol (non-hex), single */
 
-	// Special symbol in the hex designation (terminated by x)
-	Add("x", 12345678, Local0)
-	if (LNotEqual(Local0, 12345678)) {
-		err("", zFFF, __LINE__, 0, 0, Local0, 12345678)
-	}
+        Local0 = ("k" + 0x000000ABCDEF0000)
+        If ((Local0 != 0x000000ABCDEF0000))
+        {
+            ERR ("", ZFFF, 0xF3, 0x00, 0x00, Local0, 0x000000ABCDEF0000)
+        }
 
-	// Starts with the special symbol in the hex designation (terminated by x)
-	Add("x12345", 111, Local0)
-	if (LNotEqual(Local0, 111)) {
-		err("", zFFF, __LINE__, 0, 0, Local0, 111)
-	}
+        CH03 (TS, ZFFF, 0x0107, 0xF6, 0x00)
+        /* Looks like designation of hex (terminated by x) */
 
-	// No one hex, conversion is terminated just by the first symbol Z
-	Add("ZZZZ", 123456, Local0)
-	if (LNotEqual(Local0, 123456)) {
-		err("", zFFF, __LINE__, 0, 0, Local0, 123456)
-	}
+        Local0 = ("0x" + 0x12345678)
+        If ((Local0 != 0x12345678))
+        {
+            ERR ("", ZFFF, 0xFB, 0x00, 0x00, Local0, 0x12345678)
+        }
 
-	// Short <= 8, conversion is terminated by non-hex symbol Z
-	Add("abcdZZZZ", 0x11, Local0)
-	if (LNotEqual(Local0, 0xabde)) {
-		err("", zFFF, __LINE__, 0, 0, Local0, 0xabde)
-	}
+        CH03 (TS, ZFFF, 0x0108, 0xFE, 0x00)
+        /* Special symbol in the hex designation (terminated by x) */
 
-	// Short <= 8, hex in the middle (terminated by Z)
-	Add("ZQ123MMM", 123456, Local0)
-	if (LNotEqual(Local0, 123456)) {
-		err("", zFFF, __LINE__, 0, 0, Local0, 123456)
-	}
+        Local0 = ("x" + 0x00BC614E)
+        If ((Local0 != 0x00BC614E))
+        {
+            ERR ("", ZFFF, 0x0103, 0x00, 0x00, Local0, 0x00BC614E)
+        }
 
-	// Short <= 8, hex at the end (terminated by Z)
-	Add("ZQMMM123", 123456, Local0)
-	if (LNotEqual(Local0, 123456)) {
-		err("", zFFF, __LINE__, 0, 0, Local0, 123456)
-	}
+        /* Starts with the special symbol in the hex designation (terminated by x) */
 
-	// Long exceeding 16, no one hex
-	Add("zxswqrrrrrrrrrrrrrrtttttttttttttttttttttttttyyyyyyyyyyyyyyyyyyuuuuuuuuuuuuuuuuuuuuuuu", 123, Local0)
-	if (LNotEqual(Local0, 123)) {
-		err("", zFFF, __LINE__, 0, 0, Local0, 123)
-	}
+        Local0 = ("x12345" + 0x6F)
+        If ((Local0 != 0x6F))
+        {
+            ERR ("", ZFFF, 0x0109, 0x00, 0x00, Local0, 0x6F)
+        }
 
-	// Long exceeding 16, hex at the beginning
-	Add("1234zxswqrrrrrrrrrrrrrrtttttttttttttttttttttttttyyyyyyyyyyyyyyyyyyuuuuuuuuuuuuuuuuuuuuuuu", 0123, Local0)
-	if (LNotEqual(Local0, 0x1287)) {
-		err("", zFFF, __LINE__, 0, 0, Local0, 0x1287)
-	}
+        /* No one hex, conversion is terminated just by the first symbol Z */
 
-	// Long exceeding 16, hex everywhere
-	Add("123z4s5qr6rr7rrrrrrrrr8ttttttt9ttttttattttbttttcyyyydyyeyyyyyyyyuuuuuuuuuuuuuuuuuuuuf", 0123, Local0)
-	if (LNotEqual(Local0, 0x176)) {
-		err("", zFFF, __LINE__, 0, 0, Local0, 0x176)
-	}
+        Local0 = ("ZZZZ" + 0x0001E240)
+        If ((Local0 != 0x0001E240))
+        {
+            ERR ("", ZFFF, 0x010F, 0x00, 0x00, Local0, 0x0001E240)
+        }
 
-	// Long exceeding 16, hex at the end
-	Add("zxswqrrrrrrrrrrrrrrtttttttttttttttttttttttttyyyyyyyyyyyyyyyyyyuuuuuuuuuuuuuuuuuuuuuuu1234", 012321, Local0)
-	if (LNotEqual(Local0, 012321)) {
-		err("", zFFF, __LINE__, 0, 0, Local0, 012321)
-	}
+        /* Short <= 8, conversion is terminated by non-hex symbol Z */
 
-	// Long exceeding 16, hex in the middle inside the possible Integer
-	Add("zx1234swqrrrrrrrrrrrrrrtttttttttttttttttttttttttyyyyyyyyyyyyyyyyyyuuuuuuuuuuuuuuuuuuuuuuu", 0x12321, Local0)
-	if (LNotEqual(Local0, 0x12321)) {
-		err("", zFFF, __LINE__, 0, 0, Local0, 0x12321)
-	}
+        Local0 = ("abcdZZZZ" + 0x11)
+        If ((Local0 != 0xABDE))
+        {
+            ERR ("", ZFFF, 0x0115, 0x00, 0x00, Local0, 0xABDE)
+        }
 
-	// Long exceeding 16, hex in the middle beyond the bounds of the possible Integer
-	Add("zxswqrrrrrrrrrrrrrrtttttttttttttttttttttttttyyyyyyyyyyyyyyyyyyuuuuuuuuuuuuuuuuuuuuu1234uu", 12321, Local0)
-	if (LNotEqual(Local0, 12321)) {
-		err("", zFFF, __LINE__, 0, 0, Local0, 12321)
-	}
+        /* Short <= 8, hex in the middle (terminated by Z) */
 
-	CH03(ts, zFFF, 0x109, __LINE__, 0)
+        Local0 = ("ZQ123MMM" + 0x0001E240)
+        If ((Local0 != 0x0001E240))
+        {
+            ERR ("", ZFFF, 0x011B, 0x00, 0x00, Local0, 0x0001E240)
+        }
 
-	// Only decimal, much more than 16
-	Store(Add("123456789012345601112223334446667788990087654", 0), Local1)
-	if (F64) {
-		if (LNotEqual(Local0, 0x1234567890123456)) {
-			err("", zFFF, __LINE__, 0, 0, Local0, 0x1234567890123456)
-		}
-	} else {
-		if (LNotEqual(Local0, 0x12345678)) {
-			err("", zFFF, __LINE__, 0, 0, Local0, 0x12345678)
-		}
-	}
+        /* Short <= 8, hex at the end (terminated by Z) */
 
-	CH03(ts, zFFF, 0x10a, __LINE__, 0)
+        Local0 = ("ZQMMM123" + 0x0001E240)
+        If ((Local0 != 0x0001E240))
+        {
+            ERR ("", ZFFF, 0x0121, 0x00, 0x00, Local0, 0x0001E240)
+        }
 
-	// Only hex, much more than 16
-	Store(Add("abcdefabcdefabcdefabcdefabcdefabcdefabcdefabc", 0), Local1)
-	if (F64) {
-		if (LNotEqual(Local0, 0xabcdefabcdefabcd)) {
-			err("", zFFF, __LINE__, 0, 0, Local0, 0xabcdefabcdefabcd)
-		}
-	} else {
-		if (LNotEqual(Local0, 0xabcdefab)) {
-			err("", zFFF, __LINE__, 0, 0, Local0, 0xabcdefab)
-		}
-	}
+        /* Long exceeding 16, no one hex */
 
-	CH03(ts, zFFF, 0x10b, __LINE__, 0)
+        Local0 = ("zxswqrrrrrrrrrrrrrrtttttttttttttttttttttttttyyyyyyyyyyyyyyyyyyuuuuuuuuuuuuuuuuuuuuuuu" + 0x7B)
+        If ((Local0 != 0x7B))
+        {
+            ERR ("", ZFFF, 0x0127, 0x00, 0x00, Local0, 0x7B)
+        }
 
-	// Only decimal, much more than 16, non-hex at the end
-	Store(Add("123456789012345601112223334446667788990087654ZZZZ", 0), Local1)
-	if (F64) {
-		if (LNotEqual(Local0, 0x1234567890123456)) {
-			err("", zFFF, __LINE__, 0, 0, Local0, 0x1234567890123456)
-		}
-	} else {
-		if (LNotEqual(Local0, 0x12345678)) {
-			err("", zFFF, __LINE__, 0, 0, Local0, 0x12345678)
-		}
-	}
+        /* Long exceeding 16, hex at the beginning */
 
-	CH03(ts, zFFF, 0x10c, __LINE__, 0)
+        Local0 = ("1234zxswqrrrrrrrrrrrrrrtttttttttttttttttttttttttyyyyyyyyyyyyyyyyyyuuuuuuuuuuuuuuuuuuuuuuu" + 0x53)
+        If ((Local0 != 0x1287))
+        {
+            ERR ("", ZFFF, 0x012D, 0x00, 0x00, Local0, 0x1287)
+        }
 
-	// Only hex, much more than 16, non-hex at the end
-	Store(Add("abcdefabcdefabcdefabcdefabcdefabcdefabcdefabcZZZZ", 0), Local1)
-	if (F64) {
-		if (LNotEqual(Local0, 0xabcdefabcdefabcd)) {
-			err("", zFFF, __LINE__, 0, 0, Local0, 0xabcdefabcdefabcd)
-		}
-	} else {
-		if (LNotEqual(Local0, 0xabcdefab)) {
-			err("", zFFF, __LINE__, 0, 0, Local0, 0xabcdefab)
-		}
-	}
+        /* Long exceeding 16, hex everywhere */
 
-	CH03(ts, zFFF, 0x10d, __LINE__, 0)
-}
+        Local0 = ("123z4s5qr6rr7rrrrrrrrr8ttttttt9ttttttattttbttttcyyyydyyeyyyyyyyyuuuuuuuuuuuuuuuuuuuuf" + 0x53)
+        If ((Local0 != 0x0176))
+        {
+            ERR ("", ZFFF, 0x0133, 0x00, 0x00, Local0, 0x0176)
+        }
 
-Method(md75) {
-	// Do here the same as md74 but store Result by Store
-}
+        /* Long exceeding 16, hex at the end */
 
-Method(md76,, Serialized) {
+        Local0 = ("zxswqrrrrrrrrrrrrrrtttttttttttttttttttttttttyyyyyyyyyyyyyyyyyyuuuuuuuuuuuuuuuuuuuuuuu1234" + 0x14D1)
+        If ((Local0 != 0x14D1))
+        {
+            ERR ("", ZFFF, 0x0139, 0x00, 0x00, Local0, 0x14D1)
+        }
 
-	Name(ts, "md76")
+        /* Long exceeding 16, hex in the middle inside the possible Integer */
 
-	CH03(ts, zFFF, 0x10e, __LINE__, 0)
-	md74()
-	CH03(ts, zFFF, 0x10f, __LINE__, 0)
-	md75()
-	CH03(ts, zFFF, 0x110, __LINE__, 0)
-}
+        Local0 = ("zx1234swqrrrrrrrrrrrrrrtttttttttttttttttttttttttyyyyyyyyyyyyyyyyyyuuuuuuuuuuuuuuuuuuuuuuu" + 0x00012321)
+        If ((Local0 != 0x00012321))
+        {
+            ERR ("", ZFFF, 0x013F, 0x00, 0x00, Local0, 0x00012321)
+        }
+
+        /* Long exceeding 16, hex in the middle beyond the bounds of the possible Integer */
+
+        Local0 = ("zxswqrrrrrrrrrrrrrrtttttttttttttttttttttttttyyyyyyyyyyyyyyyyyyuuuuuuuuuuuuuuuuuuuuu1234uu" + 0x3021)
+        If ((Local0 != 0x3021))
+        {
+            ERR ("", ZFFF, 0x0145, 0x00, 0x00, Local0, 0x3021)
+        }
+
+        CH03 (TS, ZFFF, 0x0109, 0x0148, 0x00)
+        /* Only decimal, much more than 16 */
+
+        Store (("123456789012345601112223334446667788990087654" + 0x00), Local1)
+        If (F64)
+        {
+            If ((Local0 != 0x1234567890123456))
+            {
+                ERR ("", ZFFF, 0x014E, 0x00, 0x00, Local0, 0x1234567890123456)
+            }
+        }
+        ElseIf ((Local0 != 0x12345678))
+        {
+            ERR ("", ZFFF, 0x0152, 0x00, 0x00, Local0, 0x12345678)
+        }
+
+        CH03 (TS, ZFFF, 0x010A, 0x0156, 0x00)
+        /* Only hex, much more than 16 */
+
+        Store (("abcdefabcdefabcdefabcdefabcdefabcdefabcdefabc" + 0x00), Local1)
+        If (F64)
+        {
+            If ((Local0 != 0xABCDEFABCDEFABCD))
+            {
+                ERR ("", ZFFF, 0x015C, 0x00, 0x00, Local0, 0xABCDEFABCDEFABCD)
+            }
+        }
+        ElseIf ((Local0 != 0xABCDEFAB))
+        {
+            ERR ("", ZFFF, 0x0160, 0x00, 0x00, Local0, 0xABCDEFAB)
+        }
+
+        CH03 (TS, ZFFF, 0x010B, 0x0164, 0x00)
+        /* Only decimal, much more than 16, non-hex at the end */
+
+        Store (("123456789012345601112223334446667788990087654ZZZZ" + 0x00), Local1)
+        If (F64)
+        {
+            If ((Local0 != 0x1234567890123456))
+            {
+                ERR ("", ZFFF, 0x016A, 0x00, 0x00, Local0, 0x1234567890123456)
+            }
+        }
+        ElseIf ((Local0 != 0x12345678))
+        {
+            ERR ("", ZFFF, 0x016E, 0x00, 0x00, Local0, 0x12345678)
+        }
+
+        CH03 (TS, ZFFF, 0x010C, 0x0172, 0x00)
+        /* Only hex, much more than 16, non-hex at the end */
+
+        Store (("abcdefabcdefabcdefabcdefabcdefabcdefabcdefabcZZZZ" + 0x00), Local1)
+        If (F64)
+        {
+            If ((Local0 != 0xABCDEFABCDEFABCD))
+            {
+                ERR ("", ZFFF, 0x0178, 0x00, 0x00, Local0, 0xABCDEFABCDEFABCD)
+            }
+        }
+        ElseIf ((Local0 != 0xABCDEFAB))
+        {
+            ERR ("", ZFFF, 0x017C, 0x00, 0x00, Local0, 0xABCDEFAB)
+        }
+
+        CH03 (TS, ZFFF, 0x010D, 0x0180, 0x00)
+    }
+
+    Method (MD75, 0, NotSerialized)
+    {
+        /* Do here the same as md74 but store Result by Store */
+    }
+
+    Method (MD76, 0, Serialized)
+    {
+        Name (TS, "md76")
+        CH03 (TS, ZFFF, 0x010E, 0x018B, 0x00)
+        MD74 ()
+        CH03 (TS, ZFFF, 0x010F, 0x018D, 0x00)
+        MD75 ()
+        CH03 (TS, ZFFF, 0x0110, 0x018F, 0x00)
+    }
+

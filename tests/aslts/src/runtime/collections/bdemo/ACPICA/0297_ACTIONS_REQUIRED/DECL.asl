@@ -1,454 +1,550 @@
-/*
- * Some or all of this work - Copyright (c) 2006 - 2017, Intel Corp.
- * All rights reserved.
- *
- * Redistribution and use in source and binary forms, with or without modification,
- * are permitted provided that the following conditions are met:
- *
- * Redistributions of source code must retain the above copyright notice,
- * this list of conditions and the following disclaimer.
- * Redistributions in binary form must reproduce the above copyright notice,
- * this list of conditions and the following disclaimer in the documentation
- * and/or other materials provided with the distribution.
- * Neither the name of Intel Corporation nor the names of its contributors
- * may be used to endorse or promote products derived from this software
- * without specific prior written permission.
- *
- * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS"
- * AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE
- * IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE
- * ARE DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT OWNER OR CONTRIBUTORS BE
- * LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL
- * DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES;
- * LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY
- * THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING
- * NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE,
- * EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
- */
+    /*
+     * Some or all of this work - Copyright (c) 2006 - 2017, Intel Corp.
+     * All rights reserved.
+     *
+     * Redistribution and use in source and binary forms, with or without modification,
+     * are permitted provided that the following conditions are met:
+     *
+     * Redistributions of source code must retain the above copyright notice,
+     * this list of conditions and the following disclaimer.
+     * Redistributions in binary form must reproduce the above copyright notice,
+     * this list of conditions and the following disclaimer in the documentation
+     * and/or other materials provided with the distribution.
+     * Neither the name of Intel Corporation nor the names of its contributors
+     * may be used to endorse or promote products derived from this software
+     * without specific prior written permission.
+     *
+     * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS"
+     * AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE
+     * IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE
+     * ARE DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT OWNER OR CONTRIBUTORS BE
+     * LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL
+     * DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES;
+     * LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY
+     * THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING
+     * NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE,
+     * EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
+     */
+    /*
+     * Bug 297:
+     *
+     * SUMMARY: After AE_LIMIT the further work of ACPICA mutex framework looks unstable
+     */
+    /*
+     * It is m369 od Synchronization test
+     */
+    Method (M1E4, 1, Serialized)
+    {
+        CH03 ("", 0x00, 0x00, 0x28, 0x00)
+        Mutex (MT00, 0x00)
+        Mutex (MT10, 0x01)
+        Mutex (MT20, 0x02)
+        Mutex (MT30, 0x03)
+        Mutex (MT40, 0x04)
+        Mutex (MT50, 0x05)
+        Mutex (MT60, 0x06)
+        Mutex (MT70, 0x07)
+        Mutex (MT80, 0x08)
+        Mutex (MT90, 0x09)
+        Mutex (MTA0, 0x0A)
+        Mutex (MTB0, 0x0B)
+        Mutex (MTC0, 0x0C)
+        Mutex (MTD0, 0x0D)
+        Mutex (MTE0, 0x0E)
+        Mutex (MTF0, 0x0F)
+        Mutex (MT01, 0x00)
+        Mutex (MT11, 0x01)
+        Mutex (MT21, 0x02)
+        Mutex (MT31, 0x03)
+        Mutex (MT41, 0x04)
+        Mutex (MT51, 0x05)
+        Mutex (MT61, 0x06)
+        Mutex (MT71, 0x07)
+        Mutex (MT81, 0x08)
+        Mutex (MT91, 0x09)
+        Mutex (MTA1, 0x0A)
+        Mutex (MTB1, 0x0B)
+        Mutex (MTC1, 0x0C)
+        Mutex (MTD1, 0x0D)
+        Mutex (MTE1, 0x0E)
+        If (Arg0)
+        {
+            /* Should be enough to exceed the maximal available number of mutexes */
 
-/*
- * Bug 297:
- *
- * SUMMARY: After AE_LIMIT the further work of ACPICA mutex framework looks unstable
- */
+            Mutex (M000, 0x0A)
+            Mutex (M001, 0x0A)
+            Mutex (M002, 0x0A)
+            Mutex (M003, 0x0A)
+            Mutex (M004, 0x0A)
+            Mutex (M005, 0x0A)
+            Mutex (M006, 0x0A)
+            Mutex (M007, 0x0A)
+            Mutex (M008, 0x0A)
+            Mutex (M009, 0x0A)
+            Mutex (M010, 0x0A)
+            Mutex (M011, 0x0A)
+            Mutex (M012, 0x0A)
+            Mutex (M013, 0x0A)
+            Mutex (M014, 0x0A)
+            Mutex (M015, 0x0A)
+            Mutex (M016, 0x0A)
+            Mutex (M017, 0x0A)
+            Mutex (M018, 0x0A)
+            Mutex (M019, 0x0A)
+            Mutex (M020, 0x0A)
+            Mutex (M021, 0x0A)
+            Mutex (M022, 0x0A)
+            Mutex (M023, 0x0A)
+            Mutex (M024, 0x0A)
+            Mutex (M025, 0x0A)
+            Mutex (M026, 0x0A)
+            Mutex (M027, 0x0A)
+            Mutex (M028, 0x0A)
+            Mutex (M029, 0x0A)
+            Mutex (M030, 0x0A)
+            Mutex (M031, 0x0A)
+            Mutex (M032, 0x0A)
+            Mutex (M033, 0x0A)
+            Mutex (M034, 0x0A)
+            Mutex (M035, 0x0A)
+            Mutex (M036, 0x0A)
+            Mutex (M037, 0x0A)
+            Mutex (M038, 0x0A)
+            Mutex (M039, 0x0A)
+            Mutex (MTB2, 0x0B)
+            Mutex (MTB3, 0x0B)
+            Mutex (MTB4, 0x0B)
+            Mutex (MTB5, 0x0B)
+            Mutex (MTB6, 0x0B)
+            Mutex (MTB7, 0x0B)
+            Mutex (MTB8, 0x0B)
+            Mutex (MTB9, 0x0B)
+            Mutex (MTBA, 0x0B)
+            Mutex (MTBB, 0x0B)
+            Mutex (MTBC, 0x0B)
+            Mutex (MTBD, 0x0B)
+            Mutex (MTBE, 0x0B)
+            Mutex (MTBF, 0x0B)
+            Mutex (MTC2, 0x0C)
+            Mutex (MTC3, 0x0C)
+            Mutex (MTC4, 0x0C)
+            Mutex (MTC5, 0x0C)
+            Mutex (MTC6, 0x0C)
+            Mutex (MTC7, 0x0C)
+            Mutex (MTC8, 0x0C)
+            Mutex (MTC9, 0x0C)
+            Mutex (MTCA, 0x0C)
+            Mutex (MTCB, 0x0C)
+            Mutex (MTCC, 0x0C)
+            Mutex (MTCD, 0x0C)
+            Mutex (MTCE, 0x0C)
+            Mutex (MTCF, 0x0C)
+            Mutex (MTD2, 0x0D)
+            Mutex (MTD3, 0x0D)
+            Mutex (MTD4, 0x0D)
+            Mutex (MTD5, 0x0D)
+            Mutex (MTD6, 0x0D)
+            Mutex (MTD7, 0x0D)
+            Mutex (MTD8, 0x0D)
+            Mutex (MTD9, 0x0D)
+            Mutex (MTDA, 0x0D)
+            Mutex (MTDB, 0x0D)
+            Mutex (MTDC, 0x0D)
+            Mutex (MTDD, 0x0D)
+            Mutex (MTDE, 0x0D)
+            Mutex (MTDF, 0x0D)
+            Mutex (MTE2, 0x0E)
+            Mutex (MTE3, 0x0E)
+            Mutex (MTE4, 0x0E)
+            Mutex (MTE5, 0x0E)
+            Mutex (MTE6, 0x0E)
+            Mutex (MTE7, 0x0E)
+            Mutex (MTE8, 0x0E)
+            Mutex (MTE9, 0x0E)
+            Mutex (MTEA, 0x0E)
+            Mutex (MTEB, 0x0E)
+            Mutex (MTEC, 0x0E)
+            Mutex (MTED, 0x0E)
+            Mutex (MTEE, 0x0E)
+            Mutex (MTEF, 0x0E)
+            Mutex (MTF1, 0x0F)
+            Mutex (MTF2, 0x0F)
+            Mutex (MTF3, 0x0F)
+            Mutex (MTF4, 0x0F)
+            Mutex (MTF5, 0x0F)
+            Mutex (MTF6, 0x0F)
+            Mutex (MTF7, 0x0F)
+            Mutex (MTF8, 0x0F)
+            Mutex (MTF9, 0x0F)
+            Mutex (MTFA, 0x0F)
+            Mutex (MTFB, 0x0F)
+            Mutex (MTFC, 0x0F)
+            Mutex (MTFD, 0x0F)
+            Mutex (MTFE, 0x0F)
+            Mutex (MTFF, 0x0F)
+        }
 
-/*
- * It is m369 od Synchronization test
- */
-Method(m1e4, 1, Serialized)
-{
-    CH03("", 0, 0x000, __LINE__, 0)
+        Local0 = Acquire (MT00, 0xFFFF)
+        If (Local0)
+        {
+            ERR ("", ZFFF, 0xCA, 0x00, 0x00, 0x00, Local0)
+        }
+        Else
+        {
+            Local0 = Acquire (MT01, 0xFFFF)
+            /* the same level */
 
-    Mutex(MT00, 0)
-    Mutex(MT10, 1)
-    Mutex(MT20, 2)
-    Mutex(MT30, 3)
-    Mutex(MT40, 4)
-    Mutex(MT50, 5)
-    Mutex(MT60, 6)
-    Mutex(MT70, 7)
-    Mutex(MT80, 8)
-    Mutex(MT90, 9)
-    Mutex(MTa0, 10)
-    Mutex(MTb0, 11)
-    Mutex(MTc0, 12)
-    Mutex(MTd0, 13)
-    Mutex(MTe0, 14)
-    Mutex(MTf0, 15)
+            If (Local0)
+            {
+                ERR ("", ZFFF, 0xCE, 0x00, 0x00, 0x00, Local0)
+            }
+            Else
+            {
+                Local0 = Acquire (\_GL, 0xFFFF)
+                /* GL */
 
-    Mutex(MT01, 0)
-    Mutex(MT11, 1)
-    Mutex(MT21, 2)
-    Mutex(MT31, 3)
-    Mutex(MT41, 4)
-    Mutex(MT51, 5)
-    Mutex(MT61, 6)
-    Mutex(MT71, 7)
-    Mutex(MT81, 8)
-    Mutex(MT91, 9)
-    Mutex(MTa1, 10)
-    Mutex(MTb1, 11)
-    Mutex(MTc1, 12)
-    Mutex(MTd1, 13)
-    Mutex(MTe1, 14)
-    if (arg0) {
-
-        // Should be enough to exceed the maximal available number of mutexes
-
-        Mutex(M000, 10)
-        Mutex(M001, 10)
-        Mutex(M002, 10)
-        Mutex(M003, 10)
-        Mutex(M004, 10)
-        Mutex(M005, 10)
-        Mutex(M006, 10)
-        Mutex(M007, 10)
-        Mutex(M008, 10)
-        Mutex(M009, 10)
-
-        Mutex(M010, 10)
-        Mutex(M011, 10)
-        Mutex(M012, 10)
-        Mutex(M013, 10)
-        Mutex(M014, 10)
-        Mutex(M015, 10)
-        Mutex(M016, 10)
-        Mutex(M017, 10)
-        Mutex(M018, 10)
-        Mutex(M019, 10)
-
-        Mutex(M020, 10)
-        Mutex(M021, 10)
-        Mutex(M022, 10)
-        Mutex(M023, 10)
-        Mutex(M024, 10)
-        Mutex(M025, 10)
-        Mutex(M026, 10)
-        Mutex(M027, 10)
-        Mutex(M028, 10)
-        Mutex(M029, 10)
-
-        Mutex(M030, 10)
-        Mutex(M031, 10)
-        Mutex(M032, 10)
-        Mutex(M033, 10)
-        Mutex(M034, 10)
-        Mutex(M035, 10)
-        Mutex(M036, 10)
-        Mutex(M037, 10)
-        Mutex(M038, 10)
-        Mutex(M039, 10)
-
-
-        Mutex(MTb2, 11)
-        Mutex(MTb3, 11)
-        Mutex(MTb4, 11)
-        Mutex(MTb5, 11)
-        Mutex(MTb6, 11)
-        Mutex(MTb7, 11)
-        Mutex(MTb8, 11)
-        Mutex(MTb9, 11)
-        Mutex(MTba, 11)
-        Mutex(MTbb, 11)
-        Mutex(MTbc, 11)
-        Mutex(MTbd, 11)
-        Mutex(MTbe, 11)
-        Mutex(MTbf, 11)
-
-        Mutex(MTc2, 12)
-        Mutex(MTc3, 12)
-        Mutex(MTc4, 12)
-        Mutex(MTc5, 12)
-        Mutex(MTc6, 12)
-        Mutex(MTc7, 12)
-        Mutex(MTc8, 12)
-        Mutex(MTc9, 12)
-        Mutex(MTca, 12)
-        Mutex(MTcb, 12)
-        Mutex(MTcc, 12)
-        Mutex(MTcd, 12)
-        Mutex(MTce, 12)
-        Mutex(MTcf, 12)
-
-        Mutex(MTd2, 13)
-        Mutex(MTd3, 13)
-        Mutex(MTd4, 13)
-        Mutex(MTd5, 13)
-        Mutex(MTd6, 13)
-        Mutex(MTd7, 13)
-        Mutex(MTd8, 13)
-        Mutex(MTd9, 13)
-        Mutex(MTda, 13)
-        Mutex(MTdb, 13)
-        Mutex(MTdc, 13)
-        Mutex(MTdd, 13)
-        Mutex(MTde, 13)
-        Mutex(MTdf, 13)
-
-        Mutex(MTe2, 14)
-        Mutex(MTe3, 14)
-        Mutex(MTe4, 14)
-        Mutex(MTe5, 14)
-        Mutex(MTe6, 14)
-        Mutex(MTe7, 14)
-        Mutex(MTe8, 14)
-        Mutex(MTe9, 14)
-        Mutex(MTea, 14)
-        Mutex(MTeb, 14)
-        Mutex(MTec, 14)
-        Mutex(MTed, 14)
-        Mutex(MTee, 14)
-        Mutex(MTef, 14)
-
-        Mutex(MTf1, 15)
-        Mutex(MTf2, 15)
-        Mutex(MTf3, 15)
-        Mutex(MTf4, 15)
-        Mutex(MTf5, 15)
-        Mutex(MTf6, 15)
-        Mutex(MTf7, 15)
-        Mutex(MTf8, 15)
-        Mutex(MTf9, 15)
-        Mutex(MTfa, 15)
-        Mutex(MTfb, 15)
-        Mutex(MTfc, 15)
-        Mutex(MTfd, 15)
-        Mutex(MTfe, 15)
-        Mutex(MTff, 15)
-    }
-
-    Store(Acquire(MT00, 0xffff), Local0)
-    if (Local0) {
-        err("", zFFF, __LINE__, 0, 0, 0, Local0)
-    } else {
-    Store(Acquire(MT01, 0xffff), Local0) /* the same level */
-    if (Local0) {
-        err("", zFFF, __LINE__, 0, 0, 0, Local0)
-    } else {
-    Store(Acquire(\_GL, 0xffff), Local0) /* GL */
-    if (Local0) {
-        err("", zFFF, __LINE__, 0, 0, 0, Local0)
-    } else {
-        Store(Acquire(MT10, 0xffff), Local0)
-        if (Local0) {
-            err("", zFFF, __LINE__, 0, 0, 0, Local0)
-        } else {
-        Store(Acquire(MT11, 0xffff), Local0)
-        if (Local0) {
-            err("", zFFF, __LINE__, 0, 0, 0, Local0)
-        } else {
-            Store(Acquire(MT20, 0xffff), Local0)
-            if (Local0) {
-                err("", zFFF, __LINE__, 0, 0, 0, Local0)
-            } else {
-            Store(Acquire(MT21, 0xffff), Local0)
-            if (Local0) {
-                err("", zFFF, __LINE__, 0, 0, 0, Local0)
-            } else {
-                Store(Acquire(MT30, 0xffff), Local0)
-                if (Local0) {
-                    err("", zFFF, __LINE__, 0, 0, 0, Local0)
-                } else {
-                Store(Acquire(MT31, 0xffff), Local0)
-                if (Local0) {
-                    err("", zFFF, __LINE__, 0, 0, 0, Local0)
-                } else {
-                    Store(Acquire(MT40, 0xffff), Local0)
-                    if (Local0) {
-                        err("", zFFF, __LINE__, 0, 0, 0, Local0)
-                    } else {
-                    Store(Acquire(MT41, 0xffff), Local0)
-                    if (Local0) {
-                        err("", zFFF, __LINE__, 0, 0, 0, Local0)
-                    } else {
-                        Store(Acquire(MT50, 0xffff), Local0)
-                        if (Local0) {
-                            err("", zFFF, __LINE__, 0, 0, 0, Local0)
-                        } else {
-                        Store(Acquire(MT51, 0xffff), Local0)
-                        if (Local0) {
-                            err("", zFFF, __LINE__, 0, 0, 0, Local0)
-                        } else {
-                            Store(Acquire(MT60, 0xffff), Local0)
-                            if (Local0) {
-                                err("", zFFF, __LINE__, 0, 0, 0, Local0)
-                            } else {
-                            Store(Acquire(MT61, 0xffff), Local0)
-                            if (Local0) {
-                                err("", zFFF, __LINE__, 0, 0, 0, Local0)
-                            } else {
-                                Store(Acquire(MT70, 0xffff), Local0)
-                                if (Local0) {
-                                    err("", zFFF, __LINE__, 0, 0, 0, Local0)
-                                } else {
-                                Store(Acquire(MT71, 0xffff), Local0)
-                                if (Local0) {
-                                    err("", zFFF, __LINE__, 0, 0, 0, Local0)
-                                } else {
-                                    Store(Acquire(MT80, 0xffff), Local0)
-                                    if (Local0) {
-                                        err("", zFFF, __LINE__, 0, 0, 0, Local0)
-                                    } else {
-                                    Store(Acquire(MT81, 0xffff), Local0)
-                                    if (Local0) {
-                                        err("", zFFF, __LINE__, 0, 0, 0, Local0)
-                                    } else {
-                                        Store(Acquire(MT90, 0xffff), Local0)
-                                        if (Local0) {
-                                            err("", zFFF, __LINE__, 0, 0, 0, Local0)
-                                        } else {
-                                        Store(Acquire(MT91, 0xffff), Local0)
-                                        if (Local0) {
-                                            err("", zFFF, __LINE__, 0, 0, 0, Local0)
-                                        } else {
-                                            Store(Acquire(MTa0, 0xffff), Local0)
-                                            if (Local0) {
-                                                err("", zFFF, __LINE__, 0, 0, 0, Local0)
-                                            } else {
-                                            Store(Acquire(MTa1, 0xffff), Local0)
-                                            if (Local0) {
-                                                err("", zFFF, __LINE__, 0, 0, 0, Local0)
-                                            } else {
-                                                Store(Acquire(MTb0, 0xffff), Local0)
-                                                if (Local0) {
-                                                    err("", zFFF, __LINE__, 0, 0, 0, Local0)
-                                                } else {
-                                                Store(Acquire(MTb1, 0xffff), Local0)
-                                                if (Local0) {
-                                                    err("", zFFF, __LINE__, 0, 0, 0, Local0)
-                                                } else {
-                                                    Store(Acquire(MTc0, 0xffff), Local0)
-                                                    if (Local0) {
-                                                        err("", zFFF, __LINE__, 0, 0, 0, Local0)
-                                                    } else {
-                                                    Store(Acquire(MTc1, 0xffff), Local0)
-                                                    if (Local0) {
-                                                        err("", zFFF, __LINE__, 0, 0, 0, Local0)
-                                                    } else {
-                                                        Store(Acquire(MTd0, 0xffff), Local0)
-                                                        if (Local0) {
-                                                            err("", zFFF, __LINE__, 0, 0, 0, Local0)
-                                                        } else {
-                                                        Store(Acquire(MTd1, 0xffff), Local0)
-                                                        if (Local0) {
-                                                            err("", zFFF, __LINE__, 0, 0, 0, Local0)
-                                                        } else {
-                                                            Store(Acquire(MTe0, 0xffff), Local0)
-                                                            if (Local0) {
-                                                                err("", zFFF, __LINE__, 0, 0, 0, Local0)
-                                                            } else {
-                                                            Store(Acquire(MTe1, 0xffff), Local0)
-                                                            if (Local0) {
-                                                                err("", zFFF, __LINE__, 0, 0, 0, Local0)
-                                                            } else {
-                                                                Store(Acquire(MTf0, 0xffff), Local0)
-                                                                if (Local0) {
-                                                                    err("", zFFF, __LINE__, 0, 0, 0, Local0)
-                                                                } else {
-                                                                if (arg0) {
-                                                                    Store(Acquire(MTf1, 0xffff), Local0)
-                                                                } else {
-                                                                    Store(0, Local0)
+                If (Local0)
+                {
+                    ERR ("", ZFFF, 0xD2, 0x00, 0x00, 0x00, Local0)
+                }
+                Else
+                {
+                    Local0 = Acquire (MT10, 0xFFFF)
+                    If (Local0)
+                    {
+                        ERR ("", ZFFF, 0xD6, 0x00, 0x00, 0x00, Local0)
+                    }
+                    Else
+                    {
+                        Local0 = Acquire (MT11, 0xFFFF)
+                        If (Local0)
+                        {
+                            ERR ("", ZFFF, 0xDA, 0x00, 0x00, 0x00, Local0)
+                        }
+                        Else
+                        {
+                            Local0 = Acquire (MT20, 0xFFFF)
+                            If (Local0)
+                            {
+                                ERR ("", ZFFF, 0xDE, 0x00, 0x00, 0x00, Local0)
+                            }
+                            Else
+                            {
+                                Local0 = Acquire (MT21, 0xFFFF)
+                                If (Local0)
+                                {
+                                    ERR ("", ZFFF, 0xE2, 0x00, 0x00, 0x00, Local0)
+                                }
+                                Else
+                                {
+                                    Local0 = Acquire (MT30, 0xFFFF)
+                                    If (Local0)
+                                    {
+                                        ERR ("", ZFFF, 0xE6, 0x00, 0x00, 0x00, Local0)
+                                    }
+                                    Else
+                                    {
+                                        Local0 = Acquire (MT31, 0xFFFF)
+                                        If (Local0)
+                                        {
+                                            ERR ("", ZFFF, 0xEA, 0x00, 0x00, 0x00, Local0)
+                                        }
+                                        Else
+                                        {
+                                            Local0 = Acquire (MT40, 0xFFFF)
+                                            If (Local0)
+                                            {
+                                                ERR ("", ZFFF, 0xEE, 0x00, 0x00, 0x00, Local0)
+                                            }
+                                            Else
+                                            {
+                                                Local0 = Acquire (MT41, 0xFFFF)
+                                                If (Local0)
+                                                {
+                                                    ERR ("", ZFFF, 0xF2, 0x00, 0x00, 0x00, Local0)
+                                                }
+                                                Else
+                                                {
+                                                    Local0 = Acquire (MT50, 0xFFFF)
+                                                    If (Local0)
+                                                    {
+                                                        ERR ("", ZFFF, 0xF6, 0x00, 0x00, 0x00, Local0)
+                                                    }
+                                                    Else
+                                                    {
+                                                        Local0 = Acquire (MT51, 0xFFFF)
+                                                        If (Local0)
+                                                        {
+                                                            ERR ("", ZFFF, 0xFA, 0x00, 0x00, 0x00, Local0)
+                                                        }
+                                                        Else
+                                                        {
+                                                            Local0 = Acquire (MT60, 0xFFFF)
+                                                            If (Local0)
+                                                            {
+                                                                ERR ("", ZFFF, 0xFE, 0x00, 0x00, 0x00, Local0)
+                                                            }
+                                                            Else
+                                                            {
+                                                                Local0 = Acquire (MT61, 0xFFFF)
+                                                                If (Local0)
+                                                                {
+                                                                    ERR ("", ZFFF, 0x0102, 0x00, 0x00, 0x00, Local0)
                                                                 }
-                                                                if (Local0) {
-                                                                    err("", zFFF, __LINE__, 0, 0, 0, Local0)
-                                                                } else {
-                                                                    if (arg0) {
-                                                                        Release(MTF1)
+                                                                Else
+                                                                {
+                                                                    Local0 = Acquire (MT70, 0xFFFF)
+                                                                    If (Local0)
+                                                                    {
+                                                                        ERR ("", ZFFF, 0x0106, 0x00, 0x00, 0x00, Local0)
                                                                     }
-                                                                    Release(MTF0)
-                                                                    Release(MTE1)
-                                                                    Release(MTE0)
-                                                                    Release(MTD1)
-                                                                    Release(MTD0)
-                                                                    Release(MTC1)
-                                                                    Release(MTC0)
-                                                                    Release(MTB1)
-                                                                    Release(MTB0)
-                                                                    Release(MTA1)
-                                                                    Release(MTA0)
-                                                                    Release(MT91)
-                                                                    Release(MT90)
-                                                                    Release(MT81)
-                                                                    Release(MT80)
-                                                                    Release(MT71)
-                                                                    Release(MT70)
-                                                                    Release(MT61)
-                                                                    Release(MT60)
-                                                                    Release(MT51)
-                                                                    Release(MT50)
-                                                                    Release(MT41)
-                                                                    Release(MT40)
-                                                                    Release(MT31)
-                                                                    Release(MT30)
-                                                                    Release(MT21)
-                                                                    Release(MT20)
-                                                                    Release(MT11)
-                                                                    Release(MT10)
-                                                                    Release(\_GL)
-                                                                    Release(MT01)
-                                                                    Release(MT00)
-                                                                }
+                                                                    Else
+                                                                    {
+                                                                        Local0 = Acquire (MT71, 0xFFFF)
+                                                                        If (Local0)
+                                                                        {
+                                                                            ERR ("", ZFFF, 0x010A, 0x00, 0x00, 0x00, Local0)
+                                                                        }
+                                                                        Else
+                                                                        {
+                                                                            Local0 = Acquire (MT80, 0xFFFF)
+                                                                            If (Local0)
+                                                                            {
+                                                                                ERR ("", ZFFF, 0x010E, 0x00, 0x00, 0x00, Local0)
+                                                                            }
+                                                                            Else
+                                                                            {
+                                                                                Local0 = Acquire (MT81, 0xFFFF)
+                                                                                If (Local0)
+                                                                                {
+                                                                                    ERR ("", ZFFF, 0x0112, 0x00, 0x00, 0x00, Local0)
+                                                                                }
+                                                                                Else
+                                                                                {
+                                                                                    Local0 = Acquire (MT90, 0xFFFF)
+                                                                                    If (Local0)
+                                                                                    {
+                                                                                        ERR ("", ZFFF, 0x0116, 0x00, 0x00, 0x00, Local0)
+                                                                                    }
+                                                                                    Else
+                                                                                    {
+                                                                                        Local0 = Acquire (MT91, 0xFFFF)
+                                                                                        If (Local0)
+                                                                                        {
+                                                                                            ERR ("", ZFFF, 0x011A, 0x00, 0x00, 0x00, Local0)
+                                                                                        }
+                                                                                        Else
+                                                                                        {
+                                                                                            Local0 = Acquire (MTA0, 0xFFFF)
+                                                                                            If (Local0)
+                                                                                            {
+                                                                                                ERR ("", ZFFF, 0x011E, 0x00, 0x00, 0x00, Local0)
+                                                                                            }
+                                                                                            Else
+                                                                                            {
+                                                                                                Local0 = Acquire (MTA1, 0xFFFF)
+                                                                                                If (Local0)
+                                                                                                {
+                                                                                                    ERR ("", ZFFF, 0x0122, 0x00, 0x00, 0x00, Local0)
+                                                                                                }
+                                                                                                Else
+                                                                                                {
+                                                                                                    Local0 = Acquire (MTB0, 0xFFFF)
+                                                                                                    If (Local0)
+                                                                                                    {
+                                                                                                        ERR ("", ZFFF, 0x0126, 0x00, 0x00, 0x00, Local0)
+                                                                                                    }
+                                                                                                    Else
+                                                                                                    {
+                                                                                                        Local0 = Acquire (MTB1, 0xFFFF)
+                                                                                                        If (Local0)
+                                                                                                        {
+                                                                                                            ERR ("", ZFFF, 0x012A, 0x00, 0x00, 0x00, Local0)
+                                                                                                        }
+                                                                                                        Else
+                                                                                                        {
+                                                                                                            Local0 = Acquire (MTC0, 0xFFFF)
+                                                                                                            If (Local0)
+                                                                                                            {
+                                                                                                                ERR ("", ZFFF, 0x012E, 0x00, 0x00, 0x00, Local0)
+                                                                                                            }
+                                                                                                            Else
+                                                                                                            {
+                                                                                                                Local0 = Acquire (MTC1, 0xFFFF)
+                                                                                                                If (Local0)
+                                                                                                                {
+                                                                                                                    ERR ("", ZFFF, 0x0132, 0x00, 0x00, 0x00, Local0)
+                                                                                                                }
+                                                                                                                Else
+                                                                                                                {
+                                                                                                                    Local0 = Acquire (MTD0, 0xFFFF)
+                                                                                                                    If (Local0)
+                                                                                                                    {
+                                                                                                                        ERR ("", ZFFF, 0x0136, 0x00, 0x00, 0x00, Local0)
+                                                                                                                    }
+                                                                                                                    Else
+                                                                                                                    {
+                                                                                                                        Local0 = Acquire (MTD1, 0xFFFF)
+                                                                                                                        If (Local0)
+                                                                                                                        {
+                                                                                                                            ERR ("", ZFFF, 0x013A, 0x00, 0x00, 0x00, Local0)
+                                                                                                                        }
+                                                                                                                        Else
+                                                                                                                        {
+                                                                                                                            Local0 = Acquire (MTE0, 0xFFFF)
+                                                                                                                            If (Local0)
+                                                                                                                            {
+                                                                                                                                ERR ("", ZFFF, 0x013E, 0x00, 0x00, 0x00, Local0)
+                                                                                                                            }
+                                                                                                                            Else
+                                                                                                                            {
+                                                                                                                                Local0 = Acquire (MTE1, 0xFFFF)
+                                                                                                                                If (Local0)
+                                                                                                                                {
+                                                                                                                                    ERR ("", ZFFF, 0x0142, 0x00, 0x00, 0x00, Local0)
+                                                                                                                                }
+                                                                                                                                Else
+                                                                                                                                {
+                                                                                                                                    Local0 = Acquire (MTF0, 0xFFFF)
+                                                                                                                                    If (Local0)
+                                                                                                                                    {
+                                                                                                                                        ERR ("", ZFFF, 0x0146, 0x00, 0x00, 0x00, Local0)
+                                                                                                                                    }
+                                                                                                                                    Else
+                                                                                                                                    {
+                                                                                                                                        If (Arg0)
+                                                                                                                                        {
+                                                                                                                                            Local0 = Acquire (MTF1, 0xFFFF)
+                                                                                                                                        }
+                                                                                                                                        Else
+                                                                                                                                        {
+                                                                                                                                            Local0 = 0x00
+                                                                                                                                        }
+
+                                                                                                                                        If (Local0)
+                                                                                                                                        {
+                                                                                                                                            ERR ("", ZFFF, 0x014E, 0x00, 0x00, 0x00, Local0)
+                                                                                                                                        }
+                                                                                                                                        Else
+                                                                                                                                        {
+                                                                                                                                            If (Arg0)
+                                                                                                                                            {
+                                                                                                                                                Release (MTF1)
+                                                                                                                                            }
+
+                                                                                                                                            Release (MTF0)
+                                                                                                                                            Release (MTE1)
+                                                                                                                                            Release (MTE0)
+                                                                                                                                            Release (MTD1)
+                                                                                                                                            Release (MTD0)
+                                                                                                                                            Release (MTC1)
+                                                                                                                                            Release (MTC0)
+                                                                                                                                            Release (MTB1)
+                                                                                                                                            Release (MTB0)
+                                                                                                                                            Release (MTA1)
+                                                                                                                                            Release (MTA0)
+                                                                                                                                            Release (MT91)
+                                                                                                                                            Release (MT90)
+                                                                                                                                            Release (MT81)
+                                                                                                                                            Release (MT80)
+                                                                                                                                            Release (MT71)
+                                                                                                                                            Release (MT70)
+                                                                                                                                            Release (MT61)
+                                                                                                                                            Release (MT60)
+                                                                                                                                            Release (MT51)
+                                                                                                                                            Release (MT50)
+                                                                                                                                            Release (MT41)
+                                                                                                                                            Release (MT40)
+                                                                                                                                            Release (MT31)
+                                                                                                                                            Release (MT30)
+                                                                                                                                            Release (MT21)
+                                                                                                                                            Release (MT20)
+                                                                                                                                            Release (MT11)
+                                                                                                                                            Release (MT10)
+                                                                                                                                            Release (\_GL)
+                                                                                                                                            Release (MT01)
+                                                                                                                                            Release (MT00)
+                                                                                                                                        }
+                                                                                                                                    }
+                                                                                                                                }
+                                                                                                                            }
+                                                                                                                        }
+                                                                                                                    }
+                                                                                                                }
+                                                                                                            }
+                                                                                                        }
+                                                                                                    }
+                                                                                                }
+                                                                                            }
+                                                                                        }
+                                                                                    }
+                                                                                }
+                                                                            }
+                                                                        }
+                                                                    }
                                                                 }
                                                             }
-                                                            }
-                                                        }
                                                         }
                                                     }
-                                                    }
-                                                }
                                                 }
                                             }
-                                            }
-                                        }
                                         }
                                     }
-                                    }
-                                }
                                 }
                             }
-                            }
-                        }
                         }
                     }
-                    }
-                }
                 }
             }
-            }
         }
+
+        If (Arg0)
+        {
+            CH04 ("", 0x01, 0x12, 0x00, 0x0196, 0x00, 0x00) /* AE_LIMIT */
+        }
+        Else
+        {
+            CH03 ("", 0x00, 0x23, 0x0198, 0x00)
         }
     }
+
+    Method (M1E5, 0, NotSerialized)
+    {
+        /*
+         * This DECLARATION causes hang forever
+         *
+         * Event(E000)
+         */
+        CH03 ("", 0x00, 0x24, 0x01A4, 0x00)
+        /*
+         * This causes messages (but no exceptions):
+         *
+         * ACPI Error (utmutex-0421): Mutex [0] is not acquired, cannot release [20061215]
+         * ACPI Error (exutils-0250): Could not release AML Interpreter mutex [20061215]
+         * ACPI Exception (utmutex-0376): AE_BAD_PARAMETER, Thread B45 could not acquire Mutex [0] [20061215]
+         * ACPI Error (exutils-0180): Could not acquire AML Interpreter mutex [20061215]
+         */
+        Sleep (0x64)
+        CH03 ("", 0x00, 0x25, 0x01B0, 0x00)
     }
+
+    Method (M1E6, 0, NotSerialized)
+    {
+        SRMT ("m1e4-1")
+        M1E4 (0x01)
+        SRMT ("m1e4-0")
+        M1E4 (0x00)
+        SRMT ("m1e5")
+        M1E5 ()
+        CH03 ("", 0x00, 0x26, 0x01BB, 0x00)
+        /*
+         * m1e5 shows appearance of bug but doesn't cause exceptions
+         * (so it is not detected automatically), so actions are required
+         * for to see result of this bug until it is actually fixed. Then
+         * (when fixed) uncomment Event(E000) in m1e5 and remove this error
+         * report below (or try to find how to detect this situation
+         * automatically now (for not fixed yet)):
+         */
+        ERR ("", ZFFF, 0x01C5, 0x00, 0x00, 0x00, 0x00)
     }
 
-    if (arg0) {
-        CH04("", 1, 18, 0, __LINE__, 0, 0) // AE_LIMIT
-    } else {
-        CH03("", 0, 0x023, __LINE__, 0)
-    }
-}
-
-Method(m1e5)
-{
-	/*
-	 * This DECLARATION causes hang forever
-	 *
-	 * Event(E000)
-	 */
-
-	CH03("", 0, 0x024, __LINE__, 0)
-
-	/*
-	 * This causes messages (but no exceptions):
-	 *
-	 * ACPI Error (utmutex-0421): Mutex [0] is not acquired, cannot release [20061215]
-	 * ACPI Error (exutils-0250): Could not release AML Interpreter mutex [20061215]
-	 * ACPI Exception (utmutex-0376): AE_BAD_PARAMETER, Thread B45 could not acquire Mutex [0] [20061215]
-	 * ACPI Error (exutils-0180): Could not acquire AML Interpreter mutex [20061215]
-	 */
-	Sleep(100)
-
-	CH03("", 0, 0x025, __LINE__, 0)
-}
-
-Method(m1e6)
-{
-	SRMT("m1e4-1")
-	m1e4(1)
-	SRMT("m1e4-0")
-	m1e4(0)
-	SRMT("m1e5")
-	m1e5()
-	CH03("", 0, 0x026, __LINE__, 0)
-
-	/*
-	 * m1e5 shows appearance of bug but doesn't cause exceptions
-	 * (so it is not detected automatically), so actions are required
-	 * for to see result of this bug until it is actually fixed. Then
-	 * (when fixed) uncomment Event(E000) in m1e5 and remove this error
-	 * report below (or try to find how to detect this situation
-	 * automatically now (for not fixed yet)):
-	 */
-	err("", zFFF, __LINE__, 0, 0, 0, 0)
-}

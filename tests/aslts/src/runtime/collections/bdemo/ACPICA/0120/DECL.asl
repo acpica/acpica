@@ -1,135 +1,150 @@
-/*
- * Some or all of this work - Copyright (c) 2006 - 2017, Intel Corp.
- * All rights reserved.
- *
- * Redistribution and use in source and binary forms, with or without modification,
- * are permitted provided that the following conditions are met:
- *
- * Redistributions of source code must retain the above copyright notice,
- * this list of conditions and the following disclaimer.
- * Redistributions in binary form must reproduce the above copyright notice,
- * this list of conditions and the following disclaimer in the documentation
- * and/or other materials provided with the distribution.
- * Neither the name of Intel Corporation nor the names of its contributors
- * may be used to endorse or promote products derived from this software
- * without specific prior written permission.
- *
- * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS"
- * AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE
- * IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE
- * ARE DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT OWNER OR CONTRIBUTORS BE
- * LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL
- * DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES;
- * LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY
- * THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING
- * NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE,
- * EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
- */
+    /*
+     * Some or all of this work - Copyright (c) 2006 - 2017, Intel Corp.
+     * All rights reserved.
+     *
+     * Redistribution and use in source and binary forms, with or without modification,
+     * are permitted provided that the following conditions are met:
+     *
+     * Redistributions of source code must retain the above copyright notice,
+     * this list of conditions and the following disclaimer.
+     * Redistributions in binary form must reproduce the above copyright notice,
+     * this list of conditions and the following disclaimer in the documentation
+     * and/or other materials provided with the distribution.
+     * Neither the name of Intel Corporation nor the names of its contributors
+     * may be used to endorse or promote products derived from this software
+     * without specific prior written permission.
+     *
+     * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS"
+     * AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE
+     * IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE
+     * ARE DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT OWNER OR CONTRIBUTORS BE
+     * LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL
+     * DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES;
+     * LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY
+     * THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING
+     * NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE,
+     * EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
+     */
+    /*
+     * Bug 120:
+     *
+     * SUMMARY: Unexpected exception on Store of Device and ThermalZone elements of Package to Debug operation
+     */
+    Method (MF64, 0, Serialized)
+    {
+        Name (PP00, Package (0x01)
+        {
+            PRD2
+        })
+        Local0 = PP00 [0x00]
+        Debug = ObjectType (Local0)
+        Debug = DerefOf (Local0)
+        Local1 = ObjectType (Local0)
+        If ((Local1 != C014))
+        {
+            ERR ("", ZFFF, 0x2C, 0x00, 0x00, Local1, C014)
+        }
+    }
 
-/*
- * Bug 120:
- *
- * SUMMARY: Unexpected exception on Store of Device and ThermalZone elements of Package to Debug operation
- */
+    Method (MF65, 0, Serialized)
+    {
+        Name (PP00, Package (0x01)
+        {
+            RD07
+        })
+        Local0 = PP00 [0x00]
+        Debug = ObjectType (Local0)
+        Debug = DerefOf (Local0)
+        Local1 = ObjectType (Local0)
+        If ((Local1 != C012))
+        {
+            ERR ("", ZFFF, 0x39, 0x00, 0x00, Local1, C012)
+        }
+    }
 
-	Method(mf64,, Serialized)
-	{
-		Name(pp00, Package(){prd2})
-		Index(pp00, 0, Local0)
-		Store(ObjectType(Local0), Debug)
-		Store(Derefof(Local0), Debug)
+    Method (MF66, 0, Serialized)
+    {
+        Name (PP00, Package (0x01)
+        {
+            PWD2
+        })
+        Local0 = PP00 [0x00]
+        Debug = ObjectType (Local0)
+        Debug = DerefOf (Local0)
+        Local1 = ObjectType (Local0)
+        If ((Local1 != C013))
+        {
+            ERR ("", ZFFF, 0x46, 0x00, 0x00, Local1, C013)
+        }
+    }
 
-		Store(ObjectType(Local0), Local1)
-		if (LNotEqual(Local1, c014)) {
-			err("", zFFF, __LINE__, 0, 0, Local1, c014)
-		}
-	}
+    Method (MF67, 0, Serialized)
+    {
+        Name (PP00, Package (0x01)
+        {
+            ED05
+        })
+        Local0 = PP00 [0x00]
+        Debug = ObjectType (Local0)
+        Debug = DerefOf (Local0)
+        Local1 = ObjectType (Local0)
+        If ((Local1 != C00F))
+        {
+            ERR ("", ZFFF, 0x53, 0x00, 0x00, Local1, C00F)
+        }
+    }
 
-	Method(mf65,, Serialized)
-	{
-		Name(pp00, Package(){rd07})
-		Index(pp00, 0, Local0)
-		Store(ObjectType(Local0), Debug)
-		Store(Derefof(Local0), Debug)
+    Method (MF68, 0, Serialized)
+    {
+        Name (PP00, Package (0x01)
+        {
+            MXD3
+        })
+        Local0 = PP00 [0x00]
+        Debug = ObjectType (Local0)
+        Debug = DerefOf (Local0)
+        Local1 = ObjectType (Local0)
+        If ((Local1 != C011))
+        {
+            ERR ("", ZFFF, 0x60, 0x00, 0x00, Local1, C011)
+        }
+    }
 
-		Store(ObjectType(Local0), Local1)
-		if (LNotEqual(Local1, c012)) {
-			err("", zFFF, __LINE__, 0, 0, Local1, c012)
-		}
-	}
+    Method (MF69, 0, Serialized)
+    {
+        Name (PP00, Package (0x01)
+        {
+            DD0D
+        })
+        Local0 = PP00 [0x00]
+        CH03 ("", 0x00, 0x05, 0x6A, 0x00)
+        Debug = ObjectType (Local0)
+        CH03 ("", 0x00, 0x06, 0x6C, 0x00)
+        Debug = DerefOf (Local0)
+        CH03 ("", 0x00, 0x07, 0x6E, 0x00)
+        Local1 = ObjectType (Local0)
+        If ((Local1 != C00E))
+        {
+            ERR ("", ZFFF, 0x72, 0x00, 0x00, Local1, C00E)
+        }
+    }
 
-	Method(mf66,, Serialized)
-	{
-		Name(pp00, Package(){pwd2})
-		Index(pp00, 0, Local0)
-		Store(ObjectType(Local0), Debug)
-		Store(Derefof(Local0), Debug)
-
-		Store(ObjectType(Local0), Local1)
-		if (LNotEqual(Local1, c013)) {
-			err("", zFFF, __LINE__, 0, 0, Local1, c013)
-		}
-	}
-
-	Method(mf67,, Serialized)
-	{
-		Name(pp00, Package(){ed05})
-		Index(pp00, 0, Local0)
-		Store(ObjectType(Local0), Debug)
-		Store(Derefof(Local0), Debug)
-
-		Store(ObjectType(Local0), Local1)
-		if (LNotEqual(Local1, c00f)) {
-			err("", zFFF, __LINE__, 0, 0, Local1, c00f)
-		}
-	}
-
-	Method(mf68,, Serialized)
-	{
-		Name(pp00, Package(){mxd3})
-		Index(pp00, 0, Local0)
-		Store(ObjectType(Local0), Debug)
-		Store(Derefof(Local0), Debug)
-
-		Store(ObjectType(Local0), Local1)
-		if (LNotEqual(Local1, c011)) {
-			err("", zFFF, __LINE__, 0, 0, Local1, c011)
-		}
-	}
-
-	Method(mf69,, Serialized)
-	{
-		Name(pp00, Package(){dd0d})
-
-		Index(pp00, 0, Local0)
-
-		CH03("", 0, 0x005, __LINE__, 0)
-		Store(ObjectType(Local0), Debug)
-		CH03("", 0, 0x006, __LINE__, 0)
-		Store(Derefof(Local0), Debug)
-		CH03("", 0, 0x007, __LINE__, 0)
-
-		Store(ObjectType(Local0), Local1)
-		if (LNotEqual(Local1, c00e)) {
-			err("", zFFF, __LINE__, 0, 0, Local1, c00e)
-		}
-	}
-
-	Method(mf6a,, Serialized)
-	{
-		Name(pp00, Package(){tzd2})
-
-		Index(pp00, 0, Local0)
-
-		CH03("", 0, 0x009, __LINE__, 0)
-		Store(ObjectType(Local0), Debug)
-		CH03("", 0, 0x00a, __LINE__, 0)
-		Store(Derefof(Local0), Debug)
-		CH03("", 0, 0x00b, __LINE__, 0)
-
-		Store(ObjectType(Local0), Local1)
-		if (LNotEqual(Local1, c015)) {
-			err("", zFFF, __LINE__, 0, 0, Local1, c015)
-		}
-	}
+    Method (MF6A, 0, Serialized)
+    {
+        Name (PP00, Package (0x01)
+        {
+            TZD2
+        })
+        Local0 = PP00 [0x00]
+        CH03 ("", 0x00, 0x09, 0x7C, 0x00)
+        Debug = ObjectType (Local0)
+        CH03 ("", 0x00, 0x0A, 0x7E, 0x00)
+        Debug = DerefOf (Local0)
+        CH03 ("", 0x00, 0x0B, 0x80, 0x00)
+        Local1 = ObjectType (Local0)
+        If ((Local1 != C015))
+        {
+            ERR ("", ZFFF, 0x84, 0x00, 0x00, Local1, C015)
+        }
+    }
 

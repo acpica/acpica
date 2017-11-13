@@ -1,511 +1,613 @@
-/*
- * Some or all of this work - Copyright (c) 2006 - 2017, Intel Corp.
- * All rights reserved.
- *
- * Redistribution and use in source and binary forms, with or without modification,
- * are permitted provided that the following conditions are met:
- *
- * Redistributions of source code must retain the above copyright notice,
- * this list of conditions and the following disclaimer.
- * Redistributions in binary form must reproduce the above copyright notice,
- * this list of conditions and the following disclaimer in the documentation
- * and/or other materials provided with the distribution.
- * Neither the name of Intel Corporation nor the names of its contributors
- * may be used to endorse or promote products derived from this software
- * without specific prior written permission.
- *
- * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS"
- * AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE
- * IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE
- * ARE DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT OWNER OR CONTRIBUTORS BE
- * LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL
- * DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES;
- * LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY
- * THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING
- * NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE,
- * EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
- */
-
-/*
- * Data type conversion and manipulation
- */
-
-Name(z042, 42)
-
-Mutex(MT04, 0)
-
-// Verifying 1-parameter, 1-result operator
-Method(m302, 6, Serialized)
-{
-	Store(0, Local5)
-	Store(arg1, Local3)
-
-	While(Local3) {
-
-		// Operand
-
-		Store(DeRefOf(Index(arg3, Local5)), Local0)
-
-		// Expected result
-
-		Store(DeRefOf(Index(arg4, Local5)), Local1)
-
-		switch (ToInteger (arg5)) {
-			case (0) {
-				ToInteger(Local0, Local2)
-				if (LNotEqual(Local2, Local1)) {
-					err(arg0, z042, __LINE__, 0, 0, Local5, arg2)
-					return (1)
-				}
-			}
-			case (1) {
-				ToBuffer(Local0, Local2)
-				if (LNotEqual(Local2, Local1)) {
-					err(arg0, z042, __LINE__, 0, 0, Local5, arg2)
-					return (1)
-				}
-			}
-			case (2) {
-				ToString(Local0, , Local2)
-				if (LNotEqual(Local2, Local1)) {
-					err(arg0, z042, __LINE__, 0, 0, Local5, arg2)
-					return (1)
-				}
-			}
-			case (3) {
-				ToDecimalString(Local0, Local2)
-				if (LNotEqual(Local2, Local1)) {
-					err(arg0, z042, __LINE__, 0, 0, Local5, arg2)
-					return (1)
-				}
-			}
-			case (4) {
-				ToHexString(Local0, Local2)
-				if (LNotEqual(Local2, Local1)) {
-					err(arg0, z042, __LINE__, 0, 0, Local5, arg2)
-					return (1)
-				}
-			}
-			case (5) {
-				ToBCD(Local0, Local2)
-				if (LNotEqual(Local2, Local1)) {
-					err(arg0, z042, __LINE__, 0, 0, Local5, arg2)
-					return (1)
-				}
-			}
-			case (6) {
-				FromBCD(Local0, Local2)
-				if (LNotEqual(Local2, Local1)) {
-					err(arg0, z042, __LINE__, 0, 0, Local5, arg2)
-					return (1)
-				}
-			}
-			case (7) {	// ToUUID macro
-				Store(Local0, Local2)
-				if (LNotEqual(Local2, Local1)) {
-					err(arg0, z042, __LINE__, 0, 0, Local5, arg2)
-					return (1)
-				}
-			}
-			case (8) {	// Unicode macro
-				Store(Local0, Local2)
-				if (LNotEqual(Local2, Local1)) {
-					err(arg0, z042, __LINE__, 0, 0, Local5, arg2)
-					return (1)
-				}
-			}
-			case (9) {	// EISAID macro
-				Store(Local0, Local2)
-				if (LNotEqual(Local2, Local1)) {
-					err(arg0, z042, __LINE__, 0, 0, Local5, arg2)
-					return (1)
-				}
-			}
-		}
-		Increment(Local5)
-		Decrement(Local3)
-	}
-	return (0)
-}
-
-Method(ST00,, Serialized)
-{
-	Name(ts, "ST00")
-
-	Store("TEST: ST00, Store object", Debug)
-
-	// Store
-
-	Store(Store(0xabcdef12, Local0), Local1)
-	if (LNotEqual(Local1, 0xabcdef12)) {
-		err(ts, z042, __LINE__, 0, 0, 0, 0)
-	}
-
-	// Integer arithmetic
-
-	// Add
-
-	Store(Add(0x12345678, 0x11111111, Local0), Local1)
-	if (LNotEqual(Local1, 0x23456789)) {
-		err(ts, z042, __LINE__, 0, 0, 0, 0)
-	}
-	Store(Add(0x23456781, 0x11111111), Local0)
-	if (LNotEqual(Local0, 0x34567892)) {
-		err(ts, z042, __LINE__, 0, 0, 0, 0)
-	}
-
-	Store(Add(0x12345678, 0xf0000000, Local0), Local1)
-	m4c0(ts, Local1, 0x0000000102345678, 0x02345678)
-
-	// Subtract
-
-	Store(Subtract(0x87654321, 0x11111111, Local0), Local1)
-	if (LNotEqual(Local1, 0x76543210)) {
-		err(ts, z042, __LINE__, 0, 0, 0, 0)
-	}
-	Store(Subtract(0x72387654, 0x22221111), Local0)
-	if (LNotEqual(Local0, 0x50166543)) {
-		err(ts, z042, __LINE__, 0, 0, 0, 0)
-	}
-
-	// Multiply
-
-	Store(Multiply(0x12345, 0x7abc, Local0), Local1)
-	if (LNotEqual(Local1, 0x8BA4C8AC)) {
-		err(ts, z042, __LINE__, 0, 0, 0, 0)
-	}
-	Store(Multiply(0x145ab, 0x3247), Local0)
-	if (LNotEqual(Local0, 0x3FF5B86D)) {
-		err(ts, z042, __LINE__, 0, 0, 0, 0)
-	}
-
-	// Divide
-
-	Store(Divide(0x12345678, 0x1000, Local0, Local1), Local2)
-	if (LNotEqual(Local2, 0x12345)) {
-		err(ts, z042, __LINE__, 0, 0, 0, 0)
-	}
-	Store(Divide(0x7abc56e8, 0x1000, Local0), Local1)
-	if (LNotEqual(Local1, 0x7ABC5)) {
-		err(ts, z042, __LINE__, 0, 0, 0, 0)
-	}
-
-	Store(Divide(0x55667788, 0x1000), Local0)
-	if (LNotEqual(Local0, 0x55667)) {
-		err(ts, z042, __LINE__, 0, 0, 0, 0)
-	}
-
-	// Increment
-
-	Store(0x12345678, Local0)
-	Store(Increment(Local0), Local1)
-	if (LNotEqual(Local1, 0x12345679)) {
-		err(ts, z042, __LINE__, 0, 0, 0, 0)
-	}
-
-	// Decrement
-
-	Store(0x67812345, Local0)
-	Store(Decrement(Local0), Local1)
-	if (LNotEqual(Local1, 0x67812344)) {
-		err(ts, z042, __LINE__, 0, 0, 0, 0)
-	}
-
-	// And
-
-	Store(And(0x87654321, 0xaaaaaaaa, Local0), Local1)
-	if (LNotEqual(Local1, 0x82200220)) {
-		err(ts, z042, __LINE__, 0, 0, 0, 0)
-	}
-	Store(And(0x88aabbcc, 0xaaaaaaaa), Local0)
-	if (LNotEqual(Local0, 0x88AAAA88)) {
-		err(ts, z042, __LINE__, 0, 0, 0, 0)
-	}
-
-	// FindSetLeftBit
-
-	Store(FindSetLeftBit(0x0000f001, Local0), Local1)
-	if (LNotEqual(Local1, 16)) {
-		err(ts, z042, __LINE__, 0, 0, 0, 0)
-	}
-	Store(FindSetLeftBit(0x09007001), Local0)
-	if (LNotEqual(Local0, 28)) {
-		err(ts, z042, __LINE__, 0, 0, 0, 0)
-	}
-
-	// FindSetRightBit
-
-	Store(FindSetRightBit(0x01080040, Local0), Local1)
-	if (LNotEqual(Local1, 7)) {
-		err(ts, z042, __LINE__, 0, 0, 0, 0)
-	}
-	Store(FindSetRightBit(0x09800000), Local0)
-	if (LNotEqual(Local0, 24)) {
-		err(ts, z042, __LINE__, 0, 0, 0, 0)
-	}
-
-	// Mod
-
-	Store(Mod(0x1afb3c4d, 0x400000), Local0)
-	if (LNotEqual(Local0, 0x3b3c4d)) {
-		err(ts, z042, __LINE__, 0, 0, 0, 0)
-	}
-
-	// ShiftLeft
-
-	Store(ShiftLeft(0x12345678, 9, Local0), Local1)
-	m4c0(ts, Local1, 0x0000002468ACF000, 0x68ACF000)
-
-	Store(ShiftLeft(0x45678abf, 11), Local0)
-	m4c0(ts, Local0, 0x0000022B3C55F800, 0x3C55F800)
-
-	// ShiftRight
-
-	Store(ShiftRight(0x87654321, 25, Local0), Local1)
-	if (LNotEqual(Local1, 0x00000043)) {
-		err(ts, z042, __LINE__, 0, 0, 0, 0)
-	}
-	Store(ShiftRight(0x7654a0cb, 21), Local0)
-	if (LNotEqual(Local0, 0x000003b2)) {
-		err(ts, z042, __LINE__, 0, 0, 0, 0)
-	}
-
-	// Nand
-
-	Store(Nand(0xa33553ac, 0x9a9636ca, Local0), Local1)
-	m4c0(ts, Local1, 0xFFFFFFFF7DEBED77, 0x7DEBED77)
-
-	Store(Nand(0xa33553ac, 0x565c36c9), Local0)
-	m4c0(ts, Local0, 0xFFFFFFFFFDEBED77, 0xFDEBED77)
-
-	// Nor
-
-	Store(Nor(0x9a335a3c, 0x39a96c6a, Local0), Local1)
-	m4c0(ts, Local1, 0xFFFFFFFF44448181, 0x44448181)
-
-	Store(Nor(0x9a353a3c, 0x39a69c6a), Local0)
-	m4c0(ts, Local0, 0xFFFFFFFF44484181, 0x44484181)
-
-	// Not
-
-	Store(Not(0x8a345678, Local0), Local1)
-	m4c0(ts, Local1, 0xFFFFFFFF75CBA987, 0x75CBA987)
-
-	Store(Not(0x8af45678), Local0)
-	m4c0(ts, Local0, 0xFFFFFFFF750BA987, 0x750BA987)
-
-	// Or
-
-	Store(Or(0x9a3533ac, 0x39a696ca, Local0), Local1)
-	if (LNotEqual(Local1, 0xBBB7B7EE)) {
-		err(ts, z042, __LINE__, 0, 0, 0, 0)
-	}
-	Store(Or(0xca3533a9, 0xa9a696c3), Local0)
-	if (LNotEqual(Local0, 0xEBB7B7EB)) {
-		err(ts, z042, __LINE__, 0, 0, 0, 0)
-	}
-
-	// Xor
-
-	Store(Xor(0x9a365ac3, 0x39a96ca6, Local0), Local1)
-	if (LNotEqual(Local1,  0xA39F3665)) {
-		err(ts, z042, __LINE__, 0, 0, 0, 0)
-	}
-	Store(Xor(0xa9365ac3, 0x93a96ca6), Local0)
-	if (LNotEqual(Local0,  0x3A9F3665)) {
-		err(ts, z042, __LINE__, 0, 0, 0, 0)
-	}
-
-	// Logical operators
-
-	// LAnd          (provided by LAN0)
-	// LEqual        (provided by LEQ0)
-	// LGreater      (provided by LGR0)
-	// LGreaterEqual (provided by LGE0)
-	// LLess         (provided by LL00)
-	// LLessEqual    (provided by LLE0)
-	// LNot          (provided by LN00)
-	// LNotEqual     (provided by LNE0)
-	// LOr           (provided by LOR0)
-
-	// Synchronization
-
-	// Acquire
-
-	Store(Acquire(MT04, 0x0005), Local0)
-	if (LNotEqual(Local0, Zero)) {
-		err(ts, z042, __LINE__, 0, 0, 0, 0)
-	}
-
-	// Release (None)
-
-	// ToInteger
-
-	Store(ToInteger("0x89abcdef", Local0), Local1)
-	if (LNotEqual(Local1, 0x89abcdef)) {
-		err(ts, z042, __LINE__, 0, 0, 0, 0)
-	}
-	Store(ToInteger("0x89abcdef"), Local0)
-	if (LNotEqual(Local0, 0x89abcdef)) {
-		err(ts, z042, __LINE__, 0, 0, 0, 0)
-	}
-
-	// ToString
-
-	Store(Buffer(1){0x01}, Local2)
-
-	Store(ToString(Local2, Ones, Local0), Local1)
-	if (LNotEqual(Local1, "\x01")) {
-		err(ts, z042, __LINE__, 0, 0, 0, 0)
-	}
-	Store(ToString(Local2, Ones), Local0)
-	if (LNotEqual(Local0,  "\x01")) {
-		err(ts, z042, __LINE__, 0, 0, 0, 0)
-	}
-
-	Store(ToString(Local2, 1, Local0), Local1)
-	if (LNotEqual(Local1, "\x01")) {
-		err(ts, z042, __LINE__, 0, 0, 0, 0)
-	}
-	Store(ToString(Local2, 1), Local0)
-	if (LNotEqual(Local0,  "\x01")) {
-		err(ts, z042, __LINE__, 0, 0, 0, 0)
-	}
-
-	// ToBuffer
-
-	Store("\x01", Local2)
-
-	Store(ToBuffer(Local2, Local0), Local1)
-	if (LNotEqual(Local1, Buffer(2){0x01, 0x00})) {
-		err(ts, z042, __LINE__, 0, 0, 0, 0)
-	}
-	Store(ToBuffer(Local2), Local0)
-	if (LNotEqual(Local0, Buffer(2){0x01, 0x00})) {
-		err(ts, z042, __LINE__, 0, 0, 0, 0)
-	}
-
-	// ToDecimalString
-
-	Store(12, Local2)
-
-	Store(ToDecimalString(Local2, Local0), Local1)
-	if (LNotEqual(Local1, "12")) {
-		err(ts, z042, __LINE__, 0, 0, 0, 0)
-	}
-	Store(ToDecimalString(Local2), Local0)
-	if (LNotEqual(Local0, "12")) {
-		err(ts, z042, __LINE__, 0, 0, 0, 0)
-	}
-
-	// ToHexString
-
-	Store(Buffer(1){0xef}, Local2)
-
-	Store(ToHexString(Local2, Local0), Local1)
-	if (LNotEqual(Local1, "EF")) {
-		err(ts, z042, __LINE__, 0, 0, 0, 0)
-	}
-	Store(ToHexString(Local2), Local0)
-	if (LNotEqual(Local0, "EF")) {
-		err(ts, z042, __LINE__, 0, 0, 0, 0)
-	}
-
-	// ToBCD
-
-	Store(10, Local2)
-
-	Store(ToBCD(Local2, Local0), Local1)
-	if (LNotEqual(Local1, 0x10)) {
-		err(ts, z042, __LINE__, 0, 0, 0, 0)
-	}
-	Store(ToBCD(Local2), Local0)
-	if (LNotEqual(Local0, 0x10)) {
-		err(ts, z042, __LINE__, 0, 0, 0, 0)
-	}
-
-	// FromBCD
-
-	Store(0x10, Local2)
-
-	Store(FromBCD(Local2, Local0), Local1)
-	if (LNotEqual(Local1, 10)) {
-		err(ts, z042, __LINE__, 0, 0, 0, 0)
-	}
-	Store(FromBCD(Local2), Local0)
-	if (LNotEqual(Local0, 10)) {
-		err(ts, z042, __LINE__, 0, 0, 0, 0)
-	}
-
-	// Mid
-
-	Store("0123", Local2)
-
-	Store(Mid(Local2, 1, 2, Local0), Local1)
-	if (LNotEqual(Local1, "12")) {
-		err(ts, z042, __LINE__, 0, 0, 0, 0)
-	}
-	Store(Mid(Local2, 1, 2), Local0)
-	if (LNotEqual(Local0, "12")) {
-		err(ts, z042, __LINE__, 0, 0, 0, 0)
-	}
-
-	Store(Buffer(){0, 1, 2, 3}, Local2)
-
-	Store(Mid(Local2, 1, 2, Local0), Local1)
-	if (LNotEqual(Local1, Buffer(){1, 2})) {
-		err(ts, z042, __LINE__, 0, 0, 0, 0)
-	}
-	Store(Mid(Local2, 1, 2), Local0)
-	if (LNotEqual(Local0, Buffer(){1, 2})) {
-		err(ts, z042, __LINE__, 0, 0, 0, 0)
-	}
-
-	// Match
-
-	Store(Package(){1}, Local2)
-
-	Store(Match(Local2, MTR, 0, MTR, 0, 0), Local0)
-	if (LNotEqual(Local0, 0)) {
-		err(ts, z042, __LINE__, 0, 0, 0, 0)
-	}
-
-	// ConcatenateResTemplate
-
-	Store(ResourceTemplate(){}, Local2)
-	Store(ResourceTemplate(){}, Local3)
-
-	Store(ConcatenateResTemplate(Local2, Local3, Local0), Local1)
-	/*
-	 * 20.12.2005: 0 instead of 0x87
-	 */
-	if (LNotEqual(Local1, Buffer(){0x79, 0})) {
-		err(ts, z042, __LINE__, 0, 0, 0, 0)
-	}
-	/*
-	 * 20.12.2005: 0 instead of 0x87
-	 */
-	Store(ConcatenateResTemplate(Local2, Local3), Local0)
-	if (LNotEqual(Local0, Buffer(){0x79, 0})) {
-		err(ts, z042, __LINE__, 0, 0, 0, 0)
-	}
-}
-
-Method(m30d,, Serialized)
-{
-	Name(str0, "mnbvcxzlkjhgf")
-	Name(str1, "mnbvcxzlkjAgf")
-
-	Store("A", Index(str0, 10))
-
-	if (LNotEqual(str0, str1)) {
-		err("m30d", z042, __LINE__, 0, 0, str0, str1)
-	}
-}
-
-// Run-method
-Method(DCM0)
-{
-	ST00()
-	m30d()
-}
+    /*
+     * Some or all of this work - Copyright (c) 2006 - 2017, Intel Corp.
+     * All rights reserved.
+     *
+     * Redistribution and use in source and binary forms, with or without modification,
+     * are permitted provided that the following conditions are met:
+     *
+     * Redistributions of source code must retain the above copyright notice,
+     * this list of conditions and the following disclaimer.
+     * Redistributions in binary form must reproduce the above copyright notice,
+     * this list of conditions and the following disclaimer in the documentation
+     * and/or other materials provided with the distribution.
+     * Neither the name of Intel Corporation nor the names of its contributors
+     * may be used to endorse or promote products derived from this software
+     * without specific prior written permission.
+     *
+     * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS"
+     * AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE
+     * IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE
+     * ARE DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT OWNER OR CONTRIBUTORS BE
+     * LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL
+     * DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES;
+     * LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY
+     * THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING
+     * NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE,
+     * EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
+     */
+    /*
+     * Data type conversion and manipulation
+     */
+    Name (Z042, 0x2A)
+    Mutex (MT04, 0x00)
+    /* Verifying 1-parameter, 1-result operator */
+
+    Method (M302, 6, Serialized)
+    {
+        Local5 = 0x00
+        Local3 = Arg1
+        While (Local3)
+        {
+            /* Operand */
+
+            Local0 = DerefOf (Arg3 [Local5])
+            /* Expected result */
+
+            Local1 = DerefOf (Arg4 [Local5])
+            Switch (ToInteger (Arg5))
+            {
+                Case (0x00)
+                {
+                    ToInteger (Local0, Local2)
+                    If ((Local2 != Local1))
+                    {
+                        ERR (Arg0, Z042, 0x39, 0x00, 0x00, Local5, Arg2)
+                        Return (0x01)
+                    }
+                }
+                Case (0x01)
+                {
+                    ToBuffer (Local0, Local2)
+                    If ((Local2 != Local1))
+                    {
+                        ERR (Arg0, Z042, 0x40, 0x00, 0x00, Local5, Arg2)
+                        Return (0x01)
+                    }
+                }
+                Case (0x02)
+                {
+                    ToString (Local0, Ones, Local2)
+                    If ((Local2 != Local1))
+                    {
+                        ERR (Arg0, Z042, 0x47, 0x00, 0x00, Local5, Arg2)
+                        Return (0x01)
+                    }
+                }
+                Case (0x03)
+                {
+                    ToDecimalString (Local0, Local2)
+                    If ((Local2 != Local1))
+                    {
+                        ERR (Arg0, Z042, 0x4E, 0x00, 0x00, Local5, Arg2)
+                        Return (0x01)
+                    }
+                }
+                Case (0x04)
+                {
+                    ToHexString (Local0, Local2)
+                    If ((Local2 != Local1))
+                    {
+                        ERR (Arg0, Z042, 0x55, 0x00, 0x00, Local5, Arg2)
+                        Return (0x01)
+                    }
+                }
+                Case (0x05)
+                {
+                    ToBCD (Local0, Local2)
+                    If ((Local2 != Local1))
+                    {
+                        ERR (Arg0, Z042, 0x5C, 0x00, 0x00, Local5, Arg2)
+                        Return (0x01)
+                    }
+                }
+                Case (0x06)
+                {
+                    FromBCD (Local0, Local2)
+                    If ((Local2 != Local1))
+                    {
+                        ERR (Arg0, Z042, 0x63, 0x00, 0x00, Local5, Arg2)
+                        Return (0x01)
+                    }
+                }
+                Case (0x07)
+                {
+                    /* ToUUID macro */
+
+                    Local2 = Local0
+                    If ((Local2 != Local1))
+                    {
+                        ERR (Arg0, Z042, 0x6A, 0x00, 0x00, Local5, Arg2)
+                        Return (0x01)
+                    }
+                }
+                Case (0x08)
+                {
+                    /* Unicode macro */
+
+                    Local2 = Local0
+                    If ((Local2 != Local1))
+                    {
+                        ERR (Arg0, Z042, 0x71, 0x00, 0x00, Local5, Arg2)
+                        Return (0x01)
+                    }
+                }
+                Case (0x09)
+                {
+                    /* EISAID macro */
+
+                    Local2 = Local0
+                    If ((Local2 != Local1))
+                    {
+                        ERR (Arg0, Z042, 0x78, 0x00, 0x00, Local5, Arg2)
+                        Return (0x01)
+                    }
+                }
+
+            }
+
+            Local5++
+            Local3--
+        }
+
+        Return (0x00)
+    }
+
+    Method (ST00, 0, Serialized)
+    {
+        Name (TS, "ST00")
+        Debug = "TEST: ST00, Store object"
+        /* Store */
+
+        Local1 = Local0 = 0xABCDEF12
+        If ((Local1 != 0xABCDEF12))
+        {
+            ERR (TS, Z042, 0x8D, 0x00, 0x00, 0x00, 0x00)
+        }
+
+        /* Integer arithmetic */
+        /* Add */
+        Local1 = Local0 = (0x12345678 + 0x11111111)
+        If ((Local1 != 0x23456789))
+        {
+            ERR (TS, Z042, 0x96, 0x00, 0x00, 0x00, 0x00)
+        }
+
+        Store ((0x23456781 + 0x11111111), Local0)
+        If ((Local0 != 0x34567892))
+        {
+            ERR (TS, Z042, 0x9A, 0x00, 0x00, 0x00, 0x00)
+        }
+
+        Local1 = Local0 = (0x12345678 + 0xF0000000)
+        M4C0 (TS, Local1, 0x0000000102345678, 0x02345678)
+        /* Subtract */
+
+        Local1 = Local0 = (0x87654321 - 0x11111111)
+        If ((Local1 != 0x76543210))
+        {
+            ERR (TS, Z042, 0xA4, 0x00, 0x00, 0x00, 0x00)
+        }
+
+        Store ((0x72387654 - 0x22221111), Local0)
+        If ((Local0 != 0x50166543))
+        {
+            ERR (TS, Z042, 0xA8, 0x00, 0x00, 0x00, 0x00)
+        }
+
+        /* Multiply */
+
+        Local1 = Local0 = (0x00012345 * 0x7ABC)
+        If ((Local1 != 0x8BA4C8AC))
+        {
+            ERR (TS, Z042, 0xAF, 0x00, 0x00, 0x00, 0x00)
+        }
+
+        Store ((0x000145AB * 0x3247), Local0)
+        If ((Local0 != 0x3FF5B86D))
+        {
+            ERR (TS, Z042, 0xB3, 0x00, 0x00, 0x00, 0x00)
+        }
+
+        /* Divide */
+
+        Local2 = Divide (0x12345678, 0x1000, Local0, Local1)
+        If ((Local2 != 0x00012345))
+        {
+            ERR (TS, Z042, 0xBA, 0x00, 0x00, 0x00, 0x00)
+        }
+
+        Store (Divide (0x7ABC56E8, 0x1000, Local0), Local1)
+        If ((Local1 != 0x0007ABC5))
+        {
+            ERR (TS, Z042, 0xBE, 0x00, 0x00, 0x00, 0x00)
+        }
+
+        Store ((0x55667788 / 0x1000), Local0)
+        If ((Local0 != 0x00055667))
+        {
+            ERR (TS, Z042, 0xC3, 0x00, 0x00, 0x00, 0x00)
+        }
+
+        /* Increment */
+
+        Local0 = 0x12345678
+        Local1 = Local0++
+        If ((Local1 != 0x12345679))
+        {
+            ERR (TS, Z042, 0xCB, 0x00, 0x00, 0x00, 0x00)
+        }
+
+        /* Decrement */
+
+        Local0 = 0x67812345
+        Local1 = Local0--
+        If ((Local1 != 0x67812344))
+        {
+            ERR (TS, Z042, 0xD3, 0x00, 0x00, 0x00, 0x00)
+        }
+
+        /* And */
+
+        Local1 = Local0 = (0x87654321 & 0xAAAAAAAA)
+        If ((Local1 != 0x82200220))
+        {
+            ERR (TS, Z042, 0xDA, 0x00, 0x00, 0x00, 0x00)
+        }
+
+        Store ((0x88AABBCC & 0xAAAAAAAA), Local0)
+        If ((Local0 != 0x88AAAA88))
+        {
+            ERR (TS, Z042, 0xDE, 0x00, 0x00, 0x00, 0x00)
+        }
+
+        /* FindSetLeftBit */
+
+        Local1 = FindSetLeftBit (0xF001, Local0)
+        If ((Local1 != 0x10))
+        {
+            ERR (TS, Z042, 0xE5, 0x00, 0x00, 0x00, 0x00)
+        }
+
+        Local0 = FindSetLeftBit (0x09007001)
+        If ((Local0 != 0x1C))
+        {
+            ERR (TS, Z042, 0xE9, 0x00, 0x00, 0x00, 0x00)
+        }
+
+        /* FindSetRightBit */
+
+        Local1 = FindSetRightBit (0x01080040, Local0)
+        If ((Local1 != 0x07))
+        {
+            ERR (TS, Z042, 0xF0, 0x00, 0x00, 0x00, 0x00)
+        }
+
+        Local0 = FindSetRightBit (0x09800000)
+        If ((Local0 != 0x18))
+        {
+            ERR (TS, Z042, 0xF4, 0x00, 0x00, 0x00, 0x00)
+        }
+
+        /* Mod */
+
+        Store ((0x1AFB3C4D % 0x00400000), Local0)
+        If ((Local0 != 0x003B3C4D))
+        {
+            ERR (TS, Z042, 0xFB, 0x00, 0x00, 0x00, 0x00)
+        }
+
+        /* ShiftLeft */
+
+        Local1 = Local0 = (0x12345678 << 0x09)
+        M4C0 (TS, Local1, 0x0000002468ACF000, 0x68ACF000)
+        Store ((0x45678ABF << 0x0B), Local0)
+        M4C0 (TS, Local0, 0x0000022B3C55F800, 0x3C55F800)
+        /* ShiftRight */
+
+        Local1 = Local0 = (0x87654321 >> 0x19)
+        If ((Local1 != 0x43))
+        {
+            ERR (TS, Z042, 0x010A, 0x00, 0x00, 0x00, 0x00)
+        }
+
+        Store ((0x7654A0CB >> 0x15), Local0)
+        If ((Local0 != 0x03B2))
+        {
+            ERR (TS, Z042, 0x010E, 0x00, 0x00, 0x00, 0x00)
+        }
+
+        /* Nand */
+
+        Local1 = NAnd (0xA33553AC, 0x9A9636CA, Local0)
+        M4C0 (TS, Local1, 0xFFFFFFFF7DEBED77, 0x7DEBED77)
+        Local0 = NAnd (0xA33553AC, 0x565C36C9)
+        M4C0 (TS, Local0, 0xFFFFFFFFFDEBED77, 0xFDEBED77)
+        /* Nor */
+
+        Local1 = NOr (0x9A335A3C, 0x39A96C6A, Local0)
+        M4C0 (TS, Local1, 0xFFFFFFFF44448181, 0x44448181)
+        Local0 = NOr (0x9A353A3C, 0x39A69C6A)
+        M4C0 (TS, Local0, 0xFFFFFFFF44484181, 0x44484181)
+        /* Not */
+
+        Local1 = Local0 = ~0x8A345678
+        M4C0 (TS, Local1, 0xFFFFFFFF75CBA987, 0x75CBA987)
+        Store (~0x8AF45678, Local0)
+        M4C0 (TS, Local0, 0xFFFFFFFF750BA987, 0x750BA987)
+        /* Or */
+
+        Local1 = Local0 = (0x9A3533AC | 0x39A696CA)
+        If ((Local1 != 0xBBB7B7EE))
+        {
+            ERR (TS, Z042, 0x012D, 0x00, 0x00, 0x00, 0x00)
+        }
+
+        Store ((0xCA3533A9 | 0xA9A696C3), Local0)
+        If ((Local0 != 0xEBB7B7EB))
+        {
+            ERR (TS, Z042, 0x0131, 0x00, 0x00, 0x00, 0x00)
+        }
+
+        /* Xor */
+
+        Local1 = Local0 = (0x9A365AC3 ^ 0x39A96CA6)
+        If ((Local1 != 0xA39F3665))
+        {
+            ERR (TS, Z042, 0x0138, 0x00, 0x00, 0x00, 0x00)
+        }
+
+        Store ((0xA9365AC3 ^ 0x93A96CA6), Local0)
+        If ((Local0 != 0x3A9F3665))
+        {
+            ERR (TS, Z042, 0x013C, 0x00, 0x00, 0x00, 0x00)
+        }
+
+        /* Logical operators */
+        /* LAnd          (provided by LAN0) */
+        /* LEqual        (provided by LEQ0) */
+        /* LGreater      (provided by LGR0) */
+        /* LGreaterEqual (provided by LGE0) */
+        /* LLess         (provided by LL00) */
+        /* LLessEqual    (provided by LLE0) */
+        /* LNot          (provided by LN00) */
+        /* LNotEqual     (provided by LNE0) */
+        /* LOr           (provided by LOR0) */
+        /* Synchronization */
+        /* Acquire */
+        Local0 = Acquire (MT04, 0x0005)
+        If ((Local0 != Zero))
+        {
+            ERR (TS, Z042, 0x0151, 0x00, 0x00, 0x00, 0x00)
+        }
+
+        /* Release (None) */
+        /* ToInteger */
+        Local1 = ToInteger ("0x89abcdef", Local0)
+        If ((Local1 != 0x89ABCDEF))
+        {
+            ERR (TS, Z042, 0x015A, 0x00, 0x00, 0x00, 0x00)
+        }
+
+        Local0 = ToInteger ("0x89abcdef")
+        If ((Local0 != 0x89ABCDEF))
+        {
+            ERR (TS, Z042, 0x015E, 0x00, 0x00, 0x00, 0x00)
+        }
+
+        /* ToString */
+
+        Local2 = Buffer (0x01)
+            {
+                 0x01                                             // .
+            }
+        Local1 = ToString (Local2, Ones, Local0)
+        If ((Local1 != "\x01"))
+        {
+            ERR (TS, Z042, 0x0167, 0x00, 0x00, 0x00, 0x00)
+        }
+
+        Local0 = ToString (Local2, Ones)
+        If ((Local0 != "\x01"))
+        {
+            ERR (TS, Z042, 0x016B, 0x00, 0x00, 0x00, 0x00)
+        }
+
+        Local1 = ToString (Local2, 0x01, Local0)
+        If ((Local1 != "\x01"))
+        {
+            ERR (TS, Z042, 0x0170, 0x00, 0x00, 0x00, 0x00)
+        }
+
+        Local0 = ToString (Local2, 0x01)
+        If ((Local0 != "\x01"))
+        {
+            ERR (TS, Z042, 0x0174, 0x00, 0x00, 0x00, 0x00)
+        }
+
+        /* ToBuffer */
+
+        Local2 = "\x01"
+        Local1 = ToBuffer (Local2, Local0)
+        If ((Local1 != Buffer (0x02)
+                    {
+                         0x01, 0x00                                       // ..
+                    }))
+        {
+            ERR (TS, Z042, 0x017D, 0x00, 0x00, 0x00, 0x00)
+        }
+
+        Local0 = ToBuffer (Local2)
+        If ((Local0 != Buffer (0x02)
+                    {
+                         0x01, 0x00                                       // ..
+                    }))
+        {
+            ERR (TS, Z042, 0x0181, 0x00, 0x00, 0x00, 0x00)
+        }
+
+        /* ToDecimalString */
+
+        Local2 = 0x0C
+        Local1 = ToDecimalString (Local2, Local0)
+        If ((Local1 != "12"))
+        {
+            ERR (TS, Z042, 0x018A, 0x00, 0x00, 0x00, 0x00)
+        }
+
+        Local0 = ToDecimalString (Local2)
+        If ((Local0 != "12"))
+        {
+            ERR (TS, Z042, 0x018E, 0x00, 0x00, 0x00, 0x00)
+        }
+
+        /* ToHexString */
+
+        Local2 = Buffer (0x01)
+            {
+                 0xEF                                             // .
+            }
+        Local1 = ToHexString (Local2, Local0)
+        If ((Local1 != "EF"))
+        {
+            ERR (TS, Z042, 0x0197, 0x00, 0x00, 0x00, 0x00)
+        }
+
+        Local0 = ToHexString (Local2)
+        If ((Local0 != "EF"))
+        {
+            ERR (TS, Z042, 0x019B, 0x00, 0x00, 0x00, 0x00)
+        }
+
+        /* ToBCD */
+
+        Local2 = 0x0A
+        Local1 = ToBCD (Local2, Local0)
+        If ((Local1 != 0x10))
+        {
+            ERR (TS, Z042, 0x01A4, 0x00, 0x00, 0x00, 0x00)
+        }
+
+        Local0 = ToBCD (Local2)
+        If ((Local0 != 0x10))
+        {
+            ERR (TS, Z042, 0x01A8, 0x00, 0x00, 0x00, 0x00)
+        }
+
+        /* FromBCD */
+
+        Local2 = 0x10
+        Local1 = FromBCD (Local2, Local0)
+        If ((Local1 != 0x0A))
+        {
+            ERR (TS, Z042, 0x01B1, 0x00, 0x00, 0x00, 0x00)
+        }
+
+        Local0 = FromBCD (Local2)
+        If ((Local0 != 0x0A))
+        {
+            ERR (TS, Z042, 0x01B5, 0x00, 0x00, 0x00, 0x00)
+        }
+
+        /* Mid */
+
+        Local2 = "0123"
+        Local1 = Mid (Local2, 0x01, 0x02, Local0)
+        If ((Local1 != "12"))
+        {
+            ERR (TS, Z042, 0x01BE, 0x00, 0x00, 0x00, 0x00)
+        }
+
+        Local0 = Mid (Local2, 0x01, 0x02)
+        If ((Local0 != "12"))
+        {
+            ERR (TS, Z042, 0x01C2, 0x00, 0x00, 0x00, 0x00)
+        }
+
+        Local2 = Buffer (0x04)
+            {
+                 0x00, 0x01, 0x02, 0x03                           // ....
+            }
+        Local1 = Mid (Local2, 0x01, 0x02, Local0)
+        If ((Local1 != Buffer (0x02)
+                    {
+                         0x01, 0x02                                       // ..
+                    }))
+        {
+            ERR (TS, Z042, 0x01C9, 0x00, 0x00, 0x00, 0x00)
+        }
+
+        Local0 = Mid (Local2, 0x01, 0x02)
+        If ((Local0 != Buffer (0x02)
+                    {
+                         0x01, 0x02                                       // ..
+                    }))
+        {
+            ERR (TS, Z042, 0x01CD, 0x00, 0x00, 0x00, 0x00)
+        }
+
+        /* Match */
+
+        Local2 = Package (0x01)
+            {
+                0x01
+            }
+        Local0 = Match (Local2, MTR, 0x00, MTR, 0x00, 0x00)
+        If ((Local0 != 0x00))
+        {
+            ERR (TS, Z042, 0x01D6, 0x00, 0x00, 0x00, 0x00)
+        }
+
+        /* ConcatenateResTemplate */
+
+        Local2 = Buffer (0x02)
+            {
+                 0x79, 0x00                                       // y.
+            }
+        Local3 = Buffer (0x02)
+            {
+                 0x79, 0x00                                       // y.
+            }
+        Local1 = ConcatenateResTemplate (Local2, Local3, Local0)
+        /*
+         * 20.12.2005: 0 instead of 0x87
+         */
+        If ((Local1 != Buffer (0x02)
+                    {
+                         0x79, 0x00                                       // y.
+                    }))
+        {
+            ERR (TS, Z042, 0x01E3, 0x00, 0x00, 0x00, 0x00)
+        }
+
+        /*
+         * 20.12.2005: 0 instead of 0x87
+         */
+        Local0 = ConcatenateResTemplate (Local2, Local3)
+        If ((Local0 != Buffer (0x02)
+                    {
+                         0x79, 0x00                                       // y.
+                    }))
+        {
+            ERR (TS, Z042, 0x01EA, 0x00, 0x00, 0x00, 0x00)
+        }
+    }
+
+    Method (M30D, 0, Serialized)
+    {
+        Name (STR0, "mnbvcxzlkjhgf")
+        Name (STR1, "mnbvcxzlkjAgf")
+        STR0 [0x0A] = "A"
+        If ((STR0 != STR1))
+        {
+            ERR ("m30d", Z042, 0x01F6, 0x00, 0x00, STR0, STR1)
+        }
+    }
+
+    /* Run-method */
+
+    Method (DCM0, 0, NotSerialized)
+    {
+        ST00 ()
+        M30D ()
+    }
+

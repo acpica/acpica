@@ -1,1041 +1,1468 @@
-/*
- * Some or all of this work - Copyright (c) 2006 - 2017, Intel Corp.
- * All rights reserved.
- *
- * Redistribution and use in source and binary forms, with or without modification,
- * are permitted provided that the following conditions are met:
- *
- * Redistributions of source code must retain the above copyright notice,
- * this list of conditions and the following disclaimer.
- * Redistributions in binary form must reproduce the above copyright notice,
- * this list of conditions and the following disclaimer in the documentation
- * and/or other materials provided with the distribution.
- * Neither the name of Intel Corporation nor the names of its contributors
- * may be used to endorse or promote products derived from this software
- * without specific prior written permission.
- *
- * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS"
- * AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE
- * IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE
- * ARE DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT OWNER OR CONTRIBUTORS BE
- * LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL
- * DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES;
- * LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY
- * THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING
- * NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE,
- * EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
- */
-
-/*
- * Data type conversion and manipulation
- */
-
-/*
-!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
-SEE: to be a few updated, see below
-!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
-*/
-
-
-// ObjectType, Type of object
-
-// Check ObjectType operator for:
-// - all the Types of objects,
-// - all the ways Obtaining those objects,
-// - all the ways Passing objects to ObjectType.
-//
-// Types     - {0-16}, see specs.
-// Obtaining - different creating operators,...
-// Passing   - immediately local, immediately global,
-//             by ArgX, by LocalX,...
-
-
-Name(z040, 40)
-
-// Global objects
-
-Name(n002, 0x90801020)
-Name(n003, 0x9189192989396949)
-Name(n005, "9876")
-Name(b003, Buffer(4) {12, 13, 14, 15})
-
-// Exercise all the ways creating the source objects of different types
-//
-//  0 - Uninitialized
-//
-//  Integers
-//
-//      One, Ones, Zero, Revision, Timer          (compile error)
-//      immediate 32-bit Integer constant imagine (compile error)
-//      immediate 64-bit Integer constant imagine (compile error)
-//
-//  1 - 32-bit Integers
-//
-//      32-bit Integer passed by LocalX
-//      32-bit Integer passed by ArgX
-//      32-bit Integer passed by local Name
-//      32-bit Integer passed by global Name
-//
-//  2 - 64-bit Integers
-//
-//      64-bit Integer passed by LocalX
-//      64-bit Integer passed by ArgX
-//      64-bit Integer passed by local Name
-//      64-bit Integer passed by global Name
-//
-// String
-//
-//  3 - String
-//
-// Field Units
-//
-//  4 - Field Unit created by Field
-//  5 - Field Unit created by BankField
-//  6 - Field Unit created by IndexField
-//
-// Buffers
-//
-//    - buffer passed immediately (compile error)
-//  7 - buffer passed by LocalX
-//  8 - buffer passed by ArgX
-//  9 - buffer passed by local Name
-// 10 - buffer passed by global Name
-//
-// Buffer Fields
-//
-// 11 - CreateBitField          (bit field)
-// 12 - CreateByteField         (byte field)
-// 13 - CreateDWordField        (DWord field)
-// 14 - CreateField      32-bit (arbitrary length bit field)
-// 15 - CreateField      64-bit (arbitrary length bit field)
-// 16 - CreateField      65-bit (arbitrary length bit field)
-// 17 - CreateQWordField        (QWord field)
-// 18 - CreateWordField         (Word field)
-//
-// 19 - Index, Index with String   (reference to Buffer Fields)
-// 20 - Index, Index with Buffer   (reference to Buffer Fields)
-// 21 - Index, Index with Package  (reference to object in Package)
-//
-// 22 - Data Table Operation Region
-// 23 - Debug Object
-// 24 - Device
-// 25 - Event
-// 26 - Method
-// 27 - Function
-// 28 - Mutex
-// 29 - Operation Region
-// 30 - Package
-// 31 - Power Resource
-// 32 - Processor
-// 33 - Thermal Zone
-// 34 - DDB Handle
-//
-//
-// Name - add all other objects by the name and so on ... !!!!!!!!!!!!!!!!!
-//
-//
-// Local7 - returned result
-//
-Method(m0f1, 7, Serialized)
-{
-	OperationRegion(r000, SystemMemory, 0x100, 0x100)
-	OperationRegion(r001, SystemMemory, 0x100, 0x100)
-
-	if (arg1) {
-		Store(0, Local7)
-	}
-
-	switch (ToInteger (arg1)) {
-		case (0) {
-
-			// Uninitialized
-
-			/*
-			 * Bug 9 fixed.
-			 * if (arg1) {
-			 *	Store(0, Local0)
-			 *	Store(0, Local1)
-			 *	Store(0, Local2)
-			 *	Store(0, Local3)
-			 *	Store(0, Local4)
-			 *	Store(0, Local5)
-			 *	Store(0, Local6)
-			 *	Store(0, Local7)
-			 * }
-			 */
-
-			Store(ObjectType(Local0), Local7)
-			if (LNotEqual(Local7, c008)) {
-				err(arg0, z040, __LINE__, 0, 0, Local7, c008)
-			}
-			Store(ObjectType(Local1), Local7)
-			if (LNotEqual(Local7, c008)) {
-				err(arg0, z040, __LINE__, 0, 0, Local7, c008)
-			}
-			Store(ObjectType(Local2), Local7)
-			if (LNotEqual(Local7, c008)) {
-				err(arg0, z040, __LINE__, 0, 0, Local7, c008)
-			}
-			Store(ObjectType(Local3), Local7)
-			if (LNotEqual(Local7, c008)) {
-				err(arg0, z040, __LINE__, 0, 0, Local7, c008)
-			}
-			Store(ObjectType(Local4), Local7)
-			if (LNotEqual(Local7, c008)) {
-				err(arg0, z040, __LINE__, 0, 0, Local7, c008)
-			}
-			Store(ObjectType(Local5), Local7)
-			if (LNotEqual(Local7, c008)) {
-				err(arg0, z040, __LINE__, 0, 0, Local7, c008)
-			}
-			Store(ObjectType(Local6), Local7)
-			if (LNotEqual(Local7, c008)) {
-				err(arg0, z040, __LINE__, 0, 0, Local7, c008)
-			}
-		}
-		case (1) {
-
-			// 32-bit Integers
-
-			// By LocalX
-
-			Store(0x12345678, Local0)
-			Store(ObjectType(Local0), Local7)
-			if (LNotEqual(Local7, c009)) {
-				err(arg0, z040, __LINE__, 0, 0, Local7, c009)
-			}
-			if (LNotEqual(Local0, 0x12345678)) {
-				err(arg0, z040, __LINE__, 0, 0, Local0, 0x12345678)
-			}
-
-			// By ArgX
-
-			Store(ObjectType(Arg2), Local7)
-			if (LNotEqual(Local7, c009)) {
-				err(arg0, z040, __LINE__, 0, 0, Local7, c009)
-			}
-			if (LNotEqual(Arg2, 0x81223344)) {
-				err(arg0, z040, __LINE__, 0, 0, Arg2, 0x81223344)
-			}
-
-			// By Name locally
-
-			Name(n000, 0x98127364)
-			Store(ObjectType(n000), Local7)
-			if (LNotEqual(Local7, c009)) {
-				err(arg0, z040, __LINE__, 0, 0, Local7, c009)
-			}
-			if (LNotEqual(n000, 0x98127364)) {
-				err(arg0, z040, __LINE__, 0, 0, n000, 0x98127364)
-			}
-
-			// By Name globally
-
-			Store(ObjectType(n002), Local7)
-			if (LNotEqual(Local7, c009)) {
-				err(arg0, z040, __LINE__, 0, 0, Local7, c009)
-			}
-			if (LNotEqual(n002, 0x90801020)) {
-				err(arg0, z040, __LINE__, 0, 0, n002, 0x90801020)
-			}
-
-			// Not a Buffer in 32-bit mode
-
-			Store(0xa1b2c3d4e5c6e7f8, Local0)
-			Store(ObjectType(Local0), Local7)
-			if (LNotEqual(Local7, c009)) {
-				err(arg0, z040, __LINE__, 0, 0, Local7, c009)
-			}
-		}
-		case (2) {
-
-			// 64-bit Integers
-
-			if (LEqual(F64, 1)) {
-
-				// By LocalX
-
-				Store(0xa1b2c3d4e5c6e7f8, Local0)
-				Store(ObjectType(Local0), Local7)
-				if (LNotEqual(Local7, c009)) {
-					err(arg0, z040, __LINE__, 0, 0, Local7, c009)
-				}
-				if (LNotEqual(Local0, 0xa1b2c3d4e5c6e7f8)) {
-					err(arg0, z040, __LINE__, 0, 0, Local0, 0xa1b2c3d4e5c6e7f8)
-				}
-
-				// By ArgX
-
-				Store(ObjectType(Arg2), Local7)
-				if (LNotEqual(Local7, c009)) {
-					err(arg0, z040, __LINE__, 0, 0, Local7, c009)
-				}
-				if (LNotEqual(Arg2, 0xfabefac489501248)) {
-					err(arg0, z040, __LINE__, 0, 0, Arg2, 0xfabefac489501248)
-				}
-
-				// By Name locally
-
-				Name(n001, 0x9081122384356647)
-				Store(ObjectType(n001), Local7)
-				if (LNotEqual(Local7, c009)) {
-					err(arg0, z040, __LINE__, 0, 0, Local7, c009)
-				}
-				if (LNotEqual(n001, 0x9081122384356647)) {
-					err(arg0, z040, __LINE__, 0, 0, n001, 0x9081122384356647)
-				}
-
-				// By Name globally
-
-				Store(ObjectType(n003), Local7)
-				if (LNotEqual(Local7, c009)) {
-					err(arg0, z040, __LINE__, 0, 0, Local7, c009)
-				}
-				if (LNotEqual(n003, 0x9189192989396949)) {
-					err(arg0, z040, __LINE__, 0, 0, n003, 0x9189192989396949)
-				}
-			}
-		}
-		case (3) {
-
-			// String
-
-			// By LocalX
-
-			Store("", Local0)
-			Store(ObjectType(Local0), Local7)
-			if (LNotEqual(Local7, c00a)) {
-				err(arg0, z040, __LINE__, 0, 0, Local7, c00a)
-			}
-
-			Store("1", Local0)
-			Store(ObjectType(Local0), Local7)
-			if (LNotEqual(Local7, c00a)) {
-				err(arg0, z040, __LINE__, 0, 0, Local7, c00a)
-			}
-
-			Store("abcd", Local0)
-			Store(ObjectType(Local0), Local7)
-			if (LNotEqual(Local7, c00a)) {
-				err(arg0, z040, __LINE__, 0, 0, Local7, c00a)
-			}
-
-			Store("qwrt", Local0)
-			Store(ObjectType(Local0), Local7)
-			if (LNotEqual(Local7, c00a)) {
-				err(arg0, z040, __LINE__, 0, 0, Local7, c00a)
-			}
-
-			// By ArgX
-
-			Store(ObjectType(Arg2), Local7)
-			if (LNotEqual(Local7, c00a)) {
-				err(arg0, z040, __LINE__, 0, 0, Local7, c00a)
-			}
-			if (LNotEqual(Arg2, "zxcvbnm0912345678ok")) {
-				err(arg0, z040, __LINE__, 0, 0, Arg2, "zxcvbnm0912345678ok")
-			}
-
-			// By Name locally
-
-			Name(n004, "")
-			Store(ObjectType(n004), Local7)
-			if (LNotEqual(Local7, c00a)) {
-				err(arg0, z040, __LINE__, 0, 0, Local7, c00a)
-			}
-			if (LNotEqual(n004, "")) {
-				err(arg0, z040, __LINE__, 0, 0, n004, "")
-			}
-
-			// By Name globally
-
-			Store(ObjectType(n005), Local7)
-			if (LNotEqual(Local7, c00a)) {
-				err(arg0, z040, __LINE__, 0, 0, Local7, c00a)
-			}
-			if (LNotEqual(n005, "9876")) {
-				err(arg0, z040, __LINE__, 0, 0, n005, "9876")
-			}
-
-		}
-		case (4) {
-
-			// Field Unit
-
-			// OperationRegion(r000, SystemMemory, 0x100, 0x100)
-			Field(r000, ByteAcc, NoLock, Preserve) {
-				f000, 8,
-				f222, 32,
-				f223, 57,
-				f224, 64,
-				f225, 71
-			}
-			Store(0x8d, f000)
-
-			Store(ObjectType(f000), Local7)
-			if (LNotEqual(Local7, c00d)) {
-				err(arg0, z040, __LINE__, 0, 0, Local7, c00d)
-			}
-			if (LNotEqual(f000, 0x8d)) {
-				err(arg0, z040, __LINE__, 0, 0, f000, 0x8d)
-			}
-
-			Store(ObjectType(f222), Local7)
-			if (LNotEqual(Local7, c00d)) {
-				err(arg0, z040, __LINE__, 0, 0, Local7, c00d)
-			}
-			Store(ObjectType(f223), Local7)
-			if (LNotEqual(Local7, c00d)) {
-				err(arg0, z040, __LINE__, 0, 0, Local7, c00d)
-			}
-			Store(ObjectType(f224), Local7)
-			if (LNotEqual(Local7, c00d)) {
-				err(arg0, z040, __LINE__, 0, 0, Local7, c00d)
-			}
-			Store(ObjectType(f225), Local7)
-			if (LNotEqual(Local7, c00d)) {
-				err(arg0, z040, __LINE__, 0, 0, Local7, c00d)
-			}
-		}
-		case (5) {
-
-			// BankField
-
-			// OperationRegion(r001, SystemMemory, 0x100, 0x100)
-			Field(r001, ByteAcc, NoLock, Preserve) {
-				bnk0, 8
-			}
-			BankField(r001, bnk0, 0, ByteAcc, NoLock, Preserve) {
-				Offset(16),
-				bkf0, 8,
-			}
-			Store(0x95, bkf0)
-
-			Store(ObjectType(bkf0), Local7)
-			if (LNotEqual(Local7, c00d)) {
-				err(arg0, z040, __LINE__, 0, 0, Local7, c00d)
-			}
-			if (LNotEqual(bkf0, 0x95)) {
-				err(arg0, z040, __LINE__, 0, 0, bkf0, 0x95)
-			}
-		}
-		case (6) {
-
-			// IndexField
-
-			OperationRegion(r002, SystemMemory, 0x100, 0x100)
-			Field(r002, ByteAcc, NoLock, Preserve) {
-				f00a, 16,
-				f00b, 16
-			}
-			IndexField (f00a, f00b, ByteAcc, NoLock, Preserve) {
-				if00, 8,
-				if01, 8
-			}
-
-			Store(0xa0, f00a)
-			Store(0xa1, f00b)
-			Store(0xa2, if00)
-			Store(0xa3, if01)
-
-			Store(ObjectType(f00a), Local7)
-			if (LNotEqual(Local7, c00d)) {
-				err(arg0, z040, __LINE__, 0, 0, Local7, c00d)
-			}
-			Store(ObjectType(f00b), Local7)
-			if (LNotEqual(Local7, c00d)) {
-				err(arg0, z040, __LINE__, 0, 0, Local7, c00d)
-			}
-			Store(ObjectType(if00), Local7)
-			if (LNotEqual(Local7, c00d)) {
-				err(arg0, z040, __LINE__, 0, 0, Local7, c00d)
-			}
-			Store(ObjectType(if01), Local7)
-			if (LNotEqual(Local7, c00d)) {
-				err(arg0, z040, __LINE__, 0, 0, Local7, c00d)
-			}
-		}
-		case (7) {
-
-			// Buffer
-
-			Store(Buffer(4) {0, 1, 2, 3}, Local0)
-			Store(ObjectType(Local0), Local7)
-			if (LNotEqual(Local7, c00b)) {
-				err(arg0, z040, __LINE__, 0, 0, Local7, c00b)
-			}
-			if (LNotEqual(Local0, Buffer(4) {0, 1, 2, 3})) {
-				err(arg0, z040, __LINE__, 0, 0, 0, 0)
-			}
-		}
-		case (8) {
-
-			// Buffer
-
-			Store(ObjectType(Arg2), Local7)
-			if (LNotEqual(Local7, c00b)) {
-				err(arg0, z040, __LINE__, 0, 0, Local7, c00b)
-			}
-			if (LNotEqual(Arg2, Buffer(4) {4, 5, 6, 7})) {
-				err(arg0, z040, __LINE__, 0, 0, 0, 0)
-			}
-		}
-		case (9) {
-
-			// Buffer
-
-			Name(b000, Buffer(4) {8, 9, 10, 11})
-			Store(ObjectType(b000), Local7)
-			if (LNotEqual(Local7, c00b)) {
-				err(arg0, z040, __LINE__, 0, 0, Local7, c00b)
-			}
-			if (LNotEqual(b000, Buffer(4) {8, 9, 10, 11})) {
-				err(arg0, z040, __LINE__, 0, 0, 0, 0)
-			}
-		}
-		case (10) {
-
-			// Buffer
-
-			Store(ObjectType(b003), Local7)
-			if (LNotEqual(Local7, c00b)) {
-				err(arg0, z040, __LINE__, 0, 0, Local7, c00b)
-			}
-			if (LNotEqual(b003, Buffer(4) {12, 13, 14, 15})) {
-				err(arg0, z040, __LINE__, 0, 0, 0, 0)
-			}
-		}
-		case (11) {
-
-			// Buffer Field
-
-			Store(Buffer(4) {16, 17, 18, 19}, Local0)
-			CreateBitField(Local0, 3, f001)
-			Store(ObjectType(f001), Local7)
-			if (LNotEqual(Local7, c016)) {
-				err(arg0, z040, __LINE__, 0, 0, Local7, c016)
-			}
-			if (LNotEqual(Local0, Buffer(4) {16, 17, 18, 19})) {
-				err(arg0, z040, __LINE__, 0, 0, 0, 0)
-			}
-		}
-		case (12) {
-
-			// Buffer Field
-
-			Store(Buffer(4) {20, 21, 22, 23}, Local0)
-			CreateByteField(Local0, 3, f002)
-			Store(ObjectType(f002), Local7)
-			if (LNotEqual(Local7, c016)) {
-				err(arg0, z040, __LINE__, 0, 0, Local7, c016)
-			}
-			if (LNotEqual(Local0, Buffer(4) {20, 21, 22, 23})) {
-				err(arg0, z040, __LINE__, 0, 0, 0, 0)
-			}
-		}
-		case (13) {
-
-			// Buffer Field
-
-			Store(Buffer(4) {24, 25, 26, 27}, Local0)
-			CreateDWordField(Local0, 0, f003)
-			Store(ObjectType(f003), Local7)
-			if (LNotEqual(Local7, c016)) {
-				err(arg0, z040, __LINE__, 0, 0, Local7, c016)
-			}
-			if (LNotEqual(Local0, Buffer(4) {24, 25, 26, 27})) {
-				err(arg0, z040, __LINE__, 0, 0, 0, 0)
-			}
-		}
-		case (14) {
-
-			// Buffer Field
-
-			Store(Buffer(4) {28, 29, 30, 31}, Local0)
-			CreateField(Local0, 0, 32, f004)
-			Store(ObjectType(f004), Local7)
-			if (LNotEqual(Local7, c016)) {
-				err(arg0, z040, __LINE__, 0, 0, Local7, c016)
-			}
-			if (LNotEqual(Local0, Buffer(4) {28, 29, 30, 31})) {
-				err(arg0, z040, __LINE__, 0, 0, 0, 0)
-			}
-		}
-		case (15) {
-
-			// Buffer Field
-
-			Store(Buffer() {33, 34, 35, 36, 37, 38, 39, 40, 41}, Local0)
-			CreateField(Local0, 0, 64, f005)
-			Store(ObjectType(f005), Local7)
-			if (LNotEqual(Local7, c016)) {
-				err(arg0, z040, __LINE__, 0, 0, Local7, c016)
-			}
-			if (LNotEqual(Local0, Buffer() {33, 34, 35, 36, 37,
-								38, 39, 40, 41})) {
-				err(arg0, z040, __LINE__, 0, 0, 0, 0)
-			}
-		}
-		case (16) {
-
-			// Buffer Field
-
-			Store(Buffer() {42, 43, 44, 45, 46, 47, 48, 49, 50}, Local0)
-			CreateField(Local0, 0, 65, f006)
-			Store(ObjectType(f006), Local7)
-			if (LNotEqual(Local7, c016)) {
-				err(arg0, z040, __LINE__, 0, 0, Local7, c016)
-			}
-			if (LNotEqual(Local0, Buffer() {42, 43, 44, 45, 46, 47, 48, 49, 50})) {
-				err(arg0, z040, __LINE__, 0, 0, 0, 0)
-			}
-
-			CreateField(Local0, 0, 17, f111)
-			Store(ObjectType(f111), Local7)
-			if (LNotEqual(Local7, c016)) {
-				err(arg0, z040, __LINE__, 0, 0, Local7, c016)
-			}
-			CreateField(Local0, 0, 57, f112)
-			Store(ObjectType(f112), Local7)
-			if (LNotEqual(Local7, c016)) {
-				err(arg0, z040, __LINE__, 0, 0, Local7, c016)
-			}
-		}
-		case (17) {
-
-			// Buffer Field
-
-			Store(Buffer() {42, 43, 44, 45, 46, 47, 48, 49, 50}, Local0)
-			CreateQWordField(Local0, 0, f007)
-			Store(ObjectType(f007), Local7)
-			if (LNotEqual(Local7, c016)) {
-				err(arg0, z040, __LINE__, 0, 0, Local7, c016)
-			}
-			if (LNotEqual(Local0, Buffer() {42, 43, 44, 45, 46, 47, 48, 49, 50})) {
-				err(arg0, z040, __LINE__, 0, 0, 0, 0)
-			}
-		}
-		case (18) {
-
-			// Buffer Field
-
-			Store(Buffer() {51, 52, 53, 54}, Local0)
-			CreateWordField(Local0, 0, f008)
-			Store(ObjectType(f008), Local7)
-			if (LNotEqual(Local7, c016)) {
-				err(arg0, z040, __LINE__, 0, 0, Local7, c016)
-			}
-			if (LNotEqual(Local0, Buffer() {51, 52, 53, 54})) {
-				err(arg0, z040, __LINE__, 0, 0, 0, 0)
-			}
-		}
-		case (19) {
-
-			// Buffer Field
-
-			Store("q", Local0)
-			Store(Index(Local0, 0), Local1)
-			Store(ObjectType(Local1), Local7)
-			if (LNotEqual(Local7, c016)) {
-				err(arg0, z040, __LINE__, 0, 0, Local7, c016)
-			}
-			if (LNotEqual(Local0, "q")) {
-				err(arg0, z040, __LINE__, 0, 0, 0, 0)
-			}
-
-			Store("qw", Local0)
-			Store(Index(Local0, 0), Local1)
-			Store(ObjectType(Local1), Local7)
-			if (LNotEqual(Local7, c016)) {
-				err(arg0, z040, __LINE__, 0, 0, Local7, c016)
-			}
-			if (LNotEqual(Local0, "qw")) {
-				err(arg0, z040, __LINE__, 0, 0, 0, 0)
-			}
-
-			Store("qwertyu", Local0)
-			Store(Index(Local0, 0), Local1)
-			Store(ObjectType(Local1), Local7)
-			if (LNotEqual(Local7, c016)) {
-				err(arg0, z040, __LINE__, 0, 0, Local7, c016)
-			}
-			if (LNotEqual(Local0, "qwertyu")) {
-				err(arg0, z040, __LINE__, 0, 0, 0, 0)
-			}
-
-			Store("qwertyuiop", Local0)
-			Store(Index(Local0, 0), Local1)
-			Store(ObjectType(Local1), Local7)
-			if (LNotEqual(Local7, c016)) {
-				err(arg0, z040, __LINE__, 0, 0, Local7, c016)
-			}
-			if (LNotEqual(Local0, "qwertyuiop")) {
-				err(arg0, z040, __LINE__, 0, 0, 0, 0)
-			}
-		}
-		case (20) {
-
-			// Buffer Field
-
-			Store(Buffer() {42, 43, 44, 45}, Local0)
-			Store(Index(Local0, 0), Local1)
-			Store(ObjectType(Local1), Local7)
-			if (LNotEqual(Local7, c016)) {
-				err(arg0, z040, __LINE__, 0, 0, Local7, c016)
-			}
-			if (LNotEqual(Local0, Buffer() {42, 43, 44, 45})) {
-				err(arg0, z040, __LINE__, 0, 0, 0, 0)
-			}
-
-			Store(Buffer() {42, 43, 44, 45, 46, 47, 48, 49}, Local0)
-			Store(Index(Local0, 0), Local1)
-			Store(ObjectType(Local1), Local7)
-			if (LNotEqual(Local7, c016)) {
-				err(arg0, z040, __LINE__, 0, 0, Local7, c016)
-			}
-			if (LNotEqual(Local0, Buffer() {42, 43, 44, 45, 46, 47, 48, 49})) {
-				err(arg0, z040, __LINE__, 0, 0, 0, 0)
-			}
-
-			Store(Buffer() {42, 43, 44, 45, 46, 47, 48, 49, 50}, Local0)
-			Store(Index(Local0, 0), Local1)
-			Store(ObjectType(Local1), Local7)
-			if (LNotEqual(Local7, c016)) {
-				err(arg0, z040, __LINE__, 0, 0, Local7, c016)
-			}
-			if (LNotEqual(Local0, Buffer() {42, 43, 44, 45, 46, 47, 48, 49, 50})) {
-				err(arg0, z040, __LINE__, 0, 0, 0, 0)
-			}
-		}
-		case (21) {
-
-			// Index with ...
-
-			Store(Package() {
-					Package() {
-						0x98765432,
-						Buffer() {0x12},
-						Package() {0x12345678},
-						"qwertyui"},
-					Buffer() {0x12},
-					"q",
-					0x98765432}, LOcal0)
-
-			// Package
-
-			Store(Index(Local0, 0), Local1)
-			Store(ObjectType(Local1), Local7)
-			if (LNotEqual(Local7, c00c)) {
-				err(arg0, z040, __LINE__, 0, 0, Local7, c00c)
-			}
-
-			// Buffer
-
-			Store(Index(Local0, 1), Local1)
-			Store(ObjectType(Local1), Local7)
-			if (LNotEqual(Local7, c00b)) {
-				err(arg0, z040, __LINE__, 0, 0, Local7, c00b)
-			}
-
-			// String
-
-			Store(Index(Local0, 2), Local1)
-			Store(ObjectType(Local1), Local7)
-			if (LNotEqual(Local7, c00a)) {
-				err(arg0, z040, __LINE__, 0, 0, Local7, c00a)
-			}
-
-			// Integer
-
-			Store(Index(Local0, 3), Local1)
-			Store(ObjectType(Local1), Local7)
-			if (LNotEqual(Local7, c009)) {
-				err(arg0, z040, __LINE__, 0, 0, Local7, c009)
-			}
-		}
-		case (22) {
-
-			// Operation Region
-
-			DataTableRegion (HDR0, "DSDT", "", "")
-			Store(ObjectType(HDR0), Local7)
-			if (LNotEqual(Local7, c012)) {
-				err(arg0, z040, __LINE__, 0, 0, Local7, c012)
-			}
-		}
-		case (23) {
-
-			// Debug Object
-
-			Store(ObjectType(Debug), Local7)
-			if (LNotEqual(Local7, c018)) {
-				err(arg0, z040, __LINE__, 0, 0, Local7, c018)
-			}
-		}
-		case (24) {
-
-			// Device
-
-			Device(dv00) {}
-			Store(ObjectType(dv00), Local7)
-			if (LNotEqual(Local7, c00e)) {
-				err(arg0, z040, __LINE__, 0, 0, Local7, c00e)
-			}
-		}
-		case (25) {
-
-			// Event
-
-			Event(evt0)
-			Store(ObjectType(evt0), Local7)
-			if (LNotEqual(Local7, c00f)) {
-				err(arg0, z040, __LINE__, 0, 0, Local7, c00f)
-			}
-		}
-		case (26) {
-
-			// Method
-
-			Method(m0f2) { return (0x1234) }
-			Store(ObjectType(m0f2), Local7)
-			if (LNotEqual(Local7, c010)) {
-				err(arg0, z040, __LINE__, 0, 0, Local7, c010)
-			}
-		}
-		case (27) {
-/*
- *			// Function
- *
- *			Function(mof3) { return (0) }
- *			Store(ObjectType(m0f3), Local7)
- *			if (LNotEqual(Local7, c010)) {
- *				err(arg0, z040, __LINE__, 0, 0, Local7, c010)
- *			}
- */
-		}
-		case (28) {
-
-			// Mutex
-
-			Mutex(mt00, 0)
-			Store(ObjectType(mt00), Local7)
-			if (LNotEqual(Local7, c011)) {
-				err(arg0, z040, __LINE__, 0, 0, Local7, c011)
-			}
-		}
-		case (29) {
-
-			// Operation Region
-
-			Store(ObjectType(r000), Local7)
-			if (LNotEqual(Local7, c012)) {
-				err(arg0, z040, __LINE__, 0, 0, Local7, c012)
-			}
-			Store(ObjectType(r001), Local7)
-			if (LNotEqual(Local7, c012)) {
-				err(arg0, z040, __LINE__, 0, 0, Local7, c012)
-			}
-		}
-		case (30) {
-
-			// Package
-
-			Name(p000, Package() {0x12345678})
-			Name(p001, Package() {0x12345678, 0x9abcdef0})
-			Name(p002, Package() {0x12345678, 0x9abcdef0, 0x9abcdef0})
-			Name(p003, Package() {0x123456789abcdef0})
-			Name(p004, Package() {0x123456789abcdef0, 0x123456789abcdef0})
-			Name(p005, Package() {0x123456789abcdef0,
-							0x123456789abcdef0, 0x123456789abcdef0})
-			Name(p006, Package() {Buffer(1) {}})
-			Name(p007, Package() {Buffer(32) {}})
-			Name(p008, Package() {Buffer(64) {}})
-			Name(p009, Package() {Buffer(125) {}})
-			Name(p00a, Package() {0x12, Buffer() {0x12}})
-			Name(p00b, Package() {0x12, Package() {0x12}})
-			Name(p00c, Package() {Buffer() {0x12}})
-			Name(p00d, Package() {Buffer() {0x12}, 0x12345678})
-			Name(p00e, Package() {Buffer() {0x12}, Buffer() {0x12}})
-			Name(p00f, Package() {Buffer() {0x12}, Package() {0x12}})
-			Name(p010, Package() {Package() {0x12345678}})
-			Name(p011, Package() {Package() {0x12345678}, 0x12345678})
-			Name(p012, Package() {Package() {0x12345678}, Buffer() {0x12}})
-			Name(p013, Package() {Package() {0x12345678}, Package() {0x12}})
-
-
-			Store(ObjectType(p000), Local7)
-			if (LNotEqual(Local7, c00c)) {
-				err(arg0, z040, __LINE__, 0, 0, Local7, c00c)
-			}
-			Store(ObjectType(p001), Local7)
-			if (LNotEqual(Local7, c00c)) {
-				err(arg0, z040, __LINE__, 0, 0, Local7, c00c)
-			}
-			Store(ObjectType(p002), Local7)
-			if (LNotEqual(Local7, c00c)) {
-				err(arg0, z040, __LINE__, 0, 0, Local7, c00c)
-			}
-			Store(ObjectType(p003), Local7)
-			if (LNotEqual(Local7, c00c)) {
-				err(arg0, z040, __LINE__, 0, 0, Local7, c00c)
-			}
-			Store(ObjectType(p004), Local7)
-			if (LNotEqual(Local7, c00c)) {
-				err(arg0, z040, __LINE__, 0, 0, Local7, c00c)
-			}
-			Store(ObjectType(p005), Local7)
-			if (LNotEqual(Local7, c00c)) {
-				err(arg0, z040, __LINE__, 0, 0, Local7, c00c)
-			}
-			Store(ObjectType(p006), Local7)
-			if (LNotEqual(Local7, c00c)) {
-				err(arg0, z040, __LINE__, 0, 0, Local7, c00c)
-			}
-			Store(ObjectType(p007), Local7)
-			if (LNotEqual(Local7, c00c)) {
-				err(arg0, z040, __LINE__, 0, 0, Local7, c00c)
-			}
-			Store(ObjectType(p008), Local7)
-			if (LNotEqual(Local7, c00c)) {
-				err(arg0, z040, __LINE__, 0, 0, Local7, c00c)
-			}
-			Store(ObjectType(p009), Local7)
-			if (LNotEqual(Local7, c00c)) {
-				err(arg0, z040, __LINE__, 0, 0, Local7, c00c)
-			}
-			Store(ObjectType(p00a), Local7)
-			if (LNotEqual(Local7, c00c)) {
-				err(arg0, z040, __LINE__, 0, 0, Local7, c00c)
-			}
-			Store(ObjectType(p00b), Local7)
-			if (LNotEqual(Local7, c00c)) {
-				err(arg0, z040, __LINE__, 0, 0, Local7, c00c)
-			}
-			Store(ObjectType(p00c), Local7)
-			if (LNotEqual(Local7, c00c)) {
-				err(arg0, z040, __LINE__, 0, 0, Local7, c00c)
-			}
-			Store(ObjectType(p00d), Local7)
-			if (LNotEqual(Local7, c00c)) {
-				err(arg0, z040, __LINE__, 0, 0, Local7, c00c)
-			}
-			Store(ObjectType(p00e), Local7)
-			if (LNotEqual(Local7, c00c)) {
-				err(arg0, z040, __LINE__, 0, 0, Local7, c00c)
-			}
-			Store(ObjectType(p00f), Local7)
-			if (LNotEqual(Local7, c00c)) {
-				err(arg0, z040, __LINE__, 0, 0, Local7, c00c)
-			}
-			Store(ObjectType(p010), Local7)
-			if (LNotEqual(Local7, c00c)) {
-				err(arg0, z040, __LINE__, 0, 0, Local7, c00c)
-			}
-			Store(ObjectType(p011), Local7)
-			if (LNotEqual(Local7, c00c)) {
-				err(arg0, z040, __LINE__, 0, 0, Local7, c00c)
-			}
-			Store(ObjectType(p012), Local7)
-			if (LNotEqual(Local7, c00c)) {
-				err(arg0, z040, __LINE__, 0, 0, Local7, c00c)
-			}
-			Store(ObjectType(p013), Local7)
-			if (LNotEqual(Local7, c00c)) {
-				err(arg0, z040, __LINE__, 0, 0, Local7, c00c)
-			}
-		}
-		case (31) {
-
-			// Power Resource
-
-			PowerResource(pwr0, 1, 0) {Method(m000){return (0)}}
-			Store(ObjectType(pwr0), Local7)
-			if (LNotEqual(Local7, c013)) {
-				err(arg0, z040, __LINE__, 0, 0, Local7, c013)
-			}
-		}
-		case (32) {
-
-			// Processor
-
-			Processor(pr00, 0, 0xFFFFFFFF, 0) {}
-			Store(ObjectType(pr00), Local7)
-			if (LNotEqual(Local7, c014)) {
-				err(arg0, z040, __LINE__, 0, 0, Local7, c014)
-			}
-		}
-		case (33) {
-			ThermalZone(tz00) {}
-			Store(ObjectType(tz00), Local7)
-			if (LNotEqual(Local7, c015)) {
-				err(arg0, z040, __LINE__, 0, 0, Local7, c015)
-			}
-		}
-		case (34) {
-/*
-			// Reserved for DDB Handle
-
-Store("==================================== zzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzz", Debug)
-
-//			Store (LoadTable ("OEM1", "MYOEM", "TABLE1", "\\_SB.PCI0", "MYD",
-//					 	Package () {0, "\\_SB.PCI0"}), Local0)
-
-			Store (LoadTable("OEM1", "MYOEM", "TABLE1"), Local0)
-			Store(ObjectType(Local0), Local7)
-			if (LNotEqual(Local7, c017)) {
-				err(arg0, z040, __LINE__, 0, 0, Local7, c017)
-			}
-
-Store("==================================== uuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuu", Debug)
-*/
-		}
-		Default {
-			err(arg0, z040, __LINE__, 0, 0, 0, 0)
-		}
-	}
-
-	return (Local7)
-}
-
-Method(m0f0, 0, Serialized)
-{
-	Name(ts, "m0f0")
-
-	Store("TEST: m0f0, ObjectType", Debug)
-
-	Store(0, Local5)
-	Store(35, Local4)
-
-	While(Local4) {
-
-		Store(0, Local2)
-
-		switch (ToInteger (Local5)) {
-			case (1) {
-				Store(0x81223344, Local2)
-			}
-			case (2) {
-				Store(0xfabefac489501248, Local2)
-			}
-			case (3) {
-				Store("zxcvbnm0912345678ok", Local2)
-			}
-			case (8) {
-				Store(Buffer(4) {4, 5, 6, 7}, Local2)
-			}
-		}
-
-		m0f1(ts, Local5, Local2, 0, 0, 0, 0)
-
-		Increment(Local5)
-		Decrement(Local4)
-	}
-}
-
-// Run-method
-Method(OBT0)
-{
-	Store("TEST: OBT0, Type of object", Debug)
-
-	m0f0()
-}
+    /*
+     * Some or all of this work - Copyright (c) 2006 - 2017, Intel Corp.
+     * All rights reserved.
+     *
+     * Redistribution and use in source and binary forms, with or without modification,
+     * are permitted provided that the following conditions are met:
+     *
+     * Redistributions of source code must retain the above copyright notice,
+     * this list of conditions and the following disclaimer.
+     * Redistributions in binary form must reproduce the above copyright notice,
+     * this list of conditions and the following disclaimer in the documentation
+     * and/or other materials provided with the distribution.
+     * Neither the name of Intel Corporation nor the names of its contributors
+     * may be used to endorse or promote products derived from this software
+     * without specific prior written permission.
+     *
+     * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS"
+     * AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE
+     * IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE
+     * ARE DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT OWNER OR CONTRIBUTORS BE
+     * LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL
+     * DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES;
+     * LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY
+     * THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING
+     * NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE,
+     * EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
+     */
+    /*
+     * Data type conversion and manipulation
+     */
+    /*
+     !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+     SEE: to be a few updated, see below
+     !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+     */
+    /* ObjectType, Type of object */
+    /* Check ObjectType operator for: */
+    /* - all the Types of objects, */
+    /* - all the ways Obtaining those objects, */
+    /* - all the ways Passing objects to ObjectType. */
+    /* */
+    /* Types     - {0-16}, see specs. */
+    /* Obtaining - different creating operators,... */
+    /* Passing   - immediately local, immediately global, */
+    /*             by ArgX, by LocalX,... */
+    Name (Z040, 0x28)
+    /* Global objects */
+
+    Name (N002, 0x90801020)
+    Name (N003, 0x9189192989396949)
+    Name (N005, "9876")
+    Name (B003, Buffer (0x04)
+    {
+         0x0C, 0x0D, 0x0E, 0x0F                           // ....
+    })
+    /* Exercise all the ways creating the source objects of different types */
+    /* */
+    /*  0 - Uninitialized */
+    /* */
+    /*  Integers */
+    /* */
+    /*      One, Ones, Zero, Revision, Timer          (compile error) */
+    /*      immediate 32-bit Integer constant imagine (compile error) */
+    /*      immediate 64-bit Integer constant imagine (compile error) */
+    /* */
+    /*  1 - 32-bit Integers */
+    /* */
+    /*      32-bit Integer passed by LocalX */
+    /*      32-bit Integer passed by ArgX */
+    /*      32-bit Integer passed by local Name */
+    /*      32-bit Integer passed by global Name */
+    /* */
+    /*  2 - 64-bit Integers */
+    /* */
+    /*      64-bit Integer passed by LocalX */
+    /*      64-bit Integer passed by ArgX */
+    /*      64-bit Integer passed by local Name */
+    /*      64-bit Integer passed by global Name */
+    /* */
+    /* String */
+    /* */
+    /*  3 - String */
+    /* */
+    /* Field Units */
+    /* */
+    /*  4 - Field Unit created by Field */
+    /*  5 - Field Unit created by BankField */
+    /*  6 - Field Unit created by IndexField */
+    /* */
+    /* Buffers */
+    /* */
+    /*    - buffer passed immediately (compile error) */
+    /*  7 - buffer passed by LocalX */
+    /*  8 - buffer passed by ArgX */
+    /*  9 - buffer passed by local Name */
+    /* 10 - buffer passed by global Name */
+    /* */
+    /* Buffer Fields */
+    /* */
+    /* 11 - CreateBitField          (bit field) */
+    /* 12 - CreateByteField         (byte field) */
+    /* 13 - CreateDWordField        (DWord field) */
+    /* 14 - CreateField      32-bit (arbitrary length bit field) */
+    /* 15 - CreateField      64-bit (arbitrary length bit field) */
+    /* 16 - CreateField      65-bit (arbitrary length bit field) */
+    /* 17 - CreateQWordField        (QWord field) */
+    /* 18 - CreateWordField         (Word field) */
+    /* */
+    /* 19 - Index, Index with String   (reference to Buffer Fields) */
+    /* 20 - Index, Index with Buffer   (reference to Buffer Fields) */
+    /* 21 - Index, Index with Package  (reference to object in Package) */
+    /* */
+    /* 22 - Data Table Operation Region */
+    /* 23 - Debug Object */
+    /* 24 - Device */
+    /* 25 - Event */
+    /* 26 - Method */
+    /* 27 - Function */
+    /* 28 - Mutex */
+    /* 29 - Operation Region */
+    /* 30 - Package */
+    /* 31 - Power Resource */
+    /* 32 - Processor */
+    /* 33 - Thermal Zone */
+    /* 34 - DDB Handle */
+    /* */
+    /* */
+    /* Name - add all other objects by the name and so on ... !!!!!!!!!!!!!!!!! */
+    /* */
+    /* */
+    /* Local7 - returned result */
+    /* */
+    Method (M0F1, 7, Serialized)
+    {
+        OperationRegion (R000, SystemMemory, 0x0100, 0x0100)
+        OperationRegion (R001, SystemMemory, 0x0100, 0x0100)
+        If (Arg1)
+        {
+            Local7 = 0x00
+        }
+
+        Switch (ToInteger (Arg1))
+        {
+            Case (0x00)
+            {
+                /* Uninitialized */
+                /*
+                 * Bug 9 fixed.
+                 * if (arg1) {
+                 *	Store(0, Local0)
+                 *	Store(0, Local1)
+                 *	Store(0, Local2)
+                 *	Store(0, Local3)
+                 *	Store(0, Local4)
+                 *	Store(0, Local5)
+                 *	Store(0, Local6)
+                 *	Store(0, Local7)
+                 * }
+                 */
+                Local7 = ObjectType (Local0)
+                If ((Local7 != C008))
+                {
+                    ERR (Arg0, Z040, 0xA9, 0x00, 0x00, Local7, C008)
+                }
+
+                Local7 = ObjectType (Local1)
+                If ((Local7 != C008))
+                {
+                    ERR (Arg0, Z040, 0xAD, 0x00, 0x00, Local7, C008)
+                }
+
+                Local7 = ObjectType (Local2)
+                If ((Local7 != C008))
+                {
+                    ERR (Arg0, Z040, 0xB1, 0x00, 0x00, Local7, C008)
+                }
+
+                Local7 = ObjectType (Local3)
+                If ((Local7 != C008))
+                {
+                    ERR (Arg0, Z040, 0xB5, 0x00, 0x00, Local7, C008)
+                }
+
+                Local7 = ObjectType (Local4)
+                If ((Local7 != C008))
+                {
+                    ERR (Arg0, Z040, 0xB9, 0x00, 0x00, Local7, C008)
+                }
+
+                Local7 = ObjectType (Local5)
+                If ((Local7 != C008))
+                {
+                    ERR (Arg0, Z040, 0xBD, 0x00, 0x00, Local7, C008)
+                }
+
+                Local7 = ObjectType (Local6)
+                If ((Local7 != C008))
+                {
+                    ERR (Arg0, Z040, 0xC1, 0x00, 0x00, Local7, C008)
+                }
+            }
+            Case (0x01)
+            {
+                /* 32-bit Integers */
+                /* By LocalX */
+                Local0 = 0x12345678
+                Local7 = ObjectType (Local0)
+                If ((Local7 != C009))
+                {
+                    ERR (Arg0, Z040, 0xCD, 0x00, 0x00, Local7, C009)
+                }
+
+                If ((Local0 != 0x12345678))
+                {
+                    ERR (Arg0, Z040, 0xD0, 0x00, 0x00, Local0, 0x12345678)
+                }
+
+                /* By ArgX */
+
+                Local7 = ObjectType (Arg2)
+                If ((Local7 != C009))
+                {
+                    ERR (Arg0, Z040, 0xD7, 0x00, 0x00, Local7, C009)
+                }
+
+                If ((Arg2 != 0x81223344))
+                {
+                    ERR (Arg0, Z040, 0xDA, 0x00, 0x00, Arg2, 0x81223344)
+                }
+
+                /* By Name locally */
+
+                Name (N000, 0x98127364)
+                Local7 = ObjectType (N000)
+                If ((Local7 != C009))
+                {
+                    ERR (Arg0, Z040, 0xE2, 0x00, 0x00, Local7, C009)
+                }
+
+                If ((N000 != 0x98127364))
+                {
+                    ERR (Arg0, Z040, 0xE5, 0x00, 0x00, N000, 0x98127364)
+                }
+
+                /* By Name globally */
+
+                Local7 = ObjectType (N002)
+                If ((Local7 != C009))
+                {
+                    ERR (Arg0, Z040, 0xEC, 0x00, 0x00, Local7, C009)
+                }
+
+                If ((N002 != 0x90801020))
+                {
+                    ERR (Arg0, Z040, 0xEF, 0x00, 0x00, N002, 0x90801020)
+                }
+
+                /* Not a Buffer in 32-bit mode */
+
+                Local0 = 0xA1B2C3D4E5C6E7F8
+                Local7 = ObjectType (Local0)
+                If ((Local7 != C009))
+                {
+                    ERR (Arg0, Z040, 0xF7, 0x00, 0x00, Local7, C009)
+                }
+            }
+            Case (0x02)
+            {
+                /* 64-bit Integers */
+
+                If ((F64 == 0x01))
+                {
+                    /* By LocalX */
+
+                    Local0 = 0xA1B2C3D4E5C6E7F8
+                    Local7 = ObjectType (Local0)
+                    If ((Local7 != C009))
+                    {
+                        ERR (Arg0, Z040, 0x0105, 0x00, 0x00, Local7, C009)
+                    }
+
+                    If ((Local0 != 0xA1B2C3D4E5C6E7F8))
+                    {
+                        ERR (Arg0, Z040, 0x0108, 0x00, 0x00, Local0, 0xA1B2C3D4E5C6E7F8)
+                    }
+
+                    /* By ArgX */
+
+                    Local7 = ObjectType (Arg2)
+                    If ((Local7 != C009))
+                    {
+                        ERR (Arg0, Z040, 0x010F, 0x00, 0x00, Local7, C009)
+                    }
+
+                    If ((Arg2 != 0xFABEFAC489501248))
+                    {
+                        ERR (Arg0, Z040, 0x0112, 0x00, 0x00, Arg2, 0xFABEFAC489501248)
+                    }
+
+                    /* By Name locally */
+
+                    Name (N001, 0x9081122384356647)
+                    Local7 = ObjectType (N001)
+                    If ((Local7 != C009))
+                    {
+                        ERR (Arg0, Z040, 0x011A, 0x00, 0x00, Local7, C009)
+                    }
+
+                    If ((N001 != 0x9081122384356647))
+                    {
+                        ERR (Arg0, Z040, 0x011D, 0x00, 0x00, N001, 0x9081122384356647)
+                    }
+
+                    /* By Name globally */
+
+                    Local7 = ObjectType (N003)
+                    If ((Local7 != C009))
+                    {
+                        ERR (Arg0, Z040, 0x0124, 0x00, 0x00, Local7, C009)
+                    }
+
+                    If ((N003 != 0x9189192989396949))
+                    {
+                        ERR (Arg0, Z040, 0x0127, 0x00, 0x00, N003, 0x9189192989396949)
+                    }
+                }
+            }
+            Case (0x03)
+            {
+                /* String */
+                /* By LocalX */
+                Local0 = ""
+                Local7 = ObjectType (Local0)
+                If ((Local7 != C00A))
+                {
+                    ERR (Arg0, Z040, 0x0134, 0x00, 0x00, Local7, C00A)
+                }
+
+                Local0 = "1"
+                Local7 = ObjectType (Local0)
+                If ((Local7 != C00A))
+                {
+                    ERR (Arg0, Z040, 0x013A, 0x00, 0x00, Local7, C00A)
+                }
+
+                Local0 = "abcd"
+                Local7 = ObjectType (Local0)
+                If ((Local7 != C00A))
+                {
+                    ERR (Arg0, Z040, 0x0140, 0x00, 0x00, Local7, C00A)
+                }
+
+                Local0 = "qwrt"
+                Local7 = ObjectType (Local0)
+                If ((Local7 != C00A))
+                {
+                    ERR (Arg0, Z040, 0x0146, 0x00, 0x00, Local7, C00A)
+                }
+
+                /* By ArgX */
+
+                Local7 = ObjectType (Arg2)
+                If ((Local7 != C00A))
+                {
+                    ERR (Arg0, Z040, 0x014D, 0x00, 0x00, Local7, C00A)
+                }
+
+                If ((Arg2 != "zxcvbnm0912345678ok"))
+                {
+                    ERR (Arg0, Z040, 0x0150, 0x00, 0x00, Arg2, "zxcvbnm0912345678ok")
+                }
+
+                /* By Name locally */
+
+                Name (N004, "")
+                Local7 = ObjectType (N004)
+                If ((Local7 != C00A))
+                {
+                    ERR (Arg0, Z040, 0x0158, 0x00, 0x00, Local7, C00A)
+                }
+
+                If ((N004 != ""))
+                {
+                    ERR (Arg0, Z040, 0x015B, 0x00, 0x00, N004, "")
+                }
+
+                /* By Name globally */
+
+                Local7 = ObjectType (N005)
+                If ((Local7 != C00A))
+                {
+                    ERR (Arg0, Z040, 0x0162, 0x00, 0x00, Local7, C00A)
+                }
+
+                If ((N005 != "9876"))
+                {
+                    ERR (Arg0, Z040, 0x0165, 0x00, 0x00, N005, "9876")
+                }
+            }
+            Case (0x04)
+            {
+                /* Field Unit */
+                /* OperationRegion(r000, SystemMemory, 0x100, 0x100) */
+                Field (R000, ByteAcc, NoLock, Preserve)
+                {
+                    F000,   8, 
+                    F222,   32, 
+                    F223,   57, 
+                    F224,   64, 
+                    F225,   71
+                }
+
+                F000 = 0x8D
+                Local7 = ObjectType (F000)
+                If ((Local7 != C00D))
+                {
+                    ERR (Arg0, Z040, 0x0179, 0x00, 0x00, Local7, C00D)
+                }
+
+                If ((F000 != 0x8D))
+                {
+                    ERR (Arg0, Z040, 0x017C, 0x00, 0x00, F000, 0x8D)
+                }
+
+                Local7 = ObjectType (F222)
+                If ((Local7 != C00D))
+                {
+                    ERR (Arg0, Z040, 0x0181, 0x00, 0x00, Local7, C00D)
+                }
+
+                Local7 = ObjectType (F223)
+                If ((Local7 != C00D))
+                {
+                    ERR (Arg0, Z040, 0x0185, 0x00, 0x00, Local7, C00D)
+                }
+
+                Local7 = ObjectType (F224)
+                If ((Local7 != C00D))
+                {
+                    ERR (Arg0, Z040, 0x0189, 0x00, 0x00, Local7, C00D)
+                }
+
+                Local7 = ObjectType (F225)
+                If ((Local7 != C00D))
+                {
+                    ERR (Arg0, Z040, 0x018D, 0x00, 0x00, Local7, C00D)
+                }
+            }
+            Case (0x05)
+            {
+                /* BankField */
+                /* OperationRegion(r001, SystemMemory, 0x100, 0x100) */
+                Field (R001, ByteAcc, NoLock, Preserve)
+                {
+                    BNK0,   8
+                }
+
+                BankField (R001, BNK0, 0x00, ByteAcc, NoLock, Preserve)
+                {
+                    Offset (0x10), 
+                    BKF0,   8
+                }
+
+                BKF0 = 0x95
+                Local7 = ObjectType (BKF0)
+                If ((Local7 != C00D))
+                {
+                    ERR (Arg0, Z040, 0x01A0, 0x00, 0x00, Local7, C00D)
+                }
+
+                If ((BKF0 != 0x95))
+                {
+                    ERR (Arg0, Z040, 0x01A3, 0x00, 0x00, BKF0, 0x95)
+                }
+            }
+            Case (0x06)
+            {
+                /* IndexField */
+
+                OperationRegion (R002, SystemMemory, 0x0100, 0x0100)
+                Field (R002, ByteAcc, NoLock, Preserve)
+                {
+                    F00A,   16, 
+                    F00B,   16
+                }
+
+                IndexField (F00A, F00B, ByteAcc, NoLock, Preserve)
+                {
+                    IF00,   8, 
+                    IF01,   8
+                }
+
+                F00A = 0xA0
+                F00B = 0xA1
+                IF00 = 0xA2
+                IF01 = 0xA3
+                Local7 = ObjectType (F00A)
+                If ((Local7 != C00D))
+                {
+                    ERR (Arg0, Z040, 0x01BB, 0x00, 0x00, Local7, C00D)
+                }
+
+                Local7 = ObjectType (F00B)
+                If ((Local7 != C00D))
+                {
+                    ERR (Arg0, Z040, 0x01BF, 0x00, 0x00, Local7, C00D)
+                }
+
+                Local7 = ObjectType (IF00)
+                If ((Local7 != C00D))
+                {
+                    ERR (Arg0, Z040, 0x01C3, 0x00, 0x00, Local7, C00D)
+                }
+
+                Local7 = ObjectType (IF01)
+                If ((Local7 != C00D))
+                {
+                    ERR (Arg0, Z040, 0x01C7, 0x00, 0x00, Local7, C00D)
+                }
+            }
+            Case (0x07)
+            {
+                /* Buffer */
+
+                Local0 = Buffer (0x04)
+                    {
+                         0x00, 0x01, 0x02, 0x03                           // ....
+                    }
+                Local7 = ObjectType (Local0)
+                If ((Local7 != C00B))
+                {
+                    ERR (Arg0, Z040, 0x01D1, 0x00, 0x00, Local7, C00B)
+                }
+
+                If ((Local0 != Buffer (0x04)
+                            {
+                                 0x00, 0x01, 0x02, 0x03                           // ....
+                            }))
+                {
+                    ERR (Arg0, Z040, 0x01D4, 0x00, 0x00, 0x00, 0x00)
+                }
+            }
+            Case (0x08)
+            {
+                /* Buffer */
+
+                Local7 = ObjectType (Arg2)
+                If ((Local7 != C00B))
+                {
+                    ERR (Arg0, Z040, 0x01DD, 0x00, 0x00, Local7, C00B)
+                }
+
+                If ((Arg2 != Buffer (0x04)
+                            {
+                                 0x04, 0x05, 0x06, 0x07                           // ....
+                            }))
+                {
+                    ERR (Arg0, Z040, 0x01E0, 0x00, 0x00, 0x00, 0x00)
+                }
+            }
+            Case (0x09)
+            {
+                /* Buffer */
+
+                Name (B000, Buffer (0x04)
+                {
+                     0x08, 0x09, 0x0A, 0x0B                           // ....
+                })
+                Local7 = ObjectType (B000)
+                If ((Local7 != C00B))
+                {
+                    ERR (Arg0, Z040, 0x01EA, 0x00, 0x00, Local7, C00B)
+                }
+
+                If ((B000 != Buffer (0x04)
+                            {
+                                 0x08, 0x09, 0x0A, 0x0B                           // ....
+                            }))
+                {
+                    ERR (Arg0, Z040, 0x01ED, 0x00, 0x00, 0x00, 0x00)
+                }
+            }
+            Case (0x0A)
+            {
+                /* Buffer */
+
+                Local7 = ObjectType (B003)
+                If ((Local7 != C00B))
+                {
+                    ERR (Arg0, Z040, 0x01F6, 0x00, 0x00, Local7, C00B)
+                }
+
+                If ((B003 != Buffer (0x04)
+                            {
+                                 0x0C, 0x0D, 0x0E, 0x0F                           // ....
+                            }))
+                {
+                    ERR (Arg0, Z040, 0x01F9, 0x00, 0x00, 0x00, 0x00)
+                }
+            }
+            Case (0x0B)
+            {
+                /* Buffer Field */
+
+                Local0 = Buffer (0x04)
+                    {
+                         0x10, 0x11, 0x12, 0x13                           // ....
+                    }
+                CreateBitField (Local0, 0x03, F001)
+                Local7 = ObjectType (F001)
+                If ((Local7 != C016))
+                {
+                    ERR (Arg0, Z040, 0x0204, 0x00, 0x00, Local7, C016)
+                }
+
+                If ((Local0 != Buffer (0x04)
+                            {
+                                 0x10, 0x11, 0x12, 0x13                           // ....
+                            }))
+                {
+                    ERR (Arg0, Z040, 0x0207, 0x00, 0x00, 0x00, 0x00)
+                }
+            }
+            Case (0x0C)
+            {
+                /* Buffer Field */
+
+                Local0 = Buffer (0x04)
+                    {
+                         0x14, 0x15, 0x16, 0x17                           // ....
+                    }
+                CreateByteField (Local0, 0x03, F002)
+                Local7 = ObjectType (F002)
+                If ((Local7 != C016))
+                {
+                    ERR (Arg0, Z040, 0x0212, 0x00, 0x00, Local7, C016)
+                }
+
+                If ((Local0 != Buffer (0x04)
+                            {
+                                 0x14, 0x15, 0x16, 0x17                           // ....
+                            }))
+                {
+                    ERR (Arg0, Z040, 0x0215, 0x00, 0x00, 0x00, 0x00)
+                }
+            }
+            Case (0x0D)
+            {
+                /* Buffer Field */
+
+                Local0 = Buffer (0x04)
+                    {
+                         0x18, 0x19, 0x1A, 0x1B                           // ....
+                    }
+                CreateDWordField (Local0, 0x00, F003)
+                Local7 = ObjectType (F003)
+                If ((Local7 != C016))
+                {
+                    ERR (Arg0, Z040, 0x0220, 0x00, 0x00, Local7, C016)
+                }
+
+                If ((Local0 != Buffer (0x04)
+                            {
+                                 0x18, 0x19, 0x1A, 0x1B                           // ....
+                            }))
+                {
+                    ERR (Arg0, Z040, 0x0223, 0x00, 0x00, 0x00, 0x00)
+                }
+            }
+            Case (0x0E)
+            {
+                /* Buffer Field */
+
+                Local0 = Buffer (0x04)
+                    {
+                         0x1C, 0x1D, 0x1E, 0x1F                           // ....
+                    }
+                CreateField (Local0, 0x00, 0x20, F004)
+                Local7 = ObjectType (F004)
+                If ((Local7 != C016))
+                {
+                    ERR (Arg0, Z040, 0x022E, 0x00, 0x00, Local7, C016)
+                }
+
+                If ((Local0 != Buffer (0x04)
+                            {
+                                 0x1C, 0x1D, 0x1E, 0x1F                           // ....
+                            }))
+                {
+                    ERR (Arg0, Z040, 0x0231, 0x00, 0x00, 0x00, 0x00)
+                }
+            }
+            Case (0x0F)
+            {
+                /* Buffer Field */
+
+                Local0 = Buffer (0x09)
+                    {
+                        /* 0000 */  0x21, 0x22, 0x23, 0x24, 0x25, 0x26, 0x27, 0x28,  // !"#$%&'(
+                        /* 0008 */  0x29                                             // )
+                    }
+                CreateField (Local0, 0x00, 0x40, F005)
+                Local7 = ObjectType (F005)
+                If ((Local7 != C016))
+                {
+                    ERR (Arg0, Z040, 0x023C, 0x00, 0x00, Local7, C016)
+                }
+
+                If ((Local0 != Buffer (0x09)
+                            {
+                                /* 0000 */  0x21, 0x22, 0x23, 0x24, 0x25, 0x26, 0x27, 0x28,  // !"#$%&'(
+                                /* 0008 */  0x29                                             // )
+                            }))
+                {
+                    ERR (Arg0, Z040, 0x0240, 0x00, 0x00, 0x00, 0x00)
+                }
+            }
+            Case (0x10)
+            {
+                /* Buffer Field */
+
+                Local0 = Buffer (0x09)
+                    {
+                        /* 0000 */  0x2A, 0x2B, 0x2C, 0x2D, 0x2E, 0x2F, 0x30, 0x31,  // *+,-./01
+                        /* 0008 */  0x32                                             // 2
+                    }
+                CreateField (Local0, 0x00, 0x41, F006)
+                Local7 = ObjectType (F006)
+                If ((Local7 != C016))
+                {
+                    ERR (Arg0, Z040, 0x024B, 0x00, 0x00, Local7, C016)
+                }
+
+                If ((Local0 != Buffer (0x09)
+                            {
+                                /* 0000 */  0x2A, 0x2B, 0x2C, 0x2D, 0x2E, 0x2F, 0x30, 0x31,  // *+,-./01
+                                /* 0008 */  0x32                                             // 2
+                            }))
+                {
+                    ERR (Arg0, Z040, 0x024E, 0x00, 0x00, 0x00, 0x00)
+                }
+
+                CreateField (Local0, 0x00, 0x11, F111)
+                Local7 = ObjectType (F111)
+                If ((Local7 != C016))
+                {
+                    ERR (Arg0, Z040, 0x0254, 0x00, 0x00, Local7, C016)
+                }
+
+                CreateField (Local0, 0x00, 0x39, F112)
+                Local7 = ObjectType (F112)
+                If ((Local7 != C016))
+                {
+                    ERR (Arg0, Z040, 0x0259, 0x00, 0x00, Local7, C016)
+                }
+            }
+            Case (0x11)
+            {
+                /* Buffer Field */
+
+                Local0 = Buffer (0x09)
+                    {
+                        /* 0000 */  0x2A, 0x2B, 0x2C, 0x2D, 0x2E, 0x2F, 0x30, 0x31,  // *+,-./01
+                        /* 0008 */  0x32                                             // 2
+                    }
+                CreateQWordField (Local0, 0x00, F007)
+                Local7 = ObjectType (F007)
+                If ((Local7 != C016))
+                {
+                    ERR (Arg0, Z040, 0x0264, 0x00, 0x00, Local7, C016)
+                }
+
+                If ((Local0 != Buffer (0x09)
+                            {
+                                /* 0000 */  0x2A, 0x2B, 0x2C, 0x2D, 0x2E, 0x2F, 0x30, 0x31,  // *+,-./01
+                                /* 0008 */  0x32                                             // 2
+                            }))
+                {
+                    ERR (Arg0, Z040, 0x0267, 0x00, 0x00, 0x00, 0x00)
+                }
+            }
+            Case (0x12)
+            {
+                /* Buffer Field */
+
+                Local0 = Buffer (0x04)
+                    {
+                         0x33, 0x34, 0x35, 0x36                           // 3456
+                    }
+                CreateWordField (Local0, 0x00, F008)
+                Local7 = ObjectType (F008)
+                If ((Local7 != C016))
+                {
+                    ERR (Arg0, Z040, 0x0272, 0x00, 0x00, Local7, C016)
+                }
+
+                If ((Local0 != Buffer (0x04)
+                            {
+                                 0x33, 0x34, 0x35, 0x36                           // 3456
+                            }))
+                {
+                    ERR (Arg0, Z040, 0x0275, 0x00, 0x00, 0x00, 0x00)
+                }
+            }
+            Case (0x13)
+            {
+                /* Buffer Field */
+
+                Local0 = "q"
+                Store (Local0 [0x00], Local1)
+                Local7 = ObjectType (Local1)
+                If ((Local7 != C016))
+                {
+                    ERR (Arg0, Z040, 0x0280, 0x00, 0x00, Local7, C016)
+                }
+
+                If ((Local0 != "q"))
+                {
+                    ERR (Arg0, Z040, 0x0283, 0x00, 0x00, 0x00, 0x00)
+                }
+
+                Local0 = "qw"
+                Store (Local0 [0x00], Local1)
+                Local7 = ObjectType (Local1)
+                If ((Local7 != C016))
+                {
+                    ERR (Arg0, Z040, 0x028A, 0x00, 0x00, Local7, C016)
+                }
+
+                If ((Local0 != "qw"))
+                {
+                    ERR (Arg0, Z040, 0x028D, 0x00, 0x00, 0x00, 0x00)
+                }
+
+                Local0 = "qwertyu"
+                Store (Local0 [0x00], Local1)
+                Local7 = ObjectType (Local1)
+                If ((Local7 != C016))
+                {
+                    ERR (Arg0, Z040, 0x0294, 0x00, 0x00, Local7, C016)
+                }
+
+                If ((Local0 != "qwertyu"))
+                {
+                    ERR (Arg0, Z040, 0x0297, 0x00, 0x00, 0x00, 0x00)
+                }
+
+                Local0 = "qwertyuiop"
+                Store (Local0 [0x00], Local1)
+                Local7 = ObjectType (Local1)
+                If ((Local7 != C016))
+                {
+                    ERR (Arg0, Z040, 0x029E, 0x00, 0x00, Local7, C016)
+                }
+
+                If ((Local0 != "qwertyuiop"))
+                {
+                    ERR (Arg0, Z040, 0x02A1, 0x00, 0x00, 0x00, 0x00)
+                }
+            }
+            Case (0x14)
+            {
+                /* Buffer Field */
+
+                Local0 = Buffer (0x04)
+                    {
+                         0x2A, 0x2B, 0x2C, 0x2D                           // *+,-
+                    }
+                Store (Local0 [0x00], Local1)
+                Local7 = ObjectType (Local1)
+                If ((Local7 != C016))
+                {
+                    ERR (Arg0, Z040, 0x02AC, 0x00, 0x00, Local7, C016)
+                }
+
+                If ((Local0 != Buffer (0x04)
+                            {
+                                 0x2A, 0x2B, 0x2C, 0x2D                           // *+,-
+                            }))
+                {
+                    ERR (Arg0, Z040, 0x02AF, 0x00, 0x00, 0x00, 0x00)
+                }
+
+                Local0 = Buffer (0x08)
+                    {
+                         0x2A, 0x2B, 0x2C, 0x2D, 0x2E, 0x2F, 0x30, 0x31   // *+,-./01
+                    }
+                Store (Local0 [0x00], Local1)
+                Local7 = ObjectType (Local1)
+                If ((Local7 != C016))
+                {
+                    ERR (Arg0, Z040, 0x02B6, 0x00, 0x00, Local7, C016)
+                }
+
+                If ((Local0 != Buffer (0x08)
+                            {
+                                 0x2A, 0x2B, 0x2C, 0x2D, 0x2E, 0x2F, 0x30, 0x31   // *+,-./01
+                            }))
+                {
+                    ERR (Arg0, Z040, 0x02B9, 0x00, 0x00, 0x00, 0x00)
+                }
+
+                Local0 = Buffer (0x09)
+                    {
+                        /* 0000 */  0x2A, 0x2B, 0x2C, 0x2D, 0x2E, 0x2F, 0x30, 0x31,  // *+,-./01
+                        /* 0008 */  0x32                                             // 2
+                    }
+                Store (Local0 [0x00], Local1)
+                Local7 = ObjectType (Local1)
+                If ((Local7 != C016))
+                {
+                    ERR (Arg0, Z040, 0x02C0, 0x00, 0x00, Local7, C016)
+                }
+
+                If ((Local0 != Buffer (0x09)
+                            {
+                                /* 0000 */  0x2A, 0x2B, 0x2C, 0x2D, 0x2E, 0x2F, 0x30, 0x31,  // *+,-./01
+                                /* 0008 */  0x32                                             // 2
+                            }))
+                {
+                    ERR (Arg0, Z040, 0x02C3, 0x00, 0x00, 0x00, 0x00)
+                }
+            }
+            Case (0x15)
+            {
+                /* Index with ... */
+
+                Local0 = Package (0x04)
+                    {
+                        Package (0x04)
+                        {
+                            0x98765432, 
+                            Buffer (0x01)
+                            {
+                                 0x12                                             // .
+                            }, 
+
+                            Package (0x01)
+                            {
+                                0x12345678
+                            }, 
+
+                            "qwertyui"
+                        }, 
+
+                        Buffer (0x01)
+                        {
+                             0x12                                             // .
+                        }, 
+
+                        "q", 
+                        0x98765432
+                    }
+                /* Package */
+
+                Store (Local0 [0x00], Local1)
+                Local7 = ObjectType (Local1)
+                If ((Local7 != C00C))
+                {
+                    ERR (Arg0, Z040, 0x02D9, 0x00, 0x00, Local7, C00C)
+                }
+
+                /* Buffer */
+
+                Store (Local0 [0x01], Local1)
+                Local7 = ObjectType (Local1)
+                If ((Local7 != C00B))
+                {
+                    ERR (Arg0, Z040, 0x02E1, 0x00, 0x00, Local7, C00B)
+                }
+
+                /* String */
+
+                Store (Local0 [0x02], Local1)
+                Local7 = ObjectType (Local1)
+                If ((Local7 != C00A))
+                {
+                    ERR (Arg0, Z040, 0x02E9, 0x00, 0x00, Local7, C00A)
+                }
+
+                /* Integer */
+
+                Store (Local0 [0x03], Local1)
+                Local7 = ObjectType (Local1)
+                If ((Local7 != C009))
+                {
+                    ERR (Arg0, Z040, 0x02F1, 0x00, 0x00, Local7, C009)
+                }
+            }
+            Case (0x16)
+            {
+                /* Operation Region */
+
+                DataTableRegion (HDR0, "DSDT", "", "")
+                Local7 = ObjectType (HDR0)
+                If ((Local7 != C012))
+                {
+                    ERR (Arg0, Z040, 0x02FB, 0x00, 0x00, Local7, C012)
+                }
+            }
+            Case (0x17)
+            {
+                /* Debug Object */
+
+                Local7 = ObjectType (Debug)
+                If ((Local7 != C018))
+                {
+                    ERR (Arg0, Z040, 0x0304, 0x00, 0x00, Local7, C018)
+                }
+            }
+            Case (0x18)
+            {
+                /* Device */
+
+                Device (DV00)
+                {
+                }
+
+                Local7 = ObjectType (DV00)
+                If ((Local7 != C00E))
+                {
+                    ERR (Arg0, Z040, 0x030E, 0x00, 0x00, Local7, C00E)
+                }
+            }
+            Case (0x19)
+            {
+                /* Event */
+
+                Event (EVT0)
+                Local7 = ObjectType (EVT0)
+                If ((Local7 != C00F))
+                {
+                    ERR (Arg0, Z040, 0x0318, 0x00, 0x00, Local7, C00F)
+                }
+            }
+            Case (0x1A)
+            {
+                /* Method */
+
+                Method (M0F2, 0, NotSerialized)
+                {
+                    Return (0x1234)
+                }
+
+                Local7 = ObjectType (M0F2)
+                If ((Local7 != C010))
+                {
+                    ERR (Arg0, Z040, 0x0322, 0x00, 0x00, Local7, C010)
+                }
+            }
+            Case (0x1B)
+            {
+                        /*
+             *			// Function
+             *
+             *			Function(mof3) { return (0) }
+             *			Store(ObjectType(m0f3), Local7)
+             *			if (LNotEqual(Local7, c010)) {
+             *				err(arg0, z040, __LINE__, 0, 0, Local7, c010)
+             *			}
+             */
+            }
+            Case (0x1C)
+            {
+                /* Mutex */
+
+                Mutex (MT00, 0x00)
+                Local7 = ObjectType (MT00)
+                If ((Local7 != C011))
+                {
+                    ERR (Arg0, Z040, 0x0337, 0x00, 0x00, Local7, C011)
+                }
+            }
+            Case (0x1D)
+            {
+                /* Operation Region */
+
+                Local7 = ObjectType (R000)
+                If ((Local7 != C012))
+                {
+                    ERR (Arg0, Z040, 0x0340, 0x00, 0x00, Local7, C012)
+                }
+
+                Local7 = ObjectType (R001)
+                If ((Local7 != C012))
+                {
+                    ERR (Arg0, Z040, 0x0344, 0x00, 0x00, Local7, C012)
+                }
+            }
+            Case (0x1E)
+            {
+                /* Package */
+
+                Name (P000, Package (0x01)
+                {
+                    0x12345678
+                })
+                Name (P001, Package (0x02)
+                {
+                    0x12345678, 
+                    0x9ABCDEF0
+                })
+                Name (P002, Package (0x03)
+                {
+                    0x12345678, 
+                    0x9ABCDEF0, 
+                    0x9ABCDEF0
+                })
+                Name (P003, Package (0x01)
+                {
+                    0x123456789ABCDEF0
+                })
+                Name (P004, Package (0x02)
+                {
+                    0x123456789ABCDEF0, 
+                    0x123456789ABCDEF0
+                })
+                Name (P005, Package (0x03)
+                {
+                    0x123456789ABCDEF0, 
+                    0x123456789ABCDEF0, 
+                    0x123456789ABCDEF0
+                })
+                Name (P006, Package (0x01)
+                {
+                    Buffer (0x01){}
+                })
+                Name (P007, Package (0x01)
+                {
+                    Buffer (0x20){}
+                })
+                Name (P008, Package (0x01)
+                {
+                    Buffer (0x40){}
+                })
+                Name (P009, Package (0x01)
+                {
+                    Buffer (0x7D){}
+                })
+                Name (P00A, Package (0x02)
+                {
+                    0x12, 
+                    Buffer (0x01)
+                    {
+                         0x12                                             // .
+                    }
+                })
+                Name (P00B, Package (0x02)
+                {
+                    0x12, 
+                    Package (0x01)
+                    {
+                        0x12
+                    }
+                })
+                Name (P00C, Package (0x01)
+                {
+                    Buffer (0x01)
+                    {
+                         0x12                                             // .
+                    }
+                })
+                Name (P00D, Package (0x02)
+                {
+                    Buffer (0x01)
+                    {
+                         0x12                                             // .
+                    }, 
+
+                    0x12345678
+                })
+                Name (P00E, Package (0x02)
+                {
+                    Buffer (0x01)
+                    {
+                         0x12                                             // .
+                    }, 
+
+                    Buffer (0x01)
+                    {
+                         0x12                                             // .
+                    }
+                })
+                Name (P00F, Package (0x02)
+                {
+                    Buffer (0x01)
+                    {
+                         0x12                                             // .
+                    }, 
+
+                    Package (0x01)
+                    {
+                        0x12
+                    }
+                })
+                Name (P010, Package (0x01)
+                {
+                    Package (0x01)
+                    {
+                        0x12345678
+                    }
+                })
+                Name (P011, Package (0x02)
+                {
+                    Package (0x01)
+                    {
+                        0x12345678
+                    }, 
+
+                    0x12345678
+                })
+                Name (P012, Package (0x02)
+                {
+                    Package (0x01)
+                    {
+                        0x12345678
+                    }, 
+
+                    Buffer (0x01)
+                    {
+                         0x12                                             // .
+                    }
+                })
+                Name (P013, Package (0x02)
+                {
+                    Package (0x01)
+                    {
+                        0x12345678
+                    }, 
+
+                    Package (0x01)
+                    {
+                        0x12
+                    }
+                })
+                Local7 = ObjectType (P000)
+                If ((Local7 != C00C))
+                {
+                    ERR (Arg0, Z040, 0x0364, 0x00, 0x00, Local7, C00C)
+                }
+
+                Local7 = ObjectType (P001)
+                If ((Local7 != C00C))
+                {
+                    ERR (Arg0, Z040, 0x0368, 0x00, 0x00, Local7, C00C)
+                }
+
+                Local7 = ObjectType (P002)
+                If ((Local7 != C00C))
+                {
+                    ERR (Arg0, Z040, 0x036C, 0x00, 0x00, Local7, C00C)
+                }
+
+                Local7 = ObjectType (P003)
+                If ((Local7 != C00C))
+                {
+                    ERR (Arg0, Z040, 0x0370, 0x00, 0x00, Local7, C00C)
+                }
+
+                Local7 = ObjectType (P004)
+                If ((Local7 != C00C))
+                {
+                    ERR (Arg0, Z040, 0x0374, 0x00, 0x00, Local7, C00C)
+                }
+
+                Local7 = ObjectType (P005)
+                If ((Local7 != C00C))
+                {
+                    ERR (Arg0, Z040, 0x0378, 0x00, 0x00, Local7, C00C)
+                }
+
+                Local7 = ObjectType (P006)
+                If ((Local7 != C00C))
+                {
+                    ERR (Arg0, Z040, 0x037C, 0x00, 0x00, Local7, C00C)
+                }
+
+                Local7 = ObjectType (P007)
+                If ((Local7 != C00C))
+                {
+                    ERR (Arg0, Z040, 0x0380, 0x00, 0x00, Local7, C00C)
+                }
+
+                Local7 = ObjectType (P008)
+                If ((Local7 != C00C))
+                {
+                    ERR (Arg0, Z040, 0x0384, 0x00, 0x00, Local7, C00C)
+                }
+
+                Local7 = ObjectType (P009)
+                If ((Local7 != C00C))
+                {
+                    ERR (Arg0, Z040, 0x0388, 0x00, 0x00, Local7, C00C)
+                }
+
+                Local7 = ObjectType (P00A)
+                If ((Local7 != C00C))
+                {
+                    ERR (Arg0, Z040, 0x038C, 0x00, 0x00, Local7, C00C)
+                }
+
+                Local7 = ObjectType (P00B)
+                If ((Local7 != C00C))
+                {
+                    ERR (Arg0, Z040, 0x0390, 0x00, 0x00, Local7, C00C)
+                }
+
+                Local7 = ObjectType (P00C)
+                If ((Local7 != C00C))
+                {
+                    ERR (Arg0, Z040, 0x0394, 0x00, 0x00, Local7, C00C)
+                }
+
+                Local7 = ObjectType (P00D)
+                If ((Local7 != C00C))
+                {
+                    ERR (Arg0, Z040, 0x0398, 0x00, 0x00, Local7, C00C)
+                }
+
+                Local7 = ObjectType (P00E)
+                If ((Local7 != C00C))
+                {
+                    ERR (Arg0, Z040, 0x039C, 0x00, 0x00, Local7, C00C)
+                }
+
+                Local7 = ObjectType (P00F)
+                If ((Local7 != C00C))
+                {
+                    ERR (Arg0, Z040, 0x03A0, 0x00, 0x00, Local7, C00C)
+                }
+
+                Local7 = ObjectType (P010)
+                If ((Local7 != C00C))
+                {
+                    ERR (Arg0, Z040, 0x03A4, 0x00, 0x00, Local7, C00C)
+                }
+
+                Local7 = ObjectType (P011)
+                If ((Local7 != C00C))
+                {
+                    ERR (Arg0, Z040, 0x03A8, 0x00, 0x00, Local7, C00C)
+                }
+
+                Local7 = ObjectType (P012)
+                If ((Local7 != C00C))
+                {
+                    ERR (Arg0, Z040, 0x03AC, 0x00, 0x00, Local7, C00C)
+                }
+
+                Local7 = ObjectType (P013)
+                If ((Local7 != C00C))
+                {
+                    ERR (Arg0, Z040, 0x03B0, 0x00, 0x00, Local7, C00C)
+                }
+            }
+            Case (0x1F)
+            {
+                /* Power Resource */
+
+                PowerResource (PWR0, 0x01, 0x0000)
+                {
+                    Method (M000, 0, NotSerialized)
+                    {
+                        Return (0x00)
+                    }
+                }
+
+                Local7 = ObjectType (PWR0)
+                If ((Local7 != C013))
+                {
+                    ERR (Arg0, Z040, 0x03BA, 0x00, 0x00, Local7, C013)
+                }
+            }
+            Case (0x20)
+            {
+                /* Processor */
+
+                Processor (PR00, 0x00, 0xFFFFFFFF, 0x00){}
+                Local7 = ObjectType (PR00)
+                If ((Local7 != C014))
+                {
+                    ERR (Arg0, Z040, 0x03C4, 0x00, 0x00, Local7, C014)
+                }
+            }
+            Case (0x21)
+            {
+                ThermalZone (TZ00)
+                {
+                }
+
+                Local7 = ObjectType (TZ00)
+                If ((Local7 != C015))
+                {
+                    ERR (Arg0, Z040, 0x03CB, 0x00, 0x00, Local7, C015)
+                }
+            }
+            Case (0x22)
+            {
+                        /*
+             // Reserved for DDB Handle
+             Store("==================================== zzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzz", Debug)
+             //			Store (LoadTable ("OEM1", "MYOEM", "TABLE1", "\\_SB.PCI0", "MYD",
+             //					 	Package () {0, "\\_SB.PCI0"}), Local0)
+             Store (LoadTable("OEM1", "MYOEM", "TABLE1"), Local0)
+             Store(ObjectType(Local0), Local7)
+             if (LNotEqual(Local7, c017)) {
+             err(arg0, z040, __LINE__, 0, 0, Local7, c017)
+             }
+             Store("==================================== uuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuu", Debug)
+             */
+            }
+            Default
+            {
+                ERR (Arg0, Z040, 0x03E1, 0x00, 0x00, 0x00, 0x00)
+            }
+
+        }
+
+        Return (Local7)
+    }
+
+    Method (M0F0, 0, Serialized)
+    {
+        Name (TS, "m0f0")
+        Debug = "TEST: m0f0, ObjectType"
+        Local5 = 0x00
+        Local4 = 0x23
+        While (Local4)
+        {
+            Local2 = 0x00
+            Switch (ToInteger (Local5))
+            {
+                Case (0x01)
+                {
+                    Local2 = 0x81223344
+                }
+                Case (0x02)
+                {
+                    Local2 = 0xFABEFAC489501248
+                }
+                Case (0x03)
+                {
+                    Local2 = "zxcvbnm0912345678ok"
+                }
+                Case (0x08)
+                {
+                    Local2 = Buffer (0x04)
+                        {
+                             0x04, 0x05, 0x06, 0x07                           // ....
+                        }
+                }
+
+            }
+
+            M0F1 (TS, Local5, Local2, 0x00, 0x00, 0x00, 0x00)
+            Local5++
+            Local4--
+        }
+    }
+
+    /* Run-method */
+
+    Method (OBT0, 0, NotSerialized)
+    {
+        Debug = "TEST: OBT0, Type of object"
+        M0F0 ()
+    }
+

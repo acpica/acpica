@@ -1,1457 +1,1336 @@
-/*
- * Some or all of this work - Copyright (c) 2006 - 2017, Intel Corp.
- * All rights reserved.
- *
- * Redistribution and use in source and binary forms, with or without modification,
- * are permitted provided that the following conditions are met:
- *
- * Redistributions of source code must retain the above copyright notice,
- * this list of conditions and the following disclaimer.
- * Redistributions in binary form must reproduce the above copyright notice,
- * this list of conditions and the following disclaimer in the documentation
- * and/or other materials provided with the distribution.
- * Neither the name of Intel Corporation nor the names of its contributors
- * may be used to endorse or promote products derived from this software
- * without specific prior written permission.
- *
- * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS"
- * AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE
- * IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE
- * ARE DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT OWNER OR CONTRIBUTORS BE
- * LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL
- * DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES;
- * LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY
- * THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING
- * NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE,
- * EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
- */
-
-/*
- * References
- *
- * TEST, Package total
- */
-
-Name(z116, 116)
-
-/*
- * Flags and values used by m1c3
- */
-Name(FL00, 0) // flag of testing of exceptions
-Name(V000, 0) // type of the Standard Data object
-Name(V001, 0) // index of element of Package
-
-/*
- * Read immediate image element of Package
- *
- * Package specified by the immediate
- * images {Integer, String, Buffer, Package}.
- * Perform all the ways reading element of
- * Package passed by ArgX.
- */
-Method(m1c1,, Serialized)
-{
-	Name(ppp0, Package(4) {
-			0x77,
-			"qwer0000",
-			Buffer(4) {1,0x77,3,4},
-			Package(3) {5,0x77,7}})
-
-	Store(0, FL00)    // flag of testing of exceptions
-
-	Store(c009, V000) // type of the Standard Data object
-	Store(0, V001)    // index of element of Package
-	m1c3(ppp0, 0, 0, 0, 0, 0, 0)
-
-	Store(c00a, V000) // type of the Standard Data object
-	Store(1, V001)    // index of element of Package
-	m1c3(ppp0, 0, 0, 0, 0, 0, 0)
-
-	Store(c00b, V000) // type of the Standard Data object
-	Store(2, V001)    // index of element of Package
-	m1c3(ppp0, 0, 0, 0, 0, 0, 0)
-
-	Store(c00c, V000) // type of the Standard Data object
-	Store(3, V001)    // index of element of Package
-	m1c3(ppp0, 0, 0, 0, 0, 0, 0)
-}
-
-/*
- * Read NamedX element of Package
- * {Integer, String, Buffer, Package}.
- */
-Method(m1c2,, Serialized)
-{
-	Name(ts, "m1c2")
-
-	Name(i000, 0x77)
-	Name(s000, "qwer0000")
-	Name(b000, Buffer(4) {1,0x77,3,4})
-	Name(p000, Package(3) {5,0x77,7})
-
-	Name(ppp0, Package(4) {i000, s000, b000, p000})
-
-	Store(0, FL00)    // flag of testing of exceptions
-
-	Store(c009, V000) // type of the Standard Data object
-	Store(0, V001)    // index of element of Package
-	m1c3(ppp0, 0, 0, 0, 0, 0, 0)
-
-	Store(c00a, V000) // type of the Standard Data object
-	Store(1, V001)    // index of element of Package
-	m1c3(ppp0, 0, 0, 0, 0, 0, 0)
-
-	Store(c00b, V000) // type of the Standard Data object
-	Store(2, V001)    // index of element of Package
-	m1c3(ppp0, 0, 0, 0, 0, 0, 0)
-
-	Store(c00c, V000) // type of the Standard Data object
-	Store(3, V001)    // index of element of Package
-	m1c3(ppp0, 0, 0, 0, 0, 0, 0)
-
-	m380(ts, i000, 0, 0)
-	m381(ts, s000, 0, 1)
-	m382(ts, b000, 0, 2)
-	m383(ts, p000, 0, 3)
-}
-
-// All the ways reading element of Package given by ArgX
-// arg0 - Package
-// arg1,
-// arg2,
-// arg3,
-// arg4,
-// arg5,
-// arg6 - auxiliary, for arbitrary use
-Method(m1c3, 7, Serialized)
-{
-	Name(ts, "m1c3")
-
-	Name(i000, 0)
-	Name(i001, 0)
-	Name(i002, 0)
-	Name(i003, 0)
-	Name(i004, 0)
-	Name(i005, 0)
-	Name(i006, 0)
-
-	Name(p000, Package(2) {})
-	Name(ppp0, Package(2) {})
-
-
-	// LocalX
-
-	Store(Index(arg0, V001), Local3)
-	m390(DerefOf(Local3), V000, 0, 4)
-	Store(DerefOf(Local3), Local4)
-	m390(Local4, V000, 0, 5)
-	m390(DerefOf(Index(arg0, V001)), V000, 0, 6)
-	Store(Index(arg0, V001, Local2), Local3)
-	m390(DerefOf(Local3), V000, 0, 7)
-	Store(DerefOf(Local3), Local4)
-	m390(Local4, V000, 0, 8)
-	m390(DerefOf(Local2), V000, 0, 9)
-	Store(DerefOf(Local2), Local4)
-	m390(Local4, V000, 0, 10)
-
-	// ArgX
-
-	Store(Index(arg0, V001), arg3)
-	m390(DerefOf(arg3), V000, 0, 11)
-	Store(DerefOf(arg3), arg4)
-	m390(arg4, V000, 0, 12)
-	m390(DerefOf(Index(arg0, V001)), V000, 0, 13)
-	Store(Index(arg0, V001, arg2), arg3)
-	m390(DerefOf(arg3), V000, 0, 14)
-	Store(DerefOf(arg3), arg4)
-	m390(arg4, V000, 0, 15)
-	m390(DerefOf(arg2), V000, 0, 16)
-	Store(DerefOf(arg2), arg4)
-	m390(arg4, V000, 0, 17)
-
-	// NamedX
-
-	if (y127) {
-		CopyObject(Index(ppp0, 0), i003)
-		Store(Index(arg0, V001), i003)
-		m390(DerefOf(i003), V000, 0, 18)
-		Store(DerefOf(i003), i004)
-		m390(i004, V000, 0, 19)
-		m390(DerefOf(Index(arg0, V001)), V000, 0, 20)
-		Store(Index(arg0, V001, i002), i003)
-		m390(DerefOf(i003), V000, 0, 21)
-		Store(DerefOf(i003), i004)
-		m390(i004, V000, 0, 22)
-		m390(DerefOf(i002), V000, 0, 23)
-		Store(DerefOf(i002), i004)
-		m390(i004, V000, 0, 24)
-	}
-
-	/*
-	 * El_of_Package
-	 *
-	 * Identical to the first checking, but only
-	 * store intermediately the references to element
-	 * of Package arg0 Index(arg0, x) into Index(p000, y)
-	 * but not into LocalX.
-	 */
-
-	Store(Index(arg0, V001, Index(p000, 0)), Index(p000, 1))
-
-	// DerefOf(DerefOf(Index(x,Destination)))
-
-	m390(DerefOf(DerefOf(Index(p000, 0))), V000, 0, 25)
-
-	// DerefOf(DerefOf(Index(x,Result)))
-
-	m390(DerefOf(DerefOf(Index(p000, 1))), V000, 0, 26)
-
-	// El_of_Package, Destination, LocalX
-
-	/*
-	 * After Store(Index(p000, 0), Local5)
-	 * Local5 below - reference to element of
-	 * Package p000 containing reference to the
-	 * 0-th element of Arg0-Package.
-	 *
-	 * Correspondingly, after Store(DerefOf(Local5), Local3)
-	 * Local3 - reference to the 0-th element of Arg0-Package.
-	 *
-	 * Further, DerefOf(Local3) - 0-th element of Arg0-Package.
-	 */
-
-	if (FL00) {
-		Store(Index(p000, 0), Local5)
-
-		CH03(ts, z116, 0, __LINE__, 0)
-		Add(Local5, 1, Local6)
-		CH04(ts, 0, 0xff, z116, __LINE__, 0, 0)
-
-		CH03(ts, z116, 2, __LINE__, 0)
-		Add(DerefOf(Local5), 1, Local6)
-		CH04(ts, 0, 0xff, z116, __LINE__, 0, 0)
-
-		CH03(ts, z116, 4, __LINE__, 0)
-		m390(Local5, V000, 0, 0)
-		CH04(ts, 0, 0xff, z116, __LINE__, 0, 0)
-
-		CH03(ts, z116, 6, __LINE__, 0)
-		m390(DerefOf(Local5), V000, 0, 0)
-		CH04(ts, 0, 0xff, z116, __LINE__, 0, 0)
-
-		Store(Index(p000, 0, Local2), Local5)
-
-		CH03(ts, z116, 8, __LINE__, 0)
-		Add(Local5, 1, Local6)
-		CH04(ts, 0, 0xff, z116, __LINE__, 0, 0)
-
-		CH03(ts, z116, 10, __LINE__, 0)
-		Add(DerefOf(Local5), 1, Local6)
-		CH04(ts, 0, 0xff, z116, __LINE__, 0, 0)
-
-		CH03(ts, z116, 12, __LINE__, 0)
-		m390(Local5, V000, 0, 0)
-		CH04(ts, 0, 0xff, z116, __LINE__, 0, 0)
-
-		CH03(ts, z116, 14, __LINE__, 0)
-		m390(DerefOf(Local5), V000, 0, 0)
-		CH04(ts, 0, 0xff, z116, __LINE__, 0, 0)
-
-		CH03(ts, z116, 16, __LINE__, 0)
-		Add(Local2, 1, Local6)
-		CH04(ts, 0, 0xff, z116, __LINE__, 0, 0)
-
-		CH03(ts, z116, 18, __LINE__, 0)
-		Add(DerefOf(Local2), 1, Local6)
-		CH04(ts, 0, 0xff, z116, __LINE__, 0, 0)
-
-		CH03(ts, z116, 20, __LINE__, 0)
-		m390(Local2, V000, 0, 0)
-		CH04(ts, 0, 0xff, z116, __LINE__, 0, 0)
-
-		CH03(ts, z116, 22, __LINE__, 0)
-		m390(DerefOf(Local2), V000, 0, 0)
-		CH04(ts, 0, 0xff, z116, __LINE__, 0, 0)
-	}
-
-	if (q001) {
-
-		Store(Index(p000, 0), Local5)
-
-		Store(DerefOf(Local5), Local3)
-		m390(DerefOf(Local3), V000, 0, 27)
-		Store(DerefOf(Local3), Local4)
-		m390(Local4, V000, 0, 28)
-
-		Store(Index(p000, 0, Local2), Local5)
-
-		Store(DerefOf(Local5), Local3)
-		m390(DerefOf(Local3), V000, 0, 29)
-		Store(DerefOf(Local3), Local4)
-		m390(Local4, V000, 0, 30)
-
-		Store(DerefOf(Local2), Local3)
-		m390(DerefOf(Local3), V000, 0, 31)
-		Store(DerefOf(Local3), Local4)
-		m390(Local4, V000, 0, 32)
-
-	} /* if(q001) */
-
-	// El_of_Package, Result, LocalX
-
-	if (FL00) {
-		Store(Index(p000, 1), Local5)
-
-		CH03(ts, z116, 24, __LINE__, 0)
-		Add(Local5, 1, Local6)
-		CH04(ts, 0, 0xff, z116, __LINE__, 0, 0)
-
-		CH03(ts, z116, 26, __LINE__, 0)
-		Add(DerefOf(Local5), 1, Local6)
-		CH04(ts, 0, 0xff, z116, __LINE__, 0, 0)
-
-		CH03(ts, z116, 28, __LINE__, 0)
-		m390(Local5, V000, 0, 33)
-		CH04(ts, 0, 0xff, z116, __LINE__, 0, 0)
-
-		CH03(ts, z116, 30, __LINE__, 0)
-		m390(DerefOf(Local5), V000, 0, 34)
-		CH04(ts, 0, 0xff, z116, __LINE__, 0, 0)
-
-		Store(Index(p000, 1, Local2), Local5)
-
-		CH03(ts, z116, 32, __LINE__, 0)
-		Add(Local5, 1, Local6)
-		CH04(ts, 0, 0xff, z116, __LINE__, 0, 0)
-
-		CH03(ts, z116, 34, __LINE__, 0)
-		Add(DerefOf(Local5), 1, Local6)
-		CH04(ts, 0, 0xff, z116, __LINE__, 0, 0)
-
-		CH03(ts, z116, 36, __LINE__, 0)
-		m390(Local5, V000, 0, 35)
-		CH04(ts, 0, 0xff, z116, __LINE__, 0, 0)
-
-		CH03(ts, z116, 38, __LINE__, 0)
-		m390(DerefOf(Local5), V000, 0, 36)
-		CH04(ts, 0, 0xff, z116, __LINE__, 0, 0)
-
-		CH03(ts, z116, 40, __LINE__, 0)
-		Add(Local2, 1, Local6)
-		CH04(ts, 0, 0xff, z116, __LINE__, 0, 0)
-
-		CH03(ts, z116, 42, __LINE__, 0)
-		Add(DerefOf(Local2), 1, Local6)
-		CH04(ts, 0, 0xff, z116, __LINE__, 0, 0)
-
-		CH03(ts, z116, 44, __LINE__, 0)
-		m390(Local2, V000, 0, 37)
-		CH04(ts, 0, 0xff, z116, __LINE__, 0, 0)
-
-		CH03(ts, z116, 46, __LINE__, 0)
-		m390(DerefOf(Local2), V000, 0, 38)
-		CH04(ts, 0, 0xff, z116, __LINE__, 0, 0)
-	}
-
-	if (q001) {
-
-		Store(Index(p000, 1), Local5)
-
-		Store(DerefOf(Local5), Local3)
-		m390(DerefOf(Local3), V000, 0, 39)
-		Store(DerefOf(Local3), Local4)
-		m390(Local4, V000, 0, 40)
-
-		Store(Index(p000, 1, Local2), Local5)
-
-		Store(DerefOf(Local5), Local3)
-		m390(DerefOf(Local3), V000, 0, 41)
-		Store(DerefOf(Local3), Local4)
-		m390(Local4, V000, 0, 42)
-
-		Store(DerefOf(Local2), Local3)
-		m390(DerefOf(Local3), V000, 0, 43)
-		Store(DerefOf(Local3), Local4)
-		m390(Local4, V000, 0, 44)
-
-	} /* if(q001) */
-
-	// El_of_Package, Destination, argX
-
-	if (FL00) {
-		Store(Index(p000, 0), arg5)
-
-		CH03(ts, z116, 48, __LINE__, 0)
-		Add(arg5, 1, arg6)
-		CH04(ts, 0, 0xff, z116, __LINE__, 0, 0)
-
-		CH03(ts, z116, 50, __LINE__, 0)
-		Add(DerefOf(arg5), 1, arg6)
-		CH04(ts, 0, 0xff, z116, __LINE__, 0, 0)
-
-		CH03(ts, z116, 52, __LINE__, 0)
-		m390(arg5, V000, 0, 45)
-		CH04(ts, 0, 0xff, z116, __LINE__, 0, 0)
-
-		CH03(ts, z116, 54, __LINE__, 0)
-		m390(DerefOf(arg5), V000, 0, 46)
-		CH04(ts, 0, 0xff, z116, __LINE__, 0, 0)
-
-		Store(Index(p000, 0, arg2), arg5)
-
-		CH03(ts, z116, 56, __LINE__, 0)
-		Add(arg5, 1, arg6)
-		CH04(ts, 0, 0xff, z116, __LINE__, 0, 0)
-
-		CH03(ts, z116, 58, __LINE__, 0)
-		Add(DerefOf(arg5), 1, arg6)
-		CH04(ts, 0, 0xff, z116, __LINE__, 0, 0)
-
-		CH03(ts, z116, 60, __LINE__, 0)
-		m390(arg5, V000, 0, 47)
-		CH04(ts, 0, 0xff, z116, __LINE__, 0, 0)
-
-		CH03(ts, z116, 62, __LINE__, 0)
-		m390(DerefOf(arg5), V000, 0, 48)
-		CH04(ts, 0, 0xff, z116, __LINE__, 0, 0)
-
-		CH03(ts, z116, 64, __LINE__, 0)
-		Add(arg2, 1, arg6)
-		CH04(ts, 0, 0xff, z116, __LINE__, 0, 0)
-
-		CH03(ts, z116, 66, __LINE__, 0)
-		Add(DerefOf(arg2), 1, arg6)
-		CH04(ts, 0, 0xff, z116, __LINE__, 0, 0)
-
-		CH03(ts, z116, 68, __LINE__, 0)
-		m390(arg2, V000, 0, 49)
-		CH04(ts, 0, 0xff, z116, __LINE__, 0, 0)
-
-		CH03(ts, z116, 70, __LINE__, 0)
-		m390(DerefOf(arg2), V000, 0, 50)
-		CH04(ts, 0, 0xff, z116, __LINE__, 0, 0)
-	}
-
-	if (q001) {
-
-		Store(Index(p000, 0), arg5)
-
-		Store(DerefOf(arg5), arg3)
-		m390(DerefOf(arg3), V000, 0, 51)
-		Store(DerefOf(arg3), arg4)
-		m390(arg4, V000, 0, 52)
-
-		Store(Index(p000, 0, arg2), arg5)
-
-		Store(DerefOf(arg5), arg3)
-		m390(DerefOf(arg3), V000, 0, 53)
-		Store(DerefOf(arg3), arg4)
-		m390(arg4, V000, 0, 54)
-
-		Store(DerefOf(arg2), arg3)
-		m390(DerefOf(arg3), V000, 0, 55)
-		Store(DerefOf(arg3), arg4)
-		m390(arg4, V000, 0, 56)
-
-	} /* if(q001) */
-
-	// El_of_Package, Result, argX
-
-	if (FL00) {
-		Store(Index(p000, 1), arg5)
-
-		CH03(ts, z116, 72, __LINE__, 0)
-		Add(arg5, 1, arg6)
-		CH04(ts, 0, 0xff, z116, __LINE__, 0, 0)
-
-		CH03(ts, z116, 74, __LINE__, 0)
-		Add(DerefOf(arg5), 1, arg6)
-		CH04(ts, 0, 0xff, z116, __LINE__, 0, 0)
-
-		CH03(ts, z116, 76, __LINE__, 0)
-		m390(arg5, V000, 0, 57)
-		CH04(ts, 0, 0xff, z116, __LINE__, 0, 0)
-
-		CH03(ts, z116, 78, __LINE__, 0)
-		m390(DerefOf(arg5), V000, 0, 58)
-		CH04(ts, 0, 0xff, z116, __LINE__, 0, 0)
-
-		Store(Index(p000, 1, arg2), arg5)
-
-		CH03(ts, z116, 80, __LINE__, 0)
-		Add(arg5, 1, arg6)
-		CH04(ts, 0, 0xff, z116, __LINE__, 0, 0)
-
-		CH03(ts, z116, 82, __LINE__, 0)
-		Add(DerefOf(arg5), 1, arg6)
-		CH04(ts, 0, 0xff, z116, __LINE__, 0, 0)
-
-		CH03(ts, z116, 84, __LINE__, 0)
-		m390(arg5, V000, 0, 59)
-		CH04(ts, 0, 0xff, z116, __LINE__, 0, 0)
-
-		CH03(ts, z116, 86, __LINE__, 0)
-		m390(DerefOf(arg5), V000, 0, 60)
-		CH04(ts, 0, 0xff, z116, __LINE__, 0, 0)
-
-		CH03(ts, z116, 88, __LINE__, 0)
-		Add(arg2, 1, arg6)
-		CH04(ts, 0, 0xff, z116, __LINE__, 0, 0)
-
-		CH03(ts, z116, 90, __LINE__, 0)
-		Add(DerefOf(arg2), 1, arg6)
-		CH04(ts, 0, 0xff, z116, __LINE__, 0, 0)
-
-		CH03(ts, z116, 92, __LINE__, 0)
-		m390(arg2, V000, 0, 61)
-		CH04(ts, 0, 0xff, z116, __LINE__, 0, 0)
-
-		CH03(ts, z116, 94, __LINE__, 0)
-		m390(DerefOf(arg2), V000, 0, 62)
-		CH04(ts, 0, 0xff, z116, __LINE__, 0, 0)
-	}
-
-	if (q001) {
-
-		Store(Index(p000, 1), arg5)
-
-		Store(DerefOf(arg5), arg3)
-		m390(DerefOf(arg3), V000, 0, 63)
-		Store(DerefOf(arg3), arg4)
-		m390(arg4, V000, 0, 64)
-
-		Store(Index(p000, 1, arg2), arg5)
-
-		Store(DerefOf(arg5), arg3)
-		m390(DerefOf(arg3), V000, 0, 65)
-		Store(DerefOf(arg3), arg4)
-		m390(arg4, V000, 0, 66)
-
-		Store(DerefOf(arg2), arg3)
-		m390(DerefOf(arg3), V000, 0, 67)
-		Store(DerefOf(arg3), arg4)
-		m390(arg4, V000, 0, 68)
-
-	} /* if(q001) */
-
-	if (y127) {
-
-	// El_of_Package, Destination, NamedX
-
-	if (FL00) {
-		CopyObject(Index(ppp0, 0), i005)
-		Store(Index(p000, 0), i005)
-
-		CH03(ts, z116, 96, __LINE__, 0)
-		Add(i005, 1, i006)
-		CH04(ts, 0, 0xff, z116, __LINE__, 0, 0)
-
-		CH03(ts, z116, 98, __LINE__, 0)
-		Add(DerefOf(i005), 1, i006)
-		CH04(ts, 0, 0xff, z116, __LINE__, 0, 0)
-
-		CH03(ts, z116, 100, __LINE__, 0)
-		m390(i005, V000, 0, 69)
-		CH04(ts, 0, 0xff, z116, __LINE__, 0, 0)
-
-		CH03(ts, z116, 102, __LINE__, 0)
-		m390(DerefOf(i005), V000, 0, 70)
-		CH04(ts, 0, 0xff, z116, __LINE__, 0, 0)
-
-		Store(Index(p000, 0, i002), i005)
-
-		CH03(ts, z116, 104, __LINE__, 0)
-		Add(i005, 1, i006)
-		CH04(ts, 0, 0xff, z116, __LINE__, 0, 0)
-
-		CH03(ts, z116, 106, __LINE__, 0)
-		Add(DerefOf(i005), 1, i006)
-		CH04(ts, 0, 0xff, z116, __LINE__, 0, 0)
-
-		CH03(ts, z116, 108, __LINE__, 0)
-		m390(i005, V000, 0, 71)
-		CH04(ts, 0, 0xff, z116, __LINE__, 0, 0)
-
-		CH03(ts, z116, 110, __LINE__, 0)
-		m390(DerefOf(i005), V000, 0, 72)
-		CH04(ts, 0, 0xff, z116, __LINE__, 0, 0)
-
-		CH03(ts, z116, 112, __LINE__, 0)
-		Add(i002, 1, i006)
-		CH04(ts, 0, 0xff, z116, __LINE__, 0, 0)
-
-		CH03(ts, z116, 114, __LINE__, 0)
-		Add(DerefOf(i002), 1, i006)
-		CH04(ts, 0, 0xff, z116, __LINE__, 0, 0)
-
-		CH03(ts, z116, 116, __LINE__, 0)
-		m390(i002, V000, 0, 73)
-		CH04(ts, 0, 0xff, z116, __LINE__, 0, 0)
-
-		CH03(ts, z116, 118, __LINE__, 0)
-		m390(DerefOf(i002), V000, 0, 74)
-		CH04(ts, 0, 0xff, z116, __LINE__, 0, 0)
-	}
-
-	if (q001) {
-
-		Store(Index(p000, 0), i005)
-
-		Store(DerefOf(i005), i003)
-		m390(DerefOf(i003), V000, 0, 75)
-		Store(DerefOf(i003), i004)
-		m390(i004, V000, 0, 76)
-
-		Store(Index(p000, 0, i002), i005)
-
-		Store(DerefOf(i005), i003)
-		m390(DerefOf(i003), V000, 0, 77)
-		Store(DerefOf(i003), i004)
-		m390(i004, V000, 0, 78)
-
-		Store(DerefOf(i002), i003)
-		m390(DerefOf(i003), V000, 0, 79)
-		Store(DerefOf(i003), i004)
-		m390(i004, V000, 0, 80)
-
-	} /* if(q001) */
-
-	// El_of_Package, Result, NamedX
-
-	if (FL00) {
-		Store(Index(p000, 1), i005)
-
-		CH03(ts, z116, 120, __LINE__, 0)
-		Add(i005, 1, i006)
-		CH04(ts, 0, 0xff, z116, __LINE__, 0, 0)
-
-		CH03(ts, z116, 122, __LINE__, 0)
-		Add(DerefOf(i005), 1, i006)
-		CH04(ts, 0, 0xff, z116, __LINE__, 0, 0)
-
-		CH03(ts, z116, 124, __LINE__, 0)
-		m390(i005, V000, 0, 81)
-		CH04(ts, 0, 0xff, z116, __LINE__, 0, 0)
-
-		CH03(ts, z116, 126, __LINE__, 0)
-		m390(DerefOf(i005), V000, 0, 82)
-		CH04(ts, 0, 0xff, z116, __LINE__, 0, 0)
-
-		Store(Index(p000, 1, i002), i005)
-
-		CH03(ts, z116, 128, __LINE__, 0)
-		Add(i005, 1, i006)
-		CH04(ts, 0, 0xff, z116, __LINE__, 0, 0)
-
-		CH03(ts, z116, 130, __LINE__, 0)
-		Add(DerefOf(i005), 1, i006)
-		CH04(ts, 0, 0xff, z116, __LINE__, 0, 0)
-
-		CH03(ts, z116, 132, __LINE__, 0)
-		m390(i005, V000, 0, 83)
-		CH04(ts, 0, 0xff, z116, __LINE__, 0, 0)
-
-		CH03(ts, z116, 134, __LINE__, 0)
-		m390(DerefOf(i005), V000, 0, 84)
-		CH04(ts, 0, 0xff, z116, __LINE__, 0, 0)
-
-		CH03(ts, z116, 136, __LINE__, 0)
-		Add(i002, 1, i006)
-		CH04(ts, 0, 0xff, z116, __LINE__, 0, 0)
-
-		CH03(ts, z116, 138, __LINE__, 0)
-		Add(DerefOf(i002), 1, i006)
-		CH04(ts, 0, 0xff, z116, __LINE__, 0, 0)
-
-		CH03(ts, z116, 140, __LINE__, 0)
-		m390(i002, V000, 0, 85)
-		CH04(ts, 0, 0xff, z116, __LINE__, 0, 0)
-
-		CH03(ts, z116, 142, __LINE__, 0)
-		m390(DerefOf(i002), V000, 0, 86)
-		CH04(ts, 0, 0xff, z116, __LINE__, 0, 0)
-	}
-
-	if (q001) {
-
-		Store(Index(p000, 1), i005)
-
-		Store(DerefOf(i005), i003)
-		m390(DerefOf(i003), V000, 0, 87)
-		Store(DerefOf(i003), i004)
-		m390(i004, V000, 0, 88)
-
-		Store(Index(p000, 1, i002), i005)
-
-		Store(DerefOf(i005), i003)
-		m390(DerefOf(i003), V000, 0, 89)
-		Store(DerefOf(i003), i004)
-		m390(i004, V000, 0, 90)
-
-		Store(DerefOf(i002), i003)
-		m390(DerefOf(i003), V000, 0, 91)
-		Store(DerefOf(i003), i004)
-		m390(i004, V000, 0, 92)
-
-	} /* if(q001) */
-	} /* if(y127) */
-}
-
-// Check Uninitialized element of Package
-Method(m1c4,, Serialized)
-{
-	Name(ppp0, Package(10) {
-			0x77,
-			"qwer0000",
-			Buffer(4) {1,0x77,3,4},
-			Package(3) {5,0x77,7}})
-
-	Method(m000, 2)
-	{
-		Store(Index(arg0, arg1), Local0)
-		m1a3(Local0, c008, z116, "m1c4", 93)
-	}
-
-	m000(ppp0, 4)
-	m000(ppp0, 5)
-	m000(ppp0, 6)
-	m000(ppp0, 7)
-	m000(ppp0, 8)
-	m000(ppp0, 9)
-}
-
-// The chain of Index_References
-Method(m1c5,, Serialized)
-{
-	Name(ppp0, Package(4) {
-			0x77,
-			"qwer0000",
-			Buffer(4) {1,0x77,3,4},
-			Package(3) {5,0x77,7}})
-
-	Name(p000, Package(20) {})
-
-	Store(Index(ppp0, 0), Index(p000, 0))
-	m390(DerefOf(DerefOf(Index(p000, 0))), c009, z116, 94)
-
-	if (q002) {
-		Store(Index(p000, 0), Index(p000, 1))
-		m390(DerefOf(DerefOf(DerefOf(Index(p000, 1)))), c009, z116, 95)
-
-		Store(Index(p000, 1), Index(p000, 2))
-		m390(DerefOf(DerefOf(DerefOf(DerefOf(Index(p000, 2))))), c009, z116, 96)
-
-		Store(Index(p000, 2), Index(p000, 3))
-		m390(DerefOf(DerefOf(DerefOf(DerefOf(DerefOf(Index(p000, 3)))))), c009, z116, 97)
-
-		Store(Index(p000, 3), Index(p000, 4))
-		m390(DerefOf(DerefOf(DerefOf(DerefOf(DerefOf(DerefOf(Index(p000, 4))))))), c009, z116, 98)
-
-		Store(Index(p000, 4), Index(p000, 5))
-		m390(DerefOf(DerefOf(DerefOf(DerefOf(DerefOf(DerefOf(DerefOf(Index(p000, 5)))))))), c009, z116, 99)
-
-		Store(Index(p000, 5), Index(p000, 6))
-		m390(DerefOf(DerefOf(DerefOf(DerefOf(DerefOf(DerefOf(DerefOf(DerefOf(Index(p000, 6))))))))), c009, z116, 100)
-
-		Store(Index(p000, 6), Index(p000, 7))
-		m390(DerefOf(DerefOf(DerefOf(DerefOf(DerefOf(DerefOf(DerefOf(DerefOf(DerefOf(Index(p000, 7)))))))))), c009, z116, 101)
-	}
-
-	m390(DerefOf(DerefOf(Index(p000, 0))), c009, z116, 102)
-
-	if (q002) {
-		m390(DerefOf(DerefOf(DerefOf(Index(p000, 1)))), c009, z116, 103)
-		m390(DerefOf(DerefOf(DerefOf(DerefOf(Index(p000, 2))))), c009, z116, 104)
-		m390(DerefOf(DerefOf(DerefOf(DerefOf(DerefOf(Index(p000, 3)))))), c009, z116, 105)
-		m390(DerefOf(DerefOf(DerefOf(DerefOf(DerefOf(DerefOf(Index(p000, 4))))))), c009, z116, 106)
-		m390(DerefOf(DerefOf(DerefOf(DerefOf(DerefOf(DerefOf(DerefOf(Index(p000, 5)))))))), c009, z116, 107)
-		m390(DerefOf(DerefOf(DerefOf(DerefOf(DerefOf(DerefOf(DerefOf(DerefOf(Index(p000, 6))))))))), c009, z116, 108)
-		m390(DerefOf(DerefOf(DerefOf(DerefOf(DerefOf(DerefOf(DerefOf(DerefOf(DerefOf(Index(p000, 7)))))))))), c009, z116, 109)
-	}
-}
-
-// Access to the Method named object element of Package
-
-// Methods without parameters
-Method(m1c7,, Serialized)
-{
-	Name(ts, "m1c7")
-
-	Name(i000, 0x77)
-	Method(m000) {
-		Store(0, i000)
-	}
-	Method(m001) {
-		Store(1, i000)
-		return (0x12345678)
-	}
-
-	Method(m002) {
-		Store(0, i000)
-	}
-	Method(m003) {
-		Store(1, i000)
-		return (0x12345678)
-	}
-
-	Name(p000, Package() {m000, m001, m002, m003,
-					m000, m001, m002, m003,
-					i000, i000})
-
-
-	Store(Index(p000, 0), Local0)
-	m1a3(Local0, c010, z116, ts, 110)
-
-	Store(Index(p000, 1), Local0)
-	m1a3(Local0, c010, z116, ts, 111)
-
-	Store(Index(p000, 2), Local0)
-	m1a3(Local0, c010, z116, ts, 112)
-
-	Store(Index(p000, 3), Local0)
-	m1a3(Local0, c010, z116, ts, 113)
-
-	Store(Index(p000, 4), Local0)
-	m1a3(Local0, c010, z116, ts, 114)
-
-	Store(Index(p000, 5), Local0)
-	m1a3(Local0, c010, z116, ts, 115)
-
-	Store(Index(p000, 6), Local0)
-	m1a3(Local0, c010, z116, ts, 116)
-
-	Store(Index(p000, 7), Local0)
-	m1a3(Local0, c010, z116, ts, 117)
-
-	Store(Index(p000, 8), Local0)
-	m1a3(Local0, c009, z116, ts, 118)
-
-	Store(Index(p000, 9), Local0)
-	m1a3(Local0, c009, z116, ts, 119)
-
-	m380(ts, i000, 0, 0)
-}
-
-// CURRENTLY: compiler failed, Too few arguments (M002 requires X)
-// Methods with parameters
-Method(m1c8,, Serialized)
-{
-	Name(ts, "m1c8")
-
-/*
-	Name(i000, 0x77)
-	Method(m000) {
-		Store(0, i000)
-	}
-	Method(m001) {
-		Store(1, i000)
-		return (0x12345678)
-	}
-
-	Method(m002, 1) {
-		Store(arg0, i000)
-		Store(0, i000)
-	}
-	Method(m003, 7) {
-		Store(arg0, i000)
-		Store(arg1, i000)
-		Store(arg2, i000)
-		Store(arg3, i000)
-		Store(arg4, i000)
-		Store(arg5, i000)
-		Store(arg6, i000)
-		Store(1, i000)
-		return (0x12345678)
-	}
-
-
-	Name(p000, Package() {m000, m001, m002, m003,
-					m000, m001, m002, m003,
-					i000, i000})
-
-
-	Store(Index(p000, 0), Local0)
-	m1a3(Local0, c010, z116, ts, `120)
-
-	Store(Index(p000, 1), Local0)
-	m1a3(Local0, c010, z116, ts, 121)
-
-	Store(Index(p000, 2), Local0)
-	m1a3(Local0, c010, z116, ts, 122)
-
-	Store(Index(p000, 3), Local0)
-	m1a3(Local0, c010, z116, ts, 123)
-
-	Store(Index(p000, 4), Local0)
-	m1a3(Local0, c010, z116, ts, 124)
-
-	Store(Index(p000, 5), Local0)
-	m1a3(Local0, c010, z116, ts, 125)
-
-	Store(Index(p000, 6), Local0)
-	m1a3(Local0, c010, z116, ts, 126)
-
-	Store(Index(p000, 7), Local0)
-	m1a3(Local0, c010, z116, ts, 127)
-
-	Store(Index(p000, 8), Local0)
-	m1a3(Local0, c009, z116, ts, 128)
-
-	Store(Index(p000, 9), Local0)
-	m1a3(Local0, c009, z116, ts, 129)
-
-	m380(ts, i000, 0, 130)
-*/
-}
-
-// DerefOf of the Method named object element of Package
-Method(m1c9,, Serialized)
-{
-	Name(ts, "m1c9")
-
-	Name(i000, 0x77)
-	Method(m000) {
-		Store(0, i000)
-	}
-	Method(m001) {
-		Store(1, i000)
-		return (0x12345678)
-	}
-
-	Method(m002) {
-		Store(0, i000)
-	}
-	Method(m003) {
-		Store(1, i000)
-		return (0x12345678)
-	}
-
-	Name(p000, Package() {m000, m001, m002, m003,
-					m000, m001, m002, m003,
-					i000, i000})
-
-
-	Store(Index(p000, 0), Local0)
-	m1a3(Local0, c010, z116, ts, 131)
-	CH03(ts, z116, 144, __LINE__, 0)
-	Store(DerefOf(Local0), Local1)
-	CH04(ts, 0, 0xff, z116, __LINE__, 0, 0)
-
-	Store(Index(p000, 1), Local0)
-	m1a3(Local0, c010, z116, ts, 132)
-	CH03(ts, z116, 146, __LINE__, 0)
-	Store(DerefOf(Local0), Local1)
-	CH04(ts, 0, 0xff, z116, __LINE__, 0, 0)
-
-	Store(Index(p000, 2), Local0)
-	m1a3(Local0, c010, z116, ts, 133)
-	CH03(ts, z116, 148, __LINE__, 0)
-	Store(DerefOf(Local0), Local1)
-	CH04(ts, 0, 0xff, z116, __LINE__, 0, 0)
-
-	Store(Index(p000, 3), Local0)
-	m1a3(Local0, c010, z116, ts, 134)
-	CH03(ts, z116, 150, __LINE__, 0)
-	Store(DerefOf(Local0), Local1)
-	CH04(ts, 0, 0xff, z116, __LINE__, 0, 0)
-
-	Store(Index(p000, 4), Local0)
-	m1a3(Local0, c010, z116, ts, 135)
-	CH03(ts, z116, 152, __LINE__, 0)
-	Store(DerefOf(Local0), Local1)
-	CH04(ts, 0, 0xff, z116, __LINE__, 0, 0)
-
-	Store(Index(p000, 5), Local0)
-	m1a3(Local0, c010, z116, ts, 136)
-	CH03(ts, z116, 154, __LINE__, 0)
-	Store(DerefOf(Local0), Local1)
-	CH04(ts, 0, 0xff, z116, __LINE__, 0, 0)
-
-	Store(Index(p000, 6), Local0)
-	m1a3(Local0, c010, z116, ts, 137)
-	CH03(ts, z116, 156, __LINE__, 0)
-	Store(DerefOf(Local0), Local1)
-	CH04(ts, 0, 0xff, z116, __LINE__, 0, 0)
-
-	Store(Index(p000, 7), Local0)
-	m1a3(Local0, c010, z116, ts, 138)
-	CH03(ts, z116, 158, __LINE__, 0)
-	Store(DerefOf(Local0), Local1)
-	CH04(ts, 0, 0xff, z116, __LINE__, 0, 0)
-
-	m380(ts, i000, 0, 139)
-}
-
-// Size of Package
-Method(m1ca,, Serialized)
-{
-	Name(ts, "m1ca")
-
-	Method(m000, 1, Serialized)
-	{
-		Name(p000, Package(arg0) {})
-
-		CH03(ts, z116, 160, __LINE__, 0)
-		Store(Index(p000, arg0), Local0)
-		CH04(ts, 0, 0xff, z116, __LINE__, 0, 0)
-	}
-
-	Method(m001, 1, Serialized)
-	{
-		Name(p000, Package(Arg0) {})
-
-		Name(lpN0, 0)
-		Name(lpC0, 0)
-
-		// Write each element of Package with its index
-
-		Store(arg0, lpN0)
-		Store(0, lpC0)
-
-		While (lpN0) {
-			Store(lpC0, Index(p000, lpC0))
-			Decrement(lpN0)
-			Increment(lpC0)
-		}
-
-		// Verify each element of Package
-
-		Store(arg0, lpN0)
-		Store(0, lpC0)
-
-		While (lpN0) {
-			Store(Index(p000, lpC0), Local0)
-			Store(DerefOf(Local0), Local1)
-			if (LNotEqual(Local1, lpC0)) {
-				err(ts, z116, __LINE__, z116, 0, Local1, lpC0)
-				break
-			}
-			Decrement(lpN0)
-			Increment(lpC0)
-		}
-	}
-
-	Method(m003,, Serialized)
-	{
-		Name(p000, Package(2) {})
-
-		CH03(ts, z116, 162, __LINE__, 0)
-		Store(Index(p000, 2), Local0)
-		CH04(ts, 0, 0xff, z116, __LINE__, 0, 0)
-	}
-
-	Method(m004,, Serialized)
-	{
-		Name(p000, Package(255) {})
-
-		CH03(ts, z116, 164, __LINE__, 0)
-		Store(Index(p000, 255), Local0)
-		CH04(ts, 0, 0xff, z116, __LINE__, 0, 0)
-	}
-
-	// Size not greater than 255
-
-	m000(1)
-	m000(8)
-	m000(127)
-	m000(255)
-
-	m003()
-	m004()
-
-	// VarPackage: size of Package greater than 255
-	// (bug 129, not a bug)
-
-	m001(256)
-}
-
-// Size of Package, see comma "6,})"
-Method(m1cb,, Serialized)
-{
-	Name(ts, "m1cb")
-
-	Name(p000, Package() {1,2,3,4,5,6,})
-
-	Store(SizeOf(p000), Local0)
-	if (LNotEqual(Local0, 6)) {
-		err(ts, z116, __LINE__, 0, 0, Local0, 6)
-	}
-}
-
-// Check the read automatic dereference
-// arg0 - name of Method initiating the checking
-// arg1 - Oref or IRef
-// arg2 - expected value
-// arg3 - exception is expected
-Method(m1cc, 4)
-{
-	CH03(arg0, z116, 166, __LINE__, 0)
-
-	Store(arg1, Local0)
-	Add(Local0, 1, Local7)
-
-	if (LNotEqual(Local7, arg2)) {
-		err(arg0, z116, __LINE__, 0, 0, Local7, arg2)
-	}
-
-	CH03(arg0, z116, 167, __LINE__, 0)
-}
-
-// Check the read automatic dereference
-// arg0 - name of Method initiating the checking
-// arg1 - Oref or IRef
-// arg2 - expected value
-// arg3 - exception is expected
-Method(m1cd, 4)
-{
-	CH03(arg0, z116, 168, __LINE__, 0)
-
-	Add(arg1, 1, Local7)
-
-	if (LNotEqual(Local7, arg2)) {
-		err(arg0, z116, __LINE__, 0, 0, Local7, arg2)
-	}
-
-	CH03(arg0, z116, 169, __LINE__, 0)
-}
-
-// Check the read automatic dereference
-// when accessing element of Package.
-
-Method(m1ce,, Serialized)
-{
-	Name(ts, "m1ce")
-
-	Name(p000, Package(1) {0x77})
-
-	m1cc(ts, Index(p000, 0, Local0), 0x78, 0)
-	m1cd(ts, Index(p000, 0), 0x78, 0)
-}
-
-Method(m1cf,, Serialized)
-{
-	Name(ts, "m1cf")
-
-	Name(p000, Package(1) {0x77})
-
-	Index(p000, 0, Local0)
-	m1cc(ts, Local0, 0x78, 0)
-	m1cd(ts, Local0, 0x78, 0)
-
-	Store(Index(p000, 0, Local0), Local1)
-	m1cc(ts, Local0, 0x78, 0)
-	m1cd(ts, Local0, 0x78, 0)
-
-	m1cc(ts, Local1, 0x78, 0)
-	m1cd(ts, Local1, 0x78, 0)
-}
-
-Method(m1d0,, Serialized)
-{
-	Name(ts, "m1d0")
-
-	Name(p000, Package(1) {0x77})
-
-	CopyObject(Index(p000, 0, Local0), Local1)
-	m1cc(ts, Local0, 0x78, 0)
-	m1cd(ts, Local0, 0x78, 0)
-
-	m1cc(ts, Local1, 0x78, 0)
-	m1cd(ts, Local1, 0x78, 0)
-}
-
-
-// EXCEPTIONS
-
-
-// ref07.asl 1093: Add(Index(p000, 0, Local0), 1, Local7)
-// Error 1035 -    Invalid type ^  ([Reference] found,
-//                   Add operator requires [Integer|String|Buffer])
-/*
- * Method(m1d1)
- * {
- *	Name(p000, Package(1) {0x77})
- *	CH03(ts, z116, 170, __LINE__, 0)
- *	Add(Index(p000, 0, Local0), 1, Local7)
- *	CH04(ts, 0, 0xff, z116, __LINE__, 0, 0)
- * }
- */
-
-// LocalX
-
-Method(m1d1,, Serialized)
-{
-	Name(ts, "m1d1")
-
-	Name(p000, Package(1) {0x77})
-
-	Store(Index(p000, 0, Local0), Local1)
-
-	CH03(ts, z116, 172, __LINE__, 0)
-
-	Add(Local0, 1, Local7)
-
-	CH04(ts, 0, 0xff, z116, __LINE__, 0, 0)
-
-	Add(Local1, 1, Local7)
-
-	CH04(ts, 0, 0xff, z116, __LINE__, 0, 0)
-}
-
-Method(m1d2,, Serialized)
-{
-	Name(ts, "m1d2")
-
-	Name(p000, Package(1) {0x77})
-
-	CopyObject(Index(p000, 0, Local0), Local1)
-
-	CH03(ts, z116, 175, __LINE__, 0)
-
-	Add(Local0, 1, Local7)
-
-	CH04(ts, 0, 0xff, z116, __LINE__, 0, 0)
-
-	Add(Local1, 1, Local7)
-
-	CH04(ts, 0, 0xff, z116, __LINE__, 0, 0)
-}
-
-// ArgX
-
-Method(m1d3, 2, Serialized)
-{
-	Name(ts, "m1d3")
-
-	Name(p000, Package(1) {0x77})
-
-	Store(Index(p000, 0, Arg0), Arg1)
-
-	CH03(ts, z116, 178, __LINE__, 0)
-
-	Add(Arg0, 1, Local7)
-
-	CH04(ts, 0, 0xff, z116, __LINE__, 0, 0)
-
-	Add(Arg1, 1, Local7)
-
-	CH04(ts, 0, 0xff, z116, __LINE__, 0, 0)
-}
-
-Method(m1d4, 2, Serialized)
-{
-	Name(ts, "m1d4")
-
-	Name(p000, Package(1) {0x77})
-
-	CopyObject(Index(p000, 0, Arg0), Arg1)
-
-	CH03(ts, z116, 181, __LINE__, 0)
-
-	Add(Arg0, 1, Local7)
-
-	CH04(ts, 0, 0xff, z116, __LINE__, 0, 0)
-
-	// Type of Arg1 should be IRef here,
-	// so, exception is expected.
-
-	Add(Arg1, 1, Local7)
-
-	CH04(ts, 0, 0xff, z116, __LINE__, 0, 0)
-}
-
-// NamedX
-
-Method(m1d5,, Serialized)
-{
-	Name(ts, "m1d5")
-	Name(i001, 0)
-	Name(p000, Package(2) {0x77, 0x88})
-
-	Name(sw00, 1)
-
-	Name(hg00, 0) // if non-zero - the test hangs
-	Name(hg01, 0) // if non-zero - the test hangs
-	Name(hg02, 0) // if non-zero - the test hangs
-
-	CH03(ts, z116, 184, __LINE__, 0)
-
-	CopyObject(Index(p000, 1, Local0), i001)
-
-	CH03(ts, z116, 185, __LINE__, 0)
-
-	// Type of i001 should be already IRef here,
-	// so, don't expect exception.
-
-	Store(Index(p000, 0, Local0), i001)
-
-	CH03(ts, z116, 186, __LINE__, 0)
-
-	Add(Local0, 1, Local7)
-
-	if (y248) {
-		Store(1, hg00)
-		Store(1, hg01)
-		Store(1, hg02)
-	}
-
-	/*
-	 * To show visually the consequences of the anomaly
-	 * run one of code below. They cause hang.
-	 */
-	if (hg00) {
-		// Infinite loop of printing
-		Store(0, Local1)
-		Store(Local0, debug)
-	}
-	if (hg01) {
-		// Infinite loop of printing
-		Store(Local0, debug)
-		Store(Local0, debug)
-	}
-	if (hg02) {
-		Store(0, Local1)
-
-		Store("============== sit 2:", debug)
-
-		Store(ObjectType(Local0), Local7)
-		Store(Local7, debug)
-	}
-
-	CH04(ts, 0, 0xff, z116, __LINE__, 0, 0)
-
-	Add(i001, 1, Local7)
-
-	CH04(ts, 0, 0xff, z116, __LINE__, 0, 0)
-
-	/*
-	 * Looks identical to b248: "Incorrect ReferenceCount on Switch operation":
-	 *
-	 * Reference count of Local0 is mistakenly zeroed there too.
-	 *
-	 * [ACPI Debug]  String: [0x0F] "<-------- 0000>"
-	 * [ACPI Debug]  Reference: [Debug]
-	 * [ACPI Debug]  String: [0x0F] "<-------- 1111>"
-	 *
-	 * [ACPI Debug]  String: [0x0F] "<-------- 0000>"
-	 * [ACPI Debug]  [ACPI Debug]  String: [0x0F] "<-------- 1111>"
-	 */
-	Store("<-------- 0000>", debug)
-	Store(Local0, debug)
-	Store("<-------- 1111>", debug)
-}
-
-Method(m1d6,, Serialized)
-{
-	Name(ts, "m1d6")
-
-	Name(i001, 0)
-
-	Name(p000, Package(1) {0x77})
-
-	CH03(ts, z116, 189, __LINE__, 0)
-
-	CopyObject(Index(p000, 0, Local0), i001)
-
-	CH03(ts, z116, 190, __LINE__, 0)
-
-	Add(i001, 1, Local7)
-
-	CH04(ts, 0, 0xff, z116, __LINE__, 0, 0)
-}
-
-// Out of Package
-
-Method(m1d7,, Serialized)
-{
-	Name(ts, "m1d7")
-
-	Name(p000, Package(1) {0x77})
-
-	CH03(ts, z116, 193, __LINE__, 0)
-
-	Store(Index(p000, 1), Local0)
-
-	CH04(ts, 0, 0xff, z116, __LINE__, 0, 0)
-
-	Store(Index(p000, 1, Local0), Local1)
-
-	CH04(ts, 0, 0xff, z116, __LINE__, 0, 0)
-}
-
-Method(m1d8,, Serialized)
-{
-	Name(ts, "m1d8")
-
-	Name(p000, Package(1) {0x77})
-
-	CH03(ts, z116, 196, __LINE__, 0)
-
-	CopyObject(Index(p000, 1), Local0)
-
-	CH04(ts, 0, 0xff, z116, __LINE__, 0, 0)
-
-	CopyObject(Index(p000, 1, Local0), Local1)
-
-	CH04(ts, 0, 0xff, z116, __LINE__, 0, 0)
-}
-
-Method(m1db,, Serialized)
-{
-	Name(ts, "m1db")
-
-	Name(i001, 0)
-
-	Name(p000, Package(2) {0x77, 0x88})
-
-	CH03(ts, z116, 199, __LINE__, 0)
-
-	CopyObject(Index(p000, 1), i001)
-
-	CH03(ts, z116, 200, __LINE__, 0)
-
-	// Type of i001 should be already IRef here,
-	// so, don't expect exception. Writing to i001
-	// is here identical to Store into it.
-
-	Index(p000, 0, i001)
-
-	CH03(ts, z116, 201, __LINE__, 0)
-
-	Add(i001, 1, Local7)
-
-	CH04(ts, 0, 0xff, z116, __LINE__, 0, 0)
-}
-
-
-// WRITE
-
-
-Method(m1d9,, Serialized)
-{
-	Name(p000, Package(3) {5,0,7})
-
-	Method(m000, 1)
-	{
-		Add(0x76, 1, Local0)
-		Store(Local0, arg0)
-	}
-
-	m000(Index(p000, 1))
-	m383("m1d9", p000, z116, 140)
-}
-
-Method(m1da,, Serialized)
-{
-	Name(p000, Package(3) {5,0,7})
-
-	Method(m000, 1)
-	{
-		Add(0x76, 1, arg0)
-	}
-
-	m000(Index(p000, 1))
-	m383("m1da", p000, z116, 141)
-}
-
+    /*
+     * Some or all of this work - Copyright (c) 2006 - 2017, Intel Corp.
+     * All rights reserved.
+     *
+     * Redistribution and use in source and binary forms, with or without modification,
+     * are permitted provided that the following conditions are met:
+     *
+     * Redistributions of source code must retain the above copyright notice,
+     * this list of conditions and the following disclaimer.
+     * Redistributions in binary form must reproduce the above copyright notice,
+     * this list of conditions and the following disclaimer in the documentation
+     * and/or other materials provided with the distribution.
+     * Neither the name of Intel Corporation nor the names of its contributors
+     * may be used to endorse or promote products derived from this software
+     * without specific prior written permission.
+     *
+     * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS"
+     * AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE
+     * IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE
+     * ARE DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT OWNER OR CONTRIBUTORS BE
+     * LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL
+     * DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES;
+     * LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY
+     * THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING
+     * NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE,
+     * EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
+     */
+    /*
+     * References
+     *
+     * TEST, Package total
+     */
+    Name (Z116, 0x74)
+    /*
+     * Flags and values used by m1c3
+     */
+    Name (FL00, 0x00) /* flag of testing of exceptions */
+    Name (V000, 0x00) /* type of the Standard Data object */
+    Name (V001, 0x00) /* index of element of Package */
+    /*
+     * Read immediate image element of Package
+     *
+     * Package specified by the immediate
+     * images {Integer, String, Buffer, Package}.
+     * Perform all the ways reading element of
+     * Package passed by ArgX.
+     */
+    Method (M1C1, 0, Serialized)
+    {
+        Name (PPP0, Package (0x04)
+        {
+            0x77, 
+            "qwer0000", 
+            Buffer (0x04)
+            {
+                 0x01, 0x77, 0x03, 0x04                           // .w..
+            }, 
+
+            Package (0x03)
+            {
+                0x05, 
+                0x77, 
+                0x07
+            }
+        })
+        FL00 = 0x00    /* flag of testing of exceptions */
+        V000 = C009 /* type of the Standard Data object */ /* \C009 */
+        V001 = 0x00    /* index of element of Package */
+        M1C3 (PPP0, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00)
+        V000 = C00A /* type of the Standard Data object */ /* \C00A */
+        V001 = 0x01    /* index of element of Package */
+        M1C3 (PPP0, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00)
+        V000 = C00B /* type of the Standard Data object */ /* \C00B */
+        V001 = 0x02    /* index of element of Package */
+        M1C3 (PPP0, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00)
+        V000 = C00C /* type of the Standard Data object */ /* \C00C */
+        V001 = 0x03    /* index of element of Package */
+        M1C3 (PPP0, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00)
+    }
+
+    /*
+     * Read NamedX element of Package
+     * {Integer, String, Buffer, Package}.
+     */
+    Method (M1C2, 0, Serialized)
+    {
+        Name (TS, "m1c2")
+        Name (I000, 0x77)
+        Name (S000, "qwer0000")
+        Name (B000, Buffer (0x04)
+        {
+             0x01, 0x77, 0x03, 0x04                           // .w..
+        })
+        Name (P000, Package (0x03)
+        {
+            0x05, 
+            0x77, 
+            0x07
+        })
+        Name (PPP0, Package (0x04)
+        {
+            I000, 
+            S000, 
+            B000, 
+            P000
+        })
+        FL00 = 0x00    /* flag of testing of exceptions */
+        V000 = C009 /* type of the Standard Data object */ /* \C009 */
+        V001 = 0x00    /* index of element of Package */
+        M1C3 (PPP0, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00)
+        V000 = C00A /* type of the Standard Data object */ /* \C00A */
+        V001 = 0x01    /* index of element of Package */
+        M1C3 (PPP0, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00)
+        V000 = C00B /* type of the Standard Data object */ /* \C00B */
+        V001 = 0x02    /* index of element of Package */
+        M1C3 (PPP0, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00)
+        V000 = C00C /* type of the Standard Data object */ /* \C00C */
+        V001 = 0x03    /* index of element of Package */
+        M1C3 (PPP0, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00)
+        M380 (TS, I000, 0x00, 0x00)
+        M381 (TS, S000, 0x00, 0x01)
+        M382 (TS, B000, 0x00, 0x02)
+        M383 (TS, P000, 0x00, 0x03)
+    }
+
+    /* All the ways reading element of Package given by ArgX */
+    /* arg0 - Package */
+    /* arg1, */
+    /* arg2, */
+    /* arg3, */
+    /* arg4, */
+    /* arg5, */
+    /* arg6 - auxiliary, for arbitrary use */
+    Method (M1C3, 7, Serialized)
+    {
+        Name (TS, "m1c3")
+        Name (I000, 0x00)
+        Name (I001, 0x00)
+        Name (I002, 0x00)
+        Name (I003, 0x00)
+        Name (I004, 0x00)
+        Name (I005, 0x00)
+        Name (I006, 0x00)
+        Name (P000, Package (0x02){})
+        Name (PPP0, Package (0x02){})
+        /* LocalX */
+
+        Store (Arg0 [V001], Local3)
+        M390 (DerefOf (Local3), V000, 0x00, 0x04)
+        Local4 = DerefOf (Local3)
+        M390 (Local4, V000, 0x00, 0x05)
+        M390 (DerefOf (Arg0 [V001]), V000, 0x00, 0x06)
+        Local3 = Local2 = Arg0 [V001] /* \V001 */
+        M390 (DerefOf (Local3), V000, 0x00, 0x07)
+        Local4 = DerefOf (Local3)
+        M390 (Local4, V000, 0x00, 0x08)
+        M390 (DerefOf (Local2), V000, 0x00, 0x09)
+        Local4 = DerefOf (Local2)
+        M390 (Local4, V000, 0x00, 0x0A)
+        /* ArgX */
+
+        Store (Arg0 [V001], Arg3)
+        M390 (DerefOf (Arg3), V000, 0x00, 0x0B)
+        Arg4 = DerefOf (Arg3)
+        M390 (Arg4, V000, 0x00, 0x0C)
+        M390 (DerefOf (Arg0 [V001]), V000, 0x00, 0x0D)
+        Arg3 = Arg2 = Arg0 [V001] /* \V001 */
+        M390 (DerefOf (Arg3), V000, 0x00, 0x0E)
+        Arg4 = DerefOf (Arg3)
+        M390 (Arg4, V000, 0x00, 0x0F)
+        M390 (DerefOf (Arg2), V000, 0x00, 0x10)
+        Arg4 = DerefOf (Arg2)
+        M390 (Arg4, V000, 0x00, 0x11)
+        /* NamedX */
+
+        If (Y127)
+        {
+            CopyObject (PPP0 [0x00], I003) /* \M1C3.I003 */
+            Store (Arg0 [V001], I003) /* \M1C3.I003 */
+            M390 (DerefOf (I003), V000, 0x00, 0x12)
+            I004 = DerefOf (I003)
+            M390 (I004, V000, 0x00, 0x13)
+            M390 (DerefOf (Arg0 [V001]), V000, 0x00, 0x14)
+            I003 = I002 = Arg0 [V001] /* \V001 */
+            M390 (DerefOf (I003), V000, 0x00, 0x15)
+            I004 = DerefOf (I003)
+            M390 (I004, V000, 0x00, 0x16)
+            M390 (DerefOf (I002), V000, 0x00, 0x17)
+            I004 = DerefOf (I002)
+            M390 (I004, V000, 0x00, 0x18)
+        }
+
+        /*
+         * El_of_Package
+         *
+         * Identical to the first checking, but only
+         * store intermediately the references to element
+         * of Package arg0 Index(arg0, x) into Index(p000, y)
+         * but not into LocalX.
+         */
+        P000 [0x01] = P000 [0x00] = Arg0 [V001] /* \V001 */
+        /* DerefOf(DerefOf(Index(x,Destination))) */
+
+        M390 (DerefOf (DerefOf (P000 [0x00])), V000, 0x00, 0x19)
+        /* DerefOf(DerefOf(Index(x,Result))) */
+
+        M390 (DerefOf (DerefOf (P000 [0x01])), V000, 0x00, 0x1A)
+        /* El_of_Package, Destination, LocalX */
+        /*
+         * After Store(Index(p000, 0), Local5)
+         * Local5 below - reference to element of
+         * Package p000 containing reference to the
+         * 0-th element of Arg0-Package.
+         *
+         * Correspondingly, after Store(DerefOf(Local5), Local3)
+         * Local3 - reference to the 0-th element of Arg0-Package.
+         *
+         * Further, DerefOf(Local3) - 0-th element of Arg0-Package.
+         */
+        If (FL00)
+        {
+            Store (P000 [0x00], Local5)
+            CH03 (TS, Z116, 0x00, 0xE2, 0x00)
+            Local6 = (Local5 + 0x01)
+            CH04 (TS, 0x00, 0xFF, Z116, 0xE4, 0x00, 0x00)
+            CH03 (TS, Z116, 0x02, 0xE6, 0x00)
+            Local6 = (DerefOf (Local5) + 0x01)
+            CH04 (TS, 0x00, 0xFF, Z116, 0xE8, 0x00, 0x00)
+            CH03 (TS, Z116, 0x04, 0xEA, 0x00)
+            M390 (Local5, V000, 0x00, 0x00)
+            CH04 (TS, 0x00, 0xFF, Z116, 0xEC, 0x00, 0x00)
+            CH03 (TS, Z116, 0x06, 0xEE, 0x00)
+            M390 (DerefOf (Local5), V000, 0x00, 0x00)
+            CH04 (TS, 0x00, 0xFF, Z116, 0xF0, 0x00, 0x00)
+            Local5 = Local2 = P000 [0x00]
+            CH03 (TS, Z116, 0x08, 0xF4, 0x00)
+            Local6 = (Local5 + 0x01)
+            CH04 (TS, 0x00, 0xFF, Z116, 0xF6, 0x00, 0x00)
+            CH03 (TS, Z116, 0x0A, 0xF8, 0x00)
+            Local6 = (DerefOf (Local5) + 0x01)
+            CH04 (TS, 0x00, 0xFF, Z116, 0xFA, 0x00, 0x00)
+            CH03 (TS, Z116, 0x0C, 0xFC, 0x00)
+            M390 (Local5, V000, 0x00, 0x00)
+            CH04 (TS, 0x00, 0xFF, Z116, 0xFE, 0x00, 0x00)
+            CH03 (TS, Z116, 0x0E, 0x0100, 0x00)
+            M390 (DerefOf (Local5), V000, 0x00, 0x00)
+            CH04 (TS, 0x00, 0xFF, Z116, 0x0102, 0x00, 0x00)
+            CH03 (TS, Z116, 0x10, 0x0104, 0x00)
+            Local6 = (Local2 + 0x01)
+            CH04 (TS, 0x00, 0xFF, Z116, 0x0106, 0x00, 0x00)
+            CH03 (TS, Z116, 0x12, 0x0108, 0x00)
+            Local6 = (DerefOf (Local2) + 0x01)
+            CH04 (TS, 0x00, 0xFF, Z116, 0x010A, 0x00, 0x00)
+            CH03 (TS, Z116, 0x14, 0x010C, 0x00)
+            M390 (Local2, V000, 0x00, 0x00)
+            CH04 (TS, 0x00, 0xFF, Z116, 0x010E, 0x00, 0x00)
+            CH03 (TS, Z116, 0x16, 0x0110, 0x00)
+            M390 (DerefOf (Local2), V000, 0x00, 0x00)
+            CH04 (TS, 0x00, 0xFF, Z116, 0x0112, 0x00, 0x00)
+        }
+
+        If (Q001)
+        {
+            Store (P000 [0x00], Local5)
+            Local3 = DerefOf (Local5)
+            M390 (DerefOf (Local3), V000, 0x00, 0x1B)
+            Local4 = DerefOf (Local3)
+            M390 (Local4, V000, 0x00, 0x1C)
+            Local5 = Local2 = P000 [0x00]
+            Local3 = DerefOf (Local5)
+            M390 (DerefOf (Local3), V000, 0x00, 0x1D)
+            Local4 = DerefOf (Local3)
+            M390 (Local4, V000, 0x00, 0x1E)
+            Local3 = DerefOf (Local2)
+            M390 (DerefOf (Local3), V000, 0x00, 0x1F)
+            Local4 = DerefOf (Local3)
+            M390 (Local4, V000, 0x00, 0x20)
+        }
+
+        /* if(q001) */
+        /* El_of_Package, Result, LocalX */
+        If (FL00)
+        {
+            Store (P000 [0x01], Local5)
+            CH03 (TS, Z116, 0x18, 0x0131, 0x00)
+            Local6 = (Local5 + 0x01)
+            CH04 (TS, 0x00, 0xFF, Z116, 0x0133, 0x00, 0x00)
+            CH03 (TS, Z116, 0x1A, 0x0135, 0x00)
+            Local6 = (DerefOf (Local5) + 0x01)
+            CH04 (TS, 0x00, 0xFF, Z116, 0x0137, 0x00, 0x00)
+            CH03 (TS, Z116, 0x1C, 0x0139, 0x00)
+            M390 (Local5, V000, 0x00, 0x21)
+            CH04 (TS, 0x00, 0xFF, Z116, 0x013B, 0x00, 0x00)
+            CH03 (TS, Z116, 0x1E, 0x013D, 0x00)
+            M390 (DerefOf (Local5), V000, 0x00, 0x22)
+            CH04 (TS, 0x00, 0xFF, Z116, 0x013F, 0x00, 0x00)
+            Local5 = Local2 = P000 [0x01]
+            CH03 (TS, Z116, 0x20, 0x0143, 0x00)
+            Local6 = (Local5 + 0x01)
+            CH04 (TS, 0x00, 0xFF, Z116, 0x0145, 0x00, 0x00)
+            CH03 (TS, Z116, 0x22, 0x0147, 0x00)
+            Local6 = (DerefOf (Local5) + 0x01)
+            CH04 (TS, 0x00, 0xFF, Z116, 0x0149, 0x00, 0x00)
+            CH03 (TS, Z116, 0x24, 0x014B, 0x00)
+            M390 (Local5, V000, 0x00, 0x23)
+            CH04 (TS, 0x00, 0xFF, Z116, 0x014D, 0x00, 0x00)
+            CH03 (TS, Z116, 0x26, 0x014F, 0x00)
+            M390 (DerefOf (Local5), V000, 0x00, 0x24)
+            CH04 (TS, 0x00, 0xFF, Z116, 0x0151, 0x00, 0x00)
+            CH03 (TS, Z116, 0x28, 0x0153, 0x00)
+            Local6 = (Local2 + 0x01)
+            CH04 (TS, 0x00, 0xFF, Z116, 0x0155, 0x00, 0x00)
+            CH03 (TS, Z116, 0x2A, 0x0157, 0x00)
+            Local6 = (DerefOf (Local2) + 0x01)
+            CH04 (TS, 0x00, 0xFF, Z116, 0x0159, 0x00, 0x00)
+            CH03 (TS, Z116, 0x2C, 0x015B, 0x00)
+            M390 (Local2, V000, 0x00, 0x25)
+            CH04 (TS, 0x00, 0xFF, Z116, 0x015D, 0x00, 0x00)
+            CH03 (TS, Z116, 0x2E, 0x015F, 0x00)
+            M390 (DerefOf (Local2), V000, 0x00, 0x26)
+            CH04 (TS, 0x00, 0xFF, Z116, 0x0161, 0x00, 0x00)
+        }
+
+        If (Q001)
+        {
+            Store (P000 [0x01], Local5)
+            Local3 = DerefOf (Local5)
+            M390 (DerefOf (Local3), V000, 0x00, 0x27)
+            Local4 = DerefOf (Local3)
+            M390 (Local4, V000, 0x00, 0x28)
+            Local5 = Local2 = P000 [0x01]
+            Local3 = DerefOf (Local5)
+            M390 (DerefOf (Local3), V000, 0x00, 0x29)
+            Local4 = DerefOf (Local3)
+            M390 (Local4, V000, 0x00, 0x2A)
+            Local3 = DerefOf (Local2)
+            M390 (DerefOf (Local3), V000, 0x00, 0x2B)
+            Local4 = DerefOf (Local3)
+            M390 (Local4, V000, 0x00, 0x2C)
+        }
+
+        /* if(q001) */
+        /* El_of_Package, Destination, argX */
+        If (FL00)
+        {
+            Store (P000 [0x00], Arg5)
+            CH03 (TS, Z116, 0x30, 0x0180, 0x00)
+            Arg6 = (Arg5 + 0x01)
+            CH04 (TS, 0x00, 0xFF, Z116, 0x0182, 0x00, 0x00)
+            CH03 (TS, Z116, 0x32, 0x0184, 0x00)
+            Arg6 = (DerefOf (Arg5) + 0x01)
+            CH04 (TS, 0x00, 0xFF, Z116, 0x0186, 0x00, 0x00)
+            CH03 (TS, Z116, 0x34, 0x0188, 0x00)
+            M390 (Arg5, V000, 0x00, 0x2D)
+            CH04 (TS, 0x00, 0xFF, Z116, 0x018A, 0x00, 0x00)
+            CH03 (TS, Z116, 0x36, 0x018C, 0x00)
+            M390 (DerefOf (Arg5), V000, 0x00, 0x2E)
+            CH04 (TS, 0x00, 0xFF, Z116, 0x018E, 0x00, 0x00)
+            Arg5 = Arg2 = P000 [0x00]
+            CH03 (TS, Z116, 0x38, 0x0192, 0x00)
+            Arg6 = (Arg5 + 0x01)
+            CH04 (TS, 0x00, 0xFF, Z116, 0x0194, 0x00, 0x00)
+            CH03 (TS, Z116, 0x3A, 0x0196, 0x00)
+            Arg6 = (DerefOf (Arg5) + 0x01)
+            CH04 (TS, 0x00, 0xFF, Z116, 0x0198, 0x00, 0x00)
+            CH03 (TS, Z116, 0x3C, 0x019A, 0x00)
+            M390 (Arg5, V000, 0x00, 0x2F)
+            CH04 (TS, 0x00, 0xFF, Z116, 0x019C, 0x00, 0x00)
+            CH03 (TS, Z116, 0x3E, 0x019E, 0x00)
+            M390 (DerefOf (Arg5), V000, 0x00, 0x30)
+            CH04 (TS, 0x00, 0xFF, Z116, 0x01A0, 0x00, 0x00)
+            CH03 (TS, Z116, 0x40, 0x01A2, 0x00)
+            Arg6 = (Arg2 + 0x01)
+            CH04 (TS, 0x00, 0xFF, Z116, 0x01A4, 0x00, 0x00)
+            CH03 (TS, Z116, 0x42, 0x01A6, 0x00)
+            Arg6 = (DerefOf (Arg2) + 0x01)
+            CH04 (TS, 0x00, 0xFF, Z116, 0x01A8, 0x00, 0x00)
+            CH03 (TS, Z116, 0x44, 0x01AA, 0x00)
+            M390 (Arg2, V000, 0x00, 0x31)
+            CH04 (TS, 0x00, 0xFF, Z116, 0x01AC, 0x00, 0x00)
+            CH03 (TS, Z116, 0x46, 0x01AE, 0x00)
+            M390 (DerefOf (Arg2), V000, 0x00, 0x32)
+            CH04 (TS, 0x00, 0xFF, Z116, 0x01B0, 0x00, 0x00)
+        }
+
+        If (Q001)
+        {
+            Store (P000 [0x00], Arg5)
+            Arg3 = DerefOf (Arg5)
+            M390 (DerefOf (Arg3), V000, 0x00, 0x33)
+            Arg4 = DerefOf (Arg3)
+            M390 (Arg4, V000, 0x00, 0x34)
+            Arg5 = Arg2 = P000 [0x00]
+            Arg3 = DerefOf (Arg5)
+            M390 (DerefOf (Arg3), V000, 0x00, 0x35)
+            Arg4 = DerefOf (Arg3)
+            M390 (Arg4, V000, 0x00, 0x36)
+            Arg3 = DerefOf (Arg2)
+            M390 (DerefOf (Arg3), V000, 0x00, 0x37)
+            Arg4 = DerefOf (Arg3)
+            M390 (Arg4, V000, 0x00, 0x38)
+        }
+
+        /* if(q001) */
+        /* El_of_Package, Result, argX */
+        If (FL00)
+        {
+            Store (P000 [0x01], Arg5)
+            CH03 (TS, Z116, 0x48, 0x01CF, 0x00)
+            Arg6 = (Arg5 + 0x01)
+            CH04 (TS, 0x00, 0xFF, Z116, 0x01D1, 0x00, 0x00)
+            CH03 (TS, Z116, 0x4A, 0x01D3, 0x00)
+            Arg6 = (DerefOf (Arg5) + 0x01)
+            CH04 (TS, 0x00, 0xFF, Z116, 0x01D5, 0x00, 0x00)
+            CH03 (TS, Z116, 0x4C, 0x01D7, 0x00)
+            M390 (Arg5, V000, 0x00, 0x39)
+            CH04 (TS, 0x00, 0xFF, Z116, 0x01D9, 0x00, 0x00)
+            CH03 (TS, Z116, 0x4E, 0x01DB, 0x00)
+            M390 (DerefOf (Arg5), V000, 0x00, 0x3A)
+            CH04 (TS, 0x00, 0xFF, Z116, 0x01DD, 0x00, 0x00)
+            Arg5 = Arg2 = P000 [0x01]
+            CH03 (TS, Z116, 0x50, 0x01E1, 0x00)
+            Arg6 = (Arg5 + 0x01)
+            CH04 (TS, 0x00, 0xFF, Z116, 0x01E3, 0x00, 0x00)
+            CH03 (TS, Z116, 0x52, 0x01E5, 0x00)
+            Arg6 = (DerefOf (Arg5) + 0x01)
+            CH04 (TS, 0x00, 0xFF, Z116, 0x01E7, 0x00, 0x00)
+            CH03 (TS, Z116, 0x54, 0x01E9, 0x00)
+            M390 (Arg5, V000, 0x00, 0x3B)
+            CH04 (TS, 0x00, 0xFF, Z116, 0x01EB, 0x00, 0x00)
+            CH03 (TS, Z116, 0x56, 0x01ED, 0x00)
+            M390 (DerefOf (Arg5), V000, 0x00, 0x3C)
+            CH04 (TS, 0x00, 0xFF, Z116, 0x01EF, 0x00, 0x00)
+            CH03 (TS, Z116, 0x58, 0x01F1, 0x00)
+            Arg6 = (Arg2 + 0x01)
+            CH04 (TS, 0x00, 0xFF, Z116, 0x01F3, 0x00, 0x00)
+            CH03 (TS, Z116, 0x5A, 0x01F5, 0x00)
+            Arg6 = (DerefOf (Arg2) + 0x01)
+            CH04 (TS, 0x00, 0xFF, Z116, 0x01F7, 0x00, 0x00)
+            CH03 (TS, Z116, 0x5C, 0x01F9, 0x00)
+            M390 (Arg2, V000, 0x00, 0x3D)
+            CH04 (TS, 0x00, 0xFF, Z116, 0x01FB, 0x00, 0x00)
+            CH03 (TS, Z116, 0x5E, 0x01FD, 0x00)
+            M390 (DerefOf (Arg2), V000, 0x00, 0x3E)
+            CH04 (TS, 0x00, 0xFF, Z116, 0x01FF, 0x00, 0x00)
+        }
+
+        If (Q001)
+        {
+            Store (P000 [0x01], Arg5)
+            Arg3 = DerefOf (Arg5)
+            M390 (DerefOf (Arg3), V000, 0x00, 0x3F)
+            Arg4 = DerefOf (Arg3)
+            M390 (Arg4, V000, 0x00, 0x40)
+            Arg5 = Arg2 = P000 [0x01]
+            Arg3 = DerefOf (Arg5)
+            M390 (DerefOf (Arg3), V000, 0x00, 0x41)
+            Arg4 = DerefOf (Arg3)
+            M390 (Arg4, V000, 0x00, 0x42)
+            Arg3 = DerefOf (Arg2)
+            M390 (DerefOf (Arg3), V000, 0x00, 0x43)
+            Arg4 = DerefOf (Arg3)
+            M390 (Arg4, V000, 0x00, 0x44)
+        }
+
+        /* if(q001) */
+
+        If (Y127)
+        {
+            /* El_of_Package, Destination, NamedX */
+
+            If (FL00)
+            {
+                CopyObject (PPP0 [0x00], I005) /* \M1C3.I005 */
+                Store (P000 [0x00], I005) /* \M1C3.I005 */
+                CH03 (TS, Z116, 0x60, 0x0221, 0x00)
+                I006 = (I005 + 0x01)
+                CH04 (TS, 0x00, 0xFF, Z116, 0x0223, 0x00, 0x00)
+                CH03 (TS, Z116, 0x62, 0x0225, 0x00)
+                I006 = (DerefOf (I005) + 0x01)
+                CH04 (TS, 0x00, 0xFF, Z116, 0x0227, 0x00, 0x00)
+                CH03 (TS, Z116, 0x64, 0x0229, 0x00)
+                M390 (I005, V000, 0x00, 0x45)
+                CH04 (TS, 0x00, 0xFF, Z116, 0x022B, 0x00, 0x00)
+                CH03 (TS, Z116, 0x66, 0x022D, 0x00)
+                M390 (DerefOf (I005), V000, 0x00, 0x46)
+                CH04 (TS, 0x00, 0xFF, Z116, 0x022F, 0x00, 0x00)
+                I005 = I002 = P000 [0x00]
+                CH03 (TS, Z116, 0x68, 0x0233, 0x00)
+                I006 = (I005 + 0x01)
+                CH04 (TS, 0x00, 0xFF, Z116, 0x0235, 0x00, 0x00)
+                CH03 (TS, Z116, 0x6A, 0x0237, 0x00)
+                I006 = (DerefOf (I005) + 0x01)
+                CH04 (TS, 0x00, 0xFF, Z116, 0x0239, 0x00, 0x00)
+                CH03 (TS, Z116, 0x6C, 0x023B, 0x00)
+                M390 (I005, V000, 0x00, 0x47)
+                CH04 (TS, 0x00, 0xFF, Z116, 0x023D, 0x00, 0x00)
+                CH03 (TS, Z116, 0x6E, 0x023F, 0x00)
+                M390 (DerefOf (I005), V000, 0x00, 0x48)
+                CH04 (TS, 0x00, 0xFF, Z116, 0x0241, 0x00, 0x00)
+                CH03 (TS, Z116, 0x70, 0x0243, 0x00)
+                I006 = (I002 + 0x01)
+                CH04 (TS, 0x00, 0xFF, Z116, 0x0245, 0x00, 0x00)
+                CH03 (TS, Z116, 0x72, 0x0247, 0x00)
+                I006 = (DerefOf (I002) + 0x01)
+                CH04 (TS, 0x00, 0xFF, Z116, 0x0249, 0x00, 0x00)
+                CH03 (TS, Z116, 0x74, 0x024B, 0x00)
+                M390 (I002, V000, 0x00, 0x49)
+                CH04 (TS, 0x00, 0xFF, Z116, 0x024D, 0x00, 0x00)
+                CH03 (TS, Z116, 0x76, 0x024F, 0x00)
+                M390 (DerefOf (I002), V000, 0x00, 0x4A)
+                CH04 (TS, 0x00, 0xFF, Z116, 0x0251, 0x00, 0x00)
+            }
+
+            If (Q001)
+            {
+                Store (P000 [0x00], I005) /* \M1C3.I005 */
+                I003 = DerefOf (I005)
+                M390 (DerefOf (I003), V000, 0x00, 0x4B)
+                I004 = DerefOf (I003)
+                M390 (I004, V000, 0x00, 0x4C)
+                I005 = I002 = P000 [0x00]
+                I003 = DerefOf (I005)
+                M390 (DerefOf (I003), V000, 0x00, 0x4D)
+                I004 = DerefOf (I003)
+                M390 (I004, V000, 0x00, 0x4E)
+                I003 = DerefOf (I002)
+                M390 (DerefOf (I003), V000, 0x00, 0x4F)
+                I004 = DerefOf (I003)
+                M390 (I004, V000, 0x00, 0x50)
+            }
+
+            /* if(q001) */
+            /* El_of_Package, Result, NamedX */
+            If (FL00)
+            {
+                Store (P000 [0x01], I005) /* \M1C3.I005 */
+                CH03 (TS, Z116, 0x78, 0x0270, 0x00)
+                I006 = (I005 + 0x01)
+                CH04 (TS, 0x00, 0xFF, Z116, 0x0272, 0x00, 0x00)
+                CH03 (TS, Z116, 0x7A, 0x0274, 0x00)
+                I006 = (DerefOf (I005) + 0x01)
+                CH04 (TS, 0x00, 0xFF, Z116, 0x0276, 0x00, 0x00)
+                CH03 (TS, Z116, 0x7C, 0x0278, 0x00)
+                M390 (I005, V000, 0x00, 0x51)
+                CH04 (TS, 0x00, 0xFF, Z116, 0x027A, 0x00, 0x00)
+                CH03 (TS, Z116, 0x7E, 0x027C, 0x00)
+                M390 (DerefOf (I005), V000, 0x00, 0x52)
+                CH04 (TS, 0x00, 0xFF, Z116, 0x027E, 0x00, 0x00)
+                I005 = I002 = P000 [0x01]
+                CH03 (TS, Z116, 0x80, 0x0282, 0x00)
+                I006 = (I005 + 0x01)
+                CH04 (TS, 0x00, 0xFF, Z116, 0x0284, 0x00, 0x00)
+                CH03 (TS, Z116, 0x82, 0x0286, 0x00)
+                I006 = (DerefOf (I005) + 0x01)
+                CH04 (TS, 0x00, 0xFF, Z116, 0x0288, 0x00, 0x00)
+                CH03 (TS, Z116, 0x84, 0x028A, 0x00)
+                M390 (I005, V000, 0x00, 0x53)
+                CH04 (TS, 0x00, 0xFF, Z116, 0x028C, 0x00, 0x00)
+                CH03 (TS, Z116, 0x86, 0x028E, 0x00)
+                M390 (DerefOf (I005), V000, 0x00, 0x54)
+                CH04 (TS, 0x00, 0xFF, Z116, 0x0290, 0x00, 0x00)
+                CH03 (TS, Z116, 0x88, 0x0292, 0x00)
+                I006 = (I002 + 0x01)
+                CH04 (TS, 0x00, 0xFF, Z116, 0x0294, 0x00, 0x00)
+                CH03 (TS, Z116, 0x8A, 0x0296, 0x00)
+                I006 = (DerefOf (I002) + 0x01)
+                CH04 (TS, 0x00, 0xFF, Z116, 0x0298, 0x00, 0x00)
+                CH03 (TS, Z116, 0x8C, 0x029A, 0x00)
+                M390 (I002, V000, 0x00, 0x55)
+                CH04 (TS, 0x00, 0xFF, Z116, 0x029C, 0x00, 0x00)
+                CH03 (TS, Z116, 0x8E, 0x029E, 0x00)
+                M390 (DerefOf (I002), V000, 0x00, 0x56)
+                CH04 (TS, 0x00, 0xFF, Z116, 0x02A0, 0x00, 0x00)
+            }
+
+            If (Q001)
+            {
+                Store (P000 [0x01], I005) /* \M1C3.I005 */
+                I003 = DerefOf (I005)
+                M390 (DerefOf (I003), V000, 0x00, 0x57)
+                I004 = DerefOf (I003)
+                M390 (I004, V000, 0x00, 0x58)
+                I005 = I002 = P000 [0x01]
+                I003 = DerefOf (I005)
+                M390 (DerefOf (I003), V000, 0x00, 0x59)
+                I004 = DerefOf (I003)
+                M390 (I004, V000, 0x00, 0x5A)
+                I003 = DerefOf (I002)
+                M390 (DerefOf (I003), V000, 0x00, 0x5B)
+                I004 = DerefOf (I003)
+                M390 (I004, V000, 0x00, 0x5C)
+            }
+                /* if(q001) */
+        }
+        /* if(y127) */
+    }
+
+    /* Check Uninitialized element of Package */
+
+    Method (M1C4, 0, Serialized)
+    {
+        Name (PPP0, Package (0x0A)
+        {
+            0x77, 
+            "qwer0000", 
+            Buffer (0x04)
+            {
+                 0x01, 0x77, 0x03, 0x04                           // .w..
+            }, 
+
+            Package (0x03)
+            {
+                0x05, 
+                0x77, 
+                0x07
+            }
+        })
+        Method (M000, 2, NotSerialized)
+        {
+            Store (Arg0 [Arg1], Local0)
+            M1A3 (Local0, C008, Z116, "m1c4", 0x5D)
+        }
+
+        M000 (PPP0, 0x04)
+        M000 (PPP0, 0x05)
+        M000 (PPP0, 0x06)
+        M000 (PPP0, 0x07)
+        M000 (PPP0, 0x08)
+        M000 (PPP0, 0x09)
+    }
+
+    /* The chain of Index_References */
+
+    Method (M1C5, 0, Serialized)
+    {
+        Name (PPP0, Package (0x04)
+        {
+            0x77, 
+            "qwer0000", 
+            Buffer (0x04)
+            {
+                 0x01, 0x77, 0x03, 0x04                           // .w..
+            }, 
+
+            Package (0x03)
+            {
+                0x05, 
+                0x77, 
+                0x07
+            }
+        })
+        Name (P000, Package (0x14){})
+        Store (PPP0 [0x00], P000 [0x00])
+        M390 (DerefOf (DerefOf (P000 [0x00])), C009, Z116, 0x5E)
+        If (Q002)
+        {
+            Store (P000 [0x00], P000 [0x01])
+            M390 (DerefOf (DerefOf (DerefOf (P000 [0x01]))), C009, Z116, 0x5F)
+            Store (P000 [0x01], P000 [0x02])
+            M390 (DerefOf (DerefOf (DerefOf (DerefOf (P000 [0x02])))), C009, Z116, 0x60)
+            Store (P000 [0x02], P000 [0x03])
+            M390 (DerefOf (DerefOf (DerefOf (DerefOf (DerefOf (P000 [0x03]))))), C009, Z116, 
+                0x61)
+            Store (P000 [0x03], P000 [0x04])
+            M390 (DerefOf (DerefOf (DerefOf (DerefOf (DerefOf (DerefOf (P000 [0x04])))))), C009, 
+                Z116, 0x62)
+            Store (P000 [0x04], P000 [0x05])
+            M390 (DerefOf (DerefOf (DerefOf (DerefOf (DerefOf (DerefOf (DerefOf (P000 [0x05]))))))), 
+                C009, Z116, 0x63)
+            Store (P000 [0x05], P000 [0x06])
+            M390 (DerefOf (DerefOf (DerefOf (DerefOf (DerefOf (DerefOf (DerefOf (DerefOf (P000 [0x06]
+                )))))))), C009, Z116, 0x64)
+            Store (P000 [0x06], P000 [0x07])
+            M390 (DerefOf (DerefOf (DerefOf (DerefOf (DerefOf (DerefOf (DerefOf (DerefOf (DerefOf (P000 [
+                0x07]))))))))), C009, Z116, 0x65)
+        }
+
+        M390 (DerefOf (DerefOf (P000 [0x00])), C009, Z116, 0x66)
+        If (Q002)
+        {
+            M390 (DerefOf (DerefOf (DerefOf (P000 [0x01]))), C009, Z116, 0x67)
+            M390 (DerefOf (DerefOf (DerefOf (DerefOf (P000 [0x02])))), C009, Z116, 0x68)
+            M390 (DerefOf (DerefOf (DerefOf (DerefOf (DerefOf (P000 [0x03]))))), C009, Z116, 
+                0x69)
+            M390 (DerefOf (DerefOf (DerefOf (DerefOf (DerefOf (DerefOf (P000 [0x04])))))), C009, 
+                Z116, 0x6A)
+            M390 (DerefOf (DerefOf (DerefOf (DerefOf (DerefOf (DerefOf (DerefOf (P000 [0x05]))))))), 
+                C009, Z116, 0x6B)
+            M390 (DerefOf (DerefOf (DerefOf (DerefOf (DerefOf (DerefOf (DerefOf (DerefOf (P000 [0x06]
+                )))))))), C009, Z116, 0x6C)
+            M390 (DerefOf (DerefOf (DerefOf (DerefOf (DerefOf (DerefOf (DerefOf (DerefOf (DerefOf (P000 [
+                0x07]))))))))), C009, Z116, 0x6D)
+        }
+    }
+
+    /* Access to the Method named object element of Package */
+    /* Methods without parameters */
+    Method (M1C7, 0, Serialized)
+    {
+        Name (TS, "m1c7")
+        Name (I000, 0x77)
+        Method (M000, 0, NotSerialized)
+        {
+            I000 = 0x00
+        }
+
+        Method (M001, 0, NotSerialized)
+        {
+            I000 = 0x01
+            Return (0x12345678)
+        }
+
+        Method (M002, 0, NotSerialized)
+        {
+            I000 = 0x00
+        }
+
+        Method (M003, 0, NotSerialized)
+        {
+            I000 = 0x01
+            Return (0x12345678)
+        }
+
+        Name (P000, Package (0x0A)
+        {
+            M000, 
+            M001, 
+            M002, 
+            M003, 
+            M000, 
+            M001, 
+            M002, 
+            M003, 
+            I000, 
+            I000
+        })
+        Store (P000 [0x00], Local0)
+        M1A3 (Local0, C010, Z116, TS, 0x6E)
+        Store (P000 [0x01], Local0)
+        M1A3 (Local0, C010, Z116, TS, 0x6F)
+        Store (P000 [0x02], Local0)
+        M1A3 (Local0, C010, Z116, TS, 0x70)
+        Store (P000 [0x03], Local0)
+        M1A3 (Local0, C010, Z116, TS, 0x71)
+        Store (P000 [0x04], Local0)
+        M1A3 (Local0, C010, Z116, TS, 0x72)
+        Store (P000 [0x05], Local0)
+        M1A3 (Local0, C010, Z116, TS, 0x73)
+        Store (P000 [0x06], Local0)
+        M1A3 (Local0, C010, Z116, TS, 0x74)
+        Store (P000 [0x07], Local0)
+        M1A3 (Local0, C010, Z116, TS, 0x75)
+        Store (P000 [0x08], Local0)
+        M1A3 (Local0, C009, Z116, TS, 0x76)
+        Store (P000 [0x09], Local0)
+        M1A3 (Local0, C009, Z116, TS, 0x77)
+        M380 (TS, I000, 0x00, 0x00)
+    }
+
+    /* CURRENTLY: compiler failed, Too few arguments (M002 requires X) */
+    /* Methods with parameters */
+    Method (M1C8, 0, Serialized)
+    {
+        Name (TS, "m1c8")
+        /*
+     Name(i000, 0x77)
+     Method(m000) {
+     Store(0, i000)
+     }
+     Method(m001) {
+     Store(1, i000)
+     return (0x12345678)
+     }
+     Method(m002, 1) {
+     Store(arg0, i000)
+     Store(0, i000)
+     }
+     Method(m003, 7) {
+     Store(arg0, i000)
+     Store(arg1, i000)
+     Store(arg2, i000)
+     Store(arg3, i000)
+     Store(arg4, i000)
+     Store(arg5, i000)
+     Store(arg6, i000)
+     Store(1, i000)
+     return (0x12345678)
+     }
+     Name(p000, Package() {m000, m001, m002, m003,
+     m000, m001, m002, m003,
+     i000, i000})
+     Store(Index(p000, 0), Local0)
+     m1a3(Local0, c010, z116, ts, `120)
+     Store(Index(p000, 1), Local0)
+     m1a3(Local0, c010, z116, ts, 121)
+     Store(Index(p000, 2), Local0)
+     m1a3(Local0, c010, z116, ts, 122)
+     Store(Index(p000, 3), Local0)
+     m1a3(Local0, c010, z116, ts, 123)
+     Store(Index(p000, 4), Local0)
+     m1a3(Local0, c010, z116, ts, 124)
+     Store(Index(p000, 5), Local0)
+     m1a3(Local0, c010, z116, ts, 125)
+     Store(Index(p000, 6), Local0)
+     m1a3(Local0, c010, z116, ts, 126)
+     Store(Index(p000, 7), Local0)
+     m1a3(Local0, c010, z116, ts, 127)
+     Store(Index(p000, 8), Local0)
+     m1a3(Local0, c009, z116, ts, 128)
+     Store(Index(p000, 9), Local0)
+     m1a3(Local0, c009, z116, ts, 129)
+     m380(ts, i000, 0, 130)
+     */
+    }
+
+    /* DerefOf of the Method named object element of Package */
+
+    Method (M1C9, 0, Serialized)
+    {
+        Name (TS, "m1c9")
+        Name (I000, 0x77)
+        Method (M000, 0, NotSerialized)
+        {
+            I000 = 0x00
+        }
+
+        Method (M001, 0, NotSerialized)
+        {
+            I000 = 0x01
+            Return (0x12345678)
+        }
+
+        Method (M002, 0, NotSerialized)
+        {
+            I000 = 0x00
+        }
+
+        Method (M003, 0, NotSerialized)
+        {
+            I000 = 0x01
+            Return (0x12345678)
+        }
+
+        Name (P000, Package (0x0A)
+        {
+            M000, 
+            M001, 
+            M002, 
+            M003, 
+            M000, 
+            M001, 
+            M002, 
+            M003, 
+            I000, 
+            I000
+        })
+        Store (P000 [0x00], Local0)
+        M1A3 (Local0, C010, Z116, TS, 0x83)
+        CH03 (TS, Z116, 0x90, 0x03A8, 0x00)
+        Local1 = DerefOf (Local0)
+        CH04 (TS, 0x00, 0xFF, Z116, 0x03AA, 0x00, 0x00)
+        Store (P000 [0x01], Local0)
+        M1A3 (Local0, C010, Z116, TS, 0x84)
+        CH03 (TS, Z116, 0x92, 0x03AE, 0x00)
+        Local1 = DerefOf (Local0)
+        CH04 (TS, 0x00, 0xFF, Z116, 0x03B0, 0x00, 0x00)
+        Store (P000 [0x02], Local0)
+        M1A3 (Local0, C010, Z116, TS, 0x85)
+        CH03 (TS, Z116, 0x94, 0x03B4, 0x00)
+        Local1 = DerefOf (Local0)
+        CH04 (TS, 0x00, 0xFF, Z116, 0x03B6, 0x00, 0x00)
+        Store (P000 [0x03], Local0)
+        M1A3 (Local0, C010, Z116, TS, 0x86)
+        CH03 (TS, Z116, 0x96, 0x03BA, 0x00)
+        Local1 = DerefOf (Local0)
+        CH04 (TS, 0x00, 0xFF, Z116, 0x03BC, 0x00, 0x00)
+        Store (P000 [0x04], Local0)
+        M1A3 (Local0, C010, Z116, TS, 0x87)
+        CH03 (TS, Z116, 0x98, 0x03C0, 0x00)
+        Local1 = DerefOf (Local0)
+        CH04 (TS, 0x00, 0xFF, Z116, 0x03C2, 0x00, 0x00)
+        Store (P000 [0x05], Local0)
+        M1A3 (Local0, C010, Z116, TS, 0x88)
+        CH03 (TS, Z116, 0x9A, 0x03C6, 0x00)
+        Local1 = DerefOf (Local0)
+        CH04 (TS, 0x00, 0xFF, Z116, 0x03C8, 0x00, 0x00)
+        Store (P000 [0x06], Local0)
+        M1A3 (Local0, C010, Z116, TS, 0x89)
+        CH03 (TS, Z116, 0x9C, 0x03CC, 0x00)
+        Local1 = DerefOf (Local0)
+        CH04 (TS, 0x00, 0xFF, Z116, 0x03CE, 0x00, 0x00)
+        Store (P000 [0x07], Local0)
+        M1A3 (Local0, C010, Z116, TS, 0x8A)
+        CH03 (TS, Z116, 0x9E, 0x03D2, 0x00)
+        Local1 = DerefOf (Local0)
+        CH04 (TS, 0x00, 0xFF, Z116, 0x03D4, 0x00, 0x00)
+        M380 (TS, I000, 0x00, 0x8B)
+    }
+
+    /* Size of Package */
+
+    Method (M1CA, 0, Serialized)
+    {
+        Name (TS, "m1ca")
+        Method (M000, 1, Serialized)
+        {
+            Name (P000, Package (Arg0){})
+            CH03 (TS, Z116, 0xA0, 0x03E2, 0x00)
+            Store (P000 [Arg0], Local0)
+            CH04 (TS, 0x00, 0xFF, Z116, 0x03E4, 0x00, 0x00)
+        }
+
+        Method (M001, 1, Serialized)
+        {
+            Name (P000, Package (Arg0){})
+            Name (LPN0, 0x00)
+            Name (LPC0, 0x00)
+            /* Write each element of Package with its index */
+
+            LPN0 = Arg0
+            LPC0 = 0x00
+            While (LPN0)
+            {
+                P000 [LPC0] = LPC0 /* \M1CA.M001.LPC0 */
+                LPN0--
+                LPC0++
+            }
+
+            /* Verify each element of Package */
+
+            LPN0 = Arg0
+            LPC0 = 0x00
+            While (LPN0)
+            {
+                Store (P000 [LPC0], Local0)
+                Local1 = DerefOf (Local0)
+                If ((Local1 != LPC0))
+                {
+                    ERR (TS, Z116, 0x0402, Z116, 0x00, Local1, LPC0)
+                    Break
+                }
+
+                LPN0--
+                LPC0++
+            }
+        }
+
+        Method (M003, 0, Serialized)
+        {
+            Name (P000, Package (0x02){})
+            CH03 (TS, Z116, 0xA2, 0x040E, 0x00)
+            Store (P000 [0x02], Local0)
+            CH04 (TS, 0x00, 0xFF, Z116, 0x0410, 0x00, 0x00)
+        }
+
+        Method (M004, 0, Serialized)
+        {
+            Name (P000, Package (0xFF){})
+            CH03 (TS, Z116, 0xA4, 0x0417, 0x00)
+            Store (P000 [0xFF], Local0)
+            CH04 (TS, 0x00, 0xFF, Z116, 0x0419, 0x00, 0x00)
+        }
+
+        /* Size not greater than 255 */
+
+        M000 (0x01)
+        M000 (0x08)
+        M000 (0x7F)
+        M000 (0xFF)
+        M003 ()
+        M004 ()
+        /* VarPackage: size of Package greater than 255 */
+        /* (bug 129, not a bug) */
+        M001 (0x0100)
+    }
+
+    /* Size of Package, see comma "6,})" */
+
+    Method (M1CB, 0, Serialized)
+    {
+        Name (TS, "m1cb")
+        Name (P000, Package (0x06)
+        {
+            0x01, 
+            0x02, 
+            0x03, 
+            0x04, 
+            0x05, 
+            0x06
+        })
+        Local0 = SizeOf (P000)
+        If ((Local0 != 0x06))
+        {
+            ERR (TS, Z116, 0x0435, 0x00, 0x00, Local0, 0x06)
+        }
+    }
+
+    /* Check the read automatic dereference */
+    /* arg0 - name of Method initiating the checking */
+    /* arg1 - Oref or IRef */
+    /* arg2 - expected value */
+    /* arg3 - exception is expected */
+    Method (M1CC, 4, NotSerialized)
+    {
+        CH03 (Arg0, Z116, 0xA6, 0x0440, 0x00)
+        Local0 = Arg1
+        Local7 = (Local0 + 0x01)
+        If ((Local7 != Arg2))
+        {
+            ERR (Arg0, Z116, 0x0446, 0x00, 0x00, Local7, Arg2)
+        }
+
+        CH03 (Arg0, Z116, 0xA7, 0x0449, 0x00)
+    }
+
+    /* Check the read automatic dereference */
+    /* arg0 - name of Method initiating the checking */
+    /* arg1 - Oref or IRef */
+    /* arg2 - expected value */
+    /* arg3 - exception is expected */
+    Method (M1CD, 4, NotSerialized)
+    {
+        CH03 (Arg0, Z116, 0xA8, 0x0453, 0x00)
+        Local7 = (Arg1 + 0x01)
+        If ((Local7 != Arg2))
+        {
+            ERR (Arg0, Z116, 0x0458, 0x00, 0x00, Local7, Arg2)
+        }
+
+        CH03 (Arg0, Z116, 0xA9, 0x045B, 0x00)
+    }
+
+    /* Check the read automatic dereference */
+    /* when accessing element of Package. */
+    Method (M1CE, 0, Serialized)
+    {
+        Name (TS, "m1ce")
+        Name (P000, Package (0x01)
+        {
+            0x77
+        })
+        M1CC (TS, Local0 = P000 [0x00], 0x78, 0x00)
+        M1CD (TS, P000 [0x00], 0x78, 0x00)
+    }
+
+    Method (M1CF, 0, Serialized)
+    {
+        Name (TS, "m1cf")
+        Name (P000, Package (0x01)
+        {
+            0x77
+        })
+        Local0 = P000 [0x00]
+        M1CC (TS, Local0, 0x78, 0x00)
+        M1CD (TS, Local0, 0x78, 0x00)
+        Local1 = Local0 = P000 [0x00]
+        M1CC (TS, Local0, 0x78, 0x00)
+        M1CD (TS, Local0, 0x78, 0x00)
+        M1CC (TS, Local1, 0x78, 0x00)
+        M1CD (TS, Local1, 0x78, 0x00)
+    }
+
+    Method (M1D0, 0, Serialized)
+    {
+        Name (TS, "m1d0")
+        Name (P000, Package (0x01)
+        {
+            0x77
+        })
+        CopyObject (Local0 = P000 [0x00], Local1)
+        M1CC (TS, Local0, 0x78, 0x00)
+        M1CD (TS, Local0, 0x78, 0x00)
+        M1CC (TS, Local1, 0x78, 0x00)
+        M1CD (TS, Local1, 0x78, 0x00)
+    }
+
+    /* EXCEPTIONS */
+    /* ref07.asl 1093: Add(Index(p000, 0, Local0), 1, Local7) */
+    /* Error 1035 -    Invalid type ^  ([Reference] found, */
+    /*                   Add operator requires [Integer|String|Buffer]) */
+    /*
+     * Method(m1d1)
+     * {
+     *	Name(p000, Package(1) {0x77})
+     *	CH03(ts, z116, 170, __LINE__, 0)
+     *	Add(Index(p000, 0, Local0), 1, Local7)
+     *	CH04(ts, 0, 0xff, z116, __LINE__, 0, 0)
+     * }
+     */
+    /* LocalX */
+    Method (M1D1, 0, Serialized)
+    {
+        Name (TS, "m1d1")
+        Name (P000, Package (0x01)
+        {
+            0x77
+        })
+        Local1 = Local0 = P000 [0x00]
+        CH03 (TS, Z116, 0xAC, 0x04A6, 0x00)
+        Local7 = (Local0 + 0x01)
+        CH04 (TS, 0x00, 0xFF, Z116, 0x04AA, 0x00, 0x00)
+        Local7 = (Local1 + 0x01)
+        CH04 (TS, 0x00, 0xFF, Z116, 0x04AE, 0x00, 0x00)
+    }
+
+    Method (M1D2, 0, Serialized)
+    {
+        Name (TS, "m1d2")
+        Name (P000, Package (0x01)
+        {
+            0x77
+        })
+        CopyObject (Local0 = P000 [0x00], Local1)
+        CH03 (TS, Z116, 0xAF, 0x04B9, 0x00)
+        Local7 = (Local0 + 0x01)
+        CH04 (TS, 0x00, 0xFF, Z116, 0x04BD, 0x00, 0x00)
+        Local7 = (Local1 + 0x01)
+        CH04 (TS, 0x00, 0xFF, Z116, 0x04C1, 0x00, 0x00)
+    }
+
+    /* ArgX */
+
+    Method (M1D3, 2, Serialized)
+    {
+        Name (TS, "m1d3")
+        Name (P000, Package (0x01)
+        {
+            0x77
+        })
+        Arg1 = Arg0 = P000 [0x00]
+        CH03 (TS, Z116, 0xB2, 0x04CE, 0x00)
+        Local7 = (Arg0 + 0x01)
+        CH04 (TS, 0x00, 0xFF, Z116, 0x04D2, 0x00, 0x00)
+        Local7 = (Arg1 + 0x01)
+        CH04 (TS, 0x00, 0xFF, Z116, 0x04D6, 0x00, 0x00)
+    }
+
+    Method (M1D4, 2, Serialized)
+    {
+        Name (TS, "m1d4")
+        Name (P000, Package (0x01)
+        {
+            0x77
+        })
+        CopyObject (Arg0 = P000 [0x00], Arg1)
+        CH03 (TS, Z116, 0xB5, 0x04E1, 0x00)
+        Local7 = (Arg0 + 0x01)
+        CH04 (TS, 0x00, 0xFF, Z116, 0x04E5, 0x00, 0x00)
+        /* Type of Arg1 should be IRef here, */
+        /* so, exception is expected. */
+        Local7 = (Arg1 + 0x01)
+        CH04 (TS, 0x00, 0xFF, Z116, 0x04EC, 0x00, 0x00)
+    }
+
+    /* NamedX */
+
+    Method (M1D5, 0, Serialized)
+    {
+        Name (TS, "m1d5")
+        Name (I001, 0x00)
+        Name (P000, Package (0x02)
+        {
+            0x77, 
+            0x88
+        })
+        Name (SW00, 0x01)
+        Name (HG00, 0x00) /* if non-zero - the test hangs */
+        Name (HG01, 0x00) /* if non-zero - the test hangs */
+        Name (HG02, 0x00) /* if non-zero - the test hangs */
+        CH03 (TS, Z116, 0xB8, 0x04FD, 0x00)
+        CopyObject (Local0 = P000 [0x01], I001) /* \M1D5.I001 */
+        CH03 (TS, Z116, 0xB9, 0x0501, 0x00)
+        /* Type of i001 should be already IRef here, */
+        /* so, don't expect exception. */
+        I001 = Local0 = P000 [0x00]
+        CH03 (TS, Z116, 0xBA, 0x0508, 0x00)
+        Local7 = (Local0 + 0x01)
+        If (Y248)
+        {
+            HG00 = 0x01
+            HG01 = 0x01
+            HG02 = 0x01
+        }
+
+        /*
+         * To show visually the consequences of the anomaly
+         * run one of code below. They cause hang.
+         */
+        If (HG00)
+        {
+            /* Infinite loop of printing */
+
+            Local1 = 0x00
+            Debug = Local0
+        }
+
+        If (HG01)
+        {
+            /* Infinite loop of printing */
+
+            Debug = Local0
+            Debug = Local0
+        }
+
+        If (HG02)
+        {
+            Local1 = 0x00
+            Debug = "============== sit 2:"
+            Local7 = ObjectType (Local0)
+            Debug = Local7
+        }
+
+        CH04 (TS, 0x00, 0xFF, Z116, 0x0529, 0x00, 0x00)
+        Local7 = (I001 + 0x01)
+        CH04 (TS, 0x00, 0xFF, Z116, 0x052D, 0x00, 0x00)
+        /*
+         * Looks identical to b248: "Incorrect ReferenceCount on Switch operation":
+         *
+         * Reference count of Local0 is mistakenly zeroed there too.
+         *
+         * [ACPI Debug]  String: [0x0F] "<-------- 0000>"
+         * [ACPI Debug]  Reference: [Debug]
+         * [ACPI Debug]  String: [0x0F] "<-------- 1111>"
+         *
+         * [ACPI Debug]  String: [0x0F] "<-------- 0000>"
+         * [ACPI Debug]  [ACPI Debug]  String: [0x0F] "<-------- 1111>"
+         */
+        Debug = "<-------- 0000>"
+        Debug = Local0
+        Debug = "<-------- 1111>"
+    }
+
+    Method (M1D6, 0, Serialized)
+    {
+        Name (TS, "m1d6")
+        Name (I001, 0x00)
+        Name (P000, Package (0x01)
+        {
+            0x77
+        })
+        CH03 (TS, Z116, 0xBD, 0x0548, 0x00)
+        CopyObject (Local0 = P000 [0x00], I001) /* \M1D6.I001 */
+        CH03 (TS, Z116, 0xBE, 0x054C, 0x00)
+        Local7 = (I001 + 0x01)
+        CH04 (TS, 0x00, 0xFF, Z116, 0x0550, 0x00, 0x00)
+    }
+
+    /* Out of Package */
+
+    Method (M1D7, 0, Serialized)
+    {
+        Name (TS, "m1d7")
+        Name (P000, Package (0x01)
+        {
+            0x77
+        })
+        CH03 (TS, Z116, 0xC1, 0x055B, 0x00)
+        Store (P000 [0x01], Local0)
+        CH04 (TS, 0x00, 0xFF, Z116, 0x055F, 0x00, 0x00)
+        Local1 = Local0 = P000 [0x01]
+        CH04 (TS, 0x00, 0xFF, Z116, 0x0563, 0x00, 0x00)
+    }
+
+    Method (M1D8, 0, Serialized)
+    {
+        Name (TS, "m1d8")
+        Name (P000, Package (0x01)
+        {
+            0x77
+        })
+        CH03 (TS, Z116, 0xC4, 0x056C, 0x00)
+        CopyObject (P000 [0x01], Local0)
+        CH04 (TS, 0x00, 0xFF, Z116, 0x0570, 0x00, 0x00)
+        CopyObject (Local0 = P000 [0x01], Local1)
+        CH04 (TS, 0x00, 0xFF, Z116, 0x0574, 0x00, 0x00)
+    }
+
+    Method (M1DB, 0, Serialized)
+    {
+        Name (TS, "m1db")
+        Name (I001, 0x00)
+        Name (P000, Package (0x02)
+        {
+            0x77, 
+            0x88
+        })
+        CH03 (TS, Z116, 0xC7, 0x057F, 0x00)
+        CopyObject (P000 [0x01], I001) /* \M1DB.I001 */
+        CH03 (TS, Z116, 0xC8, 0x0583, 0x00)
+        /* Type of i001 should be already IRef here, */
+        /* so, don't expect exception. Writing to i001 */
+        /* is here identical to Store into it. */
+        I001 = P000 [0x00]
+        CH03 (TS, Z116, 0xC9, 0x058B, 0x00)
+        Local7 = (I001 + 0x01)
+        CH04 (TS, 0x00, 0xFF, Z116, 0x058F, 0x00, 0x00)
+    }
+
+    /* WRITE */
+
+    Method (M1D9, 0, Serialized)
+    {
+        Name (P000, Package (0x03)
+        {
+            0x05, 
+            0x00, 
+            0x07
+        })
+        Method (M000, 1, NotSerialized)
+        {
+            Local0 = (0x76 + 0x01)
+            Arg0 = Local0
+        }
+
+        M000 (P000 [0x01])
+        M383 ("m1d9", P000, Z116, 0x8C)
+    }
+
+    Method (M1DA, 0, Serialized)
+    {
+        Name (P000, Package (0x03)
+        {
+            0x05, 
+            0x00, 
+            0x07
+        })
+        Method (M000, 1, NotSerialized)
+        {
+            Arg0 = (0x76 + 0x01)
+        }
+
+        M000 (P000 [0x01])
+        M383 ("m1da", P000, Z116, 0x8D)
+    }
 
