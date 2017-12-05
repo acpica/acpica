@@ -343,7 +343,7 @@ AcpiDebugPrint (
     }
 
     AcpiOsPrintf ("[%02ld] %*s",
-        AcpiGbl_NestingLevel, AcpiGbl_NestingLevel, " ");
+        AcpiGbl_NestingLevel, AcpiGbl_NestingLevel + 1, " ");
     AcpiOsPrintf ("%s%*s: ",
         AcpiUtTrimFunctionName (FunctionName), FillCount, " ");
 
