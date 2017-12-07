@@ -290,8 +290,9 @@ AcpiDebugPrint (
 {
     ACPI_THREAD_ID          ThreadId;
     va_list                 args;
+#ifdef ACPI_APPLICATION
     int                     FillCount;
-
+#endif
 
     /* Check if debug output enabled */
 
