@@ -370,7 +370,7 @@ CgWriteAmlOpcode (
      * Before printing the bytecode, generate comment byte codes
      * associated with this node.
      */
-    if (Gbl_CaptureComments)
+    if (AcpiGbl_CaptureComments)
     {
         CgWriteAmlComment(Op);
     }
@@ -550,7 +550,7 @@ CgWriteTableHeader (
      * "XXXX" table signature prevents this AML file from running on the AML
      * interpreter.
      */
-    if (Gbl_CaptureComments)
+    if (AcpiGbl_CaptureComments)
     {
         strncpy(AcpiGbl_TableSig, Child->Asl.Value.String, ACPI_NAME_SIZE);
         Child->Asl.Value.String = ACPI_SIG_XXXX;
@@ -600,7 +600,7 @@ CgWriteTableHeader (
 
     /* Calculate the comment lengths for this definition block parseOp */
 
-    if (Gbl_CaptureComments)
+    if (AcpiGbl_CaptureComments)
     {
         CvDbgPrint ("Calculating comment lengths for %s in write header\n",
             Op->Asl.ParseOpName);
@@ -756,7 +756,8 @@ CgWriteNode (
 
 
     /* Write all comments here. */
-    if (Gbl_CaptureComments)
+
+    if (AcpiGbl_CaptureComments)
     {
         CgWriteAmlComment(Op);
     }
@@ -822,7 +823,7 @@ CgWriteNode (
     case PARSEOP_DEFINITION_BLOCK:
 
         CgWriteTableHeader (Op);
-        if (Gbl_CaptureComments)
+        if (AcpiGbl_CaptureComments)
         {
             CgWriteAmlDefBlockComment (Op);
         }

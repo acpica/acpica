@@ -293,7 +293,7 @@ AcpiPsAllocOp (
             AcpiGbl_CurrentScope = Op;
         }
 
-        if (Gbl_CaptureComments)
+        if (AcpiGbl_CaptureComments)
         {
             ASL_CV_TRANSFER_COMMENTS (Op);
         }

@@ -323,7 +323,7 @@ AslDoOptions (
             Gbl_IntegerOptimizationFlag = FALSE;
             Gbl_ReferenceOptimizationFlag = FALSE;
             Gbl_OptimizeTrivialParseNodes = FALSE;
-            Gbl_CaptureComments = TRUE;
+            AcpiGbl_CaptureComments = TRUE;
             AcpiGbl_DoDisassemblerOptimizations = FALSE;
             AcpiGbl_DebugAslConversion = TRUE;
             AcpiGbl_DmEmitExternalOpcodes = TRUE;
@@ -391,7 +391,7 @@ AslDoOptions (
             Gbl_IntegerOptimizationFlag = FALSE;
             Gbl_ReferenceOptimizationFlag = FALSE;
             Gbl_OptimizeTrivialParseNodes = FALSE;
-            Gbl_CaptureComments = TRUE;
+            AcpiGbl_CaptureComments = TRUE;
             AcpiGbl_DoDisassemblerOptimizations = FALSE;
             AcpiGbl_DmEmitExternalOpcodes = TRUE;
             Gbl_DoExternalsInPlace = TRUE;
@@ -796,8 +796,8 @@ AslDoOptions (
         Gbl_IntegerOptimizationFlag = FALSE;
         Gbl_ReferenceOptimizationFlag = FALSE;
         Gbl_OptimizeTrivialParseNodes = FALSE;
-        Gbl_CaptureComments = TRUE;
         Gbl_DoExternalsInPlace = TRUE;
+        AcpiGbl_CaptureComments = TRUE;
         return (0);
 
     case 'r':   /* Override revision found in table header */

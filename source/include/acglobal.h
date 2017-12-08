@@ -356,7 +356,7 @@ ACPI_INIT_GLOBAL (ACPI_PARSE_OBJECT,   *AcpiGbl_CurrentScope, NULL);
 
 /* ASL/ASL+ converter */
 
-ACPI_INIT_GLOBAL (BOOLEAN,              Gbl_CaptureComments, FALSE);
+ACPI_INIT_GLOBAL (BOOLEAN,              AcpiGbl_CaptureComments, FALSE);
 ACPI_INIT_GLOBAL (ACPI_COMMENT_NODE,   *AcpiGbl_LastListHead, NULL);
 
 
