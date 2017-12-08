@@ -552,11 +552,11 @@ CgWriteTableHeader (
      */
     if (Gbl_CaptureComments)
     {
-        strncpy(AcpiGbl_TableSig, Child->Asl.Value.String, 4);
+        strncpy(AcpiGbl_TableSig, Child->Asl.Value.String, ACPI_NAME_SIZE);
         Child->Asl.Value.String = ACPI_SIG_XXXX;
     }
 
-    strncpy (TableHeader.Signature, Child->Asl.Value.String, 4);
+    strncpy (TableHeader.Signature, Child->Asl.Value.String, ACPI_NAME_SIZE);
 
     /* Revision */
 
@@ -573,12 +573,12 @@ CgWriteTableHeader (
     /* OEMID */
 
     Child = Child->Asl.Next;
-    strncpy (TableHeader.OemId, Child->Asl.Value.String, 6);
+    strncpy (TableHeader.OemId, Child->Asl.Value.String, ACPI_OEM_ID_SIZE);
 
     /* OEM TableID */
 
     Child = Child->Asl.Next;
-    strncpy (TableHeader.OemTableId, Child->Asl.Value.String, 8);
+    strncpy (TableHeader.OemTableId, Child->Asl.Value.String, ACPI_OEM_TABLE_ID_SIZE);
 
     /* OEM Revision */
 
