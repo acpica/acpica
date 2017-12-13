@@ -747,7 +747,7 @@ AcpiExDumpOperand (
     UINT32                  Index;
 
 
-    ACPI_FUNCTION_NAME (ExDumpOperand)
+    ACPI_FUNCTION_NAME (ExDumpOperand);
 
 
     /* Check if debug output enabled */
