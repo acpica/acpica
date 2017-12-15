@@ -204,7 +204,7 @@ AxExtractTables (
 
     if (Signature)
     {
-        AcpiUtSafeStrncpy (UpperSignature, Signature, ACPI_NAME_SIZE);
+        strncpy (UpperSignature, Signature, ACPI_NAME_SIZE);
         AcpiUtStrupr (UpperSignature);
 
         /* Are there enough instances of the table to continue? */
