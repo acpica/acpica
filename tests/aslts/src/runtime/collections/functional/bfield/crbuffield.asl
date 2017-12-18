@@ -275,7 +275,6 @@
 
     Method (M211, 0, Serialized)
     {
-        Name (TS, "m211")
         Debug = "TEST: m211, Create 1-Bit Buffer Field:"
         /* Size of buffer (in bytes) */
 
@@ -294,7 +293,7 @@
         {
             If ((NCUR >= BSZ1))
             {
-                ERR (TS, Z001, 0x0136, 0x00, 0x00, NCUR, BSZ1)
+                ERR (__METHOD__, Z001, 0x0136, 0x00, 0x00, NCUR, BSZ1)
                 Break
             }
 
@@ -305,7 +304,7 @@
             B010 [Local0] = Local2
             Local3 = ~Local2
             B101 [Local0] = Local3
-            M210 (TS, NCUR, B000, B0FF, B010, B101, BSZ0)
+            M210 (__METHOD__, NCUR, B000, B0FF, B010, B101, BSZ0)
             N000--
             NCUR++
         }
@@ -485,7 +484,6 @@
 
     Method (M213, 0, Serialized)
     {
-        Name (TS, "m213")
         Debug = "TEST: m213, Create 8-Bit Buffer Field:"
         /* Size of buffer (in bytes) */
 
@@ -504,7 +502,7 @@
         {
             If ((NCUR >= BSZ1))
             {
-                ERR (TS, Z001, 0x020A, 0x00, 0x00, NCUR, BSZ1)
+                ERR (__METHOD__, Z001, 0x020A, 0x00, 0x00, NCUR, BSZ1)
                 Break
             }
 
@@ -514,7 +512,7 @@
             B010 [NCUR] = 0xFF
             B0B0 [NCUR] = 0x96
             B101 [NCUR] = 0x00
-            M212 (TS, NCUR, BSZ0)
+            M212 (__METHOD__, NCUR, BSZ0)
             N000--
             NCUR++
         }
@@ -708,7 +706,6 @@
 
     Method (M215, 0, Serialized)
     {
-        Name (TS, "m215")
         Debug = "TEST: m215, Create 16-Bit Buffer Field:"
         /* Size of buffer (in bytes) */
 
@@ -727,7 +724,7 @@
         {
             If ((NCUR >= BSZ1))
             {
-                ERR (TS, Z001, 0x02E8, 0x00, 0x00, NCUR, BSZ1)
+                ERR (__METHOD__, Z001, 0x02E8, 0x00, 0x00, NCUR, BSZ1)
                 Break
             }
 
@@ -742,7 +739,7 @@
             B010 [Local0] = 0xFF
             B0B0 [Local0] = 0x76
             B101 [Local0] = 0x00
-            M214 (TS, NCUR, BSZ0)
+            M214 (__METHOD__, NCUR, BSZ0)
             N000--
             NCUR++
         }
@@ -936,7 +933,6 @@
 
     Method (M217, 0, Serialized)
     {
-        Name (TS, "m217")
         Debug = "TEST: m217, Create 32-Bit Buffer Field:"
         /* Size of buffer (in bytes) */
 
@@ -955,7 +951,7 @@
         {
             If ((NCUR >= BSZ1))
             {
-                ERR (TS, Z001, 0x03CE, 0x00, 0x00, NCUR, BSZ1)
+                ERR (__METHOD__, Z001, 0x03CE, 0x00, 0x00, NCUR, BSZ1)
                 Break
             }
 
@@ -978,7 +974,7 @@
             B010 [Local0] = 0xFF
             B0B0 [Local0] = 0x32
             B101 [Local0] = 0x00
-            M216 (TS, NCUR, BSZ0)
+            M216 (__METHOD__, NCUR, BSZ0)
             N000--
             NCUR++
         }
@@ -1336,7 +1332,6 @@
 
     Method (M219, 0, Serialized)
     {
-        Name (TS, "m219")
         Debug = "TEST: m219, Create 64-Bit Buffer Field:"
         /* Size of buffer (in bytes) */
 
@@ -1355,7 +1350,7 @@
         {
             If ((NCUR >= BSZ1))
             {
-                ERR (TS, Z001, 0x054F, 0x00, 0x00, NCUR, BSZ1)
+                ERR (__METHOD__, Z001, 0x054F, 0x00, 0x00, NCUR, BSZ1)
                 Break
             }
 
@@ -1394,7 +1389,7 @@
             B010 [Local0] = 0xFF
             B0B0 [Local0] = 0xEF
             B101 [Local0] = 0x00
-            If (M218 (TS, NCUR, BSZ0))
+            If (M218 (__METHOD__, NCUR, BSZ0))
             {
                 Return (0x01)
             }
@@ -1720,7 +1715,6 @@
 
     Method (M21D, 0, Serialized)
     {
-        Name (TS, "m21d")
         Debug = "TEST: m21d, Create Arbitrary Length Buffer Field:"
         /* Layout of Package: */
         /* - <first index of bit>, */
@@ -1759,7 +1753,7 @@
         /*		1, 1, 40, 1, 0, 2, */
         /*		0, 1, 1, 65, 0, 1, */
         })
-        M21C (TS, 0x01, "p000", P000)
+        M21C (__METHOD__, 0x01, "p000", P000)
     }
 
     /* Run-method */

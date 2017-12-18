@@ -47292,94 +47292,93 @@
 
     Method (RFC0, 0, Serialized)
     {
-        Name (TS, "RFC0")
         /* Check common access: ByteAcc, NoLock, Preserve */
 
         SRMT ("m710")
-        M710 (TS)
+        M710 (__METHOD__)
         /* Check common access: ByteAcc, NoLock, WriteAsOnes */
 
         SRMT ("m711")
-        M711 (TS)
+        M711 (__METHOD__)
         /* Check common access: ByteAcc, NoLock, WriteAsZeros */
 
         SRMT ("m712")
-        M712 (TS)
+        M712 (__METHOD__)
         /* Check common access: WordAcc, NoLock, Preserve */
 
         SRMT ("m713")
-        M713 (TS)
+        M713 (__METHOD__)
         /* Check common access: WordAcc, NoLock, WriteAsOnes */
 
         SRMT ("m714")
-        M714 (TS)
+        M714 (__METHOD__)
         /* Check common access: WordAcc, NoLock, WriteAsZeros */
 
         SRMT ("m715")
-        M715 (TS)
+        M715 (__METHOD__)
         /* Check common access: DWordAcc, NoLock, Preserve */
 
         SRMT ("m716")
-        M716 (TS)
+        M716 (__METHOD__)
         /* Check common access: DWordAcc, NoLock, WriteAsOnes */
 
         SRMT ("m717")
-        M717 (TS)
+        M717 (__METHOD__)
         /* Check common access: DWordAcc, NoLock, WriteAsZeros */
 
         SRMT ("m718")
-        M718 (TS)
+        M718 (__METHOD__)
         /* Check common access: QWordAcc, NoLock, Preserve */
 
         SRMT ("m719")
-        M719 (TS)
+        M719 (__METHOD__)
         /* Check common access: QWordAcc, NoLock, WriteAsOnes */
 
         SRMT ("m71a")
-        M71A (TS)
+        M71A (__METHOD__)
         /* Check common access: QWordAcc, NoLock, WriteAsZeros */
 
         SRMT ("m71b")
-        M71B (TS)
+        M71B (__METHOD__)
         /* Check common access: AnyAcc, NoLock, Preserve */
 
         SRMT ("m71c")
-        M71C (TS)
+        M71C (__METHOD__)
         /* Check common access: AnyAcc, NoLock, WriteAsOnes */
 
         SRMT ("m71d")
-        M71D (TS)
+        M71D (__METHOD__)
         /* Check common access: AnyAcc, NoLock, WriteAsZeros */
 
         SRMT ("m71e")
-        M71E (TS)
+        M71E (__METHOD__)
         /* Check SMBus/BufferAcc access */
 
         SRMT ("m71f")
-        M71F (TS)
+        M71F (__METHOD__)
         /* Check GeneralPurposeIo/ByteAcc access */
 
         SRMT ("m764")
-        M764 (TS)
+        M764 (__METHOD__)
         /* Check IPMI/BufferAcc access */
 
         SRMT ("m768")
-        M768 (TS)
+        M768 (__METHOD__)
         /* Check GenericSerialBus/BufferAcc access */
 
         SRMT ("m740")
-        M740 (TS)
+        M740 (__METHOD__)
         /* Splitting of Fields */
 
         SRMT ("m742")
-        M742 (TS)
+        M742 (__METHOD__)
         /* Long List of Fields */
 
         SRMT ("m743")
-        M743 (TS)
+        M743 (__METHOD__)
         /* Large Offset */
 
         SRMT ("m744")
-        M744 (TS)
+        M744 (__METHOD__)
     }
 

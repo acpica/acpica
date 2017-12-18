@@ -41,7 +41,6 @@
     /* Note: Package can be used with Index */
     Method (M4B4, 1, Serialized)
     {
-        Name (TS, "m4b4")
         Name (P000, Package (0x01)
         {
             0x62
@@ -60,13 +59,13 @@
             /* CondRefOf */
 
             Local1 = CondRefOf (P000)
-            CH03 (TS, Z096, 0x00, 0x3F, 0x00)
+            CH03 (__METHOD__, Z096, 0x00, 0x3F, 0x00)
             CondRefOf (P000, Local1)
-            CH03 (TS, Z096, 0x01, 0x42, 0x00)
+            CH03 (__METHOD__, Z096, 0x01, 0x42, 0x00)
             /* CopyObject */
 
             CopyObject (P000, Local1)
-            CH03 (TS, Z096, 0x02, 0x47, 0x00)
+            CH03 (__METHOD__, Z096, 0x02, 0x47, 0x00)
             /* Decrement */
             /* DerefOf */
             /* These are now caught by the compiler - Aug 2015
@@ -83,22 +82,22 @@
             /* Not */
             /* ObjectType */
             Local1 = ObjectType (P000)
-            CH03 (TS, Z096, 0x03, 0x63, 0x00)
+            CH03 (__METHOD__, Z096, 0x03, 0x63, 0x00)
             /* RefOf */
 
             Local1 = RefOf (P000)
-            CH03 (TS, Z096, 0x04, 0x68, 0x00)
+            CH03 (__METHOD__, Z096, 0x04, 0x68, 0x00)
             /* Release */
             /* Reset */
             /* Signal */
             /* SizeOf */
             Local1 = SizeOf (P000)
-            CH03 (TS, Z096, 0x05, 0x73, 0x00)
+            CH03 (__METHOD__, Z096, 0x05, 0x73, 0x00)
             /* Sleep */
             /* Stall */
             /* Store */
             Local1 = P000 /* \M4B4.M000.P000 */
-            CH03 (TS, Z096, 0x06, 0x7C, 0x00)
+            CH03 (__METHOD__, Z096, 0x06, 0x7C, 0x00)
             /* ToBCD */
             /* ToBuffer */
             /* ToDecimalString */
@@ -113,9 +112,9 @@
             /* Fatal */
             /* Index */
             Local1 = P000 [0x00]
-            CH03 (TS, Z096, 0x07, 0x99, 0x00)
+            CH03 (__METHOD__, Z096, 0x07, 0x99, 0x00)
             Store (P000 [0x00], Local1)
-            CH03 (TS, Z096, 0x08, 0x9C, 0x00)
+            CH03 (__METHOD__, Z096, 0x08, 0x9C, 0x00)
             /* LEqual */
             /* LGreater */
             /* LGreaterEqual */
@@ -137,7 +136,7 @@
             /* Mid */
             /* Match */
             Local1 = Match (P000, MTR, 0x00, MTR, 0x00, 0x00)
-            CH03 (TS, Z096, 0x09, 0xC7, 0x00)
+            CH03 (__METHOD__, Z096, 0x09, 0xC7, 0x00)
         }
 
         /* Global Named Object */
@@ -147,11 +146,11 @@
             /* CondRefOf */
 
             CondRefOf (P100, Local1)
-            CH03 (TS, Z096, 0x0B, 0xD0, 0x00)
+            CH03 (__METHOD__, Z096, 0x0B, 0xD0, 0x00)
             /* CopyObject */
 
             CopyObject (P100, Local1)
-            CH03 (TS, Z096, 0x0C, 0xD5, 0x00)
+            CH03 (__METHOD__, Z096, 0x0C, 0xD5, 0x00)
             /* Decrement */
             /* DerefOf */
             /* These are now caught by the compiler - Aug 2015
@@ -168,22 +167,22 @@
             /* Not */
             /* ObjectType */
             Local1 = ObjectType (P100)
-            CH03 (TS, Z096, 0x0D, 0xF0, 0x00)
+            CH03 (__METHOD__, Z096, 0x0D, 0xF0, 0x00)
             /* RefOf */
 
             Local1 = RefOf (P100)
-            CH03 (TS, Z096, 0x0E, 0xF5, 0x00)
+            CH03 (__METHOD__, Z096, 0x0E, 0xF5, 0x00)
             /* Release */
             /* Reset */
             /* Signal */
             /* SizeOf */
             Local1 = SizeOf (P100)
-            CH03 (TS, Z096, 0x0F, 0x0100, 0x00)
+            CH03 (__METHOD__, Z096, 0x0F, 0x0100, 0x00)
             /* Sleep */
             /* Stall */
             /* Store */
             Local1 = P100 /* \P100 */
-            CH03 (TS, Z096, 0x10, 0x0109, 0x00)
+            CH03 (__METHOD__, Z096, 0x10, 0x0109, 0x00)
             /* ToBCD */
             /* ToBuffer */
             /* ToDecimalString */
@@ -198,7 +197,7 @@
             /* Fatal */
             /* Index */
             Store (P100 [0x00], Local1)
-            CH03 (TS, Z096, 0x12, 0x0126, 0x00)
+            CH03 (__METHOD__, Z096, 0x12, 0x0126, 0x00)
             /* LEqual */
             /* LGreater */
             /* LGreaterEqual */
@@ -220,7 +219,7 @@
             /* Mid */
             /* Match */
             Local1 = Match (P100, MTR, 0x00, MTR, 0x00, 0x00)
-            CH03 (TS, Z096, 0x13, 0x0151, 0x00)
+            CH03 (__METHOD__, Z096, 0x13, 0x0151, 0x00)
         }
 
         /* Argument */
@@ -231,11 +230,11 @@
             /* CondRefOf */
 
             CondRefOf (Arg1, Local1)
-            CH03 (TS, Z096, 0x15, 0x015C, 0x00)
+            CH03 (__METHOD__, Z096, 0x15, 0x015C, 0x00)
             /* CopyObject */
 
             CopyObject (Arg1, Local1)
-            CH03 (TS, Z096, 0x16, 0x0161, 0x00)
+            CH03 (__METHOD__, Z096, 0x16, 0x0161, 0x00)
             /* Decrement */
 
             Arg1--
@@ -271,11 +270,11 @@
             /* ObjectType */
 
             Local1 = ObjectType (Arg1)
-            CH03 (TS, Z096, 0x17, 0x018E, 0x00)
+            CH03 (__METHOD__, Z096, 0x17, 0x018E, 0x00)
             /* RefOf */
 
             Local1 = RefOf (Arg1)
-            CH03 (TS, Z096, 0x18, 0x0193, 0x00)
+            CH03 (__METHOD__, Z096, 0x18, 0x0193, 0x00)
             /* Release */
 
             Release (Arg1)
@@ -291,7 +290,7 @@
             /* SizeOf */
 
             Local1 = SizeOf (Arg1)
-            CH03 (TS, Z096, 0x19, 0x01A7, 0x00)
+            CH03 (__METHOD__, Z096, 0x19, 0x01A7, 0x00)
             /* Sleep */
 
             Sleep (Arg1)
@@ -303,7 +302,7 @@
             /* Store */
 
             Local1 = Arg1
-            CH03 (TS, Z096, 0x1A, 0x01B6, 0x00)
+            CH03 (__METHOD__, Z096, 0x1A, 0x01B6, 0x00)
             /* ToBCD */
 
             ToBCD (Arg1, Local1)
@@ -375,7 +374,7 @@
             /* Index */
 
             Local1 = Arg1 [0x00]
-            CH03 (TS, Z096, 0x1C, 0x020C, 0x00)
+            CH03 (__METHOD__, Z096, 0x1C, 0x020C, 0x00)
             Index ("0", Arg1, Local1)
             CH06 (Arg0, 0x39, 0x2F)
             /* LEqual */
@@ -497,7 +496,7 @@
             /* Match */
 
             Local1 = Match (Arg1, MTR, 0x00, MTR, 0x00, 0x00)
-            CH03 (TS, Z096, 0x1D, 0x02AF, 0x00)
+            CH03 (__METHOD__, Z096, 0x1D, 0x02AF, 0x00)
             Local1 = Match (Package (0x01)
                     {
                         0x01
@@ -526,11 +525,11 @@
             /* CondRefOf */
 
             CondRefOf (Local0, Local1)
-            CH03 (TS, Z096, 0x1F, 0x02C3, 0x00)
+            CH03 (__METHOD__, Z096, 0x1F, 0x02C3, 0x00)
             /* CopyObject */
 
             CopyObject (Local0, Local1)
-            CH03 (TS, Z096, 0x20, 0x02C8, 0x00)
+            CH03 (__METHOD__, Z096, 0x20, 0x02C8, 0x00)
             /* Decrement */
 
             Local0--
@@ -566,11 +565,11 @@
             /* ObjectType */
 
             Local1 = ObjectType (Local0)
-            CH03 (TS, Z096, 0x21, 0x02F5, 0x00)
+            CH03 (__METHOD__, Z096, 0x21, 0x02F5, 0x00)
             /* RefOf */
 
             Local1 = RefOf (Local0)
-            CH03 (TS, Z096, 0x22, 0x02FA, 0x00)
+            CH03 (__METHOD__, Z096, 0x22, 0x02FA, 0x00)
             /* Release */
 
             Release (Local0)
@@ -586,7 +585,7 @@
             /* SizeOf */
 
             Local1 = SizeOf (Local0)
-            CH03 (TS, Z096, 0x23, 0x030E, 0x00)
+            CH03 (__METHOD__, Z096, 0x23, 0x030E, 0x00)
             /* Sleep */
 
             Sleep (Local0)
@@ -598,7 +597,7 @@
             /* Store */
 
             Local1 = Local0
-            CH03 (TS, Z096, 0x24, 0x031D, 0x00)
+            CH03 (__METHOD__, Z096, 0x24, 0x031D, 0x00)
             /* ToBCD */
 
             ToBCD (Local0, Local1)
@@ -668,7 +667,7 @@
             /* Index */
 
             Local1 = Local0 [0x00]
-            CH03 (TS, Z096, 0x26, 0x0370, 0x00)
+            CH03 (__METHOD__, Z096, 0x26, 0x0370, 0x00)
             Index ("0", Local0, Local1)
             CH06 (Arg0, 0x39, 0x2F)
             /* LEqual */
@@ -790,7 +789,7 @@
             /* Match */
 
             Local1 = Match (Local0, MTR, 0x00, MTR, 0x00, 0x00)
-            CH03 (TS, Z096, 0x27, 0x0413, 0x00)
+            CH03 (__METHOD__, Z096, 0x27, 0x0413, 0x00)
             Local1 = Match (Package (0x01)
                     {
                         0x01
@@ -826,7 +825,7 @@
             /* CopyObject */
 
             CopyObject (DerefOf (P000 [0x00]), Local1)
-            CH03 (TS, Z096, 0x28, 0x042E, 0x00)
+            CH03 (__METHOD__, Z096, 0x28, 0x042E, 0x00)
             /* Decrement */
 
             DerefOf (P000 [0x00])--
@@ -862,7 +861,7 @@
             /* ObjectType */
 
             Local1 = ObjectType (DerefOf (P000 [0x00]))
-            CH03 (TS, Z096, 0x29, 0x045B, 0x00)
+            CH03 (__METHOD__, Z096, 0x29, 0x045B, 0x00)
             /* RefOf */
 
             Local1 = RefOf (DerefOf (P000 [0x00]))
@@ -872,7 +871,7 @@
             /* Signal */
             /* SizeOf */
             Local1 = SizeOf (DerefOf (P000 [0x00]))
-            CH03 (TS, Z096, 0x2A, 0x046B, 0x00)
+            CH03 (__METHOD__, Z096, 0x2A, 0x046B, 0x00)
             /* Sleep */
 
             Sleep (DerefOf (P000 [0x00]))
@@ -884,7 +883,7 @@
             /* Store */
 
             Local1 = DerefOf (P000 [0x00])
-            CH03 (TS, Z096, 0x2B, 0x047A, 0x00)
+            CH03 (__METHOD__, Z096, 0x2B, 0x047A, 0x00)
             /* ToBCD */
 
             ToBCD (DerefOf (P000 [0x00]), Local1)
@@ -952,7 +951,7 @@
             /* Index */
 
             Local1 = DerefOf (P000 [0x00]) [0x00]
-            CH03 (TS, Z096, 0x2D, 0x04CD, 0x00)
+            CH03 (__METHOD__, Z096, 0x2D, 0x04CD, 0x00)
             Index ("0", DerefOf (P000 [0x00]), Local1)
             CH06 (Arg0, 0x39, 0x2F)
             /* LEqual */
@@ -1073,7 +1072,7 @@
 
             Local1 = Match (DerefOf (P000 [0x00]), MTR, 0x00, MTR, 0x00, 
                 0x00)
-            CH03 (TS, Z096, 0x2E, 0x056D, 0x00)
+            CH03 (__METHOD__, Z096, 0x2E, 0x056D, 0x00)
             Local1 = Match (Package (0x01)
                     {
                         0x01
@@ -1096,7 +1095,7 @@
             /* CopyObject */
 
             CopyObject (DerefOf (Local0 = P000 [0x00]), Local1)
-            CH03 (TS, Z096, 0x2F, 0x0583, 0x00)
+            CH03 (__METHOD__, Z096, 0x2F, 0x0583, 0x00)
             /* Decrement */
 
             DerefOf (Local0 = P000 [0x00])--
@@ -1132,7 +1131,7 @@
             /* ObjectType */
 
             Local1 = ObjectType (DerefOf (Local0 = P000 [0x00]))
-            CH03 (TS, Z096, 0x30, 0x05B0, 0x00)
+            CH03 (__METHOD__, Z096, 0x30, 0x05B0, 0x00)
             /* RefOf */
 
             Local1 = RefOf (DerefOf (Local0 = P000 [0x00]))
@@ -1142,7 +1141,7 @@
             /* Signal */
             /* SizeOf */
             Local1 = SizeOf (DerefOf (Local0 = P000 [0x00]))
-            CH03 (TS, Z096, 0x31, 0x05C0, 0x00)
+            CH03 (__METHOD__, Z096, 0x31, 0x05C0, 0x00)
             /* Sleep */
 
             Sleep (DerefOf (Local0 = P000 [0x00]))
@@ -1154,7 +1153,7 @@
             /* Store */
 
             Local1 = DerefOf (Local0 = P000 [0x00])
-            CH03 (TS, Z096, 0x32, 0x05CF, 0x00)
+            CH03 (__METHOD__, Z096, 0x32, 0x05CF, 0x00)
             /* ToBCD */
 
             ToBCD (DerefOf (Local0 = P000 [0x00]), Local1)
@@ -1222,7 +1221,7 @@
             /* Index */
 
             Local1 = DerefOf (Local0 = P000 [0x00]) [0x00]
-            CH03 (TS, Z096, 0x34, 0x0622, 0x00)
+            CH03 (__METHOD__, Z096, 0x34, 0x0622, 0x00)
             Index ("0", DerefOf (Local0 = P000 [0x00]), Local1)
             CH06 (Arg0, 0x39, 0x2F)
             /* LEqual */
@@ -1343,7 +1342,7 @@
 
             Local1 = Match (DerefOf (Local0 = P000 [0x00]), MTR, 0x00, MTR, 0x00, 
                 0x00)
-            CH03 (TS, Z096, 0x35, 0x06C2, 0x00)
+            CH03 (__METHOD__, Z096, 0x35, 0x06C2, 0x00)
             Local1 = Match (Package (0x01)
                     {
                         0x01
@@ -1375,7 +1374,7 @@
             }
 
             Local1 = DerefOf (Arg1)
-            CH03 (TS, Z096, 0x36, 0x06DB, 0x00)
+            CH03 (__METHOD__, Z096, 0x36, 0x06DB, 0x00)
             /* CondRefOf */
 
             Local1 = CondRefOf (DerefOf (Arg1))
@@ -1385,7 +1384,7 @@
             /* CopyObject */
 
             CopyObject (DerefOf (Arg1), Local1)
-            CH03 (TS, Z096, 0x37, 0x06E8, 0x00)
+            CH03 (__METHOD__, Z096, 0x37, 0x06E8, 0x00)
             /* Decrement */
 
             DerefOf (Arg1)--
@@ -1421,7 +1420,7 @@
             /* ObjectType */
 
             Local1 = ObjectType (DerefOf (Arg1))
-            CH03 (TS, Z096, 0x38, 0x0715, 0x00)
+            CH03 (__METHOD__, Z096, 0x38, 0x0715, 0x00)
             /* RefOf */
 
             Local1 = RefOf (DerefOf (Arg1))
@@ -1431,7 +1430,7 @@
             /* Signal */
             /* SizeOf */
             Local1 = SizeOf (DerefOf (Arg1))
-            CH03 (TS, Z096, 0x39, 0x0725, 0x00)
+            CH03 (__METHOD__, Z096, 0x39, 0x0725, 0x00)
             /* Sleep */
 
             Sleep (DerefOf (Arg1))
@@ -1443,7 +1442,7 @@
             /* Store */
 
             Local1 = DerefOf (Arg1)
-            CH03 (TS, Z096, 0x3A, 0x0734, 0x00)
+            CH03 (__METHOD__, Z096, 0x3A, 0x0734, 0x00)
             /* ToBCD */
 
             ToBCD (DerefOf (Arg1), Local1)
@@ -1511,7 +1510,7 @@
             /* Index */
 
             Local1 = DerefOf (Arg1) [0x00]
-            CH03 (TS, Z096, 0x3C, 0x0787, 0x00)
+            CH03 (__METHOD__, Z096, 0x3C, 0x0787, 0x00)
             Index ("0", DerefOf (Arg1), Local1)
             CH06 (Arg0, 0x39, 0x2F)
             /* LEqual */
@@ -1631,7 +1630,7 @@
             /* Match */
 
             Local1 = Match (DerefOf (Arg1), MTR, 0x00, MTR, 0x00, 0x00)
-            CH03 (TS, Z096, 0x3D, 0x0827, 0x00)
+            CH03 (__METHOD__, Z096, 0x3D, 0x0827, 0x00)
             Local1 = Match (Package (0x01)
                     {
                         0x01
@@ -1680,7 +1679,7 @@
             /* CopyObject */
 
             CopyObject (M000 (), Local1)
-            CH03 (TS, Z096, 0x3E, 0x0852, 0x00)
+            CH03 (__METHOD__, Z096, 0x3E, 0x0852, 0x00)
             /* Decrement */
 
             M000 ()--
@@ -1716,7 +1715,7 @@
             /* **** ObjectType */
             /* Nov. 2012: Method invocation as arg to ObjectType is now illegal */
             Local0 = ObjectType (M000)
-            CH03 (TS, Z096, 0x3F, 0x0880, 0x00)
+            CH03 (__METHOD__, Z096, 0x3F, 0x0880, 0x00)
             /* RefOf */
             /* **** Oct. 2016: Method invocation as arg to RefOf is now illegal */
             /*		if (y601) { */
@@ -1819,22 +1818,22 @@
             If (Y900)
             {
                 Local1 = M000 () [0x00]
-                CH03 (TS, Z096, 0x41, 0x08FF, 0x00)
+                CH03 (__METHOD__, Z096, 0x41, 0x08FF, 0x00)
                 Index ("0", M000 (), Local1)
                 CH06 (Arg0, 0x39, 0x2F)
             }
             Else
             {
-                CH03 (TS, Z096, 0x0123, 0x0904, 0x00)
-                CH03 (TS, Z096, 0x0127, 0x0905, 0x00)
+                CH03 (__METHOD__, Z096, 0x0123, 0x0904, 0x00)
+                CH03 (__METHOD__, Z096, 0x0127, 0x0905, 0x00)
                 Local1 = M000 () [0x00]
-                CH04 (TS, 0x00, 0x55, Z094, 0x0907, 0x00, 0x00) /* AE_INDEX_TO_NOT_ATTACHED */
-                CH03 (TS, Z096, 0x0129, 0x0909, 0x00)
+                CH04 (__METHOD__, 0x00, 0x55, Z094, 0x0907, 0x00, 0x00) /* AE_INDEX_TO_NOT_ATTACHED */
+                CH03 (__METHOD__, Z096, 0x0129, 0x0909, 0x00)
                 Index ("0", M000 (), Local1)
-                CH04 (TS, 0x00, 0xFF, Z094, 0x090B, 0x00, 0x00) /* AE_INDEX_TO_NOT_ATTACHED */
-                CH03 (TS, Z096, 0x0129, 0x090D, 0x00)
+                CH04 (__METHOD__, 0x00, 0xFF, Z094, 0x090B, 0x00, 0x00) /* AE_INDEX_TO_NOT_ATTACHED */
+                CH03 (__METHOD__, Z096, 0x0129, 0x090D, 0x00)
                 Local1 = SS00 [M000 ()]
-                CH04 (TS, 0x00, 0x2F, Z094, 0x090F, 0x00, 0x00) /* AE_INDEX_TO_NOT_ATTACHED */
+                CH04 (__METHOD__, 0x00, 0x2F, Z094, 0x090F, 0x00, 0x00) /* AE_INDEX_TO_NOT_ATTACHED */
             }
 
             /* LEqual */
@@ -1956,7 +1955,7 @@
             /* Match */
 
             Local1 = Match (M000 (), MTR, 0x00, MTR, 0x00, 0x00)
-            CH03 (TS, Z096, 0x42, 0x09B0, 0x00)
+            CH03 (__METHOD__, Z096, 0x42, 0x09B0, 0x00)
             Local1 = Match (Package (0x01)
                     {
                         0x01
@@ -2013,7 +2012,7 @@
                 Local0 = (0x03 * LPC0) /* \M4B4.M007.LPC0 */
                 I000 = 0x00
                 Local1 = DerefOf (M000 (0x01, LPC0))
-                CH03 (TS, Z096, 0x09DE, 0x00, 0x00)
+                CH03 (__METHOD__, Z096, 0x09DE, 0x00, 0x00)
                 CH00 (Arg0, 0x01)
                 Local1 = DerefOf (DerefOf (M000 (0x02, LPC0)))
                 CH06 (Arg0, (0x01 + Local0), 0x2F)
@@ -2118,16 +2117,16 @@
 
             /* Index */
 
-            CH03 (TS, Z094, 0x0123, 0x0A48, 0x00)
+            CH03 (__METHOD__, Z094, 0x0123, 0x0A48, 0x00)
             Store (M000 (0x09) [0x00], Local1)
             If (Y900)
             {
-                CH03 (TS, Z096, 0x45, 0x0A4B, 0x00)
+                CH03 (__METHOD__, Z096, 0x45, 0x0A4B, 0x00)
                 CH00 (Arg0, 0x09)
             }
             Else
             {
-                CH04 (TS, 0x00, 0x55, Z094, 0x0A4E, 0x00, 0x00) /* AE_INDEX_TO_NOT_ATTACHED */
+                CH04 (__METHOD__, 0x00, 0x55, Z094, 0x0A4E, 0x00, 0x00) /* AE_INDEX_TO_NOT_ATTACHED */
             }
 
             /* Wait */
@@ -2142,60 +2141,60 @@
             /* Match */
 
             Local1 = Match (M000 (0x0B), MTR, 0x00, MTR, 0x00, 0x00)
-            CH03 (TS, Z096, 0x46, 0x0A5C, 0x00)
+            CH03 (__METHOD__, Z096, 0x46, 0x0A5C, 0x00)
             CH00 (Arg0, 0x0B)
         }
 
-        SET0 (Z096, TS, 0x00)
-        CH03 (TS, Z096, 0x46, 0x0A62, 0x00)
+        SET0 (Z096, __METHOD__, 0x00)
+        CH03 (__METHOD__, Z096, 0x46, 0x0A62, 0x00)
         /* Local Named Object */
 
-        M000 (TS)
+        M000 (__METHOD__)
         /* Global Named Object */
 
-        M001 (TS)
+        M001 (__METHOD__)
         /* Argument */
 
-        M002 (TS, Package (0x01)
+        M002 (__METHOD__, Package (0x01)
             {
                 0x62
             })
         /* Local */
 
-        M003 (Concatenate (TS, "-m003"))
+        M003 (Concatenate (__METHOD__, "-m003"))
         /* An element of Package */
 
-        M004 (Concatenate (TS, "-m004"))
+        M004 (Concatenate (__METHOD__, "-m004"))
         /* Reference to Local Named Object */
 
-        M005 (Concatenate (TS, "-m005-RefLocName"), RefOf (P000))
+        M005 (Concatenate (__METHOD__, "-m005-RefLocName"), RefOf (P000))
         Local0 = RefOf (P000)
-        M005 (Concatenate (TS, "-m005-RefLocName2"), Local0)
+        M005 (Concatenate (__METHOD__, "-m005-RefLocName2"), Local0)
         CondRefOf (P000, Local0)
-        M005 (Concatenate (TS, "-m005-CondRefLocName"), Local0)
-        M005 (Concatenate (TS, "-m005-RefGlobName"), RefOf (P100))
+        M005 (Concatenate (__METHOD__, "-m005-CondRefLocName"), Local0)
+        M005 (Concatenate (__METHOD__, "-m005-RefGlobName"), RefOf (P100))
         Local0 = RefOf (P100)
-        M005 (Concatenate (TS, "-m005-RefGlobName2"), Local0)
+        M005 (Concatenate (__METHOD__, "-m005-RefGlobName2"), Local0)
         CondRefOf (P100, Local0)
-        M005 (Concatenate (TS, "-m005-CondRefGlobName"), Local0)
+        M005 (Concatenate (__METHOD__, "-m005-CondRefGlobName"), Local0)
         /* Reference to Local */
 
         Local0 = Package (0x01)
             {
                 0x62
             }
-        M005 (Concatenate (TS, "-m005-RefLocal"), RefOf (Local0))
+        M005 (Concatenate (__METHOD__, "-m005-RefLocal"), RefOf (Local0))
         Local1 = RefOf (Local0)
-        M005 (Concatenate (TS, "-m005-RefLocal2"), Local1)
+        M005 (Concatenate (__METHOD__, "-m005-RefLocal2"), Local1)
         CondRefOf (Local0, Local1)
-        M005 (Concatenate (TS, "-m005-CondRefLocal"), Local1)
+        M005 (Concatenate (__METHOD__, "-m005-CondRefLocal"), Local1)
         /* Reference to Arg */
 
-        M005 (Concatenate (TS, "-m005-RefArg"), RefOf (Arg0))
+        M005 (Concatenate (__METHOD__, "-m005-RefArg"), RefOf (Arg0))
         Local0 = RefOf (Arg0)
-        M005 (Concatenate (TS, "-m005-RefArg2"), Local0)
+        M005 (Concatenate (__METHOD__, "-m005-RefArg2"), Local0)
         CondRefOf (Arg0, Local0)
-        M005 (Concatenate (TS, "-m005-CondRefArg"), Local0)
+        M005 (Concatenate (__METHOD__, "-m005-CondRefArg"), Local0)
         /* Index to Package */
 
         Name (PP00, Package (0x01)
@@ -2207,33 +2206,33 @@
         })
         If (Y113)
         {
-            M005 (Concatenate (TS, "-m005-Index"), PP00 [0x00])
+            M005 (Concatenate (__METHOD__, "-m005-Index"), PP00 [0x00])
         }
 
         Store (PP00 [0x00], Local0)
-        M005 (Concatenate (TS, "-m005-Index2"), Local0)
+        M005 (Concatenate (__METHOD__, "-m005-Index2"), Local0)
         If (Y113)
         {
-            M005 (Concatenate (TS, "-m005-Index3"), Local0 = PP00 [0x00])
+            M005 (Concatenate (__METHOD__, "-m005-Index3"), Local0 = PP00 [0x00])
         }
 
         Local0 = PP00 [0x00]
-        M005 (Concatenate (TS, "-m005-Index4"), Local0)
+        M005 (Concatenate (__METHOD__, "-m005-Index4"), Local0)
         Local1 = Local0 = PP00 [0x00]
-        M005 (Concatenate (TS, "-m005-Index5"), Local1)
+        M005 (Concatenate (__METHOD__, "-m005-Index5"), Local1)
         /* Result of Method invocation */
 
-        M006 (Concatenate (TS, "-m006"))
+        M006 (Concatenate (__METHOD__, "-m006"))
         /* Reference to Object as Result of Method invocation */
 
         If (Y500)
         {
-            M007 (Concatenate (TS, "-m007"))
+            M007 (Concatenate (__METHOD__, "-m007"))
         }
 
         /* Result of Method with checking of invocation */
 
-        M008 (Concatenate (TS, "-m008"))
+        M008 (Concatenate (__METHOD__, "-m008"))
         RST0 ()
     }
 

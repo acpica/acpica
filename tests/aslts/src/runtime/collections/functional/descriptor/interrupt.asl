@@ -1713,13 +1713,12 @@
     })
     Method (RT18, 0, Serialized)
     {
-        Name (TS, "RT18")
         /* Emit test header, set the filename */
 
-        THDR (TS, "Interrupt Resource Descriptor Macro", "interrupt.asl")
+        THDR (__METHOD__, "Interrupt Resource Descriptor Macro", "interrupt.asl")
         /* Main test case for packages above */
 
-        M330 (TS, 0x17, "p434", P434, P435)
+        M330 (__METHOD__, 0x17, "p434", P434, P435)
         /* Check resource descriptor tag offsets */
 
         Local0 = ResourceTemplate ()
@@ -1733,10 +1732,10 @@
                     0xFCFDFEFF,
                 }
             }
-        M331 (TS, 0x01, 0x19, 0x19, 0x61, 0x61, "_HE")
-        M331 (TS, 0x02, 0x1A, 0x1A, 0x62, 0x62, "_LL")
-        M331 (TS, 0x03, 0x1B, 0x1B, 0x63, 0x63, "_SHR")
-        M331 (TS, 0x04, 0x28, 0x28, 0x70, 0x70, "_INT")
-        CH03 (TS, Z017, 0x0123, 0x023E, 0x00)
+        M331 (__METHOD__, 0x01, 0x19, 0x19, 0x61, 0x61, "_HE")
+        M331 (__METHOD__, 0x02, 0x1A, 0x1A, 0x62, 0x62, "_LL")
+        M331 (__METHOD__, 0x03, 0x1B, 0x1B, 0x63, 0x63, "_SHR")
+        M331 (__METHOD__, 0x04, 0x28, 0x28, 0x70, 0x70, "_INT")
+        CH03 (__METHOD__, Z017, 0x0123, 0x023E, 0x00)
     }
 

@@ -457,16 +457,15 @@
     })
     Method (ADD0, 0, Serialized)
     {
-        Name (TS, "ADD0")
         Debug = "TEST: ADD0, Integer Add"
         If ((F64 == 0x01))
         {
-            M000 (TS, 0x07, "p000", P000, P001, 0x00)
-            M000 (TS, 0x0D, "p002", P002, P003, 0x00)
+            M000 (__METHOD__, 0x07, "p000", P000, P001, 0x00)
+            M000 (__METHOD__, 0x0D, "p002", P002, P003, 0x00)
         }
         Else
         {
-            M000 (TS, 0x0A, "p000", P000, P001, 0x00)
+            M000 (__METHOD__, 0x0A, "p000", P000, P001, 0x00)
         }
     }
 
@@ -590,16 +589,15 @@
     })
     Method (SUB0, 0, Serialized)
     {
-        Name (TS, "SUB0")
         Debug = "TEST: SUB0, Integer Subtract"
         If ((F64 == 0x01))
         {
-            M000 (TS, 0x07, "p004", P004, P005, 0x01)
-            M000 (TS, 0x14, "p006", P006, P007, 0x01)
+            M000 (__METHOD__, 0x07, "p004", P004, P005, 0x01)
+            M000 (__METHOD__, 0x14, "p006", P006, P007, 0x01)
         }
         Else
         {
-            M000 (TS, 0x0C, "p004", P004, P005, 0x01)
+            M000 (__METHOD__, 0x0C, "p004", P004, P005, 0x01)
         }
     }
 
@@ -690,16 +688,15 @@
     })
     Method (MTP0, 0, Serialized)
     {
-        Name (TS, "MTP0")
         Debug = "TEST: MTP0, Integer Multiply"
         If ((F64 == 0x01))
         {
-            M000 (TS, 0x09, "p008", P008, P009, 0x02)
-            M000 (TS, 0x07, "p00a", P00A, P00B, 0x02)
+            M000 (__METHOD__, 0x09, "p008", P008, P009, 0x02)
+            M000 (__METHOD__, 0x07, "p00a", P00A, P00B, 0x02)
         }
         Else
         {
-            M000 (TS, 0x0A, "p008", P008, P009, 0x02)
+            M000 (__METHOD__, 0x0A, "p008", P008, P009, 0x02)
         }
     }
 
@@ -797,16 +794,15 @@
     })
     Method (DVD0, 0, Serialized)
     {
-        Name (TS, "DVD0")
         Debug = "TEST: DVD0, Integer Divide"
         If ((F64 == 0x01))
         {
-            M001 (TS, 0x08, "p00c", P00C, P00D, 0x00)
-            M001 (TS, 0x08, "p00e", P00E, P00F, 0x00)
+            M001 (__METHOD__, 0x08, "p00c", P00C, P00D, 0x00)
+            M001 (__METHOD__, 0x08, "p00e", P00E, P00F, 0x00)
         }
         Else
         {
-            M001 (TS, 0x08, "p00c", P00C, P00D, 0x00)
+            M001 (__METHOD__, 0x08, "p00c", P00C, P00D, 0x00)
         }
     }
 
@@ -850,16 +846,15 @@
     })
     Method (ICR0, 0, Serialized)
     {
-        Name (TS, "ICR0")
         Debug = "TEST: ICR0, Increment an Integer"
         If ((F64 == 0x01))
         {
-            M002 (TS, 0x05, "p014", P014, P015, 0x00)
-            M002 (TS, 0x06, "p016", P016, P017, 0x00)
+            M002 (__METHOD__, 0x05, "p014", P014, P015, 0x00)
+            M002 (__METHOD__, 0x06, "p016", P016, P017, 0x00)
         }
         Else
         {
-            M002 (TS, 0x06, "p014", P014, P015, 0x00)
+            M002 (__METHOD__, 0x06, "p014", P014, P015, 0x00)
         }
     }
 
@@ -903,16 +898,15 @@
     })
     Method (DCR0, 0, Serialized)
     {
-        Name (TS, "DCR0")
         Debug = "TEST: DCR0, Decrement an Integer"
         If ((F64 == 0x01))
         {
-            M002 (TS, 0x05, "p018", P018, P019, 0x01)
-            M002 (TS, 0x06, "p01a", P01A, P01B, 0x01)
+            M002 (__METHOD__, 0x05, "p018", P018, P019, 0x01)
+            M002 (__METHOD__, 0x06, "p01a", P01A, P01B, 0x01)
         }
         Else
         {
-            M002 (TS, 0x06, "p018", P018, P019, 0x01)
+            M002 (__METHOD__, 0x06, "p018", P018, P019, 0x01)
         }
     }
 
@@ -946,16 +940,15 @@
     })
     Method (AND0, 0, Serialized)
     {
-        Name (TS, "AND0")
         Debug = "TEST: AND0, Integer Bitwise And"
         If ((F64 == 0x01))
         {
-            M000 (TS, C000, "p030", P030, P01C, 0x03)
-            M000 (TS, C000, "p031", P031, P01D, 0x03)
+            M000 (__METHOD__, C000, "p030", P030, P01C, 0x03)
+            M000 (__METHOD__, C000, "p031", P031, P01D, 0x03)
         }
         Else
         {
-            M000 (TS, C000, "p030", P030, P01C, 0x03)
+            M000 (__METHOD__, C000, "p030", P030, P01C, 0x03)
         }
     }
 
@@ -1024,19 +1017,18 @@
     })
     Method (NAN0, 0, Serialized)
     {
-        Name (TS, "NAN0")
         Debug = "TEST: NAN0, Integer Bitwise Nand"
         If ((F64 == 0x01))
         {
-            M000 (TS, 0x01, "p01e", P01E, P020, 0x04)
-            M000 (TS, 0x01, "p021", P021, P022, 0x04)
-            M000 (TS, C000, "p030", P030, P024, 0x04)
-            M000 (TS, C000, "p031", P031, P025, 0x04)
+            M000 (__METHOD__, 0x01, "p01e", P01E, P020, 0x04)
+            M000 (__METHOD__, 0x01, "p021", P021, P022, 0x04)
+            M000 (__METHOD__, C000, "p030", P030, P024, 0x04)
+            M000 (__METHOD__, C000, "p031", P031, P025, 0x04)
         }
         Else
         {
-            M000 (TS, 0x01, "p01e", P01E, P01F, 0x04)
-            M000 (TS, C000, "p030", P030, P023, 0x04)
+            M000 (__METHOD__, 0x01, "p01e", P01E, P01F, 0x04)
+            M000 (__METHOD__, C000, "p030", P030, P023, 0x04)
         }
     }
 
@@ -1105,19 +1097,18 @@
     })
     Method (NOR0, 0, Serialized)
     {
-        Name (TS, "NOR0")
         Debug = "TEST: NOR0, Integer Bitwise Nor"
         If ((F64 == 0x01))
         {
-            M000 (TS, 0x01, "p026", P026, P028, 0x05)
-            M000 (TS, 0x01, "p029", P029, P02A, 0x05)
-            M000 (TS, C000, "p030", P030, P02C, 0x05)
-            M000 (TS, C000, "p031", P031, P02D, 0x05)
+            M000 (__METHOD__, 0x01, "p026", P026, P028, 0x05)
+            M000 (__METHOD__, 0x01, "p029", P029, P02A, 0x05)
+            M000 (__METHOD__, C000, "p030", P030, P02C, 0x05)
+            M000 (__METHOD__, C000, "p031", P031, P02D, 0x05)
         }
         Else
         {
-            M000 (TS, 0x01, "p026", P026, P027, 0x05)
-            M000 (TS, C000, "p030", P030, P02B, 0x05)
+            M000 (__METHOD__, 0x01, "p026", P026, P027, 0x05)
+            M000 (__METHOD__, C000, "p030", P030, P02B, 0x05)
         }
     }
 
@@ -1149,16 +1140,15 @@
     })
     Method (NOT0, 0, Serialized)
     {
-        Name (TS, "NOT0")
         Debug = "TEST: NOT0, Integer Bitwise Not"
         If ((F64 == 0x01))
         {
-            M002 (TS, C001, "p032", P032, P02F, 0x02)
-            M002 (TS, C001, "p033", P033, P040, 0x02)
+            M002 (__METHOD__, C001, "p032", P032, P02F, 0x02)
+            M002 (__METHOD__, C001, "p033", P033, P040, 0x02)
         }
         Else
         {
-            M002 (TS, C001, "p032", P032, P02E, 0x02)
+            M002 (__METHOD__, C001, "p032", P032, P02E, 0x02)
         }
     }
 
@@ -1210,19 +1200,18 @@
     })
     Method (OR00, 0, Serialized)
     {
-        Name (TS, "OR00")
         Debug = "TEST: OR00, Integer Bitwise Or"
         If ((F64 == 0x01))
         {
-            M000 (TS, 0x01, "p041", P041, P042, 0x06)
-            M000 (TS, 0x01, "p043", P043, P044, 0x06)
-            M000 (TS, C000, "p030", P030, P045, 0x06)
-            M000 (TS, C000, "p031", P031, P046, 0x06)
+            M000 (__METHOD__, 0x01, "p041", P041, P042, 0x06)
+            M000 (__METHOD__, 0x01, "p043", P043, P044, 0x06)
+            M000 (__METHOD__, C000, "p030", P030, P045, 0x06)
+            M000 (__METHOD__, C000, "p031", P031, P046, 0x06)
         }
         Else
         {
-            M000 (TS, 0x01, "p041", P041, P042, 0x06)
-            M000 (TS, C000, "p030", P030, P045, 0x06)
+            M000 (__METHOD__, 0x01, "p041", P041, P042, 0x06)
+            M000 (__METHOD__, C000, "p030", P030, P045, 0x06)
         }
     }
 
@@ -1287,20 +1276,19 @@
     })
     Method (XOR0, 0, Serialized)
     {
-        Name (TS, "XOR0")
         Debug = "TEST: XOR0, Integer Bitwise Xor"
         If ((F64 == 0x01))
         {
-            M000 (TS, 0x01, "p047", P047, P048, 0x07)
-            M000 (TS, 0x01, "p049", P049, P04A, 0x07)
-            M000 (TS, C000, "p030", P030, P04B, 0x07)
-            M000 (TS, 0x01, "p031", P031, P04C, 0x07)
-            M000 (TS, C000, "p031", P031, P04C, 0x07)
+            M000 (__METHOD__, 0x01, "p047", P047, P048, 0x07)
+            M000 (__METHOD__, 0x01, "p049", P049, P04A, 0x07)
+            M000 (__METHOD__, C000, "p030", P030, P04B, 0x07)
+            M000 (__METHOD__, 0x01, "p031", P031, P04C, 0x07)
+            M000 (__METHOD__, C000, "p031", P031, P04C, 0x07)
         }
         Else
         {
-            M000 (TS, 0x01, "p047", P047, P048, 0x07)
-            M000 (TS, C000, "p030", P030, P04D, 0x07)
+            M000 (__METHOD__, 0x01, "p047", P047, P048, 0x07)
+            M000 (__METHOD__, C000, "p030", P030, P04D, 0x07)
         }
     }
 
@@ -1334,16 +1322,15 @@
     })
     Method (MOD0, 0, Serialized)
     {
-        Name (TS, "MOD0")
         Debug = "TEST: MOD0, Integer Modulo"
         If ((F64 == 0x01))
         {
-            M000 (TS, 0x08, "p00c", P00C, P04E, 0x08)
-            M000 (TS, 0x08, "p00e", P00E, P04F, 0x08)
+            M000 (__METHOD__, 0x08, "p00c", P00C, P04E, 0x08)
+            M000 (__METHOD__, 0x08, "p00e", P00E, P04F, 0x08)
         }
         Else
         {
-            M000 (TS, 0x08, "p00c", P00C, P04E, 0x08)
+            M000 (__METHOD__, 0x08, "p00c", P00C, P04E, 0x08)
         }
     }
 
@@ -1500,16 +1487,15 @@
     })
     Method (SHL0, 0, Serialized)
     {
-        Name (TS, "SHL0")
         Debug = "TEST: SHL0, Integer shift value left"
         If ((F64 == 0x01))
         {
-            M000 (TS, 0x1A, "p050", P050, P052, 0x09)
-            M000 (TS, 0x0A, "p053", P053, P054, 0x09)
+            M000 (__METHOD__, 0x1A, "p050", P050, P052, 0x09)
+            M000 (__METHOD__, 0x0A, "p053", P053, P054, 0x09)
         }
         Else
         {
-            M000 (TS, 0x1A, "p050", P050, P051, 0x09)
+            M000 (__METHOD__, 0x1A, "p050", P050, P051, 0x09)
         }
     }
 
@@ -1559,16 +1545,15 @@
     })
     Method (SHR0, 0, Serialized)
     {
-        Name (TS, "SHR0")
         Debug = "TEST: SHR0, Integer shift value right"
         If ((F64 == 0x01))
         {
-            M000 (TS, 0x1A, "p050", P050, P055, 0x0A)
-            M000 (TS, 0x0A, "p053", P053, P056, 0x0A)
+            M000 (__METHOD__, 0x1A, "p050", P050, P055, 0x0A)
+            M000 (__METHOD__, 0x0A, "p053", P053, P056, 0x0A)
         }
         Else
         {
-            M000 (TS, 0x1A, "p050", P050, P055, 0x0A)
+            M000 (__METHOD__, 0x1A, "p050", P050, P055, 0x0A)
         }
     }
 
@@ -1612,16 +1597,15 @@
     })
     Method (FSL0, 0, Serialized)
     {
-        Name (TS, "FSL0")
         Debug = "TEST: FSL0, Index of first least significant bit set"
         If ((F64 == 0x01))
         {
-            M002 (TS, 0x06, "p057", P057, P058, 0x03)
-            M002 (TS, 0x06, "p059", P059, P05A, 0x03)
+            M002 (__METHOD__, 0x06, "p057", P057, P058, 0x03)
+            M002 (__METHOD__, 0x06, "p059", P059, P05A, 0x03)
         }
         Else
         {
-            M002 (TS, 0x06, "p057", P057, P058, 0x03)
+            M002 (__METHOD__, 0x06, "p057", P057, P058, 0x03)
         }
 
         If ((F64 == 0x01))
@@ -1651,7 +1635,7 @@
             Local4 = (Local1 + 0x01)
             If ((Local3 != Local4))
             {
-                ERR (TS, Z083, 0x05A4, 0x00, 0x00, Local0, 0x00)
+                ERR (__METHOD__, Z083, 0x05A4, 0x00, 0x00, Local0, 0x00)
             }
 
             Local1++
@@ -1681,16 +1665,15 @@
     })
     Method (FSR0, 0, Serialized)
     {
-        Name (TS, "FSR0")
         Debug = "TEST: FSR0, Index of first most significant bit set"
         If ((F64 == 0x01))
         {
-            M002 (TS, 0x06, "p057", P057, P05B, 0x04)
-            M002 (TS, 0x06, "p059", P059, P05C, 0x04)
+            M002 (__METHOD__, 0x06, "p057", P057, P05B, 0x04)
+            M002 (__METHOD__, 0x06, "p059", P059, P05C, 0x04)
         }
         Else
         {
-            M002 (TS, 0x06, "p057", P057, P05B, 0x04)
+            M002 (__METHOD__, 0x06, "p057", P057, P05B, 0x04)
         }
 
         If ((F64 == 0x01))
@@ -1721,7 +1704,7 @@
             FindSetRightBit (Local2, Local3)
             If ((Local3 != Local4))
             {
-                ERR (TS, Z083, 0x05E1, 0x00, 0x00, Local0, 0x00)
+                ERR (__METHOD__, Z083, 0x05E1, 0x00, 0x00, Local0, 0x00)
             }
 
             Local1++

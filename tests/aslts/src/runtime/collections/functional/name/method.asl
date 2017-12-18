@@ -256,7 +256,6 @@
 
     Method (M207, 0, Serialized)
     {
-        Name (TS, "m207")
         Method (M240, 0, NotSerialized)
         {
             Method (MM00, 0, NotSerialized)
@@ -269,14 +268,14 @@
                 Return ("\\_SB.m206.mm00")
             }
 
-            M205 (TS, 0x01, ObjectType (MM00), 0x08)
-            M205 (TS, 0x02, MM00 (), "\\m207.m240.mm00")
-            M205 (TS, 0x03, ObjectType (\M207.M240.MM00), 0x08)
-            M205 (TS, 0x04, \M207.M240.MM00 (), "\\m207.m240.mm00")
-            M205 (TS, 0x05, ObjectType (^M240.MM00), 0x08)
-            M205 (TS, 0x06, ^M240.MM00 (), "\\m207.m240.mm00")
-            M205 (TS, 0x07, ObjectType (\_SB.M206.MM00), 0x08)
-            M205 (TS, 0x08, \_SB.M206.MM00 (), "\\_SB.m206.mm00")
+            M205 (__METHOD__, 0x01, ObjectType (MM00), 0x08)
+            M205 (__METHOD__, 0x02, MM00 (), "\\m207.m240.mm00")
+            M205 (__METHOD__, 0x03, ObjectType (\M207.M240.MM00), 0x08)
+            M205 (__METHOD__, 0x04, \M207.M240.MM00 (), "\\m207.m240.mm00")
+            M205 (__METHOD__, 0x05, ObjectType (^M240.MM00), 0x08)
+            M205 (__METHOD__, 0x06, ^M240.MM00 (), "\\m207.m240.mm00")
+            M205 (__METHOD__, 0x07, ObjectType (\_SB.M206.MM00), 0x08)
+            M205 (__METHOD__, 0x08, \_SB.M206.MM00 (), "\\_SB.m206.mm00")
         }
 
         Method (M241, 0, NotSerialized)
@@ -354,38 +353,38 @@
             /* Numargs as Type3Opcode (integer) constant expression */
             /* Invalid checksum warning */
             /*		Method(mm09, Add(6, 1)) {Return ("\\m207.m241.mm09")} */
-            M205 (TS, 0x09, ObjectType (MM10), 0x08)
-            M205 (TS, 0x0A, MM10 (), "\\m207.m241.mm10")
-            M205 (TS, 0x0B, ObjectType (MM20), 0x08)
-            M205 (TS, 0x0C, MM20 (), "\\m207.m241.mm20")
-            M205 (TS, 0x0D, ObjectType (MM30), 0x08)
-            M205 (TS, 0x0E, MM30 (), "\\m207.m241.mm30")
-            M205 (TS, 0x0F, ObjectType (MM40), 0x08)
-            M205 (TS, 0x10, MM40 (), "\\m207.m241.mm40")
-            M205 (TS, 0x11, ObjectType (MM50), 0x08)
-            M205 (TS, 0x12, MM50 (), "\\m207.m241.mm50")
-            M205 (TS, 0x13, ObjectType (MM60), 0x08)
+            M205 (__METHOD__, 0x09, ObjectType (MM10), 0x08)
+            M205 (__METHOD__, 0x0A, MM10 (), "\\m207.m241.mm10")
+            M205 (__METHOD__, 0x0B, ObjectType (MM20), 0x08)
+            M205 (__METHOD__, 0x0C, MM20 (), "\\m207.m241.mm20")
+            M205 (__METHOD__, 0x0D, ObjectType (MM30), 0x08)
+            M205 (__METHOD__, 0x0E, MM30 (), "\\m207.m241.mm30")
+            M205 (__METHOD__, 0x0F, ObjectType (MM40), 0x08)
+            M205 (__METHOD__, 0x10, MM40 (), "\\m207.m241.mm40")
+            M205 (__METHOD__, 0x11, ObjectType (MM50), 0x08)
+            M205 (__METHOD__, 0x12, MM50 (), "\\m207.m241.mm50")
+            M205 (__METHOD__, 0x13, ObjectType (MM60), 0x08)
             If (Y157)
             {
-                M205 (TS, 0x14, MM60 (), "\\m207.m241.mm60")
+                M205 (__METHOD__, 0x14, MM60 (), "\\m207.m241.mm60")
             }
 
-            M205 (TS, 0x15, ObjectType (MM00), 0x08)
-            M205 (TS, 0x16, MM00 (), "\\m207.m241.mm00")
-            M205 (TS, 0x17, ObjectType (MM01), 0x08)
-            M205 (TS, 0x18, MM01 (0x00), "\\m207.m241.mm01")
-            M205 (TS, 0x19, ObjectType (MM02), 0x08)
-            M205 (TS, 0x1A, MM02 (0x00, 0x01), "\\m207.m241.mm02")
-            M205 (TS, 0x1B, ObjectType (MM03), 0x08)
-            M205 (TS, 0x1C, MM03 (0x00, 0x01, 0x02), "\\m207.m241.mm03")
-            M205 (TS, 0x1D, ObjectType (MM04), 0x08)
-            M205 (TS, 0x1E, MM04 (0x00, 0x01, 0x02, 0x03), "\\m207.m241.mm04")
-            M205 (TS, 0x1F, ObjectType (MM05), 0x08)
-            M205 (TS, 0x20, MM05 (0x00, 0x01, 0x02, 0x03, 0x04), "\\m207.m241.mm05")
-            M205 (TS, 0x21, ObjectType (MM06), 0x08)
-            M205 (TS, 0x22, MM06 (0x00, 0x01, 0x02, 0x03, 0x04, 0x05), "\\m207.m241.mm06")
-            M205 (TS, 0x23, ObjectType (MM07), 0x08)
-            M205 (TS, 0x24, MM07 (0x00, 0x01, 0x02, 0x03, 0x04, 0x05, 0x06), "\\m207.m241.mm07")
+            M205 (__METHOD__, 0x15, ObjectType (MM00), 0x08)
+            M205 (__METHOD__, 0x16, MM00 (), "\\m207.m241.mm00")
+            M205 (__METHOD__, 0x17, ObjectType (MM01), 0x08)
+            M205 (__METHOD__, 0x18, MM01 (0x00), "\\m207.m241.mm01")
+            M205 (__METHOD__, 0x19, ObjectType (MM02), 0x08)
+            M205 (__METHOD__, 0x1A, MM02 (0x00, 0x01), "\\m207.m241.mm02")
+            M205 (__METHOD__, 0x1B, ObjectType (MM03), 0x08)
+            M205 (__METHOD__, 0x1C, MM03 (0x00, 0x01, 0x02), "\\m207.m241.mm03")
+            M205 (__METHOD__, 0x1D, ObjectType (MM04), 0x08)
+            M205 (__METHOD__, 0x1E, MM04 (0x00, 0x01, 0x02, 0x03), "\\m207.m241.mm04")
+            M205 (__METHOD__, 0x1F, ObjectType (MM05), 0x08)
+            M205 (__METHOD__, 0x20, MM05 (0x00, 0x01, 0x02, 0x03, 0x04), "\\m207.m241.mm05")
+            M205 (__METHOD__, 0x21, ObjectType (MM06), 0x08)
+            M205 (__METHOD__, 0x22, MM06 (0x00, 0x01, 0x02, 0x03, 0x04, 0x05), "\\m207.m241.mm06")
+            M205 (__METHOD__, 0x23, ObjectType (MM07), 0x08)
+            M205 (__METHOD__, 0x24, MM07 (0x00, 0x01, 0x02, 0x03, 0x04, 0x05, 0x06), "\\m207.m241.mm07")
                 /* Invalid checksum warning */
         /*		m205(ts, 37, ObjectType(mm09), 8) */
         /* Too many arguments ^  (MM09 requires 0) */
@@ -516,63 +515,63 @@
             /* Both Numargs and SyncLevel as Type3Opcode (integer) constant expressions */
             /* Invalid checksum warning */
             /*		Method(mm90, Add(6, 1), Serialized, Add(14, 1)) {Return ("\\m207.m242.mm90")} */
-            M205 (TS, 0x27, ObjectType (MM10), 0x08)
-            M205 (TS, 0x28, MM10 (), "\\m207.m242.mm10")
-            M205 (TS, 0x29, ObjectType (MM10), 0x08)
-            M205 (TS, 0x2A, MM20 (), "\\m207.m242.mm20")
-            M205 (TS, 0x2B, ObjectType (MM10), 0x08)
-            M205 (TS, 0x2C, MM30 (), "\\m207.m242.mm30")
-            M205 (TS, 0x2D, ObjectType (MM10), 0x08)
-            M205 (TS, 0x2E, MM40 (), "\\m207.m242.mm40")
-            M205 (TS, 0x2F, ObjectType (MM10), 0x08)
+            M205 (__METHOD__, 0x27, ObjectType (MM10), 0x08)
+            M205 (__METHOD__, 0x28, MM10 (), "\\m207.m242.mm10")
+            M205 (__METHOD__, 0x29, ObjectType (MM10), 0x08)
+            M205 (__METHOD__, 0x2A, MM20 (), "\\m207.m242.mm20")
+            M205 (__METHOD__, 0x2B, ObjectType (MM10), 0x08)
+            M205 (__METHOD__, 0x2C, MM30 (), "\\m207.m242.mm30")
+            M205 (__METHOD__, 0x2D, ObjectType (MM10), 0x08)
+            M205 (__METHOD__, 0x2E, MM40 (), "\\m207.m242.mm40")
+            M205 (__METHOD__, 0x2F, ObjectType (MM10), 0x08)
             If (Y157)
             {
-                M205 (TS, 0x30, MM50 (), "\\m207.m242.mm50")
+                M205 (__METHOD__, 0x30, MM50 (), "\\m207.m242.mm50")
             }
 
-            M205 (TS, 0x31, ObjectType (MM10), 0x08)
+            M205 (__METHOD__, 0x31, ObjectType (MM10), 0x08)
             If (Y157)
             {
-                M205 (TS, 0x32, MM60 (), "\\m207.m242.mm60")
+                M205 (__METHOD__, 0x32, MM60 (), "\\m207.m242.mm60")
             }
 
-            M205 (TS, 0x33, ObjectType (MM00), 0x08)
-            M205 (TS, 0x34, MM00 (), "\\m207.m242.mm00")
-            M205 (TS, 0x35, ObjectType (MM01), 0x08)
-            M205 (TS, 0x36, MM01 (0x00), "\\m207.m242.mm01")
-            M205 (TS, 0x37, ObjectType (MM02), 0x08)
-            M205 (TS, 0x38, MM02 (0x00, 0x01), "\\m207.m242.mm02")
-            M205 (TS, 0x39, ObjectType (MM03), 0x08)
-            M205 (TS, 0x3A, MM03 (0x00, 0x01, 0x02), "\\m207.m242.mm03")
-            M205 (TS, 0x3B, ObjectType (MM04), 0x08)
-            M205 (TS, 0x3C, MM04 (0x00, 0x01, 0x02, 0x03), "\\m207.m242.mm04")
-            M205 (TS, 0x3D, ObjectType (MM05), 0x08)
-            M205 (TS, 0x3E, MM05 (0x00, 0x01, 0x02, 0x03, 0x04), "\\m207.m242.mm05")
-            M205 (TS, 0x3F, ObjectType (MM06), 0x08)
-            M205 (TS, 0x40, MM06 (0x00, 0x01, 0x02, 0x03, 0x04, 0x05), "\\m207.m242.mm06")
-            M205 (TS, 0x41, ObjectType (MM07), 0x08)
-            M205 (TS, 0x42, MM07 (0x00, 0x01, 0x02, 0x03, 0x04, 0x05, 0x06), "\\m207.m242.mm07")
-            M205 (TS, 0x43, ObjectType (MM00), 0x08)
-            M205 (TS, 0x44, MM08 (), "\\m207.m242.mm08")
-            M205 (TS, 0x45, ObjectType (MM01), 0x08)
-            M205 (TS, 0x46, MM09 (0x00), "\\m207.m242.mm09")
-            M205 (TS, 0x47, ObjectType (MM02), 0x08)
-            M205 (TS, 0x48, MM0A (0x00, 0x01), "\\m207.m242.mm0a")
-            M205 (TS, 0x49, ObjectType (MM03), 0x08)
-            M205 (TS, 0x4A, MM0B (0x00, 0x01, 0x02), "\\m207.m242.mm0b")
-            M205 (TS, 0x4B, ObjectType (MM04), 0x08)
-            M205 (TS, 0x4C, MM0C (0x00, 0x01, 0x02, 0x03), "\\m207.m242.mm0c")
-            M205 (TS, 0x4D, ObjectType (MM05), 0x08)
-            M205 (TS, 0x4E, MM0D (0x00, 0x01, 0x02, 0x03, 0x04), "\\m207.m242.mm0d")
-            M205 (TS, 0x4F, ObjectType (MM06), 0x08)
-            M205 (TS, 0x50, MM0E (0x00, 0x01, 0x02, 0x03, 0x04, 0x05), "\\m207.m242.mm0e")
-            M205 (TS, 0x51, ObjectType (MM07), 0x08)
-            M205 (TS, 0x52, MM0F (0x00, 0x01, 0x02, 0x03, 0x04, 0x05, 0x06), "\\m207.m242.mm0f")
+            M205 (__METHOD__, 0x33, ObjectType (MM00), 0x08)
+            M205 (__METHOD__, 0x34, MM00 (), "\\m207.m242.mm00")
+            M205 (__METHOD__, 0x35, ObjectType (MM01), 0x08)
+            M205 (__METHOD__, 0x36, MM01 (0x00), "\\m207.m242.mm01")
+            M205 (__METHOD__, 0x37, ObjectType (MM02), 0x08)
+            M205 (__METHOD__, 0x38, MM02 (0x00, 0x01), "\\m207.m242.mm02")
+            M205 (__METHOD__, 0x39, ObjectType (MM03), 0x08)
+            M205 (__METHOD__, 0x3A, MM03 (0x00, 0x01, 0x02), "\\m207.m242.mm03")
+            M205 (__METHOD__, 0x3B, ObjectType (MM04), 0x08)
+            M205 (__METHOD__, 0x3C, MM04 (0x00, 0x01, 0x02, 0x03), "\\m207.m242.mm04")
+            M205 (__METHOD__, 0x3D, ObjectType (MM05), 0x08)
+            M205 (__METHOD__, 0x3E, MM05 (0x00, 0x01, 0x02, 0x03, 0x04), "\\m207.m242.mm05")
+            M205 (__METHOD__, 0x3F, ObjectType (MM06), 0x08)
+            M205 (__METHOD__, 0x40, MM06 (0x00, 0x01, 0x02, 0x03, 0x04, 0x05), "\\m207.m242.mm06")
+            M205 (__METHOD__, 0x41, ObjectType (MM07), 0x08)
+            M205 (__METHOD__, 0x42, MM07 (0x00, 0x01, 0x02, 0x03, 0x04, 0x05, 0x06), "\\m207.m242.mm07")
+            M205 (__METHOD__, 0x43, ObjectType (MM00), 0x08)
+            M205 (__METHOD__, 0x44, MM08 (), "\\m207.m242.mm08")
+            M205 (__METHOD__, 0x45, ObjectType (MM01), 0x08)
+            M205 (__METHOD__, 0x46, MM09 (0x00), "\\m207.m242.mm09")
+            M205 (__METHOD__, 0x47, ObjectType (MM02), 0x08)
+            M205 (__METHOD__, 0x48, MM0A (0x00, 0x01), "\\m207.m242.mm0a")
+            M205 (__METHOD__, 0x49, ObjectType (MM03), 0x08)
+            M205 (__METHOD__, 0x4A, MM0B (0x00, 0x01, 0x02), "\\m207.m242.mm0b")
+            M205 (__METHOD__, 0x4B, ObjectType (MM04), 0x08)
+            M205 (__METHOD__, 0x4C, MM0C (0x00, 0x01, 0x02, 0x03), "\\m207.m242.mm0c")
+            M205 (__METHOD__, 0x4D, ObjectType (MM05), 0x08)
+            M205 (__METHOD__, 0x4E, MM0D (0x00, 0x01, 0x02, 0x03, 0x04), "\\m207.m242.mm0d")
+            M205 (__METHOD__, 0x4F, ObjectType (MM06), 0x08)
+            M205 (__METHOD__, 0x50, MM0E (0x00, 0x01, 0x02, 0x03, 0x04, 0x05), "\\m207.m242.mm0e")
+            M205 (__METHOD__, 0x51, ObjectType (MM07), 0x08)
+            M205 (__METHOD__, 0x52, MM0F (0x00, 0x01, 0x02, 0x03, 0x04, 0x05, 0x06), "\\m207.m242.mm0f")
             /* Invalid checksum warning */
             /*		m205(ts, 83, ObjectType(mm70), 8) */
             /*	Too many arguments ^  (MM70 requires 0) */
             /*		m205(ts, 84, mm70(0, 1, 2, 3, 4, 5, 6), "\\m207.m242.mm70") */
-            M205 (TS, 0x55, ObjectType (MM80), 0x08)
+            M205 (__METHOD__, 0x55, ObjectType (MM80), 0x08)
                 /* Outstanding allocations */
         /*		m205(ts, 86, mm80(0, 1, 2, 3, 4, 5, 6), "\\m207.m242.mm80") */
         /* Invalid checksum warning */
@@ -777,50 +776,50 @@
             }
 
             Local0 = 0xFEDCBA9876543210
-            M205 (TS, 0x59, ObjectType (MM00), 0x08)
+            M205 (__METHOD__, 0x59, ObjectType (MM00), 0x08)
             MM00 (RefOf (Local0))
-            M205 (TS, 0x5A, Local0, 0xFEDCBA9876543211)
-            M205 (TS, 0x5B, ObjectType (MM01), 0x08)
-            M205 (TS, 0x5C, MM01 (), INT0)
-            M205 (TS, 0x5D, ObjectType (MM02), 0x08)
-            M205 (TS, 0x5E, MM02 (), STR0)
-            M205 (TS, 0x5F, ObjectType (MM03), 0x08)
-            M205 (TS, 0x60, MM03 (), BUF0)
-            M205 (TS, 0x61, ObjectType (MM04), 0x08)
-            M205 (TS, 0x62, MM04 (), PAC0)
-            M205 (TS, 0x63, ObjectType (MM05), 0x08)
-            M205 (TS, 0x64, MM05 (), FLU0)
-            M205 (TS, 0x65, ObjectType (MM06), 0x08)
-            M205 (TS, 0x66, MM06 (), DEV0)
-            M205 (TS, 0x67, ObjectType (MM07), 0x08)
-            M205 (TS, 0x68, MM07 (), EVE0)
-            M205 (TS, 0x69, ObjectType (MM08), 0x08)
+            M205 (__METHOD__, 0x5A, Local0, 0xFEDCBA9876543211)
+            M205 (__METHOD__, 0x5B, ObjectType (MM01), 0x08)
+            M205 (__METHOD__, 0x5C, MM01 (), INT0)
+            M205 (__METHOD__, 0x5D, ObjectType (MM02), 0x08)
+            M205 (__METHOD__, 0x5E, MM02 (), STR0)
+            M205 (__METHOD__, 0x5F, ObjectType (MM03), 0x08)
+            M205 (__METHOD__, 0x60, MM03 (), BUF0)
+            M205 (__METHOD__, 0x61, ObjectType (MM04), 0x08)
+            M205 (__METHOD__, 0x62, MM04 (), PAC0)
+            M205 (__METHOD__, 0x63, ObjectType (MM05), 0x08)
+            M205 (__METHOD__, 0x64, MM05 (), FLU0)
+            M205 (__METHOD__, 0x65, ObjectType (MM06), 0x08)
+            M205 (__METHOD__, 0x66, MM06 (), DEV0)
+            M205 (__METHOD__, 0x67, ObjectType (MM07), 0x08)
+            M205 (__METHOD__, 0x68, MM07 (), EVE0)
+            M205 (__METHOD__, 0x69, ObjectType (MM08), 0x08)
             CopyObject (MMM0 (), Local0)
-            M205 (TS, 0x6A, MM08 (), Local0)
-            M205 (TS, 0x6B, ObjectType (MM09), 0x08)
-            M205 (TS, 0x6C, MM09 (), MTX0)
-            M205 (TS, 0x6D, ObjectType (MM0A), 0x08)
-            M205 (TS, 0x6E, MM0A (), OPR0)
-            M205 (TS, 0x6F, ObjectType (MM0B), 0x08)
-            M205 (TS, 0x70, MM0B (), PWR0)
-            M205 (TS, 0x71, ObjectType (MM0C), 0x08)
-            M205 (TS, 0x72, MM0C (), CPU0)
-            M205 (TS, 0x73, ObjectType (MM0D), 0x08)
+            M205 (__METHOD__, 0x6A, MM08 (), Local0)
+            M205 (__METHOD__, 0x6B, ObjectType (MM09), 0x08)
+            M205 (__METHOD__, 0x6C, MM09 (), MTX0)
+            M205 (__METHOD__, 0x6D, ObjectType (MM0A), 0x08)
+            M205 (__METHOD__, 0x6E, MM0A (), OPR0)
+            M205 (__METHOD__, 0x6F, ObjectType (MM0B), 0x08)
+            M205 (__METHOD__, 0x70, MM0B (), PWR0)
+            M205 (__METHOD__, 0x71, ObjectType (MM0C), 0x08)
+            M205 (__METHOD__, 0x72, MM0C (), CPU0)
+            M205 (__METHOD__, 0x73, ObjectType (MM0D), 0x08)
             If (Y350)
             {
-                M205 (TS, 0x74, MM0D (), TZN0)
+                M205 (__METHOD__, 0x74, MM0D (), TZN0)
             }
 
-            M205 (TS, 0x75, ObjectType (MM0E), 0x08)
-            M205 (TS, 0x76, MM0E (), BFL0)
-            M205 (TS, 0x77, ObjectType (MM0F), 0x08)
-            M205 (TS, 0x78, MM0F (), DDB0)
+            M205 (__METHOD__, 0x75, ObjectType (MM0E), 0x08)
+            M205 (__METHOD__, 0x76, MM0E (), BFL0)
+            M205 (__METHOD__, 0x77, ObjectType (MM0F), 0x08)
+            M205 (__METHOD__, 0x78, MM0F (), DDB0)
             /*
              m205(ts, 121, ObjectType(mm0g), 8)
              m205(ts, 122, mm0g(), Debug)
              */
-            M205 (TS, 0x7B, ObjectType (MM0H), 0x08)
-            M205 (TS, 0x7C, DerefOf (MM0H ()), ORF0)
+            M205 (__METHOD__, 0x7B, ObjectType (MM0H), 0x08)
+            M205 (__METHOD__, 0x7C, DerefOf (MM0H ()), ORF0)
         }
 
         Method (M244, 0, NotSerialized)
@@ -835,10 +834,10 @@
                 Return (INT0) /* \M207.INT0 */
             }
 
-            M205 (TS, 0x7D, ObjectType (MM00), 0x08)
-            M205 (TS, 0x7E, MM00 (), STR0)
-            M205 (TS, 0x7F, ObjectType (MM01), 0x08)
-            M205 (TS, 0x80, MM01 (), INT0)
+            M205 (__METHOD__, 0x7D, ObjectType (MM00), 0x08)
+            M205 (__METHOD__, 0x7E, MM00 (), STR0)
+            M205 (__METHOD__, 0x7F, ObjectType (MM01), 0x08)
+            M205 (__METHOD__, 0x80, MM01 (), INT0)
         }
 
         Method (M245, 0, Serialized)
@@ -1024,105 +1023,105 @@
              }) {Store(42, Flag)}
              */
             /* List of types of the parameters contains the same keyword */
-            M205 (TS, 0x81, ObjectType (MM00), 0x08)
+            M205 (__METHOD__, 0x81, ObjectType (MM00), 0x08)
             MM00 (0x01)
-            M205 (TS, 0x82, FLAG, 0x00)
-            M205 (TS, 0x83, ObjectType (MM01), 0x08)
+            M205 (__METHOD__, 0x82, FLAG, 0x00)
+            M205 (__METHOD__, 0x83, ObjectType (MM01), 0x08)
             MM01 (0x01)
-            M205 (TS, 0x84, FLAG, 0x01)
-            M205 (TS, 0x85, ObjectType (MM02), 0x08)
+            M205 (__METHOD__, 0x84, FLAG, 0x01)
+            M205 (__METHOD__, 0x85, ObjectType (MM02), 0x08)
             MM02 (0x01, 0x02)
-            M205 (TS, 0x86, FLAG, 0x02)
-            M205 (TS, 0x87, ObjectType (MM03), 0x08)
+            M205 (__METHOD__, 0x86, FLAG, 0x02)
+            M205 (__METHOD__, 0x87, ObjectType (MM03), 0x08)
             MM03 (0x01, 0x02, 0x03)
-            M205 (TS, 0x88, FLAG, 0x03)
-            M205 (TS, 0x89, ObjectType (MM04), 0x08)
+            M205 (__METHOD__, 0x88, FLAG, 0x03)
+            M205 (__METHOD__, 0x89, ObjectType (MM04), 0x08)
             MM04 (0x01, 0x02, 0x03, 0x04)
-            M205 (TS, 0x8A, FLAG, 0x04)
-            M205 (TS, 0x8B, ObjectType (MM05), 0x08)
+            M205 (__METHOD__, 0x8A, FLAG, 0x04)
+            M205 (__METHOD__, 0x8B, ObjectType (MM05), 0x08)
             MM05 (0x01, 0x02, 0x03, 0x04, 0x05)
-            M205 (TS, 0x8C, FLAG, 0x05)
-            M205 (TS, 0x8D, ObjectType (MM06), 0x08)
+            M205 (__METHOD__, 0x8C, FLAG, 0x05)
+            M205 (__METHOD__, 0x8D, ObjectType (MM06), 0x08)
             MM06 (0x01, 0x02, 0x03, 0x04, 0x05, 0x06)
-            M205 (TS, 0x8E, FLAG, 0x06)
-            M205 (TS, 0x8F, ObjectType (MM07), 0x08)
+            M205 (__METHOD__, 0x8E, FLAG, 0x06)
+            M205 (__METHOD__, 0x8F, ObjectType (MM07), 0x08)
             MM07 (0x01, 0x02, 0x03, 0x04, 0x05, 0x06, 0x07)
-            M205 (TS, 0x90, FLAG, 0x07)
+            M205 (__METHOD__, 0x90, FLAG, 0x07)
             /* List of types of the parameters contains the UnknownObj keyword */
 
-            M205 (TS, 0x91, ObjectType (MM08), 0x08)
+            M205 (__METHOD__, 0x91, ObjectType (MM08), 0x08)
             MM08 (0x01)
-            M205 (TS, 0x92, FLAG, 0x08)
-            M205 (TS, 0x93, ObjectType (MM09), 0x08)
+            M205 (__METHOD__, 0x92, FLAG, 0x08)
+            M205 (__METHOD__, 0x93, ObjectType (MM09), 0x08)
             MM09 (0x01)
-            M205 (TS, 0x94, FLAG, 0x09)
-            M205 (TS, 0x95, ObjectType (MM0A), 0x08)
+            M205 (__METHOD__, 0x94, FLAG, 0x09)
+            M205 (__METHOD__, 0x95, ObjectType (MM0A), 0x08)
             MM0A (0x01, 0x02, 0x03, 0x04, 0x05, 0x06, 0x07)
-            M205 (TS, 0x96, FLAG, 0x0A)
+            M205 (__METHOD__, 0x96, FLAG, 0x0A)
             /* List of types of the parameters contains different keywords */
 
-            M205 (TS, 0x97, ObjectType (MM10), 0x08)
+            M205 (__METHOD__, 0x97, ObjectType (MM10), 0x08)
             MM10 (0x01, 0x02)
-            M205 (TS, 0x98, FLAG, 0x10)
-            M205 (TS, 0x99, ObjectType (MM11), 0x08)
+            M205 (__METHOD__, 0x98, FLAG, 0x10)
+            M205 (__METHOD__, 0x99, ObjectType (MM11), 0x08)
             MM11 (0x01, 0x02)
-            M205 (TS, 0x9A, FLAG, 0x11)
-            M205 (TS, 0x9B, ObjectType (MM12), 0x08)
+            M205 (__METHOD__, 0x9A, FLAG, 0x11)
+            M205 (__METHOD__, 0x9B, ObjectType (MM12), 0x08)
             MM12 (0x01, 0x02)
-            M205 (TS, 0x9C, FLAG, 0x12)
-            M205 (TS, 0x9D, ObjectType (MM13), 0x08)
+            M205 (__METHOD__, 0x9C, FLAG, 0x12)
+            M205 (__METHOD__, 0x9D, ObjectType (MM13), 0x08)
             MM13 (0x01, 0x02, 0x03)
-            M205 (TS, 0x9E, FLAG, 0x13)
-            M205 (TS, 0x9F, ObjectType (MM14), 0x08)
+            M205 (__METHOD__, 0x9E, FLAG, 0x13)
+            M205 (__METHOD__, 0x9F, ObjectType (MM14), 0x08)
             MM14 (0x01, 0x02, 0x03, 0x04)
-            M205 (TS, 0xA0, FLAG, 0x14)
-            M205 (TS, 0xA1, ObjectType (MM15), 0x08)
+            M205 (__METHOD__, 0xA0, FLAG, 0x14)
+            M205 (__METHOD__, 0xA1, ObjectType (MM15), 0x08)
             MM15 (0x01, 0x02, 0x03, 0x04, 0x05)
-            M205 (TS, 0xA2, FLAG, 0x15)
-            M205 (TS, 0xA3, ObjectType (MM16), 0x08)
+            M205 (__METHOD__, 0xA2, FLAG, 0x15)
+            M205 (__METHOD__, 0xA3, ObjectType (MM16), 0x08)
             MM16 (0x01, 0x02, 0x03, 0x04, 0x05, 0x06)
-            M205 (TS, 0xA4, FLAG, 0x16)
-            M205 (TS, 0xA5, ObjectType (MM17), 0x08)
+            M205 (__METHOD__, 0xA4, FLAG, 0x16)
+            M205 (__METHOD__, 0xA5, ObjectType (MM17), 0x08)
             MM17 (0x01, 0x02, 0x03, 0x04, 0x05, 0x06, 0x07)
-            M205 (TS, 0xA6, FLAG, 0x17)
-            M205 (TS, 0xA7, ObjectType (MM18), 0x08)
+            M205 (__METHOD__, 0xA6, FLAG, 0x17)
+            M205 (__METHOD__, 0xA7, ObjectType (MM18), 0x08)
             MM18 (0x01, 0x02, 0x03, 0x04, 0x05, 0x06, 0x07)
-            M205 (TS, 0xA8, FLAG, 0x18)
+            M205 (__METHOD__, 0xA8, FLAG, 0x18)
             /* List of types of the parameters contains keyword packages */
             /* along with different keywords */
-            M205 (TS, 0xA9, ObjectType (MM20), 0x08)
+            M205 (__METHOD__, 0xA9, ObjectType (MM20), 0x08)
             MM20 (0x01)
-            M205 (TS, 0xAA, FLAG, 0x20)
-            M205 (TS, 0xAB, ObjectType (MM21), 0x08)
+            M205 (__METHOD__, 0xAA, FLAG, 0x20)
+            M205 (__METHOD__, 0xAB, ObjectType (MM21), 0x08)
             MM21 (0x01)
-            M205 (TS, 0xAC, FLAG, 0x21)
+            M205 (__METHOD__, 0xAC, FLAG, 0x21)
             /*
              // Bug 148
              m205(ts, 173, ObjectType(mm22), 8)
              mm22(1)
              m205(ts, 174, Flag, 34)
              */
-            M205 (TS, 0xAF, ObjectType (MM23), 0x08)
+            M205 (__METHOD__, 0xAF, ObjectType (MM23), 0x08)
             MM23 (0x01, 0x02)
-            M205 (TS, 0xB0, FLAG, 0x23)
-            M205 (TS, 0xB1, ObjectType (MM24), 0x08)
+            M205 (__METHOD__, 0xB0, FLAG, 0x23)
+            M205 (__METHOD__, 0xB1, ObjectType (MM24), 0x08)
             MM24 (0x01, 0x02)
-            M205 (TS, 0xB2, FLAG, 0x24)
-            M205 (TS, 0xB3, ObjectType (MM25), 0x08)
+            M205 (__METHOD__, 0xB2, FLAG, 0x24)
+            M205 (__METHOD__, 0xB3, ObjectType (MM25), 0x08)
             MM25 (0x01, 0x02)
-            M205 (TS, 0xB4, FLAG, 0x25)
-            M205 (TS, 0xB5, ObjectType (MM26), 0x08)
+            M205 (__METHOD__, 0xB4, FLAG, 0x25)
+            M205 (__METHOD__, 0xB5, ObjectType (MM26), 0x08)
             MM26 (0x01, 0x02)
-            M205 (TS, 0xB6, FLAG, 0x26)
-            M205 (TS, 0xB7, ObjectType (MM27), 0x08)
+            M205 (__METHOD__, 0xB6, FLAG, 0x26)
+            M205 (__METHOD__, 0xB7, ObjectType (MM27), 0x08)
             MM27 (0x01, 0x02)
-            M205 (TS, 0xB8, FLAG, 0x27)
-            M205 (TS, 0xB9, ObjectType (MM28), 0x08)
+            M205 (__METHOD__, 0xB8, FLAG, 0x27)
+            M205 (__METHOD__, 0xB9, ObjectType (MM28), 0x08)
             MM28 (0x01, 0x02)
-            M205 (TS, 0xBA, FLAG, 0x28)
-            M205 (TS, 0xBB, ObjectType (MM29), 0x08)
+            M205 (__METHOD__, 0xBA, FLAG, 0x28)
+            M205 (__METHOD__, 0xBB, ObjectType (MM29), 0x08)
             MM29 (0x01, 0x02)
-            M205 (TS, 0xBC, FLAG, 0x29)
+            M205 (__METHOD__, 0xBC, FLAG, 0x29)
                 /*
          // Bug 148
          m205(ts, 189, ObjectType(mm2a), 8)
@@ -1152,10 +1151,10 @@
 
             I000 = 0x00
             MM00 (0x00)
-            M205 (TS, 0xBF, I000, 0x01)
+            M205 (__METHOD__, 0xBF, I000, 0x01)
             I000 = 0x00
             MM00 (0x01)
-            M205 (TS, 0xC0, I000, 0x02)
+            M205 (__METHOD__, 0xC0, I000, 0x02)
         }
 
         /* Serialized Method can be invoked recursively */
@@ -1179,10 +1178,10 @@
 
             I000 = 0x00
             MM00 (0x00)
-            M205 (TS, 0xC1, I000, 0x01)
+            M205 (__METHOD__, 0xC1, I000, 0x01)
             I000 = 0x00
             MM00 (0x01)
-            M205 (TS, 0xC2, I000, 0x02)
+            M205 (__METHOD__, 0xC2, I000, 0x02)
         }
 
         /* Serialized Method can invoke another Serialized One */
@@ -1206,10 +1205,10 @@
 
             I000 = 0x00
             MM00 (0x00)
-            M205 (TS, 0xC3, I000, 0x01)
+            M205 (__METHOD__, 0xC3, I000, 0x01)
             I000 = 0x00
             MM00 (0x01)
-            M205 (TS, 0xC4, I000, 0x02)
+            M205 (__METHOD__, 0xC4, I000, 0x02)
         }
 
         /* Serialized Method can acquire an Mutex */
@@ -1224,7 +1223,7 @@
                 If (Arg0)
                 {
                     Local0 = Acquire (MTX0, 0x0000)
-                    If (!M205 (TS, 0xC5, Local0, Zero))
+                    If (!M205 (__METHOD__, 0xC5, Local0, Zero))
                     {
                         I000++
                         Release (MTX0)
@@ -1234,10 +1233,10 @@
 
             I000 = 0x00
             MM00 (0x00)
-            M205 (TS, 0xC6, I000, 0x01)
+            M205 (__METHOD__, 0xC6, I000, 0x01)
             I000 = 0x00
             MM00 (0x01)
-            M205 (TS, 0xC7, I000, 0x02)
+            M205 (__METHOD__, 0xC7, I000, 0x02)
         }
 
         /* When Serialized Method calls another one then */
@@ -1258,7 +1257,7 @@
             Method (MM01, 0, NotSerialized)
             {
                 Local0 = Acquire (MTX1, 0x0000)
-                If (!M205 (TS, 0xC8, Local0, Zero))
+                If (!M205 (__METHOD__, 0xC8, Local0, Zero))
                 {
                     I000++
                     Release (MTX1)
@@ -1267,10 +1266,10 @@
 
             I000 = 0x00
             MM00 (0x00)
-            M205 (TS, 0xC9, I000, 0x01)
+            M205 (__METHOD__, 0xC9, I000, 0x01)
             I000 = 0x00
             MM00 (0x01)
-            M205 (TS, 0xCA, I000, 0x02)
+            M205 (__METHOD__, 0xCA, I000, 0x02)
         }
 
         /* UnSerialized Method acquiring an Mutex can invoke */
@@ -1282,7 +1281,7 @@
             Method (MM00, 1, NotSerialized)
             {
                 Local0 = Acquire (MTX0, 0x0000)
-                If (!M205 (TS, 0xCB, Local0, Zero))
+                If (!M205 (__METHOD__, 0xCB, Local0, Zero))
                 {
                     I000++
                     If (Arg0)
@@ -1301,10 +1300,10 @@
 
             I000 = 0x00
             MM00 (0x00)
-            M205 (TS, 0xCC, I000, 0x01)
+            M205 (__METHOD__, 0xCC, I000, 0x01)
             I000 = 0x00
             MM00 (0x01)
-            M205 (TS, 0xCD, I000, 0x02)
+            M205 (__METHOD__, 0xCD, I000, 0x02)
         }
 
         /* When UnSerialized Method acquiring an Mutex invokes */
@@ -1317,7 +1316,7 @@
             Method (MM00, 1, NotSerialized)
             {
                 Local0 = Acquire (MTX0, 0x0000)
-                If (!M205 (TS, 0xCE, Local0, Zero))
+                If (!M205 (__METHOD__, 0xCE, Local0, Zero))
                 {
                     I000++
                     If (Arg0)
@@ -1339,10 +1338,10 @@
 
             I000 = 0x00
             MM00 (0x00)
-            M205 (TS, 0xCF, I000, 0x01)
+            M205 (__METHOD__, 0xCF, I000, 0x01)
             I000 = 0x00
             MM00 (0x01)
-            M205 (TS, 0xD0, I000, 0x02)
+            M205 (__METHOD__, 0xD0, I000, 0x02)
         }
 
         SRMT ("m240")

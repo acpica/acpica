@@ -47,7 +47,6 @@
     /* */
     Method (M4BE, 0, Serialized)
     {
-        Name (TS, "m4be")
         Name (BBF1, Buffer (0x14){})
         CreateField (BBF1, 0x0B, 0x1F, BF02)
         CreateField (BBF1, 0x3A, 0x41, BF03)
@@ -81,11 +80,11 @@
             Store (BF03 [0x00], Local1)
             If (Y900)
             {
-                CH03 (TS, Z106, 0x00, 0x56, 0x00)
+                CH03 (__METHOD__, Z106, 0x00, 0x56, 0x00)
             }
             Else
             {
-                CH04 (TS, 0x00, 0x55, Z106, 0x58, 0x00, 0x00) /* AE_INDEX_TO_NOT_ATTACHED */
+                CH04 (__METHOD__, 0x00, 0x55, Z106, 0x58, 0x00, 0x00) /* AE_INDEX_TO_NOT_ATTACHED */
             }
         }
 
@@ -116,11 +115,11 @@
             Store (BF21 [0x00], Local1)
             If (Y900)
             {
-                CH03 (TS, Z106, 0x01, 0x75, 0x00)
+                CH03 (__METHOD__, Z106, 0x01, 0x75, 0x00)
             }
             Else
             {
-                CH04 (TS, 0x00, 0x55, Z106, 0x77, 0x00, 0x00) /* AE_INDEX_TO_NOT_ATTACHED */
+                CH04 (__METHOD__, 0x00, 0x55, Z106, 0x77, 0x00, 0x00) /* AE_INDEX_TO_NOT_ATTACHED */
             }
         }
 
@@ -138,7 +137,7 @@
             }
 
             Local1 = DerefOf (Arg1)
-            CH03 (TS, Z106, 0x02, 0x89, 0x00)
+            CH03 (__METHOD__, Z106, 0x02, 0x89, 0x00)
             Local1 = DerefOf (DerefOf (Arg1))
             CH06 (Arg0, 0x07, 0x2F)
             Store (DerefOf (Arg1) [0x00], Local1)
@@ -148,11 +147,11 @@
 
                 If (Y900)
                 {
-                    CH03 (TS, Z106, 0x03, 0x93, 0x00)
+                    CH03 (__METHOD__, Z106, 0x03, 0x93, 0x00)
                 }
                 Else
                 {
-                    CH04 (TS, 0x00, 0x55, Z106, 0x95, 0x00, 0x00) /* AE_INDEX_TO_NOT_ATTACHED */
+                    CH04 (__METHOD__, 0x00, 0x55, Z106, 0x95, 0x00, 0x00) /* AE_INDEX_TO_NOT_ATTACHED */
                 }
             }
             Else
@@ -217,7 +216,7 @@
                 Local0 = (0x03 * LPC0) /* \M4BE.M003.LPC0 */
                 I000 = 0x00
                 Local1 = DerefOf (M000 (0x01, LPC0))
-                CH03 (TS, Z106, (0x04 + LPC0), 0x00, 0x00)
+                CH03 (__METHOD__, Z106, (0x04 + LPC0), 0x00, 0x00)
                 CH00 (Arg0, 0x01)
                 Local1 = DerefOf (DerefOf (M000 (0x02, LPC0)))
                 CH06 (Arg0, (0x0B + Local0), 0x2F)
@@ -229,11 +228,11 @@
 
                     If (Y900)
                     {
-                        CH03 (TS, Z106, (0x08 + LPC0), 0x00, 0x00)
+                        CH03 (__METHOD__, Z106, (0x08 + LPC0), 0x00, 0x00)
                     }
                     Else
                     {
-                        CH04 (TS, 0x00, 0x55, Z106, 0xDD, 0x00, 0x00) /* AE_INDEX_TO_NOT_ATTACHED */
+                        CH04 (__METHOD__, 0x00, 0x55, Z106, 0xDD, 0x00, 0x00) /* AE_INDEX_TO_NOT_ATTACHED */
                     }
                 }
                 Else
@@ -252,41 +251,41 @@
             }
         }
 
-        CH03 (TS, Z106, 0x0C, 0xEE, 0x00)
+        CH03 (__METHOD__, Z106, 0x0C, 0xEE, 0x00)
         /* Local Named Object */
 
-        M000 (TS)
+        M000 (__METHOD__)
         /* Global Named Object */
 
-        M001 (TS)
+        M001 (__METHOD__)
         /* Reference to Local Named Object */
 
         BF02 = II71 /* \II71 */
         BF03 = BI01 /* \BI01 */
-        M002 (Concatenate (TS, "-m002-RefLocNameI"), RefOf (BF02), 0x00)
+        M002 (Concatenate (__METHOD__, "-m002-RefLocNameI"), RefOf (BF02), 0x00)
         Local0 = RefOf (BF02)
-        M002 (Concatenate (TS, "-m002-RefLocName2I"), Local0, 0x00)
+        M002 (Concatenate (__METHOD__, "-m002-RefLocName2I"), Local0, 0x00)
         CondRefOf (BF02, Local0)
-        M002 (Concatenate (TS, "-m002-CondRefLocNameI"), Local0, 0x00)
-        M002 (Concatenate (TS, "-m002-RefLocNameB"), RefOf (BF03), 0x01)
+        M002 (Concatenate (__METHOD__, "-m002-CondRefLocNameI"), Local0, 0x00)
+        M002 (Concatenate (__METHOD__, "-m002-RefLocNameB"), RefOf (BF03), 0x01)
         Local0 = RefOf (BF03)
-        M002 (Concatenate (TS, "-m002-RefLocName2B"), Local0, 0x01)
+        M002 (Concatenate (__METHOD__, "-m002-RefLocName2B"), Local0, 0x01)
         CondRefOf (BF03, Local0)
-        M002 (Concatenate (TS, "-m002-CondRefLocNameB"), Local0, 0x01)
+        M002 (Concatenate (__METHOD__, "-m002-CondRefLocNameB"), Local0, 0x01)
         BF20 = II71 /* \II71 */
         BF21 = BI01 /* \BI01 */
-        M002 (Concatenate (TS, "-m002-RefGlobNameI"), RefOf (BF20), 0x00)
+        M002 (Concatenate (__METHOD__, "-m002-RefGlobNameI"), RefOf (BF20), 0x00)
         Local0 = RefOf (BF20)
-        M002 (Concatenate (TS, "-m002-RefGlobName2I"), Local0, 0x00)
+        M002 (Concatenate (__METHOD__, "-m002-RefGlobName2I"), Local0, 0x00)
         CondRefOf (BF20, Local0)
-        M002 (Concatenate (TS, "-m002-CondRefGlobNameI"), Local0, 0x00)
-        M002 (Concatenate (TS, "-m002-RefGlobNameB"), RefOf (BF21), 0x01)
+        M002 (Concatenate (__METHOD__, "-m002-CondRefGlobNameI"), Local0, 0x00)
+        M002 (Concatenate (__METHOD__, "-m002-RefGlobNameB"), RefOf (BF21), 0x01)
         Local0 = RefOf (BF21)
-        M002 (Concatenate (TS, "-m002-RefGlobName2B"), Local0, 0x01)
+        M002 (Concatenate (__METHOD__, "-m002-RefGlobName2B"), Local0, 0x01)
         CondRefOf (BF21, Local0)
-        M002 (Concatenate (TS, "-m002-CondRefGlobNameB"), Local0, 0x01)
+        M002 (Concatenate (__METHOD__, "-m002-CondRefGlobNameB"), Local0, 0x01)
         /* Reference to Object as Result of Method invocation */
 
-        M003 (TS)
+        M003 (__METHOD__)
     }
 

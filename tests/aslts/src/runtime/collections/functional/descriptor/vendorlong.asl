@@ -235,13 +235,12 @@
     })
     Method (RT09, 0, Serialized)
     {
-        Name (TS, "RT09")
         /* Emit test header, set the filename */
 
-        THDR (TS, "Long Vendor Resource Descriptor Macro", "vendorlong.asl")
+        THDR (__METHOD__, "Long Vendor Resource Descriptor Macro", "vendorlong.asl")
         /* Main test case for packages above */
 
-        M330 (TS, 0x07, "p410", P410, P411)
+        M330 (__METHOD__, 0x07, "p410", P410, P411)
         /* VendorLong has DescriptorName */
         /* but has not fields in it. */
         Local0 = ResourceTemplate ()

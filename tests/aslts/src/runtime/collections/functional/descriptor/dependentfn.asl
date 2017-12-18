@@ -412,12 +412,11 @@
     })
     Method (RT04, 0, Serialized)
     {
-        Name (TS, "RT04")
         /* Emit test header, set the filename */
 
-        THDR (TS, "Start/End DependentFunction Resource Descriptor Macro", "dependentfn.asl")
+        THDR (__METHOD__, "Start/End DependentFunction Resource Descriptor Macro", "dependentfn.asl")
         /* Main test case for packages above */
 
-        M330 (TS, 0x0E, "p406", P406, P407)
+        M330 (__METHOD__, 0x0E, "p406", P406, P407)
     }
 

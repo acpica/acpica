@@ -517,9 +517,8 @@
 
     Method (WAI0, 0, Serialized)
     {
-        Name (TS, "WAI0")
         Debug = "TEST: WAI0, Wait for Events"
-        M060 (TS, 0x28, P011, "p011")
+        M060 (__METHOD__, 0x28, P011, "p011")
     }
 
     /* Run-method */

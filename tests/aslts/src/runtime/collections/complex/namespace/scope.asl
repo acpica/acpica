@@ -31,7 +31,6 @@
      */
     Method (SC00, 0, Serialized)
     {
-        Name (TS, "sc00")
         Method (M000, 1, Serialized)
         {
             Scope (\)
@@ -40,9 +39,9 @@
             }
         }
 
-        CH03 (TS, Z178, 0x44, 0x2C, 0x00)
+        CH03 (__METHOD__, Z178, 0x44, 0x2C, 0x00)
         M000 (0x00)
-        CH03 (TS, Z178, 0x45, 0x2E, 0x00)
+        CH03 (__METHOD__, Z178, 0x45, 0x2E, 0x00)
     }
 
     Method (SCP0, 0, NotSerialized)

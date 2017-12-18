@@ -32,7 +32,6 @@
     Name (Z120, 0x78)
     Method (M61B, 0, Serialized)
     {
-        Name (TS, "m61b")
         /* Buffer Field to Buffer implicit conversion Cases. */
         /* Buffer Field to Buffer conversion of the Buffer Field second operand */
         /* of Logical operators when the first operand is evaluated as Buffer */
@@ -10635,13 +10634,13 @@
         /* (LEqual, LGreater, LGreaterEqual, LLess, LLessEqual, LNotEqual) */
         If (F64)
         {
-            Concatenate (TS, "-m644", Local0)
+            Concatenate (__METHOD__, "-m644", Local0)
             SRMT (Local0)
             M644 (Local0)
         }
         Else
         {
-            Concatenate (TS, "-m324", Local0)
+            Concatenate (__METHOD__, "-m324", Local0)
             SRMT (Local0)
             M324 (Local0)
         }
@@ -10650,13 +10649,13 @@
         /* of Concatenate operator */
         If (F64)
         {
-            Concatenate (TS, "-m645", Local0)
+            Concatenate (__METHOD__, "-m645", Local0)
             SRMT (Local0)
             M645 (Local0)
         }
         Else
         {
-            Concatenate (TS, "-m325", Local0)
+            Concatenate (__METHOD__, "-m325", Local0)
             SRMT (Local0)
             M325 (Local0)
         }
@@ -10665,13 +10664,13 @@
         /* of Concatenate operator when the first operand is evaluated as Buffer */
         If (F64)
         {
-            Concatenate (TS, "-m646", Local0)
+            Concatenate (__METHOD__, "-m646", Local0)
             SRMT (Local0)
             M646 (Local0)
         }
         Else
         {
-            Concatenate (TS, "-m326", Local0)
+            Concatenate (__METHOD__, "-m326", Local0)
             SRMT (Local0)
             M326 (Local0)
         }
@@ -10680,13 +10679,13 @@
         /* of ToString operator */
         If (F64)
         {
-            Concatenate (TS, "-m647", Local0)
+            Concatenate (__METHOD__, "-m647", Local0)
             SRMT (Local0)
             M647 (Local0)
         }
         Else
         {
-            Concatenate (TS, "-m327", Local0)
+            Concatenate (__METHOD__, "-m327", Local0)
             SRMT (Local0)
             M327 (Local0)
         }
@@ -10695,13 +10694,13 @@
         /* of Mid operator */
         If (F64)
         {
-            Concatenate (TS, "-m648", Local0)
+            Concatenate (__METHOD__, "-m648", Local0)
             SRMT (Local0)
             M648 (Local0)
         }
         Else
         {
-            Concatenate (TS, "-m328", Local0)
+            Concatenate (__METHOD__, "-m328", Local0)
             SRMT (Local0)
             M328 (Local0)
         }
@@ -10712,33 +10711,33 @@
         /* (Decrement, Increment, FindSetLeftBit, FindSetRightBit, Not) */
         If (F64)
         {
-            Concatenate (TS, "-m64l", Local0)
+            Concatenate (__METHOD__, "-m64l", Local0)
             SRMT (Local0)
             M64L (Local0)
         }
         Else
         {
-            Concatenate (TS, "-m32l", Local0)
+            Concatenate (__METHOD__, "-m32l", Local0)
             SRMT (Local0)
             M32L (Local0)
         }
 
         /* Buffer Field to Integer conversion of the Buffer Field sole operand */
         /* of the LNot Logical Integer operator */
-        Concatenate (TS, "-m03a", Local0)
+        Concatenate (__METHOD__, "-m03a", Local0)
         SRMT (Local0)
         M03A (Local0)
         /* Buffer Field to Integer conversion of the Buffer Field sole operand */
         /* of the FromBCD and ToBCD conversion operators */
         If (F64)
         {
-            Concatenate (TS, "-m64m", Local0)
+            Concatenate (__METHOD__, "-m64m", Local0)
             SRMT (Local0)
             M64M (Local0)
         }
         Else
         {
-            Concatenate (TS, "-m32m", Local0)
+            Concatenate (__METHOD__, "-m32m", Local0)
             SRMT (Local0)
             M32M (Local0)
         }
@@ -10749,39 +10748,39 @@
         /* ShiftLeft, ShiftRight, Subtract, Xor */
         If (F64)
         {
-            M64N (Concatenate (TS, "-m64n"))
+            M64N (Concatenate (__METHOD__, "-m64n"))
         }
         Else
         {
-            M32N (Concatenate (TS, "-m32n"))
+            M32N (Concatenate (__METHOD__, "-m32n"))
         }
 
         /* Buffer Field to Integer conversion of each Buffer operand */
         /* of the 2-parameter Logical Integer operators LAnd and LOr */
         If (F64)
         {
-            M64O (Concatenate (TS, "-m64o"))
+            M64O (Concatenate (__METHOD__, "-m64o"))
         }
         Else
         {
-            M32O (Concatenate (TS, "-m32o"))
+            M32O (Concatenate (__METHOD__, "-m32o"))
         }
 
         /* Buffer Field to Integer conversion of the Buffer Field second operand */
         /* of Logical operators when the first operand is evaluated as Integer */
         /* (LEqual, LGreater, LGreaterEqual, LLess, LLessEqual, LNotEqual) */
-        Concatenate (TS, "-m065", Local0)
+        Concatenate (__METHOD__, "-m065", Local0)
         SRMT (Local0)
         M065 (Local0)
         If (F64)
         {
-            Concatenate (TS, "-m64p", Local0)
+            Concatenate (__METHOD__, "-m64p", Local0)
             SRMT (Local0)
             M64P (Local0)
         }
         Else
         {
-            Concatenate (TS, "-m32p", Local0)
+            Concatenate (__METHOD__, "-m32p", Local0)
             SRMT (Local0)
             M32P (Local0)
         }
@@ -10790,83 +10789,83 @@
         /* second operand of Concatenate operator in case the first one is Integer */
         If (F64)
         {
-            Concatenate (TS, "-m64q", Local0)
+            Concatenate (__METHOD__, "-m64q", Local0)
             SRMT (Local0)
             M64Q (Local0)
         }
         Else
         {
-            Concatenate (TS, "-m32q", Local0)
+            Concatenate (__METHOD__, "-m32q", Local0)
             SRMT (Local0)
             M32Q (Local0)
         }
 
         /* Buffer Field to Integer conversion of the Buffer Field Length */
         /* (second) operand of the ToString operator */
-        Concatenate (TS, "-m066", Local0)
+        Concatenate (__METHOD__, "-m066", Local0)
         SRMT (Local0)
         M066 (Local0)
         If (F64)
         {
-            Concatenate (TS, "-m64r", Local0)
+            Concatenate (__METHOD__, "-m64r", Local0)
             SRMT (Local0)
             M64R (Local0)
         }
         Else
         {
-            Concatenate (TS, "-m32r", Local0)
+            Concatenate (__METHOD__, "-m32r", Local0)
             SRMT (Local0)
             M32R (Local0)
         }
 
         /* Buffer Field to Integer conversion of the Buffer Field Index */
         /* (second) operand of the Index operator */
-        Concatenate (TS, "-m067", Local0)
+        Concatenate (__METHOD__, "-m067", Local0)
         SRMT (Local0)
         M067 (Local0)
         /* Buffer Field to Integer conversion of the Buffer Field Arg (third) */
         /* operand of the Fatal operator */
         /* (it can only be checked an exception does not occur) */
-        Concatenate (TS, "-m068", Local0)
+        Concatenate (__METHOD__, "-m068", Local0)
         SRMT (Local0)
         M068 (Local0)
         /* Buffer Field to Integer conversion of the Buffer Field Index */
         /* and Length operands of the Mid operator */
-        Concatenate (TS, "-m069", Local0)
+        Concatenate (__METHOD__, "-m069", Local0)
         SRMT (Local0)
         M069 (Local0)
         If (F64)
         {
-            Concatenate (TS, "-m64s", Local0)
+            Concatenate (__METHOD__, "-m64s", Local0)
             SRMT (Local0)
             M64S (Local0)
         }
         Else
         {
-            Concatenate (TS, "-m32s", Local0)
+            Concatenate (__METHOD__, "-m32s", Local0)
             SRMT (Local0)
             M32S (Local0)
         }
 
         /* Buffer Field to Integer conversion of the Buffer Field StartIndex */
         /* operand of the Match operator */
-        Concatenate (TS, "-m06a", Local0)
+        Concatenate (__METHOD__, "-m06a", Local0)
         SRMT (Local0)
         M06A (Local0)
         /* Buffer Field to Integer conversion of the Buffer Field sole operand */
         /* of the Method execution control operators (Sleep, Stall) */
-        Concatenate (TS, "-m06b", Local0)
+        Concatenate (__METHOD__, "-m06b", Local0)
         SRMT (Local0)
         M06B (Local0)
         /* Buffer Field to Integer conversion of the Buffer Field TimeoutValue */
         /* (second) operand of the Wait operator */
-        Concatenate (TS, "-m06d", Local0)
+        Concatenate (__METHOD__, "-m06d", Local0)
         SRMT (Local0)
         M06D (Local0)
         /* Buffer Field to Integer conversion of the Buffer Field value */
         /* of Predicate of the Method execution control statements */
         /* (If, ElseIf, While) */
-        Concatenate (TS, "-m06e", Local0)
+        Concatenate (__METHOD__, "-m06e", Local0)
         SRMT (Local0)
         If (Y364)
         {
@@ -10879,7 +10878,7 @@
 
         /* Check Buffer Fields consistency */
 
-        Concatenate (TS, "-m074", Local0)
+        Concatenate (__METHOD__, "-m074", Local0)
         SRMT (Local0)
         M074 (Local0)
     }
