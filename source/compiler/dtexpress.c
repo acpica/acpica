@@ -209,7 +209,7 @@ DtResolveIntegerExpression (
  * FUNCTION:    DtDoOperator
  *
  * PARAMETERS:  LeftValue           - First 64-bit operand
- *              Operator            - Parse token for the operator (EXPOP_*)
+ *              Operator            - Parse token for the operator (EXPROP_*)
  *              RightValue          - Second 64-bit operand
  *
  * RETURN:      64-bit result of the requested operation
@@ -231,22 +231,22 @@ DtDoOperator (
 
     switch (Operator)
     {
-    case EXPOP_ONES_COMPLIMENT:
+    case EXPROP_ONES_COMPLIMENT:
 
         Result = ~RightValue;
         break;
 
-    case EXPOP_LOGICAL_NOT:
+    case EXPROP_LOGICAL_NOT:
 
         Result = !RightValue;
         break;
 
-    case EXPOP_MULTIPLY:
+    case EXPROP_MULTIPLY:
 
         Result = LeftValue * RightValue;
         break;
 
-    case EXPOP_DIVIDE:
+    case EXPROP_DIVIDE:
 
         if (!RightValue)
         {
@@ -258,7 +258,7 @@ DtDoOperator (
         Result = LeftValue / RightValue;
         break;
 
-    case EXPOP_MODULO:
+    case EXPROP_MODULO:
 
         if (!RightValue)
         {
@@ -270,76 +270,76 @@ DtDoOperator (
         Result = LeftValue % RightValue;
         break;
 
-    case EXPOP_ADD:
+    case EXPROP_ADD:
         Result = LeftValue + RightValue;
         break;
 
-    case EXPOP_SUBTRACT:
+    case EXPROP_SUBTRACT:
 
         Result = LeftValue - RightValue;
         break;
 
-    case EXPOP_SHIFT_RIGHT:
+    case EXPROP_SHIFT_RIGHT:
 
         Result = LeftValue >> RightValue;
         break;
 
-    case EXPOP_SHIFT_LEFT:
+    case EXPROP_SHIFT_LEFT:
 
         Result = LeftValue << RightValue;
         break;
 
-    case EXPOP_LESS:
+    case EXPROP_LESS:
 
         Result = LeftValue < RightValue;
         break;
 
-    case EXPOP_GREATER:
+    case EXPROP_GREATER:
 
         Result = LeftValue > RightValue;
         break;
 
-    case EXPOP_LESS_EQUAL:
+    case EXPROP_LESS_EQUAL:
 
         Result = LeftValue <= RightValue;
         break;
 
-    case EXPOP_GREATER_EQUAL:
+    case EXPROP_GREATER_EQUAL:
 
         Result = LeftValue >= RightValue;
         break;
 
-    case EXPOP_EQUAL:
+    case EXPROP_EQUAL:
 
         Result = LeftValue == RightValue;
         break;
 
-    case EXPOP_NOT_EQUAL:
+    case EXPROP_NOT_EQUAL:
 
         Result = LeftValue != RightValue;
         break;
 
-    case EXPOP_AND:
+    case EXPROP_AND:
 
         Result = LeftValue & RightValue;
         break;
 
-    case EXPOP_XOR:
+    case EXPROP_XOR:
 
         Result = LeftValue ^ RightValue;
         break;
 
-    case EXPOP_OR:
+    case EXPROP_OR:
 
         Result = LeftValue | RightValue;
         break;
 
-    case EXPOP_LOGICAL_AND:
+    case EXPROP_LOGICAL_AND:
 
         Result = LeftValue && RightValue;
         break;
 
-    case EXPOP_LOGICAL_OR:
+    case EXPROP_LOGICAL_OR:
 
         Result = LeftValue || RightValue;
         break;
