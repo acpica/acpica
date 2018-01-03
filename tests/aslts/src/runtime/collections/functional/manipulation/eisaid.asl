@@ -62,8 +62,7 @@
 
     Method (EIS0, 0, Serialized)
     {
-        Name (TS, "EIS0")
         Debug = "TEST: EIS0, EISA ID String To Integer Conversion Macro"
-        M302 (TS, 0x0A, "p360", P360, P361, 0x09)
+        M302 (__METHOD__, 0x0A, "p360", P360, P361, 0x09)
     }
 

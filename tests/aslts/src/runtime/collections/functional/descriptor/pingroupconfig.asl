@@ -688,21 +688,20 @@
     })
     Method (RT30, 0, Serialized)
     {
-        Name (TS, "RT30")
         /* Emit test header, set the filename */
 
-        THDR (TS, "PinGroupConfig Resource Descriptor Macro", "pingroupconfig.asl")
+        THDR (__METHOD__, "PinGroupConfig Resource Descriptor Macro", "pingroupconfig.asl")
         /* The main test packages must have the same number of entries */
 
         If ((SizeOf (P464) != SizeOf (P465)))
         {
-            ERR (TS, 0xB3, 0x00, 0x00, 0x00, 0x00, "Incorrect package length")
+            ERR (__METHOD__, 0xB3, 0x00, 0x00, 0x00, 0x00, "Incorrect package length")
             Return (Zero)
         }
 
         /* Main test case for packages above */
 
-        M330 (TS, SizeOf (P464), "P464", P464, P465)
+        M330 (__METHOD__, SizeOf (P464), "P464", P464, P465)
                     /* Check resource descriptor tag offsets */
 
 Local0 = ResourceTemplate ()
@@ -720,9 +719,9 @@ Local0 = ResourceTemplate ()
                         0x0A, 0x0B, 0x0C, 0x0D
                     })
             }
-        M331 (TS, 0x01, 0x20, 0x20, 0x0168, 0x0168, "_SHR")
-        M331 (TS, 0x01, 0x30, 0x30, 0x0178, 0x0178, "_TYP")
-        M331 (TS, 0x01, 0x38, 0x38, 0x0180, 0x0180, "_VAL")
-        M331 (TS, 0x01, 0x0128, 0x0128, 0x0270, 0x0270, "_VEN")
+        M331 (__METHOD__, 0x01, 0x20, 0x20, 0x0168, 0x0168, "_SHR")
+        M331 (__METHOD__, 0x01, 0x30, 0x30, 0x0178, 0x0178, "_TYP")
+        M331 (__METHOD__, 0x01, 0x38, 0x38, 0x0180, 0x0180, "_VAL")
+        M331 (__METHOD__, 0x01, 0x0128, 0x0128, 0x0270, 0x0270, "_VEN")
     }
 

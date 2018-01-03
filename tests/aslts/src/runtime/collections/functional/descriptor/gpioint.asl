@@ -7350,21 +7350,20 @@
     })
     Method (RT21, 0, Serialized)
     {
-        Name (TS, "RT21")
         /* Emit test header, set the filename */
 
-        THDR (TS, "GpioInt Resource Descriptor Macro", "gpioint.asl")
+        THDR (__METHOD__, "GpioInt Resource Descriptor Macro", "gpioint.asl")
         /* The main test packages must have the same number of entries */
 
         If ((SizeOf (P452) != SizeOf (P453)))
         {
-            ERR (TS, 0xB2, 0x00, 0x00, 0x00, 0x00, "Incorrect package length")
+            ERR (__METHOD__, 0xB2, 0x00, 0x00, 0x00, 0x00, "Incorrect package length")
             Return (Zero)
         }
 
         /* Main test case for packages above */
 
-        M330 (TS, SizeOf (P452), "p452", P452, P453)
+        M330 (__METHOD__, SizeOf (P452), "p452", P452, P453)
         /* Check resource descriptor tag offsets */
 
         Local0 = ResourceTemplate ()
@@ -7388,12 +7387,12 @@
                         0x00A3
                     }
             }
-        M331 (TS, 0x01, 0x38, 0x38, 0x0150, 0x0150, "_MOD")
-        M331 (TS, 0x02, 0x39, 0x39, 0x0151, 0x0151, "_POL")
-        M331 (TS, 0x03, 0x3B, 0x3B, 0x0153, 0x0153, "_SHR")
-        M331 (TS, 0x04, 0x48, 0x48, 0x0160, 0x0160, "_PPI")
-        M331 (TS, 0x05, 0x60, 0x60, 0x0178, 0x0178, "_DBT")
-        M331 (TS, 0x06, 0xB8, 0xB8, 0x01D0, 0x01D0, "_PIN")
-        M331 (TS, 0x07, 0xF8, 0xF8, 0x0210, 0x0210, "_VEN")
+        M331 (__METHOD__, 0x01, 0x38, 0x38, 0x0150, 0x0150, "_MOD")
+        M331 (__METHOD__, 0x02, 0x39, 0x39, 0x0151, 0x0151, "_POL")
+        M331 (__METHOD__, 0x03, 0x3B, 0x3B, 0x0153, 0x0153, "_SHR")
+        M331 (__METHOD__, 0x04, 0x48, 0x48, 0x0160, 0x0160, "_PPI")
+        M331 (__METHOD__, 0x05, 0x60, 0x60, 0x0178, 0x0178, "_DBT")
+        M331 (__METHOD__, 0x06, 0xB8, 0xB8, 0x01D0, 0x01D0, "_PIN")
+        M331 (__METHOD__, 0x07, 0xF8, 0xF8, 0x0210, 0x0210, "_VEN")
     }
 

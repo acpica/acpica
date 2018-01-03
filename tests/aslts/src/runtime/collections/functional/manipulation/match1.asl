@@ -3136,7 +3136,6 @@
 
     Method (MAT0, 0, Serialized)
     {
-        Name (TS, "MAT0")
         Debug = "TEST: MAT0, Find Object Match"
         /* to do transposition of match objects flag */
 
@@ -3146,37 +3145,37 @@
             TRNS = 0x01
         }
 
-        M308 (TS, 0x22, "p370", P371, P372, P370, TRNS)
+        M308 (__METHOD__, 0x22, "p370", P371, P372, P370, TRNS)
         If (C099)
         {
-            M308 (TS, 0x22, "p373", P371, P372, P373, TRNS)
-            M308 (TS, 0x22, "p374", P371, P372, P374, TRNS)
+            M308 (__METHOD__, 0x22, "p373", P371, P372, P373, TRNS)
+            M308 (__METHOD__, 0x22, "p374", P371, P372, P374, TRNS)
         }
 
-        M308 (TS, 0x22, "p375", P371, P372, P375, TRNS)
+        M308 (__METHOD__, 0x22, "p375", P371, P372, P375, TRNS)
         If ((F64 == 0x01))
         {
-            M308 (TS, 0x22, "p377", P378, P372, P377, TRNS)
+            M308 (__METHOD__, 0x22, "p377", P378, P372, P377, TRNS)
             If (C099)
             {
-                M308 (TS, 0x22, "p389", P38A, P372, P389, TRNS)
-                M308 (TS, 0x22, "p38b", P38C, P372, P38B, TRNS)
-                M308 (TS, 0x22, "p38d", P38E, P372, P38D, TRNS)
+                M308 (__METHOD__, 0x22, "p389", P38A, P372, P389, TRNS)
+                M308 (__METHOD__, 0x22, "p38b", P38C, P372, P38B, TRNS)
+                M308 (__METHOD__, 0x22, "p38d", P38E, P372, P38D, TRNS)
             }
         }
         Else
         {
-            M308 (TS, 0x22, "p389", P38A, P372, P389, TRNS)
+            M308 (__METHOD__, 0x22, "p389", P38A, P372, P389, TRNS)
         }
 
         /* One-element length package special case */
 
-        M308 (TS, 0x06, "p380", P381, P382, P380, TRNS)
+        M308 (__METHOD__, 0x06, "p380", P381, P382, P380, TRNS)
         /* 255-element length package special case */
 
         If (C099)
         {
-            M308 (TS, 0x06, "p383", P384, P385, P383, TRNS)
+            M308 (__METHOD__, 0x06, "p383", P384, P385, P383, TRNS)
         }
     }
 

@@ -360,10 +360,9 @@
 
     Method (TOS0, 0, Serialized)
     {
-        Name (TS, "TOS0")
         Debug = "TEST: TOS0, Convert Buffer To String"
-        M30A (TS)
-        M30B (TS)
-        M30C (TS)
+        M30A (__METHOD__)
+        M30B (__METHOD__)
+        M30C (__METHOD__)
     }
 

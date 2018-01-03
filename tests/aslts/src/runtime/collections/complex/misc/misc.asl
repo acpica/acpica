@@ -203,20 +203,19 @@
 
     Method (M117, 2, Serialized)
     {
-        Name (TS, "m117")
         If (Arg1)
         {
             Local0 = 0x00
         }
 
-        CH03 (TS, Z054, 0x0100, 0xC4, 0x00)
+        CH03 (__METHOD__, Z054, 0x0100, 0xC4, 0x00)
         Local1 = ObjectType (Local0)
         If ((Local1 != 0x00))
         {
             ERR (Arg0, Z054, 0xC9, 0x00, 0x00, Local1, 0x00)
         }
 
-        CH03 (TS, Z054, 0x0101, 0xCC, 0x00)
+        CH03 (__METHOD__, Z054, 0x0101, 0xCC, 0x00)
     }
 
     Method (M118, 1, NotSerialized)
@@ -322,8 +321,7 @@
     /* are passed immediately */
     Method (M11C, 1, Serialized)
     {
-        Name (TS, "m11c")
-        CH03 (TS, Z054, 0x0103, 0x0154, 0x00)
+        CH03 (__METHOD__, Z054, 0x0103, 0x0154, 0x00)
         Store ((Buffer (0x01)
                 {
                      0x79                                             // y
@@ -331,7 +329,7 @@
                 {
                      0x79                                             // y
                 }), Local5)
-        CH03 (TS, Z054, 0x0104, 0x0158, 0x00)
+        CH03 (__METHOD__, Z054, 0x0104, 0x0158, 0x00)
     }
 
     /* Bug 57: The empty Return operator (without specifying the returning value) */
@@ -1201,7 +1199,6 @@ Zero)
 
     Method (M15B, 0, Serialized)
     {
-        Name (TS, "m15b")
         /* **************** Definitions **************** */
 
         Method (MM00, 0, NotSerialized)
@@ -1222,45 +1219,45 @@ Zero)
             Local0 = MM00 ()
             If ((Local0 != 0xABCD0000))
             {
-                ERR (TS, Z054, 0x043A, 0x00, 0x00, Local0, 0xABCD0000)
+                ERR (__METHOD__, Z054, 0x043A, 0x00, 0x00, Local0, 0xABCD0000)
             }
         }
 
         Method (M001, 0, NotSerialized)
         {
-            CH03 (TS, Z054, 0x01, 0x0440, 0x00)
+            CH03 (__METHOD__, Z054, 0x01, 0x0440, 0x00)
             Local0 = DerefOf (RefOf (MM00))
             If (SLCK)
             {
-                CH03 (TS, Z054, 0x02, 0x0443, 0x00)
+                CH03 (__METHOD__, Z054, 0x02, 0x0443, 0x00)
                 Local1 = ObjectType (Local0)
                 If ((Local1 != C010))
                 {
-                    ERR (TS, Z054, 0x0446, 0x00, 0x00, Local1, C010)
+                    ERR (__METHOD__, Z054, 0x0446, 0x00, 0x00, Local1, C010)
                 }
             }
             Else
             {
-                CH04 (TS, 0x00, 0x2F, Z054, 0x0449, 0x00, 0x00) /* AE_AML_OPERAND_TYPE */
+                CH04 (__METHOD__, 0x00, 0x2F, Z054, 0x0449, 0x00, 0x00) /* AE_AML_OPERAND_TYPE */
             }
         }
 
         Method (M002, 0, NotSerialized)
         {
-            CH03 (TS, Z054, 0x05, 0x044F, 0x00)
+            CH03 (__METHOD__, Z054, 0x05, 0x044F, 0x00)
             Local0 = DerefOf (P000 [0x01])
             If (SLCK)
             {
-                CH03 (TS, Z054, 0x06, 0x0452, 0x00)
+                CH03 (__METHOD__, Z054, 0x06, 0x0452, 0x00)
                 Local1 = ObjectType (Local0)
                 If ((Local1 != C010))
                 {
-                    ERR (TS, Z054, 0x0455, 0x00, 0x00, Local1, C010)
+                    ERR (__METHOD__, Z054, 0x0455, 0x00, 0x00, Local1, C010)
                 }
             }
             Else
             {
-                CH04 (TS, 0x00, 0x2F, Z054, 0x0458, 0x00, 0x00) /* AE_AML_OPERAND_TYPE */
+                CH04 (__METHOD__, 0x00, 0x2F, Z054, 0x0458, 0x00, 0x00) /* AE_AML_OPERAND_TYPE */
             }
         }
 
@@ -1287,31 +1284,31 @@ Zero)
             CopyObject (MM00 (), Local0)
             If ((Local0 != 0xABCD0000))
             {
-                ERR (TS, Z054, 0x0472, 0x00, 0x00, Local0, 0xABCD0000)
+                ERR (__METHOD__, Z054, 0x0472, 0x00, 0x00, Local0, 0xABCD0000)
             }
         }
 
         Method (M005, 0, NotSerialized)
         {
-            CH03 (TS, Z054, 0x0E, 0x0478, 0x00)
+            CH03 (__METHOD__, Z054, 0x0E, 0x0478, 0x00)
             CopyObject (DerefOf (RefOf (MM00)), Local0)
-            CH03 (TS, Z054, 0x0F, 0x047A, 0x00)
+            CH03 (__METHOD__, Z054, 0x0F, 0x047A, 0x00)
             Local1 = ObjectType (Local0)
             If ((Local1 != C010))
             {
-                ERR (TS, Z054, 0x047E, 0x00, 0x00, Local1, C010)
+                ERR (__METHOD__, Z054, 0x047E, 0x00, 0x00, Local1, C010)
             }
         }
 
         Method (M006, 0, NotSerialized)
         {
-            CH03 (TS, Z054, 0x11, 0x0484, 0x00)
+            CH03 (__METHOD__, Z054, 0x11, 0x0484, 0x00)
             CopyObject (DerefOf (P000 [0x01]), Local0)
-            CH03 (TS, Z054, 0x12, 0x0486, 0x00)
+            CH03 (__METHOD__, Z054, 0x12, 0x0486, 0x00)
             Local1 = ObjectType (Local0)
             If ((Local1 != C010))
             {
-                ERR (TS, Z054, 0x048A, 0x00, 0x00, Local1, C010)
+                ERR (__METHOD__, Z054, 0x048A, 0x00, 0x00, Local1, C010)
             }
         }
 
@@ -1335,22 +1332,22 @@ Zero)
             Local0 = (MM00 () + 0x01)
             If ((Local0 != 0xABCD0001))
             {
-                ERR (TS, Z054, 0x04A2, 0x00, 0x00, Local0, 0xABCD0001)
+                ERR (__METHOD__, Z054, 0x04A2, 0x00, 0x00, Local0, 0xABCD0001)
             }
         }
 
         Method (M009, 0, NotSerialized)
         {
-            CH03 (TS, Z054, 0x18, 0x04A8, 0x00)
+            CH03 (__METHOD__, Z054, 0x18, 0x04A8, 0x00)
             Local0 = (DerefOf (RefOf (MM00)) + 0x02)
-            CH04 (TS, 0x00, 0x2F, Z054, 0x04AA, 0x00, 0x00) /* AE_AML_OPERAND_TYPE */
+            CH04 (__METHOD__, 0x00, 0x2F, Z054, 0x04AA, 0x00, 0x00) /* AE_AML_OPERAND_TYPE */
         }
 
         Method (M00A, 0, NotSerialized)
         {
-            CH03 (TS, Z054, 0x1A, 0x04AF, 0x00)
+            CH03 (__METHOD__, Z054, 0x1A, 0x04AF, 0x00)
             Local0 = (DerefOf (P000 [0x01]) + 0x03)
-            CH04 (TS, 0x00, 0x2F, Z054, 0x04B1, 0x00, 0x00) /* AE_AML_OPERAND_TYPE */
+            CH04 (__METHOD__, 0x00, 0x2F, Z054, 0x04B1, 0x00, 0x00) /* AE_AML_OPERAND_TYPE */
         }
 
         Method (M00B, 0, NotSerialized)
@@ -1368,7 +1365,7 @@ Zero)
             Local0 = ObjectType (MM00)
             If ((Local0 != C010))
             {
-                ERR (TS, Z054, 0x04C3, 0x00, 0x00, Local0, C010)
+                ERR (__METHOD__, Z054, 0x04C3, 0x00, 0x00, Local0, C010)
             }
         }
 
@@ -1377,7 +1374,7 @@ Zero)
             Local0 = ObjectType (DerefOf (RefOf (MM00)))
             If ((Local0 != C010))
             {
-                ERR (TS, Z054, 0x04CB, 0x00, 0x00, Local0, C010)
+                ERR (__METHOD__, Z054, 0x04CB, 0x00, 0x00, Local0, C010)
             }
         }
 
@@ -1386,7 +1383,7 @@ Zero)
             Local0 = ObjectType (DerefOf (P000 [0x01]))
             If ((Local0 != C010))
             {
-                ERR (TS, Z054, 0x04D3, 0x00, 0x00, Local0, C010)
+                ERR (__METHOD__, Z054, 0x04D3, 0x00, 0x00, Local0, C010)
             }
         }
 
@@ -1442,51 +1439,50 @@ Zero)
 
     Method (MSC0, 0, Serialized)
     {
-        Name (TS, "MSC0")
         SRMT ("m110")
-        M110 (TS)
+        M110 (__METHOD__)
         SRMT ("m112")
-        M112 (TS)
+        M112 (__METHOD__)
         SRMT ("m113")
-        M113 (TS)
+        M113 (__METHOD__)
         SRMT ("m114")
-        M114 (TS)
+        M114 (__METHOD__)
         SRMT ("m115")
-        M115 (TS)
+        M115 (__METHOD__)
         SRMT ("m116")
-        M116 (TS)
+        M116 (__METHOD__)
         SRMT ("m118")
-        M118 (TS)
+        M118 (__METHOD__)
         SRMT ("m119")
-        M119 (TS)
+        M119 (__METHOD__)
         SRMT ("m11c")
-        M11C (TS)
+        M11C (__METHOD__)
         SRMT ("m11d")
-        M11D (TS)
+        M11D (__METHOD__)
         SRMT ("m11e")
-        M11E (TS)
+        M11E (__METHOD__)
         SRMT ("m11f")
-        M11F (TS)
+        M11F (__METHOD__)
         SRMT ("m120")
-        M120 (TS)
+        M120 (__METHOD__)
         SRMT ("m121")
-        M121 (TS)
+        M121 (__METHOD__)
         SRMT ("m122")
-        M122 (TS)
+        M122 (__METHOD__)
         SRMT ("m123")
-        M123 (TS)
+        M123 (__METHOD__)
         SRMT ("m124")
-        M124 (TS)
+        M124 (__METHOD__)
         SRMT ("m125")
-        M125 (TS)
+        M125 (__METHOD__)
         SRMT ("mf75")
-        MF75 (TS)
+        MF75 (__METHOD__)
         /*SRMT("mf77") */
         /*mf77(ts) */
         SRMT ("mf86")
-        MF86 (TS)
+        MF86 (__METHOD__)
         SRMT ("mf87")
-        MF87 (TS)
+        MF87 (__METHOD__)
         M15B ()
     }
 

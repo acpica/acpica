@@ -52,9 +52,8 @@
 
     Method (M221, 0, Serialized)
     {
-        Name (TS, "m221")
-        TS00 (TS)
-        M1AD (TS, 0x00, 0x01, 0x01, 0x01, 0x00)
+        TS00 (__METHOD__)
+        M1AD (__METHOD__, 0x00, 0x01, 0x01, 0x01, 0x00)
         M341 ()
         If (C088)
         {
@@ -66,9 +65,8 @@
 
     Method (M222, 0, Serialized)
     {
-        Name (TS, "m222")
-        TS00 (TS)
-        M1AD (TS, 0x00, 0x01, 0x01, 0x00, 0x00)
+        TS00 (__METHOD__)
+        M1AD (__METHOD__, 0x00, 0x01, 0x01, 0x00, 0x00)
         If (Y507)
         {
             M342 ()
@@ -79,7 +77,7 @@
         }
         Else
         {
-            M1AE (TS, "read of ArgX-ORef without DerefOf", "AE_AML_OPERAND_TYPE exception instead of automatic dereference")
+            M1AE (__METHOD__, "read of ArgX-ORef without DerefOf", "AE_AML_OPERAND_TYPE exception instead of automatic dereference")
         }
     }
 
@@ -87,9 +85,8 @@
 
     Method (M223, 0, Serialized)
     {
-        Name (TS, "m223")
-        TS00 (TS)
-        M1AD (TS, 0x00, 0x01, 0x01, 0x01, 0x00)
+        TS00 (__METHOD__)
+        M1AD (__METHOD__, 0x00, 0x01, 0x01, 0x01, 0x00)
         M343 ()
         If (C088)
         {
@@ -101,9 +98,8 @@
 
     Method (M224, 0, Serialized)
     {
-        Name (TS, "m224")
-        TS00 (TS)
-        M1AD (TS, 0x00, 0x01, 0x01, 0x00, 0x00)
+        TS00 (__METHOD__)
+        M1AD (__METHOD__, 0x00, 0x01, 0x01, 0x00, 0x00)
         If (Y507)
         {
             M344 ()
@@ -114,7 +110,7 @@
         }
         Else
         {
-            M1AE (TS, "read of ArgX-IRef without DerefOf", "AE_AML_OPERAND_TYPE exception instead of automatic dereference")
+            M1AE (__METHOD__, "read of ArgX-IRef without DerefOf", "AE_AML_OPERAND_TYPE exception instead of automatic dereference")
         }
     }
 
@@ -122,9 +118,8 @@
 
     Method (M225, 0, Serialized)
     {
-        Name (TS, "m225")
-        TS00 (TS)
-        M1AD (TS, 0x01, 0x01, 0x00, 0x00, 0x00)
+        TS00 (__METHOD__)
+        M1AD (__METHOD__, 0x01, 0x01, 0x00, 0x00, 0x00)
         M1C0 ()
     }
 
@@ -132,9 +127,8 @@
 
     Method (M226, 0, Serialized)
     {
-        Name (TS, "m226")
-        TS00 (TS)
-        M1AD (TS, 0x02, 0x01, 0x00, 0x00, 0x00)
+        TS00 (__METHOD__)
+        M1AD (__METHOD__, 0x02, 0x01, 0x00, 0x00, 0x00)
         M1C0 ()
     }
 
@@ -142,14 +136,13 @@
 
     Method (M227, 0, Serialized)
     {
-        Name (TS, "m227")
-        TS00 (TS)
+        TS00 (__METHOD__)
         M362 ()
         M363 ()
         M364 ()
         If (C088)
         {
-            M1AD (TS, 0x01, 0x01, 0x01, 0x01, 0x00)
+            M1AD (__METHOD__, 0x01, 0x01, 0x01, 0x01, 0x00)
             M4D0 ()
         }
     }
@@ -158,9 +151,8 @@
 
     Method (M228, 0, Serialized)
     {
-        Name (TS, "m228")
-        TS00 (TS)
-        M1AD (TS, 0x02, 0x01, 0x01, 0x01, 0x00)
+        TS00 (__METHOD__)
+        M1AD (__METHOD__, 0x02, 0x01, 0x01, 0x01, 0x00)
         M4D0 ()
     }
 
@@ -169,9 +161,8 @@
     /* ACTUALLY: doesn't write to the original object. */
     Method (M229, 0, Serialized)
     {
-        Name (TS, "m229")
-        TS00 (TS)
-        M1AD (TS, 0x01, 0x01, 0x01, 0x01, 0x00)
+        TS00 (__METHOD__)
+        M1AD (__METHOD__, 0x01, 0x01, 0x01, 0x01, 0x00)
         M4D1 ()
     }
 
@@ -180,9 +171,8 @@
     /* ACTUALLY: doesn't write to the original object. */
     Method (M22A, 0, Serialized)
     {
-        Name (TS, "m22a")
-        TS00 (TS)
-        M1AD (TS, 0x02, 0x01, 0x01, 0x01, 0x00)
+        TS00 (__METHOD__)
+        M1AD (__METHOD__, 0x02, 0x01, 0x01, 0x01, 0x00)
         M4D1 ()
     }
 
@@ -206,14 +196,13 @@
     /* ACTUALLY: writes to the original object. */
     Method (M22C, 0, Serialized)
     {
-        Name (TS, "m22c")
         If (Y100)
         {
-            TS00 (TS)
+            TS00 (__METHOD__)
         }
         Else
         {
-            Debug = TS /* \M22C.TS__ */
+            Debug = __METHOD__ /* \M22C.TS__ */
         }
 
         Name (B000, Buffer (0x04)
@@ -229,13 +218,13 @@
             CreateField (Arg0, 0x08, 0x08, BF90)
             If ((BF90 != 0x77))
             {
-                ERR (TS, Z111, 0xEF, 0x00, 0x00, BF90, 0x77)
+                ERR (__METHOD__, Z111, 0xEF, 0x00, 0x00, BF90, 0x77)
             }
 
             BF90 = 0x9999992B
             If ((BF90 != 0x2B))
             {
-                ERR (TS, Z111, 0xF3, 0x00, 0x00, BF90, 0x2B)
+                ERR (__METHOD__, Z111, 0xF3, 0x00, 0x00, BF90, 0x2B)
             }
         }
 
@@ -244,28 +233,28 @@
             CreateField (Arg0, 0x08, 0x08, BF90)
             If ((BF90 != 0x77))
             {
-                ERR (TS, Z111, 0xFB, 0x00, 0x00, BF90, 0x77)
+                ERR (__METHOD__, Z111, 0xFB, 0x00, 0x00, BF90, 0x77)
             }
 
             BF90 = 0x2B
             CopyObject (0x9999992B, BF90) /* \M22C.M001.BF90 */
             If ((BF90 != 0x2B))
             {
-                ERR (TS, Z111, 0x0101, 0x00, 0x00, BF90, 0x2B)
+                ERR (__METHOD__, Z111, 0x0101, 0x00, 0x00, BF90, 0x2B)
             }
         }
 
-        BEG0 (Z111, TS)
+        BEG0 (Z111, __METHOD__)
         M000 (B000)
         If (X191)
         {
             M001 (B010)
         }
 
-        M386 (TS, B000, 0x00, 0x04)
+        M386 (__METHOD__, B000, 0x00, 0x04)
         If (X191)
         {
-            M386 (TS, B010, 0x00, 0x05)
+            M386 (__METHOD__, B010, 0x00, 0x05)
         }
 
         END0 ()
@@ -275,20 +264,19 @@
 
     Method (M22D, 0, Serialized)
     {
-        Name (TS, "m22d")
-        TS00 (TS)
+        TS00 (__METHOD__)
         M346 ()
         If (C088)
         {
             /* RefOf */
 
             C08B = 0x01 /* do RefOf(ArgX) checkings */
-            M1AD (TS, 0x00, 0x01, 0x00, 0x00, 0x00)
+            M1AD (__METHOD__, 0x00, 0x01, 0x00, 0x00, 0x00)
             M1C0 ()
             /* CondRefOf */
 
             C08B = 0x02 /* do RefOf(ArgX) checkings */
-            M1AD (TS, 0x00, 0x01, 0x00, 0x00, 0x00)
+            M1AD (__METHOD__, 0x00, 0x01, 0x00, 0x00, 0x00)
             M1C0 ()
             C08B = 0x00 /* do RefOf(ArgX) checkings */
         }
@@ -353,14 +341,13 @@
     /* ACTUALLY: doesn't write to the original object. */
     Method (M234, 0, Serialized)
     {
-        Name (TS, "m234")
         If (Y100)
         {
-            TS00 (TS)
+            TS00 (__METHOD__)
         }
         Else
         {
-            Debug = TS /* \M234.TS__ */
+            Debug = __METHOD__ /* \M234.TS__ */
         }
 
         Name (B000, Buffer (0x04)
@@ -373,13 +360,13 @@
             CreateField (Local2, 0x08, 0x08, BF90)
             If ((BF90 != 0x77))
             {
-                ERR (TS, Z111, 0x0178, 0x00, 0x00, BF90, 0x77)
+                ERR (__METHOD__, Z111, 0x0178, 0x00, 0x00, BF90, 0x77)
             }
 
             BF90 = 0x9999992B
             If ((BF90 != 0x2B))
             {
-                ERR (TS, Z111, 0x017C, 0x00, 0x00, BF90, 0x2B)
+                ERR (__METHOD__, Z111, 0x017C, 0x00, 0x00, BF90, 0x2B)
             }
         }
 
@@ -389,13 +376,13 @@
             CreateField (Local2, 0x08, 0x08, BF90)
             If ((BF90 != 0x77))
             {
-                ERR (TS, Z111, 0x0186, 0x00, 0x00, BF90, 0x77)
+                ERR (__METHOD__, Z111, 0x0186, 0x00, 0x00, BF90, 0x77)
             }
 
             CopyObject (0x9999992B, BF90) /* \M234.M001.BF90 */
             If ((BF90 != 0x2B))
             {
-                ERR (TS, Z111, 0x018A, 0x00, 0x00, BF90, 0x2B)
+                ERR (__METHOD__, Z111, 0x018A, 0x00, 0x00, BF90, 0x2B)
             }
         }
 
@@ -405,15 +392,15 @@
             M000 (Local0)
             If ((Arg1 == C00A))
             {
-                M381 (TS, Arg0, 0x00, 0x0100)
+                M381 (__METHOD__, Arg0, 0x00, 0x0100)
             }
             ElseIf ((Arg1 == C00B))
             {
-                M382 (TS, Arg0, 0x00, 0x0101)
+                M382 (__METHOD__, Arg0, 0x00, 0x0101)
             }
             ElseIf ((Arg1 == C00C))
             {
-                M383 (TS, Arg0, 0x00, 0x0102)
+                M383 (__METHOD__, Arg0, 0x00, 0x0102)
             }
         }
 
@@ -422,15 +409,15 @@
             M000 (RefOf (Arg0))
             If ((Arg1 == C00A))
             {
-                M381 (TS, Arg0, 0x00, 0x0103)
+                M381 (__METHOD__, Arg0, 0x00, 0x0103)
             }
             ElseIf ((Arg1 == C00B))
             {
-                M382 (TS, Arg0, 0x00, 0x0104)
+                M382 (__METHOD__, Arg0, 0x00, 0x0104)
             }
             ElseIf ((Arg1 == C00C))
             {
-                M383 (TS, Arg0, 0x00, 0x0105)
+                M383 (__METHOD__, Arg0, 0x00, 0x0105)
             }
         }
 
@@ -440,15 +427,15 @@
             M001 (Local0)
             If ((Arg1 == C00A))
             {
-                M381 (TS, Arg0, 0x00, 0x0106)
+                M381 (__METHOD__, Arg0, 0x00, 0x0106)
             }
             ElseIf ((Arg1 == C00B))
             {
-                M382 (TS, Arg0, 0x00, 0x0107)
+                M382 (__METHOD__, Arg0, 0x00, 0x0107)
             }
             ElseIf ((Arg1 == C00C))
             {
-                M383 (TS, Arg0, 0x00, 0x0108)
+                M383 (__METHOD__, Arg0, 0x00, 0x0108)
             }
         }
 
@@ -457,33 +444,33 @@
             M001 (RefOf (Arg0))
             If ((Arg1 == C00A))
             {
-                M381 (TS, Arg0, 0x00, 0x0109)
+                M381 (__METHOD__, Arg0, 0x00, 0x0109)
             }
             ElseIf ((Arg1 == C00B))
             {
-                M382 (TS, Arg0, 0x00, 0x010A)
+                M382 (__METHOD__, Arg0, 0x00, 0x010A)
             }
             ElseIf ((Arg1 == C00C))
             {
-                M383 (TS, Arg0, 0x00, 0x010B)
+                M383 (__METHOD__, Arg0, 0x00, 0x010B)
             }
         }
 
-        BEG0 (Z111, TS)
+        BEG0 (Z111, __METHOD__)
         M010 (B000, C00B)
-        M382 (TS, B000, 0x00, 0x010C)
+        M382 (__METHOD__, B000, 0x00, 0x010C)
         M020 (B000, C00B)
-        M382 (TS, B000, 0x00, 0x010D)
+        M382 (__METHOD__, B000, 0x00, 0x010D)
         If (X191)
         {
             M011 (B000, C00B)
-            M382 (TS, B000, 0x00, 0x010E)
+            M382 (__METHOD__, B000, 0x00, 0x010E)
         }
 
         If (X191)
         {
             M021 (B000, C00B)
-            M382 (TS, B000, 0x00, 0x010F)
+            M382 (__METHOD__, B000, 0x00, 0x010F)
         }
 
         END0 ()
@@ -513,14 +500,13 @@
      */
     Method (M235, 0, Serialized)
     {
-        Name (TS, "m235")
         If (Y100)
         {
-            TS00 (TS)
+            TS00 (__METHOD__)
         }
         Else
         {
-            Debug = TS /* \M235.TS__ */
+            Debug = __METHOD__ /* \M235.TS__ */
         }
 
         Name (I000, 0x77)
@@ -542,19 +528,19 @@
             Arg1 = Arg0
             If ((Arg2 == C009))
             {
-                M380 (TS, Arg1, 0x00, 0x00)
+                M380 (__METHOD__, Arg1, 0x00, 0x00)
             }
             ElseIf ((Arg2 == C00A))
             {
-                M381 (TS, Arg1, 0x00, 0x01)
+                M381 (__METHOD__, Arg1, 0x00, 0x01)
             }
             ElseIf ((Arg2 == C00B))
             {
-                M382 (TS, Arg1, 0x00, 0x02)
+                M382 (__METHOD__, Arg1, 0x00, 0x02)
             }
             ElseIf ((Arg2 == C00C))
             {
-                M383 (TS, Arg1, 0x00, 0x03)
+                M383 (__METHOD__, Arg1, 0x00, 0x03)
             }
         }
 
@@ -563,19 +549,19 @@
             CopyObject (Arg0, Arg1)
             If ((Arg2 == C009))
             {
-                M380 (TS, Arg1, 0x00, 0x04)
+                M380 (__METHOD__, Arg1, 0x00, 0x04)
             }
             ElseIf ((Arg2 == C00A))
             {
-                M381 (TS, Arg1, 0x00, 0x05)
+                M381 (__METHOD__, Arg1, 0x00, 0x05)
             }
             ElseIf ((Arg2 == C00B))
             {
-                M382 (TS, Arg1, 0x00, 0x06)
+                M382 (__METHOD__, Arg1, 0x00, 0x06)
             }
             ElseIf ((Arg2 == C00C))
             {
-                M383 (TS, Arg1, 0x00, 0x07)
+                M383 (__METHOD__, Arg1, 0x00, 0x07)
             }
         }
 
@@ -585,19 +571,19 @@
             Local2 = DerefOf (Arg1)
             If ((Arg2 == C009))
             {
-                M380 (TS, Local2, 0x00, 0x08)
+                M380 (__METHOD__, Local2, 0x00, 0x08)
             }
             ElseIf ((Arg2 == C00A))
             {
-                M381 (TS, Local2, 0x00, 0x09)
+                M381 (__METHOD__, Local2, 0x00, 0x09)
             }
             ElseIf ((Arg2 == C00B))
             {
-                M382 (TS, Local2, 0x00, 0x0A)
+                M382 (__METHOD__, Local2, 0x00, 0x0A)
             }
             ElseIf ((Arg2 == C00C))
             {
-                M383 (TS, Local2, 0x00, 0x0B)
+                M383 (__METHOD__, Local2, 0x00, 0x0B)
             }
         }
 
@@ -607,26 +593,26 @@
             Local2 = DerefOf (Arg1)
             If ((Arg2 == C009))
             {
-                M380 (TS, Local2, 0x00, 0x0C)
+                M380 (__METHOD__, Local2, 0x00, 0x0C)
             }
             ElseIf ((Arg2 == C00A))
             {
-                M381 (TS, Local2, 0x00, 0x0D)
+                M381 (__METHOD__, Local2, 0x00, 0x0D)
             }
             ElseIf ((Arg2 == C00B))
             {
-                M382 (TS, Local2, 0x00, 0x0E)
+                M382 (__METHOD__, Local2, 0x00, 0x0E)
             }
             ElseIf ((Arg2 == C00C))
             {
-                M383 (TS, Local2, 0x00, 0x0F)
+                M383 (__METHOD__, Local2, 0x00, 0x0F)
             }
         }
 
         Method (M004, 2, NotSerialized)
         {
             Arg1 = Arg0
-            M380 (TS, Arg1, 0x00, 0x10)
+            M380 (__METHOD__, Arg1, 0x00, 0x10)
         }
 
         Method (M005, 2, NotSerialized)
@@ -634,121 +620,121 @@
             Arg1 = Arg0
         }
 
-        BEG0 (Z111, TS)
+        BEG0 (Z111, __METHOD__)
         /* ArgX-Object -->> ArgY-Object */
 
         M000 (I000, I001, C009)
-        M380 (TS, I000, 0x00, 0x11)
-        M384 (TS, I001, 0x00, 0x12)
+        M380 (__METHOD__, I000, 0x00, 0x11)
+        M384 (__METHOD__, I001, 0x00, 0x12)
         M001 (I000, I001, C009)
-        M380 (TS, I000, 0x00, 0x13)
-        M384 (TS, I001, 0x00, 0x14)
+        M380 (__METHOD__, I000, 0x00, 0x13)
+        M384 (__METHOD__, I001, 0x00, 0x14)
         /* ArgX-Object -->> ArgY-ORef */
 
         M002 (I000, RefOf (I001), C009)
-        M380 (TS, I000, 0x00, 0x15)
-        M380 (TS, I001, 0x00, 0x16)
+        M380 (__METHOD__, I000, 0x00, 0x15)
+        M380 (__METHOD__, I001, 0x00, 0x16)
         M003 (I000, RefOf (I021), C009)
-        M380 (TS, I000, 0x00, 0x17)
-        M380 (TS, I021, 0x00, 0x18)
+        M380 (__METHOD__, I000, 0x00, 0x17)
+        M380 (__METHOD__, I021, 0x00, 0x18)
         Local0 = RefOf (I031)
         M002 (I000, Local0, C009)
-        M380 (TS, I000, 0x00, 0x19)
-        M380 (TS, I031, 0x00, 0x1A)
+        M380 (__METHOD__, I000, 0x00, 0x19)
+        M380 (__METHOD__, I031, 0x00, 0x1A)
         Local2 = DerefOf (Local0)
-        M380 (TS, Local2, 0x00, 0x1B)
+        M380 (__METHOD__, Local2, 0x00, 0x1B)
         Local0 = RefOf (I041)
         M003 (I000, Local0, C009)
-        M380 (TS, I000, 0x00, 0x1C)
-        M380 (TS, I041, 0x00, 0x1D)
+        M380 (__METHOD__, I000, 0x00, 0x1C)
+        M380 (__METHOD__, I041, 0x00, 0x1D)
         Local2 = DerefOf (Local0)
-        M380 (TS, Local2, 0x00, 0x1E)
+        M380 (__METHOD__, Local2, 0x00, 0x1E)
         /* ArgX-Object -->> ArgY-IRef */
 
         M004 (I000, Local0 = S021 [0x01])
-        M380 (TS, I000, 0x00, 0x1F)
-        M385 (TS, S021, 0x00, 0x20)
+        M380 (__METHOD__, I000, 0x00, 0x1F)
+        M385 (__METHOD__, S021, 0x00, 0x20)
         Local2 = DerefOf (Local0)
-        M384 (TS, Local2, 0x00, 0x21)
+        M384 (__METHOD__, Local2, 0x00, 0x21)
         Local1 = Local0 = S021 [0x01]
         M004 (I000, Local0)
-        M380 (TS, I000, 0x00, 0x22)
-        M385 (TS, S021, 0x00, 0x23)
+        M380 (__METHOD__, I000, 0x00, 0x22)
+        M385 (__METHOD__, S021, 0x00, 0x23)
         Local2 = DerefOf (Local0)
-        M384 (TS, Local2, 0x00, 0x24)
+        M384 (__METHOD__, Local2, 0x00, 0x24)
         M004 (I000, Local1)
-        M380 (TS, I000, 0x00, 0x25)
-        M385 (TS, S021, 0x00, 0x26)
+        M380 (__METHOD__, I000, 0x00, 0x25)
+        M385 (__METHOD__, S021, 0x00, 0x26)
         Local2 = DerefOf (Local1)
-        M384 (TS, Local2, 0x00, 0x27)
+        M384 (__METHOD__, Local2, 0x00, 0x27)
         /* ArgX-ORef -->> ArgY-Object */
 
         M005 (RefOf (I000), S000)
-        M380 (TS, I000, 0x00, 0x28)
-        M381 (TS, S000, 0x00, 0x29)
+        M380 (__METHOD__, I000, 0x00, 0x28)
+        M381 (__METHOD__, S000, 0x00, 0x29)
         M005 (RefOf (I000), I051)
-        M380 (TS, I000, 0x00, 0x2A)
-        M384 (TS, I051, 0x00, 0x2B)
+        M380 (__METHOD__, I000, 0x00, 0x2A)
+        M384 (__METHOD__, I051, 0x00, 0x2B)
         Local0 = RefOf (I000)
         M005 (Local0, S000)
-        M380 (TS, I000, 0x00, 0x2C)
-        M381 (TS, S000, 0x00, 0x2D)
+        M380 (__METHOD__, I000, 0x00, 0x2C)
+        M381 (__METHOD__, S000, 0x00, 0x2D)
         M005 (Local0, I051)
-        M380 (TS, I000, 0x00, 0x2E)
-        M384 (TS, I051, 0x00, 0x2F)
+        M380 (__METHOD__, I000, 0x00, 0x2E)
+        M384 (__METHOD__, I051, 0x00, 0x2F)
         /* ArgX-IRef -->> ArgY-Object */
 
         M005 (Local0 = S000 [0x01], I000)
-        M381 (TS, S000, 0x00, 0x30)
-        M380 (TS, I000, 0x00, 0x31)
+        M381 (__METHOD__, S000, 0x00, 0x30)
+        M380 (__METHOD__, I000, 0x00, 0x31)
         /* The entire expression (exercised below): */
         /* m005(Index(s021, 1, Local0), RefOf(i010)) */
         /* here is executed step by step: */
-        M385 (TS, S021, 0x00, 0x32)
-        M380 (TS, I010, 0x00, 0x33)
+        M385 (__METHOD__, S021, 0x00, 0x32)
+        M380 (__METHOD__, I010, 0x00, 0x33)
         M005 (Local0 = S021 [0x01], I010)
-        M385 (TS, S021, 0x00, 0x34)
-        M380 (TS, I010, 0x00, 0x35)
+        M385 (__METHOD__, S021, 0x00, 0x34)
+        M380 (__METHOD__, I010, 0x00, 0x35)
         M005 (I051, RefOf (I010))
-        M385 (TS, S021, 0x00, 0x36)
-        M384 (TS, I051, 0x00, 0x37)
-        M384 (TS, I010, 0x00, 0x38)
+        M385 (__METHOD__, S021, 0x00, 0x36)
+        M384 (__METHOD__, I051, 0x00, 0x37)
+        M384 (__METHOD__, I010, 0x00, 0x38)
         If (Y513)
         {
             /* ArgX-IRef -->> ArgY-ORef */
 
             M005 (Local0 = S021 [0x01], RefOf (I020))
-            M385 (TS, S021, 0x00, 0x39)
-            M384 (TS, I020, 0x00, 0x3A)
+            M385 (__METHOD__, S021, 0x00, 0x39)
+            M384 (__METHOD__, I020, 0x00, 0x3A)
             Local1 = DerefOf (Local0)
-            M384 (TS, Local1, 0x00, 0x3B)
+            M384 (__METHOD__, Local1, 0x00, 0x3B)
         }
 
         /* ArgX-IRef -->> ArgY-IRef */
 
         M005 (Local0 = S021 [0x01], Local1 = S010 [0x01])
-        M385 (TS, S021, 0x00, 0x3C)
-        M381 (TS, S010, 0x00, 0x3D)
+        M385 (__METHOD__, S021, 0x00, 0x3C)
+        M381 (__METHOD__, S010, 0x00, 0x3D)
         Local2 = DerefOf (Local0)
-        M384 (TS, Local2, 0x00, 0x3E)
+        M384 (__METHOD__, Local2, 0x00, 0x3E)
         Local2 = DerefOf (Local1)
-        M380 (TS, Local2, 0x00, 0x3F)
+        M380 (__METHOD__, Local2, 0x00, 0x3F)
         If (Y513)
         {
             /* ArgX-ORef -->> ArgY-ORef */
 
             M005 (RefOf (I000), RefOf (I061))
-            M380 (TS, I000, 0x00, 0x40)
-            M380 (TS, I061, 0x00, 0x41)
+            M380 (__METHOD__, I000, 0x00, 0x40)
+            M380 (__METHOD__, I061, 0x00, 0x41)
         }
 
         /* ArgX-ORef -->> ArgY-IRef */
 
         M005 (RefOf (I000), Local0 = S031 [0x01])
-        M380 (TS, I000, 0x00, 0x42)
-        M385 (TS, S031, 0x00, 0x43)
+        M380 (__METHOD__, I000, 0x00, 0x42)
+        M385 (__METHOD__, S031, 0x00, 0x43)
         Local2 = DerefOf (Local0)
-        M384 (TS, Local2, 0x00, 0x44)
+        M384 (__METHOD__, Local2, 0x00, 0x44)
         END0 ()
     }
 
@@ -763,14 +749,13 @@
      */
     Method (M236, 0, Serialized)
     {
-        Name (TS, "m236")
         If (Y100)
         {
-            TS00 (TS)
+            TS00 (__METHOD__)
         }
         Else
         {
-            Debug = TS /* \M236.TS__ */
+            Debug = __METHOD__ /* \M236.TS__ */
         }
 
         Name (I000, 0x77)
@@ -792,19 +777,19 @@
             Local0 = Arg0
             If ((Arg1 == C009))
             {
-                M380 (TS, Local0, 0x00, 0x00)
+                M380 (__METHOD__, Local0, 0x00, 0x00)
             }
             ElseIf ((Arg1 == C00A))
             {
-                M381 (TS, Local0, 0x00, 0x01)
+                M381 (__METHOD__, Local0, 0x00, 0x01)
             }
             ElseIf ((Arg1 == C00B))
             {
-                M382 (TS, Local0, 0x00, 0x02)
+                M382 (__METHOD__, Local0, 0x00, 0x02)
             }
             ElseIf ((Arg1 == C00C))
             {
-                M383 (TS, Local0, 0x00, 0x03)
+                M383 (__METHOD__, Local0, 0x00, 0x03)
             }
 
             Local0 = 0x11
@@ -816,7 +801,7 @@
             Local0 = ObjectType (Arg0)
             If ((Local0 != Arg1))
             {
-                ERR (TS, Z111, 0x0318, 0x00, 0x00, Local0, Arg1)
+                ERR (__METHOD__, Z111, 0x0318, 0x00, 0x00, Local0, Arg1)
             }
 
             /* Overwrite LocalX which contains either */
@@ -824,36 +809,36 @@
             Local0 = 0x11
         }
 
-        BEG0 (Z111, TS)
+        BEG0 (Z111, __METHOD__)
         /* ArgX-Object -->> LocalX */
 
         M000 (I000, C009)
         M000 (S000, C00A)
         M000 (B000, C00B)
         M000 (P000, C00C)
-        M380 (TS, I000, 0x00, 0x04)
-        M381 (TS, S000, 0x00, 0x05)
-        M382 (TS, B000, 0x00, 0x06)
-        M383 (TS, P000, 0x00, 0x07)
+        M380 (__METHOD__, I000, 0x00, 0x04)
+        M381 (__METHOD__, S000, 0x00, 0x05)
+        M382 (__METHOD__, B000, 0x00, 0x06)
+        M383 (__METHOD__, P000, 0x00, 0x07)
         /* ArgX-ORef -->> LocalX */
 
         M001 (RefOf (I000), C009)
         M001 (RefOf (S000), C00A)
         M001 (RefOf (B000), C00B)
         M001 (RefOf (P000), C00C)
-        M380 (TS, I000, 0x00, 0x08)
-        M381 (TS, S000, 0x00, 0x09)
-        M382 (TS, B000, 0x00, 0x0A)
-        M383 (TS, P000, 0x00, 0x0B)
+        M380 (__METHOD__, I000, 0x00, 0x08)
+        M381 (__METHOD__, S000, 0x00, 0x09)
+        M382 (__METHOD__, B000, 0x00, 0x0A)
+        M383 (__METHOD__, P000, 0x00, 0x0B)
         /* ArgX-IRef -->> LocalX */
 
         M001 (S000 [0x01], C016)
         M001 (B000 [0x01], C016)
         M001 (P000 [0x01], C009)
-        M380 (TS, I000, 0x00, 0x0C)
-        M381 (TS, S000, 0x00, 0x0D)
-        M382 (TS, B000, 0x00, 0x0E)
-        M383 (TS, P000, 0x00, 0x0F)
+        M380 (__METHOD__, I000, 0x00, 0x0C)
+        M381 (__METHOD__, S000, 0x00, 0x0D)
+        M382 (__METHOD__, B000, 0x00, 0x0E)
+        M383 (__METHOD__, P000, 0x00, 0x0F)
         END0 ()
     }
 
@@ -864,14 +849,13 @@
      */
     Method (M237, 0, Serialized)
     {
-        Name (TS, "m237")
         If (Y100)
         {
-            TS00 (TS)
+            TS00 (__METHOD__)
         }
         Else
         {
-            Debug = TS /* \M237.TS__ */
+            Debug = __METHOD__ /* \M237.TS__ */
         }
 
         Name (I000, 0x77)
@@ -902,15 +886,15 @@
             Local0 = 0x11
         }
 
-        BEG0 (Z111, TS)
+        BEG0 (Z111, __METHOD__)
         M000 (I000)
         M000 (S000)
         M000 (B000)
         M000 (P000)
-        M380 (TS, I000, 0x00, 0x00)
-        M381 (TS, S000, 0x00, 0x01)
-        M382 (TS, B000, 0x00, 0x02)
-        M383 (TS, P000, 0x00, 0x03)
+        M380 (__METHOD__, I000, 0x00, 0x00)
+        M381 (__METHOD__, S000, 0x00, 0x01)
+        M382 (__METHOD__, B000, 0x00, 0x02)
+        M383 (__METHOD__, P000, 0x00, 0x03)
         END0 ()
     }
 
@@ -921,14 +905,13 @@
      */
     Method (M238, 0, Serialized)
     {
-        Name (TS, "m238")
         If (Y100)
         {
-            TS00 (TS)
+            TS00 (__METHOD__)
         }
         Else
         {
-            Debug = TS /* \M238.TS__ */
+            Debug = __METHOD__ /* \M238.TS__ */
         }
 
         Name (I000, 0x77)
@@ -977,21 +960,21 @@
             CopyObject (0x22, Local1)
         }
 
-        BEG0 (Z111, TS)
+        BEG0 (Z111, __METHOD__)
         M000 (S000)
         M000 (B000)
         M000 (P000)
-        M380 (TS, I000, 0x00, 0x00)
-        M381 (TS, S000, 0x00, 0x01)
-        M382 (TS, B000, 0x00, 0x02)
-        M383 (TS, P000, 0x00, 0x03)
+        M380 (__METHOD__, I000, 0x00, 0x00)
+        M381 (__METHOD__, S000, 0x00, 0x01)
+        M382 (__METHOD__, B000, 0x00, 0x02)
+        M383 (__METHOD__, P000, 0x00, 0x03)
         M001 (S000)
         M001 (B000)
         M001 (P000)
-        M380 (TS, I000, 0x00, 0x04)
-        M381 (TS, S000, 0x00, 0x05)
-        M382 (TS, B000, 0x00, 0x06)
-        M383 (TS, P000, 0x00, 0x07)
+        M380 (__METHOD__, I000, 0x00, 0x04)
+        M381 (__METHOD__, S000, 0x00, 0x05)
+        M382 (__METHOD__, B000, 0x00, 0x06)
+        M383 (__METHOD__, P000, 0x00, 0x07)
         END0 ()
     }
 
@@ -1005,14 +988,13 @@
      */
     Method (M239, 0, Serialized)
     {
-        Name (TS, "m239")
         If (Y100)
         {
-            TS00 (TS)
+            TS00 (__METHOD__)
         }
         Else
         {
-            Debug = TS /* \M239.TS__ */
+            Debug = __METHOD__ /* \M239.TS__ */
         }
 
         /* Local Objects */
@@ -1065,21 +1047,21 @@
             CopyObject (0x11, Arg1)
         }
 
-        BEG0 (Z111, TS)
+        BEG0 (Z111, __METHOD__)
         /* m000 */
 
         M000 (IA00, IA10)
         M000 (SA00, SA10)
         M000 (BA00, BA10)
         M000 (PA00, PA10)
-        M380 (TS, IA00, 0x00, 0x00)
-        M381 (TS, SA00, 0x00, 0x01)
-        M382 (TS, BA00, 0x00, 0x02)
-        M383 (TS, PA00, 0x00, 0x03)
-        M380 (TS, IA10, 0x00, 0x04)
-        M381 (TS, SA10, 0x00, 0x05)
-        M382 (TS, BA10, 0x00, 0x06)
-        M383 (TS, PA10, 0x00, 0x07)
+        M380 (__METHOD__, IA00, 0x00, 0x00)
+        M381 (__METHOD__, SA00, 0x00, 0x01)
+        M382 (__METHOD__, BA00, 0x00, 0x02)
+        M383 (__METHOD__, PA00, 0x00, 0x03)
+        M380 (__METHOD__, IA10, 0x00, 0x04)
+        M381 (__METHOD__, SA10, 0x00, 0x05)
+        M382 (__METHOD__, BA10, 0x00, 0x06)
+        M383 (__METHOD__, PA10, 0x00, 0x07)
         If (Y514)
         {
             /* m001 */
@@ -1088,28 +1070,28 @@
             M001 (SA00, SA10)
             M001 (BA00, BA10)
             M001 (PA00, PA10)
-            M380 (TS, IA00, 0x00, 0x08)
-            M381 (TS, SA00, 0x00, 0x09)
-            M382 (TS, BA00, 0x00, 0x0A)
-            M383 (TS, PA00, 0x00, 0x0B)
-            M380 (TS, IA10, 0x00, 0x0C)
-            M381 (TS, SA10, 0x00, 0x0D)
-            M382 (TS, BA10, 0x00, 0x0E)
-            M383 (TS, PA10, 0x00, 0x0F)
+            M380 (__METHOD__, IA00, 0x00, 0x08)
+            M381 (__METHOD__, SA00, 0x00, 0x09)
+            M382 (__METHOD__, BA00, 0x00, 0x0A)
+            M383 (__METHOD__, PA00, 0x00, 0x0B)
+            M380 (__METHOD__, IA10, 0x00, 0x0C)
+            M381 (__METHOD__, SA10, 0x00, 0x0D)
+            M382 (__METHOD__, BA10, 0x00, 0x0E)
+            M383 (__METHOD__, PA10, 0x00, 0x0F)
             /* m002 */
 
             M002 (IA00, IA10)
             M002 (SA00, SA10)
             M002 (BA00, BA10)
             M002 (PA00, PA10)
-            M380 (TS, IA00, 0x00, 0x10)
-            M381 (TS, SA00, 0x00, 0x11)
-            M382 (TS, BA00, 0x00, 0x12)
-            M383 (TS, PA00, 0x00, 0x13)
-            M380 (TS, IA10, 0x00, 0x14)
-            M381 (TS, SA10, 0x00, 0x15)
-            M382 (TS, BA10, 0x00, 0x16)
-            M383 (TS, PA10, 0x00, 0x17)
+            M380 (__METHOD__, IA00, 0x00, 0x10)
+            M381 (__METHOD__, SA00, 0x00, 0x11)
+            M382 (__METHOD__, BA00, 0x00, 0x12)
+            M383 (__METHOD__, PA00, 0x00, 0x13)
+            M380 (__METHOD__, IA10, 0x00, 0x14)
+            M381 (__METHOD__, SA10, 0x00, 0x15)
+            M382 (__METHOD__, BA10, 0x00, 0x16)
+            M383 (__METHOD__, PA10, 0x00, 0x17)
         }
 
         /* m003 */
@@ -1118,14 +1100,14 @@
         M003 (SA00, SA10)
         M003 (BA00, BA10)
         M003 (PA00, PA10)
-        M380 (TS, IA00, 0x00, 0x18)
-        M381 (TS, SA00, 0x00, 0x19)
-        M382 (TS, BA00, 0x00, 0x1A)
-        M383 (TS, PA00, 0x00, 0x1B)
-        M380 (TS, IA10, 0x00, 0x1C)
-        M381 (TS, SA10, 0x00, 0x1D)
-        M382 (TS, BA10, 0x00, 0x1E)
-        M383 (TS, PA10, 0x00, 0x1F)
+        M380 (__METHOD__, IA00, 0x00, 0x18)
+        M381 (__METHOD__, SA00, 0x00, 0x19)
+        M382 (__METHOD__, BA00, 0x00, 0x1A)
+        M383 (__METHOD__, PA00, 0x00, 0x1B)
+        M380 (__METHOD__, IA10, 0x00, 0x1C)
+        M381 (__METHOD__, SA10, 0x00, 0x1D)
+        M382 (__METHOD__, BA10, 0x00, 0x1E)
+        M383 (__METHOD__, PA10, 0x00, 0x1F)
         END0 ()
     }
 
@@ -1139,14 +1121,13 @@
      */
     Method (M23A, 0, Serialized)
     {
-        Name (TS, "m23a")
         If (Y100)
         {
-            TS00 (TS)
+            TS00 (__METHOD__)
         }
         Else
         {
-            Debug = TS /* \M23A.TS__ */
+            Debug = __METHOD__ /* \M23A.TS__ */
         }
 
         /* Local Objects */
@@ -1223,21 +1204,21 @@
             CopyObject (0x11, Arg1)
         }
 
-        BEG0 (Z111, TS)
+        BEG0 (Z111, __METHOD__)
         /* m000 */
 
         M000 (I000, I010)
         M000 (S000, S010)
         M000 (B000, B010)
         M000 (P000, P010)
-        M380 (TS, I000, 0x00, 0x00)
-        M381 (TS, S000, 0x00, 0x01)
-        M382 (TS, B000, 0x00, 0x02)
-        M383 (TS, P000, 0x00, 0x03)
-        M380 (TS, I010, 0x00, 0x04)
-        M381 (TS, S010, 0x00, 0x05)
-        M382 (TS, B010, 0x00, 0x06)
-        M383 (TS, P010, 0x00, 0x07)
+        M380 (__METHOD__, I000, 0x00, 0x00)
+        M381 (__METHOD__, S000, 0x00, 0x01)
+        M382 (__METHOD__, B000, 0x00, 0x02)
+        M383 (__METHOD__, P000, 0x00, 0x03)
+        M380 (__METHOD__, I010, 0x00, 0x04)
+        M381 (__METHOD__, S010, 0x00, 0x05)
+        M382 (__METHOD__, B010, 0x00, 0x06)
+        M383 (__METHOD__, P010, 0x00, 0x07)
         If (Y514)
         {
             /* m001 */
@@ -1246,28 +1227,28 @@
             M001 (S000, S010)
             M001 (B000, B010)
             M001 (P000, P010)
-            M380 (TS, I000, 0x00, 0x08)
-            M381 (TS, S000, 0x00, 0x09)
-            M382 (TS, B000, 0x00, 0x0A)
-            M383 (TS, P000, 0x00, 0x0B)
-            M380 (TS, I010, 0x00, 0x0C)
-            M381 (TS, S010, 0x00, 0x0D)
-            M382 (TS, B010, 0x00, 0x0E)
-            M383 (TS, P010, 0x00, 0x0F)
+            M380 (__METHOD__, I000, 0x00, 0x08)
+            M381 (__METHOD__, S000, 0x00, 0x09)
+            M382 (__METHOD__, B000, 0x00, 0x0A)
+            M383 (__METHOD__, P000, 0x00, 0x0B)
+            M380 (__METHOD__, I010, 0x00, 0x0C)
+            M381 (__METHOD__, S010, 0x00, 0x0D)
+            M382 (__METHOD__, B010, 0x00, 0x0E)
+            M383 (__METHOD__, P010, 0x00, 0x0F)
             /* m002 */
 
             M002 (I000, I010)
             M002 (S000, S010)
             M002 (B000, B010)
             M002 (P000, P010)
-            M380 (TS, I000, 0x00, 0x10)
-            M381 (TS, S000, 0x00, 0x11)
-            M382 (TS, B000, 0x00, 0x12)
-            M383 (TS, P000, 0x00, 0x13)
-            M380 (TS, I010, 0x00, 0x14)
-            M381 (TS, S010, 0x00, 0x15)
-            M382 (TS, B010, 0x00, 0x16)
-            M383 (TS, P010, 0x00, 0x17)
+            M380 (__METHOD__, I000, 0x00, 0x10)
+            M381 (__METHOD__, S000, 0x00, 0x11)
+            M382 (__METHOD__, B000, 0x00, 0x12)
+            M383 (__METHOD__, P000, 0x00, 0x13)
+            M380 (__METHOD__, I010, 0x00, 0x14)
+            M381 (__METHOD__, S010, 0x00, 0x15)
+            M382 (__METHOD__, B010, 0x00, 0x16)
+            M383 (__METHOD__, P010, 0x00, 0x17)
         }
 
         /* m003 */
@@ -1276,14 +1257,14 @@
         M003 (S000, S010)
         M003 (B000, B010)
         M003 (P000, P010)
-        M380 (TS, I000, 0x00, 0x18)
-        M381 (TS, S000, 0x00, 0x19)
-        M382 (TS, B000, 0x00, 0x1A)
-        M383 (TS, P000, 0x00, 0x1B)
-        M380 (TS, I010, 0x00, 0x1C)
-        M381 (TS, S010, 0x00, 0x1D)
-        M382 (TS, B010, 0x00, 0x1E)
-        M383 (TS, P010, 0x00, 0x1F)
+        M380 (__METHOD__, I000, 0x00, 0x18)
+        M381 (__METHOD__, S000, 0x00, 0x19)
+        M382 (__METHOD__, B000, 0x00, 0x1A)
+        M383 (__METHOD__, P000, 0x00, 0x1B)
+        M380 (__METHOD__, I010, 0x00, 0x1C)
+        M381 (__METHOD__, S010, 0x00, 0x1D)
+        M382 (__METHOD__, B010, 0x00, 0x1E)
+        M383 (__METHOD__, P010, 0x00, 0x1F)
         END0 ()
     }
 
@@ -1381,9 +1362,8 @@
      */
     Method (M252, 0, Serialized)
     {
-        Name (TS, "m252")
-        TS00 (TS)
-        M1AD (TS, 0x00, 0x01, 0x01, 0x01, 0x00)
+        TS00 (__METHOD__)
+        M1AD (__METHOD__, 0x00, 0x01, 0x01, 0x01, 0x00)
         /* NamedX-ORef */
 
         M4D2 ()
@@ -1447,18 +1427,17 @@
      */
     Method (M256, 0, Serialized)
     {
-        Name (TS, "m256")
-        TS00 (TS)
+        TS00 (__METHOD__)
         Name (S000, "qwer0000")
         Name (S010, "qwer0000")
-        BEG0 (Z111, TS)
+        BEG0 (Z111, __METHOD__)
         /* Store */
 
         S000 [0x01] = 0x2B
-        M385 (TS, S000, 0x00, 0x00)
+        M385 (__METHOD__, S000, 0x00, 0x00)
         Local0 = S010 [0x01]
         S010 [0x01] = 0x2B
-        M385 (TS, S010, 0x00, 0x01)
+        M385 (__METHOD__, S010, 0x00, 0x01)
         /* CopyObject */
         /* CURRENTLY: compiler failed CopyObject(xx, Index(xx,xx)) */
         /* CopyObject(0x2b, Index(s020, 1)) */
@@ -1471,8 +1450,7 @@
      */
     Method (M257, 0, Serialized)
     {
-        Name (TS, "m257")
-        TS00 (TS)
+        TS00 (__METHOD__)
         Name (B000, Buffer (0x04)
         {
              0x01, 0x77, 0x03, 0x04                           // .w..
@@ -1481,14 +1459,14 @@
         {
              0x01, 0x77, 0x03, 0x04                           // .w..
         })
-        BEG0 (Z111, TS)
+        BEG0 (Z111, __METHOD__)
         /* Store */
 
         B000 [0x01] = 0x2B
-        M386 (TS, B000, 0x00, 0x00)
+        M386 (__METHOD__, B000, 0x00, 0x00)
         Local0 = B010 [0x01]
         B010 [0x01] = 0x2B
-        M386 (TS, B010, 0x00, 0x01)
+        M386 (__METHOD__, B010, 0x00, 0x01)
         END0 ()
     }
 
@@ -1497,8 +1475,7 @@
      */
     Method (M258, 1, Serialized)
     {
-        Name (TS, "m258")
-        TS00 (TS)
+        TS00 (__METHOD__)
         Name (P100, Package (0x12){})
         P100 [0x00] = 0x00
         P100 [0x01] = I900 /* \I900 */
@@ -1594,8 +1571,7 @@
      */
     Method (M25C, 0, Serialized)
     {
-        Name (TS, "m25c")
-        TS00 (TS)
+        TS00 (__METHOD__)
         Name (P000, Package (0x03)
         {
             0x05, 
@@ -1608,14 +1584,14 @@
             0x77, 
             0x07
         })
-        BEG0 (Z111, TS)
+        BEG0 (Z111, __METHOD__)
         /* Store */
 
         P000 [0x01] = 0x2B
-        M387 (TS, P000, 0x00, 0x00)
+        M387 (__METHOD__, P000, 0x00, 0x00)
         Local0 = P010 [0x01]
         P010 [0x01] = 0x2B
-        M387 (TS, P010, 0x00, 0x01)
+        M387 (__METHOD__, P010, 0x00, 0x01)
         END0 ()
     }
 
@@ -1698,7 +1674,6 @@
 
     Method (M354, 0, Serialized)
     {
-        Name (TS, "m354")
         Name (I000, 0x77)
         Name (S000, "qwer0000")
         Name (B000, Buffer (0x04)
@@ -1721,46 +1696,45 @@
             Arg0 = 0x2B
         }
 
-        BEG0 (Z111, TS)
+        BEG0 (Z111, __METHOD__)
         Local0 = RefOf (I000)
         If (0x00)
         {
             /* This is a reference */
 
-            CH03 (TS, 0x00, 0x00, 0x06F1, 0x00)
+            CH03 (__METHOD__, 0x00, 0x00, 0x06F1, 0x00)
             Local7 = (Local0 + 0x01)
-            CH04 (TS, 0x00, 0xFF, 0x00, 0x06F3, 0x00, 0x00)
+            CH04 (__METHOD__, 0x00, 0xFF, 0x00, 0x06F3, 0x00, 0x00)
         }
 
         M1A3 (Local0, C009, 0x00, 0x00, 0x02)
-        M380 (TS, DerefOf (Local0), 0x00, 0x03)
+        M380 (__METHOD__, DerefOf (Local0), 0x00, 0x03)
         M000 (Local0)
-        M384 (TS, DerefOf (Local0), 0x00, 0x04)
+        M384 (__METHOD__, DerefOf (Local0), 0x00, 0x04)
         Local0 = RefOf (S000)
         M1A3 (Local0, C00A, 0x00, 0x00, 0x05)
-        M381 (TS, DerefOf (Local0), 0x00, 0x06)
+        M381 (__METHOD__, DerefOf (Local0), 0x00, 0x06)
         M000 (Local0)
-        M384 (TS, DerefOf (Local0), 0x00, 0x07)
+        M384 (__METHOD__, DerefOf (Local0), 0x00, 0x07)
         Local0 = RefOf (B000)
         M1A3 (Local0, C00B, 0x00, 0x00, 0x08)
-        M382 (TS, DerefOf (Local0), 0x00, 0x09)
+        M382 (__METHOD__, DerefOf (Local0), 0x00, 0x09)
         M000 (Local0)
-        M384 (TS, DerefOf (Local0), 0x00, 0x0A)
+        M384 (__METHOD__, DerefOf (Local0), 0x00, 0x0A)
         Local0 = RefOf (P000)
         M1A3 (Local0, C00C, 0x00, 0x00, 0x0B)
-        M383 (TS, DerefOf (Local0), 0x00, 0x0C)
+        M383 (__METHOD__, DerefOf (Local0), 0x00, 0x0C)
         M000 (Local0)
-        M384 (TS, DerefOf (Local0), 0x00, 0x0D)
+        M384 (__METHOD__, DerefOf (Local0), 0x00, 0x0D)
         Local0 = RefOf (D000)
         M1A3 (Local0, C00E, 0x00, 0x00, 0x0E)
         M000 (Local0)
-        M384 (TS, DerefOf (Local0), 0x00, 0x0F)
+        M384 (__METHOD__, DerefOf (Local0), 0x00, 0x0F)
         END0 ()
     }
 
     Method (M355, 0, Serialized)
     {
-        Name (TS, "m355")
         Name (I000, 0x77)
         Name (S000, "qwer0000")
         Name (B000, Buffer (0x04)
@@ -1783,40 +1757,40 @@
             CopyObject (0x2B, Arg0)
         }
 
-        BEG0 (Z111, TS)
+        BEG0 (Z111, __METHOD__)
         CopyObject (RefOf (I000), Local0)
         If (0x00)
         {
             /* This is a reference */
 
-            CH03 (TS, 0x00, 0x02, 0x0729, 0x00)
+            CH03 (__METHOD__, 0x00, 0x02, 0x0729, 0x00)
             Local7 = (Local0 + 0x01)
-            CH04 (TS, 0x00, 0xFF, 0x00, 0x072B, 0x00, 0x00)
+            CH04 (__METHOD__, 0x00, 0xFF, 0x00, 0x072B, 0x00, 0x00)
         }
 
         M1A3 (Local0, C009, 0x00, 0x00, 0x00)
-        M380 (TS, DerefOf (Local0), 0x00, 0x01)
+        M380 (__METHOD__, DerefOf (Local0), 0x00, 0x01)
         M000 (Local0)
-        M384 (TS, DerefOf (Local0), 0x00, 0x02)
+        M384 (__METHOD__, DerefOf (Local0), 0x00, 0x02)
         CopyObject (RefOf (S000), Local0)
         M1A3 (Local0, C00A, 0x00, 0x00, 0x03)
-        M381 (TS, DerefOf (Local0), 0x00, 0x04)
+        M381 (__METHOD__, DerefOf (Local0), 0x00, 0x04)
         M000 (Local0)
-        M384 (TS, DerefOf (Local0), 0x00, 0x05)
+        M384 (__METHOD__, DerefOf (Local0), 0x00, 0x05)
         CopyObject (RefOf (B000), Local0)
         M1A3 (Local0, C00B, 0x00, 0x00, 0x06)
-        M382 (TS, DerefOf (Local0), 0x00, 0x07)
+        M382 (__METHOD__, DerefOf (Local0), 0x00, 0x07)
         M000 (Local0)
-        M384 (TS, DerefOf (Local0), 0x00, 0x08)
+        M384 (__METHOD__, DerefOf (Local0), 0x00, 0x08)
         CopyObject (RefOf (P000), Local0)
         M1A3 (Local0, C00C, 0x00, 0x00, 0x09)
-        M383 (TS, DerefOf (Local0), 0x00, 0x0A)
+        M383 (__METHOD__, DerefOf (Local0), 0x00, 0x0A)
         M000 (Local0)
-        M384 (TS, DerefOf (Local0), 0x00, 0x0B)
+        M384 (__METHOD__, DerefOf (Local0), 0x00, 0x0B)
         CopyObject (RefOf (D000), Local0)
         M1A3 (Local0, C00E, 0x00, 0x00, 0x0C)
         M000 (Local0)
-        M384 (TS, DerefOf (Local0), 0x00, 0x0D)
+        M384 (__METHOD__, DerefOf (Local0), 0x00, 0x0D)
         END0 ()
     }
 
@@ -1825,21 +1799,20 @@
      */
     Method (M261, 0, Serialized)
     {
-        Name (TS, "m261")
-        TS00 (TS)
+        TS00 (__METHOD__)
         Name (I000, 0x77)
         Name (I001, 0x77)
-        BEG0 (Z111, TS)
+        BEG0 (Z111, __METHOD__)
         /* Store */
 
         If (Y519)
         {
             M356 (I000)
-            M380 (TS, I000, 0x00, 0x00)
+            M380 (__METHOD__, I000, 0x00, 0x00)
         }
         Else
         {
-            M1AE (TS, "Store ORef to ArgX", "AE_AML_OPERAND_TYPE exception occurs")
+            M1AE (__METHOD__, "Store ORef to ArgX", "AE_AML_OPERAND_TYPE exception occurs")
         }
 
         /* CopyObject */
@@ -1847,11 +1820,11 @@
         If (Y520)
         {
             M357 (I001)
-            M380 (TS, I001, 0x00, 0x01)
+            M380 (__METHOD__, I001, 0x00, 0x01)
         }
         Else
         {
-            M1AE (TS, "CopyObject ORef to ArgX", "AE_AML_OPERAND_TYPE exception occurs")
+            M1AE (__METHOD__, "CopyObject ORef to ArgX", "AE_AML_OPERAND_TYPE exception occurs")
         }
 
         END0 ()
@@ -1859,7 +1832,6 @@
 
     Method (M356, 1, Serialized)
     {
-        Name (TS, "m356")
         Name (I000, 0x77)
         Name (S000, "qwer0000")
         Name (B000, Buffer (0x04)
@@ -1882,46 +1854,45 @@
             Arg0 = 0x2B
         }
 
-        BEG0 (Z111, TS)
+        BEG0 (Z111, __METHOD__)
         Arg0 = RefOf (I000)
         If (0x00)
         {
             /* This is a reference */
 
-            CH03 (TS, 0x00, 0x04, 0x0784, 0x00)
+            CH03 (__METHOD__, 0x00, 0x04, 0x0784, 0x00)
             Local7 = (Arg0 + 0x01)
-            CH04 (TS, 0x00, 0xFF, 0x00, 0x0786, 0x00, 0x00)
+            CH04 (__METHOD__, 0x00, 0xFF, 0x00, 0x0786, 0x00, 0x00)
         }
 
         M1A3 (Arg0, C009, 0x00, 0x00, 0x00)
-        M380 (TS, DerefOf (Arg0), 0x00, 0x01)
+        M380 (__METHOD__, DerefOf (Arg0), 0x00, 0x01)
         M000 (Arg0)
-        M384 (TS, DerefOf (Arg0), 0x00, 0x02)
+        M384 (__METHOD__, DerefOf (Arg0), 0x00, 0x02)
         Arg0 = RefOf (S000)
         M1A3 (Arg0, C00A, 0x00, 0x00, 0x03)
-        M381 (TS, DerefOf (Arg0), 0x00, 0x04)
+        M381 (__METHOD__, DerefOf (Arg0), 0x00, 0x04)
         M000 (Arg0)
-        M384 (TS, DerefOf (Arg0), 0x00, 0x05)
+        M384 (__METHOD__, DerefOf (Arg0), 0x00, 0x05)
         Arg0 = RefOf (B000)
         M1A3 (Arg0, C00B, 0x00, 0x00, 0x06)
-        M382 (TS, DerefOf (Arg0), 0x00, 0x07)
+        M382 (__METHOD__, DerefOf (Arg0), 0x00, 0x07)
         M000 (Arg0)
-        M384 (TS, DerefOf (Arg0), 0x00, 0x08)
+        M384 (__METHOD__, DerefOf (Arg0), 0x00, 0x08)
         Arg0 = RefOf (P000)
         M1A3 (Arg0, C00C, 0x00, 0x00, 0x09)
-        M383 (TS, DerefOf (Arg0), 0x00, 0x0A)
+        M383 (__METHOD__, DerefOf (Arg0), 0x00, 0x0A)
         M000 (Arg0)
-        M384 (TS, DerefOf (Arg0), 0x00, 0x0B)
+        M384 (__METHOD__, DerefOf (Arg0), 0x00, 0x0B)
         Arg0 = RefOf (D000)
         M1A3 (Arg0, C00E, 0x00, 0x00, 0x0C)
         M000 (Arg0)
-        M384 (TS, DerefOf (Arg0), 0x00, 0x0D)
+        M384 (__METHOD__, DerefOf (Arg0), 0x00, 0x0D)
         END0 ()
     }
 
     Method (M357, 1, Serialized)
     {
-        Name (TS, "m357")
         Name (I000, 0x77)
         Name (S000, "qwer0000")
         Name (B000, Buffer (0x04)
@@ -1944,40 +1915,40 @@
             CopyObject (0x2B, Arg0)
         }
 
-        BEG0 (Z111, TS)
+        BEG0 (Z111, __METHOD__)
         CopyObject (RefOf (I000), Arg0)
         If (0x00)
         {
             /* This is a reference */
 
-            CH03 (TS, 0x00, 0x06, 0x07BC, 0x00)
+            CH03 (__METHOD__, 0x00, 0x06, 0x07BC, 0x00)
             Local7 = (Arg0 + 0x01)
-            CH04 (TS, 0x00, 0xFF, 0x00, 0x07BE, 0x00, 0x00)
+            CH04 (__METHOD__, 0x00, 0xFF, 0x00, 0x07BE, 0x00, 0x00)
         }
 
         M1A3 (Arg0, C009, 0x00, 0x00, 0x00)
-        M380 (TS, DerefOf (Arg0), 0x00, 0x01)
+        M380 (__METHOD__, DerefOf (Arg0), 0x00, 0x01)
         M000 (Arg0)
-        M384 (TS, DerefOf (Arg0), 0x00, 0x02)
+        M384 (__METHOD__, DerefOf (Arg0), 0x00, 0x02)
         CopyObject (RefOf (S000), Arg0)
         M1A3 (Arg0, C00A, 0x00, 0x00, 0x03)
-        M381 (TS, DerefOf (Arg0), 0x00, 0x04)
+        M381 (__METHOD__, DerefOf (Arg0), 0x00, 0x04)
         M000 (Arg0)
-        M384 (TS, DerefOf (Arg0), 0x00, 0x05)
+        M384 (__METHOD__, DerefOf (Arg0), 0x00, 0x05)
         CopyObject (RefOf (B000), Arg0)
         M1A3 (Arg0, C00B, 0x00, 0x00, 0x06)
-        M382 (TS, DerefOf (Arg0), 0x00, 0x07)
+        M382 (__METHOD__, DerefOf (Arg0), 0x00, 0x07)
         M000 (Arg0)
-        M384 (TS, DerefOf (Arg0), 0x00, 0x08)
+        M384 (__METHOD__, DerefOf (Arg0), 0x00, 0x08)
         CopyObject (RefOf (P000), Arg0)
         M1A3 (Arg0, C00C, 0x00, 0x00, 0x09)
-        M383 (TS, DerefOf (Arg0), 0x00, 0x0A)
+        M383 (__METHOD__, DerefOf (Arg0), 0x00, 0x0A)
         M000 (Arg0)
-        M384 (TS, DerefOf (Arg0), 0x00, 0x0B)
+        M384 (__METHOD__, DerefOf (Arg0), 0x00, 0x0B)
         CopyObject (RefOf (D000), Arg0)
         M1A3 (Arg0, C00E, 0x00, 0x00, 0x0C)
         M000 (Arg0)
-        M384 (TS, DerefOf (Arg0), 0x00, 0x0D)
+        M384 (__METHOD__, DerefOf (Arg0), 0x00, 0x0D)
         END0 ()
     }
 
@@ -1986,8 +1957,7 @@
      */
     Method (M262, 0, Serialized)
     {
-        Name (TS, "m262")
-        TS00 (TS)
+        TS00 (__METHOD__)
         /* Store */
 
         If (Y521)
@@ -1996,7 +1966,7 @@
         }
         Else
         {
-            M1AE (TS, "Store ORef to NamedX", "AE_AML_OPERAND_TYPE exception occurs")
+            M1AE (__METHOD__, "Store ORef to NamedX", "AE_AML_OPERAND_TYPE exception occurs")
         }
 
         /* CopyObject */
@@ -2007,13 +1977,12 @@
         }
         Else
         {
-            M1AE (TS, "CopyObject ORef to NamedX", "AE_AML_OPERAND_TYPE exception occurs")
+            M1AE (__METHOD__, "CopyObject ORef to NamedX", "AE_AML_OPERAND_TYPE exception occurs")
         }
     }
 
     Method (M358, 0, Serialized)
     {
-        Name (TS, "m358")
         Name (III0, 0x00)
         Name (I000, 0x77)
         Name (S000, "qwer0000")
@@ -2037,46 +2006,45 @@
             Arg0 = 0x2B
         }
 
-        BEG0 (Z111, TS)
+        BEG0 (Z111, __METHOD__)
         III0 = RefOf (I000)
         If (0x00)
         {
             /* This is a reference */
 
-            CH03 (TS, 0x00, 0x08, 0x0810, 0x00)
+            CH03 (__METHOD__, 0x00, 0x08, 0x0810, 0x00)
             Local7 = (III0 + 0x01)
-            CH04 (TS, 0x00, 0xFF, 0x00, 0x0812, 0x00, 0x00)
+            CH04 (__METHOD__, 0x00, 0xFF, 0x00, 0x0812, 0x00, 0x00)
         }
 
         M1A3 (III0, C009, 0x00, 0x00, 0x00)
-        M380 (TS, DerefOf (III0), 0x00, 0x01)
+        M380 (__METHOD__, DerefOf (III0), 0x00, 0x01)
         M000 (III0)
-        M384 (TS, DerefOf (III0), 0x00, 0x02)
+        M384 (__METHOD__, DerefOf (III0), 0x00, 0x02)
         III0 = RefOf (S000)
         M1A3 (III0, C00A, 0x00, 0x00, 0x03)
-        M381 (TS, DerefOf (III0), 0x00, 0x04)
+        M381 (__METHOD__, DerefOf (III0), 0x00, 0x04)
         M000 (III0)
-        M384 (TS, DerefOf (III0), 0x00, 0x05)
+        M384 (__METHOD__, DerefOf (III0), 0x00, 0x05)
         III0 = RefOf (B000)
         M1A3 (III0, C00B, 0x00, 0x00, 0x06)
-        M382 (TS, DerefOf (III0), 0x00, 0x07)
+        M382 (__METHOD__, DerefOf (III0), 0x00, 0x07)
         M000 (III0)
-        M384 (TS, DerefOf (III0), 0x00, 0x08)
+        M384 (__METHOD__, DerefOf (III0), 0x00, 0x08)
         III0 = RefOf (P000)
         M1A3 (III0, C00C, 0x00, 0x00, 0x09)
-        M383 (TS, DerefOf (III0), 0x00, 0x0A)
+        M383 (__METHOD__, DerefOf (III0), 0x00, 0x0A)
         M000 (III0)
-        M384 (TS, DerefOf (III0), 0x00, 0x0B)
+        M384 (__METHOD__, DerefOf (III0), 0x00, 0x0B)
         III0 = RefOf (D000)
         M1A3 (III0, C00E, 0x00, 0x00, 0x0C)
         M000 (III0)
-        M384 (TS, DerefOf (III0), 0x00, 0x0D)
+        M384 (__METHOD__, DerefOf (III0), 0x00, 0x0D)
         END0 ()
     }
 
     Method (M359, 0, Serialized)
     {
-        Name (TS, "m359")
         Name (III0, 0x00)
         Name (I000, 0x77)
         Name (S000, "qwer0000")
@@ -2100,40 +2068,40 @@
             CopyObject (0x2B, Arg0)
         }
 
-        BEG0 (Z111, TS)
+        BEG0 (Z111, __METHOD__)
         CopyObject (RefOf (I000), III0) /* \M359.III0 */
         If (0x00)
         {
             /* This is a reference */
 
-            CH03 (TS, 0x00, 0x0A, 0x084A, 0x00)
+            CH03 (__METHOD__, 0x00, 0x0A, 0x084A, 0x00)
             Local7 = (III0 + 0x01)
-            CH04 (TS, 0x00, 0xFF, 0x00, 0x084C, 0x00, 0x00)
+            CH04 (__METHOD__, 0x00, 0xFF, 0x00, 0x084C, 0x00, 0x00)
         }
 
         M1A3 (III0, C009, 0x00, 0x00, 0x00)
-        M380 (TS, DerefOf (III0), 0x00, 0x01)
+        M380 (__METHOD__, DerefOf (III0), 0x00, 0x01)
         M000 (III0)
-        M384 (TS, DerefOf (III0), 0x00, 0x02)
+        M384 (__METHOD__, DerefOf (III0), 0x00, 0x02)
         CopyObject (RefOf (S000), III0) /* \M359.III0 */
         M1A3 (III0, C00A, 0x00, 0x00, 0x03)
-        M381 (TS, DerefOf (III0), 0x00, 0x04)
+        M381 (__METHOD__, DerefOf (III0), 0x00, 0x04)
         M000 (III0)
-        M384 (TS, DerefOf (III0), 0x00, 0x05)
+        M384 (__METHOD__, DerefOf (III0), 0x00, 0x05)
         CopyObject (RefOf (B000), III0) /* \M359.III0 */
         M1A3 (III0, C00B, 0x00, 0x00, 0x06)
-        M382 (TS, DerefOf (III0), 0x00, 0x07)
+        M382 (__METHOD__, DerefOf (III0), 0x00, 0x07)
         M000 (III0)
-        M384 (TS, DerefOf (III0), 0x00, 0x08)
+        M384 (__METHOD__, DerefOf (III0), 0x00, 0x08)
         CopyObject (RefOf (P000), III0) /* \M359.III0 */
         M1A3 (III0, C00C, 0x00, 0x00, 0x09)
-        M383 (TS, DerefOf (III0), 0x00, 0x0A)
+        M383 (__METHOD__, DerefOf (III0), 0x00, 0x0A)
         M000 (III0)
-        M384 (TS, DerefOf (III0), 0x00, 0x0B)
+        M384 (__METHOD__, DerefOf (III0), 0x00, 0x0B)
         CopyObject (RefOf (D000), III0) /* \M359.III0 */
         M1A3 (III0, C00E, 0x00, 0x00, 0x0C)
         M000 (III0)
-        M384 (TS, DerefOf (III0), 0x00, 0x0D)
+        M384 (__METHOD__, DerefOf (III0), 0x00, 0x0D)
         END0 ()
     }
 
@@ -2153,7 +2121,6 @@
 
     Method (M35A, 0, Serialized)
     {
-        Name (TS, "m35a")
         Name (PPP0, Package (0x05){})
         Name (I000, 0x77)
         Name (S000, "qwer0000")
@@ -2172,7 +2139,7 @@
             Name (I000, 0xABCD0017)
         }
 
-        BEG0 (Z111, TS)
+        BEG0 (Z111, __METHOD__)
         PPP0 [0x00] = RefOf (I000)
         PPP0 [0x01] = RefOf (S000)
         PPP0 [0x02] = RefOf (B000)
@@ -2180,16 +2147,16 @@
         PPP0 [0x04] = RefOf (D000)
         Local0 = DerefOf (PPP0 [0x00])
         M1A3 (Local0, C009, 0x00, 0x00, 0x00)
-        M380 (TS, DerefOf (Local0), 0x00, 0x01)
+        M380 (__METHOD__, DerefOf (Local0), 0x00, 0x01)
         Local0 = DerefOf (PPP0 [0x01])
         M1A3 (Local0, C00A, 0x00, 0x00, 0x02)
-        M381 (TS, DerefOf (Local0), 0x00, 0x03)
+        M381 (__METHOD__, DerefOf (Local0), 0x00, 0x03)
         Local0 = DerefOf (PPP0 [0x02])
         M1A3 (Local0, C00B, 0x00, 0x00, 0x04)
-        M382 (TS, DerefOf (Local0), 0x00, 0x05)
+        M382 (__METHOD__, DerefOf (Local0), 0x00, 0x05)
         Local0 = DerefOf (PPP0 [0x03])
         M1A3 (Local0, C00C, 0x00, 0x00, 0x06)
-        M383 (TS, DerefOf (Local0), 0x00, 0x07)
+        M383 (__METHOD__, DerefOf (Local0), 0x00, 0x07)
         Local0 = DerefOf (PPP0 [0x04])
         M1A3 (Local0, C00E, 0x00, 0x00, 0x08)
         /* Replace */
@@ -2197,19 +2164,19 @@
         PPP0 [0x00] = RefOf (I000)
         Local0 = DerefOf (PPP0 [0x00])
         M1A3 (Local0, C009, 0x00, 0x00, 0x09)
-        M380 (TS, DerefOf (Local0), 0x00, 0x0A)
+        M380 (__METHOD__, DerefOf (Local0), 0x00, 0x0A)
         PPP0 [0x00] = RefOf (S000)
         Local0 = DerefOf (PPP0 [0x00])
         M1A3 (Local0, C00A, 0x00, 0x00, 0x0B)
-        M381 (TS, DerefOf (Local0), 0x00, 0x0C)
+        M381 (__METHOD__, DerefOf (Local0), 0x00, 0x0C)
         PPP0 [0x00] = RefOf (B000)
         Local0 = DerefOf (PPP0 [0x00])
         M1A3 (Local0, C00B, 0x00, 0x00, 0x0D)
-        M382 (TS, DerefOf (Local0), 0x00, 0x0E)
+        M382 (__METHOD__, DerefOf (Local0), 0x00, 0x0E)
         PPP0 [0x00] = RefOf (P000)
         Local0 = DerefOf (PPP0 [0x00])
         M1A3 (Local0, C00C, 0x00, 0x00, 0x0F)
-        M383 (TS, DerefOf (Local0), 0x00, 0x10)
+        M383 (__METHOD__, DerefOf (Local0), 0x00, 0x10)
         PPP0 [0x00] = RefOf (D000)
         Local0 = DerefOf (PPP0 [0x00])
         M1A3 (Local0, C00E, 0x00, 0x00, 0x11)
@@ -2288,9 +2255,8 @@
 
     Method (M35C, 0, Serialized)
     {
-        Name (TS, "m35c")
         Name (P000, Package (0x12){})
-        BEG0 (Z111, TS)
+        BEG0 (Z111, __METHOD__)
         /* Construct the p955-like Package p000 applying LocalX-IRef */
 
         Store (P956 [0x00], Local0)
@@ -2395,25 +2361,23 @@
      */
     Method (M265, 0, Serialized)
     {
-        Name (TS, "m265")
-        TS00 (TS)
+        TS00 (__METHOD__)
         Name (I000, 0x77)
         Name (I010, 0x77)
         /* Store */
 
         M35E (I000)
-        M380 (TS, I000, Z111, 0x00)
+        M380 (__METHOD__, I000, Z111, 0x00)
         /* CopyObject */
 
         M35F (I010)
-        M380 (TS, I010, Z111, 0x01)
+        M380 (__METHOD__, I010, Z111, 0x01)
     }
 
     Method (M35E, 1, Serialized)
     {
-        Name (TS, "m35e")
         Name (P000, Package (0x12){})
-        BEG0 (Z111, TS)
+        BEG0 (Z111, __METHOD__)
         /* Construct the p955-like Package p000 applying LocalX-IRef */
 
         Store (P956 [0x00], Arg0)
@@ -2518,8 +2482,7 @@
      */
     Method (M266, 0, Serialized)
     {
-        Name (TS, "m266")
-        TS00 (TS)
+        TS00 (__METHOD__)
         /* Store */
 
         If (Y521)
@@ -2528,7 +2491,7 @@
         }
         Else
         {
-            M1AE (TS, "Store IRef to NamedX", "AE_AML_OPERAND_TYPE exception occurs")
+            M1AE (__METHOD__, "Store IRef to NamedX", "AE_AML_OPERAND_TYPE exception occurs")
         }
 
         /* CopyObject */
@@ -2538,10 +2501,9 @@
 
     Method (M360, 0, Serialized)
     {
-        Name (TS, "m360")
         Name (III0, 0x00)
         Name (P000, Package (0x12){})
-        BEG0 (Z111, TS)
+        BEG0 (Z111, __METHOD__)
         /* Construct the p955-like Package p000 applying LocalX-IRef */
 
         Store (P956 [0x00], III0) /* \M360.III0 */
@@ -2693,8 +2655,7 @@
      */
     Method (M26B, 0, Serialized)
     {
-        Name (TS, "m26b")
-        TS00 (TS)
+        TS00 (__METHOD__)
         Name (I000, 0x77)
         Name (I001, 0x77)
         /* READ */
@@ -2748,15 +2709,15 @@
         }
 
         M1D3 (I000, I001)
-        M380 (TS, I000, 0x00, 0x00)
-        M380 (TS, I001, 0x00, 0x01)
+        M380 (__METHOD__, I000, 0x00, 0x00)
+        M380 (__METHOD__, I001, 0x00, 0x01)
         If (X127)
         {
             M1D4 (I000, I001) /* bug 127 */
         }
 
-        M380 (TS, I000, 0x00, 0x02)
-        M380 (TS, I001, 0x00, 0x03)
+        M380 (__METHOD__, I000, 0x00, 0x02)
+        M380 (__METHOD__, I001, 0x00, 0x03)
         If (X127)
         {
             M1D5 () /* bug 127 */
@@ -2803,29 +2764,27 @@
      */
     Method (M26E, 0, Serialized)
     {
-        Name (TS, "m26e")
         If (Y100)
         {
-            TS00 (TS)
+            TS00 (__METHOD__)
         }
         Else
         {
-            Debug = TS /* \M26E.TS__ */
+            Debug = __METHOD__ /* \M26E.TS__ */
         }
 
-        CH03 (TS, 0x00, 0x00, 0x0BC7, 0x00)
+        CH03 (__METHOD__, 0x00, 0x00, 0x0BC7, 0x00)
         /* Store */
 
         M365 ()
         /* CopyObject */
 
         M366 ()
-        CH03 (TS, 0x00, 0x01, 0x0BCF, 0x00)
+        CH03 (__METHOD__, 0x00, 0x01, 0x0BCF, 0x00)
     }
 
     Method (M365, 0, Serialized)
     {
-        Name (TS, "m365")
         Name (I000, 0x77)
         Name (I001, 0x77)
         Name (I002, 0x77)
@@ -2848,8 +2807,8 @@
         {
             Name (I002, 0x77)
             Arg0 = RefOf (I002)
-            M380 (TS, DerefOf (Arg0), 0x00, 0x00)
-            M380 (TS, I002, 0x00, 0x01)
+            M380 (__METHOD__, DerefOf (Arg0), 0x00, 0x00)
+            M380 (__METHOD__, I002, 0x00, 0x01)
         }
 
         Method (M001, 1, NotSerialized)
@@ -2862,7 +2821,7 @@
             Arg0 = 0x00
             M001 (RefOf (Arg0))
             Arg1 = DerefOf (Arg0)
-            M380 (TS, Arg1, 0x00, 0x02)
+            M380 (__METHOD__, Arg1, 0x00, 0x02)
         }
 
         Method (M003, 0, NotSerialized)
@@ -2892,7 +2851,7 @@
             Arg0 = 0x00
             M005 (RefOf (Arg0))
             Arg1 = DerefOf (Arg0)
-            M380 (TS, Arg1, 0x00, 0x03)
+            M380 (__METHOD__, Arg1, 0x00, 0x03)
         }
 
         Method (M007, 1, NotSerialized)
@@ -2905,26 +2864,26 @@
             DerefOf (Arg0) = RefOf (I004)
         }
 
-        BEG0 (Z111, TS)
+        BEG0 (Z111, __METHOD__)
         /* 1. */
 
         Local0 = RefOf (I000)
         Local1 = DerefOf (Local0)
-        M380 (TS, Local1, 0x00, 0x04)
-        M380 (TS, I000, 0x00, 0x05)
+        M380 (__METHOD__, Local1, 0x00, 0x04)
+        M380 (__METHOD__, I000, 0x00, 0x05)
         /* 2. */
 
         M000 (I001)
-        M380 (TS, I001, 0x00, 0x06)
+        M380 (__METHOD__, I001, 0x00, 0x06)
         /* 3. */
 
         CopyObject (RefOf (I000), III0) /* \M365.III0 */
         III0 = RefOf (I001)
         Local1 = DerefOf (III0)
-        M380 (TS, I001, 0x00, 0x07)
+        M380 (__METHOD__, I001, 0x00, 0x07)
         If (Y523)
         {
-            M380 (TS, Local1, 0x00, 0x08)
+            M380 (__METHOD__, Local1, 0x00, 0x08)
         }
 
         /* 4. */
@@ -2932,12 +2891,12 @@
         Local0 = 0x00
         M001 (RefOf (Local0))
         Local1 = DerefOf (Local0)
-        M380 (TS, Local1, 0x00, 0x09)
+        M380 (__METHOD__, Local1, 0x00, 0x09)
         /* 5. */
 
         M002 (I001, I002)
-        M380 (TS, I001, 0x00, 0x0A)
-        M380 (TS, I002, 0x00, 0x0B)
+        M380 (__METHOD__, I001, 0x00, 0x0A)
+        M380 (__METHOD__, I002, 0x00, 0x0B)
         /* 6. */
 
         If (Y526)
@@ -2945,7 +2904,7 @@
             CopyObject (RefOf (I003), III5) /* \M365.III5 */
             M007 (RefOf (III5))
             Local1 = DerefOf (III5)
-            M380 (TS, Local1, 0x00, 0x0C)
+            M380 (__METHOD__, Local1, 0x00, 0x0C)
         }
 
         /* 7. */
@@ -2956,7 +2915,7 @@
             Store (PPP0 [0x00], Local0)
             Local1 = DerefOf (Local0)
             Local2 = DerefOf (Local1)
-            M380 (TS, Local2, 0x00, 0x0D)
+            M380 (__METHOD__, Local2, 0x00, 0x0D)
         }
 
         /* 8. */
@@ -2966,8 +2925,8 @@
             CopyObject (RefOf (III3), III4) /* \M365.III4 */
             RefOf (III4) = RefOf (I000)
             Local1 = DerefOf (III4)
-            M380 (TS, I000, 0x00, 0x0E)
-            M380 (TS, Local1, 0x00, 0x0F)
+            M380 (__METHOD__, I000, 0x00, 0x0E)
+            M380 (__METHOD__, Local1, 0x00, 0x0F)
         }
 
         /* 9. */
@@ -2975,8 +2934,8 @@
         PPP1 [0x00] = RefOf (I000)
         Local2 = DerefOf (PPP1 [0x00])
         Local1 = DerefOf (Local2)
-        M380 (TS, Local1, 0x00, 0x10)
-        M380 (TS, I000, 0x00, 0x11)
+        M380 (__METHOD__, Local1, 0x00, 0x10)
+        M380 (__METHOD__, I000, 0x00, 0x11)
         /* 10. */
         /*
          * There are some statements try to pass a value of an integer to a LocalX via reference,
@@ -2990,8 +2949,8 @@
             Local6 = RefOf (Local7)
             DerefOf (Local6) = RefOf (I000)
             Local0 = DerefOf (Local7)
-            M380 (TS, Local0, 0x00, 0x18)
-            M380 (TS, I000, 0x00, 0x19)
+            M380 (__METHOD__, Local0, 0x00, 0x18)
+            M380 (__METHOD__, I000, 0x00, 0x19)
         }
 
         /* Particular cases of (12): */
@@ -3003,12 +2962,12 @@
             Local0 = 0x00
             M005 (RefOf (Local0))
             Local1 = DerefOf (Local0)
-            M380 (TS, Local1, 0x00, 0x1A)
+            M380 (__METHOD__, Local1, 0x00, 0x1A)
             /* 14. (5) */
 
             M006 (I001, I002)
-            M380 (TS, I001, 0x00, 0x1B)
-            M380 (TS, I002, 0x00, 0x1C)
+            M380 (__METHOD__, I001, 0x00, 0x1B)
+            M380 (__METHOD__, I002, 0x00, 0x1C)
             /* 15. (6) */
 
             If (Y526)
@@ -3016,7 +2975,7 @@
                 CopyObject (RefOf (I003), III6) /* \M365.III6 */
                 M008 (RefOf (III6))
                 Local1 = DerefOf (III6)
-                M380 (TS, Local1, 0x00, 0x1D)
+                M380 (__METHOD__, Local1, 0x00, 0x1D)
             }
 
             /* 16. (7) */
@@ -3027,7 +2986,7 @@
                 Store (PPP0 [0x00], Local0)
                 Local1 = DerefOf (Local0)
                 Local2 = DerefOf (Local1)
-                M380 (TS, Local2, 0x00, 0x1E)
+                M380 (__METHOD__, Local2, 0x00, 0x1E)
             }
 
             /* 17. (8) */
@@ -3037,8 +2996,8 @@
                 CopyObject (RefOf (III3), III4) /* \M365.III4 */
                 DerefOf (RefOf (III4)) = RefOf (I000)
                 Local1 = DerefOf (III4)
-                M380 (TS, I000, 0x00, 0x1F)
-                M380 (TS, Local1, 0x00, 0x20)
+                M380 (__METHOD__, I000, 0x00, 0x1F)
+                M380 (__METHOD__, Local1, 0x00, 0x20)
             }
 
             /* 18. (9) */
@@ -3046,20 +3005,20 @@
             DerefOf (PPP1 [0x00]) = RefOf (I000)
             Local2 = DerefOf (PPP1 [0x00])
             Local1 = DerefOf (Local2)
-            M380 (TS, Local1, 0x00, 0x21)
-            M380 (TS, I000, 0x00, 0x22)
+            M380 (__METHOD__, Local1, 0x00, 0x21)
+            M380 (__METHOD__, I000, 0x00, 0x22)
             /* 19. (10) */
 
             DerefOf (M003 ()) = RefOf (I000)
             Local1 = DerefOf (III1)
-            M380 (TS, I000, 0x00, 0x23)
-            M380 (TS, Local1, 0x00, 0x24)
+            M380 (__METHOD__, I000, 0x00, 0x23)
+            M380 (__METHOD__, Local1, 0x00, 0x24)
             /* 20. (11) */
 
             DerefOf (M004 (0x00)) = RefOf (I000)
             Local1 = DerefOf (III2)
-            M380 (TS, I000, 0x00, 0x25)
-            M380 (TS, Local1, 0x00, 0x26)
+            M380 (__METHOD__, I000, 0x00, 0x25)
+            M380 (__METHOD__, Local1, 0x00, 0x26)
         }
 
         END0 ()
@@ -3067,7 +3026,6 @@
 
     Method (M366, 0, Serialized)
     {
-        Name (TS, "m366")
         Name (I000, 0x77)
         Name (I001, 0x77)
         Name (I002, 0x77)
@@ -3082,8 +3040,8 @@
         {
             Name (I002, 0x77)
             CopyObject (RefOf (I002), Arg0)
-            M380 (TS, DerefOf (Arg0), 0x00, 0x00)
-            M380 (TS, I002, 0x00, 0x01)
+            M380 (__METHOD__, DerefOf (Arg0), 0x00, 0x00)
+            M380 (__METHOD__, I002, 0x00, 0x01)
         }
 
         Method (M001, 1, NotSerialized)
@@ -3096,28 +3054,28 @@
             Arg0 = 0x00
             M001 (RefOf (Arg0))
             Arg1 = DerefOf (Arg0)
-            M380 (TS, Arg1, 0x00, 0x02)
+            M380 (__METHOD__, Arg1, 0x00, 0x02)
         }
 
-        BEG0 (Z111, TS)
+        BEG0 (Z111, __METHOD__)
         /* 21. */
 
         CopyObject (RefOf (I000), Local0)
         Local1 = DerefOf (Local0)
-        M380 (TS, Local1, 0x00, 0x03)
-        M380 (TS, I000, 0x00, 0x04)
+        M380 (__METHOD__, Local1, 0x00, 0x03)
+        M380 (__METHOD__, I000, 0x00, 0x04)
         /* 22. */
 
         M000 (I001)
-        M380 (TS, I001, 0x00, 0x05)
+        M380 (__METHOD__, I001, 0x00, 0x05)
         /* 23. */
 
         If (Y128)
         {
             CopyObject (RefOf (I000), III0) /* \M366.III0 */
             Local1 = DerefOf (III0)
-            M380 (TS, Local1, 0x00, 0x06)
-            M380 (TS, I000, 0x00, 0x07)
+            M380 (__METHOD__, Local1, 0x00, 0x06)
+            M380 (__METHOD__, I000, 0x00, 0x07)
         }
 
         /* 24. */
@@ -3125,12 +3083,12 @@
         Local0 = 0x00
         M001 (RefOf (Local0))
         Local1 = DerefOf (Local0)
-        M380 (TS, Local1, 0x00, 0x08)
+        M380 (__METHOD__, Local1, 0x00, 0x08)
         /* 25. */
 
         M002 (I001, I002)
-        M380 (TS, I001, 0x00, 0x09)
-        M380 (TS, I002, 0x00, 0x0A)
+        M380 (__METHOD__, I001, 0x00, 0x09)
+        M380 (__METHOD__, I002, 0x00, 0x0A)
         /* 26. */
 
         If (Y526)
@@ -3138,7 +3096,7 @@
             III1 = 0x00
             M001 (RefOf (III1))
             Local1 = DerefOf (III1)
-            M380 (TS, Local1, 0x00, 0x0B)
+            M380 (__METHOD__, Local1, 0x00, 0x0B)
         }
 
         /* 27. */
@@ -3149,7 +3107,7 @@
             Store (PPP1 [0x00], Local0)
             Local1 = DerefOf (Local0)
             Local2 = DerefOf (Local1)
-            M380 (TS, Local2, 0x00, 0x0C)
+            M380 (__METHOD__, Local2, 0x00, 0x0C)
         }
 
         /*
@@ -3179,33 +3137,31 @@
      */
     Method (M270, 0, Serialized)
     {
-        Name (TS, "m270")
-        CH03 (TS, 0x00, 0x00, 0x0D2D, 0x00)
+        CH03 (__METHOD__, 0x00, 0x00, 0x0D2D, 0x00)
         If (Y100)
         {
-            TS00 (TS)
+            TS00 (__METHOD__)
         }
         Else
         {
-            Debug = TS /* \M270.TS__ */
+            Debug = __METHOD__ /* \M270.TS__ */
         }
 
-        CH03 (TS, 0x00, 0x01, 0x0D35, 0x00)
+        CH03 (__METHOD__, 0x00, 0x01, 0x0D35, 0x00)
         /* Store */
 
         M367 ()
-        CH03 (TS, 0x00, 0x02, 0x0D3A, 0x00)
+        CH03 (__METHOD__, 0x00, 0x02, 0x0D3A, 0x00)
         /* CopyObject */
 
         M368 ()
-        CH03 (TS, 0x00, 0x03, 0x0D3F, 0x00)
+        CH03 (__METHOD__, 0x00, 0x03, 0x0D3F, 0x00)
         M1AE ("m270", "All the legal sources of references (ORef and IRef)", "Started, but not implemented yet")
-        CH03 (TS, 0x00, 0x04, 0x0D44, 0x00)
+        CH03 (__METHOD__, 0x00, 0x04, 0x0D44, 0x00)
     }
 
     Method (M367, 0, Serialized)
     {
-        Name (TS, "m367")
         Name (I000, 0x77)
         Name (I001, 0x77)
         Name (I002, 0x77)
@@ -3226,19 +3182,19 @@
             Arg5 = Local0
             Arg6 = Local0
             Local7 = DerefOf (Arg0)
-            M380 (TS, Local7, 0x00, 0x00)
+            M380 (__METHOD__, Local7, 0x00, 0x00)
             Local7 = DerefOf (Arg1)
-            M380 (TS, Local7, 0x00, 0x01)
+            M380 (__METHOD__, Local7, 0x00, 0x01)
             Local7 = DerefOf (Arg2)
-            M380 (TS, Local7, 0x00, 0x02)
+            M380 (__METHOD__, Local7, 0x00, 0x02)
             Local7 = DerefOf (Arg3)
-            M380 (TS, Local7, 0x00, 0x03)
+            M380 (__METHOD__, Local7, 0x00, 0x03)
             Local7 = DerefOf (Arg4)
-            M380 (TS, Local7, 0x00, 0x04)
+            M380 (__METHOD__, Local7, 0x00, 0x04)
             Local7 = DerefOf (Arg5)
-            M380 (TS, Local7, 0x00, 0x05)
+            M380 (__METHOD__, Local7, 0x00, 0x05)
             Local7 = DerefOf (Arg6)
-            M380 (TS, Local7, 0x00, 0x06)
+            M380 (__METHOD__, Local7, 0x00, 0x06)
         }
 
         Method (M002, 7, NotSerialized)
@@ -3250,22 +3206,22 @@
             Arg4 = Arg3
             Arg5 = Arg4
             Arg6 = Arg5
-            M380 (TS, DerefOf (Arg6), 0x00, 0x07)
+            M380 (__METHOD__, DerefOf (Arg6), 0x00, 0x07)
             Arg6 = DerefOf (Arg0)
-            M380 (TS, Arg6, 0x00, 0x08)
+            M380 (__METHOD__, Arg6, 0x00, 0x08)
             Arg6 = DerefOf (Arg1)
-            M380 (TS, Arg6, 0x00, 0x09)
+            M380 (__METHOD__, Arg6, 0x00, 0x09)
             Arg6 = DerefOf (Arg2)
-            M380 (TS, Arg6, 0x00, 0x0A)
+            M380 (__METHOD__, Arg6, 0x00, 0x0A)
             Arg6 = DerefOf (Arg3)
-            M380 (TS, Arg6, 0x00, 0x0B)
+            M380 (__METHOD__, Arg6, 0x00, 0x0B)
             Arg6 = DerefOf (Arg4)
-            M380 (TS, Arg6, 0x00, 0x0C)
+            M380 (__METHOD__, Arg6, 0x00, 0x0C)
             Arg6 = DerefOf (Arg5)
-            M380 (TS, Arg6, 0x00, 0x0D)
+            M380 (__METHOD__, Arg6, 0x00, 0x0D)
         }
 
-        BEG0 (Z111, TS)
+        BEG0 (Z111, __METHOD__)
         /* 1. ORef-LocalX */
 
         Local0 = RefOf (I000)
@@ -3276,43 +3232,43 @@
         Local5 = Local4
         Local6 = Local5
         Local7 = Local6
-        M380 (TS, DerefOf (Local7), 0x00, 0x0E)
+        M380 (__METHOD__, DerefOf (Local7), 0x00, 0x0E)
         Local7 = DerefOf (Local0)
-        M380 (TS, Local7, 0x00, 0x0F)
+        M380 (__METHOD__, Local7, 0x00, 0x0F)
         Local7 = DerefOf (Local1)
-        M380 (TS, Local7, 0x00, 0x10)
+        M380 (__METHOD__, Local7, 0x00, 0x10)
         Local7 = DerefOf (Local2)
-        M380 (TS, Local7, 0x00, 0x11)
+        M380 (__METHOD__, Local7, 0x00, 0x11)
         Local7 = DerefOf (Local3)
-        M380 (TS, Local7, 0x00, 0x12)
+        M380 (__METHOD__, Local7, 0x00, 0x12)
         Local7 = DerefOf (Local4)
-        M380 (TS, Local7, 0x00, 0x13)
+        M380 (__METHOD__, Local7, 0x00, 0x13)
         Local7 = DerefOf (Local5)
-        M380 (TS, Local7, 0x00, 0x14)
+        M380 (__METHOD__, Local7, 0x00, 0x14)
         Local7 = DerefOf (Local6)
-        M380 (TS, Local7, 0x00, 0x15)
+        M380 (__METHOD__, Local7, 0x00, 0x15)
         /* 2. ORef-LocalX */
 
         M001 (I000, I001, I002, I003, I004, I005, I006)
-        M380 (TS, I000, 0x00, 0x16)
-        M380 (TS, I001, 0x00, 0x17)
-        M380 (TS, I002, 0x00, 0x18)
-        M380 (TS, I003, 0x00, 0x19)
-        M380 (TS, I004, 0x00, 0x1A)
-        M380 (TS, I005, 0x00, 0x1B)
-        M380 (TS, I006, 0x00, 0x1C)
+        M380 (__METHOD__, I000, 0x00, 0x16)
+        M380 (__METHOD__, I001, 0x00, 0x17)
+        M380 (__METHOD__, I002, 0x00, 0x18)
+        M380 (__METHOD__, I003, 0x00, 0x19)
+        M380 (__METHOD__, I004, 0x00, 0x1A)
+        M380 (__METHOD__, I005, 0x00, 0x1B)
+        M380 (__METHOD__, I006, 0x00, 0x1C)
         If (Y134)
         {
             /* 2. ORef-ArgX */
 
             M002 (I000, I001, I002, I003, I004, I005, I006)
-            M380 (TS, I000, 0x00, 0x1D)
-            M380 (TS, I001, 0x00, 0x1E)
-            M380 (TS, I002, 0x00, 0x1F)
-            M380 (TS, I003, 0x00, 0x20)
-            M380 (TS, I004, 0x00, 0x21)
-            M380 (TS, I005, 0x00, 0x22)
-            M380 (TS, I006, 0x00, 0x23)
+            M380 (__METHOD__, I000, 0x00, 0x1D)
+            M380 (__METHOD__, I001, 0x00, 0x1E)
+            M380 (__METHOD__, I002, 0x00, 0x1F)
+            M380 (__METHOD__, I003, 0x00, 0x20)
+            M380 (__METHOD__, I004, 0x00, 0x21)
+            M380 (__METHOD__, I005, 0x00, 0x22)
+            M380 (__METHOD__, I006, 0x00, 0x23)
         }
 
         /* 3. ORef-LocalX */
@@ -3325,10 +3281,10 @@
             Local0 = RefOf (I000)
             III0 = Local0
             Local1 = DerefOf (III0)
-            M380 (TS, I000, 0x00, 0x24)
+            M380 (__METHOD__, I000, 0x00, 0x24)
             If (Y523)
             {
-                M380 (TS, Local1, 0x00, 0x25)
+                M380 (__METHOD__, Local1, 0x00, 0x25)
             }
         }
 
@@ -3337,9 +3293,8 @@
 
     Method (M368, 0, Serialized)
     {
-        Name (TS, "m368")
         Name (I000, 0x77)
-        BEG0 (Z111, TS)
+        BEG0 (Z111, __METHOD__)
         /* 21. ORef-LocalX */
 
         CopyObject (RefOf (I000), Local0)
@@ -3350,21 +3305,21 @@
         CopyObject (Local4, Local5)
         CopyObject (Local5, Local6)
         CopyObject (Local6, Local7)
-        M380 (TS, DerefOf (Local7), 0x00, 0x00)
+        M380 (__METHOD__, DerefOf (Local7), 0x00, 0x00)
         CopyObject (DerefOf (Local0), Local7)
-        M380 (TS, Local7, 0x00, 0x01)
+        M380 (__METHOD__, Local7, 0x00, 0x01)
         CopyObject (DerefOf (Local1), Local7)
-        M380 (TS, Local7, 0x00, 0x02)
+        M380 (__METHOD__, Local7, 0x00, 0x02)
         CopyObject (DerefOf (Local2), Local7)
-        M380 (TS, Local7, 0x00, 0x03)
+        M380 (__METHOD__, Local7, 0x00, 0x03)
         CopyObject (DerefOf (Local3), Local7)
-        M380 (TS, Local7, 0x00, 0x04)
+        M380 (__METHOD__, Local7, 0x00, 0x04)
         CopyObject (DerefOf (Local4), Local7)
-        M380 (TS, Local7, 0x00, 0x05)
+        M380 (__METHOD__, Local7, 0x00, 0x05)
         CopyObject (DerefOf (Local5), Local7)
-        M380 (TS, Local7, 0x00, 0x06)
+        M380 (__METHOD__, Local7, 0x00, 0x06)
         CopyObject (DerefOf (Local6), Local7)
-        M380 (TS, Local7, 0x00, 0x07)
+        M380 (__METHOD__, Local7, 0x00, 0x07)
         END0 ()
     }
 
@@ -3442,7 +3397,6 @@
     /* Simple TEST 1: read of ArgX-ORef with DerefOf */
     Method (M341, 0, Serialized)
     {
-        Name (TS, "m341")
         Name (I000, 0x19283746)
         Local0 = RefOf (I000)
         Method (M000, 1, NotSerialized)
@@ -3451,7 +3405,7 @@
             Local7 = (Local0 + 0x05)
             If ((Local7 != 0x1928374B))
             {
-                ERR (TS, Z111, 0x0E3E, 0x00, 0x00, Local7, 0x1928374B)
+                ERR (__METHOD__, Z111, 0x0E3E, 0x00, 0x00, Local7, 0x1928374B)
             }
         }
 
@@ -3462,14 +3416,13 @@
 
     Method (M342, 0, Serialized)
     {
-        Name (TS, "m342")
         Name (I000, 0x00)
-        BEG0 (Z111, TS)
+        BEG0 (Z111, __METHOD__)
         Local0 = RefOf (I000)
-        M1CC (TS, Local0, 0x01, 0x00)
-        M1CD (TS, Local0, 0x01, 0x00)
-        M1CC (TS, RefOf (I000), 0x01, 0x00)
-        M1CD (TS, RefOf (I000), 0x01, 0x00)
+        M1CC (__METHOD__, Local0, 0x01, 0x00)
+        M1CD (__METHOD__, Local0, 0x01, 0x00)
+        M1CC (__METHOD__, RefOf (I000), 0x01, 0x00)
+        M1CD (__METHOD__, RefOf (I000), 0x01, 0x00)
         END0 ()
     }
 
@@ -3477,7 +3430,6 @@
 
     Method (M343, 0, Serialized)
     {
-        Name (TS, "m343")
         Name (P000, Package (0x05)
         {
             0x0B, 
@@ -3493,7 +3445,7 @@
             Local7 = (Local0 + 0x05)
             If ((Local7 != 0x13))
             {
-                ERR (TS, Z111, 0x0E66, 0x00, 0x00, Local7, 0x13)
+                ERR (__METHOD__, Z111, 0x0E66, 0x00, 0x00, Local7, 0x13)
             }
         }
 
@@ -3504,7 +3456,6 @@
 
     Method (M344, 0, Serialized)
     {
-        Name (TS, "m344")
         Name (P000, Package (0x05)
         {
             0x0B, 
@@ -3519,7 +3470,7 @@
             Local7 = (Arg0 + 0x05)
             If ((Local7 != 0x13))
             {
-                ERR (TS, Z111, 0x0E79, 0x00, 0x00, Local7, 0x13)
+                ERR (__METHOD__, Z111, 0x0E79, 0x00, 0x00, Local7, 0x13)
             }
         }
 
@@ -3530,7 +3481,6 @@
 
     Method (M345, 0, Serialized)
     {
-        Name (TS, "m345")
         Name (S000, "qwer0000")
         Name (B000, Buffer (0x04)
         {
@@ -3561,13 +3511,13 @@
             Local0 = 0x90
             If ((Local0 != 0x90))
             {
-                ERR (TS, Z111, 0x0E94, 0x00, 0x00, Local0, 0x90)
+                ERR (__METHOD__, Z111, 0x0E94, 0x00, 0x00, Local0, 0x90)
             }
 
             Local1 = 0x91
             If ((Local1 != 0x91))
             {
-                ERR (TS, Z111, 0x0E98, 0x00, 0x00, Local1, 0x91)
+                ERR (__METHOD__, Z111, 0x0E98, 0x00, 0x00, Local1, 0x91)
             }
         }
 
@@ -3579,13 +3529,13 @@
             CopyObject (0x94, Local0)
             If ((Local0 != 0x94))
             {
-                ERR (TS, Z111, 0x0EA3, 0x00, 0x00, Local0, 0x94)
+                ERR (__METHOD__, Z111, 0x0EA3, 0x00, 0x00, Local0, 0x94)
             }
 
             CopyObject (0x95, Local1)
             If ((Local1 != 0x95))
             {
-                ERR (TS, Z111, 0x0EA7, 0x00, 0x00, Local1, 0x95)
+                ERR (__METHOD__, Z111, 0x0EA7, 0x00, 0x00, Local1, 0x95)
             }
         }
 
@@ -3612,37 +3562,36 @@
         /* CopyObject(0x97, Index(arg0, 1, Local0)) */
         }
 
-        BEG0 (Z111, TS)
+        BEG0 (Z111, __METHOD__)
         M000 (S000)
         M000 (B000)
         M000 (P000)
-        M381 (TS, S000, 0x00, 0x00)
-        M382 (TS, B000, 0x00, 0x01)
-        M383 (TS, P000, 0x00, 0x02)
+        M381 (__METHOD__, S000, 0x00, 0x00)
+        M382 (__METHOD__, B000, 0x00, 0x01)
+        M383 (__METHOD__, P000, 0x00, 0x02)
         M001 (S000)
         M001 (B000)
         M001 (P000)
-        M381 (TS, S000, 0x00, 0x03)
-        M382 (TS, B000, 0x00, 0x04)
-        M383 (TS, P000, 0x00, 0x05)
+        M381 (__METHOD__, S000, 0x00, 0x03)
+        M382 (__METHOD__, B000, 0x00, 0x04)
+        M383 (__METHOD__, P000, 0x00, 0x05)
         M002 (S000)
         M002 (B000)
         M002 (P000)
-        M385 (TS, S000, 0x00, 0x06)
-        M386 (TS, B000, 0x00, 0x07)
-        M387 (TS, P000, 0x00, 0x08)
+        M385 (__METHOD__, S000, 0x00, 0x06)
+        M386 (__METHOD__, B000, 0x00, 0x07)
+        M387 (__METHOD__, P000, 0x00, 0x08)
         M003 (S010)
         M003 (B010)
         M003 (P010)
-        M385 (TS, S010, 0x00, 0x09)
-        M386 (TS, B010, 0x00, 0x0A)
-        M387 (TS, P010, 0x00, 0x0B)
+        M385 (__METHOD__, S010, 0x00, 0x09)
+        M386 (__METHOD__, B010, 0x00, 0x0A)
+        M387 (__METHOD__, P010, 0x00, 0x0B)
         END0 ()
     }
 
     Method (M346, 0, Serialized)
     {
-        Name (TS, "m346")
         Name (I000, 0xABCD0000)
         Method (M000, 1, NotSerialized)
         {
@@ -3655,24 +3604,24 @@
             Local1 = ObjectType (Local0)
             If ((Local1 != C009))
             {
-                ERR (TS, Z111, 0x0EF6, 0x00, 0x00, Local1, C009)
+                ERR (__METHOD__, Z111, 0x0EF6, 0x00, 0x00, Local1, C009)
             }
             Else
             {
                 Local1 = SizeOf (Local0)
                 If ((Local1 != ISZ0))
                 {
-                    ERR (TS, Z111, 0x0EFA, 0x00, 0x00, Local1, ISZ0)
+                    ERR (__METHOD__, Z111, 0x0EFA, 0x00, 0x00, Local1, ISZ0)
                 }
 
                 If ((Local6 != 0xABCD0000))
                 {
-                    ERR (TS, Z111, 0x0EFD, 0x00, 0x00, Local6, 0xABCD0000)
+                    ERR (__METHOD__, Z111, 0x0EFD, 0x00, 0x00, Local6, 0xABCD0000)
                 }
 
                 If ((Local7 != 0x11111111))
                 {
-                    ERR (TS, Z111, 0x0F00, 0x00, 0x00, Local7, 0x11111111)
+                    ERR (__METHOD__, Z111, 0x0F00, 0x00, 0x00, Local7, 0x11111111)
                 }
             }
         }
@@ -3680,13 +3629,12 @@
         M000 (I000)
         If ((I000 != 0xABCD0000))
         {
-            ERR (TS, Z111, 0x0F07, 0x00, 0x00, I000, 0xABCD0000)
+            ERR (__METHOD__, Z111, 0x0F07, 0x00, 0x00, I000, 0xABCD0000)
         }
     }
 
     Method (M347, 0, Serialized)
     {
-        Name (TS, "m347")
         Name (I000, 0xABCD0000)
         Method (M000, 1, NotSerialized)
         {
@@ -3694,19 +3642,19 @@
             Local1 = ObjectType (Local0)
             If ((Local1 != C009))
             {
-                ERR (TS, Z111, 0x0F16, 0x00, 0x00, Local1, C009)
+                ERR (__METHOD__, Z111, 0x0F16, 0x00, 0x00, Local1, C009)
             }
             Else
             {
                 Local1 = SizeOf (Local0)
                 If ((Local1 != ISZ0))
                 {
-                    ERR (TS, Z111, 0x0F1A, 0x00, 0x00, Local1, ISZ0)
+                    ERR (__METHOD__, Z111, 0x0F1A, 0x00, 0x00, Local1, ISZ0)
                 }
 
                 If ((Local0 != 0xABCD0000))
                 {
-                    ERR (TS, Z111, 0x0F1D, 0x00, 0x00, Local0, 0xABCD0000)
+                    ERR (__METHOD__, Z111, 0x0F1D, 0x00, 0x00, Local0, 0xABCD0000)
                 }
             }
         }
@@ -3714,13 +3662,12 @@
         M000 (I000)
         If ((I000 != 0xABCD0000))
         {
-            ERR (TS, Z111, 0x0F24, 0x00, 0x00, I000, 0xABCD0000)
+            ERR (__METHOD__, Z111, 0x0F24, 0x00, 0x00, I000, 0xABCD0000)
         }
     }
 
     Method (M348, 0, Serialized)
     {
-        Name (TS, "m348")
         Name (I000, 0xABCD0000)
         Method (M000, 1, NotSerialized)
         {
@@ -3729,7 +3676,7 @@
             Local2 = DerefOf (Local1)
             If ((Local2 != 0xABCD0000))
             {
-                ERR (TS, Z111, 0x0F34, 0x00, 0x00, Local2, 0xABCD0000)
+                ERR (__METHOD__, Z111, 0x0F34, 0x00, 0x00, Local2, 0xABCD0000)
             }
 
             RefOf (Arg0) = 0x11111111
@@ -3737,33 +3684,32 @@
             Local0 = 0x11111111
             If ((Local0 != 0x11111111))
             {
-                ERR (TS, Z111, 0x0F3C, 0x00, 0x00, Local0, 0x11111111)
+                ERR (__METHOD__, Z111, 0x0F3C, 0x00, 0x00, Local0, 0x11111111)
             }
         }
 
         M000 (RefOf (I000))
         If ((I000 != 0xABCD0000))
         {
-            ERR (TS, Z111, 0x0F42, 0x00, 0x00, I000, 0xABCD0000)
+            ERR (__METHOD__, Z111, 0x0F42, 0x00, 0x00, I000, 0xABCD0000)
         }
 
         Local0 = RefOf (I000)
         M000 (Local0)
         If ((I000 != 0xABCD0000))
         {
-            ERR (TS, Z111, 0x0F48, 0x00, 0x00, I000, 0xABCD0000)
+            ERR (__METHOD__, Z111, 0x0F48, 0x00, 0x00, I000, 0xABCD0000)
         }
 
         Local2 = DerefOf (Local0)
         If ((Local2 != 0xABCD0000))
         {
-            ERR (TS, Z111, 0x0F4C, 0x00, 0x00, Local2, 0xABCD0000)
+            ERR (__METHOD__, Z111, 0x0F4C, 0x00, 0x00, Local2, 0xABCD0000)
         }
     }
 
     Method (M349, 0, Serialized)
     {
-        Name (TS, "m349")
         Name (I000, 0xABCD0000)
         Name (I001, 0xABCD0001)
         Method (M000, 1, NotSerialized)
@@ -3772,7 +3718,7 @@
             Local2 = DerefOf (Local1)
             If ((Local2 != 0xABCD0000))
             {
-                ERR (TS, Z111, 0x0F5C, 0x00, 0x00, Local2, 0xABCD0000)
+                ERR (__METHOD__, Z111, 0x0F5C, 0x00, 0x00, Local2, 0xABCD0000)
             }
         }
 
@@ -3787,14 +3733,14 @@
         M000 (RefOf (I000))
         If ((I000 != 0xABCD0000))
         {
-            ERR (TS, Z111, 0x0F6A, 0x00, 0x00, I000, 0xABCD0000)
+            ERR (__METHOD__, Z111, 0x0F6A, 0x00, 0x00, I000, 0xABCD0000)
         }
 
         Local0 = RefOf (I000)
         M000 (Local0)
         If ((I000 != 0xABCD0000))
         {
-            ERR (TS, Z111, 0x0F70, 0x00, 0x00, I000, 0xABCD0000)
+            ERR (__METHOD__, Z111, 0x0F70, 0x00, 0x00, I000, 0xABCD0000)
         }
 
         If (Y512)
@@ -3802,7 +3748,7 @@
             Local2 = DerefOf (Local0)
             If ((Local2 != 0xABCD0000))
             {
-                ERR (TS, Z111, 0x0F75, 0x00, 0x00, Local2, 0xABCD0000)
+                ERR (__METHOD__, Z111, 0x0F75, 0x00, 0x00, Local2, 0xABCD0000)
             }
         }
 
@@ -3811,14 +3757,14 @@
         M001 (RefOf (I001))
         If ((I001 != 0x11111111))
         {
-            ERR (TS, Z111, 0x0F7D, 0x00, 0x00, I001, 0x11111111)
+            ERR (__METHOD__, Z111, 0x0F7D, 0x00, 0x00, I001, 0x11111111)
         }
 
         Local0 = RefOf (I001)
         M001 (Local0)
         If ((I001 != 0x11111111))
         {
-            ERR (TS, Z111, 0x0F83, 0x00, 0x00, I001, 0x11111111)
+            ERR (__METHOD__, Z111, 0x0F83, 0x00, 0x00, I001, 0x11111111)
         }
 
         If (Y512)
@@ -3826,14 +3772,13 @@
             Local2 = DerefOf (Local0)
             If ((Local2 != 0x11111111))
             {
-                ERR (TS, Z111, 0x0F88, 0x00, 0x00, Local2, 0x11111111)
+                ERR (__METHOD__, Z111, 0x0F88, 0x00, 0x00, Local2, 0x11111111)
             }
         }
     }
 
     Method (M34A, 0, Serialized)
     {
-        Name (TS, "m34a")
         Name (B000, Buffer (0x05)
         {
              0x01, 0x02, 0x69, 0x04, 0x05                     // ..i..
@@ -3843,7 +3788,7 @@
             Local2 = DerefOf (Arg0)
             If ((Local2 != 0x69))
             {
-                ERR (TS, Z111, 0x0F97, 0x00, 0x00, Local2, 0x69)
+                ERR (__METHOD__, Z111, 0x0F97, 0x00, 0x00, Local2, 0x69)
             }
         }
 
@@ -3856,7 +3801,7 @@
             Local2 = DerefOf (Local1)
             If ((Local2 != 0x69))
             {
-                ERR (TS, Z111, 0x0FA3, 0x00, 0x00, Local2, 0x69)
+                ERR (__METHOD__, Z111, 0x0FA3, 0x00, 0x00, Local2, 0x69)
             }
         }
 
@@ -3867,7 +3812,7 @@
             Local0 = 0x11111111
             If ((Local0 != 0x11111111))
             {
-                ERR (TS, Z111, 0x0FAE, 0x00, 0x00, Local0, 0x11111111)
+                ERR (__METHOD__, Z111, 0x0FAE, 0x00, 0x00, Local0, 0x11111111)
             }
         }
 
@@ -3879,7 +3824,7 @@
                          0x01, 0x02, 0x69, 0x04, 0x05                     // ..i..
                     }))
         {
-            ERR (TS, Z111, 0x0FB6, 0x00, 0x00, B000, Buffer (0x05)
+            ERR (__METHOD__, Z111, 0x0FB6, 0x00, 0x00, B000, Buffer (0x05)
                 {
                      0x01, 0x02, 0x69, 0x04, 0x05                     // ..i..
                 })
@@ -3892,7 +3837,7 @@
                          0x01, 0x02, 0x69, 0x04, 0x05                     // ..i..
                     }))
         {
-            ERR (TS, Z111, 0x0FBC, 0x00, 0x00, B000, Buffer (0x05)
+            ERR (__METHOD__, Z111, 0x0FBC, 0x00, 0x00, B000, Buffer (0x05)
                 {
                      0x01, 0x02, 0x69, 0x04, 0x05                     // ..i..
                 })
@@ -3901,7 +3846,7 @@
         Local2 = DerefOf (Local0)
         If ((Local2 != 0x69))
         {
-            ERR (TS, Z111, 0x0FC0, 0x00, 0x00, Local2, 0x69)
+            ERR (__METHOD__, Z111, 0x0FC0, 0x00, 0x00, Local2, 0x69)
         }
 
         Local1 = Local0 = B000 [0x02]
@@ -3911,7 +3856,7 @@
                          0x01, 0x02, 0x69, 0x04, 0x05                     // ..i..
                     }))
         {
-            ERR (TS, Z111, 0x0FC6, 0x00, 0x00, B000, Buffer (0x05)
+            ERR (__METHOD__, Z111, 0x0FC6, 0x00, 0x00, B000, Buffer (0x05)
                 {
                      0x01, 0x02, 0x69, 0x04, 0x05                     // ..i..
                 })
@@ -3920,7 +3865,7 @@
         Local2 = DerefOf (Local0)
         If ((Local2 != 0x69))
         {
-            ERR (TS, Z111, 0x0FCA, 0x00, 0x00, Local2, 0x69)
+            ERR (__METHOD__, Z111, 0x0FCA, 0x00, 0x00, Local2, 0x69)
         }
 
         M000 (Local1)
@@ -3929,7 +3874,7 @@
                          0x01, 0x02, 0x69, 0x04, 0x05                     // ..i..
                     }))
         {
-            ERR (TS, Z111, 0x0FCE, 0x00, 0x00, B000, Buffer (0x05)
+            ERR (__METHOD__, Z111, 0x0FCE, 0x00, 0x00, B000, Buffer (0x05)
                 {
                      0x01, 0x02, 0x69, 0x04, 0x05                     // ..i..
                 })
@@ -3938,7 +3883,7 @@
         Local2 = DerefOf (Local1)
         If ((Local2 != 0x69))
         {
-            ERR (TS, Z111, 0x0FD2, 0x00, 0x00, Local2, 0x69)
+            ERR (__METHOD__, Z111, 0x0FD2, 0x00, 0x00, Local2, 0x69)
         }
 
         /* m001 */
@@ -3949,7 +3894,7 @@
                          0x01, 0x02, 0x69, 0x04, 0x05                     // ..i..
                     }))
         {
-            ERR (TS, Z111, 0x0FD9, 0x00, 0x00, B000, Buffer (0x05)
+            ERR (__METHOD__, Z111, 0x0FD9, 0x00, 0x00, B000, Buffer (0x05)
                 {
                      0x01, 0x02, 0x69, 0x04, 0x05                     // ..i..
                 })
@@ -3962,7 +3907,7 @@
                          0x01, 0x02, 0x69, 0x04, 0x05                     // ..i..
                     }))
         {
-            ERR (TS, Z111, 0x0FDF, 0x00, 0x00, B000, Buffer (0x05)
+            ERR (__METHOD__, Z111, 0x0FDF, 0x00, 0x00, B000, Buffer (0x05)
                 {
                      0x01, 0x02, 0x69, 0x04, 0x05                     // ..i..
                 })
@@ -3971,7 +3916,7 @@
         Local2 = DerefOf (Local0)
         If ((Local2 != 0x69))
         {
-            ERR (TS, Z111, 0x0FE3, 0x00, 0x00, Local2, 0x69)
+            ERR (__METHOD__, Z111, 0x0FE3, 0x00, 0x00, Local2, 0x69)
         }
 
         Local1 = Local0 = B000 [0x02]
@@ -3981,7 +3926,7 @@
                          0x01, 0x02, 0x69, 0x04, 0x05                     // ..i..
                     }))
         {
-            ERR (TS, Z111, 0x0FE9, 0x00, 0x00, B000, Buffer (0x05)
+            ERR (__METHOD__, Z111, 0x0FE9, 0x00, 0x00, B000, Buffer (0x05)
                 {
                      0x01, 0x02, 0x69, 0x04, 0x05                     // ..i..
                 })
@@ -3990,7 +3935,7 @@
         Local2 = DerefOf (Local0)
         If ((Local2 != 0x69))
         {
-            ERR (TS, Z111, 0x0FED, 0x00, 0x00, Local2, 0x69)
+            ERR (__METHOD__, Z111, 0x0FED, 0x00, 0x00, Local2, 0x69)
         }
 
         M001 (Local1)
@@ -3999,7 +3944,7 @@
                          0x01, 0x02, 0x69, 0x04, 0x05                     // ..i..
                     }))
         {
-            ERR (TS, Z111, 0x0FF1, 0x00, 0x00, B000, Buffer (0x05)
+            ERR (__METHOD__, Z111, 0x0FF1, 0x00, 0x00, B000, Buffer (0x05)
                 {
                      0x01, 0x02, 0x69, 0x04, 0x05                     // ..i..
                 })
@@ -4008,7 +3953,7 @@
         Local2 = DerefOf (Local1)
         If ((Local2 != 0x69))
         {
-            ERR (TS, Z111, 0x0FF5, 0x00, 0x00, Local2, 0x69)
+            ERR (__METHOD__, Z111, 0x0FF5, 0x00, 0x00, Local2, 0x69)
         }
 
         /* m002 */
@@ -4019,7 +3964,7 @@
                          0x01, 0x02, 0x69, 0x04, 0x05                     // ..i..
                     }))
         {
-            ERR (TS, Z111, 0x0FFC, 0x00, 0x00, B000, Buffer (0x05)
+            ERR (__METHOD__, Z111, 0x0FFC, 0x00, 0x00, B000, Buffer (0x05)
                 {
                      0x01, 0x02, 0x69, 0x04, 0x05                     // ..i..
                 })
@@ -4032,7 +3977,7 @@
                          0x01, 0x02, 0x69, 0x04, 0x05                     // ..i..
                     }))
         {
-            ERR (TS, Z111, 0x1002, 0x00, 0x00, B000, Buffer (0x05)
+            ERR (__METHOD__, Z111, 0x1002, 0x00, 0x00, B000, Buffer (0x05)
                 {
                      0x01, 0x02, 0x69, 0x04, 0x05                     // ..i..
                 })
@@ -4041,7 +3986,7 @@
         Local2 = DerefOf (Local0)
         If ((Local2 != 0x69))
         {
-            ERR (TS, Z111, 0x1006, 0x00, 0x00, Local2, 0x69)
+            ERR (__METHOD__, Z111, 0x1006, 0x00, 0x00, Local2, 0x69)
         }
 
         Local1 = Local0 = B000 [0x02]
@@ -4051,7 +3996,7 @@
                          0x01, 0x02, 0x69, 0x04, 0x05                     // ..i..
                     }))
         {
-            ERR (TS, Z111, 0x100C, 0x00, 0x00, B000, Buffer (0x05)
+            ERR (__METHOD__, Z111, 0x100C, 0x00, 0x00, B000, Buffer (0x05)
                 {
                      0x01, 0x02, 0x69, 0x04, 0x05                     // ..i..
                 })
@@ -4060,7 +4005,7 @@
         Local2 = DerefOf (Local0)
         If ((Local2 != 0x69))
         {
-            ERR (TS, Z111, 0x1010, 0x00, 0x00, Local2, 0x69)
+            ERR (__METHOD__, Z111, 0x1010, 0x00, 0x00, Local2, 0x69)
         }
 
         M002 (Local1)
@@ -4069,7 +4014,7 @@
                          0x01, 0x02, 0x69, 0x04, 0x05                     // ..i..
                     }))
         {
-            ERR (TS, Z111, 0x1014, 0x00, 0x00, B000, Buffer (0x05)
+            ERR (__METHOD__, Z111, 0x1014, 0x00, 0x00, B000, Buffer (0x05)
                 {
                      0x01, 0x02, 0x69, 0x04, 0x05                     // ..i..
                 })
@@ -4078,13 +4023,12 @@
         Local2 = DerefOf (Local1)
         If ((Local2 != 0x69))
         {
-            ERR (TS, Z111, 0x1018, 0x00, 0x00, Local2, 0x69)
+            ERR (__METHOD__, Z111, 0x1018, 0x00, 0x00, Local2, 0x69)
         }
     }
 
     Method (M34B, 0, Serialized)
     {
-        Name (TS, "m34b")
         Name (B000, Buffer (0x05)
         {
              0x01, 0x02, 0x69, 0x04, 0x05                     // ..i..
@@ -4098,7 +4042,7 @@
             Local2 = DerefOf (Arg0)
             If ((Local2 != 0x69))
             {
-                ERR (TS, Z111, 0x1027, 0x00, 0x00, Local2, 0x69)
+                ERR (__METHOD__, Z111, 0x1027, 0x00, 0x00, Local2, 0x69)
             }
         }
 
@@ -4110,7 +4054,7 @@
             Local2 = DerefOf (Local1)
             If ((Local2 != 0x69))
             {
-                ERR (TS, Z111, 0x1032, 0x00, 0x00, Local2, 0x69)
+                ERR (__METHOD__, Z111, 0x1032, 0x00, 0x00, Local2, 0x69)
             }
         }
 
@@ -4128,7 +4072,7 @@
                          0x01, 0x02, 0x69, 0x04, 0x05                     // ..i..
                     }))
         {
-            ERR (TS, Z111, 0x1040, 0x00, 0x00, B000, Buffer (0x05)
+            ERR (__METHOD__, Z111, 0x1040, 0x00, 0x00, B000, Buffer (0x05)
                 {
                      0x01, 0x02, 0x69, 0x04, 0x05                     // ..i..
                 })
@@ -4141,7 +4085,7 @@
                          0x01, 0x02, 0x69, 0x04, 0x05                     // ..i..
                     }))
         {
-            ERR (TS, Z111, 0x1046, 0x00, 0x00, B000, Buffer (0x05)
+            ERR (__METHOD__, Z111, 0x1046, 0x00, 0x00, B000, Buffer (0x05)
                 {
                      0x01, 0x02, 0x69, 0x04, 0x05                     // ..i..
                 })
@@ -4150,7 +4094,7 @@
         Local2 = DerefOf (Local0)
         If ((Local2 != 0x69))
         {
-            ERR (TS, Z111, 0x104A, 0x00, 0x00, Local2, 0x69)
+            ERR (__METHOD__, Z111, 0x104A, 0x00, 0x00, Local2, 0x69)
         }
 
         Local1 = Local0 = B000 [0x02]
@@ -4160,7 +4104,7 @@
                          0x01, 0x02, 0x69, 0x04, 0x05                     // ..i..
                     }))
         {
-            ERR (TS, Z111, 0x1050, 0x00, 0x00, B000, Buffer (0x05)
+            ERR (__METHOD__, Z111, 0x1050, 0x00, 0x00, B000, Buffer (0x05)
                 {
                      0x01, 0x02, 0x69, 0x04, 0x05                     // ..i..
                 })
@@ -4169,7 +4113,7 @@
         Local2 = DerefOf (Local0)
         If ((Local2 != 0x69))
         {
-            ERR (TS, Z111, 0x1054, 0x00, 0x00, Local2, 0x69)
+            ERR (__METHOD__, Z111, 0x1054, 0x00, 0x00, Local2, 0x69)
         }
 
         M000 (Local1)
@@ -4178,7 +4122,7 @@
                          0x01, 0x02, 0x69, 0x04, 0x05                     // ..i..
                     }))
         {
-            ERR (TS, Z111, 0x1058, 0x00, 0x00, B000, Buffer (0x05)
+            ERR (__METHOD__, Z111, 0x1058, 0x00, 0x00, B000, Buffer (0x05)
                 {
                      0x01, 0x02, 0x69, 0x04, 0x05                     // ..i..
                 })
@@ -4187,7 +4131,7 @@
         Local2 = DerefOf (Local1)
         If ((Local2 != 0x69))
         {
-            ERR (TS, Z111, 0x105C, 0x00, 0x00, Local2, 0x69)
+            ERR (__METHOD__, Z111, 0x105C, 0x00, 0x00, Local2, 0x69)
         }
 
         /* m001 */
@@ -4198,7 +4142,7 @@
                          0x01, 0x02, 0x69, 0x04, 0x05                     // ..i..
                     }))
         {
-            ERR (TS, Z111, 0x1063, 0x00, 0x00, B000, Buffer (0x05)
+            ERR (__METHOD__, Z111, 0x1063, 0x00, 0x00, B000, Buffer (0x05)
                 {
                      0x01, 0x02, 0x69, 0x04, 0x05                     // ..i..
                 })
@@ -4211,7 +4155,7 @@
                          0x01, 0x02, 0x69, 0x04, 0x05                     // ..i..
                     }))
         {
-            ERR (TS, Z111, 0x1069, 0x00, 0x00, B000, Buffer (0x05)
+            ERR (__METHOD__, Z111, 0x1069, 0x00, 0x00, B000, Buffer (0x05)
                 {
                      0x01, 0x02, 0x69, 0x04, 0x05                     // ..i..
                 })
@@ -4222,7 +4166,7 @@
             Local2 = DerefOf (Local0)
             If ((Local2 != 0x69))
             {
-                ERR (TS, Z111, 0x106E, 0x00, 0x00, Local2, 0x69)
+                ERR (__METHOD__, Z111, 0x106E, 0x00, 0x00, Local2, 0x69)
             }
         }
 
@@ -4233,7 +4177,7 @@
                          0x01, 0x02, 0x69, 0x04, 0x05                     // ..i..
                     }))
         {
-            ERR (TS, Z111, 0x1075, 0x00, 0x00, B000, Buffer (0x05)
+            ERR (__METHOD__, Z111, 0x1075, 0x00, 0x00, B000, Buffer (0x05)
                 {
                      0x01, 0x02, 0x69, 0x04, 0x05                     // ..i..
                 })
@@ -4244,7 +4188,7 @@
             Local2 = DerefOf (Local0)
             If ((Local2 != 0x69))
             {
-                ERR (TS, Z111, 0x107A, 0x00, 0x00, Local2, 0x69)
+                ERR (__METHOD__, Z111, 0x107A, 0x00, 0x00, Local2, 0x69)
             }
         }
 
@@ -4254,7 +4198,7 @@
                          0x01, 0x02, 0x69, 0x04, 0x05                     // ..i..
                     }))
         {
-            ERR (TS, Z111, 0x107F, 0x00, 0x00, B000, Buffer (0x05)
+            ERR (__METHOD__, Z111, 0x107F, 0x00, 0x00, B000, Buffer (0x05)
                 {
                      0x01, 0x02, 0x69, 0x04, 0x05                     // ..i..
                 })
@@ -4265,7 +4209,7 @@
             Local2 = DerefOf (Local1)
             If ((Local2 != 0x69))
             {
-                ERR (TS, Z111, 0x1084, 0x00, 0x00, Local2, 0x69)
+                ERR (__METHOD__, Z111, 0x1084, 0x00, 0x00, Local2, 0x69)
             }
         }
 
@@ -4277,7 +4221,7 @@
                          0x01, 0x02, 0x11, 0x04, 0x05                     // .....
                     }))
         {
-            ERR (TS, Z111, 0x108C, 0x00, 0x00, B000, Buffer (0x05)
+            ERR (__METHOD__, Z111, 0x108C, 0x00, 0x00, B000, Buffer (0x05)
                 {
                      0x01, 0x02, 0x11, 0x04, 0x05                     // .....
                 })
@@ -4290,7 +4234,7 @@
                          0x01, 0x02, 0x11, 0x04, 0x05                     // .....
                     }))
         {
-            ERR (TS, Z111, 0x1092, 0x00, 0x00, B000, Buffer (0x05)
+            ERR (__METHOD__, Z111, 0x1092, 0x00, 0x00, B000, Buffer (0x05)
                 {
                      0x01, 0x02, 0x11, 0x04, 0x05                     // .....
                 })
@@ -4301,7 +4245,7 @@
             Local2 = DerefOf (Local0)
             If ((Local2 != 0x11))
             {
-                ERR (TS, Z111, 0x1097, 0x00, 0x00, Local2, 0x11)
+                ERR (__METHOD__, Z111, 0x1097, 0x00, 0x00, Local2, 0x11)
             }
         }
 
@@ -4312,7 +4256,7 @@
                          0x01, 0x02, 0x11, 0x04, 0x05                     // .....
                     }))
         {
-            ERR (TS, Z111, 0x109E, 0x00, 0x00, B000, Buffer (0x05)
+            ERR (__METHOD__, Z111, 0x109E, 0x00, 0x00, B000, Buffer (0x05)
                 {
                      0x01, 0x02, 0x11, 0x04, 0x05                     // .....
                 })
@@ -4323,7 +4267,7 @@
             Local2 = DerefOf (Local0)
             If ((Local2 != 0x11))
             {
-                ERR (TS, Z111, 0x10A3, 0x00, 0x00, Local2, 0x11)
+                ERR (__METHOD__, Z111, 0x10A3, 0x00, 0x00, Local2, 0x11)
             }
         }
 
@@ -4333,7 +4277,7 @@
                          0x01, 0x02, 0x11, 0x04, 0x05                     // .....
                     }))
         {
-            ERR (TS, Z111, 0x10A8, 0x00, 0x00, B000, Buffer (0x05)
+            ERR (__METHOD__, Z111, 0x10A8, 0x00, 0x00, B000, Buffer (0x05)
                 {
                      0x01, 0x02, 0x11, 0x04, 0x05                     // .....
                 })
@@ -4344,7 +4288,7 @@
             Local2 = DerefOf (Local1)
             If ((Local2 != 0x11))
             {
-                ERR (TS, Z111, 0x10AD, 0x00, 0x00, Local2, 0x11)
+                ERR (__METHOD__, Z111, 0x10AD, 0x00, 0x00, Local2, 0x11)
             }
         }
     }
@@ -4353,7 +4297,6 @@
 
     Method (M34C, 0, Serialized)
     {
-        Name (TS, "m34c")
         Name (S000, "qwer0000")
         Name (B000, Buffer (0x04)
         {
@@ -4406,20 +4349,20 @@
             Local3 = ObjectType (Local2)
             If ((Local3 != Arg1))
             {
-                ERR (TS, Z111, 0x10CE, 0x00, 0x00, Local3, Arg1)
+                ERR (__METHOD__, Z111, 0x10CE, 0x00, 0x00, Local3, Arg1)
             }
 
             Local1 = Local0 = Local2 [0x01]
             Local0 = 0x90
             If ((Local0 != 0x90))
             {
-                ERR (TS, Z111, 0x10D5, 0x00, 0x00, Local0, 0x90)
+                ERR (__METHOD__, Z111, 0x10D5, 0x00, 0x00, Local0, 0x90)
             }
 
             Local1 = 0x91
             If ((Local1 != 0x91))
             {
-                ERR (TS, Z111, 0x10D9, 0x00, 0x00, Local1, 0x91)
+                ERR (__METHOD__, Z111, 0x10D9, 0x00, 0x00, Local1, 0x91)
             }
         }
 
@@ -4432,13 +4375,13 @@
             CopyObject (0x94, Local0)
             If ((Local0 != 0x94))
             {
-                ERR (TS, Z111, 0x10E6, 0x00, 0x00, Local0, 0x94)
+                ERR (__METHOD__, Z111, 0x10E6, 0x00, 0x00, Local0, 0x94)
             }
 
             CopyObject (0x95, Local1)
             If ((Local1 != 0x95))
             {
-                ERR (TS, Z111, 0x10EA, 0x00, 0x00, Local1, 0x95)
+                ERR (__METHOD__, Z111, 0x10EA, 0x00, 0x00, Local1, 0x95)
             }
         }
 
@@ -4450,15 +4393,15 @@
             Local2 [0x01] = 0x2B
             If ((Arg1 == C00A))
             {
-                M385 (TS, Local2, 0x00, 0x00)
+                M385 (__METHOD__, Local2, 0x00, 0x00)
             }
             ElseIf ((Arg1 == C00B))
             {
-                M386 (TS, Local2, 0x00, 0x01)
+                M386 (__METHOD__, Local2, 0x00, 0x01)
             }
             ElseIf ((Arg1 == C00C))
             {
-                M387 (TS, Local2, 0x00, 0x02)
+                M387 (__METHOD__, Local2, 0x00, 0x02)
             }
         }
 
@@ -4471,21 +4414,21 @@
             Local2 [0x01] = 0x2B
             If ((Arg1 == C00A))
             {
-                M385 (TS, Local2, 0x00, 0x03)
+                M385 (__METHOD__, Local2, 0x00, 0x03)
             }
             ElseIf ((Arg1 == C00B))
             {
-                M386 (TS, Local2, 0x00, 0x04)
+                M386 (__METHOD__, Local2, 0x00, 0x04)
             }
             ElseIf ((Arg1 == C00C))
             {
-                M387 (TS, Local2, 0x00, 0x05)
+                M387 (__METHOD__, Local2, 0x00, 0x05)
             }
 
             Local2 = DerefOf (Local0)
             If ((Local2 != 0x2B))
             {
-                ERR (TS, Z111, 0x1110, 0x00, 0x00, Local2, 0x2B)
+                ERR (__METHOD__, Z111, 0x1110, 0x00, 0x00, Local2, 0x2B)
             }
         }
 
@@ -4496,15 +4439,15 @@
             M000 (RefOf (Arg0), Arg1)
             If ((Arg1 == C00A))
             {
-                M381 (TS, Arg0, 0x00, 0x06)
+                M381 (__METHOD__, Arg0, 0x00, 0x06)
             }
             ElseIf ((Arg1 == C00B))
             {
-                M382 (TS, Arg0, 0x00, 0x07)
+                M382 (__METHOD__, Arg0, 0x00, 0x07)
             }
             ElseIf ((Arg1 == C00C))
             {
-                M383 (TS, Arg0, 0x00, 0x08)
+                M383 (__METHOD__, Arg0, 0x00, 0x08)
             }
         }
 
@@ -4515,15 +4458,15 @@
             M001 (RefOf (Arg0))
             If ((Arg1 == C00A))
             {
-                M381 (TS, Arg0, 0x00, 0x09)
+                M381 (__METHOD__, Arg0, 0x00, 0x09)
             }
             ElseIf ((Arg1 == C00B))
             {
-                M382 (TS, Arg0, 0x00, 0x0A)
+                M382 (__METHOD__, Arg0, 0x00, 0x0A)
             }
             ElseIf ((Arg1 == C00C))
             {
-                M383 (TS, Arg0, 0x00, 0x0B)
+                M383 (__METHOD__, Arg0, 0x00, 0x0B)
             }
         }
 
@@ -4533,15 +4476,15 @@
             M002 (Local0, Arg1)
             If ((Arg1 == C00A))
             {
-                M381 (TS, Arg0, 0x00, 0x0C)
+                M381 (__METHOD__, Arg0, 0x00, 0x0C)
             }
             ElseIf ((Arg1 == C00B))
             {
-                M382 (TS, Arg0, 0x00, 0x0D)
+                M382 (__METHOD__, Arg0, 0x00, 0x0D)
             }
             ElseIf ((Arg1 == C00C))
             {
-                M383 (TS, Arg0, 0x00, 0x0E)
+                M383 (__METHOD__, Arg0, 0x00, 0x0E)
             }
         }
 
@@ -4550,15 +4493,15 @@
             M002 (RefOf (Arg0), Arg1)
             If ((Arg1 == C00A))
             {
-                M381 (TS, Arg0, 0x00, 0x0F)
+                M381 (__METHOD__, Arg0, 0x00, 0x0F)
             }
             ElseIf ((Arg1 == C00B))
             {
-                M382 (TS, Arg0, 0x00, 0x10)
+                M382 (__METHOD__, Arg0, 0x00, 0x10)
             }
             ElseIf ((Arg1 == C00C))
             {
-                M383 (TS, Arg0, 0x00, 0x11)
+                M383 (__METHOD__, Arg0, 0x00, 0x11)
             }
         }
 
@@ -4568,15 +4511,15 @@
             M003 (Local0, Arg1)
             If ((Arg1 == C00A))
             {
-                M381 (TS, Arg0, 0x00, 0x12)
+                M381 (__METHOD__, Arg0, 0x00, 0x12)
             }
             ElseIf ((Arg1 == C00B))
             {
-                M382 (TS, Arg0, 0x00, 0x13)
+                M382 (__METHOD__, Arg0, 0x00, 0x13)
             }
             ElseIf ((Arg1 == C00C))
             {
-                M383 (TS, Arg0, 0x00, 0x14)
+                M383 (__METHOD__, Arg0, 0x00, 0x14)
             }
         }
 
@@ -4585,61 +4528,60 @@
             M003 (RefOf (Arg0), Arg1)
             If ((Arg1 == C00A))
             {
-                M381 (TS, Arg0, 0x00, 0x15)
+                M381 (__METHOD__, Arg0, 0x00, 0x15)
             }
             ElseIf ((Arg1 == C00B))
             {
-                M382 (TS, Arg0, 0x00, 0x16)
+                M382 (__METHOD__, Arg0, 0x00, 0x16)
             }
             ElseIf ((Arg1 == C00C))
             {
-                M383 (TS, Arg0, 0x00, 0x17)
+                M383 (__METHOD__, Arg0, 0x00, 0x17)
             }
         }
 
-        BEG0 (Z111, TS)
+        BEG0 (Z111, __METHOD__)
         M010 (S000, C00A)
         M010 (B000, C00B)
         M010 (P000, C00C)
-        M381 (TS, S000, 0x00, 0x18)
-        M382 (TS, B000, 0x00, 0x19)
-        M383 (TS, P000, 0x00, 0x1A)
+        M381 (__METHOD__, S000, 0x00, 0x18)
+        M382 (__METHOD__, B000, 0x00, 0x19)
+        M383 (__METHOD__, P000, 0x00, 0x1A)
         M011 (S000, C00A)
         M011 (B000, C00B)
         M011 (P000, C00C)
-        M381 (TS, S000, 0x00, 0x1B)
-        M382 (TS, B000, 0x00, 0x1C)
-        M383 (TS, P000, 0x00, 0x1D)
+        M381 (__METHOD__, S000, 0x00, 0x1B)
+        M382 (__METHOD__, B000, 0x00, 0x1C)
+        M383 (__METHOD__, P000, 0x00, 0x1D)
         M012 (S000, C00A)
         M012 (B000, C00B)
         M012 (P000, C00C)
-        M381 (TS, S000, 0x00, 0x1E)
-        M382 (TS, B000, 0x00, 0x1F)
-        M383 (TS, P000, 0x00, 0x20)
+        M381 (__METHOD__, S000, 0x00, 0x1E)
+        M382 (__METHOD__, B000, 0x00, 0x1F)
+        M383 (__METHOD__, P000, 0x00, 0x20)
         M022 (S010, C00A)
         M022 (B010, C00B)
         M022 (P010, C00C)
-        M381 (TS, S010, 0x00, 0x21)
-        M382 (TS, B010, 0x00, 0x22)
-        M383 (TS, P010, 0x00, 0x23)
+        M381 (__METHOD__, S010, 0x00, 0x21)
+        M382 (__METHOD__, B010, 0x00, 0x22)
+        M383 (__METHOD__, P010, 0x00, 0x23)
         M013 (S020, C00A)
         M013 (B020, C00B)
         M013 (P020, C00C)
-        M381 (TS, S020, 0x00, 0x24)
-        M382 (TS, B020, 0x00, 0x25)
-        M383 (TS, P020, 0x00, 0x26)
+        M381 (__METHOD__, S020, 0x00, 0x24)
+        M382 (__METHOD__, B020, 0x00, 0x25)
+        M383 (__METHOD__, P020, 0x00, 0x26)
         M023 (S030, C00A)
         M023 (B030, C00B)
         M023 (P030, C00C)
-        M381 (TS, S030, 0x00, 0x27)
-        M382 (TS, B030, 0x00, 0x28)
-        M383 (TS, P030, 0x00, 0x29)
+        M381 (__METHOD__, S030, 0x00, 0x27)
+        M382 (__METHOD__, B030, 0x00, 0x28)
+        M383 (__METHOD__, P030, 0x00, 0x29)
         END0 ()
     }
 
     Method (M34D, 1, Serialized)
     {
-        Name (TS, "m34d")
         Name (OP00, 0x00)
         Name (OP01, 0x01)
         OP00 = Arg0
@@ -4762,7 +4704,7 @@
                         Local0 = ObjectType (Arg0)
                         If ((Local0 != Arg2))
                         {
-                            ERR (TS, Z111, 0x11DE, 0x00, 0x00, Local0, Arg2)
+                            ERR (__METHOD__, Z111, 0x11DE, 0x00, 0x00, Local0, Arg2)
                         }
 
                         If (OP00)
@@ -4840,7 +4782,7 @@
             M391 (Local0, Arg1, 0x00, 0x03)
         }
 
-        BEG0 (Z111, TS)
+        BEG0 (Z111, __METHOD__)
         /* Write Integer */
 
         Local0 = RefOf (I000)
@@ -4969,7 +4911,6 @@
 
     Method (M34E, 1, Serialized)
     {
-        Name (TS, "m34e")
         Name (OP00, 0x00)
         OP00 = Arg0
         Name (S000, "qwer0000")
@@ -4994,7 +4935,7 @@
                         Local0 = ObjectType (Arg0)
                         If ((Local0 != Arg2))
                         {
-                            ERR (TS, Z111, 0x12B0, 0x00, 0x00, Local0, Arg2)
+                            ERR (__METHOD__, Z111, 0x12B0, 0x00, 0x00, Local0, Arg2)
                         }
 
                         If (OP00)
@@ -5024,68 +4965,67 @@
             M390 (Local0, Arg1, 0x00, 0x03)
         }
 
-        BEG0 (Z111, TS)
+        BEG0 (Z111, __METHOD__)
         /* String */
 
         Store (S000 [0x01], Local0)
         M000 (Local0, C009, C016)
         M390 (S000, C00A, 0x00, 0x04)
         Local2 = DerefOf (Local0)
-        M380 (TS, Local2, 0x00, 0x05)
+        M380 (__METHOD__, Local2, 0x00, 0x05)
         /* Buffer */
 
         Store (B000 [0x01], Local0)
         M000 (Local0, C009, C016)
         M390 (B000, C00B, 0x00, 0x06)
         Local2 = DerefOf (Local0)
-        M380 (TS, Local2, 0x00, 0x07)
+        M380 (__METHOD__, Local2, 0x00, 0x07)
         /* Package */
 
         Store (P000 [0x01], Local0)
         M000 (Local0, C009, C009)
         M390 (P000, C00C, 0x00, 0x08)
         Local2 = DerefOf (Local0)
-        M380 (TS, Local2, 0x00, 0x09)
+        M380 (__METHOD__, Local2, 0x00, 0x09)
         END0 ()
     }
 
     Method (M34F, 0, Serialized)
     {
-        Name (TS, "m34f")
-        BEG0 (Z111, TS)
+        BEG0 (Z111, __METHOD__)
         RefOf (I900) = 0x77
-        M380 (TS, I900, 0x00, 0x00)
+        M380 (__METHOD__, I900, 0x00, 0x00)
         RefOf (S900) = 0x77
-        M4C0 (TS, S900, "0000000000000077", "00000077")
+        M4C0 (__METHOD__, S900, "0000000000000077", "00000077")
         RefOf (B900) = 0x77
-        M1AA (TS, B900, C00B, Buffer (0x05)
+        M1AA (__METHOD__, B900, C00B, Buffer (0x05)
             {
                  0x77, 0x00, 0x00, 0x00, 0x00                     // w....
             }, 0x01)
         RefOf (P953) = 0x77
-        M380 (TS, P953, 0x00, 0x02)
+        M380 (__METHOD__, P953, 0x00, 0x02)
         RefOf (E900) = 0x77
-        M380 (TS, E900, 0x00, 0x03)
+        M380 (__METHOD__, E900, 0x00, 0x03)
         RefOf (MX90) = 0x77
-        M380 (TS, MX90, 0x00, 0x04)
+        M380 (__METHOD__, MX90, 0x00, 0x04)
         RefOf (D900) = 0x77
-        M380 (TS, D900, 0x00, 0x05)
+        M380 (__METHOD__, D900, 0x00, 0x05)
         If (Y508)
         {
             RefOf (TZ90) = 0x77
-            M380 (TS, TZ90, 0x00, 0x06)
+            M380 (__METHOD__, TZ90, 0x00, 0x06)
         }
 
         RefOf (PR90) = 0x77
-        M380 (TS, PR90, 0x00, 0x07)
+        M380 (__METHOD__, PR90, 0x00, 0x07)
         If (Y510)
         {
             RefOf (R900) = 0x77
-            M380 (TS, R900, 0x00, 0x08)
+            M380 (__METHOD__, R900, 0x00, 0x08)
         }
 
         RefOf (PW90) = 0x77
-        M380 (TS, PW90, 0x00, 0x09)
+        M380 (__METHOD__, PW90, 0x00, 0x09)
         M1AC ()
         M1A6 ()
         END0 ()
@@ -5095,7 +5035,6 @@
 
     Method (M350, 0, Serialized)
     {
-        Name (TS, "m350")
         /* CopyObject(0x77, RefOf(i900)) */
     }
 
@@ -5103,7 +5042,6 @@
     /* arg0 - Package */
     Method (M351, 1, Serialized)
     {
-        Name (TS, "m351")
         Name (LPN0, 0x11)
         Name (LPC0, 0x00)
         Local6 = 0x10
@@ -5126,14 +5064,14 @@
             Local1 = ObjectType (Local0)
             If ((Local1 != C009))
             {
-                ERR (TS, Z111, 0x1334, 0x00, 0x00, Local1, C009)
+                ERR (__METHOD__, Z111, 0x1334, 0x00, 0x00, Local1, C009)
             }
             Else
             {
                 Local1 = DerefOf (Local0)
                 If ((Local1 != Local6))
                 {
-                    ERR (TS, Z111, 0x1338, 0x00, 0x00, Local1, Local6)
+                    ERR (__METHOD__, Z111, 0x1338, 0x00, 0x00, Local1, Local6)
                 }
             }
 

@@ -404,25 +404,24 @@
 
     Method (DRC0, 0, Serialized)
     {
-        Name (TS, "DRC0")
         /* Global DataTableRegions */
 
         SRMT ("m7f0")
-        M7F0 (TS)
+        M7F0 (__METHOD__)
         /* Dynamic DataTableRegions */
 
         SRMT ("m7f1")
-        M7F1 (TS)
+        M7F1 (__METHOD__)
         /* DataTableRegion Lengths */
 
         SRMT ("m7f2")
-        M7F2 (TS)
+        M7F2 (__METHOD__)
         /* Non-constant DataTableRegion *String arguments */
 
         SRMT ("m7f3")
         If (Y223)
         {
-            M7F3 (TS)
+            M7F3 (__METHOD__)
         }
         Else
         {
@@ -434,7 +433,7 @@
         SRMT ("m7f4")
         If (Y223)
         {
-            M7F4 (TS)
+            M7F4 (__METHOD__)
         }
         Else
         {

@@ -2150,10 +2150,9 @@
     })
     Method (RT1B, 0, Serialized)
     {
-        Name (TS, "RT1b")
         /* Emit test header, set the filename */
 
-        THDR (TS, "Concatenate two resource templates", "concatenaterestemplate.asl")
+        THDR (__METHOD__, "Concatenate two resource templates", "concatenaterestemplate.asl")
         /* Calculate the checksum for the target first */
         /*	m334(p440, 3) */
         /*	m332(ts, 3, "p440", p438, p438, p440) */
@@ -2161,8 +2160,8 @@
         /*	Store(0, Local0) */
         /*	Store(Buffer(Local0){}, Local1) */
         /*	Store(Local1, Index(p441, 1)) */
-        M332 (TS, 0x01, "p443", P441, P442, P443)
-        M332 (TS, 0x01, "p444", P442, P441, P444)
-        CH03 (TS, Z007, 0x0123, 0x03EC, 0x00)
+        M332 (__METHOD__, 0x01, "p443", P441, P442, P443)
+        M332 (__METHOD__, 0x01, "p444", P442, P441, P444)
+        CH03 (__METHOD__, Z007, 0x0123, 0x03EC, 0x00)
     }
 

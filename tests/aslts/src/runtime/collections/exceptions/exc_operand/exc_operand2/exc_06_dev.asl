@@ -41,7 +41,6 @@
     /* */
     Method (M4B6, 0, Serialized)
     {
-        Name (TS, "m4b6")
         Device (DEV1)
         {
         }
@@ -79,11 +78,11 @@
             /* CondRefOf */
 
             CondRefOf (Local0, Local1)
-            CH03 (TS, Z098, 0x01, 0x56, 0x00)
+            CH03 (__METHOD__, Z098, 0x01, 0x56, 0x00)
             /* CopyObject */
 
             CopyObject (Local0, Local1)
-            CH03 (TS, Z098, 0x02, 0x5B, 0x00)
+            CH03 (__METHOD__, Z098, 0x02, 0x5B, 0x00)
             /* Decrement */
 
             Local0--
@@ -119,11 +118,11 @@
             /* ObjectType */
 
             Local1 = ObjectType (Local0)
-            CH03 (TS, Z098, 0x03, 0x88, 0x00)
+            CH03 (__METHOD__, Z098, 0x03, 0x88, 0x00)
             /* RefOf */
 
             Local1 = RefOf (Local0)
-            CH03 (TS, Z098, 0x04, 0x8D, 0x00)
+            CH03 (__METHOD__, Z098, 0x04, 0x8D, 0x00)
             /* Release */
 
             Release (Local0)
@@ -384,7 +383,7 @@
             }
 
             Local1 = DerefOf (Arg1)
-            CH03 (TS, Z098, 0x05, 0x01C7, 0x00)
+            CH03 (__METHOD__, Z098, 0x05, 0x01C7, 0x00)
             /* CondRefOf */
 
             CondRefOf (DerefOf (Arg1), Local1)
@@ -428,7 +427,7 @@
             /* ObjectType */
 
             Local1 = ObjectType (DerefOf (Arg1))
-            CH03 (TS, Z098, 0x06, 0x01FE, 0x00)
+            CH03 (__METHOD__, Z098, 0x06, 0x01FE, 0x00)
             /* RefOf */
 
             Local1 = RefOf (DerefOf (Arg1))
@@ -676,7 +675,7 @@
             /* CopyObject */
 
             CopyObject (M000 (), Local1)
-            CH03 (TS, Z098, 0x07, 0x0334, 0x00)
+            CH03 (__METHOD__, Z098, 0x07, 0x0334, 0x00)
             /* Decrement */
 
             M000 ()--
@@ -712,7 +711,7 @@
             /* **** ObjectType */
             /* Nov. 2016: Method invocation as arg to ObjectType is now illegal */
             Local0 = ObjectType (M000)
-            CH03 (TS, Z098, 0x08, 0x0362, 0x00)
+            CH03 (__METHOD__, Z098, 0x08, 0x0362, 0x00)
             /* RefOf */
             /* **** Oct. 2016: Method invocation as arg to RefOf is now illegal */
             /*		Store (RefOf(m000()), Local1) */
@@ -994,7 +993,7 @@
                 Local0 = (0x03 * LPC0) /* \M4B6.M005.LPC0 */
                 I000 = 0x00
                 Local1 = DerefOf (M000 (0x01, LPC0))
-                CH03 (TS, Z098, 0x04B2, 0x00, 0x00)
+                CH03 (__METHOD__, Z098, 0x04B2, 0x00, 0x00)
                 CH00 (Arg0, 0x01)
                 Local1 = DerefOf (DerefOf (M000 (0x02, LPC0)))
                 CH06 (Arg0, (0x01 + Local0), 0x2F)
@@ -1010,25 +1009,25 @@
             }
         }
 
-        CH03 (TS, Z098, 0x0B, 0x04C6, 0x00)
+        CH03 (__METHOD__, Z098, 0x0B, 0x04C6, 0x00)
         /* Local Named Object */
         /*	m000(ts) */
         /* Global Named Object */
         /*	m001(ts) */
         /* Local */
-        M002 (Concatenate (TS, "-m002"))
+        M002 (Concatenate (__METHOD__, "-m002"))
         /* Reference to Local Named Object */
 
-        M003 (Concatenate (TS, "-m003-RefLocName"), RefOf (DEV1), 0x01)
+        M003 (Concatenate (__METHOD__, "-m003-RefLocName"), RefOf (DEV1), 0x01)
         Local0 = RefOf (DEV1)
-        M003 (Concatenate (TS, "-m003-RefLocName2"), Local0, 0x01)
+        M003 (Concatenate (__METHOD__, "-m003-RefLocName2"), Local0, 0x01)
         CondRefOf (DEV1, Local0)
-        M003 (Concatenate (TS, "-m003-CondRefLocName"), Local0, 0x01)
-        M003 (Concatenate (TS, "-m003-RefGlobName"), RefOf (DEV0), 0x01)
+        M003 (Concatenate (__METHOD__, "-m003-CondRefLocName"), Local0, 0x01)
+        M003 (Concatenate (__METHOD__, "-m003-RefGlobName"), RefOf (DEV0), 0x01)
         Local0 = RefOf (DEV0)
-        M003 (Concatenate (TS, "-m003-RefGlobName2"), Local0, 0x01)
+        M003 (Concatenate (__METHOD__, "-m003-RefGlobName2"), Local0, 0x01)
         CondRefOf (DEV0, Local0)
-        M003 (Concatenate (TS, "-m003-CondRefGlobName"), Local0, 0x01)
+        M003 (Concatenate (__METHOD__, "-m003-CondRefGlobName"), Local0, 0x01)
         /* Reference to Object as element of Package */
 
         Name (PP00, Package (0x01)
@@ -1037,25 +1036,25 @@
         })
         If (Y113)
         {
-            M003 (Concatenate (TS, "-m003-Index"), PP00 [0x00], 0x00)
+            M003 (Concatenate (__METHOD__, "-m003-Index"), PP00 [0x00], 0x00)
         }
 
         Store (PP00 [0x00], Local1)
-        M003 (Concatenate (TS, "-m003-Index2"), Local1, 0x00)
+        M003 (Concatenate (__METHOD__, "-m003-Index2"), Local1, 0x00)
         If (Y113)
         {
-            M003 (Concatenate (TS, "-m003-Index3"), Local2 = PP00 [0x00], 0x00)
+            M003 (Concatenate (__METHOD__, "-m003-Index3"), Local2 = PP00 [0x00], 0x00)
         }
 
         Local3 = PP00 [0x00]
-        M003 (Concatenate (TS, "-m003-Index4"), Local3, 0x00)
+        M003 (Concatenate (__METHOD__, "-m003-Index4"), Local3, 0x00)
         Local5 = Local4 = PP00 [0x00]
-        M003 (Concatenate (TS, "-m003-Index5"), Local5, 0x00)
+        M003 (Concatenate (__METHOD__, "-m003-Index5"), Local5, 0x00)
         /* Result of Method invocation */
 
-        M004 (Concatenate (TS, "-m004"))
+        M004 (Concatenate (__METHOD__, "-m004"))
         /* Reference to Object as Result of Method invocation */
 
-        M005 (Concatenate (TS, "-m005"))
+        M005 (Concatenate (__METHOD__, "-m005"))
     }
 

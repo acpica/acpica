@@ -415,17 +415,16 @@
 
     Method (MID0, 0, Serialized)
     {
-        Name (TS, "MID0")
         Debug = "TEST: MID0, Extract Portion of Buffer or String"
         /* String */
 
-        M304 (TS, 0x0E, "p362", P362, P363, 0x00)
+        M304 (__METHOD__, 0x0E, "p362", P362, P363, 0x00)
         /* String, Size == 200, Length > 0 */
 
-        M304 (TS, 0x08, "p364", P364, P365, 0x01)
+        M304 (__METHOD__, 0x08, "p364", P364, P365, 0x01)
         /* Buffer */
 
-        M304 (TS, 0x08, "p366", P366, P367, 0x00)
+        M304 (__METHOD__, 0x08, "p366", P366, P367, 0x00)
         /* Prepare Package of Buffer(0){} elements */
 
         Local5 = Package (0x06){}
@@ -439,19 +438,19 @@
 
         /* Buffer, Mid() results in Buffer(0){} */
 
-        M304 (TS, 0x06, "p366", P368, Local5, 0x00)
+        M304 (__METHOD__, 0x06, "p366", P368, Local5, 0x00)
         /* Buffer, Mid(Buffer(0){}) */
 
         Mid (Buffer (Local1){}, 0x00, 0x01, Local7)
         If ((Local7 != Buffer (Local1){}))
         {
-            ERR (TS, Z039, 0x011E, 0x00, 0x00, 0x00, "Buffer(0)")
+            ERR (__METHOD__, Z039, 0x011E, 0x00, 0x00, 0x00, "Buffer(0)")
         }
 
         Mid (Buffer (Local1){}, 0x012C, 0x012C, Local7)
         If ((Local7 != Buffer (Local1){}))
         {
-            ERR (TS, Z039, 0x0122, 0x00, 0x00, 0x00, "Buffer(0)")
+            ERR (__METHOD__, Z039, 0x0122, 0x00, 0x00, 0x00, "Buffer(0)")
         }
     }
 

@@ -42,7 +42,6 @@
     /* */
     Method (M4B1, 1, Serialized)
     {
-        Name (TS, "m4b1")
         Name (I000, 0x76543210)
         Event (E000)
         /* Local Named Object */
@@ -249,7 +248,7 @@
             }
 
             Local1 = DerefOf (Arg1)
-            CH03 (TS, Z093, 0x00, 0xFC, 0x00)
+            CH03 (__METHOD__, Z093, 0x00, 0xFC, 0x00)
             Local1 = DerefOf (DerefOf (Arg1))
             CH06 (Arg0, 0x2F, 0x2F)
             Store (DerefOf (Arg1) [0x00], Local1)
@@ -361,7 +360,7 @@
                 Local0 = (0x03 * LPC0) /* \M4B1.M007.LPC0 */
                 I001 = 0x00
                 Local1 = DerefOf (M000 (0x01, LPC0))
-                CH03 (TS, Z093, 0x016A, 0x00, 0x00)
+                CH03 (__METHOD__, Z093, 0x016A, 0x00, 0x00)
                 CH00 (Arg0, 0x01)
                 Local1 = DerefOf (DerefOf (M000 (0x02, LPC0)))
                 CH06 (Arg0, (0x3C + Local0), 0x2F)
@@ -377,49 +376,49 @@
             }
         }
 
-        CH03 (TS, Z093, 0x03, 0x017E, 0x00)
+        CH03 (__METHOD__, Z093, 0x03, 0x017E, 0x00)
         /* Local Named Object */
 
-        M000 (TS)
+        M000 (__METHOD__)
         /* Global Named Object */
 
-        M001 (TS)
+        M001 (__METHOD__)
         /* Argument */
 
-        M002 (TS, 0x76543210)
+        M002 (__METHOD__, 0x76543210)
         /* Local */
 
-        M003 (TS)
+        M003 (__METHOD__)
         /* An element of Package */
 
-        M004 (TS)
+        M004 (__METHOD__)
         /* Reference to Local Named Object */
 
-        M005 (Concatenate (TS, "-m005-RefLocName"), RefOf (I000))
+        M005 (Concatenate (__METHOD__, "-m005-RefLocName"), RefOf (I000))
         Local0 = RefOf (I000)
-        M005 (Concatenate (TS, "-m005-RefLocName2"), Local0)
+        M005 (Concatenate (__METHOD__, "-m005-RefLocName2"), Local0)
         CondRefOf (I000, Local0)
-        M005 (Concatenate (TS, "-m005-CondRefLocName"), Local0)
-        M005 (Concatenate (TS, "-m005-RefGlobName"), RefOf (I100))
+        M005 (Concatenate (__METHOD__, "-m005-CondRefLocName"), Local0)
+        M005 (Concatenate (__METHOD__, "-m005-RefGlobName"), RefOf (I100))
         Local0 = RefOf (I100)
-        M005 (Concatenate (TS, "-m005-RefGlobName2"), Local0)
+        M005 (Concatenate (__METHOD__, "-m005-RefGlobName2"), Local0)
         CondRefOf (I100, Local0)
-        M005 (Concatenate (TS, "-m005-CondRefGlobName"), Local0)
+        M005 (Concatenate (__METHOD__, "-m005-CondRefGlobName"), Local0)
         /* Reference to Local */
 
         Local0 = 0x89ABCDEF
-        M005 (Concatenate (TS, "-m005-RefLocal"), RefOf (Local0))
+        M005 (Concatenate (__METHOD__, "-m005-RefLocal"), RefOf (Local0))
         Local1 = RefOf (Local0)
-        M005 (Concatenate (TS, "-m005-RefLocal2"), Local1)
+        M005 (Concatenate (__METHOD__, "-m005-RefLocal2"), Local1)
         CondRefOf (Local0, Local1)
-        M005 (Concatenate (TS, "-m005-CondRefLocal"), Local1)
+        M005 (Concatenate (__METHOD__, "-m005-CondRefLocal"), Local1)
         /* Reference to Arg */
 
-        M005 (Concatenate (TS, "-m005-RefArg"), RefOf (Arg0))
+        M005 (Concatenate (__METHOD__, "-m005-RefArg"), RefOf (Arg0))
         Local0 = RefOf (Arg0)
-        M005 (Concatenate (TS, "-m005-RefArg2"), Local0)
+        M005 (Concatenate (__METHOD__, "-m005-RefArg2"), Local0)
         CondRefOf (Arg0, Local0)
-        M005 (Concatenate (TS, "-m005-CondRefArg"), Local0)
+        M005 (Concatenate (__METHOD__, "-m005-CondRefArg"), Local0)
         /* Index to Package */
 
         Name (P000, Package (0x01)
@@ -428,28 +427,28 @@
         })
         If (Y113)
         {
-            M005 (Concatenate (TS, "-m005-Index"), P000 [0x00])
+            M005 (Concatenate (__METHOD__, "-m005-Index"), P000 [0x00])
         }
 
         Store (P000 [0x00], Local0)
-        M005 (Concatenate (TS, "-m005-Index2"), Local0)
+        M005 (Concatenate (__METHOD__, "-m005-Index2"), Local0)
         If (Y113)
         {
-            M005 (Concatenate (TS, "-m005-Index3"), Local0 = P000 [0x00])
+            M005 (Concatenate (__METHOD__, "-m005-Index3"), Local0 = P000 [0x00])
         }
 
         Local0 = P000 [0x00]
-        M005 (Concatenate (TS, "-m005-Index4"), Local0)
+        M005 (Concatenate (__METHOD__, "-m005-Index4"), Local0)
         Local1 = Local0 = P000 [0x00]
-        M005 (Concatenate (TS, "-m005-Index5"), Local1)
+        M005 (Concatenate (__METHOD__, "-m005-Index5"), Local1)
         /* Result of Method invocation */
 
-        M006 (TS)
+        M006 (__METHOD__)
         /* Reference to Object as Result of Method invocation */
 
         If (Y500)
         {
-            M007 (TS)
+            M007 (__METHOD__)
         }
     }
 

@@ -242,25 +242,24 @@
 
     Method (TOD0, 0, Serialized)
     {
-        Name (TS, "TOD0")
         Debug = "TEST: TOD0, Convert Data to Decimal String"
         /* From integer */
 
         If ((F64 == 0x01))
         {
-            M302 (TS, 0x0F, "p338", P338, P339, 0x03)
-            M302 (TS, 0x0B, "p340", P340, P341, 0x03)
+            M302 (__METHOD__, 0x0F, "p338", P338, P339, 0x03)
+            M302 (__METHOD__, 0x0B, "p340", P340, P341, 0x03)
         }
         Else
         {
-            M302 (TS, 0x0F, "p338", P338, P339, 0x03)
+            M302 (__METHOD__, 0x0F, "p338", P338, P339, 0x03)
         }
 
         /* From buffer */
 
-        M302 (TS, 0x0C, "p342", P342, P343, 0x03)
+        M302 (__METHOD__, 0x0C, "p342", P342, P343, 0x03)
         /* From string */
 
-        M302 (TS, 0x06, "p344", P344, P344, 0x03)
+        M302 (__METHOD__, 0x06, "p344", P344, P344, 0x03)
     }
 

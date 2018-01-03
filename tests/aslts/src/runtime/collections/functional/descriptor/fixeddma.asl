@@ -116,21 +116,20 @@
     })
     Method (RT20, 0, Serialized)
     {
-        Name (TS, "RT20")
         /* Emit test header, set the filename */
 
-        THDR (TS, "FixedDMA Resource Descriptor Macro", "fixeddma.asl")
+        THDR (__METHOD__, "FixedDMA Resource Descriptor Macro", "fixeddma.asl")
         /* The main test packages must have the same number of entries */
 
         If ((SizeOf (P450) != SizeOf (P451)))
         {
-            ERR (TS, 0xB1, 0x00, 0x00, 0x00, 0x00, "Incorrect package length")
+            ERR (__METHOD__, 0xB1, 0x00, 0x00, 0x00, 0x00, "Incorrect package length")
             Return (Zero)
         }
 
         /* Main test case for packages above */
 
-        M330 (TS, SizeOf (P450), "p450", P450, P451)
+        M330 (__METHOD__, SizeOf (P450), "p450", P450, P451)
         /* Check resource descriptor tag offsets */
 
         Local0 = ResourceTemplate ()
@@ -138,8 +137,8 @@
                 FixedDMA (0xE1E2, 0x000F, Width16bit, )
                 FixedDMA (0xD1D2, 0x00F0, Width32bit, )
             }
-        M331 (TS, 0x01, 0x08, 0x08, 0x38, 0x38, "_DMA")
-        M331 (TS, 0x02, 0x18, 0x18, 0x48, 0x48, "_TYP")
-        M331 (TS, 0x03, 0x28, 0x28, 0x58, 0x58, "_SIZ")
+        M331 (__METHOD__, 0x01, 0x08, 0x08, 0x38, 0x38, "_DMA")
+        M331 (__METHOD__, 0x02, 0x18, 0x18, 0x48, 0x48, "_TYP")
+        M331 (__METHOD__, 0x03, 0x28, 0x28, 0x58, 0x58, "_SIZ")
     }
 

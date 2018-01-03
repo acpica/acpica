@@ -946,21 +946,20 @@
     })
     Method (RT25, 0, Serialized)
     {
-        Name (TS, "RT25")
         /* Emit test header, set the filename */
 
-        THDR (TS, "UartSerialBus Resource Descriptor Macro", "uartserialbus.asl")
+        THDR (__METHOD__, "UartSerialBus Resource Descriptor Macro", "uartserialbus.asl")
         /* The main test packages must have the same number of entries */
 
         If ((SizeOf (P45A) != SizeOf (P45B)))
         {
-            ERR (TS, 0xB6, 0x00, 0x00, 0x00, 0x00, "Incorrect package length")
+            ERR (__METHOD__, 0xB6, 0x00, 0x00, 0x00, 0x00, "Incorrect package length")
             Return (Zero)
         }
 
         /* Main test case for packages above */
 
-        M330 (TS, SizeOf (P45A), "p45A", P45A, P45B)
+        M330 (__METHOD__, SizeOf (P45A), "p45A", P45A, P45B)
         /* Check resource descriptor tag offsets */
 
         Local0 = ResourceTemplate ()
@@ -982,15 +981,15 @@
                         0xF0, 0xF1, 0xF2, 0xF3, 0xF4, 0xF5, 0xF6
                     })
             }
-        M331 (TS, 0x01, 0x38, 0x38, 0x0150, 0x0150, "_FLC")
-        M331 (TS, 0x02, 0x3A, 0x3A, 0x0152, 0x0152, "_STB")
-        M331 (TS, 0x03, 0x3C, 0x3C, 0x0154, 0x0154, "_LEN")
-        M331 (TS, 0x04, 0x3F, 0x3F, 0x0157, 0x0157, "_END")
-        M331 (TS, 0x05, 0x60, 0x60, 0x0178, 0x0178, "_SPE")
-        M331 (TS, 0x06, 0x80, 0x80, 0x0198, 0x0198, "_RXL")
-        M331 (TS, 0x07, 0x90, 0x90, 0x01A8, 0x01A8, "_TXL")
-        M331 (TS, 0x08, 0xA0, 0xA0, 0x01B8, 0x01B8, "_PAR")
-        M331 (TS, 0x09, 0xA8, 0xA8, 0x01C0, 0x01C0, "_LIN")
-        M331 (TS, 0x0A, 0xB0, 0xB0, 0x01C8, 0x01C8, "_VEN")
+        M331 (__METHOD__, 0x01, 0x38, 0x38, 0x0150, 0x0150, "_FLC")
+        M331 (__METHOD__, 0x02, 0x3A, 0x3A, 0x0152, 0x0152, "_STB")
+        M331 (__METHOD__, 0x03, 0x3C, 0x3C, 0x0154, 0x0154, "_LEN")
+        M331 (__METHOD__, 0x04, 0x3F, 0x3F, 0x0157, 0x0157, "_END")
+        M331 (__METHOD__, 0x05, 0x60, 0x60, 0x0178, 0x0178, "_SPE")
+        M331 (__METHOD__, 0x06, 0x80, 0x80, 0x0198, 0x0198, "_RXL")
+        M331 (__METHOD__, 0x07, 0x90, 0x90, 0x01A8, 0x01A8, "_TXL")
+        M331 (__METHOD__, 0x08, 0xA0, 0xA0, 0x01B8, 0x01B8, "_PAR")
+        M331 (__METHOD__, 0x09, 0xA8, 0xA8, 0x01C0, 0x01C0, "_LIN")
+        M331 (__METHOD__, 0x0A, 0xB0, 0xB0, 0x01C8, 0x01C8, "_VEN")
     }
 

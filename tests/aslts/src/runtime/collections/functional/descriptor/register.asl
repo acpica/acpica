@@ -407,21 +407,20 @@
     })
     Method (RT19, 0, Serialized)
     {
-        Name (TS, "RT19")
         /* Emit test header, set the filename */
 
-        THDR (TS, "Register Resource Descriptor Macro", "register.asl")
+        THDR (__METHOD__, "Register Resource Descriptor Macro", "register.asl")
         /* The main test packages must have the same number of entries */
 
         If ((SizeOf (P436) != SizeOf (P437)))
         {
-            ERR (TS, 0xB3, 0x00, 0x00, 0x00, 0x00, "Incorrect package length")
+            ERR (__METHOD__, 0xB3, 0x00, 0x00, 0x00, 0x00, "Incorrect package length")
             Return (Zero)
         }
 
         /* Main test case for packages above */
 
-        M330 (TS, SizeOf (P436), "p436", P436, P437)
+        M330 (__METHOD__, SizeOf (P436), "p436", P436, P437)
         /* Register macro DescriptorName is recently implemented */
         /* Check resource descriptor tag offsets */
         Local0 = ResourceTemplate ()
@@ -437,10 +436,10 @@
                     0xF2F3F4F5F6F7F8F9, // Address
                     ,)
             }
-        M331 (TS, 0x01, 0x18, 0x18, 0x90, 0x90, "_ASI")
-        M331 (TS, 0x02, 0x20, 0x20, 0x98, 0x98, "_RBW")
-        M331 (TS, 0x03, 0x28, 0x28, 0xA0, 0xA0, "_RBO")
-        M331 (TS, 0x04, 0x30, 0x30, 0xA8, 0xA8, "_ASZ")
-        M331 (TS, 0x05, 0x38, 0x38, 0xB0, 0xB0, "_ADR")
+        M331 (__METHOD__, 0x01, 0x18, 0x18, 0x90, 0x90, "_ASI")
+        M331 (__METHOD__, 0x02, 0x20, 0x20, 0x98, 0x98, "_RBW")
+        M331 (__METHOD__, 0x03, 0x28, 0x28, 0xA0, 0xA0, "_RBO")
+        M331 (__METHOD__, 0x04, 0x30, 0x30, 0xA8, 0xA8, "_ASZ")
+        M331 (__METHOD__, 0x05, 0x38, 0x38, 0xB0, 0xB0, "_ADR")
     }
 

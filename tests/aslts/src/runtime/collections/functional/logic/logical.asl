@@ -861,18 +861,17 @@
     })
     Method (LAN0, 0, Serialized)
     {
-        Name (TS, "LAN0")
         Debug = "TEST: LAN0, Logical And"
         /* Integers */
 
         If ((F64 == 0x01))
         {
-            M003 (TS, C002, "p060", P060, P05D, 0x01)
-            M003 (TS, C003, "p061", P061, P05E, 0x01)
+            M003 (__METHOD__, C002, "p060", P060, P05D, 0x01)
+            M003 (__METHOD__, C003, "p061", P061, P05E, 0x01)
         }
         Else
         {
-            M003 (TS, C002, "p060", P060, P05D, 0x01)
+            M003 (__METHOD__, C002, "p060", P060, P05D, 0x01)
         }
     }
 
@@ -896,18 +895,17 @@
     })
     Method (LN00, 0, Serialized)
     {
-        Name (TS, "LN00")
         Debug = "TEST: LN00, Logical Not"
         /* Integers */
 
         If ((F64 == 0x01))
         {
-            M004 (TS, C004, "p062", P062, P05F, 0x00)
-            M004 (TS, C005, "p063", P063, P070, 0x00)
+            M004 (__METHOD__, C004, "p062", P062, P05F, 0x00)
+            M004 (__METHOD__, C005, "p063", P063, P070, 0x00)
         }
         Else
         {
-            M004 (TS, C004, "p062", P062, P05F, 0x00)
+            M004 (__METHOD__, C004, "p062", P062, P05F, 0x00)
         }
     }
 
@@ -946,18 +944,17 @@
     })
     Method (LOR0, 0, Serialized)
     {
-        Name (TS, "LOR0")
         Debug = "TEST: LOR0, Logical Or"
         /* Integers */
 
         If ((F64 == 0x01))
         {
-            M003 (TS, C002, "p060", P060, P071, 0x02)
-            M003 (TS, C003, "p061", P061, P072, 0x02)
+            M003 (__METHOD__, C002, "p060", P060, P071, 0x02)
+            M003 (__METHOD__, C003, "p061", P061, P072, 0x02)
         }
         Else
         {
-            M003 (TS, C002, "p060", P060, P071, 0x02)
+            M003 (__METHOD__, C002, "p060", P060, P071, 0x02)
         }
     }
 
@@ -1084,32 +1081,31 @@
     })
     Method (LEQ0, 0, Serialized)
     {
-        Name (TS, "LEQ0")
         Debug = "TEST: LEQ0, Logical Equal"
         /* Integers */
 
         If ((F64 == 0x01))
         {
-            M003 (TS, C002, "p060", P060, P073, 0x03)
-            M003 (TS, C003, "p061", P061, P074, 0x03)
+            M003 (__METHOD__, C002, "p060", P060, P073, 0x03)
+            M003 (__METHOD__, C003, "p061", P061, P074, 0x03)
         }
         Else
         {
-            M003 (TS, C002, "p060", P060, P073, 0x03)
+            M003 (__METHOD__, C002, "p060", P060, P073, 0x03)
         }
 
         /* Strings */
 
-        M003 (TS, C006, "p064", P064, P075, 0x03)
+        M003 (__METHOD__, C006, "p064", P064, P075, 0x03)
         Local0 = (BIG0 == BIG0)
         If ((Local0 != Ones))
         {
-            ERR (TS, Z035, 0x0243, 0x00, 0x00, 0x00, 0x00)
+            ERR (__METHOD__, Z035, 0x0243, 0x00, 0x00, 0x00, 0x00)
         }
 
         /* Buffers */
 
-        M003 (TS, C007, "p065", P065, P076, 0x03)
+        M003 (__METHOD__, C007, "p065", P065, P076, 0x03)
     }
 
     /* ===================================== LGreater */
@@ -1235,32 +1231,31 @@
     })
     Method (LGR0, 0, Serialized)
     {
-        Name (TS, "LGR0")
         Debug = "TEST: LGR0, Logical Greater"
         /* Integers */
 
         If ((F64 == 0x01))
         {
-            M003 (TS, C002, "p060", P060, P077, 0x04)
-            M003 (TS, C003, "p061", P061, P078, 0x04)
+            M003 (__METHOD__, C002, "p060", P060, P077, 0x04)
+            M003 (__METHOD__, C003, "p061", P061, P078, 0x04)
         }
         Else
         {
-            M003 (TS, C002, "p060", P060, P077, 0x04)
+            M003 (__METHOD__, C002, "p060", P060, P077, 0x04)
         }
 
         /* Strings */
 
-        M003 (TS, C006, "p064", P064, P079, 0x04)
+        M003 (__METHOD__, C006, "p064", P064, P079, 0x04)
         Local0 = (BIG0 > BIG0)
         If ((Local0 != Zero))
         {
-            ERR (TS, Z035, 0x0283, 0x00, 0x00, 0x00, 0x00)
+            ERR (__METHOD__, Z035, 0x0283, 0x00, 0x00, 0x00, 0x00)
         }
 
         /* Buffers */
 
-        M003 (TS, C007, "p065", P065, P07A, 0x04)
+        M003 (__METHOD__, C007, "p065", P065, P07A, 0x04)
     }
 
     /* ===================================== LGreaterEqual */
@@ -1386,32 +1381,31 @@
     })
     Method (LGE0, 0, Serialized)
     {
-        Name (TS, "LGE0")
         Debug = "TEST: LGE0, Logical Greater Than Or Equal"
         /* Integers */
 
         If ((F64 == 0x01))
         {
-            M003 (TS, C002, "p060", P060, P07B, 0x05)
-            M003 (TS, C003, "p061", P061, P07C, 0x05)
+            M003 (__METHOD__, C002, "p060", P060, P07B, 0x05)
+            M003 (__METHOD__, C003, "p061", P061, P07C, 0x05)
         }
         Else
         {
-            M003 (TS, C002, "p060", P060, P07B, 0x05)
+            M003 (__METHOD__, C002, "p060", P060, P07B, 0x05)
         }
 
         /* Strings */
 
-        M003 (TS, C006, "p064", P064, P07D, 0x05)
+        M003 (__METHOD__, C006, "p064", P064, P07D, 0x05)
         Local0 = (BIG0 >= BIG0)
         If ((Local0 != Ones))
         {
-            ERR (TS, Z035, 0x02C3, 0x00, 0x00, 0x00, 0x00)
+            ERR (__METHOD__, Z035, 0x02C3, 0x00, 0x00, 0x00, 0x00)
         }
 
         /* Buffers */
 
-        M003 (TS, C007, "p065", P065, P07E, 0x05)
+        M003 (__METHOD__, C007, "p065", P065, P07E, 0x05)
     }
 
     /* ===================================== LLess */
@@ -1537,32 +1531,31 @@
     })
     Method (LL00, 0, Serialized)
     {
-        Name (TS, "LL00")
         Debug = "TEST: LL00, Logical Less"
         /* Integers */
 
         If ((F64 == 0x01))
         {
-            M003 (TS, C002, "p060", P060, P07F, 0x06)
-            M003 (TS, C003, "p061", P061, P080, 0x06)
+            M003 (__METHOD__, C002, "p060", P060, P07F, 0x06)
+            M003 (__METHOD__, C003, "p061", P061, P080, 0x06)
         }
         Else
         {
-            M003 (TS, C002, "p060", P060, P07F, 0x06)
+            M003 (__METHOD__, C002, "p060", P060, P07F, 0x06)
         }
 
         /* Strings */
 
-        M003 (TS, C006, "p064", P064, P081, 0x06)
+        M003 (__METHOD__, C006, "p064", P064, P081, 0x06)
         Local0 = (BIG0 < BIG0)
         If ((Local0 != Zero))
         {
-            ERR (TS, Z035, 0x0303, 0x00, 0x00, 0x00, 0x00)
+            ERR (__METHOD__, Z035, 0x0303, 0x00, 0x00, 0x00, 0x00)
         }
 
         /* Buffers */
 
-        M003 (TS, C007, "p065", P065, P082, 0x06)
+        M003 (__METHOD__, C007, "p065", P065, P082, 0x06)
     }
 
     /* ===================================== LLessEqual */
@@ -1688,32 +1681,31 @@
     })
     Method (LLE0, 0, Serialized)
     {
-        Name (TS, "LLE0")
         Debug = "TEST: LLE0, Logical Less Than Or Equal"
         /* Integers */
 
         If ((F64 == 0x01))
         {
-            M003 (TS, C002, "p060", P060, P083, 0x07)
-            M003 (TS, C003, "p061", P061, P084, 0x07)
+            M003 (__METHOD__, C002, "p060", P060, P083, 0x07)
+            M003 (__METHOD__, C003, "p061", P061, P084, 0x07)
         }
         Else
         {
-            M003 (TS, C002, "p060", P060, P083, 0x07)
+            M003 (__METHOD__, C002, "p060", P060, P083, 0x07)
         }
 
         /* Strings */
 
-        M003 (TS, C006, "p064", P064, P085, 0x07)
+        M003 (__METHOD__, C006, "p064", P064, P085, 0x07)
         Local0 = (BIG0 <= BIG0)
         If ((Local0 != Ones))
         {
-            ERR (TS, Z035, 0x0343, 0x00, 0x00, 0x00, 0x00)
+            ERR (__METHOD__, Z035, 0x0343, 0x00, 0x00, 0x00, 0x00)
         }
 
         /* Buffers */
 
-        M003 (TS, C007, "p065", P065, P086, 0x07)
+        M003 (__METHOD__, C007, "p065", P065, P086, 0x07)
     }
 
     /* ===================================== LNotEqual */
@@ -1839,32 +1831,31 @@
     })
     Method (LNE0, 0, Serialized)
     {
-        Name (TS, "LNE0")
         Debug = "TEST: LNE0, Logical Not equal"
         /* Integers */
 
         If ((F64 == 0x01))
         {
-            M003 (TS, C002, "p060", P060, P087, 0x00)
-            M003 (TS, C003, "p061", P061, P088, 0x00)
+            M003 (__METHOD__, C002, "p060", P060, P087, 0x00)
+            M003 (__METHOD__, C003, "p061", P061, P088, 0x00)
         }
         Else
         {
-            M003 (TS, C002, "p060", P060, P087, 0x00)
+            M003 (__METHOD__, C002, "p060", P060, P087, 0x00)
         }
 
         /* Strings */
 
-        M003 (TS, C006, "p064", P064, P089, 0x00)
+        M003 (__METHOD__, C006, "p064", P064, P089, 0x00)
         Local0 = (BIG0 != BIG0)
         If ((Local0 != Zero))
         {
-            ERR (TS, Z035, 0x0383, 0x00, 0x00, 0x00, 0x00)
+            ERR (__METHOD__, Z035, 0x0383, 0x00, 0x00, 0x00, 0x00)
         }
 
         /* Buffers */
 
-        M003 (TS, C007, "p065", P065, P08A, 0x00)
+        M003 (__METHOD__, C007, "p065", P065, P08A, 0x00)
     }
 
     /* Run-method */

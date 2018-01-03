@@ -381,13 +381,12 @@
     })
     Method (RT03, 0, Serialized)
     {
-        Name (TS, "RT03")
         /* Emit test header, set the filename */
 
-        THDR (TS, "DMA Resource Descriptor Macro", "dma.asl")
+        THDR (__METHOD__, "DMA Resource Descriptor Macro", "dma.asl")
         /* Main test case for packages above */
 
-        M330 (TS, 0x1B, "p404", P404, P405)
+        M330 (__METHOD__, 0x1B, "p404", P404, P405)
         Local0 = ResourceTemplate ()
             {
                 DMA (Compatibility, NotBusMaster, Transfer8, )
@@ -395,8 +394,8 @@
                 DMA (Compatibility, NotBusMaster, Transfer8, )
                     {}
             }
-        M331 (TS, 0x01, 0x15, 0x15, 0x2D, 0x2D, "_TYP")
-        M331 (TS, 0x02, 0x12, 0x12, 0x2A, 0x2A, "_BM")
-        M331 (TS, 0x03, 0x10, 0x10, 0x28, 0x28, "_SIZ")
+        M331 (__METHOD__, 0x01, 0x15, 0x15, 0x2D, 0x2D, "_TYP")
+        M331 (__METHOD__, 0x02, 0x12, 0x12, 0x2A, 0x2A, "_BM")
+        M331 (__METHOD__, 0x03, 0x10, 0x10, 0x28, 0x28, "_SIZ")
     }
 
