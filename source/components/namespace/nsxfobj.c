@@ -9,8 +9,7 @@
  *
  * 1. Copyright Notice
  *
- * Some or all of this work - Copyright (c) 1999 - 2017, Intel Corp.
- * All rights reserved.
+ * Some or all of this work - Copyright (c) 1999 - 2018, Intel Corp.
  *
  * 2. License
  *

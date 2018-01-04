@@ -1,6 +1,5 @@
     /*
-     * Some or all of this work - Copyright (c) 2006 - 2017, Intel Corp.
-     * All rights reserved.
+     * Some or all of this work - Copyright (c) 2006 - 2018, Intel Corp.
      *
      * Redistribution and use in source and binary forms, with or without modification,
      * are permitted provided that the following conditions are met:
@@ -244,8 +243,7 @@
     Include ("../../../../../runtime/collections/bdemo/ACPICA/0210/DECL.asl")
     Include ("../../../../../runtime/collections/bdemo/ACPICA/0211/DECL.asl")
     /*
-     * Some or all of this work - Copyright (c) 2006 - 2017, Intel Corp.
-     * All rights reserved.
+     * Some or all of this work - Copyright (c) 2006 - 2018, Intel Corp.
      *
      * Redistribution and use in source and binary forms, with or without modification,
      * are permitted provided that the following conditions are met:
