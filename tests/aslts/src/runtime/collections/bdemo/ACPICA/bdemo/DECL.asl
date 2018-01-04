@@ -1,6 +1,5 @@
     /*
      * Some or all of this work - Copyright (c) 2006 - 2018, Intel Corp.
-     * All rights reserved.
      *
      * Redistribution and use in source and binary forms, with or without modification,
      * are permitted provided that the following conditions are met:
@@ -245,7 +244,6 @@
     Include ("../../../../../runtime/collections/bdemo/ACPICA/0211/DECL.asl")
     /*
      * Some or all of this work - Copyright (c) 2006 - 2018, Intel Corp.
-     * All rights reserved.
      *
      * Redistribution and use in source and binary forms, with or without modification,
      * are permitted provided that the following conditions are met:
