@@ -34,7 +34,6 @@
      */
     Method (M3B0, 0, Serialized)
     {
-        Name (TS, "m3b0")
         Name (I000, 0x00)
         Method (M000, 0, Serialized)
         {
@@ -138,13 +137,13 @@
             Debug = "m016"
             If ((I000 != 0x11))
             {
-                ERR (TS, Z173, 0x3F, 0x00, 0x00, I000, 0x11)
+                ERR (__METHOD__, Z173, 0x3F, 0x00, 0x00, I000, 0x11)
             }
         }
 
-        CH03 (TS, Z173, 0x01, 0x43, 0x00)
+        CH03 (__METHOD__, Z173, 0x01, 0x43, 0x00)
         M000 ()
-        CH03 (TS, Z173, 0x02, 0x45, 0x00)
+        CH03 (__METHOD__, Z173, 0x02, 0x45, 0x00)
     }
 
     /*
@@ -153,7 +152,6 @@
      */
     Method (M3B1, 0, Serialized)
     {
-        Name (TS, "m3b1")
         Name (I000, 0x00)
         Method (M000, 0, Serialized)
         {
@@ -257,13 +255,13 @@
             Debug = "m016"
             If ((I000 != 0x11))
             {
-                ERR (TS, Z173, 0x65, 0x00, 0x00, I000, 0x11)
+                ERR (__METHOD__, Z173, 0x65, 0x00, 0x00, I000, 0x11)
             }
         }
 
-        CH03 (TS, Z173, 0x04, 0x69, 0x00)
+        CH03 (__METHOD__, Z173, 0x04, 0x69, 0x00)
         M000 ()
-        CH03 (TS, Z173, 0x05, 0x6B, 0x00)
+        CH03 (__METHOD__, Z173, 0x05, 0x6B, 0x00)
     }
 
     /*
@@ -272,7 +270,6 @@
      */
     Method (M3B2, 0, Serialized)
     {
-        Name (TS, "m3b2")
         Name (I000, 0x00)
         Name (I001, 0x00)
         Method (M000, 0, Serialized)
@@ -443,20 +440,20 @@
             Debug = "m016"
             If ((I000 != 0x1C))
             {
-                ERR (TS, Z173, 0xA6, 0x00, 0x00, I000, 0x1C)
+                ERR (__METHOD__, Z173, 0xA6, 0x00, 0x00, I000, 0x1C)
             }
 
             I001 = 0xABCD0000
         }
 
-        CH03 (TS, Z173, 0x07, 0xAB, 0x00)
+        CH03 (__METHOD__, Z173, 0x07, 0xAB, 0x00)
         M000 ()
         If ((I001 != 0xABCD0000))
         {
-            ERR (TS, Z173, 0xAF, 0x00, 0x00, I001, 0xABCD0000)
+            ERR (__METHOD__, Z173, 0xAF, 0x00, 0x00, I001, 0xABCD0000)
         }
 
-        CH03 (TS, Z173, 0x09, 0xB1, 0x00)
+        CH03 (__METHOD__, Z173, 0x09, 0xB1, 0x00)
     }
 
     /*
@@ -479,7 +476,6 @@
      */
     Method (M3B3, 3, Serialized)
     {
-        Name (TS, "m3b3")
         Name (I000, 0x00)
         Name (I001, 0x00)
         Name (I002, 0x00)
@@ -802,34 +798,33 @@
             }
         }
 
-        CH03 (TS, Z173, 0x0A, 0x012B, 0x00)
+        CH03 (__METHOD__, Z173, 0x0A, 0x012B, 0x00)
         I000 = Arg0
         I001 = Arg1
         I005 = Arg2
         MM00 (0x00, I000, I001)
         If ((Arg0 > Arg1))
         {
-            CH04 (TS, 0x00, 0x40, Z173, 0x0134, 0x00, 0x00) /* AE_AML_MUTEX_ORDER */
+            CH04 (__METHOD__, 0x00, 0x40, Z173, 0x0134, 0x00, 0x00) /* AE_AML_MUTEX_ORDER */
         }
         Else
         {
             If ((I003 != Arg0))
             {
-                ERR (TS, Z173, 0x0137, 0x00, 0x00, I003, Arg0)
+                ERR (__METHOD__, Z173, 0x0137, 0x00, 0x00, I003, Arg0)
             }
 
             If ((I004 != Arg1))
             {
-                ERR (TS, Z173, 0x013A, 0x00, 0x00, I004, Arg1)
+                ERR (__METHOD__, Z173, 0x013A, 0x00, 0x00, I004, Arg1)
             }
         }
 
-        CH03 (TS, Z173, 0x0E, 0x013E, 0x00)
+        CH03 (__METHOD__, Z173, 0x0E, 0x013E, 0x00)
     }
 
     Method (M3B4, 0, Serialized)
     {
-        Name (TS, "m3b4")
         Name (LPN0, 0x00)
         Name (LPC0, 0x00)
         Name (LPN1, 0x00)
@@ -860,7 +855,6 @@
      */
     Method (M3B5, 2, Serialized)
     {
-        Name (TS, "m3b5")
         Name (I000, 0x00)
         Name (I001, 0x00)
         Name (I002, 0x00)
@@ -1174,33 +1168,32 @@
             }
         }
 
-        CH03 (TS, Z173, 0x0F, 0x01B0, 0x00)
+        CH03 (__METHOD__, Z173, 0x0F, 0x01B0, 0x00)
         I000 = Arg0
         I001 = Arg1
         MM00 (0x00, I000, I001)
         If ((Arg0 > Arg1))
         {
-            CH04 (TS, 0x00, 0x40, Z173, 0x01B8, 0x00, 0x00) /* AE_AML_MUTEX_ORDER */
+            CH04 (__METHOD__, 0x00, 0x40, Z173, 0x01B8, 0x00, 0x00) /* AE_AML_MUTEX_ORDER */
         }
         Else
         {
             If ((I003 != Arg0))
             {
-                ERR (TS, Z173, 0x01BB, 0x00, 0x00, I003, Arg0)
+                ERR (__METHOD__, Z173, 0x01BB, 0x00, 0x00, I003, Arg0)
             }
 
             If ((I004 != Arg1))
             {
-                ERR (TS, Z173, 0x01BE, 0x00, 0x00, I004, Arg1)
+                ERR (__METHOD__, Z173, 0x01BE, 0x00, 0x00, I004, Arg1)
             }
         }
 
-        CH03 (TS, Z173, 0x13, 0x01C2, 0x00)
+        CH03 (__METHOD__, Z173, 0x13, 0x01C2, 0x00)
     }
 
     Method (M3B6, 0, Serialized)
     {
-        Name (TS, "m3b6")
         Name (LPN0, 0x00)
         Name (LPC0, 0x00)
         Name (LPN1, 0x00)
@@ -1233,7 +1226,6 @@
      */
     Method (M3B7, 3, Serialized)
     {
-        Name (TS, "m3b5")
         Name (I000, 0x00)
         Name (I001, 0x00)
         Name (I002, 0x00)
@@ -1585,34 +1577,33 @@
             }
         }
 
-        CH03 (TS, Z173, 0x14, 0x025C, 0x00)
+        CH03 (__METHOD__, Z173, 0x14, 0x025C, 0x00)
         I000 = Arg0
         I001 = Arg1
         I005 = Arg2
         MM00 (0x00, I000, I001)
         If ((Arg0 > Arg1))
         {
-            CH04 (TS, 0x00, 0x40, Z173, 0x0265, 0x00, 0x00) /* AE_AML_MUTEX_ORDER */
+            CH04 (__METHOD__, 0x00, 0x40, Z173, 0x0265, 0x00, 0x00) /* AE_AML_MUTEX_ORDER */
         }
         Else
         {
             If ((I003 != Arg0))
             {
-                ERR (TS, Z173, 0x0268, 0x00, 0x00, I003, Arg0)
+                ERR (__METHOD__, Z173, 0x0268, 0x00, 0x00, I003, Arg0)
             }
 
             If ((I004 != Arg1))
             {
-                ERR (TS, Z173, 0x026B, 0x00, 0x00, I004, Arg1)
+                ERR (__METHOD__, Z173, 0x026B, 0x00, 0x00, I004, Arg1)
             }
         }
 
-        CH03 (TS, Z173, 0x18, 0x026F, 0x00)
+        CH03 (__METHOD__, Z173, 0x18, 0x026F, 0x00)
     }
 
     Method (M3B8, 0, Serialized)
     {
-        Name (TS, "m3b6")
         Name (LPN0, 0x00)
         Name (LPC0, 0x00)
         Name (LPN1, 0x00)
@@ -1645,7 +1636,6 @@
      */
     Method (M3B9, 0, Serialized)
     {
-        Name (TS, "m3b9")
         Name (LPN0, 0x00)
         Name (LPC0, 0x00)
         Name (LPN1, 0x00)
@@ -1680,7 +1670,6 @@
      */
     Method (M3BA, 0, Serialized)
     {
-        Name (TS, "m3ba")
         Name (LPN0, 0x00)
         Name (LPC0, 0x00)
         Name (LPN1, 0x00)
@@ -1732,7 +1721,6 @@
      */
     Method (M3BB, 3, Serialized)
     {
-        Name (TS, "m3bb")
         Name (I000, 0x00)
         Name (I001, 0x00)
         Name (I002, 0x00)
@@ -1996,7 +1984,7 @@
             {
                 If (Local0)
                 {
-                    ERR (TS, Z173, 0x0327, 0x00, 0x00, 0x00, Local0)
+                    ERR (__METHOD__, Z173, 0x0327, 0x00, 0x00, 0x00, Local0)
                 }
             }
 
@@ -2023,7 +2011,7 @@
             {
                 If (Local0)
                 {
-                    ERR (TS, Z173, 0x0338, 0x00, 0x00, 0x00, Local0)
+                    ERR (__METHOD__, Z173, 0x0338, 0x00, 0x00, 0x00, Local0)
                 }
             }
 
@@ -2050,7 +2038,7 @@
             {
                 If (Local0)
                 {
-                    ERR (TS, Z173, 0x0349, 0x00, 0x00, 0x00, Local0)
+                    ERR (__METHOD__, Z173, 0x0349, 0x00, 0x00, 0x00, Local0)
                 }
             }
 
@@ -2077,7 +2065,7 @@
             {
                 If (Local0)
                 {
-                    ERR (TS, Z173, 0x035A, 0x00, 0x00, 0x00, Local0)
+                    ERR (__METHOD__, Z173, 0x035A, 0x00, 0x00, 0x00, Local0)
                 }
             }
 
@@ -2104,7 +2092,7 @@
             {
                 If (Local0)
                 {
-                    ERR (TS, Z173, 0x036B, 0x00, 0x00, 0x00, Local0)
+                    ERR (__METHOD__, Z173, 0x036B, 0x00, 0x00, 0x00, Local0)
                 }
             }
 
@@ -2131,7 +2119,7 @@
             {
                 If (Local0)
                 {
-                    ERR (TS, Z173, 0x037C, 0x00, 0x00, 0x00, Local0)
+                    ERR (__METHOD__, Z173, 0x037C, 0x00, 0x00, 0x00, Local0)
                 }
             }
 
@@ -2158,7 +2146,7 @@
             {
                 If (Local0)
                 {
-                    ERR (TS, Z173, 0x038D, 0x00, 0x00, 0x00, Local0)
+                    ERR (__METHOD__, Z173, 0x038D, 0x00, 0x00, 0x00, Local0)
                 }
             }
 
@@ -2185,7 +2173,7 @@
             {
                 If (Local0)
                 {
-                    ERR (TS, Z173, 0x039E, 0x00, 0x00, 0x00, Local0)
+                    ERR (__METHOD__, Z173, 0x039E, 0x00, 0x00, 0x00, Local0)
                 }
             }
 
@@ -2212,7 +2200,7 @@
             {
                 If (Local0)
                 {
-                    ERR (TS, Z173, 0x03AF, 0x00, 0x00, 0x00, Local0)
+                    ERR (__METHOD__, Z173, 0x03AF, 0x00, 0x00, 0x00, Local0)
                 }
             }
 
@@ -2239,7 +2227,7 @@
             {
                 If (Local0)
                 {
-                    ERR (TS, Z173, 0x03C0, 0x00, 0x00, 0x00, Local0)
+                    ERR (__METHOD__, Z173, 0x03C0, 0x00, 0x00, 0x00, Local0)
                 }
             }
 
@@ -2266,7 +2254,7 @@
             {
                 If (Local0)
                 {
-                    ERR (TS, Z173, 0x03D1, 0x00, 0x00, 0x00, Local0)
+                    ERR (__METHOD__, Z173, 0x03D1, 0x00, 0x00, 0x00, Local0)
                 }
             }
 
@@ -2293,7 +2281,7 @@
             {
                 If (Local0)
                 {
-                    ERR (TS, Z173, 0x03E2, 0x00, 0x00, 0x00, Local0)
+                    ERR (__METHOD__, Z173, 0x03E2, 0x00, 0x00, 0x00, Local0)
                 }
             }
 
@@ -2320,7 +2308,7 @@
             {
                 If (Local0)
                 {
-                    ERR (TS, Z173, 0x03F3, 0x00, 0x00, 0x00, Local0)
+                    ERR (__METHOD__, Z173, 0x03F3, 0x00, 0x00, 0x00, Local0)
                 }
             }
 
@@ -2347,7 +2335,7 @@
             {
                 If (Local0)
                 {
-                    ERR (TS, Z173, 0x0404, 0x00, 0x00, 0x00, Local0)
+                    ERR (__METHOD__, Z173, 0x0404, 0x00, 0x00, 0x00, Local0)
                 }
             }
 
@@ -2374,7 +2362,7 @@
             {
                 If (Local0)
                 {
-                    ERR (TS, Z173, 0x0415, 0x00, 0x00, 0x00, Local0)
+                    ERR (__METHOD__, Z173, 0x0415, 0x00, 0x00, 0x00, Local0)
                 }
             }
 
@@ -2401,7 +2389,7 @@
             {
                 If (Local0)
                 {
-                    ERR (TS, Z173, 0x0426, 0x00, 0x00, 0x00, Local0)
+                    ERR (__METHOD__, Z173, 0x0426, 0x00, 0x00, 0x00, Local0)
                 }
             }
 
@@ -2606,7 +2594,7 @@
             }
         }
 
-        CH03 (TS, Z173, 0x0A, 0x04BE, 0x00)
+        CH03 (__METHOD__, Z173, 0x0A, 0x04BE, 0x00)
         I000 = Arg0
         I001 = Arg1
         I005 = Arg2
@@ -2640,27 +2628,26 @@
 
         If (!Local4)
         {
-            CH04 (TS, 0x01, 0x40, Z173, 0x04D7, 0x00, 0x00) /* AE_AML_MUTEX_ORDER */
+            CH04 (__METHOD__, 0x01, 0x40, Z173, 0x04D7, 0x00, 0x00) /* AE_AML_MUTEX_ORDER */
         }
         Else
         {
             If ((I003 != Arg0))
             {
-                ERR (TS, Z173, 0x04DA, 0x00, 0x00, I003, Arg0)
+                ERR (__METHOD__, Z173, 0x04DA, 0x00, 0x00, I003, Arg0)
             }
 
             If ((I004 != Arg1))
             {
-                ERR (TS, Z173, 0x04DD, 0x00, 0x00, I004, Arg1)
+                ERR (__METHOD__, Z173, 0x04DD, 0x00, 0x00, I004, Arg1)
             }
         }
 
-        CH03 (TS, Z173, 0x0E, 0x04E1, 0x00)
+        CH03 (__METHOD__, Z173, 0x0E, 0x04E1, 0x00)
     }
 
     Method (M3BC, 0, Serialized)
     {
-        Name (TS, "m3bc")
         Name (LPN0, 0x00)
         Name (LPC0, 0x00)
         Name (LPN1, 0x00)

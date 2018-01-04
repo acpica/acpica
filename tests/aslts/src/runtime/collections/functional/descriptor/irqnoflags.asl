@@ -260,11 +260,10 @@
     })
     Method (RT02, 0, Serialized)
     {
-        Name (TS, "RT02")
         /* Emit test header, set the filename */
 
-        THDR (TS, "IRQNoFlags Resource Descriptor Macro", "irqnoflags.asl")
+        THDR (__METHOD__, "IRQNoFlags Resource Descriptor Macro", "irqnoflags.asl")
         /* Main test case for packages above */
 
-        M330 (TS, 0x12, "p402", P402, P403)
+        M330 (__METHOD__, 0x12, "p402", P402, P403)
     }

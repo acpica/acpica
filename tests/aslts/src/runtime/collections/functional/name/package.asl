@@ -55,7 +55,6 @@
 
     Method (M1F0, 0, Serialized)
     {
-        Name (TS, "m1f0")
         Name (P000, Package (0xFF)
         {
             /* 0 */
@@ -322,7 +321,7 @@
             0xFD,
             0xFE
         })
-        TS00 (TS)
+        TS00 (__METHOD__)
         /* Too much time for 1 there, so use {8/16} */
 
         Local6 = C040 /* \C040 */
@@ -338,7 +337,7 @@
             {
                 If ((Local2 != Local3))
                 {
-                    ERR (TS, Z051, 0x93, 0x00, 0x00, Local2, Local3)
+                    ERR (__METHOD__, Z051, 0x93, 0x00, 0x00, Local2, Local3)
                 }
             }
             ElseIf ((Local1 <= 0x9F))
@@ -346,7 +345,7 @@
                 Local3 = (0x8765AC00 + Local4)
                 If ((Local2 != Local3))
                 {
-                    ERR (TS, Z051, 0x98, 0x00, 0x00, Local2, Local3)
+                    ERR (__METHOD__, Z051, 0x98, 0x00, 0x00, Local2, Local3)
                 }
 
                 Local4 += Local6
@@ -356,20 +355,20 @@
                 Local3 = (0x8765ACBA11223300 + Local5)
                 If ((Local2 != Local3))
                 {
-                    ERR (TS, Z051, 0x9E, 0x00, 0x00, Local2, Local3)
+                    ERR (__METHOD__, Z051, 0x9E, 0x00, 0x00, Local2, Local3)
                 }
 
                 Local5 += Local6
             }
             ElseIf ((Local2 != Local3))
             {
-                ERR (TS, Z051, 0xA3, 0x00, 0x00, Local2, Local3)
+                ERR (__METHOD__, Z051, 0xA3, 0x00, 0x00, Local2, Local3)
             }
 
             Local3 = ObjectType (Local2)
             If ((Local3 != 0x01))
             {
-                ERR (TS, Z051, 0xA9, 0x00, 0x00, Local3, 0x01)
+                ERR (__METHOD__, Z051, 0xA9, 0x00, 0x00, Local3, 0x01)
             }
 
             Local1 += Local6
@@ -379,7 +378,7 @@
         Local0 = SizeOf (P000)
         If ((Local0 != 0xFF))
         {
-            ERR (TS, Z051, 0xB2, 0x00, 0x00, Local0, 0xFF)
+            ERR (__METHOD__, Z051, 0xB2, 0x00, 0x00, Local0, 0xFF)
         }
     }
 
@@ -387,7 +386,6 @@
 
     Method (M1F1, 0, Serialized)
     {
-        Name (TS, "m1f1")
         Name (P000, Package (0x0A)
         {
             "",
@@ -401,7 +399,7 @@
             "01234567",
             "01234567890123456789012345678901234567890123456789012345678901234567890123456789012345678901234567890123456789012345678901234567890123456789012345678901234567890123456789012345678901234567890123456789"
         })
-        TS00 (TS)
+        TS00 (__METHOD__)
         Local0 = 0x0A
         Local1 = 0x00
         Local5 = 0x00
@@ -417,13 +415,13 @@
 
             If ((Local4 != Local3))
             {
-                ERR (TS, Z051, 0xD1, 0x00, 0x00, Local4, Local3)
+                ERR (__METHOD__, Z051, 0xD1, 0x00, 0x00, Local4, Local3)
             }
 
             Local3 = ObjectType (Local2)
             If ((Local3 != 0x02))
             {
-                ERR (TS, Z051, 0xD6, 0x00, 0x00, Local3, 0x02)
+                ERR (__METHOD__, Z051, 0xD6, 0x00, 0x00, Local3, 0x02)
             }
 
             Local1++
@@ -433,7 +431,7 @@
         Local0 = SizeOf (P000)
         If ((Local0 != 0x0A))
         {
-            ERR (TS, Z051, 0xDF, 0x00, 0x00, Local0, 0x0A)
+            ERR (__METHOD__, Z051, 0xDF, 0x00, 0x00, Local0, 0x0A)
         }
     }
 
@@ -441,7 +439,6 @@
 
     Method (M1F2, 0, Serialized)
     {
-        Name (TS, "m1f2")
         Name (P000, Package (0xFF)
         {
             Buffer (0x01){},
@@ -754,7 +751,7 @@
             Buffer (0xFE){},
             Buffer (0xFF){}
         })
-        TS00 (TS)
+        TS00 (__METHOD__)
         /* Too much time for 1 there, so use {8/16} */
 
         Local6 = C040 /* \C040 */
@@ -768,13 +765,13 @@
             Local4 = (Local1 + 0x01)
             If ((Local4 != Local3))
             {
-                ERR (TS, Z051, 0x014E, 0x00, 0x00, Local4, Local3)
+                ERR (__METHOD__, Z051, 0x014E, 0x00, 0x00, Local4, Local3)
             }
 
             Local3 = ObjectType (Local2)
             If ((Local3 != 0x03))
             {
-                ERR (TS, Z051, 0x0153, 0x00, 0x00, Local3, 0x03)
+                ERR (__METHOD__, Z051, 0x0153, 0x00, 0x00, Local3, 0x03)
             }
 
             Local1 += Local6
@@ -784,7 +781,7 @@
         Local0 = SizeOf (P000)
         If ((Local0 != 0xFF))
         {
-            ERR (TS, Z051, 0x015C, 0x00, 0x00, Local0, 0xFF)
+            ERR (__METHOD__, Z051, 0x015C, 0x00, 0x00, Local0, 0xFF)
         }
     }
 
@@ -792,7 +789,6 @@
 
     Method (M1F3, 0, Serialized)
     {
-        Name (TS, "m1f3")
         Name (P000, Package (0xFF)
         {
             Package (0x01){},
@@ -1236,7 +1232,7 @@
             Package (0xFE){},
             Package (0xFF){}
         })
-        TS00 (TS)
+        TS00 (__METHOD__)
         /* Too much time for 1 there, so use {8/16} */
 
         Local6 = C040 /* \C040 */
@@ -1250,13 +1246,13 @@
             Local4 = (Local1 + 0x01)
             If ((Local4 != Local3))
             {
-                ERR (TS, Z051, 0x01CF, 0x00, 0x00, Local4, Local3)
+                ERR (__METHOD__, Z051, 0x01CF, 0x00, 0x00, Local4, Local3)
             }
 
             Local3 = ObjectType (Local2)
             If ((Local3 != 0x04))
             {
-                ERR (TS, Z051, 0x01D4, 0x00, 0x00, Local3, 0x04)
+                ERR (__METHOD__, Z051, 0x01D4, 0x00, 0x00, Local3, 0x04)
             }
 
             Local1 += Local6
@@ -1266,7 +1262,7 @@
         Local0 = SizeOf (P000)
         If ((Local0 != 0xFF))
         {
-            ERR (TS, Z051, 0x01DD, 0x00, 0x00, Local0, 0xFF)
+            ERR (__METHOD__, Z051, 0x01DD, 0x00, 0x00, Local0, 0xFF)
         }
     }
 
@@ -1274,8 +1270,7 @@
 
     Method (M1F4, 0, Serialized)
     {
-        Name (TS, "m1f4")
-        TS00 (TS)
+        TS00 (__METHOD__)
         /* Not implemented yet */
 
         Method (M000, 0, NotSerialized)
@@ -1403,7 +1398,6 @@
     /* - 255 levels in depth */
     Method (M1F6, 0, Serialized)
     {
-        Name (TS, "m1f6")
         Name (P000, Package (0xFF)
         {
             /* 0 */
@@ -4635,7 +4629,7 @@
         /* n000 - step */
         /* n001 - decr cur counter */
         /* n002 - incr cur counter */
-        TS00 (TS)
+        TS00 (__METHOD__)
         Name (N000, 0x00)
         Name (N001, 0x00)
         Name (N002, 0x00)
@@ -4653,7 +4647,7 @@
 
             Local0 = DerefOf (P001 [N002])
             Local1 = ObjectType (Local0)
-            M1F5 (TS, P000, Local0)
+            M1F5 (__METHOD__, P000, Local0)
             N002 += N000 /* \M1F6.N000 */
             N001--
         }
@@ -4661,13 +4655,13 @@
         Local0 = SizeOf (P000)
         If ((Local0 != 0xFF))
         {
-            ERR (TS, Z051, 0x03E2, 0x00, 0x00, Local0, 0xFF)
+            ERR (__METHOD__, Z051, 0x03E2, 0x00, 0x00, Local0, 0xFF)
         }
 
         Local0 = SizeOf (P001)
         If ((Local0 != 0x1D))
         {
-            ERR (TS, Z051, 0x03E7, 0x00, 0x00, Local0, 0x1D)
+            ERR (__METHOD__, Z051, 0x03E7, 0x00, 0x00, Local0, 0x1D)
         }
     }
 
@@ -4677,8 +4671,7 @@
     /* Do this test when ObjectType will be fixed. */
     Method (M1F7, 0, Serialized)
     {
-        Name (TS, "m1f7")
-        TS00 (TS)
+        TS00 (__METHOD__)
         Name (P000, Package (0xFF){})
         /*	Store(DeRefOf(Index(p000, 0)), Local0) */
 
@@ -4692,7 +4685,6 @@
     /* <Package>,<size>,<start value> */
     Method (M1F8, 3, Serialized)
     {
-        Name (TS, "m1f8")
         Name (N000, 0x00)
         Name (NCUR, 0x00)
         /* Writing with indexes */
@@ -4728,7 +4720,7 @@
 
             If ((Local1 != Local0))
             {
-                ERR (TS, Z051, 0x0424, 0x00, 0x00, Local1, Local0)
+                ERR (__METHOD__, Z051, 0x0424, 0x00, 0x00, Local1, Local0)
             }
 
             Local0++
@@ -4739,13 +4731,13 @@
         Local0 = ObjectType (Arg0)
         If ((Local0 != 0x04))
         {
-            ERR (TS, Z051, 0x042D, 0x00, 0x00, Local0, 0x04)
+            ERR (__METHOD__, Z051, 0x042D, 0x00, 0x00, Local0, 0x04)
         }
 
         Local0 = SizeOf (Arg0)
         If ((Local0 != Arg1))
         {
-            ERR (TS, Z051, 0x0432, 0x00, 0x00, Local0, Arg1)
+            ERR (__METHOD__, Z051, 0x0432, 0x00, 0x00, Local0, Arg1)
         }
     }
 
@@ -4764,8 +4756,7 @@
 
     Method (M1FA, 0, Serialized)
     {
-        Name (TS, "m1fa")
-        TS00 (TS)
+        TS00 (__METHOD__)
         M1F9 (0xFF)
     }
 
@@ -4774,7 +4765,6 @@
     /* <Package>,<size>,<start string> */
     Method (M1FB, 3, Serialized)
     {
-        Name (TS, "m1fb")
         Name (N000, 0x00)
         Name (NCUR, 0x00)
         /* Writing with indexes */
@@ -4809,7 +4799,7 @@
 
             If ((Local1 != Local0))
             {
-                ERR (TS, Z051, 0x0470, 0x00, 0x00, Local1, Local0)
+                ERR (__METHOD__, Z051, 0x0470, 0x00, 0x00, Local1, Local0)
             }
 
             N000--
@@ -4819,13 +4809,13 @@
         Local0 = ObjectType (Arg0)
         If ((Local0 != 0x04))
         {
-            ERR (TS, Z051, 0x0478, 0x00, 0x00, Local0, 0x04)
+            ERR (__METHOD__, Z051, 0x0478, 0x00, 0x00, Local0, 0x04)
         }
 
         Local0 = SizeOf (Arg0)
         If ((Local0 != Arg1))
         {
-            ERR (TS, Z051, 0x047D, 0x00, 0x00, Local0, Arg1)
+            ERR (__METHOD__, Z051, 0x047D, 0x00, 0x00, Local0, Arg1)
         }
     }
 
@@ -4844,8 +4834,7 @@
 
     Method (M1FD, 0, Serialized)
     {
-        Name (TS, "m1fd")
-        TS00 (TS)
+        TS00 (__METHOD__)
         M1FC (0xFF)
     }
 
@@ -4854,7 +4843,6 @@
     /* <Package>,<size>,<start buffer> */
     Method (M1FE, 3, Serialized)
     {
-        Name (TS, "m1fe")
         Name (N000, 0x00)
         Name (NCUR, 0x00)
         /* Writing with indexes */
@@ -4891,7 +4879,7 @@
 
             If ((Local1 != Local0))
             {
-                ERR (TS, Z051, 0x04BE, 0x00, 0x00, 0x00, 0x00)
+                ERR (__METHOD__, Z051, 0x04BE, 0x00, 0x00, 0x00, 0x00)
                 Debug = Local0
                 Debug = Local1
                 Return (Ones)
@@ -4904,13 +4892,13 @@
         Local0 = ObjectType (Arg0)
         If ((Local0 != 0x04))
         {
-            ERR (TS, Z051, 0x04C9, 0x00, 0x00, Local0, 0x04)
+            ERR (__METHOD__, Z051, 0x04C9, 0x00, 0x00, Local0, 0x04)
         }
 
         Local0 = SizeOf (Arg0)
         If ((Local0 != Arg1))
         {
-            ERR (TS, Z051, 0x04CE, 0x00, 0x00, Local0, Arg1)
+            ERR (__METHOD__, Z051, 0x04CE, 0x00, 0x00, Local0, Arg1)
         }
 
         Return (Zero)
@@ -4939,8 +4927,7 @@
 
     Method (M200, 0, Serialized)
     {
-        Name (TS, "m200")
-        TS00 (TS)
+        TS00 (__METHOD__)
         M1FF (0xFF)
     }
 
@@ -4950,7 +4937,6 @@
     Method (M201, 3, Serialized)
     {
         Name (PR00, 0x00)
-        Name (TS, "m201")
         Name (N000, 0x00)
         Name (NCUR, 0x00)
         /* Writing with indexes */
@@ -4994,7 +4980,7 @@
             Local0 = ObjectType (Local1)
             If ((Local0 != 0x04))
             {
-                ERR (TS, Z051, 0x0519, 0x00, 0x00, Local0, 0x04)
+                ERR (__METHOD__, Z051, 0x0519, 0x00, 0x00, Local0, 0x04)
                 Return (Ones)
             }
 
@@ -5005,13 +4991,13 @@
         Local0 = ObjectType (Arg0)
         If ((Local0 != 0x04))
         {
-            ERR (TS, Z051, 0x0522, 0x00, 0x00, Local0, 0x04)
+            ERR (__METHOD__, Z051, 0x0522, 0x00, 0x00, Local0, 0x04)
         }
 
         Local0 = SizeOf (Arg0)
         If ((Local0 != Arg1))
         {
-            ERR (TS, Z051, 0x0527, 0x00, 0x00, Local0, Arg1)
+            ERR (__METHOD__, Z051, 0x0527, 0x00, 0x00, Local0, Arg1)
         }
 
         Return (Zero)
@@ -5042,8 +5028,7 @@
     /* performed, too complex. */
     Method (M203, 0, Serialized)
     {
-        Name (TS, "m203")
-        TS00 (TS)
+        TS00 (__METHOD__)
         /*	m202(255) */
 
         M202 (0x01)

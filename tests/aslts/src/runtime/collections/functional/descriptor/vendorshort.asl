@@ -169,11 +169,10 @@
     })
     Method (RT07, 0, Serialized)
     {
-        Name (TS, "RT07")
         /* Emit test header, set the filename */
 
-        THDR (TS, "Short Vendor Resource Descriptor Macro", "vendorshort.asl")
+        THDR (__METHOD__, "Short Vendor Resource Descriptor Macro", "vendorshort.asl")
         /* Main test case for packages above */
 
-        M330 (TS, 0x08, "p40c", P40C, P40D)
+        M330 (__METHOD__, 0x08, "p40c", P40C, P40D)
     }

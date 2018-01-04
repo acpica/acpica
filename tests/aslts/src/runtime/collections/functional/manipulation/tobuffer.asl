@@ -345,24 +345,23 @@
 
     Method (TOB0, 0, Serialized)
     {
-        Name (TS, "TOB0")
         Debug = "TEST: TOB0, Convert Data to Buffer"
         /* From integer */
 
         If ((F64 == 0x01))
         {
-            M302 (TS, 0x09, "p322", P322, P323, 0x01)
+            M302 (__METHOD__, 0x09, "p322", P322, P323, 0x01)
         }
         Else
         {
-            M302 (TS, 0x06, "p320", P320, P321, 0x01)
+            M302 (__METHOD__, 0x06, "p320", P320, P321, 0x01)
         }
 
         /* From string */
 
-        M321 (TS)
+        M321 (__METHOD__)
         /* From buffer */
 
-        M322 (TS)
-        M302 (TS, 0x06, "p325", P325, P325, 0x01)
+        M322 (__METHOD__)
+        M302 (__METHOD__, 0x06, "p325", P325, P325, 0x01)
     }

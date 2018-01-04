@@ -399,7 +399,6 @@
     Method (MAT1, 0, Serialized)
     {
         Debug = "TEST: MAT1, Find Object Match"
-        Name (TS, "MAT1")
         /*	m331(ts) */
     /*	m333(ts) */
     }

@@ -1421,7 +1421,6 @@
 
     Method (M0F0, 0, Serialized)
     {
-        Name (TS, "m0f0")
         Debug = "TEST: m0f0, ObjectType"
         Local5 = 0x00
         Local4 = 0x23
@@ -1452,7 +1451,7 @@
 
             }
 
-            M0F1 (TS, Local5, Local2, 0x00, 0x00, 0x00, 0x00)
+            M0F1 (__METHOD__, Local5, Local2, 0x00, 0x00, 0x00, 0x00)
             Local5++
             Local4--
         }

@@ -1367,13 +1367,12 @@ Package (NRSK)
 
     Method (ORC0, 0, Serialized)
     {
-        Name (TS, "ORC0")
         /* Global OpRegions */
 
         SRMT ("m700")
         If (Y220)
         {
-            M700 (TS)
+            M700 (__METHOD__)
         }
         Else
         {
@@ -1385,7 +1384,7 @@ Package (NRSK)
         SRMT ("m701")
         If (Y217)
         {
-            M701 (TS)
+            M701 (__METHOD__)
         }
         Else
         {
@@ -1395,13 +1394,13 @@ Package (NRSK)
         /* OpRegion Lengths */
 
         SRMT ("m702")
-        M702 (TS)
+        M702 (__METHOD__)
         /* Overlapping of OpRegions */
 
         SRMT ("m703")
         If (Y221)
         {
-            M703 (TS)
+            M703 (__METHOD__)
         }
         Else
         {
@@ -1413,7 +1412,7 @@ Package (NRSK)
         SRMT ("m704")
         If (Y222)
         {
-            M704 (TS)
+            M704 (__METHOD__)
         }
         Else
         {
@@ -1423,13 +1422,13 @@ Package (NRSK)
         /* Non-constant OpRegion arguments */
 
         SRMT ("m705")
-        M705 (TS)
+        M705 (__METHOD__)
         /* Non-Integer OpRegion arguments */
 
         SRMT ("m706")
-        M706 (TS)
+        M706 (__METHOD__)
         /* Overlapping OpRegions algorithm test */
 
         SRMT ("m707")
-        M707 (TS)
+        M707 (__METHOD__)
     }

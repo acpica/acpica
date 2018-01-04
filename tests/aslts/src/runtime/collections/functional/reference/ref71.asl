@@ -36,7 +36,6 @@
      */
     Method (M1B3, 0, Serialized)
     {
-        Name (TS, "m1b3")
         C081 = Z109 /* absolute index of file initiating the checking */ /* \Z109 */
         Method (M000, 1, NotSerialized)
         {
@@ -45,11 +44,11 @@
                 Local7 = 0x00
             }
 
-            CH03 (TS, Z109, 0x00, 0x33, 0x00)
+            CH03 (__METHOD__, Z109, 0x00, 0x33, 0x00)
             Local0 = Local7
             If (!SLCK)
             {
-                CH04 (TS, 0x00, 0xFF, Z109, 0x37, 0x00, 0x00)
+                CH04 (__METHOD__, 0x00, 0xFF, Z109, 0x37, 0x00, 0x00)
             }
         }
 
@@ -63,35 +62,35 @@
         Local7 = ObjectType (Local0)
         If ((Local7 != C009))
         {
-            ERR (TS, Z109, 0x42, 0x00, 0x00, Local7, C009)
+            ERR (__METHOD__, Z109, 0x42, 0x00, 0x00, Local7, C009)
         }
 
         Local0 = S900 /* \S900 */
         Local7 = ObjectType (Local0)
         If ((Local7 != C00A))
         {
-            ERR (TS, Z109, 0x48, 0x00, 0x00, Local7, C00A)
+            ERR (__METHOD__, Z109, 0x48, 0x00, 0x00, Local7, C00A)
         }
 
         Local0 = B900 /* \B900 */
         Local7 = ObjectType (Local0)
         If ((Local7 != C00B))
         {
-            ERR (TS, Z109, 0x4E, 0x00, 0x00, Local7, C00B)
+            ERR (__METHOD__, Z109, 0x4E, 0x00, 0x00, Local7, C00B)
         }
 
         Local0 = P900 /* \P900 */
         Local7 = ObjectType (Local0)
         If ((Local7 != C00C))
         {
-            ERR (TS, Z109, 0x54, 0x00, 0x00, Local7, C00C)
+            ERR (__METHOD__, Z109, 0x54, 0x00, 0x00, Local7, C00C)
         }
 
         Local0 = F900 /* \F900 */
         Local7 = ObjectType (Local0)
         If ((Local7 != C009))
         {
-            ERR (TS, Z109, 0x5A, 0x00, 0x00, Local7, C009)
+            ERR (__METHOD__, Z109, 0x5A, 0x00, 0x00, Local7, C009)
         }
 
         /*
@@ -117,7 +116,7 @@
          */
         If (X114)
         {
-            CH03 (TS, Z109, 0x0B, 0x75, 0x00)
+            CH03 (__METHOD__, Z109, 0x0B, 0x75, 0x00)
             Local0 = M901 ()
                 /*CH04(ts, 0, 0xff, z109, __LINE__, 0, 0) */
         }
@@ -155,6 +154,6 @@
         Local7 = ObjectType (Local0)
         If ((Local7 != C009))
         {
-            ERR (TS, Z109, 0xA0, 0x00, 0x00, Local7, C009)
+            ERR (__METHOD__, Z109, 0xA0, 0x00, 0x00, Local7, C009)
         }
     }

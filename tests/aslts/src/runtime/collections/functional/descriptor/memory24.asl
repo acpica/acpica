@@ -132,13 +132,12 @@
     })
     Method (RT08, 0, Serialized)
     {
-        Name (TS, "RT08")
         /* Emit test header, set the filename */
 
-        THDR (TS, "Memory24 Resource Descriptor Macro", "memory24.asl")
+        THDR (__METHOD__, "Memory24 Resource Descriptor Macro", "memory24.asl")
         /* Main test case for packages above */
 
-        M330 (TS, 0x03, "p40e", P40E, P40F)
+        M330 (__METHOD__, 0x03, "p40e", P40E, P40F)
         /* Check resource descriptor tag offsets */
 
         Local0 = ResourceTemplate ()
@@ -156,9 +155,9 @@
                     0xF6F7,             // Length
                     )
             }
-        M331 (TS, 0x01, 0x18, 0x18, 0x78, 0x78, "_RW")
-        M331 (TS, 0x02, 0x20, 0x20, 0x80, 0x80, "_MIN")
-        M331 (TS, 0x03, 0x30, 0x30, 0x90, 0x90, "_MAX")
-        M331 (TS, 0x04, 0x40, 0x40, 0xA0, 0xA0, "_ALN")
-        M331 (TS, 0x05, 0x50, 0x50, 0xB0, 0xB0, "_LEN")
+        M331 (__METHOD__, 0x01, 0x18, 0x18, 0x78, 0x78, "_RW")
+        M331 (__METHOD__, 0x02, 0x20, 0x20, 0x80, 0x80, "_MIN")
+        M331 (__METHOD__, 0x03, 0x30, 0x30, 0x90, 0x90, "_MAX")
+        M331 (__METHOD__, 0x04, 0x40, 0x40, 0xA0, 0xA0, "_ALN")
+        M331 (__METHOD__, 0x05, 0x50, 0x50, 0xB0, 0xB0, "_LEN")
     }

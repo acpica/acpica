@@ -105,13 +105,12 @@
     })
     Method (RT0B, 0, Serialized)
     {
-        Name (TS, "RT0b")
         /* Emit test header, set the filename */
 
-        THDR (TS, "Memory32Fixed Resource Descriptor Macro", "memory32fixed.asl")
+        THDR (__METHOD__, "Memory32Fixed Resource Descriptor Macro", "memory32fixed.asl")
         /* Main test case for packages above */
 
-        M330 (TS, 0x03, "p414", P414, P415)
+        M330 (__METHOD__, 0x03, "p414", P414, P415)
         /* Check resource descriptor tag offsets */
 
         Local0 = ResourceTemplate ()
@@ -125,7 +124,7 @@
                     0xF4F5F6F7,         // Address Length
                     )
             }
-        M331 (TS, 0x01, 0x18, 0x18, 0x78, 0x78, "_RW")
-        M331 (TS, 0x02, 0x20, 0x20, 0x80, 0x80, "_BAS")
-        M331 (TS, 0x03, 0x40, 0x40, 0xA0, 0xA0, "_LEN")
+        M331 (__METHOD__, 0x01, 0x18, 0x18, 0x78, 0x78, "_RW")
+        M331 (__METHOD__, 0x02, 0x20, 0x20, 0x80, 0x80, "_BAS")
+        M331 (__METHOD__, 0x03, 0x40, 0x40, 0xA0, 0xA0, "_LEN")
     }

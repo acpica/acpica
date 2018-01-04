@@ -18827,17 +18827,16 @@
 
     Method (BFC0, 0, Serialized)
     {
-        Name (TS, "BFC0")
         /* Simple BankField test */
 
         SRMT ("m7c0")
-        M7C0 (TS)
+        M7C0 (__METHOD__)
         /* Check BankField access: ByteAcc, NoLock, Preserve */
 
         SRMT ("m7c1")
         If (Y192)
         {
-            M7C1 (TS)
+            M7C1 (__METHOD__)
         }
         Else
         {
@@ -18849,7 +18848,7 @@
         SRMT ("m7c2")
         If (Y192)
         {
-            M7C2 (TS)
+            M7C2 (__METHOD__)
         }
         Else
         {
@@ -18861,7 +18860,7 @@
         SRMT ("m7c3")
         If (Y192)
         {
-            M7C3 (TS)
+            M7C3 (__METHOD__)
         }
         Else
         {
@@ -18873,7 +18872,7 @@
         SRMT ("m7c4")
         If (Y192)
         {
-            M7C4 (TS)
+            M7C4 (__METHOD__)
         }
         Else
         {
@@ -18885,7 +18884,7 @@
         SRMT ("m7c5")
         If (Y192)
         {
-            M7C5 (TS)
+            M7C5 (__METHOD__)
         }
         Else
         {
@@ -18897,7 +18896,7 @@
         SRMT ("m7c6")
         If (Y192)
         {
-            M7C6 (TS)
+            M7C6 (__METHOD__)
         }
         Else
         {
@@ -18909,7 +18908,7 @@
         SRMT ("m7c7")
         If (Y178)
         {
-            M7C7 (TS)
+            M7C7 (__METHOD__)
         }
         Else
         {
@@ -18921,7 +18920,7 @@
         SRMT ("m7c8")
         If (Y178)
         {
-            M7C8 (TS)
+            M7C8 (__METHOD__)
         }
         Else
         {

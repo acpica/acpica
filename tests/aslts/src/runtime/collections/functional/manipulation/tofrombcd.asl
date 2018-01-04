@@ -92,31 +92,29 @@
     })
     Method (BCD1, 0, Serialized)
     {
-        Name (TS, "BCD1")
         Debug = "TEST: BCD1, Convert Integer to BCD"
         If ((F64 == 0x01))
         {
-            M302 (TS, 0x0C, "p352", P352, P353, 0x05)
-            M302 (TS, 0x0A, "p354", P354, P355, 0x05)
+            M302 (__METHOD__, 0x0C, "p352", P352, P353, 0x05)
+            M302 (__METHOD__, 0x0A, "p354", P354, P355, 0x05)
         }
         Else
         {
-            M302 (TS, 0x0C, "p352", P352, P353, 0x05)
+            M302 (__METHOD__, 0x0C, "p352", P352, P353, 0x05)
         }
     }
 
     Method (BCD2, 0, Serialized)
     {
-        Name (TS, "BCD2")
         Debug = "TEST: BCD2, Convert BCD To Integer"
         If ((F64 == 0x01))
         {
-            M302 (TS, 0x0C, "p353", P353, P352, 0x06)
-            M302 (TS, 0x0A, "p355", P355, P354, 0x06)
+            M302 (__METHOD__, 0x0C, "p353", P353, P352, 0x06)
+            M302 (__METHOD__, 0x0A, "p355", P355, P354, 0x06)
         }
         Else
         {
-            M302 (TS, 0x0C, "p353", P353, P352, 0x06)
+            M302 (__METHOD__, 0x0C, "p353", P353, P352, 0x06)
         }
     }
 

@@ -470,21 +470,20 @@
     })
     Method (RT23, 0, Serialized)
     {
-        Name (TS, "RT23")
         /* Emit test header, set the filename */
 
-        THDR (TS, "I2cSerialBus Resource Descriptor Macro", "i2cserialbus.asl")
+        THDR (__METHOD__, "I2cSerialBus Resource Descriptor Macro", "i2cserialbus.asl")
         /* The main test packages must have the same number of entries */
 
         If ((SizeOf (P456) != SizeOf (P457)))
         {
-            ERR (TS, 0xB4, 0x00, 0x00, 0x00, 0x00, "Incorrect package length")
+            ERR (__METHOD__, 0xB4, 0x00, 0x00, 0x00, 0x00, "Incorrect package length")
             Return (Zero)
         }
 
         /* Main test case for packages above */
 
-        M330 (TS, SizeOf (P456), "p456", P456, P457)
+        M330 (__METHOD__, SizeOf (P456), "p456", P456, P457)
         /* Check resource descriptor tag offsets */
 
         Local0 = ResourceTemplate ()
@@ -504,9 +503,9 @@
                         0xB1, 0xB2, 0xB3, 0xB4
                     })
             }
-        M331 (TS, 0x01, 0x30, 0x30, 0x0108, 0x0108, "_SLV")
-        M331 (TS, 0x02, 0x38, 0x38, 0x0110, 0x0110, "_MOD")
-        M331 (TS, 0x03, 0x60, 0x60, 0x0138, 0x0138, "_SPE")
-        M331 (TS, 0x04, 0x80, 0x80, 0x0158, 0x0158, "_ADR")
-        M331 (TS, 0x05, 0x90, 0x90, 0x0168, 0x0168, "_VEN")
+        M331 (__METHOD__, 0x01, 0x30, 0x30, 0x0108, 0x0108, "_SLV")
+        M331 (__METHOD__, 0x02, 0x38, 0x38, 0x0110, 0x0110, "_MOD")
+        M331 (__METHOD__, 0x03, 0x60, 0x60, 0x0138, 0x0138, "_SPE")
+        M331 (__METHOD__, 0x04, 0x80, 0x80, 0x0158, 0x0158, "_ADR")
+        M331 (__METHOD__, 0x05, 0x90, 0x90, 0x0168, 0x0168, "_VEN")
     }

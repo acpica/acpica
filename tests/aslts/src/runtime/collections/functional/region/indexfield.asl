@@ -17824,27 +17824,26 @@
 
     Method (IFC0, 0, Serialized)
     {
-        Name (TS, "IFC0")
         SRMT ("m770")
-        M770 (TS)
+        M770 (__METHOD__)
         /* Access to 1-bit IndexFields, ByteAcc */
 
         SRMT ("m771")
-        M771 (TS)
+        M771 (__METHOD__)
         /* Access to 1-bit IndexFields, WordAcc */
 
         SRMT ("m772")
-        M772 (TS)
+        M772 (__METHOD__)
         /* Access to 1-bit IndexFields, DWordAcc */
 
         SRMT ("m773")
-        M773 (TS)
+        M773 (__METHOD__)
         /* Access to 1-bit IndexFields, QWordAcc */
 
         SRMT ("m774")
         If (Y215)
         {
-            M774 (TS)
+            M774 (__METHOD__)
         }
         Else
         {
@@ -17854,13 +17853,13 @@
         /* Splitting of IndexFields */
 
         SRMT ("m775")
-        M775 (TS)
+        M775 (__METHOD__)
         /* Check IndexField access: ByteAcc, NoLock, Preserve */
 
         SRMT ("m776")
         If (Y224)
         {
-            M776 (TS)
+            M776 (__METHOD__)
         }
         Else
         {
@@ -17872,7 +17871,7 @@
         SRMT ("m777")
         If (Y224)
         {
-            M777 (TS)
+            M777 (__METHOD__)
         }
         Else
         {
@@ -17884,7 +17883,7 @@
         SRMT ("m778")
         If (Y224)
         {
-            M778 (TS)
+            M778 (__METHOD__)
         }
         Else
         {
@@ -17896,7 +17895,7 @@
         SRMT ("m779")
         If (Y224)
         {
-            M779 (TS)
+            M779 (__METHOD__)
         }
         Else
         {
@@ -17908,7 +17907,7 @@
         SRMT ("m77a")
         If (Y224)
         {
-            M77A (TS)
+            M77A (__METHOD__)
         }
         Else
         {

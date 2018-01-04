@@ -38,7 +38,6 @@
     /* 51 - AE_AML_UNINITIALIZED_ELEMENT */
     Method (M4B0, 1, Serialized)
     {
-        Name (TS, "m4b0")
         Name (I000, 0x00)
         Event (E000)
         /* Uninitialized Local */
@@ -53,7 +52,7 @@
             /* CondRefOf */
 
             CondRefOf (Local0, Local1)
-            CH03 (TS, Z092, 0x01, 0x3B, 0x00)
+            CH03 (__METHOD__, Z092, 0x01, 0x3B, 0x00)
             /* CopyObject */
 
             CopyObject (Local0, Local1)
@@ -93,11 +92,11 @@
             /* ObjectType */
 
             Local1 = ObjectType (Local0)
-            CH03 (TS, Z092, 0x02, 0x6D, 0x00)
+            CH03 (__METHOD__, Z092, 0x02, 0x6D, 0x00)
             /* RefOf */
 
             Local1 = RefOf (Local0)
-            CH03 (TS, Z092, 0x03, 0x72, 0x00)
+            CH03 (__METHOD__, Z092, 0x03, 0x72, 0x00)
             /* Release */
 
             Release (Local0)
@@ -345,7 +344,7 @@
             /* DeRefOf(Index(Package, Ind)) */
 
             Local1 = DerefOf (P000 [0x00])
-            CH04 (TS, 0x01, 0x33, Z092, 0x01A2, 0x00, 0x00)
+            CH04 (__METHOD__, 0x01, 0x33, Z092, 0x01A2, 0x00, 0x00)
             /* CondRefOf */
 
             CondRefOf (DerefOf (P000 [0x00]), Local1)
@@ -391,7 +390,7 @@
             If (X104)
             {
                 Local1 = ObjectType (DerefOf (P000 [0x00]))
-                CH03 (TS, Z092, 0x05, 0x01DA, 0x00)
+                CH03 (__METHOD__, Z092, 0x05, 0x01DA, 0x00)
             }
 
             /* RefOf */
@@ -953,7 +952,7 @@
             }
 
             Local1 = DerefOf (Arg1)
-            CH04 (TS, 0x00, 0x3E, Z092, 0x04F9, 0x00, 0x00)
+            CH04 (__METHOD__, 0x00, 0x3E, Z092, 0x04F9, 0x00, 0x00)
             /* CondRefOf */
 
             CondRefOf (DerefOf (Arg1), Local1)
@@ -999,7 +998,7 @@
             If (X104)
             {
                 Local1 = ObjectType (DerefOf (Arg1))
-                CH03 (TS, Z092, 0x0B, 0x0531, 0x00)
+                CH03 (__METHOD__, Z092, 0x0B, 0x0531, 0x00)
             }
 
             /* RefOf */
@@ -1418,13 +1417,13 @@
             }
         }
 
-        CH03 (TS, Z092, 0x0C, 0x0716, 0x00)
+        CH03 (__METHOD__, Z092, 0x0C, 0x0716, 0x00)
         /* Uninitialized Local */
 
-        M000 (Concatenate (TS, "-m000"), 0x00)
+        M000 (Concatenate (__METHOD__, "-m000"), 0x00)
         /* Uninitialized element of Package */
 
-        M001 (Concatenate (TS, "-m001"))
+        M001 (Concatenate (__METHOD__, "-m001"))
         /*
          // Causes Remark on compilation
          // Uninitialized Arg
@@ -1436,7 +1435,7 @@
             Local0 = 0x00
         }
 
-        M003 (Concatenate (TS, "-m003-RefLocal"), RefOf (Local0))
+        M003 (Concatenate (__METHOD__, "-m003-RefLocal"), RefOf (Local0))
         /* Reference (Index) to Uninitialized element of Package */
 
         If (Y502)
@@ -1444,32 +1443,32 @@
             Name (P000, Package (0x01){})
             If (Y113)
             {
-                M003 (Concatenate (TS, "-m003-Index"), P000 [0x00])
+                M003 (Concatenate (__METHOD__, "-m003-Index"), P000 [0x00])
             }
 
             Store (P000 [0x00], Local1)
-            M003 (Concatenate (TS, "-m003-Index2"), Local1)
+            M003 (Concatenate (__METHOD__, "-m003-Index2"), Local1)
             If (Y113)
             {
-                M003 (Concatenate (TS, "-m003-Index3"), Local2 = P000 [0x00])
+                M003 (Concatenate (__METHOD__, "-m003-Index3"), Local2 = P000 [0x00])
             }
 
             Local3 = P000 [0x00]
-            M003 (Concatenate (TS, "-m003-Index4"), Local3)
+            M003 (Concatenate (__METHOD__, "-m003-Index4"), Local3)
             Local5 = Local4 = P000 [0x00]
-            M003 (Concatenate (TS, "-m003-Index5"), Local5)
+            M003 (Concatenate (__METHOD__, "-m003-Index5"), Local5)
         }
 
         /* Uninitialized Local in Return */
 
         M004 (0x00)
-        CH06 (TS, 0x00, 0x31)
+        CH06 (__METHOD__, 0x00, 0x31)
         /* Uninitialized element of Package in Return */
 
         If (Y502)
         {
             M005 ()
-            CH06 (TS, 0x01, 0x33)
+            CH06 (__METHOD__, 0x01, 0x33)
         }
 
         /*
@@ -1480,13 +1479,13 @@
          */
         /* Uninitialized Local in If */
         M007 (0x00)
-        CH06 (TS, 0x03, 0x31)
+        CH06 (__METHOD__, 0x03, 0x31)
         /* Uninitialized element of Package in If */
 
         If (Y502)
         {
             M008 ()
-            CH06 (TS, 0x04, 0x33)
+            CH06 (__METHOD__, 0x04, 0x33)
         }
 
         /*
@@ -1497,13 +1496,13 @@
          */
         /* Uninitialized Local in Elseif */
         M00A (0x00)
-        CH06 (TS, 0x06, 0x31)
+        CH06 (__METHOD__, 0x06, 0x31)
         /* Uninitialized element of Package in Elseif */
 
         If (Y502)
         {
             M00B (0x00)
-            CH06 (TS, 0x07, 0x33)
+            CH06 (__METHOD__, 0x07, 0x33)
         }
 
         /*
@@ -1515,17 +1514,17 @@
         /* Uninitialized Local as parameter of a method */
         I001 = 0x00
         M00D (Local0)
-        CH06 (TS, 0x09, 0x31)
+        CH06 (__METHOD__, 0x09, 0x31)
         If ((I001 != 0x00))
         {
-            ERR (TS, Z092, 0x077B, 0x00, 0x00, I001, 0x00)
+            ERR (__METHOD__, Z092, 0x077B, 0x00, 0x00, I001, 0x00)
         }
 
         /* Uninitialized element of Package as parameter of a method */
 
         If (Y502)
         {
-            M00E (Concatenate (TS, "-m00e"))
+            M00E (Concatenate (__METHOD__, "-m00e"))
         }
         /*
      // Causes Remark on compilation

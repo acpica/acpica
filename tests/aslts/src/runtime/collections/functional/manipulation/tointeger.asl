@@ -380,68 +380,67 @@
 
     Method (TOI0, 0, Serialized)
     {
-        Name (TS, "TOI0")
         Debug = "TEST: TOI0, Convert data to integer"
         /* From integer */
 
         If ((F64 == 0x01))
         {
-            M302 (TS, 0x06, "p300", P300, P300, 0x00)
-            M302 (TS, 0x05, "p302", P302, P302, 0x00)
+            M302 (__METHOD__, 0x06, "p300", P300, P300, 0x00)
+            M302 (__METHOD__, 0x05, "p302", P302, P302, 0x00)
         }
         Else
         {
-            M302 (TS, 0x06, "p300", P300, P300, 0x00)
+            M302 (__METHOD__, 0x06, "p300", P300, P300, 0x00)
         }
 
         /* From hexadecimal numeric string */
 
         If ((F64 == 0x01))
         {
-            M302 (TS, 0x20, "p304", P304, P305, 0x00)
-            M302 (TS, 0x20, "p306", P306, P307, 0x00)
+            M302 (__METHOD__, 0x20, "p304", P304, P305, 0x00)
+            M302 (__METHOD__, 0x20, "p306", P306, P307, 0x00)
         }
         Else
         {
-            M302 (TS, 0x20, "p304", P304, P305, 0x00)
+            M302 (__METHOD__, 0x20, "p304", P304, P305, 0x00)
         }
 
         /* From decimal numeric string */
 
         If ((F64 == 0x01))
         {
-            M302 (TS, 0x15, "p308", P308, P309, 0x00)
-            M302 (TS, 0x15, "p310", P310, P311, 0x00)
+            M302 (__METHOD__, 0x15, "p308", P308, P309, 0x00)
+            M302 (__METHOD__, 0x15, "p310", P310, P311, 0x00)
         }
         Else
         {
-            M302 (TS, 0x15, "p308", P308, P309, 0x00)
+            M302 (__METHOD__, 0x15, "p308", P308, P309, 0x00)
         }
 
         /* From buffer */
 
         If ((F64 == 0x01))
         {
-            M302 (TS, 0x04, "p312", P312, P313, 0x00)
-            M302 (TS, 0x05, "p314", P314, P315, 0x00)
+            M302 (__METHOD__, 0x04, "p312", P312, P313, 0x00)
+            M302 (__METHOD__, 0x05, "p314", P314, P315, 0x00)
         }
         Else
         {
-            M302 (TS, 0x05, "p312", P312, P313, 0x00)
+            M302 (__METHOD__, 0x05, "p312", P312, P313, 0x00)
         }
 
         /* Suppression of zeroes */
 
         If (Y602)
         {
-            CH03 (TS, Z047, 0x00, 0x018D, 0x00)
+            CH03 (__METHOD__, Z047, 0x00, 0x018D, 0x00)
             Local0 = "0x0123456789abcdefa"
             ToInteger (Local0, Local2)
-            CH04 (TS, 0x00, 0x22, Z047, 0x0190, 0x00, 0x00)
-            CH03 (TS, Z047, 0x02, 0x0192, 0x00)
+            CH04 (__METHOD__, 0x00, 0x22, Z047, 0x0190, 0x00, 0x00)
+            CH03 (__METHOD__, Z047, 0x02, 0x0192, 0x00)
             Local0 = "0x000123456789abcdefa"
             ToInteger (Local0, Local2)
-            CH04 (TS, 0x00, 0x22, Z047, 0x0195, 0x00, 0x00)
+            CH04 (__METHOD__, 0x00, 0x22, Z047, 0x0195, 0x00, 0x00)
         }
         Else
         {
@@ -450,14 +449,14 @@
             ToInteger (Local0, Local2)
             If ((Local2 != Local1))
             {
-                ERR (TS, Z047, 0x019B, 0x00, 0x00, Local0, 0x00)
+                ERR (__METHOD__, Z047, 0x019B, 0x00, 0x00, Local0, 0x00)
             }
 
             Local0 = "0x000123456789abcdefa"
             ToInteger (Local0, Local2)
             If ((Local2 != Local1))
             {
-                ERR (TS, Z047, 0x01A1, 0x00, 0x00, Local0, 0x00)
+                ERR (__METHOD__, Z047, 0x01A1, 0x00, 0x00, Local0, 0x00)
             }
         }
     }

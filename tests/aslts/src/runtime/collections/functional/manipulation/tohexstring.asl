@@ -216,23 +216,22 @@
 
     Method (TOH0, 0, Serialized)
     {
-        Name (TS, "TOH0")
         Debug = "TEST: TOH0, Convert Data to Hexadecimal String"
         /* From integer */
 
         If ((F64 == 0x01))
         {
-            M302 (TS, 0x17, "p348", P348, P349, 0x04)
+            M302 (__METHOD__, 0x17, "p348", P348, P349, 0x04)
         }
         Else
         {
-            M302 (TS, 0x0C, "p346", P346, P347, 0x04)
+            M302 (__METHOD__, 0x0C, "p346", P346, P347, 0x04)
         }
 
         /* From string */
 
-        M302 (TS, 0x06, "p344", P344, P344, 0x04)
+        M302 (__METHOD__, 0x06, "p344", P344, P344, 0x04)
         /* From buffer */
 
-        M302 (TS, 0x0A, "p350", P350, P351, 0x04)
+        M302 (__METHOD__, 0x0A, "p350", P350, P351, 0x04)
     }

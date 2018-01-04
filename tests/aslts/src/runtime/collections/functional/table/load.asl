@@ -2436,111 +2436,109 @@ Local2 = Buffer (0x0A)
 
     Method (TLD0, 0, Serialized)
     {
-        Name (TS, "TLD0")
         /* Loading SSDT from a SystemMemory OpRegion, */
         /* different targets for DDBHandle */
-        CH03 (TS, Z174, 0x0200, 0x084F, 0x00)
+        CH03 (__METHOD__, Z174, 0x0200, 0x084F, 0x00)
         /* Named Objects */
 
         SRMT ("TLD0.tst0")
-        \DTM0.TST0 (TS)
-        CH03 (TS, Z174, 0x0201, 0x0855, 0x00)
+        \DTM0.TST0 (__METHOD__)
+        CH03 (__METHOD__, Z174, 0x0201, 0x0855, 0x00)
         /* LocalX Object */
 
         SRMT ("TLD0.tst1")
-        \DTM0.TST1 (TS)
-        CH03 (TS, Z174, 0x0202, 0x085B, 0x00)
+        \DTM0.TST1 (__METHOD__)
+        CH03 (__METHOD__, Z174, 0x0202, 0x085B, 0x00)
         /* Package element */
 
         SRMT ("TLD0.tst2")
-        \DTM0.TST2 (TS)
-        CH03 (TS, Z174, 0x0203, 0x0861, 0x00)
+        \DTM0.TST2 (__METHOD__)
+        CH03 (__METHOD__, Z174, 0x0203, 0x0861, 0x00)
         /* By Reference in ArgX */
 
         SRMT ("TLD0.tst3")
-        \DTM0.TST3 (TS)
+        \DTM0.TST3 (__METHOD__)
         /* Loading SSDT from a Field of an OpRegion of any type, */
         /* different targets for DDBHandle */
-        CH03 (TS, Z174, 0x0204, 0x086A, 0x00)
+        CH03 (__METHOD__, Z174, 0x0204, 0x086A, 0x00)
         /* SystemMemory Region */
 
         SRMT ("TLD0.tst4")
-        \DTM0.TST4 (TS)
-        CH03 (TS, Z174, 0x0205, 0x0870, 0x00)
+        \DTM0.TST4 (__METHOD__)
+        CH03 (__METHOD__, Z174, 0x0205, 0x0870, 0x00)
         /* SystemIO Region */
 
         SRMT ("TLD0.tst5")
-        \DTM0.TST5 (TS)
-        CH03 (TS, Z174, 0x0206, 0x0876, 0x00)
+        \DTM0.TST5 (__METHOD__)
+        CH03 (__METHOD__, Z174, 0x0206, 0x0876, 0x00)
         /* EmbeddedControl Region */
 
         SRMT ("TLD0.tst6")
-        \DTM0.TST6 (TS)
-        CH03 (TS, Z174, 0x0207, 0x087C, 0x00)
+        \DTM0.TST6 (__METHOD__)
+        CH03 (__METHOD__, Z174, 0x0207, 0x087C, 0x00)
         /* User defined Region */
 
         SRMT ("TLD0.tst7")
-        \DTM0.TST7 (TS)
-        CH03 (TS, Z174, 0x0208, 0x0882, 0x00)
+        \DTM0.TST7 (__METHOD__)
+        CH03 (__METHOD__, Z174, 0x0208, 0x0882, 0x00)
         /* Check that "namespace location to load the Definition Block */
         /* is relative to the current namespace" scope, */
         SRMT ("TLD0.tst8")
-        \DTM0.TST8 (TS)
-        CH03 (TS, Z174, 0x0209, 0x0889, 0x00)
+        \DTM0.TST8 (__METHOD__)
+        CH03 (__METHOD__, Z174, 0x0209, 0x0889, 0x00)
         /* Check global and dynamic declarations of OpRegions */
         /* and the appropriate _REG Methods invocation for the */
         /* loaded SSDT */
         SRMT ("TLD0.tst9")
-        \DTM0.TST9 (TS)
-        CH03 (TS, Z174, 0x020A, 0x0891, 0x00)
+        \DTM0.TST9 (__METHOD__)
+        CH03 (__METHOD__, Z174, 0x020A, 0x0891, 0x00)
         /* Object of any type can be used as the DDBHandle argument */
 
         SRMT ("TLD0.tstg")
-        \DTM0.TSTG (TS)
-        CH03 (TS, Z174, 0x020B, 0x0897, 0x00)
+        \DTM0.TSTG (__METHOD__)
+        CH03 (__METHOD__, Z174, 0x020B, 0x0897, 0x00)
         /* Loading a number of different SSDTs */
 
         SRMT ("TLD0.tsta")
         If (Y261)
         {
-            \DTM0.TSTA (TS, 0xF0)
+            \DTM0.TSTA (__METHOD__, 0xF0)
         }
         Else
         {
             BLCK ()
         }
 
-        CH03 (TS, Z174, 0x020C, 0x08A1, 0x00)
+        CH03 (__METHOD__, Z174, 0x020C, 0x08A1, 0x00)
         /* Recursive Load in module level */
 
         SRMT ("TLD0.tstk")
-        \DTM0.TSTK (TS)
-        CH03 (TS, Z174, 0x020D, 0x08A7, 0x00)
+        \DTM0.TSTK (__METHOD__)
+        CH03 (__METHOD__, Z174, 0x020D, 0x08A7, 0x00)
     }
 
     /* Exceptional conditions */
 
     Method (TLD1, 0, Serialized)
     {
-        Name (TS, "TLD1")
         /* Exceptions when the Object argument does not refer to */
         /* an operation region field or an operation region */
         SRMT ("TLD1.tstb")
-        \DTM0.TSTB (TS)
+        \DTM0.TSTB (__METHOD__)
         /* Exceptions when the an OpRegion passed as the Object */
         /* parameter of Load is not of SystemMemory type */
         SRMT ("TLD1.tstc")
-        \DTM0.TSTC (TS)
+        \DTM0.TSTC (__METHOD__)
         /* Exceptions when the table contained in an OpRegion */
         /* (Field) is not an SSDT */
         SRMT ("TLD1.tstd")
-        \DTM0.TSTD (TS)
+        \DTM0.TSTD (__METHOD__)
         /* Exceptions when the length of the supplied SSDT is greater */
         /* than the length of the respective OpRegion or Region Field, */
         SRMT ("TLD1.tste.0")
         If (Y284)
         {
-            \DTM0.TSTE (TS, 0x00)
+            \DTM0.TSTE (__METHOD__, 0x00)
         }
         Else
         {
@@ -2550,17 +2548,17 @@ Local2 = Buffer (0x0A)
         /* Exceptions when the length of the supplied SSDT is */
         /* less than the length of the Table Header */
         SRMT ("TLD1.tste.1")
-        \DTM0.TSTE (TS, 0x01)
+        \DTM0.TSTE (__METHOD__, 0x01)
         /* Exceptions when the checksum of the supplied SSDT is invalid */
 
         SRMT ("TLD1.tstf")
-        \DTM0.TSTF (TS)
+        \DTM0.TSTF (__METHOD__)
         /* AE_OWNER_ID_LIMIT exception when too many Tables loaded */
 
         SRMT ("TLD1.tsth")
         If (Y294)
         {
-            \DTM0.TSTH (TS, 0x00)
+            \DTM0.TSTH (__METHOD__, 0x00)
         }
         Else
         {
@@ -2570,9 +2568,9 @@ Local2 = Buffer (0x0A)
         /* Exception when SSDT specified as the Object parameter */
         /* of the Load operator is already loaded */
         SRMT ("TLD1.tsti")
-        \DTM0.TSTI (TS)
+        \DTM0.TSTI (__METHOD__)
         /* Exception when there already is an previously created Object */
         /* referred by the namepath of the new Object in the Table loaded */
         SRMT ("TLD1.tstj")
-        \DTM0.TSTJ (TS)
+        \DTM0.TSTJ (__METHOD__)
     }
