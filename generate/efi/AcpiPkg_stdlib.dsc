@@ -1,7 +1,7 @@
 #/** @file
 # Build discription file to generate ACPICA applications.
 #
-# Copyright (c) 2009 Intel Corporation. All rights reserved
+# Copyright (c) 2009 - 2018, Intel Corporation. All rights reserved
 # This software and associated documentation (if any) is furnished
 # under a license and may only be used or copied in accordance
 # with the terms of the license. Except as permitted by such
