@@ -271,7 +271,7 @@ AcpiUtStricmp (
 }
 
 
-#if defined (ACPI_DEBUGGER) || defined (ACPI_APPLICATION)
+#if defined (ACPI_DEBUGGER) || defined (ACPI_APPLICATION) || defined (ACPI_DEBUG_OUTPUT)
 /*******************************************************************************
  *
  * FUNCTION:    AcpiUtSafeStrcpy, AcpiUtSafeStrcat, AcpiUtSafeStrncat
