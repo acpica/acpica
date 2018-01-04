@@ -35,7 +35,6 @@
 
     Method (M1EF, 0, Serialized)
     {
-        Name (TS, "m1ef")
         Name (I000, 0x00)
         Name (S000, "vcd")
         Name (B000, Buffer (0x05)
@@ -57,30 +56,30 @@
         {
             If ((Local0 != 0x08))
             {
-                ERR (TS, Z041, 0x32, 0x00, 0x00, Local0, 0x08)
+                ERR (__METHOD__, Z041, 0x32, 0x00, 0x00, Local0, 0x08)
             }
         }
         ElseIf ((Local0 != 0x04))
         {
-            ERR (TS, Z041, 0x36, 0x00, 0x00, Local0, 0x04)
+            ERR (__METHOD__, Z041, 0x36, 0x00, 0x00, Local0, 0x04)
         }
 
         Local0 = SizeOf (S000)
         If ((Local0 != 0x03))
         {
-            ERR (TS, Z041, 0x3C, 0x00, 0x00, Local0, 0x03)
+            ERR (__METHOD__, Z041, 0x3C, 0x00, 0x00, Local0, 0x03)
         }
 
         Local0 = SizeOf (B000)
         If ((Local0 != 0x05))
         {
-            ERR (TS, Z041, 0x41, 0x00, 0x00, Local0, 0x05)
+            ERR (__METHOD__, Z041, 0x41, 0x00, 0x00, Local0, 0x05)
         }
 
         Local0 = SizeOf (P000)
         If ((Local0 != 0x07))
         {
-            ERR (TS, Z041, 0x46, 0x00, 0x00, Local0, 0x07)
+            ERR (__METHOD__, Z041, 0x46, 0x00, 0x00, Local0, 0x07)
         }
     }
 

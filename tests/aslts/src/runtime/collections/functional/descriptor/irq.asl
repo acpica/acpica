@@ -269,13 +269,12 @@
     })
     Method (RT01, 0, Serialized)
     {
-        Name (TS, "RT01")
         /* Emit test header, set the filename */
 
-        THDR (TS, "IRQ Resource Descriptor Macro", "irq.asl")
+        THDR (__METHOD__, "IRQ Resource Descriptor Macro", "irq.asl")
         /* Main test case for packages above */
 
-        M330 (TS, 0x12, "p400", P400, P401)
+        M330 (__METHOD__, 0x12, "p400", P400, P401)
         Local0 = ResourceTemplate ()
             {
                 IRQ (Edge, ActiveLow, Shared, )
@@ -283,7 +282,7 @@
                 IRQ (Edge, ActiveLow, Shared, )
                     {}
             }
-        M331 (TS, 0x01, 0x18, 0x18, 0x38, 0x38, "_HE")
-        M331 (TS, 0x02, 0x1B, 0x1B, 0x3B, 0x3B, "_LL")
-        M331 (TS, 0x03, 0x1C, 0x1C, 0x3C, 0x3C, "_SHR")
+        M331 (__METHOD__, 0x01, 0x18, 0x18, 0x38, 0x38, "_HE")
+        M331 (__METHOD__, 0x02, 0x1B, 0x1B, 0x3B, 0x3B, "_LL")
+        M331 (__METHOD__, 0x03, 0x1C, 0x1C, 0x3C, 0x3C, "_SHR")
     }

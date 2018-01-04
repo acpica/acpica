@@ -114,13 +114,12 @@
     })
     Method (RT05, 0, Serialized)
     {
-        Name (TS, "RT05")
         /* Emit test header, set the filename */
 
-        THDR (TS, "IO Resource Descriptor Macro", "io.asl")
+        THDR (__METHOD__, "IO Resource Descriptor Macro", "io.asl")
         /* Main test case for packages above */
 
-        M330 (TS, 0x03, "p408", P408, P409)
+        M330 (__METHOD__, 0x03, "p408", P408, P409)
         /* Check resource descriptor tag offsets */
 
         Local0 = ResourceTemplate ()
@@ -138,9 +137,9 @@
                     0xF5,               // Length
                     )
             }
-        M331 (TS, 0x01, 0x08, 0x08, 0x48, 0x48, "_DEC")
-        M331 (TS, 0x02, 0x10, 0x10, 0x50, 0x50, "_MIN")
-        M331 (TS, 0x03, 0x20, 0x20, 0x60, 0x60, "_MAX")
-        M331 (TS, 0x04, 0x30, 0x30, 0x70, 0x70, "_ALN")
-        M331 (TS, 0x05, 0x38, 0x38, 0x78, 0x78, "_LEN")
+        M331 (__METHOD__, 0x01, 0x08, 0x08, 0x48, 0x48, "_DEC")
+        M331 (__METHOD__, 0x02, 0x10, 0x10, 0x50, 0x50, "_MIN")
+        M331 (__METHOD__, 0x03, 0x20, 0x20, 0x60, 0x60, "_MAX")
+        M331 (__METHOD__, 0x04, 0x30, 0x30, 0x70, 0x70, "_ALN")
+        M331 (__METHOD__, 0x05, 0x38, 0x38, 0x78, 0x78, "_LEN")
     }

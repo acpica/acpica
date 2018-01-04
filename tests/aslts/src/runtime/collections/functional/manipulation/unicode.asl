@@ -125,7 +125,6 @@
 
     Method (UNI0, 0, Serialized)
     {
-        Name (TS, "UNI0")
         Debug = "TEST: UNI0, String To Unicode Conversion Macro"
-        M302 (TS, 0x04, "p358", P358, P359, 0x08)
+        M302 (__METHOD__, 0x04, "p358", P358, P359, 0x08)
     }

@@ -77,13 +77,12 @@
     })
     Method (RT06, 0, Serialized)
     {
-        Name (TS, "RT06")
         /* Emit test header, set the filename */
 
-        THDR (TS, "FixedIO Resource Descriptor Macro", "fixedio.asl")
+        THDR (__METHOD__, "FixedIO Resource Descriptor Macro", "fixedio.asl")
         /* Main test case for packages above */
 
-        M330 (TS, 0x02, "p40a", P40A, P40B)
+        M330 (__METHOD__, 0x02, "p40a", P40A, P40B)
         /* Check resource descriptor tag offsets */
 
         Local0 = ResourceTemplate ()
@@ -97,6 +96,6 @@
                     0xFF,               // Length
                     )
             }
-        M331 (TS, 0x01, 0x08, 0x08, 0x28, 0x28, "_BAS")
-        M331 (TS, 0x02, 0x18, 0x18, 0x38, 0x38, "_LEN")
+        M331 (__METHOD__, 0x01, 0x08, 0x08, 0x28, 0x28, "_BAS")
+        M331 (__METHOD__, 0x02, 0x18, 0x18, 0x38, 0x38, "_LEN")
     }

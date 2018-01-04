@@ -61,7 +61,6 @@
 
     Method (TOU0, 0, Serialized)
     {
-        Name (TS, "TOU0")
         Debug = "TEST: TOU0, Convert String to UUID Macro"
-        M302 (TS, 0x02, "p356", P356, P357, 0x07)
+        M302 (__METHOD__, 0x02, "p356", P356, P357, 0x07)
     }

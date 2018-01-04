@@ -2752,21 +2752,20 @@
     })
     Method (RT24, 0, Serialized)
     {
-        Name (TS, "RT24")
         /* Emit test header, set the filename */
 
-        THDR (TS, "SpiSerialBus Resource Descriptor Macro", "spiserialbus.asl")
+        THDR (__METHOD__, "SpiSerialBus Resource Descriptor Macro", "spiserialbus.asl")
         /* The main test packages must have the same number of entries */
 
         If ((SizeOf (P458) != SizeOf (P459)))
         {
-            ERR (TS, 0xB5, 0x00, 0x00, 0x00, 0x00, "Incorrect package length")
+            ERR (__METHOD__, 0xB5, 0x00, 0x00, 0x00, 0x00, "Incorrect package length")
             Return (Zero)
         }
 
         /* Main test case for packages above */
 
-        M330 (TS, SizeOf (P458), "p458", P458, P459)
+        M330 (__METHOD__, SizeOf (P458), "p458", P458, P459)
         /* Check resource descriptor tag offsets */
 
         Local0 = ResourceTemplate ()
@@ -2788,13 +2787,13 @@
                         0xF0, 0xF1, 0xF2, 0xF3, 0xF4
                     })
             }
-        M331 (TS, 0x01, 0x30, 0x30, 0x0128, 0x0128, "_SLV")
-        M331 (TS, 0x02, 0x38, 0x38, 0x0130, 0x0130, "_MOD")
-        M331 (TS, 0x03, 0x39, 0x39, 0x0131, 0x0131, "_DPL")
-        M331 (TS, 0x04, 0x60, 0x60, 0x0158, 0x0158, "_SPE")
-        M331 (TS, 0x05, 0x80, 0x80, 0x0178, 0x0178, "_LEN")
-        M331 (TS, 0x06, 0x88, 0x88, 0x0180, 0x0180, "_PHA")
-        M331 (TS, 0x07, 0x90, 0x90, 0x0188, 0x0188, "_POL")
-        M331 (TS, 0x08, 0x98, 0x98, 0x0190, 0x0190, "_ADR")
-        M331 (TS, 0x09, 0xA8, 0xA8, 0x01A0, 0x01A0, "_VEN")
+        M331 (__METHOD__, 0x01, 0x30, 0x30, 0x0128, 0x0128, "_SLV")
+        M331 (__METHOD__, 0x02, 0x38, 0x38, 0x0130, 0x0130, "_MOD")
+        M331 (__METHOD__, 0x03, 0x39, 0x39, 0x0131, 0x0131, "_DPL")
+        M331 (__METHOD__, 0x04, 0x60, 0x60, 0x0158, 0x0158, "_SPE")
+        M331 (__METHOD__, 0x05, 0x80, 0x80, 0x0178, 0x0178, "_LEN")
+        M331 (__METHOD__, 0x06, 0x88, 0x88, 0x0180, 0x0180, "_PHA")
+        M331 (__METHOD__, 0x07, 0x90, 0x90, 0x0188, 0x0188, "_POL")
+        M331 (__METHOD__, 0x08, 0x98, 0x98, 0x0190, 0x0190, "_ADR")
+        M331 (__METHOD__, 0x09, 0xA8, 0xA8, 0x01A0, 0x01A0, "_VEN")
     }

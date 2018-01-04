@@ -32,7 +32,6 @@
     Name (Z157, 0x9D)
     Method (M300, 0, Serialized)
     {
-        Name (TS, "m300")
         Name (P000, Package (0x03)
         {
             0xABCD0000,
@@ -50,7 +49,7 @@
             Local0 = DerefOf (Arg0 [0x00])
             If ((Local0 != 0x11112222))
             {
-                ERR (TS, Z157, 0x33, 0x00, 0x00, Local0, 0x11112222)
+                ERR (__METHOD__, Z157, 0x33, 0x00, 0x00, Local0, 0x11112222)
             }
         }
 
@@ -58,15 +57,14 @@
         Local0 = DerefOf (P000 [0x00])
         If ((Local0 != 0x11112222))
         {
-            ERR (TS, Z157, 0x3C, 0x00, 0x00, Local0, 0x11112222)
+            ERR (__METHOD__, Z157, 0x3C, 0x00, 0x00, Local0, 0x11112222)
         }
 
-        CH03 (TS, Z157, 0x02, 0x3F, 0x00)
+        CH03 (__METHOD__, Z157, 0x02, 0x3F, 0x00)
     }
 
     Method (M301, 0, Serialized)
     {
-        Name (TS, "m301")
         Name (B000, Buffer (0x03)
         {
              0x10, 0x11, 0x12                                 // ...
@@ -82,7 +80,7 @@
             Local0 = DerefOf (Arg0 [0x00])
             If ((Local0 != 0x67))
             {
-                ERR (TS, Z157, 0x53, 0x00, 0x00, Local0, 0x67)
+                ERR (__METHOD__, Z157, 0x53, 0x00, 0x00, Local0, 0x67)
             }
         }
 
@@ -90,15 +88,14 @@
         Local0 = DerefOf (B000 [0x00])
         If ((Local0 != 0x67))
         {
-            ERR (TS, Z157, 0x5C, 0x00, 0x00, Local0, 0x67)
+            ERR (__METHOD__, Z157, 0x5C, 0x00, 0x00, Local0, 0x67)
         }
 
-        CH03 (TS, Z157, 0x05, 0x5F, 0x00)
+        CH03 (__METHOD__, Z157, 0x05, 0x5F, 0x00)
     }
 
     Method (M302, 0, Serialized)
     {
-        Name (TS, "m302")
         Name (S000, "qqqqqqqqqqqqqq")
         Method (M000, 1, NotSerialized)
         {
@@ -111,7 +108,7 @@
             Local0 = DerefOf (Arg0 [0x00])
             If ((Local0 != 0x38))
             {
-                ERR (TS, Z157, 0x72, 0x00, 0x00, Local0, 0x38)
+                ERR (__METHOD__, Z157, 0x72, 0x00, 0x00, Local0, 0x38)
             }
         }
 
@@ -119,10 +116,10 @@
         Local0 = DerefOf (S000 [0x00])
         If ((Local0 != 0x38))
         {
-            ERR (TS, Z157, 0x7B, 0x00, 0x00, Local0, 0x38)
+            ERR (__METHOD__, Z157, 0x7B, 0x00, 0x00, Local0, 0x38)
         }
 
-        CH03 (TS, Z157, 0x08, 0x7E, 0x00)
+        CH03 (__METHOD__, Z157, 0x08, 0x7E, 0x00)
     }
 
     /*
@@ -130,7 +127,6 @@
      */
     Method (M303, 1, Serialized)
     {
-        Name (TS, "m303")
         Name (PP00, Package (0x03)
         {
             0x11111111,
@@ -147,7 +143,7 @@
                 0x03,
                 0x04
             })
-            CH03 (TS, Z157, 0x09, 0x8E, 0x00)
+            CH03 (__METHOD__, Z157, 0x09, 0x8E, 0x00)
             I001 = Arg1
             Method (M001, 1, NotSerialized)
             {
@@ -204,32 +200,32 @@
             Store ((DerefOf (Arg0 [0x01]) + M001 (Arg0)), Local0)
             If ((Local0 != 0x87654321))
             {
-                ERR (TS, Z157, 0xC0, 0x00, 0x00, Local0, 0x87654321)
+                ERR (__METHOD__, Z157, 0xC0, 0x00, 0x00, Local0, 0x87654321)
             }
 
             Local1 = DerefOf (Arg0 [0x01])
             If ((Local1 != 0x80000000))
             {
-                ERR (TS, Z157, 0xC6, 0x00, 0x00, Local1, 0x80000000)
+                ERR (__METHOD__, Z157, 0xC6, 0x00, 0x00, Local1, 0x80000000)
             }
 
-            CH03 (TS, Z157, 0x0C, 0xC9, 0x00)
+            CH03 (__METHOD__, Z157, 0x0C, 0xC9, 0x00)
             Return (Local0)
         }
 
         Local0 = M000 (PP00, Arg0)
         If ((Local0 != 0x87654321))
         {
-            ERR (TS, Z157, 0xD1, 0x00, 0x00, Local0, 0x87654321)
+            ERR (__METHOD__, Z157, 0xD1, 0x00, 0x00, Local0, 0x87654321)
         }
 
         Local0 = DerefOf (PP00 [0x01])
         If ((Local0 != 0x80000000))
         {
-            ERR (TS, Z157, 0xD7, 0x00, 0x00, Local0, 0x80000000)
+            ERR (__METHOD__, Z157, 0xD7, 0x00, 0x00, Local0, 0x80000000)
         }
 
-        CH03 (TS, Z157, 0x0F, 0xDA, 0x00)
+        CH03 (__METHOD__, Z157, 0x0F, 0xDA, 0x00)
     }
 
     /*
@@ -237,7 +233,6 @@
      */
     Method (M304, 0, Serialized)
     {
-        Name (TS, "m304")
         Name (I001, 0x00)
         Name (PP00, Package (0x03)
         {
@@ -265,13 +260,13 @@
             Store ((DerefOf (Arg0 [0x01]) + M001 (Arg0)), Local0)
             If ((Local0 != 0x065013BA))
             {
-                ERR (TS, Z157, 0xF7, 0x00, 0x00, Local0, 0x065013BA)
+                ERR (__METHOD__, Z157, 0xF7, 0x00, 0x00, Local0, 0x065013BA)
             }
 
             Local1 = DerefOf (Arg0 [0x01])
             If ((Local1 != 0x00100064))
             {
-                ERR (TS, Z157, 0xFD, 0x00, 0x00, Local1, 0x00100064)
+                ERR (__METHOD__, Z157, 0xFD, 0x00, 0x00, Local1, 0x00100064)
             }
 
             Return (Local0)
@@ -280,16 +275,16 @@
         Local0 = M000 (PP00)
         If ((Local0 != 0x065013BA))
         {
-            ERR (TS, Z157, 0x0105, 0x00, 0x00, Local0, 0x065013BA)
+            ERR (__METHOD__, Z157, 0x0105, 0x00, 0x00, Local0, 0x065013BA)
         }
 
         Local1 = DerefOf (PP00 [0x01])
         If ((Local1 != 0x00100064))
         {
-            ERR (TS, Z157, 0x010B, 0x00, 0x00, Local1, 0x00100064)
+            ERR (__METHOD__, Z157, 0x010B, 0x00, 0x00, Local1, 0x00100064)
         }
 
-        CH03 (TS, Z157, 0x14, 0x010E, 0x00)
+        CH03 (__METHOD__, Z157, 0x14, 0x010E, 0x00)
     }
 
     /*
@@ -297,9 +292,8 @@
      */
     Method (M305, 0, Serialized)
     {
-        Name (TS, "m305")
         Name (B000, Buffer (0x10){})
-        CH03 (TS, Z157, 0x15, 0x0119, 0x00)
+        CH03 (__METHOD__, Z157, 0x15, 0x0119, 0x00)
         CreateField (B000, 0x05, 0x20, BF00)
         BF00 = 0xABCDEF70
         Method (M000, 1, NotSerialized)
@@ -355,32 +349,32 @@
             Store ((Arg0 + M001 ()), Local0)
             If ((Local0 != 0x87654321))
             {
-                ERR (TS, Z157, 0x014D, 0x00, 0x00, Local0, 0x87654321)
+                ERR (__METHOD__, Z157, 0x014D, 0x00, 0x00, Local0, 0x87654321)
             }
 
             Local1 = 0x01
             If ((Arg0 != Local1))
             {
-                ERR (TS, Z157, 0x0153, 0x00, 0x00, Arg0, Local1)
+                ERR (__METHOD__, Z157, 0x0153, 0x00, 0x00, Arg0, Local1)
             }
 
-            CH03 (TS, Z157, 0x18, 0x0156, 0x00)
+            CH03 (__METHOD__, Z157, 0x18, 0x0156, 0x00)
             Return (Local0)
         }
 
         Local0 = M000 (BF00)
         If ((Local0 != 0x87654321))
         {
-            ERR (TS, Z157, 0x015E, 0x00, 0x00, Local0, 0x87654321)
+            ERR (__METHOD__, Z157, 0x015E, 0x00, 0x00, Local0, 0x87654321)
         }
 
         Local1 = 0xABCDEF70
         If ((BF00 != Local1))
         {
-            ERR (TS, Z157, 0x0164, 0x00, 0x00, BF00, Local1)
+            ERR (__METHOD__, Z157, 0x0164, 0x00, 0x00, BF00, Local1)
         }
 
-        CH03 (TS, Z157, 0x1B, 0x0167, 0x00)
+        CH03 (__METHOD__, Z157, 0x1B, 0x0167, 0x00)
     }
 
     /*
@@ -388,7 +382,6 @@
      */
     Method (M306, 0, Serialized)
     {
-        Name (TS, "m306")
         Name (I001, 0x00)
         OperationRegion (R000, SystemMemory, 0x0100, 0x0100)
         Field (R000, ByteAcc, NoLock, Preserve)
@@ -397,7 +390,7 @@
             F001,   32
         }
 
-        CH03 (TS, Z157, 0x1C, 0x0174, 0x00)
+        CH03 (__METHOD__, Z157, 0x1C, 0x0174, 0x00)
         F000 = 0xABCDEF70
         Method (M000, 1, NotSerialized)
         {
@@ -452,32 +445,32 @@
             Store ((Arg0 + M001 ()), Local0)
             If ((Local0 != 0x87654321))
             {
-                ERR (TS, Z157, 0x01A7, 0x00, 0x00, Local0, 0x87654321)
+                ERR (__METHOD__, Z157, 0x01A7, 0x00, 0x00, Local0, 0x87654321)
             }
 
             Local1 = 0x01
             If ((Arg0 != Local1))
             {
-                ERR (TS, Z157, 0x01AD, 0x00, 0x00, Arg0, Local1)
+                ERR (__METHOD__, Z157, 0x01AD, 0x00, 0x00, Arg0, Local1)
             }
 
-            CH03 (TS, Z157, 0x1F, 0x01B0, 0x00)
+            CH03 (__METHOD__, Z157, 0x1F, 0x01B0, 0x00)
             Return (Local0)
         }
 
         Local0 = M000 (F000)
         If ((Local0 != 0x87654321))
         {
-            ERR (TS, Z157, 0x01B8, 0x00, 0x00, Local0, 0x87654321)
+            ERR (__METHOD__, Z157, 0x01B8, 0x00, 0x00, Local0, 0x87654321)
         }
 
         Local1 = 0xABCDEF70
         If ((F000 != Local1))
         {
-            ERR (TS, Z157, 0x01BE, 0x00, 0x00, F000, Local1)
+            ERR (__METHOD__, Z157, 0x01BE, 0x00, 0x00, F000, Local1)
         }
 
-        CH03 (TS, Z157, 0x22, 0x01C1, 0x00)
+        CH03 (__METHOD__, Z157, 0x22, 0x01C1, 0x00)
     }
 
     /*
@@ -485,7 +478,6 @@
      */
     Method (M307, 0, Serialized)
     {
-        Name (TS, "m307")
         Name (I001, 0x00)
         OperationRegion (R000, SystemMemory, 0x0100, 0x0100)
         Field (R000, ByteAcc, NoLock, Preserve)
@@ -499,7 +491,7 @@
             BNK0,   32
         }
 
-        CH03 (TS, Z157, 0x23, 0x01CF, 0x00)
+        CH03 (__METHOD__, Z157, 0x23, 0x01CF, 0x00)
         BNK0 = 0xABCDEF70
         Method (M000, 1, NotSerialized)
         {
@@ -554,32 +546,32 @@
             Store ((Arg0 + M001 ()), Local0)
             If ((Local0 != 0x87654321))
             {
-                ERR (TS, Z157, 0x0202, 0x00, 0x00, Local0, 0x87654321)
+                ERR (__METHOD__, Z157, 0x0202, 0x00, 0x00, Local0, 0x87654321)
             }
 
             Local1 = 0x01
             If ((Arg0 != Local1))
             {
-                ERR (TS, Z157, 0x0208, 0x00, 0x00, Arg0, Local1)
+                ERR (__METHOD__, Z157, 0x0208, 0x00, 0x00, Arg0, Local1)
             }
 
-            CH03 (TS, Z157, 0x26, 0x020B, 0x00)
+            CH03 (__METHOD__, Z157, 0x26, 0x020B, 0x00)
             Return (Local0)
         }
 
         Local0 = M000 (BNK0)
         If ((Local0 != 0x87654321))
         {
-            ERR (TS, Z157, 0x0213, 0x00, 0x00, Local0, 0x87654321)
+            ERR (__METHOD__, Z157, 0x0213, 0x00, 0x00, Local0, 0x87654321)
         }
 
         Local1 = 0xABCDEF70
         If ((BNK0 != Local1))
         {
-            ERR (TS, Z157, 0x0219, 0x00, 0x00, BNK0, Local1)
+            ERR (__METHOD__, Z157, 0x0219, 0x00, 0x00, BNK0, Local1)
         }
 
-        CH03 (TS, Z157, 0x29, 0x021C, 0x00)
+        CH03 (__METHOD__, Z157, 0x29, 0x021C, 0x00)
     }
 
     /*
@@ -587,7 +579,6 @@
      */
     Method (M308, 0, Serialized)
     {
-        Name (TS, "m308")
         Name (I001, 0x00)
         OperationRegion (R000, SystemMemory, 0x0100, 0x0100)
         Field (R000, ByteAcc, NoLock, Preserve)
@@ -601,7 +592,7 @@
             IF00,   32
         }
 
-        CH03 (TS, Z157, 0x2A, 0x022A, 0x00)
+        CH03 (__METHOD__, Z157, 0x2A, 0x022A, 0x00)
         IF00 = 0xABCDEF70
         Method (M000, 1, NotSerialized)
         {
@@ -656,32 +647,32 @@
             Store ((Arg0 + M001 ()), Local0)
             If ((Local0 != 0x87654321))
             {
-                ERR (TS, Z157, 0x025D, 0x00, 0x00, Local0, 0x87654321)
+                ERR (__METHOD__, Z157, 0x025D, 0x00, 0x00, Local0, 0x87654321)
             }
 
             Local1 = 0x01
             If ((Arg0 != Local1))
             {
-                ERR (TS, Z157, 0x0263, 0x00, 0x00, Arg0, Local1)
+                ERR (__METHOD__, Z157, 0x0263, 0x00, 0x00, Arg0, Local1)
             }
 
-            CH03 (TS, Z157, 0x2D, 0x0266, 0x00)
+            CH03 (__METHOD__, Z157, 0x2D, 0x0266, 0x00)
             Return (Local0)
         }
 
         Local0 = M000 (IF00)
         If ((Local0 != 0x87654321))
         {
-            ERR (TS, Z157, 0x026E, 0x00, 0x00, Local0, 0x87654321)
+            ERR (__METHOD__, Z157, 0x026E, 0x00, 0x00, Local0, 0x87654321)
         }
 
         Local1 = 0xABCDEF70
         If ((IF00 != Local1))
         {
-            ERR (TS, Z157, 0x0274, 0x00, 0x00, IF00, Local1)
+            ERR (__METHOD__, Z157, 0x0274, 0x00, 0x00, IF00, Local1)
         }
 
-        CH03 (TS, Z157, 0x30, 0x0277, 0x00)
+        CH03 (__METHOD__, Z157, 0x30, 0x0277, 0x00)
     }
 
     /*
@@ -689,13 +680,12 @@
      */
     Method (M309, 1, Serialized)
     {
-        Name (TS, "m309")
         Name (I001, 0x00)
         Name (B000, Buffer (0x03)
         {
              0x11, 0x01, 0x22                                 // .."
         })
-        CH03 (TS, Z157, 0x31, 0x0283, 0x00)
+        CH03 (__METHOD__, Z157, 0x31, 0x0283, 0x00)
         I001 = Arg0
         Method (M000, 2, NotSerialized)
         {
@@ -754,7 +744,7 @@
             Store ((DerefOf (Arg0 [0x01]) + M001 (Arg0)), Local0)
             If ((Local0 != 0x24))
             {
-                ERR (TS, Z157, 0x02B7, 0x00, 0x00, Local0, 0x24)
+                ERR (__METHOD__, Z157, 0x02B7, 0x00, 0x00, Local0, 0x24)
             }
 
             Local1 = DerefOf (Arg0 [0x01])
@@ -769,17 +759,17 @@
 
             If ((Local1 != Local2))
             {
-                ERR (TS, Z157, 0x02C3, 0x00, 0x00, Local1, Local2)
+                ERR (__METHOD__, Z157, 0x02C3, 0x00, 0x00, Local1, Local2)
             }
 
-            CH03 (TS, Z157, 0x34, 0x02C6, 0x00)
+            CH03 (__METHOD__, Z157, 0x34, 0x02C6, 0x00)
             Return (Local0)
         }
 
         Local0 = M000 (B000, Arg0)
         If ((Local0 != 0x24))
         {
-            ERR (TS, Z157, 0x02CE, 0x00, 0x00, Local0, 0x24)
+            ERR (__METHOD__, Z157, 0x02CE, 0x00, 0x00, Local0, 0x24)
         }
 
         Local1 = DerefOf (B000 [0x01])
@@ -794,10 +784,10 @@
 
         If ((Local1 != Local2))
         {
-            ERR (TS, Z157, 0x02DA, 0x00, 0x00, Local1, Local2)
+            ERR (__METHOD__, Z157, 0x02DA, 0x00, 0x00, Local1, Local2)
         }
 
-        CH03 (TS, Z157, 0x37, 0x02DD, 0x00)
+        CH03 (__METHOD__, Z157, 0x37, 0x02DD, 0x00)
     }
 
     /*
@@ -805,10 +795,9 @@
      */
     Method (M30A, 1, Serialized)
     {
-        Name (TS, "m30a")
         Name (I001, 0x00)
         Name (S000, "q\x01ertyuiop")
-        CH03 (TS, Z157, 0x38, 0x02E9, 0x00)
+        CH03 (__METHOD__, Z157, 0x38, 0x02E9, 0x00)
         I001 = Arg0
         Method (M000, 2, NotSerialized)
         {
@@ -867,7 +856,7 @@
             Store ((DerefOf (Arg0 [0x01]) + M001 (Arg0)), Local0)
             If ((Local0 != 0x24))
             {
-                ERR (TS, Z157, 0x031D, 0x00, 0x00, Local0, 0x24)
+                ERR (__METHOD__, Z157, 0x031D, 0x00, 0x00, Local0, 0x24)
             }
 
             Local1 = DerefOf (Arg0 [0x01])
@@ -882,17 +871,17 @@
 
             If ((Local1 != Local2))
             {
-                ERR (TS, Z157, 0x0329, 0x00, 0x00, Local1, Local2)
+                ERR (__METHOD__, Z157, 0x0329, 0x00, 0x00, Local1, Local2)
             }
 
-            CH03 (TS, Z157, 0x3B, 0x032C, 0x00)
+            CH03 (__METHOD__, Z157, 0x3B, 0x032C, 0x00)
             Return (Local0)
         }
 
         Local0 = M000 (S000, Arg0)
         If ((Local0 != 0x24))
         {
-            ERR (TS, Z157, 0x0334, 0x00, 0x00, Local0, 0x24)
+            ERR (__METHOD__, Z157, 0x0334, 0x00, 0x00, Local0, 0x24)
         }
 
         Local1 = DerefOf (S000 [0x01])
@@ -907,10 +896,10 @@
 
         If ((Local1 != Local2))
         {
-            ERR (TS, Z157, 0x0340, 0x00, 0x00, Local1, Local2)
+            ERR (__METHOD__, Z157, 0x0340, 0x00, 0x00, Local1, Local2)
         }
 
-        CH03 (TS, Z157, 0x3E, 0x0343, 0x00)
+        CH03 (__METHOD__, Z157, 0x3E, 0x0343, 0x00)
     }
 
     /*
@@ -920,11 +909,10 @@
      */
     Method (M30B, 1, Serialized)
     {
-        Name (TS, "m30b")
         Name (I001, 0x00)
         Name (B000, Buffer (0x10){})
         I001 = Arg0
-        CH03 (TS, Z157, 0x3F, 0x0353, 0x00)
+        CH03 (__METHOD__, Z157, 0x3F, 0x0353, 0x00)
         Method (M000, 2, NotSerialized)
         {
             CreateField (B000, 0x05, 0x20, BF00)
@@ -984,7 +972,7 @@
             Store ((BF00 + M001 ()), Local0)
             If ((Local0 != 0x87654321))
             {
-                ERR (TS, Z157, 0x038A, 0x00, 0x00, Local0, 0x87654321)
+                ERR (__METHOD__, Z157, 0x038A, 0x00, 0x00, Local0, 0x87654321)
             }
 
             If (Arg1)
@@ -998,20 +986,20 @@
 
             If ((BF00 != Local1))
             {
-                ERR (TS, Z157, 0x0394, 0x00, 0x00, BF00, Local1)
+                ERR (__METHOD__, Z157, 0x0394, 0x00, 0x00, BF00, Local1)
             }
 
-            CH03 (TS, Z157, 0x42, 0x0397, 0x00)
+            CH03 (__METHOD__, Z157, 0x42, 0x0397, 0x00)
             Return (Local0)
         }
 
         Local0 = M000 (0x00, Arg0)
         If ((Local0 != 0x87654321))
         {
-            ERR (TS, Z157, 0x039F, 0x00, 0x00, Local0, 0x87654321)
+            ERR (__METHOD__, Z157, 0x039F, 0x00, 0x00, Local0, 0x87654321)
         }
 
-        CH03 (TS, Z157, 0x44, 0x03A2, 0x00)
+        CH03 (__METHOD__, Z157, 0x44, 0x03A2, 0x00)
     }
 
     Method (N003, 0, NotSerialized)

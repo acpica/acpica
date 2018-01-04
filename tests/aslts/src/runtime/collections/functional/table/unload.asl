@@ -770,42 +770,40 @@
 
     Method (TUL0, 0, Serialized)
     {
-        Name (TS, "TUL0")
-        CH03 (TS, Z175, 0x0200, 0x028B, 0x00)
+        CH03 (__METHOD__, Z175, 0x0200, 0x028B, 0x00)
         /* Different Sources to specify DDBHandle for UnLoad. */
         /* Most of them (Named Object, LocalX, ArgX, Derefof) */
         /* are checked in load.asl */
         /* DDBHandle returned by Method call */
         SRMT ("TUL0.tst0")
-        \DTM1.TST0 (TS)
-        CH03 (TS, Z175, 0x0201, 0x0294, 0x00)
+        \DTM1.TST0 (__METHOD__)
+        CH03 (__METHOD__, Z175, 0x0201, 0x0294, 0x00)
         /* All namespace objects created as a result of the corresponding */
         /* Load operation are absent in the namespace after UnLoad */
         SRMT ("TUL0.tst1")
-        \DTM1.TST1 (TS)
-        CH03 (TS, Z175, 0x0202, 0x029B, 0x00)
+        \DTM1.TST1 (__METHOD__)
+        CH03 (__METHOD__, Z175, 0x0202, 0x029B, 0x00)
         /* Load/UnLoad processing can be done with the same table many times */
 
         SRMT ("TUL0.tst2")
-        \DTM1.TST2 (TS)
-        CH03 (TS, Z175, 0x0203, 0x02A1, 0x00)
+        \DTM1.TST2 (__METHOD__)
+        CH03 (__METHOD__, Z175, 0x0203, 0x02A1, 0x00)
     }
 
     /* Exceptional conditions */
 
     Method (TUL1, 0, Serialized)
     {
-        Name (TS, "TUL1")
         /* Exceptions when the parameter of the UnLoad operator */
         /* is not of DDBHandle type */
         SRMT ("TUL1.tst3")
-        \DTM1.TST3 (TS)
+        \DTM1.TST3 (__METHOD__)
         /* Exceptions when UnLoad is executed with the same DDBHandle repeatedly */
 
         SRMT ("TUL1.tst4")
         If (Y292)
         {
-            \DTM1.TST4 (TS)
+            \DTM1.TST4 (__METHOD__)
         }
         Else
         {
@@ -815,5 +813,5 @@
         /* Exceptions when the operand of UnLoad operator is absent */
 
         SRMT ("TUL1.tst5")
-        \DTM1.TST5 (TS)
+        \DTM1.TST5 (__METHOD__)
     }
