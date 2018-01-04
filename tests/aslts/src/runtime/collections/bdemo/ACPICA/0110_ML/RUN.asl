@@ -31,4 +31,3 @@ if (STTT("Demo of bug 110", TCLD, 110, W017)) {
 	me72()
 }
 FTTT()
-

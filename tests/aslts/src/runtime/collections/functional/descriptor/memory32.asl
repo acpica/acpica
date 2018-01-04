@@ -40,7 +40,7 @@
                 0xF8F9FAFB,         // Alignment
                 0xFCFDFEFF,         // Length
                 )
-        }, 
+        },
 
         ResourceTemplate ()
         {
@@ -50,7 +50,7 @@
                 0xF8F9FAFB,         // Alignment
                 0xFCFDFEFF,         // Length
                 )
-        }, 
+        },
 
         ResourceTemplate ()
         {
@@ -101,7 +101,7 @@
                 0xF8F9FAFB,         // Alignment
                 0xFCFDFEFF,         // Length
                 )
-        }, 
+        },
 
         ResourceTemplate ()
         {
@@ -111,7 +111,7 @@
                 0xF8F9FAFB,         // Alignment
                 0xFCFDFEFF,         // Length
                 )
-        }, 
+        },
 
         ResourceTemplate ()
         {
@@ -155,4 +155,3 @@
         M331 (TS, 0x04, 0x60, 0x60, 0x0100, 0x0100, "_ALN")
         M331 (TS, 0x05, 0x80, 0x80, 0x0120, 0x0120, "_LEN")
     }
-

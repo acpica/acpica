@@ -46,7 +46,7 @@
 
         Name (P000, Package (0x02)
         {
-            0x00, 
+            0x00,
             0x01
         })
         Name (B000, Buffer (0x03)
@@ -82,7 +82,7 @@
         CH03 ("", 0x00, 0x06, 0x43, 0x00)
         Store (Index (Package (0x02)
                 {
-                    0x00, 
+                    0x00,
                     0x01
                 }, 0x02), Local1)
         If (Y900)
@@ -155,4 +155,3 @@
             CH04 ("", 0x00, 0x44, 0x00, 0x76, 0x00, 0x00) /* AE_AML_REGISTER_LIMIT */
         }
     }
-

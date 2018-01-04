@@ -245,4 +245,3 @@ Method(ini2)
 	SRMT("in23-0")
 	in23(0, 0)
 }
-

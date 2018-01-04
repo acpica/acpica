@@ -39,11 +39,11 @@
         Name (II00, 0x11112222)
         Name (P000, Package (0x06)
         {
-            I000, 
-            I001, 
-            I002, 
-            "i000", 
-            \MC74.I003, 
+            I000,
+            I001,
+            I002,
+            "i000",
+            \MC74.I003,
             0xABCD0004
         })
         Method (CHCK, 4, NotSerialized)
@@ -61,11 +61,11 @@
         {
             Local2 = Package (0x06)
                 {
-                    "I000", 
-                    "I001", 
-                    "I002", 
-                    "i000", 
-                    "I003", 
+                    "I000",
+                    "I001",
+                    "I002",
+                    "i000",
+                    "I003",
                     0xABCD0004
                 }
         }
@@ -73,11 +73,11 @@
         {
             Local2 = Package (0x06)
                 {
-                    0xABCD0000, 
-                    0xABCD0001, 
-                    0xABCD0002, 
-                    "i000", 
-                    0xABCD0003, 
+                    0xABCD0000,
+                    0xABCD0001,
+                    0xABCD0002,
+                    "i000",
+                    0xABCD0003,
                     0xABCD0004
                 }
         }
@@ -95,4 +95,3 @@
         Local0 = DerefOf (P000 [0x05])
         CHCK (Local0, Local2, 0x05, 0x06)
     }
-

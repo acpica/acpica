@@ -45,7 +45,7 @@
                     0x0003,
                     0x0004
                 }
-        }, 
+        },
 
         ResourceTemplate ()
         {
@@ -56,7 +56,7 @@
                     0x0003,
                     0x0004
                 }
-        }, 
+        },
 
         ResourceTemplate ()
         {
@@ -67,7 +67,7 @@
                     0x0003,
                     0x0004
                 }
-        }, 
+        },
 
         ResourceTemplate ()
         {
@@ -78,7 +78,7 @@
                     0x0003,
                     0x0004
                 }
-        }, 
+        },
 
         ResourceTemplate ()
         {
@@ -89,7 +89,7 @@
                     0x0003,
                     0x0004
                 }
-        }, 
+        },
 
         ResourceTemplate ()
         {
@@ -104,7 +104,7 @@
                     0x0003,
                     0x0004
                 }
-        }, 
+        },
 
         ResourceTemplate ()
         {
@@ -119,7 +119,7 @@
                     0x0003,
                     0x0004
                 }
-        }, 
+        },
 
         ResourceTemplate ()
         {
@@ -147,7 +147,7 @@
                     0x0003,
                     0x0004
                 }
-        }, 
+        },
 
         ResourceTemplate ()
         {
@@ -158,7 +158,7 @@
                     0x0003,
                     0x0004
                 }
-        }, 
+        },
 
         ResourceTemplate ()
         {
@@ -169,7 +169,7 @@
                     0x0003,
                     0x0004
                 }
-        }, 
+        },
 
         ResourceTemplate ()
         {
@@ -180,7 +180,7 @@
                     0x0003,
                     0x0004
                 }
-        }, 
+        },
 
         ResourceTemplate ()
         {
@@ -191,7 +191,7 @@
                     0x0003,
                     0x0004
                 }
-        }, 
+        },
 
         ResourceTemplate ()
         {
@@ -206,7 +206,7 @@
                     0x0003,
                     0x0004
                 }
-        }, 
+        },
 
         ResourceTemplate ()
         {
@@ -221,7 +221,7 @@
                     0x0003,
                     0x0004
                 }
-        }, 
+        },
 
         ResourceTemplate ()
         {
@@ -281,4 +281,3 @@ Local0 = ResourceTemplate ()
         M331 (TS, 0x01, 0xE8, 0xE8, 0x01E8, 0x01E8, "_VEN")
         M331 (TS, 0x01, 0x70, 0x70, 0x0170, 0x0170, "_PIN")
     }
-

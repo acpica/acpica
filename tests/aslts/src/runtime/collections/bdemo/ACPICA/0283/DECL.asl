@@ -51,9 +51,9 @@
 
         Field (IST0, ByteAcc, NoLock, Preserve)
         {
-            SIG,    32, 
-            LENG,   32, 
-            REV,    8, 
+            SIG,    32,
+            LENG,   32,
+            REV,    8,
             SUM,    8
         }
 
@@ -77,4 +77,3 @@
     {
         \D283.TST0 ()
     }
-

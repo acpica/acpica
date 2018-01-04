@@ -42,21 +42,21 @@
      */
     Name (FL00, Package (MAX0)
     {
-        Package (MAX1){}, 
-        Package (MAX1){}, 
-        Package (MAX1){}, 
-        Package (MAX1){}, 
-        Package (MAX1){}, 
-        Package (MAX1){}, 
-        Package (MAX1){}, 
-        Package (MAX1){}, 
-        Package (MAX1){}, 
-        Package (MAX1){}, 
-        Package (MAX1){}, 
-        Package (MAX1){}, 
-        Package (MAX1){}, 
-        Package (MAX1){}, 
-        Package (MAX1){}, 
+        Package (MAX1){},
+        Package (MAX1){},
+        Package (MAX1){},
+        Package (MAX1){},
+        Package (MAX1){},
+        Package (MAX1){},
+        Package (MAX1){},
+        Package (MAX1){},
+        Package (MAX1){},
+        Package (MAX1){},
+        Package (MAX1){},
+        Package (MAX1){},
+        Package (MAX1){},
+        Package (MAX1){},
+        Package (MAX1){},
         Package (MAX1){}
     })
     /*
@@ -70,21 +70,21 @@
      */
     Name (FL01, Package (MAX0)
     {
-        Package (MAX1){}, 
-        Package (MAX1){}, 
-        Package (MAX1){}, 
-        Package (MAX1){}, 
-        Package (MAX1){}, 
-        Package (MAX1){}, 
-        Package (MAX1){}, 
-        Package (MAX1){}, 
-        Package (MAX1){}, 
-        Package (MAX1){}, 
-        Package (MAX1){}, 
-        Package (MAX1){}, 
-        Package (MAX1){}, 
-        Package (MAX1){}, 
-        Package (MAX1){}, 
+        Package (MAX1){},
+        Package (MAX1){},
+        Package (MAX1){},
+        Package (MAX1){},
+        Package (MAX1){},
+        Package (MAX1){},
+        Package (MAX1){},
+        Package (MAX1){},
+        Package (MAX1){},
+        Package (MAX1){},
+        Package (MAX1){},
+        Package (MAX1){},
+        Package (MAX1){},
+        Package (MAX1){},
+        Package (MAX1){},
         Package (MAX1){}
     })
     /*
@@ -98,21 +98,21 @@
      */
     Name (CNT0, Package (MAX0)
     {
-        Package (MAX1){}, 
-        Package (MAX1){}, 
-        Package (MAX1){}, 
-        Package (MAX1){}, 
-        Package (MAX1){}, 
-        Package (MAX1){}, 
-        Package (MAX1){}, 
-        Package (MAX1){}, 
-        Package (MAX1){}, 
-        Package (MAX1){}, 
-        Package (MAX1){}, 
-        Package (MAX1){}, 
-        Package (MAX1){}, 
-        Package (MAX1){}, 
-        Package (MAX1){}, 
+        Package (MAX1){},
+        Package (MAX1){},
+        Package (MAX1){},
+        Package (MAX1){},
+        Package (MAX1){},
+        Package (MAX1){},
+        Package (MAX1){},
+        Package (MAX1){},
+        Package (MAX1){},
+        Package (MAX1){},
+        Package (MAX1){},
+        Package (MAX1){},
+        Package (MAX1){},
+        Package (MAX1){},
+        Package (MAX1){},
         Package (MAX1){}
     })
     /*
@@ -1058,9 +1058,9 @@
         Name (HAS0, 0x00)
         Name (P000, Package (0x04)
         {
-            0x00, 
-            0x00, 
-            0x00, 
+            0x00,
+            0x00,
+            0x00,
             0x00
         })
         Name (I000, 0x00)
@@ -1071,8 +1071,8 @@
         {
             Case (Package (0x03)
                 {
-                    0xF6, 
-                    0xF7, 
+                    0xF6,
+                    0xF7,
                     0xF3
                 }
 
@@ -1374,4 +1374,3 @@
             LPC0++
         }
     }
-

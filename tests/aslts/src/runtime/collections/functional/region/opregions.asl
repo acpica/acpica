@@ -52,34 +52,34 @@
     Name (FRSK, 0x0101)   /* Some false RegionSpace Keyword */
     Name (PRSK, Package (NRSK)
     {
-        0x0100, 
+        0x0100,
         /* UserDefRegionSpace 0x80-0xFF: auxiliary */
 
-        0x00, 
+        0x00,
         /* SystemMemory */
 
-        0x01, 
+        0x01,
         /* SystemIO */
 
-        0x02, 
+        0x02,
         /* PCI_Config */
 
-        0x03, 
+        0x03,
         /* EmbeddedControl */
 
-        0x04, 
+        0x04,
         /* SMBus */
 
-        0x05, 
+        0x05,
         /* SystemCMOS */
 
-        0x06, 
+        0x06,
         /* PciBarTarget */
 
-        0x07, 
+        0x07,
         /* IPMI */
 
-        0x08, 
+        0x08,
         /* GeneralPurposeIo */
 
         0x09
@@ -89,10 +89,10 @@
 
     Name (DRSK, Package (0x03)
     {
-        0x00, 
+        0x00,
         /* SystemMemory */
 
-        0x01, 
+        0x01,
         /* SystemIO */
 
         0x02
@@ -100,16 +100,16 @@
     })
     Name (VRSK,       /* Counters of the Valid RSKs */Package (NRSK)
     {
-        0x00, 
-        0x00, 
-        0x00, 
-        0x00, 
-        0x00, 
-        0x00, 
-        0x00, 
-        0x00, 
-        0x00, 
-        0x00, 
+        0x00,
+        0x00,
+        0x00,
+        0x00,
+        0x00,
+        0x00,
+        0x00,
+        0x00,
+        0x00,
+        0x00,
         0x00
     })
     /* Expected Counters of the Valid RSKs */
@@ -134,21 +134,21 @@
 
 Package (NRSK)
     {
-        0x01, 
-        0x02, 
-        0x03, 
-        0x01, 
-        0x01, 
-        0x01, 
-        0x00, 
-        0x00, 
-        0x00, 
-        0x00, 
+        0x01,
+        0x02,
+        0x03,
+        0x01,
+        0x01,
+        0x01,
+        0x00,
+        0x00,
+        0x00,
+        0x00,
         0x00
     })
     Name (VFLG,       /* Counters of the Valid Flags */Package (NFLG)
     {
-        0x00, 
+        0x00,
         0x00
     })
     /* Global Operation Regions availability notification Method */
@@ -218,38 +218,38 @@ Package (NRSK)
     /* OpRegion Lengths checking task package: Name, SpaceID, Length */
     Name (P702, Package (0x21)
     {
-        RGN0, 
-        0x00, 
-        0x0101, 
-        RGN1, 
-        0x01, 
-        0x0103, 
-        RGN2, 
-        0x02, 
-        0x0105, 
-        RGN3, 
-        0x03, 
-        0x0107, 
-        RGN4, 
-        0x04, 
-        0x0109, 
-        RGN5, 
-        0x05, 
-        0x010B, 
-        RGN6, 
-        0x06, 
-        0x010D, 
-        RGN7, 
-        0x80, 
-        0x0117, 
-        RGN8, 
-        0xCF, 
-        0x0118, 
-        RGN9, 
-        0xFF, 
-        0x0119, 
-        RGNA, 
-        0x08, 
+        RGN0,
+        0x00,
+        0x0101,
+        RGN1,
+        0x01,
+        0x0103,
+        RGN2,
+        0x02,
+        0x0105,
+        RGN3,
+        0x03,
+        0x0107,
+        RGN4,
+        0x04,
+        0x0109,
+        RGN5,
+        0x05,
+        0x010B,
+        RGN6,
+        0x06,
+        0x010D,
+        RGN7,
+        0x80,
+        0x0117,
+        RGN8,
+        0xCF,
+        0x0118,
+        RGN9,
+        0xFF,
+        0x0119,
+        RGNA,
+        0x08,
         0x011A
     })
     /* Region Space keyword strings */
@@ -259,31 +259,31 @@ Package (NRSK)
     {
         /* 0x00 */
 
-        "SystemMemory", 
+        "SystemMemory",
         /* 0x01 */
 
-        "SystemIO", 
+        "SystemIO",
         /* 0x02 */
 
-        "PCI_Config", 
+        "PCI_Config",
         /* 0x03 */
 
-        "EmbeddedControl", 
+        "EmbeddedControl",
         /* 0x04 */
 
-        "SMBus", 
+        "SMBus",
         /* 0x05 */
 
-        "SystemCMOS", 
+        "SystemCMOS",
         /* 0x06 */
 
-        "PciBarTarget", 
+        "PciBarTarget",
         /* 0x07 */
 
-        "IPMI", 
+        "IPMI",
         /* 0x08 */
 
-        "GeneralPurposeIo", 
+        "GeneralPurposeIo",
         /* 0x09 */
 
         "GenericSerialBus"
@@ -326,35 +326,35 @@ Package (NRSK)
         Name (IFLG, 0x00)   /* Counter of the Invalid Flags */
         Name (VRSK,       /* Counters of the Valid RSKs */Package (NRSK)
         {
-            0x00, 
-            0x00, 
-            0x00, 
-            0x00, 
-            0x00, 
-            0x00, 
-            0x00, 
-            0x00, 
-            0x00, 
-            0x00, 
+            0x00,
+            0x00,
+            0x00,
+            0x00,
+            0x00,
+            0x00,
+            0x00,
+            0x00,
+            0x00,
+            0x00,
             0x00
         })
         Name (ERSK,       /* Expected Counters of the Valid RSKs */Package (NRSK)
         {
-            0x01, 
-            0x01, 
-            0x01, 
-            0x01, 
-            0x01, 
-            0x01, 
-            0x00, 
-            0x00, 
-            0x00, 
-            0x00, 
+            0x01,
+            0x01,
+            0x01,
+            0x01,
+            0x01,
+            0x01,
+            0x00,
+            0x00,
+            0x00,
+            0x00,
             0x00
         })
         Name (VFLG,       /* Counters of the Valid Flags */Package (NFLG)
         {
-            0x00, 
+            0x00,
             0x00
         })
         /* Specific Operation Regions availability notification Method */
@@ -423,35 +423,35 @@ Package (NRSK)
         Name (IFLG, 0x00)   /* Counter of the Invalid Flags */
         Name (VRSK,       /* Counters of the Valid RSKs */Package (NRSK)
         {
-            0x00, 
-            0x00, 
-            0x00, 
-            0x00, 
-            0x00, 
-            0x00, 
-            0x00, 
-            0x00, 
-            0x00, 
-            0x00, 
+            0x00,
+            0x00,
+            0x00,
+            0x00,
+            0x00,
+            0x00,
+            0x00,
+            0x00,
+            0x00,
+            0x00,
             0x00
         })
         Name (ERSK,       /* Expected Counters of the Valid RSKs */Package (NRSK)
         {
-            0x01, 
-            0x01, 
-            0x01, 
-            0x01, 
-            0x01, 
-            0x01, 
-            0x00, 
-            0x00, 
-            0x00, 
-            0x00, 
+            0x01,
+            0x01,
+            0x01,
+            0x01,
+            0x01,
+            0x01,
+            0x00,
+            0x00,
+            0x00,
+            0x00,
             0x00
         })
         Name (VFLG,       /* Counters of the Valid Flags */Package (NFLG)
         {
-            0x00, 
+            0x00,
             0x00
         })
         Name (IREG, 0x00)   /* Counter of the Invalid Calls to DOR1._REG */
@@ -849,9 +849,9 @@ Package (NRSK)
         CopyObject (Arg2, OPRN) /* \M70F.OPRN */
         Field (OPRM, ByteAcc, NoLock, Preserve)
         {
-            Offset (0x7D), 
-            FU00,   80, 
-            Offset (0x8D), 
+            Offset (0x7D),
+            FU00,   80,
+            Offset (0x8D),
             FU02,   80
         }
 
@@ -1184,25 +1184,25 @@ Package (NRSK)
         OperationRegion (OPR3, SystemMemory, OFFS, LENS)
         Field (OPR0, ByteAcc, NoLock, Preserve)
         {
-            Offset (0x11F), 
+            Offset (0x11F),
             FU00,   32
         }
 
         Field (OPR1, ByteAcc, NoLock, Preserve)
         {
-            Offset (0x11F), 
+            Offset (0x11F),
             FU01,   32
         }
 
         Field (OPR2, ByteAcc, NoLock, Preserve)
         {
-            Offset (0x11F), 
+            Offset (0x11F),
             FU02,   32
         }
 
         Field (OPR3, ByteAcc, NoLock, Preserve)
         {
-            Offset (0x11F), 
+            Offset (0x11F),
             FU03,   32
         }
 
@@ -1212,7 +1212,7 @@ Package (NRSK)
             OperationRegion (OPR4, SystemMemory, Arg1, Arg2)
             Field (OPR4, AnyAcc, NoLock, Preserve)
             {
-                Offset (0x11F), 
+                Offset (0x11F),
                 FU04,   32
             }
 
@@ -1289,7 +1289,7 @@ Package (NRSK)
 
         Field (RGN0, ByteAcc, NoLock, Preserve)
         {
-            Offset (0x01), 
+            Offset (0x01),
             FU00,   48
         }
 
@@ -1297,7 +1297,7 @@ Package (NRSK)
 
         Field (RGN1, ByteAcc, NoLock, Preserve)
         {
-            Offset (0x02), 
+            Offset (0x02),
             FU10,   48
         }
 
@@ -1312,12 +1312,12 @@ Package (NRSK)
 
         Field (RGN3, ByteAcc, NoLock, Preserve)
         {
-            FU30,   48, 
-            Offset (0x08), 
-            FU31,   16, 
-            Offset (0x0C), 
-            FU32,   16, 
-            Offset (0x10), 
+            FU30,   48,
+            Offset (0x08),
+            FU31,   16,
+            Offset (0x0C),
+            FU32,   16,
+            Offset (0x10),
             FU33,   48
         }
 
@@ -1433,4 +1433,3 @@ Package (NRSK)
         SRMT ("m707")
         M707 (TS)
     }
-

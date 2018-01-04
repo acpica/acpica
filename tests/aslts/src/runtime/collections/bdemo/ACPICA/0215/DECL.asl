@@ -42,23 +42,23 @@
             OperationRegion (OPR0, SystemMemory, 0x00, 0x30)
             Field (OPR0, ByteAcc, NoLock, Preserve)
             {
-                IDX0,   32, 
+                IDX0,   32,
                 DTA0,   32
             }
 
             Field (OPR0, ByteAcc, NoLock, Preserve)
             {
-                Offset (0x08), 
-                IDX1,   32, 
-                Offset (0x10), 
+                Offset (0x08),
+                IDX1,   32,
+                Offset (0x10),
                 DTA1,   33
             }
 
             Field (OPR0, ByteAcc, NoLock, Preserve)
             {
-                Offset (0x18), 
-                IDX2,   33, 
-                Offset (0x20), 
+                Offset (0x18),
+                IDX2,   33,
+                Offset (0x20),
                 DTA2,   32
             }
 
@@ -100,4 +100,3 @@
         M000 ()
         CH03 ("", 0x00, 0x01, 0x5B, 0x00)
     }
-

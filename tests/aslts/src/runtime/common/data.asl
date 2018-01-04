@@ -104,9 +104,9 @@
     CreateField (B9Z0, 0x00, 0x08, BF90)
     Field (R9Z0, ByteAcc, NoLock, Preserve)
     {
-        F900,   8, 
-        F901,   8, 
-        F902,   8, 
+        F900,   8,
+        F901,   8,
+        F902,   8,
         F903,   8
     }
 
@@ -117,7 +117,7 @@
 
     IndexField (F902, F903, ByteAcc, NoLock, Preserve)
     {
-        IF90,   8, 
+        IF90,   8,
         IF91,   8
     }
 
@@ -128,17 +128,17 @@
 
     Name (P901, Package (0x02)
     {
-        0xABCD0004, 
+        0xABCD0004,
         0x1122334455660005
     })
     Name (P902, Package (0x02)
     {
-        "12340006", 
+        "12340006",
         "q1w2e3r4t5y6u7i80007"
     })
     Name (P903, Package (0x02)
     {
-        "qwrtyuiop0008", 
+        "qwrtyuiop0008",
         "1234567890abdef0250009"
     })
     Name (P904, Package (0x02)
@@ -146,7 +146,7 @@
         Buffer (0x03)
         {
              0xB5, 0xB6, 0xB7                                 // ...
-        }, 
+        },
 
         Buffer (0x02)
         {
@@ -157,8 +157,8 @@
     {
         Package (0x03)
         {
-            0x0ABC000A, 
-            "0xabc000b", 
+            0x0ABC000A,
+            "0xabc000b",
             "abc000c"
         }
     })
@@ -813,12 +813,12 @@
     })
     Name (P953, Package (0x02)
     {
-        0xABCD0018, 
+        0xABCD0018,
         0xABCD0019
     })
     Name (P954, Package (0x02)
     {
-        0xABCD0018, 
+        0xABCD0018,
         0xABCD0019
     })
     Name (I905, 0xABCD001A)
@@ -831,42 +831,42 @@
 
     Name (P955, Package (0x12)
     {
-        0x00, 
-        I900, 
-        S900, 
-        B900, 
-        P953, 
-        F900, 
-        D900, 
-        E900, 
-        M936, 
-        MX90, 
-        R900, 
-        PW90, 
-        PR90, 
-        TZ90, 
-        BF90, 
-        0x0F, 
+        0x00,
+        I900,
+        S900,
+        B900,
+        P953,
+        F900,
+        D900,
+        E900,
+        M936,
+        MX90,
+        R900,
+        PW90,
+        PR90,
+        TZ90,
+        BF90,
+        0x0F,
         0x10
     })
     Name (P956, Package (0x12)
     {
-        0x00, 
-        I900, 
-        S900, 
-        B900, 
-        P953, 
-        F900, 
-        D900, 
-        E900, 
-        M936, 
-        MX90, 
-        R900, 
-        PW90, 
-        PR90, 
-        TZ90, 
-        BF90, 
-        0x0F, 
+        0x00,
+        I900,
+        S900,
+        B900,
+        P953,
+        F900,
+        D900,
+        E900,
+        M936,
+        MX90,
+        R900,
+        PW90,
+        PR90,
+        TZ90,
+        BF90,
+        0x0F,
         0x10
     })
     /* Global Standard Data */
@@ -879,8 +879,8 @@
     })
     Name (PA00, Package (0x03)
     {
-        0x05, 
-        0x77, 
+        0x05,
+        0x77,
         0x07
     })
     Name (IA10, 0x77)
@@ -891,8 +891,8 @@
     })
     Name (PA10, Package (0x03)
     {
-        0x05, 
-        0x77, 
+        0x05,
+        0x77,
         0x07
     })
     Name (IA01, 0x2B)
@@ -903,8 +903,8 @@
     })
     Name (PA01, Package (0x03)
     {
-        0x05, 
-        0x2B, 
+        0x05,
+        0x2B,
         0x07
     })
     Name (IA11, 0x2B)
@@ -915,7 +915,7 @@
     })
     Name (PA11, Package (0x03)
     {
-        0x05, 
-        0x2B, 
+        0x05,
+        0x2B,
         0x07
     })

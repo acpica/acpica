@@ -143,7 +143,7 @@
             CH06 (Arg0, 0x12, 0x2F)
             Store (DerefOf (Local0 = P000 [0x00]) [0x00], Local1)
             CH03 (TS, Z095, 0x05, 0x90, 0x00)
-            Local1 = Match (DerefOf (Local0 = P000 [0x00]), MTR, 0x00, MTR, 0x00, 
+            Local1 = Match (DerefOf (Local0 = P000 [0x00]), MTR, 0x00, MTR, 0x00,
                 0x00)
             CH06 (Arg0, 0x13, 0x2F)
         }
@@ -389,4 +389,3 @@
             M007 (TS)
         }
     }
-

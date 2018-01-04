@@ -157,16 +157,16 @@
 
         Field (IST0, ByteAcc, NoLock, Preserve)
         {
-            SIG,    32, 
-            LENG,   32, 
-            REV,    8, 
-            SUM,    8, 
-            OID,    48, 
-            OTID,   64, 
-            OREV,   32, 
-            CID,    32, 
-            CREV,   32, 
-            Offset (0x27), 
+            SIG,    32,
+            LENG,   32,
+            REV,    8,
+            SUM,    8,
+            OID,    48,
+            OTID,   64,
+            OREV,   32,
+            CID,    32,
+            CREV,   32,
+            Offset (0x27),
             SSNM,   32
         }
 
@@ -244,18 +244,18 @@
 
             Field (IST0, ByteAcc, NoLock, Preserve)
             {
-                SIG,    32, 
-                LENG,   32, 
-                REV,    8, 
-                SUM,    8, 
-                OID,    48, 
-                OTID,   64, 
-                OREV,   32, 
-                CID,    32, 
-                CREV,   32, 
-                Offset (0x27), 
-                SSNM,   32, 
-                Offset (0x2F), 
+                SIG,    32,
+                LENG,   32,
+                REV,    8,
+                SUM,    8,
+                OID,    48,
+                OTID,   64,
+                OREV,   32,
+                CID,    32,
+                CREV,   32,
+                Offset (0x27),
+                SSNM,   32,
+                Offset (0x2F),
                 SSRT,   32
             }
 
@@ -677,16 +677,16 @@
 
                 Field (OPRM, ByteAcc, NoLock, Preserve)
                 {
-                    SIG,    32, 
-                    LENG,   32, 
-                    REV,    8, 
-                    SUM,    8, 
-                    OID,    48, 
-                    OTID,   64, 
-                    OREV,   32, 
-                    CID,    32, 
-                    CREV,   32, 
-                    Offset (0x27), 
+                    SIG,    32,
+                    LENG,   32,
+                    REV,    8,
+                    SUM,    8,
+                    OID,    48,
+                    OTID,   64,
+                    OREV,   32,
+                    CID,    32,
+                    CREV,   32,
+                    Offset (0x27),
                     SSNM,   32
                 }
 
@@ -855,16 +855,16 @@
 
                 Field (OPRM, ByteAcc, NoLock, Preserve)
                 {
-                    SIG,    32, 
-                    LENG,   32, 
-                    REV,    8, 
-                    SUM,    8, 
-                    OID,    48, 
-                    OTID,   64, 
-                    OREV,   32, 
-                    CID,    32, 
-                    CREV,   32, 
-                    Offset (0x27), 
+                    SIG,    32,
+                    LENG,   32,
+                    REV,    8,
+                    SUM,    8,
+                    OID,    48,
+                    OTID,   64,
+                    OREV,   32,
+                    CID,    32,
+                    CREV,   32,
+                    Offset (0x27),
                     SSNM,   32
                 }
 
@@ -1018,7 +1018,7 @@ Local2 = Buffer (0x0A)
             /* 0020 */  0x15, 0x12, 0x06, 0x20, 0x10, 0x1F, 0x5C, 0x00,  // ... ..\.
             /* 0028 */  0x08, 0x4E, 0x41, 0x42, 0x53, 0x0D, 0x61, 0x62,  // .NABS.ab
             /* 0030 */  0x73, 0x6F, 0x6C, 0x75, 0x74, 0x65, 0x20, 0x6C,  // solute l
-            /* 0038 */  0x6F, 0x63, 0x61, 0x74, 0x69, 0x6F, 0x6E, 0x20,  // ocation 
+            /* 0038 */  0x6F, 0x63, 0x61, 0x74, 0x69, 0x6F, 0x6E, 0x20,  // ocation
             /* 0040 */  0x6F, 0x62, 0x6A, 0x00, 0x08, 0x4E, 0x43, 0x52,  // obj..NCR
             /* 0048 */  0x52, 0x0D, 0x63, 0x75, 0x72, 0x72, 0x65, 0x6E,  // R.curren
             /* 0050 */  0x74, 0x20, 0x6C, 0x6F, 0x63, 0x61, 0x74, 0x69,  // t locati
@@ -1413,7 +1413,7 @@ Local2 = Buffer (0x0A)
             /* 0058 */  0x09, 0x08, 0x07, 0x06, 0x05, 0x04, 0x03, 0x02,  // ........
             /* 0060 */  0x01, 0x08, 0x50, 0x41, 0x43, 0x30, 0x12, 0x27,  // ..PAC0.'
             /* 0068 */  0x03, 0x0E, 0x1F, 0x32, 0x54, 0x76, 0x98, 0xBA,  // ...2Tv..
-            /* 0070 */  0xDC, 0xFE, 0x0D, 0x74, 0x65, 0x73, 0x74, 0x20,  // ...test 
+            /* 0070 */  0xDC, 0xFE, 0x0D, 0x74, 0x65, 0x73, 0x74, 0x20,  // ...test
             /* 0078 */  0x70, 0x61, 0x63, 0x6B, 0x61, 0x67, 0x65, 0x30,  // package0
             /* 0080 */  0x00, 0x11, 0x0C, 0x0A, 0x09, 0x13, 0x12, 0x11,  // ........
             /* 0088 */  0x10, 0x0F, 0x0E, 0x0D, 0x0C, 0x0B, 0x5B, 0x80,  // ......[.
@@ -2283,18 +2283,18 @@ Local2 = Buffer (0x0A)
 
             Field (IST0, ByteAcc, NoLock, Preserve)
             {
-                SIG,    32, 
-                LENG,   32, 
-                REV,    8, 
-                SUM,    8, 
-                OID,    48, 
-                OTID,   64, 
-                OREV,   32, 
-                CID,    32, 
-                CREV,   32, 
-                Offset (0x27), 
-                SSNM,   32, 
-                Offset (0x2F), 
+                SIG,    32,
+                LENG,   32,
+                REV,    8,
+                SUM,    8,
+                OID,    48,
+                OTID,   64,
+                OREV,   32,
+                CID,    32,
+                CREV,   32,
+                Offset (0x27),
+                SSNM,   32,
+                Offset (0x2F),
                 SSRT,   32
             }
 
@@ -2576,4 +2576,3 @@ Local2 = Buffer (0x0A)
         SRMT ("TLD1.tstj")
         \DTM0.TSTJ (TS)
     }
-

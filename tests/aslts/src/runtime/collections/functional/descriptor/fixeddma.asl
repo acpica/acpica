@@ -35,37 +35,37 @@
         ResourceTemplate ()
         {
             FixedDMA (0xF1F2, 0x1234, Width8bit, )
-        }, 
+        },
 
         ResourceTemplate ()
         {
             FixedDMA (0xE1E2, 0x000F, Width16bit, )
-        }, 
+        },
 
         ResourceTemplate ()
         {
             FixedDMA (0xD1D2, 0x00F0, Width32bit, )
-        }, 
+        },
 
         ResourceTemplate ()
         {
             FixedDMA (0xC1C2, 0x0F00, Width64bit, )
-        }, 
+        },
 
         ResourceTemplate ()
         {
             FixedDMA (0xB1B2, 0xF000, Width128bit, )
-        }, 
+        },
 
         ResourceTemplate ()
         {
             FixedDMA (0xA1A2, 0xFFFF, Width256bit, )
-        }, 
+        },
 
         ResourceTemplate ()
         {
             FixedDMA (0x9192, 0x11D7, Width32bit, )
-        }, 
+        },
 
         ResourceTemplate ()
         {
@@ -77,37 +77,37 @@
         ResourceTemplate ()
         {
             FixedDMA (0xF1F2, 0x1234, Width8bit, )
-        }, 
+        },
 
         ResourceTemplate ()
         {
             FixedDMA (0xE1E2, 0x000F, Width16bit, )
-        }, 
+        },
 
         ResourceTemplate ()
         {
             FixedDMA (0xD1D2, 0x00F0, Width32bit, )
-        }, 
+        },
 
         ResourceTemplate ()
         {
             FixedDMA (0xC1C2, 0x0F00, Width64bit, )
-        }, 
+        },
 
         ResourceTemplate ()
         {
             FixedDMA (0xB1B2, 0xF000, Width128bit, )
-        }, 
+        },
 
         ResourceTemplate ()
         {
             FixedDMA (0xA1A2, 0xFFFF, Width256bit, )
-        }, 
+        },
 
         ResourceTemplate ()
         {
             FixedDMA (0x9192, 0x11D7, Width32bit, )
-        }, 
+        },
 
         ResourceTemplate ()
         {
@@ -142,4 +142,3 @@
         M331 (TS, 0x02, 0x18, 0x18, 0x48, 0x48, "_TYP")
         M331 (TS, 0x03, 0x28, 0x28, 0x58, 0x58, "_SIZ")
     }
-

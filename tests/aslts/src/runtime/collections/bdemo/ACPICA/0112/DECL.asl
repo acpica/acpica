@@ -54,4 +54,3 @@
         Stall (I000)
         Stall ("B")
     }
-

@@ -1,4 +1,3 @@
-
 DefinitionBlock(
 	"ssdt.aml",   // Output filename
 	"SSDT",     // Signature

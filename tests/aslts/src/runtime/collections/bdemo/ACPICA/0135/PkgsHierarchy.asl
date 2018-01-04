@@ -1743,7 +1743,7 @@ SRMT("verify-2-of-pHR0-by-inner-refs-duplicated-to-pHR1")
 	 * #######                    Cross references                    #######
 	 * #######                                                        #######
 	 * ####### References to pkg-nodes inside each of two hierarchies #######
-	 * #######  added with references between those two hierarchies.  #######
+	 * #######  added with references between those two hierarchies. #######
 	 */
 
 SRMT("Duplicate-pHR0-to-pHR2")

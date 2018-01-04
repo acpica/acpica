@@ -90,8 +90,8 @@
 
         Name (PAC0, Package (0x03)
         {
-            0xFEDCBA987654321F, 
-            "test package", 
+            0xFEDCBA987654321F,
+            "test package",
             Buffer (0x09)
             {
                 /* 0000 */  0x13, 0x12, 0x11, 0x10, 0x0F, 0x0E, 0x0D, 0x0C,  // ........
@@ -104,7 +104,7 @@
 
             Field (OPR0, ByteAcc, NoLock, Preserve)
             {
-                FLU0,   69, 
+                FLU0,   69,
                 FLU1,   69
             }
         }
@@ -172,7 +172,7 @@
         Name (IND3, 0x00)
         Name (PAC4, Package (0x02)
         {
-            "Increment", 
+            "Increment",
             "Decrement"
         })
         Name (TERR, "-test error")
@@ -623,7 +623,7 @@
 
             Name (SRC0, 0x00)
             Concatenate (Arg0, "-", Arg0)
-            Concatenate (Arg0, Concatenate (Mid (Arg4, 0x00, 0x02), Concatenate (Mid (Arg2, 0x00, 
+            Concatenate (Arg0, Concatenate (Mid (Arg4, 0x00, 0x02), Concatenate (Mid (Arg2, 0x00,
                 0x02), Mid (Arg3, 0x00, 0x02))), Arg0)
             If (STCS)
             {
@@ -770,7 +770,7 @@
             /* Source LocalX Object: Local1 */
 
             Concatenate (Arg0, "-", Arg0)
-            Concatenate (Arg0, Concatenate (Mid (Arg4, 0x00, 0x02), Concatenate (Mid (Arg2, 0x00, 
+            Concatenate (Arg0, Concatenate (Mid (Arg4, 0x00, 0x02), Concatenate (Mid (Arg2, 0x00,
                 0x02), Mid (Arg3, 0x00, 0x02))), Arg0)
             If (STCS)
             {
@@ -876,7 +876,7 @@
             }
 
             Concatenate (Arg0, "-", Arg0)
-            Concatenate (Arg0, Concatenate (Mid (Arg4, 0x00, 0x02), Concatenate (Mid (Arg2, 0x00, 
+            Concatenate (Arg0, Concatenate (Mid (Arg4, 0x00, 0x02), Concatenate (Mid (Arg2, 0x00,
                 0x02), Mid (Arg3, 0x00, 0x02))), Arg0)
             If (STCS)
             {
@@ -982,7 +982,7 @@
             }
 
             Concatenate (Arg0, "-", Arg0)
-            Concatenate (Arg0, Concatenate (Mid (Arg4, 0x00, 0x02), Concatenate (Mid (Arg2, 0x00, 
+            Concatenate (Arg0, Concatenate (Mid (Arg4, 0x00, 0x02), Concatenate (Mid (Arg2, 0x00,
                 0x02), Mid (Arg3, 0x00, 0x02))), Arg0)
             If (STCS)
             {
@@ -1196,4 +1196,3 @@
 
         M692 (0x01, 0x00)
     }
-

@@ -40,4 +40,3 @@
         I000 = "0"  /* AE_BAD_HEX_CONSTANT */
         CH03 ("", 0x00, 0x00, 0x31, 0x00)
     }
-

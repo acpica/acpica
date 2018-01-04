@@ -496,10 +496,10 @@
         })
         Name (CM01, Package (MIN1)
         {
-            0x00, 
-            C107, 
-            0x00, 
-            0x00, 
+            0x00,
+            C107,
+            0x00,
+            0x00,
             0x00
         })
         Name (EE01, Buffer (MIN1)
@@ -508,10 +508,10 @@
         }) /* AE_AML_NOT_OWNER */
         Name (CM02, Package (MIN1)
         {
-            0x00, 
-            0x00, 
-            C107, 
-            0x00, 
+            0x00,
+            0x00,
+            C107,
+            0x00,
             0x00
         })
         Name (EE02, Buffer (MIN1)
@@ -520,10 +520,10 @@
         }) /* AE_AML_NOT_OWNER */
         Name (CM03, Package (MIN1)
         {
-            0x00, 
-            0x00, 
-            0x00, 
-            C107, 
+            0x00,
+            0x00,
+            0x00,
+            C107,
             0x00
         })
         Name (EE03, Buffer (MIN1)
@@ -532,10 +532,10 @@
         }) /* AE_AML_NOT_OWNER */
         Name (CM04, Package (MIN1)
         {
-            0x00, 
-            0x00, 
-            0x00, 
-            0x00, 
+            0x00,
+            0x00,
+            0x00,
+            0x00,
             C107
         })
         Name (EE04, Buffer (MIN1)
@@ -766,18 +766,18 @@
         /* Release mutexes on all threads */
         Name (CM00, Package (MIN1)
         {
-            0x00, 
-            C107, 
-            C107, 
-            C107, 
+            0x00,
+            C107,
+            C107,
+            C107,
             C107
         })
         Name (CP00, Package (MIN1)
         {
-            0x00, 
-            C107, 
-            C107, 
-            C107, 
+            0x00,
+            C107,
+            C107,
+            C107,
             C107
         })
         M33F (NTH0, CM00, 0x00, L000, B000, CP00, 0x00)    /* Expected hang statuses       (buffer/Integer) */
@@ -807,10 +807,10 @@
         /* Acquire x-x-230 and check that all -230- hang */
         Name (CM00, Package (MIN1)
         {
-            0x00, 
-            0x00, 
-            C106, 
-            C106, 
+            0x00,
+            0x00,
+            C106,
+            C106,
             C106
         })
         M33F (Arg0, CM00, 0x00, Arg1, Arg3, 0x00, CM00) /* Expected hang statuses       (buffer/Integer) */
@@ -823,26 +823,26 @@
 
         Name (CM01, Package (MIN1)
         {
-            0x00, 
-            C107, 
-            0x00, 
-            0x00, 
+            0x00,
+            C107,
+            0x00,
+            0x00,
             0x00
         })
         Name (CP01, Package (MIN1)
         {
-            0x00, 
-            C107, 
-            0x00, 
-            0x00, 
+            0x00,
+            C107,
+            0x00,
+            0x00,
             C106
         })
         Name (HG01, Package (MIN1)
         {
-            0x00, 
-            0x00, 
-            C106, 
-            C106, 
+            0x00,
+            0x00,
+            C106,
+            C106,
             0x00
         })
         M33F (Arg0, CM01, 0x00, Arg1, Arg2, CP01, HG01) /* Expected hang statuses       (buffer/Integer) */
@@ -855,18 +855,18 @@
 
         Name (CM02, Package (MIN1)
         {
-            0x00, 
-            C106, 
-            0x00, 
-            0x00, 
+            0x00,
+            C106,
+            0x00,
+            0x00,
             0x00
         })
         Name (HG02, Package (MIN1)
         {
-            0x00, 
-            C106, 
-            C106, 
-            C106, 
+            0x00,
+            C106,
+            C106,
+            C106,
             0x00
         })
         M33F (Arg0, CM02, 0x00, Arg1, Arg3, 0x00, HG02) /* Expected hang statuses       (buffer/Integer) */
@@ -879,26 +879,26 @@
 
         Name (CM03, Package (MIN1)
         {
-            0x00, 
-            0x00, 
-            0x00, 
-            0x00, 
+            0x00,
+            0x00,
+            0x00,
+            0x00,
             C107
         })
         Name (CP03, Package (MIN1)
         {
-            0x00, 
-            0x00, 
-            0x00, 
-            C106, 
+            0x00,
+            0x00,
+            0x00,
+            C106,
             C107
         })
         Name (HG03, Package (MIN1)
         {
-            0x00, 
-            C106, 
-            C106, 
-            0x00, 
+            0x00,
+            C106,
+            C106,
+            0x00,
             0x00
         })
         M33F (Arg0, CM03, 0x00, Arg1, Arg2, CP03, HG03) /* Expected hang statuses       (buffer/Integer) */
@@ -911,26 +911,26 @@
 
         Name (CM04, Package (MIN1)
         {
-            0x00, 
-            0x00, 
-            0x00, 
-            C107, 
+            0x00,
+            0x00,
+            0x00,
+            C107,
             0x00
         })
         Name (CP04, Package (MIN1)
         {
-            0x00, 
-            0x00, 
-            C106, 
-            C107, 
+            0x00,
+            0x00,
+            C106,
+            C107,
             0x00
         })
         Name (HG04, Package (MIN1)
         {
-            0x00, 
-            C106, 
-            0x00, 
-            0x00, 
+            0x00,
+            C106,
+            0x00,
+            0x00,
             0x00
         })
         M33F (Arg0, CM04, 0x00, Arg1, Arg2, CP04, HG04) /* Expected hang statuses       (buffer/Integer) */
@@ -943,18 +943,18 @@
 
         Name (CM05, Package (MIN1)
         {
-            0x00, 
-            0x00, 
-            C107, 
-            0x00, 
+            0x00,
+            0x00,
+            C107,
+            0x00,
             0x00
         })
         Name (CP05, Package (MIN1)
         {
-            0x00, 
-            C106, 
-            C107, 
-            0x00, 
+            0x00,
+            C106,
+            C107,
+            0x00,
             0x00
         })
         M33F (Arg0, CM05, 0x00, Arg1, Arg2, CP05, 0x00)    /* Expected hang statuses       (buffer/Integer) */
@@ -1152,26 +1152,26 @@
         /* x-01-12-23-34, Acquire=x-1234, hang=x-123x, success=x-xxx4 */
         Name (CM00, Package (MIN1)
         {
-            0x00, 
-            C106, 
-            C106, 
-            C106, 
+            0x00,
+            C106,
+            C106,
+            C106,
             C106
         })
         Name (CP00, Package (MIN1)
         {
-            0x00, 
-            0x00, 
-            0x00, 
-            0x00, 
+            0x00,
+            0x00,
+            0x00,
+            0x00,
             C106
         })
         Name (HG00, Package (MIN1)
         {
-            0x00, 
-            C106, 
-            C106, 
-            C106, 
+            0x00,
+            C106,
+            C106,
+            C106,
             0x00
         })
         If (Arg5)
@@ -1195,26 +1195,26 @@
 
         Name (CM01, Package (MIN1)
         {
-            0x00, 
-            0x00, 
-            0x00, 
-            0x00, 
+            0x00,
+            0x00,
+            0x00,
+            0x00,
             C107
         })
         Name (CP01, Package (MIN1)
         {
-            0x00, 
-            0x00, 
-            0x00, 
-            0x00, 
+            0x00,
+            0x00,
+            0x00,
+            0x00,
             C107
         })
         Name (HG01, Package (MIN1)
         {
-            0x00, 
-            C106, 
-            C106, 
-            C106, 
+            0x00,
+            C106,
+            C106,
+            C106,
             0x00
         })
         If (Arg5)
@@ -1238,26 +1238,26 @@
 
         Name (CM02, Package (MIN1)
         {
-            0x00, 
-            0x00, 
-            0x00, 
-            0x00, 
+            0x00,
+            0x00,
+            0x00,
+            0x00,
             C107
         })
         Name (CP02, Package (MIN1)
         {
-            0x00, 
-            0x00, 
-            0x00, 
-            C106, 
+            0x00,
+            0x00,
+            0x00,
+            C106,
             C107
         })
         Name (HG02, Package (MIN1)
         {
-            0x00, 
-            C106, 
-            C106, 
-            0x00, 
+            0x00,
+            C106,
+            C106,
+            0x00,
             0x00
         })
         If (Arg5)
@@ -1281,26 +1281,26 @@
 
         Name (CM03, Package (MIN1)
         {
-            0x00, 
-            0x00, 
-            0x00, 
-            0x00, 
+            0x00,
+            0x00,
+            0x00,
+            0x00,
             C106
         })
         Name (CP03, Package (MIN1)
         {
-            0x00, 
-            0x00, 
-            0x00, 
-            0x00, 
+            0x00,
+            0x00,
+            0x00,
+            0x00,
             C106
         })
         Name (HG03, Package (MIN1)
         {
-            0x00, 
-            C106, 
-            C106, 
-            0x00, 
+            0x00,
+            C106,
+            C106,
+            0x00,
             0x00
         })
         If (Arg5)
@@ -1324,26 +1324,26 @@
 
         Name (CM05, Package (MIN1)
         {
-            0x00, 
-            0x00, 
-            0x00, 
-            C107, 
+            0x00,
+            0x00,
+            0x00,
+            C107,
             0x00
         })
         Name (CP05, Package (MIN1)
         {
-            0x00, 
-            0x00, 
-            0x00, 
-            C107, 
+            0x00,
+            0x00,
+            0x00,
+            C107,
             0x00
         })
         Name (HG05, Package (MIN1)
         {
-            0x00, 
-            C106, 
-            C106, 
-            0x00, 
+            0x00,
+            C106,
+            C106,
+            0x00,
             0x00
         })
         If (Arg5)
@@ -1367,26 +1367,26 @@
 
         Name (CM06, Package (MIN1)
         {
-            0x00, 
-            0x00, 
-            0x00, 
-            C107, 
+            0x00,
+            0x00,
+            0x00,
+            C107,
             0x00
         })
         Name (CP06, Package (MIN1)
         {
-            0x00, 
-            0x00, 
-            C106, 
-            C107, 
+            0x00,
+            0x00,
+            C106,
+            C107,
             0x00
         })
         Name (HG06, Package (MIN1)
         {
-            0x00, 
-            C106, 
-            0x00, 
-            0x00, 
+            0x00,
+            C106,
+            0x00,
+            0x00,
             0x00
         })
         If (Arg5)
@@ -1410,26 +1410,26 @@
 
         Name (CM07, Package (MIN1)
         {
-            0x00, 
-            0x00, 
-            0x00, 
-            C106, 
+            0x00,
+            0x00,
+            0x00,
+            C106,
             0x00
         })
         Name (CP07, Package (MIN1)
         {
-            0x00, 
-            0x00, 
-            0x00, 
-            C106, 
+            0x00,
+            0x00,
+            0x00,
+            C106,
             0x00
         })
         Name (HG07, Package (MIN1)
         {
-            0x00, 
-            C106, 
-            0x00, 
-            0x00, 
+            0x00,
+            C106,
+            0x00,
+            0x00,
             0x00
         })
         If (Arg5)
@@ -1453,26 +1453,26 @@
 
         Name (CM08, Package (MIN1)
         {
-            0x00, 
-            0x00, 
-            C107, 
-            0x00, 
+            0x00,
+            0x00,
+            C107,
+            0x00,
             0x00
         })
         Name (CP08, Package (MIN1)
         {
-            0x00, 
-            0x00, 
-            C107, 
-            0x00, 
+            0x00,
+            0x00,
+            C107,
+            0x00,
             0x00
         })
         Name (HG08, Package (MIN1)
         {
-            0x00, 
-            C106, 
-            0x00, 
-            0x00, 
+            0x00,
+            C106,
+            0x00,
+            0x00,
             0x00
         })
         If (Arg5)
@@ -1496,18 +1496,18 @@
 
         Name (CM09, Package (MIN1)
         {
-            0x00, 
-            0x00, 
-            C107, 
-            0x00, 
+            0x00,
+            0x00,
+            C107,
+            0x00,
             0x00
         })
         Name (CP09, Package (MIN1)
         {
-            0x00, 
-            C106, 
-            C107, 
-            0x00, 
+            0x00,
+            C106,
+            C107,
+            0x00,
             0x00
         })
         If (Arg5)
@@ -1531,18 +1531,18 @@
 
         Name (CM0A, Package (MIN1)
         {
-            0x00, 
-            0x00, 
-            C106, 
-            0x00, 
+            0x00,
+            0x00,
+            C106,
+            0x00,
             0x00
         })
         Name (CP0A, Package (MIN1)
         {
-            0x00, 
-            0x00, 
-            C106, 
-            0x00, 
+            0x00,
+            0x00,
+            C106,
+            0x00,
             0x00
         })
         If (Arg5)
@@ -1566,18 +1566,18 @@
 
         Name (CM0B, Package (MIN1)
         {
-            0x00, 
-            C107, 
-            0x00, 
-            0x00, 
+            0x00,
+            C107,
+            0x00,
+            0x00,
             0x00
         })
         Name (CP0B, Package (MIN1)
         {
-            0x00, 
-            C107, 
-            0x00, 
-            0x00, 
+            0x00,
+            C107,
+            0x00,
+            0x00,
             0x00
         })
         If (Arg5)
@@ -1601,18 +1601,18 @@
 
         Name (CM0C, Package (MIN1)
         {
-            0x00, 
-            C107, 
-            0x00, 
-            0x00, 
+            0x00,
+            C107,
+            0x00,
+            0x00,
             0x00
         })
         Name (CP0C, Package (MIN1)
         {
-            0x00, 
-            C107, 
-            0x00, 
-            0x00, 
+            0x00,
+            C107,
+            0x00,
+            0x00,
             0x00
         })
         If (Arg5)
@@ -1636,18 +1636,18 @@
 
         Name (CM0D, Package (MIN1)
         {
-            0x00, 
-            C106, 
-            0x00, 
-            0x00, 
+            0x00,
+            C106,
+            0x00,
+            0x00,
             0x00
         })
         Name (CP0D, Package (MIN1)
         {
-            0x00, 
-            C106, 
-            0x00, 
-            0x00, 
+            0x00,
+            C106,
+            0x00,
+            0x00,
             0x00
         })
         If (Arg5)
@@ -1779,24 +1779,24 @@
 
         Name (PIXS, Package (MIN1)
         {
-            0x00, 
+            0x00,
             Buffer (IXSZ)
             {
                 /* 0000 */  0x00, 0x00, 0x00, 0x01, 0x00, 0x01, 0x00, 0x01,  // ........
                 /* 0008 */  0x00, 0x01                                       // ..
-            }, 
+            },
 
             Buffer (IXSZ)
             {
                 /* 0000 */  0x00, 0x00, 0x01, 0x01, 0x01, 0x01, 0x01, 0x01,  // ........
                 /* 0008 */  0x01, 0x01                                       // ..
-            }, 
+            },
 
             Buffer (IXSZ)
             {
                 /* 0000 */  0x00, 0x00, 0x02, 0x01, 0x02, 0x01, 0x02, 0x01,  // ........
                 /* 0008 */  0x02, 0x01                                       // ..
-            }, 
+            },
 
             Buffer (IXSZ)
             {
@@ -2638,4 +2638,3 @@
             ERR (Arg0, Z152, 0x0956, 0x00, 0x00, FLG3, THR2)
         }
     }
-

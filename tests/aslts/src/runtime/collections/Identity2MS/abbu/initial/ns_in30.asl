@@ -909,4 +909,3 @@ Method(ini3)
 
 	CH03("ini3", z166, 0x000, __LINE__, 0)
 }
-

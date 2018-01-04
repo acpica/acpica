@@ -36,8 +36,8 @@
         Name (I001, 0x00220000)
         Name (P000, Package (0x03)
         {
-            0xABCD0000, 
-            0xABCD0001, 
+            0xABCD0000,
+            0xABCD0001,
             0xABCD0002
         })
         Method (M000, 0, NotSerialized)
@@ -85,4 +85,3 @@
 
         M002 (M000 (), M001 ((I000 + I001)))
     }
-

@@ -41,7 +41,7 @@
                 0xF8F9FAFB,         // Translation Offset
                 0xFCFDFEFF,         // Length
                 ,, , AddressRangeMemory, TypeStatic)
-        }, 
+        },
 
         ResourceTemplate ()
         {
@@ -52,7 +52,7 @@
                 0xF8F9FAFB,         // Translation Offset
                 0xFCFDFEFF,         // Length
                 ,, , AddressRangeMemory, TypeStatic)
-        }, 
+        },
 
         ResourceTemplate ()
         {
@@ -63,7 +63,7 @@
                 0xF8F9FAFB,         // Translation Offset
                 0xFCFDFEFF,         // Length
                 ,, , AddressRangeMemory, TypeStatic)
-        }, 
+        },
 
         ResourceTemplate ()
         {
@@ -74,7 +74,7 @@
                 0xF8F9FAFB,         // Translation Offset
                 0xFCFDFEFF,         // Length
                 ,, , AddressRangeMemory, TypeStatic)
-        }, 
+        },
 
         ResourceTemplate ()
         {
@@ -85,7 +85,7 @@
                 0xF8F9FAFB,         // Translation Offset
                 0xFCFDFEFF,         // Length
                 ,, , AddressRangeMemory, TypeStatic)
-        }, 
+        },
 
         ResourceTemplate ()
         {
@@ -96,7 +96,7 @@
                 0xF8F9FAFB,         // Translation Offset
                 0xFCFDFEFF,         // Length
                 ,, , AddressRangeMemory, TypeStatic)
-        }, 
+        },
 
         ResourceTemplate ()
         {
@@ -107,7 +107,7 @@
                 0xF8F9FAFB,         // Translation Offset
                 0xFCFDFEFF,         // Length
                 ,, , AddressRangeMemory, TypeStatic)
-        }, 
+        },
 
         ResourceTemplate ()
         {
@@ -118,7 +118,7 @@
                 0xF8F9FAFB,         // Translation Offset
                 0xFCFDFEFF,         // Length
                 ,, , AddressRangeMemory, TypeStatic)
-        }, 
+        },
 
         ResourceTemplate ()
         {
@@ -129,7 +129,7 @@
                 0xF8F9FAFB,         // Translation Offset
                 0xFCFDFEFF,         // Length
                 ,, , AddressRangeMemory, TypeStatic)
-        }, 
+        },
 
         ResourceTemplate ()
         {
@@ -140,7 +140,7 @@
                 0xF8F9FAFB,         // Translation Offset
                 0xFCFDFEFF,         // Length
                 ,, , AddressRangeMemory, TypeStatic)
-        }, 
+        },
 
         ResourceTemplate ()
         {
@@ -151,7 +151,7 @@
                 0xF8F9FAFB,         // Translation Offset
                 0xFCFDFEFF,         // Length
                 ,, , AddressRangeMemory, TypeStatic)
-        }, 
+        },
 
         ResourceTemplate ()
         {
@@ -162,7 +162,7 @@
                 0xF8F9FAFB,         // Translation Offset
                 0xFCFDFEFF,         // Length
                 ,, , AddressRangeMemory, TypeStatic)
-        }, 
+        },
 
         ResourceTemplate ()
         {
@@ -173,7 +173,7 @@
                 0xF8F9FAFB,         // Translation Offset
                 0xFCFDFEFF,         // Length
                 ,, , AddressRangeMemory, TypeStatic)
-        }, 
+        },
 
         ResourceTemplate ()
         {
@@ -184,7 +184,7 @@
                 0xF8F9FAFB,         // Translation Offset
                 0xFCFDFEFF,         // Length
                 ,, , AddressRangeMemory, TypeStatic)
-        }, 
+        },
 
         ResourceTemplate ()
         {
@@ -195,7 +195,7 @@
                 0xF8F9FAFB,         // Translation Offset
                 0xFCFDFEFF,         // Length
                 ,, , AddressRangeMemory, TypeStatic)
-        }, 
+        },
 
         ResourceTemplate ()
         {
@@ -206,7 +206,7 @@
                 0xF8F9FAFB,         // Translation Offset
                 0xFCFDFEFF,         // Length
                 ,, , AddressRangeMemory, TypeStatic)
-        }, 
+        },
 
         ResourceTemplate ()
         {
@@ -217,7 +217,7 @@
                 0xF8F9FAFB,         // Translation Offset
                 0xFCFDFEFF,         // Length
                 ,, , AddressRangeMemory, TypeStatic)
-        }, 
+        },
 
         ResourceTemplate ()
         {
@@ -228,7 +228,7 @@
                 0xF8F9FAFB,         // Translation Offset
                 0xFCFDFEFF,         // Length
                 ,, , AddressRangeMemory, TypeTranslation)
-        }, 
+        },
 
         ResourceTemplate ()
         {
@@ -239,7 +239,7 @@
                 0xF8F9FAFB,         // Translation Offset
                 0xFCFDFEFF,         // Length
                 ,, , AddressRangeReserved, TypeStatic)
-        }, 
+        },
 
         ResourceTemplate ()
         {
@@ -250,7 +250,7 @@
                 0xF8F9FAFB,         // Translation Offset
                 0xFCFDFEFF,         // Length
                 ,, , AddressRangeReserved, TypeTranslation)
-        }, 
+        },
 
         ResourceTemplate ()
         {
@@ -261,7 +261,7 @@
                 0xF8F9FAFB,         // Translation Offset
                 0xFCFDFEFF,         // Length
                 ,, , AddressRangeACPI, TypeStatic)
-        }, 
+        },
 
         ResourceTemplate ()
         {
@@ -272,7 +272,7 @@
                 0xF8F9FAFB,         // Translation Offset
                 0xFCFDFEFF,         // Length
                 ,, , AddressRangeACPI, TypeTranslation)
-        }, 
+        },
 
         ResourceTemplate ()
         {
@@ -283,7 +283,7 @@
                 0xF8F9FAFB,         // Translation Offset
                 0xFCFDFEFF,         // Length
                 ,, , AddressRangeNVS, TypeStatic)
-        }, 
+        },
 
         ResourceTemplate ()
         {
@@ -294,7 +294,7 @@
                 0xF8F9FAFB,         // Translation Offset
                 0xFCFDFEFF,         // Length
                 ,, , AddressRangeNVS, TypeTranslation)
-        }, 
+        },
 
         ResourceTemplate ()
         {
@@ -305,7 +305,7 @@
                 0xF8F9FAFB,         // Translation Offset
                 0xFCFDFEFF,         // Length
                 ,, , AddressRangeMemory, TypeStatic)
-        }, 
+        },
 
         ResourceTemplate ()
         {
@@ -316,7 +316,7 @@
                 0xF8F9FAFB,         // Translation Offset
                 0xFCFDFEFF,         // Length
                 ,, , AddressRangeMemory, TypeTranslation)
-        }, 
+        },
 
         ResourceTemplate ()
         {
@@ -327,7 +327,7 @@
                 0xF8F9FAFB,         // Translation Offset
                 0xFCFDFEFF,         // Length
                 ,, , AddressRangeReserved, TypeStatic)
-        }, 
+        },
 
         ResourceTemplate ()
         {
@@ -338,7 +338,7 @@
                 0xF8F9FAFB,         // Translation Offset
                 0xFCFDFEFF,         // Length
                 ,, , AddressRangeReserved, TypeTranslation)
-        }, 
+        },
 
         ResourceTemplate ()
         {
@@ -349,7 +349,7 @@
                 0xF8F9FAFB,         // Translation Offset
                 0xFCFDFEFF,         // Length
                 ,, , AddressRangeACPI, TypeStatic)
-        }, 
+        },
 
         ResourceTemplate ()
         {
@@ -360,7 +360,7 @@
                 0xF8F9FAFB,         // Translation Offset
                 0xFCFDFEFF,         // Length
                 ,, , AddressRangeACPI, TypeTranslation)
-        }, 
+        },
 
         ResourceTemplate ()
         {
@@ -371,7 +371,7 @@
                 0xF8F9FAFB,         // Translation Offset
                 0xFCFDFEFF,         // Length
                 ,, , AddressRangeNVS, TypeStatic)
-        }, 
+        },
 
         ResourceTemplate ()
         {
@@ -382,7 +382,7 @@
                 0xF8F9FAFB,         // Translation Offset
                 0xFCFDFEFF,         // Length
                 ,, , AddressRangeNVS, TypeTranslation)
-        }, 
+        },
 
         ResourceTemplate ()
         {
@@ -393,7 +393,7 @@
                 0xF8F9FAFB,         // Translation Offset
                 0xFCFDFEFF,         // Length
                 ,, , AddressRangeMemory, TypeStatic)
-        }, 
+        },
 
         ResourceTemplate ()
         {
@@ -404,7 +404,7 @@
                 0xF8F9FAFB,         // Translation Offset
                 0xFCFDFEFF,         // Length
                 ,, , AddressRangeMemory, TypeTranslation)
-        }, 
+        },
 
         ResourceTemplate ()
         {
@@ -415,7 +415,7 @@
                 0xF8F9FAFB,         // Translation Offset
                 0xFCFDFEFF,         // Length
                 ,, , AddressRangeReserved, TypeStatic)
-        }, 
+        },
 
         ResourceTemplate ()
         {
@@ -426,7 +426,7 @@
                 0xF8F9FAFB,         // Translation Offset
                 0xFCFDFEFF,         // Length
                 ,, , AddressRangeReserved, TypeTranslation)
-        }, 
+        },
 
         ResourceTemplate ()
         {
@@ -437,7 +437,7 @@
                 0xF8F9FAFB,         // Translation Offset
                 0xFCFDFEFF,         // Length
                 ,, , AddressRangeACPI, TypeStatic)
-        }, 
+        },
 
         ResourceTemplate ()
         {
@@ -448,7 +448,7 @@
                 0xF8F9FAFB,         // Translation Offset
                 0xFCFDFEFF,         // Length
                 ,, , AddressRangeACPI, TypeTranslation)
-        }, 
+        },
 
         ResourceTemplate ()
         {
@@ -459,7 +459,7 @@
                 0xF8F9FAFB,         // Translation Offset
                 0xFCFDFEFF,         // Length
                 ,, , AddressRangeNVS, TypeStatic)
-        }, 
+        },
 
         ResourceTemplate ()
         {
@@ -470,7 +470,7 @@
                 0xF8F9FAFB,         // Translation Offset
                 0xFCFDFEFF,         // Length
                 ,, , AddressRangeNVS, TypeTranslation)
-        }, 
+        },
 
         ResourceTemplate ()
         {
@@ -481,7 +481,7 @@
                 0xF8F9FAFB,         // Translation Offset
                 0xFCFDFEFF,         // Length
                 ,, , AddressRangeMemory, TypeStatic)
-        }, 
+        },
 
         ResourceTemplate ()
         {
@@ -492,7 +492,7 @@
                 0xF8F9FAFB,         // Translation Offset
                 0xFCFDFEFF,         // Length
                 ,, , AddressRangeMemory, TypeTranslation)
-        }, 
+        },
 
         ResourceTemplate ()
         {
@@ -503,7 +503,7 @@
                 0xF8F9FAFB,         // Translation Offset
                 0xFCFDFEFF,         // Length
                 ,, , AddressRangeReserved, TypeStatic)
-        }, 
+        },
 
         ResourceTemplate ()
         {
@@ -514,7 +514,7 @@
                 0xF8F9FAFB,         // Translation Offset
                 0xFCFDFEFF,         // Length
                 ,, , AddressRangeReserved, TypeTranslation)
-        }, 
+        },
 
         ResourceTemplate ()
         {
@@ -525,7 +525,7 @@
                 0xF8F9FAFB,         // Translation Offset
                 0xFCFDFEFF,         // Length
                 ,, , AddressRangeACPI, TypeStatic)
-        }, 
+        },
 
         ResourceTemplate ()
         {
@@ -536,7 +536,7 @@
                 0xF8F9FAFB,         // Translation Offset
                 0xFCFDFEFF,         // Length
                 ,, , AddressRangeACPI, TypeTranslation)
-        }, 
+        },
 
         ResourceTemplate ()
         {
@@ -547,7 +547,7 @@
                 0xF8F9FAFB,         // Translation Offset
                 0xFCFDFEFF,         // Length
                 ,, , AddressRangeNVS, TypeStatic)
-        }, 
+        },
 
         ResourceTemplate ()
         {
@@ -558,7 +558,7 @@
                 0xF8F9FAFB,         // Translation Offset
                 0xFCFDFEFF,         // Length
                 ,, , AddressRangeNVS, TypeTranslation)
-        }, 
+        },
 
         ResourceTemplate ()
         {
@@ -569,7 +569,7 @@
                 0xF8F9FAFB,         // Translation Offset
                 0xFCFDFEFF,         // Length
                 ,, , AddressRangeMemory, TypeStatic)
-        }, 
+        },
 
         ResourceTemplate ()
         {
@@ -580,7 +580,7 @@
                 0xF8F9FAFB,         // Translation Offset
                 0xFCFDFEFF,         // Length
                 ,, , AddressRangeMemory, TypeTranslation)
-        }, 
+        },
 
         ResourceTemplate ()
         {
@@ -591,7 +591,7 @@
                 0xF8F9FAFB,         // Translation Offset
                 0xFCFDFEFF,         // Length
                 ,, , AddressRangeReserved, TypeStatic)
-        }, 
+        },
 
         ResourceTemplate ()
         {
@@ -602,7 +602,7 @@
                 0xF8F9FAFB,         // Translation Offset
                 0xFCFDFEFF,         // Length
                 ,, , AddressRangeReserved, TypeTranslation)
-        }, 
+        },
 
         ResourceTemplate ()
         {
@@ -613,7 +613,7 @@
                 0xF8F9FAFB,         // Translation Offset
                 0xFCFDFEFF,         // Length
                 ,, , AddressRangeACPI, TypeStatic)
-        }, 
+        },
 
         ResourceTemplate ()
         {
@@ -624,7 +624,7 @@
                 0xF8F9FAFB,         // Translation Offset
                 0xFCFDFEFF,         // Length
                 ,, , AddressRangeACPI, TypeTranslation)
-        }, 
+        },
 
         ResourceTemplate ()
         {
@@ -635,7 +635,7 @@
                 0xF8F9FAFB,         // Translation Offset
                 0xFCFDFEFF,         // Length
                 ,, , AddressRangeNVS, TypeStatic)
-        }, 
+        },
 
         ResourceTemplate ()
         {
@@ -646,7 +646,7 @@
                 0xF8F9FAFB,         // Translation Offset
                 0xFCFDFEFF,         // Length
                 ,, , AddressRangeNVS, TypeTranslation)
-        }, 
+        },
 
         ResourceTemplate ()
         {
@@ -657,7 +657,7 @@
                 0xF8F9FAFB,         // Translation Offset
                 0xFCFDFEFF,         // Length
                 ,, , AddressRangeMemory, TypeStatic)
-        }, 
+        },
 
         ResourceTemplate ()
         {
@@ -668,7 +668,7 @@
                 0xF8F9FAFB,         // Translation Offset
                 0xFCFDFEFF,         // Length
                 ,, , AddressRangeMemory, TypeTranslation)
-        }, 
+        },
 
         ResourceTemplate ()
         {
@@ -679,7 +679,7 @@
                 0xF8F9FAFB,         // Translation Offset
                 0xFCFDFEFF,         // Length
                 ,, , AddressRangeReserved, TypeStatic)
-        }, 
+        },
 
         ResourceTemplate ()
         {
@@ -690,7 +690,7 @@
                 0xF8F9FAFB,         // Translation Offset
                 0xFCFDFEFF,         // Length
                 ,, , AddressRangeReserved, TypeTranslation)
-        }, 
+        },
 
         ResourceTemplate ()
         {
@@ -701,7 +701,7 @@
                 0xF8F9FAFB,         // Translation Offset
                 0xFCFDFEFF,         // Length
                 ,, , AddressRangeACPI, TypeStatic)
-        }, 
+        },
 
         ResourceTemplate ()
         {
@@ -712,7 +712,7 @@
                 0xF8F9FAFB,         // Translation Offset
                 0xFCFDFEFF,         // Length
                 ,, , AddressRangeACPI, TypeTranslation)
-        }, 
+        },
 
         ResourceTemplate ()
         {
@@ -723,7 +723,7 @@
                 0xF8F9FAFB,         // Translation Offset
                 0xFCFDFEFF,         // Length
                 ,, , AddressRangeNVS, TypeStatic)
-        }, 
+        },
 
         ResourceTemplate ()
         {
@@ -734,7 +734,7 @@
                 0xF8F9FAFB,         // Translation Offset
                 0xFCFDFEFF,         // Length
                 ,, , AddressRangeNVS, TypeTranslation)
-        }, 
+        },
 
         ResourceTemplate ()
         {
@@ -745,7 +745,7 @@
                 0xF8F9FAFB,         // Translation Offset
                 0xFCFDFEFF,         // Length
                 ,, , AddressRangeMemory, TypeStatic)
-        }, 
+        },
 
         ResourceTemplate ()
         {
@@ -756,7 +756,7 @@
                 0xF8F9FAFB,         // Translation Offset
                 0xFCFDFEFF,         // Length
                 ,, , AddressRangeMemory, TypeTranslation)
-        }, 
+        },
 
         ResourceTemplate ()
         {
@@ -767,7 +767,7 @@
                 0xF8F9FAFB,         // Translation Offset
                 0xFCFDFEFF,         // Length
                 ,, , AddressRangeReserved, TypeStatic)
-        }, 
+        },
 
         ResourceTemplate ()
         {
@@ -778,7 +778,7 @@
                 0xF8F9FAFB,         // Translation Offset
                 0xFCFDFEFF,         // Length
                 ,, , AddressRangeReserved, TypeTranslation)
-        }, 
+        },
 
         ResourceTemplate ()
         {
@@ -789,7 +789,7 @@
                 0xF8F9FAFB,         // Translation Offset
                 0xFCFDFEFF,         // Length
                 ,, , AddressRangeACPI, TypeStatic)
-        }, 
+        },
 
         ResourceTemplate ()
         {
@@ -800,7 +800,7 @@
                 0xF8F9FAFB,         // Translation Offset
                 0xFCFDFEFF,         // Length
                 ,, , AddressRangeACPI, TypeTranslation)
-        }, 
+        },
 
         ResourceTemplate ()
         {
@@ -811,7 +811,7 @@
                 0xF8F9FAFB,         // Translation Offset
                 0xFCFDFEFF,         // Length
                 ,, , AddressRangeNVS, TypeStatic)
-        }, 
+        },
 
         ResourceTemplate ()
         {
@@ -822,7 +822,7 @@
                 0xF8F9FAFB,         // Translation Offset
                 0xFCFDFEFF,         // Length
                 ,, , AddressRangeNVS, TypeTranslation)
-        }, 
+        },
 
         ResourceTemplate ()
         {
@@ -833,7 +833,7 @@
                 0xF8F9FAFB,         // Translation Offset
                 0xFCFDFEFF,         // Length
                 ,, , AddressRangeMemory, TypeStatic)
-        }, 
+        },
 
         ResourceTemplate ()
         {
@@ -844,7 +844,7 @@
                 0xF8F9FAFB,         // Translation Offset
                 0xFCFDFEFF,         // Length
                 ,, , AddressRangeMemory, TypeTranslation)
-        }, 
+        },
 
         ResourceTemplate ()
         {
@@ -855,7 +855,7 @@
                 0xF8F9FAFB,         // Translation Offset
                 0xFCFDFEFF,         // Length
                 ,, , AddressRangeReserved, TypeStatic)
-        }, 
+        },
 
         ResourceTemplate ()
         {
@@ -866,7 +866,7 @@
                 0xF8F9FAFB,         // Translation Offset
                 0xFCFDFEFF,         // Length
                 ,, , AddressRangeReserved, TypeTranslation)
-        }, 
+        },
 
         ResourceTemplate ()
         {
@@ -877,7 +877,7 @@
                 0xF8F9FAFB,         // Translation Offset
                 0xFCFDFEFF,         // Length
                 ,, , AddressRangeACPI, TypeStatic)
-        }, 
+        },
 
         ResourceTemplate ()
         {
@@ -888,7 +888,7 @@
                 0xF8F9FAFB,         // Translation Offset
                 0xFCFDFEFF,         // Length
                 ,, , AddressRangeACPI, TypeTranslation)
-        }, 
+        },
 
         ResourceTemplate ()
         {
@@ -899,7 +899,7 @@
                 0xF8F9FAFB,         // Translation Offset
                 0xFCFDFEFF,         // Length
                 ,, , AddressRangeNVS, TypeStatic)
-        }, 
+        },
 
         ResourceTemplate ()
         {
@@ -910,7 +910,7 @@
                 0xF8F9FAFB,         // Translation Offset
                 0xFCFDFEFF,         // Length
                 ,, , AddressRangeNVS, TypeTranslation)
-        }, 
+        },
 
         ResourceTemplate ()
         {
@@ -921,7 +921,7 @@
                 0xF8F9FAFB,         // Translation Offset
                 0xFCFDFEFF,         // Length
                 ,, , AddressRangeMemory, TypeStatic)
-        }, 
+        },
 
         ResourceTemplate ()
         {
@@ -932,7 +932,7 @@
                 0xF8F9FAFB,         // Translation Offset
                 0xFCFDFEFF,         // Length
                 ,, , AddressRangeMemory, TypeStatic)
-        }, 
+        },
 
         ResourceTemplate ()
         {
@@ -943,7 +943,7 @@
                 0xF8F9FAFB,         // Translation Offset
                 0xFCFDFEFF,         // Length
                 0x01, "", , AddressRangeMemory, TypeStatic)
-        }, 
+        },
 
         ResourceTemplate ()
         {
@@ -954,7 +954,7 @@
                 0xF8F9FAFB,         // Translation Offset
                 0xFCFDFEFF,         // Length
                 0x0F, "P", , AddressRangeMemory, TypeStatic)
-        }, 
+        },
 
         ResourceTemplate ()
         {
@@ -965,7 +965,7 @@
                 0xF8F9FAFB,         // Translation Offset
                 0xFCFDFEFF,         // Length
                 0xF0, "PATH", , AddressRangeMemory, TypeStatic)
-        }, 
+        },
 
         ResourceTemplate ()
         {
@@ -976,7 +976,7 @@
                 0xF8F9FAFB,         // Translation Offset
                 0xFCFDFEFF,         // Length
                 0xFF, "!\"#$%&\'()*+,-./0123456789:;<=>?@ABCDEFGHIJKLMNOPQRSTUVWXYZ[\\]^_`abcdefghijklmnopqrstuvwxyz{|}~ !\"#$%&\'()*+,-./0123456789:;<=>?@ABCDEFGHIJKLMNOPQRSTUVWXYZ[\\]^_`abcdefghijklmnopqrstuvwxyz{|}~ !\"#$%&\'()*", , AddressRangeMemory, TypeStatic)
-        }, 
+        },
 
         ResourceTemplate ()
         {
@@ -987,7 +987,7 @@
                 0xF8F9FAFB,         // Translation Offset
                 0xFCFDFEFF,         // Length
                 0xFF, "PATHPATHPATH", , AddressRangeACPI, TypeTranslation)
-        }, 
+        },
 
         ResourceTemplate ()
         {
@@ -998,7 +998,7 @@
                 0x00000000,         // Translation Offset
                 0x00000000,         // Length
                 0xFF, "PATHPATHPATH", , AddressRangeACPI, TypeTranslation)
-        }, 
+        },
 
         ResourceTemplate ()
         {
@@ -1118,7 +1118,7 @@
                 0xF8F9FAFB,         // Translation Offset
                 0xFCFDFEFF,         // Length
                 ,, , AddressRangeMemory, TypeStatic)
-        }, 
+        },
 
         ResourceTemplate ()
         {
@@ -1129,7 +1129,7 @@
                 0xF8F9FAFB,         // Translation Offset
                 0xFCFDFEFF,         // Length
                 ,, , AddressRangeMemory, TypeStatic)
-        }, 
+        },
 
         ResourceTemplate ()
         {
@@ -1140,7 +1140,7 @@
                 0xF8F9FAFB,         // Translation Offset
                 0xFCFDFEFF,         // Length
                 ,, , AddressRangeMemory, TypeStatic)
-        }, 
+        },
 
         ResourceTemplate ()
         {
@@ -1151,7 +1151,7 @@
                 0xF8F9FAFB,         // Translation Offset
                 0xFCFDFEFF,         // Length
                 ,, , AddressRangeMemory, TypeStatic)
-        }, 
+        },
 
         ResourceTemplate ()
         {
@@ -1162,7 +1162,7 @@
                 0xF8F9FAFB,         // Translation Offset
                 0xFCFDFEFF,         // Length
                 ,, , AddressRangeMemory, TypeStatic)
-        }, 
+        },
 
         ResourceTemplate ()
         {
@@ -1173,7 +1173,7 @@
                 0xF8F9FAFB,         // Translation Offset
                 0xFCFDFEFF,         // Length
                 ,, , AddressRangeMemory, TypeStatic)
-        }, 
+        },
 
         ResourceTemplate ()
         {
@@ -1184,7 +1184,7 @@
                 0xF8F9FAFB,         // Translation Offset
                 0xFCFDFEFF,         // Length
                 ,, , AddressRangeMemory, TypeStatic)
-        }, 
+        },
 
         ResourceTemplate ()
         {
@@ -1195,7 +1195,7 @@
                 0xF8F9FAFB,         // Translation Offset
                 0xFCFDFEFF,         // Length
                 ,, , AddressRangeMemory, TypeStatic)
-        }, 
+        },
 
         ResourceTemplate ()
         {
@@ -1206,7 +1206,7 @@
                 0xF8F9FAFB,         // Translation Offset
                 0xFCFDFEFF,         // Length
                 ,, , AddressRangeMemory, TypeStatic)
-        }, 
+        },
 
         ResourceTemplate ()
         {
@@ -1217,7 +1217,7 @@
                 0xF8F9FAFB,         // Translation Offset
                 0xFCFDFEFF,         // Length
                 ,, , AddressRangeMemory, TypeStatic)
-        }, 
+        },
 
         ResourceTemplate ()
         {
@@ -1228,7 +1228,7 @@
                 0xF8F9FAFB,         // Translation Offset
                 0xFCFDFEFF,         // Length
                 ,, , AddressRangeMemory, TypeStatic)
-        }, 
+        },
 
         ResourceTemplate ()
         {
@@ -1239,7 +1239,7 @@
                 0xF8F9FAFB,         // Translation Offset
                 0xFCFDFEFF,         // Length
                 ,, , AddressRangeMemory, TypeStatic)
-        }, 
+        },
 
         ResourceTemplate ()
         {
@@ -1250,7 +1250,7 @@
                 0xF8F9FAFB,         // Translation Offset
                 0xFCFDFEFF,         // Length
                 ,, , AddressRangeMemory, TypeStatic)
-        }, 
+        },
 
         ResourceTemplate ()
         {
@@ -1261,7 +1261,7 @@
                 0xF8F9FAFB,         // Translation Offset
                 0xFCFDFEFF,         // Length
                 ,, , AddressRangeMemory, TypeStatic)
-        }, 
+        },
 
         ResourceTemplate ()
         {
@@ -1272,7 +1272,7 @@
                 0xF8F9FAFB,         // Translation Offset
                 0xFCFDFEFF,         // Length
                 ,, , AddressRangeMemory, TypeStatic)
-        }, 
+        },
 
         ResourceTemplate ()
         {
@@ -1283,7 +1283,7 @@
                 0xF8F9FAFB,         // Translation Offset
                 0xFCFDFEFF,         // Length
                 ,, , AddressRangeMemory, TypeStatic)
-        }, 
+        },
 
         /* Byte 5 (Type Specific Flags) of DWord Address Space Descriptor */
         /* NonCacheable */
@@ -1296,7 +1296,7 @@
                 0xF8F9FAFB,         // Translation Offset
                 0xFCFDFEFF,         // Length
                 ,, , AddressRangeMemory, TypeStatic)
-        }, 
+        },
 
         ResourceTemplate ()
         {
@@ -1307,7 +1307,7 @@
                 0xF8F9FAFB,         // Translation Offset
                 0xFCFDFEFF,         // Length
                 ,, , AddressRangeMemory, TypeTranslation)
-        }, 
+        },
 
         ResourceTemplate ()
         {
@@ -1318,7 +1318,7 @@
                 0xF8F9FAFB,         // Translation Offset
                 0xFCFDFEFF,         // Length
                 ,, , AddressRangeReserved, TypeStatic)
-        }, 
+        },
 
         ResourceTemplate ()
         {
@@ -1329,7 +1329,7 @@
                 0xF8F9FAFB,         // Translation Offset
                 0xFCFDFEFF,         // Length
                 ,, , AddressRangeReserved, TypeTranslation)
-        }, 
+        },
 
         ResourceTemplate ()
         {
@@ -1340,7 +1340,7 @@
                 0xF8F9FAFB,         // Translation Offset
                 0xFCFDFEFF,         // Length
                 ,, , AddressRangeACPI, TypeStatic)
-        }, 
+        },
 
         ResourceTemplate ()
         {
@@ -1351,7 +1351,7 @@
                 0xF8F9FAFB,         // Translation Offset
                 0xFCFDFEFF,         // Length
                 ,, , AddressRangeACPI, TypeTranslation)
-        }, 
+        },
 
         ResourceTemplate ()
         {
@@ -1362,7 +1362,7 @@
                 0xF8F9FAFB,         // Translation Offset
                 0xFCFDFEFF,         // Length
                 ,, , AddressRangeNVS, TypeStatic)
-        }, 
+        },
 
         ResourceTemplate ()
         {
@@ -1373,7 +1373,7 @@
                 0xF8F9FAFB,         // Translation Offset
                 0xFCFDFEFF,         // Length
                 ,, , AddressRangeNVS, TypeTranslation)
-        }, 
+        },
 
         ResourceTemplate ()
         {
@@ -1384,7 +1384,7 @@
                 0xF8F9FAFB,         // Translation Offset
                 0xFCFDFEFF,         // Length
                 ,, , AddressRangeMemory, TypeStatic)
-        }, 
+        },
 
         ResourceTemplate ()
         {
@@ -1395,7 +1395,7 @@
                 0xF8F9FAFB,         // Translation Offset
                 0xFCFDFEFF,         // Length
                 ,, , AddressRangeMemory, TypeTranslation)
-        }, 
+        },
 
         ResourceTemplate ()
         {
@@ -1406,7 +1406,7 @@
                 0xF8F9FAFB,         // Translation Offset
                 0xFCFDFEFF,         // Length
                 ,, , AddressRangeReserved, TypeStatic)
-        }, 
+        },
 
         ResourceTemplate ()
         {
@@ -1417,7 +1417,7 @@
                 0xF8F9FAFB,         // Translation Offset
                 0xFCFDFEFF,         // Length
                 ,, , AddressRangeReserved, TypeTranslation)
-        }, 
+        },
 
         ResourceTemplate ()
         {
@@ -1428,7 +1428,7 @@
                 0xF8F9FAFB,         // Translation Offset
                 0xFCFDFEFF,         // Length
                 ,, , AddressRangeACPI, TypeStatic)
-        }, 
+        },
 
         ResourceTemplate ()
         {
@@ -1439,7 +1439,7 @@
                 0xF8F9FAFB,         // Translation Offset
                 0xFCFDFEFF,         // Length
                 ,, , AddressRangeACPI, TypeTranslation)
-        }, 
+        },
 
         ResourceTemplate ()
         {
@@ -1450,7 +1450,7 @@
                 0xF8F9FAFB,         // Translation Offset
                 0xFCFDFEFF,         // Length
                 ,, , AddressRangeNVS, TypeStatic)
-        }, 
+        },
 
         ResourceTemplate ()
         {
@@ -1461,7 +1461,7 @@
                 0xF8F9FAFB,         // Translation Offset
                 0xFCFDFEFF,         // Length
                 ,, , AddressRangeNVS, TypeTranslation)
-        }, 
+        },
 
         /* Cacheable */
 
@@ -1474,7 +1474,7 @@
                 0xF8F9FAFB,         // Translation Offset
                 0xFCFDFEFF,         // Length
                 ,, , AddressRangeMemory, TypeStatic)
-        }, 
+        },
 
         ResourceTemplate ()
         {
@@ -1485,7 +1485,7 @@
                 0xF8F9FAFB,         // Translation Offset
                 0xFCFDFEFF,         // Length
                 ,, , AddressRangeMemory, TypeTranslation)
-        }, 
+        },
 
         ResourceTemplate ()
         {
@@ -1496,7 +1496,7 @@
                 0xF8F9FAFB,         // Translation Offset
                 0xFCFDFEFF,         // Length
                 ,, , AddressRangeReserved, TypeStatic)
-        }, 
+        },
 
         ResourceTemplate ()
         {
@@ -1507,7 +1507,7 @@
                 0xF8F9FAFB,         // Translation Offset
                 0xFCFDFEFF,         // Length
                 ,, , AddressRangeReserved, TypeTranslation)
-        }, 
+        },
 
         ResourceTemplate ()
         {
@@ -1518,7 +1518,7 @@
                 0xF8F9FAFB,         // Translation Offset
                 0xFCFDFEFF,         // Length
                 ,, , AddressRangeACPI, TypeStatic)
-        }, 
+        },
 
         ResourceTemplate ()
         {
@@ -1529,7 +1529,7 @@
                 0xF8F9FAFB,         // Translation Offset
                 0xFCFDFEFF,         // Length
                 ,, , AddressRangeACPI, TypeTranslation)
-        }, 
+        },
 
         ResourceTemplate ()
         {
@@ -1540,7 +1540,7 @@
                 0xF8F9FAFB,         // Translation Offset
                 0xFCFDFEFF,         // Length
                 ,, , AddressRangeNVS, TypeStatic)
-        }, 
+        },
 
         ResourceTemplate ()
         {
@@ -1551,7 +1551,7 @@
                 0xF8F9FAFB,         // Translation Offset
                 0xFCFDFEFF,         // Length
                 ,, , AddressRangeNVS, TypeTranslation)
-        }, 
+        },
 
         ResourceTemplate ()
         {
@@ -1562,7 +1562,7 @@
                 0xF8F9FAFB,         // Translation Offset
                 0xFCFDFEFF,         // Length
                 ,, , AddressRangeMemory, TypeStatic)
-        }, 
+        },
 
         ResourceTemplate ()
         {
@@ -1573,7 +1573,7 @@
                 0xF8F9FAFB,         // Translation Offset
                 0xFCFDFEFF,         // Length
                 ,, , AddressRangeMemory, TypeTranslation)
-        }, 
+        },
 
         ResourceTemplate ()
         {
@@ -1584,7 +1584,7 @@
                 0xF8F9FAFB,         // Translation Offset
                 0xFCFDFEFF,         // Length
                 ,, , AddressRangeReserved, TypeStatic)
-        }, 
+        },
 
         ResourceTemplate ()
         {
@@ -1595,7 +1595,7 @@
                 0xF8F9FAFB,         // Translation Offset
                 0xFCFDFEFF,         // Length
                 ,, , AddressRangeReserved, TypeTranslation)
-        }, 
+        },
 
         ResourceTemplate ()
         {
@@ -1606,7 +1606,7 @@
                 0xF8F9FAFB,         // Translation Offset
                 0xFCFDFEFF,         // Length
                 ,, , AddressRangeACPI, TypeStatic)
-        }, 
+        },
 
         ResourceTemplate ()
         {
@@ -1617,7 +1617,7 @@
                 0xF8F9FAFB,         // Translation Offset
                 0xFCFDFEFF,         // Length
                 ,, , AddressRangeACPI, TypeTranslation)
-        }, 
+        },
 
         ResourceTemplate ()
         {
@@ -1628,7 +1628,7 @@
                 0xF8F9FAFB,         // Translation Offset
                 0xFCFDFEFF,         // Length
                 ,, , AddressRangeNVS, TypeStatic)
-        }, 
+        },
 
         ResourceTemplate ()
         {
@@ -1639,7 +1639,7 @@
                 0xF8F9FAFB,         // Translation Offset
                 0xFCFDFEFF,         // Length
                 ,, , AddressRangeNVS, TypeTranslation)
-        }, 
+        },
 
         /* WriteCombining */
 
@@ -1652,7 +1652,7 @@
                 0xF8F9FAFB,         // Translation Offset
                 0xFCFDFEFF,         // Length
                 ,, , AddressRangeMemory, TypeStatic)
-        }, 
+        },
 
         ResourceTemplate ()
         {
@@ -1663,7 +1663,7 @@
                 0xF8F9FAFB,         // Translation Offset
                 0xFCFDFEFF,         // Length
                 ,, , AddressRangeMemory, TypeTranslation)
-        }, 
+        },
 
         ResourceTemplate ()
         {
@@ -1674,7 +1674,7 @@
                 0xF8F9FAFB,         // Translation Offset
                 0xFCFDFEFF,         // Length
                 ,, , AddressRangeReserved, TypeStatic)
-        }, 
+        },
 
         ResourceTemplate ()
         {
@@ -1685,7 +1685,7 @@
                 0xF8F9FAFB,         // Translation Offset
                 0xFCFDFEFF,         // Length
                 ,, , AddressRangeReserved, TypeTranslation)
-        }, 
+        },
 
         ResourceTemplate ()
         {
@@ -1696,7 +1696,7 @@
                 0xF8F9FAFB,         // Translation Offset
                 0xFCFDFEFF,         // Length
                 ,, , AddressRangeACPI, TypeStatic)
-        }, 
+        },
 
         ResourceTemplate ()
         {
@@ -1707,7 +1707,7 @@
                 0xF8F9FAFB,         // Translation Offset
                 0xFCFDFEFF,         // Length
                 ,, , AddressRangeACPI, TypeTranslation)
-        }, 
+        },
 
         ResourceTemplate ()
         {
@@ -1718,7 +1718,7 @@
                 0xF8F9FAFB,         // Translation Offset
                 0xFCFDFEFF,         // Length
                 ,, , AddressRangeNVS, TypeStatic)
-        }, 
+        },
 
         ResourceTemplate ()
         {
@@ -1729,7 +1729,7 @@
                 0xF8F9FAFB,         // Translation Offset
                 0xFCFDFEFF,         // Length
                 ,, , AddressRangeNVS, TypeTranslation)
-        }, 
+        },
 
         ResourceTemplate ()
         {
@@ -1740,7 +1740,7 @@
                 0xF8F9FAFB,         // Translation Offset
                 0xFCFDFEFF,         // Length
                 ,, , AddressRangeMemory, TypeStatic)
-        }, 
+        },
 
         ResourceTemplate ()
         {
@@ -1751,7 +1751,7 @@
                 0xF8F9FAFB,         // Translation Offset
                 0xFCFDFEFF,         // Length
                 ,, , AddressRangeMemory, TypeTranslation)
-        }, 
+        },
 
         ResourceTemplate ()
         {
@@ -1762,7 +1762,7 @@
                 0xF8F9FAFB,         // Translation Offset
                 0xFCFDFEFF,         // Length
                 ,, , AddressRangeReserved, TypeStatic)
-        }, 
+        },
 
         ResourceTemplate ()
         {
@@ -1773,7 +1773,7 @@
                 0xF8F9FAFB,         // Translation Offset
                 0xFCFDFEFF,         // Length
                 ,, , AddressRangeReserved, TypeTranslation)
-        }, 
+        },
 
         ResourceTemplate ()
         {
@@ -1784,7 +1784,7 @@
                 0xF8F9FAFB,         // Translation Offset
                 0xFCFDFEFF,         // Length
                 ,, , AddressRangeACPI, TypeStatic)
-        }, 
+        },
 
         ResourceTemplate ()
         {
@@ -1795,7 +1795,7 @@
                 0xF8F9FAFB,         // Translation Offset
                 0xFCFDFEFF,         // Length
                 ,, , AddressRangeACPI, TypeTranslation)
-        }, 
+        },
 
         ResourceTemplate ()
         {
@@ -1806,7 +1806,7 @@
                 0xF8F9FAFB,         // Translation Offset
                 0xFCFDFEFF,         // Length
                 ,, , AddressRangeNVS, TypeStatic)
-        }, 
+        },
 
         ResourceTemplate ()
         {
@@ -1817,7 +1817,7 @@
                 0xF8F9FAFB,         // Translation Offset
                 0xFCFDFEFF,         // Length
                 ,, , AddressRangeNVS, TypeTranslation)
-        }, 
+        },
 
         /* Prefetchable */
 
@@ -1830,7 +1830,7 @@
                 0xF8F9FAFB,         // Translation Offset
                 0xFCFDFEFF,         // Length
                 ,, , AddressRangeMemory, TypeStatic)
-        }, 
+        },
 
         ResourceTemplate ()
         {
@@ -1841,7 +1841,7 @@
                 0xF8F9FAFB,         // Translation Offset
                 0xFCFDFEFF,         // Length
                 ,, , AddressRangeMemory, TypeTranslation)
-        }, 
+        },
 
         ResourceTemplate ()
         {
@@ -1852,7 +1852,7 @@
                 0xF8F9FAFB,         // Translation Offset
                 0xFCFDFEFF,         // Length
                 ,, , AddressRangeReserved, TypeStatic)
-        }, 
+        },
 
         ResourceTemplate ()
         {
@@ -1863,7 +1863,7 @@
                 0xF8F9FAFB,         // Translation Offset
                 0xFCFDFEFF,         // Length
                 ,, , AddressRangeReserved, TypeTranslation)
-        }, 
+        },
 
         ResourceTemplate ()
         {
@@ -1874,7 +1874,7 @@
                 0xF8F9FAFB,         // Translation Offset
                 0xFCFDFEFF,         // Length
                 ,, , AddressRangeACPI, TypeStatic)
-        }, 
+        },
 
         ResourceTemplate ()
         {
@@ -1885,7 +1885,7 @@
                 0xF8F9FAFB,         // Translation Offset
                 0xFCFDFEFF,         // Length
                 ,, , AddressRangeACPI, TypeTranslation)
-        }, 
+        },
 
         ResourceTemplate ()
         {
@@ -1896,7 +1896,7 @@
                 0xF8F9FAFB,         // Translation Offset
                 0xFCFDFEFF,         // Length
                 ,, , AddressRangeNVS, TypeStatic)
-        }, 
+        },
 
         ResourceTemplate ()
         {
@@ -1907,7 +1907,7 @@
                 0xF8F9FAFB,         // Translation Offset
                 0xFCFDFEFF,         // Length
                 ,, , AddressRangeNVS, TypeTranslation)
-        }, 
+        },
 
         ResourceTemplate ()
         {
@@ -1918,7 +1918,7 @@
                 0xF8F9FAFB,         // Translation Offset
                 0xFCFDFEFF,         // Length
                 ,, , AddressRangeMemory, TypeStatic)
-        }, 
+        },
 
         ResourceTemplate ()
         {
@@ -1929,7 +1929,7 @@
                 0xF8F9FAFB,         // Translation Offset
                 0xFCFDFEFF,         // Length
                 ,, , AddressRangeMemory, TypeTranslation)
-        }, 
+        },
 
         ResourceTemplate ()
         {
@@ -1940,7 +1940,7 @@
                 0xF8F9FAFB,         // Translation Offset
                 0xFCFDFEFF,         // Length
                 ,, , AddressRangeReserved, TypeStatic)
-        }, 
+        },
 
         ResourceTemplate ()
         {
@@ -1951,7 +1951,7 @@
                 0xF8F9FAFB,         // Translation Offset
                 0xFCFDFEFF,         // Length
                 ,, , AddressRangeReserved, TypeTranslation)
-        }, 
+        },
 
         ResourceTemplate ()
         {
@@ -1962,7 +1962,7 @@
                 0xF8F9FAFB,         // Translation Offset
                 0xFCFDFEFF,         // Length
                 ,, , AddressRangeACPI, TypeStatic)
-        }, 
+        },
 
         ResourceTemplate ()
         {
@@ -1973,7 +1973,7 @@
                 0xF8F9FAFB,         // Translation Offset
                 0xFCFDFEFF,         // Length
                 ,, , AddressRangeACPI, TypeTranslation)
-        }, 
+        },
 
         ResourceTemplate ()
         {
@@ -1984,7 +1984,7 @@
                 0xF8F9FAFB,         // Translation Offset
                 0xFCFDFEFF,         // Length
                 ,, , AddressRangeNVS, TypeStatic)
-        }, 
+        },
 
         ResourceTemplate ()
         {
@@ -1995,7 +1995,7 @@
                 0xF8F9FAFB,         // Translation Offset
                 0xFCFDFEFF,         // Length
                 ,, , AddressRangeNVS, TypeTranslation)
-        }, 
+        },
 
         /* Particular cases */
 
@@ -2008,7 +2008,7 @@
                 0xF8F9FAFB,         // Translation Offset
                 0xFCFDFEFF,         // Length
                 ,, , AddressRangeMemory, TypeStatic)
-        }, 
+        },
 
         ResourceTemplate ()
         {
@@ -2019,7 +2019,7 @@
                 0xF8F9FAFB,         // Translation Offset
                 0xFCFDFEFF,         // Length
                 ,, , AddressRangeMemory, TypeStatic)
-        }, 
+        },
 
         /* Resource Source */
 
@@ -2032,7 +2032,7 @@
                 0xF8F9FAFB,         // Translation Offset
                 0xFCFDFEFF,         // Length
                 0x01, "", , AddressRangeMemory, TypeStatic)
-        }, 
+        },
 
         ResourceTemplate ()
         {
@@ -2043,7 +2043,7 @@
                 0xF8F9FAFB,         // Translation Offset
                 0xFCFDFEFF,         // Length
                 0x0F, "P", , AddressRangeMemory, TypeStatic)
-        }, 
+        },
 
         ResourceTemplate ()
         {
@@ -2054,7 +2054,7 @@
                 0xF8F9FAFB,         // Translation Offset
                 0xFCFDFEFF,         // Length
                 0xF0, "PATH", , AddressRangeMemory, TypeStatic)
-        }, 
+        },
 
         ResourceTemplate ()
         {
@@ -2065,7 +2065,7 @@
                 0xF8F9FAFB,         // Translation Offset
                 0xFCFDFEFF,         // Length
                 0xFF, "!\"#$%&\'()*+,-./0123456789:;<=>?@ABCDEFGHIJKLMNOPQRSTUVWXYZ[\\]^_`abcdefghijklmnopqrstuvwxyz{|}~ !\"#$%&\'()*+,-./0123456789:;<=>?@ABCDEFGHIJKLMNOPQRSTUVWXYZ[\\]^_`abcdefghijklmnopqrstuvwxyz{|}~ !\"#$%&\'()*", , AddressRangeMemory, TypeStatic)
-        }, 
+        },
 
         /* Particular cases */
 
@@ -2078,7 +2078,7 @@
                 0xF8F9FAFB,         // Translation Offset
                 0xFCFDFEFF,         // Length
                 0xFF, "PATHPATHPATH", , AddressRangeACPI, TypeTranslation)
-        }, 
+        },
 
         ResourceTemplate ()
         {
@@ -2089,7 +2089,7 @@
                 0x00000000,         // Translation Offset
                 0x00000000,         // Length
                 0xFF, "PATHPATHPATH", , AddressRangeACPI, TypeTranslation)
-        }, 
+        },
 
         /* 20051021, relaxation for omitted ResourceSource (bug-fix 70 rejection) */
 
@@ -2145,4 +2145,3 @@
         M331 (TS, 0x0A, 0x90, 0x90, 0x0160, 0x0160, "_TRA")
         M331 (TS, 0x0B, 0xB0, 0xB0, 0x0180, 0x0180, "_LEN")
     }
-

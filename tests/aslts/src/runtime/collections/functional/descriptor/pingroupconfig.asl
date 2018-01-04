@@ -40,7 +40,7 @@
                 {
                     0x0A, 0x0B, 0x0C, 0x0D
                 })
-        }, 
+        },
 
         ResourceTemplate ()
         {
@@ -50,7 +50,7 @@
                 {
                     0x0A, 0x0B, 0x0C, 0x0D
                 })
-        }, 
+        },
 
         ResourceTemplate ()
         {
@@ -60,7 +60,7 @@
                 {
                     0x0A, 0x0B, 0x0C, 0x0D
                 })
-        }, 
+        },
 
         ResourceTemplate ()
         {
@@ -70,7 +70,7 @@
                 {
                     0x0A, 0x0B, 0x0C, 0x0D
                 })
-        }, 
+        },
 
         ResourceTemplate ()
         {
@@ -80,7 +80,7 @@
                 {
                     0x0A, 0x0B, 0x0C, 0x0D
                 })
-        }, 
+        },
 
         ResourceTemplate ()
         {
@@ -90,7 +90,7 @@
                 {
                     0x0A, 0x0B, 0x0C, 0x0D
                 })
-        }, 
+        },
 
         ResourceTemplate ()
         {
@@ -100,7 +100,7 @@
                 {
                     0x0A, 0x0B, 0x0C, 0x0D
                 })
-        }, 
+        },
 
         ResourceTemplate ()
         {
@@ -110,7 +110,7 @@
                 {
                     0x0A, 0x0B, 0x0C, 0x0D
                 })
-        }, 
+        },
 
         ResourceTemplate ()
         {
@@ -120,7 +120,7 @@
                 {
                     0x0A, 0x0B, 0x0C, 0x0D
                 })
-        }, 
+        },
 
         ResourceTemplate ()
         {
@@ -130,7 +130,7 @@
                 {
                     0x0A, 0x0B, 0x0C, 0x0D
                 })
-        }, 
+        },
 
         ResourceTemplate ()
         {
@@ -140,7 +140,7 @@
                 {
                     0x0A, 0x0B, 0x0C, 0x0D
                 })
-        }, 
+        },
 
         ResourceTemplate ()
         {
@@ -150,7 +150,7 @@
                 {
                     0x0A, 0x0B, 0x0C, 0x0D
                 })
-        }, 
+        },
 
         ResourceTemplate ()
         {
@@ -160,7 +160,7 @@
                 {
                     0x0A, 0x0B, 0x0C, 0x0D
                 })
-        }, 
+        },
 
         ResourceTemplate ()
         {
@@ -170,7 +170,7 @@
                 {
                     0x0A, 0x0B, 0x0C, 0x0D
                 })
-        }, 
+        },
 
         ResourceTemplate ()
         {
@@ -180,7 +180,7 @@
                 {
                     0x0A, 0x0B, 0x0C, 0x0D
                 })
-        }, 
+        },
 
         ResourceTemplate ()
         {
@@ -190,7 +190,7 @@
                 {
                     0x0A, 0x0B, 0x0C, 0x0D
                 })
-        }, 
+        },
 
         ResourceTemplate ()
         {
@@ -200,7 +200,7 @@
                 {
                     0x0A, 0x0B, 0x0C, 0x0D
                 })
-        }, 
+        },
 
         ResourceTemplate ()
         {
@@ -210,7 +210,7 @@
                 {
                     0x0A, 0x0B, 0x0C, 0x0D
                 })
-        }, 
+        },
 
         ResourceTemplate ()
         {
@@ -220,7 +220,7 @@
                 {
                     0x0A, 0x0B, 0x0C, 0x0D
                 })
-        }, 
+        },
 
         ResourceTemplate ()
         {
@@ -230,7 +230,7 @@
                 {
                     0x0A, 0x0B, 0x0C, 0x0D
                 })
-        }, 
+        },
 
         ResourceTemplate ()
         {
@@ -240,7 +240,7 @@
                 {
                     0x0A, 0x0B, 0x0C, 0x0D
                 })
-        }, 
+        },
 
         ResourceTemplate ()
         {
@@ -250,7 +250,7 @@
                 {
                     0x0A, 0x0B, 0x0C, 0x0D
                 })
-        }, 
+        },
 
         ResourceTemplate ()
         {
@@ -260,7 +260,7 @@
                 {
                     0x0A, 0x0B, 0x0C, 0x0D
                 })
-        }, 
+        },
 
         ResourceTemplate ()
         {
@@ -270,7 +270,7 @@
                 {
                     0x0A, 0x0B, 0x0C, 0x0D
                 })
-        }, 
+        },
 
         ResourceTemplate ()
         {
@@ -280,7 +280,7 @@
                 {
                     0x0A, 0x0B, 0x0C, 0x0D
                 })
-        }, 
+        },
 
         ResourceTemplate ()
         {
@@ -290,7 +290,7 @@
                 {
                     0x0A, 0x0B, 0x0C, 0x0D
                 })
-        }, 
+        },
 
         ResourceTemplate ()
         {
@@ -300,7 +300,7 @@
                 {
                     0x0A, 0x0B, 0x0C, 0x0D
                 })
-        }, 
+        },
 
         ResourceTemplate ()
         {
@@ -310,7 +310,7 @@
                 {
                     0x0A, 0x0B, 0x0C, 0x0D
                 })
-        }, 
+        },
 
         ResourceTemplate ()
         {
@@ -320,7 +320,7 @@
                 {
                     0x0A, 0x0B, 0x0C, 0x0D
                 })
-        }, 
+        },
 
         ResourceTemplate ()
         {
@@ -330,7 +330,7 @@
                 {
                     0x0A, 0x0B, 0x0C, 0x0D
                 })
-        }, 
+        },
 
         ResourceTemplate ()
         {
@@ -340,7 +340,7 @@
                 {
                     0x0A, 0x0B, 0x0C, 0x0D
                 })
-        }, 
+        },
 
         ResourceTemplate ()
         {
@@ -350,7 +350,7 @@
                 {
                     0x0A, 0x0B, 0x0C, 0x0D
                 })
-        }, 
+        },
 
         ResourceTemplate ()
         {
@@ -368,7 +368,7 @@
                 {
                     0x0A, 0x0B, 0x0C, 0x0D
                 })
-        }, 
+        },
 
         ResourceTemplate ()
         {
@@ -378,7 +378,7 @@
                 {
                     0x0A, 0x0B, 0x0C, 0x0D
                 })
-        }, 
+        },
 
         ResourceTemplate ()
         {
@@ -388,7 +388,7 @@
                 {
                     0x0A, 0x0B, 0x0C, 0x0D
                 })
-        }, 
+        },
 
         ResourceTemplate ()
         {
@@ -398,7 +398,7 @@
                 {
                     0x0A, 0x0B, 0x0C, 0x0D
                 })
-        }, 
+        },
 
         ResourceTemplate ()
         {
@@ -408,7 +408,7 @@
                 {
                     0x0A, 0x0B, 0x0C, 0x0D
                 })
-        }, 
+        },
 
         ResourceTemplate ()
         {
@@ -418,7 +418,7 @@
                 {
                     0x0A, 0x0B, 0x0C, 0x0D
                 })
-        }, 
+        },
 
         ResourceTemplate ()
         {
@@ -428,7 +428,7 @@
                 {
                     0x0A, 0x0B, 0x0C, 0x0D
                 })
-        }, 
+        },
 
         ResourceTemplate ()
         {
@@ -438,7 +438,7 @@
                 {
                     0x0A, 0x0B, 0x0C, 0x0D
                 })
-        }, 
+        },
 
         ResourceTemplate ()
         {
@@ -448,7 +448,7 @@
                 {
                     0x0A, 0x0B, 0x0C, 0x0D
                 })
-        }, 
+        },
 
         ResourceTemplate ()
         {
@@ -458,7 +458,7 @@
                 {
                     0x0A, 0x0B, 0x0C, 0x0D
                 })
-        }, 
+        },
 
         ResourceTemplate ()
         {
@@ -468,7 +468,7 @@
                 {
                     0x0A, 0x0B, 0x0C, 0x0D
                 })
-        }, 
+        },
 
         ResourceTemplate ()
         {
@@ -478,7 +478,7 @@
                 {
                     0x0A, 0x0B, 0x0C, 0x0D
                 })
-        }, 
+        },
 
         ResourceTemplate ()
         {
@@ -488,7 +488,7 @@
                 {
                     0x0A, 0x0B, 0x0C, 0x0D
                 })
-        }, 
+        },
 
         ResourceTemplate ()
         {
@@ -498,7 +498,7 @@
                 {
                     0x0A, 0x0B, 0x0C, 0x0D
                 })
-        }, 
+        },
 
         ResourceTemplate ()
         {
@@ -508,7 +508,7 @@
                 {
                     0x0A, 0x0B, 0x0C, 0x0D
                 })
-        }, 
+        },
 
         ResourceTemplate ()
         {
@@ -518,7 +518,7 @@
                 {
                     0x0A, 0x0B, 0x0C, 0x0D
                 })
-        }, 
+        },
 
         ResourceTemplate ()
         {
@@ -528,7 +528,7 @@
                 {
                     0x0A, 0x0B, 0x0C, 0x0D
                 })
-        }, 
+        },
 
         ResourceTemplate ()
         {
@@ -538,7 +538,7 @@
                 {
                     0x0A, 0x0B, 0x0C, 0x0D
                 })
-        }, 
+        },
 
         ResourceTemplate ()
         {
@@ -548,7 +548,7 @@
                 {
                     0x0A, 0x0B, 0x0C, 0x0D
                 })
-        }, 
+        },
 
         ResourceTemplate ()
         {
@@ -558,7 +558,7 @@
                 {
                     0x0A, 0x0B, 0x0C, 0x0D
                 })
-        }, 
+        },
 
         ResourceTemplate ()
         {
@@ -568,7 +568,7 @@
                 {
                     0x0A, 0x0B, 0x0C, 0x0D
                 })
-        }, 
+        },
 
         ResourceTemplate ()
         {
@@ -578,7 +578,7 @@
                 {
                     0x0A, 0x0B, 0x0C, 0x0D
                 })
-        }, 
+        },
 
         ResourceTemplate ()
         {
@@ -588,7 +588,7 @@
                 {
                     0x0A, 0x0B, 0x0C, 0x0D
                 })
-        }, 
+        },
 
         ResourceTemplate ()
         {
@@ -598,7 +598,7 @@
                 {
                     0x0A, 0x0B, 0x0C, 0x0D
                 })
-        }, 
+        },
 
         ResourceTemplate ()
         {
@@ -608,7 +608,7 @@
                 {
                     0x0A, 0x0B, 0x0C, 0x0D
                 })
-        }, 
+        },
 
         ResourceTemplate ()
         {
@@ -618,7 +618,7 @@
                 {
                     0x0A, 0x0B, 0x0C, 0x0D
                 })
-        }, 
+        },
 
         ResourceTemplate ()
         {
@@ -628,7 +628,7 @@
                 {
                     0x0A, 0x0B, 0x0C, 0x0D
                 })
-        }, 
+        },
 
         ResourceTemplate ()
         {
@@ -638,7 +638,7 @@
                 {
                     0x0A, 0x0B, 0x0C, 0x0D
                 })
-        }, 
+        },
 
         ResourceTemplate ()
         {
@@ -648,7 +648,7 @@
                 {
                     0x0A, 0x0B, 0x0C, 0x0D
                 })
-        }, 
+        },
 
         ResourceTemplate ()
         {
@@ -658,7 +658,7 @@
                 {
                     0x0A, 0x0B, 0x0C, 0x0D
                 })
-        }, 
+        },
 
         ResourceTemplate ()
         {
@@ -668,7 +668,7 @@
                 {
                     0x0A, 0x0B, 0x0C, 0x0D
                 })
-        }, 
+        },
 
         ResourceTemplate ()
         {
@@ -678,7 +678,7 @@
                 {
                     0x0A, 0x0B, 0x0C, 0x0D
                 })
-        }, 
+        },
 
         ResourceTemplate ()
         {
@@ -725,4 +725,3 @@ Local0 = ResourceTemplate ()
         M331 (TS, 0x01, 0x38, 0x38, 0x0180, 0x0180, "_VAL")
         M331 (TS, 0x01, 0x0128, 0x0128, 0x0270, 0x0270, "_VEN")
     }
-

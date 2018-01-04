@@ -34,7 +34,7 @@
     {
         Name (P000, Package (0x02)
         {
-            0x00, 
+            0x00,
             0x01
         })
         Name (B000, Buffer (0x03)
@@ -54,4 +54,3 @@
         Store (S000 [0x0000000100000003], Local0)
         CH04 ("", 0x01, 0x3D, 0x00, 0x36, 0x00, 0x00) /* AE_AML_STRING_LIMIT */
     }
-

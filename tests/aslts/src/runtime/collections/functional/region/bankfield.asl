@@ -84,13 +84,13 @@
 
         BankField (OPRJ, BNK0, 0x02, ByteAcc, NoLock, Preserve)
         {
-            Offset (0x08), 
+            Offset (0x08),
             BF00,   8
         }
 
         BankField (OPRJ, BNK0, 0x03, ByteAcc, NoLock, Preserve)
         {
-            Offset (0x08), 
+            Offset (0x08),
             BF01,   8
         }
 
@@ -131,17 +131,17 @@
     /* (ByteAcc, NoLock, Preserve) */
     Name (PP20, Package (0x05)
     {
-        0x00, 
-        0x08, 
-        0x00, 
-        0x08, 
+        0x00,
+        0x08,
+        0x00,
+        0x08,
         Package (0x06)
         {
-            0x00, 
-            0x01, 
-            0x01, 
-            0x00, 
-            0x01, 
+            0x00,
+            0x01,
+            0x01,
+            0x00,
+            0x01,
             "m7d0"
         }
     })
@@ -149,17 +149,17 @@
 
     Name (PP21, Package (0x05)
     {
-        0x00, 
-        0x08, 
-        0x08, 
-        0x08, 
+        0x00,
+        0x08,
+        0x08,
+        0x08,
         Package (0x06)
         {
-            0x00, 
-            0x02, 
-            0x02, 
-            0x01, 
-            0x01, 
+            0x00,
+            0x02,
+            0x02,
+            0x01,
+            0x01,
             "m7d1"
         }
     })
@@ -167,17 +167,17 @@
 
     Name (PP22, Package (0x05)
     {
-        0x08, 
-        0x08, 
-        0x00, 
-        0x08, 
+        0x08,
+        0x08,
+        0x00,
+        0x08,
         Package (0x06)
         {
-            0x01, 
-            0x02, 
-            0x03, 
-            0x02, 
-            0x01, 
+            0x01,
+            0x02,
+            0x03,
+            0x02,
+            0x01,
             "m7d2"
         }
     })
@@ -185,17 +185,17 @@
 
     Name (PP23, Package (0x05)
     {
-        0x08, 
-        0x04, 
-        0x08, 
-        0x08, 
+        0x08,
+        0x04,
+        0x08,
+        0x08,
         Package (0x06)
         {
-            0x01, 
-            0x00, 
-            0x03, 
-            0x00, 
-            0x01, 
+            0x01,
+            0x00,
+            0x03,
+            0x00,
+            0x01,
             "m7d3"
         }
     })
@@ -203,17 +203,17 @@
 
     Name (PP24, Package (0x05)
     {
-        0x0C, 
-        0x04, 
-        0x08, 
-        0x08, 
+        0x0C,
+        0x04,
+        0x08,
+        0x08,
         Package (0x06)
         {
-            0x00, 
-            0x01, 
-            0x00, 
-            0x00, 
-            0x00, 
+            0x00,
+            0x01,
+            0x00,
+            0x00,
+            0x00,
             "m7d4"
         }
     })
@@ -360,7 +360,7 @@
                         Local2 = 0x00
                         BankField (OPR0, BNK0, 0x00, ByteAcc, NoLock, Preserve)
                         {
-                            Offset (0x00), 
+                            Offset (0x00),
                             F000,   1
                         }
 
@@ -372,8 +372,8 @@
                         Local2 = 0x01
                         BankField (OPR0, BNK0, 0x01, WordAcc, NoLock, Preserve)
                         {
-                            AccessAs (ByteAcc, 0x00), 
-                            Offset (0x00), 
+                            AccessAs (ByteAcc, 0x00),
+                            Offset (0x00),
                             F001,   6
                         }
 
@@ -385,7 +385,7 @@
                         Local2 = 0x02
                         BankField (OPR0, BNK0, 0x02, ByteAcc, NoLock, Preserve)
                         {
-                            Offset (0x00), 
+                            Offset (0x00),
                             F002,   7
                         }
 
@@ -397,8 +397,8 @@
                         Local2 = 0x03
                         BankField (OPR0, BNK0, 0x03, DWordAcc, NoLock, Preserve)
                         {
-                            AccessAs (ByteAcc, 0x00), 
-                            Offset (0x00), 
+                            AccessAs (ByteAcc, 0x00),
+                            Offset (0x00),
                             F003,   8
                         }
 
@@ -410,7 +410,7 @@
                         Local2 = 0x04
                         BankField (OPR0, BNK0, 0x04, ByteAcc, NoLock, Preserve)
                         {
-                            Offset (0x00), 
+                            Offset (0x00),
                             F004,   9
                         }
 
@@ -422,8 +422,8 @@
                         Local2 = 0x05
                         BankField (OPR0, BNK0, 0x05, QWordAcc, NoLock, Preserve)
                         {
-                            AccessAs (ByteAcc, 0x00), 
-                            Offset (0x00), 
+                            AccessAs (ByteAcc, 0x00),
+                            Offset (0x00),
                             F005,   31
                         }
 
@@ -435,7 +435,7 @@
                         Local2 = 0x06
                         BankField (OPR0, BNK0, 0x06, ByteAcc, NoLock, Preserve)
                         {
-                            Offset (0x00), 
+                            Offset (0x00),
                             F006,   32
                         }
 
@@ -447,8 +447,8 @@
                         Local2 = 0x07
                         BankField (OPR0, BNK0, 0x07, AnyAcc, NoLock, Preserve)
                         {
-                            AccessAs (ByteAcc, 0x00), 
-                            Offset (0x00), 
+                            AccessAs (ByteAcc, 0x00),
+                            Offset (0x00),
                             F007,   33
                         }
 
@@ -460,7 +460,7 @@
                         Local2 = 0x08
                         BankField (OPR0, BNK0, 0x08, ByteAcc, NoLock, Preserve)
                         {
-                            Offset (0x00), 
+                            Offset (0x00),
                             F008,   63
                         }
 
@@ -472,8 +472,8 @@
                         Local2 = 0x09
                         BankField (OPR0, BNK0, 0x09, ByteAcc, NoLock, Preserve)
                         {
-                            AccessAs (ByteAcc, 0x00), 
-                            Offset (0x00), 
+                            AccessAs (ByteAcc, 0x00),
+                            Offset (0x00),
                             F009,   64
                         }
 
@@ -485,7 +485,7 @@
                         Local2 = 0x3F
                         BankField (OPR0, BNK0, 0x3F, ByteAcc, NoLock, Preserve)
                         {
-                            Offset (0x00), 
+                            Offset (0x00),
                             F00A,   65
                         }
 
@@ -497,8 +497,8 @@
                         Local2 = 0x40
                         BankField (OPR0, BNK0, 0x40, WordAcc, NoLock, Preserve)
                         {
-                            AccessAs (ByteAcc, 0x00), 
-                            Offset (0x00), 
+                            AccessAs (ByteAcc, 0x00),
+                            Offset (0x00),
                             F00B,   69
                         }
 
@@ -510,7 +510,7 @@
                         Local2 = 0x7F
                         BankField (OPR0, BNK0, 0x7F, ByteAcc, NoLock, Preserve)
                         {
-                            Offset (0x00), 
+                            Offset (0x00),
                             F00C,   129
                         }
 
@@ -522,8 +522,8 @@
                         Local2 = 0x80
                         BankField (OPR0, BNK0, 0x80, DWordAcc, NoLock, Preserve)
                         {
-                            AccessAs (ByteAcc, 0x00), 
-                            Offset (0x00), 
+                            AccessAs (ByteAcc, 0x00),
+                            Offset (0x00),
                             F00D,   256
                         }
 
@@ -535,7 +535,7 @@
                         Local2 = 0xFF
                         BankField (OPR0, BNK0, 0xFF, ByteAcc, NoLock, Preserve)
                         {
-                            Offset (0x00), 
+                            Offset (0x00),
                             F00E,   1023
                         }
 
@@ -547,8 +547,8 @@
                         Local2 = 0x00
                         BankField (OPR0, BNK0, 0x00, QWordAcc, NoLock, Preserve)
                         {
-                            AccessAs (ByteAcc, 0x00), 
-                            Offset (0x00), 
+                            AccessAs (ByteAcc, 0x00),
+                            Offset (0x00),
                             F00F,   1983
                         }
 
@@ -572,8 +572,8 @@
                         Local2 = 0x01
                         BankField (OPR0, BNK0, 0x01, AnyAcc, NoLock, Preserve)
                         {
-                            AccessAs (ByteAcc, 0x00), 
-                                ,   1, 
+                            AccessAs (ByteAcc, 0x00),
+                                ,   1,
                             F010,   1
                         }
 
@@ -585,7 +585,7 @@
                         Local2 = 0x02
                         BankField (OPR0, BNK0, 0x02, ByteAcc, NoLock, Preserve)
                         {
-                                ,   1, 
+                                ,   1,
                             F011,   6
                         }
 
@@ -597,8 +597,8 @@
                         Local2 = 0x03
                         BankField (OPR0, BNK0, 0x03, ByteAcc, NoLock, Preserve)
                         {
-                            AccessAs (ByteAcc, 0x00), 
-                                ,   1, 
+                            AccessAs (ByteAcc, 0x00),
+                                ,   1,
                             F012,   7
                         }
 
@@ -610,7 +610,7 @@
                         Local2 = 0x04
                         BankField (OPR0, BNK0, 0x04, ByteAcc, NoLock, Preserve)
                         {
-                                ,   1, 
+                                ,   1,
                             F013,   8
                         }
 
@@ -622,8 +622,8 @@
                         Local2 = 0x05
                         BankField (OPR0, BNK0, 0x05, WordAcc, NoLock, Preserve)
                         {
-                            AccessAs (ByteAcc, 0x00), 
-                                ,   1, 
+                            AccessAs (ByteAcc, 0x00),
+                                ,   1,
                             F014,   9
                         }
 
@@ -635,7 +635,7 @@
                         Local2 = 0x06
                         BankField (OPR0, BNK0, 0x06, ByteAcc, NoLock, Preserve)
                         {
-                                ,   1, 
+                                ,   1,
                             F015,   31
                         }
 
@@ -647,8 +647,8 @@
                         Local2 = 0x07
                         BankField (OPR0, BNK0, 0x07, DWordAcc, NoLock, Preserve)
                         {
-                            AccessAs (ByteAcc, 0x00), 
-                                ,   1, 
+                            AccessAs (ByteAcc, 0x00),
+                                ,   1,
                             F016,   32
                         }
 
@@ -660,7 +660,7 @@
                         Local2 = 0x08
                         BankField (OPR0, BNK0, 0x08, ByteAcc, NoLock, Preserve)
                         {
-                                ,   1, 
+                                ,   1,
                             F017,   33
                         }
 
@@ -672,8 +672,8 @@
                         Local2 = 0x09
                         BankField (OPR0, BNK0, 0x09, QWordAcc, NoLock, Preserve)
                         {
-                            AccessAs (ByteAcc, 0x00), 
-                                ,   1, 
+                            AccessAs (ByteAcc, 0x00),
+                                ,   1,
                             F018,   63
                         }
 
@@ -685,7 +685,7 @@
                         Local2 = 0x3F
                         BankField (OPR0, BNK0, 0x3F, ByteAcc, NoLock, Preserve)
                         {
-                                ,   1, 
+                                ,   1,
                             F019,   64
                         }
 
@@ -697,8 +697,8 @@
                         Local2 = 0x40
                         BankField (OPR0, BNK0, 0x40, AnyAcc, NoLock, Preserve)
                         {
-                            AccessAs (ByteAcc, 0x00), 
-                                ,   1, 
+                            AccessAs (ByteAcc, 0x00),
+                                ,   1,
                             F01A,   65
                         }
 
@@ -710,7 +710,7 @@
                         Local2 = 0x7F
                         BankField (OPR0, BNK0, 0x7F, ByteAcc, NoLock, Preserve)
                         {
-                                ,   1, 
+                                ,   1,
                             F01B,   69
                         }
 
@@ -722,8 +722,8 @@
                         Local2 = 0x80
                         BankField (OPR0, BNK0, 0x80, ByteAcc, NoLock, Preserve)
                         {
-                            AccessAs (ByteAcc, 0x00), 
-                                ,   1, 
+                            AccessAs (ByteAcc, 0x00),
+                                ,   1,
                             F01C,   129
                         }
 
@@ -735,7 +735,7 @@
                         Local2 = 0xFF
                         BankField (OPR0, BNK0, 0xFF, ByteAcc, NoLock, Preserve)
                         {
-                                ,   1, 
+                                ,   1,
                             F01D,   256
                         }
 
@@ -747,8 +747,8 @@
                         Local2 = 0x00
                         BankField (OPR0, BNK0, 0x00, WordAcc, NoLock, Preserve)
                         {
-                            AccessAs (ByteAcc, 0x00), 
-                                ,   1, 
+                            AccessAs (ByteAcc, 0x00),
+                                ,   1,
                             F01E,   1023
                         }
 
@@ -760,7 +760,7 @@
                         Local2 = 0x01
                         BankField (OPR0, BNK0, 0x01, ByteAcc, NoLock, Preserve)
                         {
-                                ,   1, 
+                                ,   1,
                             F01F,   1983
                         }
 
@@ -784,7 +784,7 @@
                         Local2 = 0x02
                         BankField (OPR0, BNK0, 0x02, ByteAcc, NoLock, Preserve)
                         {
-                                ,   2, 
+                                ,   2,
                             F020,   1
                         }
 
@@ -796,8 +796,8 @@
                         Local2 = 0x03
                         BankField (OPR0, BNK0, 0x03, DWordAcc, NoLock, Preserve)
                         {
-                            AccessAs (ByteAcc, 0x00), 
-                                ,   2, 
+                            AccessAs (ByteAcc, 0x00),
+                                ,   2,
                             F021,   6
                         }
 
@@ -809,7 +809,7 @@
                         Local2 = 0x04
                         BankField (OPR0, BNK0, 0x04, ByteAcc, NoLock, Preserve)
                         {
-                                ,   2, 
+                                ,   2,
                             F022,   7
                         }
 
@@ -821,8 +821,8 @@
                         Local2 = 0x05
                         BankField (OPR0, BNK0, 0x05, QWordAcc, NoLock, Preserve)
                         {
-                            AccessAs (ByteAcc, 0x00), 
-                                ,   2, 
+                            AccessAs (ByteAcc, 0x00),
+                                ,   2,
                             F023,   8
                         }
 
@@ -834,7 +834,7 @@
                         Local2 = 0x06
                         BankField (OPR0, BNK0, 0x06, ByteAcc, NoLock, Preserve)
                         {
-                                ,   2, 
+                                ,   2,
                             F024,   9
                         }
 
@@ -846,8 +846,8 @@
                         Local2 = 0x07
                         BankField (OPR0, BNK0, 0x07, AnyAcc, NoLock, Preserve)
                         {
-                            AccessAs (ByteAcc, 0x00), 
-                                ,   2, 
+                            AccessAs (ByteAcc, 0x00),
+                                ,   2,
                             F025,   31
                         }
 
@@ -859,7 +859,7 @@
                         Local2 = 0x08
                         BankField (OPR0, BNK0, 0x08, ByteAcc, NoLock, Preserve)
                         {
-                                ,   2, 
+                                ,   2,
                             F026,   32
                         }
 
@@ -871,8 +871,8 @@
                         Local2 = 0x09
                         BankField (OPR0, BNK0, 0x09, ByteAcc, NoLock, Preserve)
                         {
-                            AccessAs (ByteAcc, 0x00), 
-                                ,   2, 
+                            AccessAs (ByteAcc, 0x00),
+                                ,   2,
                             F027,   33
                         }
 
@@ -884,7 +884,7 @@
                         Local2 = 0x3F
                         BankField (OPR0, BNK0, 0x3F, ByteAcc, NoLock, Preserve)
                         {
-                                ,   2, 
+                                ,   2,
                             F028,   63
                         }
 
@@ -896,8 +896,8 @@
                         Local2 = 0x40
                         BankField (OPR0, BNK0, 0x40, WordAcc, NoLock, Preserve)
                         {
-                            AccessAs (ByteAcc, 0x00), 
-                                ,   2, 
+                            AccessAs (ByteAcc, 0x00),
+                                ,   2,
                             F029,   64
                         }
 
@@ -909,7 +909,7 @@
                         Local2 = 0x7F
                         BankField (OPR0, BNK0, 0x7F, ByteAcc, NoLock, Preserve)
                         {
-                                ,   2, 
+                                ,   2,
                             F02A,   65
                         }
 
@@ -921,8 +921,8 @@
                         Local2 = 0x80
                         BankField (OPR0, BNK0, 0x80, DWordAcc, NoLock, Preserve)
                         {
-                            AccessAs (ByteAcc, 0x00), 
-                                ,   2, 
+                            AccessAs (ByteAcc, 0x00),
+                                ,   2,
                             F02B,   69
                         }
 
@@ -934,7 +934,7 @@
                         Local2 = 0xFF
                         BankField (OPR0, BNK0, 0xFF, ByteAcc, NoLock, Preserve)
                         {
-                                ,   2, 
+                                ,   2,
                             F02C,   129
                         }
 
@@ -946,8 +946,8 @@
                         Local2 = 0x00
                         BankField (OPR0, BNK0, 0x00, QWordAcc, NoLock, Preserve)
                         {
-                            AccessAs (ByteAcc, 0x00), 
-                                ,   2, 
+                            AccessAs (ByteAcc, 0x00),
+                                ,   2,
                             F02D,   256
                         }
 
@@ -959,7 +959,7 @@
                         Local2 = 0x01
                         BankField (OPR0, BNK0, 0x01, ByteAcc, NoLock, Preserve)
                         {
-                                ,   2, 
+                                ,   2,
                             F02E,   1023
                         }
 
@@ -971,8 +971,8 @@
                         Local2 = 0x02
                         BankField (OPR0, BNK0, 0x02, AnyAcc, NoLock, Preserve)
                         {
-                            AccessAs (ByteAcc, 0x00), 
-                                ,   2, 
+                            AccessAs (ByteAcc, 0x00),
+                                ,   2,
                             F02F,   1983
                         }
 
@@ -996,8 +996,8 @@
                         Local2 = 0x03
                         BankField (OPR0, BNK0, 0x03, ByteAcc, NoLock, Preserve)
                         {
-                            AccessAs (ByteAcc, 0x00), 
-                                ,   3, 
+                            AccessAs (ByteAcc, 0x00),
+                                ,   3,
                             F030,   1
                         }
 
@@ -1009,7 +1009,7 @@
                         Local2 = 0x04
                         BankField (OPR0, BNK0, 0x04, ByteAcc, NoLock, Preserve)
                         {
-                                ,   3, 
+                                ,   3,
                             F031,   6
                         }
 
@@ -1021,8 +1021,8 @@
                         Local2 = 0x05
                         BankField (OPR0, BNK0, 0x05, WordAcc, NoLock, Preserve)
                         {
-                            AccessAs (ByteAcc, 0x00), 
-                                ,   3, 
+                            AccessAs (ByteAcc, 0x00),
+                                ,   3,
                             F032,   7
                         }
 
@@ -1034,7 +1034,7 @@
                         Local2 = 0x06
                         BankField (OPR0, BNK0, 0x06, ByteAcc, NoLock, Preserve)
                         {
-                                ,   3, 
+                                ,   3,
                             F033,   8
                         }
 
@@ -1046,8 +1046,8 @@
                         Local2 = 0x07
                         BankField (OPR0, BNK0, 0x07, DWordAcc, NoLock, Preserve)
                         {
-                            AccessAs (ByteAcc, 0x00), 
-                                ,   3, 
+                            AccessAs (ByteAcc, 0x00),
+                                ,   3,
                             F034,   9
                         }
 
@@ -1059,7 +1059,7 @@
                         Local2 = 0x08
                         BankField (OPR0, BNK0, 0x08, ByteAcc, NoLock, Preserve)
                         {
-                                ,   3, 
+                                ,   3,
                             F035,   31
                         }
 
@@ -1071,8 +1071,8 @@
                         Local2 = 0x09
                         BankField (OPR0, BNK0, 0x09, QWordAcc, NoLock, Preserve)
                         {
-                            AccessAs (ByteAcc, 0x00), 
-                                ,   3, 
+                            AccessAs (ByteAcc, 0x00),
+                                ,   3,
                             F036,   32
                         }
 
@@ -1084,7 +1084,7 @@
                         Local2 = 0x3F
                         BankField (OPR0, BNK0, 0x3F, ByteAcc, NoLock, Preserve)
                         {
-                                ,   3, 
+                                ,   3,
                             F037,   33
                         }
 
@@ -1096,8 +1096,8 @@
                         Local2 = 0x40
                         BankField (OPR0, BNK0, 0x40, AnyAcc, NoLock, Preserve)
                         {
-                            AccessAs (ByteAcc, 0x00), 
-                                ,   3, 
+                            AccessAs (ByteAcc, 0x00),
+                                ,   3,
                             F038,   63
                         }
 
@@ -1109,7 +1109,7 @@
                         Local2 = 0x7F
                         BankField (OPR0, BNK0, 0x7F, ByteAcc, NoLock, Preserve)
                         {
-                                ,   3, 
+                                ,   3,
                             F039,   64
                         }
 
@@ -1121,8 +1121,8 @@
                         Local2 = 0x80
                         BankField (OPR0, BNK0, 0x80, ByteAcc, NoLock, Preserve)
                         {
-                            AccessAs (ByteAcc, 0x00), 
-                                ,   3, 
+                            AccessAs (ByteAcc, 0x00),
+                                ,   3,
                             F03A,   65
                         }
 
@@ -1134,7 +1134,7 @@
                         Local2 = 0xFF
                         BankField (OPR0, BNK0, 0xFF, ByteAcc, NoLock, Preserve)
                         {
-                                ,   3, 
+                                ,   3,
                             F03B,   69
                         }
 
@@ -1146,8 +1146,8 @@
                         Local2 = 0x00
                         BankField (OPR0, BNK0, 0x00, WordAcc, NoLock, Preserve)
                         {
-                            AccessAs (ByteAcc, 0x00), 
-                                ,   3, 
+                            AccessAs (ByteAcc, 0x00),
+                                ,   3,
                             F03C,   129
                         }
 
@@ -1159,7 +1159,7 @@
                         Local2 = 0x01
                         BankField (OPR0, BNK0, 0x01, ByteAcc, NoLock, Preserve)
                         {
-                                ,   3, 
+                                ,   3,
                             F03D,   256
                         }
 
@@ -1171,8 +1171,8 @@
                         Local2 = 0x02
                         BankField (OPR0, BNK0, 0x02, DWordAcc, NoLock, Preserve)
                         {
-                            AccessAs (ByteAcc, 0x00), 
-                                ,   3, 
+                            AccessAs (ByteAcc, 0x00),
+                                ,   3,
                             F03E,   1023
                         }
 
@@ -1184,7 +1184,7 @@
                         Local2 = 0x03
                         BankField (OPR0, BNK0, 0x03, ByteAcc, NoLock, Preserve)
                         {
-                                ,   3, 
+                                ,   3,
                             F03F,   1983
                         }
 
@@ -1208,7 +1208,7 @@
                         Local2 = 0x04
                         BankField (OPR0, BNK0, 0x04, ByteAcc, NoLock, Preserve)
                         {
-                                ,   4, 
+                                ,   4,
                             F040,   1
                         }
 
@@ -1220,8 +1220,8 @@
                         Local2 = 0x05
                         BankField (OPR0, BNK0, 0x05, QWordAcc, NoLock, Preserve)
                         {
-                            AccessAs (ByteAcc, 0x00), 
-                                ,   4, 
+                            AccessAs (ByteAcc, 0x00),
+                                ,   4,
                             F041,   6
                         }
 
@@ -1233,7 +1233,7 @@
                         Local2 = 0x06
                         BankField (OPR0, BNK0, 0x06, ByteAcc, NoLock, Preserve)
                         {
-                                ,   4, 
+                                ,   4,
                             F042,   7
                         }
 
@@ -1245,8 +1245,8 @@
                         Local2 = 0x07
                         BankField (OPR0, BNK0, 0x07, AnyAcc, NoLock, Preserve)
                         {
-                            AccessAs (ByteAcc, 0x00), 
-                                ,   4, 
+                            AccessAs (ByteAcc, 0x00),
+                                ,   4,
                             F043,   8
                         }
 
@@ -1258,7 +1258,7 @@
                         Local2 = 0x08
                         BankField (OPR0, BNK0, 0x08, ByteAcc, NoLock, Preserve)
                         {
-                                ,   4, 
+                                ,   4,
                             F044,   9
                         }
 
@@ -1270,8 +1270,8 @@
                         Local2 = 0x09
                         BankField (OPR0, BNK0, 0x09, ByteAcc, NoLock, Preserve)
                         {
-                            AccessAs (ByteAcc, 0x00), 
-                                ,   4, 
+                            AccessAs (ByteAcc, 0x00),
+                                ,   4,
                             F045,   31
                         }
 
@@ -1283,7 +1283,7 @@
                         Local2 = 0x3F
                         BankField (OPR0, BNK0, 0x3F, ByteAcc, NoLock, Preserve)
                         {
-                                ,   4, 
+                                ,   4,
                             F046,   32
                         }
 
@@ -1295,8 +1295,8 @@
                         Local2 = 0x40
                         BankField (OPR0, BNK0, 0x40, WordAcc, NoLock, Preserve)
                         {
-                            AccessAs (ByteAcc, 0x00), 
-                                ,   4, 
+                            AccessAs (ByteAcc, 0x00),
+                                ,   4,
                             F047,   33
                         }
 
@@ -1308,7 +1308,7 @@
                         Local2 = 0x7F
                         BankField (OPR0, BNK0, 0x7F, ByteAcc, NoLock, Preserve)
                         {
-                                ,   4, 
+                                ,   4,
                             F048,   63
                         }
 
@@ -1320,8 +1320,8 @@
                         Local2 = 0x80
                         BankField (OPR0, BNK0, 0x80, DWordAcc, NoLock, Preserve)
                         {
-                            AccessAs (ByteAcc, 0x00), 
-                                ,   4, 
+                            AccessAs (ByteAcc, 0x00),
+                                ,   4,
                             F049,   64
                         }
 
@@ -1333,7 +1333,7 @@
                         Local2 = 0xFF
                         BankField (OPR0, BNK0, 0xFF, ByteAcc, NoLock, Preserve)
                         {
-                                ,   4, 
+                                ,   4,
                             F04A,   65
                         }
 
@@ -1345,8 +1345,8 @@
                         Local2 = 0x00
                         BankField (OPR0, BNK0, 0x00, QWordAcc, NoLock, Preserve)
                         {
-                            AccessAs (ByteAcc, 0x00), 
-                                ,   4, 
+                            AccessAs (ByteAcc, 0x00),
+                                ,   4,
                             F04B,   69
                         }
 
@@ -1358,7 +1358,7 @@
                         Local2 = 0x01
                         BankField (OPR0, BNK0, 0x01, ByteAcc, NoLock, Preserve)
                         {
-                                ,   4, 
+                                ,   4,
                             F04C,   129
                         }
 
@@ -1370,8 +1370,8 @@
                         Local2 = 0x02
                         BankField (OPR0, BNK0, 0x02, AnyAcc, NoLock, Preserve)
                         {
-                            AccessAs (ByteAcc, 0x00), 
-                                ,   4, 
+                            AccessAs (ByteAcc, 0x00),
+                                ,   4,
                             F04D,   256
                         }
 
@@ -1383,7 +1383,7 @@
                         Local2 = 0x03
                         BankField (OPR0, BNK0, 0x03, ByteAcc, NoLock, Preserve)
                         {
-                                ,   4, 
+                                ,   4,
                             F04E,   1023
                         }
 
@@ -1395,8 +1395,8 @@
                         Local2 = 0x04
                         BankField (OPR0, BNK0, 0x04, ByteAcc, NoLock, Preserve)
                         {
-                            AccessAs (ByteAcc, 0x00), 
-                                ,   4, 
+                            AccessAs (ByteAcc, 0x00),
+                                ,   4,
                             F04F,   1983
                         }
 
@@ -1420,8 +1420,8 @@
                         Local2 = 0x05
                         BankField (OPR0, BNK0, 0x05, WordAcc, NoLock, Preserve)
                         {
-                            AccessAs (ByteAcc, 0x00), 
-                                ,   5, 
+                            AccessAs (ByteAcc, 0x00),
+                                ,   5,
                             F050,   1
                         }
 
@@ -1433,7 +1433,7 @@
                         Local2 = 0x06
                         BankField (OPR0, BNK0, 0x06, ByteAcc, NoLock, Preserve)
                         {
-                                ,   5, 
+                                ,   5,
                             F051,   6
                         }
 
@@ -1445,8 +1445,8 @@
                         Local2 = 0x07
                         BankField (OPR0, BNK0, 0x07, DWordAcc, NoLock, Preserve)
                         {
-                            AccessAs (ByteAcc, 0x00), 
-                                ,   5, 
+                            AccessAs (ByteAcc, 0x00),
+                                ,   5,
                             F052,   7
                         }
 
@@ -1458,7 +1458,7 @@
                         Local2 = 0x08
                         BankField (OPR0, BNK0, 0x08, ByteAcc, NoLock, Preserve)
                         {
-                                ,   5, 
+                                ,   5,
                             F053,   8
                         }
 
@@ -1470,8 +1470,8 @@
                         Local2 = 0x09
                         BankField (OPR0, BNK0, 0x09, QWordAcc, NoLock, Preserve)
                         {
-                            AccessAs (ByteAcc, 0x00), 
-                                ,   5, 
+                            AccessAs (ByteAcc, 0x00),
+                                ,   5,
                             F054,   9
                         }
 
@@ -1483,7 +1483,7 @@
                         Local2 = 0x3F
                         BankField (OPR0, BNK0, 0x3F, ByteAcc, NoLock, Preserve)
                         {
-                                ,   5, 
+                                ,   5,
                             F055,   31
                         }
 
@@ -1495,8 +1495,8 @@
                         Local2 = 0x40
                         BankField (OPR0, BNK0, 0x40, AnyAcc, NoLock, Preserve)
                         {
-                            AccessAs (ByteAcc, 0x00), 
-                                ,   5, 
+                            AccessAs (ByteAcc, 0x00),
+                                ,   5,
                             F056,   32
                         }
 
@@ -1508,7 +1508,7 @@
                         Local2 = 0x7F
                         BankField (OPR0, BNK0, 0x7F, ByteAcc, NoLock, Preserve)
                         {
-                                ,   5, 
+                                ,   5,
                             F057,   33
                         }
 
@@ -1520,8 +1520,8 @@
                         Local2 = 0x80
                         BankField (OPR0, BNK0, 0x80, ByteAcc, NoLock, Preserve)
                         {
-                            AccessAs (ByteAcc, 0x00), 
-                                ,   5, 
+                            AccessAs (ByteAcc, 0x00),
+                                ,   5,
                             F058,   63
                         }
 
@@ -1533,7 +1533,7 @@
                         Local2 = 0xFF
                         BankField (OPR0, BNK0, 0xFF, ByteAcc, NoLock, Preserve)
                         {
-                                ,   5, 
+                                ,   5,
                             F059,   64
                         }
 
@@ -1545,8 +1545,8 @@
                         Local2 = 0x00
                         BankField (OPR0, BNK0, 0x00, WordAcc, NoLock, Preserve)
                         {
-                            AccessAs (ByteAcc, 0x00), 
-                                ,   5, 
+                            AccessAs (ByteAcc, 0x00),
+                                ,   5,
                             F05A,   65
                         }
 
@@ -1558,7 +1558,7 @@
                         Local2 = 0x01
                         BankField (OPR0, BNK0, 0x01, ByteAcc, NoLock, Preserve)
                         {
-                                ,   5, 
+                                ,   5,
                             F05B,   69
                         }
 
@@ -1570,8 +1570,8 @@
                         Local2 = 0x02
                         BankField (OPR0, BNK0, 0x02, DWordAcc, NoLock, Preserve)
                         {
-                            AccessAs (ByteAcc, 0x00), 
-                                ,   5, 
+                            AccessAs (ByteAcc, 0x00),
+                                ,   5,
                             F05C,   129
                         }
 
@@ -1583,7 +1583,7 @@
                         Local2 = 0x03
                         BankField (OPR0, BNK0, 0x03, ByteAcc, NoLock, Preserve)
                         {
-                                ,   5, 
+                                ,   5,
                             F05D,   256
                         }
 
@@ -1595,8 +1595,8 @@
                         Local2 = 0x04
                         BankField (OPR0, BNK0, 0x04, QWordAcc, NoLock, Preserve)
                         {
-                            AccessAs (ByteAcc, 0x00), 
-                                ,   5, 
+                            AccessAs (ByteAcc, 0x00),
+                                ,   5,
                             F05E,   1023
                         }
 
@@ -1608,7 +1608,7 @@
                         Local2 = 0x05
                         BankField (OPR0, BNK0, 0x05, ByteAcc, NoLock, Preserve)
                         {
-                                ,   5, 
+                                ,   5,
                             F05F,   1983
                         }
 
@@ -1632,7 +1632,7 @@
                         Local2 = 0x06
                         BankField (OPR0, BNK0, 0x06, ByteAcc, NoLock, Preserve)
                         {
-                                ,   6, 
+                                ,   6,
                             F060,   1
                         }
 
@@ -1644,8 +1644,8 @@
                         Local2 = 0x07
                         BankField (OPR0, BNK0, 0x07, AnyAcc, NoLock, Preserve)
                         {
-                            AccessAs (ByteAcc, 0x00), 
-                                ,   6, 
+                            AccessAs (ByteAcc, 0x00),
+                                ,   6,
                             F061,   6
                         }
 
@@ -1657,7 +1657,7 @@
                         Local2 = 0x08
                         BankField (OPR0, BNK0, 0x08, ByteAcc, NoLock, Preserve)
                         {
-                                ,   6, 
+                                ,   6,
                             F062,   7
                         }
 
@@ -1669,8 +1669,8 @@
                         Local2 = 0x09
                         BankField (OPR0, BNK0, 0x09, ByteAcc, NoLock, Preserve)
                         {
-                            AccessAs (ByteAcc, 0x00), 
-                                ,   6, 
+                            AccessAs (ByteAcc, 0x00),
+                                ,   6,
                             F063,   8
                         }
 
@@ -1682,7 +1682,7 @@
                         Local2 = 0x3F
                         BankField (OPR0, BNK0, 0x3F, ByteAcc, NoLock, Preserve)
                         {
-                                ,   6, 
+                                ,   6,
                             F064,   9
                         }
 
@@ -1694,8 +1694,8 @@
                         Local2 = 0x40
                         BankField (OPR0, BNK0, 0x40, WordAcc, NoLock, Preserve)
                         {
-                            AccessAs (ByteAcc, 0x00), 
-                                ,   6, 
+                            AccessAs (ByteAcc, 0x00),
+                                ,   6,
                             F065,   31
                         }
 
@@ -1707,7 +1707,7 @@
                         Local2 = 0x7F
                         BankField (OPR0, BNK0, 0x7F, ByteAcc, NoLock, Preserve)
                         {
-                                ,   6, 
+                                ,   6,
                             F066,   32
                         }
 
@@ -1719,8 +1719,8 @@
                         Local2 = 0x80
                         BankField (OPR0, BNK0, 0x80, DWordAcc, NoLock, Preserve)
                         {
-                            AccessAs (ByteAcc, 0x00), 
-                                ,   6, 
+                            AccessAs (ByteAcc, 0x00),
+                                ,   6,
                             F067,   33
                         }
 
@@ -1732,7 +1732,7 @@
                         Local2 = 0xFF
                         BankField (OPR0, BNK0, 0xFF, ByteAcc, NoLock, Preserve)
                         {
-                                ,   6, 
+                                ,   6,
                             F068,   63
                         }
 
@@ -1744,8 +1744,8 @@
                         Local2 = 0x00
                         BankField (OPR0, BNK0, 0x00, QWordAcc, NoLock, Preserve)
                         {
-                            AccessAs (ByteAcc, 0x00), 
-                                ,   6, 
+                            AccessAs (ByteAcc, 0x00),
+                                ,   6,
                             F069,   64
                         }
 
@@ -1757,7 +1757,7 @@
                         Local2 = 0x01
                         BankField (OPR0, BNK0, 0x01, ByteAcc, NoLock, Preserve)
                         {
-                                ,   6, 
+                                ,   6,
                             F06A,   65
                         }
 
@@ -1769,8 +1769,8 @@
                         Local2 = 0x02
                         BankField (OPR0, BNK0, 0x02, AnyAcc, NoLock, Preserve)
                         {
-                            AccessAs (ByteAcc, 0x00), 
-                                ,   6, 
+                            AccessAs (ByteAcc, 0x00),
+                                ,   6,
                             F06B,   69
                         }
 
@@ -1782,7 +1782,7 @@
                         Local2 = 0x03
                         BankField (OPR0, BNK0, 0x03, ByteAcc, NoLock, Preserve)
                         {
-                                ,   6, 
+                                ,   6,
                             F06C,   129
                         }
 
@@ -1794,8 +1794,8 @@
                         Local2 = 0x04
                         BankField (OPR0, BNK0, 0x04, ByteAcc, NoLock, Preserve)
                         {
-                            AccessAs (ByteAcc, 0x00), 
-                                ,   6, 
+                            AccessAs (ByteAcc, 0x00),
+                                ,   6,
                             F06D,   256
                         }
 
@@ -1807,7 +1807,7 @@
                         Local2 = 0x05
                         BankField (OPR0, BNK0, 0x05, ByteAcc, NoLock, Preserve)
                         {
-                                ,   6, 
+                                ,   6,
                             F06E,   1023
                         }
 
@@ -1819,8 +1819,8 @@
                         Local2 = 0x06
                         BankField (OPR0, BNK0, 0x06, WordAcc, NoLock, Preserve)
                         {
-                            AccessAs (ByteAcc, 0x00), 
-                                ,   6, 
+                            AccessAs (ByteAcc, 0x00),
+                                ,   6,
                             F06F,   1983
                         }
 
@@ -1844,8 +1844,8 @@
                         Local2 = 0x07
                         BankField (OPR0, BNK0, 0x07, DWordAcc, NoLock, Preserve)
                         {
-                            AccessAs (ByteAcc, 0x00), 
-                                ,   7, 
+                            AccessAs (ByteAcc, 0x00),
+                                ,   7,
                             F070,   1
                         }
 
@@ -1857,7 +1857,7 @@
                         Local2 = 0x08
                         BankField (OPR0, BNK0, 0x08, ByteAcc, NoLock, Preserve)
                         {
-                                ,   7, 
+                                ,   7,
                             F071,   6
                         }
 
@@ -1869,8 +1869,8 @@
                         Local2 = 0x09
                         BankField (OPR0, BNK0, 0x09, QWordAcc, NoLock, Preserve)
                         {
-                            AccessAs (ByteAcc, 0x00), 
-                                ,   7, 
+                            AccessAs (ByteAcc, 0x00),
+                                ,   7,
                             F072,   7
                         }
 
@@ -1882,7 +1882,7 @@
                         Local2 = 0x3F
                         BankField (OPR0, BNK0, 0x3F, ByteAcc, NoLock, Preserve)
                         {
-                                ,   7, 
+                                ,   7,
                             F073,   8
                         }
 
@@ -1894,8 +1894,8 @@
                         Local2 = 0x40
                         BankField (OPR0, BNK0, 0x40, AnyAcc, NoLock, Preserve)
                         {
-                            AccessAs (ByteAcc, 0x00), 
-                                ,   7, 
+                            AccessAs (ByteAcc, 0x00),
+                                ,   7,
                             F074,   9
                         }
 
@@ -1907,7 +1907,7 @@
                         Local2 = 0x7F
                         BankField (OPR0, BNK0, 0x7F, ByteAcc, NoLock, Preserve)
                         {
-                                ,   7, 
+                                ,   7,
                             F075,   31
                         }
 
@@ -1919,8 +1919,8 @@
                         Local2 = 0x80
                         BankField (OPR0, BNK0, 0x80, ByteAcc, NoLock, Preserve)
                         {
-                            AccessAs (ByteAcc, 0x00), 
-                                ,   7, 
+                            AccessAs (ByteAcc, 0x00),
+                                ,   7,
                             F076,   32
                         }
 
@@ -1932,7 +1932,7 @@
                         Local2 = 0xFF
                         BankField (OPR0, BNK0, 0xFF, ByteAcc, NoLock, Preserve)
                         {
-                                ,   7, 
+                                ,   7,
                             F077,   33
                         }
 
@@ -1944,8 +1944,8 @@
                         Local2 = 0x00
                         BankField (OPR0, BNK0, 0x00, WordAcc, NoLock, Preserve)
                         {
-                            AccessAs (ByteAcc, 0x00), 
-                                ,   7, 
+                            AccessAs (ByteAcc, 0x00),
+                                ,   7,
                             F078,   63
                         }
 
@@ -1957,7 +1957,7 @@
                         Local2 = 0x01
                         BankField (OPR0, BNK0, 0x01, ByteAcc, NoLock, Preserve)
                         {
-                                ,   7, 
+                                ,   7,
                             F079,   64
                         }
 
@@ -1969,8 +1969,8 @@
                         Local2 = 0x02
                         BankField (OPR0, BNK0, 0x02, DWordAcc, NoLock, Preserve)
                         {
-                            AccessAs (ByteAcc, 0x00), 
-                                ,   7, 
+                            AccessAs (ByteAcc, 0x00),
+                                ,   7,
                             F07A,   65
                         }
 
@@ -1982,7 +1982,7 @@
                         Local2 = 0x03
                         BankField (OPR0, BNK0, 0x03, ByteAcc, NoLock, Preserve)
                         {
-                                ,   7, 
+                                ,   7,
                             F07B,   69
                         }
 
@@ -1994,8 +1994,8 @@
                         Local2 = 0x04
                         BankField (OPR0, BNK0, 0x04, QWordAcc, NoLock, Preserve)
                         {
-                            AccessAs (ByteAcc, 0x00), 
-                                ,   7, 
+                            AccessAs (ByteAcc, 0x00),
+                                ,   7,
                             F07C,   129
                         }
 
@@ -2007,7 +2007,7 @@
                         Local2 = 0x05
                         BankField (OPR0, BNK0, 0x05, ByteAcc, NoLock, Preserve)
                         {
-                                ,   7, 
+                                ,   7,
                             F07D,   256
                         }
 
@@ -2019,8 +2019,8 @@
                         Local2 = 0x06
                         BankField (OPR0, BNK0, 0x06, AnyAcc, NoLock, Preserve)
                         {
-                            AccessAs (ByteAcc, 0x00), 
-                                ,   7, 
+                            AccessAs (ByteAcc, 0x00),
+                                ,   7,
                             F07E,   1023
                         }
 
@@ -2032,7 +2032,7 @@
                         Local2 = 0x07
                         BankField (OPR0, BNK0, 0x07, ByteAcc, NoLock, Preserve)
                         {
-                                ,   7, 
+                                ,   7,
                             F07F,   1983
                         }
 
@@ -2056,7 +2056,7 @@
                         Local2 = 0x08
                         BankField (OPR0, BNK0, 0x08, ByteAcc, NoLock, Preserve)
                         {
-                            Offset (0x01), 
+                            Offset (0x01),
                             F080,   1
                         }
 
@@ -2068,8 +2068,8 @@
                         Local2 = 0x09
                         BankField (OPR0, BNK0, 0x09, ByteAcc, NoLock, Preserve)
                         {
-                            AccessAs (ByteAcc, 0x00), 
-                            Offset (0x01), 
+                            AccessAs (ByteAcc, 0x00),
+                            Offset (0x01),
                             F081,   6
                         }
 
@@ -2081,7 +2081,7 @@
                         Local2 = 0x3F
                         BankField (OPR0, BNK0, 0x3F, ByteAcc, NoLock, Preserve)
                         {
-                            Offset (0x01), 
+                            Offset (0x01),
                             F082,   7
                         }
 
@@ -2093,8 +2093,8 @@
                         Local2 = 0x40
                         BankField (OPR0, BNK0, 0x40, WordAcc, NoLock, Preserve)
                         {
-                            AccessAs (ByteAcc, 0x00), 
-                            Offset (0x01), 
+                            AccessAs (ByteAcc, 0x00),
+                            Offset (0x01),
                             F083,   8
                         }
 
@@ -2106,7 +2106,7 @@
                         Local2 = 0x7F
                         BankField (OPR0, BNK0, 0x7F, ByteAcc, NoLock, Preserve)
                         {
-                            Offset (0x01), 
+                            Offset (0x01),
                             F084,   9
                         }
 
@@ -2118,8 +2118,8 @@
                         Local2 = 0x80
                         BankField (OPR0, BNK0, 0x80, DWordAcc, NoLock, Preserve)
                         {
-                            AccessAs (ByteAcc, 0x00), 
-                            Offset (0x01), 
+                            AccessAs (ByteAcc, 0x00),
+                            Offset (0x01),
                             F085,   31
                         }
 
@@ -2131,7 +2131,7 @@
                         Local2 = 0xFF
                         BankField (OPR0, BNK0, 0xFF, ByteAcc, NoLock, Preserve)
                         {
-                            Offset (0x01), 
+                            Offset (0x01),
                             F086,   32
                         }
 
@@ -2143,8 +2143,8 @@
                         Local2 = 0x00
                         BankField (OPR0, BNK0, 0x00, QWordAcc, NoLock, Preserve)
                         {
-                            AccessAs (ByteAcc, 0x00), 
-                            Offset (0x01), 
+                            AccessAs (ByteAcc, 0x00),
+                            Offset (0x01),
                             F087,   33
                         }
 
@@ -2156,7 +2156,7 @@
                         Local2 = 0x01
                         BankField (OPR0, BNK0, 0x01, ByteAcc, NoLock, Preserve)
                         {
-                            Offset (0x01), 
+                            Offset (0x01),
                             F088,   63
                         }
 
@@ -2168,8 +2168,8 @@
                         Local2 = 0x02
                         BankField (OPR0, BNK0, 0x02, AnyAcc, NoLock, Preserve)
                         {
-                            AccessAs (ByteAcc, 0x00), 
-                            Offset (0x01), 
+                            AccessAs (ByteAcc, 0x00),
+                            Offset (0x01),
                             F089,   64
                         }
 
@@ -2181,7 +2181,7 @@
                         Local2 = 0x03
                         BankField (OPR0, BNK0, 0x03, ByteAcc, NoLock, Preserve)
                         {
-                            Offset (0x01), 
+                            Offset (0x01),
                             F08A,   65
                         }
 
@@ -2193,8 +2193,8 @@
                         Local2 = 0x04
                         BankField (OPR0, BNK0, 0x04, ByteAcc, NoLock, Preserve)
                         {
-                            AccessAs (ByteAcc, 0x00), 
-                            Offset (0x01), 
+                            AccessAs (ByteAcc, 0x00),
+                            Offset (0x01),
                             F08B,   69
                         }
 
@@ -2206,7 +2206,7 @@
                         Local2 = 0x05
                         BankField (OPR0, BNK0, 0x05, ByteAcc, NoLock, Preserve)
                         {
-                            Offset (0x01), 
+                            Offset (0x01),
                             F08C,   129
                         }
 
@@ -2218,8 +2218,8 @@
                         Local2 = 0x06
                         BankField (OPR0, BNK0, 0x06, WordAcc, NoLock, Preserve)
                         {
-                            AccessAs (ByteAcc, 0x00), 
-                            Offset (0x01), 
+                            AccessAs (ByteAcc, 0x00),
+                            Offset (0x01),
                             F08D,   256
                         }
 
@@ -2231,7 +2231,7 @@
                         Local2 = 0x07
                         BankField (OPR0, BNK0, 0x07, ByteAcc, NoLock, Preserve)
                         {
-                            Offset (0x01), 
+                            Offset (0x01),
                             F08E,   1023
                         }
 
@@ -2243,8 +2243,8 @@
                         Local2 = 0x08
                         BankField (OPR0, BNK0, 0x08, DWordAcc, NoLock, Preserve)
                         {
-                            AccessAs (ByteAcc, 0x00), 
-                            Offset (0x01), 
+                            AccessAs (ByteAcc, 0x00),
+                            Offset (0x01),
                             F08F,   1983
                         }
 
@@ -2268,8 +2268,8 @@
                         Local2 = 0x09
                         BankField (OPR0, BNK0, 0x09, QWordAcc, NoLock, Preserve)
                         {
-                            AccessAs (ByteAcc, 0x00), 
-                                ,   9, 
+                            AccessAs (ByteAcc, 0x00),
+                                ,   9,
                             F090,   1
                         }
 
@@ -2281,7 +2281,7 @@
                         Local2 = 0x3F
                         BankField (OPR0, BNK0, 0x3F, ByteAcc, NoLock, Preserve)
                         {
-                                ,   9, 
+                                ,   9,
                             F091,   6
                         }
 
@@ -2293,8 +2293,8 @@
                         Local2 = 0x40
                         BankField (OPR0, BNK0, 0x40, AnyAcc, NoLock, Preserve)
                         {
-                            AccessAs (ByteAcc, 0x00), 
-                                ,   9, 
+                            AccessAs (ByteAcc, 0x00),
+                                ,   9,
                             F092,   7
                         }
 
@@ -2306,7 +2306,7 @@
                         Local2 = 0x7F
                         BankField (OPR0, BNK0, 0x7F, ByteAcc, NoLock, Preserve)
                         {
-                                ,   9, 
+                                ,   9,
                             F093,   8
                         }
 
@@ -2318,8 +2318,8 @@
                         Local2 = 0x80
                         BankField (OPR0, BNK0, 0x80, ByteAcc, NoLock, Preserve)
                         {
-                            AccessAs (ByteAcc, 0x00), 
-                                ,   9, 
+                            AccessAs (ByteAcc, 0x00),
+                                ,   9,
                             F094,   9
                         }
 
@@ -2331,7 +2331,7 @@
                         Local2 = 0xFF
                         BankField (OPR0, BNK0, 0xFF, ByteAcc, NoLock, Preserve)
                         {
-                                ,   9, 
+                                ,   9,
                             F095,   31
                         }
 
@@ -2343,8 +2343,8 @@
                         Local2 = 0x00
                         BankField (OPR0, BNK0, 0x00, WordAcc, NoLock, Preserve)
                         {
-                            AccessAs (ByteAcc, 0x00), 
-                                ,   9, 
+                            AccessAs (ByteAcc, 0x00),
+                                ,   9,
                             F096,   32
                         }
 
@@ -2356,7 +2356,7 @@
                         Local2 = 0x01
                         BankField (OPR0, BNK0, 0x01, ByteAcc, NoLock, Preserve)
                         {
-                                ,   9, 
+                                ,   9,
                             F097,   33
                         }
 
@@ -2368,8 +2368,8 @@
                         Local2 = 0x02
                         BankField (OPR0, BNK0, 0x02, DWordAcc, NoLock, Preserve)
                         {
-                            AccessAs (ByteAcc, 0x00), 
-                                ,   9, 
+                            AccessAs (ByteAcc, 0x00),
+                                ,   9,
                             F098,   63
                         }
 
@@ -2381,7 +2381,7 @@
                         Local2 = 0x03
                         BankField (OPR0, BNK0, 0x03, ByteAcc, NoLock, Preserve)
                         {
-                                ,   9, 
+                                ,   9,
                             F099,   64
                         }
 
@@ -2393,8 +2393,8 @@
                         Local2 = 0x04
                         BankField (OPR0, BNK0, 0x04, QWordAcc, NoLock, Preserve)
                         {
-                            AccessAs (ByteAcc, 0x00), 
-                                ,   9, 
+                            AccessAs (ByteAcc, 0x00),
+                                ,   9,
                             F09A,   65
                         }
 
@@ -2406,7 +2406,7 @@
                         Local2 = 0x05
                         BankField (OPR0, BNK0, 0x05, ByteAcc, NoLock, Preserve)
                         {
-                                ,   9, 
+                                ,   9,
                             F09B,   69
                         }
 
@@ -2418,8 +2418,8 @@
                         Local2 = 0x06
                         BankField (OPR0, BNK0, 0x06, AnyAcc, NoLock, Preserve)
                         {
-                            AccessAs (ByteAcc, 0x00), 
-                                ,   9, 
+                            AccessAs (ByteAcc, 0x00),
+                                ,   9,
                             F09C,   129
                         }
 
@@ -2431,7 +2431,7 @@
                         Local2 = 0x07
                         BankField (OPR0, BNK0, 0x07, ByteAcc, NoLock, Preserve)
                         {
-                                ,   9, 
+                                ,   9,
                             F09D,   256
                         }
 
@@ -2443,8 +2443,8 @@
                         Local2 = 0x08
                         BankField (OPR0, BNK0, 0x08, ByteAcc, NoLock, Preserve)
                         {
-                            AccessAs (ByteAcc, 0x00), 
-                                ,   9, 
+                            AccessAs (ByteAcc, 0x00),
+                                ,   9,
                             F09E,   1023
                         }
 
@@ -2456,7 +2456,7 @@
                         Local2 = 0x09
                         BankField (OPR0, BNK0, 0x09, ByteAcc, NoLock, Preserve)
                         {
-                                ,   9, 
+                                ,   9,
                             F09F,   1983
                         }
 
@@ -2480,8 +2480,8 @@
                         Local2 = 0x3F
                         BankField (OPR0, BNK0, 0x3F, ByteAcc, NoLock, Preserve)
                         {
-                            Offset (0x03), 
-                                ,   7, 
+                            Offset (0x03),
+                                ,   7,
                             F0A0,   1
                         }
 
@@ -2493,9 +2493,9 @@
                         Local2 = 0x40
                         BankField (OPR0, BNK0, 0x40, WordAcc, NoLock, Preserve)
                         {
-                            AccessAs (ByteAcc, 0x00), 
-                            Offset (0x03), 
-                                ,   7, 
+                            AccessAs (ByteAcc, 0x00),
+                            Offset (0x03),
+                                ,   7,
                             F0A1,   6
                         }
 
@@ -2507,8 +2507,8 @@
                         Local2 = 0x7F
                         BankField (OPR0, BNK0, 0x7F, ByteAcc, NoLock, Preserve)
                         {
-                            Offset (0x03), 
-                                ,   7, 
+                            Offset (0x03),
+                                ,   7,
                             F0A2,   7
                         }
 
@@ -2520,9 +2520,9 @@
                         Local2 = 0x80
                         BankField (OPR0, BNK0, 0x80, DWordAcc, NoLock, Preserve)
                         {
-                            AccessAs (ByteAcc, 0x00), 
-                            Offset (0x03), 
-                                ,   7, 
+                            AccessAs (ByteAcc, 0x00),
+                            Offset (0x03),
+                                ,   7,
                             F0A3,   8
                         }
 
@@ -2534,8 +2534,8 @@
                         Local2 = 0xFF
                         BankField (OPR0, BNK0, 0xFF, ByteAcc, NoLock, Preserve)
                         {
-                            Offset (0x03), 
-                                ,   7, 
+                            Offset (0x03),
+                                ,   7,
                             F0A4,   9
                         }
 
@@ -2547,9 +2547,9 @@
                         Local2 = 0x00
                         BankField (OPR0, BNK0, 0x00, QWordAcc, NoLock, Preserve)
                         {
-                            AccessAs (ByteAcc, 0x00), 
-                            Offset (0x03), 
-                                ,   7, 
+                            AccessAs (ByteAcc, 0x00),
+                            Offset (0x03),
+                                ,   7,
                             F0A5,   31
                         }
 
@@ -2561,8 +2561,8 @@
                         Local2 = 0x01
                         BankField (OPR0, BNK0, 0x01, ByteAcc, NoLock, Preserve)
                         {
-                            Offset (0x03), 
-                                ,   7, 
+                            Offset (0x03),
+                                ,   7,
                             F0A6,   32
                         }
 
@@ -2574,9 +2574,9 @@
                         Local2 = 0x02
                         BankField (OPR0, BNK0, 0x02, AnyAcc, NoLock, Preserve)
                         {
-                            AccessAs (ByteAcc, 0x00), 
-                            Offset (0x03), 
-                                ,   7, 
+                            AccessAs (ByteAcc, 0x00),
+                            Offset (0x03),
+                                ,   7,
                             F0A7,   33
                         }
 
@@ -2588,8 +2588,8 @@
                         Local2 = 0x03
                         BankField (OPR0, BNK0, 0x03, ByteAcc, NoLock, Preserve)
                         {
-                            Offset (0x03), 
-                                ,   7, 
+                            Offset (0x03),
+                                ,   7,
                             F0A8,   63
                         }
 
@@ -2601,9 +2601,9 @@
                         Local2 = 0x04
                         BankField (OPR0, BNK0, 0x04, ByteAcc, NoLock, Preserve)
                         {
-                            AccessAs (ByteAcc, 0x00), 
-                            Offset (0x03), 
-                                ,   7, 
+                            AccessAs (ByteAcc, 0x00),
+                            Offset (0x03),
+                                ,   7,
                             F0A9,   64
                         }
 
@@ -2615,8 +2615,8 @@
                         Local2 = 0x05
                         BankField (OPR0, BNK0, 0x05, ByteAcc, NoLock, Preserve)
                         {
-                            Offset (0x03), 
-                                ,   7, 
+                            Offset (0x03),
+                                ,   7,
                             F0AA,   65
                         }
 
@@ -2628,9 +2628,9 @@
                         Local2 = 0x06
                         BankField (OPR0, BNK0, 0x06, WordAcc, NoLock, Preserve)
                         {
-                            AccessAs (ByteAcc, 0x00), 
-                            Offset (0x03), 
-                                ,   7, 
+                            AccessAs (ByteAcc, 0x00),
+                            Offset (0x03),
+                                ,   7,
                             F0AB,   69
                         }
 
@@ -2642,8 +2642,8 @@
                         Local2 = 0x07
                         BankField (OPR0, BNK0, 0x07, ByteAcc, NoLock, Preserve)
                         {
-                            Offset (0x03), 
-                                ,   7, 
+                            Offset (0x03),
+                                ,   7,
                             F0AC,   129
                         }
 
@@ -2655,9 +2655,9 @@
                         Local2 = 0x08
                         BankField (OPR0, BNK0, 0x08, DWordAcc, NoLock, Preserve)
                         {
-                            AccessAs (ByteAcc, 0x00), 
-                            Offset (0x03), 
-                                ,   7, 
+                            AccessAs (ByteAcc, 0x00),
+                            Offset (0x03),
+                                ,   7,
                             F0AD,   256
                         }
 
@@ -2669,8 +2669,8 @@
                         Local2 = 0x09
                         BankField (OPR0, BNK0, 0x09, ByteAcc, NoLock, Preserve)
                         {
-                            Offset (0x03), 
-                                ,   7, 
+                            Offset (0x03),
+                                ,   7,
                             F0AE,   1023
                         }
 
@@ -2682,9 +2682,9 @@
                         Local2 = 0x3F
                         BankField (OPR0, BNK0, 0x3F, QWordAcc, NoLock, Preserve)
                         {
-                            AccessAs (ByteAcc, 0x00), 
-                            Offset (0x03), 
-                                ,   7, 
+                            AccessAs (ByteAcc, 0x00),
+                            Offset (0x03),
+                                ,   7,
                             F0AF,   1983
                         }
 
@@ -2708,8 +2708,8 @@
                         Local2 = 0x40
                         BankField (OPR0, BNK0, 0x40, AnyAcc, NoLock, Preserve)
                         {
-                            AccessAs (ByteAcc, 0x00), 
-                            Offset (0x04), 
+                            AccessAs (ByteAcc, 0x00),
+                            Offset (0x04),
                             F0B0,   1
                         }
 
@@ -2721,7 +2721,7 @@
                         Local2 = 0x7F
                         BankField (OPR0, BNK0, 0x7F, ByteAcc, NoLock, Preserve)
                         {
-                            Offset (0x04), 
+                            Offset (0x04),
                             F0B1,   6
                         }
 
@@ -2733,8 +2733,8 @@
                         Local2 = 0x80
                         BankField (OPR0, BNK0, 0x80, ByteAcc, NoLock, Preserve)
                         {
-                            AccessAs (ByteAcc, 0x00), 
-                            Offset (0x04), 
+                            AccessAs (ByteAcc, 0x00),
+                            Offset (0x04),
                             F0B2,   7
                         }
 
@@ -2746,7 +2746,7 @@
                         Local2 = 0xFF
                         BankField (OPR0, BNK0, 0xFF, ByteAcc, NoLock, Preserve)
                         {
-                            Offset (0x04), 
+                            Offset (0x04),
                             F0B3,   8
                         }
 
@@ -2758,8 +2758,8 @@
                         Local2 = 0x00
                         BankField (OPR0, BNK0, 0x00, WordAcc, NoLock, Preserve)
                         {
-                            AccessAs (ByteAcc, 0x00), 
-                            Offset (0x04), 
+                            AccessAs (ByteAcc, 0x00),
+                            Offset (0x04),
                             F0B4,   9
                         }
 
@@ -2771,7 +2771,7 @@
                         Local2 = 0x01
                         BankField (OPR0, BNK0, 0x01, ByteAcc, NoLock, Preserve)
                         {
-                            Offset (0x04), 
+                            Offset (0x04),
                             F0B5,   31
                         }
 
@@ -2783,8 +2783,8 @@
                         Local2 = 0x02
                         BankField (OPR0, BNK0, 0x02, DWordAcc, NoLock, Preserve)
                         {
-                            AccessAs (ByteAcc, 0x00), 
-                            Offset (0x04), 
+                            AccessAs (ByteAcc, 0x00),
+                            Offset (0x04),
                             F0B6,   32
                         }
 
@@ -2796,7 +2796,7 @@
                         Local2 = 0x03
                         BankField (OPR0, BNK0, 0x03, ByteAcc, NoLock, Preserve)
                         {
-                            Offset (0x04), 
+                            Offset (0x04),
                             F0B7,   33
                         }
 
@@ -2808,8 +2808,8 @@
                         Local2 = 0x04
                         BankField (OPR0, BNK0, 0x04, QWordAcc, NoLock, Preserve)
                         {
-                            AccessAs (ByteAcc, 0x00), 
-                            Offset (0x04), 
+                            AccessAs (ByteAcc, 0x00),
+                            Offset (0x04),
                             F0B8,   63
                         }
 
@@ -2821,7 +2821,7 @@
                         Local2 = 0x05
                         BankField (OPR0, BNK0, 0x05, ByteAcc, NoLock, Preserve)
                         {
-                            Offset (0x04), 
+                            Offset (0x04),
                             F0B9,   64
                         }
 
@@ -2833,8 +2833,8 @@
                         Local2 = 0x06
                         BankField (OPR0, BNK0, 0x06, AnyAcc, NoLock, Preserve)
                         {
-                            AccessAs (ByteAcc, 0x00), 
-                            Offset (0x04), 
+                            AccessAs (ByteAcc, 0x00),
+                            Offset (0x04),
                             F0BA,   65
                         }
 
@@ -2846,7 +2846,7 @@
                         Local2 = 0x07
                         BankField (OPR0, BNK0, 0x07, ByteAcc, NoLock, Preserve)
                         {
-                            Offset (0x04), 
+                            Offset (0x04),
                             F0BB,   69
                         }
 
@@ -2858,8 +2858,8 @@
                         Local2 = 0x08
                         BankField (OPR0, BNK0, 0x08, ByteAcc, NoLock, Preserve)
                         {
-                            AccessAs (ByteAcc, 0x00), 
-                            Offset (0x04), 
+                            AccessAs (ByteAcc, 0x00),
+                            Offset (0x04),
                             F0BC,   129
                         }
 
@@ -2871,7 +2871,7 @@
                         Local2 = 0x09
                         BankField (OPR0, BNK0, 0x09, ByteAcc, NoLock, Preserve)
                         {
-                            Offset (0x04), 
+                            Offset (0x04),
                             F0BD,   256
                         }
 
@@ -2883,8 +2883,8 @@
                         Local2 = 0x3F
                         BankField (OPR0, BNK0, 0x3F, WordAcc, NoLock, Preserve)
                         {
-                            AccessAs (ByteAcc, 0x00), 
-                            Offset (0x04), 
+                            AccessAs (ByteAcc, 0x00),
+                            Offset (0x04),
                             F0BE,   1023
                         }
 
@@ -2896,7 +2896,7 @@
                         Local2 = 0x40
                         BankField (OPR0, BNK0, 0x40, ByteAcc, NoLock, Preserve)
                         {
-                            Offset (0x04), 
+                            Offset (0x04),
                             F0BF,   1983
                         }
 
@@ -2920,7 +2920,7 @@
                         Local2 = 0x7F
                         BankField (OPR0, BNK0, 0x7F, ByteAcc, NoLock, Preserve)
                         {
-                                ,   33, 
+                                ,   33,
                             F0C0,   1
                         }
 
@@ -2932,8 +2932,8 @@
                         Local2 = 0x80
                         BankField (OPR0, BNK0, 0x80, DWordAcc, NoLock, Preserve)
                         {
-                            AccessAs (ByteAcc, 0x00), 
-                                ,   33, 
+                            AccessAs (ByteAcc, 0x00),
+                                ,   33,
                             F0C1,   6
                         }
 
@@ -2945,7 +2945,7 @@
                         Local2 = 0xFF
                         BankField (OPR0, BNK0, 0xFF, ByteAcc, NoLock, Preserve)
                         {
-                                ,   33, 
+                                ,   33,
                             F0C2,   7
                         }
 
@@ -2957,8 +2957,8 @@
                         Local2 = 0x00
                         BankField (OPR0, BNK0, 0x00, QWordAcc, NoLock, Preserve)
                         {
-                            AccessAs (ByteAcc, 0x00), 
-                                ,   33, 
+                            AccessAs (ByteAcc, 0x00),
+                                ,   33,
                             F0C3,   8
                         }
 
@@ -2970,7 +2970,7 @@
                         Local2 = 0x01
                         BankField (OPR0, BNK0, 0x01, ByteAcc, NoLock, Preserve)
                         {
-                                ,   33, 
+                                ,   33,
                             F0C4,   9
                         }
 
@@ -2982,8 +2982,8 @@
                         Local2 = 0x02
                         BankField (OPR0, BNK0, 0x02, AnyAcc, NoLock, Preserve)
                         {
-                            AccessAs (ByteAcc, 0x00), 
-                                ,   33, 
+                            AccessAs (ByteAcc, 0x00),
+                                ,   33,
                             F0C5,   31
                         }
 
@@ -2995,7 +2995,7 @@
                         Local2 = 0x03
                         BankField (OPR0, BNK0, 0x03, ByteAcc, NoLock, Preserve)
                         {
-                                ,   33, 
+                                ,   33,
                             F0C6,   32
                         }
 
@@ -3007,8 +3007,8 @@
                         Local2 = 0x04
                         BankField (OPR0, BNK0, 0x04, ByteAcc, NoLock, Preserve)
                         {
-                            AccessAs (ByteAcc, 0x00), 
-                                ,   33, 
+                            AccessAs (ByteAcc, 0x00),
+                                ,   33,
                             F0C7,   33
                         }
 
@@ -3020,7 +3020,7 @@
                         Local2 = 0x05
                         BankField (OPR0, BNK0, 0x05, ByteAcc, NoLock, Preserve)
                         {
-                                ,   33, 
+                                ,   33,
                             F0C8,   63
                         }
 
@@ -3032,8 +3032,8 @@
                         Local2 = 0x06
                         BankField (OPR0, BNK0, 0x06, WordAcc, NoLock, Preserve)
                         {
-                            AccessAs (ByteAcc, 0x00), 
-                                ,   33, 
+                            AccessAs (ByteAcc, 0x00),
+                                ,   33,
                             F0C9,   64
                         }
 
@@ -3045,7 +3045,7 @@
                         Local2 = 0x07
                         BankField (OPR0, BNK0, 0x07, ByteAcc, NoLock, Preserve)
                         {
-                                ,   33, 
+                                ,   33,
                             F0CA,   65
                         }
 
@@ -3057,8 +3057,8 @@
                         Local2 = 0x08
                         BankField (OPR0, BNK0, 0x08, DWordAcc, NoLock, Preserve)
                         {
-                            AccessAs (ByteAcc, 0x00), 
-                                ,   33, 
+                            AccessAs (ByteAcc, 0x00),
+                                ,   33,
                             F0CB,   69
                         }
 
@@ -3070,7 +3070,7 @@
                         Local2 = 0x09
                         BankField (OPR0, BNK0, 0x09, ByteAcc, NoLock, Preserve)
                         {
-                                ,   33, 
+                                ,   33,
                             F0CC,   129
                         }
 
@@ -3082,8 +3082,8 @@
                         Local2 = 0x3F
                         BankField (OPR0, BNK0, 0x3F, QWordAcc, NoLock, Preserve)
                         {
-                            AccessAs (ByteAcc, 0x00), 
-                                ,   33, 
+                            AccessAs (ByteAcc, 0x00),
+                                ,   33,
                             F0CD,   256
                         }
 
@@ -3095,7 +3095,7 @@
                         Local2 = 0x40
                         BankField (OPR0, BNK0, 0x40, ByteAcc, NoLock, Preserve)
                         {
-                                ,   33, 
+                                ,   33,
                             F0CE,   1023
                         }
 
@@ -3107,8 +3107,8 @@
                         Local2 = 0x7F
                         BankField (OPR0, BNK0, 0x7F, AnyAcc, NoLock, Preserve)
                         {
-                            AccessAs (ByteAcc, 0x00), 
-                                ,   33, 
+                            AccessAs (ByteAcc, 0x00),
+                                ,   33,
                             F0CF,   1983
                         }
 
@@ -3132,8 +3132,8 @@
                         Local2 = 0x80
                         BankField (OPR0, BNK0, 0x80, ByteAcc, NoLock, Preserve)
                         {
-                            AccessAs (ByteAcc, 0x00), 
-                                ,   63, 
+                            AccessAs (ByteAcc, 0x00),
+                                ,   63,
                             F0D0,   1
                         }
 
@@ -3145,7 +3145,7 @@
                         Local2 = 0xFF
                         BankField (OPR0, BNK0, 0xFF, ByteAcc, NoLock, Preserve)
                         {
-                                ,   63, 
+                                ,   63,
                             F0D1,   6
                         }
 
@@ -3157,8 +3157,8 @@
                         Local2 = 0x00
                         BankField (OPR0, BNK0, 0x00, WordAcc, NoLock, Preserve)
                         {
-                            AccessAs (ByteAcc, 0x00), 
-                                ,   63, 
+                            AccessAs (ByteAcc, 0x00),
+                                ,   63,
                             F0D2,   7
                         }
 
@@ -3170,7 +3170,7 @@
                         Local2 = 0x01
                         BankField (OPR0, BNK0, 0x01, ByteAcc, NoLock, Preserve)
                         {
-                                ,   63, 
+                                ,   63,
                             F0D3,   8
                         }
 
@@ -3182,8 +3182,8 @@
                         Local2 = 0x02
                         BankField (OPR0, BNK0, 0x02, DWordAcc, NoLock, Preserve)
                         {
-                            AccessAs (ByteAcc, 0x00), 
-                                ,   63, 
+                            AccessAs (ByteAcc, 0x00),
+                                ,   63,
                             F0D4,   9
                         }
 
@@ -3195,7 +3195,7 @@
                         Local2 = 0x03
                         BankField (OPR0, BNK0, 0x03, ByteAcc, NoLock, Preserve)
                         {
-                                ,   63, 
+                                ,   63,
                             F0D5,   31
                         }
 
@@ -3207,8 +3207,8 @@
                         Local2 = 0x04
                         BankField (OPR0, BNK0, 0x04, QWordAcc, NoLock, Preserve)
                         {
-                            AccessAs (ByteAcc, 0x00), 
-                                ,   63, 
+                            AccessAs (ByteAcc, 0x00),
+                                ,   63,
                             F0D6,   32
                         }
 
@@ -3220,7 +3220,7 @@
                         Local2 = 0x05
                         BankField (OPR0, BNK0, 0x05, ByteAcc, NoLock, Preserve)
                         {
-                                ,   63, 
+                                ,   63,
                             F0D7,   33
                         }
 
@@ -3232,8 +3232,8 @@
                         Local2 = 0x06
                         BankField (OPR0, BNK0, 0x06, AnyAcc, NoLock, Preserve)
                         {
-                            AccessAs (ByteAcc, 0x00), 
-                                ,   63, 
+                            AccessAs (ByteAcc, 0x00),
+                                ,   63,
                             F0D8,   63
                         }
 
@@ -3245,7 +3245,7 @@
                         Local2 = 0x07
                         BankField (OPR0, BNK0, 0x07, ByteAcc, NoLock, Preserve)
                         {
-                                ,   63, 
+                                ,   63,
                             F0D9,   64
                         }
 
@@ -3257,8 +3257,8 @@
                         Local2 = 0x08
                         BankField (OPR0, BNK0, 0x08, ByteAcc, NoLock, Preserve)
                         {
-                            AccessAs (ByteAcc, 0x00), 
-                                ,   63, 
+                            AccessAs (ByteAcc, 0x00),
+                                ,   63,
                             F0DA,   65
                         }
 
@@ -3270,7 +3270,7 @@
                         Local2 = 0x09
                         BankField (OPR0, BNK0, 0x09, ByteAcc, NoLock, Preserve)
                         {
-                                ,   63, 
+                                ,   63,
                             F0DB,   69
                         }
 
@@ -3282,8 +3282,8 @@
                         Local2 = 0x3F
                         BankField (OPR0, BNK0, 0x3F, WordAcc, NoLock, Preserve)
                         {
-                            AccessAs (ByteAcc, 0x00), 
-                                ,   63, 
+                            AccessAs (ByteAcc, 0x00),
+                                ,   63,
                             F0DC,   129
                         }
 
@@ -3295,7 +3295,7 @@
                         Local2 = 0x40
                         BankField (OPR0, BNK0, 0x40, ByteAcc, NoLock, Preserve)
                         {
-                                ,   63, 
+                                ,   63,
                             F0DD,   256
                         }
 
@@ -3307,8 +3307,8 @@
                         Local2 = 0x7F
                         BankField (OPR0, BNK0, 0x7F, DWordAcc, NoLock, Preserve)
                         {
-                            AccessAs (ByteAcc, 0x00), 
-                                ,   63, 
+                            AccessAs (ByteAcc, 0x00),
+                                ,   63,
                             F0DE,   1023
                         }
 
@@ -3320,7 +3320,7 @@
                         Local2 = 0x80
                         BankField (OPR0, BNK0, 0x80, ByteAcc, NoLock, Preserve)
                         {
-                                ,   63, 
+                                ,   63,
                             F0DF,   1983
                         }
 
@@ -3344,7 +3344,7 @@
                         Local2 = 0xFF
                         BankField (OPR0, BNK0, 0xFF, ByteAcc, NoLock, Preserve)
                         {
-                            Offset (0x08), 
+                            Offset (0x08),
                             F0E0,   1
                         }
 
@@ -3356,8 +3356,8 @@
                         Local2 = 0x00
                         BankField (OPR0, BNK0, 0x00, QWordAcc, NoLock, Preserve)
                         {
-                            AccessAs (ByteAcc, 0x00), 
-                            Offset (0x08), 
+                            AccessAs (ByteAcc, 0x00),
+                            Offset (0x08),
                             F0E1,   6
                         }
 
@@ -3369,7 +3369,7 @@
                         Local2 = 0x01
                         BankField (OPR0, BNK0, 0x01, ByteAcc, NoLock, Preserve)
                         {
-                            Offset (0x08), 
+                            Offset (0x08),
                             F0E2,   7
                         }
 
@@ -3381,8 +3381,8 @@
                         Local2 = 0x02
                         BankField (OPR0, BNK0, 0x02, AnyAcc, NoLock, Preserve)
                         {
-                            AccessAs (ByteAcc, 0x00), 
-                            Offset (0x08), 
+                            AccessAs (ByteAcc, 0x00),
+                            Offset (0x08),
                             F0E3,   8
                         }
 
@@ -3394,7 +3394,7 @@
                         Local2 = 0x03
                         BankField (OPR0, BNK0, 0x03, ByteAcc, NoLock, Preserve)
                         {
-                            Offset (0x08), 
+                            Offset (0x08),
                             F0E4,   9
                         }
 
@@ -3406,8 +3406,8 @@
                         Local2 = 0x04
                         BankField (OPR0, BNK0, 0x04, ByteAcc, NoLock, Preserve)
                         {
-                            AccessAs (ByteAcc, 0x00), 
-                            Offset (0x08), 
+                            AccessAs (ByteAcc, 0x00),
+                            Offset (0x08),
                             F0E5,   31
                         }
 
@@ -3419,7 +3419,7 @@
                         Local2 = 0x05
                         BankField (OPR0, BNK0, 0x05, ByteAcc, NoLock, Preserve)
                         {
-                            Offset (0x08), 
+                            Offset (0x08),
                             F0E6,   32
                         }
 
@@ -3431,8 +3431,8 @@
                         Local2 = 0x06
                         BankField (OPR0, BNK0, 0x06, WordAcc, NoLock, Preserve)
                         {
-                            AccessAs (ByteAcc, 0x00), 
-                            Offset (0x08), 
+                            AccessAs (ByteAcc, 0x00),
+                            Offset (0x08),
                             F0E7,   33
                         }
 
@@ -3444,7 +3444,7 @@
                         Local2 = 0x07
                         BankField (OPR0, BNK0, 0x07, ByteAcc, NoLock, Preserve)
                         {
-                            Offset (0x08), 
+                            Offset (0x08),
                             F0E8,   63
                         }
 
@@ -3456,8 +3456,8 @@
                         Local2 = 0x08
                         BankField (OPR0, BNK0, 0x08, DWordAcc, NoLock, Preserve)
                         {
-                            AccessAs (ByteAcc, 0x00), 
-                            Offset (0x08), 
+                            AccessAs (ByteAcc, 0x00),
+                            Offset (0x08),
                             F0E9,   64
                         }
 
@@ -3469,7 +3469,7 @@
                         Local2 = 0x09
                         BankField (OPR0, BNK0, 0x09, ByteAcc, NoLock, Preserve)
                         {
-                            Offset (0x08), 
+                            Offset (0x08),
                             F0EA,   65
                         }
 
@@ -3481,8 +3481,8 @@
                         Local2 = 0x3F
                         BankField (OPR0, BNK0, 0x3F, QWordAcc, NoLock, Preserve)
                         {
-                            AccessAs (ByteAcc, 0x00), 
-                            Offset (0x08), 
+                            AccessAs (ByteAcc, 0x00),
+                            Offset (0x08),
                             F0EB,   69
                         }
 
@@ -3494,7 +3494,7 @@
                         Local2 = 0x40
                         BankField (OPR0, BNK0, 0x40, ByteAcc, NoLock, Preserve)
                         {
-                            Offset (0x08), 
+                            Offset (0x08),
                             F0EC,   129
                         }
 
@@ -3506,8 +3506,8 @@
                         Local2 = 0x7F
                         BankField (OPR0, BNK0, 0x7F, AnyAcc, NoLock, Preserve)
                         {
-                            AccessAs (ByteAcc, 0x00), 
-                            Offset (0x08), 
+                            AccessAs (ByteAcc, 0x00),
+                            Offset (0x08),
                             F0ED,   256
                         }
 
@@ -3519,7 +3519,7 @@
                         Local2 = 0x80
                         BankField (OPR0, BNK0, 0x80, ByteAcc, NoLock, Preserve)
                         {
-                            Offset (0x08), 
+                            Offset (0x08),
                             F0EE,   1023
                         }
 
@@ -3531,8 +3531,8 @@
                         Local2 = 0xFF
                         BankField (OPR0, BNK0, 0xFF, ByteAcc, NoLock, Preserve)
                         {
-                            AccessAs (ByteAcc, 0x00), 
-                            Offset (0x08), 
+                            AccessAs (ByteAcc, 0x00),
+                            Offset (0x08),
                             F0EF,   1983
                         }
 
@@ -3556,9 +3556,9 @@
                         Local2 = 0x00
                         BankField (OPR0, BNK0, 0x00, WordAcc, NoLock, Preserve)
                         {
-                            AccessAs (ByteAcc, 0x00), 
-                            Offset (0x08), 
-                                ,   1, 
+                            AccessAs (ByteAcc, 0x00),
+                            Offset (0x08),
+                                ,   1,
                             F0F0,   1
                         }
 
@@ -3570,8 +3570,8 @@
                         Local2 = 0x01
                         BankField (OPR0, BNK0, 0x01, ByteAcc, NoLock, Preserve)
                         {
-                            Offset (0x08), 
-                                ,   1, 
+                            Offset (0x08),
+                                ,   1,
                             F0F1,   6
                         }
 
@@ -3583,9 +3583,9 @@
                         Local2 = 0x02
                         BankField (OPR0, BNK0, 0x02, DWordAcc, NoLock, Preserve)
                         {
-                            AccessAs (ByteAcc, 0x00), 
-                            Offset (0x08), 
-                                ,   1, 
+                            AccessAs (ByteAcc, 0x00),
+                            Offset (0x08),
+                                ,   1,
                             F0F2,   7
                         }
 
@@ -3597,8 +3597,8 @@
                         Local2 = 0x03
                         BankField (OPR0, BNK0, 0x03, ByteAcc, NoLock, Preserve)
                         {
-                            Offset (0x08), 
-                                ,   1, 
+                            Offset (0x08),
+                                ,   1,
                             F0F3,   8
                         }
 
@@ -3610,9 +3610,9 @@
                         Local2 = 0x04
                         BankField (OPR0, BNK0, 0x04, QWordAcc, NoLock, Preserve)
                         {
-                            AccessAs (ByteAcc, 0x00), 
-                            Offset (0x08), 
-                                ,   1, 
+                            AccessAs (ByteAcc, 0x00),
+                            Offset (0x08),
+                                ,   1,
                             F0F4,   9
                         }
 
@@ -3624,8 +3624,8 @@
                         Local2 = 0x05
                         BankField (OPR0, BNK0, 0x05, ByteAcc, NoLock, Preserve)
                         {
-                            Offset (0x08), 
-                                ,   1, 
+                            Offset (0x08),
+                                ,   1,
                             F0F5,   31
                         }
 
@@ -3637,9 +3637,9 @@
                         Local2 = 0x06
                         BankField (OPR0, BNK0, 0x06, AnyAcc, NoLock, Preserve)
                         {
-                            AccessAs (ByteAcc, 0x00), 
-                            Offset (0x08), 
-                                ,   1, 
+                            AccessAs (ByteAcc, 0x00),
+                            Offset (0x08),
+                                ,   1,
                             F0F6,   32
                         }
 
@@ -3651,8 +3651,8 @@
                         Local2 = 0x07
                         BankField (OPR0, BNK0, 0x07, ByteAcc, NoLock, Preserve)
                         {
-                            Offset (0x08), 
-                                ,   1, 
+                            Offset (0x08),
+                                ,   1,
                             F0F7,   33
                         }
 
@@ -3664,9 +3664,9 @@
                         Local2 = 0x08
                         BankField (OPR0, BNK0, 0x08, ByteAcc, NoLock, Preserve)
                         {
-                            AccessAs (ByteAcc, 0x00), 
-                            Offset (0x08), 
-                                ,   1, 
+                            AccessAs (ByteAcc, 0x00),
+                            Offset (0x08),
+                                ,   1,
                             F0F8,   63
                         }
 
@@ -3678,8 +3678,8 @@
                         Local2 = 0x09
                         BankField (OPR0, BNK0, 0x09, ByteAcc, NoLock, Preserve)
                         {
-                            Offset (0x08), 
-                                ,   1, 
+                            Offset (0x08),
+                                ,   1,
                             F0F9,   64
                         }
 
@@ -3691,9 +3691,9 @@
                         Local2 = 0x3F
                         BankField (OPR0, BNK0, 0x3F, WordAcc, NoLock, Preserve)
                         {
-                            AccessAs (ByteAcc, 0x00), 
-                            Offset (0x08), 
-                                ,   1, 
+                            AccessAs (ByteAcc, 0x00),
+                            Offset (0x08),
+                                ,   1,
                             F0FA,   65
                         }
 
@@ -3705,8 +3705,8 @@
                         Local2 = 0x40
                         BankField (OPR0, BNK0, 0x40, ByteAcc, NoLock, Preserve)
                         {
-                            Offset (0x08), 
-                                ,   1, 
+                            Offset (0x08),
+                                ,   1,
                             F0FB,   69
                         }
 
@@ -3718,9 +3718,9 @@
                         Local2 = 0x7F
                         BankField (OPR0, BNK0, 0x7F, DWordAcc, NoLock, Preserve)
                         {
-                            AccessAs (ByteAcc, 0x00), 
-                            Offset (0x08), 
-                                ,   1, 
+                            AccessAs (ByteAcc, 0x00),
+                            Offset (0x08),
+                                ,   1,
                             F0FC,   129
                         }
 
@@ -3732,8 +3732,8 @@
                         Local2 = 0x80
                         BankField (OPR0, BNK0, 0x80, ByteAcc, NoLock, Preserve)
                         {
-                            Offset (0x08), 
-                                ,   1, 
+                            Offset (0x08),
+                                ,   1,
                             F0FD,   256
                         }
 
@@ -3745,9 +3745,9 @@
                         Local2 = 0xFF
                         BankField (OPR0, BNK0, 0xFF, QWordAcc, NoLock, Preserve)
                         {
-                            AccessAs (ByteAcc, 0x00), 
-                            Offset (0x08), 
-                                ,   1, 
+                            AccessAs (ByteAcc, 0x00),
+                            Offset (0x08),
+                                ,   1,
                             F0FE,   1023
                         }
 
@@ -3759,8 +3759,8 @@
                         Local2 = 0x00
                         BankField (OPR0, BNK0, 0x00, ByteAcc, NoLock, Preserve)
                         {
-                            Offset (0x08), 
-                                ,   1, 
+                            Offset (0x08),
+                                ,   1,
                             F0FF,   1983
                         }
 
@@ -3888,7 +3888,7 @@
                         Local2 = 0x00
                         BankField (OPR0, BNK0, 0x00, WordAcc, NoLock, WriteAsOnes)
                         {
-                            Offset (0x00), 
+                            Offset (0x00),
                             F000,   1
                         }
 
@@ -3900,8 +3900,8 @@
                         Local2 = 0x01
                         BankField (OPR0, BNK0, 0x01, WordAcc, NoLock, WriteAsOnes)
                         {
-                            AccessAs (WordAcc, 0x00), 
-                            Offset (0x00), 
+                            AccessAs (WordAcc, 0x00),
+                            Offset (0x00),
                             F001,   6
                         }
 
@@ -3913,7 +3913,7 @@
                         Local2 = 0x02
                         BankField (OPR0, BNK0, 0x02, WordAcc, NoLock, WriteAsOnes)
                         {
-                            Offset (0x00), 
+                            Offset (0x00),
                             F002,   7
                         }
 
@@ -3925,8 +3925,8 @@
                         Local2 = 0x03
                         BankField (OPR0, BNK0, 0x03, DWordAcc, NoLock, WriteAsOnes)
                         {
-                            AccessAs (WordAcc, 0x00), 
-                            Offset (0x00), 
+                            AccessAs (WordAcc, 0x00),
+                            Offset (0x00),
                             F003,   8
                         }
 
@@ -3938,7 +3938,7 @@
                         Local2 = 0x04
                         BankField (OPR0, BNK0, 0x04, WordAcc, NoLock, WriteAsOnes)
                         {
-                            Offset (0x00), 
+                            Offset (0x00),
                             F004,   9
                         }
 
@@ -3950,8 +3950,8 @@
                         Local2 = 0x05
                         BankField (OPR0, BNK0, 0x05, QWordAcc, NoLock, WriteAsOnes)
                         {
-                            AccessAs (WordAcc, 0x00), 
-                            Offset (0x00), 
+                            AccessAs (WordAcc, 0x00),
+                            Offset (0x00),
                             F005,   31
                         }
 
@@ -3963,7 +3963,7 @@
                         Local2 = 0x06
                         BankField (OPR0, BNK0, 0x06, WordAcc, NoLock, WriteAsOnes)
                         {
-                            Offset (0x00), 
+                            Offset (0x00),
                             F006,   32
                         }
 
@@ -3975,8 +3975,8 @@
                         Local2 = 0x07
                         BankField (OPR0, BNK0, 0x07, AnyAcc, NoLock, WriteAsOnes)
                         {
-                            AccessAs (WordAcc, 0x00), 
-                            Offset (0x00), 
+                            AccessAs (WordAcc, 0x00),
+                            Offset (0x00),
                             F007,   33
                         }
 
@@ -3988,7 +3988,7 @@
                         Local2 = 0x08
                         BankField (OPR0, BNK0, 0x08, WordAcc, NoLock, WriteAsOnes)
                         {
-                            Offset (0x00), 
+                            Offset (0x00),
                             F008,   63
                         }
 
@@ -4000,8 +4000,8 @@
                         Local2 = 0x09
                         BankField (OPR0, BNK0, 0x09, ByteAcc, NoLock, WriteAsOnes)
                         {
-                            AccessAs (WordAcc, 0x00), 
-                            Offset (0x00), 
+                            AccessAs (WordAcc, 0x00),
+                            Offset (0x00),
                             F009,   64
                         }
 
@@ -4013,7 +4013,7 @@
                         Local2 = 0x3F
                         BankField (OPR0, BNK0, 0x3F, WordAcc, NoLock, WriteAsOnes)
                         {
-                            Offset (0x00), 
+                            Offset (0x00),
                             F00A,   65
                         }
 
@@ -4025,8 +4025,8 @@
                         Local2 = 0x40
                         BankField (OPR0, BNK0, 0x40, WordAcc, NoLock, WriteAsOnes)
                         {
-                            AccessAs (WordAcc, 0x00), 
-                            Offset (0x00), 
+                            AccessAs (WordAcc, 0x00),
+                            Offset (0x00),
                             F00B,   69
                         }
 
@@ -4038,7 +4038,7 @@
                         Local2 = 0x7F
                         BankField (OPR0, BNK0, 0x7F, WordAcc, NoLock, WriteAsOnes)
                         {
-                            Offset (0x00), 
+                            Offset (0x00),
                             F00C,   129
                         }
 
@@ -4050,8 +4050,8 @@
                         Local2 = 0x80
                         BankField (OPR0, BNK0, 0x80, DWordAcc, NoLock, WriteAsOnes)
                         {
-                            AccessAs (WordAcc, 0x00), 
-                            Offset (0x00), 
+                            AccessAs (WordAcc, 0x00),
+                            Offset (0x00),
                             F00D,   256
                         }
 
@@ -4063,7 +4063,7 @@
                         Local2 = 0xFF
                         BankField (OPR0, BNK0, 0xFF, WordAcc, NoLock, WriteAsOnes)
                         {
-                            Offset (0x00), 
+                            Offset (0x00),
                             F00E,   1023
                         }
 
@@ -4075,8 +4075,8 @@
                         Local2 = 0x00
                         BankField (OPR0, BNK0, 0x00, QWordAcc, NoLock, WriteAsOnes)
                         {
-                            AccessAs (WordAcc, 0x00), 
-                            Offset (0x00), 
+                            AccessAs (WordAcc, 0x00),
+                            Offset (0x00),
                             F00F,   1983
                         }
 
@@ -4100,8 +4100,8 @@
                         Local2 = 0x01
                         BankField (OPR0, BNK0, 0x01, AnyAcc, NoLock, WriteAsOnes)
                         {
-                            AccessAs (WordAcc, 0x00), 
-                                ,   1, 
+                            AccessAs (WordAcc, 0x00),
+                                ,   1,
                             F010,   1
                         }
 
@@ -4113,7 +4113,7 @@
                         Local2 = 0x02
                         BankField (OPR0, BNK0, 0x02, WordAcc, NoLock, WriteAsOnes)
                         {
-                                ,   1, 
+                                ,   1,
                             F011,   6
                         }
 
@@ -4125,8 +4125,8 @@
                         Local2 = 0x03
                         BankField (OPR0, BNK0, 0x03, ByteAcc, NoLock, WriteAsOnes)
                         {
-                            AccessAs (WordAcc, 0x00), 
-                                ,   1, 
+                            AccessAs (WordAcc, 0x00),
+                                ,   1,
                             F012,   7
                         }
 
@@ -4138,7 +4138,7 @@
                         Local2 = 0x04
                         BankField (OPR0, BNK0, 0x04, WordAcc, NoLock, WriteAsOnes)
                         {
-                                ,   1, 
+                                ,   1,
                             F013,   8
                         }
 
@@ -4150,8 +4150,8 @@
                         Local2 = 0x05
                         BankField (OPR0, BNK0, 0x05, WordAcc, NoLock, WriteAsOnes)
                         {
-                            AccessAs (WordAcc, 0x00), 
-                                ,   1, 
+                            AccessAs (WordAcc, 0x00),
+                                ,   1,
                             F014,   9
                         }
 
@@ -4163,7 +4163,7 @@
                         Local2 = 0x06
                         BankField (OPR0, BNK0, 0x06, WordAcc, NoLock, WriteAsOnes)
                         {
-                                ,   1, 
+                                ,   1,
                             F015,   31
                         }
 
@@ -4175,8 +4175,8 @@
                         Local2 = 0x07
                         BankField (OPR0, BNK0, 0x07, DWordAcc, NoLock, WriteAsOnes)
                         {
-                            AccessAs (WordAcc, 0x00), 
-                                ,   1, 
+                            AccessAs (WordAcc, 0x00),
+                                ,   1,
                             F016,   32
                         }
 
@@ -4188,7 +4188,7 @@
                         Local2 = 0x08
                         BankField (OPR0, BNK0, 0x08, WordAcc, NoLock, WriteAsOnes)
                         {
-                                ,   1, 
+                                ,   1,
                             F017,   33
                         }
 
@@ -4200,8 +4200,8 @@
                         Local2 = 0x09
                         BankField (OPR0, BNK0, 0x09, QWordAcc, NoLock, WriteAsOnes)
                         {
-                            AccessAs (WordAcc, 0x00), 
-                                ,   1, 
+                            AccessAs (WordAcc, 0x00),
+                                ,   1,
                             F018,   63
                         }
 
@@ -4213,7 +4213,7 @@
                         Local2 = 0x3F
                         BankField (OPR0, BNK0, 0x3F, WordAcc, NoLock, WriteAsOnes)
                         {
-                                ,   1, 
+                                ,   1,
                             F019,   64
                         }
 
@@ -4225,8 +4225,8 @@
                         Local2 = 0x40
                         BankField (OPR0, BNK0, 0x40, AnyAcc, NoLock, WriteAsOnes)
                         {
-                            AccessAs (WordAcc, 0x00), 
-                                ,   1, 
+                            AccessAs (WordAcc, 0x00),
+                                ,   1,
                             F01A,   65
                         }
 
@@ -4238,7 +4238,7 @@
                         Local2 = 0x7F
                         BankField (OPR0, BNK0, 0x7F, WordAcc, NoLock, WriteAsOnes)
                         {
-                                ,   1, 
+                                ,   1,
                             F01B,   69
                         }
 
@@ -4250,8 +4250,8 @@
                         Local2 = 0x80
                         BankField (OPR0, BNK0, 0x80, ByteAcc, NoLock, WriteAsOnes)
                         {
-                            AccessAs (WordAcc, 0x00), 
-                                ,   1, 
+                            AccessAs (WordAcc, 0x00),
+                                ,   1,
                             F01C,   129
                         }
 
@@ -4263,7 +4263,7 @@
                         Local2 = 0xFF
                         BankField (OPR0, BNK0, 0xFF, WordAcc, NoLock, WriteAsOnes)
                         {
-                                ,   1, 
+                                ,   1,
                             F01D,   256
                         }
 
@@ -4275,8 +4275,8 @@
                         Local2 = 0x00
                         BankField (OPR0, BNK0, 0x00, WordAcc, NoLock, WriteAsOnes)
                         {
-                            AccessAs (WordAcc, 0x00), 
-                                ,   1, 
+                            AccessAs (WordAcc, 0x00),
+                                ,   1,
                             F01E,   1023
                         }
 
@@ -4288,7 +4288,7 @@
                         Local2 = 0x01
                         BankField (OPR0, BNK0, 0x01, WordAcc, NoLock, WriteAsOnes)
                         {
-                                ,   1, 
+                                ,   1,
                             F01F,   1983
                         }
 
@@ -4312,7 +4312,7 @@
                         Local2 = 0x02
                         BankField (OPR0, BNK0, 0x02, WordAcc, NoLock, WriteAsOnes)
                         {
-                                ,   2, 
+                                ,   2,
                             F020,   1
                         }
 
@@ -4324,8 +4324,8 @@
                         Local2 = 0x03
                         BankField (OPR0, BNK0, 0x03, DWordAcc, NoLock, WriteAsOnes)
                         {
-                            AccessAs (WordAcc, 0x00), 
-                                ,   2, 
+                            AccessAs (WordAcc, 0x00),
+                                ,   2,
                             F021,   6
                         }
 
@@ -4337,7 +4337,7 @@
                         Local2 = 0x04
                         BankField (OPR0, BNK0, 0x04, WordAcc, NoLock, WriteAsOnes)
                         {
-                                ,   2, 
+                                ,   2,
                             F022,   7
                         }
 
@@ -4349,8 +4349,8 @@
                         Local2 = 0x05
                         BankField (OPR0, BNK0, 0x05, QWordAcc, NoLock, WriteAsOnes)
                         {
-                            AccessAs (WordAcc, 0x00), 
-                                ,   2, 
+                            AccessAs (WordAcc, 0x00),
+                                ,   2,
                             F023,   8
                         }
 
@@ -4362,7 +4362,7 @@
                         Local2 = 0x06
                         BankField (OPR0, BNK0, 0x06, WordAcc, NoLock, WriteAsOnes)
                         {
-                                ,   2, 
+                                ,   2,
                             F024,   9
                         }
 
@@ -4374,8 +4374,8 @@
                         Local2 = 0x07
                         BankField (OPR0, BNK0, 0x07, AnyAcc, NoLock, WriteAsOnes)
                         {
-                            AccessAs (WordAcc, 0x00), 
-                                ,   2, 
+                            AccessAs (WordAcc, 0x00),
+                                ,   2,
                             F025,   31
                         }
 
@@ -4387,7 +4387,7 @@
                         Local2 = 0x08
                         BankField (OPR0, BNK0, 0x08, WordAcc, NoLock, WriteAsOnes)
                         {
-                                ,   2, 
+                                ,   2,
                             F026,   32
                         }
 
@@ -4399,8 +4399,8 @@
                         Local2 = 0x09
                         BankField (OPR0, BNK0, 0x09, ByteAcc, NoLock, WriteAsOnes)
                         {
-                            AccessAs (WordAcc, 0x00), 
-                                ,   2, 
+                            AccessAs (WordAcc, 0x00),
+                                ,   2,
                             F027,   33
                         }
 
@@ -4412,7 +4412,7 @@
                         Local2 = 0x3F
                         BankField (OPR0, BNK0, 0x3F, WordAcc, NoLock, WriteAsOnes)
                         {
-                                ,   2, 
+                                ,   2,
                             F028,   63
                         }
 
@@ -4424,8 +4424,8 @@
                         Local2 = 0x40
                         BankField (OPR0, BNK0, 0x40, WordAcc, NoLock, WriteAsOnes)
                         {
-                            AccessAs (WordAcc, 0x00), 
-                                ,   2, 
+                            AccessAs (WordAcc, 0x00),
+                                ,   2,
                             F029,   64
                         }
 
@@ -4437,7 +4437,7 @@
                         Local2 = 0x7F
                         BankField (OPR0, BNK0, 0x7F, WordAcc, NoLock, WriteAsOnes)
                         {
-                                ,   2, 
+                                ,   2,
                             F02A,   65
                         }
 
@@ -4449,8 +4449,8 @@
                         Local2 = 0x80
                         BankField (OPR0, BNK0, 0x80, DWordAcc, NoLock, WriteAsOnes)
                         {
-                            AccessAs (WordAcc, 0x00), 
-                                ,   2, 
+                            AccessAs (WordAcc, 0x00),
+                                ,   2,
                             F02B,   69
                         }
 
@@ -4462,7 +4462,7 @@
                         Local2 = 0xFF
                         BankField (OPR0, BNK0, 0xFF, WordAcc, NoLock, WriteAsOnes)
                         {
-                                ,   2, 
+                                ,   2,
                             F02C,   129
                         }
 
@@ -4474,8 +4474,8 @@
                         Local2 = 0x00
                         BankField (OPR0, BNK0, 0x00, QWordAcc, NoLock, WriteAsOnes)
                         {
-                            AccessAs (WordAcc, 0x00), 
-                                ,   2, 
+                            AccessAs (WordAcc, 0x00),
+                                ,   2,
                             F02D,   256
                         }
 
@@ -4487,7 +4487,7 @@
                         Local2 = 0x01
                         BankField (OPR0, BNK0, 0x01, WordAcc, NoLock, WriteAsOnes)
                         {
-                                ,   2, 
+                                ,   2,
                             F02E,   1023
                         }
 
@@ -4499,8 +4499,8 @@
                         Local2 = 0x02
                         BankField (OPR0, BNK0, 0x02, AnyAcc, NoLock, WriteAsOnes)
                         {
-                            AccessAs (WordAcc, 0x00), 
-                                ,   2, 
+                            AccessAs (WordAcc, 0x00),
+                                ,   2,
                             F02F,   1983
                         }
 
@@ -4524,8 +4524,8 @@
                         Local2 = 0x03
                         BankField (OPR0, BNK0, 0x03, ByteAcc, NoLock, WriteAsOnes)
                         {
-                            AccessAs (WordAcc, 0x00), 
-                                ,   3, 
+                            AccessAs (WordAcc, 0x00),
+                                ,   3,
                             F030,   1
                         }
 
@@ -4537,7 +4537,7 @@
                         Local2 = 0x04
                         BankField (OPR0, BNK0, 0x04, WordAcc, NoLock, WriteAsOnes)
                         {
-                                ,   3, 
+                                ,   3,
                             F031,   6
                         }
 
@@ -4549,8 +4549,8 @@
                         Local2 = 0x05
                         BankField (OPR0, BNK0, 0x05, WordAcc, NoLock, WriteAsOnes)
                         {
-                            AccessAs (WordAcc, 0x00), 
-                                ,   3, 
+                            AccessAs (WordAcc, 0x00),
+                                ,   3,
                             F032,   7
                         }
 
@@ -4562,7 +4562,7 @@
                         Local2 = 0x06
                         BankField (OPR0, BNK0, 0x06, WordAcc, NoLock, WriteAsOnes)
                         {
-                                ,   3, 
+                                ,   3,
                             F033,   8
                         }
 
@@ -4574,8 +4574,8 @@
                         Local2 = 0x07
                         BankField (OPR0, BNK0, 0x07, DWordAcc, NoLock, WriteAsOnes)
                         {
-                            AccessAs (WordAcc, 0x00), 
-                                ,   3, 
+                            AccessAs (WordAcc, 0x00),
+                                ,   3,
                             F034,   9
                         }
 
@@ -4587,7 +4587,7 @@
                         Local2 = 0x08
                         BankField (OPR0, BNK0, 0x08, WordAcc, NoLock, WriteAsOnes)
                         {
-                                ,   3, 
+                                ,   3,
                             F035,   31
                         }
 
@@ -4599,8 +4599,8 @@
                         Local2 = 0x09
                         BankField (OPR0, BNK0, 0x09, QWordAcc, NoLock, WriteAsOnes)
                         {
-                            AccessAs (WordAcc, 0x00), 
-                                ,   3, 
+                            AccessAs (WordAcc, 0x00),
+                                ,   3,
                             F036,   32
                         }
 
@@ -4612,7 +4612,7 @@
                         Local2 = 0x3F
                         BankField (OPR0, BNK0, 0x3F, WordAcc, NoLock, WriteAsOnes)
                         {
-                                ,   3, 
+                                ,   3,
                             F037,   33
                         }
 
@@ -4624,8 +4624,8 @@
                         Local2 = 0x40
                         BankField (OPR0, BNK0, 0x40, AnyAcc, NoLock, WriteAsOnes)
                         {
-                            AccessAs (WordAcc, 0x00), 
-                                ,   3, 
+                            AccessAs (WordAcc, 0x00),
+                                ,   3,
                             F038,   63
                         }
 
@@ -4637,7 +4637,7 @@
                         Local2 = 0x7F
                         BankField (OPR0, BNK0, 0x7F, WordAcc, NoLock, WriteAsOnes)
                         {
-                                ,   3, 
+                                ,   3,
                             F039,   64
                         }
 
@@ -4649,8 +4649,8 @@
                         Local2 = 0x80
                         BankField (OPR0, BNK0, 0x80, ByteAcc, NoLock, WriteAsOnes)
                         {
-                            AccessAs (WordAcc, 0x00), 
-                                ,   3, 
+                            AccessAs (WordAcc, 0x00),
+                                ,   3,
                             F03A,   65
                         }
 
@@ -4662,7 +4662,7 @@
                         Local2 = 0xFF
                         BankField (OPR0, BNK0, 0xFF, WordAcc, NoLock, WriteAsOnes)
                         {
-                                ,   3, 
+                                ,   3,
                             F03B,   69
                         }
 
@@ -4674,8 +4674,8 @@
                         Local2 = 0x00
                         BankField (OPR0, BNK0, 0x00, WordAcc, NoLock, WriteAsOnes)
                         {
-                            AccessAs (WordAcc, 0x00), 
-                                ,   3, 
+                            AccessAs (WordAcc, 0x00),
+                                ,   3,
                             F03C,   129
                         }
 
@@ -4687,7 +4687,7 @@
                         Local2 = 0x01
                         BankField (OPR0, BNK0, 0x01, WordAcc, NoLock, WriteAsOnes)
                         {
-                                ,   3, 
+                                ,   3,
                             F03D,   256
                         }
 
@@ -4699,8 +4699,8 @@
                         Local2 = 0x02
                         BankField (OPR0, BNK0, 0x02, DWordAcc, NoLock, WriteAsOnes)
                         {
-                            AccessAs (WordAcc, 0x00), 
-                                ,   3, 
+                            AccessAs (WordAcc, 0x00),
+                                ,   3,
                             F03E,   1023
                         }
 
@@ -4712,7 +4712,7 @@
                         Local2 = 0x03
                         BankField (OPR0, BNK0, 0x03, WordAcc, NoLock, WriteAsOnes)
                         {
-                                ,   3, 
+                                ,   3,
                             F03F,   1983
                         }
 
@@ -4736,7 +4736,7 @@
                         Local2 = 0x04
                         BankField (OPR0, BNK0, 0x04, WordAcc, NoLock, WriteAsOnes)
                         {
-                                ,   4, 
+                                ,   4,
                             F040,   1
                         }
 
@@ -4748,8 +4748,8 @@
                         Local2 = 0x05
                         BankField (OPR0, BNK0, 0x05, QWordAcc, NoLock, WriteAsOnes)
                         {
-                            AccessAs (WordAcc, 0x00), 
-                                ,   4, 
+                            AccessAs (WordAcc, 0x00),
+                                ,   4,
                             F041,   6
                         }
 
@@ -4761,7 +4761,7 @@
                         Local2 = 0x06
                         BankField (OPR0, BNK0, 0x06, WordAcc, NoLock, WriteAsOnes)
                         {
-                                ,   4, 
+                                ,   4,
                             F042,   7
                         }
 
@@ -4773,8 +4773,8 @@
                         Local2 = 0x07
                         BankField (OPR0, BNK0, 0x07, AnyAcc, NoLock, WriteAsOnes)
                         {
-                            AccessAs (WordAcc, 0x00), 
-                                ,   4, 
+                            AccessAs (WordAcc, 0x00),
+                                ,   4,
                             F043,   8
                         }
 
@@ -4786,7 +4786,7 @@
                         Local2 = 0x08
                         BankField (OPR0, BNK0, 0x08, WordAcc, NoLock, WriteAsOnes)
                         {
-                                ,   4, 
+                                ,   4,
                             F044,   9
                         }
 
@@ -4798,8 +4798,8 @@
                         Local2 = 0x09
                         BankField (OPR0, BNK0, 0x09, ByteAcc, NoLock, WriteAsOnes)
                         {
-                            AccessAs (WordAcc, 0x00), 
-                                ,   4, 
+                            AccessAs (WordAcc, 0x00),
+                                ,   4,
                             F045,   31
                         }
 
@@ -4811,7 +4811,7 @@
                         Local2 = 0x3F
                         BankField (OPR0, BNK0, 0x3F, WordAcc, NoLock, WriteAsOnes)
                         {
-                                ,   4, 
+                                ,   4,
                             F046,   32
                         }
 
@@ -4823,8 +4823,8 @@
                         Local2 = 0x40
                         BankField (OPR0, BNK0, 0x40, WordAcc, NoLock, WriteAsOnes)
                         {
-                            AccessAs (WordAcc, 0x00), 
-                                ,   4, 
+                            AccessAs (WordAcc, 0x00),
+                                ,   4,
                             F047,   33
                         }
 
@@ -4836,7 +4836,7 @@
                         Local2 = 0x7F
                         BankField (OPR0, BNK0, 0x7F, WordAcc, NoLock, WriteAsOnes)
                         {
-                                ,   4, 
+                                ,   4,
                             F048,   63
                         }
 
@@ -4848,8 +4848,8 @@
                         Local2 = 0x80
                         BankField (OPR0, BNK0, 0x80, DWordAcc, NoLock, WriteAsOnes)
                         {
-                            AccessAs (WordAcc, 0x00), 
-                                ,   4, 
+                            AccessAs (WordAcc, 0x00),
+                                ,   4,
                             F049,   64
                         }
 
@@ -4861,7 +4861,7 @@
                         Local2 = 0xFF
                         BankField (OPR0, BNK0, 0xFF, WordAcc, NoLock, WriteAsOnes)
                         {
-                                ,   4, 
+                                ,   4,
                             F04A,   65
                         }
 
@@ -4873,8 +4873,8 @@
                         Local2 = 0x00
                         BankField (OPR0, BNK0, 0x00, QWordAcc, NoLock, WriteAsOnes)
                         {
-                            AccessAs (WordAcc, 0x00), 
-                                ,   4, 
+                            AccessAs (WordAcc, 0x00),
+                                ,   4,
                             F04B,   69
                         }
 
@@ -4886,7 +4886,7 @@
                         Local2 = 0x01
                         BankField (OPR0, BNK0, 0x01, WordAcc, NoLock, WriteAsOnes)
                         {
-                                ,   4, 
+                                ,   4,
                             F04C,   129
                         }
 
@@ -4898,8 +4898,8 @@
                         Local2 = 0x02
                         BankField (OPR0, BNK0, 0x02, AnyAcc, NoLock, WriteAsOnes)
                         {
-                            AccessAs (WordAcc, 0x00), 
-                                ,   4, 
+                            AccessAs (WordAcc, 0x00),
+                                ,   4,
                             F04D,   256
                         }
 
@@ -4911,7 +4911,7 @@
                         Local2 = 0x03
                         BankField (OPR0, BNK0, 0x03, WordAcc, NoLock, WriteAsOnes)
                         {
-                                ,   4, 
+                                ,   4,
                             F04E,   1023
                         }
 
@@ -4923,8 +4923,8 @@
                         Local2 = 0x04
                         BankField (OPR0, BNK0, 0x04, ByteAcc, NoLock, WriteAsOnes)
                         {
-                            AccessAs (WordAcc, 0x00), 
-                                ,   4, 
+                            AccessAs (WordAcc, 0x00),
+                                ,   4,
                             F04F,   1983
                         }
 
@@ -4948,8 +4948,8 @@
                         Local2 = 0x05
                         BankField (OPR0, BNK0, 0x05, WordAcc, NoLock, WriteAsOnes)
                         {
-                            AccessAs (WordAcc, 0x00), 
-                                ,   5, 
+                            AccessAs (WordAcc, 0x00),
+                                ,   5,
                             F050,   1
                         }
 
@@ -4961,7 +4961,7 @@
                         Local2 = 0x06
                         BankField (OPR0, BNK0, 0x06, WordAcc, NoLock, WriteAsOnes)
                         {
-                                ,   5, 
+                                ,   5,
                             F051,   6
                         }
 
@@ -4973,8 +4973,8 @@
                         Local2 = 0x07
                         BankField (OPR0, BNK0, 0x07, DWordAcc, NoLock, WriteAsOnes)
                         {
-                            AccessAs (WordAcc, 0x00), 
-                                ,   5, 
+                            AccessAs (WordAcc, 0x00),
+                                ,   5,
                             F052,   7
                         }
 
@@ -4986,7 +4986,7 @@
                         Local2 = 0x08
                         BankField (OPR0, BNK0, 0x08, WordAcc, NoLock, WriteAsOnes)
                         {
-                                ,   5, 
+                                ,   5,
                             F053,   8
                         }
 
@@ -4998,8 +4998,8 @@
                         Local2 = 0x09
                         BankField (OPR0, BNK0, 0x09, QWordAcc, NoLock, WriteAsOnes)
                         {
-                            AccessAs (WordAcc, 0x00), 
-                                ,   5, 
+                            AccessAs (WordAcc, 0x00),
+                                ,   5,
                             F054,   9
                         }
 
@@ -5011,7 +5011,7 @@
                         Local2 = 0x3F
                         BankField (OPR0, BNK0, 0x3F, WordAcc, NoLock, WriteAsOnes)
                         {
-                                ,   5, 
+                                ,   5,
                             F055,   31
                         }
 
@@ -5023,8 +5023,8 @@
                         Local2 = 0x40
                         BankField (OPR0, BNK0, 0x40, AnyAcc, NoLock, WriteAsOnes)
                         {
-                            AccessAs (WordAcc, 0x00), 
-                                ,   5, 
+                            AccessAs (WordAcc, 0x00),
+                                ,   5,
                             F056,   32
                         }
 
@@ -5036,7 +5036,7 @@
                         Local2 = 0x7F
                         BankField (OPR0, BNK0, 0x7F, WordAcc, NoLock, WriteAsOnes)
                         {
-                                ,   5, 
+                                ,   5,
                             F057,   33
                         }
 
@@ -5048,8 +5048,8 @@
                         Local2 = 0x80
                         BankField (OPR0, BNK0, 0x80, ByteAcc, NoLock, WriteAsOnes)
                         {
-                            AccessAs (WordAcc, 0x00), 
-                                ,   5, 
+                            AccessAs (WordAcc, 0x00),
+                                ,   5,
                             F058,   63
                         }
 
@@ -5061,7 +5061,7 @@
                         Local2 = 0xFF
                         BankField (OPR0, BNK0, 0xFF, WordAcc, NoLock, WriteAsOnes)
                         {
-                                ,   5, 
+                                ,   5,
                             F059,   64
                         }
 
@@ -5073,8 +5073,8 @@
                         Local2 = 0x00
                         BankField (OPR0, BNK0, 0x00, WordAcc, NoLock, WriteAsOnes)
                         {
-                            AccessAs (WordAcc, 0x00), 
-                                ,   5, 
+                            AccessAs (WordAcc, 0x00),
+                                ,   5,
                             F05A,   65
                         }
 
@@ -5086,7 +5086,7 @@
                         Local2 = 0x01
                         BankField (OPR0, BNK0, 0x01, WordAcc, NoLock, WriteAsOnes)
                         {
-                                ,   5, 
+                                ,   5,
                             F05B,   69
                         }
 
@@ -5098,8 +5098,8 @@
                         Local2 = 0x02
                         BankField (OPR0, BNK0, 0x02, DWordAcc, NoLock, WriteAsOnes)
                         {
-                            AccessAs (WordAcc, 0x00), 
-                                ,   5, 
+                            AccessAs (WordAcc, 0x00),
+                                ,   5,
                             F05C,   129
                         }
 
@@ -5111,7 +5111,7 @@
                         Local2 = 0x03
                         BankField (OPR0, BNK0, 0x03, WordAcc, NoLock, WriteAsOnes)
                         {
-                                ,   5, 
+                                ,   5,
                             F05D,   256
                         }
 
@@ -5123,8 +5123,8 @@
                         Local2 = 0x04
                         BankField (OPR0, BNK0, 0x04, QWordAcc, NoLock, WriteAsOnes)
                         {
-                            AccessAs (WordAcc, 0x00), 
-                                ,   5, 
+                            AccessAs (WordAcc, 0x00),
+                                ,   5,
                             F05E,   1023
                         }
 
@@ -5136,7 +5136,7 @@
                         Local2 = 0x05
                         BankField (OPR0, BNK0, 0x05, WordAcc, NoLock, WriteAsOnes)
                         {
-                                ,   5, 
+                                ,   5,
                             F05F,   1983
                         }
 
@@ -5160,7 +5160,7 @@
                         Local2 = 0x06
                         BankField (OPR0, BNK0, 0x06, WordAcc, NoLock, WriteAsOnes)
                         {
-                                ,   6, 
+                                ,   6,
                             F060,   1
                         }
 
@@ -5172,8 +5172,8 @@
                         Local2 = 0x07
                         BankField (OPR0, BNK0, 0x07, AnyAcc, NoLock, WriteAsOnes)
                         {
-                            AccessAs (WordAcc, 0x00), 
-                                ,   6, 
+                            AccessAs (WordAcc, 0x00),
+                                ,   6,
                             F061,   6
                         }
 
@@ -5185,7 +5185,7 @@
                         Local2 = 0x08
                         BankField (OPR0, BNK0, 0x08, WordAcc, NoLock, WriteAsOnes)
                         {
-                                ,   6, 
+                                ,   6,
                             F062,   7
                         }
 
@@ -5197,8 +5197,8 @@
                         Local2 = 0x09
                         BankField (OPR0, BNK0, 0x09, ByteAcc, NoLock, WriteAsOnes)
                         {
-                            AccessAs (WordAcc, 0x00), 
-                                ,   6, 
+                            AccessAs (WordAcc, 0x00),
+                                ,   6,
                             F063,   8
                         }
 
@@ -5210,7 +5210,7 @@
                         Local2 = 0x3F
                         BankField (OPR0, BNK0, 0x3F, WordAcc, NoLock, WriteAsOnes)
                         {
-                                ,   6, 
+                                ,   6,
                             F064,   9
                         }
 
@@ -5222,8 +5222,8 @@
                         Local2 = 0x40
                         BankField (OPR0, BNK0, 0x40, WordAcc, NoLock, WriteAsOnes)
                         {
-                            AccessAs (WordAcc, 0x00), 
-                                ,   6, 
+                            AccessAs (WordAcc, 0x00),
+                                ,   6,
                             F065,   31
                         }
 
@@ -5235,7 +5235,7 @@
                         Local2 = 0x7F
                         BankField (OPR0, BNK0, 0x7F, WordAcc, NoLock, WriteAsOnes)
                         {
-                                ,   6, 
+                                ,   6,
                             F066,   32
                         }
 
@@ -5247,8 +5247,8 @@
                         Local2 = 0x80
                         BankField (OPR0, BNK0, 0x80, DWordAcc, NoLock, WriteAsOnes)
                         {
-                            AccessAs (WordAcc, 0x00), 
-                                ,   6, 
+                            AccessAs (WordAcc, 0x00),
+                                ,   6,
                             F067,   33
                         }
 
@@ -5260,7 +5260,7 @@
                         Local2 = 0xFF
                         BankField (OPR0, BNK0, 0xFF, WordAcc, NoLock, WriteAsOnes)
                         {
-                                ,   6, 
+                                ,   6,
                             F068,   63
                         }
 
@@ -5272,8 +5272,8 @@
                         Local2 = 0x00
                         BankField (OPR0, BNK0, 0x00, QWordAcc, NoLock, WriteAsOnes)
                         {
-                            AccessAs (WordAcc, 0x00), 
-                                ,   6, 
+                            AccessAs (WordAcc, 0x00),
+                                ,   6,
                             F069,   64
                         }
 
@@ -5285,7 +5285,7 @@
                         Local2 = 0x01
                         BankField (OPR0, BNK0, 0x01, WordAcc, NoLock, WriteAsOnes)
                         {
-                                ,   6, 
+                                ,   6,
                             F06A,   65
                         }
 
@@ -5297,8 +5297,8 @@
                         Local2 = 0x02
                         BankField (OPR0, BNK0, 0x02, AnyAcc, NoLock, WriteAsOnes)
                         {
-                            AccessAs (WordAcc, 0x00), 
-                                ,   6, 
+                            AccessAs (WordAcc, 0x00),
+                                ,   6,
                             F06B,   69
                         }
 
@@ -5310,7 +5310,7 @@
                         Local2 = 0x03
                         BankField (OPR0, BNK0, 0x03, WordAcc, NoLock, WriteAsOnes)
                         {
-                                ,   6, 
+                                ,   6,
                             F06C,   129
                         }
 
@@ -5322,8 +5322,8 @@
                         Local2 = 0x04
                         BankField (OPR0, BNK0, 0x04, ByteAcc, NoLock, WriteAsOnes)
                         {
-                            AccessAs (WordAcc, 0x00), 
-                                ,   6, 
+                            AccessAs (WordAcc, 0x00),
+                                ,   6,
                             F06D,   256
                         }
 
@@ -5335,7 +5335,7 @@
                         Local2 = 0x05
                         BankField (OPR0, BNK0, 0x05, WordAcc, NoLock, WriteAsOnes)
                         {
-                                ,   6, 
+                                ,   6,
                             F06E,   1023
                         }
 
@@ -5347,8 +5347,8 @@
                         Local2 = 0x06
                         BankField (OPR0, BNK0, 0x06, WordAcc, NoLock, WriteAsOnes)
                         {
-                            AccessAs (WordAcc, 0x00), 
-                                ,   6, 
+                            AccessAs (WordAcc, 0x00),
+                                ,   6,
                             F06F,   1983
                         }
 
@@ -5372,8 +5372,8 @@
                         Local2 = 0x07
                         BankField (OPR0, BNK0, 0x07, DWordAcc, NoLock, WriteAsOnes)
                         {
-                            AccessAs (WordAcc, 0x00), 
-                                ,   7, 
+                            AccessAs (WordAcc, 0x00),
+                                ,   7,
                             F070,   1
                         }
 
@@ -5385,7 +5385,7 @@
                         Local2 = 0x08
                         BankField (OPR0, BNK0, 0x08, WordAcc, NoLock, WriteAsOnes)
                         {
-                                ,   7, 
+                                ,   7,
                             F071,   6
                         }
 
@@ -5397,8 +5397,8 @@
                         Local2 = 0x09
                         BankField (OPR0, BNK0, 0x09, QWordAcc, NoLock, WriteAsOnes)
                         {
-                            AccessAs (WordAcc, 0x00), 
-                                ,   7, 
+                            AccessAs (WordAcc, 0x00),
+                                ,   7,
                             F072,   7
                         }
 
@@ -5410,7 +5410,7 @@
                         Local2 = 0x3F
                         BankField (OPR0, BNK0, 0x3F, WordAcc, NoLock, WriteAsOnes)
                         {
-                                ,   7, 
+                                ,   7,
                             F073,   8
                         }
 
@@ -5422,8 +5422,8 @@
                         Local2 = 0x40
                         BankField (OPR0, BNK0, 0x40, AnyAcc, NoLock, WriteAsOnes)
                         {
-                            AccessAs (WordAcc, 0x00), 
-                                ,   7, 
+                            AccessAs (WordAcc, 0x00),
+                                ,   7,
                             F074,   9
                         }
 
@@ -5435,7 +5435,7 @@
                         Local2 = 0x7F
                         BankField (OPR0, BNK0, 0x7F, WordAcc, NoLock, WriteAsOnes)
                         {
-                                ,   7, 
+                                ,   7,
                             F075,   31
                         }
 
@@ -5447,8 +5447,8 @@
                         Local2 = 0x80
                         BankField (OPR0, BNK0, 0x80, ByteAcc, NoLock, WriteAsOnes)
                         {
-                            AccessAs (WordAcc, 0x00), 
-                                ,   7, 
+                            AccessAs (WordAcc, 0x00),
+                                ,   7,
                             F076,   32
                         }
 
@@ -5460,7 +5460,7 @@
                         Local2 = 0xFF
                         BankField (OPR0, BNK0, 0xFF, WordAcc, NoLock, WriteAsOnes)
                         {
-                                ,   7, 
+                                ,   7,
                             F077,   33
                         }
 
@@ -5472,8 +5472,8 @@
                         Local2 = 0x00
                         BankField (OPR0, BNK0, 0x00, WordAcc, NoLock, WriteAsOnes)
                         {
-                            AccessAs (WordAcc, 0x00), 
-                                ,   7, 
+                            AccessAs (WordAcc, 0x00),
+                                ,   7,
                             F078,   63
                         }
 
@@ -5485,7 +5485,7 @@
                         Local2 = 0x01
                         BankField (OPR0, BNK0, 0x01, WordAcc, NoLock, WriteAsOnes)
                         {
-                                ,   7, 
+                                ,   7,
                             F079,   64
                         }
 
@@ -5497,8 +5497,8 @@
                         Local2 = 0x02
                         BankField (OPR0, BNK0, 0x02, DWordAcc, NoLock, WriteAsOnes)
                         {
-                            AccessAs (WordAcc, 0x00), 
-                                ,   7, 
+                            AccessAs (WordAcc, 0x00),
+                                ,   7,
                             F07A,   65
                         }
 
@@ -5510,7 +5510,7 @@
                         Local2 = 0x03
                         BankField (OPR0, BNK0, 0x03, WordAcc, NoLock, WriteAsOnes)
                         {
-                                ,   7, 
+                                ,   7,
                             F07B,   69
                         }
 
@@ -5522,8 +5522,8 @@
                         Local2 = 0x04
                         BankField (OPR0, BNK0, 0x04, QWordAcc, NoLock, WriteAsOnes)
                         {
-                            AccessAs (WordAcc, 0x00), 
-                                ,   7, 
+                            AccessAs (WordAcc, 0x00),
+                                ,   7,
                             F07C,   129
                         }
 
@@ -5535,7 +5535,7 @@
                         Local2 = 0x05
                         BankField (OPR0, BNK0, 0x05, WordAcc, NoLock, WriteAsOnes)
                         {
-                                ,   7, 
+                                ,   7,
                             F07D,   256
                         }
 
@@ -5547,8 +5547,8 @@
                         Local2 = 0x06
                         BankField (OPR0, BNK0, 0x06, AnyAcc, NoLock, WriteAsOnes)
                         {
-                            AccessAs (WordAcc, 0x00), 
-                                ,   7, 
+                            AccessAs (WordAcc, 0x00),
+                                ,   7,
                             F07E,   1023
                         }
 
@@ -5560,7 +5560,7 @@
                         Local2 = 0x07
                         BankField (OPR0, BNK0, 0x07, WordAcc, NoLock, WriteAsOnes)
                         {
-                                ,   7, 
+                                ,   7,
                             F07F,   1983
                         }
 
@@ -5584,7 +5584,7 @@
                         Local2 = 0x08
                         BankField (OPR0, BNK0, 0x08, WordAcc, NoLock, WriteAsOnes)
                         {
-                            Offset (0x01), 
+                            Offset (0x01),
                             F080,   1
                         }
 
@@ -5596,8 +5596,8 @@
                         Local2 = 0x09
                         BankField (OPR0, BNK0, 0x09, ByteAcc, NoLock, WriteAsOnes)
                         {
-                            AccessAs (WordAcc, 0x00), 
-                            Offset (0x01), 
+                            AccessAs (WordAcc, 0x00),
+                            Offset (0x01),
                             F081,   6
                         }
 
@@ -5609,7 +5609,7 @@
                         Local2 = 0x3F
                         BankField (OPR0, BNK0, 0x3F, WordAcc, NoLock, WriteAsOnes)
                         {
-                            Offset (0x01), 
+                            Offset (0x01),
                             F082,   7
                         }
 
@@ -5621,8 +5621,8 @@
                         Local2 = 0x40
                         BankField (OPR0, BNK0, 0x40, WordAcc, NoLock, WriteAsOnes)
                         {
-                            AccessAs (WordAcc, 0x00), 
-                            Offset (0x01), 
+                            AccessAs (WordAcc, 0x00),
+                            Offset (0x01),
                             F083,   8
                         }
 
@@ -5634,7 +5634,7 @@
                         Local2 = 0x7F
                         BankField (OPR0, BNK0, 0x7F, WordAcc, NoLock, WriteAsOnes)
                         {
-                            Offset (0x01), 
+                            Offset (0x01),
                             F084,   9
                         }
 
@@ -5646,8 +5646,8 @@
                         Local2 = 0x80
                         BankField (OPR0, BNK0, 0x80, DWordAcc, NoLock, WriteAsOnes)
                         {
-                            AccessAs (WordAcc, 0x00), 
-                            Offset (0x01), 
+                            AccessAs (WordAcc, 0x00),
+                            Offset (0x01),
                             F085,   31
                         }
 
@@ -5659,7 +5659,7 @@
                         Local2 = 0xFF
                         BankField (OPR0, BNK0, 0xFF, WordAcc, NoLock, WriteAsOnes)
                         {
-                            Offset (0x01), 
+                            Offset (0x01),
                             F086,   32
                         }
 
@@ -5671,8 +5671,8 @@
                         Local2 = 0x00
                         BankField (OPR0, BNK0, 0x00, QWordAcc, NoLock, WriteAsOnes)
                         {
-                            AccessAs (WordAcc, 0x00), 
-                            Offset (0x01), 
+                            AccessAs (WordAcc, 0x00),
+                            Offset (0x01),
                             F087,   33
                         }
 
@@ -5684,7 +5684,7 @@
                         Local2 = 0x01
                         BankField (OPR0, BNK0, 0x01, WordAcc, NoLock, WriteAsOnes)
                         {
-                            Offset (0x01), 
+                            Offset (0x01),
                             F088,   63
                         }
 
@@ -5696,8 +5696,8 @@
                         Local2 = 0x02
                         BankField (OPR0, BNK0, 0x02, AnyAcc, NoLock, WriteAsOnes)
                         {
-                            AccessAs (WordAcc, 0x00), 
-                            Offset (0x01), 
+                            AccessAs (WordAcc, 0x00),
+                            Offset (0x01),
                             F089,   64
                         }
 
@@ -5709,7 +5709,7 @@
                         Local2 = 0x03
                         BankField (OPR0, BNK0, 0x03, WordAcc, NoLock, WriteAsOnes)
                         {
-                            Offset (0x01), 
+                            Offset (0x01),
                             F08A,   65
                         }
 
@@ -5721,8 +5721,8 @@
                         Local2 = 0x04
                         BankField (OPR0, BNK0, 0x04, ByteAcc, NoLock, WriteAsOnes)
                         {
-                            AccessAs (WordAcc, 0x00), 
-                            Offset (0x01), 
+                            AccessAs (WordAcc, 0x00),
+                            Offset (0x01),
                             F08B,   69
                         }
 
@@ -5734,7 +5734,7 @@
                         Local2 = 0x05
                         BankField (OPR0, BNK0, 0x05, WordAcc, NoLock, WriteAsOnes)
                         {
-                            Offset (0x01), 
+                            Offset (0x01),
                             F08C,   129
                         }
 
@@ -5746,8 +5746,8 @@
                         Local2 = 0x06
                         BankField (OPR0, BNK0, 0x06, WordAcc, NoLock, WriteAsOnes)
                         {
-                            AccessAs (WordAcc, 0x00), 
-                            Offset (0x01), 
+                            AccessAs (WordAcc, 0x00),
+                            Offset (0x01),
                             F08D,   256
                         }
 
@@ -5759,7 +5759,7 @@
                         Local2 = 0x07
                         BankField (OPR0, BNK0, 0x07, WordAcc, NoLock, WriteAsOnes)
                         {
-                            Offset (0x01), 
+                            Offset (0x01),
                             F08E,   1023
                         }
 
@@ -5771,8 +5771,8 @@
                         Local2 = 0x08
                         BankField (OPR0, BNK0, 0x08, DWordAcc, NoLock, WriteAsOnes)
                         {
-                            AccessAs (WordAcc, 0x00), 
-                            Offset (0x01), 
+                            AccessAs (WordAcc, 0x00),
+                            Offset (0x01),
                             F08F,   1983
                         }
 
@@ -5796,8 +5796,8 @@
                         Local2 = 0x09
                         BankField (OPR0, BNK0, 0x09, QWordAcc, NoLock, WriteAsOnes)
                         {
-                            AccessAs (WordAcc, 0x00), 
-                                ,   9, 
+                            AccessAs (WordAcc, 0x00),
+                                ,   9,
                             F090,   1
                         }
 
@@ -5809,7 +5809,7 @@
                         Local2 = 0x3F
                         BankField (OPR0, BNK0, 0x3F, WordAcc, NoLock, WriteAsOnes)
                         {
-                                ,   9, 
+                                ,   9,
                             F091,   6
                         }
 
@@ -5821,8 +5821,8 @@
                         Local2 = 0x40
                         BankField (OPR0, BNK0, 0x40, AnyAcc, NoLock, WriteAsOnes)
                         {
-                            AccessAs (WordAcc, 0x00), 
-                                ,   9, 
+                            AccessAs (WordAcc, 0x00),
+                                ,   9,
                             F092,   7
                         }
 
@@ -5834,7 +5834,7 @@
                         Local2 = 0x7F
                         BankField (OPR0, BNK0, 0x7F, WordAcc, NoLock, WriteAsOnes)
                         {
-                                ,   9, 
+                                ,   9,
                             F093,   8
                         }
 
@@ -5846,8 +5846,8 @@
                         Local2 = 0x80
                         BankField (OPR0, BNK0, 0x80, ByteAcc, NoLock, WriteAsOnes)
                         {
-                            AccessAs (WordAcc, 0x00), 
-                                ,   9, 
+                            AccessAs (WordAcc, 0x00),
+                                ,   9,
                             F094,   9
                         }
 
@@ -5859,7 +5859,7 @@
                         Local2 = 0xFF
                         BankField (OPR0, BNK0, 0xFF, WordAcc, NoLock, WriteAsOnes)
                         {
-                                ,   9, 
+                                ,   9,
                             F095,   31
                         }
 
@@ -5871,8 +5871,8 @@
                         Local2 = 0x00
                         BankField (OPR0, BNK0, 0x00, WordAcc, NoLock, WriteAsOnes)
                         {
-                            AccessAs (WordAcc, 0x00), 
-                                ,   9, 
+                            AccessAs (WordAcc, 0x00),
+                                ,   9,
                             F096,   32
                         }
 
@@ -5884,7 +5884,7 @@
                         Local2 = 0x01
                         BankField (OPR0, BNK0, 0x01, WordAcc, NoLock, WriteAsOnes)
                         {
-                                ,   9, 
+                                ,   9,
                             F097,   33
                         }
 
@@ -5896,8 +5896,8 @@
                         Local2 = 0x02
                         BankField (OPR0, BNK0, 0x02, DWordAcc, NoLock, WriteAsOnes)
                         {
-                            AccessAs (WordAcc, 0x00), 
-                                ,   9, 
+                            AccessAs (WordAcc, 0x00),
+                                ,   9,
                             F098,   63
                         }
 
@@ -5909,7 +5909,7 @@
                         Local2 = 0x03
                         BankField (OPR0, BNK0, 0x03, WordAcc, NoLock, WriteAsOnes)
                         {
-                                ,   9, 
+                                ,   9,
                             F099,   64
                         }
 
@@ -5921,8 +5921,8 @@
                         Local2 = 0x04
                         BankField (OPR0, BNK0, 0x04, QWordAcc, NoLock, WriteAsOnes)
                         {
-                            AccessAs (WordAcc, 0x00), 
-                                ,   9, 
+                            AccessAs (WordAcc, 0x00),
+                                ,   9,
                             F09A,   65
                         }
 
@@ -5934,7 +5934,7 @@
                         Local2 = 0x05
                         BankField (OPR0, BNK0, 0x05, WordAcc, NoLock, WriteAsOnes)
                         {
-                                ,   9, 
+                                ,   9,
                             F09B,   69
                         }
 
@@ -5946,8 +5946,8 @@
                         Local2 = 0x06
                         BankField (OPR0, BNK0, 0x06, AnyAcc, NoLock, WriteAsOnes)
                         {
-                            AccessAs (WordAcc, 0x00), 
-                                ,   9, 
+                            AccessAs (WordAcc, 0x00),
+                                ,   9,
                             F09C,   129
                         }
 
@@ -5959,7 +5959,7 @@
                         Local2 = 0x07
                         BankField (OPR0, BNK0, 0x07, WordAcc, NoLock, WriteAsOnes)
                         {
-                                ,   9, 
+                                ,   9,
                             F09D,   256
                         }
 
@@ -5971,8 +5971,8 @@
                         Local2 = 0x08
                         BankField (OPR0, BNK0, 0x08, ByteAcc, NoLock, WriteAsOnes)
                         {
-                            AccessAs (WordAcc, 0x00), 
-                                ,   9, 
+                            AccessAs (WordAcc, 0x00),
+                                ,   9,
                             F09E,   1023
                         }
 
@@ -5984,7 +5984,7 @@
                         Local2 = 0x09
                         BankField (OPR0, BNK0, 0x09, WordAcc, NoLock, WriteAsOnes)
                         {
-                                ,   9, 
+                                ,   9,
                             F09F,   1983
                         }
 
@@ -6008,8 +6008,8 @@
                         Local2 = 0x3F
                         BankField (OPR0, BNK0, 0x3F, WordAcc, NoLock, WriteAsOnes)
                         {
-                            Offset (0x03), 
-                                ,   7, 
+                            Offset (0x03),
+                                ,   7,
                             F0A0,   1
                         }
 
@@ -6021,9 +6021,9 @@
                         Local2 = 0x40
                         BankField (OPR0, BNK0, 0x40, WordAcc, NoLock, WriteAsOnes)
                         {
-                            AccessAs (WordAcc, 0x00), 
-                            Offset (0x03), 
-                                ,   7, 
+                            AccessAs (WordAcc, 0x00),
+                            Offset (0x03),
+                                ,   7,
                             F0A1,   6
                         }
 
@@ -6035,8 +6035,8 @@
                         Local2 = 0x7F
                         BankField (OPR0, BNK0, 0x7F, WordAcc, NoLock, WriteAsOnes)
                         {
-                            Offset (0x03), 
-                                ,   7, 
+                            Offset (0x03),
+                                ,   7,
                             F0A2,   7
                         }
 
@@ -6048,9 +6048,9 @@
                         Local2 = 0x80
                         BankField (OPR0, BNK0, 0x80, DWordAcc, NoLock, WriteAsOnes)
                         {
-                            AccessAs (WordAcc, 0x00), 
-                            Offset (0x03), 
-                                ,   7, 
+                            AccessAs (WordAcc, 0x00),
+                            Offset (0x03),
+                                ,   7,
                             F0A3,   8
                         }
 
@@ -6062,8 +6062,8 @@
                         Local2 = 0xFF
                         BankField (OPR0, BNK0, 0xFF, WordAcc, NoLock, WriteAsOnes)
                         {
-                            Offset (0x03), 
-                                ,   7, 
+                            Offset (0x03),
+                                ,   7,
                             F0A4,   9
                         }
 
@@ -6075,9 +6075,9 @@
                         Local2 = 0x00
                         BankField (OPR0, BNK0, 0x00, QWordAcc, NoLock, WriteAsOnes)
                         {
-                            AccessAs (WordAcc, 0x00), 
-                            Offset (0x03), 
-                                ,   7, 
+                            AccessAs (WordAcc, 0x00),
+                            Offset (0x03),
+                                ,   7,
                             F0A5,   31
                         }
 
@@ -6089,8 +6089,8 @@
                         Local2 = 0x01
                         BankField (OPR0, BNK0, 0x01, WordAcc, NoLock, WriteAsOnes)
                         {
-                            Offset (0x03), 
-                                ,   7, 
+                            Offset (0x03),
+                                ,   7,
                             F0A6,   32
                         }
 
@@ -6102,9 +6102,9 @@
                         Local2 = 0x02
                         BankField (OPR0, BNK0, 0x02, AnyAcc, NoLock, WriteAsOnes)
                         {
-                            AccessAs (WordAcc, 0x00), 
-                            Offset (0x03), 
-                                ,   7, 
+                            AccessAs (WordAcc, 0x00),
+                            Offset (0x03),
+                                ,   7,
                             F0A7,   33
                         }
 
@@ -6116,8 +6116,8 @@
                         Local2 = 0x03
                         BankField (OPR0, BNK0, 0x03, WordAcc, NoLock, WriteAsOnes)
                         {
-                            Offset (0x03), 
-                                ,   7, 
+                            Offset (0x03),
+                                ,   7,
                             F0A8,   63
                         }
 
@@ -6129,9 +6129,9 @@
                         Local2 = 0x04
                         BankField (OPR0, BNK0, 0x04, ByteAcc, NoLock, WriteAsOnes)
                         {
-                            AccessAs (WordAcc, 0x00), 
-                            Offset (0x03), 
-                                ,   7, 
+                            AccessAs (WordAcc, 0x00),
+                            Offset (0x03),
+                                ,   7,
                             F0A9,   64
                         }
 
@@ -6143,8 +6143,8 @@
                         Local2 = 0x05
                         BankField (OPR0, BNK0, 0x05, WordAcc, NoLock, WriteAsOnes)
                         {
-                            Offset (0x03), 
-                                ,   7, 
+                            Offset (0x03),
+                                ,   7,
                             F0AA,   65
                         }
 
@@ -6156,9 +6156,9 @@
                         Local2 = 0x06
                         BankField (OPR0, BNK0, 0x06, WordAcc, NoLock, WriteAsOnes)
                         {
-                            AccessAs (WordAcc, 0x00), 
-                            Offset (0x03), 
-                                ,   7, 
+                            AccessAs (WordAcc, 0x00),
+                            Offset (0x03),
+                                ,   7,
                             F0AB,   69
                         }
 
@@ -6170,8 +6170,8 @@
                         Local2 = 0x07
                         BankField (OPR0, BNK0, 0x07, WordAcc, NoLock, WriteAsOnes)
                         {
-                            Offset (0x03), 
-                                ,   7, 
+                            Offset (0x03),
+                                ,   7,
                             F0AC,   129
                         }
 
@@ -6183,9 +6183,9 @@
                         Local2 = 0x08
                         BankField (OPR0, BNK0, 0x08, DWordAcc, NoLock, WriteAsOnes)
                         {
-                            AccessAs (WordAcc, 0x00), 
-                            Offset (0x03), 
-                                ,   7, 
+                            AccessAs (WordAcc, 0x00),
+                            Offset (0x03),
+                                ,   7,
                             F0AD,   256
                         }
 
@@ -6197,8 +6197,8 @@
                         Local2 = 0x09
                         BankField (OPR0, BNK0, 0x09, WordAcc, NoLock, WriteAsOnes)
                         {
-                            Offset (0x03), 
-                                ,   7, 
+                            Offset (0x03),
+                                ,   7,
                             F0AE,   1023
                         }
 
@@ -6210,9 +6210,9 @@
                         Local2 = 0x3F
                         BankField (OPR0, BNK0, 0x3F, QWordAcc, NoLock, WriteAsOnes)
                         {
-                            AccessAs (WordAcc, 0x00), 
-                            Offset (0x03), 
-                                ,   7, 
+                            AccessAs (WordAcc, 0x00),
+                            Offset (0x03),
+                                ,   7,
                             F0AF,   1983
                         }
 
@@ -6236,8 +6236,8 @@
                         Local2 = 0x40
                         BankField (OPR0, BNK0, 0x40, AnyAcc, NoLock, WriteAsOnes)
                         {
-                            AccessAs (WordAcc, 0x00), 
-                            Offset (0x04), 
+                            AccessAs (WordAcc, 0x00),
+                            Offset (0x04),
                             F0B0,   1
                         }
 
@@ -6249,7 +6249,7 @@
                         Local2 = 0x7F
                         BankField (OPR0, BNK0, 0x7F, WordAcc, NoLock, WriteAsOnes)
                         {
-                            Offset (0x04), 
+                            Offset (0x04),
                             F0B1,   6
                         }
 
@@ -6261,8 +6261,8 @@
                         Local2 = 0x80
                         BankField (OPR0, BNK0, 0x80, ByteAcc, NoLock, WriteAsOnes)
                         {
-                            AccessAs (WordAcc, 0x00), 
-                            Offset (0x04), 
+                            AccessAs (WordAcc, 0x00),
+                            Offset (0x04),
                             F0B2,   7
                         }
 
@@ -6274,7 +6274,7 @@
                         Local2 = 0xFF
                         BankField (OPR0, BNK0, 0xFF, WordAcc, NoLock, WriteAsOnes)
                         {
-                            Offset (0x04), 
+                            Offset (0x04),
                             F0B3,   8
                         }
 
@@ -6286,8 +6286,8 @@
                         Local2 = 0x00
                         BankField (OPR0, BNK0, 0x00, WordAcc, NoLock, WriteAsOnes)
                         {
-                            AccessAs (WordAcc, 0x00), 
-                            Offset (0x04), 
+                            AccessAs (WordAcc, 0x00),
+                            Offset (0x04),
                             F0B4,   9
                         }
 
@@ -6299,7 +6299,7 @@
                         Local2 = 0x01
                         BankField (OPR0, BNK0, 0x01, WordAcc, NoLock, WriteAsOnes)
                         {
-                            Offset (0x04), 
+                            Offset (0x04),
                             F0B5,   31
                         }
 
@@ -6311,8 +6311,8 @@
                         Local2 = 0x02
                         BankField (OPR0, BNK0, 0x02, DWordAcc, NoLock, WriteAsOnes)
                         {
-                            AccessAs (WordAcc, 0x00), 
-                            Offset (0x04), 
+                            AccessAs (WordAcc, 0x00),
+                            Offset (0x04),
                             F0B6,   32
                         }
 
@@ -6324,7 +6324,7 @@
                         Local2 = 0x03
                         BankField (OPR0, BNK0, 0x03, WordAcc, NoLock, WriteAsOnes)
                         {
-                            Offset (0x04), 
+                            Offset (0x04),
                             F0B7,   33
                         }
 
@@ -6336,8 +6336,8 @@
                         Local2 = 0x04
                         BankField (OPR0, BNK0, 0x04, QWordAcc, NoLock, WriteAsOnes)
                         {
-                            AccessAs (WordAcc, 0x00), 
-                            Offset (0x04), 
+                            AccessAs (WordAcc, 0x00),
+                            Offset (0x04),
                             F0B8,   63
                         }
 
@@ -6349,7 +6349,7 @@
                         Local2 = 0x05
                         BankField (OPR0, BNK0, 0x05, WordAcc, NoLock, WriteAsOnes)
                         {
-                            Offset (0x04), 
+                            Offset (0x04),
                             F0B9,   64
                         }
 
@@ -6361,8 +6361,8 @@
                         Local2 = 0x06
                         BankField (OPR0, BNK0, 0x06, AnyAcc, NoLock, WriteAsOnes)
                         {
-                            AccessAs (WordAcc, 0x00), 
-                            Offset (0x04), 
+                            AccessAs (WordAcc, 0x00),
+                            Offset (0x04),
                             F0BA,   65
                         }
 
@@ -6374,7 +6374,7 @@
                         Local2 = 0x07
                         BankField (OPR0, BNK0, 0x07, WordAcc, NoLock, WriteAsOnes)
                         {
-                            Offset (0x04), 
+                            Offset (0x04),
                             F0BB,   69
                         }
 
@@ -6386,8 +6386,8 @@
                         Local2 = 0x08
                         BankField (OPR0, BNK0, 0x08, ByteAcc, NoLock, WriteAsOnes)
                         {
-                            AccessAs (WordAcc, 0x00), 
-                            Offset (0x04), 
+                            AccessAs (WordAcc, 0x00),
+                            Offset (0x04),
                             F0BC,   129
                         }
 
@@ -6399,7 +6399,7 @@
                         Local2 = 0x09
                         BankField (OPR0, BNK0, 0x09, WordAcc, NoLock, WriteAsOnes)
                         {
-                            Offset (0x04), 
+                            Offset (0x04),
                             F0BD,   256
                         }
 
@@ -6411,8 +6411,8 @@
                         Local2 = 0x3F
                         BankField (OPR0, BNK0, 0x3F, WordAcc, NoLock, WriteAsOnes)
                         {
-                            AccessAs (WordAcc, 0x00), 
-                            Offset (0x04), 
+                            AccessAs (WordAcc, 0x00),
+                            Offset (0x04),
                             F0BE,   1023
                         }
 
@@ -6424,7 +6424,7 @@
                         Local2 = 0x40
                         BankField (OPR0, BNK0, 0x40, WordAcc, NoLock, WriteAsOnes)
                         {
-                            Offset (0x04), 
+                            Offset (0x04),
                             F0BF,   1983
                         }
 
@@ -6448,7 +6448,7 @@
                         Local2 = 0x7F
                         BankField (OPR0, BNK0, 0x7F, WordAcc, NoLock, WriteAsOnes)
                         {
-                                ,   33, 
+                                ,   33,
                             F0C0,   1
                         }
 
@@ -6460,8 +6460,8 @@
                         Local2 = 0x80
                         BankField (OPR0, BNK0, 0x80, DWordAcc, NoLock, WriteAsOnes)
                         {
-                            AccessAs (WordAcc, 0x00), 
-                                ,   33, 
+                            AccessAs (WordAcc, 0x00),
+                                ,   33,
                             F0C1,   6
                         }
 
@@ -6473,7 +6473,7 @@
                         Local2 = 0xFF
                         BankField (OPR0, BNK0, 0xFF, WordAcc, NoLock, WriteAsOnes)
                         {
-                                ,   33, 
+                                ,   33,
                             F0C2,   7
                         }
 
@@ -6485,8 +6485,8 @@
                         Local2 = 0x00
                         BankField (OPR0, BNK0, 0x00, QWordAcc, NoLock, WriteAsOnes)
                         {
-                            AccessAs (WordAcc, 0x00), 
-                                ,   33, 
+                            AccessAs (WordAcc, 0x00),
+                                ,   33,
                             F0C3,   8
                         }
 
@@ -6498,7 +6498,7 @@
                         Local2 = 0x01
                         BankField (OPR0, BNK0, 0x01, WordAcc, NoLock, WriteAsOnes)
                         {
-                                ,   33, 
+                                ,   33,
                             F0C4,   9
                         }
 
@@ -6510,8 +6510,8 @@
                         Local2 = 0x02
                         BankField (OPR0, BNK0, 0x02, AnyAcc, NoLock, WriteAsOnes)
                         {
-                            AccessAs (WordAcc, 0x00), 
-                                ,   33, 
+                            AccessAs (WordAcc, 0x00),
+                                ,   33,
                             F0C5,   31
                         }
 
@@ -6523,7 +6523,7 @@
                         Local2 = 0x03
                         BankField (OPR0, BNK0, 0x03, WordAcc, NoLock, WriteAsOnes)
                         {
-                                ,   33, 
+                                ,   33,
                             F0C6,   32
                         }
 
@@ -6535,8 +6535,8 @@
                         Local2 = 0x04
                         BankField (OPR0, BNK0, 0x04, ByteAcc, NoLock, WriteAsOnes)
                         {
-                            AccessAs (WordAcc, 0x00), 
-                                ,   33, 
+                            AccessAs (WordAcc, 0x00),
+                                ,   33,
                             F0C7,   33
                         }
 
@@ -6548,7 +6548,7 @@
                         Local2 = 0x05
                         BankField (OPR0, BNK0, 0x05, WordAcc, NoLock, WriteAsOnes)
                         {
-                                ,   33, 
+                                ,   33,
                             F0C8,   63
                         }
 
@@ -6560,8 +6560,8 @@
                         Local2 = 0x06
                         BankField (OPR0, BNK0, 0x06, WordAcc, NoLock, WriteAsOnes)
                         {
-                            AccessAs (WordAcc, 0x00), 
-                                ,   33, 
+                            AccessAs (WordAcc, 0x00),
+                                ,   33,
                             F0C9,   64
                         }
 
@@ -6573,7 +6573,7 @@
                         Local2 = 0x07
                         BankField (OPR0, BNK0, 0x07, WordAcc, NoLock, WriteAsOnes)
                         {
-                                ,   33, 
+                                ,   33,
                             F0CA,   65
                         }
 
@@ -6585,8 +6585,8 @@
                         Local2 = 0x08
                         BankField (OPR0, BNK0, 0x08, DWordAcc, NoLock, WriteAsOnes)
                         {
-                            AccessAs (WordAcc, 0x00), 
-                                ,   33, 
+                            AccessAs (WordAcc, 0x00),
+                                ,   33,
                             F0CB,   69
                         }
 
@@ -6598,7 +6598,7 @@
                         Local2 = 0x09
                         BankField (OPR0, BNK0, 0x09, WordAcc, NoLock, WriteAsOnes)
                         {
-                                ,   33, 
+                                ,   33,
                             F0CC,   129
                         }
 
@@ -6610,8 +6610,8 @@
                         Local2 = 0x3F
                         BankField (OPR0, BNK0, 0x3F, QWordAcc, NoLock, WriteAsOnes)
                         {
-                            AccessAs (WordAcc, 0x00), 
-                                ,   33, 
+                            AccessAs (WordAcc, 0x00),
+                                ,   33,
                             F0CD,   256
                         }
 
@@ -6623,7 +6623,7 @@
                         Local2 = 0x40
                         BankField (OPR0, BNK0, 0x40, WordAcc, NoLock, WriteAsOnes)
                         {
-                                ,   33, 
+                                ,   33,
                             F0CE,   1023
                         }
 
@@ -6635,8 +6635,8 @@
                         Local2 = 0x7F
                         BankField (OPR0, BNK0, 0x7F, AnyAcc, NoLock, WriteAsOnes)
                         {
-                            AccessAs (WordAcc, 0x00), 
-                                ,   33, 
+                            AccessAs (WordAcc, 0x00),
+                                ,   33,
                             F0CF,   1983
                         }
 
@@ -6660,8 +6660,8 @@
                         Local2 = 0x80
                         BankField (OPR0, BNK0, 0x80, WordAcc, NoLock, WriteAsOnes)
                         {
-                            AccessAs (WordAcc, 0x00), 
-                                ,   63, 
+                            AccessAs (WordAcc, 0x00),
+                                ,   63,
                             F0D0,   1
                         }
 
@@ -6673,7 +6673,7 @@
                         Local2 = 0xFF
                         BankField (OPR0, BNK0, 0xFF, ByteAcc, NoLock, WriteAsOnes)
                         {
-                                ,   63, 
+                                ,   63,
                             F0D1,   6
                         }
 
@@ -6685,8 +6685,8 @@
                         Local2 = 0x00
                         BankField (OPR0, BNK0, 0x00, WordAcc, NoLock, WriteAsOnes)
                         {
-                            AccessAs (WordAcc, 0x00), 
-                                ,   63, 
+                            AccessAs (WordAcc, 0x00),
+                                ,   63,
                             F0D2,   7
                         }
 
@@ -6698,7 +6698,7 @@
                         Local2 = 0x01
                         BankField (OPR0, BNK0, 0x01, WordAcc, NoLock, WriteAsOnes)
                         {
-                                ,   63, 
+                                ,   63,
                             F0D3,   8
                         }
 
@@ -6710,8 +6710,8 @@
                         Local2 = 0x02
                         BankField (OPR0, BNK0, 0x02, DWordAcc, NoLock, WriteAsOnes)
                         {
-                            AccessAs (WordAcc, 0x00), 
-                                ,   63, 
+                            AccessAs (WordAcc, 0x00),
+                                ,   63,
                             F0D4,   9
                         }
 
@@ -6723,7 +6723,7 @@
                         Local2 = 0x03
                         BankField (OPR0, BNK0, 0x03, WordAcc, NoLock, WriteAsOnes)
                         {
-                                ,   63, 
+                                ,   63,
                             F0D5,   31
                         }
 
@@ -6735,8 +6735,8 @@
                         Local2 = 0x04
                         BankField (OPR0, BNK0, 0x04, QWordAcc, NoLock, WriteAsOnes)
                         {
-                            AccessAs (WordAcc, 0x00), 
-                                ,   63, 
+                            AccessAs (WordAcc, 0x00),
+                                ,   63,
                             F0D6,   32
                         }
 
@@ -6748,7 +6748,7 @@
                         Local2 = 0x05
                         BankField (OPR0, BNK0, 0x05, WordAcc, NoLock, WriteAsOnes)
                         {
-                                ,   63, 
+                                ,   63,
                             F0D7,   33
                         }
 
@@ -6760,8 +6760,8 @@
                         Local2 = 0x06
                         BankField (OPR0, BNK0, 0x06, AnyAcc, NoLock, WriteAsOnes)
                         {
-                            AccessAs (WordAcc, 0x00), 
-                                ,   63, 
+                            AccessAs (WordAcc, 0x00),
+                                ,   63,
                             F0D8,   63
                         }
 
@@ -6773,7 +6773,7 @@
                         Local2 = 0x07
                         BankField (OPR0, BNK0, 0x07, WordAcc, NoLock, WriteAsOnes)
                         {
-                                ,   63, 
+                                ,   63,
                             F0D9,   64
                         }
 
@@ -6785,8 +6785,8 @@
                         Local2 = 0x08
                         BankField (OPR0, BNK0, 0x08, ByteAcc, NoLock, WriteAsOnes)
                         {
-                            AccessAs (WordAcc, 0x00), 
-                                ,   63, 
+                            AccessAs (WordAcc, 0x00),
+                                ,   63,
                             F0DA,   65
                         }
 
@@ -6798,7 +6798,7 @@
                         Local2 = 0x09
                         BankField (OPR0, BNK0, 0x09, WordAcc, NoLock, WriteAsOnes)
                         {
-                                ,   63, 
+                                ,   63,
                             F0DB,   69
                         }
 
@@ -6810,8 +6810,8 @@
                         Local2 = 0x3F
                         BankField (OPR0, BNK0, 0x3F, WordAcc, NoLock, WriteAsOnes)
                         {
-                            AccessAs (WordAcc, 0x00), 
-                                ,   63, 
+                            AccessAs (WordAcc, 0x00),
+                                ,   63,
                             F0DC,   129
                         }
 
@@ -6823,7 +6823,7 @@
                         Local2 = 0x40
                         BankField (OPR0, BNK0, 0x40, WordAcc, NoLock, WriteAsOnes)
                         {
-                                ,   63, 
+                                ,   63,
                             F0DD,   256
                         }
 
@@ -6835,8 +6835,8 @@
                         Local2 = 0x7F
                         BankField (OPR0, BNK0, 0x7F, DWordAcc, NoLock, WriteAsOnes)
                         {
-                            AccessAs (WordAcc, 0x00), 
-                                ,   63, 
+                            AccessAs (WordAcc, 0x00),
+                                ,   63,
                             F0DE,   1023
                         }
 
@@ -6848,7 +6848,7 @@
                         Local2 = 0x80
                         BankField (OPR0, BNK0, 0x80, WordAcc, NoLock, WriteAsOnes)
                         {
-                                ,   63, 
+                                ,   63,
                             F0DF,   1983
                         }
 
@@ -6872,7 +6872,7 @@
                         Local2 = 0xFF
                         BankField (OPR0, BNK0, 0xFF, WordAcc, NoLock, WriteAsOnes)
                         {
-                            Offset (0x08), 
+                            Offset (0x08),
                             F0E0,   1
                         }
 
@@ -6884,8 +6884,8 @@
                         Local2 = 0x00
                         BankField (OPR0, BNK0, 0x00, QWordAcc, NoLock, WriteAsOnes)
                         {
-                            AccessAs (WordAcc, 0x00), 
-                            Offset (0x08), 
+                            AccessAs (WordAcc, 0x00),
+                            Offset (0x08),
                             F0E1,   6
                         }
 
@@ -6897,7 +6897,7 @@
                         Local2 = 0x01
                         BankField (OPR0, BNK0, 0x01, WordAcc, NoLock, WriteAsOnes)
                         {
-                            Offset (0x08), 
+                            Offset (0x08),
                             F0E2,   7
                         }
 
@@ -6909,8 +6909,8 @@
                         Local2 = 0x02
                         BankField (OPR0, BNK0, 0x02, AnyAcc, NoLock, WriteAsOnes)
                         {
-                            AccessAs (WordAcc, 0x00), 
-                            Offset (0x08), 
+                            AccessAs (WordAcc, 0x00),
+                            Offset (0x08),
                             F0E3,   8
                         }
 
@@ -6922,7 +6922,7 @@
                         Local2 = 0x03
                         BankField (OPR0, BNK0, 0x03, WordAcc, NoLock, WriteAsOnes)
                         {
-                            Offset (0x08), 
+                            Offset (0x08),
                             F0E4,   9
                         }
 
@@ -6934,8 +6934,8 @@
                         Local2 = 0x04
                         BankField (OPR0, BNK0, 0x04, ByteAcc, NoLock, WriteAsOnes)
                         {
-                            AccessAs (WordAcc, 0x00), 
-                            Offset (0x08), 
+                            AccessAs (WordAcc, 0x00),
+                            Offset (0x08),
                             F0E5,   31
                         }
 
@@ -6947,7 +6947,7 @@
                         Local2 = 0x05
                         BankField (OPR0, BNK0, 0x05, WordAcc, NoLock, WriteAsOnes)
                         {
-                            Offset (0x08), 
+                            Offset (0x08),
                             F0E6,   32
                         }
 
@@ -6959,8 +6959,8 @@
                         Local2 = 0x06
                         BankField (OPR0, BNK0, 0x06, WordAcc, NoLock, WriteAsOnes)
                         {
-                            AccessAs (WordAcc, 0x00), 
-                            Offset (0x08), 
+                            AccessAs (WordAcc, 0x00),
+                            Offset (0x08),
                             F0E7,   33
                         }
 
@@ -6972,7 +6972,7 @@
                         Local2 = 0x07
                         BankField (OPR0, BNK0, 0x07, WordAcc, NoLock, WriteAsOnes)
                         {
-                            Offset (0x08), 
+                            Offset (0x08),
                             F0E8,   63
                         }
 
@@ -6984,8 +6984,8 @@
                         Local2 = 0x08
                         BankField (OPR0, BNK0, 0x08, DWordAcc, NoLock, WriteAsOnes)
                         {
-                            AccessAs (WordAcc, 0x00), 
-                            Offset (0x08), 
+                            AccessAs (WordAcc, 0x00),
+                            Offset (0x08),
                             F0E9,   64
                         }
 
@@ -6997,7 +6997,7 @@
                         Local2 = 0x09
                         BankField (OPR0, BNK0, 0x09, WordAcc, NoLock, WriteAsOnes)
                         {
-                            Offset (0x08), 
+                            Offset (0x08),
                             F0EA,   65
                         }
 
@@ -7009,8 +7009,8 @@
                         Local2 = 0x3F
                         BankField (OPR0, BNK0, 0x3F, QWordAcc, NoLock, WriteAsOnes)
                         {
-                            AccessAs (WordAcc, 0x00), 
-                            Offset (0x08), 
+                            AccessAs (WordAcc, 0x00),
+                            Offset (0x08),
                             F0EB,   69
                         }
 
@@ -7022,7 +7022,7 @@
                         Local2 = 0x40
                         BankField (OPR0, BNK0, 0x40, WordAcc, NoLock, WriteAsOnes)
                         {
-                            Offset (0x08), 
+                            Offset (0x08),
                             F0EC,   129
                         }
 
@@ -7034,8 +7034,8 @@
                         Local2 = 0x7F
                         BankField (OPR0, BNK0, 0x7F, AnyAcc, NoLock, WriteAsOnes)
                         {
-                            AccessAs (WordAcc, 0x00), 
-                            Offset (0x08), 
+                            AccessAs (WordAcc, 0x00),
+                            Offset (0x08),
                             F0ED,   256
                         }
 
@@ -7047,7 +7047,7 @@
                         Local2 = 0x80
                         BankField (OPR0, BNK0, 0x80, WordAcc, NoLock, WriteAsOnes)
                         {
-                            Offset (0x08), 
+                            Offset (0x08),
                             F0EE,   1023
                         }
 
@@ -7059,8 +7059,8 @@
                         Local2 = 0xFF
                         BankField (OPR0, BNK0, 0xFF, ByteAcc, NoLock, WriteAsOnes)
                         {
-                            AccessAs (WordAcc, 0x00), 
-                            Offset (0x08), 
+                            AccessAs (WordAcc, 0x00),
+                            Offset (0x08),
                             F0EF,   1983
                         }
 
@@ -7084,9 +7084,9 @@
                         Local2 = 0x00
                         BankField (OPR0, BNK0, 0x00, WordAcc, NoLock, WriteAsOnes)
                         {
-                            AccessAs (WordAcc, 0x00), 
-                            Offset (0x08), 
-                                ,   1, 
+                            AccessAs (WordAcc, 0x00),
+                            Offset (0x08),
+                                ,   1,
                             F0F0,   1
                         }
 
@@ -7098,8 +7098,8 @@
                         Local2 = 0x01
                         BankField (OPR0, BNK0, 0x01, WordAcc, NoLock, WriteAsOnes)
                         {
-                            Offset (0x08), 
-                                ,   1, 
+                            Offset (0x08),
+                                ,   1,
                             F0F1,   6
                         }
 
@@ -7111,9 +7111,9 @@
                         Local2 = 0x02
                         BankField (OPR0, BNK0, 0x02, DWordAcc, NoLock, WriteAsOnes)
                         {
-                            AccessAs (WordAcc, 0x00), 
-                            Offset (0x08), 
-                                ,   1, 
+                            AccessAs (WordAcc, 0x00),
+                            Offset (0x08),
+                                ,   1,
                             F0F2,   7
                         }
 
@@ -7125,8 +7125,8 @@
                         Local2 = 0x03
                         BankField (OPR0, BNK0, 0x03, WordAcc, NoLock, WriteAsOnes)
                         {
-                            Offset (0x08), 
-                                ,   1, 
+                            Offset (0x08),
+                                ,   1,
                             F0F3,   8
                         }
 
@@ -7138,9 +7138,9 @@
                         Local2 = 0x04
                         BankField (OPR0, BNK0, 0x04, QWordAcc, NoLock, WriteAsOnes)
                         {
-                            AccessAs (WordAcc, 0x00), 
-                            Offset (0x08), 
-                                ,   1, 
+                            AccessAs (WordAcc, 0x00),
+                            Offset (0x08),
+                                ,   1,
                             F0F4,   9
                         }
 
@@ -7152,8 +7152,8 @@
                         Local2 = 0x05
                         BankField (OPR0, BNK0, 0x05, WordAcc, NoLock, WriteAsOnes)
                         {
-                            Offset (0x08), 
-                                ,   1, 
+                            Offset (0x08),
+                                ,   1,
                             F0F5,   31
                         }
 
@@ -7165,9 +7165,9 @@
                         Local2 = 0x06
                         BankField (OPR0, BNK0, 0x06, AnyAcc, NoLock, WriteAsOnes)
                         {
-                            AccessAs (WordAcc, 0x00), 
-                            Offset (0x08), 
-                                ,   1, 
+                            AccessAs (WordAcc, 0x00),
+                            Offset (0x08),
+                                ,   1,
                             F0F6,   32
                         }
 
@@ -7179,8 +7179,8 @@
                         Local2 = 0x07
                         BankField (OPR0, BNK0, 0x07, WordAcc, NoLock, WriteAsOnes)
                         {
-                            Offset (0x08), 
-                                ,   1, 
+                            Offset (0x08),
+                                ,   1,
                             F0F7,   33
                         }
 
@@ -7192,9 +7192,9 @@
                         Local2 = 0x08
                         BankField (OPR0, BNK0, 0x08, ByteAcc, NoLock, WriteAsOnes)
                         {
-                            AccessAs (WordAcc, 0x00), 
-                            Offset (0x08), 
-                                ,   1, 
+                            AccessAs (WordAcc, 0x00),
+                            Offset (0x08),
+                                ,   1,
                             F0F8,   63
                         }
 
@@ -7206,8 +7206,8 @@
                         Local2 = 0x09
                         BankField (OPR0, BNK0, 0x09, WordAcc, NoLock, WriteAsOnes)
                         {
-                            Offset (0x08), 
-                                ,   1, 
+                            Offset (0x08),
+                                ,   1,
                             F0F9,   64
                         }
 
@@ -7219,9 +7219,9 @@
                         Local2 = 0x3F
                         BankField (OPR0, BNK0, 0x3F, WordAcc, NoLock, WriteAsOnes)
                         {
-                            AccessAs (WordAcc, 0x00), 
-                            Offset (0x08), 
-                                ,   1, 
+                            AccessAs (WordAcc, 0x00),
+                            Offset (0x08),
+                                ,   1,
                             F0FA,   65
                         }
 
@@ -7233,8 +7233,8 @@
                         Local2 = 0x40
                         BankField (OPR0, BNK0, 0x40, WordAcc, NoLock, WriteAsOnes)
                         {
-                            Offset (0x08), 
-                                ,   1, 
+                            Offset (0x08),
+                                ,   1,
                             F0FB,   69
                         }
 
@@ -7246,9 +7246,9 @@
                         Local2 = 0x7F
                         BankField (OPR0, BNK0, 0x7F, DWordAcc, NoLock, WriteAsOnes)
                         {
-                            AccessAs (WordAcc, 0x00), 
-                            Offset (0x08), 
-                                ,   1, 
+                            AccessAs (WordAcc, 0x00),
+                            Offset (0x08),
+                                ,   1,
                             F0FC,   129
                         }
 
@@ -7260,8 +7260,8 @@
                         Local2 = 0x80
                         BankField (OPR0, BNK0, 0x80, WordAcc, NoLock, WriteAsOnes)
                         {
-                            Offset (0x08), 
-                                ,   1, 
+                            Offset (0x08),
+                                ,   1,
                             F0FD,   256
                         }
 
@@ -7273,9 +7273,9 @@
                         Local2 = 0xFF
                         BankField (OPR0, BNK0, 0xFF, QWordAcc, NoLock, WriteAsOnes)
                         {
-                            AccessAs (WordAcc, 0x00), 
-                            Offset (0x08), 
-                                ,   1, 
+                            AccessAs (WordAcc, 0x00),
+                            Offset (0x08),
+                                ,   1,
                             F0FE,   1023
                         }
 
@@ -7287,8 +7287,8 @@
                         Local2 = 0x00
                         BankField (OPR0, BNK0, 0x00, WordAcc, NoLock, WriteAsOnes)
                         {
-                            Offset (0x08), 
-                                ,   1, 
+                            Offset (0x08),
+                                ,   1,
                             F0FF,   1983
                         }
 
@@ -7416,7 +7416,7 @@
                         Local2 = 0x00
                         BankField (OPR0, BNK0, 0x00, DWordAcc, NoLock, WriteAsZeros)
                         {
-                            Offset (0x00), 
+                            Offset (0x00),
                             F000,   1
                         }
 
@@ -7428,8 +7428,8 @@
                         Local2 = 0x01
                         BankField (OPR0, BNK0, 0x01, WordAcc, NoLock, WriteAsZeros)
                         {
-                            AccessAs (DWordAcc, 0x00), 
-                            Offset (0x00), 
+                            AccessAs (DWordAcc, 0x00),
+                            Offset (0x00),
                             F001,   6
                         }
 
@@ -7441,7 +7441,7 @@
                         Local2 = 0x02
                         BankField (OPR0, BNK0, 0x02, DWordAcc, NoLock, WriteAsZeros)
                         {
-                            Offset (0x00), 
+                            Offset (0x00),
                             F002,   7
                         }
 
@@ -7453,8 +7453,8 @@
                         Local2 = 0x03
                         BankField (OPR0, BNK0, 0x03, DWordAcc, NoLock, WriteAsZeros)
                         {
-                            AccessAs (DWordAcc, 0x00), 
-                            Offset (0x00), 
+                            AccessAs (DWordAcc, 0x00),
+                            Offset (0x00),
                             F003,   8
                         }
 
@@ -7466,7 +7466,7 @@
                         Local2 = 0x04
                         BankField (OPR0, BNK0, 0x04, DWordAcc, NoLock, WriteAsZeros)
                         {
-                            Offset (0x00), 
+                            Offset (0x00),
                             F004,   9
                         }
 
@@ -7478,8 +7478,8 @@
                         Local2 = 0x05
                         BankField (OPR0, BNK0, 0x05, QWordAcc, NoLock, WriteAsZeros)
                         {
-                            AccessAs (DWordAcc, 0x00), 
-                            Offset (0x00), 
+                            AccessAs (DWordAcc, 0x00),
+                            Offset (0x00),
                             F005,   31
                         }
 
@@ -7491,7 +7491,7 @@
                         Local2 = 0x06
                         BankField (OPR0, BNK0, 0x06, DWordAcc, NoLock, WriteAsZeros)
                         {
-                            Offset (0x00), 
+                            Offset (0x00),
                             F006,   32
                         }
 
@@ -7503,8 +7503,8 @@
                         Local2 = 0x07
                         BankField (OPR0, BNK0, 0x07, AnyAcc, NoLock, WriteAsZeros)
                         {
-                            AccessAs (DWordAcc, 0x00), 
-                            Offset (0x00), 
+                            AccessAs (DWordAcc, 0x00),
+                            Offset (0x00),
                             F007,   33
                         }
 
@@ -7516,7 +7516,7 @@
                         Local2 = 0x08
                         BankField (OPR0, BNK0, 0x08, DWordAcc, NoLock, WriteAsZeros)
                         {
-                            Offset (0x00), 
+                            Offset (0x00),
                             F008,   63
                         }
 
@@ -7528,8 +7528,8 @@
                         Local2 = 0x09
                         BankField (OPR0, BNK0, 0x09, ByteAcc, NoLock, WriteAsZeros)
                         {
-                            AccessAs (DWordAcc, 0x00), 
-                            Offset (0x00), 
+                            AccessAs (DWordAcc, 0x00),
+                            Offset (0x00),
                             F009,   64
                         }
 
@@ -7541,7 +7541,7 @@
                         Local2 = 0x3F
                         BankField (OPR0, BNK0, 0x3F, DWordAcc, NoLock, WriteAsZeros)
                         {
-                            Offset (0x00), 
+                            Offset (0x00),
                             F00A,   65
                         }
 
@@ -7553,8 +7553,8 @@
                         Local2 = 0x40
                         BankField (OPR0, BNK0, 0x40, WordAcc, NoLock, WriteAsZeros)
                         {
-                            AccessAs (DWordAcc, 0x00), 
-                            Offset (0x00), 
+                            AccessAs (DWordAcc, 0x00),
+                            Offset (0x00),
                             F00B,   69
                         }
 
@@ -7566,7 +7566,7 @@
                         Local2 = 0x7F
                         BankField (OPR0, BNK0, 0x7F, DWordAcc, NoLock, WriteAsZeros)
                         {
-                            Offset (0x00), 
+                            Offset (0x00),
                             F00C,   129
                         }
 
@@ -7578,8 +7578,8 @@
                         Local2 = 0x80
                         BankField (OPR0, BNK0, 0x80, DWordAcc, NoLock, WriteAsZeros)
                         {
-                            AccessAs (DWordAcc, 0x00), 
-                            Offset (0x00), 
+                            AccessAs (DWordAcc, 0x00),
+                            Offset (0x00),
                             F00D,   256
                         }
 
@@ -7591,7 +7591,7 @@
                         Local2 = 0xFF
                         BankField (OPR0, BNK0, 0xFF, DWordAcc, NoLock, WriteAsZeros)
                         {
-                            Offset (0x00), 
+                            Offset (0x00),
                             F00E,   1023
                         }
 
@@ -7603,8 +7603,8 @@
                         Local2 = 0x00
                         BankField (OPR0, BNK0, 0x00, QWordAcc, NoLock, WriteAsZeros)
                         {
-                            AccessAs (DWordAcc, 0x00), 
-                            Offset (0x00), 
+                            AccessAs (DWordAcc, 0x00),
+                            Offset (0x00),
                             F00F,   1983
                         }
 
@@ -7628,8 +7628,8 @@
                         Local2 = 0x01
                         BankField (OPR0, BNK0, 0x01, AnyAcc, NoLock, WriteAsZeros)
                         {
-                            AccessAs (DWordAcc, 0x00), 
-                                ,   1, 
+                            AccessAs (DWordAcc, 0x00),
+                                ,   1,
                             F010,   1
                         }
 
@@ -7641,7 +7641,7 @@
                         Local2 = 0x02
                         BankField (OPR0, BNK0, 0x02, DWordAcc, NoLock, WriteAsZeros)
                         {
-                                ,   1, 
+                                ,   1,
                             F011,   6
                         }
 
@@ -7653,8 +7653,8 @@
                         Local2 = 0x03
                         BankField (OPR0, BNK0, 0x03, ByteAcc, NoLock, WriteAsZeros)
                         {
-                            AccessAs (DWordAcc, 0x00), 
-                                ,   1, 
+                            AccessAs (DWordAcc, 0x00),
+                                ,   1,
                             F012,   7
                         }
 
@@ -7666,7 +7666,7 @@
                         Local2 = 0x04
                         BankField (OPR0, BNK0, 0x04, DWordAcc, NoLock, WriteAsZeros)
                         {
-                                ,   1, 
+                                ,   1,
                             F013,   8
                         }
 
@@ -7678,8 +7678,8 @@
                         Local2 = 0x05
                         BankField (OPR0, BNK0, 0x05, WordAcc, NoLock, WriteAsZeros)
                         {
-                            AccessAs (DWordAcc, 0x00), 
-                                ,   1, 
+                            AccessAs (DWordAcc, 0x00),
+                                ,   1,
                             F014,   9
                         }
 
@@ -7691,7 +7691,7 @@
                         Local2 = 0x06
                         BankField (OPR0, BNK0, 0x06, DWordAcc, NoLock, WriteAsZeros)
                         {
-                                ,   1, 
+                                ,   1,
                             F015,   31
                         }
 
@@ -7703,8 +7703,8 @@
                         Local2 = 0x07
                         BankField (OPR0, BNK0, 0x07, DWordAcc, NoLock, WriteAsZeros)
                         {
-                            AccessAs (DWordAcc, 0x00), 
-                                ,   1, 
+                            AccessAs (DWordAcc, 0x00),
+                                ,   1,
                             F016,   32
                         }
 
@@ -7716,7 +7716,7 @@
                         Local2 = 0x08
                         BankField (OPR0, BNK0, 0x08, DWordAcc, NoLock, WriteAsZeros)
                         {
-                                ,   1, 
+                                ,   1,
                             F017,   33
                         }
 
@@ -7728,8 +7728,8 @@
                         Local2 = 0x09
                         BankField (OPR0, BNK0, 0x09, QWordAcc, NoLock, WriteAsZeros)
                         {
-                            AccessAs (DWordAcc, 0x00), 
-                                ,   1, 
+                            AccessAs (DWordAcc, 0x00),
+                                ,   1,
                             F018,   63
                         }
 
@@ -7741,7 +7741,7 @@
                         Local2 = 0x3F
                         BankField (OPR0, BNK0, 0x3F, DWordAcc, NoLock, WriteAsZeros)
                         {
-                                ,   1, 
+                                ,   1,
                             F019,   64
                         }
 
@@ -7753,8 +7753,8 @@
                         Local2 = 0x40
                         BankField (OPR0, BNK0, 0x40, AnyAcc, NoLock, WriteAsZeros)
                         {
-                            AccessAs (DWordAcc, 0x00), 
-                                ,   1, 
+                            AccessAs (DWordAcc, 0x00),
+                                ,   1,
                             F01A,   65
                         }
 
@@ -7766,7 +7766,7 @@
                         Local2 = 0x7F
                         BankField (OPR0, BNK0, 0x7F, DWordAcc, NoLock, WriteAsZeros)
                         {
-                                ,   1, 
+                                ,   1,
                             F01B,   69
                         }
 
@@ -7778,8 +7778,8 @@
                         Local2 = 0x80
                         BankField (OPR0, BNK0, 0x80, ByteAcc, NoLock, WriteAsZeros)
                         {
-                            AccessAs (DWordAcc, 0x00), 
-                                ,   1, 
+                            AccessAs (DWordAcc, 0x00),
+                                ,   1,
                             F01C,   129
                         }
 
@@ -7791,7 +7791,7 @@
                         Local2 = 0xFF
                         BankField (OPR0, BNK0, 0xFF, DWordAcc, NoLock, WriteAsZeros)
                         {
-                                ,   1, 
+                                ,   1,
                             F01D,   256
                         }
 
@@ -7803,8 +7803,8 @@
                         Local2 = 0x00
                         BankField (OPR0, BNK0, 0x00, WordAcc, NoLock, WriteAsZeros)
                         {
-                            AccessAs (DWordAcc, 0x00), 
-                                ,   1, 
+                            AccessAs (DWordAcc, 0x00),
+                                ,   1,
                             F01E,   1023
                         }
 
@@ -7816,7 +7816,7 @@
                         Local2 = 0x01
                         BankField (OPR0, BNK0, 0x01, DWordAcc, NoLock, WriteAsZeros)
                         {
-                                ,   1, 
+                                ,   1,
                             F01F,   1983
                         }
 
@@ -7840,7 +7840,7 @@
                         Local2 = 0x02
                         BankField (OPR0, BNK0, 0x02, DWordAcc, NoLock, WriteAsZeros)
                         {
-                                ,   2, 
+                                ,   2,
                             F020,   1
                         }
 
@@ -7852,8 +7852,8 @@
                         Local2 = 0x03
                         BankField (OPR0, BNK0, 0x03, DWordAcc, NoLock, WriteAsZeros)
                         {
-                            AccessAs (DWordAcc, 0x00), 
-                                ,   2, 
+                            AccessAs (DWordAcc, 0x00),
+                                ,   2,
                             F021,   6
                         }
 
@@ -7865,7 +7865,7 @@
                         Local2 = 0x04
                         BankField (OPR0, BNK0, 0x04, DWordAcc, NoLock, WriteAsZeros)
                         {
-                                ,   2, 
+                                ,   2,
                             F022,   7
                         }
 
@@ -7877,8 +7877,8 @@
                         Local2 = 0x05
                         BankField (OPR0, BNK0, 0x05, QWordAcc, NoLock, WriteAsZeros)
                         {
-                            AccessAs (DWordAcc, 0x00), 
-                                ,   2, 
+                            AccessAs (DWordAcc, 0x00),
+                                ,   2,
                             F023,   8
                         }
 
@@ -7890,7 +7890,7 @@
                         Local2 = 0x06
                         BankField (OPR0, BNK0, 0x06, DWordAcc, NoLock, WriteAsZeros)
                         {
-                                ,   2, 
+                                ,   2,
                             F024,   9
                         }
 
@@ -7902,8 +7902,8 @@
                         Local2 = 0x07
                         BankField (OPR0, BNK0, 0x07, AnyAcc, NoLock, WriteAsZeros)
                         {
-                            AccessAs (DWordAcc, 0x00), 
-                                ,   2, 
+                            AccessAs (DWordAcc, 0x00),
+                                ,   2,
                             F025,   31
                         }
 
@@ -7915,7 +7915,7 @@
                         Local2 = 0x08
                         BankField (OPR0, BNK0, 0x08, DWordAcc, NoLock, WriteAsZeros)
                         {
-                                ,   2, 
+                                ,   2,
                             F026,   32
                         }
 
@@ -7927,8 +7927,8 @@
                         Local2 = 0x09
                         BankField (OPR0, BNK0, 0x09, ByteAcc, NoLock, WriteAsZeros)
                         {
-                            AccessAs (DWordAcc, 0x00), 
-                                ,   2, 
+                            AccessAs (DWordAcc, 0x00),
+                                ,   2,
                             F027,   33
                         }
 
@@ -7940,7 +7940,7 @@
                         Local2 = 0x3F
                         BankField (OPR0, BNK0, 0x3F, DWordAcc, NoLock, WriteAsZeros)
                         {
-                                ,   2, 
+                                ,   2,
                             F028,   63
                         }
 
@@ -7952,8 +7952,8 @@
                         Local2 = 0x40
                         BankField (OPR0, BNK0, 0x40, WordAcc, NoLock, WriteAsZeros)
                         {
-                            AccessAs (DWordAcc, 0x00), 
-                                ,   2, 
+                            AccessAs (DWordAcc, 0x00),
+                                ,   2,
                             F029,   64
                         }
 
@@ -7965,7 +7965,7 @@
                         Local2 = 0x7F
                         BankField (OPR0, BNK0, 0x7F, DWordAcc, NoLock, WriteAsZeros)
                         {
-                                ,   2, 
+                                ,   2,
                             F02A,   65
                         }
 
@@ -7977,8 +7977,8 @@
                         Local2 = 0x80
                         BankField (OPR0, BNK0, 0x80, DWordAcc, NoLock, WriteAsZeros)
                         {
-                            AccessAs (DWordAcc, 0x00), 
-                                ,   2, 
+                            AccessAs (DWordAcc, 0x00),
+                                ,   2,
                             F02B,   69
                         }
 
@@ -7990,7 +7990,7 @@
                         Local2 = 0xFF
                         BankField (OPR0, BNK0, 0xFF, DWordAcc, NoLock, WriteAsZeros)
                         {
-                                ,   2, 
+                                ,   2,
                             F02C,   129
                         }
 
@@ -8002,8 +8002,8 @@
                         Local2 = 0x00
                         BankField (OPR0, BNK0, 0x00, QWordAcc, NoLock, WriteAsZeros)
                         {
-                            AccessAs (DWordAcc, 0x00), 
-                                ,   2, 
+                            AccessAs (DWordAcc, 0x00),
+                                ,   2,
                             F02D,   256
                         }
 
@@ -8015,7 +8015,7 @@
                         Local2 = 0x01
                         BankField (OPR0, BNK0, 0x01, DWordAcc, NoLock, WriteAsZeros)
                         {
-                                ,   2, 
+                                ,   2,
                             F02E,   1023
                         }
 
@@ -8027,8 +8027,8 @@
                         Local2 = 0x02
                         BankField (OPR0, BNK0, 0x02, AnyAcc, NoLock, WriteAsZeros)
                         {
-                            AccessAs (DWordAcc, 0x00), 
-                                ,   2, 
+                            AccessAs (DWordAcc, 0x00),
+                                ,   2,
                             F02F,   1983
                         }
 
@@ -8052,8 +8052,8 @@
                         Local2 = 0x03
                         BankField (OPR0, BNK0, 0x03, ByteAcc, NoLock, WriteAsZeros)
                         {
-                            AccessAs (DWordAcc, 0x00), 
-                                ,   3, 
+                            AccessAs (DWordAcc, 0x00),
+                                ,   3,
                             F030,   1
                         }
 
@@ -8065,7 +8065,7 @@
                         Local2 = 0x04
                         BankField (OPR0, BNK0, 0x04, DWordAcc, NoLock, WriteAsZeros)
                         {
-                                ,   3, 
+                                ,   3,
                             F031,   6
                         }
 
@@ -8077,8 +8077,8 @@
                         Local2 = 0x05
                         BankField (OPR0, BNK0, 0x05, WordAcc, NoLock, WriteAsZeros)
                         {
-                            AccessAs (DWordAcc, 0x00), 
-                                ,   3, 
+                            AccessAs (DWordAcc, 0x00),
+                                ,   3,
                             F032,   7
                         }
 
@@ -8090,7 +8090,7 @@
                         Local2 = 0x06
                         BankField (OPR0, BNK0, 0x06, DWordAcc, NoLock, WriteAsZeros)
                         {
-                                ,   3, 
+                                ,   3,
                             F033,   8
                         }
 
@@ -8102,8 +8102,8 @@
                         Local2 = 0x07
                         BankField (OPR0, BNK0, 0x07, DWordAcc, NoLock, WriteAsZeros)
                         {
-                            AccessAs (DWordAcc, 0x00), 
-                                ,   3, 
+                            AccessAs (DWordAcc, 0x00),
+                                ,   3,
                             F034,   9
                         }
 
@@ -8115,7 +8115,7 @@
                         Local2 = 0x08
                         BankField (OPR0, BNK0, 0x08, DWordAcc, NoLock, WriteAsZeros)
                         {
-                                ,   3, 
+                                ,   3,
                             F035,   31
                         }
 
@@ -8127,8 +8127,8 @@
                         Local2 = 0x09
                         BankField (OPR0, BNK0, 0x09, QWordAcc, NoLock, WriteAsZeros)
                         {
-                            AccessAs (DWordAcc, 0x00), 
-                                ,   3, 
+                            AccessAs (DWordAcc, 0x00),
+                                ,   3,
                             F036,   32
                         }
 
@@ -8140,7 +8140,7 @@
                         Local2 = 0x3F
                         BankField (OPR0, BNK0, 0x3F, DWordAcc, NoLock, WriteAsZeros)
                         {
-                                ,   3, 
+                                ,   3,
                             F037,   33
                         }
 
@@ -8152,8 +8152,8 @@
                         Local2 = 0x40
                         BankField (OPR0, BNK0, 0x40, AnyAcc, NoLock, WriteAsZeros)
                         {
-                            AccessAs (DWordAcc, 0x00), 
-                                ,   3, 
+                            AccessAs (DWordAcc, 0x00),
+                                ,   3,
                             F038,   63
                         }
 
@@ -8165,7 +8165,7 @@
                         Local2 = 0x7F
                         BankField (OPR0, BNK0, 0x7F, DWordAcc, NoLock, WriteAsZeros)
                         {
-                                ,   3, 
+                                ,   3,
                             F039,   64
                         }
 
@@ -8177,8 +8177,8 @@
                         Local2 = 0x80
                         BankField (OPR0, BNK0, 0x80, ByteAcc, NoLock, WriteAsZeros)
                         {
-                            AccessAs (DWordAcc, 0x00), 
-                                ,   3, 
+                            AccessAs (DWordAcc, 0x00),
+                                ,   3,
                             F03A,   65
                         }
 
@@ -8190,7 +8190,7 @@
                         Local2 = 0xFF
                         BankField (OPR0, BNK0, 0xFF, DWordAcc, NoLock, WriteAsZeros)
                         {
-                                ,   3, 
+                                ,   3,
                             F03B,   69
                         }
 
@@ -8202,8 +8202,8 @@
                         Local2 = 0x00
                         BankField (OPR0, BNK0, 0x00, WordAcc, NoLock, WriteAsZeros)
                         {
-                            AccessAs (DWordAcc, 0x00), 
-                                ,   3, 
+                            AccessAs (DWordAcc, 0x00),
+                                ,   3,
                             F03C,   129
                         }
 
@@ -8215,7 +8215,7 @@
                         Local2 = 0x01
                         BankField (OPR0, BNK0, 0x01, DWordAcc, NoLock, WriteAsZeros)
                         {
-                                ,   3, 
+                                ,   3,
                             F03D,   256
                         }
 
@@ -8227,8 +8227,8 @@
                         Local2 = 0x02
                         BankField (OPR0, BNK0, 0x02, DWordAcc, NoLock, WriteAsZeros)
                         {
-                            AccessAs (DWordAcc, 0x00), 
-                                ,   3, 
+                            AccessAs (DWordAcc, 0x00),
+                                ,   3,
                             F03E,   1023
                         }
 
@@ -8240,7 +8240,7 @@
                         Local2 = 0x03
                         BankField (OPR0, BNK0, 0x03, DWordAcc, NoLock, WriteAsZeros)
                         {
-                                ,   3, 
+                                ,   3,
                             F03F,   1983
                         }
 
@@ -8264,7 +8264,7 @@
                         Local2 = 0x04
                         BankField (OPR0, BNK0, 0x04, DWordAcc, NoLock, WriteAsZeros)
                         {
-                                ,   4, 
+                                ,   4,
                             F040,   1
                         }
 
@@ -8276,8 +8276,8 @@
                         Local2 = 0x05
                         BankField (OPR0, BNK0, 0x05, QWordAcc, NoLock, WriteAsZeros)
                         {
-                            AccessAs (DWordAcc, 0x00), 
-                                ,   4, 
+                            AccessAs (DWordAcc, 0x00),
+                                ,   4,
                             F041,   6
                         }
 
@@ -8289,7 +8289,7 @@
                         Local2 = 0x06
                         BankField (OPR0, BNK0, 0x06, DWordAcc, NoLock, WriteAsZeros)
                         {
-                                ,   4, 
+                                ,   4,
                             F042,   7
                         }
 
@@ -8301,8 +8301,8 @@
                         Local2 = 0x07
                         BankField (OPR0, BNK0, 0x07, AnyAcc, NoLock, WriteAsZeros)
                         {
-                            AccessAs (DWordAcc, 0x00), 
-                                ,   4, 
+                            AccessAs (DWordAcc, 0x00),
+                                ,   4,
                             F043,   8
                         }
 
@@ -8314,7 +8314,7 @@
                         Local2 = 0x08
                         BankField (OPR0, BNK0, 0x08, DWordAcc, NoLock, WriteAsZeros)
                         {
-                                ,   4, 
+                                ,   4,
                             F044,   9
                         }
 
@@ -8326,8 +8326,8 @@
                         Local2 = 0x09
                         BankField (OPR0, BNK0, 0x09, ByteAcc, NoLock, WriteAsZeros)
                         {
-                            AccessAs (DWordAcc, 0x00), 
-                                ,   4, 
+                            AccessAs (DWordAcc, 0x00),
+                                ,   4,
                             F045,   31
                         }
 
@@ -8339,7 +8339,7 @@
                         Local2 = 0x3F
                         BankField (OPR0, BNK0, 0x3F, DWordAcc, NoLock, WriteAsZeros)
                         {
-                                ,   4, 
+                                ,   4,
                             F046,   32
                         }
 
@@ -8351,8 +8351,8 @@
                         Local2 = 0x40
                         BankField (OPR0, BNK0, 0x40, WordAcc, NoLock, WriteAsZeros)
                         {
-                            AccessAs (DWordAcc, 0x00), 
-                                ,   4, 
+                            AccessAs (DWordAcc, 0x00),
+                                ,   4,
                             F047,   33
                         }
 
@@ -8364,7 +8364,7 @@
                         Local2 = 0x7F
                         BankField (OPR0, BNK0, 0x7F, DWordAcc, NoLock, WriteAsZeros)
                         {
-                                ,   4, 
+                                ,   4,
                             F048,   63
                         }
 
@@ -8376,8 +8376,8 @@
                         Local2 = 0x80
                         BankField (OPR0, BNK0, 0x80, DWordAcc, NoLock, WriteAsZeros)
                         {
-                            AccessAs (DWordAcc, 0x00), 
-                                ,   4, 
+                            AccessAs (DWordAcc, 0x00),
+                                ,   4,
                             F049,   64
                         }
 
@@ -8389,7 +8389,7 @@
                         Local2 = 0xFF
                         BankField (OPR0, BNK0, 0xFF, DWordAcc, NoLock, WriteAsZeros)
                         {
-                                ,   4, 
+                                ,   4,
                             F04A,   65
                         }
 
@@ -8401,8 +8401,8 @@
                         Local2 = 0x00
                         BankField (OPR0, BNK0, 0x00, QWordAcc, NoLock, WriteAsZeros)
                         {
-                            AccessAs (DWordAcc, 0x00), 
-                                ,   4, 
+                            AccessAs (DWordAcc, 0x00),
+                                ,   4,
                             F04B,   69
                         }
 
@@ -8414,7 +8414,7 @@
                         Local2 = 0x01
                         BankField (OPR0, BNK0, 0x01, DWordAcc, NoLock, WriteAsZeros)
                         {
-                                ,   4, 
+                                ,   4,
                             F04C,   129
                         }
 
@@ -8426,8 +8426,8 @@
                         Local2 = 0x02
                         BankField (OPR0, BNK0, 0x02, AnyAcc, NoLock, WriteAsZeros)
                         {
-                            AccessAs (DWordAcc, 0x00), 
-                                ,   4, 
+                            AccessAs (DWordAcc, 0x00),
+                                ,   4,
                             F04D,   256
                         }
 
@@ -8439,7 +8439,7 @@
                         Local2 = 0x03
                         BankField (OPR0, BNK0, 0x03, DWordAcc, NoLock, WriteAsZeros)
                         {
-                                ,   4, 
+                                ,   4,
                             F04E,   1023
                         }
 
@@ -8451,8 +8451,8 @@
                         Local2 = 0x04
                         BankField (OPR0, BNK0, 0x04, ByteAcc, NoLock, WriteAsZeros)
                         {
-                            AccessAs (DWordAcc, 0x00), 
-                                ,   4, 
+                            AccessAs (DWordAcc, 0x00),
+                                ,   4,
                             F04F,   1983
                         }
 
@@ -8476,8 +8476,8 @@
                         Local2 = 0x05
                         BankField (OPR0, BNK0, 0x05, WordAcc, NoLock, WriteAsZeros)
                         {
-                            AccessAs (DWordAcc, 0x00), 
-                                ,   5, 
+                            AccessAs (DWordAcc, 0x00),
+                                ,   5,
                             F050,   1
                         }
 
@@ -8489,7 +8489,7 @@
                         Local2 = 0x06
                         BankField (OPR0, BNK0, 0x06, DWordAcc, NoLock, WriteAsZeros)
                         {
-                                ,   5, 
+                                ,   5,
                             F051,   6
                         }
 
@@ -8501,8 +8501,8 @@
                         Local2 = 0x07
                         BankField (OPR0, BNK0, 0x07, DWordAcc, NoLock, WriteAsZeros)
                         {
-                            AccessAs (DWordAcc, 0x00), 
-                                ,   5, 
+                            AccessAs (DWordAcc, 0x00),
+                                ,   5,
                             F052,   7
                         }
 
@@ -8514,7 +8514,7 @@
                         Local2 = 0x08
                         BankField (OPR0, BNK0, 0x08, DWordAcc, NoLock, WriteAsZeros)
                         {
-                                ,   5, 
+                                ,   5,
                             F053,   8
                         }
 
@@ -8526,8 +8526,8 @@
                         Local2 = 0x09
                         BankField (OPR0, BNK0, 0x09, QWordAcc, NoLock, WriteAsZeros)
                         {
-                            AccessAs (DWordAcc, 0x00), 
-                                ,   5, 
+                            AccessAs (DWordAcc, 0x00),
+                                ,   5,
                             F054,   9
                         }
 
@@ -8539,7 +8539,7 @@
                         Local2 = 0x3F
                         BankField (OPR0, BNK0, 0x3F, DWordAcc, NoLock, WriteAsZeros)
                         {
-                                ,   5, 
+                                ,   5,
                             F055,   31
                         }
 
@@ -8551,8 +8551,8 @@
                         Local2 = 0x40
                         BankField (OPR0, BNK0, 0x40, AnyAcc, NoLock, WriteAsZeros)
                         {
-                            AccessAs (DWordAcc, 0x00), 
-                                ,   5, 
+                            AccessAs (DWordAcc, 0x00),
+                                ,   5,
                             F056,   32
                         }
 
@@ -8564,7 +8564,7 @@
                         Local2 = 0x7F
                         BankField (OPR0, BNK0, 0x7F, DWordAcc, NoLock, WriteAsZeros)
                         {
-                                ,   5, 
+                                ,   5,
                             F057,   33
                         }
 
@@ -8576,8 +8576,8 @@
                         Local2 = 0x80
                         BankField (OPR0, BNK0, 0x80, ByteAcc, NoLock, WriteAsZeros)
                         {
-                            AccessAs (DWordAcc, 0x00), 
-                                ,   5, 
+                            AccessAs (DWordAcc, 0x00),
+                                ,   5,
                             F058,   63
                         }
 
@@ -8589,7 +8589,7 @@
                         Local2 = 0xFF
                         BankField (OPR0, BNK0, 0xFF, DWordAcc, NoLock, WriteAsZeros)
                         {
-                                ,   5, 
+                                ,   5,
                             F059,   64
                         }
 
@@ -8601,8 +8601,8 @@
                         Local2 = 0x00
                         BankField (OPR0, BNK0, 0x00, WordAcc, NoLock, WriteAsZeros)
                         {
-                            AccessAs (DWordAcc, 0x00), 
-                                ,   5, 
+                            AccessAs (DWordAcc, 0x00),
+                                ,   5,
                             F05A,   65
                         }
 
@@ -8614,7 +8614,7 @@
                         Local2 = 0x01
                         BankField (OPR0, BNK0, 0x01, DWordAcc, NoLock, WriteAsZeros)
                         {
-                                ,   5, 
+                                ,   5,
                             F05B,   69
                         }
 
@@ -8626,8 +8626,8 @@
                         Local2 = 0x02
                         BankField (OPR0, BNK0, 0x02, DWordAcc, NoLock, WriteAsZeros)
                         {
-                            AccessAs (DWordAcc, 0x00), 
-                                ,   5, 
+                            AccessAs (DWordAcc, 0x00),
+                                ,   5,
                             F05C,   129
                         }
 
@@ -8639,7 +8639,7 @@
                         Local2 = 0x03
                         BankField (OPR0, BNK0, 0x03, DWordAcc, NoLock, WriteAsZeros)
                         {
-                                ,   5, 
+                                ,   5,
                             F05D,   256
                         }
 
@@ -8651,8 +8651,8 @@
                         Local2 = 0x04
                         BankField (OPR0, BNK0, 0x04, QWordAcc, NoLock, WriteAsZeros)
                         {
-                            AccessAs (DWordAcc, 0x00), 
-                                ,   5, 
+                            AccessAs (DWordAcc, 0x00),
+                                ,   5,
                             F05E,   1023
                         }
 
@@ -8664,7 +8664,7 @@
                         Local2 = 0x05
                         BankField (OPR0, BNK0, 0x05, DWordAcc, NoLock, WriteAsZeros)
                         {
-                                ,   5, 
+                                ,   5,
                             F05F,   1983
                         }
 
@@ -8688,7 +8688,7 @@
                         Local2 = 0x06
                         BankField (OPR0, BNK0, 0x06, DWordAcc, NoLock, WriteAsZeros)
                         {
-                                ,   6, 
+                                ,   6,
                             F060,   1
                         }
 
@@ -8700,8 +8700,8 @@
                         Local2 = 0x07
                         BankField (OPR0, BNK0, 0x07, AnyAcc, NoLock, WriteAsZeros)
                         {
-                            AccessAs (DWordAcc, 0x00), 
-                                ,   6, 
+                            AccessAs (DWordAcc, 0x00),
+                                ,   6,
                             F061,   6
                         }
 
@@ -8713,7 +8713,7 @@
                         Local2 = 0x08
                         BankField (OPR0, BNK0, 0x08, DWordAcc, NoLock, WriteAsZeros)
                         {
-                                ,   6, 
+                                ,   6,
                             F062,   7
                         }
 
@@ -8725,8 +8725,8 @@
                         Local2 = 0x09
                         BankField (OPR0, BNK0, 0x09, ByteAcc, NoLock, WriteAsZeros)
                         {
-                            AccessAs (DWordAcc, 0x00), 
-                                ,   6, 
+                            AccessAs (DWordAcc, 0x00),
+                                ,   6,
                             F063,   8
                         }
 
@@ -8738,7 +8738,7 @@
                         Local2 = 0x3F
                         BankField (OPR0, BNK0, 0x3F, DWordAcc, NoLock, WriteAsZeros)
                         {
-                                ,   6, 
+                                ,   6,
                             F064,   9
                         }
 
@@ -8750,8 +8750,8 @@
                         Local2 = 0x40
                         BankField (OPR0, BNK0, 0x40, WordAcc, NoLock, WriteAsZeros)
                         {
-                            AccessAs (DWordAcc, 0x00), 
-                                ,   6, 
+                            AccessAs (DWordAcc, 0x00),
+                                ,   6,
                             F065,   31
                         }
 
@@ -8763,7 +8763,7 @@
                         Local2 = 0x7F
                         BankField (OPR0, BNK0, 0x7F, DWordAcc, NoLock, WriteAsZeros)
                         {
-                                ,   6, 
+                                ,   6,
                             F066,   32
                         }
 
@@ -8775,8 +8775,8 @@
                         Local2 = 0x80
                         BankField (OPR0, BNK0, 0x80, DWordAcc, NoLock, WriteAsZeros)
                         {
-                            AccessAs (DWordAcc, 0x00), 
-                                ,   6, 
+                            AccessAs (DWordAcc, 0x00),
+                                ,   6,
                             F067,   33
                         }
 
@@ -8788,7 +8788,7 @@
                         Local2 = 0xFF
                         BankField (OPR0, BNK0, 0xFF, DWordAcc, NoLock, WriteAsZeros)
                         {
-                                ,   6, 
+                                ,   6,
                             F068,   63
                         }
 
@@ -8800,8 +8800,8 @@
                         Local2 = 0x00
                         BankField (OPR0, BNK0, 0x00, QWordAcc, NoLock, WriteAsZeros)
                         {
-                            AccessAs (DWordAcc, 0x00), 
-                                ,   6, 
+                            AccessAs (DWordAcc, 0x00),
+                                ,   6,
                             F069,   64
                         }
 
@@ -8813,7 +8813,7 @@
                         Local2 = 0x01
                         BankField (OPR0, BNK0, 0x01, DWordAcc, NoLock, WriteAsZeros)
                         {
-                                ,   6, 
+                                ,   6,
                             F06A,   65
                         }
 
@@ -8825,8 +8825,8 @@
                         Local2 = 0x02
                         BankField (OPR0, BNK0, 0x02, AnyAcc, NoLock, WriteAsZeros)
                         {
-                            AccessAs (DWordAcc, 0x00), 
-                                ,   6, 
+                            AccessAs (DWordAcc, 0x00),
+                                ,   6,
                             F06B,   69
                         }
 
@@ -8838,7 +8838,7 @@
                         Local2 = 0x03
                         BankField (OPR0, BNK0, 0x03, DWordAcc, NoLock, WriteAsZeros)
                         {
-                                ,   6, 
+                                ,   6,
                             F06C,   129
                         }
 
@@ -8850,8 +8850,8 @@
                         Local2 = 0x04
                         BankField (OPR0, BNK0, 0x04, ByteAcc, NoLock, WriteAsZeros)
                         {
-                            AccessAs (DWordAcc, 0x00), 
-                                ,   6, 
+                            AccessAs (DWordAcc, 0x00),
+                                ,   6,
                             F06D,   256
                         }
 
@@ -8863,7 +8863,7 @@
                         Local2 = 0x05
                         BankField (OPR0, BNK0, 0x05, DWordAcc, NoLock, WriteAsZeros)
                         {
-                                ,   6, 
+                                ,   6,
                             F06E,   1023
                         }
 
@@ -8875,8 +8875,8 @@
                         Local2 = 0x06
                         BankField (OPR0, BNK0, 0x06, WordAcc, NoLock, WriteAsZeros)
                         {
-                            AccessAs (DWordAcc, 0x00), 
-                                ,   6, 
+                            AccessAs (DWordAcc, 0x00),
+                                ,   6,
                             F06F,   1983
                         }
 
@@ -8900,8 +8900,8 @@
                         Local2 = 0x07
                         BankField (OPR0, BNK0, 0x07, DWordAcc, NoLock, WriteAsZeros)
                         {
-                            AccessAs (DWordAcc, 0x00), 
-                                ,   7, 
+                            AccessAs (DWordAcc, 0x00),
+                                ,   7,
                             F070,   1
                         }
 
@@ -8913,7 +8913,7 @@
                         Local2 = 0x08
                         BankField (OPR0, BNK0, 0x08, DWordAcc, NoLock, WriteAsZeros)
                         {
-                                ,   7, 
+                                ,   7,
                             F071,   6
                         }
 
@@ -8925,8 +8925,8 @@
                         Local2 = 0x09
                         BankField (OPR0, BNK0, 0x09, QWordAcc, NoLock, WriteAsZeros)
                         {
-                            AccessAs (DWordAcc, 0x00), 
-                                ,   7, 
+                            AccessAs (DWordAcc, 0x00),
+                                ,   7,
                             F072,   7
                         }
 
@@ -8938,7 +8938,7 @@
                         Local2 = 0x3F
                         BankField (OPR0, BNK0, 0x3F, DWordAcc, NoLock, WriteAsZeros)
                         {
-                                ,   7, 
+                                ,   7,
                             F073,   8
                         }
 
@@ -8950,8 +8950,8 @@
                         Local2 = 0x40
                         BankField (OPR0, BNK0, 0x40, AnyAcc, NoLock, WriteAsZeros)
                         {
-                            AccessAs (DWordAcc, 0x00), 
-                                ,   7, 
+                            AccessAs (DWordAcc, 0x00),
+                                ,   7,
                             F074,   9
                         }
 
@@ -8963,7 +8963,7 @@
                         Local2 = 0x7F
                         BankField (OPR0, BNK0, 0x7F, DWordAcc, NoLock, WriteAsZeros)
                         {
-                                ,   7, 
+                                ,   7,
                             F075,   31
                         }
 
@@ -8975,8 +8975,8 @@
                         Local2 = 0x80
                         BankField (OPR0, BNK0, 0x80, ByteAcc, NoLock, WriteAsZeros)
                         {
-                            AccessAs (DWordAcc, 0x00), 
-                                ,   7, 
+                            AccessAs (DWordAcc, 0x00),
+                                ,   7,
                             F076,   32
                         }
 
@@ -8988,7 +8988,7 @@
                         Local2 = 0xFF
                         BankField (OPR0, BNK0, 0xFF, DWordAcc, NoLock, WriteAsZeros)
                         {
-                                ,   7, 
+                                ,   7,
                             F077,   33
                         }
 
@@ -9000,8 +9000,8 @@
                         Local2 = 0x00
                         BankField (OPR0, BNK0, 0x00, WordAcc, NoLock, WriteAsZeros)
                         {
-                            AccessAs (DWordAcc, 0x00), 
-                                ,   7, 
+                            AccessAs (DWordAcc, 0x00),
+                                ,   7,
                             F078,   63
                         }
 
@@ -9013,7 +9013,7 @@
                         Local2 = 0x01
                         BankField (OPR0, BNK0, 0x01, DWordAcc, NoLock, WriteAsZeros)
                         {
-                                ,   7, 
+                                ,   7,
                             F079,   64
                         }
 
@@ -9025,8 +9025,8 @@
                         Local2 = 0x02
                         BankField (OPR0, BNK0, 0x02, DWordAcc, NoLock, WriteAsZeros)
                         {
-                            AccessAs (DWordAcc, 0x00), 
-                                ,   7, 
+                            AccessAs (DWordAcc, 0x00),
+                                ,   7,
                             F07A,   65
                         }
 
@@ -9038,7 +9038,7 @@
                         Local2 = 0x03
                         BankField (OPR0, BNK0, 0x03, DWordAcc, NoLock, WriteAsZeros)
                         {
-                                ,   7, 
+                                ,   7,
                             F07B,   69
                         }
 
@@ -9050,8 +9050,8 @@
                         Local2 = 0x04
                         BankField (OPR0, BNK0, 0x04, QWordAcc, NoLock, WriteAsZeros)
                         {
-                            AccessAs (DWordAcc, 0x00), 
-                                ,   7, 
+                            AccessAs (DWordAcc, 0x00),
+                                ,   7,
                             F07C,   129
                         }
 
@@ -9063,7 +9063,7 @@
                         Local2 = 0x05
                         BankField (OPR0, BNK0, 0x05, DWordAcc, NoLock, WriteAsZeros)
                         {
-                                ,   7, 
+                                ,   7,
                             F07D,   256
                         }
 
@@ -9075,8 +9075,8 @@
                         Local2 = 0x06
                         BankField (OPR0, BNK0, 0x06, AnyAcc, NoLock, WriteAsZeros)
                         {
-                            AccessAs (DWordAcc, 0x00), 
-                                ,   7, 
+                            AccessAs (DWordAcc, 0x00),
+                                ,   7,
                             F07E,   1023
                         }
 
@@ -9088,7 +9088,7 @@
                         Local2 = 0x07
                         BankField (OPR0, BNK0, 0x07, DWordAcc, NoLock, WriteAsZeros)
                         {
-                                ,   7, 
+                                ,   7,
                             F07F,   1983
                         }
 
@@ -9112,7 +9112,7 @@
                         Local2 = 0x08
                         BankField (OPR0, BNK0, 0x08, DWordAcc, NoLock, WriteAsZeros)
                         {
-                            Offset (0x01), 
+                            Offset (0x01),
                             F080,   1
                         }
 
@@ -9124,8 +9124,8 @@
                         Local2 = 0x09
                         BankField (OPR0, BNK0, 0x09, ByteAcc, NoLock, WriteAsZeros)
                         {
-                            AccessAs (DWordAcc, 0x00), 
-                            Offset (0x01), 
+                            AccessAs (DWordAcc, 0x00),
+                            Offset (0x01),
                             F081,   6
                         }
 
@@ -9137,7 +9137,7 @@
                         Local2 = 0x3F
                         BankField (OPR0, BNK0, 0x3F, DWordAcc, NoLock, WriteAsZeros)
                         {
-                            Offset (0x01), 
+                            Offset (0x01),
                             F082,   7
                         }
 
@@ -9149,8 +9149,8 @@
                         Local2 = 0x40
                         BankField (OPR0, BNK0, 0x40, WordAcc, NoLock, WriteAsZeros)
                         {
-                            AccessAs (DWordAcc, 0x00), 
-                            Offset (0x01), 
+                            AccessAs (DWordAcc, 0x00),
+                            Offset (0x01),
                             F083,   8
                         }
 
@@ -9162,7 +9162,7 @@
                         Local2 = 0x7F
                         BankField (OPR0, BNK0, 0x7F, DWordAcc, NoLock, WriteAsZeros)
                         {
-                            Offset (0x01), 
+                            Offset (0x01),
                             F084,   9
                         }
 
@@ -9174,8 +9174,8 @@
                         Local2 = 0x80
                         BankField (OPR0, BNK0, 0x80, DWordAcc, NoLock, WriteAsZeros)
                         {
-                            AccessAs (DWordAcc, 0x00), 
-                            Offset (0x01), 
+                            AccessAs (DWordAcc, 0x00),
+                            Offset (0x01),
                             F085,   31
                         }
 
@@ -9187,7 +9187,7 @@
                         Local2 = 0xFF
                         BankField (OPR0, BNK0, 0xFF, DWordAcc, NoLock, WriteAsZeros)
                         {
-                            Offset (0x01), 
+                            Offset (0x01),
                             F086,   32
                         }
 
@@ -9199,8 +9199,8 @@
                         Local2 = 0x00
                         BankField (OPR0, BNK0, 0x00, QWordAcc, NoLock, WriteAsZeros)
                         {
-                            AccessAs (DWordAcc, 0x00), 
-                            Offset (0x01), 
+                            AccessAs (DWordAcc, 0x00),
+                            Offset (0x01),
                             F087,   33
                         }
 
@@ -9212,7 +9212,7 @@
                         Local2 = 0x01
                         BankField (OPR0, BNK0, 0x01, DWordAcc, NoLock, WriteAsZeros)
                         {
-                            Offset (0x01), 
+                            Offset (0x01),
                             F088,   63
                         }
 
@@ -9224,8 +9224,8 @@
                         Local2 = 0x02
                         BankField (OPR0, BNK0, 0x02, AnyAcc, NoLock, WriteAsZeros)
                         {
-                            AccessAs (DWordAcc, 0x00), 
-                            Offset (0x01), 
+                            AccessAs (DWordAcc, 0x00),
+                            Offset (0x01),
                             F089,   64
                         }
 
@@ -9237,7 +9237,7 @@
                         Local2 = 0x03
                         BankField (OPR0, BNK0, 0x03, DWordAcc, NoLock, WriteAsZeros)
                         {
-                            Offset (0x01), 
+                            Offset (0x01),
                             F08A,   65
                         }
 
@@ -9249,8 +9249,8 @@
                         Local2 = 0x04
                         BankField (OPR0, BNK0, 0x04, ByteAcc, NoLock, WriteAsZeros)
                         {
-                            AccessAs (DWordAcc, 0x00), 
-                            Offset (0x01), 
+                            AccessAs (DWordAcc, 0x00),
+                            Offset (0x01),
                             F08B,   69
                         }
 
@@ -9262,7 +9262,7 @@
                         Local2 = 0x05
                         BankField (OPR0, BNK0, 0x05, DWordAcc, NoLock, WriteAsZeros)
                         {
-                            Offset (0x01), 
+                            Offset (0x01),
                             F08C,   129
                         }
 
@@ -9274,8 +9274,8 @@
                         Local2 = 0x06
                         BankField (OPR0, BNK0, 0x06, WordAcc, NoLock, WriteAsZeros)
                         {
-                            AccessAs (DWordAcc, 0x00), 
-                            Offset (0x01), 
+                            AccessAs (DWordAcc, 0x00),
+                            Offset (0x01),
                             F08D,   256
                         }
 
@@ -9287,7 +9287,7 @@
                         Local2 = 0x07
                         BankField (OPR0, BNK0, 0x07, DWordAcc, NoLock, WriteAsZeros)
                         {
-                            Offset (0x01), 
+                            Offset (0x01),
                             F08E,   1023
                         }
 
@@ -9299,8 +9299,8 @@
                         Local2 = 0x08
                         BankField (OPR0, BNK0, 0x08, DWordAcc, NoLock, WriteAsZeros)
                         {
-                            AccessAs (DWordAcc, 0x00), 
-                            Offset (0x01), 
+                            AccessAs (DWordAcc, 0x00),
+                            Offset (0x01),
                             F08F,   1983
                         }
 
@@ -9324,8 +9324,8 @@
                         Local2 = 0x09
                         BankField (OPR0, BNK0, 0x09, QWordAcc, NoLock, WriteAsZeros)
                         {
-                            AccessAs (DWordAcc, 0x00), 
-                                ,   9, 
+                            AccessAs (DWordAcc, 0x00),
+                                ,   9,
                             F090,   1
                         }
 
@@ -9337,7 +9337,7 @@
                         Local2 = 0x3F
                         BankField (OPR0, BNK0, 0x3F, DWordAcc, NoLock, WriteAsZeros)
                         {
-                                ,   9, 
+                                ,   9,
                             F091,   6
                         }
 
@@ -9349,8 +9349,8 @@
                         Local2 = 0x40
                         BankField (OPR0, BNK0, 0x40, AnyAcc, NoLock, WriteAsZeros)
                         {
-                            AccessAs (DWordAcc, 0x00), 
-                                ,   9, 
+                            AccessAs (DWordAcc, 0x00),
+                                ,   9,
                             F092,   7
                         }
 
@@ -9362,7 +9362,7 @@
                         Local2 = 0x7F
                         BankField (OPR0, BNK0, 0x7F, DWordAcc, NoLock, WriteAsZeros)
                         {
-                                ,   9, 
+                                ,   9,
                             F093,   8
                         }
 
@@ -9374,8 +9374,8 @@
                         Local2 = 0x80
                         BankField (OPR0, BNK0, 0x80, ByteAcc, NoLock, WriteAsZeros)
                         {
-                            AccessAs (DWordAcc, 0x00), 
-                                ,   9, 
+                            AccessAs (DWordAcc, 0x00),
+                                ,   9,
                             F094,   9
                         }
 
@@ -9387,7 +9387,7 @@
                         Local2 = 0xFF
                         BankField (OPR0, BNK0, 0xFF, DWordAcc, NoLock, WriteAsZeros)
                         {
-                                ,   9, 
+                                ,   9,
                             F095,   31
                         }
 
@@ -9399,8 +9399,8 @@
                         Local2 = 0x00
                         BankField (OPR0, BNK0, 0x00, WordAcc, NoLock, WriteAsZeros)
                         {
-                            AccessAs (DWordAcc, 0x00), 
-                                ,   9, 
+                            AccessAs (DWordAcc, 0x00),
+                                ,   9,
                             F096,   32
                         }
 
@@ -9412,7 +9412,7 @@
                         Local2 = 0x01
                         BankField (OPR0, BNK0, 0x01, DWordAcc, NoLock, WriteAsZeros)
                         {
-                                ,   9, 
+                                ,   9,
                             F097,   33
                         }
 
@@ -9424,8 +9424,8 @@
                         Local2 = 0x02
                         BankField (OPR0, BNK0, 0x02, DWordAcc, NoLock, WriteAsZeros)
                         {
-                            AccessAs (DWordAcc, 0x00), 
-                                ,   9, 
+                            AccessAs (DWordAcc, 0x00),
+                                ,   9,
                             F098,   63
                         }
 
@@ -9437,7 +9437,7 @@
                         Local2 = 0x03
                         BankField (OPR0, BNK0, 0x03, DWordAcc, NoLock, WriteAsZeros)
                         {
-                                ,   9, 
+                                ,   9,
                             F099,   64
                         }
 
@@ -9449,8 +9449,8 @@
                         Local2 = 0x04
                         BankField (OPR0, BNK0, 0x04, QWordAcc, NoLock, WriteAsZeros)
                         {
-                            AccessAs (DWordAcc, 0x00), 
-                                ,   9, 
+                            AccessAs (DWordAcc, 0x00),
+                                ,   9,
                             F09A,   65
                         }
 
@@ -9462,7 +9462,7 @@
                         Local2 = 0x05
                         BankField (OPR0, BNK0, 0x05, DWordAcc, NoLock, WriteAsZeros)
                         {
-                                ,   9, 
+                                ,   9,
                             F09B,   69
                         }
 
@@ -9474,8 +9474,8 @@
                         Local2 = 0x06
                         BankField (OPR0, BNK0, 0x06, AnyAcc, NoLock, WriteAsZeros)
                         {
-                            AccessAs (DWordAcc, 0x00), 
-                                ,   9, 
+                            AccessAs (DWordAcc, 0x00),
+                                ,   9,
                             F09C,   129
                         }
 
@@ -9487,7 +9487,7 @@
                         Local2 = 0x07
                         BankField (OPR0, BNK0, 0x07, DWordAcc, NoLock, WriteAsZeros)
                         {
-                                ,   9, 
+                                ,   9,
                             F09D,   256
                         }
 
@@ -9499,8 +9499,8 @@
                         Local2 = 0x08
                         BankField (OPR0, BNK0, 0x08, ByteAcc, NoLock, WriteAsZeros)
                         {
-                            AccessAs (DWordAcc, 0x00), 
-                                ,   9, 
+                            AccessAs (DWordAcc, 0x00),
+                                ,   9,
                             F09E,   1023
                         }
 
@@ -9512,7 +9512,7 @@
                         Local2 = 0x09
                         BankField (OPR0, BNK0, 0x09, DWordAcc, NoLock, WriteAsZeros)
                         {
-                                ,   9, 
+                                ,   9,
                             F09F,   1983
                         }
 
@@ -9536,8 +9536,8 @@
                         Local2 = 0x3F
                         BankField (OPR0, BNK0, 0x3F, DWordAcc, NoLock, WriteAsZeros)
                         {
-                            Offset (0x03), 
-                                ,   7, 
+                            Offset (0x03),
+                                ,   7,
                             F0A0,   1
                         }
 
@@ -9549,9 +9549,9 @@
                         Local2 = 0x40
                         BankField (OPR0, BNK0, 0x40, WordAcc, NoLock, WriteAsZeros)
                         {
-                            AccessAs (DWordAcc, 0x00), 
-                            Offset (0x03), 
-                                ,   7, 
+                            AccessAs (DWordAcc, 0x00),
+                            Offset (0x03),
+                                ,   7,
                             F0A1,   6
                         }
 
@@ -9563,8 +9563,8 @@
                         Local2 = 0x7F
                         BankField (OPR0, BNK0, 0x7F, DWordAcc, NoLock, WriteAsZeros)
                         {
-                            Offset (0x03), 
-                                ,   7, 
+                            Offset (0x03),
+                                ,   7,
                             F0A2,   7
                         }
 
@@ -9576,9 +9576,9 @@
                         Local2 = 0x80
                         BankField (OPR0, BNK0, 0x80, DWordAcc, NoLock, WriteAsZeros)
                         {
-                            AccessAs (DWordAcc, 0x00), 
-                            Offset (0x03), 
-                                ,   7, 
+                            AccessAs (DWordAcc, 0x00),
+                            Offset (0x03),
+                                ,   7,
                             F0A3,   8
                         }
 
@@ -9590,8 +9590,8 @@
                         Local2 = 0xFF
                         BankField (OPR0, BNK0, 0xFF, DWordAcc, NoLock, WriteAsZeros)
                         {
-                            Offset (0x03), 
-                                ,   7, 
+                            Offset (0x03),
+                                ,   7,
                             F0A4,   9
                         }
 
@@ -9603,9 +9603,9 @@
                         Local2 = 0x00
                         BankField (OPR0, BNK0, 0x00, QWordAcc, NoLock, WriteAsZeros)
                         {
-                            AccessAs (DWordAcc, 0x00), 
-                            Offset (0x03), 
-                                ,   7, 
+                            AccessAs (DWordAcc, 0x00),
+                            Offset (0x03),
+                                ,   7,
                             F0A5,   31
                         }
 
@@ -9617,8 +9617,8 @@
                         Local2 = 0x01
                         BankField (OPR0, BNK0, 0x01, DWordAcc, NoLock, WriteAsZeros)
                         {
-                            Offset (0x03), 
-                                ,   7, 
+                            Offset (0x03),
+                                ,   7,
                             F0A6,   32
                         }
 
@@ -9630,9 +9630,9 @@
                         Local2 = 0x02
                         BankField (OPR0, BNK0, 0x02, AnyAcc, NoLock, WriteAsZeros)
                         {
-                            AccessAs (DWordAcc, 0x00), 
-                            Offset (0x03), 
-                                ,   7, 
+                            AccessAs (DWordAcc, 0x00),
+                            Offset (0x03),
+                                ,   7,
                             F0A7,   33
                         }
 
@@ -9644,8 +9644,8 @@
                         Local2 = 0x03
                         BankField (OPR0, BNK0, 0x03, DWordAcc, NoLock, WriteAsZeros)
                         {
-                            Offset (0x03), 
-                                ,   7, 
+                            Offset (0x03),
+                                ,   7,
                             F0A8,   63
                         }
 
@@ -9657,9 +9657,9 @@
                         Local2 = 0x04
                         BankField (OPR0, BNK0, 0x04, ByteAcc, NoLock, WriteAsZeros)
                         {
-                            AccessAs (DWordAcc, 0x00), 
-                            Offset (0x03), 
-                                ,   7, 
+                            AccessAs (DWordAcc, 0x00),
+                            Offset (0x03),
+                                ,   7,
                             F0A9,   64
                         }
 
@@ -9671,8 +9671,8 @@
                         Local2 = 0x05
                         BankField (OPR0, BNK0, 0x05, DWordAcc, NoLock, WriteAsZeros)
                         {
-                            Offset (0x03), 
-                                ,   7, 
+                            Offset (0x03),
+                                ,   7,
                             F0AA,   65
                         }
 
@@ -9684,9 +9684,9 @@
                         Local2 = 0x06
                         BankField (OPR0, BNK0, 0x06, WordAcc, NoLock, WriteAsZeros)
                         {
-                            AccessAs (DWordAcc, 0x00), 
-                            Offset (0x03), 
-                                ,   7, 
+                            AccessAs (DWordAcc, 0x00),
+                            Offset (0x03),
+                                ,   7,
                             F0AB,   69
                         }
 
@@ -9698,8 +9698,8 @@
                         Local2 = 0x07
                         BankField (OPR0, BNK0, 0x07, DWordAcc, NoLock, WriteAsZeros)
                         {
-                            Offset (0x03), 
-                                ,   7, 
+                            Offset (0x03),
+                                ,   7,
                             F0AC,   129
                         }
 
@@ -9711,9 +9711,9 @@
                         Local2 = 0x08
                         BankField (OPR0, BNK0, 0x08, DWordAcc, NoLock, WriteAsZeros)
                         {
-                            AccessAs (DWordAcc, 0x00), 
-                            Offset (0x03), 
-                                ,   7, 
+                            AccessAs (DWordAcc, 0x00),
+                            Offset (0x03),
+                                ,   7,
                             F0AD,   256
                         }
 
@@ -9725,8 +9725,8 @@
                         Local2 = 0x09
                         BankField (OPR0, BNK0, 0x09, DWordAcc, NoLock, WriteAsZeros)
                         {
-                            Offset (0x03), 
-                                ,   7, 
+                            Offset (0x03),
+                                ,   7,
                             F0AE,   1023
                         }
 
@@ -9738,9 +9738,9 @@
                         Local2 = 0x3F
                         BankField (OPR0, BNK0, 0x3F, QWordAcc, NoLock, WriteAsZeros)
                         {
-                            AccessAs (DWordAcc, 0x00), 
-                            Offset (0x03), 
-                                ,   7, 
+                            AccessAs (DWordAcc, 0x00),
+                            Offset (0x03),
+                                ,   7,
                             F0AF,   1983
                         }
 
@@ -9764,8 +9764,8 @@
                         Local2 = 0x40
                         BankField (OPR0, BNK0, 0x40, AnyAcc, NoLock, WriteAsZeros)
                         {
-                            AccessAs (DWordAcc, 0x00), 
-                            Offset (0x04), 
+                            AccessAs (DWordAcc, 0x00),
+                            Offset (0x04),
                             F0B0,   1
                         }
 
@@ -9777,7 +9777,7 @@
                         Local2 = 0x7F
                         BankField (OPR0, BNK0, 0x7F, DWordAcc, NoLock, WriteAsZeros)
                         {
-                            Offset (0x04), 
+                            Offset (0x04),
                             F0B1,   6
                         }
 
@@ -9789,8 +9789,8 @@
                         Local2 = 0x80
                         BankField (OPR0, BNK0, 0x80, ByteAcc, NoLock, WriteAsZeros)
                         {
-                            AccessAs (DWordAcc, 0x00), 
-                            Offset (0x04), 
+                            AccessAs (DWordAcc, 0x00),
+                            Offset (0x04),
                             F0B2,   7
                         }
 
@@ -9802,7 +9802,7 @@
                         Local2 = 0xFF
                         BankField (OPR0, BNK0, 0xFF, DWordAcc, NoLock, WriteAsZeros)
                         {
-                            Offset (0x04), 
+                            Offset (0x04),
                             F0B3,   8
                         }
 
@@ -9814,8 +9814,8 @@
                         Local2 = 0x00
                         BankField (OPR0, BNK0, 0x00, WordAcc, NoLock, WriteAsZeros)
                         {
-                            AccessAs (DWordAcc, 0x00), 
-                            Offset (0x04), 
+                            AccessAs (DWordAcc, 0x00),
+                            Offset (0x04),
                             F0B4,   9
                         }
 
@@ -9827,7 +9827,7 @@
                         Local2 = 0x01
                         BankField (OPR0, BNK0, 0x01, DWordAcc, NoLock, WriteAsZeros)
                         {
-                            Offset (0x04), 
+                            Offset (0x04),
                             F0B5,   31
                         }
 
@@ -9839,8 +9839,8 @@
                         Local2 = 0x02
                         BankField (OPR0, BNK0, 0x02, DWordAcc, NoLock, WriteAsZeros)
                         {
-                            AccessAs (DWordAcc, 0x00), 
-                            Offset (0x04), 
+                            AccessAs (DWordAcc, 0x00),
+                            Offset (0x04),
                             F0B6,   32
                         }
 
@@ -9852,7 +9852,7 @@
                         Local2 = 0x03
                         BankField (OPR0, BNK0, 0x03, DWordAcc, NoLock, WriteAsZeros)
                         {
-                            Offset (0x04), 
+                            Offset (0x04),
                             F0B7,   33
                         }
 
@@ -9864,8 +9864,8 @@
                         Local2 = 0x04
                         BankField (OPR0, BNK0, 0x04, QWordAcc, NoLock, WriteAsZeros)
                         {
-                            AccessAs (DWordAcc, 0x00), 
-                            Offset (0x04), 
+                            AccessAs (DWordAcc, 0x00),
+                            Offset (0x04),
                             F0B8,   63
                         }
 
@@ -9877,7 +9877,7 @@
                         Local2 = 0x05
                         BankField (OPR0, BNK0, 0x05, DWordAcc, NoLock, WriteAsZeros)
                         {
-                            Offset (0x04), 
+                            Offset (0x04),
                             F0B9,   64
                         }
 
@@ -9889,8 +9889,8 @@
                         Local2 = 0x06
                         BankField (OPR0, BNK0, 0x06, AnyAcc, NoLock, WriteAsZeros)
                         {
-                            AccessAs (DWordAcc, 0x00), 
-                            Offset (0x04), 
+                            AccessAs (DWordAcc, 0x00),
+                            Offset (0x04),
                             F0BA,   65
                         }
 
@@ -9902,7 +9902,7 @@
                         Local2 = 0x07
                         BankField (OPR0, BNK0, 0x07, DWordAcc, NoLock, WriteAsZeros)
                         {
-                            Offset (0x04), 
+                            Offset (0x04),
                             F0BB,   69
                         }
 
@@ -9914,8 +9914,8 @@
                         Local2 = 0x08
                         BankField (OPR0, BNK0, 0x08, ByteAcc, NoLock, WriteAsZeros)
                         {
-                            AccessAs (DWordAcc, 0x00), 
-                            Offset (0x04), 
+                            AccessAs (DWordAcc, 0x00),
+                            Offset (0x04),
                             F0BC,   129
                         }
 
@@ -9927,7 +9927,7 @@
                         Local2 = 0x09
                         BankField (OPR0, BNK0, 0x09, DWordAcc, NoLock, WriteAsZeros)
                         {
-                            Offset (0x04), 
+                            Offset (0x04),
                             F0BD,   256
                         }
 
@@ -9939,8 +9939,8 @@
                         Local2 = 0x3F
                         BankField (OPR0, BNK0, 0x3F, WordAcc, NoLock, WriteAsZeros)
                         {
-                            AccessAs (DWordAcc, 0x00), 
-                            Offset (0x04), 
+                            AccessAs (DWordAcc, 0x00),
+                            Offset (0x04),
                             F0BE,   1023
                         }
 
@@ -9952,7 +9952,7 @@
                         Local2 = 0x40
                         BankField (OPR0, BNK0, 0x40, DWordAcc, NoLock, WriteAsZeros)
                         {
-                            Offset (0x04), 
+                            Offset (0x04),
                             F0BF,   1983
                         }
 
@@ -9976,7 +9976,7 @@
                         Local2 = 0x7F
                         BankField (OPR0, BNK0, 0x7F, DWordAcc, NoLock, WriteAsZeros)
                         {
-                                ,   33, 
+                                ,   33,
                             F0C0,   1
                         }
 
@@ -9988,8 +9988,8 @@
                         Local2 = 0x80
                         BankField (OPR0, BNK0, 0x80, DWordAcc, NoLock, WriteAsZeros)
                         {
-                            AccessAs (DWordAcc, 0x00), 
-                                ,   33, 
+                            AccessAs (DWordAcc, 0x00),
+                                ,   33,
                             F0C1,   6
                         }
 
@@ -10001,7 +10001,7 @@
                         Local2 = 0xFF
                         BankField (OPR0, BNK0, 0xFF, DWordAcc, NoLock, WriteAsZeros)
                         {
-                                ,   33, 
+                                ,   33,
                             F0C2,   7
                         }
 
@@ -10013,8 +10013,8 @@
                         Local2 = 0x00
                         BankField (OPR0, BNK0, 0x00, QWordAcc, NoLock, WriteAsZeros)
                         {
-                            AccessAs (DWordAcc, 0x00), 
-                                ,   33, 
+                            AccessAs (DWordAcc, 0x00),
+                                ,   33,
                             F0C3,   8
                         }
 
@@ -10026,7 +10026,7 @@
                         Local2 = 0x01
                         BankField (OPR0, BNK0, 0x01, DWordAcc, NoLock, WriteAsZeros)
                         {
-                                ,   33, 
+                                ,   33,
                             F0C4,   9
                         }
 
@@ -10038,8 +10038,8 @@
                         Local2 = 0x02
                         BankField (OPR0, BNK0, 0x02, AnyAcc, NoLock, WriteAsZeros)
                         {
-                            AccessAs (DWordAcc, 0x00), 
-                                ,   33, 
+                            AccessAs (DWordAcc, 0x00),
+                                ,   33,
                             F0C5,   31
                         }
 
@@ -10051,7 +10051,7 @@
                         Local2 = 0x03
                         BankField (OPR0, BNK0, 0x03, DWordAcc, NoLock, WriteAsZeros)
                         {
-                                ,   33, 
+                                ,   33,
                             F0C6,   32
                         }
 
@@ -10063,8 +10063,8 @@
                         Local2 = 0x04
                         BankField (OPR0, BNK0, 0x04, ByteAcc, NoLock, WriteAsZeros)
                         {
-                            AccessAs (DWordAcc, 0x00), 
-                                ,   33, 
+                            AccessAs (DWordAcc, 0x00),
+                                ,   33,
                             F0C7,   33
                         }
 
@@ -10076,7 +10076,7 @@
                         Local2 = 0x05
                         BankField (OPR0, BNK0, 0x05, DWordAcc, NoLock, WriteAsZeros)
                         {
-                                ,   33, 
+                                ,   33,
                             F0C8,   63
                         }
 
@@ -10088,8 +10088,8 @@
                         Local2 = 0x06
                         BankField (OPR0, BNK0, 0x06, WordAcc, NoLock, WriteAsZeros)
                         {
-                            AccessAs (DWordAcc, 0x00), 
-                                ,   33, 
+                            AccessAs (DWordAcc, 0x00),
+                                ,   33,
                             F0C9,   64
                         }
 
@@ -10101,7 +10101,7 @@
                         Local2 = 0x07
                         BankField (OPR0, BNK0, 0x07, DWordAcc, NoLock, WriteAsZeros)
                         {
-                                ,   33, 
+                                ,   33,
                             F0CA,   65
                         }
 
@@ -10113,8 +10113,8 @@
                         Local2 = 0x08
                         BankField (OPR0, BNK0, 0x08, DWordAcc, NoLock, WriteAsZeros)
                         {
-                            AccessAs (DWordAcc, 0x00), 
-                                ,   33, 
+                            AccessAs (DWordAcc, 0x00),
+                                ,   33,
                             F0CB,   69
                         }
 
@@ -10126,7 +10126,7 @@
                         Local2 = 0x09
                         BankField (OPR0, BNK0, 0x09, DWordAcc, NoLock, WriteAsZeros)
                         {
-                                ,   33, 
+                                ,   33,
                             F0CC,   129
                         }
 
@@ -10138,8 +10138,8 @@
                         Local2 = 0x3F
                         BankField (OPR0, BNK0, 0x3F, QWordAcc, NoLock, WriteAsZeros)
                         {
-                            AccessAs (DWordAcc, 0x00), 
-                                ,   33, 
+                            AccessAs (DWordAcc, 0x00),
+                                ,   33,
                             F0CD,   256
                         }
 
@@ -10151,7 +10151,7 @@
                         Local2 = 0x40
                         BankField (OPR0, BNK0, 0x40, DWordAcc, NoLock, WriteAsZeros)
                         {
-                                ,   33, 
+                                ,   33,
                             F0CE,   1023
                         }
 
@@ -10163,8 +10163,8 @@
                         Local2 = 0x7F
                         BankField (OPR0, BNK0, 0x7F, AnyAcc, NoLock, WriteAsZeros)
                         {
-                            AccessAs (DWordAcc, 0x00), 
-                                ,   33, 
+                            AccessAs (DWordAcc, 0x00),
+                                ,   33,
                             F0CF,   1983
                         }
 
@@ -10188,8 +10188,8 @@
                         Local2 = 0x80
                         BankField (OPR0, BNK0, 0x80, DWordAcc, NoLock, WriteAsZeros)
                         {
-                            AccessAs (DWordAcc, 0x00), 
-                                ,   63, 
+                            AccessAs (DWordAcc, 0x00),
+                                ,   63,
                             F0D0,   1
                         }
 
@@ -10203,7 +10203,7 @@
                         Local2 = 0xFF
                         BankField (OPR0, BNK0, 0xFF, DWordAcc, NoLock, WriteAsZeros)
                         {
-                                ,   63, 
+                                ,   63,
                             F0D1,   6
                         }
 
@@ -10215,8 +10215,8 @@
                         Local2 = 0x00
                         BankField (OPR0, BNK0, 0x00, DWordAcc, NoLock, WriteAsZeros)
                         {
-                            AccessAs (DWordAcc, 0x00), 
-                                ,   63, 
+                            AccessAs (DWordAcc, 0x00),
+                                ,   63,
                             F0D2,   7
                         }
 
@@ -10230,7 +10230,7 @@
                         Local2 = 0x01
                         BankField (OPR0, BNK0, 0x01, DWordAcc, NoLock, WriteAsZeros)
                         {
-                                ,   63, 
+                                ,   63,
                             F0D3,   8
                         }
 
@@ -10242,8 +10242,8 @@
                         Local2 = 0x02
                         BankField (OPR0, BNK0, 0x02, DWordAcc, NoLock, WriteAsZeros)
                         {
-                            AccessAs (DWordAcc, 0x00), 
-                                ,   63, 
+                            AccessAs (DWordAcc, 0x00),
+                                ,   63,
                             F0D4,   9
                         }
 
@@ -10255,7 +10255,7 @@
                         Local2 = 0x03
                         BankField (OPR0, BNK0, 0x03, DWordAcc, NoLock, WriteAsZeros)
                         {
-                                ,   63, 
+                                ,   63,
                             F0D5,   31
                         }
 
@@ -10267,8 +10267,8 @@
                         Local2 = 0x04
                         BankField (OPR0, BNK0, 0x04, QWordAcc, NoLock, WriteAsZeros)
                         {
-                            AccessAs (DWordAcc, 0x00), 
-                                ,   63, 
+                            AccessAs (DWordAcc, 0x00),
+                                ,   63,
                             F0D6,   32
                         }
 
@@ -10280,7 +10280,7 @@
                         Local2 = 0x05
                         BankField (OPR0, BNK0, 0x05, DWordAcc, NoLock, WriteAsZeros)
                         {
-                                ,   63, 
+                                ,   63,
                             F0D7,   33
                         }
 
@@ -10292,8 +10292,8 @@
                         Local2 = 0x06
                         BankField (OPR0, BNK0, 0x06, AnyAcc, NoLock, WriteAsZeros)
                         {
-                            AccessAs (DWordAcc, 0x00), 
-                                ,   63, 
+                            AccessAs (DWordAcc, 0x00),
+                                ,   63,
                             F0D8,   63
                         }
 
@@ -10305,7 +10305,7 @@
                         Local2 = 0x07
                         BankField (OPR0, BNK0, 0x07, DWordAcc, NoLock, WriteAsZeros)
                         {
-                                ,   63, 
+                                ,   63,
                             F0D9,   64
                         }
 
@@ -10317,8 +10317,8 @@
                         Local2 = 0x08
                         BankField (OPR0, BNK0, 0x08, ByteAcc, NoLock, WriteAsZeros)
                         {
-                            AccessAs (DWordAcc, 0x00), 
-                                ,   63, 
+                            AccessAs (DWordAcc, 0x00),
+                                ,   63,
                             F0DA,   65
                         }
 
@@ -10330,7 +10330,7 @@
                         Local2 = 0x09
                         BankField (OPR0, BNK0, 0x09, DWordAcc, NoLock, WriteAsZeros)
                         {
-                                ,   63, 
+                                ,   63,
                             F0DB,   69
                         }
 
@@ -10342,8 +10342,8 @@
                         Local2 = 0x3F
                         BankField (OPR0, BNK0, 0x3F, WordAcc, NoLock, WriteAsZeros)
                         {
-                            AccessAs (DWordAcc, 0x00), 
-                                ,   63, 
+                            AccessAs (DWordAcc, 0x00),
+                                ,   63,
                             F0DC,   129
                         }
 
@@ -10355,7 +10355,7 @@
                         Local2 = 0x40
                         BankField (OPR0, BNK0, 0x40, DWordAcc, NoLock, WriteAsZeros)
                         {
-                                ,   63, 
+                                ,   63,
                             F0DD,   256
                         }
 
@@ -10367,8 +10367,8 @@
                         Local2 = 0x7F
                         BankField (OPR0, BNK0, 0x7F, DWordAcc, NoLock, WriteAsZeros)
                         {
-                            AccessAs (DWordAcc, 0x00), 
-                                ,   63, 
+                            AccessAs (DWordAcc, 0x00),
+                                ,   63,
                             F0DE,   1023
                         }
 
@@ -10380,7 +10380,7 @@
                         Local2 = 0x80
                         BankField (OPR0, BNK0, 0x80, DWordAcc, NoLock, WriteAsZeros)
                         {
-                                ,   63, 
+                                ,   63,
                             F0DF,   1983
                         }
 
@@ -10404,7 +10404,7 @@
                         Local2 = 0xFF
                         BankField (OPR0, BNK0, 0xFF, DWordAcc, NoLock, WriteAsZeros)
                         {
-                            Offset (0x08), 
+                            Offset (0x08),
                             F0E0,   1
                         }
 
@@ -10416,8 +10416,8 @@
                         Local2 = 0x00
                         BankField (OPR0, BNK0, 0x00, QWordAcc, NoLock, WriteAsZeros)
                         {
-                            AccessAs (DWordAcc, 0x00), 
-                            Offset (0x08), 
+                            AccessAs (DWordAcc, 0x00),
+                            Offset (0x08),
                             F0E1,   6
                         }
 
@@ -10429,7 +10429,7 @@
                         Local2 = 0x01
                         BankField (OPR0, BNK0, 0x01, DWordAcc, NoLock, WriteAsZeros)
                         {
-                            Offset (0x08), 
+                            Offset (0x08),
                             F0E2,   7
                         }
 
@@ -10441,8 +10441,8 @@
                         Local2 = 0x02
                         BankField (OPR0, BNK0, 0x02, AnyAcc, NoLock, WriteAsZeros)
                         {
-                            AccessAs (DWordAcc, 0x00), 
-                            Offset (0x08), 
+                            AccessAs (DWordAcc, 0x00),
+                            Offset (0x08),
                             F0E3,   8
                         }
 
@@ -10454,7 +10454,7 @@
                         Local2 = 0x03
                         BankField (OPR0, BNK0, 0x03, DWordAcc, NoLock, WriteAsZeros)
                         {
-                            Offset (0x08), 
+                            Offset (0x08),
                             F0E4,   9
                         }
 
@@ -10466,8 +10466,8 @@
                         Local2 = 0x04
                         BankField (OPR0, BNK0, 0x04, ByteAcc, NoLock, WriteAsZeros)
                         {
-                            AccessAs (DWordAcc, 0x00), 
-                            Offset (0x08), 
+                            AccessAs (DWordAcc, 0x00),
+                            Offset (0x08),
                             F0E5,   31
                         }
 
@@ -10479,7 +10479,7 @@
                         Local2 = 0x05
                         BankField (OPR0, BNK0, 0x05, DWordAcc, NoLock, WriteAsZeros)
                         {
-                            Offset (0x08), 
+                            Offset (0x08),
                             F0E6,   32
                         }
 
@@ -10491,8 +10491,8 @@
                         Local2 = 0x06
                         BankField (OPR0, BNK0, 0x06, WordAcc, NoLock, WriteAsZeros)
                         {
-                            AccessAs (DWordAcc, 0x00), 
-                            Offset (0x08), 
+                            AccessAs (DWordAcc, 0x00),
+                            Offset (0x08),
                             F0E7,   33
                         }
 
@@ -10504,7 +10504,7 @@
                         Local2 = 0x07
                         BankField (OPR0, BNK0, 0x07, DWordAcc, NoLock, WriteAsZeros)
                         {
-                            Offset (0x08), 
+                            Offset (0x08),
                             F0E8,   63
                         }
 
@@ -10516,8 +10516,8 @@
                         Local2 = 0x08
                         BankField (OPR0, BNK0, 0x08, DWordAcc, NoLock, WriteAsZeros)
                         {
-                            AccessAs (DWordAcc, 0x00), 
-                            Offset (0x08), 
+                            AccessAs (DWordAcc, 0x00),
+                            Offset (0x08),
                             F0E9,   64
                         }
 
@@ -10529,7 +10529,7 @@
                         Local2 = 0x09
                         BankField (OPR0, BNK0, 0x09, DWordAcc, NoLock, WriteAsZeros)
                         {
-                            Offset (0x08), 
+                            Offset (0x08),
                             F0EA,   65
                         }
 
@@ -10541,8 +10541,8 @@
                         Local2 = 0x3F
                         BankField (OPR0, BNK0, 0x3F, QWordAcc, NoLock, WriteAsZeros)
                         {
-                            AccessAs (DWordAcc, 0x00), 
-                            Offset (0x08), 
+                            AccessAs (DWordAcc, 0x00),
+                            Offset (0x08),
                             F0EB,   69
                         }
 
@@ -10554,7 +10554,7 @@
                         Local2 = 0x40
                         BankField (OPR0, BNK0, 0x40, DWordAcc, NoLock, WriteAsZeros)
                         {
-                            Offset (0x08), 
+                            Offset (0x08),
                             F0EC,   129
                         }
 
@@ -10566,8 +10566,8 @@
                         Local2 = 0x7F
                         BankField (OPR0, BNK0, 0x7F, AnyAcc, NoLock, WriteAsZeros)
                         {
-                            AccessAs (DWordAcc, 0x00), 
-                            Offset (0x08), 
+                            AccessAs (DWordAcc, 0x00),
+                            Offset (0x08),
                             F0ED,   256
                         }
 
@@ -10579,7 +10579,7 @@
                         Local2 = 0x80
                         BankField (OPR0, BNK0, 0x80, DWordAcc, NoLock, WriteAsZeros)
                         {
-                            Offset (0x08), 
+                            Offset (0x08),
                             F0EE,   1023
                         }
 
@@ -10591,8 +10591,8 @@
                         Local2 = 0xFF
                         BankField (OPR0, BNK0, 0xFF, ByteAcc, NoLock, WriteAsZeros)
                         {
-                            AccessAs (DWordAcc, 0x00), 
-                            Offset (0x08), 
+                            AccessAs (DWordAcc, 0x00),
+                            Offset (0x08),
                             F0EF,   1983
                         }
 
@@ -10616,9 +10616,9 @@
                         Local2 = 0x00
                         BankField (OPR0, BNK0, 0x00, WordAcc, NoLock, WriteAsZeros)
                         {
-                            AccessAs (DWordAcc, 0x00), 
-                            Offset (0x08), 
-                                ,   1, 
+                            AccessAs (DWordAcc, 0x00),
+                            Offset (0x08),
+                                ,   1,
                             F0F0,   1
                         }
 
@@ -10630,8 +10630,8 @@
                         Local2 = 0x01
                         BankField (OPR0, BNK0, 0x01, DWordAcc, NoLock, WriteAsZeros)
                         {
-                            Offset (0x08), 
-                                ,   1, 
+                            Offset (0x08),
+                                ,   1,
                             F0F1,   6
                         }
 
@@ -10643,9 +10643,9 @@
                         Local2 = 0x02
                         BankField (OPR0, BNK0, 0x02, DWordAcc, NoLock, WriteAsZeros)
                         {
-                            AccessAs (DWordAcc, 0x00), 
-                            Offset (0x08), 
-                                ,   1, 
+                            AccessAs (DWordAcc, 0x00),
+                            Offset (0x08),
+                                ,   1,
                             F0F2,   7
                         }
 
@@ -10657,8 +10657,8 @@
                         Local2 = 0x03
                         BankField (OPR0, BNK0, 0x03, DWordAcc, NoLock, WriteAsZeros)
                         {
-                            Offset (0x08), 
-                                ,   1, 
+                            Offset (0x08),
+                                ,   1,
                             F0F3,   8
                         }
 
@@ -10670,9 +10670,9 @@
                         Local2 = 0x04
                         BankField (OPR0, BNK0, 0x04, QWordAcc, NoLock, WriteAsZeros)
                         {
-                            AccessAs (DWordAcc, 0x00), 
-                            Offset (0x08), 
-                                ,   1, 
+                            AccessAs (DWordAcc, 0x00),
+                            Offset (0x08),
+                                ,   1,
                             F0F4,   9
                         }
 
@@ -10684,8 +10684,8 @@
                         Local2 = 0x05
                         BankField (OPR0, BNK0, 0x05, DWordAcc, NoLock, WriteAsZeros)
                         {
-                            Offset (0x08), 
-                                ,   1, 
+                            Offset (0x08),
+                                ,   1,
                             F0F5,   31
                         }
 
@@ -10697,9 +10697,9 @@
                         Local2 = 0x06
                         BankField (OPR0, BNK0, 0x06, AnyAcc, NoLock, WriteAsZeros)
                         {
-                            AccessAs (DWordAcc, 0x00), 
-                            Offset (0x08), 
-                                ,   1, 
+                            AccessAs (DWordAcc, 0x00),
+                            Offset (0x08),
+                                ,   1,
                             F0F6,   32
                         }
 
@@ -10711,8 +10711,8 @@
                         Local2 = 0x07
                         BankField (OPR0, BNK0, 0x07, DWordAcc, NoLock, WriteAsZeros)
                         {
-                            Offset (0x08), 
-                                ,   1, 
+                            Offset (0x08),
+                                ,   1,
                             F0F7,   33
                         }
 
@@ -10724,9 +10724,9 @@
                         Local2 = 0x08
                         BankField (OPR0, BNK0, 0x08, ByteAcc, NoLock, WriteAsZeros)
                         {
-                            AccessAs (DWordAcc, 0x00), 
-                            Offset (0x08), 
-                                ,   1, 
+                            AccessAs (DWordAcc, 0x00),
+                            Offset (0x08),
+                                ,   1,
                             F0F8,   63
                         }
 
@@ -10738,8 +10738,8 @@
                         Local2 = 0x09
                         BankField (OPR0, BNK0, 0x09, DWordAcc, NoLock, WriteAsZeros)
                         {
-                            Offset (0x08), 
-                                ,   1, 
+                            Offset (0x08),
+                                ,   1,
                             F0F9,   64
                         }
 
@@ -10751,9 +10751,9 @@
                         Local2 = 0x3F
                         BankField (OPR0, BNK0, 0x3F, WordAcc, NoLock, WriteAsZeros)
                         {
-                            AccessAs (DWordAcc, 0x00), 
-                            Offset (0x08), 
-                                ,   1, 
+                            AccessAs (DWordAcc, 0x00),
+                            Offset (0x08),
+                                ,   1,
                             F0FA,   65
                         }
 
@@ -10765,8 +10765,8 @@
                         Local2 = 0x40
                         BankField (OPR0, BNK0, 0x40, DWordAcc, NoLock, WriteAsZeros)
                         {
-                            Offset (0x08), 
-                                ,   1, 
+                            Offset (0x08),
+                                ,   1,
                             F0FB,   69
                         }
 
@@ -10778,9 +10778,9 @@
                         Local2 = 0x7F
                         BankField (OPR0, BNK0, 0x7F, DWordAcc, NoLock, WriteAsZeros)
                         {
-                            AccessAs (DWordAcc, 0x00), 
-                            Offset (0x08), 
-                                ,   1, 
+                            AccessAs (DWordAcc, 0x00),
+                            Offset (0x08),
+                                ,   1,
                             F0FC,   129
                         }
 
@@ -10792,8 +10792,8 @@
                         Local2 = 0x80
                         BankField (OPR0, BNK0, 0x80, DWordAcc, NoLock, WriteAsZeros)
                         {
-                            Offset (0x08), 
-                                ,   1, 
+                            Offset (0x08),
+                                ,   1,
                             F0FD,   256
                         }
 
@@ -10805,9 +10805,9 @@
                         Local2 = 0xFF
                         BankField (OPR0, BNK0, 0xFF, QWordAcc, NoLock, WriteAsZeros)
                         {
-                            AccessAs (DWordAcc, 0x00), 
-                            Offset (0x08), 
-                                ,   1, 
+                            AccessAs (DWordAcc, 0x00),
+                            Offset (0x08),
+                                ,   1,
                             F0FE,   1023
                         }
 
@@ -10819,8 +10819,8 @@
                         Local2 = 0x00
                         BankField (OPR0, BNK0, 0x00, DWordAcc, NoLock, WriteAsZeros)
                         {
-                            Offset (0x08), 
-                                ,   1, 
+                            Offset (0x08),
+                                ,   1,
                             F0FF,   1983
                         }
 
@@ -10948,7 +10948,7 @@
                         Local2 = 0x00
                         BankField (OPR0, BNK0, 0x00, QWordAcc, NoLock, Preserve)
                         {
-                            Offset (0x00), 
+                            Offset (0x00),
                             F000,   1
                         }
 
@@ -10960,8 +10960,8 @@
                         Local2 = 0x01
                         BankField (OPR0, BNK0, 0x01, WordAcc, NoLock, Preserve)
                         {
-                            AccessAs (QWordAcc, 0x00), 
-                            Offset (0x00), 
+                            AccessAs (QWordAcc, 0x00),
+                            Offset (0x00),
                             F001,   6
                         }
 
@@ -10973,7 +10973,7 @@
                         Local2 = 0x02
                         BankField (OPR0, BNK0, 0x02, QWordAcc, NoLock, Preserve)
                         {
-                            Offset (0x00), 
+                            Offset (0x00),
                             F002,   7
                         }
 
@@ -10985,8 +10985,8 @@
                         Local2 = 0x03
                         BankField (OPR0, BNK0, 0x03, DWordAcc, NoLock, Preserve)
                         {
-                            AccessAs (QWordAcc, 0x00), 
-                            Offset (0x00), 
+                            AccessAs (QWordAcc, 0x00),
+                            Offset (0x00),
                             F003,   8
                         }
 
@@ -10998,7 +10998,7 @@
                         Local2 = 0x04
                         BankField (OPR0, BNK0, 0x04, QWordAcc, NoLock, Preserve)
                         {
-                            Offset (0x00), 
+                            Offset (0x00),
                             F004,   9
                         }
 
@@ -11010,8 +11010,8 @@
                         Local2 = 0x05
                         BankField (OPR0, BNK0, 0x05, QWordAcc, NoLock, Preserve)
                         {
-                            AccessAs (QWordAcc, 0x00), 
-                            Offset (0x00), 
+                            AccessAs (QWordAcc, 0x00),
+                            Offset (0x00),
                             F005,   31
                         }
 
@@ -11023,7 +11023,7 @@
                         Local2 = 0x06
                         BankField (OPR0, BNK0, 0x06, QWordAcc, NoLock, Preserve)
                         {
-                            Offset (0x00), 
+                            Offset (0x00),
                             F006,   32
                         }
 
@@ -11035,8 +11035,8 @@
                         Local2 = 0x07
                         BankField (OPR0, BNK0, 0x07, AnyAcc, NoLock, Preserve)
                         {
-                            AccessAs (QWordAcc, 0x00), 
-                            Offset (0x00), 
+                            AccessAs (QWordAcc, 0x00),
+                            Offset (0x00),
                             F007,   33
                         }
 
@@ -11048,7 +11048,7 @@
                         Local2 = 0x08
                         BankField (OPR0, BNK0, 0x08, QWordAcc, NoLock, Preserve)
                         {
-                            Offset (0x00), 
+                            Offset (0x00),
                             F008,   63
                         }
 
@@ -11060,8 +11060,8 @@
                         Local2 = 0x09
                         BankField (OPR0, BNK0, 0x09, ByteAcc, NoLock, Preserve)
                         {
-                            AccessAs (QWordAcc, 0x00), 
-                            Offset (0x00), 
+                            AccessAs (QWordAcc, 0x00),
+                            Offset (0x00),
                             F009,   64
                         }
 
@@ -11073,7 +11073,7 @@
                         Local2 = 0x3F
                         BankField (OPR0, BNK0, 0x3F, QWordAcc, NoLock, Preserve)
                         {
-                            Offset (0x00), 
+                            Offset (0x00),
                             F00A,   65
                         }
 
@@ -11085,8 +11085,8 @@
                         Local2 = 0x40
                         BankField (OPR0, BNK0, 0x40, WordAcc, NoLock, Preserve)
                         {
-                            AccessAs (QWordAcc, 0x00), 
-                            Offset (0x00), 
+                            AccessAs (QWordAcc, 0x00),
+                            Offset (0x00),
                             F00B,   69
                         }
 
@@ -11098,7 +11098,7 @@
                         Local2 = 0x7F
                         BankField (OPR0, BNK0, 0x7F, QWordAcc, NoLock, Preserve)
                         {
-                            Offset (0x00), 
+                            Offset (0x00),
                             F00C,   129
                         }
 
@@ -11110,8 +11110,8 @@
                         Local2 = 0x80
                         BankField (OPR0, BNK0, 0x80, DWordAcc, NoLock, Preserve)
                         {
-                            AccessAs (QWordAcc, 0x00), 
-                            Offset (0x00), 
+                            AccessAs (QWordAcc, 0x00),
+                            Offset (0x00),
                             F00D,   256
                         }
 
@@ -11123,7 +11123,7 @@
                         Local2 = 0xFF
                         BankField (OPR0, BNK0, 0xFF, QWordAcc, NoLock, Preserve)
                         {
-                            Offset (0x00), 
+                            Offset (0x00),
                             F00E,   1023
                         }
 
@@ -11135,8 +11135,8 @@
                         Local2 = 0x00
                         BankField (OPR0, BNK0, 0x00, QWordAcc, NoLock, Preserve)
                         {
-                            AccessAs (QWordAcc, 0x00), 
-                            Offset (0x00), 
+                            AccessAs (QWordAcc, 0x00),
+                            Offset (0x00),
                             F00F,   1983
                         }
 
@@ -11160,8 +11160,8 @@
                         Local2 = 0x01
                         BankField (OPR0, BNK0, 0x01, AnyAcc, NoLock, Preserve)
                         {
-                            AccessAs (QWordAcc, 0x00), 
-                                ,   1, 
+                            AccessAs (QWordAcc, 0x00),
+                                ,   1,
                             F010,   1
                         }
 
@@ -11173,7 +11173,7 @@
                         Local2 = 0x02
                         BankField (OPR0, BNK0, 0x02, QWordAcc, NoLock, Preserve)
                         {
-                                ,   1, 
+                                ,   1,
                             F011,   6
                         }
 
@@ -11185,8 +11185,8 @@
                         Local2 = 0x03
                         BankField (OPR0, BNK0, 0x03, ByteAcc, NoLock, Preserve)
                         {
-                            AccessAs (QWordAcc, 0x00), 
-                                ,   1, 
+                            AccessAs (QWordAcc, 0x00),
+                                ,   1,
                             F012,   7
                         }
 
@@ -11198,7 +11198,7 @@
                         Local2 = 0x04
                         BankField (OPR0, BNK0, 0x04, QWordAcc, NoLock, Preserve)
                         {
-                                ,   1, 
+                                ,   1,
                             F013,   8
                         }
 
@@ -11210,8 +11210,8 @@
                         Local2 = 0x05
                         BankField (OPR0, BNK0, 0x05, WordAcc, NoLock, Preserve)
                         {
-                            AccessAs (QWordAcc, 0x00), 
-                                ,   1, 
+                            AccessAs (QWordAcc, 0x00),
+                                ,   1,
                             F014,   9
                         }
 
@@ -11223,7 +11223,7 @@
                         Local2 = 0x06
                         BankField (OPR0, BNK0, 0x06, QWordAcc, NoLock, Preserve)
                         {
-                                ,   1, 
+                                ,   1,
                             F015,   31
                         }
 
@@ -11235,8 +11235,8 @@
                         Local2 = 0x07
                         BankField (OPR0, BNK0, 0x07, DWordAcc, NoLock, Preserve)
                         {
-                            AccessAs (QWordAcc, 0x00), 
-                                ,   1, 
+                            AccessAs (QWordAcc, 0x00),
+                                ,   1,
                             F016,   32
                         }
 
@@ -11248,7 +11248,7 @@
                         Local2 = 0x08
                         BankField (OPR0, BNK0, 0x08, QWordAcc, NoLock, Preserve)
                         {
-                                ,   1, 
+                                ,   1,
                             F017,   33
                         }
 
@@ -11260,8 +11260,8 @@
                         Local2 = 0x09
                         BankField (OPR0, BNK0, 0x09, QWordAcc, NoLock, Preserve)
                         {
-                            AccessAs (QWordAcc, 0x00), 
-                                ,   1, 
+                            AccessAs (QWordAcc, 0x00),
+                                ,   1,
                             F018,   63
                         }
 
@@ -11273,7 +11273,7 @@
                         Local2 = 0x3F
                         BankField (OPR0, BNK0, 0x3F, QWordAcc, NoLock, Preserve)
                         {
-                                ,   1, 
+                                ,   1,
                             F019,   64
                         }
 
@@ -11285,8 +11285,8 @@
                         Local2 = 0x40
                         BankField (OPR0, BNK0, 0x40, AnyAcc, NoLock, Preserve)
                         {
-                            AccessAs (QWordAcc, 0x00), 
-                                ,   1, 
+                            AccessAs (QWordAcc, 0x00),
+                                ,   1,
                             F01A,   65
                         }
 
@@ -11298,7 +11298,7 @@
                         Local2 = 0x7F
                         BankField (OPR0, BNK0, 0x7F, QWordAcc, NoLock, Preserve)
                         {
-                                ,   1, 
+                                ,   1,
                             F01B,   69
                         }
 
@@ -11310,8 +11310,8 @@
                         Local2 = 0x80
                         BankField (OPR0, BNK0, 0x80, ByteAcc, NoLock, Preserve)
                         {
-                            AccessAs (QWordAcc, 0x00), 
-                                ,   1, 
+                            AccessAs (QWordAcc, 0x00),
+                                ,   1,
                             F01C,   129
                         }
 
@@ -11323,7 +11323,7 @@
                         Local2 = 0xFF
                         BankField (OPR0, BNK0, 0xFF, QWordAcc, NoLock, Preserve)
                         {
-                                ,   1, 
+                                ,   1,
                             F01D,   256
                         }
 
@@ -11335,8 +11335,8 @@
                         Local2 = 0x00
                         BankField (OPR0, BNK0, 0x00, WordAcc, NoLock, Preserve)
                         {
-                            AccessAs (QWordAcc, 0x00), 
-                                ,   1, 
+                            AccessAs (QWordAcc, 0x00),
+                                ,   1,
                             F01E,   1023
                         }
 
@@ -11348,7 +11348,7 @@
                         Local2 = 0x01
                         BankField (OPR0, BNK0, 0x01, QWordAcc, NoLock, Preserve)
                         {
-                                ,   1, 
+                                ,   1,
                             F01F,   1983
                         }
 
@@ -11372,7 +11372,7 @@
                         Local2 = 0x02
                         BankField (OPR0, BNK0, 0x02, QWordAcc, NoLock, Preserve)
                         {
-                                ,   2, 
+                                ,   2,
                             F020,   1
                         }
 
@@ -11384,8 +11384,8 @@
                         Local2 = 0x03
                         BankField (OPR0, BNK0, 0x03, DWordAcc, NoLock, Preserve)
                         {
-                            AccessAs (QWordAcc, 0x00), 
-                                ,   2, 
+                            AccessAs (QWordAcc, 0x00),
+                                ,   2,
                             F021,   6
                         }
 
@@ -11397,7 +11397,7 @@
                         Local2 = 0x04
                         BankField (OPR0, BNK0, 0x04, QWordAcc, NoLock, Preserve)
                         {
-                                ,   2, 
+                                ,   2,
                             F022,   7
                         }
 
@@ -11409,8 +11409,8 @@
                         Local2 = 0x05
                         BankField (OPR0, BNK0, 0x05, QWordAcc, NoLock, Preserve)
                         {
-                            AccessAs (QWordAcc, 0x00), 
-                                ,   2, 
+                            AccessAs (QWordAcc, 0x00),
+                                ,   2,
                             F023,   8
                         }
 
@@ -11422,7 +11422,7 @@
                         Local2 = 0x06
                         BankField (OPR0, BNK0, 0x06, QWordAcc, NoLock, Preserve)
                         {
-                                ,   2, 
+                                ,   2,
                             F024,   9
                         }
 
@@ -11434,8 +11434,8 @@
                         Local2 = 0x07
                         BankField (OPR0, BNK0, 0x07, AnyAcc, NoLock, Preserve)
                         {
-                            AccessAs (QWordAcc, 0x00), 
-                                ,   2, 
+                            AccessAs (QWordAcc, 0x00),
+                                ,   2,
                             F025,   31
                         }
 
@@ -11447,7 +11447,7 @@
                         Local2 = 0x08
                         BankField (OPR0, BNK0, 0x08, QWordAcc, NoLock, Preserve)
                         {
-                                ,   2, 
+                                ,   2,
                             F026,   32
                         }
 
@@ -11459,8 +11459,8 @@
                         Local2 = 0x09
                         BankField (OPR0, BNK0, 0x09, ByteAcc, NoLock, Preserve)
                         {
-                            AccessAs (QWordAcc, 0x00), 
-                                ,   2, 
+                            AccessAs (QWordAcc, 0x00),
+                                ,   2,
                             F027,   33
                         }
 
@@ -11472,7 +11472,7 @@
                         Local2 = 0x3F
                         BankField (OPR0, BNK0, 0x3F, QWordAcc, NoLock, Preserve)
                         {
-                                ,   2, 
+                                ,   2,
                             F028,   63
                         }
 
@@ -11484,8 +11484,8 @@
                         Local2 = 0x40
                         BankField (OPR0, BNK0, 0x40, WordAcc, NoLock, Preserve)
                         {
-                            AccessAs (QWordAcc, 0x00), 
-                                ,   2, 
+                            AccessAs (QWordAcc, 0x00),
+                                ,   2,
                             F029,   64
                         }
 
@@ -11497,7 +11497,7 @@
                         Local2 = 0x7F
                         BankField (OPR0, BNK0, 0x7F, QWordAcc, NoLock, Preserve)
                         {
-                                ,   2, 
+                                ,   2,
                             F02A,   65
                         }
 
@@ -11509,8 +11509,8 @@
                         Local2 = 0x80
                         BankField (OPR0, BNK0, 0x80, DWordAcc, NoLock, Preserve)
                         {
-                            AccessAs (QWordAcc, 0x00), 
-                                ,   2, 
+                            AccessAs (QWordAcc, 0x00),
+                                ,   2,
                             F02B,   69
                         }
 
@@ -11522,7 +11522,7 @@
                         Local2 = 0xFF
                         BankField (OPR0, BNK0, 0xFF, QWordAcc, NoLock, Preserve)
                         {
-                                ,   2, 
+                                ,   2,
                             F02C,   129
                         }
 
@@ -11534,8 +11534,8 @@
                         Local2 = 0x00
                         BankField (OPR0, BNK0, 0x00, QWordAcc, NoLock, Preserve)
                         {
-                            AccessAs (QWordAcc, 0x00), 
-                                ,   2, 
+                            AccessAs (QWordAcc, 0x00),
+                                ,   2,
                             F02D,   256
                         }
 
@@ -11547,7 +11547,7 @@
                         Local2 = 0x01
                         BankField (OPR0, BNK0, 0x01, QWordAcc, NoLock, Preserve)
                         {
-                                ,   2, 
+                                ,   2,
                             F02E,   1023
                         }
 
@@ -11559,8 +11559,8 @@
                         Local2 = 0x02
                         BankField (OPR0, BNK0, 0x02, AnyAcc, NoLock, Preserve)
                         {
-                            AccessAs (QWordAcc, 0x00), 
-                                ,   2, 
+                            AccessAs (QWordAcc, 0x00),
+                                ,   2,
                             F02F,   1983
                         }
 
@@ -11584,8 +11584,8 @@
                         Local2 = 0x03
                         BankField (OPR0, BNK0, 0x03, ByteAcc, NoLock, Preserve)
                         {
-                            AccessAs (QWordAcc, 0x00), 
-                                ,   3, 
+                            AccessAs (QWordAcc, 0x00),
+                                ,   3,
                             F030,   1
                         }
 
@@ -11597,7 +11597,7 @@
                         Local2 = 0x04
                         BankField (OPR0, BNK0, 0x04, QWordAcc, NoLock, Preserve)
                         {
-                                ,   3, 
+                                ,   3,
                             F031,   6
                         }
 
@@ -11609,8 +11609,8 @@
                         Local2 = 0x05
                         BankField (OPR0, BNK0, 0x05, WordAcc, NoLock, Preserve)
                         {
-                            AccessAs (QWordAcc, 0x00), 
-                                ,   3, 
+                            AccessAs (QWordAcc, 0x00),
+                                ,   3,
                             F032,   7
                         }
 
@@ -11622,7 +11622,7 @@
                         Local2 = 0x06
                         BankField (OPR0, BNK0, 0x06, QWordAcc, NoLock, Preserve)
                         {
-                                ,   3, 
+                                ,   3,
                             F033,   8
                         }
 
@@ -11634,8 +11634,8 @@
                         Local2 = 0x07
                         BankField (OPR0, BNK0, 0x07, DWordAcc, NoLock, Preserve)
                         {
-                            AccessAs (QWordAcc, 0x00), 
-                                ,   3, 
+                            AccessAs (QWordAcc, 0x00),
+                                ,   3,
                             F034,   9
                         }
 
@@ -11647,7 +11647,7 @@
                         Local2 = 0x08
                         BankField (OPR0, BNK0, 0x08, QWordAcc, NoLock, Preserve)
                         {
-                                ,   3, 
+                                ,   3,
                             F035,   31
                         }
 
@@ -11659,8 +11659,8 @@
                         Local2 = 0x09
                         BankField (OPR0, BNK0, 0x09, QWordAcc, NoLock, Preserve)
                         {
-                            AccessAs (QWordAcc, 0x00), 
-                                ,   3, 
+                            AccessAs (QWordAcc, 0x00),
+                                ,   3,
                             F036,   32
                         }
 
@@ -11672,7 +11672,7 @@
                         Local2 = 0x3F
                         BankField (OPR0, BNK0, 0x3F, QWordAcc, NoLock, Preserve)
                         {
-                                ,   3, 
+                                ,   3,
                             F037,   33
                         }
 
@@ -11684,8 +11684,8 @@
                         Local2 = 0x40
                         BankField (OPR0, BNK0, 0x40, AnyAcc, NoLock, Preserve)
                         {
-                            AccessAs (QWordAcc, 0x00), 
-                                ,   3, 
+                            AccessAs (QWordAcc, 0x00),
+                                ,   3,
                             F038,   63
                         }
 
@@ -11697,7 +11697,7 @@
                         Local2 = 0x7F
                         BankField (OPR0, BNK0, 0x7F, QWordAcc, NoLock, Preserve)
                         {
-                                ,   3, 
+                                ,   3,
                             F039,   64
                         }
 
@@ -11709,8 +11709,8 @@
                         Local2 = 0x80
                         BankField (OPR0, BNK0, 0x80, ByteAcc, NoLock, Preserve)
                         {
-                            AccessAs (QWordAcc, 0x00), 
-                                ,   3, 
+                            AccessAs (QWordAcc, 0x00),
+                                ,   3,
                             F03A,   65
                         }
 
@@ -11722,7 +11722,7 @@
                         Local2 = 0xFF
                         BankField (OPR0, BNK0, 0xFF, QWordAcc, NoLock, Preserve)
                         {
-                                ,   3, 
+                                ,   3,
                             F03B,   69
                         }
 
@@ -11734,8 +11734,8 @@
                         Local2 = 0x00
                         BankField (OPR0, BNK0, 0x00, WordAcc, NoLock, Preserve)
                         {
-                            AccessAs (QWordAcc, 0x00), 
-                                ,   3, 
+                            AccessAs (QWordAcc, 0x00),
+                                ,   3,
                             F03C,   129
                         }
 
@@ -11747,7 +11747,7 @@
                         Local2 = 0x01
                         BankField (OPR0, BNK0, 0x01, QWordAcc, NoLock, Preserve)
                         {
-                                ,   3, 
+                                ,   3,
                             F03D,   256
                         }
 
@@ -11759,8 +11759,8 @@
                         Local2 = 0x02
                         BankField (OPR0, BNK0, 0x02, DWordAcc, NoLock, Preserve)
                         {
-                            AccessAs (QWordAcc, 0x00), 
-                                ,   3, 
+                            AccessAs (QWordAcc, 0x00),
+                                ,   3,
                             F03E,   1023
                         }
 
@@ -11772,7 +11772,7 @@
                         Local2 = 0x03
                         BankField (OPR0, BNK0, 0x03, QWordAcc, NoLock, Preserve)
                         {
-                                ,   3, 
+                                ,   3,
                             F03F,   1983
                         }
 
@@ -11796,7 +11796,7 @@
                         Local2 = 0x04
                         BankField (OPR0, BNK0, 0x04, QWordAcc, NoLock, Preserve)
                         {
-                                ,   4, 
+                                ,   4,
                             F040,   1
                         }
 
@@ -11808,8 +11808,8 @@
                         Local2 = 0x05
                         BankField (OPR0, BNK0, 0x05, QWordAcc, NoLock, Preserve)
                         {
-                            AccessAs (QWordAcc, 0x00), 
-                                ,   4, 
+                            AccessAs (QWordAcc, 0x00),
+                                ,   4,
                             F041,   6
                         }
 
@@ -11821,7 +11821,7 @@
                         Local2 = 0x06
                         BankField (OPR0, BNK0, 0x06, QWordAcc, NoLock, Preserve)
                         {
-                                ,   4, 
+                                ,   4,
                             F042,   7
                         }
 
@@ -11833,8 +11833,8 @@
                         Local2 = 0x07
                         BankField (OPR0, BNK0, 0x07, AnyAcc, NoLock, Preserve)
                         {
-                            AccessAs (QWordAcc, 0x00), 
-                                ,   4, 
+                            AccessAs (QWordAcc, 0x00),
+                                ,   4,
                             F043,   8
                         }
 
@@ -11846,7 +11846,7 @@
                         Local2 = 0x08
                         BankField (OPR0, BNK0, 0x08, QWordAcc, NoLock, Preserve)
                         {
-                                ,   4, 
+                                ,   4,
                             F044,   9
                         }
 
@@ -11858,8 +11858,8 @@
                         Local2 = 0x09
                         BankField (OPR0, BNK0, 0x09, ByteAcc, NoLock, Preserve)
                         {
-                            AccessAs (QWordAcc, 0x00), 
-                                ,   4, 
+                            AccessAs (QWordAcc, 0x00),
+                                ,   4,
                             F045,   31
                         }
 
@@ -11871,7 +11871,7 @@
                         Local2 = 0x3F
                         BankField (OPR0, BNK0, 0x3F, QWordAcc, NoLock, Preserve)
                         {
-                                ,   4, 
+                                ,   4,
                             F046,   32
                         }
 
@@ -11883,8 +11883,8 @@
                         Local2 = 0x40
                         BankField (OPR0, BNK0, 0x40, WordAcc, NoLock, Preserve)
                         {
-                            AccessAs (QWordAcc, 0x00), 
-                                ,   4, 
+                            AccessAs (QWordAcc, 0x00),
+                                ,   4,
                             F047,   33
                         }
 
@@ -11896,7 +11896,7 @@
                         Local2 = 0x7F
                         BankField (OPR0, BNK0, 0x7F, QWordAcc, NoLock, Preserve)
                         {
-                                ,   4, 
+                                ,   4,
                             F048,   63
                         }
 
@@ -11908,8 +11908,8 @@
                         Local2 = 0x80
                         BankField (OPR0, BNK0, 0x80, DWordAcc, NoLock, Preserve)
                         {
-                            AccessAs (QWordAcc, 0x00), 
-                                ,   4, 
+                            AccessAs (QWordAcc, 0x00),
+                                ,   4,
                             F049,   64
                         }
 
@@ -11921,7 +11921,7 @@
                         Local2 = 0xFF
                         BankField (OPR0, BNK0, 0xFF, QWordAcc, NoLock, Preserve)
                         {
-                                ,   4, 
+                                ,   4,
                             F04A,   65
                         }
 
@@ -11933,8 +11933,8 @@
                         Local2 = 0x00
                         BankField (OPR0, BNK0, 0x00, QWordAcc, NoLock, Preserve)
                         {
-                            AccessAs (QWordAcc, 0x00), 
-                                ,   4, 
+                            AccessAs (QWordAcc, 0x00),
+                                ,   4,
                             F04B,   69
                         }
 
@@ -11946,7 +11946,7 @@
                         Local2 = 0x01
                         BankField (OPR0, BNK0, 0x01, QWordAcc, NoLock, Preserve)
                         {
-                                ,   4, 
+                                ,   4,
                             F04C,   129
                         }
 
@@ -11958,8 +11958,8 @@
                         Local2 = 0x02
                         BankField (OPR0, BNK0, 0x02, AnyAcc, NoLock, Preserve)
                         {
-                            AccessAs (QWordAcc, 0x00), 
-                                ,   4, 
+                            AccessAs (QWordAcc, 0x00),
+                                ,   4,
                             F04D,   256
                         }
 
@@ -11971,7 +11971,7 @@
                         Local2 = 0x03
                         BankField (OPR0, BNK0, 0x03, QWordAcc, NoLock, Preserve)
                         {
-                                ,   4, 
+                                ,   4,
                             F04E,   1023
                         }
 
@@ -11983,8 +11983,8 @@
                         Local2 = 0x04
                         BankField (OPR0, BNK0, 0x04, ByteAcc, NoLock, Preserve)
                         {
-                            AccessAs (QWordAcc, 0x00), 
-                                ,   4, 
+                            AccessAs (QWordAcc, 0x00),
+                                ,   4,
                             F04F,   1983
                         }
 
@@ -12008,8 +12008,8 @@
                         Local2 = 0x05
                         BankField (OPR0, BNK0, 0x05, WordAcc, NoLock, Preserve)
                         {
-                            AccessAs (QWordAcc, 0x00), 
-                                ,   5, 
+                            AccessAs (QWordAcc, 0x00),
+                                ,   5,
                             F050,   1
                         }
 
@@ -12021,7 +12021,7 @@
                         Local2 = 0x06
                         BankField (OPR0, BNK0, 0x06, QWordAcc, NoLock, Preserve)
                         {
-                                ,   5, 
+                                ,   5,
                             F051,   6
                         }
 
@@ -12033,8 +12033,8 @@
                         Local2 = 0x07
                         BankField (OPR0, BNK0, 0x07, DWordAcc, NoLock, Preserve)
                         {
-                            AccessAs (QWordAcc, 0x00), 
-                                ,   5, 
+                            AccessAs (QWordAcc, 0x00),
+                                ,   5,
                             F052,   7
                         }
 
@@ -12046,7 +12046,7 @@
                         Local2 = 0x08
                         BankField (OPR0, BNK0, 0x08, QWordAcc, NoLock, Preserve)
                         {
-                                ,   5, 
+                                ,   5,
                             F053,   8
                         }
 
@@ -12058,8 +12058,8 @@
                         Local2 = 0x09
                         BankField (OPR0, BNK0, 0x09, QWordAcc, NoLock, Preserve)
                         {
-                            AccessAs (QWordAcc, 0x00), 
-                                ,   5, 
+                            AccessAs (QWordAcc, 0x00),
+                                ,   5,
                             F054,   9
                         }
 
@@ -12071,7 +12071,7 @@
                         Local2 = 0x3F
                         BankField (OPR0, BNK0, 0x3F, QWordAcc, NoLock, Preserve)
                         {
-                                ,   5, 
+                                ,   5,
                             F055,   31
                         }
 
@@ -12083,8 +12083,8 @@
                         Local2 = 0x40
                         BankField (OPR0, BNK0, 0x40, AnyAcc, NoLock, Preserve)
                         {
-                            AccessAs (QWordAcc, 0x00), 
-                                ,   5, 
+                            AccessAs (QWordAcc, 0x00),
+                                ,   5,
                             F056,   32
                         }
 
@@ -12096,7 +12096,7 @@
                         Local2 = 0x7F
                         BankField (OPR0, BNK0, 0x7F, QWordAcc, NoLock, Preserve)
                         {
-                                ,   5, 
+                                ,   5,
                             F057,   33
                         }
 
@@ -12108,8 +12108,8 @@
                         Local2 = 0x80
                         BankField (OPR0, BNK0, 0x80, ByteAcc, NoLock, Preserve)
                         {
-                            AccessAs (QWordAcc, 0x00), 
-                                ,   5, 
+                            AccessAs (QWordAcc, 0x00),
+                                ,   5,
                             F058,   63
                         }
 
@@ -12121,7 +12121,7 @@
                         Local2 = 0xFF
                         BankField (OPR0, BNK0, 0xFF, QWordAcc, NoLock, Preserve)
                         {
-                                ,   5, 
+                                ,   5,
                             F059,   64
                         }
 
@@ -12133,8 +12133,8 @@
                         Local2 = 0x00
                         BankField (OPR0, BNK0, 0x00, WordAcc, NoLock, Preserve)
                         {
-                            AccessAs (QWordAcc, 0x00), 
-                                ,   5, 
+                            AccessAs (QWordAcc, 0x00),
+                                ,   5,
                             F05A,   65
                         }
 
@@ -12146,7 +12146,7 @@
                         Local2 = 0x01
                         BankField (OPR0, BNK0, 0x01, QWordAcc, NoLock, Preserve)
                         {
-                                ,   5, 
+                                ,   5,
                             F05B,   69
                         }
 
@@ -12158,8 +12158,8 @@
                         Local2 = 0x02
                         BankField (OPR0, BNK0, 0x02, DWordAcc, NoLock, Preserve)
                         {
-                            AccessAs (QWordAcc, 0x00), 
-                                ,   5, 
+                            AccessAs (QWordAcc, 0x00),
+                                ,   5,
                             F05C,   129
                         }
 
@@ -12171,7 +12171,7 @@
                         Local2 = 0x03
                         BankField (OPR0, BNK0, 0x03, QWordAcc, NoLock, Preserve)
                         {
-                                ,   5, 
+                                ,   5,
                             F05D,   256
                         }
 
@@ -12183,8 +12183,8 @@
                         Local2 = 0x04
                         BankField (OPR0, BNK0, 0x04, QWordAcc, NoLock, Preserve)
                         {
-                            AccessAs (QWordAcc, 0x00), 
-                                ,   5, 
+                            AccessAs (QWordAcc, 0x00),
+                                ,   5,
                             F05E,   1023
                         }
 
@@ -12196,7 +12196,7 @@
                         Local2 = 0x05
                         BankField (OPR0, BNK0, 0x05, QWordAcc, NoLock, Preserve)
                         {
-                                ,   5, 
+                                ,   5,
                             F05F,   1983
                         }
 
@@ -12220,7 +12220,7 @@
                         Local2 = 0x06
                         BankField (OPR0, BNK0, 0x06, QWordAcc, NoLock, Preserve)
                         {
-                                ,   6, 
+                                ,   6,
                             F060,   1
                         }
 
@@ -12232,8 +12232,8 @@
                         Local2 = 0x07
                         BankField (OPR0, BNK0, 0x07, AnyAcc, NoLock, Preserve)
                         {
-                            AccessAs (QWordAcc, 0x00), 
-                                ,   6, 
+                            AccessAs (QWordAcc, 0x00),
+                                ,   6,
                             F061,   6
                         }
 
@@ -12245,7 +12245,7 @@
                         Local2 = 0x08
                         BankField (OPR0, BNK0, 0x08, QWordAcc, NoLock, Preserve)
                         {
-                                ,   6, 
+                                ,   6,
                             F062,   7
                         }
 
@@ -12257,8 +12257,8 @@
                         Local2 = 0x09
                         BankField (OPR0, BNK0, 0x09, ByteAcc, NoLock, Preserve)
                         {
-                            AccessAs (QWordAcc, 0x00), 
-                                ,   6, 
+                            AccessAs (QWordAcc, 0x00),
+                                ,   6,
                             F063,   8
                         }
 
@@ -12270,7 +12270,7 @@
                         Local2 = 0x3F
                         BankField (OPR0, BNK0, 0x3F, QWordAcc, NoLock, Preserve)
                         {
-                                ,   6, 
+                                ,   6,
                             F064,   9
                         }
 
@@ -12282,8 +12282,8 @@
                         Local2 = 0x40
                         BankField (OPR0, BNK0, 0x40, WordAcc, NoLock, Preserve)
                         {
-                            AccessAs (QWordAcc, 0x00), 
-                                ,   6, 
+                            AccessAs (QWordAcc, 0x00),
+                                ,   6,
                             F065,   31
                         }
 
@@ -12295,7 +12295,7 @@
                         Local2 = 0x7F
                         BankField (OPR0, BNK0, 0x7F, QWordAcc, NoLock, Preserve)
                         {
-                                ,   6, 
+                                ,   6,
                             F066,   32
                         }
 
@@ -12307,8 +12307,8 @@
                         Local2 = 0x80
                         BankField (OPR0, BNK0, 0x80, DWordAcc, NoLock, Preserve)
                         {
-                            AccessAs (QWordAcc, 0x00), 
-                                ,   6, 
+                            AccessAs (QWordAcc, 0x00),
+                                ,   6,
                             F067,   33
                         }
 
@@ -12320,7 +12320,7 @@
                         Local2 = 0xFF
                         BankField (OPR0, BNK0, 0xFF, QWordAcc, NoLock, Preserve)
                         {
-                                ,   6, 
+                                ,   6,
                             F068,   63
                         }
 
@@ -12332,8 +12332,8 @@
                         Local2 = 0x00
                         BankField (OPR0, BNK0, 0x00, QWordAcc, NoLock, Preserve)
                         {
-                            AccessAs (QWordAcc, 0x00), 
-                                ,   6, 
+                            AccessAs (QWordAcc, 0x00),
+                                ,   6,
                             F069,   64
                         }
 
@@ -12345,7 +12345,7 @@
                         Local2 = 0x01
                         BankField (OPR0, BNK0, 0x01, QWordAcc, NoLock, Preserve)
                         {
-                                ,   6, 
+                                ,   6,
                             F06A,   65
                         }
 
@@ -12357,8 +12357,8 @@
                         Local2 = 0x02
                         BankField (OPR0, BNK0, 0x02, AnyAcc, NoLock, Preserve)
                         {
-                            AccessAs (QWordAcc, 0x00), 
-                                ,   6, 
+                            AccessAs (QWordAcc, 0x00),
+                                ,   6,
                             F06B,   69
                         }
 
@@ -12370,7 +12370,7 @@
                         Local2 = 0x03
                         BankField (OPR0, BNK0, 0x03, QWordAcc, NoLock, Preserve)
                         {
-                                ,   6, 
+                                ,   6,
                             F06C,   129
                         }
 
@@ -12382,8 +12382,8 @@
                         Local2 = 0x04
                         BankField (OPR0, BNK0, 0x04, ByteAcc, NoLock, Preserve)
                         {
-                            AccessAs (QWordAcc, 0x00), 
-                                ,   6, 
+                            AccessAs (QWordAcc, 0x00),
+                                ,   6,
                             F06D,   256
                         }
 
@@ -12395,7 +12395,7 @@
                         Local2 = 0x05
                         BankField (OPR0, BNK0, 0x05, QWordAcc, NoLock, Preserve)
                         {
-                                ,   6, 
+                                ,   6,
                             F06E,   1023
                         }
 
@@ -12407,8 +12407,8 @@
                         Local2 = 0x06
                         BankField (OPR0, BNK0, 0x06, WordAcc, NoLock, Preserve)
                         {
-                            AccessAs (QWordAcc, 0x00), 
-                                ,   6, 
+                            AccessAs (QWordAcc, 0x00),
+                                ,   6,
                             F06F,   1983
                         }
 
@@ -12432,8 +12432,8 @@
                         Local2 = 0x07
                         BankField (OPR0, BNK0, 0x07, DWordAcc, NoLock, Preserve)
                         {
-                            AccessAs (QWordAcc, 0x00), 
-                                ,   7, 
+                            AccessAs (QWordAcc, 0x00),
+                                ,   7,
                             F070,   1
                         }
 
@@ -12445,7 +12445,7 @@
                         Local2 = 0x08
                         BankField (OPR0, BNK0, 0x08, QWordAcc, NoLock, Preserve)
                         {
-                                ,   7, 
+                                ,   7,
                             F071,   6
                         }
 
@@ -12457,8 +12457,8 @@
                         Local2 = 0x09
                         BankField (OPR0, BNK0, 0x09, QWordAcc, NoLock, Preserve)
                         {
-                            AccessAs (QWordAcc, 0x00), 
-                                ,   7, 
+                            AccessAs (QWordAcc, 0x00),
+                                ,   7,
                             F072,   7
                         }
 
@@ -12470,7 +12470,7 @@
                         Local2 = 0x3F
                         BankField (OPR0, BNK0, 0x3F, QWordAcc, NoLock, Preserve)
                         {
-                                ,   7, 
+                                ,   7,
                             F073,   8
                         }
 
@@ -12482,8 +12482,8 @@
                         Local2 = 0x40
                         BankField (OPR0, BNK0, 0x40, AnyAcc, NoLock, Preserve)
                         {
-                            AccessAs (QWordAcc, 0x00), 
-                                ,   7, 
+                            AccessAs (QWordAcc, 0x00),
+                                ,   7,
                             F074,   9
                         }
 
@@ -12495,7 +12495,7 @@
                         Local2 = 0x7F
                         BankField (OPR0, BNK0, 0x7F, QWordAcc, NoLock, Preserve)
                         {
-                                ,   7, 
+                                ,   7,
                             F075,   31
                         }
 
@@ -12507,8 +12507,8 @@
                         Local2 = 0x80
                         BankField (OPR0, BNK0, 0x80, ByteAcc, NoLock, Preserve)
                         {
-                            AccessAs (QWordAcc, 0x00), 
-                                ,   7, 
+                            AccessAs (QWordAcc, 0x00),
+                                ,   7,
                             F076,   32
                         }
 
@@ -12520,7 +12520,7 @@
                         Local2 = 0xFF
                         BankField (OPR0, BNK0, 0xFF, QWordAcc, NoLock, Preserve)
                         {
-                                ,   7, 
+                                ,   7,
                             F077,   33
                         }
 
@@ -12532,8 +12532,8 @@
                         Local2 = 0x00
                         BankField (OPR0, BNK0, 0x00, WordAcc, NoLock, Preserve)
                         {
-                            AccessAs (QWordAcc, 0x00), 
-                                ,   7, 
+                            AccessAs (QWordAcc, 0x00),
+                                ,   7,
                             F078,   63
                         }
 
@@ -12545,7 +12545,7 @@
                         Local2 = 0x01
                         BankField (OPR0, BNK0, 0x01, QWordAcc, NoLock, Preserve)
                         {
-                                ,   7, 
+                                ,   7,
                             F079,   64
                         }
 
@@ -12557,8 +12557,8 @@
                         Local2 = 0x02
                         BankField (OPR0, BNK0, 0x02, DWordAcc, NoLock, Preserve)
                         {
-                            AccessAs (QWordAcc, 0x00), 
-                                ,   7, 
+                            AccessAs (QWordAcc, 0x00),
+                                ,   7,
                             F07A,   65
                         }
 
@@ -12570,7 +12570,7 @@
                         Local2 = 0x03
                         BankField (OPR0, BNK0, 0x03, QWordAcc, NoLock, Preserve)
                         {
-                                ,   7, 
+                                ,   7,
                             F07B,   69
                         }
 
@@ -12582,8 +12582,8 @@
                         Local2 = 0x04
                         BankField (OPR0, BNK0, 0x04, QWordAcc, NoLock, Preserve)
                         {
-                            AccessAs (QWordAcc, 0x00), 
-                                ,   7, 
+                            AccessAs (QWordAcc, 0x00),
+                                ,   7,
                             F07C,   129
                         }
 
@@ -12595,7 +12595,7 @@
                         Local2 = 0x05
                         BankField (OPR0, BNK0, 0x05, QWordAcc, NoLock, Preserve)
                         {
-                                ,   7, 
+                                ,   7,
                             F07D,   256
                         }
 
@@ -12607,8 +12607,8 @@
                         Local2 = 0x06
                         BankField (OPR0, BNK0, 0x06, AnyAcc, NoLock, Preserve)
                         {
-                            AccessAs (QWordAcc, 0x00), 
-                                ,   7, 
+                            AccessAs (QWordAcc, 0x00),
+                                ,   7,
                             F07E,   1023
                         }
 
@@ -12620,7 +12620,7 @@
                         Local2 = 0x07
                         BankField (OPR0, BNK0, 0x07, QWordAcc, NoLock, Preserve)
                         {
-                                ,   7, 
+                                ,   7,
                             F07F,   1983
                         }
 
@@ -12644,7 +12644,7 @@
                         Local2 = 0x08
                         BankField (OPR0, BNK0, 0x08, QWordAcc, NoLock, Preserve)
                         {
-                            Offset (0x01), 
+                            Offset (0x01),
                             F080,   1
                         }
 
@@ -12656,8 +12656,8 @@
                         Local2 = 0x09
                         BankField (OPR0, BNK0, 0x09, ByteAcc, NoLock, Preserve)
                         {
-                            AccessAs (QWordAcc, 0x00), 
-                            Offset (0x01), 
+                            AccessAs (QWordAcc, 0x00),
+                            Offset (0x01),
                             F081,   6
                         }
 
@@ -12669,7 +12669,7 @@
                         Local2 = 0x3F
                         BankField (OPR0, BNK0, 0x3F, QWordAcc, NoLock, Preserve)
                         {
-                            Offset (0x01), 
+                            Offset (0x01),
                             F082,   7
                         }
 
@@ -12681,8 +12681,8 @@
                         Local2 = 0x40
                         BankField (OPR0, BNK0, 0x40, WordAcc, NoLock, Preserve)
                         {
-                            AccessAs (QWordAcc, 0x00), 
-                            Offset (0x01), 
+                            AccessAs (QWordAcc, 0x00),
+                            Offset (0x01),
                             F083,   8
                         }
 
@@ -12694,7 +12694,7 @@
                         Local2 = 0x7F
                         BankField (OPR0, BNK0, 0x7F, QWordAcc, NoLock, Preserve)
                         {
-                            Offset (0x01), 
+                            Offset (0x01),
                             F084,   9
                         }
 
@@ -12706,8 +12706,8 @@
                         Local2 = 0x80
                         BankField (OPR0, BNK0, 0x80, DWordAcc, NoLock, Preserve)
                         {
-                            AccessAs (QWordAcc, 0x00), 
-                            Offset (0x01), 
+                            AccessAs (QWordAcc, 0x00),
+                            Offset (0x01),
                             F085,   31
                         }
 
@@ -12719,7 +12719,7 @@
                         Local2 = 0xFF
                         BankField (OPR0, BNK0, 0xFF, QWordAcc, NoLock, Preserve)
                         {
-                            Offset (0x01), 
+                            Offset (0x01),
                             F086,   32
                         }
 
@@ -12731,8 +12731,8 @@
                         Local2 = 0x00
                         BankField (OPR0, BNK0, 0x00, QWordAcc, NoLock, Preserve)
                         {
-                            AccessAs (QWordAcc, 0x00), 
-                            Offset (0x01), 
+                            AccessAs (QWordAcc, 0x00),
+                            Offset (0x01),
                             F087,   33
                         }
 
@@ -12744,7 +12744,7 @@
                         Local2 = 0x01
                         BankField (OPR0, BNK0, 0x01, QWordAcc, NoLock, Preserve)
                         {
-                            Offset (0x01), 
+                            Offset (0x01),
                             F088,   63
                         }
 
@@ -12756,8 +12756,8 @@
                         Local2 = 0x02
                         BankField (OPR0, BNK0, 0x02, AnyAcc, NoLock, Preserve)
                         {
-                            AccessAs (QWordAcc, 0x00), 
-                            Offset (0x01), 
+                            AccessAs (QWordAcc, 0x00),
+                            Offset (0x01),
                             F089,   64
                         }
 
@@ -12769,7 +12769,7 @@
                         Local2 = 0x03
                         BankField (OPR0, BNK0, 0x03, QWordAcc, NoLock, Preserve)
                         {
-                            Offset (0x01), 
+                            Offset (0x01),
                             F08A,   65
                         }
 
@@ -12781,8 +12781,8 @@
                         Local2 = 0x04
                         BankField (OPR0, BNK0, 0x04, ByteAcc, NoLock, Preserve)
                         {
-                            AccessAs (QWordAcc, 0x00), 
-                            Offset (0x01), 
+                            AccessAs (QWordAcc, 0x00),
+                            Offset (0x01),
                             F08B,   69
                         }
 
@@ -12794,7 +12794,7 @@
                         Local2 = 0x05
                         BankField (OPR0, BNK0, 0x05, QWordAcc, NoLock, Preserve)
                         {
-                            Offset (0x01), 
+                            Offset (0x01),
                             F08C,   129
                         }
 
@@ -12806,8 +12806,8 @@
                         Local2 = 0x06
                         BankField (OPR0, BNK0, 0x06, WordAcc, NoLock, Preserve)
                         {
-                            AccessAs (QWordAcc, 0x00), 
-                            Offset (0x01), 
+                            AccessAs (QWordAcc, 0x00),
+                            Offset (0x01),
                             F08D,   256
                         }
 
@@ -12819,7 +12819,7 @@
                         Local2 = 0x07
                         BankField (OPR0, BNK0, 0x07, QWordAcc, NoLock, Preserve)
                         {
-                            Offset (0x01), 
+                            Offset (0x01),
                             F08E,   1023
                         }
 
@@ -12831,8 +12831,8 @@
                         Local2 = 0x08
                         BankField (OPR0, BNK0, 0x08, DWordAcc, NoLock, Preserve)
                         {
-                            AccessAs (QWordAcc, 0x00), 
-                            Offset (0x01), 
+                            AccessAs (QWordAcc, 0x00),
+                            Offset (0x01),
                             F08F,   1983
                         }
 
@@ -12856,8 +12856,8 @@
                         Local2 = 0x09
                         BankField (OPR0, BNK0, 0x09, QWordAcc, NoLock, Preserve)
                         {
-                            AccessAs (QWordAcc, 0x00), 
-                                ,   9, 
+                            AccessAs (QWordAcc, 0x00),
+                                ,   9,
                             F090,   1
                         }
 
@@ -12869,7 +12869,7 @@
                         Local2 = 0x3F
                         BankField (OPR0, BNK0, 0x3F, QWordAcc, NoLock, Preserve)
                         {
-                                ,   9, 
+                                ,   9,
                             F091,   6
                         }
 
@@ -12881,8 +12881,8 @@
                         Local2 = 0x40
                         BankField (OPR0, BNK0, 0x40, AnyAcc, NoLock, Preserve)
                         {
-                            AccessAs (QWordAcc, 0x00), 
-                                ,   9, 
+                            AccessAs (QWordAcc, 0x00),
+                                ,   9,
                             F092,   7
                         }
 
@@ -12894,7 +12894,7 @@
                         Local2 = 0x7F
                         BankField (OPR0, BNK0, 0x7F, QWordAcc, NoLock, Preserve)
                         {
-                                ,   9, 
+                                ,   9,
                             F093,   8
                         }
 
@@ -12906,8 +12906,8 @@
                         Local2 = 0x80
                         BankField (OPR0, BNK0, 0x80, ByteAcc, NoLock, Preserve)
                         {
-                            AccessAs (QWordAcc, 0x00), 
-                                ,   9, 
+                            AccessAs (QWordAcc, 0x00),
+                                ,   9,
                             F094,   9
                         }
 
@@ -12919,7 +12919,7 @@
                         Local2 = 0xFF
                         BankField (OPR0, BNK0, 0xFF, QWordAcc, NoLock, Preserve)
                         {
-                                ,   9, 
+                                ,   9,
                             F095,   31
                         }
 
@@ -12931,8 +12931,8 @@
                         Local2 = 0x00
                         BankField (OPR0, BNK0, 0x00, WordAcc, NoLock, Preserve)
                         {
-                            AccessAs (QWordAcc, 0x00), 
-                                ,   9, 
+                            AccessAs (QWordAcc, 0x00),
+                                ,   9,
                             F096,   32
                         }
 
@@ -12944,7 +12944,7 @@
                         Local2 = 0x01
                         BankField (OPR0, BNK0, 0x01, QWordAcc, NoLock, Preserve)
                         {
-                                ,   9, 
+                                ,   9,
                             F097,   33
                         }
 
@@ -12956,8 +12956,8 @@
                         Local2 = 0x02
                         BankField (OPR0, BNK0, 0x02, DWordAcc, NoLock, Preserve)
                         {
-                            AccessAs (QWordAcc, 0x00), 
-                                ,   9, 
+                            AccessAs (QWordAcc, 0x00),
+                                ,   9,
                             F098,   63
                         }
 
@@ -12969,7 +12969,7 @@
                         Local2 = 0x03
                         BankField (OPR0, BNK0, 0x03, QWordAcc, NoLock, Preserve)
                         {
-                                ,   9, 
+                                ,   9,
                             F099,   64
                         }
 
@@ -12981,8 +12981,8 @@
                         Local2 = 0x04
                         BankField (OPR0, BNK0, 0x04, QWordAcc, NoLock, Preserve)
                         {
-                            AccessAs (QWordAcc, 0x00), 
-                                ,   9, 
+                            AccessAs (QWordAcc, 0x00),
+                                ,   9,
                             F09A,   65
                         }
 
@@ -12994,7 +12994,7 @@
                         Local2 = 0x05
                         BankField (OPR0, BNK0, 0x05, QWordAcc, NoLock, Preserve)
                         {
-                                ,   9, 
+                                ,   9,
                             F09B,   69
                         }
 
@@ -13006,8 +13006,8 @@
                         Local2 = 0x06
                         BankField (OPR0, BNK0, 0x06, AnyAcc, NoLock, Preserve)
                         {
-                            AccessAs (QWordAcc, 0x00), 
-                                ,   9, 
+                            AccessAs (QWordAcc, 0x00),
+                                ,   9,
                             F09C,   129
                         }
 
@@ -13019,7 +13019,7 @@
                         Local2 = 0x07
                         BankField (OPR0, BNK0, 0x07, QWordAcc, NoLock, Preserve)
                         {
-                                ,   9, 
+                                ,   9,
                             F09D,   256
                         }
 
@@ -13031,8 +13031,8 @@
                         Local2 = 0x08
                         BankField (OPR0, BNK0, 0x08, ByteAcc, NoLock, Preserve)
                         {
-                            AccessAs (QWordAcc, 0x00), 
-                                ,   9, 
+                            AccessAs (QWordAcc, 0x00),
+                                ,   9,
                             F09E,   1023
                         }
 
@@ -13044,7 +13044,7 @@
                         Local2 = 0x09
                         BankField (OPR0, BNK0, 0x09, QWordAcc, NoLock, Preserve)
                         {
-                                ,   9, 
+                                ,   9,
                             F09F,   1983
                         }
 
@@ -13068,8 +13068,8 @@
                         Local2 = 0x3F
                         BankField (OPR0, BNK0, 0x3F, QWordAcc, NoLock, Preserve)
                         {
-                            Offset (0x03), 
-                                ,   7, 
+                            Offset (0x03),
+                                ,   7,
                             F0A0,   1
                         }
 
@@ -13081,9 +13081,9 @@
                         Local2 = 0x40
                         BankField (OPR0, BNK0, 0x40, WordAcc, NoLock, Preserve)
                         {
-                            AccessAs (QWordAcc, 0x00), 
-                            Offset (0x03), 
-                                ,   7, 
+                            AccessAs (QWordAcc, 0x00),
+                            Offset (0x03),
+                                ,   7,
                             F0A1,   6
                         }
 
@@ -13095,8 +13095,8 @@
                         Local2 = 0x7F
                         BankField (OPR0, BNK0, 0x7F, QWordAcc, NoLock, Preserve)
                         {
-                            Offset (0x03), 
-                                ,   7, 
+                            Offset (0x03),
+                                ,   7,
                             F0A2,   7
                         }
 
@@ -13108,9 +13108,9 @@
                         Local2 = 0x80
                         BankField (OPR0, BNK0, 0x80, DWordAcc, NoLock, Preserve)
                         {
-                            AccessAs (QWordAcc, 0x00), 
-                            Offset (0x03), 
-                                ,   7, 
+                            AccessAs (QWordAcc, 0x00),
+                            Offset (0x03),
+                                ,   7,
                             F0A3,   8
                         }
 
@@ -13122,8 +13122,8 @@
                         Local2 = 0xFF
                         BankField (OPR0, BNK0, 0xFF, QWordAcc, NoLock, Preserve)
                         {
-                            Offset (0x03), 
-                                ,   7, 
+                            Offset (0x03),
+                                ,   7,
                             F0A4,   9
                         }
 
@@ -13135,9 +13135,9 @@
                         Local2 = 0x00
                         BankField (OPR0, BNK0, 0x00, QWordAcc, NoLock, Preserve)
                         {
-                            AccessAs (QWordAcc, 0x00), 
-                            Offset (0x03), 
-                                ,   7, 
+                            AccessAs (QWordAcc, 0x00),
+                            Offset (0x03),
+                                ,   7,
                             F0A5,   31
                         }
 
@@ -13149,8 +13149,8 @@
                         Local2 = 0x01
                         BankField (OPR0, BNK0, 0x01, QWordAcc, NoLock, Preserve)
                         {
-                            Offset (0x03), 
-                                ,   7, 
+                            Offset (0x03),
+                                ,   7,
                             F0A6,   32
                         }
 
@@ -13162,9 +13162,9 @@
                         Local2 = 0x02
                         BankField (OPR0, BNK0, 0x02, AnyAcc, NoLock, Preserve)
                         {
-                            AccessAs (QWordAcc, 0x00), 
-                            Offset (0x03), 
-                                ,   7, 
+                            AccessAs (QWordAcc, 0x00),
+                            Offset (0x03),
+                                ,   7,
                             F0A7,   33
                         }
 
@@ -13176,8 +13176,8 @@
                         Local2 = 0x03
                         BankField (OPR0, BNK0, 0x03, QWordAcc, NoLock, Preserve)
                         {
-                            Offset (0x03), 
-                                ,   7, 
+                            Offset (0x03),
+                                ,   7,
                             F0A8,   63
                         }
 
@@ -13189,9 +13189,9 @@
                         Local2 = 0x04
                         BankField (OPR0, BNK0, 0x04, ByteAcc, NoLock, Preserve)
                         {
-                            AccessAs (QWordAcc, 0x00), 
-                            Offset (0x03), 
-                                ,   7, 
+                            AccessAs (QWordAcc, 0x00),
+                            Offset (0x03),
+                                ,   7,
                             F0A9,   64
                         }
 
@@ -13203,8 +13203,8 @@
                         Local2 = 0x05
                         BankField (OPR0, BNK0, 0x05, QWordAcc, NoLock, Preserve)
                         {
-                            Offset (0x03), 
-                                ,   7, 
+                            Offset (0x03),
+                                ,   7,
                             F0AA,   65
                         }
 
@@ -13216,9 +13216,9 @@
                         Local2 = 0x06
                         BankField (OPR0, BNK0, 0x06, WordAcc, NoLock, Preserve)
                         {
-                            AccessAs (QWordAcc, 0x00), 
-                            Offset (0x03), 
-                                ,   7, 
+                            AccessAs (QWordAcc, 0x00),
+                            Offset (0x03),
+                                ,   7,
                             F0AB,   69
                         }
 
@@ -13230,8 +13230,8 @@
                         Local2 = 0x07
                         BankField (OPR0, BNK0, 0x07, QWordAcc, NoLock, Preserve)
                         {
-                            Offset (0x03), 
-                                ,   7, 
+                            Offset (0x03),
+                                ,   7,
                             F0AC,   129
                         }
 
@@ -13243,9 +13243,9 @@
                         Local2 = 0x08
                         BankField (OPR0, BNK0, 0x08, DWordAcc, NoLock, Preserve)
                         {
-                            AccessAs (QWordAcc, 0x00), 
-                            Offset (0x03), 
-                                ,   7, 
+                            AccessAs (QWordAcc, 0x00),
+                            Offset (0x03),
+                                ,   7,
                             F0AD,   256
                         }
 
@@ -13257,8 +13257,8 @@
                         Local2 = 0x09
                         BankField (OPR0, BNK0, 0x09, QWordAcc, NoLock, Preserve)
                         {
-                            Offset (0x03), 
-                                ,   7, 
+                            Offset (0x03),
+                                ,   7,
                             F0AE,   1023
                         }
 
@@ -13270,9 +13270,9 @@
                         Local2 = 0x3F
                         BankField (OPR0, BNK0, 0x3F, QWordAcc, NoLock, Preserve)
                         {
-                            AccessAs (QWordAcc, 0x00), 
-                            Offset (0x03), 
-                                ,   7, 
+                            AccessAs (QWordAcc, 0x00),
+                            Offset (0x03),
+                                ,   7,
                             F0AF,   1983
                         }
 
@@ -13296,8 +13296,8 @@
                         Local2 = 0x40
                         BankField (OPR0, BNK0, 0x40, AnyAcc, NoLock, Preserve)
                         {
-                            AccessAs (QWordAcc, 0x00), 
-                            Offset (0x04), 
+                            AccessAs (QWordAcc, 0x00),
+                            Offset (0x04),
                             F0B0,   1
                         }
 
@@ -13309,7 +13309,7 @@
                         Local2 = 0x7F
                         BankField (OPR0, BNK0, 0x7F, QWordAcc, NoLock, Preserve)
                         {
-                            Offset (0x04), 
+                            Offset (0x04),
                             F0B1,   6
                         }
 
@@ -13321,8 +13321,8 @@
                         Local2 = 0x80
                         BankField (OPR0, BNK0, 0x80, ByteAcc, NoLock, Preserve)
                         {
-                            AccessAs (QWordAcc, 0x00), 
-                            Offset (0x04), 
+                            AccessAs (QWordAcc, 0x00),
+                            Offset (0x04),
                             F0B2,   7
                         }
 
@@ -13334,7 +13334,7 @@
                         Local2 = 0xFF
                         BankField (OPR0, BNK0, 0xFF, QWordAcc, NoLock, Preserve)
                         {
-                            Offset (0x04), 
+                            Offset (0x04),
                             F0B3,   8
                         }
 
@@ -13346,8 +13346,8 @@
                         Local2 = 0x00
                         BankField (OPR0, BNK0, 0x00, WordAcc, NoLock, Preserve)
                         {
-                            AccessAs (QWordAcc, 0x00), 
-                            Offset (0x04), 
+                            AccessAs (QWordAcc, 0x00),
+                            Offset (0x04),
                             F0B4,   9
                         }
 
@@ -13359,7 +13359,7 @@
                         Local2 = 0x01
                         BankField (OPR0, BNK0, 0x01, QWordAcc, NoLock, Preserve)
                         {
-                            Offset (0x04), 
+                            Offset (0x04),
                             F0B5,   31
                         }
 
@@ -13371,8 +13371,8 @@
                         Local2 = 0x02
                         BankField (OPR0, BNK0, 0x02, DWordAcc, NoLock, Preserve)
                         {
-                            AccessAs (QWordAcc, 0x00), 
-                            Offset (0x04), 
+                            AccessAs (QWordAcc, 0x00),
+                            Offset (0x04),
                             F0B6,   32
                         }
 
@@ -13384,7 +13384,7 @@
                         Local2 = 0x03
                         BankField (OPR0, BNK0, 0x03, QWordAcc, NoLock, Preserve)
                         {
-                            Offset (0x04), 
+                            Offset (0x04),
                             F0B7,   33
                         }
 
@@ -13396,8 +13396,8 @@
                         Local2 = 0x04
                         BankField (OPR0, BNK0, 0x04, QWordAcc, NoLock, Preserve)
                         {
-                            AccessAs (QWordAcc, 0x00), 
-                            Offset (0x04), 
+                            AccessAs (QWordAcc, 0x00),
+                            Offset (0x04),
                             F0B8,   63
                         }
 
@@ -13409,7 +13409,7 @@
                         Local2 = 0x05
                         BankField (OPR0, BNK0, 0x05, QWordAcc, NoLock, Preserve)
                         {
-                            Offset (0x04), 
+                            Offset (0x04),
                             F0B9,   64
                         }
 
@@ -13421,8 +13421,8 @@
                         Local2 = 0x06
                         BankField (OPR0, BNK0, 0x06, AnyAcc, NoLock, Preserve)
                         {
-                            AccessAs (QWordAcc, 0x00), 
-                            Offset (0x04), 
+                            AccessAs (QWordAcc, 0x00),
+                            Offset (0x04),
                             F0BA,   65
                         }
 
@@ -13434,7 +13434,7 @@
                         Local2 = 0x07
                         BankField (OPR0, BNK0, 0x07, QWordAcc, NoLock, Preserve)
                         {
-                            Offset (0x04), 
+                            Offset (0x04),
                             F0BB,   69
                         }
 
@@ -13446,8 +13446,8 @@
                         Local2 = 0x08
                         BankField (OPR0, BNK0, 0x08, ByteAcc, NoLock, Preserve)
                         {
-                            AccessAs (QWordAcc, 0x00), 
-                            Offset (0x04), 
+                            AccessAs (QWordAcc, 0x00),
+                            Offset (0x04),
                             F0BC,   129
                         }
 
@@ -13459,7 +13459,7 @@
                         Local2 = 0x09
                         BankField (OPR0, BNK0, 0x09, QWordAcc, NoLock, Preserve)
                         {
-                            Offset (0x04), 
+                            Offset (0x04),
                             F0BD,   256
                         }
 
@@ -13471,8 +13471,8 @@
                         Local2 = 0x3F
                         BankField (OPR0, BNK0, 0x3F, WordAcc, NoLock, Preserve)
                         {
-                            AccessAs (QWordAcc, 0x00), 
-                            Offset (0x04), 
+                            AccessAs (QWordAcc, 0x00),
+                            Offset (0x04),
                             F0BE,   1023
                         }
 
@@ -13484,7 +13484,7 @@
                         Local2 = 0x40
                         BankField (OPR0, BNK0, 0x40, QWordAcc, NoLock, Preserve)
                         {
-                            Offset (0x04), 
+                            Offset (0x04),
                             F0BF,   1983
                         }
 
@@ -13508,7 +13508,7 @@
                         Local2 = 0x7F
                         BankField (OPR0, BNK0, 0x7F, QWordAcc, NoLock, Preserve)
                         {
-                                ,   33, 
+                                ,   33,
                             F0C0,   1
                         }
 
@@ -13520,8 +13520,8 @@
                         Local2 = 0x80
                         BankField (OPR0, BNK0, 0x80, DWordAcc, NoLock, Preserve)
                         {
-                            AccessAs (QWordAcc, 0x00), 
-                                ,   33, 
+                            AccessAs (QWordAcc, 0x00),
+                                ,   33,
                             F0C1,   6
                         }
 
@@ -13533,7 +13533,7 @@
                         Local2 = 0xFF
                         BankField (OPR0, BNK0, 0xFF, QWordAcc, NoLock, Preserve)
                         {
-                                ,   33, 
+                                ,   33,
                             F0C2,   7
                         }
 
@@ -13545,8 +13545,8 @@
                         Local2 = 0x00
                         BankField (OPR0, BNK0, 0x00, QWordAcc, NoLock, Preserve)
                         {
-                            AccessAs (QWordAcc, 0x00), 
-                                ,   33, 
+                            AccessAs (QWordAcc, 0x00),
+                                ,   33,
                             F0C3,   8
                         }
 
@@ -13558,7 +13558,7 @@
                         Local2 = 0x01
                         BankField (OPR0, BNK0, 0x01, QWordAcc, NoLock, Preserve)
                         {
-                                ,   33, 
+                                ,   33,
                             F0C4,   9
                         }
 
@@ -13570,8 +13570,8 @@
                         Local2 = 0x02
                         BankField (OPR0, BNK0, 0x02, AnyAcc, NoLock, Preserve)
                         {
-                            AccessAs (QWordAcc, 0x00), 
-                                ,   33, 
+                            AccessAs (QWordAcc, 0x00),
+                                ,   33,
                             F0C5,   31
                         }
 
@@ -13583,7 +13583,7 @@
                         Local2 = 0x03
                         BankField (OPR0, BNK0, 0x03, QWordAcc, NoLock, Preserve)
                         {
-                                ,   33, 
+                                ,   33,
                             F0C6,   32
                         }
 
@@ -13595,8 +13595,8 @@
                         Local2 = 0x04
                         BankField (OPR0, BNK0, 0x04, ByteAcc, NoLock, Preserve)
                         {
-                            AccessAs (QWordAcc, 0x00), 
-                                ,   33, 
+                            AccessAs (QWordAcc, 0x00),
+                                ,   33,
                             F0C7,   33
                         }
 
@@ -13608,7 +13608,7 @@
                         Local2 = 0x05
                         BankField (OPR0, BNK0, 0x05, QWordAcc, NoLock, Preserve)
                         {
-                                ,   33, 
+                                ,   33,
                             F0C8,   63
                         }
 
@@ -13620,8 +13620,8 @@
                         Local2 = 0x06
                         BankField (OPR0, BNK0, 0x06, WordAcc, NoLock, Preserve)
                         {
-                            AccessAs (QWordAcc, 0x00), 
-                                ,   33, 
+                            AccessAs (QWordAcc, 0x00),
+                                ,   33,
                             F0C9,   64
                         }
 
@@ -13633,7 +13633,7 @@
                         Local2 = 0x07
                         BankField (OPR0, BNK0, 0x07, QWordAcc, NoLock, Preserve)
                         {
-                                ,   33, 
+                                ,   33,
                             F0CA,   65
                         }
 
@@ -13645,8 +13645,8 @@
                         Local2 = 0x08
                         BankField (OPR0, BNK0, 0x08, DWordAcc, NoLock, Preserve)
                         {
-                            AccessAs (QWordAcc, 0x00), 
-                                ,   33, 
+                            AccessAs (QWordAcc, 0x00),
+                                ,   33,
                             F0CB,   69
                         }
 
@@ -13658,7 +13658,7 @@
                         Local2 = 0x09
                         BankField (OPR0, BNK0, 0x09, QWordAcc, NoLock, Preserve)
                         {
-                                ,   33, 
+                                ,   33,
                             F0CC,   129
                         }
 
@@ -13670,8 +13670,8 @@
                         Local2 = 0x3F
                         BankField (OPR0, BNK0, 0x3F, QWordAcc, NoLock, Preserve)
                         {
-                            AccessAs (QWordAcc, 0x00), 
-                                ,   33, 
+                            AccessAs (QWordAcc, 0x00),
+                                ,   33,
                             F0CD,   256
                         }
 
@@ -13683,7 +13683,7 @@
                         Local2 = 0x40
                         BankField (OPR0, BNK0, 0x40, QWordAcc, NoLock, Preserve)
                         {
-                                ,   33, 
+                                ,   33,
                             F0CE,   1023
                         }
 
@@ -13695,8 +13695,8 @@
                         Local2 = 0x7F
                         BankField (OPR0, BNK0, 0x7F, AnyAcc, NoLock, Preserve)
                         {
-                            AccessAs (QWordAcc, 0x00), 
-                                ,   33, 
+                            AccessAs (QWordAcc, 0x00),
+                                ,   33,
                             F0CF,   1983
                         }
 
@@ -13720,8 +13720,8 @@
                         Local2 = 0x80
                         BankField (OPR0, BNK0, 0x80, QWordAcc, NoLock, Preserve)
                         {
-                            AccessAs (QWordAcc, 0x00), 
-                                ,   63, 
+                            AccessAs (QWordAcc, 0x00),
+                                ,   63,
                             F0D0,   1
                         }
 
@@ -13733,7 +13733,7 @@
                         Local2 = 0xFF
                         BankField (OPR0, BNK0, 0xFF, ByteAcc, NoLock, Preserve)
                         {
-                                ,   63, 
+                                ,   63,
                             F0D1,   6
                         }
 
@@ -13745,8 +13745,8 @@
                         Local2 = 0x00
                         BankField (OPR0, BNK0, 0x00, QWordAcc, NoLock, Preserve)
                         {
-                            AccessAs (QWordAcc, 0x00), 
-                                ,   63, 
+                            AccessAs (QWordAcc, 0x00),
+                                ,   63,
                             F0D2,   7
                         }
 
@@ -13758,7 +13758,7 @@
                         Local2 = 0x01
                         BankField (OPR0, BNK0, 0x01, WordAcc, NoLock, Preserve)
                         {
-                                ,   63, 
+                                ,   63,
                             F0D3,   8
                         }
 
@@ -13770,8 +13770,8 @@
                         Local2 = 0x02
                         BankField (OPR0, BNK0, 0x02, QWordAcc, NoLock, Preserve)
                         {
-                            AccessAs (QWordAcc, 0x00), 
-                                ,   63, 
+                            AccessAs (QWordAcc, 0x00),
+                                ,   63,
                             F0D4,   9
                         }
 
@@ -13783,7 +13783,7 @@
                         Local2 = 0x03
                         BankField (OPR0, BNK0, 0x03, DWordAcc, NoLock, Preserve)
                         {
-                                ,   63, 
+                                ,   63,
                             F0D5,   31
                         }
 
@@ -13795,8 +13795,8 @@
                         Local2 = 0x04
                         BankField (OPR0, BNK0, 0x04, QWordAcc, NoLock, Preserve)
                         {
-                            AccessAs (QWordAcc, 0x00), 
-                                ,   63, 
+                            AccessAs (QWordAcc, 0x00),
+                                ,   63,
                             F0D6,   32
                         }
 
@@ -13808,7 +13808,7 @@
                         Local2 = 0x05
                         BankField (OPR0, BNK0, 0x05, QWordAcc, NoLock, Preserve)
                         {
-                                ,   63, 
+                                ,   63,
                             F0D7,   33
                         }
 
@@ -13820,8 +13820,8 @@
                         Local2 = 0x06
                         BankField (OPR0, BNK0, 0x06, AnyAcc, NoLock, Preserve)
                         {
-                            AccessAs (QWordAcc, 0x00), 
-                                ,   63, 
+                            AccessAs (QWordAcc, 0x00),
+                                ,   63,
                             F0D8,   63
                         }
 
@@ -13833,7 +13833,7 @@
                         Local2 = 0x07
                         BankField (OPR0, BNK0, 0x07, QWordAcc, NoLock, Preserve)
                         {
-                                ,   63, 
+                                ,   63,
                             F0D9,   64
                         }
 
@@ -13845,8 +13845,8 @@
                         Local2 = 0x08
                         BankField (OPR0, BNK0, 0x08, ByteAcc, NoLock, Preserve)
                         {
-                            AccessAs (QWordAcc, 0x00), 
-                                ,   63, 
+                            AccessAs (QWordAcc, 0x00),
+                                ,   63,
                             F0DA,   65
                         }
 
@@ -13858,7 +13858,7 @@
                         Local2 = 0x09
                         BankField (OPR0, BNK0, 0x09, QWordAcc, NoLock, Preserve)
                         {
-                                ,   63, 
+                                ,   63,
                             F0DB,   69
                         }
 
@@ -13870,8 +13870,8 @@
                         Local2 = 0x3F
                         BankField (OPR0, BNK0, 0x3F, WordAcc, NoLock, Preserve)
                         {
-                            AccessAs (QWordAcc, 0x00), 
-                                ,   63, 
+                            AccessAs (QWordAcc, 0x00),
+                                ,   63,
                             F0DC,   129
                         }
 
@@ -13883,7 +13883,7 @@
                         Local2 = 0x40
                         BankField (OPR0, BNK0, 0x40, QWordAcc, NoLock, Preserve)
                         {
-                                ,   63, 
+                                ,   63,
                             F0DD,   256
                         }
 
@@ -13895,8 +13895,8 @@
                         Local2 = 0x7F
                         BankField (OPR0, BNK0, 0x7F, DWordAcc, NoLock, Preserve)
                         {
-                            AccessAs (QWordAcc, 0x00), 
-                                ,   63, 
+                            AccessAs (QWordAcc, 0x00),
+                                ,   63,
                             F0DE,   1023
                         }
 
@@ -13908,7 +13908,7 @@
                         Local2 = 0x80
                         BankField (OPR0, BNK0, 0x80, QWordAcc, NoLock, Preserve)
                         {
-                                ,   63, 
+                                ,   63,
                             F0DF,   1983
                         }
 
@@ -13932,7 +13932,7 @@
                         Local2 = 0xFF
                         BankField (OPR0, BNK0, 0xFF, QWordAcc, NoLock, Preserve)
                         {
-                            Offset (0x08), 
+                            Offset (0x08),
                             F0E0,   1
                         }
 
@@ -13944,8 +13944,8 @@
                         Local2 = 0x00
                         BankField (OPR0, BNK0, 0x00, QWordAcc, NoLock, Preserve)
                         {
-                            AccessAs (QWordAcc, 0x00), 
-                            Offset (0x08), 
+                            AccessAs (QWordAcc, 0x00),
+                            Offset (0x08),
                             F0E1,   6
                         }
 
@@ -13957,7 +13957,7 @@
                         Local2 = 0x01
                         BankField (OPR0, BNK0, 0x01, QWordAcc, NoLock, Preserve)
                         {
-                            Offset (0x08), 
+                            Offset (0x08),
                             F0E2,   7
                         }
 
@@ -13969,8 +13969,8 @@
                         Local2 = 0x02
                         BankField (OPR0, BNK0, 0x02, AnyAcc, NoLock, Preserve)
                         {
-                            AccessAs (QWordAcc, 0x00), 
-                            Offset (0x08), 
+                            AccessAs (QWordAcc, 0x00),
+                            Offset (0x08),
                             F0E3,   8
                         }
 
@@ -13982,7 +13982,7 @@
                         Local2 = 0x03
                         BankField (OPR0, BNK0, 0x03, QWordAcc, NoLock, Preserve)
                         {
-                            Offset (0x08), 
+                            Offset (0x08),
                             F0E4,   9
                         }
 
@@ -13994,8 +13994,8 @@
                         Local2 = 0x04
                         BankField (OPR0, BNK0, 0x04, ByteAcc, NoLock, Preserve)
                         {
-                            AccessAs (QWordAcc, 0x00), 
-                            Offset (0x08), 
+                            AccessAs (QWordAcc, 0x00),
+                            Offset (0x08),
                             F0E5,   31
                         }
 
@@ -14007,7 +14007,7 @@
                         Local2 = 0x05
                         BankField (OPR0, BNK0, 0x05, QWordAcc, NoLock, Preserve)
                         {
-                            Offset (0x08), 
+                            Offset (0x08),
                             F0E6,   32
                         }
 
@@ -14019,8 +14019,8 @@
                         Local2 = 0x06
                         BankField (OPR0, BNK0, 0x06, WordAcc, NoLock, Preserve)
                         {
-                            AccessAs (QWordAcc, 0x00), 
-                            Offset (0x08), 
+                            AccessAs (QWordAcc, 0x00),
+                            Offset (0x08),
                             F0E7,   33
                         }
 
@@ -14032,7 +14032,7 @@
                         Local2 = 0x07
                         BankField (OPR0, BNK0, 0x07, QWordAcc, NoLock, Preserve)
                         {
-                            Offset (0x08), 
+                            Offset (0x08),
                             F0E8,   63
                         }
 
@@ -14044,8 +14044,8 @@
                         Local2 = 0x08
                         BankField (OPR0, BNK0, 0x08, DWordAcc, NoLock, Preserve)
                         {
-                            AccessAs (QWordAcc, 0x00), 
-                            Offset (0x08), 
+                            AccessAs (QWordAcc, 0x00),
+                            Offset (0x08),
                             F0E9,   64
                         }
 
@@ -14057,7 +14057,7 @@
                         Local2 = 0x09
                         BankField (OPR0, BNK0, 0x09, QWordAcc, NoLock, Preserve)
                         {
-                            Offset (0x08), 
+                            Offset (0x08),
                             F0EA,   65
                         }
 
@@ -14069,8 +14069,8 @@
                         Local2 = 0x3F
                         BankField (OPR0, BNK0, 0x3F, QWordAcc, NoLock, Preserve)
                         {
-                            AccessAs (QWordAcc, 0x00), 
-                            Offset (0x08), 
+                            AccessAs (QWordAcc, 0x00),
+                            Offset (0x08),
                             F0EB,   69
                         }
 
@@ -14082,7 +14082,7 @@
                         Local2 = 0x40
                         BankField (OPR0, BNK0, 0x40, QWordAcc, NoLock, Preserve)
                         {
-                            Offset (0x08), 
+                            Offset (0x08),
                             F0EC,   129
                         }
 
@@ -14094,8 +14094,8 @@
                         Local2 = 0x7F
                         BankField (OPR0, BNK0, 0x7F, AnyAcc, NoLock, Preserve)
                         {
-                            AccessAs (QWordAcc, 0x00), 
-                            Offset (0x08), 
+                            AccessAs (QWordAcc, 0x00),
+                            Offset (0x08),
                             F0ED,   256
                         }
 
@@ -14107,7 +14107,7 @@
                         Local2 = 0x80
                         BankField (OPR0, BNK0, 0x80, QWordAcc, NoLock, Preserve)
                         {
-                            Offset (0x08), 
+                            Offset (0x08),
                             F0EE,   1023
                         }
 
@@ -14119,8 +14119,8 @@
                         Local2 = 0xFF
                         BankField (OPR0, BNK0, 0xFF, ByteAcc, NoLock, Preserve)
                         {
-                            AccessAs (QWordAcc, 0x00), 
-                            Offset (0x08), 
+                            AccessAs (QWordAcc, 0x00),
+                            Offset (0x08),
                             F0EF,   1983
                         }
 
@@ -14144,9 +14144,9 @@
                         Local2 = 0x00
                         BankField (OPR0, BNK0, 0x00, WordAcc, NoLock, Preserve)
                         {
-                            AccessAs (QWordAcc, 0x00), 
-                            Offset (0x08), 
-                                ,   1, 
+                            AccessAs (QWordAcc, 0x00),
+                            Offset (0x08),
+                                ,   1,
                             F0F0,   1
                         }
 
@@ -14158,8 +14158,8 @@
                         Local2 = 0x01
                         BankField (OPR0, BNK0, 0x01, QWordAcc, NoLock, Preserve)
                         {
-                            Offset (0x08), 
-                                ,   1, 
+                            Offset (0x08),
+                                ,   1,
                             F0F1,   6
                         }
 
@@ -14171,9 +14171,9 @@
                         Local2 = 0x02
                         BankField (OPR0, BNK0, 0x02, DWordAcc, NoLock, Preserve)
                         {
-                            AccessAs (QWordAcc, 0x00), 
-                            Offset (0x08), 
-                                ,   1, 
+                            AccessAs (QWordAcc, 0x00),
+                            Offset (0x08),
+                                ,   1,
                             F0F2,   7
                         }
 
@@ -14185,8 +14185,8 @@
                         Local2 = 0x03
                         BankField (OPR0, BNK0, 0x03, QWordAcc, NoLock, Preserve)
                         {
-                            Offset (0x08), 
-                                ,   1, 
+                            Offset (0x08),
+                                ,   1,
                             F0F3,   8
                         }
 
@@ -14198,9 +14198,9 @@
                         Local2 = 0x04
                         BankField (OPR0, BNK0, 0x04, QWordAcc, NoLock, Preserve)
                         {
-                            AccessAs (QWordAcc, 0x00), 
-                            Offset (0x08), 
-                                ,   1, 
+                            AccessAs (QWordAcc, 0x00),
+                            Offset (0x08),
+                                ,   1,
                             F0F4,   9
                         }
 
@@ -14212,8 +14212,8 @@
                         Local2 = 0x05
                         BankField (OPR0, BNK0, 0x05, QWordAcc, NoLock, Preserve)
                         {
-                            Offset (0x08), 
-                                ,   1, 
+                            Offset (0x08),
+                                ,   1,
                             F0F5,   31
                         }
 
@@ -14225,9 +14225,9 @@
                         Local2 = 0x06
                         BankField (OPR0, BNK0, 0x06, AnyAcc, NoLock, Preserve)
                         {
-                            AccessAs (QWordAcc, 0x00), 
-                            Offset (0x08), 
-                                ,   1, 
+                            AccessAs (QWordAcc, 0x00),
+                            Offset (0x08),
+                                ,   1,
                             F0F6,   32
                         }
 
@@ -14239,8 +14239,8 @@
                         Local2 = 0x07
                         BankField (OPR0, BNK0, 0x07, QWordAcc, NoLock, Preserve)
                         {
-                            Offset (0x08), 
-                                ,   1, 
+                            Offset (0x08),
+                                ,   1,
                             F0F7,   33
                         }
 
@@ -14252,9 +14252,9 @@
                         Local2 = 0x08
                         BankField (OPR0, BNK0, 0x08, ByteAcc, NoLock, Preserve)
                         {
-                            AccessAs (QWordAcc, 0x00), 
-                            Offset (0x08), 
-                                ,   1, 
+                            AccessAs (QWordAcc, 0x00),
+                            Offset (0x08),
+                                ,   1,
                             F0F8,   63
                         }
 
@@ -14266,8 +14266,8 @@
                         Local2 = 0x09
                         BankField (OPR0, BNK0, 0x09, QWordAcc, NoLock, Preserve)
                         {
-                            Offset (0x08), 
-                                ,   1, 
+                            Offset (0x08),
+                                ,   1,
                             F0F9,   64
                         }
 
@@ -14279,9 +14279,9 @@
                         Local2 = 0x3F
                         BankField (OPR0, BNK0, 0x3F, WordAcc, NoLock, Preserve)
                         {
-                            AccessAs (QWordAcc, 0x00), 
-                            Offset (0x08), 
-                                ,   1, 
+                            AccessAs (QWordAcc, 0x00),
+                            Offset (0x08),
+                                ,   1,
                             F0FA,   65
                         }
 
@@ -14293,8 +14293,8 @@
                         Local2 = 0x40
                         BankField (OPR0, BNK0, 0x40, QWordAcc, NoLock, Preserve)
                         {
-                            Offset (0x08), 
-                                ,   1, 
+                            Offset (0x08),
+                                ,   1,
                             F0FB,   69
                         }
 
@@ -14306,9 +14306,9 @@
                         Local2 = 0x7F
                         BankField (OPR0, BNK0, 0x7F, DWordAcc, NoLock, Preserve)
                         {
-                            AccessAs (QWordAcc, 0x00), 
-                            Offset (0x08), 
-                                ,   1, 
+                            AccessAs (QWordAcc, 0x00),
+                            Offset (0x08),
+                                ,   1,
                             F0FC,   129
                         }
 
@@ -14320,8 +14320,8 @@
                         Local2 = 0x80
                         BankField (OPR0, BNK0, 0x80, QWordAcc, NoLock, Preserve)
                         {
-                            Offset (0x08), 
-                                ,   1, 
+                            Offset (0x08),
+                                ,   1,
                             F0FD,   256
                         }
 
@@ -14333,9 +14333,9 @@
                         Local2 = 0xFF
                         BankField (OPR0, BNK0, 0xFF, QWordAcc, NoLock, Preserve)
                         {
-                            AccessAs (QWordAcc, 0x00), 
-                            Offset (0x08), 
-                                ,   1, 
+                            AccessAs (QWordAcc, 0x00),
+                            Offset (0x08),
+                                ,   1,
                             F0FE,   1023
                         }
 
@@ -14347,8 +14347,8 @@
                         Local2 = 0x00
                         BankField (OPR0, BNK0, 0x00, QWordAcc, NoLock, Preserve)
                         {
-                            Offset (0x08), 
-                                ,   1, 
+                            Offset (0x08),
+                                ,   1,
                             F0FF,   1983
                         }
 
@@ -14476,7 +14476,7 @@
                         Local2 = 0x00
                         BankField (OPR0, BNK0, 0x00, AnyAcc, Lock, Preserve)
                         {
-                            Offset (0x00), 
+                            Offset (0x00),
                             F000,   1
                         }
 
@@ -14488,8 +14488,8 @@
                         Local2 = 0x01
                         BankField (OPR0, BNK0, 0x01, WordAcc, Lock, Preserve)
                         {
-                            AccessAs (AnyAcc, 0x00), 
-                            Offset (0x00), 
+                            AccessAs (AnyAcc, 0x00),
+                            Offset (0x00),
                             F001,   6
                         }
 
@@ -14501,7 +14501,7 @@
                         Local2 = 0x02
                         BankField (OPR0, BNK0, 0x02, AnyAcc, Lock, Preserve)
                         {
-                            Offset (0x00), 
+                            Offset (0x00),
                             F002,   7
                         }
 
@@ -14513,8 +14513,8 @@
                         Local2 = 0x03
                         BankField (OPR0, BNK0, 0x03, DWordAcc, Lock, Preserve)
                         {
-                            AccessAs (AnyAcc, 0x00), 
-                            Offset (0x00), 
+                            AccessAs (AnyAcc, 0x00),
+                            Offset (0x00),
                             F003,   8
                         }
 
@@ -14526,7 +14526,7 @@
                         Local2 = 0x04
                         BankField (OPR0, BNK0, 0x04, AnyAcc, Lock, Preserve)
                         {
-                            Offset (0x00), 
+                            Offset (0x00),
                             F004,   9
                         }
 
@@ -14538,8 +14538,8 @@
                         Local2 = 0x05
                         BankField (OPR0, BNK0, 0x05, QWordAcc, Lock, Preserve)
                         {
-                            AccessAs (AnyAcc, 0x00), 
-                            Offset (0x00), 
+                            AccessAs (AnyAcc, 0x00),
+                            Offset (0x00),
                             F005,   31
                         }
 
@@ -14551,7 +14551,7 @@
                         Local2 = 0x06
                         BankField (OPR0, BNK0, 0x06, AnyAcc, Lock, Preserve)
                         {
-                            Offset (0x00), 
+                            Offset (0x00),
                             F006,   32
                         }
 
@@ -14563,8 +14563,8 @@
                         Local2 = 0x07
                         BankField (OPR0, BNK0, 0x07, AnyAcc, Lock, Preserve)
                         {
-                            AccessAs (AnyAcc, 0x00), 
-                            Offset (0x00), 
+                            AccessAs (AnyAcc, 0x00),
+                            Offset (0x00),
                             F007,   33
                         }
 
@@ -14576,7 +14576,7 @@
                         Local2 = 0x08
                         BankField (OPR0, BNK0, 0x08, AnyAcc, Lock, Preserve)
                         {
-                            Offset (0x00), 
+                            Offset (0x00),
                             F008,   63
                         }
 
@@ -14588,8 +14588,8 @@
                         Local2 = 0x09
                         BankField (OPR0, BNK0, 0x09, ByteAcc, Lock, Preserve)
                         {
-                            AccessAs (AnyAcc, 0x00), 
-                            Offset (0x00), 
+                            AccessAs (AnyAcc, 0x00),
+                            Offset (0x00),
                             F009,   64
                         }
 
@@ -14601,7 +14601,7 @@
                         Local2 = 0x3F
                         BankField (OPR0, BNK0, 0x3F, AnyAcc, Lock, Preserve)
                         {
-                            Offset (0x00), 
+                            Offset (0x00),
                             F00A,   65
                         }
 
@@ -14613,8 +14613,8 @@
                         Local2 = 0x40
                         BankField (OPR0, BNK0, 0x40, WordAcc, Lock, Preserve)
                         {
-                            AccessAs (AnyAcc, 0x00), 
-                            Offset (0x00), 
+                            AccessAs (AnyAcc, 0x00),
+                            Offset (0x00),
                             F00B,   69
                         }
 
@@ -14626,7 +14626,7 @@
                         Local2 = 0x7F
                         BankField (OPR0, BNK0, 0x7F, AnyAcc, Lock, Preserve)
                         {
-                            Offset (0x00), 
+                            Offset (0x00),
                             F00C,   129
                         }
 
@@ -14638,8 +14638,8 @@
                         Local2 = 0x80
                         BankField (OPR0, BNK0, 0x80, DWordAcc, Lock, Preserve)
                         {
-                            AccessAs (AnyAcc, 0x00), 
-                            Offset (0x00), 
+                            AccessAs (AnyAcc, 0x00),
+                            Offset (0x00),
                             F00D,   256
                         }
 
@@ -14651,7 +14651,7 @@
                         Local2 = 0xFF
                         BankField (OPR0, BNK0, 0xFF, AnyAcc, Lock, Preserve)
                         {
-                            Offset (0x00), 
+                            Offset (0x00),
                             F00E,   1023
                         }
 
@@ -14663,8 +14663,8 @@
                         Local2 = 0x00
                         BankField (OPR0, BNK0, 0x00, QWordAcc, Lock, Preserve)
                         {
-                            AccessAs (AnyAcc, 0x00), 
-                            Offset (0x00), 
+                            AccessAs (AnyAcc, 0x00),
+                            Offset (0x00),
                             F00F,   1983
                         }
 
@@ -14688,8 +14688,8 @@
                         Local2 = 0x01
                         BankField (OPR0, BNK0, 0x01, AnyAcc, Lock, Preserve)
                         {
-                            AccessAs (AnyAcc, 0x00), 
-                                ,   1, 
+                            AccessAs (AnyAcc, 0x00),
+                                ,   1,
                             F010,   1
                         }
 
@@ -14701,7 +14701,7 @@
                         Local2 = 0x02
                         BankField (OPR0, BNK0, 0x02, AnyAcc, Lock, Preserve)
                         {
-                                ,   1, 
+                                ,   1,
                             F011,   6
                         }
 
@@ -14713,8 +14713,8 @@
                         Local2 = 0x03
                         BankField (OPR0, BNK0, 0x03, AnyAcc, Lock, Preserve)
                         {
-                            AccessAs (AnyAcc, 0x00), 
-                                ,   1, 
+                            AccessAs (AnyAcc, 0x00),
+                                ,   1,
                             F012,   7
                         }
 
@@ -14726,7 +14726,7 @@
                         Local2 = 0x04
                         BankField (OPR0, BNK0, 0x04, ByteAcc, Lock, Preserve)
                         {
-                                ,   1, 
+                                ,   1,
                             F013,   8
                         }
 
@@ -14738,8 +14738,8 @@
                         Local2 = 0x05
                         BankField (OPR0, BNK0, 0x05, WordAcc, Lock, Preserve)
                         {
-                            AccessAs (AnyAcc, 0x00), 
-                                ,   1, 
+                            AccessAs (AnyAcc, 0x00),
+                                ,   1,
                             F014,   9
                         }
 
@@ -14751,7 +14751,7 @@
                         Local2 = 0x06
                         BankField (OPR0, BNK0, 0x06, AnyAcc, Lock, Preserve)
                         {
-                                ,   1, 
+                                ,   1,
                             F015,   31
                         }
 
@@ -14763,8 +14763,8 @@
                         Local2 = 0x07
                         BankField (OPR0, BNK0, 0x07, DWordAcc, Lock, Preserve)
                         {
-                            AccessAs (AnyAcc, 0x00), 
-                                ,   1, 
+                            AccessAs (AnyAcc, 0x00),
+                                ,   1,
                             F016,   32
                         }
 
@@ -14776,7 +14776,7 @@
                         Local2 = 0x08
                         BankField (OPR0, BNK0, 0x08, AnyAcc, Lock, Preserve)
                         {
-                                ,   1, 
+                                ,   1,
                             F017,   33
                         }
 
@@ -14788,8 +14788,8 @@
                         Local2 = 0x09
                         BankField (OPR0, BNK0, 0x09, QWordAcc, Lock, Preserve)
                         {
-                            AccessAs (AnyAcc, 0x00), 
-                                ,   1, 
+                            AccessAs (AnyAcc, 0x00),
+                                ,   1,
                             F018,   63
                         }
 
@@ -14801,7 +14801,7 @@
                         Local2 = 0x3F
                         BankField (OPR0, BNK0, 0x3F, AnyAcc, Lock, Preserve)
                         {
-                                ,   1, 
+                                ,   1,
                             F019,   64
                         }
 
@@ -14813,8 +14813,8 @@
                         Local2 = 0x40
                         BankField (OPR0, BNK0, 0x40, AnyAcc, Lock, Preserve)
                         {
-                            AccessAs (AnyAcc, 0x00), 
-                                ,   1, 
+                            AccessAs (AnyAcc, 0x00),
+                                ,   1,
                             F01A,   65
                         }
 
@@ -14826,7 +14826,7 @@
                         Local2 = 0x7F
                         BankField (OPR0, BNK0, 0x7F, AnyAcc, Lock, Preserve)
                         {
-                                ,   1, 
+                                ,   1,
                             F01B,   69
                         }
 
@@ -14838,8 +14838,8 @@
                         Local2 = 0x80
                         BankField (OPR0, BNK0, 0x80, ByteAcc, Lock, Preserve)
                         {
-                            AccessAs (AnyAcc, 0x00), 
-                                ,   1, 
+                            AccessAs (AnyAcc, 0x00),
+                                ,   1,
                             F01C,   129
                         }
 
@@ -14851,7 +14851,7 @@
                         Local2 = 0xFF
                         BankField (OPR0, BNK0, 0xFF, AnyAcc, Lock, Preserve)
                         {
-                                ,   1, 
+                                ,   1,
                             F01D,   256
                         }
 
@@ -14863,8 +14863,8 @@
                         Local2 = 0x00
                         BankField (OPR0, BNK0, 0x00, WordAcc, Lock, Preserve)
                         {
-                            AccessAs (AnyAcc, 0x00), 
-                                ,   1, 
+                            AccessAs (AnyAcc, 0x00),
+                                ,   1,
                             F01E,   1023
                         }
 
@@ -14876,7 +14876,7 @@
                         Local2 = 0x01
                         BankField (OPR0, BNK0, 0x01, AnyAcc, Lock, Preserve)
                         {
-                                ,   1, 
+                                ,   1,
                             F01F,   1983
                         }
 
@@ -14900,7 +14900,7 @@
                         Local2 = 0x02
                         BankField (OPR0, BNK0, 0x02, AnyAcc, Lock, Preserve)
                         {
-                                ,   2, 
+                                ,   2,
                             F020,   1
                         }
 
@@ -14912,8 +14912,8 @@
                         Local2 = 0x03
                         BankField (OPR0, BNK0, 0x03, DWordAcc, Lock, Preserve)
                         {
-                            AccessAs (AnyAcc, 0x00), 
-                                ,   2, 
+                            AccessAs (AnyAcc, 0x00),
+                                ,   2,
                             F021,   6
                         }
 
@@ -14925,7 +14925,7 @@
                         Local2 = 0x04
                         BankField (OPR0, BNK0, 0x04, AnyAcc, Lock, Preserve)
                         {
-                                ,   2, 
+                                ,   2,
                             F022,   7
                         }
 
@@ -14937,8 +14937,8 @@
                         Local2 = 0x05
                         BankField (OPR0, BNK0, 0x05, QWordAcc, Lock, Preserve)
                         {
-                            AccessAs (AnyAcc, 0x00), 
-                                ,   2, 
+                            AccessAs (AnyAcc, 0x00),
+                                ,   2,
                             F023,   8
                         }
 
@@ -14950,7 +14950,7 @@
                         Local2 = 0x06
                         BankField (OPR0, BNK0, 0x06, AnyAcc, Lock, Preserve)
                         {
-                                ,   2, 
+                                ,   2,
                             F024,   9
                         }
 
@@ -14962,8 +14962,8 @@
                         Local2 = 0x07
                         BankField (OPR0, BNK0, 0x07, AnyAcc, Lock, Preserve)
                         {
-                            AccessAs (AnyAcc, 0x00), 
-                                ,   2, 
+                            AccessAs (AnyAcc, 0x00),
+                                ,   2,
                             F025,   31
                         }
 
@@ -14975,7 +14975,7 @@
                         Local2 = 0x08
                         BankField (OPR0, BNK0, 0x08, AnyAcc, Lock, Preserve)
                         {
-                                ,   2, 
+                                ,   2,
                             F026,   32
                         }
 
@@ -14987,8 +14987,8 @@
                         Local2 = 0x09
                         BankField (OPR0, BNK0, 0x09, ByteAcc, Lock, Preserve)
                         {
-                            AccessAs (AnyAcc, 0x00), 
-                                ,   2, 
+                            AccessAs (AnyAcc, 0x00),
+                                ,   2,
                             F027,   33
                         }
 
@@ -15000,7 +15000,7 @@
                         Local2 = 0x3F
                         BankField (OPR0, BNK0, 0x3F, AnyAcc, Lock, Preserve)
                         {
-                                ,   2, 
+                                ,   2,
                             F028,   63
                         }
 
@@ -15012,8 +15012,8 @@
                         Local2 = 0x40
                         BankField (OPR0, BNK0, 0x40, WordAcc, Lock, Preserve)
                         {
-                            AccessAs (AnyAcc, 0x00), 
-                                ,   2, 
+                            AccessAs (AnyAcc, 0x00),
+                                ,   2,
                             F029,   64
                         }
 
@@ -15025,7 +15025,7 @@
                         Local2 = 0x7F
                         BankField (OPR0, BNK0, 0x7F, AnyAcc, Lock, Preserve)
                         {
-                                ,   2, 
+                                ,   2,
                             F02A,   65
                         }
 
@@ -15037,8 +15037,8 @@
                         Local2 = 0x80
                         BankField (OPR0, BNK0, 0x80, DWordAcc, Lock, Preserve)
                         {
-                            AccessAs (AnyAcc, 0x00), 
-                                ,   2, 
+                            AccessAs (AnyAcc, 0x00),
+                                ,   2,
                             F02B,   69
                         }
 
@@ -15050,7 +15050,7 @@
                         Local2 = 0xFF
                         BankField (OPR0, BNK0, 0xFF, AnyAcc, Lock, Preserve)
                         {
-                                ,   2, 
+                                ,   2,
                             F02C,   129
                         }
 
@@ -15062,8 +15062,8 @@
                         Local2 = 0x00
                         BankField (OPR0, BNK0, 0x00, QWordAcc, Lock, Preserve)
                         {
-                            AccessAs (AnyAcc, 0x00), 
-                                ,   2, 
+                            AccessAs (AnyAcc, 0x00),
+                                ,   2,
                             F02D,   256
                         }
 
@@ -15075,7 +15075,7 @@
                         Local2 = 0x01
                         BankField (OPR0, BNK0, 0x01, AnyAcc, Lock, Preserve)
                         {
-                                ,   2, 
+                                ,   2,
                             F02E,   1023
                         }
 
@@ -15087,8 +15087,8 @@
                         Local2 = 0x02
                         BankField (OPR0, BNK0, 0x02, AnyAcc, Lock, Preserve)
                         {
-                            AccessAs (AnyAcc, 0x00), 
-                                ,   2, 
+                            AccessAs (AnyAcc, 0x00),
+                                ,   2,
                             F02F,   1983
                         }
 
@@ -15112,8 +15112,8 @@
                         Local2 = 0x03
                         BankField (OPR0, BNK0, 0x03, ByteAcc, Lock, Preserve)
                         {
-                            AccessAs (AnyAcc, 0x00), 
-                                ,   3, 
+                            AccessAs (AnyAcc, 0x00),
+                                ,   3,
                             F030,   1
                         }
 
@@ -15125,7 +15125,7 @@
                         Local2 = 0x04
                         BankField (OPR0, BNK0, 0x04, AnyAcc, Lock, Preserve)
                         {
-                                ,   3, 
+                                ,   3,
                             F031,   6
                         }
 
@@ -15137,8 +15137,8 @@
                         Local2 = 0x05
                         BankField (OPR0, BNK0, 0x05, WordAcc, Lock, Preserve)
                         {
-                            AccessAs (AnyAcc, 0x00), 
-                                ,   3, 
+                            AccessAs (AnyAcc, 0x00),
+                                ,   3,
                             F032,   7
                         }
 
@@ -15150,7 +15150,7 @@
                         Local2 = 0x06
                         BankField (OPR0, BNK0, 0x06, AnyAcc, Lock, Preserve)
                         {
-                                ,   3, 
+                                ,   3,
                             F033,   8
                         }
 
@@ -15162,8 +15162,8 @@
                         Local2 = 0x07
                         BankField (OPR0, BNK0, 0x07, DWordAcc, Lock, Preserve)
                         {
-                            AccessAs (AnyAcc, 0x00), 
-                                ,   3, 
+                            AccessAs (AnyAcc, 0x00),
+                                ,   3,
                             F034,   9
                         }
 
@@ -15175,7 +15175,7 @@
                         Local2 = 0x08
                         BankField (OPR0, BNK0, 0x08, AnyAcc, Lock, Preserve)
                         {
-                                ,   3, 
+                                ,   3,
                             F035,   31
                         }
 
@@ -15187,8 +15187,8 @@
                         Local2 = 0x09
                         BankField (OPR0, BNK0, 0x09, QWordAcc, Lock, Preserve)
                         {
-                            AccessAs (AnyAcc, 0x00), 
-                                ,   3, 
+                            AccessAs (AnyAcc, 0x00),
+                                ,   3,
                             F036,   32
                         }
 
@@ -15200,7 +15200,7 @@
                         Local2 = 0x3F
                         BankField (OPR0, BNK0, 0x3F, AnyAcc, Lock, Preserve)
                         {
-                                ,   3, 
+                                ,   3,
                             F037,   33
                         }
 
@@ -15212,8 +15212,8 @@
                         Local2 = 0x40
                         BankField (OPR0, BNK0, 0x40, AnyAcc, Lock, Preserve)
                         {
-                            AccessAs (AnyAcc, 0x00), 
-                                ,   3, 
+                            AccessAs (AnyAcc, 0x00),
+                                ,   3,
                             F038,   63
                         }
 
@@ -15225,7 +15225,7 @@
                         Local2 = 0x7F
                         BankField (OPR0, BNK0, 0x7F, AnyAcc, Lock, Preserve)
                         {
-                                ,   3, 
+                                ,   3,
                             F039,   64
                         }
 
@@ -15237,8 +15237,8 @@
                         Local2 = 0x80
                         BankField (OPR0, BNK0, 0x80, ByteAcc, Lock, Preserve)
                         {
-                            AccessAs (AnyAcc, 0x00), 
-                                ,   3, 
+                            AccessAs (AnyAcc, 0x00),
+                                ,   3,
                             F03A,   65
                         }
 
@@ -15250,7 +15250,7 @@
                         Local2 = 0xFF
                         BankField (OPR0, BNK0, 0xFF, AnyAcc, Lock, Preserve)
                         {
-                                ,   3, 
+                                ,   3,
                             F03B,   69
                         }
 
@@ -15262,8 +15262,8 @@
                         Local2 = 0x00
                         BankField (OPR0, BNK0, 0x00, WordAcc, Lock, Preserve)
                         {
-                            AccessAs (AnyAcc, 0x00), 
-                                ,   3, 
+                            AccessAs (AnyAcc, 0x00),
+                                ,   3,
                             F03C,   129
                         }
 
@@ -15275,7 +15275,7 @@
                         Local2 = 0x01
                         BankField (OPR0, BNK0, 0x01, AnyAcc, Lock, Preserve)
                         {
-                                ,   3, 
+                                ,   3,
                             F03D,   256
                         }
 
@@ -15287,8 +15287,8 @@
                         Local2 = 0x02
                         BankField (OPR0, BNK0, 0x02, DWordAcc, Lock, Preserve)
                         {
-                            AccessAs (AnyAcc, 0x00), 
-                                ,   3, 
+                            AccessAs (AnyAcc, 0x00),
+                                ,   3,
                             F03E,   1023
                         }
 
@@ -15300,7 +15300,7 @@
                         Local2 = 0x03
                         BankField (OPR0, BNK0, 0x03, AnyAcc, Lock, Preserve)
                         {
-                                ,   3, 
+                                ,   3,
                             F03F,   1983
                         }
 
@@ -15324,7 +15324,7 @@
                         Local2 = 0x04
                         BankField (OPR0, BNK0, 0x04, AnyAcc, Lock, Preserve)
                         {
-                                ,   4, 
+                                ,   4,
                             F040,   1
                         }
 
@@ -15336,8 +15336,8 @@
                         Local2 = 0x05
                         BankField (OPR0, BNK0, 0x05, QWordAcc, Lock, Preserve)
                         {
-                            AccessAs (AnyAcc, 0x00), 
-                                ,   4, 
+                            AccessAs (AnyAcc, 0x00),
+                                ,   4,
                             F041,   6
                         }
 
@@ -15349,7 +15349,7 @@
                         Local2 = 0x06
                         BankField (OPR0, BNK0, 0x06, AnyAcc, Lock, Preserve)
                         {
-                                ,   4, 
+                                ,   4,
                             F042,   7
                         }
 
@@ -15361,8 +15361,8 @@
                         Local2 = 0x07
                         BankField (OPR0, BNK0, 0x07, AnyAcc, Lock, Preserve)
                         {
-                            AccessAs (AnyAcc, 0x00), 
-                                ,   4, 
+                            AccessAs (AnyAcc, 0x00),
+                                ,   4,
                             F043,   8
                         }
 
@@ -15374,7 +15374,7 @@
                         Local2 = 0x08
                         BankField (OPR0, BNK0, 0x08, AnyAcc, Lock, Preserve)
                         {
-                                ,   4, 
+                                ,   4,
                             F044,   9
                         }
 
@@ -15386,8 +15386,8 @@
                         Local2 = 0x09
                         BankField (OPR0, BNK0, 0x09, ByteAcc, Lock, Preserve)
                         {
-                            AccessAs (AnyAcc, 0x00), 
-                                ,   4, 
+                            AccessAs (AnyAcc, 0x00),
+                                ,   4,
                             F045,   31
                         }
 
@@ -15399,7 +15399,7 @@
                         Local2 = 0x3F
                         BankField (OPR0, BNK0, 0x3F, AnyAcc, Lock, Preserve)
                         {
-                                ,   4, 
+                                ,   4,
                             F046,   32
                         }
 
@@ -15411,8 +15411,8 @@
                         Local2 = 0x40
                         BankField (OPR0, BNK0, 0x40, WordAcc, Lock, Preserve)
                         {
-                            AccessAs (AnyAcc, 0x00), 
-                                ,   4, 
+                            AccessAs (AnyAcc, 0x00),
+                                ,   4,
                             F047,   33
                         }
 
@@ -15424,7 +15424,7 @@
                         Local2 = 0x7F
                         BankField (OPR0, BNK0, 0x7F, AnyAcc, Lock, Preserve)
                         {
-                                ,   4, 
+                                ,   4,
                             F048,   63
                         }
 
@@ -15436,8 +15436,8 @@
                         Local2 = 0x80
                         BankField (OPR0, BNK0, 0x80, DWordAcc, Lock, Preserve)
                         {
-                            AccessAs (AnyAcc, 0x00), 
-                                ,   4, 
+                            AccessAs (AnyAcc, 0x00),
+                                ,   4,
                             F049,   64
                         }
 
@@ -15449,7 +15449,7 @@
                         Local2 = 0xFF
                         BankField (OPR0, BNK0, 0xFF, AnyAcc, Lock, Preserve)
                         {
-                                ,   4, 
+                                ,   4,
                             F04A,   65
                         }
 
@@ -15461,8 +15461,8 @@
                         Local2 = 0x00
                         BankField (OPR0, BNK0, 0x00, QWordAcc, Lock, Preserve)
                         {
-                            AccessAs (AnyAcc, 0x00), 
-                                ,   4, 
+                            AccessAs (AnyAcc, 0x00),
+                                ,   4,
                             F04B,   69
                         }
 
@@ -15474,7 +15474,7 @@
                         Local2 = 0x01
                         BankField (OPR0, BNK0, 0x01, AnyAcc, Lock, Preserve)
                         {
-                                ,   4, 
+                                ,   4,
                             F04C,   129
                         }
 
@@ -15486,8 +15486,8 @@
                         Local2 = 0x02
                         BankField (OPR0, BNK0, 0x02, AnyAcc, Lock, Preserve)
                         {
-                            AccessAs (AnyAcc, 0x00), 
-                                ,   4, 
+                            AccessAs (AnyAcc, 0x00),
+                                ,   4,
                             F04D,   256
                         }
 
@@ -15499,7 +15499,7 @@
                         Local2 = 0x03
                         BankField (OPR0, BNK0, 0x03, AnyAcc, Lock, Preserve)
                         {
-                                ,   4, 
+                                ,   4,
                             F04E,   1023
                         }
 
@@ -15511,8 +15511,8 @@
                         Local2 = 0x04
                         BankField (OPR0, BNK0, 0x04, ByteAcc, Lock, Preserve)
                         {
-                            AccessAs (AnyAcc, 0x00), 
-                                ,   4, 
+                            AccessAs (AnyAcc, 0x00),
+                                ,   4,
                             F04F,   1983
                         }
 
@@ -15536,8 +15536,8 @@
                         Local2 = 0x05
                         BankField (OPR0, BNK0, 0x05, WordAcc, Lock, Preserve)
                         {
-                            AccessAs (AnyAcc, 0x00), 
-                                ,   5, 
+                            AccessAs (AnyAcc, 0x00),
+                                ,   5,
                             F050,   1
                         }
 
@@ -15549,7 +15549,7 @@
                         Local2 = 0x06
                         BankField (OPR0, BNK0, 0x06, AnyAcc, Lock, Preserve)
                         {
-                                ,   5, 
+                                ,   5,
                             F051,   6
                         }
 
@@ -15561,8 +15561,8 @@
                         Local2 = 0x07
                         BankField (OPR0, BNK0, 0x07, DWordAcc, Lock, Preserve)
                         {
-                            AccessAs (AnyAcc, 0x00), 
-                                ,   5, 
+                            AccessAs (AnyAcc, 0x00),
+                                ,   5,
                             F052,   7
                         }
 
@@ -15574,7 +15574,7 @@
                         Local2 = 0x08
                         BankField (OPR0, BNK0, 0x08, AnyAcc, Lock, Preserve)
                         {
-                                ,   5, 
+                                ,   5,
                             F053,   8
                         }
 
@@ -15586,8 +15586,8 @@
                         Local2 = 0x09
                         BankField (OPR0, BNK0, 0x09, QWordAcc, Lock, Preserve)
                         {
-                            AccessAs (AnyAcc, 0x00), 
-                                ,   5, 
+                            AccessAs (AnyAcc, 0x00),
+                                ,   5,
                             F054,   9
                         }
 
@@ -15599,7 +15599,7 @@
                         Local2 = 0x3F
                         BankField (OPR0, BNK0, 0x3F, AnyAcc, Lock, Preserve)
                         {
-                                ,   5, 
+                                ,   5,
                             F055,   31
                         }
 
@@ -15611,8 +15611,8 @@
                         Local2 = 0x40
                         BankField (OPR0, BNK0, 0x40, AnyAcc, Lock, Preserve)
                         {
-                            AccessAs (AnyAcc, 0x00), 
-                                ,   5, 
+                            AccessAs (AnyAcc, 0x00),
+                                ,   5,
                             F056,   32
                         }
 
@@ -15624,7 +15624,7 @@
                         Local2 = 0x7F
                         BankField (OPR0, BNK0, 0x7F, AnyAcc, Lock, Preserve)
                         {
-                                ,   5, 
+                                ,   5,
                             F057,   33
                         }
 
@@ -15636,8 +15636,8 @@
                         Local2 = 0x80
                         BankField (OPR0, BNK0, 0x80, ByteAcc, Lock, Preserve)
                         {
-                            AccessAs (AnyAcc, 0x00), 
-                                ,   5, 
+                            AccessAs (AnyAcc, 0x00),
+                                ,   5,
                             F058,   63
                         }
 
@@ -15649,7 +15649,7 @@
                         Local2 = 0xFF
                         BankField (OPR0, BNK0, 0xFF, AnyAcc, Lock, Preserve)
                         {
-                                ,   5, 
+                                ,   5,
                             F059,   64
                         }
 
@@ -15661,8 +15661,8 @@
                         Local2 = 0x00
                         BankField (OPR0, BNK0, 0x00, WordAcc, Lock, Preserve)
                         {
-                            AccessAs (AnyAcc, 0x00), 
-                                ,   5, 
+                            AccessAs (AnyAcc, 0x00),
+                                ,   5,
                             F05A,   65
                         }
 
@@ -15674,7 +15674,7 @@
                         Local2 = 0x01
                         BankField (OPR0, BNK0, 0x01, AnyAcc, Lock, Preserve)
                         {
-                                ,   5, 
+                                ,   5,
                             F05B,   69
                         }
 
@@ -15686,8 +15686,8 @@
                         Local2 = 0x02
                         BankField (OPR0, BNK0, 0x02, DWordAcc, Lock, Preserve)
                         {
-                            AccessAs (AnyAcc, 0x00), 
-                                ,   5, 
+                            AccessAs (AnyAcc, 0x00),
+                                ,   5,
                             F05C,   129
                         }
 
@@ -15699,7 +15699,7 @@
                         Local2 = 0x03
                         BankField (OPR0, BNK0, 0x03, AnyAcc, Lock, Preserve)
                         {
-                                ,   5, 
+                                ,   5,
                             F05D,   256
                         }
 
@@ -15711,8 +15711,8 @@
                         Local2 = 0x04
                         BankField (OPR0, BNK0, 0x04, QWordAcc, Lock, Preserve)
                         {
-                            AccessAs (AnyAcc, 0x00), 
-                                ,   5, 
+                            AccessAs (AnyAcc, 0x00),
+                                ,   5,
                             F05E,   1023
                         }
 
@@ -15724,7 +15724,7 @@
                         Local2 = 0x05
                         BankField (OPR0, BNK0, 0x05, AnyAcc, Lock, Preserve)
                         {
-                                ,   5, 
+                                ,   5,
                             F05F,   1983
                         }
 
@@ -15748,7 +15748,7 @@
                         Local2 = 0x06
                         BankField (OPR0, BNK0, 0x06, AnyAcc, Lock, Preserve)
                         {
-                                ,   6, 
+                                ,   6,
                             F060,   1
                         }
 
@@ -15760,8 +15760,8 @@
                         Local2 = 0x07
                         BankField (OPR0, BNK0, 0x07, AnyAcc, Lock, Preserve)
                         {
-                            AccessAs (AnyAcc, 0x00), 
-                                ,   6, 
+                            AccessAs (AnyAcc, 0x00),
+                                ,   6,
                             F061,   6
                         }
 
@@ -15773,7 +15773,7 @@
                         Local2 = 0x08
                         BankField (OPR0, BNK0, 0x08, AnyAcc, Lock, Preserve)
                         {
-                                ,   6, 
+                                ,   6,
                             F062,   7
                         }
 
@@ -15785,8 +15785,8 @@
                         Local2 = 0x09
                         BankField (OPR0, BNK0, 0x09, ByteAcc, Lock, Preserve)
                         {
-                            AccessAs (AnyAcc, 0x00), 
-                                ,   6, 
+                            AccessAs (AnyAcc, 0x00),
+                                ,   6,
                             F063,   8
                         }
 
@@ -15798,7 +15798,7 @@
                         Local2 = 0x3F
                         BankField (OPR0, BNK0, 0x3F, AnyAcc, Lock, Preserve)
                         {
-                                ,   6, 
+                                ,   6,
                             F064,   9
                         }
 
@@ -15810,8 +15810,8 @@
                         Local2 = 0x40
                         BankField (OPR0, BNK0, 0x40, WordAcc, Lock, Preserve)
                         {
-                            AccessAs (AnyAcc, 0x00), 
-                                ,   6, 
+                            AccessAs (AnyAcc, 0x00),
+                                ,   6,
                             F065,   31
                         }
 
@@ -15823,7 +15823,7 @@
                         Local2 = 0x7F
                         BankField (OPR0, BNK0, 0x7F, AnyAcc, Lock, Preserve)
                         {
-                                ,   6, 
+                                ,   6,
                             F066,   32
                         }
 
@@ -15835,8 +15835,8 @@
                         Local2 = 0x80
                         BankField (OPR0, BNK0, 0x80, DWordAcc, Lock, Preserve)
                         {
-                            AccessAs (AnyAcc, 0x00), 
-                                ,   6, 
+                            AccessAs (AnyAcc, 0x00),
+                                ,   6,
                             F067,   33
                         }
 
@@ -15848,7 +15848,7 @@
                         Local2 = 0xFF
                         BankField (OPR0, BNK0, 0xFF, AnyAcc, Lock, Preserve)
                         {
-                                ,   6, 
+                                ,   6,
                             F068,   63
                         }
 
@@ -15860,8 +15860,8 @@
                         Local2 = 0x00
                         BankField (OPR0, BNK0, 0x00, QWordAcc, Lock, Preserve)
                         {
-                            AccessAs (AnyAcc, 0x00), 
-                                ,   6, 
+                            AccessAs (AnyAcc, 0x00),
+                                ,   6,
                             F069,   64
                         }
 
@@ -15873,7 +15873,7 @@
                         Local2 = 0x01
                         BankField (OPR0, BNK0, 0x01, AnyAcc, Lock, Preserve)
                         {
-                                ,   6, 
+                                ,   6,
                             F06A,   65
                         }
 
@@ -15885,8 +15885,8 @@
                         Local2 = 0x02
                         BankField (OPR0, BNK0, 0x02, AnyAcc, Lock, Preserve)
                         {
-                            AccessAs (AnyAcc, 0x00), 
-                                ,   6, 
+                            AccessAs (AnyAcc, 0x00),
+                                ,   6,
                             F06B,   69
                         }
 
@@ -15898,7 +15898,7 @@
                         Local2 = 0x03
                         BankField (OPR0, BNK0, 0x03, AnyAcc, Lock, Preserve)
                         {
-                                ,   6, 
+                                ,   6,
                             F06C,   129
                         }
 
@@ -15910,8 +15910,8 @@
                         Local2 = 0x04
                         BankField (OPR0, BNK0, 0x04, ByteAcc, Lock, Preserve)
                         {
-                            AccessAs (AnyAcc, 0x00), 
-                                ,   6, 
+                            AccessAs (AnyAcc, 0x00),
+                                ,   6,
                             F06D,   256
                         }
 
@@ -15923,7 +15923,7 @@
                         Local2 = 0x05
                         BankField (OPR0, BNK0, 0x05, AnyAcc, Lock, Preserve)
                         {
-                                ,   6, 
+                                ,   6,
                             F06E,   1023
                         }
 
@@ -15935,8 +15935,8 @@
                         Local2 = 0x06
                         BankField (OPR0, BNK0, 0x06, WordAcc, Lock, Preserve)
                         {
-                            AccessAs (AnyAcc, 0x00), 
-                                ,   6, 
+                            AccessAs (AnyAcc, 0x00),
+                                ,   6,
                             F06F,   1983
                         }
 
@@ -15960,8 +15960,8 @@
                         Local2 = 0x07
                         BankField (OPR0, BNK0, 0x07, DWordAcc, Lock, Preserve)
                         {
-                            AccessAs (AnyAcc, 0x00), 
-                                ,   7, 
+                            AccessAs (AnyAcc, 0x00),
+                                ,   7,
                             F070,   1
                         }
 
@@ -15973,7 +15973,7 @@
                         Local2 = 0x08
                         BankField (OPR0, BNK0, 0x08, AnyAcc, Lock, Preserve)
                         {
-                                ,   7, 
+                                ,   7,
                             F071,   6
                         }
 
@@ -15985,8 +15985,8 @@
                         Local2 = 0x09
                         BankField (OPR0, BNK0, 0x09, QWordAcc, Lock, Preserve)
                         {
-                            AccessAs (AnyAcc, 0x00), 
-                                ,   7, 
+                            AccessAs (AnyAcc, 0x00),
+                                ,   7,
                             F072,   7
                         }
 
@@ -15998,7 +15998,7 @@
                         Local2 = 0x3F
                         BankField (OPR0, BNK0, 0x3F, AnyAcc, Lock, Preserve)
                         {
-                                ,   7, 
+                                ,   7,
                             F073,   8
                         }
 
@@ -16010,8 +16010,8 @@
                         Local2 = 0x40
                         BankField (OPR0, BNK0, 0x40, AnyAcc, Lock, Preserve)
                         {
-                            AccessAs (AnyAcc, 0x00), 
-                                ,   7, 
+                            AccessAs (AnyAcc, 0x00),
+                                ,   7,
                             F074,   9
                         }
 
@@ -16023,7 +16023,7 @@
                         Local2 = 0x7F
                         BankField (OPR0, BNK0, 0x7F, AnyAcc, Lock, Preserve)
                         {
-                                ,   7, 
+                                ,   7,
                             F075,   31
                         }
 
@@ -16035,8 +16035,8 @@
                         Local2 = 0x80
                         BankField (OPR0, BNK0, 0x80, ByteAcc, Lock, Preserve)
                         {
-                            AccessAs (AnyAcc, 0x00), 
-                                ,   7, 
+                            AccessAs (AnyAcc, 0x00),
+                                ,   7,
                             F076,   32
                         }
 
@@ -16048,7 +16048,7 @@
                         Local2 = 0xFF
                         BankField (OPR0, BNK0, 0xFF, AnyAcc, Lock, Preserve)
                         {
-                                ,   7, 
+                                ,   7,
                             F077,   33
                         }
 
@@ -16060,8 +16060,8 @@
                         Local2 = 0x00
                         BankField (OPR0, BNK0, 0x00, WordAcc, Lock, Preserve)
                         {
-                            AccessAs (AnyAcc, 0x00), 
-                                ,   7, 
+                            AccessAs (AnyAcc, 0x00),
+                                ,   7,
                             F078,   63
                         }
 
@@ -16073,7 +16073,7 @@
                         Local2 = 0x01
                         BankField (OPR0, BNK0, 0x01, AnyAcc, Lock, Preserve)
                         {
-                                ,   7, 
+                                ,   7,
                             F079,   64
                         }
 
@@ -16085,8 +16085,8 @@
                         Local2 = 0x02
                         BankField (OPR0, BNK0, 0x02, DWordAcc, Lock, Preserve)
                         {
-                            AccessAs (AnyAcc, 0x00), 
-                                ,   7, 
+                            AccessAs (AnyAcc, 0x00),
+                                ,   7,
                             F07A,   65
                         }
 
@@ -16098,7 +16098,7 @@
                         Local2 = 0x03
                         BankField (OPR0, BNK0, 0x03, AnyAcc, Lock, Preserve)
                         {
-                                ,   7, 
+                                ,   7,
                             F07B,   69
                         }
 
@@ -16110,8 +16110,8 @@
                         Local2 = 0x04
                         BankField (OPR0, BNK0, 0x04, QWordAcc, Lock, Preserve)
                         {
-                            AccessAs (AnyAcc, 0x00), 
-                                ,   7, 
+                            AccessAs (AnyAcc, 0x00),
+                                ,   7,
                             F07C,   129
                         }
 
@@ -16123,7 +16123,7 @@
                         Local2 = 0x05
                         BankField (OPR0, BNK0, 0x05, AnyAcc, Lock, Preserve)
                         {
-                                ,   7, 
+                                ,   7,
                             F07D,   256
                         }
 
@@ -16135,8 +16135,8 @@
                         Local2 = 0x06
                         BankField (OPR0, BNK0, 0x06, AnyAcc, Lock, Preserve)
                         {
-                            AccessAs (AnyAcc, 0x00), 
-                                ,   7, 
+                            AccessAs (AnyAcc, 0x00),
+                                ,   7,
                             F07E,   1023
                         }
 
@@ -16148,7 +16148,7 @@
                         Local2 = 0x07
                         BankField (OPR0, BNK0, 0x07, AnyAcc, Lock, Preserve)
                         {
-                                ,   7, 
+                                ,   7,
                             F07F,   1983
                         }
 
@@ -16172,7 +16172,7 @@
                         Local2 = 0x08
                         BankField (OPR0, BNK0, 0x08, AnyAcc, Lock, Preserve)
                         {
-                            Offset (0x01), 
+                            Offset (0x01),
                             F080,   1
                         }
 
@@ -16184,8 +16184,8 @@
                         Local2 = 0x09
                         BankField (OPR0, BNK0, 0x09, ByteAcc, Lock, Preserve)
                         {
-                            AccessAs (AnyAcc, 0x00), 
-                            Offset (0x01), 
+                            AccessAs (AnyAcc, 0x00),
+                            Offset (0x01),
                             F081,   6
                         }
 
@@ -16197,7 +16197,7 @@
                         Local2 = 0x3F
                         BankField (OPR0, BNK0, 0x3F, AnyAcc, Lock, Preserve)
                         {
-                            Offset (0x01), 
+                            Offset (0x01),
                             F082,   7
                         }
 
@@ -16209,8 +16209,8 @@
                         Local2 = 0x40
                         BankField (OPR0, BNK0, 0x40, WordAcc, Lock, Preserve)
                         {
-                            AccessAs (AnyAcc, 0x00), 
-                            Offset (0x01), 
+                            AccessAs (AnyAcc, 0x00),
+                            Offset (0x01),
                             F083,   8
                         }
 
@@ -16222,7 +16222,7 @@
                         Local2 = 0x7F
                         BankField (OPR0, BNK0, 0x7F, AnyAcc, Lock, Preserve)
                         {
-                            Offset (0x01), 
+                            Offset (0x01),
                             F084,   9
                         }
 
@@ -16234,8 +16234,8 @@
                         Local2 = 0x80
                         BankField (OPR0, BNK0, 0x80, DWordAcc, Lock, Preserve)
                         {
-                            AccessAs (AnyAcc, 0x00), 
-                            Offset (0x01), 
+                            AccessAs (AnyAcc, 0x00),
+                            Offset (0x01),
                             F085,   31
                         }
 
@@ -16247,7 +16247,7 @@
                         Local2 = 0xFF
                         BankField (OPR0, BNK0, 0xFF, AnyAcc, Lock, Preserve)
                         {
-                            Offset (0x01), 
+                            Offset (0x01),
                             F086,   32
                         }
 
@@ -16259,8 +16259,8 @@
                         Local2 = 0x00
                         BankField (OPR0, BNK0, 0x00, QWordAcc, Lock, Preserve)
                         {
-                            AccessAs (AnyAcc, 0x00), 
-                            Offset (0x01), 
+                            AccessAs (AnyAcc, 0x00),
+                            Offset (0x01),
                             F087,   33
                         }
 
@@ -16272,7 +16272,7 @@
                         Local2 = 0x01
                         BankField (OPR0, BNK0, 0x01, AnyAcc, Lock, Preserve)
                         {
-                            Offset (0x01), 
+                            Offset (0x01),
                             F088,   63
                         }
 
@@ -16284,8 +16284,8 @@
                         Local2 = 0x02
                         BankField (OPR0, BNK0, 0x02, AnyAcc, Lock, Preserve)
                         {
-                            AccessAs (AnyAcc, 0x00), 
-                            Offset (0x01), 
+                            AccessAs (AnyAcc, 0x00),
+                            Offset (0x01),
                             F089,   64
                         }
 
@@ -16297,7 +16297,7 @@
                         Local2 = 0x03
                         BankField (OPR0, BNK0, 0x03, AnyAcc, Lock, Preserve)
                         {
-                            Offset (0x01), 
+                            Offset (0x01),
                             F08A,   65
                         }
 
@@ -16309,8 +16309,8 @@
                         Local2 = 0x04
                         BankField (OPR0, BNK0, 0x04, ByteAcc, Lock, Preserve)
                         {
-                            AccessAs (AnyAcc, 0x00), 
-                            Offset (0x01), 
+                            AccessAs (AnyAcc, 0x00),
+                            Offset (0x01),
                             F08B,   69
                         }
 
@@ -16322,7 +16322,7 @@
                         Local2 = 0x05
                         BankField (OPR0, BNK0, 0x05, AnyAcc, Lock, Preserve)
                         {
-                            Offset (0x01), 
+                            Offset (0x01),
                             F08C,   129
                         }
 
@@ -16334,8 +16334,8 @@
                         Local2 = 0x06
                         BankField (OPR0, BNK0, 0x06, WordAcc, Lock, Preserve)
                         {
-                            AccessAs (AnyAcc, 0x00), 
-                            Offset (0x01), 
+                            AccessAs (AnyAcc, 0x00),
+                            Offset (0x01),
                             F08D,   256
                         }
 
@@ -16347,7 +16347,7 @@
                         Local2 = 0x07
                         BankField (OPR0, BNK0, 0x07, AnyAcc, Lock, Preserve)
                         {
-                            Offset (0x01), 
+                            Offset (0x01),
                             F08E,   1023
                         }
 
@@ -16359,8 +16359,8 @@
                         Local2 = 0x08
                         BankField (OPR0, BNK0, 0x08, DWordAcc, Lock, Preserve)
                         {
-                            AccessAs (AnyAcc, 0x00), 
-                            Offset (0x01), 
+                            AccessAs (AnyAcc, 0x00),
+                            Offset (0x01),
                             F08F,   1983
                         }
 
@@ -16384,8 +16384,8 @@
                         Local2 = 0x09
                         BankField (OPR0, BNK0, 0x09, QWordAcc, Lock, Preserve)
                         {
-                            AccessAs (AnyAcc, 0x00), 
-                                ,   9, 
+                            AccessAs (AnyAcc, 0x00),
+                                ,   9,
                             F090,   1
                         }
 
@@ -16397,7 +16397,7 @@
                         Local2 = 0x3F
                         BankField (OPR0, BNK0, 0x3F, AnyAcc, Lock, Preserve)
                         {
-                                ,   9, 
+                                ,   9,
                             F091,   6
                         }
 
@@ -16409,8 +16409,8 @@
                         Local2 = 0x40
                         BankField (OPR0, BNK0, 0x40, AnyAcc, Lock, Preserve)
                         {
-                            AccessAs (AnyAcc, 0x00), 
-                                ,   9, 
+                            AccessAs (AnyAcc, 0x00),
+                                ,   9,
                             F092,   7
                         }
 
@@ -16422,7 +16422,7 @@
                         Local2 = 0x7F
                         BankField (OPR0, BNK0, 0x7F, AnyAcc, Lock, Preserve)
                         {
-                                ,   9, 
+                                ,   9,
                             F093,   8
                         }
 
@@ -16434,8 +16434,8 @@
                         Local2 = 0x80
                         BankField (OPR0, BNK0, 0x80, ByteAcc, Lock, Preserve)
                         {
-                            AccessAs (AnyAcc, 0x00), 
-                                ,   9, 
+                            AccessAs (AnyAcc, 0x00),
+                                ,   9,
                             F094,   9
                         }
 
@@ -16447,7 +16447,7 @@
                         Local2 = 0xFF
                         BankField (OPR0, BNK0, 0xFF, AnyAcc, Lock, Preserve)
                         {
-                                ,   9, 
+                                ,   9,
                             F095,   31
                         }
 
@@ -16459,8 +16459,8 @@
                         Local2 = 0x00
                         BankField (OPR0, BNK0, 0x00, WordAcc, Lock, Preserve)
                         {
-                            AccessAs (AnyAcc, 0x00), 
-                                ,   9, 
+                            AccessAs (AnyAcc, 0x00),
+                                ,   9,
                             F096,   32
                         }
 
@@ -16472,7 +16472,7 @@
                         Local2 = 0x01
                         BankField (OPR0, BNK0, 0x01, AnyAcc, Lock, Preserve)
                         {
-                                ,   9, 
+                                ,   9,
                             F097,   33
                         }
 
@@ -16484,8 +16484,8 @@
                         Local2 = 0x02
                         BankField (OPR0, BNK0, 0x02, DWordAcc, Lock, Preserve)
                         {
-                            AccessAs (AnyAcc, 0x00), 
-                                ,   9, 
+                            AccessAs (AnyAcc, 0x00),
+                                ,   9,
                             F098,   63
                         }
 
@@ -16497,7 +16497,7 @@
                         Local2 = 0x03
                         BankField (OPR0, BNK0, 0x03, AnyAcc, Lock, Preserve)
                         {
-                                ,   9, 
+                                ,   9,
                             F099,   64
                         }
 
@@ -16509,8 +16509,8 @@
                         Local2 = 0x04
                         BankField (OPR0, BNK0, 0x04, QWordAcc, Lock, Preserve)
                         {
-                            AccessAs (AnyAcc, 0x00), 
-                                ,   9, 
+                            AccessAs (AnyAcc, 0x00),
+                                ,   9,
                             F09A,   65
                         }
 
@@ -16522,7 +16522,7 @@
                         Local2 = 0x05
                         BankField (OPR0, BNK0, 0x05, AnyAcc, Lock, Preserve)
                         {
-                                ,   9, 
+                                ,   9,
                             F09B,   69
                         }
 
@@ -16534,8 +16534,8 @@
                         Local2 = 0x06
                         BankField (OPR0, BNK0, 0x06, AnyAcc, Lock, Preserve)
                         {
-                            AccessAs (AnyAcc, 0x00), 
-                                ,   9, 
+                            AccessAs (AnyAcc, 0x00),
+                                ,   9,
                             F09C,   129
                         }
 
@@ -16547,7 +16547,7 @@
                         Local2 = 0x07
                         BankField (OPR0, BNK0, 0x07, AnyAcc, Lock, Preserve)
                         {
-                                ,   9, 
+                                ,   9,
                             F09D,   256
                         }
 
@@ -16559,8 +16559,8 @@
                         Local2 = 0x08
                         BankField (OPR0, BNK0, 0x08, ByteAcc, Lock, Preserve)
                         {
-                            AccessAs (AnyAcc, 0x00), 
-                                ,   9, 
+                            AccessAs (AnyAcc, 0x00),
+                                ,   9,
                             F09E,   1023
                         }
 
@@ -16572,7 +16572,7 @@
                         Local2 = 0x09
                         BankField (OPR0, BNK0, 0x09, AnyAcc, Lock, Preserve)
                         {
-                                ,   9, 
+                                ,   9,
                             F09F,   1983
                         }
 
@@ -16596,8 +16596,8 @@
                         Local2 = 0x3F
                         BankField (OPR0, BNK0, 0x3F, AnyAcc, Lock, Preserve)
                         {
-                            Offset (0x03), 
-                                ,   7, 
+                            Offset (0x03),
+                                ,   7,
                             F0A0,   1
                         }
 
@@ -16609,9 +16609,9 @@
                         Local2 = 0x40
                         BankField (OPR0, BNK0, 0x40, WordAcc, Lock, Preserve)
                         {
-                            AccessAs (AnyAcc, 0x00), 
-                            Offset (0x03), 
-                                ,   7, 
+                            AccessAs (AnyAcc, 0x00),
+                            Offset (0x03),
+                                ,   7,
                             F0A1,   6
                         }
 
@@ -16623,8 +16623,8 @@
                         Local2 = 0x7F
                         BankField (OPR0, BNK0, 0x7F, AnyAcc, Lock, Preserve)
                         {
-                            Offset (0x03), 
-                                ,   7, 
+                            Offset (0x03),
+                                ,   7,
                             F0A2,   7
                         }
 
@@ -16636,9 +16636,9 @@
                         Local2 = 0x80
                         BankField (OPR0, BNK0, 0x80, DWordAcc, Lock, Preserve)
                         {
-                            AccessAs (AnyAcc, 0x00), 
-                            Offset (0x03), 
-                                ,   7, 
+                            AccessAs (AnyAcc, 0x00),
+                            Offset (0x03),
+                                ,   7,
                             F0A3,   8
                         }
 
@@ -16650,8 +16650,8 @@
                         Local2 = 0xFF
                         BankField (OPR0, BNK0, 0xFF, AnyAcc, Lock, Preserve)
                         {
-                            Offset (0x03), 
-                                ,   7, 
+                            Offset (0x03),
+                                ,   7,
                             F0A4,   9
                         }
 
@@ -16663,9 +16663,9 @@
                         Local2 = 0x00
                         BankField (OPR0, BNK0, 0x00, QWordAcc, Lock, Preserve)
                         {
-                            AccessAs (AnyAcc, 0x00), 
-                            Offset (0x03), 
-                                ,   7, 
+                            AccessAs (AnyAcc, 0x00),
+                            Offset (0x03),
+                                ,   7,
                             F0A5,   31
                         }
 
@@ -16677,8 +16677,8 @@
                         Local2 = 0x01
                         BankField (OPR0, BNK0, 0x01, AnyAcc, Lock, Preserve)
                         {
-                            Offset (0x03), 
-                                ,   7, 
+                            Offset (0x03),
+                                ,   7,
                             F0A6,   32
                         }
 
@@ -16690,9 +16690,9 @@
                         Local2 = 0x02
                         BankField (OPR0, BNK0, 0x02, AnyAcc, Lock, Preserve)
                         {
-                            AccessAs (AnyAcc, 0x00), 
-                            Offset (0x03), 
-                                ,   7, 
+                            AccessAs (AnyAcc, 0x00),
+                            Offset (0x03),
+                                ,   7,
                             F0A7,   33
                         }
 
@@ -16704,8 +16704,8 @@
                         Local2 = 0x03
                         BankField (OPR0, BNK0, 0x03, AnyAcc, Lock, Preserve)
                         {
-                            Offset (0x03), 
-                                ,   7, 
+                            Offset (0x03),
+                                ,   7,
                             F0A8,   63
                         }
 
@@ -16717,9 +16717,9 @@
                         Local2 = 0x04
                         BankField (OPR0, BNK0, 0x04, ByteAcc, Lock, Preserve)
                         {
-                            AccessAs (AnyAcc, 0x00), 
-                            Offset (0x03), 
-                                ,   7, 
+                            AccessAs (AnyAcc, 0x00),
+                            Offset (0x03),
+                                ,   7,
                             F0A9,   64
                         }
 
@@ -16731,8 +16731,8 @@
                         Local2 = 0x05
                         BankField (OPR0, BNK0, 0x05, AnyAcc, Lock, Preserve)
                         {
-                            Offset (0x03), 
-                                ,   7, 
+                            Offset (0x03),
+                                ,   7,
                             F0AA,   65
                         }
 
@@ -16744,9 +16744,9 @@
                         Local2 = 0x06
                         BankField (OPR0, BNK0, 0x06, WordAcc, Lock, Preserve)
                         {
-                            AccessAs (AnyAcc, 0x00), 
-                            Offset (0x03), 
-                                ,   7, 
+                            AccessAs (AnyAcc, 0x00),
+                            Offset (0x03),
+                                ,   7,
                             F0AB,   69
                         }
 
@@ -16758,8 +16758,8 @@
                         Local2 = 0x07
                         BankField (OPR0, BNK0, 0x07, AnyAcc, Lock, Preserve)
                         {
-                            Offset (0x03), 
-                                ,   7, 
+                            Offset (0x03),
+                                ,   7,
                             F0AC,   129
                         }
 
@@ -16771,9 +16771,9 @@
                         Local2 = 0x08
                         BankField (OPR0, BNK0, 0x08, DWordAcc, Lock, Preserve)
                         {
-                            AccessAs (AnyAcc, 0x00), 
-                            Offset (0x03), 
-                                ,   7, 
+                            AccessAs (AnyAcc, 0x00),
+                            Offset (0x03),
+                                ,   7,
                             F0AD,   256
                         }
 
@@ -16785,8 +16785,8 @@
                         Local2 = 0x09
                         BankField (OPR0, BNK0, 0x09, AnyAcc, Lock, Preserve)
                         {
-                            Offset (0x03), 
-                                ,   7, 
+                            Offset (0x03),
+                                ,   7,
                             F0AE,   1023
                         }
 
@@ -16798,9 +16798,9 @@
                         Local2 = 0x3F
                         BankField (OPR0, BNK0, 0x3F, QWordAcc, Lock, Preserve)
                         {
-                            AccessAs (AnyAcc, 0x00), 
-                            Offset (0x03), 
-                                ,   7, 
+                            AccessAs (AnyAcc, 0x00),
+                            Offset (0x03),
+                                ,   7,
                             F0AF,   1983
                         }
 
@@ -16824,8 +16824,8 @@
                         Local2 = 0x40
                         BankField (OPR0, BNK0, 0x40, AnyAcc, Lock, Preserve)
                         {
-                            AccessAs (AnyAcc, 0x00), 
-                            Offset (0x04), 
+                            AccessAs (AnyAcc, 0x00),
+                            Offset (0x04),
                             F0B0,   1
                         }
 
@@ -16837,7 +16837,7 @@
                         Local2 = 0x7F
                         BankField (OPR0, BNK0, 0x7F, AnyAcc, Lock, Preserve)
                         {
-                            Offset (0x04), 
+                            Offset (0x04),
                             F0B1,   6
                         }
 
@@ -16849,8 +16849,8 @@
                         Local2 = 0x80
                         BankField (OPR0, BNK0, 0x80, ByteAcc, Lock, Preserve)
                         {
-                            AccessAs (AnyAcc, 0x00), 
-                            Offset (0x04), 
+                            AccessAs (AnyAcc, 0x00),
+                            Offset (0x04),
                             F0B2,   7
                         }
 
@@ -16862,7 +16862,7 @@
                         Local2 = 0xFF
                         BankField (OPR0, BNK0, 0xFF, AnyAcc, Lock, Preserve)
                         {
-                            Offset (0x04), 
+                            Offset (0x04),
                             F0B3,   8
                         }
 
@@ -16874,8 +16874,8 @@
                         Local2 = 0x00
                         BankField (OPR0, BNK0, 0x00, WordAcc, Lock, Preserve)
                         {
-                            AccessAs (AnyAcc, 0x00), 
-                            Offset (0x04), 
+                            AccessAs (AnyAcc, 0x00),
+                            Offset (0x04),
                             F0B4,   9
                         }
 
@@ -16887,7 +16887,7 @@
                         Local2 = 0x01
                         BankField (OPR0, BNK0, 0x01, AnyAcc, Lock, Preserve)
                         {
-                            Offset (0x04), 
+                            Offset (0x04),
                             F0B5,   31
                         }
 
@@ -16899,8 +16899,8 @@
                         Local2 = 0x02
                         BankField (OPR0, BNK0, 0x02, DWordAcc, Lock, Preserve)
                         {
-                            AccessAs (AnyAcc, 0x00), 
-                            Offset (0x04), 
+                            AccessAs (AnyAcc, 0x00),
+                            Offset (0x04),
                             F0B6,   32
                         }
 
@@ -16912,7 +16912,7 @@
                         Local2 = 0x03
                         BankField (OPR0, BNK0, 0x03, AnyAcc, Lock, Preserve)
                         {
-                            Offset (0x04), 
+                            Offset (0x04),
                             F0B7,   33
                         }
 
@@ -16924,8 +16924,8 @@
                         Local2 = 0x04
                         BankField (OPR0, BNK0, 0x04, QWordAcc, Lock, Preserve)
                         {
-                            AccessAs (AnyAcc, 0x00), 
-                            Offset (0x04), 
+                            AccessAs (AnyAcc, 0x00),
+                            Offset (0x04),
                             F0B8,   63
                         }
 
@@ -16937,7 +16937,7 @@
                         Local2 = 0x05
                         BankField (OPR0, BNK0, 0x05, AnyAcc, Lock, Preserve)
                         {
-                            Offset (0x04), 
+                            Offset (0x04),
                             F0B9,   64
                         }
 
@@ -16949,8 +16949,8 @@
                         Local2 = 0x06
                         BankField (OPR0, BNK0, 0x06, AnyAcc, Lock, Preserve)
                         {
-                            AccessAs (AnyAcc, 0x00), 
-                            Offset (0x04), 
+                            AccessAs (AnyAcc, 0x00),
+                            Offset (0x04),
                             F0BA,   65
                         }
 
@@ -16962,7 +16962,7 @@
                         Local2 = 0x07
                         BankField (OPR0, BNK0, 0x07, AnyAcc, Lock, Preserve)
                         {
-                            Offset (0x04), 
+                            Offset (0x04),
                             F0BB,   69
                         }
 
@@ -16974,8 +16974,8 @@
                         Local2 = 0x08
                         BankField (OPR0, BNK0, 0x08, ByteAcc, Lock, Preserve)
                         {
-                            AccessAs (AnyAcc, 0x00), 
-                            Offset (0x04), 
+                            AccessAs (AnyAcc, 0x00),
+                            Offset (0x04),
                             F0BC,   129
                         }
 
@@ -16987,7 +16987,7 @@
                         Local2 = 0x09
                         BankField (OPR0, BNK0, 0x09, AnyAcc, Lock, Preserve)
                         {
-                            Offset (0x04), 
+                            Offset (0x04),
                             F0BD,   256
                         }
 
@@ -16999,8 +16999,8 @@
                         Local2 = 0x3F
                         BankField (OPR0, BNK0, 0x3F, WordAcc, Lock, Preserve)
                         {
-                            AccessAs (AnyAcc, 0x00), 
-                            Offset (0x04), 
+                            AccessAs (AnyAcc, 0x00),
+                            Offset (0x04),
                             F0BE,   1023
                         }
 
@@ -17012,7 +17012,7 @@
                         Local2 = 0x40
                         BankField (OPR0, BNK0, 0x40, AnyAcc, Lock, Preserve)
                         {
-                            Offset (0x04), 
+                            Offset (0x04),
                             F0BF,   1983
                         }
 
@@ -17036,7 +17036,7 @@
                         Local2 = 0x7F
                         BankField (OPR0, BNK0, 0x7F, AnyAcc, Lock, Preserve)
                         {
-                                ,   33, 
+                                ,   33,
                             F0C0,   1
                         }
 
@@ -17048,8 +17048,8 @@
                         Local2 = 0x80
                         BankField (OPR0, BNK0, 0x80, DWordAcc, Lock, Preserve)
                         {
-                            AccessAs (AnyAcc, 0x00), 
-                                ,   33, 
+                            AccessAs (AnyAcc, 0x00),
+                                ,   33,
                             F0C1,   6
                         }
 
@@ -17061,7 +17061,7 @@
                         Local2 = 0xFF
                         BankField (OPR0, BNK0, 0xFF, AnyAcc, Lock, Preserve)
                         {
-                                ,   33, 
+                                ,   33,
                             F0C2,   7
                         }
 
@@ -17073,8 +17073,8 @@
                         Local2 = 0x00
                         BankField (OPR0, BNK0, 0x00, QWordAcc, Lock, Preserve)
                         {
-                            AccessAs (AnyAcc, 0x00), 
-                                ,   33, 
+                            AccessAs (AnyAcc, 0x00),
+                                ,   33,
                             F0C3,   8
                         }
 
@@ -17086,7 +17086,7 @@
                         Local2 = 0x01
                         BankField (OPR0, BNK0, 0x01, AnyAcc, Lock, Preserve)
                         {
-                                ,   33, 
+                                ,   33,
                             F0C4,   9
                         }
 
@@ -17098,8 +17098,8 @@
                         Local2 = 0x02
                         BankField (OPR0, BNK0, 0x02, AnyAcc, Lock, Preserve)
                         {
-                            AccessAs (AnyAcc, 0x00), 
-                                ,   33, 
+                            AccessAs (AnyAcc, 0x00),
+                                ,   33,
                             F0C5,   31
                         }
 
@@ -17111,7 +17111,7 @@
                         Local2 = 0x03
                         BankField (OPR0, BNK0, 0x03, AnyAcc, Lock, Preserve)
                         {
-                                ,   33, 
+                                ,   33,
                             F0C6,   32
                         }
 
@@ -17123,8 +17123,8 @@
                         Local2 = 0x04
                         BankField (OPR0, BNK0, 0x04, ByteAcc, Lock, Preserve)
                         {
-                            AccessAs (AnyAcc, 0x00), 
-                                ,   33, 
+                            AccessAs (AnyAcc, 0x00),
+                                ,   33,
                             F0C7,   33
                         }
 
@@ -17136,7 +17136,7 @@
                         Local2 = 0x05
                         BankField (OPR0, BNK0, 0x05, AnyAcc, Lock, Preserve)
                         {
-                                ,   33, 
+                                ,   33,
                             F0C8,   63
                         }
 
@@ -17148,8 +17148,8 @@
                         Local2 = 0x06
                         BankField (OPR0, BNK0, 0x06, WordAcc, Lock, Preserve)
                         {
-                            AccessAs (AnyAcc, 0x00), 
-                                ,   33, 
+                            AccessAs (AnyAcc, 0x00),
+                                ,   33,
                             F0C9,   64
                         }
 
@@ -17161,7 +17161,7 @@
                         Local2 = 0x07
                         BankField (OPR0, BNK0, 0x07, AnyAcc, Lock, Preserve)
                         {
-                                ,   33, 
+                                ,   33,
                             F0CA,   65
                         }
 
@@ -17173,8 +17173,8 @@
                         Local2 = 0x08
                         BankField (OPR0, BNK0, 0x08, DWordAcc, Lock, Preserve)
                         {
-                            AccessAs (AnyAcc, 0x00), 
-                                ,   33, 
+                            AccessAs (AnyAcc, 0x00),
+                                ,   33,
                             F0CB,   69
                         }
 
@@ -17186,7 +17186,7 @@
                         Local2 = 0x09
                         BankField (OPR0, BNK0, 0x09, AnyAcc, Lock, Preserve)
                         {
-                                ,   33, 
+                                ,   33,
                             F0CC,   129
                         }
 
@@ -17198,8 +17198,8 @@
                         Local2 = 0x3F
                         BankField (OPR0, BNK0, 0x3F, QWordAcc, Lock, Preserve)
                         {
-                            AccessAs (AnyAcc, 0x00), 
-                                ,   33, 
+                            AccessAs (AnyAcc, 0x00),
+                                ,   33,
                             F0CD,   256
                         }
 
@@ -17211,7 +17211,7 @@
                         Local2 = 0x40
                         BankField (OPR0, BNK0, 0x40, AnyAcc, Lock, Preserve)
                         {
-                                ,   33, 
+                                ,   33,
                             F0CE,   1023
                         }
 
@@ -17223,8 +17223,8 @@
                         Local2 = 0x7F
                         BankField (OPR0, BNK0, 0x7F, AnyAcc, Lock, Preserve)
                         {
-                            AccessAs (AnyAcc, 0x00), 
-                                ,   33, 
+                            AccessAs (AnyAcc, 0x00),
+                                ,   33,
                             F0CF,   1983
                         }
 
@@ -17248,8 +17248,8 @@
                         Local2 = 0x80
                         BankField (OPR0, BNK0, 0x80, ByteAcc, Lock, Preserve)
                         {
-                            AccessAs (AnyAcc, 0x00), 
-                                ,   63, 
+                            AccessAs (AnyAcc, 0x00),
+                                ,   63,
                             F0D0,   1
                         }
 
@@ -17261,7 +17261,7 @@
                         Local2 = 0xFF
                         BankField (OPR0, BNK0, 0xFF, AnyAcc, Lock, Preserve)
                         {
-                                ,   63, 
+                                ,   63,
                             F0D1,   6
                         }
 
@@ -17273,8 +17273,8 @@
                         Local2 = 0x00
                         BankField (OPR0, BNK0, 0x00, WordAcc, Lock, Preserve)
                         {
-                            AccessAs (AnyAcc, 0x00), 
-                                ,   63, 
+                            AccessAs (AnyAcc, 0x00),
+                                ,   63,
                             F0D2,   7
                         }
 
@@ -17286,7 +17286,7 @@
                         Local2 = 0x01
                         BankField (OPR0, BNK0, 0x01, AnyAcc, Lock, Preserve)
                         {
-                                ,   63, 
+                                ,   63,
                             F0D3,   8
                         }
 
@@ -17298,8 +17298,8 @@
                         Local2 = 0x02
                         BankField (OPR0, BNK0, 0x02, DWordAcc, Lock, Preserve)
                         {
-                            AccessAs (AnyAcc, 0x00), 
-                                ,   63, 
+                            AccessAs (AnyAcc, 0x00),
+                                ,   63,
                             F0D4,   9
                         }
 
@@ -17311,7 +17311,7 @@
                         Local2 = 0x03
                         BankField (OPR0, BNK0, 0x03, AnyAcc, Lock, Preserve)
                         {
-                                ,   63, 
+                                ,   63,
                             F0D5,   31
                         }
 
@@ -17323,8 +17323,8 @@
                         Local2 = 0x04
                         BankField (OPR0, BNK0, 0x04, QWordAcc, Lock, Preserve)
                         {
-                            AccessAs (AnyAcc, 0x00), 
-                                ,   63, 
+                            AccessAs (AnyAcc, 0x00),
+                                ,   63,
                             F0D6,   32
                         }
 
@@ -17336,7 +17336,7 @@
                         Local2 = 0x05
                         BankField (OPR0, BNK0, 0x05, AnyAcc, Lock, Preserve)
                         {
-                                ,   63, 
+                                ,   63,
                             F0D7,   33
                         }
 
@@ -17348,8 +17348,8 @@
                         Local2 = 0x06
                         BankField (OPR0, BNK0, 0x06, AnyAcc, Lock, Preserve)
                         {
-                            AccessAs (AnyAcc, 0x00), 
-                                ,   63, 
+                            AccessAs (AnyAcc, 0x00),
+                                ,   63,
                             F0D8,   63
                         }
 
@@ -17361,7 +17361,7 @@
                         Local2 = 0x07
                         BankField (OPR0, BNK0, 0x07, AnyAcc, Lock, Preserve)
                         {
-                                ,   63, 
+                                ,   63,
                             F0D9,   64
                         }
 
@@ -17373,8 +17373,8 @@
                         Local2 = 0x08
                         BankField (OPR0, BNK0, 0x08, ByteAcc, Lock, Preserve)
                         {
-                            AccessAs (AnyAcc, 0x00), 
-                                ,   63, 
+                            AccessAs (AnyAcc, 0x00),
+                                ,   63,
                             F0DA,   65
                         }
 
@@ -17386,7 +17386,7 @@
                         Local2 = 0x09
                         BankField (OPR0, BNK0, 0x09, AnyAcc, Lock, Preserve)
                         {
-                                ,   63, 
+                                ,   63,
                             F0DB,   69
                         }
 
@@ -17398,8 +17398,8 @@
                         Local2 = 0x3F
                         BankField (OPR0, BNK0, 0x3F, WordAcc, Lock, Preserve)
                         {
-                            AccessAs (AnyAcc, 0x00), 
-                                ,   63, 
+                            AccessAs (AnyAcc, 0x00),
+                                ,   63,
                             F0DC,   129
                         }
 
@@ -17411,7 +17411,7 @@
                         Local2 = 0x40
                         BankField (OPR0, BNK0, 0x40, AnyAcc, Lock, Preserve)
                         {
-                                ,   63, 
+                                ,   63,
                             F0DD,   256
                         }
 
@@ -17423,8 +17423,8 @@
                         Local2 = 0x7F
                         BankField (OPR0, BNK0, 0x7F, DWordAcc, Lock, Preserve)
                         {
-                            AccessAs (AnyAcc, 0x00), 
-                                ,   63, 
+                            AccessAs (AnyAcc, 0x00),
+                                ,   63,
                             F0DE,   1023
                         }
 
@@ -17436,7 +17436,7 @@
                         Local2 = 0x80
                         BankField (OPR0, BNK0, 0x80, AnyAcc, Lock, Preserve)
                         {
-                                ,   63, 
+                                ,   63,
                             F0DF,   1983
                         }
 
@@ -17460,7 +17460,7 @@
                         Local2 = 0xFF
                         BankField (OPR0, BNK0, 0xFF, AnyAcc, Lock, Preserve)
                         {
-                            Offset (0x08), 
+                            Offset (0x08),
                             F0E0,   1
                         }
 
@@ -17472,8 +17472,8 @@
                         Local2 = 0x00
                         BankField (OPR0, BNK0, 0x00, QWordAcc, Lock, Preserve)
                         {
-                            AccessAs (AnyAcc, 0x00), 
-                            Offset (0x08), 
+                            AccessAs (AnyAcc, 0x00),
+                            Offset (0x08),
                             F0E1,   6
                         }
 
@@ -17485,7 +17485,7 @@
                         Local2 = 0x01
                         BankField (OPR0, BNK0, 0x01, AnyAcc, Lock, Preserve)
                         {
-                            Offset (0x08), 
+                            Offset (0x08),
                             F0E2,   7
                         }
 
@@ -17497,8 +17497,8 @@
                         Local2 = 0x02
                         BankField (OPR0, BNK0, 0x02, AnyAcc, Lock, Preserve)
                         {
-                            AccessAs (AnyAcc, 0x00), 
-                            Offset (0x08), 
+                            AccessAs (AnyAcc, 0x00),
+                            Offset (0x08),
                             F0E3,   8
                         }
 
@@ -17510,7 +17510,7 @@
                         Local2 = 0x03
                         BankField (OPR0, BNK0, 0x03, AnyAcc, Lock, Preserve)
                         {
-                            Offset (0x08), 
+                            Offset (0x08),
                             F0E4,   9
                         }
 
@@ -17522,8 +17522,8 @@
                         Local2 = 0x04
                         BankField (OPR0, BNK0, 0x04, ByteAcc, Lock, Preserve)
                         {
-                            AccessAs (AnyAcc, 0x00), 
-                            Offset (0x08), 
+                            AccessAs (AnyAcc, 0x00),
+                            Offset (0x08),
                             F0E5,   31
                         }
 
@@ -17535,7 +17535,7 @@
                         Local2 = 0x05
                         BankField (OPR0, BNK0, 0x05, AnyAcc, Lock, Preserve)
                         {
-                            Offset (0x08), 
+                            Offset (0x08),
                             F0E6,   32
                         }
 
@@ -17547,8 +17547,8 @@
                         Local2 = 0x06
                         BankField (OPR0, BNK0, 0x06, WordAcc, Lock, Preserve)
                         {
-                            AccessAs (AnyAcc, 0x00), 
-                            Offset (0x08), 
+                            AccessAs (AnyAcc, 0x00),
+                            Offset (0x08),
                             F0E7,   33
                         }
 
@@ -17560,7 +17560,7 @@
                         Local2 = 0x07
                         BankField (OPR0, BNK0, 0x07, AnyAcc, Lock, Preserve)
                         {
-                            Offset (0x08), 
+                            Offset (0x08),
                             F0E8,   63
                         }
 
@@ -17572,8 +17572,8 @@
                         Local2 = 0x08
                         BankField (OPR0, BNK0, 0x08, DWordAcc, Lock, Preserve)
                         {
-                            AccessAs (AnyAcc, 0x00), 
-                            Offset (0x08), 
+                            AccessAs (AnyAcc, 0x00),
+                            Offset (0x08),
                             F0E9,   64
                         }
 
@@ -17585,7 +17585,7 @@
                         Local2 = 0x09
                         BankField (OPR0, BNK0, 0x09, AnyAcc, Lock, Preserve)
                         {
-                            Offset (0x08), 
+                            Offset (0x08),
                             F0EA,   65
                         }
 
@@ -17597,8 +17597,8 @@
                         Local2 = 0x3F
                         BankField (OPR0, BNK0, 0x3F, QWordAcc, Lock, Preserve)
                         {
-                            AccessAs (AnyAcc, 0x00), 
-                            Offset (0x08), 
+                            AccessAs (AnyAcc, 0x00),
+                            Offset (0x08),
                             F0EB,   69
                         }
 
@@ -17610,7 +17610,7 @@
                         Local2 = 0x40
                         BankField (OPR0, BNK0, 0x40, AnyAcc, Lock, Preserve)
                         {
-                            Offset (0x08), 
+                            Offset (0x08),
                             F0EC,   129
                         }
 
@@ -17622,8 +17622,8 @@
                         Local2 = 0x7F
                         BankField (OPR0, BNK0, 0x7F, AnyAcc, Lock, Preserve)
                         {
-                            AccessAs (AnyAcc, 0x00), 
-                            Offset (0x08), 
+                            AccessAs (AnyAcc, 0x00),
+                            Offset (0x08),
                             F0ED,   256
                         }
 
@@ -17635,7 +17635,7 @@
                         Local2 = 0x80
                         BankField (OPR0, BNK0, 0x80, AnyAcc, Lock, Preserve)
                         {
-                            Offset (0x08), 
+                            Offset (0x08),
                             F0EE,   1023
                         }
 
@@ -17647,8 +17647,8 @@
                         Local2 = 0xFF
                         BankField (OPR0, BNK0, 0xFF, ByteAcc, Lock, Preserve)
                         {
-                            AccessAs (AnyAcc, 0x00), 
-                            Offset (0x08), 
+                            AccessAs (AnyAcc, 0x00),
+                            Offset (0x08),
                             F0EF,   1983
                         }
 
@@ -17672,9 +17672,9 @@
                         Local2 = 0x00
                         BankField (OPR0, BNK0, 0x00, WordAcc, Lock, Preserve)
                         {
-                            AccessAs (AnyAcc, 0x00), 
-                            Offset (0x08), 
-                                ,   1, 
+                            AccessAs (AnyAcc, 0x00),
+                            Offset (0x08),
+                                ,   1,
                             F0F0,   1
                         }
 
@@ -17686,8 +17686,8 @@
                         Local2 = 0x01
                         BankField (OPR0, BNK0, 0x01, AnyAcc, Lock, Preserve)
                         {
-                            Offset (0x08), 
-                                ,   1, 
+                            Offset (0x08),
+                                ,   1,
                             F0F1,   6
                         }
 
@@ -17699,9 +17699,9 @@
                         Local2 = 0x02
                         BankField (OPR0, BNK0, 0x02, DWordAcc, Lock, Preserve)
                         {
-                            AccessAs (AnyAcc, 0x00), 
-                            Offset (0x08), 
-                                ,   1, 
+                            AccessAs (AnyAcc, 0x00),
+                            Offset (0x08),
+                                ,   1,
                             F0F2,   7
                         }
 
@@ -17713,8 +17713,8 @@
                         Local2 = 0x03
                         BankField (OPR0, BNK0, 0x03, AnyAcc, Lock, Preserve)
                         {
-                            Offset (0x08), 
-                                ,   1, 
+                            Offset (0x08),
+                                ,   1,
                             F0F3,   8
                         }
 
@@ -17726,9 +17726,9 @@
                         Local2 = 0x04
                         BankField (OPR0, BNK0, 0x04, QWordAcc, Lock, Preserve)
                         {
-                            AccessAs (AnyAcc, 0x00), 
-                            Offset (0x08), 
-                                ,   1, 
+                            AccessAs (AnyAcc, 0x00),
+                            Offset (0x08),
+                                ,   1,
                             F0F4,   9
                         }
 
@@ -17740,8 +17740,8 @@
                         Local2 = 0x05
                         BankField (OPR0, BNK0, 0x05, AnyAcc, Lock, Preserve)
                         {
-                            Offset (0x08), 
-                                ,   1, 
+                            Offset (0x08),
+                                ,   1,
                             F0F5,   31
                         }
 
@@ -17753,9 +17753,9 @@
                         Local2 = 0x06
                         BankField (OPR0, BNK0, 0x06, AnyAcc, Lock, Preserve)
                         {
-                            AccessAs (AnyAcc, 0x00), 
-                            Offset (0x08), 
-                                ,   1, 
+                            AccessAs (AnyAcc, 0x00),
+                            Offset (0x08),
+                                ,   1,
                             F0F6,   32
                         }
 
@@ -17767,8 +17767,8 @@
                         Local2 = 0x07
                         BankField (OPR0, BNK0, 0x07, AnyAcc, Lock, Preserve)
                         {
-                            Offset (0x08), 
-                                ,   1, 
+                            Offset (0x08),
+                                ,   1,
                             F0F7,   33
                         }
 
@@ -17780,9 +17780,9 @@
                         Local2 = 0x08
                         BankField (OPR0, BNK0, 0x08, ByteAcc, Lock, Preserve)
                         {
-                            AccessAs (AnyAcc, 0x00), 
-                            Offset (0x08), 
-                                ,   1, 
+                            AccessAs (AnyAcc, 0x00),
+                            Offset (0x08),
+                                ,   1,
                             F0F8,   63
                         }
 
@@ -17794,8 +17794,8 @@
                         Local2 = 0x09
                         BankField (OPR0, BNK0, 0x09, AnyAcc, Lock, Preserve)
                         {
-                            Offset (0x08), 
-                                ,   1, 
+                            Offset (0x08),
+                                ,   1,
                             F0F9,   64
                         }
 
@@ -17807,9 +17807,9 @@
                         Local2 = 0x3F
                         BankField (OPR0, BNK0, 0x3F, WordAcc, Lock, Preserve)
                         {
-                            AccessAs (AnyAcc, 0x00), 
-                            Offset (0x08), 
-                                ,   1, 
+                            AccessAs (AnyAcc, 0x00),
+                            Offset (0x08),
+                                ,   1,
                             F0FA,   65
                         }
 
@@ -17821,8 +17821,8 @@
                         Local2 = 0x40
                         BankField (OPR0, BNK0, 0x40, AnyAcc, Lock, Preserve)
                         {
-                            Offset (0x08), 
-                                ,   1, 
+                            Offset (0x08),
+                                ,   1,
                             F0FB,   69
                         }
 
@@ -17834,9 +17834,9 @@
                         Local2 = 0x7F
                         BankField (OPR0, BNK0, 0x7F, DWordAcc, Lock, Preserve)
                         {
-                            AccessAs (AnyAcc, 0x00), 
-                            Offset (0x08), 
-                                ,   1, 
+                            AccessAs (AnyAcc, 0x00),
+                            Offset (0x08),
+                                ,   1,
                             F0FC,   129
                         }
 
@@ -17848,8 +17848,8 @@
                         Local2 = 0x80
                         BankField (OPR0, BNK0, 0x80, AnyAcc, Lock, Preserve)
                         {
-                            Offset (0x08), 
-                                ,   1, 
+                            Offset (0x08),
+                                ,   1,
                             F0FD,   256
                         }
 
@@ -17861,9 +17861,9 @@
                         Local2 = 0xFF
                         BankField (OPR0, BNK0, 0xFF, QWordAcc, Lock, Preserve)
                         {
-                            AccessAs (AnyAcc, 0x00), 
-                            Offset (0x08), 
-                                ,   1, 
+                            AccessAs (AnyAcc, 0x00),
+                            Offset (0x08),
+                                ,   1,
                             F0FE,   1023
                         }
 
@@ -17875,8 +17875,8 @@
                         Local2 = 0x00
                         BankField (OPR0, BNK0, 0x00, AnyAcc, Lock, Preserve)
                         {
-                            Offset (0x08), 
-                                ,   1, 
+                            Offset (0x08),
+                                ,   1,
                             F0FF,   1983
                         }
 
@@ -17941,41 +17941,41 @@
         CopyObject (Arg1, OPRM) /* \M7E0.OPRM */
         BankField (OPRM, BNK0, Arg2, ByteAcc, NoLock, Preserve)
         {
-            Offset (0x00), 
+            Offset (0x00),
             BF00,   3
         }
 
         BankField (OPRM, BNK0, Arg2, ByteAcc, NoLock, Preserve)
         {
-            Offset (0x00), 
-            BF10,   1, 
-            BF11,   1, 
+            Offset (0x00),
+            BF10,   1,
+            BF11,   1,
             BF12,   1
         }
 
         BankField (OPRM, BNK0, Arg2, ByteAcc, NoLock, Preserve)
         {
-            Offset (0x00), 
-            BF20,   1, 
+            Offset (0x00),
+            BF20,   1,
             BF21,   2
         }
 
         BankField (OPRM, BNK0, Arg2, ByteAcc, NoLock, Preserve)
         {
-            Offset (0x00), 
-            BF30,   2, 
+            Offset (0x00),
+            BF30,   2,
             BF31,   1
         }
 
         Local0 = 0x08
         Local1 = Package (0x07)
             {
-                BF10, 
-                BF11, 
-                BF12, 
-                BF20, 
-                BF21, 
-                BF30, 
+                BF10,
+                BF11,
+                BF12,
+                BF20,
+                BF21,
+                BF30,
                 BF31
             }
         While (Local0)
@@ -18014,41 +18014,41 @@
         CopyObject (Arg1, OPRM) /* \M7E1.OPRM */
         BankField (OPRM, BNK0, Arg2, ByteAcc, NoLock, Preserve)
         {
-                ,   1, 
+                ,   1,
             BF00,   3
         }
 
         BankField (OPRM, BNK0, Arg2, ByteAcc, NoLock, Preserve)
         {
-                ,   1, 
-            BF10,   1, 
-            BF11,   1, 
+                ,   1,
+            BF10,   1,
+            BF11,   1,
             BF12,   1
         }
 
         BankField (OPRM, BNK0, Arg2, ByteAcc, NoLock, Preserve)
         {
-                ,   1, 
-            BF20,   1, 
+                ,   1,
+            BF20,   1,
             BF21,   2
         }
 
         BankField (OPRM, BNK0, Arg2, ByteAcc, NoLock, Preserve)
         {
-                ,   1, 
-            BF30,   2, 
+                ,   1,
+            BF30,   2,
             BF31,   1
         }
 
         Local0 = 0x08
         Local1 = Package (0x07)
             {
-                BF10, 
-                BF11, 
-                BF12, 
-                BF20, 
-                BF21, 
-                BF30, 
+                BF10,
+                BF11,
+                BF12,
+                BF20,
+                BF21,
+                BF30,
                 BF31
             }
         While (Local0)
@@ -18087,41 +18087,41 @@
         CopyObject (Arg1, OPRM) /* \M7E2.OPRM */
         BankField (OPRM, BNK0, Arg2, ByteAcc, NoLock, Preserve)
         {
-                ,   2, 
+                ,   2,
             BF00,   3
         }
 
         BankField (OPRM, BNK0, Arg2, ByteAcc, NoLock, Preserve)
         {
-                ,   2, 
-            BF10,   1, 
-            BF11,   1, 
+                ,   2,
+            BF10,   1,
+            BF11,   1,
             BF12,   1
         }
 
         BankField (OPRM, BNK0, Arg2, ByteAcc, NoLock, Preserve)
         {
-                ,   2, 
-            BF20,   1, 
+                ,   2,
+            BF20,   1,
             BF21,   2
         }
 
         BankField (OPRM, BNK0, Arg2, ByteAcc, NoLock, Preserve)
         {
-                ,   2, 
-            BF30,   2, 
+                ,   2,
+            BF30,   2,
             BF31,   1
         }
 
         Local0 = 0x08
         Local1 = Package (0x07)
             {
-                BF10, 
-                BF11, 
-                BF12, 
-                BF20, 
-                BF21, 
-                BF30, 
+                BF10,
+                BF11,
+                BF12,
+                BF20,
+                BF21,
+                BF30,
                 BF31
             }
         While (Local0)
@@ -18160,41 +18160,41 @@
         CopyObject (Arg1, OPRM) /* \M7E3.OPRM */
         BankField (OPRM, BNK0, Arg2, ByteAcc, NoLock, Preserve)
         {
-                ,   3, 
+                ,   3,
             BF00,   3
         }
 
         BankField (OPRM, BNK0, Arg2, ByteAcc, NoLock, Preserve)
         {
-                ,   3, 
-            BF10,   1, 
-            BF11,   1, 
+                ,   3,
+            BF10,   1,
+            BF11,   1,
             BF12,   1
         }
 
         BankField (OPRM, BNK0, Arg2, ByteAcc, NoLock, Preserve)
         {
-                ,   3, 
-            BF20,   1, 
+                ,   3,
+            BF20,   1,
             BF21,   2
         }
 
         BankField (OPRM, BNK0, Arg2, ByteAcc, NoLock, Preserve)
         {
-                ,   3, 
-            BF30,   2, 
+                ,   3,
+            BF30,   2,
             BF31,   1
         }
 
         Local0 = 0x08
         Local1 = Package (0x07)
             {
-                BF10, 
-                BF11, 
-                BF12, 
-                BF20, 
-                BF21, 
-                BF30, 
+                BF10,
+                BF11,
+                BF12,
+                BF20,
+                BF21,
+                BF30,
                 BF31
             }
         While (Local0)
@@ -18233,41 +18233,41 @@
         CopyObject (Arg1, OPRM) /* \M7E4.OPRM */
         BankField (OPRM, BNK0, Arg2, ByteAcc, NoLock, Preserve)
         {
-                ,   4, 
+                ,   4,
             BF00,   3
         }
 
         BankField (OPRM, BNK0, Arg2, ByteAcc, NoLock, Preserve)
         {
-                ,   4, 
-            BF10,   1, 
-            BF11,   1, 
+                ,   4,
+            BF10,   1,
+            BF11,   1,
             BF12,   1
         }
 
         BankField (OPRM, BNK0, Arg2, ByteAcc, NoLock, Preserve)
         {
-                ,   4, 
-            BF20,   1, 
+                ,   4,
+            BF20,   1,
             BF21,   2
         }
 
         BankField (OPRM, BNK0, Arg2, ByteAcc, NoLock, Preserve)
         {
-                ,   4, 
-            BF30,   2, 
+                ,   4,
+            BF30,   2,
             BF31,   1
         }
 
         Local0 = 0x08
         Local1 = Package (0x07)
             {
-                BF10, 
-                BF11, 
-                BF12, 
-                BF20, 
-                BF21, 
-                BF30, 
+                BF10,
+                BF11,
+                BF12,
+                BF20,
+                BF21,
+                BF30,
                 BF31
             }
         While (Local0)
@@ -18306,41 +18306,41 @@
         CopyObject (Arg1, OPRM) /* \M7E5.OPRM */
         BankField (OPRM, BNK0, Arg2, ByteAcc, NoLock, Preserve)
         {
-                ,   5, 
+                ,   5,
             BF00,   3
         }
 
         BankField (OPRM, BNK0, Arg2, ByteAcc, NoLock, Preserve)
         {
-                ,   5, 
-            BF10,   1, 
-            BF11,   1, 
+                ,   5,
+            BF10,   1,
+            BF11,   1,
             BF12,   1
         }
 
         BankField (OPRM, BNK0, Arg2, ByteAcc, NoLock, Preserve)
         {
-                ,   5, 
-            BF20,   1, 
+                ,   5,
+            BF20,   1,
             BF21,   2
         }
 
         BankField (OPRM, BNK0, Arg2, ByteAcc, NoLock, Preserve)
         {
-                ,   5, 
-            BF30,   2, 
+                ,   5,
+            BF30,   2,
             BF31,   1
         }
 
         Local0 = 0x08
         Local1 = Package (0x07)
             {
-                BF10, 
-                BF11, 
-                BF12, 
-                BF20, 
-                BF21, 
-                BF30, 
+                BF10,
+                BF11,
+                BF12,
+                BF20,
+                BF21,
+                BF30,
                 BF31
             }
         While (Local0)
@@ -18379,41 +18379,41 @@
         CopyObject (Arg1, OPRM) /* \M7E6.OPRM */
         BankField (OPRM, BNK0, Arg2, ByteAcc, NoLock, Preserve)
         {
-                ,   6, 
+                ,   6,
             BF00,   3
         }
 
         BankField (OPRM, BNK0, Arg2, ByteAcc, NoLock, Preserve)
         {
-                ,   6, 
-            BF10,   1, 
-            BF11,   1, 
+                ,   6,
+            BF10,   1,
+            BF11,   1,
             BF12,   1
         }
 
         BankField (OPRM, BNK0, Arg2, ByteAcc, NoLock, Preserve)
         {
-                ,   6, 
-            BF20,   1, 
+                ,   6,
+            BF20,   1,
             BF21,   2
         }
 
         BankField (OPRM, BNK0, Arg2, ByteAcc, NoLock, Preserve)
         {
-                ,   6, 
-            BF30,   2, 
+                ,   6,
+            BF30,   2,
             BF31,   1
         }
 
         Local0 = 0x08
         Local1 = Package (0x07)
             {
-                BF10, 
-                BF11, 
-                BF12, 
-                BF20, 
-                BF21, 
-                BF30, 
+                BF10,
+                BF11,
+                BF12,
+                BF20,
+                BF21,
+                BF30,
                 BF31
             }
         While (Local0)
@@ -18452,41 +18452,41 @@
         CopyObject (Arg1, OPRM) /* \M7E7.OPRM */
         BankField (OPRM, BNK0, Arg2, ByteAcc, NoLock, Preserve)
         {
-                ,   7, 
+                ,   7,
             BF00,   3
         }
 
         BankField (OPRM, BNK0, Arg2, ByteAcc, NoLock, Preserve)
         {
-                ,   7, 
-            BF10,   1, 
-            BF11,   1, 
+                ,   7,
+            BF10,   1,
+            BF11,   1,
             BF12,   1
         }
 
         BankField (OPRM, BNK0, Arg2, ByteAcc, NoLock, Preserve)
         {
-                ,   7, 
-            BF20,   1, 
+                ,   7,
+            BF20,   1,
             BF21,   2
         }
 
         BankField (OPRM, BNK0, Arg2, ByteAcc, NoLock, Preserve)
         {
-                ,   7, 
-            BF30,   2, 
+                ,   7,
+            BF30,   2,
             BF31,   1
         }
 
         Local0 = 0x08
         Local1 = Package (0x07)
             {
-                BF10, 
-                BF11, 
-                BF12, 
-                BF20, 
-                BF21, 
-                BF30, 
+                BF10,
+                BF11,
+                BF12,
+                BF20,
+                BF21,
+                BF30,
                 BF31
             }
         While (Local0)
@@ -18525,41 +18525,41 @@
         CopyObject (Arg1, OPRM) /* \M7E8.OPRM */
         BankField (OPRM, BNK0, Arg2, ByteAcc, NoLock, Preserve)
         {
-            Offset (0x01), 
+            Offset (0x01),
             BF00,   3
         }
 
         BankField (OPRM, BNK0, Arg2, ByteAcc, NoLock, Preserve)
         {
-            Offset (0x01), 
-            BF10,   1, 
-            BF11,   1, 
+            Offset (0x01),
+            BF10,   1,
+            BF11,   1,
             BF12,   1
         }
 
         BankField (OPRM, BNK0, Arg2, ByteAcc, NoLock, Preserve)
         {
-            Offset (0x01), 
-            BF20,   1, 
+            Offset (0x01),
+            BF20,   1,
             BF21,   2
         }
 
         BankField (OPRM, BNK0, Arg2, ByteAcc, NoLock, Preserve)
         {
-            Offset (0x01), 
-            BF30,   2, 
+            Offset (0x01),
+            BF30,   2,
             BF31,   1
         }
 
         Local0 = 0x08
         Local1 = Package (0x07)
             {
-                BF10, 
-                BF11, 
-                BF12, 
-                BF20, 
-                BF21, 
-                BF30, 
+                BF10,
+                BF11,
+                BF12,
+                BF20,
+                BF21,
+                BF30,
                 BF31
             }
         While (Local0)
@@ -18598,41 +18598,41 @@
         CopyObject (Arg1, OPRM) /* \M7E9.OPRM */
         BankField (OPRM, BNK0, Arg2, ByteAcc, NoLock, Preserve)
         {
-                ,   2046, 
+                ,   2046,
             BF00,   3
         }
 
         BankField (OPRM, BNK0, Arg2, ByteAcc, NoLock, Preserve)
         {
-                ,   2046, 
-            BF10,   1, 
-            BF11,   1, 
+                ,   2046,
+            BF10,   1,
+            BF11,   1,
             BF12,   1
         }
 
         BankField (OPRM, BNK0, Arg2, ByteAcc, NoLock, Preserve)
         {
-                ,   2046, 
-            BF20,   1, 
+                ,   2046,
+            BF20,   1,
             BF21,   2
         }
 
         BankField (OPRM, BNK0, Arg2, ByteAcc, NoLock, Preserve)
         {
-                ,   2046, 
-            BF30,   2, 
+                ,   2046,
+            BF30,   2,
             BF31,   1
         }
 
         Local0 = 0x08
         Local1 = Package (0x07)
             {
-                BF10, 
-                BF11, 
-                BF12, 
-                BF20, 
-                BF21, 
-                BF30, 
+                BF10,
+                BF11,
+                BF12,
+                BF20,
+                BF21,
+                BF30,
                 BF31
             }
         While (Local0)
@@ -18689,7 +18689,7 @@
         {
             BankField (OPRJ, BNK0, Arg1, ByteAcc, NoLock, Preserve)
             {
-                Offset (0x08), 
+                Offset (0x08),
                 BF00,   8
             }
 
@@ -18702,7 +18702,7 @@
         {
             BankField (OPRJ, BNK0, BVAL, ByteAcc, NoLock, Preserve)
             {
-                Offset (0x08), 
+                Offset (0x08),
                 BF00,   8
             }
 
@@ -18716,7 +18716,7 @@
             Local0 = BVAL /* \M7C7.BVAL */
             BankField (OPRJ, BNK0, Local0, ByteAcc, NoLock, Preserve)
             {
-                Offset (0x08), 
+                Offset (0x08),
                 BF00,   8
             }
 
@@ -18730,7 +18730,7 @@
             Local0 = 0x01
             BankField (OPRJ, BNK0, (Local0 + 0x01), ByteAcc, NoLock, Preserve)
             {
-                Offset (0x08), 
+                Offset (0x08),
                 BF00,   8
             }
 
@@ -18761,7 +18761,7 @@
         Name (VALS, "2")
         BankField (OPRJ, BNK0, 0x02, ByteAcc, NoLock, Preserve)
         {
-            Offset (0x08), 
+            Offset (0x08),
             BF00,   32
         }
 
@@ -18771,13 +18771,13 @@
         /* */
         BankField (OPRJ, BNK0, ToInteger (VALB), ByteAcc, NoLock, Preserve)
         {
-            Offset (0x08), 
+            Offset (0x08),
             BF01,   32
         }
 
         BankField (OPRJ, BNK0, ToInteger (VALS), ByteAcc, NoLock, Preserve)
         {
-            Offset (0x08), 
+            Offset (0x08),
             BF02,   32
         }
 
@@ -18787,7 +18787,7 @@
             Local0 = 0x01
             BankField (OPRJ, BNK0, Arg1, ByteAcc, NoLock, Preserve)
             {
-                Offset (0x08), 
+                Offset (0x08),
                 BF03,   32
             }
 
@@ -18928,4 +18928,3 @@
             BLCK ()
         }
     }
-

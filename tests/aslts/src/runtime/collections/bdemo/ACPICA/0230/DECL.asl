@@ -46,9 +46,9 @@
         })
         Name (P000, Package (0x04)
         {
-            0x01, 
-            0x02, 
-            0x03, 
+            0x01,
+            0x02,
+            0x03,
             0x04
         })
         Event (E000)
@@ -76,9 +76,9 @@
         CreateField (B001, 0x00, 0x08, BF90)
         Field (R9Z0, ByteAcc, NoLock, Preserve)
         {
-            F900,   8, 
-            F901,   8, 
-            F902,   8, 
+            F900,   8,
+            F901,   8,
+            F902,   8,
             F903,   8
         }
 
@@ -89,7 +89,7 @@
 
         IndexField (F902, F903, ByteAcc, NoLock, Preserve)
         {
-            IF90,   8, 
+            IF90,   8,
             IF91,   8
         }
 
@@ -202,9 +202,9 @@
         {
             Return (Package (0x04)
             {
-                0x01, 
-                0x02, 
-                0x03, 
+                0x01,
+                0x02,
+                0x03,
                 0x04
             })
         }
@@ -241,4 +241,3 @@
 
         CH04 ("", 0x00, 0xFF, 0x00, 0x75, 0x00, 0x00)
     }
-

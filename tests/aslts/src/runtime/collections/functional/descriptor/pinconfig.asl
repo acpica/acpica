@@ -46,7 +46,7 @@
                     0x00CC,
                     0x00DD
                 }
-        }, 
+        },
 
         ResourceTemplate ()
         {
@@ -62,7 +62,7 @@
                     0x00CC,
                     0x000D
                 }
-        }, 
+        },
 
         ResourceTemplate ()
         {
@@ -78,7 +78,7 @@
                     0x00CC,
                     0x00DD
                 }
-        }, 
+        },
 
         ResourceTemplate ()
         {
@@ -94,7 +94,7 @@
                     0x00CC,
                     0x00DD
                 }
-        }, 
+        },
 
         ResourceTemplate ()
         {
@@ -110,7 +110,7 @@
                     0x00CC,
                     0x00DD
                 }
-        }, 
+        },
 
         ResourceTemplate ()
         {
@@ -126,7 +126,7 @@
                     0x00CC,
                     0x00DD
                 }
-        }, 
+        },
 
         ResourceTemplate ()
         {
@@ -142,7 +142,7 @@
                     0x00CC,
                     0x00DD
                 }
-        }, 
+        },
 
         ResourceTemplate ()
         {
@@ -158,7 +158,7 @@
                     0x00CC,
                     0x00DD
                 }
-        }, 
+        },
 
         ResourceTemplate ()
         {
@@ -174,7 +174,7 @@
                     0x00CC,
                     0x00DD
                 }
-        }, 
+        },
 
         ResourceTemplate ()
         {
@@ -190,7 +190,7 @@
                     0x00CC,
                     0x00DD
                 }
-        }, 
+        },
 
         ResourceTemplate ()
         {
@@ -206,7 +206,7 @@
                     0x00CC,
                     0x00DD
                 }
-        }, 
+        },
 
         ResourceTemplate ()
         {
@@ -222,7 +222,7 @@
                     0x00CC,
                     0x00DD
                 }
-        }, 
+        },
 
         ResourceTemplate ()
         {
@@ -238,7 +238,7 @@
                     0x00CC,
                     0x00DD
                 }
-        }, 
+        },
 
         ResourceTemplate ()
         {
@@ -254,7 +254,7 @@
                     0x00CC,
                     0x00DD
                 }
-        }, 
+        },
 
         ResourceTemplate ()
         {
@@ -270,7 +270,7 @@
                     0x00CC,
                     0x00DD
                 }
-        }, 
+        },
 
         ResourceTemplate ()
         {
@@ -286,7 +286,7 @@
                     0x00CC,
                     0x00DD
                 }
-        }, 
+        },
 
         ResourceTemplate ()
         {
@@ -302,7 +302,7 @@
                     0x00CC,
                     0x00DD
                 }
-        }, 
+        },
 
         ResourceTemplate ()
         {
@@ -318,7 +318,7 @@
                     0x00CC,
                     0x000D
                 }
-        }, 
+        },
 
         ResourceTemplate ()
         {
@@ -334,7 +334,7 @@
                     0x00CC,
                     0x00DD
                 }
-        }, 
+        },
 
         ResourceTemplate ()
         {
@@ -350,7 +350,7 @@
                     0x00CC,
                     0x00DD
                 }
-        }, 
+        },
 
         ResourceTemplate ()
         {
@@ -366,7 +366,7 @@
                     0x00CC,
                     0x00DD
                 }
-        }, 
+        },
 
         ResourceTemplate ()
         {
@@ -382,7 +382,7 @@
                     0x00CC,
                     0x00DD
                 }
-        }, 
+        },
 
         ResourceTemplate ()
         {
@@ -398,7 +398,7 @@
                     0x00CC,
                     0x00DD
                 }
-        }, 
+        },
 
         ResourceTemplate ()
         {
@@ -414,7 +414,7 @@
                     0x00CC,
                     0x00DD
                 }
-        }, 
+        },
 
         ResourceTemplate ()
         {
@@ -430,7 +430,7 @@
                     0x00CC,
                     0x00DD
                 }
-        }, 
+        },
 
         ResourceTemplate ()
         {
@@ -446,7 +446,7 @@
                     0x00CC,
                     0x00DD
                 }
-        }, 
+        },
 
         ResourceTemplate ()
         {
@@ -462,7 +462,7 @@
                     0x00CC,
                     0x00DD
                 }
-        }, 
+        },
 
         ResourceTemplate ()
         {
@@ -478,7 +478,7 @@
                     0x00CC,
                     0x00DD
                 }
-        }, 
+        },
 
         ResourceTemplate ()
         {
@@ -494,7 +494,7 @@
                     0x00CC,
                     0x00DD
                 }
-        }, 
+        },
 
         ResourceTemplate ()
         {
@@ -510,7 +510,7 @@
                     0x00CC,
                     0x00DD
                 }
-        }, 
+        },
 
         ResourceTemplate ()
         {
@@ -526,7 +526,7 @@
                     0x00CC,
                     0x00DD
                 }
-        }, 
+        },
 
         ResourceTemplate ()
         {
@@ -542,7 +542,7 @@
                     0x00CC,
                     0x00DD
                 }
-        }, 
+        },
 
         ResourceTemplate ()
         {
@@ -570,7 +570,7 @@
                     0x00CC,
                     0x00DD
                 }
-        }, 
+        },
 
         ResourceTemplate ()
         {
@@ -586,7 +586,7 @@
                     0x00CC,
                     0x000D
                 }
-        }, 
+        },
 
         ResourceTemplate ()
         {
@@ -602,7 +602,7 @@
                     0x00CC,
                     0x00DD
                 }
-        }, 
+        },
 
         ResourceTemplate ()
         {
@@ -618,7 +618,7 @@
                     0x00CC,
                     0x00DD
                 }
-        }, 
+        },
 
         ResourceTemplate ()
         {
@@ -634,7 +634,7 @@
                     0x00CC,
                     0x00DD
                 }
-        }, 
+        },
 
         ResourceTemplate ()
         {
@@ -650,7 +650,7 @@
                     0x00CC,
                     0x00DD
                 }
-        }, 
+        },
 
         ResourceTemplate ()
         {
@@ -666,7 +666,7 @@
                     0x00CC,
                     0x00DD
                 }
-        }, 
+        },
 
         ResourceTemplate ()
         {
@@ -682,7 +682,7 @@
                     0x00CC,
                     0x00DD
                 }
-        }, 
+        },
 
         ResourceTemplate ()
         {
@@ -698,7 +698,7 @@
                     0x00CC,
                     0x00DD
                 }
-        }, 
+        },
 
         ResourceTemplate ()
         {
@@ -714,7 +714,7 @@
                     0x00CC,
                     0x00DD
                 }
-        }, 
+        },
 
         ResourceTemplate ()
         {
@@ -730,7 +730,7 @@
                     0x00CC,
                     0x00DD
                 }
-        }, 
+        },
 
         ResourceTemplate ()
         {
@@ -746,7 +746,7 @@
                     0x00CC,
                     0x00DD
                 }
-        }, 
+        },
 
         ResourceTemplate ()
         {
@@ -762,7 +762,7 @@
                     0x00CC,
                     0x00DD
                 }
-        }, 
+        },
 
         ResourceTemplate ()
         {
@@ -778,7 +778,7 @@
                     0x00CC,
                     0x00DD
                 }
-        }, 
+        },
 
         ResourceTemplate ()
         {
@@ -794,7 +794,7 @@
                     0x00CC,
                     0x00DD
                 }
-        }, 
+        },
 
         ResourceTemplate ()
         {
@@ -810,7 +810,7 @@
                     0x00CC,
                     0x00DD
                 }
-        }, 
+        },
 
         ResourceTemplate ()
         {
@@ -826,7 +826,7 @@
                     0x00CC,
                     0x00DD
                 }
-        }, 
+        },
 
         ResourceTemplate ()
         {
@@ -842,7 +842,7 @@
                     0x00CC,
                     0x000D
                 }
-        }, 
+        },
 
         ResourceTemplate ()
         {
@@ -858,7 +858,7 @@
                     0x00CC,
                     0x00DD
                 }
-        }, 
+        },
 
         ResourceTemplate ()
         {
@@ -874,7 +874,7 @@
                     0x00CC,
                     0x00DD
                 }
-        }, 
+        },
 
         ResourceTemplate ()
         {
@@ -890,7 +890,7 @@
                     0x00CC,
                     0x00DD
                 }
-        }, 
+        },
 
         ResourceTemplate ()
         {
@@ -906,7 +906,7 @@
                     0x00CC,
                     0x00DD
                 }
-        }, 
+        },
 
         ResourceTemplate ()
         {
@@ -922,7 +922,7 @@
                     0x00CC,
                     0x00DD
                 }
-        }, 
+        },
 
         ResourceTemplate ()
         {
@@ -938,7 +938,7 @@
                     0x00CC,
                     0x00DD
                 }
-        }, 
+        },
 
         ResourceTemplate ()
         {
@@ -954,7 +954,7 @@
                     0x00CC,
                     0x00DD
                 }
-        }, 
+        },
 
         ResourceTemplate ()
         {
@@ -970,7 +970,7 @@
                     0x00CC,
                     0x00DD
                 }
-        }, 
+        },
 
         ResourceTemplate ()
         {
@@ -986,7 +986,7 @@
                     0x00CC,
                     0x00DD
                 }
-        }, 
+        },
 
         ResourceTemplate ()
         {
@@ -1002,7 +1002,7 @@
                     0x00CC,
                     0x00DD
                 }
-        }, 
+        },
 
         ResourceTemplate ()
         {
@@ -1018,7 +1018,7 @@
                     0x00CC,
                     0x00DD
                 }
-        }, 
+        },
 
         ResourceTemplate ()
         {
@@ -1034,7 +1034,7 @@
                     0x00CC,
                     0x00DD
                 }
-        }, 
+        },
 
         ResourceTemplate ()
         {
@@ -1050,7 +1050,7 @@
                     0x00CC,
                     0x00DD
                 }
-        }, 
+        },
 
         ResourceTemplate ()
         {
@@ -1066,7 +1066,7 @@
                     0x00CC,
                     0x00DD
                 }
-        }, 
+        },
 
         ResourceTemplate ()
         {
@@ -1130,4 +1130,3 @@ Local0 = ResourceTemplate ()
         M331 (TS, 0x01, 0xA0, 0xA0, 0x01E0, 0x01E0, "_PIN")
         M331 (TS, 0x01, 0x0128, 0x0128, 0x0268, 0x0268, "_VEN")
     }
-

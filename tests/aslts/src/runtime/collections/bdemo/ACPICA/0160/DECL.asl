@@ -60,4 +60,3 @@
         Debug = "mf49 finished"
         CH03 ("", 0x00, 0x03, 0x36, 0x00)
     }
-

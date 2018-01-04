@@ -36,103 +36,103 @@
         {
             IRQNoFlags ()
                 {0}
-        }, 
+        },
 
         ResourceTemplate ()
         {
             IRQNoFlags ()
                 {1}
-        }, 
+        },
 
         ResourceTemplate ()
         {
             IRQNoFlags ()
                 {2}
-        }, 
+        },
 
         ResourceTemplate ()
         {
             IRQNoFlags ()
                 {3}
-        }, 
+        },
 
         ResourceTemplate ()
         {
             IRQNoFlags ()
                 {4}
-        }, 
+        },
 
         ResourceTemplate ()
         {
             IRQNoFlags ()
                 {5}
-        }, 
+        },
 
         ResourceTemplate ()
         {
             IRQNoFlags ()
                 {6}
-        }, 
+        },
 
         ResourceTemplate ()
         {
             IRQNoFlags ()
                 {7}
-        }, 
+        },
 
         ResourceTemplate ()
         {
             IRQNoFlags ()
                 {8}
-        }, 
+        },
 
         ResourceTemplate ()
         {
             IRQNoFlags ()
                 {9}
-        }, 
+        },
 
         ResourceTemplate ()
         {
             IRQNoFlags ()
                 {10}
-        }, 
+        },
 
         ResourceTemplate ()
         {
             IRQNoFlags ()
                 {11}
-        }, 
+        },
 
         ResourceTemplate ()
         {
             IRQNoFlags ()
                 {12}
-        }, 
+        },
 
         ResourceTemplate ()
         {
             IRQNoFlags ()
                 {13}
-        }, 
+        },
 
         ResourceTemplate ()
         {
             IRQNoFlags ()
                 {14}
-        }, 
+        },
 
         ResourceTemplate ()
         {
             IRQNoFlags ()
                 {15}
-        }, 
+        },
 
         ResourceTemplate ()
         {
             IRQNoFlags ()
                 {}
-        }, 
+        },
 
         ResourceTemplate ()
         {
@@ -154,103 +154,103 @@
         {
             IRQNoFlags ()
                 {0}
-        }, 
+        },
 
         ResourceTemplate ()
         {
             IRQNoFlags ()
                 {1}
-        }, 
+        },
 
         ResourceTemplate ()
         {
             IRQNoFlags ()
                 {2}
-        }, 
+        },
 
         ResourceTemplate ()
         {
             IRQNoFlags ()
                 {3}
-        }, 
+        },
 
         ResourceTemplate ()
         {
             IRQNoFlags ()
                 {4}
-        }, 
+        },
 
         ResourceTemplate ()
         {
             IRQNoFlags ()
                 {5}
-        }, 
+        },
 
         ResourceTemplate ()
         {
             IRQNoFlags ()
                 {6}
-        }, 
+        },
 
         ResourceTemplate ()
         {
             IRQNoFlags ()
                 {7}
-        }, 
+        },
 
         ResourceTemplate ()
         {
             IRQNoFlags ()
                 {8}
-        }, 
+        },
 
         ResourceTemplate ()
         {
             IRQNoFlags ()
                 {9}
-        }, 
+        },
 
         ResourceTemplate ()
         {
             IRQNoFlags ()
                 {10}
-        }, 
+        },
 
         ResourceTemplate ()
         {
             IRQNoFlags ()
                 {11}
-        }, 
+        },
 
         ResourceTemplate ()
         {
             IRQNoFlags ()
                 {12}
-        }, 
+        },
 
         ResourceTemplate ()
         {
             IRQNoFlags ()
                 {13}
-        }, 
+        },
 
         ResourceTemplate ()
         {
             IRQNoFlags ()
                 {14}
-        }, 
+        },
 
         ResourceTemplate ()
         {
             IRQNoFlags ()
                 {15}
-        }, 
+        },
 
         ResourceTemplate ()
         {
             IRQNoFlags ()
                 {}
-        }, 
+        },
 
         ResourceTemplate ()
         {
@@ -268,4 +268,3 @@
 
         M330 (TS, 0x12, "p402", P402, P403)
     }
-

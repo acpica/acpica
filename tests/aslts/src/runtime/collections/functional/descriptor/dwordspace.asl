@@ -41,7 +41,7 @@
                 0xF8F9FAFB,         // Translation Offset
                 0xFCFDFEFF,         // Length
                 ,, )
-        }, 
+        },
 
         ResourceTemplate ()
         {
@@ -52,7 +52,7 @@
                 0xF8F9FAFB,         // Translation Offset
                 0xFCFDFEFF,         // Length
                 ,, )
-        }, 
+        },
 
         ResourceTemplate ()
         {
@@ -63,7 +63,7 @@
                 0xF8F9FAFB,         // Translation Offset
                 0xFCFDFEFF,         // Length
                 ,, )
-        }, 
+        },
 
         ResourceTemplate ()
         {
@@ -74,7 +74,7 @@
                 0xF8F9FAFB,         // Translation Offset
                 0xFCFDFEFF,         // Length
                 ,, )
-        }, 
+        },
 
         ResourceTemplate ()
         {
@@ -85,7 +85,7 @@
                 0xF8F9FAFB,         // Translation Offset
                 0xFCFDFEFF,         // Length
                 ,, )
-        }, 
+        },
 
         ResourceTemplate ()
         {
@@ -96,7 +96,7 @@
                 0xF8F9FAFB,         // Translation Offset
                 0xFCFDFEFF,         // Length
                 ,, )
-        }, 
+        },
 
         ResourceTemplate ()
         {
@@ -107,7 +107,7 @@
                 0xF8F9FAFB,         // Translation Offset
                 0xFCFDFEFF,         // Length
                 ,, )
-        }, 
+        },
 
         ResourceTemplate ()
         {
@@ -118,7 +118,7 @@
                 0xF8F9FAFB,         // Translation Offset
                 0xFCFDFEFF,         // Length
                 ,, )
-        }, 
+        },
 
         ResourceTemplate ()
         {
@@ -129,7 +129,7 @@
                 0xF8F9FAFB,         // Translation Offset
                 0xFCFDFEFF,         // Length
                 ,, )
-        }, 
+        },
 
         ResourceTemplate ()
         {
@@ -140,7 +140,7 @@
                 0xF8F9FAFB,         // Translation Offset
                 0xFCFDFEFF,         // Length
                 ,, )
-        }, 
+        },
 
         ResourceTemplate ()
         {
@@ -151,7 +151,7 @@
                 0xF8F9FAFB,         // Translation Offset
                 0xFCFDFEFF,         // Length
                 ,, )
-        }, 
+        },
 
         ResourceTemplate ()
         {
@@ -162,7 +162,7 @@
                 0xF8F9FAFB,         // Translation Offset
                 0xFCFDFEFF,         // Length
                 ,, )
-        }, 
+        },
 
         ResourceTemplate ()
         {
@@ -173,7 +173,7 @@
                 0xF8F9FAFB,         // Translation Offset
                 0xFCFDFEFF,         // Length
                 ,, )
-        }, 
+        },
 
         ResourceTemplate ()
         {
@@ -184,7 +184,7 @@
                 0xF8F9FAFB,         // Translation Offset
                 0xFCFDFEFF,         // Length
                 ,, )
-        }, 
+        },
 
         ResourceTemplate ()
         {
@@ -195,7 +195,7 @@
                 0xF8F9FAFB,         // Translation Offset
                 0xFCFDFEFF,         // Length
                 ,, )
-        }, 
+        },
 
         ResourceTemplate ()
         {
@@ -206,7 +206,7 @@
                 0xF8F9FAFB,         // Translation Offset
                 0xFCFDFEFF,         // Length
                 ,, )
-        }, 
+        },
 
         ResourceTemplate ()
         {
@@ -217,7 +217,7 @@
                 0xF8F9FAFB,         // Translation Offset
                 0xFCFDFEFF,         // Length
                 ,, )
-        }, 
+        },
 
         ResourceTemplate ()
         {
@@ -228,7 +228,7 @@
                 0xF8F9FAFB,         // Translation Offset
                 0xFCFDFEFF,         // Length
                 ,, )
-        }, 
+        },
 
         ResourceTemplate ()
         {
@@ -239,7 +239,7 @@
                 0xF8F9FAFB,         // Translation Offset
                 0xFCFDFEFF,         // Length
                 ,, )
-        }, 
+        },
 
         ResourceTemplate ()
         {
@@ -250,7 +250,7 @@
                 0xF8F9FAFB,         // Translation Offset
                 0xFCFDFEFF,         // Length
                 ,, )
-        }, 
+        },
 
         ResourceTemplate ()
         {
@@ -261,7 +261,7 @@
                 0xF8F9FAFB,         // Translation Offset
                 0xFCFDFEFF,         // Length
                 0x01, "", )
-        }, 
+        },
 
         ResourceTemplate ()
         {
@@ -272,7 +272,7 @@
                 0xF8F9FAFB,         // Translation Offset
                 0xFCFDFEFF,         // Length
                 0x0F, "P", )
-        }, 
+        },
 
         ResourceTemplate ()
         {
@@ -283,7 +283,7 @@
                 0xF8F9FAFB,         // Translation Offset
                 0xFCFDFEFF,         // Length
                 0xF0, "PATH", )
-        }, 
+        },
 
         ResourceTemplate ()
         {
@@ -294,7 +294,7 @@
                 0xF8F9FAFB,         // Translation Offset
                 0xFCFDFEFF,         // Length
                 0xFF, "!\"#$%&\'()*+,-./0123456789:;<=>?@ABCDEFGHIJKLMNOPQRSTUVWXYZ[\\]^_`abcdefghijklmnopqrstuvwxyz{|}~ !\"#$%&\'()*+,-./0123456789:;<=>?@ABCDEFGHIJKLMNOPQRSTUVWXYZ[\\]^_`abcdefghijklmnopqrstuvwxyz{|}~ !\"#$%&\'()*", )
-        }, 
+        },
 
         ResourceTemplate ()
         {
@@ -305,7 +305,7 @@
                 0xF8F9FAFB,         // Translation Offset
                 0xFCFDFEFF,         // Length
                 0xFF, "PATHPATHPATH", )
-        }, 
+        },
 
         ResourceTemplate ()
         {
@@ -316,7 +316,7 @@
                 0x00000000,         // Translation Offset
                 0x00000000,         // Length
                 0xFF, "PATHPATHPATH", )
-        }, 
+        },
 
         ResourceTemplate ()
         {
@@ -413,7 +413,7 @@
                 0xF8F9FAFB,         // Translation Offset
                 0xFCFDFEFF,         // Length
                 ,, )
-        }, 
+        },
 
         ResourceTemplate ()
         {
@@ -424,7 +424,7 @@
                 0xF8F9FAFB,         // Translation Offset
                 0xFCFDFEFF,         // Length
                 ,, )
-        }, 
+        },
 
         ResourceTemplate ()
         {
@@ -435,7 +435,7 @@
                 0xF8F9FAFB,         // Translation Offset
                 0xFCFDFEFF,         // Length
                 ,, )
-        }, 
+        },
 
         ResourceTemplate ()
         {
@@ -446,7 +446,7 @@
                 0xF8F9FAFB,         // Translation Offset
                 0xFCFDFEFF,         // Length
                 ,, )
-        }, 
+        },
 
         ResourceTemplate ()
         {
@@ -457,7 +457,7 @@
                 0xF8F9FAFB,         // Translation Offset
                 0xFCFDFEFF,         // Length
                 ,, )
-        }, 
+        },
 
         ResourceTemplate ()
         {
@@ -468,7 +468,7 @@
                 0xF8F9FAFB,         // Translation Offset
                 0xFCFDFEFF,         // Length
                 ,, )
-        }, 
+        },
 
         ResourceTemplate ()
         {
@@ -479,7 +479,7 @@
                 0xF8F9FAFB,         // Translation Offset
                 0xFCFDFEFF,         // Length
                 ,, )
-        }, 
+        },
 
         ResourceTemplate ()
         {
@@ -490,7 +490,7 @@
                 0xF8F9FAFB,         // Translation Offset
                 0xFCFDFEFF,         // Length
                 ,, )
-        }, 
+        },
 
         ResourceTemplate ()
         {
@@ -501,7 +501,7 @@
                 0xF8F9FAFB,         // Translation Offset
                 0xFCFDFEFF,         // Length
                 ,, )
-        }, 
+        },
 
         ResourceTemplate ()
         {
@@ -512,7 +512,7 @@
                 0xF8F9FAFB,         // Translation Offset
                 0xFCFDFEFF,         // Length
                 ,, )
-        }, 
+        },
 
         ResourceTemplate ()
         {
@@ -523,7 +523,7 @@
                 0xF8F9FAFB,         // Translation Offset
                 0xFCFDFEFF,         // Length
                 ,, )
-        }, 
+        },
 
         ResourceTemplate ()
         {
@@ -534,7 +534,7 @@
                 0xF8F9FAFB,         // Translation Offset
                 0xFCFDFEFF,         // Length
                 ,, )
-        }, 
+        },
 
         ResourceTemplate ()
         {
@@ -545,7 +545,7 @@
                 0xF8F9FAFB,         // Translation Offset
                 0xFCFDFEFF,         // Length
                 ,, )
-        }, 
+        },
 
         ResourceTemplate ()
         {
@@ -556,7 +556,7 @@
                 0xF8F9FAFB,         // Translation Offset
                 0xFCFDFEFF,         // Length
                 ,, )
-        }, 
+        },
 
         ResourceTemplate ()
         {
@@ -567,7 +567,7 @@
                 0xF8F9FAFB,         // Translation Offset
                 0xFCFDFEFF,         // Length
                 ,, )
-        }, 
+        },
 
         ResourceTemplate ()
         {
@@ -578,7 +578,7 @@
                 0xF8F9FAFB,         // Translation Offset
                 0xFCFDFEFF,         // Length
                 ,, )
-        }, 
+        },
 
         /* Byte 5 (Type Specific Flags) of DWord Address Space Descriptor */
 
@@ -591,7 +591,7 @@
                 0xF8F9FAFB,         // Translation Offset
                 0xFCFDFEFF,         // Length
                 ,, )
-        }, 
+        },
 
         ResourceTemplate ()
         {
@@ -602,7 +602,7 @@
                 0xF8F9FAFB,         // Translation Offset
                 0xFCFDFEFF,         // Length
                 ,, )
-        }, 
+        },
 
         /* Particular cases */
 
@@ -615,7 +615,7 @@
                 0xF8F9FAFB,         // Translation Offset
                 0xFCFDFEFF,         // Length
                 ,, )
-        }, 
+        },
 
         ResourceTemplate ()
         {
@@ -626,7 +626,7 @@
                 0xF8F9FAFB,         // Translation Offset
                 0xFCFDFEFF,         // Length
                 ,, )
-        }, 
+        },
 
         /* Resource Source */
 
@@ -639,7 +639,7 @@
                 0xF8F9FAFB,         // Translation Offset
                 0xFCFDFEFF,         // Length
                 0x01, "", )
-        }, 
+        },
 
         ResourceTemplate ()
         {
@@ -650,7 +650,7 @@
                 0xF8F9FAFB,         // Translation Offset
                 0xFCFDFEFF,         // Length
                 0x0F, "P", )
-        }, 
+        },
 
         ResourceTemplate ()
         {
@@ -661,7 +661,7 @@
                 0xF8F9FAFB,         // Translation Offset
                 0xFCFDFEFF,         // Length
                 0xF0, "PATH", )
-        }, 
+        },
 
         ResourceTemplate ()
         {
@@ -672,7 +672,7 @@
                 0xF8F9FAFB,         // Translation Offset
                 0xFCFDFEFF,         // Length
                 0xFF, "!\"#$%&\'()*+,-./0123456789:;<=>?@ABCDEFGHIJKLMNOPQRSTUVWXYZ[\\]^_`abcdefghijklmnopqrstuvwxyz{|}~ !\"#$%&\'()*+,-./0123456789:;<=>?@ABCDEFGHIJKLMNOPQRSTUVWXYZ[\\]^_`abcdefghijklmnopqrstuvwxyz{|}~ !\"#$%&\'()*", )
-        }, 
+        },
 
         /* Particular cases */
 
@@ -685,7 +685,7 @@
                 0xF8F9FAFB,         // Translation Offset
                 0xFCFDFEFF,         // Length
                 0xFF, "PATHPATHPATH", )
-        }, 
+        },
 
         ResourceTemplate ()
         {
@@ -696,7 +696,7 @@
                 0x00000000,         // Translation Offset
                 0x00000000,         // Length
                 0xFF, "PATHPATHPATH", )
-        }, 
+        },
 
         /* 20051021, relaxation for omitted ResourceSource (bug-fix 70 rejection) */
 
@@ -748,4 +748,3 @@
         M331 (TS, 0x0A, 0x90, 0x90, 0x0160, 0x0160, "_TRA")
         M331 (TS, 0x0B, 0xB0, 0xB0, 0x0180, 0x0180, "_LEN")
     }
-

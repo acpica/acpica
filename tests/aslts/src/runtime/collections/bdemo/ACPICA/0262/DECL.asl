@@ -46,7 +46,7 @@
 
         Method (MAD7, 7, NotSerialized)
         {
-            Return (((((((Arg0 + Arg1) + Arg2) + 
+            Return (((((((Arg0 + Arg1) + Arg2) +
                 Arg3) + Arg4) + Arg5) + Arg6))
         }
 
@@ -71,4 +71,3 @@
         M000 ()
         CH03 ("", 0x00, 0x02, 0x44, 0x00)
     }
-

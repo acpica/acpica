@@ -566,4 +566,3 @@
             Concatenate ("Settings of ASLTS test suite 0x", Arg0, Debug)
         }
     }
-

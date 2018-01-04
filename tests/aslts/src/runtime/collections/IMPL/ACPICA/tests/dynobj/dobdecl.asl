@@ -117,13 +117,13 @@
             _TCI (C200, Local0)
             Name (P100, Package (0x10)
             {
-                0x01, 
-                0x02, 
-                0x03, 
-                0x04, 
-                0x05, 
-                0x06, 
-                0x07, 
+                0x01,
+                0x02,
+                0x03,
+                0x04,
+                0x05,
+                0x06,
+                0x07,
                 0x08
             })
             _TCI (C201, PP0A)
@@ -144,14 +144,14 @@
             _TCI (C200, Local0)
             Name (P101, Package (0x10)
             {
-                0x01, 
-                0x02, 
-                0x03, 
-                0x04, 
-                0x05, 
-                0x06, 
-                0x07, 
-                0x08, 
+                0x01,
+                0x02,
+                0x03,
+                0x04,
+                0x05,
+                0x06,
+                0x07,
+                0x08,
                 I000
             })
             _TCI (C201, PP0A)
@@ -288,14 +288,14 @@
             Debug = "IndexField"
             Field (R000, ByteAcc, NoLock, Preserve)
             {
-                F002,   8, 
+                F002,   8,
                 F003,   8
             }
 
             _TCI (C200, Local0)
             IndexField (F002, F003, ByteAcc, NoLock, Preserve)
             {
-                IF00,   8, 
+                IF00,   8,
                 IF01,   8
             }
 
@@ -466,4 +466,3 @@
 
         RST0 ()
     }
-

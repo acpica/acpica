@@ -1071,7 +1071,7 @@
             CH06 (Arg0, 0x77, 0x2F)
             /* Match */
 
-            Local1 = Match (DerefOf (P000 [0x00]), MTR, 0x00, MTR, 0x00, 
+            Local1 = Match (DerefOf (P000 [0x00]), MTR, 0x00, MTR, 0x00,
                 0x00)
             CH03 (TS, Z096, 0x2E, 0x056D, 0x00)
             Local1 = Match (Package (0x01)
@@ -1341,7 +1341,7 @@
             CH06 (Arg0, 0x77, 0x2F)
             /* Match */
 
-            Local1 = Match (DerefOf (Local0 = P000 [0x00]), MTR, 0x00, MTR, 0x00, 
+            Local1 = Match (DerefOf (Local0 = P000 [0x00]), MTR, 0x00, MTR, 0x00,
                 0x00)
             CH03 (TS, Z096, 0x35, 0x06C2, 0x00)
             Local1 = Match (Package (0x01)
@@ -2236,4 +2236,3 @@
         M008 (Concatenate (TS, "-m008"))
         RST0 ()
     }
-

@@ -43,4 +43,3 @@ DefinitionBlock ("misc", "DSDT", 1, "Intel", "Many", 0x00000001)
         Return (Local7)
     }
 }
-

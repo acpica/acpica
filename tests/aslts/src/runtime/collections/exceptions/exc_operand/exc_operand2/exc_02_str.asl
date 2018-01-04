@@ -216,7 +216,7 @@
             CH06 (Arg0, 0x20, 0x05)
             Store (DerefOf (P000 [0x00]) [0x00], Local1)
             CH03 (TS, Z094, 0x08, 0xDA, 0x00)
-            Local1 = Match (DerefOf (P000 [0x00]), MTR, 0x00, MTR, 0x00, 
+            Local1 = Match (DerefOf (P000 [0x00]), MTR, 0x00, MTR, 0x00,
                 0x00)
             CH06 (Arg0, 0x21, 0x2F)
             /* DeRefOf(Index(Package, Ind, Dest)) */
@@ -225,7 +225,7 @@
             CH06 (Arg0, 0x22, 0x05)
             Store (DerefOf (Local0 = P000 [0x00]) [0x00], Local1)
             CH03 (TS, Z094, 0x09, 0xE5, 0x00)
-            Local1 = Match (DerefOf (Local0 = P000 [0x00]), MTR, 0x00, MTR, 0x00, 
+            Local1 = Match (DerefOf (Local0 = P000 [0x00]), MTR, 0x00, MTR, 0x00,
                 0x00)
             CH06 (Arg0, 0x23, 0x2F)
         }
@@ -456,4 +456,3 @@
             M007 (TS)
         }
     }
-

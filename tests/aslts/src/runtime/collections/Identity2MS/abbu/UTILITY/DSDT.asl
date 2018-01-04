@@ -482,7 +482,7 @@ DefinitionBlock ("DSDT.aml", "DSDT", 1, "IBM   ", "TP-T20  ", 100930080)
                 {
                     Return (Package (0x02)
                     {
-                        0x0B, 
+                        0x0B,
                         0x04
                     })
                 }
@@ -490,7 +490,7 @@ DefinitionBlock ("DSDT.aml", "DSDT", 1, "IBM   ", "TP-T20  ", 100930080)
                 {
                     Return (Package (0x02)
                     {
-                        0x0B, 
+                        0x0B,
                         0x03
                     })
                 }
@@ -532,7 +532,7 @@ DefinitionBlock ("DSDT.aml", "DSDT", 1, "IBM   ", "TP-T20  ", 100930080)
                 {
                     Return (Package (0x02)
                     {
-                        0x0B, 
+                        0x0B,
                         0x04
                     })
                 }
@@ -540,7 +540,7 @@ DefinitionBlock ("DSDT.aml", "DSDT", 1, "IBM   ", "TP-T20  ", 100930080)
                 {
                     Return (Package (0x02)
                     {
-                        0x0B, 
+                        0x0B,
                         0x03
                     })
                 }
@@ -580,30 +580,30 @@ DefinitionBlock ("DSDT.aml", "DSDT", 1, "IBM   ", "TP-T20  ", 100930080)
             OperationRegion (X000, PCI_Config, 0x00, 0x0100)
             Field (X000, DWordAcc, NoLock, Preserve)
             {
-                Offset (0x59), 
-                PAM0,   8, 
-                PAM1,   8, 
-                PAM2,   8, 
-                PAM3,   8, 
-                PAM4,   8, 
-                PAM5,   8, 
-                PAM6,   8, 
-                DRB0,   8, 
-                DRB1,   8, 
-                DRB2,   8, 
-                DRB3,   8, 
-                DRB4,   8, 
-                DRB5,   8, 
-                DRB6,   8, 
-                DRB7,   8, 
-                Offset (0x7A), 
-                CREN,   1, 
+                Offset (0x59),
+                PAM0,   8,
+                PAM1,   8,
+                PAM2,   8,
+                PAM3,   8,
+                PAM4,   8,
+                PAM5,   8,
+                PAM6,   8,
+                DRB0,   8,
+                DRB1,   8,
+                DRB2,   8,
+                DRB3,   8,
+                DRB4,   8,
+                DRB5,   8,
+                DRB6,   8,
+                DRB7,   8,
+                Offset (0x7A),
+                CREN,   1,
                 Offset (0x7B)
             }
 
             Name (_PRW, Package (0x02)
             {
-                0x0B, 
+                0x0B,
                 0x04
             })
             Method (_PSW, 1, NotSerialized)
@@ -875,57 +875,57 @@ DefinitionBlock ("DSDT.aml", "DSDT", 1, "IBM   ", "TP-T20  ", 100930080)
             {
                 Package (0x04)
                 {
-                    0x0001FFFF, 
-                    0x00, 
-                    \_SB.LNKA, 
+                    0x0001FFFF,
+                    0x00,
+                    \_SB.LNKA,
                     0x00
-                }, 
+                },
 
                 Package (0x04)
                 {
-                    0x0002FFFF, 
-                    0x00, 
-                    \_SB.LNKA, 
+                    0x0002FFFF,
+                    0x00,
+                    \_SB.LNKA,
                     0x00
-                }, 
+                },
 
                 Package (0x04)
                 {
-                    0x0002FFFF, 
-                    0x01, 
-                    \_SB.LNKB, 
+                    0x0002FFFF,
+                    0x01,
+                    \_SB.LNKB,
                     0x00
-                }, 
+                },
 
                 Package (0x04)
                 {
-                    0x0003FFFF, 
-                    0x00, 
-                    \_SB.LNKC, 
+                    0x0003FFFF,
+                    0x00,
+                    \_SB.LNKC,
                     0x00
-                }, 
+                },
 
                 Package (0x04)
                 {
-                    0x0003FFFF, 
-                    0x01, 
-                    \_SB.LNKD, 
+                    0x0003FFFF,
+                    0x01,
+                    \_SB.LNKD,
                     0x00
-                }, 
+                },
 
                 Package (0x04)
                 {
-                    0x0005FFFF, 
-                    0x00, 
-                    \_SB.LNKA, 
+                    0x0005FFFF,
+                    0x00,
+                    \_SB.LNKA,
                     0x00
-                }, 
+                },
 
                 Package (0x04)
                 {
-                    0x0007FFFF, 
-                    0x03, 
-                    \_SB.LNKD, 
+                    0x0007FFFF,
+                    0x03,
+                    \_SB.LNKD,
                     0x00
                 }
             })
@@ -935,49 +935,49 @@ DefinitionBlock ("DSDT.aml", "DSDT", 1, "IBM   ", "TP-T20  ", 100930080)
                 OperationRegion (X140, PCI_Config, 0x40, 0x10)
                 Field (X140, DWordAcc, NoLock, Preserve)
                 {
-                    XPT0,   1, 
-                    XPI0,   1, 
-                    XPP0,   1, 
-                    XPD0,   1, 
-                    XPT1,   1, 
-                    XPI1,   1, 
-                    XPP1,   1, 
-                    XPD1,   1, 
-                    XPRT,   2, 
-                        ,   2, 
-                    XPIS,   2, 
-                    XPSE,   1, 
-                    XPE,    1, 
-                    XST0,   1, 
-                    XSI0,   1, 
-                    XSP0,   1, 
-                    XSD0,   1, 
-                    XST1,   1, 
-                    XSI1,   1, 
-                    XSP1,   1, 
-                    XSD1,   1, 
-                    XSRT,   2, 
-                        ,   2, 
-                    XSIS,   2, 
-                    XSSE,   1, 
-                    XSE,    1, 
-                    XVRT,   2, 
-                    XVIS,   2, 
-                    Offset (0x05), 
-                    Offset (0x08), 
-                    XEP0,   1, 
-                    XEP1,   1, 
-                    XES0,   1, 
-                    XES1,   1, 
-                    Offset (0x09), 
-                    Offset (0x0A), 
-                    XUP0,   2, 
-                        ,   2, 
-                    XUP1,   2, 
-                    Offset (0x0B), 
-                    XUS0,   2, 
-                        ,   2, 
-                    XUS1,   2, 
+                    XPT0,   1,
+                    XPI0,   1,
+                    XPP0,   1,
+                    XPD0,   1,
+                    XPT1,   1,
+                    XPI1,   1,
+                    XPP1,   1,
+                    XPD1,   1,
+                    XPRT,   2,
+                        ,   2,
+                    XPIS,   2,
+                    XPSE,   1,
+                    XPE,    1,
+                    XST0,   1,
+                    XSI0,   1,
+                    XSP0,   1,
+                    XSD0,   1,
+                    XST1,   1,
+                    XSI1,   1,
+                    XSP1,   1,
+                    XSD1,   1,
+                    XSRT,   2,
+                        ,   2,
+                    XSIS,   2,
+                    XSSE,   1,
+                    XSE,    1,
+                    XVRT,   2,
+                    XVIS,   2,
+                    Offset (0x05),
+                    Offset (0x08),
+                    XEP0,   1,
+                    XEP1,   1,
+                    XES0,   1,
+                    XES1,   1,
+                    Offset (0x09),
+                    Offset (0x0A),
+                    XUP0,   2,
+                        ,   2,
+                    XUP1,   2,
+                    Offset (0x0B),
+                    XUS0,   2,
+                        ,   2,
+                    XUS1,   2,
                     Offset (0x0C)
                 }
 
@@ -1467,61 +1467,61 @@ DefinitionBlock ("DSDT.aml", "DSDT", 1, "IBM   ", "TP-T20  ", 100930080)
                 OperationRegion (X3DR, PCI_Config, 0x5C, 0x20)
                 Field (X3DR, DWordAcc, NoLock, Preserve)
                 {
-                        ,   1, 
-                        ,   2, 
-                        ,   1, 
-                        ,   1, 
-                        ,   2, 
-                    Offset (0x01), 
-                        ,   2, 
-                        ,   15, 
-                        ,   1, 
-                        ,   3, 
-                    XA0E,   1, 
-                    XM0E,   1, 
-                    XPE,    1, 
-                    X09A,   16, 
-                    X09M,   4, 
-                        ,   1, 
-                    X09E,   3, 
-                        ,   1, 
-                    XPA,    2, 
-                        ,   1, 
-                    XFA,    1, 
-                    XFE,    1, 
-                        ,   1, 
-                    Offset (0x08), 
-                    Offset (0x0B), 
-                    XU1A,   3, 
-                    XU1E,   1, 
-                    XU2A,   3, 
-                    XU2E,   1, 
-                    X12A,   16, 
-                    X12M,   4, 
-                    X12E,   1, 
-                    Offset (0x0F), 
-                    Offset (0x10), 
-                    X12O,   32, 
-                    X13A,   16, 
-                    X13M,   4, 
-                    X13E,   1, 
-                    Offset (0x17), 
-                    Offset (0x18), 
-                    X13O,   32, 
+                        ,   1,
+                        ,   2,
+                        ,   1,
+                        ,   1,
+                        ,   2,
+                    Offset (0x01),
+                        ,   2,
+                        ,   15,
+                        ,   1,
+                        ,   3,
+                    XA0E,   1,
+                    XM0E,   1,
+                    XPE,    1,
+                    X09A,   16,
+                    X09M,   4,
+                        ,   1,
+                    X09E,   3,
+                        ,   1,
+                    XPA,    2,
+                        ,   1,
+                    XFA,    1,
+                    XFE,    1,
+                        ,   1,
+                    Offset (0x08),
+                    Offset (0x0B),
+                    XU1A,   3,
+                    XU1E,   1,
+                    XU2A,   3,
+                    XU2E,   1,
+                    X12A,   16,
+                    X12M,   4,
+                    X12E,   1,
+                    Offset (0x0F),
+                    Offset (0x10),
+                    X12O,   32,
+                    X13A,   16,
+                    X13M,   4,
+                    X13E,   1,
+                    Offset (0x17),
+                    Offset (0x18),
+                    X13O,   32,
                     Offset (0x20)
                 }
 
                 OperationRegion (SMBC, PCI_Config, 0xD2, 0x01)
                 Field (SMBC, ByteAcc, NoLock, Preserve)
                 {
-                    SBHE,   1, 
+                    SBHE,   1,
                     SBIS,   3
                 }
 
                 OperationRegion (GLEN, SystemIO, 0x1020, 0x02)
                 Field (GLEN, WordAcc, NoLock, Preserve)
                 {
-                        ,   15, 
+                        ,   15,
                     BLEN,   1
                 }
             }
@@ -1536,7 +1536,7 @@ DefinitionBlock ("DSDT.aml", "DSDT", 1, "IBM   ", "TP-T20  ", 100930080)
 
                 Name (_PRW, Package (0x02)
                 {
-                    0x08, 
+                    0x08,
                     0x01
                 })
             }
@@ -1548,126 +1548,126 @@ DefinitionBlock ("DSDT.aml", "DSDT", 1, "IBM   ", "TP-T20  ", 100930080)
                 {
                     Package (0x04)
                     {
-                        0xFFFF, 
-                        0x00, 
-                        \_SB.LNKA, 
+                        0xFFFF,
+                        0x00,
+                        \_SB.LNKA,
                         0x00
-                    }, 
+                    },
 
                     Package (0x04)
                     {
-                        0xFFFF, 
-                        0x01, 
-                        \_SB.LNKB, 
+                        0xFFFF,
+                        0x01,
+                        \_SB.LNKB,
                         0x00
                     }
                 })
                 Name (EDX1, Buffer (0x80)
                 {
-                    0x00, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0x00, 
-                    0x24, 0x4D, 0x55, 0x0A, 0x01, 0x01, 0x01, 0x01, 
-                    0x23, 0x09, 0x01, 0x02, 0x80, 0x21, 0x18, 0x00, 
-                    0xEA, 0x0D, 0xFB, 0xA0, 0x57, 0x47, 0x98, 0x27, 
-                    0x12, 0x4D, 0x51, 0xA1, 0x08, 0x00, 0x00, 0x00, 
-                    0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 
-                    0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x64, 0x19, 
-                    0x00, 0x40, 0x41, 0x00, 0x26, 0x30, 0x18, 0x88, 
-                    0x36, 0x00, 0x0E, 0xCB, 0x10, 0x00, 0x00, 0x1A, 
-                    0x00, 0x00, 0x00, 0xFC, 0x00, 0x54, 0x68, 0x69, 
-                    0x6E, 0x6B, 0x50, 0x61, 0x64, 0x20, 0x4C, 0x43, 
-                    0x44, 0x20, 0x00, 0x00, 0x00, 0xFC, 0x00, 0x31, 
-                    0x30, 0x32, 0x34, 0x78, 0x37, 0x36, 0x38, 0x20, 
-                    0x20, 0x20, 0x20, 0x20, 0x00, 0x00, 0x00, 0x00, 
-                    0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 
+                    0x00, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0x00,
+                    0x24, 0x4D, 0x55, 0x0A, 0x01, 0x01, 0x01, 0x01,
+                    0x23, 0x09, 0x01, 0x02, 0x80, 0x21, 0x18, 0x00,
+                    0xEA, 0x0D, 0xFB, 0xA0, 0x57, 0x47, 0x98, 0x27,
+                    0x12, 0x4D, 0x51, 0xA1, 0x08, 0x00, 0x00, 0x00,
+                    0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00,
+                    0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x64, 0x19,
+                    0x00, 0x40, 0x41, 0x00, 0x26, 0x30, 0x18, 0x88,
+                    0x36, 0x00, 0x0E, 0xCB, 0x10, 0x00, 0x00, 0x1A,
+                    0x00, 0x00, 0x00, 0xFC, 0x00, 0x54, 0x68, 0x69,
+                    0x6E, 0x6B, 0x50, 0x61, 0x64, 0x20, 0x4C, 0x43,
+                    0x44, 0x20, 0x00, 0x00, 0x00, 0xFC, 0x00, 0x31,
+                    0x30, 0x32, 0x34, 0x78, 0x37, 0x36, 0x38, 0x20,
+                    0x20, 0x20, 0x20, 0x20, 0x00, 0x00, 0x00, 0x00,
+                    0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00,
                     0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x33
                 })
                 Name (EDX2, Buffer (0x0100)
                 {
-                    0x00, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0x00, 
-                    0x24, 0x4D, 0x55, 0x0A, 0x01, 0x01, 0x01, 0x01, 
-                    0x23, 0x09, 0x01, 0x02, 0x80, 0x21, 0x18, 0x00, 
-                    0xEA, 0x0D, 0xFB, 0xA0, 0x57, 0x47, 0x98, 0x27, 
-                    0x12, 0x4D, 0x51, 0xA1, 0x08, 0x00, 0x00, 0x00, 
-                    0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 
-                    0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x64, 0x19, 
-                    0x00, 0x40, 0x41, 0x00, 0x26, 0x30, 0x18, 0x88, 
-                    0x36, 0x00, 0x0E, 0xCB, 0x10, 0x00, 0x00, 0x1A, 
-                    0x00, 0x00, 0x00, 0xFC, 0x00, 0x54, 0x68, 0x69, 
-                    0x6E, 0x6B, 0x50, 0x61, 0x64, 0x20, 0x4C, 0x43, 
-                    0x44, 0x20, 0x00, 0x00, 0x00, 0xFC, 0x00, 0x31, 
-                    0x30, 0x32, 0x34, 0x78, 0x37, 0x36, 0x38, 0x20, 
-                    0x20, 0x20, 0x20, 0x20, 0x00, 0x00, 0x00, 0x00, 
-                    0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 
-                    0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x33, 
-                    0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 
-                    0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 
-                    0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 
-                    0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 
-                    0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 
-                    0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 
-                    0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 
-                    0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 
-                    0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 
-                    0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 
-                    0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 
-                    0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 
-                    0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 
-                    0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 
-                    0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 
+                    0x00, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0x00,
+                    0x24, 0x4D, 0x55, 0x0A, 0x01, 0x01, 0x01, 0x01,
+                    0x23, 0x09, 0x01, 0x02, 0x80, 0x21, 0x18, 0x00,
+                    0xEA, 0x0D, 0xFB, 0xA0, 0x57, 0x47, 0x98, 0x27,
+                    0x12, 0x4D, 0x51, 0xA1, 0x08, 0x00, 0x00, 0x00,
+                    0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00,
+                    0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x64, 0x19,
+                    0x00, 0x40, 0x41, 0x00, 0x26, 0x30, 0x18, 0x88,
+                    0x36, 0x00, 0x0E, 0xCB, 0x10, 0x00, 0x00, 0x1A,
+                    0x00, 0x00, 0x00, 0xFC, 0x00, 0x54, 0x68, 0x69,
+                    0x6E, 0x6B, 0x50, 0x61, 0x64, 0x20, 0x4C, 0x43,
+                    0x44, 0x20, 0x00, 0x00, 0x00, 0xFC, 0x00, 0x31,
+                    0x30, 0x32, 0x34, 0x78, 0x37, 0x36, 0x38, 0x20,
+                    0x20, 0x20, 0x20, 0x20, 0x00, 0x00, 0x00, 0x00,
+                    0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00,
+                    0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x33,
+                    0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00,
+                    0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00,
+                    0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00,
+                    0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00,
+                    0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00,
+                    0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00,
+                    0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00,
+                    0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00,
+                    0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00,
+                    0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00,
+                    0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00,
+                    0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00,
+                    0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00,
+                    0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00,
+                    0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00,
                     0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00
                 })
                 Name (EDT1, Buffer (0x80)
                 {
-                    0x00, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0x00, 
-                    0xC1, 0xD0, 0xFE, 0x09, 0x01, 0x01, 0x01, 0x01, 
-                    0x23, 0x09, 0x01, 0x02, 0x00, 0x00, 0x00, 0x00, 
-                    0xEA, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 
-                    0x00, 0x00, 0x00, 0xA1, 0x08, 0x00, 0x00, 0x00, 
-                    0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 
-                    0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 
-                    0x00, 0x00, 0x31, 0x58, 0x1C, 0x20, 0x28, 0x80, 
-                    0x01, 0x00, 0xF6, 0xB8, 0x00, 0x00, 0x00, 0x1A, 
-                    0x00, 0x00, 0x00, 0xFC, 0x00, 0x54, 0x68, 0x69, 
-                    0x6E, 0x6B, 0x50, 0x61, 0x64, 0x20, 0x54, 0x56, 
-                    0x20, 0x20, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 
-                    0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 
-                    0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 
-                    0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 
+                    0x00, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0x00,
+                    0xC1, 0xD0, 0xFE, 0x09, 0x01, 0x01, 0x01, 0x01,
+                    0x23, 0x09, 0x01, 0x02, 0x00, 0x00, 0x00, 0x00,
+                    0xEA, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00,
+                    0x00, 0x00, 0x00, 0xA1, 0x08, 0x00, 0x00, 0x00,
+                    0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00,
+                    0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00,
+                    0x00, 0x00, 0x31, 0x58, 0x1C, 0x20, 0x28, 0x80,
+                    0x01, 0x00, 0xF6, 0xB8, 0x00, 0x00, 0x00, 0x1A,
+                    0x00, 0x00, 0x00, 0xFC, 0x00, 0x54, 0x68, 0x69,
+                    0x6E, 0x6B, 0x50, 0x61, 0x64, 0x20, 0x54, 0x56,
+                    0x20, 0x20, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00,
+                    0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00,
+                    0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00,
+                    0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00,
                     0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x59
                 })
                 Name (EDT2, Buffer (0x0100)
                 {
-                    0x00, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0x00, 
-                    0xC1, 0xD0, 0xFE, 0x09, 0x01, 0x01, 0x01, 0x01, 
-                    0x23, 0x09, 0x01, 0x02, 0x00, 0x00, 0x00, 0x00, 
-                    0xEA, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 
-                    0x00, 0x00, 0x00, 0xA1, 0x08, 0x00, 0x00, 0x00, 
-                    0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 
-                    0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 
-                    0x00, 0x00, 0x31, 0x58, 0x1C, 0x20, 0x28, 0x80, 
-                    0x01, 0x00, 0xF6, 0xB8, 0x00, 0x00, 0x00, 0x1A, 
-                    0x00, 0x00, 0x00, 0xFC, 0x00, 0x54, 0x68, 0x69, 
-                    0x6E, 0x6B, 0x50, 0x61, 0x64, 0x20, 0x54, 0x56, 
-                    0x20, 0x20, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 
-                    0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 
-                    0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 
-                    0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 
-                    0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x59, 
-                    0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 
-                    0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 
-                    0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 
-                    0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 
-                    0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 
-                    0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 
-                    0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 
-                    0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 
-                    0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 
-                    0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 
-                    0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 
-                    0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 
-                    0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 
-                    0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 
-                    0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 
+                    0x00, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0x00,
+                    0xC1, 0xD0, 0xFE, 0x09, 0x01, 0x01, 0x01, 0x01,
+                    0x23, 0x09, 0x01, 0x02, 0x00, 0x00, 0x00, 0x00,
+                    0xEA, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00,
+                    0x00, 0x00, 0x00, 0xA1, 0x08, 0x00, 0x00, 0x00,
+                    0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00,
+                    0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00,
+                    0x00, 0x00, 0x31, 0x58, 0x1C, 0x20, 0x28, 0x80,
+                    0x01, 0x00, 0xF6, 0xB8, 0x00, 0x00, 0x00, 0x1A,
+                    0x00, 0x00, 0x00, 0xFC, 0x00, 0x54, 0x68, 0x69,
+                    0x6E, 0x6B, 0x50, 0x61, 0x64, 0x20, 0x54, 0x56,
+                    0x20, 0x20, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00,
+                    0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00,
+                    0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00,
+                    0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00,
+                    0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x59,
+                    0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00,
+                    0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00,
+                    0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00,
+                    0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00,
+                    0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00,
+                    0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00,
+                    0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00,
+                    0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00,
+                    0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00,
+                    0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00,
+                    0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00,
+                    0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00,
+                    0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00,
+                    0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00,
+                    0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00,
                     0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00
                 })
                 Mutex (MDGS, 0x07)
@@ -1818,8 +1818,8 @@ DefinitionBlock ("DSDT.aml", "DSDT", 1, "IBM   ", "TP-T20  ", 100930080)
                     {
                         Return (Package (0x03)
                         {
-                            0x00010110, 
-                            0x00010100, 
+                            0x00010110,
+                            0x00010100,
                             0x00010200
                         })
                     }
@@ -2118,46 +2118,46 @@ DefinitionBlock ("DSDT.aml", "DSDT", 1, "IBM   ", "TP-T20  ", 100930080)
                 OperationRegion (PIRQ, PCI_Config, 0x60, 0x60)
                 Field (PIRQ, AnyAcc, NoLock, Preserve)
                 {
-                    PIRA,   8, 
-                    PIRB,   8, 
-                    PIRC,   8, 
-                    PIRD,   8, 
-                    SIRQ,   8, 
-                    Offset (0x16), 
-                    CH00,   3, 
-                        ,   4, 
-                    FE00,   1, 
-                    CH01,   3, 
-                        ,   4, 
-                    FE01,   1, 
-                    Offset (0x22), 
-                    P21E,   3, 
-                    Offset (0x23), 
-                    Offset (0x50), 
-                        ,   1, 
-                        ,   1, 
-                        ,   1, 
-                        ,   1, 
-                    GCR4,   1, 
-                        ,   1, 
-                        ,   1, 
-                    Offset (0x51), 
-                        ,   1, 
-                        ,   1, 
-                        ,   1, 
-                        ,   1, 
-                    GCRC,   1, 
-                        ,   1, 
-                        ,   1, 
-                    Offset (0x52), 
-                        ,   1, 
-                        ,   1, 
-                        ,   1, 
-                        ,   1, 
-                        ,   1, 
-                        ,   1, 
-                    SUS2,   1, 
-                    Offset (0x54), 
+                    PIRA,   8,
+                    PIRB,   8,
+                    PIRC,   8,
+                    PIRD,   8,
+                    SIRQ,   8,
+                    Offset (0x16),
+                    CH00,   3,
+                        ,   4,
+                    FE00,   1,
+                    CH01,   3,
+                        ,   4,
+                    FE01,   1,
+                    Offset (0x22),
+                    P21E,   3,
+                    Offset (0x23),
+                    Offset (0x50),
+                        ,   1,
+                        ,   1,
+                        ,   1,
+                        ,   1,
+                    GCR4,   1,
+                        ,   1,
+                        ,   1,
+                    Offset (0x51),
+                        ,   1,
+                        ,   1,
+                        ,   1,
+                        ,   1,
+                    GCRC,   1,
+                        ,   1,
+                        ,   1,
+                    Offset (0x52),
+                        ,   1,
+                        ,   1,
+                        ,   1,
+                        ,   1,
+                        ,   1,
+                        ,   1,
+                    SUS2,   1,
+                    Offset (0x54),
                     Offset (0x60)
                 }
 
@@ -2275,42 +2275,42 @@ DefinitionBlock ("DSDT.aml", "DSDT", 1, "IBM   ", "TP-T20  ", 100930080)
                 OperationRegion (IMGA, SystemIO, 0x15EC, 0x04)
                 Field (IMGA, ByteAcc, NoLock, Preserve)
                 {
-                    IND0,   8, 
-                    DAT0,   8, 
-                    IND1,   8, 
+                    IND0,   8,
+                    DAT0,   8,
+                    IND1,   8,
                     DAT1,   8
                 }
 
                 IndexField (IND0, DAT0, ByteAcc, NoLock, Preserve)
                 {
-                    Offset (0x7F), 
+                    Offset (0x7F),
                     ACI,    8
                 }
 
                 IndexField (IND1, DAT1, ByteAcc, NoLock, Preserve)
                 {
-                        ,   4, 
-                    VDPW,   1, 
-                    CBPW,   1, 
-                    BREN,   1, 
-                    Offset (0x01), 
-                    Offset (0x07), 
-                        ,   2, 
-                    SSBY,   1, 
-                    Offset (0x08), 
-                    Offset (0x21), 
-                        ,   1, 
-                        ,   1, 
-                    BTON,   1, 
-                        ,   1, 
-                    Offset (0x22), 
-                    Offset (0x2D), 
-                    BUSC,   1, 
-                    BUSD,   1, 
-                    SCIS,   1, 
-                    SCIR,   2, 
-                    SLCK,   1, 
-                    WOLE,   1, 
+                        ,   4,
+                    VDPW,   1,
+                    CBPW,   1,
+                    BREN,   1,
+                    Offset (0x01),
+                    Offset (0x07),
+                        ,   2,
+                    SSBY,   1,
+                    Offset (0x08),
+                    Offset (0x21),
+                        ,   1,
+                        ,   1,
+                    BTON,   1,
+                        ,   1,
+                    Offset (0x22),
+                    Offset (0x2D),
+                    BUSC,   1,
+                    BUSD,   1,
+                    SCIS,   1,
+                    SCIR,   2,
+                    SLCK,   1,
+                    WOLE,   1,
                     Offset (0x2E)
                 }
 
@@ -2362,53 +2362,53 @@ DefinitionBlock ("DSDT.aml", "DSDT", 1, "IBM   ", "TP-T20  ", 100930080)
                 OperationRegion (NCFG, SystemIO, 0x2E, 0x02)
                 Field (NCFG, ByteAcc, NoLock, Preserve)
                 {
-                    INDX,   8, 
+                    INDX,   8,
                     DATA,   8
                 }
 
                 IndexField (INDX, DATA, ByteAcc, NoLock, Preserve)
                 {
-                    FER,    8, 
-                    FAR,    8, 
-                    PTR,    8, 
-                    FCR,    8, 
-                    PCR,    8, 
-                    Offset (0x06), 
-                    PMC,    8, 
-                    TUP,    8, 
-                    SID,    8, 
-                    ASC,    8, 
-                    S0LA,   8, 
-                    S0CF,   8, 
-                    S1LA,   8, 
-                    S1CF,   8, 
-                    Offset (0x10), 
-                    S0HA,   8, 
-                    S1HA,   8, 
-                    SCF0,   8, 
-                    Offset (0x18), 
-                    SCF1,   8, 
-                    Offset (0x1B), 
-                    PNP0,   8, 
-                    PNP1,   8, 
-                    Offset (0x40), 
-                    SCF2,   8, 
-                    PNP2,   8, 
-                    PBAL,   8, 
-                    PBAH,   8, 
-                    U1AL,   8, 
-                    U1AH,   8, 
-                    U2AL,   8, 
-                    U2AH,   8, 
-                    FBAL,   8, 
-                    FBAH,   8, 
-                    SBAL,   8, 
-                    SBAH,   8, 
-                    IRQ1,   8, 
-                    IRQ2,   8, 
-                    IRQ3,   8, 
-                    PNP3,   8, 
-                    SCF3,   8, 
+                    FER,    8,
+                    FAR,    8,
+                    PTR,    8,
+                    FCR,    8,
+                    PCR,    8,
+                    Offset (0x06),
+                    PMC,    8,
+                    TUP,    8,
+                    SID,    8,
+                    ASC,    8,
+                    S0LA,   8,
+                    S0CF,   8,
+                    S1LA,   8,
+                    S1CF,   8,
+                    Offset (0x10),
+                    S0HA,   8,
+                    S1HA,   8,
+                    SCF0,   8,
+                    Offset (0x18),
+                    SCF1,   8,
+                    Offset (0x1B),
+                    PNP0,   8,
+                    PNP1,   8,
+                    Offset (0x40),
+                    SCF2,   8,
+                    PNP2,   8,
+                    PBAL,   8,
+                    PBAH,   8,
+                    U1AL,   8,
+                    U1AH,   8,
+                    U2AL,   8,
+                    U2AH,   8,
+                    FBAL,   8,
+                    FBAH,   8,
+                    SBAL,   8,
+                    SBAH,   8,
+                    IRQ1,   8,
+                    IRQ2,   8,
+                    IRQ3,   8,
+                    PNP3,   8,
+                    SCF3,   8,
                     CLK,    8
                 }
 
@@ -2504,12 +2504,12 @@ DefinitionBlock ("DSDT.aml", "DSDT", 1, "IBM   ", "TP-T20  ", 100930080)
                     Name (_EJD, "_SB.PCI0.DOCK")
                     Name (_PR0, Package (0x02)
                     {
-                        PSIO, 
+                        PSIO,
                         PSER
                     })
                     Name (_PRW, Package (0x02)
                     {
-                        0x0B, 
+                        0x0B,
                         0x03
                     })
                     Method (_PSW, 1, NotSerialized)
@@ -3491,228 +3491,228 @@ DefinitionBlock ("DSDT.aml", "DSDT", 1, "IBM   ", "TP-T20  ", 100930080)
                     OperationRegion (ECOR, EmbeddedControl, 0x00, 0x0100)
                     Field (ECOR, ByteAcc, Lock, Preserve)
                     {
-                            ,   1, 
-                        HCGA,   1, 
-                            ,   1, 
-                            ,   1, 
-                            ,   1, 
-                            ,   1, 
-                        HCAC,   1, 
-                        Offset (0x01), 
-                            ,   1, 
-                        BTCM,   1, 
-                            ,   1, 
-                            ,   1, 
-                            ,   1, 
-                        HCAD,   1, 
-                        BTPC,   1, 
-                        Offset (0x02), 
-                        Offset (0x03), 
-                        Offset (0x04), 
-                            ,   1, 
-                            ,   1, 
-                            ,   1, 
-                            ,   1, 
-                            ,   1, 
-                            ,   1, 
-                            ,   1, 
-                        Offset (0x05), 
-                        HSPA,   1, 
-                            ,   1, 
-                            ,   1, 
-                            ,   1, 
-                            ,   1, 
-                            ,   1, 
-                            ,   1, 
-                        Offset (0x06), 
-                        HSUN,   8, 
-                        HSRP,   8, 
-                        HACC,   8, 
-                        Offset (0x0A), 
-                        Offset (0x0B), 
-                        Offset (0x0C), 
-                        HLCL,   8, 
-                        HLBL,   8, 
-                        HLMS,   8, 
-                        HICA,   8, 
-                        HAM0,   8, 
-                        HAM1,   8, 
-                        HAM2,   8, 
-                        HAM3,   8, 
-                        HAM4,   8, 
-                        HAM5,   8, 
-                        HAM6,   8, 
-                        HAM7,   8, 
-                        HAM8,   8, 
-                        HAM9,   8, 
-                        HAMA,   8, 
-                        HAMB,   8, 
-                        HAMC,   8, 
-                        HAMD,   8, 
-                        HAME,   8, 
-                        HAMF,   8, 
-                        HT00,   1, 
-                        HT01,   1, 
-                        HT02,   1, 
-                            ,   4, 
-                        HT0E,   1, 
-                        HT10,   1, 
-                        HT11,   1, 
-                        HT12,   1, 
-                            ,   4, 
-                        HT1E,   1, 
-                        HT20,   1, 
-                        HT21,   1, 
-                        HT22,   1, 
-                            ,   4, 
-                        HT2E,   1, 
-                        HT30,   1, 
-                        HT31,   1, 
-                        HT32,   1, 
-                            ,   4, 
-                        HT3E,   1, 
-                        HT40,   1, 
-                        HT41,   1, 
-                        HT42,   1, 
-                            ,   4, 
-                        HT4E,   1, 
-                        HT50,   1, 
-                        HT51,   1, 
-                        HT52,   1, 
-                            ,   4, 
-                        HT5E,   1, 
-                        HT60,   1, 
-                        HT61,   1, 
-                        HT62,   1, 
-                            ,   4, 
-                        HT6E,   1, 
-                        HT70,   1, 
-                        HT71,   1, 
-                        HT72,   1, 
-                            ,   4, 
-                        HT7E,   1, 
-                        HDID,   8, 
-                        Offset (0x2A), 
-                        Offset (0x2B), 
-                        HT0H,   8, 
-                        HT0L,   8, 
-                        HT1H,   8, 
-                        HT1L,   8, 
-                        HFSP,   8, 
-                            ,   5, 
-                            ,   1, 
-                        HMUT,   1, 
-                        Offset (0x31), 
-                        Offset (0x32), 
-                        HWPM,   1, 
-                        HWLB,   1, 
-                        HWLO,   1, 
-                        HWDK,   1, 
-                        HWFN,   1, 
-                        HWBT,   1, 
-                        HWRI,   1, 
-                        HWBU,   1, 
-                        Offset (0x34), 
-                            ,   1, 
-                            ,   1, 
-                            ,   1, 
-                            ,   1, 
-                            ,   1, 
-                            ,   1, 
-                            ,   1, 
-                        Offset (0x35), 
-                        Offset (0x36), 
-                            ,   1, 
-                        BTWK,   1, 
-                        HPLD,   1, 
-                            ,   1, 
-                        HPAC,   1, 
-                        BTST,   1, 
-                        Offset (0x37), 
-                        HPBU,   1, 
-                            ,   1, 
-                            ,   1, 
-                            ,   1, 
-                            ,   1, 
-                            ,   1, 
-                            ,   1, 
-                        HPNF,   1, 
-                        HB0L,   4, 
-                            ,   1, 
-                        HB0C,   1, 
-                        HB0D,   1, 
-                        HB0A,   1, 
-                        HB1L,   4, 
-                            ,   1, 
-                        HB1C,   1, 
-                        HB1D,   1, 
-                        HB1A,   1, 
-                        HCMU,   1, 
-                            ,   1, 
-                            ,   1, 
-                            ,   1, 
-                        HCSL,   2, 
-                            ,   1, 
-                        Offset (0x3B), 
-                            ,   1, 
-                        KBLT,   1, 
-                        BTPW,   1, 
-                        BTDT,   1, 
-                        Offset (0x3C), 
-                        Offset (0x3D), 
-                        Offset (0x3E), 
-                        Offset (0x46), 
-                        Offset (0x47), 
-                            ,   4, 
-                            ,   1, 
-                            ,   1, 
-                            ,   1, 
-                        Offset (0x48), 
-                            ,   4, 
-                        Offset (0x49), 
-                        Offset (0x4A), 
-                        Offset (0x4C), 
-                        Offset (0x4E), 
-                        HWAK,   8, 
-                        Offset (0x50), 
-                        Offset (0x75), 
-                        Offset (0x78), 
-                        TMP0,   8, 
-                        TMP1,   8, 
-                        TMP2,   8, 
-                        TMP3,   8, 
-                        TMP4,   8, 
-                        TMP5,   8, 
-                        TMP6,   8, 
-                        TMP7,   8, 
-                        Offset (0x82), 
-                        CP4E,   8, 
-                        HFNI,   8, 
-                        HKBD,   1, 
-                        HPHT,   1, 
-                        Offset (0x85), 
-                        Offset (0xC0), 
-                        Offset (0xC2), 
-                        Offset (0xC4), 
-                        Offset (0xD0), 
-                        Offset (0xE0), 
-                        Offset (0xE8), 
-                        Offset (0xEA), 
-                        Offset (0xEB), 
-                        Offset (0xEC), 
-                            ,   1, 
-                            ,   1, 
-                            ,   2, 
-                            ,   1, 
-                            ,   1, 
-                            ,   1, 
-                        Offset (0xED), 
-                            ,   1, 
-                        Offset (0xEE), 
-                            ,   4, 
-                        Offset (0xEF), 
-                        Offset (0xF0), 
-                        Offset (0xF8), 
+                            ,   1,
+                        HCGA,   1,
+                            ,   1,
+                            ,   1,
+                            ,   1,
+                            ,   1,
+                        HCAC,   1,
+                        Offset (0x01),
+                            ,   1,
+                        BTCM,   1,
+                            ,   1,
+                            ,   1,
+                            ,   1,
+                        HCAD,   1,
+                        BTPC,   1,
+                        Offset (0x02),
+                        Offset (0x03),
+                        Offset (0x04),
+                            ,   1,
+                            ,   1,
+                            ,   1,
+                            ,   1,
+                            ,   1,
+                            ,   1,
+                            ,   1,
+                        Offset (0x05),
+                        HSPA,   1,
+                            ,   1,
+                            ,   1,
+                            ,   1,
+                            ,   1,
+                            ,   1,
+                            ,   1,
+                        Offset (0x06),
+                        HSUN,   8,
+                        HSRP,   8,
+                        HACC,   8,
+                        Offset (0x0A),
+                        Offset (0x0B),
+                        Offset (0x0C),
+                        HLCL,   8,
+                        HLBL,   8,
+                        HLMS,   8,
+                        HICA,   8,
+                        HAM0,   8,
+                        HAM1,   8,
+                        HAM2,   8,
+                        HAM3,   8,
+                        HAM4,   8,
+                        HAM5,   8,
+                        HAM6,   8,
+                        HAM7,   8,
+                        HAM8,   8,
+                        HAM9,   8,
+                        HAMA,   8,
+                        HAMB,   8,
+                        HAMC,   8,
+                        HAMD,   8,
+                        HAME,   8,
+                        HAMF,   8,
+                        HT00,   1,
+                        HT01,   1,
+                        HT02,   1,
+                            ,   4,
+                        HT0E,   1,
+                        HT10,   1,
+                        HT11,   1,
+                        HT12,   1,
+                            ,   4,
+                        HT1E,   1,
+                        HT20,   1,
+                        HT21,   1,
+                        HT22,   1,
+                            ,   4,
+                        HT2E,   1,
+                        HT30,   1,
+                        HT31,   1,
+                        HT32,   1,
+                            ,   4,
+                        HT3E,   1,
+                        HT40,   1,
+                        HT41,   1,
+                        HT42,   1,
+                            ,   4,
+                        HT4E,   1,
+                        HT50,   1,
+                        HT51,   1,
+                        HT52,   1,
+                            ,   4,
+                        HT5E,   1,
+                        HT60,   1,
+                        HT61,   1,
+                        HT62,   1,
+                            ,   4,
+                        HT6E,   1,
+                        HT70,   1,
+                        HT71,   1,
+                        HT72,   1,
+                            ,   4,
+                        HT7E,   1,
+                        HDID,   8,
+                        Offset (0x2A),
+                        Offset (0x2B),
+                        HT0H,   8,
+                        HT0L,   8,
+                        HT1H,   8,
+                        HT1L,   8,
+                        HFSP,   8,
+                            ,   5,
+                            ,   1,
+                        HMUT,   1,
+                        Offset (0x31),
+                        Offset (0x32),
+                        HWPM,   1,
+                        HWLB,   1,
+                        HWLO,   1,
+                        HWDK,   1,
+                        HWFN,   1,
+                        HWBT,   1,
+                        HWRI,   1,
+                        HWBU,   1,
+                        Offset (0x34),
+                            ,   1,
+                            ,   1,
+                            ,   1,
+                            ,   1,
+                            ,   1,
+                            ,   1,
+                            ,   1,
+                        Offset (0x35),
+                        Offset (0x36),
+                            ,   1,
+                        BTWK,   1,
+                        HPLD,   1,
+                            ,   1,
+                        HPAC,   1,
+                        BTST,   1,
+                        Offset (0x37),
+                        HPBU,   1,
+                            ,   1,
+                            ,   1,
+                            ,   1,
+                            ,   1,
+                            ,   1,
+                            ,   1,
+                        HPNF,   1,
+                        HB0L,   4,
+                            ,   1,
+                        HB0C,   1,
+                        HB0D,   1,
+                        HB0A,   1,
+                        HB1L,   4,
+                            ,   1,
+                        HB1C,   1,
+                        HB1D,   1,
+                        HB1A,   1,
+                        HCMU,   1,
+                            ,   1,
+                            ,   1,
+                            ,   1,
+                        HCSL,   2,
+                            ,   1,
+                        Offset (0x3B),
+                            ,   1,
+                        KBLT,   1,
+                        BTPW,   1,
+                        BTDT,   1,
+                        Offset (0x3C),
+                        Offset (0x3D),
+                        Offset (0x3E),
+                        Offset (0x46),
+                        Offset (0x47),
+                            ,   4,
+                            ,   1,
+                            ,   1,
+                            ,   1,
+                        Offset (0x48),
+                            ,   4,
+                        Offset (0x49),
+                        Offset (0x4A),
+                        Offset (0x4C),
+                        Offset (0x4E),
+                        HWAK,   8,
+                        Offset (0x50),
+                        Offset (0x75),
+                        Offset (0x78),
+                        TMP0,   8,
+                        TMP1,   8,
+                        TMP2,   8,
+                        TMP3,   8,
+                        TMP4,   8,
+                        TMP5,   8,
+                        TMP6,   8,
+                        TMP7,   8,
+                        Offset (0x82),
+                        CP4E,   8,
+                        HFNI,   8,
+                        HKBD,   1,
+                        HPHT,   1,
+                        Offset (0x85),
+                        Offset (0xC0),
+                        Offset (0xC2),
+                        Offset (0xC4),
+                        Offset (0xD0),
+                        Offset (0xE0),
+                        Offset (0xE8),
+                        Offset (0xEA),
+                        Offset (0xEB),
+                        Offset (0xEC),
+                            ,   1,
+                            ,   1,
+                            ,   2,
+                            ,   1,
+                            ,   1,
+                            ,   1,
+                        Offset (0xED),
+                            ,   1,
+                        Offset (0xEE),
+                            ,   4,
+                        Offset (0xEF),
+                        Offset (0xF0),
+                        Offset (0xF8),
                         Offset (0x100)
                     }
 
@@ -4409,18 +4409,18 @@ DefinitionBlock ("DSDT.aml", "DSDT", 1, "IBM   ", "TP-T20  ", 100930080)
 
                     Name (BT0I, Package (0x0D)
                     {
-                        0x00, 
-                        0x00, 
-                        0x00, 
-                        0x01, 
-                        0x2A30, 
-                        0x00, 
-                        0x00, 
-                        0x01, 
-                        0x01, 
-                        "ThinkPad Battery", 
-                        "", 
-                        "LION", 
+                        0x00,
+                        0x00,
+                        0x00,
+                        0x01,
+                        0x2A30,
+                        0x00,
+                        0x00,
+                        0x01,
+                        0x01,
+                        "ThinkPad Battery",
+                        "",
+                        "LION",
                         "IBM Corporation "
                     })
                     Name (BT0P, Package (0x04) {})
@@ -4606,18 +4606,18 @@ DefinitionBlock ("DSDT.aml", "DSDT", 1, "IBM   ", "TP-T20  ", 100930080)
 
                     Name (BT1I, Package (0x0D)
                     {
-                        0x00, 
-                        0x00, 
-                        0x00, 
-                        0x01, 
-                        0x2A30, 
-                        0x00, 
-                        0x00, 
-                        0x01, 
-                        0x01, 
-                        "ThinkPad Battery", 
-                        "", 
-                        "LION", 
+                        0x00,
+                        0x00,
+                        0x00,
+                        0x01,
+                        0x2A30,
+                        0x00,
+                        0x00,
+                        0x01,
+                        0x01,
+                        "ThinkPad Battery",
+                        "",
+                        "LION",
                         "IBM Corporation "
                     })
                     Name (BT1P, Package (0x04) {})
@@ -4848,74 +4848,74 @@ DefinitionBlock ("DSDT.aml", "DSDT", 1, "IBM   ", "TP-T20  ", 100930080)
                     {
                         Field (ECOR, ByteAcc, Lock, Preserve)
                         {
-                            Offset (0x50), 
-                            HMPR,   8, 
-                            HMST,   5, 
-                                ,   1, 
-                            HMAR,   1, 
-                            HMDN,   1, 
-                            HMAD,   8, 
-                            HMCM,   8, 
-                            HMDT,   8, 
-                            Offset (0x74), 
+                            Offset (0x50),
+                            HMPR,   8,
+                            HMST,   5,
+                                ,   1,
+                            HMAR,   1,
+                            HMDN,   1,
+                            HMAD,   8,
+                            HMCM,   8,
+                            HMDT,   8,
+                            Offset (0x74),
                             HMBC,   8
                         }
 
                         Field (ECOR, ByteAcc, Lock, Preserve)
                         {
-                            Offset (0x54), 
-                            HBPU,   8, 
-                            Offset (0x56), 
-                            HBST,   8, 
-                            HBID,   4, 
-                            Offset (0x58), 
-                            HBRC,   32, 
-                            HBFC,   32, 
-                            HBCC,   32, 
-                            HBVL,   16, 
-                            HBEC,   16, 
-                            HBBT,   16, 
-                            HBNF,   16, 
-                            HBTC,   16, 
-                            HBCT,   16, 
-                            Offset (0x74), 
+                            Offset (0x54),
+                            HBPU,   8,
+                            Offset (0x56),
+                            HBST,   8,
+                            HBID,   4,
+                            Offset (0x58),
+                            HBRC,   32,
+                            HBFC,   32,
+                            HBCC,   32,
+                            HBVL,   16,
+                            HBEC,   16,
+                            HBBT,   16,
+                            HBNF,   16,
+                            HBTC,   16,
+                            HBCT,   16,
+                            Offset (0x74),
                             Offset (0x100)
                         }
 
                         Field (ECOR, ByteAcc, Lock, Preserve)
                         {
-                            Offset (0x54), 
-                            HBTS,   8, 
-                            HBAF,   1, 
-                            Offset (0x56), 
-                            HBSD,   16, 
-                            HBDT,   16, 
-                            HBH0,   16, 
-                            HBL0,   16, 
-                            HBH1,   16, 
-                            HBL1,   16, 
-                            HBH2,   16, 
+                            Offset (0x54),
+                            HBTS,   8,
+                            HBAF,   1,
+                            Offset (0x56),
+                            HBSD,   16,
+                            HBDT,   16,
+                            HBH0,   16,
+                            HBL0,   16,
+                            HBH1,   16,
+                            HBL1,   16,
+                            HBH2,   16,
                             HBL2,   16
                         }
 
                         Field (ECOR, ByteAcc, Lock, Preserve)
                         {
-                            Offset (0x54), 
-                            HF_Z,   8, 
-                            HF_D,   8, 
-                            HZIP,   8, 
-                            HDVD,   8, 
-                            HHFD,   8, 
-                            HF_H,   8, 
-                            HHDD,   8, 
-                            HADP,   8, 
-                            HLS,    8, 
-                            HF_C,   8, 
-                            HCRW,   8, 
-                            HCD,    8, 
-                            HR01,   8, 
-                            HFDD,   8, 
-                            HIMP,   8, 
+                            Offset (0x54),
+                            HF_Z,   8,
+                            HF_D,   8,
+                            HZIP,   8,
+                            HDVD,   8,
+                            HHFD,   8,
+                            HF_H,   8,
+                            HHDD,   8,
+                            HADP,   8,
+                            HLS,    8,
+                            HF_C,   8,
+                            HCRW,   8,
+                            HCD,    8,
+                            HR01,   8,
+                            HFDD,   8,
+                            HIMP,   8,
                             HNON,   8
                         }
 
@@ -5278,16 +5278,16 @@ DefinitionBlock ("DSDT.aml", "DSDT", 1, "IBM   ", "TP-T20  ", 100930080)
                 OperationRegion (CBUS, PCI_Config, 0x00, 0x0100)
                 Field (CBUS, DWordAcc, NoLock, Preserve)
                 {
-                    Offset (0x40), 
-                    SVID,   16, 
-                    SSID,   16, 
-                    LGDC,   32, 
-                    Offset (0x80), 
-                    SYSC,   32, 
-                    MCTL,   8, 
-                    Offset (0x91), 
-                    CCTL,   8, 
-                    Offset (0x93), 
+                    Offset (0x40),
+                    SVID,   16,
+                    SSID,   16,
+                    LGDC,   32,
+                    Offset (0x80),
+                    SYSC,   32,
+                    MCTL,   8,
+                    Offset (0x91),
+                    CCTL,   8,
+                    Offset (0x93),
                     DIAG,   8
                 }
 
@@ -5361,16 +5361,16 @@ DefinitionBlock ("DSDT.aml", "DSDT", 1, "IBM   ", "TP-T20  ", 100930080)
                 OperationRegion (CBUS, PCI_Config, 0x00, 0x0100)
                 Field (CBUS, DWordAcc, NoLock, Preserve)
                 {
-                    Offset (0x40), 
-                    SVID,   16, 
-                    SSID,   16, 
-                    LGDC,   32, 
-                    Offset (0x80), 
-                    SYSC,   32, 
-                    MCTL,   8, 
-                    Offset (0x91), 
-                    CCTL,   8, 
-                    Offset (0x93), 
+                    Offset (0x40),
+                    SVID,   16,
+                    SSID,   16,
+                    LGDC,   32,
+                    Offset (0x80),
+                    SYSC,   32,
+                    MCTL,   8,
+                    Offset (0x91),
+                    CCTL,   8,
+                    Offset (0x93),
                     DIAG,   8
                 }
 
@@ -5455,49 +5455,49 @@ DefinitionBlock ("DSDT.aml", "DSDT", 1, "IBM   ", "TP-T20  ", 100930080)
                 {
                     Package (0x04)
                     {
-                        0xFFFF, 
-                        0x00, 
-                        \_SB.LNKA, 
+                        0xFFFF,
+                        0x00,
+                        \_SB.LNKA,
                         0x00
-                    }, 
+                    },
 
                     Package (0x04)
                     {
-                        0xFFFF, 
-                        0x01, 
-                        \_SB.LNKB, 
+                        0xFFFF,
+                        0x01,
+                        \_SB.LNKB,
                         0x00
-                    }, 
+                    },
 
                     Package (0x04)
                     {
-                        0xFFFF, 
-                        0x02, 
-                        \_SB.LNKC, 
+                        0xFFFF,
+                        0x02,
+                        \_SB.LNKC,
                         0x00
-                    }, 
+                    },
 
                     Package (0x04)
                     {
-                        0xFFFF, 
-                        0x03, 
-                        \_SB.LNKD, 
+                        0xFFFF,
+                        0x03,
+                        \_SB.LNKD,
                         0x00
-                    }, 
+                    },
 
                     Package (0x04)
                     {
-                        0x0001FFFF, 
-                        0x00, 
-                        \_SB.LNKB, 
+                        0x0001FFFF,
+                        0x00,
+                        \_SB.LNKB,
                         0x00
-                    }, 
+                    },
 
                     Package (0x04)
                     {
-                        0x0002FFFF, 
-                        0x00, 
-                        \_SB.LNKC, 
+                        0x0002FFFF,
+                        0x00,
+                        \_SB.LNKC,
                         0x00
                     }
                 })
@@ -5582,7 +5582,7 @@ DefinitionBlock ("DSDT.aml", "DSDT", 1, "IBM   ", "TP-T20  ", 100930080)
 
                 Name (_PRW, Package (0x02)
                 {
-                    0x0B, 
+                    0x0B,
                     0x04
                 })
                 Method (_PSW, 1, NotSerialized)
@@ -6337,36 +6337,36 @@ DefinitionBlock ("DSDT.aml", "DSDT", 1, "IBM   ", "TP-T20  ", 100930080)
                 OperationRegion (PPBR, PCI_Config, 0x00, 0x0100)
                 Field (PPBR, DWordAcc, NoLock, Preserve)
                 {
-                    Offset (0x40), 
-                    SVID,   16, 
-                    SSID,   16, 
-                    Offset (0x66), 
-                    SDCL,   8, 
-                    PDCL,   8, 
-                    Offset (0x6C), 
-                    SCAD,   8, 
-                    BUFC,   8, 
-                    Offset (0x6F), 
-                    CLKR,   8, 
-                    Offset (0x76), 
-                    PG0D,   1, 
-                    PG1D,   1, 
-                    PG2D,   1, 
-                    PG3D,   1, 
-                    SG0D,   1, 
-                    SG1D,   1, 
-                    SG2D,   1, 
-                    SG3D,   1, 
-                    PG0O,   1, 
-                    PG1O,   1, 
-                    PG2O,   1, 
-                    PG3O,   1, 
-                    SG0O,   1, 
-                    SG1O,   1, 
-                    SG2O,   1, 
-                    SG3O,   1, 
-                    Offset (0x79), 
-                    SIRQ,   8, 
+                    Offset (0x40),
+                    SVID,   16,
+                    SSID,   16,
+                    Offset (0x66),
+                    SDCL,   8,
+                    PDCL,   8,
+                    Offset (0x6C),
+                    SCAD,   8,
+                    BUFC,   8,
+                    Offset (0x6F),
+                    CLKR,   8,
+                    Offset (0x76),
+                    PG0D,   1,
+                    PG1D,   1,
+                    PG2D,   1,
+                    PG3D,   1,
+                    SG0D,   1,
+                    SG1D,   1,
+                    SG2D,   1,
+                    SG3D,   1,
+                    PG0O,   1,
+                    PG1O,   1,
+                    PG2O,   1,
+                    PG3O,   1,
+                    SG0O,   1,
+                    SG1O,   1,
+                    SG2O,   1,
+                    SG3O,   1,
+                    Offset (0x79),
+                    SIRQ,   8,
                     ARMK,   8
                 }
 
@@ -6489,26 +6489,26 @@ DefinitionBlock ("DSDT.aml", "DSDT", 1, "IBM   ", "TP-T20  ", 100930080)
                     OperationRegion (IDEC, PCI_Config, 0x00, 0x0100)
                     Field (IDEC, DWordAcc, NoLock, Preserve)
                     {
-                        Offset (0x4F), 
-                            ,   2, 
-                        ENCL,   1, 
-                        Offset (0x50), 
-                        Offset (0x51), 
-                            ,   2, 
-                        PRMC,   1, 
-                        SNDC,   1, 
-                        Offset (0x52), 
-                        XCMT,   8, 
-                            ,   6, 
-                        XAR0,   2, 
-                        XDRR,   4, 
-                        XDRW,   4, 
-                        Offset (0x73), 
-                        XUDM,   1, 
-                            ,   1, 
-                        XUDC,   1, 
-                            ,   1, 
-                        XUDT,   2, 
+                        Offset (0x4F),
+                            ,   2,
+                        ENCL,   1,
+                        Offset (0x50),
+                        Offset (0x51),
+                            ,   2,
+                        PRMC,   1,
+                        SNDC,   1,
+                        Offset (0x52),
+                        XCMT,   8,
+                            ,   6,
+                        XAR0,   2,
+                        XDRR,   4,
+                        XDRW,   4,
+                        Offset (0x73),
+                        XUDM,   1,
+                            ,   1,
+                        XUDC,   1,
+                            ,   1,
+                        XUDT,   2,
                         Offset (0x74)
                     }
 
@@ -6757,15 +6757,15 @@ DefinitionBlock ("DSDT.aml", "DSDT", 1, "IBM   ", "TP-T20  ", 100930080)
                     OperationRegion (CBUS, PCI_Config, 0x00, 0x0100)
                     Field (CBUS, DWordAcc, NoLock, Preserve)
                     {
-                        Offset (0x44), 
-                        LGDC,   32, 
-                        Offset (0x80), 
-                        SYSC,   32, 
-                        Offset (0x8C), 
-                        MULR,   32, 
-                        RSTS,   8, 
-                        CCTL,   8, 
-                        DCTL,   8, 
+                        Offset (0x44),
+                        LGDC,   32,
+                        Offset (0x80),
+                        SYSC,   32,
+                        Offset (0x8C),
+                        MULR,   32,
+                        RSTS,   8,
+                        CCTL,   8,
+                        DCTL,   8,
                         DIAG,   8
                     }
 
@@ -6817,15 +6817,15 @@ DefinitionBlock ("DSDT.aml", "DSDT", 1, "IBM   ", "TP-T20  ", 100930080)
                     OperationRegion (CBUS, PCI_Config, 0x00, 0x0100)
                     Field (CBUS, DWordAcc, NoLock, Preserve)
                     {
-                        Offset (0x44), 
-                        LGDC,   32, 
-                        Offset (0x80), 
-                        SYSC,   32, 
-                        Offset (0x8C), 
-                        MULR,   32, 
-                        RSTS,   8, 
-                        CCTL,   8, 
-                        DCTL,   8, 
+                        Offset (0x44),
+                        LGDC,   32,
+                        Offset (0x80),
+                        SYSC,   32,
+                        Offset (0x8C),
+                        MULR,   32,
+                        RSTS,   8,
+                        CCTL,   8,
+                        DCTL,   8,
                         DIAG,   8
                     }
 
@@ -7519,11 +7519,11 @@ DefinitionBlock ("DSDT.aml", "DSDT", 1, "IBM   ", "TP-T20  ", 100930080)
                 {
                     Name (XPCK, Package (0x06)
                     {
-                        0x00, 
-                        0x00, 
-                        0xFFFFFFFF, 
-                        0xFFFFFFFF, 
-                        0xFFFFFFFF, 
+                        0x00,
+                        0x00,
+                        0xFFFFFFFF,
+                        0xFFFFFFFF,
+                        0xFFFFFFFF,
                         0x00
                     })
                     Store (\_SB.PCI0.ISA.EC.BDEV, Local0)
@@ -7601,8 +7601,8 @@ DefinitionBlock ("DSDT.aml", "DSDT", 1, "IBM   ", "TP-T20  ", 100930080)
 
             Name (FDEB, Buffer (0x14)
             {
-                0x01, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 
-                0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 
+                0x01, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00,
+                0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00,
                 0x02, 0x00, 0x00, 0x00
             })
             CreateByteField (FDEB, 0x00, FD0S)
@@ -7651,21 +7651,21 @@ DefinitionBlock ("DSDT.aml", "DSDT", 1, "IBM   ", "TP-T20  ", 100930080)
 
                 Name (_FDI, Package (0x10)
                 {
-                    0x00, 
-                    0x04, 
-                    0x4F, 
-                    0x12, 
-                    0x01, 
-                    0xDF, 
-                    0x02, 
-                    0x25, 
-                    0x02, 
-                    0x12, 
-                    0x1B, 
-                    0xFF, 
-                    0x6C, 
-                    0xF6, 
-                    0x0F, 
+                    0x00,
+                    0x04,
+                    0x4F,
+                    0x12,
+                    0x01,
+                    0xDF,
+                    0x02,
+                    0x25,
+                    0x02,
+                    0x12,
+                    0x1B,
+                    0xFF,
+                    0x6C,
+                    0xF6,
+                    0x0F,
                     0x05
                 })
             }
@@ -8089,37 +8089,37 @@ DefinitionBlock ("DSDT.aml", "DSDT", 1, "IBM   ", "TP-T20  ", 100930080)
 
     Name (\_S0, Package (0x04)
     {
-        0x05, 
-        0x05, 
-        0x00, 
+        0x05,
+        0x05,
+        0x00,
         0x00
     })
     Name (\_S1, Package (0x04)
     {
-        0x04, 
-        0x04, 
-        0x00, 
+        0x04,
+        0x04,
+        0x00,
         0x00
     })
     Name (\_S3, Package (0x04)
     {
-        0x01, 
-        0x01, 
-        0x00, 
+        0x01,
+        0x01,
+        0x00,
         0x00
     })
     Name (\_S4, Package (0x04)
     {
-        0x07, 
-        0x07, 
-        0x00, 
+        0x07,
+        0x07,
+        0x00,
         0x00
     })
     Name (\_S5, Package (0x04)
     {
-        0x07, 
-        0x07, 
-        0x00, 
+        0x07,
+        0x07,
+        0x00,
         0x00
     })
     Method (\_PTS, 1, NotSerialized)
@@ -8196,7 +8196,7 @@ DefinitionBlock ("DSDT.aml", "DSDT", 1, "IBM   ", "TP-T20  ", 100930080)
 
     Name (WAKI, Package (0x02)
     {
-        0x00, 
+        0x00,
         0x00
     })
     Method (\_WAK, 1, NotSerialized)
@@ -8442,37 +8442,37 @@ DefinitionBlock ("DSDT.aml", "DSDT", 1, "IBM   ", "TP-T20  ", 100930080)
     OperationRegion (MNVS, SystemMemory, 0x0FFFF000, 0x1000)
     Field (MNVS, DWordAcc, NoLock, Preserve)
     {
-        Offset (0xF00), 
-        HDHD,   8, 
-        HDSE,   8, 
-        Offset (0xF03), 
-        Offset (0xF04), 
-        Offset (0xF08), 
-        Offset (0xF0C), 
-        Offset (0xF10), 
-        VCDL,   1, 
-        VCDC,   1, 
-        VCDT,   1, 
-        VCDD,   1, 
-            ,   1, 
-        VCSS,   1, 
-        VCDB,   1, 
-        VCIN,   1, 
-        Offset (0xF12), 
-        VLID,   4, 
+        Offset (0xF00),
+        HDHD,   8,
+        HDSE,   8,
+        Offset (0xF03),
+        Offset (0xF04),
+        Offset (0xF08),
+        Offset (0xF0C),
+        Offset (0xF10),
+        VCDL,   1,
+        VCDC,   1,
+        VCDT,   1,
+        VCDD,   1,
+            ,   1,
+        VCSS,   1,
+        VCDB,   1,
+        VCIN,   1,
+        Offset (0xF12),
+        VLID,   4,
         Offset (0xF14)
     }
 
     Field (MNVS, ByteAcc, NoLock, Preserve)
     {
-        Offset (0xE00), 
-        DDC1,   1024, 
+        Offset (0xE00),
+        DDC1,   1024,
         Offset (0xF00)
     }
 
     Field (MNVS, ByteAcc, NoLock, Preserve)
     {
-        Offset (0xE00), 
+        Offset (0xE00),
         DDC2,   2048
     }
 
@@ -8484,12 +8484,12 @@ DefinitionBlock ("DSDT.aml", "DSDT", 1, "IBM   ", "TP-T20  ", 100930080)
 
     Field (MNVS, AnyAcc, NoLock, Preserve)
     {
-        Offset (0xFC0), 
-        CMD,    8, 
-        ERR,    32, 
-        PAR0,   32, 
-        PAR1,   32, 
-        PAR2,   32, 
+        Offset (0xFC0),
+        CMD,    8,
+        ERR,    32,
+        PAR0,   32,
+        PAR1,   32,
+        PAR2,   32,
         PAR3,   32
     }
 
@@ -8745,45 +8745,45 @@ DefinitionBlock ("DSDT.aml", "DSDT", 1, "IBM   ", "TP-T20  ", 100930080)
         OperationRegion (GPOR, SystemIO, 0x1034, 0x04)
         Field (GPOR, ByteAcc, NoLock, Preserve)
         {
-                ,   1, 
-            Offset (0x01), 
-            MSON,   1, 
-                ,   1, 
-            URST,   1, 
-            EID2,   1, 
-            EID,    2, 
-            CSON,   1, 
-                ,   4, 
-            IPDR,   1, 
-                ,   1, 
-            S2DS,   1, 
-                ,   1, 
-            ULON,   1, 
+                ,   1,
+            Offset (0x01),
+            MSON,   1,
+                ,   1,
+            URST,   1,
+            EID2,   1,
+            EID,    2,
+            CSON,   1,
+                ,   4,
+            IPDR,   1,
+                ,   1,
+            S2DS,   1,
+                ,   1,
+            ULON,   1,
                 ,   7
         }
     }
 
     Name (ICM0, Buffer (0x1C)
     {
-        0x02, 0x00, 0x00, 0x00, 0x00, 0xA0, 0xEF, 0x00, 
-        0x00, 0x00, 0x00, 0x00, 0xA0, 0xF5, 0x03, 0x00, 
-        0x00, 0x00, 0x00, 0xA0, 0xEF, 0x03, 0x00, 0x00, 
+        0x02, 0x00, 0x00, 0x00, 0x00, 0xA0, 0xEF, 0x00,
+        0x00, 0x00, 0x00, 0x00, 0xA0, 0xF5, 0x03, 0x00,
+        0x00, 0x00, 0x00, 0xA0, 0xEF, 0x03, 0x00, 0x00,
         0x00, 0x00, 0xA0, 0xEF
     })
     CreateByteField (ICM0, 0x0F, HDM0)
     CreateByteField (ICM0, 0x16, HPI0)
     Name (ICM1, Buffer (0x1C)
     {
-        0x02, 0x00, 0x00, 0x00, 0x00, 0xB0, 0xEF, 0x00, 
-        0x00, 0x00, 0x00, 0x00, 0xB0, 0xF5, 0x03, 0x00, 
-        0x00, 0x00, 0x00, 0xB0, 0xEF, 0x03, 0x00, 0x00, 
+        0x02, 0x00, 0x00, 0x00, 0x00, 0xB0, 0xEF, 0x00,
+        0x00, 0x00, 0x00, 0x00, 0xB0, 0xF5, 0x03, 0x00,
+        0x00, 0x00, 0x00, 0xB0, 0xEF, 0x03, 0x00, 0x00,
         0x00, 0x00, 0xB0, 0xEF
     })
     CreateByteField (ICM1, 0x0F, HDM1)
     CreateByteField (ICM1, 0x16, HPI1)
     Name (ICC1, Buffer (0x0E)
     {
-        0x03, 0x00, 0x00, 0x00, 0x00, 0xB0, 0xEF, 0x03, 
+        0x03, 0x00, 0x00, 0x00, 0x00, 0xB0, 0xEF, 0x03,
         0x00, 0x00, 0x00, 0x00, 0xB0, 0xEF
     })
     CreateByteField (ICC1, 0x01, CDM1)
@@ -8791,25 +8791,25 @@ DefinitionBlock ("DSDT.aml", "DSDT", 1, "IBM   ", "TP-T20  ", 100930080)
     Name (IDKM, 0x00)
     Name (ICM2, Buffer (0x1C)
     {
-        0x02, 0x00, 0x00, 0x00, 0x00, 0xA0, 0xEF, 0x00, 
-        0x00, 0x00, 0x00, 0x00, 0xA0, 0xF5, 0x03, 0x00, 
-        0x00, 0x00, 0x00, 0xA0, 0xEF, 0x03, 0x00, 0x00, 
+        0x02, 0x00, 0x00, 0x00, 0x00, 0xA0, 0xEF, 0x00,
+        0x00, 0x00, 0x00, 0x00, 0xA0, 0xF5, 0x03, 0x00,
+        0x00, 0x00, 0x00, 0xA0, 0xEF, 0x03, 0x00, 0x00,
         0x00, 0x00, 0xA0, 0xEF
     })
     CreateByteField (ICM2, 0x0F, HDM2)
     CreateByteField (ICM2, 0x16, HPI2)
     Name (ICC2, Buffer (0x0E)
     {
-        0x03, 0x00, 0x00, 0x00, 0x00, 0xA0, 0xEF, 0x03, 
+        0x03, 0x00, 0x00, 0x00, 0x00, 0xA0, 0xEF, 0x03,
         0x00, 0x00, 0x00, 0x00, 0xA0, 0xEF
     })
     CreateByteField (ICC2, 0x01, CDM2)
     CreateByteField (ICC2, 0x08, CPI2)
     Name (DCM2, Buffer (0x1C)
     {
-        0x03, 0x00, 0x00, 0x00, 0x00, 0xA0, 0xEF, 0x03, 
-        0x00, 0x00, 0x00, 0x00, 0xA0, 0xEF, 0x00, 0x00, 
-        0x00, 0x00, 0x00, 0xA0, 0xE3, 0x00, 0x00, 0x00, 
+        0x03, 0x00, 0x00, 0x00, 0x00, 0xA0, 0xEF, 0x03,
+        0x00, 0x00, 0x00, 0x00, 0xA0, 0xEF, 0x00, 0x00,
+        0x00, 0x00, 0x00, 0xA0, 0xE3, 0x00, 0x00, 0x00,
         0x00, 0x00, 0xA0, 0xE3
     })
     CreateByteField (DCM2, 0x01, DDM2)
@@ -8819,16 +8819,16 @@ DefinitionBlock ("DSDT.aml", "DSDT", 1, "IBM   ", "TP-T20  ", 100930080)
     Name (IDKS, 0x00)
     Name (ICM3, Buffer (0x1C)
     {
-        0x02, 0x00, 0x00, 0x00, 0x00, 0xA0, 0xEF, 0x00, 
-        0x00, 0x00, 0x00, 0x00, 0xA0, 0xF5, 0x03, 0x00, 
-        0x00, 0x00, 0x00, 0xA0, 0xEF, 0x03, 0x00, 0x00, 
+        0x02, 0x00, 0x00, 0x00, 0x00, 0xA0, 0xEF, 0x00,
+        0x00, 0x00, 0x00, 0x00, 0xA0, 0xF5, 0x03, 0x00,
+        0x00, 0x00, 0x00, 0xA0, 0xEF, 0x03, 0x00, 0x00,
         0x00, 0x00, 0xA0, 0xEF
     })
     CreateByteField (ICM3, 0x0F, HDM3)
     CreateByteField (ICM3, 0x16, HPI3)
     Name (ICC3, Buffer (0x0E)
     {
-        0x03, 0x00, 0x00, 0x00, 0x00, 0xA0, 0xEF, 0x03, 
+        0x03, 0x00, 0x00, 0x00, 0x00, 0xA0, 0xEF, 0x03,
         0x00, 0x00, 0x00, 0x00, 0xA0, 0xEF
     })
     CreateByteField (ICC3, 0x01, CDM3)
@@ -9653,4 +9653,3 @@ DefinitionBlock ("DSDT.aml", "DSDT", 1, "IBM   ", "TP-T20  ", 100930080)
     Name (FNID, 0x00)
     Name (RRBF, 0x00)
 }
-

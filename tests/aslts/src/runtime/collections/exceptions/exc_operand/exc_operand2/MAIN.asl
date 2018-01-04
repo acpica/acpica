@@ -58,4 +58,3 @@ DefinitionBlock ("exc_operand2", "DSDT", 2, "Intel", "Many", 0x00000001)
         Return (Local7)
     }
 }
-

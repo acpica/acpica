@@ -73,19 +73,19 @@
     {
         Field (OPRK, ByteAcc, NoLock, Preserve)
         {
-            IDX0,   8, 
+            IDX0,   8,
             DTA0,   8
         }
 
         IndexField (IDX0, DTA0, ByteAcc, NoLock, Preserve)
         {
-            Offset (0x1A), 
-            REG0,   8, 
-            Offset (0x5B), 
-            REG1,   8, 
-            Offset (0x9C), 
-            REG2,   8, 
-            Offset (0xED), 
+            Offset (0x1A),
+            REG0,   8,
+            Offset (0x5B),
+            REG1,   8,
+            Offset (0x9C),
+            REG2,   8,
+            Offset (0xED),
             REG3,   8
         }
 
@@ -170,23 +170,23 @@
         Debug = "TEST: m771, Check Access to 1-bit IndexFields, ByteAcc"
         Field (OPRK, ByteAcc, NoLock, WriteAsZeros)
         {
-            IDX0,   16, 
+            IDX0,   16,
             DTA0,   16
         }
 
         IndexField (IDX0, DTA0, ByteAcc, NoLock, WriteAsZeros)
         {
-            IDF0,   1, 
-                ,   6, 
-            IDF1,   1, 
-            IDF2,   1, 
-                ,   6, 
-            IDF3,   1, 
-            IDF4,   1, 
-                ,   6, 
-            IDF5,   1, 
-            IDF6,   1, 
-                ,   6, 
+            IDF0,   1,
+                ,   6,
+            IDF1,   1,
+            IDF2,   1,
+                ,   6,
+            IDF3,   1,
+            IDF4,   1,
+                ,   6,
+            IDF5,   1,
+            IDF6,   1,
+                ,   6,
             IDF7,   1
         }
 
@@ -208,23 +208,23 @@
         Debug = "TEST: m772, Check Access to 1-bit IndexFields, WordAcc"
         Field (OPRK, ByteAcc, NoLock, WriteAsZeros)
         {
-            IDX0,   16, 
+            IDX0,   16,
             DTA0,   16
         }
 
         IndexField (IDX0, DTA0, WordAcc, NoLock, WriteAsZeros)
         {
-            IDF0,   1, 
-                ,   6, 
-            IDF1,   1, 
-            IDF2,   1, 
-                ,   6, 
-            IDF3,   1, 
-            IDF4,   1, 
-                ,   6, 
-            IDF5,   1, 
-            IDF6,   1, 
-                ,   6, 
+            IDF0,   1,
+                ,   6,
+            IDF1,   1,
+            IDF2,   1,
+                ,   6,
+            IDF3,   1,
+            IDF4,   1,
+                ,   6,
+            IDF5,   1,
+            IDF6,   1,
+                ,   6,
             IDF7,   1
         }
 
@@ -246,23 +246,23 @@
         Debug = "TEST: m773, Check Access to 1-bit IndexFields, DWordAcc"
         Field (OPRK, ByteAcc, NoLock, WriteAsZeros)
         {
-            IDX0,   32, 
+            IDX0,   32,
             DTA0,   32
         }
 
         IndexField (IDX0, DTA0, DWordAcc, NoLock, WriteAsZeros)
         {
-            IDF0,   1, 
-                ,   14, 
-            IDF1,   1, 
-            IDF2,   1, 
-                ,   14, 
-            IDF3,   1, 
-            IDF4,   1, 
-                ,   14, 
-            IDF5,   1, 
-            IDF6,   1, 
-                ,   14, 
+            IDF0,   1,
+                ,   14,
+            IDF1,   1,
+            IDF2,   1,
+                ,   14,
+            IDF3,   1,
+            IDF4,   1,
+                ,   14,
+            IDF5,   1,
+            IDF6,   1,
+                ,   14,
             IDF7,   1
         }
 
@@ -320,23 +320,23 @@
         Debug = "TEST: m774, Check Access to 1-bit IndexFields, QWordAcc"
         Field (OPRK, ByteAcc, NoLock, WriteAsZeros)
         {
-            IDX0,   64, 
+            IDX0,   64,
             DTA0,   64
         }
 
         IndexField (IDX0, DTA0, QWordAcc, NoLock, WriteAsZeros)
         {
-            IDF0,   1, 
-                ,   30, 
-            IDF1,   1, 
-            IDF2,   1, 
-                ,   30, 
-            IDF3,   1, 
-            IDF4,   1, 
-                ,   30, 
-            IDF5,   1, 
-            IDF6,   1, 
-                ,   30, 
+            IDF0,   1,
+                ,   30,
+            IDF1,   1,
+            IDF2,   1,
+                ,   30,
+            IDF3,   1,
+            IDF4,   1,
+                ,   30,
+            IDF5,   1,
+            IDF6,   1,
+                ,   30,
             IDF7,   1
         }
 
@@ -467,47 +467,47 @@
         CopyObject (Arg1, OPRM) /* \M780.OPRM */
         Field (OPRM, ByteAcc, NoLock, Preserve)
         {
-            IDX0,   16, 
+            IDX0,   16,
             DAT0,   16
         }
 
         IndexField (IDX0, DAT0, ByteAcc, NoLock, Preserve)
         {
-            Offset (0x00), 
+            Offset (0x00),
             IF00,   3
         }
 
         IndexField (IDX0, DAT0, ByteAcc, NoLock, Preserve)
         {
-            Offset (0x00), 
-            IF10,   1, 
-            IF11,   1, 
+            Offset (0x00),
+            IF10,   1,
+            IF11,   1,
             IF12,   1
         }
 
         IndexField (IDX0, DAT0, ByteAcc, NoLock, Preserve)
         {
-            Offset (0x00), 
-            IF20,   1, 
+            Offset (0x00),
+            IF20,   1,
             IF21,   2
         }
 
         IndexField (IDX0, DAT0, ByteAcc, NoLock, Preserve)
         {
-            Offset (0x00), 
-            IF30,   2, 
+            Offset (0x00),
+            IF30,   2,
             IF31,   1
         }
 
         Local0 = 0x08
         Local1 = Package (0x07)
             {
-                IF10, 
-                IF11, 
-                IF12, 
-                IF20, 
-                IF21, 
-                IF30, 
+                IF10,
+                IF11,
+                IF12,
+                IF20,
+                IF21,
+                IF30,
                 IF31
             }
         While (Local0)
@@ -540,47 +540,47 @@
         CopyObject (Arg1, OPRM) /* \M781.OPRM */
         Field (OPRM, WordAcc, NoLock, Preserve)
         {
-            IDX0,   16, 
+            IDX0,   16,
             DAT0,   16
         }
 
         IndexField (IDX0, DAT0, ByteAcc, NoLock, Preserve)
         {
-                ,   1, 
+                ,   1,
             IF00,   3
         }
 
         IndexField (IDX0, DAT0, ByteAcc, NoLock, Preserve)
         {
-                ,   1, 
-            IF10,   1, 
-            IF11,   1, 
+                ,   1,
+            IF10,   1,
+            IF11,   1,
             IF12,   1
         }
 
         IndexField (IDX0, DAT0, ByteAcc, NoLock, Preserve)
         {
-                ,   1, 
-            IF20,   1, 
+                ,   1,
+            IF20,   1,
             IF21,   2
         }
 
         IndexField (IDX0, DAT0, ByteAcc, NoLock, Preserve)
         {
-                ,   1, 
-            IF30,   2, 
+                ,   1,
+            IF30,   2,
             IF31,   1
         }
 
         Local0 = 0x08
         Local1 = Package (0x07)
             {
-                IF10, 
-                IF11, 
-                IF12, 
-                IF20, 
-                IF21, 
-                IF30, 
+                IF10,
+                IF11,
+                IF12,
+                IF20,
+                IF21,
+                IF30,
                 IF31
             }
         While (Local0)
@@ -613,47 +613,47 @@
         CopyObject (Arg1, OPRM) /* \M782.OPRM */
         Field (OPRM, DWordAcc, NoLock, Preserve)
         {
-            IDX0,   32, 
+            IDX0,   32,
             DAT0,   32
         }
 
         IndexField (IDX0, DAT0, ByteAcc, NoLock, Preserve)
         {
-                ,   2, 
+                ,   2,
             IF00,   3
         }
 
         IndexField (IDX0, DAT0, ByteAcc, NoLock, Preserve)
         {
-                ,   2, 
-            IF10,   1, 
-            IF11,   1, 
+                ,   2,
+            IF10,   1,
+            IF11,   1,
             IF12,   1
         }
 
         IndexField (IDX0, DAT0, ByteAcc, NoLock, Preserve)
         {
-                ,   2, 
-            IF20,   1, 
+                ,   2,
+            IF20,   1,
             IF21,   2
         }
 
         IndexField (IDX0, DAT0, ByteAcc, NoLock, Preserve)
         {
-                ,   2, 
-            IF30,   2, 
+                ,   2,
+            IF30,   2,
             IF31,   1
         }
 
         Local0 = 0x08
         Local1 = Package (0x07)
             {
-                IF10, 
-                IF11, 
-                IF12, 
-                IF20, 
-                IF21, 
-                IF30, 
+                IF10,
+                IF11,
+                IF12,
+                IF20,
+                IF21,
+                IF30,
                 IF31
             }
         While (Local0)
@@ -686,47 +686,47 @@
         CopyObject (Arg1, OPRM) /* \M783.OPRM */
         Field (OPRM, ByteAcc, NoLock, WriteAsOnes)
         {
-            IDX0,   16, 
+            IDX0,   16,
             DAT0,   16
         }
 
         IndexField (IDX0, DAT0, ByteAcc, NoLock, Preserve)
         {
-                ,   3, 
+                ,   3,
             IF00,   3
         }
 
         IndexField (IDX0, DAT0, ByteAcc, NoLock, Preserve)
         {
-                ,   3, 
-            IF10,   1, 
-            IF11,   1, 
+                ,   3,
+            IF10,   1,
+            IF11,   1,
             IF12,   1
         }
 
         IndexField (IDX0, DAT0, ByteAcc, NoLock, Preserve)
         {
-                ,   3, 
-            IF20,   1, 
+                ,   3,
+            IF20,   1,
             IF21,   2
         }
 
         IndexField (IDX0, DAT0, ByteAcc, NoLock, Preserve)
         {
-                ,   3, 
-            IF30,   2, 
+                ,   3,
+            IF30,   2,
             IF31,   1
         }
 
         Local0 = 0x08
         Local1 = Package (0x07)
             {
-                IF10, 
-                IF11, 
-                IF12, 
-                IF20, 
-                IF21, 
-                IF30, 
+                IF10,
+                IF11,
+                IF12,
+                IF20,
+                IF21,
+                IF30,
                 IF31
             }
         While (Local0)
@@ -759,47 +759,47 @@
         CopyObject (Arg1, OPRM) /* \M784.OPRM */
         Field (OPRM, WordAcc, NoLock, WriteAsOnes)
         {
-            IDX0,   16, 
+            IDX0,   16,
             DAT0,   16
         }
 
         IndexField (IDX0, DAT0, ByteAcc, NoLock, Preserve)
         {
-                ,   4, 
+                ,   4,
             IF00,   3
         }
 
         IndexField (IDX0, DAT0, ByteAcc, NoLock, Preserve)
         {
-                ,   4, 
-            IF10,   1, 
-            IF11,   1, 
+                ,   4,
+            IF10,   1,
+            IF11,   1,
             IF12,   1
         }
 
         IndexField (IDX0, DAT0, ByteAcc, NoLock, Preserve)
         {
-                ,   4, 
-            IF20,   1, 
+                ,   4,
+            IF20,   1,
             IF21,   2
         }
 
         IndexField (IDX0, DAT0, ByteAcc, NoLock, Preserve)
         {
-                ,   4, 
-            IF30,   2, 
+                ,   4,
+            IF30,   2,
             IF31,   1
         }
 
         Local0 = 0x08
         Local1 = Package (0x07)
             {
-                IF10, 
-                IF11, 
-                IF12, 
-                IF20, 
-                IF21, 
-                IF30, 
+                IF10,
+                IF11,
+                IF12,
+                IF20,
+                IF21,
+                IF30,
                 IF31
             }
         While (Local0)
@@ -832,47 +832,47 @@
         CopyObject (Arg1, OPRM) /* \M785.OPRM */
         Field (OPRM, DWordAcc, NoLock, WriteAsOnes)
         {
-            IDX0,   32, 
+            IDX0,   32,
             DAT0,   32
         }
 
         IndexField (IDX0, DAT0, ByteAcc, NoLock, Preserve)
         {
-                ,   5, 
+                ,   5,
             IF00,   3
         }
 
         IndexField (IDX0, DAT0, ByteAcc, NoLock, Preserve)
         {
-                ,   5, 
-            IF10,   1, 
-            IF11,   1, 
+                ,   5,
+            IF10,   1,
+            IF11,   1,
             IF12,   1
         }
 
         IndexField (IDX0, DAT0, ByteAcc, NoLock, Preserve)
         {
-                ,   5, 
-            IF20,   1, 
+                ,   5,
+            IF20,   1,
             IF21,   2
         }
 
         IndexField (IDX0, DAT0, ByteAcc, NoLock, Preserve)
         {
-                ,   5, 
-            IF30,   2, 
+                ,   5,
+            IF30,   2,
             IF31,   1
         }
 
         Local0 = 0x08
         Local1 = Package (0x07)
             {
-                IF10, 
-                IF11, 
-                IF12, 
-                IF20, 
-                IF21, 
-                IF30, 
+                IF10,
+                IF11,
+                IF12,
+                IF20,
+                IF21,
+                IF30,
                 IF31
             }
         While (Local0)
@@ -905,47 +905,47 @@
         CopyObject (Arg1, OPRM) /* \M786.OPRM */
         Field (OPRM, ByteAcc, NoLock, WriteAsZeros)
         {
-            IDX0,   16, 
+            IDX0,   16,
             DAT0,   16
         }
 
         IndexField (IDX0, DAT0, ByteAcc, NoLock, Preserve)
         {
-                ,   6, 
+                ,   6,
             IF00,   3
         }
 
         IndexField (IDX0, DAT0, ByteAcc, NoLock, Preserve)
         {
-                ,   6, 
-            IF10,   1, 
-            IF11,   1, 
+                ,   6,
+            IF10,   1,
+            IF11,   1,
             IF12,   1
         }
 
         IndexField (IDX0, DAT0, ByteAcc, NoLock, Preserve)
         {
-                ,   6, 
-            IF20,   1, 
+                ,   6,
+            IF20,   1,
             IF21,   2
         }
 
         IndexField (IDX0, DAT0, ByteAcc, NoLock, Preserve)
         {
-                ,   6, 
-            IF30,   2, 
+                ,   6,
+            IF30,   2,
             IF31,   1
         }
 
         Local0 = 0x08
         Local1 = Package (0x07)
             {
-                IF10, 
-                IF11, 
-                IF12, 
-                IF20, 
-                IF21, 
-                IF30, 
+                IF10,
+                IF11,
+                IF12,
+                IF20,
+                IF21,
+                IF30,
                 IF31
             }
         While (Local0)
@@ -978,47 +978,47 @@
         CopyObject (Arg1, OPRM) /* \M787.OPRM */
         Field (OPRM, WordAcc, NoLock, WriteAsZeros)
         {
-            IDX0,   16, 
+            IDX0,   16,
             DAT0,   16
         }
 
         IndexField (IDX0, DAT0, ByteAcc, NoLock, Preserve)
         {
-                ,   7, 
+                ,   7,
             IF00,   3
         }
 
         IndexField (IDX0, DAT0, ByteAcc, NoLock, Preserve)
         {
-                ,   7, 
-            IF10,   1, 
-            IF11,   1, 
+                ,   7,
+            IF10,   1,
+            IF11,   1,
             IF12,   1
         }
 
         IndexField (IDX0, DAT0, ByteAcc, NoLock, Preserve)
         {
-                ,   7, 
-            IF20,   1, 
+                ,   7,
+            IF20,   1,
             IF21,   2
         }
 
         IndexField (IDX0, DAT0, ByteAcc, NoLock, Preserve)
         {
-                ,   7, 
-            IF30,   2, 
+                ,   7,
+            IF30,   2,
             IF31,   1
         }
 
         Local0 = 0x08
         Local1 = Package (0x07)
             {
-                IF10, 
-                IF11, 
-                IF12, 
-                IF20, 
-                IF21, 
-                IF30, 
+                IF10,
+                IF11,
+                IF12,
+                IF20,
+                IF21,
+                IF30,
                 IF31
             }
         While (Local0)
@@ -1051,47 +1051,47 @@
         CopyObject (Arg1, OPRM) /* \M788.OPRM */
         Field (OPRM, DWordAcc, NoLock, WriteAsZeros)
         {
-            IDX0,   32, 
+            IDX0,   32,
             DAT0,   32
         }
 
         IndexField (IDX0, DAT0, ByteAcc, NoLock, Preserve)
         {
-            Offset (0x01), 
+            Offset (0x01),
             IF00,   3
         }
 
         IndexField (IDX0, DAT0, ByteAcc, NoLock, Preserve)
         {
-            Offset (0x01), 
-            IF10,   1, 
-            IF11,   1, 
+            Offset (0x01),
+            IF10,   1,
+            IF11,   1,
             IF12,   1
         }
 
         IndexField (IDX0, DAT0, ByteAcc, NoLock, Preserve)
         {
-            Offset (0x01), 
-            IF20,   1, 
+            Offset (0x01),
+            IF20,   1,
             IF21,   2
         }
 
         IndexField (IDX0, DAT0, ByteAcc, NoLock, Preserve)
         {
-            Offset (0x01), 
-            IF30,   2, 
+            Offset (0x01),
+            IF30,   2,
             IF31,   1
         }
 
         Local0 = 0x08
         Local1 = Package (0x07)
             {
-                IF10, 
-                IF11, 
-                IF12, 
-                IF20, 
-                IF21, 
-                IF30, 
+                IF10,
+                IF11,
+                IF12,
+                IF20,
+                IF21,
+                IF30,
                 IF31
             }
         While (Local0)
@@ -1124,47 +1124,47 @@
         CopyObject (Arg1, OPRM) /* \M789.OPRM */
         Field (OPRM, WordAcc, NoLock, Preserve)
         {
-            IDX0,   16, 
+            IDX0,   16,
             DAT0,   16
         }
 
         IndexField (IDX0, DAT0, ByteAcc, NoLock, Preserve)
         {
-                ,   2046, 
+                ,   2046,
             IF00,   3
         }
 
         IndexField (IDX0, DAT0, ByteAcc, NoLock, Preserve)
         {
-                ,   2046, 
-            IF10,   1, 
-            IF11,   1, 
+                ,   2046,
+            IF10,   1,
+            IF11,   1,
             IF12,   1
         }
 
         IndexField (IDX0, DAT0, ByteAcc, NoLock, Preserve)
         {
-                ,   2046, 
-            IF20,   1, 
+                ,   2046,
+            IF20,   1,
             IF21,   2
         }
 
         IndexField (IDX0, DAT0, ByteAcc, NoLock, Preserve)
         {
-                ,   2046, 
-            IF30,   2, 
+                ,   2046,
+            IF30,   2,
             IF31,   1
         }
 
         Local0 = 0x08
         Local1 = Package (0x07)
             {
-                IF10, 
-                IF11, 
-                IF12, 
-                IF20, 
-                IF21, 
-                IF30, 
+                IF10,
+                IF11,
+                IF12,
+                IF20,
+                IF21,
+                IF30,
                 IF31
             }
         While (Local0)
@@ -1192,17 +1192,17 @@
     /* (ByteAcc, NoLock, Preserve) */
     Name (PP10, Package (0x05)
     {
-        0x00, 
-        0x08, 
-        0x00, 
-        0x08, 
+        0x00,
+        0x08,
+        0x00,
+        0x08,
         Package (0x06)
         {
-            0x00, 
-            0x01, 
-            0x01, 
-            0x00, 
-            0x01, 
+            0x00,
+            0x01,
+            0x01,
+            0x00,
+            0x01,
             "m790"
         }
     })
@@ -1210,17 +1210,17 @@
 
     Name (PP11, Package (0x05)
     {
-        0x00, 
-        0x08, 
-        0x08, 
-        0x08, 
+        0x00,
+        0x08,
+        0x08,
+        0x08,
         Package (0x06)
         {
-            0x01, 
-            0x00, 
-            0x02, 
-            0x01, 
-            0x01, 
+            0x01,
+            0x00,
+            0x02,
+            0x01,
+            0x01,
             "m791"
         }
     })
@@ -1228,17 +1228,17 @@
 
     Name (PP12, Package (0x05)
     {
-        0x08, 
-        0x08, 
-        0x00, 
-        0x08, 
+        0x08,
+        0x08,
+        0x00,
+        0x08,
         Package (0x06)
         {
-            0x02, 
-            0x01, 
-            0x03, 
-            0x02, 
-            0x01, 
+            0x02,
+            0x01,
+            0x03,
+            0x02,
+            0x01,
             "m792"
         }
     })
@@ -1246,17 +1246,17 @@
 
     Name (PP13, Package (0x05)
     {
-        0x08, 
-        0x04, 
-        0x08, 
-        0x08, 
+        0x08,
+        0x04,
+        0x08,
+        0x08,
         Package (0x06)
         {
-            0x01, 
-            0x02, 
-            0x04, 
-            0x00, 
-            0x01, 
+            0x01,
+            0x02,
+            0x04,
+            0x00,
+            0x01,
             "m793"
         }
     })
@@ -1264,17 +1264,17 @@
 
     Name (PP14, Package (0x05)
     {
-        0x0C, 
-        0x04, 
-        0x08, 
-        0x08, 
+        0x0C,
+        0x04,
+        0x08,
+        0x08,
         Package (0x06)
         {
-            0x01, 
-            0x00, 
-            0x00, 
-            0x00, 
-            0x00, 
+            0x01,
+            0x00,
+            0x00,
+            0x00,
+            0x00,
             "m794"
         }
     })
@@ -1340,7 +1340,7 @@
          */
         Field (OPR0, ByteAcc, NoLock, Preserve)
         {
-            IDX0,   8, 
+            IDX0,   8,
             DAT0,   8
         }
 
@@ -1351,8 +1351,8 @@
 
         Field (OPR0, ByteAcc, NoLock, WriteAsOnes)
         {
-            Offset (0x03), 
-            IDX1,   8, 
+            Offset (0x03),
+            IDX1,   8,
             DAT1,   8
         }
 
@@ -1363,8 +1363,8 @@
 
         Field (OPR0, ByteAcc, NoLock, WriteAsZeros)
         {
-            Offset (0x07), 
-            IDX2,   16, 
+            Offset (0x07),
+            IDX2,   16,
             DAT2,   8
         }
 
@@ -1375,8 +1375,8 @@
 
         Field (OPR0, WordAcc, NoLock, Preserve)
         {
-            Offset (0x0B), 
-            IDX3,   8, 
+            Offset (0x0B),
+            IDX3,   8,
             DAT3,   8
         }
 
@@ -1387,8 +1387,8 @@
 
         Field (OPR0, WordAcc, NoLock, WriteAsOnes)
         {
-            Offset (0x0E), 
-            IDX4,   16, 
+            Offset (0x0E),
+            IDX4,   16,
             DAT4,   8
         }
 
@@ -1399,8 +1399,8 @@
 
         Field (OPR0, WordAcc, NoLock, WriteAsZeros)
         {
-            Offset (0x12), 
-            IDX5,   32, 
+            Offset (0x12),
+            IDX5,   32,
             DAT5,   8
         }
 
@@ -1411,9 +1411,9 @@
 
         Field (OPR0, DWordAcc, NoLock, Preserve)
         {
-            Offset (0x1A), 
-            IDX6,   8, 
-            Offset (0x1C), 
+            Offset (0x1A),
+            IDX6,   8,
+            Offset (0x1C),
             DAT6,   8
         }
 
@@ -1424,8 +1424,8 @@
 
         Field (OPR0, DWordAcc, NoLock, WriteAsOnes)
         {
-            Offset (0x20), 
-            IDX7,   32, 
+            Offset (0x20),
+            IDX7,   32,
             DAT7,   8
         }
 
@@ -1436,8 +1436,8 @@
 
         Field (OPR0, DWordAcc, NoLock, WriteAsZeros)
         {
-            Offset (0x28), 
-            IDX8,   32, 
+            Offset (0x28),
+            IDX8,   32,
             DAT8,   8
         }
 
@@ -1448,9 +1448,9 @@
 
         Field (OPR0, QWordAcc, NoLock, Preserve)
         {
-            Offset (0x38), 
-            IDX9,   8, 
-            Offset (0x40), 
+            Offset (0x38),
+            IDX9,   8,
+            Offset (0x40),
             DAT9,   8
         }
 
@@ -1461,12 +1461,12 @@
 
         Field (OPR0, QWordAcc, NoLock, WriteAsOnes)
         {
-            Offset (0x48), 
-            Offset (0x4C), 
+            Offset (0x48),
+            Offset (0x4C),
             /* Index field exceeding 32 bits causes AE_BUFFER_OVERFLOW */
             /* IDXA, 64, */
             /* Do not allow index/data interference */
-            IDXA,   32, 
+            IDXA,   32,
             DATA,   8
         }
 
@@ -1477,9 +1477,9 @@
 
         Field (OPR0, QWordAcc, NoLock, WriteAsZeros)
         {
-            Offset (0x58), 
-            IDXB,   32, 
-            Offset (0x60), 
+            Offset (0x58),
+            IDXB,   32,
+            Offset (0x60),
             DATB,   8
         }
 
@@ -1490,8 +1490,8 @@
 
         Field (OPR0, AnyAcc, NoLock, Preserve)
         {
-            Offset (0x68), 
-            IDXC,   8, 
+            Offset (0x68),
+            IDXC,   8,
             DATC,   8
         }
 
@@ -1502,10 +1502,10 @@
 
         Field (OPR0, AnyAcc, NoLock, WriteAsOnes)
         {
-            Offset (0x6B), 
+            Offset (0x6B),
             /* Index field exceeding 32 bits causes AE_BUFFER_OVERFLOW */
             /* IDXD, 64, */
-            IDXD,   32, 
+            IDXD,   32,
             DATD,   8
         }
 
@@ -1516,8 +1516,8 @@
 
         Field (OPR0, AnyAcc, NoLock, WriteAsZeros)
         {
-            Offset (0x7B), 
-            IDXE,   32, 
+            Offset (0x7B),
+            IDXE,   32,
             DATE,   8
         }
 
@@ -1538,7 +1538,7 @@
                     {
                         IndexField (IDX0, DAT0, ByteAcc, NoLock, Preserve)
                         {
-                            Offset (0x00), 
+                            Offset (0x00),
                             F000,   1
                         }
 
@@ -1549,8 +1549,8 @@
                     {
                         IndexField (IDX1, DAT1, ByteAcc, NoLock, Preserve)
                         {
-                            AccessAs (ByteAcc, 0x00), 
-                            Offset (0x00), 
+                            AccessAs (ByteAcc, 0x00),
+                            Offset (0x00),
                             F001,   6
                         }
 
@@ -1561,7 +1561,7 @@
                     {
                         IndexField (IDX2, DAT2, ByteAcc, NoLock, Preserve)
                         {
-                            Offset (0x00), 
+                            Offset (0x00),
                             F002,   7
                         }
 
@@ -1572,8 +1572,8 @@
                     {
                         IndexField (IDX3, DAT3, WordAcc, NoLock, Preserve)
                         {
-                            AccessAs (ByteAcc, 0x00), 
-                            Offset (0x00), 
+                            AccessAs (ByteAcc, 0x00),
+                            Offset (0x00),
                             F003,   8
                         }
 
@@ -1584,7 +1584,7 @@
                     {
                         IndexField (IDX4, DAT4, ByteAcc, NoLock, Preserve)
                         {
-                            Offset (0x00), 
+                            Offset (0x00),
                             F004,   9
                         }
 
@@ -1595,8 +1595,8 @@
                     {
                         IndexField (IDX5, DAT5, DWordAcc, NoLock, Preserve)
                         {
-                            AccessAs (ByteAcc, 0x00), 
-                            Offset (0x00), 
+                            AccessAs (ByteAcc, 0x00),
+                            Offset (0x00),
                             F005,   31
                         }
 
@@ -1607,7 +1607,7 @@
                     {
                         IndexField (IDX6, DAT6, ByteAcc, NoLock, Preserve)
                         {
-                            Offset (0x00), 
+                            Offset (0x00),
                             F006,   32
                         }
 
@@ -1618,8 +1618,8 @@
                     {
                         IndexField (IDX7, DAT7, QWordAcc, NoLock, Preserve)
                         {
-                            AccessAs (ByteAcc, 0x00), 
-                            Offset (0x00), 
+                            AccessAs (ByteAcc, 0x00),
+                            Offset (0x00),
                             F007,   33
                         }
 
@@ -1630,7 +1630,7 @@
                     {
                         IndexField (IDX8, DAT8, ByteAcc, NoLock, Preserve)
                         {
-                            Offset (0x00), 
+                            Offset (0x00),
                             F008,   63
                         }
 
@@ -1641,8 +1641,8 @@
                     {
                         IndexField (IDX9, DAT9, AnyAcc, NoLock, Preserve)
                         {
-                            AccessAs (ByteAcc, 0x00), 
-                            Offset (0x00), 
+                            AccessAs (ByteAcc, 0x00),
+                            Offset (0x00),
                             F009,   64
                         }
 
@@ -1653,7 +1653,7 @@
                     {
                         IndexField (IDXA, DATA, ByteAcc, NoLock, Preserve)
                         {
-                            Offset (0x00), 
+                            Offset (0x00),
                             F00A,   65
                         }
 
@@ -1664,8 +1664,8 @@
                     {
                         IndexField (IDXB, DATB, ByteAcc, NoLock, Preserve)
                         {
-                            AccessAs (ByteAcc, 0x00), 
-                            Offset (0x00), 
+                            AccessAs (ByteAcc, 0x00),
+                            Offset (0x00),
                             F00B,   69
                         }
 
@@ -1676,7 +1676,7 @@
                     {
                         IndexField (IDXC, DATC, ByteAcc, NoLock, Preserve)
                         {
-                            Offset (0x00), 
+                            Offset (0x00),
                             F00C,   129
                         }
 
@@ -1687,8 +1687,8 @@
                     {
                         IndexField (IDXD, DATD, WordAcc, NoLock, Preserve)
                         {
-                            AccessAs (ByteAcc, 0x00), 
-                            Offset (0x00), 
+                            AccessAs (ByteAcc, 0x00),
+                            Offset (0x00),
                             F00D,   256
                         }
 
@@ -1699,7 +1699,7 @@
                     {
                         IndexField (IDXE, DATE, ByteAcc, NoLock, Preserve)
                         {
-                            Offset (0x00), 
+                            Offset (0x00),
                             F00E,   1023
                         }
 
@@ -1710,8 +1710,8 @@
                     {
                         IndexField (IDX0, DAT0, DWordAcc, NoLock, Preserve)
                         {
-                            AccessAs (ByteAcc, 0x00), 
-                            Offset (0x00), 
+                            AccessAs (ByteAcc, 0x00),
+                            Offset (0x00),
                             F00F,   1983
                         }
 
@@ -1734,9 +1734,9 @@
                     {
                         IndexField (IDX1, DAT1, QWordAcc, NoLock, Preserve)
                         {
-                            AccessAs (ByteAcc, 0x00), 
-                            Offset (0x00), 
-                                ,   1, 
+                            AccessAs (ByteAcc, 0x00),
+                            Offset (0x00),
+                                ,   1,
                             F010,   1
                         }
 
@@ -1747,8 +1747,8 @@
                     {
                         IndexField (IDX2, DAT2, ByteAcc, NoLock, Preserve)
                         {
-                            Offset (0x00), 
-                                ,   1, 
+                            Offset (0x00),
+                                ,   1,
                             F011,   6
                         }
 
@@ -1759,9 +1759,9 @@
                     {
                         IndexField (IDX3, DAT3, AnyAcc, NoLock, Preserve)
                         {
-                            AccessAs (ByteAcc, 0x00), 
-                            Offset (0x00), 
-                                ,   1, 
+                            AccessAs (ByteAcc, 0x00),
+                            Offset (0x00),
+                                ,   1,
                             F012,   7
                         }
 
@@ -1772,8 +1772,8 @@
                     {
                         IndexField (IDX4, DAT4, ByteAcc, NoLock, Preserve)
                         {
-                            Offset (0x00), 
-                                ,   1, 
+                            Offset (0x00),
+                                ,   1,
                             F013,   8
                         }
 
@@ -1784,9 +1784,9 @@
                     {
                         IndexField (IDX5, DAT5, ByteAcc, NoLock, Preserve)
                         {
-                            AccessAs (ByteAcc, 0x00), 
-                            Offset (0x00), 
-                                ,   1, 
+                            AccessAs (ByteAcc, 0x00),
+                            Offset (0x00),
+                                ,   1,
                             F014,   9
                         }
 
@@ -1797,8 +1797,8 @@
                     {
                         IndexField (IDX6, DAT6, ByteAcc, NoLock, Preserve)
                         {
-                            Offset (0x00), 
-                                ,   1, 
+                            Offset (0x00),
+                                ,   1,
                             F015,   31
                         }
 
@@ -1809,9 +1809,9 @@
                     {
                         IndexField (IDX7, DAT7, WordAcc, NoLock, Preserve)
                         {
-                            AccessAs (ByteAcc, 0x00), 
-                            Offset (0x00), 
-                                ,   1, 
+                            AccessAs (ByteAcc, 0x00),
+                            Offset (0x00),
+                                ,   1,
                             F016,   32
                         }
 
@@ -1822,8 +1822,8 @@
                     {
                         IndexField (IDX8, DAT8, ByteAcc, NoLock, Preserve)
                         {
-                            Offset (0x00), 
-                                ,   1, 
+                            Offset (0x00),
+                                ,   1,
                             F017,   33
                         }
 
@@ -1834,9 +1834,9 @@
                     {
                         IndexField (IDX9, DAT9, DWordAcc, NoLock, Preserve)
                         {
-                            AccessAs (ByteAcc, 0x00), 
-                            Offset (0x00), 
-                                ,   1, 
+                            AccessAs (ByteAcc, 0x00),
+                            Offset (0x00),
+                                ,   1,
                             F018,   63
                         }
 
@@ -1847,8 +1847,8 @@
                     {
                         IndexField (IDXA, DATA, ByteAcc, NoLock, Preserve)
                         {
-                            Offset (0x00), 
-                                ,   1, 
+                            Offset (0x00),
+                                ,   1,
                             F019,   64
                         }
 
@@ -1859,9 +1859,9 @@
                     {
                         IndexField (IDXB, DATB, QWordAcc, NoLock, Preserve)
                         {
-                            AccessAs (ByteAcc, 0x00), 
-                            Offset (0x00), 
-                                ,   1, 
+                            AccessAs (ByteAcc, 0x00),
+                            Offset (0x00),
+                                ,   1,
                             F01A,   65
                         }
 
@@ -1872,8 +1872,8 @@
                     {
                         IndexField (IDXC, DATC, ByteAcc, NoLock, Preserve)
                         {
-                            Offset (0x00), 
-                                ,   1, 
+                            Offset (0x00),
+                                ,   1,
                             F01B,   69
                         }
 
@@ -1884,9 +1884,9 @@
                     {
                         IndexField (IDXD, DATD, AnyAcc, NoLock, Preserve)
                         {
-                            AccessAs (ByteAcc, 0x00), 
-                            Offset (0x00), 
-                                ,   1, 
+                            AccessAs (ByteAcc, 0x00),
+                            Offset (0x00),
+                                ,   1,
                             F01C,   129
                         }
 
@@ -1897,8 +1897,8 @@
                     {
                         IndexField (IDXE, DATE, ByteAcc, NoLock, Preserve)
                         {
-                            Offset (0x00), 
-                                ,   1, 
+                            Offset (0x00),
+                                ,   1,
                             F01D,   256
                         }
 
@@ -1909,9 +1909,9 @@
                     {
                         IndexField (IDX0, DAT0, ByteAcc, NoLock, Preserve)
                         {
-                            AccessAs (ByteAcc, 0x00), 
-                            Offset (0x00), 
-                                ,   1, 
+                            AccessAs (ByteAcc, 0x00),
+                            Offset (0x00),
+                                ,   1,
                             F01E,   1023
                         }
 
@@ -1922,8 +1922,8 @@
                     {
                         IndexField (IDX1, DAT1, ByteAcc, NoLock, Preserve)
                         {
-                            Offset (0x00), 
-                                ,   1, 
+                            Offset (0x00),
+                                ,   1,
                             F01F,   1983
                         }
 
@@ -1946,7 +1946,7 @@
                     {
                         IndexField (IDX2, DAT2, ByteAcc, NoLock, Preserve)
                         {
-                                ,   2, 
+                                ,   2,
                             F020,   1
                         }
 
@@ -1957,8 +1957,8 @@
                     {
                         IndexField (IDX3, DAT3, WordAcc, NoLock, Preserve)
                         {
-                            AccessAs (ByteAcc, 0x00), 
-                                ,   2, 
+                            AccessAs (ByteAcc, 0x00),
+                                ,   2,
                             F021,   6
                         }
 
@@ -1969,7 +1969,7 @@
                     {
                         IndexField (IDX4, DAT4, ByteAcc, NoLock, Preserve)
                         {
-                                ,   2, 
+                                ,   2,
                             F022,   7
                         }
 
@@ -1980,8 +1980,8 @@
                     {
                         IndexField (IDX5, DAT5, DWordAcc, NoLock, Preserve)
                         {
-                            AccessAs (ByteAcc, 0x00), 
-                                ,   2, 
+                            AccessAs (ByteAcc, 0x00),
+                                ,   2,
                             F023,   8
                         }
 
@@ -1992,7 +1992,7 @@
                     {
                         IndexField (IDX6, DAT6, ByteAcc, NoLock, Preserve)
                         {
-                                ,   2, 
+                                ,   2,
                             F024,   9
                         }
 
@@ -2003,8 +2003,8 @@
                     {
                         IndexField (IDX7, DAT7, QWordAcc, NoLock, Preserve)
                         {
-                            AccessAs (ByteAcc, 0x00), 
-                                ,   2, 
+                            AccessAs (ByteAcc, 0x00),
+                                ,   2,
                             F025,   31
                         }
 
@@ -2015,7 +2015,7 @@
                     {
                         IndexField (IDX8, DAT8, ByteAcc, NoLock, Preserve)
                         {
-                                ,   2, 
+                                ,   2,
                             F026,   32
                         }
 
@@ -2026,8 +2026,8 @@
                     {
                         IndexField (IDX9, DAT9, AnyAcc, NoLock, Preserve)
                         {
-                            AccessAs (ByteAcc, 0x00), 
-                                ,   2, 
+                            AccessAs (ByteAcc, 0x00),
+                                ,   2,
                             F027,   33
                         }
 
@@ -2038,7 +2038,7 @@
                     {
                         IndexField (IDXA, DATA, ByteAcc, NoLock, Preserve)
                         {
-                                ,   2, 
+                                ,   2,
                             F028,   63
                         }
 
@@ -2049,8 +2049,8 @@
                     {
                         IndexField (IDXB, DATB, ByteAcc, NoLock, Preserve)
                         {
-                            AccessAs (ByteAcc, 0x00), 
-                                ,   2, 
+                            AccessAs (ByteAcc, 0x00),
+                                ,   2,
                             F029,   64
                         }
 
@@ -2061,7 +2061,7 @@
                     {
                         IndexField (IDXC, DATC, ByteAcc, NoLock, Preserve)
                         {
-                                ,   2, 
+                                ,   2,
                             F02A,   65
                         }
 
@@ -2072,8 +2072,8 @@
                     {
                         IndexField (IDXD, DATD, WordAcc, NoLock, Preserve)
                         {
-                            AccessAs (ByteAcc, 0x00), 
-                                ,   2, 
+                            AccessAs (ByteAcc, 0x00),
+                                ,   2,
                             F02B,   69
                         }
 
@@ -2084,7 +2084,7 @@
                     {
                         IndexField (IDXE, DATE, ByteAcc, NoLock, Preserve)
                         {
-                                ,   2, 
+                                ,   2,
                             F02C,   129
                         }
 
@@ -2095,8 +2095,8 @@
                     {
                         IndexField (IDX0, DAT0, DWordAcc, NoLock, Preserve)
                         {
-                            AccessAs (ByteAcc, 0x00), 
-                                ,   2, 
+                            AccessAs (ByteAcc, 0x00),
+                                ,   2,
                             F02D,   256
                         }
 
@@ -2107,7 +2107,7 @@
                     {
                         IndexField (IDX1, DAT1, ByteAcc, NoLock, Preserve)
                         {
-                                ,   2, 
+                                ,   2,
                             F02E,   1023
                         }
 
@@ -2118,8 +2118,8 @@
                     {
                         IndexField (IDX2, DAT2, QWordAcc, NoLock, Preserve)
                         {
-                            AccessAs (ByteAcc, 0x00), 
-                                ,   2, 
+                            AccessAs (ByteAcc, 0x00),
+                                ,   2,
                             F02F,   1983
                         }
 
@@ -2142,8 +2142,8 @@
                     {
                         IndexField (IDX3, DAT3, AnyAcc, NoLock, Preserve)
                         {
-                            AccessAs (ByteAcc, 0x00), 
-                                ,   3, 
+                            AccessAs (ByteAcc, 0x00),
+                                ,   3,
                             F030,   1
                         }
 
@@ -2154,7 +2154,7 @@
                     {
                         IndexField (IDX4, DAT4, ByteAcc, NoLock, Preserve)
                         {
-                                ,   3, 
+                                ,   3,
                             F031,   6
                         }
 
@@ -2165,8 +2165,8 @@
                     {
                         IndexField (IDX5, DAT5, ByteAcc, NoLock, Preserve)
                         {
-                            AccessAs (ByteAcc, 0x00), 
-                                ,   3, 
+                            AccessAs (ByteAcc, 0x00),
+                                ,   3,
                             F032,   7
                         }
 
@@ -2177,7 +2177,7 @@
                     {
                         IndexField (IDX6, DAT6, ByteAcc, NoLock, Preserve)
                         {
-                                ,   3, 
+                                ,   3,
                             F033,   8
                         }
 
@@ -2188,8 +2188,8 @@
                     {
                         IndexField (IDX7, DAT7, WordAcc, NoLock, Preserve)
                         {
-                            AccessAs (ByteAcc, 0x00), 
-                                ,   3, 
+                            AccessAs (ByteAcc, 0x00),
+                                ,   3,
                             F034,   9
                         }
 
@@ -2200,7 +2200,7 @@
                     {
                         IndexField (IDX8, DAT8, ByteAcc, NoLock, Preserve)
                         {
-                                ,   3, 
+                                ,   3,
                             F035,   31
                         }
 
@@ -2211,8 +2211,8 @@
                     {
                         IndexField (IDX9, DAT9, DWordAcc, NoLock, Preserve)
                         {
-                            AccessAs (ByteAcc, 0x00), 
-                                ,   3, 
+                            AccessAs (ByteAcc, 0x00),
+                                ,   3,
                             F036,   32
                         }
 
@@ -2223,7 +2223,7 @@
                     {
                         IndexField (IDXA, DATA, ByteAcc, NoLock, Preserve)
                         {
-                                ,   3, 
+                                ,   3,
                             F037,   33
                         }
 
@@ -2234,8 +2234,8 @@
                     {
                         IndexField (IDXB, DATB, QWordAcc, NoLock, Preserve)
                         {
-                            AccessAs (ByteAcc, 0x00), 
-                                ,   3, 
+                            AccessAs (ByteAcc, 0x00),
+                                ,   3,
                             F038,   63
                         }
 
@@ -2246,7 +2246,7 @@
                     {
                         IndexField (IDXC, DATC, ByteAcc, NoLock, Preserve)
                         {
-                                ,   3, 
+                                ,   3,
                             F039,   64
                         }
 
@@ -2257,8 +2257,8 @@
                     {
                         IndexField (IDXD, DATD, AnyAcc, NoLock, Preserve)
                         {
-                            AccessAs (ByteAcc, 0x00), 
-                                ,   3, 
+                            AccessAs (ByteAcc, 0x00),
+                                ,   3,
                             F03A,   65
                         }
 
@@ -2269,7 +2269,7 @@
                     {
                         IndexField (IDXE, DATE, ByteAcc, NoLock, Preserve)
                         {
-                                ,   3, 
+                                ,   3,
                             F03B,   69
                         }
 
@@ -2280,8 +2280,8 @@
                     {
                         IndexField (IDX0, DAT0, ByteAcc, NoLock, Preserve)
                         {
-                            AccessAs (ByteAcc, 0x00), 
-                                ,   3, 
+                            AccessAs (ByteAcc, 0x00),
+                                ,   3,
                             F03C,   129
                         }
 
@@ -2292,7 +2292,7 @@
                     {
                         IndexField (IDX1, DAT1, ByteAcc, NoLock, Preserve)
                         {
-                                ,   3, 
+                                ,   3,
                             F03D,   256
                         }
 
@@ -2303,8 +2303,8 @@
                     {
                         IndexField (IDX2, DAT2, WordAcc, NoLock, Preserve)
                         {
-                            AccessAs (ByteAcc, 0x00), 
-                                ,   3, 
+                            AccessAs (ByteAcc, 0x00),
+                                ,   3,
                             F03E,   1023
                         }
 
@@ -2315,7 +2315,7 @@
                     {
                         IndexField (IDX3, DAT3, ByteAcc, NoLock, Preserve)
                         {
-                                ,   3, 
+                                ,   3,
                             F03F,   1983
                         }
 
@@ -2338,7 +2338,7 @@
                     {
                         IndexField (IDX4, DAT4, ByteAcc, NoLock, Preserve)
                         {
-                                ,   4, 
+                                ,   4,
                             F040,   1
                         }
 
@@ -2349,8 +2349,8 @@
                     {
                         IndexField (IDX5, DAT5, DWordAcc, NoLock, Preserve)
                         {
-                            AccessAs (ByteAcc, 0x00), 
-                                ,   4, 
+                            AccessAs (ByteAcc, 0x00),
+                                ,   4,
                             F041,   6
                         }
 
@@ -2361,7 +2361,7 @@
                     {
                         IndexField (IDX6, DAT6, ByteAcc, NoLock, Preserve)
                         {
-                                ,   4, 
+                                ,   4,
                             F042,   7
                         }
 
@@ -2372,8 +2372,8 @@
                     {
                         IndexField (IDX7, DAT7, QWordAcc, NoLock, Preserve)
                         {
-                            AccessAs (ByteAcc, 0x00), 
-                                ,   4, 
+                            AccessAs (ByteAcc, 0x00),
+                                ,   4,
                             F043,   8
                         }
 
@@ -2384,7 +2384,7 @@
                     {
                         IndexField (IDX8, DAT8, ByteAcc, NoLock, Preserve)
                         {
-                                ,   4, 
+                                ,   4,
                             F044,   9
                         }
 
@@ -2395,8 +2395,8 @@
                     {
                         IndexField (IDX9, DAT9, AnyAcc, NoLock, Preserve)
                         {
-                            AccessAs (ByteAcc, 0x00), 
-                                ,   4, 
+                            AccessAs (ByteAcc, 0x00),
+                                ,   4,
                             F045,   31
                         }
 
@@ -2407,7 +2407,7 @@
                     {
                         IndexField (IDXA, DATA, ByteAcc, NoLock, Preserve)
                         {
-                                ,   4, 
+                                ,   4,
                             F046,   32
                         }
 
@@ -2418,8 +2418,8 @@
                     {
                         IndexField (IDXB, DATB, ByteAcc, NoLock, Preserve)
                         {
-                            AccessAs (ByteAcc, 0x00), 
-                                ,   4, 
+                            AccessAs (ByteAcc, 0x00),
+                                ,   4,
                             F047,   33
                         }
 
@@ -2430,7 +2430,7 @@
                     {
                         IndexField (IDXC, DATC, ByteAcc, NoLock, Preserve)
                         {
-                                ,   4, 
+                                ,   4,
                             F048,   63
                         }
 
@@ -2441,8 +2441,8 @@
                     {
                         IndexField (IDXD, DATD, WordAcc, NoLock, Preserve)
                         {
-                            AccessAs (ByteAcc, 0x00), 
-                                ,   4, 
+                            AccessAs (ByteAcc, 0x00),
+                                ,   4,
                             F049,   64
                         }
 
@@ -2453,7 +2453,7 @@
                     {
                         IndexField (IDXE, DATE, ByteAcc, NoLock, Preserve)
                         {
-                                ,   4, 
+                                ,   4,
                             F04A,   65
                         }
 
@@ -2464,8 +2464,8 @@
                     {
                         IndexField (IDX0, DAT0, DWordAcc, NoLock, Preserve)
                         {
-                            AccessAs (ByteAcc, 0x00), 
-                                ,   4, 
+                            AccessAs (ByteAcc, 0x00),
+                                ,   4,
                             F04B,   69
                         }
 
@@ -2476,7 +2476,7 @@
                     {
                         IndexField (IDX1, DAT1, ByteAcc, NoLock, Preserve)
                         {
-                                ,   4, 
+                                ,   4,
                             F04C,   129
                         }
 
@@ -2487,8 +2487,8 @@
                     {
                         IndexField (IDX2, DAT2, QWordAcc, NoLock, Preserve)
                         {
-                            AccessAs (ByteAcc, 0x00), 
-                                ,   4, 
+                            AccessAs (ByteAcc, 0x00),
+                                ,   4,
                             F04D,   256
                         }
 
@@ -2499,7 +2499,7 @@
                     {
                         IndexField (IDX3, DAT3, ByteAcc, NoLock, Preserve)
                         {
-                                ,   4, 
+                                ,   4,
                             F04E,   1023
                         }
 
@@ -2510,8 +2510,8 @@
                     {
                         IndexField (IDX4, DAT4, AnyAcc, NoLock, Preserve)
                         {
-                            AccessAs (ByteAcc, 0x00), 
-                                ,   4, 
+                            AccessAs (ByteAcc, 0x00),
+                                ,   4,
                             F04F,   1983
                         }
 
@@ -2534,8 +2534,8 @@
                     {
                         IndexField (IDX5, DAT5, ByteAcc, NoLock, Preserve)
                         {
-                            AccessAs (ByteAcc, 0x00), 
-                                ,   5, 
+                            AccessAs (ByteAcc, 0x00),
+                                ,   5,
                             F050,   1
                         }
 
@@ -2546,7 +2546,7 @@
                     {
                         IndexField (IDX6, DAT6, ByteAcc, NoLock, Preserve)
                         {
-                                ,   5, 
+                                ,   5,
                             F051,   6
                         }
 
@@ -2557,8 +2557,8 @@
                     {
                         IndexField (IDX7, DAT7, WordAcc, NoLock, Preserve)
                         {
-                            AccessAs (ByteAcc, 0x00), 
-                                ,   5, 
+                            AccessAs (ByteAcc, 0x00),
+                                ,   5,
                             F052,   7
                         }
 
@@ -2569,7 +2569,7 @@
                     {
                         IndexField (IDX8, DAT8, ByteAcc, NoLock, Preserve)
                         {
-                                ,   5, 
+                                ,   5,
                             F053,   8
                         }
 
@@ -2580,8 +2580,8 @@
                     {
                         IndexField (IDX9, DAT9, DWordAcc, NoLock, Preserve)
                         {
-                            AccessAs (ByteAcc, 0x00), 
-                                ,   5, 
+                            AccessAs (ByteAcc, 0x00),
+                                ,   5,
                             F054,   9
                         }
 
@@ -2592,7 +2592,7 @@
                     {
                         IndexField (IDXA, DATA, ByteAcc, NoLock, Preserve)
                         {
-                                ,   5, 
+                                ,   5,
                             F055,   31
                         }
 
@@ -2603,8 +2603,8 @@
                     {
                         IndexField (IDXB, DATB, QWordAcc, NoLock, Preserve)
                         {
-                            AccessAs (ByteAcc, 0x00), 
-                                ,   5, 
+                            AccessAs (ByteAcc, 0x00),
+                                ,   5,
                             F056,   32
                         }
 
@@ -2615,7 +2615,7 @@
                     {
                         IndexField (IDXC, DATC, ByteAcc, NoLock, Preserve)
                         {
-                                ,   5, 
+                                ,   5,
                             F057,   33
                         }
 
@@ -2626,8 +2626,8 @@
                     {
                         IndexField (IDXD, DATD, AnyAcc, NoLock, Preserve)
                         {
-                            AccessAs (ByteAcc, 0x00), 
-                                ,   5, 
+                            AccessAs (ByteAcc, 0x00),
+                                ,   5,
                             F058,   63
                         }
 
@@ -2638,7 +2638,7 @@
                     {
                         IndexField (IDXE, DATE, ByteAcc, NoLock, Preserve)
                         {
-                                ,   5, 
+                                ,   5,
                             F059,   64
                         }
 
@@ -2649,8 +2649,8 @@
                     {
                         IndexField (IDX0, DAT0, ByteAcc, NoLock, Preserve)
                         {
-                            AccessAs (ByteAcc, 0x00), 
-                                ,   5, 
+                            AccessAs (ByteAcc, 0x00),
+                                ,   5,
                             F05A,   65
                         }
 
@@ -2661,7 +2661,7 @@
                     {
                         IndexField (IDX1, DAT1, ByteAcc, NoLock, Preserve)
                         {
-                                ,   5, 
+                                ,   5,
                             F05B,   69
                         }
 
@@ -2672,8 +2672,8 @@
                     {
                         IndexField (IDX2, DAT2, WordAcc, NoLock, Preserve)
                         {
-                            AccessAs (ByteAcc, 0x00), 
-                                ,   5, 
+                            AccessAs (ByteAcc, 0x00),
+                                ,   5,
                             F05C,   129
                         }
 
@@ -2684,7 +2684,7 @@
                     {
                         IndexField (IDX3, DAT3, ByteAcc, NoLock, Preserve)
                         {
-                                ,   5, 
+                                ,   5,
                             F05D,   256
                         }
 
@@ -2695,8 +2695,8 @@
                     {
                         IndexField (IDX4, DAT4, WordAcc, NoLock, Preserve)
                         {
-                            AccessAs (ByteAcc, 0x00), 
-                                ,   5, 
+                            AccessAs (ByteAcc, 0x00),
+                                ,   5,
                             F05E,   1023
                         }
 
@@ -2707,7 +2707,7 @@
                     {
                         IndexField (IDX5, DAT5, ByteAcc, NoLock, Preserve)
                         {
-                                ,   5, 
+                                ,   5,
                             F05F,   1983
                         }
 
@@ -2730,7 +2730,7 @@
                     {
                         IndexField (IDX6, DAT6, ByteAcc, NoLock, Preserve)
                         {
-                                ,   6, 
+                                ,   6,
                             F060,   1
                         }
 
@@ -2741,8 +2741,8 @@
                     {
                         IndexField (IDX7, DAT7, QWordAcc, NoLock, Preserve)
                         {
-                            AccessAs (ByteAcc, 0x00), 
-                                ,   6, 
+                            AccessAs (ByteAcc, 0x00),
+                                ,   6,
                             F061,   6
                         }
 
@@ -2753,7 +2753,7 @@
                     {
                         IndexField (IDX8, DAT8, ByteAcc, NoLock, Preserve)
                         {
-                                ,   6, 
+                                ,   6,
                             F062,   7
                         }
 
@@ -2764,8 +2764,8 @@
                     {
                         IndexField (IDX9, DAT9, AnyAcc, NoLock, Preserve)
                         {
-                            AccessAs (ByteAcc, 0x00), 
-                                ,   6, 
+                            AccessAs (ByteAcc, 0x00),
+                                ,   6,
                             F063,   8
                         }
 
@@ -2776,7 +2776,7 @@
                     {
                         IndexField (IDXA, DATA, ByteAcc, NoLock, Preserve)
                         {
-                                ,   6, 
+                                ,   6,
                             F064,   9
                         }
 
@@ -2787,8 +2787,8 @@
                     {
                         IndexField (IDXB, DATB, ByteAcc, NoLock, Preserve)
                         {
-                            AccessAs (ByteAcc, 0x00), 
-                                ,   6, 
+                            AccessAs (ByteAcc, 0x00),
+                                ,   6,
                             F065,   31
                         }
 
@@ -2799,7 +2799,7 @@
                     {
                         IndexField (IDXC, DATC, ByteAcc, NoLock, Preserve)
                         {
-                                ,   6, 
+                                ,   6,
                             F066,   32
                         }
 
@@ -2810,8 +2810,8 @@
                     {
                         IndexField (IDXD, DATD, WordAcc, NoLock, Preserve)
                         {
-                            AccessAs (ByteAcc, 0x00), 
-                                ,   6, 
+                            AccessAs (ByteAcc, 0x00),
+                                ,   6,
                             F067,   33
                         }
 
@@ -2822,7 +2822,7 @@
                     {
                         IndexField (IDXE, DATE, ByteAcc, NoLock, Preserve)
                         {
-                                ,   6, 
+                                ,   6,
                             F068,   63
                         }
 
@@ -2833,8 +2833,8 @@
                     {
                         IndexField (IDX0, DAT0, DWordAcc, NoLock, Preserve)
                         {
-                            AccessAs (ByteAcc, 0x00), 
-                                ,   6, 
+                            AccessAs (ByteAcc, 0x00),
+                                ,   6,
                             F069,   64
                         }
 
@@ -2845,7 +2845,7 @@
                     {
                         IndexField (IDX1, DAT1, ByteAcc, NoLock, Preserve)
                         {
-                                ,   6, 
+                                ,   6,
                             F06A,   65
                         }
 
@@ -2856,8 +2856,8 @@
                     {
                         IndexField (IDX2, DAT2, QWordAcc, NoLock, Preserve)
                         {
-                            AccessAs (ByteAcc, 0x00), 
-                                ,   6, 
+                            AccessAs (ByteAcc, 0x00),
+                                ,   6,
                             F06B,   69
                         }
 
@@ -2868,7 +2868,7 @@
                     {
                         IndexField (IDX3, DAT3, ByteAcc, NoLock, Preserve)
                         {
-                                ,   6, 
+                                ,   6,
                             F06C,   129
                         }
 
@@ -2879,8 +2879,8 @@
                     {
                         IndexField (IDX4, DAT4, AnyAcc, NoLock, Preserve)
                         {
-                            AccessAs (ByteAcc, 0x00), 
-                                ,   6, 
+                            AccessAs (ByteAcc, 0x00),
+                                ,   6,
                             F06D,   256
                         }
 
@@ -2891,7 +2891,7 @@
                     {
                         IndexField (IDX5, DAT5, ByteAcc, NoLock, Preserve)
                         {
-                                ,   6, 
+                                ,   6,
                             F06E,   1023
                         }
 
@@ -2902,8 +2902,8 @@
                     {
                         IndexField (IDX6, DAT6, ByteAcc, NoLock, Preserve)
                         {
-                            AccessAs (ByteAcc, 0x00), 
-                                ,   6, 
+                            AccessAs (ByteAcc, 0x00),
+                                ,   6,
                             F06F,   1983
                         }
 
@@ -2926,8 +2926,8 @@
                     {
                         IndexField (IDX7, DAT7, WordAcc, NoLock, Preserve)
                         {
-                            AccessAs (ByteAcc, 0x00), 
-                                ,   7, 
+                            AccessAs (ByteAcc, 0x00),
+                                ,   7,
                             F070,   1
                         }
 
@@ -2938,7 +2938,7 @@
                     {
                         IndexField (IDX8, DAT8, ByteAcc, NoLock, Preserve)
                         {
-                                ,   7, 
+                                ,   7,
                             F071,   6
                         }
 
@@ -2949,8 +2949,8 @@
                     {
                         IndexField (IDX9, DAT9, DWordAcc, NoLock, Preserve)
                         {
-                            AccessAs (ByteAcc, 0x00), 
-                                ,   7, 
+                            AccessAs (ByteAcc, 0x00),
+                                ,   7,
                             F072,   7
                         }
 
@@ -2961,7 +2961,7 @@
                     {
                         IndexField (IDXA, DATA, ByteAcc, NoLock, Preserve)
                         {
-                                ,   7, 
+                                ,   7,
                             F073,   8
                         }
 
@@ -2972,8 +2972,8 @@
                     {
                         IndexField (IDXB, DATB, QWordAcc, NoLock, Preserve)
                         {
-                            AccessAs (ByteAcc, 0x00), 
-                                ,   7, 
+                            AccessAs (ByteAcc, 0x00),
+                                ,   7,
                             F074,   9
                         }
 
@@ -2984,7 +2984,7 @@
                     {
                         IndexField (IDXC, DATC, ByteAcc, NoLock, Preserve)
                         {
-                                ,   7, 
+                                ,   7,
                             F075,   31
                         }
 
@@ -2995,8 +2995,8 @@
                     {
                         IndexField (IDXD, DATD, AnyAcc, NoLock, Preserve)
                         {
-                            AccessAs (ByteAcc, 0x00), 
-                                ,   7, 
+                            AccessAs (ByteAcc, 0x00),
+                                ,   7,
                             F076,   32
                         }
 
@@ -3007,7 +3007,7 @@
                     {
                         IndexField (IDXE, DATE, ByteAcc, NoLock, Preserve)
                         {
-                                ,   7, 
+                                ,   7,
                             F077,   33
                         }
 
@@ -3018,8 +3018,8 @@
                     {
                         IndexField (IDX0, DAT0, ByteAcc, NoLock, Preserve)
                         {
-                            AccessAs (ByteAcc, 0x00), 
-                                ,   7, 
+                            AccessAs (ByteAcc, 0x00),
+                                ,   7,
                             F078,   63
                         }
 
@@ -3030,7 +3030,7 @@
                     {
                         IndexField (IDX1, DAT1, ByteAcc, NoLock, Preserve)
                         {
-                                ,   7, 
+                                ,   7,
                             F079,   64
                         }
 
@@ -3041,8 +3041,8 @@
                     {
                         IndexField (IDX2, DAT2, WordAcc, NoLock, Preserve)
                         {
-                            AccessAs (ByteAcc, 0x00), 
-                                ,   7, 
+                            AccessAs (ByteAcc, 0x00),
+                                ,   7,
                             F07A,   65
                         }
 
@@ -3053,7 +3053,7 @@
                     {
                         IndexField (IDX3, DAT3, ByteAcc, NoLock, Preserve)
                         {
-                                ,   7, 
+                                ,   7,
                             F07B,   69
                         }
 
@@ -3064,8 +3064,8 @@
                     {
                         IndexField (IDX4, DAT4, DWordAcc, NoLock, Preserve)
                         {
-                            AccessAs (ByteAcc, 0x00), 
-                                ,   7, 
+                            AccessAs (ByteAcc, 0x00),
+                                ,   7,
                             F07C,   129
                         }
 
@@ -3076,7 +3076,7 @@
                     {
                         IndexField (IDX5, DAT5, ByteAcc, NoLock, Preserve)
                         {
-                                ,   7, 
+                                ,   7,
                             F07D,   256
                         }
 
@@ -3087,8 +3087,8 @@
                     {
                         IndexField (IDX6, DAT6, QWordAcc, NoLock, Preserve)
                         {
-                            AccessAs (ByteAcc, 0x00), 
-                                ,   7, 
+                            AccessAs (ByteAcc, 0x00),
+                                ,   7,
                             F07E,   1023
                         }
 
@@ -3099,7 +3099,7 @@
                     {
                         IndexField (IDX7, DAT7, ByteAcc, NoLock, Preserve)
                         {
-                                ,   7, 
+                                ,   7,
                             F07F,   1983
                         }
 
@@ -3122,7 +3122,7 @@
                     {
                         IndexField (IDX8, DAT8, ByteAcc, NoLock, Preserve)
                         {
-                            Offset (0x01), 
+                            Offset (0x01),
                             F080,   1
                         }
 
@@ -3133,8 +3133,8 @@
                     {
                         IndexField (IDX9, DAT9, AnyAcc, NoLock, Preserve)
                         {
-                            AccessAs (ByteAcc, 0x00), 
-                            Offset (0x01), 
+                            AccessAs (ByteAcc, 0x00),
+                            Offset (0x01),
                             F081,   6
                         }
 
@@ -3145,7 +3145,7 @@
                     {
                         IndexField (IDXA, DATA, ByteAcc, NoLock, Preserve)
                         {
-                            Offset (0x01), 
+                            Offset (0x01),
                             F082,   7
                         }
 
@@ -3156,8 +3156,8 @@
                     {
                         IndexField (IDXB, DATB, ByteAcc, NoLock, Preserve)
                         {
-                            AccessAs (ByteAcc, 0x00), 
-                            Offset (0x01), 
+                            AccessAs (ByteAcc, 0x00),
+                            Offset (0x01),
                             F083,   8
                         }
 
@@ -3168,7 +3168,7 @@
                     {
                         IndexField (IDXC, DATC, ByteAcc, NoLock, Preserve)
                         {
-                            Offset (0x01), 
+                            Offset (0x01),
                             F084,   9
                         }
 
@@ -3179,8 +3179,8 @@
                     {
                         IndexField (IDXD, DATD, WordAcc, NoLock, Preserve)
                         {
-                            AccessAs (ByteAcc, 0x00), 
-                            Offset (0x01), 
+                            AccessAs (ByteAcc, 0x00),
+                            Offset (0x01),
                             F085,   31
                         }
 
@@ -3191,7 +3191,7 @@
                     {
                         IndexField (IDXE, DATE, ByteAcc, NoLock, Preserve)
                         {
-                            Offset (0x01), 
+                            Offset (0x01),
                             F086,   32
                         }
 
@@ -3202,8 +3202,8 @@
                     {
                         IndexField (IDX0, DAT0, DWordAcc, NoLock, Preserve)
                         {
-                            AccessAs (ByteAcc, 0x00), 
-                            Offset (0x01), 
+                            AccessAs (ByteAcc, 0x00),
+                            Offset (0x01),
                             F087,   33
                         }
 
@@ -3214,7 +3214,7 @@
                     {
                         IndexField (IDX1, DAT1, ByteAcc, NoLock, Preserve)
                         {
-                            Offset (0x01), 
+                            Offset (0x01),
                             F088,   63
                         }
 
@@ -3225,8 +3225,8 @@
                     {
                         IndexField (IDX2, DAT2, QWordAcc, NoLock, Preserve)
                         {
-                            AccessAs (ByteAcc, 0x00), 
-                            Offset (0x01), 
+                            AccessAs (ByteAcc, 0x00),
+                            Offset (0x01),
                             F089,   64
                         }
 
@@ -3237,7 +3237,7 @@
                     {
                         IndexField (IDX3, DAT3, ByteAcc, NoLock, Preserve)
                         {
-                            Offset (0x01), 
+                            Offset (0x01),
                             F08A,   65
                         }
 
@@ -3248,8 +3248,8 @@
                     {
                         IndexField (IDX4, DAT4, AnyAcc, NoLock, Preserve)
                         {
-                            AccessAs (ByteAcc, 0x00), 
-                            Offset (0x01), 
+                            AccessAs (ByteAcc, 0x00),
+                            Offset (0x01),
                             F08B,   69
                         }
 
@@ -3260,7 +3260,7 @@
                     {
                         IndexField (IDX5, DAT5, ByteAcc, NoLock, Preserve)
                         {
-                            Offset (0x01), 
+                            Offset (0x01),
                             F08C,   129
                         }
 
@@ -3271,8 +3271,8 @@
                     {
                         IndexField (IDX6, DAT6, ByteAcc, NoLock, Preserve)
                         {
-                            AccessAs (ByteAcc, 0x00), 
-                            Offset (0x01), 
+                            AccessAs (ByteAcc, 0x00),
+                            Offset (0x01),
                             F08D,   256
                         }
 
@@ -3283,7 +3283,7 @@
                     {
                         IndexField (IDX7, DAT7, ByteAcc, NoLock, Preserve)
                         {
-                            Offset (0x01), 
+                            Offset (0x01),
                             F08E,   1023
                         }
 
@@ -3294,8 +3294,8 @@
                     {
                         IndexField (IDX8, DAT8, WordAcc, NoLock, Preserve)
                         {
-                            AccessAs (ByteAcc, 0x00), 
-                            Offset (0x01), 
+                            AccessAs (ByteAcc, 0x00),
+                            Offset (0x01),
                             F08F,   1983
                         }
 
@@ -3318,8 +3318,8 @@
                     {
                         IndexField (IDX9, DAT9, QWordAcc, NoLock, Preserve)
                         {
-                            AccessAs (ByteAcc, 0x00), 
-                                ,   9, 
+                            AccessAs (ByteAcc, 0x00),
+                                ,   9,
                             F090,   1
                         }
 
@@ -3330,7 +3330,7 @@
                     {
                         IndexField (IDXA, DATA, ByteAcc, NoLock, Preserve)
                         {
-                                ,   9, 
+                                ,   9,
                             F091,   6
                         }
 
@@ -3341,8 +3341,8 @@
                     {
                         IndexField (IDXB, DATB, AnyAcc, NoLock, Preserve)
                         {
-                            AccessAs (ByteAcc, 0x00), 
-                                ,   9, 
+                            AccessAs (ByteAcc, 0x00),
+                                ,   9,
                             F092,   7
                         }
 
@@ -3353,7 +3353,7 @@
                     {
                         IndexField (IDXC, DATC, ByteAcc, NoLock, Preserve)
                         {
-                                ,   9, 
+                                ,   9,
                             F093,   8
                         }
 
@@ -3364,8 +3364,8 @@
                     {
                         IndexField (IDXD, DATD, ByteAcc, NoLock, Preserve)
                         {
-                            AccessAs (ByteAcc, 0x00), 
-                                ,   9, 
+                            AccessAs (ByteAcc, 0x00),
+                                ,   9,
                             F094,   9
                         }
 
@@ -3376,7 +3376,7 @@
                     {
                         IndexField (IDXE, DATE, ByteAcc, NoLock, Preserve)
                         {
-                                ,   9, 
+                                ,   9,
                             F095,   31
                         }
 
@@ -3387,8 +3387,8 @@
                     {
                         IndexField (IDX0, DAT0, WordAcc, NoLock, Preserve)
                         {
-                            AccessAs (ByteAcc, 0x00), 
-                                ,   9, 
+                            AccessAs (ByteAcc, 0x00),
+                                ,   9,
                             F096,   32
                         }
 
@@ -3399,7 +3399,7 @@
                     {
                         IndexField (IDX1, DAT1, ByteAcc, NoLock, Preserve)
                         {
-                                ,   9, 
+                                ,   9,
                             F097,   33
                         }
 
@@ -3410,8 +3410,8 @@
                     {
                         IndexField (IDX2, DAT2, DWordAcc, NoLock, Preserve)
                         {
-                            AccessAs (ByteAcc, 0x00), 
-                                ,   9, 
+                            AccessAs (ByteAcc, 0x00),
+                                ,   9,
                             F098,   63
                         }
 
@@ -3422,7 +3422,7 @@
                     {
                         IndexField (IDX3, DAT3, ByteAcc, NoLock, Preserve)
                         {
-                                ,   9, 
+                                ,   9,
                             F099,   64
                         }
 
@@ -3433,8 +3433,8 @@
                     {
                         IndexField (IDX4, DAT4, QWordAcc, NoLock, Preserve)
                         {
-                            AccessAs (ByteAcc, 0x00), 
-                                ,   9, 
+                            AccessAs (ByteAcc, 0x00),
+                                ,   9,
                             F09A,   65
                         }
 
@@ -3445,7 +3445,7 @@
                     {
                         IndexField (IDX5, DAT5, ByteAcc, NoLock, Preserve)
                         {
-                                ,   9, 
+                                ,   9,
                             F09B,   69
                         }
 
@@ -3456,8 +3456,8 @@
                     {
                         IndexField (IDX6, DAT6, AnyAcc, NoLock, Preserve)
                         {
-                            AccessAs (ByteAcc, 0x00), 
-                                ,   9, 
+                            AccessAs (ByteAcc, 0x00),
+                                ,   9,
                             F09C,   129
                         }
 
@@ -3468,7 +3468,7 @@
                     {
                         IndexField (IDX7, DAT7, ByteAcc, NoLock, Preserve)
                         {
-                                ,   9, 
+                                ,   9,
                             F09D,   256
                         }
 
@@ -3479,8 +3479,8 @@
                     {
                         IndexField (IDX8, DAT8, ByteAcc, NoLock, Preserve)
                         {
-                            AccessAs (ByteAcc, 0x00), 
-                                ,   9, 
+                            AccessAs (ByteAcc, 0x00),
+                                ,   9,
                             F09E,   1023
                         }
 
@@ -3491,7 +3491,7 @@
                     {
                         IndexField (IDX9, DAT9, ByteAcc, NoLock, Preserve)
                         {
-                                ,   9, 
+                                ,   9,
                             F09F,   1983
                         }
 
@@ -3514,8 +3514,8 @@
                     {
                         IndexField (IDXA, DATA, ByteAcc, NoLock, Preserve)
                         {
-                            Offset (0x03), 
-                                ,   7, 
+                            Offset (0x03),
+                                ,   7,
                             F0A0,   1
                         }
 
@@ -3526,9 +3526,9 @@
                     {
                         IndexField (IDXB, DATB, WordAcc, NoLock, Preserve)
                         {
-                            AccessAs (ByteAcc, 0x00), 
-                            Offset (0x03), 
-                                ,   7, 
+                            AccessAs (ByteAcc, 0x00),
+                            Offset (0x03),
+                                ,   7,
                             F0A1,   6
                         }
 
@@ -3539,8 +3539,8 @@
                     {
                         IndexField (IDXC, DATC, ByteAcc, NoLock, Preserve)
                         {
-                            Offset (0x03), 
-                                ,   7, 
+                            Offset (0x03),
+                                ,   7,
                             F0A2,   7
                         }
 
@@ -3551,9 +3551,9 @@
                     {
                         IndexField (IDXD, DATD, DWordAcc, NoLock, Preserve)
                         {
-                            AccessAs (ByteAcc, 0x00), 
-                            Offset (0x03), 
-                                ,   7, 
+                            AccessAs (ByteAcc, 0x00),
+                            Offset (0x03),
+                                ,   7,
                             F0A3,   8
                         }
 
@@ -3564,8 +3564,8 @@
                     {
                         IndexField (IDXE, DATE, ByteAcc, NoLock, Preserve)
                         {
-                            Offset (0x03), 
-                                ,   7, 
+                            Offset (0x03),
+                                ,   7,
                             F0A4,   9
                         }
 
@@ -3576,9 +3576,9 @@
                     {
                         IndexField (IDX0, DAT0, QWordAcc, NoLock, Preserve)
                         {
-                            AccessAs (ByteAcc, 0x00), 
-                            Offset (0x03), 
-                                ,   7, 
+                            AccessAs (ByteAcc, 0x00),
+                            Offset (0x03),
+                                ,   7,
                             F0A5,   31
                         }
 
@@ -3589,8 +3589,8 @@
                     {
                         IndexField (IDX1, DAT1, ByteAcc, NoLock, Preserve)
                         {
-                            Offset (0x03), 
-                                ,   7, 
+                            Offset (0x03),
+                                ,   7,
                             F0A6,   32
                         }
 
@@ -3601,9 +3601,9 @@
                     {
                         IndexField (IDX2, DAT2, AnyAcc, NoLock, Preserve)
                         {
-                            AccessAs (ByteAcc, 0x00), 
-                            Offset (0x03), 
-                                ,   7, 
+                            AccessAs (ByteAcc, 0x00),
+                            Offset (0x03),
+                                ,   7,
                             F0A7,   33
                         }
 
@@ -3614,8 +3614,8 @@
                     {
                         IndexField (IDX3, DAT3, ByteAcc, NoLock, Preserve)
                         {
-                            Offset (0x03), 
-                                ,   7, 
+                            Offset (0x03),
+                                ,   7,
                             F0A8,   63
                         }
 
@@ -3626,9 +3626,9 @@
                     {
                         IndexField (IDX4, DAT4, ByteAcc, NoLock, Preserve)
                         {
-                            AccessAs (ByteAcc, 0x00), 
-                            Offset (0x03), 
-                                ,   7, 
+                            AccessAs (ByteAcc, 0x00),
+                            Offset (0x03),
+                                ,   7,
                             F0A9,   64
                         }
 
@@ -3639,8 +3639,8 @@
                     {
                         IndexField (IDX5, DAT5, ByteAcc, NoLock, Preserve)
                         {
-                            Offset (0x03), 
-                                ,   7, 
+                            Offset (0x03),
+                                ,   7,
                             F0AA,   65
                         }
 
@@ -3651,9 +3651,9 @@
                     {
                         IndexField (IDX6, DAT6, WordAcc, NoLock, Preserve)
                         {
-                            AccessAs (ByteAcc, 0x00), 
-                            Offset (0x03), 
-                                ,   7, 
+                            AccessAs (ByteAcc, 0x00),
+                            Offset (0x03),
+                                ,   7,
                             F0AB,   69
                         }
 
@@ -3664,8 +3664,8 @@
                     {
                         IndexField (IDX7, DAT7, ByteAcc, NoLock, Preserve)
                         {
-                            Offset (0x03), 
-                                ,   7, 
+                            Offset (0x03),
+                                ,   7,
                             F0AC,   129
                         }
 
@@ -3676,9 +3676,9 @@
                     {
                         IndexField (IDX8, DAT8, DWordAcc, NoLock, Preserve)
                         {
-                            AccessAs (ByteAcc, 0x00), 
-                            Offset (0x03), 
-                                ,   7, 
+                            AccessAs (ByteAcc, 0x00),
+                            Offset (0x03),
+                                ,   7,
                             F0AD,   256
                         }
 
@@ -3689,8 +3689,8 @@
                     {
                         IndexField (IDX9, DAT9, ByteAcc, NoLock, Preserve)
                         {
-                            Offset (0x03), 
-                                ,   7, 
+                            Offset (0x03),
+                                ,   7,
                             F0AE,   1023
                         }
 
@@ -3701,9 +3701,9 @@
                     {
                         IndexField (IDXA, DATA, QWordAcc, NoLock, Preserve)
                         {
-                            AccessAs (ByteAcc, 0x00), 
-                            Offset (0x03), 
-                                ,   7, 
+                            AccessAs (ByteAcc, 0x00),
+                            Offset (0x03),
+                                ,   7,
                             F0AF,   1983
                         }
 
@@ -3726,8 +3726,8 @@
                     {
                         IndexField (IDXB, DATB, AnyAcc, NoLock, Preserve)
                         {
-                            AccessAs (ByteAcc, 0x00), 
-                            Offset (0x04), 
+                            AccessAs (ByteAcc, 0x00),
+                            Offset (0x04),
                             F0B0,   1
                         }
 
@@ -3738,7 +3738,7 @@
                     {
                         IndexField (IDXC, DATC, ByteAcc, NoLock, Preserve)
                         {
-                            Offset (0x04), 
+                            Offset (0x04),
                             F0B1,   6
                         }
 
@@ -3749,8 +3749,8 @@
                     {
                         IndexField (IDXD, DATD, ByteAcc, NoLock, Preserve)
                         {
-                            AccessAs (ByteAcc, 0x00), 
-                            Offset (0x04), 
+                            AccessAs (ByteAcc, 0x00),
+                            Offset (0x04),
                             F0B2,   7
                         }
 
@@ -3761,7 +3761,7 @@
                     {
                         IndexField (IDXE, DATE, ByteAcc, NoLock, Preserve)
                         {
-                            Offset (0x04), 
+                            Offset (0x04),
                             F0B3,   8
                         }
 
@@ -3772,8 +3772,8 @@
                     {
                         IndexField (IDX0, DAT0, WordAcc, NoLock, Preserve)
                         {
-                            AccessAs (ByteAcc, 0x00), 
-                            Offset (0x04), 
+                            AccessAs (ByteAcc, 0x00),
+                            Offset (0x04),
                             F0B4,   9
                         }
 
@@ -3784,7 +3784,7 @@
                     {
                         IndexField (IDX1, DAT1, ByteAcc, NoLock, Preserve)
                         {
-                            Offset (0x04), 
+                            Offset (0x04),
                             F0B5,   31
                         }
 
@@ -3795,8 +3795,8 @@
                     {
                         IndexField (IDX2, DAT2, DWordAcc, NoLock, Preserve)
                         {
-                            AccessAs (ByteAcc, 0x00), 
-                            Offset (0x04), 
+                            AccessAs (ByteAcc, 0x00),
+                            Offset (0x04),
                             F0B6,   32
                         }
 
@@ -3807,7 +3807,7 @@
                     {
                         IndexField (IDX3, DAT3, ByteAcc, NoLock, Preserve)
                         {
-                            Offset (0x04), 
+                            Offset (0x04),
                             F0B7,   33
                         }
 
@@ -3818,8 +3818,8 @@
                     {
                         IndexField (IDX4, DAT4, QWordAcc, NoLock, Preserve)
                         {
-                            AccessAs (ByteAcc, 0x00), 
-                            Offset (0x04), 
+                            AccessAs (ByteAcc, 0x00),
+                            Offset (0x04),
                             F0B8,   63
                         }
 
@@ -3830,7 +3830,7 @@
                     {
                         IndexField (IDX5, DAT5, ByteAcc, NoLock, Preserve)
                         {
-                            Offset (0x04), 
+                            Offset (0x04),
                             F0B9,   64
                         }
 
@@ -3841,8 +3841,8 @@
                     {
                         IndexField (IDX6, DAT6, AnyAcc, NoLock, Preserve)
                         {
-                            AccessAs (ByteAcc, 0x00), 
-                            Offset (0x04), 
+                            AccessAs (ByteAcc, 0x00),
+                            Offset (0x04),
                             F0BA,   65
                         }
 
@@ -3853,7 +3853,7 @@
                     {
                         IndexField (IDX7, DAT7, ByteAcc, NoLock, Preserve)
                         {
-                            Offset (0x04), 
+                            Offset (0x04),
                             F0BB,   69
                         }
 
@@ -3864,8 +3864,8 @@
                     {
                         IndexField (IDX8, DAT8, ByteAcc, NoLock, Preserve)
                         {
-                            AccessAs (ByteAcc, 0x00), 
-                            Offset (0x04), 
+                            AccessAs (ByteAcc, 0x00),
+                            Offset (0x04),
                             F0BC,   129
                         }
 
@@ -3876,7 +3876,7 @@
                     {
                         IndexField (IDX9, DAT9, ByteAcc, NoLock, Preserve)
                         {
-                            Offset (0x04), 
+                            Offset (0x04),
                             F0BD,   256
                         }
 
@@ -3887,8 +3887,8 @@
                     {
                         IndexField (IDXA, DATA, WordAcc, NoLock, Preserve)
                         {
-                            AccessAs (ByteAcc, 0x00), 
-                            Offset (0x04), 
+                            AccessAs (ByteAcc, 0x00),
+                            Offset (0x04),
                             F0BE,   1023
                         }
 
@@ -3899,7 +3899,7 @@
                     {
                         IndexField (IDXB, DATB, ByteAcc, NoLock, Preserve)
                         {
-                            Offset (0x04), 
+                            Offset (0x04),
                             F0BF,   1983
                         }
 
@@ -3922,7 +3922,7 @@
                     {
                         IndexField (IDXC, DATC, ByteAcc, NoLock, Preserve)
                         {
-                                ,   33, 
+                                ,   33,
                             F0C0,   1
                         }
 
@@ -3933,8 +3933,8 @@
                     {
                         IndexField (IDXD, DATD, DWordAcc, NoLock, Preserve)
                         {
-                            AccessAs (ByteAcc, 0x00), 
-                                ,   33, 
+                            AccessAs (ByteAcc, 0x00),
+                                ,   33,
                             F0C1,   6
                         }
 
@@ -3945,7 +3945,7 @@
                     {
                         IndexField (IDXE, DATE, ByteAcc, NoLock, Preserve)
                         {
-                                ,   33, 
+                                ,   33,
                             F0C2,   7
                         }
 
@@ -3956,8 +3956,8 @@
                     {
                         IndexField (IDX0, DAT0, QWordAcc, NoLock, Preserve)
                         {
-                            AccessAs (ByteAcc, 0x00), 
-                                ,   33, 
+                            AccessAs (ByteAcc, 0x00),
+                                ,   33,
                             F0C3,   8
                         }
 
@@ -3968,7 +3968,7 @@
                     {
                         IndexField (IDX1, DAT1, ByteAcc, NoLock, Preserve)
                         {
-                                ,   33, 
+                                ,   33,
                             F0C4,   9
                         }
 
@@ -3979,8 +3979,8 @@
                     {
                         IndexField (IDX2, DAT2, AnyAcc, NoLock, Preserve)
                         {
-                            AccessAs (ByteAcc, 0x00), 
-                                ,   33, 
+                            AccessAs (ByteAcc, 0x00),
+                                ,   33,
                             F0C5,   31
                         }
 
@@ -3991,7 +3991,7 @@
                     {
                         IndexField (IDX3, DAT3, ByteAcc, NoLock, Preserve)
                         {
-                                ,   33, 
+                                ,   33,
                             F0C6,   32
                         }
 
@@ -4002,8 +4002,8 @@
                     {
                         IndexField (IDX4, DAT4, ByteAcc, NoLock, Preserve)
                         {
-                            AccessAs (ByteAcc, 0x00), 
-                                ,   33, 
+                            AccessAs (ByteAcc, 0x00),
+                                ,   33,
                             F0C7,   33
                         }
 
@@ -4014,7 +4014,7 @@
                     {
                         IndexField (IDX5, DAT5, ByteAcc, NoLock, Preserve)
                         {
-                                ,   33, 
+                                ,   33,
                             F0C8,   63
                         }
 
@@ -4025,8 +4025,8 @@
                     {
                         IndexField (IDX6, DAT6, WordAcc, NoLock, Preserve)
                         {
-                            AccessAs (ByteAcc, 0x00), 
-                                ,   33, 
+                            AccessAs (ByteAcc, 0x00),
+                                ,   33,
                             F0C9,   64
                         }
 
@@ -4037,7 +4037,7 @@
                     {
                         IndexField (IDX7, DAT7, ByteAcc, NoLock, Preserve)
                         {
-                                ,   33, 
+                                ,   33,
                             F0CA,   65
                         }
 
@@ -4048,8 +4048,8 @@
                     {
                         IndexField (IDX8, DAT8, DWordAcc, NoLock, Preserve)
                         {
-                            AccessAs (ByteAcc, 0x00), 
-                                ,   33, 
+                            AccessAs (ByteAcc, 0x00),
+                                ,   33,
                             F0CB,   69
                         }
 
@@ -4060,7 +4060,7 @@
                     {
                         IndexField (IDX9, DAT9, ByteAcc, NoLock, Preserve)
                         {
-                                ,   33, 
+                                ,   33,
                             F0CC,   129
                         }
 
@@ -4071,8 +4071,8 @@
                     {
                         IndexField (IDXA, DATA, QWordAcc, NoLock, Preserve)
                         {
-                            AccessAs (ByteAcc, 0x00), 
-                                ,   33, 
+                            AccessAs (ByteAcc, 0x00),
+                                ,   33,
                             F0CD,   256
                         }
 
@@ -4083,7 +4083,7 @@
                     {
                         IndexField (IDXB, DATB, ByteAcc, NoLock, Preserve)
                         {
-                                ,   33, 
+                                ,   33,
                             F0CE,   1023
                         }
 
@@ -4094,8 +4094,8 @@
                     {
                         IndexField (IDXC, DATC, AnyAcc, NoLock, Preserve)
                         {
-                            AccessAs (ByteAcc, 0x00), 
-                                ,   33, 
+                            AccessAs (ByteAcc, 0x00),
+                                ,   33,
                             F0CF,   1983
                         }
 
@@ -4118,8 +4118,8 @@
                     {
                         IndexField (IDXD, DATD, ByteAcc, NoLock, Preserve)
                         {
-                            AccessAs (ByteAcc, 0x00), 
-                                ,   63, 
+                            AccessAs (ByteAcc, 0x00),
+                                ,   63,
                             F0D0,   1
                         }
 
@@ -4130,7 +4130,7 @@
                     {
                         IndexField (IDXE, DATE, ByteAcc, NoLock, Preserve)
                         {
-                                ,   63, 
+                                ,   63,
                             F0D1,   6
                         }
 
@@ -4141,8 +4141,8 @@
                     {
                         IndexField (IDX0, DAT0, WordAcc, NoLock, Preserve)
                         {
-                            AccessAs (ByteAcc, 0x00), 
-                                ,   63, 
+                            AccessAs (ByteAcc, 0x00),
+                                ,   63,
                             F0D2,   7
                         }
 
@@ -4153,7 +4153,7 @@
                     {
                         IndexField (IDX1, DAT1, ByteAcc, NoLock, Preserve)
                         {
-                                ,   63, 
+                                ,   63,
                             F0D3,   8
                         }
 
@@ -4164,8 +4164,8 @@
                     {
                         IndexField (IDX2, DAT2, DWordAcc, NoLock, Preserve)
                         {
-                            AccessAs (ByteAcc, 0x00), 
-                                ,   63, 
+                            AccessAs (ByteAcc, 0x00),
+                                ,   63,
                             F0D4,   9
                         }
 
@@ -4176,7 +4176,7 @@
                     {
                         IndexField (IDX3, DAT3, ByteAcc, NoLock, Preserve)
                         {
-                                ,   63, 
+                                ,   63,
                             F0D5,   31
                         }
 
@@ -4187,8 +4187,8 @@
                     {
                         IndexField (IDX4, DAT4, QWordAcc, NoLock, Preserve)
                         {
-                            AccessAs (ByteAcc, 0x00), 
-                                ,   63, 
+                            AccessAs (ByteAcc, 0x00),
+                                ,   63,
                             F0D6,   32
                         }
 
@@ -4199,7 +4199,7 @@
                     {
                         IndexField (IDX5, DAT5, ByteAcc, NoLock, Preserve)
                         {
-                                ,   63, 
+                                ,   63,
                             F0D7,   33
                         }
 
@@ -4210,8 +4210,8 @@
                     {
                         IndexField (IDX6, DAT6, AnyAcc, NoLock, Preserve)
                         {
-                            AccessAs (ByteAcc, 0x00), 
-                                ,   63, 
+                            AccessAs (ByteAcc, 0x00),
+                                ,   63,
                             F0D8,   63
                         }
 
@@ -4222,7 +4222,7 @@
                     {
                         IndexField (IDX7, DAT7, ByteAcc, NoLock, Preserve)
                         {
-                                ,   63, 
+                                ,   63,
                             F0D9,   64
                         }
 
@@ -4233,8 +4233,8 @@
                     {
                         IndexField (IDX8, DAT8, ByteAcc, NoLock, Preserve)
                         {
-                            AccessAs (ByteAcc, 0x00), 
-                                ,   63, 
+                            AccessAs (ByteAcc, 0x00),
+                                ,   63,
                             F0DA,   65
                         }
 
@@ -4245,7 +4245,7 @@
                     {
                         IndexField (IDX9, DAT9, ByteAcc, NoLock, Preserve)
                         {
-                                ,   63, 
+                                ,   63,
                             F0DB,   69
                         }
 
@@ -4256,8 +4256,8 @@
                     {
                         IndexField (IDXA, DATA, WordAcc, NoLock, Preserve)
                         {
-                            AccessAs (ByteAcc, 0x00), 
-                                ,   63, 
+                            AccessAs (ByteAcc, 0x00),
+                                ,   63,
                             F0DC,   129
                         }
 
@@ -4268,7 +4268,7 @@
                     {
                         IndexField (IDXB, DATB, ByteAcc, NoLock, Preserve)
                         {
-                                ,   63, 
+                                ,   63,
                             F0DD,   256
                         }
 
@@ -4279,8 +4279,8 @@
                     {
                         IndexField (IDXC, DATC, DWordAcc, NoLock, Preserve)
                         {
-                            AccessAs (ByteAcc, 0x00), 
-                                ,   63, 
+                            AccessAs (ByteAcc, 0x00),
+                                ,   63,
                             F0DE,   1023
                         }
 
@@ -4291,7 +4291,7 @@
                     {
                         IndexField (IDXD, DATD, ByteAcc, NoLock, Preserve)
                         {
-                                ,   63, 
+                                ,   63,
                             F0DF,   1983
                         }
 
@@ -4314,7 +4314,7 @@
                     {
                         IndexField (IDXE, DATE, ByteAcc, NoLock, Preserve)
                         {
-                            Offset (0x08), 
+                            Offset (0x08),
                             F0E0,   1
                         }
 
@@ -4325,8 +4325,8 @@
                     {
                         IndexField (IDX0, DAT0, QWordAcc, NoLock, Preserve)
                         {
-                            AccessAs (ByteAcc, 0x00), 
-                            Offset (0x08), 
+                            AccessAs (ByteAcc, 0x00),
+                            Offset (0x08),
                             F0E1,   6
                         }
 
@@ -4337,7 +4337,7 @@
                     {
                         IndexField (IDX1, DAT1, ByteAcc, NoLock, Preserve)
                         {
-                            Offset (0x08), 
+                            Offset (0x08),
                             F0E2,   7
                         }
 
@@ -4348,8 +4348,8 @@
                     {
                         IndexField (IDX2, DAT2, AnyAcc, NoLock, Preserve)
                         {
-                            AccessAs (ByteAcc, 0x00), 
-                            Offset (0x08), 
+                            AccessAs (ByteAcc, 0x00),
+                            Offset (0x08),
                             F0E3,   8
                         }
 
@@ -4360,7 +4360,7 @@
                     {
                         IndexField (IDX3, DAT3, ByteAcc, NoLock, Preserve)
                         {
-                            Offset (0x08), 
+                            Offset (0x08),
                             F0E4,   9
                         }
 
@@ -4371,8 +4371,8 @@
                     {
                         IndexField (IDX4, DAT4, ByteAcc, NoLock, Preserve)
                         {
-                            AccessAs (ByteAcc, 0x00), 
-                            Offset (0x08), 
+                            AccessAs (ByteAcc, 0x00),
+                            Offset (0x08),
                             F0E5,   31
                         }
 
@@ -4383,7 +4383,7 @@
                     {
                         IndexField (IDX5, DAT5, ByteAcc, NoLock, Preserve)
                         {
-                            Offset (0x08), 
+                            Offset (0x08),
                             F0E6,   32
                         }
 
@@ -4394,8 +4394,8 @@
                     {
                         IndexField (IDX6, DAT6, WordAcc, NoLock, Preserve)
                         {
-                            AccessAs (ByteAcc, 0x00), 
-                            Offset (0x08), 
+                            AccessAs (ByteAcc, 0x00),
+                            Offset (0x08),
                             F0E7,   33
                         }
 
@@ -4406,7 +4406,7 @@
                     {
                         IndexField (IDX7, DAT7, ByteAcc, NoLock, Preserve)
                         {
-                            Offset (0x08), 
+                            Offset (0x08),
                             F0E8,   63
                         }
 
@@ -4417,8 +4417,8 @@
                     {
                         IndexField (IDX8, DAT8, DWordAcc, NoLock, Preserve)
                         {
-                            AccessAs (ByteAcc, 0x00), 
-                            Offset (0x08), 
+                            AccessAs (ByteAcc, 0x00),
+                            Offset (0x08),
                             F0E9,   64
                         }
 
@@ -4429,7 +4429,7 @@
                     {
                         IndexField (IDX9, DAT9, ByteAcc, NoLock, Preserve)
                         {
-                            Offset (0x08), 
+                            Offset (0x08),
                             F0EA,   65
                         }
 
@@ -4440,8 +4440,8 @@
                     {
                         IndexField (IDXA, DATA, QWordAcc, NoLock, Preserve)
                         {
-                            AccessAs (ByteAcc, 0x00), 
-                            Offset (0x08), 
+                            AccessAs (ByteAcc, 0x00),
+                            Offset (0x08),
                             F0EB,   69
                         }
 
@@ -4452,7 +4452,7 @@
                     {
                         IndexField (IDXB, DATB, ByteAcc, NoLock, Preserve)
                         {
-                            Offset (0x08), 
+                            Offset (0x08),
                             F0EC,   129
                         }
 
@@ -4463,8 +4463,8 @@
                     {
                         IndexField (IDXC, DATC, AnyAcc, NoLock, Preserve)
                         {
-                            AccessAs (ByteAcc, 0x00), 
-                            Offset (0x08), 
+                            AccessAs (ByteAcc, 0x00),
+                            Offset (0x08),
                             F0ED,   256
                         }
 
@@ -4475,7 +4475,7 @@
                     {
                         IndexField (IDXD, DATD, ByteAcc, NoLock, Preserve)
                         {
-                            Offset (0x08), 
+                            Offset (0x08),
                             F0EE,   1023
                         }
 
@@ -4486,8 +4486,8 @@
                     {
                         IndexField (IDXE, DATE, ByteAcc, NoLock, Preserve)
                         {
-                            AccessAs (ByteAcc, 0x00), 
-                            Offset (0x08), 
+                            AccessAs (ByteAcc, 0x00),
+                            Offset (0x08),
                             F0EF,   1983
                         }
 
@@ -4510,9 +4510,9 @@
                     {
                         IndexField (IDX0, DAT0, WordAcc, NoLock, Preserve)
                         {
-                            AccessAs (ByteAcc, 0x00), 
-                            Offset (0x08), 
-                                ,   1, 
+                            AccessAs (ByteAcc, 0x00),
+                            Offset (0x08),
+                                ,   1,
                             F0F0,   1
                         }
 
@@ -4523,8 +4523,8 @@
                     {
                         IndexField (IDX1, DAT1, ByteAcc, NoLock, Preserve)
                         {
-                            Offset (0x08), 
-                                ,   1, 
+                            Offset (0x08),
+                                ,   1,
                             F0F1,   6
                         }
 
@@ -4535,9 +4535,9 @@
                     {
                         IndexField (IDX2, DAT2, DWordAcc, NoLock, Preserve)
                         {
-                            AccessAs (ByteAcc, 0x00), 
-                            Offset (0x08), 
-                                ,   1, 
+                            AccessAs (ByteAcc, 0x00),
+                            Offset (0x08),
+                                ,   1,
                             F0F2,   7
                         }
 
@@ -4548,8 +4548,8 @@
                     {
                         IndexField (IDX3, DAT3, ByteAcc, NoLock, Preserve)
                         {
-                            Offset (0x08), 
-                                ,   1, 
+                            Offset (0x08),
+                                ,   1,
                             F0F3,   8
                         }
 
@@ -4560,9 +4560,9 @@
                     {
                         IndexField (IDX4, DAT4, QWordAcc, NoLock, Preserve)
                         {
-                            AccessAs (ByteAcc, 0x00), 
-                            Offset (0x08), 
-                                ,   1, 
+                            AccessAs (ByteAcc, 0x00),
+                            Offset (0x08),
+                                ,   1,
                             F0F4,   9
                         }
 
@@ -4573,8 +4573,8 @@
                     {
                         IndexField (IDX5, DAT5, ByteAcc, NoLock, Preserve)
                         {
-                            Offset (0x08), 
-                                ,   1, 
+                            Offset (0x08),
+                                ,   1,
                             F0F5,   31
                         }
 
@@ -4585,9 +4585,9 @@
                     {
                         IndexField (IDX6, DAT6, AnyAcc, NoLock, Preserve)
                         {
-                            AccessAs (ByteAcc, 0x00), 
-                            Offset (0x08), 
-                                ,   1, 
+                            AccessAs (ByteAcc, 0x00),
+                            Offset (0x08),
+                                ,   1,
                             F0F6,   32
                         }
 
@@ -4598,8 +4598,8 @@
                     {
                         IndexField (IDX7, DAT7, ByteAcc, NoLock, Preserve)
                         {
-                            Offset (0x08), 
-                                ,   1, 
+                            Offset (0x08),
+                                ,   1,
                             F0F7,   33
                         }
 
@@ -4610,9 +4610,9 @@
                     {
                         IndexField (IDX8, DAT8, ByteAcc, NoLock, Preserve)
                         {
-                            AccessAs (ByteAcc, 0x00), 
-                            Offset (0x08), 
-                                ,   1, 
+                            AccessAs (ByteAcc, 0x00),
+                            Offset (0x08),
+                                ,   1,
                             F0F8,   63
                         }
 
@@ -4623,8 +4623,8 @@
                     {
                         IndexField (IDX9, DAT9, ByteAcc, NoLock, Preserve)
                         {
-                            Offset (0x08), 
-                                ,   1, 
+                            Offset (0x08),
+                                ,   1,
                             F0F9,   64
                         }
 
@@ -4635,9 +4635,9 @@
                     {
                         IndexField (IDXA, DATA, WordAcc, NoLock, Preserve)
                         {
-                            AccessAs (ByteAcc, 0x00), 
-                            Offset (0x08), 
-                                ,   1, 
+                            AccessAs (ByteAcc, 0x00),
+                            Offset (0x08),
+                                ,   1,
                             F0FA,   65
                         }
 
@@ -4648,8 +4648,8 @@
                     {
                         IndexField (IDXB, DATB, ByteAcc, NoLock, Preserve)
                         {
-                            Offset (0x08), 
-                                ,   1, 
+                            Offset (0x08),
+                                ,   1,
                             F0FB,   69
                         }
 
@@ -4660,9 +4660,9 @@
                     {
                         IndexField (IDXC, DATC, DWordAcc, NoLock, Preserve)
                         {
-                            AccessAs (ByteAcc, 0x00), 
-                            Offset (0x08), 
-                                ,   1, 
+                            AccessAs (ByteAcc, 0x00),
+                            Offset (0x08),
+                                ,   1,
                             F0FC,   129
                         }
 
@@ -4673,8 +4673,8 @@
                     {
                         IndexField (IDXD, DATD, ByteAcc, NoLock, Preserve)
                         {
-                            Offset (0x08), 
-                                ,   1, 
+                            Offset (0x08),
+                                ,   1,
                             F0FD,   256
                         }
 
@@ -4685,9 +4685,9 @@
                     {
                         IndexField (IDXE, DATE, QWordAcc, NoLock, Preserve)
                         {
-                            AccessAs (ByteAcc, 0x00), 
-                            Offset (0x08), 
-                                ,   1, 
+                            AccessAs (ByteAcc, 0x00),
+                            Offset (0x08),
+                                ,   1,
                             F0FE,   1023
                         }
 
@@ -4698,8 +4698,8 @@
                     {
                         IndexField (IDX0, DAT0, ByteAcc, NoLock, Preserve)
                         {
-                            Offset (0x08), 
-                                ,   1, 
+                            Offset (0x08),
+                                ,   1,
                             F0FF,   1983
                         }
 
@@ -4742,7 +4742,7 @@
          */
         Field (OPR0, ByteAcc, NoLock, Preserve)
         {
-            IDX0,   8, 
+            IDX0,   8,
             DAT0,   16
         }
 
@@ -4753,8 +4753,8 @@
 
         Field (OPR0, ByteAcc, NoLock, WriteAsOnes)
         {
-            Offset (0x03), 
-            IDX1,   8, 
+            Offset (0x03),
+            IDX1,   8,
             DAT1,   16
         }
 
@@ -4765,8 +4765,8 @@
 
         Field (OPR0, ByteAcc, NoLock, WriteAsZeros)
         {
-            Offset (0x07), 
-            IDX2,   16, 
+            Offset (0x07),
+            IDX2,   16,
             DAT2,   16
         }
 
@@ -4777,8 +4777,8 @@
 
         Field (OPR0, WordAcc, NoLock, Preserve)
         {
-            Offset (0x0B), 
-            IDX3,   8, 
+            Offset (0x0B),
+            IDX3,   8,
             DAT3,   16
         }
 
@@ -4789,8 +4789,8 @@
 
         Field (OPR0, WordAcc, NoLock, WriteAsOnes)
         {
-            Offset (0x0E), 
-            IDX4,   16, 
+            Offset (0x0E),
+            IDX4,   16,
             DAT4,   16
         }
 
@@ -4801,8 +4801,8 @@
 
         Field (OPR0, WordAcc, NoLock, WriteAsZeros)
         {
-            Offset (0x12), 
-            IDX5,   32, 
+            Offset (0x12),
+            IDX5,   32,
             DAT5,   16
         }
 
@@ -4813,9 +4813,9 @@
 
         Field (OPR0, DWordAcc, NoLock, Preserve)
         {
-            Offset (0x1A), 
-            IDX6,   8, 
-            Offset (0x1C), 
+            Offset (0x1A),
+            IDX6,   8,
+            Offset (0x1C),
             DAT6,   16
         }
 
@@ -4826,8 +4826,8 @@
 
         Field (OPR0, DWordAcc, NoLock, WriteAsOnes)
         {
-            Offset (0x20), 
-            IDX7,   32, 
+            Offset (0x20),
+            IDX7,   32,
             DAT7,   16
         }
 
@@ -4838,8 +4838,8 @@
 
         Field (OPR0, DWordAcc, NoLock, WriteAsZeros)
         {
-            Offset (0x28), 
-            IDX8,   32, 
+            Offset (0x28),
+            IDX8,   32,
             DAT8,   16
         }
 
@@ -4850,9 +4850,9 @@
 
         Field (OPR0, QWordAcc, NoLock, Preserve)
         {
-            Offset (0x38), 
-            IDX9,   8, 
-            Offset (0x40), 
+            Offset (0x38),
+            IDX9,   8,
+            Offset (0x40),
             DAT9,   16
         }
 
@@ -4863,12 +4863,12 @@
 
         Field (OPR0, QWordAcc, NoLock, WriteAsOnes)
         {
-            Offset (0x48), 
-            Offset (0x4C), 
+            Offset (0x48),
+            Offset (0x4C),
             /* Index field exceeding 32 bits causes AE_BUFFER_OVERFLOW */
             /* IDXA, 64, */
             /* Do not allow index/data interference */
-            IDXA,   32, 
+            IDXA,   32,
             DATA,   16
         }
 
@@ -4879,9 +4879,9 @@
 
         Field (OPR0, QWordAcc, NoLock, WriteAsZeros)
         {
-            Offset (0x58), 
-            IDXB,   32, 
-            Offset (0x60), 
+            Offset (0x58),
+            IDXB,   32,
+            Offset (0x60),
             DATB,   16
         }
 
@@ -4892,8 +4892,8 @@
 
         Field (OPR0, AnyAcc, NoLock, Preserve)
         {
-            Offset (0x68), 
-            IDXC,   8, 
+            Offset (0x68),
+            IDXC,   8,
             DATC,   16
         }
 
@@ -4904,10 +4904,10 @@
 
         Field (OPR0, AnyAcc, NoLock, WriteAsOnes)
         {
-            Offset (0x6B), 
+            Offset (0x6B),
             /* Index field exceeding 32 bits causes AE_BUFFER_OVERFLOW */
             /* IDXD, 64, */
-            IDXD,   32, 
+            IDXD,   32,
             DATD,   16
         }
 
@@ -4918,8 +4918,8 @@
 
         Field (OPR0, AnyAcc, NoLock, WriteAsZeros)
         {
-            Offset (0x7B), 
-            IDXE,   32, 
+            Offset (0x7B),
+            IDXE,   32,
             DATE,   16
         }
 
@@ -4939,7 +4939,7 @@
                     {
                         IndexField (IDX0, DAT0, WordAcc, NoLock, WriteAsOnes)
                         {
-                            Offset (0x00), 
+                            Offset (0x00),
                             F000,   1
                         }
 
@@ -4950,7 +4950,7 @@
                     {
                         IndexField (IDX1, DAT1, WordAcc, NoLock, WriteAsOnes)
                         {
-                            Offset (0x00), 
+                            Offset (0x00),
                             F001,   6
                         }
 
@@ -4961,7 +4961,7 @@
                     {
                         IndexField (IDX2, DAT2, WordAcc, NoLock, WriteAsOnes)
                         {
-                            Offset (0x00), 
+                            Offset (0x00),
                             F002,   7
                         }
 
@@ -4972,7 +4972,7 @@
                     {
                         IndexField (IDX3, DAT3, WordAcc, NoLock, WriteAsOnes)
                         {
-                            Offset (0x00), 
+                            Offset (0x00),
                             F003,   8
                         }
 
@@ -4983,7 +4983,7 @@
                     {
                         IndexField (IDX4, DAT4, WordAcc, NoLock, WriteAsOnes)
                         {
-                            Offset (0x00), 
+                            Offset (0x00),
                             F004,   9
                         }
 
@@ -4994,7 +4994,7 @@
                     {
                         IndexField (IDX5, DAT5, WordAcc, NoLock, WriteAsOnes)
                         {
-                            Offset (0x00), 
+                            Offset (0x00),
                             F005,   31
                         }
 
@@ -5005,7 +5005,7 @@
                     {
                         IndexField (IDX6, DAT6, WordAcc, NoLock, WriteAsOnes)
                         {
-                            Offset (0x00), 
+                            Offset (0x00),
                             F006,   32
                         }
 
@@ -5016,7 +5016,7 @@
                     {
                         IndexField (IDX7, DAT7, WordAcc, NoLock, WriteAsOnes)
                         {
-                            Offset (0x00), 
+                            Offset (0x00),
                             F007,   33
                         }
 
@@ -5027,7 +5027,7 @@
                     {
                         IndexField (IDX8, DAT8, WordAcc, NoLock, WriteAsOnes)
                         {
-                            Offset (0x00), 
+                            Offset (0x00),
                             F008,   63
                         }
 
@@ -5038,7 +5038,7 @@
                     {
                         IndexField (IDX9, DAT9, WordAcc, NoLock, WriteAsOnes)
                         {
-                            Offset (0x00), 
+                            Offset (0x00),
                             F009,   64
                         }
 
@@ -5049,7 +5049,7 @@
                     {
                         IndexField (IDXA, DATA, WordAcc, NoLock, WriteAsOnes)
                         {
-                            Offset (0x00), 
+                            Offset (0x00),
                             F00A,   65
                         }
 
@@ -5060,7 +5060,7 @@
                     {
                         IndexField (IDXB, DATB, WordAcc, NoLock, WriteAsOnes)
                         {
-                            Offset (0x00), 
+                            Offset (0x00),
                             F00B,   69
                         }
 
@@ -5071,7 +5071,7 @@
                     {
                         IndexField (IDXC, DATC, WordAcc, NoLock, WriteAsOnes)
                         {
-                            Offset (0x00), 
+                            Offset (0x00),
                             F00C,   129
                         }
 
@@ -5082,7 +5082,7 @@
                     {
                         IndexField (IDXD, DATD, WordAcc, NoLock, WriteAsOnes)
                         {
-                            Offset (0x00), 
+                            Offset (0x00),
                             F00D,   256
                         }
 
@@ -5093,7 +5093,7 @@
                     {
                         IndexField (IDXE, DATE, WordAcc, NoLock, WriteAsOnes)
                         {
-                            Offset (0x00), 
+                            Offset (0x00),
                             F00E,   1023
                         }
 
@@ -5104,7 +5104,7 @@
                     {
                         IndexField (IDX0, DAT0, WordAcc, NoLock, WriteAsOnes)
                         {
-                            Offset (0x00), 
+                            Offset (0x00),
                             F00F,   1983
                         }
 
@@ -5127,8 +5127,8 @@
                     {
                         IndexField (IDX1, DAT1, WordAcc, NoLock, WriteAsOnes)
                         {
-                            Offset (0x00), 
-                                ,   1, 
+                            Offset (0x00),
+                                ,   1,
                             F010,   1
                         }
 
@@ -5139,8 +5139,8 @@
                     {
                         IndexField (IDX2, DAT2, WordAcc, NoLock, WriteAsOnes)
                         {
-                            Offset (0x00), 
-                                ,   1, 
+                            Offset (0x00),
+                                ,   1,
                             F011,   6
                         }
 
@@ -5151,8 +5151,8 @@
                     {
                         IndexField (IDX3, DAT3, WordAcc, NoLock, WriteAsOnes)
                         {
-                            Offset (0x00), 
-                                ,   1, 
+                            Offset (0x00),
+                                ,   1,
                             F012,   7
                         }
 
@@ -5163,8 +5163,8 @@
                     {
                         IndexField (IDX4, DAT4, WordAcc, NoLock, WriteAsOnes)
                         {
-                            Offset (0x00), 
-                                ,   1, 
+                            Offset (0x00),
+                                ,   1,
                             F013,   8
                         }
 
@@ -5175,8 +5175,8 @@
                     {
                         IndexField (IDX5, DAT5, WordAcc, NoLock, WriteAsOnes)
                         {
-                            Offset (0x00), 
-                                ,   1, 
+                            Offset (0x00),
+                                ,   1,
                             F014,   9
                         }
 
@@ -5187,8 +5187,8 @@
                     {
                         IndexField (IDX6, DAT6, WordAcc, NoLock, WriteAsOnes)
                         {
-                            Offset (0x00), 
-                                ,   1, 
+                            Offset (0x00),
+                                ,   1,
                             F015,   31
                         }
 
@@ -5199,8 +5199,8 @@
                     {
                         IndexField (IDX7, DAT7, WordAcc, NoLock, WriteAsOnes)
                         {
-                            Offset (0x00), 
-                                ,   1, 
+                            Offset (0x00),
+                                ,   1,
                             F016,   32
                         }
 
@@ -5211,8 +5211,8 @@
                     {
                         IndexField (IDX8, DAT8, WordAcc, NoLock, WriteAsOnes)
                         {
-                            Offset (0x00), 
-                                ,   1, 
+                            Offset (0x00),
+                                ,   1,
                             F017,   33
                         }
 
@@ -5223,8 +5223,8 @@
                     {
                         IndexField (IDX9, DAT9, WordAcc, NoLock, WriteAsOnes)
                         {
-                            Offset (0x00), 
-                                ,   1, 
+                            Offset (0x00),
+                                ,   1,
                             F018,   63
                         }
 
@@ -5235,8 +5235,8 @@
                     {
                         IndexField (IDXA, DATA, WordAcc, NoLock, WriteAsOnes)
                         {
-                            Offset (0x00), 
-                                ,   1, 
+                            Offset (0x00),
+                                ,   1,
                             F019,   64
                         }
 
@@ -5247,8 +5247,8 @@
                     {
                         IndexField (IDXB, DATB, WordAcc, NoLock, WriteAsOnes)
                         {
-                            Offset (0x00), 
-                                ,   1, 
+                            Offset (0x00),
+                                ,   1,
                             F01A,   65
                         }
 
@@ -5259,8 +5259,8 @@
                     {
                         IndexField (IDXC, DATC, WordAcc, NoLock, WriteAsOnes)
                         {
-                            Offset (0x00), 
-                                ,   1, 
+                            Offset (0x00),
+                                ,   1,
                             F01B,   69
                         }
 
@@ -5271,8 +5271,8 @@
                     {
                         IndexField (IDXD, DATD, WordAcc, NoLock, WriteAsOnes)
                         {
-                            Offset (0x00), 
-                                ,   1, 
+                            Offset (0x00),
+                                ,   1,
                             F01C,   129
                         }
 
@@ -5283,8 +5283,8 @@
                     {
                         IndexField (IDXE, DATE, WordAcc, NoLock, WriteAsOnes)
                         {
-                            Offset (0x00), 
-                                ,   1, 
+                            Offset (0x00),
+                                ,   1,
                             F01D,   256
                         }
 
@@ -5295,8 +5295,8 @@
                     {
                         IndexField (IDX0, DAT0, WordAcc, NoLock, WriteAsOnes)
                         {
-                            Offset (0x00), 
-                                ,   1, 
+                            Offset (0x00),
+                                ,   1,
                             F01E,   1023
                         }
 
@@ -5307,8 +5307,8 @@
                     {
                         IndexField (IDX1, DAT1, WordAcc, NoLock, WriteAsOnes)
                         {
-                            Offset (0x00), 
-                                ,   1, 
+                            Offset (0x00),
+                                ,   1,
                             F01F,   1983
                         }
 
@@ -5331,7 +5331,7 @@
                     {
                         IndexField (IDX2, DAT2, WordAcc, NoLock, WriteAsOnes)
                         {
-                                ,   2, 
+                                ,   2,
                             F020,   1
                         }
 
@@ -5342,7 +5342,7 @@
                     {
                         IndexField (IDX3, DAT3, WordAcc, NoLock, WriteAsOnes)
                         {
-                                ,   2, 
+                                ,   2,
                             F021,   6
                         }
 
@@ -5353,7 +5353,7 @@
                     {
                         IndexField (IDX4, DAT4, WordAcc, NoLock, WriteAsOnes)
                         {
-                                ,   2, 
+                                ,   2,
                             F022,   7
                         }
 
@@ -5364,7 +5364,7 @@
                     {
                         IndexField (IDX5, DAT5, WordAcc, NoLock, WriteAsOnes)
                         {
-                                ,   2, 
+                                ,   2,
                             F023,   8
                         }
 
@@ -5375,7 +5375,7 @@
                     {
                         IndexField (IDX6, DAT6, WordAcc, NoLock, WriteAsOnes)
                         {
-                                ,   2, 
+                                ,   2,
                             F024,   9
                         }
 
@@ -5386,7 +5386,7 @@
                     {
                         IndexField (IDX7, DAT7, WordAcc, NoLock, WriteAsOnes)
                         {
-                                ,   2, 
+                                ,   2,
                             F025,   31
                         }
 
@@ -5397,7 +5397,7 @@
                     {
                         IndexField (IDX8, DAT8, WordAcc, NoLock, WriteAsOnes)
                         {
-                                ,   2, 
+                                ,   2,
                             F026,   32
                         }
 
@@ -5408,7 +5408,7 @@
                     {
                         IndexField (IDX9, DAT9, WordAcc, NoLock, WriteAsOnes)
                         {
-                                ,   2, 
+                                ,   2,
                             F027,   33
                         }
 
@@ -5419,7 +5419,7 @@
                     {
                         IndexField (IDXA, DATA, WordAcc, NoLock, WriteAsOnes)
                         {
-                                ,   2, 
+                                ,   2,
                             F028,   63
                         }
 
@@ -5430,7 +5430,7 @@
                     {
                         IndexField (IDXB, DATB, WordAcc, NoLock, WriteAsOnes)
                         {
-                                ,   2, 
+                                ,   2,
                             F029,   64
                         }
 
@@ -5441,7 +5441,7 @@
                     {
                         IndexField (IDXC, DATC, WordAcc, NoLock, WriteAsOnes)
                         {
-                                ,   2, 
+                                ,   2,
                             F02A,   65
                         }
 
@@ -5452,7 +5452,7 @@
                     {
                         IndexField (IDXD, DATD, WordAcc, NoLock, WriteAsOnes)
                         {
-                                ,   2, 
+                                ,   2,
                             F02B,   69
                         }
 
@@ -5463,7 +5463,7 @@
                     {
                         IndexField (IDXE, DATE, WordAcc, NoLock, WriteAsOnes)
                         {
-                                ,   2, 
+                                ,   2,
                             F02C,   129
                         }
 
@@ -5474,7 +5474,7 @@
                     {
                         IndexField (IDX0, DAT0, WordAcc, NoLock, WriteAsOnes)
                         {
-                                ,   2, 
+                                ,   2,
                             F02D,   256
                         }
 
@@ -5485,7 +5485,7 @@
                     {
                         IndexField (IDX1, DAT1, WordAcc, NoLock, WriteAsOnes)
                         {
-                                ,   2, 
+                                ,   2,
                             F02E,   1023
                         }
 
@@ -5496,7 +5496,7 @@
                     {
                         IndexField (IDX2, DAT2, WordAcc, NoLock, WriteAsOnes)
                         {
-                                ,   2, 
+                                ,   2,
                             F02F,   1983
                         }
 
@@ -5519,7 +5519,7 @@
                     {
                         IndexField (IDX3, DAT3, WordAcc, NoLock, WriteAsOnes)
                         {
-                                ,   3, 
+                                ,   3,
                             F030,   1
                         }
 
@@ -5530,7 +5530,7 @@
                     {
                         IndexField (IDX4, DAT4, WordAcc, NoLock, WriteAsOnes)
                         {
-                                ,   3, 
+                                ,   3,
                             F031,   6
                         }
 
@@ -5541,7 +5541,7 @@
                     {
                         IndexField (IDX5, DAT5, WordAcc, NoLock, WriteAsOnes)
                         {
-                                ,   3, 
+                                ,   3,
                             F032,   7
                         }
 
@@ -5552,7 +5552,7 @@
                     {
                         IndexField (IDX6, DAT6, WordAcc, NoLock, WriteAsOnes)
                         {
-                                ,   3, 
+                                ,   3,
                             F033,   8
                         }
 
@@ -5563,7 +5563,7 @@
                     {
                         IndexField (IDX7, DAT7, WordAcc, NoLock, WriteAsOnes)
                         {
-                                ,   3, 
+                                ,   3,
                             F034,   9
                         }
 
@@ -5574,7 +5574,7 @@
                     {
                         IndexField (IDX8, DAT8, WordAcc, NoLock, WriteAsOnes)
                         {
-                                ,   3, 
+                                ,   3,
                             F035,   31
                         }
 
@@ -5585,7 +5585,7 @@
                     {
                         IndexField (IDX9, DAT9, WordAcc, NoLock, WriteAsOnes)
                         {
-                                ,   3, 
+                                ,   3,
                             F036,   32
                         }
 
@@ -5596,7 +5596,7 @@
                     {
                         IndexField (IDXA, DATA, WordAcc, NoLock, WriteAsOnes)
                         {
-                                ,   3, 
+                                ,   3,
                             F037,   33
                         }
 
@@ -5607,7 +5607,7 @@
                     {
                         IndexField (IDXB, DATB, WordAcc, NoLock, WriteAsOnes)
                         {
-                                ,   3, 
+                                ,   3,
                             F038,   63
                         }
 
@@ -5618,7 +5618,7 @@
                     {
                         IndexField (IDXC, DATC, WordAcc, NoLock, WriteAsOnes)
                         {
-                                ,   3, 
+                                ,   3,
                             F039,   64
                         }
 
@@ -5629,7 +5629,7 @@
                     {
                         IndexField (IDXD, DATD, WordAcc, NoLock, WriteAsOnes)
                         {
-                                ,   3, 
+                                ,   3,
                             F03A,   65
                         }
 
@@ -5640,7 +5640,7 @@
                     {
                         IndexField (IDXE, DATE, WordAcc, NoLock, WriteAsOnes)
                         {
-                                ,   3, 
+                                ,   3,
                             F03B,   69
                         }
 
@@ -5651,7 +5651,7 @@
                     {
                         IndexField (IDX0, DAT0, WordAcc, NoLock, WriteAsOnes)
                         {
-                                ,   3, 
+                                ,   3,
                             F03C,   129
                         }
 
@@ -5662,7 +5662,7 @@
                     {
                         IndexField (IDX1, DAT1, WordAcc, NoLock, WriteAsOnes)
                         {
-                                ,   3, 
+                                ,   3,
                             F03D,   256
                         }
 
@@ -5673,7 +5673,7 @@
                     {
                         IndexField (IDX2, DAT2, WordAcc, NoLock, WriteAsOnes)
                         {
-                                ,   3, 
+                                ,   3,
                             F03E,   1023
                         }
 
@@ -5684,7 +5684,7 @@
                     {
                         IndexField (IDX3, DAT3, WordAcc, NoLock, WriteAsOnes)
                         {
-                                ,   3, 
+                                ,   3,
                             F03F,   1983
                         }
 
@@ -5707,7 +5707,7 @@
                     {
                         IndexField (IDX4, DAT4, WordAcc, NoLock, WriteAsOnes)
                         {
-                                ,   4, 
+                                ,   4,
                             F040,   1
                         }
 
@@ -5718,7 +5718,7 @@
                     {
                         IndexField (IDX5, DAT5, WordAcc, NoLock, WriteAsOnes)
                         {
-                                ,   4, 
+                                ,   4,
                             F041,   6
                         }
 
@@ -5729,7 +5729,7 @@
                     {
                         IndexField (IDX6, DAT6, WordAcc, NoLock, WriteAsOnes)
                         {
-                                ,   4, 
+                                ,   4,
                             F042,   7
                         }
 
@@ -5740,7 +5740,7 @@
                     {
                         IndexField (IDX7, DAT7, WordAcc, NoLock, WriteAsOnes)
                         {
-                                ,   4, 
+                                ,   4,
                             F043,   8
                         }
 
@@ -5751,7 +5751,7 @@
                     {
                         IndexField (IDX8, DAT8, WordAcc, NoLock, WriteAsOnes)
                         {
-                                ,   4, 
+                                ,   4,
                             F044,   9
                         }
 
@@ -5762,7 +5762,7 @@
                     {
                         IndexField (IDX9, DAT9, WordAcc, NoLock, WriteAsOnes)
                         {
-                                ,   4, 
+                                ,   4,
                             F045,   31
                         }
 
@@ -5773,7 +5773,7 @@
                     {
                         IndexField (IDXA, DATA, WordAcc, NoLock, WriteAsOnes)
                         {
-                                ,   4, 
+                                ,   4,
                             F046,   32
                         }
 
@@ -5784,7 +5784,7 @@
                     {
                         IndexField (IDXB, DATB, WordAcc, NoLock, WriteAsOnes)
                         {
-                                ,   4, 
+                                ,   4,
                             F047,   33
                         }
 
@@ -5795,7 +5795,7 @@
                     {
                         IndexField (IDXC, DATC, WordAcc, NoLock, WriteAsOnes)
                         {
-                                ,   4, 
+                                ,   4,
                             F048,   63
                         }
 
@@ -5806,7 +5806,7 @@
                     {
                         IndexField (IDXD, DATD, WordAcc, NoLock, WriteAsOnes)
                         {
-                                ,   4, 
+                                ,   4,
                             F049,   64
                         }
 
@@ -5817,7 +5817,7 @@
                     {
                         IndexField (IDXE, DATE, WordAcc, NoLock, WriteAsOnes)
                         {
-                                ,   4, 
+                                ,   4,
                             F04A,   65
                         }
 
@@ -5828,7 +5828,7 @@
                     {
                         IndexField (IDX0, DAT0, WordAcc, NoLock, WriteAsOnes)
                         {
-                                ,   4, 
+                                ,   4,
                             F04B,   69
                         }
 
@@ -5839,7 +5839,7 @@
                     {
                         IndexField (IDX1, DAT1, WordAcc, NoLock, WriteAsOnes)
                         {
-                                ,   4, 
+                                ,   4,
                             F04C,   129
                         }
 
@@ -5850,7 +5850,7 @@
                     {
                         IndexField (IDX2, DAT2, WordAcc, NoLock, WriteAsOnes)
                         {
-                                ,   4, 
+                                ,   4,
                             F04D,   256
                         }
 
@@ -5861,7 +5861,7 @@
                     {
                         IndexField (IDX3, DAT3, WordAcc, NoLock, WriteAsOnes)
                         {
-                                ,   4, 
+                                ,   4,
                             F04E,   1023
                         }
 
@@ -5872,7 +5872,7 @@
                     {
                         IndexField (IDX4, DAT4, WordAcc, NoLock, WriteAsOnes)
                         {
-                                ,   4, 
+                                ,   4,
                             F04F,   1983
                         }
 
@@ -5895,7 +5895,7 @@
                     {
                         IndexField (IDX5, DAT5, WordAcc, NoLock, WriteAsOnes)
                         {
-                                ,   5, 
+                                ,   5,
                             F050,   1
                         }
 
@@ -5906,7 +5906,7 @@
                     {
                         IndexField (IDX6, DAT6, WordAcc, NoLock, WriteAsOnes)
                         {
-                                ,   5, 
+                                ,   5,
                             F051,   6
                         }
 
@@ -5917,7 +5917,7 @@
                     {
                         IndexField (IDX7, DAT7, WordAcc, NoLock, WriteAsOnes)
                         {
-                                ,   5, 
+                                ,   5,
                             F052,   7
                         }
 
@@ -5928,7 +5928,7 @@
                     {
                         IndexField (IDX8, DAT8, WordAcc, NoLock, WriteAsOnes)
                         {
-                                ,   5, 
+                                ,   5,
                             F053,   8
                         }
 
@@ -5939,7 +5939,7 @@
                     {
                         IndexField (IDX9, DAT9, WordAcc, NoLock, WriteAsOnes)
                         {
-                                ,   5, 
+                                ,   5,
                             F054,   9
                         }
 
@@ -5950,7 +5950,7 @@
                     {
                         IndexField (IDXA, DATA, WordAcc, NoLock, WriteAsOnes)
                         {
-                                ,   5, 
+                                ,   5,
                             F055,   31
                         }
 
@@ -5961,7 +5961,7 @@
                     {
                         IndexField (IDXB, DATB, WordAcc, NoLock, WriteAsOnes)
                         {
-                                ,   5, 
+                                ,   5,
                             F056,   32
                         }
 
@@ -5972,7 +5972,7 @@
                     {
                         IndexField (IDXC, DATC, WordAcc, NoLock, WriteAsOnes)
                         {
-                                ,   5, 
+                                ,   5,
                             F057,   33
                         }
 
@@ -5983,7 +5983,7 @@
                     {
                         IndexField (IDXD, DATD, WordAcc, NoLock, WriteAsOnes)
                         {
-                                ,   5, 
+                                ,   5,
                             F058,   63
                         }
 
@@ -5994,7 +5994,7 @@
                     {
                         IndexField (IDXE, DATE, WordAcc, NoLock, WriteAsOnes)
                         {
-                                ,   5, 
+                                ,   5,
                             F059,   64
                         }
 
@@ -6005,7 +6005,7 @@
                     {
                         IndexField (IDX0, DAT0, WordAcc, NoLock, WriteAsOnes)
                         {
-                                ,   5, 
+                                ,   5,
                             F05A,   65
                         }
 
@@ -6016,7 +6016,7 @@
                     {
                         IndexField (IDX1, DAT1, WordAcc, NoLock, WriteAsOnes)
                         {
-                                ,   5, 
+                                ,   5,
                             F05B,   69
                         }
 
@@ -6027,7 +6027,7 @@
                     {
                         IndexField (IDX2, DAT2, WordAcc, NoLock, WriteAsOnes)
                         {
-                                ,   5, 
+                                ,   5,
                             F05C,   129
                         }
 
@@ -6038,7 +6038,7 @@
                     {
                         IndexField (IDX3, DAT3, WordAcc, NoLock, WriteAsOnes)
                         {
-                                ,   5, 
+                                ,   5,
                             F05D,   256
                         }
 
@@ -6049,7 +6049,7 @@
                     {
                         IndexField (IDX4, DAT4, WordAcc, NoLock, WriteAsOnes)
                         {
-                                ,   5, 
+                                ,   5,
                             F05E,   1023
                         }
 
@@ -6060,7 +6060,7 @@
                     {
                         IndexField (IDX5, DAT5, WordAcc, NoLock, WriteAsOnes)
                         {
-                                ,   5, 
+                                ,   5,
                             F05F,   1983
                         }
 
@@ -6083,7 +6083,7 @@
                     {
                         IndexField (IDX6, DAT6, WordAcc, NoLock, WriteAsOnes)
                         {
-                                ,   6, 
+                                ,   6,
                             F060,   1
                         }
 
@@ -6094,7 +6094,7 @@
                     {
                         IndexField (IDX7, DAT7, WordAcc, NoLock, WriteAsOnes)
                         {
-                                ,   6, 
+                                ,   6,
                             F061,   6
                         }
 
@@ -6105,7 +6105,7 @@
                     {
                         IndexField (IDX8, DAT8, WordAcc, NoLock, WriteAsOnes)
                         {
-                                ,   6, 
+                                ,   6,
                             F062,   7
                         }
 
@@ -6116,7 +6116,7 @@
                     {
                         IndexField (IDX9, DAT9, WordAcc, NoLock, WriteAsOnes)
                         {
-                                ,   6, 
+                                ,   6,
                             F063,   8
                         }
 
@@ -6127,7 +6127,7 @@
                     {
                         IndexField (IDXA, DATA, WordAcc, NoLock, WriteAsOnes)
                         {
-                                ,   6, 
+                                ,   6,
                             F064,   9
                         }
 
@@ -6138,7 +6138,7 @@
                     {
                         IndexField (IDXB, DATB, WordAcc, NoLock, WriteAsOnes)
                         {
-                                ,   6, 
+                                ,   6,
                             F065,   31
                         }
 
@@ -6149,7 +6149,7 @@
                     {
                         IndexField (IDXC, DATC, WordAcc, NoLock, WriteAsOnes)
                         {
-                                ,   6, 
+                                ,   6,
                             F066,   32
                         }
 
@@ -6160,7 +6160,7 @@
                     {
                         IndexField (IDXD, DATD, WordAcc, NoLock, WriteAsOnes)
                         {
-                                ,   6, 
+                                ,   6,
                             F067,   33
                         }
 
@@ -6171,7 +6171,7 @@
                     {
                         IndexField (IDXE, DATE, WordAcc, NoLock, WriteAsOnes)
                         {
-                                ,   6, 
+                                ,   6,
                             F068,   63
                         }
 
@@ -6182,7 +6182,7 @@
                     {
                         IndexField (IDX0, DAT0, WordAcc, NoLock, WriteAsOnes)
                         {
-                                ,   6, 
+                                ,   6,
                             F069,   64
                         }
 
@@ -6193,7 +6193,7 @@
                     {
                         IndexField (IDX1, DAT1, WordAcc, NoLock, WriteAsOnes)
                         {
-                                ,   6, 
+                                ,   6,
                             F06A,   65
                         }
 
@@ -6204,7 +6204,7 @@
                     {
                         IndexField (IDX2, DAT2, WordAcc, NoLock, WriteAsOnes)
                         {
-                                ,   6, 
+                                ,   6,
                             F06B,   69
                         }
 
@@ -6215,7 +6215,7 @@
                     {
                         IndexField (IDX3, DAT3, WordAcc, NoLock, WriteAsOnes)
                         {
-                                ,   6, 
+                                ,   6,
                             F06C,   129
                         }
 
@@ -6226,7 +6226,7 @@
                     {
                         IndexField (IDX4, DAT4, WordAcc, NoLock, WriteAsOnes)
                         {
-                                ,   6, 
+                                ,   6,
                             F06D,   256
                         }
 
@@ -6237,7 +6237,7 @@
                     {
                         IndexField (IDX5, DAT5, WordAcc, NoLock, WriteAsOnes)
                         {
-                                ,   6, 
+                                ,   6,
                             F06E,   1023
                         }
 
@@ -6248,7 +6248,7 @@
                     {
                         IndexField (IDX6, DAT6, WordAcc, NoLock, WriteAsOnes)
                         {
-                                ,   6, 
+                                ,   6,
                             F06F,   1983
                         }
 
@@ -6271,7 +6271,7 @@
                     {
                         IndexField (IDX7, DAT7, WordAcc, NoLock, WriteAsOnes)
                         {
-                                ,   7, 
+                                ,   7,
                             F070,   1
                         }
 
@@ -6282,7 +6282,7 @@
                     {
                         IndexField (IDX8, DAT8, WordAcc, NoLock, WriteAsOnes)
                         {
-                                ,   7, 
+                                ,   7,
                             F071,   6
                         }
 
@@ -6293,7 +6293,7 @@
                     {
                         IndexField (IDX9, DAT9, WordAcc, NoLock, WriteAsOnes)
                         {
-                                ,   7, 
+                                ,   7,
                             F072,   7
                         }
 
@@ -6304,7 +6304,7 @@
                     {
                         IndexField (IDXA, DATA, WordAcc, NoLock, WriteAsOnes)
                         {
-                                ,   7, 
+                                ,   7,
                             F073,   8
                         }
 
@@ -6315,7 +6315,7 @@
                     {
                         IndexField (IDXB, DATB, WordAcc, NoLock, WriteAsOnes)
                         {
-                                ,   7, 
+                                ,   7,
                             F074,   9
                         }
 
@@ -6326,7 +6326,7 @@
                     {
                         IndexField (IDXC, DATC, WordAcc, NoLock, WriteAsOnes)
                         {
-                                ,   7, 
+                                ,   7,
                             F075,   31
                         }
 
@@ -6337,7 +6337,7 @@
                     {
                         IndexField (IDXD, DATD, WordAcc, NoLock, WriteAsOnes)
                         {
-                                ,   7, 
+                                ,   7,
                             F076,   32
                         }
 
@@ -6348,7 +6348,7 @@
                     {
                         IndexField (IDXE, DATE, WordAcc, NoLock, WriteAsOnes)
                         {
-                                ,   7, 
+                                ,   7,
                             F077,   33
                         }
 
@@ -6359,7 +6359,7 @@
                     {
                         IndexField (IDX0, DAT0, WordAcc, NoLock, WriteAsOnes)
                         {
-                                ,   7, 
+                                ,   7,
                             F078,   63
                         }
 
@@ -6370,7 +6370,7 @@
                     {
                         IndexField (IDX1, DAT1, WordAcc, NoLock, WriteAsOnes)
                         {
-                                ,   7, 
+                                ,   7,
                             F079,   64
                         }
 
@@ -6381,7 +6381,7 @@
                     {
                         IndexField (IDX2, DAT2, WordAcc, NoLock, WriteAsOnes)
                         {
-                                ,   7, 
+                                ,   7,
                             F07A,   65
                         }
 
@@ -6392,7 +6392,7 @@
                     {
                         IndexField (IDX3, DAT3, WordAcc, NoLock, WriteAsOnes)
                         {
-                                ,   7, 
+                                ,   7,
                             F07B,   69
                         }
 
@@ -6403,7 +6403,7 @@
                     {
                         IndexField (IDX4, DAT4, WordAcc, NoLock, WriteAsOnes)
                         {
-                                ,   7, 
+                                ,   7,
                             F07C,   129
                         }
 
@@ -6414,7 +6414,7 @@
                     {
                         IndexField (IDX5, DAT5, WordAcc, NoLock, WriteAsOnes)
                         {
-                                ,   7, 
+                                ,   7,
                             F07D,   256
                         }
 
@@ -6425,7 +6425,7 @@
                     {
                         IndexField (IDX6, DAT6, WordAcc, NoLock, WriteAsOnes)
                         {
-                                ,   7, 
+                                ,   7,
                             F07E,   1023
                         }
 
@@ -6436,7 +6436,7 @@
                     {
                         IndexField (IDX7, DAT7, WordAcc, NoLock, WriteAsOnes)
                         {
-                                ,   7, 
+                                ,   7,
                             F07F,   1983
                         }
 
@@ -6459,7 +6459,7 @@
                     {
                         IndexField (IDX8, DAT8, WordAcc, NoLock, WriteAsOnes)
                         {
-                            Offset (0x01), 
+                            Offset (0x01),
                             F080,   1
                         }
 
@@ -6470,7 +6470,7 @@
                     {
                         IndexField (IDX9, DAT9, WordAcc, NoLock, WriteAsOnes)
                         {
-                            Offset (0x01), 
+                            Offset (0x01),
                             F081,   6
                         }
 
@@ -6481,7 +6481,7 @@
                     {
                         IndexField (IDXA, DATA, WordAcc, NoLock, WriteAsOnes)
                         {
-                            Offset (0x01), 
+                            Offset (0x01),
                             F082,   7
                         }
 
@@ -6492,7 +6492,7 @@
                     {
                         IndexField (IDXB, DATB, WordAcc, NoLock, WriteAsOnes)
                         {
-                            Offset (0x01), 
+                            Offset (0x01),
                             F083,   8
                         }
 
@@ -6503,7 +6503,7 @@
                     {
                         IndexField (IDXC, DATC, WordAcc, NoLock, WriteAsOnes)
                         {
-                            Offset (0x01), 
+                            Offset (0x01),
                             F084,   9
                         }
 
@@ -6514,7 +6514,7 @@
                     {
                         IndexField (IDXD, DATD, WordAcc, NoLock, WriteAsOnes)
                         {
-                            Offset (0x01), 
+                            Offset (0x01),
                             F085,   31
                         }
 
@@ -6525,7 +6525,7 @@
                     {
                         IndexField (IDXE, DATE, WordAcc, NoLock, WriteAsOnes)
                         {
-                            Offset (0x01), 
+                            Offset (0x01),
                             F086,   32
                         }
 
@@ -6536,7 +6536,7 @@
                     {
                         IndexField (IDX0, DAT0, WordAcc, NoLock, WriteAsOnes)
                         {
-                            Offset (0x01), 
+                            Offset (0x01),
                             F087,   33
                         }
 
@@ -6547,7 +6547,7 @@
                     {
                         IndexField (IDX1, DAT1, WordAcc, NoLock, WriteAsOnes)
                         {
-                            Offset (0x01), 
+                            Offset (0x01),
                             F088,   63
                         }
 
@@ -6558,7 +6558,7 @@
                     {
                         IndexField (IDX2, DAT2, WordAcc, NoLock, WriteAsOnes)
                         {
-                            Offset (0x01), 
+                            Offset (0x01),
                             F089,   64
                         }
 
@@ -6569,7 +6569,7 @@
                     {
                         IndexField (IDX3, DAT3, WordAcc, NoLock, WriteAsOnes)
                         {
-                            Offset (0x01), 
+                            Offset (0x01),
                             F08A,   65
                         }
 
@@ -6580,7 +6580,7 @@
                     {
                         IndexField (IDX4, DAT4, WordAcc, NoLock, WriteAsOnes)
                         {
-                            Offset (0x01), 
+                            Offset (0x01),
                             F08B,   69
                         }
 
@@ -6591,7 +6591,7 @@
                     {
                         IndexField (IDX5, DAT5, WordAcc, NoLock, WriteAsOnes)
                         {
-                            Offset (0x01), 
+                            Offset (0x01),
                             F08C,   129
                         }
 
@@ -6602,7 +6602,7 @@
                     {
                         IndexField (IDX6, DAT6, WordAcc, NoLock, WriteAsOnes)
                         {
-                            Offset (0x01), 
+                            Offset (0x01),
                             F08D,   256
                         }
 
@@ -6613,7 +6613,7 @@
                     {
                         IndexField (IDX7, DAT7, WordAcc, NoLock, WriteAsOnes)
                         {
-                            Offset (0x01), 
+                            Offset (0x01),
                             F08E,   1023
                         }
 
@@ -6624,7 +6624,7 @@
                     {
                         IndexField (IDX8, DAT8, WordAcc, NoLock, WriteAsOnes)
                         {
-                            Offset (0x01), 
+                            Offset (0x01),
                             F08F,   1983
                         }
 
@@ -6647,7 +6647,7 @@
                     {
                         IndexField (IDX9, DAT9, WordAcc, NoLock, WriteAsOnes)
                         {
-                                ,   9, 
+                                ,   9,
                             F090,   1
                         }
 
@@ -6658,7 +6658,7 @@
                     {
                         IndexField (IDXA, DATA, WordAcc, NoLock, WriteAsOnes)
                         {
-                                ,   9, 
+                                ,   9,
                             F091,   6
                         }
 
@@ -6669,7 +6669,7 @@
                     {
                         IndexField (IDXB, DATB, WordAcc, NoLock, WriteAsOnes)
                         {
-                                ,   9, 
+                                ,   9,
                             F092,   7
                         }
 
@@ -6680,7 +6680,7 @@
                     {
                         IndexField (IDXC, DATC, WordAcc, NoLock, WriteAsOnes)
                         {
-                                ,   9, 
+                                ,   9,
                             F093,   8
                         }
 
@@ -6691,7 +6691,7 @@
                     {
                         IndexField (IDXD, DATD, WordAcc, NoLock, WriteAsOnes)
                         {
-                                ,   9, 
+                                ,   9,
                             F094,   9
                         }
 
@@ -6702,7 +6702,7 @@
                     {
                         IndexField (IDXE, DATE, WordAcc, NoLock, WriteAsOnes)
                         {
-                                ,   9, 
+                                ,   9,
                             F095,   31
                         }
 
@@ -6713,7 +6713,7 @@
                     {
                         IndexField (IDX0, DAT0, WordAcc, NoLock, WriteAsOnes)
                         {
-                                ,   9, 
+                                ,   9,
                             F096,   32
                         }
 
@@ -6724,7 +6724,7 @@
                     {
                         IndexField (IDX1, DAT1, WordAcc, NoLock, WriteAsOnes)
                         {
-                                ,   9, 
+                                ,   9,
                             F097,   33
                         }
 
@@ -6735,7 +6735,7 @@
                     {
                         IndexField (IDX2, DAT2, WordAcc, NoLock, WriteAsOnes)
                         {
-                                ,   9, 
+                                ,   9,
                             F098,   63
                         }
 
@@ -6746,7 +6746,7 @@
                     {
                         IndexField (IDX3, DAT3, WordAcc, NoLock, WriteAsOnes)
                         {
-                                ,   9, 
+                                ,   9,
                             F099,   64
                         }
 
@@ -6757,7 +6757,7 @@
                     {
                         IndexField (IDX4, DAT4, WordAcc, NoLock, WriteAsOnes)
                         {
-                                ,   9, 
+                                ,   9,
                             F09A,   65
                         }
 
@@ -6768,7 +6768,7 @@
                     {
                         IndexField (IDX5, DAT5, WordAcc, NoLock, WriteAsOnes)
                         {
-                                ,   9, 
+                                ,   9,
                             F09B,   69
                         }
 
@@ -6779,7 +6779,7 @@
                     {
                         IndexField (IDX6, DAT6, WordAcc, NoLock, WriteAsOnes)
                         {
-                                ,   9, 
+                                ,   9,
                             F09C,   129
                         }
 
@@ -6790,7 +6790,7 @@
                     {
                         IndexField (IDX7, DAT7, WordAcc, NoLock, WriteAsOnes)
                         {
-                                ,   9, 
+                                ,   9,
                             F09D,   256
                         }
 
@@ -6801,7 +6801,7 @@
                     {
                         IndexField (IDX8, DAT8, WordAcc, NoLock, WriteAsOnes)
                         {
-                                ,   9, 
+                                ,   9,
                             F09E,   1023
                         }
 
@@ -6812,7 +6812,7 @@
                     {
                         IndexField (IDX9, DAT9, WordAcc, NoLock, WriteAsOnes)
                         {
-                                ,   9, 
+                                ,   9,
                             F09F,   1983
                         }
 
@@ -6835,8 +6835,8 @@
                     {
                         IndexField (IDXA, DATA, WordAcc, NoLock, WriteAsOnes)
                         {
-                            Offset (0x03), 
-                                ,   7, 
+                            Offset (0x03),
+                                ,   7,
                             F0A0,   1
                         }
 
@@ -6847,8 +6847,8 @@
                     {
                         IndexField (IDXB, DATB, WordAcc, NoLock, WriteAsOnes)
                         {
-                            Offset (0x03), 
-                                ,   7, 
+                            Offset (0x03),
+                                ,   7,
                             F0A1,   6
                         }
 
@@ -6859,8 +6859,8 @@
                     {
                         IndexField (IDXC, DATC, WordAcc, NoLock, WriteAsOnes)
                         {
-                            Offset (0x03), 
-                                ,   7, 
+                            Offset (0x03),
+                                ,   7,
                             F0A2,   7
                         }
 
@@ -6871,8 +6871,8 @@
                     {
                         IndexField (IDXD, DATD, WordAcc, NoLock, WriteAsOnes)
                         {
-                            Offset (0x03), 
-                                ,   7, 
+                            Offset (0x03),
+                                ,   7,
                             F0A3,   8
                         }
 
@@ -6883,8 +6883,8 @@
                     {
                         IndexField (IDXE, DATE, WordAcc, NoLock, WriteAsOnes)
                         {
-                            Offset (0x03), 
-                                ,   7, 
+                            Offset (0x03),
+                                ,   7,
                             F0A4,   9
                         }
 
@@ -6895,8 +6895,8 @@
                     {
                         IndexField (IDX0, DAT0, WordAcc, NoLock, WriteAsOnes)
                         {
-                            Offset (0x03), 
-                                ,   7, 
+                            Offset (0x03),
+                                ,   7,
                             F0A5,   31
                         }
 
@@ -6907,8 +6907,8 @@
                     {
                         IndexField (IDX1, DAT1, WordAcc, NoLock, WriteAsOnes)
                         {
-                            Offset (0x03), 
-                                ,   7, 
+                            Offset (0x03),
+                                ,   7,
                             F0A6,   32
                         }
 
@@ -6919,8 +6919,8 @@
                     {
                         IndexField (IDX2, DAT2, WordAcc, NoLock, WriteAsOnes)
                         {
-                            Offset (0x03), 
-                                ,   7, 
+                            Offset (0x03),
+                                ,   7,
                             F0A7,   33
                         }
 
@@ -6931,8 +6931,8 @@
                     {
                         IndexField (IDX3, DAT3, WordAcc, NoLock, WriteAsOnes)
                         {
-                            Offset (0x03), 
-                                ,   7, 
+                            Offset (0x03),
+                                ,   7,
                             F0A8,   63
                         }
 
@@ -6943,8 +6943,8 @@
                     {
                         IndexField (IDX4, DAT4, WordAcc, NoLock, WriteAsOnes)
                         {
-                            Offset (0x03), 
-                                ,   7, 
+                            Offset (0x03),
+                                ,   7,
                             F0A9,   64
                         }
 
@@ -6955,8 +6955,8 @@
                     {
                         IndexField (IDX5, DAT5, WordAcc, NoLock, WriteAsOnes)
                         {
-                            Offset (0x03), 
-                                ,   7, 
+                            Offset (0x03),
+                                ,   7,
                             F0AA,   65
                         }
 
@@ -6967,8 +6967,8 @@
                     {
                         IndexField (IDX6, DAT6, WordAcc, NoLock, WriteAsOnes)
                         {
-                            Offset (0x03), 
-                                ,   7, 
+                            Offset (0x03),
+                                ,   7,
                             F0AB,   69
                         }
 
@@ -6979,8 +6979,8 @@
                     {
                         IndexField (IDX7, DAT7, WordAcc, NoLock, WriteAsOnes)
                         {
-                            Offset (0x03), 
-                                ,   7, 
+                            Offset (0x03),
+                                ,   7,
                             F0AC,   129
                         }
 
@@ -6991,8 +6991,8 @@
                     {
                         IndexField (IDX8, DAT8, WordAcc, NoLock, WriteAsOnes)
                         {
-                            Offset (0x03), 
-                                ,   7, 
+                            Offset (0x03),
+                                ,   7,
                             F0AD,   256
                         }
 
@@ -7003,8 +7003,8 @@
                     {
                         IndexField (IDX9, DAT9, WordAcc, NoLock, WriteAsOnes)
                         {
-                            Offset (0x03), 
-                                ,   7, 
+                            Offset (0x03),
+                                ,   7,
                             F0AE,   1023
                         }
 
@@ -7015,8 +7015,8 @@
                     {
                         IndexField (IDXA, DATA, WordAcc, NoLock, WriteAsOnes)
                         {
-                            Offset (0x03), 
-                                ,   7, 
+                            Offset (0x03),
+                                ,   7,
                             F0AF,   1983
                         }
 
@@ -7039,7 +7039,7 @@
                     {
                         IndexField (IDXB, DATB, WordAcc, NoLock, WriteAsOnes)
                         {
-                            Offset (0x04), 
+                            Offset (0x04),
                             F0B0,   1
                         }
 
@@ -7050,7 +7050,7 @@
                     {
                         IndexField (IDXC, DATC, WordAcc, NoLock, WriteAsOnes)
                         {
-                            Offset (0x04), 
+                            Offset (0x04),
                             F0B1,   6
                         }
 
@@ -7061,7 +7061,7 @@
                     {
                         IndexField (IDXD, DATD, WordAcc, NoLock, WriteAsOnes)
                         {
-                            Offset (0x04), 
+                            Offset (0x04),
                             F0B2,   7
                         }
 
@@ -7072,7 +7072,7 @@
                     {
                         IndexField (IDXE, DATE, WordAcc, NoLock, WriteAsOnes)
                         {
-                            Offset (0x04), 
+                            Offset (0x04),
                             F0B3,   8
                         }
 
@@ -7083,7 +7083,7 @@
                     {
                         IndexField (IDX0, DAT0, WordAcc, NoLock, WriteAsOnes)
                         {
-                            Offset (0x04), 
+                            Offset (0x04),
                             F0B4,   9
                         }
 
@@ -7094,7 +7094,7 @@
                     {
                         IndexField (IDX1, DAT1, WordAcc, NoLock, WriteAsOnes)
                         {
-                            Offset (0x04), 
+                            Offset (0x04),
                             F0B5,   31
                         }
 
@@ -7105,7 +7105,7 @@
                     {
                         IndexField (IDX2, DAT2, WordAcc, NoLock, WriteAsOnes)
                         {
-                            Offset (0x04), 
+                            Offset (0x04),
                             F0B6,   32
                         }
 
@@ -7116,7 +7116,7 @@
                     {
                         IndexField (IDX3, DAT3, WordAcc, NoLock, WriteAsOnes)
                         {
-                            Offset (0x04), 
+                            Offset (0x04),
                             F0B7,   33
                         }
 
@@ -7127,7 +7127,7 @@
                     {
                         IndexField (IDX4, DAT4, WordAcc, NoLock, WriteAsOnes)
                         {
-                            Offset (0x04), 
+                            Offset (0x04),
                             F0B8,   63
                         }
 
@@ -7138,7 +7138,7 @@
                     {
                         IndexField (IDX5, DAT5, WordAcc, NoLock, WriteAsOnes)
                         {
-                            Offset (0x04), 
+                            Offset (0x04),
                             F0B9,   64
                         }
 
@@ -7149,7 +7149,7 @@
                     {
                         IndexField (IDX6, DAT6, WordAcc, NoLock, WriteAsOnes)
                         {
-                            Offset (0x04), 
+                            Offset (0x04),
                             F0BA,   65
                         }
 
@@ -7160,7 +7160,7 @@
                     {
                         IndexField (IDX7, DAT7, WordAcc, NoLock, WriteAsOnes)
                         {
-                            Offset (0x04), 
+                            Offset (0x04),
                             F0BB,   69
                         }
 
@@ -7171,7 +7171,7 @@
                     {
                         IndexField (IDX8, DAT8, WordAcc, NoLock, WriteAsOnes)
                         {
-                            Offset (0x04), 
+                            Offset (0x04),
                             F0BC,   129
                         }
 
@@ -7182,7 +7182,7 @@
                     {
                         IndexField (IDX9, DAT9, WordAcc, NoLock, WriteAsOnes)
                         {
-                            Offset (0x04), 
+                            Offset (0x04),
                             F0BD,   256
                         }
 
@@ -7193,7 +7193,7 @@
                     {
                         IndexField (IDXA, DATA, WordAcc, NoLock, WriteAsOnes)
                         {
-                            Offset (0x04), 
+                            Offset (0x04),
                             F0BE,   1023
                         }
 
@@ -7204,7 +7204,7 @@
                     {
                         IndexField (IDXB, DATB, WordAcc, NoLock, WriteAsOnes)
                         {
-                            Offset (0x04), 
+                            Offset (0x04),
                             F0BF,   1983
                         }
 
@@ -7227,7 +7227,7 @@
                     {
                         IndexField (IDXC, DATC, WordAcc, NoLock, WriteAsOnes)
                         {
-                                ,   33, 
+                                ,   33,
                             F0C0,   1
                         }
 
@@ -7238,7 +7238,7 @@
                     {
                         IndexField (IDXD, DATD, WordAcc, NoLock, WriteAsOnes)
                         {
-                                ,   33, 
+                                ,   33,
                             F0C1,   6
                         }
 
@@ -7249,7 +7249,7 @@
                     {
                         IndexField (IDXE, DATE, WordAcc, NoLock, WriteAsOnes)
                         {
-                                ,   33, 
+                                ,   33,
                             F0C2,   7
                         }
 
@@ -7260,7 +7260,7 @@
                     {
                         IndexField (IDX0, DAT0, WordAcc, NoLock, WriteAsOnes)
                         {
-                                ,   33, 
+                                ,   33,
                             F0C3,   8
                         }
 
@@ -7271,7 +7271,7 @@
                     {
                         IndexField (IDX1, DAT1, WordAcc, NoLock, WriteAsOnes)
                         {
-                                ,   33, 
+                                ,   33,
                             F0C4,   9
                         }
 
@@ -7282,7 +7282,7 @@
                     {
                         IndexField (IDX2, DAT2, WordAcc, NoLock, WriteAsOnes)
                         {
-                                ,   33, 
+                                ,   33,
                             F0C5,   31
                         }
 
@@ -7293,7 +7293,7 @@
                     {
                         IndexField (IDX3, DAT3, WordAcc, NoLock, WriteAsOnes)
                         {
-                                ,   33, 
+                                ,   33,
                             F0C6,   32
                         }
 
@@ -7304,7 +7304,7 @@
                     {
                         IndexField (IDX4, DAT4, WordAcc, NoLock, WriteAsOnes)
                         {
-                                ,   33, 
+                                ,   33,
                             F0C7,   33
                         }
 
@@ -7315,7 +7315,7 @@
                     {
                         IndexField (IDX5, DAT5, WordAcc, NoLock, WriteAsOnes)
                         {
-                                ,   33, 
+                                ,   33,
                             F0C8,   63
                         }
 
@@ -7326,7 +7326,7 @@
                     {
                         IndexField (IDX6, DAT6, WordAcc, NoLock, WriteAsOnes)
                         {
-                                ,   33, 
+                                ,   33,
                             F0C9,   64
                         }
 
@@ -7337,7 +7337,7 @@
                     {
                         IndexField (IDX7, DAT7, WordAcc, NoLock, WriteAsOnes)
                         {
-                                ,   33, 
+                                ,   33,
                             F0CA,   65
                         }
 
@@ -7348,7 +7348,7 @@
                     {
                         IndexField (IDX8, DAT8, WordAcc, NoLock, WriteAsOnes)
                         {
-                                ,   33, 
+                                ,   33,
                             F0CB,   69
                         }
 
@@ -7359,7 +7359,7 @@
                     {
                         IndexField (IDX9, DAT9, WordAcc, NoLock, WriteAsOnes)
                         {
-                                ,   33, 
+                                ,   33,
                             F0CC,   129
                         }
 
@@ -7370,7 +7370,7 @@
                     {
                         IndexField (IDXA, DATA, WordAcc, NoLock, WriteAsOnes)
                         {
-                                ,   33, 
+                                ,   33,
                             F0CD,   256
                         }
 
@@ -7381,7 +7381,7 @@
                     {
                         IndexField (IDXB, DATB, WordAcc, NoLock, WriteAsOnes)
                         {
-                                ,   33, 
+                                ,   33,
                             F0CE,   1023
                         }
 
@@ -7392,7 +7392,7 @@
                     {
                         IndexField (IDXC, DATC, WordAcc, NoLock, WriteAsOnes)
                         {
-                                ,   33, 
+                                ,   33,
                             F0CF,   1983
                         }
 
@@ -7415,7 +7415,7 @@
                     {
                         IndexField (IDXD, DATD, WordAcc, NoLock, WriteAsOnes)
                         {
-                                ,   63, 
+                                ,   63,
                             F0D0,   1
                         }
 
@@ -7426,7 +7426,7 @@
                     {
                         IndexField (IDXE, DATE, WordAcc, NoLock, WriteAsOnes)
                         {
-                                ,   63, 
+                                ,   63,
                             F0D1,   6
                         }
 
@@ -7437,7 +7437,7 @@
                     {
                         IndexField (IDX0, DAT0, WordAcc, NoLock, WriteAsOnes)
                         {
-                                ,   63, 
+                                ,   63,
                             F0D2,   7
                         }
 
@@ -7448,7 +7448,7 @@
                     {
                         IndexField (IDX1, DAT1, WordAcc, NoLock, WriteAsOnes)
                         {
-                                ,   63, 
+                                ,   63,
                             F0D3,   8
                         }
 
@@ -7459,7 +7459,7 @@
                     {
                         IndexField (IDX2, DAT2, WordAcc, NoLock, WriteAsOnes)
                         {
-                                ,   63, 
+                                ,   63,
                             F0D4,   9
                         }
 
@@ -7470,7 +7470,7 @@
                     {
                         IndexField (IDX3, DAT3, WordAcc, NoLock, WriteAsOnes)
                         {
-                                ,   63, 
+                                ,   63,
                             F0D5,   31
                         }
 
@@ -7481,7 +7481,7 @@
                     {
                         IndexField (IDX4, DAT4, WordAcc, NoLock, WriteAsOnes)
                         {
-                                ,   63, 
+                                ,   63,
                             F0D6,   32
                         }
 
@@ -7492,7 +7492,7 @@
                     {
                         IndexField (IDX5, DAT5, WordAcc, NoLock, WriteAsOnes)
                         {
-                                ,   63, 
+                                ,   63,
                             F0D7,   33
                         }
 
@@ -7503,7 +7503,7 @@
                     {
                         IndexField (IDX6, DAT6, WordAcc, NoLock, WriteAsOnes)
                         {
-                                ,   63, 
+                                ,   63,
                             F0D8,   63
                         }
 
@@ -7514,7 +7514,7 @@
                     {
                         IndexField (IDX7, DAT7, WordAcc, NoLock, WriteAsOnes)
                         {
-                                ,   63, 
+                                ,   63,
                             F0D9,   64
                         }
 
@@ -7525,7 +7525,7 @@
                     {
                         IndexField (IDX8, DAT8, WordAcc, NoLock, WriteAsOnes)
                         {
-                                ,   63, 
+                                ,   63,
                             F0DA,   65
                         }
 
@@ -7536,7 +7536,7 @@
                     {
                         IndexField (IDX9, DAT9, WordAcc, NoLock, WriteAsOnes)
                         {
-                                ,   63, 
+                                ,   63,
                             F0DB,   69
                         }
 
@@ -7547,7 +7547,7 @@
                     {
                         IndexField (IDXA, DATA, WordAcc, NoLock, WriteAsOnes)
                         {
-                                ,   63, 
+                                ,   63,
                             F0DC,   129
                         }
 
@@ -7558,7 +7558,7 @@
                     {
                         IndexField (IDXB, DATB, WordAcc, NoLock, WriteAsOnes)
                         {
-                                ,   63, 
+                                ,   63,
                             F0DD,   256
                         }
 
@@ -7569,7 +7569,7 @@
                     {
                         IndexField (IDXC, DATC, WordAcc, NoLock, WriteAsOnes)
                         {
-                                ,   63, 
+                                ,   63,
                             F0DE,   1023
                         }
 
@@ -7580,7 +7580,7 @@
                     {
                         IndexField (IDXD, DATD, WordAcc, NoLock, WriteAsOnes)
                         {
-                                ,   63, 
+                                ,   63,
                             F0DF,   1983
                         }
 
@@ -7603,7 +7603,7 @@
                     {
                         IndexField (IDXE, DATE, WordAcc, NoLock, WriteAsOnes)
                         {
-                            Offset (0x08), 
+                            Offset (0x08),
                             F0E0,   1
                         }
 
@@ -7614,7 +7614,7 @@
                     {
                         IndexField (IDX0, DAT0, WordAcc, NoLock, WriteAsOnes)
                         {
-                            Offset (0x08), 
+                            Offset (0x08),
                             F0E1,   6
                         }
 
@@ -7625,7 +7625,7 @@
                     {
                         IndexField (IDX1, DAT1, WordAcc, NoLock, WriteAsOnes)
                         {
-                            Offset (0x08), 
+                            Offset (0x08),
                             F0E2,   7
                         }
 
@@ -7636,7 +7636,7 @@
                     {
                         IndexField (IDX2, DAT2, WordAcc, NoLock, WriteAsOnes)
                         {
-                            Offset (0x08), 
+                            Offset (0x08),
                             F0E3,   8
                         }
 
@@ -7647,7 +7647,7 @@
                     {
                         IndexField (IDX3, DAT3, WordAcc, NoLock, WriteAsOnes)
                         {
-                            Offset (0x08), 
+                            Offset (0x08),
                             F0E4,   9
                         }
 
@@ -7658,7 +7658,7 @@
                     {
                         IndexField (IDX4, DAT4, WordAcc, NoLock, WriteAsOnes)
                         {
-                            Offset (0x08), 
+                            Offset (0x08),
                             F0E5,   31
                         }
 
@@ -7669,7 +7669,7 @@
                     {
                         IndexField (IDX5, DAT5, WordAcc, NoLock, WriteAsOnes)
                         {
-                            Offset (0x08), 
+                            Offset (0x08),
                             F0E6,   32
                         }
 
@@ -7680,7 +7680,7 @@
                     {
                         IndexField (IDX6, DAT6, WordAcc, NoLock, WriteAsOnes)
                         {
-                            Offset (0x08), 
+                            Offset (0x08),
                             F0E7,   33
                         }
 
@@ -7691,7 +7691,7 @@
                     {
                         IndexField (IDX7, DAT7, WordAcc, NoLock, WriteAsOnes)
                         {
-                            Offset (0x08), 
+                            Offset (0x08),
                             F0E8,   63
                         }
 
@@ -7702,7 +7702,7 @@
                     {
                         IndexField (IDX8, DAT8, WordAcc, NoLock, WriteAsOnes)
                         {
-                            Offset (0x08), 
+                            Offset (0x08),
                             F0E9,   64
                         }
 
@@ -7713,7 +7713,7 @@
                     {
                         IndexField (IDX9, DAT9, WordAcc, NoLock, WriteAsOnes)
                         {
-                            Offset (0x08), 
+                            Offset (0x08),
                             F0EA,   65
                         }
 
@@ -7724,7 +7724,7 @@
                     {
                         IndexField (IDXA, DATA, WordAcc, NoLock, WriteAsOnes)
                         {
-                            Offset (0x08), 
+                            Offset (0x08),
                             F0EB,   69
                         }
 
@@ -7735,7 +7735,7 @@
                     {
                         IndexField (IDXB, DATB, WordAcc, NoLock, WriteAsOnes)
                         {
-                            Offset (0x08), 
+                            Offset (0x08),
                             F0EC,   129
                         }
 
@@ -7746,7 +7746,7 @@
                     {
                         IndexField (IDXC, DATC, WordAcc, NoLock, WriteAsOnes)
                         {
-                            Offset (0x08), 
+                            Offset (0x08),
                             F0ED,   256
                         }
 
@@ -7757,7 +7757,7 @@
                     {
                         IndexField (IDXD, DATD, WordAcc, NoLock, WriteAsOnes)
                         {
-                            Offset (0x08), 
+                            Offset (0x08),
                             F0EE,   1023
                         }
 
@@ -7768,7 +7768,7 @@
                     {
                         IndexField (IDXE, DATE, WordAcc, NoLock, WriteAsOnes)
                         {
-                            Offset (0x08), 
+                            Offset (0x08),
                             F0EF,   1983
                         }
 
@@ -7791,8 +7791,8 @@
                     {
                         IndexField (IDX0, DAT0, WordAcc, NoLock, WriteAsOnes)
                         {
-                            Offset (0x08), 
-                                ,   1, 
+                            Offset (0x08),
+                                ,   1,
                             F0F0,   1
                         }
 
@@ -7803,8 +7803,8 @@
                     {
                         IndexField (IDX1, DAT1, WordAcc, NoLock, WriteAsOnes)
                         {
-                            Offset (0x08), 
-                                ,   1, 
+                            Offset (0x08),
+                                ,   1,
                             F0F1,   6
                         }
 
@@ -7815,8 +7815,8 @@
                     {
                         IndexField (IDX2, DAT2, WordAcc, NoLock, WriteAsOnes)
                         {
-                            Offset (0x08), 
-                                ,   1, 
+                            Offset (0x08),
+                                ,   1,
                             F0F2,   7
                         }
 
@@ -7827,8 +7827,8 @@
                     {
                         IndexField (IDX3, DAT3, WordAcc, NoLock, WriteAsOnes)
                         {
-                            Offset (0x08), 
-                                ,   1, 
+                            Offset (0x08),
+                                ,   1,
                             F0F3,   8
                         }
 
@@ -7839,8 +7839,8 @@
                     {
                         IndexField (IDX4, DAT4, WordAcc, NoLock, WriteAsOnes)
                         {
-                            Offset (0x08), 
-                                ,   1, 
+                            Offset (0x08),
+                                ,   1,
                             F0F4,   9
                         }
 
@@ -7851,8 +7851,8 @@
                     {
                         IndexField (IDX5, DAT5, WordAcc, NoLock, WriteAsOnes)
                         {
-                            Offset (0x08), 
-                                ,   1, 
+                            Offset (0x08),
+                                ,   1,
                             F0F5,   31
                         }
 
@@ -7863,8 +7863,8 @@
                     {
                         IndexField (IDX6, DAT6, WordAcc, NoLock, WriteAsOnes)
                         {
-                            Offset (0x08), 
-                                ,   1, 
+                            Offset (0x08),
+                                ,   1,
                             F0F6,   32
                         }
 
@@ -7875,8 +7875,8 @@
                     {
                         IndexField (IDX7, DAT7, WordAcc, NoLock, WriteAsOnes)
                         {
-                            Offset (0x08), 
-                                ,   1, 
+                            Offset (0x08),
+                                ,   1,
                             F0F7,   33
                         }
 
@@ -7887,8 +7887,8 @@
                     {
                         IndexField (IDX8, DAT8, WordAcc, NoLock, WriteAsOnes)
                         {
-                            Offset (0x08), 
-                                ,   1, 
+                            Offset (0x08),
+                                ,   1,
                             F0F8,   63
                         }
 
@@ -7899,8 +7899,8 @@
                     {
                         IndexField (IDX9, DAT9, WordAcc, NoLock, WriteAsOnes)
                         {
-                            Offset (0x08), 
-                                ,   1, 
+                            Offset (0x08),
+                                ,   1,
                             F0F9,   64
                         }
 
@@ -7911,8 +7911,8 @@
                     {
                         IndexField (IDXA, DATA, WordAcc, NoLock, WriteAsOnes)
                         {
-                            Offset (0x08), 
-                                ,   1, 
+                            Offset (0x08),
+                                ,   1,
                             F0FA,   65
                         }
 
@@ -7923,8 +7923,8 @@
                     {
                         IndexField (IDXB, DATB, WordAcc, NoLock, WriteAsOnes)
                         {
-                            Offset (0x08), 
-                                ,   1, 
+                            Offset (0x08),
+                                ,   1,
                             F0FB,   69
                         }
 
@@ -7935,8 +7935,8 @@
                     {
                         IndexField (IDXC, DATC, WordAcc, NoLock, WriteAsOnes)
                         {
-                            Offset (0x08), 
-                                ,   1, 
+                            Offset (0x08),
+                                ,   1,
                             F0FC,   129
                         }
 
@@ -7947,8 +7947,8 @@
                     {
                         IndexField (IDXD, DATD, WordAcc, NoLock, WriteAsOnes)
                         {
-                            Offset (0x08), 
-                                ,   1, 
+                            Offset (0x08),
+                                ,   1,
                             F0FD,   256
                         }
 
@@ -7959,8 +7959,8 @@
                     {
                         IndexField (IDXE, DATE, WordAcc, NoLock, WriteAsOnes)
                         {
-                            Offset (0x08), 
-                                ,   1, 
+                            Offset (0x08),
+                                ,   1,
                             F0FE,   1023
                         }
 
@@ -7971,8 +7971,8 @@
                     {
                         IndexField (IDX0, DAT0, WordAcc, NoLock, WriteAsOnes)
                         {
-                            Offset (0x08), 
-                                ,   1, 
+                            Offset (0x08),
+                                ,   1,
                             F0FF,   1983
                         }
 
@@ -8015,7 +8015,7 @@
          */
         Field (OPR0, ByteAcc, NoLock, Preserve)
         {
-            IDX0,   8, 
+            IDX0,   8,
             DAT0,   32
         }
 
@@ -8026,8 +8026,8 @@
 
         Field (OPR0, ByteAcc, NoLock, WriteAsOnes)
         {
-            Offset (0x04), 
-            IDX1,   8, 
+            Offset (0x04),
+            IDX1,   8,
             DAT1,   32
         }
 
@@ -8038,8 +8038,8 @@
 
         Field (OPR0, ByteAcc, NoLock, WriteAsZeros)
         {
-            Offset (0x08), 
-            IDX2,   16, 
+            Offset (0x08),
+            IDX2,   16,
             DAT2,   32
         }
 
@@ -8050,8 +8050,8 @@
 
         Field (OPR0, WordAcc, NoLock, Preserve)
         {
-            Offset (0x0E), 
-            IDX3,   16, 
+            Offset (0x0E),
+            IDX3,   16,
             DAT3,   32
         }
 
@@ -8062,8 +8062,8 @@
 
         Field (OPR0, WordAcc, NoLock, WriteAsOnes)
         {
-            Offset (0x14), 
-            IDX4,   16, 
+            Offset (0x14),
+            IDX4,   16,
             DAT4,   32
         }
 
@@ -8074,8 +8074,8 @@
 
         Field (OPR0, WordAcc, NoLock, WriteAsZeros)
         {
-            Offset (0x1A), 
-            IDX5,   32, 
+            Offset (0x1A),
+            IDX5,   32,
             DAT5,   32
         }
 
@@ -8086,9 +8086,9 @@
 
         Field (OPR0, DWordAcc, NoLock, Preserve)
         {
-            Offset (0x22), 
-            IDX6,   8, 
-            Offset (0x24), 
+            Offset (0x22),
+            IDX6,   8,
+            Offset (0x24),
             DAT6,   32
         }
 
@@ -8099,8 +8099,8 @@
 
         Field (OPR0, DWordAcc, NoLock, WriteAsOnes)
         {
-            Offset (0x28), 
-            IDX7,   32, 
+            Offset (0x28),
+            IDX7,   32,
             DAT7,   32
         }
 
@@ -8111,8 +8111,8 @@
 
         Field (OPR0, DWordAcc, NoLock, WriteAsZeros)
         {
-            Offset (0x30), 
-            IDX8,   32, 
+            Offset (0x30),
+            IDX8,   32,
             DAT8,   32
         }
 
@@ -8123,9 +8123,9 @@
 
         Field (OPR0, QWordAcc, NoLock, Preserve)
         {
-            Offset (0x3C), 
-            IDX9,   8, 
-            Offset (0x40), 
+            Offset (0x3C),
+            IDX9,   8,
+            Offset (0x40),
             DAT9,   32
         }
 
@@ -8136,12 +8136,12 @@
 
         Field (OPR0, QWordAcc, NoLock, WriteAsOnes)
         {
-            Offset (0x48), 
-            Offset (0x4C), 
+            Offset (0x48),
+            Offset (0x4C),
             /* Index field exceeding 32 bits causes AE_BUFFER_OVERFLOW */
             /* IDXA, 64, */
             /* Do not allow index/data interference */
-            IDXA,   32, 
+            IDXA,   32,
             DATA,   32
         }
 
@@ -8152,9 +8152,9 @@
 
         Field (OPR0, QWordAcc, NoLock, WriteAsZeros)
         {
-            Offset (0x58), 
-            IDXB,   32, 
-            Offset (0x60), 
+            Offset (0x58),
+            IDXB,   32,
+            Offset (0x60),
             DATB,   32
         }
 
@@ -8165,8 +8165,8 @@
 
         Field (OPR0, AnyAcc, NoLock, Preserve)
         {
-            Offset (0x68), 
-            IDXC,   8, 
+            Offset (0x68),
+            IDXC,   8,
             DATC,   32
         }
 
@@ -8177,10 +8177,10 @@
 
         Field (OPR0, AnyAcc, NoLock, WriteAsOnes)
         {
-            Offset (0x6C), 
+            Offset (0x6C),
             /* Index field exceeding 32 bits causes AE_BUFFER_OVERFLOW */
             /* IDXD, 64, */
-            IDXD,   32, 
+            IDXD,   32,
             DATD,   32
         }
 
@@ -8191,8 +8191,8 @@
 
         Field (OPR0, AnyAcc, NoLock, WriteAsZeros)
         {
-            Offset (0x7B), 
-            IDXE,   32, 
+            Offset (0x7B),
+            IDXE,   32,
             DATE,   32
         }
 
@@ -8212,7 +8212,7 @@
                     {
                         IndexField (IDX0, DAT0, DWordAcc, NoLock, WriteAsZeros)
                         {
-                            Offset (0x00), 
+                            Offset (0x00),
                             F000,   1
                         }
 
@@ -8223,7 +8223,7 @@
                     {
                         IndexField (IDX1, DAT1, DWordAcc, NoLock, WriteAsZeros)
                         {
-                            Offset (0x00), 
+                            Offset (0x00),
                             F001,   6
                         }
 
@@ -8234,7 +8234,7 @@
                     {
                         IndexField (IDX2, DAT2, DWordAcc, NoLock, WriteAsZeros)
                         {
-                            Offset (0x00), 
+                            Offset (0x00),
                             F002,   7
                         }
 
@@ -8245,7 +8245,7 @@
                     {
                         IndexField (IDX3, DAT3, DWordAcc, NoLock, WriteAsZeros)
                         {
-                            Offset (0x00), 
+                            Offset (0x00),
                             F003,   8
                         }
 
@@ -8256,7 +8256,7 @@
                     {
                         IndexField (IDX4, DAT4, DWordAcc, NoLock, WriteAsZeros)
                         {
-                            Offset (0x00), 
+                            Offset (0x00),
                             F004,   9
                         }
 
@@ -8267,7 +8267,7 @@
                     {
                         IndexField (IDX5, DAT5, DWordAcc, NoLock, WriteAsZeros)
                         {
-                            Offset (0x00), 
+                            Offset (0x00),
                             F005,   31
                         }
 
@@ -8278,7 +8278,7 @@
                     {
                         IndexField (IDX6, DAT6, DWordAcc, NoLock, WriteAsZeros)
                         {
-                            Offset (0x00), 
+                            Offset (0x00),
                             F006,   32
                         }
 
@@ -8289,7 +8289,7 @@
                     {
                         IndexField (IDX7, DAT7, DWordAcc, NoLock, WriteAsZeros)
                         {
-                            Offset (0x00), 
+                            Offset (0x00),
                             F007,   33
                         }
 
@@ -8300,7 +8300,7 @@
                     {
                         IndexField (IDX8, DAT8, DWordAcc, NoLock, WriteAsZeros)
                         {
-                            Offset (0x00), 
+                            Offset (0x00),
                             F008,   63
                         }
 
@@ -8311,7 +8311,7 @@
                     {
                         IndexField (IDX9, DAT9, DWordAcc, NoLock, WriteAsZeros)
                         {
-                            Offset (0x00), 
+                            Offset (0x00),
                             F009,   64
                         }
 
@@ -8322,7 +8322,7 @@
                     {
                         IndexField (IDXA, DATA, DWordAcc, NoLock, WriteAsZeros)
                         {
-                            Offset (0x00), 
+                            Offset (0x00),
                             F00A,   65
                         }
 
@@ -8333,7 +8333,7 @@
                     {
                         IndexField (IDXB, DATB, DWordAcc, NoLock, WriteAsZeros)
                         {
-                            Offset (0x00), 
+                            Offset (0x00),
                             F00B,   69
                         }
 
@@ -8344,7 +8344,7 @@
                     {
                         IndexField (IDXC, DATC, DWordAcc, NoLock, WriteAsZeros)
                         {
-                            Offset (0x00), 
+                            Offset (0x00),
                             F00C,   129
                         }
 
@@ -8355,7 +8355,7 @@
                     {
                         IndexField (IDXD, DATD, DWordAcc, NoLock, WriteAsZeros)
                         {
-                            Offset (0x00), 
+                            Offset (0x00),
                             F00D,   256
                         }
 
@@ -8366,7 +8366,7 @@
                     {
                         IndexField (IDXE, DATE, DWordAcc, NoLock, WriteAsZeros)
                         {
-                            Offset (0x00), 
+                            Offset (0x00),
                             F00E,   1023
                         }
 
@@ -8377,7 +8377,7 @@
                     {
                         IndexField (IDX0, DAT0, DWordAcc, NoLock, WriteAsZeros)
                         {
-                            Offset (0x00), 
+                            Offset (0x00),
                             F00F,   1983
                         }
 
@@ -8400,8 +8400,8 @@
                     {
                         IndexField (IDX1, DAT1, DWordAcc, NoLock, WriteAsZeros)
                         {
-                            Offset (0x00), 
-                                ,   1, 
+                            Offset (0x00),
+                                ,   1,
                             F010,   1
                         }
 
@@ -8412,8 +8412,8 @@
                     {
                         IndexField (IDX2, DAT2, DWordAcc, NoLock, WriteAsZeros)
                         {
-                            Offset (0x00), 
-                                ,   1, 
+                            Offset (0x00),
+                                ,   1,
                             F011,   6
                         }
 
@@ -8424,8 +8424,8 @@
                     {
                         IndexField (IDX3, DAT3, DWordAcc, NoLock, WriteAsZeros)
                         {
-                            Offset (0x00), 
-                                ,   1, 
+                            Offset (0x00),
+                                ,   1,
                             F012,   7
                         }
 
@@ -8436,8 +8436,8 @@
                     {
                         IndexField (IDX4, DAT4, DWordAcc, NoLock, WriteAsZeros)
                         {
-                            Offset (0x00), 
-                                ,   1, 
+                            Offset (0x00),
+                                ,   1,
                             F013,   8
                         }
 
@@ -8448,8 +8448,8 @@
                     {
                         IndexField (IDX5, DAT5, DWordAcc, NoLock, WriteAsZeros)
                         {
-                            Offset (0x00), 
-                                ,   1, 
+                            Offset (0x00),
+                                ,   1,
                             F014,   9
                         }
 
@@ -8460,8 +8460,8 @@
                     {
                         IndexField (IDX6, DAT6, DWordAcc, NoLock, WriteAsZeros)
                         {
-                            Offset (0x00), 
-                                ,   1, 
+                            Offset (0x00),
+                                ,   1,
                             F015,   31
                         }
 
@@ -8472,8 +8472,8 @@
                     {
                         IndexField (IDX7, DAT7, DWordAcc, NoLock, WriteAsZeros)
                         {
-                            Offset (0x00), 
-                                ,   1, 
+                            Offset (0x00),
+                                ,   1,
                             F016,   32
                         }
 
@@ -8484,8 +8484,8 @@
                     {
                         IndexField (IDX8, DAT8, DWordAcc, NoLock, WriteAsZeros)
                         {
-                            Offset (0x00), 
-                                ,   1, 
+                            Offset (0x00),
+                                ,   1,
                             F017,   33
                         }
 
@@ -8496,8 +8496,8 @@
                     {
                         IndexField (IDX9, DAT9, DWordAcc, NoLock, WriteAsZeros)
                         {
-                            Offset (0x00), 
-                                ,   1, 
+                            Offset (0x00),
+                                ,   1,
                             F018,   63
                         }
 
@@ -8508,8 +8508,8 @@
                     {
                         IndexField (IDXA, DATA, DWordAcc, NoLock, WriteAsZeros)
                         {
-                            Offset (0x00), 
-                                ,   1, 
+                            Offset (0x00),
+                                ,   1,
                             F019,   64
                         }
 
@@ -8520,8 +8520,8 @@
                     {
                         IndexField (IDXB, DATB, DWordAcc, NoLock, WriteAsZeros)
                         {
-                            Offset (0x00), 
-                                ,   1, 
+                            Offset (0x00),
+                                ,   1,
                             F01A,   65
                         }
 
@@ -8532,8 +8532,8 @@
                     {
                         IndexField (IDXC, DATC, DWordAcc, NoLock, WriteAsZeros)
                         {
-                            Offset (0x00), 
-                                ,   1, 
+                            Offset (0x00),
+                                ,   1,
                             F01B,   69
                         }
 
@@ -8544,8 +8544,8 @@
                     {
                         IndexField (IDXD, DATD, DWordAcc, NoLock, WriteAsZeros)
                         {
-                            Offset (0x00), 
-                                ,   1, 
+                            Offset (0x00),
+                                ,   1,
                             F01C,   129
                         }
 
@@ -8556,8 +8556,8 @@
                     {
                         IndexField (IDXE, DATE, DWordAcc, NoLock, WriteAsZeros)
                         {
-                            Offset (0x00), 
-                                ,   1, 
+                            Offset (0x00),
+                                ,   1,
                             F01D,   256
                         }
 
@@ -8568,8 +8568,8 @@
                     {
                         IndexField (IDX0, DAT0, DWordAcc, NoLock, WriteAsZeros)
                         {
-                            Offset (0x00), 
-                                ,   1, 
+                            Offset (0x00),
+                                ,   1,
                             F01E,   1023
                         }
 
@@ -8580,8 +8580,8 @@
                     {
                         IndexField (IDX1, DAT1, DWordAcc, NoLock, WriteAsZeros)
                         {
-                            Offset (0x00), 
-                                ,   1, 
+                            Offset (0x00),
+                                ,   1,
                             F01F,   1983
                         }
 
@@ -8604,7 +8604,7 @@
                     {
                         IndexField (IDX2, DAT2, DWordAcc, NoLock, WriteAsZeros)
                         {
-                                ,   2, 
+                                ,   2,
                             F020,   1
                         }
 
@@ -8615,7 +8615,7 @@
                     {
                         IndexField (IDX3, DAT3, DWordAcc, NoLock, WriteAsZeros)
                         {
-                                ,   2, 
+                                ,   2,
                             F021,   6
                         }
 
@@ -8626,7 +8626,7 @@
                     {
                         IndexField (IDX4, DAT4, DWordAcc, NoLock, WriteAsZeros)
                         {
-                                ,   2, 
+                                ,   2,
                             F022,   7
                         }
 
@@ -8637,7 +8637,7 @@
                     {
                         IndexField (IDX5, DAT5, DWordAcc, NoLock, WriteAsZeros)
                         {
-                                ,   2, 
+                                ,   2,
                             F023,   8
                         }
 
@@ -8648,7 +8648,7 @@
                     {
                         IndexField (IDX6, DAT6, DWordAcc, NoLock, WriteAsZeros)
                         {
-                                ,   2, 
+                                ,   2,
                             F024,   9
                         }
 
@@ -8659,7 +8659,7 @@
                     {
                         IndexField (IDX7, DAT7, DWordAcc, NoLock, WriteAsZeros)
                         {
-                                ,   2, 
+                                ,   2,
                             F025,   31
                         }
 
@@ -8670,7 +8670,7 @@
                     {
                         IndexField (IDX8, DAT8, DWordAcc, NoLock, WriteAsZeros)
                         {
-                                ,   2, 
+                                ,   2,
                             F026,   32
                         }
 
@@ -8681,7 +8681,7 @@
                     {
                         IndexField (IDX9, DAT9, DWordAcc, NoLock, WriteAsZeros)
                         {
-                                ,   2, 
+                                ,   2,
                             F027,   33
                         }
 
@@ -8692,7 +8692,7 @@
                     {
                         IndexField (IDXA, DATA, DWordAcc, NoLock, WriteAsZeros)
                         {
-                                ,   2, 
+                                ,   2,
                             F028,   63
                         }
 
@@ -8703,7 +8703,7 @@
                     {
                         IndexField (IDXB, DATB, DWordAcc, NoLock, WriteAsZeros)
                         {
-                                ,   2, 
+                                ,   2,
                             F029,   64
                         }
 
@@ -8714,7 +8714,7 @@
                     {
                         IndexField (IDXC, DATC, DWordAcc, NoLock, WriteAsZeros)
                         {
-                                ,   2, 
+                                ,   2,
                             F02A,   65
                         }
 
@@ -8725,7 +8725,7 @@
                     {
                         IndexField (IDXD, DATD, DWordAcc, NoLock, WriteAsZeros)
                         {
-                                ,   2, 
+                                ,   2,
                             F02B,   69
                         }
 
@@ -8736,7 +8736,7 @@
                     {
                         IndexField (IDXE, DATE, DWordAcc, NoLock, WriteAsZeros)
                         {
-                                ,   2, 
+                                ,   2,
                             F02C,   129
                         }
 
@@ -8747,7 +8747,7 @@
                     {
                         IndexField (IDX0, DAT0, DWordAcc, NoLock, WriteAsZeros)
                         {
-                                ,   2, 
+                                ,   2,
                             F02D,   256
                         }
 
@@ -8758,7 +8758,7 @@
                     {
                         IndexField (IDX1, DAT1, DWordAcc, NoLock, WriteAsZeros)
                         {
-                                ,   2, 
+                                ,   2,
                             F02E,   1023
                         }
 
@@ -8769,7 +8769,7 @@
                     {
                         IndexField (IDX2, DAT2, DWordAcc, NoLock, WriteAsZeros)
                         {
-                                ,   2, 
+                                ,   2,
                             F02F,   1983
                         }
 
@@ -8792,7 +8792,7 @@
                     {
                         IndexField (IDX3, DAT3, DWordAcc, NoLock, WriteAsZeros)
                         {
-                                ,   3, 
+                                ,   3,
                             F030,   1
                         }
 
@@ -8803,7 +8803,7 @@
                     {
                         IndexField (IDX4, DAT4, DWordAcc, NoLock, WriteAsZeros)
                         {
-                                ,   3, 
+                                ,   3,
                             F031,   6
                         }
 
@@ -8814,7 +8814,7 @@
                     {
                         IndexField (IDX5, DAT5, DWordAcc, NoLock, WriteAsZeros)
                         {
-                                ,   3, 
+                                ,   3,
                             F032,   7
                         }
 
@@ -8825,7 +8825,7 @@
                     {
                         IndexField (IDX6, DAT6, DWordAcc, NoLock, WriteAsZeros)
                         {
-                                ,   3, 
+                                ,   3,
                             F033,   8
                         }
 
@@ -8836,7 +8836,7 @@
                     {
                         IndexField (IDX7, DAT7, DWordAcc, NoLock, WriteAsZeros)
                         {
-                                ,   3, 
+                                ,   3,
                             F034,   9
                         }
 
@@ -8847,7 +8847,7 @@
                     {
                         IndexField (IDX8, DAT8, DWordAcc, NoLock, WriteAsZeros)
                         {
-                                ,   3, 
+                                ,   3,
                             F035,   31
                         }
 
@@ -8858,7 +8858,7 @@
                     {
                         IndexField (IDX9, DAT9, DWordAcc, NoLock, WriteAsZeros)
                         {
-                                ,   3, 
+                                ,   3,
                             F036,   32
                         }
 
@@ -8869,7 +8869,7 @@
                     {
                         IndexField (IDXA, DATA, DWordAcc, NoLock, WriteAsZeros)
                         {
-                                ,   3, 
+                                ,   3,
                             F037,   33
                         }
 
@@ -8880,7 +8880,7 @@
                     {
                         IndexField (IDXB, DATB, DWordAcc, NoLock, WriteAsZeros)
                         {
-                                ,   3, 
+                                ,   3,
                             F038,   63
                         }
 
@@ -8891,7 +8891,7 @@
                     {
                         IndexField (IDXC, DATC, DWordAcc, NoLock, WriteAsZeros)
                         {
-                                ,   3, 
+                                ,   3,
                             F039,   64
                         }
 
@@ -8902,7 +8902,7 @@
                     {
                         IndexField (IDXD, DATD, DWordAcc, NoLock, WriteAsZeros)
                         {
-                                ,   3, 
+                                ,   3,
                             F03A,   65
                         }
 
@@ -8913,7 +8913,7 @@
                     {
                         IndexField (IDXE, DATE, DWordAcc, NoLock, WriteAsZeros)
                         {
-                                ,   3, 
+                                ,   3,
                             F03B,   69
                         }
 
@@ -8924,7 +8924,7 @@
                     {
                         IndexField (IDX0, DAT0, DWordAcc, NoLock, WriteAsZeros)
                         {
-                                ,   3, 
+                                ,   3,
                             F03C,   129
                         }
 
@@ -8935,7 +8935,7 @@
                     {
                         IndexField (IDX1, DAT1, DWordAcc, NoLock, WriteAsZeros)
                         {
-                                ,   3, 
+                                ,   3,
                             F03D,   256
                         }
 
@@ -8946,7 +8946,7 @@
                     {
                         IndexField (IDX2, DAT2, DWordAcc, NoLock, WriteAsZeros)
                         {
-                                ,   3, 
+                                ,   3,
                             F03E,   1023
                         }
 
@@ -8957,7 +8957,7 @@
                     {
                         IndexField (IDX3, DAT3, DWordAcc, NoLock, WriteAsZeros)
                         {
-                                ,   3, 
+                                ,   3,
                             F03F,   1983
                         }
 
@@ -8980,7 +8980,7 @@
                     {
                         IndexField (IDX4, DAT4, DWordAcc, NoLock, WriteAsZeros)
                         {
-                                ,   4, 
+                                ,   4,
                             F040,   1
                         }
 
@@ -8991,7 +8991,7 @@
                     {
                         IndexField (IDX5, DAT5, DWordAcc, NoLock, WriteAsZeros)
                         {
-                                ,   4, 
+                                ,   4,
                             F041,   6
                         }
 
@@ -9002,7 +9002,7 @@
                     {
                         IndexField (IDX6, DAT6, DWordAcc, NoLock, WriteAsZeros)
                         {
-                                ,   4, 
+                                ,   4,
                             F042,   7
                         }
 
@@ -9013,7 +9013,7 @@
                     {
                         IndexField (IDX7, DAT7, DWordAcc, NoLock, WriteAsZeros)
                         {
-                                ,   4, 
+                                ,   4,
                             F043,   8
                         }
 
@@ -9024,7 +9024,7 @@
                     {
                         IndexField (IDX8, DAT8, DWordAcc, NoLock, WriteAsZeros)
                         {
-                                ,   4, 
+                                ,   4,
                             F044,   9
                         }
 
@@ -9035,7 +9035,7 @@
                     {
                         IndexField (IDX9, DAT9, DWordAcc, NoLock, WriteAsZeros)
                         {
-                                ,   4, 
+                                ,   4,
                             F045,   31
                         }
 
@@ -9046,7 +9046,7 @@
                     {
                         IndexField (IDXA, DATA, DWordAcc, NoLock, WriteAsZeros)
                         {
-                                ,   4, 
+                                ,   4,
                             F046,   32
                         }
 
@@ -9057,7 +9057,7 @@
                     {
                         IndexField (IDXB, DATB, DWordAcc, NoLock, WriteAsZeros)
                         {
-                                ,   4, 
+                                ,   4,
                             F047,   33
                         }
 
@@ -9068,7 +9068,7 @@
                     {
                         IndexField (IDXC, DATC, DWordAcc, NoLock, WriteAsZeros)
                         {
-                                ,   4, 
+                                ,   4,
                             F048,   63
                         }
 
@@ -9079,7 +9079,7 @@
                     {
                         IndexField (IDXD, DATD, DWordAcc, NoLock, WriteAsZeros)
                         {
-                                ,   4, 
+                                ,   4,
                             F049,   64
                         }
 
@@ -9090,7 +9090,7 @@
                     {
                         IndexField (IDXE, DATE, DWordAcc, NoLock, WriteAsZeros)
                         {
-                                ,   4, 
+                                ,   4,
                             F04A,   65
                         }
 
@@ -9101,7 +9101,7 @@
                     {
                         IndexField (IDX0, DAT0, DWordAcc, NoLock, WriteAsZeros)
                         {
-                                ,   4, 
+                                ,   4,
                             F04B,   69
                         }
 
@@ -9112,7 +9112,7 @@
                     {
                         IndexField (IDX1, DAT1, DWordAcc, NoLock, WriteAsZeros)
                         {
-                                ,   4, 
+                                ,   4,
                             F04C,   129
                         }
 
@@ -9123,7 +9123,7 @@
                     {
                         IndexField (IDX2, DAT2, DWordAcc, NoLock, WriteAsZeros)
                         {
-                                ,   4, 
+                                ,   4,
                             F04D,   256
                         }
 
@@ -9134,7 +9134,7 @@
                     {
                         IndexField (IDX3, DAT3, DWordAcc, NoLock, WriteAsZeros)
                         {
-                                ,   4, 
+                                ,   4,
                             F04E,   1023
                         }
 
@@ -9145,7 +9145,7 @@
                     {
                         IndexField (IDX4, DAT4, DWordAcc, NoLock, WriteAsZeros)
                         {
-                                ,   4, 
+                                ,   4,
                             F04F,   1983
                         }
 
@@ -9168,7 +9168,7 @@
                     {
                         IndexField (IDX5, DAT5, DWordAcc, NoLock, WriteAsZeros)
                         {
-                                ,   5, 
+                                ,   5,
                             F050,   1
                         }
 
@@ -9179,7 +9179,7 @@
                     {
                         IndexField (IDX6, DAT6, DWordAcc, NoLock, WriteAsZeros)
                         {
-                                ,   5, 
+                                ,   5,
                             F051,   6
                         }
 
@@ -9190,7 +9190,7 @@
                     {
                         IndexField (IDX7, DAT7, DWordAcc, NoLock, WriteAsZeros)
                         {
-                                ,   5, 
+                                ,   5,
                             F052,   7
                         }
 
@@ -9201,7 +9201,7 @@
                     {
                         IndexField (IDX8, DAT8, DWordAcc, NoLock, WriteAsZeros)
                         {
-                                ,   5, 
+                                ,   5,
                             F053,   8
                         }
 
@@ -9212,7 +9212,7 @@
                     {
                         IndexField (IDX9, DAT9, DWordAcc, NoLock, WriteAsZeros)
                         {
-                                ,   5, 
+                                ,   5,
                             F054,   9
                         }
 
@@ -9223,7 +9223,7 @@
                     {
                         IndexField (IDXA, DATA, DWordAcc, NoLock, WriteAsZeros)
                         {
-                                ,   5, 
+                                ,   5,
                             F055,   31
                         }
 
@@ -9234,7 +9234,7 @@
                     {
                         IndexField (IDXB, DATB, DWordAcc, NoLock, WriteAsZeros)
                         {
-                                ,   5, 
+                                ,   5,
                             F056,   32
                         }
 
@@ -9245,7 +9245,7 @@
                     {
                         IndexField (IDXC, DATC, DWordAcc, NoLock, WriteAsZeros)
                         {
-                                ,   5, 
+                                ,   5,
                             F057,   33
                         }
 
@@ -9256,7 +9256,7 @@
                     {
                         IndexField (IDXD, DATD, DWordAcc, NoLock, WriteAsZeros)
                         {
-                                ,   5, 
+                                ,   5,
                             F058,   63
                         }
 
@@ -9267,7 +9267,7 @@
                     {
                         IndexField (IDXE, DATE, DWordAcc, NoLock, WriteAsZeros)
                         {
-                                ,   5, 
+                                ,   5,
                             F059,   64
                         }
 
@@ -9278,7 +9278,7 @@
                     {
                         IndexField (IDX0, DAT0, DWordAcc, NoLock, WriteAsZeros)
                         {
-                                ,   5, 
+                                ,   5,
                             F05A,   65
                         }
 
@@ -9289,7 +9289,7 @@
                     {
                         IndexField (IDX1, DAT1, DWordAcc, NoLock, WriteAsZeros)
                         {
-                                ,   5, 
+                                ,   5,
                             F05B,   69
                         }
 
@@ -9300,7 +9300,7 @@
                     {
                         IndexField (IDX2, DAT2, DWordAcc, NoLock, WriteAsZeros)
                         {
-                                ,   5, 
+                                ,   5,
                             F05C,   129
                         }
 
@@ -9311,7 +9311,7 @@
                     {
                         IndexField (IDX3, DAT3, DWordAcc, NoLock, WriteAsZeros)
                         {
-                                ,   5, 
+                                ,   5,
                             F05D,   256
                         }
 
@@ -9322,7 +9322,7 @@
                     {
                         IndexField (IDX4, DAT4, DWordAcc, NoLock, WriteAsZeros)
                         {
-                                ,   5, 
+                                ,   5,
                             F05E,   1023
                         }
 
@@ -9333,7 +9333,7 @@
                     {
                         IndexField (IDX5, DAT5, DWordAcc, NoLock, WriteAsZeros)
                         {
-                                ,   5, 
+                                ,   5,
                             F05F,   1983
                         }
 
@@ -9356,7 +9356,7 @@
                     {
                         IndexField (IDX6, DAT6, DWordAcc, NoLock, WriteAsZeros)
                         {
-                                ,   6, 
+                                ,   6,
                             F060,   1
                         }
 
@@ -9367,7 +9367,7 @@
                     {
                         IndexField (IDX7, DAT7, DWordAcc, NoLock, WriteAsZeros)
                         {
-                                ,   6, 
+                                ,   6,
                             F061,   6
                         }
 
@@ -9378,7 +9378,7 @@
                     {
                         IndexField (IDX8, DAT8, DWordAcc, NoLock, WriteAsZeros)
                         {
-                                ,   6, 
+                                ,   6,
                             F062,   7
                         }
 
@@ -9389,7 +9389,7 @@
                     {
                         IndexField (IDX9, DAT9, DWordAcc, NoLock, WriteAsZeros)
                         {
-                                ,   6, 
+                                ,   6,
                             F063,   8
                         }
 
@@ -9400,7 +9400,7 @@
                     {
                         IndexField (IDXA, DATA, DWordAcc, NoLock, WriteAsZeros)
                         {
-                                ,   6, 
+                                ,   6,
                             F064,   9
                         }
 
@@ -9411,7 +9411,7 @@
                     {
                         IndexField (IDXB, DATB, DWordAcc, NoLock, WriteAsZeros)
                         {
-                                ,   6, 
+                                ,   6,
                             F065,   31
                         }
 
@@ -9422,7 +9422,7 @@
                     {
                         IndexField (IDXC, DATC, DWordAcc, NoLock, WriteAsZeros)
                         {
-                                ,   6, 
+                                ,   6,
                             F066,   32
                         }
 
@@ -9433,7 +9433,7 @@
                     {
                         IndexField (IDXD, DATD, DWordAcc, NoLock, WriteAsZeros)
                         {
-                                ,   6, 
+                                ,   6,
                             F067,   33
                         }
 
@@ -9444,7 +9444,7 @@
                     {
                         IndexField (IDXE, DATE, DWordAcc, NoLock, WriteAsZeros)
                         {
-                                ,   6, 
+                                ,   6,
                             F068,   63
                         }
 
@@ -9455,7 +9455,7 @@
                     {
                         IndexField (IDX0, DAT0, DWordAcc, NoLock, WriteAsZeros)
                         {
-                                ,   6, 
+                                ,   6,
                             F069,   64
                         }
 
@@ -9466,7 +9466,7 @@
                     {
                         IndexField (IDX1, DAT1, DWordAcc, NoLock, WriteAsZeros)
                         {
-                                ,   6, 
+                                ,   6,
                             F06A,   65
                         }
 
@@ -9477,7 +9477,7 @@
                     {
                         IndexField (IDX2, DAT2, DWordAcc, NoLock, WriteAsZeros)
                         {
-                                ,   6, 
+                                ,   6,
                             F06B,   69
                         }
 
@@ -9488,7 +9488,7 @@
                     {
                         IndexField (IDX3, DAT3, DWordAcc, NoLock, WriteAsZeros)
                         {
-                                ,   6, 
+                                ,   6,
                             F06C,   129
                         }
 
@@ -9499,7 +9499,7 @@
                     {
                         IndexField (IDX4, DAT4, DWordAcc, NoLock, WriteAsZeros)
                         {
-                                ,   6, 
+                                ,   6,
                             F06D,   256
                         }
 
@@ -9510,7 +9510,7 @@
                     {
                         IndexField (IDX5, DAT5, DWordAcc, NoLock, WriteAsZeros)
                         {
-                                ,   6, 
+                                ,   6,
                             F06E,   1023
                         }
 
@@ -9521,7 +9521,7 @@
                     {
                         IndexField (IDX6, DAT6, DWordAcc, NoLock, WriteAsZeros)
                         {
-                                ,   6, 
+                                ,   6,
                             F06F,   1983
                         }
 
@@ -9544,7 +9544,7 @@
                     {
                         IndexField (IDX7, DAT7, DWordAcc, NoLock, WriteAsZeros)
                         {
-                                ,   7, 
+                                ,   7,
                             F070,   1
                         }
 
@@ -9555,7 +9555,7 @@
                     {
                         IndexField (IDX8, DAT8, DWordAcc, NoLock, WriteAsZeros)
                         {
-                                ,   7, 
+                                ,   7,
                             F071,   6
                         }
 
@@ -9566,7 +9566,7 @@
                     {
                         IndexField (IDX9, DAT9, DWordAcc, NoLock, WriteAsZeros)
                         {
-                                ,   7, 
+                                ,   7,
                             F072,   7
                         }
 
@@ -9577,7 +9577,7 @@
                     {
                         IndexField (IDXA, DATA, DWordAcc, NoLock, WriteAsZeros)
                         {
-                                ,   7, 
+                                ,   7,
                             F073,   8
                         }
 
@@ -9588,7 +9588,7 @@
                     {
                         IndexField (IDXB, DATB, DWordAcc, NoLock, WriteAsZeros)
                         {
-                                ,   7, 
+                                ,   7,
                             F074,   9
                         }
 
@@ -9599,7 +9599,7 @@
                     {
                         IndexField (IDXC, DATC, DWordAcc, NoLock, WriteAsZeros)
                         {
-                                ,   7, 
+                                ,   7,
                             F075,   31
                         }
 
@@ -9610,7 +9610,7 @@
                     {
                         IndexField (IDXD, DATD, DWordAcc, NoLock, WriteAsZeros)
                         {
-                                ,   7, 
+                                ,   7,
                             F076,   32
                         }
 
@@ -9621,7 +9621,7 @@
                     {
                         IndexField (IDXE, DATE, DWordAcc, NoLock, WriteAsZeros)
                         {
-                                ,   7, 
+                                ,   7,
                             F077,   33
                         }
 
@@ -9632,7 +9632,7 @@
                     {
                         IndexField (IDX0, DAT0, DWordAcc, NoLock, WriteAsZeros)
                         {
-                                ,   7, 
+                                ,   7,
                             F078,   63
                         }
 
@@ -9643,7 +9643,7 @@
                     {
                         IndexField (IDX1, DAT1, DWordAcc, NoLock, WriteAsZeros)
                         {
-                                ,   7, 
+                                ,   7,
                             F079,   64
                         }
 
@@ -9654,7 +9654,7 @@
                     {
                         IndexField (IDX2, DAT2, DWordAcc, NoLock, WriteAsZeros)
                         {
-                                ,   7, 
+                                ,   7,
                             F07A,   65
                         }
 
@@ -9665,7 +9665,7 @@
                     {
                         IndexField (IDX3, DAT3, DWordAcc, NoLock, WriteAsZeros)
                         {
-                                ,   7, 
+                                ,   7,
                             F07B,   69
                         }
 
@@ -9676,7 +9676,7 @@
                     {
                         IndexField (IDX4, DAT4, DWordAcc, NoLock, WriteAsZeros)
                         {
-                                ,   7, 
+                                ,   7,
                             F07C,   129
                         }
 
@@ -9687,7 +9687,7 @@
                     {
                         IndexField (IDX5, DAT5, DWordAcc, NoLock, WriteAsZeros)
                         {
-                                ,   7, 
+                                ,   7,
                             F07D,   256
                         }
 
@@ -9698,7 +9698,7 @@
                     {
                         IndexField (IDX6, DAT6, DWordAcc, NoLock, WriteAsZeros)
                         {
-                                ,   7, 
+                                ,   7,
                             F07E,   1023
                         }
 
@@ -9709,7 +9709,7 @@
                     {
                         IndexField (IDX7, DAT7, DWordAcc, NoLock, WriteAsZeros)
                         {
-                                ,   7, 
+                                ,   7,
                             F07F,   1983
                         }
 
@@ -9732,7 +9732,7 @@
                     {
                         IndexField (IDX8, DAT8, DWordAcc, NoLock, WriteAsZeros)
                         {
-                            Offset (0x01), 
+                            Offset (0x01),
                             F080,   1
                         }
 
@@ -9743,7 +9743,7 @@
                     {
                         IndexField (IDX9, DAT9, DWordAcc, NoLock, WriteAsZeros)
                         {
-                            Offset (0x01), 
+                            Offset (0x01),
                             F081,   6
                         }
 
@@ -9754,7 +9754,7 @@
                     {
                         IndexField (IDXA, DATA, DWordAcc, NoLock, WriteAsZeros)
                         {
-                            Offset (0x01), 
+                            Offset (0x01),
                             F082,   7
                         }
 
@@ -9765,7 +9765,7 @@
                     {
                         IndexField (IDXB, DATB, DWordAcc, NoLock, WriteAsZeros)
                         {
-                            Offset (0x01), 
+                            Offset (0x01),
                             F083,   8
                         }
 
@@ -9776,7 +9776,7 @@
                     {
                         IndexField (IDXC, DATC, DWordAcc, NoLock, WriteAsZeros)
                         {
-                            Offset (0x01), 
+                            Offset (0x01),
                             F084,   9
                         }
 
@@ -9787,7 +9787,7 @@
                     {
                         IndexField (IDXD, DATD, DWordAcc, NoLock, WriteAsZeros)
                         {
-                            Offset (0x01), 
+                            Offset (0x01),
                             F085,   31
                         }
 
@@ -9798,7 +9798,7 @@
                     {
                         IndexField (IDXE, DATE, DWordAcc, NoLock, WriteAsZeros)
                         {
-                            Offset (0x01), 
+                            Offset (0x01),
                             F086,   32
                         }
 
@@ -9809,7 +9809,7 @@
                     {
                         IndexField (IDX0, DAT0, DWordAcc, NoLock, WriteAsZeros)
                         {
-                            Offset (0x01), 
+                            Offset (0x01),
                             F087,   33
                         }
 
@@ -9820,7 +9820,7 @@
                     {
                         IndexField (IDX1, DAT1, DWordAcc, NoLock, WriteAsZeros)
                         {
-                            Offset (0x01), 
+                            Offset (0x01),
                             F088,   63
                         }
 
@@ -9831,7 +9831,7 @@
                     {
                         IndexField (IDX2, DAT2, DWordAcc, NoLock, WriteAsZeros)
                         {
-                            Offset (0x01), 
+                            Offset (0x01),
                             F089,   64
                         }
 
@@ -9842,7 +9842,7 @@
                     {
                         IndexField (IDX3, DAT3, DWordAcc, NoLock, WriteAsZeros)
                         {
-                            Offset (0x01), 
+                            Offset (0x01),
                             F08A,   65
                         }
 
@@ -9853,7 +9853,7 @@
                     {
                         IndexField (IDX4, DAT4, DWordAcc, NoLock, WriteAsZeros)
                         {
-                            Offset (0x01), 
+                            Offset (0x01),
                             F08B,   69
                         }
 
@@ -9864,7 +9864,7 @@
                     {
                         IndexField (IDX5, DAT5, DWordAcc, NoLock, WriteAsZeros)
                         {
-                            Offset (0x01), 
+                            Offset (0x01),
                             F08C,   129
                         }
 
@@ -9875,7 +9875,7 @@
                     {
                         IndexField (IDX6, DAT6, DWordAcc, NoLock, WriteAsZeros)
                         {
-                            Offset (0x01), 
+                            Offset (0x01),
                             F08D,   256
                         }
 
@@ -9886,7 +9886,7 @@
                     {
                         IndexField (IDX7, DAT7, DWordAcc, NoLock, WriteAsZeros)
                         {
-                            Offset (0x01), 
+                            Offset (0x01),
                             F08E,   1023
                         }
 
@@ -9897,7 +9897,7 @@
                     {
                         IndexField (IDX8, DAT8, DWordAcc, NoLock, WriteAsZeros)
                         {
-                            Offset (0x01), 
+                            Offset (0x01),
                             F08F,   1983
                         }
 
@@ -9920,7 +9920,7 @@
                     {
                         IndexField (IDX9, DAT9, DWordAcc, NoLock, WriteAsZeros)
                         {
-                                ,   9, 
+                                ,   9,
                             F090,   1
                         }
 
@@ -9931,7 +9931,7 @@
                     {
                         IndexField (IDXA, DATA, DWordAcc, NoLock, WriteAsZeros)
                         {
-                                ,   9, 
+                                ,   9,
                             F091,   6
                         }
 
@@ -9942,7 +9942,7 @@
                     {
                         IndexField (IDXB, DATB, DWordAcc, NoLock, WriteAsZeros)
                         {
-                                ,   9, 
+                                ,   9,
                             F092,   7
                         }
 
@@ -9953,7 +9953,7 @@
                     {
                         IndexField (IDXC, DATC, DWordAcc, NoLock, WriteAsZeros)
                         {
-                                ,   9, 
+                                ,   9,
                             F093,   8
                         }
 
@@ -9964,7 +9964,7 @@
                     {
                         IndexField (IDXD, DATD, DWordAcc, NoLock, WriteAsZeros)
                         {
-                                ,   9, 
+                                ,   9,
                             F094,   9
                         }
 
@@ -9975,7 +9975,7 @@
                     {
                         IndexField (IDXE, DATE, DWordAcc, NoLock, WriteAsZeros)
                         {
-                                ,   9, 
+                                ,   9,
                             F095,   31
                         }
 
@@ -9986,7 +9986,7 @@
                     {
                         IndexField (IDX0, DAT0, DWordAcc, NoLock, WriteAsZeros)
                         {
-                                ,   9, 
+                                ,   9,
                             F096,   32
                         }
 
@@ -9997,7 +9997,7 @@
                     {
                         IndexField (IDX1, DAT1, DWordAcc, NoLock, WriteAsZeros)
                         {
-                                ,   9, 
+                                ,   9,
                             F097,   33
                         }
 
@@ -10008,7 +10008,7 @@
                     {
                         IndexField (IDX2, DAT2, DWordAcc, NoLock, WriteAsZeros)
                         {
-                                ,   9, 
+                                ,   9,
                             F098,   63
                         }
 
@@ -10019,7 +10019,7 @@
                     {
                         IndexField (IDX3, DAT3, DWordAcc, NoLock, WriteAsZeros)
                         {
-                                ,   9, 
+                                ,   9,
                             F099,   64
                         }
 
@@ -10030,7 +10030,7 @@
                     {
                         IndexField (IDX4, DAT4, DWordAcc, NoLock, WriteAsZeros)
                         {
-                                ,   9, 
+                                ,   9,
                             F09A,   65
                         }
 
@@ -10041,7 +10041,7 @@
                     {
                         IndexField (IDX5, DAT5, DWordAcc, NoLock, WriteAsZeros)
                         {
-                                ,   9, 
+                                ,   9,
                             F09B,   69
                         }
 
@@ -10052,7 +10052,7 @@
                     {
                         IndexField (IDX6, DAT6, DWordAcc, NoLock, WriteAsZeros)
                         {
-                                ,   9, 
+                                ,   9,
                             F09C,   129
                         }
 
@@ -10063,7 +10063,7 @@
                     {
                         IndexField (IDX7, DAT7, DWordAcc, NoLock, WriteAsZeros)
                         {
-                                ,   9, 
+                                ,   9,
                             F09D,   256
                         }
 
@@ -10074,7 +10074,7 @@
                     {
                         IndexField (IDX8, DAT8, DWordAcc, NoLock, WriteAsZeros)
                         {
-                                ,   9, 
+                                ,   9,
                             F09E,   1023
                         }
 
@@ -10085,7 +10085,7 @@
                     {
                         IndexField (IDX9, DAT9, DWordAcc, NoLock, WriteAsZeros)
                         {
-                                ,   9, 
+                                ,   9,
                             F09F,   1983
                         }
 
@@ -10108,8 +10108,8 @@
                     {
                         IndexField (IDXA, DATA, DWordAcc, NoLock, WriteAsZeros)
                         {
-                            Offset (0x03), 
-                                ,   7, 
+                            Offset (0x03),
+                                ,   7,
                             F0A0,   1
                         }
 
@@ -10120,8 +10120,8 @@
                     {
                         IndexField (IDXB, DATB, DWordAcc, NoLock, WriteAsZeros)
                         {
-                            Offset (0x03), 
-                                ,   7, 
+                            Offset (0x03),
+                                ,   7,
                             F0A1,   6
                         }
 
@@ -10132,8 +10132,8 @@
                     {
                         IndexField (IDXC, DATC, DWordAcc, NoLock, WriteAsZeros)
                         {
-                            Offset (0x03), 
-                                ,   7, 
+                            Offset (0x03),
+                                ,   7,
                             F0A2,   7
                         }
 
@@ -10144,8 +10144,8 @@
                     {
                         IndexField (IDXD, DATD, DWordAcc, NoLock, WriteAsZeros)
                         {
-                            Offset (0x03), 
-                                ,   7, 
+                            Offset (0x03),
+                                ,   7,
                             F0A3,   8
                         }
 
@@ -10156,8 +10156,8 @@
                     {
                         IndexField (IDXE, DATE, DWordAcc, NoLock, WriteAsZeros)
                         {
-                            Offset (0x03), 
-                                ,   7, 
+                            Offset (0x03),
+                                ,   7,
                             F0A4,   9
                         }
 
@@ -10168,8 +10168,8 @@
                     {
                         IndexField (IDX0, DAT0, DWordAcc, NoLock, WriteAsZeros)
                         {
-                            Offset (0x03), 
-                                ,   7, 
+                            Offset (0x03),
+                                ,   7,
                             F0A5,   31
                         }
 
@@ -10180,8 +10180,8 @@
                     {
                         IndexField (IDX1, DAT1, DWordAcc, NoLock, WriteAsZeros)
                         {
-                            Offset (0x03), 
-                                ,   7, 
+                            Offset (0x03),
+                                ,   7,
                             F0A6,   32
                         }
 
@@ -10192,8 +10192,8 @@
                     {
                         IndexField (IDX2, DAT2, DWordAcc, NoLock, WriteAsZeros)
                         {
-                            Offset (0x03), 
-                                ,   7, 
+                            Offset (0x03),
+                                ,   7,
                             F0A7,   33
                         }
 
@@ -10204,8 +10204,8 @@
                     {
                         IndexField (IDX3, DAT3, DWordAcc, NoLock, WriteAsZeros)
                         {
-                            Offset (0x03), 
-                                ,   7, 
+                            Offset (0x03),
+                                ,   7,
                             F0A8,   63
                         }
 
@@ -10216,8 +10216,8 @@
                     {
                         IndexField (IDX4, DAT4, DWordAcc, NoLock, WriteAsZeros)
                         {
-                            Offset (0x03), 
-                                ,   7, 
+                            Offset (0x03),
+                                ,   7,
                             F0A9,   64
                         }
 
@@ -10228,8 +10228,8 @@
                     {
                         IndexField (IDX5, DAT5, DWordAcc, NoLock, WriteAsZeros)
                         {
-                            Offset (0x03), 
-                                ,   7, 
+                            Offset (0x03),
+                                ,   7,
                             F0AA,   65
                         }
 
@@ -10240,8 +10240,8 @@
                     {
                         IndexField (IDX6, DAT6, DWordAcc, NoLock, WriteAsZeros)
                         {
-                            Offset (0x03), 
-                                ,   7, 
+                            Offset (0x03),
+                                ,   7,
                             F0AB,   69
                         }
 
@@ -10252,8 +10252,8 @@
                     {
                         IndexField (IDX7, DAT7, DWordAcc, NoLock, WriteAsZeros)
                         {
-                            Offset (0x03), 
-                                ,   7, 
+                            Offset (0x03),
+                                ,   7,
                             F0AC,   129
                         }
 
@@ -10264,8 +10264,8 @@
                     {
                         IndexField (IDX8, DAT8, DWordAcc, NoLock, WriteAsZeros)
                         {
-                            Offset (0x03), 
-                                ,   7, 
+                            Offset (0x03),
+                                ,   7,
                             F0AD,   256
                         }
 
@@ -10276,8 +10276,8 @@
                     {
                         IndexField (IDX9, DAT9, DWordAcc, NoLock, WriteAsZeros)
                         {
-                            Offset (0x03), 
-                                ,   7, 
+                            Offset (0x03),
+                                ,   7,
                             F0AE,   1023
                         }
 
@@ -10288,8 +10288,8 @@
                     {
                         IndexField (IDXA, DATA, DWordAcc, NoLock, WriteAsZeros)
                         {
-                            Offset (0x03), 
-                                ,   7, 
+                            Offset (0x03),
+                                ,   7,
                             F0AF,   1983
                         }
 
@@ -10312,7 +10312,7 @@
                     {
                         IndexField (IDXB, DATB, DWordAcc, NoLock, WriteAsZeros)
                         {
-                            Offset (0x04), 
+                            Offset (0x04),
                             F0B0,   1
                         }
 
@@ -10323,7 +10323,7 @@
                     {
                         IndexField (IDXC, DATC, DWordAcc, NoLock, WriteAsZeros)
                         {
-                            Offset (0x04), 
+                            Offset (0x04),
                             F0B1,   6
                         }
 
@@ -10334,7 +10334,7 @@
                     {
                         IndexField (IDXD, DATD, DWordAcc, NoLock, WriteAsZeros)
                         {
-                            Offset (0x04), 
+                            Offset (0x04),
                             F0B2,   7
                         }
 
@@ -10345,7 +10345,7 @@
                     {
                         IndexField (IDXE, DATE, DWordAcc, NoLock, WriteAsZeros)
                         {
-                            Offset (0x04), 
+                            Offset (0x04),
                             F0B3,   8
                         }
 
@@ -10356,7 +10356,7 @@
                     {
                         IndexField (IDX0, DAT0, DWordAcc, NoLock, WriteAsZeros)
                         {
-                            Offset (0x04), 
+                            Offset (0x04),
                             F0B4,   9
                         }
 
@@ -10367,7 +10367,7 @@
                     {
                         IndexField (IDX1, DAT1, DWordAcc, NoLock, WriteAsZeros)
                         {
-                            Offset (0x04), 
+                            Offset (0x04),
                             F0B5,   31
                         }
 
@@ -10378,7 +10378,7 @@
                     {
                         IndexField (IDX2, DAT2, DWordAcc, NoLock, WriteAsZeros)
                         {
-                            Offset (0x04), 
+                            Offset (0x04),
                             F0B6,   32
                         }
 
@@ -10389,7 +10389,7 @@
                     {
                         IndexField (IDX3, DAT3, DWordAcc, NoLock, WriteAsZeros)
                         {
-                            Offset (0x04), 
+                            Offset (0x04),
                             F0B7,   33
                         }
 
@@ -10400,7 +10400,7 @@
                     {
                         IndexField (IDX4, DAT4, DWordAcc, NoLock, WriteAsZeros)
                         {
-                            Offset (0x04), 
+                            Offset (0x04),
                             F0B8,   63
                         }
 
@@ -10411,7 +10411,7 @@
                     {
                         IndexField (IDX5, DAT5, DWordAcc, NoLock, WriteAsZeros)
                         {
-                            Offset (0x04), 
+                            Offset (0x04),
                             F0B9,   64
                         }
 
@@ -10422,7 +10422,7 @@
                     {
                         IndexField (IDX6, DAT6, DWordAcc, NoLock, WriteAsZeros)
                         {
-                            Offset (0x04), 
+                            Offset (0x04),
                             F0BA,   65
                         }
 
@@ -10433,7 +10433,7 @@
                     {
                         IndexField (IDX7, DAT7, DWordAcc, NoLock, WriteAsZeros)
                         {
-                            Offset (0x04), 
+                            Offset (0x04),
                             F0BB,   69
                         }
 
@@ -10444,7 +10444,7 @@
                     {
                         IndexField (IDX8, DAT8, DWordAcc, NoLock, WriteAsZeros)
                         {
-                            Offset (0x04), 
+                            Offset (0x04),
                             F0BC,   129
                         }
 
@@ -10455,7 +10455,7 @@
                     {
                         IndexField (IDX9, DAT9, DWordAcc, NoLock, WriteAsZeros)
                         {
-                            Offset (0x04), 
+                            Offset (0x04),
                             F0BD,   256
                         }
 
@@ -10466,7 +10466,7 @@
                     {
                         IndexField (IDXA, DATA, DWordAcc, NoLock, WriteAsZeros)
                         {
-                            Offset (0x04), 
+                            Offset (0x04),
                             F0BE,   1023
                         }
 
@@ -10477,7 +10477,7 @@
                     {
                         IndexField (IDXB, DATB, DWordAcc, NoLock, WriteAsZeros)
                         {
-                            Offset (0x04), 
+                            Offset (0x04),
                             F0BF,   1983
                         }
 
@@ -10500,7 +10500,7 @@
                     {
                         IndexField (IDXC, DATC, DWordAcc, NoLock, WriteAsZeros)
                         {
-                                ,   33, 
+                                ,   33,
                             F0C0,   1
                         }
 
@@ -10511,7 +10511,7 @@
                     {
                         IndexField (IDXD, DATD, DWordAcc, NoLock, WriteAsZeros)
                         {
-                                ,   33, 
+                                ,   33,
                             F0C1,   6
                         }
 
@@ -10522,7 +10522,7 @@
                     {
                         IndexField (IDXE, DATE, DWordAcc, NoLock, WriteAsZeros)
                         {
-                                ,   33, 
+                                ,   33,
                             F0C2,   7
                         }
 
@@ -10533,7 +10533,7 @@
                     {
                         IndexField (IDX0, DAT0, DWordAcc, NoLock, WriteAsZeros)
                         {
-                                ,   33, 
+                                ,   33,
                             F0C3,   8
                         }
 
@@ -10544,7 +10544,7 @@
                     {
                         IndexField (IDX1, DAT1, DWordAcc, NoLock, WriteAsZeros)
                         {
-                                ,   33, 
+                                ,   33,
                             F0C4,   9
                         }
 
@@ -10555,7 +10555,7 @@
                     {
                         IndexField (IDX2, DAT2, DWordAcc, NoLock, WriteAsZeros)
                         {
-                                ,   33, 
+                                ,   33,
                             F0C5,   31
                         }
 
@@ -10566,7 +10566,7 @@
                     {
                         IndexField (IDX3, DAT3, DWordAcc, NoLock, WriteAsZeros)
                         {
-                                ,   33, 
+                                ,   33,
                             F0C6,   32
                         }
 
@@ -10577,7 +10577,7 @@
                     {
                         IndexField (IDX4, DAT4, DWordAcc, NoLock, WriteAsZeros)
                         {
-                                ,   33, 
+                                ,   33,
                             F0C7,   33
                         }
 
@@ -10588,7 +10588,7 @@
                     {
                         IndexField (IDX5, DAT5, DWordAcc, NoLock, WriteAsZeros)
                         {
-                                ,   33, 
+                                ,   33,
                             F0C8,   63
                         }
 
@@ -10599,7 +10599,7 @@
                     {
                         IndexField (IDX6, DAT6, DWordAcc, NoLock, WriteAsZeros)
                         {
-                                ,   33, 
+                                ,   33,
                             F0C9,   64
                         }
 
@@ -10610,7 +10610,7 @@
                     {
                         IndexField (IDX7, DAT7, DWordAcc, NoLock, WriteAsZeros)
                         {
-                                ,   33, 
+                                ,   33,
                             F0CA,   65
                         }
 
@@ -10621,7 +10621,7 @@
                     {
                         IndexField (IDX8, DAT8, DWordAcc, NoLock, WriteAsZeros)
                         {
-                                ,   33, 
+                                ,   33,
                             F0CB,   69
                         }
 
@@ -10632,7 +10632,7 @@
                     {
                         IndexField (IDX9, DAT9, DWordAcc, NoLock, WriteAsZeros)
                         {
-                                ,   33, 
+                                ,   33,
                             F0CC,   129
                         }
 
@@ -10643,7 +10643,7 @@
                     {
                         IndexField (IDXA, DATA, DWordAcc, NoLock, WriteAsZeros)
                         {
-                                ,   33, 
+                                ,   33,
                             F0CD,   256
                         }
 
@@ -10654,7 +10654,7 @@
                     {
                         IndexField (IDXB, DATB, DWordAcc, NoLock, WriteAsZeros)
                         {
-                                ,   33, 
+                                ,   33,
                             F0CE,   1023
                         }
 
@@ -10665,7 +10665,7 @@
                     {
                         IndexField (IDXC, DATC, DWordAcc, NoLock, WriteAsZeros)
                         {
-                                ,   33, 
+                                ,   33,
                             F0CF,   1983
                         }
 
@@ -10688,7 +10688,7 @@
                     {
                         IndexField (IDXD, DATD, DWordAcc, NoLock, WriteAsZeros)
                         {
-                                ,   63, 
+                                ,   63,
                             F0D0,   1
                         }
 
@@ -10699,7 +10699,7 @@
                     {
                         IndexField (IDXE, DATE, DWordAcc, NoLock, WriteAsZeros)
                         {
-                                ,   63, 
+                                ,   63,
                             F0D1,   6
                         }
 
@@ -10710,7 +10710,7 @@
                     {
                         IndexField (IDX0, DAT0, DWordAcc, NoLock, WriteAsZeros)
                         {
-                                ,   63, 
+                                ,   63,
                             F0D2,   7
                         }
 
@@ -10721,7 +10721,7 @@
                     {
                         IndexField (IDX1, DAT1, DWordAcc, NoLock, WriteAsZeros)
                         {
-                                ,   63, 
+                                ,   63,
                             F0D3,   8
                         }
 
@@ -10732,7 +10732,7 @@
                     {
                         IndexField (IDX2, DAT2, DWordAcc, NoLock, WriteAsZeros)
                         {
-                                ,   63, 
+                                ,   63,
                             F0D4,   9
                         }
 
@@ -10743,7 +10743,7 @@
                     {
                         IndexField (IDX3, DAT3, DWordAcc, NoLock, WriteAsZeros)
                         {
-                                ,   63, 
+                                ,   63,
                             F0D5,   31
                         }
 
@@ -10754,7 +10754,7 @@
                     {
                         IndexField (IDX4, DAT4, DWordAcc, NoLock, WriteAsZeros)
                         {
-                                ,   63, 
+                                ,   63,
                             F0D6,   32
                         }
 
@@ -10765,7 +10765,7 @@
                     {
                         IndexField (IDX5, DAT5, DWordAcc, NoLock, WriteAsZeros)
                         {
-                                ,   63, 
+                                ,   63,
                             F0D7,   33
                         }
 
@@ -10776,7 +10776,7 @@
                     {
                         IndexField (IDX6, DAT6, DWordAcc, NoLock, WriteAsZeros)
                         {
-                                ,   63, 
+                                ,   63,
                             F0D8,   63
                         }
 
@@ -10787,7 +10787,7 @@
                     {
                         IndexField (IDX7, DAT7, DWordAcc, NoLock, WriteAsZeros)
                         {
-                                ,   63, 
+                                ,   63,
                             F0D9,   64
                         }
 
@@ -10798,7 +10798,7 @@
                     {
                         IndexField (IDX8, DAT8, DWordAcc, NoLock, WriteAsZeros)
                         {
-                                ,   63, 
+                                ,   63,
                             F0DA,   65
                         }
 
@@ -10809,7 +10809,7 @@
                     {
                         IndexField (IDX9, DAT9, DWordAcc, NoLock, WriteAsZeros)
                         {
-                                ,   63, 
+                                ,   63,
                             F0DB,   69
                         }
 
@@ -10820,7 +10820,7 @@
                     {
                         IndexField (IDXA, DATA, DWordAcc, NoLock, WriteAsZeros)
                         {
-                                ,   63, 
+                                ,   63,
                             F0DC,   129
                         }
 
@@ -10831,7 +10831,7 @@
                     {
                         IndexField (IDXB, DATB, DWordAcc, NoLock, WriteAsZeros)
                         {
-                                ,   63, 
+                                ,   63,
                             F0DD,   256
                         }
 
@@ -10842,7 +10842,7 @@
                     {
                         IndexField (IDXC, DATC, DWordAcc, NoLock, WriteAsZeros)
                         {
-                                ,   63, 
+                                ,   63,
                             F0DE,   1023
                         }
 
@@ -10853,7 +10853,7 @@
                     {
                         IndexField (IDXD, DATD, DWordAcc, NoLock, WriteAsZeros)
                         {
-                                ,   63, 
+                                ,   63,
                             F0DF,   1983
                         }
 
@@ -10876,7 +10876,7 @@
                     {
                         IndexField (IDXE, DATE, DWordAcc, NoLock, WriteAsZeros)
                         {
-                            Offset (0x08), 
+                            Offset (0x08),
                             F0E0,   1
                         }
 
@@ -10887,7 +10887,7 @@
                     {
                         IndexField (IDX0, DAT0, DWordAcc, NoLock, WriteAsZeros)
                         {
-                            Offset (0x08), 
+                            Offset (0x08),
                             F0E1,   6
                         }
 
@@ -10898,7 +10898,7 @@
                     {
                         IndexField (IDX1, DAT1, DWordAcc, NoLock, WriteAsZeros)
                         {
-                            Offset (0x08), 
+                            Offset (0x08),
                             F0E2,   7
                         }
 
@@ -10909,7 +10909,7 @@
                     {
                         IndexField (IDX2, DAT2, DWordAcc, NoLock, WriteAsZeros)
                         {
-                            Offset (0x08), 
+                            Offset (0x08),
                             F0E3,   8
                         }
 
@@ -10920,7 +10920,7 @@
                     {
                         IndexField (IDX3, DAT3, DWordAcc, NoLock, WriteAsZeros)
                         {
-                            Offset (0x08), 
+                            Offset (0x08),
                             F0E4,   9
                         }
 
@@ -10931,7 +10931,7 @@
                     {
                         IndexField (IDX4, DAT4, DWordAcc, NoLock, WriteAsZeros)
                         {
-                            Offset (0x08), 
+                            Offset (0x08),
                             F0E5,   31
                         }
 
@@ -10942,7 +10942,7 @@
                     {
                         IndexField (IDX5, DAT5, DWordAcc, NoLock, WriteAsZeros)
                         {
-                            Offset (0x08), 
+                            Offset (0x08),
                             F0E6,   32
                         }
 
@@ -10953,7 +10953,7 @@
                     {
                         IndexField (IDX6, DAT6, DWordAcc, NoLock, WriteAsZeros)
                         {
-                            Offset (0x08), 
+                            Offset (0x08),
                             F0E7,   33
                         }
 
@@ -10964,7 +10964,7 @@
                     {
                         IndexField (IDX7, DAT7, DWordAcc, NoLock, WriteAsZeros)
                         {
-                            Offset (0x08), 
+                            Offset (0x08),
                             F0E8,   63
                         }
 
@@ -10975,7 +10975,7 @@
                     {
                         IndexField (IDX8, DAT8, DWordAcc, NoLock, WriteAsZeros)
                         {
-                            Offset (0x08), 
+                            Offset (0x08),
                             F0E9,   64
                         }
 
@@ -10986,7 +10986,7 @@
                     {
                         IndexField (IDX9, DAT9, DWordAcc, NoLock, WriteAsZeros)
                         {
-                            Offset (0x08), 
+                            Offset (0x08),
                             F0EA,   65
                         }
 
@@ -10997,7 +10997,7 @@
                     {
                         IndexField (IDXA, DATA, DWordAcc, NoLock, WriteAsZeros)
                         {
-                            Offset (0x08), 
+                            Offset (0x08),
                             F0EB,   69
                         }
 
@@ -11008,7 +11008,7 @@
                     {
                         IndexField (IDXB, DATB, DWordAcc, NoLock, WriteAsZeros)
                         {
-                            Offset (0x08), 
+                            Offset (0x08),
                             F0EC,   129
                         }
 
@@ -11019,7 +11019,7 @@
                     {
                         IndexField (IDXC, DATC, DWordAcc, NoLock, WriteAsZeros)
                         {
-                            Offset (0x08), 
+                            Offset (0x08),
                             F0ED,   256
                         }
 
@@ -11030,7 +11030,7 @@
                     {
                         IndexField (IDXD, DATD, DWordAcc, NoLock, WriteAsZeros)
                         {
-                            Offset (0x08), 
+                            Offset (0x08),
                             F0EE,   1023
                         }
 
@@ -11041,7 +11041,7 @@
                     {
                         IndexField (IDXE, DATE, DWordAcc, NoLock, WriteAsZeros)
                         {
-                            Offset (0x08), 
+                            Offset (0x08),
                             F0EF,   1983
                         }
 
@@ -11064,8 +11064,8 @@
                     {
                         IndexField (IDX0, DAT0, DWordAcc, NoLock, WriteAsZeros)
                         {
-                            Offset (0x08), 
-                                ,   1, 
+                            Offset (0x08),
+                                ,   1,
                             F0F0,   1
                         }
 
@@ -11076,8 +11076,8 @@
                     {
                         IndexField (IDX1, DAT1, DWordAcc, NoLock, WriteAsZeros)
                         {
-                            Offset (0x08), 
-                                ,   1, 
+                            Offset (0x08),
+                                ,   1,
                             F0F1,   6
                         }
 
@@ -11088,8 +11088,8 @@
                     {
                         IndexField (IDX2, DAT2, DWordAcc, NoLock, WriteAsZeros)
                         {
-                            Offset (0x08), 
-                                ,   1, 
+                            Offset (0x08),
+                                ,   1,
                             F0F2,   7
                         }
 
@@ -11100,8 +11100,8 @@
                     {
                         IndexField (IDX3, DAT3, DWordAcc, NoLock, WriteAsZeros)
                         {
-                            Offset (0x08), 
-                                ,   1, 
+                            Offset (0x08),
+                                ,   1,
                             F0F3,   8
                         }
 
@@ -11112,8 +11112,8 @@
                     {
                         IndexField (IDX4, DAT4, DWordAcc, NoLock, WriteAsZeros)
                         {
-                            Offset (0x08), 
-                                ,   1, 
+                            Offset (0x08),
+                                ,   1,
                             F0F4,   9
                         }
 
@@ -11124,8 +11124,8 @@
                     {
                         IndexField (IDX5, DAT5, DWordAcc, NoLock, WriteAsZeros)
                         {
-                            Offset (0x08), 
-                                ,   1, 
+                            Offset (0x08),
+                                ,   1,
                             F0F5,   31
                         }
 
@@ -11136,8 +11136,8 @@
                     {
                         IndexField (IDX6, DAT6, DWordAcc, NoLock, WriteAsZeros)
                         {
-                            Offset (0x08), 
-                                ,   1, 
+                            Offset (0x08),
+                                ,   1,
                             F0F6,   32
                         }
 
@@ -11148,8 +11148,8 @@
                     {
                         IndexField (IDX7, DAT7, DWordAcc, NoLock, WriteAsZeros)
                         {
-                            Offset (0x08), 
-                                ,   1, 
+                            Offset (0x08),
+                                ,   1,
                             F0F7,   33
                         }
 
@@ -11160,8 +11160,8 @@
                     {
                         IndexField (IDX8, DAT8, DWordAcc, NoLock, WriteAsZeros)
                         {
-                            Offset (0x08), 
-                                ,   1, 
+                            Offset (0x08),
+                                ,   1,
                             F0F8,   63
                         }
 
@@ -11172,8 +11172,8 @@
                     {
                         IndexField (IDX9, DAT9, DWordAcc, NoLock, WriteAsZeros)
                         {
-                            Offset (0x08), 
-                                ,   1, 
+                            Offset (0x08),
+                                ,   1,
                             F0F9,   64
                         }
 
@@ -11184,8 +11184,8 @@
                     {
                         IndexField (IDXA, DATA, DWordAcc, NoLock, WriteAsZeros)
                         {
-                            Offset (0x08), 
-                                ,   1, 
+                            Offset (0x08),
+                                ,   1,
                             F0FA,   65
                         }
 
@@ -11196,8 +11196,8 @@
                     {
                         IndexField (IDXB, DATB, DWordAcc, NoLock, WriteAsZeros)
                         {
-                            Offset (0x08), 
-                                ,   1, 
+                            Offset (0x08),
+                                ,   1,
                             F0FB,   69
                         }
 
@@ -11208,8 +11208,8 @@
                     {
                         IndexField (IDXC, DATC, DWordAcc, NoLock, WriteAsZeros)
                         {
-                            Offset (0x08), 
-                                ,   1, 
+                            Offset (0x08),
+                                ,   1,
                             F0FC,   129
                         }
 
@@ -11220,8 +11220,8 @@
                     {
                         IndexField (IDXD, DATD, DWordAcc, NoLock, WriteAsZeros)
                         {
-                            Offset (0x08), 
-                                ,   1, 
+                            Offset (0x08),
+                                ,   1,
                             F0FD,   256
                         }
 
@@ -11232,8 +11232,8 @@
                     {
                         IndexField (IDXE, DATE, DWordAcc, NoLock, WriteAsZeros)
                         {
-                            Offset (0x08), 
-                                ,   1, 
+                            Offset (0x08),
+                                ,   1,
                             F0FE,   1023
                         }
 
@@ -11244,8 +11244,8 @@
                     {
                         IndexField (IDX0, DAT0, DWordAcc, NoLock, WriteAsZeros)
                         {
-                            Offset (0x08), 
-                                ,   1, 
+                            Offset (0x08),
+                                ,   1,
                             F0FF,   1983
                         }
 
@@ -11288,7 +11288,7 @@
          */
         Field (OPR0, ByteAcc, NoLock, Preserve)
         {
-            IDX0,   8, 
+            IDX0,   8,
             DAT0,   64
         }
 
@@ -11299,8 +11299,8 @@
 
         Field (OPR0, ByteAcc, NoLock, WriteAsOnes)
         {
-            Offset (0x07), 
-            IDX1,   8, 
+            Offset (0x07),
+            IDX1,   8,
             DAT1,   64
         }
 
@@ -11311,8 +11311,8 @@
 
         Field (OPR0, ByteAcc, NoLock, WriteAsZeros)
         {
-            Offset (0x0E), 
-            IDX2,   16, 
+            Offset (0x0E),
+            IDX2,   16,
             DAT2,   64
         }
 
@@ -11323,8 +11323,8 @@
 
         Field (OPR0, WordAcc, NoLock, Preserve)
         {
-            Offset (0x18), 
-            IDX3,   16, 
+            Offset (0x18),
+            IDX3,   16,
             DAT3,   64
         }
 
@@ -11335,8 +11335,8 @@
 
         Field (OPR0, WordAcc, NoLock, WriteAsOnes)
         {
-            Offset (0x22), 
-            IDX4,   16, 
+            Offset (0x22),
+            IDX4,   16,
             DAT4,   64
         }
 
@@ -11347,8 +11347,8 @@
 
         Field (OPR0, WordAcc, NoLock, WriteAsZeros)
         {
-            Offset (0x2C), 
-            IDX5,   32, 
+            Offset (0x2C),
+            IDX5,   32,
             DAT5,   64
         }
 
@@ -11359,9 +11359,9 @@
 
         Field (OPR0, DWordAcc, NoLock, Preserve)
         {
-            Offset (0x38), 
-            IDX6,   8, 
-            Offset (0x3C), 
+            Offset (0x38),
+            IDX6,   8,
+            Offset (0x3C),
             DAT6,   64
         }
 
@@ -11372,8 +11372,8 @@
 
         Field (OPR0, DWordAcc, NoLock, WriteAsOnes)
         {
-            Offset (0x44), 
-            IDX7,   32, 
+            Offset (0x44),
+            IDX7,   32,
             DAT7,   64
         }
 
@@ -11384,8 +11384,8 @@
 
         Field (OPR0, DWordAcc, NoLock, WriteAsZeros)
         {
-            Offset (0x46), 
-            IDX8,   32, 
+            Offset (0x46),
+            IDX8,   32,
             DAT8,   64
         }
 
@@ -11396,9 +11396,9 @@
 
         Field (OPR0, QWordAcc, NoLock, Preserve)
         {
-            Offset (0x52), 
-            IDX9,   8, 
-            Offset (0x58), 
+            Offset (0x52),
+            IDX9,   8,
+            Offset (0x58),
             DAT9,   64
         }
 
@@ -11409,12 +11409,12 @@
 
         Field (OPR0, QWordAcc, NoLock, WriteAsOnes)
         {
-            Offset (0x60), 
-            Offset (0x64), 
+            Offset (0x60),
+            Offset (0x64),
             /* Index field exceeding 32 bits causes AE_BUFFER_OVERFLOW */
             /* IDXA, 64, */
             /* Do not allow index/data interference */
-            IDXA,   32, 
+            IDXA,   32,
             DATA,   64
         }
 
@@ -11425,9 +11425,9 @@
 
         Field (OPR0, QWordAcc, NoLock, WriteAsZeros)
         {
-            Offset (0x70), 
-            IDXB,   32, 
-            Offset (0x78), 
+            Offset (0x70),
+            IDXB,   32,
+            Offset (0x78),
             DATB,   64
         }
 
@@ -11438,8 +11438,8 @@
 
         Field (OPR0, AnyAcc, NoLock, Preserve)
         {
-            Offset (0x80), 
-            IDXC,   8, 
+            Offset (0x80),
+            IDXC,   8,
             DATC,   64
         }
 
@@ -11450,11 +11450,11 @@
 
         Field (OPR0, AnyAcc, NoLock, WriteAsOnes)
         {
-            Offset (0x88), 
+            Offset (0x88),
             /* Index field exceeding 32 bits causes AE_BUFFER_OVERFLOW */
             /* IDXD, 64, */
-            IDXD,   32, 
-            Offset (0x90), 
+            IDXD,   32,
+            Offset (0x90),
             DATD,   64
         }
 
@@ -11465,9 +11465,9 @@
 
         Field (OPR0, AnyAcc, NoLock, WriteAsZeros)
         {
-            Offset (0x98), 
-            IDXE,   32, 
-            Offset (0xA0), 
+            Offset (0x98),
+            IDXE,   32,
+            Offset (0xA0),
             DATE,   64
         }
 
@@ -11487,7 +11487,7 @@
                     {
                         IndexField (IDX0, DAT0, QWordAcc, NoLock, Preserve)
                         {
-                            Offset (0x00), 
+                            Offset (0x00),
                             F000,   1
                         }
 
@@ -11498,7 +11498,7 @@
                     {
                         IndexField (IDX1, DAT1, QWordAcc, NoLock, Preserve)
                         {
-                            Offset (0x00), 
+                            Offset (0x00),
                             F001,   6
                         }
 
@@ -11509,7 +11509,7 @@
                     {
                         IndexField (IDX2, DAT2, QWordAcc, NoLock, Preserve)
                         {
-                            Offset (0x00), 
+                            Offset (0x00),
                             F002,   7
                         }
 
@@ -11520,7 +11520,7 @@
                     {
                         IndexField (IDX3, DAT3, QWordAcc, NoLock, Preserve)
                         {
-                            Offset (0x00), 
+                            Offset (0x00),
                             F003,   8
                         }
 
@@ -11531,7 +11531,7 @@
                     {
                         IndexField (IDX4, DAT4, QWordAcc, NoLock, Preserve)
                         {
-                            Offset (0x00), 
+                            Offset (0x00),
                             F004,   9
                         }
 
@@ -11542,7 +11542,7 @@
                     {
                         IndexField (IDX5, DAT5, QWordAcc, NoLock, Preserve)
                         {
-                            Offset (0x00), 
+                            Offset (0x00),
                             F005,   31
                         }
 
@@ -11553,7 +11553,7 @@
                     {
                         IndexField (IDX6, DAT6, QWordAcc, NoLock, Preserve)
                         {
-                            Offset (0x00), 
+                            Offset (0x00),
                             F006,   32
                         }
 
@@ -11564,7 +11564,7 @@
                     {
                         IndexField (IDX7, DAT7, QWordAcc, NoLock, Preserve)
                         {
-                            Offset (0x00), 
+                            Offset (0x00),
                             F007,   33
                         }
 
@@ -11575,7 +11575,7 @@
                     {
                         IndexField (IDX8, DAT8, QWordAcc, NoLock, Preserve)
                         {
-                            Offset (0x00), 
+                            Offset (0x00),
                             F008,   63
                         }
 
@@ -11586,7 +11586,7 @@
                     {
                         IndexField (IDX9, DAT9, QWordAcc, NoLock, Preserve)
                         {
-                            Offset (0x00), 
+                            Offset (0x00),
                             F009,   64
                         }
 
@@ -11597,7 +11597,7 @@
                     {
                         IndexField (IDXA, DATA, QWordAcc, NoLock, Preserve)
                         {
-                            Offset (0x00), 
+                            Offset (0x00),
                             F00A,   65
                         }
 
@@ -11608,7 +11608,7 @@
                     {
                         IndexField (IDXB, DATB, QWordAcc, NoLock, Preserve)
                         {
-                            Offset (0x00), 
+                            Offset (0x00),
                             F00B,   69
                         }
 
@@ -11619,7 +11619,7 @@
                     {
                         IndexField (IDXC, DATC, QWordAcc, NoLock, Preserve)
                         {
-                            Offset (0x00), 
+                            Offset (0x00),
                             F00C,   129
                         }
 
@@ -11630,7 +11630,7 @@
                     {
                         IndexField (IDXD, DATD, QWordAcc, NoLock, Preserve)
                         {
-                            Offset (0x00), 
+                            Offset (0x00),
                             F00D,   256
                         }
 
@@ -11641,7 +11641,7 @@
                     {
                         IndexField (IDXE, DATE, QWordAcc, NoLock, Preserve)
                         {
-                            Offset (0x00), 
+                            Offset (0x00),
                             F00E,   1023
                         }
 
@@ -11652,7 +11652,7 @@
                     {
                         IndexField (IDX0, DAT0, QWordAcc, NoLock, Preserve)
                         {
-                            Offset (0x00), 
+                            Offset (0x00),
                             F00F,   1983
                         }
 
@@ -11675,8 +11675,8 @@
                     {
                         IndexField (IDX1, DAT1, QWordAcc, NoLock, Preserve)
                         {
-                            Offset (0x00), 
-                                ,   1, 
+                            Offset (0x00),
+                                ,   1,
                             F010,   1
                         }
 
@@ -11687,8 +11687,8 @@
                     {
                         IndexField (IDX2, DAT2, QWordAcc, NoLock, Preserve)
                         {
-                            Offset (0x00), 
-                                ,   1, 
+                            Offset (0x00),
+                                ,   1,
                             F011,   6
                         }
 
@@ -11699,8 +11699,8 @@
                     {
                         IndexField (IDX3, DAT3, QWordAcc, NoLock, Preserve)
                         {
-                            Offset (0x00), 
-                                ,   1, 
+                            Offset (0x00),
+                                ,   1,
                             F012,   7
                         }
 
@@ -11711,8 +11711,8 @@
                     {
                         IndexField (IDX4, DAT4, QWordAcc, NoLock, Preserve)
                         {
-                            Offset (0x00), 
-                                ,   1, 
+                            Offset (0x00),
+                                ,   1,
                             F013,   8
                         }
 
@@ -11723,8 +11723,8 @@
                     {
                         IndexField (IDX5, DAT5, QWordAcc, NoLock, Preserve)
                         {
-                            Offset (0x00), 
-                                ,   1, 
+                            Offset (0x00),
+                                ,   1,
                             F014,   9
                         }
 
@@ -11735,8 +11735,8 @@
                     {
                         IndexField (IDX6, DAT6, QWordAcc, NoLock, Preserve)
                         {
-                            Offset (0x00), 
-                                ,   1, 
+                            Offset (0x00),
+                                ,   1,
                             F015,   31
                         }
 
@@ -11747,8 +11747,8 @@
                     {
                         IndexField (IDX7, DAT7, QWordAcc, NoLock, Preserve)
                         {
-                            Offset (0x00), 
-                                ,   1, 
+                            Offset (0x00),
+                                ,   1,
                             F016,   32
                         }
 
@@ -11759,8 +11759,8 @@
                     {
                         IndexField (IDX8, DAT8, QWordAcc, NoLock, Preserve)
                         {
-                            Offset (0x00), 
-                                ,   1, 
+                            Offset (0x00),
+                                ,   1,
                             F017,   33
                         }
 
@@ -11771,8 +11771,8 @@
                     {
                         IndexField (IDX9, DAT9, QWordAcc, NoLock, Preserve)
                         {
-                            Offset (0x00), 
-                                ,   1, 
+                            Offset (0x00),
+                                ,   1,
                             F018,   63
                         }
 
@@ -11783,8 +11783,8 @@
                     {
                         IndexField (IDXA, DATA, QWordAcc, NoLock, Preserve)
                         {
-                            Offset (0x00), 
-                                ,   1, 
+                            Offset (0x00),
+                                ,   1,
                             F019,   64
                         }
 
@@ -11795,8 +11795,8 @@
                     {
                         IndexField (IDXB, DATB, QWordAcc, NoLock, Preserve)
                         {
-                            Offset (0x00), 
-                                ,   1, 
+                            Offset (0x00),
+                                ,   1,
                             F01A,   65
                         }
 
@@ -11807,8 +11807,8 @@
                     {
                         IndexField (IDXC, DATC, QWordAcc, NoLock, Preserve)
                         {
-                            Offset (0x00), 
-                                ,   1, 
+                            Offset (0x00),
+                                ,   1,
                             F01B,   69
                         }
 
@@ -11819,8 +11819,8 @@
                     {
                         IndexField (IDXD, DATD, QWordAcc, NoLock, Preserve)
                         {
-                            Offset (0x00), 
-                                ,   1, 
+                            Offset (0x00),
+                                ,   1,
                             F01C,   129
                         }
 
@@ -11831,8 +11831,8 @@
                     {
                         IndexField (IDXE, DATE, QWordAcc, NoLock, Preserve)
                         {
-                            Offset (0x00), 
-                                ,   1, 
+                            Offset (0x00),
+                                ,   1,
                             F01D,   256
                         }
 
@@ -11843,8 +11843,8 @@
                     {
                         IndexField (IDX0, DAT0, QWordAcc, NoLock, Preserve)
                         {
-                            Offset (0x00), 
-                                ,   1, 
+                            Offset (0x00),
+                                ,   1,
                             F01E,   1023
                         }
 
@@ -11855,8 +11855,8 @@
                     {
                         IndexField (IDX1, DAT1, QWordAcc, NoLock, Preserve)
                         {
-                            Offset (0x00), 
-                                ,   1, 
+                            Offset (0x00),
+                                ,   1,
                             F01F,   1983
                         }
 
@@ -11879,7 +11879,7 @@
                     {
                         IndexField (IDX2, DAT2, QWordAcc, NoLock, Preserve)
                         {
-                                ,   2, 
+                                ,   2,
                             F020,   1
                         }
 
@@ -11890,7 +11890,7 @@
                     {
                         IndexField (IDX3, DAT3, QWordAcc, NoLock, Preserve)
                         {
-                                ,   2, 
+                                ,   2,
                             F021,   6
                         }
 
@@ -11901,7 +11901,7 @@
                     {
                         IndexField (IDX4, DAT4, QWordAcc, NoLock, Preserve)
                         {
-                                ,   2, 
+                                ,   2,
                             F022,   7
                         }
 
@@ -11912,7 +11912,7 @@
                     {
                         IndexField (IDX5, DAT5, QWordAcc, NoLock, Preserve)
                         {
-                                ,   2, 
+                                ,   2,
                             F023,   8
                         }
 
@@ -11923,7 +11923,7 @@
                     {
                         IndexField (IDX6, DAT6, QWordAcc, NoLock, Preserve)
                         {
-                                ,   2, 
+                                ,   2,
                             F024,   9
                         }
 
@@ -11934,7 +11934,7 @@
                     {
                         IndexField (IDX7, DAT7, QWordAcc, NoLock, Preserve)
                         {
-                                ,   2, 
+                                ,   2,
                             F025,   31
                         }
 
@@ -11945,7 +11945,7 @@
                     {
                         IndexField (IDX8, DAT8, QWordAcc, NoLock, Preserve)
                         {
-                                ,   2, 
+                                ,   2,
                             F026,   32
                         }
 
@@ -11956,7 +11956,7 @@
                     {
                         IndexField (IDX9, DAT9, QWordAcc, NoLock, Preserve)
                         {
-                                ,   2, 
+                                ,   2,
                             F027,   33
                         }
 
@@ -11967,7 +11967,7 @@
                     {
                         IndexField (IDXA, DATA, QWordAcc, NoLock, Preserve)
                         {
-                                ,   2, 
+                                ,   2,
                             F028,   63
                         }
 
@@ -11978,7 +11978,7 @@
                     {
                         IndexField (IDXB, DATB, QWordAcc, NoLock, Preserve)
                         {
-                                ,   2, 
+                                ,   2,
                             F029,   64
                         }
 
@@ -11989,7 +11989,7 @@
                     {
                         IndexField (IDXC, DATC, QWordAcc, NoLock, Preserve)
                         {
-                                ,   2, 
+                                ,   2,
                             F02A,   65
                         }
 
@@ -12000,7 +12000,7 @@
                     {
                         IndexField (IDXD, DATD, QWordAcc, NoLock, Preserve)
                         {
-                                ,   2, 
+                                ,   2,
                             F02B,   69
                         }
 
@@ -12011,7 +12011,7 @@
                     {
                         IndexField (IDXE, DATE, QWordAcc, NoLock, Preserve)
                         {
-                                ,   2, 
+                                ,   2,
                             F02C,   129
                         }
 
@@ -12022,7 +12022,7 @@
                     {
                         IndexField (IDX0, DAT0, QWordAcc, NoLock, Preserve)
                         {
-                                ,   2, 
+                                ,   2,
                             F02D,   256
                         }
 
@@ -12033,7 +12033,7 @@
                     {
                         IndexField (IDX1, DAT1, QWordAcc, NoLock, Preserve)
                         {
-                                ,   2, 
+                                ,   2,
                             F02E,   1023
                         }
 
@@ -12044,7 +12044,7 @@
                     {
                         IndexField (IDX2, DAT2, QWordAcc, NoLock, Preserve)
                         {
-                                ,   2, 
+                                ,   2,
                             F02F,   1983
                         }
 
@@ -12067,7 +12067,7 @@
                     {
                         IndexField (IDX3, DAT3, QWordAcc, NoLock, Preserve)
                         {
-                                ,   3, 
+                                ,   3,
                             F030,   1
                         }
 
@@ -12078,7 +12078,7 @@
                     {
                         IndexField (IDX4, DAT4, QWordAcc, NoLock, Preserve)
                         {
-                                ,   3, 
+                                ,   3,
                             F031,   6
                         }
 
@@ -12089,7 +12089,7 @@
                     {
                         IndexField (IDX5, DAT5, QWordAcc, NoLock, Preserve)
                         {
-                                ,   3, 
+                                ,   3,
                             F032,   7
                         }
 
@@ -12100,7 +12100,7 @@
                     {
                         IndexField (IDX6, DAT6, QWordAcc, NoLock, Preserve)
                         {
-                                ,   3, 
+                                ,   3,
                             F033,   8
                         }
 
@@ -12111,7 +12111,7 @@
                     {
                         IndexField (IDX7, DAT7, QWordAcc, NoLock, Preserve)
                         {
-                                ,   3, 
+                                ,   3,
                             F034,   9
                         }
 
@@ -12122,7 +12122,7 @@
                     {
                         IndexField (IDX8, DAT8, QWordAcc, NoLock, Preserve)
                         {
-                                ,   3, 
+                                ,   3,
                             F035,   31
                         }
 
@@ -12133,7 +12133,7 @@
                     {
                         IndexField (IDX9, DAT9, QWordAcc, NoLock, Preserve)
                         {
-                                ,   3, 
+                                ,   3,
                             F036,   32
                         }
 
@@ -12144,7 +12144,7 @@
                     {
                         IndexField (IDXA, DATA, QWordAcc, NoLock, Preserve)
                         {
-                                ,   3, 
+                                ,   3,
                             F037,   33
                         }
 
@@ -12155,7 +12155,7 @@
                     {
                         IndexField (IDXB, DATB, QWordAcc, NoLock, Preserve)
                         {
-                                ,   3, 
+                                ,   3,
                             F038,   63
                         }
 
@@ -12166,7 +12166,7 @@
                     {
                         IndexField (IDXC, DATC, QWordAcc, NoLock, Preserve)
                         {
-                                ,   3, 
+                                ,   3,
                             F039,   64
                         }
 
@@ -12177,7 +12177,7 @@
                     {
                         IndexField (IDXD, DATD, QWordAcc, NoLock, Preserve)
                         {
-                                ,   3, 
+                                ,   3,
                             F03A,   65
                         }
 
@@ -12188,7 +12188,7 @@
                     {
                         IndexField (IDXE, DATE, QWordAcc, NoLock, Preserve)
                         {
-                                ,   3, 
+                                ,   3,
                             F03B,   69
                         }
 
@@ -12199,7 +12199,7 @@
                     {
                         IndexField (IDX0, DAT0, QWordAcc, NoLock, Preserve)
                         {
-                                ,   3, 
+                                ,   3,
                             F03C,   129
                         }
 
@@ -12210,7 +12210,7 @@
                     {
                         IndexField (IDX1, DAT1, QWordAcc, NoLock, Preserve)
                         {
-                                ,   3, 
+                                ,   3,
                             F03D,   256
                         }
 
@@ -12221,7 +12221,7 @@
                     {
                         IndexField (IDX2, DAT2, QWordAcc, NoLock, Preserve)
                         {
-                                ,   3, 
+                                ,   3,
                             F03E,   1023
                         }
 
@@ -12232,7 +12232,7 @@
                     {
                         IndexField (IDX3, DAT3, QWordAcc, NoLock, Preserve)
                         {
-                                ,   3, 
+                                ,   3,
                             F03F,   1983
                         }
 
@@ -12255,7 +12255,7 @@
                     {
                         IndexField (IDX4, DAT4, QWordAcc, NoLock, Preserve)
                         {
-                                ,   4, 
+                                ,   4,
                             F040,   1
                         }
 
@@ -12266,7 +12266,7 @@
                     {
                         IndexField (IDX5, DAT5, QWordAcc, NoLock, Preserve)
                         {
-                                ,   4, 
+                                ,   4,
                             F041,   6
                         }
 
@@ -12277,7 +12277,7 @@
                     {
                         IndexField (IDX6, DAT6, QWordAcc, NoLock, Preserve)
                         {
-                                ,   4, 
+                                ,   4,
                             F042,   7
                         }
 
@@ -12288,7 +12288,7 @@
                     {
                         IndexField (IDX7, DAT7, QWordAcc, NoLock, Preserve)
                         {
-                                ,   4, 
+                                ,   4,
                             F043,   8
                         }
 
@@ -12299,7 +12299,7 @@
                     {
                         IndexField (IDX8, DAT8, QWordAcc, NoLock, Preserve)
                         {
-                                ,   4, 
+                                ,   4,
                             F044,   9
                         }
 
@@ -12310,7 +12310,7 @@
                     {
                         IndexField (IDX9, DAT9, QWordAcc, NoLock, Preserve)
                         {
-                                ,   4, 
+                                ,   4,
                             F045,   31
                         }
 
@@ -12321,7 +12321,7 @@
                     {
                         IndexField (IDXA, DATA, QWordAcc, NoLock, Preserve)
                         {
-                                ,   4, 
+                                ,   4,
                             F046,   32
                         }
 
@@ -12332,7 +12332,7 @@
                     {
                         IndexField (IDXB, DATB, QWordAcc, NoLock, Preserve)
                         {
-                                ,   4, 
+                                ,   4,
                             F047,   33
                         }
 
@@ -12343,7 +12343,7 @@
                     {
                         IndexField (IDXC, DATC, QWordAcc, NoLock, Preserve)
                         {
-                                ,   4, 
+                                ,   4,
                             F048,   63
                         }
 
@@ -12354,7 +12354,7 @@
                     {
                         IndexField (IDXD, DATD, QWordAcc, NoLock, Preserve)
                         {
-                                ,   4, 
+                                ,   4,
                             F049,   64
                         }
 
@@ -12365,7 +12365,7 @@
                     {
                         IndexField (IDXE, DATE, QWordAcc, NoLock, Preserve)
                         {
-                                ,   4, 
+                                ,   4,
                             F04A,   65
                         }
 
@@ -12376,7 +12376,7 @@
                     {
                         IndexField (IDX0, DAT0, QWordAcc, NoLock, Preserve)
                         {
-                                ,   4, 
+                                ,   4,
                             F04B,   69
                         }
 
@@ -12387,7 +12387,7 @@
                     {
                         IndexField (IDX1, DAT1, QWordAcc, NoLock, Preserve)
                         {
-                                ,   4, 
+                                ,   4,
                             F04C,   129
                         }
 
@@ -12398,7 +12398,7 @@
                     {
                         IndexField (IDX2, DAT2, QWordAcc, NoLock, Preserve)
                         {
-                                ,   4, 
+                                ,   4,
                             F04D,   256
                         }
 
@@ -12409,7 +12409,7 @@
                     {
                         IndexField (IDX3, DAT3, QWordAcc, NoLock, Preserve)
                         {
-                                ,   4, 
+                                ,   4,
                             F04E,   1023
                         }
 
@@ -12420,7 +12420,7 @@
                     {
                         IndexField (IDX4, DAT4, QWordAcc, NoLock, Preserve)
                         {
-                                ,   4, 
+                                ,   4,
                             F04F,   1983
                         }
 
@@ -12443,7 +12443,7 @@
                     {
                         IndexField (IDX5, DAT5, QWordAcc, NoLock, Preserve)
                         {
-                                ,   5, 
+                                ,   5,
                             F050,   1
                         }
 
@@ -12454,7 +12454,7 @@
                     {
                         IndexField (IDX6, DAT6, QWordAcc, NoLock, Preserve)
                         {
-                                ,   5, 
+                                ,   5,
                             F051,   6
                         }
 
@@ -12465,7 +12465,7 @@
                     {
                         IndexField (IDX7, DAT7, QWordAcc, NoLock, Preserve)
                         {
-                                ,   5, 
+                                ,   5,
                             F052,   7
                         }
 
@@ -12476,7 +12476,7 @@
                     {
                         IndexField (IDX8, DAT8, QWordAcc, NoLock, Preserve)
                         {
-                                ,   5, 
+                                ,   5,
                             F053,   8
                         }
 
@@ -12487,7 +12487,7 @@
                     {
                         IndexField (IDX9, DAT9, QWordAcc, NoLock, Preserve)
                         {
-                                ,   5, 
+                                ,   5,
                             F054,   9
                         }
 
@@ -12498,7 +12498,7 @@
                     {
                         IndexField (IDXA, DATA, QWordAcc, NoLock, Preserve)
                         {
-                                ,   5, 
+                                ,   5,
                             F055,   31
                         }
 
@@ -12509,7 +12509,7 @@
                     {
                         IndexField (IDXB, DATB, QWordAcc, NoLock, Preserve)
                         {
-                                ,   5, 
+                                ,   5,
                             F056,   32
                         }
 
@@ -12520,7 +12520,7 @@
                     {
                         IndexField (IDXC, DATC, QWordAcc, NoLock, Preserve)
                         {
-                                ,   5, 
+                                ,   5,
                             F057,   33
                         }
 
@@ -12531,7 +12531,7 @@
                     {
                         IndexField (IDXD, DATD, QWordAcc, NoLock, Preserve)
                         {
-                                ,   5, 
+                                ,   5,
                             F058,   63
                         }
 
@@ -12542,7 +12542,7 @@
                     {
                         IndexField (IDXE, DATE, QWordAcc, NoLock, Preserve)
                         {
-                                ,   5, 
+                                ,   5,
                             F059,   64
                         }
 
@@ -12553,7 +12553,7 @@
                     {
                         IndexField (IDX0, DAT0, QWordAcc, NoLock, Preserve)
                         {
-                                ,   5, 
+                                ,   5,
                             F05A,   65
                         }
 
@@ -12564,7 +12564,7 @@
                     {
                         IndexField (IDX1, DAT1, QWordAcc, NoLock, Preserve)
                         {
-                                ,   5, 
+                                ,   5,
                             F05B,   69
                         }
 
@@ -12575,7 +12575,7 @@
                     {
                         IndexField (IDX2, DAT2, QWordAcc, NoLock, Preserve)
                         {
-                                ,   5, 
+                                ,   5,
                             F05C,   129
                         }
 
@@ -12586,7 +12586,7 @@
                     {
                         IndexField (IDX3, DAT3, QWordAcc, NoLock, Preserve)
                         {
-                                ,   5, 
+                                ,   5,
                             F05D,   256
                         }
 
@@ -12597,7 +12597,7 @@
                     {
                         IndexField (IDX4, DAT4, QWordAcc, NoLock, Preserve)
                         {
-                                ,   5, 
+                                ,   5,
                             F05E,   1023
                         }
 
@@ -12608,7 +12608,7 @@
                     {
                         IndexField (IDX5, DAT5, QWordAcc, NoLock, Preserve)
                         {
-                                ,   5, 
+                                ,   5,
                             F05F,   1983
                         }
 
@@ -12631,7 +12631,7 @@
                     {
                         IndexField (IDX6, DAT6, QWordAcc, NoLock, Preserve)
                         {
-                                ,   6, 
+                                ,   6,
                             F060,   1
                         }
 
@@ -12642,7 +12642,7 @@
                     {
                         IndexField (IDX7, DAT7, QWordAcc, NoLock, Preserve)
                         {
-                                ,   6, 
+                                ,   6,
                             F061,   6
                         }
 
@@ -12653,7 +12653,7 @@
                     {
                         IndexField (IDX8, DAT8, QWordAcc, NoLock, Preserve)
                         {
-                                ,   6, 
+                                ,   6,
                             F062,   7
                         }
 
@@ -12664,7 +12664,7 @@
                     {
                         IndexField (IDX9, DAT9, QWordAcc, NoLock, Preserve)
                         {
-                                ,   6, 
+                                ,   6,
                             F063,   8
                         }
 
@@ -12675,7 +12675,7 @@
                     {
                         IndexField (IDXA, DATA, QWordAcc, NoLock, Preserve)
                         {
-                                ,   6, 
+                                ,   6,
                             F064,   9
                         }
 
@@ -12686,7 +12686,7 @@
                     {
                         IndexField (IDXB, DATB, QWordAcc, NoLock, Preserve)
                         {
-                                ,   6, 
+                                ,   6,
                             F065,   31
                         }
 
@@ -12697,7 +12697,7 @@
                     {
                         IndexField (IDXC, DATC, QWordAcc, NoLock, Preserve)
                         {
-                                ,   6, 
+                                ,   6,
                             F066,   32
                         }
 
@@ -12708,7 +12708,7 @@
                     {
                         IndexField (IDXD, DATD, QWordAcc, NoLock, Preserve)
                         {
-                                ,   6, 
+                                ,   6,
                             F067,   33
                         }
 
@@ -12719,7 +12719,7 @@
                     {
                         IndexField (IDXE, DATE, QWordAcc, NoLock, Preserve)
                         {
-                                ,   6, 
+                                ,   6,
                             F068,   63
                         }
 
@@ -12730,7 +12730,7 @@
                     {
                         IndexField (IDX0, DAT0, QWordAcc, NoLock, Preserve)
                         {
-                                ,   6, 
+                                ,   6,
                             F069,   64
                         }
 
@@ -12741,7 +12741,7 @@
                     {
                         IndexField (IDX1, DAT1, QWordAcc, NoLock, Preserve)
                         {
-                                ,   6, 
+                                ,   6,
                             F06A,   65
                         }
 
@@ -12752,7 +12752,7 @@
                     {
                         IndexField (IDX2, DAT2, QWordAcc, NoLock, Preserve)
                         {
-                                ,   6, 
+                                ,   6,
                             F06B,   69
                         }
 
@@ -12763,7 +12763,7 @@
                     {
                         IndexField (IDX3, DAT3, QWordAcc, NoLock, Preserve)
                         {
-                                ,   6, 
+                                ,   6,
                             F06C,   129
                         }
 
@@ -12774,7 +12774,7 @@
                     {
                         IndexField (IDX4, DAT4, QWordAcc, NoLock, Preserve)
                         {
-                                ,   6, 
+                                ,   6,
                             F06D,   256
                         }
 
@@ -12785,7 +12785,7 @@
                     {
                         IndexField (IDX5, DAT5, QWordAcc, NoLock, Preserve)
                         {
-                                ,   6, 
+                                ,   6,
                             F06E,   1023
                         }
 
@@ -12796,7 +12796,7 @@
                     {
                         IndexField (IDX6, DAT6, QWordAcc, NoLock, Preserve)
                         {
-                                ,   6, 
+                                ,   6,
                             F06F,   1983
                         }
 
@@ -12819,7 +12819,7 @@
                     {
                         IndexField (IDX7, DAT7, QWordAcc, NoLock, Preserve)
                         {
-                                ,   7, 
+                                ,   7,
                             F070,   1
                         }
 
@@ -12830,7 +12830,7 @@
                     {
                         IndexField (IDX8, DAT8, QWordAcc, NoLock, Preserve)
                         {
-                                ,   7, 
+                                ,   7,
                             F071,   6
                         }
 
@@ -12841,7 +12841,7 @@
                     {
                         IndexField (IDX9, DAT9, QWordAcc, NoLock, Preserve)
                         {
-                                ,   7, 
+                                ,   7,
                             F072,   7
                         }
 
@@ -12852,7 +12852,7 @@
                     {
                         IndexField (IDXA, DATA, QWordAcc, NoLock, Preserve)
                         {
-                                ,   7, 
+                                ,   7,
                             F073,   8
                         }
 
@@ -12863,7 +12863,7 @@
                     {
                         IndexField (IDXB, DATB, QWordAcc, NoLock, Preserve)
                         {
-                                ,   7, 
+                                ,   7,
                             F074,   9
                         }
 
@@ -12874,7 +12874,7 @@
                     {
                         IndexField (IDXC, DATC, QWordAcc, NoLock, Preserve)
                         {
-                                ,   7, 
+                                ,   7,
                             F075,   31
                         }
 
@@ -12885,7 +12885,7 @@
                     {
                         IndexField (IDXD, DATD, QWordAcc, NoLock, Preserve)
                         {
-                                ,   7, 
+                                ,   7,
                             F076,   32
                         }
 
@@ -12896,7 +12896,7 @@
                     {
                         IndexField (IDXE, DATE, QWordAcc, NoLock, Preserve)
                         {
-                                ,   7, 
+                                ,   7,
                             F077,   33
                         }
 
@@ -12907,7 +12907,7 @@
                     {
                         IndexField (IDX0, DAT0, QWordAcc, NoLock, Preserve)
                         {
-                                ,   7, 
+                                ,   7,
                             F078,   63
                         }
 
@@ -12918,7 +12918,7 @@
                     {
                         IndexField (IDX1, DAT1, QWordAcc, NoLock, Preserve)
                         {
-                                ,   7, 
+                                ,   7,
                             F079,   64
                         }
 
@@ -12929,7 +12929,7 @@
                     {
                         IndexField (IDX2, DAT2, QWordAcc, NoLock, Preserve)
                         {
-                                ,   7, 
+                                ,   7,
                             F07A,   65
                         }
 
@@ -12940,7 +12940,7 @@
                     {
                         IndexField (IDX3, DAT3, QWordAcc, NoLock, Preserve)
                         {
-                                ,   7, 
+                                ,   7,
                             F07B,   69
                         }
 
@@ -12951,7 +12951,7 @@
                     {
                         IndexField (IDX4, DAT4, QWordAcc, NoLock, Preserve)
                         {
-                                ,   7, 
+                                ,   7,
                             F07C,   129
                         }
 
@@ -12962,7 +12962,7 @@
                     {
                         IndexField (IDX5, DAT5, QWordAcc, NoLock, Preserve)
                         {
-                                ,   7, 
+                                ,   7,
                             F07D,   256
                         }
 
@@ -12973,7 +12973,7 @@
                     {
                         IndexField (IDX6, DAT6, QWordAcc, NoLock, Preserve)
                         {
-                                ,   7, 
+                                ,   7,
                             F07E,   1023
                         }
 
@@ -12984,7 +12984,7 @@
                     {
                         IndexField (IDX7, DAT7, QWordAcc, NoLock, Preserve)
                         {
-                                ,   7, 
+                                ,   7,
                             F07F,   1983
                         }
 
@@ -13007,7 +13007,7 @@
                     {
                         IndexField (IDX8, DAT8, QWordAcc, NoLock, Preserve)
                         {
-                            Offset (0x01), 
+                            Offset (0x01),
                             F080,   1
                         }
 
@@ -13018,7 +13018,7 @@
                     {
                         IndexField (IDX9, DAT9, QWordAcc, NoLock, Preserve)
                         {
-                            Offset (0x01), 
+                            Offset (0x01),
                             F081,   6
                         }
 
@@ -13029,7 +13029,7 @@
                     {
                         IndexField (IDXA, DATA, QWordAcc, NoLock, Preserve)
                         {
-                            Offset (0x01), 
+                            Offset (0x01),
                             F082,   7
                         }
 
@@ -13040,7 +13040,7 @@
                     {
                         IndexField (IDXB, DATB, QWordAcc, NoLock, Preserve)
                         {
-                            Offset (0x01), 
+                            Offset (0x01),
                             F083,   8
                         }
 
@@ -13051,7 +13051,7 @@
                     {
                         IndexField (IDXC, DATC, QWordAcc, NoLock, Preserve)
                         {
-                            Offset (0x01), 
+                            Offset (0x01),
                             F084,   9
                         }
 
@@ -13062,7 +13062,7 @@
                     {
                         IndexField (IDXD, DATD, QWordAcc, NoLock, Preserve)
                         {
-                            Offset (0x01), 
+                            Offset (0x01),
                             F085,   31
                         }
 
@@ -13073,7 +13073,7 @@
                     {
                         IndexField (IDXE, DATE, QWordAcc, NoLock, Preserve)
                         {
-                            Offset (0x01), 
+                            Offset (0x01),
                             F086,   32
                         }
 
@@ -13084,7 +13084,7 @@
                     {
                         IndexField (IDX0, DAT0, QWordAcc, NoLock, Preserve)
                         {
-                            Offset (0x01), 
+                            Offset (0x01),
                             F087,   33
                         }
 
@@ -13095,7 +13095,7 @@
                     {
                         IndexField (IDX1, DAT1, QWordAcc, NoLock, Preserve)
                         {
-                            Offset (0x01), 
+                            Offset (0x01),
                             F088,   63
                         }
 
@@ -13106,7 +13106,7 @@
                     {
                         IndexField (IDX2, DAT2, QWordAcc, NoLock, Preserve)
                         {
-                            Offset (0x01), 
+                            Offset (0x01),
                             F089,   64
                         }
 
@@ -13117,7 +13117,7 @@
                     {
                         IndexField (IDX3, DAT3, QWordAcc, NoLock, Preserve)
                         {
-                            Offset (0x01), 
+                            Offset (0x01),
                             F08A,   65
                         }
 
@@ -13128,7 +13128,7 @@
                     {
                         IndexField (IDX4, DAT4, QWordAcc, NoLock, Preserve)
                         {
-                            Offset (0x01), 
+                            Offset (0x01),
                             F08B,   69
                         }
 
@@ -13139,7 +13139,7 @@
                     {
                         IndexField (IDX5, DAT5, QWordAcc, NoLock, Preserve)
                         {
-                            Offset (0x01), 
+                            Offset (0x01),
                             F08C,   129
                         }
 
@@ -13150,7 +13150,7 @@
                     {
                         IndexField (IDX6, DAT6, QWordAcc, NoLock, Preserve)
                         {
-                            Offset (0x01), 
+                            Offset (0x01),
                             F08D,   256
                         }
 
@@ -13161,7 +13161,7 @@
                     {
                         IndexField (IDX7, DAT7, QWordAcc, NoLock, Preserve)
                         {
-                            Offset (0x01), 
+                            Offset (0x01),
                             F08E,   1023
                         }
 
@@ -13172,7 +13172,7 @@
                     {
                         IndexField (IDX8, DAT8, QWordAcc, NoLock, Preserve)
                         {
-                            Offset (0x01), 
+                            Offset (0x01),
                             F08F,   1983
                         }
 
@@ -13195,7 +13195,7 @@
                     {
                         IndexField (IDX9, DAT9, QWordAcc, NoLock, Preserve)
                         {
-                                ,   9, 
+                                ,   9,
                             F090,   1
                         }
 
@@ -13206,7 +13206,7 @@
                     {
                         IndexField (IDXA, DATA, QWordAcc, NoLock, Preserve)
                         {
-                                ,   9, 
+                                ,   9,
                             F091,   6
                         }
 
@@ -13217,7 +13217,7 @@
                     {
                         IndexField (IDXB, DATB, QWordAcc, NoLock, Preserve)
                         {
-                                ,   9, 
+                                ,   9,
                             F092,   7
                         }
 
@@ -13228,7 +13228,7 @@
                     {
                         IndexField (IDXC, DATC, QWordAcc, NoLock, Preserve)
                         {
-                                ,   9, 
+                                ,   9,
                             F093,   8
                         }
 
@@ -13239,7 +13239,7 @@
                     {
                         IndexField (IDXD, DATD, QWordAcc, NoLock, Preserve)
                         {
-                                ,   9, 
+                                ,   9,
                             F094,   9
                         }
 
@@ -13250,7 +13250,7 @@
                     {
                         IndexField (IDXE, DATE, QWordAcc, NoLock, Preserve)
                         {
-                                ,   9, 
+                                ,   9,
                             F095,   31
                         }
 
@@ -13261,7 +13261,7 @@
                     {
                         IndexField (IDX0, DAT0, QWordAcc, NoLock, Preserve)
                         {
-                                ,   9, 
+                                ,   9,
                             F096,   32
                         }
 
@@ -13272,7 +13272,7 @@
                     {
                         IndexField (IDX1, DAT1, QWordAcc, NoLock, Preserve)
                         {
-                                ,   9, 
+                                ,   9,
                             F097,   33
                         }
 
@@ -13283,7 +13283,7 @@
                     {
                         IndexField (IDX2, DAT2, QWordAcc, NoLock, Preserve)
                         {
-                                ,   9, 
+                                ,   9,
                             F098,   63
                         }
 
@@ -13294,7 +13294,7 @@
                     {
                         IndexField (IDX3, DAT3, QWordAcc, NoLock, Preserve)
                         {
-                                ,   9, 
+                                ,   9,
                             F099,   64
                         }
 
@@ -13305,7 +13305,7 @@
                     {
                         IndexField (IDX4, DAT4, QWordAcc, NoLock, Preserve)
                         {
-                                ,   9, 
+                                ,   9,
                             F09A,   65
                         }
 
@@ -13316,7 +13316,7 @@
                     {
                         IndexField (IDX5, DAT5, QWordAcc, NoLock, Preserve)
                         {
-                                ,   9, 
+                                ,   9,
                             F09B,   69
                         }
 
@@ -13327,7 +13327,7 @@
                     {
                         IndexField (IDX6, DAT6, QWordAcc, NoLock, Preserve)
                         {
-                                ,   9, 
+                                ,   9,
                             F09C,   129
                         }
 
@@ -13338,7 +13338,7 @@
                     {
                         IndexField (IDX7, DAT7, QWordAcc, NoLock, Preserve)
                         {
-                                ,   9, 
+                                ,   9,
                             F09D,   256
                         }
 
@@ -13349,7 +13349,7 @@
                     {
                         IndexField (IDX8, DAT8, QWordAcc, NoLock, Preserve)
                         {
-                                ,   9, 
+                                ,   9,
                             F09E,   1023
                         }
 
@@ -13360,7 +13360,7 @@
                     {
                         IndexField (IDX9, DAT9, QWordAcc, NoLock, Preserve)
                         {
-                                ,   9, 
+                                ,   9,
                             F09F,   1983
                         }
 
@@ -13383,8 +13383,8 @@
                     {
                         IndexField (IDXA, DATA, QWordAcc, NoLock, Preserve)
                         {
-                            Offset (0x03), 
-                                ,   7, 
+                            Offset (0x03),
+                                ,   7,
                             F0A0,   1
                         }
 
@@ -13395,8 +13395,8 @@
                     {
                         IndexField (IDXB, DATB, QWordAcc, NoLock, Preserve)
                         {
-                            Offset (0x03), 
-                                ,   7, 
+                            Offset (0x03),
+                                ,   7,
                             F0A1,   6
                         }
 
@@ -13407,8 +13407,8 @@
                     {
                         IndexField (IDXC, DATC, QWordAcc, NoLock, Preserve)
                         {
-                            Offset (0x03), 
-                                ,   7, 
+                            Offset (0x03),
+                                ,   7,
                             F0A2,   7
                         }
 
@@ -13419,8 +13419,8 @@
                     {
                         IndexField (IDXD, DATD, QWordAcc, NoLock, Preserve)
                         {
-                            Offset (0x03), 
-                                ,   7, 
+                            Offset (0x03),
+                                ,   7,
                             F0A3,   8
                         }
 
@@ -13431,8 +13431,8 @@
                     {
                         IndexField (IDXE, DATE, QWordAcc, NoLock, Preserve)
                         {
-                            Offset (0x03), 
-                                ,   7, 
+                            Offset (0x03),
+                                ,   7,
                             F0A4,   9
                         }
 
@@ -13443,8 +13443,8 @@
                     {
                         IndexField (IDX0, DAT0, QWordAcc, NoLock, Preserve)
                         {
-                            Offset (0x03), 
-                                ,   7, 
+                            Offset (0x03),
+                                ,   7,
                             F0A5,   31
                         }
 
@@ -13455,8 +13455,8 @@
                     {
                         IndexField (IDX1, DAT1, QWordAcc, NoLock, Preserve)
                         {
-                            Offset (0x03), 
-                                ,   7, 
+                            Offset (0x03),
+                                ,   7,
                             F0A6,   32
                         }
 
@@ -13467,8 +13467,8 @@
                     {
                         IndexField (IDX2, DAT2, QWordAcc, NoLock, Preserve)
                         {
-                            Offset (0x03), 
-                                ,   7, 
+                            Offset (0x03),
+                                ,   7,
                             F0A7,   33
                         }
 
@@ -13479,8 +13479,8 @@
                     {
                         IndexField (IDX3, DAT3, QWordAcc, NoLock, Preserve)
                         {
-                            Offset (0x03), 
-                                ,   7, 
+                            Offset (0x03),
+                                ,   7,
                             F0A8,   63
                         }
 
@@ -13491,8 +13491,8 @@
                     {
                         IndexField (IDX4, DAT4, QWordAcc, NoLock, Preserve)
                         {
-                            Offset (0x03), 
-                                ,   7, 
+                            Offset (0x03),
+                                ,   7,
                             F0A9,   64
                         }
 
@@ -13503,8 +13503,8 @@
                     {
                         IndexField (IDX5, DAT5, QWordAcc, NoLock, Preserve)
                         {
-                            Offset (0x03), 
-                                ,   7, 
+                            Offset (0x03),
+                                ,   7,
                             F0AA,   65
                         }
 
@@ -13515,8 +13515,8 @@
                     {
                         IndexField (IDX6, DAT6, QWordAcc, NoLock, Preserve)
                         {
-                            Offset (0x03), 
-                                ,   7, 
+                            Offset (0x03),
+                                ,   7,
                             F0AB,   69
                         }
 
@@ -13527,8 +13527,8 @@
                     {
                         IndexField (IDX7, DAT7, QWordAcc, NoLock, Preserve)
                         {
-                            Offset (0x03), 
-                                ,   7, 
+                            Offset (0x03),
+                                ,   7,
                             F0AC,   129
                         }
 
@@ -13539,8 +13539,8 @@
                     {
                         IndexField (IDX8, DAT8, QWordAcc, NoLock, Preserve)
                         {
-                            Offset (0x03), 
-                                ,   7, 
+                            Offset (0x03),
+                                ,   7,
                             F0AD,   256
                         }
 
@@ -13551,8 +13551,8 @@
                     {
                         IndexField (IDX9, DAT9, QWordAcc, NoLock, Preserve)
                         {
-                            Offset (0x03), 
-                                ,   7, 
+                            Offset (0x03),
+                                ,   7,
                             F0AE,   1023
                         }
 
@@ -13563,8 +13563,8 @@
                     {
                         IndexField (IDXA, DATA, QWordAcc, NoLock, Preserve)
                         {
-                            Offset (0x03), 
-                                ,   7, 
+                            Offset (0x03),
+                                ,   7,
                             F0AF,   1983
                         }
 
@@ -13587,7 +13587,7 @@
                     {
                         IndexField (IDXB, DATB, QWordAcc, NoLock, Preserve)
                         {
-                            Offset (0x04), 
+                            Offset (0x04),
                             F0B0,   1
                         }
 
@@ -13598,7 +13598,7 @@
                     {
                         IndexField (IDXC, DATC, QWordAcc, NoLock, Preserve)
                         {
-                            Offset (0x04), 
+                            Offset (0x04),
                             F0B1,   6
                         }
 
@@ -13609,7 +13609,7 @@
                     {
                         IndexField (IDXD, DATD, QWordAcc, NoLock, Preserve)
                         {
-                            Offset (0x04), 
+                            Offset (0x04),
                             F0B2,   7
                         }
 
@@ -13620,7 +13620,7 @@
                     {
                         IndexField (IDXE, DATE, QWordAcc, NoLock, Preserve)
                         {
-                            Offset (0x04), 
+                            Offset (0x04),
                             F0B3,   8
                         }
 
@@ -13631,7 +13631,7 @@
                     {
                         IndexField (IDX0, DAT0, QWordAcc, NoLock, Preserve)
                         {
-                            Offset (0x04), 
+                            Offset (0x04),
                             F0B4,   9
                         }
 
@@ -13642,7 +13642,7 @@
                     {
                         IndexField (IDX1, DAT1, QWordAcc, NoLock, Preserve)
                         {
-                            Offset (0x04), 
+                            Offset (0x04),
                             F0B5,   31
                         }
 
@@ -13653,7 +13653,7 @@
                     {
                         IndexField (IDX2, DAT2, QWordAcc, NoLock, Preserve)
                         {
-                            Offset (0x04), 
+                            Offset (0x04),
                             F0B6,   32
                         }
 
@@ -13664,7 +13664,7 @@
                     {
                         IndexField (IDX3, DAT3, QWordAcc, NoLock, Preserve)
                         {
-                            Offset (0x04), 
+                            Offset (0x04),
                             F0B7,   33
                         }
 
@@ -13675,7 +13675,7 @@
                     {
                         IndexField (IDX4, DAT4, QWordAcc, NoLock, Preserve)
                         {
-                            Offset (0x04), 
+                            Offset (0x04),
                             F0B8,   63
                         }
 
@@ -13686,7 +13686,7 @@
                     {
                         IndexField (IDX5, DAT5, QWordAcc, NoLock, Preserve)
                         {
-                            Offset (0x04), 
+                            Offset (0x04),
                             F0B9,   64
                         }
 
@@ -13697,7 +13697,7 @@
                     {
                         IndexField (IDX6, DAT6, QWordAcc, NoLock, Preserve)
                         {
-                            Offset (0x04), 
+                            Offset (0x04),
                             F0BA,   65
                         }
 
@@ -13708,7 +13708,7 @@
                     {
                         IndexField (IDX7, DAT7, QWordAcc, NoLock, Preserve)
                         {
-                            Offset (0x04), 
+                            Offset (0x04),
                             F0BB,   69
                         }
 
@@ -13719,7 +13719,7 @@
                     {
                         IndexField (IDX8, DAT8, QWordAcc, NoLock, Preserve)
                         {
-                            Offset (0x04), 
+                            Offset (0x04),
                             F0BC,   129
                         }
 
@@ -13730,7 +13730,7 @@
                     {
                         IndexField (IDX9, DAT9, QWordAcc, NoLock, Preserve)
                         {
-                            Offset (0x04), 
+                            Offset (0x04),
                             F0BD,   256
                         }
 
@@ -13741,7 +13741,7 @@
                     {
                         IndexField (IDXA, DATA, QWordAcc, NoLock, Preserve)
                         {
-                            Offset (0x04), 
+                            Offset (0x04),
                             F0BE,   1023
                         }
 
@@ -13752,7 +13752,7 @@
                     {
                         IndexField (IDXB, DATB, QWordAcc, NoLock, Preserve)
                         {
-                            Offset (0x04), 
+                            Offset (0x04),
                             F0BF,   1983
                         }
 
@@ -13775,7 +13775,7 @@
                     {
                         IndexField (IDXC, DATC, QWordAcc, NoLock, Preserve)
                         {
-                                ,   33, 
+                                ,   33,
                             F0C0,   1
                         }
 
@@ -13786,7 +13786,7 @@
                     {
                         IndexField (IDXD, DATD, QWordAcc, NoLock, Preserve)
                         {
-                                ,   33, 
+                                ,   33,
                             F0C1,   6
                         }
 
@@ -13797,7 +13797,7 @@
                     {
                         IndexField (IDXE, DATE, QWordAcc, NoLock, Preserve)
                         {
-                                ,   33, 
+                                ,   33,
                             F0C2,   7
                         }
 
@@ -13808,7 +13808,7 @@
                     {
                         IndexField (IDX0, DAT0, QWordAcc, NoLock, Preserve)
                         {
-                                ,   33, 
+                                ,   33,
                             F0C3,   8
                         }
 
@@ -13819,7 +13819,7 @@
                     {
                         IndexField (IDX1, DAT1, QWordAcc, NoLock, Preserve)
                         {
-                                ,   33, 
+                                ,   33,
                             F0C4,   9
                         }
 
@@ -13830,7 +13830,7 @@
                     {
                         IndexField (IDX2, DAT2, QWordAcc, NoLock, Preserve)
                         {
-                                ,   33, 
+                                ,   33,
                             F0C5,   31
                         }
 
@@ -13841,7 +13841,7 @@
                     {
                         IndexField (IDX3, DAT3, QWordAcc, NoLock, Preserve)
                         {
-                                ,   33, 
+                                ,   33,
                             F0C6,   32
                         }
 
@@ -13852,7 +13852,7 @@
                     {
                         IndexField (IDX4, DAT4, QWordAcc, NoLock, Preserve)
                         {
-                                ,   33, 
+                                ,   33,
                             F0C7,   33
                         }
 
@@ -13863,7 +13863,7 @@
                     {
                         IndexField (IDX5, DAT5, QWordAcc, NoLock, Preserve)
                         {
-                                ,   33, 
+                                ,   33,
                             F0C8,   63
                         }
 
@@ -13874,7 +13874,7 @@
                     {
                         IndexField (IDX6, DAT6, QWordAcc, NoLock, Preserve)
                         {
-                                ,   33, 
+                                ,   33,
                             F0C9,   64
                         }
 
@@ -13885,7 +13885,7 @@
                     {
                         IndexField (IDX7, DAT7, QWordAcc, NoLock, Preserve)
                         {
-                                ,   33, 
+                                ,   33,
                             F0CA,   65
                         }
 
@@ -13896,7 +13896,7 @@
                     {
                         IndexField (IDX8, DAT8, QWordAcc, NoLock, Preserve)
                         {
-                                ,   33, 
+                                ,   33,
                             F0CB,   69
                         }
 
@@ -13907,7 +13907,7 @@
                     {
                         IndexField (IDX9, DAT9, QWordAcc, NoLock, Preserve)
                         {
-                                ,   33, 
+                                ,   33,
                             F0CC,   129
                         }
 
@@ -13918,7 +13918,7 @@
                     {
                         IndexField (IDXA, DATA, QWordAcc, NoLock, Preserve)
                         {
-                                ,   33, 
+                                ,   33,
                             F0CD,   256
                         }
 
@@ -13929,7 +13929,7 @@
                     {
                         IndexField (IDXB, DATB, QWordAcc, NoLock, Preserve)
                         {
-                                ,   33, 
+                                ,   33,
                             F0CE,   1023
                         }
 
@@ -13940,7 +13940,7 @@
                     {
                         IndexField (IDXC, DATC, QWordAcc, NoLock, Preserve)
                         {
-                                ,   33, 
+                                ,   33,
                             F0CF,   1983
                         }
 
@@ -13963,7 +13963,7 @@
                     {
                         IndexField (IDXD, DATD, QWordAcc, NoLock, Preserve)
                         {
-                                ,   63, 
+                                ,   63,
                             F0D0,   1
                         }
 
@@ -13974,7 +13974,7 @@
                     {
                         IndexField (IDXE, DATE, QWordAcc, NoLock, Preserve)
                         {
-                                ,   63, 
+                                ,   63,
                             F0D1,   6
                         }
 
@@ -13985,7 +13985,7 @@
                     {
                         IndexField (IDX0, DAT0, QWordAcc, NoLock, Preserve)
                         {
-                                ,   63, 
+                                ,   63,
                             F0D2,   7
                         }
 
@@ -13996,7 +13996,7 @@
                     {
                         IndexField (IDX1, DAT1, QWordAcc, NoLock, Preserve)
                         {
-                                ,   63, 
+                                ,   63,
                             F0D3,   8
                         }
 
@@ -14007,7 +14007,7 @@
                     {
                         IndexField (IDX2, DAT2, QWordAcc, NoLock, Preserve)
                         {
-                                ,   63, 
+                                ,   63,
                             F0D4,   9
                         }
 
@@ -14018,7 +14018,7 @@
                     {
                         IndexField (IDX3, DAT3, QWordAcc, NoLock, Preserve)
                         {
-                                ,   63, 
+                                ,   63,
                             F0D5,   31
                         }
 
@@ -14029,7 +14029,7 @@
                     {
                         IndexField (IDX4, DAT4, QWordAcc, NoLock, Preserve)
                         {
-                                ,   63, 
+                                ,   63,
                             F0D6,   32
                         }
 
@@ -14040,7 +14040,7 @@
                     {
                         IndexField (IDX5, DAT5, QWordAcc, NoLock, Preserve)
                         {
-                                ,   63, 
+                                ,   63,
                             F0D7,   33
                         }
 
@@ -14051,7 +14051,7 @@
                     {
                         IndexField (IDX6, DAT6, QWordAcc, NoLock, Preserve)
                         {
-                                ,   63, 
+                                ,   63,
                             F0D8,   63
                         }
 
@@ -14062,7 +14062,7 @@
                     {
                         IndexField (IDX7, DAT7, QWordAcc, NoLock, Preserve)
                         {
-                                ,   63, 
+                                ,   63,
                             F0D9,   64
                         }
 
@@ -14073,7 +14073,7 @@
                     {
                         IndexField (IDX8, DAT8, QWordAcc, NoLock, Preserve)
                         {
-                                ,   63, 
+                                ,   63,
                             F0DA,   65
                         }
 
@@ -14084,7 +14084,7 @@
                     {
                         IndexField (IDX9, DAT9, QWordAcc, NoLock, Preserve)
                         {
-                                ,   63, 
+                                ,   63,
                             F0DB,   69
                         }
 
@@ -14095,7 +14095,7 @@
                     {
                         IndexField (IDXA, DATA, QWordAcc, NoLock, Preserve)
                         {
-                                ,   63, 
+                                ,   63,
                             F0DC,   129
                         }
 
@@ -14106,7 +14106,7 @@
                     {
                         IndexField (IDXB, DATB, QWordAcc, NoLock, Preserve)
                         {
-                                ,   63, 
+                                ,   63,
                             F0DD,   256
                         }
 
@@ -14117,7 +14117,7 @@
                     {
                         IndexField (IDXC, DATC, QWordAcc, NoLock, Preserve)
                         {
-                                ,   63, 
+                                ,   63,
                             F0DE,   1023
                         }
 
@@ -14128,7 +14128,7 @@
                     {
                         IndexField (IDXD, DATD, QWordAcc, NoLock, Preserve)
                         {
-                                ,   63, 
+                                ,   63,
                             F0DF,   1983
                         }
 
@@ -14151,7 +14151,7 @@
                     {
                         IndexField (IDXE, DATE, QWordAcc, NoLock, Preserve)
                         {
-                            Offset (0x08), 
+                            Offset (0x08),
                             F0E0,   1
                         }
 
@@ -14162,7 +14162,7 @@
                     {
                         IndexField (IDX0, DAT0, QWordAcc, NoLock, Preserve)
                         {
-                            Offset (0x08), 
+                            Offset (0x08),
                             F0E1,   6
                         }
 
@@ -14173,7 +14173,7 @@
                     {
                         IndexField (IDX1, DAT1, QWordAcc, NoLock, Preserve)
                         {
-                            Offset (0x08), 
+                            Offset (0x08),
                             F0E2,   7
                         }
 
@@ -14184,7 +14184,7 @@
                     {
                         IndexField (IDX2, DAT2, QWordAcc, NoLock, Preserve)
                         {
-                            Offset (0x08), 
+                            Offset (0x08),
                             F0E3,   8
                         }
 
@@ -14195,7 +14195,7 @@
                     {
                         IndexField (IDX3, DAT3, QWordAcc, NoLock, Preserve)
                         {
-                            Offset (0x08), 
+                            Offset (0x08),
                             F0E4,   9
                         }
 
@@ -14206,7 +14206,7 @@
                     {
                         IndexField (IDX4, DAT4, QWordAcc, NoLock, Preserve)
                         {
-                            Offset (0x08), 
+                            Offset (0x08),
                             F0E5,   31
                         }
 
@@ -14217,7 +14217,7 @@
                     {
                         IndexField (IDX5, DAT5, QWordAcc, NoLock, Preserve)
                         {
-                            Offset (0x08), 
+                            Offset (0x08),
                             F0E6,   32
                         }
 
@@ -14228,7 +14228,7 @@
                     {
                         IndexField (IDX6, DAT6, QWordAcc, NoLock, Preserve)
                         {
-                            Offset (0x08), 
+                            Offset (0x08),
                             F0E7,   33
                         }
 
@@ -14239,7 +14239,7 @@
                     {
                         IndexField (IDX7, DAT7, QWordAcc, NoLock, Preserve)
                         {
-                            Offset (0x08), 
+                            Offset (0x08),
                             F0E8,   63
                         }
 
@@ -14250,7 +14250,7 @@
                     {
                         IndexField (IDX8, DAT8, QWordAcc, NoLock, Preserve)
                         {
-                            Offset (0x08), 
+                            Offset (0x08),
                             F0E9,   64
                         }
 
@@ -14261,7 +14261,7 @@
                     {
                         IndexField (IDX9, DAT9, QWordAcc, NoLock, Preserve)
                         {
-                            Offset (0x08), 
+                            Offset (0x08),
                             F0EA,   65
                         }
 
@@ -14272,7 +14272,7 @@
                     {
                         IndexField (IDXA, DATA, QWordAcc, NoLock, Preserve)
                         {
-                            Offset (0x08), 
+                            Offset (0x08),
                             F0EB,   69
                         }
 
@@ -14283,7 +14283,7 @@
                     {
                         IndexField (IDXB, DATB, QWordAcc, NoLock, Preserve)
                         {
-                            Offset (0x08), 
+                            Offset (0x08),
                             F0EC,   129
                         }
 
@@ -14294,7 +14294,7 @@
                     {
                         IndexField (IDXC, DATC, QWordAcc, NoLock, Preserve)
                         {
-                            Offset (0x08), 
+                            Offset (0x08),
                             F0ED,   256
                         }
 
@@ -14305,7 +14305,7 @@
                     {
                         IndexField (IDXD, DATD, QWordAcc, NoLock, Preserve)
                         {
-                            Offset (0x08), 
+                            Offset (0x08),
                             F0EE,   1023
                         }
 
@@ -14316,7 +14316,7 @@
                     {
                         IndexField (IDXE, DATE, QWordAcc, NoLock, Preserve)
                         {
-                            Offset (0x08), 
+                            Offset (0x08),
                             F0EF,   1983
                         }
 
@@ -14339,8 +14339,8 @@
                     {
                         IndexField (IDX0, DAT0, QWordAcc, NoLock, Preserve)
                         {
-                            Offset (0x08), 
-                                ,   1, 
+                            Offset (0x08),
+                                ,   1,
                             F0F0,   1
                         }
 
@@ -14351,8 +14351,8 @@
                     {
                         IndexField (IDX1, DAT1, QWordAcc, NoLock, Preserve)
                         {
-                            Offset (0x08), 
-                                ,   1, 
+                            Offset (0x08),
+                                ,   1,
                             F0F1,   6
                         }
 
@@ -14363,8 +14363,8 @@
                     {
                         IndexField (IDX2, DAT2, QWordAcc, NoLock, Preserve)
                         {
-                            Offset (0x08), 
-                                ,   1, 
+                            Offset (0x08),
+                                ,   1,
                             F0F2,   7
                         }
 
@@ -14375,8 +14375,8 @@
                     {
                         IndexField (IDX3, DAT3, QWordAcc, NoLock, Preserve)
                         {
-                            Offset (0x08), 
-                                ,   1, 
+                            Offset (0x08),
+                                ,   1,
                             F0F3,   8
                         }
 
@@ -14387,8 +14387,8 @@
                     {
                         IndexField (IDX4, DAT4, QWordAcc, NoLock, Preserve)
                         {
-                            Offset (0x08), 
-                                ,   1, 
+                            Offset (0x08),
+                                ,   1,
                             F0F4,   9
                         }
 
@@ -14399,8 +14399,8 @@
                     {
                         IndexField (IDX5, DAT5, QWordAcc, NoLock, Preserve)
                         {
-                            Offset (0x08), 
-                                ,   1, 
+                            Offset (0x08),
+                                ,   1,
                             F0F5,   31
                         }
 
@@ -14411,8 +14411,8 @@
                     {
                         IndexField (IDX6, DAT6, QWordAcc, NoLock, Preserve)
                         {
-                            Offset (0x08), 
-                                ,   1, 
+                            Offset (0x08),
+                                ,   1,
                             F0F6,   32
                         }
 
@@ -14423,8 +14423,8 @@
                     {
                         IndexField (IDX7, DAT7, QWordAcc, NoLock, Preserve)
                         {
-                            Offset (0x08), 
-                                ,   1, 
+                            Offset (0x08),
+                                ,   1,
                             F0F7,   33
                         }
 
@@ -14435,8 +14435,8 @@
                     {
                         IndexField (IDX8, DAT8, QWordAcc, NoLock, Preserve)
                         {
-                            Offset (0x08), 
-                                ,   1, 
+                            Offset (0x08),
+                                ,   1,
                             F0F8,   63
                         }
 
@@ -14447,8 +14447,8 @@
                     {
                         IndexField (IDX9, DAT9, QWordAcc, NoLock, Preserve)
                         {
-                            Offset (0x08), 
-                                ,   1, 
+                            Offset (0x08),
+                                ,   1,
                             F0F9,   64
                         }
 
@@ -14459,8 +14459,8 @@
                     {
                         IndexField (IDXA, DATA, QWordAcc, NoLock, Preserve)
                         {
-                            Offset (0x08), 
-                                ,   1, 
+                            Offset (0x08),
+                                ,   1,
                             F0FA,   65
                         }
 
@@ -14471,8 +14471,8 @@
                     {
                         IndexField (IDXB, DATB, QWordAcc, NoLock, Preserve)
                         {
-                            Offset (0x08), 
-                                ,   1, 
+                            Offset (0x08),
+                                ,   1,
                             F0FB,   69
                         }
 
@@ -14483,8 +14483,8 @@
                     {
                         IndexField (IDXC, DATC, QWordAcc, NoLock, Preserve)
                         {
-                            Offset (0x08), 
-                                ,   1, 
+                            Offset (0x08),
+                                ,   1,
                             F0FC,   129
                         }
 
@@ -14495,8 +14495,8 @@
                     {
                         IndexField (IDXD, DATD, QWordAcc, NoLock, Preserve)
                         {
-                            Offset (0x08), 
-                                ,   1, 
+                            Offset (0x08),
+                                ,   1,
                             F0FD,   256
                         }
 
@@ -14507,8 +14507,8 @@
                     {
                         IndexField (IDXE, DATE, QWordAcc, NoLock, Preserve)
                         {
-                            Offset (0x08), 
-                                ,   1, 
+                            Offset (0x08),
+                                ,   1,
                             F0FE,   1023
                         }
 
@@ -14519,8 +14519,8 @@
                     {
                         IndexField (IDX0, DAT0, QWordAcc, NoLock, Preserve)
                         {
-                            Offset (0x08), 
-                                ,   1, 
+                            Offset (0x08),
+                                ,   1,
                             F0FF,   1983
                         }
 
@@ -14563,7 +14563,7 @@
          */
         Field (OPR0, ByteAcc, NoLock, Preserve)
         {
-            IDX0,   8, 
+            IDX0,   8,
             DAT0,   8
         }
 
@@ -14574,8 +14574,8 @@
 
         Field (OPR0, ByteAcc, NoLock, WriteAsOnes)
         {
-            Offset (0x03), 
-            IDX1,   8, 
+            Offset (0x03),
+            IDX1,   8,
             DAT1,   8
         }
 
@@ -14586,8 +14586,8 @@
 
         Field (OPR0, ByteAcc, NoLock, WriteAsZeros)
         {
-            Offset (0x07), 
-            IDX2,   16, 
+            Offset (0x07),
+            IDX2,   16,
             DAT2,   8
         }
 
@@ -14598,8 +14598,8 @@
 
         Field (OPR0, WordAcc, NoLock, Preserve)
         {
-            Offset (0x0B), 
-            IDX3,   8, 
+            Offset (0x0B),
+            IDX3,   8,
             DAT3,   8
         }
 
@@ -14610,8 +14610,8 @@
 
         Field (OPR0, WordAcc, NoLock, WriteAsOnes)
         {
-            Offset (0x0E), 
-            IDX4,   16, 
+            Offset (0x0E),
+            IDX4,   16,
             DAT4,   8
         }
 
@@ -14622,8 +14622,8 @@
 
         Field (OPR0, WordAcc, NoLock, WriteAsZeros)
         {
-            Offset (0x12), 
-            IDX5,   32, 
+            Offset (0x12),
+            IDX5,   32,
             DAT5,   8
         }
 
@@ -14634,9 +14634,9 @@
 
         Field (OPR0, DWordAcc, NoLock, Preserve)
         {
-            Offset (0x1A), 
-            IDX6,   8, 
-            Offset (0x1C), 
+            Offset (0x1A),
+            IDX6,   8,
+            Offset (0x1C),
             DAT6,   8
         }
 
@@ -14647,8 +14647,8 @@
 
         Field (OPR0, DWordAcc, NoLock, WriteAsOnes)
         {
-            Offset (0x20), 
-            IDX7,   32, 
+            Offset (0x20),
+            IDX7,   32,
             DAT7,   8
         }
 
@@ -14659,8 +14659,8 @@
 
         Field (OPR0, DWordAcc, NoLock, WriteAsZeros)
         {
-            Offset (0x28), 
-            IDX8,   32, 
+            Offset (0x28),
+            IDX8,   32,
             DAT8,   8
         }
 
@@ -14671,9 +14671,9 @@
 
         Field (OPR0, QWordAcc, NoLock, Preserve)
         {
-            Offset (0x38), 
-            IDX9,   8, 
-            Offset (0x40), 
+            Offset (0x38),
+            IDX9,   8,
+            Offset (0x40),
             DAT9,   8
         }
 
@@ -14684,12 +14684,12 @@
 
         Field (OPR0, QWordAcc, NoLock, WriteAsOnes)
         {
-            Offset (0x48), 
-            Offset (0x4C), 
+            Offset (0x48),
+            Offset (0x4C),
             /* Index field exceeding 32 bits causes AE_BUFFER_OVERFLOW */
             /* IDXA, 64, */
             /* Do not allow index/data interference */
-            IDXA,   32, 
+            IDXA,   32,
             DATA,   8
         }
 
@@ -14700,9 +14700,9 @@
 
         Field (OPR0, QWordAcc, NoLock, WriteAsZeros)
         {
-            Offset (0x58), 
-            IDXB,   32, 
-            Offset (0x60), 
+            Offset (0x58),
+            IDXB,   32,
+            Offset (0x60),
             DATB,   8
         }
 
@@ -14713,8 +14713,8 @@
 
         Field (OPR0, AnyAcc, NoLock, Preserve)
         {
-            Offset (0x68), 
-            IDXC,   8, 
+            Offset (0x68),
+            IDXC,   8,
             DATC,   8
         }
 
@@ -14725,10 +14725,10 @@
 
         Field (OPR0, AnyAcc, NoLock, WriteAsOnes)
         {
-            Offset (0x6B), 
+            Offset (0x6B),
             /* Index field exceeding 32 bits causes AE_BUFFER_OVERFLOW */
             /* IDXD, 64, */
-            IDXD,   32, 
+            IDXD,   32,
             DATD,   8
         }
 
@@ -14739,8 +14739,8 @@
 
         Field (OPR0, AnyAcc, NoLock, WriteAsZeros)
         {
-            Offset (0x7B), 
-            IDXE,   32, 
+            Offset (0x7B),
+            IDXE,   32,
             DATE,   8
         }
 
@@ -14761,7 +14761,7 @@
                     {
                         IndexField (IDX0, DAT0, AnyAcc, Lock, Preserve)
                         {
-                            Offset (0x00), 
+                            Offset (0x00),
                             F000,   1
                         }
 
@@ -14772,7 +14772,7 @@
                     {
                         IndexField (IDX1, DAT1, AnyAcc, Lock, Preserve)
                         {
-                            Offset (0x00), 
+                            Offset (0x00),
                             F001,   6
                         }
 
@@ -14783,7 +14783,7 @@
                     {
                         IndexField (IDX2, DAT2, AnyAcc, Lock, Preserve)
                         {
-                            Offset (0x00), 
+                            Offset (0x00),
                             F002,   7
                         }
 
@@ -14794,7 +14794,7 @@
                     {
                         IndexField (IDX3, DAT3, AnyAcc, Lock, Preserve)
                         {
-                            Offset (0x00), 
+                            Offset (0x00),
                             F003,   8
                         }
 
@@ -14805,7 +14805,7 @@
                     {
                         IndexField (IDX4, DAT4, AnyAcc, Lock, Preserve)
                         {
-                            Offset (0x00), 
+                            Offset (0x00),
                             F004,   9
                         }
 
@@ -14816,7 +14816,7 @@
                     {
                         IndexField (IDX5, DAT5, AnyAcc, Lock, Preserve)
                         {
-                            Offset (0x00), 
+                            Offset (0x00),
                             F005,   31
                         }
 
@@ -14827,7 +14827,7 @@
                     {
                         IndexField (IDX6, DAT6, AnyAcc, Lock, Preserve)
                         {
-                            Offset (0x00), 
+                            Offset (0x00),
                             F006,   32
                         }
 
@@ -14838,7 +14838,7 @@
                     {
                         IndexField (IDX7, DAT7, AnyAcc, Lock, Preserve)
                         {
-                            Offset (0x00), 
+                            Offset (0x00),
                             F007,   33
                         }
 
@@ -14849,7 +14849,7 @@
                     {
                         IndexField (IDX8, DAT8, AnyAcc, Lock, Preserve)
                         {
-                            Offset (0x00), 
+                            Offset (0x00),
                             F008,   63
                         }
 
@@ -14860,7 +14860,7 @@
                     {
                         IndexField (IDX9, DAT9, AnyAcc, Lock, Preserve)
                         {
-                            Offset (0x00), 
+                            Offset (0x00),
                             F009,   64
                         }
 
@@ -14871,7 +14871,7 @@
                     {
                         IndexField (IDXA, DATA, AnyAcc, Lock, Preserve)
                         {
-                            Offset (0x00), 
+                            Offset (0x00),
                             F00A,   65
                         }
 
@@ -14882,7 +14882,7 @@
                     {
                         IndexField (IDXB, DATB, AnyAcc, Lock, Preserve)
                         {
-                            Offset (0x00), 
+                            Offset (0x00),
                             F00B,   69
                         }
 
@@ -14893,7 +14893,7 @@
                     {
                         IndexField (IDXC, DATC, AnyAcc, Lock, Preserve)
                         {
-                            Offset (0x00), 
+                            Offset (0x00),
                             F00C,   129
                         }
 
@@ -14904,7 +14904,7 @@
                     {
                         IndexField (IDXD, DATD, AnyAcc, Lock, Preserve)
                         {
-                            Offset (0x00), 
+                            Offset (0x00),
                             F00D,   256
                         }
 
@@ -14915,7 +14915,7 @@
                     {
                         IndexField (IDXE, DATE, AnyAcc, Lock, Preserve)
                         {
-                            Offset (0x00), 
+                            Offset (0x00),
                             F00E,   1023
                         }
 
@@ -14926,7 +14926,7 @@
                     {
                         IndexField (IDX0, DAT0, AnyAcc, Lock, Preserve)
                         {
-                            Offset (0x00), 
+                            Offset (0x00),
                             F00F,   1983
                         }
 
@@ -14949,8 +14949,8 @@
                     {
                         IndexField (IDX1, DAT1, AnyAcc, Lock, Preserve)
                         {
-                            Offset (0x00), 
-                                ,   1, 
+                            Offset (0x00),
+                                ,   1,
                             F010,   1
                         }
 
@@ -14961,8 +14961,8 @@
                     {
                         IndexField (IDX2, DAT2, AnyAcc, Lock, Preserve)
                         {
-                            Offset (0x00), 
-                                ,   1, 
+                            Offset (0x00),
+                                ,   1,
                             F011,   6
                         }
 
@@ -14973,8 +14973,8 @@
                     {
                         IndexField (IDX3, DAT3, AnyAcc, Lock, Preserve)
                         {
-                            Offset (0x00), 
-                                ,   1, 
+                            Offset (0x00),
+                                ,   1,
                             F012,   7
                         }
 
@@ -14985,8 +14985,8 @@
                     {
                         IndexField (IDX4, DAT4, AnyAcc, Lock, Preserve)
                         {
-                            Offset (0x00), 
-                                ,   1, 
+                            Offset (0x00),
+                                ,   1,
                             F013,   8
                         }
 
@@ -14997,8 +14997,8 @@
                     {
                         IndexField (IDX5, DAT5, AnyAcc, Lock, Preserve)
                         {
-                            Offset (0x00), 
-                                ,   1, 
+                            Offset (0x00),
+                                ,   1,
                             F014,   9
                         }
 
@@ -15009,8 +15009,8 @@
                     {
                         IndexField (IDX6, DAT6, AnyAcc, Lock, Preserve)
                         {
-                            Offset (0x00), 
-                                ,   1, 
+                            Offset (0x00),
+                                ,   1,
                             F015,   31
                         }
 
@@ -15021,8 +15021,8 @@
                     {
                         IndexField (IDX7, DAT7, AnyAcc, Lock, Preserve)
                         {
-                            Offset (0x00), 
-                                ,   1, 
+                            Offset (0x00),
+                                ,   1,
                             F016,   32
                         }
 
@@ -15033,8 +15033,8 @@
                     {
                         IndexField (IDX8, DAT8, AnyAcc, Lock, Preserve)
                         {
-                            Offset (0x00), 
-                                ,   1, 
+                            Offset (0x00),
+                                ,   1,
                             F017,   33
                         }
 
@@ -15045,8 +15045,8 @@
                     {
                         IndexField (IDX9, DAT9, AnyAcc, Lock, Preserve)
                         {
-                            Offset (0x00), 
-                                ,   1, 
+                            Offset (0x00),
+                                ,   1,
                             F018,   63
                         }
 
@@ -15057,8 +15057,8 @@
                     {
                         IndexField (IDXA, DATA, AnyAcc, Lock, Preserve)
                         {
-                            Offset (0x00), 
-                                ,   1, 
+                            Offset (0x00),
+                                ,   1,
                             F019,   64
                         }
 
@@ -15069,8 +15069,8 @@
                     {
                         IndexField (IDXB, DATB, AnyAcc, Lock, Preserve)
                         {
-                            Offset (0x00), 
-                                ,   1, 
+                            Offset (0x00),
+                                ,   1,
                             F01A,   65
                         }
 
@@ -15081,8 +15081,8 @@
                     {
                         IndexField (IDXC, DATC, AnyAcc, Lock, Preserve)
                         {
-                            Offset (0x00), 
-                                ,   1, 
+                            Offset (0x00),
+                                ,   1,
                             F01B,   69
                         }
 
@@ -15093,8 +15093,8 @@
                     {
                         IndexField (IDXD, DATD, AnyAcc, Lock, Preserve)
                         {
-                            Offset (0x00), 
-                                ,   1, 
+                            Offset (0x00),
+                                ,   1,
                             F01C,   129
                         }
 
@@ -15105,8 +15105,8 @@
                     {
                         IndexField (IDXE, DATE, AnyAcc, Lock, Preserve)
                         {
-                            Offset (0x00), 
-                                ,   1, 
+                            Offset (0x00),
+                                ,   1,
                             F01D,   256
                         }
 
@@ -15117,8 +15117,8 @@
                     {
                         IndexField (IDX0, DAT0, AnyAcc, Lock, Preserve)
                         {
-                            Offset (0x00), 
-                                ,   1, 
+                            Offset (0x00),
+                                ,   1,
                             F01E,   1023
                         }
 
@@ -15129,8 +15129,8 @@
                     {
                         IndexField (IDX1, DAT1, AnyAcc, Lock, Preserve)
                         {
-                            Offset (0x00), 
-                                ,   1, 
+                            Offset (0x00),
+                                ,   1,
                             F01F,   1983
                         }
 
@@ -15153,7 +15153,7 @@
                     {
                         IndexField (IDX2, DAT2, AnyAcc, Lock, Preserve)
                         {
-                                ,   2, 
+                                ,   2,
                             F020,   1
                         }
 
@@ -15164,7 +15164,7 @@
                     {
                         IndexField (IDX3, DAT3, AnyAcc, Lock, Preserve)
                         {
-                                ,   2, 
+                                ,   2,
                             F021,   6
                         }
 
@@ -15175,7 +15175,7 @@
                     {
                         IndexField (IDX4, DAT4, AnyAcc, Lock, Preserve)
                         {
-                                ,   2, 
+                                ,   2,
                             F022,   7
                         }
 
@@ -15186,7 +15186,7 @@
                     {
                         IndexField (IDX5, DAT5, AnyAcc, Lock, Preserve)
                         {
-                                ,   2, 
+                                ,   2,
                             F023,   8
                         }
 
@@ -15197,7 +15197,7 @@
                     {
                         IndexField (IDX6, DAT6, AnyAcc, Lock, Preserve)
                         {
-                                ,   2, 
+                                ,   2,
                             F024,   9
                         }
 
@@ -15208,7 +15208,7 @@
                     {
                         IndexField (IDX7, DAT7, AnyAcc, Lock, Preserve)
                         {
-                                ,   2, 
+                                ,   2,
                             F025,   31
                         }
 
@@ -15219,7 +15219,7 @@
                     {
                         IndexField (IDX8, DAT8, AnyAcc, Lock, Preserve)
                         {
-                                ,   2, 
+                                ,   2,
                             F026,   32
                         }
 
@@ -15230,7 +15230,7 @@
                     {
                         IndexField (IDX9, DAT9, AnyAcc, Lock, Preserve)
                         {
-                                ,   2, 
+                                ,   2,
                             F027,   33
                         }
 
@@ -15241,7 +15241,7 @@
                     {
                         IndexField (IDXA, DATA, AnyAcc, Lock, Preserve)
                         {
-                                ,   2, 
+                                ,   2,
                             F028,   63
                         }
 
@@ -15252,7 +15252,7 @@
                     {
                         IndexField (IDXB, DATB, AnyAcc, Lock, Preserve)
                         {
-                                ,   2, 
+                                ,   2,
                             F029,   64
                         }
 
@@ -15263,7 +15263,7 @@
                     {
                         IndexField (IDXC, DATC, AnyAcc, Lock, Preserve)
                         {
-                                ,   2, 
+                                ,   2,
                             F02A,   65
                         }
 
@@ -15274,7 +15274,7 @@
                     {
                         IndexField (IDXD, DATD, AnyAcc, Lock, Preserve)
                         {
-                                ,   2, 
+                                ,   2,
                             F02B,   69
                         }
 
@@ -15285,7 +15285,7 @@
                     {
                         IndexField (IDXE, DATE, AnyAcc, Lock, Preserve)
                         {
-                                ,   2, 
+                                ,   2,
                             F02C,   129
                         }
 
@@ -15296,7 +15296,7 @@
                     {
                         IndexField (IDX0, DAT0, AnyAcc, Lock, Preserve)
                         {
-                                ,   2, 
+                                ,   2,
                             F02D,   256
                         }
 
@@ -15307,7 +15307,7 @@
                     {
                         IndexField (IDX1, DAT1, AnyAcc, Lock, Preserve)
                         {
-                                ,   2, 
+                                ,   2,
                             F02E,   1023
                         }
 
@@ -15318,7 +15318,7 @@
                     {
                         IndexField (IDX2, DAT2, AnyAcc, Lock, Preserve)
                         {
-                                ,   2, 
+                                ,   2,
                             F02F,   1983
                         }
 
@@ -15341,7 +15341,7 @@
                     {
                         IndexField (IDX3, DAT3, AnyAcc, Lock, Preserve)
                         {
-                                ,   3, 
+                                ,   3,
                             F030,   1
                         }
 
@@ -15352,7 +15352,7 @@
                     {
                         IndexField (IDX4, DAT4, AnyAcc, Lock, Preserve)
                         {
-                                ,   3, 
+                                ,   3,
                             F031,   6
                         }
 
@@ -15363,7 +15363,7 @@
                     {
                         IndexField (IDX5, DAT5, AnyAcc, Lock, Preserve)
                         {
-                                ,   3, 
+                                ,   3,
                             F032,   7
                         }
 
@@ -15374,7 +15374,7 @@
                     {
                         IndexField (IDX6, DAT6, AnyAcc, Lock, Preserve)
                         {
-                                ,   3, 
+                                ,   3,
                             F033,   8
                         }
 
@@ -15385,7 +15385,7 @@
                     {
                         IndexField (IDX7, DAT7, AnyAcc, Lock, Preserve)
                         {
-                                ,   3, 
+                                ,   3,
                             F034,   9
                         }
 
@@ -15396,7 +15396,7 @@
                     {
                         IndexField (IDX8, DAT8, AnyAcc, Lock, Preserve)
                         {
-                                ,   3, 
+                                ,   3,
                             F035,   31
                         }
 
@@ -15407,7 +15407,7 @@
                     {
                         IndexField (IDX9, DAT9, AnyAcc, Lock, Preserve)
                         {
-                                ,   3, 
+                                ,   3,
                             F036,   32
                         }
 
@@ -15418,7 +15418,7 @@
                     {
                         IndexField (IDXA, DATA, AnyAcc, Lock, Preserve)
                         {
-                                ,   3, 
+                                ,   3,
                             F037,   33
                         }
 
@@ -15429,7 +15429,7 @@
                     {
                         IndexField (IDXB, DATB, AnyAcc, Lock, Preserve)
                         {
-                                ,   3, 
+                                ,   3,
                             F038,   63
                         }
 
@@ -15440,7 +15440,7 @@
                     {
                         IndexField (IDXC, DATC, AnyAcc, Lock, Preserve)
                         {
-                                ,   3, 
+                                ,   3,
                             F039,   64
                         }
 
@@ -15451,7 +15451,7 @@
                     {
                         IndexField (IDXD, DATD, AnyAcc, Lock, Preserve)
                         {
-                                ,   3, 
+                                ,   3,
                             F03A,   65
                         }
 
@@ -15462,7 +15462,7 @@
                     {
                         IndexField (IDXE, DATE, AnyAcc, Lock, Preserve)
                         {
-                                ,   3, 
+                                ,   3,
                             F03B,   69
                         }
 
@@ -15473,7 +15473,7 @@
                     {
                         IndexField (IDX0, DAT0, AnyAcc, Lock, Preserve)
                         {
-                                ,   3, 
+                                ,   3,
                             F03C,   129
                         }
 
@@ -15484,7 +15484,7 @@
                     {
                         IndexField (IDX1, DAT1, AnyAcc, Lock, Preserve)
                         {
-                                ,   3, 
+                                ,   3,
                             F03D,   256
                         }
 
@@ -15495,7 +15495,7 @@
                     {
                         IndexField (IDX2, DAT2, AnyAcc, Lock, Preserve)
                         {
-                                ,   3, 
+                                ,   3,
                             F03E,   1023
                         }
 
@@ -15506,7 +15506,7 @@
                     {
                         IndexField (IDX3, DAT3, AnyAcc, Lock, Preserve)
                         {
-                                ,   3, 
+                                ,   3,
                             F03F,   1983
                         }
 
@@ -15529,7 +15529,7 @@
                     {
                         IndexField (IDX4, DAT4, AnyAcc, Lock, Preserve)
                         {
-                                ,   4, 
+                                ,   4,
                             F040,   1
                         }
 
@@ -15540,7 +15540,7 @@
                     {
                         IndexField (IDX5, DAT5, AnyAcc, Lock, Preserve)
                         {
-                                ,   4, 
+                                ,   4,
                             F041,   6
                         }
 
@@ -15551,7 +15551,7 @@
                     {
                         IndexField (IDX6, DAT6, AnyAcc, Lock, Preserve)
                         {
-                                ,   4, 
+                                ,   4,
                             F042,   7
                         }
 
@@ -15562,7 +15562,7 @@
                     {
                         IndexField (IDX7, DAT7, AnyAcc, Lock, Preserve)
                         {
-                                ,   4, 
+                                ,   4,
                             F043,   8
                         }
 
@@ -15573,7 +15573,7 @@
                     {
                         IndexField (IDX8, DAT8, AnyAcc, Lock, Preserve)
                         {
-                                ,   4, 
+                                ,   4,
                             F044,   9
                         }
 
@@ -15584,7 +15584,7 @@
                     {
                         IndexField (IDX9, DAT9, AnyAcc, Lock, Preserve)
                         {
-                                ,   4, 
+                                ,   4,
                             F045,   31
                         }
 
@@ -15595,7 +15595,7 @@
                     {
                         IndexField (IDXA, DATA, AnyAcc, Lock, Preserve)
                         {
-                                ,   4, 
+                                ,   4,
                             F046,   32
                         }
 
@@ -15606,7 +15606,7 @@
                     {
                         IndexField (IDXB, DATB, AnyAcc, Lock, Preserve)
                         {
-                                ,   4, 
+                                ,   4,
                             F047,   33
                         }
 
@@ -15617,7 +15617,7 @@
                     {
                         IndexField (IDXC, DATC, AnyAcc, Lock, Preserve)
                         {
-                                ,   4, 
+                                ,   4,
                             F048,   63
                         }
 
@@ -15628,7 +15628,7 @@
                     {
                         IndexField (IDXD, DATD, AnyAcc, Lock, Preserve)
                         {
-                                ,   4, 
+                                ,   4,
                             F049,   64
                         }
 
@@ -15639,7 +15639,7 @@
                     {
                         IndexField (IDXE, DATE, AnyAcc, Lock, Preserve)
                         {
-                                ,   4, 
+                                ,   4,
                             F04A,   65
                         }
 
@@ -15650,7 +15650,7 @@
                     {
                         IndexField (IDX0, DAT0, AnyAcc, Lock, Preserve)
                         {
-                                ,   4, 
+                                ,   4,
                             F04B,   69
                         }
 
@@ -15661,7 +15661,7 @@
                     {
                         IndexField (IDX1, DAT1, AnyAcc, Lock, Preserve)
                         {
-                                ,   4, 
+                                ,   4,
                             F04C,   129
                         }
 
@@ -15672,7 +15672,7 @@
                     {
                         IndexField (IDX2, DAT2, AnyAcc, Lock, Preserve)
                         {
-                                ,   4, 
+                                ,   4,
                             F04D,   256
                         }
 
@@ -15683,7 +15683,7 @@
                     {
                         IndexField (IDX3, DAT3, AnyAcc, Lock, Preserve)
                         {
-                                ,   4, 
+                                ,   4,
                             F04E,   1023
                         }
 
@@ -15694,7 +15694,7 @@
                     {
                         IndexField (IDX4, DAT4, AnyAcc, Lock, Preserve)
                         {
-                                ,   4, 
+                                ,   4,
                             F04F,   1983
                         }
 
@@ -15717,7 +15717,7 @@
                     {
                         IndexField (IDX5, DAT5, AnyAcc, Lock, Preserve)
                         {
-                                ,   5, 
+                                ,   5,
                             F050,   1
                         }
 
@@ -15728,7 +15728,7 @@
                     {
                         IndexField (IDX6, DAT6, AnyAcc, Lock, Preserve)
                         {
-                                ,   5, 
+                                ,   5,
                             F051,   6
                         }
 
@@ -15739,7 +15739,7 @@
                     {
                         IndexField (IDX7, DAT7, AnyAcc, Lock, Preserve)
                         {
-                                ,   5, 
+                                ,   5,
                             F052,   7
                         }
 
@@ -15750,7 +15750,7 @@
                     {
                         IndexField (IDX8, DAT8, AnyAcc, Lock, Preserve)
                         {
-                                ,   5, 
+                                ,   5,
                             F053,   8
                         }
 
@@ -15761,7 +15761,7 @@
                     {
                         IndexField (IDX9, DAT9, AnyAcc, Lock, Preserve)
                         {
-                                ,   5, 
+                                ,   5,
                             F054,   9
                         }
 
@@ -15772,7 +15772,7 @@
                     {
                         IndexField (IDXA, DATA, AnyAcc, Lock, Preserve)
                         {
-                                ,   5, 
+                                ,   5,
                             F055,   31
                         }
 
@@ -15783,7 +15783,7 @@
                     {
                         IndexField (IDXB, DATB, AnyAcc, Lock, Preserve)
                         {
-                                ,   5, 
+                                ,   5,
                             F056,   32
                         }
 
@@ -15794,7 +15794,7 @@
                     {
                         IndexField (IDXC, DATC, AnyAcc, Lock, Preserve)
                         {
-                                ,   5, 
+                                ,   5,
                             F057,   33
                         }
 
@@ -15805,7 +15805,7 @@
                     {
                         IndexField (IDXD, DATD, AnyAcc, Lock, Preserve)
                         {
-                                ,   5, 
+                                ,   5,
                             F058,   63
                         }
 
@@ -15816,7 +15816,7 @@
                     {
                         IndexField (IDXE, DATE, AnyAcc, Lock, Preserve)
                         {
-                                ,   5, 
+                                ,   5,
                             F059,   64
                         }
 
@@ -15827,7 +15827,7 @@
                     {
                         IndexField (IDX0, DAT0, AnyAcc, Lock, Preserve)
                         {
-                                ,   5, 
+                                ,   5,
                             F05A,   65
                         }
 
@@ -15838,7 +15838,7 @@
                     {
                         IndexField (IDX1, DAT1, AnyAcc, Lock, Preserve)
                         {
-                                ,   5, 
+                                ,   5,
                             F05B,   69
                         }
 
@@ -15849,7 +15849,7 @@
                     {
                         IndexField (IDX2, DAT2, AnyAcc, Lock, Preserve)
                         {
-                                ,   5, 
+                                ,   5,
                             F05C,   129
                         }
 
@@ -15860,7 +15860,7 @@
                     {
                         IndexField (IDX3, DAT3, AnyAcc, Lock, Preserve)
                         {
-                                ,   5, 
+                                ,   5,
                             F05D,   256
                         }
 
@@ -15871,7 +15871,7 @@
                     {
                         IndexField (IDX4, DAT4, AnyAcc, Lock, Preserve)
                         {
-                                ,   5, 
+                                ,   5,
                             F05E,   1023
                         }
 
@@ -15882,7 +15882,7 @@
                     {
                         IndexField (IDX5, DAT5, AnyAcc, Lock, Preserve)
                         {
-                                ,   5, 
+                                ,   5,
                             F05F,   1983
                         }
 
@@ -15905,7 +15905,7 @@
                     {
                         IndexField (IDX6, DAT6, AnyAcc, Lock, Preserve)
                         {
-                                ,   6, 
+                                ,   6,
                             F060,   1
                         }
 
@@ -15916,7 +15916,7 @@
                     {
                         IndexField (IDX7, DAT7, AnyAcc, Lock, Preserve)
                         {
-                                ,   6, 
+                                ,   6,
                             F061,   6
                         }
 
@@ -15927,7 +15927,7 @@
                     {
                         IndexField (IDX8, DAT8, AnyAcc, Lock, Preserve)
                         {
-                                ,   6, 
+                                ,   6,
                             F062,   7
                         }
 
@@ -15938,7 +15938,7 @@
                     {
                         IndexField (IDX9, DAT9, AnyAcc, Lock, Preserve)
                         {
-                                ,   6, 
+                                ,   6,
                             F063,   8
                         }
 
@@ -15949,7 +15949,7 @@
                     {
                         IndexField (IDXA, DATA, AnyAcc, Lock, Preserve)
                         {
-                                ,   6, 
+                                ,   6,
                             F064,   9
                         }
 
@@ -15960,7 +15960,7 @@
                     {
                         IndexField (IDXB, DATB, AnyAcc, Lock, Preserve)
                         {
-                                ,   6, 
+                                ,   6,
                             F065,   31
                         }
 
@@ -15971,7 +15971,7 @@
                     {
                         IndexField (IDXC, DATC, AnyAcc, Lock, Preserve)
                         {
-                                ,   6, 
+                                ,   6,
                             F066,   32
                         }
 
@@ -15982,7 +15982,7 @@
                     {
                         IndexField (IDXD, DATD, AnyAcc, Lock, Preserve)
                         {
-                                ,   6, 
+                                ,   6,
                             F067,   33
                         }
 
@@ -15993,7 +15993,7 @@
                     {
                         IndexField (IDXE, DATE, AnyAcc, Lock, Preserve)
                         {
-                                ,   6, 
+                                ,   6,
                             F068,   63
                         }
 
@@ -16004,7 +16004,7 @@
                     {
                         IndexField (IDX0, DAT0, AnyAcc, Lock, Preserve)
                         {
-                                ,   6, 
+                                ,   6,
                             F069,   64
                         }
 
@@ -16015,7 +16015,7 @@
                     {
                         IndexField (IDX1, DAT1, AnyAcc, Lock, Preserve)
                         {
-                                ,   6, 
+                                ,   6,
                             F06A,   65
                         }
 
@@ -16026,7 +16026,7 @@
                     {
                         IndexField (IDX2, DAT2, AnyAcc, Lock, Preserve)
                         {
-                                ,   6, 
+                                ,   6,
                             F06B,   69
                         }
 
@@ -16037,7 +16037,7 @@
                     {
                         IndexField (IDX3, DAT3, AnyAcc, Lock, Preserve)
                         {
-                                ,   6, 
+                                ,   6,
                             F06C,   129
                         }
 
@@ -16048,7 +16048,7 @@
                     {
                         IndexField (IDX4, DAT4, AnyAcc, Lock, Preserve)
                         {
-                                ,   6, 
+                                ,   6,
                             F06D,   256
                         }
 
@@ -16059,7 +16059,7 @@
                     {
                         IndexField (IDX5, DAT5, AnyAcc, Lock, Preserve)
                         {
-                                ,   6, 
+                                ,   6,
                             F06E,   1023
                         }
 
@@ -16070,7 +16070,7 @@
                     {
                         IndexField (IDX6, DAT6, AnyAcc, Lock, Preserve)
                         {
-                                ,   6, 
+                                ,   6,
                             F06F,   1983
                         }
 
@@ -16093,7 +16093,7 @@
                     {
                         IndexField (IDX7, DAT7, AnyAcc, Lock, Preserve)
                         {
-                                ,   7, 
+                                ,   7,
                             F070,   1
                         }
 
@@ -16104,7 +16104,7 @@
                     {
                         IndexField (IDX8, DAT8, AnyAcc, Lock, Preserve)
                         {
-                                ,   7, 
+                                ,   7,
                             F071,   6
                         }
 
@@ -16115,7 +16115,7 @@
                     {
                         IndexField (IDX9, DAT9, AnyAcc, Lock, Preserve)
                         {
-                                ,   7, 
+                                ,   7,
                             F072,   7
                         }
 
@@ -16126,7 +16126,7 @@
                     {
                         IndexField (IDXA, DATA, AnyAcc, Lock, Preserve)
                         {
-                                ,   7, 
+                                ,   7,
                             F073,   8
                         }
 
@@ -16137,7 +16137,7 @@
                     {
                         IndexField (IDXB, DATB, AnyAcc, Lock, Preserve)
                         {
-                                ,   7, 
+                                ,   7,
                             F074,   9
                         }
 
@@ -16148,7 +16148,7 @@
                     {
                         IndexField (IDXC, DATC, AnyAcc, Lock, Preserve)
                         {
-                                ,   7, 
+                                ,   7,
                             F075,   31
                         }
 
@@ -16159,7 +16159,7 @@
                     {
                         IndexField (IDXD, DATD, AnyAcc, Lock, Preserve)
                         {
-                                ,   7, 
+                                ,   7,
                             F076,   32
                         }
 
@@ -16170,7 +16170,7 @@
                     {
                         IndexField (IDXE, DATE, AnyAcc, Lock, Preserve)
                         {
-                                ,   7, 
+                                ,   7,
                             F077,   33
                         }
 
@@ -16181,7 +16181,7 @@
                     {
                         IndexField (IDX0, DAT0, AnyAcc, Lock, Preserve)
                         {
-                                ,   7, 
+                                ,   7,
                             F078,   63
                         }
 
@@ -16192,7 +16192,7 @@
                     {
                         IndexField (IDX1, DAT1, AnyAcc, Lock, Preserve)
                         {
-                                ,   7, 
+                                ,   7,
                             F079,   64
                         }
 
@@ -16203,7 +16203,7 @@
                     {
                         IndexField (IDX2, DAT2, AnyAcc, Lock, Preserve)
                         {
-                                ,   7, 
+                                ,   7,
                             F07A,   65
                         }
 
@@ -16214,7 +16214,7 @@
                     {
                         IndexField (IDX3, DAT3, AnyAcc, Lock, Preserve)
                         {
-                                ,   7, 
+                                ,   7,
                             F07B,   69
                         }
 
@@ -16225,7 +16225,7 @@
                     {
                         IndexField (IDX4, DAT4, AnyAcc, Lock, Preserve)
                         {
-                                ,   7, 
+                                ,   7,
                             F07C,   129
                         }
 
@@ -16236,7 +16236,7 @@
                     {
                         IndexField (IDX5, DAT5, AnyAcc, Lock, Preserve)
                         {
-                                ,   7, 
+                                ,   7,
                             F07D,   256
                         }
 
@@ -16247,7 +16247,7 @@
                     {
                         IndexField (IDX6, DAT6, AnyAcc, Lock, Preserve)
                         {
-                                ,   7, 
+                                ,   7,
                             F07E,   1023
                         }
 
@@ -16258,7 +16258,7 @@
                     {
                         IndexField (IDX7, DAT7, AnyAcc, Lock, Preserve)
                         {
-                                ,   7, 
+                                ,   7,
                             F07F,   1983
                         }
 
@@ -16281,7 +16281,7 @@
                     {
                         IndexField (IDX8, DAT8, AnyAcc, Lock, Preserve)
                         {
-                            Offset (0x01), 
+                            Offset (0x01),
                             F080,   1
                         }
 
@@ -16292,7 +16292,7 @@
                     {
                         IndexField (IDX9, DAT9, AnyAcc, Lock, Preserve)
                         {
-                            Offset (0x01), 
+                            Offset (0x01),
                             F081,   6
                         }
 
@@ -16303,7 +16303,7 @@
                     {
                         IndexField (IDXA, DATA, AnyAcc, Lock, Preserve)
                         {
-                            Offset (0x01), 
+                            Offset (0x01),
                             F082,   7
                         }
 
@@ -16314,7 +16314,7 @@
                     {
                         IndexField (IDXB, DATB, AnyAcc, Lock, Preserve)
                         {
-                            Offset (0x01), 
+                            Offset (0x01),
                             F083,   8
                         }
 
@@ -16325,7 +16325,7 @@
                     {
                         IndexField (IDXC, DATC, AnyAcc, Lock, Preserve)
                         {
-                            Offset (0x01), 
+                            Offset (0x01),
                             F084,   9
                         }
 
@@ -16336,7 +16336,7 @@
                     {
                         IndexField (IDXD, DATD, AnyAcc, Lock, Preserve)
                         {
-                            Offset (0x01), 
+                            Offset (0x01),
                             F085,   31
                         }
 
@@ -16347,7 +16347,7 @@
                     {
                         IndexField (IDXE, DATE, AnyAcc, Lock, Preserve)
                         {
-                            Offset (0x01), 
+                            Offset (0x01),
                             F086,   32
                         }
 
@@ -16358,7 +16358,7 @@
                     {
                         IndexField (IDX0, DAT0, AnyAcc, Lock, Preserve)
                         {
-                            Offset (0x01), 
+                            Offset (0x01),
                             F087,   33
                         }
 
@@ -16369,7 +16369,7 @@
                     {
                         IndexField (IDX1, DAT1, AnyAcc, Lock, Preserve)
                         {
-                            Offset (0x01), 
+                            Offset (0x01),
                             F088,   63
                         }
 
@@ -16380,7 +16380,7 @@
                     {
                         IndexField (IDX2, DAT2, AnyAcc, Lock, Preserve)
                         {
-                            Offset (0x01), 
+                            Offset (0x01),
                             F089,   64
                         }
 
@@ -16391,7 +16391,7 @@
                     {
                         IndexField (IDX3, DAT3, AnyAcc, Lock, Preserve)
                         {
-                            Offset (0x01), 
+                            Offset (0x01),
                             F08A,   65
                         }
 
@@ -16402,7 +16402,7 @@
                     {
                         IndexField (IDX4, DAT4, AnyAcc, Lock, Preserve)
                         {
-                            Offset (0x01), 
+                            Offset (0x01),
                             F08B,   69
                         }
 
@@ -16413,7 +16413,7 @@
                     {
                         IndexField (IDX5, DAT5, AnyAcc, Lock, Preserve)
                         {
-                            Offset (0x01), 
+                            Offset (0x01),
                             F08C,   129
                         }
 
@@ -16424,7 +16424,7 @@
                     {
                         IndexField (IDX6, DAT6, AnyAcc, Lock, Preserve)
                         {
-                            Offset (0x01), 
+                            Offset (0x01),
                             F08D,   256
                         }
 
@@ -16435,7 +16435,7 @@
                     {
                         IndexField (IDX7, DAT7, AnyAcc, Lock, Preserve)
                         {
-                            Offset (0x01), 
+                            Offset (0x01),
                             F08E,   1023
                         }
 
@@ -16446,7 +16446,7 @@
                     {
                         IndexField (IDX8, DAT8, AnyAcc, Lock, Preserve)
                         {
-                            Offset (0x01), 
+                            Offset (0x01),
                             F08F,   1983
                         }
 
@@ -16469,7 +16469,7 @@
                     {
                         IndexField (IDX9, DAT9, AnyAcc, Lock, Preserve)
                         {
-                                ,   9, 
+                                ,   9,
                             F090,   1
                         }
 
@@ -16480,7 +16480,7 @@
                     {
                         IndexField (IDXA, DATA, AnyAcc, Lock, Preserve)
                         {
-                                ,   9, 
+                                ,   9,
                             F091,   6
                         }
 
@@ -16491,7 +16491,7 @@
                     {
                         IndexField (IDXB, DATB, AnyAcc, Lock, Preserve)
                         {
-                                ,   9, 
+                                ,   9,
                             F092,   7
                         }
 
@@ -16502,7 +16502,7 @@
                     {
                         IndexField (IDXC, DATC, AnyAcc, Lock, Preserve)
                         {
-                                ,   9, 
+                                ,   9,
                             F093,   8
                         }
 
@@ -16513,7 +16513,7 @@
                     {
                         IndexField (IDXD, DATD, AnyAcc, Lock, Preserve)
                         {
-                                ,   9, 
+                                ,   9,
                             F094,   9
                         }
 
@@ -16524,7 +16524,7 @@
                     {
                         IndexField (IDXE, DATE, AnyAcc, Lock, Preserve)
                         {
-                                ,   9, 
+                                ,   9,
                             F095,   31
                         }
 
@@ -16535,7 +16535,7 @@
                     {
                         IndexField (IDX0, DAT0, AnyAcc, Lock, Preserve)
                         {
-                                ,   9, 
+                                ,   9,
                             F096,   32
                         }
 
@@ -16546,7 +16546,7 @@
                     {
                         IndexField (IDX1, DAT1, AnyAcc, Lock, Preserve)
                         {
-                                ,   9, 
+                                ,   9,
                             F097,   33
                         }
 
@@ -16557,7 +16557,7 @@
                     {
                         IndexField (IDX2, DAT2, AnyAcc, Lock, Preserve)
                         {
-                                ,   9, 
+                                ,   9,
                             F098,   63
                         }
 
@@ -16568,7 +16568,7 @@
                     {
                         IndexField (IDX3, DAT3, AnyAcc, Lock, Preserve)
                         {
-                                ,   9, 
+                                ,   9,
                             F099,   64
                         }
 
@@ -16579,7 +16579,7 @@
                     {
                         IndexField (IDX4, DAT4, AnyAcc, Lock, Preserve)
                         {
-                                ,   9, 
+                                ,   9,
                             F09A,   65
                         }
 
@@ -16590,7 +16590,7 @@
                     {
                         IndexField (IDX5, DAT5, AnyAcc, Lock, Preserve)
                         {
-                                ,   9, 
+                                ,   9,
                             F09B,   69
                         }
 
@@ -16601,7 +16601,7 @@
                     {
                         IndexField (IDX6, DAT6, AnyAcc, Lock, Preserve)
                         {
-                                ,   9, 
+                                ,   9,
                             F09C,   129
                         }
 
@@ -16612,7 +16612,7 @@
                     {
                         IndexField (IDX7, DAT7, AnyAcc, Lock, Preserve)
                         {
-                                ,   9, 
+                                ,   9,
                             F09D,   256
                         }
 
@@ -16623,7 +16623,7 @@
                     {
                         IndexField (IDX8, DAT8, AnyAcc, Lock, Preserve)
                         {
-                                ,   9, 
+                                ,   9,
                             F09E,   1023
                         }
 
@@ -16634,7 +16634,7 @@
                     {
                         IndexField (IDX9, DAT9, AnyAcc, Lock, Preserve)
                         {
-                                ,   9, 
+                                ,   9,
                             F09F,   1983
                         }
 
@@ -16657,8 +16657,8 @@
                     {
                         IndexField (IDXA, DATA, AnyAcc, Lock, Preserve)
                         {
-                            Offset (0x03), 
-                                ,   7, 
+                            Offset (0x03),
+                                ,   7,
                             F0A0,   1
                         }
 
@@ -16669,8 +16669,8 @@
                     {
                         IndexField (IDXB, DATB, AnyAcc, Lock, Preserve)
                         {
-                            Offset (0x03), 
-                                ,   7, 
+                            Offset (0x03),
+                                ,   7,
                             F0A1,   6
                         }
 
@@ -16681,8 +16681,8 @@
                     {
                         IndexField (IDXC, DATC, AnyAcc, Lock, Preserve)
                         {
-                            Offset (0x03), 
-                                ,   7, 
+                            Offset (0x03),
+                                ,   7,
                             F0A2,   7
                         }
 
@@ -16693,8 +16693,8 @@
                     {
                         IndexField (IDXD, DATD, AnyAcc, Lock, Preserve)
                         {
-                            Offset (0x03), 
-                                ,   7, 
+                            Offset (0x03),
+                                ,   7,
                             F0A3,   8
                         }
 
@@ -16705,8 +16705,8 @@
                     {
                         IndexField (IDXE, DATE, AnyAcc, Lock, Preserve)
                         {
-                            Offset (0x03), 
-                                ,   7, 
+                            Offset (0x03),
+                                ,   7,
                             F0A4,   9
                         }
 
@@ -16717,8 +16717,8 @@
                     {
                         IndexField (IDX0, DAT0, AnyAcc, Lock, Preserve)
                         {
-                            Offset (0x03), 
-                                ,   7, 
+                            Offset (0x03),
+                                ,   7,
                             F0A5,   31
                         }
 
@@ -16729,8 +16729,8 @@
                     {
                         IndexField (IDX1, DAT1, AnyAcc, Lock, Preserve)
                         {
-                            Offset (0x03), 
-                                ,   7, 
+                            Offset (0x03),
+                                ,   7,
                             F0A6,   32
                         }
 
@@ -16741,8 +16741,8 @@
                     {
                         IndexField (IDX2, DAT2, AnyAcc, Lock, Preserve)
                         {
-                            Offset (0x03), 
-                                ,   7, 
+                            Offset (0x03),
+                                ,   7,
                             F0A7,   33
                         }
 
@@ -16753,8 +16753,8 @@
                     {
                         IndexField (IDX3, DAT3, AnyAcc, Lock, Preserve)
                         {
-                            Offset (0x03), 
-                                ,   7, 
+                            Offset (0x03),
+                                ,   7,
                             F0A8,   63
                         }
 
@@ -16765,8 +16765,8 @@
                     {
                         IndexField (IDX4, DAT4, AnyAcc, Lock, Preserve)
                         {
-                            Offset (0x03), 
-                                ,   7, 
+                            Offset (0x03),
+                                ,   7,
                             F0A9,   64
                         }
 
@@ -16777,8 +16777,8 @@
                     {
                         IndexField (IDX5, DAT5, AnyAcc, Lock, Preserve)
                         {
-                            Offset (0x03), 
-                                ,   7, 
+                            Offset (0x03),
+                                ,   7,
                             F0AA,   65
                         }
 
@@ -16789,8 +16789,8 @@
                     {
                         IndexField (IDX6, DAT6, AnyAcc, Lock, Preserve)
                         {
-                            Offset (0x03), 
-                                ,   7, 
+                            Offset (0x03),
+                                ,   7,
                             F0AB,   69
                         }
 
@@ -16801,8 +16801,8 @@
                     {
                         IndexField (IDX7, DAT7, AnyAcc, Lock, Preserve)
                         {
-                            Offset (0x03), 
-                                ,   7, 
+                            Offset (0x03),
+                                ,   7,
                             F0AC,   129
                         }
 
@@ -16813,8 +16813,8 @@
                     {
                         IndexField (IDX8, DAT8, AnyAcc, Lock, Preserve)
                         {
-                            Offset (0x03), 
-                                ,   7, 
+                            Offset (0x03),
+                                ,   7,
                             F0AD,   256
                         }
 
@@ -16825,8 +16825,8 @@
                     {
                         IndexField (IDX9, DAT9, AnyAcc, Lock, Preserve)
                         {
-                            Offset (0x03), 
-                                ,   7, 
+                            Offset (0x03),
+                                ,   7,
                             F0AE,   1023
                         }
 
@@ -16837,8 +16837,8 @@
                     {
                         IndexField (IDXA, DATA, AnyAcc, Lock, Preserve)
                         {
-                            Offset (0x03), 
-                                ,   7, 
+                            Offset (0x03),
+                                ,   7,
                             F0AF,   1983
                         }
 
@@ -16861,7 +16861,7 @@
                     {
                         IndexField (IDXB, DATB, AnyAcc, Lock, Preserve)
                         {
-                            Offset (0x04), 
+                            Offset (0x04),
                             F0B0,   1
                         }
 
@@ -16872,7 +16872,7 @@
                     {
                         IndexField (IDXC, DATC, AnyAcc, Lock, Preserve)
                         {
-                            Offset (0x04), 
+                            Offset (0x04),
                             F0B1,   6
                         }
 
@@ -16883,7 +16883,7 @@
                     {
                         IndexField (IDXD, DATD, AnyAcc, Lock, Preserve)
                         {
-                            Offset (0x04), 
+                            Offset (0x04),
                             F0B2,   7
                         }
 
@@ -16894,7 +16894,7 @@
                     {
                         IndexField (IDXE, DATE, AnyAcc, Lock, Preserve)
                         {
-                            Offset (0x04), 
+                            Offset (0x04),
                             F0B3,   8
                         }
 
@@ -16905,7 +16905,7 @@
                     {
                         IndexField (IDX0, DAT0, AnyAcc, Lock, Preserve)
                         {
-                            Offset (0x04), 
+                            Offset (0x04),
                             F0B4,   9
                         }
 
@@ -16916,7 +16916,7 @@
                     {
                         IndexField (IDX1, DAT1, AnyAcc, Lock, Preserve)
                         {
-                            Offset (0x04), 
+                            Offset (0x04),
                             F0B5,   31
                         }
 
@@ -16927,7 +16927,7 @@
                     {
                         IndexField (IDX2, DAT2, AnyAcc, Lock, Preserve)
                         {
-                            Offset (0x04), 
+                            Offset (0x04),
                             F0B6,   32
                         }
 
@@ -16938,7 +16938,7 @@
                     {
                         IndexField (IDX3, DAT3, AnyAcc, Lock, Preserve)
                         {
-                            Offset (0x04), 
+                            Offset (0x04),
                             F0B7,   33
                         }
 
@@ -16949,7 +16949,7 @@
                     {
                         IndexField (IDX4, DAT4, AnyAcc, Lock, Preserve)
                         {
-                            Offset (0x04), 
+                            Offset (0x04),
                             F0B8,   63
                         }
 
@@ -16960,7 +16960,7 @@
                     {
                         IndexField (IDX5, DAT5, AnyAcc, Lock, Preserve)
                         {
-                            Offset (0x04), 
+                            Offset (0x04),
                             F0B9,   64
                         }
 
@@ -16971,7 +16971,7 @@
                     {
                         IndexField (IDX6, DAT6, AnyAcc, Lock, Preserve)
                         {
-                            Offset (0x04), 
+                            Offset (0x04),
                             F0BA,   65
                         }
 
@@ -16982,7 +16982,7 @@
                     {
                         IndexField (IDX7, DAT7, AnyAcc, Lock, Preserve)
                         {
-                            Offset (0x04), 
+                            Offset (0x04),
                             F0BB,   69
                         }
 
@@ -16993,7 +16993,7 @@
                     {
                         IndexField (IDX8, DAT8, AnyAcc, Lock, Preserve)
                         {
-                            Offset (0x04), 
+                            Offset (0x04),
                             F0BC,   129
                         }
 
@@ -17004,7 +17004,7 @@
                     {
                         IndexField (IDX9, DAT9, AnyAcc, Lock, Preserve)
                         {
-                            Offset (0x04), 
+                            Offset (0x04),
                             F0BD,   256
                         }
 
@@ -17015,7 +17015,7 @@
                     {
                         IndexField (IDXA, DATA, AnyAcc, Lock, Preserve)
                         {
-                            Offset (0x04), 
+                            Offset (0x04),
                             F0BE,   1023
                         }
 
@@ -17026,7 +17026,7 @@
                     {
                         IndexField (IDXB, DATB, AnyAcc, Lock, Preserve)
                         {
-                            Offset (0x04), 
+                            Offset (0x04),
                             F0BF,   1983
                         }
 
@@ -17049,7 +17049,7 @@
                     {
                         IndexField (IDXC, DATC, AnyAcc, Lock, Preserve)
                         {
-                                ,   33, 
+                                ,   33,
                             F0C0,   1
                         }
 
@@ -17060,7 +17060,7 @@
                     {
                         IndexField (IDXD, DATD, AnyAcc, Lock, Preserve)
                         {
-                                ,   33, 
+                                ,   33,
                             F0C1,   6
                         }
 
@@ -17071,7 +17071,7 @@
                     {
                         IndexField (IDXE, DATE, AnyAcc, Lock, Preserve)
                         {
-                                ,   33, 
+                                ,   33,
                             F0C2,   7
                         }
 
@@ -17082,7 +17082,7 @@
                     {
                         IndexField (IDX0, DAT0, AnyAcc, Lock, Preserve)
                         {
-                                ,   33, 
+                                ,   33,
                             F0C3,   8
                         }
 
@@ -17093,7 +17093,7 @@
                     {
                         IndexField (IDX1, DAT1, AnyAcc, Lock, Preserve)
                         {
-                                ,   33, 
+                                ,   33,
                             F0C4,   9
                         }
 
@@ -17104,7 +17104,7 @@
                     {
                         IndexField (IDX2, DAT2, AnyAcc, Lock, Preserve)
                         {
-                                ,   33, 
+                                ,   33,
                             F0C5,   31
                         }
 
@@ -17115,7 +17115,7 @@
                     {
                         IndexField (IDX3, DAT3, AnyAcc, Lock, Preserve)
                         {
-                                ,   33, 
+                                ,   33,
                             F0C6,   32
                         }
 
@@ -17126,7 +17126,7 @@
                     {
                         IndexField (IDX4, DAT4, AnyAcc, Lock, Preserve)
                         {
-                                ,   33, 
+                                ,   33,
                             F0C7,   33
                         }
 
@@ -17137,7 +17137,7 @@
                     {
                         IndexField (IDX5, DAT5, AnyAcc, Lock, Preserve)
                         {
-                                ,   33, 
+                                ,   33,
                             F0C8,   63
                         }
 
@@ -17148,7 +17148,7 @@
                     {
                         IndexField (IDX6, DAT6, AnyAcc, Lock, Preserve)
                         {
-                                ,   33, 
+                                ,   33,
                             F0C9,   64
                         }
 
@@ -17159,7 +17159,7 @@
                     {
                         IndexField (IDX7, DAT7, AnyAcc, Lock, Preserve)
                         {
-                                ,   33, 
+                                ,   33,
                             F0CA,   65
                         }
 
@@ -17170,7 +17170,7 @@
                     {
                         IndexField (IDX8, DAT8, AnyAcc, Lock, Preserve)
                         {
-                                ,   33, 
+                                ,   33,
                             F0CB,   69
                         }
 
@@ -17181,7 +17181,7 @@
                     {
                         IndexField (IDX9, DAT9, AnyAcc, Lock, Preserve)
                         {
-                                ,   33, 
+                                ,   33,
                             F0CC,   129
                         }
 
@@ -17192,7 +17192,7 @@
                     {
                         IndexField (IDXA, DATA, AnyAcc, Lock, Preserve)
                         {
-                                ,   33, 
+                                ,   33,
                             F0CD,   256
                         }
 
@@ -17203,7 +17203,7 @@
                     {
                         IndexField (IDXB, DATB, AnyAcc, Lock, Preserve)
                         {
-                                ,   33, 
+                                ,   33,
                             F0CE,   1023
                         }
 
@@ -17214,7 +17214,7 @@
                     {
                         IndexField (IDXC, DATC, AnyAcc, Lock, Preserve)
                         {
-                                ,   33, 
+                                ,   33,
                             F0CF,   1983
                         }
 
@@ -17237,7 +17237,7 @@
                     {
                         IndexField (IDXD, DATD, AnyAcc, Lock, Preserve)
                         {
-                                ,   63, 
+                                ,   63,
                             F0D0,   1
                         }
 
@@ -17248,7 +17248,7 @@
                     {
                         IndexField (IDXE, DATE, AnyAcc, Lock, Preserve)
                         {
-                                ,   63, 
+                                ,   63,
                             F0D1,   6
                         }
 
@@ -17259,7 +17259,7 @@
                     {
                         IndexField (IDX0, DAT0, AnyAcc, Lock, Preserve)
                         {
-                                ,   63, 
+                                ,   63,
                             F0D2,   7
                         }
 
@@ -17270,7 +17270,7 @@
                     {
                         IndexField (IDX1, DAT1, AnyAcc, Lock, Preserve)
                         {
-                                ,   63, 
+                                ,   63,
                             F0D3,   8
                         }
 
@@ -17281,7 +17281,7 @@
                     {
                         IndexField (IDX2, DAT2, AnyAcc, Lock, Preserve)
                         {
-                                ,   63, 
+                                ,   63,
                             F0D4,   9
                         }
 
@@ -17292,7 +17292,7 @@
                     {
                         IndexField (IDX3, DAT3, AnyAcc, Lock, Preserve)
                         {
-                                ,   63, 
+                                ,   63,
                             F0D5,   31
                         }
 
@@ -17303,7 +17303,7 @@
                     {
                         IndexField (IDX4, DAT4, AnyAcc, Lock, Preserve)
                         {
-                                ,   63, 
+                                ,   63,
                             F0D6,   32
                         }
 
@@ -17314,7 +17314,7 @@
                     {
                         IndexField (IDX5, DAT5, AnyAcc, Lock, Preserve)
                         {
-                                ,   63, 
+                                ,   63,
                             F0D7,   33
                         }
 
@@ -17325,7 +17325,7 @@
                     {
                         IndexField (IDX6, DAT6, AnyAcc, Lock, Preserve)
                         {
-                                ,   63, 
+                                ,   63,
                             F0D8,   63
                         }
 
@@ -17336,7 +17336,7 @@
                     {
                         IndexField (IDX7, DAT7, AnyAcc, Lock, Preserve)
                         {
-                                ,   63, 
+                                ,   63,
                             F0D9,   64
                         }
 
@@ -17347,7 +17347,7 @@
                     {
                         IndexField (IDX8, DAT8, AnyAcc, Lock, Preserve)
                         {
-                                ,   63, 
+                                ,   63,
                             F0DA,   65
                         }
 
@@ -17358,7 +17358,7 @@
                     {
                         IndexField (IDX9, DAT9, AnyAcc, Lock, Preserve)
                         {
-                                ,   63, 
+                                ,   63,
                             F0DB,   69
                         }
 
@@ -17369,7 +17369,7 @@
                     {
                         IndexField (IDXA, DATA, AnyAcc, Lock, Preserve)
                         {
-                                ,   63, 
+                                ,   63,
                             F0DC,   129
                         }
 
@@ -17380,7 +17380,7 @@
                     {
                         IndexField (IDXB, DATB, AnyAcc, Lock, Preserve)
                         {
-                                ,   63, 
+                                ,   63,
                             F0DD,   256
                         }
 
@@ -17391,7 +17391,7 @@
                     {
                         IndexField (IDXC, DATC, AnyAcc, Lock, Preserve)
                         {
-                                ,   63, 
+                                ,   63,
                             F0DE,   1023
                         }
 
@@ -17402,7 +17402,7 @@
                     {
                         IndexField (IDXD, DATD, AnyAcc, Lock, Preserve)
                         {
-                                ,   63, 
+                                ,   63,
                             F0DF,   1983
                         }
 
@@ -17425,7 +17425,7 @@
                     {
                         IndexField (IDXE, DATE, AnyAcc, Lock, Preserve)
                         {
-                            Offset (0x08), 
+                            Offset (0x08),
                             F0E0,   1
                         }
 
@@ -17436,7 +17436,7 @@
                     {
                         IndexField (IDX0, DAT0, AnyAcc, Lock, Preserve)
                         {
-                            Offset (0x08), 
+                            Offset (0x08),
                             F0E1,   6
                         }
 
@@ -17447,7 +17447,7 @@
                     {
                         IndexField (IDX1, DAT1, AnyAcc, Lock, Preserve)
                         {
-                            Offset (0x08), 
+                            Offset (0x08),
                             F0E2,   7
                         }
 
@@ -17458,7 +17458,7 @@
                     {
                         IndexField (IDX2, DAT2, AnyAcc, Lock, Preserve)
                         {
-                            Offset (0x08), 
+                            Offset (0x08),
                             F0E3,   8
                         }
 
@@ -17469,7 +17469,7 @@
                     {
                         IndexField (IDX3, DAT3, AnyAcc, Lock, Preserve)
                         {
-                            Offset (0x08), 
+                            Offset (0x08),
                             F0E4,   9
                         }
 
@@ -17480,7 +17480,7 @@
                     {
                         IndexField (IDX4, DAT4, AnyAcc, Lock, Preserve)
                         {
-                            Offset (0x08), 
+                            Offset (0x08),
                             F0E5,   31
                         }
 
@@ -17491,7 +17491,7 @@
                     {
                         IndexField (IDX5, DAT5, AnyAcc, Lock, Preserve)
                         {
-                            Offset (0x08), 
+                            Offset (0x08),
                             F0E6,   32
                         }
 
@@ -17502,7 +17502,7 @@
                     {
                         IndexField (IDX6, DAT6, AnyAcc, Lock, Preserve)
                         {
-                            Offset (0x08), 
+                            Offset (0x08),
                             F0E7,   33
                         }
 
@@ -17513,7 +17513,7 @@
                     {
                         IndexField (IDX7, DAT7, AnyAcc, Lock, Preserve)
                         {
-                            Offset (0x08), 
+                            Offset (0x08),
                             F0E8,   63
                         }
 
@@ -17524,7 +17524,7 @@
                     {
                         IndexField (IDX8, DAT8, AnyAcc, Lock, Preserve)
                         {
-                            Offset (0x08), 
+                            Offset (0x08),
                             F0E9,   64
                         }
 
@@ -17535,7 +17535,7 @@
                     {
                         IndexField (IDX9, DAT9, AnyAcc, Lock, Preserve)
                         {
-                            Offset (0x08), 
+                            Offset (0x08),
                             F0EA,   65
                         }
 
@@ -17546,7 +17546,7 @@
                     {
                         IndexField (IDXA, DATA, AnyAcc, Lock, Preserve)
                         {
-                            Offset (0x08), 
+                            Offset (0x08),
                             F0EB,   69
                         }
 
@@ -17557,7 +17557,7 @@
                     {
                         IndexField (IDXB, DATB, AnyAcc, Lock, Preserve)
                         {
-                            Offset (0x08), 
+                            Offset (0x08),
                             F0EC,   129
                         }
 
@@ -17568,7 +17568,7 @@
                     {
                         IndexField (IDXC, DATC, AnyAcc, Lock, Preserve)
                         {
-                            Offset (0x08), 
+                            Offset (0x08),
                             F0ED,   256
                         }
 
@@ -17579,7 +17579,7 @@
                     {
                         IndexField (IDXD, DATD, AnyAcc, Lock, Preserve)
                         {
-                            Offset (0x08), 
+                            Offset (0x08),
                             F0EE,   1023
                         }
 
@@ -17590,7 +17590,7 @@
                     {
                         IndexField (IDXE, DATE, AnyAcc, Lock, Preserve)
                         {
-                            Offset (0x08), 
+                            Offset (0x08),
                             F0EF,   1983
                         }
 
@@ -17613,8 +17613,8 @@
                     {
                         IndexField (IDX0, DAT0, AnyAcc, Lock, Preserve)
                         {
-                            Offset (0x08), 
-                                ,   1, 
+                            Offset (0x08),
+                                ,   1,
                             F0F0,   1
                         }
 
@@ -17625,8 +17625,8 @@
                     {
                         IndexField (IDX1, DAT1, AnyAcc, Lock, Preserve)
                         {
-                            Offset (0x08), 
-                                ,   1, 
+                            Offset (0x08),
+                                ,   1,
                             F0F1,   6
                         }
 
@@ -17637,8 +17637,8 @@
                     {
                         IndexField (IDX2, DAT2, AnyAcc, Lock, Preserve)
                         {
-                            Offset (0x08), 
-                                ,   1, 
+                            Offset (0x08),
+                                ,   1,
                             F0F2,   7
                         }
 
@@ -17649,8 +17649,8 @@
                     {
                         IndexField (IDX3, DAT3, AnyAcc, Lock, Preserve)
                         {
-                            Offset (0x08), 
-                                ,   1, 
+                            Offset (0x08),
+                                ,   1,
                             F0F3,   8
                         }
 
@@ -17661,8 +17661,8 @@
                     {
                         IndexField (IDX4, DAT4, AnyAcc, Lock, Preserve)
                         {
-                            Offset (0x08), 
-                                ,   1, 
+                            Offset (0x08),
+                                ,   1,
                             F0F4,   9
                         }
 
@@ -17673,8 +17673,8 @@
                     {
                         IndexField (IDX5, DAT5, AnyAcc, Lock, Preserve)
                         {
-                            Offset (0x08), 
-                                ,   1, 
+                            Offset (0x08),
+                                ,   1,
                             F0F5,   31
                         }
 
@@ -17685,8 +17685,8 @@
                     {
                         IndexField (IDX6, DAT6, AnyAcc, Lock, Preserve)
                         {
-                            Offset (0x08), 
-                                ,   1, 
+                            Offset (0x08),
+                                ,   1,
                             F0F6,   32
                         }
 
@@ -17697,8 +17697,8 @@
                     {
                         IndexField (IDX7, DAT7, AnyAcc, Lock, Preserve)
                         {
-                            Offset (0x08), 
-                                ,   1, 
+                            Offset (0x08),
+                                ,   1,
                             F0F7,   33
                         }
 
@@ -17709,8 +17709,8 @@
                     {
                         IndexField (IDX8, DAT8, AnyAcc, Lock, Preserve)
                         {
-                            Offset (0x08), 
-                                ,   1, 
+                            Offset (0x08),
+                                ,   1,
                             F0F8,   63
                         }
 
@@ -17721,8 +17721,8 @@
                     {
                         IndexField (IDX9, DAT9, AnyAcc, Lock, Preserve)
                         {
-                            Offset (0x08), 
-                                ,   1, 
+                            Offset (0x08),
+                                ,   1,
                             F0F9,   64
                         }
 
@@ -17733,8 +17733,8 @@
                     {
                         IndexField (IDXA, DATA, AnyAcc, Lock, Preserve)
                         {
-                            Offset (0x08), 
-                                ,   1, 
+                            Offset (0x08),
+                                ,   1,
                             F0FA,   65
                         }
 
@@ -17745,8 +17745,8 @@
                     {
                         IndexField (IDXB, DATB, AnyAcc, Lock, Preserve)
                         {
-                            Offset (0x08), 
-                                ,   1, 
+                            Offset (0x08),
+                                ,   1,
                             F0FB,   69
                         }
 
@@ -17757,8 +17757,8 @@
                     {
                         IndexField (IDXC, DATC, AnyAcc, Lock, Preserve)
                         {
-                            Offset (0x08), 
-                                ,   1, 
+                            Offset (0x08),
+                                ,   1,
                             F0FC,   129
                         }
 
@@ -17769,8 +17769,8 @@
                     {
                         IndexField (IDXD, DATD, AnyAcc, Lock, Preserve)
                         {
-                            Offset (0x08), 
-                                ,   1, 
+                            Offset (0x08),
+                                ,   1,
                             F0FD,   256
                         }
 
@@ -17781,8 +17781,8 @@
                     {
                         IndexField (IDXE, DATE, AnyAcc, Lock, Preserve)
                         {
-                            Offset (0x08), 
-                                ,   1, 
+                            Offset (0x08),
+                                ,   1,
                             F0FE,   1023
                         }
 
@@ -17793,8 +17793,8 @@
                     {
                         IndexField (IDX0, DAT0, AnyAcc, Lock, Preserve)
                         {
-                            Offset (0x08), 
-                                ,   1, 
+                            Offset (0x08),
+                                ,   1,
                             F0FF,   1983
                         }
 
@@ -17915,4 +17915,3 @@
             BLCK ()
         }
     }
-

@@ -47,4 +47,3 @@
         Local1 = ConcatenateResTemplate (RT00, Local0)
         CH04 ("", 0x00, 0xFF, 0x00, 0x2F, 0x00, 0x00)
     }
-

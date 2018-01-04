@@ -36,7 +36,7 @@
         Buffer (0x02)
         {
              0x79, 0x00                                       // y.
-        }, 
+        },
 
         ResourceTemplate ()
         {
@@ -382,7 +382,7 @@
                 0x000000FE,
                 0x000000FF,
             }
-            Register (FFixedHW, 
+            Register (FFixedHW,
                 0xF0,               // Bit Width
                 0xF1,               // Bit Offset
                 0xF2F3F4F5F6F7F8F9, // Address
@@ -774,7 +774,7 @@
                 0x000000FE,
                 0x000000FF,
             }
-            Register (FFixedHW, 
+            Register (FFixedHW,
                 0xF0,               // Bit Width
                 0xF1,               // Bit Offset
                 0xF2F3F4F5F6F7F8F9, // Address
@@ -824,7 +824,7 @@
                 0xFCFD,             // Translation Offset
                 0xFEFF,             // Length
                 0xFF, "PATHPATHPATH", )
-        }, 
+        },
 
         ResourceTemplate ()
         {
@@ -1309,7 +1309,7 @@
                     0x000000FE,
                     0x000000FF,
                 }
-                Register (FFixedHW, 
+                Register (FFixedHW,
                     0xF0,               // Bit Width
                     0xF1,               // Bit Offset
                     0xF2F3F4F5F6F7F8F9, // Address
@@ -1932,7 +1932,7 @@
                     0x000000FE,
                     0x000000FF,
                 }
-                Register (FFixedHW, 
+                Register (FFixedHW,
                     0xF0,               // Bit Width
                     0xF1,               // Bit Offset
                     0xF2F3F4F5F6F7F8F9, // Address
@@ -2095,7 +2095,7 @@
         {
             IRQNoFlags ()
                 {1}
-        }, 
+        },
 
         ResourceTemplate ()
         {
@@ -2120,7 +2120,7 @@
                 {4}
             IRQNoFlags ()
                 {1}
-        }, 
+        },
 
         /* Buffer () {0x00, 0x00, 0x00, 0x22, 0x02, 0x00, 0x79, 0}, */
         /* Buffer () {0x2a, 0x10, 0x05, 0x22, 0x02, 0x00, 0x79, 0}, */
@@ -2138,7 +2138,7 @@
                 {1}
             DMA (Compatibility, BusMaster, Transfer8_16, )
                 {4}
-        }, 
+        },
 
         /* Buffer () {0x22, 0x02, 0x00, 0x00, 0x00, 0x00, 0x79, 0}, */
         /* Buffer () {0x22, 0x02, 0x00, 0x2a, 0x10, 0x05, 0x79, 0}, */
@@ -2165,4 +2165,3 @@
         M332 (TS, 0x01, "p444", P442, P441, P444)
         CH03 (TS, Z007, 0x0123, 0x03EC, 0x00)
     }
-

@@ -81,4 +81,3 @@
         ToInteger (Local1, Local0)
         CH04 ("", 0x00, 0x24, 0x00, 0x54, 0x00, 0x00) /* AE_BAD_DECIMAL_CONSTANT */
     }
-

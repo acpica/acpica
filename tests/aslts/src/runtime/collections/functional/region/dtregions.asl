@@ -66,7 +66,7 @@
         Name (ERSK, 0x02)   /* Expected Counters of the Valid RSK */
         Name (VFLG,       /* Counters of the Valid Flags */Package (NFLG)
         {
-            0x00, 
+            0x00,
             0x00
         })
         /* Specific DataTable Regions availability notification Method */
@@ -146,7 +146,7 @@
         Name (ERSK, 0x02)   /* Expected Counters of the Valid RSK */
         Name (VFLG,       /* Counters of the Valid Flags */Package (NFLG)
         {
-            0x00, 
+            0x00,
             0x00
         })
         /* Specific DataTable Regions availability notification Method */
@@ -441,4 +441,3 @@
             BLCK ()
         }
     }
-

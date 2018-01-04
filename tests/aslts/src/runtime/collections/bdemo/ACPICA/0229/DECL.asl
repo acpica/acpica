@@ -40,4 +40,3 @@
         ToInteger (B000, Local0)
         CH04 ("", 0x00, 0x36, 0x00, 0x2D, 0x00, 0x00) /* AE_AML_BUFFER_LIMIT */
     }
-

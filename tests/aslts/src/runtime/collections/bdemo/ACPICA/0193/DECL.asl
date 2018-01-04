@@ -104,4 +104,3 @@
         Debug = "NOr operator"
         MFA5 (0x01)
     }
-

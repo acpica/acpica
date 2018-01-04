@@ -403,10 +403,10 @@
                 /* OperationRegion(r000, SystemMemory, 0x100, 0x100) */
                 Field (R000, ByteAcc, NoLock, Preserve)
                 {
-                    F000,   8, 
-                    F222,   32, 
-                    F223,   57, 
-                    F224,   64, 
+                    F000,   8,
+                    F222,   32,
+                    F223,   57,
+                    F224,   64,
                     F225,   71
                 }
 
@@ -457,7 +457,7 @@
 
                 BankField (R001, BNK0, 0x00, ByteAcc, NoLock, Preserve)
                 {
-                    Offset (0x10), 
+                    Offset (0x10),
                     BKF0,   8
                 }
 
@@ -480,13 +480,13 @@
                 OperationRegion (R002, SystemMemory, 0x0100, 0x0100)
                 Field (R002, ByteAcc, NoLock, Preserve)
                 {
-                    F00A,   16, 
+                    F00A,   16,
                     F00B,   16
                 }
 
                 IndexField (F00A, F00B, ByteAcc, NoLock, Preserve)
                 {
-                    IF00,   8, 
+                    IF00,   8,
                     IF01,   8
                 }
 
@@ -929,26 +929,26 @@
                     {
                         Package (0x04)
                         {
-                            0x98765432, 
+                            0x98765432,
                             Buffer (0x01)
                             {
                                  0x12                                             // .
-                            }, 
+                            },
 
                             Package (0x01)
                             {
                                 0x12345678
-                            }, 
+                            },
 
                             "qwertyui"
-                        }, 
+                        },
 
                         Buffer (0x01)
                         {
                              0x12                                             // .
-                        }, 
+                        },
 
-                        "q", 
+                        "q",
                         0x98765432
                     }
                 /* Package */
@@ -1097,13 +1097,13 @@
                 })
                 Name (P001, Package (0x02)
                 {
-                    0x12345678, 
+                    0x12345678,
                     0x9ABCDEF0
                 })
                 Name (P002, Package (0x03)
                 {
-                    0x12345678, 
-                    0x9ABCDEF0, 
+                    0x12345678,
+                    0x9ABCDEF0,
                     0x9ABCDEF0
                 })
                 Name (P003, Package (0x01)
@@ -1112,13 +1112,13 @@
                 })
                 Name (P004, Package (0x02)
                 {
-                    0x123456789ABCDEF0, 
+                    0x123456789ABCDEF0,
                     0x123456789ABCDEF0
                 })
                 Name (P005, Package (0x03)
                 {
-                    0x123456789ABCDEF0, 
-                    0x123456789ABCDEF0, 
+                    0x123456789ABCDEF0,
+                    0x123456789ABCDEF0,
                     0x123456789ABCDEF0
                 })
                 Name (P006, Package (0x01)
@@ -1139,7 +1139,7 @@
                 })
                 Name (P00A, Package (0x02)
                 {
-                    0x12, 
+                    0x12,
                     Buffer (0x01)
                     {
                          0x12                                             // .
@@ -1147,7 +1147,7 @@
                 })
                 Name (P00B, Package (0x02)
                 {
-                    0x12, 
+                    0x12,
                     Package (0x01)
                     {
                         0x12
@@ -1165,7 +1165,7 @@
                     Buffer (0x01)
                     {
                          0x12                                             // .
-                    }, 
+                    },
 
                     0x12345678
                 })
@@ -1174,7 +1174,7 @@
                     Buffer (0x01)
                     {
                          0x12                                             // .
-                    }, 
+                    },
 
                     Buffer (0x01)
                     {
@@ -1186,7 +1186,7 @@
                     Buffer (0x01)
                     {
                          0x12                                             // .
-                    }, 
+                    },
 
                     Package (0x01)
                     {
@@ -1205,7 +1205,7 @@
                     Package (0x01)
                     {
                         0x12345678
-                    }, 
+                    },
 
                     0x12345678
                 })
@@ -1214,7 +1214,7 @@
                     Package (0x01)
                     {
                         0x12345678
-                    }, 
+                    },
 
                     Buffer (0x01)
                     {
@@ -1226,7 +1226,7 @@
                     Package (0x01)
                     {
                         0x12345678
-                    }, 
+                    },
 
                     Package (0x01)
                     {
@@ -1465,4 +1465,3 @@
         Debug = "TEST: OBT0, Type of object"
         M0F0 ()
     }
-

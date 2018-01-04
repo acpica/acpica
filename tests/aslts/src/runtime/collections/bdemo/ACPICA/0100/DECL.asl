@@ -46,4 +46,3 @@
         Name (I000, 0x00ABCDEF)
         Debug = "Finish of test."
     }
-

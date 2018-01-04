@@ -40,7 +40,7 @@
                 /* 0008 */  0xF7, 0xF8, 0xF9, 0xFA, 0xFB, 0xFC, 0xFD, 0xFE,  // ........
                 /* 0010 */  0xFF                                             // .
             }
-        }, 
+        },
 
         ResourceTemplate ()
         {
@@ -50,7 +50,7 @@
                 /* 0008 */  0xF7, 0xF8, 0xF9, 0xFA, 0xFB, 0xFC, 0xFD, 0xFE,  // ........
                 /* 0010 */  0xFF, 0x00, 0x01, 0x02, 0x03                     // .....
             }
-        }, 
+        },
 
         ResourceTemplate ()
         {
@@ -92,14 +92,14 @@
                 /* 0108 */  0xF8, 0xF9, 0xFA, 0xFB, 0xFC, 0xFD, 0xFE, 0xFF,  // ........
                 /* 0110 */  0x00, 0x01                                       // ..
             }
-        }, 
+        },
 
         ResourceTemplate ()
         {
             VendorLong  ()      // Length = 0x00
             {
             }
-        }, 
+        },
 
         ResourceTemplate ()
         {
@@ -107,7 +107,7 @@
             {
                  0xBF                                             // .
             }
-        }, 
+        },
 
         ResourceTemplate ()
         {
@@ -115,7 +115,7 @@
             {
                  0xCF, 0xF0                                       // ..
             }
-        }, 
+        },
 
         ResourceTemplate ()
         {
@@ -147,7 +147,7 @@
                 /* 0008 */  0xF7, 0xF8, 0xF9, 0xFA, 0xFB, 0xFC, 0xFD, 0xFE,  // ........
                 /* 0010 */  0xFF                                             // .
             }
-        }, 
+        },
 
         ResourceTemplate ()
         {
@@ -157,7 +157,7 @@
                 /* 0008 */  0xF7, 0xF8, 0xF9, 0xFA, 0xFB, 0xFC, 0xFD, 0xFE,  // ........
                 /* 0010 */  0xFF, 0x00, 0x01, 0x02, 0x03                     // .....
             }
-        }, 
+        },
 
         ResourceTemplate ()
         {
@@ -199,14 +199,14 @@
                 /* 0108 */  0xF8, 0xF9, 0xFA, 0xFB, 0xFC, 0xFD, 0xFE, 0xFF,  // ........
                 /* 0110 */  0x00, 0x01                                       // ..
             }
-        }, 
+        },
 
         ResourceTemplate ()
         {
             VendorLong  ()      // Length = 0x00
             {
             }
-        }, 
+        },
 
         ResourceTemplate ()
         {
@@ -214,7 +214,7 @@
             {
                  0xBF                                             // .
             }
-        }, 
+        },
 
         ResourceTemplate ()
         {
@@ -222,7 +222,7 @@
             {
                  0xCF, 0xF0                                       // ..
             }
-        }, 
+        },
 
         ResourceTemplate ()
         {
@@ -254,4 +254,3 @@
                 }
             }
     }
-

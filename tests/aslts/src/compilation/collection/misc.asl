@@ -108,5 +108,3 @@ Method(me05)
 	Name (VV, 0xBBBBAAAA)
 	Store (12, Local2)
 }
-
-

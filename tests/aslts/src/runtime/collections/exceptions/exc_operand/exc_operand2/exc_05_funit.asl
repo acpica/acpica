@@ -34,7 +34,7 @@
     OperationRegion (RG01, SystemMemory, 0x0100, 0x0100)
     Field (RG01, ByteAcc, NoLock, Preserve)
     {
-        FU00,   31, 
+        FU00,   31,
         FU01,   65
     }
 
@@ -54,8 +54,8 @@
         Name (TS, "m4b5")
         Field (RG01, ByteAcc, NoLock, Preserve)
         {
-            Offset (0x0C), 
-            FU02,   31, 
+            Offset (0x0C),
+            FU02,   31,
             FU03,   65
         }
 
@@ -65,8 +65,8 @@
         {
             Field (RG01, ByteAcc, NoLock, Preserve)
             {
-                Offset (0x18), 
-                FU02,   31, 
+                Offset (0x18),
+                FU02,   31,
                 FU03,   65
             }
 
@@ -185,8 +185,8 @@
         {
             Field (RG01, ByteAcc, NoLock, Preserve)
             {
-                Offset (0x18), 
-                FU02,   31, 
+                Offset (0x18),
+                FU02,   31,
                 FU03,   65
             }
 
@@ -305,4 +305,3 @@
 
         M003 (TS)
     }
-

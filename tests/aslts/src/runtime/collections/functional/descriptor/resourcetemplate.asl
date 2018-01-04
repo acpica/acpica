@@ -35,7 +35,7 @@
         Buffer (0x02)
         {
              0x79, 0x00                                       // y.
-        }, 
+        },
 
         ResourceTemplate ()
         {
@@ -381,7 +381,7 @@
                 0x000000FE,
                 0x000000FF,
             }
-            Register (FFixedHW, 
+            Register (FFixedHW,
                 0xF0,               // Bit Width
                 0xF1,               // Bit Offset
                 0xF2F3F4F5F6F7F8F9, // Address
@@ -431,7 +431,7 @@
                 0xFCFD,             // Translation Offset
                 0xFEFF,             // Length
                 0xFF, "PATHPATHPATH", )
-        }, 
+        },
 
         ResourceTemplate ()
         {
@@ -916,7 +916,7 @@
                     0x000000FE,
                     0x000000FF,
                 }
-                Register (FFixedHW, 
+                Register (FFixedHW,
                     0xF0,               // Bit Width
                     0xF1,               // Bit Offset
                     0xF2F3F4F5F6F7F8F9, // Address
@@ -1408,7 +1408,7 @@
                 0x000000FE,
                 0x000000FF,
             }
-            Register (FFixedHW, 
+            Register (FFixedHW,
                 0xF0,               // Bit Width
                 0xF1,               // Bit Offset
                 0xF2F3F4F5F6F7F8F9, // Address
@@ -1800,7 +1800,7 @@
                 0x000000FE,
                 0x000000FF,
             }
-            Register (FFixedHW, 
+            Register (FFixedHW,
                 0xF0,               // Bit Width
                 0xF1,               // Bit Offset
                 0xF2F3F4F5F6F7F8F9, // Address
@@ -1850,7 +1850,7 @@
                 0xFCFD,             // Translation Offset
                 0xFEFF,             // Length
                 0xFF, "PATHPATHPATH", )
-        }, 
+        },
 
         ResourceTemplate ()
         {
@@ -2335,7 +2335,7 @@
                     0x000000FE,
                     0x000000FF,
                 }
-                Register (FFixedHW, 
+                Register (FFixedHW,
                     0xF0,               // Bit Width
                     0xF1,               // Bit Offset
                     0xF2F3F4F5F6F7F8F9, // Address
@@ -2958,7 +2958,7 @@
                     0x000000FE,
                     0x000000FF,
                 }
-                Register (FFixedHW, 
+                Register (FFixedHW,
                     0xF0,               // Bit Width
                     0xF1,               // Bit Offset
                     0xF2F3F4F5F6F7F8F9, // Address
@@ -3122,7 +3122,7 @@
         Buffer (0x02)
         {
              0x79, 0x00                                       // y.
-        }, 
+        },
 
         ResourceTemplate ()
         {
@@ -3468,7 +3468,7 @@
                 0x000000FE,
                 0x000000FF,
             }
-            Register (FFixedHW, 
+            Register (FFixedHW,
                 0xF0,               // Bit Width
                 0xF1,               // Bit Offset
                 0xF2F3F4F5F6F7F8F9, // Address
@@ -3518,7 +3518,7 @@
                 0xFCFD,             // Translation Offset
                 0xFEFF,             // Length
                 0xFF, "PATHPATHPATH", )
-        }, 
+        },
 
         ResourceTemplate ()
         {
@@ -4003,7 +4003,7 @@
                     0x000000FE,
                     0x000000FF,
                 }
-                Register (FFixedHW, 
+                Register (FFixedHW,
                     0xF0,               // Bit Width
                     0xF1,               // Bit Offset
                     0xF2F3F4F5F6F7F8F9, // Address
@@ -4495,7 +4495,7 @@
                 0x000000FE,
                 0x000000FF,
             }
-            Register (FFixedHW, 
+            Register (FFixedHW,
                 0xF0,               // Bit Width
                 0xF1,               // Bit Offset
                 0xF2F3F4F5F6F7F8F9, // Address
@@ -4887,7 +4887,7 @@
                 0x000000FE,
                 0x000000FF,
             }
-            Register (FFixedHW, 
+            Register (FFixedHW,
                 0xF0,               // Bit Width
                 0xF1,               // Bit Offset
                 0xF2F3F4F5F6F7F8F9, // Address
@@ -4937,7 +4937,7 @@
                 0xFCFD,             // Translation Offset
                 0xFEFF,             // Length
                 0xFF, "PATHPATHPATH", )
-        }, 
+        },
 
         ResourceTemplate ()
         {
@@ -5422,7 +5422,7 @@
                     0x000000FE,
                     0x000000FF,
                 }
-                Register (FFixedHW, 
+                Register (FFixedHW,
                     0xF0,               // Bit Width
                     0xF1,               // Bit Offset
                     0xF2F3F4F5F6F7F8F9, // Address
@@ -6045,7 +6045,7 @@
                     0x000000FE,
                     0x000000FF,
                 }
-                Register (FFixedHW, 
+                Register (FFixedHW,
                     0xF0,               // Bit Width
                     0xF1,               // Bit Offset
                     0xF2F3F4F5F6F7F8F9, // Address
@@ -6550,7 +6550,7 @@
                 0x000000FE,
                 0x000000FF,
             }
-            Register (FFixedHW, 
+            Register (FFixedHW,
                 0xF0,               // Bit Width
                 0xF1,               // Bit Offset
                 0xF2F3F4F5F6F7F8F9, // Address
@@ -6942,7 +6942,7 @@
                 0x000000FE,
                 0x000000FF,
             }
-            Register (FFixedHW, 
+            Register (FFixedHW,
                 0xF0,               // Bit Width
                 0xF1,               // Bit Offset
                 0xF2F3F4F5F6F7F8F9, // Address
@@ -7476,7 +7476,7 @@
                     0x000000FE,
                     0x000000FF,
                 }
-                Register (FFixedHW, 
+                Register (FFixedHW,
                     0xF0,               // Bit Width
                     0xF1,               // Bit Offset
                     0xF2F3F4F5F6F7F8F9, // Address
@@ -8099,7 +8099,7 @@
                     0x000000FE,
                     0x000000FF,
                 }
-                Register (FFixedHW, 
+                Register (FFixedHW,
                     0xF0,               // Bit Width
                     0xF1,               // Bit Offset
                     0xF2F3F4F5F6F7F8F9, // Address
@@ -8499,4 +8499,3 @@
         M331 (TS, 0xF8, 0x4648, 0x4648, 0x8DA8, 0x8DA8, "_BAS")
         M331 (TS, 0xF9, 0x4668, 0x4668, 0x8DC8, 0x8DC8, "_LEN")
     }
-

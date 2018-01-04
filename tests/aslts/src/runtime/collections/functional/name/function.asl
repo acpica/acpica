@@ -188,8 +188,8 @@
 
         Name (PAC0, Package (0x03)
         {
-            0xFEDCBA987654321F, 
-            "test package", 
+            0xFEDCBA987654321F,
+            "test package",
             Buffer (0x09)
             {
                 /* 0000 */  0x13, 0x12, 0x11, 0x10, 0x0F, 0x0E, 0x0D, 0x0C,  // ........
@@ -203,8 +203,8 @@
 
         Field (OPR0, ByteAcc, NoLock, Preserve)
         {
-            FLU0,   69, 
-            FLU2,   64, 
+            FLU0,   69,
+            FLU2,   64,
             FLU4,   32
         }
 
@@ -728,4 +728,3 @@
         M20E ()
         CH03 ("NM02", Z134, 0x74, 0x0231, 0x00)
     }
-

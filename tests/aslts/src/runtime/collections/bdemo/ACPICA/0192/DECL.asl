@@ -54,19 +54,19 @@
 
             BankField (R000, BNK0, 0x00, ByteAcc, NoLock, Preserve)
             {
-                Offset (0x10), 
+                Offset (0x10),
                 BF00,   8
             }
 
             BankField (R000, BNK0, 0x01, ByteAcc, NoLock, Preserve)
             {
-                Offset (0x11), 
+                Offset (0x11),
                 BF01,   8
             }
 
             BankField (R000, BNK0, 0xFF, ByteAcc, NoLock, Preserve)
             {
-                Offset (0x12), 
+                Offset (0x12),
                 BFFF,   8
             }
 
@@ -109,19 +109,19 @@
 
             BankField (R000, BNK0, 0x00, ByteAcc, NoLock, Preserve)
             {
-                Offset (0x10), 
+                Offset (0x10),
                 BF00,   8
             }
 
             BankField (R000, BNK0, 0x01, ByteAcc, NoLock, Preserve)
             {
-                Offset (0x11), 
+                Offset (0x11),
                 BF01,   8
             }
 
             BankField (R000, BNK0, 0xFFFF, ByteAcc, NoLock, Preserve)
             {
-                Offset (0x12), 
+                Offset (0x12),
                 BFFF,   8
             }
 
@@ -164,19 +164,19 @@
 
             BankField (R000, BNK0, 0x00, ByteAcc, NoLock, Preserve)
             {
-                Offset (0x10), 
+                Offset (0x10),
                 BF00,   8
             }
 
             BankField (R000, BNK0, 0x01, ByteAcc, NoLock, Preserve)
             {
-                Offset (0x11), 
+                Offset (0x11),
                 BF01,   8
             }
 
             BankField (R000, BNK0, 0xFFFFFFFF, ByteAcc, NoLock, Preserve)
             {
-                Offset (0x12), 
+                Offset (0x12),
                 BFFF,   8
             }
 
@@ -219,7 +219,7 @@
 
             BankField (R000, BNK0, 0x00000001FFFFFFFF, ByteAcc, NoLock, Preserve)
             {
-                Offset (0x12), 
+                Offset (0x12),
                 BFFF,   8
             }
 
@@ -275,19 +275,19 @@
 
             BankField (R000, BNK0, I000, ByteAcc, NoLock, Preserve)
             {
-                Offset (0x10), 
+                Offset (0x10),
                 BF00,   8
             }
 
             BankField (R000, BNK0, I001, ByteAcc, NoLock, Preserve)
             {
-                Offset (0x11), 
+                Offset (0x11),
                 BF01,   8
             }
 
             BankField (R000, BNK0, I002, ByteAcc, NoLock, Preserve)
             {
-                Offset (0x12), 
+                Offset (0x12),
                 BFFF,   8
             }
 
@@ -330,19 +330,19 @@
 
             BankField (R000, BNK0, I000, ByteAcc, NoLock, Preserve)
             {
-                Offset (0x10), 
+                Offset (0x10),
                 BF00,   8
             }
 
             BankField (R000, BNK0, I001, ByteAcc, NoLock, Preserve)
             {
-                Offset (0x11), 
+                Offset (0x11),
                 BF01,   8
             }
 
             BankField (R000, BNK0, I003, ByteAcc, NoLock, Preserve)
             {
-                Offset (0x12), 
+                Offset (0x12),
                 BFFF,   8
             }
 
@@ -385,19 +385,19 @@
 
             BankField (R000, BNK0, I000, ByteAcc, NoLock, Preserve)
             {
-                Offset (0x10), 
+                Offset (0x10),
                 BF00,   8
             }
 
             BankField (R000, BNK0, I001, ByteAcc, NoLock, Preserve)
             {
-                Offset (0x11), 
+                Offset (0x11),
                 BF01,   8
             }
 
             BankField (R000, BNK0, I004, ByteAcc, NoLock, Preserve)
             {
-                Offset (0x12), 
+                Offset (0x12),
                 BFFF,   8
             }
 
@@ -440,7 +440,7 @@
 
             BankField (R000, BNK0, I005, ByteAcc, NoLock, Preserve)
             {
-                Offset (0x12), 
+                Offset (0x12),
                 BFFF,   8
             }
 
@@ -491,19 +491,19 @@
 
             BankField (R000, BNK0, Local0, ByteAcc, NoLock, Preserve)
             {
-                Offset (0x10), 
+                Offset (0x10),
                 BF00,   8
             }
 
             BankField (R000, BNK0, Local1, ByteAcc, NoLock, Preserve)
             {
-                Offset (0x11), 
+                Offset (0x11),
                 BF01,   8
             }
 
             BankField (R000, BNK0, Local2, ByteAcc, NoLock, Preserve)
             {
-                Offset (0x12), 
+                Offset (0x12),
                 BFFF,   8
             }
 
@@ -549,19 +549,19 @@
 
             BankField (R000, BNK0, Local0, ByteAcc, NoLock, Preserve)
             {
-                Offset (0x10), 
+                Offset (0x10),
                 BF00,   8
             }
 
             BankField (R000, BNK0, Local1, ByteAcc, NoLock, Preserve)
             {
-                Offset (0x11), 
+                Offset (0x11),
                 BF01,   8
             }
 
             BankField (R000, BNK0, Local3, ByteAcc, NoLock, Preserve)
             {
-                Offset (0x12), 
+                Offset (0x12),
                 BFFF,   8
             }
 
@@ -607,19 +607,19 @@
 
             BankField (R000, BNK0, Local0, ByteAcc, NoLock, Preserve)
             {
-                Offset (0x10), 
+                Offset (0x10),
                 BF00,   8
             }
 
             BankField (R000, BNK0, Local1, ByteAcc, NoLock, Preserve)
             {
-                Offset (0x11), 
+                Offset (0x11),
                 BF01,   8
             }
 
             BankField (R000, BNK0, Local4, ByteAcc, NoLock, Preserve)
             {
-                Offset (0x12), 
+                Offset (0x12),
                 BFFF,   8
             }
 
@@ -663,7 +663,7 @@
 
             BankField (R000, BNK0, Local5, ByteAcc, NoLock, Preserve)
             {
-                Offset (0x12), 
+                Offset (0x12),
                 BFFF,   8
             }
 
@@ -711,19 +711,19 @@
 
             BankField (R000, BNK0, Arg0, ByteAcc, NoLock, Preserve)
             {
-                Offset (0x10), 
+                Offset (0x10),
                 BF00,   8
             }
 
             BankField (R000, BNK0, Arg1, ByteAcc, NoLock, Preserve)
             {
-                Offset (0x11), 
+                Offset (0x11),
                 BF01,   8
             }
 
             BankField (R000, BNK0, Arg2, ByteAcc, NoLock, Preserve)
             {
-                Offset (0x12), 
+                Offset (0x12),
                 BFFF,   8
             }
 
@@ -766,19 +766,19 @@
 
             BankField (R000, BNK0, Arg0, ByteAcc, NoLock, Preserve)
             {
-                Offset (0x10), 
+                Offset (0x10),
                 BF00,   8
             }
 
             BankField (R000, BNK0, Arg1, ByteAcc, NoLock, Preserve)
             {
-                Offset (0x11), 
+                Offset (0x11),
                 BF01,   8
             }
 
             BankField (R000, BNK0, Arg2, ByteAcc, NoLock, Preserve)
             {
-                Offset (0x12), 
+                Offset (0x12),
                 BFFF,   8
             }
 
@@ -821,19 +821,19 @@
 
             BankField (R000, BNK0, Arg0, ByteAcc, NoLock, Preserve)
             {
-                Offset (0x10), 
+                Offset (0x10),
                 BF00,   8
             }
 
             BankField (R000, BNK0, Arg1, ByteAcc, NoLock, Preserve)
             {
-                Offset (0x11), 
+                Offset (0x11),
                 BF01,   8
             }
 
             BankField (R000, BNK0, Arg2, ByteAcc, NoLock, Preserve)
             {
-                Offset (0x12), 
+                Offset (0x12),
                 BFFF,   8
             }
 
@@ -876,7 +876,7 @@
 
             BankField (R000, BNK0, Arg0, ByteAcc, NoLock, Preserve)
             {
-                Offset (0x12), 
+                Offset (0x12),
                 BFFF,   8
             }
 
@@ -926,19 +926,19 @@
 
             BankField (R000, BNK0, (Arg0 + Local0), ByteAcc, NoLock, Preserve)
             {
-                Offset (0x10), 
+                Offset (0x10),
                 BF00,   8
             }
 
             BankField (R000, BNK0, (Arg1 + 0x01), ByteAcc, NoLock, Preserve)
             {
-                Offset (0x11), 
+                Offset (0x11),
                 BF01,   8
             }
 
             BankField (R000, BNK0, (Arg2 + Local1), ByteAcc, NoLock, Preserve)
             {
-                Offset (0x12), 
+                Offset (0x12),
                 BFFF,   8
             }
 
@@ -983,19 +983,19 @@
 
             BankField (R000, BNK0, (Arg0 + Local0), ByteAcc, NoLock, Preserve)
             {
-                Offset (0x10), 
+                Offset (0x10),
                 BF00,   8
             }
 
             BankField (R000, BNK0, (Arg1 + Local1), ByteAcc, NoLock, Preserve)
             {
-                Offset (0x11), 
+                Offset (0x11),
                 BF01,   8
             }
 
             BankField (R000, BNK0, (Arg2 + 0x01), ByteAcc, NoLock, Preserve)
             {
-                Offset (0x12), 
+                Offset (0x12),
                 BFFF,   8
             }
 
@@ -1040,19 +1040,19 @@
 
             BankField (R000, BNK0, (Arg0 + Local0), ByteAcc, NoLock, Preserve)
             {
-                Offset (0x10), 
+                Offset (0x10),
                 BF00,   8
             }
 
             BankField (R000, BNK0, (Arg1 + Local1), ByteAcc, NoLock, Preserve)
             {
-                Offset (0x11), 
+                Offset (0x11),
                 BF01,   8
             }
 
             BankField (R000, BNK0, (Arg2 + 0x01), ByteAcc, NoLock, Preserve)
             {
-                Offset (0x12), 
+                Offset (0x12),
                 BFFF,   8
             }
 
@@ -1095,7 +1095,7 @@
 
             BankField (R000, BNK0, (Arg0 + 0x01), ByteAcc, NoLock, Preserve)
             {
-                Offset (0x12), 
+                Offset (0x12),
                 BFFF,   8
             }
 
@@ -1142,4 +1142,3 @@
         Debug = "BankValues set up with Expressions"
         M005 ()
     }
-

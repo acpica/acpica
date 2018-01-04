@@ -38,7 +38,7 @@
                 0xF0F1F2F3,         // Address Base
                 0xF4F5F6F7,         // Address Length
                 )
-        }, 
+        },
 
         ResourceTemplate ()
         {
@@ -46,7 +46,7 @@
                 0xF0F1F2F3,         // Address Base
                 0xF4F5F6F7,         // Address Length
                 )
-        }, 
+        },
 
         ResourceTemplate ()
         {
@@ -85,7 +85,7 @@
                 0xF0F1F2F3,         // Address Base
                 0xF4F5F6F7,         // Address Length
                 )
-        }, 
+        },
 
         ResourceTemplate ()
         {
@@ -93,7 +93,7 @@
                 0xF0F1F2F3,         // Address Base
                 0xF4F5F6F7,         // Address Length
                 )
-        }, 
+        },
 
         ResourceTemplate ()
         {
@@ -129,4 +129,3 @@
         M331 (TS, 0x02, 0x20, 0x20, 0x80, 0x80, "_BAS")
         M331 (TS, 0x03, 0x40, 0x40, 0xA0, 0xA0, "_LEN")
     }
-

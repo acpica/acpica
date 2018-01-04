@@ -32,30 +32,30 @@
      */
     Name (P360, Package (0x0A)
     {
-        0x23014304, 
-        0x6745A610, 
-        0xBC8A091D, 
-        0xFADE6C29, 
-        0xDEBCCF35, 
-        0x12F03242, 
-        0x5634954E, 
-        0x9A78F85A, 
-        0xDEBC4167, 
+        0x23014304,
+        0x6745A610,
+        0xBC8A091D,
+        0xFADE6C29,
+        0xDEBCCF35,
+        0x12F03242,
+        0x5634954E,
+        0x9A78F85A,
+        0xDEBC4167,
         /* check uppercase requirement to the EISAID */
         /* form "UUUXXXX" (UUU - 3 uppercase letters) */
         0x23014304
     })
     Name (P361, Package (0x0A)
     {
-        0x23014304, 
-        0x6745A610, 
-        0xBC8A091D, 
-        0xFADE6C29, 
-        0xDEBCCF35, 
-        0x12F03242, 
-        0x5634954E, 
-        0x9A78F85A, 
-        0xDEBC4167, 
+        0x23014304,
+        0x6745A610,
+        0xBC8A091D,
+        0xFADE6C29,
+        0xDEBCCF35,
+        0x12F03242,
+        0x5634954E,
+        0x9A78F85A,
+        0xDEBC4167,
         0x23014304 /* 0x23014384 */
     })
     /* Run-method */
@@ -66,4 +66,3 @@
         Debug = "TEST: EIS0, EISA ID String To Integer Conversion Macro"
         M302 (TS, 0x0A, "p360", P360, P361, 0x09)
     }
-

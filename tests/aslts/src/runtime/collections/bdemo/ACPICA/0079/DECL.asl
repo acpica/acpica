@@ -36,4 +36,3 @@
         Local1 = ToBuffer ("1234567")
         Local0 = ToBuffer ("1234567")
     }
-

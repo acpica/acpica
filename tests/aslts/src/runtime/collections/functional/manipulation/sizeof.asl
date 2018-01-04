@@ -44,12 +44,12 @@
         })
         Name (P000, Package (0x07)
         {
-            0x0B, 
-            0x0C, 
-            0x0D, 
-            0x0E, 
-            0x0F, 
-            0x10, 
+            0x0B,
+            0x0C,
+            0x0D,
+            0x0E,
+            0x0F,
+            0x10,
             0x11
         })
         Local0 = SizeOf (I000)
@@ -91,4 +91,3 @@
         Debug = "TEST: SZO0, Get the size of Integer, Buffer, String or Package:"
         M1EF ()
     }
-

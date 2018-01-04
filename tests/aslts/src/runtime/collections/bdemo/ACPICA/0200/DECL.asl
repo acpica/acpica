@@ -228,4 +228,3 @@
         CH04 ("", 0x00, 0xFF, 0x00, 0xDA, 0x00, 0x00)
         Debug = "mfc0 ==== successfully returned to mfc0; finished !!!!!"
     }
-

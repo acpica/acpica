@@ -42,4 +42,3 @@
         Local2 = RefOf (ID0A)
         Debug = Local2
     }
-

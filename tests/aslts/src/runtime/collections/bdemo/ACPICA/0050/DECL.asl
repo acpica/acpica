@@ -53,4 +53,3 @@
         ToHexString (B000, Local0)
         CH04 ("", 0x00, 0x3D, 0x00, 0x35, 0x00, 0x00) /* AE_AML_STRING_LIMIT */
     }
-

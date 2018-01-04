@@ -46,7 +46,7 @@
                 {
                     0xF0, 0xF1, 0xF2, 0xF3, 0xF4, 0xF5, 0xF6
                 })
-        }, 
+        },
 
         ResourceTemplate ()
         {
@@ -58,7 +58,7 @@
                 {
                     0xF0, 0xF1, 0xF2, 0xF3, 0xF4, 0xF5, 0xF6
                 })
-        }, 
+        },
 
         ResourceTemplate ()
         {
@@ -70,7 +70,7 @@
                 {
                     0xF0, 0xF1, 0xF2, 0xF3, 0xF4, 0xF5, 0xF6
                 })
-        }, 
+        },
 
         ResourceTemplate ()
         {
@@ -82,7 +82,7 @@
                 {
                     0xF0, 0xF1, 0xF2, 0xF3, 0xF4, 0xF5, 0xF6
                 })
-        }, 
+        },
 
         ResourceTemplate ()
         {
@@ -94,7 +94,7 @@
                 {
                     0xF0, 0xF1, 0xF2, 0xF3, 0xF4, 0xF5, 0xF6
                 })
-        }, 
+        },
 
         ResourceTemplate ()
         {
@@ -106,7 +106,7 @@
                 {
                     0xF0, 0xF1, 0xF2, 0xF3, 0xF4, 0xF5, 0xF6
                 })
-        }, 
+        },
 
         ResourceTemplate ()
         {
@@ -118,7 +118,7 @@
                 {
                     0xF0, 0xF1, 0xF2, 0xF3, 0xF4, 0xF5, 0xF6
                 })
-        }, 
+        },
 
         ResourceTemplate ()
         {
@@ -130,7 +130,7 @@
                 {
                     0xF0, 0xF1, 0xF2, 0xF3, 0xF4, 0xF5, 0xF6
                 })
-        }, 
+        },
 
         ResourceTemplate ()
         {
@@ -142,7 +142,7 @@
                 {
                     0xF0, 0xF1, 0xF2, 0xF3, 0xF4, 0xF5, 0xF6
                 })
-        }, 
+        },
 
         ResourceTemplate ()
         {
@@ -154,7 +154,7 @@
                 {
                     0xF0, 0xF1, 0xF2, 0xF3, 0xF4, 0xF5, 0xF6
                 })
-        }, 
+        },
 
         ResourceTemplate ()
         {
@@ -166,7 +166,7 @@
                 {
                     0xF0, 0xF1, 0xF2, 0xF3, 0xF4, 0xF5, 0xF6
                 })
-        }, 
+        },
 
         ResourceTemplate ()
         {
@@ -178,7 +178,7 @@
                 {
                     0xF0, 0xF1, 0xF2, 0xF3, 0xF4, 0xF5, 0xF6
                 })
-        }, 
+        },
 
         ResourceTemplate ()
         {
@@ -190,7 +190,7 @@
                 {
                     0xF0, 0xF1, 0xF2, 0xF3, 0xF4, 0xF5, 0xF6
                 })
-        }, 
+        },
 
         ResourceTemplate ()
         {
@@ -202,7 +202,7 @@
                 {
                     0xF0, 0xF1, 0xF2, 0xF3, 0xF4, 0xF5, 0xF6
                 })
-        }, 
+        },
 
         ResourceTemplate ()
         {
@@ -214,7 +214,7 @@
                 {
                     0xF0, 0xF1, 0xF2, 0xF3, 0xF4, 0xF5, 0xF6
                 })
-        }, 
+        },
 
         ResourceTemplate ()
         {
@@ -226,7 +226,7 @@
                 {
                     0xF0, 0xF1, 0xF2, 0xF3, 0xF4, 0xF5, 0xF6
                 })
-        }, 
+        },
 
         ResourceTemplate ()
         {
@@ -238,7 +238,7 @@
                 {
                     0xF0, 0xF1, 0xF2, 0xF3, 0xF4, 0xF5, 0xF6
                 })
-        }, 
+        },
 
         ResourceTemplate ()
         {
@@ -250,7 +250,7 @@
                 {
                     0xF0, 0xF1, 0xF2, 0xF3, 0xF4, 0xF5, 0xF6
                 })
-        }, 
+        },
 
         ResourceTemplate ()
         {
@@ -262,7 +262,7 @@
                 {
                     0xF0, 0xF1, 0xF2, 0xF3, 0xF4, 0xF5, 0xF6
                 })
-        }, 
+        },
 
         ResourceTemplate ()
         {
@@ -274,7 +274,7 @@
                 {
                     0xF0, 0xF1, 0xF2, 0xF3, 0xF4, 0xF5, 0xF6
                 })
-        }, 
+        },
 
         ResourceTemplate ()
         {
@@ -286,7 +286,7 @@
                 {
                     0xF0, 0xF1, 0xF2, 0xF3, 0xF4, 0xF5, 0xF6
                 })
-        }, 
+        },
 
         ResourceTemplate ()
         {
@@ -298,7 +298,7 @@
                 {
                     0xF0, 0xF1, 0xF2, 0xF3, 0xF4, 0xF5, 0xF6
                 })
-        }, 
+        },
 
         ResourceTemplate ()
         {
@@ -310,7 +310,7 @@
                 {
                     0xF0, 0xF1, 0xF2, 0xF3, 0xF4, 0xF5, 0xF6
                 })
-        }, 
+        },
 
         ResourceTemplate ()
         {
@@ -322,7 +322,7 @@
                 {
                     0xF0, 0xF1, 0xF2, 0xF3, 0xF4, 0xF5, 0xF6
                 })
-        }, 
+        },
 
         ResourceTemplate ()
         {
@@ -334,7 +334,7 @@
                 {
                     0xF0, 0xF1, 0xF2, 0xF3, 0xF4, 0xF5, 0xF6
                 })
-        }, 
+        },
 
         ResourceTemplate ()
         {
@@ -346,7 +346,7 @@
                 {
                     0xF0, 0xF1, 0xF2, 0xF3, 0xF4, 0xF5, 0xF6
                 })
-        }, 
+        },
 
         ResourceTemplate ()
         {
@@ -358,7 +358,7 @@
                 {
                     0xF0, 0xF1, 0xF2, 0xF3, 0xF4, 0xF5, 0xF6
                 })
-        }, 
+        },
 
         ResourceTemplate ()
         {
@@ -370,7 +370,7 @@
                 {
                     0xF0, 0xF1, 0xF2, 0xF3, 0xF4, 0xF5, 0xF6
                 })
-        }, 
+        },
 
         ResourceTemplate ()
         {
@@ -382,7 +382,7 @@
                 {
                     0xF0, 0xF1, 0xF2, 0xF3, 0xF4, 0xF5, 0xF6
                 })
-        }, 
+        },
 
         ResourceTemplate ()
         {
@@ -394,7 +394,7 @@
                 {
                     0xF0, 0xF1, 0xF2, 0xF3, 0xF4, 0xF5, 0xF6
                 })
-        }, 
+        },
 
         ResourceTemplate ()
         {
@@ -406,7 +406,7 @@
                 {
                     0xF0, 0xF1, 0xF2, 0xF3, 0xF4, 0xF5, 0xF6
                 })
-        }, 
+        },
 
         ResourceTemplate ()
         {
@@ -415,7 +415,7 @@
                 0x3377, 0x4488, "\\UART",
                 0x8C, ResourceProducer, , Shared,
                 )
-        }, 
+        },
 
         ResourceTemplate ()
         {
@@ -424,7 +424,7 @@
                 0x3377, 0x4488, "\\UART",
                 0x8C, ResourceProducer, , Shared,
                 )
-        }, 
+        },
 
         ResourceTemplate ()
         {
@@ -433,7 +433,7 @@
                 0x3377, 0x4488, "\\UART",
                 0x8C, ResourceProducer, , Exclusive,
                 )
-        }, 
+        },
 
         ResourceTemplate ()
         {
@@ -442,7 +442,7 @@
                 0x3377, 0x4488, "\\UART",
                 0x8C, ResourceProducer, , Exclusive,
                 )
-        }, 
+        },
 
         ResourceTemplate ()
         {
@@ -451,7 +451,7 @@
                 0x3377, 0x4488, "\\UART",
                 0x8C, ResourceProducer, , Exclusive,
                 )
-        }, 
+        },
 
         ResourceTemplate ()
         {
@@ -460,7 +460,7 @@
                 0x3377, 0x4488, "\\UART",
                 0x8C, ResourceProducer, , Exclusive,
                 )
-        }, 
+        },
 
         ResourceTemplate ()
         {
@@ -469,7 +469,7 @@
                 0x3377, 0x4488, "\\UART",
                 0x8C, ResourceProducer, , Exclusive,
                 )
-        }, 
+        },
 
         ResourceTemplate ()
         {
@@ -478,7 +478,7 @@
                 0x3377, 0x4488, "\\UART",
                 0x8C, ResourceProducer, , Exclusive,
                 )
-        }, 
+        },
 
         ResourceTemplate ()
         {
@@ -501,7 +501,7 @@
                 {
                     0xF0, 0xF1, 0xF2, 0xF3, 0xF4, 0xF5, 0xF6
                 })
-        }, 
+        },
 
         ResourceTemplate ()
         {
@@ -513,7 +513,7 @@
                 {
                     0xF0, 0xF1, 0xF2, 0xF3, 0xF4, 0xF5, 0xF6
                 })
-        }, 
+        },
 
         ResourceTemplate ()
         {
@@ -525,7 +525,7 @@
                 {
                     0xF0, 0xF1, 0xF2, 0xF3, 0xF4, 0xF5, 0xF6
                 })
-        }, 
+        },
 
         ResourceTemplate ()
         {
@@ -537,7 +537,7 @@
                 {
                     0xF0, 0xF1, 0xF2, 0xF3, 0xF4, 0xF5, 0xF6
                 })
-        }, 
+        },
 
         ResourceTemplate ()
         {
@@ -549,7 +549,7 @@
                 {
                     0xF0, 0xF1, 0xF2, 0xF3, 0xF4, 0xF5, 0xF6
                 })
-        }, 
+        },
 
         ResourceTemplate ()
         {
@@ -561,7 +561,7 @@
                 {
                     0xF0, 0xF1, 0xF2, 0xF3, 0xF4, 0xF5, 0xF6
                 })
-        }, 
+        },
 
         ResourceTemplate ()
         {
@@ -573,7 +573,7 @@
                 {
                     0xF0, 0xF1, 0xF2, 0xF3, 0xF4, 0xF5, 0xF6
                 })
-        }, 
+        },
 
         ResourceTemplate ()
         {
@@ -585,7 +585,7 @@
                 {
                     0xF0, 0xF1, 0xF2, 0xF3, 0xF4, 0xF5, 0xF6
                 })
-        }, 
+        },
 
         ResourceTemplate ()
         {
@@ -597,7 +597,7 @@
                 {
                     0xF0, 0xF1, 0xF2, 0xF3, 0xF4, 0xF5, 0xF6
                 })
-        }, 
+        },
 
         ResourceTemplate ()
         {
@@ -609,7 +609,7 @@
                 {
                     0xF0, 0xF1, 0xF2, 0xF3, 0xF4, 0xF5, 0xF6
                 })
-        }, 
+        },
 
         ResourceTemplate ()
         {
@@ -621,7 +621,7 @@
                 {
                     0xF0, 0xF1, 0xF2, 0xF3, 0xF4, 0xF5, 0xF6
                 })
-        }, 
+        },
 
         ResourceTemplate ()
         {
@@ -633,7 +633,7 @@
                 {
                     0xF0, 0xF1, 0xF2, 0xF3, 0xF4, 0xF5, 0xF6
                 })
-        }, 
+        },
 
         ResourceTemplate ()
         {
@@ -645,7 +645,7 @@
                 {
                     0xF0, 0xF1, 0xF2, 0xF3, 0xF4, 0xF5, 0xF6
                 })
-        }, 
+        },
 
         ResourceTemplate ()
         {
@@ -657,7 +657,7 @@
                 {
                     0xF0, 0xF1, 0xF2, 0xF3, 0xF4, 0xF5, 0xF6
                 })
-        }, 
+        },
 
         ResourceTemplate ()
         {
@@ -669,7 +669,7 @@
                 {
                     0xF0, 0xF1, 0xF2, 0xF3, 0xF4, 0xF5, 0xF6
                 })
-        }, 
+        },
 
         ResourceTemplate ()
         {
@@ -681,7 +681,7 @@
                 {
                     0xF0, 0xF1, 0xF2, 0xF3, 0xF4, 0xF5, 0xF6
                 })
-        }, 
+        },
 
         ResourceTemplate ()
         {
@@ -693,7 +693,7 @@
                 {
                     0xF0, 0xF1, 0xF2, 0xF3, 0xF4, 0xF5, 0xF6
                 })
-        }, 
+        },
 
         ResourceTemplate ()
         {
@@ -705,7 +705,7 @@
                 {
                     0xF0, 0xF1, 0xF2, 0xF3, 0xF4, 0xF5, 0xF6
                 })
-        }, 
+        },
 
         ResourceTemplate ()
         {
@@ -717,7 +717,7 @@
                 {
                     0xF0, 0xF1, 0xF2, 0xF3, 0xF4, 0xF5, 0xF6
                 })
-        }, 
+        },
 
         ResourceTemplate ()
         {
@@ -729,7 +729,7 @@
                 {
                     0xF0, 0xF1, 0xF2, 0xF3, 0xF4, 0xF5, 0xF6
                 })
-        }, 
+        },
 
         ResourceTemplate ()
         {
@@ -741,7 +741,7 @@
                 {
                     0xF0, 0xF1, 0xF2, 0xF3, 0xF4, 0xF5, 0xF6
                 })
-        }, 
+        },
 
         ResourceTemplate ()
         {
@@ -753,7 +753,7 @@
                 {
                     0xF0, 0xF1, 0xF2, 0xF3, 0xF4, 0xF5, 0xF6
                 })
-        }, 
+        },
 
         ResourceTemplate ()
         {
@@ -765,7 +765,7 @@
                 {
                     0xF0, 0xF1, 0xF2, 0xF3, 0xF4, 0xF5, 0xF6
                 })
-        }, 
+        },
 
         ResourceTemplate ()
         {
@@ -777,7 +777,7 @@
                 {
                     0xF0, 0xF1, 0xF2, 0xF3, 0xF4, 0xF5, 0xF6
                 })
-        }, 
+        },
 
         ResourceTemplate ()
         {
@@ -789,7 +789,7 @@
                 {
                     0xF0, 0xF1, 0xF2, 0xF3, 0xF4, 0xF5, 0xF6
                 })
-        }, 
+        },
 
         ResourceTemplate ()
         {
@@ -801,7 +801,7 @@
                 {
                     0xF0, 0xF1, 0xF2, 0xF3, 0xF4, 0xF5, 0xF6
                 })
-        }, 
+        },
 
         ResourceTemplate ()
         {
@@ -813,7 +813,7 @@
                 {
                     0xF0, 0xF1, 0xF2, 0xF3, 0xF4, 0xF5, 0xF6
                 })
-        }, 
+        },
 
         ResourceTemplate ()
         {
@@ -825,7 +825,7 @@
                 {
                     0xF0, 0xF1, 0xF2, 0xF3, 0xF4, 0xF5, 0xF6
                 })
-        }, 
+        },
 
         ResourceTemplate ()
         {
@@ -837,7 +837,7 @@
                 {
                     0xF0, 0xF1, 0xF2, 0xF3, 0xF4, 0xF5, 0xF6
                 })
-        }, 
+        },
 
         ResourceTemplate ()
         {
@@ -849,7 +849,7 @@
                 {
                     0xF0, 0xF1, 0xF2, 0xF3, 0xF4, 0xF5, 0xF6
                 })
-        }, 
+        },
 
         ResourceTemplate ()
         {
@@ -861,7 +861,7 @@
                 {
                     0xF0, 0xF1, 0xF2, 0xF3, 0xF4, 0xF5, 0xF6
                 })
-        }, 
+        },
 
         ResourceTemplate ()
         {
@@ -870,7 +870,7 @@
                 0x3377, 0x4488, "\\UART",
                 0x8C, ResourceProducer, , Shared,
                 )
-        }, 
+        },
 
         ResourceTemplate ()
         {
@@ -879,7 +879,7 @@
                 0x3377, 0x4488, "\\UART",
                 0x8C, ResourceProducer, , Shared,
                 )
-        }, 
+        },
 
         ResourceTemplate ()
         {
@@ -888,7 +888,7 @@
                 0x3377, 0x4488, "\\UART",
                 0x8C, ResourceProducer, , Exclusive,
                 )
-        }, 
+        },
 
         ResourceTemplate ()
         {
@@ -897,7 +897,7 @@
                 0x3377, 0x4488, "\\UART",
                 0x8C, ResourceProducer, , Exclusive,
                 )
-        }, 
+        },
 
         ResourceTemplate ()
         {
@@ -906,7 +906,7 @@
                 0x3377, 0x4488, "\\UART",
                 0x8C, ResourceProducer, , Exclusive,
                 )
-        }, 
+        },
 
         ResourceTemplate ()
         {
@@ -915,7 +915,7 @@
                 0x3377, 0x4488, "\\UART",
                 0x8C, ResourceProducer, , Exclusive,
                 )
-        }, 
+        },
 
         ResourceTemplate ()
         {
@@ -924,7 +924,7 @@
                 0x3377, 0x4488, "\\UART",
                 0x8C, ResourceProducer, , Exclusive,
                 )
-        }, 
+        },
 
         ResourceTemplate ()
         {
@@ -933,7 +933,7 @@
                 0x3377, 0x4488, "\\UART",
                 0x8C, ResourceProducer, , Exclusive,
                 )
-        }, 
+        },
 
         ResourceTemplate ()
         {
@@ -993,4 +993,3 @@
         M331 (TS, 0x09, 0xA8, 0xA8, 0x01C0, 0x01C0, "_LIN")
         M331 (TS, 0x0A, 0xB0, 0xB0, 0x01C8, 0x01C8, "_VEN")
     }
-

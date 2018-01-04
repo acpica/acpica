@@ -42,7 +42,7 @@
      * The value resulting from this opcode is 64-bits.
      * It is monotonically increasing, but it is not guaranteed
      * that every result will be unique,  i.e. two subsequent
-     * instructions may return the same value.  The only guarantee
+     * instructions may return the same value. The only guarantee
      * is that each subsequent evaluation will be greater-than or
      * equal to the previous ones.
      *
@@ -97,4 +97,3 @@
         Local0 = TMR0 (Local6)
         Debug = Concatenate ("Run time (in seconds): 0x", Local0)
     }
-

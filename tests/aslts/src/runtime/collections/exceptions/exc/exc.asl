@@ -212,14 +212,14 @@
         Name (TS, "m145")
         Name (P000, Package (0x03)
         {
-            0x00, 
-            0x01, 
+            0x00,
+            0x01,
             0x02
         })
         Name (P001, Package (0x03)
         {
-            0x00, 
-            0x01, 
+            0x00,
+            0x01,
             0x02
         })
         CH03 (TS, Z058, 0x17, 0xE7, 0x00)
@@ -564,8 +564,8 @@
         Name (TS, "m151")
         Name (P000, Package (0x04)
         {
-            0x00, 
-            0x01, 
+            0x00,
+            0x01,
             0x02
         })
         CH03 (TS, Z058, 0x57, 0x0261, 0x00)
@@ -966,8 +966,8 @@
 
         Field (R000, ByteAcc, NoLock, Preserve)
         {
-            BNK0,   8, 
-            F00A,   8, 
+            BNK0,   8,
+            F00A,   8,
             F00B,   8
         }
 
@@ -978,7 +978,7 @@
 
         IndexField (F00A, F00B, ByteAcc, NoLock, Preserve)
         {
-            IF00,   1, 
+            IF00,   1,
             IF01,   1
         }
 
@@ -1034,8 +1034,8 @@
 
         Field (R000, ByteAcc, NoLock, Preserve)
         {
-            BNK0,   8, 
-            F00A,   8, 
+            BNK0,   8,
+            F00A,   8,
             F00B,   8
         }
 
@@ -1046,7 +1046,7 @@
 
         IndexField (F00A, F00B, ByteAcc, NoLock, Preserve)
         {
-            IF00,   1, 
+            IF00,   1,
             IF01,   1
         }
 
@@ -1296,7 +1296,7 @@
 
         Field (OPR0, AnyAcc, NoLock, Preserve)
         {
-            Offset (0x11), 
+            Offset (0x11),
             FU00,   8
         }
 
@@ -1304,7 +1304,7 @@
 
         Field (OPR0, WordAcc, NoLock, Preserve)
         {
-            Offset (0x10), 
+            Offset (0x10),
             FU01,   8
         }
 
@@ -1379,7 +1379,7 @@
         OperationRegion (SMBD, SMBus, 0x4200, 0x0100)
         Field (SMBD, BufferAcc, NoLock, Preserve)
         {
-            AccessAs (BufferAcc, AttribQuick), 
+            AccessAs (BufferAcc, AttribQuick),
             FLD0,   8
         }
 
@@ -1558,4 +1558,3 @@
         SRMT ("m0bc")
         M0BC ()
     }
-

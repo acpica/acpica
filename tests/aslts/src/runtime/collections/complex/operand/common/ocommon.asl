@@ -219,21 +219,21 @@
     Name (I60F, 0x6E7C534136002214)
     Name (PI60, Package (0x10)
     {
-        0x01, 
-        0xD1, 
-        0x000000024CB016EA, 
-        0xC179B3FE, 
-        0xFE7CB391D650A284, 
-        0x00, 
-        0xFFFFFFFF, 
-        0xFFFFFFFFFFFFFFFF, 
-        0x00ABCDEF, 
-        0x00ABCDEF, 
-        0xFF, 
-        0x000000FFFFFFFFFF, 
-        0x6179534E, 
-        0x6E7C534136502214, 
-        0x6E00534136002214, 
+        0x01,
+        0xD1,
+        0x000000024CB016EA,
+        0xC179B3FE,
+        0xFE7CB391D650A284,
+        0x00,
+        0xFFFFFFFF,
+        0xFFFFFFFFFFFFFFFF,
+        0x00ABCDEF,
+        0x00ABCDEF,
+        0xFF,
+        0x000000FFFFFFFFFF,
+        0x6179534E,
+        0x6E7C534136502214,
+        0x6E00534136002214,
         0x6E7C534136002214
     })
     /* Test Strings */
@@ -272,37 +272,37 @@
     Name (S61B, "63")
     Name (PS60, Package (0x1C)
     {
-        "0", 
-        "0321", 
-        "321", 
-        "ba9876", 
-        "C179B3FE", 
-        "FE7CB391D650A284", 
-        "ffffffff", 
-        "ffffffffffffffff", 
-        "fe7cb391d650a2841", 
-        "9876543210", 
-        "0xfe7cb3", 
-        "1234q", 
-        "", 
-        " ", 
+        "0",
+        "0321",
+        "321",
+        "ba9876",
+        "C179B3FE",
+        "FE7CB391D650A284",
+        "ffffffff",
+        "ffffffffffffffff",
+        "fe7cb391d650a2841",
+        "9876543210",
+        "0xfe7cb3",
+        "1234q",
+        "",
+        " ",
         /* of size 200 chars */
 
-        "!\"#$%&\'()*+,-./0123456789:;<=>?@ABCDEFGHIJKLMNOPQRSTUVWXYZ[\\]^_`abcdefghijklmnopqrstuvwxyz{|}~ !\"#$%&\'()*+,-./0123456789:;<=>?@ABCDEFGHIJKLMNOPQRSTUVWXYZ[\\]^_`abcdefghijklmnopqrstuvwxyz{|}~ !\"#$%&\'()*", 
+        "!\"#$%&\'()*+,-./0123456789:;<=>?@ABCDEFGHIJKLMNOPQRSTUVWXYZ[\\]^_`abcdefghijklmnopqrstuvwxyz{|}~ !\"#$%&\'()*+,-./0123456789:;<=>?@ABCDEFGHIJKLMNOPQRSTUVWXYZ[\\]^_`abcdefghijklmnopqrstuvwxyz{|}~ !\"#$%&\'()*",
         /* all symbols 0x01-0x7f */
 
-        "\x01\x02\x03\x04\x05\x06\a\b\t\n\v\f\r\x0E\x0F\x10\x11\x12\x13\x14\x15\x16\x17\x18\x19\x1A\x1B\x1C\x1D\x1E\x1F !\"#$%&\'()*+,-./0123456789:;<=>?@ABCDEFGHIJKLMNOPQRSTUVWXYZ[\\]^_`abcdefghijklmnopqrstuvwxyz{|}~\x7F", 
-        "abcdef", 
-        "ABCDEF", 
-        "ff", 
-        "ffffffffff", 
-        "B", 
-        "3789012345678901", 
-        "D76162EE9EC35", 
-        "90123456", 
-        "55F2CC0", 
-        "c179B3FE", 
-        "fE7CB391D650A284", 
+        "\x01\x02\x03\x04\x05\x06\a\b\t\n\v\f\r\x0E\x0F\x10\x11\x12\x13\x14\x15\x16\x17\x18\x19\x1A\x1B\x1C\x1D\x1E\x1F !\"#$%&\'()*+,-./0123456789:;<=>?@ABCDEFGHIJKLMNOPQRSTUVWXYZ[\\]^_`abcdefghijklmnopqrstuvwxyz{|}~\x7F",
+        "abcdef",
+        "ABCDEF",
+        "ff",
+        "ffffffffff",
+        "B",
+        "3789012345678901",
+        "D76162EE9EC35",
+        "90123456",
+        "55F2CC0",
+        "c179B3FE",
+        "fE7CB391D650A284",
         "63"
     })
     /* Test Buffers */
@@ -401,63 +401,63 @@
         Buffer (0x01)
         {
              0x00                                             // .
-        }, 
+        },
 
         Buffer (0x01)
         {
              0xA5                                             // .
-        }, 
+        },
 
         Buffer (0x02)
         {
              0x21, 0x03                                       // !.
-        }, 
+        },
 
         Buffer (0x03)
         {
              0x21, 0x03, 0x5A                                 // !.Z
-        }, 
+        },
 
         Buffer (0x03)
         {
              0x21, 0x03, 0x5A                                 // !.Z
-        }, 
+        },
 
         Buffer (0x03)
         {
              0x21, 0x03                                       // !.
-        }, 
+        },
 
         Buffer (0x03)
         {
              0x21, 0x03, 0x00                                 // !..
-        }, 
+        },
 
         Buffer (0x04)
         {
              0xFE, 0xB3, 0x79, 0xC1                           // ..y.
-        }, 
+        },
 
         Buffer (0x05)
         {
              0xFE, 0xB3, 0x79, 0xC1, 0xA5                     // ..y..
-        }, 
+        },
 
         Buffer (0x08)
         {
              0x84, 0xA2, 0x50, 0xD6, 0x91, 0xB3, 0x7C, 0xFE   // ..P...|.
-        }, 
+        },
 
         Buffer (0x09)
         {
             /* 0000 */  0x84, 0xA2, 0x50, 0xD6, 0x91, 0xB3, 0x7C, 0xFE,  // ..P...|.
             /* 0008 */  0xA5                                             // .
-        }, 
+        },
 
         Buffer (0x0101)
         {
              0x00                                             // .
-        }, 
+        },
 
         Buffer (0x43)
         {
@@ -470,37 +470,37 @@
             /* 0030 */  0x51, 0x52, 0x53, 0x54, 0x55, 0x56, 0x57, 0x58,  // QRSTUVWX
             /* 0038 */  0x59, 0x5A, 0x5B, 0x5C, 0x5D, 0x5E, 0x5F, 0x60,  // YZ[\]^_`
             /* 0040 */  0x61, 0x62, 0x63                                 // abc
-        }, 
+        },
 
         Buffer (0x44)
         {
             "!\"#$%&\'()*+,-./0123456789:;<=>?@ABCDEFGHIJKLMNOPQRSTUVWXYZ[\\]^_`abc"
-        }, 
+        },
 
         Buffer (0x01)
         {
              0x0B                                             // .
-        }, 
+        },
 
         Buffer (0x08)
         {
              0x01, 0x89, 0x67, 0x45, 0x23, 0x01, 0x89, 0x37   // ..gE#..7
-        }, 
+        },
 
         Buffer (0x07)
         {
              0x35, 0xEC, 0xE9, 0x2E, 0x16, 0x76, 0x0D         // 5....v.
-        }, 
+        },
 
         Buffer (0x04)
         {
              0x56, 0x34, 0x12, 0x90                           // V4..
-        }, 
+        },
 
         Buffer (0x04)
         {
              0xC0, 0x2C, 0x5F, 0x05                           // .,_.
-        }, 
+        },
 
         Buffer (0x01)
         {
@@ -577,28 +577,28 @@
     Name (AUIM, 0xD650A283)
     Name (PAUI, Package (0x17)
     {
-        Ones, 
-        0x0321, 
-        0x000000024CB016EA, 
-        0xC179B3FE, 
-        0xFE7CB391D650A284, 
-        0x00, 
-        0x01, 
-        0x03, 
-        0x04, 
-        0x05, 
-        0x08, 
-        0x09, 
-        0xC179B3FF, 
-        0xFE7CB391D650A285, 
-        0xC179B3FD, 
-        0xFE7CB391D650A283, 
-        0x0322, 
-        0x0320, 
-        0xFFFFFFFF, 
-        0xFFFFFFFFFFFFFFFF, 
-        0xD650A284, 
-        0xD650A285, 
+        Ones,
+        0x0321,
+        0x000000024CB016EA,
+        0xC179B3FE,
+        0xFE7CB391D650A284,
+        0x00,
+        0x01,
+        0x03,
+        0x04,
+        0x05,
+        0x08,
+        0x09,
+        0xC179B3FF,
+        0xFE7CB391D650A285,
+        0xC179B3FD,
+        0xFE7CB391D650A283,
+        0x0322,
+        0x0320,
+        0xFFFFFFFF,
+        0xFFFFFFFFFFFFFFFF,
+        0xD650A284,
+        0xD650A285,
         0xD650A283
     })
     /* Auxiliary Strings */
@@ -618,18 +618,18 @@
     Name (AUSC, "21 22 23 24 25 26 27 28 29 2A 2B 2C 2D 2E 2F 30 31 32 33 34 35 36 37 38 39 3A 3B 3C 3D 3E 3F 40 41 42 43 44 45 46 47 48 49 4A 4B 4C 4D 4E 4F 50 51 52 53 54 55 56 57 58 59 5A 5B 5C 5D 5E 5F 60 61 62 64")
     Name (PAUS, Package (0x0D)
     {
-        "", 
-        "1234q", 
-        "c179B3FE", 
-        "C179B3FE", 
-        "FE7CB391D650A284", 
-        "fE7CB391D650A284", 
-        "This is auxiliary String", 
-        "0321", 
-        "321", 
-        "21 03 00", 
-        "21 03 01", 
-        "21 22 23 24 25 26 27 28 29 2A 2B 2C 2D 2E 2F 30 31 32 33 34 35 36 37 38 39 3A 3B 3C 3D 3E 3F 40 41 42 43 44 45 46 47 48 49 4A 4B 4C 4D 4E 4F 50 51 52 53 54 55 56 57 58 59 5A 5B 5C 5D 5E 5F 60 61 62 63", 
+        "",
+        "1234q",
+        "c179B3FE",
+        "C179B3FE",
+        "FE7CB391D650A284",
+        "fE7CB391D650A284",
+        "This is auxiliary String",
+        "0321",
+        "321",
+        "21 03 00",
+        "21 03 01",
+        "21 22 23 24 25 26 27 28 29 2A 2B 2C 2D 2E 2F 30 31 32 33 34 35 36 37 38 39 3A 3B 3C 3D 3E 3F 40 41 42 43 44 45 46 47 48 49 4A 4B 4C 4D 4E 4F 50 51 52 53 54 55 56 57 58 59 5A 5B 5C 5D 5E 5F 60 61 62 63",
         "21 22 23 24 25 26 27 28 29 2A 2B 2C 2D 2E 2F 30 31 32 33 34 35 36 37 38 39 3A 3B 3C 3D 3E 3F 40 41 42 43 44 45 46 47 48 49 4A 4B 4C 4D 4E 4F 50 51 52 53 54 55 56 57 58 59 5A 5B 5C 5D 5E 5F 60 61 62 64"
     })
     /* Auxiliary Buffers */
@@ -716,62 +716,62 @@
         Buffer (0x01)
         {
              0x5A                                             // Z
-        }, 
+        },
 
         Buffer (0x02)
         {
             "Z"
-        }, 
+        },
 
         Buffer (0x04)
         {
              0xFE, 0xB3, 0x79, 0xC2                           // ..y.
-        }, 
+        },
 
         Buffer (0x04)
         {
              0xFE, 0xB3, 0x79, 0xC1                           // ..y.
-        }, 
+        },
 
         Buffer (0x08)
         {
              0x84, 0xA2, 0x50, 0xD6, 0x91, 0xB3, 0x7C, 0xFE   // ..P...|.
-        }, 
+        },
 
         Buffer (0x08)
         {
              0x84, 0xA2, 0x50, 0xD6, 0x91, 0xB3, 0x7C, 0xFF   // ..P...|.
-        }, 
+        },
 
         Buffer (0x19)
         {
             "This is auxiliary Buffer"
-        }, 
+        },
 
         Buffer (0x05)
         {
             "0321"
-        }, 
+        },
 
         Buffer (0x05)
         {
              0x30, 0x33, 0x32, 0x31, 0x01                     // 0321.
-        }, 
+        },
 
         Buffer (0x01)
         {
              0x00                                             // .
-        }, 
+        },
 
         Buffer (0x01)
         {
              0x01                                             // .
-        }, 
+        },
 
         Buffer (0xC9)
         {
             "!\"#$%&\'()*+,-./0123456789:;<=>?@ABCDEFGHIJKLMNOPQRSTUVWXYZ[\\]^_`abcdefghijklmnopqrstuvwxyz{|}~ !\"#$%&\'()*+,-./0123456789:;<=>?@ABCDEFGHIJKLMNOPQRSTUVWXYZ[\\]^_`abcdefghijklmnopqrstuvwxyz{|}~ !\"#$%&\'()*"
-        }, 
+        },
 
         Buffer (0xC9)
         {
@@ -807,20 +807,20 @@
 
     Name (AUP0, Package (0x0F)
     {
-        0x0A50, 
-        0x0A51, 
-        0x0A52, 
-        0x0A53, 
-        0x0A54, 
-        0x0A55, 
-        0x0A56, 
-        0x0A57, 
-        0x0A58, 
-        0x0A59, 
-        0x0A5A, 
-        0x0A5B, 
-        0x0A5C, 
-        0x0A5D, 
+        0x0A50,
+        0x0A51,
+        0x0A52,
+        0x0A53,
+        0x0A54,
+        0x0A55,
+        0x0A56,
+        0x0A57,
+        0x0A58,
+        0x0A59,
+        0x0A5A,
+        0x0A5B,
+        0x0A5C,
+        0x0A5D,
         0x0A5E
     })
     Name (AUP1, Package (0x01)
@@ -835,27 +835,27 @@
     {
         Package (0x0F)
         {
-            0x0A50, 
-            0x0A51, 
-            0x0A52, 
-            0x0A53, 
-            0x0A54, 
-            0x0A55, 
-            0x0A56, 
-            0x0A57, 
-            0x0A58, 
-            0x0A59, 
-            0x0A5A, 
-            0x0A5B, 
-            0x0A5C, 
-            0x0A5D, 
+            0x0A50,
+            0x0A51,
+            0x0A52,
+            0x0A53,
+            0x0A54,
+            0x0A55,
+            0x0A56,
+            0x0A57,
+            0x0A58,
+            0x0A59,
+            0x0A5A,
+            0x0A5B,
+            0x0A5C,
+            0x0A5D,
             0x0A5E
-        }, 
+        },
 
         Package (0x01)
         {
             0xFE7CB391D650A284
-        }, 
+        },
 
         Package (0x01)
         {
@@ -1080,7 +1080,7 @@
     })
     Name (BB33, Buffer (0x0B)
     {
-        /* 0000 */  0x54, 0x68, 0x69, 0x73, 0x20, 0x69, 0x73, 0x20,  // This is 
+        /* 0000 */  0x54, 0x68, 0x69, 0x73, 0x20, 0x69, 0x73, 0x20,  // This is
         /* 0008 */  0x61, 0x75, 0x78                                 // aux
     })
     Name (BB34, Buffer (0x19)
@@ -1367,20 +1367,20 @@
                     {
                         Return (Package (0x0F)
                         {
-                            0x0A50, 
-                            0x0A51, 
-                            0x0A52, 
-                            0x0A53, 
-                            0x0A54, 
-                            0x0A55, 
-                            0x0A56, 
-                            0x0A57, 
-                            0x0A58, 
-                            0x0A59, 
-                            0x0A5A, 
-                            0x0A5B, 
-                            0x0A5C, 
-                            0x0A5D, 
+                            0x0A50,
+                            0x0A51,
+                            0x0A52,
+                            0x0A53,
+                            0x0A54,
+                            0x0A55,
+                            0x0A56,
+                            0x0A57,
+                            0x0A58,
+                            0x0A59,
+                            0x0A5A,
+                            0x0A5B,
+                            0x0A5C,
+                            0x0A5D,
                             0x0A5E
                         })
                     }
@@ -3072,4 +3072,3 @@
         M605 (Arg0, 0x03, 0x00)
         M605 (Arg0, 0x03, 0x01)
     }
-

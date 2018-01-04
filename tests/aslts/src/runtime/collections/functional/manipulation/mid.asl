@@ -83,108 +83,108 @@
     {
         /* Length > 0 */
 
-        "0123456789a", 
-        0x00, 
+        "0123456789a",
+        0x00,
         0x06,            /* Index == 0, Index + Length < Size */
-        "0123456789a", 
-        0x03, 
+        "0123456789a",
+        0x03,
         0x07,            /* Index < Size, Index + Length < Size */
-        "0123456789a", 
-        0x05, 
+        "0123456789a",
+        0x05,
         0x06,            /* Index < Size, Index + Length == Size */
-        "0123456789a", 
-        0x00, 
+        "0123456789a",
+        0x00,
         0x0B,       /* Index == 0, Index + Length == Size */
-        "0123456789a", 
-        0x08, 
+        "0123456789a",
+        0x08,
         0x08,            /* Index < Size, Index + Length > Size */
-        "0123456789a", 
-        0x0B, 
+        "0123456789a",
+        0x0B,
         0x03,       /* Index == Size */
-        "0123456789a", 
-        0x0E, 
+        "0123456789a",
+        0x0E,
         0x01,       /* Index > Size */
-        "0123456789a", 
-        0x00, 
+        "0123456789a",
+        0x00,
         0x0E,       /* Index == 0, Length > Size */
         /* Length == 0 */
 
-        "0123456789a", 
-        0x00, 
+        "0123456789a",
+        0x00,
         0x00,            /* Index == 0 */
-        "0123456789a", 
-        0x05, 
+        "0123456789a",
+        0x05,
         0x00,            /* Index < Size */
-        "0123456789a", 
-        0x0B, 
+        "0123456789a",
+        0x0B,
         0x00,       /* Index == Size */
-        "0123456789a", 
-        0x0F, 
+        "0123456789a",
+        0x0F,
         0x00,       /* Index > Size */
         /* Size == 0 */
 
-        "", 
-        0x00, 
-        0x01, 
-        "", 
-        0x012C, 
+        "",
+        0x00,
+        0x01,
+        "",
+        0x012C,
         0x012C
     })
     Name (P363, Package (0x0E)
     {
-        "012345", 
-        "3456789", 
-        "56789a", 
-        "0123456789a", 
-        "89a", 
-        "", 
-        "", 
-        "0123456789a", 
-        "", 
-        "", 
-        "", 
-        "", 
-        "", 
+        "012345",
+        "3456789",
+        "56789a",
+        "0123456789a",
+        "89a",
+        "",
+        "",
+        "0123456789a",
+        "",
+        "",
+        "",
+        "",
+        "",
         ""
     })
     /* String, Size == 200, Length > 0 */
 
     Name (P364, Package (0x18)
     {
-        0x00, 
-        0x00, 
+        0x00,
+        0x00,
         0x7D,  /* Index == 0, Index + Length < Size */
-        0x00, 
-        0x43, 
+        0x00,
+        0x43,
         0x43,  /* Index < Size, Index + Length < Size */
-        0x00, 
-        0x5D, 
+        0x00,
+        0x5D,
         0x6B,     /* Index < Size, Index + Length == Size */
-        0x00, 
-        0x00, 
+        0x00,
+        0x00,
         0xC8,  /* Index == 0, Index + Length == Size */
-        0x00, 
-        0x7F, 
+        0x00,
+        0x7F,
         0x64,    /* Index < Size, Index + Length > Size */
-        0x00, 
-        0xC8, 
+        0x00,
+        0xC8,
         0x03,  /* Index == Size */
-        0x00, 
-        0xD6, 
+        0x00,
+        0xD6,
         0x01,  /* Index > Size */
-        0x00, 
-        0x00, 
+        0x00,
+        0x00,
         0xC9 /* Index == 0, Length > Size */
     })
     Name (P365, Package (0x08)
     {
-        "!\"#$%&\'()*+,-./0123456789:;<=>?@ABCDEFGHIJKLMNOPQRSTUVWXYZ[\\]^_`abcdefghijklmnopqrstuvwxyz{|}~ !\"#$%&\'()*+,-./0123456789:;<=>", 
-        "defghijklmnopqrstuvwxyz{|}~ !\"#$%&\'()*+,-./0123456789:;<=>?@ABCDEFG", 
-        "~ !\"#$%&\'()*+,-./0123456789:;<=>?@ABCDEFGHIJKLMNOPQRSTUVWXYZ[\\]^_`abcdefghijklmnopqrstuvwxyz{|}~ !\"#$%&\'()*", 
-        "!\"#$%&\'()*+,-./0123456789:;<=>?@ABCDEFGHIJKLMNOPQRSTUVWXYZ[\\]^_`abcdefghijklmnopqrstuvwxyz{|}~ !\"#$%&\'()*+,-./0123456789:;<=>?@ABCDEFGHIJKLMNOPQRSTUVWXYZ[\\]^_`abcdefghijklmnopqrstuvwxyz{|}~ !\"#$%&\'()*", 
-        "ABCDEFGHIJKLMNOPQRSTUVWXYZ[\\]^_`abcdefghijklmnopqrstuvwxyz{|}~ !\"#$%&\'()*", 
-        "", 
-        "", 
+        "!\"#$%&\'()*+,-./0123456789:;<=>?@ABCDEFGHIJKLMNOPQRSTUVWXYZ[\\]^_`abcdefghijklmnopqrstuvwxyz{|}~ !\"#$%&\'()*+,-./0123456789:;<=>",
+        "defghijklmnopqrstuvwxyz{|}~ !\"#$%&\'()*+,-./0123456789:;<=>?@ABCDEFG",
+        "~ !\"#$%&\'()*+,-./0123456789:;<=>?@ABCDEFGHIJKLMNOPQRSTUVWXYZ[\\]^_`abcdefghijklmnopqrstuvwxyz{|}~ !\"#$%&\'()*",
+        "!\"#$%&\'()*+,-./0123456789:;<=>?@ABCDEFGHIJKLMNOPQRSTUVWXYZ[\\]^_`abcdefghijklmnopqrstuvwxyz{|}~ !\"#$%&\'()*+,-./0123456789:;<=>?@ABCDEFGHIJKLMNOPQRSTUVWXYZ[\\]^_`abcdefghijklmnopqrstuvwxyz{|}~ !\"#$%&\'()*",
+        "ABCDEFGHIJKLMNOPQRSTUVWXYZ[\\]^_`abcdefghijklmnopqrstuvwxyz{|}~ !\"#$%&\'()*",
+        "",
+        "",
         "!\"#$%&\'()*+,-./0123456789:;<=>?@ABCDEFGHIJKLMNOPQRSTUVWXYZ[\\]^_`abcdefghijklmnopqrstuvwxyz{|}~ !\"#$%&\'()*+,-./0123456789:;<=>?@ABCDEFGHIJKLMNOPQRSTUVWXYZ[\\]^_`abcdefghijklmnopqrstuvwxyz{|}~ !\"#$%&\'()*"
     })
     /* Buffer */
@@ -197,57 +197,57 @@
         {
             /* 0000 */  0x00, 0x01, 0x02, 0x03, 0x04, 0x05, 0x06, 0x07,  // ........
             /* 0008 */  0x08, 0x09, 0x00                                 // ...
-        }, 
+        },
 
-        0x00, 
+        0x00,
         0x06,            /* Index == 0, Index + Length < Size */
         Buffer (0x0B)
         {
             /* 0000 */  0x00, 0x01, 0x02, 0x03, 0x04, 0x05, 0x06, 0x07,  // ........
             /* 0008 */  0x08, 0x09, 0x00                                 // ...
-        }, 
+        },
 
-        0x03, 
+        0x03,
         0x07,            /* Index < Size, Index + Length < Size */
         Buffer (0x0B)
         {
             /* 0000 */  0x00, 0x01, 0x02, 0x03, 0x04, 0x05, 0x00, 0x07,  // ........
             /* 0008 */  0x08, 0x09, 0x00                                 // ...
-        }, 
+        },
 
-        0x03, 
+        0x03,
         0x07,            /* Index < Size, Index + Length < Size */
         Buffer (0x0B)
         {
             /* 0000 */  0x00, 0x01, 0x02, 0x03, 0x04, 0x05, 0x06, 0x07,  // ........
             /* 0008 */  0x08, 0x09, 0x00                                 // ...
-        }, 
+        },
 
-        0x05, 
+        0x05,
         0x06,            /* Index < Size, Index + Length == Size */
         Buffer (0x0B)
         {
             /* 0000 */  0x00, 0x01, 0x02, 0x03, 0x04, 0x05, 0x06, 0x07,  // ........
             /* 0008 */  0x08, 0x09, 0x00                                 // ...
-        }, 
+        },
 
-        0x00, 
+        0x00,
         0x0B,       /* Index == 0, Index + Length == Size */
         Buffer (0x0B)
         {
             /* 0000 */  0x00, 0x01, 0x02, 0x03, 0x04, 0x05, 0x06, 0x07,  // ........
             /* 0008 */  0x08, 0x09, 0x00                                 // ...
-        }, 
+        },
 
-        0x08, 
+        0x08,
         0x08,            /* Index < Size, Index + Length > Size */
         Buffer (0x0B)
         {
             /* 0000 */  0x00, 0x01, 0x02, 0x03, 0x04, 0x05, 0x06, 0x07,  // ........
             /* 0008 */  0x08, 0x09, 0x00                                 // ...
-        }, 
+        },
 
-        0x00, 
+        0x00,
         0xC9,      /* Index == 0, Length > Size */
         /* Length > 200 */
 
@@ -280,9 +280,9 @@
             /* 00C0 */  0xB6, 0xB7, 0xB8, 0xB9, 0xBA, 0xBB, 0xBC, 0xBD,  // ........
             /* 00C8 */  0xBE, 0xBF, 0xC0, 0xC1, 0xC2, 0xC3, 0xC4, 0xC5,  // ........
             /* 00D0 */  0xC6, 0xC7, 0xC8                                 // ...
-        }, 
+        },
 
-        0x02, 
+        0x02,
         0xCB
     })
     Name (P367, Package (0x08)
@@ -290,39 +290,39 @@
         Buffer (0x06)
         {
              0x00, 0x01, 0x02, 0x03, 0x04, 0x05               // ......
-        }, 
+        },
 
         Buffer (0x07)
         {
              0x03, 0x04, 0x05, 0x06, 0x07, 0x08, 0x09         // .......
-        }, 
+        },
 
         Buffer (0x07)
         {
              0x03, 0x04, 0x05, 0x00, 0x07, 0x08, 0x09         // .......
-        }, 
+        },
 
         Buffer (0x06)
         {
              0x05, 0x06, 0x07, 0x08, 0x09, 0x00               // ......
-        }, 
+        },
 
         Buffer (0x0B)
         {
             /* 0000 */  0x00, 0x01, 0x02, 0x03, 0x04, 0x05, 0x06, 0x07,  // ........
             /* 0008 */  0x08, 0x09, 0x00                                 // ...
-        }, 
+        },
 
         Buffer (0x03)
         {
              0x08, 0x09, 0x00                                 // ...
-        }, 
+        },
 
         Buffer (0x0B)
         {
             /* 0000 */  0x00, 0x01, 0x02, 0x03, 0x04, 0x05, 0x06, 0x07,  // ........
             /* 0008 */  0x08, 0x09, 0x00                                 // ...
-        }, 
+        },
 
         Buffer (0xCB)
         {
@@ -364,17 +364,17 @@
         {
             /* 0000 */  0x00, 0x01, 0x02, 0x03, 0x04, 0x05, 0x06, 0x07,  // ........
             /* 0008 */  0x08, 0x09, 0x00                                 // ...
-        }, 
+        },
 
-        0x0B, 
+        0x0B,
         0x03,           /* Index == Size */
         Buffer (0x0B)
         {
             /* 0000 */  0x00, 0x01, 0x02, 0x03, 0x04, 0x05, 0x06, 0x07,  // ........
             /* 0008 */  0x08, 0x09, 0x00                                 // ...
-        }, 
+        },
 
-        0x0E, 
+        0x0E,
         0x01,           /* Index > Size */
         /* Length == 0 */
 
@@ -382,33 +382,33 @@
         {
             /* 0000 */  0x00, 0x01, 0x02, 0x03, 0x04, 0x05, 0x06, 0x07,  // ........
             /* 0008 */  0x08, 0x09, 0x00                                 // ...
-        }, 
+        },
 
-        0x00, 
+        0x00,
         0x00,                /* Index == 0 */
         Buffer (0x0B)
         {
             /* 0000 */  0x00, 0x01, 0x02, 0x03, 0x04, 0x05, 0x06, 0x00,  // ........
             /* 0008 */  0x08, 0x09, 0x00                                 // ...
-        }, 
+        },
 
-        0x05, 
+        0x05,
         0x00,                /* Index < Size */
         Buffer (0x0B)
         {
             /* 0000 */  0x00, 0x01, 0x02, 0x03, 0x04, 0x05, 0x06, 0x07,  // ........
             /* 0008 */  0x08, 0x09, 0x00                                 // ...
-        }, 
+        },
 
-        0x0B, 
+        0x0B,
         0x00,           /* Index == Size */
         Buffer (0x0B)
         {
             /* 0000 */  0x00, 0x01, 0x02, 0x03, 0x04, 0x05, 0x06, 0x07,  // ........
             /* 0008 */  0x08, 0x09, 0x00                                 // ...
-        }, 
+        },
 
-        0x0F, 
+        0x0F,
         0x00          /* Index > Size */
     })
     /* Run-method */
@@ -454,4 +454,3 @@
             ERR (TS, Z039, 0x0122, 0x00, 0x00, 0x00, "Buffer(0)")
         }
     }
-

@@ -37,7 +37,7 @@
             VendorShort ()      // Length = 0x00
             {
             }
-        }, 
+        },
 
         ResourceTemplate ()
         {
@@ -45,7 +45,7 @@
             {
                  0xF1                                             // .
             }
-        }, 
+        },
 
         ResourceTemplate ()
         {
@@ -53,7 +53,7 @@
             {
                  0xE1, 0xF2                                       // ..
             }
-        }, 
+        },
 
         ResourceTemplate ()
         {
@@ -61,7 +61,7 @@
             {
                  0xD1, 0xE2, 0xF3                                 // ...
             }
-        }, 
+        },
 
         ResourceTemplate ()
         {
@@ -69,7 +69,7 @@
             {
                  0x00, 0xD2, 0xE3, 0xF4                           // ....
             }
-        }, 
+        },
 
         ResourceTemplate ()
         {
@@ -77,7 +77,7 @@
             {
                  0xB1, 0xC2, 0x00, 0xE4, 0xF5                     // .....
             }
-        }, 
+        },
 
         ResourceTemplate ()
         {
@@ -85,7 +85,7 @@
             {
                  0xA1, 0xB2, 0xC3, 0xD4, 0xE5, 0xF6               // ......
             }
-        }, 
+        },
 
         ResourceTemplate ()
         {
@@ -109,7 +109,7 @@
             VendorShort ()      // Length = 0x00
             {
             }
-        }, 
+        },
 
         ResourceTemplate ()
         {
@@ -117,7 +117,7 @@
             {
                  0xF1                                             // .
             }
-        }, 
+        },
 
         ResourceTemplate ()
         {
@@ -125,7 +125,7 @@
             {
                  0xE1, 0xF2                                       // ..
             }
-        }, 
+        },
 
         ResourceTemplate ()
         {
@@ -133,7 +133,7 @@
             {
                  0xD1, 0xE2, 0xF3                                 // ...
             }
-        }, 
+        },
 
         ResourceTemplate ()
         {
@@ -141,7 +141,7 @@
             {
                  0x00, 0xD2, 0xE3, 0xF4                           // ....
             }
-        }, 
+        },
 
         ResourceTemplate ()
         {
@@ -149,7 +149,7 @@
             {
                  0xB1, 0xC2, 0x00, 0xE4, 0xF5                     // .....
             }
-        }, 
+        },
 
         ResourceTemplate ()
         {
@@ -157,7 +157,7 @@
             {
                  0xA1, 0xB2, 0xC3, 0xD4, 0xE5, 0xF6               // ......
             }
-        }, 
+        },
 
         ResourceTemplate ()
         {
@@ -177,4 +177,3 @@
 
         M330 (TS, 0x08, "p40c", P40C, P40D)
     }
-

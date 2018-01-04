@@ -23,4 +23,3 @@ DefinitionBlock ("oem1.aml", "OEM1", 1, "Intel", "Many", 0x00000001)
         Store (One, _XT2)
     }
 }
-

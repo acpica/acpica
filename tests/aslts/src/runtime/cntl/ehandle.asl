@@ -63,628 +63,628 @@
 
         Package (0x03)
         {
-            0x00, 
-            0x00, 
+            0x00,
+            0x00,
             "AE_OK"
-        }, 
+        },
 
         Package (0x03)
         {
-            0x01, 
-            0x01, 
+            0x01,
+            0x01,
             "AE_ERROR"
-        }, 
+        },
 
         Package (0x03)
         {
-            0x02, 
-            0x02, 
+            0x02,
+            0x02,
             "AE_NO_ACPI_TABLES"
-        }, 
+        },
 
         Package (0x03)
         {
-            0x03, 
-            0x03, 
+            0x03,
+            0x03,
             "AE_NO_NAMESPACE"
-        }, 
+        },
 
         Package (0x03)
         {
-            0x04, 
-            0x04, 
+            0x04,
+            0x04,
             "AE_NO_MEMORY"
-        }, 
+        },
 
         Package (0x03)
         {
-            0x05, 
-            0x05, 
+            0x05,
+            0x05,
             "AE_NOT_FOUND"
-        }, 
+        },
 
         Package (0x03)
         {
-            0x06, 
-            0x06, 
+            0x06,
+            0x06,
             "AE_NOT_EXIST"
-        }, 
+        },
 
         Package (0x03)
         {
-            0x07, 
-            0x07, 
+            0x07,
+            0x07,
             "AE_ALREADY_EXISTS"
-        }, 
+        },
 
         Package (0x03)
         {
-            0x08, 
-            0x08, 
+            0x08,
+            0x08,
             "AE_TYPE"
-        }, 
+        },
 
         Package (0x03)
         {
-            0x09, 
-            0x09, 
+            0x09,
+            0x09,
             "AE_NULL_OBJECT"
-        }, 
+        },
 
         Package (0x03)
         {
-            0x0A, 
-            0x0A, 
+            0x0A,
+            0x0A,
             "AE_NULL_ENTRY"
-        }, 
+        },
 
         Package (0x03)
         {
-            0x0B, 
-            0x0B, 
+            0x0B,
+            0x0B,
             "AE_BUFFER_OVERFLOW"
-        }, 
+        },
 
         Package (0x03)
         {
-            0x0C, 
-            0x0C, 
+            0x0C,
+            0x0C,
             "AE_STACK_OVERFLOW"
-        }, 
+        },
 
         Package (0x03)
         {
-            0x0D, 
-            0x0D, 
+            0x0D,
+            0x0D,
             "AE_STACK_UNDERFLOW"
-        }, 
+        },
 
         Package (0x03)
         {
-            0x0E, 
-            0x0E, 
+            0x0E,
+            0x0E,
             "AE_NOT_IMPLEMENTED"
-        }, 
+        },
 
         Package (0x03)
         {
-            0x0F, 
-            0x0F, 
+            0x0F,
+            0x0F,
             "AE_VERSION_MISMATCH"
-        }, 
+        },
 
         /* obsolete */
 
         Package (0x03)
         {
-            0x10, 
-            0x0F, 
+            0x10,
+            0x0F,
             "AE_SUPPORT"
-        }, 
+        },
 
         Package (0x03)
         {
-            0x11, 
-            0x11, 
+            0x11,
+            0x11,
             "AE_SHARE"
-        }, 
+        },
 
         /* obsolete */
 
         Package (0x03)
         {
-            0x12, 
-            0x10, 
+            0x12,
+            0x10,
             "AE_LIMIT"
-        }, 
+        },
 
         Package (0x03)
         {
-            0x13, 
-            0x11, 
+            0x13,
+            0x11,
             "AE_TIME"
-        }, 
+        },
 
         Package (0x03)
         {
-            0x14, 
-            0x14, 
+            0x14,
+            0x14,
             "AE_UNKNOWN_STATUS"
-        }, 
+        },
 
         /* obsolete */
 
         Package (0x03)
         {
-            0x15, 
-            0x12, 
+            0x15,
+            0x12,
             "AE_ACQUIRE_DEADLOCK"
-        }, 
+        },
 
         Package (0x03)
         {
-            0x16, 
-            0x13, 
+            0x16,
+            0x13,
             "AE_RELEASE_DEADLOCK"
-        }, 
+        },
 
         Package (0x03)
         {
-            0x17, 
-            0x14, 
+            0x17,
+            0x14,
             "AE_NOT_ACQUIRED"
-        }, 
+        },
 
         Package (0x03)
         {
-            0x18, 
-            0x15, 
+            0x18,
+            0x15,
             "AE_ALREADY_ACQUIRED"
-        }, 
+        },
 
         Package (0x03)
         {
-            0x19, 
-            0x16, 
+            0x19,
+            0x16,
             "AE_NO_HARDWARE_RESPONSE"
-        }, 
+        },
 
         Package (0x03)
         {
-            0x1A, 
-            0x17, 
+            0x1A,
+            0x17,
             "AE_NO_GLOBAL_LOCK"
-        }, 
+        },
 
         Package (0x03)
         {
-            0x1B, 
-            0x18, 
+            0x1B,
+            0x18,
             "AE_ABORT_METHOD"
-        }, 
+        },
 
         Package (0x03)
         {
-            0x1C, 
-            0x1001, 
+            0x1C,
+            0x1001,
             "AE_BAD_PARAMETER"
-        }, 
+        },
 
         Package (0x03)
         {
-            0x1D, 
-            0x1002, 
+            0x1D,
+            0x1002,
             "AE_BAD_CHARACTER"
-        }, 
+        },
 
         Package (0x03)
         {
-            0x1E, 
-            0x1003, 
+            0x1E,
+            0x1003,
             "AE_BAD_PATHNAME"
-        }, 
+        },
 
         Package (0x03)
         {
-            0x1F, 
-            0x1004, 
+            0x1F,
+            0x1004,
             "AE_BAD_DATA"
-        }, 
+        },
 
         Package (0x03)
         {
-            0x20, 
-            0x1005, 
+            0x20,
+            0x1005,
             "AE_BAD_ADDRESS"
-        }, 
+        },
 
         /* obsolete */
 
         Package (0x03)
         {
-            0x21, 
-            0x1006, 
+            0x21,
+            0x1006,
             "AE_ALIGNMENT"
-        }, 
+        },
 
         /* obsolete */
 
         Package (0x03)
         {
-            0x22, 
-            0x1005, 
+            0x22,
+            0x1005,
             "AE_BAD_HEX_CONSTANT"
-        }, 
+        },
 
         Package (0x03)
         {
-            0x23, 
-            0x1006, 
+            0x23,
+            0x1006,
             "AE_BAD_OCTAL_CONSTANT"
-        }, 
+        },
 
         Package (0x03)
         {
-            0x24, 
-            0x1007, 
+            0x24,
+            0x1007,
             "AE_BAD_DECIMAL_CONSTANT"
-        }, 
+        },
 
         Package (0x03)
         {
-            0x25, 
-            0x2001, 
+            0x25,
+            0x2001,
             "AE_BAD_SIGNATURE"
-        }, 
+        },
 
         Package (0x03)
         {
-            0x26, 
-            0x2002, 
+            0x26,
+            0x2002,
             "AE_BAD_HEADER"
-        }, 
+        },
 
         Package (0x03)
         {
-            0x27, 
-            0x2003, 
+            0x27,
+            0x2003,
             "AE_BAD_CHECKSUM"
-        }, 
+        },
 
         Package (0x03)
         {
-            0x28, 
-            0x2004, 
+            0x28,
+            0x2004,
             "AE_BAD_VALUE"
-        }, 
+        },
 
         Package (0x03)
         {
-            0x29, 
-            0x2005, 
+            0x29,
+            0x2005,
             "AE_TABLE_NOT_SUPPORTED"
-        }, 
+        },
 
         /* obsolete */
 
         Package (0x03)
         {
-            0x2A, 
-            0x2005, 
+            0x2A,
+            0x2005,
             "AE_INVALID_TABLE_LENGTH"
-        }, 
+        },
 
         Package (0x03)
         {
-            0x2B, 
-            0x3001, 
+            0x2B,
+            0x3001,
             "AE_AML_ERROR"
-        }, 
+        },
 
         /* obsolete */
 
         Package (0x03)
         {
-            0x2C, 
-            0x3002, 
+            0x2C,
+            0x3002,
             "AE_AML_PARSE"
-        }, 
+        },
 
         /* obsolete */
 
         Package (0x03)
         {
-            0x2D, 
-            0x3001, 
+            0x2D,
+            0x3001,
             "AE_AML_BAD_OPCODE"
-        }, 
+        },
 
         Package (0x03)
         {
-            0x2E, 
-            0x3002, 
+            0x2E,
+            0x3002,
             "AE_AML_NO_OPERAND"
-        }, 
+        },
 
         Package (0x03)
         {
-            0x2F, 
-            0x3003, 
+            0x2F,
+            0x3003,
             "AE_AML_OPERAND_TYPE"
-        }, 
+        },
 
         Package (0x03)
         {
-            0x30, 
-            0x3004, 
+            0x30,
+            0x3004,
             "AE_AML_OPERAND_VALUE"
-        }, 
+        },
 
         Package (0x03)
         {
-            0x31, 
-            0x3005, 
+            0x31,
+            0x3005,
             "AE_AML_UNINITIALIZED_LOCAL"
-        }, 
+        },
 
         Package (0x03)
         {
-            0x32, 
-            0x3006, 
+            0x32,
+            0x3006,
             "AE_AML_UNINITIALIZED_ARG"
-        }, 
+        },
 
         Package (0x03)
         {
-            0x33, 
-            0x3007, 
+            0x33,
+            0x3007,
             "AE_AML_UNINITIALIZED_ELEMENT"
-        }, 
+        },
 
         Package (0x03)
         {
-            0x34, 
-            0x3008, 
+            0x34,
+            0x3008,
             "AE_AML_NUMERIC_OVERFLOW"
-        }, 
+        },
 
         Package (0x03)
         {
-            0x35, 
-            0x3009, 
+            0x35,
+            0x3009,
             "AE_AML_REGION_LIMIT"
-        }, 
+        },
 
         Package (0x03)
         {
-            0x36, 
-            0x300A, 
+            0x36,
+            0x300A,
             "AE_AML_BUFFER_LIMIT"
-        }, 
+        },
 
         Package (0x03)
         {
-            0x37, 
-            0x300B, 
+            0x37,
+            0x300B,
             "AE_AML_PACKAGE_LIMIT"
-        }, 
+        },
 
         Package (0x03)
         {
-            0x38, 
-            0x300C, 
+            0x38,
+            0x300C,
             "AE_AML_DIVIDE_BY_ZERO"
-        }, 
+        },
 
         Package (0x03)
         {
-            0x39, 
-            0x300D, 
+            0x39,
+            0x300D,
             "AE_AML_BAD_NAME"
-        }, 
+        },
 
         Package (0x03)
         {
-            0x3A, 
-            0x300E, 
+            0x3A,
+            0x300E,
             "AE_AML_NAME_NOT_FOUND"
-        }, 
+        },
 
         Package (0x03)
         {
-            0x3B, 
-            0x300F, 
+            0x3B,
+            0x300F,
             "AE_AML_INTERNAL"
-        }, 
+        },
 
         Package (0x03)
         {
-            0x3C, 
-            0x3010, 
+            0x3C,
+            0x3010,
             "AE_AML_INVALID_SPACE_ID"
-        }, 
+        },
 
         Package (0x03)
         {
-            0x3D, 
-            0x3011, 
+            0x3D,
+            0x3011,
             "AE_AML_STRING_LIMIT"
-        }, 
+        },
 
         Package (0x03)
         {
-            0x3E, 
-            0x3012, 
+            0x3E,
+            0x3012,
             "AE_AML_NO_RETURN_VALUE"
-        }, 
+        },
 
         Package (0x03)
         {
-            0x3F, 
-            0x3014, 
+            0x3F,
+            0x3014,
             "AE_AML_NOT_OWNER"
-        }, 
+        },
 
         Package (0x03)
         {
-            0x40, 
-            0x3015, 
+            0x40,
+            0x3015,
             "AE_AML_MUTEX_ORDER"
-        }, 
+        },
 
         Package (0x03)
         {
-            0x41, 
-            0x3016, 
+            0x41,
+            0x3016,
             "AE_AML_MUTEX_NOT_ACQUIRED"
-        }, 
+        },
 
         Package (0x03)
         {
-            0x42, 
-            0x3017, 
+            0x42,
+            0x3017,
             "AE_AML_INVALID_RESOURCE_TYPE"
-        }, 
+        },
 
         Package (0x03)
         {
-            0x43, 
-            0x3018, 
+            0x43,
+            0x3018,
             "AE_AML_INVALID_INDEX"
-        }, 
+        },
 
         Package (0x03)
         {
-            0x44, 
-            0x3019, 
+            0x44,
+            0x3019,
             "AE_AML_REGISTER_LIMIT"
-        }, 
+        },
 
         Package (0x03)
         {
-            0x45, 
-            0x301A, 
+            0x45,
+            0x301A,
             "AE_AML_NO_WHILE"
-        }, 
+        },
 
         Package (0x03)
         {
-            0x46, 
-            0x301B, 
+            0x46,
+            0x301B,
             "AE_AML_ALIGNMENT"
-        }, 
+        },
 
         Package (0x03)
         {
-            0x47, 
-            0x301C, 
+            0x47,
+            0x301C,
             "AE_AML_NO_RESOURCE_END_TAG"
-        }, 
+        },
 
         Package (0x03)
         {
-            0x48, 
-            0x301D, 
+            0x48,
+            0x301D,
             "AE_AML_BAD_RESOURCE_VALUE"
-        }, 
+        },
 
         Package (0x03)
         {
-            0x49, 
-            0x301E, 
+            0x49,
+            0x301E,
             "AE_AML_CIRCULAR_REFERENCE"
-        }, 
+        },
 
         Package (0x03)
         {
-            0x4A, 
-            0x4001, 
+            0x4A,
+            0x4001,
             "AE_CTRL_RETURN_VALUE"
-        }, 
+        },
 
         Package (0x03)
         {
-            0x4B, 
-            0x4002, 
+            0x4B,
+            0x4002,
             "AE_CTRL_PENDING"
-        }, 
+        },
 
         Package (0x03)
         {
-            0x4C, 
-            0x4003, 
+            0x4C,
+            0x4003,
             "AE_CTRL_TERMINATE"
-        }, 
+        },
 
         Package (0x03)
         {
-            0x4D, 
-            0x4004, 
+            0x4D,
+            0x4004,
             "AE_CTRL_TRUE"
-        }, 
+        },
 
         Package (0x03)
         {
-            0x4E, 
-            0x4005, 
+            0x4E,
+            0x4005,
             "AE_CTRL_FALSE"
-        }, 
+        },
 
         Package (0x03)
         {
-            0x4F, 
-            0x4006, 
+            0x4F,
+            0x4006,
             "AE_CTRL_DEPTH"
-        }, 
+        },
 
         Package (0x03)
         {
-            0x50, 
-            0x4007, 
+            0x50,
+            0x4007,
             "AE_CTRL_END"
-        }, 
+        },
 
         Package (0x03)
         {
-            0x51, 
-            0x4008, 
+            0x51,
+            0x4008,
             "AE_CTRL_TRANSFER"
-        }, 
+        },
 
         Package (0x03)
         {
-            0x52, 
-            0x4009, 
+            0x52,
+            0x4009,
             "AE_CTRL_BREAK"
-        }, 
+        },
 
         Package (0x03)
         {
-            0x53, 
-            0x400A, 
+            0x53,
+            0x400A,
             "AE_CTRL_CONTINUE"
-        }, 
+        },
 
         /* New additional are here not to touch previous indexes */
 
         Package (0x03)
         {
-            0x54, 
-            0x3013, 
+            0x54,
+            0x3013,
             "AE_AML_METHOD_LIMIT"
-        }, 
+        },
 
         Package (0x03)
         {
-            0x55, 
-            0x100B, 
+            0x55,
+            0x100B,
             "AE_INDEX_TO_NOT_ATTACHED"
-        }, 
+        },
 
         Package (0x03)
         {
-            0x56, 
-            0x1B, 
+            0x56,
+            0x1B,
             "AE_OWNER_ID_LIMIT"
         }
     })
@@ -975,7 +975,7 @@
     {
         Local2 = Package (0x02)
             {
-                0x00, 
+                0x00,
                 0x00
             } /* Package to be returned */
         Local3 = 0x00 /* found */
@@ -1131,4 +1131,3 @@
     {
         EXC0 = 0x00
     }
-

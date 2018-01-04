@@ -120,4 +120,3 @@
         EXT0 (TS, 0x0E, E014, NM14)
         Return (0x00)
     }
-

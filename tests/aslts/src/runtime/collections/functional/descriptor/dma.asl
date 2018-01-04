@@ -36,157 +36,157 @@
         {
             DMA (Compatibility, NotBusMaster, Transfer8, )
                 {0}
-        }, 
+        },
 
         ResourceTemplate ()
         {
             DMA (Compatibility, NotBusMaster, Transfer8_16, )
                 {1}
-        }, 
+        },
 
         ResourceTemplate ()
         {
             DMA (Compatibility, NotBusMaster, Transfer16, )
                 {2}
-        }, 
+        },
 
         ResourceTemplate ()
         {
             DMA (Compatibility, BusMaster, Transfer8, )
                 {3}
-        }, 
+        },
 
         ResourceTemplate ()
         {
             DMA (Compatibility, BusMaster, Transfer8_16, )
                 {4}
-        }, 
+        },
 
         ResourceTemplate ()
         {
             DMA (Compatibility, BusMaster, Transfer16, )
                 {5}
-        }, 
+        },
 
         ResourceTemplate ()
         {
             DMA (TypeA, NotBusMaster, Transfer8, )
                 {6}
-        }, 
+        },
 
         ResourceTemplate ()
         {
             DMA (TypeA, NotBusMaster, Transfer8_16, )
                 {7}
-        }, 
+        },
 
         ResourceTemplate ()
         {
             DMA (TypeA, NotBusMaster, Transfer16, )
                 {0}
-        }, 
+        },
 
         ResourceTemplate ()
         {
             DMA (TypeA, BusMaster, Transfer8, )
                 {1}
-        }, 
+        },
 
         ResourceTemplate ()
         {
             DMA (TypeA, BusMaster, Transfer8_16, )
                 {2}
-        }, 
+        },
 
         ResourceTemplate ()
         {
             DMA (TypeA, BusMaster, Transfer16, )
                 {3}
-        }, 
+        },
 
         ResourceTemplate ()
         {
             DMA (TypeB, NotBusMaster, Transfer8, )
                 {4}
-        }, 
+        },
 
         ResourceTemplate ()
         {
             DMA (TypeB, NotBusMaster, Transfer8_16, )
                 {5}
-        }, 
+        },
 
         ResourceTemplate ()
         {
             DMA (TypeB, NotBusMaster, Transfer16, )
                 {6}
-        }, 
+        },
 
         ResourceTemplate ()
         {
             DMA (TypeB, BusMaster, Transfer8, )
                 {7}
-        }, 
+        },
 
         ResourceTemplate ()
         {
             DMA (TypeB, BusMaster, Transfer8_16, )
                 {0}
-        }, 
+        },
 
         ResourceTemplate ()
         {
             DMA (TypeB, BusMaster, Transfer16, )
                 {1}
-        }, 
+        },
 
         ResourceTemplate ()
         {
             DMA (TypeF, NotBusMaster, Transfer8, )
                 {2}
-        }, 
+        },
 
         ResourceTemplate ()
         {
             DMA (TypeF, NotBusMaster, Transfer8_16, )
                 {3}
-        }, 
+        },
 
         ResourceTemplate ()
         {
             DMA (TypeF, NotBusMaster, Transfer16, )
                 {4}
-        }, 
+        },
 
         ResourceTemplate ()
         {
             DMA (TypeF, BusMaster, Transfer8, )
                 {5}
-        }, 
+        },
 
         ResourceTemplate ()
         {
             DMA (TypeF, BusMaster, Transfer8_16, )
                 {6}
-        }, 
+        },
 
         ResourceTemplate ()
         {
             DMA (TypeF, BusMaster, Transfer16, )
                 {7}
-        }, 
+        },
 
         ResourceTemplate ()
         {
             DMA (TypeF, BusMaster, Transfer16, )
                 {}
-        }, 
+        },
 
         ResourceTemplate ()
         {
             DMA (TypeF, BusMaster, Transfer16, )
                 {0,1,2,3,4,5,6,7}
-        }, 
+        },
 
         ResourceTemplate ()
         {
@@ -221,157 +221,157 @@
         {
             DMA (Compatibility, NotBusMaster, Transfer8, )
                 {0}
-        }, 
+        },
 
         ResourceTemplate ()
         {
             DMA (Compatibility, NotBusMaster, Transfer8_16, )
                 {1}
-        }, 
+        },
 
         ResourceTemplate ()
         {
             DMA (Compatibility, NotBusMaster, Transfer16, )
                 {2}
-        }, 
+        },
 
         ResourceTemplate ()
         {
             DMA (Compatibility, BusMaster, Transfer8, )
                 {3}
-        }, 
+        },
 
         ResourceTemplate ()
         {
             DMA (Compatibility, BusMaster, Transfer8_16, )
                 {4}
-        }, 
+        },
 
         ResourceTemplate ()
         {
             DMA (Compatibility, BusMaster, Transfer16, )
                 {5}
-        }, 
+        },
 
         ResourceTemplate ()
         {
             DMA (TypeA, NotBusMaster, Transfer8, )
                 {6}
-        }, 
+        },
 
         ResourceTemplate ()
         {
             DMA (TypeA, NotBusMaster, Transfer8_16, )
                 {7}
-        }, 
+        },
 
         ResourceTemplate ()
         {
             DMA (TypeA, NotBusMaster, Transfer16, )
                 {0}
-        }, 
+        },
 
         ResourceTemplate ()
         {
             DMA (TypeA, BusMaster, Transfer8, )
                 {1}
-        }, 
+        },
 
         ResourceTemplate ()
         {
             DMA (TypeA, BusMaster, Transfer8_16, )
                 {2}
-        }, 
+        },
 
         ResourceTemplate ()
         {
             DMA (TypeA, BusMaster, Transfer16, )
                 {3}
-        }, 
+        },
 
         ResourceTemplate ()
         {
             DMA (TypeB, NotBusMaster, Transfer8, )
                 {4}
-        }, 
+        },
 
         ResourceTemplate ()
         {
             DMA (TypeB, NotBusMaster, Transfer8_16, )
                 {5}
-        }, 
+        },
 
         ResourceTemplate ()
         {
             DMA (TypeB, NotBusMaster, Transfer16, )
                 {6}
-        }, 
+        },
 
         ResourceTemplate ()
         {
             DMA (TypeB, BusMaster, Transfer8, )
                 {7}
-        }, 
+        },
 
         ResourceTemplate ()
         {
             DMA (TypeB, BusMaster, Transfer8_16, )
                 {0}
-        }, 
+        },
 
         ResourceTemplate ()
         {
             DMA (TypeB, BusMaster, Transfer16, )
                 {1}
-        }, 
+        },
 
         ResourceTemplate ()
         {
             DMA (TypeF, NotBusMaster, Transfer8, )
                 {2}
-        }, 
+        },
 
         ResourceTemplate ()
         {
             DMA (TypeF, NotBusMaster, Transfer8_16, )
                 {3}
-        }, 
+        },
 
         ResourceTemplate ()
         {
             DMA (TypeF, NotBusMaster, Transfer16, )
                 {4}
-        }, 
+        },
 
         ResourceTemplate ()
         {
             DMA (TypeF, BusMaster, Transfer8, )
                 {5}
-        }, 
+        },
 
         ResourceTemplate ()
         {
             DMA (TypeF, BusMaster, Transfer8_16, )
                 {6}
-        }, 
+        },
 
         ResourceTemplate ()
         {
             DMA (TypeF, BusMaster, Transfer16, )
                 {7}
-        }, 
+        },
 
         ResourceTemplate ()
         {
             DMA (TypeF, BusMaster, Transfer16, )
                 {}
-        }, 
+        },
 
         ResourceTemplate ()
         {
             DMA (TypeF, BusMaster, Transfer16, )
                 {0,1,2,3,4,5,6,7}
-        }, 
+        },
 
         ResourceTemplate ()
         {
@@ -399,4 +399,3 @@
         M331 (TS, 0x02, 0x12, 0x12, 0x2A, 0x2A, "_BM")
         M331 (TS, 0x03, 0x10, 0x10, 0x28, 0x28, "_SIZ")
     }
-

@@ -110,4 +110,3 @@ DefinitionBlock ("external", "SSDT", 2, "Intel", "Many", 0x00000001)
 
     External (ABCD.XPEG, IntObj)
 }
-

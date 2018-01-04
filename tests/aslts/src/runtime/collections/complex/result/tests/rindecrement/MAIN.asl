@@ -44,4 +44,3 @@ DefinitionBlock ("rindecrement", "DSDT", 2, "Intel", "Many", 0x00000001)
         Return (Local7)
     }
 }
-

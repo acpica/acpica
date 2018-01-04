@@ -39,7 +39,7 @@
         })
         Name (P000, Package (0x02)
         {
-            0x33, 
+            0x33,
             0x44
         })
         Local0 = DerefOf (Local1 = P000 [0x00])
@@ -49,4 +49,3 @@
         Debug = S000 /* \ME5B.S000 */
         Return (0x00)
     }
-

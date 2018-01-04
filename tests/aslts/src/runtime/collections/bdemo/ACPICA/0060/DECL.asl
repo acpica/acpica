@@ -42,7 +42,7 @@
         OperationRegion (R001, SystemMemory, 0x10, 0x10)
         Field (R001, ByteAcc, NoLock, Preserve)
         {
-            F001,   32, 
+            F001,   32,
             F002,   32
         }
 
@@ -58,7 +58,7 @@
         OperationRegion (R001, SystemMemory, 0x10, 0x10)
         Field (R001, ByteAcc, NoLock, Preserve)
         {
-            F001,   32, 
+            F001,   32,
             F002,   72
         }
 
@@ -116,4 +116,3 @@
         MDFF ()
         ME00 ()
     }
-

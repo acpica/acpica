@@ -40,7 +40,7 @@
                 {
                     0x0A, 0x0B, 0x0C, 0x0D
                 })
-        }, 
+        },
 
         ResourceTemplate ()
         {
@@ -50,7 +50,7 @@
                 {
                     0x0A, 0x0B, 0x0C, 0x0D
                 })
-        }, 
+        },
 
         ResourceTemplate ()
         {
@@ -60,7 +60,7 @@
                 {
                     0x0A, 0x0B, 0x0C, 0x0D
                 })
-        }, 
+        },
 
         ResourceTemplate ()
         {
@@ -70,19 +70,19 @@
                 {
                     0x0A, 0x0B, 0x0C, 0x0D
                 })
-        }, 
+        },
 
         ResourceTemplate ()
         {
             PinGroupFunction (Shared, 0x1000, "\\_SB.GPO1", 0x00,
                 "group0", ResourceConsumer, ,)
-        }, 
+        },
 
         ResourceTemplate ()
         {
             PinGroupFunction (Shared, 0x1234, "\\_SB.GPO1", 0x00,
                 "group1", ResourceConsumer, ,)
-        }, 
+        },
 
         ResourceTemplate ()
         {
@@ -100,7 +100,7 @@
                 {
                     0x0A, 0x0B, 0x0C, 0x0D
                 })
-        }, 
+        },
 
         ResourceTemplate ()
         {
@@ -110,7 +110,7 @@
                 {
                     0x0A, 0x0B, 0x0C, 0x0D
                 })
-        }, 
+        },
 
         ResourceTemplate ()
         {
@@ -120,7 +120,7 @@
                 {
                     0x0A, 0x0B, 0x0C, 0x0D
                 })
-        }, 
+        },
 
         ResourceTemplate ()
         {
@@ -130,19 +130,19 @@
                 {
                     0x0A, 0x0B, 0x0C, 0x0D
                 })
-        }, 
+        },
 
         ResourceTemplate ()
         {
             PinGroupFunction (Shared, 0x1000, "\\_SB.GPO1", 0x00,
                 "group0", ResourceConsumer, ,)
-        }, 
+        },
 
         ResourceTemplate ()
         {
             PinGroupFunction (Shared, 0x1234, "\\_SB.GPO1", 0x00,
                 "group1", ResourceConsumer, ,)
-        }, 
+        },
 
         ResourceTemplate ()
         {
@@ -188,4 +188,3 @@ Local0 = ResourceTemplate ()
         M331 (TS, 0x01, 0x30, 0x30, 0x0160, 0x0160, "_FUN")
         M331 (TS, 0x01, 0x0110, 0x0110, 0x0240, 0x0240, "_VEN")
     }
-

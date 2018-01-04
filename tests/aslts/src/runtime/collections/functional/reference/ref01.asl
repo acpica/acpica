@@ -219,13 +219,13 @@
             M1A2 (Local1, C016, 0x00, 0x00, C009, 0x06, 0x04FE)
             Local0 = Index (Package (0x08)
                     {
-                        0x01, 
-                        0x02, 
-                        0x03, 
-                        0x04, 
-                        0x05, 
-                        0x06, 
-                        0x07, 
+                        0x01,
+                        0x02,
+                        0x03,
+                        0x04,
+                        0x05,
+                        0x06,
+                        0x07,
                         0x08
                     }, 0x05, Local1)
             M1A2 (Local0, C009, 0x00, 0x00, C009, 0x06, 0x04FF)
@@ -317,9 +317,9 @@
         CreateField (B9Z0, 0x00, 0x08, BF90)
         Field (R9Z0, ByteAcc, NoLock, Preserve)
         {
-            F900,   8, 
-            F901,   8, 
-            F902,   8, 
+            F900,   8,
+            F901,   8,
+            F902,   8,
             F903,   8
         }
 
@@ -330,7 +330,7 @@
 
         IndexField (F902, F903, ByteAcc, NoLock, Preserve)
         {
-            IF90,   8, 
+            IF90,   8,
             IF91,   8
         }
 
@@ -341,17 +341,17 @@
 
         Name (P901, Package (0x02)
         {
-            0xABCD1004, 
+            0xABCD1004,
             0x1122334455661005
         })
         Name (P902, Package (0x02)
         {
-            "12341006", 
+            "12341006",
             "q1w2e3r4t5y6u7i81007"
         })
         Name (P903, Package (0x02)
         {
-            "qwrtyuiop1008", 
+            "qwrtyuiop1008",
             "1234567890abdef0251009"
         })
         Name (P904, Package (0x02)
@@ -359,7 +359,7 @@
             Buffer (0x03)
             {
                  0xA0, 0xA1, 0xA2                                 // ...
-            }, 
+            },
 
             Buffer (0x02)
             {
@@ -370,8 +370,8 @@
         {
             Package (0x03)
             {
-                0x0ABC100A, 
-                "0xabc100b", 
+                0x0ABC100A,
+                "0xabc100b",
                 "abc100c"
             }
         })
@@ -1024,12 +1024,12 @@
         })
         Name (P953, Package (0x02)
         {
-            0xABCD1018, 
+            0xABCD1018,
             0xABCD1019
         })
         Name (P954, Package (0x02)
         {
-            0xABCD1018, 
+            0xABCD1018,
             0xABCD1019
         })
         /* Check that all the data (local) are not corrupted */
@@ -2137,9 +2137,9 @@
         CreateField (B9Z0, 0x00, 0x08, BF90)
         Field (R9Z0, ByteAcc, NoLock, Preserve)
         {
-            F900,   8, 
-            F901,   8, 
-            F902,   8, 
+            F900,   8,
+            F901,   8,
+            F902,   8,
             F903,   8
         }
 
@@ -2150,7 +2150,7 @@
 
         IndexField (F902, F903, ByteAcc, NoLock, Preserve)
         {
-            IF90,   8, 
+            IF90,   8,
             IF91,   8
         }
 
@@ -2161,17 +2161,17 @@
 
         Name (P901, Package (0x02)
         {
-            0xABCD2004, 
+            0xABCD2004,
             0x1122334455662005
         })
         Name (P902, Package (0x02)
         {
-            "12342006", 
+            "12342006",
             "q1w2e3r4t5y6u7i82007"
         })
         Name (P903, Package (0x02)
         {
-            "qwrtyuiop2008", 
+            "qwrtyuiop2008",
             "1234567890abdef0252009"
         })
         Name (P904, Package (0x02)
@@ -2179,7 +2179,7 @@
             Buffer (0x03)
             {
                  0xC5, 0xC6, 0xC7                                 // ...
-            }, 
+            },
 
             Buffer (0x02)
             {
@@ -2190,8 +2190,8 @@
         {
             Package (0x03)
             {
-                0x0ABC200A, 
-                "0xabc200b", 
+                0x0ABC200A,
+                "0xabc200b",
                 "abc200c"
             }
         })
@@ -2844,12 +2844,12 @@
         })
         Name (P953, Package (0x02)
         {
-            0xABCD2018, 
+            0xABCD2018,
             0xABCD2019
         })
         Name (P954, Package (0x02)
         {
-            0xABCD2018, 
+            0xABCD2018,
             0xABCD2019
         })
         /* Check that all the data (local) are not corrupted */
@@ -3808,9 +3808,9 @@
         CreateField (B900, 0x00, 0x08, BF90)
         Field (R900, ByteAcc, NoLock, Preserve)
         {
-            F900,   8, 
-            F901,   8, 
-            F902,   8, 
+            F900,   8,
+            F901,   8,
+            F902,   8,
             F903,   8
         }
 
@@ -3821,7 +3821,7 @@
 
         IndexField (F902, F903, ByteAcc, NoLock, Preserve)
         {
-            IF90,   8, 
+            IF90,   8,
             IF91,   8
         }
 
@@ -3832,17 +3832,17 @@
 
         Name (P901, Package (0x02)
         {
-            0xABCD3004, 
+            0xABCD3004,
             0x1122334455663005
         })
         Name (P902, Package (0x02)
         {
-            "12343006", 
+            "12343006",
             "q1w2e3r4t5y6u7i83007"
         })
         Name (P903, Package (0x02)
         {
-            "qwrtyuiop3008", 
+            "qwrtyuiop3008",
             "1234567890abdef0253009"
         })
         Name (P904, Package (0x02)
@@ -3850,7 +3850,7 @@
             Buffer (0x03)
             {
                  0xD5, 0xD6, 0xD7                                 // ...
-            }, 
+            },
 
             Buffer (0x02)
             {
@@ -3861,8 +3861,8 @@
         {
             Package (0x03)
             {
-                0x0ABC300A, 
-                "0xabc300b", 
+                0x0ABC300A,
+                "0xabc300b",
                 "abc300c"
             }
         })
@@ -4515,12 +4515,12 @@
         })
         Name (P953, Package (0x02)
         {
-            0xABCD3018, 
+            0xABCD3018,
             0xABCD3019
         })
         Name (P954, Package (0x02)
         {
-            0xABCD3018, 
+            0xABCD3018,
             0xABCD3019
         })
         /* Check that all the data (local) are not corrupted */
@@ -5399,9 +5399,9 @@
         CreateField (B9Z0, 0x00, 0x08, BF90)
         Field (R9Z0, ByteAcc, NoLock, Preserve)
         {
-            F900,   8, 
-            F901,   8, 
-            F902,   8, 
+            F900,   8,
+            F901,   8,
+            F902,   8,
             F903,   8
         }
 
@@ -5412,7 +5412,7 @@
 
         IndexField (F902, F903, ByteAcc, NoLock, Preserve)
         {
-            IF90,   8, 
+            IF90,   8,
             IF91,   8
         }
 
@@ -5423,17 +5423,17 @@
 
         Name (P901, Package (0x02)
         {
-            0xABCD4004, 
+            0xABCD4004,
             0x1122334455664005
         })
         Name (P902, Package (0x02)
         {
-            "12344006", 
+            "12344006",
             "q1w2e3r4t5y6u7i84007"
         })
         Name (P903, Package (0x02)
         {
-            "qwrtyuiop4008", 
+            "qwrtyuiop4008",
             "1234567890abdef0254009"
         })
         Name (P904, Package (0x02)
@@ -5441,7 +5441,7 @@
             Buffer (0x03)
             {
                  0xE5, 0xE6, 0xE7                                 // ...
-            }, 
+            },
 
             Buffer (0x02)
             {
@@ -5452,8 +5452,8 @@
         {
             Package (0x03)
             {
-                0x0ABC400A, 
-                "0xabc400b", 
+                0x0ABC400A,
+                "0xabc400b",
                 "abc400c"
             }
         })
@@ -6106,12 +6106,12 @@
         })
         Name (P953, Package (0x02)
         {
-            0xABCD4018, 
+            0xABCD4018,
             0xABCD4019
         })
         Name (P954, Package (0x02)
         {
-            0xABCD4018, 
+            0xABCD4018,
             0xABCD4019
         })
         /* Check that all the data (local) are not corrupted */
@@ -7642,9 +7642,9 @@
         CreateField (B900, 0x00, 0x08, BF90)
         Field (R900, ByteAcc, NoLock, Preserve)
         {
-            F900,   8, 
-            F901,   8, 
-            F902,   8, 
+            F900,   8,
+            F901,   8,
+            F902,   8,
             F903,   8
         }
 
@@ -7655,7 +7655,7 @@
 
         IndexField (F902, F903, ByteAcc, NoLock, Preserve)
         {
-            IF90,   8, 
+            IF90,   8,
             IF91,   8
         }
 
@@ -7666,17 +7666,17 @@
 
         Name (P901, Package (0x02)
         {
-            0xABCD5004, 
+            0xABCD5004,
             0x1122334455665005
         })
         Name (P902, Package (0x02)
         {
-            "12345006", 
+            "12345006",
             "q1w2e3r4t5y6u7i85007"
         })
         Name (P903, Package (0x02)
         {
-            "qwrtyuiop5008", 
+            "qwrtyuiop5008",
             "1234567890abdef0255009"
         })
         Name (P904, Package (0x02)
@@ -7684,7 +7684,7 @@
             Buffer (0x03)
             {
                  0xF5, 0xF6, 0xF7                                 // ...
-            }, 
+            },
 
             Buffer (0x02)
             {
@@ -7695,8 +7695,8 @@
         {
             Package (0x03)
             {
-                0x0ABC500A, 
-                "0xabc500b", 
+                0x0ABC500A,
+                "0xabc500b",
                 "abc500c"
             }
         })
@@ -8349,12 +8349,12 @@
         })
         Name (P953, Package (0x02)
         {
-            0xABCD5018, 
+            0xABCD5018,
             0xABCD5019
         })
         Name (P954, Package (0x02)
         {
-            0xABCD5018, 
+            0xABCD5018,
             0xABCD5019
         })
         /* Check that all the data (local) are not corrupted */
@@ -10689,4 +10689,3 @@
         M178 ()
         M179 ()
     }
-

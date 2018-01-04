@@ -36,103 +36,103 @@
         {
             IRQ (Level, ActiveHigh, Exclusive, )
                 {0}
-        }, 
+        },
 
         ResourceTemplate ()
         {
             IRQ (Level, ActiveHigh, Shared, )
                 {1}
-        }, 
+        },
 
         ResourceTemplate ()
         {
             IRQ (Level, ActiveLow, Exclusive, )
                 {2}
-        }, 
+        },
 
         ResourceTemplate ()
         {
             IRQ (Level, ActiveLow, Shared, )
                 {3}
-        }, 
+        },
 
         ResourceTemplate ()
         {
             IRQ (Edge, ActiveHigh, Exclusive, )
                 {4}
-        }, 
+        },
 
         ResourceTemplate ()
         {
             IRQ (Edge, ActiveHigh, Shared, )
                 {5}
-        }, 
+        },
 
         ResourceTemplate ()
         {
             IRQ (Edge, ActiveLow, Exclusive, )
                 {6}
-        }, 
+        },
 
         ResourceTemplate ()
         {
             IRQ (Edge, ActiveLow, Shared, )
                 {7}
-        }, 
+        },
 
         ResourceTemplate ()
         {
             IRQ (Level, ActiveHigh, Exclusive, )
                 {8}
-        }, 
+        },
 
         ResourceTemplate ()
         {
             IRQ (Level, ActiveHigh, Shared, )
                 {9}
-        }, 
+        },
 
         ResourceTemplate ()
         {
             IRQ (Level, ActiveLow, Exclusive, )
                 {10}
-        }, 
+        },
 
         ResourceTemplate ()
         {
             IRQ (Level, ActiveLow, Shared, )
                 {11}
-        }, 
+        },
 
         ResourceTemplate ()
         {
             IRQ (Edge, ActiveHigh, Exclusive, )
                 {12}
-        }, 
+        },
 
         ResourceTemplate ()
         {
             IRQ (Edge, ActiveHigh, Shared, )
                 {13}
-        }, 
+        },
 
         ResourceTemplate ()
         {
             IRQ (Edge, ActiveLow, Exclusive, )
                 {14}
-        }, 
+        },
 
         ResourceTemplate ()
         {
             IRQ (Edge, ActiveLow, Shared, )
                 {15}
-        }, 
+        },
 
         ResourceTemplate ()
         {
             IRQ (Edge, ActiveLow, Exclusive, )
                 {}
-        }, 
+        },
 
         ResourceTemplate ()
         {
@@ -163,103 +163,103 @@
         {
             IRQ (Level, ActiveHigh, Exclusive, )
                 {0}
-        }, 
+        },
 
         ResourceTemplate ()
         {
             IRQ (Level, ActiveHigh, Shared, )
                 {1}
-        }, 
+        },
 
         ResourceTemplate ()
         {
             IRQ (Level, ActiveLow, Exclusive, )
                 {2}
-        }, 
+        },
 
         ResourceTemplate ()
         {
             IRQ (Level, ActiveLow, Shared, )
                 {3}
-        }, 
+        },
 
         ResourceTemplate ()
         {
             IRQ (Edge, ActiveHigh, Exclusive, )
                 {4}
-        }, 
+        },
 
         ResourceTemplate ()
         {
             IRQ (Edge, ActiveHigh, Shared, )
                 {5}
-        }, 
+        },
 
         ResourceTemplate ()
         {
             IRQ (Edge, ActiveLow, Exclusive, )
                 {6}
-        }, 
+        },
 
         ResourceTemplate ()
         {
             IRQ (Edge, ActiveLow, Shared, )
                 {7}
-        }, 
+        },
 
         ResourceTemplate ()
         {
             IRQ (Level, ActiveHigh, Exclusive, )
                 {8}
-        }, 
+        },
 
         ResourceTemplate ()
         {
             IRQ (Level, ActiveHigh, Shared, )
                 {9}
-        }, 
+        },
 
         ResourceTemplate ()
         {
             IRQ (Level, ActiveLow, Exclusive, )
                 {10}
-        }, 
+        },
 
         ResourceTemplate ()
         {
             IRQ (Level, ActiveLow, Shared, )
                 {11}
-        }, 
+        },
 
         ResourceTemplate ()
         {
             IRQ (Edge, ActiveHigh, Exclusive, )
                 {12}
-        }, 
+        },
 
         ResourceTemplate ()
         {
             IRQ (Edge, ActiveHigh, Shared, )
                 {13}
-        }, 
+        },
 
         ResourceTemplate ()
         {
             IRQ (Edge, ActiveLow, Exclusive, )
                 {14}
-        }, 
+        },
 
         ResourceTemplate ()
         {
             IRQ (Edge, ActiveLow, Shared, )
                 {15}
-        }, 
+        },
 
         ResourceTemplate ()
         {
             IRQ (Edge, ActiveLow, Exclusive, )
                 {}
-        }, 
+        },
 
         ResourceTemplate ()
         {
@@ -287,4 +287,3 @@
         M331 (TS, 0x02, 0x1B, 0x1B, 0x3B, 0x3B, "_LL")
         M331 (TS, 0x03, 0x1C, 0x1C, 0x3C, 0x3C, "_SHR")
     }
-

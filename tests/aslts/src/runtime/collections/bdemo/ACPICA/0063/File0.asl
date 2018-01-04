@@ -670,4 +670,3 @@
         ToInteger (Local1, Local0)
         CH04 ("", 0x00, 0xFF, 0x00, 0x026A, 0x00, 0x00)
     }
-

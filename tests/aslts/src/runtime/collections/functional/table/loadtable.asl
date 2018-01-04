@@ -139,8 +139,8 @@
         Name (STID, "Many")
         Name (POEM, Package (0x03)
         {
-            "OEM1", 
-            "Intel", 
+            "OEM1",
+            "Intel",
             "Many"
         })
         Name (RPST, "\\DTM2")
@@ -613,8 +613,8 @@
             Name (STID, "")
             Name (POEM, Package (0x03)
             {
-                "OEM1", 
-                "", 
+                "OEM1",
+                "",
                 ""
             })
             Method (M000, 1, NotSerialized)
@@ -792,8 +792,8 @@
             Name (NVAL, 0x01)
             Name (POPT, Package (0x03)
             {
-                "\\DTM2", 
-                "\\DTM2.PLDT", 
+                "\\DTM2",
+                "\\DTM2.PLDT",
                 0x01
             })
             Method (M000, 1, NotSerialized)
@@ -952,7 +952,7 @@
             Local2 = ToBuffer (Local2)
             Local3 = ToBuffer (PPST)
             Local4 = 0x03
-            DDB6 = LoadTable ("OEM1", "", "", Mid (ToString (Local2, Ones), 0x04, 
+            DDB6 = LoadTable ("OEM1", "", "", Mid (ToString (Local2, Ones), 0x04,
                 0x05), ToString (M000 (Local3), Ones),                     /* Bug 288: iASL unexpectedly forbids ParameterData of Loadtable to be LocalX or UserTerm */
                     /*				Subtract(m000(Local4), 2)), */
 (0x03 - 0x02))
@@ -1330,7 +1330,7 @@
             /* 0020 */  0x15, 0x12, 0x06, 0x20, 0x10, 0x1F, 0x5C, 0x00,  // ... ..\.
             /* 0028 */  0x08, 0x5F, 0x58, 0x54, 0x32, 0x0D, 0x61, 0x62,  // ._XT2.ab
             /* 0030 */  0x73, 0x6F, 0x6C, 0x75, 0x74, 0x65, 0x20, 0x6C,  // solute l
-            /* 0038 */  0x6F, 0x63, 0x61, 0x74, 0x69, 0x6F, 0x6E, 0x20,  // ocation 
+            /* 0038 */  0x6F, 0x63, 0x61, 0x74, 0x69, 0x6F, 0x6E, 0x20,  // ocation
             /* 0040 */  0x6F, 0x62, 0x6A, 0x00                           // obj.
         })
         OperationRegion (IST4, SystemMemory, 0x0600, 0x44)
@@ -2516,4 +2516,3 @@
         SRMT ("TLT1.tsti")
         \DTM2.TSTI (TS)
     }
-

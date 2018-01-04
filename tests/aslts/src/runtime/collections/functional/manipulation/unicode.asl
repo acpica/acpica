@@ -34,9 +34,9 @@
         Buffer (0x02)
         {
              0x00, 0x00                                       // ..
-        }, 
+        },
 
-        Unicode (" "), 
+        Unicode (" "),
         Buffer (0x0100)
         {
             /* 0000 */  0x01, 0x00, 0x02, 0x00, 0x03, 0x00, 0x04, 0x00,  // ........
@@ -71,7 +71,7 @@
             /* 00E8 */  0x75, 0x00, 0x76, 0x00, 0x77, 0x00, 0x78, 0x00,  // u.v.w.x.
             /* 00F0 */  0x79, 0x00, 0x7A, 0x00, 0x7B, 0x00, 0x7C, 0x00,  // y.z.{.|.
             /* 00F8 */  0x7D, 0x00, 0x7E, 0x00, 0x7F, 0x00, 0x00, 0x00   // }.~.....
-        }, 
+        },
 
         Unicode ("!\"#$%&'()*+,-./0123456789:;<=>?@ABCDEFGHIJKLMNOPQRSTUVWXYZ[\\]^_`abcdefghijklmnopqrstuvwxyz{|}~ !\"#$%&'()*+,-./0123456789:;<=>?@ABCDEFGHIJKLMNOPQRSTUVWXYZ[\\]^_`abcdefghijklmnopqrstuvwxyz{|}~ !\"#$%&'()*")
     })
@@ -80,9 +80,9 @@
         Buffer (0x02)
         {
              0x00, 0x00                                       // ..
-        }, 
+        },
 
-        Unicode (" "), 
+        Unicode (" "),
         Buffer (0x0100)
         {
             /* 0000 */  0x01, 0x00, 0x02, 0x00, 0x03, 0x00, 0x04, 0x00,  // ........
@@ -117,7 +117,7 @@
             /* 00E8 */  0x75, 0x00, 0x76, 0x00, 0x77, 0x00, 0x78, 0x00,  // u.v.w.x.
             /* 00F0 */  0x79, 0x00, 0x7A, 0x00, 0x7B, 0x00, 0x7C, 0x00,  // y.z.{.|.
             /* 00F8 */  0x7D, 0x00, 0x7E, 0x00, 0x7F, 0x00, 0x00, 0x00   // }.~.....
-        }, 
+        },
 
         Unicode ("!\"#$%&'()*+,-./0123456789:;<=>?@ABCDEFGHIJKLMNOPQRSTUVWXYZ[\\]^_`abcdefghijklmnopqrstuvwxyz{|}~ !\"#$%&'()*+,-./0123456789:;<=>?@ABCDEFGHIJKLMNOPQRSTUVWXYZ[\\]^_`abcdefghijklmnopqrstuvwxyz{|}~ !\"#$%&'()*")
     })
@@ -129,4 +129,3 @@
         Debug = "TEST: UNI0, String To Unicode Conversion Macro"
         M302 (TS, 0x04, "p358", P358, P359, 0x08)
     }
-

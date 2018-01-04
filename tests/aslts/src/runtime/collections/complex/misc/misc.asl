@@ -114,13 +114,13 @@
 
         BankField (R000, BNK0, 0x00, ByteAcc, NoLock, Preserve)
         {
-            Offset (0x10), 
+            Offset (0x10),
             BF00,   8
         }
 
         BankField (R000, BNK0, 0x01, ByteAcc, NoLock, Preserve)
         {
-            Offset (0x11), 
+            Offset (0x11),
             BF01,   8
         }
 
@@ -517,11 +517,11 @@ Zero)
         OperationRegion (R000, SystemMemory, 0x0100, 0x0100)
         Field (R000, ByteAcc, NoLock, Preserve)
         {
-            F000,   31, 
-            F001,   32, 
-            F002,   33, 
-            F003,   63, 
-            F004,   64, 
+            F000,   31,
+            F001,   32,
+            F002,   33,
+            F003,   63,
+            F004,   64,
             F005,   65
         }
 
@@ -702,11 +702,11 @@ Zero)
         OperationRegion (R000, SystemMemory, 0x0100, 0x0100)
         Field (R000, ByteAcc, NoLock, Preserve)
         {
-            F000,   31, 
-            F001,   32, 
-            F002,   33, 
-            F003,   63, 
-            F004,   64, 
+            F000,   31,
+            F001,   32,
+            F002,   33,
+            F003,   63,
+            F004,   64,
             F005,   65
         }
 
@@ -793,11 +793,11 @@ Zero)
             OperationRegion (R000, SystemMemory, 0x0100, 0x0100)
             Field (R000, ByteAcc, NoLock, Preserve)
             {
-                F000,   8, 
-                F001,   16, 
-                F002,   32, 
-                F003,   33, 
-                F004,   1, 
+                F000,   8,
+                F001,   16,
+                F002,   32,
+                F003,   33,
+                F004,   1,
                 F005,   64
             }
 
@@ -819,11 +819,11 @@ Zero)
             OperationRegion (R000, SystemMemory, 0x0100, 0x0100)
             Field (R000, ByteAcc, NoLock, Preserve)
             {
-                F000,   8, 
-                F001,   16, 
-                F002,   32, 
-                F003,   33, 
-                F004,   7, 
+                F000,   8,
+                F001,   16,
+                F002,   32,
+                F003,   33,
+                F004,   7,
                 F005,   64
             }
 
@@ -944,11 +944,11 @@ Zero)
         {
             Name (P000, Package (0x06)
             {
-                0xFFF0, 
-                0xFFF1, 
-                0xFFF2, 
-                0xFFF3, 
-                0xFFF4, 
+                0xFFF0,
+                0xFFF1,
+                0xFFF2,
+                0xFFF3,
+                0xFFF4,
                 0xFFF5
             })
             Local0 = P000 /* \M125.M003.P000 */
@@ -1211,8 +1211,8 @@ Zero)
 
         Name (P000, Package (0x03)
         {
-            0xABCD0001, 
-            MM00, 
+            0xABCD0001,
+            MM00,
             0xABCD0002
         })
         /* **************** Run checkings **************** */
@@ -1489,4 +1489,3 @@ Zero)
         MF87 (TS)
         M15B ()
     }
-

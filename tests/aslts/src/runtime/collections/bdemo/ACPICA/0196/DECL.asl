@@ -37,4 +37,3 @@
         ToInteger (Local1, Local0)
         CH04 ("", 0x00, 0x22, 0x00, 0x28, 0x00, 0x00) /* AE_BAD_HEX_CONSTANT */
     }
-

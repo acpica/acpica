@@ -47,4 +47,3 @@
      * CH04("", 0, 61, 0, __LINE__, 0, 0) // AE_AML_STRING_LIMIT
      */
     }
-

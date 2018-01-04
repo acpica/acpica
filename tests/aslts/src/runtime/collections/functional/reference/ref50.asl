@@ -781,8 +781,8 @@
         })
         Name (P000, Package (0x03)
         {
-            0x05, 
-            0x77, 
+            0x05,
+            0x77,
             0x07
         })
         Name (I001, 0x2B)
@@ -882,8 +882,8 @@
         })
         Name (P000, Package (0x03)
         {
-            0x05, 
-            0x77, 
+            0x05,
+            0x77,
             0x07
         })
         /* Overwrite LocalX-ORef */
@@ -939,8 +939,8 @@
         })
         Name (P000, Package (0x03)
         {
-            0x05, 
-            0x77, 
+            0x05,
+            0x77,
             0x07
         })
         /* Overwrite LocalX-ORef */
@@ -1159,8 +1159,8 @@
         })
         Name (P000, Package (0x03)
         {
-            0x05, 
-            0x77, 
+            0x05,
+            0x77,
             0x07
         })
         Name (I010, 0x77)
@@ -1171,8 +1171,8 @@
         })
         Name (P010, Package (0x03)
         {
-            0x05, 
-            0x77, 
+            0x05,
+            0x77,
             0x07
         })
         Method (M000, 2, NotSerialized)
@@ -1598,14 +1598,14 @@
         TS00 (TS)
         Name (P000, Package (0x03)
         {
-            0x05, 
-            0x77, 
+            0x05,
+            0x77,
             0x07
         })
         Name (P010, Package (0x03)
         {
-            0x05, 
-            0x77, 
+            0x05,
+            0x77,
             0x07
         })
         BEG0 (Z111, TS)
@@ -1707,8 +1707,8 @@
         })
         Name (P000, Package (0x03)
         {
-            0x05, 
-            0x77, 
+            0x05,
+            0x77,
             0x07
         })
         Device (D000)
@@ -1769,8 +1769,8 @@
         })
         Name (P000, Package (0x03)
         {
-            0x05, 
-            0x77, 
+            0x05,
+            0x77,
             0x07
         })
         Device (D000)
@@ -1868,8 +1868,8 @@
         })
         Name (P000, Package (0x03)
         {
-            0x05, 
-            0x77, 
+            0x05,
+            0x77,
             0x07
         })
         Device (D000)
@@ -1930,8 +1930,8 @@
         })
         Name (P000, Package (0x03)
         {
-            0x05, 
-            0x77, 
+            0x05,
+            0x77,
             0x07
         })
         Device (D000)
@@ -2023,8 +2023,8 @@
         })
         Name (P000, Package (0x03)
         {
-            0x05, 
-            0x77, 
+            0x05,
+            0x77,
             0x07
         })
         Device (D000)
@@ -2086,8 +2086,8 @@
         })
         Name (P000, Package (0x03)
         {
-            0x05, 
-            0x77, 
+            0x05,
+            0x77,
             0x07
         })
         Device (D000)
@@ -2163,8 +2163,8 @@
         })
         Name (P000, Package (0x03)
         {
-            0x05, 
-            0x77, 
+            0x05,
+            0x77,
             0x07
         })
         Device (D000)
@@ -3379,14 +3379,14 @@
     Name (P090, Package (0x09){})
     Name (P091, Package (0x09)
     {
-        0x01, 
-        0x02, 
-        0x03, 
-        0x04, 
-        0x05, 
-        0x06, 
-        0x07, 
-        0x08, 
+        0x01,
+        0x02,
+        0x03,
+        0x04,
+        0x05,
+        0x06,
+        0x07,
+        0x08,
         0x09
     })
     Method (M271, 2, NotSerialized)
@@ -3480,10 +3480,10 @@
         Name (TS, "m343")
         Name (P000, Package (0x05)
         {
-            0x0B, 
-            0x0C, 
-            0x0D, 
-            0x0E, 
+            0x0B,
+            0x0C,
+            0x0D,
+            0x0E,
             0x0F
         })
         Store (P000 [0x03], Local0)
@@ -3507,10 +3507,10 @@
         Name (TS, "m344")
         Name (P000, Package (0x05)
         {
-            0x0B, 
-            0x0C, 
-            0x0D, 
-            0x0E, 
+            0x0B,
+            0x0C,
+            0x0D,
+            0x0E,
             0x0F
         })
         Store (P000 [0x03], Local0)
@@ -3538,8 +3538,8 @@
         })
         Name (P000, Package (0x03)
         {
-            0x05, 
-            0x77, 
+            0x05,
+            0x77,
             0x07
         })
         Name (S010, "qwer0000")
@@ -3549,8 +3549,8 @@
         })
         Name (P010, Package (0x03)
         {
-            0x05, 
-            0x77, 
+            0x05,
+            0x77,
             0x07
         })
         /* Store to reference keeping in LocalX */
@@ -4361,8 +4361,8 @@
         })
         Name (P000, Package (0x03)
         {
-            0x05, 
-            0x77, 
+            0x05,
+            0x77,
             0x07
         })
         Name (S010, "qwer0000")
@@ -4372,8 +4372,8 @@
         })
         Name (P010, Package (0x03)
         {
-            0x05, 
-            0x77, 
+            0x05,
+            0x77,
             0x07
         })
         Name (S020, "qwer0000")
@@ -4383,8 +4383,8 @@
         })
         Name (P020, Package (0x03)
         {
-            0x05, 
-            0x77, 
+            0x05,
+            0x77,
             0x07
         })
         Name (S030, "qwer0000")
@@ -4394,8 +4394,8 @@
         })
         Name (P030, Package (0x03)
         {
-            0x05, 
-            0x77, 
+            0x05,
+            0x77,
             0x07
         })
         /* Store to reference keeping in LocalX */
@@ -4651,8 +4651,8 @@
         })
         Name (P000, Package (0x03)
         {
-            0x05, 
-            0x77, 
+            0x05,
+            0x77,
             0x07
         })
         Name (I010, 0x77)
@@ -4663,8 +4663,8 @@
         })
         Name (P010, Package (0x03)
         {
-            0x05, 
-            0x77, 
+            0x05,
+            0x77,
             0x07
         })
         Name (I020, 0x77)
@@ -4675,8 +4675,8 @@
         })
         Name (P020, Package (0x03)
         {
-            0x05, 
-            0x77, 
+            0x05,
+            0x77,
             0x07
         })
         Name (I030, 0x77)
@@ -4687,8 +4687,8 @@
         })
         Name (P030, Package (0x03)
         {
-            0x05, 
-            0x77, 
+            0x05,
+            0x77,
             0x07
         })
         Name (I040, 0x77)
@@ -4699,8 +4699,8 @@
         })
         Name (P040, Package (0x03)
         {
-            0x05, 
-            0x77, 
+            0x05,
+            0x77,
             0x07
         })
         Name (I050, 0x77)
@@ -4711,8 +4711,8 @@
         })
         Name (P050, Package (0x03)
         {
-            0x05, 
-            0x77, 
+            0x05,
+            0x77,
             0x07
         })
         Name (I060, 0x77)
@@ -4723,8 +4723,8 @@
         })
         Name (P060, Package (0x03)
         {
-            0x05, 
-            0x77, 
+            0x05,
+            0x77,
             0x07
         })
         Name (I070, 0x77)
@@ -4735,8 +4735,8 @@
         })
         Name (P070, Package (0x03)
         {
-            0x05, 
-            0x77, 
+            0x05,
+            0x77,
             0x07
         })
         Name (I001, 0x2B)
@@ -4747,8 +4747,8 @@
         })
         Name (P001, Package (0x03)
         {
-            0x05, 
-            0x2B, 
+            0x05,
+            0x2B,
             0x07
         })
         Method (M000, 3, NotSerialized)
@@ -4788,8 +4788,8 @@
                             {
                                 CopyObject (Package (0x03)
                                     {
-                                        0x05, 
-                                        0x2B, 
+                                        0x05,
+                                        0x2B,
                                         0x07
                                     }, Arg0)
                             }
@@ -4815,8 +4815,8 @@
                         {
                             Arg0 = Package (0x03)
                                 {
-                                    0x05, 
-                                    0x2B, 
+                                    0x05,
+                                    0x2B,
                                     0x07
                                 }
                         }
@@ -4979,8 +4979,8 @@
         })
         Name (P000, Package (0x03)
         {
-            0x05, 
-            0x77, 
+            0x05,
+            0x77,
             0x07
         })
         Method (M000, 3, NotSerialized)
@@ -5296,32 +5296,32 @@
          */
         Name (PP00, Package (0x08)
         {
-            0x80, 
-            0x81, 
-            0x82, 
-            0x83, 
-            0x84, 
-            0x85, 
-            0x86, 
+            0x80,
+            0x81,
+            0x82,
+            0x83,
+            0x84,
+            0x85,
+            0x86,
             0x87
         })
         Name (P000, Package (0x10)
         {
-            0x00, 
-            0x01, 
-            0x02, 
-            0x03, 
-            0x04, 
-            0x05, 
-            0x06, 
-            0x07, 
-            0x08, 
-            0x09, 
-            0x0A, 
-            0x0B, 
-            0x0C, 
-            0x0D, 
-            0x0E, 
+            0x00,
+            0x01,
+            0x02,
+            0x03,
+            0x04,
+            0x05,
+            0x06,
+            0x07,
+            0x08,
+            0x09,
+            0x0A,
+            0x0B,
+            0x0C,
+            0x0D,
+            0x0E,
             0x0F
         })
         /* Over Integers */
@@ -5365,21 +5365,21 @@
         Name (I000, 0xABCD0000)
         Name (P000, Package (0x10)
         {
-            0x00, 
-            0x01, 
-            0x02, 
-            0x03, 
-            0x04, 
-            0x05, 
-            0x06, 
-            0x07, 
-            0x08, 
-            0x09, 
-            0x0A, 
-            0x0B, 
-            0x0C, 
-            0x0D, 
-            0x0E, 
+            0x00,
+            0x01,
+            0x02,
+            0x03,
+            0x04,
+            0x05,
+            0x06,
+            0x07,
+            0x08,
+            0x09,
+            0x0A,
+            0x0B,
+            0x0C,
+            0x0D,
+            0x0E,
             0x0F
         })
         /* Over Integers */
@@ -5431,21 +5431,21 @@
         Name (I000, 0xABCD0000)
         Name (P000, Package (0x10)
         {
-            0x00, 
-            0x01, 
-            0x02, 
-            0x03, 
-            0x04, 
-            0x05, 
-            0x06, 
-            0x07, 
-            0x08, 
-            0x09, 
-            0x0A, 
-            0x0B, 
-            0x0C, 
-            0x0D, 
-            0x0E, 
+            0x00,
+            0x01,
+            0x02,
+            0x03,
+            0x04,
+            0x05,
+            0x06,
+            0x07,
+            0x08,
+            0x09,
+            0x0A,
+            0x0B,
+            0x0C,
+            0x0D,
+            0x0E,
             0x0F
         })
         /* Over Integers */
@@ -5497,21 +5497,21 @@
         Name (I000, 0xABCD0000)
         Name (P000, Package (0x10)
         {
-            0x00, 
-            0x01, 
-            0x02, 
-            0x03, 
-            0x04, 
-            0x05, 
-            0x06, 
-            0x07, 
-            0x08, 
-            0x09, 
-            0x0A, 
-            0x0B, 
-            0x0C, 
-            0x0D, 
-            0x0E, 
+            0x00,
+            0x01,
+            0x02,
+            0x03,
+            0x04,
+            0x05,
+            0x06,
+            0x07,
+            0x08,
+            0x09,
+            0x0A,
+            0x0B,
+            0x0C,
+            0x0D,
+            0x0E,
             0x0F
         })
         /* Over Integers */
@@ -5836,4 +5836,3 @@
      Use the same object in several operands and results
      */
     }
-

@@ -34,7 +34,7 @@
     {
         Name (P000, Package (0x20)
         {
-            0x00, 
+            0x00,
             P000
         })
         Store (P000 [0x00], Local0)
@@ -46,11 +46,10 @@
     {
         Name (P000, Package (0x20)
         {
-            0x00, 
+            0x00,
             P000
         })
         Local0 = P000 [0x00]
         Local1 = Local0
         Debug = Local0
     }
-

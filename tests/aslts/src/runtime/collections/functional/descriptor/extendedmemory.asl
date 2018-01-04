@@ -42,7 +42,7 @@
                 0xF0F1F2F3F4F5F6F7, // Length
                 0xF8F9FAFBFCFDFEFF, // Type-Specific Attributes
                 , AddressRangeMemory, TypeStatic)
-        }, 
+        },
 
         ResourceTemplate ()
         {
@@ -54,7 +54,7 @@
                 0xF0F1F2F3F4F5F6F7, // Length
                 0xF8F9FAFBFCFDFEFF, // Type-Specific Attributes
                 , AddressRangeMemory, TypeStatic)
-        }, 
+        },
 
         ResourceTemplate ()
         {
@@ -66,7 +66,7 @@
                 0xF0F1F2F3F4F5F6F7, // Length
                 0xF8F9FAFBFCFDFEFF, // Type-Specific Attributes
                 , AddressRangeMemory, TypeStatic)
-        }, 
+        },
 
         ResourceTemplate ()
         {
@@ -78,7 +78,7 @@
                 0xF0F1F2F3F4F5F6F7, // Length
                 0xF8F9FAFBFCFDFEFF, // Type-Specific Attributes
                 , AddressRangeMemory, TypeStatic)
-        }, 
+        },
 
         ResourceTemplate ()
         {
@@ -90,7 +90,7 @@
                 0xF0F1F2F3F4F5F6F7, // Length
                 0xF8F9FAFBFCFDFEFF, // Type-Specific Attributes
                 , AddressRangeMemory, TypeStatic)
-        }, 
+        },
 
         ResourceTemplate ()
         {
@@ -102,7 +102,7 @@
                 0xF0F1F2F3F4F5F6F7, // Length
                 0xF8F9FAFBFCFDFEFF, // Type-Specific Attributes
                 , AddressRangeMemory, TypeStatic)
-        }, 
+        },
 
         ResourceTemplate ()
         {
@@ -114,7 +114,7 @@
                 0xF0F1F2F3F4F5F6F7, // Length
                 0xF8F9FAFBFCFDFEFF, // Type-Specific Attributes
                 , AddressRangeMemory, TypeStatic)
-        }, 
+        },
 
         ResourceTemplate ()
         {
@@ -126,7 +126,7 @@
                 0xF0F1F2F3F4F5F6F7, // Length
                 0xF8F9FAFBFCFDFEFF, // Type-Specific Attributes
                 , AddressRangeMemory, TypeStatic)
-        }, 
+        },
 
         ResourceTemplate ()
         {
@@ -138,7 +138,7 @@
                 0xF0F1F2F3F4F5F6F7, // Length
                 0xF8F9FAFBFCFDFEFF, // Type-Specific Attributes
                 , AddressRangeMemory, TypeStatic)
-        }, 
+        },
 
         ResourceTemplate ()
         {
@@ -150,7 +150,7 @@
                 0xF0F1F2F3F4F5F6F7, // Length
                 0xF8F9FAFBFCFDFEFF, // Type-Specific Attributes
                 , AddressRangeMemory, TypeStatic)
-        }, 
+        },
 
         ResourceTemplate ()
         {
@@ -162,7 +162,7 @@
                 0xF0F1F2F3F4F5F6F7, // Length
                 0xF8F9FAFBFCFDFEFF, // Type-Specific Attributes
                 , AddressRangeMemory, TypeStatic)
-        }, 
+        },
 
         ResourceTemplate ()
         {
@@ -174,7 +174,7 @@
                 0xF0F1F2F3F4F5F6F7, // Length
                 0xF8F9FAFBFCFDFEFF, // Type-Specific Attributes
                 , AddressRangeMemory, TypeStatic)
-        }, 
+        },
 
         ResourceTemplate ()
         {
@@ -186,7 +186,7 @@
                 0xF0F1F2F3F4F5F6F7, // Length
                 0xF8F9FAFBFCFDFEFF, // Type-Specific Attributes
                 , AddressRangeMemory, TypeStatic)
-        }, 
+        },
 
         ResourceTemplate ()
         {
@@ -198,7 +198,7 @@
                 0xF0F1F2F3F4F5F6F7, // Length
                 0xF8F9FAFBFCFDFEFF, // Type-Specific Attributes
                 , AddressRangeMemory, TypeStatic)
-        }, 
+        },
 
         ResourceTemplate ()
         {
@@ -210,7 +210,7 @@
                 0xF0F1F2F3F4F5F6F7, // Length
                 0xF8F9FAFBFCFDFEFF, // Type-Specific Attributes
                 , AddressRangeMemory, TypeStatic)
-        }, 
+        },
 
         ResourceTemplate ()
         {
@@ -222,7 +222,7 @@
                 0xF0F1F2F3F4F5F6F7, // Length
                 0xF8F9FAFBFCFDFEFF, // Type-Specific Attributes
                 , AddressRangeMemory, TypeStatic)
-        }, 
+        },
 
         ResourceTemplate ()
         {
@@ -234,7 +234,7 @@
                 0xF0F1F2F3F4F5F6F7, // Length
                 0xF8F9FAFBFCFDFEFF, // Type-Specific Attributes
                 , AddressRangeMemory, TypeStatic)
-        }, 
+        },
 
         ResourceTemplate ()
         {
@@ -246,7 +246,7 @@
                 0xF0F1F2F3F4F5F6F7, // Length
                 0xF8F9FAFBFCFDFEFF, // Type-Specific Attributes
                 , AddressRangeMemory, TypeTranslation)
-        }, 
+        },
 
         ResourceTemplate ()
         {
@@ -258,7 +258,7 @@
                 0xF0F1F2F3F4F5F6F7, // Length
                 0xF8F9FAFBFCFDFEFF, // Type-Specific Attributes
                 , AddressRangeReserved, TypeStatic)
-        }, 
+        },
 
         ResourceTemplate ()
         {
@@ -270,7 +270,7 @@
                 0xF0F1F2F3F4F5F6F7, // Length
                 0xF8F9FAFBFCFDFEFF, // Type-Specific Attributes
                 , AddressRangeReserved, TypeTranslation)
-        }, 
+        },
 
         ResourceTemplate ()
         {
@@ -282,7 +282,7 @@
                 0xF0F1F2F3F4F5F6F7, // Length
                 0xF8F9FAFBFCFDFEFF, // Type-Specific Attributes
                 , AddressRangeACPI, TypeStatic)
-        }, 
+        },
 
         ResourceTemplate ()
         {
@@ -294,7 +294,7 @@
                 0xF0F1F2F3F4F5F6F7, // Length
                 0xF8F9FAFBFCFDFEFF, // Type-Specific Attributes
                 , AddressRangeACPI, TypeTranslation)
-        }, 
+        },
 
         ResourceTemplate ()
         {
@@ -306,7 +306,7 @@
                 0xF0F1F2F3F4F5F6F7, // Length
                 0xF8F9FAFBFCFDFEFF, // Type-Specific Attributes
                 , AddressRangeNVS, TypeStatic)
-        }, 
+        },
 
         ResourceTemplate ()
         {
@@ -318,7 +318,7 @@
                 0xF0F1F2F3F4F5F6F7, // Length
                 0xF8F9FAFBFCFDFEFF, // Type-Specific Attributes
                 , AddressRangeNVS, TypeTranslation)
-        }, 
+        },
 
         ResourceTemplate ()
         {
@@ -330,7 +330,7 @@
                 0xF0F1F2F3F4F5F6F7, // Length
                 0xF8F9FAFBFCFDFEFF, // Type-Specific Attributes
                 , AddressRangeMemory, TypeStatic)
-        }, 
+        },
 
         ResourceTemplate ()
         {
@@ -342,7 +342,7 @@
                 0xF0F1F2F3F4F5F6F7, // Length
                 0xF8F9FAFBFCFDFEFF, // Type-Specific Attributes
                 , AddressRangeMemory, TypeTranslation)
-        }, 
+        },
 
         ResourceTemplate ()
         {
@@ -354,7 +354,7 @@
                 0xF0F1F2F3F4F5F6F7, // Length
                 0xF8F9FAFBFCFDFEFF, // Type-Specific Attributes
                 , AddressRangeReserved, TypeStatic)
-        }, 
+        },
 
         ResourceTemplate ()
         {
@@ -366,7 +366,7 @@
                 0xF0F1F2F3F4F5F6F7, // Length
                 0xF8F9FAFBFCFDFEFF, // Type-Specific Attributes
                 , AddressRangeReserved, TypeTranslation)
-        }, 
+        },
 
         ResourceTemplate ()
         {
@@ -378,7 +378,7 @@
                 0xF0F1F2F3F4F5F6F7, // Length
                 0xF8F9FAFBFCFDFEFF, // Type-Specific Attributes
                 , AddressRangeACPI, TypeStatic)
-        }, 
+        },
 
         ResourceTemplate ()
         {
@@ -390,7 +390,7 @@
                 0xF0F1F2F3F4F5F6F7, // Length
                 0xF8F9FAFBFCFDFEFF, // Type-Specific Attributes
                 , AddressRangeACPI, TypeTranslation)
-        }, 
+        },
 
         ResourceTemplate ()
         {
@@ -402,7 +402,7 @@
                 0xF0F1F2F3F4F5F6F7, // Length
                 0xF8F9FAFBFCFDFEFF, // Type-Specific Attributes
                 , AddressRangeNVS, TypeStatic)
-        }, 
+        },
 
         ResourceTemplate ()
         {
@@ -414,7 +414,7 @@
                 0xF0F1F2F3F4F5F6F7, // Length
                 0xF8F9FAFBFCFDFEFF, // Type-Specific Attributes
                 , AddressRangeNVS, TypeTranslation)
-        }, 
+        },
 
         ResourceTemplate ()
         {
@@ -426,7 +426,7 @@
                 0xF0F1F2F3F4F5F6F7, // Length
                 0xF8F9FAFBFCFDFEFF, // Type-Specific Attributes
                 , AddressRangeMemory, TypeStatic)
-        }, 
+        },
 
         ResourceTemplate ()
         {
@@ -438,7 +438,7 @@
                 0xF0F1F2F3F4F5F6F7, // Length
                 0xF8F9FAFBFCFDFEFF, // Type-Specific Attributes
                 , AddressRangeMemory, TypeTranslation)
-        }, 
+        },
 
         ResourceTemplate ()
         {
@@ -450,7 +450,7 @@
                 0xF0F1F2F3F4F5F6F7, // Length
                 0xF8F9FAFBFCFDFEFF, // Type-Specific Attributes
                 , AddressRangeReserved, TypeStatic)
-        }, 
+        },
 
         ResourceTemplate ()
         {
@@ -462,7 +462,7 @@
                 0xF0F1F2F3F4F5F6F7, // Length
                 0xF8F9FAFBFCFDFEFF, // Type-Specific Attributes
                 , AddressRangeReserved, TypeTranslation)
-        }, 
+        },
 
         ResourceTemplate ()
         {
@@ -474,7 +474,7 @@
                 0xF0F1F2F3F4F5F6F7, // Length
                 0xF8F9FAFBFCFDFEFF, // Type-Specific Attributes
                 , AddressRangeACPI, TypeStatic)
-        }, 
+        },
 
         ResourceTemplate ()
         {
@@ -486,7 +486,7 @@
                 0xF0F1F2F3F4F5F6F7, // Length
                 0xF8F9FAFBFCFDFEFF, // Type-Specific Attributes
                 , AddressRangeACPI, TypeTranslation)
-        }, 
+        },
 
         ResourceTemplate ()
         {
@@ -498,7 +498,7 @@
                 0xF0F1F2F3F4F5F6F7, // Length
                 0xF8F9FAFBFCFDFEFF, // Type-Specific Attributes
                 , AddressRangeNVS, TypeStatic)
-        }, 
+        },
 
         ResourceTemplate ()
         {
@@ -510,7 +510,7 @@
                 0xF0F1F2F3F4F5F6F7, // Length
                 0xF8F9FAFBFCFDFEFF, // Type-Specific Attributes
                 , AddressRangeNVS, TypeTranslation)
-        }, 
+        },
 
         ResourceTemplate ()
         {
@@ -522,7 +522,7 @@
                 0xF0F1F2F3F4F5F6F7, // Length
                 0xF8F9FAFBFCFDFEFF, // Type-Specific Attributes
                 , AddressRangeMemory, TypeStatic)
-        }, 
+        },
 
         ResourceTemplate ()
         {
@@ -534,7 +534,7 @@
                 0xF0F1F2F3F4F5F6F7, // Length
                 0xF8F9FAFBFCFDFEFF, // Type-Specific Attributes
                 , AddressRangeMemory, TypeTranslation)
-        }, 
+        },
 
         ResourceTemplate ()
         {
@@ -546,7 +546,7 @@
                 0xF0F1F2F3F4F5F6F7, // Length
                 0xF8F9FAFBFCFDFEFF, // Type-Specific Attributes
                 , AddressRangeReserved, TypeStatic)
-        }, 
+        },
 
         ResourceTemplate ()
         {
@@ -558,7 +558,7 @@
                 0xF0F1F2F3F4F5F6F7, // Length
                 0xF8F9FAFBFCFDFEFF, // Type-Specific Attributes
                 , AddressRangeReserved, TypeTranslation)
-        }, 
+        },
 
         ResourceTemplate ()
         {
@@ -570,7 +570,7 @@
                 0xF0F1F2F3F4F5F6F7, // Length
                 0xF8F9FAFBFCFDFEFF, // Type-Specific Attributes
                 , AddressRangeACPI, TypeStatic)
-        }, 
+        },
 
         ResourceTemplate ()
         {
@@ -582,7 +582,7 @@
                 0xF0F1F2F3F4F5F6F7, // Length
                 0xF8F9FAFBFCFDFEFF, // Type-Specific Attributes
                 , AddressRangeACPI, TypeTranslation)
-        }, 
+        },
 
         ResourceTemplate ()
         {
@@ -594,7 +594,7 @@
                 0xF0F1F2F3F4F5F6F7, // Length
                 0xF8F9FAFBFCFDFEFF, // Type-Specific Attributes
                 , AddressRangeNVS, TypeStatic)
-        }, 
+        },
 
         ResourceTemplate ()
         {
@@ -606,7 +606,7 @@
                 0xF0F1F2F3F4F5F6F7, // Length
                 0xF8F9FAFBFCFDFEFF, // Type-Specific Attributes
                 , AddressRangeNVS, TypeTranslation)
-        }, 
+        },
 
         ResourceTemplate ()
         {
@@ -618,7 +618,7 @@
                 0xF0F1F2F3F4F5F6F7, // Length
                 0xF8F9FAFBFCFDFEFF, // Type-Specific Attributes
                 , AddressRangeMemory, TypeStatic)
-        }, 
+        },
 
         ResourceTemplate ()
         {
@@ -630,7 +630,7 @@
                 0xF0F1F2F3F4F5F6F7, // Length
                 0xF8F9FAFBFCFDFEFF, // Type-Specific Attributes
                 , AddressRangeMemory, TypeTranslation)
-        }, 
+        },
 
         ResourceTemplate ()
         {
@@ -642,7 +642,7 @@
                 0xF0F1F2F3F4F5F6F7, // Length
                 0xF8F9FAFBFCFDFEFF, // Type-Specific Attributes
                 , AddressRangeReserved, TypeStatic)
-        }, 
+        },
 
         ResourceTemplate ()
         {
@@ -654,7 +654,7 @@
                 0xF0F1F2F3F4F5F6F7, // Length
                 0xF8F9FAFBFCFDFEFF, // Type-Specific Attributes
                 , AddressRangeReserved, TypeTranslation)
-        }, 
+        },
 
         ResourceTemplate ()
         {
@@ -666,7 +666,7 @@
                 0xF0F1F2F3F4F5F6F7, // Length
                 0xF8F9FAFBFCFDFEFF, // Type-Specific Attributes
                 , AddressRangeACPI, TypeStatic)
-        }, 
+        },
 
         ResourceTemplate ()
         {
@@ -678,7 +678,7 @@
                 0xF0F1F2F3F4F5F6F7, // Length
                 0xF8F9FAFBFCFDFEFF, // Type-Specific Attributes
                 , AddressRangeACPI, TypeTranslation)
-        }, 
+        },
 
         ResourceTemplate ()
         {
@@ -690,7 +690,7 @@
                 0xF0F1F2F3F4F5F6F7, // Length
                 0xF8F9FAFBFCFDFEFF, // Type-Specific Attributes
                 , AddressRangeNVS, TypeStatic)
-        }, 
+        },
 
         ResourceTemplate ()
         {
@@ -702,7 +702,7 @@
                 0xF0F1F2F3F4F5F6F7, // Length
                 0xF8F9FAFBFCFDFEFF, // Type-Specific Attributes
                 , AddressRangeNVS, TypeTranslation)
-        }, 
+        },
 
         ResourceTemplate ()
         {
@@ -714,7 +714,7 @@
                 0xF0F1F2F3F4F5F6F7, // Length
                 0xF8F9FAFBFCFDFEFF, // Type-Specific Attributes
                 , AddressRangeMemory, TypeStatic)
-        }, 
+        },
 
         ResourceTemplate ()
         {
@@ -726,7 +726,7 @@
                 0xF0F1F2F3F4F5F6F7, // Length
                 0xF8F9FAFBFCFDFEFF, // Type-Specific Attributes
                 , AddressRangeMemory, TypeTranslation)
-        }, 
+        },
 
         ResourceTemplate ()
         {
@@ -738,7 +738,7 @@
                 0xF0F1F2F3F4F5F6F7, // Length
                 0xF8F9FAFBFCFDFEFF, // Type-Specific Attributes
                 , AddressRangeReserved, TypeStatic)
-        }, 
+        },
 
         ResourceTemplate ()
         {
@@ -750,7 +750,7 @@
                 0xF0F1F2F3F4F5F6F7, // Length
                 0xF8F9FAFBFCFDFEFF, // Type-Specific Attributes
                 , AddressRangeReserved, TypeTranslation)
-        }, 
+        },
 
         ResourceTemplate ()
         {
@@ -762,7 +762,7 @@
                 0xF0F1F2F3F4F5F6F7, // Length
                 0xF8F9FAFBFCFDFEFF, // Type-Specific Attributes
                 , AddressRangeACPI, TypeStatic)
-        }, 
+        },
 
         ResourceTemplate ()
         {
@@ -774,7 +774,7 @@
                 0xF0F1F2F3F4F5F6F7, // Length
                 0xF8F9FAFBFCFDFEFF, // Type-Specific Attributes
                 , AddressRangeACPI, TypeTranslation)
-        }, 
+        },
 
         ResourceTemplate ()
         {
@@ -786,7 +786,7 @@
                 0xF0F1F2F3F4F5F6F7, // Length
                 0xF8F9FAFBFCFDFEFF, // Type-Specific Attributes
                 , AddressRangeNVS, TypeStatic)
-        }, 
+        },
 
         ResourceTemplate ()
         {
@@ -798,7 +798,7 @@
                 0xF0F1F2F3F4F5F6F7, // Length
                 0xF8F9FAFBFCFDFEFF, // Type-Specific Attributes
                 , AddressRangeNVS, TypeTranslation)
-        }, 
+        },
 
         ResourceTemplate ()
         {
@@ -810,7 +810,7 @@
                 0xF0F1F2F3F4F5F6F7, // Length
                 0xF8F9FAFBFCFDFEFF, // Type-Specific Attributes
                 , AddressRangeMemory, TypeStatic)
-        }, 
+        },
 
         ResourceTemplate ()
         {
@@ -822,7 +822,7 @@
                 0xF0F1F2F3F4F5F6F7, // Length
                 0xF8F9FAFBFCFDFEFF, // Type-Specific Attributes
                 , AddressRangeMemory, TypeTranslation)
-        }, 
+        },
 
         ResourceTemplate ()
         {
@@ -834,7 +834,7 @@
                 0xF0F1F2F3F4F5F6F7, // Length
                 0xF8F9FAFBFCFDFEFF, // Type-Specific Attributes
                 , AddressRangeReserved, TypeStatic)
-        }, 
+        },
 
         ResourceTemplate ()
         {
@@ -846,7 +846,7 @@
                 0xF0F1F2F3F4F5F6F7, // Length
                 0xF8F9FAFBFCFDFEFF, // Type-Specific Attributes
                 , AddressRangeReserved, TypeTranslation)
-        }, 
+        },
 
         ResourceTemplate ()
         {
@@ -858,7 +858,7 @@
                 0xF0F1F2F3F4F5F6F7, // Length
                 0xF8F9FAFBFCFDFEFF, // Type-Specific Attributes
                 , AddressRangeACPI, TypeStatic)
-        }, 
+        },
 
         ResourceTemplate ()
         {
@@ -870,7 +870,7 @@
                 0xF0F1F2F3F4F5F6F7, // Length
                 0xF8F9FAFBFCFDFEFF, // Type-Specific Attributes
                 , AddressRangeACPI, TypeTranslation)
-        }, 
+        },
 
         ResourceTemplate ()
         {
@@ -882,7 +882,7 @@
                 0xF0F1F2F3F4F5F6F7, // Length
                 0xF8F9FAFBFCFDFEFF, // Type-Specific Attributes
                 , AddressRangeNVS, TypeStatic)
-        }, 
+        },
 
         ResourceTemplate ()
         {
@@ -894,7 +894,7 @@
                 0xF0F1F2F3F4F5F6F7, // Length
                 0xF8F9FAFBFCFDFEFF, // Type-Specific Attributes
                 , AddressRangeNVS, TypeTranslation)
-        }, 
+        },
 
         ResourceTemplate ()
         {
@@ -906,7 +906,7 @@
                 0xF0F1F2F3F4F5F6F7, // Length
                 0xF8F9FAFBFCFDFEFF, // Type-Specific Attributes
                 , AddressRangeMemory, TypeStatic)
-        }, 
+        },
 
         ResourceTemplate ()
         {
@@ -918,7 +918,7 @@
                 0xF0F1F2F3F4F5F6F7, // Length
                 0xF8F9FAFBFCFDFEFF, // Type-Specific Attributes
                 , AddressRangeMemory, TypeTranslation)
-        }, 
+        },
 
         ResourceTemplate ()
         {
@@ -930,7 +930,7 @@
                 0xF0F1F2F3F4F5F6F7, // Length
                 0xF8F9FAFBFCFDFEFF, // Type-Specific Attributes
                 , AddressRangeReserved, TypeStatic)
-        }, 
+        },
 
         ResourceTemplate ()
         {
@@ -942,7 +942,7 @@
                 0xF0F1F2F3F4F5F6F7, // Length
                 0xF8F9FAFBFCFDFEFF, // Type-Specific Attributes
                 , AddressRangeReserved, TypeTranslation)
-        }, 
+        },
 
         ResourceTemplate ()
         {
@@ -954,7 +954,7 @@
                 0xF0F1F2F3F4F5F6F7, // Length
                 0xF8F9FAFBFCFDFEFF, // Type-Specific Attributes
                 , AddressRangeACPI, TypeStatic)
-        }, 
+        },
 
         ResourceTemplate ()
         {
@@ -966,7 +966,7 @@
                 0xF0F1F2F3F4F5F6F7, // Length
                 0xF8F9FAFBFCFDFEFF, // Type-Specific Attributes
                 , AddressRangeACPI, TypeTranslation)
-        }, 
+        },
 
         ResourceTemplate ()
         {
@@ -978,7 +978,7 @@
                 0xF0F1F2F3F4F5F6F7, // Length
                 0xF8F9FAFBFCFDFEFF, // Type-Specific Attributes
                 , AddressRangeNVS, TypeStatic)
-        }, 
+        },
 
         ResourceTemplate ()
         {
@@ -990,7 +990,7 @@
                 0xF0F1F2F3F4F5F6F7, // Length
                 0xF8F9FAFBFCFDFEFF, // Type-Specific Attributes
                 , AddressRangeNVS, TypeTranslation)
-        }, 
+        },
 
         ResourceTemplate ()
         {
@@ -1002,7 +1002,7 @@
                 0xF0F1F2F3F4F5F6F7, // Length
                 0xF8F9FAFBFCFDFEFF, // Type-Specific Attributes
                 , AddressRangeMemory, TypeStatic)
-        }, 
+        },
 
         ResourceTemplate ()
         {
@@ -1014,7 +1014,7 @@
                 0xF0F1F2F3F4F5F6F7, // Length
                 0x0000000000000000, // Type-Specific Attributes
                 , AddressRangeMemory, TypeStatic)
-        }, 
+        },
 
         ResourceTemplate ()
         {
@@ -1026,7 +1026,7 @@
                 0xF0F1F2F3F4F5F6F7, // Length
                 0xF8F9FAFBFCFDFEFF, // Type-Specific Attributes
                 , AddressRangeMemory, TypeStatic)
-        }, 
+        },
 
         ResourceTemplate ()
         {
@@ -1038,7 +1038,7 @@
                 0xF0F1F2F3F4F5F6F7, // Length
                 0x0000000000000000, // Type-Specific Attributes
                 , AddressRangeMemory, TypeStatic)
-        }, 
+        },
 
         ResourceTemplate ()
         {
@@ -1050,7 +1050,7 @@
                 0xF0F1F2F3F4F5F6F7, // Length
                 0xF8F9FAFBFCFDFEFF, // Type-Specific Attributes
                 , AddressRangeACPI, TypeTranslation)
-        }, 
+        },
 
         ResourceTemplate ()
         {
@@ -1198,7 +1198,7 @@
                 0xF0F1F2F3F4F5F6F7, // Length
                 0xF8F9FAFBFCFDFEFF, // Type-Specific Attributes
                 , AddressRangeMemory, TypeStatic)
-        }, 
+        },
 
         ResourceTemplate ()
         {
@@ -1210,7 +1210,7 @@
                 0xF0F1F2F3F4F5F6F7, // Length
                 0xF8F9FAFBFCFDFEFF, // Type-Specific Attributes
                 , AddressRangeMemory, TypeStatic)
-        }, 
+        },
 
         ResourceTemplate ()
         {
@@ -1222,7 +1222,7 @@
                 0xF0F1F2F3F4F5F6F7, // Length
                 0xF8F9FAFBFCFDFEFF, // Type-Specific Attributes
                 , AddressRangeMemory, TypeStatic)
-        }, 
+        },
 
         ResourceTemplate ()
         {
@@ -1234,7 +1234,7 @@
                 0xF0F1F2F3F4F5F6F7, // Length
                 0xF8F9FAFBFCFDFEFF, // Type-Specific Attributes
                 , AddressRangeMemory, TypeStatic)
-        }, 
+        },
 
         ResourceTemplate ()
         {
@@ -1246,7 +1246,7 @@
                 0xF0F1F2F3F4F5F6F7, // Length
                 0xF8F9FAFBFCFDFEFF, // Type-Specific Attributes
                 , AddressRangeMemory, TypeStatic)
-        }, 
+        },
 
         ResourceTemplate ()
         {
@@ -1258,7 +1258,7 @@
                 0xF0F1F2F3F4F5F6F7, // Length
                 0xF8F9FAFBFCFDFEFF, // Type-Specific Attributes
                 , AddressRangeMemory, TypeStatic)
-        }, 
+        },
 
         ResourceTemplate ()
         {
@@ -1270,7 +1270,7 @@
                 0xF0F1F2F3F4F5F6F7, // Length
                 0xF8F9FAFBFCFDFEFF, // Type-Specific Attributes
                 , AddressRangeMemory, TypeStatic)
-        }, 
+        },
 
         ResourceTemplate ()
         {
@@ -1282,7 +1282,7 @@
                 0xF0F1F2F3F4F5F6F7, // Length
                 0xF8F9FAFBFCFDFEFF, // Type-Specific Attributes
                 , AddressRangeMemory, TypeStatic)
-        }, 
+        },
 
         ResourceTemplate ()
         {
@@ -1294,7 +1294,7 @@
                 0xF0F1F2F3F4F5F6F7, // Length
                 0xF8F9FAFBFCFDFEFF, // Type-Specific Attributes
                 , AddressRangeMemory, TypeStatic)
-        }, 
+        },
 
         ResourceTemplate ()
         {
@@ -1306,7 +1306,7 @@
                 0xF0F1F2F3F4F5F6F7, // Length
                 0xF8F9FAFBFCFDFEFF, // Type-Specific Attributes
                 , AddressRangeMemory, TypeStatic)
-        }, 
+        },
 
         ResourceTemplate ()
         {
@@ -1318,7 +1318,7 @@
                 0xF0F1F2F3F4F5F6F7, // Length
                 0xF8F9FAFBFCFDFEFF, // Type-Specific Attributes
                 , AddressRangeMemory, TypeStatic)
-        }, 
+        },
 
         ResourceTemplate ()
         {
@@ -1330,7 +1330,7 @@
                 0xF0F1F2F3F4F5F6F7, // Length
                 0xF8F9FAFBFCFDFEFF, // Type-Specific Attributes
                 , AddressRangeMemory, TypeStatic)
-        }, 
+        },
 
         ResourceTemplate ()
         {
@@ -1342,7 +1342,7 @@
                 0xF0F1F2F3F4F5F6F7, // Length
                 0xF8F9FAFBFCFDFEFF, // Type-Specific Attributes
                 , AddressRangeMemory, TypeStatic)
-        }, 
+        },
 
         ResourceTemplate ()
         {
@@ -1354,7 +1354,7 @@
                 0xF0F1F2F3F4F5F6F7, // Length
                 0xF8F9FAFBFCFDFEFF, // Type-Specific Attributes
                 , AddressRangeMemory, TypeStatic)
-        }, 
+        },
 
         ResourceTemplate ()
         {
@@ -1366,7 +1366,7 @@
                 0xF0F1F2F3F4F5F6F7, // Length
                 0xF8F9FAFBFCFDFEFF, // Type-Specific Attributes
                 , AddressRangeMemory, TypeStatic)
-        }, 
+        },
 
         ResourceTemplate ()
         {
@@ -1378,7 +1378,7 @@
                 0xF0F1F2F3F4F5F6F7, // Length
                 0xF8F9FAFBFCFDFEFF, // Type-Specific Attributes
                 , AddressRangeMemory, TypeStatic)
-        }, 
+        },
 
         /* Byte 5 (Type Specific Flags) of Extended Address Space Descriptor */
         /* NonCacheable */
@@ -1392,7 +1392,7 @@
                 0xF0F1F2F3F4F5F6F7, // Length
                 0xF8F9FAFBFCFDFEFF, // Type-Specific Attributes
                 , AddressRangeMemory, TypeStatic)
-        }, 
+        },
 
         ResourceTemplate ()
         {
@@ -1404,7 +1404,7 @@
                 0xF0F1F2F3F4F5F6F7, // Length
                 0xF8F9FAFBFCFDFEFF, // Type-Specific Attributes
                 , AddressRangeMemory, TypeTranslation)
-        }, 
+        },
 
         ResourceTemplate ()
         {
@@ -1416,7 +1416,7 @@
                 0xF0F1F2F3F4F5F6F7, // Length
                 0xF8F9FAFBFCFDFEFF, // Type-Specific Attributes
                 , AddressRangeReserved, TypeStatic)
-        }, 
+        },
 
         ResourceTemplate ()
         {
@@ -1428,7 +1428,7 @@
                 0xF0F1F2F3F4F5F6F7, // Length
                 0xF8F9FAFBFCFDFEFF, // Type-Specific Attributes
                 , AddressRangeReserved, TypeTranslation)
-        }, 
+        },
 
         ResourceTemplate ()
         {
@@ -1440,7 +1440,7 @@
                 0xF0F1F2F3F4F5F6F7, // Length
                 0xF8F9FAFBFCFDFEFF, // Type-Specific Attributes
                 , AddressRangeACPI, TypeStatic)
-        }, 
+        },
 
         ResourceTemplate ()
         {
@@ -1452,7 +1452,7 @@
                 0xF0F1F2F3F4F5F6F7, // Length
                 0xF8F9FAFBFCFDFEFF, // Type-Specific Attributes
                 , AddressRangeACPI, TypeTranslation)
-        }, 
+        },
 
         ResourceTemplate ()
         {
@@ -1464,7 +1464,7 @@
                 0xF0F1F2F3F4F5F6F7, // Length
                 0xF8F9FAFBFCFDFEFF, // Type-Specific Attributes
                 , AddressRangeNVS, TypeStatic)
-        }, 
+        },
 
         ResourceTemplate ()
         {
@@ -1476,7 +1476,7 @@
                 0xF0F1F2F3F4F5F6F7, // Length
                 0xF8F9FAFBFCFDFEFF, // Type-Specific Attributes
                 , AddressRangeNVS, TypeTranslation)
-        }, 
+        },
 
         ResourceTemplate ()
         {
@@ -1488,7 +1488,7 @@
                 0xF0F1F2F3F4F5F6F7, // Length
                 0xF8F9FAFBFCFDFEFF, // Type-Specific Attributes
                 , AddressRangeMemory, TypeStatic)
-        }, 
+        },
 
         ResourceTemplate ()
         {
@@ -1500,7 +1500,7 @@
                 0xF0F1F2F3F4F5F6F7, // Length
                 0xF8F9FAFBFCFDFEFF, // Type-Specific Attributes
                 , AddressRangeMemory, TypeTranslation)
-        }, 
+        },
 
         ResourceTemplate ()
         {
@@ -1512,7 +1512,7 @@
                 0xF0F1F2F3F4F5F6F7, // Length
                 0xF8F9FAFBFCFDFEFF, // Type-Specific Attributes
                 , AddressRangeReserved, TypeStatic)
-        }, 
+        },
 
         ResourceTemplate ()
         {
@@ -1524,7 +1524,7 @@
                 0xF0F1F2F3F4F5F6F7, // Length
                 0xF8F9FAFBFCFDFEFF, // Type-Specific Attributes
                 , AddressRangeReserved, TypeTranslation)
-        }, 
+        },
 
         ResourceTemplate ()
         {
@@ -1536,7 +1536,7 @@
                 0xF0F1F2F3F4F5F6F7, // Length
                 0xF8F9FAFBFCFDFEFF, // Type-Specific Attributes
                 , AddressRangeACPI, TypeStatic)
-        }, 
+        },
 
         ResourceTemplate ()
         {
@@ -1548,7 +1548,7 @@
                 0xF0F1F2F3F4F5F6F7, // Length
                 0xF8F9FAFBFCFDFEFF, // Type-Specific Attributes
                 , AddressRangeACPI, TypeTranslation)
-        }, 
+        },
 
         ResourceTemplate ()
         {
@@ -1560,7 +1560,7 @@
                 0xF0F1F2F3F4F5F6F7, // Length
                 0xF8F9FAFBFCFDFEFF, // Type-Specific Attributes
                 , AddressRangeNVS, TypeStatic)
-        }, 
+        },
 
         ResourceTemplate ()
         {
@@ -1572,7 +1572,7 @@
                 0xF0F1F2F3F4F5F6F7, // Length
                 0xF8F9FAFBFCFDFEFF, // Type-Specific Attributes
                 , AddressRangeNVS, TypeTranslation)
-        }, 
+        },
 
         /* Cacheable */
 
@@ -1586,7 +1586,7 @@
                 0xF0F1F2F3F4F5F6F7, // Length
                 0xF8F9FAFBFCFDFEFF, // Type-Specific Attributes
                 , AddressRangeMemory, TypeStatic)
-        }, 
+        },
 
         ResourceTemplate ()
         {
@@ -1598,7 +1598,7 @@
                 0xF0F1F2F3F4F5F6F7, // Length
                 0xF8F9FAFBFCFDFEFF, // Type-Specific Attributes
                 , AddressRangeMemory, TypeTranslation)
-        }, 
+        },
 
         ResourceTemplate ()
         {
@@ -1610,7 +1610,7 @@
                 0xF0F1F2F3F4F5F6F7, // Length
                 0xF8F9FAFBFCFDFEFF, // Type-Specific Attributes
                 , AddressRangeReserved, TypeStatic)
-        }, 
+        },
 
         ResourceTemplate ()
         {
@@ -1622,7 +1622,7 @@
                 0xF0F1F2F3F4F5F6F7, // Length
                 0xF8F9FAFBFCFDFEFF, // Type-Specific Attributes
                 , AddressRangeReserved, TypeTranslation)
-        }, 
+        },
 
         ResourceTemplate ()
         {
@@ -1634,7 +1634,7 @@
                 0xF0F1F2F3F4F5F6F7, // Length
                 0xF8F9FAFBFCFDFEFF, // Type-Specific Attributes
                 , AddressRangeACPI, TypeStatic)
-        }, 
+        },
 
         ResourceTemplate ()
         {
@@ -1646,7 +1646,7 @@
                 0xF0F1F2F3F4F5F6F7, // Length
                 0xF8F9FAFBFCFDFEFF, // Type-Specific Attributes
                 , AddressRangeACPI, TypeTranslation)
-        }, 
+        },
 
         ResourceTemplate ()
         {
@@ -1658,7 +1658,7 @@
                 0xF0F1F2F3F4F5F6F7, // Length
                 0xF8F9FAFBFCFDFEFF, // Type-Specific Attributes
                 , AddressRangeNVS, TypeStatic)
-        }, 
+        },
 
         ResourceTemplate ()
         {
@@ -1670,7 +1670,7 @@
                 0xF0F1F2F3F4F5F6F7, // Length
                 0xF8F9FAFBFCFDFEFF, // Type-Specific Attributes
                 , AddressRangeNVS, TypeTranslation)
-        }, 
+        },
 
         ResourceTemplate ()
         {
@@ -1682,7 +1682,7 @@
                 0xF0F1F2F3F4F5F6F7, // Length
                 0xF8F9FAFBFCFDFEFF, // Type-Specific Attributes
                 , AddressRangeMemory, TypeStatic)
-        }, 
+        },
 
         ResourceTemplate ()
         {
@@ -1694,7 +1694,7 @@
                 0xF0F1F2F3F4F5F6F7, // Length
                 0xF8F9FAFBFCFDFEFF, // Type-Specific Attributes
                 , AddressRangeMemory, TypeTranslation)
-        }, 
+        },
 
         ResourceTemplate ()
         {
@@ -1706,7 +1706,7 @@
                 0xF0F1F2F3F4F5F6F7, // Length
                 0xF8F9FAFBFCFDFEFF, // Type-Specific Attributes
                 , AddressRangeReserved, TypeStatic)
-        }, 
+        },
 
         ResourceTemplate ()
         {
@@ -1718,7 +1718,7 @@
                 0xF0F1F2F3F4F5F6F7, // Length
                 0xF8F9FAFBFCFDFEFF, // Type-Specific Attributes
                 , AddressRangeReserved, TypeTranslation)
-        }, 
+        },
 
         ResourceTemplate ()
         {
@@ -1730,7 +1730,7 @@
                 0xF0F1F2F3F4F5F6F7, // Length
                 0xF8F9FAFBFCFDFEFF, // Type-Specific Attributes
                 , AddressRangeACPI, TypeStatic)
-        }, 
+        },
 
         ResourceTemplate ()
         {
@@ -1742,7 +1742,7 @@
                 0xF0F1F2F3F4F5F6F7, // Length
                 0xF8F9FAFBFCFDFEFF, // Type-Specific Attributes
                 , AddressRangeACPI, TypeTranslation)
-        }, 
+        },
 
         ResourceTemplate ()
         {
@@ -1754,7 +1754,7 @@
                 0xF0F1F2F3F4F5F6F7, // Length
                 0xF8F9FAFBFCFDFEFF, // Type-Specific Attributes
                 , AddressRangeNVS, TypeStatic)
-        }, 
+        },
 
         ResourceTemplate ()
         {
@@ -1766,7 +1766,7 @@
                 0xF0F1F2F3F4F5F6F7, // Length
                 0xF8F9FAFBFCFDFEFF, // Type-Specific Attributes
                 , AddressRangeNVS, TypeTranslation)
-        }, 
+        },
 
         /* WriteCombining */
 
@@ -1780,7 +1780,7 @@
                 0xF0F1F2F3F4F5F6F7, // Length
                 0xF8F9FAFBFCFDFEFF, // Type-Specific Attributes
                 , AddressRangeMemory, TypeStatic)
-        }, 
+        },
 
         ResourceTemplate ()
         {
@@ -1792,7 +1792,7 @@
                 0xF0F1F2F3F4F5F6F7, // Length
                 0xF8F9FAFBFCFDFEFF, // Type-Specific Attributes
                 , AddressRangeMemory, TypeTranslation)
-        }, 
+        },
 
         ResourceTemplate ()
         {
@@ -1804,7 +1804,7 @@
                 0xF0F1F2F3F4F5F6F7, // Length
                 0xF8F9FAFBFCFDFEFF, // Type-Specific Attributes
                 , AddressRangeReserved, TypeStatic)
-        }, 
+        },
 
         ResourceTemplate ()
         {
@@ -1816,7 +1816,7 @@
                 0xF0F1F2F3F4F5F6F7, // Length
                 0xF8F9FAFBFCFDFEFF, // Type-Specific Attributes
                 , AddressRangeReserved, TypeTranslation)
-        }, 
+        },
 
         ResourceTemplate ()
         {
@@ -1828,7 +1828,7 @@
                 0xF0F1F2F3F4F5F6F7, // Length
                 0xF8F9FAFBFCFDFEFF, // Type-Specific Attributes
                 , AddressRangeACPI, TypeStatic)
-        }, 
+        },
 
         ResourceTemplate ()
         {
@@ -1840,7 +1840,7 @@
                 0xF0F1F2F3F4F5F6F7, // Length
                 0xF8F9FAFBFCFDFEFF, // Type-Specific Attributes
                 , AddressRangeACPI, TypeTranslation)
-        }, 
+        },
 
         ResourceTemplate ()
         {
@@ -1852,7 +1852,7 @@
                 0xF0F1F2F3F4F5F6F7, // Length
                 0xF8F9FAFBFCFDFEFF, // Type-Specific Attributes
                 , AddressRangeNVS, TypeStatic)
-        }, 
+        },
 
         ResourceTemplate ()
         {
@@ -1864,7 +1864,7 @@
                 0xF0F1F2F3F4F5F6F7, // Length
                 0xF8F9FAFBFCFDFEFF, // Type-Specific Attributes
                 , AddressRangeNVS, TypeTranslation)
-        }, 
+        },
 
         ResourceTemplate ()
         {
@@ -1876,7 +1876,7 @@
                 0xF0F1F2F3F4F5F6F7, // Length
                 0xF8F9FAFBFCFDFEFF, // Type-Specific Attributes
                 , AddressRangeMemory, TypeStatic)
-        }, 
+        },
 
         ResourceTemplate ()
         {
@@ -1888,7 +1888,7 @@
                 0xF0F1F2F3F4F5F6F7, // Length
                 0xF8F9FAFBFCFDFEFF, // Type-Specific Attributes
                 , AddressRangeMemory, TypeTranslation)
-        }, 
+        },
 
         ResourceTemplate ()
         {
@@ -1900,7 +1900,7 @@
                 0xF0F1F2F3F4F5F6F7, // Length
                 0xF8F9FAFBFCFDFEFF, // Type-Specific Attributes
                 , AddressRangeReserved, TypeStatic)
-        }, 
+        },
 
         ResourceTemplate ()
         {
@@ -1912,7 +1912,7 @@
                 0xF0F1F2F3F4F5F6F7, // Length
                 0xF8F9FAFBFCFDFEFF, // Type-Specific Attributes
                 , AddressRangeReserved, TypeTranslation)
-        }, 
+        },
 
         ResourceTemplate ()
         {
@@ -1924,7 +1924,7 @@
                 0xF0F1F2F3F4F5F6F7, // Length
                 0xF8F9FAFBFCFDFEFF, // Type-Specific Attributes
                 , AddressRangeACPI, TypeStatic)
-        }, 
+        },
 
         ResourceTemplate ()
         {
@@ -1936,7 +1936,7 @@
                 0xF0F1F2F3F4F5F6F7, // Length
                 0xF8F9FAFBFCFDFEFF, // Type-Specific Attributes
                 , AddressRangeACPI, TypeTranslation)
-        }, 
+        },
 
         ResourceTemplate ()
         {
@@ -1948,7 +1948,7 @@
                 0xF0F1F2F3F4F5F6F7, // Length
                 0xF8F9FAFBFCFDFEFF, // Type-Specific Attributes
                 , AddressRangeNVS, TypeStatic)
-        }, 
+        },
 
         ResourceTemplate ()
         {
@@ -1960,7 +1960,7 @@
                 0xF0F1F2F3F4F5F6F7, // Length
                 0xF8F9FAFBFCFDFEFF, // Type-Specific Attributes
                 , AddressRangeNVS, TypeTranslation)
-        }, 
+        },
 
         /* Prefetchable */
 
@@ -1974,7 +1974,7 @@
                 0xF0F1F2F3F4F5F6F7, // Length
                 0xF8F9FAFBFCFDFEFF, // Type-Specific Attributes
                 , AddressRangeMemory, TypeStatic)
-        }, 
+        },
 
         ResourceTemplate ()
         {
@@ -1986,7 +1986,7 @@
                 0xF0F1F2F3F4F5F6F7, // Length
                 0xF8F9FAFBFCFDFEFF, // Type-Specific Attributes
                 , AddressRangeMemory, TypeTranslation)
-        }, 
+        },
 
         ResourceTemplate ()
         {
@@ -1998,7 +1998,7 @@
                 0xF0F1F2F3F4F5F6F7, // Length
                 0xF8F9FAFBFCFDFEFF, // Type-Specific Attributes
                 , AddressRangeReserved, TypeStatic)
-        }, 
+        },
 
         ResourceTemplate ()
         {
@@ -2010,7 +2010,7 @@
                 0xF0F1F2F3F4F5F6F7, // Length
                 0xF8F9FAFBFCFDFEFF, // Type-Specific Attributes
                 , AddressRangeReserved, TypeTranslation)
-        }, 
+        },
 
         ResourceTemplate ()
         {
@@ -2022,7 +2022,7 @@
                 0xF0F1F2F3F4F5F6F7, // Length
                 0xF8F9FAFBFCFDFEFF, // Type-Specific Attributes
                 , AddressRangeACPI, TypeStatic)
-        }, 
+        },
 
         ResourceTemplate ()
         {
@@ -2034,7 +2034,7 @@
                 0xF0F1F2F3F4F5F6F7, // Length
                 0xF8F9FAFBFCFDFEFF, // Type-Specific Attributes
                 , AddressRangeACPI, TypeTranslation)
-        }, 
+        },
 
         ResourceTemplate ()
         {
@@ -2046,7 +2046,7 @@
                 0xF0F1F2F3F4F5F6F7, // Length
                 0xF8F9FAFBFCFDFEFF, // Type-Specific Attributes
                 , AddressRangeNVS, TypeStatic)
-        }, 
+        },
 
         ResourceTemplate ()
         {
@@ -2058,7 +2058,7 @@
                 0xF0F1F2F3F4F5F6F7, // Length
                 0xF8F9FAFBFCFDFEFF, // Type-Specific Attributes
                 , AddressRangeNVS, TypeTranslation)
-        }, 
+        },
 
         ResourceTemplate ()
         {
@@ -2070,7 +2070,7 @@
                 0xF0F1F2F3F4F5F6F7, // Length
                 0xF8F9FAFBFCFDFEFF, // Type-Specific Attributes
                 , AddressRangeMemory, TypeStatic)
-        }, 
+        },
 
         ResourceTemplate ()
         {
@@ -2082,7 +2082,7 @@
                 0xF0F1F2F3F4F5F6F7, // Length
                 0xF8F9FAFBFCFDFEFF, // Type-Specific Attributes
                 , AddressRangeMemory, TypeTranslation)
-        }, 
+        },
 
         ResourceTemplate ()
         {
@@ -2094,7 +2094,7 @@
                 0xF0F1F2F3F4F5F6F7, // Length
                 0xF8F9FAFBFCFDFEFF, // Type-Specific Attributes
                 , AddressRangeReserved, TypeStatic)
-        }, 
+        },
 
         ResourceTemplate ()
         {
@@ -2106,7 +2106,7 @@
                 0xF0F1F2F3F4F5F6F7, // Length
                 0xF8F9FAFBFCFDFEFF, // Type-Specific Attributes
                 , AddressRangeReserved, TypeTranslation)
-        }, 
+        },
 
         ResourceTemplate ()
         {
@@ -2118,7 +2118,7 @@
                 0xF0F1F2F3F4F5F6F7, // Length
                 0xF8F9FAFBFCFDFEFF, // Type-Specific Attributes
                 , AddressRangeACPI, TypeStatic)
-        }, 
+        },
 
         ResourceTemplate ()
         {
@@ -2130,7 +2130,7 @@
                 0xF0F1F2F3F4F5F6F7, // Length
                 0xF8F9FAFBFCFDFEFF, // Type-Specific Attributes
                 , AddressRangeACPI, TypeTranslation)
-        }, 
+        },
 
         ResourceTemplate ()
         {
@@ -2142,7 +2142,7 @@
                 0xF0F1F2F3F4F5F6F7, // Length
                 0xF8F9FAFBFCFDFEFF, // Type-Specific Attributes
                 , AddressRangeNVS, TypeStatic)
-        }, 
+        },
 
         ResourceTemplate ()
         {
@@ -2154,7 +2154,7 @@
                 0xF0F1F2F3F4F5F6F7, // Length
                 0xF8F9FAFBFCFDFEFF, // Type-Specific Attributes
                 , AddressRangeNVS, TypeTranslation)
-        }, 
+        },
 
         /* Particular cases */
 
@@ -2168,7 +2168,7 @@
                 0xF0F1F2F3F4F5F6F7, // Length
                 0xF8F9FAFBFCFDFEFF, // Type-Specific Attributes
                 , AddressRangeMemory, TypeStatic)
-        }, 
+        },
 
         ResourceTemplate ()
         {
@@ -2180,7 +2180,7 @@
                 0xF0F1F2F3F4F5F6F7, // Length
                 0x0000000000000000, // Type-Specific Attributes
                 , AddressRangeMemory, TypeStatic)
-        }, 
+        },
 
         ResourceTemplate ()
         {
@@ -2192,7 +2192,7 @@
                 0xF0F1F2F3F4F5F6F7, // Length
                 0xF8F9FAFBFCFDFEFF, // Type-Specific Attributes
                 , AddressRangeMemory, TypeStatic)
-        }, 
+        },
 
         ResourceTemplate ()
         {
@@ -2204,7 +2204,7 @@
                 0xF0F1F2F3F4F5F6F7, // Length
                 0x0000000000000000, // Type-Specific Attributes
                 , AddressRangeMemory, TypeStatic)
-        }, 
+        },
 
         ResourceTemplate ()
         {
@@ -2216,7 +2216,7 @@
                 0xF0F1F2F3F4F5F6F7, // Length
                 0xF8F9FAFBFCFDFEFF, // Type-Specific Attributes
                 , AddressRangeACPI, TypeTranslation)
-        }, 
+        },
 
         ResourceTemplate ()
         {
@@ -2274,4 +2274,3 @@
         M331 (TS, 0x0B, 0x0140, 0x0140, 0x0300, 0x0300, "_LEN")
         M331 (TS, 0x0C, 0x0180, 0x0180, 0x0340, 0x0340, "_ATT")
     }
-

@@ -36,7 +36,7 @@
         OperationRegion (OPR0, SystemMemory, 0x00, 0x0100)
         Field (OPR0, ByteAcc, NoLock, WriteAsZeros)
         {
-            IDX0,   8, 
+            IDX0,   8,
             DTA0,   24
         }
 
@@ -47,7 +47,7 @@
 
         IndexField (IDX0, DTA0, ByteAcc, NoLock, WriteAsZeros)
         {
-                ,   15, 
+                ,   15,
             IDF0,   1
         }
 
@@ -80,4 +80,3 @@
             ERR ("", ZFFF, 0x4D, 0x00, 0x00, BF00, B001)
         }
     }
-

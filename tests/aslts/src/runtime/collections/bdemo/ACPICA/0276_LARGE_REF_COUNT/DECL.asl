@@ -47,14 +47,14 @@
         Name (STST, "STST")
         Name (TCNP, Package (0x09)
         {
-            "compilation", 
-            "functional", 
-            "complex", 
-            "exceptions", 
-            "bug-demo", 
-            "service", 
-            "mt", 
-            "Identity2MS", 
+            "compilation",
+            "functional",
+            "complex",
+            "exceptions",
+            "bug-demo",
+            "service",
+            "mt",
+            "Identity2MS",
             "IMPL"
         })
         Method (TCN0, 1, NotSerialized)
@@ -129,4 +129,3 @@
 
         MMM5 ()
     }
-

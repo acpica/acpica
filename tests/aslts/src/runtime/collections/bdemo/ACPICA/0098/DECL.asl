@@ -43,10 +43,10 @@
         Name (RUN2, 0x01)
         Name (P000, Package (0x20)
         {
-            0x00, 
-            DD08, 
-            SD01, 
-            BD04, 
+            0x00,
+            DD08,
+            SD01,
+            BD04,
             0x00
         })
         Debug = "============= Test started:"
@@ -86,20 +86,20 @@
     {
         Name (PD02, Package (0x20)
         {
-            0x00, 
-            ID0C, 
-            SD02, 
-            BD05, 
-            PD02, 
-            FD02, 
-            DD09, 
-            ED01, 
-            ME53, 
-            MXD1, 
-            RD03, 
-            PWD0, 
-            PRD0, 
-            TZD0, 
+            0x00,
+            ID0C,
+            SD02,
+            BD05,
+            PD02,
+            FD02,
+            DD09,
+            ED01,
+            ME53,
+            MXD1,
+            RD03,
+            PWD0,
+            PRD0,
+            TZD0,
             BFD0
         })
         Debug = "============= Test started:"
@@ -238,20 +238,20 @@
     {
         Name (PD02, Package (0x20)
         {
-            0x00, 
-            ID0C, 
-            SD02, 
-            BD05, 
-            PD02, 
-            FD02, 
-            DD09, 
-            ED01, 
-            ME53, 
-            MXD1, 
-            RD03, 
-            PWD0, 
-            PRD0, 
-            TZD0, 
+            0x00,
+            ID0C,
+            SD02,
+            BD05,
+            PD02,
+            FD02,
+            DD09,
+            ED01,
+            ME53,
+            MXD1,
+            RD03,
+            PWD0,
+            PRD0,
+            TZD0,
             BFD0
         })
         Debug = "============= Test started:"
@@ -417,4 +417,3 @@
          */
         ME55 ()
     }
-

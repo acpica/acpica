@@ -34,164 +34,164 @@
     {
         ResourceTemplate ()
         {
-            Register (SystemMemory, 
+            Register (SystemMemory,
                 0xF0,               // Bit Width
                 0xF1,               // Bit Offset
                 0xF2F3F4F5F6F7F8F9, // Address
                 ,)
-        }, 
+        },
 
         ResourceTemplate ()
         {
-            Register (SystemIO, 
+            Register (SystemIO,
                 0xF0,               // Bit Width
                 0xF1,               // Bit Offset
                 0xF2F3F4F5F6F7F8F9, // Address
                 ,)
-        }, 
+        },
 
         ResourceTemplate ()
         {
-            Register (PCI_Config, 
+            Register (PCI_Config,
                 0xF0,               // Bit Width
                 0xF1,               // Bit Offset
                 0xF2F3F4F5F6F7F8F9, // Address
                 ,)
-        }, 
+        },
 
         ResourceTemplate ()
         {
-            Register (EmbeddedControl, 
+            Register (EmbeddedControl,
                 0xF0,               // Bit Width
                 0xF1,               // Bit Offset
                 0xF2F3F4F5F6F7F8F9, // Address
                 ,)
-        }, 
+        },
 
         ResourceTemplate ()
         {
-            Register (SMBus, 
+            Register (SMBus,
                 0xF0,               // Bit Width
                 0xF1,               // Bit Offset
                 0xF2F3F4F5F6F7F8F9, // Address
                 ,)
-        }, 
+        },
 
         ResourceTemplate ()
         {
-            Register (SystemCMOS, 
+            Register (SystemCMOS,
                 0xF0,               // Bit Width
                 0xF1,               // Bit Offset
                 0xF2F3F4F5F6F7F8F9, // Address
                 ,)
-        }, 
+        },
 
         ResourceTemplate ()
         {
-            Register (PCIBARTarget, 
+            Register (PCIBARTarget,
                 0xF0,               // Bit Width
                 0xF1,               // Bit Offset
                 0xF2F3F4F5F6F7F8F9, // Address
                 ,)
-        }, 
+        },
 
         ResourceTemplate ()
         {
-            Register (IPMI, 
+            Register (IPMI,
                 0xF0,               // Bit Width
                 0xF1,               // Bit Offset
                 0xF2F3F4F5F6F7F8F9, // Address
                 ,)
-        }, 
+        },
 
         ResourceTemplate ()
         {
-            Register (GeneralPurposeIo, 
+            Register (GeneralPurposeIo,
                 0xF0,               // Bit Width
                 0xF1,               // Bit Offset
                 0xF2F3F4F5F6F7F8F9, // Address
                 ,)
-        }, 
+        },
 
         ResourceTemplate ()
         {
-            Register (GenericSerialBus, 
+            Register (GenericSerialBus,
                 0xF0,               // Bit Width
                 0xF1,               // Bit Offset
                 0xF2F3F4F5F6F7F8F9, // Address
                 ,)
-        }, 
+        },
 
         ResourceTemplate ()
         {
-            Register (FFixedHW, 
+            Register (FFixedHW,
                 0xF0,               // Bit Width
                 0xF1,               // Bit Offset
                 0xF2F3F4F5F6F7F8F9, // Address
                 ,)
-        }, 
+        },
 
         ResourceTemplate ()
         {
-            Register (SystemMemory, 
+            Register (SystemMemory,
                 0xF0,               // Bit Width
                 0xF1,               // Bit Offset
                 0xF2F3F4F5F6F7F8F9, // Address
                 ,)
-        }, 
+        },
 
         ResourceTemplate ()
         {
-            Register (SystemMemory, 
+            Register (SystemMemory,
                 0xF0,               // Bit Width
                 0xF1,               // Bit Offset
                 0xF2F3F4F5F6F7F8F9, // Address
                 0x01,               // Access Size
                 )
-        }, 
+        },
 
         ResourceTemplate ()
         {
-            Register (SystemMemory, 
+            Register (SystemMemory,
                 0xF0,               // Bit Width
                 0xF1,               // Bit Offset
                 0xF2F3F4F5F6F7F8F9, // Address
                 0x02,               // Access Size
                 )
-        }, 
+        },
 
         ResourceTemplate ()
         {
-            Register (SystemMemory, 
+            Register (SystemMemory,
                 0xF0,               // Bit Width
                 0xF1,               // Bit Offset
                 0xF2F3F4F5F6F7F8F9, // Address
                 0x03,               // Access Size
                 )
-        }, 
+        },
 
         ResourceTemplate ()
         {
-            Register (SystemMemory, 
+            Register (SystemMemory,
                 0xF0,               // Bit Width
                 0xF1,               // Bit Offset
                 0xF2F3F4F5F6F7F8F9, // Address
                 0x04,               // Access Size
                 )
-        }, 
+        },
 
         ResourceTemplate ()
         {
-            Register (SystemMemory, 
+            Register (SystemMemory,
                 0x00,               // Bit Width
                 0x00,               // Bit Offset
                 0x0000000000000000, // Address
                 ,)
-        }, 
+        },
 
         ResourceTemplate ()
         {
-            Register (SystemMemory, 
+            Register (SystemMemory,
                 0xFF,               // Bit Width
                 0xFF,               // Bit Offset
                 0x0000000000000000, // Address
@@ -237,168 +237,168 @@
 
         ResourceTemplate ()
         {
-            Register (SystemMemory, 
+            Register (SystemMemory,
                 0xF0,               // Bit Width
                 0xF1,               // Bit Offset
                 0xF2F3F4F5F6F7F8F9, // Address
                 ,)
-        }, 
+        },
 
         ResourceTemplate ()
         {
-            Register (SystemIO, 
+            Register (SystemIO,
                 0xF0,               // Bit Width
                 0xF1,               // Bit Offset
                 0xF2F3F4F5F6F7F8F9, // Address
                 ,)
-        }, 
+        },
 
         ResourceTemplate ()
         {
-            Register (PCI_Config, 
+            Register (PCI_Config,
                 0xF0,               // Bit Width
                 0xF1,               // Bit Offset
                 0xF2F3F4F5F6F7F8F9, // Address
                 ,)
-        }, 
+        },
 
         ResourceTemplate ()
         {
-            Register (EmbeddedControl, 
+            Register (EmbeddedControl,
                 0xF0,               // Bit Width
                 0xF1,               // Bit Offset
                 0xF2F3F4F5F6F7F8F9, // Address
                 ,)
-        }, 
+        },
 
         ResourceTemplate ()
         {
-            Register (SMBus, 
+            Register (SMBus,
                 0xF0,               // Bit Width
                 0xF1,               // Bit Offset
                 0xF2F3F4F5F6F7F8F9, // Address
                 ,)
-        }, 
+        },
 
         ResourceTemplate ()
         {
-            Register (SystemCMOS, 
+            Register (SystemCMOS,
                 0xF0,               // Bit Width
                 0xF1,               // Bit Offset
                 0xF2F3F4F5F6F7F8F9, // Address
                 ,)
-        }, 
+        },
 
         ResourceTemplate ()
         {
-            Register (PCIBARTarget, 
+            Register (PCIBARTarget,
                 0xF0,               // Bit Width
                 0xF1,               // Bit Offset
                 0xF2F3F4F5F6F7F8F9, // Address
                 ,)
-        }, 
+        },
 
         ResourceTemplate ()
         {
-            Register (IPMI, 
+            Register (IPMI,
                 0xF0,               // Bit Width
                 0xF1,               // Bit Offset
                 0xF2F3F4F5F6F7F8F9, // Address
                 ,)
-        }, 
+        },
 
         ResourceTemplate ()
         {
-            Register (GeneralPurposeIo, 
+            Register (GeneralPurposeIo,
                 0xF0,               // Bit Width
                 0xF1,               // Bit Offset
                 0xF2F3F4F5F6F7F8F9, // Address
                 ,)
-        }, 
+        },
 
         ResourceTemplate ()
         {
-            Register (GenericSerialBus, 
+            Register (GenericSerialBus,
                 0xF0,               // Bit Width
                 0xF1,               // Bit Offset
                 0xF2F3F4F5F6F7F8F9, // Address
                 ,)
-        }, 
+        },
 
         ResourceTemplate ()
         {
-            Register (FFixedHW, 
+            Register (FFixedHW,
                 0xF0,               // Bit Width
                 0xF1,               // Bit Offset
                 0xF2F3F4F5F6F7F8F9, // Address
                 ,)
-        }, 
+        },
 
         /* Byte 6 (Address Size) of Register Descriptor */
 
         ResourceTemplate ()
         {
-            Register (SystemMemory, 
+            Register (SystemMemory,
                 0xF0,               // Bit Width
                 0xF1,               // Bit Offset
                 0xF2F3F4F5F6F7F8F9, // Address
                 ,)
-        }, 
+        },
 
         ResourceTemplate ()
         {
-            Register (SystemMemory, 
+            Register (SystemMemory,
                 0xF0,               // Bit Width
                 0xF1,               // Bit Offset
                 0xF2F3F4F5F6F7F8F9, // Address
                 0x01,               // Access Size
                 )
-        }, 
+        },
 
         ResourceTemplate ()
         {
-            Register (SystemMemory, 
+            Register (SystemMemory,
                 0xF0,               // Bit Width
                 0xF1,               // Bit Offset
                 0xF2F3F4F5F6F7F8F9, // Address
                 0x02,               // Access Size
                 )
-        }, 
+        },
 
         ResourceTemplate ()
         {
-            Register (SystemMemory, 
+            Register (SystemMemory,
                 0xF0,               // Bit Width
                 0xF1,               // Bit Offset
                 0xF2F3F4F5F6F7F8F9, // Address
                 0x03,               // Access Size
                 )
-        }, 
+        },
 
         ResourceTemplate ()
         {
-            Register (SystemMemory, 
+            Register (SystemMemory,
                 0xF0,               // Bit Width
                 0xF1,               // Bit Offset
                 0xF2F3F4F5F6F7F8F9, // Address
                 0x04,               // Access Size
                 )
-        }, 
+        },
 
         /* Particular cases */
 
         ResourceTemplate ()
         {
-            Register (SystemMemory, 
+            Register (SystemMemory,
                 0x00,               // Bit Width
                 0x00,               // Bit Offset
                 0x0000000000000000, // Address
                 ,)
-        }, 
+        },
 
         ResourceTemplate ()
         {
-            Register (SystemMemory, 
+            Register (SystemMemory,
                 0xFF,               // Bit Width
                 0xFF,               // Bit Offset
                 0x0000000000000000, // Address
@@ -426,12 +426,12 @@
         /* Check resource descriptor tag offsets */
         Local0 = ResourceTemplate ()
             {
-                Register (SystemMemory, 
+                Register (SystemMemory,
                     0xF0,               // Bit Width
                     0xF1,               // Bit Offset
                     0xF2F3F4F5F6F7F8F9, // Address
                     ,)
-                Register (SystemMemory, 
+                Register (SystemMemory,
                     0xF0,               // Bit Width
                     0xF1,               // Bit Offset
                     0xF2F3F4F5F6F7F8F9, // Address
@@ -443,4 +443,3 @@
         M331 (TS, 0x04, 0x30, 0x30, 0xA8, 0xA8, "_ASZ")
         M331 (TS, 0x05, 0x38, 0x38, 0xB0, 0xB0, "_ADR")
     }
-

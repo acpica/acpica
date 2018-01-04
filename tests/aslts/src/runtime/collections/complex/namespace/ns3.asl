@@ -35,8 +35,8 @@
         Name (TS, "m300")
         Name (P000, Package (0x03)
         {
-            0xABCD0000, 
-            0xABCD0001, 
+            0xABCD0000,
+            0xABCD0001,
             0xABCD0002
         })
         Method (M000, 1, NotSerialized)
@@ -133,8 +133,8 @@
         Name (TS, "m303")
         Name (PP00, Package (0x03)
         {
-            0x11111111, 
-            0x01, 
+            0x11111111,
+            0x01,
             0x22223333
         })
         Method (M000, 2, Serialized)
@@ -142,9 +142,9 @@
             Name (I001, 0x00)
             Name (P000, Package (0x04)
             {
-                0x01, 
-                0x02, 
-                0x03, 
+                0x01,
+                0x02,
+                0x03,
                 0x04
             })
             CH03 (TS, Z157, 0x09, 0x8E, 0x00)
@@ -241,8 +241,8 @@
         Name (I001, 0x00)
         Name (PP00, Package (0x03)
         {
-            0x11111111, 
-            0x00100000, 
+            0x11111111,
+            0x00100000,
             0x22223333
         })
         Method (M000, 1, NotSerialized)
@@ -393,7 +393,7 @@
         OperationRegion (R000, SystemMemory, 0x0100, 0x0100)
         Field (R000, ByteAcc, NoLock, Preserve)
         {
-            F000,   32, 
+            F000,   32,
             F001,   32
         }
 
@@ -490,7 +490,7 @@
         OperationRegion (R000, SystemMemory, 0x0100, 0x0100)
         Field (R000, ByteAcc, NoLock, Preserve)
         {
-            F000,   32, 
+            F000,   32,
             F001,   32
         }
 
@@ -592,7 +592,7 @@
         OperationRegion (R000, SystemMemory, 0x0100, 0x0100)
         Field (R000, ByteAcc, NoLock, Preserve)
         {
-            F000,   32, 
+            F000,   32,
             F001,   32
         }
 
@@ -1065,4 +1065,3 @@
             M300 ()
         }
     }
-

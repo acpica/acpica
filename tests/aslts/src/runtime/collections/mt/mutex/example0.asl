@@ -39,12 +39,12 @@
         OperationRegion (C0A3, SystemIO, C0A1 (), 0x07)
         Field (C0A3, ByteAcc, NoLock, Preserve)
         {
-            C0A4,   8, 
-            C0A5,   8, 
-            C0A6,   8, 
-            C0A7,   8, 
-            C0A8,   8, 
-            C0A9,   8, 
+            C0A4,   8,
+            C0A5,   8,
+            C0A6,   8,
+            C0A7,   8,
+            C0A8,   8,
+            C0A9,   8,
             C0AA,   8
         }
 
@@ -114,4 +114,3 @@
 
         M311 (Arg0, Arg1, GLLL, GLIX, 0x00, 0x00) /* Release */
     }
-

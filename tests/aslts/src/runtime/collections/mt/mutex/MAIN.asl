@@ -85,4 +85,3 @@ DefinitionBlock ("mt_mutex", "DSDT", 2, "Intel", "Many", 0x00000001)
         Return (Local7)
     }
 }
-

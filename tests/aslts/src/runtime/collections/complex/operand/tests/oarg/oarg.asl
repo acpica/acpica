@@ -1837,10 +1837,10 @@
                 M600 (Arg0, 0x11, Local0, BB30)
             }
 
-            Mid (Arg1, DerefOf (PAUI [0x05]), DerefOf (PAUI [0x0B]), 
+            Mid (Arg1, DerefOf (PAUI [0x05]), DerefOf (PAUI [0x0B]),
                 Local0)
             M600 (Arg0, 0x12, Local0, BB1D)
-            Mid (Arg2, DerefOf (PAUI [0x06]), DerefOf (PAUI [0x0A]), 
+            Mid (Arg2, DerefOf (PAUI [0x06]), DerefOf (PAUI [0x0A]),
                 Local0)
             M600 (Arg0, 0x13, Local0, BB30)
             /* Method returns Index and Length parameters */
@@ -1918,10 +1918,10 @@
                 M600 (Arg0, 0x11, Local0, BB31)
             }
 
-            Mid (Arg1, DerefOf (PAUI [0x05]), DerefOf (PAUI [0x09]), 
+            Mid (Arg1, DerefOf (PAUI [0x05]), DerefOf (PAUI [0x09]),
                 Local0)
             M600 (Arg0, 0x12, Local0, BB1C)
-            Mid (Arg2, DerefOf (PAUI [0x06]), DerefOf (PAUI [0x08]), 
+            Mid (Arg2, DerefOf (PAUI [0x06]), DerefOf (PAUI [0x08]),
                 Local0)
             M600 (Arg0, 0x13, Local0, BB31)
             /* Method returns Index and Length parameters */
@@ -10633,39 +10633,39 @@
         {
             Local0 = Match (Package (0x0F)
                     {
-                        0x0A50, 
-                        0x0A51, 
-                        0x0A52, 
-                        0x0A53, 
-                        0x0A54, 
-                        0x0A55, 
-                        0x0A56, 
-                        0x0A57, 
-                        0x0A58, 
-                        0x0A59, 
-                        0x0A5A, 
-                        0x0A5B, 
-                        0x0A5C, 
-                        0x0A5D, 
+                        0x0A50,
+                        0x0A51,
+                        0x0A52,
+                        0x0A53,
+                        0x0A54,
+                        0x0A55,
+                        0x0A56,
+                        0x0A57,
+                        0x0A58,
+                        0x0A59,
+                        0x0A5A,
+                        0x0A5B,
+                        0x0A5C,
+                        0x0A5D,
                         0x0A5E
                     }, MEQ, 0x0A5D, MTR, 0x00, Arg1)
             M600 (Arg0, 0x00, Local0, 0x0D)
             Local0 = Match (Package (0x0F)
                     {
-                        0x0A50, 
-                        0x0A51, 
-                        0x0A52, 
-                        0x0A53, 
-                        0x0A54, 
-                        0x0A55, 
-                        0x0A56, 
-                        0x0A57, 
-                        0x0A58, 
-                        0x0A59, 
-                        0x0A5A, 
-                        0x0A5B, 
-                        0x0A5C, 
-                        0x0A5D, 
+                        0x0A50,
+                        0x0A51,
+                        0x0A52,
+                        0x0A53,
+                        0x0A54,
+                        0x0A55,
+                        0x0A56,
+                        0x0A57,
+                        0x0A58,
+                        0x0A59,
+                        0x0A5A,
+                        0x0A5B,
+                        0x0A5C,
+                        0x0A5D,
                         0x0A5E
                     }, MEQ, 0x0A5A, MTR, 0x00, Arg1)
             M600 (Arg0, 0x01, Local0, Ones)
@@ -10681,10 +10681,10 @@
                 M600 (Arg0, 0x05, Local0, Ones)
             }
 
-            Local0 = Match (DerefOf (PAUP [0x00]), MEQ, 0x0A5D, MTR, 0x00, 
+            Local0 = Match (DerefOf (PAUP [0x00]), MEQ, 0x0A5D, MTR, 0x00,
                 Arg1)
             M600 (Arg0, 0x06, Local0, 0x0D)
-            Local0 = Match (DerefOf (PAUP [0x00]), MEQ, 0x0A5A, MTR, 0x00, 
+            Local0 = Match (DerefOf (PAUP [0x00]), MEQ, 0x0A5A, MTR, 0x00,
                 Arg1)
             M600 (Arg0, 0x07, Local0, Ones)
             /* Method returns Object */
@@ -10697,10 +10697,10 @@
 
             If (Y500)
             {
-                Local0 = Match (DerefOf (M602 (0x04, 0x00, 0x01)), MEQ, 0x0A5D, MTR, 0x00, 
+                Local0 = Match (DerefOf (M602 (0x04, 0x00, 0x01)), MEQ, 0x0A5D, MTR, 0x00,
                     Arg1)
                 M600 (Arg0, 0x0A, Local0, 0x0D)
-                Local0 = Match (DerefOf (M602 (0x04, 0x00, 0x01)), MEQ, 0x0A5A, MTR, 0x00, 
+                Local0 = Match (DerefOf (M602 (0x04, 0x00, 0x01)), MEQ, 0x0A5A, MTR, 0x00,
                     Arg1)
                 M600 (Arg0, 0x0B, Local0, Ones)
             }
@@ -20664,39 +20664,39 @@
         {
             Local0 = Match (Package (0x0F)
                     {
-                        0x0A50, 
-                        0x0A51, 
-                        0x0A52, 
-                        0x0A53, 
-                        0x0A54, 
-                        0x0A55, 
-                        0x0A56, 
-                        0x0A57, 
-                        0x0A58, 
-                        0x0A59, 
-                        0x0A5A, 
-                        0x0A5B, 
-                        0x0A5C, 
-                        0x0A5D, 
+                        0x0A50,
+                        0x0A51,
+                        0x0A52,
+                        0x0A53,
+                        0x0A54,
+                        0x0A55,
+                        0x0A56,
+                        0x0A57,
+                        0x0A58,
+                        0x0A59,
+                        0x0A5A,
+                        0x0A5B,
+                        0x0A5C,
+                        0x0A5D,
                         0x0A5E
                     }, MEQ, 0x0A5D, MTR, 0x00, Arg1)
             M600 (Arg0, 0x00, Local0, 0x0D)
             Local0 = Match (Package (0x0F)
                     {
-                        0x0A50, 
-                        0x0A51, 
-                        0x0A52, 
-                        0x0A53, 
-                        0x0A54, 
-                        0x0A55, 
-                        0x0A56, 
-                        0x0A57, 
-                        0x0A58, 
-                        0x0A59, 
-                        0x0A5A, 
-                        0x0A5B, 
-                        0x0A5C, 
-                        0x0A5D, 
+                        0x0A50,
+                        0x0A51,
+                        0x0A52,
+                        0x0A53,
+                        0x0A54,
+                        0x0A55,
+                        0x0A56,
+                        0x0A57,
+                        0x0A58,
+                        0x0A59,
+                        0x0A5A,
+                        0x0A5B,
+                        0x0A5C,
+                        0x0A5D,
                         0x0A5E
                     }, MEQ, 0x0A5A, MTR, 0x00, Arg1)
             M600 (Arg0, 0x01, Local0, Ones)
@@ -20712,10 +20712,10 @@
                 M600 (Arg0, 0x05, Local0, Ones)
             }
 
-            Local0 = Match (DerefOf (PAUP [0x00]), MEQ, 0x0A5D, MTR, 0x00, 
+            Local0 = Match (DerefOf (PAUP [0x00]), MEQ, 0x0A5D, MTR, 0x00,
                 Arg1)
             M600 (Arg0, 0x06, Local0, 0x0D)
-            Local0 = Match (DerefOf (PAUP [0x00]), MEQ, 0x0A5A, MTR, 0x00, 
+            Local0 = Match (DerefOf (PAUP [0x00]), MEQ, 0x0A5A, MTR, 0x00,
                 Arg1)
             M600 (Arg0, 0x07, Local0, Ones)
             /* Method returns Object */
@@ -20728,10 +20728,10 @@
 
             If (Y500)
             {
-                Local0 = Match (DerefOf (M602 (0x04, 0x00, 0x01)), MEQ, 0x0A5D, MTR, 0x00, 
+                Local0 = Match (DerefOf (M602 (0x04, 0x00, 0x01)), MEQ, 0x0A5D, MTR, 0x00,
                     Arg1)
                 M600 (Arg0, 0x0A, Local0, 0x0D)
-                Local0 = Match (DerefOf (M602 (0x04, 0x00, 0x01)), MEQ, 0x0A5A, MTR, 0x00, 
+                Local0 = Match (DerefOf (M602 (0x04, 0x00, 0x01)), MEQ, 0x0A5A, MTR, 0x00,
                     Arg1)
                 M600 (Arg0, 0x0B, Local0, Ones)
             }
@@ -21970,4 +21970,3 @@
         Debug = "TEST: OPR5, Source Operand"
         M617 ()
     }
-

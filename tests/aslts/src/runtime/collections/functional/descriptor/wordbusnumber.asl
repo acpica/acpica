@@ -41,7 +41,7 @@
                 0xFCFD,             // Translation Offset
                 0xFEFF,             // Length
                 ,, )
-        }, 
+        },
 
         ResourceTemplate ()
         {
@@ -52,7 +52,7 @@
                 0xFCFD,             // Translation Offset
                 0xFEFF,             // Length
                 ,, )
-        }, 
+        },
 
         ResourceTemplate ()
         {
@@ -63,7 +63,7 @@
                 0xFCFD,             // Translation Offset
                 0xFEFF,             // Length
                 ,, )
-        }, 
+        },
 
         ResourceTemplate ()
         {
@@ -74,7 +74,7 @@
                 0xFCFD,             // Translation Offset
                 0xFEFF,             // Length
                 ,, )
-        }, 
+        },
 
         ResourceTemplate ()
         {
@@ -85,7 +85,7 @@
                 0xFCFD,             // Translation Offset
                 0xFEFF,             // Length
                 ,, )
-        }, 
+        },
 
         ResourceTemplate ()
         {
@@ -96,7 +96,7 @@
                 0xFCFD,             // Translation Offset
                 0xFEFF,             // Length
                 ,, )
-        }, 
+        },
 
         ResourceTemplate ()
         {
@@ -107,7 +107,7 @@
                 0xFCFD,             // Translation Offset
                 0xFEFF,             // Length
                 ,, )
-        }, 
+        },
 
         ResourceTemplate ()
         {
@@ -118,7 +118,7 @@
                 0xFCFD,             // Translation Offset
                 0xFEFF,             // Length
                 ,, )
-        }, 
+        },
 
         ResourceTemplate ()
         {
@@ -129,7 +129,7 @@
                 0xFCFD,             // Translation Offset
                 0xFEFF,             // Length
                 ,, )
-        }, 
+        },
 
         ResourceTemplate ()
         {
@@ -140,7 +140,7 @@
                 0xFCFD,             // Translation Offset
                 0xFEFF,             // Length
                 ,, )
-        }, 
+        },
 
         ResourceTemplate ()
         {
@@ -151,7 +151,7 @@
                 0xFCFD,             // Translation Offset
                 0xFEFF,             // Length
                 ,, )
-        }, 
+        },
 
         ResourceTemplate ()
         {
@@ -162,7 +162,7 @@
                 0xFCFD,             // Translation Offset
                 0xFEFF,             // Length
                 ,, )
-        }, 
+        },
 
         ResourceTemplate ()
         {
@@ -173,7 +173,7 @@
                 0xFCFD,             // Translation Offset
                 0xFEFF,             // Length
                 ,, )
-        }, 
+        },
 
         ResourceTemplate ()
         {
@@ -184,7 +184,7 @@
                 0xFCFD,             // Translation Offset
                 0xFEFF,             // Length
                 ,, )
-        }, 
+        },
 
         ResourceTemplate ()
         {
@@ -195,7 +195,7 @@
                 0xFCFD,             // Translation Offset
                 0xFEFF,             // Length
                 ,, )
-        }, 
+        },
 
         ResourceTemplate ()
         {
@@ -206,7 +206,7 @@
                 0xFCFD,             // Translation Offset
                 0xFEFF,             // Length
                 ,, )
-        }, 
+        },
 
         ResourceTemplate ()
         {
@@ -217,7 +217,7 @@
                 0xFCFD,             // Translation Offset
                 0xFEFF,             // Length
                 ,, )
-        }, 
+        },
 
         ResourceTemplate ()
         {
@@ -228,7 +228,7 @@
                 0xFCFD,             // Translation Offset
                 0xFEFF,             // Length
                 ,, )
-        }, 
+        },
 
         ResourceTemplate ()
         {
@@ -239,7 +239,7 @@
                 0xFCFD,             // Translation Offset
                 0xFEFF,             // Length
                 0x01, "", )
-        }, 
+        },
 
         ResourceTemplate ()
         {
@@ -250,7 +250,7 @@
                 0xFCFD,             // Translation Offset
                 0xFEFF,             // Length
                 0x0F, "P", )
-        }, 
+        },
 
         ResourceTemplate ()
         {
@@ -261,7 +261,7 @@
                 0xFCFD,             // Translation Offset
                 0xFEFF,             // Length
                 0xF0, "PATH", )
-        }, 
+        },
 
         ResourceTemplate ()
         {
@@ -272,7 +272,7 @@
                 0xFCFD,             // Translation Offset
                 0xFEFF,             // Length
                 0xFF, "!\"#$%&\'()*+,-./0123456789:;<=>?@ABCDEFGHIJKLMNOPQRSTUVWXYZ[\\]^_`abcdefghijklmnopqrstuvwxyz{|}~ !\"#$%&\'()*+,-./0123456789:;<=>?@ABCDEFGHIJKLMNOPQRSTUVWXYZ[\\]^_`abcdefghijklmnopqrstuvwxyz{|}~ !\"#$%&\'()*", )
-        }, 
+        },
 
         ResourceTemplate ()
         {
@@ -283,7 +283,7 @@
                 0xFCFD,             // Translation Offset
                 0xFEFF,             // Length
                 0xFF, "PATHPATHPATH", )
-        }, 
+        },
 
         ResourceTemplate ()
         {
@@ -294,7 +294,7 @@
                 0x0000,             // Translation Offset
                 0x0000,             // Length
                 0xFF, "PATHPATHPATH", )
-        }, 
+        },
 
         ResourceTemplate ()
         {
@@ -382,7 +382,7 @@
                 0xFCFD,             // Translation Offset
                 0xFEFF,             // Length
                 ,, )
-        }, 
+        },
 
         ResourceTemplate ()
         {
@@ -393,7 +393,7 @@
                 0xFCFD,             // Translation Offset
                 0xFEFF,             // Length
                 ,, )
-        }, 
+        },
 
         ResourceTemplate ()
         {
@@ -404,7 +404,7 @@
                 0xFCFD,             // Translation Offset
                 0xFEFF,             // Length
                 ,, )
-        }, 
+        },
 
         ResourceTemplate ()
         {
@@ -415,7 +415,7 @@
                 0xFCFD,             // Translation Offset
                 0xFEFF,             // Length
                 ,, )
-        }, 
+        },
 
         ResourceTemplate ()
         {
@@ -426,7 +426,7 @@
                 0xFCFD,             // Translation Offset
                 0xFEFF,             // Length
                 ,, )
-        }, 
+        },
 
         ResourceTemplate ()
         {
@@ -437,7 +437,7 @@
                 0xFCFD,             // Translation Offset
                 0xFEFF,             // Length
                 ,, )
-        }, 
+        },
 
         ResourceTemplate ()
         {
@@ -448,7 +448,7 @@
                 0xFCFD,             // Translation Offset
                 0xFEFF,             // Length
                 ,, )
-        }, 
+        },
 
         ResourceTemplate ()
         {
@@ -459,7 +459,7 @@
                 0xFCFD,             // Translation Offset
                 0xFEFF,             // Length
                 ,, )
-        }, 
+        },
 
         ResourceTemplate ()
         {
@@ -470,7 +470,7 @@
                 0xFCFD,             // Translation Offset
                 0xFEFF,             // Length
                 ,, )
-        }, 
+        },
 
         ResourceTemplate ()
         {
@@ -481,7 +481,7 @@
                 0xFCFD,             // Translation Offset
                 0xFEFF,             // Length
                 ,, )
-        }, 
+        },
 
         ResourceTemplate ()
         {
@@ -492,7 +492,7 @@
                 0xFCFD,             // Translation Offset
                 0xFEFF,             // Length
                 ,, )
-        }, 
+        },
 
         ResourceTemplate ()
         {
@@ -503,7 +503,7 @@
                 0xFCFD,             // Translation Offset
                 0xFEFF,             // Length
                 ,, )
-        }, 
+        },
 
         ResourceTemplate ()
         {
@@ -514,7 +514,7 @@
                 0xFCFD,             // Translation Offset
                 0xFEFF,             // Length
                 ,, )
-        }, 
+        },
 
         ResourceTemplate ()
         {
@@ -525,7 +525,7 @@
                 0xFCFD,             // Translation Offset
                 0xFEFF,             // Length
                 ,, )
-        }, 
+        },
 
         ResourceTemplate ()
         {
@@ -536,7 +536,7 @@
                 0xFCFD,             // Translation Offset
                 0xFEFF,             // Length
                 ,, )
-        }, 
+        },
 
         ResourceTemplate ()
         {
@@ -547,7 +547,7 @@
                 0xFCFD,             // Translation Offset
                 0xFEFF,             // Length
                 ,, )
-        }, 
+        },
 
         /* Particular cases */
 
@@ -560,7 +560,7 @@
                 0xFCFD,             // Translation Offset
                 0xFEFF,             // Length
                 ,, )
-        }, 
+        },
 
         ResourceTemplate ()
         {
@@ -571,7 +571,7 @@
                 0xFCFD,             // Translation Offset
                 0xFEFF,             // Length
                 ,, )
-        }, 
+        },
 
         /* Resource Source */
 
@@ -584,7 +584,7 @@
                 0xFCFD,             // Translation Offset
                 0xFEFF,             // Length
                 0x01, "", )
-        }, 
+        },
 
         ResourceTemplate ()
         {
@@ -595,7 +595,7 @@
                 0xFCFD,             // Translation Offset
                 0xFEFF,             // Length
                 0x0F, "P", )
-        }, 
+        },
 
         ResourceTemplate ()
         {
@@ -606,7 +606,7 @@
                 0xFCFD,             // Translation Offset
                 0xFEFF,             // Length
                 0xF0, "PATH", )
-        }, 
+        },
 
         ResourceTemplate ()
         {
@@ -617,7 +617,7 @@
                 0xFCFD,             // Translation Offset
                 0xFEFF,             // Length
                 0xFF, "!\"#$%&\'()*+,-./0123456789:;<=>?@ABCDEFGHIJKLMNOPQRSTUVWXYZ[\\]^_`abcdefghijklmnopqrstuvwxyz{|}~ !\"#$%&\'()*+,-./0123456789:;<=>?@ABCDEFGHIJKLMNOPQRSTUVWXYZ[\\]^_`abcdefghijklmnopqrstuvwxyz{|}~ !\"#$%&\'()*", )
-        }, 
+        },
 
         /* Particular cases */
 
@@ -630,7 +630,7 @@
                 0xFCFD,             // Translation Offset
                 0xFEFF,             // Length
                 0xFF, "PATHPATHPATH", )
-        }, 
+        },
 
         ResourceTemplate ()
         {
@@ -641,7 +641,7 @@
                 0x0000,             // Translation Offset
                 0x0000,             // Length
                 0xFF, "PATHPATHPATH", )
-        }, 
+        },
 
         /* 20051021, relaxation for omitted ResourceSource (bug-fix 70 rejection) */
 
@@ -693,4 +693,3 @@
         M331 (TS, 0x0A, 0x60, 0x60, 0xE0, 0xE0, "_TRA")
         M331 (TS, 0x0B, 0x70, 0x70, 0xF0, 0xF0, "_LEN")
     }
-

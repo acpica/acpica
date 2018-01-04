@@ -97,7 +97,7 @@
     OperationRegion (RD00, SystemMemory, 0x0100, 0x0100)
     Field (RD00, ByteAcc, NoLock, Preserve)
     {
-        FD00,   8, 
+        FD00,   8,
         FD01,   65
     }
 
@@ -179,14 +179,14 @@
     })
     Name (PD02, Package (0x09)
     {
-        0x01, 
-        0x02, 
-        0x03, 
-        0x04, 
-        0x05, 
-        0x06, 
-        0x07, 
-        0x08, 
+        0x01,
+        0x02,
+        0x03,
+        0x04,
+        0x05,
+        0x06,
+        0x07,
+        0x08,
         0x09
     })
     OperationRegion (RD03, SystemMemory, 0x0100, 0x0100)
@@ -291,8 +291,8 @@
     })
     Name (PD0D, Package (0x03)
     {
-        0x05, 
-        0x77, 
+        0x05,
+        0x77,
         0x07
     })
     Name (ID12, 0x77)
@@ -308,8 +308,8 @@
     })
     Name (PD0F, Package (0x03)
     {
-        0x05, 
-        0x00, 
+        0x05,
+        0x00,
         0x07
     })
     Name (ID14, 0x11)

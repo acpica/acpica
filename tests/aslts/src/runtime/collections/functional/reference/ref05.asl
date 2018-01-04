@@ -2465,4 +2465,3 @@
         C089 = 0x00      /* flag of Reference, object otherwise */
         M1B0 ()
     }
-

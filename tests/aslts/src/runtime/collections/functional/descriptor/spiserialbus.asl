@@ -46,7 +46,7 @@
                 {
                     0xF0, 0xF1, 0xF2, 0xF3, 0xF4
                 })
-        }, 
+        },
 
         ResourceTemplate ()
         {
@@ -58,7 +58,7 @@
                 {
                     0xF0, 0xF1, 0xF2, 0xF3, 0xF4
                 })
-        }, 
+        },
 
         ResourceTemplate ()
         {
@@ -70,7 +70,7 @@
                 {
                     0xF0, 0xF1, 0xF2, 0xF3, 0xF4
                 })
-        }, 
+        },
 
         ResourceTemplate ()
         {
@@ -82,7 +82,7 @@
                 {
                     0xF0, 0xF1, 0xF2, 0xF3, 0xF4
                 })
-        }, 
+        },
 
         ResourceTemplate ()
         {
@@ -94,7 +94,7 @@
                 {
                     0xF0, 0xF1, 0xF2, 0xF3, 0xF4
                 })
-        }, 
+        },
 
         ResourceTemplate ()
         {
@@ -106,7 +106,7 @@
                 {
                     0xF0, 0xF1, 0xF2, 0xF3, 0xF4
                 })
-        }, 
+        },
 
         ResourceTemplate ()
         {
@@ -118,7 +118,7 @@
                 {
                     0xF0, 0xF1, 0xF2, 0xF3, 0xF4
                 })
-        }, 
+        },
 
         ResourceTemplate ()
         {
@@ -130,7 +130,7 @@
                 {
                     0xF0, 0xF1, 0xF2, 0xF3, 0xF4
                 })
-        }, 
+        },
 
         ResourceTemplate ()
         {
@@ -142,7 +142,7 @@
                 {
                     0xF0, 0xF1, 0xF2, 0xF3, 0xF4
                 })
-        }, 
+        },
 
         ResourceTemplate ()
         {
@@ -154,7 +154,7 @@
                 {
                     0xF0, 0xF1, 0xF2, 0xF3, 0xF4
                 })
-        }, 
+        },
 
         ResourceTemplate ()
         {
@@ -166,7 +166,7 @@
                 {
                     0xF0, 0xF1, 0xF2, 0xF3, 0xF4
                 })
-        }, 
+        },
 
         ResourceTemplate ()
         {
@@ -178,7 +178,7 @@
                 {
                     0xF0, 0xF1, 0xF2, 0xF3, 0xF4
                 })
-        }, 
+        },
 
         ResourceTemplate ()
         {
@@ -190,7 +190,7 @@
                 {
                     0xF0, 0xF1, 0xF2, 0xF3, 0xF4
                 })
-        }, 
+        },
 
         ResourceTemplate ()
         {
@@ -202,7 +202,7 @@
                 {
                     0xF0, 0xF1, 0xF2, 0xF3, 0xF4
                 })
-        }, 
+        },
 
         ResourceTemplate ()
         {
@@ -214,7 +214,7 @@
                 {
                     0xF0, 0xF1, 0xF2, 0xF3, 0xF4
                 })
-        }, 
+        },
 
         ResourceTemplate ()
         {
@@ -226,7 +226,7 @@
                 {
                     0xF0, 0xF1, 0xF2, 0xF3, 0xF4
                 })
-        }, 
+        },
 
         ResourceTemplate ()
         {
@@ -238,7 +238,7 @@
                 {
                     0xF0, 0xF1, 0xF2, 0xF3, 0xF4
                 })
-        }, 
+        },
 
         ResourceTemplate ()
         {
@@ -250,7 +250,7 @@
                 {
                     0xF0, 0xF1, 0xF2, 0xF3, 0xF4
                 })
-        }, 
+        },
 
         ResourceTemplate ()
         {
@@ -262,7 +262,7 @@
                 {
                     0xF0, 0xF1, 0xF2, 0xF3, 0xF4
                 })
-        }, 
+        },
 
         ResourceTemplate ()
         {
@@ -274,7 +274,7 @@
                 {
                     0xF0, 0xF1, 0xF2, 0xF3, 0xF4
                 })
-        }, 
+        },
 
         ResourceTemplate ()
         {
@@ -286,7 +286,7 @@
                 {
                     0xF0, 0xF1, 0xF2, 0xF3, 0xF4
                 })
-        }, 
+        },
 
         ResourceTemplate ()
         {
@@ -298,7 +298,7 @@
                 {
                     0xF0, 0xF1, 0xF2, 0xF3, 0xF4
                 })
-        }, 
+        },
 
         ResourceTemplate ()
         {
@@ -310,7 +310,7 @@
                 {
                     0xF0, 0xF1, 0xF2, 0xF3, 0xF4
                 })
-        }, 
+        },
 
         ResourceTemplate ()
         {
@@ -322,7 +322,7 @@
                 {
                     0xF0, 0xF1, 0xF2, 0xF3, 0xF4
                 })
-        }, 
+        },
 
         ResourceTemplate ()
         {
@@ -334,7 +334,7 @@
                 {
                     0xF0, 0xF1, 0xF2, 0xF3, 0xF4
                 })
-        }, 
+        },
 
         ResourceTemplate ()
         {
@@ -346,7 +346,7 @@
                 {
                     0xF0, 0xF1, 0xF2, 0xF3, 0xF4
                 })
-        }, 
+        },
 
         ResourceTemplate ()
         {
@@ -358,7 +358,7 @@
                 {
                     0xF0, 0xF1, 0xF2, 0xF3, 0xF4
                 })
-        }, 
+        },
 
         ResourceTemplate ()
         {
@@ -370,7 +370,7 @@
                 {
                     0xF0, 0xF1, 0xF2, 0xF3, 0xF4
                 })
-        }, 
+        },
 
         ResourceTemplate ()
         {
@@ -382,7 +382,7 @@
                 {
                     0xF0, 0xF1, 0xF2, 0xF3, 0xF4
                 })
-        }, 
+        },
 
         ResourceTemplate ()
         {
@@ -394,7 +394,7 @@
                 {
                     0xF0, 0xF1, 0xF2, 0xF3, 0xF4
                 })
-        }, 
+        },
 
         ResourceTemplate ()
         {
@@ -406,7 +406,7 @@
                 {
                     0xF0, 0xF1, 0xF2, 0xF3, 0xF4
                 })
-        }, 
+        },
 
         ResourceTemplate ()
         {
@@ -418,7 +418,7 @@
                 {
                     0xF0, 0xF1, 0xF2, 0xF3, 0xF4
                 })
-        }, 
+        },
 
         ResourceTemplate ()
         {
@@ -430,7 +430,7 @@
                 {
                     0xF0, 0xF1, 0xF2, 0xF3, 0xF4
                 })
-        }, 
+        },
 
         ResourceTemplate ()
         {
@@ -442,7 +442,7 @@
                 {
                     0xF0, 0xF1, 0xF2, 0xF3, 0xF4
                 })
-        }, 
+        },
 
         ResourceTemplate ()
         {
@@ -454,7 +454,7 @@
                 {
                     0xF0, 0xF1, 0xF2, 0xF3, 0xF4
                 })
-        }, 
+        },
 
         ResourceTemplate ()
         {
@@ -466,7 +466,7 @@
                 {
                     0xF0, 0xF1, 0xF2, 0xF3, 0xF4
                 })
-        }, 
+        },
 
         ResourceTemplate ()
         {
@@ -478,7 +478,7 @@
                 {
                     0xF0, 0xF1, 0xF2, 0xF3, 0xF4
                 })
-        }, 
+        },
 
         ResourceTemplate ()
         {
@@ -490,7 +490,7 @@
                 {
                     0xF0, 0xF1, 0xF2, 0xF3, 0xF4
                 })
-        }, 
+        },
 
         ResourceTemplate ()
         {
@@ -502,7 +502,7 @@
                 {
                     0xF0, 0xF1, 0xF2, 0xF3, 0xF4
                 })
-        }, 
+        },
 
         ResourceTemplate ()
         {
@@ -514,7 +514,7 @@
                 {
                     0xF0, 0xF1, 0xF2, 0xF3, 0xF4
                 })
-        }, 
+        },
 
         ResourceTemplate ()
         {
@@ -526,7 +526,7 @@
                 {
                     0xF0, 0xF1, 0xF2, 0xF3, 0xF4
                 })
-        }, 
+        },
 
         ResourceTemplate ()
         {
@@ -538,7 +538,7 @@
                 {
                     0xF0, 0xF1, 0xF2, 0xF3, 0xF4
                 })
-        }, 
+        },
 
         ResourceTemplate ()
         {
@@ -550,7 +550,7 @@
                 {
                     0xF0, 0xF1, 0xF2, 0xF3, 0xF4
                 })
-        }, 
+        },
 
         ResourceTemplate ()
         {
@@ -562,7 +562,7 @@
                 {
                     0xF0, 0xF1, 0xF2, 0xF3, 0xF4
                 })
-        }, 
+        },
 
         ResourceTemplate ()
         {
@@ -574,7 +574,7 @@
                 {
                     0xF0, 0xF1, 0xF2, 0xF3, 0xF4
                 })
-        }, 
+        },
 
         ResourceTemplate ()
         {
@@ -586,7 +586,7 @@
                 {
                     0xF0, 0xF1, 0xF2, 0xF3, 0xF4
                 })
-        }, 
+        },
 
         ResourceTemplate ()
         {
@@ -598,7 +598,7 @@
                 {
                     0xF0, 0xF1, 0xF2, 0xF3, 0xF4
                 })
-        }, 
+        },
 
         ResourceTemplate ()
         {
@@ -610,7 +610,7 @@
                 {
                     0xF0, 0xF1, 0xF2, 0xF3, 0xF4
                 })
-        }, 
+        },
 
         ResourceTemplate ()
         {
@@ -622,7 +622,7 @@
                 {
                     0xF0, 0xF1, 0xF2, 0xF3, 0xF4
                 })
-        }, 
+        },
 
         ResourceTemplate ()
         {
@@ -634,7 +634,7 @@
                 {
                     0xF0, 0xF1, 0xF2, 0xF3, 0xF4
                 })
-        }, 
+        },
 
         ResourceTemplate ()
         {
@@ -646,7 +646,7 @@
                 {
                     0xF0, 0xF1, 0xF2, 0xF3, 0xF4
                 })
-        }, 
+        },
 
         ResourceTemplate ()
         {
@@ -658,7 +658,7 @@
                 {
                     0xF0, 0xF1, 0xF2, 0xF3, 0xF4
                 })
-        }, 
+        },
 
         ResourceTemplate ()
         {
@@ -670,7 +670,7 @@
                 {
                     0xF0, 0xF1, 0xF2, 0xF3, 0xF4
                 })
-        }, 
+        },
 
         ResourceTemplate ()
         {
@@ -682,7 +682,7 @@
                 {
                     0xF0, 0xF1, 0xF2, 0xF3, 0xF4
                 })
-        }, 
+        },
 
         ResourceTemplate ()
         {
@@ -694,7 +694,7 @@
                 {
                     0xF0, 0xF1, 0xF2, 0xF3, 0xF4
                 })
-        }, 
+        },
 
         ResourceTemplate ()
         {
@@ -706,7 +706,7 @@
                 {
                     0xF0, 0xF1, 0xF2, 0xF3, 0xF4
                 })
-        }, 
+        },
 
         ResourceTemplate ()
         {
@@ -718,7 +718,7 @@
                 {
                     0xF0, 0xF1, 0xF2, 0xF3, 0xF4
                 })
-        }, 
+        },
 
         ResourceTemplate ()
         {
@@ -730,7 +730,7 @@
                 {
                     0xF0, 0xF1, 0xF2, 0xF3, 0xF4
                 })
-        }, 
+        },
 
         ResourceTemplate ()
         {
@@ -742,7 +742,7 @@
                 {
                     0xF0, 0xF1, 0xF2, 0xF3, 0xF4
                 })
-        }, 
+        },
 
         ResourceTemplate ()
         {
@@ -754,7 +754,7 @@
                 {
                     0xF0, 0xF1, 0xF2, 0xF3, 0xF4
                 })
-        }, 
+        },
 
         ResourceTemplate ()
         {
@@ -766,7 +766,7 @@
                 {
                     0xF0, 0xF1, 0xF2, 0xF3, 0xF4
                 })
-        }, 
+        },
 
         ResourceTemplate ()
         {
@@ -778,7 +778,7 @@
                 {
                     0xF0, 0xF1, 0xF2, 0xF3, 0xF4
                 })
-        }, 
+        },
 
         ResourceTemplate ()
         {
@@ -790,7 +790,7 @@
                 {
                     0xF0, 0xF1, 0xF2, 0xF3, 0xF4
                 })
-        }, 
+        },
 
         ResourceTemplate ()
         {
@@ -802,7 +802,7 @@
                 {
                     0xF0, 0xF1, 0xF2, 0xF3, 0xF4
                 })
-        }, 
+        },
 
         ResourceTemplate ()
         {
@@ -811,7 +811,7 @@
                 ClockPhaseFirst, "\\SPI",
                 0xEE, ResourceConsumer, , Shared,
                 )
-        }, 
+        },
 
         ResourceTemplate ()
         {
@@ -820,7 +820,7 @@
                 ClockPhaseSecond, "\\SPI",
                 0xEE, ResourceConsumer, , Shared,
                 )
-        }, 
+        },
 
         ResourceTemplate ()
         {
@@ -829,7 +829,7 @@
                 ClockPhaseFirst, "\\SPI",
                 0xEE, ResourceConsumer, , Shared,
                 )
-        }, 
+        },
 
         ResourceTemplate ()
         {
@@ -838,7 +838,7 @@
                 ClockPhaseSecond, "\\SPI",
                 0xEE, ResourceConsumer, , Shared,
                 )
-        }, 
+        },
 
         ResourceTemplate ()
         {
@@ -847,7 +847,7 @@
                 ClockPhaseFirst, "\\SPI",
                 0xEE, ResourceConsumer, , Shared,
                 )
-        }, 
+        },
 
         ResourceTemplate ()
         {
@@ -856,7 +856,7 @@
                 ClockPhaseSecond, "\\SPI",
                 0xEE, ResourceConsumer, , Shared,
                 )
-        }, 
+        },
 
         ResourceTemplate ()
         {
@@ -865,7 +865,7 @@
                 ClockPhaseFirst, "\\SPI",
                 0xEE, ResourceConsumer, , Exclusive,
                 )
-        }, 
+        },
 
         ResourceTemplate ()
         {
@@ -874,7 +874,7 @@
                 ClockPhaseSecond, "\\SPI",
                 0xEE, ResourceConsumer, , Exclusive,
                 )
-        }, 
+        },
 
         ResourceTemplate ()
         {
@@ -883,7 +883,7 @@
                 ClockPhaseFirst, "\\SPI",
                 0xEE, ResourceConsumer, , Exclusive,
                 )
-        }, 
+        },
 
         ResourceTemplate ()
         {
@@ -892,7 +892,7 @@
                 ClockPhaseSecond, "\\SPI",
                 0xEE, ResourceConsumer, , Exclusive,
                 )
-        }, 
+        },
 
         ResourceTemplate ()
         {
@@ -901,7 +901,7 @@
                 ClockPhaseFirst, "\\SPI",
                 0xEE, ResourceConsumer, , Exclusive,
                 )
-        }, 
+        },
 
         ResourceTemplate ()
         {
@@ -910,7 +910,7 @@
                 ClockPhaseSecond, "\\SPI",
                 0xEE, ResourceConsumer, , Exclusive,
                 )
-        }, 
+        },
 
         ResourceTemplate ()
         {
@@ -919,7 +919,7 @@
                 ClockPhaseFirst, "\\SPI",
                 0xEE, ResourceConsumer, , Exclusive,
                 )
-        }, 
+        },
 
         ResourceTemplate ()
         {
@@ -928,7 +928,7 @@
                 ClockPhaseSecond, "\\SPI",
                 0xEE, ResourceConsumer, , Exclusive,
                 )
-        }, 
+        },
 
         ResourceTemplate ()
         {
@@ -937,7 +937,7 @@
                 ClockPhaseFirst, "\\SPI",
                 0xEE, ResourceConsumer, , Exclusive,
                 )
-        }, 
+        },
 
         ResourceTemplate ()
         {
@@ -946,7 +946,7 @@
                 ClockPhaseSecond, "\\SPI",
                 0xEE, ResourceConsumer, , Exclusive,
                 )
-        }, 
+        },
 
         ResourceTemplate ()
         {
@@ -955,7 +955,7 @@
                 ClockPhaseFirst, "\\SPI",
                 0xEE, ResourceConsumer, , Exclusive,
                 )
-        }, 
+        },
 
         ResourceTemplate ()
         {
@@ -964,7 +964,7 @@
                 ClockPhaseSecond, "\\SPI",
                 0xEE, ResourceConsumer, , Exclusive,
                 )
-        }, 
+        },
 
         ResourceTemplate ()
         {
@@ -973,7 +973,7 @@
                 ClockPhaseFirst, "\\SPI",
                 0xEE, ResourceConsumer, , Exclusive,
                 )
-        }, 
+        },
 
         ResourceTemplate ()
         {
@@ -982,7 +982,7 @@
                 ClockPhaseSecond, "\\SPI",
                 0xEE, ResourceConsumer, , Exclusive,
                 )
-        }, 
+        },
 
         ResourceTemplate ()
         {
@@ -991,7 +991,7 @@
                 ClockPhaseFirst, "\\SPI",
                 0xEE, ResourceConsumer, , Exclusive,
                 )
-        }, 
+        },
 
         ResourceTemplate ()
         {
@@ -1000,7 +1000,7 @@
                 ClockPhaseSecond, "\\SPI",
                 0xEE, ResourceConsumer, , Exclusive,
                 )
-        }, 
+        },
 
         ResourceTemplate ()
         {
@@ -1009,7 +1009,7 @@
                 ClockPhaseFirst, "\\SPI",
                 0xEE, ResourceConsumer, , Exclusive,
                 )
-        }, 
+        },
 
         ResourceTemplate ()
         {
@@ -1018,7 +1018,7 @@
                 ClockPhaseSecond, "\\SPI",
                 0xEE, ResourceConsumer, , Exclusive,
                 )
-        }, 
+        },
 
         ResourceTemplate ()
         {
@@ -1027,7 +1027,7 @@
                 ClockPhaseFirst, "\\SPI",
                 0xEE, ResourceConsumer, , Exclusive,
                 )
-        }, 
+        },
 
         ResourceTemplate ()
         {
@@ -1036,7 +1036,7 @@
                 ClockPhaseSecond, "\\SPI",
                 0xEE, ResourceConsumer, , Exclusive,
                 )
-        }, 
+        },
 
         ResourceTemplate ()
         {
@@ -1045,7 +1045,7 @@
                 ClockPhaseFirst, "\\SPI",
                 0xEE, ResourceConsumer, , Exclusive,
                 )
-        }, 
+        },
 
         ResourceTemplate ()
         {
@@ -1054,7 +1054,7 @@
                 ClockPhaseSecond, "\\SPI",
                 0xEE, ResourceConsumer, , Exclusive,
                 )
-        }, 
+        },
 
         ResourceTemplate ()
         {
@@ -1063,7 +1063,7 @@
                 ClockPhaseFirst, "\\SPI",
                 0xEE, ResourceConsumer, , Exclusive,
                 )
-        }, 
+        },
 
         ResourceTemplate ()
         {
@@ -1072,7 +1072,7 @@
                 ClockPhaseSecond, "\\SPI",
                 0xEE, ResourceConsumer, , Exclusive,
                 )
-        }, 
+        },
 
         ResourceTemplate ()
         {
@@ -1084,7 +1084,7 @@
                 {
                     0xF0, 0xF1, 0xF2, 0xF3, 0xF4
                 })
-        }, 
+        },
 
         ResourceTemplate ()
         {
@@ -1093,7 +1093,7 @@
                 ClockPhaseSecond, "\\SPI",
                 0xEE, ResourceConsumer, , Shared,
                 )
-        }, 
+        },
 
         ResourceTemplate ()
         {
@@ -1102,7 +1102,7 @@
                 ClockPhaseFirst, "\\SPI",
                 0xEE, ResourceProducer, , Exclusive,
                 )
-        }, 
+        },
 
         ResourceTemplate ()
         {
@@ -1111,7 +1111,7 @@
                 ClockPhaseSecond, "\\SPI",
                 0xEE, ResourceProducer, , Exclusive,
                 )
-        }, 
+        },
 
         ResourceTemplate ()
         {
@@ -1120,7 +1120,7 @@
                 ClockPhaseFirst, "\\SPI",
                 0xEE, ResourceProducer, , Exclusive,
                 )
-        }, 
+        },
 
         ResourceTemplate ()
         {
@@ -1129,7 +1129,7 @@
                 ClockPhaseSecond, "\\SPI",
                 0xEE, ResourceProducer, , Exclusive,
                 )
-        }, 
+        },
 
         ResourceTemplate ()
         {
@@ -1138,7 +1138,7 @@
                 ClockPhaseFirst, "\\SPI",
                 0xEE, ResourceProducer, , Exclusive,
                 )
-        }, 
+        },
 
         ResourceTemplate ()
         {
@@ -1147,7 +1147,7 @@
                 ClockPhaseSecond, "\\SPI",
                 0xEE, ResourceProducer, , Exclusive,
                 )
-        }, 
+        },
 
         ResourceTemplate ()
         {
@@ -1156,7 +1156,7 @@
                 ClockPhaseFirst, "\\SPI",
                 0xEE, ResourceProducer, , Exclusive,
                 )
-        }, 
+        },
 
         ResourceTemplate ()
         {
@@ -1165,7 +1165,7 @@
                 ClockPhaseSecond, "\\SPI",
                 0xEE, ResourceProducer, , Exclusive,
                 )
-        }, 
+        },
 
         ResourceTemplate ()
         {
@@ -1174,7 +1174,7 @@
                 ClockPhaseFirst, "\\SPI",
                 0xEE, ResourceProducer, , Exclusive,
                 )
-        }, 
+        },
 
         ResourceTemplate ()
         {
@@ -1183,7 +1183,7 @@
                 ClockPhaseSecond, "\\SPI",
                 0xEE, ResourceProducer, , Exclusive,
                 )
-        }, 
+        },
 
         ResourceTemplate ()
         {
@@ -1192,7 +1192,7 @@
                 ClockPhaseFirst, "\\SPI",
                 0xEE, ResourceProducer, , Exclusive,
                 )
-        }, 
+        },
 
         ResourceTemplate ()
         {
@@ -1201,7 +1201,7 @@
                 ClockPhaseSecond, "\\SPI",
                 0xEE, ResourceProducer, , Exclusive,
                 )
-        }, 
+        },
 
         ResourceTemplate ()
         {
@@ -1210,7 +1210,7 @@
                 ClockPhaseFirst, "\\SPI",
                 0xEE, ResourceProducer, , Exclusive,
                 )
-        }, 
+        },
 
         ResourceTemplate ()
         {
@@ -1219,7 +1219,7 @@
                 ClockPhaseSecond, "\\SPI",
                 0xEE, ResourceProducer, , Exclusive,
                 )
-        }, 
+        },
 
         ResourceTemplate ()
         {
@@ -1228,7 +1228,7 @@
                 ClockPhaseFirst, "\\SPI",
                 0xEE, ResourceProducer, , Exclusive,
                 )
-        }, 
+        },
 
         ResourceTemplate ()
         {
@@ -1237,7 +1237,7 @@
                 ClockPhaseSecond, "\\SPI",
                 0xEE, ResourceProducer, , Exclusive,
                 )
-        }, 
+        },
 
         ResourceTemplate ()
         {
@@ -1246,7 +1246,7 @@
                 ClockPhaseFirst, "\\SPI",
                 0xEE, ResourceProducer, , Exclusive,
                 )
-        }, 
+        },
 
         ResourceTemplate ()
         {
@@ -1255,7 +1255,7 @@
                 ClockPhaseSecond, "\\SPI",
                 0xEE, ResourceProducer, , Exclusive,
                 )
-        }, 
+        },
 
         ResourceTemplate ()
         {
@@ -1264,7 +1264,7 @@
                 ClockPhaseFirst, "\\SPI",
                 0xEE, ResourceProducer, , Exclusive,
                 )
-        }, 
+        },
 
         ResourceTemplate ()
         {
@@ -1273,7 +1273,7 @@
                 ClockPhaseSecond, "\\SPI",
                 0xEE, ResourceProducer, , Exclusive,
                 )
-        }, 
+        },
 
         ResourceTemplate ()
         {
@@ -1282,7 +1282,7 @@
                 ClockPhaseFirst, "\\SPI",
                 0xEE, ResourceProducer, , Exclusive,
                 )
-        }, 
+        },
 
         ResourceTemplate ()
         {
@@ -1291,7 +1291,7 @@
                 ClockPhaseSecond, "\\SPI",
                 0xEE, ResourceProducer, , Exclusive,
                 )
-        }, 
+        },
 
         ResourceTemplate ()
         {
@@ -1300,7 +1300,7 @@
                 ClockPhaseFirst, "\\SPI",
                 0xEE, ResourceProducer, , Exclusive,
                 )
-        }, 
+        },
 
         ResourceTemplate ()
         {
@@ -1309,7 +1309,7 @@
                 ClockPhaseSecond, "\\SPI",
                 0xEE, ResourceProducer, , Exclusive,
                 )
-        }, 
+        },
 
         ResourceTemplate ()
         {
@@ -1318,7 +1318,7 @@
                 ClockPhaseFirst, "\\SPI",
                 0xEE, ResourceProducer, , Exclusive,
                 )
-        }, 
+        },
 
         ResourceTemplate ()
         {
@@ -1327,7 +1327,7 @@
                 ClockPhaseSecond, "\\SPI",
                 0xEE, ResourceProducer, , Exclusive,
                 )
-        }, 
+        },
 
         ResourceTemplate ()
         {
@@ -1336,7 +1336,7 @@
                 ClockPhaseFirst, "\\SPI",
                 0xEE, ResourceProducer, , Exclusive,
                 )
-        }, 
+        },
 
         ResourceTemplate ()
         {
@@ -1345,7 +1345,7 @@
                 ClockPhaseSecond, "\\SPI",
                 0xEE, ResourceProducer, , Exclusive,
                 )
-        }, 
+        },
 
         ResourceTemplate ()
         {
@@ -1354,7 +1354,7 @@
                 ClockPhaseFirst, "\\SPI",
                 0xEE, ResourceProducer, , Exclusive,
                 )
-        }, 
+        },
 
         ResourceTemplate ()
         {
@@ -1363,7 +1363,7 @@
                 ClockPhaseSecond, "\\SPI",
                 0xEE, ResourceProducer, , Exclusive,
                 )
-        }, 
+        },
 
         ResourceTemplate ()
         {
@@ -1372,7 +1372,7 @@
                 ClockPhaseFirst, "\\SPI",
                 0xEE, ResourceProducer, , Exclusive,
                 )
-        }, 
+        },
 
         ResourceTemplate ()
         {
@@ -1381,7 +1381,7 @@
                 ClockPhaseSecond, "\\SPI",
                 0xEE, ResourceProducer, , Exclusive,
                 )
-        }, 
+        },
 
         ResourceTemplate ()
         {
@@ -1404,7 +1404,7 @@
                 {
                     0xF0, 0xF1, 0xF2, 0xF3, 0xF4
                 })
-        }, 
+        },
 
         ResourceTemplate ()
         {
@@ -1416,7 +1416,7 @@
                 {
                     0xF0, 0xF1, 0xF2, 0xF3, 0xF4
                 })
-        }, 
+        },
 
         ResourceTemplate ()
         {
@@ -1428,7 +1428,7 @@
                 {
                     0xF0, 0xF1, 0xF2, 0xF3, 0xF4
                 })
-        }, 
+        },
 
         ResourceTemplate ()
         {
@@ -1440,7 +1440,7 @@
                 {
                     0xF0, 0xF1, 0xF2, 0xF3, 0xF4
                 })
-        }, 
+        },
 
         ResourceTemplate ()
         {
@@ -1452,7 +1452,7 @@
                 {
                     0xF0, 0xF1, 0xF2, 0xF3, 0xF4
                 })
-        }, 
+        },
 
         ResourceTemplate ()
         {
@@ -1464,7 +1464,7 @@
                 {
                     0xF0, 0xF1, 0xF2, 0xF3, 0xF4
                 })
-        }, 
+        },
 
         ResourceTemplate ()
         {
@@ -1476,7 +1476,7 @@
                 {
                     0xF0, 0xF1, 0xF2, 0xF3, 0xF4
                 })
-        }, 
+        },
 
         ResourceTemplate ()
         {
@@ -1488,7 +1488,7 @@
                 {
                     0xF0, 0xF1, 0xF2, 0xF3, 0xF4
                 })
-        }, 
+        },
 
         ResourceTemplate ()
         {
@@ -1500,7 +1500,7 @@
                 {
                     0xF0, 0xF1, 0xF2, 0xF3, 0xF4
                 })
-        }, 
+        },
 
         ResourceTemplate ()
         {
@@ -1512,7 +1512,7 @@
                 {
                     0xF0, 0xF1, 0xF2, 0xF3, 0xF4
                 })
-        }, 
+        },
 
         ResourceTemplate ()
         {
@@ -1524,7 +1524,7 @@
                 {
                     0xF0, 0xF1, 0xF2, 0xF3, 0xF4
                 })
-        }, 
+        },
 
         ResourceTemplate ()
         {
@@ -1536,7 +1536,7 @@
                 {
                     0xF0, 0xF1, 0xF2, 0xF3, 0xF4
                 })
-        }, 
+        },
 
         ResourceTemplate ()
         {
@@ -1548,7 +1548,7 @@
                 {
                     0xF0, 0xF1, 0xF2, 0xF3, 0xF4
                 })
-        }, 
+        },
 
         ResourceTemplate ()
         {
@@ -1560,7 +1560,7 @@
                 {
                     0xF0, 0xF1, 0xF2, 0xF3, 0xF4
                 })
-        }, 
+        },
 
         ResourceTemplate ()
         {
@@ -1572,7 +1572,7 @@
                 {
                     0xF0, 0xF1, 0xF2, 0xF3, 0xF4
                 })
-        }, 
+        },
 
         ResourceTemplate ()
         {
@@ -1584,7 +1584,7 @@
                 {
                     0xF0, 0xF1, 0xF2, 0xF3, 0xF4
                 })
-        }, 
+        },
 
         ResourceTemplate ()
         {
@@ -1596,7 +1596,7 @@
                 {
                     0xF0, 0xF1, 0xF2, 0xF3, 0xF4
                 })
-        }, 
+        },
 
         ResourceTemplate ()
         {
@@ -1608,7 +1608,7 @@
                 {
                     0xF0, 0xF1, 0xF2, 0xF3, 0xF4
                 })
-        }, 
+        },
 
         ResourceTemplate ()
         {
@@ -1620,7 +1620,7 @@
                 {
                     0xF0, 0xF1, 0xF2, 0xF3, 0xF4
                 })
-        }, 
+        },
 
         ResourceTemplate ()
         {
@@ -1632,7 +1632,7 @@
                 {
                     0xF0, 0xF1, 0xF2, 0xF3, 0xF4
                 })
-        }, 
+        },
 
         ResourceTemplate ()
         {
@@ -1644,7 +1644,7 @@
                 {
                     0xF0, 0xF1, 0xF2, 0xF3, 0xF4
                 })
-        }, 
+        },
 
         ResourceTemplate ()
         {
@@ -1656,7 +1656,7 @@
                 {
                     0xF0, 0xF1, 0xF2, 0xF3, 0xF4
                 })
-        }, 
+        },
 
         ResourceTemplate ()
         {
@@ -1668,7 +1668,7 @@
                 {
                     0xF0, 0xF1, 0xF2, 0xF3, 0xF4
                 })
-        }, 
+        },
 
         ResourceTemplate ()
         {
@@ -1680,7 +1680,7 @@
                 {
                     0xF0, 0xF1, 0xF2, 0xF3, 0xF4
                 })
-        }, 
+        },
 
         ResourceTemplate ()
         {
@@ -1692,7 +1692,7 @@
                 {
                     0xF0, 0xF1, 0xF2, 0xF3, 0xF4
                 })
-        }, 
+        },
 
         ResourceTemplate ()
         {
@@ -1704,7 +1704,7 @@
                 {
                     0xF0, 0xF1, 0xF2, 0xF3, 0xF4
                 })
-        }, 
+        },
 
         ResourceTemplate ()
         {
@@ -1716,7 +1716,7 @@
                 {
                     0xF0, 0xF1, 0xF2, 0xF3, 0xF4
                 })
-        }, 
+        },
 
         ResourceTemplate ()
         {
@@ -1728,7 +1728,7 @@
                 {
                     0xF0, 0xF1, 0xF2, 0xF3, 0xF4
                 })
-        }, 
+        },
 
         ResourceTemplate ()
         {
@@ -1740,7 +1740,7 @@
                 {
                     0xF0, 0xF1, 0xF2, 0xF3, 0xF4
                 })
-        }, 
+        },
 
         ResourceTemplate ()
         {
@@ -1752,7 +1752,7 @@
                 {
                     0xF0, 0xF1, 0xF2, 0xF3, 0xF4
                 })
-        }, 
+        },
 
         ResourceTemplate ()
         {
@@ -1764,7 +1764,7 @@
                 {
                     0xF0, 0xF1, 0xF2, 0xF3, 0xF4
                 })
-        }, 
+        },
 
         ResourceTemplate ()
         {
@@ -1776,7 +1776,7 @@
                 {
                     0xF0, 0xF1, 0xF2, 0xF3, 0xF4
                 })
-        }, 
+        },
 
         ResourceTemplate ()
         {
@@ -1788,7 +1788,7 @@
                 {
                     0xF0, 0xF1, 0xF2, 0xF3, 0xF4
                 })
-        }, 
+        },
 
         ResourceTemplate ()
         {
@@ -1800,7 +1800,7 @@
                 {
                     0xF0, 0xF1, 0xF2, 0xF3, 0xF4
                 })
-        }, 
+        },
 
         ResourceTemplate ()
         {
@@ -1812,7 +1812,7 @@
                 {
                     0xF0, 0xF1, 0xF2, 0xF3, 0xF4
                 })
-        }, 
+        },
 
         ResourceTemplate ()
         {
@@ -1824,7 +1824,7 @@
                 {
                     0xF0, 0xF1, 0xF2, 0xF3, 0xF4
                 })
-        }, 
+        },
 
         ResourceTemplate ()
         {
@@ -1836,7 +1836,7 @@
                 {
                     0xF0, 0xF1, 0xF2, 0xF3, 0xF4
                 })
-        }, 
+        },
 
         ResourceTemplate ()
         {
@@ -1848,7 +1848,7 @@
                 {
                     0xF0, 0xF1, 0xF2, 0xF3, 0xF4
                 })
-        }, 
+        },
 
         ResourceTemplate ()
         {
@@ -1860,7 +1860,7 @@
                 {
                     0xF0, 0xF1, 0xF2, 0xF3, 0xF4
                 })
-        }, 
+        },
 
         ResourceTemplate ()
         {
@@ -1872,7 +1872,7 @@
                 {
                     0xF0, 0xF1, 0xF2, 0xF3, 0xF4
                 })
-        }, 
+        },
 
         ResourceTemplate ()
         {
@@ -1884,7 +1884,7 @@
                 {
                     0xF0, 0xF1, 0xF2, 0xF3, 0xF4
                 })
-        }, 
+        },
 
         ResourceTemplate ()
         {
@@ -1896,7 +1896,7 @@
                 {
                     0xF0, 0xF1, 0xF2, 0xF3, 0xF4
                 })
-        }, 
+        },
 
         ResourceTemplate ()
         {
@@ -1908,7 +1908,7 @@
                 {
                     0xF0, 0xF1, 0xF2, 0xF3, 0xF4
                 })
-        }, 
+        },
 
         ResourceTemplate ()
         {
@@ -1920,7 +1920,7 @@
                 {
                     0xF0, 0xF1, 0xF2, 0xF3, 0xF4
                 })
-        }, 
+        },
 
         ResourceTemplate ()
         {
@@ -1932,7 +1932,7 @@
                 {
                     0xF0, 0xF1, 0xF2, 0xF3, 0xF4
                 })
-        }, 
+        },
 
         ResourceTemplate ()
         {
@@ -1944,7 +1944,7 @@
                 {
                     0xF0, 0xF1, 0xF2, 0xF3, 0xF4
                 })
-        }, 
+        },
 
         ResourceTemplate ()
         {
@@ -1956,7 +1956,7 @@
                 {
                     0xF0, 0xF1, 0xF2, 0xF3, 0xF4
                 })
-        }, 
+        },
 
         ResourceTemplate ()
         {
@@ -1968,7 +1968,7 @@
                 {
                     0xF0, 0xF1, 0xF2, 0xF3, 0xF4
                 })
-        }, 
+        },
 
         ResourceTemplate ()
         {
@@ -1980,7 +1980,7 @@
                 {
                     0xF0, 0xF1, 0xF2, 0xF3, 0xF4
                 })
-        }, 
+        },
 
         ResourceTemplate ()
         {
@@ -1992,7 +1992,7 @@
                 {
                     0xF0, 0xF1, 0xF2, 0xF3, 0xF4
                 })
-        }, 
+        },
 
         ResourceTemplate ()
         {
@@ -2004,7 +2004,7 @@
                 {
                     0xF0, 0xF1, 0xF2, 0xF3, 0xF4
                 })
-        }, 
+        },
 
         ResourceTemplate ()
         {
@@ -2016,7 +2016,7 @@
                 {
                     0xF0, 0xF1, 0xF2, 0xF3, 0xF4
                 })
-        }, 
+        },
 
         ResourceTemplate ()
         {
@@ -2028,7 +2028,7 @@
                 {
                     0xF0, 0xF1, 0xF2, 0xF3, 0xF4
                 })
-        }, 
+        },
 
         ResourceTemplate ()
         {
@@ -2040,7 +2040,7 @@
                 {
                     0xF0, 0xF1, 0xF2, 0xF3, 0xF4
                 })
-        }, 
+        },
 
         ResourceTemplate ()
         {
@@ -2052,7 +2052,7 @@
                 {
                     0xF0, 0xF1, 0xF2, 0xF3, 0xF4
                 })
-        }, 
+        },
 
         ResourceTemplate ()
         {
@@ -2064,7 +2064,7 @@
                 {
                     0xF0, 0xF1, 0xF2, 0xF3, 0xF4
                 })
-        }, 
+        },
 
         ResourceTemplate ()
         {
@@ -2076,7 +2076,7 @@
                 {
                     0xF0, 0xF1, 0xF2, 0xF3, 0xF4
                 })
-        }, 
+        },
 
         ResourceTemplate ()
         {
@@ -2088,7 +2088,7 @@
                 {
                     0xF0, 0xF1, 0xF2, 0xF3, 0xF4
                 })
-        }, 
+        },
 
         ResourceTemplate ()
         {
@@ -2100,7 +2100,7 @@
                 {
                     0xF0, 0xF1, 0xF2, 0xF3, 0xF4
                 })
-        }, 
+        },
 
         ResourceTemplate ()
         {
@@ -2112,7 +2112,7 @@
                 {
                     0xF0, 0xF1, 0xF2, 0xF3, 0xF4
                 })
-        }, 
+        },
 
         ResourceTemplate ()
         {
@@ -2124,7 +2124,7 @@
                 {
                     0xF0, 0xF1, 0xF2, 0xF3, 0xF4
                 })
-        }, 
+        },
 
         ResourceTemplate ()
         {
@@ -2136,7 +2136,7 @@
                 {
                     0xF0, 0xF1, 0xF2, 0xF3, 0xF4
                 })
-        }, 
+        },
 
         ResourceTemplate ()
         {
@@ -2148,7 +2148,7 @@
                 {
                     0xF0, 0xF1, 0xF2, 0xF3, 0xF4
                 })
-        }, 
+        },
 
         ResourceTemplate ()
         {
@@ -2160,7 +2160,7 @@
                 {
                     0xF0, 0xF1, 0xF2, 0xF3, 0xF4
                 })
-        }, 
+        },
 
         ResourceTemplate ()
         {
@@ -2169,7 +2169,7 @@
                 ClockPhaseFirst, "\\SPI",
                 0xEE, ResourceConsumer, , Shared,
                 )
-        }, 
+        },
 
         ResourceTemplate ()
         {
@@ -2178,7 +2178,7 @@
                 ClockPhaseSecond, "\\SPI",
                 0xEE, ResourceConsumer, , Shared,
                 )
-        }, 
+        },
 
         ResourceTemplate ()
         {
@@ -2187,7 +2187,7 @@
                 ClockPhaseFirst, "\\SPI",
                 0xEE, ResourceConsumer, , Shared,
                 )
-        }, 
+        },
 
         ResourceTemplate ()
         {
@@ -2196,7 +2196,7 @@
                 ClockPhaseSecond, "\\SPI",
                 0xEE, ResourceConsumer, , Shared,
                 )
-        }, 
+        },
 
         ResourceTemplate ()
         {
@@ -2205,7 +2205,7 @@
                 ClockPhaseFirst, "\\SPI",
                 0xEE, ResourceConsumer, , Shared,
                 )
-        }, 
+        },
 
         ResourceTemplate ()
         {
@@ -2214,7 +2214,7 @@
                 ClockPhaseSecond, "\\SPI",
                 0xEE, ResourceConsumer, , Shared,
                 )
-        }, 
+        },
 
         ResourceTemplate ()
         {
@@ -2223,7 +2223,7 @@
                 ClockPhaseFirst, "\\SPI",
                 0xEE, ResourceConsumer, , Exclusive,
                 )
-        }, 
+        },
 
         ResourceTemplate ()
         {
@@ -2232,7 +2232,7 @@
                 ClockPhaseSecond, "\\SPI",
                 0xEE, ResourceConsumer, , Exclusive,
                 )
-        }, 
+        },
 
         ResourceTemplate ()
         {
@@ -2241,7 +2241,7 @@
                 ClockPhaseFirst, "\\SPI",
                 0xEE, ResourceConsumer, , Exclusive,
                 )
-        }, 
+        },
 
         ResourceTemplate ()
         {
@@ -2250,7 +2250,7 @@
                 ClockPhaseSecond, "\\SPI",
                 0xEE, ResourceConsumer, , Exclusive,
                 )
-        }, 
+        },
 
         ResourceTemplate ()
         {
@@ -2259,7 +2259,7 @@
                 ClockPhaseFirst, "\\SPI",
                 0xEE, ResourceConsumer, , Exclusive,
                 )
-        }, 
+        },
 
         ResourceTemplate ()
         {
@@ -2268,7 +2268,7 @@
                 ClockPhaseSecond, "\\SPI",
                 0xEE, ResourceConsumer, , Exclusive,
                 )
-        }, 
+        },
 
         ResourceTemplate ()
         {
@@ -2277,7 +2277,7 @@
                 ClockPhaseFirst, "\\SPI",
                 0xEE, ResourceConsumer, , Exclusive,
                 )
-        }, 
+        },
 
         ResourceTemplate ()
         {
@@ -2286,7 +2286,7 @@
                 ClockPhaseSecond, "\\SPI",
                 0xEE, ResourceConsumer, , Exclusive,
                 )
-        }, 
+        },
 
         ResourceTemplate ()
         {
@@ -2295,7 +2295,7 @@
                 ClockPhaseFirst, "\\SPI",
                 0xEE, ResourceConsumer, , Exclusive,
                 )
-        }, 
+        },
 
         ResourceTemplate ()
         {
@@ -2304,7 +2304,7 @@
                 ClockPhaseSecond, "\\SPI",
                 0xEE, ResourceConsumer, , Exclusive,
                 )
-        }, 
+        },
 
         ResourceTemplate ()
         {
@@ -2313,7 +2313,7 @@
                 ClockPhaseFirst, "\\SPI",
                 0xEE, ResourceConsumer, , Exclusive,
                 )
-        }, 
+        },
 
         ResourceTemplate ()
         {
@@ -2322,7 +2322,7 @@
                 ClockPhaseSecond, "\\SPI",
                 0xEE, ResourceConsumer, , Exclusive,
                 )
-        }, 
+        },
 
         ResourceTemplate ()
         {
@@ -2331,7 +2331,7 @@
                 ClockPhaseFirst, "\\SPI",
                 0xEE, ResourceConsumer, , Exclusive,
                 )
-        }, 
+        },
 
         ResourceTemplate ()
         {
@@ -2340,7 +2340,7 @@
                 ClockPhaseSecond, "\\SPI",
                 0xEE, ResourceConsumer, , Exclusive,
                 )
-        }, 
+        },
 
         ResourceTemplate ()
         {
@@ -2349,7 +2349,7 @@
                 ClockPhaseFirst, "\\SPI",
                 0xEE, ResourceConsumer, , Exclusive,
                 )
-        }, 
+        },
 
         ResourceTemplate ()
         {
@@ -2358,7 +2358,7 @@
                 ClockPhaseSecond, "\\SPI",
                 0xEE, ResourceConsumer, , Exclusive,
                 )
-        }, 
+        },
 
         ResourceTemplate ()
         {
@@ -2367,7 +2367,7 @@
                 ClockPhaseFirst, "\\SPI",
                 0xEE, ResourceConsumer, , Exclusive,
                 )
-        }, 
+        },
 
         ResourceTemplate ()
         {
@@ -2376,7 +2376,7 @@
                 ClockPhaseSecond, "\\SPI",
                 0xEE, ResourceConsumer, , Exclusive,
                 )
-        }, 
+        },
 
         ResourceTemplate ()
         {
@@ -2385,7 +2385,7 @@
                 ClockPhaseFirst, "\\SPI",
                 0xEE, ResourceConsumer, , Exclusive,
                 )
-        }, 
+        },
 
         ResourceTemplate ()
         {
@@ -2394,7 +2394,7 @@
                 ClockPhaseSecond, "\\SPI",
                 0xEE, ResourceConsumer, , Exclusive,
                 )
-        }, 
+        },
 
         ResourceTemplate ()
         {
@@ -2403,7 +2403,7 @@
                 ClockPhaseFirst, "\\SPI",
                 0xEE, ResourceConsumer, , Exclusive,
                 )
-        }, 
+        },
 
         ResourceTemplate ()
         {
@@ -2412,7 +2412,7 @@
                 ClockPhaseSecond, "\\SPI",
                 0xEE, ResourceConsumer, , Exclusive,
                 )
-        }, 
+        },
 
         ResourceTemplate ()
         {
@@ -2421,7 +2421,7 @@
                 ClockPhaseFirst, "\\SPI",
                 0xEE, ResourceConsumer, , Exclusive,
                 )
-        }, 
+        },
 
         ResourceTemplate ()
         {
@@ -2430,7 +2430,7 @@
                 ClockPhaseSecond, "\\SPI",
                 0xEE, ResourceConsumer, , Exclusive,
                 )
-        }, 
+        },
 
         ResourceTemplate ()
         {
@@ -2442,7 +2442,7 @@
                 {
                     0xF0, 0xF1, 0xF2, 0xF3, 0xF4
                 })
-        }, 
+        },
 
         ResourceTemplate ()
         {
@@ -2451,7 +2451,7 @@
                 ClockPhaseSecond, "\\SPI",
                 0xEE, ResourceConsumer, , Shared,
                 )
-        }, 
+        },
 
         ResourceTemplate ()
         {
@@ -2460,7 +2460,7 @@
                 ClockPhaseFirst, "\\SPI",
                 0xEE, ResourceProducer, , Exclusive,
                 )
-        }, 
+        },
 
         ResourceTemplate ()
         {
@@ -2469,7 +2469,7 @@
                 ClockPhaseSecond, "\\SPI",
                 0xEE, ResourceProducer, , Exclusive,
                 )
-        }, 
+        },
 
         ResourceTemplate ()
         {
@@ -2478,7 +2478,7 @@
                 ClockPhaseFirst, "\\SPI",
                 0xEE, ResourceProducer, , Exclusive,
                 )
-        }, 
+        },
 
         ResourceTemplate ()
         {
@@ -2487,7 +2487,7 @@
                 ClockPhaseSecond, "\\SPI",
                 0xEE, ResourceProducer, , Exclusive,
                 )
-        }, 
+        },
 
         ResourceTemplate ()
         {
@@ -2496,7 +2496,7 @@
                 ClockPhaseFirst, "\\SPI",
                 0xEE, ResourceProducer, , Exclusive,
                 )
-        }, 
+        },
 
         ResourceTemplate ()
         {
@@ -2505,7 +2505,7 @@
                 ClockPhaseSecond, "\\SPI",
                 0xEE, ResourceProducer, , Exclusive,
                 )
-        }, 
+        },
 
         ResourceTemplate ()
         {
@@ -2514,7 +2514,7 @@
                 ClockPhaseFirst, "\\SPI",
                 0xEE, ResourceProducer, , Exclusive,
                 )
-        }, 
+        },
 
         ResourceTemplate ()
         {
@@ -2523,7 +2523,7 @@
                 ClockPhaseSecond, "\\SPI",
                 0xEE, ResourceProducer, , Exclusive,
                 )
-        }, 
+        },
 
         ResourceTemplate ()
         {
@@ -2532,7 +2532,7 @@
                 ClockPhaseFirst, "\\SPI",
                 0xEE, ResourceProducer, , Exclusive,
                 )
-        }, 
+        },
 
         ResourceTemplate ()
         {
@@ -2541,7 +2541,7 @@
                 ClockPhaseSecond, "\\SPI",
                 0xEE, ResourceProducer, , Exclusive,
                 )
-        }, 
+        },
 
         ResourceTemplate ()
         {
@@ -2550,7 +2550,7 @@
                 ClockPhaseFirst, "\\SPI",
                 0xEE, ResourceProducer, , Exclusive,
                 )
-        }, 
+        },
 
         ResourceTemplate ()
         {
@@ -2559,7 +2559,7 @@
                 ClockPhaseSecond, "\\SPI",
                 0xEE, ResourceProducer, , Exclusive,
                 )
-        }, 
+        },
 
         ResourceTemplate ()
         {
@@ -2568,7 +2568,7 @@
                 ClockPhaseFirst, "\\SPI",
                 0xEE, ResourceProducer, , Exclusive,
                 )
-        }, 
+        },
 
         ResourceTemplate ()
         {
@@ -2577,7 +2577,7 @@
                 ClockPhaseSecond, "\\SPI",
                 0xEE, ResourceProducer, , Exclusive,
                 )
-        }, 
+        },
 
         ResourceTemplate ()
         {
@@ -2586,7 +2586,7 @@
                 ClockPhaseFirst, "\\SPI",
                 0xEE, ResourceProducer, , Exclusive,
                 )
-        }, 
+        },
 
         ResourceTemplate ()
         {
@@ -2595,7 +2595,7 @@
                 ClockPhaseSecond, "\\SPI",
                 0xEE, ResourceProducer, , Exclusive,
                 )
-        }, 
+        },
 
         ResourceTemplate ()
         {
@@ -2604,7 +2604,7 @@
                 ClockPhaseFirst, "\\SPI",
                 0xEE, ResourceProducer, , Exclusive,
                 )
-        }, 
+        },
 
         ResourceTemplate ()
         {
@@ -2613,7 +2613,7 @@
                 ClockPhaseSecond, "\\SPI",
                 0xEE, ResourceProducer, , Exclusive,
                 )
-        }, 
+        },
 
         ResourceTemplate ()
         {
@@ -2622,7 +2622,7 @@
                 ClockPhaseFirst, "\\SPI",
                 0xEE, ResourceProducer, , Exclusive,
                 )
-        }, 
+        },
 
         ResourceTemplate ()
         {
@@ -2631,7 +2631,7 @@
                 ClockPhaseSecond, "\\SPI",
                 0xEE, ResourceProducer, , Exclusive,
                 )
-        }, 
+        },
 
         ResourceTemplate ()
         {
@@ -2640,7 +2640,7 @@
                 ClockPhaseFirst, "\\SPI",
                 0xEE, ResourceProducer, , Exclusive,
                 )
-        }, 
+        },
 
         ResourceTemplate ()
         {
@@ -2649,7 +2649,7 @@
                 ClockPhaseSecond, "\\SPI",
                 0xEE, ResourceProducer, , Exclusive,
                 )
-        }, 
+        },
 
         ResourceTemplate ()
         {
@@ -2658,7 +2658,7 @@
                 ClockPhaseFirst, "\\SPI",
                 0xEE, ResourceProducer, , Exclusive,
                 )
-        }, 
+        },
 
         ResourceTemplate ()
         {
@@ -2667,7 +2667,7 @@
                 ClockPhaseSecond, "\\SPI",
                 0xEE, ResourceProducer, , Exclusive,
                 )
-        }, 
+        },
 
         ResourceTemplate ()
         {
@@ -2676,7 +2676,7 @@
                 ClockPhaseFirst, "\\SPI",
                 0xEE, ResourceProducer, , Exclusive,
                 )
-        }, 
+        },
 
         ResourceTemplate ()
         {
@@ -2685,7 +2685,7 @@
                 ClockPhaseSecond, "\\SPI",
                 0xEE, ResourceProducer, , Exclusive,
                 )
-        }, 
+        },
 
         ResourceTemplate ()
         {
@@ -2694,7 +2694,7 @@
                 ClockPhaseFirst, "\\SPI",
                 0xEE, ResourceProducer, , Exclusive,
                 )
-        }, 
+        },
 
         ResourceTemplate ()
         {
@@ -2703,7 +2703,7 @@
                 ClockPhaseSecond, "\\SPI",
                 0xEE, ResourceProducer, , Exclusive,
                 )
-        }, 
+        },
 
         ResourceTemplate ()
         {
@@ -2712,7 +2712,7 @@
                 ClockPhaseFirst, "\\SPI",
                 0xEE, ResourceProducer, , Exclusive,
                 )
-        }, 
+        },
 
         ResourceTemplate ()
         {
@@ -2721,7 +2721,7 @@
                 ClockPhaseSecond, "\\SPI",
                 0xEE, ResourceProducer, , Exclusive,
                 )
-        }, 
+        },
 
         ResourceTemplate ()
         {
@@ -2730,7 +2730,7 @@
                 ClockPhaseFirst, "\\SPI",
                 0xEE, ResourceProducer, , Exclusive,
                 )
-        }, 
+        },
 
         ResourceTemplate ()
         {
@@ -2739,7 +2739,7 @@
                 ClockPhaseSecond, "\\SPI",
                 0xEE, ResourceProducer, , Exclusive,
                 )
-        }, 
+        },
 
         ResourceTemplate ()
         {
@@ -2798,4 +2798,3 @@
         M331 (TS, 0x08, 0x98, 0x98, 0x0190, 0x0190, "_ADR")
         M331 (TS, 0x09, 0xA8, 0xA8, 0x01A0, 0x01A0, "_VEN")
     }
-

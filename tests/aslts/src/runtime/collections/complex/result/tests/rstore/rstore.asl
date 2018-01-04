@@ -325,9 +325,9 @@
         {
             Name (P000, Package (0x04)
             {
-                Zero, 
-                One, 
-                Ones, 
+                Zero,
+                One,
+                Ones,
                 0xFE7CB391D650A284
             })
             /* Return Indexed reference to ASL constant specified */
@@ -339,9 +339,9 @@
                 {
                     Return (Index (Package (0x04)
                         {
-                            Zero, 
-                            One, 
-                            Ones, 
+                            Zero,
+                            One,
+                            Ones,
                             0xFE7CB391D650A284
                         }, Arg0))
                 }
@@ -6977,4 +6977,3 @@
 
         M690 ()
     }
-

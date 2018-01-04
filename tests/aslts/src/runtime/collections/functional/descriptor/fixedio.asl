@@ -38,7 +38,7 @@
                 0x03F1,             // Address
                 0xF2,               // Length
                 )
-        }, 
+        },
 
         ResourceTemplate ()
         {
@@ -65,7 +65,7 @@
                 0x03F1,             // Address
                 0xF2,               // Length
                 )
-        }, 
+        },
 
         ResourceTemplate ()
         {
@@ -100,4 +100,3 @@
         M331 (TS, 0x01, 0x08, 0x08, 0x28, 0x28, "_BAS")
         M331 (TS, 0x02, 0x18, 0x18, 0x38, 0x38, "_LEN")
     }
-

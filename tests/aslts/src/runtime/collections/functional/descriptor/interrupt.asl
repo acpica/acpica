@@ -39,7 +39,7 @@
             {
                 0xFCFDFEFF,
             }
-        }, 
+        },
 
         ResourceTemplate ()
         {
@@ -48,7 +48,7 @@
                 0xF8F9FAFB,
                 0xFCFDFEFF,
             }
-        }, 
+        },
 
         ResourceTemplate ()
         {
@@ -58,7 +58,7 @@
                 0xF8F9FAFB,
                 0xFCFDFEFF,
             }
-        }, 
+        },
 
         ResourceTemplate ()
         {
@@ -69,7 +69,7 @@
                 0xF8F9FAFB,
                 0xFCFDFEFF,
             }
-        }, 
+        },
 
         ResourceTemplate ()
         {
@@ -81,7 +81,7 @@
                 0xF8F9FAFB,
                 0xFCFDFEFF,
             }
-        }, 
+        },
 
         ResourceTemplate ()
         {
@@ -94,7 +94,7 @@
                 0xF8F9FAFB,
                 0xFCFDFEFF,
             }
-        }, 
+        },
 
         ResourceTemplate ()
         {
@@ -108,7 +108,7 @@
                 0xF8F9FAFB,
                 0xFCFDFEFF,
             }
-        }, 
+        },
 
         ResourceTemplate ()
         {
@@ -123,7 +123,7 @@
                 0xF8F9FAFB,
                 0xFCFDFEFF,
             }
-        }, 
+        },
 
         ResourceTemplate ()
         {
@@ -139,7 +139,7 @@
                 0xF8F9FAFB,
                 0xFCFDFEFF,
             }
-        }, 
+        },
 
         ResourceTemplate ()
         {
@@ -156,7 +156,7 @@
                 0xF8F9FAFB,
                 0xFCFDFEFF,
             }
-        }, 
+        },
 
         ResourceTemplate ()
         {
@@ -174,7 +174,7 @@
                 0xF8F9FAFB,
                 0xFCFDFEFF,
             }
-        }, 
+        },
 
         ResourceTemplate ()
         {
@@ -193,7 +193,7 @@
                 0xF8F9FAFB,
                 0xFCFDFEFF,
             }
-        }, 
+        },
 
         ResourceTemplate ()
         {
@@ -213,7 +213,7 @@
                 0xF8F9FAFB,
                 0xFCFDFEFF,
             }
-        }, 
+        },
 
         ResourceTemplate ()
         {
@@ -234,7 +234,7 @@
                 0xF8F9FAFB,
                 0xFCFDFEFF,
             }
-        }, 
+        },
 
         ResourceTemplate ()
         {
@@ -256,7 +256,7 @@
                 0xF8F9FAFB,
                 0xFCFDFEFF,
             }
-        }, 
+        },
 
         ResourceTemplate ()
         {
@@ -279,7 +279,7 @@
                 0xF8F9FAFB,
                 0xFCFDFEFF,
             }
-        }, 
+        },
 
         ResourceTemplate ()
         {
@@ -541,7 +541,7 @@
                 0x000000FE,
                 0x000000FF,
             }
-        }, 
+        },
 
         ResourceTemplate ()
         {
@@ -549,7 +549,7 @@
             {
                 0xFCFDFEFF,
             }
-        }, 
+        },
 
         ResourceTemplate ()
         {
@@ -557,7 +557,7 @@
             {
                 0xFCFDFEFF,
             }
-        }, 
+        },
 
         ResourceTemplate ()
         {
@@ -565,7 +565,7 @@
             {
                 0xFCFDFEFF,
             }
-        }, 
+        },
 
         ResourceTemplate ()
         {
@@ -573,7 +573,7 @@
             {
                 0xFCFDFEFF,
             }
-        }, 
+        },
 
         ResourceTemplate ()
         {
@@ -835,7 +835,7 @@
                 0x000000FE,
                 0x000000FF,
             }
-        }, 
+        },
 
         ResourceTemplate ()
         {
@@ -897,7 +897,7 @@
             {
                 0xFCFDFEFF,
             }
-        }, 
+        },
 
         ResourceTemplate ()
         {
@@ -906,7 +906,7 @@
                 0xF8F9FAFB,
                 0xFCFDFEFF,
             }
-        }, 
+        },
 
         ResourceTemplate ()
         {
@@ -916,7 +916,7 @@
                 0xF8F9FAFB,
                 0xFCFDFEFF,
             }
-        }, 
+        },
 
         ResourceTemplate ()
         {
@@ -927,7 +927,7 @@
                 0xF8F9FAFB,
                 0xFCFDFEFF,
             }
-        }, 
+        },
 
         ResourceTemplate ()
         {
@@ -939,7 +939,7 @@
                 0xF8F9FAFB,
                 0xFCFDFEFF,
             }
-        }, 
+        },
 
         ResourceTemplate ()
         {
@@ -952,7 +952,7 @@
                 0xF8F9FAFB,
                 0xFCFDFEFF,
             }
-        }, 
+        },
 
         ResourceTemplate ()
         {
@@ -966,7 +966,7 @@
                 0xF8F9FAFB,
                 0xFCFDFEFF,
             }
-        }, 
+        },
 
         ResourceTemplate ()
         {
@@ -981,7 +981,7 @@
                 0xF8F9FAFB,
                 0xFCFDFEFF,
             }
-        }, 
+        },
 
         ResourceTemplate ()
         {
@@ -997,7 +997,7 @@
                 0xF8F9FAFB,
                 0xFCFDFEFF,
             }
-        }, 
+        },
 
         ResourceTemplate ()
         {
@@ -1014,7 +1014,7 @@
                 0xF8F9FAFB,
                 0xFCFDFEFF,
             }
-        }, 
+        },
 
         ResourceTemplate ()
         {
@@ -1032,7 +1032,7 @@
                 0xF8F9FAFB,
                 0xFCFDFEFF,
             }
-        }, 
+        },
 
         ResourceTemplate ()
         {
@@ -1051,7 +1051,7 @@
                 0xF8F9FAFB,
                 0xFCFDFEFF,
             }
-        }, 
+        },
 
         ResourceTemplate ()
         {
@@ -1071,7 +1071,7 @@
                 0xF8F9FAFB,
                 0xFCFDFEFF,
             }
-        }, 
+        },
 
         ResourceTemplate ()
         {
@@ -1092,7 +1092,7 @@
                 0xF8F9FAFB,
                 0xFCFDFEFF,
             }
-        }, 
+        },
 
         ResourceTemplate ()
         {
@@ -1114,7 +1114,7 @@
                 0xF8F9FAFB,
                 0xFCFDFEFF,
             }
-        }, 
+        },
 
         ResourceTemplate ()
         {
@@ -1137,7 +1137,7 @@
                 0xF8F9FAFB,
                 0xFCFDFEFF,
             }
-        }, 
+        },
 
         /* At the moment returning */
         /* Buffer () {0x89, 0x06, 0x00, 0x0f, 0x01, 0x00, 0x00, 0x00, 0x00, 0x79, 0x00}, */
@@ -1401,7 +1401,7 @@
                 0x000000FE,
                 0x000000FF,
             }
-        }, 
+        },
 
         /* Resource Source */
 
@@ -1411,7 +1411,7 @@
             {
                 0xFCFDFEFF,
             }
-        }, 
+        },
 
         ResourceTemplate ()
         {
@@ -1419,7 +1419,7 @@
             {
                 0xFCFDFEFF,
             }
-        }, 
+        },
 
         ResourceTemplate ()
         {
@@ -1427,7 +1427,7 @@
             {
                 0xFCFDFEFF,
             }
-        }, 
+        },
 
         ResourceTemplate ()
         {
@@ -1435,7 +1435,7 @@
             {
                 0xFCFDFEFF,
             }
-        }, 
+        },
 
         /* Particular cases */
 
@@ -1699,7 +1699,7 @@
                 0x000000FE,
                 0x000000FF,
             }
-        }, 
+        },
 
         /* 20051021, relaxation for omitted ResourceSource (bug-fix 70 rejection) */
 
@@ -1739,4 +1739,3 @@
         M331 (TS, 0x04, 0x28, 0x28, 0x70, 0x70, "_INT")
         CH03 (TS, Z017, 0x0123, 0x023E, 0x00)
     }
-

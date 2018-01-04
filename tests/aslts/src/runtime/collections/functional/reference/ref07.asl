@@ -49,17 +49,17 @@
     {
         Name (PPP0, Package (0x04)
         {
-            0x77, 
-            "qwer0000", 
+            0x77,
+            "qwer0000",
             Buffer (0x04)
             {
                  0x01, 0x77, 0x03, 0x04                           // .w..
-            }, 
+            },
 
             Package (0x03)
             {
-                0x05, 
-                0x77, 
+                0x05,
+                0x77,
                 0x07
             }
         })
@@ -93,15 +93,15 @@
         })
         Name (P000, Package (0x03)
         {
-            0x05, 
-            0x77, 
+            0x05,
+            0x77,
             0x07
         })
         Name (PPP0, Package (0x04)
         {
-            I000, 
-            S000, 
-            B000, 
+            I000,
+            S000,
+            B000,
             P000
         })
         FL00 = 0x00    /* flag of testing of exceptions */
@@ -602,17 +602,17 @@
     {
         Name (PPP0, Package (0x0A)
         {
-            0x77, 
-            "qwer0000", 
+            0x77,
+            "qwer0000",
             Buffer (0x04)
             {
                  0x01, 0x77, 0x03, 0x04                           // .w..
-            }, 
+            },
 
             Package (0x03)
             {
-                0x05, 
-                0x77, 
+                0x05,
+                0x77,
                 0x07
             }
         })
@@ -636,17 +636,17 @@
     {
         Name (PPP0, Package (0x04)
         {
-            0x77, 
-            "qwer0000", 
+            0x77,
+            "qwer0000",
             Buffer (0x04)
             {
                  0x01, 0x77, 0x03, 0x04                           // .w..
-            }, 
+            },
 
             Package (0x03)
             {
-                0x05, 
-                0x77, 
+                0x05,
+                0x77,
                 0x07
             }
         })
@@ -660,13 +660,13 @@
             Store (P000 [0x01], P000 [0x02])
             M390 (DerefOf (DerefOf (DerefOf (DerefOf (P000 [0x02])))), C009, Z116, 0x60)
             Store (P000 [0x02], P000 [0x03])
-            M390 (DerefOf (DerefOf (DerefOf (DerefOf (DerefOf (P000 [0x03]))))), C009, Z116, 
+            M390 (DerefOf (DerefOf (DerefOf (DerefOf (DerefOf (P000 [0x03]))))), C009, Z116,
                 0x61)
             Store (P000 [0x03], P000 [0x04])
-            M390 (DerefOf (DerefOf (DerefOf (DerefOf (DerefOf (DerefOf (P000 [0x04])))))), C009, 
+            M390 (DerefOf (DerefOf (DerefOf (DerefOf (DerefOf (DerefOf (P000 [0x04])))))), C009,
                 Z116, 0x62)
             Store (P000 [0x04], P000 [0x05])
-            M390 (DerefOf (DerefOf (DerefOf (DerefOf (DerefOf (DerefOf (DerefOf (P000 [0x05]))))))), 
+            M390 (DerefOf (DerefOf (DerefOf (DerefOf (DerefOf (DerefOf (DerefOf (P000 [0x05]))))))),
                 C009, Z116, 0x63)
             Store (P000 [0x05], P000 [0x06])
             M390 (DerefOf (DerefOf (DerefOf (DerefOf (DerefOf (DerefOf (DerefOf (DerefOf (P000 [0x06]
@@ -681,11 +681,11 @@
         {
             M390 (DerefOf (DerefOf (DerefOf (P000 [0x01]))), C009, Z116, 0x67)
             M390 (DerefOf (DerefOf (DerefOf (DerefOf (P000 [0x02])))), C009, Z116, 0x68)
-            M390 (DerefOf (DerefOf (DerefOf (DerefOf (DerefOf (P000 [0x03]))))), C009, Z116, 
+            M390 (DerefOf (DerefOf (DerefOf (DerefOf (DerefOf (P000 [0x03]))))), C009, Z116,
                 0x69)
-            M390 (DerefOf (DerefOf (DerefOf (DerefOf (DerefOf (DerefOf (P000 [0x04])))))), C009, 
+            M390 (DerefOf (DerefOf (DerefOf (DerefOf (DerefOf (DerefOf (P000 [0x04])))))), C009,
                 Z116, 0x6A)
-            M390 (DerefOf (DerefOf (DerefOf (DerefOf (DerefOf (DerefOf (DerefOf (P000 [0x05]))))))), 
+            M390 (DerefOf (DerefOf (DerefOf (DerefOf (DerefOf (DerefOf (DerefOf (P000 [0x05]))))))),
                 C009, Z116, 0x6B)
             M390 (DerefOf (DerefOf (DerefOf (DerefOf (DerefOf (DerefOf (DerefOf (DerefOf (P000 [0x06]
                 )))))))), C009, Z116, 0x6C)
@@ -724,15 +724,15 @@
 
         Name (P000, Package (0x0A)
         {
-            M000, 
-            M001, 
-            M002, 
-            M003, 
-            M000, 
-            M001, 
-            M002, 
-            M003, 
-            I000, 
+            M000,
+            M001,
+            M002,
+            M003,
+            M000,
+            M001,
+            M002,
+            M003,
+            I000,
             I000
         })
         Store (P000 [0x00], Local0)
@@ -844,15 +844,15 @@
 
         Name (P000, Package (0x0A)
         {
-            M000, 
-            M001, 
-            M002, 
-            M003, 
-            M000, 
-            M001, 
-            M002, 
-            M003, 
-            I000, 
+            M000,
+            M001,
+            M002,
+            M003,
+            M000,
+            M001,
+            M002,
+            M003,
+            I000,
             I000
         })
         Store (P000 [0x00], Local0)
@@ -982,11 +982,11 @@
         Name (TS, "m1cb")
         Name (P000, Package (0x06)
         {
-            0x01, 
-            0x02, 
-            0x03, 
-            0x04, 
-            0x05, 
+            0x01,
+            0x02,
+            0x03,
+            0x04,
+            0x05,
             0x06
         })
         Local0 = SizeOf (P000)
@@ -1161,7 +1161,7 @@
         Name (I001, 0x00)
         Name (P000, Package (0x02)
         {
-            0x77, 
+            0x77,
             0x88
         })
         Name (SW00, 0x01)
@@ -1282,7 +1282,7 @@
         Name (I001, 0x00)
         Name (P000, Package (0x02)
         {
-            0x77, 
+            0x77,
             0x88
         })
         CH03 (TS, Z116, 0xC7, 0x057F, 0x00)
@@ -1303,8 +1303,8 @@
     {
         Name (P000, Package (0x03)
         {
-            0x05, 
-            0x00, 
+            0x05,
+            0x00,
             0x07
         })
         Method (M000, 1, NotSerialized)
@@ -1321,8 +1321,8 @@
     {
         Name (P000, Package (0x03)
         {
-            0x05, 
-            0x00, 
+            0x05,
+            0x00,
             0x07
         })
         Method (M000, 1, NotSerialized)
@@ -1333,4 +1333,3 @@
         M000 (P000 [0x01])
         M383 ("m1da", P000, Z116, 0x8D)
     }
-
