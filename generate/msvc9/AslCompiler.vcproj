@@ -738,7 +738,31 @@
 					>
 				</File>
 				<File
+					RelativePath="..\..\source\common\dmtbdump1.c"
+					>
+				</File>
+				<File
+					RelativePath="..\..\source\common\dmtbdump2.c"
+					>
+				</File>
+				<File
+					RelativePath="..\..\source\common\dmtbdump3.c"
+					>
+				</File>
+				<File
 					RelativePath="..\..\source\common\dmtbinfo.c"
+					>
+				</File>
+				<File
+					RelativePath="..\..\source\common\dmtbinfo1.c"
+					>
+				</File>
+				<File
+					RelativePath="..\..\source\common\dmtbinfo2.c"
+					>
+				</File>
+				<File
+					RelativePath="..\..\source\common\dmtbinfo3.c"
 					>
 				</File>
 				<File
