@@ -589,7 +589,7 @@ cent_units_to_cent_str()
 #
 convert_string_to_centisecond_units()
 {
-	local n0=0 h0=00 m0=00 s0=00 csec0=00 sec0=0 total0=0
+	local n0=0 h0=0 m0=0 s0=0 csec0=0 sec0=0 total0=0
 
 	n0=`echo "$1" | awk -F: '{ print NF}'`
 
