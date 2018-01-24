@@ -103,6 +103,7 @@ acpica_exclude_paths()
 	paths="\
 		include/acpi/acclib.h \
 		include/acpi/acdisasm.h \
+		include/acpi/actbinfo.h \
 		include/acpi/platform/accygwin.h \
 		include/acpi/platform/acefi.h \
 		include/acpi/platform/acefiex.h \
