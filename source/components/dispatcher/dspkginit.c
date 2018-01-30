@@ -165,7 +165,8 @@
 
 static void
 AcpiDsResolvePackageElement (
-    ACPI_OPERAND_OBJECT     **Element);
+    ACPI_OPERAND_OBJECT     **Element,
+    BOOLEAN                 IsDeferred);
 
 
 /*******************************************************************************
@@ -312,8 +313,27 @@ AcpiDsBuildInternalPackageObj (
              * Initialize this package element. This function handles the
              * resolution of named references within the package.
              */
-            AcpiDsInitPackageElement (0, ObjDesc->Package.Elements[i],
-                NULL, &ObjDesc->Package.Elements[i]);
+            switch (ObjDesc->Package.Elements[i]->Common.Type)
+            {
+            case ACPI_TYPE_LOCAL_REFERENCE:
+                /*
+                 * Attempt to resolve the (named) reference to a namespace
+                 * node.
+                 */
+                AcpiDsResolvePackageElement (
+                    &ObjDesc->Package.Elements[i], FALSE);
+                break;
+
+            case ACPI_TYPE_PACKAGE:
+
+                ObjDesc->Package.Elements[i]->Package.Flags |=
+                    AOPOBJ_DATA_VALID;
+                break;
+
+            default:
+
+                break;
+            }
         }
 
         if (*ObjDescPtr)
@@ -433,18 +453,7 @@ AcpiDsInitPackageElement (
      * to the location within the element array because a new object
      * may be created and stored there.
      */
-    if (Context)
-    {
-        /* A direct call was made to this function */
-
-        ElementPtr = (ACPI_OPERAND_OBJECT **) Context;
-    }
-    else
-    {
-        /* Call came from AcpiUtWalkPackageTree */
-
-        ElementPtr = State->Pkg.ThisTargetObj;
-    }
+    ElementPtr = State->Pkg.ThisTargetObj;
 
     /* We are only interested in reference objects/elements */
 
@@ -452,7 +461,7 @@ AcpiDsInitPackageElement (
     {
         /* Attempt to resolve the (named) reference to a namespace node */
 
-        AcpiDsResolvePackageElement (ElementPtr);
+        AcpiDsResolvePackageElement (ElementPtr, AcpiGbl_NamespaceLoaded);
     }
     else if (SourceObject->Common.Type == ACPI_TYPE_PACKAGE)
     {
@@ -468,6 +477,7 @@ AcpiDsInitPackageElement (
  * FUNCTION:    AcpiDsResolvePackageElement
  *
  * PARAMETERS:  ElementPtr          - Pointer to a reference object
+ *              IsDeferred          - Deferred name string resolution
  *
  * RETURN:      Possible new element is stored to the indirect ElementPtr
  *
@@ -478,7 +488,8 @@ AcpiDsInitPackageElement (
 
 static void
 AcpiDsResolvePackageElement (
-    ACPI_OPERAND_OBJECT     **ElementPtr)
+    ACPI_OPERAND_OBJECT     **ElementPtr,
+    BOOLEAN                 IsDeferred)
 {
     ACPI_STATUS             Status;
     ACPI_GENERIC_STATE      ScopeInfo;
@@ -510,25 +521,37 @@ AcpiDsResolvePackageElement (
         NULL, &ResolvedNode);
     if (ACPI_FAILURE (Status))
     {
-        Status = AcpiNsExternalizeName (ACPI_UINT32_MAX,
-            (char *) Element->Reference.Aml,
-            NULL, &ExternalPath);
+        if (IsDeferred)
+        {
+            /*
+             * Failed to solve the named package element using the last
+             * chance, so replace the package element with a NULL object
+             * and complain a BIOS problem.
+             */
+            *ElementPtr = NULL;
 
-        ACPI_EXCEPTION ((AE_INFO, Status,
-            "Could not find/resolve named package element: %s", ExternalPath));
+            Status = AcpiNsExternalizeName (ACPI_UINT32_MAX,
+                (char *) Element->Reference.Aml,
+                NULL, &ExternalPath);
 
-        ACPI_FREE (ExternalPath);
-        *ElementPtr = NULL;
+            ACPI_BIOS_ERROR ((AE_INFO,
+                "Could not find/resolve named package element: %s", ExternalPath));
+
+            ACPI_FREE (ExternalPath);
+        }
         return_VOID;
     }
     else if (ResolvedNode->Type == ACPI_TYPE_ANY)
     {
-        /* Named reference not resolved, return a NULL package element */
+        if (IsDeferred)
+        {
+            /* Named reference not resolved, return a NULL package element */
 
-        ACPI_ERROR ((AE_INFO,
-            "Could not resolve named package element [%4.4s] in [%4.4s]",
-            ResolvedNode->Name.Ascii, ScopeInfo.Scope.Node->Name.Ascii));
-        *ElementPtr = NULL;
+            *ElementPtr = NULL;
+            ACPI_BIOS_ERROR ((AE_INFO,
+                "Could not resolve named package element [%4.4s] in [%4.4s]",
+                ResolvedNode->Name.Ascii, ScopeInfo.Scope.Node->Name.Ascii));
+        }
         return_VOID;
     }
 #if 0

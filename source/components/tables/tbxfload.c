@@ -219,6 +219,7 @@ AcpiLoadTables (
             "While loading namespace from ACPI tables"));
     }
 
+    AcpiGbl_NamespaceLoaded = TRUE;
     if (AcpiGbl_ParseTableAsTermList || !AcpiGbl_GroupModuleLevelCode)
     {
         /*
