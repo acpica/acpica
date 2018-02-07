@@ -405,7 +405,8 @@ AcpiNsParseTable (
 
     if (AcpiGbl_ParseTableAsTermList)
     {
-        ACPI_DEBUG_PRINT ((ACPI_DB_PARSE, "**** Start table execution pass\n"));
+        ACPI_DEBUG_PRINT_RAW ((ACPI_DB_PARSE,
+            "%s: **** Start table execution pass\n", ACPI_GET_FUNCTION_NAME));
 
         Status = AcpiNsExecuteTable (TableIndex, StartNode);
         if (ACPI_FAILURE (Status))
