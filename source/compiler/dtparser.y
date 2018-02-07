@@ -191,28 +191,28 @@ UINT64                      DtParserResult; /* Expression return value */
 
 /*! [Begin] no source code translation */
 
-%type  <value>  Expression
+%type  <value>  Expr
 
-%token <op>     EXPOP_EOF
-%token <op>     EXPOP_NEW_LINE
-%token <op>     EXPOP_NUMBER
-%token <op>     EXPOP_HEX_NUMBER
-%token <op>     EXPOP_DECIMAL_NUMBER
-%token <op>     EXPOP_LABEL
-%token <op>     EXPOP_PAREN_OPEN
-%token <op>     EXPOP_PAREN_CLOSE
+%token <op>     EXPROP_EOF
+%token <op>     EXPROP_NEW_LINE
+%token <op>     EXPROP_NUMBER
+%token <op>     EXPROP_HEX_NUMBER
+%token <op>     EXPROP_DECIMAL_NUMBER
+%token <op>     EXPROP_LABEL
+%token <op>     EXPROP_PAREN_OPEN
+%token <op>     EXPROP_PAREN_CLOSE
 
-%left <op>      EXPOP_LOGICAL_OR
-%left <op>      EXPOP_LOGICAL_AND
-%left <op>      EXPOP_OR
-%left <op>      EXPOP_XOR
-%left <op>      EXPOP_AND
-%left <op>      EXPOP_EQUAL EXPOP_NOT_EQUAL
-%left <op>      EXPOP_GREATER EXPOP_LESS EXPOP_GREATER_EQUAL EXPOP_LESS_EQUAL
-%left <op>      EXPOP_SHIFT_RIGHT EXPOP_SHIFT_LEFT
-%left <op>      EXPOP_ADD EXPOP_SUBTRACT
-%left <op>      EXPOP_MULTIPLY EXPOP_DIVIDE EXPOP_MODULO
-%right <op>     EXPOP_ONES_COMPLIMENT EXPOP_LOGICAL_NOT
+%left <op>      EXPROP_LOGICAL_OR
+%left <op>      EXPROP_LOGICAL_AND
+%left <op>      EXPROP_OR
+%left <op>      EXPROP_XOR
+%left <op>      EXPROP_AND
+%left <op>      EXPROP_EQUAL EXPROP_NOT_EQUAL
+%left <op>      EXPROP_GREATER EXPROP_LESS EXPROP_GREATER_EQUAL EXPROP_LESS_EQUAL
+%left <op>      EXPROP_SHIFT_RIGHT EXPROP_SHIFT_LEFT
+%left <op>      EXPROP_ADD EXPROP_SUBTRACT
+%left <op>      EXPROP_MULTIPLY EXPROP_DIVIDE EXPROP_MODULO
+%right <op>     EXPROP_ONES_COMPLIMENT EXPROP_LOGICAL_NOT
 
 %%
 
@@ -233,46 +233,46 @@ UINT64                      DtParserResult; /* Expression return value */
  *  12)     ||
  */
 Value
-    : Expression EXPOP_NEW_LINE                     { DtParserResult=$1; return 0; } /* End of line (newline) */
-    | Expression EXPOP_EOF                          { DtParserResult=$1; return 0; } /* End of string (0) */
+    : Expr EXPROP_NEW_LINE                     { DtParserResult=$1; return 0; } /* End of line (newline) */
+    | Expr EXPROP_EOF                          { DtParserResult=$1; return 0; } /* End of string (0) */
     ;
 
-Expression
+Expr
 
       /* Unary operators */
 
-    : EXPOP_LOGICAL_NOT         Expression          { $$ = DtDoOperator ($2, EXPOP_LOGICAL_NOT,     $2);}
-    | EXPOP_ONES_COMPLIMENT     Expression          { $$ = DtDoOperator ($2, EXPOP_ONES_COMPLIMENT, $2);}
+    : EXPROP_LOGICAL_NOT         Expr          { $$ = DtDoOperator ($2, EXPROP_LOGICAL_NOT,     $2);}
+    | EXPROP_ONES_COMPLIMENT     Expr          { $$ = DtDoOperator ($2, EXPROP_ONES_COMPLIMENT, $2);}
 
       /* Binary operators */
 
-    | Expression EXPOP_MULTIPLY         Expression  { $$ = DtDoOperator ($1, EXPOP_MULTIPLY,        $3);}
-    | Expression EXPOP_DIVIDE           Expression  { $$ = DtDoOperator ($1, EXPOP_DIVIDE,          $3);}
-    | Expression EXPOP_MODULO           Expression  { $$ = DtDoOperator ($1, EXPOP_MODULO,          $3);}
-    | Expression EXPOP_ADD              Expression  { $$ = DtDoOperator ($1, EXPOP_ADD,             $3);}
-    | Expression EXPOP_SUBTRACT         Expression  { $$ = DtDoOperator ($1, EXPOP_SUBTRACT,        $3);}
-    | Expression EXPOP_SHIFT_RIGHT      Expression  { $$ = DtDoOperator ($1, EXPOP_SHIFT_RIGHT,     $3);}
-    | Expression EXPOP_SHIFT_LEFT       Expression  { $$ = DtDoOperator ($1, EXPOP_SHIFT_LEFT,      $3);}
-    | Expression EXPOP_GREATER          Expression  { $$ = DtDoOperator ($1, EXPOP_GREATER,         $3);}
-    | Expression EXPOP_LESS             Expression  { $$ = DtDoOperator ($1, EXPOP_LESS,            $3);}
-    | Expression EXPOP_GREATER_EQUAL    Expression  { $$ = DtDoOperator ($1, EXPOP_GREATER_EQUAL,   $3);}
-    | Expression EXPOP_LESS_EQUAL       Expression  { $$ = DtDoOperator ($1, EXPOP_LESS_EQUAL,      $3);}
-    | Expression EXPOP_EQUAL            Expression  { $$ = DtDoOperator ($1, EXPOP_EQUAL,           $3);}
-    | Expression EXPOP_NOT_EQUAL        Expression  { $$ = DtDoOperator ($1, EXPOP_NOT_EQUAL,       $3);}
-    | Expression EXPOP_AND              Expression  { $$ = DtDoOperator ($1, EXPOP_AND,             $3);}
-    | Expression EXPOP_XOR              Expression  { $$ = DtDoOperator ($1, EXPOP_XOR,             $3);}
-    | Expression EXPOP_OR               Expression  { $$ = DtDoOperator ($1, EXPOP_OR,              $3);}
-    | Expression EXPOP_LOGICAL_AND      Expression  { $$ = DtDoOperator ($1, EXPOP_LOGICAL_AND,     $3);}
-    | Expression EXPOP_LOGICAL_OR       Expression  { $$ = DtDoOperator ($1, EXPOP_LOGICAL_OR,      $3);}
+    | Expr EXPROP_MULTIPLY         Expr  { $$ = DtDoOperator ($1, EXPROP_MULTIPLY,        $3);}
+    | Expr EXPROP_DIVIDE           Expr  { $$ = DtDoOperator ($1, EXPROP_DIVIDE,          $3);}
+    | Expr EXPROP_MODULO           Expr  { $$ = DtDoOperator ($1, EXPROP_MODULO,          $3);}
+    | Expr EXPROP_ADD              Expr  { $$ = DtDoOperator ($1, EXPROP_ADD,             $3);}
+    | Expr EXPROP_SUBTRACT         Expr  { $$ = DtDoOperator ($1, EXPROP_SUBTRACT,        $3);}
+    | Expr EXPROP_SHIFT_RIGHT      Expr  { $$ = DtDoOperator ($1, EXPROP_SHIFT_RIGHT,     $3);}
+    | Expr EXPROP_SHIFT_LEFT       Expr  { $$ = DtDoOperator ($1, EXPROP_SHIFT_LEFT,      $3);}
+    | Expr EXPROP_GREATER          Expr  { $$ = DtDoOperator ($1, EXPROP_GREATER,         $3);}
+    | Expr EXPROP_LESS             Expr  { $$ = DtDoOperator ($1, EXPROP_LESS,            $3);}
+    | Expr EXPROP_GREATER_EQUAL    Expr  { $$ = DtDoOperator ($1, EXPROP_GREATER_EQUAL,   $3);}
+    | Expr EXPROP_LESS_EQUAL       Expr  { $$ = DtDoOperator ($1, EXPROP_LESS_EQUAL,      $3);}
+    | Expr EXPROP_EQUAL            Expr  { $$ = DtDoOperator ($1, EXPROP_EQUAL,           $3);}
+    | Expr EXPROP_NOT_EQUAL        Expr  { $$ = DtDoOperator ($1, EXPROP_NOT_EQUAL,       $3);}
+    | Expr EXPROP_AND              Expr  { $$ = DtDoOperator ($1, EXPROP_AND,             $3);}
+    | Expr EXPROP_XOR              Expr  { $$ = DtDoOperator ($1, EXPROP_XOR,             $3);}
+    | Expr EXPROP_OR               Expr  { $$ = DtDoOperator ($1, EXPROP_OR,              $3);}
+    | Expr EXPROP_LOGICAL_AND      Expr  { $$ = DtDoOperator ($1, EXPROP_LOGICAL_AND,     $3);}
+    | Expr EXPROP_LOGICAL_OR       Expr  { $$ = DtDoOperator ($1, EXPROP_LOGICAL_OR,      $3);}
 
-      /* Parentheses: '(' Expression ')' */
+      /* Parentheses: '(' Expr ')' */
 
-    | EXPOP_PAREN_OPEN          Expression
-        EXPOP_PAREN_CLOSE                           { $$ = $2;}
+    | EXPROP_PAREN_OPEN          Expr
+        EXPROP_PAREN_CLOSE                           { $$ = $2;}
 
       /* Label references (prefixed with $) */
 
-    | EXPOP_LABEL                                   { $$ = DtResolveLabel (DtParsertext);}
+    | EXPROP_LABEL                                   { $$ = DtResolveLabel (DtParsertext);}
 
       /*
        * All constants for the data table compiler are in hex, whether a (optional) 0x
@@ -283,15 +283,15 @@ Expression
 
       /* Non-prefixed hex number */
 
-    | EXPOP_NUMBER                                  { $$ = DtDoConstant (DtParsertext);}
+    | EXPROP_NUMBER                                  { $$ = DtDoConstant (DtParsertext);}
 
       /* Standard hex number (0x1234) */
 
-    | EXPOP_HEX_NUMBER                              { $$ = DtDoConstant (DtParsertext);}
+    | EXPROP_HEX_NUMBER                              { $$ = DtDoConstant (DtParsertext);}
 
       /* Possible TBD: Decimal number with prefix (0d1234) - Not supported this time */
 
-    | EXPOP_DECIMAL_NUMBER                          { $$ = DtDoConstant (DtParsertext);}
+    | EXPROP_DECIMAL_NUMBER                          { $$ = DtDoConstant (DtParsertext);}
     ;
 %%
 
@@ -300,7 +300,7 @@ Expression
 /*
  * Local support functions, including parser entry point
  */
-#define PR_FIRST_PARSE_OPCODE   EXPOP_EOF
+#define PR_FIRST_PARSE_OPCODE   EXPROP_EOF
 #define PR_YYTNAME_START        3
 
 
@@ -329,7 +329,7 @@ DtParsererror (
  *
  * FUNCTION:    DtGetOpName
  *
- * PARAMETERS:  ParseOpcode         - Parser token (EXPOP_*)
+ * PARAMETERS:  ParseOpcode         - Parser token (EXPROP_*)
  *
  * RETURN:      Pointer to the opcode name
  *
@@ -344,7 +344,7 @@ DtGetOpName (
 #ifdef ASL_YYTNAME_START
     /*
      * First entries (PR_YYTNAME_START) in yytname are special reserved names.
-     * Ignore first 6 characters of name (EXPOP_)
+     * Ignore first 6 characters of name (EXPROP_)
      */
     return ((char *) yytname
         [(ParseOpcode - PR_FIRST_PARSE_OPCODE) + PR_YYTNAME_START] + 6);

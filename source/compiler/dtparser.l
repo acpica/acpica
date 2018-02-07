@@ -171,37 +171,37 @@ NewLine         [\n]
 
 %%
 
-\(              return (EXPOP_PAREN_OPEN);
-\)              return (EXPOP_PAREN_CLOSE);
-\~              return (EXPOP_ONES_COMPLIMENT);
-\!              return (EXPOP_LOGICAL_NOT);
-\*              return (EXPOP_MULTIPLY);
-\/              return (EXPOP_DIVIDE);
-\%              return (EXPOP_MODULO);
-\+              return (EXPOP_ADD);
-\-              return (EXPOP_SUBTRACT);
-">>"            return (EXPOP_SHIFT_RIGHT);
-"<<"            return (EXPOP_SHIFT_LEFT);
-\<              return (EXPOP_LESS);
-\>              return (EXPOP_GREATER);
-"<="            return (EXPOP_LESS_EQUAL);
-">="            return (EXPOP_GREATER_EQUAL);
-"=="            return (EXPOP_EQUAL);
-"!="            return (EXPOP_NOT_EQUAL);
-\&              return (EXPOP_AND);
-\^              return (EXPOP_XOR);
-\|              return (EXPOP_OR);
-"&&"            return (EXPOP_LOGICAL_AND);
-"||"            return (EXPOP_LOGICAL_OR);
-<<EOF>>         return (EXPOP_EOF); /* null end-of-string */
+\(              return (EXPROP_PAREN_OPEN);
+\)              return (EXPROP_PAREN_CLOSE);
+\~              return (EXPROP_ONES_COMPLIMENT);
+\!              return (EXPROP_LOGICAL_NOT);
+\*              return (EXPROP_MULTIPLY);
+\/              return (EXPROP_DIVIDE);
+\%              return (EXPROP_MODULO);
+\+              return (EXPROP_ADD);
+\-              return (EXPROP_SUBTRACT);
+">>"            return (EXPROP_SHIFT_RIGHT);
+"<<"            return (EXPROP_SHIFT_LEFT);
+\<              return (EXPROP_LESS);
+\>              return (EXPROP_GREATER);
+"<="            return (EXPROP_LESS_EQUAL);
+">="            return (EXPROP_GREATER_EQUAL);
+"=="            return (EXPROP_EQUAL);
+"!="            return (EXPROP_NOT_EQUAL);
+\&              return (EXPROP_AND);
+\^              return (EXPROP_XOR);
+\|              return (EXPROP_OR);
+"&&"            return (EXPROP_LOGICAL_AND);
+"||"            return (EXPROP_LOGICAL_OR);
+<<EOF>>         return (EXPROP_EOF); /* null end-of-string */
 
-{LabelRef}      return (EXPOP_LABEL);
-{Number}        return (EXPOP_NUMBER);
-{HexNumber}     return (EXPOP_HEX_NUMBER);
-{NewLine}       return (EXPOP_NEW_LINE);
+{LabelRef}      return (EXPROP_LABEL);
+{Number}        return (EXPROP_NUMBER);
+{HexNumber}     return (EXPROP_HEX_NUMBER);
+{NewLine}       return (EXPROP_NEW_LINE);
 {WhiteSpace}    /* Ignore */
 
-.               return (EXPOP_EOF);
+.               return (EXPROP_EOF);
 
 %%
 
