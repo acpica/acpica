@@ -519,11 +519,12 @@ AcpiDsResolvePackageElement (
     ACPI_OPERAND_OBJECT     **ElementPtr)
 {
     ACPI_STATUS             Status;
+    ACPI_STATUS             Status2;
     ACPI_GENERIC_STATE      ScopeInfo;
     ACPI_OPERAND_OBJECT     *Element = *ElementPtr;
     ACPI_NAMESPACE_NODE     *ResolvedNode;
     ACPI_NAMESPACE_NODE     *OriginalNode;
-    char                    *ExternalPath = NULL;
+    char                    *ExternalPath = "";
     ACPI_OBJECT_TYPE        Type;
 
 
@@ -552,16 +553,40 @@ AcpiDsResolvePackageElement (
         NULL, &ResolvedNode);
     if (ACPI_FAILURE (Status))
     {
-        Status = AcpiNsExternalizeName (ACPI_UINT32_MAX,
+#if defined ACPI_IGNORE_PACKAGE_RESOLUTION_ERRORS && !defined ACPI_APPLICATION
+        /*
+         * For the kernel-resident ACPICA, optionally be silent about the
+         * NOT_FOUND case. Although this is potentially a serious problem,
+         * it can generate a lot of noise/errors on platforms whose
+         * firmware carries around a bunch of unused Package objects.
+         * To disable these errors, define ACPI_IGNORE_PACKAGE_RESOLUTION_ERRORS
+         * in the OS-specific header.
+         *
+         * All errors are always reported for ACPICA applications such as
+         * AcpiExec.
+         */
+        if (Status == AE_NOT_FOUND)
+        {
+            /* Reference name not found, set the element to NULL */
+
+            AcpiUtRemoveReference (*ElementPtr);
+            *ElementPtr = NULL;
+            return_VOID;
+        }
+#endif
+        Status2 = AcpiNsExternalizeName (ACPI_UINT32_MAX,
             (char *) Element->Reference.Aml, NULL, &ExternalPath);
 
         ACPI_EXCEPTION ((AE_INFO, Status,
-            "Could not find/resolve named package element: %s",
+            "While resolving a named reference package element - %s",
             ExternalPath));
+        if (ACPI_SUCCESS (Status2))
+        {
+            ACPI_FREE (ExternalPath);
+        }
 
-        /* Not found, set the element to NULL */
+        /* Could not resolve name, set the element to NULL */
 
-        ACPI_FREE (ExternalPath);
         AcpiUtRemoveReference (*ElementPtr);
         *ElementPtr = NULL;
         return_VOID;
