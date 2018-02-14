@@ -690,7 +690,7 @@
      *
      * arg0 - diagnostic message (usually, the name of method conglomeration of tests)
      * arg1 - absolute index of file reporting the error
-     * arg2 - index of error (inside the file)
+     * arg2 - line number of error (inside the file)
      * arg3 - absolute index of file initiating the checking
      * arg4 - index of checking (inside the file)
      * arg5 - first value (usually, received value)
@@ -854,10 +854,7 @@
 
         Concatenate ("ERROR,    File      : ", Local1, Local0)
         Debug = Local0
-        Concatenate ("          Index     : 0x", Arg1, Local0)
-        Concatenate (Local0, ", (", Local0)
-        Concatenate (Local0, ToDecimalString (Arg1), Local0)
-        Concatenate (Local0, ")", Local0)
+        Concatenate ("          Line      : ", ToDecimalString(Arg1), Local0)
         Debug = Local0
         /* Checking */
 
