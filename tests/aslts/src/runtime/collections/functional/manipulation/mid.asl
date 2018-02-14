@@ -58,7 +58,7 @@
                     Mid (Local0, Local1, Local4, Local7)
                     If ((Local7 != Local2))
                     {
-                        ERR (Arg0, Z039, 0x40, 0x00, 0x00, Local5, Arg2)
+                        ERR (Arg0, Z039, __LINE__, 0x00, 0x00, Local5, Arg2)
                     }
                 }
                 Case (0x01)
@@ -66,7 +66,7 @@
                     Mid (S200, Local1, Local4, Local7)
                     If ((Local7 != Local2))
                     {
-                        ERR (Arg0, Z039, 0x46, 0x00, 0x00, Local5, Arg2)
+                        ERR (Arg0, Z039, __LINE__, 0x00, 0x00, Local5, Arg2)
                     }
                 }
 
@@ -444,12 +444,12 @@
         Mid (Buffer (Local1){}, 0x00, 0x01, Local7)
         If ((Local7 != Buffer (Local1){}))
         {
-            ERR (__METHOD__, Z039, 0x011E, 0x00, 0x00, 0x00, "Buffer(0)")
+            ERR (__METHOD__, Z039, __LINE__, 0x00, 0x00, 0x00, "Buffer(0)")
         }
 
         Mid (Buffer (Local1){}, 0x012C, 0x012C, Local7)
         If ((Local7 != Buffer (Local1){}))
         {
-            ERR (__METHOD__, Z039, 0x0122, 0x00, 0x00, 0x00, "Buffer(0)")
+            ERR (__METHOD__, Z039, __LINE__, 0x00, 0x00, 0x00, "Buffer(0)")
         }
     }

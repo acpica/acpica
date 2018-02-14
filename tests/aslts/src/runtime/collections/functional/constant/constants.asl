@@ -35,34 +35,34 @@
     {
         If ((Zero != 0x00))
         {
-            ERR (__METHOD__, Z002, 0x29, 0x00, 0x00, Zero, 0x00)
+            ERR (__METHOD__, Z002, __LINE__, 0x00, 0x00, Zero, 0x00)
         }
 
         If ((One != 0x01))
         {
-            ERR (__METHOD__, Z002, 0x2D, 0x00, 0x00, One, 0x01)
+            ERR (__METHOD__, Z002, __LINE__, 0x00, 0x00, One, 0x01)
         }
 
         If ((F64 == 0x01))
         {
             If ((Ones != 0xFFFFFFFFFFFFFFFF))
             {
-                ERR (__METHOD__, Z002, 0x32, 0x00, 0x00, Ones, 0xFFFFFFFFFFFFFFFF)
+                ERR (__METHOD__, Z002, __LINE__, 0x00, 0x00, Ones, 0xFFFFFFFFFFFFFFFF)
             }
         }
         ElseIf ((Ones != 0xFFFFFFFF))
         {
-            ERR (__METHOD__, Z002, 0x36, 0x00, 0x00, Ones, 0xFFFFFFFF)
+            ERR (__METHOD__, Z002, __LINE__, 0x00, 0x00, Ones, 0xFFFFFFFF)
         }
 
         If ((Revision < 0x20140114))
         {
-            ERR (__METHOD__, Z002, 0x3B, 0x00, 0x00, Revision, 0x20050114)
+            ERR (__METHOD__, Z002, __LINE__, 0x00, 0x00, Revision, 0x20050114)
         }
 
         If ((Revision > 0x20500000))
         {
-            ERR (__METHOD__, Z002, 0x3F, 0x00, 0x00, Revision, 0x20500000)
+            ERR (__METHOD__, Z002, __LINE__, 0x00, 0x00, Revision, 0x20500000)
         }
 
         /*
@@ -74,6 +74,6 @@
          */
         If ((\_REV != 0x02))
         {
-            ERR (__METHOD__, Z002, 0x4A, 0x00, 0x00, \_REV, 0x02)
+            ERR (__METHOD__, Z002, __LINE__, 0x00, 0x00, \_REV, 0x02)
         }
     }

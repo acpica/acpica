@@ -47,7 +47,7 @@
             Debug = I000 /* \M023.I000 */
             If ((Arg0 != 0xABCD0000))
             {
-                ERR ("", ZFFF, 0x34, 0x00, 0x00, Arg0, 0xABCD0000)
+                ERR (__METHOD__, ZFFF, __LINE__, 0x00, 0x00, Arg0, 0xABCD0000)
             }
         }
 
@@ -59,6 +59,6 @@
         Debug = I000 /* \M023.I000 */
         If ((I000 != 0x11223344))
         {
-            ERR ("", ZFFF, 0x43, 0x00, 0x00, I000, 0x11223344)
+            ERR (__METHOD__, ZFFF, __LINE__, 0x00, 0x00, I000, 0x11223344)
         }
     }

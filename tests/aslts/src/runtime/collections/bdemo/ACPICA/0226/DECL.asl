@@ -55,7 +55,7 @@
         Local0 = TOT0 /* \M10E.TOT0 */
         If ((Local0 != 0x8001))
         {
-            ERR ("", ZFFF, 0x3B, 0x00, 0x00, Local0, 0x8001)
+            ERR (__METHOD__, ZFFF, __LINE__, 0x00, 0x00, Local0, 0x8001)
         }
     }
 
@@ -72,11 +72,11 @@
         {
             If ((BF00 != 0x123456789ABCDEF0))
             {
-                ERR ("", ZFFF, 0x49, 0x00, 0x00, BF00, 0x123456789ABCDEF0)
+                ERR (__METHOD__, ZFFF, __LINE__, 0x00, 0x00, BF00, 0x123456789ABCDEF0)
             }
         }
         ElseIf ((BF00 != B001))
         {
-            ERR ("", ZFFF, 0x4D, 0x00, 0x00, BF00, B001)
+            ERR (__METHOD__, ZFFF, __LINE__, 0x00, 0x00, BF00, B001)
         }
     }

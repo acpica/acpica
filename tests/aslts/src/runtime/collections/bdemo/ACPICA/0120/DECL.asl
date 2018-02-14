@@ -42,7 +42,7 @@
         Local1 = ObjectType (Local0)
         If ((Local1 != C014))
         {
-            ERR ("", ZFFF, 0x2C, 0x00, 0x00, Local1, C014)
+            ERR (__METHOD__, ZFFF, __LINE__, 0x00, 0x00, Local1, C014)
         }
     }
 
@@ -58,7 +58,7 @@
         Local1 = ObjectType (Local0)
         If ((Local1 != C012))
         {
-            ERR ("", ZFFF, 0x39, 0x00, 0x00, Local1, C012)
+            ERR (__METHOD__, ZFFF, __LINE__, 0x00, 0x00, Local1, C012)
         }
     }
 
@@ -74,7 +74,7 @@
         Local1 = ObjectType (Local0)
         If ((Local1 != C013))
         {
-            ERR ("", ZFFF, 0x46, 0x00, 0x00, Local1, C013)
+            ERR (__METHOD__, ZFFF, __LINE__, 0x00, 0x00, Local1, C013)
         }
     }
 
@@ -90,7 +90,7 @@
         Local1 = ObjectType (Local0)
         If ((Local1 != C00F))
         {
-            ERR ("", ZFFF, 0x53, 0x00, 0x00, Local1, C00F)
+            ERR (__METHOD__, ZFFF, __LINE__, 0x00, 0x00, Local1, C00F)
         }
     }
 
@@ -106,7 +106,7 @@
         Local1 = ObjectType (Local0)
         If ((Local1 != C011))
         {
-            ERR ("", ZFFF, 0x60, 0x00, 0x00, Local1, C011)
+            ERR (__METHOD__, ZFFF, __LINE__, 0x00, 0x00, Local1, C011)
         }
     }
 
@@ -125,7 +125,7 @@
         Local1 = ObjectType (Local0)
         If ((Local1 != C00E))
         {
-            ERR ("", ZFFF, 0x72, 0x00, 0x00, Local1, C00E)
+            ERR (__METHOD__, ZFFF, __LINE__, 0x00, 0x00, Local1, C00E)
         }
     }
 
@@ -144,6 +144,6 @@
         Local1 = ObjectType (Local0)
         If ((Local1 != C015))
         {
-            ERR ("", ZFFF, 0x84, 0x00, 0x00, Local1, C015)
+            ERR (__METHOD__, ZFFF, __LINE__, 0x00, 0x00, Local1, C015)
         }
     }

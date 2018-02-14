@@ -51,7 +51,7 @@
                     ToInteger (Local0, Local2)
                     If ((Local2 != Local1))
                     {
-                        ERR (Arg0, Z042, 0x39, 0x00, 0x00, Local5, Arg2)
+                        ERR (Arg0, Z042, __LINE__, 0x00, 0x00, Local5, Arg2)
                         Return (0x01)
                     }
                 }
@@ -60,7 +60,7 @@
                     ToBuffer (Local0, Local2)
                     If ((Local2 != Local1))
                     {
-                        ERR (Arg0, Z042, 0x40, 0x00, 0x00, Local5, Arg2)
+                        ERR (Arg0, Z042, __LINE__, 0x00, 0x00, Local5, Arg2)
                         Return (0x01)
                     }
                 }
@@ -69,7 +69,7 @@
                     ToString (Local0, Ones, Local2)
                     If ((Local2 != Local1))
                     {
-                        ERR (Arg0, Z042, 0x47, 0x00, 0x00, Local5, Arg2)
+                        ERR (Arg0, Z042, __LINE__, 0x00, 0x00, Local5, Arg2)
                         Return (0x01)
                     }
                 }
@@ -78,7 +78,7 @@
                     ToDecimalString (Local0, Local2)
                     If ((Local2 != Local1))
                     {
-                        ERR (Arg0, Z042, 0x4E, 0x00, 0x00, Local5, Arg2)
+                        ERR (Arg0, Z042, __LINE__, 0x00, 0x00, Local5, Arg2)
                         Return (0x01)
                     }
                 }
@@ -87,7 +87,7 @@
                     ToHexString (Local0, Local2)
                     If ((Local2 != Local1))
                     {
-                        ERR (Arg0, Z042, 0x55, 0x00, 0x00, Local5, Arg2)
+                        ERR (Arg0, Z042, __LINE__, 0x00, 0x00, Local5, Arg2)
                         Return (0x01)
                     }
                 }
@@ -96,7 +96,7 @@
                     ToBCD (Local0, Local2)
                     If ((Local2 != Local1))
                     {
-                        ERR (Arg0, Z042, 0x5C, 0x00, 0x00, Local5, Arg2)
+                        ERR (Arg0, Z042, __LINE__, 0x00, 0x00, Local5, Arg2)
                         Return (0x01)
                     }
                 }
@@ -105,7 +105,7 @@
                     FromBCD (Local0, Local2)
                     If ((Local2 != Local1))
                     {
-                        ERR (Arg0, Z042, 0x63, 0x00, 0x00, Local5, Arg2)
+                        ERR (Arg0, Z042, __LINE__, 0x00, 0x00, Local5, Arg2)
                         Return (0x01)
                     }
                 }
@@ -116,7 +116,7 @@
                     Local2 = Local0
                     If ((Local2 != Local1))
                     {
-                        ERR (Arg0, Z042, 0x6A, 0x00, 0x00, Local5, Arg2)
+                        ERR (Arg0, Z042, __LINE__, 0x00, 0x00, Local5, Arg2)
                         Return (0x01)
                     }
                 }
@@ -127,7 +127,7 @@
                     Local2 = Local0
                     If ((Local2 != Local1))
                     {
-                        ERR (Arg0, Z042, 0x71, 0x00, 0x00, Local5, Arg2)
+                        ERR (Arg0, Z042, __LINE__, 0x00, 0x00, Local5, Arg2)
                         Return (0x01)
                     }
                 }
@@ -138,7 +138,7 @@
                     Local2 = Local0
                     If ((Local2 != Local1))
                     {
-                        ERR (Arg0, Z042, 0x78, 0x00, 0x00, Local5, Arg2)
+                        ERR (Arg0, Z042, __LINE__, 0x00, 0x00, Local5, Arg2)
                         Return (0x01)
                     }
                 }
@@ -160,7 +160,7 @@
         Local1 = Local0 = 0xABCDEF12
         If ((Local1 != 0xABCDEF12))
         {
-            ERR (__METHOD__, Z042, 0x8D, 0x00, 0x00, 0x00, 0x00)
+            ERR (__METHOD__, Z042, __LINE__, 0x00, 0x00, 0x00, 0x00)
         }
 
         /* Integer arithmetic */
@@ -168,13 +168,13 @@
         Local1 = Local0 = (0x12345678 + 0x11111111)
         If ((Local1 != 0x23456789))
         {
-            ERR (__METHOD__, Z042, 0x96, 0x00, 0x00, 0x00, 0x00)
+            ERR (__METHOD__, Z042, __LINE__, 0x00, 0x00, 0x00, 0x00)
         }
 
         Store ((0x23456781 + 0x11111111), Local0)
         If ((Local0 != 0x34567892))
         {
-            ERR (__METHOD__, Z042, 0x9A, 0x00, 0x00, 0x00, 0x00)
+            ERR (__METHOD__, Z042, __LINE__, 0x00, 0x00, 0x00, 0x00)
         }
 
         Local1 = Local0 = (0x12345678 + 0xF0000000)
@@ -184,13 +184,13 @@
         Local1 = Local0 = (0x87654321 - 0x11111111)
         If ((Local1 != 0x76543210))
         {
-            ERR (__METHOD__, Z042, 0xA4, 0x00, 0x00, 0x00, 0x00)
+            ERR (__METHOD__, Z042, __LINE__, 0x00, 0x00, 0x00, 0x00)
         }
 
         Store ((0x72387654 - 0x22221111), Local0)
         If ((Local0 != 0x50166543))
         {
-            ERR (__METHOD__, Z042, 0xA8, 0x00, 0x00, 0x00, 0x00)
+            ERR (__METHOD__, Z042, __LINE__, 0x00, 0x00, 0x00, 0x00)
         }
 
         /* Multiply */
@@ -198,13 +198,13 @@
         Local1 = Local0 = (0x00012345 * 0x7ABC)
         If ((Local1 != 0x8BA4C8AC))
         {
-            ERR (__METHOD__, Z042, 0xAF, 0x00, 0x00, 0x00, 0x00)
+            ERR (__METHOD__, Z042, __LINE__, 0x00, 0x00, 0x00, 0x00)
         }
 
         Store ((0x000145AB * 0x3247), Local0)
         If ((Local0 != 0x3FF5B86D))
         {
-            ERR (__METHOD__, Z042, 0xB3, 0x00, 0x00, 0x00, 0x00)
+            ERR (__METHOD__, Z042, __LINE__, 0x00, 0x00, 0x00, 0x00)
         }
 
         /* Divide */
@@ -212,19 +212,19 @@
         Local2 = Divide (0x12345678, 0x1000, Local0, Local1)
         If ((Local2 != 0x00012345))
         {
-            ERR (__METHOD__, Z042, 0xBA, 0x00, 0x00, 0x00, 0x00)
+            ERR (__METHOD__, Z042, __LINE__, 0x00, 0x00, 0x00, 0x00)
         }
 
         Store (Divide (0x7ABC56E8, 0x1000, Local0), Local1)
         If ((Local1 != 0x0007ABC5))
         {
-            ERR (__METHOD__, Z042, 0xBE, 0x00, 0x00, 0x00, 0x00)
+            ERR (__METHOD__, Z042, __LINE__, 0x00, 0x00, 0x00, 0x00)
         }
 
         Store ((0x55667788 / 0x1000), Local0)
         If ((Local0 != 0x00055667))
         {
-            ERR (__METHOD__, Z042, 0xC3, 0x00, 0x00, 0x00, 0x00)
+            ERR (__METHOD__, Z042, __LINE__, 0x00, 0x00, 0x00, 0x00)
         }
 
         /* Increment */
@@ -233,7 +233,7 @@
         Local1 = Local0++
         If ((Local1 != 0x12345679))
         {
-            ERR (__METHOD__, Z042, 0xCB, 0x00, 0x00, 0x00, 0x00)
+            ERR (__METHOD__, Z042, __LINE__, 0x00, 0x00, 0x00, 0x00)
         }
 
         /* Decrement */
@@ -242,7 +242,7 @@
         Local1 = Local0--
         If ((Local1 != 0x67812344))
         {
-            ERR (__METHOD__, Z042, 0xD3, 0x00, 0x00, 0x00, 0x00)
+            ERR (__METHOD__, Z042, __LINE__, 0x00, 0x00, 0x00, 0x00)
         }
 
         /* And */
@@ -250,13 +250,13 @@
         Local1 = Local0 = (0x87654321 & 0xAAAAAAAA)
         If ((Local1 != 0x82200220))
         {
-            ERR (__METHOD__, Z042, 0xDA, 0x00, 0x00, 0x00, 0x00)
+            ERR (__METHOD__, Z042, __LINE__, 0x00, 0x00, 0x00, 0x00)
         }
 
         Store ((0x88AABBCC & 0xAAAAAAAA), Local0)
         If ((Local0 != 0x88AAAA88))
         {
-            ERR (__METHOD__, Z042, 0xDE, 0x00, 0x00, 0x00, 0x00)
+            ERR (__METHOD__, Z042, __LINE__, 0x00, 0x00, 0x00, 0x00)
         }
 
         /* FindSetLeftBit */
@@ -264,13 +264,13 @@
         Local1 = FindSetLeftBit (0xF001, Local0)
         If ((Local1 != 0x10))
         {
-            ERR (__METHOD__, Z042, 0xE5, 0x00, 0x00, 0x00, 0x00)
+            ERR (__METHOD__, Z042, __LINE__, 0x00, 0x00, 0x00, 0x00)
         }
 
         Local0 = FindSetLeftBit (0x09007001)
         If ((Local0 != 0x1C))
         {
-            ERR (__METHOD__, Z042, 0xE9, 0x00, 0x00, 0x00, 0x00)
+            ERR (__METHOD__, Z042, __LINE__, 0x00, 0x00, 0x00, 0x00)
         }
 
         /* FindSetRightBit */
@@ -278,13 +278,13 @@
         Local1 = FindSetRightBit (0x01080040, Local0)
         If ((Local1 != 0x07))
         {
-            ERR (__METHOD__, Z042, 0xF0, 0x00, 0x00, 0x00, 0x00)
+            ERR (__METHOD__, Z042, __LINE__, 0x00, 0x00, 0x00, 0x00)
         }
 
         Local0 = FindSetRightBit (0x09800000)
         If ((Local0 != 0x18))
         {
-            ERR (__METHOD__, Z042, 0xF4, 0x00, 0x00, 0x00, 0x00)
+            ERR (__METHOD__, Z042, __LINE__, 0x00, 0x00, 0x00, 0x00)
         }
 
         /* Mod */
@@ -292,7 +292,7 @@
         Store ((0x1AFB3C4D % 0x00400000), Local0)
         If ((Local0 != 0x003B3C4D))
         {
-            ERR (__METHOD__, Z042, 0xFB, 0x00, 0x00, 0x00, 0x00)
+            ERR (__METHOD__, Z042, __LINE__, 0x00, 0x00, 0x00, 0x00)
         }
 
         /* ShiftLeft */
@@ -306,13 +306,13 @@
         Local1 = Local0 = (0x87654321 >> 0x19)
         If ((Local1 != 0x43))
         {
-            ERR (__METHOD__, Z042, 0x010A, 0x00, 0x00, 0x00, 0x00)
+            ERR (__METHOD__, Z042, __LINE__, 0x00, 0x00, 0x00, 0x00)
         }
 
         Store ((0x7654A0CB >> 0x15), Local0)
         If ((Local0 != 0x03B2))
         {
-            ERR (__METHOD__, Z042, 0x010E, 0x00, 0x00, 0x00, 0x00)
+            ERR (__METHOD__, Z042, __LINE__, 0x00, 0x00, 0x00, 0x00)
         }
 
         /* Nand */
@@ -338,13 +338,13 @@
         Local1 = Local0 = (0x9A3533AC | 0x39A696CA)
         If ((Local1 != 0xBBB7B7EE))
         {
-            ERR (__METHOD__, Z042, 0x012D, 0x00, 0x00, 0x00, 0x00)
+            ERR (__METHOD__, Z042, __LINE__, 0x00, 0x00, 0x00, 0x00)
         }
 
         Store ((0xCA3533A9 | 0xA9A696C3), Local0)
         If ((Local0 != 0xEBB7B7EB))
         {
-            ERR (__METHOD__, Z042, 0x0131, 0x00, 0x00, 0x00, 0x00)
+            ERR (__METHOD__, Z042, __LINE__, 0x00, 0x00, 0x00, 0x00)
         }
 
         /* Xor */
@@ -352,13 +352,13 @@
         Local1 = Local0 = (0x9A365AC3 ^ 0x39A96CA6)
         If ((Local1 != 0xA39F3665))
         {
-            ERR (__METHOD__, Z042, 0x0138, 0x00, 0x00, 0x00, 0x00)
+            ERR (__METHOD__, Z042, __LINE__, 0x00, 0x00, 0x00, 0x00)
         }
 
         Store ((0xA9365AC3 ^ 0x93A96CA6), Local0)
         If ((Local0 != 0x3A9F3665))
         {
-            ERR (__METHOD__, Z042, 0x013C, 0x00, 0x00, 0x00, 0x00)
+            ERR (__METHOD__, Z042, __LINE__, 0x00, 0x00, 0x00, 0x00)
         }
 
         /* Logical operators */
@@ -376,7 +376,7 @@
         Local0 = Acquire (MT04, 0x0005)
         If ((Local0 != Zero))
         {
-            ERR (__METHOD__, Z042, 0x0151, 0x00, 0x00, 0x00, 0x00)
+            ERR (__METHOD__, Z042, __LINE__, 0x00, 0x00, 0x00, 0x00)
         }
 
         /* Release (None) */
@@ -384,13 +384,13 @@
         Local1 = ToInteger ("0x89abcdef", Local0)
         If ((Local1 != 0x89ABCDEF))
         {
-            ERR (__METHOD__, Z042, 0x015A, 0x00, 0x00, 0x00, 0x00)
+            ERR (__METHOD__, Z042, __LINE__, 0x00, 0x00, 0x00, 0x00)
         }
 
         Local0 = ToInteger ("0x89abcdef")
         If ((Local0 != 0x89ABCDEF))
         {
-            ERR (__METHOD__, Z042, 0x015E, 0x00, 0x00, 0x00, 0x00)
+            ERR (__METHOD__, Z042, __LINE__, 0x00, 0x00, 0x00, 0x00)
         }
 
         /* ToString */
@@ -402,25 +402,25 @@
         Local1 = ToString (Local2, Ones, Local0)
         If ((Local1 != "\x01"))
         {
-            ERR (__METHOD__, Z042, 0x0167, 0x00, 0x00, 0x00, 0x00)
+            ERR (__METHOD__, Z042, __LINE__, 0x00, 0x00, 0x00, 0x00)
         }
 
         Local0 = ToString (Local2, Ones)
         If ((Local0 != "\x01"))
         {
-            ERR (__METHOD__, Z042, 0x016B, 0x00, 0x00, 0x00, 0x00)
+            ERR (__METHOD__, Z042, __LINE__, 0x00, 0x00, 0x00, 0x00)
         }
 
         Local1 = ToString (Local2, 0x01, Local0)
         If ((Local1 != "\x01"))
         {
-            ERR (__METHOD__, Z042, 0x0170, 0x00, 0x00, 0x00, 0x00)
+            ERR (__METHOD__, Z042, __LINE__, 0x00, 0x00, 0x00, 0x00)
         }
 
         Local0 = ToString (Local2, 0x01)
         If ((Local0 != "\x01"))
         {
-            ERR (__METHOD__, Z042, 0x0174, 0x00, 0x00, 0x00, 0x00)
+            ERR (__METHOD__, Z042, __LINE__, 0x00, 0x00, 0x00, 0x00)
         }
 
         /* ToBuffer */
@@ -432,7 +432,7 @@
                          0x01, 0x00                                       // ..
                     }))
         {
-            ERR (__METHOD__, Z042, 0x017D, 0x00, 0x00, 0x00, 0x00)
+            ERR (__METHOD__, Z042, __LINE__, 0x00, 0x00, 0x00, 0x00)
         }
 
         Local0 = ToBuffer (Local2)
@@ -441,7 +441,7 @@
                          0x01, 0x00                                       // ..
                     }))
         {
-            ERR (__METHOD__, Z042, 0x0181, 0x00, 0x00, 0x00, 0x00)
+            ERR (__METHOD__, Z042, __LINE__, 0x00, 0x00, 0x00, 0x00)
         }
 
         /* ToDecimalString */
@@ -450,13 +450,13 @@
         Local1 = ToDecimalString (Local2, Local0)
         If ((Local1 != "12"))
         {
-            ERR (__METHOD__, Z042, 0x018A, 0x00, 0x00, 0x00, 0x00)
+            ERR (__METHOD__, Z042, __LINE__, 0x00, 0x00, 0x00, 0x00)
         }
 
         Local0 = ToDecimalString (Local2)
         If ((Local0 != "12"))
         {
-            ERR (__METHOD__, Z042, 0x018E, 0x00, 0x00, 0x00, 0x00)
+            ERR (__METHOD__, Z042, __LINE__, 0x00, 0x00, 0x00, 0x00)
         }
 
         /* ToHexString */
@@ -468,13 +468,13 @@
         Local1 = ToHexString (Local2, Local0)
         If ((Local1 != "EF"))
         {
-            ERR (__METHOD__, Z042, 0x0197, 0x00, 0x00, 0x00, 0x00)
+            ERR (__METHOD__, Z042, __LINE__, 0x00, 0x00, 0x00, 0x00)
         }
 
         Local0 = ToHexString (Local2)
         If ((Local0 != "EF"))
         {
-            ERR (__METHOD__, Z042, 0x019B, 0x00, 0x00, 0x00, 0x00)
+            ERR (__METHOD__, Z042, __LINE__, 0x00, 0x00, 0x00, 0x00)
         }
 
         /* ToBCD */
@@ -483,13 +483,13 @@
         Local1 = ToBCD (Local2, Local0)
         If ((Local1 != 0x10))
         {
-            ERR (__METHOD__, Z042, 0x01A4, 0x00, 0x00, 0x00, 0x00)
+            ERR (__METHOD__, Z042, __LINE__, 0x00, 0x00, 0x00, 0x00)
         }
 
         Local0 = ToBCD (Local2)
         If ((Local0 != 0x10))
         {
-            ERR (__METHOD__, Z042, 0x01A8, 0x00, 0x00, 0x00, 0x00)
+            ERR (__METHOD__, Z042, __LINE__, 0x00, 0x00, 0x00, 0x00)
         }
 
         /* FromBCD */
@@ -498,13 +498,13 @@
         Local1 = FromBCD (Local2, Local0)
         If ((Local1 != 0x0A))
         {
-            ERR (__METHOD__, Z042, 0x01B1, 0x00, 0x00, 0x00, 0x00)
+            ERR (__METHOD__, Z042, __LINE__, 0x00, 0x00, 0x00, 0x00)
         }
 
         Local0 = FromBCD (Local2)
         If ((Local0 != 0x0A))
         {
-            ERR (__METHOD__, Z042, 0x01B5, 0x00, 0x00, 0x00, 0x00)
+            ERR (__METHOD__, Z042, __LINE__, 0x00, 0x00, 0x00, 0x00)
         }
 
         /* Mid */
@@ -513,13 +513,13 @@
         Local1 = Mid (Local2, 0x01, 0x02, Local0)
         If ((Local1 != "12"))
         {
-            ERR (__METHOD__, Z042, 0x01BE, 0x00, 0x00, 0x00, 0x00)
+            ERR (__METHOD__, Z042, __LINE__, 0x00, 0x00, 0x00, 0x00)
         }
 
         Local0 = Mid (Local2, 0x01, 0x02)
         If ((Local0 != "12"))
         {
-            ERR (__METHOD__, Z042, 0x01C2, 0x00, 0x00, 0x00, 0x00)
+            ERR (__METHOD__, Z042, __LINE__, 0x00, 0x00, 0x00, 0x00)
         }
 
         Local2 = Buffer (0x04)
@@ -532,7 +532,7 @@
                          0x01, 0x02                                       // ..
                     }))
         {
-            ERR (__METHOD__, Z042, 0x01C9, 0x00, 0x00, 0x00, 0x00)
+            ERR (__METHOD__, Z042, __LINE__, 0x00, 0x00, 0x00, 0x00)
         }
 
         Local0 = Mid (Local2, 0x01, 0x02)
@@ -541,7 +541,7 @@
                          0x01, 0x02                                       // ..
                     }))
         {
-            ERR (__METHOD__, Z042, 0x01CD, 0x00, 0x00, 0x00, 0x00)
+            ERR (__METHOD__, Z042, __LINE__, 0x00, 0x00, 0x00, 0x00)
         }
 
         /* Match */
@@ -553,7 +553,7 @@
         Local0 = Match (Local2, MTR, 0x00, MTR, 0x00, 0x00)
         If ((Local0 != 0x00))
         {
-            ERR (__METHOD__, Z042, 0x01D6, 0x00, 0x00, 0x00, 0x00)
+            ERR (__METHOD__, Z042, __LINE__, 0x00, 0x00, 0x00, 0x00)
         }
 
         /* ConcatenateResTemplate */
@@ -575,7 +575,7 @@
                          0x79, 0x00                                       // y.
                     }))
         {
-            ERR (__METHOD__, Z042, 0x01E3, 0x00, 0x00, 0x00, 0x00)
+            ERR (__METHOD__, Z042, __LINE__, 0x00, 0x00, 0x00, 0x00)
         }
 
         /*
@@ -587,7 +587,7 @@
                          0x79, 0x00                                       // y.
                     }))
         {
-            ERR (__METHOD__, Z042, 0x01EA, 0x00, 0x00, 0x00, 0x00)
+            ERR (__METHOD__, Z042, __LINE__, 0x00, 0x00, 0x00, 0x00)
         }
     }
 
@@ -598,7 +598,7 @@
         STR0 [0x0A] = "A"
         If ((STR0 != STR1))
         {
-            ERR ("m30d", Z042, 0x01F6, 0x00, 0x00, STR0, STR1)
+            ERR ("m30d", Z042, __LINE__, 0x00, 0x00, STR0, STR1)
         }
     }
 

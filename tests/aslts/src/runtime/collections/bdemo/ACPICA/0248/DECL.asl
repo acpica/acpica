@@ -94,7 +94,7 @@
 
             If ((DerefOf (Local0) != 0xABCD0000))
             {
-                ERR ("", ZFFF, 0x5A, 0x00, 0x00, DerefOf (Local0), 0xABCD0000)
+                ERR (__METHOD__, ZFFF, __LINE__, 0x00, 0x00, DerefOf (Local0), 0xABCD0000)
             }
 
             Debug = "============== sit 0 (Local0):"
@@ -125,7 +125,7 @@
             Debug = "============== before checking:"
             If ((DerefOf (Local0) != 0xABCD0000))
             {
-                ERR ("", ZFFF, 0x80, 0x00, 0x00, DerefOf (Local0), 0xABCD0000)
+                ERR (__METHOD__, ZFFF, __LINE__, 0x00, 0x00, DerefOf (Local0), 0xABCD0000)
             }
 
             Debug = "============== end of test"

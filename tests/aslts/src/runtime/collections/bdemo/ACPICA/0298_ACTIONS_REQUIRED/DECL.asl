@@ -64,7 +64,7 @@
         Debug = Local4
         If ((Local4 != 0x11111233))
         {
-            ERR ("", ZFFF, 0x46, 0x00, 0x00, Local4, 0x11111233)
+            ERR (__METHOD__, ZFFF, __LINE__, 0x00, 0x00, Local4, 0x11111233)
         }
 
         Debug = "============================== 3"
@@ -73,5 +73,5 @@
          * The problem is not automatically detected,
          * so remove this error report after the problem has been resolved.
          */
-        ERR ("", ZFFF, 0x50, 0x00, 0x00, 0x00, 0x00)
+        ERR (__METHOD__, ZFFF, __LINE__, 0x00, 0x00, 0x00, 0x00)
     }

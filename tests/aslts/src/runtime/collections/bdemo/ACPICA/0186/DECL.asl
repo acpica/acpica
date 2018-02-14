@@ -95,7 +95,7 @@
 
             If ((I000 != Local0))
             {
-                ERR ("", ZFFF, 0x5B, 0x00, 0x00, I000, Local0)
+                ERR (__METHOD__, ZFFF, __LINE__, 0x00, 0x00, I000, Local0)
             }
         }
         Else
@@ -124,7 +124,7 @@
 
             If ((I000 != Local0))
             {
-                ERR ("", ZFFF, 0x73, 0x00, 0x00, I000, Local0)
+                ERR (__METHOD__, ZFFF, __LINE__, 0x00, 0x00, I000, Local0)
             }
         }
         Else
@@ -153,7 +153,7 @@
 
             If ((I000 != Local0))
             {
-                ERR ("", ZFFF, 0x8B, 0x00, 0x00, I000, Local0)
+                ERR (__METHOD__, ZFFF, __LINE__, 0x00, 0x00, I000, Local0)
             }
         }
         Else

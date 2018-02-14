@@ -316,7 +316,7 @@
             RFU0 = BUF0 /* \DTM0.BUF0 */
             If (CondRefOf (\SSS0, Local0))
             {
-                ERR (Arg0, Z174, 0x013B, 0x00, 0x00, "\\SSS0", 0x01)
+                ERR (Arg0, Z174, __LINE__, 0x00, 0x00, "\\SSS0", 0x01)
                 Return (Zero)
             }
 
@@ -355,7 +355,7 @@
                 Default
                 {
                     Debug = "Unexpected parameter of the test"
-                    ERR (Arg0, Z174, 0x0152, 0x00, 0x00, "\\SSS0", 0x01)
+                    ERR (Arg0, Z174, __LINE__, 0x00, 0x00, "\\SSS0", 0x01)
                     Return (Zero)
                 }
 
@@ -394,7 +394,7 @@
             {
                 /* DDB Handle */
 
-                ERR (Arg0, Z174, 0x0165, 0x00, 0x00, Local1, C017)
+                ERR (Arg0, Z174, __LINE__, 0x00, 0x00, Local1, C017)
             }
 
             /* Check the new Object appears */
@@ -402,7 +402,7 @@
             If (CondRefOf (\SSS0, Local0)){}
             Else
             {
-                ERR (Arg0, Z174, 0x016C, 0x00, 0x00, "\\SSS0", 0x00)
+                ERR (Arg0, Z174, __LINE__, 0x00, 0x00, "\\SSS0", 0x00)
             }
 
             Local1 = ObjectType (Local0)
@@ -410,7 +410,7 @@
             {
                 /* Method */
 
-                ERR (Arg0, Z174, 0x0171, 0x00, 0x00, Local1, C010)
+                ERR (Arg0, Z174, __LINE__, 0x00, 0x00, Local1, C010)
             }
             Else
             {
@@ -422,7 +422,7 @@
 
                 If (("\\SSS0" != Local0))
                 {
-                    ERR (Arg0, Z174, 0x0178, 0x00, 0x00, Local0, "\\SSS0")
+                    ERR (Arg0, Z174, __LINE__, 0x00, 0x00, Local0, "\\SSS0")
                 }
             }
 
@@ -457,7 +457,7 @@
             Debug = "Table Unloaded"
             If (CondRefOf (\SSS0, Local0))
             {
-                ERR (Arg0, Z174, 0x018B, 0x00, 0x00, "\\SSS0", 0x01)
+                ERR (Arg0, Z174, __LINE__, 0x00, 0x00, "\\SSS0", 0x01)
             }
 
             Return (Zero)
@@ -471,7 +471,7 @@
             RFU0 = BUF0 /* \DTM0.BUF0 */
             If (CondRefOf (\SSS0, Local0))
             {
-                ERR (Arg0, Z174, 0x019A, 0x00, 0x00, "\\SSS0", 0x01)
+                ERR (Arg0, Z174, __LINE__, 0x00, 0x00, "\\SSS0", 0x01)
                 Return (0x01)
             }
 
@@ -511,7 +511,7 @@
             {
                 /* DDB Handle */
 
-                ERR (Arg0, Z174, 0x01BE, 0x00, 0x00, Local1, C017)
+                ERR (Arg0, Z174, __LINE__, 0x00, 0x00, Local1, C017)
             }
 
             /* Check the new Object appears */
@@ -519,7 +519,7 @@
             If (CondRefOf (\SSS0, Local0)){}
             Else
             {
-                ERR (Arg0, Z174, 0x01C5, 0x00, 0x00, "\\SSS0", 0x00)
+                ERR (Arg0, Z174, __LINE__, 0x00, 0x00, "\\SSS0", 0x00)
             }
 
             Local1 = ObjectType (Local0)
@@ -527,7 +527,7 @@
             {
                 /* Method */
 
-                ERR (Arg0, Z174, 0x01CA, 0x00, 0x00, Local1, C010)
+                ERR (Arg0, Z174, __LINE__, 0x00, 0x00, Local1, C010)
             }
             Else
             {
@@ -539,7 +539,7 @@
 
                 If (("\\SSS0" != Local0))
                 {
-                    ERR (Arg0, Z174, 0x01D1, 0x00, 0x00, Local0, "\\SSS0")
+                    ERR (Arg0, Z174, __LINE__, 0x00, 0x00, Local0, "\\SSS0")
                 }
             }
 
@@ -552,7 +552,7 @@
             Debug = "SSDT Unloaded"
             If (CondRefOf (\SSS0, Local0))
             {
-                ERR (Arg0, Z174, 0x01DE, 0x00, 0x00, "\\SSS0", 0x01)
+                ERR (Arg0, Z174, __LINE__, 0x00, 0x00, "\\SSS0", 0x01)
             }
 
             Return (Zero)
@@ -693,7 +693,7 @@
                 RFU0 = BUF0 /* \DTM0.BUF0 */
                 If (CondRefOf (\SSS0, Local0))
                 {
-                    ERR (Arg0, Z174, 0x0264, 0x00, 0x00, "\\SSS0", 0x01)
+                    ERR (Arg0, Z174, __LINE__, 0x00, 0x00, "\\SSS0", 0x01)
                     Return (Zero)
                 }
 
@@ -732,7 +732,7 @@
                     Default
                     {
                         Debug = "Unexpected parameter of the test"
-                        ERR (Arg0, Z174, 0x027B, 0x00, 0x00, "\\SSS0", 0x01)
+                        ERR (Arg0, Z174, __LINE__, 0x00, 0x00, "\\SSS0", 0x01)
                         Return (Zero)
                     }
 
@@ -771,7 +771,7 @@
                 {
                     /* DDB Handle */
 
-                    ERR (Arg0, Z174, 0x028E, 0x00, 0x00, Local1, C017)
+                    ERR (Arg0, Z174, __LINE__, 0x00, 0x00, Local1, C017)
                 }
 
                 /* Check the new Object appears */
@@ -779,7 +779,7 @@
                 If (CondRefOf (\SSS0, Local0)){}
                 Else
                 {
-                    ERR (Arg0, Z174, 0x0295, 0x00, 0x00, "\\SSS0", 0x00)
+                    ERR (Arg0, Z174, __LINE__, 0x00, 0x00, "\\SSS0", 0x00)
                 }
 
                 Local1 = ObjectType (Local0)
@@ -787,7 +787,7 @@
                 {
                     /* Method */
 
-                    ERR (Arg0, Z174, 0x029A, 0x00, 0x00, Local1, C010)
+                    ERR (Arg0, Z174, __LINE__, 0x00, 0x00, Local1, C010)
                 }
                 Else
                 {
@@ -799,7 +799,7 @@
 
                     If (("\\SSS0" != Local0))
                     {
-                        ERR (Arg0, Z174, 0x02A1, 0x00, 0x00, Local0, "\\SSS0")
+                        ERR (Arg0, Z174, __LINE__, 0x00, 0x00, Local0, "\\SSS0")
                     }
                 }
 
@@ -834,7 +834,7 @@
                 Debug = "SSDT Unloaded"
                 If (CondRefOf (\SSS0, Local0))
                 {
-                    ERR (Arg0, Z174, 0x02B4, 0x00, 0x00, "\\SSS0", 0x01)
+                    ERR (Arg0, Z174, __LINE__, 0x00, 0x00, "\\SSS0", 0x01)
                 }
 
                 Return (Zero)
@@ -871,7 +871,7 @@
                 RFU0 = BUF0 /* \DTM0.BUF0 */
                 If (CondRefOf (\SSS0, Local0))
                 {
-                    ERR (Arg0, Z174, 0x02DA, 0x00, 0x00, "\\SSS0", 0x01)
+                    ERR (Arg0, Z174, __LINE__, 0x00, 0x00, "\\SSS0", 0x01)
                     Return (0x01)
                 }
 
@@ -969,7 +969,7 @@ Local2 = Buffer (0x0A)
             Else
             {
                 Debug = "This Region type\'s AddrSpace Handler not installed"
-                ERR (Arg0, Z174, 0x0335, 0x00, 0x00, Local2, Arg1)
+                ERR (Arg0, Z174, __LINE__, 0x00, 0x00, Local2, Arg1)
             }
         }
 
@@ -1038,12 +1038,12 @@ Local2 = Buffer (0x0A)
 
             If (CondRefOf (NABS, Local0))
             {
-                ERR (Arg0, Z174, 0x037B, 0x00, 0x00, "NABS", 0x01)
+                ERR (Arg0, Z174, __LINE__, 0x00, 0x00, "NABS", 0x01)
             }
 
             If (CondRefOf (NCRR, Local0))
             {
-                ERR (Arg0, Z174, 0x037E, 0x00, 0x00, "NCRR", 0x01)
+                ERR (Arg0, Z174, __LINE__, 0x00, 0x00, "NCRR", 0x01)
             }
 
             RFU1 = BUF1 /* \DTM0.BUF1 */
@@ -1055,24 +1055,24 @@ Local2 = Buffer (0x0A)
             {
                 If (("absolute location obj" != DerefOf (Local0)))
                 {
-                    ERR (Arg0, Z174, 0x0388, 0x00, 0x00, DerefOf (Local0), "absolute location obj")
+                    ERR (Arg0, Z174, __LINE__, 0x00, 0x00, DerefOf (Local0), "absolute location obj")
                 }
             }
             Else
             {
-                ERR (Arg0, Z174, 0x038C, 0x00, 0x00, "NABS", 0x00)
+                ERR (Arg0, Z174, __LINE__, 0x00, 0x00, "NABS", 0x00)
             }
 
             If (CondRefOf (NCRR, Local0))
             {
                 If (("current location obj" != DerefOf (Local0)))
                 {
-                    ERR (Arg0, Z174, 0x0390, 0x00, 0x00, DerefOf (Local0), "current location obj")
+                    ERR (Arg0, Z174, __LINE__, 0x00, 0x00, DerefOf (Local0), "current location obj")
                 }
             }
             Else
             {
-                ERR (Arg0, Z174, 0x0394, 0x00, 0x00, "NCRR", 0x00)
+                ERR (Arg0, Z174, __LINE__, 0x00, 0x00, "NCRR", 0x00)
             }
 
             /* Check location */
@@ -1080,7 +1080,7 @@ Local2 = Buffer (0x0A)
             If (CondRefOf (\NABS, Local0)){}
             Else
             {
-                ERR (Arg0, Z174, 0x039A, 0x00, 0x00, "NABS", 0x00)
+                ERR (Arg0, Z174, __LINE__, 0x00, 0x00, "NABS", 0x00)
             }
 
             /*Note: We load the table objects relative to the root of the namespace. */
@@ -1088,17 +1088,17 @@ Local2 = Buffer (0x0A)
             If (CondRefOf (\NCRR, Local0)){}
             Else
             {
-                ERR (Arg0, Z174, 0x039F, 0x00, 0x00, "\\NCRR", 0x01)
+                ERR (Arg0, Z174, __LINE__, 0x00, 0x00, "\\NCRR", 0x01)
             }
 
             If (CondRefOf (\DTM0.NCRR, Local0))
             {
-                ERR (Arg0, Z174, 0x03A2, 0x00, 0x00, "\\DTM0.NCRR", 0x01)
+                ERR (Arg0, Z174, __LINE__, 0x00, 0x00, "\\DTM0.NCRR", 0x01)
             }
 
             If (CondRefOf (\DTM0.TST8.NCRR, Local0))
             {
-                ERR (Arg0, Z174, 0x03A5, 0x00, 0x00, "\\DTM0.TST8.NCRR", 0x00)
+                ERR (Arg0, Z174, __LINE__, 0x00, 0x00, "\\DTM0.TST8.NCRR", 0x00)
             }
 
             Unload (DDBH)
@@ -1107,12 +1107,12 @@ Local2 = Buffer (0x0A)
 
             If (CondRefOf (NABS, Local0))
             {
-                ERR (Arg0, Z174, 0x03AD, 0x00, 0x00, "NABS", 0x01)
+                ERR (Arg0, Z174, __LINE__, 0x00, 0x00, "NABS", 0x01)
             }
 
             If (CondRefOf (NCRR, Local0))
             {
-                ERR (Arg0, Z174, 0x03B0, 0x00, 0x00, "NCRR", 0x01)
+                ERR (Arg0, Z174, __LINE__, 0x00, 0x00, "NCRR", 0x01)
             }
         }
 
@@ -1172,7 +1172,7 @@ Local2 = Buffer (0x0A)
             RFU2 = BUF2 /* \DTM0.BUF2 */
             If (CondRefOf (\AUXD, Local0))
             {
-                ERR (Arg0, Z174, 0x03F0, 0x00, 0x00, "\\AUXD", 0x01)
+                ERR (Arg0, Z174, __LINE__, 0x00, 0x00, "\\AUXD", 0x01)
                 Return (Zero)
             }
 
@@ -1190,41 +1190,41 @@ Local2 = Buffer (0x0A)
             If (CondRefOf (\AUXD, Local0)){}
             Else
             {
-                ERR (Arg0, Z174, 0x0400, 0x00, 0x00, "\\AUXD", 0x00)
+                ERR (Arg0, Z174, __LINE__, 0x00, 0x00, "\\AUXD", 0x00)
                 Return (Zero)
             }
 
             Local1 = ObjectType (Local0)
             If ((Local1 != 0x06))
             {
-                ERR (Arg0, Z174, 0x0407, 0x00, 0x00, Local1, 0x06)
+                ERR (Arg0, Z174, __LINE__, 0x00, 0x00, Local1, 0x06)
                 Return (Zero)
             }
 
             If (CondRefOf (\AUXD.REGC, Local0)){}
             Else
             {
-                ERR (Arg0, Z174, 0x040D, 0x00, 0x00, "\\AUXD.REGC", 0x00)
+                ERR (Arg0, Z174, __LINE__, 0x00, 0x00, "\\AUXD.REGC", 0x00)
                 Return (Zero)
             }
 
             Local1 = DerefOf (Local0)
             If ((0x01 != Local1))
             {
-                ERR (Arg0, Z174, 0x0414, 0x00, 0x00, Local1, 0x01)
+                ERR (Arg0, Z174, __LINE__, 0x00, 0x00, Local1, 0x01)
             }
 
             If (CondRefOf (\AUXD.REGD, Local0)){}
             Else
             {
-                ERR (Arg0, Z174, 0x0419, 0x00, 0x00, "\\AUXD.REGD", 0x00)
+                ERR (Arg0, Z174, __LINE__, 0x00, 0x00, "\\AUXD.REGD", 0x00)
                 Return (Zero)
             }
 
             Local1 = DerefOf (Local0)
             If ((0xFFFFFFFF != Local1))
             {
-                ERR (Arg0, Z174, 0x0420, 0x00, 0x00, Local1, 0xFFFFFFFF)
+                ERR (Arg0, Z174, __LINE__, 0x00, 0x00, Local1, 0xFFFFFFFF)
             }
             ElseIf (CondRefOf (\AUXD.M000, Local2))
             {
@@ -1232,18 +1232,18 @@ Local2 = Buffer (0x0A)
                 Local1 = DerefOf (Local0)
                 If ((0x01 != Local1))
                 {
-                    ERR (Arg0, Z174, 0x0428, 0x00, 0x00, Local1, 0x01)
+                    ERR (Arg0, Z174, __LINE__, 0x00, 0x00, Local1, 0x01)
                 }
             }
             Else
             {
-                ERR (Arg0, Z174, 0x042B, 0x00, 0x00, "\\AUXD.M000", 0x00)
+                ERR (Arg0, Z174, __LINE__, 0x00, 0x00, "\\AUXD.M000", 0x00)
             }
 
             Unload (DDBH)
             If (CondRefOf (\AUXD, Local0))
             {
-                ERR (Arg0, Z174, 0x0431, 0x00, 0x00, "\\AUXD", 0x01)
+                ERR (Arg0, Z174, __LINE__, 0x00, 0x00, "\\AUXD", 0x01)
             }
 
             Return (Zero)
@@ -1314,7 +1314,7 @@ Local2 = Buffer (0x0A)
 
                     If ((Local5 != Local2))
                     {
-                        ERR (Arg0, Z174, 0x0466, 0x00, 0x00, Local2, Local5)
+                        ERR (Arg0, Z174, __LINE__, 0x00, 0x00, Local2, Local5)
                     }
                 }
                 ElseIf (CH04 (Arg0, 0x00, 0xFF, Z174, 0x0469, 0x00, 0x00))
@@ -1338,7 +1338,7 @@ Local2 = Buffer (0x0A)
             Concatenate (Arg0, "-tsta", Arg0)
             If (INIT ())
             {
-                ERR (Arg0, Z174, 0x047B, 0x00, 0x00, "INIT", 0x01)
+                ERR (Arg0, Z174, __LINE__, 0x00, 0x00, "INIT", 0x01)
                 Return (0x01)
             }
 
@@ -1352,7 +1352,7 @@ Local2 = Buffer (0x0A)
             {
                 If (LD ())
                 {
-                    ERR (Arg0, Z174, 0x0485, 0x00, 0x00, "HI0N", HI0N)
+                    ERR (Arg0, Z174, __LINE__, 0x00, 0x00, "HI0N", HI0N)
                     Return (0x01)
                 }
 
@@ -1364,7 +1364,7 @@ Local2 = Buffer (0x0A)
                 Local0--
                 If (LDCH (Arg0))
                 {
-                    ERR (Arg0, Z174, 0x048E, 0x00, 0x00, "HI0N", HI0N)
+                    ERR (Arg0, Z174, __LINE__, 0x00, 0x00, "HI0N", HI0N)
                     Return (0x01)
                 }
             }
@@ -1374,7 +1374,7 @@ Local2 = Buffer (0x0A)
             {
                 If (UNLD ())
                 {
-                    ERR (Arg0, Z174, 0x0496, 0x00, 0x00, "HI0N", HI0N)
+                    ERR (Arg0, Z174, __LINE__, 0x00, 0x00, "HI0N", HI0N)
                     Return (0x01)
                 }
 
@@ -1386,7 +1386,7 @@ Local2 = Buffer (0x0A)
                 Local0--
                 If (LDCH (Arg0))
                 {
-                    ERR (Arg0, Z174, 0x049F, 0x00, 0x00, "HI0N", HI0N)
+                    ERR (Arg0, Z174, __LINE__, 0x00, 0x00, "HI0N", HI0N)
                     Return (0x01)
                 }
             }
@@ -1462,7 +1462,7 @@ Local2 = Buffer (0x0A)
             Local0 = ObjectType (\AUXD.INT0)
             If ((C009 != Local0))
             {
-                ERR (Arg0, Z174, 0x04EE, 0x00, 0x00, Local0, C009)
+                ERR (Arg0, Z174, __LINE__, 0x00, 0x00, Local0, C009)
             }
 
             /* String */
@@ -1472,7 +1472,7 @@ Local2 = Buffer (0x0A)
             Local0 = ObjectType (\AUXD.STR0)
             If ((C00A != Local0))
             {
-                ERR (Arg0, Z174, 0x04F6, 0x00, 0x00, Local0, C00A)
+                ERR (Arg0, Z174, __LINE__, 0x00, 0x00, Local0, C00A)
             }
 
             /* Buffer */
@@ -1486,7 +1486,7 @@ Local2 = Buffer (0x0A)
                 Local0 = ObjectType (\AUXD.BUF0)
                 If ((C00B != Local0))
                 {
-                    ERR (Arg0, Z174, 0x0500, 0x00, 0x00, Local0, C00B)
+                    ERR (Arg0, Z174, __LINE__, 0x00, 0x00, Local0, C00B)
                 }
             }
 
@@ -1497,7 +1497,7 @@ Local2 = Buffer (0x0A)
             Local0 = ObjectType (\AUXD.PAC0)
             If ((C00C != Local0))
             {
-                ERR (Arg0, Z174, 0x0509, 0x00, 0x00, Local0, C00C)
+                ERR (Arg0, Z174, __LINE__, 0x00, 0x00, Local0, C00C)
             }
 
             /* Field Unit */
@@ -1507,7 +1507,7 @@ Local2 = Buffer (0x0A)
             Local0 = ObjectType (\AUXD.DEV0)
             If ((C00E != Local0))
             {
-                ERR (Arg0, Z174, 0x0513, 0x00, 0x00, Local0, C00E)
+                ERR (Arg0, Z174, __LINE__, 0x00, 0x00, Local0, C00E)
             }
 
             /* Event */
@@ -1517,7 +1517,7 @@ Local2 = Buffer (0x0A)
             Local0 = ObjectType (\AUXD.EVE0)
             If ((C00F != Local0))
             {
-                ERR (Arg0, Z174, 0x051B, 0x00, 0x00, Local0, C00F)
+                ERR (Arg0, Z174, __LINE__, 0x00, 0x00, Local0, C00F)
             }
 
             /* Method */
@@ -1527,7 +1527,7 @@ Local2 = Buffer (0x0A)
             Local0 = ObjectType (\AUXD.MMM0)
             If ((C010 != Local0))
             {
-                ERR (Arg0, Z174, 0x0523, 0x00, 0x00, Local0, C010)
+                ERR (Arg0, Z174, __LINE__, 0x00, 0x00, Local0, C010)
             }
 
             /* Mutex */
@@ -1537,7 +1537,7 @@ Local2 = Buffer (0x0A)
             Local0 = ObjectType (\AUXD.MTX0)
             If ((C011 != Local0))
             {
-                ERR (Arg0, Z174, 0x052B, 0x00, 0x00, Local0, C011)
+                ERR (Arg0, Z174, __LINE__, 0x00, 0x00, Local0, C011)
             }
 
             /* OpRegion */
@@ -1547,7 +1547,7 @@ Local2 = Buffer (0x0A)
             Local0 = ObjectType (\AUXD.PWR0)
             If ((C013 != Local0))
             {
-                ERR (Arg0, Z174, 0x0535, 0x00, 0x00, Local0, C013)
+                ERR (Arg0, Z174, __LINE__, 0x00, 0x00, Local0, C013)
             }
 
             /* Processor */
@@ -1557,7 +1557,7 @@ Local2 = Buffer (0x0A)
             Local0 = ObjectType (\AUXD.CPU0)
             If ((C014 != Local0))
             {
-                ERR (Arg0, Z174, 0x053D, 0x00, 0x00, Local0, C014)
+                ERR (Arg0, Z174, __LINE__, 0x00, 0x00, Local0, C014)
             }
 
             /* Thermal Zone */
@@ -1567,7 +1567,7 @@ Local2 = Buffer (0x0A)
             Local0 = ObjectType (\AUXD.TZN0)
             If ((C015 != Local0))
             {
-                ERR (Arg0, Z174, 0x0545, 0x00, 0x00, Local0, C015)
+                ERR (Arg0, Z174, __LINE__, 0x00, 0x00, Local0, C015)
             }
 
             /* Buffer Field */
@@ -1581,7 +1581,7 @@ Local2 = Buffer (0x0A)
                 Local0 = ObjectType (\AUXD.BFL0)
                 If ((C016 != Local0))
                 {
-                    ERR (Arg0, Z174, 0x054F, 0x00, 0x00, Local0, C016)
+                    ERR (Arg0, Z174, __LINE__, 0x00, 0x00, Local0, C016)
                 }
             }
 
@@ -1592,7 +1592,7 @@ Local2 = Buffer (0x0A)
             Local0 = ObjectType (DDB0)
             If ((C017 != Local0))
             {
-                ERR (Arg0, Z174, 0x0558, 0x00, 0x00, Local0, C017)
+                ERR (Arg0, Z174, __LINE__, 0x00, 0x00, Local0, C017)
             }
 
             Unload (DDB0)
@@ -1628,7 +1628,7 @@ Local2 = Buffer (0x0A)
             Local0 = ObjectType (RGN1)
             If ((C012 != Local0))
             {
-                ERR (Arg0, Z174, 0x057D, 0x00, 0x00, Local0, C012)
+                ERR (Arg0, Z174, __LINE__, 0x00, 0x00, Local0, C012)
             }
 
             /* PCI_Config */
@@ -1638,7 +1638,7 @@ Local2 = Buffer (0x0A)
             Local0 = ObjectType (RGN2)
             If ((C012 != Local0))
             {
-                ERR (Arg0, Z174, 0x0585, 0x00, 0x00, Local0, C012)
+                ERR (Arg0, Z174, __LINE__, 0x00, 0x00, Local0, C012)
             }
 
             /* EmbeddedControl */
@@ -1648,7 +1648,7 @@ Local2 = Buffer (0x0A)
             Local0 = ObjectType (RGN3)
             If ((C012 != Local0))
             {
-                ERR (Arg0, Z174, 0x058D, 0x00, 0x00, Local0, C012)
+                ERR (Arg0, Z174, __LINE__, 0x00, 0x00, Local0, C012)
             }
 
             /* SMBus */
@@ -1658,7 +1658,7 @@ Local2 = Buffer (0x0A)
             Local0 = ObjectType (RGN4)
             If ((C012 != Local0))
             {
-                ERR (Arg0, Z174, 0x0595, 0x00, 0x00, Local0, C012)
+                ERR (Arg0, Z174, __LINE__, 0x00, 0x00, Local0, C012)
             }
 
             /* SystemCMOS */
@@ -1668,7 +1668,7 @@ Local2 = Buffer (0x0A)
             Local0 = ObjectType (RGN5)
             If ((C012 != Local0))
             {
-                ERR (Arg0, Z174, 0x059D, 0x00, 0x00, Local0, C012)
+                ERR (Arg0, Z174, __LINE__, 0x00, 0x00, Local0, C012)
             }
 
             /* PciBarTarget */
@@ -1678,7 +1678,7 @@ Local2 = Buffer (0x0A)
             Local0 = ObjectType (RGN6)
             If ((C012 != Local0))
             {
-                ERR (Arg0, Z174, 0x05A5, 0x00, 0x00, Local0, C012)
+                ERR (Arg0, Z174, __LINE__, 0x00, 0x00, Local0, C012)
             }
 
             /* UserDefRegionSpace 0x80 */
@@ -1688,7 +1688,7 @@ Local2 = Buffer (0x0A)
             Local0 = ObjectType (RGN7)
             If ((C012 != Local0))
             {
-                ERR (Arg0, Z174, 0x05AD, 0x00, 0x00, Local0, C012)
+                ERR (Arg0, Z174, __LINE__, 0x00, 0x00, Local0, C012)
             }
 
             /* UserDefRegionSpace 0xcf */
@@ -1698,7 +1698,7 @@ Local2 = Buffer (0x0A)
             Local0 = ObjectType (RGN8)
             If ((C012 != Local0))
             {
-                ERR (Arg0, Z174, 0x05B5, 0x00, 0x00, Local0, C012)
+                ERR (Arg0, Z174, __LINE__, 0x00, 0x00, Local0, C012)
             }
 
             /* UserDefRegionSpace 0xff */
@@ -1708,7 +1708,7 @@ Local2 = Buffer (0x0A)
             Local0 = ObjectType (RGN9)
             If ((C012 != Local0))
             {
-                ERR (Arg0, Z174, 0x05BD, 0x00, 0x00, Local0, C012)
+                ERR (Arg0, Z174, __LINE__, 0x00, 0x00, Local0, C012)
             }
 
             Return (0x00)
@@ -1722,7 +1722,7 @@ Local2 = Buffer (0x0A)
             Concatenate (Arg0, "-tstd", Arg0)
             If (CondRefOf (\SSS0, Local0))
             {
-                ERR (Arg0, Z174, 0x05CC, 0x00, 0x00, "\\SSS0", 0x01)
+                ERR (Arg0, Z174, __LINE__, 0x00, 0x00, "\\SSS0", 0x01)
                 Return (0x01)
             }
 
@@ -1749,7 +1749,7 @@ Local2 = Buffer (0x0A)
                 CH04 (Arg0, 0x00, 0x25, Z174, 0x05E2, 0x00, 0x00) /* AE_BAD_SIGNATURE */
                 If (CondRefOf (\SSS0, Local0))
                 {
-                    ERR (Arg0, Z174, 0x05E5, 0x00, 0x00, "\\SSS0", 0x01)
+                    ERR (Arg0, Z174, __LINE__, 0x00, 0x00, "\\SSS0", 0x01)
                     Return (0x01)
                 }
             }
@@ -1760,7 +1760,7 @@ Local2 = Buffer (0x0A)
             CH04 (Arg0, 0x00, 0x25, Z174, 0x05EC, 0x00, 0x00) /* AE_BAD_SIGNATURE */
             If (CondRefOf (\SSS0, Local0))
             {
-                ERR (Arg0, Z174, 0x05EF, 0x00, 0x00, "\\SSS0", 0x01)
+                ERR (Arg0, Z174, __LINE__, 0x00, 0x00, "\\SSS0", 0x01)
             }
 
             Return (0x00)
@@ -1781,7 +1781,7 @@ Local2 = Buffer (0x0A)
 
             If (CondRefOf (\SSS0, Local0))
             {
-                ERR (Arg0, Z174, 0x0604, 0x00, 0x00, "\\SSS0", 0x01)
+                ERR (Arg0, Z174, __LINE__, 0x00, 0x00, "\\SSS0", 0x01)
                 Return (0x01)
             }
 
@@ -1816,7 +1816,7 @@ Local2 = Buffer (0x0A)
                 CH04 (Arg0, 0x00, 0x2A, Z174, 0x061E, 0x00, 0x00) /* AE_INVALID_TABLE_LENGTH */
                 If (CondRefOf (\SSS0, Local0))
                 {
-                    ERR (Arg0, Z174, 0x0621, 0x00, 0x00, "\\SSS0", 0x01)
+                    ERR (Arg0, Z174, __LINE__, 0x00, 0x00, "\\SSS0", 0x01)
                     /* CleanUp */
 
                     Unload (HI0)
@@ -1827,7 +1827,7 @@ Local2 = Buffer (0x0A)
 
                     If (CondRefOf (\SSS0, Local0))
                     {
-                        ERR (Arg0, Z174, 0x0629, 0x00, 0x00, "\\SSS0", 0x01)
+                        ERR (Arg0, Z174, __LINE__, 0x00, 0x00, "\\SSS0", 0x01)
                         Return (0x01)
                     }
                 }
@@ -1851,7 +1851,7 @@ Local2 = Buffer (0x0A)
 
             If (CondRefOf (\SSS0, Local0))
             {
-                ERR (Arg0, Z174, 0x063A, 0x00, 0x00, "\\SSS0", 0x01)
+                ERR (Arg0, Z174, __LINE__, 0x00, 0x00, "\\SSS0", 0x01)
                 Unload (HI0)
                 If (CH03 (Arg0, Z174, 0x98, 0x063C, 0x00))
                 {
@@ -1860,7 +1860,7 @@ Local2 = Buffer (0x0A)
 
                 If (CondRefOf (\SSS0, Local0))
                 {
-                    ERR (Arg0, Z174, 0x0640, 0x00, 0x00, "\\SSS0", 0x01)
+                    ERR (Arg0, Z174, __LINE__, 0x00, 0x00, "\\SSS0", 0x01)
                     Return (0x01)
                 }
             }
@@ -1876,7 +1876,7 @@ Local2 = Buffer (0x0A)
             Concatenate (Arg0, "-tstf", Arg0)
             If (CondRefOf (\SSS0, Local0))
             {
-                ERR (Arg0, Z174, 0x0650, 0x00, 0x00, "\\SSS0", 0x01)
+                ERR (Arg0, Z174, __LINE__, 0x00, 0x00, "\\SSS0", 0x01)
                 Return (0x01)
             }
 
@@ -1901,7 +1901,7 @@ Local2 = Buffer (0x0A)
                 CH04 (Arg0, 0x00, 0x27, Z174, 0x0664, 0x00, 0x00) /* AE_BAD_CHECKSUM */
                 If (CondRefOf (\SSS0, Local0))
                 {
-                    ERR (Arg0, Z174, 0x0667, 0x00, 0x00, "\\SSS0", 0x01)
+                    ERR (Arg0, Z174, __LINE__, 0x00, 0x00, "\\SSS0", 0x01)
                     /*Cleanup */
 
                     Unload (HI0)
@@ -1920,7 +1920,7 @@ Local2 = Buffer (0x0A)
             CH04 (Arg0, 0x00, 0x27, Z174, 0x0674, 0x00, 0x00) /* AE_BAD_CHECKSUM */
             If (CondRefOf (\SSS0, Local0))
             {
-                ERR (Arg0, Z174, 0x0677, 0x00, 0x00, "\\SSS0", 0x01)
+                ERR (Arg0, Z174, __LINE__, 0x00, 0x00, "\\SSS0", 0x01)
                 /*Cleanup */
 
                 Unload (HI0)
@@ -1952,13 +1952,13 @@ Local2 = Buffer (0x0A)
                 Local0 = ObjectType (Arg2)
                 If ((Arg3 != Local0))
                 {
-                    ERR (Arg0, Z174, 0x0695, 0x00, 0x00, Local0, Arg3)
+                    ERR (Arg0, Z174, __LINE__, 0x00, 0x00, Local0, Arg3)
                     Return (0x01)
                 }
 
                 If (CondRefOf (\SSS0, Local0))
                 {
-                    ERR (Arg0, Z174, 0x069A, 0x00, 0x00, "\\SSS0", 0x01)
+                    ERR (Arg0, Z174, __LINE__, 0x00, 0x00, "\\SSS0", 0x01)
                     Return (0x01)
                 }
 
@@ -1971,13 +1971,13 @@ Local2 = Buffer (0x0A)
                 Local0 = ObjectType (Arg2)
                 If ((C017 != Local0))
                 {
-                    ERR (Arg0, Z174, 0x06A4, 0x00, 0x00, Local0, C017)
+                    ERR (Arg0, Z174, __LINE__, 0x00, 0x00, Local0, C017)
                 }
 
                 If (CondRefOf (\SSS0, Local0)){}
                 Else
                 {
-                    ERR (Arg0, Z174, 0x06A8, 0x00, 0x00, "\\SSS0", 0x00)
+                    ERR (Arg0, Z174, __LINE__, 0x00, 0x00, "\\SSS0", 0x00)
                     Return (0x01)
                 }
 
@@ -1989,7 +1989,7 @@ Local2 = Buffer (0x0A)
 
                 If (CondRefOf (\SSS0, Local0))
                 {
-                    ERR (Arg0, Z174, 0x06B1, 0x00, 0x00, "\\SSS0", 0x01)
+                    ERR (Arg0, Z174, __LINE__, 0x00, 0x00, "\\SSS0", 0x01)
                     Return (0x01)
                 }
 
@@ -2082,7 +2082,7 @@ Local2 = Buffer (0x0A)
             Concatenate (Arg0, "-tsth", Arg0)
             If (INIT ())
             {
-                ERR (Arg0, Z174, 0x070F, 0x00, 0x00, "INIT", 0x01)
+                ERR (Arg0, Z174, __LINE__, 0x00, 0x00, "INIT", 0x01)
                 Return (0x01)
             }
 
@@ -2099,7 +2099,7 @@ Local2 = Buffer (0x0A)
                 Debug = HI0N /* \DTM0.HI0N */
                 If (LD ())
                 {
-                    ERR (Arg0, Z174, 0x071C, 0x00, 0x00, "HI0N", HI0N)
+                    ERR (Arg0, Z174, __LINE__, 0x00, 0x00, "HI0N", HI0N)
                     Return (0x01)
                 }
 
@@ -2134,7 +2134,7 @@ Local2 = Buffer (0x0A)
             {
                 If (UNLD ())
                 {
-                    ERR (Arg0, Z174, 0x0738, 0x00, 0x00, "HI0N", HI0N)
+                    ERR (Arg0, Z174, __LINE__, 0x00, 0x00, "HI0N", HI0N)
                     Return (0x01)
                 }
 
@@ -2148,7 +2148,7 @@ Local2 = Buffer (0x0A)
 
             If (LDCH (0x00))
             {
-                ERR (Arg0, Z174, 0x0742, 0x00, 0x00, "HI0N", HI0N)
+                ERR (Arg0, Z174, __LINE__, 0x00, 0x00, "HI0N", HI0N)
                 Return (0x01)
             }
 
@@ -2164,7 +2164,7 @@ Local2 = Buffer (0x0A)
             Concatenate (Arg0, "-tsti", Arg0)
             If (CondRefOf (\SSS0, Local0))
             {
-                ERR (Arg0, Z174, 0x0753, 0x00, 0x00, "\\SSS0", 0x01)
+                ERR (Arg0, Z174, __LINE__, 0x00, 0x00, "\\SSS0", 0x01)
                 Return (0x01)
             }
 
@@ -2189,13 +2189,13 @@ Local2 = Buffer (0x0A)
             Local0 = ObjectType (HI0)
             If ((C017 != Local0))
             {
-                ERR (Arg0, Z174, 0x0769, 0x00, 0x00, Local0, C017)
+                ERR (Arg0, Z174, __LINE__, 0x00, 0x00, Local0, C017)
             }
 
             If (CondRefOf (\SSS0, Local0)){}
             Else
             {
-                ERR (Arg0, Z174, 0x076E, 0x00, 0x00, "\\SSS0", 0x00)
+                ERR (Arg0, Z174, __LINE__, 0x00, 0x00, "\\SSS0", 0x00)
                 Return (0x01)
             }
 
@@ -2209,7 +2209,7 @@ Local2 = Buffer (0x0A)
                 Local0 = ObjectType (HI1)
                 If ((C009 != Local0))
                 {
-                    ERR (Arg0, Z174, 0x077B, 0x00, 0x00, Local0, C009)
+                    ERR (Arg0, Z174, __LINE__, 0x00, 0x00, Local0, C009)
                 }
 
                 Local1--
@@ -2223,7 +2223,7 @@ Local2 = Buffer (0x0A)
 
             If (CondRefOf (\SSS0, Local0))
             {
-                ERR (Arg0, Z174, 0x0788, 0x00, 0x00, "\\SSS0", 0x01)
+                ERR (Arg0, Z174, __LINE__, 0x00, 0x00, "\\SSS0", 0x01)
             }
 
             Return (0x00)
@@ -2238,7 +2238,7 @@ Local2 = Buffer (0x0A)
             Concatenate (Arg0, "-tstj", Arg0)
             If (CondRefOf (\SSS0, Local0))
             {
-                ERR (Arg0, Z174, 0x0798, 0x00, 0x00, "\\SSS0", 0x01)
+                ERR (Arg0, Z174, __LINE__, 0x00, 0x00, "\\SSS0", 0x01)
                 Return (0x01)
             }
 
@@ -2263,13 +2263,13 @@ Local2 = Buffer (0x0A)
             Local0 = ObjectType (HI0)
             If ((C017 != Local0))
             {
-                ERR (Arg0, Z174, 0x07AE, 0x00, 0x00, Local0, C017)
+                ERR (Arg0, Z174, __LINE__, 0x00, 0x00, Local0, C017)
             }
 
             If (CondRefOf (\SSS0, Local0)){}
             Else
             {
-                ERR (Arg0, Z174, 0x07B3, 0x00, 0x00, "\\SSS0", 0x00)
+                ERR (Arg0, Z174, __LINE__, 0x00, 0x00, "\\SSS0", 0x00)
                 Return (0x01)
             }
 
@@ -2316,7 +2316,7 @@ Local2 = Buffer (0x0A)
                 Local0 = ObjectType (HI1)
                 If ((C009 != Local0))
                 {
-                    ERR (Arg0, Z174, 0x07E1, 0x00, 0x00, Local0, C009)
+                    ERR (Arg0, Z174, __LINE__, 0x00, 0x00, Local0, C009)
                 }
 
                 Local1--
@@ -2330,7 +2330,7 @@ Local2 = Buffer (0x0A)
 
             If (CondRefOf (\SSS0, Local0))
             {
-                ERR (Arg0, Z174, 0x07EE, 0x00, 0x00, "\\SSS0", 0x01)
+                ERR (Arg0, Z174, __LINE__, 0x00, 0x00, "\\SSS0", 0x01)
             }
 
             Return (0x00)
@@ -2377,13 +2377,13 @@ Local2 = Buffer (0x0A)
             Concatenate (Arg0, "-tstk", Arg0)
             If (CondRefOf (\DDBX, Local0))
             {
-                ERR (Arg0, Z174, 0x0819, 0x00, 0x00, "\\DDBX", 0x01)
+                ERR (Arg0, Z174, __LINE__, 0x00, 0x00, "\\DDBX", 0x01)
                 Return (Zero)
             }
 
             If (CondRefOf (\SSS0, Local0))
             {
-                ERR (Arg0, Z174, 0x081D, 0x00, 0x00, "\\SSS0", 0x01)
+                ERR (Arg0, Z174, __LINE__, 0x00, 0x00, "\\SSS0", 0x01)
                 Return (Zero)
             }
 
@@ -2397,14 +2397,14 @@ Local2 = Buffer (0x0A)
             If (CondRefOf (\DDBX, Local0)){}
             Else
             {
-                ERR (Arg0, Z174, 0x0829, 0x00, 0x00, "\\DDBX", 0x01)
+                ERR (Arg0, Z174, __LINE__, 0x00, 0x00, "\\DDBX", 0x01)
                 Return (Zero)
             }
 
             If (CondRefOf (\SSS0, Local0)){}
             Else
             {
-                ERR (Arg0, Z174, 0x082E, 0x00, 0x00, "\\SSS0", 0x01)
+                ERR (Arg0, Z174, __LINE__, 0x00, 0x00, "\\SSS0", 0x01)
                 Return (Zero)
             }
 
@@ -2416,7 +2416,7 @@ Local2 = Buffer (0x0A)
 
             If (CondRefOf (\SSS0, Local0))
             {
-                ERR (Arg0, Z174, 0x0838, 0x00, 0x00, "\\SSS0", 0x01)
+                ERR (Arg0, Z174, __LINE__, 0x00, 0x00, "\\SSS0", 0x01)
                 Return (Zero)
             }
 
@@ -2428,7 +2428,7 @@ Local2 = Buffer (0x0A)
 
             If (CondRefOf (\DDBX, Local0))
             {
-                ERR (Arg0, Z174, 0x0842, 0x00, 0x00, "\\DDBX", 0x01)
+                ERR (Arg0, Z174, __LINE__, 0x00, 0x00, "\\DDBX", 0x01)
                 Return (Zero)
             }
         }

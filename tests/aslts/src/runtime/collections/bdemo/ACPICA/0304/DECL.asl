@@ -153,7 +153,7 @@
                     Local1 = DerefOf (Arg3 [LPC0])
                     If ((Local0 != Local1))
                     {
-                        ERR ("", ZFFF, 0x8E, 0x00, 0x00, Local0, Local1)
+                        ERR (__METHOD__, ZFFF, __LINE__, 0x00, 0x00, Local0, Local1)
                         Debug = Arg0
                         Debug = LPC0 /* \M1ED.M18A.M802.LPC0 */
                     }
@@ -168,28 +168,28 @@
                     {
                         If ((IND1 != N100))
                         {
-                            ERR ("", ZFFF, 0x99, 0x00, 0x00, IND1, N100)
+                            ERR (__METHOD__, ZFFF, __LINE__, 0x00, 0x00, IND1, N100)
                         }
                     }
                     Case (0x02)
                     {
                         If ((IND2 != N200))
                         {
-                            ERR ("", ZFFF, 0x9E, 0x00, 0x00, IND2, N200)
+                            ERR (__METHOD__, ZFFF, __LINE__, 0x00, 0x00, IND2, N200)
                         }
                     }
                     Case (0x03)
                     {
                         If ((IND3 != N300))
                         {
-                            ERR ("", ZFFF, 0xA3, 0x00, 0x00, IND3, N300)
+                            ERR (__METHOD__, ZFFF, __LINE__, 0x00, 0x00, IND3, N300)
                         }
                     }
                     Case (0x04)
                     {
                         If ((IND4 != N400))
                         {
-                            ERR ("", ZFFF, 0xA8, 0x00, 0x00, IND4, N400)
+                            ERR (__METHOD__, ZFFF, __LINE__, 0x00, 0x00, IND4, N400)
                         }
                     }
 
@@ -229,7 +229,7 @@
                 Local1 = DerefOf (P100 [Local1])
                 If ((Local1 != Local0))
                 {
-                    ERR ("", ZFFF, 0xCE, 0x00, 0x00, Local1, Local0)
+                    ERR (__METHOD__, ZFFF, __LINE__, 0x00, 0x00, Local1, Local0)
                 }
             }
 
@@ -254,7 +254,7 @@
                 Local1 = DerefOf (P200 [Local1])
                 If ((Local1 != Local0))
                 {
-                    ERR ("", ZFFF, 0xE1, 0x00, 0x00, Local1, Local0)
+                    ERR (__METHOD__, ZFFF, __LINE__, 0x00, 0x00, Local1, Local0)
                 }
             }
 
@@ -288,7 +288,7 @@
                 Local1 = DerefOf (P300 [Local1])
                 If ((Local1 != Local0))
                 {
-                    ERR ("", ZFFF, 0xFA, 0x00, 0x00, Local1, Local0)
+                    ERR (__METHOD__, ZFFF, __LINE__, 0x00, 0x00, Local1, Local0)
                 }
             }
 
@@ -312,7 +312,7 @@
                 Local1 = DerefOf (P400 [Local1])
                 If ((Local1 != Local0))
                 {
-                    ERR ("", ZFFF, 0x010C, 0x00, 0x00, Local1, Local0)
+                    ERR (__METHOD__, ZFFF, __LINE__, 0x00, 0x00, Local1, Local0)
                 }
             }
 

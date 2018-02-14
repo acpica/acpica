@@ -301,7 +301,7 @@
 
         If ((SizeOf (P45C) != SizeOf (P45D)))
         {
-            ERR (__METHOD__, 0xB3, 0x00, 0x00, 0x00, 0x00, "Incorrect package length")
+            ERR (__METHOD__, 0xB3, __LINE__, 0x00, 0x00, 0x00, "Incorrect package length")
             Return (Zero)
         }
 

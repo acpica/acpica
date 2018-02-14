@@ -38,7 +38,7 @@
         CH03 ("", 0x00, 0x01, 0x29, 0x00)
         If ((Local7 != 0x78))
         {
-            ERR ("", ZFFF, 0x2C, 0x00, 0x00, ID12, 0x05)
+            ERR (__METHOD__, ZFFF, __LINE__, 0x00, 0x00, ID12, 0x05)
         }
     }
 

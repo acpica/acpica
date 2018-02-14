@@ -42,12 +42,12 @@
         Local0 = ObjectType (Local5)
         If ((Local0 != C009))
         {
-            ERR ("", ZFFF, 0x31, 0x00, 0x00, Local0, C009)
+            ERR (__METHOD__, ZFFF, __LINE__, 0x00, 0x00, Local0, C009)
         }
 
         Local5++
         If ((Local5 != 0x01))
         {
-            ERR ("", ZFFF, 0x37, 0x00, 0x00, Local5, 0x01)
+            ERR (__METHOD__, ZFFF, __LINE__, 0x00, 0x00, Local5, 0x01)
         }
     }

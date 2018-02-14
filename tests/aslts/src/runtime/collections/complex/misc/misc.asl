@@ -57,7 +57,7 @@
 
         If ((Local0 != 0x01))
         {
-            ERR (Arg0, Z054, 0x3B, 0x00, 0x00, Local0, 0x00)
+            ERR (Arg0, Z054, __LINE__, 0x00, 0x00, Local0, 0x00)
         }
     }
 
@@ -74,14 +74,14 @@
         M111 (Local0)
         If ((Local0 != 0x00))
         {
-            ERR (Arg0, Z054, 0x4A, 0x00, 0x00, Local0, 0x00)
+            ERR (Arg0, Z054, __LINE__, 0x00, 0x00, Local0, 0x00)
         }
 
         Local0 = 0x00
         Local5 = Concatenate ("qwertyuiop", Local0)
         If ((Local0 != 0x00))
         {
-            ERR (Arg0, Z054, 0x50, 0x00, 0x00, Local0, 0x00)
+            ERR (Arg0, Z054, __LINE__, 0x00, 0x00, Local0, 0x00)
         }
     }
 
@@ -98,7 +98,7 @@
         Local0 = ObjectType (RefOf (F000))
         If ((Local0 != 0x05))
         {
-            ERR (Arg0, Z054, 0x60, 0x00, 0x00, Local0, 0x00)
+            ERR (Arg0, Z054, __LINE__, 0x00, 0x00, Local0, 0x00)
         }
     }
 
@@ -129,18 +129,18 @@
         BNK0 = 0x00
         If ((BNK0 != 0x00))
         {
-            ERR (Arg0, Z054, 0x7B, 0x00, 0x00, BNK0, 0x00)
+            ERR (Arg0, Z054, __LINE__, 0x00, 0x00, BNK0, 0x00)
         }
 
         BF00 = 0x87
         If ((BNK0 != 0x00))
         {
-            ERR (Arg0, Z054, 0x80, 0x00, 0x00, BNK0, 0x00)
+            ERR (Arg0, Z054, __LINE__, 0x00, 0x00, BNK0, 0x00)
         }
 
         If ((BF00 != 0x87))
         {
-            ERR (Arg0, Z054, 0x84, 0x00, 0x00, BF00, 0x87)
+            ERR (Arg0, Z054, __LINE__, 0x00, 0x00, BF00, 0x87)
         }
 
         /* Deal with 1-th bank layout: */
@@ -148,7 +148,7 @@
         BNK0 = 0x01
         If ((BNK0 != 0x01))
         {
-            ERR (Arg0, Z054, 0x8B, 0x00, 0x00, BNK0, 0x01)
+            ERR (Arg0, Z054, __LINE__, 0x00, 0x00, BNK0, 0x01)
         }
 
         BF01 = 0x96
@@ -156,13 +156,13 @@
         {
             If ((BNK0 != 0x01))
             {
-                ERR (Arg0, Z054, 0x92, 0x00, 0x00, BNK0, 0x01)
+                ERR (Arg0, Z054, __LINE__, 0x00, 0x00, BNK0, 0x01)
             }
         }
 
         If ((BF01 != 0x96))
         {
-            ERR (Arg0, Z054, 0x97, 0x00, 0x00, BF01, 0x96)
+            ERR (Arg0, Z054, __LINE__, 0x00, 0x00, BF01, 0x96)
         }
     }
 
@@ -177,7 +177,7 @@
         Local1 = ObjectType (Local0)
         If ((Local1 != C00B))
         {
-            ERR (Arg0, Z054, 0xA2, 0x00, 0x00, Local1, 0x00)
+            ERR (Arg0, Z054, __LINE__, 0x00, 0x00, Local1, 0x00)
         }
 
         ToBuffer (Local0, Local2)
@@ -185,7 +185,7 @@
         Local3 = ObjectType (Local0)
         If ((Local3 != C00B))
         {
-            ERR (Arg0, Z054, 0xAC, 0x00, 0x00, Local3, 0x00)
+            ERR (Arg0, Z054, __LINE__, 0x00, 0x00, Local3, 0x00)
         }
     }
 
@@ -212,7 +212,7 @@
         Local1 = ObjectType (Local0)
         If ((Local1 != 0x00))
         {
-            ERR (Arg0, Z054, 0xC9, 0x00, 0x00, Local1, 0x00)
+            ERR (Arg0, Z054, __LINE__, 0x00, 0x00, Local1, 0x00)
         }
 
         CH03 (__METHOD__, Z054, 0x0101, 0xCC, 0x00)
@@ -242,7 +242,7 @@
         Local2 = ObjectType (Local1)
         If ((Local2 != 0x03))
         {
-            ERR (Arg0, Z054, 0xE9, 0x00, 0x00, Local2, 0x00)
+            ERR (Arg0, Z054, __LINE__, 0x00, 0x00, Local2, 0x00)
         }
 
         Debug = "================ 2:"
@@ -345,7 +345,7 @@
             /* Store("ERROR 0: m121, after Return !!!", Debug) */
             }
 
-            ERR (Arg0, Z054, 0x0167, 0x00, 0x00, 0x00, 0x00)
+            ERR (Arg0, Z054, __LINE__, 0x00, 0x00, 0x00, 0x00)
             Return (0x5678)
         }
 
@@ -356,10 +356,10 @@
                 Return (                /* ASL-compiler DOESN'T report Warning in this case!!! */
                 /* And the Store operator below is actually processed!!! */
 Zero)
-                ERR (Arg0, Z054, 0x0175, 0x00, 0x00, 0x00, 0x00)
+                ERR (Arg0, Z054, __LINE__, 0x00, 0x00, 0x00, 0x00)
             }
 
-            ERR (Arg0, Z054, 0x0178, 0x00, 0x00, 0x00, 0x00)
+            ERR (Arg0, Z054, __LINE__, 0x00, 0x00, 0x00, 0x00)
             Return (Zero)
         }
 
@@ -400,7 +400,7 @@ Zero)
                          0x01, 0x02, 0x00, 0x00                           // ....
                     }))
         {
-            ERR (Arg0, Z054, 0x019E, 0x00, 0x00, BUF0, Buffer (0x04)
+            ERR (Arg0, Z054, __LINE__, 0x00, 0x00, BUF0, Buffer (0x04)
                 {
                      0x01, 0x02, 0x00, 0x00                           // ....
                 })
@@ -431,13 +431,13 @@ Zero)
             Local0 = ObjectType (Arg1)
             If ((Local0 != Arg2))
             {
-                ERR (Arg0, Z054, 0x01B9, 0x00, 0x00, Local0, Arg2)
+                ERR (Arg0, Z054, __LINE__, 0x00, 0x00, Local0, Arg2)
             }
 
             Local0 = SizeOf (Arg1)
             If ((Local0 != Arg3))
             {
-                ERR (Arg0, Z054, 0x01BE, 0x00, 0x00, Local0, Arg3)
+                ERR (Arg0, Z054, __LINE__, 0x00, 0x00, Local0, Arg3)
             }
         }
 
@@ -446,37 +446,37 @@ Zero)
             Local0 = ObjectType (BF00)
             If ((Local0 != 0x0E))
             {
-                ERR (Arg0, Z054, 0x01C6, 0x00, 0x00, Local0, 0x0E)
+                ERR (Arg0, Z054, __LINE__, 0x00, 0x00, Local0, 0x0E)
             }
 
             Local0 = ObjectType (BF01)
             If ((Local0 != 0x0E))
             {
-                ERR (Arg0, Z054, 0x01CA, 0x00, 0x00, Local0, 0x0E)
+                ERR (Arg0, Z054, __LINE__, 0x00, 0x00, Local0, 0x0E)
             }
 
             Local0 = ObjectType (BF02)
             If ((Local0 != 0x0E))
             {
-                ERR (Arg0, Z054, 0x01CE, 0x00, 0x00, Local0, 0x0E)
+                ERR (Arg0, Z054, __LINE__, 0x00, 0x00, Local0, 0x0E)
             }
 
             Local0 = ObjectType (BF03)
             If ((Local0 != 0x0E))
             {
-                ERR (Arg0, Z054, 0x01D2, 0x00, 0x00, Local0, 0x0E)
+                ERR (Arg0, Z054, __LINE__, 0x00, 0x00, Local0, 0x0E)
             }
 
             Local0 = ObjectType (BF04)
             If ((Local0 != 0x0E))
             {
-                ERR (Arg0, Z054, 0x01D6, 0x00, 0x00, Local0, 0x0E)
+                ERR (Arg0, Z054, __LINE__, 0x00, 0x00, Local0, 0x0E)
             }
 
             Local0 = ObjectType (BF05)
             If ((Local0 != 0x0E))
             {
-                ERR (Arg0, Z054, 0x01DA, 0x00, 0x00, Local0, 0x0E)
+                ERR (Arg0, Z054, __LINE__, 0x00, 0x00, Local0, 0x0E)
             }
 
             If (F64)
@@ -528,13 +528,13 @@ Zero)
             Local0 = ObjectType (Arg1)
             If ((Local0 != Arg2))
             {
-                ERR (Arg0, Z054, 0x0208, 0x00, 0x00, Local0, Arg2)
+                ERR (Arg0, Z054, __LINE__, 0x00, 0x00, Local0, Arg2)
             }
 
             Local0 = SizeOf (Arg1)
             If ((Local0 != Arg3))
             {
-                ERR (Arg0, Z054, 0x020D, 0x00, 0x00, Local0, Arg3)
+                ERR (Arg0, Z054, __LINE__, 0x00, 0x00, Local0, Arg3)
             }
         }
 
@@ -543,37 +543,37 @@ Zero)
             Local0 = ObjectType (F000)
             If ((Local0 != 0x05))
             {
-                ERR (Arg0, Z054, 0x0215, 0x00, 0x00, Local0, 0x05)
+                ERR (Arg0, Z054, __LINE__, 0x00, 0x00, Local0, 0x05)
             }
 
             Local0 = ObjectType (F001)
             If ((Local0 != 0x05))
             {
-                ERR (Arg0, Z054, 0x0219, 0x00, 0x00, Local0, 0x05)
+                ERR (Arg0, Z054, __LINE__, 0x00, 0x00, Local0, 0x05)
             }
 
             Local0 = ObjectType (F002)
             If ((Local0 != 0x05))
             {
-                ERR (Arg0, Z054, 0x021D, 0x00, 0x00, Local0, 0x05)
+                ERR (Arg0, Z054, __LINE__, 0x00, 0x00, Local0, 0x05)
             }
 
             Local0 = ObjectType (F003)
             If ((Local0 != 0x05))
             {
-                ERR (Arg0, Z054, 0x0221, 0x00, 0x00, Local0, 0x05)
+                ERR (Arg0, Z054, __LINE__, 0x00, 0x00, Local0, 0x05)
             }
 
             Local0 = ObjectType (F004)
             If ((Local0 != 0x05))
             {
-                ERR (Arg0, Z054, 0x0225, 0x00, 0x00, Local0, 0x05)
+                ERR (Arg0, Z054, __LINE__, 0x00, 0x00, Local0, 0x05)
             }
 
             Local0 = ObjectType (F005)
             If ((Local0 != 0x05))
             {
-                ERR (Arg0, Z054, 0x0229, 0x00, 0x00, Local0, 0x05)
+                ERR (Arg0, Z054, __LINE__, 0x00, 0x00, Local0, 0x05)
             }
 
             If (F64)
@@ -652,13 +652,13 @@ Zero)
             Local0 = ObjectType (Local1)
             If ((Local0 != Arg2))
             {
-                ERR (Arg0, Z054, 0x0269, 0x00, 0x00, Local0, Arg2)
+                ERR (Arg0, Z054, __LINE__, 0x00, 0x00, Local0, Arg2)
             }
 
             Local0 = SizeOf (Local1)
             If ((Local0 != Arg3))
             {
-                ERR (Arg0, Z054, 0x026E, 0x00, 0x00, Local0, Arg3)
+                ERR (Arg0, Z054, __LINE__, 0x00, 0x00, Local0, Arg3)
             }
         }
 
@@ -744,13 +744,13 @@ Zero)
             Local0 = ObjectType (Local1)
             If ((Local0 != Arg2))
             {
-                ERR (Arg0, Z054, 0x02B2, 0x00, 0x00, Local0, Arg2)
+                ERR (Arg0, Z054, __LINE__, 0x00, 0x00, Local0, Arg2)
             }
 
             Local0 = SizeOf (Local1)
             If ((Local0 != Arg3))
             {
-                ERR (Arg0, Z054, 0x02B7, 0x00, 0x00, Local0, Arg3)
+                ERR (Arg0, Z054, __LINE__, 0x00, 0x00, Local0, Arg3)
             }
         }
 
@@ -859,7 +859,7 @@ Zero)
         Local0 = ObjectType (M000)
         If ((Local0 != C010))
         {
-            ERR (Arg0, Z054, 0x031E, 0x00, 0x00, Local0, C010)
+            ERR (Arg0, Z054, __LINE__, 0x00, 0x00, Local0, C010)
         }
         /* Bug 81. */
     /*
@@ -898,12 +898,12 @@ Zero)
             Local0 [0x03] = 0x61
             If ((Local0 != "Strang"))
             {
-                ERR (Arg0, Z054, 0x0349, 0x00, 0x00, Local0, "Strang")
+                ERR (Arg0, Z054, __LINE__, 0x00, 0x00, Local0, "Strang")
             }
 
             If ((S000 != "String"))
             {
-                ERR (Arg0, Z054, 0x034C, 0x00, 0x00, S000, "String")
+                ERR (Arg0, Z054, __LINE__, 0x00, 0x00, S000, "String")
             }
         }
 
@@ -920,7 +920,7 @@ Zero)
                              0xA0, 0xA1, 0xA2, 0x61, 0xA4, 0xA5               // ...a..
                         }))
             {
-                ERR (Arg0, Z054, 0x0359, 0x00, 0x00, Local0, Buffer (0x06)
+                ERR (Arg0, Z054, __LINE__, 0x00, 0x00, Local0, Buffer (0x06)
                     {
                          0xA0, 0xA1, 0xA2, 0x61, 0xA4, 0xA5               // ...a..
                     })
@@ -931,7 +931,7 @@ Zero)
                              0xA0, 0xA1, 0xA2, 0xA3, 0xA4, 0xA5               // ......
                         }))
             {
-                ERR (Arg0, Z054, 0x035C, 0x00, 0x00, B000, Buffer (0x06)
+                ERR (Arg0, Z054, __LINE__, 0x00, 0x00, B000, Buffer (0x06)
                     {
                          0xA0, 0xA1, 0xA2, 0xA3, 0xA4, 0xA5               // ......
                     })
@@ -953,62 +953,62 @@ Zero)
             Local0 [0x03] = 0x61
             If ((DerefOf (Local0 [0x00]) != 0xFFF0))
             {
-                ERR (Arg0, Z054, 0x0369, 0x00, 0x00, DerefOf (Local0 [0x00]), 0xFFF0)
+                ERR (Arg0, Z054, __LINE__, 0x00, 0x00, DerefOf (Local0 [0x00]), 0xFFF0)
             }
 
             If ((DerefOf (Local0 [0x01]) != 0xFFF1))
             {
-                ERR (Arg0, Z054, 0x036C, 0x00, 0x00, DerefOf (Local0 [0x01]), 0xFFF1)
+                ERR (Arg0, Z054, __LINE__, 0x00, 0x00, DerefOf (Local0 [0x01]), 0xFFF1)
             }
 
             If ((DerefOf (Local0 [0x02]) != 0xFFF2))
             {
-                ERR (Arg0, Z054, 0x036F, 0x00, 0x00, DerefOf (Local0 [0x02]), 0xFFF2)
+                ERR (Arg0, Z054, __LINE__, 0x00, 0x00, DerefOf (Local0 [0x02]), 0xFFF2)
             }
 
             If ((DerefOf (Local0 [0x03]) != 0x61))
             {
-                ERR (Arg0, Z054, 0x0372, 0x00, 0x00, DerefOf (Local0 [0x03]), 0x61)
+                ERR (Arg0, Z054, __LINE__, 0x00, 0x00, DerefOf (Local0 [0x03]), 0x61)
             }
 
             If ((DerefOf (Local0 [0x04]) != 0xFFF4))
             {
-                ERR (Arg0, Z054, 0x0375, 0x00, 0x00, DerefOf (Local0 [0x04]), 0xFFF4)
+                ERR (Arg0, Z054, __LINE__, 0x00, 0x00, DerefOf (Local0 [0x04]), 0xFFF4)
             }
 
             If ((DerefOf (Local0 [0x05]) != 0xFFF5))
             {
-                ERR (Arg0, Z054, 0x0378, 0x00, 0x00, DerefOf (Local0 [0x05]), 0xFFF5)
+                ERR (Arg0, Z054, __LINE__, 0x00, 0x00, DerefOf (Local0 [0x05]), 0xFFF5)
             }
 
             If ((DerefOf (P000 [0x00]) != 0xFFF0))
             {
-                ERR (Arg0, Z054, 0x037C, 0x00, 0x00, DerefOf (P000 [0x00]), 0xFFF0)
+                ERR (Arg0, Z054, __LINE__, 0x00, 0x00, DerefOf (P000 [0x00]), 0xFFF0)
             }
 
             If ((DerefOf (P000 [0x01]) != 0xFFF1))
             {
-                ERR (Arg0, Z054, 0x037F, 0x00, 0x00, DerefOf (P000 [0x01]), 0xFFF1)
+                ERR (Arg0, Z054, __LINE__, 0x00, 0x00, DerefOf (P000 [0x01]), 0xFFF1)
             }
 
             If ((DerefOf (P000 [0x02]) != 0xFFF2))
             {
-                ERR (Arg0, Z054, 0x0382, 0x00, 0x00, DerefOf (P000 [0x02]), 0xFFF2)
+                ERR (Arg0, Z054, __LINE__, 0x00, 0x00, DerefOf (P000 [0x02]), 0xFFF2)
             }
 
             If ((DerefOf (P000 [0x03]) != 0xFFF3))
             {
-                ERR (Arg0, Z054, 0x0385, 0x00, 0x00, DerefOf (P000 [0x03]), 0xFFF3)
+                ERR (Arg0, Z054, __LINE__, 0x00, 0x00, DerefOf (P000 [0x03]), 0xFFF3)
             }
 
             If ((DerefOf (P000 [0x04]) != 0xFFF4))
             {
-                ERR (Arg0, Z054, 0x0388, 0x00, 0x00, DerefOf (P000 [0x04]), 0xFFF4)
+                ERR (Arg0, Z054, __LINE__, 0x00, 0x00, DerefOf (P000 [0x04]), 0xFFF4)
             }
 
             If ((DerefOf (P000 [0x05]) != 0xFFF5))
             {
-                ERR (Arg0, Z054, 0x038B, 0x00, 0x00, DerefOf (P000 [0x05]), 0xFFF5)
+                ERR (Arg0, Z054, __LINE__, 0x00, 0x00, DerefOf (P000 [0x05]), 0xFFF5)
             }
         }
 
@@ -1172,7 +1172,7 @@ Zero)
         ToInteger (Local1, Local0)
         If ((Local0 != 0x00))
         {
-            ERR (Arg0, Z054, 0x040C, 0x00, 0x00, Local0, 0x00)
+            ERR (Arg0, Z054, __LINE__, 0x00, 0x00, Local0, 0x00)
         }
 
         CH04 ("mf86", 0x00, 0xFF, Z054, 0x040F, 0x00, 0x00)
@@ -1184,14 +1184,14 @@ Zero)
         Local0 = ("0x0xabcdef" + 0x00010234)
         If ((Local0 != 0x00010234))
         {
-            ERR (Arg0, Z054, 0x0418, 0x00, 0x00, Local0, 0x00010234)
+            ERR (Arg0, Z054, __LINE__, 0x00, 0x00, Local0, 0x00010234)
         }
 
         CH03 ("mf87", Z054, 0x01, 0x041B, 0x00)
         Local0 = (0x00010234 + "0x0xabcdef")
         If ((Local0 != 0x00010234))
         {
-            ERR (Arg0, Z054, 0x041F, 0x00, 0x00, Local0, 0x00010234)
+            ERR (Arg0, Z054, __LINE__, 0x00, 0x00, Local0, 0x00010234)
         }
 
         CH03 ("mf87", Z054, 0x02, 0x0422, 0x00)
@@ -1219,7 +1219,7 @@ Zero)
             Local0 = MM00 ()
             If ((Local0 != 0xABCD0000))
             {
-                ERR (__METHOD__, Z054, 0x043A, 0x00, 0x00, Local0, 0xABCD0000)
+                ERR (__METHOD__, Z054, __LINE__, 0x00, 0x00, Local0, 0xABCD0000)
             }
         }
 
@@ -1233,7 +1233,7 @@ Zero)
                 Local1 = ObjectType (Local0)
                 If ((Local1 != C010))
                 {
-                    ERR (__METHOD__, Z054, 0x0446, 0x00, 0x00, Local1, C010)
+                    ERR (__METHOD__, Z054, __LINE__, 0x00, 0x00, Local1, C010)
                 }
             }
             Else
@@ -1252,7 +1252,7 @@ Zero)
                 Local1 = ObjectType (Local0)
                 If ((Local1 != C010))
                 {
-                    ERR (__METHOD__, Z054, 0x0455, 0x00, 0x00, Local1, C010)
+                    ERR (__METHOD__, Z054, __LINE__, 0x00, 0x00, Local1, C010)
                 }
             }
             Else
@@ -1284,7 +1284,7 @@ Zero)
             CopyObject (MM00 (), Local0)
             If ((Local0 != 0xABCD0000))
             {
-                ERR (__METHOD__, Z054, 0x0472, 0x00, 0x00, Local0, 0xABCD0000)
+                ERR (__METHOD__, Z054, __LINE__, 0x00, 0x00, Local0, 0xABCD0000)
             }
         }
 
@@ -1296,7 +1296,7 @@ Zero)
             Local1 = ObjectType (Local0)
             If ((Local1 != C010))
             {
-                ERR (__METHOD__, Z054, 0x047E, 0x00, 0x00, Local1, C010)
+                ERR (__METHOD__, Z054, __LINE__, 0x00, 0x00, Local1, C010)
             }
         }
 
@@ -1308,7 +1308,7 @@ Zero)
             Local1 = ObjectType (Local0)
             If ((Local1 != C010))
             {
-                ERR (__METHOD__, Z054, 0x048A, 0x00, 0x00, Local1, C010)
+                ERR (__METHOD__, Z054, __LINE__, 0x00, 0x00, Local1, C010)
             }
         }
 
@@ -1332,7 +1332,7 @@ Zero)
             Local0 = (MM00 () + 0x01)
             If ((Local0 != 0xABCD0001))
             {
-                ERR (__METHOD__, Z054, 0x04A2, 0x00, 0x00, Local0, 0xABCD0001)
+                ERR (__METHOD__, Z054, __LINE__, 0x00, 0x00, Local0, 0xABCD0001)
             }
         }
 
@@ -1365,7 +1365,7 @@ Zero)
             Local0 = ObjectType (MM00)
             If ((Local0 != C010))
             {
-                ERR (__METHOD__, Z054, 0x04C3, 0x00, 0x00, Local0, C010)
+                ERR (__METHOD__, Z054, __LINE__, 0x00, 0x00, Local0, C010)
             }
         }
 
@@ -1374,7 +1374,7 @@ Zero)
             Local0 = ObjectType (DerefOf (RefOf (MM00)))
             If ((Local0 != C010))
             {
-                ERR (__METHOD__, Z054, 0x04CB, 0x00, 0x00, Local0, C010)
+                ERR (__METHOD__, Z054, __LINE__, 0x00, 0x00, Local0, C010)
             }
         }
 
@@ -1383,7 +1383,7 @@ Zero)
             Local0 = ObjectType (DerefOf (P000 [0x01]))
             If ((Local0 != C010))
             {
-                ERR (__METHOD__, Z054, 0x04D3, 0x00, 0x00, Local0, C010)
+                ERR (__METHOD__, Z054, __LINE__, 0x00, 0x00, Local0, C010)
             }
         }
 

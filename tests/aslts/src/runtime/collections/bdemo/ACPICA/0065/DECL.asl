@@ -43,7 +43,7 @@
         Local0 = ObjectType (Arg0)
         If ((Local0 != C009))
         {
-            ERR ("", ZFFF, 0x30, 0x00, 0x00, Local0, C009)
+            ERR (__METHOD__, ZFFF, __LINE__, 0x00, 0x00, Local0, C009)
         }
     }
 
@@ -54,7 +54,7 @@
         Local0 = ObjectType (Arg0)
         If ((Local0 != C00B))
         {
-            ERR ("", ZFFF, 0x3A, 0x00, 0x00, Local0, C00B)
+            ERR (__METHOD__, ZFFF, __LINE__, 0x00, 0x00, Local0, C00B)
         }
     }
 
@@ -65,13 +65,13 @@
         Local0 = ObjectType (BF30)
         If ((Local0 != C016))
         {
-            ERR ("", ZFFF, 0x44, 0x00, 0x00, Local0, C016)
+            ERR (__METHOD__, ZFFF, __LINE__, 0x00, 0x00, Local0, C016)
         }
 
         Local0 = ObjectType (BF31)
         If ((Local0 != C016))
         {
-            ERR ("", ZFFF, 0x49, 0x00, 0x00, Local0, C016)
+            ERR (__METHOD__, ZFFF, __LINE__, 0x00, 0x00, Local0, C016)
         }
 
         MD7E (BF30)

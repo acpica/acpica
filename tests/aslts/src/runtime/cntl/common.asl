@@ -263,7 +263,7 @@
     {
         If (ERR0)
         {
-            ERR ("SET0", Z062, 0x0114, 0x00, 0x00, ERR0, 0x00)
+            ERR ("SET0", Z062, __LINE__, 0x00, 0x00, ERR0, 0x00)
         }
         Else
         {
@@ -941,7 +941,7 @@
     {
         If ((Arg3 != Zero))
         {
-            ERR (Arg0, Z062, 0x0393, 0x00, 0x00, Arg1, Arg2)
+            ERR (Arg0, Z062, __LINE__, 0x00, 0x00, Arg1, Arg2)
         }
     }
 
@@ -956,7 +956,7 @@
     {
         If ((Arg3 != Ones))
         {
-            ERR (Arg0, Z062, 0x03A1, 0x00, 0x00, Arg1, Arg2)
+            ERR (Arg0, Z062, __LINE__, 0x00, 0x00, Arg1, Arg2)
         }
     }
 
@@ -999,132 +999,132 @@
     {
         If ((C000 != 0x0A))
         {
-            ERR ("c000 corrupted", Z062, 0x03C6, 0x00, 0x00, 0x00, 0x00)
+            ERR ("c000 corrupted", Z062, __LINE__, 0x00, 0x00, 0x00, 0x00)
         }
 
         If ((C001 != 0x05))
         {
-            ERR ("c001 corrupted", Z062, 0x03C9, 0x00, 0x00, 0x00, 0x00)
+            ERR ("c001 corrupted", Z062, __LINE__, 0x00, 0x00, 0x00, 0x00)
         }
 
         If ((C002 != 0x0D))
         {
-            ERR ("c002 corrupted", Z062, 0x03CD, 0x00, 0x00, 0x00, 0x00)
+            ERR ("c002 corrupted", Z062, __LINE__, 0x00, 0x00, 0x00, 0x00)
         }
 
         If ((C003 != 0x0C))
         {
-            ERR ("c003 corrupted", Z062, 0x03D0, 0x00, 0x00, 0x00, 0x00)
+            ERR ("c003 corrupted", Z062, __LINE__, 0x00, 0x00, 0x00, 0x00)
         }
 
         If ((C004 != 0x06))
         {
-            ERR ("c004 corrupted", Z062, 0x03D3, 0x00, 0x00, 0x00, 0x00)
+            ERR ("c004 corrupted", Z062, __LINE__, 0x00, 0x00, 0x00, 0x00)
         }
 
         If ((C005 != 0x04))
         {
-            ERR ("c005 corrupted", Z062, 0x03D6, 0x00, 0x00, 0x00, 0x00)
+            ERR ("c005 corrupted", Z062, __LINE__, 0x00, 0x00, 0x00, 0x00)
         }
 
         If ((C006 != 0x1F))
         {
-            ERR ("c006 corrupted", Z062, 0x03D9, 0x00, 0x00, 0x00, 0x00)
+            ERR ("c006 corrupted", Z062, __LINE__, 0x00, 0x00, 0x00, 0x00)
         }
 
         If ((C007 != 0x33))
         {
-            ERR ("c007 corrupted", Z062, 0x03DC, 0x00, 0x00, 0x00, 0x00)
+            ERR ("c007 corrupted", Z062, __LINE__, 0x00, 0x00, 0x00, 0x00)
         }
 
         If ((C008 != 0x00))
         {
-            ERR ("c008 corrupted", Z062, 0x03E0, 0x00, 0x00, 0x00, 0x00)
+            ERR ("c008 corrupted", Z062, __LINE__, 0x00, 0x00, 0x00, 0x00)
         }
 
         If ((C009 != 0x01))
         {
-            ERR ("c009 corrupted", Z062, 0x03E3, 0x00, 0x00, 0x00, 0x00)
+            ERR ("c009 corrupted", Z062, __LINE__, 0x00, 0x00, 0x00, 0x00)
         }
 
         If ((C00A != 0x02))
         {
-            ERR ("c00a corrupted", Z062, 0x03E6, 0x00, 0x00, 0x00, 0x00)
+            ERR ("c00a corrupted", Z062, __LINE__, 0x00, 0x00, 0x00, 0x00)
         }
 
         If ((C00B != 0x03))
         {
-            ERR ("c00b corrupted", Z062, 0x03E9, 0x00, 0x00, 0x00, 0x00)
+            ERR ("c00b corrupted", Z062, __LINE__, 0x00, 0x00, 0x00, 0x00)
         }
 
         If ((C00C != 0x04))
         {
-            ERR ("c00c corrupted", Z062, 0x03EC, 0x00, 0x00, 0x00, 0x00)
+            ERR ("c00c corrupted", Z062, __LINE__, 0x00, 0x00, 0x00, 0x00)
         }
 
         If ((C00D != 0x05))
         {
-            ERR ("c00d corrupted", Z062, 0x03EF, 0x00, 0x00, 0x00, 0x00)
+            ERR ("c00d corrupted", Z062, __LINE__, 0x00, 0x00, 0x00, 0x00)
         }
 
         If ((C00E != 0x06))
         {
-            ERR ("c00e corrupted", Z062, 0x03F2, 0x00, 0x00, 0x00, 0x00)
+            ERR ("c00e corrupted", Z062, __LINE__, 0x00, 0x00, 0x00, 0x00)
         }
 
         If ((C00F != 0x07))
         {
-            ERR ("c00f corrupted", Z062, 0x03F5, 0x00, 0x00, 0x00, 0x00)
+            ERR ("c00f corrupted", Z062, __LINE__, 0x00, 0x00, 0x00, 0x00)
         }
 
         If ((C010 != 0x08))
         {
-            ERR ("c010 corrupted", Z062, 0x03F8, 0x00, 0x00, 0x00, 0x00)
+            ERR ("c010 corrupted", Z062, __LINE__, 0x00, 0x00, 0x00, 0x00)
         }
 
         If ((C011 != 0x09))
         {
-            ERR ("c011 corrupted", Z062, 0x03FB, 0x00, 0x00, 0x00, 0x00)
+            ERR ("c011 corrupted", Z062, __LINE__, 0x00, 0x00, 0x00, 0x00)
         }
 
         If ((C012 != 0x0A))
         {
-            ERR ("c012 corrupted", Z062, 0x03FE, 0x00, 0x00, 0x00, 0x00)
+            ERR ("c012 corrupted", Z062, __LINE__, 0x00, 0x00, 0x00, 0x00)
         }
 
         If ((C013 != 0x0B))
         {
-            ERR ("c013 corrupted", Z062, 0x0401, 0x00, 0x00, 0x00, 0x00)
+            ERR ("c013 corrupted", Z062, __LINE__, 0x00, 0x00, 0x00, 0x00)
         }
 
         If ((C014 != 0x0C))
         {
-            ERR ("c014 corrupted", Z062, 0x0404, 0x00, 0x00, 0x00, 0x00)
+            ERR ("c014 corrupted", Z062, __LINE__, 0x00, 0x00, 0x00, 0x00)
         }
 
         If ((C015 != 0x0D))
         {
-            ERR ("c015 corrupted", Z062, 0x0407, 0x00, 0x00, 0x00, 0x00)
+            ERR ("c015 corrupted", Z062, __LINE__, 0x00, 0x00, 0x00, 0x00)
         }
 
         If ((C016 != 0x0E))
         {
-            ERR ("c016 corrupted", Z062, 0x040A, 0x00, 0x00, 0x00, 0x00)
+            ERR ("c016 corrupted", Z062, __LINE__, 0x00, 0x00, 0x00, 0x00)
         }
 
         If ((C017 != 0x0F))
         {
-            ERR ("c017 corrupted", Z062, 0x040D, 0x00, 0x00, 0x00, 0x00)
+            ERR ("c017 corrupted", Z062, __LINE__, 0x00, 0x00, 0x00, 0x00)
         }
 
         If ((C018 != 0x10))
         {
-            ERR ("c018 corrupted", Z062, 0x0410, 0x00, 0x00, 0x00, 0x00)
+            ERR ("c018 corrupted", Z062, __LINE__, 0x00, 0x00, 0x00, 0x00)
         }
 
         If ((C019 != 0x11))
         {
-            ERR ("c019 corrupted", Z062, 0x0413, 0x00, 0x00, 0x00, 0x00)
+            ERR ("c019 corrupted", Z062, __LINE__, 0x00, 0x00, 0x00, 0x00)
         }
     }
 
@@ -1229,13 +1229,13 @@
         Name (REST, 0x00)
         If ((Arg2 < 0x01))
         {
-            ERR ("sft", Z062, 0x047D, 0x00, 0x00, Arg2, 0x01)
+            ERR ("sft", Z062, __LINE__, 0x00, 0x00, Arg2, 0x01)
             Return (Ones)
         }
 
         If ((Arg1 > 0x07))
         {
-            ERR ("sft", Z062, 0x0482, 0x00, 0x00, Arg1, 0x07)
+            ERR ("sft", Z062, __LINE__, 0x00, 0x00, Arg1, 0x07)
             Return (Ones)
         }
 
@@ -1371,12 +1371,12 @@
             TMP1 = ObjectType (Arg2)
             If ((TMP0 != TMP1))
             {
-                ERR (Arg0, Z062, 0x050A, 0x00, 0x00, TMP0, TMP1)
+                ERR (Arg0, Z062, __LINE__, 0x00, 0x00, TMP0, TMP1)
                 Local7 = 0x01
             }
             ElseIf ((Arg1 != Arg2))
             {
-                ERR (Arg0, Z062, 0x050D, 0x00, 0x00, Arg1, Arg2)
+                ERR (Arg0, Z062, __LINE__, 0x00, 0x00, Arg1, Arg2)
                 Local7 = 0x01
             }
         }
@@ -1385,12 +1385,12 @@
             TMP1 = ObjectType (Arg3)
             If ((TMP0 != TMP1))
             {
-                ERR (Arg0, Z062, 0x0513, 0x00, 0x00, TMP0, TMP1)
+                ERR (Arg0, Z062, __LINE__, 0x00, 0x00, TMP0, TMP1)
                 Local7 = 0x01
             }
             ElseIf ((Arg1 != Arg3))
             {
-                ERR (Arg0, Z062, 0x0516, 0x00, 0x00, Arg1, Arg3)
+                ERR (Arg0, Z062, __LINE__, 0x00, 0x00, Arg1, Arg3)
                 Local7 = 0x01
             }
         }

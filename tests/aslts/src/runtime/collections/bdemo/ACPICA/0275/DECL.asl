@@ -66,7 +66,7 @@
 
             If ((Local1 != 0xABCD0001))
             {
-                ERR ("", ZFFF, 0x40, 0x00, 0x00, Local1, 0xABCD0001)
+                ERR (__METHOD__, ZFFF, __LINE__, 0x00, 0x00, Local1, 0xABCD0001)
             }
 
             Return (Zero)

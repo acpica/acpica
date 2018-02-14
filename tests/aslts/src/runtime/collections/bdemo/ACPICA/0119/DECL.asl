@@ -39,13 +39,13 @@
         }
         Else
         {
-            ERR ("", ZFFF, 0x29, 0x00, 0x00, Local0, Ones)
+            ERR (__METHOD__, ZFFF, __LINE__, 0x00, 0x00, Local0, Ones)
         }
 
         Local1 = (0xFFFFFFFF < 0x0000000100000000)
         If (Local1)
         {
-            ERR ("", ZFFF, 0x2E, 0x00, 0x00, Local1, Zero)
+            ERR (__METHOD__, ZFFF, __LINE__, 0x00, 0x00, Local1, Zero)
         }
         Else
         {

@@ -43,7 +43,7 @@
                 Local4 = (Arg1 * 0x2710)
                 If ((Local6 < Local4))
                 {
-                    ERR ("", ZFFF, 0x2D, 0x00, 0x00, Local6, Local4)
+                    ERR (__METHOD__, ZFFF, __LINE__, 0x00, 0x00, Local6, Local4)
                 }
             }
             Case (0x01)
@@ -55,7 +55,7 @@
                 Local4 = (Arg1 * 0x0A)
                 If ((Local6 < Local4))
                 {
-                    ERR ("", ZFFF, 0x37, 0x00, 0x00, Local6, Local4)
+                    ERR (__METHOD__, ZFFF, __LINE__, 0x00, 0x00, Local6, Local4)
                 }
             }
             Case (0x02)
@@ -67,7 +67,7 @@
                 Local4 = (Arg1 * 0x2710)
                 If ((Local6 < Local4))
                 {
-                    ERR ("", ZFFF, 0x41, 0x00, 0x00, Local6, Local4)
+                    ERR (__METHOD__, ZFFF, __LINE__, 0x00, 0x00, Local6, Local4)
                 }
             }
 

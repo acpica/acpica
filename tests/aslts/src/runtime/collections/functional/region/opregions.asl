@@ -545,22 +545,22 @@ Package (NRSK)
 
         If ((IRSK != 0x00))
         {
-            ERR (Arg0, Z141, 0x0191, 0x00, 0x00, IRSK, 0x00)
+            ERR (Arg0, Z141, __LINE__, 0x00, 0x00, IRSK, 0x00)
         }
 
         If ((IFLG != 0x00))
         {
-            ERR (Arg0, Z141, 0x0194, 0x00, 0x00, IFLG, 0x00)
+            ERR (Arg0, Z141, __LINE__, 0x00, 0x00, IFLG, 0x00)
         }
 
         If ((\DOR0.IRSK != 0x00))
         {
-            ERR (Arg0, Z141, 0x0198, 0x00, 0x00, IRSK, 0x00)
+            ERR (Arg0, Z141, __LINE__, 0x00, 0x00, IRSK, 0x00)
         }
 
         If ((\DOR0.IFLG != 0x00))
         {
-            ERR (Arg0, Z141, 0x019B, 0x00, 0x00, IFLG, 0x00)
+            ERR (Arg0, Z141, __LINE__, 0x00, 0x00, IFLG, 0x00)
         }
 
         /* Emulate and verify incorrect calls */
@@ -569,29 +569,29 @@ Package (NRSK)
         \DOR0._REG (FRSK, 0x02)
         If ((IRSK != 0x01))
         {
-            ERR (Arg0, Z141, 0x01A4, 0x00, 0x00, IRSK, 0x01)
+            ERR (Arg0, Z141, __LINE__, 0x00, 0x00, IRSK, 0x01)
         }
 
         If ((IFLG != 0x01))
         {
-            ERR (Arg0, Z141, 0x01A7, 0x00, 0x00, IFLG, 0x01)
+            ERR (Arg0, Z141, __LINE__, 0x00, 0x00, IFLG, 0x01)
         }
 
         If ((\DOR0.IRSK != 0x01))
         {
-            ERR (Arg0, Z141, 0x01AA, 0x00, 0x00, IRSK, 0x01)
+            ERR (Arg0, Z141, __LINE__, 0x00, 0x00, IRSK, 0x01)
         }
 
         If ((\DOR0.IFLG != 0x01))
         {
-            ERR (Arg0, Z141, 0x01AD, 0x00, 0x00, IFLG, 0x01)
+            ERR (Arg0, Z141, __LINE__, 0x00, 0x00, IFLG, 0x01)
         }
 
         /* Check total calls to \_REG */
 
         If ((DerefOf (VFLG [0x01]) != 0x09))
         {
-            ERR (Arg0, Z141, 0x01B3, 0x00, 0x00, DerefOf (VFLG [0x01]), 0x09)
+            ERR (Arg0, Z141, __LINE__, 0x00, 0x00, DerefOf (VFLG [0x01]), 0x09)
         }
 
         M70E (Arg0, 0x01, VRSK, ERSK, 0x0A)
@@ -599,7 +599,7 @@ Package (NRSK)
 
         If ((DerefOf (\DOR0.VFLG [0x01]) != 0x06))
         {
-            ERR (Arg0, Z141, 0x01BA, 0x00, 0x00, DerefOf (\DOR0.VFLG [0x01]), 0x06)
+            ERR (Arg0, Z141, __LINE__, 0x00, 0x00, DerefOf (\DOR0.VFLG [0x01]), 0x06)
         }
 
         M70E (Arg0, 0x01, \DOR0.VRSK, \DOR0.ERSK, 0x0C)
@@ -613,46 +613,46 @@ Package (NRSK)
         Concatenate (Arg0, "-m701", Arg0)
         If ((\DOR1.IREG != 0x00))
         {
-            ERR (Arg0, Z141, 0x01C7, 0x00, 0x00, \DOR1.IREG, 0x00)
+            ERR (Arg0, Z141, __LINE__, 0x00, 0x00, \DOR1.IREG, 0x00)
         }
 
         If ((\DOR1.IRSK != 0x00))
         {
-            ERR (Arg0, Z141, 0x01CA, 0x00, 0x00, \DOR1.IRSK, 0x00)
+            ERR (Arg0, Z141, __LINE__, 0x00, 0x00, \DOR1.IRSK, 0x00)
         }
 
         If ((\DOR1.IFLG != 0x00))
         {
-            ERR (Arg0, Z141, 0x01CD, 0x00, 0x00, \DOR1.IFLG, 0x00)
+            ERR (Arg0, Z141, __LINE__, 0x00, 0x00, \DOR1.IFLG, 0x00)
         }
 
         If ((DerefOf (\DOR1.VFLG [0x01]) != 0x00))
         {
-            ERR (Arg0, Z141, 0x01D0, 0x00, 0x00, DerefOf (\DOR1.VFLG [0x01]), 0x00)
+            ERR (Arg0, Z141, __LINE__, 0x00, 0x00, DerefOf (\DOR1.VFLG [0x01]), 0x00)
         }
 
         M70E (Arg0, 0x02, \DOR1.VRSK, 0x00, 0x11)
         \DOR1.M000 ()
         If ((\DOR1.IREG != 0x00))
         {
-            ERR (Arg0, Z141, 0x01D7, 0x00, 0x00, \DOR1.IREG, 0x01)
+            ERR (Arg0, Z141, __LINE__, 0x00, 0x00, \DOR1.IREG, 0x01)
         }
 
         If ((\DOR1.IRSK != 0x01))
         {
-            ERR (Arg0, Z141, 0x01DA, 0x00, 0x00, \DOR1.IRSK, 0x01)
+            ERR (Arg0, Z141, __LINE__, 0x00, 0x00, \DOR1.IRSK, 0x01)
         }
 
         If ((\DOR1.IFLG != 0x01))
         {
-            ERR (Arg0, Z141, 0x01DD, 0x00, 0x00, \DOR1.IFLG, 0x01)
+            ERR (Arg0, Z141, __LINE__, 0x00, 0x00, \DOR1.IFLG, 0x01)
         }
 
         /* Check total calls to \DOR1._REG */
 
         If ((DerefOf (\DOR1.VFLG [0x01]) != 0x06))
         {
-            ERR (Arg0, Z141, 0x01E3, 0x00, 0x00, DerefOf (\DOR1.VFLG [0x01]), 0x06)
+            ERR (Arg0, Z141, __LINE__, 0x00, 0x00, DerefOf (\DOR1.VFLG [0x01]), 0x06)
         }
 
         M70E (Arg0, 0x01, \DOR1.VRSK, \DOR1.ERSK, 0x16)
@@ -758,14 +758,14 @@ Package (NRSK)
             Local1 = C00B /* \C00B */
             If ((Local0 != Local1))
             {
-                ERR (Arg0, Z141, 0x0254, 0x00, 0x00, Local0, Local1)
+                ERR (Arg0, Z141, __LINE__, 0x00, 0x00, Local0, Local1)
             }
             Else
             {
                 Local0 = DerefOf (Local6)
                 If ((Local0 != B000))
                 {
-                    ERR (Arg0, Z141, 0x0258, Z141, Arg2, Local0, B000)
+                    ERR (Arg0, Z141, __LINE__, Z141, Arg2, Local0, B000)
                 }
             }
         }
@@ -823,14 +823,14 @@ Package (NRSK)
                     Local3 = Arg3 [Local0]
                     If ((DerefOf (Local1) != DerefOf (Local3)))
                     {
-                        ERR (Arg0, Z141, 0x028D, Z141, Local0, DerefOf (Local1), DerefOf (Local3))
+                        ERR (Arg0, Z141, __LINE__, Z141, Local0, DerefOf (Local1), DerefOf (Local3))
                     }
                 }
                 Case (0x02)
                 {
                     If ((DerefOf (Local1) != 0x00))
                     {
-                        ERR (Arg0, Z141, 0x0292, Z141, Local0, DerefOf (Local1), 0x00)
+                        ERR (Arg0, Z141, __LINE__, Z141, Local0, DerefOf (Local1), 0x00)
                     }
                 }
 
@@ -890,7 +890,7 @@ Package (NRSK)
             }
         If ((Local0 != Local1))
         {
-            ERR (Arg0, Z141, 0x02C3, Z141, Arg4, Local0, Local1)
+            ERR (Arg0, Z141, __LINE__, Z141, Arg4, Local0, Local1)
         }
     }
 
@@ -904,7 +904,7 @@ Package (NRSK)
         {
             If ((Arg1 != Arg2))
             {
-                ERR (Arg0, Z141, 0x02D0, Z141, Arg3, Arg1, Arg2)
+                ERR (Arg0, Z141, __LINE__, Z141, Arg3, Arg1, Arg2)
             }
         }
 
@@ -990,7 +990,7 @@ Package (NRSK)
             Local7 = DerefOf (Local5)
             If ((I002 != Local7))
             {
-                ERR (Arg0, Z141, 0x031C, Z141, Arg1, Local7, I002)
+                ERR (Arg0, Z141, __LINE__, Z141, Arg1, Local7, I002)
             }
         }
 
@@ -1038,7 +1038,7 @@ Package (NRSK)
             Local7 = DerefOf (Local5)
             If ((I002 != Local7))
             {
-                ERR (Arg0, Z141, 0x033F, Z141, Arg1, Local7, I002)
+                ERR (Arg0, Z141, __LINE__, Z141, Arg1, Local7, I002)
             }
         }
 
@@ -1088,7 +1088,7 @@ Package (NRSK)
             Local7 = DerefOf (Local5)
             If ((I002 != Local7))
             {
-                ERR (Arg0, Z141, 0x0365, Z141, Arg1, Local7, I002)
+                ERR (Arg0, Z141, __LINE__, Z141, Arg1, Local7, I002)
             }
         }
 
@@ -1137,7 +1137,7 @@ Package (NRSK)
             Local7 = DerefOf (Local5)
             If ((I002 != Local7))
             {
-                ERR (Arg0, Z141, 0x038B, Z141, Arg1, Local7, I002)
+                ERR (Arg0, Z141, __LINE__, Z141, Arg1, Local7, I002)
             }
         }
 
@@ -1218,7 +1218,7 @@ Package (NRSK)
 
             If ((FU04 != I000))
             {
-                ERR (Arg0, Z141, 0x03CF, 0x00, 0x00, FU04, I000)
+                ERR (Arg0, Z141, __LINE__, 0x00, 0x00, FU04, I000)
             }
         }
 
@@ -1226,48 +1226,48 @@ Package (NRSK)
         FU00 = I000 /* \M706.I000 */
         If ((FU00 != I000))
         {
-            ERR (Arg0, Z141, 0x03D8, 0x00, 0x00, FU00, I000)
+            ERR (Arg0, Z141, __LINE__, 0x00, 0x00, FU00, I000)
         }
 
         If ((0xFEDCBA987654321F != OFF0))
         {
-            ERR (Arg0, Z141, 0x03DC, 0x00, 0x00, OFF0, 0xFEDCBA987654321F)
+            ERR (Arg0, Z141, __LINE__, 0x00, 0x00, OFF0, 0xFEDCBA987654321F)
         }
         ElseIf ((0x0123 != LEN0))
         {
-            ERR (Arg0, Z141, 0x03DE, 0x00, 0x00, LEN0, 0x0123)
+            ERR (Arg0, Z141, __LINE__, 0x00, 0x00, LEN0, 0x0123)
         }
         ElseIf ((FU01 != I000))
         {
-            ERR (Arg0, Z141, 0x03E0, 0x00, 0x00, FU00, I000)
+            ERR (Arg0, Z141, __LINE__, 0x00, 0x00, FU00, I000)
         }
 
         If ((0xFEDCBA987654321F != OFFB))
         {
-            ERR (Arg0, Z141, 0x03E4, 0x00, 0x00, OFFB, 0xFEDCBA987654321F)
+            ERR (Arg0, Z141, __LINE__, 0x00, 0x00, OFFB, 0xFEDCBA987654321F)
         }
         ElseIf ((0x0123 != LENB))
         {
-            ERR (Arg0, Z141, 0x03E6, 0x00, 0x00, LENB, 0x0123)
+            ERR (Arg0, Z141, __LINE__, 0x00, 0x00, LENB, 0x0123)
         }
         ElseIf ((FU02 != I000))
         {
-            ERR (Arg0, Z141, 0x03E8, 0x00, 0x00, FU00, I000)
+            ERR (Arg0, Z141, __LINE__, 0x00, 0x00, FU00, I000)
         }
 
         If ((0xFEDCBA987654321F != OFFS))
         {
             Local0 = (OFFS + 0x00)
-            ERR (Arg0, Z141, 0x03ED, 0x00, 0x00, Local0, 0xFEDCBA987654321F)
+            ERR (Arg0, Z141, __LINE__, 0x00, 0x00, Local0, 0xFEDCBA987654321F)
         }
         ElseIf ((0x0123 != LENS))
         {
             Local0 = (LENS + 0x00)
-            ERR (Arg0, Z141, 0x03F0, 0x00, 0x00, Local0, 0x0123)
+            ERR (Arg0, Z141, __LINE__, 0x00, 0x00, Local0, 0x0123)
         }
         ElseIf ((FU03 != I000))
         {
-            ERR (Arg0, Z141, 0x03F2, 0x00, 0x00, FU00, I000)
+            ERR (Arg0, Z141, __LINE__, 0x00, 0x00, FU00, I000)
         }
 
         M000 (Arg0, OFF0, LEN0, 0x2B)
@@ -1361,7 +1361,7 @@ Package (NRSK)
             }
         If ((Local0 != Local1))
         {
-            ERR (Arg0, Z141, 0x0442, 0x00, 0x00, Local0, Local1)
+            ERR (Arg0, Z141, __LINE__, 0x00, 0x00, Local0, Local1)
         }
     }
 

@@ -51,7 +51,7 @@
         Local0 = DerefOf (D000.P000 [0x00])
         If ((Local0 != 0x11112222))
         {
-            ERR (__METHOD__, Z156, 0x36, 0x00, 0x00, Local0, 0x11112222)
+            ERR (__METHOD__, Z156, __LINE__, 0x00, 0x00, Local0, 0x11112222)
         }
 
         CH03 (__METHOD__, Z156, 0x01, 0x39, 0x00)
@@ -76,7 +76,7 @@
         Local0 = DerefOf (D000.B000 [0x00])
         If ((Local0 != 0x67))
         {
-            ERR (__METHOD__, Z156, 0x4D, 0x00, 0x00, Local0, 0x67)
+            ERR (__METHOD__, Z156, __LINE__, 0x00, 0x00, Local0, 0x67)
         }
 
         CH03 (__METHOD__, Z156, 0x03, 0x50, 0x00)
@@ -98,7 +98,7 @@
         Local0 = DerefOf (D000.S000 [0x00])
         If ((Local0 != 0x38))
         {
-            ERR (__METHOD__, Z156, 0x64, 0x00, 0x00, Local0, 0x38)
+            ERR (__METHOD__, Z156, __LINE__, 0x00, 0x00, Local0, 0x38)
         }
 
         CH03 (__METHOD__, Z156, 0x05, 0x67, 0x00)
@@ -138,13 +138,13 @@
         Store ((DerefOf (D000.PP00 [0x01]) + M001 ()), Local0)
         If ((Local0 != 0x065013BA))
         {
-            ERR (__METHOD__, Z156, 0x86, 0x00, 0x00, Local0, 0x065013BA)
+            ERR (__METHOD__, Z156, __LINE__, 0x00, 0x00, Local0, 0x065013BA)
         }
 
         Local0 = DerefOf (D000.PP00 [0x01])
         If ((Local0 != 0x00100064))
         {
-            ERR (__METHOD__, Z156, 0x8C, 0x00, 0x00, Local0, 0x00100064)
+            ERR (__METHOD__, Z156, __LINE__, 0x00, 0x00, Local0, 0x00100064)
         }
 
         CH03 (__METHOD__, Z156, 0x0C, 0x8F, 0x00)

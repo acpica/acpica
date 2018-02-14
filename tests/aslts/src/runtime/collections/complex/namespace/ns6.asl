@@ -9,14 +9,14 @@
             I000 = 0x11223344
             If ((Arg0 != 0xABCD0000))
             {
-                ERR (__METHOD__, Z160, 0x0D, 0x00, 0x00, Arg0, 0xABCD0000)
+                ERR (__METHOD__, Z160, __LINE__, 0x00, 0x00, Arg0, 0xABCD0000)
             }
         }
 
         M000 (I000)
         If ((I000 != 0x11223344))
         {
-            ERR (__METHOD__, Z160, 0x14, 0x00, 0x00, I000, 0x11223344)
+            ERR (__METHOD__, Z160, __LINE__, 0x00, 0x00, I000, 0x11223344)
         }
     }
 

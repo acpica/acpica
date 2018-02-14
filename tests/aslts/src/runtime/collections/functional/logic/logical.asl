@@ -53,13 +53,13 @@
                     Local7 = (Local0 != Local1)
                     If ((Local7 != Local2))
                     {
-                        ERR (Arg0, Z035, 0x3A, 0x00, 0x00, Local5, Arg2)
+                        ERR (Arg0, Z035, __LINE__, 0x00, 0x00, Local5, Arg2)
                     }
 
                     Local7 = (Local1 != Local0)
                     If ((Local7 != Local2))
                     {
-                        ERR (Arg0, Z035, 0x3E, 0x00, 0x00, Local5, Arg2)
+                        ERR (Arg0, Z035, __LINE__, 0x00, 0x00, Local5, Arg2)
                     }
                 }
                 Case (0x01)
@@ -67,13 +67,13 @@
                     Local7 = (Local0 && Local1)
                     If ((Local7 != Local2))
                     {
-                        ERR (Arg0, Z035, 0x44, 0x00, 0x00, Local5, Arg2)
+                        ERR (Arg0, Z035, __LINE__, 0x00, 0x00, Local5, Arg2)
                     }
 
                     Local7 = (Local1 && Local0)
                     If ((Local7 != Local2))
                     {
-                        ERR (Arg0, Z035, 0x48, 0x00, 0x00, Local5, Arg2)
+                        ERR (Arg0, Z035, __LINE__, 0x00, 0x00, Local5, Arg2)
                     }
                 }
                 Case (0x02)
@@ -81,13 +81,13 @@
                     Local7 = (Local0 || Local1)
                     If ((Local7 != Local2))
                     {
-                        ERR (Arg0, Z035, 0x4E, 0x00, 0x00, Local5, Arg2)
+                        ERR (Arg0, Z035, __LINE__, 0x00, 0x00, Local5, Arg2)
                     }
 
                     Local7 = (Local1 || Local0)
                     If ((Local7 != Local2))
                     {
-                        ERR (Arg0, Z035, 0x52, 0x00, 0x00, Local5, Arg2)
+                        ERR (Arg0, Z035, __LINE__, 0x00, 0x00, Local5, Arg2)
                     }
                 }
                 Case (0x03)
@@ -95,13 +95,13 @@
                     Local7 = (Local0 == Local1)
                     If ((Local7 != Local2))
                     {
-                        ERR (Arg0, Z035, 0x58, 0x00, 0x00, Local5, Arg2)
+                        ERR (Arg0, Z035, __LINE__, 0x00, 0x00, Local5, Arg2)
                     }
 
                     Local7 = (Local1 == Local0)
                     If ((Local7 != Local2))
                     {
-                        ERR (Arg0, Z035, 0x5C, 0x00, 0x00, Local5, Arg2)
+                        ERR (Arg0, Z035, __LINE__, 0x00, 0x00, Local5, Arg2)
                     }
                 }
                 Case (0x04)
@@ -109,7 +109,7 @@
                     Local7 = (Local0 > Local1)
                     If ((Local7 != Local2))
                     {
-                        ERR (Arg0, Z035, 0x62, 0x00, 0x00, Local5, Arg2)
+                        ERR (Arg0, Z035, __LINE__, 0x00, 0x00, Local5, Arg2)
                     }
                 }
                 Case (0x05)
@@ -117,7 +117,7 @@
                     Local7 = (Local0 >= Local1)
                     If ((Local7 != Local2))
                     {
-                        ERR (Arg0, Z035, 0x68, 0x00, 0x00, Local5, Arg2)
+                        ERR (Arg0, Z035, __LINE__, 0x00, 0x00, Local5, Arg2)
                     }
                 }
                 Case (0x06)
@@ -125,7 +125,7 @@
                     Local7 = (Local0 < Local1)
                     If ((Local7 != Local2))
                     {
-                        ERR (Arg0, Z035, 0x6E, 0x00, 0x00, Local5, Arg2)
+                        ERR (Arg0, Z035, __LINE__, 0x00, 0x00, Local5, Arg2)
                     }
                 }
                 Case (0x07)
@@ -133,7 +133,7 @@
                     Local7 = (Local0 <= Local1)
                     If ((Local7 != Local2))
                     {
-                        ERR (Arg0, Z035, 0x74, 0x00, 0x00, Local5, Arg2)
+                        ERR (Arg0, Z035, __LINE__, 0x00, 0x00, Local5, Arg2)
                     }
                 }
 
@@ -175,7 +175,7 @@
                     Local2 = !Local0
                     If ((Local2 != Local1))
                     {
-                        ERR (Arg0, Z035, 0x9B, 0x00, 0x00, Local5, Arg2)
+                        ERR (Arg0, Z035, __LINE__, 0x00, 0x00, Local5, Arg2)
                     }
                 }
 
@@ -1100,7 +1100,7 @@
         Local0 = (BIG0 == BIG0)
         If ((Local0 != Ones))
         {
-            ERR (__METHOD__, Z035, 0x0243, 0x00, 0x00, 0x00, 0x00)
+            ERR (__METHOD__, Z035, __LINE__, 0x00, 0x00, 0x00, 0x00)
         }
 
         /* Buffers */
@@ -1250,7 +1250,7 @@
         Local0 = (BIG0 > BIG0)
         If ((Local0 != Zero))
         {
-            ERR (__METHOD__, Z035, 0x0283, 0x00, 0x00, 0x00, 0x00)
+            ERR (__METHOD__, Z035, __LINE__, 0x00, 0x00, 0x00, 0x00)
         }
 
         /* Buffers */
@@ -1400,7 +1400,7 @@
         Local0 = (BIG0 >= BIG0)
         If ((Local0 != Ones))
         {
-            ERR (__METHOD__, Z035, 0x02C3, 0x00, 0x00, 0x00, 0x00)
+            ERR (__METHOD__, Z035, __LINE__, 0x00, 0x00, 0x00, 0x00)
         }
 
         /* Buffers */
@@ -1550,7 +1550,7 @@
         Local0 = (BIG0 < BIG0)
         If ((Local0 != Zero))
         {
-            ERR (__METHOD__, Z035, 0x0303, 0x00, 0x00, 0x00, 0x00)
+            ERR (__METHOD__, Z035, __LINE__, 0x00, 0x00, 0x00, 0x00)
         }
 
         /* Buffers */
@@ -1700,7 +1700,7 @@
         Local0 = (BIG0 <= BIG0)
         If ((Local0 != Ones))
         {
-            ERR (__METHOD__, Z035, 0x0343, 0x00, 0x00, 0x00, 0x00)
+            ERR (__METHOD__, Z035, __LINE__, 0x00, 0x00, 0x00, 0x00)
         }
 
         /* Buffers */
@@ -1850,7 +1850,7 @@
         Local0 = (BIG0 != BIG0)
         If ((Local0 != Zero))
         {
-            ERR (__METHOD__, Z035, 0x0383, 0x00, 0x00, 0x00, 0x00)
+            ERR (__METHOD__, Z035, __LINE__, 0x00, 0x00, 0x00, 0x00)
         }
 
         /* Buffers */

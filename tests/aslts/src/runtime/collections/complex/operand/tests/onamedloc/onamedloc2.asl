@@ -10723,7 +10723,7 @@
             Local2 = (Local1 - Local0)
             If ((Local2 < C08C))
             {
-                ERR (Arg0, Z089, 0x2FFF, 0x00, 0x00, Local2, C08C)
+                ERR (Arg0, Z089, __LINE__, 0x00, 0x00, Local2, C08C)
             }
 
             /* Stall */
@@ -10735,7 +10735,7 @@
             Local2 = (Local1 - Local0)
             If ((Local2 < 0x03DE))
             {
-                ERR (Arg0, Z089, 0x300C, 0x00, 0x00, Local2, 0x03DE)
+                ERR (Arg0, Z089, __LINE__, 0x00, 0x00, Local2, 0x03DE)
             }
         }
 
@@ -10760,7 +10760,7 @@
             Local2 = (Local1 - Local0)
             If ((Local2 < C08C))
             {
-                ERR (Arg0, Z089, 0x3028, 0x00, 0x00, Local2, C08C)
+                ERR (Arg0, Z089, __LINE__, 0x00, 0x00, Local2, C08C)
             }
         }
 
@@ -10782,7 +10782,7 @@
             Local2 = (Local1 - Local0)
             If ((Local2 < C08C))
             {
-                ERR (Arg0, Z089, 0x3040, 0x00, 0x00, Local2, C08C)
+                ERR (Arg0, Z089, __LINE__, 0x00, 0x00, Local2, C08C)
             }
         }
 

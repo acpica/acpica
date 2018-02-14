@@ -52,12 +52,12 @@
         {
             If ((Local7 != 0x1234))
             {
-                ERR ("", ZFFF, 0x34, 0x00, 0x00, Local7, 0x1234)
+                ERR (__METHOD__, ZFFF, __LINE__, 0x00, 0x00, Local7, 0x1234)
             }
         }
         ElseIf ((Local7 != 0x5678))
         {
-            ERR ("", ZFFF, 0x38, 0x00, 0x00, Local7, 0x5678)
+            ERR (__METHOD__, ZFFF, __LINE__, 0x00, 0x00, Local7, 0x5678)
         }
     }
 

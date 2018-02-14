@@ -43,7 +43,7 @@
         Local0 = ObjectType (Arg0)
         If ((Local0 != C009))
         {
-            ERR ("", ZFFF, 0x30, 0x00, 0x00, Local0, C009)
+            ERR (__METHOD__, ZFFF, __LINE__, 0x00, 0x00, Local0, C009)
         }
     }
 
@@ -54,7 +54,7 @@
         Local0 = ObjectType (Arg0)
         If ((Local0 != C00B))
         {
-            ERR ("", ZFFF, 0x3A, 0x00, 0x00, Local0, C00B)
+            ERR (__METHOD__, ZFFF, __LINE__, 0x00, 0x00, Local0, C00B)
         }
     }
 
@@ -65,13 +65,13 @@
         Local0 = ObjectType (FD00)
         If ((Local0 != C00D))
         {
-            ERR ("", ZFFF, 0x44, 0x00, 0x00, Local0, C00D)
+            ERR (__METHOD__, ZFFF, __LINE__, 0x00, 0x00, Local0, C00D)
         }
 
         Local0 = ObjectType (FD01)
         If ((Local0 != C00D))
         {
-            ERR ("", ZFFF, 0x49, 0x00, 0x00, Local0, C00D)
+            ERR (__METHOD__, ZFFF, __LINE__, 0x00, 0x00, Local0, C00D)
         }
 
         MD81 (FD00)

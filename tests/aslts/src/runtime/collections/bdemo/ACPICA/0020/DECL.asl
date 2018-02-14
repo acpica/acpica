@@ -47,7 +47,7 @@
         }
         Else
         {
-            ERR ("", ZFFF, 0x2D, 0x00, 0x00, Local0, Local1)
+            ERR (__METHOD__, ZFFF, __LINE__, 0x00, 0x00, Local0, Local1)
         }
 
         Return (Local7)

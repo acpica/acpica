@@ -41,6 +41,6 @@
         MM20 (0x01)
         If ((I000 != 0x20))
         {
-            ERR ("", ZFFF, 0x2A, 0x00, 0x00, I000, 0x20)
+            ERR (__METHOD__, ZFFF, __LINE__, 0x00, 0x00, I000, 0x20)
         }
     }

@@ -92,7 +92,7 @@
                 Name (I000, 0xABCD0003)
                 If ((I000 != 0xABCD0003))
                 {
-                    ERR ("", ZFFF, 0x68, 0x00, 0x00, I000, 0xABCD0003)
+                    ERR (__METHOD__, ZFFF, __LINE__, 0x00, 0x00, I000, 0xABCD0003)
                 }
             }
 
@@ -103,7 +103,7 @@
                 I000 = 0xABCD0005
                 If ((I000 != 0xABCD0005))
                 {
-                    ERR ("", ZFFF, 0x73, 0x00, 0x00, I000, 0xABCD0005)
+                    ERR (__METHOD__, ZFFF, __LINE__, 0x00, 0x00, I000, 0xABCD0005)
                 }
             }
 
@@ -115,7 +115,7 @@
                 I000 = 0xABCD0007
                 If ((I000 != 0xABCD0007))
                 {
-                    ERR ("", ZFFF, 0x7F, 0x00, 0x00, I000, 0xABCD0007)
+                    ERR (__METHOD__, ZFFF, __LINE__, 0x00, 0x00, I000, 0xABCD0007)
                 }
             }
 
@@ -127,7 +127,7 @@
                 Name (ID28, 0xABCD0008)
                 If ((ID28 != 0xABCD0008))
                 {
-                    ERR ("", ZFFF, 0x8B, 0x00, 0x00, ID28, 0xABCD0008)
+                    ERR (__METHOD__, ZFFF, __LINE__, 0x00, 0x00, ID28, 0xABCD0008)
                 }
             }
 
@@ -137,17 +137,17 @@
         CH03 ("", 0x00, 0x09, 0x92, 0x00)
         If ((I000 != 0xABCD0000))
         {
-            ERR ("", ZFFF, 0x95, 0x00, 0x00, I000, 0xABCD0000)
+            ERR (__METHOD__, ZFFF, __LINE__, 0x00, 0x00, I000, 0xABCD0000)
         }
 
         If ((I001 != 0xABCD0001))
         {
-            ERR ("", ZFFF, 0x98, 0x00, 0x00, I001, 0xABCD0001)
+            ERR (__METHOD__, ZFFF, __LINE__, 0x00, 0x00, I001, 0xABCD0001)
         }
 
         If ((I002 != 0xABCD0002))
         {
-            ERR ("", ZFFF, 0x9B, 0x00, 0x00, I002, 0xABCD0002)
+            ERR (__METHOD__, ZFFF, __LINE__, 0x00, 0x00, I002, 0xABCD0002)
         }
 
         If (Y084)
@@ -178,7 +178,7 @@
     {
         /* Successful compilation itself of this test is error */
 
-        ERR ("", ZFFF, 0xB8, 0x00, 0x00, 0x00, 0x00)
+        ERR (__METHOD__, ZFFF, __LINE__, 0x00, 0x00, 0x00, 0x00)
     }
 
     Method (MDC6, 0, NotSerialized)

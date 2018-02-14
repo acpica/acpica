@@ -51,7 +51,7 @@
             {
                 If ((\_SB.I2Z7 != 0xABCD0007))
                 {
-                    ERR ("", ZFFF, 0x33, 0x00, 0x00, \_SB.I2Z7, 0xABCD0007)
+                    ERR (__METHOD__, ZFFF, __LINE__, 0x00, 0x00, \_SB.I2Z7, 0xABCD0007)
                 }
             }
 
@@ -77,7 +77,7 @@
             {
                 If ((\I2Z4 != 0xABCD0004))
                 {
-                    ERR ("", ZFFF, 0x48, 0x00, 0x00, \I2Z4, 0xABCD0004)
+                    ERR (__METHOD__, ZFFF, __LINE__, 0x00, 0x00, \I2Z4, 0xABCD0004)
                 }
             }
 

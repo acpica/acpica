@@ -39,6 +39,6 @@
         Local7 = (Local0 + 0x01)
         If ((Local7 != 0x01))
         {
-            ERR ("", ZFFF, 0x2B, 0x00, 0x00, Local7, 0x01)
+            ERR (__METHOD__, ZFFF, __LINE__, 0x00, 0x00, Local7, 0x01)
         }
     }

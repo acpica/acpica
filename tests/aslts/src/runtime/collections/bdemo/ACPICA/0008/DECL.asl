@@ -41,6 +41,6 @@
         Local0 = ObjectType (F000)
         If ((Local0 != C00D))
         {
-            ERR ("", ZFFF, 0x2B, 0x00, 0x00, Local0, C00D)
+            ERR (__METHOD__, ZFFF, __LINE__, 0x00, 0x00, Local0, C00D)
         }
     }

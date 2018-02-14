@@ -56,14 +56,14 @@
         Local1 = 0x00
         If (Acquire (MX00, 0x0001))
         {
-            ERR ("", ZFFF, 0x3F, 0x00, 0x00, 0x00, 0x00)
+            ERR (__METHOD__, ZFFF, __LINE__, 0x00, 0x00, 0x00, 0x00)
         }
         Else
         {
             Local0 = 0x01
             If (Acquire (MX01, 0x0001))
             {
-                ERR ("", ZFFF, 0x43, 0x00, 0x00, 0x00, 0x00)
+                ERR (__METHOD__, ZFFF, __LINE__, 0x00, 0x00, 0x00, 0x00)
             }
             Else
             {
@@ -96,7 +96,7 @@
         Local1 = 0x00
         If (Acquire (MX00, 0x0001))
         {
-            ERR ("", ZFFF, 0x60, 0x00, 0x00, 0x00, 0x00)
+            ERR (__METHOD__, ZFFF, __LINE__, 0x00, 0x00, 0x00, 0x00)
         }
         Else
         {
@@ -130,7 +130,7 @@
         Local1 = 0x00
         If (Acquire (MX00, 0x0001))
         {
-            ERR ("", ZFFF, 0x7E, 0x00, 0x00, 0x00, 0x00)
+            ERR (__METHOD__, ZFFF, __LINE__, 0x00, 0x00, 0x00, 0x00)
         }
         Else
         {
@@ -164,7 +164,7 @@
         Local1 = 0x00
         If (Acquire (MX00, 0x0001))
         {
-            ERR ("", ZFFF, 0x9D, 0x00, 0x00, 0x00, 0x00)
+            ERR (__METHOD__, ZFFF, __LINE__, 0x00, 0x00, 0x00, 0x00)
         }
         Else
         {

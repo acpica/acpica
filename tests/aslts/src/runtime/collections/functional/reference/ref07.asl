@@ -931,7 +931,7 @@
                 Local1 = DerefOf (Local0)
                 If ((Local1 != LPC0))
                 {
-                    ERR (__METHOD__, Z116, 0x0402, Z116, 0x00, Local1, LPC0)
+                    ERR (__METHOD__, Z116, __LINE__, Z116, 0x00, Local1, LPC0)
                     Break
                 }
 
@@ -985,7 +985,7 @@
         Local0 = SizeOf (P000)
         If ((Local0 != 0x06))
         {
-            ERR (__METHOD__, Z116, 0x0435, 0x00, 0x00, Local0, 0x06)
+            ERR (__METHOD__, Z116, __LINE__, 0x00, 0x00, Local0, 0x06)
         }
     }
 
@@ -1001,7 +1001,7 @@
         Local7 = (Local0 + 0x01)
         If ((Local7 != Arg2))
         {
-            ERR (Arg0, Z116, 0x0446, 0x00, 0x00, Local7, Arg2)
+            ERR (Arg0, Z116, __LINE__, 0x00, 0x00, Local7, Arg2)
         }
 
         CH03 (Arg0, Z116, 0xA7, 0x0449, 0x00)
@@ -1018,7 +1018,7 @@
         Local7 = (Arg1 + 0x01)
         If ((Local7 != Arg2))
         {
-            ERR (Arg0, Z116, 0x0458, 0x00, 0x00, Local7, Arg2)
+            ERR (Arg0, Z116, __LINE__, 0x00, 0x00, Local7, Arg2)
         }
 
         CH03 (Arg0, Z116, 0xA9, 0x045B, 0x00)

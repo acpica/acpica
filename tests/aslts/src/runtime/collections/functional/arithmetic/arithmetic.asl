@@ -53,13 +53,13 @@
                     Local7 = (Local0 + Local1)
                     If ((Local7 != Local2))
                     {
-                        ERR (Arg0, Z083, 0x3A, 0x00, 0x00, Local5, Arg2)
+                        ERR (Arg0, Z083, __LINE__, 0x00, 0x00, Local5, Arg2)
                     }
 
                     Local7 = (Local1 + Local0)
                     If ((Local7 != Local2))
                     {
-                        ERR (Arg0, Z083, 0x3E, 0x00, 0x00, Local5, Arg2)
+                        ERR (Arg0, Z083, __LINE__, 0x00, 0x00, Local5, Arg2)
                     }
                 }
                 Case (0x01)
@@ -67,7 +67,7 @@
                     Local7 = (Local0 - Local1)
                     If ((Local7 != Local2))
                     {
-                        ERR (Arg0, Z083, 0x44, 0x00, 0x00, Local5, Arg2)
+                        ERR (Arg0, Z083, __LINE__, 0x00, 0x00, Local5, Arg2)
                     }
                 }
                 Case (0x02)
@@ -75,13 +75,13 @@
                     Local7 = (Local0 * Local1)
                     If ((Local7 != Local2))
                     {
-                        ERR (Arg0, Z083, 0x4A, 0x00, 0x00, Local5, Arg2)
+                        ERR (Arg0, Z083, __LINE__, 0x00, 0x00, Local5, Arg2)
                     }
 
                     Local7 = (Local1 * Local0)
                     If ((Local7 != Local2))
                     {
-                        ERR (Arg0, Z083, 0x4E, 0x00, 0x00, Local5, Arg2)
+                        ERR (Arg0, Z083, __LINE__, 0x00, 0x00, Local5, Arg2)
                     }
                 }
                 Case (0x03)
@@ -89,13 +89,13 @@
                     Local7 = (Local0 & Local1)
                     If ((Local7 != Local2))
                     {
-                        ERR (Arg0, Z083, 0x54, 0x00, 0x00, Local5, Arg2)
+                        ERR (Arg0, Z083, __LINE__, 0x00, 0x00, Local5, Arg2)
                     }
 
                     Local7 = (Local1 & Local0)
                     If ((Local7 != Local2))
                     {
-                        ERR (Arg0, Z083, 0x58, 0x00, 0x00, Local5, Arg2)
+                        ERR (Arg0, Z083, __LINE__, 0x00, 0x00, Local5, Arg2)
                     }
                 }
                 Case (0x04)
@@ -103,13 +103,13 @@
                     NAnd (Local0, Local1, Local7)
                     If ((Local7 != Local2))
                     {
-                        ERR (Arg0, Z083, 0x5E, 0x00, 0x00, Local5, Arg2)
+                        ERR (Arg0, Z083, __LINE__, 0x00, 0x00, Local5, Arg2)
                     }
 
                     NAnd (Local1, Local0, Local7)
                     If ((Local7 != Local2))
                     {
-                        ERR (Arg0, Z083, 0x62, 0x00, 0x00, Local5, Arg2)
+                        ERR (Arg0, Z083, __LINE__, 0x00, 0x00, Local5, Arg2)
                     }
                 }
                 Case (0x05)
@@ -117,13 +117,13 @@
                     NOr (Local0, Local1, Local7)
                     If ((Local7 != Local2))
                     {
-                        ERR (Arg0, Z083, 0x68, 0x00, 0x00, Local5, Arg2)
+                        ERR (Arg0, Z083, __LINE__, 0x00, 0x00, Local5, Arg2)
                     }
 
                     NOr (Local1, Local0, Local7)
                     If ((Local7 != Local2))
                     {
-                        ERR (Arg0, Z083, 0x6C, 0x00, 0x00, Local5, Arg2)
+                        ERR (Arg0, Z083, __LINE__, 0x00, 0x00, Local5, Arg2)
                     }
                 }
                 Case (0x06)
@@ -131,13 +131,13 @@
                     Local7 = (Local0 | Local1)
                     If ((Local7 != Local2))
                     {
-                        ERR (Arg0, Z083, 0x72, 0x00, 0x00, Local5, Arg2)
+                        ERR (Arg0, Z083, __LINE__, 0x00, 0x00, Local5, Arg2)
                     }
 
                     Local7 = (Local1 | Local0)
                     If ((Local7 != Local2))
                     {
-                        ERR (Arg0, Z083, 0x76, 0x00, 0x00, Local5, Arg2)
+                        ERR (Arg0, Z083, __LINE__, 0x00, 0x00, Local5, Arg2)
                     }
                 }
                 Case (0x07)
@@ -145,13 +145,13 @@
                     Local7 = (Local0 ^ Local1)
                     If ((Local7 != Local2))
                     {
-                        ERR (Arg0, Z083, 0x7C, 0x00, 0x00, Local5, Arg2)
+                        ERR (Arg0, Z083, __LINE__, 0x00, 0x00, Local5, Arg2)
                     }
 
                     Local7 = (Local1 ^ Local0)
                     If ((Local7 != Local2))
                     {
-                        ERR (Arg0, Z083, 0x80, 0x00, 0x00, Local5, Arg2)
+                        ERR (Arg0, Z083, __LINE__, 0x00, 0x00, Local5, Arg2)
                     }
                 }
                 Case (0x08)
@@ -159,7 +159,7 @@
                     Local7 = (Local0 % Local1)
                     If ((Local7 != Local2))
                     {
-                        ERR (Arg0, Z083, 0x86, 0x00, 0x00, Local5, Arg2)
+                        ERR (Arg0, Z083, __LINE__, 0x00, 0x00, Local5, Arg2)
                     }
                 }
                 Case (0x09)
@@ -167,7 +167,7 @@
                     Local7 = (Local0 << Local1)
                     If ((Local7 != Local2))
                     {
-                        ERR (Arg0, Z083, 0x8C, 0x00, 0x00, Local5, Arg2)
+                        ERR (Arg0, Z083, __LINE__, 0x00, 0x00, Local5, Arg2)
                     }
                 }
                 Case (0x0A)
@@ -175,7 +175,7 @@
                     Local7 = (Local0 >> Local1)
                     If ((Local7 != Local2))
                     {
-                        ERR (Arg0, Z083, 0x92, 0x00, 0x00, Local5, Arg2)
+                        ERR (Arg0, Z083, __LINE__, 0x00, 0x00, Local5, Arg2)
                     }
                 }
 
@@ -213,12 +213,12 @@
                     Divide (Local0, Local1, Local6, Local7)
                     If ((Local7 != Local2))
                     {
-                        ERR (Arg0, Z083, 0xB5, 0x00, 0x00, Local5, Arg2)
+                        ERR (Arg0, Z083, __LINE__, 0x00, 0x00, Local5, Arg2)
                     }
 
                     If ((Local6 != Local3))
                     {
-                        ERR (Arg0, Z083, 0xB8, 0x00, 0x00, Local5, Arg2)
+                        ERR (Arg0, Z083, __LINE__, 0x00, 0x00, Local5, Arg2)
                     }
                 }
 
@@ -250,7 +250,7 @@
                     Local0++
                     If ((Local0 != Local1))
                     {
-                        ERR (Arg0, Z083, 0xD5, 0x00, 0x00, Local5, Arg2)
+                        ERR (Arg0, Z083, __LINE__, 0x00, 0x00, Local5, Arg2)
                     }
                 }
                 Case (0x01)
@@ -258,7 +258,7 @@
                     Local0--
                     If ((Local0 != Local1))
                     {
-                        ERR (Arg0, Z083, 0xDB, 0x00, 0x00, Local5, Arg2)
+                        ERR (Arg0, Z083, __LINE__, 0x00, 0x00, Local5, Arg2)
                     }
                 }
                 Case (0x02)
@@ -266,7 +266,7 @@
                     Local2 = ~Local0
                     If ((Local2 != Local1))
                     {
-                        ERR (Arg0, Z083, 0xE1, 0x00, 0x00, Local5, Arg2)
+                        ERR (Arg0, Z083, __LINE__, 0x00, 0x00, Local5, Arg2)
                     }
                 }
                 Case (0x03)
@@ -274,7 +274,7 @@
                     FindSetLeftBit (Local0, Local2)
                     If ((Local2 != Local1))
                     {
-                        ERR (Arg0, Z083, 0xE7, 0x00, 0x00, Local5, Arg2)
+                        ERR (Arg0, Z083, __LINE__, 0x00, 0x00, Local5, Arg2)
                     }
                 }
                 Case (0x04)
@@ -282,7 +282,7 @@
                     FindSetRightBit (Local0, Local2)
                     If ((Local2 != Local1))
                     {
-                        ERR (Arg0, Z083, 0xED, 0x00, 0x00, Local5, Arg2)
+                        ERR (Arg0, Z083, __LINE__, 0x00, 0x00, Local5, Arg2)
                     }
                 }
 
@@ -1635,7 +1635,7 @@
             Local4 = (Local1 + 0x01)
             If ((Local3 != Local4))
             {
-                ERR (__METHOD__, Z083, 0x05A4, 0x00, 0x00, Local0, 0x00)
+                ERR (__METHOD__, Z083, __LINE__, 0x00, 0x00, Local0, 0x00)
             }
 
             Local1++
@@ -1704,7 +1704,7 @@
             FindSetRightBit (Local2, Local3)
             If ((Local3 != Local4))
             {
-                ERR (__METHOD__, Z083, 0x05E1, 0x00, 0x00, Local0, 0x00)
+                ERR (__METHOD__, Z083, __LINE__, 0x00, 0x00, Local0, 0x00)
             }
 
             Local1++

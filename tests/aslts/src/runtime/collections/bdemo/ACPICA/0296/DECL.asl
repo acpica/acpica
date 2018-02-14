@@ -45,11 +45,11 @@
             Local1 = ObjectType (PLDT)
             If ((Local1 != 0x01))
             {
-                ERR ("", ZFFF, 0x33, 0x00, 0x00, Local1, 0x01)
+                ERR (__METHOD__, ZFFF, __LINE__, 0x00, 0x00, Local1, 0x01)
             }
             ElseIf ((0x01 != PLDT))
             {
-                ERR ("", ZFFF, 0x35, 0x00, 0x00, 0x01, PLDT)
+                ERR (__METHOD__, ZFFF, __LINE__, 0x00, 0x00, 0x01, PLDT)
             }
 
             Unload (Local0)

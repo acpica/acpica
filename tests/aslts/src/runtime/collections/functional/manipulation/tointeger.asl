@@ -449,14 +449,14 @@
             ToInteger (Local0, Local2)
             If ((Local2 != Local1))
             {
-                ERR (__METHOD__, Z047, 0x019B, 0x00, 0x00, Local0, 0x00)
+                ERR (__METHOD__, Z047, __LINE__, 0x00, 0x00, Local0, 0x00)
             }
 
             Local0 = "0x000123456789abcdefa"
             ToInteger (Local0, Local2)
             If ((Local2 != Local1))
             {
-                ERR (__METHOD__, Z047, 0x01A1, 0x00, 0x00, Local0, 0x00)
+                ERR (__METHOD__, Z047, __LINE__, 0x00, 0x00, Local0, 0x00)
             }
         }
     }

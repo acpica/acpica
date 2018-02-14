@@ -61,21 +61,21 @@
         Local1 = ObjectType (S001)
         If ((Local0 != Local1))
         {
-            ERR ("", ZFFF, 0x3F, 0x00, 0x00, Local0, Local1)
+            ERR (__METHOD__, ZFFF, __LINE__, 0x00, 0x00, Local0, Local1)
         }
         ElseIf ((S000 != S001))
         {
-            ERR ("", ZFFF, 0x41, 0x00, 0x00, S000, S001)
+            ERR (__METHOD__, ZFFF, __LINE__, 0x00, 0x00, S000, S001)
         }
 
         If ((Local0 != 0x02))
         {
-            ERR ("", ZFFF, 0x45, 0x00, 0x00, Local0, 0x02)
+            ERR (__METHOD__, ZFFF, __LINE__, 0x00, 0x00, Local0, 0x02)
         }
 
         If ((Local1 != 0x02))
         {
-            ERR ("", ZFFF, 0x49, 0x00, 0x00, Local1, 0x02)
+            ERR (__METHOD__, ZFFF, __LINE__, 0x00, 0x00, Local1, 0x02)
         }
 
         B000++
@@ -88,20 +88,20 @@
         Local1 = ObjectType (B001)
         If ((Local0 != Local1))
         {
-            ERR ("", ZFFF, 0x58, 0x00, 0x00, Local0, Local1)
+            ERR (__METHOD__, ZFFF, __LINE__, 0x00, 0x00, Local0, Local1)
         }
         ElseIf ((B000 != B001))
         {
-            ERR ("", ZFFF, 0x5A, 0x00, 0x00, B000, B001)
+            ERR (__METHOD__, ZFFF, __LINE__, 0x00, 0x00, B000, B001)
         }
 
         If ((Local0 != 0x03))
         {
-            ERR ("", ZFFF, 0x5E, 0x00, 0x00, Local0, 0x03)
+            ERR (__METHOD__, ZFFF, __LINE__, 0x00, 0x00, Local0, 0x03)
         }
 
         If ((Local1 != 0x03))
         {
-            ERR ("", ZFFF, 0x62, 0x00, 0x00, Local1, 0x03)
+            ERR (__METHOD__, ZFFF, __LINE__, 0x00, 0x00, Local1, 0x03)
         }
     }

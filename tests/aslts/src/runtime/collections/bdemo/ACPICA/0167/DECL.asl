@@ -311,7 +311,7 @@
         Local0 = SizeOf (P000)
         If ((Local0 != 0x0100))
         {
-            ERR ("", ZFFF, 0x4D, 0x00, 0x00, Local0, 0x0100)
+            ERR (__METHOD__, ZFFF, __LINE__, 0x00, 0x00, Local0, 0x0100)
         }
         Else
         {
@@ -322,7 +322,7 @@
                 Local3 = DerefOf (P000 [Local2])
                 If ((Local3 != Local1))
                 {
-                    ERR ("", ZFFF, 0x54, 0x00, 0x00, Local3, Local1)
+                    ERR (__METHOD__, ZFFF, __LINE__, 0x00, 0x00, Local3, Local1)
                     Break
                 }
 
@@ -383,13 +383,13 @@
         MM00 (0x00)
         If ((I000 != 0x01))
         {
-            ERR ("", ZFFF, 0x87, 0x00, 0x00, I000, 0x01)
+            ERR (__METHOD__, ZFFF, __LINE__, 0x00, 0x00, I000, 0x01)
         }
 
         I000 = 0x00
         MM00 (0x01)
         If ((I000 != 0x02))
         {
-            ERR ("", ZFFF, 0x8D, 0x00, 0x00, I000, 0x02)
+            ERR (__METHOD__, ZFFF, __LINE__, 0x00, 0x00, I000, 0x02)
         }
     }

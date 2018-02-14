@@ -56,7 +56,7 @@
                          0x01, 0x02, 0x03, 0x04, 0x05, 0x06, 0x07         // .......
                     }))
         {
-            ERR ("", ZFFF, 0x37, 0x00, 0x00, Local0, Buffer (0x07)
+            ERR (__METHOD__, ZFFF, __LINE__, 0x00, 0x00, Local0, Buffer (0x07)
                 {
                      0x01, 0x02, 0x03, 0x04, 0x05, 0x06, 0x07         // .......
                 })
@@ -76,7 +76,7 @@
                          0x01, 0x02, 0x03, 0x04, 0x05, 0x06, 0x07         // .......
                     }))
         {
-            ERR ("", ZFFF, 0x46, 0x00, 0x00, Local0, Buffer (0x07)
+            ERR (__METHOD__, ZFFF, __LINE__, 0x00, 0x00, Local0, Buffer (0x07)
                 {
                      0x01, 0x02, 0x03, 0x04, 0x05, 0x06, 0x07         // .......
                 })
@@ -98,7 +98,7 @@
         Concatenate (S000, S001, Local0)
         If ((Local0 != "String1"))
         {
-            ERR ("", ZFFF, 0x5C, 0x00, 0x00, Local0, "String1")
+            ERR (__METHOD__, ZFFF, __LINE__, 0x00, 0x00, Local0, "String1")
         }
 
         /* 4. */
@@ -112,7 +112,7 @@
         Concatenate (Local0, S001, Local0)
         If ((Local0 != "String1"))
         {
-            ERR ("", ZFFF, 0x6B, 0x00, 0x00, Local0, "String1")
+            ERR (__METHOD__, ZFFF, __LINE__, 0x00, 0x00, Local0, "String1")
         }
     }
 

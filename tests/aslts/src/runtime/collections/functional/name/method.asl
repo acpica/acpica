@@ -152,7 +152,7 @@
         Local1 = ObjectType (Arg3)
         If ((Local0 != Local1))
         {
-            ERR (Concatenate (Arg0, "-OType"), Z133, 0x9A, 0x00, 0x00, Local0, Local1)
+            ERR (Concatenate (Arg0, "-OType"), Z133, __LINE__, 0x00, 0x00, Local0, Local1)
             Return (0x01)
         }
         ElseIf (DerefOf (BZ00 [Local0]))
@@ -172,7 +172,7 @@
 
             If ((Arg2 != Arg3))
             {
-                ERR (Arg0, Z133, 0xA6, 0x00, 0x00, Arg2, Arg3)
+                ERR (Arg0, Z133, __LINE__, 0x00, 0x00, Arg2, Arg3)
                 Return (0x01)
             }
         }
@@ -212,7 +212,7 @@
         Local0 = SizeOf (Arg3)
         If ((SizeOf (Arg2) != Local0))
         {
-            ERR (Concatenate (Arg0, "-Size"), Z133, 0xC6, 0x00, 0x00, SizeOf (Arg2), Local0)
+            ERR (Concatenate (Arg0, "-Size"), Z133, __LINE__, 0x00, 0x00, SizeOf (Arg2), Local0)
             Return (0x01)
         }
 
@@ -225,7 +225,7 @@
             {
                 /* ObjectType is corrupted */
 
-                ERR (Concatenate (Arg0, "-OType"), Z133, 0xCF, 0x00, 0x00, Local1, Local2)
+                ERR (Concatenate (Arg0, "-OType"), Z133, __LINE__, 0x00, 0x00, Local1, Local2)
                 Return (0x01)
             }
             ElseIf (DerefOf (BZ00 [Local1]))
@@ -237,7 +237,7 @@
                 {
                     /* The value is corrupted */
 
-                    ERR (Arg0, Z133, 0xD7, 0x00, 0x00, DerefOf (Arg2 [Local0]), DerefOf (
+                    ERR (Arg0, Z133, __LINE__, 0x00, 0x00, DerefOf (Arg2 [Local0]), DerefOf (
                         Arg3 [Local0]))
                     Return (0x01)
                 }

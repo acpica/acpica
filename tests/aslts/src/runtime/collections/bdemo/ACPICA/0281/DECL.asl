@@ -47,13 +47,13 @@
             If ((PLDT != 0x00))
             {
                 Debug = PLDT /* \D281.PLDT */
-                ERR ("", ZFFF, 0x38, 0x00, 0x00, PLDT, 0x00)
+                ERR (__METHOD__, ZFFF, __LINE__, 0x00, 0x00, PLDT, 0x00)
                 Return (0x01)
             }
 
             If (CondRefOf (\_XT2, Local0))
             {
-                ERR ("", ZFFF, 0x3D, 0x00, 0x00, "\\_XT2", 0x01)
+                ERR (__METHOD__, ZFFF, __LINE__, 0x00, 0x00, "\\_XT2", 0x01)
             }
 
             /* Successful case: spaces is replaced with zeroes */
@@ -68,7 +68,7 @@
             If ((PLDT != 0x01))
             {
                 Debug = PLDT /* \D281.PLDT */
-                ERR ("", ZFFF, 0x4F, 0x00, 0x00, PLDT, 0x01)
+                ERR (__METHOD__, ZFFF, __LINE__, 0x00, 0x00, PLDT, 0x01)
                 Return (0x01)
             }
 
@@ -76,14 +76,14 @@
             If (CondRefOf (\_XT2, Local0)){}
             Else
             {
-                ERR ("", ZFFF, 0x56, 0x00, 0x00, "\\_XT2", 0x00)
+                ERR (__METHOD__, ZFFF, __LINE__, 0x00, 0x00, "\\_XT2", 0x00)
             }
 
             Unload (DDB0)
             Debug = "OEM1 unloaded"
             If (CondRefOf (\_XT2, Local0))
             {
-                ERR ("", ZFFF, 0x5D, 0x00, 0x00, "\\_XT2", 0x01)
+                ERR (__METHOD__, ZFFF, __LINE__, 0x00, 0x00, "\\_XT2", 0x01)
             }
 
             /* Unhappy case: normal strings */
@@ -93,7 +93,7 @@
             If ((PLDT != 0x01))
             {
                 Debug = PLDT /* \D281.PLDT */
-                ERR ("", ZFFF, 0x68, 0x00, 0x00, PLDT, 0x01)
+                ERR (__METHOD__, ZFFF, __LINE__, 0x00, 0x00, PLDT, 0x01)
                 Return (0x01)
             }
 
@@ -101,14 +101,14 @@
             If (CondRefOf (\_XT2, Local0)){}
             Else
             {
-                ERR ("", ZFFF, 0x6F, 0x00, 0x00, "\\_XT2", 0x00)
+                ERR (__METHOD__, ZFFF, __LINE__, 0x00, 0x00, "\\_XT2", 0x00)
             }
 
             Unload (DDB1)
             Debug = "OEM1 unloaded"
             If (CondRefOf (\_XT2, Local0))
             {
-                ERR ("", ZFFF, 0x76, 0x00, 0x00, "\\_XT2", 0x01)
+                ERR (__METHOD__, ZFFF, __LINE__, 0x00, 0x00, "\\_XT2", 0x01)
             }
 
             Return (0x00)

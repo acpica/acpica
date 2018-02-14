@@ -319,7 +319,7 @@
                     Local0 = SizeOf (BUF1)
                     If ((Local0 != 0x11))
                     {
-                        ERR (Concatenate (Arg0, TERR), Z127, 0x0120, 0x00, 0x00, Local0, 0x11)
+                        ERR (Concatenate (Arg0, TERR), Z127, __LINE__, 0x00, 0x00, Local0, 0x11)
                         Return (0x01)
                     }
 
@@ -385,7 +385,7 @@
 
                 Default
                 {
-                    ERR (Concatenate (Arg0, TERR), Z127, 0x0150, 0x00, 0x00, Arg1, 0x00)
+                    ERR (Concatenate (Arg0, TERR), Z127, __LINE__, 0x00, 0x00, Arg1, 0x00)
                     Return (0x01)
                 }
 
@@ -410,7 +410,7 @@
             {
                 /* ObjectType of Target can not be set up */
 
-                ERR (Arg0, Z127, 0x0161, 0x00, 0x00, Local0, Arg1)
+                ERR (Arg0, Z127, __LINE__, 0x00, 0x00, Local0, Arg1)
                 Return (0x01)
             }
 
@@ -455,7 +455,7 @@
 
                 Default
                 {
-                    ERR (Concatenate (Arg0, TERR), Z127, 0x0182, 0x00, 0x00, Arg1, 0x00)
+                    ERR (Concatenate (Arg0, TERR), Z127, __LINE__, 0x00, 0x00, Arg1, 0x00)
                     Return (0x01)
                 }
 
@@ -473,7 +473,7 @@
             {
                 /* ObjectType of Source can not be set up */
 
-                ERR (Arg0, Z127, 0x018E, 0x00, 0x00, Local0, Arg1)
+                ERR (Arg0, Z127, __LINE__, 0x00, 0x00, Local0, Arg1)
                 Return (0x01)
             }
 
@@ -490,7 +490,7 @@
             {
                 /* ObjectType of Source object is corrupted */
 
-                ERR (Arg0, Z127, 0x019D, 0x00, 0x00, Local0, Arg1)
+                ERR (Arg0, Z127, __LINE__, 0x00, 0x00, Local0, Arg1)
                 Return (0x01)
             }
 
@@ -516,7 +516,7 @@
 
                 Default
                 {
-                    ERR (Arg0, Z127, 0x01B0, 0x00, 0x00, Arg1, 0x00)
+                    ERR (Arg0, Z127, __LINE__, 0x00, 0x00, Arg1, 0x00)
                     Return (0x01)
                 }
 
@@ -526,7 +526,7 @@
             {
                 /* Mismatch of Source Type against specified one */
 
-                ERR (Arg0, Z127, 0x01B7, 0x00, 0x00, Local0, Arg1)
+                ERR (Arg0, Z127, __LINE__, 0x00, 0x00, Local0, Arg1)
                 If (STCS)
                 {
                     M000 (0x03, 0x01000000, Local0, Arg0)
@@ -544,13 +544,13 @@
                     {
                         If ((INT0 != DerefOf (Arg3)))
                         {
-                            ERR (Arg0, Z127, 0x01BF, 0x00, 0x00, INT0, DerefOf (Arg3))
+                            ERR (Arg0, Z127, __LINE__, 0x00, 0x00, INT0, DerefOf (Arg3))
                             Return (0x01)
                         }
 
                         If ((DerefOf (Arg2) != INT0))
                         {
-                            ERR (Arg0, Z127, 0x01C3, 0x00, 0x00, DerefOf (Arg2), INT0)
+                            ERR (Arg0, Z127, __LINE__, 0x00, 0x00, DerefOf (Arg2), INT0)
                             Return (0x01)
                         }
                     }
@@ -558,13 +558,13 @@
                     {
                         If ((STR0 != DerefOf (Arg3)))
                         {
-                            ERR (Arg0, Z127, 0x01C9, 0x00, 0x00, STR0, DerefOf (Arg3))
+                            ERR (Arg0, Z127, __LINE__, 0x00, 0x00, STR0, DerefOf (Arg3))
                             Return (0x01)
                         }
 
                         If ((DerefOf (Arg2) != STR0))
                         {
-                            ERR (Arg0, Z127, 0x01CD, 0x00, 0x00, DerefOf (Arg2), STR0)
+                            ERR (Arg0, Z127, __LINE__, 0x00, 0x00, DerefOf (Arg2), STR0)
                             Return (0x01)
                         }
                     }
@@ -572,13 +572,13 @@
                     {
                         If ((BUF0 != DerefOf (Arg3)))
                         {
-                            ERR (Arg0, Z127, 0x01D3, 0x00, 0x00, BUF0, DerefOf (Arg3))
+                            ERR (Arg0, Z127, __LINE__, 0x00, 0x00, BUF0, DerefOf (Arg3))
                             Return (0x01)
                         }
 
                         If ((DerefOf (Arg2) != BUF0))
                         {
-                            ERR (Arg0, Z127, 0x01D7, 0x00, 0x00, DerefOf (Arg2), BUF0)
+                            ERR (Arg0, Z127, __LINE__, 0x00, 0x00, DerefOf (Arg2), BUF0)
                             Return (0x01)
                         }
                     }
@@ -619,7 +619,7 @@
                     }
                     Else
                     {
-                        ERR (Arg0, Z127, 0x01F5, 0x00, 0x00, Local2, Arg2)
+                        ERR (Arg0, Z127, __LINE__, 0x00, 0x00, Local2, Arg2)
                     }
 
                     If (STCS)
@@ -651,14 +651,14 @@
                 {
                     /* Types mismatch Result/Target on storing */
 
-                    ERR (Arg0, Z127, 0x020A, 0x00, 0x00, Local2, Arg3)
+                    ERR (Arg0, Z127, __LINE__, 0x00, 0x00, Local2, Arg3)
                     Return (0x01)
                 }
                 ElseIf ((Local2 != 0x03))
                 {
                     /* Types mismatch Result/Target on storing */
                     /* Test fixed type Objects are converted to Buffer */
-                    ERR (Arg0, Z127, 0x020F, 0x00, 0x00, Local2, 0x03)
+                    ERR (Arg0, Z127, __LINE__, 0x00, 0x00, Local2, 0x03)
                     Return (0x01)
                 }
 
@@ -687,12 +687,12 @@
                 {
                     If (X193)
                     {
-                        ERR (Arg0, Z127, 0x0223, 0x00, 0x00, DerefOf (Arg1), Local7)
+                        ERR (Arg0, Z127, __LINE__, 0x00, 0x00, DerefOf (Arg1), Local7)
                     }
                 }
                 Else
                 {
-                    ERR (Arg0, Z127, 0x0226, 0x00, 0x00, DerefOf (Arg1), Local7)
+                    ERR (Arg0, Z127, __LINE__, 0x00, 0x00, DerefOf (Arg1), Local7)
                 }
 
                 Return (0x01)
@@ -743,7 +743,7 @@
             {
                 /* Source Object can not be prepared */
 
-                ERR (Concatenate (Arg0, TERR), Z127, 0x024A, 0x00, 0x00, Arg3, 0x00)
+                ERR (Concatenate (Arg0, TERR), Z127, __LINE__, 0x00, 0x00, Arg3, 0x00)
                 Return (0x01)
             }
 
@@ -778,7 +778,7 @@
             {
                 /* Target Object can not be prepared */
 
-                ERR (Concatenate (Arg0, TERR), Z127, 0x025B, 0x00, 0x00, Arg2, 0x00)
+                ERR (Concatenate (Arg0, TERR), Z127, __LINE__, 0x00, 0x00, Arg2, 0x00)
                 Return (0x01)
             }
 
@@ -1056,7 +1056,7 @@
                 {
                     /* Unexpected Kind of Op (0 - Store, ...) */
 
-                    ERR (Concatenate (Arg0, TERR), Z127, 0x02A5, 0x00, 0x00, Arg4, 0x00)
+                    ERR (Concatenate (Arg0, TERR), Z127, __LINE__, 0x00, 0x00, Arg4, 0x00)
                     Return (0x01)
                 }
             }
@@ -1332,7 +1332,7 @@
                 {
                     /* Unexpected Kind of Op (0 - Store, ...) */
 
-                    ERR (Concatenate (Arg0, TERR), Z127, 0x02ED, 0x00, 0x00, Arg4, 0x00)
+                    ERR (Concatenate (Arg0, TERR), Z127, __LINE__, 0x00, 0x00, Arg4, 0x00)
                     Return (0x01)
                 }
             }
@@ -1604,7 +1604,7 @@
             {
                 /* Unexpected Kind of Op (0 - Store, ...) */
 
-                ERR (Concatenate (Arg0, TERR), Z127, 0x0335, 0x00, 0x00, Arg4, 0x00)
+                ERR (Concatenate (Arg0, TERR), Z127, __LINE__, 0x00, 0x00, Arg4, 0x00)
                 Return (0x01)
             }
 
@@ -1681,7 +1681,7 @@
             {
                 /* Source Object can not be prepared */
 
-                ERR (Concatenate (Arg0, TERR), Z127, 0x036B, 0x00, 0x00, Arg3, 0x00)
+                ERR (Concatenate (Arg0, TERR), Z127, __LINE__, 0x00, 0x00, Arg3, 0x00)
                 Return (0x01)
             }
 
@@ -1692,7 +1692,7 @@
             {
                 /* Target Object can not be prepared */
 
-                ERR (Concatenate (Arg0, TERR), Z127, 0x0373, 0x00, 0x00, Arg2, 0x00)
+                ERR (Concatenate (Arg0, TERR), Z127, __LINE__, 0x00, 0x00, Arg2, 0x00)
                 Return (0x01)
             }
 
@@ -1966,7 +1966,7 @@
             {
                 /* Unexpected Kind of Op (0 - Store, ...) */
 
-                ERR (Concatenate (Arg0, TERR), Z127, 0x03BC, 0x00, 0x00, Arg4, 0x00)
+                ERR (Concatenate (Arg0, TERR), Z127, __LINE__, 0x00, 0x00, Arg4, 0x00)
                 Return (0x01)
             }
 
@@ -5089,7 +5089,7 @@
         {
             /* Unexpected Kind of Op (0 - Store, ...) */
 
-            ERR (Concatenate (TS, TERR), Z127, 0x08D0, 0x00, 0x00, Arg0, 0x00)
+            ERR (Concatenate (TS, TERR), Z127, __LINE__, 0x00, 0x00, Arg0, 0x00)
             Return (0x01)
         }
 
@@ -5097,7 +5097,7 @@
         {
             /* Unexpected Kind of Source-Target pair */
 
-            ERR (Concatenate (TS, TERR), Z127, 0x08D6, 0x00, 0x00, Arg4, 0x00)
+            ERR (Concatenate (TS, TERR), Z127, __LINE__, 0x00, 0x00, Arg4, 0x00)
             Return (0x01)
         }
 

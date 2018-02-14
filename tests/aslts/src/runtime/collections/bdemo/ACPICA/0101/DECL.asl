@@ -42,7 +42,7 @@
         Local1 = ObjectType (Local0)
         If ((Local1 != C010))
         {
-            ERR ("", ZFFF, 0x2F, 0x00, 0x00, Local1, C010)
+            ERR (__METHOD__, ZFFF, __LINE__, 0x00, 0x00, Local1, C010)
         }
 
         Return (0x00)
@@ -64,7 +64,7 @@
         Debug = Local1
         If ((Local1 != C010))
         {
-            ERR ("", ZFFF, 0x46, 0x00, 0x00, Local1, C010)
+            ERR (__METHOD__, ZFFF, __LINE__, 0x00, 0x00, Local1, C010)
         }
 
         Debug = "Finish of test"

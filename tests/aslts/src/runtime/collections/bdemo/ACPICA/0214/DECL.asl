@@ -55,27 +55,27 @@
             M000 (OPR1)
             If ((RFU0 != 0x01))
             {
-                ERR ("", ZFFF, 0x3C, 0x00, 0x00, RFU0, 0x01)
+                ERR (__METHOD__, ZFFF, __LINE__, 0x00, 0x00, RFU0, 0x01)
             }
 
             RFU0 = 0x02
             M000 (OPR1)
             If ((RFU0 != 0x02))
             {
-                ERR ("", ZFFF, 0x42, 0x00, 0x00, RFU0, 0x02)
+                ERR (__METHOD__, ZFFF, __LINE__, 0x00, 0x00, RFU0, 0x02)
             }
 
             RFU0 = 0x03
             M000 (OPR1)
             If ((RFU0 != 0x03))
             {
-                ERR ("", ZFFF, 0x48, 0x00, 0x00, RFU0, 0x03)
+                ERR (__METHOD__, ZFFF, __LINE__, 0x00, 0x00, RFU0, 0x03)
             }
 
             RFU0 = 0x04
             If ((RFU0 != 0x04))
             {
-                ERR ("", ZFFF, 0x4D, 0x00, 0x00, RFU0, 0x04)
+                ERR (__METHOD__, ZFFF, __LINE__, 0x00, 0x00, RFU0, 0x04)
             }
         }
 

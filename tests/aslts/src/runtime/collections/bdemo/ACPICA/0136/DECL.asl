@@ -45,6 +45,6 @@
         CopyObject (B000, B001) /* \MF27.B001 */
         If ((B000 != B001))
         {
-            ERR ("", ZFFF, 0x2D, 0x00, 0x00, B000, B001)
+            ERR (__METHOD__, ZFFF, __LINE__, 0x00, 0x00, B000, B001)
         }
     }

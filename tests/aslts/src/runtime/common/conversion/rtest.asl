@@ -693,21 +693,21 @@
         Local2 = ObjectType (Local0)
         If ((Local2 != 0x02))
         {
-            ERR (TS, Z067, 0x013A, 0x00, 0x00, Local2, 0x02)
+            ERR (TS, Z067, __LINE__, 0x00, 0x00, Local2, 0x02)
         }
         ElseIf ((Local0 != "abcdef"))
         {
-            ERR (TS, Z067, 0x013C, 0x00, 0x00, Local0, "abcdef")
+            ERR (TS, Z067, __LINE__, 0x00, 0x00, Local0, "abcdef")
         }
 
         Local2 = ObjectType (Local1)
         If ((Local2 != 0x02))
         {
-            ERR (TS, Z067, 0x0141, 0x00, 0x00, Local2, 0x02)
+            ERR (TS, Z067, __LINE__, 0x00, 0x00, Local2, 0x02)
         }
         ElseIf ((Local1 != "12345678"))
         {
-            ERR (TS, Z067, 0x0143, 0x00, 0x00, Local1, "12345678")
+            ERR (TS, Z067, __LINE__, 0x00, 0x00, Local1, "12345678")
         }
     }
 
@@ -1284,21 +1284,21 @@
         Local2 = ObjectType (Local0)
         If ((Local2 != 0x03))
         {
-            ERR (TS, Z067, 0x020A, 0x00, 0x00, Local2, 0x03)
+            ERR (TS, Z067, __LINE__, 0x00, 0x00, Local2, 0x03)
         }
         ElseIf ((Local0 != B000))
         {
-            ERR (TS, Z067, 0x020C, 0x00, 0x00, Local0, B000)
+            ERR (TS, Z067, __LINE__, 0x00, 0x00, Local0, B000)
         }
 
         Local2 = ObjectType (Local1)
         If ((Local2 != 0x03))
         {
-            ERR (TS, Z067, 0x0211, 0x00, 0x00, Local2, 0x03)
+            ERR (TS, Z067, __LINE__, 0x00, 0x00, Local2, 0x03)
         }
         ElseIf ((Local1 != B001))
         {
-            ERR (TS, Z067, 0x0213, 0x00, 0x00, Local1, B001)
+            ERR (TS, Z067, __LINE__, 0x00, 0x00, Local1, B001)
         }
     }
 
@@ -1942,11 +1942,11 @@
         Local0 = ObjectType (SS00)
         If ((Local0 != 0x02))
         {
-            ERR (TS, Z067, 0x04A6, 0x00, 0x00, Local0, 0x02)
+            ERR (TS, Z067, __LINE__, 0x00, 0x00, Local0, 0x02)
         }
         ElseIf ((SS00 != "ABC"))
         {
-            ERR (TS, Z067, 0x04A8, 0x00, 0x00, SS00, "ABC")
+            ERR (TS, Z067, __LINE__, 0x00, 0x00, SS00, "ABC")
         }
 
         Name (B000, Buffer (0xC8){})
@@ -1959,15 +1959,15 @@
         Local1 = SizeOf (B000)
         If ((Local0 != 0x03))
         {
-            ERR (TS, Z067, 0x04B5, 0x00, 0x00, Local0, 0x03)
+            ERR (TS, Z067, __LINE__, 0x00, 0x00, Local0, 0x03)
         }
         ElseIf ((Local1 != 0x06))
         {
-            ERR (TS, Z067, 0x04B7, 0x00, 0x00, Local1, 0x06)
+            ERR (TS, Z067, __LINE__, 0x00, 0x00, Local1, 0x06)
         }
         ElseIf ((B000 != B001))
         {
-            ERR (TS, Z067, 0x04B9, 0x00, 0x00, B000, B001)
+            ERR (TS, Z067, __LINE__, 0x00, 0x00, B000, B001)
         }
     }
 

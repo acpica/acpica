@@ -55,7 +55,7 @@
             Local0 = ObjectType (Arg0)
             If ((Local0 != Arg1))
             {
-                ERR (C080, Z076, 0x3F, 0x00, 0x00, Local0, Arg1)
+                ERR (C080, Z076, __LINE__, 0x00, 0x00, Local0, Arg1)
             }
             /* if (c08b) */
             /* ATTENTION: exactly the same in m1a0 and m1a2 */
@@ -133,7 +133,7 @@
                     Local1 = ObjectType (Local0)
                     If ((Local1 != Arg1))
                     {
-                        ERR (C080, Z076, 0x84, 0x00, 0x00, Local1, Arg1)
+                        ERR (C080, Z076, __LINE__, 0x00, 0x00, Local1, Arg1)
                     }
                     Else
                     {
@@ -145,14 +145,14 @@
                     Local1 = CondRefOf (Arg0, Local0)
                     If ((Local1 != Ones))
                     {
-                        ERR (C080, Z076, 0x8B, 0x00, 0x00, Local1, Arg1)
+                        ERR (C080, Z076, __LINE__, 0x00, 0x00, Local1, Arg1)
                     }
                     Else
                     {
                         Local1 = ObjectType (Local0)
                         If ((Local1 != Arg1))
                         {
-                            ERR (C080, Z076, 0x8F, 0x00, 0x00, Local1, Arg1)
+                            ERR (C080, Z076, __LINE__, 0x00, 0x00, Local1, Arg1)
                         }
                         Else
                         {
@@ -169,7 +169,7 @@
                     Local1 = ObjectType (Local0)
                     If ((Local1 != Arg1))
                     {
-                        ERR (C080, Z076, 0x9E, 0x00, 0x00, Local1, Arg1)
+                        ERR (C080, Z076, __LINE__, 0x00, 0x00, Local1, Arg1)
                     }
                     Else
                     {
@@ -178,7 +178,7 @@
                         Local1 = ObjectType (DerefOf (Local0))
                         If ((Local1 != Arg1))
                         {
-                            ERR (C080, Z076, 0xA5, 0x00, 0x00, Local1, Arg1)
+                            ERR (C080, Z076, __LINE__, 0x00, 0x00, Local1, Arg1)
                         }
 
                         /* Check that writing into M2-ArgX-RefOf_Reference */
@@ -187,11 +187,11 @@
                         Local1 = ObjectType (Arg0)
                         If ((Local1 != C009))
                         {
-                            ERR (C080, Z076, 0xAE, 0x00, 0x00, Local1, C009)
+                            ERR (C080, Z076, __LINE__, 0x00, 0x00, Local1, C009)
                         }
                         ElseIf ((Arg0 != 0xABCD001A))
                         {
-                            ERR (C080, Z076, 0xB0, 0x00, 0x00, Arg0, 0xABCD001A)
+                            ERR (C080, Z076, __LINE__, 0x00, 0x00, Arg0, 0xABCD001A)
                         }
                         Else
                         {
@@ -202,14 +202,14 @@
                             Local1 = ObjectType (Local0)
                             If ((Local1 != C009))
                             {
-                                ERR (C080, Z076, 0xBA, 0x00, 0x00, Local1, C009)
+                                ERR (C080, Z076, __LINE__, 0x00, 0x00, Local1, C009)
                             }
                             Else
                             {
                                 Local1 = SizeOf (Local0)
                                 If ((Local1 != ISZ0))
                                 {
-                                    ERR (C080, Z076, 0xBE, 0x00, 0x00, Local1, ISZ0)
+                                    ERR (C080, Z076, __LINE__, 0x00, 0x00, Local1, ISZ0)
                                 }
                             }
                         }
@@ -241,7 +241,7 @@
         Local0 = ObjectType (Arg0)
         If ((Local0 != Arg1))
         {
-            ERR (C080, Z076, 0xDF, 0x00, 0x00, Local0, Arg1)
+            ERR (C080, Z076, __LINE__, 0x00, 0x00, Local0, Arg1)
         }
         /* if (c08b) */
         /* ATTENTION: exactly the same in m1a0 and m1a2 */
@@ -349,11 +349,11 @@
                 Local0 = ObjectType (Local2)
                 If ((Local0 != Arg4))
                 {
-                    ERR (C080, Z076, 0x0136, 0x00, 0x00, Local0, Arg4)
+                    ERR (C080, Z076, __LINE__, 0x00, 0x00, Local0, Arg4)
                 }
                 ElseIf ((Local2 != Arg5))
                 {
-                    ERR (C080, Z076, 0x0139, 0x00, 0x00, Local2, Arg5)
+                    ERR (C080, Z076, __LINE__, 0x00, 0x00, Local2, Arg5)
                 }
             }
 
@@ -392,7 +392,7 @@
                 Local1 = ObjectType (Local0)
                 If ((Local1 != Arg1))
                 {
-                    ERR (C080, Z076, 0x015D, 0x00, 0x00, Local1, Arg1)
+                    ERR (C080, Z076, __LINE__, 0x00, 0x00, Local1, Arg1)
                 }
                 Else
                 {
@@ -404,14 +404,14 @@
                 Local1 = CondRefOf (Arg0, Local0)
                 If ((Local1 != Ones))
                 {
-                    ERR (C080, Z076, 0x0164, 0x00, 0x00, Local1, Arg1)
+                    ERR (C080, Z076, __LINE__, 0x00, 0x00, Local1, Arg1)
                 }
                 Else
                 {
                     Local1 = ObjectType (Local0)
                     If ((Local1 != Arg1))
                     {
-                        ERR (C080, Z076, 0x0168, 0x00, 0x00, Local1, Arg1)
+                        ERR (C080, Z076, __LINE__, 0x00, 0x00, Local1, Arg1)
                     }
                     Else
                     {
@@ -428,7 +428,7 @@
                 Local1 = ObjectType (Local0)
                 If ((Local1 != Arg1))
                 {
-                    ERR (C080, Z076, 0x0177, 0x00, 0x00, Local1, Arg1)
+                    ERR (C080, Z076, __LINE__, 0x00, 0x00, Local1, Arg1)
                 }
                 Else
                 {
@@ -437,7 +437,7 @@
                     Local1 = ObjectType (DerefOf (Local0))
                     If ((Local1 != Arg1))
                     {
-                        ERR (C080, Z076, 0x017E, 0x00, 0x00, Local1, Arg1)
+                        ERR (C080, Z076, __LINE__, 0x00, 0x00, Local1, Arg1)
                     }
 
                     /* Check that writing into M2-ArgX-RefOf_Reference */
@@ -446,11 +446,11 @@
                     Local1 = ObjectType (Arg0)
                     If ((Local1 != C009))
                     {
-                        ERR (C080, Z076, 0x0187, 0x00, 0x00, Local1, C009)
+                        ERR (C080, Z076, __LINE__, 0x00, 0x00, Local1, C009)
                     }
                     ElseIf ((Arg0 != 0xABCD001A))
                     {
-                        ERR (C080, Z076, 0x0189, 0x00, 0x00, Arg0, 0xABCD001A)
+                        ERR (C080, Z076, __LINE__, 0x00, 0x00, Arg0, 0xABCD001A)
                     }
                     Else
                     {
@@ -461,14 +461,14 @@
                         Local1 = ObjectType (Local0)
                         If ((Local1 != C009))
                         {
-                            ERR (C080, Z076, 0x0193, 0x00, 0x00, Local1, C009)
+                            ERR (C080, Z076, __LINE__, 0x00, 0x00, Local1, C009)
                         }
                         Else
                         {
                             Local1 = SizeOf (Local0)
                             If ((Local1 != ISZ0))
                             {
-                                ERR (C080, Z076, 0x0197, 0x00, 0x00, Local1, ISZ0)
+                                ERR (C080, Z076, __LINE__, 0x00, 0x00, Local1, ISZ0)
                             }
                         }
                     }
@@ -489,12 +489,12 @@
         Local0 = ObjectType (Arg0)
         If ((Local0 != C009))
         {
-            ERR (C080, Z076, 0x01B1, 0x00, 0x00, Local0, C009)
+            ERR (C080, Z076, __LINE__, 0x00, 0x00, Local0, C009)
             Local7 = 0x00
         }
         ElseIf ((Arg0 != Ones))
         {
-            ERR (C080, Z076, 0x01B4, 0x00, 0x00, Arg0, Ones)
+            ERR (C080, Z076, __LINE__, 0x00, 0x00, Arg0, Ones)
             Local7 = 0x00
         }
 

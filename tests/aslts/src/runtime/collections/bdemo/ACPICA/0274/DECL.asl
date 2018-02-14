@@ -51,7 +51,7 @@
             Local0 = DerefOf (Arg1 [Arg2])
             If ((Local0 != Arg0))
             {
-                ERR ("", ZFFF, 0x39, 0x00, 0x00, Arg0, Local0)
+                ERR (__METHOD__, ZFFF, __LINE__, 0x00, 0x00, Arg0, Local0)
             }
         }
 

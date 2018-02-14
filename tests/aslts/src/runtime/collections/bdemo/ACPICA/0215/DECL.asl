@@ -80,19 +80,19 @@
             IDF0 = 0x01
             If ((IDF0 != 0x01))
             {
-                ERR ("", ZFFF, 0x4B, 0x00, 0x00, IDF0, 0x01)
+                ERR (__METHOD__, ZFFF, __LINE__, 0x00, 0x00, IDF0, 0x01)
             }
 
             IDF1 = 0x01
             If ((IDF1 != 0x01))
             {
-                ERR ("", ZFFF, 0x50, 0x00, 0x00, IDF1, 0x01)
+                ERR (__METHOD__, ZFFF, __LINE__, 0x00, 0x00, IDF1, 0x01)
             }
 
             IDF2 = 0x01
             If ((IDF2 != 0x01))
             {
-                ERR ("", ZFFF, 0x55, 0x00, 0x00, IDF2, 0x01)
+                ERR (__METHOD__, ZFFF, __LINE__, 0x00, 0x00, IDF2, 0x01)
             }
         }
 

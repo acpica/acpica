@@ -45,7 +45,7 @@
             If (Local0)
             {
                 Debug = "!!!!!!!! ERROR 0: Acquire T500 (Level 5, index 0)"
-                ERR ("", ZFFF, 0x32, 0x00, 0x00, 0x00, 0x00)
+                ERR (__METHOD__, ZFFF, __LINE__, 0x00, 0x00, 0x00, 0x00)
             }
             Else
             {
@@ -59,7 +59,7 @@
             If (Local0)
             {
                 Debug = "!!!!!!!! ERROR 1: Acquire T600 (Level 6, index 0)"
-                ERR ("", ZFFF, 0x3C, 0x00, 0x00, 0x00, 0x00)
+                ERR (__METHOD__, ZFFF, __LINE__, 0x00, 0x00, 0x00, 0x00)
             }
             Else
             {
@@ -83,7 +83,7 @@
             If (Local0)
             {
                 Debug = "!!!!!!!! ERROR 3: Acquire T700 (Level 7, index 0)"
-                ERR ("", ZFFF, 0x50, 0x00, 0x00, 0x00, 0x00)
+                ERR (__METHOD__, ZFFF, __LINE__, 0x00, 0x00, 0x00, 0x00)
             }
             Else
             {

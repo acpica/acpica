@@ -48,6 +48,6 @@
         })
         If ((RT00 != BUF0))
         {
-            ERR ("", ZFFF, 0x2E, 0x00, 0x00, RT00, BUF0)
+            ERR (__METHOD__, ZFFF, __LINE__, 0x00, 0x00, RT00, BUF0)
         }
     }

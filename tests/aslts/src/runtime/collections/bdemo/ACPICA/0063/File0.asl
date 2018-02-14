@@ -36,31 +36,31 @@
         ToInteger ("0x0", Local0)
         If ((Local0 != 0x00))
         {
-            ERR ("", ZFFF, 0x29, 0x00, 0x00, Local0, 0x00)
+            ERR (__METHOD__, ZFFF, __LINE__, 0x00, 0x00, Local0, 0x00)
         }
 
         ToInteger ("0x0000000", Local0)
         If ((Local0 != 0x00))
         {
-            ERR ("", ZFFF, 0x2E, 0x00, 0x00, Local0, 0x00)
+            ERR (__METHOD__, ZFFF, __LINE__, 0x00, 0x00, Local0, 0x00)
         }
 
         ToInteger ("0x1", Local0)
         If ((Local0 != 0x01))
         {
-            ERR ("", ZFFF, 0x33, 0x00, 0x00, Local0, 0x01)
+            ERR (__METHOD__, ZFFF, __LINE__, 0x00, 0x00, Local0, 0x01)
         }
 
         ToInteger ("0x12345678", Local0)
         If ((Local0 != 0x12345678))
         {
-            ERR ("", ZFFF, 0x38, 0x00, 0x00, Local0, 0x12345678)
+            ERR (__METHOD__, ZFFF, __LINE__, 0x00, 0x00, Local0, 0x12345678)
         }
 
         ToInteger ("0x12345", Local0)
         If ((Local0 != 0x00012345))
         {
-            ERR ("", ZFFF, 0x3D, 0x00, 0x00, Local0, 0x00012345)
+            ERR (__METHOD__, ZFFF, __LINE__, 0x00, 0x00, Local0, 0x00012345)
         }
 
         If (F64)
@@ -69,14 +69,14 @@
             ToInteger (Local1, Local0)
             If ((Local0 != 0x1234567890123456))
             {
-                ERR ("", ZFFF, 0x44, 0x00, 0x00, Local0, 0x1234567890123456)
+                ERR (__METHOD__, ZFFF, __LINE__, 0x00, 0x00, Local0, 0x1234567890123456)
             }
 
             Local1 = "0x123456789012345"
             ToInteger (Local1, Local0)
             If ((Local0 != 0x0123456789012345))
             {
-                ERR ("", ZFFF, 0x4A, 0x00, 0x00, Local0, 0x0123456789012345)
+                ERR (__METHOD__, ZFFF, __LINE__, 0x00, 0x00, Local0, 0x0123456789012345)
             }
         }
 
@@ -85,13 +85,13 @@
         ToInteger ("0xabcdefef", Local0)
         If ((Local0 != 0xABCDEFEF))
         {
-            ERR ("", ZFFF, 0x52, 0x00, 0x00, Local0, 0xABCDEFEF)
+            ERR (__METHOD__, ZFFF, __LINE__, 0x00, 0x00, Local0, 0xABCDEFEF)
         }
 
         ToInteger ("0xabcdef", Local0)
         If ((Local0 != 0x00ABCDEF))
         {
-            ERR ("", ZFFF, 0x57, 0x00, 0x00, Local0, 0x00ABCDEF)
+            ERR (__METHOD__, ZFFF, __LINE__, 0x00, 0x00, Local0, 0x00ABCDEF)
         }
 
         If (F64)
@@ -100,14 +100,14 @@
             ToInteger (Local1, Local0)
             If ((Local0 != 0xABCDEFEFADEFBCDF))
             {
-                ERR ("", ZFFF, 0x5E, 0x00, 0x00, Local0, 0xABCDEFEFADEFBCDF)
+                ERR (__METHOD__, ZFFF, __LINE__, 0x00, 0x00, Local0, 0xABCDEFEFADEFBCDF)
             }
 
             Local1 = "0xabcdefefadefbcd"
             ToInteger (Local1, Local0)
             If ((Local0 != 0x0ABCDEFEFADEFBCD))
             {
-                ERR ("", ZFFF, 0x64, 0x00, 0x00, Local0, 0x0ABCDEFEFADEFBCD)
+                ERR (__METHOD__, ZFFF, __LINE__, 0x00, 0x00, Local0, 0x0ABCDEFEFADEFBCD)
             }
         }
 
@@ -116,7 +116,7 @@
         ToInteger ("0x1ab2cd34", Local0)
         If ((Local0 != 0x1AB2CD34))
         {
-            ERR ("", ZFFF, 0x6C, 0x00, 0x00, Local0, 0x1AB2CD34)
+            ERR (__METHOD__, ZFFF, __LINE__, 0x00, 0x00, Local0, 0x1AB2CD34)
         }
 
         If (F64)
@@ -125,14 +125,14 @@
             ToInteger (Local1, Local0)
             If ((Local0 != 0x1AB2CD340FE05678))
             {
-                ERR ("", ZFFF, 0x73, 0x00, 0x00, Local0, 0x1AB2CD340FE05678)
+                ERR (__METHOD__, ZFFF, __LINE__, 0x00, 0x00, Local0, 0x1AB2CD340FE05678)
             }
 
             Local1 = "0x1ab2cd340fe0"
             ToInteger (Local1, Local0)
             If ((Local0 != 0x00001AB2CD340FE0))
             {
-                ERR ("", ZFFF, 0x79, 0x00, 0x00, Local0, 0x00001AB2CD340FE0)
+                ERR (__METHOD__, ZFFF, __LINE__, 0x00, 0x00, Local0, 0x00001AB2CD340FE0)
             }
         }
 
@@ -148,49 +148,49 @@
         ToInteger ("0", Local0)
         If ((Local0 != 0x00))
         {
-            ERR ("", ZFFF, 0x89, 0x00, 0x00, Local0, 0x00)
+            ERR (__METHOD__, ZFFF, __LINE__, 0x00, 0x00, Local0, 0x00)
         }
 
         ToInteger ("0000000", Local0)
         If ((Local0 != 0x00))
         {
-            ERR ("", ZFFF, 0x8E, 0x00, 0x00, Local0, 0x00)
+            ERR (__METHOD__, ZFFF, __LINE__, 0x00, 0x00, Local0, 0x00)
         }
 
         ToInteger ("000000000000000", Local0)
         If ((Local0 != 0x00))
         {
-            ERR ("", ZFFF, 0x93, 0x00, 0x00, Local0, 0x00)
+            ERR (__METHOD__, ZFFF, __LINE__, 0x00, 0x00, Local0, 0x00)
         }
 
         ToInteger ("000000000000000000000000000000000000000000", Local0)
         If ((Local0 != 0x00))
         {
-            ERR ("", ZFFF, 0x98, 0x00, 0x00, Local0, 0x00)
+            ERR (__METHOD__, ZFFF, __LINE__, 0x00, 0x00, Local0, 0x00)
         }
 
         ToInteger ("1", Local0)
         If ((Local0 != 0x01))
         {
-            ERR ("", ZFFF, 0x9D, 0x00, 0x00, Local0, 0x01)
+            ERR (__METHOD__, ZFFF, __LINE__, 0x00, 0x00, Local0, 0x01)
         }
 
         ToInteger ("1234567890", Local0)
         If ((Local0 != 0x499602D2))
         {
-            ERR ("", ZFFF, 0xA2, 0x00, 0x00, Local0, 0x499602D2)
+            ERR (__METHOD__, ZFFF, __LINE__, 0x00, 0x00, Local0, 0x499602D2)
         }
 
         ToInteger ("1234567", Local0)
         If ((Local0 != 0x0012D687))
         {
-            ERR ("", ZFFF, 0xA7, 0x00, 0x00, Local0, 0x0012D687)
+            ERR (__METHOD__, ZFFF, __LINE__, 0x00, 0x00, Local0, 0x0012D687)
         }
 
         ToInteger ("4294967295", Local0)
         If ((Local0 != 0xFFFFFFFF))
         {
-            ERR ("", ZFFF, 0xAC, 0x00, 0x00, Local0, 0xFFFFFFFF)
+            ERR (__METHOD__, ZFFF, __LINE__, 0x00, 0x00, Local0, 0xFFFFFFFF)
         }
 
         If (F64)
@@ -199,7 +199,7 @@
             ToInteger (Local1, Local0)
             If ((Local0 != 0xFFFFFFFFFFFFFFFF))
             {
-                ERR ("", ZFFF, 0xB3, 0x00, 0x00, Local0, 0xFFFFFFFFFFFFFFFF)
+                ERR (__METHOD__, ZFFF, __LINE__, 0x00, 0x00, Local0, 0xFFFFFFFFFFFFFFFF)
             }
         }
 
@@ -216,31 +216,31 @@
         ToInteger ("                    0x0", Local0)
         If ((Local0 != 0x00))
         {
-            ERR ("", ZFFF, 0xC4, 0x00, 0x00, Local0, 0x00)
+            ERR (__METHOD__, ZFFF, __LINE__, 0x00, 0x00, Local0, 0x00)
         }
 
         ToInteger ("                    0x00000", Local0)
         If ((Local0 != 0x00))
         {
-            ERR ("", ZFFF, 0xC9, 0x00, 0x00, Local0, 0x00)
+            ERR (__METHOD__, ZFFF, __LINE__, 0x00, 0x00, Local0, 0x00)
         }
 
         ToInteger (" 0x1", Local0)
         If ((Local0 != 0x01))
         {
-            ERR ("", ZFFF, 0xCE, 0x00, 0x00, Local0, 0x01)
+            ERR (__METHOD__, ZFFF, __LINE__, 0x00, 0x00, Local0, 0x01)
         }
 
         ToInteger ("  0x12345678", Local0)
         If ((Local0 != 0x12345678))
         {
-            ERR ("", ZFFF, 0xD3, 0x00, 0x00, Local0, 0x12345678)
+            ERR (__METHOD__, ZFFF, __LINE__, 0x00, 0x00, Local0, 0x12345678)
         }
 
         ToInteger ("   0x12345", Local0)
         If ((Local0 != 0x00012345))
         {
-            ERR ("", ZFFF, 0xD8, 0x00, 0x00, Local0, 0x00012345)
+            ERR (__METHOD__, ZFFF, __LINE__, 0x00, 0x00, Local0, 0x00012345)
         }
 
         If (F64)
@@ -249,33 +249,33 @@
             ToInteger (Local1, Local0)
             If ((Local0 != 0x1234567890123456))
             {
-                ERR ("", ZFFF, 0xDF, 0x00, 0x00, Local0, 0x1234567890123456)
+                ERR (__METHOD__, ZFFF, __LINE__, 0x00, 0x00, Local0, 0x1234567890123456)
             }
 
             Local1 = "    0x123456789012345"
             ToInteger (Local1, Local0)
             If ((Local0 != 0x0123456789012345))
             {
-                ERR ("", ZFFF, 0xE5, 0x00, 0x00, Local0, 0x0123456789012345)
+                ERR (__METHOD__, ZFFF, __LINE__, 0x00, 0x00, Local0, 0x0123456789012345)
             }
         }
 
         ToInteger ("     0xabcdefef", Local0)
         If ((Local0 != 0xABCDEFEF))
         {
-            ERR ("", ZFFF, 0xEB, 0x00, 0x00, Local0, 0xABCDEFEF)
+            ERR (__METHOD__, ZFFF, __LINE__, 0x00, 0x00, Local0, 0xABCDEFEF)
         }
 
         ToInteger ("      0xabcdef", Local0)
         If ((Local0 != 0x00ABCDEF))
         {
-            ERR ("", ZFFF, 0xF0, 0x00, 0x00, Local0, 0x00ABCDEF)
+            ERR (__METHOD__, ZFFF, __LINE__, 0x00, 0x00, Local0, 0x00ABCDEF)
         }
 
         ToInteger ("\t0xabcdef", Local0)
         If ((Local0 != 0x00ABCDEF))
         {
-            ERR ("", ZFFF, 0xF5, 0x00, 0x00, Local0, 0x00ABCDEF)
+            ERR (__METHOD__, ZFFF, __LINE__, 0x00, 0x00, Local0, 0x00ABCDEF)
         }
 
         If (F64)
@@ -284,21 +284,21 @@
             ToInteger (Local1, Local0)
             If ((Local0 != 0xABCDEFEFADEFBCDF))
             {
-                ERR ("", ZFFF, 0xFC, 0x00, 0x00, Local0, 0xABCDEFEFADEFBCDF)
+                ERR (__METHOD__, ZFFF, __LINE__, 0x00, 0x00, Local0, 0xABCDEFEFADEFBCDF)
             }
 
             Local1 = "       0xabcdefefadefbcd"
             ToInteger (Local1, Local0)
             If ((Local0 != 0x0ABCDEFEFADEFBCD))
             {
-                ERR ("", ZFFF, 0x0102, 0x00, 0x00, Local0, 0x0ABCDEFEFADEFBCD)
+                ERR (__METHOD__, ZFFF, __LINE__, 0x00, 0x00, Local0, 0x0ABCDEFEFADEFBCD)
             }
         }
 
         ToInteger ("        0x1ab2cd34", Local0)
         If ((Local0 != 0x1AB2CD34))
         {
-            ERR ("", ZFFF, 0x0108, 0x00, 0x00, Local0, 0x1AB2CD34)
+            ERR (__METHOD__, ZFFF, __LINE__, 0x00, 0x00, Local0, 0x1AB2CD34)
         }
 
         If (F64)
@@ -307,75 +307,75 @@
             ToInteger (Local1, Local0)
             If ((Local0 != 0x1AB2CD340FE05678))
             {
-                ERR ("", ZFFF, 0x010F, 0x00, 0x00, Local0, 0x1AB2CD340FE05678)
+                ERR (__METHOD__, ZFFF, __LINE__, 0x00, 0x00, Local0, 0x1AB2CD340FE05678)
             }
 
             Local1 = "         0x1ab2cd340fe0"
             ToInteger (Local1, Local0)
             If ((Local0 != 0x00001AB2CD340FE0))
             {
-                ERR ("", ZFFF, 0x0115, 0x00, 0x00, Local0, 0x00001AB2CD340FE0)
+                ERR (__METHOD__, ZFFF, __LINE__, 0x00, 0x00, Local0, 0x00001AB2CD340FE0)
             }
         }
 
         ToInteger ("          0", Local0)
         If ((Local0 != 0x00))
         {
-            ERR ("", ZFFF, 0x011B, 0x00, 0x00, Local0, 0x00)
+            ERR (__METHOD__, ZFFF, __LINE__, 0x00, 0x00, Local0, 0x00)
         }
 
         ToInteger (" \t0000000", Local0)
         If ((Local0 != 0x00))
         {
-            ERR ("", ZFFF, 0x0120, 0x00, 0x00, Local0, 0x00)
+            ERR (__METHOD__, ZFFF, __LINE__, 0x00, 0x00, Local0, 0x00)
         }
 
         ToInteger ("\t000000000000000", Local0)
         If ((Local0 != 0x00))
         {
-            ERR ("", ZFFF, 0x0125, 0x00, 0x00, Local0, 0x00)
+            ERR (__METHOD__, ZFFF, __LINE__, 0x00, 0x00, Local0, 0x00)
         }
 
         ToInteger (" 000000000000000000000000000000000000000000", Local0)
         If ((Local0 != 0x00))
         {
-            ERR ("", ZFFF, 0x012A, 0x00, 0x00, Local0, 0x00)
+            ERR (__METHOD__, ZFFF, __LINE__, 0x00, 0x00, Local0, 0x00)
         }
 
         ToInteger ("           1", Local0)
         If ((Local0 != 0x01))
         {
-            ERR ("", ZFFF, 0x012F, 0x00, 0x00, Local0, 0x01)
+            ERR (__METHOD__, ZFFF, __LINE__, 0x00, 0x00, Local0, 0x01)
         }
 
         ToInteger ("            1234567890", Local0)
         If ((Local0 != 0x499602D2))
         {
-            ERR ("", ZFFF, 0x0134, 0x00, 0x00, Local0, 0x499602D2)
+            ERR (__METHOD__, ZFFF, __LINE__, 0x00, 0x00, Local0, 0x499602D2)
         }
 
         ToInteger ("\t1234567890", Local0)
         If ((Local0 != 0x499602D2))
         {
-            ERR ("", ZFFF, 0x0139, 0x00, 0x00, Local0, 0x499602D2)
+            ERR (__METHOD__, ZFFF, __LINE__, 0x00, 0x00, Local0, 0x499602D2)
         }
 
         ToInteger ("\t\t\t\t\t\t\t\t\t1234567890", Local0)
         If ((Local0 != 0x499602D2))
         {
-            ERR ("", ZFFF, 0x013E, 0x00, 0x00, Local0, 0x499602D2)
+            ERR (__METHOD__, ZFFF, __LINE__, 0x00, 0x00, Local0, 0x499602D2)
         }
 
         ToInteger ("  \t           1234567", Local0)
         If ((Local0 != 0x0012D687))
         {
-            ERR ("", ZFFF, 0x0143, 0x00, 0x00, Local0, 0x0012D687)
+            ERR (__METHOD__, ZFFF, __LINE__, 0x00, 0x00, Local0, 0x0012D687)
         }
 
         ToInteger ("     \t         4294967295", Local0)
         If ((Local0 != 0xFFFFFFFF))
         {
-            ERR ("", ZFFF, 0x0148, 0x00, 0x00, Local0, 0xFFFFFFFF)
+            ERR (__METHOD__, ZFFF, __LINE__, 0x00, 0x00, Local0, 0xFFFFFFFF)
         }
 
         If (F64)
@@ -384,7 +384,7 @@
             ToInteger (Local1, Local0)
             If ((Local0 != 0xFFFFFFFFFFFFFFFF))
             {
-                ERR ("", ZFFF, 0x014F, 0x00, 0x00, Local0, 0xFFFFFFFFFFFFFFFF)
+                ERR (__METHOD__, ZFFF, __LINE__, 0x00, 0x00, Local0, 0xFFFFFFFFFFFFFFFF)
             }
         }
 
@@ -400,79 +400,79 @@
         ToInteger ("          0", Local0)
         If ((Local0 != 0x00))
         {
-            ERR ("", ZFFF, 0x015F, 0x00, 0x00, Local0, 0x00)
+            ERR (__METHOD__, ZFFF, __LINE__, 0x00, 0x00, Local0, 0x00)
         }
 
         ToInteger ("          2", Local0)
         If ((Local0 != 0x02))
         {
-            ERR ("", ZFFF, 0x0164, 0x00, 0x00, Local0, 0x02)
+            ERR (__METHOD__, ZFFF, __LINE__, 0x00, 0x00, Local0, 0x02)
         }
 
         ToInteger ("          0xa", Local0)
         If ((Local0 != 0x0A))
         {
-            ERR ("", ZFFF, 0x0169, 0x00, 0x00, Local0, 0x0A)
+            ERR (__METHOD__, ZFFF, __LINE__, 0x00, 0x00, Local0, 0x0A)
         }
 
         ToInteger ("          04294967295", Local0)
         If ((Local0 != 0xFFFFFFFF))
         {
-            ERR ("", ZFFF, 0x016E, 0x00, 0x00, Local0, 0xFFFFFFFF)
+            ERR (__METHOD__, ZFFF, __LINE__, 0x00, 0x00, Local0, 0xFFFFFFFF)
         }
 
         ToInteger ("04294967295", Local0)
         If ((Local0 != 0xFFFFFFFF))
         {
-            ERR ("", ZFFF, 0x0173, 0x00, 0x00, Local0, 0xFFFFFFFF)
+            ERR (__METHOD__, ZFFF, __LINE__, 0x00, 0x00, Local0, 0xFFFFFFFF)
         }
 
         ToInteger ("000000000000000000004294967295", Local0)
         If ((Local0 != 0xFFFFFFFF))
         {
-            ERR ("", ZFFF, 0x0178, 0x00, 0x00, Local0, 0xFFFFFFFF)
+            ERR (__METHOD__, ZFFF, __LINE__, 0x00, 0x00, Local0, 0xFFFFFFFF)
         }
 
         ToInteger (" 000000000000000000004294967295", Local0)
         If ((Local0 != 0xFFFFFFFF))
         {
-            ERR ("", ZFFF, 0x017D, 0x00, 0x00, Local0, 0xFFFFFFFF)
+            ERR (__METHOD__, ZFFF, __LINE__, 0x00, 0x00, Local0, 0xFFFFFFFF)
         }
 
         ToInteger ("\t000000000000000000004294967295", Local0)
         If ((Local0 != 0xFFFFFFFF))
         {
-            ERR ("", ZFFF, 0x0182, 0x00, 0x00, Local0, 0xFFFFFFFF)
+            ERR (__METHOD__, ZFFF, __LINE__, 0x00, 0x00, Local0, 0xFFFFFFFF)
         }
 
         ToInteger ("\t \t \t \t \t000000000000000000004294967295", Local0)
         If ((Local0 != 0xFFFFFFFF))
         {
-            ERR ("", ZFFF, 0x0187, 0x00, 0x00, Local0, 0xFFFFFFFF)
+            ERR (__METHOD__, ZFFF, __LINE__, 0x00, 0x00, Local0, 0xFFFFFFFF)
         }
 
         ToInteger ("\t \t \t \t \t04294967295", Local0)
         If ((Local0 != 0xFFFFFFFF))
         {
-            ERR ("", ZFFF, 0x018C, 0x00, 0x00, Local0, 0xFFFFFFFF)
+            ERR (__METHOD__, ZFFF, __LINE__, 0x00, 0x00, Local0, 0xFFFFFFFF)
         }
 
         ToInteger ("\t \t \t \t \t0123456789", Local0)
         If ((Local0 != 0x075BCD15))
         {
-            ERR ("", ZFFF, 0x0191, 0x00, 0x00, Local0, 0x075BCD15)
+            ERR (__METHOD__, ZFFF, __LINE__, 0x00, 0x00, Local0, 0x075BCD15)
         }
 
         ToInteger ("0123456789", Local0)
         If ((Local0 != 0x075BCD15))
         {
-            ERR ("", ZFFF, 0x0196, 0x00, 0x00, Local0, 0x075BCD15)
+            ERR (__METHOD__, ZFFF, __LINE__, 0x00, 0x00, Local0, 0x075BCD15)
         }
 
         ToInteger ("00123456789", Local0)
         If ((Local0 != 0x075BCD15))
         {
-            ERR ("", ZFFF, 0x019B, 0x00, 0x00, Local0, 0x075BCD15)
+            ERR (__METHOD__, ZFFF, __LINE__, 0x00, 0x00, Local0, 0x075BCD15)
         }
 
         If (F64)
@@ -481,21 +481,21 @@
             ToInteger (Local1, Local0)
             If ((Local0 != 0xFFFFFFFFFFFFFFFF))
             {
-                ERR ("", ZFFF, 0x01A2, 0x00, 0x00, Local0, 0xFFFFFFFFFFFFFFFF)
+                ERR (__METHOD__, ZFFF, __LINE__, 0x00, 0x00, Local0, 0xFFFFFFFFFFFFFFFF)
             }
 
             Local1 = "018446744073709551615"
             ToInteger (Local1, Local0)
             If ((Local0 != 0xFFFFFFFFFFFFFFFF))
             {
-                ERR ("", ZFFF, 0x01A8, 0x00, 0x00, Local0, 0xFFFFFFFFFFFFFFFF)
+                ERR (__METHOD__, ZFFF, __LINE__, 0x00, 0x00, Local0, 0xFFFFFFFFFFFFFFFF)
             }
 
             Local1 = "000000000000000000000000000000000000000018446744073709551615"
             ToInteger (Local1, Local0)
             If ((Local0 != 0xFFFFFFFFFFFFFFFF))
             {
-                ERR ("", ZFFF, 0x01AE, 0x00, 0x00, Local0, 0xFFFFFFFFFFFFFFFF)
+                ERR (__METHOD__, ZFFF, __LINE__, 0x00, 0x00, Local0, 0xFFFFFFFFFFFFFFFF)
             }
         }
 

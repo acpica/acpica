@@ -98,28 +98,28 @@
         Local1 = C00D /* \C00D */
         If ((Local0 != Local1))
         {
-            ERR (Arg0, Z144, 0x67, 0x00, 0x00, Local0, Local1)
+            ERR (Arg0, Z144, __LINE__, 0x00, 0x00, Local0, Local1)
         }
 
         Local0 = ObjectType (REG1)
         Local1 = C00D /* \C00D */
         If ((Local0 != Local1))
         {
-            ERR (Arg0, Z144, 0x6D, 0x00, 0x00, Local0, Local1)
+            ERR (Arg0, Z144, __LINE__, 0x00, 0x00, Local0, Local1)
         }
 
         Local0 = ObjectType (REG2)
         Local1 = C00D /* \C00D */
         If ((Local1 != Local0))
         {
-            ERR (Arg0, Z144, 0x73, 0x00, 0x00, Local0, Local1)
+            ERR (Arg0, Z144, __LINE__, 0x00, 0x00, Local0, Local1)
         }
 
         Local0 = ObjectType (REG3)
         Local1 = C00D /* \C00D */
         If ((Local1 != Local0))
         {
-            ERR (Arg0, Z144, 0x79, 0x00, 0x00, Local0, Local1)
+            ERR (Arg0, Z144, __LINE__, 0x00, 0x00, Local0, Local1)
         }
 
         /* Check actual writes to the IndexField(s). */
@@ -131,7 +131,7 @@
         Local1 = 0xF11A
         If ((Local1 != Local0))
         {
-            ERR (Arg0, Z144, 0x86, 0x00, 0x00, Local0, Local1)
+            ERR (Arg0, Z144, __LINE__, 0x00, 0x00, Local0, Local1)
         }
 
         FK32 = I000 /* \M770.I000 */
@@ -140,7 +140,7 @@
         Local1 = 0xD25B
         If ((Local1 != Local0))
         {
-            ERR (Arg0, Z144, 0x8F, 0x00, 0x00, Local0, Local1)
+            ERR (Arg0, Z144, __LINE__, 0x00, 0x00, Local0, Local1)
         }
 
         FK32 = I000 /* \M770.I000 */
@@ -149,7 +149,7 @@
         Local1 = 0x939C
         If ((Local1 != Local0))
         {
-            ERR (Arg0, Z144, 0x98, 0x00, 0x00, Local0, Local1)
+            ERR (Arg0, Z144, __LINE__, 0x00, 0x00, Local0, Local1)
         }
 
         FK32 = I000 /* \M770.I000 */
@@ -158,7 +158,7 @@
         Local1 = 0x54ED
         If ((Local1 != Local0))
         {
-            ERR (Arg0, Z144, 0xA1, 0x00, 0x00, Local0, Local1)
+            ERR (Arg0, Z144, __LINE__, 0x00, 0x00, Local0, Local1)
         }
     }
 
@@ -410,7 +410,7 @@
 
         If ((Arg5 != Local2))
         {
-            ERR (Arg0, Z144, 0x0157, Z144, Arg6, Local2, Arg5)
+            ERR (Arg0, Z144, __LINE__, Z144, Arg6, Local2, Arg5)
         }
 
         /* Fill then immediately read */
@@ -421,7 +421,7 @@
         Local2 = DerefOf (Arg2)
         If ((Arg1 != Local2))
         {
-            ERR (Arg0, Z144, 0x0163, Z144, Arg6, Local2, Arg1)
+            ERR (Arg0, Z144, __LINE__, Z144, Arg6, Local2, Arg1)
         }
         /*
      * November 2011:
@@ -1720,7 +1720,7 @@
                     }
                     Default
                     {
-                        ERR (Arg0, Z144, 0x0546, 0x00, 0x00, Arg2, Arg3)
+                        ERR (Arg0, Z144, __LINE__, 0x00, 0x00, Arg2, Arg3)
                         Return (Zero)
                     }
 
@@ -1932,7 +1932,7 @@
                     }
                     Default
                     {
-                        ERR (Arg0, Z144, 0x05B6, 0x00, 0x00, Arg2, Arg3)
+                        ERR (Arg0, Z144, __LINE__, 0x00, 0x00, Arg2, Arg3)
                         Return (Zero)
                     }
 
@@ -2128,7 +2128,7 @@
                     }
                     Default
                     {
-                        ERR (Arg0, Z144, 0x0626, 0x00, 0x00, Arg2, Arg3)
+                        ERR (Arg0, Z144, __LINE__, 0x00, 0x00, Arg2, Arg3)
                         Return (Zero)
                     }
 
@@ -2324,7 +2324,7 @@
                     }
                     Default
                     {
-                        ERR (Arg0, Z144, 0x0696, 0x00, 0x00, Arg2, Arg3)
+                        ERR (Arg0, Z144, __LINE__, 0x00, 0x00, Arg2, Arg3)
                         Return (Zero)
                     }
 
@@ -2520,7 +2520,7 @@
                     }
                     Default
                     {
-                        ERR (Arg0, Z144, 0x0706, 0x00, 0x00, Arg2, Arg3)
+                        ERR (Arg0, Z144, __LINE__, 0x00, 0x00, Arg2, Arg3)
                         Return (Zero)
                     }
 
@@ -2716,7 +2716,7 @@
                     }
                     Default
                     {
-                        ERR (Arg0, Z144, 0x0776, 0x00, 0x00, Arg2, Arg3)
+                        ERR (Arg0, Z144, __LINE__, 0x00, 0x00, Arg2, Arg3)
                         Return (Zero)
                     }
 
@@ -2912,7 +2912,7 @@
                     }
                     Default
                     {
-                        ERR (Arg0, Z144, 0x07E6, 0x00, 0x00, Arg2, Arg3)
+                        ERR (Arg0, Z144, __LINE__, 0x00, 0x00, Arg2, Arg3)
                         Return (Zero)
                     }
 
@@ -3108,7 +3108,7 @@
                     }
                     Default
                     {
-                        ERR (Arg0, Z144, 0x0856, 0x00, 0x00, Arg2, Arg3)
+                        ERR (Arg0, Z144, __LINE__, 0x00, 0x00, Arg2, Arg3)
                         Return (Zero)
                     }
 
@@ -3304,7 +3304,7 @@
                     }
                     Default
                     {
-                        ERR (Arg0, Z144, 0x08C6, 0x00, 0x00, Arg2, Arg3)
+                        ERR (Arg0, Z144, __LINE__, 0x00, 0x00, Arg2, Arg3)
                         Return (Zero)
                     }
 
@@ -3500,7 +3500,7 @@
                     }
                     Default
                     {
-                        ERR (Arg0, Z144, 0x0936, 0x00, 0x00, Arg2, Arg3)
+                        ERR (Arg0, Z144, __LINE__, 0x00, 0x00, Arg2, Arg3)
                         Return (Zero)
                     }
 
@@ -3712,7 +3712,7 @@
                     }
                     Default
                     {
-                        ERR (Arg0, Z144, 0x09A6, 0x00, 0x00, Arg2, Arg3)
+                        ERR (Arg0, Z144, __LINE__, 0x00, 0x00, Arg2, Arg3)
                         Return (Zero)
                     }
 
@@ -3908,7 +3908,7 @@
                     }
                     Default
                     {
-                        ERR (Arg0, Z144, 0x0A16, 0x00, 0x00, Arg2, Arg3)
+                        ERR (Arg0, Z144, __LINE__, 0x00, 0x00, Arg2, Arg3)
                         Return (Zero)
                     }
 
@@ -4104,7 +4104,7 @@
                     }
                     Default
                     {
-                        ERR (Arg0, Z144, 0x0A86, 0x00, 0x00, Arg2, Arg3)
+                        ERR (Arg0, Z144, __LINE__, 0x00, 0x00, Arg2, Arg3)
                         Return (Zero)
                     }
 
@@ -4300,7 +4300,7 @@
                     }
                     Default
                     {
-                        ERR (Arg0, Z144, 0x0AF6, 0x00, 0x00, Arg2, Arg3)
+                        ERR (Arg0, Z144, __LINE__, 0x00, 0x00, Arg2, Arg3)
                         Return (Zero)
                     }
 
@@ -4496,7 +4496,7 @@
                     }
                     Default
                     {
-                        ERR (Arg0, Z144, 0x0B66, 0x00, 0x00, Arg2, Arg3)
+                        ERR (Arg0, Z144, __LINE__, 0x00, 0x00, Arg2, Arg3)
                         Return (Zero)
                     }
 
@@ -4708,7 +4708,7 @@
                     }
                     Default
                     {
-                        ERR (Arg0, Z144, 0x0BD6, 0x00, 0x00, Arg2, Arg3)
+                        ERR (Arg0, Z144, __LINE__, 0x00, 0x00, Arg2, Arg3)
                         Return (Zero)
                     }
 
@@ -4716,7 +4716,7 @@
             }
             Default
             {
-                ERR (Arg0, Z144, 0x0BDC, 0x00, 0x00, Arg2, Arg3)
+                ERR (Arg0, Z144, __LINE__, 0x00, 0x00, Arg2, Arg3)
                 Return (Zero)
             }
 
@@ -5113,7 +5113,7 @@
                     }
                     Default
                     {
-                        ERR (Arg0, Z144, 0x0CE8, 0x00, 0x00, Arg2, Arg3)
+                        ERR (Arg0, Z144, __LINE__, 0x00, 0x00, Arg2, Arg3)
                         Return (Zero)
                     }
 
@@ -5317,7 +5317,7 @@
                     }
                     Default
                     {
-                        ERR (Arg0, Z144, 0x0D50, 0x00, 0x00, Arg2, Arg3)
+                        ERR (Arg0, Z144, __LINE__, 0x00, 0x00, Arg2, Arg3)
                         Return (Zero)
                     }
 
@@ -5505,7 +5505,7 @@
                     }
                     Default
                     {
-                        ERR (Arg0, Z144, 0x0DB8, 0x00, 0x00, Arg2, Arg3)
+                        ERR (Arg0, Z144, __LINE__, 0x00, 0x00, Arg2, Arg3)
                         Return (Zero)
                     }
 
@@ -5693,7 +5693,7 @@
                     }
                     Default
                     {
-                        ERR (Arg0, Z144, 0x0E20, 0x00, 0x00, Arg2, Arg3)
+                        ERR (Arg0, Z144, __LINE__, 0x00, 0x00, Arg2, Arg3)
                         Return (Zero)
                     }
 
@@ -5881,7 +5881,7 @@
                     }
                     Default
                     {
-                        ERR (Arg0, Z144, 0x0E88, 0x00, 0x00, Arg2, Arg3)
+                        ERR (Arg0, Z144, __LINE__, 0x00, 0x00, Arg2, Arg3)
                         Return (Zero)
                     }
 
@@ -6069,7 +6069,7 @@
                     }
                     Default
                     {
-                        ERR (Arg0, Z144, 0x0EF0, 0x00, 0x00, Arg2, Arg3)
+                        ERR (Arg0, Z144, __LINE__, 0x00, 0x00, Arg2, Arg3)
                         Return (Zero)
                     }
 
@@ -6257,7 +6257,7 @@
                     }
                     Default
                     {
-                        ERR (Arg0, Z144, 0x0F58, 0x00, 0x00, Arg2, Arg3)
+                        ERR (Arg0, Z144, __LINE__, 0x00, 0x00, Arg2, Arg3)
                         Return (Zero)
                     }
 
@@ -6445,7 +6445,7 @@
                     }
                     Default
                     {
-                        ERR (Arg0, Z144, 0x0FC0, 0x00, 0x00, Arg2, Arg3)
+                        ERR (Arg0, Z144, __LINE__, 0x00, 0x00, Arg2, Arg3)
                         Return (Zero)
                     }
 
@@ -6633,7 +6633,7 @@
                     }
                     Default
                     {
-                        ERR (Arg0, Z144, 0x1028, 0x00, 0x00, Arg2, Arg3)
+                        ERR (Arg0, Z144, __LINE__, 0x00, 0x00, Arg2, Arg3)
                         Return (Zero)
                     }
 
@@ -6821,7 +6821,7 @@
                     }
                     Default
                     {
-                        ERR (Arg0, Z144, 0x1090, 0x00, 0x00, Arg2, Arg3)
+                        ERR (Arg0, Z144, __LINE__, 0x00, 0x00, Arg2, Arg3)
                         Return (Zero)
                     }
 
@@ -7025,7 +7025,7 @@
                     }
                     Default
                     {
-                        ERR (Arg0, Z144, 0x10F8, 0x00, 0x00, Arg2, Arg3)
+                        ERR (Arg0, Z144, __LINE__, 0x00, 0x00, Arg2, Arg3)
                         Return (Zero)
                     }
 
@@ -7213,7 +7213,7 @@
                     }
                     Default
                     {
-                        ERR (Arg0, Z144, 0x1160, 0x00, 0x00, Arg2, Arg3)
+                        ERR (Arg0, Z144, __LINE__, 0x00, 0x00, Arg2, Arg3)
                         Return (Zero)
                     }
 
@@ -7401,7 +7401,7 @@
                     }
                     Default
                     {
-                        ERR (Arg0, Z144, 0x11C8, 0x00, 0x00, Arg2, Arg3)
+                        ERR (Arg0, Z144, __LINE__, 0x00, 0x00, Arg2, Arg3)
                         Return (Zero)
                     }
 
@@ -7589,7 +7589,7 @@
                     }
                     Default
                     {
-                        ERR (Arg0, Z144, 0x1230, 0x00, 0x00, Arg2, Arg3)
+                        ERR (Arg0, Z144, __LINE__, 0x00, 0x00, Arg2, Arg3)
                         Return (Zero)
                     }
 
@@ -7777,7 +7777,7 @@
                     }
                     Default
                     {
-                        ERR (Arg0, Z144, 0x1298, 0x00, 0x00, Arg2, Arg3)
+                        ERR (Arg0, Z144, __LINE__, 0x00, 0x00, Arg2, Arg3)
                         Return (Zero)
                     }
 
@@ -7981,7 +7981,7 @@
                     }
                     Default
                     {
-                        ERR (Arg0, Z144, 0x1300, 0x00, 0x00, Arg2, Arg3)
+                        ERR (Arg0, Z144, __LINE__, 0x00, 0x00, Arg2, Arg3)
                         Return (Zero)
                     }
 
@@ -7989,7 +7989,7 @@
             }
             Default
             {
-                ERR (Arg0, Z144, 0x1306, 0x00, 0x00, Arg2, Arg3)
+                ERR (Arg0, Z144, __LINE__, 0x00, 0x00, Arg2, Arg3)
                 Return (Zero)
             }
 
@@ -8386,7 +8386,7 @@
                     }
                     Default
                     {
-                        ERR (Arg0, Z144, 0x1412, 0x00, 0x00, Arg2, Arg3)
+                        ERR (Arg0, Z144, __LINE__, 0x00, 0x00, Arg2, Arg3)
                         Return (Zero)
                     }
 
@@ -8590,7 +8590,7 @@
                     }
                     Default
                     {
-                        ERR (Arg0, Z144, 0x147A, 0x00, 0x00, Arg2, Arg3)
+                        ERR (Arg0, Z144, __LINE__, 0x00, 0x00, Arg2, Arg3)
                         Return (Zero)
                     }
 
@@ -8778,7 +8778,7 @@
                     }
                     Default
                     {
-                        ERR (Arg0, Z144, 0x14E2, 0x00, 0x00, Arg2, Arg3)
+                        ERR (Arg0, Z144, __LINE__, 0x00, 0x00, Arg2, Arg3)
                         Return (Zero)
                     }
 
@@ -8966,7 +8966,7 @@
                     }
                     Default
                     {
-                        ERR (Arg0, Z144, 0x154A, 0x00, 0x00, Arg2, Arg3)
+                        ERR (Arg0, Z144, __LINE__, 0x00, 0x00, Arg2, Arg3)
                         Return (Zero)
                     }
 
@@ -9154,7 +9154,7 @@
                     }
                     Default
                     {
-                        ERR (Arg0, Z144, 0x15B2, 0x00, 0x00, Arg2, Arg3)
+                        ERR (Arg0, Z144, __LINE__, 0x00, 0x00, Arg2, Arg3)
                         Return (Zero)
                     }
 
@@ -9342,7 +9342,7 @@
                     }
                     Default
                     {
-                        ERR (Arg0, Z144, 0x161A, 0x00, 0x00, Arg2, Arg3)
+                        ERR (Arg0, Z144, __LINE__, 0x00, 0x00, Arg2, Arg3)
                         Return (Zero)
                     }
 
@@ -9530,7 +9530,7 @@
                     }
                     Default
                     {
-                        ERR (Arg0, Z144, 0x1682, 0x00, 0x00, Arg2, Arg3)
+                        ERR (Arg0, Z144, __LINE__, 0x00, 0x00, Arg2, Arg3)
                         Return (Zero)
                     }
 
@@ -9718,7 +9718,7 @@
                     }
                     Default
                     {
-                        ERR (Arg0, Z144, 0x16EA, 0x00, 0x00, Arg2, Arg3)
+                        ERR (Arg0, Z144, __LINE__, 0x00, 0x00, Arg2, Arg3)
                         Return (Zero)
                     }
 
@@ -9906,7 +9906,7 @@
                     }
                     Default
                     {
-                        ERR (Arg0, Z144, 0x1752, 0x00, 0x00, Arg2, Arg3)
+                        ERR (Arg0, Z144, __LINE__, 0x00, 0x00, Arg2, Arg3)
                         Return (Zero)
                     }
 
@@ -10094,7 +10094,7 @@
                     }
                     Default
                     {
-                        ERR (Arg0, Z144, 0x17BA, 0x00, 0x00, Arg2, Arg3)
+                        ERR (Arg0, Z144, __LINE__, 0x00, 0x00, Arg2, Arg3)
                         Return (Zero)
                     }
 
@@ -10298,7 +10298,7 @@
                     }
                     Default
                     {
-                        ERR (Arg0, Z144, 0x1822, 0x00, 0x00, Arg2, Arg3)
+                        ERR (Arg0, Z144, __LINE__, 0x00, 0x00, Arg2, Arg3)
                         Return (Zero)
                     }
 
@@ -10486,7 +10486,7 @@
                     }
                     Default
                     {
-                        ERR (Arg0, Z144, 0x188A, 0x00, 0x00, Arg2, Arg3)
+                        ERR (Arg0, Z144, __LINE__, 0x00, 0x00, Arg2, Arg3)
                         Return (Zero)
                     }
 
@@ -10674,7 +10674,7 @@
                     }
                     Default
                     {
-                        ERR (Arg0, Z144, 0x18F2, 0x00, 0x00, Arg2, Arg3)
+                        ERR (Arg0, Z144, __LINE__, 0x00, 0x00, Arg2, Arg3)
                         Return (Zero)
                     }
 
@@ -10862,7 +10862,7 @@
                     }
                     Default
                     {
-                        ERR (Arg0, Z144, 0x195A, 0x00, 0x00, Arg2, Arg3)
+                        ERR (Arg0, Z144, __LINE__, 0x00, 0x00, Arg2, Arg3)
                         Return (Zero)
                     }
 
@@ -11050,7 +11050,7 @@
                     }
                     Default
                     {
-                        ERR (Arg0, Z144, 0x19C2, 0x00, 0x00, Arg2, Arg3)
+                        ERR (Arg0, Z144, __LINE__, 0x00, 0x00, Arg2, Arg3)
                         Return (Zero)
                     }
 
@@ -11254,7 +11254,7 @@
                     }
                     Default
                     {
-                        ERR (Arg0, Z144, 0x1A2A, 0x00, 0x00, Arg2, Arg3)
+                        ERR (Arg0, Z144, __LINE__, 0x00, 0x00, Arg2, Arg3)
                         Return (Zero)
                     }
 
@@ -11262,7 +11262,7 @@
             }
             Default
             {
-                ERR (Arg0, Z144, 0x1A30, 0x00, 0x00, Arg2, Arg3)
+                ERR (Arg0, Z144, __LINE__, 0x00, 0x00, Arg2, Arg3)
                 Return (Zero)
             }
 
@@ -11661,7 +11661,7 @@
                     }
                     Default
                     {
-                        ERR (Arg0, Z144, 0x1B3E, 0x00, 0x00, Arg2, Arg3)
+                        ERR (Arg0, Z144, __LINE__, 0x00, 0x00, Arg2, Arg3)
                         Return (Zero)
                     }
 
@@ -11865,7 +11865,7 @@
                     }
                     Default
                     {
-                        ERR (Arg0, Z144, 0x1BA6, 0x00, 0x00, Arg2, Arg3)
+                        ERR (Arg0, Z144, __LINE__, 0x00, 0x00, Arg2, Arg3)
                         Return (Zero)
                     }
 
@@ -12053,7 +12053,7 @@
                     }
                     Default
                     {
-                        ERR (Arg0, Z144, 0x1C0E, 0x00, 0x00, Arg2, Arg3)
+                        ERR (Arg0, Z144, __LINE__, 0x00, 0x00, Arg2, Arg3)
                         Return (Zero)
                     }
 
@@ -12241,7 +12241,7 @@
                     }
                     Default
                     {
-                        ERR (Arg0, Z144, 0x1C76, 0x00, 0x00, Arg2, Arg3)
+                        ERR (Arg0, Z144, __LINE__, 0x00, 0x00, Arg2, Arg3)
                         Return (Zero)
                     }
 
@@ -12429,7 +12429,7 @@
                     }
                     Default
                     {
-                        ERR (Arg0, Z144, 0x1CDE, 0x00, 0x00, Arg2, Arg3)
+                        ERR (Arg0, Z144, __LINE__, 0x00, 0x00, Arg2, Arg3)
                         Return (Zero)
                     }
 
@@ -12617,7 +12617,7 @@
                     }
                     Default
                     {
-                        ERR (Arg0, Z144, 0x1D46, 0x00, 0x00, Arg2, Arg3)
+                        ERR (Arg0, Z144, __LINE__, 0x00, 0x00, Arg2, Arg3)
                         Return (Zero)
                     }
 
@@ -12805,7 +12805,7 @@
                     }
                     Default
                     {
-                        ERR (Arg0, Z144, 0x1DAE, 0x00, 0x00, Arg2, Arg3)
+                        ERR (Arg0, Z144, __LINE__, 0x00, 0x00, Arg2, Arg3)
                         Return (Zero)
                     }
 
@@ -12993,7 +12993,7 @@
                     }
                     Default
                     {
-                        ERR (Arg0, Z144, 0x1E16, 0x00, 0x00, Arg2, Arg3)
+                        ERR (Arg0, Z144, __LINE__, 0x00, 0x00, Arg2, Arg3)
                         Return (Zero)
                     }
 
@@ -13181,7 +13181,7 @@
                     }
                     Default
                     {
-                        ERR (Arg0, Z144, 0x1E7E, 0x00, 0x00, Arg2, Arg3)
+                        ERR (Arg0, Z144, __LINE__, 0x00, 0x00, Arg2, Arg3)
                         Return (Zero)
                     }
 
@@ -13369,7 +13369,7 @@
                     }
                     Default
                     {
-                        ERR (Arg0, Z144, 0x1EE6, 0x00, 0x00, Arg2, Arg3)
+                        ERR (Arg0, Z144, __LINE__, 0x00, 0x00, Arg2, Arg3)
                         Return (Zero)
                     }
 
@@ -13573,7 +13573,7 @@
                     }
                     Default
                     {
-                        ERR (Arg0, Z144, 0x1F4E, 0x00, 0x00, Arg2, Arg3)
+                        ERR (Arg0, Z144, __LINE__, 0x00, 0x00, Arg2, Arg3)
                         Return (Zero)
                     }
 
@@ -13761,7 +13761,7 @@
                     }
                     Default
                     {
-                        ERR (Arg0, Z144, 0x1FB6, 0x00, 0x00, Arg2, Arg3)
+                        ERR (Arg0, Z144, __LINE__, 0x00, 0x00, Arg2, Arg3)
                         Return (Zero)
                     }
 
@@ -13949,7 +13949,7 @@
                     }
                     Default
                     {
-                        ERR (Arg0, Z144, 0x201E, 0x00, 0x00, Arg2, Arg3)
+                        ERR (Arg0, Z144, __LINE__, 0x00, 0x00, Arg2, Arg3)
                         Return (Zero)
                     }
 
@@ -14137,7 +14137,7 @@
                     }
                     Default
                     {
-                        ERR (Arg0, Z144, 0x2086, 0x00, 0x00, Arg2, Arg3)
+                        ERR (Arg0, Z144, __LINE__, 0x00, 0x00, Arg2, Arg3)
                         Return (Zero)
                     }
 
@@ -14325,7 +14325,7 @@
                     }
                     Default
                     {
-                        ERR (Arg0, Z144, 0x20EE, 0x00, 0x00, Arg2, Arg3)
+                        ERR (Arg0, Z144, __LINE__, 0x00, 0x00, Arg2, Arg3)
                         Return (Zero)
                     }
 
@@ -14529,7 +14529,7 @@
                     }
                     Default
                     {
-                        ERR (Arg0, Z144, 0x2156, 0x00, 0x00, Arg2, Arg3)
+                        ERR (Arg0, Z144, __LINE__, 0x00, 0x00, Arg2, Arg3)
                         Return (Zero)
                     }
 
@@ -14537,7 +14537,7 @@
             }
             Default
             {
-                ERR (Arg0, Z144, 0x215C, 0x00, 0x00, Arg2, Arg3)
+                ERR (Arg0, Z144, __LINE__, 0x00, 0x00, Arg2, Arg3)
                 Return (Zero)
             }
 
@@ -14935,7 +14935,7 @@
                     }
                     Default
                     {
-                        ERR (Arg0, Z144, 0x226A, 0x00, 0x00, Arg2, Arg3)
+                        ERR (Arg0, Z144, __LINE__, 0x00, 0x00, Arg2, Arg3)
                         Return (Zero)
                     }
 
@@ -15139,7 +15139,7 @@
                     }
                     Default
                     {
-                        ERR (Arg0, Z144, 0x22D2, 0x00, 0x00, Arg2, Arg3)
+                        ERR (Arg0, Z144, __LINE__, 0x00, 0x00, Arg2, Arg3)
                         Return (Zero)
                     }
 
@@ -15327,7 +15327,7 @@
                     }
                     Default
                     {
-                        ERR (Arg0, Z144, 0x233A, 0x00, 0x00, Arg2, Arg3)
+                        ERR (Arg0, Z144, __LINE__, 0x00, 0x00, Arg2, Arg3)
                         Return (Zero)
                     }
 
@@ -15515,7 +15515,7 @@
                     }
                     Default
                     {
-                        ERR (Arg0, Z144, 0x23A2, 0x00, 0x00, Arg2, Arg3)
+                        ERR (Arg0, Z144, __LINE__, 0x00, 0x00, Arg2, Arg3)
                         Return (Zero)
                     }
 
@@ -15703,7 +15703,7 @@
                     }
                     Default
                     {
-                        ERR (Arg0, Z144, 0x240A, 0x00, 0x00, Arg2, Arg3)
+                        ERR (Arg0, Z144, __LINE__, 0x00, 0x00, Arg2, Arg3)
                         Return (Zero)
                     }
 
@@ -15891,7 +15891,7 @@
                     }
                     Default
                     {
-                        ERR (Arg0, Z144, 0x2472, 0x00, 0x00, Arg2, Arg3)
+                        ERR (Arg0, Z144, __LINE__, 0x00, 0x00, Arg2, Arg3)
                         Return (Zero)
                     }
 
@@ -16079,7 +16079,7 @@
                     }
                     Default
                     {
-                        ERR (Arg0, Z144, 0x24DA, 0x00, 0x00, Arg2, Arg3)
+                        ERR (Arg0, Z144, __LINE__, 0x00, 0x00, Arg2, Arg3)
                         Return (Zero)
                     }
 
@@ -16267,7 +16267,7 @@
                     }
                     Default
                     {
-                        ERR (Arg0, Z144, 0x2542, 0x00, 0x00, Arg2, Arg3)
+                        ERR (Arg0, Z144, __LINE__, 0x00, 0x00, Arg2, Arg3)
                         Return (Zero)
                     }
 
@@ -16455,7 +16455,7 @@
                     }
                     Default
                     {
-                        ERR (Arg0, Z144, 0x25AA, 0x00, 0x00, Arg2, Arg3)
+                        ERR (Arg0, Z144, __LINE__, 0x00, 0x00, Arg2, Arg3)
                         Return (Zero)
                     }
 
@@ -16643,7 +16643,7 @@
                     }
                     Default
                     {
-                        ERR (Arg0, Z144, 0x2612, 0x00, 0x00, Arg2, Arg3)
+                        ERR (Arg0, Z144, __LINE__, 0x00, 0x00, Arg2, Arg3)
                         Return (Zero)
                     }
 
@@ -16847,7 +16847,7 @@
                     }
                     Default
                     {
-                        ERR (Arg0, Z144, 0x267A, 0x00, 0x00, Arg2, Arg3)
+                        ERR (Arg0, Z144, __LINE__, 0x00, 0x00, Arg2, Arg3)
                         Return (Zero)
                     }
 
@@ -17035,7 +17035,7 @@
                     }
                     Default
                     {
-                        ERR (Arg0, Z144, 0x26E2, 0x00, 0x00, Arg2, Arg3)
+                        ERR (Arg0, Z144, __LINE__, 0x00, 0x00, Arg2, Arg3)
                         Return (Zero)
                     }
 
@@ -17223,7 +17223,7 @@
                     }
                     Default
                     {
-                        ERR (Arg0, Z144, 0x274A, 0x00, 0x00, Arg2, Arg3)
+                        ERR (Arg0, Z144, __LINE__, 0x00, 0x00, Arg2, Arg3)
                         Return (Zero)
                     }
 
@@ -17411,7 +17411,7 @@
                     }
                     Default
                     {
-                        ERR (Arg0, Z144, 0x27B2, 0x00, 0x00, Arg2, Arg3)
+                        ERR (Arg0, Z144, __LINE__, 0x00, 0x00, Arg2, Arg3)
                         Return (Zero)
                     }
 
@@ -17599,7 +17599,7 @@
                     }
                     Default
                     {
-                        ERR (Arg0, Z144, 0x281A, 0x00, 0x00, Arg2, Arg3)
+                        ERR (Arg0, Z144, __LINE__, 0x00, 0x00, Arg2, Arg3)
                         Return (Zero)
                     }
 
@@ -17803,7 +17803,7 @@
                     }
                     Default
                     {
-                        ERR (Arg0, Z144, 0x2882, 0x00, 0x00, Arg2, Arg3)
+                        ERR (Arg0, Z144, __LINE__, 0x00, 0x00, Arg2, Arg3)
                         Return (Zero)
                     }
 
@@ -17811,7 +17811,7 @@
             }
             Default
             {
-                ERR (Arg0, Z144, 0x2888, 0x00, 0x00, Arg2, Arg3)
+                ERR (Arg0, Z144, __LINE__, 0x00, 0x00, Arg2, Arg3)
                 Return (Zero)
             }
 

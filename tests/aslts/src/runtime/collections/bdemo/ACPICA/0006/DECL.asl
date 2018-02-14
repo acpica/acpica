@@ -35,12 +35,12 @@
         ToInteger ("0x12345678", Local0)
         If ((Local0 != 0x12345678))
         {
-            ERR ("", ZFFF, 0x27, 0x00, 0x00, Local0, 0x12345678)
+            ERR (__METHOD__, ZFFF, __LINE__, 0x00, 0x00, Local0, 0x12345678)
         }
 
         ToInteger ("12345678", Local0)
         If ((Local0 != 0x00BC614E))
         {
-            ERR ("", ZFFF, 0x2C, 0x00, 0x00, Local0, 0x00BC614E)
+            ERR (__METHOD__, ZFFF, __LINE__, 0x00, 0x00, Local0, 0x00BC614E)
         }
     }

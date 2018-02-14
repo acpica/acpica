@@ -46,6 +46,6 @@
         }
         ElseIf ((Ones != 0xFFFFFFFF))
         {
-            ERR ("", ZFFF, 0x30, 0x00, 0x00, Ones, 0xFFFFFFFF)
+            ERR (__METHOD__, ZFFF, __LINE__, 0x00, 0x00, Ones, 0xFFFFFFFF)
         }
     }

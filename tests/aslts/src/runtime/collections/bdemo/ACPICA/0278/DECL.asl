@@ -60,12 +60,12 @@
 
             If (CondRefOf (NABS, Local0))
             {
-                ERR ("", ZFFF, 0x3F, 0x00, 0x00, "NABS", 0x01)
+                ERR (__METHOD__, ZFFF, __LINE__, 0x00, 0x00, "NABS", 0x01)
             }
 
             If (CondRefOf (NCRR, Local0))
             {
-                ERR ("", ZFFF, 0x42, 0x00, 0x00, "NCRR", 0x01)
+                ERR (__METHOD__, ZFFF, __LINE__, 0x00, 0x00, "NCRR", 0x01)
             }
 
             RFU0 = SSDT /* \D278.SSDT */
@@ -77,24 +77,24 @@
             {
                 If (("absolute location obj" != DerefOf (Local0)))
                 {
-                    ERR ("", ZFFF, 0x4C, 0x00, 0x00, "absolute location NABS", 0x01)
+                    ERR (__METHOD__, ZFFF, __LINE__, 0x00, 0x00, "absolute location NABS", 0x01)
                 }
             }
             Else
             {
-                ERR ("", ZFFF, 0x4F, 0x00, 0x00, "NABS", 0x00)
+                ERR (__METHOD__, ZFFF, __LINE__, 0x00, 0x00, "NABS", 0x00)
             }
 
             If (CondRefOf (NCRR, Local0))
             {
                 If (("current location obj" != DerefOf (Local0)))
                 {
-                    ERR ("", ZFFF, 0x53, 0x00, 0x00, "current location NCRR", 0x01)
+                    ERR (__METHOD__, ZFFF, __LINE__, 0x00, 0x00, "current location NCRR", 0x01)
                 }
             }
             Else
             {
-                ERR ("", ZFFF, 0x56, 0x00, 0x00, "NCRR", 0x00)
+                ERR (__METHOD__, ZFFF, __LINE__, 0x00, 0x00, "NCRR", 0x00)
             }
 
             /* Check location */
@@ -102,23 +102,23 @@
             If (CondRefOf (\NABS, Local0)){}
             Else
             {
-                ERR ("", ZFFF, 0x5C, 0x00, 0x00, "\\NABS", 0x00)
+                ERR (__METHOD__, ZFFF, __LINE__, 0x00, 0x00, "\\NABS", 0x00)
             }
 
             If (CondRefOf (\NCRR, Local0))
             {
-                ERR ("", ZFFF, 0x5F, 0x00, 0x00, "\\NCRR", 0x01)
+                ERR (__METHOD__, ZFFF, __LINE__, 0x00, 0x00, "\\NCRR", 0x01)
             }
 
             If (CondRefOf (\D278.NCRR, Local0))
             {
-                ERR ("", ZFFF, 0x62, 0x00, 0x00, "\\D278.NCRR", 0x01)
+                ERR (__METHOD__, ZFFF, __LINE__, 0x00, 0x00, "\\D278.NCRR", 0x01)
             }
 
             If (CondRefOf (\D278.TST0.NCRR, Local0)){}
             Else
             {
-                ERR ("", ZFFF, 0x66, 0x00, 0x00, "\\D278.TST0.NCRR", 0x00)
+                ERR (__METHOD__, ZFFF, __LINE__, 0x00, 0x00, "\\D278.TST0.NCRR", 0x00)
             }
 
             Unload (DDBH)
@@ -127,12 +127,12 @@
 
             If (CondRefOf (NABS, Local0))
             {
-                ERR ("", ZFFF, 0x6E, 0x00, 0x00, "NABS", 0x01)
+                ERR (__METHOD__, ZFFF, __LINE__, 0x00, 0x00, "NABS", 0x01)
             }
 
             If (CondRefOf (NCRR, Local0))
             {
-                ERR ("", ZFFF, 0x71, 0x00, 0x00, "NCRR", 0x01)
+                ERR (__METHOD__, ZFFF, __LINE__, 0x00, 0x00, "NCRR", 0x01)
             }
         }
     }

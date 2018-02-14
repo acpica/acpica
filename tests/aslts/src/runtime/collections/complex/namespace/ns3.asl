@@ -49,7 +49,7 @@
             Local0 = DerefOf (Arg0 [0x00])
             If ((Local0 != 0x11112222))
             {
-                ERR (__METHOD__, Z157, 0x33, 0x00, 0x00, Local0, 0x11112222)
+                ERR (__METHOD__, Z157, __LINE__, 0x00, 0x00, Local0, 0x11112222)
             }
         }
 
@@ -57,7 +57,7 @@
         Local0 = DerefOf (P000 [0x00])
         If ((Local0 != 0x11112222))
         {
-            ERR (__METHOD__, Z157, 0x3C, 0x00, 0x00, Local0, 0x11112222)
+            ERR (__METHOD__, Z157, __LINE__, 0x00, 0x00, Local0, 0x11112222)
         }
 
         CH03 (__METHOD__, Z157, 0x02, 0x3F, 0x00)
@@ -80,7 +80,7 @@
             Local0 = DerefOf (Arg0 [0x00])
             If ((Local0 != 0x67))
             {
-                ERR (__METHOD__, Z157, 0x53, 0x00, 0x00, Local0, 0x67)
+                ERR (__METHOD__, Z157, __LINE__, 0x00, 0x00, Local0, 0x67)
             }
         }
 
@@ -88,7 +88,7 @@
         Local0 = DerefOf (B000 [0x00])
         If ((Local0 != 0x67))
         {
-            ERR (__METHOD__, Z157, 0x5C, 0x00, 0x00, Local0, 0x67)
+            ERR (__METHOD__, Z157, __LINE__, 0x00, 0x00, Local0, 0x67)
         }
 
         CH03 (__METHOD__, Z157, 0x05, 0x5F, 0x00)
@@ -108,7 +108,7 @@
             Local0 = DerefOf (Arg0 [0x00])
             If ((Local0 != 0x38))
             {
-                ERR (__METHOD__, Z157, 0x72, 0x00, 0x00, Local0, 0x38)
+                ERR (__METHOD__, Z157, __LINE__, 0x00, 0x00, Local0, 0x38)
             }
         }
 
@@ -116,7 +116,7 @@
         Local0 = DerefOf (S000 [0x00])
         If ((Local0 != 0x38))
         {
-            ERR (__METHOD__, Z157, 0x7B, 0x00, 0x00, Local0, 0x38)
+            ERR (__METHOD__, Z157, __LINE__, 0x00, 0x00, Local0, 0x38)
         }
 
         CH03 (__METHOD__, Z157, 0x08, 0x7E, 0x00)
@@ -200,13 +200,13 @@
             Store ((DerefOf (Arg0 [0x01]) + M001 (Arg0)), Local0)
             If ((Local0 != 0x87654321))
             {
-                ERR (__METHOD__, Z157, 0xC0, 0x00, 0x00, Local0, 0x87654321)
+                ERR (__METHOD__, Z157, __LINE__, 0x00, 0x00, Local0, 0x87654321)
             }
 
             Local1 = DerefOf (Arg0 [0x01])
             If ((Local1 != 0x80000000))
             {
-                ERR (__METHOD__, Z157, 0xC6, 0x00, 0x00, Local1, 0x80000000)
+                ERR (__METHOD__, Z157, __LINE__, 0x00, 0x00, Local1, 0x80000000)
             }
 
             CH03 (__METHOD__, Z157, 0x0C, 0xC9, 0x00)
@@ -216,13 +216,13 @@
         Local0 = M000 (PP00, Arg0)
         If ((Local0 != 0x87654321))
         {
-            ERR (__METHOD__, Z157, 0xD1, 0x00, 0x00, Local0, 0x87654321)
+            ERR (__METHOD__, Z157, __LINE__, 0x00, 0x00, Local0, 0x87654321)
         }
 
         Local0 = DerefOf (PP00 [0x01])
         If ((Local0 != 0x80000000))
         {
-            ERR (__METHOD__, Z157, 0xD7, 0x00, 0x00, Local0, 0x80000000)
+            ERR (__METHOD__, Z157, __LINE__, 0x00, 0x00, Local0, 0x80000000)
         }
 
         CH03 (__METHOD__, Z157, 0x0F, 0xDA, 0x00)
@@ -260,13 +260,13 @@
             Store ((DerefOf (Arg0 [0x01]) + M001 (Arg0)), Local0)
             If ((Local0 != 0x065013BA))
             {
-                ERR (__METHOD__, Z157, 0xF7, 0x00, 0x00, Local0, 0x065013BA)
+                ERR (__METHOD__, Z157, __LINE__, 0x00, 0x00, Local0, 0x065013BA)
             }
 
             Local1 = DerefOf (Arg0 [0x01])
             If ((Local1 != 0x00100064))
             {
-                ERR (__METHOD__, Z157, 0xFD, 0x00, 0x00, Local1, 0x00100064)
+                ERR (__METHOD__, Z157, __LINE__, 0x00, 0x00, Local1, 0x00100064)
             }
 
             Return (Local0)
@@ -275,13 +275,13 @@
         Local0 = M000 (PP00)
         If ((Local0 != 0x065013BA))
         {
-            ERR (__METHOD__, Z157, 0x0105, 0x00, 0x00, Local0, 0x065013BA)
+            ERR (__METHOD__, Z157, __LINE__, 0x00, 0x00, Local0, 0x065013BA)
         }
 
         Local1 = DerefOf (PP00 [0x01])
         If ((Local1 != 0x00100064))
         {
-            ERR (__METHOD__, Z157, 0x010B, 0x00, 0x00, Local1, 0x00100064)
+            ERR (__METHOD__, Z157, __LINE__, 0x00, 0x00, Local1, 0x00100064)
         }
 
         CH03 (__METHOD__, Z157, 0x14, 0x010E, 0x00)
@@ -349,13 +349,13 @@
             Store ((Arg0 + M001 ()), Local0)
             If ((Local0 != 0x87654321))
             {
-                ERR (__METHOD__, Z157, 0x014D, 0x00, 0x00, Local0, 0x87654321)
+                ERR (__METHOD__, Z157, __LINE__, 0x00, 0x00, Local0, 0x87654321)
             }
 
             Local1 = 0x01
             If ((Arg0 != Local1))
             {
-                ERR (__METHOD__, Z157, 0x0153, 0x00, 0x00, Arg0, Local1)
+                ERR (__METHOD__, Z157, __LINE__, 0x00, 0x00, Arg0, Local1)
             }
 
             CH03 (__METHOD__, Z157, 0x18, 0x0156, 0x00)
@@ -365,13 +365,13 @@
         Local0 = M000 (BF00)
         If ((Local0 != 0x87654321))
         {
-            ERR (__METHOD__, Z157, 0x015E, 0x00, 0x00, Local0, 0x87654321)
+            ERR (__METHOD__, Z157, __LINE__, 0x00, 0x00, Local0, 0x87654321)
         }
 
         Local1 = 0xABCDEF70
         If ((BF00 != Local1))
         {
-            ERR (__METHOD__, Z157, 0x0164, 0x00, 0x00, BF00, Local1)
+            ERR (__METHOD__, Z157, __LINE__, 0x00, 0x00, BF00, Local1)
         }
 
         CH03 (__METHOD__, Z157, 0x1B, 0x0167, 0x00)
@@ -445,13 +445,13 @@
             Store ((Arg0 + M001 ()), Local0)
             If ((Local0 != 0x87654321))
             {
-                ERR (__METHOD__, Z157, 0x01A7, 0x00, 0x00, Local0, 0x87654321)
+                ERR (__METHOD__, Z157, __LINE__, 0x00, 0x00, Local0, 0x87654321)
             }
 
             Local1 = 0x01
             If ((Arg0 != Local1))
             {
-                ERR (__METHOD__, Z157, 0x01AD, 0x00, 0x00, Arg0, Local1)
+                ERR (__METHOD__, Z157, __LINE__, 0x00, 0x00, Arg0, Local1)
             }
 
             CH03 (__METHOD__, Z157, 0x1F, 0x01B0, 0x00)
@@ -461,13 +461,13 @@
         Local0 = M000 (F000)
         If ((Local0 != 0x87654321))
         {
-            ERR (__METHOD__, Z157, 0x01B8, 0x00, 0x00, Local0, 0x87654321)
+            ERR (__METHOD__, Z157, __LINE__, 0x00, 0x00, Local0, 0x87654321)
         }
 
         Local1 = 0xABCDEF70
         If ((F000 != Local1))
         {
-            ERR (__METHOD__, Z157, 0x01BE, 0x00, 0x00, F000, Local1)
+            ERR (__METHOD__, Z157, __LINE__, 0x00, 0x00, F000, Local1)
         }
 
         CH03 (__METHOD__, Z157, 0x22, 0x01C1, 0x00)
@@ -546,13 +546,13 @@
             Store ((Arg0 + M001 ()), Local0)
             If ((Local0 != 0x87654321))
             {
-                ERR (__METHOD__, Z157, 0x0202, 0x00, 0x00, Local0, 0x87654321)
+                ERR (__METHOD__, Z157, __LINE__, 0x00, 0x00, Local0, 0x87654321)
             }
 
             Local1 = 0x01
             If ((Arg0 != Local1))
             {
-                ERR (__METHOD__, Z157, 0x0208, 0x00, 0x00, Arg0, Local1)
+                ERR (__METHOD__, Z157, __LINE__, 0x00, 0x00, Arg0, Local1)
             }
 
             CH03 (__METHOD__, Z157, 0x26, 0x020B, 0x00)
@@ -562,13 +562,13 @@
         Local0 = M000 (BNK0)
         If ((Local0 != 0x87654321))
         {
-            ERR (__METHOD__, Z157, 0x0213, 0x00, 0x00, Local0, 0x87654321)
+            ERR (__METHOD__, Z157, __LINE__, 0x00, 0x00, Local0, 0x87654321)
         }
 
         Local1 = 0xABCDEF70
         If ((BNK0 != Local1))
         {
-            ERR (__METHOD__, Z157, 0x0219, 0x00, 0x00, BNK0, Local1)
+            ERR (__METHOD__, Z157, __LINE__, 0x00, 0x00, BNK0, Local1)
         }
 
         CH03 (__METHOD__, Z157, 0x29, 0x021C, 0x00)
@@ -647,13 +647,13 @@
             Store ((Arg0 + M001 ()), Local0)
             If ((Local0 != 0x87654321))
             {
-                ERR (__METHOD__, Z157, 0x025D, 0x00, 0x00, Local0, 0x87654321)
+                ERR (__METHOD__, Z157, __LINE__, 0x00, 0x00, Local0, 0x87654321)
             }
 
             Local1 = 0x01
             If ((Arg0 != Local1))
             {
-                ERR (__METHOD__, Z157, 0x0263, 0x00, 0x00, Arg0, Local1)
+                ERR (__METHOD__, Z157, __LINE__, 0x00, 0x00, Arg0, Local1)
             }
 
             CH03 (__METHOD__, Z157, 0x2D, 0x0266, 0x00)
@@ -663,13 +663,13 @@
         Local0 = M000 (IF00)
         If ((Local0 != 0x87654321))
         {
-            ERR (__METHOD__, Z157, 0x026E, 0x00, 0x00, Local0, 0x87654321)
+            ERR (__METHOD__, Z157, __LINE__, 0x00, 0x00, Local0, 0x87654321)
         }
 
         Local1 = 0xABCDEF70
         If ((IF00 != Local1))
         {
-            ERR (__METHOD__, Z157, 0x0274, 0x00, 0x00, IF00, Local1)
+            ERR (__METHOD__, Z157, __LINE__, 0x00, 0x00, IF00, Local1)
         }
 
         CH03 (__METHOD__, Z157, 0x30, 0x0277, 0x00)
@@ -744,7 +744,7 @@
             Store ((DerefOf (Arg0 [0x01]) + M001 (Arg0)), Local0)
             If ((Local0 != 0x24))
             {
-                ERR (__METHOD__, Z157, 0x02B7, 0x00, 0x00, Local0, 0x24)
+                ERR (__METHOD__, Z157, __LINE__, 0x00, 0x00, Local0, 0x24)
             }
 
             Local1 = DerefOf (Arg0 [0x01])
@@ -759,7 +759,7 @@
 
             If ((Local1 != Local2))
             {
-                ERR (__METHOD__, Z157, 0x02C3, 0x00, 0x00, Local1, Local2)
+                ERR (__METHOD__, Z157, __LINE__, 0x00, 0x00, Local1, Local2)
             }
 
             CH03 (__METHOD__, Z157, 0x34, 0x02C6, 0x00)
@@ -769,7 +769,7 @@
         Local0 = M000 (B000, Arg0)
         If ((Local0 != 0x24))
         {
-            ERR (__METHOD__, Z157, 0x02CE, 0x00, 0x00, Local0, 0x24)
+            ERR (__METHOD__, Z157, __LINE__, 0x00, 0x00, Local0, 0x24)
         }
 
         Local1 = DerefOf (B000 [0x01])
@@ -784,7 +784,7 @@
 
         If ((Local1 != Local2))
         {
-            ERR (__METHOD__, Z157, 0x02DA, 0x00, 0x00, Local1, Local2)
+            ERR (__METHOD__, Z157, __LINE__, 0x00, 0x00, Local1, Local2)
         }
 
         CH03 (__METHOD__, Z157, 0x37, 0x02DD, 0x00)
@@ -856,7 +856,7 @@
             Store ((DerefOf (Arg0 [0x01]) + M001 (Arg0)), Local0)
             If ((Local0 != 0x24))
             {
-                ERR (__METHOD__, Z157, 0x031D, 0x00, 0x00, Local0, 0x24)
+                ERR (__METHOD__, Z157, __LINE__, 0x00, 0x00, Local0, 0x24)
             }
 
             Local1 = DerefOf (Arg0 [0x01])
@@ -871,7 +871,7 @@
 
             If ((Local1 != Local2))
             {
-                ERR (__METHOD__, Z157, 0x0329, 0x00, 0x00, Local1, Local2)
+                ERR (__METHOD__, Z157, __LINE__, 0x00, 0x00, Local1, Local2)
             }
 
             CH03 (__METHOD__, Z157, 0x3B, 0x032C, 0x00)
@@ -881,7 +881,7 @@
         Local0 = M000 (S000, Arg0)
         If ((Local0 != 0x24))
         {
-            ERR (__METHOD__, Z157, 0x0334, 0x00, 0x00, Local0, 0x24)
+            ERR (__METHOD__, Z157, __LINE__, 0x00, 0x00, Local0, 0x24)
         }
 
         Local1 = DerefOf (S000 [0x01])
@@ -896,7 +896,7 @@
 
         If ((Local1 != Local2))
         {
-            ERR (__METHOD__, Z157, 0x0340, 0x00, 0x00, Local1, Local2)
+            ERR (__METHOD__, Z157, __LINE__, 0x00, 0x00, Local1, Local2)
         }
 
         CH03 (__METHOD__, Z157, 0x3E, 0x0343, 0x00)
@@ -972,7 +972,7 @@
             Store ((BF00 + M001 ()), Local0)
             If ((Local0 != 0x87654321))
             {
-                ERR (__METHOD__, Z157, 0x038A, 0x00, 0x00, Local0, 0x87654321)
+                ERR (__METHOD__, Z157, __LINE__, 0x00, 0x00, Local0, 0x87654321)
             }
 
             If (Arg1)
@@ -986,7 +986,7 @@
 
             If ((BF00 != Local1))
             {
-                ERR (__METHOD__, Z157, 0x0394, 0x00, 0x00, BF00, Local1)
+                ERR (__METHOD__, Z157, __LINE__, 0x00, 0x00, BF00, Local1)
             }
 
             CH03 (__METHOD__, Z157, 0x42, 0x0397, 0x00)
@@ -996,7 +996,7 @@
         Local0 = M000 (0x00, Arg0)
         If ((Local0 != 0x87654321))
         {
-            ERR (__METHOD__, Z157, 0x039F, 0x00, 0x00, Local0, 0x87654321)
+            ERR (__METHOD__, Z157, __LINE__, 0x00, 0x00, Local0, 0x87654321)
         }
 
         CH03 (__METHOD__, Z157, 0x44, 0x03A2, 0x00)

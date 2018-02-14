@@ -43,54 +43,54 @@
         Local0 = (0x01 && 0x01)
         If ((Local0 != ON00))
         {
-            ERR ("", ZFFF, 0x31, 0x00, 0x00, Local0, ON00)
+            ERR (__METHOD__, ZFFF, __LINE__, 0x00, 0x00, Local0, ON00)
         }
 
         Local0 = (0x00 == 0x00)
         If ((Local0 != ON00))
         {
-            ERR ("", ZFFF, 0x36, 0x00, 0x00, Local0, ON00)
+            ERR (__METHOD__, ZFFF, __LINE__, 0x00, 0x00, Local0, ON00)
         }
 
         Local0 = (0x01 > 0x00)
         If ((Local0 != ON00))
         {
-            ERR ("", ZFFF, 0x3B, 0x00, 0x00, Local0, ON00)
+            ERR (__METHOD__, ZFFF, __LINE__, 0x00, 0x00, Local0, ON00)
         }
 
         Local0 = (0x01 >= 0x01)
         If ((Local0 != ON00))
         {
-            ERR ("", ZFFF, 0x40, 0x00, 0x00, Local0, ON00)
+            ERR (__METHOD__, ZFFF, __LINE__, 0x00, 0x00, Local0, ON00)
         }
 
         Local0 = (0x00 < 0x01)
         If ((Local0 != ON00))
         {
-            ERR ("", ZFFF, 0x45, 0x00, 0x00, Local0, ON00)
+            ERR (__METHOD__, ZFFF, __LINE__, 0x00, 0x00, Local0, ON00)
         }
 
         Local0 = (0x01 <= 0x01)
         If ((Local0 != ON00))
         {
-            ERR ("", ZFFF, 0x4A, 0x00, 0x00, Local0, ON00)
+            ERR (__METHOD__, ZFFF, __LINE__, 0x00, 0x00, Local0, ON00)
         }
 
         Local0 = !0x00
         If ((Local0 != ON00))
         {
-            ERR ("", ZFFF, 0x4F, 0x00, 0x00, Local0, ON00)
+            ERR (__METHOD__, ZFFF, __LINE__, 0x00, 0x00, Local0, ON00)
         }
 
         Local0 = (0x01 != 0x00)
         If ((Local0 != ON00))
         {
-            ERR ("", ZFFF, 0x54, 0x00, 0x00, Local0, ON00)
+            ERR (__METHOD__, ZFFF, __LINE__, 0x00, 0x00, Local0, ON00)
         }
 
         Local0 = (0x00 || 0x01)
         If ((Local0 != ON00))
         {
-            ERR ("", ZFFF, 0x59, 0x00, 0x00, Local0, ON00)
+            ERR (__METHOD__, ZFFF, __LINE__, 0x00, 0x00, Local0, ON00)
         }
     }

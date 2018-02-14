@@ -38,5 +38,5 @@
     {
         Debug = "To be investigated:"
         Debug = "many Outstanding allocations on Reference ASLTS test run and other ASLTS tests."
-        ERR ("", ZFFF, 0x2C, 0x00, 0x00, 0x00, 0x00)
+        ERR (__METHOD__, ZFFF, __LINE__, 0x00, 0x00, 0x00, 0x00)
     }

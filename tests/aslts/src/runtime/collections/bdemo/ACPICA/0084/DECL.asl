@@ -77,7 +77,7 @@
         {
             If ((I000 != 0xABCD0000))
             {
-                ERR ("", ZFFF, 0x55, 0x00, 0x00, I000, 0xABCD0000)
+                ERR (__METHOD__, ZFFF, __LINE__, 0x00, 0x00, I000, 0xABCD0000)
             }
 
             I000 = 0xABCD0001
@@ -89,7 +89,7 @@
         {
             If ((I000 != 0xABCD0001))
             {
-                ERR ("", ZFFF, 0x60, 0x00, 0x00, I000, 0xABCD0001)
+                ERR (__METHOD__, ZFFF, __LINE__, 0x00, 0x00, I000, 0xABCD0001)
             }
 
             I000 = 0xABCD0003
@@ -101,7 +101,7 @@
         {
             If ((I000 != 0xABCD0003))
             {
-                ERR ("", ZFFF, 0x6B, 0x00, 0x00, I000, 0xABCD0003)
+                ERR (__METHOD__, ZFFF, __LINE__, 0x00, 0x00, I000, 0xABCD0003)
             }
 
             I000 = 0xABCD0005
@@ -113,7 +113,7 @@
         {
             If ((I000 != 0xABCD0005))
             {
-                ERR ("", ZFFF, 0x76, 0x00, 0x00, I000, 0xABCD0005)
+                ERR (__METHOD__, ZFFF, __LINE__, 0x00, 0x00, I000, 0xABCD0005)
             }
 
             I000 = 0xABCD0007
@@ -132,7 +132,7 @@
             {
                 If ((I000 != 0xABCD0000))
                 {
-                    ERR ("", ZFFF, 0x88, 0x00, 0x00, I000, 0xABCD0000)
+                    ERR (__METHOD__, ZFFF, __LINE__, 0x00, 0x00, I000, 0xABCD0000)
                 }
 
                 I000 = 0xABCD0001
@@ -144,7 +144,7 @@
             {
                 If ((I000 != 0xABCD0001))
                 {
-                    ERR ("", ZFFF, 0x93, 0x00, 0x00, I000, 0xABCD0001)
+                    ERR (__METHOD__, ZFFF, __LINE__, 0x00, 0x00, I000, 0xABCD0001)
                 }
 
                 I000 = 0xABCD0003
@@ -156,7 +156,7 @@
             {
                 If ((I000 != 0xABCD0003))
                 {
-                    ERR ("", ZFFF, 0x9E, 0x00, 0x00, I000, 0xABCD0003)
+                    ERR (__METHOD__, ZFFF, __LINE__, 0x00, 0x00, I000, 0xABCD0003)
                 }
 
                 I000 = 0xABCD0005
@@ -168,7 +168,7 @@
             {
                 If ((I000 != 0xABCD0005))
                 {
-                    ERR ("", ZFFF, 0xA9, 0x00, 0x00, I000, 0xABCD0005)
+                    ERR (__METHOD__, ZFFF, __LINE__, 0x00, 0x00, I000, 0xABCD0005)
                 }
 
                 I000 = 0xABCD0007
@@ -185,7 +185,7 @@
             {
                 If ((I000 != 0xABCD0007))
                 {
-                    ERR ("", ZFFF, 0xB9, 0x00, 0x00, I000, 0xABCD0007)
+                    ERR (__METHOD__, ZFFF, __LINE__, 0x00, 0x00, I000, 0xABCD0007)
                 }
 
                 I000 = 0xABCD0008
@@ -197,7 +197,7 @@
             {
                 If ((I000 != 0xABCD0008))
                 {
-                    ERR ("", ZFFF, 0xC4, 0x00, 0x00, I000, 0xABCD0008)
+                    ERR (__METHOD__, ZFFF, __LINE__, 0x00, 0x00, I000, 0xABCD0008)
                 }
 
                 I000 = 0xABCD000A
@@ -209,7 +209,7 @@
             {
                 If ((I000 != 0xABCD000A))
                 {
-                    ERR ("", ZFFF, 0xCF, 0x00, 0x00, I000, 0xABCD000A)
+                    ERR (__METHOD__, ZFFF, __LINE__, 0x00, 0x00, I000, 0xABCD000A)
                 }
 
                 I000 = 0xABCD000C
@@ -221,7 +221,7 @@
             {
                 If ((I000 != 0xABCD000C))
                 {
-                    ERR ("", ZFFF, 0xDA, 0x00, 0x00, I000, 0xABCD000C)
+                    ERR (__METHOD__, ZFFF, __LINE__, 0x00, 0x00, I000, 0xABCD000C)
                 }
 
                 I000 = 0xABCD000E
@@ -238,7 +238,7 @@
             {
                 If ((I000 != 0xABCD000E))
                 {
-                    ERR ("", ZFFF, 0xEA, 0x00, 0x00, I000, 0xABCD000E)
+                    ERR (__METHOD__, ZFFF, __LINE__, 0x00, 0x00, I000, 0xABCD000E)
                 }
 
                 I000 = 0xABCD0010
@@ -250,7 +250,7 @@
             {
                 If ((I000 != 0xABCD0010))
                 {
-                    ERR ("", ZFFF, 0xF5, 0x00, 0x00, I000, 0xABCD0010)
+                    ERR (__METHOD__, ZFFF, __LINE__, 0x00, 0x00, I000, 0xABCD0010)
                 }
 
                 I000 = 0xABCD0012
@@ -262,7 +262,7 @@
             {
                 If ((I000 != 0xABCD0012))
                 {
-                    ERR ("", ZFFF, 0x0100, 0x00, 0x00, I000, 0xABCD0012)
+                    ERR (__METHOD__, ZFFF, __LINE__, 0x00, 0x00, I000, 0xABCD0012)
                 }
 
                 I000 = 0xABCD0014
@@ -274,7 +274,7 @@
             {
                 If ((I000 != 0xABCD0014))
                 {
-                    ERR ("", ZFFF, 0x010B, 0x00, 0x00, I000, 0xABCD0014)
+                    ERR (__METHOD__, ZFFF, __LINE__, 0x00, 0x00, I000, 0xABCD0014)
                 }
 
                 I000 = 0xABCD0016
@@ -287,6 +287,6 @@
         M002 ()
         If ((I000 != 0xABCD0016))
         {
-            ERR ("", ZFFF, 0x0117, 0x00, 0x00, I000, 0xABCD0016)
+            ERR (__METHOD__, ZFFF, __LINE__, 0x00, 0x00, I000, 0xABCD0016)
         }
     }

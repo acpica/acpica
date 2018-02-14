@@ -46,12 +46,12 @@
             Debug = I000 /* \M026.MM00.I000 */
             If ((Local0 != 0x50000001))
             {
-                ERR ("", ZFFF, 0x34, 0x00, 0x00, Local0, 0x50000001)
+                ERR (__METHOD__, ZFFF, __LINE__, 0x00, 0x00, Local0, 0x50000001)
             }
 
             If ((I000 != 0x50000000))
             {
-                ERR ("", ZFFF, 0x38, 0x00, 0x00, I000, 0x50000000)
+                ERR (__METHOD__, ZFFF, __LINE__, 0x00, 0x00, I000, 0x50000000)
             }
         }
 
@@ -122,12 +122,12 @@
             Store ((I000 + M001 ()), Local0)
             If ((Local0 != 0x87654321))
             {
-                ERR ("", ZFFF, 0x72, 0x00, 0x00, Local0, 0x87654321)
+                ERR (__METHOD__, ZFFF, __LINE__, 0x00, 0x00, Local0, 0x87654321)
             }
 
             If ((I000 != 0x80000000))
             {
-                ERR ("", ZFFF, 0x76, 0x00, 0x00, I000, 0x80000000)
+                ERR (__METHOD__, ZFFF, __LINE__, 0x00, 0x00, I000, 0x80000000)
             }
         }
 
