@@ -39,8 +39,14 @@ See acpica/source/compiler/readme.txt for flex/bison installation and
 iASL generation instructions.
 
     Microsoft Visual Studio 2008
-    Flex for Windows (http://gnuwin32.sourceforge.net/packages/flex.htm)
-    Bison for Windows (http://gnuwin32.sourceforge.net/packages/bison.htm)
+
+    Flex and Bison:
+        https://sourceforge.net/projects/winflexbison/
+
+    Flex/Bison: probably obsolete:
+        Flex for Windows (http://gnuwin32.sourceforge.net/packages/flex.htm)
+        Bison for Windows (http://gnuwin32.sourceforge.net/packages/bison.htm)
+
     PkWare pkzip25 (Available free from multiple sources). Here is a list of
         mirrors: http://www.filewatcher.com/m/PKZIP25.EXE.339456-0.html
         Otherwise, Google "pkzip25.exe" to find the free executable.
@@ -136,7 +142,7 @@ Update the ACPICA website
 Login to acpica.org (with update permission)
 
 Create a new download node for the new ACPICA version:
-    Goto: Manage->Content->AddContent->Downloads
+    At screen top ("Manage"), Goto: Content->AddContent->Downloads
     Title: Use the new version number in the correct format (e.g., "Version 20140114")
     Body: Insert the release notes for this version
     Date: Must be the current date (should match ACPICA version)
