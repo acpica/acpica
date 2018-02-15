@@ -34,6 +34,6 @@
     {
         If ((RTD1 != BD0C))
         {
-            ERR ("", ZFFF, 0x26, 0x00, 0x00, RTD1, BD0C)
+            ERR (__METHOD__, ZFFF, __LINE__, 0x00, 0x00, RTD1, BD0C)
         }
     }

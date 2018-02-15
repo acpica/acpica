@@ -149,5 +149,5 @@
          * The problem is not automatically detected,
          * so remove this error report after the problem has been resolved.
          */
-        ERR ("", ZFFF, 0x7D, 0x00, 0x00, 0x00, 0x00)
+        ERR (__METHOD__, ZFFF, __LINE__, 0x00, 0x00, 0x00, 0x00)
     }

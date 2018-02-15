@@ -40,7 +40,7 @@
         Debug = N000 /* \MDCE.N000 */
         If ((N000 != 0xFDEACB01))
         {
-            ERR ("", ZFFF, 0x2F, 0x00, 0x00, N000, 0xFDEACB01)
+            ERR (__METHOD__, ZFFF, __LINE__, 0x00, 0x00, N000, 0xFDEACB01)
         }
 
         /* Show that LGreater operator indicates correctly */
@@ -51,7 +51,7 @@
         }
         Else
         {
-            ERR ("", ZFFF, 0x38, 0x00, 0x00, 0x42345678, 0x32547698)
+            ERR (__METHOD__, ZFFF, __LINE__, 0x00, 0x00, 0x42345678, 0x32547698)
         }
 
         /* Show that (in 32-bit mode) "FdeAcb0132547698" passed to Name operator */
@@ -63,7 +63,7 @@
         }
         Else
         {
-            ERR ("", ZFFF, 0x42, 0x00, 0x00, N000, 0x42345678)
+            ERR (__METHOD__, ZFFF, __LINE__, 0x00, 0x00, N000, 0x42345678)
         }
 
         /* Show that, nevertheless, (in 32-bit mode) "FdeAcb01Fdeacb03" passed */
@@ -75,7 +75,7 @@
         }
         Else
         {
-            ERR ("", ZFFF, 0x4C, 0x00, 0x00, 0xFDEACB02, "FdeAcb01Fdeacb03")
+            ERR (__METHOD__, ZFFF, __LINE__, 0x00, 0x00, 0xFDEACB02, "FdeAcb01Fdeacb03")
         }
 
         Return (Local7)

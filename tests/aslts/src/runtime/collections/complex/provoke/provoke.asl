@@ -46,7 +46,7 @@
         Local2 = ToString (B000, Local0)
         If ((Local0 != 0x00))
         {
-            ERR (Arg0, Z055, 0x33, 0x00, 0x00, Local0, 0x00)
+            ERR (Arg0, Z055, __LINE__, 0x00, 0x00, Local0, 0x00)
         }
 
         CH03 (Arg0, Z055, 0x01, 0x36, 0x00)
@@ -68,7 +68,7 @@
         M131 (Local0)
         If ((Local0 != 0x0A))
         {
-            ERR (Arg0, Z055, 0x48, 0x00, 0x00, Local0, 0x0A)
+            ERR (Arg0, Z055, __LINE__, 0x00, 0x00, Local0, 0x0A)
         }
 
         CH03 (Arg0, Z055, 0x03, 0x4B, 0x00)
@@ -83,7 +83,7 @@
         M131 (Local1)
         If ((Local0 != 0x09))
         {
-            ERR (Arg0, Z055, 0x56, 0x00, 0x00, Local0, 0x09)
+            ERR (Arg0, Z055, __LINE__, 0x00, 0x00, Local0, 0x09)
         }
 
         CH03 (Arg0, Z055, 0x05, 0x59, 0x00)
@@ -95,7 +95,7 @@
         M131 (RefOf (Local0))
         If ((Local0 != 0x09))
         {
-            ERR (Arg0, Z055, 0x61, 0x00, 0x00, Local0, 0x09)
+            ERR (Arg0, Z055, __LINE__, 0x00, 0x00, Local0, 0x09)
         }
 
         CH03 (Arg0, Z055, 0x07, 0x64, 0x00)
@@ -112,7 +112,7 @@
         M135 (RefOf (Local0))
         If ((Local0 != 0x05))
         {
-            ERR (Arg0, Z055, 0x71, 0x00, 0x00, Local0, 0x05)
+            ERR (Arg0, Z055, __LINE__, 0x00, 0x00, Local0, 0x05)
         }
 
         CH03 (Arg0, Z055, 0x09, 0x74, 0x00)

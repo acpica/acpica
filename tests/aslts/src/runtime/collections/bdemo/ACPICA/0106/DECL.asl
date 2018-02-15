@@ -40,6 +40,6 @@
         Debug = Local2
         If ((Local2 != C018))
         {
-            ERR ("", ZFFF, 0x30, 0x00, 0x00, Local2, C018)
+            ERR (__METHOD__, ZFFF, __LINE__, 0x00, 0x00, Local2, C018)
         }
     }

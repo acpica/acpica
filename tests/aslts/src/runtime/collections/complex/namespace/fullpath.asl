@@ -39,12 +39,12 @@
             Name (\I4Z0, 0xABCD0000)
             If ((I4Z0 != 0xABCD0000))
             {
-                ERR (__METHOD__, Z179, 0x30, 0x00, 0x00, I4Z0, 0xABCD0000)
+                ERR (__METHOD__, Z179, __LINE__, 0x00, 0x00, I4Z0, 0xABCD0000)
             }
 
             If ((\I4Z0 != 0xABCD0000))
             {
-                ERR (__METHOD__, Z179, 0x33, 0x00, 0x00, \I4Z0, 0xABCD0000)
+                ERR (__METHOD__, Z179, __LINE__, 0x00, 0x00, \I4Z0, 0xABCD0000)
             }
 
             M001 ()
@@ -54,12 +54,12 @@
         {
             If ((I4Z0 != 0xABCD0000))
             {
-                ERR (__METHOD__, Z179, 0x3B, 0x00, 0x00, I4Z0, 0xABCD0000)
+                ERR (__METHOD__, Z179, __LINE__, 0x00, 0x00, I4Z0, 0xABCD0000)
             }
 
             If ((\I4Z0 != 0xABCD0000))
             {
-                ERR (__METHOD__, Z179, 0x3E, 0x00, 0x00, \I4Z0, 0xABCD0000)
+                ERR (__METHOD__, Z179, __LINE__, 0x00, 0x00, \I4Z0, 0xABCD0000)
             }
         }
 
@@ -79,12 +79,12 @@
 
             If ((I4Z1 != 0xABCD0000))
             {
-                ERR (__METHOD__, Z179, 0x52, 0x00, 0x00, I4Z1, 0xABCD0000)
+                ERR (__METHOD__, Z179, __LINE__, 0x00, 0x00, I4Z1, 0xABCD0000)
             }
 
             If ((\I4Z1 != 0xABCD0000))
             {
-                ERR (__METHOD__, Z179, 0x55, 0x00, 0x00, \I4Z1, 0xABCD0000)
+                ERR (__METHOD__, Z179, __LINE__, 0x00, 0x00, \I4Z1, 0xABCD0000)
             }
 
             M001 ()
@@ -94,12 +94,12 @@
         {
             If ((I4Z1 != 0xABCD0000))
             {
-                ERR (__METHOD__, Z179, 0x5D, 0x00, 0x00, I4Z1, 0xABCD0000)
+                ERR (__METHOD__, Z179, __LINE__, 0x00, 0x00, I4Z1, 0xABCD0000)
             }
 
             If ((\I4Z1 != 0xABCD0000))
             {
-                ERR (__METHOD__, Z179, 0x60, 0x00, 0x00, \I4Z1, 0xABCD0000)
+                ERR (__METHOD__, Z179, __LINE__, 0x00, 0x00, \I4Z1, 0xABCD0000)
             }
         }
 

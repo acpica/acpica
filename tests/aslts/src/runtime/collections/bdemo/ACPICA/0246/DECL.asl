@@ -70,6 +70,6 @@
 
         If ((Local1 != 0x03))
         {
-            ERR ("", ZFFF, 0x41, 0x00, 0x00, Local1, 0x03)
+            ERR (__METHOD__, ZFFF, __LINE__, 0x00, 0x00, Local1, 0x03)
         }
     }

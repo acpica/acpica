@@ -55,26 +55,26 @@
         Local5 = (Local1 + 0x79)
         If ((Local4 != C009))
         {
-            ERR ("", ZFFF, 0x41, 0x00, 0x00, Local4, C009)
+            ERR (__METHOD__, ZFFF, __LINE__, 0x00, 0x00, Local4, C009)
         }
         ElseIf ((Local5 != 0xAAAA0279))
         {
-            ERR ("", ZFFF, 0x43, 0x00, 0x00, Local5, 0xAAAA0279)
+            ERR (__METHOD__, ZFFF, __LINE__, 0x00, 0x00, Local5, 0xAAAA0279)
         }
 
         If ((I000 != 0xAAAA0300))
         {
-            ERR ("", ZFFF, 0x47, 0x00, 0x00, I000, 0xAAAA0300)
+            ERR (__METHOD__, ZFFF, __LINE__, 0x00, 0x00, I000, 0xAAAA0300)
         }
 
         If ((Local2 != C009))
         {
-            ERR ("", ZFFF, 0x4B, 0x00, 0x00, Local2, C009)
+            ERR (__METHOD__, ZFFF, __LINE__, 0x00, 0x00, Local2, C009)
         }
 
         If ((Local3 != C009))
         {
-            ERR ("", ZFFF, 0x4F, 0x00, 0x00, Local3, C009)
+            ERR (__METHOD__, ZFFF, __LINE__, 0x00, 0x00, Local3, C009)
         }
 
         CH03 ("", 0x00, 0x05, 0x52, 0x00)
@@ -108,26 +108,26 @@
         II05 = (II01 + 0x79)
         If ((II04 != C009))
         {
-            ERR ("", ZFFF, 0x76, 0x00, 0x00, II04, C009)
+            ERR (__METHOD__, ZFFF, __LINE__, 0x00, 0x00, II04, C009)
         }
         ElseIf ((II05 != 0xAAAA0279))
         {
-            ERR ("", ZFFF, 0x78, 0x00, 0x00, II05, 0xAAAA0279)
+            ERR (__METHOD__, ZFFF, __LINE__, 0x00, 0x00, II05, 0xAAAA0279)
         }
 
         If ((I000 != 0xAAAA0300))
         {
-            ERR ("", ZFFF, 0x7C, 0x00, 0x00, I000, 0xAAAA0300)
+            ERR (__METHOD__, ZFFF, __LINE__, 0x00, 0x00, I000, 0xAAAA0300)
         }
 
         If ((II02 != C009))
         {
-            ERR ("", ZFFF, 0x80, 0x00, 0x00, II02, C009)
+            ERR (__METHOD__, ZFFF, __LINE__, 0x00, 0x00, II02, C009)
         }
 
         If ((II03 != C009))
         {
-            ERR ("", ZFFF, 0x84, 0x00, 0x00, II03, C009)
+            ERR (__METHOD__, ZFFF, __LINE__, 0x00, 0x00, II03, C009)
         }
 
         CH03 ("", 0x00, 0x0C, 0x87, 0x00)
@@ -159,26 +159,26 @@
         II05 = (II01 + 0x79)
         If ((II04 != C009))
         {
-            ERR ("", ZFFF, 0xA9, 0x00, 0x00, II04, C009)
+            ERR (__METHOD__, ZFFF, __LINE__, 0x00, 0x00, II04, C009)
         }
         ElseIf ((II05 != 0xAAAA0279))
         {
-            ERR ("", ZFFF, 0xAB, 0x00, 0x00, II05, 0xAAAA0279)
+            ERR (__METHOD__, ZFFF, __LINE__, 0x00, 0x00, II05, 0xAAAA0279)
         }
 
         If ((I000 != 0xAAAA0300))
         {
-            ERR ("", ZFFF, 0xAF, 0x00, 0x00, I000, 0xAAAA0300)
+            ERR (__METHOD__, ZFFF, __LINE__, 0x00, 0x00, I000, 0xAAAA0300)
         }
 
         If ((II02 != C009))
         {
-            ERR ("", ZFFF, 0xB3, 0x00, 0x00, II02, C009)
+            ERR (__METHOD__, ZFFF, __LINE__, 0x00, 0x00, II02, C009)
         }
 
         If ((II03 != C009))
         {
-            ERR ("", ZFFF, 0xB7, 0x00, 0x00, II03, C009)
+            ERR (__METHOD__, ZFFF, __LINE__, 0x00, 0x00, II03, C009)
         }
 
         CH03 ("", 0x00, 0x13, 0xBA, 0x00)
@@ -193,11 +193,11 @@
         Local0 = ObjectType (Local1)
         If ((Local0 != C009))
         {
-            ERR ("", ZFFF, 0xC6, 0x00, 0x00, Local0, C009)
+            ERR (__METHOD__, ZFFF, __LINE__, 0x00, 0x00, Local0, C009)
         }
         ElseIf ((Local1 != 0xFE7CB391D650A284))
         {
-            ERR ("", ZFFF, 0xC9, 0x00, 0x00, Local1, 0xFE7CB391D650A284)
+            ERR (__METHOD__, ZFFF, __LINE__, 0x00, 0x00, Local1, 0xFE7CB391D650A284)
         }
     }
 
@@ -210,7 +210,7 @@
         Local0 = ObjectType (Local1)
         If ((Local0 != C016))
         {
-            ERR ("", ZFFF, 0xD7, 0x00, 0x00, Local0, C016)
+            ERR (__METHOD__, ZFFF, __LINE__, 0x00, 0x00, Local0, C016)
         }
         Else
         {
@@ -224,7 +224,7 @@
             {
                 If ((Local1 != 0x59))
                 {
-                    ERR ("", ZFFF, 0xE1, 0x00, 0x00, Local1, 0x59)
+                    ERR (__METHOD__, ZFFF, __LINE__, 0x00, 0x00, Local1, 0x59)
                 }
             }
         }
@@ -239,7 +239,7 @@
         Local0 = ObjectType (Local1)
         If ((Local0 != C00D))
         {
-            ERR ("", ZFFF, 0xF0, 0x00, 0x00, Local0, C00D)
+            ERR (__METHOD__, ZFFF, __LINE__, 0x00, 0x00, Local0, C00D)
         }
         Else
         {
@@ -253,7 +253,7 @@
             {
                 If ((Local1 != 0x00))
                 {
-                    ERR ("", ZFFF, 0xFB, 0x00, 0x00, Local1, 0x00)
+                    ERR (__METHOD__, ZFFF, __LINE__, 0x00, 0x00, Local1, 0x00)
                 }
             }
         }

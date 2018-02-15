@@ -947,7 +947,7 @@
             Local0 = ObjectType (Arg1)
             If ((Local0 != 0x00))
             {
-                ERR (Arg0, Z092, 0x04F4, 0x00, 0x00, Local0, 0x00)
+                ERR (Arg0, Z092, __LINE__, 0x00, 0x00, Local0, 0x00)
                 Return (0x01)
             }
 
@@ -1378,7 +1378,7 @@
             CH06 (Arg0, 0x00, 0x33)
             If ((I001 != 0x00))
             {
-                ERR (Arg0, Z092, 0x06F3, 0x00, 0x00, I001, 0x00)
+                ERR (Arg0, Z092, __LINE__, 0x00, 0x00, I001, 0x00)
             }
 
             I001 = 0x00
@@ -1387,7 +1387,7 @@
             CH06 (Arg0, 0x02, 0x33)
             If ((I001 != 0x00))
             {
-                ERR (Arg0, Z092, 0x06FB, 0x00, 0x00, I001, 0x00)
+                ERR (Arg0, Z092, __LINE__, 0x00, 0x00, I001, 0x00)
             }
 
             I001 = 0x00
@@ -1395,7 +1395,7 @@
             CH06 (Arg0, 0x04, 0x33)
             If ((I001 != 0x00))
             {
-                ERR (Arg0, Z092, 0x0702, 0x00, 0x00, I001, 0x00)
+                ERR (Arg0, Z092, __LINE__, 0x00, 0x00, I001, 0x00)
             }
 
             I001 = 0x00
@@ -1404,7 +1404,7 @@
             CH06 (Arg0, 0x06, 0x33)
             If ((I001 != 0x00))
             {
-                ERR (Arg0, Z092, 0x070A, 0x00, 0x00, I001, 0x00)
+                ERR (Arg0, Z092, __LINE__, 0x00, 0x00, I001, 0x00)
             }
 
             I001 = 0x00
@@ -1413,7 +1413,7 @@
             CH06 (Arg0, 0x08, 0x33)
             If ((I001 != 0x00))
             {
-                ERR (Arg0, Z092, 0x0712, 0x00, 0x00, I001, 0x00)
+                ERR (Arg0, Z092, __LINE__, 0x00, 0x00, I001, 0x00)
             }
         }
 
@@ -1517,7 +1517,7 @@
         CH06 (__METHOD__, 0x09, 0x31)
         If ((I001 != 0x00))
         {
-            ERR (__METHOD__, Z092, 0x077B, 0x00, 0x00, I001, 0x00)
+            ERR (__METHOD__, Z092, __LINE__, 0x00, 0x00, I001, 0x00)
         }
 
         /* Uninitialized element of Package as parameter of a method */

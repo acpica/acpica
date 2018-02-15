@@ -1041,56 +1041,56 @@
             Local0 = ObjectType (I900)
             If ((Local0 != C009))
             {
-                ERR (C080, Z077, 0x016D, 0x00, 0x00, Local0, C009)
+                ERR (C080, Z077, __LINE__, 0x00, 0x00, Local0, C009)
             }
 
             If ((I900 != 0xFE7CB391D65A1000))
             {
-                ERR (C080, Z077, 0x0170, 0x00, 0x00, I900, 0xFE7CB391D65A1000)
+                ERR (C080, Z077, __LINE__, 0x00, 0x00, I900, 0xFE7CB391D65A1000)
             }
 
             Local0 = ObjectType (I901)
             If ((Local0 != C009))
             {
-                ERR (C080, Z077, 0x0175, 0x00, 0x00, Local0, C009)
+                ERR (C080, Z077, __LINE__, 0x00, 0x00, Local0, C009)
             }
 
             If ((I901 != 0xC1791001))
             {
-                ERR (C080, Z077, 0x0178, 0x00, 0x00, I901, 0xC1791001)
+                ERR (C080, Z077, __LINE__, 0x00, 0x00, I901, 0xC1791001)
             }
 
             Local0 = ObjectType (I902)
             If ((Local0 != C009))
             {
-                ERR (C080, Z077, 0x017D, 0x00, 0x00, Local0, C009)
+                ERR (C080, Z077, __LINE__, 0x00, 0x00, Local0, C009)
             }
 
             If ((I902 != 0x00))
             {
-                ERR (C080, Z077, 0x0180, 0x00, 0x00, I902, 0x00)
+                ERR (C080, Z077, __LINE__, 0x00, 0x00, I902, 0x00)
             }
 
             Local0 = ObjectType (I903)
             If ((Local0 != C009))
             {
-                ERR (C080, Z077, 0x0185, 0x00, 0x00, Local0, C009)
+                ERR (C080, Z077, __LINE__, 0x00, 0x00, Local0, C009)
             }
 
             If ((I903 != 0xFFFFFFFFFFFFFFFF))
             {
-                ERR (C080, Z077, 0x0188, 0x00, 0x00, I903, 0xFFFFFFFFFFFFFFFF)
+                ERR (C080, Z077, __LINE__, 0x00, 0x00, I903, 0xFFFFFFFFFFFFFFFF)
             }
 
             Local0 = ObjectType (I904)
             If ((Local0 != C009))
             {
-                ERR (C080, Z077, 0x018D, 0x00, 0x00, Local0, C009)
+                ERR (C080, Z077, __LINE__, 0x00, 0x00, Local0, C009)
             }
 
             If ((I904 != 0xFFFFFFFF))
             {
-                ERR (C080, Z077, 0x0190, 0x00, 0x00, I904, 0xFFFFFFFF)
+                ERR (C080, Z077, __LINE__, 0x00, 0x00, I904, 0xFFFFFFFF)
             }
 
             /* String */
@@ -1098,23 +1098,23 @@
             Local0 = ObjectType (S900)
             If ((Local0 != C00A))
             {
-                ERR (C080, Z077, 0x0197, 0x00, 0x00, Local0, C00A)
+                ERR (C080, Z077, __LINE__, 0x00, 0x00, Local0, C00A)
             }
 
             If ((S900 != "12341002"))
             {
-                ERR (C080, Z077, 0x019A, 0x00, 0x00, S900, "12341002")
+                ERR (C080, Z077, __LINE__, 0x00, 0x00, S900, "12341002")
             }
 
             Local0 = ObjectType (S901)
             If ((Local0 != C00A))
             {
-                ERR (C080, Z077, 0x019F, 0x00, 0x00, Local0, C00A)
+                ERR (C080, Z077, __LINE__, 0x00, 0x00, Local0, C00A)
             }
 
             If ((S901 != "qwrtyu1003"))
             {
-                ERR (C080, Z077, 0x01A2, 0x00, 0x00, S901, "qwrtyu1003")
+                ERR (C080, Z077, __LINE__, 0x00, 0x00, S901, "qwrtyu1003")
             }
 
             /* Buffer */
@@ -1122,7 +1122,7 @@
             Local0 = ObjectType (B900)
             If ((Local0 != C00B))
             {
-                ERR (C080, Z077, 0x01A9, 0x00, 0x00, Local0, C00B)
+                ERR (C080, Z077, __LINE__, 0x00, 0x00, Local0, C00B)
             }
 
             If ((B900 != Buffer (0x05)
@@ -1130,7 +1130,7 @@
                              0x10, 0x11, 0x12, 0x13, 0x14                     // .....
                         }))
             {
-                ERR (C080, Z077, 0x01AC, 0x00, 0x00, B900, Buffer (0x05)
+                ERR (C080, Z077, __LINE__, 0x00, 0x00, B900, Buffer (0x05)
                     {
                          0x10, 0x11, 0x12, 0x13, 0x14                     // .....
                     })
@@ -1141,12 +1141,12 @@
             Local0 = ObjectType (BF90)
             If ((Local0 != C016))
             {
-                ERR (C080, Z077, 0x01B3, 0x00, 0x00, Local0, C016)
+                ERR (C080, Z077, __LINE__, 0x00, 0x00, Local0, C016)
             }
 
             If ((BF90 != 0x10))
             {
-                ERR (C080, Z077, 0x01B6, 0x00, 0x00, BF90, 0x10)
+                ERR (C080, Z077, __LINE__, 0x00, 0x00, BF90, 0x10)
             }
 
             /* One level Package */
@@ -1155,7 +1155,7 @@
             Local1 = ObjectType (Local0)
             If ((Local1 != C008))
             {
-                ERR (C080, Z077, 0x01BE, 0x00, 0x00, Local1, C008)
+                ERR (C080, Z077, __LINE__, 0x00, 0x00, Local1, C008)
             }
 
             Store (P901 [0x00], Local0)
@@ -1163,12 +1163,12 @@
             Local2 = ObjectType (Local1)
             If ((Local2 != C009))
             {
-                ERR (C080, Z077, 0x01C5, 0x00, 0x00, Local2, C009)
+                ERR (C080, Z077, __LINE__, 0x00, 0x00, Local2, C009)
             }
 
             If ((Local1 != 0xABCD1004))
             {
-                ERR (C080, Z077, 0x01C8, 0x00, 0x00, Local1, 0xABCD1004)
+                ERR (C080, Z077, __LINE__, 0x00, 0x00, Local1, 0xABCD1004)
             }
 
             Store (P901 [0x01], Local0)
@@ -1176,12 +1176,12 @@
             Local2 = ObjectType (Local1)
             If ((Local2 != C009))
             {
-                ERR (C080, Z077, 0x01CF, 0x00, 0x00, Local2, C009)
+                ERR (C080, Z077, __LINE__, 0x00, 0x00, Local2, C009)
             }
 
             If ((Local1 != 0x1122334455661005))
             {
-                ERR (C080, Z077, 0x01D2, 0x00, 0x00, Local1, 0x1122334455661005)
+                ERR (C080, Z077, __LINE__, 0x00, 0x00, Local1, 0x1122334455661005)
             }
 
             Store (P902 [0x00], Local0)
@@ -1189,12 +1189,12 @@
             Local2 = ObjectType (Local1)
             If ((Local2 != C00A))
             {
-                ERR (C080, Z077, 0x01D9, 0x00, 0x00, Local2, C00A)
+                ERR (C080, Z077, __LINE__, 0x00, 0x00, Local2, C00A)
             }
 
             If ((Local1 != "12341006"))
             {
-                ERR (C080, Z077, 0x01DC, 0x00, 0x00, Local1, "12341006")
+                ERR (C080, Z077, __LINE__, 0x00, 0x00, Local1, "12341006")
             }
 
             Store (P902 [0x01], Local0)
@@ -1202,12 +1202,12 @@
             Local2 = ObjectType (Local1)
             If ((Local2 != C00A))
             {
-                ERR (C080, Z077, 0x01E3, 0x00, 0x00, Local2, C00A)
+                ERR (C080, Z077, __LINE__, 0x00, 0x00, Local2, C00A)
             }
 
             If ((Local1 != "q1w2e3r4t5y6u7i81007"))
             {
-                ERR (C080, Z077, 0x01E6, 0x00, 0x00, Local1, "q1w2e3r4t5y6u7i81007")
+                ERR (C080, Z077, __LINE__, 0x00, 0x00, Local1, "q1w2e3r4t5y6u7i81007")
             }
 
             Store (P903 [0x00], Local0)
@@ -1215,12 +1215,12 @@
             Local2 = ObjectType (Local1)
             If ((Local2 != C00A))
             {
-                ERR (C080, Z077, 0x01ED, 0x00, 0x00, Local2, C00A)
+                ERR (C080, Z077, __LINE__, 0x00, 0x00, Local2, C00A)
             }
 
             If ((Local1 != "qwrtyuiop1008"))
             {
-                ERR (C080, Z077, 0x01F0, 0x00, 0x00, Local1, "qwrtyuiop1008")
+                ERR (C080, Z077, __LINE__, 0x00, 0x00, Local1, "qwrtyuiop1008")
             }
 
             Store (P903 [0x01], Local0)
@@ -1228,12 +1228,12 @@
             Local2 = ObjectType (Local1)
             If ((Local2 != C00A))
             {
-                ERR (C080, Z077, 0x01F7, 0x00, 0x00, Local2, C00A)
+                ERR (C080, Z077, __LINE__, 0x00, 0x00, Local2, C00A)
             }
 
             If ((Local1 != "1234567890abdef0251009"))
             {
-                ERR (C080, Z077, 0x01FA, 0x00, 0x00, Local1, "1234567890abdef0251009")
+                ERR (C080, Z077, __LINE__, 0x00, 0x00, Local1, "1234567890abdef0251009")
             }
 
             Store (P904 [0x00], Local0)
@@ -1241,7 +1241,7 @@
             Local2 = ObjectType (Local1)
             If ((Local2 != C00B))
             {
-                ERR (C080, Z077, 0x0201, 0x00, 0x00, Local2, C00B)
+                ERR (C080, Z077, __LINE__, 0x00, 0x00, Local2, C00B)
             }
 
             If ((Local1 != Buffer (0x03)
@@ -1249,7 +1249,7 @@
                              0xA0, 0xA1, 0xA2                                 // ...
                         }))
             {
-                ERR (C080, Z077, 0x0204, 0x00, 0x00, Local1, Buffer (0x03)
+                ERR (C080, Z077, __LINE__, 0x00, 0x00, Local1, Buffer (0x03)
                     {
                          0xA0, 0xA1, 0xA2                                 // ...
                     })
@@ -1260,7 +1260,7 @@
             Local2 = ObjectType (Local1)
             If ((Local2 != C00B))
             {
-                ERR (C080, Z077, 0x020B, 0x00, 0x00, Local2, C00B)
+                ERR (C080, Z077, __LINE__, 0x00, 0x00, Local2, C00B)
             }
 
             If ((Local1 != Buffer (0x02)
@@ -1268,7 +1268,7 @@
                              0xA3, 0xA4                                       // ..
                         }))
             {
-                ERR (C080, Z077, 0x020E, 0x00, 0x00, Local1, Buffer (0x02)
+                ERR (C080, Z077, __LINE__, 0x00, 0x00, Local1, Buffer (0x02)
                     {
                          0xA3, 0xA4                                       // ..
                     })
@@ -1283,12 +1283,12 @@
             Local4 = ObjectType (Local3)
             If ((Local4 != C009))
             {
-                ERR (C080, Z077, 0x0219, 0x00, 0x00, Local4, C009)
+                ERR (C080, Z077, __LINE__, 0x00, 0x00, Local4, C009)
             }
 
             If ((Local3 != 0x0ABC100A))
             {
-                ERR (C080, Z077, 0x021C, 0x00, 0x00, Local3, 0x0ABC100A)
+                ERR (C080, Z077, __LINE__, 0x00, 0x00, Local3, 0x0ABC100A)
             }
 
             Store (P905 [0x00], Local0)
@@ -1298,12 +1298,12 @@
             Local4 = ObjectType (Local3)
             If ((Local4 != C00A))
             {
-                ERR (C080, Z077, 0x0225, 0x00, 0x00, Local4, C00A)
+                ERR (C080, Z077, __LINE__, 0x00, 0x00, Local4, C00A)
             }
 
             If ((Local3 != "0xabc100b"))
             {
-                ERR (C080, Z077, 0x0228, 0x00, 0x00, Local3, "0xabc100b")
+                ERR (C080, Z077, __LINE__, 0x00, 0x00, Local3, "0xabc100b")
             }
 
             Store (P905 [0x00], Local0)
@@ -1313,12 +1313,12 @@
             Local4 = ObjectType (Local3)
             If ((Local4 != C00A))
             {
-                ERR (C080, Z077, 0x0231, 0x00, 0x00, Local4, C00A)
+                ERR (C080, Z077, __LINE__, 0x00, 0x00, Local4, C00A)
             }
 
             If ((Local3 != "abc100c"))
             {
-                ERR (C080, Z077, 0x0234, 0x00, 0x00, Local3, "abc100c")
+                ERR (C080, Z077, __LINE__, 0x00, 0x00, Local3, "abc100c")
             }
 
             Store (P906 [0x00], Local0)
@@ -1328,12 +1328,12 @@
             Local4 = ObjectType (Local3)
             If ((Local4 != C00A))
             {
-                ERR (C080, Z077, 0x023D, 0x00, 0x00, Local4, C00A)
+                ERR (C080, Z077, __LINE__, 0x00, 0x00, Local4, C00A)
             }
 
             If ((Local3 != "abc100d"))
             {
-                ERR (C080, Z077, 0x0240, 0x00, 0x00, Local3, "abc100d")
+                ERR (C080, Z077, __LINE__, 0x00, 0x00, Local3, "abc100d")
             }
 
             Store (P907 [0x00], Local0)
@@ -1343,12 +1343,12 @@
             Local4 = ObjectType (Local3)
             If ((Local4 != C00A))
             {
-                ERR (C080, Z077, 0x0249, 0x00, 0x00, Local4, C00A)
+                ERR (C080, Z077, __LINE__, 0x00, 0x00, Local4, C00A)
             }
 
             If ((Local3 != "aqwevbgnm100e"))
             {
-                ERR (C080, Z077, 0x024C, 0x00, 0x00, Local3, "aqwevbgnm100e")
+                ERR (C080, Z077, __LINE__, 0x00, 0x00, Local3, "aqwevbgnm100e")
             }
 
             Store (P908 [0x00], Local0)
@@ -1358,7 +1358,7 @@
             Local4 = ObjectType (Local3)
             If ((Local4 != C00B))
             {
-                ERR (C080, Z077, 0x0255, 0x00, 0x00, Local4, C00B)
+                ERR (C080, Z077, __LINE__, 0x00, 0x00, Local4, C00B)
             }
 
             If ((Local3 != Buffer (0x05)
@@ -1366,7 +1366,7 @@
                              0xA5, 0xA6, 0xA7, 0xA8, 0xA9                     // .....
                         }))
             {
-                ERR (C080, Z077, 0x0258, 0x00, 0x00, Local3, Buffer (0x05)
+                ERR (C080, Z077, __LINE__, 0x00, 0x00, Local3, Buffer (0x05)
                     {
                          0xA5, 0xA6, 0xA7, 0xA8, 0xA9                     // .....
                     })
@@ -1383,12 +1383,12 @@
             Local6 = ObjectType (Local5)
             If ((Local6 != C009))
             {
-                ERR (C080, Z077, 0x0265, 0x00, 0x00, Local6, C009)
+                ERR (C080, Z077, __LINE__, 0x00, 0x00, Local6, C009)
             }
 
             If ((Local5 != 0x0ABC100F))
             {
-                ERR (C080, Z077, 0x0268, 0x00, 0x00, Local5, 0x0ABC100F)
+                ERR (C080, Z077, __LINE__, 0x00, 0x00, Local5, 0x0ABC100F)
             }
 
             Store (P90A [0x00], Local0)
@@ -1400,12 +1400,12 @@
             Local6 = ObjectType (Local5)
             If ((Local6 != C00A))
             {
-                ERR (C080, Z077, 0x0273, 0x00, 0x00, Local6, C00A)
+                ERR (C080, Z077, __LINE__, 0x00, 0x00, Local6, C00A)
             }
 
             If ((Local5 != "12341010"))
             {
-                ERR (C080, Z077, 0x0276, 0x00, 0x00, Local5, "12341010")
+                ERR (C080, Z077, __LINE__, 0x00, 0x00, Local5, "12341010")
             }
 
             Store (P90B [0x00], Local0)
@@ -1417,12 +1417,12 @@
             Local6 = ObjectType (Local5)
             If ((Local6 != C00A))
             {
-                ERR (C080, Z077, 0x0281, 0x00, 0x00, Local6, C00A)
+                ERR (C080, Z077, __LINE__, 0x00, 0x00, Local6, C00A)
             }
 
             If ((Local5 != "zxswefas1011"))
             {
-                ERR (C080, Z077, 0x0284, 0x00, 0x00, Local5, "zxswefas1011")
+                ERR (C080, Z077, __LINE__, 0x00, 0x00, Local5, "zxswefas1011")
             }
 
             Store (P90C [0x00], Local0)
@@ -1434,7 +1434,7 @@
             Local6 = ObjectType (Local5)
             If ((Local6 != C00B))
             {
-                ERR (C080, Z077, 0x028F, 0x00, 0x00, Local6, C00B)
+                ERR (C080, Z077, __LINE__, 0x00, 0x00, Local6, C00B)
             }
 
             If ((Local5 != Buffer (0x03)
@@ -1442,7 +1442,7 @@
                              0xAA, 0xAB, 0xAC                                 // ...
                         }))
             {
-                ERR (C080, Z077, 0x0292, 0x00, 0x00, Local5, Buffer (0x03)
+                ERR (C080, Z077, __LINE__, 0x00, 0x00, Local5, Buffer (0x03)
                     {
                          0xAA, 0xAB, 0xAC                                 // ...
                     })
@@ -1453,12 +1453,12 @@
             Local2 = ObjectType (Local1)
             If ((Local2 != C009))
             {
-                ERR (C080, Z077, 0x0299, 0x00, 0x00, Local2, C009)
+                ERR (C080, Z077, __LINE__, 0x00, 0x00, Local2, C009)
             }
 
             If ((Local1 != 0xABCD1018))
             {
-                ERR (C080, Z077, 0x029C, 0x00, 0x00, Local1, 0xABCD1018)
+                ERR (C080, Z077, __LINE__, 0x00, 0x00, Local1, 0xABCD1018)
             }
 
             Store (P953 [0x01], Local0)
@@ -1466,12 +1466,12 @@
             Local2 = ObjectType (Local1)
             If ((Local2 != C009))
             {
-                ERR (C080, Z077, 0x02A3, 0x00, 0x00, Local2, C009)
+                ERR (C080, Z077, __LINE__, 0x00, 0x00, Local2, C009)
             }
 
             If ((Local1 != 0xABCD1019))
             {
-                ERR (C080, Z077, 0x02A6, 0x00, 0x00, Local1, 0xABCD1019)
+                ERR (C080, Z077, __LINE__, 0x00, 0x00, Local1, 0xABCD1019)
             }
 
             /* Not Computational Data */
@@ -2861,56 +2861,56 @@
             Local0 = ObjectType (I900)
             If ((Local0 != C009))
             {
-                ERR (C080, Z077, 0x064C, 0x00, 0x00, Local0, C009)
+                ERR (C080, Z077, __LINE__, 0x00, 0x00, Local0, C009)
             }
 
             If ((I900 != 0xFE7CB391D65A2000))
             {
-                ERR (C080, Z077, 0x064F, 0x00, 0x00, I900, 0xFE7CB391D65A2000)
+                ERR (C080, Z077, __LINE__, 0x00, 0x00, I900, 0xFE7CB391D65A2000)
             }
 
             Local0 = ObjectType (I901)
             If ((Local0 != C009))
             {
-                ERR (C080, Z077, 0x0654, 0x00, 0x00, Local0, C009)
+                ERR (C080, Z077, __LINE__, 0x00, 0x00, Local0, C009)
             }
 
             If ((I901 != 0xC1792001))
             {
-                ERR (C080, Z077, 0x0657, 0x00, 0x00, I901, 0xC1792001)
+                ERR (C080, Z077, __LINE__, 0x00, 0x00, I901, 0xC1792001)
             }
 
             Local0 = ObjectType (I902)
             If ((Local0 != C009))
             {
-                ERR (C080, Z077, 0x065C, 0x00, 0x00, Local0, C009)
+                ERR (C080, Z077, __LINE__, 0x00, 0x00, Local0, C009)
             }
 
             If ((I902 != 0x00))
             {
-                ERR (C080, Z077, 0x065F, 0x00, 0x00, I902, 0x00)
+                ERR (C080, Z077, __LINE__, 0x00, 0x00, I902, 0x00)
             }
 
             Local0 = ObjectType (I903)
             If ((Local0 != C009))
             {
-                ERR (C080, Z077, 0x0664, 0x00, 0x00, Local0, C009)
+                ERR (C080, Z077, __LINE__, 0x00, 0x00, Local0, C009)
             }
 
             If ((I903 != 0xFFFFFFFFFFFFFFFF))
             {
-                ERR (C080, Z077, 0x0667, 0x00, 0x00, I903, 0xFFFFFFFFFFFFFFFF)
+                ERR (C080, Z077, __LINE__, 0x00, 0x00, I903, 0xFFFFFFFFFFFFFFFF)
             }
 
             Local0 = ObjectType (I904)
             If ((Local0 != C009))
             {
-                ERR (C080, Z077, 0x066C, 0x00, 0x00, Local0, C009)
+                ERR (C080, Z077, __LINE__, 0x00, 0x00, Local0, C009)
             }
 
             If ((I904 != 0xFFFFFFFF))
             {
-                ERR (C080, Z077, 0x066F, 0x00, 0x00, I904, 0xFFFFFFFF)
+                ERR (C080, Z077, __LINE__, 0x00, 0x00, I904, 0xFFFFFFFF)
             }
 
             /* String */
@@ -2918,23 +2918,23 @@
             Local0 = ObjectType (S900)
             If ((Local0 != C00A))
             {
-                ERR (C080, Z077, 0x0676, 0x00, 0x00, Local0, C00A)
+                ERR (C080, Z077, __LINE__, 0x00, 0x00, Local0, C00A)
             }
 
             If ((S900 != "12342002"))
             {
-                ERR (C080, Z077, 0x0679, 0x00, 0x00, S900, "12342002")
+                ERR (C080, Z077, __LINE__, 0x00, 0x00, S900, "12342002")
             }
 
             Local0 = ObjectType (S901)
             If ((Local0 != C00A))
             {
-                ERR (C080, Z077, 0x067E, 0x00, 0x00, Local0, C00A)
+                ERR (C080, Z077, __LINE__, 0x00, 0x00, Local0, C00A)
             }
 
             If ((S901 != "qwrtyu2003"))
             {
-                ERR (C080, Z077, 0x0681, 0x00, 0x00, S901, "qwrtyu2003")
+                ERR (C080, Z077, __LINE__, 0x00, 0x00, S901, "qwrtyu2003")
             }
 
             /* Buffer */
@@ -2942,7 +2942,7 @@
             Local0 = ObjectType (B900)
             If ((Local0 != C00B))
             {
-                ERR (C080, Z077, 0x0688, 0x00, 0x00, Local0, C00B)
+                ERR (C080, Z077, __LINE__, 0x00, 0x00, Local0, C00B)
             }
 
             If ((B900 != Buffer (0x05)
@@ -2950,7 +2950,7 @@
                              0xC0, 0xC1, 0xC2, 0xC3, 0xC4                     // .....
                         }))
             {
-                ERR (C080, Z077, 0x068B, 0x00, 0x00, B900, Buffer (0x05)
+                ERR (C080, Z077, __LINE__, 0x00, 0x00, B900, Buffer (0x05)
                     {
                          0xC0, 0xC1, 0xC2, 0xC3, 0xC4                     // .....
                     })
@@ -2961,12 +2961,12 @@
             Local0 = ObjectType (BF90)
             If ((Local0 != C016))
             {
-                ERR (C080, Z077, 0x0692, 0x00, 0x00, Local0, C016)
+                ERR (C080, Z077, __LINE__, 0x00, 0x00, Local0, C016)
             }
 
             If ((BF90 != 0xC0))
             {
-                ERR (C080, Z077, 0x0695, 0x00, 0x00, BF90, 0xC0)
+                ERR (C080, Z077, __LINE__, 0x00, 0x00, BF90, 0xC0)
             }
 
             /* One level Package */
@@ -2975,7 +2975,7 @@
             Local1 = ObjectType (Local0)
             If ((Local1 != C008))
             {
-                ERR (C080, Z077, 0x069D, 0x00, 0x00, Local1, C008)
+                ERR (C080, Z077, __LINE__, 0x00, 0x00, Local1, C008)
             }
 
             Store (P901 [0x00], Local0)
@@ -2983,12 +2983,12 @@
             Local2 = ObjectType (Local1)
             If ((Local2 != C009))
             {
-                ERR (C080, Z077, 0x06A4, 0x00, 0x00, Local2, C009)
+                ERR (C080, Z077, __LINE__, 0x00, 0x00, Local2, C009)
             }
 
             If ((Local1 != 0xABCD2004))
             {
-                ERR (C080, Z077, 0x06A7, 0x00, 0x00, Local1, 0xABCD2004)
+                ERR (C080, Z077, __LINE__, 0x00, 0x00, Local1, 0xABCD2004)
             }
 
             Store (P901 [0x01], Local0)
@@ -2996,12 +2996,12 @@
             Local2 = ObjectType (Local1)
             If ((Local2 != C009))
             {
-                ERR (C080, Z077, 0x06AE, 0x00, 0x00, Local2, C009)
+                ERR (C080, Z077, __LINE__, 0x00, 0x00, Local2, C009)
             }
 
             If ((Local1 != 0x1122334455662005))
             {
-                ERR (C080, Z077, 0x06B1, 0x00, 0x00, Local1, 0x1122334455662005)
+                ERR (C080, Z077, __LINE__, 0x00, 0x00, Local1, 0x1122334455662005)
             }
 
             Store (P902 [0x00], Local0)
@@ -3009,12 +3009,12 @@
             Local2 = ObjectType (Local1)
             If ((Local2 != C00A))
             {
-                ERR (C080, Z077, 0x06B8, 0x00, 0x00, Local2, C00A)
+                ERR (C080, Z077, __LINE__, 0x00, 0x00, Local2, C00A)
             }
 
             If ((Local1 != "12342006"))
             {
-                ERR (C080, Z077, 0x06BB, 0x00, 0x00, Local1, "12342006")
+                ERR (C080, Z077, __LINE__, 0x00, 0x00, Local1, "12342006")
             }
 
             Store (P902 [0x01], Local0)
@@ -3022,12 +3022,12 @@
             Local2 = ObjectType (Local1)
             If ((Local2 != C00A))
             {
-                ERR (C080, Z077, 0x06C2, 0x00, 0x00, Local2, C00A)
+                ERR (C080, Z077, __LINE__, 0x00, 0x00, Local2, C00A)
             }
 
             If ((Local1 != "q1w2e3r4t5y6u7i82007"))
             {
-                ERR (C080, Z077, 0x06C5, 0x00, 0x00, Local1, "q1w2e3r4t5y6u7i82007")
+                ERR (C080, Z077, __LINE__, 0x00, 0x00, Local1, "q1w2e3r4t5y6u7i82007")
             }
 
             Store (P903 [0x00], Local0)
@@ -3035,12 +3035,12 @@
             Local2 = ObjectType (Local1)
             If ((Local2 != C00A))
             {
-                ERR (C080, Z077, 0x06CC, 0x00, 0x00, Local2, C00A)
+                ERR (C080, Z077, __LINE__, 0x00, 0x00, Local2, C00A)
             }
 
             If ((Local1 != "qwrtyuiop2008"))
             {
-                ERR (C080, Z077, 0x06CF, 0x00, 0x00, Local1, "qwrtyuiop2008")
+                ERR (C080, Z077, __LINE__, 0x00, 0x00, Local1, "qwrtyuiop2008")
             }
 
             Store (P903 [0x01], Local0)
@@ -3048,12 +3048,12 @@
             Local2 = ObjectType (Local1)
             If ((Local2 != C00A))
             {
-                ERR (C080, Z077, 0x06D6, 0x00, 0x00, Local2, C00A)
+                ERR (C080, Z077, __LINE__, 0x00, 0x00, Local2, C00A)
             }
 
             If ((Local1 != "1234567890abdef0252009"))
             {
-                ERR (C080, Z077, 0x06D9, 0x00, 0x00, Local1, "1234567890abdef0252009")
+                ERR (C080, Z077, __LINE__, 0x00, 0x00, Local1, "1234567890abdef0252009")
             }
 
             Store (P904 [0x00], Local0)
@@ -3061,7 +3061,7 @@
             Local2 = ObjectType (Local1)
             If ((Local2 != C00B))
             {
-                ERR (C080, Z077, 0x06E0, 0x00, 0x00, Local2, C00B)
+                ERR (C080, Z077, __LINE__, 0x00, 0x00, Local2, C00B)
             }
 
             If ((Local1 != Buffer (0x03)
@@ -3069,7 +3069,7 @@
                              0xC5, 0xC6, 0xC7                                 // ...
                         }))
             {
-                ERR (C080, Z077, 0x06E3, 0x00, 0x00, Local1, Buffer (0x03)
+                ERR (C080, Z077, __LINE__, 0x00, 0x00, Local1, Buffer (0x03)
                     {
                          0xC5, 0xC6, 0xC7                                 // ...
                     })
@@ -3080,7 +3080,7 @@
             Local2 = ObjectType (Local1)
             If ((Local2 != C00B))
             {
-                ERR (C080, Z077, 0x06EA, 0x00, 0x00, Local2, C00B)
+                ERR (C080, Z077, __LINE__, 0x00, 0x00, Local2, C00B)
             }
 
             If ((Local1 != Buffer (0x02)
@@ -3088,7 +3088,7 @@
                              0xC8, 0xC9                                       // ..
                         }))
             {
-                ERR (C080, Z077, 0x06ED, 0x00, 0x00, Local1, Buffer (0x02)
+                ERR (C080, Z077, __LINE__, 0x00, 0x00, Local1, Buffer (0x02)
                     {
                          0xC8, 0xC9                                       // ..
                     })
@@ -3103,12 +3103,12 @@
             Local4 = ObjectType (Local3)
             If ((Local4 != C009))
             {
-                ERR (C080, Z077, 0x06F8, 0x00, 0x00, Local4, C009)
+                ERR (C080, Z077, __LINE__, 0x00, 0x00, Local4, C009)
             }
 
             If ((Local3 != 0x0ABC200A))
             {
-                ERR (C080, Z077, 0x06FB, 0x00, 0x00, Local3, 0x0ABC200A)
+                ERR (C080, Z077, __LINE__, 0x00, 0x00, Local3, 0x0ABC200A)
             }
 
             Store (P905 [0x00], Local0)
@@ -3118,12 +3118,12 @@
             Local4 = ObjectType (Local3)
             If ((Local4 != C00A))
             {
-                ERR (C080, Z077, 0x0704, 0x00, 0x00, Local4, C00A)
+                ERR (C080, Z077, __LINE__, 0x00, 0x00, Local4, C00A)
             }
 
             If ((Local3 != "0xabc200b"))
             {
-                ERR (C080, Z077, 0x0707, 0x00, 0x00, Local3, "0xabc200b")
+                ERR (C080, Z077, __LINE__, 0x00, 0x00, Local3, "0xabc200b")
             }
 
             Store (P905 [0x00], Local0)
@@ -3133,12 +3133,12 @@
             Local4 = ObjectType (Local3)
             If ((Local4 != C00A))
             {
-                ERR (C080, Z077, 0x0710, 0x00, 0x00, Local4, C00A)
+                ERR (C080, Z077, __LINE__, 0x00, 0x00, Local4, C00A)
             }
 
             If ((Local3 != "abc200c"))
             {
-                ERR (C080, Z077, 0x0713, 0x00, 0x00, Local3, "abc200c")
+                ERR (C080, Z077, __LINE__, 0x00, 0x00, Local3, "abc200c")
             }
 
             Store (P906 [0x00], Local0)
@@ -3148,12 +3148,12 @@
             Local4 = ObjectType (Local3)
             If ((Local4 != C00A))
             {
-                ERR (C080, Z077, 0x071C, 0x00, 0x00, Local4, C00A)
+                ERR (C080, Z077, __LINE__, 0x00, 0x00, Local4, C00A)
             }
 
             If ((Local3 != "abc200d"))
             {
-                ERR (C080, Z077, 0x071F, 0x00, 0x00, Local3, "abc200d")
+                ERR (C080, Z077, __LINE__, 0x00, 0x00, Local3, "abc200d")
             }
 
             Store (P907 [0x00], Local0)
@@ -3163,12 +3163,12 @@
             Local4 = ObjectType (Local3)
             If ((Local4 != C00A))
             {
-                ERR (C080, Z077, 0x0728, 0x00, 0x00, Local4, C00A)
+                ERR (C080, Z077, __LINE__, 0x00, 0x00, Local4, C00A)
             }
 
             If ((Local3 != "aqwevbgnm200e"))
             {
-                ERR (C080, Z077, 0x072B, 0x00, 0x00, Local3, "aqwevbgnm200e")
+                ERR (C080, Z077, __LINE__, 0x00, 0x00, Local3, "aqwevbgnm200e")
             }
 
             Store (P908 [0x00], Local0)
@@ -3178,7 +3178,7 @@
             Local4 = ObjectType (Local3)
             If ((Local4 != C00B))
             {
-                ERR (C080, Z077, 0x0734, 0x00, 0x00, Local4, C00B)
+                ERR (C080, Z077, __LINE__, 0x00, 0x00, Local4, C00B)
             }
 
             If ((Local3 != Buffer (0x05)
@@ -3186,7 +3186,7 @@
                              0xCA, 0xCB, 0xCC, 0xCD, 0xCE                     // .....
                         }))
             {
-                ERR (C080, Z077, 0x0737, 0x00, 0x00, Local3, Buffer (0x05)
+                ERR (C080, Z077, __LINE__, 0x00, 0x00, Local3, Buffer (0x05)
                     {
                          0xCA, 0xCB, 0xCC, 0xCD, 0xCE                     // .....
                     })
@@ -3203,12 +3203,12 @@
             Local6 = ObjectType (Local5)
             If ((Local6 != C009))
             {
-                ERR (C080, Z077, 0x0744, 0x00, 0x00, Local6, C009)
+                ERR (C080, Z077, __LINE__, 0x00, 0x00, Local6, C009)
             }
 
             If ((Local5 != 0x0ABC200F))
             {
-                ERR (C080, Z077, 0x0747, 0x00, 0x00, Local5, 0x0ABC200F)
+                ERR (C080, Z077, __LINE__, 0x00, 0x00, Local5, 0x0ABC200F)
             }
 
             Store (P90A [0x00], Local0)
@@ -3220,12 +3220,12 @@
             Local6 = ObjectType (Local5)
             If ((Local6 != C00A))
             {
-                ERR (C080, Z077, 0x0752, 0x00, 0x00, Local6, C00A)
+                ERR (C080, Z077, __LINE__, 0x00, 0x00, Local6, C00A)
             }
 
             If ((Local5 != "12342010"))
             {
-                ERR (C080, Z077, 0x0755, 0x00, 0x00, Local5, "12342010")
+                ERR (C080, Z077, __LINE__, 0x00, 0x00, Local5, "12342010")
             }
 
             Store (P90B [0x00], Local0)
@@ -3237,12 +3237,12 @@
             Local6 = ObjectType (Local5)
             If ((Local6 != C00A))
             {
-                ERR (C080, Z077, 0x0760, 0x00, 0x00, Local6, C00A)
+                ERR (C080, Z077, __LINE__, 0x00, 0x00, Local6, C00A)
             }
 
             If ((Local5 != "zxswefas2011"))
             {
-                ERR (C080, Z077, 0x0763, 0x00, 0x00, Local5, "zxswefas2011")
+                ERR (C080, Z077, __LINE__, 0x00, 0x00, Local5, "zxswefas2011")
             }
 
             Store (P90C [0x00], Local0)
@@ -3254,7 +3254,7 @@
             Local6 = ObjectType (Local5)
             If ((Local6 != C00B))
             {
-                ERR (C080, Z077, 0x076E, 0x00, 0x00, Local6, C00B)
+                ERR (C080, Z077, __LINE__, 0x00, 0x00, Local6, C00B)
             }
 
             If ((Local5 != Buffer (0x03)
@@ -3262,7 +3262,7 @@
                              0xCF, 0xD0, 0xD1                                 // ...
                         }))
             {
-                ERR (C080, Z077, 0x0771, 0x00, 0x00, Local5, Buffer (0x03)
+                ERR (C080, Z077, __LINE__, 0x00, 0x00, Local5, Buffer (0x03)
                     {
                          0xCF, 0xD0, 0xD1                                 // ...
                     })
@@ -3273,12 +3273,12 @@
             Local2 = ObjectType (Local1)
             If ((Local2 != C009))
             {
-                ERR (C080, Z077, 0x0778, 0x00, 0x00, Local2, C009)
+                ERR (C080, Z077, __LINE__, 0x00, 0x00, Local2, C009)
             }
 
             If ((Local1 != 0xABCD2018))
             {
-                ERR (C080, Z077, 0x077B, 0x00, 0x00, Local1, 0xABCD2018)
+                ERR (C080, Z077, __LINE__, 0x00, 0x00, Local1, 0xABCD2018)
             }
 
             Store (P953 [0x01], Local0)
@@ -3286,12 +3286,12 @@
             Local2 = ObjectType (Local1)
             If ((Local2 != C009))
             {
-                ERR (C080, Z077, 0x0782, 0x00, 0x00, Local2, C009)
+                ERR (C080, Z077, __LINE__, 0x00, 0x00, Local2, C009)
             }
 
             If ((Local1 != 0xABCD2019))
             {
-                ERR (C080, Z077, 0x0785, 0x00, 0x00, Local1, 0xABCD2019)
+                ERR (C080, Z077, __LINE__, 0x00, 0x00, Local1, 0xABCD2019)
             }
 
             /* Not Computational Data */
@@ -4532,56 +4532,56 @@
             Local0 = ObjectType (I900)
             If ((Local0 != C009))
             {
-                ERR (C080, Z077, 0x0AAB, 0x00, 0x00, Local0, C009)
+                ERR (C080, Z077, __LINE__, 0x00, 0x00, Local0, C009)
             }
 
             If ((I900 != 0xFE7CB391D65A3000))
             {
-                ERR (C080, Z077, 0x0AAE, 0x00, 0x00, I900, 0xFE7CB391D65A3000)
+                ERR (C080, Z077, __LINE__, 0x00, 0x00, I900, 0xFE7CB391D65A3000)
             }
 
             Local0 = ObjectType (I901)
             If ((Local0 != C009))
             {
-                ERR (C080, Z077, 0x0AB3, 0x00, 0x00, Local0, C009)
+                ERR (C080, Z077, __LINE__, 0x00, 0x00, Local0, C009)
             }
 
             If ((I901 != 0x21793001))
             {
-                ERR (C080, Z077, 0x0AB6, 0x00, 0x00, I901, 0x21793001)
+                ERR (C080, Z077, __LINE__, 0x00, 0x00, I901, 0x21793001)
             }
 
             Local0 = ObjectType (I902)
             If ((Local0 != C009))
             {
-                ERR (C080, Z077, 0x0ABB, 0x00, 0x00, Local0, C009)
+                ERR (C080, Z077, __LINE__, 0x00, 0x00, Local0, C009)
             }
 
             If ((I902 != 0x00))
             {
-                ERR (C080, Z077, 0x0ABE, 0x00, 0x00, I902, 0x00)
+                ERR (C080, Z077, __LINE__, 0x00, 0x00, I902, 0x00)
             }
 
             Local0 = ObjectType (I903)
             If ((Local0 != C009))
             {
-                ERR (C080, Z077, 0x0AC3, 0x00, 0x00, Local0, C009)
+                ERR (C080, Z077, __LINE__, 0x00, 0x00, Local0, C009)
             }
 
             If ((I903 != 0xFFFFFFFFFFFFFFFF))
             {
-                ERR (C080, Z077, 0x0AC6, 0x00, 0x00, I903, 0xFFFFFFFFFFFFFFFF)
+                ERR (C080, Z077, __LINE__, 0x00, 0x00, I903, 0xFFFFFFFFFFFFFFFF)
             }
 
             Local0 = ObjectType (I904)
             If ((Local0 != C009))
             {
-                ERR (C080, Z077, 0x0ACB, 0x00, 0x00, Local0, C009)
+                ERR (C080, Z077, __LINE__, 0x00, 0x00, Local0, C009)
             }
 
             If ((I904 != 0xFFFFFFFF))
             {
-                ERR (C080, Z077, 0x0ACE, 0x00, 0x00, I904, 0xFFFFFFFF)
+                ERR (C080, Z077, __LINE__, 0x00, 0x00, I904, 0xFFFFFFFF)
             }
 
             /* String */
@@ -4589,23 +4589,23 @@
             Local0 = ObjectType (S900)
             If ((Local0 != C00A))
             {
-                ERR (C080, Z077, 0x0AD5, 0x00, 0x00, Local0, C00A)
+                ERR (C080, Z077, __LINE__, 0x00, 0x00, Local0, C00A)
             }
 
             If ((S900 != "12343002"))
             {
-                ERR (C080, Z077, 0x0AD8, 0x00, 0x00, S900, "12343002")
+                ERR (C080, Z077, __LINE__, 0x00, 0x00, S900, "12343002")
             }
 
             Local0 = ObjectType (S901)
             If ((Local0 != C00A))
             {
-                ERR (C080, Z077, 0x0ADD, 0x00, 0x00, Local0, C00A)
+                ERR (C080, Z077, __LINE__, 0x00, 0x00, Local0, C00A)
             }
 
             If ((S901 != "qwrtyu3003"))
             {
-                ERR (C080, Z077, 0x0AE0, 0x00, 0x00, S901, "qwrtyu3003")
+                ERR (C080, Z077, __LINE__, 0x00, 0x00, S901, "qwrtyu3003")
             }
 
             /* Buffer */
@@ -4613,7 +4613,7 @@
             Local0 = ObjectType (B900)
             If ((Local0 != C00B))
             {
-                ERR (C080, Z077, 0x0AE7, 0x00, 0x00, Local0, C00B)
+                ERR (C080, Z077, __LINE__, 0x00, 0x00, Local0, C00B)
             }
 
             If ((B900 != Buffer (0x05)
@@ -4621,7 +4621,7 @@
                              0xD0, 0xD1, 0xD2, 0xD3, 0xD4                     // .....
                         }))
             {
-                ERR (C080, Z077, 0x0AEA, 0x00, 0x00, B900, Buffer (0x05)
+                ERR (C080, Z077, __LINE__, 0x00, 0x00, B900, Buffer (0x05)
                     {
                          0xD0, 0xD1, 0xD2, 0xD3, 0xD4                     // .....
                     })
@@ -4632,12 +4632,12 @@
             Local0 = ObjectType (BF90)
             If ((Local0 != C016))
             {
-                ERR (C080, Z077, 0x0AF1, 0x00, 0x00, Local0, C016)
+                ERR (C080, Z077, __LINE__, 0x00, 0x00, Local0, C016)
             }
 
             If ((BF90 != 0xD0))
             {
-                ERR (C080, Z077, 0x0AF4, 0x00, 0x00, BF90, 0xD0)
+                ERR (C080, Z077, __LINE__, 0x00, 0x00, BF90, 0xD0)
             }
 
             /* One level Package */
@@ -4646,7 +4646,7 @@
             Local1 = ObjectType (Local0)
             If ((Local1 != C008))
             {
-                ERR (C080, Z077, 0x0AFC, 0x00, 0x00, Local1, C008)
+                ERR (C080, Z077, __LINE__, 0x00, 0x00, Local1, C008)
             }
 
             Store (P901 [0x00], Local0)
@@ -4654,12 +4654,12 @@
             Local2 = ObjectType (Local1)
             If ((Local2 != C009))
             {
-                ERR (C080, Z077, 0x0B03, 0x00, 0x00, Local2, C009)
+                ERR (C080, Z077, __LINE__, 0x00, 0x00, Local2, C009)
             }
 
             If ((Local1 != 0xABCD3004))
             {
-                ERR (C080, Z077, 0x0B06, 0x00, 0x00, Local1, 0xABCD3004)
+                ERR (C080, Z077, __LINE__, 0x00, 0x00, Local1, 0xABCD3004)
             }
 
             Store (P901 [0x01], Local0)
@@ -4667,12 +4667,12 @@
             Local2 = ObjectType (Local1)
             If ((Local2 != C009))
             {
-                ERR (C080, Z077, 0x0B0D, 0x00, 0x00, Local2, C009)
+                ERR (C080, Z077, __LINE__, 0x00, 0x00, Local2, C009)
             }
 
             If ((Local1 != 0x1122334455663005))
             {
-                ERR (C080, Z077, 0x0B10, 0x00, 0x00, Local1, 0x1122334455663005)
+                ERR (C080, Z077, __LINE__, 0x00, 0x00, Local1, 0x1122334455663005)
             }
 
             Store (P902 [0x00], Local0)
@@ -4680,12 +4680,12 @@
             Local2 = ObjectType (Local1)
             If ((Local2 != C00A))
             {
-                ERR (C080, Z077, 0x0B17, 0x00, 0x00, Local2, C00A)
+                ERR (C080, Z077, __LINE__, 0x00, 0x00, Local2, C00A)
             }
 
             If ((Local1 != "12343006"))
             {
-                ERR (C080, Z077, 0x0B1A, 0x00, 0x00, Local1, "12343006")
+                ERR (C080, Z077, __LINE__, 0x00, 0x00, Local1, "12343006")
             }
 
             Store (P902 [0x01], Local0)
@@ -4693,12 +4693,12 @@
             Local2 = ObjectType (Local1)
             If ((Local2 != C00A))
             {
-                ERR (C080, Z077, 0x0B21, 0x00, 0x00, Local2, C00A)
+                ERR (C080, Z077, __LINE__, 0x00, 0x00, Local2, C00A)
             }
 
             If ((Local1 != "q1w2e3r4t5y6u7i83007"))
             {
-                ERR (C080, Z077, 0x0B24, 0x00, 0x00, Local1, "q1w2e3r4t5y6u7i83007")
+                ERR (C080, Z077, __LINE__, 0x00, 0x00, Local1, "q1w2e3r4t5y6u7i83007")
             }
 
             Store (P903 [0x00], Local0)
@@ -4706,12 +4706,12 @@
             Local2 = ObjectType (Local1)
             If ((Local2 != C00A))
             {
-                ERR (C080, Z077, 0x0B2B, 0x00, 0x00, Local2, C00A)
+                ERR (C080, Z077, __LINE__, 0x00, 0x00, Local2, C00A)
             }
 
             If ((Local1 != "qwrtyuiop3008"))
             {
-                ERR (C080, Z077, 0x0B2E, 0x00, 0x00, Local1, "qwrtyuiop3008")
+                ERR (C080, Z077, __LINE__, 0x00, 0x00, Local1, "qwrtyuiop3008")
             }
 
             Store (P903 [0x01], Local0)
@@ -4719,12 +4719,12 @@
             Local2 = ObjectType (Local1)
             If ((Local2 != C00A))
             {
-                ERR (C080, Z077, 0x0B35, 0x00, 0x00, Local2, C00A)
+                ERR (C080, Z077, __LINE__, 0x00, 0x00, Local2, C00A)
             }
 
             If ((Local1 != "1234567890abdef0253009"))
             {
-                ERR (C080, Z077, 0x0B38, 0x00, 0x00, Local1, "1234567890abdef0253009")
+                ERR (C080, Z077, __LINE__, 0x00, 0x00, Local1, "1234567890abdef0253009")
             }
 
             Store (P904 [0x00], Local0)
@@ -4732,7 +4732,7 @@
             Local2 = ObjectType (Local1)
             If ((Local2 != C00B))
             {
-                ERR (C080, Z077, 0x0B3F, 0x00, 0x00, Local2, C00B)
+                ERR (C080, Z077, __LINE__, 0x00, 0x00, Local2, C00B)
             }
 
             If ((Local1 != Buffer (0x03)
@@ -4740,7 +4740,7 @@
                              0xD5, 0xD6, 0xD7                                 // ...
                         }))
             {
-                ERR (C080, Z077, 0x0B42, 0x00, 0x00, Local1, Buffer (0x03)
+                ERR (C080, Z077, __LINE__, 0x00, 0x00, Local1, Buffer (0x03)
                     {
                          0xD5, 0xD6, 0xD7                                 // ...
                     })
@@ -4751,7 +4751,7 @@
             Local2 = ObjectType (Local1)
             If ((Local2 != C00B))
             {
-                ERR (C080, Z077, 0x0B49, 0x00, 0x00, Local2, C00B)
+                ERR (C080, Z077, __LINE__, 0x00, 0x00, Local2, C00B)
             }
 
             If ((Local1 != Buffer (0x02)
@@ -4759,7 +4759,7 @@
                              0xD8, 0xD9                                       // ..
                         }))
             {
-                ERR (C080, Z077, 0x0B4C, 0x00, 0x00, Local1, Buffer (0x02)
+                ERR (C080, Z077, __LINE__, 0x00, 0x00, Local1, Buffer (0x02)
                     {
                          0xD8, 0xD9                                       // ..
                     })
@@ -4774,12 +4774,12 @@
             Local4 = ObjectType (Local3)
             If ((Local4 != C009))
             {
-                ERR (C080, Z077, 0x0B57, 0x00, 0x00, Local4, C009)
+                ERR (C080, Z077, __LINE__, 0x00, 0x00, Local4, C009)
             }
 
             If ((Local3 != 0x0ABC300A))
             {
-                ERR (C080, Z077, 0x0B5A, 0x00, 0x00, Local3, 0x0ABC300A)
+                ERR (C080, Z077, __LINE__, 0x00, 0x00, Local3, 0x0ABC300A)
             }
 
             Store (P905 [0x00], Local0)
@@ -4789,12 +4789,12 @@
             Local4 = ObjectType (Local3)
             If ((Local4 != C00A))
             {
-                ERR (C080, Z077, 0x0B63, 0x00, 0x00, Local4, C00A)
+                ERR (C080, Z077, __LINE__, 0x00, 0x00, Local4, C00A)
             }
 
             If ((Local3 != "0xabc300b"))
             {
-                ERR (C080, Z077, 0x0B66, 0x00, 0x00, Local3, "0xabc300b")
+                ERR (C080, Z077, __LINE__, 0x00, 0x00, Local3, "0xabc300b")
             }
 
             Store (P905 [0x00], Local0)
@@ -4804,12 +4804,12 @@
             Local4 = ObjectType (Local3)
             If ((Local4 != C00A))
             {
-                ERR (C080, Z077, 0x0B6F, 0x00, 0x00, Local4, C00A)
+                ERR (C080, Z077, __LINE__, 0x00, 0x00, Local4, C00A)
             }
 
             If ((Local3 != "abc300c"))
             {
-                ERR (C080, Z077, 0x0B72, 0x00, 0x00, Local3, "abc300c")
+                ERR (C080, Z077, __LINE__, 0x00, 0x00, Local3, "abc300c")
             }
 
             Store (P906 [0x00], Local0)
@@ -4819,12 +4819,12 @@
             Local4 = ObjectType (Local3)
             If ((Local4 != C00A))
             {
-                ERR (C080, Z077, 0x0B7B, 0x00, 0x00, Local4, C00A)
+                ERR (C080, Z077, __LINE__, 0x00, 0x00, Local4, C00A)
             }
 
             If ((Local3 != "abc300d"))
             {
-                ERR (C080, Z077, 0x0B7E, 0x00, 0x00, Local3, "abc300d")
+                ERR (C080, Z077, __LINE__, 0x00, 0x00, Local3, "abc300d")
             }
 
             Store (P907 [0x00], Local0)
@@ -4834,12 +4834,12 @@
             Local4 = ObjectType (Local3)
             If ((Local4 != C00A))
             {
-                ERR (C080, Z077, 0x0B87, 0x00, 0x00, Local4, C00A)
+                ERR (C080, Z077, __LINE__, 0x00, 0x00, Local4, C00A)
             }
 
             If ((Local3 != "aqwevbgnm300e"))
             {
-                ERR (C080, Z077, 0x0B8A, 0x00, 0x00, Local3, "aqwevbgnm300e")
+                ERR (C080, Z077, __LINE__, 0x00, 0x00, Local3, "aqwevbgnm300e")
             }
 
             Store (P908 [0x00], Local0)
@@ -4849,7 +4849,7 @@
             Local4 = ObjectType (Local3)
             If ((Local4 != C00B))
             {
-                ERR (C080, Z077, 0x0B93, 0x00, 0x00, Local4, C00B)
+                ERR (C080, Z077, __LINE__, 0x00, 0x00, Local4, C00B)
             }
 
             If ((Local3 != Buffer (0x05)
@@ -4857,7 +4857,7 @@
                              0xDA, 0xDB, 0xDC, 0xDD, 0xDE                     // .....
                         }))
             {
-                ERR (C080, Z077, 0x0B96, 0x00, 0x00, Local3, Buffer (0x05)
+                ERR (C080, Z077, __LINE__, 0x00, 0x00, Local3, Buffer (0x05)
                     {
                          0xDA, 0xDB, 0xDC, 0xDD, 0xDE                     // .....
                     })
@@ -4874,12 +4874,12 @@
             Local6 = ObjectType (Local5)
             If ((Local6 != C009))
             {
-                ERR (C080, Z077, 0x0BA3, 0x00, 0x00, Local6, C009)
+                ERR (C080, Z077, __LINE__, 0x00, 0x00, Local6, C009)
             }
 
             If ((Local5 != 0x0ABC300F))
             {
-                ERR (C080, Z077, 0x0BA6, 0x00, 0x00, Local5, 0x0ABC300F)
+                ERR (C080, Z077, __LINE__, 0x00, 0x00, Local5, 0x0ABC300F)
             }
 
             Store (P90A [0x00], Local0)
@@ -4891,12 +4891,12 @@
             Local6 = ObjectType (Local5)
             If ((Local6 != C00A))
             {
-                ERR (C080, Z077, 0x0BB1, 0x00, 0x00, Local6, C00A)
+                ERR (C080, Z077, __LINE__, 0x00, 0x00, Local6, C00A)
             }
 
             If ((Local5 != "12343010"))
             {
-                ERR (C080, Z077, 0x0BB4, 0x00, 0x00, Local5, "12343010")
+                ERR (C080, Z077, __LINE__, 0x00, 0x00, Local5, "12343010")
             }
 
             Store (P90B [0x00], Local0)
@@ -4908,12 +4908,12 @@
             Local6 = ObjectType (Local5)
             If ((Local6 != C00A))
             {
-                ERR (C080, Z077, 0x0BBF, 0x00, 0x00, Local6, C00A)
+                ERR (C080, Z077, __LINE__, 0x00, 0x00, Local6, C00A)
             }
 
             If ((Local5 != "zxswefas3011"))
             {
-                ERR (C080, Z077, 0x0BC2, 0x00, 0x00, Local5, "zxswefas3011")
+                ERR (C080, Z077, __LINE__, 0x00, 0x00, Local5, "zxswefas3011")
             }
 
             Store (P90C [0x00], Local0)
@@ -4925,7 +4925,7 @@
             Local6 = ObjectType (Local5)
             If ((Local6 != C00B))
             {
-                ERR (C080, Z077, 0x0BCD, 0x00, 0x00, Local6, C00B)
+                ERR (C080, Z077, __LINE__, 0x00, 0x00, Local6, C00B)
             }
 
             If ((Local5 != Buffer (0x03)
@@ -4933,7 +4933,7 @@
                              0xDF, 0x20, 0x21                                 // . !
                         }))
             {
-                ERR (C080, Z077, 0x0BD0, 0x00, 0x00, Local5, Buffer (0x03)
+                ERR (C080, Z077, __LINE__, 0x00, 0x00, Local5, Buffer (0x03)
                     {
                          0xDF, 0x20, 0x21                                 // . !
                     })
@@ -4944,12 +4944,12 @@
             Local2 = ObjectType (Local1)
             If ((Local2 != C009))
             {
-                ERR (C080, Z077, 0x0BD7, 0x00, 0x00, Local2, C009)
+                ERR (C080, Z077, __LINE__, 0x00, 0x00, Local2, C009)
             }
 
             If ((Local1 != 0xABCD3018))
             {
-                ERR (C080, Z077, 0x0BDA, 0x00, 0x00, Local1, 0xABCD3018)
+                ERR (C080, Z077, __LINE__, 0x00, 0x00, Local1, 0xABCD3018)
             }
 
             Store (P953 [0x01], Local0)
@@ -4957,12 +4957,12 @@
             Local2 = ObjectType (Local1)
             If ((Local2 != C009))
             {
-                ERR (C080, Z077, 0x0BE1, 0x00, 0x00, Local2, C009)
+                ERR (C080, Z077, __LINE__, 0x00, 0x00, Local2, C009)
             }
 
             If ((Local1 != 0xABCD3019))
             {
-                ERR (C080, Z077, 0x0BE4, 0x00, 0x00, Local1, 0xABCD3019)
+                ERR (C080, Z077, __LINE__, 0x00, 0x00, Local1, 0xABCD3019)
             }
 
             /* Not Computational Data */
@@ -6123,56 +6123,56 @@
             Local0 = ObjectType (I900)
             If ((Local0 != C009))
             {
-                ERR (C080, Z077, 0x0EBB, 0x00, 0x00, Local0, C009)
+                ERR (C080, Z077, __LINE__, 0x00, 0x00, Local0, C009)
             }
 
             If ((I900 != 0xFE7CB391D65A4000))
             {
-                ERR (C080, Z077, 0x0EBE, 0x00, 0x00, I900, 0xFE7CB391D65A4000)
+                ERR (C080, Z077, __LINE__, 0x00, 0x00, I900, 0xFE7CB391D65A4000)
             }
 
             Local0 = ObjectType (I901)
             If ((Local0 != C009))
             {
-                ERR (C080, Z077, 0x0EC3, 0x00, 0x00, Local0, C009)
+                ERR (C080, Z077, __LINE__, 0x00, 0x00, Local0, C009)
             }
 
             If ((I901 != 0xC1794001))
             {
-                ERR (C080, Z077, 0x0EC6, 0x00, 0x00, I901, 0xC1794001)
+                ERR (C080, Z077, __LINE__, 0x00, 0x00, I901, 0xC1794001)
             }
 
             Local0 = ObjectType (I902)
             If ((Local0 != C009))
             {
-                ERR (C080, Z077, 0x0ECB, 0x00, 0x00, Local0, C009)
+                ERR (C080, Z077, __LINE__, 0x00, 0x00, Local0, C009)
             }
 
             If ((I902 != 0x00))
             {
-                ERR (C080, Z077, 0x0ECE, 0x00, 0x00, I902, 0x00)
+                ERR (C080, Z077, __LINE__, 0x00, 0x00, I902, 0x00)
             }
 
             Local0 = ObjectType (I903)
             If ((Local0 != C009))
             {
-                ERR (C080, Z077, 0x0ED3, 0x00, 0x00, Local0, C009)
+                ERR (C080, Z077, __LINE__, 0x00, 0x00, Local0, C009)
             }
 
             If ((I903 != 0xFFFFFFFFFFFFFFFF))
             {
-                ERR (C080, Z077, 0x0ED6, 0x00, 0x00, I903, 0xFFFFFFFFFFFFFFFF)
+                ERR (C080, Z077, __LINE__, 0x00, 0x00, I903, 0xFFFFFFFFFFFFFFFF)
             }
 
             Local0 = ObjectType (I904)
             If ((Local0 != C009))
             {
-                ERR (C080, Z077, 0x0EDB, 0x00, 0x00, Local0, C009)
+                ERR (C080, Z077, __LINE__, 0x00, 0x00, Local0, C009)
             }
 
             If ((I904 != 0xFFFFFFFF))
             {
-                ERR (C080, Z077, 0x0EDE, 0x00, 0x00, I904, 0xFFFFFFFF)
+                ERR (C080, Z077, __LINE__, 0x00, 0x00, I904, 0xFFFFFFFF)
             }
 
             /* String */
@@ -6180,23 +6180,23 @@
             Local0 = ObjectType (S900)
             If ((Local0 != C00A))
             {
-                ERR (C080, Z077, 0x0EE5, 0x00, 0x00, Local0, C00A)
+                ERR (C080, Z077, __LINE__, 0x00, 0x00, Local0, C00A)
             }
 
             If ((S900 != "12344002"))
             {
-                ERR (C080, Z077, 0x0EE8, 0x00, 0x00, S900, "12344002")
+                ERR (C080, Z077, __LINE__, 0x00, 0x00, S900, "12344002")
             }
 
             Local0 = ObjectType (S901)
             If ((Local0 != C00A))
             {
-                ERR (C080, Z077, 0x0EED, 0x00, 0x00, Local0, C00A)
+                ERR (C080, Z077, __LINE__, 0x00, 0x00, Local0, C00A)
             }
 
             If ((S901 != "qwrtyu4003"))
             {
-                ERR (C080, Z077, 0x0EF0, 0x00, 0x00, S901, "qwrtyu4003")
+                ERR (C080, Z077, __LINE__, 0x00, 0x00, S901, "qwrtyu4003")
             }
 
             /* Buffer */
@@ -6204,7 +6204,7 @@
             Local0 = ObjectType (B900)
             If ((Local0 != C00B))
             {
-                ERR (C080, Z077, 0x0EF7, 0x00, 0x00, Local0, C00B)
+                ERR (C080, Z077, __LINE__, 0x00, 0x00, Local0, C00B)
             }
 
             If ((B900 != Buffer (0x05)
@@ -6212,7 +6212,7 @@
                              0xE0, 0xE1, 0xE2, 0xE3, 0xE4                     // .....
                         }))
             {
-                ERR (C080, Z077, 0x0EFA, 0x00, 0x00, B900, Buffer (0x05)
+                ERR (C080, Z077, __LINE__, 0x00, 0x00, B900, Buffer (0x05)
                     {
                          0xE0, 0xE1, 0xE2, 0xE3, 0xE4                     // .....
                     })
@@ -6223,12 +6223,12 @@
             Local0 = ObjectType (BF90)
             If ((Local0 != C016))
             {
-                ERR (C080, Z077, 0x0F01, 0x00, 0x00, Local0, C016)
+                ERR (C080, Z077, __LINE__, 0x00, 0x00, Local0, C016)
             }
 
             If ((BF90 != 0xE0))
             {
-                ERR (C080, Z077, 0x0F04, 0x00, 0x00, BF90, 0xE0)
+                ERR (C080, Z077, __LINE__, 0x00, 0x00, BF90, 0xE0)
             }
 
             /* One level Package */
@@ -6237,7 +6237,7 @@
             Local1 = ObjectType (Local0)
             If ((Local1 != C008))
             {
-                ERR (C080, Z077, 0x0F0C, 0x00, 0x00, Local1, C008)
+                ERR (C080, Z077, __LINE__, 0x00, 0x00, Local1, C008)
             }
 
             Store (P901 [0x00], Local0)
@@ -6245,12 +6245,12 @@
             Local2 = ObjectType (Local1)
             If ((Local2 != C009))
             {
-                ERR (C080, Z077, 0x0F13, 0x00, 0x00, Local2, C009)
+                ERR (C080, Z077, __LINE__, 0x00, 0x00, Local2, C009)
             }
 
             If ((Local1 != 0xABCD4004))
             {
-                ERR (C080, Z077, 0x0F16, 0x00, 0x00, Local1, 0xABCD4004)
+                ERR (C080, Z077, __LINE__, 0x00, 0x00, Local1, 0xABCD4004)
             }
 
             Store (P901 [0x01], Local0)
@@ -6258,12 +6258,12 @@
             Local2 = ObjectType (Local1)
             If ((Local2 != C009))
             {
-                ERR (C080, Z077, 0x0F1D, 0x00, 0x00, Local2, C009)
+                ERR (C080, Z077, __LINE__, 0x00, 0x00, Local2, C009)
             }
 
             If ((Local1 != 0x1122334455664005))
             {
-                ERR (C080, Z077, 0x0F20, 0x00, 0x00, Local1, 0x1122334455664005)
+                ERR (C080, Z077, __LINE__, 0x00, 0x00, Local1, 0x1122334455664005)
             }
 
             Store (P902 [0x00], Local0)
@@ -6271,12 +6271,12 @@
             Local2 = ObjectType (Local1)
             If ((Local2 != C00A))
             {
-                ERR (C080, Z077, 0x0F27, 0x00, 0x00, Local2, C00A)
+                ERR (C080, Z077, __LINE__, 0x00, 0x00, Local2, C00A)
             }
 
             If ((Local1 != "12344006"))
             {
-                ERR (C080, Z077, 0x0F2A, 0x00, 0x00, Local1, "12344006")
+                ERR (C080, Z077, __LINE__, 0x00, 0x00, Local1, "12344006")
             }
 
             Store (P902 [0x01], Local0)
@@ -6284,12 +6284,12 @@
             Local2 = ObjectType (Local1)
             If ((Local2 != C00A))
             {
-                ERR (C080, Z077, 0x0F31, 0x00, 0x00, Local2, C00A)
+                ERR (C080, Z077, __LINE__, 0x00, 0x00, Local2, C00A)
             }
 
             If ((Local1 != "q1w2e3r4t5y6u7i84007"))
             {
-                ERR (C080, Z077, 0x0F34, 0x00, 0x00, Local1, "q1w2e3r4t5y6u7i84007")
+                ERR (C080, Z077, __LINE__, 0x00, 0x00, Local1, "q1w2e3r4t5y6u7i84007")
             }
 
             Store (P903 [0x00], Local0)
@@ -6297,12 +6297,12 @@
             Local2 = ObjectType (Local1)
             If ((Local2 != C00A))
             {
-                ERR (C080, Z077, 0x0F3B, 0x00, 0x00, Local2, C00A)
+                ERR (C080, Z077, __LINE__, 0x00, 0x00, Local2, C00A)
             }
 
             If ((Local1 != "qwrtyuiop4008"))
             {
-                ERR (C080, Z077, 0x0F3E, 0x00, 0x00, Local1, "qwrtyuiop4008")
+                ERR (C080, Z077, __LINE__, 0x00, 0x00, Local1, "qwrtyuiop4008")
             }
 
             Store (P903 [0x01], Local0)
@@ -6310,12 +6310,12 @@
             Local2 = ObjectType (Local1)
             If ((Local2 != C00A))
             {
-                ERR (C080, Z077, 0x0F45, 0x00, 0x00, Local2, C00A)
+                ERR (C080, Z077, __LINE__, 0x00, 0x00, Local2, C00A)
             }
 
             If ((Local1 != "1234567890abdef0254009"))
             {
-                ERR (C080, Z077, 0x0F48, 0x00, 0x00, Local1, "1234567890abdef0254009")
+                ERR (C080, Z077, __LINE__, 0x00, 0x00, Local1, "1234567890abdef0254009")
             }
 
             Store (P904 [0x00], Local0)
@@ -6323,7 +6323,7 @@
             Local2 = ObjectType (Local1)
             If ((Local2 != C00B))
             {
-                ERR (C080, Z077, 0x0F4F, 0x00, 0x00, Local2, C00B)
+                ERR (C080, Z077, __LINE__, 0x00, 0x00, Local2, C00B)
             }
 
             If ((Local1 != Buffer (0x03)
@@ -6331,7 +6331,7 @@
                              0xE5, 0xE6, 0xE7                                 // ...
                         }))
             {
-                ERR (C080, Z077, 0x0F52, 0x00, 0x00, Local1, Buffer (0x03)
+                ERR (C080, Z077, __LINE__, 0x00, 0x00, Local1, Buffer (0x03)
                     {
                          0xE5, 0xE6, 0xE7                                 // ...
                     })
@@ -6342,7 +6342,7 @@
             Local2 = ObjectType (Local1)
             If ((Local2 != C00B))
             {
-                ERR (C080, Z077, 0x0F59, 0x00, 0x00, Local2, C00B)
+                ERR (C080, Z077, __LINE__, 0x00, 0x00, Local2, C00B)
             }
 
             If ((Local1 != Buffer (0x02)
@@ -6350,7 +6350,7 @@
                              0xE8, 0xE9                                       // ..
                         }))
             {
-                ERR (C080, Z077, 0x0F5C, 0x00, 0x00, Local1, Buffer (0x02)
+                ERR (C080, Z077, __LINE__, 0x00, 0x00, Local1, Buffer (0x02)
                     {
                          0xE8, 0xE9                                       // ..
                     })
@@ -6365,12 +6365,12 @@
             Local4 = ObjectType (Local3)
             If ((Local4 != C009))
             {
-                ERR (C080, Z077, 0x0F67, 0x00, 0x00, Local4, C009)
+                ERR (C080, Z077, __LINE__, 0x00, 0x00, Local4, C009)
             }
 
             If ((Local3 != 0x0ABC400A))
             {
-                ERR (C080, Z077, 0x0F6A, 0x00, 0x00, Local3, 0x0ABC400A)
+                ERR (C080, Z077, __LINE__, 0x00, 0x00, Local3, 0x0ABC400A)
             }
 
             Store (P905 [0x00], Local0)
@@ -6380,12 +6380,12 @@
             Local4 = ObjectType (Local3)
             If ((Local4 != C00A))
             {
-                ERR (C080, Z077, 0x0F73, 0x00, 0x00, Local4, C00A)
+                ERR (C080, Z077, __LINE__, 0x00, 0x00, Local4, C00A)
             }
 
             If ((Local3 != "0xabc400b"))
             {
-                ERR (C080, Z077, 0x0F76, 0x00, 0x00, Local3, "0xabc400b")
+                ERR (C080, Z077, __LINE__, 0x00, 0x00, Local3, "0xabc400b")
             }
 
             Store (P905 [0x00], Local0)
@@ -6395,12 +6395,12 @@
             Local4 = ObjectType (Local3)
             If ((Local4 != C00A))
             {
-                ERR (C080, Z077, 0x0F7F, 0x00, 0x00, Local4, C00A)
+                ERR (C080, Z077, __LINE__, 0x00, 0x00, Local4, C00A)
             }
 
             If ((Local3 != "abc400c"))
             {
-                ERR (C080, Z077, 0x0F82, 0x00, 0x00, Local3, "abc400c")
+                ERR (C080, Z077, __LINE__, 0x00, 0x00, Local3, "abc400c")
             }
 
             Store (P906 [0x00], Local0)
@@ -6410,12 +6410,12 @@
             Local4 = ObjectType (Local3)
             If ((Local4 != C00A))
             {
-                ERR (C080, Z077, 0x0F8B, 0x00, 0x00, Local4, C00A)
+                ERR (C080, Z077, __LINE__, 0x00, 0x00, Local4, C00A)
             }
 
             If ((Local3 != "abc400d"))
             {
-                ERR (C080, Z077, 0x0F8E, 0x00, 0x00, Local3, "abc400d")
+                ERR (C080, Z077, __LINE__, 0x00, 0x00, Local3, "abc400d")
             }
 
             Store (P907 [0x00], Local0)
@@ -6425,12 +6425,12 @@
             Local4 = ObjectType (Local3)
             If ((Local4 != C00A))
             {
-                ERR (C080, Z077, 0x0F97, 0x00, 0x00, Local4, C00A)
+                ERR (C080, Z077, __LINE__, 0x00, 0x00, Local4, C00A)
             }
 
             If ((Local3 != "aqwevbgnm400e"))
             {
-                ERR (C080, Z077, 0x0F9A, 0x00, 0x00, Local3, "aqwevbgnm400e")
+                ERR (C080, Z077, __LINE__, 0x00, 0x00, Local3, "aqwevbgnm400e")
             }
 
             Store (P908 [0x00], Local0)
@@ -6440,7 +6440,7 @@
             Local4 = ObjectType (Local3)
             If ((Local4 != C00B))
             {
-                ERR (C080, Z077, 0x0FA3, 0x00, 0x00, Local4, C00B)
+                ERR (C080, Z077, __LINE__, 0x00, 0x00, Local4, C00B)
             }
 
             If ((Local3 != Buffer (0x05)
@@ -6448,7 +6448,7 @@
                              0xEA, 0xEB, 0xEC, 0xED, 0xEE                     // .....
                         }))
             {
-                ERR (C080, Z077, 0x0FA6, 0x00, 0x00, Local3, Buffer (0x05)
+                ERR (C080, Z077, __LINE__, 0x00, 0x00, Local3, Buffer (0x05)
                     {
                          0xEA, 0xEB, 0xEC, 0xED, 0xEE                     // .....
                     })
@@ -6465,12 +6465,12 @@
             Local6 = ObjectType (Local5)
             If ((Local6 != C009))
             {
-                ERR (C080, Z077, 0x0FB3, 0x00, 0x00, Local6, C009)
+                ERR (C080, Z077, __LINE__, 0x00, 0x00, Local6, C009)
             }
 
             If ((Local5 != 0x0ABC400F))
             {
-                ERR (C080, Z077, 0x0FB6, 0x00, 0x00, Local5, 0x0ABC400F)
+                ERR (C080, Z077, __LINE__, 0x00, 0x00, Local5, 0x0ABC400F)
             }
 
             Store (P90A [0x00], Local0)
@@ -6482,12 +6482,12 @@
             Local6 = ObjectType (Local5)
             If ((Local6 != C00A))
             {
-                ERR (C080, Z077, 0x0FC1, 0x00, 0x00, Local6, C00A)
+                ERR (C080, Z077, __LINE__, 0x00, 0x00, Local6, C00A)
             }
 
             If ((Local5 != "12344010"))
             {
-                ERR (C080, Z077, 0x0FC4, 0x00, 0x00, Local5, "12344010")
+                ERR (C080, Z077, __LINE__, 0x00, 0x00, Local5, "12344010")
             }
 
             Store (P90B [0x00], Local0)
@@ -6499,12 +6499,12 @@
             Local6 = ObjectType (Local5)
             If ((Local6 != C00A))
             {
-                ERR (C080, Z077, 0x0FCF, 0x00, 0x00, Local6, C00A)
+                ERR (C080, Z077, __LINE__, 0x00, 0x00, Local6, C00A)
             }
 
             If ((Local5 != "zxswefas4011"))
             {
-                ERR (C080, Z077, 0x0FD2, 0x00, 0x00, Local5, "zxswefas4011")
+                ERR (C080, Z077, __LINE__, 0x00, 0x00, Local5, "zxswefas4011")
             }
 
             Store (P90C [0x00], Local0)
@@ -6516,7 +6516,7 @@
             Local6 = ObjectType (Local5)
             If ((Local6 != C00B))
             {
-                ERR (C080, Z077, 0x0FDD, 0x00, 0x00, Local6, C00B)
+                ERR (C080, Z077, __LINE__, 0x00, 0x00, Local6, C00B)
             }
 
             If ((Local5 != Buffer (0x03)
@@ -6524,7 +6524,7 @@
                              0xEF, 0x30, 0x31                                 // .01
                         }))
             {
-                ERR (C080, Z077, 0x0FE0, 0x00, 0x00, Local5, Buffer (0x03)
+                ERR (C080, Z077, __LINE__, 0x00, 0x00, Local5, Buffer (0x03)
                     {
                          0xEF, 0x30, 0x31                                 // .01
                     })
@@ -6535,12 +6535,12 @@
             Local2 = ObjectType (Local1)
             If ((Local2 != C009))
             {
-                ERR (C080, Z077, 0x0FE7, 0x00, 0x00, Local2, C009)
+                ERR (C080, Z077, __LINE__, 0x00, 0x00, Local2, C009)
             }
 
             If ((Local1 != 0xABCD4018))
             {
-                ERR (C080, Z077, 0x0FEA, 0x00, 0x00, Local1, 0xABCD4018)
+                ERR (C080, Z077, __LINE__, 0x00, 0x00, Local1, 0xABCD4018)
             }
 
             Store (P953 [0x01], Local0)
@@ -6548,12 +6548,12 @@
             Local2 = ObjectType (Local1)
             If ((Local2 != C009))
             {
-                ERR (C080, Z077, 0x0FF1, 0x00, 0x00, Local2, C009)
+                ERR (C080, Z077, __LINE__, 0x00, 0x00, Local2, C009)
             }
 
             If ((Local1 != 0xABCD4019))
             {
-                ERR (C080, Z077, 0x0FF4, 0x00, 0x00, Local1, 0xABCD4019)
+                ERR (C080, Z077, __LINE__, 0x00, 0x00, Local1, 0xABCD4019)
             }
 
             /* Not Computational Data */
@@ -8366,56 +8366,56 @@
             Local0 = ObjectType (I900)
             If ((Local0 != C009))
             {
-                ERR (C080, Z077, 0x13F9, 0x00, 0x00, Local0, C009)
+                ERR (C080, Z077, __LINE__, 0x00, 0x00, Local0, C009)
             }
 
             If ((I900 != 0xFE7CB391D65A5000))
             {
-                ERR (C080, Z077, 0x13FC, 0x00, 0x00, I900, 0xFE7CB391D65A5000)
+                ERR (C080, Z077, __LINE__, 0x00, 0x00, I900, 0xFE7CB391D65A5000)
             }
 
             Local0 = ObjectType (I901)
             If ((Local0 != C009))
             {
-                ERR (C080, Z077, 0x1401, 0x00, 0x00, Local0, C009)
+                ERR (C080, Z077, __LINE__, 0x00, 0x00, Local0, C009)
             }
 
             If ((I901 != 0x41795001))
             {
-                ERR (C080, Z077, 0x1404, 0x00, 0x00, I901, 0x41795001)
+                ERR (C080, Z077, __LINE__, 0x00, 0x00, I901, 0x41795001)
             }
 
             Local0 = ObjectType (I902)
             If ((Local0 != C009))
             {
-                ERR (C080, Z077, 0x1409, 0x00, 0x00, Local0, C009)
+                ERR (C080, Z077, __LINE__, 0x00, 0x00, Local0, C009)
             }
 
             If ((I902 != 0x00))
             {
-                ERR (C080, Z077, 0x140C, 0x00, 0x00, I902, 0x00)
+                ERR (C080, Z077, __LINE__, 0x00, 0x00, I902, 0x00)
             }
 
             Local0 = ObjectType (I903)
             If ((Local0 != C009))
             {
-                ERR (C080, Z077, 0x1411, 0x00, 0x00, Local0, C009)
+                ERR (C080, Z077, __LINE__, 0x00, 0x00, Local0, C009)
             }
 
             If ((I903 != 0xFFFFFFFFFFFFFFFF))
             {
-                ERR (C080, Z077, 0x1414, 0x00, 0x00, I903, 0xFFFFFFFFFFFFFFFF)
+                ERR (C080, Z077, __LINE__, 0x00, 0x00, I903, 0xFFFFFFFFFFFFFFFF)
             }
 
             Local0 = ObjectType (I904)
             If ((Local0 != C009))
             {
-                ERR (C080, Z077, 0x1419, 0x00, 0x00, Local0, C009)
+                ERR (C080, Z077, __LINE__, 0x00, 0x00, Local0, C009)
             }
 
             If ((I904 != 0xFFFFFFFF))
             {
-                ERR (C080, Z077, 0x141C, 0x00, 0x00, I904, 0xFFFFFFFF)
+                ERR (C080, Z077, __LINE__, 0x00, 0x00, I904, 0xFFFFFFFF)
             }
 
             /* String */
@@ -8423,23 +8423,23 @@
             Local0 = ObjectType (S900)
             If ((Local0 != C00A))
             {
-                ERR (C080, Z077, 0x1423, 0x00, 0x00, Local0, C00A)
+                ERR (C080, Z077, __LINE__, 0x00, 0x00, Local0, C00A)
             }
 
             If ((S900 != "12345002"))
             {
-                ERR (C080, Z077, 0x1426, 0x00, 0x00, S900, "12345002")
+                ERR (C080, Z077, __LINE__, 0x00, 0x00, S900, "12345002")
             }
 
             Local0 = ObjectType (S901)
             If ((Local0 != C00A))
             {
-                ERR (C080, Z077, 0x142B, 0x00, 0x00, Local0, C00A)
+                ERR (C080, Z077, __LINE__, 0x00, 0x00, Local0, C00A)
             }
 
             If ((S901 != "qwrtyu5003"))
             {
-                ERR (C080, Z077, 0x142E, 0x00, 0x00, S901, "qwrtyu5003")
+                ERR (C080, Z077, __LINE__, 0x00, 0x00, S901, "qwrtyu5003")
             }
 
             /* Buffer */
@@ -8447,7 +8447,7 @@
             Local0 = ObjectType (B900)
             If ((Local0 != C00B))
             {
-                ERR (C080, Z077, 0x1435, 0x00, 0x00, Local0, C00B)
+                ERR (C080, Z077, __LINE__, 0x00, 0x00, Local0, C00B)
             }
 
             If ((B900 != Buffer (0x05)
@@ -8455,7 +8455,7 @@
                              0xF0, 0xF1, 0xF2, 0xF3, 0xF4                     // .....
                         }))
             {
-                ERR (C080, Z077, 0x1438, 0x00, 0x00, B900, Buffer (0x05)
+                ERR (C080, Z077, __LINE__, 0x00, 0x00, B900, Buffer (0x05)
                     {
                          0xF0, 0xF1, 0xF2, 0xF3, 0xF4                     // .....
                     })
@@ -8466,12 +8466,12 @@
             Local0 = ObjectType (BF90)
             If ((Local0 != C016))
             {
-                ERR (C080, Z077, 0x143F, 0x00, 0x00, Local0, C016)
+                ERR (C080, Z077, __LINE__, 0x00, 0x00, Local0, C016)
             }
 
             If ((BF90 != 0xF0))
             {
-                ERR (C080, Z077, 0x1442, 0x00, 0x00, BF90, 0xF0)
+                ERR (C080, Z077, __LINE__, 0x00, 0x00, BF90, 0xF0)
             }
 
             /* One level Package */
@@ -8480,7 +8480,7 @@
             Local1 = ObjectType (Local0)
             If ((Local1 != C008))
             {
-                ERR (C080, Z077, 0x144A, 0x00, 0x00, Local1, C008)
+                ERR (C080, Z077, __LINE__, 0x00, 0x00, Local1, C008)
             }
 
             Store (P901 [0x00], Local0)
@@ -8488,12 +8488,12 @@
             Local2 = ObjectType (Local1)
             If ((Local2 != C009))
             {
-                ERR (C080, Z077, 0x1451, 0x00, 0x00, Local2, C009)
+                ERR (C080, Z077, __LINE__, 0x00, 0x00, Local2, C009)
             }
 
             If ((Local1 != 0xABCD5004))
             {
-                ERR (C080, Z077, 0x1454, 0x00, 0x00, Local1, 0xABCD5004)
+                ERR (C080, Z077, __LINE__, 0x00, 0x00, Local1, 0xABCD5004)
             }
 
             Store (P901 [0x01], Local0)
@@ -8501,12 +8501,12 @@
             Local2 = ObjectType (Local1)
             If ((Local2 != C009))
             {
-                ERR (C080, Z077, 0x145B, 0x00, 0x00, Local2, C009)
+                ERR (C080, Z077, __LINE__, 0x00, 0x00, Local2, C009)
             }
 
             If ((Local1 != 0x1122334455665005))
             {
-                ERR (C080, Z077, 0x145E, 0x00, 0x00, Local1, 0x1122334455665005)
+                ERR (C080, Z077, __LINE__, 0x00, 0x00, Local1, 0x1122334455665005)
             }
 
             Store (P902 [0x00], Local0)
@@ -8514,12 +8514,12 @@
             Local2 = ObjectType (Local1)
             If ((Local2 != C00A))
             {
-                ERR (C080, Z077, 0x1465, 0x00, 0x00, Local2, C00A)
+                ERR (C080, Z077, __LINE__, 0x00, 0x00, Local2, C00A)
             }
 
             If ((Local1 != "12345006"))
             {
-                ERR (C080, Z077, 0x1468, 0x00, 0x00, Local1, "12345006")
+                ERR (C080, Z077, __LINE__, 0x00, 0x00, Local1, "12345006")
             }
 
             Store (P902 [0x01], Local0)
@@ -8527,12 +8527,12 @@
             Local2 = ObjectType (Local1)
             If ((Local2 != C00A))
             {
-                ERR (C080, Z077, 0x146F, 0x00, 0x00, Local2, C00A)
+                ERR (C080, Z077, __LINE__, 0x00, 0x00, Local2, C00A)
             }
 
             If ((Local1 != "q1w2e3r4t5y6u7i85007"))
             {
-                ERR (C080, Z077, 0x1472, 0x00, 0x00, Local1, "q1w2e3r4t5y6u7i85007")
+                ERR (C080, Z077, __LINE__, 0x00, 0x00, Local1, "q1w2e3r4t5y6u7i85007")
             }
 
             Store (P903 [0x00], Local0)
@@ -8540,12 +8540,12 @@
             Local2 = ObjectType (Local1)
             If ((Local2 != C00A))
             {
-                ERR (C080, Z077, 0x1479, 0x00, 0x00, Local2, C00A)
+                ERR (C080, Z077, __LINE__, 0x00, 0x00, Local2, C00A)
             }
 
             If ((Local1 != "qwrtyuiop5008"))
             {
-                ERR (C080, Z077, 0x147C, 0x00, 0x00, Local1, "qwrtyuiop5008")
+                ERR (C080, Z077, __LINE__, 0x00, 0x00, Local1, "qwrtyuiop5008")
             }
 
             Store (P903 [0x01], Local0)
@@ -8553,12 +8553,12 @@
             Local2 = ObjectType (Local1)
             If ((Local2 != C00A))
             {
-                ERR (C080, Z077, 0x1483, 0x00, 0x00, Local2, C00A)
+                ERR (C080, Z077, __LINE__, 0x00, 0x00, Local2, C00A)
             }
 
             If ((Local1 != "1234567890abdef0255009"))
             {
-                ERR (C080, Z077, 0x1486, 0x00, 0x00, Local1, "1234567890abdef0255009")
+                ERR (C080, Z077, __LINE__, 0x00, 0x00, Local1, "1234567890abdef0255009")
             }
 
             Store (P904 [0x00], Local0)
@@ -8566,7 +8566,7 @@
             Local2 = ObjectType (Local1)
             If ((Local2 != C00B))
             {
-                ERR (C080, Z077, 0x148D, 0x00, 0x00, Local2, C00B)
+                ERR (C080, Z077, __LINE__, 0x00, 0x00, Local2, C00B)
             }
 
             If ((Local1 != Buffer (0x03)
@@ -8574,7 +8574,7 @@
                              0xF5, 0xF6, 0xF7                                 // ...
                         }))
             {
-                ERR (C080, Z077, 0x1490, 0x00, 0x00, Local1, Buffer (0x03)
+                ERR (C080, Z077, __LINE__, 0x00, 0x00, Local1, Buffer (0x03)
                     {
                          0xF5, 0xF6, 0xF7                                 // ...
                     })
@@ -8585,7 +8585,7 @@
             Local2 = ObjectType (Local1)
             If ((Local2 != C00B))
             {
-                ERR (C080, Z077, 0x1497, 0x00, 0x00, Local2, C00B)
+                ERR (C080, Z077, __LINE__, 0x00, 0x00, Local2, C00B)
             }
 
             If ((Local1 != Buffer (0x02)
@@ -8593,7 +8593,7 @@
                              0xF8, 0xF9                                       // ..
                         }))
             {
-                ERR (C080, Z077, 0x149A, 0x00, 0x00, Local1, Buffer (0x02)
+                ERR (C080, Z077, __LINE__, 0x00, 0x00, Local1, Buffer (0x02)
                     {
                          0xF8, 0xF9                                       // ..
                     })
@@ -8608,12 +8608,12 @@
             Local4 = ObjectType (Local3)
             If ((Local4 != C009))
             {
-                ERR (C080, Z077, 0x14A5, 0x00, 0x00, Local4, C009)
+                ERR (C080, Z077, __LINE__, 0x00, 0x00, Local4, C009)
             }
 
             If ((Local3 != 0x0ABC500A))
             {
-                ERR (C080, Z077, 0x14A8, 0x00, 0x00, Local3, 0x0ABC500A)
+                ERR (C080, Z077, __LINE__, 0x00, 0x00, Local3, 0x0ABC500A)
             }
 
             Store (P905 [0x00], Local0)
@@ -8623,12 +8623,12 @@
             Local4 = ObjectType (Local3)
             If ((Local4 != C00A))
             {
-                ERR (C080, Z077, 0x14B1, 0x00, 0x00, Local4, C00A)
+                ERR (C080, Z077, __LINE__, 0x00, 0x00, Local4, C00A)
             }
 
             If ((Local3 != "0xabc500b"))
             {
-                ERR (C080, Z077, 0x14B4, 0x00, 0x00, Local3, "0xabc500b")
+                ERR (C080, Z077, __LINE__, 0x00, 0x00, Local3, "0xabc500b")
             }
 
             Store (P905 [0x00], Local0)
@@ -8638,12 +8638,12 @@
             Local4 = ObjectType (Local3)
             If ((Local4 != C00A))
             {
-                ERR (C080, Z077, 0x14BD, 0x00, 0x00, Local4, C00A)
+                ERR (C080, Z077, __LINE__, 0x00, 0x00, Local4, C00A)
             }
 
             If ((Local3 != "abc500c"))
             {
-                ERR (C080, Z077, 0x14C0, 0x00, 0x00, Local3, "abc500c")
+                ERR (C080, Z077, __LINE__, 0x00, 0x00, Local3, "abc500c")
             }
 
             Store (P906 [0x00], Local0)
@@ -8653,12 +8653,12 @@
             Local4 = ObjectType (Local3)
             If ((Local4 != C00A))
             {
-                ERR (C080, Z077, 0x14C9, 0x00, 0x00, Local4, C00A)
+                ERR (C080, Z077, __LINE__, 0x00, 0x00, Local4, C00A)
             }
 
             If ((Local3 != "abc500d"))
             {
-                ERR (C080, Z077, 0x14CC, 0x00, 0x00, Local3, "abc500d")
+                ERR (C080, Z077, __LINE__, 0x00, 0x00, Local3, "abc500d")
             }
 
             Store (P907 [0x00], Local0)
@@ -8668,12 +8668,12 @@
             Local4 = ObjectType (Local3)
             If ((Local4 != C00A))
             {
-                ERR (C080, Z077, 0x14D5, 0x00, 0x00, Local4, C00A)
+                ERR (C080, Z077, __LINE__, 0x00, 0x00, Local4, C00A)
             }
 
             If ((Local3 != "aqwevbgnm500e"))
             {
-                ERR (C080, Z077, 0x14D8, 0x00, 0x00, Local3, "aqwevbgnm500e")
+                ERR (C080, Z077, __LINE__, 0x00, 0x00, Local3, "aqwevbgnm500e")
             }
 
             Store (P908 [0x00], Local0)
@@ -8683,7 +8683,7 @@
             Local4 = ObjectType (Local3)
             If ((Local4 != C00B))
             {
-                ERR (C080, Z077, 0x14E1, 0x00, 0x00, Local4, C00B)
+                ERR (C080, Z077, __LINE__, 0x00, 0x00, Local4, C00B)
             }
 
             If ((Local3 != Buffer (0x05)
@@ -8691,7 +8691,7 @@
                              0xFA, 0xFB, 0xFC, 0xFD, 0xFE                     // .....
                         }))
             {
-                ERR (C080, Z077, 0x14E4, 0x00, 0x00, Local3, Buffer (0x05)
+                ERR (C080, Z077, __LINE__, 0x00, 0x00, Local3, Buffer (0x05)
                     {
                          0xFA, 0xFB, 0xFC, 0xFD, 0xFE                     // .....
                     })
@@ -8708,12 +8708,12 @@
             Local6 = ObjectType (Local5)
             If ((Local6 != C009))
             {
-                ERR (C080, Z077, 0x14F1, 0x00, 0x00, Local6, C009)
+                ERR (C080, Z077, __LINE__, 0x00, 0x00, Local6, C009)
             }
 
             If ((Local5 != 0x0ABC500F))
             {
-                ERR (C080, Z077, 0x14F4, 0x00, 0x00, Local5, 0x0ABC500F)
+                ERR (C080, Z077, __LINE__, 0x00, 0x00, Local5, 0x0ABC500F)
             }
 
             Store (P90A [0x00], Local0)
@@ -8725,12 +8725,12 @@
             Local6 = ObjectType (Local5)
             If ((Local6 != C00A))
             {
-                ERR (C080, Z077, 0x14FF, 0x00, 0x00, Local6, C00A)
+                ERR (C080, Z077, __LINE__, 0x00, 0x00, Local6, C00A)
             }
 
             If ((Local5 != "12345010"))
             {
-                ERR (C080, Z077, 0x1502, 0x00, 0x00, Local5, "12345010")
+                ERR (C080, Z077, __LINE__, 0x00, 0x00, Local5, "12345010")
             }
 
             Store (P90B [0x00], Local0)
@@ -8742,12 +8742,12 @@
             Local6 = ObjectType (Local5)
             If ((Local6 != C00A))
             {
-                ERR (C080, Z077, 0x150D, 0x00, 0x00, Local6, C00A)
+                ERR (C080, Z077, __LINE__, 0x00, 0x00, Local6, C00A)
             }
 
             If ((Local5 != "zxswefas5011"))
             {
-                ERR (C080, Z077, 0x1510, 0x00, 0x00, Local5, "zxswefas5011")
+                ERR (C080, Z077, __LINE__, 0x00, 0x00, Local5, "zxswefas5011")
             }
 
             Store (P90C [0x00], Local0)
@@ -8759,7 +8759,7 @@
             Local6 = ObjectType (Local5)
             If ((Local6 != C00B))
             {
-                ERR (C080, Z077, 0x151B, 0x00, 0x00, Local6, C00B)
+                ERR (C080, Z077, __LINE__, 0x00, 0x00, Local6, C00B)
             }
 
             If ((Local5 != Buffer (0x03)
@@ -8767,7 +8767,7 @@
                              0xFF, 0x40, 0x41                                 // .@A
                         }))
             {
-                ERR (C080, Z077, 0x151E, 0x00, 0x00, Local5, Buffer (0x03)
+                ERR (C080, Z077, __LINE__, 0x00, 0x00, Local5, Buffer (0x03)
                     {
                          0xFF, 0x40, 0x41                                 // .@A
                     })
@@ -8778,12 +8778,12 @@
             Local2 = ObjectType (Local1)
             If ((Local2 != C009))
             {
-                ERR (C080, Z077, 0x1525, 0x00, 0x00, Local2, C009)
+                ERR (C080, Z077, __LINE__, 0x00, 0x00, Local2, C009)
             }
 
             If ((Local1 != 0xABCD5018))
             {
-                ERR (C080, Z077, 0x1528, 0x00, 0x00, Local1, 0xABCD5018)
+                ERR (C080, Z077, __LINE__, 0x00, 0x00, Local1, 0xABCD5018)
             }
 
             Store (P953 [0x01], Local0)
@@ -8791,12 +8791,12 @@
             Local2 = ObjectType (Local1)
             If ((Local2 != C009))
             {
-                ERR (C080, Z077, 0x152F, 0x00, 0x00, Local2, C009)
+                ERR (C080, Z077, __LINE__, 0x00, 0x00, Local2, C009)
             }
 
             If ((Local1 != 0xABCD5019))
             {
-                ERR (C080, Z077, 0x1532, 0x00, 0x00, Local1, 0xABCD5019)
+                ERR (C080, Z077, __LINE__, 0x00, 0x00, Local1, 0xABCD5019)
             }
 
             /* Not Computational Data */

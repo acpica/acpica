@@ -42,7 +42,7 @@
             }
         If ((Local0 == Local1))
         {
-            ERR ("", ZFFF, 0x29, 0x00, 0x00, Local0, Local1)
+            ERR (__METHOD__, ZFFF, __LINE__, 0x00, 0x00, Local0, Local1)
         }
 
         If ((Local0 != Buffer (0x05)
@@ -50,7 +50,7 @@
                          0x20, 0x21, 0x22, 0x00, 0x25                     //  !".%
                     }))
         {
-            ERR ("", ZFFF, 0x2D, 0x00, 0x00, Local0, Buffer (0x05)
+            ERR (__METHOD__, ZFFF, __LINE__, 0x00, 0x00, Local0, Buffer (0x05)
                 {
                      0x20, 0x21, 0x22, 0x00, 0x25                     //  !".%
                 })
@@ -61,7 +61,7 @@
                          0x20, 0x21, 0x22, 0x00, 0x26                     //  !".&
                     }))
         {
-            ERR ("", ZFFF, 0x31, 0x00, 0x00, Local1, Buffer (0x05)
+            ERR (__METHOD__, ZFFF, __LINE__, 0x00, 0x00, Local1, Buffer (0x05)
                 {
                      0x20, 0x21, 0x22, 0x00, 0x26                     //  !".&
                 })

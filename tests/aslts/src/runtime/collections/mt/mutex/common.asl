@@ -671,7 +671,7 @@
                  * lpC0   - Index of thread
                  * Local0 - the scale of its errors
                  */
-                ERR (Arg0, Z147, 0x027E, 0x00, 0x00, LPC0, Local0)
+                ERR (Arg0, Z147, __LINE__, 0x00, 0x00, LPC0, Local0)
             }
 
             LPN0--
@@ -710,7 +710,7 @@
             Local1 = ObjectType (Local0)
             If ((Local1 != C00C))
             {
-                ERR ("m107", Z147, 0x02A4, 0x00, 0x00, Local1, C00C)
+                ERR ("m107", Z147, __LINE__, 0x00, 0x00, Local1, C00C)
                 Return (0x00)
             }
 
@@ -720,13 +720,13 @@
             Local7 = DerefOf (Local0 [0x01])
             If ((Local6 != Arg1))
             {
-                ERR ("m107", Z147, 0x02AD, 0x00, 0x00, Local6, Arg1)
+                ERR ("m107", Z147, __LINE__, 0x00, 0x00, Local6, Arg1)
                 Return (0x00)
             }
 
             If ((Local7 != Arg2))
             {
-                ERR ("m107", Z147, 0x02B2, 0x00, 0x00, Local7, Arg2)
+                ERR ("m107", Z147, __LINE__, 0x00, 0x00, Local7, Arg2)
                 Return (0x00)
             }
         }
@@ -939,7 +939,7 @@
                     {
                         If ((Local0 != CMD0))
                         {
-                            ERR ("m110", Z147, 0x0380, 0x00, 0x00, Local0, CMD0)
+                            ERR ("m110", Z147, __LINE__, 0x00, 0x00, Local0, CMD0)
                             Debug = LPC0 /* \M110.LPC0 */
                         }
 
@@ -954,7 +954,7 @@
                         {
                             /* Has executed unexpected command */
 
-                            ERR ("m110", Z147, 0x0389, 0x00, 0x00, Local1, Local0)
+                            ERR ("m110", Z147, __LINE__, 0x00, 0x00, Local1, Local0)
                             Debug = LPC0 /* \M110.LPC0 */
                         }
                     }
@@ -981,11 +981,11 @@
                             {
                                 /* Has executed unexpected command */
 
-                                ERR ("m110", Z147, 0x039C, 0x00, 0x00, Local1, Local0)
+                                ERR ("m110", Z147, __LINE__, 0x00, 0x00, Local1, Local0)
                                 Debug = LPC0 /* \M110.LPC0 */
                             }
 
-                            ERR ("m110", Z147, 0x039F, 0x00, 0x00, Local0, Local4)
+                            ERR ("m110", Z147, __LINE__, 0x00, 0x00, Local0, Local4)
                             Debug = LPC0 /* \M110.LPC0 */
                         }
                     }
@@ -993,7 +993,7 @@
                     {
                         If ((Local0 != C100))
                         {
-                            ERR ("m110", Z147, 0x03A4, 0x00, 0x00, Local0, CMD0)
+                            ERR ("m110", Z147, __LINE__, 0x00, 0x00, Local0, CMD0)
                             Debug = LPC0 /* \M110.LPC0 */
                         }
 
@@ -1008,13 +1008,13 @@
                         {
                             /* Has executed unexpected command */
 
-                            ERR ("m110", Z147, 0x03AD, 0x00, 0x00, Local0, CMD0)
+                            ERR ("m110", Z147, __LINE__, 0x00, 0x00, Local0, CMD0)
                             Debug = LPC0 /* \M110.LPC0 */
                         }
                     }
                     Else
                     {
-                        ERR ("m110", Z147, 0x03B1, 0x00, 0x00, LPC0, Local0)
+                        ERR ("m110", Z147, __LINE__, 0x00, 0x00, LPC0, Local0)
                         Debug = LPC0 /* \M110.LPC0 */
                     }
                 }
@@ -1208,7 +1208,7 @@
 
             If (!Arg3)
             {
-                ERR ("m112", Z147, 0x045F, 0x00, 0x00, Arg3, 0x01)
+                ERR ("m112", Z147, __LINE__, 0x00, 0x00, Arg3, 0x01)
             }
         }
         ElseIf (Arg2)

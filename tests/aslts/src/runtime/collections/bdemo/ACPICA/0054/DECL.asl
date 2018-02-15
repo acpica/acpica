@@ -51,7 +51,7 @@
                          0x79, 0x00                                       // y.
                     }))
         {
-            ERR ("", ZFFF, 0x2F, 0x00, 0x00, Local0, Buffer (0x02)
+            ERR (__METHOD__, ZFFF, __LINE__, 0x00, 0x00, Local0, Buffer (0x02)
                 {
                      0x79, 0x00                                       // y.
                 })
@@ -75,7 +75,7 @@
                          0x79, 0x00                                       // y.
                     }))
         {
-            ERR ("", ZFFF, 0x3B, 0x00, 0x00, Local0, Buffer (0x02)
+            ERR (__METHOD__, ZFFF, __LINE__, 0x00, 0x00, Local0, Buffer (0x02)
                 {
                      0x79, 0x00                                       // y.
                 })
@@ -90,7 +90,7 @@
                          0x79, 0x00                                       // y.
                     }))
         {
-            ERR ("", ZFFF, 0x40, 0x00, 0x00, Local0, Buffer (0x02)
+            ERR (__METHOD__, ZFFF, __LINE__, 0x00, 0x00, Local0, Buffer (0x02)
                 {
                      0x79, 0x00                                       // y.
                 })
@@ -111,7 +111,7 @@
                          0x79, 0x00                                       // y.
                     }))
         {
-            ERR ("", ZFFF, 0x48, 0x00, 0x00, Local0, Buffer (0x02)
+            ERR (__METHOD__, ZFFF, __LINE__, 0x00, 0x00, Local0, Buffer (0x02)
                 {
                      0x79, 0x00                                       // y.
                 })
@@ -132,7 +132,7 @@
                 })
         If ((Local0 != Ones))
         {
-            ERR ("", ZFFF, 0x54, 0x00, 0x00, Local0, Ones)
+            ERR (__METHOD__, ZFFF, __LINE__, 0x00, 0x00, Local0, Ones)
         }
 
         Local0 = (Buffer (0x01)
@@ -141,7 +141,7 @@
                 } == B000)
         If ((Local0 != Ones))
         {
-            ERR ("", ZFFF, 0x59, 0x00, 0x00, Local0, Ones)
+            ERR (__METHOD__, ZFFF, __LINE__, 0x00, 0x00, Local0, Ones)
         }
     }
 
@@ -156,7 +156,7 @@
                 })
         If ((Local0 != Ones))
         {
-            ERR ("", ZFFF, 0x61, 0x00, 0x00, Local0, Ones)
+            ERR (__METHOD__, ZFFF, __LINE__, 0x00, 0x00, Local0, Ones)
         }
     }
 
@@ -174,7 +174,7 @@
                 })
         If ((Local0 != Zero))
         {
-            ERR ("", ZFFF, 0x6D, 0x00, 0x00, Local0, Zero)
+            ERR (__METHOD__, ZFFF, __LINE__, 0x00, 0x00, Local0, Zero)
         }
 
         Local0 = (Buffer (0x01)
@@ -183,7 +183,7 @@
                 } > B000)
         If ((Local0 != Zero))
         {
-            ERR ("", ZFFF, 0x72, 0x00, 0x00, Local0, Zero)
+            ERR (__METHOD__, ZFFF, __LINE__, 0x00, 0x00, Local0, Zero)
         }
     }
 
@@ -198,7 +198,7 @@
                 })
         If ((Local0 != Zero))
         {
-            ERR ("", ZFFF, 0x7A, 0x00, 0x00, Local0, Zero)
+            ERR (__METHOD__, ZFFF, __LINE__, 0x00, 0x00, Local0, Zero)
         }
     }
 
@@ -219,7 +219,7 @@
                          0x79, 0x79                                       // yy
                     }))
         {
-            ERR ("", ZFFF, 0x88, 0x00, 0x00, Local0, Buffer (0x02)
+            ERR (__METHOD__, ZFFF, __LINE__, 0x00, 0x00, Local0, Buffer (0x02)
                 {
                      0x79, 0x79                                       // yy
                 })
@@ -234,7 +234,7 @@
                          0x79, 0x79                                       // yy
                     }))
         {
-            ERR ("", ZFFF, 0x8D, 0x00, 0x00, Local0, Buffer (0x02)
+            ERR (__METHOD__, ZFFF, __LINE__, 0x00, 0x00, Local0, Buffer (0x02)
                 {
                      0x79, 0x79                                       // yy
                 })
@@ -255,7 +255,7 @@
                          0x79, 0x79                                       // yy
                     }))
         {
-            ERR ("", ZFFF, 0x95, 0x00, 0x00, Local0, Buffer (0x02)
+            ERR (__METHOD__, ZFFF, __LINE__, 0x00, 0x00, Local0, Buffer (0x02)
                 {
                      0x79, 0x79                                       // yy
                 })
@@ -276,7 +276,7 @@
             })
         If ((Local0 != 0xF2))
         {
-            ERR ("", ZFFF, 0xA1, 0x00, 0x00, Local0, 0xF2)
+            ERR (__METHOD__, ZFFF, __LINE__, 0x00, 0x00, Local0, 0xF2)
         }
 
         Local0 = (Buffer (0x01)
@@ -285,7 +285,7 @@
             } + B000) /* \MDE8.B000 */
         If ((Local0 != 0xF2))
         {
-            ERR ("", ZFFF, 0xA6, 0x00, 0x00, Local0, 0xF2)
+            ERR (__METHOD__, ZFFF, __LINE__, 0x00, 0x00, Local0, 0xF2)
         }
     }
 
@@ -300,7 +300,7 @@
             })
         If ((Local0 != 0xF2))
         {
-            ERR ("", ZFFF, 0xAE, 0x00, 0x00, Local0, 0xF2)
+            ERR (__METHOD__, ZFFF, __LINE__, 0x00, 0x00, Local0, 0xF2)
         }
     }
 

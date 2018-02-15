@@ -62,35 +62,35 @@
         Local7 = ObjectType (Local0)
         If ((Local7 != C009))
         {
-            ERR (__METHOD__, Z109, 0x42, 0x00, 0x00, Local7, C009)
+            ERR (__METHOD__, Z109, __LINE__, 0x00, 0x00, Local7, C009)
         }
 
         Local0 = S900 /* \S900 */
         Local7 = ObjectType (Local0)
         If ((Local7 != C00A))
         {
-            ERR (__METHOD__, Z109, 0x48, 0x00, 0x00, Local7, C00A)
+            ERR (__METHOD__, Z109, __LINE__, 0x00, 0x00, Local7, C00A)
         }
 
         Local0 = B900 /* \B900 */
         Local7 = ObjectType (Local0)
         If ((Local7 != C00B))
         {
-            ERR (__METHOD__, Z109, 0x4E, 0x00, 0x00, Local7, C00B)
+            ERR (__METHOD__, Z109, __LINE__, 0x00, 0x00, Local7, C00B)
         }
 
         Local0 = P900 /* \P900 */
         Local7 = ObjectType (Local0)
         If ((Local7 != C00C))
         {
-            ERR (__METHOD__, Z109, 0x54, 0x00, 0x00, Local7, C00C)
+            ERR (__METHOD__, Z109, __LINE__, 0x00, 0x00, Local7, C00C)
         }
 
         Local0 = F900 /* \F900 */
         Local7 = ObjectType (Local0)
         If ((Local7 != C009))
         {
-            ERR (__METHOD__, Z109, 0x5A, 0x00, 0x00, Local7, C009)
+            ERR (__METHOD__, Z109, __LINE__, 0x00, 0x00, Local7, C009)
         }
 
         /*
@@ -154,6 +154,6 @@
         Local7 = ObjectType (Local0)
         If ((Local7 != C009))
         {
-            ERR (__METHOD__, Z109, 0xA0, 0x00, 0x00, Local7, C009)
+            ERR (__METHOD__, Z109, __LINE__, 0x00, 0x00, Local7, C009)
         }
     }

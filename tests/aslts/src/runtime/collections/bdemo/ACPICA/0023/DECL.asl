@@ -40,7 +40,7 @@
         FromBCD (Local0, Local2)
         If ((Local2 != Local1))
         {
-            ERR ("", ZFFF, 0x2D, 0x00, 0x00, Local2, Local1)
+            ERR (__METHOD__, ZFFF, __LINE__, 0x00, 0x00, Local2, Local1)
         }
 
         /* Bug, FromBCD(0x10000000000) */
@@ -51,7 +51,7 @@
         FromBCD (Local0, Local2)
         If ((Local2 != Local1))
         {
-            ERR ("", ZFFF, 0x38, 0x00, 0x00, Local2, Local1)
+            ERR (__METHOD__, ZFFF, __LINE__, 0x00, 0x00, Local2, Local1)
         }
 
         /* Ok, ToBCD(10000000000) */
@@ -62,7 +62,7 @@
         ToBCD (Local0, Local2)
         If ((Local2 != Local1))
         {
-            ERR ("", ZFFF, 0x43, 0x00, 0x00, Local2, Local1)
+            ERR (__METHOD__, ZFFF, __LINE__, 0x00, 0x00, Local2, Local1)
         }
 
         CH03 ("", 0x00, 0x00, 0x46, 0x00)

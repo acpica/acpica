@@ -89,7 +89,7 @@
         ME7E (ME85 (), Local0)
         If ((ID10 != Local0))
         {
-            ERR ("", ZFFF, 0x55, 0x00, 0x00, ID10, Local0)
+            ERR (__METHOD__, ZFFF, __LINE__, 0x00, 0x00, ID10, Local0)
         }
 
         /* To show: all methods return Index references (Ok) */
@@ -111,7 +111,7 @@
         Local1 = DerefOf (PD04 [0x00])
         If ((Local1 != Local0))
         {
-            ERR ("", ZFFF, 0x6A, 0x00, 0x00, Local1, Local0)
+            ERR (__METHOD__, ZFFF, __LINE__, 0x00, 0x00, Local1, Local0)
         }
 
         Local0 = 0xABCD0002
@@ -119,7 +119,7 @@
         Local1 = DerefOf (PD05 [0x00])
         If ((Local1 != Local0))
         {
-            ERR ("", ZFFF, 0x71, 0x00, 0x00, Local1, Local0)
+            ERR (__METHOD__, ZFFF, __LINE__, 0x00, 0x00, Local1, Local0)
         }
 
         Local0 = 0xABCD0003
@@ -127,7 +127,7 @@
         Local1 = DerefOf (PD06 [0x00])
         If ((Local1 != Local0))
         {
-            ERR ("", ZFFF, 0x78, 0x00, 0x00, Local1, Local0)
+            ERR (__METHOD__, ZFFF, __LINE__, 0x00, 0x00, Local1, Local0)
         }
 
         Local0 = 0xABCD0004
@@ -135,7 +135,7 @@
         Local1 = DerefOf (PD07 [0x00])
         If ((Local1 != Local0))
         {
-            ERR ("", ZFFF, 0x7F, 0x00, 0x00, Local1, Local0)
+            ERR (__METHOD__, ZFFF, __LINE__, 0x00, 0x00, Local1, Local0)
         }
 
         Local0 = 0xABCD0005
@@ -143,7 +143,7 @@
         Local1 = DerefOf (PD08 [0x00])
         If ((Local1 != Local0))
         {
-            ERR ("", ZFFF, 0x86, 0x00, 0x00, Local1, Local0)
+            ERR (__METHOD__, ZFFF, __LINE__, 0x00, 0x00, Local1, Local0)
         }
 
         Local0 = 0xABCD0006
@@ -151,6 +151,6 @@
         Local1 = DerefOf (PD09 [0x00])
         If ((Local1 != Local0))
         {
-            ERR ("", ZFFF, 0x8D, 0x00, 0x00, Local1, Local0)
+            ERR (__METHOD__, ZFFF, __LINE__, 0x00, 0x00, Local1, Local0)
         }
     }

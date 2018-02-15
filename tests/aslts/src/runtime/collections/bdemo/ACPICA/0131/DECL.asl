@@ -69,7 +69,7 @@
             Local0 = DerefOf (P000 [0x00])
             If ((Local0 != 0xABCD0001))
             {
-                ERR ("", ZFFF, 0x40, 0x00, 0x00, Local0, 0xABCD0001)
+                ERR (__METHOD__, ZFFF, __LINE__, 0x00, 0x00, Local0, 0xABCD0001)
             }
                 /*
          // Removed 09/2015

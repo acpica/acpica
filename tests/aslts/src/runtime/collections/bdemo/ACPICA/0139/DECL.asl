@@ -36,7 +36,7 @@
     {
         If ((ID1B != 0xFEDCBA9876543210))
         {
-            ERR ("", ZFFF, 0x28, 0x00, 0x00, ID1B, 0xFEDCBA9876543210)
+            ERR (__METHOD__, ZFFF, __LINE__, 0x00, 0x00, ID1B, 0xFEDCBA9876543210)
         }
         Else
         {
@@ -45,7 +45,7 @@
             Local0 = ID1B /* \ID1B */
             If ((ID1B != 0xFEDCBA9876543210))
             {
-                ERR ("", ZFFF, 0x31, 0x00, 0x00, ID1B, 0xFEDCBA9876543210)
+                ERR (__METHOD__, ZFFF, __LINE__, 0x00, 0x00, ID1B, 0xFEDCBA9876543210)
             }
         }
     }
@@ -56,7 +56,7 @@
         Local0 = RefOf (ID1C)
         If ((ID1C != 0xFEDCBA9876543211))
         {
-            ERR ("", ZFFF, 0x3C, 0x00, 0x00, ID1C, 0xFEDCBA9876543211)
+            ERR (__METHOD__, ZFFF, __LINE__, 0x00, 0x00, ID1C, 0xFEDCBA9876543211)
         }
         Else
         {
@@ -65,7 +65,7 @@
             Local1 = DerefOf (Local0)
             If ((ID1C != 0xFEDCBA9876543211))
             {
-                ERR ("", ZFFF, 0x45, 0x00, 0x00, ID1C, 0xFEDCBA9876543211)
+                ERR (__METHOD__, ZFFF, __LINE__, 0x00, 0x00, ID1C, 0xFEDCBA9876543211)
             }
         }
     }

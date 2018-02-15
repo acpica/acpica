@@ -41,6 +41,6 @@
         Local0 = MF3C ()
         If ((Local0 != "mf3czxcvbnm"))
         {
-            ERR ("", ZFFF, 0x32, 0x00, 0x00, Local0, "mf3czxcvbnm")
+            ERR (__METHOD__, ZFFF, __LINE__, 0x00, 0x00, Local0, "mf3czxcvbnm")
         }
     }

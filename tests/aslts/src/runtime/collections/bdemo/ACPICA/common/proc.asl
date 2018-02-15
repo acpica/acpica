@@ -75,7 +75,7 @@
                 TRC1 (Arg0, LPC0, Local0)
                 If ((Local0 != LPC0))
                 {
-                    ERR ("", ZFFF, 0x4D, 0x00, 0x00, Local0, LPC0)
+                    ERR (__METHOD__, ZFFF, __LINE__, 0x00, 0x00, Local0, LPC0)
                 }
 
                 LPN0--
@@ -91,7 +91,7 @@
             TRC1 (Arg0, 0x00, Local0)
             If ((Local0 != 0x00))
             {
-                ERR ("", ZFFF, 0x59, 0x00, 0x00, Local0, 0x00)
+                ERR (__METHOD__, ZFFF, __LINE__, 0x00, 0x00, Local0, 0x00)
             }
 
             /* Last pre-initialized element */
@@ -101,7 +101,7 @@
             TRC1 (Arg0, Local0, Local1)
             If ((Local1 != Local0))
             {
-                ERR ("", ZFFF, 0x61, 0x00, 0x00, Local1, Local0)
+                ERR (__METHOD__, ZFFF, __LINE__, 0x00, 0x00, Local1, Local0)
             }
 
             /* Middle pre-initialized element */
@@ -111,7 +111,7 @@
             TRC1 (Arg0, Local0, Local1)
             If ((Local1 != Local0))
             {
-                ERR ("", ZFFF, 0x69, 0x00, 0x00, Local1, Local0)
+                ERR (__METHOD__, ZFFF, __LINE__, 0x00, 0x00, Local1, Local0)
             }
         }
 
@@ -132,7 +132,7 @@
                 TRC1 (Arg0, LPC0, Local0)
                 If ((Local0 != LPC0))
                 {
-                    ERR ("", ZFFF, 0x7A, 0x00, 0x00, Local0, LPC0)
+                    ERR (__METHOD__, ZFFF, __LINE__, 0x00, 0x00, Local0, LPC0)
                 }
 
                 LPN0--
@@ -148,7 +148,7 @@
             TRC1 (Arg0, Arg3, Local0)
             If ((Local0 != Arg3))
             {
-                ERR ("", ZFFF, 0x86, 0x00, 0x00, Local0, Arg3)
+                ERR (__METHOD__, ZFFF, __LINE__, 0x00, 0x00, Local0, Arg3)
             }
 
             /* Last written element */
@@ -159,7 +159,7 @@
             TRC1 (Arg0, Local0, Local1)
             If ((Local1 != Local0))
             {
-                ERR ("", ZFFF, 0x8F, 0x00, 0x00, Local1, Local0)
+                ERR (__METHOD__, ZFFF, __LINE__, 0x00, 0x00, Local1, Local0)
             }
 
             /* Middle written element */
@@ -170,7 +170,7 @@
             TRC1 (Arg0, Local0, Local1)
             If ((Local1 != Local0))
             {
-                ERR ("", ZFFF, 0x98, 0x00, 0x00, Local1, Local0)
+                ERR (__METHOD__, ZFFF, __LINE__, 0x00, 0x00, Local1, Local0)
             }
         }
 
@@ -311,7 +311,7 @@
             TRC1 (Arg0, Arg5, Local0)
             If ((Local0 != Arg5))
             {
-                ERR ("", ZFFF, 0x011F, 0x00, 0x00, Local0, Arg5)
+                ERR (__METHOD__, ZFFF, __LINE__, 0x00, 0x00, Local0, Arg5)
             }
 
             CH03 ("", 0x00, 0x0113, 0x0121, 0x00)
@@ -387,14 +387,14 @@
         Local0 = ObjectType (Arg0)
         If ((Local0 != Arg1))
         {
-            ERR ("", ZFFF, 0x016B, 0x00, 0x00, Local0, Arg1)
+            ERR (__METHOD__, ZFFF, __LINE__, 0x00, 0x00, Local0, Arg1)
         }
 
         If (Arg5)
         {
             If ((Arg0 != Arg2))
             {
-                ERR ("", ZFFF, 0x016F, 0x00, 0x00, Arg0, Arg2)
+                ERR (__METHOD__, ZFFF, __LINE__, 0x00, 0x00, Arg0, Arg2)
             }
         }
     }
@@ -402,5 +402,5 @@
     Method (M02A, 0, NotSerialized)
     {
         Debug = "Check the error manually and remove call to m02a() when the bug is fixed."
-        ERR ("", ZFFF, 0x0178, 0x00, 0x00, 0x00, 0x00)
+        ERR (__METHOD__, ZFFF, __LINE__, 0x00, 0x00, 0x00, 0x00)
     }

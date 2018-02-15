@@ -273,7 +273,7 @@
                 Local6 = M306 (Arg5, Local0, Local1, Local2, Local3, Local4)
                 If ((Local7 != Local6))
                 {
-                    ERR ("err 1", Z038, 0xE3, 0x00, 0x00, LPC1, Arg2)
+                    ERR ("err 1", Z038, __LINE__, 0x00, 0x00, LPC1, Arg2)
                 }
 
                 If ((Arg6 && (Local1 != Local3)))
@@ -285,7 +285,7 @@
                     Local6 = M306 (Arg5, Local0, Local3, Local2, Local1, Local4)
                     If ((Local7 != Local6))
                     {
-                        ERR ("err 2", Z038, 0xF0, 0x00, 0x00, LPC2, Arg2)
+                        ERR ("err 2", Z038, __LINE__, 0x00, 0x00, LPC2, Arg2)
                     }
                 }
 

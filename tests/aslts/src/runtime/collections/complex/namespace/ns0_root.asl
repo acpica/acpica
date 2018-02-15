@@ -106,12 +106,12 @@
             CH03 (__METHOD__, Z154, 0x14, 0x61, 0x00)
             If ((Local0 != 0x87654321))
             {
-                ERR (__METHOD__, Z154, 0x63, 0x00, 0x00, Local0, 0x87654321)
+                ERR (__METHOD__, Z154, __LINE__, 0x00, 0x00, Local0, 0x87654321)
             }
 
             If ((D000.I000 != 0x80000000))
             {
-                ERR (__METHOD__, Z154, 0x66, 0x00, 0x00, D000.I000, 0x80000000)
+                ERR (__METHOD__, Z154, __LINE__, 0x00, 0x00, D000.I000, 0x80000000)
             }
         }
         Else
@@ -198,12 +198,12 @@
             CH03 (__METHOD__, Z154, 0x14, 0xAC, 0x00)
             If ((Local0 != 0x87654321))
             {
-                ERR (__METHOD__, Z154, 0xAE, 0x00, 0x00, Local0, 0x87654321)
+                ERR (__METHOD__, Z154, __LINE__, 0x00, 0x00, Local0, 0x87654321)
             }
 
             If ((TZ00.I000 != 0x80000000))
             {
-                ERR (__METHOD__, Z154, 0xB1, 0x00, 0x00, TZ00.I000, 0x80000000)
+                ERR (__METHOD__, Z154, __LINE__, 0x00, 0x00, TZ00.I000, 0x80000000)
             }
         }
         Else
@@ -290,12 +290,12 @@
             CH03 (__METHOD__, Z154, 0x14, 0xF8, 0x00)
             If ((Local0 != 0x87654321))
             {
-                ERR (__METHOD__, Z154, 0xFA, 0x00, 0x00, Local0, 0x87654321)
+                ERR (__METHOD__, Z154, __LINE__, 0x00, 0x00, Local0, 0x87654321)
             }
 
             If ((PR00.I000 != 0x80000000))
             {
-                ERR (__METHOD__, Z154, 0xFD, 0x00, 0x00, PR00.I000, 0x80000000)
+                ERR (__METHOD__, Z154, __LINE__, 0x00, 0x00, PR00.I000, 0x80000000)
             }
         }
         Else
@@ -382,12 +382,12 @@
             CH03 (__METHOD__, Z154, 0x14, 0x0144, 0x00)
             If ((Local0 != 0x87654321))
             {
-                ERR (__METHOD__, Z154, 0x0146, 0x00, 0x00, Local0, 0x87654321)
+                ERR (__METHOD__, Z154, __LINE__, 0x00, 0x00, Local0, 0x87654321)
             }
 
             If ((PW00.I000 != 0x80000000))
             {
-                ERR (__METHOD__, Z154, 0x0149, 0x00, 0x00, PW00.I000, 0x80000000)
+                ERR (__METHOD__, Z154, __LINE__, 0x00, 0x00, PW00.I000, 0x80000000)
             }
         }
         Else

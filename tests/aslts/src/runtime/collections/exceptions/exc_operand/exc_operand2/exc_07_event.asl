@@ -360,7 +360,7 @@
             Local0 = ObjectType (Arg1)
             If ((Local0 != 0x07))
             {
-                ERR (Arg0, Z099, 0x01BB, 0x00, 0x00, Local0, 0x07)
+                ERR (Arg0, Z099, __LINE__, 0x00, 0x00, Local0, 0x07)
                 Return (0x01)
             }
 
@@ -973,7 +973,7 @@
             {
                 If ((I000 != Arg1))
                 {
-                    ERR (Arg0, Z099, 0x04A7, 0x00, 0x00, I000, Arg1)
+                    ERR (Arg0, Z099, __LINE__, 0x00, 0x00, I000, Arg1)
                 }
             }
 

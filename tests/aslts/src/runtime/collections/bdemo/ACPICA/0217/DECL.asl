@@ -43,7 +43,7 @@
         OperationRegion (OPR0, SystemMemory, 0x2000, 0x0100)
         If ((ID2A != 0x01))
         {
-            ERR ("", ZFFF, 0x30, 0x00, 0x00, ID2A, 0x01)
+            ERR (__METHOD__, ZFFF, __LINE__, 0x00, 0x00, ID2A, 0x01)
         }
     }
 
@@ -51,7 +51,7 @@
     {
         If ((ID2A != 0x00))
         {
-            ERR ("", ZFFF, 0x37, 0x00, 0x00, ID2A, 0x00)
+            ERR (__METHOD__, ZFFF, __LINE__, 0x00, 0x00, ID2A, 0x00)
         }
 
         M035 ()

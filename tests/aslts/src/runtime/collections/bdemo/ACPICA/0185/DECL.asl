@@ -67,7 +67,7 @@
             CH03 ("", 0x00, 0x01, 0x48, 0x00)
             If ((I000 != 0x00))
             {
-                ERR ("", ZFFF, 0x4A, 0x00, 0x00, I000, 0x00)
+                ERR (__METHOD__, ZFFF, __LINE__, 0x00, 0x00, I000, 0x00)
             }
         }
         Else
@@ -85,7 +85,7 @@
             CH03 ("", 0x00, 0x05, 0x59, 0x00)
             If ((I000 != 0x00))
             {
-                ERR ("", ZFFF, 0x5B, 0x00, 0x00, I000, 0x00)
+                ERR (__METHOD__, ZFFF, __LINE__, 0x00, 0x00, I000, 0x00)
             }
         }
         Else

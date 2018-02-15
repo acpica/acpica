@@ -560,7 +560,7 @@
         Local1 = DerefOf (Local0 [Arg1])
         If ((Local1 != Arg2))
         {
-            ERR ("m333", Z149, 0x01EC, 0x00, 0x00, Local1, Arg2)
+            ERR ("m333", Z149, __LINE__, 0x00, 0x00, Local1, Arg2)
             Debug = Arg0
             Debug = Arg1
         }
@@ -717,12 +717,12 @@
         Local0 = M10F (Arg0, Arg1)
         If ((Local0 & 0x01))
         {
-            ERR ("m33d", Z149, 0x0280, 0x00, 0x00, Local0, 0x00)
+            ERR ("m33d", Z149, __LINE__, 0x00, 0x00, Local0, 0x00)
         }
 
         If ((Local0 & 0x02))
         {
-            ERR ("m33d", Z149, 0x0283, 0x00, 0x00, Local0, 0x00)
+            ERR ("m33d", Z149, __LINE__, 0x00, 0x00, Local0, 0x00)
         }
     }
 
@@ -861,7 +861,7 @@
         Local0 = M344 (Arg5, Arg6)
         If (Local0)
         {
-            ERR ("m33f: incorrect parameters", Z149, 0x030D, 0x00, 0x00, Arg5, Arg6)
+            ERR ("m33f: incorrect parameters", Z149, __LINE__, 0x00, 0x00, Arg5, Arg6)
             Debug = Local0
             Return (Zero)
         }
@@ -1132,7 +1132,7 @@
             }
             Default
             {
-                ERR ("m341: unexpected command:", Z149, 0x0403, 0x00, 0x00, 0x00, Arg0)
+                ERR ("m341: unexpected command:", Z149, __LINE__, 0x00, 0x00, 0x00, Arg0)
             }
 
         }
@@ -1262,7 +1262,7 @@
 
         If (ERR0)
         {
-            ERR ("m333", Z149, 0x0477, 0x00, 0x00, 0x00, 0x00)
+            ERR ("m333", Z149, __LINE__, 0x00, 0x00, 0x00, 0x00)
         }
 
         Return (B000) /* \M343.B000 */
@@ -1333,14 +1333,14 @@
             {
                 /* Expected exceptions but have none */
 
-                ERR ("m333", Z149, 0x04B3, 0x00, 0x00, EXC0, 0x00)
+                ERR ("m333", Z149, __LINE__, 0x00, 0x00, EXC0, 0x00)
             }
         }
         ElseIf (EXC0)
         {
             /* Unexpected exceptions */
 
-            ERR ("m333", Z149, 0x04B8, 0x00, 0x00, EXC0, 0x00)
+            ERR ("m333", Z149, __LINE__, 0x00, 0x00, EXC0, 0x00)
         }
 
         /*Reset EXC0 (the current number of exceptions handled) */

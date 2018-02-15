@@ -46,12 +46,12 @@
         Local0 = ("C179B3FE" == 0xC179B3FE)
         If ((Local0 != Ones))
         {
-            ERR ("", ZFFF, 0x32, 0x00, 0x00, Local0, Ones)
+            ERR (__METHOD__, ZFFF, __LINE__, 0x00, 0x00, Local0, Ones)
         }
 
         Local0 = (0xC179B3FE == "C179B3FE")
         If ((Local0 != Ones))
         {
-            ERR ("", ZFFF, 0x37, 0x00, 0x00, Local0, Ones)
+            ERR (__METHOD__, ZFFF, __LINE__, 0x00, 0x00, Local0, Ones)
         }
     }

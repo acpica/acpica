@@ -71,7 +71,7 @@
         Local0 = Acquire (MT00, 0xFFFF)
         If (Local0)
         {
-            ERR (__METHOD__, Z150, 0x53, 0x00, 0x00, 0x00, Local0)
+            ERR (__METHOD__, Z150, __LINE__, 0x00, 0x00, 0x00, Local0)
         }
         Else
         {
@@ -80,112 +80,112 @@
 
             If (Local0)
             {
-                ERR (__METHOD__, Z150, 0x57, 0x00, 0x00, 0x00, Local0)
+                ERR (__METHOD__, Z150, __LINE__, 0x00, 0x00, 0x00, Local0)
             }
             Else
             {
                 Local0 = Acquire (MT10, 0xFFFF)
                 If (Local0)
                 {
-                    ERR (__METHOD__, Z150, 0x5B, 0x00, 0x00, 0x00, Local0)
+                    ERR (__METHOD__, Z150, __LINE__, 0x00, 0x00, 0x00, Local0)
                 }
                 Else
                 {
                     Local0 = Acquire (MT20, 0xFFFF)
                     If (Local0)
                     {
-                        ERR (__METHOD__, Z150, 0x5F, 0x00, 0x00, 0x00, Local0)
+                        ERR (__METHOD__, Z150, __LINE__, 0x00, 0x00, 0x00, Local0)
                     }
                     Else
                     {
                         Local0 = Acquire (MT30, 0xFFFF)
                         If (Local0)
                         {
-                            ERR (__METHOD__, Z150, 0x63, 0x00, 0x00, 0x00, Local0)
+                            ERR (__METHOD__, Z150, __LINE__, 0x00, 0x00, 0x00, Local0)
                         }
                         Else
                         {
                             Local0 = Acquire (MT40, 0xFFFF)
                             If (Local0)
                             {
-                                ERR (__METHOD__, Z150, 0x67, 0x00, 0x00, 0x00, Local0)
+                                ERR (__METHOD__, Z150, __LINE__, 0x00, 0x00, 0x00, Local0)
                             }
                             Else
                             {
                                 Local0 = Acquire (MT50, 0xFFFF)
                                 If (Local0)
                                 {
-                                    ERR (__METHOD__, Z150, 0x6B, 0x00, 0x00, 0x00, Local0)
+                                    ERR (__METHOD__, Z150, __LINE__, 0x00, 0x00, 0x00, Local0)
                                 }
                                 Else
                                 {
                                     Local0 = Acquire (MT60, 0xFFFF)
                                     If (Local0)
                                     {
-                                        ERR (__METHOD__, Z150, 0x6F, 0x00, 0x00, 0x00, Local0)
+                                        ERR (__METHOD__, Z150, __LINE__, 0x00, 0x00, 0x00, Local0)
                                     }
                                     Else
                                     {
                                         Local0 = Acquire (MT70, 0xFFFF)
                                         If (Local0)
                                         {
-                                            ERR (__METHOD__, Z150, 0x73, 0x00, 0x00, 0x00, Local0)
+                                            ERR (__METHOD__, Z150, __LINE__, 0x00, 0x00, 0x00, Local0)
                                         }
                                         Else
                                         {
                                             Local0 = Acquire (MT80, 0xFFFF)
                                             If (Local0)
                                             {
-                                                ERR (__METHOD__, Z150, 0x77, 0x00, 0x00, 0x00, Local0)
+                                                ERR (__METHOD__, Z150, __LINE__, 0x00, 0x00, 0x00, Local0)
                                             }
                                             Else
                                             {
                                                 Local0 = Acquire (MT90, 0xFFFF)
                                                 If (Local0)
                                                 {
-                                                    ERR (__METHOD__, Z150, 0x7B, 0x00, 0x00, 0x00, Local0)
+                                                    ERR (__METHOD__, Z150, __LINE__, 0x00, 0x00, 0x00, Local0)
                                                 }
                                                 Else
                                                 {
                                                     Local0 = Acquire (MTA0, 0xFFFF)
                                                     If (Local0)
                                                     {
-                                                        ERR (__METHOD__, Z150, 0x7F, 0x00, 0x00, 0x00, Local0)
+                                                        ERR (__METHOD__, Z150, __LINE__, 0x00, 0x00, 0x00, Local0)
                                                     }
                                                     Else
                                                     {
                                                         Local0 = Acquire (MTB0, 0xFFFF)
                                                         If (Local0)
                                                         {
-                                                            ERR (__METHOD__, Z150, 0x83, 0x00, 0x00, 0x00, Local0)
+                                                            ERR (__METHOD__, Z150, __LINE__, 0x00, 0x00, 0x00, Local0)
                                                         }
                                                         Else
                                                         {
                                                             Local0 = Acquire (MTC0, 0xFFFF)
                                                             If (Local0)
                                                             {
-                                                                ERR (__METHOD__, Z150, 0x87, 0x00, 0x00, 0x00, Local0)
+                                                                ERR (__METHOD__, Z150, __LINE__, 0x00, 0x00, 0x00, Local0)
                                                             }
                                                             Else
                                                             {
                                                                 Local0 = Acquire (MTD0, 0xFFFF)
                                                                 If (Local0)
                                                                 {
-                                                                    ERR (__METHOD__, Z150, 0x8B, 0x00, 0x00, 0x00, Local0)
+                                                                    ERR (__METHOD__, Z150, __LINE__, 0x00, 0x00, 0x00, Local0)
                                                                 }
                                                                 Else
                                                                 {
                                                                     Local0 = Acquire (MTE0, 0xFFFF)
                                                                     If (Local0)
                                                                     {
-                                                                        ERR (__METHOD__, Z150, 0x8F, 0x00, 0x00, 0x00, Local0)
+                                                                        ERR (__METHOD__, Z150, __LINE__, 0x00, 0x00, 0x00, Local0)
                                                                     }
                                                                     Else
                                                                     {
                                                                         Local0 = Acquire (MTF0, 0xFFFF)
                                                                         If (Local0)
                                                                         {
-                                                                            ERR (__METHOD__, Z150, 0x93, 0x00, 0x00, 0x00, Local0)
+                                                                            ERR (__METHOD__, Z150, __LINE__, 0x00, 0x00, 0x00, Local0)
                                                                         }
                                                                         Else
                                                                         {
@@ -284,7 +284,7 @@
         Local0 = Acquire (MT00, 0xFFFF)
         If (Local0)
         {
-            ERR (__METHOD__, Z150, 0xF6, 0x00, 0x00, 0x00, Local0)
+            ERR (__METHOD__, Z150, __LINE__, 0x00, 0x00, 0x00, Local0)
         }
         Else
         {
@@ -293,7 +293,7 @@
 
             If (Local0)
             {
-                ERR (__METHOD__, Z150, 0xFA, 0x00, 0x00, 0x00, Local0)
+                ERR (__METHOD__, Z150, __LINE__, 0x00, 0x00, 0x00, Local0)
             }
             Else
             {
@@ -302,210 +302,210 @@
 
                 If (Local0)
                 {
-                    ERR (__METHOD__, Z150, 0xFE, 0x00, 0x00, 0x00, Local0)
+                    ERR (__METHOD__, Z150, __LINE__, 0x00, 0x00, 0x00, Local0)
                 }
                 Else
                 {
                     Local0 = Acquire (MT10, 0xFFFF)
                     If (Local0)
                     {
-                        ERR (__METHOD__, Z150, 0x0102, 0x00, 0x00, 0x00, Local0)
+                        ERR (__METHOD__, Z150, __LINE__, 0x00, 0x00, 0x00, Local0)
                     }
                     Else
                     {
                         Local0 = Acquire (MT11, 0xFFFF)
                         If (Local0)
                         {
-                            ERR (__METHOD__, Z150, 0x0106, 0x00, 0x00, 0x00, Local0)
+                            ERR (__METHOD__, Z150, __LINE__, 0x00, 0x00, 0x00, Local0)
                         }
                         Else
                         {
                             Local0 = Acquire (MT20, 0xFFFF)
                             If (Local0)
                             {
-                                ERR (__METHOD__, Z150, 0x010A, 0x00, 0x00, 0x00, Local0)
+                                ERR (__METHOD__, Z150, __LINE__, 0x00, 0x00, 0x00, Local0)
                             }
                             Else
                             {
                                 Local0 = Acquire (MT21, 0xFFFF)
                                 If (Local0)
                                 {
-                                    ERR (__METHOD__, Z150, 0x010E, 0x00, 0x00, 0x00, Local0)
+                                    ERR (__METHOD__, Z150, __LINE__, 0x00, 0x00, 0x00, Local0)
                                 }
                                 Else
                                 {
                                     Local0 = Acquire (MT30, 0xFFFF)
                                     If (Local0)
                                     {
-                                        ERR (__METHOD__, Z150, 0x0112, 0x00, 0x00, 0x00, Local0)
+                                        ERR (__METHOD__, Z150, __LINE__, 0x00, 0x00, 0x00, Local0)
                                     }
                                     Else
                                     {
                                         Local0 = Acquire (MT31, 0xFFFF)
                                         If (Local0)
                                         {
-                                            ERR (__METHOD__, Z150, 0x0116, 0x00, 0x00, 0x00, Local0)
+                                            ERR (__METHOD__, Z150, __LINE__, 0x00, 0x00, 0x00, Local0)
                                         }
                                         Else
                                         {
                                             Local0 = Acquire (MT40, 0xFFFF)
                                             If (Local0)
                                             {
-                                                ERR (__METHOD__, Z150, 0x011A, 0x00, 0x00, 0x00, Local0)
+                                                ERR (__METHOD__, Z150, __LINE__, 0x00, 0x00, 0x00, Local0)
                                             }
                                             Else
                                             {
                                                 Local0 = Acquire (MT41, 0xFFFF)
                                                 If (Local0)
                                                 {
-                                                    ERR (__METHOD__, Z150, 0x011E, 0x00, 0x00, 0x00, Local0)
+                                                    ERR (__METHOD__, Z150, __LINE__, 0x00, 0x00, 0x00, Local0)
                                                 }
                                                 Else
                                                 {
                                                     Local0 = Acquire (MT50, 0xFFFF)
                                                     If (Local0)
                                                     {
-                                                        ERR (__METHOD__, Z150, 0x0122, 0x00, 0x00, 0x00, Local0)
+                                                        ERR (__METHOD__, Z150, __LINE__, 0x00, 0x00, 0x00, Local0)
                                                     }
                                                     Else
                                                     {
                                                         Local0 = Acquire (MT51, 0xFFFF)
                                                         If (Local0)
                                                         {
-                                                            ERR (__METHOD__, Z150, 0x0126, 0x00, 0x00, 0x00, Local0)
+                                                            ERR (__METHOD__, Z150, __LINE__, 0x00, 0x00, 0x00, Local0)
                                                         }
                                                         Else
                                                         {
                                                             Local0 = Acquire (MT60, 0xFFFF)
                                                             If (Local0)
                                                             {
-                                                                ERR (__METHOD__, Z150, 0x012A, 0x00, 0x00, 0x00, Local0)
+                                                                ERR (__METHOD__, Z150, __LINE__, 0x00, 0x00, 0x00, Local0)
                                                             }
                                                             Else
                                                             {
                                                                 Local0 = Acquire (MT61, 0xFFFF)
                                                                 If (Local0)
                                                                 {
-                                                                    ERR (__METHOD__, Z150, 0x012E, 0x00, 0x00, 0x00, Local0)
+                                                                    ERR (__METHOD__, Z150, __LINE__, 0x00, 0x00, 0x00, Local0)
                                                                 }
                                                                 Else
                                                                 {
                                                                     Local0 = Acquire (MT70, 0xFFFF)
                                                                     If (Local0)
                                                                     {
-                                                                        ERR (__METHOD__, Z150, 0x0132, 0x00, 0x00, 0x00, Local0)
+                                                                        ERR (__METHOD__, Z150, __LINE__, 0x00, 0x00, 0x00, Local0)
                                                                     }
                                                                     Else
                                                                     {
                                                                         Local0 = Acquire (MT71, 0xFFFF)
                                                                         If (Local0)
                                                                         {
-                                                                            ERR (__METHOD__, Z150, 0x0136, 0x00, 0x00, 0x00, Local0)
+                                                                            ERR (__METHOD__, Z150, __LINE__, 0x00, 0x00, 0x00, Local0)
                                                                         }
                                                                         Else
                                                                         {
                                                                             Local0 = Acquire (MT80, 0xFFFF)
                                                                             If (Local0)
                                                                             {
-                                                                                ERR (__METHOD__, Z150, 0x013A, 0x00, 0x00, 0x00, Local0)
+                                                                                ERR (__METHOD__, Z150, __LINE__, 0x00, 0x00, 0x00, Local0)
                                                                             }
                                                                             Else
                                                                             {
                                                                                 Local0 = Acquire (MT81, 0xFFFF)
                                                                                 If (Local0)
                                                                                 {
-                                                                                    ERR (__METHOD__, Z150, 0x013E, 0x00, 0x00, 0x00, Local0)
+                                                                                    ERR (__METHOD__, Z150, __LINE__, 0x00, 0x00, 0x00, Local0)
                                                                                 }
                                                                                 Else
                                                                                 {
                                                                                     Local0 = Acquire (MT90, 0xFFFF)
                                                                                     If (Local0)
                                                                                     {
-                                                                                        ERR (__METHOD__, Z150, 0x0142, 0x00, 0x00, 0x00, Local0)
+                                                                                        ERR (__METHOD__, Z150, __LINE__, 0x00, 0x00, 0x00, Local0)
                                                                                     }
                                                                                     Else
                                                                                     {
                                                                                         Local0 = Acquire (MT91, 0xFFFF)
                                                                                         If (Local0)
                                                                                         {
-                                                                                            ERR (__METHOD__, Z150, 0x0146, 0x00, 0x00, 0x00, Local0)
+                                                                                            ERR (__METHOD__, Z150, __LINE__, 0x00, 0x00, 0x00, Local0)
                                                                                         }
                                                                                         Else
                                                                                         {
                                                                                             Local0 = Acquire (MTA0, 0xFFFF)
                                                                                             If (Local0)
                                                                                             {
-                                                                                                ERR (__METHOD__, Z150, 0x014A, 0x00, 0x00, 0x00, Local0)
+                                                                                                ERR (__METHOD__, Z150, __LINE__, 0x00, 0x00, 0x00, Local0)
                                                                                             }
                                                                                             Else
                                                                                             {
                                                                                                 Local0 = Acquire (MTA1, 0xFFFF)
                                                                                                 If (Local0)
                                                                                                 {
-                                                                                                    ERR (__METHOD__, Z150, 0x014E, 0x00, 0x00, 0x00, Local0)
+                                                                                                    ERR (__METHOD__, Z150, __LINE__, 0x00, 0x00, 0x00, Local0)
                                                                                                 }
                                                                                                 Else
                                                                                                 {
                                                                                                     Local0 = Acquire (MTB0, 0xFFFF)
                                                                                                     If (Local0)
                                                                                                     {
-                                                                                                        ERR (__METHOD__, Z150, 0x0152, 0x00, 0x00, 0x00, Local0)
+                                                                                                        ERR (__METHOD__, Z150, __LINE__, 0x00, 0x00, 0x00, Local0)
                                                                                                     }
                                                                                                     Else
                                                                                                     {
                                                                                                         Local0 = Acquire (MTB1, 0xFFFF)
                                                                                                         If (Local0)
                                                                                                         {
-                                                                                                            ERR (__METHOD__, Z150, 0x0156, 0x00, 0x00, 0x00, Local0)
+                                                                                                            ERR (__METHOD__, Z150, __LINE__, 0x00, 0x00, 0x00, Local0)
                                                                                                         }
                                                                                                         Else
                                                                                                         {
                                                                                                             Local0 = Acquire (MTC0, 0xFFFF)
                                                                                                             If (Local0)
                                                                                                             {
-                                                                                                                ERR (__METHOD__, Z150, 0x015A, 0x00, 0x00, 0x00, Local0)
+                                                                                                                ERR (__METHOD__, Z150, __LINE__, 0x00, 0x00, 0x00, Local0)
                                                                                                             }
                                                                                                             Else
                                                                                                             {
                                                                                                                 Local0 = Acquire (MTC1, 0xFFFF)
                                                                                                                 If (Local0)
                                                                                                                 {
-                                                                                                                    ERR (__METHOD__, Z150, 0x015E, 0x00, 0x00, 0x00, Local0)
+                                                                                                                    ERR (__METHOD__, Z150, __LINE__, 0x00, 0x00, 0x00, Local0)
                                                                                                                 }
                                                                                                                 Else
                                                                                                                 {
                                                                                                                     Local0 = Acquire (MTD0, 0xFFFF)
                                                                                                                     If (Local0)
                                                                                                                     {
-                                                                                                                        ERR (__METHOD__, Z150, 0x0162, 0x00, 0x00, 0x00, Local0)
+                                                                                                                        ERR (__METHOD__, Z150, __LINE__, 0x00, 0x00, 0x00, Local0)
                                                                                                                     }
                                                                                                                     Else
                                                                                                                     {
                                                                                                                         Local0 = Acquire (MTD1, 0xFFFF)
                                                                                                                         If (Local0)
                                                                                                                         {
-                                                                                                                            ERR (__METHOD__, Z150, 0x0166, 0x00, 0x00, 0x00, Local0)
+                                                                                                                            ERR (__METHOD__, Z150, __LINE__, 0x00, 0x00, 0x00, Local0)
                                                                                                                         }
                                                                                                                         Else
                                                                                                                         {
                                                                                                                             Local0 = Acquire (MTE0, 0xFFFF)
                                                                                                                             If (Local0)
                                                                                                                             {
-                                                                                                                                ERR (__METHOD__, Z150, 0x016A, 0x00, 0x00, 0x00, Local0)
+                                                                                                                                ERR (__METHOD__, Z150, __LINE__, 0x00, 0x00, 0x00, Local0)
                                                                                                                             }
                                                                                                                             Else
                                                                                                                             {
                                                                                                                                 Local0 = Acquire (MTE1, 0xFFFF)
                                                                                                                                 If (Local0)
                                                                                                                                 {
-                                                                                                                                    ERR (__METHOD__, Z150, 0x016E, 0x00, 0x00, 0x00, Local0)
+                                                                                                                                    ERR (__METHOD__, Z150, __LINE__, 0x00, 0x00, 0x00, Local0)
                                                                                                                                 }
                                                                                                                                 Else
                                                                                                                                 {
                                                                                                                                     Local0 = Acquire (MTF0, 0xFFFF)
                                                                                                                                     If (Local0)
                                                                                                                                     {
-                                                                                                                                        ERR (__METHOD__, Z150, 0x0172, 0x00, 0x00, 0x00, Local0)
+                                                                                                                                        ERR (__METHOD__, Z150, __LINE__, 0x00, 0x00, 0x00, Local0)
                                                                                                                                     }
                                                                                                                                     Else
                                                                                                                                     {
@@ -520,7 +520,7 @@
 
                                                                                                                                         If (Local0)
                                                                                                                                         {
-                                                                                                                                            ERR (__METHOD__, Z150, 0x017A, 0x00, 0x00, 0x00, Local0)
+                                                                                                                                            ERR (__METHOD__, Z150, __LINE__, 0x00, 0x00, 0x00, Local0)
                                                                                                                                         }
                                                                                                                                         Else
                                                                                                                                         {
@@ -638,119 +638,119 @@
             Local0 = Acquire (MT00, 0xFFFF)
             If (Local0)
             {
-                ERR (__METHOD__, Z150, 0x01EC, 0x00, 0x00, 0x00, Local0)
+                ERR (__METHOD__, Z150, __LINE__, 0x00, 0x00, 0x00, Local0)
             }
             Else
             {
                 Local0 = Acquire (\_GL, 0xFFFF)
                 If (Local0)
                 {
-                    ERR (__METHOD__, Z150, 0x01F0, 0x00, 0x00, 0x00, Local0)
+                    ERR (__METHOD__, Z150, __LINE__, 0x00, 0x00, 0x00, Local0)
                 }
                 Else
                 {
                     Local0 = Acquire (MT10, 0xFFFF)
                     If (Local0)
                     {
-                        ERR (__METHOD__, Z150, 0x01F4, 0x00, 0x00, 0x00, Local0)
+                        ERR (__METHOD__, Z150, __LINE__, 0x00, 0x00, 0x00, Local0)
                     }
                     Else
                     {
                         Local0 = Acquire (MT20, 0xFFFF)
                         If (Local0)
                         {
-                            ERR (__METHOD__, Z150, 0x01F8, 0x00, 0x00, 0x00, Local0)
+                            ERR (__METHOD__, Z150, __LINE__, 0x00, 0x00, 0x00, Local0)
                         }
                         Else
                         {
                             Local0 = Acquire (MT30, 0xFFFF)
                             If (Local0)
                             {
-                                ERR (__METHOD__, Z150, 0x01FC, 0x00, 0x00, 0x00, Local0)
+                                ERR (__METHOD__, Z150, __LINE__, 0x00, 0x00, 0x00, Local0)
                             }
                             Else
                             {
                                 Local0 = Acquire (MT40, 0xFFFF)
                                 If (Local0)
                                 {
-                                    ERR (__METHOD__, Z150, 0x0200, 0x00, 0x00, 0x00, Local0)
+                                    ERR (__METHOD__, Z150, __LINE__, 0x00, 0x00, 0x00, Local0)
                                 }
                                 Else
                                 {
                                     Local0 = Acquire (MT50, 0xFFFF)
                                     If (Local0)
                                     {
-                                        ERR (__METHOD__, Z150, 0x0204, 0x00, 0x00, 0x00, Local0)
+                                        ERR (__METHOD__, Z150, __LINE__, 0x00, 0x00, 0x00, Local0)
                                     }
                                     Else
                                     {
                                         Local0 = Acquire (MT60, 0xFFFF)
                                         If (Local0)
                                         {
-                                            ERR (__METHOD__, Z150, 0x0208, 0x00, 0x00, 0x00, Local0)
+                                            ERR (__METHOD__, Z150, __LINE__, 0x00, 0x00, 0x00, Local0)
                                         }
                                         Else
                                         {
                                             Local0 = Acquire (MT70, 0xFFFF)
                                             If (Local0)
                                             {
-                                                ERR (__METHOD__, Z150, 0x020C, 0x00, 0x00, 0x00, Local0)
+                                                ERR (__METHOD__, Z150, __LINE__, 0x00, 0x00, 0x00, Local0)
                                             }
                                             Else
                                             {
                                                 Local0 = Acquire (MT80, 0xFFFF)
                                                 If (Local0)
                                                 {
-                                                    ERR (__METHOD__, Z150, 0x0210, 0x00, 0x00, 0x00, Local0)
+                                                    ERR (__METHOD__, Z150, __LINE__, 0x00, 0x00, 0x00, Local0)
                                                 }
                                                 Else
                                                 {
                                                     Local0 = Acquire (MT90, 0xFFFF)
                                                     If (Local0)
                                                     {
-                                                        ERR (__METHOD__, Z150, 0x0214, 0x00, 0x00, 0x00, Local0)
+                                                        ERR (__METHOD__, Z150, __LINE__, 0x00, 0x00, 0x00, Local0)
                                                     }
                                                     Else
                                                     {
                                                         Local0 = Acquire (MTA0, 0xFFFF)
                                                         If (Local0)
                                                         {
-                                                            ERR (__METHOD__, Z150, 0x0218, 0x00, 0x00, 0x00, Local0)
+                                                            ERR (__METHOD__, Z150, __LINE__, 0x00, 0x00, 0x00, Local0)
                                                         }
                                                         Else
                                                         {
                                                             Local0 = Acquire (MTB0, 0xFFFF)
                                                             If (Local0)
                                                             {
-                                                                ERR (__METHOD__, Z150, 0x021C, 0x00, 0x00, 0x00, Local0)
+                                                                ERR (__METHOD__, Z150, __LINE__, 0x00, 0x00, 0x00, Local0)
                                                             }
                                                             Else
                                                             {
                                                                 Local0 = Acquire (MTC0, 0xFFFF)
                                                                 If (Local0)
                                                                 {
-                                                                    ERR (__METHOD__, Z150, 0x0220, 0x00, 0x00, 0x00, Local0)
+                                                                    ERR (__METHOD__, Z150, __LINE__, 0x00, 0x00, 0x00, Local0)
                                                                 }
                                                                 Else
                                                                 {
                                                                     Local0 = Acquire (MTD0, 0xFFFF)
                                                                     If (Local0)
                                                                     {
-                                                                        ERR (__METHOD__, Z150, 0x0224, 0x00, 0x00, 0x00, Local0)
+                                                                        ERR (__METHOD__, Z150, __LINE__, 0x00, 0x00, 0x00, Local0)
                                                                     }
                                                                     Else
                                                                     {
                                                                         Local0 = Acquire (MTE0, 0xFFFF)
                                                                         If (Local0)
                                                                         {
-                                                                            ERR (__METHOD__, Z150, 0x0228, 0x00, 0x00, 0x00, Local0)
+                                                                            ERR (__METHOD__, Z150, __LINE__, 0x00, 0x00, 0x00, Local0)
                                                                         }
                                                                         Else
                                                                         {
                                                                             Local0 = Acquire (MTF0, 0xFFFF)
                                                                             If (Local0)
                                                                             {
-                                                                                ERR (__METHOD__, Z150, 0x022C, 0x00, 0x00, 0x00, Local0)
+                                                                                ERR (__METHOD__, Z150, __LINE__, 0x00, 0x00, 0x00, Local0)
                                                                             }
                                                                             Else
                                                                             {
@@ -835,119 +835,119 @@
             Local0 = Acquire (MT00, 0xFFFF)
             If (Local0)
             {
-                ERR (__METHOD__, Z150, 0x0280, 0x00, 0x00, 0x00, Local0)
+                ERR (__METHOD__, Z150, __LINE__, 0x00, 0x00, 0x00, Local0)
             }
             Else
             {
                 Local0 = Acquire (\_GL, 0xFFFF)
                 If (Local0)
                 {
-                    ERR (__METHOD__, Z150, 0x0284, 0x00, 0x00, 0x00, Local0)
+                    ERR (__METHOD__, Z150, __LINE__, 0x00, 0x00, 0x00, Local0)
                 }
                 Else
                 {
                     Local0 = Acquire (MT10, 0xFFFF)
                     If (Local0)
                     {
-                        ERR (__METHOD__, Z150, 0x0288, 0x00, 0x00, 0x00, Local0)
+                        ERR (__METHOD__, Z150, __LINE__, 0x00, 0x00, 0x00, Local0)
                     }
                     Else
                     {
                         Local0 = Acquire (MT20, 0xFFFF)
                         If (Local0)
                         {
-                            ERR (__METHOD__, Z150, 0x028C, 0x00, 0x00, 0x00, Local0)
+                            ERR (__METHOD__, Z150, __LINE__, 0x00, 0x00, 0x00, Local0)
                         }
                         Else
                         {
                             Local0 = Acquire (MT30, 0xFFFF)
                             If (Local0)
                             {
-                                ERR (__METHOD__, Z150, 0x0290, 0x00, 0x00, 0x00, Local0)
+                                ERR (__METHOD__, Z150, __LINE__, 0x00, 0x00, 0x00, Local0)
                             }
                             Else
                             {
                                 Local0 = Acquire (MT40, 0xFFFF)
                                 If (Local0)
                                 {
-                                    ERR (__METHOD__, Z150, 0x0294, 0x00, 0x00, 0x00, Local0)
+                                    ERR (__METHOD__, Z150, __LINE__, 0x00, 0x00, 0x00, Local0)
                                 }
                                 Else
                                 {
                                     Local0 = Acquire (MT50, 0xFFFF)
                                     If (Local0)
                                     {
-                                        ERR (__METHOD__, Z150, 0x0298, 0x00, 0x00, 0x00, Local0)
+                                        ERR (__METHOD__, Z150, __LINE__, 0x00, 0x00, 0x00, Local0)
                                     }
                                     Else
                                     {
                                         Local0 = Acquire (MT60, 0xFFFF)
                                         If (Local0)
                                         {
-                                            ERR (__METHOD__, Z150, 0x029C, 0x00, 0x00, 0x00, Local0)
+                                            ERR (__METHOD__, Z150, __LINE__, 0x00, 0x00, 0x00, Local0)
                                         }
                                         Else
                                         {
                                             Local0 = Acquire (MT70, 0xFFFF)
                                             If (Local0)
                                             {
-                                                ERR (__METHOD__, Z150, 0x02A0, 0x00, 0x00, 0x00, Local0)
+                                                ERR (__METHOD__, Z150, __LINE__, 0x00, 0x00, 0x00, Local0)
                                             }
                                             Else
                                             {
                                                 Local0 = Acquire (MT80, 0xFFFF)
                                                 If (Local0)
                                                 {
-                                                    ERR (__METHOD__, Z150, 0x02A4, 0x00, 0x00, 0x00, Local0)
+                                                    ERR (__METHOD__, Z150, __LINE__, 0x00, 0x00, 0x00, Local0)
                                                 }
                                                 Else
                                                 {
                                                     Local0 = Acquire (MT90, 0xFFFF)
                                                     If (Local0)
                                                     {
-                                                        ERR (__METHOD__, Z150, 0x02A8, 0x00, 0x00, 0x00, Local0)
+                                                        ERR (__METHOD__, Z150, __LINE__, 0x00, 0x00, 0x00, Local0)
                                                     }
                                                     Else
                                                     {
                                                         Local0 = Acquire (MTA0, 0xFFFF)
                                                         If (Local0)
                                                         {
-                                                            ERR (__METHOD__, Z150, 0x02AC, 0x00, 0x00, 0x00, Local0)
+                                                            ERR (__METHOD__, Z150, __LINE__, 0x00, 0x00, 0x00, Local0)
                                                         }
                                                         Else
                                                         {
                                                             Local0 = Acquire (MTB0, 0xFFFF)
                                                             If (Local0)
                                                             {
-                                                                ERR (__METHOD__, Z150, 0x02B0, 0x00, 0x00, 0x00, Local0)
+                                                                ERR (__METHOD__, Z150, __LINE__, 0x00, 0x00, 0x00, Local0)
                                                             }
                                                             Else
                                                             {
                                                                 Local0 = Acquire (MTC0, 0xFFFF)
                                                                 If (Local0)
                                                                 {
-                                                                    ERR (__METHOD__, Z150, 0x02B4, 0x00, 0x00, 0x00, Local0)
+                                                                    ERR (__METHOD__, Z150, __LINE__, 0x00, 0x00, 0x00, Local0)
                                                                 }
                                                                 Else
                                                                 {
                                                                     Local0 = Acquire (MTD0, 0xFFFF)
                                                                     If (Local0)
                                                                     {
-                                                                        ERR (__METHOD__, Z150, 0x02B8, 0x00, 0x00, 0x00, Local0)
+                                                                        ERR (__METHOD__, Z150, __LINE__, 0x00, 0x00, 0x00, Local0)
                                                                     }
                                                                     Else
                                                                     {
                                                                         Local0 = Acquire (MTE0, 0xFFFF)
                                                                         If (Local0)
                                                                         {
-                                                                            ERR (__METHOD__, Z150, 0x02BC, 0x00, 0x00, 0x00, Local0)
+                                                                            ERR (__METHOD__, Z150, __LINE__, 0x00, 0x00, 0x00, Local0)
                                                                         }
                                                                         Else
                                                                         {
                                                                             Local0 = Acquire (MTF0, 0xFFFF)
                                                                             If (Local0)
                                                                             {
-                                                                                ERR (__METHOD__, Z150, 0x02C0, 0x00, 0x00, 0x00, Local0)
+                                                                                ERR (__METHOD__, Z150, __LINE__, 0x00, 0x00, 0x00, Local0)
                                                                             }
                                                                         }
                                                                     }
@@ -1577,7 +1577,7 @@
             I103 = Acquire (T805, 0xFFFF)
             If (I103)
             {
-                ERR (__METHOD__, Z150, 0x0557, 0x00, 0x00, 0x00, I103)
+                ERR (__METHOD__, Z150, __LINE__, 0x00, 0x00, 0x00, I103)
             }
 
             Debug = "m13e completed"
@@ -1617,13 +1617,13 @@
         If (I102)
         {
             Debug = "Acquire(T804, 0xffff) failed"
-            ERR (__METHOD__, Z150, 0x0575, 0x00, 0x00, 0x00, I102)
+            ERR (__METHOD__, Z150, __LINE__, 0x00, 0x00, 0x00, I102)
         }
 
         If (I103)
         {
             Debug = "Acquire(T805, 0xffff) failed"
-            ERR (__METHOD__, Z150, 0x057A, 0x00, 0x00, 0x00, I103)
+            ERR (__METHOD__, Z150, __LINE__, 0x00, 0x00, 0x00, I103)
         }
 
         CH03 (__METHOD__, Z150, 0x04, 0x057D, 0x00)
@@ -1649,103 +1649,103 @@
             Local0 = Acquire (\_GL, 0xFFFF)
             If (Local0)
             {
-                ERR (__METHOD__, Z150, 0x0595, 0x00, 0x00, 0x00, Local0)
+                ERR (__METHOD__, Z150, __LINE__, 0x00, 0x00, 0x00, Local0)
             }
 
             Local0 = Acquire (T000, 0xFFFF)
             If (Local0)
             {
-                ERR (__METHOD__, Z150, 0x059A, 0x00, 0x00, 0x00, Local0)
+                ERR (__METHOD__, Z150, __LINE__, 0x00, 0x00, 0x00, Local0)
             }
 
             Local0 = Acquire (T100, 0xFFFF)
             If (Local0)
             {
-                ERR (__METHOD__, Z150, 0x059F, 0x00, 0x00, 0x00, Local0)
+                ERR (__METHOD__, Z150, __LINE__, 0x00, 0x00, 0x00, Local0)
             }
 
             Local0 = Acquire (T200, 0xFFFF)
             If (Local0)
             {
-                ERR (__METHOD__, Z150, 0x05A4, 0x00, 0x00, 0x00, Local0)
+                ERR (__METHOD__, Z150, __LINE__, 0x00, 0x00, 0x00, Local0)
             }
 
             Local0 = Acquire (T300, 0xFFFF)
             If (Local0)
             {
-                ERR (__METHOD__, Z150, 0x05A9, 0x00, 0x00, 0x00, Local0)
+                ERR (__METHOD__, Z150, __LINE__, 0x00, 0x00, 0x00, Local0)
             }
 
             Local0 = Acquire (T400, 0xFFFF)
             If (Local0)
             {
-                ERR (__METHOD__, Z150, 0x05AE, 0x00, 0x00, 0x00, Local0)
+                ERR (__METHOD__, Z150, __LINE__, 0x00, 0x00, 0x00, Local0)
             }
 
             Local0 = Acquire (T500, 0xFFFF)
             If (Local0)
             {
-                ERR (__METHOD__, Z150, 0x05B3, 0x00, 0x00, 0x00, Local0)
+                ERR (__METHOD__, Z150, __LINE__, 0x00, 0x00, 0x00, Local0)
             }
 
             Local0 = Acquire (T600, 0xFFFF)
             If (Local0)
             {
-                ERR (__METHOD__, Z150, 0x05B8, 0x00, 0x00, 0x00, Local0)
+                ERR (__METHOD__, Z150, __LINE__, 0x00, 0x00, 0x00, Local0)
             }
 
             Local0 = Acquire (T700, 0xFFFF)
             If (Local0)
             {
-                ERR (__METHOD__, Z150, 0x05BD, 0x00, 0x00, 0x00, Local0)
+                ERR (__METHOD__, Z150, __LINE__, 0x00, 0x00, 0x00, Local0)
             }
 
             Local0 = Acquire (T800, 0xFFFF)
             If (Local0)
             {
-                ERR (__METHOD__, Z150, 0x05C2, 0x00, 0x00, 0x00, Local0)
+                ERR (__METHOD__, Z150, __LINE__, 0x00, 0x00, 0x00, Local0)
             }
 
             Local0 = Acquire (T900, 0xFFFF)
             If (Local0)
             {
-                ERR (__METHOD__, Z150, 0x05C7, 0x00, 0x00, 0x00, Local0)
+                ERR (__METHOD__, Z150, __LINE__, 0x00, 0x00, 0x00, Local0)
             }
 
             Local0 = Acquire (TA00, 0xFFFF)
             If (Local0)
             {
-                ERR (__METHOD__, Z150, 0x05CC, 0x00, 0x00, 0x00, Local0)
+                ERR (__METHOD__, Z150, __LINE__, 0x00, 0x00, 0x00, Local0)
             }
 
             Local0 = Acquire (TB00, 0xFFFF)
             If (Local0)
             {
-                ERR (__METHOD__, Z150, 0x05D1, 0x00, 0x00, 0x00, Local0)
+                ERR (__METHOD__, Z150, __LINE__, 0x00, 0x00, 0x00, Local0)
             }
 
             Local0 = Acquire (TC00, 0xFFFF)
             If (Local0)
             {
-                ERR (__METHOD__, Z150, 0x05D6, 0x00, 0x00, 0x00, Local0)
+                ERR (__METHOD__, Z150, __LINE__, 0x00, 0x00, 0x00, Local0)
             }
 
             Local0 = Acquire (TD00, 0xFFFF)
             If (Local0)
             {
-                ERR (__METHOD__, Z150, 0x05DB, 0x00, 0x00, 0x00, Local0)
+                ERR (__METHOD__, Z150, __LINE__, 0x00, 0x00, 0x00, Local0)
             }
 
             Local0 = Acquire (TE00, 0xFFFF)
             If (Local0)
             {
-                ERR (__METHOD__, Z150, 0x05E0, 0x00, 0x00, 0x00, Local0)
+                ERR (__METHOD__, Z150, __LINE__, 0x00, 0x00, 0x00, Local0)
             }
 
             Local0 = Acquire (TF00, 0xFFFF)
             If (Local0)
             {
-                ERR (__METHOD__, Z150, 0x05E5, 0x00, 0x00, 0x00, Local0)
+                ERR (__METHOD__, Z150, __LINE__, 0x00, 0x00, 0x00, Local0)
             }
 
             CH03 (__METHOD__, Z150, 0x00, 0x05E8, 0x00)
@@ -1781,103 +1781,103 @@
                 Local0 = Acquire (\_GL, 0xFFFF)
                 If (Local0)
                 {
-                    ERR (__METHOD__, Z150, 0x060A, 0x00, 0x00, 0x00, Local0)
+                    ERR (__METHOD__, Z150, __LINE__, 0x00, 0x00, 0x00, Local0)
                 }
 
                 Local0 = Acquire (T000, 0xFFFF)
                 If (Local0)
                 {
-                    ERR (__METHOD__, Z150, 0x060F, 0x00, 0x00, 0x00, Local0)
+                    ERR (__METHOD__, Z150, __LINE__, 0x00, 0x00, 0x00, Local0)
                 }
 
                 Local0 = Acquire (T100, 0xFFFF)
                 If (Local0)
                 {
-                    ERR (__METHOD__, Z150, 0x0614, 0x00, 0x00, 0x00, Local0)
+                    ERR (__METHOD__, Z150, __LINE__, 0x00, 0x00, 0x00, Local0)
                 }
 
                 Local0 = Acquire (T200, 0xFFFF)
                 If (Local0)
                 {
-                    ERR (__METHOD__, Z150, 0x0619, 0x00, 0x00, 0x00, Local0)
+                    ERR (__METHOD__, Z150, __LINE__, 0x00, 0x00, 0x00, Local0)
                 }
 
                 Local0 = Acquire (T300, 0xFFFF)
                 If (Local0)
                 {
-                    ERR (__METHOD__, Z150, 0x061E, 0x00, 0x00, 0x00, Local0)
+                    ERR (__METHOD__, Z150, __LINE__, 0x00, 0x00, 0x00, Local0)
                 }
 
                 Local0 = Acquire (T400, 0xFFFF)
                 If (Local0)
                 {
-                    ERR (__METHOD__, Z150, 0x0623, 0x00, 0x00, 0x00, Local0)
+                    ERR (__METHOD__, Z150, __LINE__, 0x00, 0x00, 0x00, Local0)
                 }
 
                 Local0 = Acquire (T500, 0xFFFF)
                 If (Local0)
                 {
-                    ERR (__METHOD__, Z150, 0x0628, 0x00, 0x00, 0x00, Local0)
+                    ERR (__METHOD__, Z150, __LINE__, 0x00, 0x00, 0x00, Local0)
                 }
 
                 Local0 = Acquire (T600, 0xFFFF)
                 If (Local0)
                 {
-                    ERR (__METHOD__, Z150, 0x062D, 0x00, 0x00, 0x00, Local0)
+                    ERR (__METHOD__, Z150, __LINE__, 0x00, 0x00, 0x00, Local0)
                 }
 
                 Local0 = Acquire (T700, 0xFFFF)
                 If (Local0)
                 {
-                    ERR (__METHOD__, Z150, 0x0632, 0x00, 0x00, 0x00, Local0)
+                    ERR (__METHOD__, Z150, __LINE__, 0x00, 0x00, 0x00, Local0)
                 }
 
                 Local0 = Acquire (T800, 0xFFFF)
                 If (Local0)
                 {
-                    ERR (__METHOD__, Z150, 0x0637, 0x00, 0x00, 0x00, Local0)
+                    ERR (__METHOD__, Z150, __LINE__, 0x00, 0x00, 0x00, Local0)
                 }
 
                 Local0 = Acquire (T900, 0xFFFF)
                 If (Local0)
                 {
-                    ERR (__METHOD__, Z150, 0x063C, 0x00, 0x00, 0x00, Local0)
+                    ERR (__METHOD__, Z150, __LINE__, 0x00, 0x00, 0x00, Local0)
                 }
 
                 Local0 = Acquire (TA00, 0xFFFF)
                 If (Local0)
                 {
-                    ERR (__METHOD__, Z150, 0x0641, 0x00, 0x00, 0x00, Local0)
+                    ERR (__METHOD__, Z150, __LINE__, 0x00, 0x00, 0x00, Local0)
                 }
 
                 Local0 = Acquire (TB00, 0xFFFF)
                 If (Local0)
                 {
-                    ERR (__METHOD__, Z150, 0x0646, 0x00, 0x00, 0x00, Local0)
+                    ERR (__METHOD__, Z150, __LINE__, 0x00, 0x00, 0x00, Local0)
                 }
 
                 Local0 = Acquire (TC00, 0xFFFF)
                 If (Local0)
                 {
-                    ERR (__METHOD__, Z150, 0x064B, 0x00, 0x00, 0x00, Local0)
+                    ERR (__METHOD__, Z150, __LINE__, 0x00, 0x00, 0x00, Local0)
                 }
 
                 Local0 = Acquire (TD00, 0xFFFF)
                 If (Local0)
                 {
-                    ERR (__METHOD__, Z150, 0x0650, 0x00, 0x00, 0x00, Local0)
+                    ERR (__METHOD__, Z150, __LINE__, 0x00, 0x00, 0x00, Local0)
                 }
 
                 Local0 = Acquire (TE00, 0xFFFF)
                 If (Local0)
                 {
-                    ERR (__METHOD__, Z150, 0x0655, 0x00, 0x00, 0x00, Local0)
+                    ERR (__METHOD__, Z150, __LINE__, 0x00, 0x00, 0x00, Local0)
                 }
 
                 Local0 = Acquire (TF00, 0xFFFF)
                 If (Local0)
                 {
-                    ERR (__METHOD__, Z150, 0x065A, 0x00, 0x00, 0x00, Local0)
+                    ERR (__METHOD__, Z150, __LINE__, 0x00, 0x00, 0x00, Local0)
                 }
 
                 CH03 (__METHOD__, Z150, 0x00, 0x065D, 0x00)
@@ -1985,13 +1985,13 @@
         Local0 = (Acquire (\_GL, 0xFFFF) + 0x01)
         If ((Local0 != 0x01))
         {
-            ERR (__METHOD__, Z150, 0x06C9, 0x00, 0x00, 0x00, Local0)
+            ERR (__METHOD__, Z150, __LINE__, 0x00, 0x00, 0x00, Local0)
         }
 
         Local0 = (Acquire (T500, 0xFFFF) + 0x01)
         If ((Local0 != 0x01))
         {
-            ERR (__METHOD__, Z150, 0x06CE, 0x00, 0x00, 0x00, Local0)
+            ERR (__METHOD__, Z150, __LINE__, 0x00, 0x00, 0x00, Local0)
         }
 
         Release (T500)
@@ -2001,13 +2001,13 @@
         Local0 = (0x01 - Acquire (\_GL, 0xFFFF))
         If ((Local0 != 0x01))
         {
-            ERR (__METHOD__, Z150, 0x06D8, 0x00, 0x00, 0x00, Local0)
+            ERR (__METHOD__, Z150, __LINE__, 0x00, 0x00, 0x00, Local0)
         }
 
         Local0 = (0x01 - Acquire (T500, 0xFFFF))
         If ((Local0 != 0x01))
         {
-            ERR (__METHOD__, Z150, 0x06DD, 0x00, 0x00, 0x00, Local0)
+            ERR (__METHOD__, Z150, __LINE__, 0x00, 0x00, 0x00, Local0)
         }
 
         Release (T500)
@@ -2016,7 +2016,7 @@
 
         If ((Acquire (T500, 0xFFFF) != 0x00))
         {
-            ERR (__METHOD__, Z150, 0x06E6, 0x00, 0x00, 0x00, Local0)
+            ERR (__METHOD__, Z150, __LINE__, 0x00, 0x00, 0x00, Local0)
         }
 
         Release (T500)
@@ -2347,7 +2347,7 @@
         SRMT ("m300")
         If (ERR7)
         {
-            ERR ("ERRORS were detected during the loading stage", Z150, 0x083C, 0x00, 0x00, 0x00, ERR7)
+            ERR ("ERRORS were detected during the loading stage", Z150, __LINE__, 0x00, 0x00, 0x00, ERR7)
         }
 
         /* ATTENTION: this test must be run the first */

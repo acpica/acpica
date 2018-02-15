@@ -68,7 +68,7 @@
         ME73 ("1")
         If (!ID0F)
         {
-            ERR ("", ZFFF, 0x43, 0x00, 0x00, 0x00, 0x00)
+            ERR (__METHOD__, ZFFF, __LINE__, 0x00, 0x00, 0x00, 0x00)
         }
 
         ID0F = 0x00
@@ -78,14 +78,14 @@
             })
         If (!ID0F)
         {
-            ERR ("", ZFFF, 0x49, 0x00, 0x00, 0x00, 0x00)
+            ERR (__METHOD__, ZFFF, __LINE__, 0x00, 0x00, 0x00, 0x00)
         }
 
         ID0F = 0x00
         ME73 ("0")
         If (ID0F)
         {
-            ERR ("", ZFFF, 0x4F, 0x00, 0x00, 0x00, 0x00)
+            ERR (__METHOD__, ZFFF, __LINE__, 0x00, 0x00, 0x00, 0x00)
         }
 
         ID0F = 0x00
@@ -95,7 +95,7 @@
             })
         If (ID0F)
         {
-            ERR ("", ZFFF, 0x55, 0x00, 0x00, 0x00, 0x00)
+            ERR (__METHOD__, ZFFF, __LINE__, 0x00, 0x00, 0x00, 0x00)
         }
 
         /* ////////// */
@@ -104,7 +104,7 @@
         ME74 ("1", 0x00)
         If ((ID0F != 0x02))
         {
-            ERR ("", ZFFF, 0x5D, 0x00, 0x00, 0x00, 0x00)
+            ERR (__METHOD__, ZFFF, __LINE__, 0x00, 0x00, 0x00, 0x00)
         }
 
         ID0F = 0x00
@@ -114,14 +114,14 @@
             }, 0x00)
         If ((ID0F != 0x02))
         {
-            ERR ("", ZFFF, 0x63, 0x00, 0x00, 0x00, 0x00)
+            ERR (__METHOD__, ZFFF, __LINE__, 0x00, 0x00, 0x00, 0x00)
         }
 
         ID0F = 0x00
         ME74 ("0", 0x00)
         If (ID0F)
         {
-            ERR ("", ZFFF, 0x69, 0x00, 0x00, 0x00, 0x00)
+            ERR (__METHOD__, ZFFF, __LINE__, 0x00, 0x00, 0x00, 0x00)
         }
 
         ID0F = 0x00
@@ -131,14 +131,14 @@
             }, 0x00)
         If (ID0F)
         {
-            ERR ("", ZFFF, 0x6F, 0x00, 0x00, 0x00, 0x00)
+            ERR (__METHOD__, ZFFF, __LINE__, 0x00, 0x00, 0x00, 0x00)
         }
 
         ID0F = 0x00
         ME74 ("1", 0x01)
         If ((ID0F != 0x01))
         {
-            ERR ("", ZFFF, 0x75, 0x00, 0x00, 0x00, 0x00)
+            ERR (__METHOD__, ZFFF, __LINE__, 0x00, 0x00, 0x00, 0x00)
         }
 
         ID0F = 0x00
@@ -148,14 +148,14 @@
             }, 0x01)
         If ((ID0F != 0x01))
         {
-            ERR ("", ZFFF, 0x7B, 0x00, 0x00, 0x00, 0x00)
+            ERR (__METHOD__, ZFFF, __LINE__, 0x00, 0x00, 0x00, 0x00)
         }
 
         ID0F = 0x00
         ME75 ("0")
         If (ID0F)
         {
-            ERR ("", ZFFF, 0x81, 0x00, 0x00, 0x00, 0x00)
+            ERR (__METHOD__, ZFFF, __LINE__, 0x00, 0x00, 0x00, 0x00)
         }
 
         ID0F = 0x00
@@ -165,14 +165,14 @@
             })
         If (ID0F)
         {
-            ERR ("", ZFFF, 0x87, 0x00, 0x00, 0x00, 0x00)
+            ERR (__METHOD__, ZFFF, __LINE__, 0x00, 0x00, 0x00, 0x00)
         }
 
         ID0F = 0x00
         ME75 ("01")
         If (!ID0F)
         {
-            ERR ("", ZFFF, 0x8D, 0x00, 0x00, 0x00, 0x00)
+            ERR (__METHOD__, ZFFF, __LINE__, 0x00, 0x00, 0x00, 0x00)
         }
 
         ID0F = 0x00
@@ -182,6 +182,6 @@
             })
         If (!ID0F)
         {
-            ERR ("", ZFFF, 0x93, 0x00, 0x00, 0x00, 0x00)
+            ERR (__METHOD__, ZFFF, __LINE__, 0x00, 0x00, 0x00, 0x00)
         }
     }

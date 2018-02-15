@@ -71,13 +71,13 @@
     {
         If ((ObjectType (Arg1) != 0x03))
         {
-            ERR ("m311: unexpected type of Arg1", Z036, 0x4B, 0x00, 0x00, 0x00, 0x00)
+            ERR ("m311: unexpected type of Arg1", Z036, __LINE__, 0x00, 0x00, 0x00, 0x00)
             Return (Ones)
         }
 
         If ((ObjectType (Arg2) != 0x03))
         {
-            ERR ("m311: unexpected type of Arg2", Z036, 0x50, 0x00, 0x00, 0x00, 0x00)
+            ERR ("m311: unexpected type of Arg2", Z036, __LINE__, 0x00, 0x00, 0x00, 0x00)
             Return (Ones)
         }
 
@@ -121,7 +121,7 @@
                     Concatenate (Local0, Local1, Local7)
                     If (M311 (Arg0, Local7, Local2))
                     {
-                        ERR (Arg0, Z036, 0x7A, 0x00, 0x00, Local5, Arg2)
+                        ERR (Arg0, Z036, __LINE__, 0x00, 0x00, Local5, Arg2)
                     }
                 }
                 Case (0x01)
@@ -131,15 +131,15 @@
                     Concatenate (Local0, Local1, Local7)
                     If ((ObjectType (Local7) != 0x02))
                     {
-                        ERR (Arg0, Z036, 0x83, 0x00, 0x00, Local7, Arg2)
+                        ERR (Arg0, Z036, __LINE__, 0x00, 0x00, Local7, Arg2)
                     }
                     ElseIf ((ObjectType (Local2) != 0x02))
                     {
-                        ERR (Arg0, Z036, 0x85, 0x00, 0x00, Local2, Arg2)
+                        ERR (Arg0, Z036, __LINE__, 0x00, 0x00, Local2, Arg2)
                     }
                     ElseIf ((Local7 != Local2))
                     {
-                        ERR (Arg0, Z036, 0x87, 0x00, 0x00, Local7, Arg2)
+                        ERR (Arg0, Z036, __LINE__, 0x00, 0x00, Local7, Arg2)
                     }
                 }
 

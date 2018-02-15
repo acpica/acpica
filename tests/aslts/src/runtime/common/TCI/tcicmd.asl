@@ -176,14 +176,14 @@
                 }
                 Default
                 {
-                    ERR ("m165", Z128, 0xBB, 0x00, 0x00, Arg0, 0x00)
+                    ERR ("m165", Z128, __LINE__, 0x00, 0x00, Arg0, 0x00)
                 }
 
             }
 
             If ((NUM < C22B))
             {
-                ERR ("m165", Z128, 0xC0, 0x00, 0x00, NUM, C22B)
+                ERR ("m165", Z128, __LINE__, 0x00, 0x00, NUM, C22B)
             }
             Else
             {
@@ -489,7 +489,7 @@
                 {
                     If (!DE00)
                     {
-                        ERR ("m3a4", Z128, 0x01CB, 0x00, Arg6, Local6, Local5)
+                        ERR ("m3a4", Z128, __LINE__, 0x00, Arg6, Local6, Local5)
                         Debug = LPC0 /* \M3A4.LPC0 */
                         Debug = Local0
                         Debug = Local1
@@ -524,7 +524,7 @@
                 {
                     If (!DE00)
                     {
-                        ERR ("m3a4", Z128, 0x01E9, 0x00, Arg6, Local2, Local3)
+                        ERR ("m3a4", Z128, __LINE__, 0x00, Arg6, Local2, Local3)
                     }
 
                     Local7 = 0x01
@@ -554,7 +554,7 @@
             {
                 If (!DE00)
                 {
-                    ERR ("m3a4", Z128, 0x0206, 0x00, Arg6, Local3, Local6)
+                    ERR ("m3a4", Z128, __LINE__, 0x00, Arg6, Local3, Local6)
                 }
 
                 Local7 = 0x01
@@ -584,7 +584,7 @@
             {
                 If (!DE00)
                 {
-                    ERR ("m3a4", Z128, 0x0224, 0x00, Arg6, Local3, Local6)
+                    ERR ("m3a4", Z128, __LINE__, 0x00, Arg6, Local3, Local6)
                 }
 
                 Local7 = 0x01
@@ -612,7 +612,7 @@
                 {
                     If (!DE00)
                     {
-                        ERR ("m3a4", Z128, 0x023E, 0x00, Arg6, Local2, Local3)
+                        ERR ("m3a4", Z128, __LINE__, 0x00, Arg6, Local2, Local3)
                     }
 
                     Local7 = 0x01
@@ -649,7 +649,7 @@
                 {
                     If (!DE00)
                     {
-                        ERR ("m3a4", Z128, 0x0260, 0x00, Arg6, Local2, Local3)
+                        ERR ("m3a4", Z128, __LINE__, 0x00, Arg6, Local2, Local3)
                     }
 
                     Local7 = 0x01
@@ -712,7 +712,7 @@
         Local1 = DerefOf (Arg0 [0x00])
         If ((Local1 != Local0))
         {
-            ERR ("m3a6", Z128, 0x029F, 0x00, Arg2, Local1, Local0)
+            ERR ("m3a6", Z128, __LINE__, 0x00, Arg2, Local1, Local0)
             Local7 = 0x01
         }
 
@@ -721,7 +721,7 @@
         Local1 = DerefOf (Arg0 [0x01])
         If ((Local1 != C220))
         {
-            ERR ("m3a6", Z128, 0x02A7, 0x00, Arg2, Local1, C220)
+            ERR ("m3a6", Z128, __LINE__, 0x00, Arg2, Local1, C220)
             Local7 = 0x01
         }
 
@@ -739,7 +739,7 @@
         Local1 = DerefOf (Arg0 [0x02])
         If ((Local1 != Local0))
         {
-            ERR ("m3a6", Z128, 0x02B5, 0x00, Arg2, Local1, Local0)
+            ERR ("m3a6", Z128, __LINE__, 0x00, Arg2, Local1, Local0)
             Local7 = 0x01
         }
 
@@ -748,7 +748,7 @@
         Local1 = DerefOf (Arg0 [0x03])
         If (!Local1)
         {
-            ERR ("m3a6", Z128, 0x02BD, 0x00, Arg2, Local1, 0x01)
+            ERR ("m3a6", Z128, __LINE__, 0x00, Arg2, Local1, 0x01)
             Local7 = 0x01
         }
 
@@ -787,7 +787,7 @@
             Local1 = DerefOf (Arg0 [Local0])
             If (Local1)
             {
-                ERR ("m3a7", Z128, 0x02E8, 0x00, Arg2, Local1, 0x00)
+                ERR ("m3a7", Z128, __LINE__, 0x00, Arg2, Local1, 0x00)
                 Local7 = 0x01
             }
 
@@ -797,7 +797,7 @@
             Local1 = DerefOf (Arg0 [Local0])
             If (Local1)
             {
-                ERR ("m3a7", Z128, 0x02F1, 0x00, Arg2, Local1, 0x00)
+                ERR ("m3a7", Z128, __LINE__, 0x00, Arg2, Local1, 0x00)
                 Local7 = 0x01
             }
 
@@ -807,7 +807,7 @@
             Local1 = DerefOf (Arg0 [Local0])
             If (Local1)
             {
-                ERR ("m3a7", Z128, 0x02FA, 0x00, Arg2, Local1, 0x00)
+                ERR ("m3a7", Z128, __LINE__, 0x00, Arg2, Local1, 0x00)
                 Local7 = 0x01
             }
 
@@ -817,7 +817,7 @@
             Local1 = DerefOf (Arg0 [Local0])
             If (Local1)
             {
-                ERR ("m3a7", Z128, 0x0303, 0x00, Arg2, Local1, 0x00)
+                ERR ("m3a7", Z128, __LINE__, 0x00, Arg2, Local1, 0x00)
                 Local7 = 0x01
             }
 
@@ -827,7 +827,7 @@
             Local1 = DerefOf (Arg0 [Local0])
             If (Local1)
             {
-                ERR ("m3a7", Z128, 0x030C, 0x00, Arg2, Local1, 0x00)
+                ERR ("m3a7", Z128, __LINE__, 0x00, Arg2, Local1, 0x00)
                 Local7 = 0x01
             }
         }
@@ -954,7 +954,7 @@
         If ((Local6 == Local7))
         {
             Debug = "Internal error 0"
-            ERR ("m3aa", Z128, 0x0368, 0x00, 0x00, Local6, Local7)
+            ERR ("m3aa", Z128, __LINE__, 0x00, 0x00, Local6, Local7)
         }
         ElseIf (Local6)
         {

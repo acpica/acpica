@@ -160,7 +160,7 @@
             Concatenate (Arg0, "-tst0", Arg0)
             If ((OEMT != FU00))
             {
-                ERR (Arg0, Z176, 0x9F, 0x00, 0x00, FU00, OEMT)
+                ERR (Arg0, Z176, __LINE__, 0x00, 0x00, FU00, OEMT)
                 Return (0x01)
             }
 
@@ -180,7 +180,7 @@
 
             If (CondRefOf (\_XT2, Local0))
             {
-                ERR (Arg0, Z176, 0xB2, 0x00, 0x00, "\\_XT2", 0x01)
+                ERR (Arg0, Z176, __LINE__, 0x00, 0x00, "\\_XT2", 0x01)
                 Return (0x01)
             }
 
@@ -196,19 +196,19 @@
             {
                 /* DDB Handle */
 
-                ERR (Arg0, Z176, 0xC0, 0x00, 0x00, Local1, C017)
+                ERR (Arg0, Z176, __LINE__, 0x00, 0x00, Local1, C017)
                 Return (0x01)
             }
 
             If ((0x01 != \DTM2.PLDT))
             {
-                ERR (Arg0, Z176, 0xC5, 0x00, 0x00, \DTM2.PLDT, 0x01)
+                ERR (Arg0, Z176, __LINE__, 0x00, 0x00, \DTM2.PLDT, 0x01)
             }
 
             If (CondRefOf (\_XT2, Local0)){}
             Else
             {
-                ERR (Arg0, Z176, 0xCA, 0x00, 0x00, "\\_XT2", 0x00)
+                ERR (Arg0, Z176, __LINE__, 0x00, 0x00, "\\_XT2", 0x00)
             }
 
             Unload (DDBH)
@@ -220,7 +220,7 @@
 
             If (CondRefOf (\_XT2, Local0))
             {
-                ERR (Arg0, Z176, 0xD5, 0x00, 0x00, "\\_XT2", 0x01)
+                ERR (Arg0, Z176, __LINE__, 0x00, 0x00, "\\_XT2", 0x01)
             }
 
             Return (0x00)
@@ -234,7 +234,7 @@
             Concatenate (Arg0, "-tst1", Arg0)
             If (CondRefOf (\_XT2, Local0))
             {
-                ERR (Arg0, Z176, 0xE4, 0x00, 0x00, "\\_XT2", 0x01)
+                ERR (Arg0, Z176, __LINE__, 0x00, 0x00, "\\_XT2", 0x01)
                 Return (0x01)
             }
 
@@ -260,19 +260,19 @@
             {
                 /* DDB Handle */
 
-                ERR (Arg0, Z176, 0xF8, 0x00, 0x00, Local1, C017)
+                ERR (Arg0, Z176, __LINE__, 0x00, 0x00, Local1, C017)
                 Return (0x01)
             }
 
             If ((0x01 != \DTM2.PLDT))
             {
-                ERR (Arg0, Z176, 0xFD, 0x00, 0x00, \DTM2.PLDT, 0x01)
+                ERR (Arg0, Z176, __LINE__, 0x00, 0x00, \DTM2.PLDT, 0x01)
             }
 
             If (CondRefOf (\_XT2, Local0)){}
             Else
             {
-                ERR (Arg0, Z176, 0x0102, 0x00, 0x00, "\\_XT2", 0x00)
+                ERR (Arg0, Z176, __LINE__, 0x00, 0x00, "\\_XT2", 0x00)
             }
 
             Unload (DDBH)
@@ -284,7 +284,7 @@
 
             If (CondRefOf (\_XT2, Local0))
             {
-                ERR (Arg0, Z176, 0x010D, 0x00, 0x00, "\\_XT2", 0x01)
+                ERR (Arg0, Z176, __LINE__, 0x00, 0x00, "\\_XT2", 0x01)
             }
 
             /* Unhappy comparison due to the SignatureString */
@@ -293,7 +293,7 @@
             Local1 = ObjectType (Local2)
             If ((Local1 != C008))
             {
-                ERR (Arg0, Z176, 0x0116, 0x00, 0x00, Local1, C008)
+                ERR (Arg0, Z176, __LINE__, 0x00, 0x00, Local1, C008)
             }
 
             Local2 = LoadTable ("OeM1", "Intel", "Many", "\\", PPST, 0x01)
@@ -318,27 +318,27 @@
             {
                 If ((Local1 != C009))
                 {
-                    ERR (Arg0, Z176, 0x0128, 0x00, 0x00, Local1, C009)
+                    ERR (Arg0, Z176, __LINE__, 0x00, 0x00, Local1, C009)
                 }
 
                 If ((Local2 != 0x00))
                 {
-                    ERR (Arg0, Z176, 0x012B, 0x00, 0x00, Local2, 0x00)
+                    ERR (Arg0, Z176, __LINE__, 0x00, 0x00, Local2, 0x00)
                 }
             }
             ElseIf ((Local1 != C008))
             {
-                ERR (Arg0, Z176, 0x012F, 0x00, 0x00, Local1, C008)
+                ERR (Arg0, Z176, __LINE__, 0x00, 0x00, Local1, C008)
             }
 
             If ((0x00 != \DTM2.PLDT))
             {
-                ERR (Arg0, Z176, 0x0134, 0x00, 0x00, \DTM2.PLDT, 0x00)
+                ERR (Arg0, Z176, __LINE__, 0x00, 0x00, \DTM2.PLDT, 0x00)
             }
 
             If (CondRefOf (\_XT2, Local0))
             {
-                ERR (Arg0, Z176, 0x0138, 0x00, 0x00, "\\_XT2", 0x01)
+                ERR (Arg0, Z176, __LINE__, 0x00, 0x00, "\\_XT2", 0x01)
             }
 
             /* Unhappy comparison due to the OEMIDString */
@@ -347,7 +347,7 @@
             Local1 = ObjectType (Local3)
             If ((Local1 != C008))
             {
-                ERR (Arg0, Z176, 0x0141, 0x00, 0x00, Local1, C008)
+                ERR (Arg0, Z176, __LINE__, 0x00, 0x00, Local1, C008)
             }
 
             Local3 = LoadTable ("OEM1", "InteL", "Many", "\\", PPST, 0x01)
@@ -359,22 +359,22 @@
             Local1 = ObjectType (Local3)
             If ((Local1 != C009))
             {
-                ERR (Arg0, Z176, 0x014C, 0x00, 0x00, Local1, C009)
+                ERR (Arg0, Z176, __LINE__, 0x00, 0x00, Local1, C009)
             }
 
             If ((Local3 != 0x00))
             {
-                ERR (Arg0, Z176, 0x0150, 0x00, 0x00, Local3, 0x00)
+                ERR (Arg0, Z176, __LINE__, 0x00, 0x00, Local3, 0x00)
             }
 
             If ((0x00 != \DTM2.PLDT))
             {
-                ERR (Arg0, Z176, 0x0154, 0x00, 0x00, \DTM2.PLDT, 0x00)
+                ERR (Arg0, Z176, __LINE__, 0x00, 0x00, \DTM2.PLDT, 0x00)
             }
 
             If (CondRefOf (\_XT2, Local0))
             {
-                ERR (Arg0, Z176, 0x0158, 0x00, 0x00, "\\_XT2", 0x01)
+                ERR (Arg0, Z176, __LINE__, 0x00, 0x00, "\\_XT2", 0x01)
             }
 
             /* Unhappy comparison due to the OEMTableIDString */
@@ -383,7 +383,7 @@
             Local1 = ObjectType (Local4)
             If ((Local1 != C008))
             {
-                ERR (Arg0, Z176, 0x0161, 0x00, 0x00, Local1, C008)
+                ERR (Arg0, Z176, __LINE__, 0x00, 0x00, Local1, C008)
             }
 
             Local4 = LoadTable ("OEM1", "Intel", "many", "\\", PPST, 0x01)
@@ -395,22 +395,22 @@
             Local1 = ObjectType (Local4)
             If ((Local1 != C009))
             {
-                ERR (Arg0, Z176, 0x016C, 0x00, 0x00, Local1, C009)
+                ERR (Arg0, Z176, __LINE__, 0x00, 0x00, Local1, C009)
             }
 
             If ((Local4 != 0x00))
             {
-                ERR (Arg0, Z176, 0x0170, 0x00, 0x00, Local4, 0x00)
+                ERR (Arg0, Z176, __LINE__, 0x00, 0x00, Local4, 0x00)
             }
 
             If ((0x00 != \DTM2.PLDT))
             {
-                ERR (Arg0, Z176, 0x0174, 0x00, 0x00, \DTM2.PLDT, 0x00)
+                ERR (Arg0, Z176, __LINE__, 0x00, 0x00, \DTM2.PLDT, 0x00)
             }
 
             If (CondRefOf (\_XT2, Local0))
             {
-                ERR (Arg0, Z176, 0x0178, 0x00, 0x00, "\\_XT2", 0x01)
+                ERR (Arg0, Z176, __LINE__, 0x00, 0x00, "\\_XT2", 0x01)
             }
 
             Return (0x00)
@@ -427,7 +427,7 @@
             Concatenate (Arg0, "-tst2", Arg0)
             If (CondRefOf (\_XT2, Local0))
             {
-                ERR (Arg0, Z176, 0x018A, 0x00, 0x00, "\\_XT2", 0x01)
+                ERR (Arg0, Z176, __LINE__, 0x00, 0x00, "\\_XT2", 0x01)
                 Return (0x01)
             }
 
@@ -445,19 +445,19 @@
             {
                 /* DDB Handle */
 
-                ERR (Arg0, Z176, 0x019A, 0x00, 0x00, Local1, C017)
+                ERR (Arg0, Z176, __LINE__, 0x00, 0x00, Local1, C017)
                 Return (0x01)
             }
 
             If ((0x01 != \DTM2.PLDT))
             {
-                ERR (Arg0, Z176, 0x019F, 0x00, 0x00, \DTM2.PLDT, 0x01)
+                ERR (Arg0, Z176, __LINE__, 0x00, 0x00, \DTM2.PLDT, 0x01)
             }
 
             If (CondRefOf (\_XT2, Local0)){}
             Else
             {
-                ERR (Arg0, Z176, 0x01A4, 0x00, 0x00, "\\_XT2", 0x00)
+                ERR (Arg0, Z176, __LINE__, 0x00, 0x00, "\\_XT2", 0x00)
             }
 
             Unload (DDB0)
@@ -469,7 +469,7 @@
 
             If (CondRefOf (\_XT2, Local0))
             {
-                ERR (Arg0, Z176, 0x01AF, 0x00, 0x00, "\\_XT2", 0x01)
+                ERR (Arg0, Z176, __LINE__, 0x00, 0x00, "\\_XT2", 0x01)
             }
 
             /* Check when ParameterPathString omitted */
@@ -486,19 +486,19 @@
             {
                 /* DDB Handle */
 
-                ERR (Arg0, Z176, 0x01BE, 0x00, 0x00, Local1, C017)
+                ERR (Arg0, Z176, __LINE__, 0x00, 0x00, Local1, C017)
                 Return (0x01)
             }
 
             If ((0x00 != \DTM2.PLDT))
             {
-                ERR (Arg0, Z176, 0x01C3, 0x00, 0x00, \DTM2.PLDT, 0x00)
+                ERR (Arg0, Z176, __LINE__, 0x00, 0x00, \DTM2.PLDT, 0x00)
             }
 
             If (CondRefOf (\_XT2, Local0)){}
             Else
             {
-                ERR (Arg0, Z176, 0x01C8, 0x00, 0x00, "\\_XT2", 0x00)
+                ERR (Arg0, Z176, __LINE__, 0x00, 0x00, "\\_XT2", 0x00)
             }
 
             Unload (DDB1)
@@ -510,7 +510,7 @@
 
             If (CondRefOf (\_XT2, Local0))
             {
-                ERR (Arg0, Z176, 0x01D3, 0x00, 0x00, "\\_XT2", 0x01)
+                ERR (Arg0, Z176, __LINE__, 0x00, 0x00, "\\_XT2", 0x01)
             }
 
             /* Check when ParameterData omitted */
@@ -527,19 +527,19 @@
             {
                 /* DDB Handle */
 
-                ERR (Arg0, Z176, 0x01E2, 0x00, 0x00, Local1, C017)
+                ERR (Arg0, Z176, __LINE__, 0x00, 0x00, Local1, C017)
                 Return (0x01)
             }
 
             If ((0x00 != \DTM2.PLDT))
             {
-                ERR (Arg0, Z176, 0x01E7, 0x00, 0x00, \DTM2.PLDT, 0x00)
+                ERR (Arg0, Z176, __LINE__, 0x00, 0x00, \DTM2.PLDT, 0x00)
             }
 
             If (CondRefOf (\_XT2, Local0)){}
             Else
             {
-                ERR (Arg0, Z176, 0x01EC, 0x00, 0x00, "\\_XT2", 0x00)
+                ERR (Arg0, Z176, __LINE__, 0x00, 0x00, "\\_XT2", 0x00)
             }
 
             Unload (DDB2)
@@ -551,7 +551,7 @@
 
             If (CondRefOf (\_XT2, Local0))
             {
-                ERR (Arg0, Z176, 0x01F7, 0x00, 0x00, "\\_XT2", 0x01)
+                ERR (Arg0, Z176, __LINE__, 0x00, 0x00, "\\_XT2", 0x01)
             }
 
             /* Check when all optional parameters omitted */
@@ -568,19 +568,19 @@
             {
                 /* DDB Handle */
 
-                ERR (Arg0, Z176, 0x0206, 0x00, 0x00, Local1, C017)
+                ERR (Arg0, Z176, __LINE__, 0x00, 0x00, Local1, C017)
                 Return (0x01)
             }
 
             If ((0x00 != \DTM2.PLDT))
             {
-                ERR (Arg0, Z176, 0x020B, 0x00, 0x00, \DTM2.PLDT, 0x00)
+                ERR (Arg0, Z176, __LINE__, 0x00, 0x00, \DTM2.PLDT, 0x00)
             }
 
             If (CondRefOf (\_XT2, Local0)){}
             Else
             {
-                ERR (Arg0, Z176, 0x0210, 0x00, 0x00, "\\_XT2", 0x00)
+                ERR (Arg0, Z176, __LINE__, 0x00, 0x00, "\\_XT2", 0x00)
             }
 
             Unload (DDB3)
@@ -592,7 +592,7 @@
 
             If (CondRefOf (\_XT2, Local0))
             {
-                ERR (Arg0, Z176, 0x021B, 0x00, 0x00, "\\_XT2", 0x01)
+                ERR (Arg0, Z176, __LINE__, 0x00, 0x00, "\\_XT2", 0x01)
             }
 
             Return (0x00)
@@ -635,19 +635,19 @@
                 {
                     /* DDB Handle */
 
-                    ERR (Arg0, Z176, 0x023E, 0x00, 0x00, Local1, C017)
+                    ERR (Arg0, Z176, __LINE__, 0x00, 0x00, Local1, C017)
                     Return (0x01)
                 }
 
                 If ((0x00 != \DTM2.PLDT))
                 {
-                    ERR (Arg0, Z176, 0x0243, 0x00, 0x00, \DTM2.PLDT, 0x00)
+                    ERR (Arg0, Z176, __LINE__, 0x00, 0x00, \DTM2.PLDT, 0x00)
                 }
 
                 If (CondRefOf (\_XT2, Local0)){}
                 Else
                 {
-                    ERR (Arg0, Z176, 0x0248, 0x00, 0x00, "\\DTM2._XT2", 0x00)
+                    ERR (Arg0, Z176, __LINE__, 0x00, 0x00, "\\DTM2._XT2", 0x00)
                 }
 
                 Unload (Arg1)
@@ -659,7 +659,7 @@
 
                 If (CondRefOf (\_XT2, Local0))
                 {
-                    ERR (Arg0, Z176, 0x0253, 0x00, 0x00, "\\DTM2._XT2", 0x01)
+                    ERR (Arg0, Z176, __LINE__, 0x00, 0x00, "\\DTM2._XT2", 0x01)
                     Return (0x01)
                 }
 
@@ -691,7 +691,7 @@
 
             If (CondRefOf (\DTM2._XT2, Local0))
             {
-                ERR (Arg0, Z176, 0x0272, 0x00, 0x00, "\\_XT2", 0x01)
+                ERR (Arg0, Z176, __LINE__, 0x00, 0x00, "\\_XT2", 0x01)
                 Return (0x01)
             }
 
@@ -814,19 +814,19 @@
                 {
                     /* DDB Handle */
 
-                    ERR (Arg0, Z176, 0x02F7, 0x00, 0x00, Local1, C017)
+                    ERR (Arg0, Z176, __LINE__, 0x00, 0x00, Local1, C017)
                     Return (0x01)
                 }
 
                 If ((0x01 != \DTM2.PLDT))
                 {
-                    ERR (Arg0, Z176, 0x02FC, 0x00, 0x00, \DTM2.PLDT, 0x01)
+                    ERR (Arg0, Z176, __LINE__, 0x00, 0x00, \DTM2.PLDT, 0x01)
                 }
 
                 If (CondRefOf (\DTM2._XT2, Local0)){}
                 Else
                 {
-                    ERR (Arg0, Z176, 0x0301, 0x00, 0x00, "\\DTM2._XT2", 0x00)
+                    ERR (Arg0, Z176, __LINE__, 0x00, 0x00, "\\DTM2._XT2", 0x00)
                 }
 
                 Unload (Arg1)
@@ -838,7 +838,7 @@
 
                 If (CondRefOf (\DTM2._XT2, Local0))
                 {
-                    ERR (Arg0, Z176, 0x030C, 0x00, 0x00, "\\DTM2._XT2", 0x01)
+                    ERR (Arg0, Z176, __LINE__, 0x00, 0x00, "\\DTM2._XT2", 0x01)
                     Return (0x01)
                 }
 
@@ -872,7 +872,7 @@
             Concatenate (Arg0, "-tst4", Arg0)
             If (CondRefOf (\DTM2._XT2, Local0))
             {
-                ERR (Arg0, Z176, 0x032E, 0x00, 0x00, "\\DTM2._XT2", 0x01)
+                ERR (Arg0, Z176, __LINE__, 0x00, 0x00, "\\DTM2._XT2", 0x01)
                 Return (0x01)
             }
 
@@ -973,13 +973,13 @@
             Concatenate (Arg0, "-tst5", Arg0)
             If (CondRefOf (\_XT2, Local0))
             {
-                ERR (Arg0, Z176, 0x03A7, 0x00, 0x00, "\\_XT2", 0x01)
+                ERR (Arg0, Z176, __LINE__, 0x00, 0x00, "\\_XT2", 0x01)
                 Return (0x01)
             }
 
             If (CondRefOf (\DTM2.DEVR._XT2, Local0))
             {
-                ERR (Arg0, Z176, 0x03AC, 0x00, 0x00, "\\DTM2.DEVR._XT2", 0x01)
+                ERR (Arg0, Z176, __LINE__, 0x00, 0x00, "\\DTM2.DEVR._XT2", 0x01)
                 Return (0x01)
             }
 
@@ -995,24 +995,24 @@
             {
                 /* DDB Handle */
 
-                ERR (Arg0, Z176, 0x03BA, 0x00, 0x00, Local1, C017)
+                ERR (Arg0, Z176, __LINE__, 0x00, 0x00, Local1, C017)
                 Return (0x01)
             }
 
             If ((0x01 != \DTM2.PLDT))
             {
-                ERR (Arg0, Z176, 0x03BF, 0x00, 0x00, \DTM2.PLDT, 0x01)
+                ERR (Arg0, Z176, __LINE__, 0x00, 0x00, \DTM2.PLDT, 0x01)
             }
 
             If (CondRefOf (\_XT2, Local0))
             {
-                ERR (Arg0, Z176, 0x03C3, 0x00, 0x00, "\\_XT2", 0x01)
+                ERR (Arg0, Z176, __LINE__, 0x00, 0x00, "\\_XT2", 0x01)
             }
 
             If (CondRefOf (\DTM2.DEVR._XT2, Local0)){}
             Else
             {
-                ERR (Arg0, Z176, 0x03C8, 0x00, 0x00, "\\DTM2.DEVR._XT2", 0x00)
+                ERR (Arg0, Z176, __LINE__, 0x00, 0x00, "\\DTM2.DEVR._XT2", 0x00)
             }
 
             Unload (DDBH)
@@ -1024,12 +1024,12 @@
 
             If (CondRefOf (\_XT2, Local0))
             {
-                ERR (Arg0, Z176, 0x03D3, 0x00, 0x00, "\\_XT2", 0x01)
+                ERR (Arg0, Z176, __LINE__, 0x00, 0x00, "\\_XT2", 0x01)
             }
 
             If (CondRefOf (\DTM2.DEVR._XT2, Local0))
             {
-                ERR (Arg0, Z176, 0x03D7, 0x00, 0x00, "\\DTM2.DEVR._XT2", 0x01)
+                ERR (Arg0, Z176, __LINE__, 0x00, 0x00, "\\DTM2.DEVR._XT2", 0x01)
             }
 
             Return (0x00)
@@ -1043,7 +1043,7 @@
             Concatenate (Arg0, "-tst6", Arg0)
             If (CondRefOf (\_XT2, Local0))
             {
-                ERR (Arg0, Z176, 0x03E6, 0x00, 0x00, "\\_XT2", 0x01)
+                ERR (Arg0, Z176, __LINE__, 0x00, 0x00, "\\_XT2", 0x01)
                 Return (0x01)
             }
 
@@ -1059,19 +1059,19 @@
             {
                 /* DDB Handle */
 
-                ERR (Arg0, Z176, 0x03F4, 0x00, 0x00, Local1, C017)
+                ERR (Arg0, Z176, __LINE__, 0x00, 0x00, Local1, C017)
                 Return (0x01)
             }
 
             If ((0x01 != \DTM2.PLDT))
             {
-                ERR (Arg0, Z176, 0x03F9, 0x00, 0x00, \DTM2.PLDT, 0x01)
+                ERR (Arg0, Z176, __LINE__, 0x00, 0x00, \DTM2.PLDT, 0x01)
             }
 
             If (CondRefOf (\_XT2, Local0)){}
             Else
             {
-                ERR (Arg0, Z176, 0x03FE, 0x00, 0x00, "\\_XT2", 0x00)
+                ERR (Arg0, Z176, __LINE__, 0x00, 0x00, "\\_XT2", 0x00)
             }
 
             Unload (DDBH)
@@ -1083,7 +1083,7 @@
 
             If (CondRefOf (\_XT2, Local0))
             {
-                ERR (Arg0, Z176, 0x0409, 0x00, 0x00, "\\_XT2", 0x01)
+                ERR (Arg0, Z176, __LINE__, 0x00, 0x00, "\\_XT2", 0x01)
             }
 
             Return (0x00)
@@ -1109,13 +1109,13 @@
             {
                 /* DDB Handle */
 
-                ERR (Arg0, Z176, 0x0422, 0x00, 0x00, Local1, C017)
+                ERR (Arg0, Z176, __LINE__, 0x00, 0x00, Local1, C017)
                 Return (0x01)
             }
 
             If ((0x01 != PLDT))
             {
-                ERR (Arg0, Z176, 0x0427, 0x00, 0x00, PLDT, 0x01)
+                ERR (Arg0, Z176, __LINE__, 0x00, 0x00, PLDT, 0x01)
             }
 
             Unload (DDBH)
@@ -1137,18 +1137,18 @@
             {
                 /* DDB Handle */
 
-                ERR (Arg0, Z176, 0x043B, 0x00, 0x00, Local1, C017)
+                ERR (Arg0, Z176, __LINE__, 0x00, 0x00, Local1, C017)
                 Return (0x01)
             }
 
             If ((0x00 != PLDT))
             {
-                ERR (Arg0, Z176, 0x0440, 0x00, 0x00, PLDT, 0x00)
+                ERR (Arg0, Z176, __LINE__, 0x00, 0x00, PLDT, 0x00)
             }
 
             If ((0x01 != \DTM2.PLDT))
             {
-                ERR (Arg0, Z176, 0x0444, 0x00, 0x00, \DTM2.PLDT, 0x01)
+                ERR (Arg0, Z176, __LINE__, 0x00, 0x00, \DTM2.PLDT, 0x01)
             }
 
             Unload (DDBH)
@@ -1182,7 +1182,7 @@
             CH04 (Arg0, 0x00, 0x3D, Z176, 0x0462, 0x00, 0x00) /* AE_AML_STRING_LIMIT */
             If ((0x00 != \DTM2.PLDT))
             {
-                ERR (Arg0, Z176, 0x0465, 0x00, 0x00, \DTM2.PLDT, 0x01)
+                ERR (Arg0, Z176, __LINE__, 0x00, 0x00, \DTM2.PLDT, 0x01)
                 If (Y287)
                 {
                     Return (0x01)
@@ -1202,7 +1202,7 @@
             CH04 (Arg0, 0x00, 0x3D, Z176, 0x0473, 0x00, 0x00) /* AE_AML_STRING_LIMIT */
             If ((0x00 != \DTM2.PLDT))
             {
-                ERR (Arg0, Z176, 0x0476, 0x00, 0x00, \DTM2.PLDT, 0x01)
+                ERR (Arg0, Z176, __LINE__, 0x00, 0x00, \DTM2.PLDT, 0x01)
                 Return (0x01)
             }
 
@@ -1212,7 +1212,7 @@
             CH04 (Arg0, 0x00, 0x3D, Z176, 0x047D, 0x00, 0x00) /* AE_AML_STRING_LIMIT */
             If ((0x00 != \DTM2.PLDT))
             {
-                ERR (Arg0, Z176, 0x0480, 0x00, 0x00, \DTM2.PLDT, 0x01)
+                ERR (Arg0, Z176, __LINE__, 0x00, 0x00, \DTM2.PLDT, 0x01)
                 Return (0x01)
             }
 
@@ -1231,7 +1231,7 @@
             CH04 (Arg0, 0x00, 0x07, Z176, 0x0492, 0x00, 0x00)  /* AE_ALREADY_EXISTS */
             If ((0x00 != \DTM2.PLDT))
             {
-                ERR (Arg0, Z176, 0x0495, 0x00, 0x00, \DTM2.PLDT, 0x01)
+                ERR (Arg0, Z176, __LINE__, 0x00, 0x00, \DTM2.PLDT, 0x01)
             }
 
             /* SignatureString is "SSDT" */
@@ -1240,7 +1240,7 @@
             CH04 (Arg0, 0x00, 0x07, Z176, 0x049B, 0x00, 0x00)  /* AE_ALREADY_EXISTS */
             If ((0x00 != \DTM2.PLDT))
             {
-                ERR (Arg0, Z176, 0x049E, 0x00, 0x00, \DTM2.PLDT, 0x01)
+                ERR (Arg0, Z176, __LINE__, 0x00, 0x00, \DTM2.PLDT, 0x01)
             }
 
             Return (0x00)
@@ -1254,7 +1254,7 @@
             Concatenate (Arg0, "-tsta", Arg0)
             If (CondRefOf (\_XT2, Local0))
             {
-                ERR (Arg0, Z176, 0x04AC, 0x00, 0x00, "\\_XT2", 0x01)
+                ERR (Arg0, Z176, __LINE__, 0x00, 0x00, "\\_XT2", 0x01)
                 Return (0x01)
             }
 
@@ -1270,19 +1270,19 @@
             {
                 /* DDB Handle */
 
-                ERR (Arg0, Z176, 0x04BA, 0x00, 0x00, Local1, C017)
+                ERR (Arg0, Z176, __LINE__, 0x00, 0x00, Local1, C017)
                 Return (0x01)
             }
 
             If ((0x01 != \DTM2.PLDT))
             {
-                ERR (Arg0, Z176, 0x04BF, 0x00, 0x00, \DTM2.PLDT, 0x01)
+                ERR (Arg0, Z176, __LINE__, 0x00, 0x00, \DTM2.PLDT, 0x01)
             }
 
             If (CondRefOf (\_XT2, Local0)){}
             Else
             {
-                ERR (Arg0, Z176, 0x04C4, 0x00, 0x00, "\\_XT2", 0x00)
+                ERR (Arg0, Z176, __LINE__, 0x00, 0x00, "\\_XT2", 0x00)
             }
 
             \DTM2.PLDT = 0x00
@@ -1290,18 +1290,18 @@
             CH04 (Arg0, 0x00, 0x07, Z176, 0x04CB, 0x00, 0x00)  /* AE_ALREADY_EXISTS */
             If ((0x00 != \DTM2.PLDT))
             {
-                ERR (Arg0, Z176, 0x04CE, 0x00, 0x00, \DTM2.PLDT, 0x00)
+                ERR (Arg0, Z176, __LINE__, 0x00, 0x00, \DTM2.PLDT, 0x00)
             }
 
             If (CondRefOf (\DTM2._XT2, Local0))
             {
-                ERR (Arg0, Z176, 0x04D2, 0x00, 0x00, "\\DTM2._XT2", 0x01)
+                ERR (Arg0, Z176, __LINE__, 0x00, 0x00, "\\DTM2._XT2", 0x01)
             }
 
             If (CondRefOf (\_XT2, Local0)){}
             Else
             {
-                ERR (Arg0, Z176, 0x04D7, 0x00, 0x00, "\\_XT2", 0x00)
+                ERR (Arg0, Z176, __LINE__, 0x00, 0x00, "\\_XT2", 0x00)
             }
 
             Unload (DDBH)
@@ -1313,7 +1313,7 @@
 
             If (CondRefOf (\_XT2, Local0))
             {
-                ERR (Arg0, Z176, 0x04E2, 0x00, 0x00, "\\_XT2", 0x01)
+                ERR (Arg0, Z176, __LINE__, 0x00, 0x00, "\\_XT2", 0x01)
             }
 
             Return (0x00)
@@ -1347,7 +1347,7 @@
             Concatenate (Arg0, "-tstb", Arg0)
             If (CondRefOf (\_XT2, Local0))
             {
-                ERR (Arg0, Z176, 0x0504, 0x00, 0x00, "\\_XT2", 0x01)
+                ERR (Arg0, Z176, __LINE__, 0x00, 0x00, "\\_XT2", 0x01)
                 Return (0x01)
             }
 
@@ -1363,14 +1363,14 @@
             {
                 /* DDB Handle */
 
-                ERR (Arg0, Z176, 0x0511, 0x00, 0x00, Local1, C017)
+                ERR (Arg0, Z176, __LINE__, 0x00, 0x00, Local1, C017)
                 Return (0x01)
             }
 
             If (CondRefOf (\_XT2, Local0)){}
             Else
             {
-                ERR (Arg0, Z176, 0x0517, 0x00, 0x00, "\\_XT2", 0x00)
+                ERR (Arg0, Z176, __LINE__, 0x00, 0x00, "\\_XT2", 0x00)
             }
 
             \DTM2.PLDT = 0x00
@@ -1378,13 +1378,13 @@
             CH04 (Arg0, 0x00, 0x07, Z176, 0x051E, 0x00, 0x00)  /* AE_ALREADY_EXISTS */
             If ((0x00 != \DTM2.PLDT))
             {
-                ERR (Arg0, Z176, 0x0521, 0x00, 0x00, \DTM2.PLDT, 0x00)
+                ERR (Arg0, Z176, __LINE__, 0x00, 0x00, \DTM2.PLDT, 0x00)
             }
 
             If (CondRefOf (\_XT2, Local0)){}
             Else
             {
-                ERR (Arg0, Z176, 0x0526, 0x00, 0x00, "\\_XT2", 0x00)
+                ERR (Arg0, Z176, __LINE__, 0x00, 0x00, "\\_XT2", 0x00)
             }
 
             Unload (DDBH)
@@ -1396,7 +1396,7 @@
 
             If (CondRefOf (\_XT2, Local0))
             {
-                ERR (Arg0, Z176, 0x0531, 0x00, 0x00, "\\_XT2", 0x01)
+                ERR (Arg0, Z176, __LINE__, 0x00, 0x00, "\\_XT2", 0x01)
             }
 
             Return (0x00)
@@ -1422,12 +1422,12 @@
             CH04 (Arg0, 0x00, 0x2F, Z176, 0x054E, 0x00, 0x00) /* AE_AML_OPERAND_TYPE */
             If ((0x00 != \DTM2.PLDT))
             {
-                ERR (Arg0, Z176, 0x0551, 0x00, 0x00, \DTM2.PLDT, 0x00)
+                ERR (Arg0, Z176, __LINE__, 0x00, 0x00, \DTM2.PLDT, 0x00)
             }
 
             If (CondRefOf (\_XT2, Local0))
             {
-                ERR (Arg0, Z176, 0x0555, 0x00, 0x00, "\\_XT2", 0x01)
+                ERR (Arg0, Z176, __LINE__, 0x00, 0x00, "\\_XT2", 0x01)
             }
 
             Return (0x00)
@@ -1484,7 +1484,7 @@
 
                 If ((0x00 != \DTM2.PLDT))
                 {
-                    ERR (Arg0, Z176, 0x0588, 0x00, 0x00, \DTM2.PLDT, 0x00)
+                    ERR (Arg0, Z176, __LINE__, 0x00, 0x00, \DTM2.PLDT, 0x00)
                     Return (0x01)
                 }
 
@@ -1498,13 +1498,13 @@
                 {
                     /* Integer */
 
-                    ERR (Arg0, Z176, 0x0593, 0x00, 0x00, Local5, C009)
+                    ERR (Arg0, Z176, __LINE__, 0x00, 0x00, Local5, C009)
                     Return (0x01)
                 }
 
                 If ((0x00 != DDBH))
                 {
-                    ERR (Arg0, Z176, 0x0598, 0x00, 0x00, DDBH, 0x00)
+                    ERR (Arg0, Z176, __LINE__, 0x00, 0x00, DDBH, 0x00)
                     Return (0x01)
                 }
 
@@ -1555,31 +1555,31 @@
 
             If ((ToBuffer (SOEM) != Local0))
             {
-                ERR (Arg0, Z176, 0x05B9, 0x00, 0x00, Local0, ToBuffer (SOEM))
+                ERR (Arg0, Z176, __LINE__, 0x00, 0x00, Local0, ToBuffer (SOEM))
                 Return (0x01)
             }
 
             If ((ToBuffer (SOID) != Local1))
             {
-                ERR (Arg0, Z176, 0x05BE, 0x00, 0x00, Local1, ToBuffer (SOID))
+                ERR (Arg0, Z176, __LINE__, 0x00, 0x00, Local1, ToBuffer (SOID))
                 Return (0x01)
             }
 
             If ((ToBuffer (STID) != Local2))
             {
-                ERR (Arg0, Z176, 0x05C3, 0x00, 0x00, Local2, ToBuffer (STID))
+                ERR (Arg0, Z176, __LINE__, 0x00, 0x00, Local2, ToBuffer (STID))
                 Return (0x01)
             }
 
             If ((ToBuffer (RPST) != Local3))
             {
-                ERR (Arg0, Z176, 0x05C8, 0x00, 0x00, Local3, ToBuffer (RPST))
+                ERR (Arg0, Z176, __LINE__, 0x00, 0x00, Local3, ToBuffer (RPST))
                 Return (0x01)
             }
 
             If ((ToBuffer (PPST) != Local4))
             {
-                ERR (Arg0, Z176, 0x05CD, 0x00, 0x00, Local4, ToBuffer (PPST))
+                ERR (Arg0, Z176, __LINE__, 0x00, 0x00, Local4, ToBuffer (PPST))
                 Return (0x01)
             }
 
@@ -1609,7 +1609,7 @@
             {
                 If (CondRefOf (\_XT2, Local0))
                 {
-                    ERR (Arg0, Z176, 0x05E3, 0x00, 0x00, "\\_XT2", 0x01)
+                    ERR (Arg0, Z176, __LINE__, 0x00, 0x00, "\\_XT2", 0x01)
                     Return (0x01)
                 }
 
@@ -1624,14 +1624,14 @@
 
                 If ((0x01 != \DTM2.PLDT))
                 {
-                    ERR (Arg0, Z176, 0x05F3, 0x00, 0x00, \DTM2.PLDT, 0x01)
+                    ERR (Arg0, Z176, __LINE__, 0x00, 0x00, \DTM2.PLDT, 0x01)
                     Return (0x01)
                 }
 
                 If (CondRefOf (\_XT2, Local0)){}
                 Else
                 {
-                    ERR (Arg0, Z176, 0x05F9, 0x00, 0x00, "\\_XT2", 0x01)
+                    ERR (Arg0, Z176, __LINE__, 0x00, 0x00, "\\_XT2", 0x01)
                     Return (0x01)
                 }
 
@@ -1643,7 +1643,7 @@
 
                 If (CondRefOf (\_XT2, Local0))
                 {
-                    ERR (Arg0, Z176, 0x0604, 0x00, 0x00, "\\_XT2", 0x01)
+                    ERR (Arg0, Z176, __LINE__, 0x00, 0x00, "\\_XT2", 0x01)
                     Return (0x01)
                 }
             }
@@ -1745,7 +1745,7 @@
                 Local0 = ObjectType (Arg2)
                 If ((Arg3 != Local0))
                 {
-                    ERR (Arg0, Z176, 0x0678, 0x00, 0x00, Local0, Arg3)
+                    ERR (Arg0, Z176, __LINE__, 0x00, 0x00, Local0, Arg3)
                     Return (0x01)
                 }
 
@@ -1761,7 +1761,7 @@
                 Local0 = ObjectType (Arg2)
                 If ((Arg3 != Local0))
                 {
-                    ERR (Arg0, Z176, 0x0689, 0x00, 0x00, Local0, Arg3)
+                    ERR (Arg0, Z176, __LINE__, 0x00, 0x00, Local0, Arg3)
                     Return (0x01)
                 }
 
@@ -1777,7 +1777,7 @@
                 Local0 = ObjectType (Arg2)
                 If ((Arg3 != Local0))
                 {
-                    ERR (Arg0, Z176, 0x069A, 0x00, 0x00, Local0, Arg3)
+                    ERR (Arg0, Z176, __LINE__, 0x00, 0x00, Local0, Arg3)
                     Return (0x01)
                 }
 
@@ -1793,7 +1793,7 @@
                 Local0 = ObjectType (Arg2)
                 If ((Arg3 != Local0))
                 {
-                    ERR (Arg0, Z176, 0x06AB, 0x00, 0x00, Local0, Arg3)
+                    ERR (Arg0, Z176, __LINE__, 0x00, 0x00, Local0, Arg3)
                     Return (0x01)
                 }
 
@@ -1817,7 +1817,7 @@
                 Local0 = ObjectType (Arg2)
                 If ((Arg3 != Local0))
                 {
-                    ERR (Arg0, Z176, 0x06C0, 0x00, 0x00, Local0, Arg3)
+                    ERR (Arg0, Z176, __LINE__, 0x00, 0x00, Local0, Arg3)
                     Return (0x01)
                 }
 
@@ -1854,7 +1854,7 @@
             Local0 = ObjectType (Local1)
             If ((C008 != Local0))
             {
-                ERR (Arg0, Z176, 0x06DE, 0x00, 0x00, Local0, C008)
+                ERR (Arg0, Z176, __LINE__, 0x00, 0x00, Local0, C008)
             }
             Else
             {
@@ -1954,7 +1954,7 @@
             Local0 = ObjectType (\AUXD.PAC0)
             If ((C00C != Local0))
             {
-                ERR (Arg0, Z176, 0x0726, 0x00, 0x00, Local0, C00C)
+                ERR (Arg0, Z176, __LINE__, 0x00, 0x00, Local0, C00C)
             }
 
             /* Field Unit */
@@ -1976,7 +1976,7 @@
             Local0 = ObjectType (\AUXD.DEV0)
             If ((C00E != Local0))
             {
-                ERR (Arg0, Z176, 0x073A, 0x00, 0x00, Local0, C00E)
+                ERR (Arg0, Z176, __LINE__, 0x00, 0x00, Local0, C00E)
             }
 
             /* Event */
@@ -2036,7 +2036,7 @@
             Local0 = ObjectType (\AUXD.TZN0)
             If ((C015 != Local0))
             {
-                ERR (Arg0, Z176, 0x0774, 0x00, 0x00, Local0, C015)
+                ERR (Arg0, Z176, __LINE__, 0x00, 0x00, Local0, C015)
             }
 
             /* Buffer Field */
@@ -2074,7 +2074,7 @@
             Local0 = ObjectType (Local1)
             If ((C008 != Local0))
             {
-                ERR (Arg0, Z176, 0x0799, 0x00, 0x00, Local0, C008)
+                ERR (Arg0, Z176, __LINE__, 0x00, 0x00, Local0, C008)
             }
             /* Bug 288: iASL unexpectedly forbids ParameterData of Loadtable to be LocalX or UserTerm */
             /*
@@ -2094,7 +2094,7 @@
             Local0 = ObjectType (\DTM2.PLDT)
             If ((C009 != Local0))
             {
-                ERR (Arg0, Z176, 0x07A9, 0x00, 0x00, Local0, C009)
+                ERR (Arg0, Z176, __LINE__, 0x00, 0x00, Local0, C009)
                 Return (0x01)
             }
 
@@ -2107,13 +2107,13 @@
             Local0 = ObjectType (\DTM2.PLDT)
             If ((C009 != Local0))
             {
-                ERR (Arg0, Z176, 0x07B2, 0x00, 0x00, Local0, C009)
+                ERR (Arg0, Z176, __LINE__, 0x00, 0x00, Local0, C009)
                 Return (0x01)
             }
 
             If ((\DTM2.PLDT != \AUXD.INT0))
             {
-                ERR (Arg0, Z176, 0x07B6, 0x00, 0x00, \DTM2.PLDT, \AUXD.INT0)
+                ERR (Arg0, Z176, __LINE__, 0x00, 0x00, \DTM2.PLDT, \AUXD.INT0)
                 Return (0x01)
             }
 
@@ -2126,7 +2126,7 @@
             Local0 = ObjectType (\AUXD.INT0)
             If ((C009 != Local0))
             {
-                ERR (Arg0, Z176, 0x07BF, 0x00, 0x00, Local0, C009)
+                ERR (Arg0, Z176, __LINE__, 0x00, 0x00, Local0, C009)
             }
 
             /* String */
@@ -2136,7 +2136,7 @@
                 Local0 = ObjectType (\DTM2.PLDT)
                 If ((C009 != Local0))
                 {
-                    ERR (Arg0, Z176, 0x07C6, 0x00, 0x00, Local0, C009)
+                    ERR (Arg0, Z176, __LINE__, 0x00, 0x00, Local0, C009)
                     Return (0x01)
                 }
 
@@ -2149,13 +2149,13 @@
                 Local0 = ObjectType (\DTM2.PLDT)
                 If ((C009 != Local0))
                 {
-                    ERR (Arg0, Z176, 0x07CF, 0x00, 0x00, Local0, C009)
+                    ERR (Arg0, Z176, __LINE__, 0x00, 0x00, Local0, C009)
                     Return (0x01)
                 }
 
                 If ((\DTM2.PLDT != \AUXD.STR0))
                 {
-                    ERR (Arg0, Z176, 0x07D3, 0x00, 0x00, \DTM2.PLDT, \AUXD.STR0)
+                    ERR (Arg0, Z176, __LINE__, 0x00, 0x00, \DTM2.PLDT, \AUXD.STR0)
                     Return (0x01)
                 }
 
@@ -2168,7 +2168,7 @@
                 Local0 = ObjectType (\AUXD.STR0)
                 If ((C00A != Local0))
                 {
-                    ERR (Arg0, Z176, 0x07DC, 0x00, 0x00, Local0, C00A)
+                    ERR (Arg0, Z176, __LINE__, 0x00, 0x00, Local0, C00A)
                 }
             }
 
@@ -2179,7 +2179,7 @@
                 Local0 = ObjectType (\DTM2.PLDT)
                 If ((C009 != Local0))
                 {
-                    ERR (Arg0, Z176, 0x07E4, 0x00, 0x00, Local0, C009)
+                    ERR (Arg0, Z176, __LINE__, 0x00, 0x00, Local0, C009)
                     Return (0x01)
                 }
 
@@ -2192,13 +2192,13 @@
                 Local0 = ObjectType (\DTM2.PLDT)
                 If ((C009 != Local0))
                 {
-                    ERR (Arg0, Z176, 0x07ED, 0x00, 0x00, Local0, C009)
+                    ERR (Arg0, Z176, __LINE__, 0x00, 0x00, Local0, C009)
                     Return (0x01)
                 }
 
                 If ((\DTM2.PLDT != \AUXD.BUF0))
                 {
-                    ERR (Arg0, Z176, 0x07F1, 0x00, 0x00, \DTM2.PLDT, \AUXD.BUF0)
+                    ERR (Arg0, Z176, __LINE__, 0x00, 0x00, \DTM2.PLDT, \AUXD.BUF0)
                     Return (0x01)
                 }
 
@@ -2211,7 +2211,7 @@
                 Local0 = ObjectType (\AUXD.BUF0)
                 If ((C00B != Local0))
                 {
-                    ERR (Arg0, Z176, 0x07FA, 0x00, 0x00, Local0, C00B)
+                    ERR (Arg0, Z176, __LINE__, 0x00, 0x00, Local0, C00B)
                 }
             }
 
@@ -2222,7 +2222,7 @@
             Local0 = ObjectType (\AUXD.PAC0)
             If ((C00C != Local0))
             {
-                ERR (Arg0, Z176, 0x0803, 0x00, 0x00, Local0, C00C)
+                ERR (Arg0, Z176, __LINE__, 0x00, 0x00, Local0, C00C)
             }
 
             /* Field Unit */
@@ -2232,7 +2232,7 @@
                 Local0 = ObjectType (\DTM2.PLDT)
                 If ((C009 != Local0))
                 {
-                    ERR (Arg0, Z176, 0x080A, 0x00, 0x00, Local0, C009)
+                    ERR (Arg0, Z176, __LINE__, 0x00, 0x00, Local0, C009)
                     Return (0x01)
                 }
 
@@ -2245,13 +2245,13 @@
                 Local0 = ObjectType (\DTM2.PLDT)
                 If ((C009 != Local0))
                 {
-                    ERR (Arg0, Z176, 0x0813, 0x00, 0x00, Local0, C009)
+                    ERR (Arg0, Z176, __LINE__, 0x00, 0x00, Local0, C009)
                     Return (0x01)
                 }
 
                 If ((\DTM2.PLDT != \AUXD.FLU0))
                 {
-                    ERR (Arg0, Z176, 0x0817, 0x00, 0x00, \DTM2.PLDT, \AUXD.FLU0)
+                    ERR (Arg0, Z176, __LINE__, 0x00, 0x00, \DTM2.PLDT, \AUXD.FLU0)
                     Return (0x01)
                 }
 
@@ -2264,7 +2264,7 @@
                 Local0 = ObjectType (\AUXD.FLU0)
                 If ((C00D != Local0))
                 {
-                    ERR (Arg0, Z176, 0x0820, 0x00, 0x00, Local0, C00D)
+                    ERR (Arg0, Z176, __LINE__, 0x00, 0x00, Local0, C00D)
                 }
             }
 
@@ -2275,7 +2275,7 @@
             Local0 = ObjectType (\AUXD.DEV0)
             If ((C00E != Local0))
             {
-                ERR (Arg0, Z176, 0x0829, 0x00, 0x00, Local0, C00E)
+                ERR (Arg0, Z176, __LINE__, 0x00, 0x00, Local0, C00E)
             }
 
             /* Event */
@@ -2285,7 +2285,7 @@
             Local0 = ObjectType (\AUXD.EVE0)
             If ((C00F != Local0))
             {
-                ERR (Arg0, Z176, 0x0831, 0x00, 0x00, Local0, C00F)
+                ERR (Arg0, Z176, __LINE__, 0x00, 0x00, Local0, C00F)
             }
 
             /* Method */
@@ -2297,7 +2297,7 @@
                 Local0 = ObjectType (\AUXD.MMM0)
                 If ((C010 != Local0))
                 {
-                    ERR (Arg0, Z176, 0x083A, 0x00, 0x00, Local0, C010)
+                    ERR (Arg0, Z176, __LINE__, 0x00, 0x00, Local0, C010)
                 }
             }
 
@@ -2308,7 +2308,7 @@
             Local0 = ObjectType (\AUXD.MTX0)
             If ((C011 != Local0))
             {
-                ERR (Arg0, Z176, 0x0843, 0x00, 0x00, Local0, C011)
+                ERR (Arg0, Z176, __LINE__, 0x00, 0x00, Local0, C011)
             }
 
             /* OpRegion */
@@ -2318,7 +2318,7 @@
             Local0 = ObjectType (\AUXD.OPR0)
             If ((C012 != Local0))
             {
-                ERR (Arg0, Z176, 0x084B, 0x00, 0x00, Local0, C012)
+                ERR (Arg0, Z176, __LINE__, 0x00, 0x00, Local0, C012)
             }
 
             /* Power Resource */
@@ -2328,7 +2328,7 @@
             Local0 = ObjectType (\AUXD.PWR0)
             If ((C013 != Local0))
             {
-                ERR (Arg0, Z176, 0x0853, 0x00, 0x00, Local0, C013)
+                ERR (Arg0, Z176, __LINE__, 0x00, 0x00, Local0, C013)
             }
 
             /* Processor */
@@ -2338,7 +2338,7 @@
             Local0 = ObjectType (\AUXD.CPU0)
             If ((C014 != Local0))
             {
-                ERR (Arg0, Z176, 0x085B, 0x00, 0x00, Local0, C014)
+                ERR (Arg0, Z176, __LINE__, 0x00, 0x00, Local0, C014)
             }
 
             /* Thermal Zone */
@@ -2348,7 +2348,7 @@
             Local0 = ObjectType (\AUXD.TZN0)
             If ((C015 != Local0))
             {
-                ERR (Arg0, Z176, 0x0863, 0x00, 0x00, Local0, C015)
+                ERR (Arg0, Z176, __LINE__, 0x00, 0x00, Local0, C015)
             }
 
             /* Buffer Field */
@@ -2358,7 +2358,7 @@
                 Local0 = ObjectType (\DTM2.PLDT)
                 If ((C009 != Local0))
                 {
-                    ERR (Arg0, Z176, 0x086A, 0x00, 0x00, Local0, C009)
+                    ERR (Arg0, Z176, __LINE__, 0x00, 0x00, Local0, C009)
                     Return (0x01)
                 }
 
@@ -2371,13 +2371,13 @@
                 Local0 = ObjectType (\DTM2.PLDT)
                 If ((C009 != Local0))
                 {
-                    ERR (Arg0, Z176, 0x0873, 0x00, 0x00, Local0, C009)
+                    ERR (Arg0, Z176, __LINE__, 0x00, 0x00, Local0, C009)
                     Return (0x01)
                 }
 
                 If ((\DTM2.PLDT != \AUXD.BFL0))
                 {
-                    ERR (Arg0, Z176, 0x0877, 0x00, 0x00, \DTM2.PLDT, \AUXD.BFL0)
+                    ERR (Arg0, Z176, __LINE__, 0x00, 0x00, \DTM2.PLDT, \AUXD.BFL0)
                     Return (0x01)
                 }
 
@@ -2390,7 +2390,7 @@
                 Local0 = ObjectType (\AUXD.BFL0)
                 If ((C016 != Local0))
                 {
-                    ERR (Arg0, Z176, 0x0880, 0x00, 0x00, Local0, C016)
+                    ERR (Arg0, Z176, __LINE__, 0x00, 0x00, Local0, C016)
                 }
             }
 

@@ -160,43 +160,43 @@
                 Local7 = ObjectType (Local0)
                 If ((Local7 != C008))
                 {
-                    ERR (Arg0, Z040, 0xA9, 0x00, 0x00, Local7, C008)
+                    ERR (Arg0, Z040, __LINE__, 0x00, 0x00, Local7, C008)
                 }
 
                 Local7 = ObjectType (Local1)
                 If ((Local7 != C008))
                 {
-                    ERR (Arg0, Z040, 0xAD, 0x00, 0x00, Local7, C008)
+                    ERR (Arg0, Z040, __LINE__, 0x00, 0x00, Local7, C008)
                 }
 
                 Local7 = ObjectType (Local2)
                 If ((Local7 != C008))
                 {
-                    ERR (Arg0, Z040, 0xB1, 0x00, 0x00, Local7, C008)
+                    ERR (Arg0, Z040, __LINE__, 0x00, 0x00, Local7, C008)
                 }
 
                 Local7 = ObjectType (Local3)
                 If ((Local7 != C008))
                 {
-                    ERR (Arg0, Z040, 0xB5, 0x00, 0x00, Local7, C008)
+                    ERR (Arg0, Z040, __LINE__, 0x00, 0x00, Local7, C008)
                 }
 
                 Local7 = ObjectType (Local4)
                 If ((Local7 != C008))
                 {
-                    ERR (Arg0, Z040, 0xB9, 0x00, 0x00, Local7, C008)
+                    ERR (Arg0, Z040, __LINE__, 0x00, 0x00, Local7, C008)
                 }
 
                 Local7 = ObjectType (Local5)
                 If ((Local7 != C008))
                 {
-                    ERR (Arg0, Z040, 0xBD, 0x00, 0x00, Local7, C008)
+                    ERR (Arg0, Z040, __LINE__, 0x00, 0x00, Local7, C008)
                 }
 
                 Local7 = ObjectType (Local6)
                 If ((Local7 != C008))
                 {
-                    ERR (Arg0, Z040, 0xC1, 0x00, 0x00, Local7, C008)
+                    ERR (Arg0, Z040, __LINE__, 0x00, 0x00, Local7, C008)
                 }
             }
             Case (0x01)
@@ -207,12 +207,12 @@
                 Local7 = ObjectType (Local0)
                 If ((Local7 != C009))
                 {
-                    ERR (Arg0, Z040, 0xCD, 0x00, 0x00, Local7, C009)
+                    ERR (Arg0, Z040, __LINE__, 0x00, 0x00, Local7, C009)
                 }
 
                 If ((Local0 != 0x12345678))
                 {
-                    ERR (Arg0, Z040, 0xD0, 0x00, 0x00, Local0, 0x12345678)
+                    ERR (Arg0, Z040, __LINE__, 0x00, 0x00, Local0, 0x12345678)
                 }
 
                 /* By ArgX */
@@ -220,12 +220,12 @@
                 Local7 = ObjectType (Arg2)
                 If ((Local7 != C009))
                 {
-                    ERR (Arg0, Z040, 0xD7, 0x00, 0x00, Local7, C009)
+                    ERR (Arg0, Z040, __LINE__, 0x00, 0x00, Local7, C009)
                 }
 
                 If ((Arg2 != 0x81223344))
                 {
-                    ERR (Arg0, Z040, 0xDA, 0x00, 0x00, Arg2, 0x81223344)
+                    ERR (Arg0, Z040, __LINE__, 0x00, 0x00, Arg2, 0x81223344)
                 }
 
                 /* By Name locally */
@@ -234,12 +234,12 @@
                 Local7 = ObjectType (N000)
                 If ((Local7 != C009))
                 {
-                    ERR (Arg0, Z040, 0xE2, 0x00, 0x00, Local7, C009)
+                    ERR (Arg0, Z040, __LINE__, 0x00, 0x00, Local7, C009)
                 }
 
                 If ((N000 != 0x98127364))
                 {
-                    ERR (Arg0, Z040, 0xE5, 0x00, 0x00, N000, 0x98127364)
+                    ERR (Arg0, Z040, __LINE__, 0x00, 0x00, N000, 0x98127364)
                 }
 
                 /* By Name globally */
@@ -247,12 +247,12 @@
                 Local7 = ObjectType (N002)
                 If ((Local7 != C009))
                 {
-                    ERR (Arg0, Z040, 0xEC, 0x00, 0x00, Local7, C009)
+                    ERR (Arg0, Z040, __LINE__, 0x00, 0x00, Local7, C009)
                 }
 
                 If ((N002 != 0x90801020))
                 {
-                    ERR (Arg0, Z040, 0xEF, 0x00, 0x00, N002, 0x90801020)
+                    ERR (Arg0, Z040, __LINE__, 0x00, 0x00, N002, 0x90801020)
                 }
 
                 /* Not a Buffer in 32-bit mode */
@@ -261,7 +261,7 @@
                 Local7 = ObjectType (Local0)
                 If ((Local7 != C009))
                 {
-                    ERR (Arg0, Z040, 0xF7, 0x00, 0x00, Local7, C009)
+                    ERR (Arg0, Z040, __LINE__, 0x00, 0x00, Local7, C009)
                 }
             }
             Case (0x02)
@@ -276,12 +276,12 @@
                     Local7 = ObjectType (Local0)
                     If ((Local7 != C009))
                     {
-                        ERR (Arg0, Z040, 0x0105, 0x00, 0x00, Local7, C009)
+                        ERR (Arg0, Z040, __LINE__, 0x00, 0x00, Local7, C009)
                     }
 
                     If ((Local0 != 0xA1B2C3D4E5C6E7F8))
                     {
-                        ERR (Arg0, Z040, 0x0108, 0x00, 0x00, Local0, 0xA1B2C3D4E5C6E7F8)
+                        ERR (Arg0, Z040, __LINE__, 0x00, 0x00, Local0, 0xA1B2C3D4E5C6E7F8)
                     }
 
                     /* By ArgX */
@@ -289,12 +289,12 @@
                     Local7 = ObjectType (Arg2)
                     If ((Local7 != C009))
                     {
-                        ERR (Arg0, Z040, 0x010F, 0x00, 0x00, Local7, C009)
+                        ERR (Arg0, Z040, __LINE__, 0x00, 0x00, Local7, C009)
                     }
 
                     If ((Arg2 != 0xFABEFAC489501248))
                     {
-                        ERR (Arg0, Z040, 0x0112, 0x00, 0x00, Arg2, 0xFABEFAC489501248)
+                        ERR (Arg0, Z040, __LINE__, 0x00, 0x00, Arg2, 0xFABEFAC489501248)
                     }
 
                     /* By Name locally */
@@ -303,12 +303,12 @@
                     Local7 = ObjectType (N001)
                     If ((Local7 != C009))
                     {
-                        ERR (Arg0, Z040, 0x011A, 0x00, 0x00, Local7, C009)
+                        ERR (Arg0, Z040, __LINE__, 0x00, 0x00, Local7, C009)
                     }
 
                     If ((N001 != 0x9081122384356647))
                     {
-                        ERR (Arg0, Z040, 0x011D, 0x00, 0x00, N001, 0x9081122384356647)
+                        ERR (Arg0, Z040, __LINE__, 0x00, 0x00, N001, 0x9081122384356647)
                     }
 
                     /* By Name globally */
@@ -316,12 +316,12 @@
                     Local7 = ObjectType (N003)
                     If ((Local7 != C009))
                     {
-                        ERR (Arg0, Z040, 0x0124, 0x00, 0x00, Local7, C009)
+                        ERR (Arg0, Z040, __LINE__, 0x00, 0x00, Local7, C009)
                     }
 
                     If ((N003 != 0x9189192989396949))
                     {
-                        ERR (Arg0, Z040, 0x0127, 0x00, 0x00, N003, 0x9189192989396949)
+                        ERR (Arg0, Z040, __LINE__, 0x00, 0x00, N003, 0x9189192989396949)
                     }
                 }
             }
@@ -333,28 +333,28 @@
                 Local7 = ObjectType (Local0)
                 If ((Local7 != C00A))
                 {
-                    ERR (Arg0, Z040, 0x0134, 0x00, 0x00, Local7, C00A)
+                    ERR (Arg0, Z040, __LINE__, 0x00, 0x00, Local7, C00A)
                 }
 
                 Local0 = "1"
                 Local7 = ObjectType (Local0)
                 If ((Local7 != C00A))
                 {
-                    ERR (Arg0, Z040, 0x013A, 0x00, 0x00, Local7, C00A)
+                    ERR (Arg0, Z040, __LINE__, 0x00, 0x00, Local7, C00A)
                 }
 
                 Local0 = "abcd"
                 Local7 = ObjectType (Local0)
                 If ((Local7 != C00A))
                 {
-                    ERR (Arg0, Z040, 0x0140, 0x00, 0x00, Local7, C00A)
+                    ERR (Arg0, Z040, __LINE__, 0x00, 0x00, Local7, C00A)
                 }
 
                 Local0 = "qwrt"
                 Local7 = ObjectType (Local0)
                 If ((Local7 != C00A))
                 {
-                    ERR (Arg0, Z040, 0x0146, 0x00, 0x00, Local7, C00A)
+                    ERR (Arg0, Z040, __LINE__, 0x00, 0x00, Local7, C00A)
                 }
 
                 /* By ArgX */
@@ -362,12 +362,12 @@
                 Local7 = ObjectType (Arg2)
                 If ((Local7 != C00A))
                 {
-                    ERR (Arg0, Z040, 0x014D, 0x00, 0x00, Local7, C00A)
+                    ERR (Arg0, Z040, __LINE__, 0x00, 0x00, Local7, C00A)
                 }
 
                 If ((Arg2 != "zxcvbnm0912345678ok"))
                 {
-                    ERR (Arg0, Z040, 0x0150, 0x00, 0x00, Arg2, "zxcvbnm0912345678ok")
+                    ERR (Arg0, Z040, __LINE__, 0x00, 0x00, Arg2, "zxcvbnm0912345678ok")
                 }
 
                 /* By Name locally */
@@ -376,12 +376,12 @@
                 Local7 = ObjectType (N004)
                 If ((Local7 != C00A))
                 {
-                    ERR (Arg0, Z040, 0x0158, 0x00, 0x00, Local7, C00A)
+                    ERR (Arg0, Z040, __LINE__, 0x00, 0x00, Local7, C00A)
                 }
 
                 If ((N004 != ""))
                 {
-                    ERR (Arg0, Z040, 0x015B, 0x00, 0x00, N004, "")
+                    ERR (Arg0, Z040, __LINE__, 0x00, 0x00, N004, "")
                 }
 
                 /* By Name globally */
@@ -389,12 +389,12 @@
                 Local7 = ObjectType (N005)
                 If ((Local7 != C00A))
                 {
-                    ERR (Arg0, Z040, 0x0162, 0x00, 0x00, Local7, C00A)
+                    ERR (Arg0, Z040, __LINE__, 0x00, 0x00, Local7, C00A)
                 }
 
                 If ((N005 != "9876"))
                 {
-                    ERR (Arg0, Z040, 0x0165, 0x00, 0x00, N005, "9876")
+                    ERR (Arg0, Z040, __LINE__, 0x00, 0x00, N005, "9876")
                 }
             }
             Case (0x04)
@@ -414,36 +414,36 @@
                 Local7 = ObjectType (F000)
                 If ((Local7 != C00D))
                 {
-                    ERR (Arg0, Z040, 0x0179, 0x00, 0x00, Local7, C00D)
+                    ERR (Arg0, Z040, __LINE__, 0x00, 0x00, Local7, C00D)
                 }
 
                 If ((F000 != 0x8D))
                 {
-                    ERR (Arg0, Z040, 0x017C, 0x00, 0x00, F000, 0x8D)
+                    ERR (Arg0, Z040, __LINE__, 0x00, 0x00, F000, 0x8D)
                 }
 
                 Local7 = ObjectType (F222)
                 If ((Local7 != C00D))
                 {
-                    ERR (Arg0, Z040, 0x0181, 0x00, 0x00, Local7, C00D)
+                    ERR (Arg0, Z040, __LINE__, 0x00, 0x00, Local7, C00D)
                 }
 
                 Local7 = ObjectType (F223)
                 If ((Local7 != C00D))
                 {
-                    ERR (Arg0, Z040, 0x0185, 0x00, 0x00, Local7, C00D)
+                    ERR (Arg0, Z040, __LINE__, 0x00, 0x00, Local7, C00D)
                 }
 
                 Local7 = ObjectType (F224)
                 If ((Local7 != C00D))
                 {
-                    ERR (Arg0, Z040, 0x0189, 0x00, 0x00, Local7, C00D)
+                    ERR (Arg0, Z040, __LINE__, 0x00, 0x00, Local7, C00D)
                 }
 
                 Local7 = ObjectType (F225)
                 If ((Local7 != C00D))
                 {
-                    ERR (Arg0, Z040, 0x018D, 0x00, 0x00, Local7, C00D)
+                    ERR (Arg0, Z040, __LINE__, 0x00, 0x00, Local7, C00D)
                 }
             }
             Case (0x05)
@@ -465,12 +465,12 @@
                 Local7 = ObjectType (BKF0)
                 If ((Local7 != C00D))
                 {
-                    ERR (Arg0, Z040, 0x01A0, 0x00, 0x00, Local7, C00D)
+                    ERR (Arg0, Z040, __LINE__, 0x00, 0x00, Local7, C00D)
                 }
 
                 If ((BKF0 != 0x95))
                 {
-                    ERR (Arg0, Z040, 0x01A3, 0x00, 0x00, BKF0, 0x95)
+                    ERR (Arg0, Z040, __LINE__, 0x00, 0x00, BKF0, 0x95)
                 }
             }
             Case (0x06)
@@ -497,25 +497,25 @@
                 Local7 = ObjectType (F00A)
                 If ((Local7 != C00D))
                 {
-                    ERR (Arg0, Z040, 0x01BB, 0x00, 0x00, Local7, C00D)
+                    ERR (Arg0, Z040, __LINE__, 0x00, 0x00, Local7, C00D)
                 }
 
                 Local7 = ObjectType (F00B)
                 If ((Local7 != C00D))
                 {
-                    ERR (Arg0, Z040, 0x01BF, 0x00, 0x00, Local7, C00D)
+                    ERR (Arg0, Z040, __LINE__, 0x00, 0x00, Local7, C00D)
                 }
 
                 Local7 = ObjectType (IF00)
                 If ((Local7 != C00D))
                 {
-                    ERR (Arg0, Z040, 0x01C3, 0x00, 0x00, Local7, C00D)
+                    ERR (Arg0, Z040, __LINE__, 0x00, 0x00, Local7, C00D)
                 }
 
                 Local7 = ObjectType (IF01)
                 If ((Local7 != C00D))
                 {
-                    ERR (Arg0, Z040, 0x01C7, 0x00, 0x00, Local7, C00D)
+                    ERR (Arg0, Z040, __LINE__, 0x00, 0x00, Local7, C00D)
                 }
             }
             Case (0x07)
@@ -529,7 +529,7 @@
                 Local7 = ObjectType (Local0)
                 If ((Local7 != C00B))
                 {
-                    ERR (Arg0, Z040, 0x01D1, 0x00, 0x00, Local7, C00B)
+                    ERR (Arg0, Z040, __LINE__, 0x00, 0x00, Local7, C00B)
                 }
 
                 If ((Local0 != Buffer (0x04)
@@ -537,7 +537,7 @@
                                  0x00, 0x01, 0x02, 0x03                           // ....
                             }))
                 {
-                    ERR (Arg0, Z040, 0x01D4, 0x00, 0x00, 0x00, 0x00)
+                    ERR (Arg0, Z040, __LINE__, 0x00, 0x00, 0x00, 0x00)
                 }
             }
             Case (0x08)
@@ -547,7 +547,7 @@
                 Local7 = ObjectType (Arg2)
                 If ((Local7 != C00B))
                 {
-                    ERR (Arg0, Z040, 0x01DD, 0x00, 0x00, Local7, C00B)
+                    ERR (Arg0, Z040, __LINE__, 0x00, 0x00, Local7, C00B)
                 }
 
                 If ((Arg2 != Buffer (0x04)
@@ -555,7 +555,7 @@
                                  0x04, 0x05, 0x06, 0x07                           // ....
                             }))
                 {
-                    ERR (Arg0, Z040, 0x01E0, 0x00, 0x00, 0x00, 0x00)
+                    ERR (Arg0, Z040, __LINE__, 0x00, 0x00, 0x00, 0x00)
                 }
             }
             Case (0x09)
@@ -569,7 +569,7 @@
                 Local7 = ObjectType (B000)
                 If ((Local7 != C00B))
                 {
-                    ERR (Arg0, Z040, 0x01EA, 0x00, 0x00, Local7, C00B)
+                    ERR (Arg0, Z040, __LINE__, 0x00, 0x00, Local7, C00B)
                 }
 
                 If ((B000 != Buffer (0x04)
@@ -577,7 +577,7 @@
                                  0x08, 0x09, 0x0A, 0x0B                           // ....
                             }))
                 {
-                    ERR (Arg0, Z040, 0x01ED, 0x00, 0x00, 0x00, 0x00)
+                    ERR (Arg0, Z040, __LINE__, 0x00, 0x00, 0x00, 0x00)
                 }
             }
             Case (0x0A)
@@ -587,7 +587,7 @@
                 Local7 = ObjectType (B003)
                 If ((Local7 != C00B))
                 {
-                    ERR (Arg0, Z040, 0x01F6, 0x00, 0x00, Local7, C00B)
+                    ERR (Arg0, Z040, __LINE__, 0x00, 0x00, Local7, C00B)
                 }
 
                 If ((B003 != Buffer (0x04)
@@ -595,7 +595,7 @@
                                  0x0C, 0x0D, 0x0E, 0x0F                           // ....
                             }))
                 {
-                    ERR (Arg0, Z040, 0x01F9, 0x00, 0x00, 0x00, 0x00)
+                    ERR (Arg0, Z040, __LINE__, 0x00, 0x00, 0x00, 0x00)
                 }
             }
             Case (0x0B)
@@ -610,7 +610,7 @@
                 Local7 = ObjectType (F001)
                 If ((Local7 != C016))
                 {
-                    ERR (Arg0, Z040, 0x0204, 0x00, 0x00, Local7, C016)
+                    ERR (Arg0, Z040, __LINE__, 0x00, 0x00, Local7, C016)
                 }
 
                 If ((Local0 != Buffer (0x04)
@@ -618,7 +618,7 @@
                                  0x10, 0x11, 0x12, 0x13                           // ....
                             }))
                 {
-                    ERR (Arg0, Z040, 0x0207, 0x00, 0x00, 0x00, 0x00)
+                    ERR (Arg0, Z040, __LINE__, 0x00, 0x00, 0x00, 0x00)
                 }
             }
             Case (0x0C)
@@ -633,7 +633,7 @@
                 Local7 = ObjectType (F002)
                 If ((Local7 != C016))
                 {
-                    ERR (Arg0, Z040, 0x0212, 0x00, 0x00, Local7, C016)
+                    ERR (Arg0, Z040, __LINE__, 0x00, 0x00, Local7, C016)
                 }
 
                 If ((Local0 != Buffer (0x04)
@@ -641,7 +641,7 @@
                                  0x14, 0x15, 0x16, 0x17                           // ....
                             }))
                 {
-                    ERR (Arg0, Z040, 0x0215, 0x00, 0x00, 0x00, 0x00)
+                    ERR (Arg0, Z040, __LINE__, 0x00, 0x00, 0x00, 0x00)
                 }
             }
             Case (0x0D)
@@ -656,7 +656,7 @@
                 Local7 = ObjectType (F003)
                 If ((Local7 != C016))
                 {
-                    ERR (Arg0, Z040, 0x0220, 0x00, 0x00, Local7, C016)
+                    ERR (Arg0, Z040, __LINE__, 0x00, 0x00, Local7, C016)
                 }
 
                 If ((Local0 != Buffer (0x04)
@@ -664,7 +664,7 @@
                                  0x18, 0x19, 0x1A, 0x1B                           // ....
                             }))
                 {
-                    ERR (Arg0, Z040, 0x0223, 0x00, 0x00, 0x00, 0x00)
+                    ERR (Arg0, Z040, __LINE__, 0x00, 0x00, 0x00, 0x00)
                 }
             }
             Case (0x0E)
@@ -679,7 +679,7 @@
                 Local7 = ObjectType (F004)
                 If ((Local7 != C016))
                 {
-                    ERR (Arg0, Z040, 0x022E, 0x00, 0x00, Local7, C016)
+                    ERR (Arg0, Z040, __LINE__, 0x00, 0x00, Local7, C016)
                 }
 
                 If ((Local0 != Buffer (0x04)
@@ -687,7 +687,7 @@
                                  0x1C, 0x1D, 0x1E, 0x1F                           // ....
                             }))
                 {
-                    ERR (Arg0, Z040, 0x0231, 0x00, 0x00, 0x00, 0x00)
+                    ERR (Arg0, Z040, __LINE__, 0x00, 0x00, 0x00, 0x00)
                 }
             }
             Case (0x0F)
@@ -703,7 +703,7 @@
                 Local7 = ObjectType (F005)
                 If ((Local7 != C016))
                 {
-                    ERR (Arg0, Z040, 0x023C, 0x00, 0x00, Local7, C016)
+                    ERR (Arg0, Z040, __LINE__, 0x00, 0x00, Local7, C016)
                 }
 
                 If ((Local0 != Buffer (0x09)
@@ -712,7 +712,7 @@
                                 /* 0008 */  0x29                                             // )
                             }))
                 {
-                    ERR (Arg0, Z040, 0x0240, 0x00, 0x00, 0x00, 0x00)
+                    ERR (Arg0, Z040, __LINE__, 0x00, 0x00, 0x00, 0x00)
                 }
             }
             Case (0x10)
@@ -728,7 +728,7 @@
                 Local7 = ObjectType (F006)
                 If ((Local7 != C016))
                 {
-                    ERR (Arg0, Z040, 0x024B, 0x00, 0x00, Local7, C016)
+                    ERR (Arg0, Z040, __LINE__, 0x00, 0x00, Local7, C016)
                 }
 
                 If ((Local0 != Buffer (0x09)
@@ -737,21 +737,21 @@
                                 /* 0008 */  0x32                                             // 2
                             }))
                 {
-                    ERR (Arg0, Z040, 0x024E, 0x00, 0x00, 0x00, 0x00)
+                    ERR (Arg0, Z040, __LINE__, 0x00, 0x00, 0x00, 0x00)
                 }
 
                 CreateField (Local0, 0x00, 0x11, F111)
                 Local7 = ObjectType (F111)
                 If ((Local7 != C016))
                 {
-                    ERR (Arg0, Z040, 0x0254, 0x00, 0x00, Local7, C016)
+                    ERR (Arg0, Z040, __LINE__, 0x00, 0x00, Local7, C016)
                 }
 
                 CreateField (Local0, 0x00, 0x39, F112)
                 Local7 = ObjectType (F112)
                 If ((Local7 != C016))
                 {
-                    ERR (Arg0, Z040, 0x0259, 0x00, 0x00, Local7, C016)
+                    ERR (Arg0, Z040, __LINE__, 0x00, 0x00, Local7, C016)
                 }
             }
             Case (0x11)
@@ -767,7 +767,7 @@
                 Local7 = ObjectType (F007)
                 If ((Local7 != C016))
                 {
-                    ERR (Arg0, Z040, 0x0264, 0x00, 0x00, Local7, C016)
+                    ERR (Arg0, Z040, __LINE__, 0x00, 0x00, Local7, C016)
                 }
 
                 If ((Local0 != Buffer (0x09)
@@ -776,7 +776,7 @@
                                 /* 0008 */  0x32                                             // 2
                             }))
                 {
-                    ERR (Arg0, Z040, 0x0267, 0x00, 0x00, 0x00, 0x00)
+                    ERR (Arg0, Z040, __LINE__, 0x00, 0x00, 0x00, 0x00)
                 }
             }
             Case (0x12)
@@ -791,7 +791,7 @@
                 Local7 = ObjectType (F008)
                 If ((Local7 != C016))
                 {
-                    ERR (Arg0, Z040, 0x0272, 0x00, 0x00, Local7, C016)
+                    ERR (Arg0, Z040, __LINE__, 0x00, 0x00, Local7, C016)
                 }
 
                 If ((Local0 != Buffer (0x04)
@@ -799,7 +799,7 @@
                                  0x33, 0x34, 0x35, 0x36                           // 3456
                             }))
                 {
-                    ERR (Arg0, Z040, 0x0275, 0x00, 0x00, 0x00, 0x00)
+                    ERR (Arg0, Z040, __LINE__, 0x00, 0x00, 0x00, 0x00)
                 }
             }
             Case (0x13)
@@ -811,12 +811,12 @@
                 Local7 = ObjectType (Local1)
                 If ((Local7 != C016))
                 {
-                    ERR (Arg0, Z040, 0x0280, 0x00, 0x00, Local7, C016)
+                    ERR (Arg0, Z040, __LINE__, 0x00, 0x00, Local7, C016)
                 }
 
                 If ((Local0 != "q"))
                 {
-                    ERR (Arg0, Z040, 0x0283, 0x00, 0x00, 0x00, 0x00)
+                    ERR (Arg0, Z040, __LINE__, 0x00, 0x00, 0x00, 0x00)
                 }
 
                 Local0 = "qw"
@@ -824,12 +824,12 @@
                 Local7 = ObjectType (Local1)
                 If ((Local7 != C016))
                 {
-                    ERR (Arg0, Z040, 0x028A, 0x00, 0x00, Local7, C016)
+                    ERR (Arg0, Z040, __LINE__, 0x00, 0x00, Local7, C016)
                 }
 
                 If ((Local0 != "qw"))
                 {
-                    ERR (Arg0, Z040, 0x028D, 0x00, 0x00, 0x00, 0x00)
+                    ERR (Arg0, Z040, __LINE__, 0x00, 0x00, 0x00, 0x00)
                 }
 
                 Local0 = "qwertyu"
@@ -837,12 +837,12 @@
                 Local7 = ObjectType (Local1)
                 If ((Local7 != C016))
                 {
-                    ERR (Arg0, Z040, 0x0294, 0x00, 0x00, Local7, C016)
+                    ERR (Arg0, Z040, __LINE__, 0x00, 0x00, Local7, C016)
                 }
 
                 If ((Local0 != "qwertyu"))
                 {
-                    ERR (Arg0, Z040, 0x0297, 0x00, 0x00, 0x00, 0x00)
+                    ERR (Arg0, Z040, __LINE__, 0x00, 0x00, 0x00, 0x00)
                 }
 
                 Local0 = "qwertyuiop"
@@ -850,12 +850,12 @@
                 Local7 = ObjectType (Local1)
                 If ((Local7 != C016))
                 {
-                    ERR (Arg0, Z040, 0x029E, 0x00, 0x00, Local7, C016)
+                    ERR (Arg0, Z040, __LINE__, 0x00, 0x00, Local7, C016)
                 }
 
                 If ((Local0 != "qwertyuiop"))
                 {
-                    ERR (Arg0, Z040, 0x02A1, 0x00, 0x00, 0x00, 0x00)
+                    ERR (Arg0, Z040, __LINE__, 0x00, 0x00, 0x00, 0x00)
                 }
             }
             Case (0x14)
@@ -870,7 +870,7 @@
                 Local7 = ObjectType (Local1)
                 If ((Local7 != C016))
                 {
-                    ERR (Arg0, Z040, 0x02AC, 0x00, 0x00, Local7, C016)
+                    ERR (Arg0, Z040, __LINE__, 0x00, 0x00, Local7, C016)
                 }
 
                 If ((Local0 != Buffer (0x04)
@@ -878,7 +878,7 @@
                                  0x2A, 0x2B, 0x2C, 0x2D                           // *+,-
                             }))
                 {
-                    ERR (Arg0, Z040, 0x02AF, 0x00, 0x00, 0x00, 0x00)
+                    ERR (Arg0, Z040, __LINE__, 0x00, 0x00, 0x00, 0x00)
                 }
 
                 Local0 = Buffer (0x08)
@@ -889,7 +889,7 @@
                 Local7 = ObjectType (Local1)
                 If ((Local7 != C016))
                 {
-                    ERR (Arg0, Z040, 0x02B6, 0x00, 0x00, Local7, C016)
+                    ERR (Arg0, Z040, __LINE__, 0x00, 0x00, Local7, C016)
                 }
 
                 If ((Local0 != Buffer (0x08)
@@ -897,7 +897,7 @@
                                  0x2A, 0x2B, 0x2C, 0x2D, 0x2E, 0x2F, 0x30, 0x31   // *+,-./01
                             }))
                 {
-                    ERR (Arg0, Z040, 0x02B9, 0x00, 0x00, 0x00, 0x00)
+                    ERR (Arg0, Z040, __LINE__, 0x00, 0x00, 0x00, 0x00)
                 }
 
                 Local0 = Buffer (0x09)
@@ -909,7 +909,7 @@
                 Local7 = ObjectType (Local1)
                 If ((Local7 != C016))
                 {
-                    ERR (Arg0, Z040, 0x02C0, 0x00, 0x00, Local7, C016)
+                    ERR (Arg0, Z040, __LINE__, 0x00, 0x00, Local7, C016)
                 }
 
                 If ((Local0 != Buffer (0x09)
@@ -918,7 +918,7 @@
                                 /* 0008 */  0x32                                             // 2
                             }))
                 {
-                    ERR (Arg0, Z040, 0x02C3, 0x00, 0x00, 0x00, 0x00)
+                    ERR (Arg0, Z040, __LINE__, 0x00, 0x00, 0x00, 0x00)
                 }
             }
             Case (0x15)
@@ -957,7 +957,7 @@
                 Local7 = ObjectType (Local1)
                 If ((Local7 != C00C))
                 {
-                    ERR (Arg0, Z040, 0x02D9, 0x00, 0x00, Local7, C00C)
+                    ERR (Arg0, Z040, __LINE__, 0x00, 0x00, Local7, C00C)
                 }
 
                 /* Buffer */
@@ -966,7 +966,7 @@
                 Local7 = ObjectType (Local1)
                 If ((Local7 != C00B))
                 {
-                    ERR (Arg0, Z040, 0x02E1, 0x00, 0x00, Local7, C00B)
+                    ERR (Arg0, Z040, __LINE__, 0x00, 0x00, Local7, C00B)
                 }
 
                 /* String */
@@ -975,7 +975,7 @@
                 Local7 = ObjectType (Local1)
                 If ((Local7 != C00A))
                 {
-                    ERR (Arg0, Z040, 0x02E9, 0x00, 0x00, Local7, C00A)
+                    ERR (Arg0, Z040, __LINE__, 0x00, 0x00, Local7, C00A)
                 }
 
                 /* Integer */
@@ -984,7 +984,7 @@
                 Local7 = ObjectType (Local1)
                 If ((Local7 != C009))
                 {
-                    ERR (Arg0, Z040, 0x02F1, 0x00, 0x00, Local7, C009)
+                    ERR (Arg0, Z040, __LINE__, 0x00, 0x00, Local7, C009)
                 }
             }
             Case (0x16)
@@ -995,7 +995,7 @@
                 Local7 = ObjectType (HDR0)
                 If ((Local7 != C012))
                 {
-                    ERR (Arg0, Z040, 0x02FB, 0x00, 0x00, Local7, C012)
+                    ERR (Arg0, Z040, __LINE__, 0x00, 0x00, Local7, C012)
                 }
             }
             Case (0x17)
@@ -1005,7 +1005,7 @@
                 Local7 = ObjectType (Debug)
                 If ((Local7 != C018))
                 {
-                    ERR (Arg0, Z040, 0x0304, 0x00, 0x00, Local7, C018)
+                    ERR (Arg0, Z040, __LINE__, 0x00, 0x00, Local7, C018)
                 }
             }
             Case (0x18)
@@ -1019,7 +1019,7 @@
                 Local7 = ObjectType (DV00)
                 If ((Local7 != C00E))
                 {
-                    ERR (Arg0, Z040, 0x030E, 0x00, 0x00, Local7, C00E)
+                    ERR (Arg0, Z040, __LINE__, 0x00, 0x00, Local7, C00E)
                 }
             }
             Case (0x19)
@@ -1030,7 +1030,7 @@
                 Local7 = ObjectType (EVT0)
                 If ((Local7 != C00F))
                 {
-                    ERR (Arg0, Z040, 0x0318, 0x00, 0x00, Local7, C00F)
+                    ERR (Arg0, Z040, __LINE__, 0x00, 0x00, Local7, C00F)
                 }
             }
             Case (0x1A)
@@ -1045,7 +1045,7 @@
                 Local7 = ObjectType (M0F2)
                 If ((Local7 != C010))
                 {
-                    ERR (Arg0, Z040, 0x0322, 0x00, 0x00, Local7, C010)
+                    ERR (Arg0, Z040, __LINE__, 0x00, 0x00, Local7, C010)
                 }
             }
             Case (0x1B)
@@ -1068,7 +1068,7 @@
                 Local7 = ObjectType (MT00)
                 If ((Local7 != C011))
                 {
-                    ERR (Arg0, Z040, 0x0337, 0x00, 0x00, Local7, C011)
+                    ERR (Arg0, Z040, __LINE__, 0x00, 0x00, Local7, C011)
                 }
             }
             Case (0x1D)
@@ -1078,13 +1078,13 @@
                 Local7 = ObjectType (R000)
                 If ((Local7 != C012))
                 {
-                    ERR (Arg0, Z040, 0x0340, 0x00, 0x00, Local7, C012)
+                    ERR (Arg0, Z040, __LINE__, 0x00, 0x00, Local7, C012)
                 }
 
                 Local7 = ObjectType (R001)
                 If ((Local7 != C012))
                 {
-                    ERR (Arg0, Z040, 0x0344, 0x00, 0x00, Local7, C012)
+                    ERR (Arg0, Z040, __LINE__, 0x00, 0x00, Local7, C012)
                 }
             }
             Case (0x1E)
@@ -1236,121 +1236,121 @@
                 Local7 = ObjectType (P000)
                 If ((Local7 != C00C))
                 {
-                    ERR (Arg0, Z040, 0x0364, 0x00, 0x00, Local7, C00C)
+                    ERR (Arg0, Z040, __LINE__, 0x00, 0x00, Local7, C00C)
                 }
 
                 Local7 = ObjectType (P001)
                 If ((Local7 != C00C))
                 {
-                    ERR (Arg0, Z040, 0x0368, 0x00, 0x00, Local7, C00C)
+                    ERR (Arg0, Z040, __LINE__, 0x00, 0x00, Local7, C00C)
                 }
 
                 Local7 = ObjectType (P002)
                 If ((Local7 != C00C))
                 {
-                    ERR (Arg0, Z040, 0x036C, 0x00, 0x00, Local7, C00C)
+                    ERR (Arg0, Z040, __LINE__, 0x00, 0x00, Local7, C00C)
                 }
 
                 Local7 = ObjectType (P003)
                 If ((Local7 != C00C))
                 {
-                    ERR (Arg0, Z040, 0x0370, 0x00, 0x00, Local7, C00C)
+                    ERR (Arg0, Z040, __LINE__, 0x00, 0x00, Local7, C00C)
                 }
 
                 Local7 = ObjectType (P004)
                 If ((Local7 != C00C))
                 {
-                    ERR (Arg0, Z040, 0x0374, 0x00, 0x00, Local7, C00C)
+                    ERR (Arg0, Z040, __LINE__, 0x00, 0x00, Local7, C00C)
                 }
 
                 Local7 = ObjectType (P005)
                 If ((Local7 != C00C))
                 {
-                    ERR (Arg0, Z040, 0x0378, 0x00, 0x00, Local7, C00C)
+                    ERR (Arg0, Z040, __LINE__, 0x00, 0x00, Local7, C00C)
                 }
 
                 Local7 = ObjectType (P006)
                 If ((Local7 != C00C))
                 {
-                    ERR (Arg0, Z040, 0x037C, 0x00, 0x00, Local7, C00C)
+                    ERR (Arg0, Z040, __LINE__, 0x00, 0x00, Local7, C00C)
                 }
 
                 Local7 = ObjectType (P007)
                 If ((Local7 != C00C))
                 {
-                    ERR (Arg0, Z040, 0x0380, 0x00, 0x00, Local7, C00C)
+                    ERR (Arg0, Z040, __LINE__, 0x00, 0x00, Local7, C00C)
                 }
 
                 Local7 = ObjectType (P008)
                 If ((Local7 != C00C))
                 {
-                    ERR (Arg0, Z040, 0x0384, 0x00, 0x00, Local7, C00C)
+                    ERR (Arg0, Z040, __LINE__, 0x00, 0x00, Local7, C00C)
                 }
 
                 Local7 = ObjectType (P009)
                 If ((Local7 != C00C))
                 {
-                    ERR (Arg0, Z040, 0x0388, 0x00, 0x00, Local7, C00C)
+                    ERR (Arg0, Z040, __LINE__, 0x00, 0x00, Local7, C00C)
                 }
 
                 Local7 = ObjectType (P00A)
                 If ((Local7 != C00C))
                 {
-                    ERR (Arg0, Z040, 0x038C, 0x00, 0x00, Local7, C00C)
+                    ERR (Arg0, Z040, __LINE__, 0x00, 0x00, Local7, C00C)
                 }
 
                 Local7 = ObjectType (P00B)
                 If ((Local7 != C00C))
                 {
-                    ERR (Arg0, Z040, 0x0390, 0x00, 0x00, Local7, C00C)
+                    ERR (Arg0, Z040, __LINE__, 0x00, 0x00, Local7, C00C)
                 }
 
                 Local7 = ObjectType (P00C)
                 If ((Local7 != C00C))
                 {
-                    ERR (Arg0, Z040, 0x0394, 0x00, 0x00, Local7, C00C)
+                    ERR (Arg0, Z040, __LINE__, 0x00, 0x00, Local7, C00C)
                 }
 
                 Local7 = ObjectType (P00D)
                 If ((Local7 != C00C))
                 {
-                    ERR (Arg0, Z040, 0x0398, 0x00, 0x00, Local7, C00C)
+                    ERR (Arg0, Z040, __LINE__, 0x00, 0x00, Local7, C00C)
                 }
 
                 Local7 = ObjectType (P00E)
                 If ((Local7 != C00C))
                 {
-                    ERR (Arg0, Z040, 0x039C, 0x00, 0x00, Local7, C00C)
+                    ERR (Arg0, Z040, __LINE__, 0x00, 0x00, Local7, C00C)
                 }
 
                 Local7 = ObjectType (P00F)
                 If ((Local7 != C00C))
                 {
-                    ERR (Arg0, Z040, 0x03A0, 0x00, 0x00, Local7, C00C)
+                    ERR (Arg0, Z040, __LINE__, 0x00, 0x00, Local7, C00C)
                 }
 
                 Local7 = ObjectType (P010)
                 If ((Local7 != C00C))
                 {
-                    ERR (Arg0, Z040, 0x03A4, 0x00, 0x00, Local7, C00C)
+                    ERR (Arg0, Z040, __LINE__, 0x00, 0x00, Local7, C00C)
                 }
 
                 Local7 = ObjectType (P011)
                 If ((Local7 != C00C))
                 {
-                    ERR (Arg0, Z040, 0x03A8, 0x00, 0x00, Local7, C00C)
+                    ERR (Arg0, Z040, __LINE__, 0x00, 0x00, Local7, C00C)
                 }
 
                 Local7 = ObjectType (P012)
                 If ((Local7 != C00C))
                 {
-                    ERR (Arg0, Z040, 0x03AC, 0x00, 0x00, Local7, C00C)
+                    ERR (Arg0, Z040, __LINE__, 0x00, 0x00, Local7, C00C)
                 }
 
                 Local7 = ObjectType (P013)
                 If ((Local7 != C00C))
                 {
-                    ERR (Arg0, Z040, 0x03B0, 0x00, 0x00, Local7, C00C)
+                    ERR (Arg0, Z040, __LINE__, 0x00, 0x00, Local7, C00C)
                 }
             }
             Case (0x1F)
@@ -1368,7 +1368,7 @@
                 Local7 = ObjectType (PWR0)
                 If ((Local7 != C013))
                 {
-                    ERR (Arg0, Z040, 0x03BA, 0x00, 0x00, Local7, C013)
+                    ERR (Arg0, Z040, __LINE__, 0x00, 0x00, Local7, C013)
                 }
             }
             Case (0x20)
@@ -1379,7 +1379,7 @@
                 Local7 = ObjectType (PR00)
                 If ((Local7 != C014))
                 {
-                    ERR (Arg0, Z040, 0x03C4, 0x00, 0x00, Local7, C014)
+                    ERR (Arg0, Z040, __LINE__, 0x00, 0x00, Local7, C014)
                 }
             }
             Case (0x21)
@@ -1391,7 +1391,7 @@
                 Local7 = ObjectType (TZ00)
                 If ((Local7 != C015))
                 {
-                    ERR (Arg0, Z040, 0x03CB, 0x00, 0x00, Local7, C015)
+                    ERR (Arg0, Z040, __LINE__, 0x00, 0x00, Local7, C015)
                 }
             }
             Case (0x22)
@@ -1411,7 +1411,7 @@
             }
             Default
             {
-                ERR (Arg0, Z040, 0x03E1, 0x00, 0x00, 0x00, 0x00)
+                ERR (Arg0, Z040, __LINE__, 0x00, 0x00, 0x00, 0x00)
             }
 
         }

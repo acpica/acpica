@@ -246,11 +246,11 @@
     {
         If ((ObjectType (Arg1) != 0x03))
         {
-            ERR (Arg0, Z043, 0x8C, 0x00, 0x00, Arg2, "Type")
+            ERR (Arg0, Z043, __LINE__, 0x00, 0x00, Arg2, "Type")
         }
         ElseIf ((SizeOf (Arg1) != (Arg2 + Arg3)))
         {
-            ERR (Arg0, Z043, 0x8F, 0x00, 0x00, Arg2, "Sizeof")
+            ERR (Arg0, Z043, __LINE__, 0x00, 0x00, Arg2, "Sizeof")
         }
         Else
         {
@@ -290,7 +290,7 @@
 
             If ((Local3 != Local5))
             {
-                ERR (Arg0, Z043, 0xB6, 0x00, 0x00, Local0, "NotEqual")
+                ERR (Arg0, Z043, __LINE__, 0x00, 0x00, Local0, "NotEqual")
             }
 
             /* Check the source string was not corrupted */
@@ -330,7 +330,7 @@
             ToBuffer (Local4, Local3)
             If ((Local3 != Local4))
             {
-                ERR (Arg0, Z043, 0xDF, 0x00, 0x00, Local0, "NotEqual")
+                ERR (Arg0, Z043, __LINE__, 0x00, 0x00, Local0, "NotEqual")
             }
 
             /* Check the buffers were not corrupted */

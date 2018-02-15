@@ -39,7 +39,7 @@
         Local0 = ObjectType (Debug)
         If ((Local0 != C018))
         {
-            ERR ("", ZFFF, 0x2C, 0x00, 0x00, Local0, C018)
+            ERR (__METHOD__, ZFFF, __LINE__, 0x00, 0x00, Local0, C018)
         }
 
         /* Method */
@@ -52,6 +52,6 @@
         Local0 = ObjectType (M0F2)
         If ((Local0 != C010))
         {
-            ERR ("", ZFFF, 0x34, 0x00, 0x00, Local0, C010)
+            ERR (__METHOD__, ZFFF, __LINE__, 0x00, 0x00, Local0, C010)
         }
     }

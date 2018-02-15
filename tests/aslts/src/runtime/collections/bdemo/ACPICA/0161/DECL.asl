@@ -37,12 +37,12 @@
     {
         If ((BF32 != 0x14))
         {
-            ERR ("", ZFFF, 0x2A, 0x00, 0x00, BF32, 0x14)
+            ERR (__METHOD__, ZFFF, __LINE__, 0x00, 0x00, BF32, 0x14)
         }
 
         If ((BF33 != 0x1615))
         {
-            ERR ("", ZFFF, 0x2D, 0x00, 0x00, BF33, 0x1615)
+            ERR (__METHOD__, ZFFF, __LINE__, 0x00, 0x00, BF33, 0x1615)
         }
     }
 
@@ -50,12 +50,12 @@
     {
         If ((BF34 != 0x18))
         {
-            ERR ("", ZFFF, 0x34, 0x00, 0x00, BF34, 0x18)
+            ERR (__METHOD__, ZFFF, __LINE__, 0x00, 0x00, BF34, 0x18)
         }
 
         If ((BF35 != 0x19))
         {
-            ERR ("", ZFFF, 0x37, 0x00, 0x00, BF35, 0x19)
+            ERR (__METHOD__, ZFFF, __LINE__, 0x00, 0x00, BF35, 0x19)
         }
     }
 
@@ -63,12 +63,12 @@
     {
         If ((BF36 != 0x1A))
         {
-            ERR ("", ZFFF, 0x3E, 0x00, 0x00, BF36, 0x1A)
+            ERR (__METHOD__, ZFFF, __LINE__, 0x00, 0x00, BF36, 0x1A)
         }
 
         If ((BF37 != 0x1C1B))
         {
-            ERR ("", ZFFF, 0x41, 0x00, 0x00, BF37, 0x1C1B)
+            ERR (__METHOD__, ZFFF, __LINE__, 0x00, 0x00, BF37, 0x1C1B)
         }
     }
 
@@ -80,12 +80,12 @@
         CreateField (BD02, 0x28, (ID03 + 0x08), BF33)
         If ((BF32 != 0x14))
         {
-            ERR ("", ZFFF, 0x4D, 0x00, 0x00, BF32, 0x14)
+            ERR (__METHOD__, ZFFF, __LINE__, 0x00, 0x00, BF32, 0x14)
         }
 
         If ((BF33 != 0x1615))
         {
-            ERR ("", ZFFF, 0x50, 0x00, 0x00, BF33, 0x1615)
+            ERR (__METHOD__, ZFFF, __LINE__, 0x00, 0x00, BF33, 0x1615)
         }
     }
 
@@ -95,12 +95,12 @@
         CreateField (BD02, (ID04 + 0x08), 0x08, BF35)
         If ((BF34 != 0x18))
         {
-            ERR ("", ZFFF, 0x5A, 0x00, 0x00, BF34, 0x18)
+            ERR (__METHOD__, ZFFF, __LINE__, 0x00, 0x00, BF34, 0x18)
         }
 
         If ((BF35 != 0x19))
         {
-            ERR ("", ZFFF, 0x5D, 0x00, 0x00, BF35, 0x19)
+            ERR (__METHOD__, ZFFF, __LINE__, 0x00, 0x00, BF35, 0x19)
         }
     }
 
@@ -110,12 +110,12 @@
         CreateField (BD02, (ID07 + 0x08), (ID08 + 0x08), BF37)
         If ((BF36 != 0x1A))
         {
-            ERR ("", ZFFF, 0x67, 0x00, 0x00, BF36, 0x1A)
+            ERR (__METHOD__, ZFFF, __LINE__, 0x00, 0x00, BF36, 0x1A)
         }
 
         If ((BF37 != 0x1C1B))
         {
-            ERR ("", ZFFF, 0x6A, 0x00, 0x00, BF37, 0x1C1B)
+            ERR (__METHOD__, ZFFF, __LINE__, 0x00, 0x00, BF37, 0x1C1B)
         }
     }
 
@@ -127,12 +127,12 @@
         CreateField (BD03, 0x28, (ID03 + 0x08), BF33)
         If ((BF32 != 0x14))
         {
-            ERR ("", ZFFF, 0x76, 0x00, 0x00, BF32, 0x14)
+            ERR (__METHOD__, ZFFF, __LINE__, 0x00, 0x00, BF32, 0x14)
         }
 
         If ((BF33 != 0x1615))
         {
-            ERR ("", ZFFF, 0x79, 0x00, 0x00, BF33, 0x1615)
+            ERR (__METHOD__, ZFFF, __LINE__, 0x00, 0x00, BF33, 0x1615)
         }
     }
 
@@ -142,12 +142,12 @@
         CreateField (BD03, (ID04 + 0x08), 0x08, BF35)
         If ((BF34 != 0x18))
         {
-            ERR ("", ZFFF, 0x83, 0x00, 0x00, BF34, 0x18)
+            ERR (__METHOD__, ZFFF, __LINE__, 0x00, 0x00, BF34, 0x18)
         }
 
         If ((BF35 != 0x19))
         {
-            ERR ("", ZFFF, 0x86, 0x00, 0x00, BF35, 0x19)
+            ERR (__METHOD__, ZFFF, __LINE__, 0x00, 0x00, BF35, 0x19)
         }
     }
 
@@ -157,12 +157,12 @@
         CreateField (BD03, (ID07 + 0x08), (ID08 + 0x08), BF37)
         If ((BF36 != 0x1A))
         {
-            ERR ("", ZFFF, 0x90, 0x00, 0x00, BF36, 0x1A)
+            ERR (__METHOD__, ZFFF, __LINE__, 0x00, 0x00, BF36, 0x1A)
         }
 
         If ((BF37 != 0x1C1B))
         {
-            ERR ("", ZFFF, 0x93, 0x00, 0x00, BF37, 0x1C1B)
+            ERR (__METHOD__, ZFFF, __LINE__, 0x00, 0x00, BF37, 0x1C1B)
         }
     }
 
@@ -174,39 +174,39 @@
         })
         If ((Arg0 != 0x01))
         {
-            ERR ("", ZFFF, 0x9C, 0x00, 0x00, Arg0, 0x01)
+            ERR (__METHOD__, ZFFF, __LINE__, 0x00, 0x00, Arg0, 0x01)
         }
 
         If ((Arg1 != 0x5D))
         {
-            ERR ("", ZFFF, 0x9F, 0x00, 0x00, Arg1, 0x5D)
+            ERR (__METHOD__, ZFFF, __LINE__, 0x00, 0x00, Arg1, 0x5D)
         }
 
         If ((Arg2 != 0x125D))
         {
-            ERR ("", ZFFF, 0xA2, 0x00, 0x00, Arg2, 0x125D)
+            ERR (__METHOD__, ZFFF, __LINE__, 0x00, 0x00, Arg2, 0x125D)
         }
 
         If ((Arg3 != 0x1413125D))
         {
-            ERR ("", ZFFF, 0xA5, 0x00, 0x00, Arg3, 0x1413125D)
+            ERR (__METHOD__, ZFFF, __LINE__, 0x00, 0x00, Arg3, 0x1413125D)
         }
 
         If (F64)
         {
             If ((Arg4 != 0x181716151413125D))
             {
-                ERR ("", ZFFF, 0xAA, 0x00, 0x00, Arg4, 0x181716151413125D)
+                ERR (__METHOD__, ZFFF, __LINE__, 0x00, 0x00, Arg4, 0x181716151413125D)
             }
         }
         ElseIf ((Arg4 != B000))
         {
-            ERR ("", ZFFF, 0xAE, 0x00, 0x00, Arg4, B000)
+            ERR (__METHOD__, ZFFF, __LINE__, 0x00, 0x00, Arg4, B000)
         }
 
         If ((Arg5 != 0x5D))
         {
-            ERR ("", ZFFF, 0xB3, 0x00, 0x00, Arg5, 0x5D)
+            ERR (__METHOD__, ZFFF, __LINE__, 0x00, 0x00, Arg5, 0x5D)
         }
     }
 
@@ -214,12 +214,12 @@
     {
         If ((Arg0 != 0x5D))
         {
-            ERR ("", ZFFF, 0xBA, 0x00, 0x00, Arg0, 0x5D)
+            ERR (__METHOD__, ZFFF, __LINE__, 0x00, 0x00, Arg0, 0x5D)
         }
 
         If ((Arg1 != 0x5D))
         {
-            ERR ("", ZFFF, 0xBD, 0x00, 0x00, Arg1, 0x5D)
+            ERR (__METHOD__, ZFFF, __LINE__, 0x00, 0x00, Arg1, 0x5D)
         }
     }
 

@@ -53,7 +53,7 @@
             Debug = "==================== 1"
             If ((Local0 != 0xABCD0003))
             {
-                ERR ("", ZFFF, 0x35, 0x00, 0x00, Local0, 0xABCD0003)
+                ERR (__METHOD__, ZFFF, __LINE__, 0x00, 0x00, Local0, 0xABCD0003)
             }
         }
 

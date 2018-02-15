@@ -260,7 +260,7 @@
             If (!I101)
             {
                 Debug = "******** Test was not run !!!!!!!!!!!!!"
-                ERR ("", ZFFF, 0x0139, 0x00, 0x00, 0x00, 0x00)
+                ERR (__METHOD__, ZFFF, __LINE__, 0x00, 0x00, 0x00, 0x00)
                 Return (Zero)
             }
 
@@ -269,7 +269,7 @@
             If (I104)
             {
                 Debug = "!!!!!!!! ERROR 1: Acquire(T804, 0xffff) failed"
-                ERR ("", ZFFF, 0x0144, 0x00, 0x00, 0x00, 0x00)
+                ERR (__METHOD__, ZFFF, __LINE__, 0x00, 0x00, 0x00, 0x00)
             }
             Else
             {
@@ -279,7 +279,7 @@
             If (I105)
             {
                 Debug = "!!!!!!!! ERROR 2: Acquire(T805, 0xffff) failed"
-                ERR ("", ZFFF, 0x014B, 0x00, 0x00, 0x00, 0x00)
+                ERR (__METHOD__, ZFFF, __LINE__, 0x00, 0x00, 0x00, 0x00)
             }
             Else
             {
@@ -299,7 +299,7 @@
             Else
             {
                 Debug = "!!!!!!!! ERROR 7: Acquire(T807, 0xffff) failed"
-                ERR ("", ZFFF, 0x015C, 0x00, 0x00, 0x00, 0x00)
+                ERR (__METHOD__, ZFFF, __LINE__, 0x00, 0x00, 0x00, 0x00)
             }
 
             CH03 ("", 0x00, 0x07, 0x015E, 0x00)
@@ -312,7 +312,7 @@
             Else
             {
                 Debug = "!!!!!!!! ERROR 5: Acquire(T806, 0xffff) failed"
-                ERR ("", ZFFF, 0x0166, 0x00, 0x00, 0x00, 0x00)
+                ERR (__METHOD__, ZFFF, __LINE__, 0x00, 0x00, 0x00, 0x00)
             }
 
             CH03 ("", 0x00, 0x09, 0x0168, 0x00)

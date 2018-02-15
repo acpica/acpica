@@ -1119,11 +1119,11 @@
         Local1 = ObjectType (Arg2)
         If ((Local0 != Local1))
         {
-            ERR (Arg0, Z064, 0x037A, 0x00, 0x00, Local0, Local1)
+            ERR (Arg0, Z064, __LINE__, 0x00, 0x00, Local0, Local1)
         }
         ElseIf ((Arg1 != Arg2))
         {
-            ERR (Arg0, Z064, 0x037C, 0x00, 0x00, Arg1, Arg2)
+            ERR (Arg0, Z064, __LINE__, 0x00, 0x00, Arg1, Arg2)
         }
     }
 
@@ -1139,12 +1139,12 @@
         {
             If ((Arg2 != Local7))
             {
-                ERR (Arg0, Z064, 0x038B, 0x00, 0x00, Arg2, Local7)
+                ERR (Arg0, Z064, __LINE__, 0x00, 0x00, Arg2, Local7)
             }
         }
         ElseIf ((Arg2 != Local6))
         {
-            ERR (Arg0, Z064, 0x038F, 0x00, 0x00, Arg2, Local6)
+            ERR (Arg0, Z064, __LINE__, 0x00, 0x00, Arg2, Local6)
         }
     }
 

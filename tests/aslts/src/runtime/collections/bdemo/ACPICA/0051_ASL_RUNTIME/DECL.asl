@@ -36,12 +36,12 @@
     {
         If ((Arg0 != Arg1))
         {
-            ERR ("", ZFFF, 0x29, 0x00, 0x00, Arg0, Arg1)
+            ERR (__METHOD__, ZFFF, __LINE__, 0x00, 0x00, Arg0, Arg1)
         }
 
         If ((Arg2 != Arg3))
         {
-            ERR ("", ZFFF, 0x2C, 0x00, 0x00, Arg0, Arg1)
+            ERR (__METHOD__, ZFFF, __LINE__, 0x00, 0x00, Arg0, Arg1)
         }
     }
 
@@ -87,6 +87,6 @@
         MDDB (0x38, 0x07, 0xB0, 0x16, "_ADR")
         If ((RT00 != BUF0))
         {
-            ERR ("", ZFFF, 0x4C, 0x00, 0x00, RT00, BUF0)
+            ERR (__METHOD__, ZFFF, __LINE__, 0x00, 0x00, RT00, BUF0)
         }
     }

@@ -169,7 +169,7 @@
 
             If ((Local7 != C008))
             {
-                ERR ("", ZFFF, 0x31, 0x00, 0x00, Local7, C008)
+                ERR (__METHOD__, ZFFF, __LINE__, 0x00, 0x00, Local7, C008)
             }
                 /* or RING_OF_REFS_EXCEPTION? */
         }

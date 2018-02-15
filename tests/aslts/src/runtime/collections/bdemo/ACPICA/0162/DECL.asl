@@ -68,6 +68,6 @@
          */
         If (ID01)
         {
-            ERR ("", ZFFF, 0x47, 0x00, 0x00, 0x00, 0x00)
+            ERR (__METHOD__, ZFFF, __LINE__, 0x00, 0x00, 0x00, 0x00)
         }
     }

@@ -37,7 +37,7 @@
         {
             If ((Arg0 != Arg1))
             {
-                ERR ("", ZFFF, 0x2A, 0x00, 0x00, Arg0, Arg1)
+                ERR (__METHOD__, ZFFF, __LINE__, 0x00, 0x00, Arg0, Arg1)
             }
         }
 

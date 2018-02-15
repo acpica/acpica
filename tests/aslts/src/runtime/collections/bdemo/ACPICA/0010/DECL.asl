@@ -40,7 +40,7 @@
         Local2 = ObjectType (Local1)
         If ((Local2 != C00B))
         {
-            ERR ("", ZFFF, 0x2B, 0x00, 0x00, Local2, C00B)
+            ERR (__METHOD__, ZFFF, __LINE__, 0x00, 0x00, Local2, C00B)
         }
 
         If ((Local1 != Buffer (0x04)
@@ -48,7 +48,7 @@
                          0x0A, 0x0B, 0x0C, 0x0D                           // ....
                     }))
         {
-            ERR ("", ZFFF, 0x2E, 0x00, 0x00, Local1, Buffer (0x04)
+            ERR (__METHOD__, ZFFF, __LINE__, 0x00, 0x00, Local1, Buffer (0x04)
                 {
                      0x0A, 0x0B, 0x0C, 0x0D                           // ....
                 })
@@ -57,7 +57,7 @@
         Local2 = ObjectType (Local0)
         If ((Local2 != C00B))
         {
-            ERR ("", ZFFF, 0x33, 0x00, 0x00, Local2, C00B)
+            ERR (__METHOD__, ZFFF, __LINE__, 0x00, 0x00, Local2, C00B)
         }
 
         If ((Local0 != Buffer (0x04)
@@ -65,7 +65,7 @@
                          0x0A, 0x0B, 0x0C, 0x0D                           // ....
                     }))
         {
-            ERR ("", ZFFF, 0x36, 0x00, 0x00, Local0, Buffer (0x04)
+            ERR (__METHOD__, ZFFF, __LINE__, 0x00, 0x00, Local0, Buffer (0x04)
                 {
                      0x0A, 0x0B, 0x0C, 0x0D                           // ....
                 })

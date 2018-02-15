@@ -74,7 +74,7 @@
         CH03 ("", 0x00, 0x00, 0x44, 0x00)
         If (("md00.m000" != Local0))
         {
-            ERR ("", ZFFF, 0x47, 0x00, 0x00, Local0, "md00.m000")
+            ERR (__METHOD__, ZFFF, __LINE__, 0x00, 0x00, Local0, "md00.m000")
         }
 
         /* Function */
@@ -85,7 +85,7 @@
         CH03 ("", 0x00, 0x02, 0x53, 0x00)
         If (("md00.mm00" != Local0))
         {
-            ERR ("", ZFFF, 0x56, 0x00, 0x00, Local0, "md00.mm00")
+            ERR (__METHOD__, ZFFF, __LINE__, 0x00, 0x00, Local0, "md00.mm00")
         }
 
         CH03 ("", 0x00, 0x04, 0x59, 0x00)

@@ -35,6 +35,6 @@
         Local0 = ConcatenateResTemplate (RTD0, RTD0)
         If ((Local0 != BD0B))
         {
-            ERR ("", ZFFF, 0x28, 0x00, 0x00, Local0, 0x0100)
+            ERR (__METHOD__, ZFFF, __LINE__, 0x00, 0x00, Local0, 0x0100)
         }
     }

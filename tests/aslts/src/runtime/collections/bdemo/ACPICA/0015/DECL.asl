@@ -39,12 +39,12 @@
         ToDecimalString (B000, Local0)
         If ((Local0 != "1,1"))
         {
-            ERR ("", ZFFF, 0x2A, 0x00, 0x00, Local0, "1,1")
+            ERR (__METHOD__, ZFFF, __LINE__, 0x00, 0x00, Local0, "1,1")
         }
 
         Local1 = SizeOf (Local0)
         If ((Local1 != 0x03))
         {
-            ERR ("", ZFFF, 0x2F, 0x00, 0x00, Local1, 0x03)
+            ERR (__METHOD__, ZFFF, __LINE__, 0x00, 0x00, Local1, 0x03)
         }
     }

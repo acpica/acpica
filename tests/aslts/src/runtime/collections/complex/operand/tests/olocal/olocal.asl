@@ -10857,7 +10857,7 @@
             Local2 = (Local1 - Local0)
             If ((Local2 < C08C))
             {
-                ERR (Arg0, Z117, 0x3223, 0x00, 0x00, Local2, C08C)
+                ERR (Arg0, Z117, __LINE__, 0x00, 0x00, Local2, C08C)
             }
 
             /* Stall */
@@ -10869,7 +10869,7 @@
             Local2 = (Local1 - Local0)
             If ((Local2 < 0x03DE))
             {
-                ERR (Arg0, Z117, 0x3230, 0x00, 0x00, Local2, 0x03DE)
+                ERR (Arg0, Z117, __LINE__, 0x00, 0x00, Local2, 0x03DE)
             }
         }
 
@@ -10890,7 +10890,7 @@
             Local2 = (Local1 - Local0)
             If ((Local2 < C08C))
             {
-                ERR (Arg0, Z117, 0x3249, 0x00, 0x00, Local2, C08C)
+                ERR (Arg0, Z117, __LINE__, 0x00, 0x00, Local2, C08C)
             }
         }
 
@@ -10908,7 +10908,7 @@
             Local2 = (Local1 - Local0)
             If ((Local2 < C08C))
             {
-                ERR (Arg0, Z117, 0x325F, 0x00, 0x00, Local2, C08C)
+                ERR (Arg0, Z117, __LINE__, 0x00, 0x00, Local2, C08C)
             }
         }
 
@@ -21088,7 +21088,7 @@
             Local2 = (Local1 - Local0)
             If ((Local2 < C08C))
             {
-                ERR (Arg0, Z117, 0x5F6D, 0x00, 0x00, Local2, C08C)
+                ERR (Arg0, Z117, __LINE__, 0x00, 0x00, Local2, C08C)
             }
 
             /* Stall */
@@ -21100,7 +21100,7 @@
             Local2 = (Local1 - Local0)
             If ((Local2 < 0x03DE))
             {
-                ERR (Arg0, Z117, 0x5F7A, 0x00, 0x00, Local2, 0x03DE)
+                ERR (Arg0, Z117, __LINE__, 0x00, 0x00, Local2, 0x03DE)
             }
         }
 
@@ -21124,7 +21124,7 @@
             Local2 = (Local1 - Local0)
             If ((Local2 < C08C))
             {
-                ERR (Arg0, Z117, 0x5F94, 0x00, 0x00, Local2, C08C)
+                ERR (Arg0, Z117, __LINE__, 0x00, 0x00, Local2, C08C)
             }
         }
 
@@ -21145,7 +21145,7 @@
             Local2 = (Local1 - Local0)
             If ((Local2 < C08C))
             {
-                ERR (Arg0, Z117, 0x5FAA, 0x00, 0x00, Local2, C08C)
+                ERR (Arg0, Z117, __LINE__, 0x00, 0x00, Local2, C08C)
             }
         }
 

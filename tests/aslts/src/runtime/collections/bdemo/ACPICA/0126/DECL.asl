@@ -37,12 +37,12 @@
         Local7 = (Local0 + 0x01)
         If ((Local0 != 0x07))
         {
-            ERR ("", ZFFF, 0x2C, 0x00, 0x00, Local0, 0x07)
+            ERR (__METHOD__, ZFFF, __LINE__, 0x00, 0x00, Local0, 0x07)
         }
 
         If ((Local7 != 0x08))
         {
-            ERR ("", ZFFF, 0x2F, 0x00, 0x00, Local7, 0x08)
+            ERR (__METHOD__, ZFFF, __LINE__, 0x00, 0x00, Local7, 0x08)
         }
 
         Debug = "m000 finished"
@@ -55,12 +55,12 @@
         Local7 = (Arg0 + 0x01)
         If ((Arg0 != 0x07))
         {
-            ERR ("", ZFFF, 0x3E, 0x00, 0x00, Arg0, 0x07)
+            ERR (__METHOD__, ZFFF, __LINE__, 0x00, 0x00, Arg0, 0x07)
         }
 
         If ((Local7 != 0x08))
         {
-            ERR ("", ZFFF, 0x41, 0x00, 0x00, Arg0, 0x08)
+            ERR (__METHOD__, ZFFF, __LINE__, 0x00, 0x00, Arg0, 0x08)
         }
 
         Debug = "m001 finished"

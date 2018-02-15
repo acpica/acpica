@@ -65,7 +65,7 @@
         }
         Else
         {
-            ERR ("", ZFFF, 0x3C, 0x00, 0x00, BFL1, BD10)
+            ERR (__METHOD__, ZFFF, __LINE__, 0x00, 0x00, BFL1, BD10)
         }
 
         /* Optional storing */
@@ -90,7 +90,7 @@
         }
         Else
         {
-            ERR ("", ZFFF, 0x4B, 0x00, 0x00, BFL1, BD10)
+            ERR (__METHOD__, ZFFF, __LINE__, 0x00, 0x00, BFL1, BD10)
         }
     }
 
