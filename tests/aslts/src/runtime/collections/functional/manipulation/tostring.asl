@@ -165,7 +165,7 @@
             Local1 = ((Local0 + 0x01) % 0x0100)
             If ((DerefOf (Arg1 [Local0]) != Local1))
             {
-                ERR (Arg0, Z048, 0x5F, 0x00, 0x00, Local0, Arg4)
+                ERR (Arg0, Z048, __LINE__, 0x00, 0x00, Local0, Arg4)
             }
 
             Local0++
@@ -178,11 +178,11 @@
     {
         If ((ObjectType (Arg1) != 0x02))
         {
-            ERR (Arg0, Z048, 0x69, 0x00, 0x00, Arg2, "Type")
+            ERR (Arg0, Z048, __LINE__, 0x00, 0x00, Arg2, "Type")
         }
         ElseIf ((SizeOf (Arg1) != Arg2))
         {
-            ERR (Arg0, Z048, 0x6C, 0x00, 0x00, Arg2, "Sizeof")
+            ERR (Arg0, Z048, __LINE__, 0x00, 0x00, Arg2, "Sizeof")
         }
         Else
         {
@@ -202,7 +202,7 @@
         {
             If ((DerefOf (Local1 [Local0]) != 0xFF))
             {
-                ERR (Arg0, Z048, 0x7C, 0x00, 0x00, Local0, "buf8")
+                ERR (Arg0, Z048, __LINE__, 0x00, 0x00, Local0, "buf8")
             }
 
             Local0++

@@ -464,31 +464,31 @@
             TMP0 = ObjectType (Arg0)
             If ((TMP0 != OT00))
             {
-                ERR (TS, Z082, 0x01A3, 0x00, 0x00, TMP0, OT00)
+                ERR (TS, Z082, __LINE__, 0x00, 0x00, TMP0, OT00)
             }
 
             TMP0 = ObjectType (Arg1)
             If ((TMP0 != OT01))
             {
-                ERR (TS, Z082, 0x01A7, 0x00, 0x00, TMP0, OT01)
+                ERR (TS, Z082, __LINE__, 0x00, 0x00, TMP0, OT01)
             }
 
             TMP0 = ObjectType (Arg2)
             If ((TMP0 != OT02))
             {
-                ERR (TS, Z082, 0x01AB, 0x00, 0x00, TMP0, OT02)
+                ERR (TS, Z082, __LINE__, 0x00, 0x00, TMP0, OT02)
             }
 
             TMP0 = ObjectType (Arg3)
             If ((TMP0 != OT03))
             {
-                ERR (TS, Z082, 0x01AF, 0x00, 0x00, TMP0, OT03)
+                ERR (TS, Z082, __LINE__, 0x00, 0x00, TMP0, OT03)
             }
 
             TMP0 = ObjectType (Arg4)
             If ((TMP0 != OT04))
             {
-                ERR (TS, Z082, 0x01B3, 0x00, 0x00, TMP0, OT04)
+                ERR (TS, Z082, __LINE__, 0x00, 0x00, TMP0, OT04)
             }
 
             If (RES0)
@@ -496,14 +496,14 @@
                 TMP0 = ObjectType (Arg5)
                 If ((TMP0 != OT05))
                 {
-                    ERR (TS, Z082, 0x01B9, 0x00, 0x00, TMP0, OT05)
+                    ERR (TS, Z082, __LINE__, 0x00, 0x00, TMP0, OT05)
                 }
             }
 
             TMP0 = ObjectType (Arg6)
             If ((TMP0 != OT06))
             {
-                ERR (TS, Z082, 0x01BE, 0x00, 0x00, TMP0, OT06)
+                ERR (TS, Z082, __LINE__, 0x00, 0x00, TMP0, OT06)
             }
 
             /* Types of LocalX are save, and data of LocalX and ArgX are identical */
@@ -511,7 +511,7 @@
             TMP0 = ObjectType (Local0)
             If ((TMP0 != OT10))
             {
-                ERR (TS, Z082, 0x01C5, 0x00, 0x00, TMP0, OT10)
+                ERR (TS, Z082, __LINE__, 0x00, 0x00, TMP0, OT10)
             }
             Else
             {
@@ -521,7 +521,7 @@
             TMP0 = ObjectType (Local1)
             If ((TMP0 != OT11))
             {
-                ERR (TS, Z082, 0x01CB, 0x00, 0x00, TMP0, OT11)
+                ERR (TS, Z082, __LINE__, 0x00, 0x00, TMP0, OT11)
             }
             Else
             {
@@ -533,7 +533,7 @@
                 TMP0 = ObjectType (Local2)
                 If ((TMP0 != OT12))
                 {
-                    ERR (TS, Z082, 0x01D3, 0x00, 0x00, TMP0, OT12)
+                    ERR (TS, Z082, __LINE__, 0x00, 0x00, TMP0, OT12)
                 }
                 Else
                 {
@@ -544,7 +544,7 @@
             TMP0 = ObjectType (Local3)
             If ((TMP0 != OT13))
             {
-                ERR (TS, Z082, 0x01DB, 0x00, 0x00, TMP0, OT13)
+                ERR (TS, Z082, __LINE__, 0x00, 0x00, TMP0, OT13)
             }
             Else
             {
@@ -554,7 +554,7 @@
             TMP0 = ObjectType (Local4)
             If ((TMP0 != OT14))
             {
-                ERR (TS, Z082, 0x01E1, 0x00, 0x00, TMP0, OT14)
+                ERR (TS, Z082, __LINE__, 0x00, 0x00, TMP0, OT14)
             }
             Else
             {
@@ -564,7 +564,7 @@
             TMP0 = ObjectType (Local5)
             If ((TMP0 != OT15))
             {
-                ERR (TS, Z082, 0x01E7, 0x00, 0x00, TMP0, OT15)
+                ERR (TS, Z082, __LINE__, 0x00, 0x00, TMP0, OT15)
             }
             ElseIf (RES0)
             {
@@ -574,7 +574,7 @@
             TMP0 = ObjectType (Local6)
             If ((TMP0 != OT16))
             {
-                ERR (TS, Z082, 0x01ED, 0x00, 0x00, TMP0, OT16)
+                ERR (TS, Z082, __LINE__, 0x00, 0x00, TMP0, OT16)
             }
             Else
             {
@@ -585,7 +585,7 @@
             {
                 If ((Local7 != Ones))
                 {
-                    ERR (TS, Z082, 0x01F4, 0x00, 0x00, Local7, Ones)
+                    ERR (TS, Z082, __LINE__, 0x00, 0x00, Local7, Ones)
                 }
             }
             ElseIf (RES0)
@@ -594,7 +594,7 @@
                 TMP1 = ObjectType (Arg5)
                 If ((TMP0 != TMP1))
                 {
-                    ERR (TS, Z082, 0x01FA, 0x00, 0x00, TMP0, TMP1)
+                    ERR (TS, Z082, __LINE__, 0x00, 0x00, TMP0, TMP1)
                 }
                 Else
                 {
@@ -643,7 +643,7 @@
             {
                 If ((Arg3 != Arg4))
                 {
-                    ERR (Arg0, Z082, 0x0224, 0x00, 0x00, Arg1, 0x00)
+                    ERR (Arg0, Z082, __LINE__, 0x00, 0x00, Arg1, 0x00)
                     Local0 = 0x01
                 }
             }
@@ -651,7 +651,7 @@
             {
                 If ((Arg3 != Arg4))
                 {
-                    ERR (Arg0, Z082, 0x022A, 0x00, 0x00, Arg1, 0x00)
+                    ERR (Arg0, Z082, __LINE__, 0x00, 0x00, Arg1, 0x00)
                     Local0 = 0x01
                 }
             }
@@ -659,7 +659,7 @@
             {
                 If ((Arg3 != Arg4))
                 {
-                    ERR (Arg0, Z082, 0x0230, 0x00, 0x00, Arg1, 0x00)
+                    ERR (Arg0, Z082, __LINE__, 0x00, 0x00, Arg1, 0x00)
                     Local0 = 0x01
                 }
             }
@@ -748,43 +748,43 @@
         TMP0 = ObjectType (Arg0)
         If ((TMP0 != OT00))
         {
-            ERR (TS, Z082, 0x028D, 0x00, 0x00, TMP0, OT00)
+            ERR (TS, Z082, __LINE__, 0x00, 0x00, TMP0, OT00)
         }
 
         TMP0 = ObjectType (Arg1)
         If ((TMP0 != OT01))
         {
-            ERR (TS, Z082, 0x0291, 0x00, 0x00, TMP0, OT01)
+            ERR (TS, Z082, __LINE__, 0x00, 0x00, TMP0, OT01)
         }
 
         TMP0 = ObjectType (Arg2)
         If ((TMP0 != OT02))
         {
-            ERR (TS, Z082, 0x0295, 0x00, 0x00, TMP0, OT02)
+            ERR (TS, Z082, __LINE__, 0x00, 0x00, TMP0, OT02)
         }
 
         TMP0 = ObjectType (Arg3)
         If ((TMP0 != OT03))
         {
-            ERR (TS, Z082, 0x0299, 0x00, 0x00, TMP0, OT03)
+            ERR (TS, Z082, __LINE__, 0x00, 0x00, TMP0, OT03)
         }
 
         TMP0 = ObjectType (Arg4)
         If ((TMP0 != OT04))
         {
-            ERR (TS, Z082, 0x029D, 0x00, 0x00, TMP0, OT04)
+            ERR (TS, Z082, __LINE__, 0x00, 0x00, TMP0, OT04)
         }
 
         TMP0 = ObjectType (Arg5)
         If ((TMP0 != OT05))
         {
-            ERR (TS, Z082, 0x02A1, 0x00, 0x00, TMP0, OT05)
+            ERR (TS, Z082, __LINE__, 0x00, 0x00, TMP0, OT05)
         }
 
         TMP0 = ObjectType (Arg6)
         If ((TMP0 != OT06))
         {
-            ERR (TS, Z082, 0x02A5, 0x00, 0x00, TMP0, OT06)
+            ERR (TS, Z082, __LINE__, 0x00, 0x00, TMP0, OT06)
         }
 
         /* Types of LocalX are save, and data of LocalX and ArgX are identical */
@@ -792,7 +792,7 @@
         TMP0 = ObjectType (Local0)
         If ((TMP0 != OT10))
         {
-            ERR (TS, Z082, 0x02AC, 0x00, 0x00, TMP0, OT10)
+            ERR (TS, Z082, __LINE__, 0x00, 0x00, TMP0, OT10)
         }
         Else
         {
@@ -802,7 +802,7 @@
         TMP0 = ObjectType (Local1)
         If ((TMP0 != OT11))
         {
-            ERR (TS, Z082, 0x02B2, 0x00, 0x00, TMP0, OT11)
+            ERR (TS, Z082, __LINE__, 0x00, 0x00, TMP0, OT11)
         }
         Else
         {
@@ -812,7 +812,7 @@
         TMP0 = ObjectType (Local2)
         If ((TMP0 != OT12))
         {
-            ERR (TS, Z082, 0x02B8, 0x00, 0x00, TMP0, OT12)
+            ERR (TS, Z082, __LINE__, 0x00, 0x00, TMP0, OT12)
         }
         Else
         {
@@ -822,7 +822,7 @@
         TMP0 = ObjectType (Local3)
         If ((TMP0 != OT13))
         {
-            ERR (TS, Z082, 0x02BE, 0x00, 0x00, TMP0, OT13)
+            ERR (TS, Z082, __LINE__, 0x00, 0x00, TMP0, OT13)
         }
         Else
         {
@@ -832,7 +832,7 @@
         TMP0 = ObjectType (Local4)
         If ((TMP0 != OT14))
         {
-            ERR (TS, Z082, 0x02C4, 0x00, 0x00, TMP0, OT14)
+            ERR (TS, Z082, __LINE__, 0x00, 0x00, TMP0, OT14)
         }
         Else
         {
@@ -842,7 +842,7 @@
         TMP0 = ObjectType (Local5)
         If ((TMP0 != OT15))
         {
-            ERR (TS, Z082, 0x02CA, 0x00, 0x00, TMP0, OT15)
+            ERR (TS, Z082, __LINE__, 0x00, 0x00, TMP0, OT15)
         }
         Else
         {
@@ -852,7 +852,7 @@
         TMP0 = ObjectType (Local6)
         If ((TMP0 != OT16))
         {
-            ERR (TS, Z082, 0x02D1, 0x00, 0x00, TMP0, OT16)
+            ERR (TS, Z082, __LINE__, 0x00, 0x00, TMP0, OT16)
         }
         /* Package is passed by arg6 */
         /* m481(ts, 47, tmp0, Local6, arg6) */
@@ -877,7 +877,7 @@
                 Local3 = 0x00
                 If ((Local2 != Local0))
                 {
-                    ERR (TS, Z082, 0x02EB, 0x00, 0x00, 0x00, 0x00)
+                    ERR (TS, Z082, __LINE__, 0x00, 0x00, 0x00, 0x00)
                     Debug = "Expected type of result:"
                     Debug = Local0
                     Debug = "The type of obtained result:"
@@ -886,7 +886,7 @@
                 }
                 ElseIf ((Local7 != Local1))
                 {
-                    ERR (TS, Z082, 0x02F2, 0x00, 0x00, 0x00, 0x00)
+                    ERR (TS, Z082, __LINE__, 0x00, 0x00, 0x00, 0x00)
                     Local3 = 0x01
                 }
 

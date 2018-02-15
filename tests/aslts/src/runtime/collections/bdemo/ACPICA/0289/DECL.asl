@@ -64,7 +64,7 @@
             DDBH = LoadTable ("SSDT", "iASLTS", "LTBL0001", "\\", "\\D289.PLDT", 0x01)
             If ((PLDT == 0x01))
             {
-                ERR ("", ZFFF, 0x46, 0x00, 0x00, "PLDT", 0x01)
+                ERR (__METHOD__, ZFFF, __LINE__, 0x00, 0x00, "PLDT", 0x01)
                 Unload (DDBH)
             }
         }

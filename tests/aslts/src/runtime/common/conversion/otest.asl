@@ -77,14 +77,14 @@
             Local1 = ObjectType (Local0)
             If ((Local1 != 0x02))
             {
-                ERR (Arg0, Z065, 0x5A, 0x00, 0x00, Local1, 0x02)
+                ERR (Arg0, Z065, __LINE__, 0x00, 0x00, Local1, 0x02)
             }
             Else
             {
                 Local1 = SizeOf (Local0)
                 If ((Local1 != 0x01))
                 {
-                    ERR (Arg0, Z065, 0x5E, 0x00, 0x00, Local1, 0x01)
+                    ERR (Arg0, Z065, __LINE__, 0x00, 0x00, Local1, 0x01)
                 }
                 Else
                 {
@@ -117,14 +117,14 @@
             Local1 = ObjectType (Local0)
             If ((Local1 != 0x02))
             {
-                ERR (Arg0, Z065, 0x81, 0x00, 0x00, Local1, 0x02)
+                ERR (Arg0, Z065, __LINE__, 0x00, 0x00, Local1, 0x02)
             }
             Else
             {
                 Local1 = SizeOf (Local0)
                 If ((Local1 != 0x01))
                 {
-                    ERR (Arg0, Z065, 0x85, 0x00, 0x00, Local1, 0x01)
+                    ERR (Arg0, Z065, __LINE__, 0x00, 0x00, Local1, 0x01)
                 }
                 Else
                 {

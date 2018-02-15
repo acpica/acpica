@@ -2630,11 +2630,11 @@
         M103 (Arg0)
         If ((FLG2 != THR1))
         {
-            ERR (Arg0, Z152, 0x0953, 0x00, 0x00, FLG2, THR1)
+            ERR (Arg0, Z152, __LINE__, 0x00, 0x00, FLG2, THR1)
         }
 
         If ((FLG3 != THR2))
         {
-            ERR (Arg0, Z152, 0x0956, 0x00, 0x00, FLG3, THR2)
+            ERR (Arg0, Z152, __LINE__, 0x00, 0x00, FLG3, THR2)
         }
     }

@@ -55,24 +55,24 @@
         Local0 = MF34 (0x00)
         If ((Local0 != 0x00))
         {
-            ERR ("", ZFFF, 0x3A, 0x00, 0x00, Local0, 0x00)
+            ERR (__METHOD__, ZFFF, __LINE__, 0x00, 0x00, Local0, 0x00)
         }
 
         Local0 = MF35 (0x01)
         If ((Local0 != 0x01))
         {
-            ERR ("", ZFFF, 0x3F, 0x00, 0x00, Local0, 0x01)
+            ERR (__METHOD__, ZFFF, __LINE__, 0x00, 0x00, Local0, 0x01)
         }
 
         Local0 = MF36 (0x02)
         If ((Local0 != 0x02))
         {
-            ERR ("", ZFFF, 0x44, 0x00, 0x00, Local0, 0x02)
+            ERR (__METHOD__, ZFFF, __LINE__, 0x00, 0x00, Local0, 0x02)
         }
 
         Local0 = MF37 ("3")
         If ((Local0 != "3"))
         {
-            ERR ("", ZFFF, 0x49, 0x00, 0x00, Local0, "3")
+            ERR (__METHOD__, ZFFF, __LINE__, 0x00, 0x00, Local0, "3")
         }
     }

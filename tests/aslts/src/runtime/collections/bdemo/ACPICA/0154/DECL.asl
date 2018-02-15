@@ -46,25 +46,25 @@
         Local0 = ObjectType (ID1D)
         If ((Local0 != C009))
         {
-            ERR ("", ZFFF, 0x32, 0x00, 0x00, Local0, C009)
+            ERR (__METHOD__, ZFFF, __LINE__, 0x00, 0x00, Local0, C009)
         }
 
         If ((ID1D != 0xFEDCBA9876543210))
         {
-            ERR ("", ZFFF, 0x35, 0x00, 0x00, ID1D, 0xFEDCBA9876543210)
+            ERR (__METHOD__, ZFFF, __LINE__, 0x00, 0x00, ID1D, 0xFEDCBA9876543210)
         }
 
         MF43 (ED02)
         Local0 = ObjectType (ED02)
         If ((Local0 != C00F))
         {
-            ERR ("", ZFFF, 0x3B, 0x00, 0x00, Local0, C00F)
+            ERR (__METHOD__, ZFFF, __LINE__, 0x00, 0x00, Local0, C00F)
         }
 
         MF43 (DD0B)
         Local0 = ObjectType (DD0B)
         If ((Local0 != C00E))
         {
-            ERR ("", ZFFF, 0x41, 0x00, 0x00, Local0, C00E)
+            ERR (__METHOD__, ZFFF, __LINE__, 0x00, 0x00, Local0, C00E)
         }
     }

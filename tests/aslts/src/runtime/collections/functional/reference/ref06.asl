@@ -102,7 +102,7 @@
             }
             Default
             {
-                ERR ("m1e2", Z110, 0x67, 0x00, 0x00, Local7, 0x00)
+                ERR ("m1e2", Z110, __LINE__, 0x00, 0x00, Local7, 0x00)
             }
 
         }
@@ -794,7 +794,7 @@
                 }
                 Default
                 {
-                    ERR (__METHOD__, Z110, 0x02CA, 0x00, 0x00, IND0, 0x00)
+                    ERR (__METHOD__, Z110, __LINE__, 0x00, 0x00, IND0, 0x00)
                 }
 
             }

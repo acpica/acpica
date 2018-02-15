@@ -56,6 +56,6 @@
 
         If ((Local0 != S000))
         {
-            ERR ("", ZFFF, 0x90, 0x00, 0x00, S000, Local0)
+            ERR (__METHOD__, ZFFF, __LINE__, 0x00, 0x00, S000, Local0)
         }
     }

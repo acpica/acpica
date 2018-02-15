@@ -36,7 +36,7 @@
         Local0 = ("" + 0xABCD0000)
         If ((Local0 != 0xABCD0000))
         {
-            ERR ("", ZFFF, 0x29, 0x00, 0x00, Local0, 0xABCD0000)
+            ERR (__METHOD__, ZFFF, __LINE__, 0x00, 0x00, Local0, 0xABCD0000)
         }
 
         CH03 ("", 0x00, 0x02, 0x2B, 0x00)
@@ -44,7 +44,7 @@
         Local0 = ("                      " + 0xABCD0001)
         If ((Local0 != 0xABCD0001))
         {
-            ERR ("", ZFFF, 0x30, 0x00, 0x00, Local0, 0xABCD0001)
+            ERR (__METHOD__, ZFFF, __LINE__, 0x00, 0x00, Local0, 0xABCD0001)
         }
 
         CH03 ("", 0x00, 0x05, 0x32, 0x00)
@@ -60,7 +60,7 @@
         Local0 = ("q" + 0xABCD0002)
         If ((Local0 != 0xABCD0002))
         {
-            ERR ("", ZFFF, 0x41, 0x00, 0x00, Local0, 0xABCD0002)
+            ERR (__METHOD__, ZFFF, __LINE__, 0x00, 0x00, Local0, 0xABCD0002)
         }
 
         CH03 ("", 0x00, 0x0C, 0x43, 0x00)
@@ -68,7 +68,7 @@
         Local0 = ("q                      " + 0xABCD0003)
         If ((Local0 != 0xABCD0003))
         {
-            ERR ("", ZFFF, 0x48, 0x00, 0x00, Local0, 0xABCD0003)
+            ERR (__METHOD__, ZFFF, __LINE__, 0x00, 0x00, Local0, 0xABCD0003)
         }
 
         CH03 ("", 0x00, 0x0F, 0x4A, 0x00)

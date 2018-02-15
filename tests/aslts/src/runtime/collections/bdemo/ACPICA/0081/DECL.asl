@@ -50,7 +50,7 @@
         Local0 = ObjectType (ME31)
         If ((Local0 != C010))
         {
-            ERR ("", ZFFF, 0x37, 0x00, 0x00, Local0, C010)
+            ERR (__METHOD__, ZFFF, __LINE__, 0x00, 0x00, Local0, C010)
         }
         /* Nov. 2012: Method invocation as arg to ObjectType is now illegal */
     /* */

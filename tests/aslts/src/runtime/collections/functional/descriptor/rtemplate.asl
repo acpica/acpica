@@ -45,7 +45,7 @@
             Local1 = DerefOf (Arg4 [LPC0])
             If ((Local0 != Local1))
             {
-                ERR (Arg0, Z029, 0x36, 0x00, 0x00, LPC0, Arg2)
+                ERR (Arg0, Z029, __LINE__, 0x00, 0x00, LPC0, Arg2)
             }
 
             LPN0--
@@ -59,12 +59,12 @@
     {
         If ((Arg2 != Arg3))
         {
-            ERR (Arg0, Z029, 0x42, Arg6, Arg6, Arg2, Arg3)
+            ERR (Arg0, Z029, __LINE__, Arg6, Arg6, Arg2, Arg3)
         }
 
         If ((Arg4 != Arg5))
         {
-            ERR (Arg0, Z029, 0x45, Arg6, Arg6, Arg4, Arg5)
+            ERR (Arg0, Z029, __LINE__, Arg6, Arg6, Arg4, Arg5)
         }
     }
 
@@ -90,7 +90,7 @@
             {
                 Debug = Local3
                 Debug = Local2
-                ERR (Arg0, Z029, 0x65, 0x00, 0x00, LPC0, Arg2)
+                ERR (Arg0, Z029, __LINE__, 0x00, 0x00, LPC0, Arg2)
             }
 
             LPN0--

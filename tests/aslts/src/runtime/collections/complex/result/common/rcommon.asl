@@ -659,14 +659,14 @@
         Local1 = ObjectType (Arg4)
         If ((Local0 != Local1))
         {
-            ERR (Concatenate (Arg0, "-OType"), Z122, 0x0148, Arg2, 0x00, Local0, Local1)
+            ERR (Concatenate (Arg0, "-OType"), Z122, __LINE__, Arg2, 0x00, Local0, Local1)
             Return (0x01)
         }
         ElseIf (DerefOf (B679 [Local0]))
         {
             If ((Arg3 != Arg4))
             {
-                ERR (Arg0, Z122, 0x014C, Arg2, 0x00, Arg3, Arg4)
+                ERR (Arg0, Z122, __LINE__, Arg2, 0x00, Arg3, Arg4)
                 Return (0x01)
             }
         }
@@ -1140,7 +1140,7 @@
         {
             If ((Arg0 != Arg1))
             {
-                ERR (Arg0, Z122, 0x027D, 0x00, 0x00, Arg0, Arg1)
+                ERR (Arg0, Z122, __LINE__, 0x00, 0x00, Arg0, Arg1)
                 If (STCS)
                 {
                     M000 (0x03, 0x0100, Arg2, Arg1)
@@ -1674,7 +1674,7 @@
 
                 Default
                 {
-                    ERR (Concatenate (Arg0, TERR), Z122, 0x0452, 0x00, 0x00, Arg1, 0x00)
+                    ERR (Concatenate (Arg0, TERR), Z122, __LINE__, 0x00, 0x00, Arg1, 0x00)
                     Return (0x01)
                 }
 
@@ -1699,7 +1699,7 @@
             {
                 /* ObjectType of Target can not be set up */
 
-                ERR (Arg0, Z122, 0x0463, 0x00, 0x00, Local0, Arg1)
+                ERR (Arg0, Z122, __LINE__, 0x00, 0x00, Local0, Arg1)
                 Return (0x01)
             }
 
@@ -1823,7 +1823,7 @@
 
                 Default
                 {
-                    ERR (Concatenate (Arg0, TERR), Z122, 0x04BC, 0x00, 0x00, Arg1, 0x00)
+                    ERR (Concatenate (Arg0, TERR), Z122, __LINE__, 0x00, 0x00, Arg1, 0x00)
                     Return (0x01)
                 }
 
@@ -1848,7 +1848,7 @@
             {
                 /* ObjectType of Source can not be set up */
 
-                ERR (Arg0, Z122, 0x04CD, 0x00, 0x00, Local0, Arg1)
+                ERR (Arg0, Z122, __LINE__, 0x00, 0x00, Local0, Arg1)
                 Return (0x01)
             }
 
@@ -1882,7 +1882,7 @@
             {
                 /* ObjectType of Source object is corrupted */
 
-                ERR (Arg0, Z122, 0x04EA, 0x00, 0x00, Local0, Arg1)
+                ERR (Arg0, Z122, __LINE__, 0x00, 0x00, Local0, Arg1)
                 Return (0x01)
             }
 
@@ -1976,7 +1976,7 @@
 
                 Default
                 {
-                    ERR (Arg0, Z122, 0x052C, 0x00, 0x00, Arg1, 0x00)
+                    ERR (Arg0, Z122, __LINE__, 0x00, 0x00, Arg1, 0x00)
                     Return (0x01)
                 }
 
@@ -1986,7 +1986,7 @@
             {
                 /* Mismatch of Source Type against specified Result Type */
 
-                ERR (Arg0, Z122, 0x0533, 0x00, 0x00, Local0, Arg1)
+                ERR (Arg0, Z122, __LINE__, 0x00, 0x00, Local0, Arg1)
                 If (STCS)
                 {
                     M000 (0x03, 0x01000000, Local0, Arg1)
@@ -2004,13 +2004,13 @@
                     {
                         If ((INT0 != DerefOf (Arg3)))
                         {
-                            ERR (Arg0, Z122, 0x053D, 0x00, 0x00, INT0, DerefOf (Arg3))
+                            ERR (Arg0, Z122, __LINE__, 0x00, 0x00, INT0, DerefOf (Arg3))
                             Return (0x01)
                         }
 
                         If ((DerefOf (Arg2) != INT0))
                         {
-                            ERR (Arg0, Z122, 0x0541, 0x00, 0x00, DerefOf (Arg2), INT0)
+                            ERR (Arg0, Z122, __LINE__, 0x00, 0x00, DerefOf (Arg2), INT0)
                             Return (0x01)
                         }
                     }
@@ -2018,13 +2018,13 @@
                     {
                         If ((STR0 != DerefOf (Arg3)))
                         {
-                            ERR (Arg0, Z122, 0x0547, 0x00, 0x00, STR0, DerefOf (Arg3))
+                            ERR (Arg0, Z122, __LINE__, 0x00, 0x00, STR0, DerefOf (Arg3))
                             Return (0x01)
                         }
 
                         If ((DerefOf (Arg2) != STR0))
                         {
-                            ERR (Arg0, Z122, 0x054B, 0x00, 0x00, DerefOf (Arg2), STR0)
+                            ERR (Arg0, Z122, __LINE__, 0x00, 0x00, DerefOf (Arg2), STR0)
                             Return (0x01)
                         }
                     }
@@ -2032,13 +2032,13 @@
                     {
                         If ((BUF0 != DerefOf (Arg3)))
                         {
-                            ERR (Arg0, Z122, 0x0551, 0x00, 0x00, BUF0, DerefOf (Arg3))
+                            ERR (Arg0, Z122, __LINE__, 0x00, 0x00, BUF0, DerefOf (Arg3))
                             Return (0x01)
                         }
 
                         If ((DerefOf (Arg2) != BUF0))
                         {
-                            ERR (Arg0, Z122, 0x0555, 0x00, 0x00, DerefOf (Arg2), BUF0)
+                            ERR (Arg0, Z122, __LINE__, 0x00, 0x00, DerefOf (Arg2), BUF0)
                             Return (0x01)
                         }
                     }
@@ -2047,7 +2047,7 @@
                         Local0 = SizeOf (PAC0)
                         If ((SizeOf (Arg3) != Local0))
                         {
-                            ERR (Arg0, Z122, 0x055D, 0x00, 0x00, SizeOf (Arg3), Local0)
+                            ERR (Arg0, Z122, __LINE__, 0x00, 0x00, SizeOf (Arg3), Local0)
                             Return (0x01)
                         }
 
@@ -2060,7 +2060,7 @@
                             {
                                 /* ObjectType is corrupted */
 
-                                ERR (Arg0, Z122, 0x0566, 0x00, 0x00, Local1, Local2)
+                                ERR (Arg0, Z122, __LINE__, 0x00, 0x00, Local1, Local2)
                                 Return (0x01)
                             }
                             ElseIf (DerefOf (B679 [Local1]))
@@ -2072,7 +2072,7 @@
                                 {
                                     /* The value is corrupted */
 
-                                    ERR (Arg0, Z122, 0x056E, 0x00, 0x00, DerefOf (DerefOf (Arg3) [Local0]),
+                                    ERR (Arg0, Z122, __LINE__, 0x00, 0x00, DerefOf (DerefOf (Arg3) [Local0]),
                                         Local0)
                                     Return (0x01)
                                 }
@@ -2082,7 +2082,7 @@
                         Local0 = SizeOf (PAC0)
                         If ((SizeOf (Arg2) != Local0))
                         {
-                            ERR (Arg0, Z122, 0x0576, 0x00, 0x00, SizeOf (Arg2), Local0)
+                            ERR (Arg0, Z122, __LINE__, 0x00, 0x00, SizeOf (Arg2), Local0)
                             Return (0x01)
                         }
 
@@ -2095,7 +2095,7 @@
                             {
                                 /* ObjectType is corrupted */
 
-                                ERR (Arg0, Z122, 0x057F, 0x00, 0x00, Local1, Local2)
+                                ERR (Arg0, Z122, __LINE__, 0x00, 0x00, Local1, Local2)
                                 Return (0x01)
                             }
                             ElseIf (DerefOf (B679 [Local1]))
@@ -2107,7 +2107,7 @@
                                 {
                                     /* The value is corrupted */
 
-                                    ERR (Arg0, Z122, 0x0587, 0x00, 0x00, DerefOf (DerefOf (Arg2) [Local0]),
+                                    ERR (Arg0, Z122, __LINE__, 0x00, 0x00, DerefOf (DerefOf (Arg2) [Local0]),
                                         Local0)
                                     Return (0x01)
                                 }
@@ -2121,14 +2121,14 @@
                         {
                             If ((FLU0 != DerefOf (DerefOf (Arg3) [0x01])))
                             {
-                                ERR (Arg0, Z122, 0x0591, 0x00, 0x00, FLU0, DerefOf (DerefOf (Arg3) [0x01]
+                                ERR (Arg0, Z122, __LINE__, 0x00, 0x00, FLU0, DerefOf (DerefOf (Arg3) [0x01]
                                     ))
                                 Return (0x01)
                             }
 
                             If ((DerefOf (Arg2) != FLU0))
                             {
-                                ERR (Arg0, Z122, 0x0595, 0x00, 0x00, DerefOf (Arg2), FLU0)
+                                ERR (Arg0, Z122, __LINE__, 0x00, 0x00, DerefOf (Arg2), FLU0)
                                 Return (0x01)
                             }
                         }
@@ -2136,14 +2136,14 @@
                         {
                             If ((FLU2 != DerefOf (DerefOf (Arg3) [0x01])))
                             {
-                                ERR (Arg0, Z122, 0x059A, 0x00, 0x00, FLU2, DerefOf (DerefOf (Arg3) [0x01]
+                                ERR (Arg0, Z122, __LINE__, 0x00, 0x00, FLU2, DerefOf (DerefOf (Arg3) [0x01]
                                     ))
                                 Return (0x01)
                             }
 
                             If ((DerefOf (Arg2) != FLU2))
                             {
-                                ERR (Arg0, Z122, 0x059E, 0x00, 0x00, DerefOf (Arg2), FLU2)
+                                ERR (Arg0, Z122, __LINE__, 0x00, 0x00, DerefOf (Arg2), FLU2)
                                 Return (0x01)
                             }
                         }
@@ -2151,14 +2151,14 @@
                         {
                             If ((FLU4 != DerefOf (DerefOf (Arg3) [0x01])))
                             {
-                                ERR (Arg0, Z122, 0x05A3, 0x00, 0x00, FLU4, DerefOf (DerefOf (Arg3) [0x01]
+                                ERR (Arg0, Z122, __LINE__, 0x00, 0x00, FLU4, DerefOf (DerefOf (Arg3) [0x01]
                                     ))
                                 Return (0x01)
                             }
 
                             If ((DerefOf (Arg2) != FLU4))
                             {
-                                ERR (Arg0, Z122, 0x05A7, 0x00, 0x00, DerefOf (Arg2), FLU4)
+                                ERR (Arg0, Z122, __LINE__, 0x00, 0x00, DerefOf (Arg2), FLU4)
                                 Return (0x01)
                             }
                         }
@@ -2168,7 +2168,7 @@
                         CopyObject (DerefOf (Arg2), MMM2) /* \M689.M005.MMM2 */
                         If ((MMM2 != MMM0))
                         {
-                            ERR (Arg0, Z122, 0x05AF, 0x00, 0x00, MMM2, MMM0)
+                            ERR (Arg0, Z122, __LINE__, 0x00, 0x00, MMM2, MMM0)
                             Return (0x01)
                         }
                     }
@@ -2179,14 +2179,14 @@
                         {
                             If ((BFL0 != DerefOf (DerefOf (Arg3) [0x01])))
                             {
-                                ERR (Arg0, Z122, 0x05B7, 0x00, 0x00, BFL0, DerefOf (DerefOf (Arg3) [0x01]
+                                ERR (Arg0, Z122, __LINE__, 0x00, 0x00, BFL0, DerefOf (DerefOf (Arg3) [0x01]
                                     ))
                                 Return (0x01)
                             }
 
                             If ((DerefOf (Arg2) != BFL0))
                             {
-                                ERR (Arg0, Z122, 0x05BB, 0x00, 0x00, DerefOf (Arg2), BFL0)
+                                ERR (Arg0, Z122, __LINE__, 0x00, 0x00, DerefOf (Arg2), BFL0)
                                 Return (0x01)
                             }
                         }
@@ -2194,14 +2194,14 @@
                         {
                             If ((BFL2 != DerefOf (DerefOf (Arg3) [0x01])))
                             {
-                                ERR (Arg0, Z122, 0x05C0, 0x00, 0x00, BFL2, DerefOf (DerefOf (Arg3) [0x01]
+                                ERR (Arg0, Z122, __LINE__, 0x00, 0x00, BFL2, DerefOf (DerefOf (Arg3) [0x01]
                                     ))
                                 Return (0x01)
                             }
 
                             If ((DerefOf (Arg2) != BFL2))
                             {
-                                ERR (Arg0, Z122, 0x05C4, 0x00, 0x00, DerefOf (Arg2), BFL2)
+                                ERR (Arg0, Z122, __LINE__, 0x00, 0x00, DerefOf (Arg2), BFL2)
                                 Return (0x01)
                             }
                         }
@@ -2209,14 +2209,14 @@
                         {
                             If ((BFL4 != DerefOf (DerefOf (Arg3) [0x01])))
                             {
-                                ERR (Arg0, Z122, 0x05C9, 0x00, 0x00, BFL4, DerefOf (DerefOf (Arg3) [0x01]
+                                ERR (Arg0, Z122, __LINE__, 0x00, 0x00, BFL4, DerefOf (DerefOf (Arg3) [0x01]
                                     ))
                                 Return (0x01)
                             }
 
                             If ((DerefOf (Arg2) != BFL4))
                             {
-                                ERR (Arg0, Z122, 0x05CD, 0x00, 0x00, DerefOf (Arg2), BFL4)
+                                ERR (Arg0, Z122, __LINE__, 0x00, 0x00, DerefOf (Arg2), BFL4)
                                 Return (0x01)
                             }
                         }
@@ -2259,7 +2259,7 @@
                     }
                     Else
                     {
-                        ERR (Arg0, Z122, 0x05EE, 0x00, 0x00, Local2, Arg2)
+                        ERR (Arg0, Z122, __LINE__, 0x00, 0x00, Local2, Arg2)
                     }
 
                     If (STCS)
@@ -2291,14 +2291,14 @@
                 {
                     /* Types mismatch Result/Target on storing */
 
-                    ERR (Arg0, Z122, 0x0605, 0x00, 0x00, Local2, Arg3)
+                    ERR (Arg0, Z122, __LINE__, 0x00, 0x00, Local2, Arg3)
                     Return (0x01)
                 }
                 ElseIf ((Local2 != 0x03))
                 {
                     /* Types mismatch Result/Target on storing */
                     /* Test fixed type Objects are converted to Buffer */
-                    ERR (Arg0, Z122, 0x060A, 0x00, 0x00, Local2, 0x03)
+                    ERR (Arg0, Z122, __LINE__, 0x00, 0x00, Local2, 0x03)
                     Return (0x01)
                 }
 
@@ -2346,7 +2346,7 @@
                 CopyObject (DerefOf (Arg1), MMM2) /* \M689.M006.MMM2 */
                 If ((MMM2 != Local7))
                 {
-                    ERR (Arg0, Z122, 0x062B, 0x00, 0x00, MMM2, Local7)
+                    ERR (Arg0, Z122, __LINE__, 0x00, 0x00, MMM2, Local7)
                     Return (0x01)
                 }
             }
@@ -2356,7 +2356,7 @@
 
                 If ((DerefOf (Arg1) != Local7))
                 {
-                    ERR (Arg0, Z122, 0x0630, 0x00, 0x00, DerefOf (Arg1), Local7)
+                    ERR (Arg0, Z122, __LINE__, 0x00, 0x00, DerefOf (Arg1), Local7)
                     Return (0x01)
                 }
             }
@@ -2367,7 +2367,7 @@
                 Local0 = SizeOf (Local7)
                 If ((SizeOf (Arg1) != Local0))
                 {
-                    ERR (Arg0, Z122, 0x0636, 0x00, 0x00, SizeOf (Arg1), Local0)
+                    ERR (Arg0, Z122, __LINE__, 0x00, 0x00, SizeOf (Arg1), Local0)
                     Return (0x01)
                 }
 
@@ -2380,7 +2380,7 @@
                     {
                         /* ObjectType is corrupted */
 
-                        ERR (Arg0, Z122, 0x063F, 0x00, 0x00, Local1, Local2)
+                        ERR (Arg0, Z122, __LINE__, 0x00, 0x00, Local1, Local2)
                         Return (0x01)
                     }
                     ElseIf (DerefOf (B679 [Local1]))
@@ -2392,7 +2392,7 @@
                         {
                             /* The value is corrupted */
 
-                            ERR (Arg0, Z122, 0x0647, 0x00, 0x00, DerefOf (DerefOf (Arg1) [Local0]),
+                            ERR (Arg0, Z122, __LINE__, 0x00, 0x00, DerefOf (DerefOf (Arg1) [Local0]),
                                 DerefOf (Local7 [Local0]))
                             Return (0x01)
                         }
@@ -2612,7 +2612,7 @@
             {
                 /* Source Object can not be prepared */
 
-                ERR (Concatenate (Arg0, TERR), Z122, 0x06D1, 0x00, 0x00, Arg3, 0x00)
+                ERR (Concatenate (Arg0, TERR), Z122, __LINE__, 0x00, 0x00, Arg3, 0x00)
                 Return (0x01)
             }
 
@@ -2647,7 +2647,7 @@
             {
                 /* Target Object can not be prepared */
 
-                ERR (Concatenate (Arg0, TERR), Z122, 0x06E2, 0x00, 0x00, Arg2, 0x00)
+                ERR (Concatenate (Arg0, TERR), Z122, __LINE__, 0x00, 0x00, Arg2, 0x00)
                 Return (0x01)
             }
 
@@ -2759,7 +2759,7 @@
                 {
                     /* Unexpected Kind of Op (0 - Store, ...) */
 
-                    ERR (Concatenate (Arg0, TERR), Z122, 0x071C, 0x00, 0x00, Arg4, 0x00)
+                    ERR (Concatenate (Arg0, TERR), Z122, __LINE__, 0x00, 0x00, Arg4, 0x00)
                     Return (0x01)
                 }
             }
@@ -2861,7 +2861,7 @@
                 {
                     /* Unexpected Kind of Op (0 - Store, ...) */
 
-                    ERR (Concatenate (Arg0, TERR), Z122, 0x074E, 0x00, 0x00, Arg4, 0x00)
+                    ERR (Concatenate (Arg0, TERR), Z122, __LINE__, 0x00, 0x00, Arg4, 0x00)
                     Return (0x01)
                 }
             }
@@ -2959,7 +2959,7 @@
             {
                 /* Unexpected Kind of Op (0 - Store, ...) */
 
-                ERR (Concatenate (Arg0, TERR), Z122, 0x0782, 0x00, 0x00, Arg4, 0x00)
+                ERR (Concatenate (Arg0, TERR), Z122, __LINE__, 0x00, 0x00, Arg4, 0x00)
                 Return (0x01)
             }
 
@@ -3242,7 +3242,7 @@ DerefOf (Index (Buffer (0x12)
             {
                 /* Source Object can not be prepared */
 
-                ERR (Concatenate (Arg0, TERR), Z122, 0x0839, 0x00, 0x00, Arg3, 0x00)
+                ERR (Concatenate (Arg0, TERR), Z122, __LINE__, 0x00, 0x00, Arg3, 0x00)
                 Return (0x01)
             }
 
@@ -3253,7 +3253,7 @@ DerefOf (Index (Buffer (0x12)
             {
                 /* Target Object can not be prepared */
 
-                ERR (Concatenate (Arg0, TERR), Z122, 0x0841, 0x00, 0x00, Arg2, 0x00)
+                ERR (Concatenate (Arg0, TERR), Z122, __LINE__, 0x00, 0x00, Arg2, 0x00)
                 Return (0x01)
             }
 
@@ -3361,7 +3361,7 @@ DerefOf (Index (Buffer (0x12)
             {
                 /* Unexpected Kind of Op (0 - Store, ...) */
 
-                ERR (Concatenate (Arg0, TERR), Z122, 0x087A, 0x00, 0x00, Arg4, 0x00)
+                ERR (Concatenate (Arg0, TERR), Z122, __LINE__, 0x00, 0x00, Arg4, 0x00)
                 Return (0x01)
             }
 
@@ -3493,7 +3493,7 @@ DerefOf (Index (Buffer (0x12)
             {
                 /* Source Object can not be prepared */
 
-                ERR (Concatenate (Arg0, TERR), Z122, 0x08D1, 0x00, 0x00, Arg3, 0x00)
+                ERR (Concatenate (Arg0, TERR), Z122, __LINE__, 0x00, 0x00, Arg3, 0x00)
                 Return (0x01)
             }
 
@@ -3528,7 +3528,7 @@ DerefOf (Index (Buffer (0x12)
             {
                 /* Target Object can not be prepared */
 
-                ERR (Concatenate (Arg0, TERR), Z122, 0x08E2, 0x00, 0x00, Arg2, 0x00)
+                ERR (Concatenate (Arg0, TERR), Z122, __LINE__, 0x00, 0x00, Arg2, 0x00)
                 Return (0x01)
             }
 
@@ -3561,7 +3561,7 @@ DerefOf (Index (Buffer (0x12)
                 {
                     /* Unexpected Kind of Op (0 - Store, ...) */
 
-                    ERR (Concatenate (Arg0, TERR), Z122, 0x08F3, 0x00, 0x00, Arg4, 0x00)
+                    ERR (Concatenate (Arg0, TERR), Z122, __LINE__, 0x00, 0x00, Arg4, 0x00)
                     Return (0x01)
                 }
             }
@@ -3585,7 +3585,7 @@ DerefOf (Index (Buffer (0x12)
                 {
                     /* Unexpected Kind of Op (0 - Store, ...) */
 
-                    ERR (Concatenate (Arg0, TERR), Z122, 0x08FD, 0x00, 0x00, Arg4, 0x00)
+                    ERR (Concatenate (Arg0, TERR), Z122, __LINE__, 0x00, 0x00, Arg4, 0x00)
                     Return (0x01)
                 }
             }
@@ -3605,7 +3605,7 @@ DerefOf (Index (Buffer (0x12)
             {
                 /* Unexpected Kind of Op (0 - Store, ...) */
 
-                ERR (Concatenate (Arg0, TERR), Z122, 0x0909, 0x00, 0x00, Arg4, 0x00)
+                ERR (Concatenate (Arg0, TERR), Z122, __LINE__, 0x00, 0x00, Arg4, 0x00)
                 Return (0x01)
             }
 
@@ -3812,7 +3812,7 @@ DerefOf (Index (Buffer (0x12)
             {
                 /* Source Object can not be prepared */
 
-                ERR (Concatenate (Arg0, TERR), Z122, 0x0995, 0x00, 0x00, Arg3, 0x00)
+                ERR (Concatenate (Arg0, TERR), Z122, __LINE__, 0x00, 0x00, Arg3, 0x00)
                 Return (0x01)
             }
 
@@ -3823,7 +3823,7 @@ DerefOf (Index (Buffer (0x12)
             {
                 /* Target Object can not be prepared */
 
-                ERR (Concatenate (Arg0, TERR), Z122, 0x099D, 0x00, 0x00, Arg2, 0x00)
+                ERR (Concatenate (Arg0, TERR), Z122, __LINE__, 0x00, 0x00, Arg2, 0x00)
                 Return (0x01)
             }
 
@@ -3852,7 +3852,7 @@ DerefOf (Index (Buffer (0x12)
             {
                 /* Unexpected Kind of Op (0 - Store, ...) */
 
-                ERR (Concatenate (Arg0, TERR), Z122, 0x09AD, 0x00, 0x00, Arg4, 0x00)
+                ERR (Concatenate (Arg0, TERR), Z122, __LINE__, 0x00, 0x00, Arg4, 0x00)
                 Return (0x01)
             }
 
@@ -4042,7 +4042,7 @@ DerefOf (Index (Buffer (0x12)
                 {
                     /* Source Object can not be prepared */
 
-                    ERR (Concatenate (Arg0, TERR), Z122, 0x0A2C, 0x00, 0x00, Arg3, 0x00)
+                    ERR (Concatenate (Arg0, TERR), Z122, __LINE__, 0x00, 0x00, Arg3, 0x00)
                     Return (0x01)
                 }
 
@@ -4151,7 +4151,7 @@ DerefOf (Index (Buffer (0x12)
                 {
                     /* Unexpected Kind of Op (0 - Store, ...) */
 
-                    ERR (Concatenate (Arg0, TERR), Z122, 0x0A69, 0x00, 0x00, Arg4, 0x00)
+                    ERR (Concatenate (Arg0, TERR), Z122, __LINE__, 0x00, 0x00, Arg4, 0x00)
                     Return (0x01)
                 }
 
@@ -4311,7 +4311,7 @@ DerefOf (Index (Buffer (0x12)
             {
                 /* Target Object can not be prepared */
 
-                ERR (Concatenate (Arg0, TERR), Z122, 0x0ACE, 0x00, 0x00, Arg2, 0x00)
+                ERR (Concatenate (Arg0, TERR), Z122, __LINE__, 0x00, 0x00, Arg2, 0x00)
                 Return (0x01)
             }
 
@@ -4451,7 +4451,7 @@ DerefOf (Index (Buffer (0x12)
                 {
                     /* Source Object can not be prepared */
 
-                    ERR (Concatenate (Arg0, TERR), Z122, 0x0B2D, 0x00, 0x00, Arg3, 0x00)
+                    ERR (Concatenate (Arg0, TERR), Z122, __LINE__, 0x00, 0x00, Arg3, 0x00)
                     Return (0x01)
                 }
 
@@ -4559,7 +4559,7 @@ DerefOf (Index (Buffer (0x12)
                 {
                     /* Unexpected Kind of Op (0 - Store, ...) */
 
-                    ERR (Concatenate (Arg0, TERR), Z122, 0x0B68, 0x00, 0x00, Arg4, 0x00)
+                    ERR (Concatenate (Arg0, TERR), Z122, __LINE__, 0x00, 0x00, Arg4, 0x00)
                     Return (0x01)
                 }
 
@@ -4727,7 +4727,7 @@ DerefOf (Index (Buffer (0x12)
             {
                 /* Target Object can not be prepared */
 
-                ERR (Concatenate (Arg0, TERR), Z122, 0x0BD0, 0x00, 0x00, Arg2, 0x00)
+                ERR (Concatenate (Arg0, TERR), Z122, __LINE__, 0x00, 0x00, Arg2, 0x00)
                 Return (0x01)
             }
 
@@ -4778,7 +4778,7 @@ DerefOf (Index (Buffer (0x12)
             {
                 /* Source Object can not be prepared */
 
-                ERR (Concatenate (Arg0, TERR), Z122, 0x0BF6, 0x00, 0x00, Arg3, 0x00)
+                ERR (Concatenate (Arg0, TERR), Z122, __LINE__, 0x00, 0x00, Arg3, 0x00)
                 Return (0x01)
             }
 
@@ -4790,7 +4790,7 @@ DerefOf (Index (Buffer (0x12)
             {
                 /* Target Object can not be prepared */
 
-                ERR (Concatenate (Arg0, TERR), Z122, 0x0BFF, 0x00, 0x00, Arg2, 0x00)
+                ERR (Concatenate (Arg0, TERR), Z122, __LINE__, 0x00, 0x00, Arg2, 0x00)
                 Return (0x01)
             }
 
@@ -4807,7 +4807,7 @@ DerefOf (Index (Buffer (0x12)
             {
                 /* Target Object can not be prepared */
 
-                ERR (Concatenate (Arg0, TERR), Z122, 0x0C0B, 0x00, 0x00, Arg2, 0x00)
+                ERR (Concatenate (Arg0, TERR), Z122, __LINE__, 0x00, 0x00, Arg2, 0x00)
                 Return (0x01)
             }
 
@@ -4825,7 +4825,7 @@ DerefOf (Index (Buffer (0x12)
             {
                 /* Unexpected Kind of Op (0 - Store, ...) */
 
-                ERR (Concatenate (Arg0, TERR), Z122, 0x0C16, 0x00, 0x00, Arg4, 0x00)
+                ERR (Concatenate (Arg0, TERR), Z122, __LINE__, 0x00, 0x00, Arg4, 0x00)
                 Return (0x01)
             }
 
@@ -4973,7 +4973,7 @@ DerefOf (Index (Buffer (0x12)
 
                 Default
                 {
-                    ERR (Concatenate (Arg0, TERR), Z122, 0x0C7C, 0x00, 0x00, Arg1, 0x00)
+                    ERR (Concatenate (Arg0, TERR), Z122, __LINE__, 0x00, 0x00, Arg1, 0x00)
                     Return (0x01)
                 }
 
@@ -4998,7 +4998,7 @@ DerefOf (Index (Buffer (0x12)
             {
                 /* ObjectType of Target can not be set up */
 
-                ERR (Arg0, Z122, 0x0C8D, 0x00, 0x00, Local0, Arg1)
+                ERR (Arg0, Z122, __LINE__, 0x00, 0x00, Local0, Arg1)
                 Return (0x01)
             }
 
@@ -5031,7 +5031,7 @@ DerefOf (Index (Buffer (0x12)
                 {
                     /* ObjectType of Target object is corrupted */
 
-                    ERR (Arg0, Z122, 0x0CA8, 0x00, 0x00, Local0, Arg1)
+                    ERR (Arg0, Z122, __LINE__, 0x00, 0x00, Local0, Arg1)
                     Return (0x01)
                 }
             }
@@ -5116,7 +5116,7 @@ DerefOf (Index (Buffer (0x12)
 
                 Default
                 {
-                    ERR (Arg0, Z122, 0x0CE6, 0x00, 0x00, Arg1, 0x00)
+                    ERR (Arg0, Z122, __LINE__, 0x00, 0x00, Arg1, 0x00)
                     Return (0x01)
                 }
 
@@ -5126,7 +5126,7 @@ DerefOf (Index (Buffer (0x12)
             {
                 /* Mismatch of Target Type against the specified one */
 
-                ERR (Arg0, Z122, 0x0CED, 0x00, 0x00, Local0, Arg1)
+                ERR (Arg0, Z122, __LINE__, 0x00, 0x00, Local0, Arg1)
                 If (STCS)
                 {
                     M000 (0x03, 0x01000000, Local0, Arg1)
@@ -5144,13 +5144,13 @@ DerefOf (Index (Buffer (0x12)
                     {
                         If ((INT1 != DerefOf (Arg3)))
                         {
-                            ERR (Arg0, Z122, 0x0CF7, 0x00, 0x00, INT1, DerefOf (Arg3))
+                            ERR (Arg0, Z122, __LINE__, 0x00, 0x00, INT1, DerefOf (Arg3))
                             Return (0x01)
                         }
 
                         If ((DerefOf (Arg2) != INT1))
                         {
-                            ERR (Arg0, Z122, 0x0CFB, 0x00, 0x00, DerefOf (Arg2), INT1)
+                            ERR (Arg0, Z122, __LINE__, 0x00, 0x00, DerefOf (Arg2), INT1)
                             Return (0x01)
                         }
                     }
@@ -5158,13 +5158,13 @@ DerefOf (Index (Buffer (0x12)
                     {
                         If ((STR1 != DerefOf (Arg3)))
                         {
-                            ERR (Arg0, Z122, 0x0D01, 0x00, 0x00, STR1, DerefOf (Arg3))
+                            ERR (Arg0, Z122, __LINE__, 0x00, 0x00, STR1, DerefOf (Arg3))
                             Return (0x01)
                         }
 
                         If ((DerefOf (Arg2) != STR1))
                         {
-                            ERR (Arg0, Z122, 0x0D05, 0x00, 0x00, DerefOf (Arg2), STR1)
+                            ERR (Arg0, Z122, __LINE__, 0x00, 0x00, DerefOf (Arg2), STR1)
                             Return (0x01)
                         }
                     }
@@ -5172,13 +5172,13 @@ DerefOf (Index (Buffer (0x12)
                     {
                         If ((BUF1 != DerefOf (Arg3)))
                         {
-                            ERR (Arg0, Z122, 0x0D0B, 0x00, 0x00, BUF1, DerefOf (Arg3))
+                            ERR (Arg0, Z122, __LINE__, 0x00, 0x00, BUF1, DerefOf (Arg3))
                             Return (0x01)
                         }
 
                         If ((DerefOf (Arg2) != BUF1))
                         {
-                            ERR (Arg0, Z122, 0x0D0F, 0x00, 0x00, DerefOf (Arg2), BUF1)
+                            ERR (Arg0, Z122, __LINE__, 0x00, 0x00, DerefOf (Arg2), BUF1)
                             Return (0x01)
                         }
                     }
@@ -5187,7 +5187,7 @@ DerefOf (Index (Buffer (0x12)
                         Local0 = SizeOf (PAC1)
                         If ((SizeOf (Arg3) != Local0))
                         {
-                            ERR (Arg0, Z122, 0x0D17, 0x00, 0x00, SizeOf (Arg3), Local0)
+                            ERR (Arg0, Z122, __LINE__, 0x00, 0x00, SizeOf (Arg3), Local0)
                             Return (0x01)
                         }
 
@@ -5200,7 +5200,7 @@ DerefOf (Index (Buffer (0x12)
                             {
                                 /* ObjectType is corrupted */
 
-                                ERR (Arg0, Z122, 0x0D20, 0x00, 0x00, Local1, Local2)
+                                ERR (Arg0, Z122, __LINE__, 0x00, 0x00, Local1, Local2)
                                 Return (0x01)
                             }
                             ElseIf (DerefOf (B679 [Local1]))
@@ -5212,7 +5212,7 @@ DerefOf (Index (Buffer (0x12)
                                 {
                                     /* The value is corrupted */
 
-                                    ERR (Arg0, Z122, 0x0D28, 0x00, 0x00, DerefOf (DerefOf (Arg3) [Local0]),
+                                    ERR (Arg0, Z122, __LINE__, 0x00, 0x00, DerefOf (DerefOf (Arg3) [Local0]),
                                         Local0)
                                     Return (0x01)
                                 }
@@ -5222,7 +5222,7 @@ DerefOf (Index (Buffer (0x12)
                         Local0 = SizeOf (PAC1)
                         If ((SizeOf (Arg2) != Local0))
                         {
-                            ERR (Arg0, Z122, 0x0D30, 0x00, 0x00, SizeOf (Arg2), Local0)
+                            ERR (Arg0, Z122, __LINE__, 0x00, 0x00, SizeOf (Arg2), Local0)
                             Return (0x01)
                         }
 
@@ -5235,7 +5235,7 @@ DerefOf (Index (Buffer (0x12)
                             {
                                 /* ObjectType is corrupted */
 
-                                ERR (Arg0, Z122, 0x0D39, 0x00, 0x00, Local1, Local2)
+                                ERR (Arg0, Z122, __LINE__, 0x00, 0x00, Local1, Local2)
                                 Return (0x01)
                             }
                             ElseIf (DerefOf (B679 [Local1]))
@@ -5247,7 +5247,7 @@ DerefOf (Index (Buffer (0x12)
                                 {
                                     /* The value is corrupted */
 
-                                    ERR (Arg0, Z122, 0x0D41, 0x00, 0x00, DerefOf (DerefOf (Arg2) [Local0]),
+                                    ERR (Arg0, Z122, __LINE__, 0x00, 0x00, DerefOf (DerefOf (Arg2) [Local0]),
                                         Local0)
                                     Return (0x01)
                                 }
@@ -5258,7 +5258,7 @@ DerefOf (Index (Buffer (0x12)
                     {
                         If ((DerefOf (Arg2) != DerefOf (Arg3)))
                         {
-                            ERR (Arg0, Z122, 0x0D49, 0x00, 0x00, DerefOf (Arg2), DerefOf (Arg3))
+                            ERR (Arg0, Z122, __LINE__, 0x00, 0x00, DerefOf (Arg2), DerefOf (Arg3))
                             Return (0x01)
                         }
                     }
@@ -5267,7 +5267,7 @@ DerefOf (Index (Buffer (0x12)
                         CopyObject (DerefOf (Arg2), MMM2) /* \M689.M015.MMM2 */
                         If ((MMM2 != MMM1))
                         {
-                            ERR (Arg0, Z122, 0x0D50, 0x00, 0x00, MMM2, MMM1)
+                            ERR (Arg0, Z122, __LINE__, 0x00, 0x00, MMM2, MMM1)
                             Return (0x01)
                         }
                     }
@@ -5275,7 +5275,7 @@ DerefOf (Index (Buffer (0x12)
                     {
                         If ((DerefOf (Arg2) != DerefOf (Arg3)))
                         {
-                            ERR (Arg0, Z122, 0x0D56, 0x00, 0x00, DerefOf (Arg2), DerefOf (Arg3))
+                            ERR (Arg0, Z122, __LINE__, 0x00, 0x00, DerefOf (Arg2), DerefOf (Arg3))
                             Return (0x01)
                         }
                     }
@@ -5371,7 +5371,7 @@ DerefOf (Index (Buffer (0x12)
 
                 Default
                 {
-                    ERR (Arg0, Z122, 0x0D9D, 0x00, 0x00, Arg1, 0x00)
+                    ERR (Arg0, Z122, __LINE__, 0x00, 0x00, Arg1, 0x00)
                     Return (0x01)
                 }
 
@@ -5381,7 +5381,7 @@ DerefOf (Index (Buffer (0x12)
             {
                 /* Mismatch of Target Type against the specified one */
 
-                ERR (Arg0, Z122, 0x0DA4, 0x00, 0x00, Local0, Arg1)
+                ERR (Arg0, Z122, __LINE__, 0x00, 0x00, Local0, Arg1)
                 If (STCS)
                 {
                     M000 (0x03, 0x01000000, Local0, Arg1)
@@ -5399,7 +5399,7 @@ DerefOf (Index (Buffer (0x12)
                     {
                         If ((INT1 != DerefOf (Arg3)))
                         {
-                            ERR (Arg0, Z122, 0x0DAE, 0x00, 0x00, INT1, DerefOf (Arg3))
+                            ERR (Arg0, Z122, __LINE__, 0x00, 0x00, INT1, DerefOf (Arg3))
                             Return (0x01)
                         }
                     }
@@ -5407,7 +5407,7 @@ DerefOf (Index (Buffer (0x12)
                     {
                         If ((STR1 != DerefOf (Arg3)))
                         {
-                            ERR (Arg0, Z122, 0x0DB4, 0x00, 0x00, STR1, DerefOf (Arg3))
+                            ERR (Arg0, Z122, __LINE__, 0x00, 0x00, STR1, DerefOf (Arg3))
                             Return (0x01)
                         }
                     }
@@ -5415,7 +5415,7 @@ DerefOf (Index (Buffer (0x12)
                     {
                         If ((BUF1 != DerefOf (Arg3)))
                         {
-                            ERR (Arg0, Z122, 0x0DBA, 0x00, 0x00, BUF1, DerefOf (Arg3))
+                            ERR (Arg0, Z122, __LINE__, 0x00, 0x00, BUF1, DerefOf (Arg3))
                             Return (0x01)
                         }
                     }
@@ -5424,7 +5424,7 @@ DerefOf (Index (Buffer (0x12)
                         Local0 = SizeOf (PAC1)
                         If ((SizeOf (Arg3) != Local0))
                         {
-                            ERR (Arg0, Z122, 0x0DC2, 0x00, 0x00, SizeOf (Arg3), Local0)
+                            ERR (Arg0, Z122, __LINE__, 0x00, 0x00, SizeOf (Arg3), Local0)
                             Return (0x01)
                         }
 
@@ -5437,7 +5437,7 @@ DerefOf (Index (Buffer (0x12)
                             {
                                 /* ObjectType is corrupted */
 
-                                ERR (Arg0, Z122, 0x0DCB, 0x00, 0x00, Local1, Local2)
+                                ERR (Arg0, Z122, __LINE__, 0x00, 0x00, Local1, Local2)
                                 Return (0x01)
                             }
                             ElseIf (DerefOf (B679 [Local1]))
@@ -5449,7 +5449,7 @@ DerefOf (Index (Buffer (0x12)
                                 {
                                     /* The value is corrupted */
 
-                                    ERR (Arg0, Z122, 0x0DD3, 0x00, 0x00, DerefOf (DerefOf (Arg3) [Local0]),
+                                    ERR (Arg0, Z122, __LINE__, 0x00, 0x00, DerefOf (DerefOf (Arg3) [Local0]),
                                         Local0)
                                     Return (0x01)
                                 }
@@ -7067,7 +7067,7 @@ DerefOf (Index (Buffer (0x12)
             {
                 /* Unexpected Kind of Op (0 - Store, ...) */
 
-                ERR (Concatenate (Arg0, TERR), Z122, 0x10F7, 0x00, 0x00, Arg1, 0x00)
+                ERR (Concatenate (Arg0, TERR), Z122, __LINE__, 0x00, 0x00, Arg1, 0x00)
                 Return (0x01)
             }
 
@@ -7075,7 +7075,7 @@ DerefOf (Index (Buffer (0x12)
             {
                 /* Unexpected Kind of Source-Target pair */
 
-                ERR (Concatenate (Arg0, TERR), Z122, 0x10FD, 0x00, 0x00, Arg5, 0x00)
+                ERR (Concatenate (Arg0, TERR), Z122, __LINE__, 0x00, 0x00, Arg5, 0x00)
                 Return (0x01)
             }
 
@@ -7146,7 +7146,7 @@ DerefOf (Index (Buffer (0x12)
                             {
                                 /* Unexpected data package */
 
-                                ERR (Concatenate (Arg0, TERR), Z122, 0x1130, 0x00, 0x00, Arg1, LPC1)
+                                ERR (Concatenate (Arg0, TERR), Z122, __LINE__, 0x00, 0x00, Arg1, LPC1)
                                 Return (0x01)
                             }
 

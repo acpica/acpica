@@ -41,16 +41,16 @@
     {
         If ((ID1F != 0x32))
         {
-            ERR ("", ZFFF, 0x2E, 0x00, 0x00, ID1F, 0x32)
+            ERR (__METHOD__, ZFFF, __LINE__, 0x00, 0x00, ID1F, 0x32)
         }
 
         If ((ID20 != 0x08))
         {
-            ERR ("", ZFFF, 0x32, 0x00, 0x00, ID20, 0x08)
+            ERR (__METHOD__, ZFFF, __LINE__, 0x00, 0x00, ID20, 0x08)
         }
 
         If ((BFD3 != 0x99))
         {
-            ERR ("", ZFFF, 0x36, 0x00, 0x00, BFD3, 0x99)
+            ERR (__METHOD__, ZFFF, __LINE__, 0x00, 0x00, BFD3, 0x99)
         }
     }

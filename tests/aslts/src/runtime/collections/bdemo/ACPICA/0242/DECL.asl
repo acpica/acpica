@@ -53,7 +53,7 @@
             If (Local0)
             {
                 Debug = "ERROR: Acquire T000 (Level 0, index 0)"
-                ERR ("", ZFFF, 0x3E, 0x00, 0x00, 0x00, 0x00)
+                ERR (__METHOD__, ZFFF, __LINE__, 0x00, 0x00, 0x00, 0x00)
             }
             Else
             {
@@ -64,7 +64,7 @@
             If (Local0)
             {
                 Debug = "ERROR: Acquire T001 (Level 0, index 1)"
-                ERR ("", ZFFF, 0x46, 0x00, 0x00, 0x00, 0x00)
+                ERR (__METHOD__, ZFFF, __LINE__, 0x00, 0x00, 0x00, 0x00)
             }
             Else
             {
@@ -75,7 +75,7 @@
             If (Local0)
             {
                 Debug = "ERROR: Acquire T002 (Level 0, index 2)"
-                ERR ("", ZFFF, 0x4E, 0x00, 0x00, 0x00, 0x00)
+                ERR (__METHOD__, ZFFF, __LINE__, 0x00, 0x00, 0x00, 0x00)
             }
             Else
             {
@@ -86,7 +86,7 @@
             If (Local0)
             {
                 Debug = "ERROR: Acquire T003 (Level 0, index 3)"
-                ERR ("", ZFFF, 0x56, 0x00, 0x00, 0x00, 0x00)
+                ERR (__METHOD__, ZFFF, __LINE__, 0x00, 0x00, 0x00, 0x00)
             }
             Else
             {
@@ -125,7 +125,7 @@
             If (Local0)
             {
                 Debug = "ERROR: Acquire T100 (Level 1, index 0)"
-                ERR ("", ZFFF, 0x81, 0x00, 0x00, 0x00, 0x00)
+                ERR (__METHOD__, ZFFF, __LINE__, 0x00, 0x00, 0x00, 0x00)
             }
             Else
             {
@@ -136,7 +136,7 @@
             If (Local0)
             {
                 Debug = "ERROR: Acquire T101 (Level 1, index 1)"
-                ERR ("", ZFFF, 0x89, 0x00, 0x00, 0x00, 0x00)
+                ERR (__METHOD__, ZFFF, __LINE__, 0x00, 0x00, 0x00, 0x00)
             }
             Else
             {
@@ -147,7 +147,7 @@
             If (Local0)
             {
                 Debug = "ERROR: Acquire T102 (Level 1, index 2)"
-                ERR ("", ZFFF, 0x91, 0x00, 0x00, 0x00, 0x00)
+                ERR (__METHOD__, ZFFF, __LINE__, 0x00, 0x00, 0x00, 0x00)
             }
             Else
             {
@@ -158,7 +158,7 @@
             If (Local0)
             {
                 Debug = "ERROR: Acquire T103 (Level 1, index 3)"
-                ERR ("", ZFFF, 0x99, 0x00, 0x00, 0x00, 0x00)
+                ERR (__METHOD__, ZFFF, __LINE__, 0x00, 0x00, 0x00, 0x00)
             }
             Else
             {
@@ -198,7 +198,7 @@
             If (Local0)
             {
                 Debug = "ERROR: Acquire T100 (Level 1, index 0)"
-                ERR ("", ZFFF, 0xC5, 0x00, 0x00, 0x00, 0x00)
+                ERR (__METHOD__, ZFFF, __LINE__, 0x00, 0x00, 0x00, 0x00)
             }
             Else
             {
@@ -209,7 +209,7 @@
             If (Local0)
             {
                 Debug = "ERROR: Acquire T101 (Level 1, index 1)"
-                ERR ("", ZFFF, 0xCD, 0x00, 0x00, 0x00, 0x00)
+                ERR (__METHOD__, ZFFF, __LINE__, 0x00, 0x00, 0x00, 0x00)
             }
             Else
             {
@@ -220,7 +220,7 @@
             If (Local0)
             {
                 Debug = "ERROR: Acquire T102 (Level 1, index 2)"
-                ERR ("", ZFFF, 0xD5, 0x00, 0x00, 0x00, 0x00)
+                ERR (__METHOD__, ZFFF, __LINE__, 0x00, 0x00, 0x00, 0x00)
             }
             Else
             {
@@ -231,7 +231,7 @@
             If (Local0)
             {
                 Debug = "ERROR: Acquire T103 (Level 1, index 3)"
-                ERR ("", ZFFF, 0xDD, 0x00, 0x00, 0x00, 0x00)
+                ERR (__METHOD__, ZFFF, __LINE__, 0x00, 0x00, 0x00, 0x00)
             }
             Else
             {

@@ -137,7 +137,7 @@
             Debug = "m016"
             If ((I000 != 0x11))
             {
-                ERR (__METHOD__, Z173, 0x3F, 0x00, 0x00, I000, 0x11)
+                ERR (__METHOD__, Z173, __LINE__, 0x00, 0x00, I000, 0x11)
             }
         }
 
@@ -255,7 +255,7 @@
             Debug = "m016"
             If ((I000 != 0x11))
             {
-                ERR (__METHOD__, Z173, 0x65, 0x00, 0x00, I000, 0x11)
+                ERR (__METHOD__, Z173, __LINE__, 0x00, 0x00, I000, 0x11)
             }
         }
 
@@ -440,7 +440,7 @@
             Debug = "m016"
             If ((I000 != 0x1C))
             {
-                ERR (__METHOD__, Z173, 0xA6, 0x00, 0x00, I000, 0x1C)
+                ERR (__METHOD__, Z173, __LINE__, 0x00, 0x00, I000, 0x1C)
             }
 
             I001 = 0xABCD0000
@@ -450,7 +450,7 @@
         M000 ()
         If ((I001 != 0xABCD0000))
         {
-            ERR (__METHOD__, Z173, 0xAF, 0x00, 0x00, I001, 0xABCD0000)
+            ERR (__METHOD__, Z173, __LINE__, 0x00, 0x00, I001, 0xABCD0000)
         }
 
         CH03 (__METHOD__, Z173, 0x09, 0xB1, 0x00)
@@ -811,12 +811,12 @@
         {
             If ((I003 != Arg0))
             {
-                ERR (__METHOD__, Z173, 0x0137, 0x00, 0x00, I003, Arg0)
+                ERR (__METHOD__, Z173, __LINE__, 0x00, 0x00, I003, Arg0)
             }
 
             If ((I004 != Arg1))
             {
-                ERR (__METHOD__, Z173, 0x013A, 0x00, 0x00, I004, Arg1)
+                ERR (__METHOD__, Z173, __LINE__, 0x00, 0x00, I004, Arg1)
             }
         }
 
@@ -1180,12 +1180,12 @@
         {
             If ((I003 != Arg0))
             {
-                ERR (__METHOD__, Z173, 0x01BB, 0x00, 0x00, I003, Arg0)
+                ERR (__METHOD__, Z173, __LINE__, 0x00, 0x00, I003, Arg0)
             }
 
             If ((I004 != Arg1))
             {
-                ERR (__METHOD__, Z173, 0x01BE, 0x00, 0x00, I004, Arg1)
+                ERR (__METHOD__, Z173, __LINE__, 0x00, 0x00, I004, Arg1)
             }
         }
 
@@ -1590,12 +1590,12 @@
         {
             If ((I003 != Arg0))
             {
-                ERR (__METHOD__, Z173, 0x0268, 0x00, 0x00, I003, Arg0)
+                ERR (__METHOD__, Z173, __LINE__, 0x00, 0x00, I003, Arg0)
             }
 
             If ((I004 != Arg1))
             {
-                ERR (__METHOD__, Z173, 0x026B, 0x00, 0x00, I004, Arg1)
+                ERR (__METHOD__, Z173, __LINE__, 0x00, 0x00, I004, Arg1)
             }
         }
 
@@ -1984,7 +1984,7 @@
             {
                 If (Local0)
                 {
-                    ERR (__METHOD__, Z173, 0x0327, 0x00, 0x00, 0x00, Local0)
+                    ERR (__METHOD__, Z173, __LINE__, 0x00, 0x00, 0x00, Local0)
                 }
             }
 
@@ -2011,7 +2011,7 @@
             {
                 If (Local0)
                 {
-                    ERR (__METHOD__, Z173, 0x0338, 0x00, 0x00, 0x00, Local0)
+                    ERR (__METHOD__, Z173, __LINE__, 0x00, 0x00, 0x00, Local0)
                 }
             }
 
@@ -2038,7 +2038,7 @@
             {
                 If (Local0)
                 {
-                    ERR (__METHOD__, Z173, 0x0349, 0x00, 0x00, 0x00, Local0)
+                    ERR (__METHOD__, Z173, __LINE__, 0x00, 0x00, 0x00, Local0)
                 }
             }
 
@@ -2065,7 +2065,7 @@
             {
                 If (Local0)
                 {
-                    ERR (__METHOD__, Z173, 0x035A, 0x00, 0x00, 0x00, Local0)
+                    ERR (__METHOD__, Z173, __LINE__, 0x00, 0x00, 0x00, Local0)
                 }
             }
 
@@ -2092,7 +2092,7 @@
             {
                 If (Local0)
                 {
-                    ERR (__METHOD__, Z173, 0x036B, 0x00, 0x00, 0x00, Local0)
+                    ERR (__METHOD__, Z173, __LINE__, 0x00, 0x00, 0x00, Local0)
                 }
             }
 
@@ -2119,7 +2119,7 @@
             {
                 If (Local0)
                 {
-                    ERR (__METHOD__, Z173, 0x037C, 0x00, 0x00, 0x00, Local0)
+                    ERR (__METHOD__, Z173, __LINE__, 0x00, 0x00, 0x00, Local0)
                 }
             }
 
@@ -2146,7 +2146,7 @@
             {
                 If (Local0)
                 {
-                    ERR (__METHOD__, Z173, 0x038D, 0x00, 0x00, 0x00, Local0)
+                    ERR (__METHOD__, Z173, __LINE__, 0x00, 0x00, 0x00, Local0)
                 }
             }
 
@@ -2173,7 +2173,7 @@
             {
                 If (Local0)
                 {
-                    ERR (__METHOD__, Z173, 0x039E, 0x00, 0x00, 0x00, Local0)
+                    ERR (__METHOD__, Z173, __LINE__, 0x00, 0x00, 0x00, Local0)
                 }
             }
 
@@ -2200,7 +2200,7 @@
             {
                 If (Local0)
                 {
-                    ERR (__METHOD__, Z173, 0x03AF, 0x00, 0x00, 0x00, Local0)
+                    ERR (__METHOD__, Z173, __LINE__, 0x00, 0x00, 0x00, Local0)
                 }
             }
 
@@ -2227,7 +2227,7 @@
             {
                 If (Local0)
                 {
-                    ERR (__METHOD__, Z173, 0x03C0, 0x00, 0x00, 0x00, Local0)
+                    ERR (__METHOD__, Z173, __LINE__, 0x00, 0x00, 0x00, Local0)
                 }
             }
 
@@ -2254,7 +2254,7 @@
             {
                 If (Local0)
                 {
-                    ERR (__METHOD__, Z173, 0x03D1, 0x00, 0x00, 0x00, Local0)
+                    ERR (__METHOD__, Z173, __LINE__, 0x00, 0x00, 0x00, Local0)
                 }
             }
 
@@ -2281,7 +2281,7 @@
             {
                 If (Local0)
                 {
-                    ERR (__METHOD__, Z173, 0x03E2, 0x00, 0x00, 0x00, Local0)
+                    ERR (__METHOD__, Z173, __LINE__, 0x00, 0x00, 0x00, Local0)
                 }
             }
 
@@ -2308,7 +2308,7 @@
             {
                 If (Local0)
                 {
-                    ERR (__METHOD__, Z173, 0x03F3, 0x00, 0x00, 0x00, Local0)
+                    ERR (__METHOD__, Z173, __LINE__, 0x00, 0x00, 0x00, Local0)
                 }
             }
 
@@ -2335,7 +2335,7 @@
             {
                 If (Local0)
                 {
-                    ERR (__METHOD__, Z173, 0x0404, 0x00, 0x00, 0x00, Local0)
+                    ERR (__METHOD__, Z173, __LINE__, 0x00, 0x00, 0x00, Local0)
                 }
             }
 
@@ -2362,7 +2362,7 @@
             {
                 If (Local0)
                 {
-                    ERR (__METHOD__, Z173, 0x0415, 0x00, 0x00, 0x00, Local0)
+                    ERR (__METHOD__, Z173, __LINE__, 0x00, 0x00, 0x00, Local0)
                 }
             }
 
@@ -2389,7 +2389,7 @@
             {
                 If (Local0)
                 {
-                    ERR (__METHOD__, Z173, 0x0426, 0x00, 0x00, 0x00, Local0)
+                    ERR (__METHOD__, Z173, __LINE__, 0x00, 0x00, 0x00, Local0)
                 }
             }
 
@@ -2634,12 +2634,12 @@
         {
             If ((I003 != Arg0))
             {
-                ERR (__METHOD__, Z173, 0x04DA, 0x00, 0x00, I003, Arg0)
+                ERR (__METHOD__, Z173, __LINE__, 0x00, 0x00, I003, Arg0)
             }
 
             If ((I004 != Arg1))
             {
-                ERR (__METHOD__, Z173, 0x04DD, 0x00, 0x00, I004, Arg1)
+                ERR (__METHOD__, Z173, __LINE__, 0x00, 0x00, I004, Arg1)
             }
         }
 

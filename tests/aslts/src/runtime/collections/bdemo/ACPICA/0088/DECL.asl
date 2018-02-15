@@ -48,7 +48,7 @@
 
         If ((Local0 != 0x01))
         {
-            ERR ("", ZFFF, 0x31, 0x00, 0x00, Local0, 0x01)
+            ERR (__METHOD__, ZFFF, __LINE__, 0x00, 0x00, Local0, 0x01)
         }
     }
 
@@ -75,7 +75,7 @@
 
         If ((Local0 != 0x01))
         {
-            ERR ("", ZFFF, 0x43, 0x00, 0x00, Local0, 0x01)
+            ERR (__METHOD__, ZFFF, __LINE__, 0x00, 0x00, Local0, 0x01)
         }
     }
 

@@ -70,12 +70,12 @@
 
                 If ((Arg0 != II00))
                 {
-                    ERR ("", ZFFF, 0x4C, 0x00, 0x00, Arg0, II00)
+                    ERR (__METHOD__, ZFFF, __LINE__, 0x00, 0x00, Arg0, II00)
                 }
 
                 If ((Arg0 != Local5))
                 {
-                    ERR ("", ZFFF, 0x4F, 0x00, 0x00, Arg0, Local5)
+                    ERR (__METHOD__, ZFFF, __LINE__, 0x00, 0x00, Arg0, Local5)
                 }
             }
 

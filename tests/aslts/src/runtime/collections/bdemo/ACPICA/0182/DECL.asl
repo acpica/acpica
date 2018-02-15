@@ -39,13 +39,13 @@
         CH03 ("", 0x00, 0x00, 0x2A, 0x00)
         If ((ID23 != 0xABCD0000))
         {
-            ERR ("", ZFFF, 0x2D, 0x00, 0x00, ID23, 0xABCD0000)
+            ERR (__METHOD__, ZFFF, __LINE__, 0x00, 0x00, ID23, 0xABCD0000)
         }
 
         Name (ID23, 0xABCD0001)
         If ((ID23 != 0xABCD0001))
         {
-            ERR ("", ZFFF, 0x33, 0x00, 0x00, ID23, 0xABCD0001)
+            ERR (__METHOD__, ZFFF, __LINE__, 0x00, 0x00, ID23, 0xABCD0001)
         }
 
         CH03 ("", 0x00, 0x03, 0x36, 0x00)
@@ -60,7 +60,7 @@
         CH03 ("", 0x00, 0x04, 0x3F, 0x00)
         If ((I9Z8 != 0xABCD0001))
         {
-            ERR ("", ZFFF, 0x42, 0x00, 0x00, I9Z8, 0xABCD0001)
+            ERR (__METHOD__, ZFFF, __LINE__, 0x00, 0x00, I9Z8, 0xABCD0001)
         }
 
         Name (I9Z8, 0xABCD0001)

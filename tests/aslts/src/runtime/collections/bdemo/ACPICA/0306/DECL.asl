@@ -43,13 +43,13 @@
         Local0 = "87654321"
         If ((ObjectType (Local0) != 0x02))
         {
-            ERR ("", ZFFF, 0x32, 0x00, 0x00, ObjectType (Local0), 0x02)
+            ERR (__METHOD__, ZFFF, __LINE__, 0x00, 0x00, ObjectType (Local0), 0x02)
         }
 
         M000 (RefOf (Local1))
         If ((ObjectType (Local1) != 0x02))
         {
-            ERR ("", ZFFF, 0x38, 0x00, 0x00, ObjectType (Local1), 0x02)
+            ERR (__METHOD__, ZFFF, __LINE__, 0x00, 0x00, ObjectType (Local1), 0x02)
         }
 
         Local3 = RefOf (Local2)
@@ -58,7 +58,7 @@
         DerefOf (Local4) = "87654321"
         If ((ObjectType (Local2) != 0x02))
         {
-            ERR ("", ZFFF, 0x42, 0x00, 0x00, ObjectType (Local2), 0x02)
+            ERR (__METHOD__, ZFFF, __LINE__, 0x00, 0x00, ObjectType (Local2), 0x02)
         }
 
         CH03 ("", 0x00, 0x04, 0x45, 0x00)

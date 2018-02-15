@@ -56,7 +56,7 @@
             RFU0 = BUF0 /* \D290.BUF0 */
             If (CondRefOf (\AUXD, Local0))
             {
-                ERR ("", ZFFF, 0x3E, 0x00, 0x00, "\\AUXD", 0x01)
+                ERR (__METHOD__, ZFFF, __LINE__, 0x00, 0x00, "\\AUXD", 0x01)
                 Return (Zero)
             }
 
@@ -68,7 +68,7 @@
             ElseIf (CondRefOf (\AUXD, Local0)){}
             Else
             {
-                ERR ("", ZFFF, 0x48, 0x00, 0x00, "\\AUXD", 0x00)
+                ERR (__METHOD__, ZFFF, __LINE__, 0x00, 0x00, "\\AUXD", 0x00)
                 Return (Zero)
             }
 
@@ -77,7 +77,7 @@
             Debug = "SSDT unloaded"
             If (CondRefOf (\AUXD, Local0))
             {
-                ERR ("", ZFFF, 0x53, 0x00, 0x00, "\\AUXD", 0x01)
+                ERR (__METHOD__, ZFFF, __LINE__, 0x00, 0x00, "\\AUXD", 0x01)
             }
 
             Return (Zero)

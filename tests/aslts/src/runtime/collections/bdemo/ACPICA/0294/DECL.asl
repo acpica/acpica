@@ -234,7 +234,7 @@
             Name (DDB3, 0x00)
             If (INIT ())
             {
-                ERR ("", ZFFF, 0xF1, 0x00, 0x00, 0x00, 0x00)
+                ERR (__METHOD__, ZFFF, __LINE__, 0x00, 0x00, 0x00, 0x00)
                 Return (0x01)
             }
 
@@ -247,7 +247,7 @@
 
                 If (LD ())
                 {
-                    ERR ("", ZFFF, 0xFC, 0x00, 0x00, Local0, HI0N)
+                    ERR (__METHOD__, ZFFF, __LINE__, 0x00, 0x00, Local0, HI0N)
                     Return (0x01)
                 }
 

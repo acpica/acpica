@@ -35,24 +35,24 @@
         Local0 = (0xFFFFFFFFFFFFFFFF << 0x40)
         If ((Local0 != 0x00))
         {
-            ERR ("", ZFFF, 0x27, 0x00, 0x00, Local0, 0x00)
+            ERR (__METHOD__, ZFFF, __LINE__, 0x00, 0x00, Local0, 0x00)
         }
 
         Local0 = (0xFFFFFFFFFFFFFFFF << 0x41)
         If ((Local0 != 0x00))
         {
-            ERR ("", ZFFF, 0x2B, 0x00, 0x00, Local0, 0x00)
+            ERR (__METHOD__, ZFFF, __LINE__, 0x00, 0x00, Local0, 0x00)
         }
 
         Local0 = (0xFFFFFFFFFFFFFFFF >> 0x40)
         If ((Local0 != 0x00))
         {
-            ERR ("", ZFFF, 0x2F, 0x00, 0x00, Local0, 0x00)
+            ERR (__METHOD__, ZFFF, __LINE__, 0x00, 0x00, Local0, 0x00)
         }
 
         Local0 = (0xFFFFFFFFFFFFFFFF >> 0x41)
         If ((Local0 != 0x00))
         {
-            ERR ("", ZFFF, 0x33, 0x00, 0x00, Local0, 0x00)
+            ERR (__METHOD__, ZFFF, __LINE__, 0x00, 0x00, Local0, 0x00)
         }
     }

@@ -1102,11 +1102,11 @@
         Local1 = ObjectType (Arg3)
         If ((Local0 != Local1))
         {
-            ERR (Concatenate (Arg0, "-OType"), Z084, 0x0313, 0x00, 0x00, Local0, Local1)
+            ERR (Concatenate (Arg0, "-OType"), Z084, __LINE__, 0x00, 0x00, Local0, Local1)
         }
         ElseIf ((Arg2 != Arg3))
         {
-            ERR (Arg0, Z084, 0x0315, 0x00, 0x00, Arg2, Arg3)
+            ERR (Arg0, Z084, __LINE__, 0x00, 0x00, Arg2, Arg3)
         }
     }
 
@@ -1219,7 +1219,7 @@
                     }
                     Default
                     {
-                        ERR (TERR, Z084, 0x0369, 0x00, 0x00, Arg0, Arg1)
+                        ERR (TERR, Z084, __LINE__, 0x00, 0x00, Arg0, Arg1)
                     }
 
                 }
@@ -1276,7 +1276,7 @@
                     }
                     Default
                     {
-                        ERR (TERR, Z084, 0x0391, 0x00, 0x00, Arg0, Arg1)
+                        ERR (TERR, Z084, __LINE__, 0x00, 0x00, Arg0, Arg1)
                     }
 
                 }
@@ -1352,7 +1352,7 @@
                     }
                     Default
                     {
-                        ERR (TERR, Z084, 0x03B3, 0x00, 0x00, Arg0, Arg1)
+                        ERR (TERR, Z084, __LINE__, 0x00, 0x00, Arg0, Arg1)
                     }
 
                 }
@@ -1386,14 +1386,14 @@
                     }
                     Default
                     {
-                        ERR (TERR, Z084, 0x03BF, 0x00, 0x00, Arg0, Arg1)
+                        ERR (TERR, Z084, __LINE__, 0x00, 0x00, Arg0, Arg1)
                     }
 
                 }
             }
             Default
             {
-                ERR (TERR, Z084, 0x03C4, 0x00, 0x00, Arg0, Arg1)
+                ERR (TERR, Z084, __LINE__, 0x00, 0x00, Arg0, Arg1)
             }
 
         }
@@ -1789,7 +1789,7 @@
                         }
                         Default
                         {
-                            ERR (TERR, Z084, 0x04BD, 0x00, 0x00, Arg0, Arg1)
+                            ERR (TERR, Z084, __LINE__, 0x00, 0x00, Arg0, Arg1)
                         }
 
                     }
@@ -1978,7 +1978,7 @@
                         }
                         Default
                         {
-                            ERR (TERR, Z084, 0x0532, 0x00, 0x00, Arg0, Arg1)
+                            ERR (TERR, Z084, __LINE__, 0x00, 0x00, Arg0, Arg1)
                         }
 
                     }
@@ -2135,7 +2135,7 @@
                         }
                         Default
                         {
-                            ERR (TERR, Z084, 0x0593, 0x00, 0x00, Arg0, Arg1)
+                            ERR (TERR, Z084, __LINE__, 0x00, 0x00, Arg0, Arg1)
                         }
 
                     }
@@ -2164,21 +2164,21 @@
                         }
                         Default
                         {
-                            ERR (TERR, Z084, 0x05A4, 0x00, 0x00, Arg0, Arg1)
+                            ERR (TERR, Z084, __LINE__, 0x00, 0x00, Arg0, Arg1)
                         }
 
                     }
                 }
                 Default
                 {
-                    ERR (TERR, Z084, 0x05A9, 0x00, 0x00, Arg0, Arg1)
+                    ERR (TERR, Z084, __LINE__, 0x00, 0x00, Arg0, Arg1)
                 }
 
             }
         }
         Else
         {
-            ERR (TERR, Z084, 0x05AD, 0x00, 0x00, Arg1, Arg2)
+            ERR (TERR, Z084, __LINE__, 0x00, 0x00, Arg1, Arg2)
         }
 
         Return (Local0)
@@ -2217,14 +2217,14 @@
                         }
                         Default
                         {
-                            ERR (TERR, Z084, 0x05C9, 0x00, 0x00, Arg1, Arg2)
+                            ERR (TERR, Z084, __LINE__, 0x00, 0x00, Arg1, Arg2)
                         }
 
                     }
                 }
                 Else
                 {
-                    ERR (TERR, Z084, 0x05CD, 0x00, 0x00, Arg0, Arg1)
+                    ERR (TERR, Z084, __LINE__, 0x00, 0x00, Arg0, Arg1)
                 }
             }
             Case (0x02)
@@ -2250,14 +2250,14 @@
                         }
                         Default
                         {
-                            ERR (TERR, Z084, 0x05DE, 0x00, 0x00, Arg1, Arg2)
+                            ERR (TERR, Z084, __LINE__, 0x00, 0x00, Arg1, Arg2)
                         }
 
                     }
                 }
                 Else
                 {
-                    ERR (TERR, Z084, 0x05E2, 0x00, 0x00, Arg0, Arg1)
+                    ERR (TERR, Z084, __LINE__, 0x00, 0x00, Arg0, Arg1)
                 }
             }
             Case (0x03)
@@ -2283,14 +2283,14 @@
                         }
                         Default
                         {
-                            ERR (TERR, Z084, 0x05F3, 0x00, 0x00, Arg1, Arg2)
+                            ERR (TERR, Z084, __LINE__, 0x00, 0x00, Arg1, Arg2)
                         }
 
                     }
                 }
                 Else
                 {
-                    ERR (TERR, Z084, 0x05F7, 0x00, 0x00, Arg0, Arg1)
+                    ERR (TERR, Z084, __LINE__, 0x00, 0x00, Arg0, Arg1)
                 }
             }
             Case (0x04)
@@ -2316,19 +2316,19 @@
                         }
                         Default
                         {
-                            ERR (TERR, Z084, 0x0608, 0x00, 0x00, Arg1, Arg2)
+                            ERR (TERR, Z084, __LINE__, 0x00, 0x00, Arg1, Arg2)
                         }
 
                     }
                 }
                 Else
                 {
-                    ERR (TERR, Z084, 0x060C, 0x00, 0x00, Arg0, Arg1)
+                    ERR (TERR, Z084, __LINE__, 0x00, 0x00, Arg0, Arg1)
                 }
             }
             Default
             {
-                ERR (TERR, Z084, 0x0610, 0x00, 0x00, Arg0, Arg1)
+                ERR (TERR, Z084, __LINE__, 0x00, 0x00, Arg0, Arg1)
             }
 
         }
@@ -2351,7 +2351,7 @@
 
                 If (Arg3)
                 {
-                    ERR (TERR, Z084, 0x0620, 0x00, 0x00, Arg1, Arg2)
+                    ERR (TERR, Z084, __LINE__, 0x00, 0x00, Arg1, Arg2)
                 }
 
                 Switch (ToInteger (Arg1))
@@ -2388,7 +2388,7 @@
                             }
                             Default
                             {
-                                ERR (TERR, Z084, 0x0638, 0x00, 0x00, Arg1, Arg2)
+                                ERR (TERR, Z084, __LINE__, 0x00, 0x00, Arg1, Arg2)
                             }
 
                         }
@@ -2449,7 +2449,7 @@
                             }
                             Default
                             {
-                                ERR (TERR, Z084, 0x0663, 0x00, 0x00, Arg1, Arg2)
+                                ERR (TERR, Z084, __LINE__, 0x00, 0x00, Arg1, Arg2)
                             }
 
                         }
@@ -2541,14 +2541,14 @@
                             }
                             Default
                             {
-                                ERR (TERR, Z084, 0x068D, 0x00, 0x00, Arg1, Arg2)
+                                ERR (TERR, Z084, __LINE__, 0x00, 0x00, Arg1, Arg2)
                             }
 
                         }
                     }
                     Default
                     {
-                        ERR (TERR, Z084, 0x0692, 0x00, 0x00, Arg1, Arg2)
+                        ERR (TERR, Z084, __LINE__, 0x00, 0x00, Arg1, Arg2)
                     }
 
                 }
@@ -2584,7 +2584,7 @@
                                     }
                                     Default
                                     {
-                                        ERR (TERR, Z084, 0x06A7, 0x00, 0x00, Arg2, Arg3)
+                                        ERR (TERR, Z084, __LINE__, 0x00, 0x00, Arg2, Arg3)
                                     }
 
                                 }
@@ -2608,21 +2608,21 @@
                                     }
                                     Default
                                     {
-                                        ERR (TERR, Z084, 0x06B8, 0x00, 0x00, Arg2, Arg3)
+                                        ERR (TERR, Z084, __LINE__, 0x00, 0x00, Arg2, Arg3)
                                     }
 
                                 }
                             }
                             Default
                             {
-                                ERR (TERR, Z084, 0x06BD, 0x00, 0x00, Arg1, Arg2)
+                                ERR (TERR, Z084, __LINE__, 0x00, 0x00, Arg1, Arg2)
                             }
 
                         }
                     }
                     Default
                     {
-                        ERR (TERR, Z084, 0x06C2, 0x00, 0x00, Arg1, Arg2)
+                        ERR (TERR, Z084, __LINE__, 0x00, 0x00, Arg1, Arg2)
                     }
 
                 }
@@ -2656,14 +2656,14 @@
                                 }
                                 Default
                                 {
-                                    ERR (TERR, Z084, 0x06D6, 0x00, 0x00, Arg2, Arg3)
+                                    ERR (TERR, Z084, __LINE__, 0x00, 0x00, Arg2, Arg3)
                                 }
 
                             }
                         }
                         Else
                         {
-                            ERR (TERR, Z084, 0x06DA, 0x00, 0x00, Arg1, Arg2)
+                            ERR (TERR, Z084, __LINE__, 0x00, 0x00, Arg1, Arg2)
                         }
                     }
                     Case (0x02)
@@ -2689,14 +2689,14 @@
                                 }
                                 Default
                                 {
-                                    ERR (TERR, Z084, 0x06EB, 0x00, 0x00, Arg2, Arg3)
+                                    ERR (TERR, Z084, __LINE__, 0x00, 0x00, Arg2, Arg3)
                                 }
 
                             }
                         }
                         Else
                         {
-                            ERR (TERR, Z084, 0x06EF, 0x00, 0x00, Arg1, Arg2)
+                            ERR (TERR, Z084, __LINE__, 0x00, 0x00, Arg1, Arg2)
                         }
                     }
                     Case (0x03)
@@ -2722,26 +2722,26 @@
                                 }
                                 Default
                                 {
-                                    ERR (TERR, Z084, 0x0700, 0x00, 0x00, Arg2, Arg3)
+                                    ERR (TERR, Z084, __LINE__, 0x00, 0x00, Arg2, Arg3)
                                 }
 
                             }
                         }
                         Else
                         {
-                            ERR (TERR, Z084, 0x0704, 0x00, 0x00, Arg1, Arg2)
+                            ERR (TERR, Z084, __LINE__, 0x00, 0x00, Arg1, Arg2)
                         }
                     }
                     Default
                     {
-                        ERR (TERR, Z084, 0x0708, 0x00, 0x00, Arg1, Arg2)
+                        ERR (TERR, Z084, __LINE__, 0x00, 0x00, Arg1, Arg2)
                     }
 
                 }
             }
             Default
             {
-                ERR (TERR, Z084, 0x070D, 0x00, 0x00, Arg0, Arg1)
+                ERR (TERR, Z084, __LINE__, 0x00, 0x00, Arg0, Arg1)
             }
 
         }

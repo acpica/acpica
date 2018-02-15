@@ -108,6 +108,6 @@
         ME06 ()
         If ((ID09 != 0x01))
         {
-            ERR ("", ZFFF, 0x77, 0x00, 0x00, ID09, 0x01)
+            ERR (__METHOD__, ZFFF, __LINE__, 0x00, 0x00, ID09, 0x01)
         }
     }

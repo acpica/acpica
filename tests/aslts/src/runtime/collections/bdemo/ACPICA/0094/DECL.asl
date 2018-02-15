@@ -40,7 +40,7 @@
             Local0 = DerefOf (S000 [0x05])
             If ((Local0 != 0x75))
             {
-                ERR ("", ZFFF, 0x2E, 0x00, 0x00, Local0, 0x75)
+                ERR (__METHOD__, ZFFF, __LINE__, 0x00, 0x00, Local0, 0x75)
             }
 
             CH03 ("", 0x00, 0x02, 0x30, 0x00)
@@ -55,7 +55,7 @@
                 Local0 = DerefOf (Local1)
                 If ((Local0 != 0x75))
                 {
-                    ERR ("", ZFFF, 0x3B, 0x00, 0x00, Local0, 0x75)
+                    ERR (__METHOD__, ZFFF, __LINE__, 0x00, 0x00, Local0, 0x75)
                 }
 
                 CH03 ("", 0x00, 0x05, 0x3D, 0x00)
@@ -73,7 +73,7 @@
             {
                 If ((Local0 != 0x75))
                 {
-                    ERR ("", ZFFF, 0x48, 0x00, 0x00, Local0, 0x75)
+                    ERR (__METHOD__, ZFFF, __LINE__, 0x00, 0x00, Local0, 0x75)
                 }
 
                 CH03 ("", 0x00, 0x09, 0x4A, 0x00)

@@ -44,7 +44,7 @@
         Debug = Local6
         If ((Local6 != 0x11))
         {
-            ERR ("", ZFFF, 0x34, 0x00, 0x00, Local6, 0x11)
+            ERR (__METHOD__, ZFFF, __LINE__, 0x00, 0x00, Local6, 0x11)
         }
 
         Debug = "LocalX case of Method finished"
@@ -64,7 +64,7 @@
         Debug = Arg6
         If ((Arg6 != 0x11))
         {
-            ERR ("", ZFFF, 0x4B, 0x00, 0x00, Arg6, 0x11)
+            ERR (__METHOD__, ZFFF, __LINE__, 0x00, 0x00, Arg6, 0x11)
         }
 
         Debug = "ArgX case (1) of Method finished"
@@ -84,7 +84,7 @@
         Debug = Arg6
         If ((Arg6 != 0x11))
         {
-            ERR ("", ZFFF, 0x62, 0x00, 0x00, Arg6, 0x11)
+            ERR (__METHOD__, ZFFF, __LINE__, 0x00, 0x00, Arg6, 0x11)
         }
 
         Debug = "ArgX case (2) of Method finished"

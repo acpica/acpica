@@ -38,7 +38,7 @@
         Local0 = ObjectType (Arg0)
         If ((Local0 != Arg1))
         {
-            ERR ("m1a3", Z114, 0x2D, Arg2, Arg4, Local0, Arg1)
+            ERR ("m1a3", Z114, __LINE__, Arg2, Arg4, Local0, Arg1)
             Local7 = 0x00
         }
 
@@ -55,56 +55,56 @@
         Local0 = ObjectType (I900)
         If ((Local0 != C009))
         {
-            ERR (TS, Z114, 0x3F, 0x00, 0x00, Local0, C009)
+            ERR (TS, Z114, __LINE__, 0x00, 0x00, Local0, C009)
         }
 
         If ((I900 != 0xFE7CB391D65A0000))
         {
-            ERR (TS, Z114, 0x42, 0x00, 0x00, I900, 0xFE7CB391D65A0000)
+            ERR (TS, Z114, __LINE__, 0x00, 0x00, I900, 0xFE7CB391D65A0000)
         }
 
         Local0 = ObjectType (I901)
         If ((Local0 != C009))
         {
-            ERR (TS, Z114, 0x47, 0x00, 0x00, Local0, C009)
+            ERR (TS, Z114, __LINE__, 0x00, 0x00, Local0, C009)
         }
 
         If ((I901 != 0xC1790001))
         {
-            ERR (TS, Z114, 0x4A, 0x00, 0x00, I901, 0xC1790001)
+            ERR (TS, Z114, __LINE__, 0x00, 0x00, I901, 0xC1790001)
         }
 
         Local0 = ObjectType (I902)
         If ((Local0 != C009))
         {
-            ERR (TS, Z114, 0x4F, 0x00, 0x00, Local0, C009)
+            ERR (TS, Z114, __LINE__, 0x00, 0x00, Local0, C009)
         }
 
         If ((I902 != 0x00))
         {
-            ERR (TS, Z114, 0x52, 0x00, 0x00, I902, 0x00)
+            ERR (TS, Z114, __LINE__, 0x00, 0x00, I902, 0x00)
         }
 
         Local0 = ObjectType (I903)
         If ((Local0 != C009))
         {
-            ERR (TS, Z114, 0x57, 0x00, 0x00, Local0, C009)
+            ERR (TS, Z114, __LINE__, 0x00, 0x00, Local0, C009)
         }
 
         If ((I903 != 0xFFFFFFFFFFFFFFFF))
         {
-            ERR (TS, Z114, 0x5A, 0x00, 0x00, I903, 0xFFFFFFFFFFFFFFFF)
+            ERR (TS, Z114, __LINE__, 0x00, 0x00, I903, 0xFFFFFFFFFFFFFFFF)
         }
 
         Local0 = ObjectType (I904)
         If ((Local0 != C009))
         {
-            ERR (TS, Z114, 0x5F, 0x00, 0x00, Local0, C009)
+            ERR (TS, Z114, __LINE__, 0x00, 0x00, Local0, C009)
         }
 
         If ((I904 != 0xFFFFFFFF))
         {
-            ERR (TS, Z114, 0x62, 0x00, 0x00, I904, 0xFFFFFFFF)
+            ERR (TS, Z114, __LINE__, 0x00, 0x00, I904, 0xFFFFFFFF)
         }
 
         /* String */
@@ -112,23 +112,23 @@
         Local0 = ObjectType (S900)
         If ((Local0 != C00A))
         {
-            ERR (TS, Z114, 0x69, 0x00, 0x00, Local0, C00A)
+            ERR (TS, Z114, __LINE__, 0x00, 0x00, Local0, C00A)
         }
 
         If ((S900 != "12340002"))
         {
-            ERR (TS, Z114, 0x6C, 0x00, 0x00, S900, "12340002")
+            ERR (TS, Z114, __LINE__, 0x00, 0x00, S900, "12340002")
         }
 
         Local0 = ObjectType (S901)
         If ((Local0 != C00A))
         {
-            ERR (TS, Z114, 0x71, 0x00, 0x00, Local0, C00A)
+            ERR (TS, Z114, __LINE__, 0x00, 0x00, Local0, C00A)
         }
 
         If ((S901 != "qwrtyu0003"))
         {
-            ERR (TS, Z114, 0x74, 0x00, 0x00, S901, "qwrtyu0003")
+            ERR (TS, Z114, __LINE__, 0x00, 0x00, S901, "qwrtyu0003")
         }
 
         /* Buffer */
@@ -136,7 +136,7 @@
         Local0 = ObjectType (B900)
         If ((Local0 != C00B))
         {
-            ERR (TS, Z114, 0x7B, 0x00, 0x00, Local0, C00B)
+            ERR (TS, Z114, __LINE__, 0x00, 0x00, Local0, C00B)
         }
 
         If ((B900 != Buffer (0x05)
@@ -144,7 +144,7 @@
                          0xB0, 0xB1, 0xB2, 0xB3, 0xB4                     // .....
                     }))
         {
-            ERR (TS, Z114, 0x7E, 0x00, 0x00, B900, Buffer (0x05)
+            ERR (TS, Z114, __LINE__, 0x00, 0x00, B900, Buffer (0x05)
                 {
                      0xB0, 0xB1, 0xB2, 0xB3, 0xB4                     // .....
                 })
@@ -155,12 +155,12 @@
         Local0 = ObjectType (BF90)
         If ((Local0 != C016))
         {
-            ERR (TS, Z114, 0x85, 0x00, 0x00, Local0, C016)
+            ERR (TS, Z114, __LINE__, 0x00, 0x00, Local0, C016)
         }
 
         If ((BF90 != 0xB0))
         {
-            ERR (TS, Z114, 0x88, 0x00, 0x00, BF90, 0xB0)
+            ERR (TS, Z114, __LINE__, 0x00, 0x00, BF90, 0xB0)
         }
 
         /* One level Package */
@@ -169,7 +169,7 @@
         Local1 = ObjectType (Local0)
         If ((Local1 != C008))
         {
-            ERR (TS, Z114, 0x90, 0x00, 0x00, Local1, C008)
+            ERR (TS, Z114, __LINE__, 0x00, 0x00, Local1, C008)
         }
 
         Store (P901 [0x00], Local0)
@@ -177,12 +177,12 @@
         Local2 = ObjectType (Local1)
         If ((Local2 != C009))
         {
-            ERR (TS, Z114, 0x97, 0x00, 0x00, Local2, C009)
+            ERR (TS, Z114, __LINE__, 0x00, 0x00, Local2, C009)
         }
 
         If ((Local1 != 0xABCD0004))
         {
-            ERR (TS, Z114, 0x9A, 0x00, 0x00, Local1, 0xABCD0004)
+            ERR (TS, Z114, __LINE__, 0x00, 0x00, Local1, 0xABCD0004)
         }
 
         Store (P901 [0x01], Local0)
@@ -190,12 +190,12 @@
         Local2 = ObjectType (Local1)
         If ((Local2 != C009))
         {
-            ERR (TS, Z114, 0xA1, 0x00, 0x00, Local2, C009)
+            ERR (TS, Z114, __LINE__, 0x00, 0x00, Local2, C009)
         }
 
         If ((Local1 != 0x1122334455660005))
         {
-            ERR (TS, Z114, 0xA4, 0x00, 0x00, Local1, 0x1122334455660005)
+            ERR (TS, Z114, __LINE__, 0x00, 0x00, Local1, 0x1122334455660005)
         }
 
         Store (P902 [0x00], Local0)
@@ -203,12 +203,12 @@
         Local2 = ObjectType (Local1)
         If ((Local2 != C00A))
         {
-            ERR (TS, Z114, 0xAB, 0x00, 0x00, Local2, C00A)
+            ERR (TS, Z114, __LINE__, 0x00, 0x00, Local2, C00A)
         }
 
         If ((Local1 != "12340006"))
         {
-            ERR (TS, Z114, 0xAE, 0x00, 0x00, Local1, "12340006")
+            ERR (TS, Z114, __LINE__, 0x00, 0x00, Local1, "12340006")
         }
 
         Store (P902 [0x01], Local0)
@@ -216,12 +216,12 @@
         Local2 = ObjectType (Local1)
         If ((Local2 != C00A))
         {
-            ERR (TS, Z114, 0xB5, 0x00, 0x00, Local2, C00A)
+            ERR (TS, Z114, __LINE__, 0x00, 0x00, Local2, C00A)
         }
 
         If ((Local1 != "q1w2e3r4t5y6u7i80007"))
         {
-            ERR (TS, Z114, 0xB8, 0x00, 0x00, Local1, "q1w2e3r4t5y6u7i80007")
+            ERR (TS, Z114, __LINE__, 0x00, 0x00, Local1, "q1w2e3r4t5y6u7i80007")
         }
 
         Store (P903 [0x00], Local0)
@@ -229,12 +229,12 @@
         Local2 = ObjectType (Local1)
         If ((Local2 != C00A))
         {
-            ERR (TS, Z114, 0xBF, 0x00, 0x00, Local2, C00A)
+            ERR (TS, Z114, __LINE__, 0x00, 0x00, Local2, C00A)
         }
 
         If ((Local1 != "qwrtyuiop0008"))
         {
-            ERR (TS, Z114, 0xC2, 0x00, 0x00, Local1, "qwrtyuiop0008")
+            ERR (TS, Z114, __LINE__, 0x00, 0x00, Local1, "qwrtyuiop0008")
         }
 
         Store (P903 [0x01], Local0)
@@ -242,12 +242,12 @@
         Local2 = ObjectType (Local1)
         If ((Local2 != C00A))
         {
-            ERR (TS, Z114, 0xC9, 0x00, 0x00, Local2, C00A)
+            ERR (TS, Z114, __LINE__, 0x00, 0x00, Local2, C00A)
         }
 
         If ((Local1 != "1234567890abdef0250009"))
         {
-            ERR (TS, Z114, 0xCC, 0x00, 0x00, Local1, "1234567890abdef0250009")
+            ERR (TS, Z114, __LINE__, 0x00, 0x00, Local1, "1234567890abdef0250009")
         }
 
         Store (P904 [0x00], Local0)
@@ -255,7 +255,7 @@
         Local2 = ObjectType (Local1)
         If ((Local2 != C00B))
         {
-            ERR (TS, Z114, 0xD3, 0x00, 0x00, Local2, C00B)
+            ERR (TS, Z114, __LINE__, 0x00, 0x00, Local2, C00B)
         }
 
         If ((Local1 != Buffer (0x03)
@@ -263,7 +263,7 @@
                          0xB5, 0xB6, 0xB7                                 // ...
                     }))
         {
-            ERR (TS, Z114, 0xD6, 0x00, 0x00, Local1, Buffer (0x03)
+            ERR (TS, Z114, __LINE__, 0x00, 0x00, Local1, Buffer (0x03)
                 {
                      0xB5, 0xB6, 0xB7                                 // ...
                 })
@@ -274,7 +274,7 @@
         Local2 = ObjectType (Local1)
         If ((Local2 != C00B))
         {
-            ERR (TS, Z114, 0xDD, 0x00, 0x00, Local2, C00B)
+            ERR (TS, Z114, __LINE__, 0x00, 0x00, Local2, C00B)
         }
 
         If ((Local1 != Buffer (0x02)
@@ -282,7 +282,7 @@
                          0xB8, 0xB9                                       // ..
                     }))
         {
-            ERR (TS, Z114, 0xE0, 0x00, 0x00, Local1, Buffer (0x02)
+            ERR (TS, Z114, __LINE__, 0x00, 0x00, Local1, Buffer (0x02)
                 {
                      0xB8, 0xB9                                       // ..
                 })
@@ -297,12 +297,12 @@
         Local4 = ObjectType (Local3)
         If ((Local4 != C009))
         {
-            ERR (TS, Z114, 0xEB, 0x00, 0x00, Local4, C009)
+            ERR (TS, Z114, __LINE__, 0x00, 0x00, Local4, C009)
         }
 
         If ((Local3 != 0x0ABC000A))
         {
-            ERR (TS, Z114, 0xEE, 0x00, 0x00, Local3, 0x0ABC000A)
+            ERR (TS, Z114, __LINE__, 0x00, 0x00, Local3, 0x0ABC000A)
         }
 
         Store (P905 [0x00], Local0)
@@ -312,12 +312,12 @@
         Local4 = ObjectType (Local3)
         If ((Local4 != C00A))
         {
-            ERR (TS, Z114, 0xF7, 0x00, 0x00, Local4, C00A)
+            ERR (TS, Z114, __LINE__, 0x00, 0x00, Local4, C00A)
         }
 
         If ((Local3 != "0xabc000b"))
         {
-            ERR (TS, Z114, 0xFA, 0x00, 0x00, Local3, "0xabc000b")
+            ERR (TS, Z114, __LINE__, 0x00, 0x00, Local3, "0xabc000b")
         }
 
         Store (P905 [0x00], Local0)
@@ -327,12 +327,12 @@
         Local4 = ObjectType (Local3)
         If ((Local4 != C00A))
         {
-            ERR (TS, Z114, 0x0103, 0x00, 0x00, Local4, C00A)
+            ERR (TS, Z114, __LINE__, 0x00, 0x00, Local4, C00A)
         }
 
         If ((Local3 != "abc000c"))
         {
-            ERR (TS, Z114, 0x0106, 0x00, 0x00, Local3, "abc000c")
+            ERR (TS, Z114, __LINE__, 0x00, 0x00, Local3, "abc000c")
         }
 
         Store (P906 [0x00], Local0)
@@ -342,12 +342,12 @@
         Local4 = ObjectType (Local3)
         If ((Local4 != C00A))
         {
-            ERR (TS, Z114, 0x010F, 0x00, 0x00, Local4, C00A)
+            ERR (TS, Z114, __LINE__, 0x00, 0x00, Local4, C00A)
         }
 
         If ((Local3 != "abc000d"))
         {
-            ERR (TS, Z114, 0x0112, 0x00, 0x00, Local3, "abc000d")
+            ERR (TS, Z114, __LINE__, 0x00, 0x00, Local3, "abc000d")
         }
 
         Store (P907 [0x00], Local0)
@@ -357,12 +357,12 @@
         Local4 = ObjectType (Local3)
         If ((Local4 != C00A))
         {
-            ERR (TS, Z114, 0x011B, 0x00, 0x00, Local4, C00A)
+            ERR (TS, Z114, __LINE__, 0x00, 0x00, Local4, C00A)
         }
 
         If ((Local3 != "aqwevbgnm000e"))
         {
-            ERR (TS, Z114, 0x011E, 0x00, 0x00, Local3, "aqwevbgnm000e")
+            ERR (TS, Z114, __LINE__, 0x00, 0x00, Local3, "aqwevbgnm000e")
         }
 
         Store (P908 [0x00], Local0)
@@ -372,7 +372,7 @@
         Local4 = ObjectType (Local3)
         If ((Local4 != C00B))
         {
-            ERR (TS, Z114, 0x0127, 0x00, 0x00, Local4, C00B)
+            ERR (TS, Z114, __LINE__, 0x00, 0x00, Local4, C00B)
         }
 
         If ((Local3 != Buffer (0x05)
@@ -380,7 +380,7 @@
                          0xBA, 0xBB, 0xBC, 0xBD, 0xBE                     // .....
                     }))
         {
-            ERR (TS, Z114, 0x012A, 0x00, 0x00, Local3, Buffer (0x05)
+            ERR (TS, Z114, __LINE__, 0x00, 0x00, Local3, Buffer (0x05)
                 {
                      0xBA, 0xBB, 0xBC, 0xBD, 0xBE                     // .....
                 })
@@ -397,12 +397,12 @@
         Local6 = ObjectType (Local5)
         If ((Local6 != C009))
         {
-            ERR (TS, Z114, 0x0137, 0x00, 0x00, Local6, C009)
+            ERR (TS, Z114, __LINE__, 0x00, 0x00, Local6, C009)
         }
 
         If ((Local5 != 0x0ABC000F))
         {
-            ERR (TS, Z114, 0x013A, 0x00, 0x00, Local5, 0x0ABC000F)
+            ERR (TS, Z114, __LINE__, 0x00, 0x00, Local5, 0x0ABC000F)
         }
 
         Store (P90A [0x00], Local0)
@@ -414,12 +414,12 @@
         Local6 = ObjectType (Local5)
         If ((Local6 != C00A))
         {
-            ERR (TS, Z114, 0x0145, 0x00, 0x00, Local6, C00A)
+            ERR (TS, Z114, __LINE__, 0x00, 0x00, Local6, C00A)
         }
 
         If ((Local5 != "12340010"))
         {
-            ERR (TS, Z114, 0x0148, 0x00, 0x00, Local5, "12340010")
+            ERR (TS, Z114, __LINE__, 0x00, 0x00, Local5, "12340010")
         }
 
         Store (P90B [0x00], Local0)
@@ -431,12 +431,12 @@
         Local6 = ObjectType (Local5)
         If ((Local6 != C00A))
         {
-            ERR (TS, Z114, 0x0153, 0x00, 0x00, Local6, C00A)
+            ERR (TS, Z114, __LINE__, 0x00, 0x00, Local6, C00A)
         }
 
         If ((Local5 != "zxswefas0011"))
         {
-            ERR (TS, Z114, 0x0156, 0x00, 0x00, Local5, "zxswefas0011")
+            ERR (TS, Z114, __LINE__, 0x00, 0x00, Local5, "zxswefas0011")
         }
 
         Store (P90C [0x00], Local0)
@@ -448,7 +448,7 @@
         Local6 = ObjectType (Local5)
         If ((Local6 != C00B))
         {
-            ERR (TS, Z114, 0x0161, 0x00, 0x00, Local6, C00B)
+            ERR (TS, Z114, __LINE__, 0x00, 0x00, Local6, C00B)
         }
 
         If ((Local5 != Buffer (0x03)
@@ -456,7 +456,7 @@
                          0xBF, 0xC0, 0xC1                                 // ...
                     }))
         {
-            ERR (TS, Z114, 0x0164, 0x00, 0x00, Local5, Buffer (0x03)
+            ERR (TS, Z114, __LINE__, 0x00, 0x00, Local5, Buffer (0x03)
                 {
                      0xBF, 0xC0, 0xC1                                 // ...
                 })
@@ -469,12 +469,12 @@
         Local2 = ObjectType (Local1)
         If ((Local2 != C009))
         {
-            ERR (TS, Z114, 0x016F, 0x00, 0x00, Local2, C009)
+            ERR (TS, Z114, __LINE__, 0x00, 0x00, Local2, C009)
         }
 
         If ((Local1 != 0xABCD0018))
         {
-            ERR (TS, Z114, 0x0172, 0x00, 0x00, Local1, 0xABCD0018)
+            ERR (TS, Z114, __LINE__, 0x00, 0x00, Local1, 0xABCD0018)
         }
 
         Store (P953 [0x01], Local0)
@@ -482,12 +482,12 @@
         Local2 = ObjectType (Local1)
         If ((Local2 != C009))
         {
-            ERR (TS, Z114, 0x0179, 0x00, 0x00, Local2, C009)
+            ERR (TS, Z114, __LINE__, 0x00, 0x00, Local2, C009)
         }
 
         If ((Local1 != 0xABCD0019))
         {
-            ERR (TS, Z114, 0x017C, 0x00, 0x00, Local1, 0xABCD0019)
+            ERR (TS, Z114, __LINE__, 0x00, 0x00, Local1, 0xABCD0019)
         }
 
         /* p955 */
@@ -511,25 +511,25 @@
         Local0 = ObjectType (F900)
         If ((Local0 != C00D))
         {
-            ERR (TS, Z114, 0x0193, 0x00, 0x00, Local0, C00D)
+            ERR (TS, Z114, __LINE__, 0x00, 0x00, Local0, C00D)
         }
 
         Local0 = ObjectType (F901)
         If ((Local0 != C00D))
         {
-            ERR (TS, Z114, 0x0197, 0x00, 0x00, Local0, C00D)
+            ERR (TS, Z114, __LINE__, 0x00, 0x00, Local0, C00D)
         }
 
         Local0 = ObjectType (F902)
         If ((Local0 != C00D))
         {
-            ERR (TS, Z114, 0x019B, 0x00, 0x00, Local0, C00D)
+            ERR (TS, Z114, __LINE__, 0x00, 0x00, Local0, C00D)
         }
 
         Local0 = ObjectType (F903)
         If ((Local0 != C00D))
         {
-            ERR (TS, Z114, 0x019F, 0x00, 0x00, Local0, C00D)
+            ERR (TS, Z114, __LINE__, 0x00, 0x00, Local0, C00D)
         }
 
         /* Field Unit (IndexField) */
@@ -537,13 +537,13 @@
         Local0 = ObjectType (IF90)
         If ((Local0 != C00D))
         {
-            ERR (TS, Z114, 0x01A6, 0x00, 0x00, Local0, C00D)
+            ERR (TS, Z114, __LINE__, 0x00, 0x00, Local0, C00D)
         }
 
         Local0 = ObjectType (IF91)
         If ((Local0 != C00D))
         {
-            ERR (TS, Z114, 0x01AA, 0x00, 0x00, Local0, C00D)
+            ERR (TS, Z114, __LINE__, 0x00, 0x00, Local0, C00D)
         }
 
         /* Field Unit (BankField) */
@@ -551,7 +551,7 @@
         Local0 = ObjectType (BN90)
         If ((Local0 != C00D))
         {
-            ERR (TS, Z114, 0x01B1, 0x00, 0x00, Local0, C00D)
+            ERR (TS, Z114, __LINE__, 0x00, 0x00, Local0, C00D)
         }
         /*
      *	if (LNotEqual(f900, 0xd7)) {
@@ -576,14 +576,14 @@
         Local0 = ObjectType (Arg1)
         If ((Local0 != Arg2))
         {
-            ERR (Arg0, Z114, 0x01CC, 0x00, Arg4, Local0, Arg2)
+            ERR (Arg0, Z114, __LINE__, 0x00, Arg4, Local0, Arg2)
             Local7 = 0x01
         }
         ElseIf ((Arg2 < C00C))
         {
             If ((Arg1 != Arg3))
             {
-                ERR (Arg0, Z114, 0x01D0, 0x00, Arg4, Arg1, Arg3)
+                ERR (Arg0, Z114, __LINE__, 0x00, Arg4, Arg1, Arg3)
                 Local7 = 0x01
             }
         }
@@ -675,14 +675,14 @@
         Local1 = ObjectType (Local0)
         If ((Local1 != C009))
         {
-            ERR (TS, Z114, 0x0234, 0x00, 0x00, Local1, C009)
+            ERR (TS, Z114, __LINE__, 0x00, 0x00, Local1, C009)
         }
         Else
         {
             Local1 = DerefOf (Local0)
             If ((Local1 != 0x00))
             {
-                ERR (TS, Z113, 0x0238, 0x00, 0x00, Local1, 0x00)
+                ERR (TS, Z113, __LINE__, 0x00, 0x00, Local1, 0x00)
             }
         }
 
@@ -690,7 +690,7 @@
         Local1 = ObjectType (Local0)
         If ((Local1 != C009))
         {
-            ERR (TS, Z114, 0x0240, 0x00, 0x00, Local1, C009)
+            ERR (TS, Z114, __LINE__, 0x00, 0x00, Local1, C009)
         }
         Else
         {
@@ -703,7 +703,7 @@
 
             If ((Local1 != 0xFE7CB391D65A0000))
             {
-                ERR (TS, Z114, 0x0248, 0x00, 0x00, Local1, 0xFE7CB391D65A0000)
+                ERR (TS, Z114, __LINE__, 0x00, 0x00, Local1, 0xFE7CB391D65A0000)
             }
         }
 
@@ -711,7 +711,7 @@
         Local1 = ObjectType (Local0)
         If ((Local1 != C00A))
         {
-            ERR (TS, Z114, 0x0250, 0x00, 0x00, Local1, C00A)
+            ERR (TS, Z114, __LINE__, 0x00, 0x00, Local1, C00A)
         }
         Else
         {
@@ -724,7 +724,7 @@
 
             If ((Local1 != "12340002"))
             {
-                ERR (TS, Z114, 0x0258, 0x00, 0x00, Local1, "12340002")
+                ERR (TS, Z114, __LINE__, 0x00, 0x00, Local1, "12340002")
             }
         }
 
@@ -732,7 +732,7 @@
         Local1 = ObjectType (Local0)
         If ((Local1 != C00B))
         {
-            ERR (TS, Z114, 0x0260, 0x00, 0x00, Local1, C00A)
+            ERR (TS, Z114, __LINE__, 0x00, 0x00, Local1, C00A)
         }
         Else
         {
@@ -748,7 +748,7 @@
                              0xB0, 0xB1, 0xB2, 0xB3, 0xB4                     // .....
                         }))
             {
-                ERR (TS, Z114, 0x0268, 0x00, 0x00, Local1, Buffer (0x05)
+                ERR (TS, Z114, __LINE__, 0x00, 0x00, Local1, Buffer (0x05)
                     {
                          0xB0, 0xB1, 0xB2, 0xB3, 0xB4                     // .....
                     })
@@ -768,7 +768,7 @@
             {
                 If ((Local1 != C00D))
                 {
-                    ERR (TS, Z114, 0x0279, 0x00, 0x00, Local1, C00D)
+                    ERR (TS, Z114, __LINE__, 0x00, 0x00, Local1, C00D)
                 }
                 Else
                 {
@@ -780,11 +780,11 @@
             Local5 = ObjectType (Local7)
             If ((Local5 != C009))
             {
-                ERR (TS, Z114, 0x0283, 0x00, 0x00, Local5, C009)
+                ERR (TS, Z114, __LINE__, 0x00, 0x00, Local5, C009)
             }
             ElseIf ((Local7 != 0x00))
             {
-                ERR (TS, Z114, 0x0286, 0x00, 0x00, Local7, 0x00)
+                ERR (TS, Z114, __LINE__, 0x00, 0x00, Local7, 0x00)
             }
         }
 
@@ -819,7 +819,7 @@
             {
                 If ((Local1 != C016))
                 {
-                    ERR (TS, Z114, 0x02AF, 0x00, 0x00, Local1, C016)
+                    ERR (TS, Z114, __LINE__, 0x00, 0x00, Local1, C016)
                 }
                 Else
                 {
@@ -831,11 +831,11 @@
             Local5 = ObjectType (Local7)
             If ((Local5 != C009))
             {
-                ERR (TS, Z114, 0x02B9, 0x00, 0x00, Local5, C009)
+                ERR (TS, Z114, __LINE__, 0x00, 0x00, Local5, C009)
             }
             ElseIf ((Local7 != 0xB0))
             {
-                ERR (TS, Z114, 0x02BC, 0x00, 0x00, Local7, 0x00)
+                ERR (TS, Z114, __LINE__, 0x00, 0x00, Local7, 0x00)
             }
         }
 
@@ -843,14 +843,14 @@
         Local1 = ObjectType (Local0)
         If ((Local1 != C009))
         {
-            ERR (TS, Z114, 0x02C5, 0x00, 0x00, Local1, C009)
+            ERR (TS, Z114, __LINE__, 0x00, 0x00, Local1, C009)
         }
         Else
         {
             Local1 = DerefOf (Local0)
             If ((Local1 != 0x0F))
             {
-                ERR (TS, Z114, 0x02C9, 0x00, 0x00, Local1, 0x0F)
+                ERR (TS, Z114, __LINE__, 0x00, 0x00, Local1, 0x0F)
             }
         }
 
@@ -858,14 +858,14 @@
         Local1 = ObjectType (Local0)
         If ((Local1 != C009))
         {
-            ERR (TS, Z114, 0x02D1, 0x00, 0x00, Local1, C009)
+            ERR (TS, Z114, __LINE__, 0x00, 0x00, Local1, C009)
         }
         Else
         {
             Local1 = DerefOf (Local0)
             If ((Local1 != 0x10))
             {
-                ERR (TS, Z114, 0x02D5, 0x00, 0x00, Local1, 0x10)
+                ERR (TS, Z114, __LINE__, 0x00, 0x00, Local1, 0x10)
             }
         }
 
@@ -873,14 +873,14 @@
         Local1 = ObjectType (Local0)
         If ((Local1 != C008))
         {
-            ERR (TS, Z114, 0x02DD, 0x00, 0x00, Local1, C008)
+            ERR (TS, Z114, __LINE__, 0x00, 0x00, Local1, C008)
         }
 
         /* Evaluation of Method m936 takes place */
 
         If ((I905 != 0xABCD001A))
         {
-            ERR (TS, Z114, 0x02E3, 0x00, 0x00, I905, 0xABCD001A)
+            ERR (TS, Z114, __LINE__, 0x00, 0x00, I905, 0xABCD001A)
         }
     }
 

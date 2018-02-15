@@ -54,11 +54,11 @@
                 TMP1 = ObjectType (Local0)
                 If ((TMP0 != TMP1))
                 {
-                    ERR (Arg0, Z066, 0x3F, 0x00, 0x00, TMP0, TMP1)
+                    ERR (Arg0, Z066, __LINE__, 0x00, 0x00, TMP0, TMP1)
                 }
                 ElseIf ((Arg5 != Local0))
                 {
-                    ERR (Arg0, Z066, 0x41, 0x00, 0x00, Arg5, Local0)
+                    ERR (Arg0, Z066, __LINE__, 0x00, 0x00, Arg5, Local0)
                 }
             }
             Else
@@ -66,11 +66,11 @@
                 TMP1 = ObjectType (Local1)
                 If ((TMP0 != TMP1))
                 {
-                    ERR (Arg0, Z066, 0x46, 0x00, 0x00, TMP0, TMP1)
+                    ERR (Arg0, Z066, __LINE__, 0x00, 0x00, TMP0, TMP1)
                 }
                 ElseIf ((Arg5 != Local1))
                 {
-                    ERR (Arg0, Z066, 0x48, 0x00, 0x00, Arg5, Local1)
+                    ERR (Arg0, Z066, __LINE__, 0x00, 0x00, Arg5, Local1)
                 }
             }
         }
@@ -93,11 +93,11 @@
                 TMP1 = ObjectType (Local2)
                 If ((TMP0 != TMP1))
                 {
-                    ERR (Arg0, Z066, 0x5F, 0x00, 0x00, TMP0, TMP1)
+                    ERR (Arg0, Z066, __LINE__, 0x00, 0x00, TMP0, TMP1)
                 }
                 ElseIf ((Arg6 != Local2))
                 {
-                    ERR (Arg0, Z066, 0x61, 0x00, 0x00, Arg6, Local2)
+                    ERR (Arg0, Z066, __LINE__, 0x00, 0x00, Arg6, Local2)
                 }
             }
             Else
@@ -105,11 +105,11 @@
                 TMP1 = ObjectType (Local3)
                 If ((TMP0 != TMP1))
                 {
-                    ERR (Arg0, Z066, 0x66, 0x00, 0x00, TMP0, TMP1)
+                    ERR (Arg0, Z066, __LINE__, 0x00, 0x00, TMP0, TMP1)
                 }
                 ElseIf ((Arg6 != Local3))
                 {
-                    ERR (Arg0, Z066, 0x68, 0x00, 0x00, Arg6, Local3)
+                    ERR (Arg0, Z066, __LINE__, 0x00, 0x00, Arg6, Local3)
                 }
             }
         }

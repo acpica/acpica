@@ -79,14 +79,14 @@
         Local1 = SizeOf (B000)
         If ((Local0 != 0x03))
         {
-            ERR ("", ZFFF, 0x46, 0x00, 0x00, Local0, 0x03)
+            ERR (__METHOD__, ZFFF, __LINE__, 0x00, 0x00, Local0, 0x03)
         }
         ElseIf ((Local1 != 0xCA))
         {
-            ERR ("", ZFFF, 0x48, 0x00, 0x00, Local0, 0xCA)
+            ERR (__METHOD__, ZFFF, __LINE__, 0x00, 0x00, Local0, 0xCA)
         }
         ElseIf ((B000 != B001))
         {
-            ERR ("", ZFFF, 0x4A, 0x00, 0x00, B000, B001)
+            ERR (__METHOD__, ZFFF, __LINE__, 0x00, 0x00, B000, B001)
         }
     }

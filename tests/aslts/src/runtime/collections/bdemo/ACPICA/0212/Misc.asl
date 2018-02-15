@@ -382,7 +382,7 @@
             CopyObject (DerefOf (IR00), Local0)
             If ((Local0 != Arg0))
             {
-                ERR ("", ZFFF, 0x017A, 0x00, 0x00, Local0, Arg0)
+                ERR (__METHOD__, ZFFF, __LINE__, 0x00, 0x00, Local0, Arg0)
             }
         }
 

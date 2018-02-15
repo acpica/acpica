@@ -76,7 +76,7 @@
             {
                 /* if (Local5) { */
 
-                ERR ("", ZFFF, 0x56, 0x00, 0x00, Local0, Local7)
+                ERR (__METHOD__, ZFFF, __LINE__, 0x00, 0x00, Local0, Local7)
                 Debug = Concatenate ("Cur   timer    : 0x", Local7)
                 Debug = Concatenate ("Start timer    : 0x", Local0)
                 Debug = Concatenate ("Step of cycle  : 0x", TSLP)

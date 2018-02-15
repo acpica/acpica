@@ -40,7 +40,7 @@
         Debug = Local1
         If ((Local1 != C010))
         {
-            ERR ("", ZFFF, 0x31, 0x00, 0x00, Local1, C010)
+            ERR (__METHOD__, ZFFF, __LINE__, 0x00, 0x00, Local1, C010)
         }
 
         Debug = "Finish of test"

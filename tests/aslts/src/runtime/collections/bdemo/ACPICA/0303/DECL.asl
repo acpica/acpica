@@ -41,12 +41,12 @@
                 Name (\I4Z0, 0xABCD0000)
                 If ((I4Z0 != 0xABCD0000))
                 {
-                    ERR ("", ZFFF, 0x2D, 0x00, 0x00, I4Z0, 0xABCD0000)
+                    ERR (__METHOD__, ZFFF, __LINE__, 0x00, 0x00, I4Z0, 0xABCD0000)
                 }
 
                 If ((\I4Z0 != 0xABCD0000))
                 {
-                    ERR ("", ZFFF, 0x30, 0x00, 0x00, \I4Z0, 0xABCD0000)
+                    ERR (__METHOD__, ZFFF, __LINE__, 0x00, 0x00, \I4Z0, 0xABCD0000)
                 }
 
                 M101 ()
@@ -56,12 +56,12 @@
             {
                 If ((I4Z0 != 0xABCD0000))
                 {
-                    ERR ("", ZFFF, 0x38, 0x00, 0x00, I4Z0, 0xABCD0000)
+                    ERR (__METHOD__, ZFFF, __LINE__, 0x00, 0x00, I4Z0, 0xABCD0000)
                 }
 
                 If ((\I4Z0 != 0xABCD0000))
                 {
-                    ERR ("", ZFFF, 0x3B, 0x00, 0x00, \I4Z0, 0xABCD0000)
+                    ERR (__METHOD__, ZFFF, __LINE__, 0x00, 0x00, \I4Z0, 0xABCD0000)
                 }
             }
 
@@ -83,12 +83,12 @@
 
                 If ((I4Z1 != 0xABCD0000))
                 {
-                    ERR ("", ZFFF, 0x4E, 0x00, 0x00, I4Z1, 0xABCD0000)
+                    ERR (__METHOD__, ZFFF, __LINE__, 0x00, 0x00, I4Z1, 0xABCD0000)
                 }
 
                 If ((\I4Z1 != 0xABCD0000))
                 {
-                    ERR ("", ZFFF, 0x51, 0x00, 0x00, \I4Z1, 0xABCD0000)
+                    ERR (__METHOD__, ZFFF, __LINE__, 0x00, 0x00, \I4Z1, 0xABCD0000)
                 }
 
                 M101 ()
@@ -98,12 +98,12 @@
             {
                 If ((I4Z1 != 0xABCD0000))
                 {
-                    ERR ("", ZFFF, 0x59, 0x00, 0x00, I4Z1, 0xABCD0000)
+                    ERR (__METHOD__, ZFFF, __LINE__, 0x00, 0x00, I4Z1, 0xABCD0000)
                 }
 
                 If ((\I4Z1 != 0xABCD0000))
                 {
-                    ERR ("", ZFFF, 0x5C, 0x00, 0x00, \I4Z1, 0xABCD0000)
+                    ERR (__METHOD__, ZFFF, __LINE__, 0x00, 0x00, \I4Z1, 0xABCD0000)
                 }
             }
 

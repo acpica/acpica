@@ -54,7 +54,7 @@
         Local0 = ObjectType (Local7)
         If ((Local0 != C009))
         {
-            ERR ("", ZFFF, 0x3B, 0x00, 0x00, Local0, C009)
+            ERR (__METHOD__, ZFFF, __LINE__, 0x00, 0x00, Local0, C009)
         }
 
         /* BufferField converted to Buffer before return */
@@ -63,6 +63,6 @@
         Local0 = ObjectType (Local7)
         If ((Local0 != C00B))
         {
-            ERR ("", ZFFF, 0x43, 0x00, 0x00, Local0, C00B)
+            ERR (__METHOD__, ZFFF, __LINE__, 0x00, 0x00, Local0, C00B)
         }
     }

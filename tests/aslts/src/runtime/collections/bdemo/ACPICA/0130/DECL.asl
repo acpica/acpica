@@ -50,7 +50,7 @@
         MF1A (SD04)
         If ((SD04 != "qwer0000"))
         {
-            ERR ("", ZFFF, 0x36, 0x00, 0x00, SD04, "qwer0000")
+            ERR (__METHOD__, ZFFF, __LINE__, 0x00, 0x00, SD04, "qwer0000")
         }
 
         /* Index of Buffer */
@@ -61,7 +61,7 @@
                          0x01, 0x77, 0x03, 0x04                           // .w..
                     }))
         {
-            ERR ("", ZFFF, 0x3D, 0x00, 0x00, BD08, Buffer (0x04)
+            ERR (__METHOD__, ZFFF, __LINE__, 0x00, 0x00, BD08, Buffer (0x04)
                 {
                      0x01, 0x77, 0x03, 0x04                           // .w..
                 })
@@ -74,6 +74,6 @@
         Local1 = DerefOf (Local0)
         If ((Local1 != 0x77))
         {
-            ERR ("", ZFFF, 0x48, 0x00, 0x00, Local1, 0x77)
+            ERR (__METHOD__, ZFFF, __LINE__, 0x00, 0x00, Local1, 0x77)
         }
     }

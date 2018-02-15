@@ -107,12 +107,12 @@
         Local0 = MADD (I000, M001 ())
         If ((Local0 != 0x87654321))
         {
-            ERR (__METHOD__, Z158, 0x67, 0x00, 0x00, Local0, 0x87654321)
+            ERR (__METHOD__, Z158, __LINE__, 0x00, 0x00, Local0, 0x87654321)
         }
 
         If ((I000 != 0x80000000))
         {
-            ERR (__METHOD__, Z158, 0x6B, 0x00, 0x00, I000, 0x80000000)
+            ERR (__METHOD__, Z158, __LINE__, 0x00, 0x00, I000, 0x80000000)
         }
 
         CH03 (__METHOD__, Z158, 0x03, 0x6E, 0x00)

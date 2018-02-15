@@ -36,7 +36,7 @@
         Debug = Local0
         If ((Local0 != Ones))
         {
-            ERR ("", ZFFF, 0x29, 0x00, 0x00, Local0, Ones)
+            ERR (__METHOD__, ZFFF, __LINE__, 0x00, 0x00, Local0, Ones)
         }
     }
 
@@ -46,7 +46,7 @@
         Debug = Local0
         If ((Local0 != 0x1235))
         {
-            ERR ("", ZFFF, 0x33, 0x00, 0x00, Local0, 0x1235)
+            ERR (__METHOD__, ZFFF, __LINE__, 0x00, 0x00, Local0, 0x1235)
         }
     }
 
@@ -56,7 +56,7 @@
         Debug = Local0
         If ((Local0 != 0xFFFFFFFFFFFFEDCB))
         {
-            ERR ("", ZFFF, 0x3C, 0x00, 0x00, Local0, 0xFFFFFFFFFFFFEDCB)
+            ERR (__METHOD__, ZFFF, __LINE__, 0x00, 0x00, Local0, 0xFFFFFFFFFFFFEDCB)
         }
     }
 

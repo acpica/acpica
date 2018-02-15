@@ -35,7 +35,7 @@
         Local7 = ObjectType (Local0)
         If ((Local7 != C008))
         {
-            ERR ("", ZFFF, 0x27, 0x00, 0x00, Local7, C008)
+            ERR (__METHOD__, ZFFF, __LINE__, 0x00, 0x00, Local7, C008)
         }
     }
 
@@ -49,7 +49,7 @@
         Local7 = ObjectType (Local0)
         If ((Local7 != C008))
         {
-            ERR ("", ZFFF, 0x32, 0x00, 0x00, Local7, C008)
+            ERR (__METHOD__, ZFFF, __LINE__, 0x00, 0x00, Local7, C008)
         }
     }
 

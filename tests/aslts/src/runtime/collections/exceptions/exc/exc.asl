@@ -766,7 +766,7 @@
         {
             /* Bug 63, Bugzilla 5329. */
 
-            ERR (__METHOD__, Z058, 0x0332, 0x00, 0x00, Local0, 0x00)
+            ERR (__METHOD__, Z058, __LINE__, 0x00, 0x00, Local0, 0x00)
         }
     }
 
@@ -1376,12 +1376,12 @@
             Local1 = M000 ()
             If ((Local0 != 0xABCD0000))
             {
-                ERR (__METHOD__, Z058, 0x05B3, 0x00, 0x00, Local0, 0xABCD0000)
+                ERR (__METHOD__, Z058, __LINE__, 0x00, 0x00, Local0, 0xABCD0000)
             }
 
             If ((Local1 != 0xABCD0001))
             {
-                ERR (__METHOD__, Z058, 0x05B7, 0x00, 0x00, Local1, 0xABCD0001)
+                ERR (__METHOD__, Z058, __LINE__, 0x00, 0x00, Local1, 0xABCD0001)
             }
         }
 

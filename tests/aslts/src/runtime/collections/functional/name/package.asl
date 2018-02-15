@@ -337,7 +337,7 @@
             {
                 If ((Local2 != Local3))
                 {
-                    ERR (__METHOD__, Z051, 0x93, 0x00, 0x00, Local2, Local3)
+                    ERR (__METHOD__, Z051, __LINE__, 0x00, 0x00, Local2, Local3)
                 }
             }
             ElseIf ((Local1 <= 0x9F))
@@ -345,7 +345,7 @@
                 Local3 = (0x8765AC00 + Local4)
                 If ((Local2 != Local3))
                 {
-                    ERR (__METHOD__, Z051, 0x98, 0x00, 0x00, Local2, Local3)
+                    ERR (__METHOD__, Z051, __LINE__, 0x00, 0x00, Local2, Local3)
                 }
 
                 Local4 += Local6
@@ -355,20 +355,20 @@
                 Local3 = (0x8765ACBA11223300 + Local5)
                 If ((Local2 != Local3))
                 {
-                    ERR (__METHOD__, Z051, 0x9E, 0x00, 0x00, Local2, Local3)
+                    ERR (__METHOD__, Z051, __LINE__, 0x00, 0x00, Local2, Local3)
                 }
 
                 Local5 += Local6
             }
             ElseIf ((Local2 != Local3))
             {
-                ERR (__METHOD__, Z051, 0xA3, 0x00, 0x00, Local2, Local3)
+                ERR (__METHOD__, Z051, __LINE__, 0x00, 0x00, Local2, Local3)
             }
 
             Local3 = ObjectType (Local2)
             If ((Local3 != 0x01))
             {
-                ERR (__METHOD__, Z051, 0xA9, 0x00, 0x00, Local3, 0x01)
+                ERR (__METHOD__, Z051, __LINE__, 0x00, 0x00, Local3, 0x01)
             }
 
             Local1 += Local6
@@ -378,7 +378,7 @@
         Local0 = SizeOf (P000)
         If ((Local0 != 0xFF))
         {
-            ERR (__METHOD__, Z051, 0xB2, 0x00, 0x00, Local0, 0xFF)
+            ERR (__METHOD__, Z051, __LINE__, 0x00, 0x00, Local0, 0xFF)
         }
     }
 
@@ -415,13 +415,13 @@
 
             If ((Local4 != Local3))
             {
-                ERR (__METHOD__, Z051, 0xD1, 0x00, 0x00, Local4, Local3)
+                ERR (__METHOD__, Z051, __LINE__, 0x00, 0x00, Local4, Local3)
             }
 
             Local3 = ObjectType (Local2)
             If ((Local3 != 0x02))
             {
-                ERR (__METHOD__, Z051, 0xD6, 0x00, 0x00, Local3, 0x02)
+                ERR (__METHOD__, Z051, __LINE__, 0x00, 0x00, Local3, 0x02)
             }
 
             Local1++
@@ -431,7 +431,7 @@
         Local0 = SizeOf (P000)
         If ((Local0 != 0x0A))
         {
-            ERR (__METHOD__, Z051, 0xDF, 0x00, 0x00, Local0, 0x0A)
+            ERR (__METHOD__, Z051, __LINE__, 0x00, 0x00, Local0, 0x0A)
         }
     }
 
@@ -765,13 +765,13 @@
             Local4 = (Local1 + 0x01)
             If ((Local4 != Local3))
             {
-                ERR (__METHOD__, Z051, 0x014E, 0x00, 0x00, Local4, Local3)
+                ERR (__METHOD__, Z051, __LINE__, 0x00, 0x00, Local4, Local3)
             }
 
             Local3 = ObjectType (Local2)
             If ((Local3 != 0x03))
             {
-                ERR (__METHOD__, Z051, 0x0153, 0x00, 0x00, Local3, 0x03)
+                ERR (__METHOD__, Z051, __LINE__, 0x00, 0x00, Local3, 0x03)
             }
 
             Local1 += Local6
@@ -781,7 +781,7 @@
         Local0 = SizeOf (P000)
         If ((Local0 != 0xFF))
         {
-            ERR (__METHOD__, Z051, 0x015C, 0x00, 0x00, Local0, 0xFF)
+            ERR (__METHOD__, Z051, __LINE__, 0x00, 0x00, Local0, 0xFF)
         }
     }
 
@@ -1246,13 +1246,13 @@
             Local4 = (Local1 + 0x01)
             If ((Local4 != Local3))
             {
-                ERR (__METHOD__, Z051, 0x01CF, 0x00, 0x00, Local4, Local3)
+                ERR (__METHOD__, Z051, __LINE__, 0x00, 0x00, Local4, Local3)
             }
 
             Local3 = ObjectType (Local2)
             If ((Local3 != 0x04))
             {
-                ERR (__METHOD__, Z051, 0x01D4, 0x00, 0x00, Local3, 0x04)
+                ERR (__METHOD__, Z051, __LINE__, 0x00, 0x00, Local3, 0x04)
             }
 
             Local1 += Local6
@@ -1262,7 +1262,7 @@
         Local0 = SizeOf (P000)
         If ((Local0 != 0xFF))
         {
-            ERR (__METHOD__, Z051, 0x01DD, 0x00, 0x00, Local0, 0xFF)
+            ERR (__METHOD__, Z051, __LINE__, 0x00, 0x00, Local0, 0xFF)
         }
     }
 
@@ -1354,7 +1354,7 @@
         Local0 = ObjectType (Local7)
         If ((Local0 != N002))
         {
-            ERR (Arg0, Z051, 0x0227, 0x00, 0x00, Local0, N002)
+            ERR (Arg0, Z051, __LINE__, 0x00, 0x00, Local0, N002)
         }
 
         /* Contents */
@@ -1373,12 +1373,12 @@
 
                 If ((Local1 != N004))
                 {
-                    ERR (Arg0, Z051, 0x0239, 0x00, 0x00, Local1, N004)
+                    ERR (Arg0, Z051, __LINE__, 0x00, 0x00, Local1, N004)
                     Local6 = 0x01
                 }
                 ElseIf ((Local7 != Local0))
                 {
-                    ERR (Arg0, Z051, 0x023C, 0x00, 0x00, Local7, Local0)
+                    ERR (Arg0, Z051, __LINE__, 0x00, 0x00, Local7, Local0)
                     Local6 = 0x01
                 }
 
@@ -4655,13 +4655,13 @@
         Local0 = SizeOf (P000)
         If ((Local0 != 0xFF))
         {
-            ERR (__METHOD__, Z051, 0x03E2, 0x00, 0x00, Local0, 0xFF)
+            ERR (__METHOD__, Z051, __LINE__, 0x00, 0x00, Local0, 0xFF)
         }
 
         Local0 = SizeOf (P001)
         If ((Local0 != 0x1D))
         {
-            ERR (__METHOD__, Z051, 0x03E7, 0x00, 0x00, Local0, 0x1D)
+            ERR (__METHOD__, Z051, __LINE__, 0x00, 0x00, Local0, 0x1D)
         }
     }
 
@@ -4720,7 +4720,7 @@
 
             If ((Local1 != Local0))
             {
-                ERR (__METHOD__, Z051, 0x0424, 0x00, 0x00, Local1, Local0)
+                ERR (__METHOD__, Z051, __LINE__, 0x00, 0x00, Local1, Local0)
             }
 
             Local0++
@@ -4731,13 +4731,13 @@
         Local0 = ObjectType (Arg0)
         If ((Local0 != 0x04))
         {
-            ERR (__METHOD__, Z051, 0x042D, 0x00, 0x00, Local0, 0x04)
+            ERR (__METHOD__, Z051, __LINE__, 0x00, 0x00, Local0, 0x04)
         }
 
         Local0 = SizeOf (Arg0)
         If ((Local0 != Arg1))
         {
-            ERR (__METHOD__, Z051, 0x0432, 0x00, 0x00, Local0, Arg1)
+            ERR (__METHOD__, Z051, __LINE__, 0x00, 0x00, Local0, Arg1)
         }
     }
 
@@ -4799,7 +4799,7 @@
 
             If ((Local1 != Local0))
             {
-                ERR (__METHOD__, Z051, 0x0470, 0x00, 0x00, Local1, Local0)
+                ERR (__METHOD__, Z051, __LINE__, 0x00, 0x00, Local1, Local0)
             }
 
             N000--
@@ -4809,13 +4809,13 @@
         Local0 = ObjectType (Arg0)
         If ((Local0 != 0x04))
         {
-            ERR (__METHOD__, Z051, 0x0478, 0x00, 0x00, Local0, 0x04)
+            ERR (__METHOD__, Z051, __LINE__, 0x00, 0x00, Local0, 0x04)
         }
 
         Local0 = SizeOf (Arg0)
         If ((Local0 != Arg1))
         {
-            ERR (__METHOD__, Z051, 0x047D, 0x00, 0x00, Local0, Arg1)
+            ERR (__METHOD__, Z051, __LINE__, 0x00, 0x00, Local0, Arg1)
         }
     }
 
@@ -4879,7 +4879,7 @@
 
             If ((Local1 != Local0))
             {
-                ERR (__METHOD__, Z051, 0x04BE, 0x00, 0x00, 0x00, 0x00)
+                ERR (__METHOD__, Z051, __LINE__, 0x00, 0x00, 0x00, 0x00)
                 Debug = Local0
                 Debug = Local1
                 Return (Ones)
@@ -4892,13 +4892,13 @@
         Local0 = ObjectType (Arg0)
         If ((Local0 != 0x04))
         {
-            ERR (__METHOD__, Z051, 0x04C9, 0x00, 0x00, Local0, 0x04)
+            ERR (__METHOD__, Z051, __LINE__, 0x00, 0x00, Local0, 0x04)
         }
 
         Local0 = SizeOf (Arg0)
         If ((Local0 != Arg1))
         {
-            ERR (__METHOD__, Z051, 0x04CE, 0x00, 0x00, Local0, Arg1)
+            ERR (__METHOD__, Z051, __LINE__, 0x00, 0x00, Local0, Arg1)
         }
 
         Return (Zero)
@@ -4980,7 +4980,7 @@
             Local0 = ObjectType (Local1)
             If ((Local0 != 0x04))
             {
-                ERR (__METHOD__, Z051, 0x0519, 0x00, 0x00, Local0, 0x04)
+                ERR (__METHOD__, Z051, __LINE__, 0x00, 0x00, Local0, 0x04)
                 Return (Ones)
             }
 
@@ -4991,13 +4991,13 @@
         Local0 = ObjectType (Arg0)
         If ((Local0 != 0x04))
         {
-            ERR (__METHOD__, Z051, 0x0522, 0x00, 0x00, Local0, 0x04)
+            ERR (__METHOD__, Z051, __LINE__, 0x00, 0x00, Local0, 0x04)
         }
 
         Local0 = SizeOf (Arg0)
         If ((Local0 != Arg1))
         {
-            ERR (__METHOD__, Z051, 0x0527, 0x00, 0x00, Local0, Arg1)
+            ERR (__METHOD__, Z051, __LINE__, 0x00, 0x00, Local0, Arg1)
         }
 
         Return (Zero)

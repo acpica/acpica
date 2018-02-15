@@ -89,7 +89,7 @@
         Local2 = ObjectType (Arg3)
         If ((Local1 != Local2))
         {
-            ERR (DerefOf (Arg0), Z204, 0x01, Z204, Arg1, Local1, Local2)
+            ERR (DerefOf (Arg0), Z204, __LINE__, Z204, Arg1, Local1, Local2)
         }
     }
 
@@ -100,7 +100,7 @@
         Local1 = ObjectType (E000)
         If ((Local1 != 0x01))
         {
-            ERR (__METHOD__, Z204, 0x00, 0x00, 0x00, Local1, 0x01)
+            ERR (__METHOD__, Z204, __LINE__, 0x00, 0x00, Local1, 0x01)
         }
 
         EXT0 (__METHOD__, 0x01, E001, NM01)

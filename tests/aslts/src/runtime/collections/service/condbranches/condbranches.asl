@@ -43,7 +43,7 @@
             SRMT (Arg1)
             If (!Arg0)
             {
-                ERR (Arg0, Z135, 0x30, 0x00, 0x00, 0x00, 0x01)
+                ERR (Arg0, Z135, __LINE__, 0x00, 0x00, 0x00, 0x01)
             }
 
             I000++

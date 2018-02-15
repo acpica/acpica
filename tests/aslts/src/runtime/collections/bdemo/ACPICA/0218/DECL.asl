@@ -73,12 +73,12 @@
         Debug = Local0
         If ((I000 != ID29))
         {
-            ERR ("", ZFFF, 0x52, 0x00, 0x00, I000, ID29)
+            ERR (__METHOD__, ZFFF, __LINE__, 0x00, 0x00, I000, ID29)
         }
 
         If ((Local0 != ID29))
         {
-            ERR ("", ZFFF, 0x56, 0x00, 0x00, Local0, ID29)
+            ERR (__METHOD__, ZFFF, __LINE__, 0x00, 0x00, Local0, ID29)
         }
     }
 

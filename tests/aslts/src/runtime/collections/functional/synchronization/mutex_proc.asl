@@ -52,7 +52,7 @@
         Local0 = Acquire (T000, 0xFFFF)
         If (Local0)
         {
-            ERR (__METHOD__, Z151, 0x3A, 0x00, 0x00, 0x00, Local0)
+            ERR (__METHOD__, Z151, __LINE__, 0x00, 0x00, 0x00, Local0)
         }
         Else
         {
@@ -64,7 +64,7 @@
             Local0 = Acquire (\_GL, 0xFFFF)
             If (Local0)
             {
-                ERR (__METHOD__, Z151, 0x41, 0x00, 0x00, 0x00, Local0)
+                ERR (__METHOD__, Z151, __LINE__, 0x00, 0x00, 0x00, Local0)
             }
             Else
             {
@@ -76,7 +76,7 @@
                 Local0 = Acquire (T100, 0xFFFF)
                 If (Local0)
                 {
-                    ERR (__METHOD__, Z151, 0x48, 0x00, 0x00, 0x00, Local0)
+                    ERR (__METHOD__, Z151, __LINE__, 0x00, 0x00, 0x00, Local0)
                 }
                 Else
                 {
@@ -88,7 +88,7 @@
                     Local0 = Acquire (T200, 0xFFFF)
                     If (Local0)
                     {
-                        ERR (__METHOD__, Z151, 0x4F, 0x00, 0x00, 0x00, Local0)
+                        ERR (__METHOD__, Z151, __LINE__, 0x00, 0x00, 0x00, Local0)
                     }
                     Else
                     {
@@ -100,7 +100,7 @@
                         Local0 = Acquire (T300, 0xFFFF)
                         If (Local0)
                         {
-                            ERR (__METHOD__, Z151, 0x56, 0x00, 0x00, 0x00, Local0)
+                            ERR (__METHOD__, Z151, __LINE__, 0x00, 0x00, 0x00, Local0)
                         }
                         Else
                         {
@@ -112,7 +112,7 @@
                             Local0 = Acquire (T400, 0xFFFF)
                             If (Local0)
                             {
-                                ERR (__METHOD__, Z151, 0x5D, 0x00, 0x00, 0x00, Local0)
+                                ERR (__METHOD__, Z151, __LINE__, 0x00, 0x00, 0x00, Local0)
                             }
                             Else
                             {
@@ -124,7 +124,7 @@
                                 Local0 = Acquire (T500, 0xFFFF)
                                 If (Local0)
                                 {
-                                    ERR (__METHOD__, Z151, 0x64, 0x00, 0x00, 0x00, Local0)
+                                    ERR (__METHOD__, Z151, __LINE__, 0x00, 0x00, 0x00, Local0)
                                 }
                                 Else
                                 {
@@ -136,7 +136,7 @@
                                     Local0 = Acquire (T600, 0xFFFF)
                                     If (Local0)
                                     {
-                                        ERR (__METHOD__, Z151, 0x6B, 0x00, 0x00, 0x00, Local0)
+                                        ERR (__METHOD__, Z151, __LINE__, 0x00, 0x00, 0x00, Local0)
                                     }
                                     Else
                                     {
@@ -148,7 +148,7 @@
                                         Local0 = Acquire (T700, 0xFFFF)
                                         If (Local0)
                                         {
-                                            ERR (__METHOD__, Z151, 0x72, 0x00, 0x00, 0x00, Local0)
+                                            ERR (__METHOD__, Z151, __LINE__, 0x00, 0x00, 0x00, Local0)
                                         }
                                         Else
                                         {
@@ -160,7 +160,7 @@
                                             Local0 = Acquire (T800, 0xFFFF)
                                             If (Local0)
                                             {
-                                                ERR (__METHOD__, Z151, 0x79, 0x00, 0x00, 0x00, Local0)
+                                                ERR (__METHOD__, Z151, __LINE__, 0x00, 0x00, 0x00, Local0)
                                             }
                                             Else
                                             {
@@ -172,7 +172,7 @@
                                                 Local0 = Acquire (T900, 0xFFFF)
                                                 If (Local0)
                                                 {
-                                                    ERR (__METHOD__, Z151, 0x80, 0x00, 0x00, 0x00, Local0)
+                                                    ERR (__METHOD__, Z151, __LINE__, 0x00, 0x00, 0x00, Local0)
                                                 }
                                                 Else
                                                 {
@@ -184,7 +184,7 @@
                                                     Local0 = Acquire (TA00, 0xFFFF)
                                                     If (Local0)
                                                     {
-                                                        ERR (__METHOD__, Z151, 0x87, 0x00, 0x00, 0x00, Local0)
+                                                        ERR (__METHOD__, Z151, __LINE__, 0x00, 0x00, 0x00, Local0)
                                                     }
                                                     Else
                                                     {
@@ -196,7 +196,7 @@
                                                         Local0 = Acquire (TB00, 0xFFFF)
                                                         If (Local0)
                                                         {
-                                                            ERR (__METHOD__, Z151, 0x8E, 0x00, 0x00, 0x00, Local0)
+                                                            ERR (__METHOD__, Z151, __LINE__, 0x00, 0x00, 0x00, Local0)
                                                         }
                                                         Else
                                                         {
@@ -208,7 +208,7 @@
                                                             Local0 = Acquire (TC00, 0xFFFF)
                                                             If (Local0)
                                                             {
-                                                                ERR (__METHOD__, Z151, 0x95, 0x00, 0x00, 0x00, Local0)
+                                                                ERR (__METHOD__, Z151, __LINE__, 0x00, 0x00, 0x00, Local0)
                                                             }
                                                             Else
                                                             {
@@ -220,7 +220,7 @@
                                                                 Local0 = Acquire (TD00, 0xFFFF)
                                                                 If (Local0)
                                                                 {
-                                                                    ERR (__METHOD__, Z151, 0x9C, 0x00, 0x00, 0x00, Local0)
+                                                                    ERR (__METHOD__, Z151, __LINE__, 0x00, 0x00, 0x00, Local0)
                                                                 }
                                                                 Else
                                                                 {
@@ -232,7 +232,7 @@
                                                                     Local0 = Acquire (TE00, 0xFFFF)
                                                                     If (Local0)
                                                                     {
-                                                                        ERR (__METHOD__, Z151, 0xA3, 0x00, 0x00, 0x00, Local0)
+                                                                        ERR (__METHOD__, Z151, __LINE__, 0x00, 0x00, 0x00, Local0)
                                                                     }
                                                                     Else
                                                                     {
@@ -244,7 +244,7 @@
                                                                         Local0 = Acquire (TF00, 0xFFFF)
                                                                         If (Local0)
                                                                         {
-                                                                            ERR (__METHOD__, Z151, 0xAA, 0x00, 0x00, 0x00, Local0)
+                                                                            ERR (__METHOD__, Z151, __LINE__, 0x00, 0x00, 0x00, Local0)
                                                                         }
                                                                         ElseIf ((Arg0 == 0x11))
                                                                         {
@@ -491,7 +491,7 @@
         {
             If (Local0)
             {
-                ERR ("m36f", Z151, 0x015D, 0x00, 0x00, Local0, 0x00)
+                ERR ("m36f", Z151, __LINE__, 0x00, 0x00, Local0, 0x00)
             }
         }
 
