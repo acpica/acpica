@@ -116,10 +116,10 @@
         V000 = C00C /* type of the Standard Data object */ /* \C00C */
         V001 = 0x03    /* index of element of Package */
         M1C3 (PPP0, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00)
-        M380 (__METHOD__, I000, 0x00, 0x00)
-        M381 (__METHOD__, S000, 0x00, 0x01)
-        M382 (__METHOD__, B000, 0x00, 0x02)
-        M383 (__METHOD__, P000, 0x00, 0x03)
+        M380 (__METHOD__, I000, 0x00, __LINE__)
+        M381 (__METHOD__, S000, 0x00, __LINE__)
+        M382 (__METHOD__, B000, 0x00, __LINE__)
+        M383 (__METHOD__, P000, 0x00, __LINE__)
     }
 
     /* All the ways reading element of Package given by ArgX */
@@ -144,48 +144,48 @@
         /* LocalX */
 
         Store (Arg0 [V001], Local3)
-        M390 (DerefOf (Local3), V000, 0x00, 0x04)
+        M390 (DerefOf (Local3), V000, 0x00, __LINE__)
         Local4 = DerefOf (Local3)
-        M390 (Local4, V000, 0x00, 0x05)
+        M390 (Local4, V000, 0x00, __LINE__)
         M390 (DerefOf (Arg0 [V001]), V000, 0x00, 0x06)
         Local3 = Local2 = Arg0 [V001] /* \V001 */
-        M390 (DerefOf (Local3), V000, 0x00, 0x07)
+        M390 (DerefOf (Local3), V000, 0x00, __LINE__)
         Local4 = DerefOf (Local3)
-        M390 (Local4, V000, 0x00, 0x08)
-        M390 (DerefOf (Local2), V000, 0x00, 0x09)
+        M390 (Local4, V000, 0x00, __LINE__)
+        M390 (DerefOf (Local2), V000, 0x00, __LINE__)
         Local4 = DerefOf (Local2)
-        M390 (Local4, V000, 0x00, 0x0A)
+        M390 (Local4, V000, 0x00, __LINE__)
         /* ArgX */
 
         Store (Arg0 [V001], Arg3)
-        M390 (DerefOf (Arg3), V000, 0x00, 0x0B)
+        M390 (DerefOf (Arg3), V000, 0x00, __LINE__)
         Arg4 = DerefOf (Arg3)
-        M390 (Arg4, V000, 0x00, 0x0C)
+        M390 (Arg4, V000, 0x00, __LINE__)
         M390 (DerefOf (Arg0 [V001]), V000, 0x00, 0x0D)
         Arg3 = Arg2 = Arg0 [V001] /* \V001 */
-        M390 (DerefOf (Arg3), V000, 0x00, 0x0E)
+        M390 (DerefOf (Arg3), V000, 0x00, __LINE__)
         Arg4 = DerefOf (Arg3)
-        M390 (Arg4, V000, 0x00, 0x0F)
-        M390 (DerefOf (Arg2), V000, 0x00, 0x10)
+        M390 (Arg4, V000, 0x00, __LINE__)
+        M390 (DerefOf (Arg2), V000, 0x00, __LINE__)
         Arg4 = DerefOf (Arg2)
-        M390 (Arg4, V000, 0x00, 0x11)
+        M390 (Arg4, V000, 0x00, __LINE__)
         /* NamedX */
 
         If (Y127)
         {
             CopyObject (PPP0 [0x00], I003) /* \M1C3.I003 */
             Store (Arg0 [V001], I003) /* \M1C3.I003 */
-            M390 (DerefOf (I003), V000, 0x00, 0x12)
+            M390 (DerefOf (I003), V000, 0x00, __LINE__)
             I004 = DerefOf (I003)
-            M390 (I004, V000, 0x00, 0x13)
+            M390 (I004, V000, 0x00, __LINE__)
             M390 (DerefOf (Arg0 [V001]), V000, 0x00, 0x14)
             I003 = I002 = Arg0 [V001] /* \V001 */
-            M390 (DerefOf (I003), V000, 0x00, 0x15)
+            M390 (DerefOf (I003), V000, 0x00, __LINE__)
             I004 = DerefOf (I003)
-            M390 (I004, V000, 0x00, 0x16)
-            M390 (DerefOf (I002), V000, 0x00, 0x17)
+            M390 (I004, V000, 0x00, __LINE__)
+            M390 (DerefOf (I002), V000, 0x00, __LINE__)
             I004 = DerefOf (I002)
-            M390 (I004, V000, 0x00, 0x18)
+            M390 (I004, V000, 0x00, __LINE__)
         }
 
         /*
@@ -225,10 +225,10 @@
             Local6 = (DerefOf (Local5) + 0x01)
             CH04 (__METHOD__, 0x00, 0xFF, Z116, __LINE__, 0x00, 0x00)
             CH03 (__METHOD__, Z116, 0x04, 0xEA, 0x00)
-            M390 (Local5, V000, 0x00, 0x00)
+            M390 (Local5, V000, 0x00, __LINE__)
             CH04 (__METHOD__, 0x00, 0xFF, Z116, __LINE__, 0x00, 0x00)
             CH03 (__METHOD__, Z116, 0x06, 0xEE, 0x00)
-            M390 (DerefOf (Local5), V000, 0x00, 0x00)
+            M390 (DerefOf (Local5), V000, 0x00, __LINE__)
             CH04 (__METHOD__, 0x00, 0xFF, Z116, __LINE__, 0x00, 0x00)
             Local5 = Local2 = P000 [0x00]
             CH03 (__METHOD__, Z116, 0x08, 0xF4, 0x00)
@@ -238,10 +238,10 @@
             Local6 = (DerefOf (Local5) + 0x01)
             CH04 (__METHOD__, 0x00, 0xFF, Z116, __LINE__, 0x00, 0x00)
             CH03 (__METHOD__, Z116, 0x0C, 0xFC, 0x00)
-            M390 (Local5, V000, 0x00, 0x00)
+            M390 (Local5, V000, 0x00, __LINE__)
             CH04 (__METHOD__, 0x00, 0xFF, Z116, __LINE__, 0x00, 0x00)
             CH03 (__METHOD__, Z116, 0x0E, 0x0100, 0x00)
-            M390 (DerefOf (Local5), V000, 0x00, 0x00)
+            M390 (DerefOf (Local5), V000, 0x00, __LINE__)
             CH04 (__METHOD__, 0x00, 0xFF, Z116, __LINE__, 0x00, 0x00)
             CH03 (__METHOD__, Z116, 0x10, 0x0104, 0x00)
             Local6 = (Local2 + 0x01)
@@ -250,10 +250,10 @@
             Local6 = (DerefOf (Local2) + 0x01)
             CH04 (__METHOD__, 0x00, 0xFF, Z116, __LINE__, 0x00, 0x00)
             CH03 (__METHOD__, Z116, 0x14, 0x010C, 0x00)
-            M390 (Local2, V000, 0x00, 0x00)
+            M390 (Local2, V000, 0x00, __LINE__)
             CH04 (__METHOD__, 0x00, 0xFF, Z116, __LINE__, 0x00, 0x00)
             CH03 (__METHOD__, Z116, 0x16, 0x0110, 0x00)
-            M390 (DerefOf (Local2), V000, 0x00, 0x00)
+            M390 (DerefOf (Local2), V000, 0x00, __LINE__)
             CH04 (__METHOD__, 0x00, 0xFF, Z116, __LINE__, 0x00, 0x00)
         }
 
@@ -261,18 +261,18 @@
         {
             Store (P000 [0x00], Local5)
             Local3 = DerefOf (Local5)
-            M390 (DerefOf (Local3), V000, 0x00, 0x1B)
+            M390 (DerefOf (Local3), V000, 0x00, __LINE__)
             Local4 = DerefOf (Local3)
-            M390 (Local4, V000, 0x00, 0x1C)
+            M390 (Local4, V000, 0x00, __LINE__)
             Local5 = Local2 = P000 [0x00]
             Local3 = DerefOf (Local5)
-            M390 (DerefOf (Local3), V000, 0x00, 0x1D)
+            M390 (DerefOf (Local3), V000, 0x00, __LINE__)
             Local4 = DerefOf (Local3)
-            M390 (Local4, V000, 0x00, 0x1E)
+            M390 (Local4, V000, 0x00, __LINE__)
             Local3 = DerefOf (Local2)
-            M390 (DerefOf (Local3), V000, 0x00, 0x1F)
+            M390 (DerefOf (Local3), V000, 0x00, __LINE__)
             Local4 = DerefOf (Local3)
-            M390 (Local4, V000, 0x00, 0x20)
+            M390 (Local4, V000, 0x00, __LINE__)
         }
 
         /* if(q001) */
@@ -287,10 +287,10 @@
             Local6 = (DerefOf (Local5) + 0x01)
             CH04 (__METHOD__, 0x00, 0xFF, Z116, __LINE__, 0x00, 0x00)
             CH03 (__METHOD__, Z116, 0x1C, 0x0139, 0x00)
-            M390 (Local5, V000, 0x00, 0x21)
+            M390 (Local5, V000, 0x00, __LINE__)
             CH04 (__METHOD__, 0x00, 0xFF, Z116, __LINE__, 0x00, 0x00)
             CH03 (__METHOD__, Z116, 0x1E, 0x013D, 0x00)
-            M390 (DerefOf (Local5), V000, 0x00, 0x22)
+            M390 (DerefOf (Local5), V000, 0x00, __LINE__)
             CH04 (__METHOD__, 0x00, 0xFF, Z116, __LINE__, 0x00, 0x00)
             Local5 = Local2 = P000 [0x01]
             CH03 (__METHOD__, Z116, 0x20, 0x0143, 0x00)
@@ -300,10 +300,10 @@
             Local6 = (DerefOf (Local5) + 0x01)
             CH04 (__METHOD__, 0x00, 0xFF, Z116, __LINE__, 0x00, 0x00)
             CH03 (__METHOD__, Z116, 0x24, 0x014B, 0x00)
-            M390 (Local5, V000, 0x00, 0x23)
+            M390 (Local5, V000, 0x00, __LINE__)
             CH04 (__METHOD__, 0x00, 0xFF, Z116, __LINE__, 0x00, 0x00)
             CH03 (__METHOD__, Z116, 0x26, 0x014F, 0x00)
-            M390 (DerefOf (Local5), V000, 0x00, 0x24)
+            M390 (DerefOf (Local5), V000, 0x00, __LINE__)
             CH04 (__METHOD__, 0x00, 0xFF, Z116, __LINE__, 0x00, 0x00)
             CH03 (__METHOD__, Z116, 0x28, 0x0153, 0x00)
             Local6 = (Local2 + 0x01)
@@ -312,10 +312,10 @@
             Local6 = (DerefOf (Local2) + 0x01)
             CH04 (__METHOD__, 0x00, 0xFF, Z116, __LINE__, 0x00, 0x00)
             CH03 (__METHOD__, Z116, 0x2C, 0x015B, 0x00)
-            M390 (Local2, V000, 0x00, 0x25)
+            M390 (Local2, V000, 0x00, __LINE__)
             CH04 (__METHOD__, 0x00, 0xFF, Z116, __LINE__, 0x00, 0x00)
             CH03 (__METHOD__, Z116, 0x2E, 0x015F, 0x00)
-            M390 (DerefOf (Local2), V000, 0x00, 0x26)
+            M390 (DerefOf (Local2), V000, 0x00, __LINE__)
             CH04 (__METHOD__, 0x00, 0xFF, Z116, __LINE__, 0x00, 0x00)
         }
 
@@ -323,18 +323,18 @@
         {
             Store (P000 [0x01], Local5)
             Local3 = DerefOf (Local5)
-            M390 (DerefOf (Local3), V000, 0x00, 0x27)
+            M390 (DerefOf (Local3), V000, 0x00, __LINE__)
             Local4 = DerefOf (Local3)
-            M390 (Local4, V000, 0x00, 0x28)
+            M390 (Local4, V000, 0x00, __LINE__)
             Local5 = Local2 = P000 [0x01]
             Local3 = DerefOf (Local5)
-            M390 (DerefOf (Local3), V000, 0x00, 0x29)
+            M390 (DerefOf (Local3), V000, 0x00, __LINE__)
             Local4 = DerefOf (Local3)
-            M390 (Local4, V000, 0x00, 0x2A)
+            M390 (Local4, V000, 0x00, __LINE__)
             Local3 = DerefOf (Local2)
-            M390 (DerefOf (Local3), V000, 0x00, 0x2B)
+            M390 (DerefOf (Local3), V000, 0x00, __LINE__)
             Local4 = DerefOf (Local3)
-            M390 (Local4, V000, 0x00, 0x2C)
+            M390 (Local4, V000, 0x00, __LINE__)
         }
 
         /* if(q001) */
@@ -349,10 +349,10 @@
             Arg6 = (DerefOf (Arg5) + 0x01)
             CH04 (__METHOD__, 0x00, 0xFF, Z116, __LINE__, 0x00, 0x00)
             CH03 (__METHOD__, Z116, 0x34, 0x0188, 0x00)
-            M390 (Arg5, V000, 0x00, 0x2D)
+            M390 (Arg5, V000, 0x00, __LINE__)
             CH04 (__METHOD__, 0x00, 0xFF, Z116, __LINE__, 0x00, 0x00)
             CH03 (__METHOD__, Z116, 0x36, 0x018C, 0x00)
-            M390 (DerefOf (Arg5), V000, 0x00, 0x2E)
+            M390 (DerefOf (Arg5), V000, 0x00, __LINE__)
             CH04 (__METHOD__, 0x00, 0xFF, Z116, __LINE__, 0x00, 0x00)
             Arg5 = Arg2 = P000 [0x00]
             CH03 (__METHOD__, Z116, 0x38, 0x0192, 0x00)
@@ -362,10 +362,10 @@
             Arg6 = (DerefOf (Arg5) + 0x01)
             CH04 (__METHOD__, 0x00, 0xFF, Z116, __LINE__, 0x00, 0x00)
             CH03 (__METHOD__, Z116, 0x3C, 0x019A, 0x00)
-            M390 (Arg5, V000, 0x00, 0x2F)
+            M390 (Arg5, V000, 0x00, __LINE__)
             CH04 (__METHOD__, 0x00, 0xFF, Z116, __LINE__, 0x00, 0x00)
             CH03 (__METHOD__, Z116, 0x3E, 0x019E, 0x00)
-            M390 (DerefOf (Arg5), V000, 0x00, 0x30)
+            M390 (DerefOf (Arg5), V000, 0x00, __LINE__)
             CH04 (__METHOD__, 0x00, 0xFF, Z116, __LINE__, 0x00, 0x00)
             CH03 (__METHOD__, Z116, 0x40, 0x01A2, 0x00)
             Arg6 = (Arg2 + 0x01)
@@ -374,10 +374,10 @@
             Arg6 = (DerefOf (Arg2) + 0x01)
             CH04 (__METHOD__, 0x00, 0xFF, Z116, __LINE__, 0x00, 0x00)
             CH03 (__METHOD__, Z116, 0x44, 0x01AA, 0x00)
-            M390 (Arg2, V000, 0x00, 0x31)
+            M390 (Arg2, V000, 0x00, __LINE__)
             CH04 (__METHOD__, 0x00, 0xFF, Z116, __LINE__, 0x00, 0x00)
             CH03 (__METHOD__, Z116, 0x46, 0x01AE, 0x00)
-            M390 (DerefOf (Arg2), V000, 0x00, 0x32)
+            M390 (DerefOf (Arg2), V000, 0x00, __LINE__)
             CH04 (__METHOD__, 0x00, 0xFF, Z116, __LINE__, 0x00, 0x00)
         }
 
@@ -385,18 +385,18 @@
         {
             Store (P000 [0x00], Arg5)
             Arg3 = DerefOf (Arg5)
-            M390 (DerefOf (Arg3), V000, 0x00, 0x33)
+            M390 (DerefOf (Arg3), V000, 0x00, __LINE__)
             Arg4 = DerefOf (Arg3)
-            M390 (Arg4, V000, 0x00, 0x34)
+            M390 (Arg4, V000, 0x00, __LINE__)
             Arg5 = Arg2 = P000 [0x00]
             Arg3 = DerefOf (Arg5)
-            M390 (DerefOf (Arg3), V000, 0x00, 0x35)
+            M390 (DerefOf (Arg3), V000, 0x00, __LINE__)
             Arg4 = DerefOf (Arg3)
-            M390 (Arg4, V000, 0x00, 0x36)
+            M390 (Arg4, V000, 0x00, __LINE__)
             Arg3 = DerefOf (Arg2)
-            M390 (DerefOf (Arg3), V000, 0x00, 0x37)
+            M390 (DerefOf (Arg3), V000, 0x00, __LINE__)
             Arg4 = DerefOf (Arg3)
-            M390 (Arg4, V000, 0x00, 0x38)
+            M390 (Arg4, V000, 0x00, __LINE__)
         }
 
         /* if(q001) */
@@ -411,10 +411,10 @@
             Arg6 = (DerefOf (Arg5) + 0x01)
             CH04 (__METHOD__, 0x00, 0xFF, Z116, __LINE__, 0x00, 0x00)
             CH03 (__METHOD__, Z116, 0x4C, 0x01D7, 0x00)
-            M390 (Arg5, V000, 0x00, 0x39)
+            M390 (Arg5, V000, 0x00, __LINE__)
             CH04 (__METHOD__, 0x00, 0xFF, Z116, __LINE__, 0x00, 0x00)
             CH03 (__METHOD__, Z116, 0x4E, 0x01DB, 0x00)
-            M390 (DerefOf (Arg5), V000, 0x00, 0x3A)
+            M390 (DerefOf (Arg5), V000, 0x00, __LINE__)
             CH04 (__METHOD__, 0x00, 0xFF, Z116, __LINE__, 0x00, 0x00)
             Arg5 = Arg2 = P000 [0x01]
             CH03 (__METHOD__, Z116, 0x50, 0x01E1, 0x00)
@@ -424,10 +424,10 @@
             Arg6 = (DerefOf (Arg5) + 0x01)
             CH04 (__METHOD__, 0x00, 0xFF, Z116, __LINE__, 0x00, 0x00)
             CH03 (__METHOD__, Z116, 0x54, 0x01E9, 0x00)
-            M390 (Arg5, V000, 0x00, 0x3B)
+            M390 (Arg5, V000, 0x00, __LINE__)
             CH04 (__METHOD__, 0x00, 0xFF, Z116, __LINE__, 0x00, 0x00)
             CH03 (__METHOD__, Z116, 0x56, 0x01ED, 0x00)
-            M390 (DerefOf (Arg5), V000, 0x00, 0x3C)
+            M390 (DerefOf (Arg5), V000, 0x00, __LINE__)
             CH04 (__METHOD__, 0x00, 0xFF, Z116, __LINE__, 0x00, 0x00)
             CH03 (__METHOD__, Z116, 0x58, 0x01F1, 0x00)
             Arg6 = (Arg2 + 0x01)
@@ -436,10 +436,10 @@
             Arg6 = (DerefOf (Arg2) + 0x01)
             CH04 (__METHOD__, 0x00, 0xFF, Z116, __LINE__, 0x00, 0x00)
             CH03 (__METHOD__, Z116, 0x5C, 0x01F9, 0x00)
-            M390 (Arg2, V000, 0x00, 0x3D)
+            M390 (Arg2, V000, 0x00, __LINE__)
             CH04 (__METHOD__, 0x00, 0xFF, Z116, __LINE__, 0x00, 0x00)
             CH03 (__METHOD__, Z116, 0x5E, 0x01FD, 0x00)
-            M390 (DerefOf (Arg2), V000, 0x00, 0x3E)
+            M390 (DerefOf (Arg2), V000, 0x00, __LINE__)
             CH04 (__METHOD__, 0x00, 0xFF, Z116, __LINE__, 0x00, 0x00)
         }
 
@@ -447,18 +447,18 @@
         {
             Store (P000 [0x01], Arg5)
             Arg3 = DerefOf (Arg5)
-            M390 (DerefOf (Arg3), V000, 0x00, 0x3F)
+            M390 (DerefOf (Arg3), V000, 0x00, __LINE__)
             Arg4 = DerefOf (Arg3)
-            M390 (Arg4, V000, 0x00, 0x40)
+            M390 (Arg4, V000, 0x00, __LINE__)
             Arg5 = Arg2 = P000 [0x01]
             Arg3 = DerefOf (Arg5)
-            M390 (DerefOf (Arg3), V000, 0x00, 0x41)
+            M390 (DerefOf (Arg3), V000, 0x00, __LINE__)
             Arg4 = DerefOf (Arg3)
-            M390 (Arg4, V000, 0x00, 0x42)
+            M390 (Arg4, V000, 0x00, __LINE__)
             Arg3 = DerefOf (Arg2)
-            M390 (DerefOf (Arg3), V000, 0x00, 0x43)
+            M390 (DerefOf (Arg3), V000, 0x00, __LINE__)
             Arg4 = DerefOf (Arg3)
-            M390 (Arg4, V000, 0x00, 0x44)
+            M390 (Arg4, V000, 0x00, __LINE__)
         }
 
         /* if(q001) */
@@ -478,10 +478,10 @@
                 I006 = (DerefOf (I005) + 0x01)
                 CH04 (__METHOD__, 0x00, 0xFF, Z116, __LINE__, 0x00, 0x00)
                 CH03 (__METHOD__, Z116, 0x64, 0x0229, 0x00)
-                M390 (I005, V000, 0x00, 0x45)
+                M390 (I005, V000, 0x00, __LINE__)
                 CH04 (__METHOD__, 0x00, 0xFF, Z116, __LINE__, 0x00, 0x00)
                 CH03 (__METHOD__, Z116, 0x66, 0x022D, 0x00)
-                M390 (DerefOf (I005), V000, 0x00, 0x46)
+                M390 (DerefOf (I005), V000, 0x00, __LINE__)
                 CH04 (__METHOD__, 0x00, 0xFF, Z116, __LINE__, 0x00, 0x00)
                 I005 = I002 = P000 [0x00]
                 CH03 (__METHOD__, Z116, 0x68, 0x0233, 0x00)
@@ -491,10 +491,10 @@
                 I006 = (DerefOf (I005) + 0x01)
                 CH04 (__METHOD__, 0x00, 0xFF, Z116, __LINE__, 0x00, 0x00)
                 CH03 (__METHOD__, Z116, 0x6C, 0x023B, 0x00)
-                M390 (I005, V000, 0x00, 0x47)
+                M390 (I005, V000, 0x00, __LINE__)
                 CH04 (__METHOD__, 0x00, 0xFF, Z116, __LINE__, 0x00, 0x00)
                 CH03 (__METHOD__, Z116, 0x6E, 0x023F, 0x00)
-                M390 (DerefOf (I005), V000, 0x00, 0x48)
+                M390 (DerefOf (I005), V000, 0x00, __LINE__)
                 CH04 (__METHOD__, 0x00, 0xFF, Z116, __LINE__, 0x00, 0x00)
                 CH03 (__METHOD__, Z116, 0x70, 0x0243, 0x00)
                 I006 = (I002 + 0x01)
@@ -503,10 +503,10 @@
                 I006 = (DerefOf (I002) + 0x01)
                 CH04 (__METHOD__, 0x00, 0xFF, Z116, __LINE__, 0x00, 0x00)
                 CH03 (__METHOD__, Z116, 0x74, 0x024B, 0x00)
-                M390 (I002, V000, 0x00, 0x49)
+                M390 (I002, V000, 0x00, __LINE__)
                 CH04 (__METHOD__, 0x00, 0xFF, Z116, __LINE__, 0x00, 0x00)
                 CH03 (__METHOD__, Z116, 0x76, 0x024F, 0x00)
-                M390 (DerefOf (I002), V000, 0x00, 0x4A)
+                M390 (DerefOf (I002), V000, 0x00, __LINE__)
                 CH04 (__METHOD__, 0x00, 0xFF, Z116, __LINE__, 0x00, 0x00)
             }
 
@@ -514,18 +514,18 @@
             {
                 Store (P000 [0x00], I005) /* \M1C3.I005 */
                 I003 = DerefOf (I005)
-                M390 (DerefOf (I003), V000, 0x00, 0x4B)
+                M390 (DerefOf (I003), V000, 0x00, __LINE__)
                 I004 = DerefOf (I003)
-                M390 (I004, V000, 0x00, 0x4C)
+                M390 (I004, V000, 0x00, __LINE__)
                 I005 = I002 = P000 [0x00]
                 I003 = DerefOf (I005)
-                M390 (DerefOf (I003), V000, 0x00, 0x4D)
+                M390 (DerefOf (I003), V000, 0x00, __LINE__)
                 I004 = DerefOf (I003)
-                M390 (I004, V000, 0x00, 0x4E)
+                M390 (I004, V000, 0x00, __LINE__)
                 I003 = DerefOf (I002)
-                M390 (DerefOf (I003), V000, 0x00, 0x4F)
+                M390 (DerefOf (I003), V000, 0x00, __LINE__)
                 I004 = DerefOf (I003)
-                M390 (I004, V000, 0x00, 0x50)
+                M390 (I004, V000, 0x00, __LINE__)
             }
 
             /* if(q001) */
@@ -540,10 +540,10 @@
                 I006 = (DerefOf (I005) + 0x01)
                 CH04 (__METHOD__, 0x00, 0xFF, Z116, __LINE__, 0x00, 0x00)
                 CH03 (__METHOD__, Z116, 0x7C, 0x0278, 0x00)
-                M390 (I005, V000, 0x00, 0x51)
+                M390 (I005, V000, 0x00, __LINE__)
                 CH04 (__METHOD__, 0x00, 0xFF, Z116, __LINE__, 0x00, 0x00)
                 CH03 (__METHOD__, Z116, 0x7E, 0x027C, 0x00)
-                M390 (DerefOf (I005), V000, 0x00, 0x52)
+                M390 (DerefOf (I005), V000, 0x00, __LINE__)
                 CH04 (__METHOD__, 0x00, 0xFF, Z116, __LINE__, 0x00, 0x00)
                 I005 = I002 = P000 [0x01]
                 CH03 (__METHOD__, Z116, 0x80, 0x0282, 0x00)
@@ -553,10 +553,10 @@
                 I006 = (DerefOf (I005) + 0x01)
                 CH04 (__METHOD__, 0x00, 0xFF, Z116, __LINE__, 0x00, 0x00)
                 CH03 (__METHOD__, Z116, 0x84, 0x028A, 0x00)
-                M390 (I005, V000, 0x00, 0x53)
+                M390 (I005, V000, 0x00, __LINE__)
                 CH04 (__METHOD__, 0x00, 0xFF, Z116, __LINE__, 0x00, 0x00)
                 CH03 (__METHOD__, Z116, 0x86, 0x028E, 0x00)
-                M390 (DerefOf (I005), V000, 0x00, 0x54)
+                M390 (DerefOf (I005), V000, 0x00, __LINE__)
                 CH04 (__METHOD__, 0x00, 0xFF, Z116, __LINE__, 0x00, 0x00)
                 CH03 (__METHOD__, Z116, 0x88, 0x0292, 0x00)
                 I006 = (I002 + 0x01)
@@ -565,10 +565,10 @@
                 I006 = (DerefOf (I002) + 0x01)
                 CH04 (__METHOD__, 0x00, 0xFF, Z116, __LINE__, 0x00, 0x00)
                 CH03 (__METHOD__, Z116, 0x8C, 0x029A, 0x00)
-                M390 (I002, V000, 0x00, 0x55)
+                M390 (I002, V000, 0x00, __LINE__)
                 CH04 (__METHOD__, 0x00, 0xFF, Z116, __LINE__, 0x00, 0x00)
                 CH03 (__METHOD__, Z116, 0x8E, 0x029E, 0x00)
-                M390 (DerefOf (I002), V000, 0x00, 0x56)
+                M390 (DerefOf (I002), V000, 0x00, __LINE__)
                 CH04 (__METHOD__, 0x00, 0xFF, Z116, __LINE__, 0x00, 0x00)
             }
 
@@ -576,18 +576,18 @@
             {
                 Store (P000 [0x01], I005) /* \M1C3.I005 */
                 I003 = DerefOf (I005)
-                M390 (DerefOf (I003), V000, 0x00, 0x57)
+                M390 (DerefOf (I003), V000, 0x00, __LINE__)
                 I004 = DerefOf (I003)
-                M390 (I004, V000, 0x00, 0x58)
+                M390 (I004, V000, 0x00, __LINE__)
                 I005 = I002 = P000 [0x01]
                 I003 = DerefOf (I005)
-                M390 (DerefOf (I003), V000, 0x00, 0x59)
+                M390 (DerefOf (I003), V000, 0x00, __LINE__)
                 I004 = DerefOf (I003)
-                M390 (I004, V000, 0x00, 0x5A)
+                M390 (I004, V000, 0x00, __LINE__)
                 I003 = DerefOf (I002)
-                M390 (DerefOf (I003), V000, 0x00, 0x5B)
+                M390 (DerefOf (I003), V000, 0x00, __LINE__)
                 I004 = DerefOf (I003)
-                M390 (I004, V000, 0x00, 0x5C)
+                M390 (I004, V000, 0x00, __LINE__)
             }
                 /* if(q001) */
         }
@@ -752,7 +752,7 @@
         M1A3 (Local0, C009, Z116, __METHOD__, 0x76)
         Store (P000 [0x09], Local0)
         M1A3 (Local0, C009, Z116, __METHOD__, 0x77)
-        M380 (__METHOD__, I000, 0x00, 0x00)
+        M380 (__METHOD__, I000, 0x00, __LINE__)
     }
 
     /* CURRENTLY: compiler failed, Too few arguments (M002 requires X) */
@@ -806,7 +806,7 @@
      m1a3(Local0, c009, z116, ts, 128)
      Store(Index(p000, 9), Local0)
      m1a3(Local0, c009, z116, ts, 129)
-     m380(ts, i000, 0, 130)
+     m380 (ts, i000, 0, __LINE__)
      */
     }
 
@@ -890,7 +890,7 @@
         CH03 (__METHOD__, Z116, 0x9E, 0x03D2, 0x00)
         Local1 = DerefOf (Local0)
         CH04 (__METHOD__, 0x00, 0xFF, Z116, __LINE__, 0x00, 0x00)
-        M380 (__METHOD__, I000, 0x00, 0x8B)
+        M380 (__METHOD__, I000, 0x00, __LINE__)
     }
 
     /* Size of Package */
@@ -1295,7 +1295,7 @@
         }
 
         M000 (P000 [0x01])
-        M383 ("m1d9", P000, Z116, 0x8C)
+        M383 ("m1d9", P000, Z116, __LINE__)
     }
 
     Method (M1DA, 0, Serialized)
@@ -1312,5 +1312,5 @@
         }
 
         M000 (P000 [0x01])
-        M383 ("m1da", P000, Z116, 0x8D)
+        M383 ("m1da", P000, Z116, __LINE__)
     }

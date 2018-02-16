@@ -33,7 +33,7 @@
     /* arg0 - test name */
     /* arg1 - Integer, original object */
     /* arg2 - absolute index of file initiating the checking */
-    /* arg3 - index of checking (inside the file) */
+    /* arg3 - line number of checking (inside the file) */
     Method (M380, 4, NotSerialized)
     {
         Local0 = ObjectType (Arg1)
@@ -50,7 +50,7 @@
     /* arg0 - test name */
     /* arg1 - String, original object */
     /* arg2 - absolute index of file initiating the checking */
-    /* arg3 - index of checking (inside the file) */
+    /* arg3 - line number of checking (inside the file) */
     Method (M381, 4, NotSerialized)
     {
         Local0 = ObjectType (Arg1)
@@ -67,7 +67,7 @@
     /* arg0 - test name */
     /* arg1 - Buffer, original object */
     /* arg2 - absolute index of file initiating the checking */
-    /* arg3 - index of checking (inside the file) */
+    /* arg3 - line number of checking (inside the file) */
     Method (M382, 4, NotSerialized)
     {
         Local0 = ObjectType (Arg1)
@@ -90,7 +90,7 @@
     /* arg0 - test name */
     /* arg1 - Package, original object */
     /* arg2 - absolute index of file initiating the checking */
-    /* arg3 - index of checking (inside the file) */
+    /* arg3 - line number of checking (inside the file) */
     Method (M383, 4, NotSerialized)
     {
         Local0 = ObjectType (Arg1)
@@ -127,7 +127,7 @@
     /* arg0 - test name */
     /* arg1 - Integer, original object */
     /* arg2 - absolute index of file initiating the checking */
-    /* arg3 - index of checking (inside the file) */
+    /* arg3 - line number of checking (inside the file) */
     Method (M384, 4, NotSerialized)
     {
         Local0 = ObjectType (Arg1)
@@ -144,7 +144,7 @@
     /* arg0 - test name */
     /* arg1 - String, original object */
     /* arg2 - absolute index of file initiating the checking */
-    /* arg3 - index of checking (inside the file) */
+    /* arg3 - line number of checking (inside the file) */
     Method (M385, 4, NotSerialized)
     {
         Local0 = ObjectType (Arg1)
@@ -161,7 +161,7 @@
     /* arg0 - test name */
     /* arg1 - Buffer, original object */
     /* arg2 - absolute index of file initiating the checking */
-    /* arg3 - index of checking (inside the file) */
+    /* arg3 - line number of checking (inside the file) */
     Method (M386, 4, NotSerialized)
     {
         Local0 = ObjectType (Arg1)
@@ -184,7 +184,7 @@
     /* arg0 - test name */
     /* arg1 - Package, original object */
     /* arg2 - absolute index of file initiating the checking */
-    /* arg3 - index of checking (inside the file) */
+    /* arg3 - line number of checking (inside the file) */
     Method (M387, 4, NotSerialized)
     {
         Local0 = ObjectType (Arg1)
@@ -220,49 +220,49 @@
     /* arg0 - original object */
     /* arg1 - type of it */
     /* arg2 - absolute index of file initiating the checking */
-    /* arg3 - index of checking (inside the file) */
+    /* arg3 - line number of checking (inside the file) */
     Method (M390, 4, Serialized)
     {
         Name (TS, "m390")
         If ((Arg1 == C009))
         {
-            M380 (TS, Arg0, Arg2, Arg3)
+            M380 (TS, Arg0, Arg2, __LINE__)
         }
         ElseIf ((Arg1 == C00A))
         {
-            M381 (TS, Arg0, Arg2, Arg3)
+            M381 (TS, Arg0, Arg2, __LINE__)
         }
         ElseIf ((Arg1 == C00B))
         {
-            M382 (TS, Arg0, Arg2, Arg3)
+            M382 (TS, Arg0, Arg2, __LINE__)
         }
         ElseIf ((Arg1 == C00C))
         {
-            M383 (TS, Arg0, Arg2, Arg3)
+            M383 (TS, Arg0, Arg2, __LINE__)
         }
     }
 
     /* arg0 - original object */
     /* arg1 - type of it */
     /* arg2 - absolute index of file initiating the checking */
-    /* arg3 - index of checking (inside the file) */
+    /* arg3 - line number of checking (inside the file) */
     Method (M391, 4, Serialized)
     {
         Name (TS, "m391")
         If ((Arg1 == C009))
         {
-            M384 (TS, Arg0, Arg2, Arg3)
+            M384 (TS, Arg0, Arg2, __LINE__)
         }
         ElseIf ((Arg1 == C00A))
         {
-            M385 (TS, Arg0, Arg2, Arg3)
+            M385 (TS, Arg0, Arg2, __LINE__)
         }
         ElseIf ((Arg1 == C00B))
         {
-            M386 (TS, Arg0, Arg2, Arg3)
+            M386 (TS, Arg0, Arg2, __LINE__)
         }
         ElseIf ((Arg1 == C00C))
         {
-            M387 (TS, Arg0, Arg2, Arg3)
+            M387 (TS, Arg0, Arg2, __LINE__)
         }
     }
