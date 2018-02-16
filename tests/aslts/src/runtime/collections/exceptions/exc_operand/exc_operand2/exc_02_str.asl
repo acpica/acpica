@@ -313,7 +313,7 @@
             }
             Else
             {
-                CH04 (__METHOD__, 0x00, 0x55, Z094, 0x013B, 0x00, 0x00) /* AE_INDEX_TO_NOT_ATTACHED */
+                CH04 (__METHOD__, 0x00, 0x55, Z094, __LINE__, 0x00, 0x00) /* AE_INDEX_TO_NOT_ATTACHED */
             }
 
             Local1 = Wait (M000 (0x07), 0x00)

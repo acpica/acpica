@@ -68,7 +68,7 @@
             }
             Else
             {
-                CH04 ("", 0x00, 0xFF, 0x00, 0x3F, 0x00, 0x00) /* AE_INDEX_TO_NOT_ATTACHED */
+                CH04 (__METHOD__, 0x00, 0xFF, 0x00, __LINE__, 0x00, 0x00) /* AE_INDEX_TO_NOT_ATTACHED */
             }
         }
         Else
@@ -89,7 +89,7 @@
             }
             Else
             {
-                CH04 ("", 0x00, 0xFF, 0x00, 0x4C, 0x00, 0x00) /* AE_INDEX_TO_NOT_ATTACHED */
+                CH04 (__METHOD__, 0x00, 0xFF, 0x00, __LINE__, 0x00, 0x00) /* AE_INDEX_TO_NOT_ATTACHED */
             }
         }
     }

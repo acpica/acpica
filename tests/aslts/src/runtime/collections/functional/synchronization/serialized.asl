@@ -805,7 +805,7 @@
         MM00 (0x00, I000, I001)
         If ((Arg0 > Arg1))
         {
-            CH04 (__METHOD__, 0x00, 0x40, Z173, 0x0134, 0x00, 0x00) /* AE_AML_MUTEX_ORDER */
+            CH04 (__METHOD__, 0x00, 0x40, Z173, __LINE__, 0x00, 0x00) /* AE_AML_MUTEX_ORDER */
         }
         Else
         {
@@ -1174,7 +1174,7 @@
         MM00 (0x00, I000, I001)
         If ((Arg0 > Arg1))
         {
-            CH04 (__METHOD__, 0x00, 0x40, Z173, 0x01B8, 0x00, 0x00) /* AE_AML_MUTEX_ORDER */
+            CH04 (__METHOD__, 0x00, 0x40, Z173, __LINE__, 0x00, 0x00) /* AE_AML_MUTEX_ORDER */
         }
         Else
         {
@@ -1584,7 +1584,7 @@
         MM00 (0x00, I000, I001)
         If ((Arg0 > Arg1))
         {
-            CH04 (__METHOD__, 0x00, 0x40, Z173, 0x0265, 0x00, 0x00) /* AE_AML_MUTEX_ORDER */
+            CH04 (__METHOD__, 0x00, 0x40, Z173, __LINE__, 0x00, 0x00) /* AE_AML_MUTEX_ORDER */
         }
         Else
         {
@@ -2628,7 +2628,7 @@
 
         If (!Local4)
         {
-            CH04 (__METHOD__, 0x01, 0x40, Z173, 0x04D7, 0x00, 0x00) /* AE_AML_MUTEX_ORDER */
+            CH04 (__METHOD__, 0x01, 0x40, Z173, __LINE__, 0x00, 0x00) /* AE_AML_MUTEX_ORDER */
         }
         Else
         {

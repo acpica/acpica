@@ -140,7 +140,7 @@
         MM00 ()
         /* Check opcode of the last exception */
 
-        CH04 ("", 0x02, 0x2F, 0x00, 0x8E, 0x00, 0x00) /* AE_AML_OPERAND_TYPE */
+        CH04 (__METHOD__, 0x02, 0x2F, 0x00, __LINE__, 0x00, 0x00) /* AE_AML_OPERAND_TYPE */
     }
 
     /*
@@ -201,9 +201,9 @@
             Debug = Local7
         }
 
-        CH04 ("", 0x00, 0xFF, 0x00, 0xCB, 0x00, 0x00)
+        CH04 (__METHOD__, 0x00, 0xFF, 0x00, __LINE__, 0x00, 0x00)
         Local7 = (I001 + 0x01)
-        CH04 ("", 0x00, 0xFF, 0x00, 0xCF, 0x00, 0x00)
+        CH04 (__METHOD__, 0x00, 0xFF, 0x00, __LINE__, 0x00, 0x00)
         /*
          * Looks identical to b248: "Incorrect ReferenceCount on Switch operation"
          * (though there is no Switch operation)

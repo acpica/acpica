@@ -188,7 +188,7 @@
                     Store (Arg0 [Arg2], Local0)
                     CH03 ("", 0x00, 0x0100, 0xA6, 0x00)
                     Local1 = DerefOf (Local0)
-                    CH04 ("", 0x01, 0x33, 0x00, 0xA8, 0x00, 0x00) /* AE_AML_UNINITIALIZED_ELEMENT */
+                    CH04 (__METHOD__, 0x01, 0x33, 0x00, __LINE__, 0x00, 0x00) /* AE_AML_UNINITIALIZED_ELEMENT */
                     /* Just before written area */
 
                     Local1 = (Arg3 - 0x01)
@@ -196,7 +196,7 @@
                     Store (Arg0 [Local1], Local0)
                     CH03 ("", 0x00, 0x0102, 0xAF, 0x00)
                     Local1 = DerefOf (Local0)
-                    CH04 ("", 0x01, 0x33, 0x00, 0xB1, 0x00, 0x00) /* AE_AML_UNINITIALIZED_ELEMENT */
+                    CH04 (__METHOD__, 0x01, 0x33, 0x00, __LINE__, 0x00, 0x00) /* AE_AML_UNINITIALIZED_ELEMENT */
                 }
 
                 /* Just after pre-initialized and written areas */
@@ -213,7 +213,7 @@
                     Store (Arg0 [Local7], Local0)
                     CH03 ("", 0x00, 0x0104, 0xBE, 0x00)
                     Local1 = DerefOf (Local0)
-                    CH04 ("", 0x01, 0x33, 0x00, 0xC0, 0x00, 0x00) /* AE_AML_UNINITIALIZED_ELEMENT */
+                    CH04 (__METHOD__, 0x01, 0x33, 0x00, __LINE__, 0x00, 0x00) /* AE_AML_UNINITIALIZED_ELEMENT */
                     /* Last element of Package */
 
                     Local1 = (Arg1 - 0x01)
@@ -221,7 +221,7 @@
                     Store (Arg0 [Local1], Local0)
                     CH03 ("", 0x00, 0x0106, 0xC7, 0x00)
                     Local1 = DerefOf (Local0)
-                    CH04 ("", 0x01, 0x33, 0x00, 0xC9, 0x00, 0x00) /* AE_AML_UNINITIALIZED_ELEMENT */
+                    CH04 (__METHOD__, 0x01, 0x33, 0x00, __LINE__, 0x00, 0x00) /* AE_AML_UNINITIALIZED_ELEMENT */
                 }
             }
             Else
@@ -232,7 +232,7 @@
                 Store (Arg0 [Arg2], Local0)
                 CH03 ("", 0x00, 0x0108, 0xD0, 0x00)
                 Local1 = DerefOf (Local0)
-                CH04 ("", 0x01, 0x33, 0x00, 0xD2, 0x00, 0x00) /* AE_AML_UNINITIALIZED_ELEMENT */
+                CH04 (__METHOD__, 0x01, 0x33, 0x00, __LINE__, 0x00, 0x00) /* AE_AML_UNINITIALIZED_ELEMENT */
                 /* Last element of Package */
 
                 Local1 = (Arg1 - 0x01)
@@ -240,7 +240,7 @@
                 Store (Arg0 [Local1], Local0)
                 CH03 ("", 0x00, 0x010A, 0xD9, 0x00)
                 Local1 = DerefOf (Local0)
-                CH04 ("", 0x01, 0x33, 0x00, 0xDB, 0x00, 0x00) /* AE_AML_UNINITIALIZED_ELEMENT */
+                CH04 (__METHOD__, 0x01, 0x33, 0x00, __LINE__, 0x00, 0x00) /* AE_AML_UNINITIALIZED_ELEMENT */
             }
         }
 
@@ -249,14 +249,14 @@
         TRC1 (Arg0, Arg1, 0xF0F0F0F0)
         CH03 ("", 0x00, 0x010C, 0xE2, 0x00)
         Local0 = Arg0 [Arg1]
-        CH04 ("", 0x00, 0x37, 0x00, 0xE4, 0x00, 0x00) /* AE_AML_PACKAGE_LIMIT */
+        CH04 (__METHOD__, 0x00, 0x37, 0x00, __LINE__, 0x00, 0x00) /* AE_AML_PACKAGE_LIMIT */
         Local7 = (Arg1 + 0x01)
         If ((Local7 >= Arg1))
         {
             TRC1 (Arg0, Local7, 0xF0F0F0F0)
             CH03 ("", 0x00, 0x010E, 0xE9, 0x00)
             Local0 = Arg0 [Local7]
-            CH04 ("", 0x00, 0x37, 0x00, 0xEB, 0x00, 0x00) /* AE_AML_PACKAGE_LIMIT */
+            CH04 (__METHOD__, 0x00, 0x37, 0x00, __LINE__, 0x00, 0x00) /* AE_AML_PACKAGE_LIMIT */
         }
 
         If ((0xFFFFFFFFFFFFFFFF >= Arg1))
@@ -264,7 +264,7 @@
             TRC1 (Arg0, 0xFFFFFFFFFFFFFFFF, 0xF0F0F0F0)
             CH03 ("", 0x00, 0x0110, 0xF0, 0x00)
             Local0 = Arg0 [0xFFFFFFFFFFFFFFFF]
-            CH04 ("", 0x00, 0x37, 0x00, 0xF2, 0x00, 0x00) /* AE_AML_PACKAGE_LIMIT */
+            CH04 (__METHOD__, 0x00, 0x37, 0x00, __LINE__, 0x00, 0x00) /* AE_AML_PACKAGE_LIMIT */
         }
 
         /* Check near the maximal bound of a simple Package */
@@ -324,7 +324,7 @@
             Store (Arg0 [Arg5], Local0)
             CH03 ("", 0x00, 0x0114, 0x0129, 0x00)
             Local1 = DerefOf (Local0)
-            CH04 ("", 0x01, 0x33, 0x00, 0x012B, 0x00, 0x00) /* AE_AML_UNINITIALIZED_ELEMENT */
+            CH04 (__METHOD__, 0x01, 0x33, 0x00, __LINE__, 0x00, 0x00) /* AE_AML_UNINITIALIZED_ELEMENT */
         }
         Else
         {
@@ -333,7 +333,7 @@
             TRC1 (Arg0, Arg5, 0xF0F0F0F0)
             CH03 ("", 0x00, 0x0116, 0x0132, 0x00)
             Local0 = Arg0 [Arg5]
-            CH04 ("", 0x00, 0x37, 0x00, 0x0134, 0x00, 0x00) /* AE_AML_PACKAGE_LIMIT */
+            CH04 (__METHOD__, 0x00, 0x37, 0x00, __LINE__, 0x00, 0x00) /* AE_AML_PACKAGE_LIMIT */
         }
     }
 
@@ -353,7 +353,7 @@
          * - number of exceptions NOT GREATER than two
          */
         /* Check opcode of the first exception */
-        CH04 ("", 0x01, 0x38, 0x00, 0x014B, 0x00, 0x00) /* AE_AML_DIVIDE_BY_ZERO */
+        CH04 (__METHOD__, 0x01, 0x38, 0x00, __LINE__, 0x00, 0x00) /* AE_AML_DIVIDE_BY_ZERO */
         /* Number of exceptions not greater than two */
 
         If ((EXC1 > 0x02))

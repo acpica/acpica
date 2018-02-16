@@ -78,7 +78,7 @@
         }
 
         Load (R258, H258) /* \H258 */
-        If (CH04 ("", 0x00, 0x08, 0x00, 0x58, 0x00, 0x00))
+        If (CH04 (__METHOD__, 0x00, 0x08, 0x00, __LINE__, 0x00, 0x00))
         {
             Return (            /* AE_TYPE */
 

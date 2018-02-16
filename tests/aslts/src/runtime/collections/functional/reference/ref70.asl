@@ -75,7 +75,7 @@
 
         }
 
-        CH04 (C080, 0x00, 0xFF, Z081, 0x4D, Arg6, Arg6)
+        CH04 (C080, 0x00, 0xFF, Z081, __LINE__, Arg6, Arg6)
         /*
          // FILE BUG: hangs without printing error
          Store(CH04(c080, 0, 0xff, z081, __LINE__, arg6, arg6), Local0)
@@ -112,7 +112,7 @@
 
         }
 
-        CH04 (C080, 0x00, 0xFF, Z081, 0x6F, 0x38, 0x38)
+        CH04 (C080, 0x00, 0xFF, Z081, __LINE__, 0x38, 0x38)
     }
 
     /* Check reaction on OPERAND-REFERENCE (exceptions are expected in most cases) */
@@ -138,7 +138,7 @@
                 Local7 = 0x00
             }
 
-            CH04 (C080, 0x00, 0xFF, Z081, 0x87, 0x36, 0x36)
+            CH04 (C080, 0x00, 0xFF, Z081, __LINE__, 0x36, 0x36)
         }
 
         /* ElseIf */
@@ -155,7 +155,7 @@
                 Local7 = 0x01
             }
 
-            CH04 (C080, 0x00, 0xFF, Z081, 0x93, 0x37, 0x37)
+            CH04 (C080, 0x00, 0xFF, Z081, __LINE__, 0x37, 0x37)
         }
 
         /* While */
@@ -169,7 +169,7 @@
                 Break
             }
 
-            CH04 (C080, 0x00, 0xFF, Z081, 0x9E, 0x3A, 0x3A)
+            CH04 (C080, 0x00, 0xFF, Z081, __LINE__, 0x3A, 0x3A)
         }
 
         /* Set parameters of current checking */
@@ -808,7 +808,7 @@
         {
             CH03 (__METHOD__, Z081, 0x48, 0x0334, 0x00)
             Debug = DerefOf (RefOf (DerefOf (RefOf (Arg0))))
-            CH04 (C080, 0x00, 0xFF, Z081, 0x0338, 0x00, 0x00)
+            CH04 (C080, 0x00, 0xFF, Z081, __LINE__, 0x00, 0x00)
         }
 
         M000 (I000)

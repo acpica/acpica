@@ -692,7 +692,7 @@
      * arg1 - absolute index of file reporting the error
      * arg2 - line number of error (inside the file)
      * arg3 - absolute index of file initiating the checking
-     * arg4 - index of checking (inside the file)
+     * arg4 - line number of of checking (inside the file)
      * arg5 - first value (usually, received value)
      * arg6 - second value (usually, expected value)
      */
@@ -879,7 +879,7 @@
                 Debug = Local0
             }
 
-            Concatenate ("             Index  : ", Arg4, Local0)
+            Concatenate ("             Line   : ", ToDecimalString(Arg4), Local0)
             Debug = Local0
         }
     }

@@ -1317,7 +1317,7 @@ Local2 = Buffer (0x0A)
                         ERR (Arg0, Z174, __LINE__, 0x00, 0x00, Local2, Local5)
                     }
                 }
-                ElseIf (CH04 (Arg0, 0x00, 0xFF, Z174, 0x0469, 0x00, 0x00))
+                ElseIf (CH04 (Arg0, 0x00, 0xFF, Z174, __LINE__, 0x00, 0x00))
                 {
                     /* AE_NOT_FOUND */
 
@@ -1458,7 +1458,7 @@ Local2 = Buffer (0x0A)
             /* allows NameString only to be used as Object parameter */
             /* Integer */
             Load (\AUXD.INT0, DDBH) /* \DTM0.TSTB.DDBH */
-            CH04 (Arg0, 0x00, 0x2F, Z174, 0x04EB, 0x00, 0x00) /* AE_AML_OPERAND_TYPE */
+            CH04 (Arg0, 0x00, 0x2F, Z174, __LINE__, 0x00, 0x00) /* AE_AML_OPERAND_TYPE */
             Local0 = ObjectType (\AUXD.INT0)
             If ((C009 != Local0))
             {
@@ -1468,7 +1468,7 @@ Local2 = Buffer (0x0A)
             /* String */
 
             Load (\AUXD.STR0, DDBH) /* \DTM0.TSTB.DDBH */
-            CH04 (Arg0, 0x00, 0x2F, Z174, 0x04F3, 0x00, 0x00) /* AE_AML_OPERAND_TYPE */
+            CH04 (Arg0, 0x00, 0x2F, Z174, __LINE__, 0x00, 0x00) /* AE_AML_OPERAND_TYPE */
             Local0 = ObjectType (\AUXD.STR0)
             If ((C00A != Local0))
             {
@@ -1482,7 +1482,7 @@ Local2 = Buffer (0x0A)
                 /* TBD: LBZ480 update allows Buffer to be Source of Load */
 
                 Load (\AUXD.BUF0, DDBH) /* \DTM0.TSTB.DDBH */
-                CH04 (Arg0, 0x00, 0x2F, Z174, 0x04FD, 0x00, 0x00) /* AE_AML_OPERAND_TYPE */
+                CH04 (Arg0, 0x00, 0x2F, Z174, __LINE__, 0x00, 0x00) /* AE_AML_OPERAND_TYPE */
                 Local0 = ObjectType (\AUXD.BUF0)
                 If ((C00B != Local0))
                 {
@@ -1493,7 +1493,7 @@ Local2 = Buffer (0x0A)
             /* Package */
 
             Load (\AUXD.PAC0, DDBH) /* \DTM0.TSTB.DDBH */
-            CH04 (Arg0, 0x00, 0x2F, Z174, 0x0506, 0x00, 0x00) /* AE_AML_OPERAND_TYPE */
+            CH04 (Arg0, 0x00, 0x2F, Z174, __LINE__, 0x00, 0x00) /* AE_AML_OPERAND_TYPE */
             Local0 = ObjectType (\AUXD.PAC0)
             If ((C00C != Local0))
             {
@@ -1503,7 +1503,7 @@ Local2 = Buffer (0x0A)
             /* Field Unit */
             /* Device */
             Load (\AUXD.DEV0, DDBH) /* \DTM0.TSTB.DDBH */
-            CH04 (Arg0, 0x00, 0x2F, Z174, 0x0510, 0x00, 0x00) /* AE_AML_OPERAND_TYPE */
+            CH04 (Arg0, 0x00, 0x2F, Z174, __LINE__, 0x00, 0x00) /* AE_AML_OPERAND_TYPE */
             Local0 = ObjectType (\AUXD.DEV0)
             If ((C00E != Local0))
             {
@@ -1513,7 +1513,7 @@ Local2 = Buffer (0x0A)
             /* Event */
 
             Load (\AUXD.EVE0, DDBH) /* \DTM0.TSTB.DDBH */
-            CH04 (Arg0, 0x00, 0x2F, Z174, 0x0518, 0x00, 0x00) /* AE_AML_OPERAND_TYPE */
+            CH04 (Arg0, 0x00, 0x2F, Z174, __LINE__, 0x00, 0x00) /* AE_AML_OPERAND_TYPE */
             Local0 = ObjectType (\AUXD.EVE0)
             If ((C00F != Local0))
             {
@@ -1523,7 +1523,7 @@ Local2 = Buffer (0x0A)
             /* Method */
 
             Load (\AUXD.MMM0, DDBH) /* \DTM0.TSTB.DDBH */
-            CH04 (Arg0, 0x00, 0x2F, Z174, 0x0520, 0x00, 0x00) /* AE_AML_OPERAND_TYPE */
+            CH04 (Arg0, 0x00, 0x2F, Z174, __LINE__, 0x00, 0x00) /* AE_AML_OPERAND_TYPE */
             Local0 = ObjectType (\AUXD.MMM0)
             If ((C010 != Local0))
             {
@@ -1533,7 +1533,7 @@ Local2 = Buffer (0x0A)
             /* Mutex */
 
             Load (\AUXD.MTX0, DDBH) /* \DTM0.TSTB.DDBH */
-            CH04 (Arg0, 0x00, 0x2F, Z174, 0x0528, 0x00, 0x00) /* AE_AML_OPERAND_TYPE */
+            CH04 (Arg0, 0x00, 0x2F, Z174, __LINE__, 0x00, 0x00) /* AE_AML_OPERAND_TYPE */
             Local0 = ObjectType (\AUXD.MTX0)
             If ((C011 != Local0))
             {
@@ -1543,7 +1543,7 @@ Local2 = Buffer (0x0A)
             /* OpRegion */
             /* Power Resource */
             Load (\AUXD.PWR0, DDBH) /* \DTM0.TSTB.DDBH */
-            CH04 (Arg0, 0x00, 0x2F, Z174, 0x0532, 0x00, 0x00) /* AE_AML_OPERAND_TYPE */
+            CH04 (Arg0, 0x00, 0x2F, Z174, __LINE__, 0x00, 0x00) /* AE_AML_OPERAND_TYPE */
             Local0 = ObjectType (\AUXD.PWR0)
             If ((C013 != Local0))
             {
@@ -1553,7 +1553,7 @@ Local2 = Buffer (0x0A)
             /* Processor */
 
             Load (\AUXD.CPU0, DDBH) /* \DTM0.TSTB.DDBH */
-            CH04 (Arg0, 0x00, 0x2F, Z174, 0x053A, 0x00, 0x00) /* AE_AML_OPERAND_TYPE */
+            CH04 (Arg0, 0x00, 0x2F, Z174, __LINE__, 0x00, 0x00) /* AE_AML_OPERAND_TYPE */
             Local0 = ObjectType (\AUXD.CPU0)
             If ((C014 != Local0))
             {
@@ -1563,7 +1563,7 @@ Local2 = Buffer (0x0A)
             /* Thermal Zone */
 
             Load (\AUXD.TZN0, DDBH) /* \DTM0.TSTB.DDBH */
-            CH04 (Arg0, 0x00, 0x2F, Z174, 0x0542, 0x00, 0x00) /* AE_AML_OPERAND_TYPE */
+            CH04 (Arg0, 0x00, 0x2F, Z174, __LINE__, 0x00, 0x00) /* AE_AML_OPERAND_TYPE */
             Local0 = ObjectType (\AUXD.TZN0)
             If ((C015 != Local0))
             {
@@ -1577,7 +1577,7 @@ Local2 = Buffer (0x0A)
                 /* TBD: LBZ480 update allows Buffer Field to be Source of Load */
 
                 Load (\AUXD.BFL0, DDBH) /* \DTM0.TSTB.DDBH */
-                CH04 (Arg0, 0x00, 0x2F, Z174, 0x054C, 0x00, 0x00) /* AE_AML_OPERAND_TYPE */
+                CH04 (Arg0, 0x00, 0x2F, Z174, __LINE__, 0x00, 0x00) /* AE_AML_OPERAND_TYPE */
                 Local0 = ObjectType (\AUXD.BFL0)
                 If ((C016 != Local0))
                 {
@@ -1588,7 +1588,7 @@ Local2 = Buffer (0x0A)
             /* DDB Handle */
 
             Load (DDB0, DDBH) /* \DTM0.TSTB.DDBH */
-            CH04 (Arg0, 0x00, 0x2F, Z174, 0x0555, 0x00, 0x00) /* AE_AML_OPERAND_TYPE */
+            CH04 (Arg0, 0x00, 0x2F, Z174, __LINE__, 0x00, 0x00) /* AE_AML_OPERAND_TYPE */
             Local0 = ObjectType (DDB0)
             If ((C017 != Local0))
             {
@@ -1624,7 +1624,7 @@ Local2 = Buffer (0x0A)
             /* SystemIO */
 
             Load (RGN1, DDBH) /* \DTM0.TSTC.DDBH */
-            CH04 (Arg0, 0x00, 0x2F, Z174, 0x057A, 0x00, 0x00) /* AE_AML_OPERAND_TYPE */
+            CH04 (Arg0, 0x00, 0x2F, Z174, __LINE__, 0x00, 0x00) /* AE_AML_OPERAND_TYPE */
             Local0 = ObjectType (RGN1)
             If ((C012 != Local0))
             {
@@ -1634,7 +1634,7 @@ Local2 = Buffer (0x0A)
             /* PCI_Config */
 
             Load (RGN2, DDBH) /* \DTM0.TSTC.DDBH */
-            CH04 (Arg0, 0x00, 0x2F, Z174, 0x0582, 0x00, 0x00) /* AE_AML_OPERAND_TYPE */
+            CH04 (Arg0, 0x00, 0x2F, Z174, __LINE__, 0x00, 0x00) /* AE_AML_OPERAND_TYPE */
             Local0 = ObjectType (RGN2)
             If ((C012 != Local0))
             {
@@ -1644,7 +1644,7 @@ Local2 = Buffer (0x0A)
             /* EmbeddedControl */
 
             Load (RGN3, DDBH) /* \DTM0.TSTC.DDBH */
-            CH04 (Arg0, 0x00, 0x2F, Z174, 0x058A, 0x00, 0x00) /* AE_AML_OPERAND_TYPE */
+            CH04 (Arg0, 0x00, 0x2F, Z174, __LINE__, 0x00, 0x00) /* AE_AML_OPERAND_TYPE */
             Local0 = ObjectType (RGN3)
             If ((C012 != Local0))
             {
@@ -1654,7 +1654,7 @@ Local2 = Buffer (0x0A)
             /* SMBus */
 
             Load (RGN4, DDBH) /* \DTM0.TSTC.DDBH */
-            CH04 (Arg0, 0x00, 0x2F, Z174, 0x0592, 0x00, 0x00) /* AE_AML_OPERAND_TYPE */
+            CH04 (Arg0, 0x00, 0x2F, Z174, __LINE__, 0x00, 0x00) /* AE_AML_OPERAND_TYPE */
             Local0 = ObjectType (RGN4)
             If ((C012 != Local0))
             {
@@ -1664,7 +1664,7 @@ Local2 = Buffer (0x0A)
             /* SystemCMOS */
 
             Load (RGN5, DDBH) /* \DTM0.TSTC.DDBH */
-            CH04 (Arg0, 0x00, 0x2F, Z174, 0x059A, 0x00, 0x00) /* AE_AML_OPERAND_TYPE */
+            CH04 (Arg0, 0x00, 0x2F, Z174, __LINE__, 0x00, 0x00) /* AE_AML_OPERAND_TYPE */
             Local0 = ObjectType (RGN5)
             If ((C012 != Local0))
             {
@@ -1674,7 +1674,7 @@ Local2 = Buffer (0x0A)
             /* PciBarTarget */
 
             Load (RGN6, DDBH) /* \DTM0.TSTC.DDBH */
-            CH04 (Arg0, 0x00, 0x2F, Z174, 0x05A2, 0x00, 0x00) /* AE_AML_OPERAND_TYPE */
+            CH04 (Arg0, 0x00, 0x2F, Z174, __LINE__, 0x00, 0x00) /* AE_AML_OPERAND_TYPE */
             Local0 = ObjectType (RGN6)
             If ((C012 != Local0))
             {
@@ -1684,7 +1684,7 @@ Local2 = Buffer (0x0A)
             /* UserDefRegionSpace 0x80 */
 
             Load (RGN7, DDBH) /* \DTM0.TSTC.DDBH */
-            CH04 (Arg0, 0x00, 0x2F, Z174, 0x05AA, 0x00, 0x00) /* AE_AML_OPERAND_TYPE */
+            CH04 (Arg0, 0x00, 0x2F, Z174, __LINE__, 0x00, 0x00) /* AE_AML_OPERAND_TYPE */
             Local0 = ObjectType (RGN7)
             If ((C012 != Local0))
             {
@@ -1694,7 +1694,7 @@ Local2 = Buffer (0x0A)
             /* UserDefRegionSpace 0xcf */
 
             Load (RGN8, DDBH) /* \DTM0.TSTC.DDBH */
-            CH04 (Arg0, 0x00, 0x2F, Z174, 0x05B2, 0x00, 0x00) /* AE_AML_OPERAND_TYPE */
+            CH04 (Arg0, 0x00, 0x2F, Z174, __LINE__, 0x00, 0x00) /* AE_AML_OPERAND_TYPE */
             Local0 = ObjectType (RGN8)
             If ((C012 != Local0))
             {
@@ -1704,7 +1704,7 @@ Local2 = Buffer (0x0A)
             /* UserDefRegionSpace 0xff */
 
             Load (RGN9, DDBH) /* \DTM0.TSTC.DDBH */
-            CH04 (Arg0, 0x00, 0x2F, Z174, 0x05BA, 0x00, 0x00) /* AE_AML_OPERAND_TYPE */
+            CH04 (Arg0, 0x00, 0x2F, Z174, __LINE__, 0x00, 0x00) /* AE_AML_OPERAND_TYPE */
             Local0 = ObjectType (RGN9)
             If ((C012 != Local0))
             {
@@ -1746,7 +1746,7 @@ Local2 = Buffer (0x0A)
             If (Y290)
             {
                 Load (IST0, HI0) /* \DTM0.TSTD.HI0_ */
-                CH04 (Arg0, 0x00, 0x25, Z174, 0x05E2, 0x00, 0x00) /* AE_BAD_SIGNATURE */
+                CH04 (Arg0, 0x00, 0x25, Z174, __LINE__, 0x00, 0x00) /* AE_BAD_SIGNATURE */
                 If (CondRefOf (\SSS0, Local0))
                 {
                     ERR (Arg0, Z174, __LINE__, 0x00, 0x00, "\\SSS0", 0x01)
@@ -1757,7 +1757,7 @@ Local2 = Buffer (0x0A)
             /* Load operator execution, OpRegion Field case */
 
             Load (RFU0, HI0) /* \DTM0.TSTD.HI0_ */
-            CH04 (Arg0, 0x00, 0x25, Z174, 0x05EC, 0x00, 0x00) /* AE_BAD_SIGNATURE */
+            CH04 (Arg0, 0x00, 0x25, Z174, __LINE__, 0x00, 0x00) /* AE_BAD_SIGNATURE */
             If (CondRefOf (\SSS0, Local0))
             {
                 ERR (Arg0, Z174, __LINE__, 0x00, 0x00, "\\SSS0", 0x01)
@@ -1813,7 +1813,7 @@ Local2 = Buffer (0x0A)
             If (Y290)
             {
                 Load (IST0, HI0) /* \DTM0.TSTE.HI0_ */
-                CH04 (Arg0, 0x00, 0x2A, Z174, 0x061E, 0x00, 0x00) /* AE_INVALID_TABLE_LENGTH */
+                CH04 (Arg0, 0x00, 0x2A, Z174, __LINE__, 0x00, 0x00) /* AE_INVALID_TABLE_LENGTH */
                 If (CondRefOf (\SSS0, Local0))
                 {
                     ERR (Arg0, Z174, __LINE__, 0x00, 0x00, "\\SSS0", 0x01)
@@ -1840,13 +1840,13 @@ Local2 = Buffer (0x0A)
             {
                 /* If the table length in the header is larger than the buffer. */
 
-                CH04 (Arg0, 0x00, 0x36, Z174, 0x0633, 0x00, 0x00) /* AE_AML_BUFFER_LIMIT */
+                CH04 (Arg0, 0x00, 0x36, Z174, __LINE__, 0x00, 0x00) /* AE_AML_BUFFER_LIMIT */
             }
             Else
             {
                 /* If the table length is smaller than an ACPI table header. */
 
-                CH04 (Arg0, 0x00, 0x2A, Z174, 0x0636, 0x00, 0x00)    /* AE_INVALID_TABLE_LENGTH */
+                CH04 (Arg0, 0x00, 0x2A, Z174, __LINE__, 0x00, 0x00)    /* AE_INVALID_TABLE_LENGTH */
             }
 
             If (CondRefOf (\SSS0, Local0))
@@ -1898,7 +1898,7 @@ Local2 = Buffer (0x0A)
             If (Y290)
             {
                 Load (IST0, HI0) /* \DTM0.TSTF.HI0_ */
-                CH04 (Arg0, 0x00, 0x27, Z174, 0x0664, 0x00, 0x00) /* AE_BAD_CHECKSUM */
+                CH04 (Arg0, 0x00, 0x27, Z174, __LINE__, 0x00, 0x00) /* AE_BAD_CHECKSUM */
                 If (CondRefOf (\SSS0, Local0))
                 {
                     ERR (Arg0, Z174, __LINE__, 0x00, 0x00, "\\SSS0", 0x01)
@@ -1917,7 +1917,7 @@ Local2 = Buffer (0x0A)
             /* Load operator execution, OpRegion Field case */
 
             Load (RFU0, HI0) /* \DTM0.TSTF.HI0_ */
-            CH04 (Arg0, 0x00, 0x27, Z174, 0x0674, 0x00, 0x00) /* AE_BAD_CHECKSUM */
+            CH04 (Arg0, 0x00, 0x27, Z174, __LINE__, 0x00, 0x00) /* AE_BAD_CHECKSUM */
             If (CondRefOf (\SSS0, Local0))
             {
                 ERR (Arg0, Z174, __LINE__, 0x00, 0x00, "\\SSS0", 0x01)
@@ -2128,7 +2128,7 @@ Local2 = Buffer (0x0A)
             /* Futher 1 Method can be called */
 
             Unload (DDB1)
-            CH04 (Arg0, 0x00, 0x56, Z174, 0x0733, 0x00, 0x00) /* AE_OWNER_ID_LIMIT */
+            CH04 (Arg0, 0x00, 0x56, Z174, __LINE__, 0x00, 0x00) /* AE_OWNER_ID_LIMIT */
             Local0 = MAXT /* \DTM0.TSTH.MAXT */
             While (Local0)
             {
@@ -2205,7 +2205,7 @@ Local2 = Buffer (0x0A)
                 /* Repeated Load operator execution */
 
                 Load (RFU0, HI1) /* \DTM0.TSTI.HI1_ */
-                CH04 (Arg0, 0x00, 0x07, Z174, 0x0777, 0x05, Local1) /* AE_ALREADY_EXISTS */
+                CH04 (Arg0, 0x00, 0x07, Z174, __LINE__, 0x05, Local1) /* AE_ALREADY_EXISTS */
                 Local0 = ObjectType (HI1)
                 If ((C009 != Local0))
                 {
@@ -2312,7 +2312,7 @@ Local2 = Buffer (0x0A)
                 /* Any next Load */
 
                 Load (RFU0, HI1) /* \DTM0.TSTJ.HI1_ */
-                CH04 (Arg0, 0x00, 0x07, Z174, 0x07DD, 0x05, Local1) /* AE_ALREADY_EXISTS */
+                CH04 (Arg0, 0x00, 0x07, Z174, __LINE__, 0x05, Local1) /* AE_ALREADY_EXISTS */
                 Local0 = ObjectType (HI1)
                 If ((C009 != Local0))
                 {

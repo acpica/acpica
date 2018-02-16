@@ -308,7 +308,7 @@
             }
             ElseIf            /* Exception: AE_BAD_SIGNATURE */
 
- (CH04 (Arg0, 0x01, 0x25, Z176, 0x0121, 0x00, 0x00))
+ (CH04 (Arg0, 0x01, 0x25, Z176, __LINE__, 0x00, 0x00))
             {
                 Return (0x01)
             }
@@ -1179,7 +1179,7 @@
                 LoadTable ("OEM1X", "", "", RPST, PPST, 0x01)
             }
 
-            CH04 (Arg0, 0x00, 0x3D, Z176, 0x0462, 0x00, 0x00) /* AE_AML_STRING_LIMIT */
+            CH04 (Arg0, 0x00, 0x3D, Z176, __LINE__, 0x00, 0x00) /* AE_AML_STRING_LIMIT */
             If ((0x00 != \DTM2.PLDT))
             {
                 ERR (Arg0, Z176, __LINE__, 0x00, 0x00, \DTM2.PLDT, 0x01)
@@ -1199,7 +1199,7 @@
             /* OEMIDString is greater than six characters */
 
             LoadTable ("OEM1", "IntelXX", "", RPST, PPST, 0x01)
-            CH04 (Arg0, 0x00, 0x3D, Z176, 0x0473, 0x00, 0x00) /* AE_AML_STRING_LIMIT */
+            CH04 (Arg0, 0x00, 0x3D, Z176, __LINE__, 0x00, 0x00) /* AE_AML_STRING_LIMIT */
             If ((0x00 != \DTM2.PLDT))
             {
                 ERR (Arg0, Z176, __LINE__, 0x00, 0x00, \DTM2.PLDT, 0x01)
@@ -1209,7 +1209,7 @@
             /* OEMTableID is greater than eight characters */
 
             LoadTable ("OEM1", "", "ManyXXXXX", RPST, PPST, 0x01)
-            CH04 (Arg0, 0x00, 0x3D, Z176, 0x047D, 0x00, 0x00) /* AE_AML_STRING_LIMIT */
+            CH04 (Arg0, 0x00, 0x3D, Z176, __LINE__, 0x00, 0x00) /* AE_AML_STRING_LIMIT */
             If ((0x00 != \DTM2.PLDT))
             {
                 ERR (Arg0, Z176, __LINE__, 0x00, 0x00, \DTM2.PLDT, 0x01)
@@ -1228,7 +1228,7 @@
             /* SignatureString is "DSDT" */
 
             LoadTable ("DSDT", "", "", RPST, PPST, 0x01)
-            CH04 (Arg0, 0x00, 0x07, Z176, 0x0492, 0x00, 0x00)  /* AE_ALREADY_EXISTS */
+            CH04 (Arg0, 0x00, 0x07, Z176, __LINE__, 0x00, 0x00)  /* AE_ALREADY_EXISTS */
             If ((0x00 != \DTM2.PLDT))
             {
                 ERR (Arg0, Z176, __LINE__, 0x00, 0x00, \DTM2.PLDT, 0x01)
@@ -1237,7 +1237,7 @@
             /* SignatureString is "SSDT" */
 
             LoadTable ("SSDT", "", "", RPST, PPST, 0x01)
-            CH04 (Arg0, 0x00, 0x07, Z176, 0x049B, 0x00, 0x00)  /* AE_ALREADY_EXISTS */
+            CH04 (Arg0, 0x00, 0x07, Z176, __LINE__, 0x00, 0x00)  /* AE_ALREADY_EXISTS */
             If ((0x00 != \DTM2.PLDT))
             {
                 ERR (Arg0, Z176, __LINE__, 0x00, 0x00, \DTM2.PLDT, 0x01)
@@ -1287,7 +1287,7 @@
 
             \DTM2.PLDT = 0x00
             LoadTable ("OEM1", "", "", "\\DTM2", PPST, 0x01)
-            CH04 (Arg0, 0x00, 0x07, Z176, 0x04CB, 0x00, 0x00)  /* AE_ALREADY_EXISTS */
+            CH04 (Arg0, 0x00, 0x07, Z176, __LINE__, 0x00, 0x00)  /* AE_ALREADY_EXISTS */
             If ((0x00 != \DTM2.PLDT))
             {
                 ERR (Arg0, Z176, __LINE__, 0x00, 0x00, \DTM2.PLDT, 0x00)
@@ -1375,7 +1375,7 @@
 
             \DTM2.PLDT = 0x00
             LoadTable ("OEM1", "", "", "\\", PPST, 0x01)
-            CH04 (Arg0, 0x00, 0x07, Z176, 0x051E, 0x00, 0x00)  /* AE_ALREADY_EXISTS */
+            CH04 (Arg0, 0x00, 0x07, Z176, __LINE__, 0x00, 0x00)  /* AE_ALREADY_EXISTS */
             If ((0x00 != \DTM2.PLDT))
             {
                 ERR (Arg0, Z176, __LINE__, 0x00, 0x00, \DTM2.PLDT, 0x00)
@@ -1408,7 +1408,7 @@
         {
             Concatenate (Arg0, "-tstc", Arg0)
             LoadTable ("DSDT", "", "", RPST, "\\DTM2.NULL", 0x01)
-            CH04 (Arg0, 0x00, 0x05, Z176, 0x053F, 0x00, 0x00)  /* AE_NOT_FOUND */
+            CH04 (Arg0, 0x00, 0x05, Z176, __LINE__, 0x00, 0x00)  /* AE_NOT_FOUND */
             Return (0x00)
         }
 
@@ -1419,7 +1419,7 @@
             Concatenate (Arg0, "-tstd", Arg0)
             \DTM2.PLDT = 0x00
             LoadTable ("OEM1", "", "", "\\", "\\DTM2.PLDT", \DTM2.DEVR)
-            CH04 (Arg0, 0x00, 0x2F, Z176, 0x054E, 0x00, 0x00) /* AE_AML_OPERAND_TYPE */
+            CH04 (Arg0, 0x00, 0x2F, Z176, __LINE__, 0x00, 0x00) /* AE_AML_OPERAND_TYPE */
             If ((0x00 != \DTM2.PLDT))
             {
                 ERR (Arg0, Z176, __LINE__, 0x00, 0x00, \DTM2.PLDT, 0x00)
@@ -1454,7 +1454,7 @@
                     Case (0x00)
                     {
                         LoadTable (Arg1, SOID, STID, RPST, PPST, 0x01)
-                        Return (CH04 (Arg0, 0x00, 0x25, Z176, 0x0571, 0x00, 0x00))/* AE_BAD_SIGNATURE */
+                        Return (CH04 (Arg0, 0x00, 0x25, Z176, __LINE__, 0x00, 0x00))/* AE_BAD_SIGNATURE */
                     }
                     Case (0x01)
                     {
@@ -1467,12 +1467,12 @@
                     Case (0x03)
                     {
                         LoadTable (SOEM, SOID, STID, Arg1, PPST, 0x01)
-                        Return (CH04 (Arg0, 0x00, 0x1E, Z176, 0x057B, 0x00, 0x00)) /* AE_BAD_PATHNAME */
+                        Return (CH04 (Arg0, 0x00, 0x1E, Z176, __LINE__, 0x00, 0x00)) /* AE_BAD_PATHNAME */
                     }
                     Case (0x04)
                     {
                         LoadTable (SOEM, SOID, STID, RPST, Arg1, 0x01)
-                        Return (CH04 (Arg0, 0x00, 0x1E, Z176, 0x057F, 0x00, 0x00)) /* AE_BAD_PATHNAME */
+                        Return (CH04 (Arg0, 0x00, 0x1E, Z176, __LINE__, 0x00, 0x00)) /* AE_BAD_PATHNAME */
                     }
 
                 }
@@ -1750,7 +1750,7 @@
                 }
 
                 LoadTable (DerefOf (Arg2), "", "", "\\", "\\DTM2.PLDT", 0x01)
-                CH04 (Arg0, 0x00, 0x2F, Z176, 0x067D, 0x00, 0x00) /* AE_AML_OPERAND_TYPE */
+                CH04 (Arg0, 0x00, 0x2F, Z176, __LINE__, 0x00, 0x00) /* AE_AML_OPERAND_TYPE */
                 Return (0x00)
             }
 
@@ -1766,7 +1766,7 @@
                 }
 
                 LoadTable ("OEM1", DerefOf (Arg2), "", "\\", "\\DTM2.PLDT", 0x01)
-                CH04 (Arg0, 0x00, 0x2F, Z176, 0x068E, 0x00, 0x00) /* AE_AML_OPERAND_TYPE */
+                CH04 (Arg0, 0x00, 0x2F, Z176, __LINE__, 0x00, 0x00) /* AE_AML_OPERAND_TYPE */
                 Return (0x00)
             }
 
@@ -1782,7 +1782,7 @@
                 }
 
                 LoadTable ("OEM1", "", DerefOf (Arg2), "\\", "\\DTM2.PLDT", 0x01)
-                CH04 (Arg0, 0x00, 0x2F, Z176, 0x069F, 0x00, 0x00) /* AE_AML_OPERAND_TYPE */
+                CH04 (Arg0, 0x00, 0x2F, Z176, __LINE__, 0x00, 0x00) /* AE_AML_OPERAND_TYPE */
                 Return (0x00)
             }
 
@@ -1800,11 +1800,11 @@
                 LoadTable ("OEM1", "", "", DerefOf (Arg2), "\\DTM2.PLDT", 0x01)
                 If (DerefOf (BTYP [Arg3]))
                 {
-                    CH04 (Arg0, 0x00, 0x1E, Z176, 0x06B1, 0x00, 0x00) /* AE_BAD_PATHNAME */
+                    CH04 (Arg0, 0x00, 0x1E, Z176, __LINE__, 0x00, 0x00) /* AE_BAD_PATHNAME */
                 }
                 Else
                 {
-                    CH04 (Arg0, 0x00, 0x2F, Z176, 0x06B3, 0x00, 0x00) /* AE_AML_OPERAND_TYPE */
+                    CH04 (Arg0, 0x00, 0x2F, Z176, __LINE__, 0x00, 0x00) /* AE_AML_OPERAND_TYPE */
                 }
 
                 Return (0x00)
@@ -1824,11 +1824,11 @@
                 LoadTable ("OEM1", "", "", "\\", DerefOf (Arg2), 0x01)
                 If (DerefOf (BTYP [Arg3]))
                 {
-                    CH04 (Arg0, 0x00, 0x1E, Z176, 0x06C6, 0x00, 0x00) /* AE_BAD_PATHNAME */
+                    CH04 (Arg0, 0x00, 0x1E, Z176, __LINE__, 0x00, 0x00) /* AE_BAD_PATHNAME */
                 }
                 Else
                 {
-                    CH04 (Arg0, 0x00, 0x2F, Z176, 0x06C8, 0x00, 0x00) /* AE_AML_OPERAND_TYPE */
+                    CH04 (Arg0, 0x00, 0x2F, Z176, __LINE__, 0x00, 0x00) /* AE_AML_OPERAND_TYPE */
                 }
 
                 Return (0x00)
@@ -1861,21 +1861,21 @@
                 LoadTable (Local1, "", "", "\\", "\\DTM2.PLDT", 0x01)
                 If (SLCK)
                 {
-                    CH04 (Arg0, 0x00, 0x3D, Z176, 0x06E2, 0x00, 0x00) /* AE_AML_STRING_LIMIT */
+                    CH04 (Arg0, 0x00, 0x3D, Z176, __LINE__, 0x00, 0x00) /* AE_AML_STRING_LIMIT */
                 }
                 Else
                 {
-                    CH04 (Arg0, 0x00, 0x31, Z176, 0x06E4, 0x00, 0x00) /* AE_AML_UNINITIALIZED_LOCAL */
+                    CH04 (Arg0, 0x00, 0x31, Z176, __LINE__, 0x00, 0x00) /* AE_AML_UNINITIALIZED_LOCAL */
                 }
 
                 LoadTable ("OEM1", Local1, "", "\\", "\\DTM2.PLDT", 0x01)
                 If (SLCK)
                 {
-                    CH04 (Arg0, 0x00, 0x3D, Z176, 0x06E8, 0x00, 0x00) /* AE_AML_STRING_LIMIT */
+                    CH04 (Arg0, 0x00, 0x3D, Z176, __LINE__, 0x00, 0x00) /* AE_AML_STRING_LIMIT */
                 }
                 Else
                 {
-                    CH04 (Arg0, 0x00, 0x31, Z176, 0x06EA, 0x00, 0x00) /* AE_AML_UNINITIALIZED_LOCAL */
+                    CH04 (Arg0, 0x00, 0x31, Z176, __LINE__, 0x00, 0x00) /* AE_AML_UNINITIALIZED_LOCAL */
                 }
 
                 LoadTable ("OEM1", "", Local1, "\\", "\\DTM2.PLDT", 0x01)
@@ -1889,32 +1889,32 @@
                     }
                     Else
                     {
-                        CH04 (Arg0, 0x00, 0x3D, Z176, 0x06F3, 0x00, 0x00) /* AE_AML_STRING_LIMIT */
+                        CH04 (Arg0, 0x00, 0x3D, Z176, __LINE__, 0x00, 0x00) /* AE_AML_STRING_LIMIT */
                     }
                 }
                 Else
                 {
-                    CH04 (Arg0, 0x00, 0x31, Z176, 0x06F6, 0x00, 0x00) /* AE_AML_UNINITIALIZED_LOCAL */
+                    CH04 (Arg0, 0x00, 0x31, Z176, __LINE__, 0x00, 0x00) /* AE_AML_UNINITIALIZED_LOCAL */
                 }
 
                 LoadTable ("OEM1", "", "", Local1, "\\DTM2.PLDT", 0x01)
                 If (SLCK)
                 {
-                    CH04 (Arg0, 0x00, 0x1E, Z176, 0x06FA, 0x00, 0x00) /* AE_BAD_PATHNAME */
+                    CH04 (Arg0, 0x00, 0x1E, Z176, __LINE__, 0x00, 0x00) /* AE_BAD_PATHNAME */
                 }
                 Else
                 {
-                    CH04 (Arg0, 0x00, 0x31, Z176, 0x06FC, 0x00, 0x00) /* AE_AML_UNINITIALIZED_LOCAL */
+                    CH04 (Arg0, 0x00, 0x31, Z176, __LINE__, 0x00, 0x00) /* AE_AML_UNINITIALIZED_LOCAL */
                 }
 
                 LoadTable ("OEM1", "", "", "\\", Local1, 0x01)
                 If (SLCK)
                 {
-                    CH04 (Arg0, 0x00, 0x1E, Z176, 0x0700, 0x00, 0x00) /* AE_BAD_PATHNAME */
+                    CH04 (Arg0, 0x00, 0x1E, Z176, __LINE__, 0x00, 0x00) /* AE_BAD_PATHNAME */
                 }
                 Else
                 {
-                    CH04 (Arg0, 0x00, 0x31, Z176, 0x0702, 0x00, 0x00) /* AE_AML_UNINITIALIZED_LOCAL */
+                    CH04 (Arg0, 0x00, 0x31, Z176, __LINE__, 0x00, 0x00) /* AE_AML_UNINITIALIZED_LOCAL */
                 }
             }
 
@@ -1942,15 +1942,15 @@
             }
 
             LoadTable (\AUXD.PAC0, "", "", "\\", "\\DTM2.PLDT", 0x01)
-            CH04 (Arg0, 0x00, 0x2F, Z176, 0x071B, 0x00, 0x00) /* AE_AML_OPERAND_TYPE */
+            CH04 (Arg0, 0x00, 0x2F, Z176, __LINE__, 0x00, 0x00) /* AE_AML_OPERAND_TYPE */
             LoadTable ("OEM1", \AUXD.PAC0, "", "\\", "\\DTM2.PLDT", 0x01)
-            CH04 (Arg0, 0x00, 0x2F, Z176, 0x071D, 0x00, 0x00) /* AE_AML_OPERAND_TYPE */
+            CH04 (Arg0, 0x00, 0x2F, Z176, __LINE__, 0x00, 0x00) /* AE_AML_OPERAND_TYPE */
             LoadTable ("OEM1", "", \AUXD.PAC0, "\\", "\\DTM2.PLDT", 0x01)
-            CH04 (Arg0, 0x00, 0x2F, Z176, 0x071F, 0x00, 0x00) /* AE_AML_OPERAND_TYPE */
+            CH04 (Arg0, 0x00, 0x2F, Z176, __LINE__, 0x00, 0x00) /* AE_AML_OPERAND_TYPE */
             LoadTable ("OEM1", "", "", \AUXD.PAC0, "\\DTM2.PLDT", 0x01)
-            CH04 (Arg0, 0x00, 0x2F, Z176, 0x0721, 0x00, 0x00) /* AE_AML_OPERAND_TYPE */
+            CH04 (Arg0, 0x00, 0x2F, Z176, __LINE__, 0x00, 0x00) /* AE_AML_OPERAND_TYPE */
             LoadTable ("OEM1", "", "", "\\", \AUXD.PAC0, 0x01)
-            CH04 (Arg0, 0x00, 0x2F, Z176, 0x0723, 0x00, 0x00) /* AE_AML_OPERAND_TYPE */
+            CH04 (Arg0, 0x00, 0x2F, Z176, __LINE__, 0x00, 0x00) /* AE_AML_OPERAND_TYPE */
             Local0 = ObjectType (\AUXD.PAC0)
             If ((C00C != Local0))
             {
@@ -1964,15 +1964,15 @@
             /* Device */
 
             LoadTable (\AUXD.DEV0, "", "", "\\", "\\DTM2.PLDT", 0x01)
-            CH04 (Arg0, 0x00, 0x2F, Z176, 0x072F, 0x00, 0x00) /* AE_AML_OPERAND_TYPE */
+            CH04 (Arg0, 0x00, 0x2F, Z176, __LINE__, 0x00, 0x00) /* AE_AML_OPERAND_TYPE */
             LoadTable ("OEM1", \AUXD.DEV0, "", "\\", "\\DTM2.PLDT", 0x01)
-            CH04 (Arg0, 0x00, 0x2F, Z176, 0x0731, 0x00, 0x00) /* AE_AML_OPERAND_TYPE */
+            CH04 (Arg0, 0x00, 0x2F, Z176, __LINE__, 0x00, 0x00) /* AE_AML_OPERAND_TYPE */
             LoadTable ("OEM1", "", \AUXD.DEV0, "\\", "\\DTM2.PLDT", 0x01)
-            CH04 (Arg0, 0x00, 0x2F, Z176, 0x0733, 0x00, 0x00) /* AE_AML_OPERAND_TYPE */
+            CH04 (Arg0, 0x00, 0x2F, Z176, __LINE__, 0x00, 0x00) /* AE_AML_OPERAND_TYPE */
             LoadTable ("OEM1", "", "", \AUXD.DEV0, "\\DTM2.PLDT", 0x01)
-            CH04 (Arg0, 0x00, 0x2F, Z176, 0x0735, 0x00, 0x00) /* AE_AML_OPERAND_TYPE */
+            CH04 (Arg0, 0x00, 0x2F, Z176, __LINE__, 0x00, 0x00) /* AE_AML_OPERAND_TYPE */
             LoadTable ("OEM1", "", "", "\\", \AUXD.DEV0, 0x01)
-            CH04 (Arg0, 0x00, 0x2F, Z176, 0x0737, 0x00, 0x00) /* AE_AML_OPERAND_TYPE */
+            CH04 (Arg0, 0x00, 0x2F, Z176, __LINE__, 0x00, 0x00) /* AE_AML_OPERAND_TYPE */
             Local0 = ObjectType (\AUXD.DEV0)
             If ((C00E != Local0))
             {
@@ -2024,15 +2024,15 @@
             /* Thermal Zone */
 
             LoadTable (\AUXD.TZN0, "", "", "\\", "\\DTM2.PLDT", 0x01)
-            CH04 (Arg0, 0x00, 0x2F, Z176, 0x0769, 0x00, 0x00) /* AE_AML_OPERAND_TYPE */
+            CH04 (Arg0, 0x00, 0x2F, Z176, __LINE__, 0x00, 0x00) /* AE_AML_OPERAND_TYPE */
             LoadTable ("OEM1", \AUXD.TZN0, "", "\\", "\\DTM2.PLDT", 0x01)
-            CH04 (Arg0, 0x00, 0x2F, Z176, 0x076B, 0x00, 0x00) /* AE_AML_OPERAND_TYPE */
+            CH04 (Arg0, 0x00, 0x2F, Z176, __LINE__, 0x00, 0x00) /* AE_AML_OPERAND_TYPE */
             LoadTable ("OEM1", "", \AUXD.TZN0, "\\", "\\DTM2.PLDT", 0x01)
-            CH04 (Arg0, 0x00, 0x2F, Z176, 0x076D, 0x00, 0x00) /* AE_AML_OPERAND_TYPE */
+            CH04 (Arg0, 0x00, 0x2F, Z176, __LINE__, 0x00, 0x00) /* AE_AML_OPERAND_TYPE */
             LoadTable ("OEM1", "", "", \AUXD.TZN0, "\\DTM2.PLDT", 0x01)
-            CH04 (Arg0, 0x00, 0x2F, Z176, 0x076F, 0x00, 0x00) /* AE_AML_OPERAND_TYPE */
+            CH04 (Arg0, 0x00, 0x2F, Z176, __LINE__, 0x00, 0x00) /* AE_AML_OPERAND_TYPE */
             LoadTable ("OEM1", "", "", "\\", \AUXD.TZN0, 0x01)
-            CH04 (Arg0, 0x00, 0x2F, Z176, 0x0771, 0x00, 0x00) /* AE_AML_OPERAND_TYPE */
+            CH04 (Arg0, 0x00, 0x2F, Z176, __LINE__, 0x00, 0x00) /* AE_AML_OPERAND_TYPE */
             Local0 = ObjectType (\AUXD.TZN0)
             If ((C015 != Local0))
             {
@@ -2218,7 +2218,7 @@
             /* Package */
 
             LoadTable ("OEM1", "", "", "\\", "\\DTM2.PLDT", \AUXD.PAC0)
-            CH04 (Arg0, 0x00, 0x2F, Z176, 0x0800, 0x00, 0x00) /* AE_AML_OPERAND_TYPE */
+            CH04 (Arg0, 0x00, 0x2F, Z176, __LINE__, 0x00, 0x00) /* AE_AML_OPERAND_TYPE */
             Local0 = ObjectType (\AUXD.PAC0)
             If ((C00C != Local0))
             {
@@ -2271,7 +2271,7 @@
             /* Device */
 
             LoadTable ("OEM1", "", "", "\\", "\\DTM2.PLDT", \AUXD.DEV0)
-            CH04 (Arg0, 0x00, 0x2F, Z176, 0x0826, 0x00, 0x00) /* AE_AML_OPERAND_TYPE */
+            CH04 (Arg0, 0x00, 0x2F, Z176, __LINE__, 0x00, 0x00) /* AE_AML_OPERAND_TYPE */
             Local0 = ObjectType (\AUXD.DEV0)
             If ((C00E != Local0))
             {
@@ -2281,7 +2281,7 @@
             /* Event */
 
             LoadTable ("OEM1", "", "", "\\", "\\DTM2.PLDT", \AUXD.EVE0)
-            CH04 (Arg0, 0x00, 0x2F, Z176, 0x082E, 0x00, 0x00) /* AE_AML_OPERAND_TYPE */
+            CH04 (Arg0, 0x00, 0x2F, Z176, __LINE__, 0x00, 0x00) /* AE_AML_OPERAND_TYPE */
             Local0 = ObjectType (\AUXD.EVE0)
             If ((C00F != Local0))
             {
@@ -2293,7 +2293,7 @@
             If (Y288)
             {
                 LoadTable ("OEM1", "", "", "\\", "\\DTM2.PLDT", \AUXD.MMM0)
-                CH04 (Arg0, 0x00, 0x2F, Z176, 0x0837, 0x00, 0x00) /* AE_AML_OPERAND_TYPE */
+                CH04 (Arg0, 0x00, 0x2F, Z176, __LINE__, 0x00, 0x00) /* AE_AML_OPERAND_TYPE */
                 Local0 = ObjectType (\AUXD.MMM0)
                 If ((C010 != Local0))
                 {
@@ -2304,7 +2304,7 @@
             /* Mutex */
 
             LoadTable ("OEM1", "", "", "\\", "\\DTM2.PLDT", \AUXD.MTX0)
-            CH04 (Arg0, 0x00, 0x2F, Z176, 0x0840, 0x00, 0x00) /* AE_AML_OPERAND_TYPE */
+            CH04 (Arg0, 0x00, 0x2F, Z176, __LINE__, 0x00, 0x00) /* AE_AML_OPERAND_TYPE */
             Local0 = ObjectType (\AUXD.MTX0)
             If ((C011 != Local0))
             {
@@ -2314,7 +2314,7 @@
             /* OpRegion */
 
             LoadTable ("OEM1", "", "", "\\", "\\DTM2.PLDT", \AUXD.OPR0)
-            CH04 (Arg0, 0x00, 0x2F, Z176, 0x0848, 0x00, 0x00) /* AE_AML_OPERAND_TYPE */
+            CH04 (Arg0, 0x00, 0x2F, Z176, __LINE__, 0x00, 0x00) /* AE_AML_OPERAND_TYPE */
             Local0 = ObjectType (\AUXD.OPR0)
             If ((C012 != Local0))
             {
@@ -2324,7 +2324,7 @@
             /* Power Resource */
 
             LoadTable ("OEM1", "", "", "\\", "\\DTM2.PLDT", \AUXD.PWR0)
-            CH04 (Arg0, 0x00, 0x2F, Z176, 0x0850, 0x00, 0x00) /* AE_AML_OPERAND_TYPE */
+            CH04 (Arg0, 0x00, 0x2F, Z176, __LINE__, 0x00, 0x00) /* AE_AML_OPERAND_TYPE */
             Local0 = ObjectType (\AUXD.PWR0)
             If ((C013 != Local0))
             {
@@ -2334,7 +2334,7 @@
             /* Processor */
 
             LoadTable ("OEM1", "", "", "\\", "\\DTM2.PLDT", \AUXD.CPU0)
-            CH04 (Arg0, 0x00, 0x2F, Z176, 0x0858, 0x00, 0x00) /* AE_AML_OPERAND_TYPE */
+            CH04 (Arg0, 0x00, 0x2F, Z176, __LINE__, 0x00, 0x00) /* AE_AML_OPERAND_TYPE */
             Local0 = ObjectType (\AUXD.CPU0)
             If ((C014 != Local0))
             {
@@ -2344,7 +2344,7 @@
             /* Thermal Zone */
 
             LoadTable ("OEM1", "", "", "\\", "\\DTM2.PLDT", \AUXD.TZN0)
-            CH04 (Arg0, 0x00, 0x2F, Z176, 0x0860, 0x00, 0x00) /* AE_AML_OPERAND_TYPE */
+            CH04 (Arg0, 0x00, 0x2F, Z176, __LINE__, 0x00, 0x00) /* AE_AML_OPERAND_TYPE */
             Local0 = ObjectType (\AUXD.TZN0)
             If ((C015 != Local0))
             {

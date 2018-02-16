@@ -500,7 +500,7 @@
 
         If (Arg0)
         {
-            CH04 ("", 0x01, 0x12, 0x00, 0x0196, 0x00, 0x00) /* AE_LIMIT */
+            CH04 (__METHOD__, 0x01, 0x12, 0x00, __LINE__, 0x00, 0x00) /* AE_LIMIT */
         }
         Else
         {

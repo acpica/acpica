@@ -103,7 +103,7 @@
             Local0 = 0x01
             CH03 ("", 0x00, 0x03, 0x63, 0x00)
             Acquire (MX01, 0x0001)
-            CH04 ("", 0x00, 0x40, 0x00, 0x65, 0x00, 0x00) /* AE_AML_MUTEX_ORDER */
+            CH04 (__METHOD__, 0x00, 0x40, 0x00, __LINE__, 0x00, 0x00) /* AE_AML_MUTEX_ORDER */
         }
 
         If (Local0)
@@ -171,7 +171,7 @@
             Local0 = 0x01
             CH03 ("", 0x00, 0x09, 0xA0, 0x00)
             MX01 ()
-            CH04 ("", 0x00, 0x40, 0x00, 0xA2, 0x00, 0x00) /* AE_AML_MUTEX_ORDER */
+            CH04 (__METHOD__, 0x00, 0x40, 0x00, __LINE__, 0x00, 0x00) /* AE_AML_MUTEX_ORDER */
         }
 
         If (Local0)

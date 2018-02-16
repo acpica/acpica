@@ -116,7 +116,7 @@
         }
         Else
         {
-            CH04 (__METHOD__, 0x01, 0x05, Z154, 0x69, 0x00, 0x00)    /* AE_NOT_FOUND */
+            CH04 (__METHOD__, 0x01, 0x05, Z154, __LINE__, 0x00, 0x00)    /* AE_NOT_FOUND */
         }
     }
 
@@ -208,7 +208,7 @@
         }
         Else
         {
-            CH04 (__METHOD__, 0x01, 0x05, Z154, 0xB4, 0x00, 0x00)    /* AE_NOT_FOUND */
+            CH04 (__METHOD__, 0x01, 0x05, Z154, __LINE__, 0x00, 0x00)    /* AE_NOT_FOUND */
         }
     }
 
@@ -300,7 +300,7 @@
         }
         Else
         {
-            CH04 (__METHOD__, 0x01, 0x05, Z154, 0x0100, 0x00, 0x00)    /* AE_NOT_FOUND */
+            CH04 (__METHOD__, 0x01, 0x05, Z154, __LINE__, 0x00, 0x00)    /* AE_NOT_FOUND */
         }
     }
 
@@ -392,7 +392,7 @@
         }
         Else
         {
-            CH04 (__METHOD__, 0x01, 0x05, Z154, 0x014C, 0x00, 0x00)    /* AE_NOT_FOUND */
+            CH04 (__METHOD__, 0x01, 0x05, Z154, __LINE__, 0x00, 0x00)    /* AE_NOT_FOUND */
         }
     }
 

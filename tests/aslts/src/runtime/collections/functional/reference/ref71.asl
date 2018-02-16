@@ -48,7 +48,7 @@
             Local0 = Local7
             If (!SLCK)
             {
-                CH04 (__METHOD__, 0x00, 0xFF, Z109, 0x37, 0x00, 0x00)
+                CH04 (__METHOD__, 0x00, 0xFF, Z109, __LINE__, 0x00, 0x00)
             }
         }
 

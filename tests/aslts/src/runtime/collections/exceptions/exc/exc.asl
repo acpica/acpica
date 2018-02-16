@@ -43,7 +43,7 @@
         CH03 (__METHOD__, Z058, 0x01, 0x31, 0x00)
         Local0 = 0x00
         Divide (Local1, Local0, Local2)
-        CH04 (__METHOD__, 0x00, 0x38, Z058, 0x36, 0x00, 0x00)   /* AE_AML_DIVIDE_BY_ZERO */
+        CH04 (__METHOD__, 0x00, 0x38, Z058, __LINE__, 0x00, 0x00)   /* AE_AML_DIVIDE_BY_ZERO */
         Local0 = 0x02
         Divide (Local1, Local0, Local2)
         CH03 (__METHOD__, Z058, 0x03, 0x3B, 0x00)
@@ -60,7 +60,7 @@
         CH03 (__METHOD__, Z058, 0x05, 0x49, 0x00)
         Local0 = 0x00
         Local2 = (Local1 % Local0)
-        CH04 (__METHOD__, 0x00, 0x38, Z058, 0x4E, 0x00, 0x00)   /* AE_AML_DIVIDE_BY_ZERO */
+        CH04 (__METHOD__, 0x00, 0x38, Z058, __LINE__, 0x00, 0x00)   /* AE_AML_DIVIDE_BY_ZERO */
         Local0 = 0x02
         Local2 = (Local1 % Local0)
         CH03 (__METHOD__, Z058, 0x07, 0x53, 0x00)
@@ -73,7 +73,7 @@
         Mutex (MTX0, 0x00)
         CH03 (__METHOD__, Z058, 0x08, 0x5D, 0x00)
         Release (MTX0)
-        CH04 (__METHOD__, 0x00, 0x41, Z058, 0x61, 0x00, 0x00)   /* AE_AML_MUTEX_NOT_ACQUIRED */
+        CH04 (__METHOD__, 0x00, 0x41, Z058, __LINE__, 0x00, 0x00)   /* AE_AML_MUTEX_NOT_ACQUIRED */
     }
 
     /* SizeOf for data types not an Integer, Buffer, String or Package object */
@@ -143,7 +143,7 @@
         }
 
         Local5 = SizeOf (Local1)
-        CH04 (__METHOD__, 0x01, 0x31, Z058, 0xA0, 0x00, 0x00)   /* AE_AML_UNINITIALIZED_LOCAL */
+        CH04 (__METHOD__, 0x01, 0x31, Z058, __LINE__, 0x00, 0x00)   /* AE_AML_UNINITIALIZED_LOCAL */
         /* These are now caught by the compiler - Aug 2015 */
     /*	Store(SizeOf(DEV0), Local5) */
     /*	CH04(ts, 1, 47, z058, __LINE__, 0, 0)	// AE_AML_OPERAND_TYPE */
@@ -222,21 +222,21 @@
         Store (P000 [0x02], Local5)
         CH03 (__METHOD__, Z058, 0x18, 0xED, 0x00)
         Store (P000 [0x03], Local5)
-        CH04 (__METHOD__, 0x01, 0x37, Z058, 0xF1, 0x00, 0x00)   /* AE_AML_PACKAGE_LIMIT */
+        CH04 (__METHOD__, 0x01, 0x37, Z058, __LINE__, 0x00, 0x00)   /* AE_AML_PACKAGE_LIMIT */
         Local0 = P000 [0x02]
         CH03 (__METHOD__, Z058, 0x1A, 0xF5, 0x00)
         Local0 = P000 [0x03]
-        CH04 (__METHOD__, 0x00, 0x37, Z058, 0xF9, 0x00, 0x00)   /* AE_AML_PACKAGE_LIMIT */
+        CH04 (__METHOD__, 0x00, 0x37, Z058, __LINE__, 0x00, 0x00)   /* AE_AML_PACKAGE_LIMIT */
         /* Package(3) */
 
         Store (P001 [0x02], Local5)
         CH03 (__METHOD__, Z058, 0x1C, 0xFF, 0x00)
         Local5 = P001 [0x03]
-        CH04 (__METHOD__, 0x00, 0x37, Z058, 0x0103, 0x00, 0x00)   /* AE_AML_PACKAGE_LIMIT */
+        CH04 (__METHOD__, 0x00, 0x37, Z058, __LINE__, 0x00, 0x00)   /* AE_AML_PACKAGE_LIMIT */
         Local0 = P001 [0x02]
         CH03 (__METHOD__, Z058, 0x1E, 0x0107, 0x00)
         Local0 = P001 [0x03]
-        CH04 (__METHOD__, 0x00, 0x37, Z058, 0x010B, 0x00, 0x00)   /* AE_AML_PACKAGE_LIMIT */
+        CH04 (__METHOD__, 0x00, 0x37, Z058, __LINE__, 0x00, 0x00)   /* AE_AML_PACKAGE_LIMIT */
     }
 
     /* Access out of String */
@@ -250,11 +250,11 @@
         Local5 = S000 [0x03]
         /* Bug 177, Bugzilla 5480. */
 
-        CH04 (__METHOD__, 0x00, 0x3D, Z058, 0x011E, 0x00, 0x00)   /* AE_AML_STRING_LIMIT */
+        CH04 (__METHOD__, 0x00, 0x3D, Z058, __LINE__, 0x00, 0x00)   /* AE_AML_STRING_LIMIT */
         Local0 = S000 [0x02]
         CH03 (__METHOD__, Z058, 0x23, 0x0122, 0x00)
         Local0 = S000 [0x03]
-        CH04 (__METHOD__, 0x00, 0x3D, Z058, 0x0126, 0x00, 0x00)   /* AE_AML_STRING_LIMIT */
+        CH04 (__METHOD__, 0x00, 0x3D, Z058, __LINE__, 0x00, 0x00)   /* AE_AML_STRING_LIMIT */
     }
 
     /* Access out of Buffer */
@@ -275,21 +275,21 @@
         Local5 = B000 [0x02]
         CH03 (__METHOD__, Z058, 0x26, 0x0137, 0x00)
         Local5 = B000 [0x03]
-        CH04 (__METHOD__, 0x00, 0x36, Z058, 0x013B, 0x00, 0x00)   /* AE_AML_BUFFER_LIMIT */
+        CH04 (__METHOD__, 0x00, 0x36, Z058, __LINE__, 0x00, 0x00)   /* AE_AML_BUFFER_LIMIT */
         Local0 = B000 [0x02]
         CH03 (__METHOD__, Z058, 0x28, 0x013F, 0x00)
         Local0 = B000 [0x03]
-        CH04 (__METHOD__, 0x00, 0x36, Z058, 0x0143, 0x00, 0x00)   /* AE_AML_BUFFER_LIMIT */
+        CH04 (__METHOD__, 0x00, 0x36, Z058, __LINE__, 0x00, 0x00)   /* AE_AML_BUFFER_LIMIT */
         /* Buffer(3) */
 
         Local5 = B001 [0x02]
         CH03 (__METHOD__, Z058, 0x2A, 0x0149, 0x00)
         Local5 = B001 [0x03]
-        CH04 (__METHOD__, 0x00, 0x36, Z058, 0x014D, 0x00, 0x00)   /* AE_AML_BUFFER_LIMIT */
+        CH04 (__METHOD__, 0x00, 0x36, Z058, __LINE__, 0x00, 0x00)   /* AE_AML_BUFFER_LIMIT */
         Local0 = B001 [0x02]
         CH03 (__METHOD__, Z058, 0x2C, 0x0151, 0x00)
         Local0 = B001 [0x03]
-        CH04 (__METHOD__, 0x00, 0x36, Z058, 0x0155, 0x00, 0x00)   /* AE_AML_BUFFER_LIMIT */
+        CH04 (__METHOD__, 0x00, 0x36, Z058, __LINE__, 0x00, 0x00)   /* AE_AML_BUFFER_LIMIT */
     }
 
     /* ToInteger() passed with an image of a number which value */
@@ -318,7 +318,7 @@
         }
 
         ToInteger (Local0, Local5)
-        CH04 (__METHOD__, 0x00, 0x2E, Z058, 0x0170, 0x00, 0x00)   /* AE_AML_NO_OPERAND */
+        CH04 (__METHOD__, 0x00, 0x2E, Z058, __LINE__, 0x00, 0x00)   /* AE_AML_NO_OPERAND */
     }
 
     /* [Uninitialized] None. */
@@ -333,7 +333,7 @@
 
         CH03 (__METHOD__, Z058, 0x31, 0x017E, 0x00)
         Local0++
-        CH04 (__METHOD__, 0x00, 0x31, Z058, 0x0182, 0x00, 0x00)   /* AE_AML_UNINITIALIZED_LOCAL */
+        CH04 (__METHOD__, 0x00, 0x31, Z058, __LINE__, 0x00, 0x00)   /* AE_AML_UNINITIALIZED_LOCAL */
     }
 
     Method (M148, 0, NotSerialized)
@@ -356,7 +356,7 @@
         Stall (Arg0)
         /* It is now bug 14. */
 
-        CH04 (__METHOD__, 0x00, 0x30, Z058, 0x01A0, 0x00, 0x00)   /* AE_AML_OPERAND_VALUE */
+        CH04 (__METHOD__, 0x00, 0x30, Z058, __LINE__, 0x00, 0x00)   /* AE_AML_OPERAND_VALUE */
     }
 
     /* Bug 14. */
@@ -481,7 +481,7 @@
             ToBCD (Local4, Local5)
         }
 
-        CH04 (__METHOD__, 0x00, 0x34, Z058, 0x0215, 0x00, 0x00)   /* AE_AML_NUMERIC_OVERFLOW */
+        CH04 (__METHOD__, 0x00, 0x34, Z058, __LINE__, 0x00, 0x00)   /* AE_AML_NUMERIC_OVERFLOW */
     }
 
     /* Create field out of buffer */
@@ -493,37 +493,37 @@
         CreateBitField (B001, 0x7F, F000)
         CH03 (__METHOD__, Z058, 0x41, 0x0221, 0x00)
         CreateBitField (B001, 0x80, F001)
-        CH04 (__METHOD__, 0x00, 0x36, Z058, 0x0223, 0x00, 0x00)   /* AE_AML_BUFFER_LIMIT */
+        CH04 (__METHOD__, 0x00, 0x36, Z058, __LINE__, 0x00, 0x00)   /* AE_AML_BUFFER_LIMIT */
         CH03 (__METHOD__, Z058, 0x43, 0x0225, 0x00)
         CreateByteField (B001, 0x0F, F002)
         CH03 (__METHOD__, Z058, 0x44, 0x0227, 0x00)
         CreateByteField (B001, 0x10, F003)
-        CH04 (__METHOD__, 0x00, 0x36, Z058, 0x0229, 0x00, 0x00)   /* AE_AML_BUFFER_LIMIT */
+        CH04 (__METHOD__, 0x00, 0x36, Z058, __LINE__, 0x00, 0x00)   /* AE_AML_BUFFER_LIMIT */
         CH03 (__METHOD__, Z058, 0x46, 0x022B, 0x00)
         CreateWordField (B001, 0x0E, F004)
         CH03 (__METHOD__, Z058, 0x47, 0x022D, 0x00)
         CreateWordField (B001, 0x0F, F005)
-        CH04 (__METHOD__, 0x00, 0x36, Z058, 0x022F, 0x00, 0x00)   /* AE_AML_BUFFER_LIMIT */
+        CH04 (__METHOD__, 0x00, 0x36, Z058, __LINE__, 0x00, 0x00)   /* AE_AML_BUFFER_LIMIT */
         CH03 (__METHOD__, Z058, 0x49, 0x0231, 0x00)
         CreateDWordField (B001, 0x0C, F006)
         CH03 (__METHOD__, Z058, 0x4A, 0x0233, 0x00)
         CreateDWordField (B001, 0x0D, F007)
-        CH04 (__METHOD__, 0x00, 0x36, Z058, 0x0235, 0x00, 0x00)   /* AE_AML_BUFFER_LIMIT */
+        CH04 (__METHOD__, 0x00, 0x36, Z058, __LINE__, 0x00, 0x00)   /* AE_AML_BUFFER_LIMIT */
         CH03 (__METHOD__, Z058, 0x4C, 0x0237, 0x00)
         CreateQWordField (B001, 0x08, F008)
         CH03 (__METHOD__, Z058, 0x4D, 0x0239, 0x00)
         CreateQWordField (B001, 0x09, F009)
-        CH04 (__METHOD__, 0x00, 0x36, Z058, 0x023B, 0x00, 0x00)   /* AE_AML_BUFFER_LIMIT */
+        CH04 (__METHOD__, 0x00, 0x36, Z058, __LINE__, 0x00, 0x00)   /* AE_AML_BUFFER_LIMIT */
         CH03 (__METHOD__, Z058, 0x4F, 0x023D, 0x00)
         CreateField (B001, 0x7F, 0x01, F00A)
         CH03 (__METHOD__, Z058, 0x50, 0x023F, 0x00)
         CreateField (B001, 0x80, 0x01, F00B)
-        CH04 (__METHOD__, 0x00, 0x36, Z058, 0x0241, 0x00, 0x00)   /* AE_AML_BUFFER_LIMIT */
+        CH04 (__METHOD__, 0x00, 0x36, Z058, __LINE__, 0x00, 0x00)   /* AE_AML_BUFFER_LIMIT */
         CH03 (__METHOD__, Z058, 0x52, 0x0243, 0x00)
         CreateField (B001, 0x78, 0x08, F00C)
         CH03 (__METHOD__, Z058, 0x53, 0x0245, 0x00)
         CreateField (B001, 0x78, 0x09, F00D)
-        CH04 (__METHOD__, 0x00, 0x36, Z058, 0x0247, 0x00, 0x00)   /* AE_AML_BUFFER_LIMIT */
+        CH04 (__METHOD__, 0x00, 0x36, Z058, __LINE__, 0x00, 0x00)   /* AE_AML_BUFFER_LIMIT */
     }
 
     /* Access to uninitialized local */
@@ -537,7 +537,7 @@
 
         CH03 (__METHOD__, Z058, 0x55, 0x0253, 0x00)
         Local5 = Local0 [0x00]
-        CH04 (__METHOD__, 0x00, 0x31, Z058, 0x0257, 0x00, 0x00)   /* AE_AML_UNINITIALIZED_LOCAL */
+        CH04 (__METHOD__, 0x00, 0x31, Z058, __LINE__, 0x00, 0x00)   /* AE_AML_UNINITIALIZED_LOCAL */
     }
 
     /* Access to an uninitialized element of package */
@@ -565,15 +565,15 @@
          * OBSOLETE July 2013. DerefOf on an empty package element now causes error
          * CH04(ts, 0, 62, z058, __LINE__, 0, 0)
          */
-        CH04 (__METHOD__, 0x01, 0x33, Z058, 0x0274, 0x00, 0x00)   /* AE_AML_UNINITIALIZED_ELEMENT */
+        CH04 (__METHOD__, 0x01, 0x33, Z058, __LINE__, 0x00, 0x00)   /* AE_AML_UNINITIALIZED_ELEMENT */
         Local5 = (DerefOf (P000 [0x03]) + 0x01)
         If (EXCV)
         {
-            CH04 (__METHOD__, 0x00, 0x33, Z058, 0x0279, 0x00, 0x00)   /* AE_AML_UNINITIALIZED_ELEMENT */
+            CH04 (__METHOD__, 0x00, 0x33, Z058, __LINE__, 0x00, 0x00)   /* AE_AML_UNINITIALIZED_ELEMENT */
         }
         Else
         {
-            CH04 (__METHOD__, 0x00, 0xFF, Z058, 0x027B, 0x00, 0x00)
+            CH04 (__METHOD__, 0x00, 0xFF, Z058, __LINE__, 0x00, 0x00)
         }
 
         Return (0x00)
@@ -636,7 +636,7 @@
         Local5 = Match (PAC0, MTR, 0x00, MTR, 0x00, 0x00)
         CH03 (__METHOD__, Z058, 0x5E, 0x02B3, 0x00)
         Local5 = Match (PAC0, MTR, 0x00, MTR, 0x00, 0x01)
-        CH04 (__METHOD__, 0x01, 0x37, Z058, 0x02B7, 0x00, 0x00)   /* AE_AML_PACKAGE_LIMIT */
+        CH04 (__METHOD__, 0x01, 0x37, Z058, __LINE__, 0x00, 0x00)   /* AE_AML_PACKAGE_LIMIT */
     }
 
     /* Exeptional conditions of ConcatenateResTemplate */
@@ -674,11 +674,11 @@
          */
         If (EXCV)
         {
-            CH04 (__METHOD__, 0x00, 0x47, Z058, 0x02E0, 0x00, 0x00) /* AE_AML_NO_RESOURCE_END_TAG */
+            CH04 (__METHOD__, 0x00, 0x47, Z058, __LINE__, 0x00, 0x00) /* AE_AML_NO_RESOURCE_END_TAG */
         }
         Else
         {
-            CH04 (__METHOD__, 0x00, 0xFF, Z058, 0x02E2, 0x00, 0x00)
+            CH04 (__METHOD__, 0x00, 0xFF, Z058, __LINE__, 0x00, 0x00)
         }
 
         /* One-element 0x79 buffer */
@@ -690,7 +690,7 @@
         ConcatenateResTemplate (RT00, Local2, Local5)
         /* Bug 189. */
 
-        CH04 (__METHOD__, 0x00, 0x47, Z058, 0x02EC, 0x00, 0x00)   /* AE_AML_NO_RESOURCE_END_TAG */
+        CH04 (__METHOD__, 0x00, 0x47, Z058, __LINE__, 0x00, 0x00)   /* AE_AML_NO_RESOURCE_END_TAG */
         /* Not resource template buffer */
 
         Local2 = Buffer (0x03)
@@ -700,11 +700,11 @@
         ConcatenateResTemplate (RT00, Local2, Local5)
         If (EXCV)
         {
-            CH04 (__METHOD__, 0x00, 0x47, Z058, 0x02F5, 0x00, 0x00) /* AE_AML_NO_RESOURCE_END_TAG */
+            CH04 (__METHOD__, 0x00, 0x47, Z058, __LINE__, 0x00, 0x00) /* AE_AML_NO_RESOURCE_END_TAG */
         }
         Else
         {
-            CH04 (__METHOD__, 0x00, 0xFF, Z058, 0x02F7, 0x00, 0x00)
+            CH04 (__METHOD__, 0x00, 0xFF, Z058, __LINE__, 0x00, 0x00)
         }
 
         /* Nearly resource template buffer */
@@ -716,7 +716,7 @@
         ConcatenateResTemplate (RT00, Local2, Local5)
         /* Bug 190. */
 
-        CH04 (__METHOD__, 0x00, 0x47, Z058, 0x0301, 0x00, 0x00)   /* AE_AML_NO_RESOURCE_END_TAG */
+        CH04 (__METHOD__, 0x00, 0x47, Z058, __LINE__, 0x00, 0x00)   /* AE_AML_NO_RESOURCE_END_TAG */
         /* Like resource template buffer */
 
         Local2 = Buffer (0x05)
@@ -726,11 +726,11 @@
         ConcatenateResTemplate (RT00, Local2, Local5)
         If (EXCV)
         {
-            CH04 (__METHOD__, 0x00, 0x47, Z058, 0x030A, 0x00, 0x00) /* AE_AML_NO_RESOURCE_END_TAG */
+            CH04 (__METHOD__, 0x00, 0x47, Z058, __LINE__, 0x00, 0x00) /* AE_AML_NO_RESOURCE_END_TAG */
         }
         Else
         {
-            CH04 (__METHOD__, 0x00, 0xFF, Z058, 0x030C, 0x00, 0x00)
+            CH04 (__METHOD__, 0x00, 0xFF, Z058, __LINE__, 0x00, 0x00)
         }
 
         CH03 (__METHOD__, Z058, 0xAB, 0x030F, 0x00)
@@ -798,26 +798,26 @@
 
         Local4 = ""
         ToInteger (Local4, Local5)
-        CH04 (__METHOD__, 0x00, 0x24, Z058, 0x0356, 0x00, 0x00)   /* AE_BAD_DECIMAL_CONSTANT */
+        CH04 (__METHOD__, 0x00, 0x24, Z058, __LINE__, 0x00, 0x00)   /* AE_BAD_DECIMAL_CONSTANT */
         /* ToInteger, String filled with blanks */
 
         Local4 = "                 "
         ToInteger (Local4, Local5)
         /*	CH04(ts, 0, 34, z058, __LINE__, 0, 0)	// AE_BAD_HEX_CONSTANT */
 
-        CH04 (__METHOD__, 0x00, 0x24, Z058, 0x035D, 0x00, 0x00)   /* AE_BAD_DECIMAL_CONSTANT */
+        CH04 (__METHOD__, 0x00, 0x24, Z058, __LINE__, 0x00, 0x00)   /* AE_BAD_DECIMAL_CONSTANT */
         /* Add, zero-length Buffer */
 
         Local5 = (B000 + 0x00)
         /*	CH04(ts, 0, 34, z058, __LINE__, 0, 0)	// AE_BAD_HEX_CONSTANT */
 
-        CH04 (__METHOD__, 0x00, 0x36, Z058, 0x0363, 0x00, 0x00)   /* AE_AML_BUFFER_LIMIT */
+        CH04 (__METHOD__, 0x00, 0x36, Z058, __LINE__, 0x00, 0x00)   /* AE_AML_BUFFER_LIMIT */
         /* ToInteger, zero-length Buffer */
 
         ToInteger (B000, Local5)
         /*	CH04(ts, 0, 34, z058, __LINE__, 0, 0)	// AE_BAD_HEX_CONSTANT */
 
-        CH04 (__METHOD__, 0x00, 0x36, Z058, 0x0369, 0x00, 0x00)   /* AE_AML_BUFFER_LIMIT */
+        CH04 (__METHOD__, 0x00, 0x36, Z058, __LINE__, 0x00, 0x00)   /* AE_AML_BUFFER_LIMIT */
     }
 
     /* ////////////////////////////////////////////////////////// */
@@ -831,13 +831,13 @@
         Name (I000, 0xAAAAAAAA)
         CH03 (__METHOD__, Z058, 0x72, 0x0379, 0x00)
         Store (I000 [0x00], Local5)
-        CH04 (__METHOD__, 0x01, 0x2F, Z058, 0x037D, 0x00, 0x00)   /* AE_AML_OPERAND_TYPE */
+        CH04 (__METHOD__, 0x01, 0x2F, Z058, __LINE__, 0x00, 0x00)   /* AE_AML_OPERAND_TYPE */
         Local0 = I000 [0x00]
-        CH04 (__METHOD__, 0x00, 0x2F, Z058, 0x0381, 0x00, 0x00)   /* AE_AML_OPERAND_TYPE */
+        CH04 (__METHOD__, 0x00, 0x2F, Z058, __LINE__, 0x00, 0x00)   /* AE_AML_OPERAND_TYPE */
         Store (I000 [0x00], Local0)
-        CH04 (__METHOD__, 0x00, 0xFF, Z058, 0x0385, 0x00, 0x00)
+        CH04 (__METHOD__, 0x00, 0xFF, Z058, __LINE__, 0x00, 0x00)
         Local1 = Local0 = I000 [0x00]
-        CH04 (__METHOD__, 0x00, 0xFF, Z058, 0x0389, 0x00, 0x00)
+        CH04 (__METHOD__, 0x00, 0xFF, Z058, __LINE__, 0x00, 0x00)
     }
 
     /* Bug 83 */
@@ -849,11 +849,11 @@
         /* Bug 83, Bugzilla 5387. */
 
         Local5 = DerefOf (I000)
-        CH04 (__METHOD__, 0x00, 0xFF, Z058, 0x0399, 0x00, 0x00)
+        CH04 (__METHOD__, 0x00, 0xFF, Z058, __LINE__, 0x00, 0x00)
         Local0 = DerefOf (I000)
         /* Bug 83, Bugzilla 5387. */
 
-        CH04 (__METHOD__, 0x00, 0xFF, Z058, 0x039E, 0x00, 0x00)
+        CH04 (__METHOD__, 0x00, 0xFF, Z058, __LINE__, 0x00, 0x00)
     }
 
     /* Index(Local7-Integer) */
@@ -866,19 +866,19 @@
         /* Index(Integer) */
 
         Store (Local7 [0x00], Local5)
-        CH04 (__METHOD__, 0x01, 0x2F, Z058, 0x03B1, 0x00, 0x00)   /* AE_AML_OPERAND_TYPE */
+        CH04 (__METHOD__, 0x01, 0x2F, Z058, __LINE__, 0x00, 0x00)   /* AE_AML_OPERAND_TYPE */
         Local0 = Local7 [0x00]
-        CH04 (__METHOD__, 0x00, 0x2F, Z058, 0x03B5, 0x00, 0x00)   /* AE_AML_OPERAND_TYPE */
+        CH04 (__METHOD__, 0x00, 0x2F, Z058, __LINE__, 0x00, 0x00)   /* AE_AML_OPERAND_TYPE */
         Store (Local7 [0x00], Local0)
-        CH04 (__METHOD__, 0x00, 0xFF, Z058, 0x03B9, 0x00, 0x00)
+        CH04 (__METHOD__, 0x00, 0xFF, Z058, __LINE__, 0x00, 0x00)
         Local1 = Local0 = Local7 [0x00]
-        CH04 (__METHOD__, 0x00, 0xFF, Z058, 0x03BD, 0x00, 0x00)
+        CH04 (__METHOD__, 0x00, 0xFF, Z058, __LINE__, 0x00, 0x00)
         /* DerefOf(Integer) */
 
         Local5 = DerefOf (Local7)
-        CH04 (__METHOD__, 0x00, 0xFF, Z058, 0x03C3, 0x00, 0x00)
+        CH04 (__METHOD__, 0x00, 0xFF, Z058, __LINE__, 0x00, 0x00)
         Local0 = DerefOf (Local7)
-        CH04 (__METHOD__, 0x00, 0xFF, Z058, 0x03C7, 0x00, 0x00)
+        CH04 (__METHOD__, 0x00, 0xFF, Z058, __LINE__, 0x00, 0x00)
     }
 
     /* Index(Buffer Field) */
@@ -893,15 +893,15 @@
         CreateField (B000, 0x00, 0x08, BF00)
         CH03 (__METHOD__, Z058, 0x81, 0x03D2, 0x00)
         Store (BF00 [0x00], Local5)
-        CH04 (__METHOD__, 0x01, 0x2F, Z058, 0x03D6, 0x00, 0x00)   /* AE_AML_OPERAND_TYPE */
+        CH04 (__METHOD__, 0x01, 0x2F, Z058, __LINE__, 0x00, 0x00)   /* AE_AML_OPERAND_TYPE */
         Local0 = BF00 [0x00]
-        CH04 (__METHOD__, 0x00, 0x2F, Z058, 0x03DA, 0x00, 0x00)   /* AE_AML_OPERAND_TYPE */
+        CH04 (__METHOD__, 0x00, 0x2F, Z058, __LINE__, 0x00, 0x00)   /* AE_AML_OPERAND_TYPE */
         Store (BF00 [0x00], Local0)
-        CH04 (__METHOD__, 0x00, 0xFF, Z058, 0x03DE, 0x00, 0x00)
+        CH04 (__METHOD__, 0x00, 0xFF, Z058, __LINE__, 0x00, 0x00)
         Store (BF00 [0x00], Local0)
-        CH04 (__METHOD__, 0x00, 0xFF, Z058, 0x03E2, 0x00, 0x00)
+        CH04 (__METHOD__, 0x00, 0xFF, Z058, __LINE__, 0x00, 0x00)
         Local1 = Local0 = BF00 [0x00]
-        CH04 (__METHOD__, 0x00, 0xFF, Z058, 0x03E6, 0x00, 0x00)
+        CH04 (__METHOD__, 0x00, 0xFF, Z058, __LINE__, 0x00, 0x00)
     }
 
     /* Bug 83 */
@@ -918,11 +918,11 @@
         Local5 = DerefOf (BF00)
         /* Bug 83, Bugzilla 5387. */
 
-        CH04 (__METHOD__, 0x00, 0xFF, Z058, 0x03F7, 0x00, 0x00)
+        CH04 (__METHOD__, 0x00, 0xFF, Z058, __LINE__, 0x00, 0x00)
         Local0 = DerefOf (BF00)
         /* Bug 83, Bugzilla 5387. */
 
-        CH04 (__METHOD__, 0x00, 0xFF, Z058, 0x03FC, 0x00, 0x00)
+        CH04 (__METHOD__, 0x00, 0xFF, Z058, __LINE__, 0x00, 0x00)
     }
 
     /* Index(Field Unit) */
@@ -957,39 +957,39 @@
         /* Field */
 
         Store (F000 [0x00], Local5)
-        CH04 (__METHOD__, 0x01, 0x2F, Z058, 0x0410, 0x00, 0x00)   /* AE_AML_OPERAND_TYPE */
+        CH04 (__METHOD__, 0x01, 0x2F, Z058, __LINE__, 0x00, 0x00)   /* AE_AML_OPERAND_TYPE */
         Local0 = F000 [0x00]
-        CH04 (__METHOD__, 0x00, 0x2F, Z058, 0x0414, 0x00, 0x00)   /* AE_AML_OPERAND_TYPE */
+        CH04 (__METHOD__, 0x00, 0x2F, Z058, __LINE__, 0x00, 0x00)   /* AE_AML_OPERAND_TYPE */
         Store (F000 [0x00], Local0)
-        CH04 (__METHOD__, 0x00, 0xFF, Z058, 0x0418, 0x00, 0x00)
+        CH04 (__METHOD__, 0x00, 0xFF, Z058, __LINE__, 0x00, 0x00)
         Store (F000 [0x00], Local0)
-        CH04 (__METHOD__, 0x00, 0xFF, Z058, 0x041C, 0x00, 0x00)
+        CH04 (__METHOD__, 0x00, 0xFF, Z058, __LINE__, 0x00, 0x00)
         Local1 = Local0 = F000 [0x00]
-        CH04 (__METHOD__, 0x00, 0xFF, Z058, 0x0420, 0x00, 0x00)
+        CH04 (__METHOD__, 0x00, 0xFF, Z058, __LINE__, 0x00, 0x00)
         /* BankField */
 
         Store (BKF0 [0x00], Local5)
-        CH04 (__METHOD__, 0x01, 0x2F, Z058, 0x0426, 0x00, 0x00)   /* AE_AML_OPERAND_TYPE */
+        CH04 (__METHOD__, 0x01, 0x2F, Z058, __LINE__, 0x00, 0x00)   /* AE_AML_OPERAND_TYPE */
         Local0 = BKF0 [0x00]
-        CH04 (__METHOD__, 0x00, 0x2F, Z058, 0x042A, 0x00, 0x00)   /* AE_AML_OPERAND_TYPE */
+        CH04 (__METHOD__, 0x00, 0x2F, Z058, __LINE__, 0x00, 0x00)   /* AE_AML_OPERAND_TYPE */
         Store (BKF0 [0x00], Local0)
-        CH04 (__METHOD__, 0x00, 0xFF, Z058, 0x042E, 0x00, 0x00)
+        CH04 (__METHOD__, 0x00, 0xFF, Z058, __LINE__, 0x00, 0x00)
         Store (BKF0 [0x00], Local0)
-        CH04 (__METHOD__, 0x00, 0xFF, Z058, 0x0432, 0x00, 0x00)
+        CH04 (__METHOD__, 0x00, 0xFF, Z058, __LINE__, 0x00, 0x00)
         Local1 = Local0 = BKF0 [0x00]
-        CH04 (__METHOD__, 0x00, 0xFF, Z058, 0x0436, 0x00, 0x00)
+        CH04 (__METHOD__, 0x00, 0xFF, Z058, __LINE__, 0x00, 0x00)
         /* IndexField */
 
         Store (IF00 [0x00], Local5)
-        CH04 (__METHOD__, 0x01, 0x2F, Z058, 0x043C, 0x00, 0x00)   /* AE_AML_OPERAND_TYPE */
+        CH04 (__METHOD__, 0x01, 0x2F, Z058, __LINE__, 0x00, 0x00)   /* AE_AML_OPERAND_TYPE */
         Local0 = IF00 [0x00]
-        CH04 (__METHOD__, 0x00, 0x2F, Z058, 0x0440, 0x00, 0x00)   /* AE_AML_OPERAND_TYPE */
+        CH04 (__METHOD__, 0x00, 0x2F, Z058, __LINE__, 0x00, 0x00)   /* AE_AML_OPERAND_TYPE */
         Store (IF00 [0x00], Local0)
-        CH04 (__METHOD__, 0x00, 0xFF, Z058, 0x0444, 0x00, 0x00)
+        CH04 (__METHOD__, 0x00, 0xFF, Z058, __LINE__, 0x00, 0x00)
         Store (IF00 [0x00], Local0)
-        CH04 (__METHOD__, 0x00, 0xFF, Z058, 0x0448, 0x00, 0x00)
+        CH04 (__METHOD__, 0x00, 0xFF, Z058, __LINE__, 0x00, 0x00)
         Local1 = Local0 = IF00 [0x00]
-        CH04 (__METHOD__, 0x00, 0xFF, Z058, 0x044C, 0x00, 0x00)
+        CH04 (__METHOD__, 0x00, 0xFF, Z058, __LINE__, 0x00, 0x00)
     }
 
     /* Bug 83 */
@@ -1026,31 +1026,31 @@
         Local5 = DerefOf (F000)
         /* Bug 83, Bugzilla 5387. */
 
-        CH04 (__METHOD__, 0x00, 0xFF, Z058, 0x0462, 0x00, 0x00)
+        CH04 (__METHOD__, 0x00, 0xFF, Z058, __LINE__, 0x00, 0x00)
         Local0 = DerefOf (F000)
         /* Bug 83, Bugzilla 5387. */
 
-        CH04 (__METHOD__, 0x00, 0xFF, Z058, 0x0467, 0x00, 0x00)
+        CH04 (__METHOD__, 0x00, 0xFF, Z058, __LINE__, 0x00, 0x00)
         /* BankField */
 
         Local5 = DerefOf (BKF0)
         /* Bug 83, Bugzilla 5387. */
 
-        CH04 (__METHOD__, 0x00, 0xFF, Z058, 0x046E, 0x00, 0x00)
+        CH04 (__METHOD__, 0x00, 0xFF, Z058, __LINE__, 0x00, 0x00)
         Local0 = DerefOf (BKF0)
         /* Bug 83, Bugzilla 5387. */
 
-        CH04 (__METHOD__, 0x00, 0xFF, Z058, 0x0473, 0x00, 0x00)
+        CH04 (__METHOD__, 0x00, 0xFF, Z058, __LINE__, 0x00, 0x00)
         /* IndexField */
 
         Local5 = DerefOf (IF00)
         /* Bug 83, Bugzilla 5387. */
 
-        CH04 (__METHOD__, 0x00, 0xFF, Z058, 0x047A, 0x00, 0x00)
+        CH04 (__METHOD__, 0x00, 0xFF, Z058, __LINE__, 0x00, 0x00)
         Local0 = DerefOf (IF00)
         /* Bug 83, Bugzilla 5387. */
 
-        CH04 (__METHOD__, 0x00, 0xFF, Z058, 0x047F, 0x00, 0x00)
+        CH04 (__METHOD__, 0x00, 0xFF, Z058, __LINE__, 0x00, 0x00)
     }
 
     /* UPDATE exc.m084: Implement this test for all the types of objects */
@@ -1088,7 +1088,7 @@
         Store (P000 [0x00], Local0)
         If (!Arg0)
         {
-            CH04 (__METHOD__, 0x00, 0xFF, Z058, 0x04A5, 0x00, 0x00)
+            CH04 (__METHOD__, 0x00, 0xFF, Z058, __LINE__, 0x00, 0x00)
         }
         Else
         {
@@ -1125,10 +1125,10 @@
 
         CH03 ("mf9d", Z058, 0xAB, 0x04C4, 0x00)
         M000 ()
-        CH04 ("mf9d", 0x00, 0xFF, Z058, 0x04C8, 0x00, 0x00)
+        CH04 ("mf9d", 0x00, 0xFF, Z058, __LINE__, 0x00, 0x00)
         CH03 ("mf9d", Z058, 0xAD, 0x04CA, 0x00)
         M001 ()
-        CH04 ("mf9d", 0x00, 0xFF, Z058, 0x04CE, 0x00, 0x00)
+        CH04 ("mf9d", 0x00, 0xFF, Z058, __LINE__, 0x00, 0x00)
     }
 
     /* Access out of OpRegion and DataTableRegion */
@@ -1197,7 +1197,7 @@
                 If ((Local1 < 0x03))
                 {
                     DerefOf (Local3) = 0x12345678
-                    CH04 (__METHOD__, 0x00, 0x35, Z058, 0x04FB, 0x00, 0x00)/* AE_AML_REGION_LIMIT */
+                    CH04 (__METHOD__, 0x00, 0x35, Z058, __LINE__, 0x00, 0x00)/* AE_AML_REGION_LIMIT */
                 }
 
                 /* Read */
@@ -1212,7 +1212,7 @@
                  * Indicate we only care about the first by placing a 1
                  * in the second argument
                  */
-                CH04 (__METHOD__, 0x01, 0x35, Z058, 0x050A, 0x00, 0x00)   /* AE_AML_REGION_LIMIT */
+                CH04 (__METHOD__, 0x01, 0x35, Z058, __LINE__, 0x00, 0x00)   /* AE_AML_REGION_LIMIT */
                 Local0--
                 Local1++
             }
@@ -1276,9 +1276,9 @@
 
         CH03 (__METHOD__, Z058, 0xBF, 0x053F, 0x00)
         FU00 = 0x12
-        CH04 (__METHOD__, 0x00, 0x35, Z058, 0x0543, 0x00, 0x00)   /* AE_AML_REGION_LIMIT */
+        CH04 (__METHOD__, 0x00, 0x35, Z058, __LINE__, 0x00, 0x00)   /* AE_AML_REGION_LIMIT */
         FU01 = 0x12
-        CH04 (__METHOD__, 0x00, 0x35, Z058, 0x0547, 0x00, 0x00)   /* AE_AML_REGION_LIMIT */
+        CH04 (__METHOD__, 0x00, 0x35, Z058, __LINE__, 0x00, 0x00)   /* AE_AML_REGION_LIMIT */
     }
 
     /* Attempt to write into DataTableRegion */
@@ -1294,7 +1294,7 @@
         Local0 = FU00 /* \M70B.FU00 */
         CH03 (__METHOD__, Z058, 0xC2, 0x0556, 0x00)
         FU00 = 0x00
-        CH04 (__METHOD__, 0x00, 0x10, Z058, 0x055A, 0x00, 0x00)   /* AE_SUPPORT */
+        CH04 (__METHOD__, 0x00, 0x10, Z058, __LINE__, 0x00, 0x00)   /* AE_SUPPORT */
     }
 
     /* Check non-String DataTableRegion *String arguments */
@@ -1312,17 +1312,17 @@
         })
         CH03 (__METHOD__, Z058, 0xC1, 0x0566, 0x00)
         DataTableRegion (DR00, B000, "", "")
-        CH04 (__METHOD__, 0x00, 0x05, Z058, 0x0569, 0x00, 0x00)    /* AE_NOT_FOUND */
+        CH04 (__METHOD__, 0x00, 0x05, Z058, __LINE__, 0x00, 0x00)    /* AE_NOT_FOUND */
         DataTableRegion (DR01, "SSDT", B000, "")
-        CH04 (__METHOD__, 0x00, 0x05, Z058, 0x056C, 0x00, 0x00)    /* AE_NOT_FOUND */
+        CH04 (__METHOD__, 0x00, 0x05, Z058, __LINE__, 0x00, 0x00)    /* AE_NOT_FOUND */
         DataTableRegion (DR02, "SSDT", "", B000)
-        CH04 (__METHOD__, 0x00, 0x05, Z058, 0x056F, 0x00, 0x00)    /* AE_NOT_FOUND */
+        CH04 (__METHOD__, 0x00, 0x05, Z058, __LINE__, 0x00, 0x00)    /* AE_NOT_FOUND */
         DataTableRegion (DR03, I000, "", "")
-        CH04 (__METHOD__, 0x00, 0x05, Z058, 0x0572, 0x00, 0x00)    /* AE_NOT_FOUND */
+        CH04 (__METHOD__, 0x00, 0x05, Z058, __LINE__, 0x00, 0x00)    /* AE_NOT_FOUND */
         DataTableRegion (DR04, "SSDT", I000, "")
-        CH04 (__METHOD__, 0x00, 0x05, Z058, 0x0575, 0x00, 0x00)    /* AE_NOT_FOUND */
+        CH04 (__METHOD__, 0x00, 0x05, Z058, __LINE__, 0x00, 0x00)    /* AE_NOT_FOUND */
         DataTableRegion (DR05, "SSDT", "", I000)
-        CH04 (__METHOD__, 0x00, 0x05, Z058, 0x0578, 0x00, 0x00)    /* AE_NOT_FOUND */
+        CH04 (__METHOD__, 0x00, 0x05, Z058, __LINE__, 0x00, 0x00)    /* AE_NOT_FOUND */
         /* These are now caught by the compiler - Aug 2015 */
     /* */
     /*	DataTableRegion (DR06, p000, "", i000) */
@@ -1353,7 +1353,7 @@
         /* Invoke Write Quick transaction */
 
         FLD0 = BUFF /* \M7F6.BUFF */
-        CH04 (__METHOD__, 0x00, 0x36, Z058, 0x059A, 0x00, 0x00)   /* AE_AML_BUFFER_LIMIT */
+        CH04 (__METHOD__, 0x00, 0x36, Z058, __LINE__, 0x00, 0x00)   /* AE_AML_BUFFER_LIMIT */
     }
 
     /* Name space issues */
@@ -1394,7 +1394,7 @@
 
             CH03 (__METHOD__, Z058, 0xD0, 0x05C2, 0x00)
             M004 ()
-            CH04 (__METHOD__, 0x00, 0x05, Z058, 0x05C4, 0x00, 0x00) /* AE_NOT_FOUND */
+            CH04 (__METHOD__, 0x00, 0x05, Z058, __LINE__, 0x00, 0x00) /* AE_NOT_FOUND */
         }
 
         Method (M003, 0, NotSerialized)
@@ -1403,7 +1403,7 @@
 
             CH03 (__METHOD__, Z058, 0xD0, 0x05CA, 0x00)
             M003 ()
-            CH04 (__METHOD__, 0x00, 0x54, Z058, 0x05CC, 0x00, 0x00) /* AE_AML_METHOD_LIMIT */
+            CH04 (__METHOD__, 0x00, 0x54, Z058, __LINE__, 0x00, 0x00) /* AE_AML_METHOD_LIMIT */
             Method (M003, 0, NotSerialized)
             {
                 Return (0xABCD0002)

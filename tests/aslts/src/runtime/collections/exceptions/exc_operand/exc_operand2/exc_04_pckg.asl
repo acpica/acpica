@@ -1827,13 +1827,13 @@
                 CH03 (__METHOD__, Z096, 0x0123, 0x0904, 0x00)
                 CH03 (__METHOD__, Z096, 0x0127, 0x0905, 0x00)
                 Local1 = M000 () [0x00]
-                CH04 (__METHOD__, 0x00, 0x55, Z094, 0x0907, 0x00, 0x00) /* AE_INDEX_TO_NOT_ATTACHED */
+                CH04 (__METHOD__, 0x00, 0x55, Z094, __LINE__, 0x00, 0x00) /* AE_INDEX_TO_NOT_ATTACHED */
                 CH03 (__METHOD__, Z096, 0x0129, 0x0909, 0x00)
                 Index ("0", M000 (), Local1)
-                CH04 (__METHOD__, 0x00, 0xFF, Z094, 0x090B, 0x00, 0x00) /* AE_INDEX_TO_NOT_ATTACHED */
+                CH04 (__METHOD__, 0x00, 0xFF, Z094, __LINE__, 0x00, 0x00) /* AE_INDEX_TO_NOT_ATTACHED */
                 CH03 (__METHOD__, Z096, 0x0129, 0x090D, 0x00)
                 Local1 = SS00 [M000 ()]
-                CH04 (__METHOD__, 0x00, 0x2F, Z094, 0x090F, 0x00, 0x00) /* AE_INDEX_TO_NOT_ATTACHED */
+                CH04 (__METHOD__, 0x00, 0x2F, Z094, __LINE__, 0x00, 0x00) /* AE_INDEX_TO_NOT_ATTACHED */
             }
 
             /* LEqual */
@@ -2126,7 +2126,7 @@
             }
             Else
             {
-                CH04 (__METHOD__, 0x00, 0x55, Z094, 0x0A4E, 0x00, 0x00) /* AE_INDEX_TO_NOT_ATTACHED */
+                CH04 (__METHOD__, 0x00, 0x55, Z094, __LINE__, 0x00, 0x00) /* AE_INDEX_TO_NOT_ATTACHED */
             }
 
             /* Wait */

@@ -529,7 +529,7 @@
                 }
 
                 Unload (DerefOf (Arg2))
-                CH04 (Arg0, 0x00, 0x2F, Z175, 0x01B4, 0x00, 0x00) /* AE_AML_OPERAND_TYPE */
+                CH04 (Arg0, 0x00, 0x2F, Z175, __LINE__, 0x00, 0x00) /* AE_AML_OPERAND_TYPE */
                 Return (0x00)
             }
 
@@ -560,11 +560,11 @@
                 Unload (Local1)
                 If (SLCK)
                 {
-                    CH04 (Arg0, 0x00, 0x2F, Z175, 0x01CD, 0x00, 0x00) /* AE_AML_OPERAND_TYPE */
+                    CH04 (Arg0, 0x00, 0x2F, Z175, __LINE__, 0x00, 0x00) /* AE_AML_OPERAND_TYPE */
                 }
                 Else
                 {
-                    CH04 (Arg0, 0x00, 0x31, Z175, 0x01CF, 0x00, 0x00) /* AE_AML_UNINITIALIZED_LOCAL */
+                    CH04 (Arg0, 0x00, 0x31, Z175, __LINE__, 0x00, 0x00) /* AE_AML_UNINITIALIZED_LOCAL */
                 }
             }
 
@@ -592,7 +592,7 @@
             Else
             {
                 Unload (\AUXD.PAC0)
-                CH04 (Arg0, 0x00, 0x2F, Z175, 0x01E7, 0x00, 0x00) /* AE_AML_OPERAND_TYPE */
+                CH04 (Arg0, 0x00, 0x2F, Z175, __LINE__, 0x00, 0x00) /* AE_AML_OPERAND_TYPE */
             }
 
             /* Field Unit */
@@ -608,7 +608,7 @@
             Else
             {
                 Unload (\AUXD.DEV0)
-                CH04 (Arg0, 0x00, 0x2F, Z175, 0x01F3, 0x00, 0x00) /* AE_AML_OPERAND_TYPE */
+                CH04 (Arg0, 0x00, 0x2F, Z175, __LINE__, 0x00, 0x00) /* AE_AML_OPERAND_TYPE */
             }
 
             /* Event */
@@ -639,7 +639,7 @@
             Else
             {
                 Unload (\AUXD.TZN0)
-                CH04 (Arg0, 0x00, 0x2F, Z175, 0x020E, 0x00, 0x00) /* AE_AML_OPERAND_TYPE */
+                CH04 (Arg0, 0x00, 0x2F, Z175, __LINE__, 0x00, 0x00) /* AE_AML_OPERAND_TYPE */
             }
 
             /* Buffer Field */
@@ -680,7 +680,7 @@
                 /* Any next */
 
                 Unload (DDB0)
-                CH04 (Arg0, 0x00, 0x1C, Z175, 0x0238, 0x05, Local0) /* AE_BAD_PARAMETER */
+                CH04 (Arg0, 0x00, 0x1C, Z175, __LINE__, 0x05, Local0) /* AE_BAD_PARAMETER */
                 Local0--
             }
 
@@ -699,7 +699,7 @@
                 /* Any next */
 
                 Unload (DDB0)
-                CH04 (Arg0, 0x00, 0x1C, Z175, 0x024B, 0x05, Local0) /* AE_BAD_PARAMETER */
+                CH04 (Arg0, 0x00, 0x1C, Z175, __LINE__, 0x05, Local0) /* AE_BAD_PARAMETER */
                 Local0--
             }
 
@@ -740,22 +740,22 @@
             /* Device */
 
             Unload (DerefOf (RefOf (\AUXD.DEV0)))
-            CH04 (Arg0, 0x00, 0x3E, Z175, 0x026D, 0x00, 0x00) /* AE_AML_NO_RETURN_VALUE */
+            CH04 (Arg0, 0x00, 0x3E, Z175, __LINE__, 0x00, 0x00) /* AE_AML_NO_RETURN_VALUE */
             /* Thermal Zone */
 
             Unload (DerefOf (RefOf (\AUXD.TZN0)))
-            CH04 (Arg0, 0x00, 0x3E, Z175, 0x0271, 0x00, 0x00) /* AE_AML_NO_RETURN_VALUE */
+            CH04 (Arg0, 0x00, 0x3E, Z175, __LINE__, 0x00, 0x00) /* AE_AML_NO_RETURN_VALUE */
             /* Method execution */
 
             CopyObject (M000 (), M001) /* \DTM1.TST5.M001 */
             Unload (M001 ())
             If (SLCK)
             {
-                CH04 (Arg0, 0x00, 0x2F, Z175, 0x0278, 0x00, 0x00) /* AE_AML_OPERAND_TYPE */
+                CH04 (Arg0, 0x00, 0x2F, Z175, __LINE__, 0x00, 0x00) /* AE_AML_OPERAND_TYPE */
             }
             Else
             {
-                CH04 (Arg0, 0x00, 0x2F, Z175, 0x027A, 0x00, 0x00) /* AE_AML_OPERAND_TYPE */
+                CH04 (Arg0, 0x00, 0x2F, Z175, __LINE__, 0x00, 0x00) /* AE_AML_OPERAND_TYPE */
             }
 
             Unload (DDB0)

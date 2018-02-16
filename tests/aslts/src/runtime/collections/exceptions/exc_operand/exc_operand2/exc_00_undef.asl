@@ -344,7 +344,7 @@
             /* DeRefOf(Index(Package, Ind)) */
 
             Local1 = DerefOf (P000 [0x00])
-            CH04 (__METHOD__, 0x01, 0x33, Z092, 0x01A2, 0x00, 0x00)
+            CH04 (__METHOD__, 0x01, 0x33, Z092, __LINE__, 0x00, 0x00)
             /* CondRefOf */
 
             CondRefOf (DerefOf (P000 [0x00]), Local1)
@@ -952,7 +952,7 @@
             }
 
             Local1 = DerefOf (Arg1)
-            CH04 (__METHOD__, 0x00, 0x3E, Z092, 0x04F9, 0x00, 0x00)
+            CH04 (__METHOD__, 0x00, 0x3E, Z092, __LINE__, 0x00, 0x00)
             /* CondRefOf */
 
             CondRefOf (DerefOf (Arg1), Local1)

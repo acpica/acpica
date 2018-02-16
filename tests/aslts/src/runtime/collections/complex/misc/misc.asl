@@ -1175,7 +1175,7 @@ Zero)
             ERR (Arg0, Z054, __LINE__, 0x00, 0x00, Local0, 0x00)
         }
 
-        CH04 ("mf86", 0x00, 0xFF, Z054, 0x040F, 0x00, 0x00)
+        CH04 ("mf86", 0x00, 0xFF, Z054, __LINE__, 0x00, 0x00)
     }
 
     Method (MF87, 1, NotSerialized)
@@ -1238,7 +1238,7 @@ Zero)
             }
             Else
             {
-                CH04 (__METHOD__, 0x00, 0x2F, Z054, 0x0449, 0x00, 0x00) /* AE_AML_OPERAND_TYPE */
+                CH04 (__METHOD__, 0x00, 0x2F, Z054, __LINE__, 0x00, 0x00) /* AE_AML_OPERAND_TYPE */
             }
         }
 
@@ -1257,7 +1257,7 @@ Zero)
             }
             Else
             {
-                CH04 (__METHOD__, 0x00, 0x2F, Z054, 0x0458, 0x00, 0x00) /* AE_AML_OPERAND_TYPE */
+                CH04 (__METHOD__, 0x00, 0x2F, Z054, __LINE__, 0x00, 0x00) /* AE_AML_OPERAND_TYPE */
             }
         }
 
@@ -1340,14 +1340,14 @@ Zero)
         {
             CH03 (__METHOD__, Z054, 0x18, 0x04A8, 0x00)
             Local0 = (DerefOf (RefOf (MM00)) + 0x02)
-            CH04 (__METHOD__, 0x00, 0x2F, Z054, 0x04AA, 0x00, 0x00) /* AE_AML_OPERAND_TYPE */
+            CH04 (__METHOD__, 0x00, 0x2F, Z054, __LINE__, 0x00, 0x00) /* AE_AML_OPERAND_TYPE */
         }
 
         Method (M00A, 0, NotSerialized)
         {
             CH03 (__METHOD__, Z054, 0x1A, 0x04AF, 0x00)
             Local0 = (DerefOf (P000 [0x01]) + 0x03)
-            CH04 (__METHOD__, 0x00, 0x2F, Z054, 0x04B1, 0x00, 0x00) /* AE_AML_OPERAND_TYPE */
+            CH04 (__METHOD__, 0x00, 0x2F, Z054, __LINE__, 0x00, 0x00) /* AE_AML_OPERAND_TYPE */
         }
 
         Method (M00B, 0, NotSerialized)

@@ -46,11 +46,11 @@
              * Release(MX08) above doesn't cause exception
              * but, seems, it should.
              */
-            CH04 ("", 0x00, 0x40, 0x00, 0x35, 0x00, 0x00) /* AE_AML_MUTEX_ORDER */
+            CH04 (__METHOD__, 0x00, 0x40, 0x00, __LINE__, 0x00, 0x00) /* AE_AML_MUTEX_ORDER */
             /* Also this */
 
             Release (MX07)
-            CH04 ("", 0x00, 0x40, 0x00, 0x39, 0x00, 0x00) /* AE_AML_MUTEX_ORDER */
+            CH04 (__METHOD__, 0x00, 0x40, 0x00, __LINE__, 0x00, 0x00) /* AE_AML_MUTEX_ORDER */
             /*
              * Now, the Release(MX09) below causes exception,
              * so we have no way to release MX09.

@@ -54,11 +54,11 @@
              * - and on Store-to-debug stage
              * Check opcode of the last exception.
              */
-            CH04 ("", 0x02, 0x44, 0x00, 0x35, 0x00, 0x00) /* AE_AML_REGISTER_LIMIT */
+            CH04 (__METHOD__, 0x02, 0x44, 0x00, __LINE__, 0x00, 0x00) /* AE_AML_REGISTER_LIMIT */
         }
         Else
         {
-            CH04 ("", 0x00, 0x44, 0x00, 0x37, 0x00, 0x00) /* AE_AML_REGISTER_LIMIT */
+            CH04 (__METHOD__, 0x00, 0x44, 0x00, __LINE__, 0x00, 0x00) /* AE_AML_REGISTER_LIMIT */
         }
     }
 
@@ -78,7 +78,7 @@
 
         CH03 ("", 0x00, 0x02, 0x43, 0x00)
         Local0 = BKF0 /* \MF0B.BKF0 */
-        CH04 ("", 0x00, 0x44, 0x00, 0x45, 0x00, 0x00) /* AE_AML_REGISTER_LIMIT */
+        CH04 (__METHOD__, 0x00, 0x44, 0x00, __LINE__, 0x00, 0x00) /* AE_AML_REGISTER_LIMIT */
     }
 
     Method (MF0C, 0, Serialized)

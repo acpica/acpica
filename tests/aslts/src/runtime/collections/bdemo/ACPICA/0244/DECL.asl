@@ -287,9 +287,9 @@
             }
 
             Release (T804)
-            CH04 ("", 0x00, 0x41, 0x00, 0x0151, 0x00, 0x00) /* AE_AML_MUTEX_NOT_ACQUIRED */
+            CH04 (__METHOD__, 0x00, 0x41, 0x00, __LINE__, 0x00, 0x00) /* AE_AML_MUTEX_NOT_ACQUIRED */
             Release (T805)
-            CH04 ("", 0x00, 0x41, 0x00, 0x0154, 0x00, 0x00) /* AE_AML_MUTEX_NOT_ACQUIRED */
+            CH04 (__METHOD__, 0x00, 0x41, 0x00, __LINE__, 0x00, 0x00) /* AE_AML_MUTEX_NOT_ACQUIRED */
             /* Release T807 */
 
             If (!I107)

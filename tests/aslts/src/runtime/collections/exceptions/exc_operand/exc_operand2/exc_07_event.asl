@@ -367,7 +367,7 @@
             Local1 = DerefOf (Arg1)
             If (!SLCK)
             {
-                CH04 (__METHOD__, 0x00, 0x2F, Z099, 0x01C1, 0x00, 0x00)
+                CH04 (__METHOD__, 0x00, 0x2F, Z099, __LINE__, 0x00, 0x00)
             }
 
             /* CondRefOf */
@@ -986,7 +986,7 @@
                 Local1 = DerefOf (M000 (0x01, LPC0))
                 If (!SLCK)
                 {
-                    CH04 (__METHOD__, 0x00, 0x2F, Z099, 0x04B5, 0x00, 0x00)
+                    CH04 (__METHOD__, 0x00, 0x2F, Z099, __LINE__, 0x00, 0x00)
                 }
 
                 CH00 (Arg0, 0x01)

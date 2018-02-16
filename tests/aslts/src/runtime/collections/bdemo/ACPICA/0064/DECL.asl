@@ -51,11 +51,11 @@
         CH03 ("", 0x00, 0x06, 0x34, 0x00)
         Local1 = ""
         ToInteger (Local1, Local0)
-        CH04 ("", 0x00, 0x24, 0x00, 0x37, 0x00, 0x00) /* AE_BAD_DECIMAL_CONSTANT */
+        CH04 (__METHOD__, 0x00, 0x24, 0x00, __LINE__, 0x00, 0x00) /* AE_BAD_DECIMAL_CONSTANT */
         CH03 ("", 0x00, 0x08, 0x39, 0x00)
         Local1 = "                 "
         ToInteger (Local1, Local0)
-        CH04 ("", 0x00, 0x24, 0x00, 0x3C, 0x00, 0x00) /* AE_BAD_DECIMAL_CONSTANT */
+        CH04 (__METHOD__, 0x00, 0x24, 0x00, __LINE__, 0x00, 0x00) /* AE_BAD_DECIMAL_CONSTANT */
         CH03 ("", 0x00, 0x0A, 0x3E, 0x00)
         Local0 = ("q" + 0xABCD0002)
         If ((Local0 != 0xABCD0002))
@@ -75,9 +75,9 @@
         CH03 ("", 0x00, 0x10, 0x4C, 0x00)
         Local1 = "q"
         ToInteger (Local1, Local0)
-        CH04 ("", 0x00, 0x24, 0x00, 0x4F, 0x00, 0x00) /* AE_BAD_DECIMAL_CONSTANT */
+        CH04 (__METHOD__, 0x00, 0x24, 0x00, __LINE__, 0x00, 0x00) /* AE_BAD_DECIMAL_CONSTANT */
         CH03 ("", 0x00, 0x12, 0x51, 0x00)
         Local1 = "q                 "
         ToInteger (Local1, Local0)
-        CH04 ("", 0x00, 0x24, 0x00, 0x54, 0x00, 0x00) /* AE_BAD_DECIMAL_CONSTANT */
+        CH04 (__METHOD__, 0x00, 0x24, 0x00, __LINE__, 0x00, 0x00) /* AE_BAD_DECIMAL_CONSTANT */
     }

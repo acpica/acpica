@@ -62,7 +62,7 @@
                 EXC0 = 0x01
             }
 
-            CH04 ("", 0x00, 0x3E, 0x00, 0x41, 0x00, 0x00) /* AE_AML_NO_RETURN_VALUE */
+            CH04 (__METHOD__, 0x00, 0x3E, 0x00, __LINE__, 0x00, 0x00) /* AE_AML_NO_RETURN_VALUE */
         }
 
         M000 (0x0100)

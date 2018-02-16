@@ -323,7 +323,7 @@
 
             If (Arg0)
             {
-                CH04 ("", 0x00, 0x54, 0x00, 0x0119, 0x00, 0x00) /* AE_AML_METHOD_LIMIT */
+                CH04 (__METHOD__, 0x00, 0x54, 0x00, __LINE__, 0x00, 0x00) /* AE_AML_METHOD_LIMIT */
             }
             Else
             {

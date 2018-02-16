@@ -597,7 +597,7 @@
 
         If (Arg0)
         {
-            CH04 (__METHOD__, 0x01, 0x12, Z150, 0x01C2, 0x00, 0x00) /* AE_LIMIT */
+            CH04 (__METHOD__, 0x01, 0x12, Z150, __LINE__, 0x00, 0x00) /* AE_LIMIT */
         }
         Else
         {
@@ -1046,7 +1046,7 @@
 
             }
 
-            CH04 (__METHOD__, 0x00, 0x40, Z150, 0x031E, 0x00, 0x00) /* AE_AML_MUTEX_ORDER */
+            CH04 (__METHOD__, 0x00, 0x40, Z150, __LINE__, 0x00, 0x00) /* AE_AML_MUTEX_ORDER */
             M388 (Arg0, 0x00, 0x00) /* Release */
             CH03 (__METHOD__, Z150, 0x03, 0x0322, 0x00)
         }
@@ -1111,7 +1111,7 @@
             /* Attempt to Release free mutex */
 
             M388 (Arg0, 0x00, 0x00) /* Release */
-            CH04 (__METHOD__, 0x00, 0x41, Z150, 0x035F, 0x00, 0x00) /* AE_AML_MUTEX_NOT_ACQUIRED */
+            CH04 (__METHOD__, 0x00, 0x41, Z150, __LINE__, 0x00, 0x00) /* AE_AML_MUTEX_NOT_ACQUIRED */
             CH03 (__METHOD__, Z150, 0x03, 0x0361, 0x00)
             M36F (Arg0, 0x00, 0x00, 0x00) /* Acquire */
             M388 (Arg0, 0x00, 0x00) /* Release */
@@ -1136,7 +1136,7 @@
         /* Attempt to Release free mutex */
 
         M388 (GLLL, GLIX, 0x00) /* Release */
-        CH04 (__METHOD__, 0x00, 0x41, Z150, 0x0378, 0x00, 0x00) /* AE_AML_MUTEX_NOT_ACQUIRED */
+        CH04 (__METHOD__, 0x00, 0x41, Z150, __LINE__, 0x00, 0x00) /* AE_AML_MUTEX_NOT_ACQUIRED */
         CH03 (__METHOD__, Z150, 0x08, 0x037A, 0x00)
         M36F (GLLL, GLIX, 0x00, 0x00) /* Acquire */
         M388 (GLLL, GLIX, 0x00) /* Release */
@@ -1169,105 +1169,105 @@
 
         CH03 (__METHOD__, Z150, 0x00, 0x039B, 0x00)
         Release (T000)
-        CH04 (__METHOD__, 0x00, 0x41, Z150, 0x039D, 0x00, 0x00) /* AE_AML_MUTEX_NOT_ACQUIRED */
+        CH04 (__METHOD__, 0x00, 0x41, Z150, __LINE__, 0x00, 0x00) /* AE_AML_MUTEX_NOT_ACQUIRED */
         CH03 (__METHOD__, Z150, 0x02, 0x039F, 0x00)
         Release (\_GL)
-        CH04 (__METHOD__, 0x00, 0x41, Z150, 0x03A1, 0x00, 0x00)
+        CH04 (__METHOD__, 0x00, 0x41, Z150, __LINE__, 0x00, 0x00)
         CH03 (__METHOD__, Z150, 0x04, 0x03A3, 0x00)
         Release (T100)
-        CH04 (__METHOD__, 0x00, 0x41, Z150, 0x03A5, 0x00, 0x00)
+        CH04 (__METHOD__, 0x00, 0x41, Z150, __LINE__, 0x00, 0x00)
         CH03 (__METHOD__, Z150, 0x06, 0x03A7, 0x00)
         Release (T200)
-        CH04 (__METHOD__, 0x00, 0x41, Z150, 0x03A9, 0x00, 0x00)
+        CH04 (__METHOD__, 0x00, 0x41, Z150, __LINE__, 0x00, 0x00)
         CH03 (__METHOD__, Z150, 0x08, 0x03AB, 0x00)
         Release (T300)
-        CH04 (__METHOD__, 0x00, 0x41, Z150, 0x03AD, 0x00, 0x00)
+        CH04 (__METHOD__, 0x00, 0x41, Z150, __LINE__, 0x00, 0x00)
         CH03 (__METHOD__, Z150, 0x0A, 0x03AF, 0x00)
         Release (T400)
-        CH04 (__METHOD__, 0x00, 0x41, Z150, 0x03B1, 0x00, 0x00)
+        CH04 (__METHOD__, 0x00, 0x41, Z150, __LINE__, 0x00, 0x00)
         CH03 (__METHOD__, Z150, 0x0C, 0x03B3, 0x00)
         Release (T500)
-        CH04 (__METHOD__, 0x00, 0x41, Z150, 0x03B5, 0x00, 0x00)
+        CH04 (__METHOD__, 0x00, 0x41, Z150, __LINE__, 0x00, 0x00)
         CH03 (__METHOD__, Z150, 0x0E, 0x03B7, 0x00)
         Release (T600)
-        CH04 (__METHOD__, 0x00, 0x41, Z150, 0x03B9, 0x00, 0x00)
+        CH04 (__METHOD__, 0x00, 0x41, Z150, __LINE__, 0x00, 0x00)
         CH03 (__METHOD__, Z150, 0x10, 0x03BB, 0x00)
         Release (T700)
-        CH04 (__METHOD__, 0x00, 0x41, Z150, 0x03BD, 0x00, 0x00)
+        CH04 (__METHOD__, 0x00, 0x41, Z150, __LINE__, 0x00, 0x00)
         CH03 (__METHOD__, Z150, 0x12, 0x03BF, 0x00)
         Release (T800)
-        CH04 (__METHOD__, 0x00, 0x41, Z150, 0x03C1, 0x00, 0x00)
+        CH04 (__METHOD__, 0x00, 0x41, Z150, __LINE__, 0x00, 0x00)
         CH03 (__METHOD__, Z150, 0x14, 0x03C3, 0x00)
         Release (T900)
-        CH04 (__METHOD__, 0x00, 0x41, Z150, 0x03C5, 0x00, 0x00)
+        CH04 (__METHOD__, 0x00, 0x41, Z150, __LINE__, 0x00, 0x00)
         CH03 (__METHOD__, Z150, 0x16, 0x03C7, 0x00)
         Release (TA00)
-        CH04 (__METHOD__, 0x00, 0x41, Z150, 0x03C9, 0x00, 0x00)
+        CH04 (__METHOD__, 0x00, 0x41, Z150, __LINE__, 0x00, 0x00)
         CH03 (__METHOD__, Z150, 0x18, 0x03CB, 0x00)
         Release (TB00)
-        CH04 (__METHOD__, 0x00, 0x41, Z150, 0x03CD, 0x00, 0x00)
+        CH04 (__METHOD__, 0x00, 0x41, Z150, __LINE__, 0x00, 0x00)
         CH03 (__METHOD__, Z150, 0x1A, 0x03CF, 0x00)
         Release (TC00)
-        CH04 (__METHOD__, 0x00, 0x41, Z150, 0x03D1, 0x00, 0x00)
+        CH04 (__METHOD__, 0x00, 0x41, Z150, __LINE__, 0x00, 0x00)
         CH03 (__METHOD__, Z150, 0x1C, 0x03D3, 0x00)
         Release (TD00)
-        CH04 (__METHOD__, 0x00, 0x41, Z150, 0x03D5, 0x00, 0x00)
+        CH04 (__METHOD__, 0x00, 0x41, Z150, __LINE__, 0x00, 0x00)
         CH03 (__METHOD__, Z150, 0x1E, 0x03D7, 0x00)
         Release (TE00)
-        CH04 (__METHOD__, 0x00, 0x41, Z150, 0x03D9, 0x00, 0x00)
+        CH04 (__METHOD__, 0x00, 0x41, Z150, __LINE__, 0x00, 0x00)
         CH03 (__METHOD__, Z150, 0x20, 0x03DB, 0x00)
         Release (TF00)
-        CH04 (__METHOD__, 0x00, 0x41, Z150, 0x03DD, 0x00, 0x00)
+        CH04 (__METHOD__, 0x00, 0x41, Z150, __LINE__, 0x00, 0x00)
         /* Second time */
 
         CH03 (__METHOD__, Z150, 0x22, 0x03E2, 0x00)
         Release (T000)
-        CH04 (__METHOD__, 0x00, 0x41, Z150, 0x03E4, 0x00, 0x00) /* AE_AML_MUTEX_NOT_ACQUIRED */
+        CH04 (__METHOD__, 0x00, 0x41, Z150, __LINE__, 0x00, 0x00) /* AE_AML_MUTEX_NOT_ACQUIRED */
         CH03 (__METHOD__, Z150, 0x24, 0x03E6, 0x00)
         Release (T100)
-        CH04 (__METHOD__, 0x00, 0x41, Z150, 0x03E8, 0x00, 0x00)
+        CH04 (__METHOD__, 0x00, 0x41, Z150, __LINE__, 0x00, 0x00)
         CH03 (__METHOD__, Z150, 0x26, 0x03EA, 0x00)
         Release (T200)
-        CH04 (__METHOD__, 0x00, 0x41, Z150, 0x03EC, 0x00, 0x00)
+        CH04 (__METHOD__, 0x00, 0x41, Z150, __LINE__, 0x00, 0x00)
         CH03 (__METHOD__, Z150, 0x28, 0x03EE, 0x00)
         Release (T300)
-        CH04 (__METHOD__, 0x00, 0x41, Z150, 0x03F0, 0x00, 0x00)
+        CH04 (__METHOD__, 0x00, 0x41, Z150, __LINE__, 0x00, 0x00)
         CH03 (__METHOD__, Z150, 0x2A, 0x03F2, 0x00)
         Release (T400)
-        CH04 (__METHOD__, 0x00, 0x41, Z150, 0x03F4, 0x00, 0x00)
+        CH04 (__METHOD__, 0x00, 0x41, Z150, __LINE__, 0x00, 0x00)
         CH03 (__METHOD__, Z150, 0x2C, 0x03F6, 0x00)
         Release (T500)
-        CH04 (__METHOD__, 0x00, 0x41, Z150, 0x03F8, 0x00, 0x00)
+        CH04 (__METHOD__, 0x00, 0x41, Z150, __LINE__, 0x00, 0x00)
         CH03 (__METHOD__, Z150, 0x2E, 0x03FA, 0x00)
         Release (T600)
-        CH04 (__METHOD__, 0x00, 0x41, Z150, 0x03FC, 0x00, 0x00)
+        CH04 (__METHOD__, 0x00, 0x41, Z150, __LINE__, 0x00, 0x00)
         CH03 (__METHOD__, Z150, 0x30, 0x03FE, 0x00)
         Release (T700)
-        CH04 (__METHOD__, 0x00, 0x41, Z150, 0x0400, 0x00, 0x00)
+        CH04 (__METHOD__, 0x00, 0x41, Z150, __LINE__, 0x00, 0x00)
         CH03 (__METHOD__, Z150, 0x32, 0x0402, 0x00)
         Release (T800)
-        CH04 (__METHOD__, 0x00, 0x41, Z150, 0x0404, 0x00, 0x00)
+        CH04 (__METHOD__, 0x00, 0x41, Z150, __LINE__, 0x00, 0x00)
         CH03 (__METHOD__, Z150, 0x34, 0x0406, 0x00)
         Release (T900)
-        CH04 (__METHOD__, 0x00, 0x41, Z150, 0x0408, 0x00, 0x00)
+        CH04 (__METHOD__, 0x00, 0x41, Z150, __LINE__, 0x00, 0x00)
         CH03 (__METHOD__, Z150, 0x36, 0x040A, 0x00)
         Release (TA00)
-        CH04 (__METHOD__, 0x00, 0x41, Z150, 0x040C, 0x00, 0x00)
+        CH04 (__METHOD__, 0x00, 0x41, Z150, __LINE__, 0x00, 0x00)
         CH03 (__METHOD__, Z150, 0x38, 0x040E, 0x00)
         Release (TB00)
-        CH04 (__METHOD__, 0x00, 0x41, Z150, 0x0410, 0x00, 0x00)
+        CH04 (__METHOD__, 0x00, 0x41, Z150, __LINE__, 0x00, 0x00)
         CH03 (__METHOD__, Z150, 0x3A, 0x0412, 0x00)
         Release (TC00)
-        CH04 (__METHOD__, 0x00, 0x41, Z150, 0x0414, 0x00, 0x00)
+        CH04 (__METHOD__, 0x00, 0x41, Z150, __LINE__, 0x00, 0x00)
         CH03 (__METHOD__, Z150, 0x3C, 0x0416, 0x00)
         Release (TD00)
-        CH04 (__METHOD__, 0x00, 0x41, Z150, 0x0418, 0x00, 0x00)
+        CH04 (__METHOD__, 0x00, 0x41, Z150, __LINE__, 0x00, 0x00)
         CH03 (__METHOD__, Z150, 0x3E, 0x041A, 0x00)
         Release (TE00)
-        CH04 (__METHOD__, 0x00, 0x41, Z150, 0x041C, 0x00, 0x00)
+        CH04 (__METHOD__, 0x00, 0x41, Z150, __LINE__, 0x00, 0x00)
         CH03 (__METHOD__, Z150, 0x40, 0x041E, 0x00)
         Release (TF00)
-        CH04 (__METHOD__, 0x00, 0x41, Z150, 0x0420, 0x00, 0x00)
+        CH04 (__METHOD__, 0x00, 0x41, Z150, __LINE__, 0x00, 0x00)
     }
 
     /*
@@ -1513,7 +1513,7 @@
         {
             CH03 (__METHOD__, Z150, 0x01, 0x0510, 0x00)
             M388 (LPC0, IX00, 0x00)
-            CH04 (__METHOD__, 0x00, 0x41, Z150, 0x0512, 0x00, 0x00) /* AE_AML_MUTEX_NOT_ACQUIRED */
+            CH04 (__METHOD__, 0x00, 0x41, Z150, __LINE__, 0x00, 0x00) /* AE_AML_MUTEX_NOT_ACQUIRED */
             LPN0--
             LPC0--
         }
@@ -1910,55 +1910,55 @@
             {
                 CH03 (__METHOD__, Z150, 0x00, 0x067B, 0x00)
                 Release (TF00)
-                CH04 (__METHOD__, 0x00, 0x41, Z150, 0x067D, 0x00, 0x00) /* AE_AML_MUTEX_NOT_ACQUIRED */
+                CH04 (__METHOD__, 0x00, 0x41, Z150, __LINE__, 0x00, 0x00) /* AE_AML_MUTEX_NOT_ACQUIRED */
                 CH03 (__METHOD__, Z150, 0x02, 0x067E, 0x00)
                 Release (TE00)
-                CH04 (__METHOD__, 0x00, 0x41, Z150, 0x0680, 0x00, 0x00) /* AE_AML_MUTEX_NOT_ACQUIRED */
+                CH04 (__METHOD__, 0x00, 0x41, Z150, __LINE__, 0x00, 0x00) /* AE_AML_MUTEX_NOT_ACQUIRED */
                 CH03 (__METHOD__, Z150, 0x04, 0x0681, 0x00)
                 Release (TD00)
-                CH04 (__METHOD__, 0x00, 0x41, Z150, 0x0683, 0x00, 0x00) /* AE_AML_MUTEX_NOT_ACQUIRED */
+                CH04 (__METHOD__, 0x00, 0x41, Z150, __LINE__, 0x00, 0x00) /* AE_AML_MUTEX_NOT_ACQUIRED */
                 CH03 (__METHOD__, Z150, 0x06, 0x0684, 0x00)
                 Release (TC00)
-                CH04 (__METHOD__, 0x00, 0x41, Z150, 0x0686, 0x00, 0x00) /* AE_AML_MUTEX_NOT_ACQUIRED */
+                CH04 (__METHOD__, 0x00, 0x41, Z150, __LINE__, 0x00, 0x00) /* AE_AML_MUTEX_NOT_ACQUIRED */
                 CH03 (__METHOD__, Z150, 0x08, 0x0687, 0x00)
                 Release (TB00)
-                CH04 (__METHOD__, 0x00, 0x41, Z150, 0x0689, 0x00, 0x00) /* AE_AML_MUTEX_NOT_ACQUIRED */
+                CH04 (__METHOD__, 0x00, 0x41, Z150, __LINE__, 0x00, 0x00) /* AE_AML_MUTEX_NOT_ACQUIRED */
                 CH03 (__METHOD__, Z150, 0x0A, 0x068A, 0x00)
                 Release (TA00)
-                CH04 (__METHOD__, 0x00, 0x41, Z150, 0x068C, 0x00, 0x00) /* AE_AML_MUTEX_NOT_ACQUIRED */
+                CH04 (__METHOD__, 0x00, 0x41, Z150, __LINE__, 0x00, 0x00) /* AE_AML_MUTEX_NOT_ACQUIRED */
                 CH03 (__METHOD__, Z150, 0x0C, 0x068D, 0x00)
                 Release (T900)
-                CH04 (__METHOD__, 0x00, 0x41, Z150, 0x068F, 0x00, 0x00) /* AE_AML_MUTEX_NOT_ACQUIRED */
+                CH04 (__METHOD__, 0x00, 0x41, Z150, __LINE__, 0x00, 0x00) /* AE_AML_MUTEX_NOT_ACQUIRED */
                 CH03 (__METHOD__, Z150, 0x0E, 0x0690, 0x00)
                 Release (T800)
-                CH04 (__METHOD__, 0x00, 0x41, Z150, 0x0692, 0x00, 0x00) /* AE_AML_MUTEX_NOT_ACQUIRED */
+                CH04 (__METHOD__, 0x00, 0x41, Z150, __LINE__, 0x00, 0x00) /* AE_AML_MUTEX_NOT_ACQUIRED */
                 CH03 (__METHOD__, Z150, 0x10, 0x0693, 0x00)
                 Release (T700)
-                CH04 (__METHOD__, 0x00, 0x41, Z150, 0x0695, 0x00, 0x00) /* AE_AML_MUTEX_NOT_ACQUIRED */
+                CH04 (__METHOD__, 0x00, 0x41, Z150, __LINE__, 0x00, 0x00) /* AE_AML_MUTEX_NOT_ACQUIRED */
                 CH03 (__METHOD__, Z150, 0x12, 0x0696, 0x00)
                 Release (T600)
-                CH04 (__METHOD__, 0x00, 0x41, Z150, 0x0698, 0x00, 0x00) /* AE_AML_MUTEX_NOT_ACQUIRED */
+                CH04 (__METHOD__, 0x00, 0x41, Z150, __LINE__, 0x00, 0x00) /* AE_AML_MUTEX_NOT_ACQUIRED */
                 CH03 (__METHOD__, Z150, 0x14, 0x0699, 0x00)
                 Release (T500)
-                CH04 (__METHOD__, 0x00, 0x41, Z150, 0x069B, 0x00, 0x00) /* AE_AML_MUTEX_NOT_ACQUIRED */
+                CH04 (__METHOD__, 0x00, 0x41, Z150, __LINE__, 0x00, 0x00) /* AE_AML_MUTEX_NOT_ACQUIRED */
                 CH03 (__METHOD__, Z150, 0x16, 0x069C, 0x00)
                 Release (T400)
-                CH04 (__METHOD__, 0x00, 0x41, Z150, 0x069E, 0x00, 0x00) /* AE_AML_MUTEX_NOT_ACQUIRED */
+                CH04 (__METHOD__, 0x00, 0x41, Z150, __LINE__, 0x00, 0x00) /* AE_AML_MUTEX_NOT_ACQUIRED */
                 CH03 (__METHOD__, Z150, 0x18, 0x069F, 0x00)
                 Release (T300)
-                CH04 (__METHOD__, 0x00, 0x41, Z150, 0x06A1, 0x00, 0x00) /* AE_AML_MUTEX_NOT_ACQUIRED */
+                CH04 (__METHOD__, 0x00, 0x41, Z150, __LINE__, 0x00, 0x00) /* AE_AML_MUTEX_NOT_ACQUIRED */
                 CH03 (__METHOD__, Z150, 0x1A, 0x06A2, 0x00)
                 Release (T200)
-                CH04 (__METHOD__, 0x00, 0x41, Z150, 0x06A4, 0x00, 0x00) /* AE_AML_MUTEX_NOT_ACQUIRED */
+                CH04 (__METHOD__, 0x00, 0x41, Z150, __LINE__, 0x00, 0x00) /* AE_AML_MUTEX_NOT_ACQUIRED */
                 CH03 (__METHOD__, Z150, 0x1C, 0x06A5, 0x00)
                 Release (T100)
-                CH04 (__METHOD__, 0x00, 0x41, Z150, 0x06A7, 0x00, 0x00) /* AE_AML_MUTEX_NOT_ACQUIRED */
+                CH04 (__METHOD__, 0x00, 0x41, Z150, __LINE__, 0x00, 0x00) /* AE_AML_MUTEX_NOT_ACQUIRED */
                 CH03 (__METHOD__, Z150, 0x1E, 0x06A8, 0x00)
                 Release (T000)
-                CH04 (__METHOD__, 0x00, 0x41, Z150, 0x06AA, 0x00, 0x00) /* AE_AML_MUTEX_NOT_ACQUIRED */
+                CH04 (__METHOD__, 0x00, 0x41, Z150, __LINE__, 0x00, 0x00) /* AE_AML_MUTEX_NOT_ACQUIRED */
                 CH03 (__METHOD__, Z150, 0x20, 0x06AB, 0x00)
                 Release (\_GL)
-                CH04 (__METHOD__, 0x00, 0x41, Z150, 0x06AD, 0x00, 0x00) /* AE_AML_MUTEX_NOT_ACQUIRED */
+                CH04 (__METHOD__, 0x00, 0x41, Z150, __LINE__, 0x00, 0x00) /* AE_AML_MUTEX_NOT_ACQUIRED */
             }
 
             MM00 ()
@@ -2027,7 +2027,7 @@
             M08A ()
         }
 
-        CH04 (__METHOD__, 0x01, 0x40, Z150, 0x01, 0x00, 0x00)
+        CH04 (__METHOD__, 0x01, 0x40, Z150, __LINE__, 0x00, 0x00)
     }
 
     /*

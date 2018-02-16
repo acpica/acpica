@@ -90,10 +90,10 @@
                 {
                     CH03 (TS, Z065, 0x00, 0x60, 0x00)
                     Local7 = (Local0 + 0x00)
-                    CH04 (Arg0, 0x00, 0x22, Z065, 0x62, 0x00, 0x00) /* AE_BAD_HEX_CONSTANT */
+                    CH04 (Arg0, 0x00, 0x22, Z065, __LINE__, 0x00, 0x00) /* AE_BAD_HEX_CONSTANT */
                     CH03 (TS, Z065, 0x02, 0x64, 0x00)
                     Local7 = (0x00 + Local0)
-                    CH04 (Arg0, 0x00, 0x22, Z065, 0x66, 0x00, 0x00) /* AE_BAD_HEX_CONSTANT */
+                    CH04 (Arg0, 0x00, 0x22, Z065, __LINE__, 0x00, 0x00) /* AE_BAD_HEX_CONSTANT */
                 }
             }
 
@@ -153,36 +153,36 @@
         {
             CH03 (TS, Z065, 0x08, 0xA1, 0x00)
             Local7 = ("fedcba98765432101" + 0x00)
-            CH04 (TS, 0x00, 0x22, Z065, 0xA3, 0x00, 0x00)   /* AE_BAD_HEX_CONSTANT */
+            CH04 (__METHOD__, 0x00, 0x22, Z065, __LINE__, 0x00, 0x00)   /* AE_BAD_HEX_CONSTANT */
             CH03 (TS, Z065, 0x0A, 0xA5, 0x00)
             Local7 = (0x00 + "fedcba98765432101")
-            CH04 (TS, 0x00, 0x22, Z065, 0xA7, 0x00, 0x00)   /* AE_BAD_HEX_CONSTANT */
+            CH04 (__METHOD__, 0x00, 0x22, Z065, __LINE__, 0x00, 0x00)   /* AE_BAD_HEX_CONSTANT */
             CH03 (TS, Z065, 0x0C, 0xA9, 0x00)
             Local7 = ("1234q" + 0x00)
-            CH04 (TS, 0x00, 0x22, Z065, 0xAB, 0x00, 0x00)   /* AE_BAD_HEX_CONSTANT */
+            CH04 (__METHOD__, 0x00, 0x22, Z065, __LINE__, 0x00, 0x00)   /* AE_BAD_HEX_CONSTANT */
             CH03 (TS, Z065, 0x0E, 0xAD, 0x00)
             Local7 = (0x00 + "1234q")
-            CH04 (TS, 0x00, 0x22, Z065, 0xAF, 0x00, 0x00)   /* AE_BAD_HEX_CONSTANT */
+            CH04 (__METHOD__, 0x00, 0x22, Z065, __LINE__, 0x00, 0x00)   /* AE_BAD_HEX_CONSTANT */
             If (0x00)
             {
                 CH03 (TS, Z065, 0x10, 0xB4, 0x00)
                 Local7 = ("0xfedcba98765432" + 0x00)
-                CH04 (TS, 0x00, 0x22, Z065, 0xB6, 0x00, 0x00)   /* AE_BAD_HEX_CONSTANT */
+                CH04 (__METHOD__, 0x00, 0x22, Z065, __LINE__, 0x00, 0x00)   /* AE_BAD_HEX_CONSTANT */
                 CH03 (TS, Z065, 0x12, 0xB8, 0x00)
                 Local7 = (0x00 + "0xfedcba98765432")
-                CH04 (TS, 0x00, 0x22, Z065, 0xBA, 0x00, 0x00)   /* AE_BAD_HEX_CONSTANT */
+                CH04 (__METHOD__, 0x00, 0x22, Z065, __LINE__, 0x00, 0x00)   /* AE_BAD_HEX_CONSTANT */
                 CH03 (TS, Z065, 0x14, 0xBC, 0x00)
                 Local7 = ("" + 0x00)
-                CH04 (TS, 0x00, 0x22, Z065, 0xBE, 0x00, 0x00)   /* AE_BAD_HEX_CONSTANT */
+                CH04 (__METHOD__, 0x00, 0x22, Z065, __LINE__, 0x00, 0x00)   /* AE_BAD_HEX_CONSTANT */
                 CH03 (TS, Z065, 0x16, 0xC0, 0x00)
                 Local7 = (0x00 + "")
-                CH04 (TS, 0x00, 0x22, Z065, 0xC2, 0x00, 0x00)   /* AE_BAD_HEX_CONSTANT */
+                CH04 (__METHOD__, 0x00, 0x22, Z065, __LINE__, 0x00, 0x00)   /* AE_BAD_HEX_CONSTANT */
                 CH03 (TS, Z065, 0x18, 0xC4, 0x00)
                 Local7 = (" " + 0x00)
-                CH04 (TS, 0x00, 0x22, Z065, 0xC6, 0x00, 0x00)   /* AE_BAD_HEX_CONSTANT */
+                CH04 (__METHOD__, 0x00, 0x22, Z065, __LINE__, 0x00, 0x00)   /* AE_BAD_HEX_CONSTANT */
                 CH03 (TS, Z065, 0x1A, 0xC8, 0x00)
                 Local7 = (0x00 + " ")
-                CH04 (TS, 0x00, 0x22, Z065, 0xCA, 0x00, 0x00)   /* AE_BAD_HEX_CONSTANT */
+                CH04 (__METHOD__, 0x00, 0x22, Z065, __LINE__, 0x00, 0x00)   /* AE_BAD_HEX_CONSTANT */
             }
 
             M4A2 (TS)

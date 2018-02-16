@@ -75,7 +75,7 @@
              * If no exception there:
              * ERROR: NO exception though expected! (it is the contents of bug 238)
              */
-            CH04 ("", 0x00, 0x40, 0x00, 0x49, 0x00, 0x00) /* AE_AML_MUTEX_ORDER */
+            CH04 (__METHOD__, 0x00, 0x40, 0x00, __LINE__, 0x00, 0x00) /* AE_AML_MUTEX_ORDER */
             /* (4) */
 
             Debug = "Acquiring mutex of level 7:"

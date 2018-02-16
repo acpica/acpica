@@ -10110,11 +10110,11 @@
             {
                 CH03 (Arg0, Z117, 0x00, 0x2EED, 0x00)
                 Store (M601 (0x02, 0x06) [Local1], Local5)
-                CH04 (Arg0, 0x00, 0x55, Z117, 0x2EF0, 0x00, 0x00) /* AE_INDEX_TO_NOT_ATTACHED */
+                CH04 (Arg0, 0x00, 0x55, Z117, __LINE__, 0x00, 0x00) /* AE_INDEX_TO_NOT_ATTACHED */
                 Store (M601 (0x03, 0x06) [Local1], Local5)
-                CH04 (Arg0, 0x00, 0x55, Z117, 0x2EF3, 0x00, 0x00) /* AE_INDEX_TO_NOT_ATTACHED */
+                CH04 (Arg0, 0x00, 0x55, Z117, __LINE__, 0x00, 0x00) /* AE_INDEX_TO_NOT_ATTACHED */
                 Store (M601 (0x04, 0x00) [Local1], Local5)
-                CH04 (Arg0, 0x00, 0x55, Z117, 0x2EF6, 0x00, 0x00) /* AE_INDEX_TO_NOT_ATTACHED */
+                CH04 (Arg0, 0x00, 0x55, Z117, __LINE__, 0x00, 0x00) /* AE_INDEX_TO_NOT_ATTACHED */
             }
 
             /* Method returns Reference */
@@ -10166,11 +10166,11 @@
             {
                 CH03 (Arg0, Z117, 0x00, 0x2F31, 0x00)
                 Local0 = M601 (0x02, 0x06) [Local1]
-                CH04 (Arg0, 0x00, 0x55, Z117, 0x2F34, 0x00, 0x00) /* AE_INDEX_TO_NOT_ATTACHED */
+                CH04 (Arg0, 0x00, 0x55, Z117, __LINE__, 0x00, 0x00) /* AE_INDEX_TO_NOT_ATTACHED */
                 Local0 = M601 (0x03, 0x06) [Local1]
-                CH04 (Arg0, 0x00, 0x55, Z117, 0x2F37, 0x00, 0x00) /* AE_INDEX_TO_NOT_ATTACHED */
+                CH04 (Arg0, 0x00, 0x55, Z117, __LINE__, 0x00, 0x00) /* AE_INDEX_TO_NOT_ATTACHED */
                 Local0 = M601 (0x04, 0x00) [Local1]
-                CH04 (Arg0, 0x00, 0x55, Z117, 0x2F3A, 0x00, 0x00) /* AE_INDEX_TO_NOT_ATTACHED */
+                CH04 (Arg0, 0x00, 0x55, Z117, __LINE__, 0x00, 0x00) /* AE_INDEX_TO_NOT_ATTACHED */
             }
 
             /* Method returns Reference */
