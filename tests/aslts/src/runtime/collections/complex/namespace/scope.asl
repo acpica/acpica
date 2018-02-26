@@ -39,9 +39,9 @@
             }
         }
 
-        CH03 (__METHOD__, Z178, 0x44, 0x2C, 0x00)
+        CH03 (__METHOD__, Z178, __LINE__, 0x00, 0x00)
         M000 (0x00)
-        CH03 (__METHOD__, Z178, 0x45, 0x2E, 0x00)
+        CH03 (__METHOD__, Z178, __LINE__, 0x00, 0x00)
     }
 
     Method (SCP0, 0, NotSerialized)

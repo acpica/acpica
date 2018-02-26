@@ -35,7 +35,7 @@
      */
     Method (M1E4, 1, Serialized)
     {
-        CH03 ("", 0x00, 0x00, 0x28, 0x00)
+        CH03 (__METHOD__, 0x00, __LINE__, 0x00, 0x00)
         Mutex (MT00, 0x00)
         Mutex (MT10, 0x01)
         Mutex (MT20, 0x02)
@@ -504,7 +504,7 @@
         }
         Else
         {
-            CH03 ("", 0x00, 0x23, 0x0198, 0x00)
+            CH03 (__METHOD__, 0x00, __LINE__, 0x00, 0x00)
         }
     }
 
@@ -515,7 +515,7 @@
          *
          * Event(E000)
          */
-        CH03 ("", 0x00, 0x24, 0x01A4, 0x00)
+        CH03 (__METHOD__, 0x00, __LINE__, 0x00, 0x00)
         /*
          * This causes messages (but no exceptions):
          *
@@ -525,7 +525,7 @@
          * ACPI Error (exutils-0180): Could not acquire AML Interpreter mutex [20061215]
          */
         Sleep (0x64)
-        CH03 ("", 0x00, 0x25, 0x01B0, 0x00)
+        CH03 (__METHOD__, 0x00, __LINE__, 0x00, 0x00)
     }
 
     Method (M1E6, 0, NotSerialized)
@@ -536,7 +536,7 @@
         M1E4 (0x00)
         SRMT ("m1e5")
         M1E5 ()
-        CH03 ("", 0x00, 0x26, 0x01BB, 0x00)
+        CH03 (__METHOD__, 0x00, __LINE__, 0x00, 0x00)
         /*
          * m1e5 shows appearance of bug but doesn't cause exceptions
          * (so it is not detected automatically), so actions are required

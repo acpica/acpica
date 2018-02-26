@@ -327,15 +327,15 @@
             }
             Else
             {
-                CH03 ("", 0x00, 0x0A, 0x011B, 0x00)
+                CH03 (__METHOD__, 0x00, __LINE__, 0x00, 0x00)
             }
         }
 
-        CH03 ("", 0x00, 0x0B, 0x011F, 0x00)
+        CH03 (__METHOD__, 0x00, __LINE__, 0x00, 0x00)
         SRMT ("m18a-0")
         M18A (0x00)
-        CH03 ("", 0x00, 0x0C, 0x0122, 0x00)
+        CH03 (__METHOD__, 0x00, __LINE__, 0x00, 0x00)
         SRMT ("m18a-1")
         M18A (0x01)
-        CH03 ("", 0x00, 0x0D, 0x0125, 0x00)
+        CH03 (__METHOD__, 0x00, __LINE__, 0x00, 0x00)
     }

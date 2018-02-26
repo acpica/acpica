@@ -36,19 +36,19 @@
         If ((Arg0 == 0x00))
         {
             Debug = "String as a named object:"
-            CH03 ("", 0x00, 0x00, 0x2B, 0x00)
+            CH03 (__METHOD__, 0x00, __LINE__, 0x00, 0x00)
             Local0 = DerefOf (S000 [0x05])
             If ((Local0 != 0x75))
             {
                 ERR (__METHOD__, ZFFF, __LINE__, 0x00, 0x00, Local0, 0x75)
             }
 
-            CH03 ("", 0x00, 0x02, 0x30, 0x00)
+            CH03 (__METHOD__, 0x00, __LINE__, 0x00, 0x00)
         }
         ElseIf ((Arg0 == 0x01))
         {
             Debug = "The same String but substituted immediately:"
-            CH03 ("", 0x00, 0x03, 0x36, 0x00)
+            CH03 (__METHOD__, 0x00, __LINE__, 0x00, 0x00)
             Store (Index ("qwrtyuiop", 0x05), Local1)
             If (Y900)
             {
@@ -58,7 +58,7 @@
                     ERR (__METHOD__, ZFFF, __LINE__, 0x00, 0x00, Local0, 0x75)
                 }
 
-                CH03 ("", 0x00, 0x05, 0x3D, 0x00)
+                CH03 (__METHOD__, 0x00, __LINE__, 0x00, 0x00)
             }
             Else
             {
@@ -67,7 +67,7 @@
         }
         Else
         {
-            CH03 ("", 0x00, 0x07, 0x44, 0x00)
+            CH03 (__METHOD__, 0x00, __LINE__, 0x00, 0x00)
             Local0 = DerefOf (Index ("qwrtyuiop", 0x05))
             If (Y900)
             {
@@ -76,7 +76,7 @@
                     ERR (__METHOD__, ZFFF, __LINE__, 0x00, 0x00, Local0, 0x75)
                 }
 
-                CH03 ("", 0x00, 0x09, 0x4A, 0x00)
+                CH03 (__METHOD__, 0x00, __LINE__, 0x00, 0x00)
             }
             Else
             {

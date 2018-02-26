@@ -725,5 +725,5 @@
     {
         Debug = "TEST: NM02, Declare Function Control Method Named Object"
         M20E ()
-        CH03 ("NM02", Z134, 0x74, 0x0231, 0x00)
+        CH03 ("NM02", Z134, __LINE__, 0x00, 0x00)
     }

@@ -753,7 +753,7 @@ Package (NRSK)
         Else
         {
             DerefOf (Local5) = B000 /* \M70C.B000 */
-            CH03 (Arg0, Z141, 0x18, 0x024F, Local3)
+            CH03 (Arg0, Z141, __LINE__, 0x00, Local3)
             Local0 = ObjectType (DerefOf (Local6))
             Local1 = C00B /* \C00B */
             If ((Local0 != Local1))

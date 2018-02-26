@@ -46,19 +46,19 @@
         If ((Arg0 == 0x00))
         {
             Debug = "Package as a named object:"
-            CH03 ("", 0x00, 0x00, 0x2B, 0x00)
+            CH03 (__METHOD__, 0x00, __LINE__, 0x00, 0x00)
             Local0 = DerefOf (P000 [0x05])
             If ((Local0 != 0x06))
             {
                 ERR (__METHOD__, ZFFF, __LINE__, 0x00, 0x00, Local0, 0x06)
             }
 
-            CH03 ("", 0x00, 0x02, 0x30, 0x00)
+            CH03 (__METHOD__, 0x00, __LINE__, 0x00, 0x00)
         }
         ElseIf ((Arg0 == 0x01))
         {
             Debug = "The same Package but substituted immediately:"
-            CH03 ("", 0x00, 0x03, 0x35, 0x00)
+            CH03 (__METHOD__, 0x00, __LINE__, 0x00, 0x00)
             Store (Index (Package (0x08)
                     {
                         0x01,
@@ -78,7 +78,7 @@
                     ERR (__METHOD__, ZFFF, __LINE__, 0x00, 0x00, Local0, 0x06)
                 }
 
-                CH03 ("", 0x00, 0x05, 0x3C, 0x00)
+                CH03 (__METHOD__, 0x00, __LINE__, 0x00, 0x00)
             }
             Else
             {
@@ -87,7 +87,7 @@
         }
         Else
         {
-            CH03 ("", 0x00, 0x07, 0x42, 0x00)
+            CH03 (__METHOD__, 0x00, __LINE__, 0x00, 0x00)
             Local0 = DerefOf (Index (Package (0x08)
                         {
                             0x01,
@@ -106,7 +106,7 @@
                     ERR (__METHOD__, ZFFF, __LINE__, 0x00, 0x00, Local0, 0x06)
                 }
 
-                CH03 ("", 0x00, 0x09, 0x48, 0x00)
+                CH03 (__METHOD__, 0x00, __LINE__, 0x00, 0x00)
             }
             Else
             {

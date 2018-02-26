@@ -47,7 +47,7 @@
     {
         Name (REF0, 0x00)
         Name (I000, 0x1234)
-        CH03 ("", 0x00, 0x00, 0x35, 0x00)
+        CH03 (__METHOD__, 0x00, __LINE__, 0x00, 0x00)
         CopyObject (RefOf (I000), REF0) /* \MF18.REF0 */
         Debug = "Before printing ref0"
         Debug = REF0 /* \MF18.REF0 */
@@ -61,7 +61,7 @@
             ERR (__METHOD__, ZFFF, __LINE__, 0x00, 0x00, Local1, 0x1234)
         }
 
-        CH03 ("", 0x00, 0x02, 0x44, 0x00)
+        CH03 (__METHOD__, 0x00, __LINE__, 0x00, 0x00)
     }
 
     Method (MF9E, 0, Serialized)
@@ -86,7 +86,7 @@
             0x04
         })
         Name (REF0, 0x00)
-        CH03 ("", 0x00, 0x00, 0x54, 0x00)
+        CH03 (__METHOD__, 0x00, __LINE__, 0x00, 0x00)
         CopyObject (RefOf (I000), REF0) /* \MF9E.REF0 */
         MF88 (DerefOf (REF0), C009, II00, 0x01, 0x02, 0x01)
         CopyObject (RefOf (B000), REF0) /* \MF9E.REF0 */
@@ -95,7 +95,7 @@
         MF88 (DerefOf (REF0), C00A, SS00, 0x03, 0x04, 0x01)
         CopyObject (RefOf (P000), REF0) /* \MF9E.REF0 */
         MF88 (DerefOf (REF0), C00C, SS00, 0x05, 0x06, 0x00)
-        CH03 ("", 0x00, 0x07, 0x62, 0x00)
+        CH03 (__METHOD__, 0x00, __LINE__, 0x00, 0x00)
     }
 
     Method (MF9F, 0, Serialized)
@@ -124,33 +124,33 @@
 
         /* Checkings */
 
-        CH03 ("", 0x00, 0x26, 0x73, 0x00)
+        CH03 (__METHOD__, 0x00, __LINE__, 0x00, 0x00)
         CopyObject (RefOf (E000), REF0) /* \MF9F.REF0 */
         MF88 (DerefOf (REF0), C00F, 0x00, 0x27, 0x28, 0x00)
-        CH03 ("", 0x00, 0x29, 0x77, 0x00)
+        CH03 (__METHOD__, 0x00, __LINE__, 0x00, 0x00)
         CopyObject (RefOf (MX00), REF0) /* \MF9F.REF0 */
         MF88 (DerefOf (REF0), C011, 0x00, 0x2A, 0x2B, 0x00)
         If (Y511)
         {
-            CH03 ("", 0x00, 0x2C, 0x7C, 0x00)
+            CH03 (__METHOD__, 0x00, __LINE__, 0x00, 0x00)
             CopyObject (RefOf (D000), REF0) /* \MF9F.REF0 */
             MF88 (DerefOf (REF0), C00E, 0x00, 0x2D, 0x2E, 0x00)
         }
 
         If (Y508)
         {
-            CH03 ("", 0x00, 0x2F, 0x82, 0x00)
+            CH03 (__METHOD__, 0x00, __LINE__, 0x00, 0x00)
             CopyObject (RefOf (TZ00), REF0) /* \MF9F.REF0 */
             MF88 (DerefOf (REF0), C015, 0x00, 0x30, 0x31, 0x00)
         }
 
-        CH03 ("", 0x00, 0x32, 0x87, 0x00)
+        CH03 (__METHOD__, 0x00, __LINE__, 0x00, 0x00)
         CopyObject (RefOf (PR00), REF0) /* \MF9F.REF0 */
         MF88 (DerefOf (REF0), C014, 0x00, 0x33, 0x34, 0x00)
-        CH03 ("", 0x00, 0x35, 0x8B, 0x00)
+        CH03 (__METHOD__, 0x00, __LINE__, 0x00, 0x00)
         CopyObject (RefOf (R000), REF0) /* \MF9F.REF0 */
         MF88 (DerefOf (REF0), C012, 0x00, 0x36, 0x37, 0x00)
-        CH03 ("", 0x00, 0x38, 0x8F, 0x00)
+        CH03 (__METHOD__, 0x00, __LINE__, 0x00, 0x00)
         CopyObject (RefOf (PW00), REF0) /* \MF9F.REF0 */
         MF88 (DerefOf (REF0), C013, 0x00, 0x39, 0x3A, 0x00)
     }

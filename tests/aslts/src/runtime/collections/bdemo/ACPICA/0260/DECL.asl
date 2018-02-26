@@ -52,7 +52,7 @@
 
         Method (M000, 0, NotSerialized)
         {
-            CH03 ("", 0x00, 0x00, 0x3B, 0x00)
+            CH03 (__METHOD__, 0x00, __LINE__, 0x00, 0x00)
             RFU0 = BUF0 /* \M029.BUF0 */
             If (CondRefOf (\AUXD, Local0))
             {
@@ -84,7 +84,7 @@
                 ERR (__METHOD__, ZFFF, __LINE__, 0x00, 0x00, 0x00, 0x00)
             }
 
-            CH03 ("", 0x00, 0x05, 0x5D, 0x00)
+            CH03 (__METHOD__, 0x00, __LINE__, 0x00, 0x00)
             Return (Zero)
         }
 

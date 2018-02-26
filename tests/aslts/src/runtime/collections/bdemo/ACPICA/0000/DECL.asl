@@ -39,7 +39,7 @@
          * Check that exceptions initiated by some bdemo tests on the
          * global level are all actually handled and reset at this point.
          */
-        CH03 ("", 0x00, 0x0999, 0x2D, 0x00)
+        CH03 (__METHOD__, 0x00, __LINE__, 0x00, 0x00)
         Local0 = (0x01 && 0x01)
         If ((Local0 != ON00))
         {

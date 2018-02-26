@@ -49,7 +49,7 @@
             {
                 I000
             })
-            CH03 ("", 0x00, 0x00, 0x35, 0x00)
+            CH03 (__METHOD__, 0x00, __LINE__, 0x00, 0x00)
             DerefOf (P000 [0x00]) = 0xABCD0001
             /*
              Specify then what should be there the result of Store operation above?
@@ -58,7 +58,7 @@
              err("", zFFF, __LINE__, 0, 0, Local0, 0xabcd0000)
              }
              */
-            CH03 ("", 0x00, 0x01, 0x42, 0x00)
+            CH03 (__METHOD__, 0x00, __LINE__, 0x00, 0x00)
         }
 
         Method (M001, 0, Serialized)
@@ -68,9 +68,9 @@
             {
                 I000
             })
-            CH03 ("", 0x00, 0x02, 0x4A, 0x00)
+            CH03 (__METHOD__, 0x00, __LINE__, 0x00, 0x00)
             DerefOf (Local0 = P000 [0x00]) = 0xABCD0001
-            CH03 ("", 0x00, 0x03, 0x4C, 0x00)
+            CH03 (__METHOD__, 0x00, __LINE__, 0x00, 0x00)
         }
 
         Method (M002, 0, Serialized)
@@ -80,10 +80,10 @@
             {
                 I000
             })
-            CH03 ("", 0x00, 0x04, 0x54, 0x00)
+            CH03 (__METHOD__, 0x00, __LINE__, 0x00, 0x00)
             Local0 = P000 [0x00]
             DerefOf (Local0) = 0xABCD0001
-            CH03 ("", 0x00, 0x05, 0x57, 0x00)
+            CH03 (__METHOD__, 0x00, __LINE__, 0x00, 0x00)
         }
 
         Method (M003, 0, Serialized)
@@ -93,10 +93,10 @@
             {
                 I000
             })
-            CH03 ("", 0x00, 0x06, 0x5F, 0x00)
+            CH03 (__METHOD__, 0x00, __LINE__, 0x00, 0x00)
             Store (P000 [0x00], Local0)
             DerefOf (Local0) = 0xABCD0001
-            CH03 ("", 0x00, 0x07, 0x62, 0x00)
+            CH03 (__METHOD__, 0x00, __LINE__, 0x00, 0x00)
         }
 
         Method (M004, 0, Serialized)
@@ -106,10 +106,10 @@
             {
                 I000
             })
-            CH03 ("", 0x00, 0x08, 0x6A, 0x00)
+            CH03 (__METHOD__, 0x00, __LINE__, 0x00, 0x00)
             Local1 = Local0 = P000 [0x00]
             DerefOf (Local0) = 0xABCD0001
-            CH03 ("", 0x00, 0x09, 0x6D, 0x00)
+            CH03 (__METHOD__, 0x00, __LINE__, 0x00, 0x00)
         }
 
         Method (M005, 0, Serialized)
@@ -119,10 +119,10 @@
             {
                 I000
             })
-            CH03 ("", 0x00, 0x0A, 0x75, 0x00)
+            CH03 (__METHOD__, 0x00, __LINE__, 0x00, 0x00)
             Local1 = Local0 = P000 [0x00]
             DerefOf (Local1) = 0xABCD0001
-            CH03 ("", 0x00, 0x0B, 0x78, 0x00)
+            CH03 (__METHOD__, 0x00, __LINE__, 0x00, 0x00)
         }
 
         Method (M006, 0, NotSerialized)

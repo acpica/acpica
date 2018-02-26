@@ -44,16 +44,16 @@
 
     Method (MF7A, 0, NotSerialized)
     {
-        CH03 ("", 0x00, 0x00, 0x2E, 0x00)
+        CH03 (__METHOD__, 0x00, __LINE__, 0x00, 0x00)
         Debug = "mf79(250):"
         Debug = MF79 (0xFA)
-        CH03 ("", 0x00, 0x01, 0x33, 0x00)
+        CH03 (__METHOD__, 0x00, __LINE__, 0x00, 0x00)
     }
 
     Method (M27E, 0, NotSerialized)
     {
-        CH03 ("", 0x00, 0x02, 0x38, 0x00)
+        CH03 (__METHOD__, 0x00, __LINE__, 0x00, 0x00)
         Debug = "mf79(248):"
         Debug = MF79 (0xF8)
-        CH03 ("", 0x00, 0x03, 0x3D, 0x00)
+        CH03 (__METHOD__, 0x00, __LINE__, 0x00, 0x00)
     }

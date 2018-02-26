@@ -36,7 +36,7 @@
 
         Local0 = 0x0000009999999999
         Local1 = 0x00000002540BE3FF
-        CH03 ("", 0x00, 0x00, 0x2A, 0x00)
+        CH03 (__METHOD__, 0x00, __LINE__, 0x00, 0x00)
         FromBCD (Local0, Local2)
         If ((Local2 != Local1))
         {
@@ -47,7 +47,7 @@
 
         Local0 = 0x0000010000000000
         Local1 = 0x00000002540BE400
-        CH03 ("", 0x00, 0x03, 0x35, 0x00)
+        CH03 (__METHOD__, 0x00, __LINE__, 0x00, 0x00)
         FromBCD (Local0, Local2)
         If ((Local2 != Local1))
         {
@@ -58,12 +58,12 @@
 
         Local0 = 0x00000002540BE400
         Local1 = 0x0000010000000000
-        CH03 ("", 0x00, 0x06, 0x40, 0x00)
+        CH03 (__METHOD__, 0x00, __LINE__, 0x00, 0x00)
         ToBCD (Local0, Local2)
         If ((Local2 != Local1))
         {
             ERR (__METHOD__, ZFFF, __LINE__, 0x00, 0x00, Local2, Local1)
         }
 
-        CH03 ("", 0x00, 0x00, 0x46, 0x00)
+        CH03 (__METHOD__, 0x00, __LINE__, 0x00, 0x00)
     }

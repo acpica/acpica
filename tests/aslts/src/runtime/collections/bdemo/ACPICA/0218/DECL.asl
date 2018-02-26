@@ -84,7 +84,7 @@
 
     Method (M038, 0, NotSerialized)
     {
-        CH03 ("", 0x00, 0x00, 0x5B, 0x00)
+        CH03 (__METHOD__, 0x00, __LINE__, 0x00, 0x00)
         M037 ()
-        CH03 ("", 0x00, 0x01, 0x5D, 0x00)
+        CH03 (__METHOD__, 0x00, __LINE__, 0x00, 0x00)
     }

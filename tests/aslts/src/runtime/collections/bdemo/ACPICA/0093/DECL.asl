@@ -39,19 +39,19 @@
         If ((Arg0 == 0x00))
         {
             Debug = "Buffer as a named object:"
-            CH03 ("", 0x00, 0x00, 0x2B, 0x00)
+            CH03 (__METHOD__, 0x00, __LINE__, 0x00, 0x00)
             Local0 = DerefOf (B000 [0x05])
             If ((Local0 != 0x42))
             {
                 ERR (__METHOD__, ZFFF, __LINE__, 0x00, 0x00, Local0, 0x42)
             }
 
-            CH03 ("", 0x00, 0x02, 0x30, 0x00)
+            CH03 (__METHOD__, 0x00, __LINE__, 0x00, 0x00)
         }
         ElseIf ((Arg0 == 0x01))
         {
             Debug = "The same Buffer but substituted immediately:"
-            CH03 ("", 0x00, 0x03, 0x36, 0x00)
+            CH03 (__METHOD__, 0x00, __LINE__, 0x00, 0x00)
             Store (Index (Buffer (0x08)
                     {
                          0x0B, 0x16, 0x21, 0x2C, 0x37, 0x42, 0x4D, 0x58   // ..!,7BMX
@@ -64,7 +64,7 @@
                     ERR (__METHOD__, ZFFF, __LINE__, 0x00, 0x00, Local0, 0x42)
                 }
 
-                CH03 ("", 0x00, 0x05, 0x3D, 0x00)
+                CH03 (__METHOD__, 0x00, __LINE__, 0x00, 0x00)
             }
             Else
             {
@@ -73,7 +73,7 @@
         }
         Else
         {
-            CH03 ("", 0x00, 0x07, 0x44, 0x00)
+            CH03 (__METHOD__, 0x00, __LINE__, 0x00, 0x00)
             Local0 = DerefOf (Index (Buffer (0x08)
                         {
                              0x0B, 0x16, 0x21, 0x2C, 0x37, 0x42, 0x4D, 0x58   // ..!,7BMX
@@ -85,7 +85,7 @@
                     ERR (__METHOD__, ZFFF, __LINE__, 0x00, 0x00, Local0, 0x42)
                 }
 
-                CH03 ("", 0x00, 0x09, 0x4A, 0x00)
+                CH03 (__METHOD__, 0x00, __LINE__, 0x00, 0x00)
             }
             Else
             {

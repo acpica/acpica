@@ -327,7 +327,7 @@
 
             Local0 = RFU0 /* \DTM0.RFU0 */
             Store ((SUM + CHSM (Local0, SizeOf (Local0))), SUM) /* \DTM0.SUM_ */
-            If (CH03 (Arg0, Z174, 0x01, 0x0146, 0x00))
+            If (CH03 (Arg0, Z174, __LINE__, 0x00, 0x00))
             {
                 Return (Zero)
             }
@@ -361,7 +361,7 @@
 
             }
 
-            If (CH03 (Arg0, Z174, 0x03, 0x0157, 0x00))
+            If (CH03 (Arg0, Z174, __LINE__, 0x00, 0x00))
             {
                 Return (Zero)
             }
@@ -415,7 +415,7 @@
             Else
             {
                 Local0 = \SSS0 ()
-                If (CH03 (Arg0, Z174, 0x07, 0x0174, 0x01))
+                If (CH03 (Arg0, Z174, __LINE__, 0x00, 0x01))
                 {
                     Return (Zero)
                 }
@@ -449,7 +449,7 @@
 
             }
 
-            If (CH03 (Arg0, Z174, 0x09, 0x0184, 0x00))
+            If (CH03 (Arg0, Z174, __LINE__, 0x00, 0x00))
             {
                 Return (Zero)
             }
@@ -482,7 +482,7 @@
 
             Local0 = RFU0 /* \DTM0.RFU0 */
             Store ((SUM + CHSM (Local0, SizeOf (Local0))), SUM) /* \DTM0.SUM_ */
-            If (CH03 (Arg0, Z174, 0x0C, 0x01A5, 0x00))
+            If (CH03 (Arg0, Z174, __LINE__, 0x00, 0x00))
             {
                 Return (0x01)
             }
@@ -490,7 +490,7 @@
             /* Load operator execution */
 
             Load (RFU0, Arg1)
-            If (CH03 (Arg0, Z174, 0x0D, 0x01AC, 0x00))
+            If (CH03 (Arg0, Z174, __LINE__, 0x00, 0x00))
             {
                 Return (0x01)
             }
@@ -532,7 +532,7 @@
             Else
             {
                 Local0 = \SSS0 ()
-                If (CH03 (Arg0, Z174, 0x11, 0x01CD, 0x01))
+                If (CH03 (Arg0, Z174, __LINE__, 0x00, 0x01))
                 {
                     Return (Zero)
                 }
@@ -544,7 +544,7 @@
             }
 
             Unload (Arg1)
-            If (CH03 (Arg0, Z174, 0x13, 0x01D7, 0x00))
+            If (CH03 (Arg0, Z174, __LINE__, 0x00, 0x00))
             {
                 Return (Zero)
             }
@@ -704,7 +704,7 @@
 
                 Local0 = RFU0 /* \DTM0.M003.M000.RFU0 */
                 Store ((SUM + CHSM (Local0, SizeOf (Local0))), SUM) /* \DTM0.M003.M000.SUM_ */
-                If (CH03 (Arg0, Z174, 0x16, 0x026F, 0x00))
+                If (CH03 (Arg0, Z174, __LINE__, 0x00, 0x00))
                 {
                     Return (Zero)
                 }
@@ -738,7 +738,7 @@
 
                 }
 
-                If (CH03 (Arg0, Z174, 0x18, 0x0280, 0x00))
+                If (CH03 (Arg0, Z174, __LINE__, 0x00, 0x00))
                 {
                     Return (Zero)
                 }
@@ -792,7 +792,7 @@
                 Else
                 {
                     Local0 = \SSS0 ()
-                    If (CH03 (Arg0, Z174, 0x1C, 0x029D, 0x01))
+                    If (CH03 (Arg0, Z174, __LINE__, 0x00, 0x01))
                     {
                         Return (Zero)
                     }
@@ -826,7 +826,7 @@
 
                 }
 
-                If (CH03 (Arg0, Z174, 0x1E, 0x02AD, 0x00))
+                If (CH03 (Arg0, Z174, __LINE__, 0x00, 0x00))
                 {
                     Return (Zero)
                 }
@@ -882,7 +882,7 @@
 
                 Local0 = RFU0 /* \DTM0.M003.M001.RFU0 */
                 Store ((SUM + CHSM (Local0, SizeOf (Local0))), SUM) /* \DTM0.M003.M001.SUM_ */
-                If (CH03 (Arg0, Z174, 0x21, 0x02E5, 0x00))
+                If (CH03 (Arg0, Z174, __LINE__, 0x00, 0x00))
                 {
                     Return (0x01)
                 }
@@ -890,7 +890,7 @@
                 /* Load operator execution */
 
                 Load (RFU0, Arg1)
-                If (CH03 (Arg0, Z174, 0x22, 0x02EC, 0x00))
+                If (CH03 (Arg0, Z174, __LINE__, 0x00, 0x00))
                 {
                     Return (0x01)
                 }
@@ -1176,13 +1176,13 @@ Local2 = Buffer (0x0A)
                 Return (Zero)
             }
 
-            If (CH03 (Arg0, 0x00, 0x31, 0x03F4, 0x00))
+            If (CH03 (Arg0, 0x00, __LINE__, 0x00, 0x00))
             {
                 Return (Zero)
             }
 
             Load (RFU2, DDBH) /* \DTM0.TST9.DDBH */
-            If (CH03 (Arg0, 0x00, 0x32, 0x03FA, 0x00))
+            If (CH03 (Arg0, 0x00, __LINE__, 0x00, 0x00))
             {
                 Return (Zero)
             }
@@ -1259,7 +1259,7 @@ Local2 = Buffer (0x0A)
             }
 
             Concatenate (Arg0, "-LDCH", Arg0)
-            If (CH03 (Arg0, Z174, 0x40, 0x043D, 0x00))
+            If (CH03 (Arg0, Z174, __LINE__, 0x00, 0x00))
             {
                 Return (0x01)
             }
@@ -1301,13 +1301,13 @@ Local2 = Buffer (0x0A)
                 CopyObject (DerefOf (Local5), MAUX) /* \DTM0.LDCH.MAUX */
                 If ((Local1 < HI0N))
                 {
-                    If (CH03 (Arg0, Z174, 0x41, 0x045E, 0x00))
+                    If (CH03 (Arg0, Z174, __LINE__, 0x00, 0x00))
                     {
                         Return (0x02)
                     }
 
                     Local2 = MAUX ()
-                    If (CH03 (Arg0, Z174, 0x42, 0x0462, 0x00))
+                    If (CH03 (Arg0, Z174, __LINE__, 0x00, 0x00))
                     {
                         Return (0x03)
                     }
@@ -1342,7 +1342,7 @@ Local2 = Buffer (0x0A)
                 Return (0x01)
             }
 
-            If (CH03 (Arg0, Z174, 0x46, 0x047E, 0x00))
+            If (CH03 (Arg0, Z174, __LINE__, 0x00, 0x00))
             {
                 Return (0x01)
             }
@@ -1356,7 +1356,7 @@ Local2 = Buffer (0x0A)
                     Return (0x01)
                 }
 
-                If (CH03 (Arg0, Z174, 0x48, 0x0488, 0x00))
+                If (CH03 (Arg0, Z174, __LINE__, 0x00, 0x00))
                 {
                     Return (0x01)
                 }
@@ -1378,7 +1378,7 @@ Local2 = Buffer (0x0A)
                     Return (0x01)
                 }
 
-                If (CH03 (Arg0, Z174, 0x4B, 0x0499, 0x00))
+                If (CH03 (Arg0, Z174, __LINE__, 0x00, 0x00))
                 {
                     Return (0x01)
                 }
@@ -1449,7 +1449,7 @@ Local2 = Buffer (0x0A)
             Concatenate (Arg0, "-tstb", Arg0)
             RFU3 = BUF3 /* \DTM0.BUF3 */
             Load (RFU3, DDB0) /* \DTM0.TSTB.DDB0 */
-            If (CH03 (Arg0, Z174, 0x50, 0x04E2, 0x00))
+            If (CH03 (Arg0, Z174, __LINE__, 0x00, 0x00))
             {
                 Return (0x01)
             }
@@ -1616,7 +1616,7 @@ Local2 = Buffer (0x0A)
             OperationRegion (RGN7, 0x80, 0x0D80, 0x0137)
             OperationRegion (RGN8, 0xCF, 0x0E80, 0x0138)
             OperationRegion (RGN9, 0xFF, 0x0F80, 0x0139)
-            If (CH03 (Arg0, Z174, 0x6F, 0x0574, 0x00))
+            If (CH03 (Arg0, Z174, __LINE__, 0x00, 0x00))
             {
                 Return (0x01)
             }
@@ -1736,7 +1736,7 @@ Local2 = Buffer (0x0A)
 
             Local0 = RFU0 /* \DTM0.RFU0 */
             Store ((SUM + CHSM (Local0, SizeOf (Local0))), SUM) /* \DTM0.SUM_ */
-            If (CH03 (Arg0, Z174, 0x83, 0x05DB, 0x00))
+            If (CH03 (Arg0, Z174, __LINE__, 0x00, 0x00))
             {
                 Return (0x01)
             }
@@ -1803,7 +1803,7 @@ Local2 = Buffer (0x0A)
 
             Local0 = RFU0 /* \DTM0.RFU0 */
             Store ((SUM + CHSM (Local0, SizeOf (Local0))), SUM) /* \DTM0.SUM_ */
-            If (CH03 (Arg0, Z174, 0x91, 0x0617, 0x00))
+            If (CH03 (Arg0, Z174, __LINE__, 0x00, 0x00))
             {
                 Return (0x01)
             }
@@ -1820,7 +1820,7 @@ Local2 = Buffer (0x0A)
                     /* CleanUp */
 
                     Unload (HI0)
-                    If (CH03 (Arg0, Z174, 0x94, 0x0625, 0x00))
+                    If (CH03 (Arg0, Z174, __LINE__, 0x00, 0x00))
                     {
                         Return (0x01)
                     }
@@ -1853,7 +1853,7 @@ Local2 = Buffer (0x0A)
             {
                 ERR (Arg0, Z174, __LINE__, 0x00, 0x00, "\\SSS0", 0x01)
                 Unload (HI0)
-                If (CH03 (Arg0, Z174, 0x98, 0x063C, 0x00))
+                If (CH03 (Arg0, Z174, __LINE__, 0x00, 0x00))
                 {
                     Return (0x01)
                 }
@@ -1888,7 +1888,7 @@ Local2 = Buffer (0x0A)
             /* Spoil the CheckSum */
 
             Store ((SUM + 0x01), SUM) /* \DTM0.SUM_ */
-            If (CH03 (Arg0, Z174, 0xA1, 0x065D, 0x00))
+            If (CH03 (Arg0, Z174, __LINE__, 0x00, 0x00))
             {
                 Return (0x01)
             }
@@ -1905,7 +1905,7 @@ Local2 = Buffer (0x0A)
                     /*Cleanup */
 
                     Unload (HI0)
-                    If (CH03 (Arg0, Z174, 0xA4, 0x066B, 0x00))
+                    If (CH03 (Arg0, Z174, __LINE__, 0x00, 0x00))
                     {
                         Return (0x01)
                     }
@@ -1924,12 +1924,12 @@ Local2 = Buffer (0x0A)
                 /*Cleanup */
 
                 Unload (HI0)
-                If (CH03 (Arg0, Z174, 0xA7, 0x067B, 0x00))
+                If (CH03 (Arg0, Z174, __LINE__, 0x00, 0x00))
                 {
                     Return (0x01)
                 }
 
-                If (CH03 (Arg0, Z174, 0xA8, 0x067E, 0x00))
+                If (CH03 (Arg0, Z174, __LINE__, 0x00, 0x00))
                 {
                     Return (0x01)
                 }
@@ -1963,7 +1963,7 @@ Local2 = Buffer (0x0A)
                 }
 
                 Load (RFU0, Arg2)
-                If (CH03 (Arg0, Z174, 0xB2, 0x069F, 0x00))
+                If (CH03 (Arg0, Z174, __LINE__, 0x00, 0x00))
                 {
                     Return (0x01)
                 }
@@ -1982,7 +1982,7 @@ Local2 = Buffer (0x0A)
                 }
 
                 Unload (DerefOf (Arg2))
-                If (CH03 (Arg0, Z174, 0xB5, 0x06AD, 0x00))
+                If (CH03 (Arg0, Z174, __LINE__, 0x00, 0x00))
                 {
                     Return (0x01)
                 }
@@ -2006,7 +2006,7 @@ Local2 = Buffer (0x0A)
 
             Local0 = RFU0 /* \DTM0.RFU0 */
             Store ((SUM + CHSM (Local0, SizeOf (Local0))), SUM) /* \DTM0.SUM_ */
-            If (CH03 (Arg0, Z174, 0xB7, 0x06C3, 0x00))
+            If (CH03 (Arg0, Z174, __LINE__, 0x00, 0x00))
             {
                 Return (0x01)
             }
@@ -2068,7 +2068,7 @@ Local2 = Buffer (0x0A)
             }
 
             Unload (DDB0)
-            CH03 (Arg0, Z174, 0xB8, 0x06FF, 0x00)
+            CH03 (Arg0, Z174, __LINE__, 0x00, 0x00)
             Return (0x00)
         }
 
@@ -2086,7 +2086,7 @@ Local2 = Buffer (0x0A)
                 Return (0x01)
             }
 
-            If (CH03 (Arg0, Z174, 0xC1, 0x0712, 0x00))
+            If (CH03 (Arg0, Z174, __LINE__, 0x00, 0x00))
             {
                 Return (0x01)
             }
@@ -2103,7 +2103,7 @@ Local2 = Buffer (0x0A)
                     Return (0x01)
                 }
 
-                If (CH03 (Arg0, Z174, 0xC3, 0x071F, 0x00))
+                If (CH03 (Arg0, Z174, __LINE__, 0x00, 0x00))
                 {
                     Return (0x01)
                 }
@@ -2138,7 +2138,7 @@ Local2 = Buffer (0x0A)
                     Return (0x01)
                 }
 
-                If (CH03 (Arg0, Z174, 0xC6, 0x073B, 0x00))
+                If (CH03 (Arg0, Z174, __LINE__, 0x00, 0x00))
                 {
                     Return (0x01)
                 }
@@ -2173,7 +2173,7 @@ Local2 = Buffer (0x0A)
 
             Local0 = RFU0 /* \DTM0.RFU0 */
             Store ((SUM + CHSM (Local0, SizeOf (Local0))), SUM) /* \DTM0.SUM_ */
-            If (CH03 (Arg0, Z174, 0xD1, 0x075D, 0x00))
+            If (CH03 (Arg0, Z174, __LINE__, 0x00, 0x00))
             {
                 Return (0x01)
             }
@@ -2181,7 +2181,7 @@ Local2 = Buffer (0x0A)
             /* Load operator execution */
 
             Load (RFU0, HI0) /* \DTM0.TSTI.HI0_ */
-            If (CH03 (Arg0, Z174, 0xD2, 0x0763, 0x00))
+            If (CH03 (Arg0, Z174, __LINE__, 0x00, 0x00))
             {
                 Return (0x01)
             }
@@ -2216,7 +2216,7 @@ Local2 = Buffer (0x0A)
             }
 
             Unload (HI0)
-            If (CH03 (Arg0, Z174, 0xD7, 0x0783, 0x00))
+            If (CH03 (Arg0, Z174, __LINE__, 0x00, 0x00))
             {
                 Return (0x01)
             }
@@ -2247,7 +2247,7 @@ Local2 = Buffer (0x0A)
 
             Local0 = ^RFU0 /* \DTM0.RFU0 */
             Store ((^SUM + CHSM (Local0, SizeOf (Local0))), ^SUM) /* \DTM0.SUM_ */
-            If (CH03 (Arg0, Z174, 0xE1, 0x07A2, 0x00))
+            If (CH03 (Arg0, Z174, __LINE__, 0x00, 0x00))
             {
                 Return (0x01)
             }
@@ -2255,7 +2255,7 @@ Local2 = Buffer (0x0A)
             /* Load operator execution */
 
             Load (^RFU0, HI0) /* \DTM0.TSTJ.HI0_ */
-            If (CH03 (Arg0, Z174, 0xE2, 0x07A8, 0x00))
+            If (CH03 (Arg0, Z174, __LINE__, 0x00, 0x00))
             {
                 Return (0x01)
             }
@@ -2323,7 +2323,7 @@ Local2 = Buffer (0x0A)
             }
 
             Unload (HI0)
-            If (CH03 (Arg0, Z174, 0xE7, 0x07E9, 0x00))
+            If (CH03 (Arg0, Z174, __LINE__, 0x00, 0x00))
             {
                 Return (0x01)
             }
@@ -2389,7 +2389,7 @@ Local2 = Buffer (0x0A)
 
             RFU5 = BUF5 /* \DTM0.BUF5 */
             Load (RFU5, DDBH) /* \DTM0.TSTK.DDBH */
-            If (CH03 (Arg0, Z174, 0xF2, 0x0823, 0x00))
+            If (CH03 (Arg0, Z174, __LINE__, 0x00, 0x00))
             {
                 Return (0x01)
             }
@@ -2409,7 +2409,7 @@ Local2 = Buffer (0x0A)
             }
 
             Unload (DDBX)
-            If (CH03 (Arg0, Z174, 0xF5, 0x0833, 0x00))
+            If (CH03 (Arg0, Z174, __LINE__, 0x00, 0x00))
             {
                 Return (0x01)
             }
@@ -2421,7 +2421,7 @@ Local2 = Buffer (0x0A)
             }
 
             Unload (DDBH)
-            If (CH03 (Arg0, Z174, 0xF7, 0x083D, 0x00))
+            If (CH03 (Arg0, Z174, __LINE__, 0x00, 0x00))
             {
                 Return (0x01)
             }
@@ -2438,65 +2438,65 @@ Local2 = Buffer (0x0A)
     {
         /* Loading SSDT from a SystemMemory OpRegion, */
         /* different targets for DDBHandle */
-        CH03 (__METHOD__, Z174, 0x0200, 0x084F, 0x00)
+        CH03 (__METHOD__, Z174, __LINE__, 0x00, 0x00)
         /* Named Objects */
 
         SRMT ("TLD0.tst0")
         \DTM0.TST0 (__METHOD__)
-        CH03 (__METHOD__, Z174, 0x0201, 0x0855, 0x00)
+        CH03 (__METHOD__, Z174, __LINE__, 0x00, 0x00)
         /* LocalX Object */
 
         SRMT ("TLD0.tst1")
         \DTM0.TST1 (__METHOD__)
-        CH03 (__METHOD__, Z174, 0x0202, 0x085B, 0x00)
+        CH03 (__METHOD__, Z174, __LINE__, 0x00, 0x00)
         /* Package element */
 
         SRMT ("TLD0.tst2")
         \DTM0.TST2 (__METHOD__)
-        CH03 (__METHOD__, Z174, 0x0203, 0x0861, 0x00)
+        CH03 (__METHOD__, Z174, __LINE__, 0x00, 0x00)
         /* By Reference in ArgX */
 
         SRMT ("TLD0.tst3")
         \DTM0.TST3 (__METHOD__)
         /* Loading SSDT from a Field of an OpRegion of any type, */
         /* different targets for DDBHandle */
-        CH03 (__METHOD__, Z174, 0x0204, 0x086A, 0x00)
+        CH03 (__METHOD__, Z174, __LINE__, 0x00, 0x00)
         /* SystemMemory Region */
 
         SRMT ("TLD0.tst4")
         \DTM0.TST4 (__METHOD__)
-        CH03 (__METHOD__, Z174, 0x0205, 0x0870, 0x00)
+        CH03 (__METHOD__, Z174, __LINE__, 0x00, 0x00)
         /* SystemIO Region */
 
         SRMT ("TLD0.tst5")
         \DTM0.TST5 (__METHOD__)
-        CH03 (__METHOD__, Z174, 0x0206, 0x0876, 0x00)
+        CH03 (__METHOD__, Z174, __LINE__, 0x00, 0x00)
         /* EmbeddedControl Region */
 
         SRMT ("TLD0.tst6")
         \DTM0.TST6 (__METHOD__)
-        CH03 (__METHOD__, Z174, 0x0207, 0x087C, 0x00)
+        CH03 (__METHOD__, Z174, __LINE__, 0x00, 0x00)
         /* User defined Region */
 
         SRMT ("TLD0.tst7")
         \DTM0.TST7 (__METHOD__)
-        CH03 (__METHOD__, Z174, 0x0208, 0x0882, 0x00)
+        CH03 (__METHOD__, Z174, __LINE__, 0x00, 0x00)
         /* Check that "namespace location to load the Definition Block */
         /* is relative to the current namespace" scope, */
         SRMT ("TLD0.tst8")
         \DTM0.TST8 (__METHOD__)
-        CH03 (__METHOD__, Z174, 0x0209, 0x0889, 0x00)
+        CH03 (__METHOD__, Z174, __LINE__, 0x00, 0x00)
         /* Check global and dynamic declarations of OpRegions */
         /* and the appropriate _REG Methods invocation for the */
         /* loaded SSDT */
         SRMT ("TLD0.tst9")
         \DTM0.TST9 (__METHOD__)
-        CH03 (__METHOD__, Z174, 0x020A, 0x0891, 0x00)
+        CH03 (__METHOD__, Z174, __LINE__, 0x00, 0x00)
         /* Object of any type can be used as the DDBHandle argument */
 
         SRMT ("TLD0.tstg")
         \DTM0.TSTG (__METHOD__)
-        CH03 (__METHOD__, Z174, 0x020B, 0x0897, 0x00)
+        CH03 (__METHOD__, Z174, __LINE__, 0x00, 0x00)
         /* Loading a number of different SSDTs */
 
         SRMT ("TLD0.tsta")
@@ -2509,12 +2509,12 @@ Local2 = Buffer (0x0A)
             BLCK ()
         }
 
-        CH03 (__METHOD__, Z174, 0x020C, 0x08A1, 0x00)
+        CH03 (__METHOD__, Z174, __LINE__, 0x00, 0x00)
         /* Recursive Load in module level */
 
         SRMT ("TLD0.tstk")
         \DTM0.TSTK (__METHOD__)
-        CH03 (__METHOD__, Z174, 0x020D, 0x08A7, 0x00)
+        CH03 (__METHOD__, Z174, __LINE__, 0x00, 0x00)
     }
 
     /* Exceptional conditions */

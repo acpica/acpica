@@ -47,7 +47,7 @@
     {
         Local0 = 0x0123
         Acquire (MX03, 0x0100)
-        CH03 ("", 0x00, 0x00, 0x34, 0x00)
+        CH03 (__METHOD__, 0x00, __LINE__, 0x00, 0x00)
         Acquire (MX02, 0x0100)
         CH04 (__METHOD__, 0x00, 0x40, 0x00, __LINE__, 0x00, 0x00) /* AE_AML_MUTEX_ORDER */
         Local2 = RefOf (P000) /* L0(0x004d5ec8, 0x123), L2 (0x004d5dc8, res of RefOf) */
@@ -68,7 +68,7 @@
         }
 
         Debug = "============================== 3"
-        CH03 ("", 0x00, 0x02, 0x4A, 0x00)
+        CH03 (__METHOD__, 0x00, __LINE__, 0x00, 0x00)
         /*
          * The problem is not automatically detected,
          * so remove this error report after the problem has been resolved.

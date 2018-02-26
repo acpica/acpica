@@ -1431,7 +1431,7 @@
             Arg1--
         }
 
-        CH03 ("MUX0", Z150, 0x00, 0x02CD, 0x00)
+        CH03 ("MUX0", Z150, __LINE__, 0x00, 0x00)
     }
 
     Method (M033, 0, Serialized)

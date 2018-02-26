@@ -60,10 +60,10 @@
             RFU0 = BUF0 /* \D285.BUF0 */
             Load (RFU0, HI0) /* \D285.TST0.HI0_ */
             Unload (M000 ())
-            If (CH03 ("", 0x00, 0x01, 0x42, 0x00))
+            If (CH03 (__METHOD__, 0x00, __LINE__, 0x00, 0x00))
             {
                 Unload (HI0)
-                CH03 ("", 0x00, 0x02, 0x44, 0x00)
+                CH03 (__METHOD__, 0x00, __LINE__, 0x00, 0x00)
             }
         }
     }

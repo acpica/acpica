@@ -186,7 +186,7 @@
 
             \DTM2.PLDT = 0x00
             DDBH = LoadTable ("OEM1", "", "", "\\", PPST, 0x01)
-            If (CH03 (Arg0, Z176, 0x03, 0xBA, 0x00))
+            If (CH03 (Arg0, Z176, __LINE__, 0x00, 0x00))
             {
                 Return (0x01)
             }
@@ -213,7 +213,7 @@
 
             Unload (DDBH)
             Debug = "OEM1 unloaded"
-            If (CH03 (Arg0, Z176, 0x08, 0xD0, 0x00))
+            If (CH03 (Arg0, Z176, __LINE__, 0x00, 0x00))
             {
                 Return (0x01)
             }
@@ -250,7 +250,7 @@
                 DDBH = LoadTable ("OEM1", "", "", "\\", PPST, 0x01)
             }
 
-            If (CH03 (Arg0, Z176, 0x11, 0xF2, 0x00))
+            If (CH03 (Arg0, Z176, __LINE__, 0x00, 0x00))
             {
                 Return (0x01)
             }
@@ -277,7 +277,7 @@
 
             Unload (DDBH)
             Debug = "OEM1 unloaded"
-            If (CH03 (Arg0, Z176, 0x15, 0x0108, 0x00))
+            If (CH03 (Arg0, Z176, __LINE__, 0x00, 0x00))
             {
                 Return (0x01)
             }
@@ -301,7 +301,7 @@
             {
                 /* No exception */
 
-                If (CH03 (Arg0, Z176, 0x18, 0x011C, 0x00))
+                If (CH03 (Arg0, Z176, __LINE__, 0x00, 0x00))
                 {
                     Return (0x01)
                 }
@@ -351,7 +351,7 @@
             }
 
             Local3 = LoadTable ("OEM1", "InteL", "Many", "\\", PPST, 0x01)
-            If (CH03 (Arg0, Z176, 0x20, 0x0146, 0x00))
+            If (CH03 (Arg0, Z176, __LINE__, 0x00, 0x00))
             {
                 Return (0x01)
             }
@@ -387,7 +387,7 @@
             }
 
             Local4 = LoadTable ("OEM1", "Intel", "many", "\\", PPST, 0x01)
-            If (CH03 (Arg0, Z176, 0x26, 0x0166, 0x00))
+            If (CH03 (Arg0, Z176, __LINE__, 0x00, 0x00))
             {
                 Return (0x01)
             }
@@ -435,7 +435,7 @@
 
             \DTM2.PLDT = 0x00
             DDB0 = LoadTable ("OEM1", "", "", "", PPST, 0x01)
-            If (CH03 (Arg0, Z176, 0x31, 0x0194, 0x00))
+            If (CH03 (Arg0, Z176, __LINE__, 0x00, 0x00))
             {
                 Return (0x01)
             }
@@ -462,7 +462,7 @@
 
             Unload (DDB0)
             Debug = "OEM1 unloaded"
-            If (CH03 (Arg0, Z176, 0x35, 0x01AA, 0x00))
+            If (CH03 (Arg0, Z176, __LINE__, 0x00, 0x00))
             {
                 Return (0x01)
             }
@@ -476,7 +476,7 @@
 
             \DTM2.PLDT = 0x00
             DDB1 = LoadTable ("OEM1", "", "", "\\", "", 0x01)
-            If (CH03 (Arg0, Z176, 0x37, 0x01B8, 0x00))
+            If (CH03 (Arg0, Z176, __LINE__, 0x00, 0x00))
             {
                 Return (0x01)
             }
@@ -503,7 +503,7 @@
 
             Unload (DDB1)
             Debug = "OEM1 unloaded"
-            If (CH03 (Arg0, Z176, 0x3B, 0x01CE, 0x00))
+            If (CH03 (Arg0, Z176, __LINE__, 0x00, 0x00))
             {
                 Return (0x01)
             }
@@ -517,7 +517,7 @@
 
             \DTM2.PLDT = 0x00
             DDB2 = LoadTable ("OEM1", "", "", "\\", PPST, Zero)
-            If (CH03 (Arg0, Z176, 0x3D, 0x01DC, 0x00))
+            If (CH03 (Arg0, Z176, __LINE__, 0x00, 0x00))
             {
                 Return (0x01)
             }
@@ -544,7 +544,7 @@
 
             Unload (DDB2)
             Debug = "OEM1 unloaded"
-            If (CH03 (Arg0, Z176, 0x41, 0x01F2, 0x00))
+            If (CH03 (Arg0, Z176, __LINE__, 0x00, 0x00))
             {
                 Return (0x01)
             }
@@ -558,7 +558,7 @@
 
             \DTM2.PLDT = 0x00
             DDB3 = LoadTable ("OEM1", "", "", "", "", Zero)
-            If (CH03 (Arg0, Z176, 0x43, 0x0200, 0x00))
+            If (CH03 (Arg0, Z176, __LINE__, 0x00, 0x00))
             {
                 Return (0x01)
             }
@@ -585,7 +585,7 @@
 
             Unload (DDB3)
             Debug = "OEM1 unloaded"
-            If (CH03 (Arg0, Z176, 0x47, 0x0216, 0x00))
+            If (CH03 (Arg0, Z176, __LINE__, 0x00, 0x00))
             {
                 Return (0x01)
             }
@@ -625,7 +625,7 @@
             Method (M001, 3, NotSerialized)
             {
                 Concatenate (Arg0, Arg2, Arg0)
-                If (CH03 (Arg0, Z176, 0x51, 0x0238, 0x00))
+                If (CH03 (Arg0, Z176, __LINE__, 0x00, 0x00))
                 {
                     Return (0x01)
                 }
@@ -652,7 +652,7 @@
 
                 Unload (Arg1)
                 Debug = "OEM1 unloaded"
-                If (CH03 (Arg0, Z176, 0x55, 0x024E, 0x00))
+                If (CH03 (Arg0, Z176, __LINE__, 0x00, 0x00))
                 {
                     Return (0x01)
                 }
@@ -804,7 +804,7 @@
             Method (M001, 3, NotSerialized)
             {
                 Concatenate (Arg0, Arg2, Arg0)
-                If (CH03 (Arg0, Z176, 0x61, 0x02F1, 0x00))
+                If (CH03 (Arg0, Z176, __LINE__, 0x00, 0x00))
                 {
                     Return (0x01)
                 }
@@ -831,7 +831,7 @@
 
                 Unload (Arg1)
                 Debug = "OEM1 unloaded"
-                If (CH03 (Arg0, Z176, 0x65, 0x0307, 0x00))
+                If (CH03 (Arg0, Z176, __LINE__, 0x00, 0x00))
                 {
                     Return (0x01)
                 }
@@ -985,7 +985,7 @@
 
             \DTM2.PLDT = 0x00
             DDBH = LoadTable ("OEM1", "", "", Arg1, PPST, 0x01)
-            If (CH03 (Arg0, Z176, 0x72, 0x03B4, 0x00))
+            If (CH03 (Arg0, Z176, __LINE__, 0x00, 0x00))
             {
                 Return (0x01)
             }
@@ -1017,7 +1017,7 @@
 
             Unload (DDBH)
             Debug = "OEM1 unloaded"
-            If (CH03 (Arg0, Z176, 0x77, 0x03CE, 0x00))
+            If (CH03 (Arg0, Z176, __LINE__, 0x00, 0x00))
             {
                 Return (0x01)
             }
@@ -1049,7 +1049,7 @@
 
             \DTM2.PLDT = 0x00
             DDBH = LoadTable ("OEM1", "", "", "", PPST, 0x01)
-            If (CH03 (Arg0, Z176, 0x81, 0x03EE, 0x00))
+            If (CH03 (Arg0, Z176, __LINE__, 0x00, 0x00))
             {
                 Return (0x01)
             }
@@ -1076,7 +1076,7 @@
 
             Unload (DDBH)
             Debug = "OEM1 unloaded"
-            If (CH03 (Arg0, Z176, 0x85, 0x0404, 0x00))
+            If (CH03 (Arg0, Z176, __LINE__, 0x00, 0x00))
             {
                 Return (0x01)
             }
@@ -1099,7 +1099,7 @@
             Name (PLDT, 0x00)
             Concatenate (Arg0, "-tst7", Arg0)
             DDBH = LoadTable ("OEM1", "", "", RPST, "^TST7.PLDT", 0x01)
-            If (CH03 (Arg0, Z176, 0x91, 0x041C, 0x00))
+            If (CH03 (Arg0, Z176, __LINE__, 0x00, 0x00))
             {
                 Return (0x01)
             }
@@ -1119,7 +1119,7 @@
             }
 
             Unload (DDBH)
-            If (CH03 (Arg0, Z176, 0x94, 0x042C, 0x00))
+            If (CH03 (Arg0, Z176, __LINE__, 0x00, 0x00))
             {
                 Return (0x01)
             }
@@ -1127,7 +1127,7 @@
             PLDT = 0x00
             \DTM2.PLDT = 0x00
             DDBH = LoadTable ("OEM1", "", "", RPST, "PLDT", 0x01)
-            If (CH03 (Arg0, Z176, 0x95, 0x0435, 0x00))
+            If (CH03 (Arg0, Z176, __LINE__, 0x00, 0x00))
             {
                 Return (0x01)
             }
@@ -1152,7 +1152,7 @@
             }
 
             Unload (DDBH)
-            If (CH03 (Arg0, Z176, 0x99, 0x0449, 0x00))
+            If (CH03 (Arg0, Z176, __LINE__, 0x00, 0x00))
             {
                 Return (0x01)
             }
@@ -1260,7 +1260,7 @@
 
             \DTM2.PLDT = 0x00
             DDBH = LoadTable ("OEM1", "", "", "\\", PPST, 0x01)
-            If (CH03 (Arg0, Z176, 0xB1, 0x04B4, 0x00))
+            If (CH03 (Arg0, Z176, __LINE__, 0x00, 0x00))
             {
                 Return (0x01)
             }
@@ -1306,7 +1306,7 @@
 
             Unload (DDBH)
             Debug = "OEM1 unloaded"
-            If (CH03 (Arg0, Z176, 0xB9, 0x04DD, 0x00))
+            If (CH03 (Arg0, Z176, __LINE__, 0x00, 0x00))
             {
                 Return (0x01)
             }
@@ -1353,7 +1353,7 @@
 
             RFU4 = BUF4 /* \DTM2.BUF4 */
             Load (RFU4, DDBH) /* \DTM2.TSTB.DDBH */
-            If (CH03 (Arg0, Z176, 0xC1, 0x050B, 0x00))
+            If (CH03 (Arg0, Z176, __LINE__, 0x00, 0x00))
             {
                 Return (0x01)
             }
@@ -1389,7 +1389,7 @@
 
             Unload (DDBH)
             Debug = "SSDT unloaded"
-            If (CH03 (Arg0, Z176, 0xC7, 0x052C, 0x00))
+            If (CH03 (Arg0, Z176, __LINE__, 0x00, 0x00))
             {
                 Return (0x01)
             }
@@ -1477,7 +1477,7 @@
 
                 }
 
-                If (CH03 (Arg0, Z176, 0xD3, 0x0583, 0x00))
+                If (CH03 (Arg0, Z176, __LINE__, 0x00, 0x00))
                 {
                     Return (0x01)
                 }
@@ -1489,7 +1489,7 @@
                 }
 
                 Local5 = ObjectType (DDBH)
-                If (CH03 (Arg0, Z176, 0xD5, 0x058E, 0x00))
+                If (CH03 (Arg0, Z176, __LINE__, 0x00, 0x00))
                 {
                     Return (0x01)
                 }
@@ -1617,7 +1617,7 @@
                 Local1 = Buffer (Local0){}
                 \DTM2.PLDT = 0x00
                 DDBH = LoadTable (SOEM, Local1, Local1, RPST, PPST, 0x01)
-                If (CH03 (Arg0, Z176, 0xE1, 0x05EE, 0x00))
+                If (CH03 (Arg0, Z176, __LINE__, 0x00, 0x00))
                 {
                     Return (0x01)
                 }
@@ -1636,7 +1636,7 @@
                 }
 
                 Unload (DDBH)
-                If (CH03 (Arg0, Z176, 0xE4, 0x05FF, 0x00))
+                If (CH03 (Arg0, Z176, __LINE__, 0x00, 0x00))
                 {
                     Return (0x01)
                 }
@@ -1839,7 +1839,7 @@
 
             \DTM0.RFU3 = \DTM0.BUF3
             Load (\DTM0.RFU3, DDB0) /* \DTM2.TSTH.DDB0 */
-            If (CH03 (Arg0, Z176, 0x010C, 0x06D4, 0x00))
+            If (CH03 (Arg0, Z176, __LINE__, 0x00, 0x00))
             {
                 Return (0x01)
             }
@@ -1885,7 +1885,7 @@
                     /* The size of the "Integer" converted from "Any" is ISZ0*2. */
                     If ((ISZ0 <= 0x04))
                     {
-                        CH03 (Arg0, Z176, 0x0110, 0x06F1, 0x00) /* No exception */
+                        CH03 (Arg0, Z176, __LINE__, 0x00, 0x00) /* No exception */
                     }
                     Else
                     {
@@ -2044,7 +2044,7 @@
             M003 (Arg0, "bfl", RefOf (\AUXD.BFL0), C016)
             M004 (Arg0, "bfl", RefOf (\AUXD.BFL0), C016)
             Unload (DDB0)
-            CH03 (Arg0, Z176, 0x0126, 0x077D, 0x00)
+            CH03 (Arg0, Z176, __LINE__, 0x00, 0x00)
             Return (0x00)
         }
 
@@ -2059,7 +2059,7 @@
 
             \DTM0.RFU3 = \DTM0.BUF3
             Load (\DTM0.RFU3, DDB0) /* \DTM2.TSTI.DDB0 */
-            If (CH03 (Arg0, Z176, 0x0130, 0x078F, 0x00))
+            If (CH03 (Arg0, Z176, __LINE__, 0x00, 0x00))
             {
                 Return (0x01)
             }
@@ -2099,7 +2099,7 @@
             }
 
             DDB1 = LoadTable ("OEM1", "", "", "\\", "\\DTM2.PLDT", \AUXD.INT0)
-            If (CH03 (Arg0, Z176, 0x0134, 0x07AD, 0x00))
+            If (CH03 (Arg0, Z176, __LINE__, 0x00, 0x00))
             {
                 Return (0x01)
             }
@@ -2118,7 +2118,7 @@
             }
 
             Unload (DDB1)
-            If (CH03 (Arg0, Z176, 0x0137, 0x07BA, 0x00))
+            If (CH03 (Arg0, Z176, __LINE__, 0x00, 0x00))
             {
                 Return (0x01)
             }
@@ -2141,7 +2141,7 @@
                 }
 
                 DDB1 = LoadTable ("OEM1", "", "", "\\", "\\DTM2.PLDT", \AUXD.STR0)
-                If (CH03 (Arg0, Z176, 0x013A, 0x07CA, 0x00))
+                If (CH03 (Arg0, Z176, __LINE__, 0x00, 0x00))
                 {
                     Return (0x01)
                 }
@@ -2160,7 +2160,7 @@
                 }
 
                 Unload (DDB1)
-                If (CH03 (Arg0, Z176, 0x013D, 0x07D7, 0x00))
+                If (CH03 (Arg0, Z176, __LINE__, 0x00, 0x00))
                 {
                     Return (0x01)
                 }
@@ -2184,7 +2184,7 @@
                 }
 
                 DDB1 = LoadTable ("OEM1", "", "", "\\", "\\DTM2.PLDT", \AUXD.BUF0)
-                If (CH03 (Arg0, Z176, 0x0140, 0x07E8, 0x00))
+                If (CH03 (Arg0, Z176, __LINE__, 0x00, 0x00))
                 {
                     Return (0x01)
                 }
@@ -2203,7 +2203,7 @@
                 }
 
                 Unload (DDB1)
-                If (CH03 (Arg0, Z176, 0x0143, 0x07F5, 0x00))
+                If (CH03 (Arg0, Z176, __LINE__, 0x00, 0x00))
                 {
                     Return (0x01)
                 }
@@ -2237,7 +2237,7 @@
                 }
 
                 DDB1 = LoadTable ("OEM1", "", "", "\\", "\\DTM2.PLDT", \AUXD.FLU0)
-                If (CH03 (Arg0, Z176, 0x0148, 0x080E, 0x00))
+                If (CH03 (Arg0, Z176, __LINE__, 0x00, 0x00))
                 {
                     Return (0x01)
                 }
@@ -2256,7 +2256,7 @@
                 }
 
                 Unload (DDB1)
-                If (CH03 (Arg0, Z176, 0x014B, 0x081B, 0x00))
+                If (CH03 (Arg0, Z176, __LINE__, 0x00, 0x00))
                 {
                     Return (0x01)
                 }
@@ -2363,7 +2363,7 @@
                 }
 
                 DDB1 = LoadTable ("OEM1", "", "", "\\", "\\DTM2.PLDT", \AUXD.BFL0)
-                If (CH03 (Arg0, Z176, 0x015E, 0x086E, 0x00))
+                If (CH03 (Arg0, Z176, __LINE__, 0x00, 0x00))
                 {
                     Return (0x01)
                 }
@@ -2382,7 +2382,7 @@
                 }
 
                 Unload (DDB1)
-                If (CH03 (Arg0, Z176, 0x0161, 0x087B, 0x00))
+                If (CH03 (Arg0, Z176, __LINE__, 0x00, 0x00))
                 {
                     Return (0x01)
                 }
@@ -2395,73 +2395,73 @@
             }
 
             Unload (DDB0)
-            CH03 (Arg0, Z176, 0x0163, 0x0886, 0x00)
+            CH03 (Arg0, Z176, __LINE__, 0x00, 0x00)
             Return (0x00)
         }
     }
 
     Method (TLT0, 0, Serialized)
     {
-        CH03 (__METHOD__, Z176, 0x0200, 0x0890, 0x00)
+        CH03 (__METHOD__, Z176, __LINE__, 0x00, 0x00)
         /* Simple Loadtable test */
 
         SRMT ("TLT0.tst0")
         \DTM2.TST0 (__METHOD__)
-        CH03 (__METHOD__, Z176, 0x0201, 0x0896, 0x00)
+        CH03 (__METHOD__, Z176, __LINE__, 0x00, 0x00)
         /* All comparisons of Loadtable parameters are case sensitive, */
         /* if no table matches the specified parameters, then 0 is returned */
         SRMT ("TLT0.tst1")
         \DTM2.TST1 (__METHOD__)
-        CH03 (__METHOD__, Z176, 0x0202, 0x089D, 0x00)
+        CH03 (__METHOD__, Z176, __LINE__, 0x00, 0x00)
         /* Any of the RootPathString, ParameterPathString, and ParameterData */
         /* parameters in LoadTable expression can be omitted */
         SRMT ("TLT0.tst2")
         \DTM2.TST2 (__METHOD__)
-        CH03 (__METHOD__, Z176, 0x0203, 0x08A4, 0x00)
+        CH03 (__METHOD__, Z176, __LINE__, 0x00, 0x00)
         /* Different sources of the String parameters: Named Objects, LocalX, */
         /* ArgX, elements of Packages, results of functions, any TermArg */
         SRMT ("TLT0.tst3")
         \DTM2.TST3 (__METHOD__)
-        CH03 (__METHOD__, Z176, 0x0204, 0x08AB, 0x00)
+        CH03 (__METHOD__, Z176, __LINE__, 0x00, 0x00)
         /* Different sources of the optional parameters (RootPathString, */
         /* ParameterPathString, and ParameterData): Named Objects, LocalX, */
         /* ArgX, elements of Packages, results of functions, any TermArg */
         SRMT ("TLT0.tst4")
         \DTM2.TST4 (__METHOD__)
-        CH03 (__METHOD__, Z176, 0x0205, 0x08B3, 0x00)
+        CH03 (__METHOD__, Z176, __LINE__, 0x00, 0x00)
         /* Namespace location to load the Definition Block is determined */
         /* by the RootPathString parameter of Loadtable */
         SRMT ("TLT0.tst5.0")
         \DTM2.TST5 (__METHOD__, "\\DTM2.DEVR")
-        CH03 (__METHOD__, Z176, 0x0206, 0x08BA, 0x00)
+        CH03 (__METHOD__, Z176, __LINE__, 0x00, 0x00)
         /* The RootPathString value is evaluated using normal scoping rules, */
         /* assuming that the scope of the LoadTable operator is the current */
         /* scope */
         SRMT ("TLT0.tst5.1")
         \DTM2.TST5 (__METHOD__, "^DEVR")
-        CH03 (__METHOD__, Z176, 0x0207, 0x08C2, 0x00)
+        CH03 (__METHOD__, Z176, __LINE__, 0x00, 0x00)
         /* "\" is assumed to be Namespace location to load the Definition */
         /* Block if RootPathString parameter is not specified */
         SRMT ("TLT0.tst6")
         \DTM2.TST6 (__METHOD__)
-        CH03 (__METHOD__, Z176, 0x0208, 0x08C9, 0x00)
+        CH03 (__METHOD__, Z176, __LINE__, 0x00, 0x00)
         /* If the first character of ParameterPathString is a backslash */
         /* or caret character, then the path of the object set up on success */
         /* is ParameterPathString. It is RootPathString.ParameterPathString */
         /* in any case. */
         SRMT ("TLT0.tst7")
         \DTM2.TST7 (__METHOD__)
-        CH03 (__METHOD__, Z176, 0x0209, 0x08D2, 0x00)
+        CH03 (__METHOD__, Z176, __LINE__, 0x00, 0x00)
         /* Implicit operand conversion of the parameters specified to be strings */
 
         SRMT ("TLT0.tste")
         \DTM2.TSTE (__METHOD__)
-        CH03 (__METHOD__, Z176, 0x020A, 0x08D8, 0x00)
+        CH03 (__METHOD__, Z176, __LINE__, 0x00, 0x00)
         /* LoadTable returns 0 if some SSDT matching the LoadTable */
         /* parameters is originally not listed in XSDT */
         /*SRMT("TLT0.tstf") */
         /*\DTM2.tstf(ts) */
-        CH03 (__METHOD__, Z176, 0x020B, 0x08DF, 0x00)
+        CH03 (__METHOD__, Z176, __LINE__, 0x00, 0x00)
     }
 
     /* Exceptional conditions */

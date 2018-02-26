@@ -243,7 +243,7 @@
         Local0 = RefOf (FU01)
         Local1 = RefOf (Local0)
         Local2 = DerefOf (Local0)
-        CH03 (Arg0, Z142, 0x10, 0xE0, 0x00)
+        CH03 (Arg0, Z142, __LINE__, 0x00, 0x00)
         Local3 = \DTR0.SSDT
         If ((Local2 != Local3))
         {

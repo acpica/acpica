@@ -45,7 +45,7 @@
             }
 
             Local2 = RefOf (FU01)
-            If (CH03 ("", 0x00, 0x00, 0x32, 0x00))
+            If (CH03 (__METHOD__, 0x00, __LINE__, 0x00, 0x00))
             {
                 Return (Zero)
             }

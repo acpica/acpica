@@ -112,11 +112,11 @@
             Debug = "---------------- Completed"
         }
 
-        CH03 ("", 0x00, 0x08, 0x65, 0x00)
+        CH03 (__METHOD__, 0x00, __LINE__, 0x00, 0x00)
         SRMT ("m1ec-m000")
         M000 ()
-        CH03 ("", 0x00, 0x09, 0x68, 0x00)
+        CH03 (__METHOD__, 0x00, __LINE__, 0x00, 0x00)
         SRMT ("m1ec-m001")
         M001 ()
-        CH03 ("", 0x00, 0x0A, 0x6B, 0x00)
+        CH03 (__METHOD__, 0x00, __LINE__, 0x00, 0x00)
     }

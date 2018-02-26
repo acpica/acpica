@@ -69,11 +69,11 @@
             /* CondRefOf */
 
             CondRefOf (Local0, Local1)
-            CH03 (__METHOD__, Z099, 0x01, 0x57, 0x00)
+            CH03 (__METHOD__, Z099, __LINE__, 0x00, 0x00)
             /* CopyObject */
 
             CopyObject (Local0, Local1)
-            CH03 (__METHOD__, Z099, 0x02, 0x5C, 0x00)
+            CH03 (__METHOD__, Z099, __LINE__, 0x00, 0x00)
             /* Decrement */
 
             Local0--
@@ -109,11 +109,11 @@
             /* ObjectType */
 
             Local1 = ObjectType (Local0)
-            CH03 (__METHOD__, Z099, 0x03, 0x89, 0x00)
+            CH03 (__METHOD__, Z099, __LINE__, 0x00, 0x00)
             /* RefOf */
 
             Local1 = RefOf (Local0)
-            CH03 (__METHOD__, Z099, 0x04, 0x8E, 0x00)
+            CH03 (__METHOD__, Z099, __LINE__, 0x00, 0x00)
             /* Release */
 
             Release (Local0)
@@ -121,11 +121,11 @@
             /* Reset */
 
             Reset (Local0)
-            CH03 (__METHOD__, Z099, 0x0E, 0x98, 0x00)
+            CH03 (__METHOD__, Z099, __LINE__, 0x00, 0x00)
             /* Signal */
 
             Signal (Local0)
-            CH03 (__METHOD__, Z099, 0x0F, 0x9D, 0x00)
+            CH03 (__METHOD__, Z099, __LINE__, 0x00, 0x00)
             /* SizeOf */
 
             Local1 = SizeOf (Local0)
@@ -315,7 +315,7 @@
             /* Wait */
 
             Local1 = Wait (Local0, I000)
-            CH03 (__METHOD__, Z099, 0x6C, 0x018F, 0x00)
+            CH03 (__METHOD__, Z099, __LINE__, 0x00, 0x00)
             Local1 = Wait (E000, Local0)
             CH06 (Arg0, 0x6D, 0x2F)
             /* XOr */
@@ -377,7 +377,7 @@
             /* CopyObject */
 
             CopyObject (DerefOf (Arg1), Local1)
-            CH03 (__METHOD__, Z099, 0x02, 0x01CC, 0x00)
+            CH03 (__METHOD__, Z099, __LINE__, 0x00, 0x00)
             /* Decrement */
 
             DerefOf (Arg1)--
@@ -413,7 +413,7 @@
             /* ObjectType */
 
             Local1 = ObjectType (DerefOf (Arg1))
-            CH03 (__METHOD__, Z099, 0x06, 0x01F9, 0x00)
+            CH03 (__METHOD__, Z099, __LINE__, 0x00, 0x00)
             /* RefOf */
 
             Local1 = RefOf (DerefOf (Arg1))
@@ -667,7 +667,7 @@
             /* CopyObject */
 
             CopyObject (M000 (), Local1)
-            CH03 (__METHOD__, Z099, 0x07, 0x0334, 0x00)
+            CH03 (__METHOD__, Z099, __LINE__, 0x00, 0x00)
             /* Decrement */
 
             M000 ()--
@@ -703,7 +703,7 @@
             /* ObjectType */
             /* **** Nov. 2016: Method invocation as arg to ObjectType is now illegal */
             Local0 = ObjectType (M000)
-            CH03 (__METHOD__, Z099, 0x08, 0x0362, 0x00)
+            CH03 (__METHOD__, Z099, __LINE__, 0x00, 0x00)
             /* RefOf */
             /* **** Oct. 2016: Method invocation as arg to RefOf is now illegal */
             /*		if (y601) { */
@@ -1009,7 +1009,7 @@
         }
 
         SET0 (Z099, __METHOD__, 0x00)
-        CH03 (__METHOD__, Z099, 0x0B, 0x04CE, 0x00)
+        CH03 (__METHOD__, Z099, __LINE__, 0x00, 0x00)
         /* Local Named Object */
         /*	m000(ts) */
         /* Global Named Object */

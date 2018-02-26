@@ -37,7 +37,7 @@
     {
         If (SLCK)
         {
-            CH03 ("", 0x00, Arg0, 0x29, 0x00)
+            CH03 (__METHOD__, 0x00, __LINE__, 0x00, 0x00)
         }
         Else
         {

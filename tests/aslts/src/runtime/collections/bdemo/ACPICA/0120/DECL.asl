@@ -117,11 +117,11 @@
             DD0D
         })
         Local0 = PP00 [0x00]
-        CH03 ("", 0x00, 0x05, 0x6A, 0x00)
+        CH03 (__METHOD__, 0x00, __LINE__, 0x00, 0x00)
         Debug = ObjectType (Local0)
-        CH03 ("", 0x00, 0x06, 0x6C, 0x00)
+        CH03 (__METHOD__, 0x00, __LINE__, 0x00, 0x00)
         Debug = DerefOf (Local0)
-        CH03 ("", 0x00, 0x07, 0x6E, 0x00)
+        CH03 (__METHOD__, 0x00, __LINE__, 0x00, 0x00)
         Local1 = ObjectType (Local0)
         If ((Local1 != C00E))
         {
@@ -136,11 +136,11 @@
             TZD2
         })
         Local0 = PP00 [0x00]
-        CH03 ("", 0x00, 0x09, 0x7C, 0x00)
+        CH03 (__METHOD__, 0x00, __LINE__, 0x00, 0x00)
         Debug = ObjectType (Local0)
-        CH03 ("", 0x00, 0x0A, 0x7E, 0x00)
+        CH03 (__METHOD__, 0x00, __LINE__, 0x00, 0x00)
         Debug = DerefOf (Local0)
-        CH03 ("", 0x00, 0x0B, 0x80, 0x00)
+        CH03 (__METHOD__, 0x00, __LINE__, 0x00, 0x00)
         Local1 = ObjectType (Local0)
         If ((Local1 != C015))
         {

@@ -433,11 +433,11 @@
 
         If (Y602)
         {
-            CH03 (__METHOD__, Z047, 0x00, 0x018D, 0x00)
+            CH03 (__METHOD__, Z047, __LINE__, 0x00, 0x00)
             Local0 = "0x0123456789abcdefa"
             ToInteger (Local0, Local2)
             CH04 (__METHOD__, 0x00, 0x22, Z047, __LINE__, 0x00, 0x00)
-            CH03 (__METHOD__, Z047, 0x02, 0x0192, 0x00)
+            CH03 (__METHOD__, Z047, __LINE__, 0x00, 0x00)
             Local0 = "0x000123456789abcdefa"
             ToInteger (Local0, Local2)
             CH04 (__METHOD__, 0x00, 0x22, Z047, __LINE__, 0x00, 0x00)

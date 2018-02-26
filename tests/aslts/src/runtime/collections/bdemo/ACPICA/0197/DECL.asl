@@ -32,7 +32,7 @@
      */
     Method (MFB1, 0, NotSerialized)
     {
-        CH03 ("", 0x00, 0x00, 0x25, 0x00)
+        CH03 (__METHOD__, 0x00, __LINE__, 0x00, 0x00)
         Local1 = "0x     12345678"
         ToInteger (Local1, Local0)
         CH04 (__METHOD__, 0x00, 0x22, 0x00, __LINE__, 0x00, 0x00) /* AE_BAD_HEX_CONSTANT */

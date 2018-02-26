@@ -63,9 +63,9 @@
             }
         }
 
-        CH03 (__METHOD__, Z179, 0x44, 0x42, 0x00)
+        CH03 (__METHOD__, Z179, __LINE__, 0x00, 0x00)
         M000 ()
-        CH03 (__METHOD__, Z179, 0x45, 0x44, 0x00)
+        CH03 (__METHOD__, Z179, __LINE__, 0x00, 0x00)
     }
 
     Method (FP01, 0, Serialized)
@@ -103,9 +103,9 @@
             }
         }
 
-        CH03 (__METHOD__, Z179, 0x44, 0x64, 0x00)
+        CH03 (__METHOD__, Z179, __LINE__, 0x00, 0x00)
         M000 (0x00)
-        CH03 (__METHOD__, Z179, 0x45, 0x66, 0x00)
+        CH03 (__METHOD__, Z179, __LINE__, 0x00, 0x00)
     }
 
     Method (FPD0, 0, NotSerialized)

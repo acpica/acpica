@@ -80,7 +80,7 @@
             Store (BF03 [0x00], Local1)
             If (Y900)
             {
-                CH03 (__METHOD__, Z106, 0x00, 0x56, 0x00)
+                CH03 (__METHOD__, Z106, __LINE__, 0x00, 0x00)
             }
             Else
             {
@@ -115,7 +115,7 @@
             Store (BF21 [0x00], Local1)
             If (Y900)
             {
-                CH03 (__METHOD__, Z106, 0x01, 0x75, 0x00)
+                CH03 (__METHOD__, Z106, __LINE__, 0x00, 0x00)
             }
             Else
             {
@@ -137,7 +137,7 @@
             }
 
             Local1 = DerefOf (Arg1)
-            CH03 (__METHOD__, Z106, 0x02, 0x89, 0x00)
+            CH03 (__METHOD__, Z106, __LINE__, 0x00, 0x00)
             Local1 = DerefOf (DerefOf (Arg1))
             CH06 (Arg0, 0x07, 0x2F)
             Store (DerefOf (Arg1) [0x00], Local1)
@@ -147,7 +147,7 @@
 
                 If (Y900)
                 {
-                    CH03 (__METHOD__, Z106, 0x03, 0x93, 0x00)
+                    CH03 (__METHOD__, Z106, __LINE__, 0x00, 0x00)
                 }
                 Else
                 {
@@ -251,7 +251,7 @@
             }
         }
 
-        CH03 (__METHOD__, Z106, 0x0C, 0xEE, 0x00)
+        CH03 (__METHOD__, Z106, __LINE__, 0x00, 0x00)
         /* Local Named Object */
 
         M000 (__METHOD__)

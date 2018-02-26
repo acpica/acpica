@@ -1702,7 +1702,7 @@
         {
             /* This is a reference */
 
-            CH03 (__METHOD__, 0x00, 0x00, 0x06F1, 0x00)
+            CH03 (__METHOD__, 0x00, __LINE__, 0x00, 0x00)
             Local7 = (Local0 + 0x01)
             CH04 (__METHOD__, 0x00, 0xFF, 0x00, __LINE__, 0x00, 0x00)
         }
@@ -1763,7 +1763,7 @@
         {
             /* This is a reference */
 
-            CH03 (__METHOD__, 0x00, 0x02, 0x0729, 0x00)
+            CH03 (__METHOD__, 0x00, __LINE__, 0x00, 0x00)
             Local7 = (Local0 + 0x01)
             CH04 (__METHOD__, 0x00, 0xFF, 0x00, __LINE__, 0x00, 0x00)
         }
@@ -1860,7 +1860,7 @@
         {
             /* This is a reference */
 
-            CH03 (__METHOD__, 0x00, 0x04, 0x0784, 0x00)
+            CH03 (__METHOD__, 0x00, __LINE__, 0x00, 0x00)
             Local7 = (Arg0 + 0x01)
             CH04 (__METHOD__, 0x00, 0xFF, 0x00, __LINE__, 0x00, 0x00)
         }
@@ -1921,7 +1921,7 @@
         {
             /* This is a reference */
 
-            CH03 (__METHOD__, 0x00, 0x06, 0x07BC, 0x00)
+            CH03 (__METHOD__, 0x00, __LINE__, 0x00, 0x00)
             Local7 = (Arg0 + 0x01)
             CH04 (__METHOD__, 0x00, 0xFF, 0x00, __LINE__, 0x00, 0x00)
         }
@@ -2012,7 +2012,7 @@
         {
             /* This is a reference */
 
-            CH03 (__METHOD__, 0x00, 0x08, 0x0810, 0x00)
+            CH03 (__METHOD__, 0x00, __LINE__, 0x00, 0x00)
             Local7 = (III0 + 0x01)
             CH04 (__METHOD__, 0x00, 0xFF, 0x00, __LINE__, 0x00, 0x00)
         }
@@ -2074,7 +2074,7 @@
         {
             /* This is a reference */
 
-            CH03 (__METHOD__, 0x00, 0x0A, 0x084A, 0x00)
+            CH03 (__METHOD__, 0x00, __LINE__, 0x00, 0x00)
             Local7 = (III0 + 0x01)
             CH04 (__METHOD__, 0x00, 0xFF, 0x00, __LINE__, 0x00, 0x00)
         }
@@ -2754,9 +2754,9 @@
      */
     Method (M26D, 0, NotSerialized)
     {
-        CH03 ("m26d", 0x00, 0x00, 0x0BB5, 0x00)
+        CH03 ("m26d", 0x00, __LINE__, 0x00, 0x00)
         M1AE ("m26d", "Buffer total", "Not implemented yet")
-        CH03 ("m26d", 0x00, 0x01, 0x0BB7, 0x00)
+        CH03 ("m26d", 0x00, __LINE__, 0x00, 0x00)
     }
 
     /*
@@ -2773,14 +2773,14 @@
             Debug = __METHOD__ /* \M26E.TS__ */
         }
 
-        CH03 (__METHOD__, 0x00, 0x00, 0x0BC7, 0x00)
+        CH03 (__METHOD__, 0x00, __LINE__, 0x00, 0x00)
         /* Store */
 
         M365 ()
         /* CopyObject */
 
         M366 ()
-        CH03 (__METHOD__, 0x00, 0x01, 0x0BCF, 0x00)
+        CH03 (__METHOD__, 0x00, __LINE__, 0x00, 0x00)
     }
 
     Method (M365, 0, Serialized)
@@ -3127,9 +3127,9 @@
      */
     Method (M26F, 0, NotSerialized)
     {
-        CH03 ("m26f", 0x00, 0x00, 0x0D1E, 0x00)
+        CH03 ("m26f", 0x00, __LINE__, 0x00, 0x00)
         M1AE ("m26f", "All the legal ways of writing IRef reference to some target location", "Not implemented yet")
-        CH03 ("m26f", 0x00, 0x01, 0x0D23, 0x00)
+        CH03 ("m26f", 0x00, __LINE__, 0x00, 0x00)
     }
 
     /*
@@ -3137,7 +3137,7 @@
      */
     Method (M270, 0, Serialized)
     {
-        CH03 (__METHOD__, 0x00, 0x00, 0x0D2D, 0x00)
+        CH03 (__METHOD__, 0x00, __LINE__, 0x00, 0x00)
         If (Y100)
         {
             TS00 (__METHOD__)
@@ -3147,17 +3147,17 @@
             Debug = __METHOD__ /* \M270.TS__ */
         }
 
-        CH03 (__METHOD__, 0x00, 0x01, 0x0D35, 0x00)
+        CH03 (__METHOD__, 0x00, __LINE__, 0x00, 0x00)
         /* Store */
 
         M367 ()
-        CH03 (__METHOD__, 0x00, 0x02, 0x0D3A, 0x00)
+        CH03 (__METHOD__, 0x00, __LINE__, 0x00, 0x00)
         /* CopyObject */
 
         M368 ()
-        CH03 (__METHOD__, 0x00, 0x03, 0x0D3F, 0x00)
+        CH03 (__METHOD__, 0x00, __LINE__, 0x00, 0x00)
         M1AE ("m270", "All the legal sources of references (ORef and IRef)", "Started, but not implemented yet")
-        CH03 (__METHOD__, 0x00, 0x04, 0x0D44, 0x00)
+        CH03 (__METHOD__, 0x00, __LINE__, 0x00, 0x00)
     }
 
     Method (M367, 0, Serialized)

@@ -141,9 +141,9 @@
             }
         }
 
-        CH03 (__METHOD__, Z173, 0x01, 0x43, 0x00)
+        CH03 (__METHOD__, Z173, __LINE__, 0x00, 0x00)
         M000 ()
-        CH03 (__METHOD__, Z173, 0x02, 0x45, 0x00)
+        CH03 (__METHOD__, Z173, __LINE__, 0x00, 0x00)
     }
 
     /*
@@ -259,9 +259,9 @@
             }
         }
 
-        CH03 (__METHOD__, Z173, 0x04, 0x69, 0x00)
+        CH03 (__METHOD__, Z173, __LINE__, 0x00, 0x00)
         M000 ()
-        CH03 (__METHOD__, Z173, 0x05, 0x6B, 0x00)
+        CH03 (__METHOD__, Z173, __LINE__, 0x00, 0x00)
     }
 
     /*
@@ -446,14 +446,14 @@
             I001 = 0xABCD0000
         }
 
-        CH03 (__METHOD__, Z173, 0x07, 0xAB, 0x00)
+        CH03 (__METHOD__, Z173, __LINE__, 0x00, 0x00)
         M000 ()
         If ((I001 != 0xABCD0000))
         {
             ERR (__METHOD__, Z173, __LINE__, 0x00, 0x00, I001, 0xABCD0000)
         }
 
-        CH03 (__METHOD__, Z173, 0x09, 0xB1, 0x00)
+        CH03 (__METHOD__, Z173, __LINE__, 0x00, 0x00)
     }
 
     /*
@@ -798,7 +798,7 @@
             }
         }
 
-        CH03 (__METHOD__, Z173, 0x0A, 0x012B, 0x00)
+        CH03 (__METHOD__, Z173, __LINE__, 0x00, 0x00)
         I000 = Arg0
         I001 = Arg1
         I005 = Arg2
@@ -820,7 +820,7 @@
             }
         }
 
-        CH03 (__METHOD__, Z173, 0x0E, 0x013E, 0x00)
+        CH03 (__METHOD__, Z173, __LINE__, 0x00, 0x00)
     }
 
     Method (M3B4, 0, Serialized)
@@ -1168,7 +1168,7 @@
             }
         }
 
-        CH03 (__METHOD__, Z173, 0x0F, 0x01B0, 0x00)
+        CH03 (__METHOD__, Z173, __LINE__, 0x00, 0x00)
         I000 = Arg0
         I001 = Arg1
         MM00 (0x00, I000, I001)
@@ -1189,7 +1189,7 @@
             }
         }
 
-        CH03 (__METHOD__, Z173, 0x13, 0x01C2, 0x00)
+        CH03 (__METHOD__, Z173, __LINE__, 0x00, 0x00)
     }
 
     Method (M3B6, 0, Serialized)
@@ -1577,7 +1577,7 @@
             }
         }
 
-        CH03 (__METHOD__, Z173, 0x14, 0x025C, 0x00)
+        CH03 (__METHOD__, Z173, __LINE__, 0x00, 0x00)
         I000 = Arg0
         I001 = Arg1
         I005 = Arg2
@@ -1599,7 +1599,7 @@
             }
         }
 
-        CH03 (__METHOD__, Z173, 0x18, 0x026F, 0x00)
+        CH03 (__METHOD__, Z173, __LINE__, 0x00, 0x00)
     }
 
     Method (M3B8, 0, Serialized)
@@ -2594,7 +2594,7 @@
             }
         }
 
-        CH03 (__METHOD__, Z173, 0x0A, 0x04BE, 0x00)
+        CH03 (__METHOD__, Z173, __LINE__, 0x00, 0x00)
         I000 = Arg0
         I001 = Arg1
         I005 = Arg2
@@ -2643,7 +2643,7 @@
             }
         }
 
-        CH03 (__METHOD__, Z173, 0x0E, 0x04E1, 0x00)
+        CH03 (__METHOD__, Z173, __LINE__, 0x00, 0x00)
     }
 
     Method (M3BC, 0, Serialized)

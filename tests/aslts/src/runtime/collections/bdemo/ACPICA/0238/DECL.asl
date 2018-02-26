@@ -40,7 +40,7 @@
             Acquire (MX07, 0xFFFF)
             Acquire (MX08, 0xFFFF)
             Acquire (MX09, 0xFFFF)
-            CH03 ("", 0x00, 0x00, 0x2F, 0x00)
+            CH03 (__METHOD__, 0x00, __LINE__, 0x00, 0x00)
             Release (MX08)
             /*
              * Release(MX08) above doesn't cause exception
@@ -63,7 +63,7 @@
             Release (MX09)
             Release (MX08)
             Release (MX07)
-            CH03 ("", 0x00, 0x03, 0x47, 0x00)
+            CH03 (__METHOD__, 0x00, __LINE__, 0x00, 0x00)
         }
 
         M000 ()

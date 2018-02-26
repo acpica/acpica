@@ -38,7 +38,7 @@
             Arg0 = "87654321"
         }
 
-        CH03 ("", 0x00, 0x00, 0x2C, 0x00)
+        CH03 (__METHOD__, 0x00, __LINE__, 0x00, 0x00)
         Local0 = 0x12345678
         Local0 = "87654321"
         If ((ObjectType (Local0) != 0x02))
@@ -61,5 +61,5 @@
             ERR (__METHOD__, ZFFF, __LINE__, 0x00, 0x00, ObjectType (Local2), 0x02)
         }
 
-        CH03 ("", 0x00, 0x04, 0x45, 0x00)
+        CH03 (__METHOD__, 0x00, __LINE__, 0x00, 0x00)
     }

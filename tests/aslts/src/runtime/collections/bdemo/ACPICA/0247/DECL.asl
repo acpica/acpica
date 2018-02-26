@@ -43,7 +43,7 @@
             Local0 = 0x02
             While (Local0)
             {
-                If (CH03 ("", 0x00, ERRN, 0x32, 0x00))
+                If (CH03 (__METHOD__, 0x00, __LINE__, 0x00, 0x00))
                 {
                     Return (Zero)
                 }
@@ -74,7 +74,7 @@
 
                 }
 
-                If (CH03 ("", 0x00, ERRN, 0x46, 0x00))
+                If (CH03 (__METHOD__, 0x00, __LINE__, 0x00, 0x00))
                 {
                     Return (Zero)
                 }

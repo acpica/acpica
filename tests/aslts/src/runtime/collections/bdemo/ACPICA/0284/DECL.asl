@@ -70,7 +70,7 @@
             If (CH04 (__METHOD__, 0x00, 0xFF, 0x00, __LINE__, 0x00, 0x00))
             {
                 Unload (HI0)
-                CH03 ("", 0x00, 0x02, 0x4B, 0x00)
+                CH03 (__METHOD__, 0x00, __LINE__, 0x00, 0x00)
             }
         }
     }

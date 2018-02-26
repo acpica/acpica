@@ -1386,5 +1386,5 @@
     {
         Debug = "TEST: NM01, Declare Control Method Named Object"
         M207 ()
-        CH03 ("NM01", Z133, 0xD1, 0x0441, 0x00)
+        CH03 ("NM01", Z133, __LINE__, 0x00, 0x00)
     }

@@ -33,10 +33,10 @@
     Method (ME2A, 0, Serialized)
     {
         Name (I000, 0x89ABCDEF)
-        CH03 ("", 0x00, 0x00, 0x27, 0x00)
+        CH03 (__METHOD__, 0x00, __LINE__, 0x00, 0x00)
         Local0 = ToInteger ("0")    /* AE_BAD_DECIMAL_CONSTANT */
         Local0 = ToInteger ("0x0")  /* AE_BAD_HEX_CONSTANT */
         Store (("0" + 0x01), Local0)       /* AE_BAD_HEX_CONSTANT */
         I000 = "0"  /* AE_BAD_HEX_CONSTANT */
-        CH03 ("", 0x00, 0x00, 0x31, 0x00)
+        CH03 (__METHOD__, 0x00, __LINE__, 0x00, 0x00)
     }

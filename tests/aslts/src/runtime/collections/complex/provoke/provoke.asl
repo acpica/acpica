@@ -49,7 +49,7 @@
             ERR (Arg0, Z055, __LINE__, 0x00, 0x00, Local0, 0x00)
         }
 
-        CH03 (Arg0, Z055, 0x01, 0x36, 0x00)
+        CH03 (Arg0, Z055, __LINE__, 0x00, 0x00)
     }
 
     /* Store-like actions affect the source objects passed as parameter */
@@ -71,7 +71,7 @@
             ERR (Arg0, Z055, __LINE__, 0x00, 0x00, Local0, 0x0A)
         }
 
-        CH03 (Arg0, Z055, 0x03, 0x4B, 0x00)
+        CH03 (Arg0, Z055, __LINE__, 0x00, 0x00)
     }
 
     /* Operator doesn't update the source object passed to method as a REFERENCE */
@@ -86,7 +86,7 @@
             ERR (Arg0, Z055, __LINE__, 0x00, 0x00, Local0, 0x09)
         }
 
-        CH03 (Arg0, Z055, 0x05, 0x59, 0x00)
+        CH03 (Arg0, Z055, __LINE__, 0x00, 0x00)
     }
 
     Method (M134, 1, NotSerialized)
@@ -98,7 +98,7 @@
             ERR (Arg0, Z055, __LINE__, 0x00, 0x00, Local0, 0x09)
         }
 
-        CH03 (Arg0, Z055, 0x07, 0x64, 0x00)
+        CH03 (Arg0, Z055, __LINE__, 0x00, 0x00)
     }
 
     Method (M135, 1, NotSerialized)
@@ -115,7 +115,7 @@
             ERR (Arg0, Z055, __LINE__, 0x00, 0x00, Local0, 0x05)
         }
 
-        CH03 (Arg0, Z055, 0x09, 0x74, 0x00)
+        CH03 (Arg0, Z055, __LINE__, 0x00, 0x00)
     }
 
     /* Run-method */

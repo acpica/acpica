@@ -76,11 +76,11 @@
             /* CondRefOf */
 
             CondRefOf (Local0, Local1)
-            CH03 (__METHOD__, Z104, 0x01, 0x5B, 0x00)
+            CH03 (__METHOD__, Z104, __LINE__, 0x00, 0x00)
             /* CopyObject */
 
             CopyObject (Local0, Local1)
-            CH03 (__METHOD__, Z104, 0x02, 0x60, 0x00)
+            CH03 (__METHOD__, Z104, __LINE__, 0x00, 0x00)
             /* Decrement */
 
             Local0--
@@ -116,11 +116,11 @@
             /* ObjectType */
 
             Local1 = ObjectType (Local0)
-            CH03 (__METHOD__, Z104, 0x03, 0x8D, 0x00)
+            CH03 (__METHOD__, Z104, __LINE__, 0x00, 0x00)
             /* RefOf */
 
             Local1 = RefOf (Local0)
-            CH03 (__METHOD__, Z104, 0x04, 0x92, 0x00)
+            CH03 (__METHOD__, Z104, __LINE__, 0x00, 0x00)
             /* Release */
 
             Release (Local0)
@@ -384,7 +384,7 @@
             /* CopyObject */
 
             CopyObject (DerefOf (Arg1), Local1)
-            CH03 (__METHOD__, Z104, 0x02, 0x01D0, 0x00)
+            CH03 (__METHOD__, Z104, __LINE__, 0x00, 0x00)
             /* Decrement */
 
             DerefOf (Arg1)--
@@ -420,7 +420,7 @@
             /* ObjectType */
 
             Local1 = ObjectType (DerefOf (Arg1))
-            CH03 (__METHOD__, Z104, 0x06, 0x01FD, 0x00)
+            CH03 (__METHOD__, Z104, __LINE__, 0x00, 0x00)
             /* RefOf */
 
             Local1 = RefOf (DerefOf (Arg1))
@@ -674,7 +674,7 @@
             /* CopyObject */
 
             CopyObject (M000 (), Local1)
-            CH03 (__METHOD__, Z104, 0x07, 0x0337, 0x00)
+            CH03 (__METHOD__, Z104, __LINE__, 0x00, 0x00)
             /* Decrement */
 
             M000 ()--
@@ -710,7 +710,7 @@
             /* ObjectType */
             /* **** Nov. 2016: Method invocation as arg to ObjectType is now illegal */
             Local0 = ObjectType (M000)
-            CH03 (__METHOD__, Z104, 0x08, 0x0365, 0x00)
+            CH03 (__METHOD__, Z104, __LINE__, 0x00, 0x00)
             /* RefOf */
             /* **** Oct. 2016: Method invocation as arg to RefOf is now illegal */
             /*		if (y601) { */
@@ -1016,7 +1016,7 @@
         }
 
         SET0 (Z104, __METHOD__, 0x00)
-        CH03 (__METHOD__, Z104, 0x0B, 0x04D1, 0x00)
+        CH03 (__METHOD__, Z104, __LINE__, 0x00, 0x00)
         /* Local Named Object */
 
         M000 (__METHOD__)

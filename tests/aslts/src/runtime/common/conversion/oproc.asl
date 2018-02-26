@@ -816,7 +816,7 @@
         If (EX00)
         {
             TMP0 = FLG2 /* \FLG2 */
-            CH03 (TS, Z064, 0x00, 0x0288, 0x00)
+            CH03 (TS, Z064, __LINE__, 0x00, 0x00)
         }
 
         Local7 = M482 (Local0, Local1, Local2, Local3, Local4, TMP0, Arg0)
@@ -854,7 +854,7 @@
 
             If (EX00)
             {
-                CH03 (TS, Z064, 0x02, 0x02A6, 0x00)
+                CH03 (TS, Z064, __LINE__, 0x00, 0x00)
             }
 
             Local7 = M482 (Local1, Local0, Local2, Local3, Local4, TMP0, Arg0)
@@ -1292,7 +1292,7 @@
         If (EX00)
         {
             TMP0 = FLG2 /* \FLG2 */
-            CH03 (TS, Z064, 0x04, 0x0421, 0x00)
+            CH03 (TS, Z064, __LINE__, 0x00, 0x00)
         }
 
         Local7 = M482 (Local0, Local1, Local2, Local3, 0x00, TMP0, Arg0)

@@ -47,7 +47,7 @@
             0x04
         })
         I001 = Arg0
-        CH03 (__METHOD__, Z154, 0x14, 0x30, 0x00)
+        CH03 (__METHOD__, Z154, __LINE__, 0x00, 0x00)
         Method (M001, 0, NotSerialized)
         {
             Method (M002, 0, NotSerialized)
@@ -103,7 +103,7 @@
         Store ((D000.I000 + M001 ()), Local0)
         If (FLG9)
         {
-            CH03 (__METHOD__, Z154, 0x14, 0x61, 0x00)
+            CH03 (__METHOD__, Z154, __LINE__, 0x00, 0x00)
             If ((Local0 != 0x87654321))
             {
                 ERR (__METHOD__, Z154, __LINE__, 0x00, 0x00, Local0, 0x87654321)
@@ -139,7 +139,7 @@
             0x04
         })
         I001 = Arg0
-        CH03 (__METHOD__, Z154, 0x14, 0x7C, 0x00)
+        CH03 (__METHOD__, Z154, __LINE__, 0x00, 0x00)
         Method (M001, 0, NotSerialized)
         {
             Method (M002, 0, NotSerialized)
@@ -195,7 +195,7 @@
         Store ((TZ00.I000 + M001 ()), Local0)
         If (FLG9)
         {
-            CH03 (__METHOD__, Z154, 0x14, 0xAC, 0x00)
+            CH03 (__METHOD__, Z154, __LINE__, 0x00, 0x00)
             If ((Local0 != 0x87654321))
             {
                 ERR (__METHOD__, Z154, __LINE__, 0x00, 0x00, Local0, 0x87654321)
@@ -231,7 +231,7 @@
             0x04
         })
         I001 = Arg0
-        CH03 (__METHOD__, Z154, 0x14, 0xC7, 0x00)
+        CH03 (__METHOD__, Z154, __LINE__, 0x00, 0x00)
         Method (M001, 0, NotSerialized)
         {
             Method (M002, 0, NotSerialized)
@@ -287,7 +287,7 @@
         Store ((PR00.I000 + M001 ()), Local0)
         If (FLG9)
         {
-            CH03 (__METHOD__, Z154, 0x14, 0xF8, 0x00)
+            CH03 (__METHOD__, Z154, __LINE__, 0x00, 0x00)
             If ((Local0 != 0x87654321))
             {
                 ERR (__METHOD__, Z154, __LINE__, 0x00, 0x00, Local0, 0x87654321)
@@ -323,7 +323,7 @@
             0x04
         })
         I001 = Arg0
-        CH03 (__METHOD__, Z154, 0x1D, 0x0113, 0x00)
+        CH03 (__METHOD__, Z154, __LINE__, 0x00, 0x00)
         Method (M001, 0, NotSerialized)
         {
             Method (M002, 0, NotSerialized)
@@ -379,7 +379,7 @@
         Store ((PW00.I000 + M001 ()), Local0)
         If (FLG9)
         {
-            CH03 (__METHOD__, Z154, 0x14, 0x0144, 0x00)
+            CH03 (__METHOD__, Z154, __LINE__, 0x00, 0x00)
             If ((Local0 != 0x87654321))
             {
                 ERR (__METHOD__, Z154, __LINE__, 0x00, 0x00, Local0, 0x87654321)

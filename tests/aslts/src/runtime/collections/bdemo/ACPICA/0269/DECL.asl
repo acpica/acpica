@@ -100,7 +100,7 @@
             Return (MADD (I000, M002 ()))
         }
 
-        CH03 ("", 0x00, 0x00, 0x5D, 0x00)
+        CH03 (__METHOD__, 0x00, __LINE__, 0x00, 0x00)
         Local0 = MADD (I000, M001 ())
         If ((Local0 != 0x87654321))
         {
@@ -116,5 +116,5 @@
         Debug = Local0
         Debug = "i000:"
         Debug = I000 /* \M022.I000 */
-        CH03 ("", 0x00, 0x00, 0x6F, 0x00)
+        CH03 (__METHOD__, 0x00, __LINE__, 0x00, 0x00)
     }

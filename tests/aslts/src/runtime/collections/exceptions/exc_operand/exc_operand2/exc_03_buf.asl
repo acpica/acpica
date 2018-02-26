@@ -60,7 +60,7 @@
             }
 
             Store (B000 [0x00], Local1)
-            CH03 (__METHOD__, Z095, 0x00, 0x3C, 0x00)
+            CH03 (__METHOD__, Z095, __LINE__, 0x00, 0x00)
         }
 
         /* Global Named Object */
@@ -74,7 +74,7 @@
             }
 
             Store (B100 [0x00], Local1)
-            CH03 (__METHOD__, Z095, 0x01, 0x48, 0x00)
+            CH03 (__METHOD__, Z095, __LINE__, 0x00, 0x00)
         }
 
         /* Argument */
@@ -92,7 +92,7 @@
             Local1 = Acquire (Arg1, 0x0000)
             CH06 (Arg0, 0x06, 0x2F)
             Store (Arg1 [0x00], Local1)
-            CH03 (__METHOD__, Z095, 0x02, 0x5E, 0x00)
+            CH03 (__METHOD__, Z095, __LINE__, 0x00, 0x00)
             Local1 = Wait (Arg1, 0x00)
             CH06 (Arg0, 0x07, 0x2F)
             Local1 = Match (Arg1, MTR, 0x00, MTR, 0x00, 0x00)
@@ -118,7 +118,7 @@
             Local1 = Acquire (Local0, 0x0000)
             CH06 (Arg0, 0x0D, 0x2F)
             Store (Local0 [0x00], Local1)
-            CH03 (__METHOD__, Z095, 0x03, 0x7C, 0x00)
+            CH03 (__METHOD__, Z095, __LINE__, 0x00, 0x00)
             Local1 = Wait (Local0, 0x00)
             CH06 (Arg0, 0x0E, 0x2F)
             Local1 = Match (Local0, MTR, 0x00, MTR, 0x00, 0x00)
@@ -141,7 +141,7 @@
             Local1 = DerefOf (DerefOf (Local0 = P000 [0x00]))
             CH06 (Arg0, 0x12, 0x2F)
             Store (DerefOf (Local0 = P000 [0x00]) [0x00], Local1)
-            CH03 (__METHOD__, Z095, 0x05, 0x90, 0x00)
+            CH03 (__METHOD__, Z095, __LINE__, 0x00, 0x00)
             Local1 = Match (DerefOf (Local0 = P000 [0x00]), MTR, 0x00, MTR, 0x00,
                 0x00)
             CH06 (Arg0, 0x13, 0x2F)
@@ -161,11 +161,11 @@
             }
 
             Local1 = DerefOf (Arg1)
-            CH03 (__METHOD__, Z095, 0x06, 0xA3, 0x00)
+            CH03 (__METHOD__, Z095, __LINE__, 0x00, 0x00)
             Local1 = DerefOf (DerefOf (Arg1))
             CH06 (Arg0, 0x15, 0x2F)
             Store (DerefOf (Arg1) [0x00], Local1)
-            CH03 (__METHOD__, Z095, 0x07, 0xA9, 0x00)
+            CH03 (__METHOD__, Z095, __LINE__, 0x00, 0x00)
             Local1 = Match (DerefOf (Arg1), MTR, 0x00, MTR, 0x00, 0x00)
             CH06 (Arg0, 0x16, 0x2F)
             Return (0x00)
@@ -225,11 +225,11 @@
                 CH00 (Arg0, 0x05)
             }
 
-            CH03 (__METHOD__, Z095, 0x0C, 0xE0, 0x00)
+            CH03 (__METHOD__, Z095, __LINE__, 0x00, 0x00)
             Store (M000 (0x06) [0x00], Local1)
             If (Y900)
             {
-                CH03 (__METHOD__, Z095, 0x08, 0xE3, 0x00)
+                CH03 (__METHOD__, Z095, __LINE__, 0x00, 0x00)
                 CH00 (Arg0, 0x06)
             }
             Else
@@ -288,7 +288,7 @@
                 Local0 = (0x03 * LPC0) /* \M4B3.M007.LPC0 */
                 I000 = 0x00
                 Local1 = DerefOf (M000 (0x01, LPC0))
-                CH03 (__METHOD__, Z095, 0x0116, 0x00, 0x00)
+                CH03 (__METHOD__, Z095, __LINE__, 0x00, 0x00)
                 CH00 (Arg0, 0x01)
                 Local1 = DerefOf (DerefOf (M000 (0x02, LPC0)))
                 CH06 (Arg0, (0x20 + Local0), 0x2F)
@@ -304,7 +304,7 @@
             }
         }
 
-        CH03 (__METHOD__, Z095, 0x0B, 0x012A, 0x00)
+        CH03 (__METHOD__, Z095, __LINE__, 0x00, 0x00)
         /* Local Named Object */
 
         M000 (__METHOD__)

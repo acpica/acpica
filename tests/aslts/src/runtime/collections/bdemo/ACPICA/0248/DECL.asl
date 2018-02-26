@@ -136,7 +136,7 @@
             M1A9 ()
         }
 
-        CH03 ("", 0x00, 0x02, 0x8A, 0x00)
+        CH03 (__METHOD__, 0x00, __LINE__, 0x00, 0x00)
         MM00 ()
         /* Check opcode of the last exception */
 
@@ -158,13 +158,13 @@
         Name (HG00, 0x01) /* if non-zero - the test hangs */
         Name (HG01, 0x01) /* if non-zero - the test hangs */
         Name (HG02, 0x01) /* if non-zero - the test hangs */
-        CH03 ("", 0x00, 0xB8, 0x9F, 0x00)
+        CH03 (__METHOD__, 0x00, __LINE__, 0x00, 0x00)
         CopyObject (Local0 = P000 [0x01], I001) /* \M03D.I001 */
-        CH03 ("", 0x00, 0xB9, 0xA3, 0x00)
+        CH03 (__METHOD__, 0x00, __LINE__, 0x00, 0x00)
         /* Type of i001 should be already IRef here, */
         /* so, don't expect exception. */
         I001 = Local0 = P000 [0x00]
-        CH03 ("", 0x00, 0xBA, 0xAA, 0x00)
+        CH03 (__METHOD__, 0x00, __LINE__, 0x00, 0x00)
         Local7 = (Local0 + 0x01)
         If (Y248)
         {

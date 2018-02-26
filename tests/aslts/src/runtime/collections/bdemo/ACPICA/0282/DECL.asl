@@ -42,7 +42,7 @@
             Debug = BUF0 /* \D282.BUF0 */
             Load (BUF0, Local0)
             Debug = BUF0 /* \D282.BUF0 */
-            CH03 ("", 0x00, 0x01, 0x2F, 0x00)
+            CH03 (__METHOD__, 0x00, __LINE__, 0x00, 0x00)
         }
     }
 

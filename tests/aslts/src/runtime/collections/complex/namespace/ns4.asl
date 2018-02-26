@@ -44,7 +44,7 @@
             0x03,
             0x04
         })
-        CH03 (__METHOD__, Z158, 0x00, 0x2F, 0x00)
+        CH03 (__METHOD__, Z158, __LINE__, 0x00, 0x00)
         I001 = Arg0
         Method (MADD, 2, NotSerialized)
         {
@@ -115,7 +115,7 @@
             ERR (__METHOD__, Z158, __LINE__, 0x00, 0x00, I000, 0x80000000)
         }
 
-        CH03 (__METHOD__, Z158, 0x03, 0x6E, 0x00)
+        CH03 (__METHOD__, Z158, __LINE__, 0x00, 0x00)
     }
 
     Method (N004, 0, NotSerialized)

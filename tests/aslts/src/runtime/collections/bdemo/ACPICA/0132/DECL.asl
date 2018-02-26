@@ -33,9 +33,9 @@
     Method (MF1F, 2, NotSerialized)
     {
         Debug = Arg0
-        CH03 ("", 0x00, 0x00, 0x27, 0x00)
+        CH03 (__METHOD__, 0x00, __LINE__, 0x00, 0x00)
         Local7 = (Arg0 + 0x01)
-        CH03 ("", 0x00, 0x01, 0x29, 0x00)
+        CH03 (__METHOD__, 0x00, __LINE__, 0x00, 0x00)
         If ((Local7 != 0x78))
         {
             ERR (__METHOD__, ZFFF, __LINE__, 0x00, 0x00, ID12, 0x05)

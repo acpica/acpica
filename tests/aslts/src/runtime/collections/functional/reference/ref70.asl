@@ -53,7 +53,7 @@
             }
         }
 
-        CH03 (__METHOD__, Z081, 0x0200, 0x3A, Arg6)
+        CH03 (__METHOD__, Z081, __LINE__, 0x00, Arg6)
         /*
          // FILE BUG: hangs without printing error
          Store(CH03(ts, z081, 0x200, __LINE__, arg6), Local0)
@@ -98,7 +98,7 @@
      */
     Method (M167, 1, Serialized)
     {
-        CH03 ("m167", Z081, 0x0206, 0x66, 0x38)
+        CH03 ("m167", Z081, __LINE__, 0x00, 0x38)
         Switch (ToInteger (Arg0))
         {
             Case (0x00)
@@ -132,7 +132,7 @@
 
         Method (M001, 1, NotSerialized)
         {
-            CH03 (__METHOD__, Z081, 0x0202, 0x83, 0x36)
+            CH03 (__METHOD__, Z081, __LINE__, 0x00, 0x36)
             If (Arg0)
             {
                 Local7 = 0x00
@@ -145,7 +145,7 @@
 
         Method (M002, 1, NotSerialized)
         {
-            CH03 (__METHOD__, Z081, 0x0204, 0x8D, 0x37)
+            CH03 (__METHOD__, Z081, __LINE__, 0x00, 0x37)
             If (0x00)
             {
                 Local7 = 0x00
@@ -162,7 +162,7 @@
 
         Method (M004, 1, NotSerialized)
         {
-            CH03 (__METHOD__, Z081, 0x0208, 0x99, 0x3A)
+            CH03 (__METHOD__, Z081, __LINE__, 0x00, 0x3A)
             While (Arg0)
             {
                 Local7 = 0x00
@@ -228,36 +228,36 @@
         {
             /* CondRefOf */
 
-            CH03 (__METHOD__, Z081, 0x020A, 0xC8, 0x00)
+            CH03 (__METHOD__, Z081, __LINE__, 0x00, 0x00)
             M480 (Arg0, 0x00, 0x00, 0x00, 0x00, 0x00, 0x05)
-            CH03 (__METHOD__, Z081, 0x020B, 0xCA, 0x00)
+            CH03 (__METHOD__, Z081, __LINE__, 0x00, 0x00)
         }
 
         If (RN01)
         {
             /* DerefOf */
 
-            CH03 (__METHOD__, Z081, 0x020C, 0xD0, 0x00)
+            CH03 (__METHOD__, Z081, __LINE__, 0x00, 0x00)
             M480 (Arg0, 0x00, 0x00, 0x00, 0x00, 0x00, 0x08)
-            CH03 (__METHOD__, Z081, 0x020D, 0xD2, 0x00)
+            CH03 (__METHOD__, Z081, __LINE__, 0x00, 0x00)
         }
 
         If (RN02)
         {
             /* ObjectType */
 
-            CH03 (__METHOD__, Z081, 0x020E, 0xD8, 0x00)
+            CH03 (__METHOD__, Z081, __LINE__, 0x00, 0x00)
             M480 (Arg0, 0x00, 0x00, 0x00, 0x00, 0x00, 0x20)
-            CH03 (__METHOD__, Z081, 0x020F, 0xDA, 0x00)
+            CH03 (__METHOD__, Z081, __LINE__, 0x00, 0x00)
         }
 
         If (RN03)
         {
             /* RefOf */
 
-            CH03 (__METHOD__, Z081, 0x0210, 0xE0, 0x00)
+            CH03 (__METHOD__, Z081, __LINE__, 0x00, 0x00)
             M480 (Arg0, 0x00, 0x00, 0x00, 0x00, 0x00, 0x22)
-            CH03 (__METHOD__, Z081, 0x0211, 0xE2, 0x00)
+            CH03 (__METHOD__, Z081, __LINE__, 0x00, 0x00)
         }
 
         If (RN04)
@@ -319,9 +319,9 @@
 
             If (Local0)
             {
-                CH03 (__METHOD__, Z081, 0x0212, 0x010A, 0x00)
+                CH03 (__METHOD__, Z081, __LINE__, 0x00, 0x00)
                 M480 (Arg0, 0x00, 0x00, 0x00, 0x00, 0x00, 0x29)
-                CH03 (__METHOD__, Z081, 0x0213, 0x010C, 0x00)
+                CH03 (__METHOD__, Z081, __LINE__, 0x00, 0x00)
             }
             Else
             {
@@ -335,18 +335,18 @@
         {
             /* CopyObject */
 
-            CH03 (__METHOD__, Z081, 0x0214, 0x0117, 0x00)
+            CH03 (__METHOD__, Z081, __LINE__, 0x00, 0x00)
             CopyObject (Arg0, Local7)
-            CH03 (__METHOD__, Z081, 0x0215, 0x0119, 0x00)
+            CH03 (__METHOD__, Z081, __LINE__, 0x00, 0x00)
         }
 
         If (RN06)
         {
             /* Return */
 
-            CH03 (__METHOD__, Z081, 0x0216, 0x0120, 0x00)
+            CH03 (__METHOD__, Z081, __LINE__, 0x00, 0x00)
             M000 (Arg0)
-            CH03 (__METHOD__, Z081, 0x0217, 0x0122, 0x00)
+            CH03 (__METHOD__, Z081, __LINE__, 0x00, 0x00)
         }
 
         If (RN07)
@@ -513,9 +513,9 @@
             M1A7 (Arg0, 0x00, 0x00, 0x00, 0x00, 0x00, 0x2B)
             /* Store */
 
-            CH03 (__METHOD__, Z081, 0x0218, 0x01ED, 0x00)
+            CH03 (__METHOD__, Z081, __LINE__, 0x00, 0x00)
             Local7 = Arg0
-            CH03 (__METHOD__, Z081, 0x0219, 0x01EF, 0x00)
+            CH03 (__METHOD__, Z081, __LINE__, 0x00, 0x00)
             /* Subtract */
 
             M1A7 (Arg0, 0x01, 0x00, 0x00, 0x00, 0x00, 0x2D)
@@ -806,7 +806,7 @@
         Name (I000, 0xABCD0000)
         Method (M000, 1, NotSerialized)
         {
-            CH03 (__METHOD__, Z081, 0x48, 0x0334, 0x00)
+            CH03 (__METHOD__, Z081, __LINE__, 0x00, 0x00)
             Debug = DerefOf (RefOf (DerefOf (RefOf (Arg0))))
             CH04 (C080, 0x00, 0xFF, Z081, __LINE__, 0x00, 0x00)
         }

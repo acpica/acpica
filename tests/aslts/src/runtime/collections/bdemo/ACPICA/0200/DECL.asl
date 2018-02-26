@@ -162,7 +162,7 @@
         SRMT ("mfb5")
         If (Y200)
         {
-            CH03 ("", 0x00, 0x00, 0x9C, 0x00)
+            CH03 (__METHOD__, 0x00, __LINE__, 0x00, 0x00)
             MFB5 ()
             CH04 (__METHOD__, 0x00, 0xFF, 0x00, __LINE__, 0x00, 0x00)
         }
@@ -174,7 +174,7 @@
         SRMT ("mfbd")
         If (Y200)
         {
-            CH03 ("", 0x00, 0x02, 0xA5, 0x00)
+            CH03 (__METHOD__, 0x00, __LINE__, 0x00, 0x00)
             MFBD ()
             CH04 (__METHOD__, 0x00, 0xFF, 0x00, __LINE__, 0x00, 0x00)
         }
@@ -186,7 +186,7 @@
         SRMT ("mfbe")
         If (Y200)
         {
-            CH03 ("", 0x00, 0x04, 0xAE, 0x00)
+            CH03 (__METHOD__, 0x00, __LINE__, 0x00, 0x00)
             MFBE ()
             CH04 (__METHOD__, 0x00, 0xFF, 0x00, __LINE__, 0x00, 0x00)
         }
@@ -199,31 +199,31 @@
          * These work Ok:
          */
         SRMT ("mfb6")
-        CH03 ("", 0x00, 0x06, 0xBA, 0x00)
+        CH03 (__METHOD__, 0x00, __LINE__, 0x00, 0x00)
         MFB6 ()
         CH04 (__METHOD__, 0x00, 0xFF, 0x00, __LINE__, 0x00, 0x00)
         SRMT ("mfb7")
-        CH03 ("", 0x00, 0x08, 0xBF, 0x00)
+        CH03 (__METHOD__, 0x00, __LINE__, 0x00, 0x00)
         MFB7 ()
         CH04 (__METHOD__, 0x00, 0xFF, 0x00, __LINE__, 0x00, 0x00)
         SRMT ("mfb8")
-        CH03 ("", 0x00, 0x0A, 0xC4, 0x00)
+        CH03 (__METHOD__, 0x00, __LINE__, 0x00, 0x00)
         MFB8 ()
         CH04 (__METHOD__, 0x00, 0xFF, 0x00, __LINE__, 0x00, 0x00)
         SRMT ("mfb9")
-        CH03 ("", 0x00, 0x0C, 0xC9, 0x00)
+        CH03 (__METHOD__, 0x00, __LINE__, 0x00, 0x00)
         MFB9 ()
         CH04 (__METHOD__, 0x00, 0xFF, 0x00, __LINE__, 0x00, 0x00)
         SRMT ("mfba")
-        CH03 ("", 0x00, 0x0E, 0xCE, 0x00)
+        CH03 (__METHOD__, 0x00, __LINE__, 0x00, 0x00)
         MFBA ()
         CH04 (__METHOD__, 0x00, 0xFF, 0x00, __LINE__, 0x00, 0x00)
         SRMT ("mfbb")
-        CH03 ("", 0x00, 0x10, 0xD3, 0x00)
+        CH03 (__METHOD__, 0x00, __LINE__, 0x00, 0x00)
         MFBB ()
         CH04 (__METHOD__, 0x00, 0xFF, 0x00, __LINE__, 0x00, 0x00)
         SRMT ("mfbf")
-        CH03 ("", 0x00, 0x12, 0xD8, 0x00)
+        CH03 (__METHOD__, 0x00, __LINE__, 0x00, 0x00)
         MFBF ()
         CH04 (__METHOD__, 0x00, 0xFF, 0x00, __LINE__, 0x00, 0x00)
         Debug = "mfc0 ==== successfully returned to mfc0; finished !!!!!"

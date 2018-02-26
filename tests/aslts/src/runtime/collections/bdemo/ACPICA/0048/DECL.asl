@@ -40,12 +40,12 @@
         Local1 = "01234567890123456789012345678901234567890123456789012345678901234567890123456789012345678901234567890"
         /* Concatenate 100-byte long string with 101-byte long */
         /* string and expect AE_AML_STRING_LIMIT exception. */
-        CH03 ("", 0x00, 0x00, 0x2E, 0x00)
+        CH03 (__METHOD__, 0x00, __LINE__, 0x00, 0x00)
         Local2 = Concatenate (Local0, Local1)
         /*
          * No restriction on the length of String objects now:
          *
          * CH04("", 0, 61, 0, __LINE__, 0, 0) // AE_AML_STRING_LIMIT
          */
-        CH03 ("", 0x00, 0x01, 0x38, 0x00)
+        CH03 (__METHOD__, 0x00, __LINE__, 0x00, 0x00)
     }

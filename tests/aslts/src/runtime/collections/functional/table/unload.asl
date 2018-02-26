@@ -102,13 +102,13 @@
 
             Local0 = \DTM0.RFU0
             Store ((\DTM0.SUM + \DTM0.CHSM (Local0, SizeOf (Local0))), \DTM0.SUM)
-            If (CH03 (Arg0, Z175, 0x01, 0x6D, 0x00))
+            If (CH03 (Arg0, Z175, __LINE__, 0x00, 0x00))
             {
                 Return (Zero)
             }
 
             Load (\DTM0.RFU0, HI0) /* \DTM1.TST0.HI0_ */
-            If (CH03 (Arg0, Z175, 0x02, 0x73, 0x00))
+            If (CH03 (Arg0, Z175, __LINE__, 0x00, 0x00))
             {
                 Return (Zero)
             }
@@ -140,7 +140,7 @@
             Else
             {
                 Local0 = \SSS0 ()
-                If (CH03 (Arg0, Z175, 0x06, 0x8A, 0x01))
+                If (CH03 (Arg0, Z175, __LINE__, 0x00, 0x01))
                 {
                     Return (Zero)
                 }
@@ -154,7 +154,7 @@
             /* UnLoad operator execution */
 
             Unload (M000 ())
-            If (CH03 (Arg0, Z175, 0x08, 0x95, 0x00))
+            If (CH03 (Arg0, Z175, __LINE__, 0x00, 0x00))
             {
                 Return (Zero)
             }
@@ -318,7 +318,7 @@
 
             \DTM0.RFU3 = \DTM0.BUF3
             Load (\DTM0.RFU3, DDB0) /* \DTM1.TST1.DDB0 */
-            If (CH03 (Arg0, Z175, 0x1F, 0x011C, 0x00))
+            If (CH03 (Arg0, Z175, __LINE__, 0x00, 0x00))
             {
                 Return (0x01)
             }
@@ -481,7 +481,7 @@
             }
 
             Unload (DDB0)
-            CH03 (Arg0, Z175, 0x2F, 0x0186, 0x00)
+            CH03 (Arg0, Z175, __LINE__, 0x00, 0x00)
             /* Check absence of the auxiliary table Objects after UnLoad */
 
             If (M001 (Concatenate (Arg0, ".after")))
@@ -538,7 +538,7 @@
 
             \DTM0.RFU3 = \DTM0.BUF3
             Load (\DTM0.RFU3, DDB0) /* \DTM1.TST3.DDB0 */
-            If (CH03 (Arg0, Z175, 0x33, 0x01BF, 0x00))
+            If (CH03 (Arg0, Z175, __LINE__, 0x00, 0x00))
             {
                 Return (0x01)
             }
@@ -646,7 +646,7 @@
 
             M000 (Arg0, "bfl", RefOf (\AUXD.BFL0), C016)
             Unload (DDB0)
-            CH03 (Arg0, Z175, 0x3C, 0x0216, 0x00)
+            CH03 (Arg0, Z175, __LINE__, 0x00, 0x00)
             Return (0x00)
         }
 
@@ -661,7 +661,7 @@
 
             \DTM0.RFU3 = \DTM0.BUF3
             Load (\DTM0.RFU3, DDB0) /* \DTM1.TST4.DDB0 */
-            If (CH03 (Arg0, Z175, 0x3D, 0x0227, 0x00))
+            If (CH03 (Arg0, Z175, __LINE__, 0x00, 0x00))
             {
                 Return (0x01)
             }
@@ -669,7 +669,7 @@
             /* First Unload */
 
             Unload (DDB0)
-            If (CH03 (Arg0, Z175, 0x3E, 0x022E, 0x00))
+            If (CH03 (Arg0, Z175, __LINE__, 0x00, 0x00))
             {
                 Return (0x01)
             }
@@ -688,7 +688,7 @@
 
             \DTM0.RFU3 = \DTM0.BUF3
             Load (\DTM0.RFU3, DDB1) /* \DTM1.TST4.DDB1 */
-            If (CH03 (Arg0, Z175, 0x40, 0x0241, 0x00))
+            If (CH03 (Arg0, Z175, __LINE__, 0x00, 0x00))
             {
                 Return (0x01)
             }
@@ -704,7 +704,7 @@
             }
 
             Unload (DDB1)
-            If (CH03 (Arg0, Z175, 0x42, 0x0252, 0x00))
+            If (CH03 (Arg0, Z175, __LINE__, 0x00, 0x00))
             {
                 Return (0x01)
             }
@@ -732,7 +732,7 @@
 
             \DTM0.RFU3 = \DTM0.BUF3
             Load (\DTM0.RFU3, DDB0) /* \DTM1.TST5.DDB0 */
-            If (CH03 (Arg0, Z175, 0x43, 0x0267, 0x00))
+            If (CH03 (Arg0, Z175, __LINE__, 0x00, 0x00))
             {
                 Return (0x01)
             }
@@ -759,7 +759,7 @@
             }
 
             Unload (DDB0)
-            If (CH03 (Arg0, Z175, 0x48, 0x027F, 0x00))
+            If (CH03 (Arg0, Z175, __LINE__, 0x00, 0x00))
             {
                 Return (0x01)
             }
@@ -770,24 +770,24 @@
 
     Method (TUL0, 0, Serialized)
     {
-        CH03 (__METHOD__, Z175, 0x0200, 0x028B, 0x00)
+        CH03 (__METHOD__, Z175, __LINE__, 0x00, 0x00)
         /* Different Sources to specify DDBHandle for UnLoad. */
         /* Most of them (Named Object, LocalX, ArgX, Derefof) */
         /* are checked in load.asl */
         /* DDBHandle returned by Method call */
         SRMT ("TUL0.tst0")
         \DTM1.TST0 (__METHOD__)
-        CH03 (__METHOD__, Z175, 0x0201, 0x0294, 0x00)
+        CH03 (__METHOD__, Z175, __LINE__, 0x00, 0x00)
         /* All namespace objects created as a result of the corresponding */
         /* Load operation are absent in the namespace after UnLoad */
         SRMT ("TUL0.tst1")
         \DTM1.TST1 (__METHOD__)
-        CH03 (__METHOD__, Z175, 0x0202, 0x029B, 0x00)
+        CH03 (__METHOD__, Z175, __LINE__, 0x00, 0x00)
         /* Load/UnLoad processing can be done with the same table many times */
 
         SRMT ("TUL0.tst2")
         \DTM1.TST2 (__METHOD__)
-        CH03 (__METHOD__, Z175, 0x0203, 0x02A1, 0x00)
+        CH03 (__METHOD__, Z175, __LINE__, 0x00, 0x00)
     }
 
     /* Exceptional conditions */

@@ -327,7 +327,7 @@
 
             }
 
-            If (CH03 (Arg0, Z125, 0x02, 0x0116, 0x00))
+            If (CH03 (Arg0, Z125, __LINE__, 0x00, 0x00))
             {
                 /* Exception during preparing of Source Object */
 
@@ -742,7 +742,7 @@
                     }
                 }
             }
-            ElseIf (CH03 (Arg0, Z125, 0x17, 0x0214, Arg2))
+            ElseIf (CH03 (Arg0, Z125, __LINE__, 0x00, Arg2))
             {
                 /* Processing caused unexpected exception */
 
@@ -817,7 +817,7 @@
                     /* will be converted to Integer 0, thus no */
                     /* exception caused by implicit source */
                     /* conversion. */
-                    If (CH03 (Arg0, Z125, 0x1A, 0x0245, Arg2))
+                    If (CH03 (Arg0, Z125, __LINE__, 0x00, Arg2))
                     {
                         If (STCS)
                         {
@@ -835,7 +835,7 @@
                     }
                 }
             }
-            ElseIf (CH03 (Arg0, Z125, 0x1B, 0x024E, Arg2))
+            ElseIf (CH03 (Arg0, Z125, __LINE__, 0x00, Arg2))
             {
                 /* Processing caused unexpected exception */
 
@@ -923,7 +923,7 @@
                     /* will be converted to Integer 0, thus no */
                     /* exception caused by implicit source */
                     /* conversion. */
-                    If (CH03 (Arg0, Z125, 0x1E, 0x028C, Arg2))
+                    If (CH03 (Arg0, Z125, __LINE__, 0x00, Arg2))
                     {
                         If (STCS)
                         {
@@ -941,7 +941,7 @@
                     }
                 }
             }
-            ElseIf (CH03 (Arg0, Z125, 0x1F, 0x0295, Arg2))
+            ElseIf (CH03 (Arg0, Z125, __LINE__, 0x00, Arg2))
             {
                 /* Processing caused unexpected exception */
 
@@ -1053,7 +1053,7 @@
                     }
                 }
             }
-            ElseIf (CH03 (Arg0, Z125, 0x23, 0x02DB, Arg2))
+            ElseIf (CH03 (Arg0, Z125, __LINE__, 0x00, Arg2))
             {
                 /* Processing caused unexpected exception */
 

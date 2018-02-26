@@ -36,34 +36,34 @@
 
     Method (M140, 0, Serialized)
     {
-        CH03 (__METHOD__, Z058, 0x00, 0x2B, 0x00)
+        CH03 (__METHOD__, Z058, __LINE__, 0x00, 0x00)
         Local1 = 0x01
         Local0 = 0x02
         Divide (Local1, Local0, Local2)
-        CH03 (__METHOD__, Z058, 0x01, 0x31, 0x00)
+        CH03 (__METHOD__, Z058, __LINE__, 0x00, 0x00)
         Local0 = 0x00
         Divide (Local1, Local0, Local2)
         CH04 (__METHOD__, 0x00, 0x38, Z058, __LINE__, 0x00, 0x00)   /* AE_AML_DIVIDE_BY_ZERO */
         Local0 = 0x02
         Divide (Local1, Local0, Local2)
-        CH03 (__METHOD__, Z058, 0x03, 0x3B, 0x00)
+        CH03 (__METHOD__, Z058, __LINE__, 0x00, 0x00)
     }
 
     /* Modulo divide by zero */
 
     Method (M141, 0, Serialized)
     {
-        CH03 (__METHOD__, Z058, 0x04, 0x43, 0x00)
+        CH03 (__METHOD__, Z058, __LINE__, 0x00, 0x00)
         Local1 = 0x01
         Local0 = 0x02
         Local2 = (Local1 % Local0)
-        CH03 (__METHOD__, Z058, 0x05, 0x49, 0x00)
+        CH03 (__METHOD__, Z058, __LINE__, 0x00, 0x00)
         Local0 = 0x00
         Local2 = (Local1 % Local0)
         CH04 (__METHOD__, 0x00, 0x38, Z058, __LINE__, 0x00, 0x00)   /* AE_AML_DIVIDE_BY_ZERO */
         Local0 = 0x02
         Local2 = (Local1 % Local0)
-        CH03 (__METHOD__, Z058, 0x07, 0x53, 0x00)
+        CH03 (__METHOD__, Z058, __LINE__, 0x00, 0x00)
     }
 
     /* Release ownership on a Mutex that is not currently owned */
@@ -71,7 +71,7 @@
     Method (M142, 0, Serialized)
     {
         Mutex (MTX0, 0x00)
-        CH03 (__METHOD__, Z058, 0x08, 0x5D, 0x00)
+        CH03 (__METHOD__, Z058, __LINE__, 0x00, 0x00)
         Release (MTX0)
         CH04 (__METHOD__, 0x00, 0x41, Z058, __LINE__, 0x00, 0x00)   /* AE_AML_MUTEX_NOT_ACQUIRED */
     }
@@ -131,12 +131,12 @@
         /* Buffer Field */
 
         Local0 = BUF0 [0x00]
-        CH03 (__METHOD__, Z058, 0x0A, 0x93, 0x00)
+        CH03 (__METHOD__, Z058, __LINE__, 0x00, 0x00)
         Local5 = SizeOf (STR0)
         Local5 = SizeOf (BUF0)
         Local5 = SizeOf (PAC0)
         Local5 = SizeOf (INT0)
-        CH03 (__METHOD__, Z058, 0x0B, 0x9A, 0x00)
+        CH03 (__METHOD__, Z058, __LINE__, 0x00, 0x00)
         If (INT0)
         {
             Local1 = 0x00
@@ -179,9 +179,9 @@
             Local0++
         }
 
-        CH03 (__METHOD__, Z058, 0x14, 0xC6, 0x00)
+        CH03 (__METHOD__, Z058, __LINE__, 0x00, 0x00)
         ToString (B000, Ones, Local5)
-        CH03 (__METHOD__, Z058, 0x15, 0xCA, 0x00)
+        CH03 (__METHOD__, Z058, __LINE__, 0x00, 0x00)
         Name (B001, Buffer (0xC9){})
         Local0 = 0x00
         While ((Local0 < 0xC9))
@@ -197,7 +197,7 @@
          * 20.12.2005.
          * No more limit of string size.
          */
-        CH03 (__METHOD__, Z058, 0x16, 0xDC, 0x00)
+        CH03 (__METHOD__, Z058, __LINE__, 0x00, 0x00)
     }
 
     /* Access out of Package */
@@ -216,25 +216,25 @@
             0x01,
             0x02
         })
-        CH03 (__METHOD__, Z058, 0x17, 0xE7, 0x00)
+        CH03 (__METHOD__, Z058, __LINE__, 0x00, 0x00)
         /* Package() */
 
         Store (P000 [0x02], Local5)
-        CH03 (__METHOD__, Z058, 0x18, 0xED, 0x00)
+        CH03 (__METHOD__, Z058, __LINE__, 0x00, 0x00)
         Store (P000 [0x03], Local5)
         CH04 (__METHOD__, 0x01, 0x37, Z058, __LINE__, 0x00, 0x00)   /* AE_AML_PACKAGE_LIMIT */
         Local0 = P000 [0x02]
-        CH03 (__METHOD__, Z058, 0x1A, 0xF5, 0x00)
+        CH03 (__METHOD__, Z058, __LINE__, 0x00, 0x00)
         Local0 = P000 [0x03]
         CH04 (__METHOD__, 0x00, 0x37, Z058, __LINE__, 0x00, 0x00)   /* AE_AML_PACKAGE_LIMIT */
         /* Package(3) */
 
         Store (P001 [0x02], Local5)
-        CH03 (__METHOD__, Z058, 0x1C, 0xFF, 0x00)
+        CH03 (__METHOD__, Z058, __LINE__, 0x00, 0x00)
         Local5 = P001 [0x03]
         CH04 (__METHOD__, 0x00, 0x37, Z058, __LINE__, 0x00, 0x00)   /* AE_AML_PACKAGE_LIMIT */
         Local0 = P001 [0x02]
-        CH03 (__METHOD__, Z058, 0x1E, 0x0107, 0x00)
+        CH03 (__METHOD__, Z058, __LINE__, 0x00, 0x00)
         Local0 = P001 [0x03]
         CH04 (__METHOD__, 0x00, 0x37, Z058, __LINE__, 0x00, 0x00)   /* AE_AML_PACKAGE_LIMIT */
     }
@@ -244,15 +244,15 @@
     Method (M085, 0, Serialized)
     {
         Name (S000, "123")
-        CH03 (__METHOD__, Z058, 0x20, 0x0115, 0x00)
+        CH03 (__METHOD__, Z058, __LINE__, 0x00, 0x00)
         Local5 = S000 [0x02]
-        CH03 (__METHOD__, Z058, 0x21, 0x0119, 0x00)
+        CH03 (__METHOD__, Z058, __LINE__, 0x00, 0x00)
         Local5 = S000 [0x03]
         /* Bug 177, Bugzilla 5480. */
 
         CH04 (__METHOD__, 0x00, 0x3D, Z058, __LINE__, 0x00, 0x00)   /* AE_AML_STRING_LIMIT */
         Local0 = S000 [0x02]
-        CH03 (__METHOD__, Z058, 0x23, 0x0122, 0x00)
+        CH03 (__METHOD__, Z058, __LINE__, 0x00, 0x00)
         Local0 = S000 [0x03]
         CH04 (__METHOD__, 0x00, 0x3D, Z058, __LINE__, 0x00, 0x00)   /* AE_AML_STRING_LIMIT */
     }
@@ -269,25 +269,25 @@
         {
              0x00, 0x01, 0x02                                 // ...
         })
-        CH03 (__METHOD__, Z058, 0x25, 0x0131, 0x00)
+        CH03 (__METHOD__, Z058, __LINE__, 0x00, 0x00)
         /* Buffer() */
 
         Local5 = B000 [0x02]
-        CH03 (__METHOD__, Z058, 0x26, 0x0137, 0x00)
+        CH03 (__METHOD__, Z058, __LINE__, 0x00, 0x00)
         Local5 = B000 [0x03]
         CH04 (__METHOD__, 0x00, 0x36, Z058, __LINE__, 0x00, 0x00)   /* AE_AML_BUFFER_LIMIT */
         Local0 = B000 [0x02]
-        CH03 (__METHOD__, Z058, 0x28, 0x013F, 0x00)
+        CH03 (__METHOD__, Z058, __LINE__, 0x00, 0x00)
         Local0 = B000 [0x03]
         CH04 (__METHOD__, 0x00, 0x36, Z058, __LINE__, 0x00, 0x00)   /* AE_AML_BUFFER_LIMIT */
         /* Buffer(3) */
 
         Local5 = B001 [0x02]
-        CH03 (__METHOD__, Z058, 0x2A, 0x0149, 0x00)
+        CH03 (__METHOD__, Z058, __LINE__, 0x00, 0x00)
         Local5 = B001 [0x03]
         CH04 (__METHOD__, 0x00, 0x36, Z058, __LINE__, 0x00, 0x00)   /* AE_AML_BUFFER_LIMIT */
         Local0 = B001 [0x02]
-        CH03 (__METHOD__, Z058, 0x2C, 0x0151, 0x00)
+        CH03 (__METHOD__, Z058, __LINE__, 0x00, 0x00)
         Local0 = B001 [0x03]
         CH04 (__METHOD__, 0x00, 0x36, Z058, __LINE__, 0x00, 0x00)   /* AE_AML_BUFFER_LIMIT */
     }
@@ -296,7 +296,7 @@
     /* exceeds the maximum of an integer for the current mode. */
     Method (M146, 0, Serialized)
     {
-        CH03 (__METHOD__, Z058, 0x2E, 0x015E, 0x00)
+        CH03 (__METHOD__, Z058, __LINE__, 0x00, 0x00)
         If ((F64 == 0x01))
         {
             Local0 = "0xffffffffffffffff"
@@ -307,7 +307,7 @@
         }
 
         ToInteger (Local0, Local5)
-        CH03 (__METHOD__, Z058, 0x2F, 0x0167, 0x00)
+        CH03 (__METHOD__, Z058, __LINE__, 0x00, 0x00)
         If ((F64 == 0x01))
         {
             Local0 = "0x11111111111111111"
@@ -331,7 +331,7 @@
             Local0 = 0x00
         }
 
-        CH03 (__METHOD__, Z058, 0x31, 0x017E, 0x00)
+        CH03 (__METHOD__, Z058, __LINE__, 0x00, 0x00)
         Local0++
         CH04 (__METHOD__, 0x00, 0x31, Z058, __LINE__, 0x00, 0x00)   /* AE_AML_UNINITIALIZED_LOCAL */
     }
@@ -345,14 +345,14 @@
 
     Method (M149, 1, Serialized)
     {
-        CH03 (__METHOD__, Z058, 0x33, 0x0190, 0x00)
+        CH03 (__METHOD__, Z058, __LINE__, 0x00, 0x00)
         Stall (Arg0)
-        CH03 (__METHOD__, Z058, 0x34, 0x0194, 0x00)
+        CH03 (__METHOD__, Z058, __LINE__, 0x00, 0x00)
     }
 
     Method (M14A, 1, Serialized)
     {
-        CH03 (__METHOD__, Z058, 0x35, 0x019B, 0x00)
+        CH03 (__METHOD__, Z058, __LINE__, 0x00, 0x00)
         Stall (Arg0)
         /* It is now bug 14. */
 
@@ -388,9 +388,9 @@
         /* 101 characters */
 
         Local1 = "01234567890123456789012345678901234567890123456789012345678901234567890123456789012345678901234567890"
-        CH03 (__METHOD__, Z058, 0x37, 0x01C0, 0x00)
+        CH03 (__METHOD__, Z058, __LINE__, 0x00, 0x00)
         Concatenate (Local0, Local0, Local5)
-        CH03 (__METHOD__, Z058, 0x38, 0x01C4, 0x00)
+        CH03 (__METHOD__, Z058, __LINE__, 0x00, 0x00)
         Concatenate (Local0, Local1, Local5)
         /*
          * CH04(ts, 0, 61, z058, __LINE__, 0, 0)	// AE_AML_STRING_LIMIT
@@ -398,7 +398,7 @@
          * 20.12.2005.
          * No more limit of string size.
          */
-        CH03 (__METHOD__, Z058, 0x39, 0x01CF, 0x00)
+        CH03 (__METHOD__, Z058, __LINE__, 0x00, 0x00)
     }
 
     /* ToDecimalString() when the number of result characters in string exceeds 200 */
@@ -441,9 +441,9 @@
             /* 0058 */  0x01, 0x01, 0x01, 0x01, 0x01, 0x01, 0x01, 0x01,  // ........
             /* 0060 */  0x01, 0x01, 0x01, 0x01, 0x01                     // .....
         })
-        CH03 (__METHOD__, Z058, 0x3A, 0x01EB, 0x00)
+        CH03 (__METHOD__, Z058, __LINE__, 0x00, 0x00)
         ToDecimalString (B000, Local5)
-        CH03 (__METHOD__, Z058, 0x3B, 0x01EF, 0x00)
+        CH03 (__METHOD__, Z058, __LINE__, 0x00, 0x00)
         ToDecimalString (B001, Local5)
         /*
          * CH04(ts, 0, 61, z058, __LINE__, 0, 0)	// AE_AML_STRING_LIMIT
@@ -451,14 +451,14 @@
          * 20.12.2005.
          * No more limit of string size.
          */
-        CH03 (__METHOD__, Z058, 0x3C, 0x01FA, 0x00)
+        CH03 (__METHOD__, Z058, __LINE__, 0x00, 0x00)
     }
 
     /* ToBCD() when a specified integer overflows a number of the BCD format */
 
     Method (M14E, 0, Serialized)
     {
-        CH03 (__METHOD__, Z058, 0x3D, 0x0202, 0x00)
+        CH03 (__METHOD__, Z058, __LINE__, 0x00, 0x00)
         If ((F64 == 0x01))
         {
             Local4 = 0x002386F26FC0FFFF
@@ -469,7 +469,7 @@
             ToBCD (0x05F5E0FF, Local5)
         }
 
-        CH03 (__METHOD__, Z058, 0x3E, 0x020B, 0x00)
+        CH03 (__METHOD__, Z058, __LINE__, 0x00, 0x00)
         If ((F64 == 0x01))
         {
             Local4 = 0x002386F26FC10000
@@ -489,39 +489,39 @@
     Method (M14F, 0, Serialized)
     {
         Name (B001, Buffer (0x10){})
-        CH03 (__METHOD__, Z058, 0x40, 0x021F, 0x00)
+        CH03 (__METHOD__, Z058, __LINE__, 0x00, 0x00)
         CreateBitField (B001, 0x7F, F000)
-        CH03 (__METHOD__, Z058, 0x41, 0x0221, 0x00)
+        CH03 (__METHOD__, Z058, __LINE__, 0x00, 0x00)
         CreateBitField (B001, 0x80, F001)
         CH04 (__METHOD__, 0x00, 0x36, Z058, __LINE__, 0x00, 0x00)   /* AE_AML_BUFFER_LIMIT */
-        CH03 (__METHOD__, Z058, 0x43, 0x0225, 0x00)
+        CH03 (__METHOD__, Z058, __LINE__, 0x00, 0x00)
         CreateByteField (B001, 0x0F, F002)
-        CH03 (__METHOD__, Z058, 0x44, 0x0227, 0x00)
+        CH03 (__METHOD__, Z058, __LINE__, 0x00, 0x00)
         CreateByteField (B001, 0x10, F003)
         CH04 (__METHOD__, 0x00, 0x36, Z058, __LINE__, 0x00, 0x00)   /* AE_AML_BUFFER_LIMIT */
-        CH03 (__METHOD__, Z058, 0x46, 0x022B, 0x00)
+        CH03 (__METHOD__, Z058, __LINE__, 0x00, 0x00)
         CreateWordField (B001, 0x0E, F004)
-        CH03 (__METHOD__, Z058, 0x47, 0x022D, 0x00)
+        CH03 (__METHOD__, Z058, __LINE__, 0x00, 0x00)
         CreateWordField (B001, 0x0F, F005)
         CH04 (__METHOD__, 0x00, 0x36, Z058, __LINE__, 0x00, 0x00)   /* AE_AML_BUFFER_LIMIT */
-        CH03 (__METHOD__, Z058, 0x49, 0x0231, 0x00)
+        CH03 (__METHOD__, Z058, __LINE__, 0x00, 0x00)
         CreateDWordField (B001, 0x0C, F006)
-        CH03 (__METHOD__, Z058, 0x4A, 0x0233, 0x00)
+        CH03 (__METHOD__, Z058, __LINE__, 0x00, 0x00)
         CreateDWordField (B001, 0x0D, F007)
         CH04 (__METHOD__, 0x00, 0x36, Z058, __LINE__, 0x00, 0x00)   /* AE_AML_BUFFER_LIMIT */
-        CH03 (__METHOD__, Z058, 0x4C, 0x0237, 0x00)
+        CH03 (__METHOD__, Z058, __LINE__, 0x00, 0x00)
         CreateQWordField (B001, 0x08, F008)
-        CH03 (__METHOD__, Z058, 0x4D, 0x0239, 0x00)
+        CH03 (__METHOD__, Z058, __LINE__, 0x00, 0x00)
         CreateQWordField (B001, 0x09, F009)
         CH04 (__METHOD__, 0x00, 0x36, Z058, __LINE__, 0x00, 0x00)   /* AE_AML_BUFFER_LIMIT */
-        CH03 (__METHOD__, Z058, 0x4F, 0x023D, 0x00)
+        CH03 (__METHOD__, Z058, __LINE__, 0x00, 0x00)
         CreateField (B001, 0x7F, 0x01, F00A)
-        CH03 (__METHOD__, Z058, 0x50, 0x023F, 0x00)
+        CH03 (__METHOD__, Z058, __LINE__, 0x00, 0x00)
         CreateField (B001, 0x80, 0x01, F00B)
         CH04 (__METHOD__, 0x00, 0x36, Z058, __LINE__, 0x00, 0x00)   /* AE_AML_BUFFER_LIMIT */
-        CH03 (__METHOD__, Z058, 0x52, 0x0243, 0x00)
+        CH03 (__METHOD__, Z058, __LINE__, 0x00, 0x00)
         CreateField (B001, 0x78, 0x08, F00C)
-        CH03 (__METHOD__, Z058, 0x53, 0x0245, 0x00)
+        CH03 (__METHOD__, Z058, __LINE__, 0x00, 0x00)
         CreateField (B001, 0x78, 0x09, F00D)
         CH04 (__METHOD__, 0x00, 0x36, Z058, __LINE__, 0x00, 0x00)   /* AE_AML_BUFFER_LIMIT */
     }
@@ -535,7 +535,7 @@
             Local0 = 0x00
         }
 
-        CH03 (__METHOD__, Z058, 0x55, 0x0253, 0x00)
+        CH03 (__METHOD__, Z058, __LINE__, 0x00, 0x00)
         Local5 = Local0 [0x00]
         CH04 (__METHOD__, 0x00, 0x31, Z058, __LINE__, 0x00, 0x00)   /* AE_AML_UNINITIALIZED_LOCAL */
     }
@@ -550,9 +550,9 @@
             0x01,
             0x02
         })
-        CH03 (__METHOD__, Z058, 0x57, 0x0261, 0x00)
+        CH03 (__METHOD__, Z058, __LINE__, 0x00, 0x00)
         Local5 = DerefOf (P000 [0x02])
-        CH03 (__METHOD__, Z058, 0x58, 0x0265, 0x00)
+        CH03 (__METHOD__, Z058, __LINE__, 0x00, 0x00)
         Local5 = DerefOf (P000 [0x03])
         /*
          * Obsolete:
@@ -611,9 +611,9 @@
             /* 0038 */  0x01, 0x01, 0x01, 0x01, 0x01, 0x01, 0x01, 0x01,  // ........
             /* 0040 */  0x01, 0x01, 0x01, 0x01                           // ....
         })
-        CH03 (__METHOD__, Z058, 0x5A, 0x0296, 0x00)
+        CH03 (__METHOD__, Z058, __LINE__, 0x00, 0x00)
         ToHexString (B000, Local5)
-        CH03 (__METHOD__, Z058, 0x5B, 0x029A, 0x00)
+        CH03 (__METHOD__, Z058, __LINE__, 0x00, 0x00)
         ToHexString (B001, Local5)
         /*
          * CH04(ts, 0, 61, z058, __LINE__, 0, 0)	// AE_AML_STRING_LIMIT
@@ -621,7 +621,7 @@
          * 20.12.2005.
          * No more limit of string size.
          */
-        CH03 (__METHOD__, Z058, 0x5C, 0x02A5, 0x00)
+        CH03 (__METHOD__, Z058, __LINE__, 0x00, 0x00)
     }
 
     /* StartIndex in Match greater than the package size */
@@ -632,9 +632,9 @@
         {
             0x00
         })
-        CH03 (__METHOD__, Z058, 0x5D, 0x02AF, 0x00)
+        CH03 (__METHOD__, Z058, __LINE__, 0x00, 0x00)
         Local5 = Match (PAC0, MTR, 0x00, MTR, 0x00, 0x00)
-        CH03 (__METHOD__, Z058, 0x5E, 0x02B3, 0x00)
+        CH03 (__METHOD__, Z058, __LINE__, 0x00, 0x00)
         Local5 = Match (PAC0, MTR, 0x00, MTR, 0x00, 0x01)
         CH04 (__METHOD__, 0x01, 0x37, Z058, __LINE__, 0x00, 0x00)   /* AE_AML_PACKAGE_LIMIT */
     }
@@ -652,13 +652,13 @@
 
         Local0 = 0x00
         Local2 = Buffer (Local0){}
-        CH03 (__METHOD__, Z058, 0x60, 0x02C7, 0x00)
+        CH03 (__METHOD__, Z058, __LINE__, 0x00, 0x00)
         ConcatenateResTemplate (RT00, RT00, Local5)
-        CH03 (__METHOD__, Z058, 0x61, 0x02CB, 0x00)
+        CH03 (__METHOD__, Z058, __LINE__, 0x00, 0x00)
         ConcatenateResTemplate (RT00, Local2, Local5)
         /* Bug 188. */
 
-        CH03 (__METHOD__, Z058, 0x62, 0x02D0, 0x00)
+        CH03 (__METHOD__, Z058, __LINE__, 0x00, 0x00)
         /* CH04(ts, 0, 71, z058, __LINE__, 0, 0)	// AE_AML_NO_RESOURCE_END_TAG */
         /* One-element buffer */
         Local2 = Buffer (0x01)
@@ -733,7 +733,7 @@
             CH04 (__METHOD__, 0x00, 0xFF, Z058, __LINE__, 0x00, 0x00)
         }
 
-        CH03 (__METHOD__, Z058, 0xAB, 0x030F, 0x00)
+        CH03 (__METHOD__, Z058, __LINE__, 0x00, 0x00)
     }
 
     /*
@@ -753,7 +753,7 @@
      */
     Method (M155, 0, Serialized)
     {
-        CH03 (__METHOD__, Z058, 0x69, 0x0325, 0x00)
+        CH03 (__METHOD__, Z058, __LINE__, 0x00, 0x00)
         Local0 = ("0x1111" + 0x00)
         /*
          * Obsolete:
@@ -761,7 +761,7 @@
          *
          * New:
          */
-        CH03 (__METHOD__, Z058, 0x6A, 0x032F, 0x00)
+        CH03 (__METHOD__, Z058, __LINE__, 0x00, 0x00)
         If ((Local0 != 0x1111))
         {
             /* Bug 63, Bugzilla 5329. */
@@ -781,19 +781,19 @@
     {
         Local0 = 0x00
         Name (B000, Buffer (Local0){})
-        CH03 (__METHOD__, Z058, 0x6B, 0x0344, 0x00)
+        CH03 (__METHOD__, Z058, __LINE__, 0x00, 0x00)
         /* Add, empty String */
 
         Local5 = ("" + 0x00)
         /*	CH04(ts, 0, 34, z058, __LINE__, 0, 0)	// AE_BAD_HEX_CONSTANT */
 
-        CH03 (__METHOD__, Z058, 0x6C, 0x034A, 0x00)
+        CH03 (__METHOD__, Z058, __LINE__, 0x00, 0x00)
         /* Add, String filled with blanks */
 
         Local5 = ("                 " + 0x00)
         /*	CH04(ts, 0, 34, z058, __LINE__, 0, 0)	// AE_BAD_HEX_CONSTANT */
 
-        CH03 (__METHOD__, Z058, 0x6D, 0x0350, 0x00)
+        CH03 (__METHOD__, Z058, __LINE__, 0x00, 0x00)
         /* ToInteger, empty String */
 
         Local4 = ""
@@ -829,7 +829,7 @@
     Method (M157, 0, Serialized)
     {
         Name (I000, 0xAAAAAAAA)
-        CH03 (__METHOD__, Z058, 0x72, 0x0379, 0x00)
+        CH03 (__METHOD__, Z058, __LINE__, 0x00, 0x00)
         Store (I000 [0x00], Local5)
         CH04 (__METHOD__, 0x01, 0x2F, Z058, __LINE__, 0x00, 0x00)   /* AE_AML_OPERAND_TYPE */
         Local0 = I000 [0x00]
@@ -845,7 +845,7 @@
     Method (M158, 0, Serialized)
     {
         Name (I000, 0xAAAAAAAA)
-        CH03 (__METHOD__, Z058, 0x77, 0x0394, 0x00)
+        CH03 (__METHOD__, Z058, __LINE__, 0x00, 0x00)
         /* Bug 83, Bugzilla 5387. */
 
         Local5 = DerefOf (I000)
@@ -862,7 +862,7 @@
     {
         Name (I000, 0xAAAAAAAA)
         Local7 = I000 /* \M087.I000 */
-        CH03 (__METHOD__, Z058, 0x7A, 0x03AB, 0x00)
+        CH03 (__METHOD__, Z058, __LINE__, 0x00, 0x00)
         /* Index(Integer) */
 
         Store (Local7 [0x00], Local5)
@@ -891,7 +891,7 @@
             /* 0008 */  0x09                                             // .
         })
         CreateField (B000, 0x00, 0x08, BF00)
-        CH03 (__METHOD__, Z058, 0x81, 0x03D2, 0x00)
+        CH03 (__METHOD__, Z058, __LINE__, 0x00, 0x00)
         Store (BF00 [0x00], Local5)
         CH04 (__METHOD__, 0x01, 0x2F, Z058, __LINE__, 0x00, 0x00)   /* AE_AML_OPERAND_TYPE */
         Local0 = BF00 [0x00]
@@ -914,7 +914,7 @@
             /* 0008 */  0x09                                             // .
         })
         CreateField (B000, 0x00, 0x08, BF00)
-        CH03 (__METHOD__, Z058, 0x87, 0x03F2, 0x00)
+        CH03 (__METHOD__, Z058, __LINE__, 0x00, 0x00)
         Local5 = DerefOf (BF00)
         /* Bug 83, Bugzilla 5387. */
 
@@ -953,7 +953,7 @@
             IF01,   1
         }
 
-        CH03 (__METHOD__, Z058, 0x8A, 0x040A, 0x00)
+        CH03 (__METHOD__, Z058, __LINE__, 0x00, 0x00)
         /* Field */
 
         Store (F000 [0x00], Local5)
@@ -1020,7 +1020,7 @@
             IF01,   1
         }
 
-        CH03 (__METHOD__, Z058, 0x9A, 0x045B, 0x00)
+        CH03 (__METHOD__, Z058, __LINE__, 0x00, 0x00)
         /* Field */
 
         Local5 = DerefOf (F000)
@@ -1072,7 +1072,7 @@
             })
         }
 
-        CH03 (__METHOD__, Z058, 0xA1, 0x0490, 0x00)
+        CH03 (__METHOD__, Z058, __LINE__, 0x00, 0x00)
         /*
          Discuss: now the ObjectType doesnt cause exception!
          Is it correct? Understand and discuss it.
@@ -1092,10 +1092,10 @@
         }
         Else
         {
-            CH03 (__METHOD__, Z058, 0xA7, 0x04A7, 0x00)
+            CH03 (__METHOD__, Z058, __LINE__, 0x00, 0x00)
         }
 
-        CH03 (__METHOD__, Z058, 0xA8, 0x04AA, 0x00)
+        CH03 (__METHOD__, Z058, __LINE__, 0x00, 0x00)
     }
 
     Method (MF9D, 0, NotSerialized)
@@ -1123,10 +1123,10 @@
         {
         }
 
-        CH03 ("mf9d", Z058, 0xAB, 0x04C4, 0x00)
+        CH03 ("mf9d", Z058, __LINE__, 0x00, 0x00)
         M000 ()
         CH04 ("mf9d", 0x00, 0xFF, Z058, __LINE__, 0x00, 0x00)
-        CH03 ("mf9d", Z058, 0xAD, 0x04CA, 0x00)
+        CH03 ("mf9d", Z058, __LINE__, 0x00, 0x00)
         M001 ()
         CH04 ("mf9d", 0x00, 0xFF, Z058, __LINE__, 0x00, 0x00)
     }
@@ -1191,7 +1191,7 @@
                 }
 
                 Local3 = RefOf (Local2)
-                CH03 (__METHOD__, Z058, 0x04F6, 0x00, 0x00)
+                CH03 (__METHOD__, Z058, __LINE__, 0x00, 0x00)
                 /* Write: except DataTableRegion */
 
                 If ((Local1 < 0x03))
@@ -1274,7 +1274,7 @@
             FU01,   8
         }
 
-        CH03 (__METHOD__, Z058, 0xBF, 0x053F, 0x00)
+        CH03 (__METHOD__, Z058, __LINE__, 0x00, 0x00)
         FU00 = 0x12
         CH04 (__METHOD__, 0x00, 0x35, Z058, __LINE__, 0x00, 0x00)   /* AE_AML_REGION_LIMIT */
         FU01 = 0x12
@@ -1292,7 +1292,7 @@
         }
 
         Local0 = FU00 /* \M70B.FU00 */
-        CH03 (__METHOD__, Z058, 0xC2, 0x0556, 0x00)
+        CH03 (__METHOD__, Z058, __LINE__, 0x00, 0x00)
         FU00 = 0x00
         CH04 (__METHOD__, 0x00, 0x10, Z058, __LINE__, 0x00, 0x00)   /* AE_SUPPORT */
     }
@@ -1310,7 +1310,7 @@
         {
             0x12
         })
-        CH03 (__METHOD__, Z058, 0xC1, 0x0566, 0x00)
+        CH03 (__METHOD__, Z058, __LINE__, 0x00, 0x00)
         DataTableRegion (DR00, B000, "", "")
         CH04 (__METHOD__, 0x00, 0x05, Z058, __LINE__, 0x00, 0x00)    /* AE_NOT_FOUND */
         DataTableRegion (DR01, "SSDT", B000, "")
@@ -1349,7 +1349,7 @@
         /* Create improper SMBus data buffer */
 
         Name (BUFF, Buffer (0x21){})
-        CH03 (__METHOD__, Z058, 0xCD, 0x0595, 0x00)
+        CH03 (__METHOD__, Z058, __LINE__, 0x00, 0x00)
         /* Invoke Write Quick transaction */
 
         FLD0 = BUFF /* \M7F6.BUFF */
@@ -1392,7 +1392,7 @@
                 Return (0xABCD0002)
             }
 
-            CH03 (__METHOD__, Z058, 0xD0, 0x05C2, 0x00)
+            CH03 (__METHOD__, Z058, __LINE__, 0x00, 0x00)
             M004 ()
             CH04 (__METHOD__, 0x00, 0x05, Z058, __LINE__, 0x00, 0x00) /* AE_NOT_FOUND */
         }
@@ -1401,7 +1401,7 @@
         {
             /* Recursion */
 
-            CH03 (__METHOD__, Z058, 0xD0, 0x05CA, 0x00)
+            CH03 (__METHOD__, Z058, __LINE__, 0x00, 0x00)
             M003 ()
             CH04 (__METHOD__, 0x00, 0x54, Z058, __LINE__, 0x00, 0x00) /* AE_AML_METHOD_LIMIT */
             Method (M003, 0, NotSerialized)

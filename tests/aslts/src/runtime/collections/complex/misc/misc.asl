@@ -208,14 +208,14 @@
             Local0 = 0x00
         }
 
-        CH03 (__METHOD__, Z054, 0x0100, 0xC4, 0x00)
+        CH03 (__METHOD__, Z054, __LINE__, 0x00, 0x00)
         Local1 = ObjectType (Local0)
         If ((Local1 != 0x00))
         {
             ERR (Arg0, Z054, __LINE__, 0x00, 0x00, Local1, 0x00)
         }
 
-        CH03 (__METHOD__, Z054, 0x0101, 0xCC, 0x00)
+        CH03 (__METHOD__, Z054, __LINE__, 0x00, 0x00)
     }
 
     Method (M118, 1, NotSerialized)
@@ -248,7 +248,7 @@
         Debug = "================ 2:"
         Debug = Local1
         Debug = Local2
-        CH03 (Arg0, Z054, 0x0102, 0xF1, 0x00)
+        CH03 (Arg0, Z054, __LINE__, 0x00, 0x00)
         Return (0x00)
     }
 
@@ -321,7 +321,7 @@
     /* are passed immediately */
     Method (M11C, 1, Serialized)
     {
-        CH03 (__METHOD__, Z054, 0x0103, 0x0154, 0x00)
+        CH03 (__METHOD__, Z054, __LINE__, 0x00, 0x00)
         Store ((Buffer (0x01)
                 {
                      0x79                                             // y
@@ -329,7 +329,7 @@
                 {
                      0x79                                             // y
                 }), Local5)
-        CH03 (__METHOD__, Z054, 0x0104, 0x0158, 0x00)
+        CH03 (__METHOD__, Z054, __LINE__, 0x00, 0x00)
     }
 
     /* Bug 57: The empty Return operator (without specifying the returning value) */
@@ -855,7 +855,7 @@ Zero)
             Return (0x12345678)
         }
 
-        CH03 (Arg0, Z054, 0x0105, 0x031A, 0x00)
+        CH03 (Arg0, Z054, __LINE__, 0x00, 0x00)
         Local0 = ObjectType (M000)
         If ((Local0 != C010))
         {
@@ -1116,21 +1116,21 @@ Zero)
             }
         }
 
-        CH03 (Arg0, Z054, 0x0107, 0x03CE, 0x00)
+        CH03 (Arg0, Z054, __LINE__, 0x00, 0x00)
         MF74 ()
-        CH03 (Arg0, Z054, 0x0108, 0x03D0, 0x00)
-        CH03 (Arg0, Z054, 0x0109, 0x03D2, 0x00)
+        CH03 (Arg0, Z054, __LINE__, 0x00, 0x00)
+        CH03 (Arg0, Z054, __LINE__, 0x00, 0x00)
         MM00 ()
-        CH03 (Arg0, Z054, 0x010A, 0x03D4, 0x00)
-        CH03 (Arg0, Z054, 0x010B, 0x03D6, 0x00)
+        CH03 (Arg0, Z054, __LINE__, 0x00, 0x00)
+        CH03 (Arg0, Z054, __LINE__, 0x00, 0x00)
         MM01 ()
-        CH03 (Arg0, Z054, 0x010C, 0x03D8, 0x00)
-        CH03 (Arg0, Z054, 0x010D, 0x03DA, 0x00)
+        CH03 (Arg0, Z054, __LINE__, 0x00, 0x00)
+        CH03 (Arg0, Z054, __LINE__, 0x00, 0x00)
         MM02 ()
-        CH03 (Arg0, Z054, 0x010E, 0x03DC, 0x00)
-        CH03 (Arg0, Z054, 0x010F, 0x03DE, 0x00)
+        CH03 (Arg0, Z054, __LINE__, 0x00, 0x00)
+        CH03 (Arg0, Z054, __LINE__, 0x00, 0x00)
         MM03 ()
-        CH03 (Arg0, Z054, 0x0110, 0x03E0, 0x00)
+        CH03 (Arg0, Z054, __LINE__, 0x00, 0x00)
     }
 
     /*
@@ -1167,7 +1167,7 @@ Zero)
     /* Bug 196 */
     Method (MF86, 1, NotSerialized)
     {
-        CH03 ("mf86", Z054, 0x4A, 0x0407, 0x00)
+        CH03 ("mf86", Z054, __LINE__, 0x00, 0x00)
         Local1 = "0x0x12345678"
         ToInteger (Local1, Local0)
         If ((Local0 != 0x00))
@@ -1180,21 +1180,21 @@ Zero)
 
     Method (MF87, 1, NotSerialized)
     {
-        CH03 ("mf87", Z054, 0x00, 0x0414, 0x00)
+        CH03 ("mf87", Z054, __LINE__, 0x00, 0x00)
         Local0 = ("0x0xabcdef" + 0x00010234)
         If ((Local0 != 0x00010234))
         {
             ERR (Arg0, Z054, __LINE__, 0x00, 0x00, Local0, 0x00010234)
         }
 
-        CH03 ("mf87", Z054, 0x01, 0x041B, 0x00)
+        CH03 ("mf87", Z054, __LINE__, 0x00, 0x00)
         Local0 = (0x00010234 + "0x0xabcdef")
         If ((Local0 != 0x00010234))
         {
             ERR (Arg0, Z054, __LINE__, 0x00, 0x00, Local0, 0x00010234)
         }
 
-        CH03 ("mf87", Z054, 0x02, 0x0422, 0x00)
+        CH03 ("mf87", Z054, __LINE__, 0x00, 0x00)
     }
 
     Method (M15B, 0, Serialized)
@@ -1225,11 +1225,11 @@ Zero)
 
         Method (M001, 0, NotSerialized)
         {
-            CH03 (__METHOD__, Z054, 0x01, 0x0440, 0x00)
+            CH03 (__METHOD__, Z054, __LINE__, 0x00, 0x00)
             Local0 = DerefOf (RefOf (MM00))
             If (SLCK)
             {
-                CH03 (__METHOD__, Z054, 0x02, 0x0443, 0x00)
+                CH03 (__METHOD__, Z054, __LINE__, 0x00, 0x00)
                 Local1 = ObjectType (Local0)
                 If ((Local1 != C010))
                 {
@@ -1244,11 +1244,11 @@ Zero)
 
         Method (M002, 0, NotSerialized)
         {
-            CH03 (__METHOD__, Z054, 0x05, 0x044F, 0x00)
+            CH03 (__METHOD__, Z054, __LINE__, 0x00, 0x00)
             Local0 = DerefOf (P000 [0x01])
             If (SLCK)
             {
-                CH03 (__METHOD__, Z054, 0x06, 0x0452, 0x00)
+                CH03 (__METHOD__, Z054, __LINE__, 0x00, 0x00)
                 Local1 = ObjectType (Local0)
                 If ((Local1 != C010))
                 {
@@ -1290,9 +1290,9 @@ Zero)
 
         Method (M005, 0, NotSerialized)
         {
-            CH03 (__METHOD__, Z054, 0x0E, 0x0478, 0x00)
+            CH03 (__METHOD__, Z054, __LINE__, 0x00, 0x00)
             CopyObject (DerefOf (RefOf (MM00)), Local0)
-            CH03 (__METHOD__, Z054, 0x0F, 0x047A, 0x00)
+            CH03 (__METHOD__, Z054, __LINE__, 0x00, 0x00)
             Local1 = ObjectType (Local0)
             If ((Local1 != C010))
             {
@@ -1302,9 +1302,9 @@ Zero)
 
         Method (M006, 0, NotSerialized)
         {
-            CH03 (__METHOD__, Z054, 0x11, 0x0484, 0x00)
+            CH03 (__METHOD__, Z054, __LINE__, 0x00, 0x00)
             CopyObject (DerefOf (P000 [0x01]), Local0)
-            CH03 (__METHOD__, Z054, 0x12, 0x0486, 0x00)
+            CH03 (__METHOD__, Z054, __LINE__, 0x00, 0x00)
             Local1 = ObjectType (Local0)
             If ((Local1 != C010))
             {
@@ -1338,14 +1338,14 @@ Zero)
 
         Method (M009, 0, NotSerialized)
         {
-            CH03 (__METHOD__, Z054, 0x18, 0x04A8, 0x00)
+            CH03 (__METHOD__, Z054, __LINE__, 0x00, 0x00)
             Local0 = (DerefOf (RefOf (MM00)) + 0x02)
             CH04 (__METHOD__, 0x00, 0x2F, Z054, __LINE__, 0x00, 0x00) /* AE_AML_OPERAND_TYPE */
         }
 
         Method (M00A, 0, NotSerialized)
         {
-            CH03 (__METHOD__, Z054, 0x1A, 0x04AF, 0x00)
+            CH03 (__METHOD__, Z054, __LINE__, 0x00, 0x00)
             Local0 = (DerefOf (P000 [0x01]) + 0x03)
             CH04 (__METHOD__, 0x00, 0x2F, Z054, __LINE__, 0x00, 0x00) /* AE_AML_OPERAND_TYPE */
         }

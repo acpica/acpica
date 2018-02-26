@@ -911,7 +911,7 @@
 
     Method (CH05, 0, NotSerialized)
     {
-        Return (CH03 ("CH05", 0x00, 0x00, 0x016E, 0x00))
+        Return (CH03 ("CH05", 0x00, __LINE__, 0x00, 0x00))
     }
 
     Method (CH06, 3, NotSerialized)
@@ -935,7 +935,7 @@
     {
         If (SLCK)
         {
-            CH03 (Arg0, Arg3, Arg4, 0x0181, Arg6)
+            CH03 (Arg0, Arg3, __LINE__, 0x00, Arg6)
         }
         Else
         {

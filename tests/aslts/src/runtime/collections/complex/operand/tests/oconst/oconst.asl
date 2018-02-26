@@ -10869,7 +10869,7 @@
             }
             Else
             {
-                CH03 (Arg0, Z085, 0x00, 0x2FE8, 0x00)
+                CH03 (Arg0, Z085, __LINE__, 0x00, 0x00)
                 Store (M601 (0x02, 0x06) ["B"], Local3)
                 CH04 (Arg0, 0x00, 0x55, Z085, __LINE__, 0x00, 0x00) /* AE_INDEX_TO_NOT_ATTACHED */
                 Store (M601 (0x03, 0x06) ["B"], Local3)
@@ -10925,7 +10925,7 @@
             }
             Else
             {
-                CH03 (Arg0, Z085, 0x00, 0x302D, 0x00)
+                CH03 (Arg0, Z085, __LINE__, 0x00, 0x00)
                 Local0 = M601 (0x02, 0x06) ["B"]
                 CH04 (Arg0, 0x00, 0x55, Z085, __LINE__, 0x00, 0x00) /* AE_INDEX_TO_NOT_ATTACHED */
                 Local0 = M601 (0x03, 0x06) ["B"]
@@ -11006,7 +11006,7 @@
         /* (it can only be checked an exception does not occur) */
         Method (M02E, 1, NotSerialized)
         {
-            CH03 (Arg0, Z085, 0x00, 0x3088, 0x00)
+            CH03 (Arg0, Z085, __LINE__, 0x00, 0x00)
             Fatal (0xFF, 0xFFFFFFFF, "0321")
             If (F64)
             {
@@ -11017,7 +11017,7 @@
                 Fatal (0xFF, 0xFFFFFFFF, "C179B3FE")
             }
 
-            CH03 (Arg0, Z085, 0x01, 0x308F, 0x00)
+            CH03 (Arg0, Z085, __LINE__, 0x00, 0x00)
         }
 
         /* String to Integer conversion of the String Index and Length */
@@ -11686,12 +11686,12 @@
         /* of the Method execution control operators (Sleep, Stall) */
         Method (M031, 1, NotSerialized)
         {
-            CH03 (Arg0, Z085, 0x02, 0x3349, 0x00)
+            CH03 (Arg0, Z085, __LINE__, 0x00, 0x00)
             /* Sleep */
 
             Local0 = Timer
             Sleep ("0321")
-            CH03 (Arg0, Z085, 0x03, 0x3350, 0x00)
+            CH03 (Arg0, Z085, __LINE__, 0x00, 0x00)
             Local1 = Timer
             Local2 = (Local1 - Local0)
             If ((Local2 < C08C))
@@ -11703,7 +11703,7 @@
 
             Local0 = Timer
             Stall ("63")
-            CH03 (Arg0, Z085, 0x04, 0x335D, 0x00)
+            CH03 (Arg0, Z085, __LINE__, 0x00, 0x00)
             Local1 = Timer
             Local2 = (Local1 - Local0)
             If ((Local2 < 0x03DE))
@@ -11718,12 +11718,12 @@
         {
             Mutex (MTX0, 0x00)
             Acquire (MTX0, 0x0000)
-            CH03 (Arg0, Z085, 0x05, 0x336D, 0x00)
+            CH03 (Arg0, Z085, __LINE__, 0x00, 0x00)
             Local0 = Timer
             /* Compiler allows only Integer constant as TimeoutValue (Bug 1)
              Acquire(MTX0, "0321")
              */
-            CH03 (Arg0, Z085, 0x06, 0x3374, 0x00)
+            CH03 (Arg0, Z085, __LINE__, 0x00, 0x00)
             Local1 = Timer
             Local2 = (Local1 - Local0)
             If ((Local2 < C08C))
@@ -11737,10 +11737,10 @@
         Method (M033, 1, Serialized)
         {
             Event (EVT0)
-            CH03 (Arg0, Z085, 0x07, 0x3383, 0x00)
+            CH03 (Arg0, Z085, __LINE__, 0x00, 0x00)
             Local0 = Timer
             Wait (EVT0, "0321")
-            CH03 (Arg0, Z085, 0x08, 0x3388, 0x00)
+            CH03 (Arg0, Z085, __LINE__, 0x00, 0x00)
             Local1 = Timer
             Local2 = (Local1 - Local0)
             If ((Local2 < C08C))
@@ -30669,7 +30669,7 @@
             }
             Else
             {
-                CH03 (Arg0, Z085, 0x00, 0x5E8A, 0x00)
+                CH03 (Arg0, Z085, __LINE__, 0x00, 0x00)
                 Store (M601 (0x02, 0x06) [Buffer (0x01)
                         {
                              0x0B                                             // .
@@ -30779,7 +30779,7 @@
             }
             Else
             {
-                CH03 (Arg0, Z085, 0x00, 0x5ECE, 0x00)
+                CH03 (Arg0, Z085, __LINE__, 0x00, 0x00)
                 Local0 = M601 (0x02, 0x06) [Buffer (0x01)
                     {
                          0x0B                                             // .
@@ -30923,7 +30923,7 @@
         /* (it can only be checked an exception does not occur) */
         Method (M068, 1, NotSerialized)
         {
-            CH03 (Arg0, Z085, 0x09, 0x5F28, 0x00)
+            CH03 (Arg0, Z085, __LINE__, 0x00, 0x00)
             Fatal (0xFF, 0xFFFFFFFF, Buffer (0x03)
                 {
                      0x21, 0x03, 0x00                                 // !..
@@ -30945,7 +30945,7 @@
                     })
             }
 
-            CH03 (Arg0, Z085, 0x0A, 0x5F2F, 0x00)
+            CH03 (Arg0, Z085, __LINE__, 0x00, 0x00)
         }
 
         /* Buffer to Integer conversion of the Buffer Index and Length */
@@ -32360,7 +32360,7 @@
         /* of the Method execution control operators (Sleep, Stall) */
         Method (M06B, 1, NotSerialized)
         {
-            CH03 (Arg0, Z085, 0x0B, 0x61C9, 0x00)
+            CH03 (Arg0, Z085, __LINE__, 0x00, 0x00)
             /* Sleep */
 
             Local0 = Timer
@@ -32368,7 +32368,7 @@
                 {
                      0x21, 0x03, 0x00                                 // !..
                 })
-            CH03 (Arg0, Z085, 0x0C, 0x61D0, 0x00)
+            CH03 (Arg0, Z085, __LINE__, 0x00, 0x00)
             Local1 = Timer
             Local2 = (Local1 - Local0)
             If ((Local2 < C08C))
@@ -32383,7 +32383,7 @@
                 {
                      0x3F                                             // ?
                 })
-            CH03 (Arg0, Z085, 0x0D, 0x61DD, 0x00)
+            CH03 (Arg0, Z085, __LINE__, 0x00, 0x00)
             Local1 = Timer
             Local2 = (Local1 - Local0)
             If ((Local2 < 0x03DE))
@@ -32398,12 +32398,12 @@
         {
             Mutex (MTX0, 0x00)
             Acquire (MTX0, 0x0000)
-            CH03 (Arg0, Z085, 0x0E, 0x61EE, 0x00)
+            CH03 (Arg0, Z085, __LINE__, 0x00, 0x00)
             Local0 = Timer
             /* Compiler allows only Integer constant as TimeoutValue (Bug 1)
              Acquire(MTX0, Buffer(3){0x21, 0x03, 0x00})
              */
-            CH03 (Arg0, Z085, 0x0F, 0x61F5, 0x00)
+            CH03 (Arg0, Z085, __LINE__, 0x00, 0x00)
             Local1 = Timer
             Local2 = (Local1 - Local0)
             If ((Local2 < C08C))
@@ -32417,13 +32417,13 @@
         Method (M06D, 1, Serialized)
         {
             Event (EVT0)
-            CH03 (Arg0, Z085, 0x10, 0x6204, 0x00)
+            CH03 (Arg0, Z085, __LINE__, 0x00, 0x00)
             Local0 = Timer
             Wait (EVT0, Buffer (0x03)
                 {
                      0x21, 0x03, 0x00                                 // !..
                 })
-            CH03 (Arg0, Z085, 0x11, 0x6209, 0x00)
+            CH03 (Arg0, Z085, __LINE__, 0x00, 0x00)
             Local1 = Timer
             Local2 = (Local1 - Local0)
             If ((Local2 < C08C))
