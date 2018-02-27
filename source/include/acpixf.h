@@ -381,6 +381,16 @@ ACPI_INIT_GLOBAL (BOOLEAN,          AcpiGbl_ReducedHardware, FALSE);
 ACPI_INIT_GLOBAL (UINT32,           AcpiGbl_MaxLoopIterations, ACPI_MAX_LOOP_TIMEOUT);
 
 /*
+ * Optionally ignore AE_NOT_FOUND errors from named reference package elements
+ * during DSDT/SSDT table loading. This reduces error "noise" in platforms
+ * whose firmware is carrying around a bunch of unused package objects that
+ * refer to non-existent named objects. However, If the AML actually tries to
+ * use such a package, the unresolved element(s) will be replaced with NULL
+ * elements.
+ */
+ACPI_INIT_GLOBAL (BOOLEAN,          AcpiGbl_IgnorePackageResolutionErrors, FALSE);
+
+/*
  * This mechanism is used to trace a specified AML method. The method is
  * traced each time it is executed.
  */
