@@ -403,7 +403,7 @@ AcpiNsParseTable (
     ACPI_FUNCTION_TRACE (NsParseTable);
 
 
-    if (AcpiGbl_ParseTableAsTermList)
+    if (AcpiGbl_ExecuteTablesAsMethods)
     {
         ACPI_DEBUG_PRINT_RAW ((ACPI_DB_PARSE,
             "%s: **** Start table execution pass\n", ACPI_GET_FUNCTION_NAME));

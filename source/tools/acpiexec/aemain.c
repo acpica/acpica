@@ -342,7 +342,7 @@ AeDoOptions (
 
         case 'p':
 
-            AcpiGbl_ParseTableAsTermList = FALSE;
+            AcpiGbl_ExecuteTablesAsMethods = FALSE;
             break;
 
         case 'r':

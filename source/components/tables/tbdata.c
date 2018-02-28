@@ -1192,7 +1192,7 @@ AcpiTbLoadTable (
 
     /* Execute any module-level code that was found in the table */
 
-    if (!AcpiGbl_ParseTableAsTermList && AcpiGbl_GroupModuleLevelCode)
+    if (!AcpiGbl_ExecuteTablesAsMethods && AcpiGbl_GroupModuleLevelCode)
     {
         AcpiNsExecModuleCodeList ();
     }
