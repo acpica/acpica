@@ -858,6 +858,7 @@ typedef struct acpi_pscope_state
     UINT8                           *ArgEnd;                /* Current argument end */
     UINT8                           *PkgEnd;                /* Current package end */
     UINT32                          ArgList;                /* Next argument to parse */
+    BOOLEAN                         VarArgs;                /* Variable number of args */
 
 } ACPI_PSCOPE_STATE;
 

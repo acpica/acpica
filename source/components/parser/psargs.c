@@ -897,8 +897,6 @@ AcpiPsGetNextArg (
     ACPI_PARSE_OBJECT       **ReturnArg)
 {
     ACPI_PARSE_OBJECT       *Arg = NULL;
-    ACPI_PARSE_OBJECT       *Prev = NULL;
-    ACPI_PARSE_OBJECT       *Field;
     UINT32                  Subop;
     ACPI_STATUS             Status = AE_OK;
 
@@ -943,28 +941,16 @@ AcpiPsGetNextArg (
         {
             /* Non-empty list */
 
-            while (ParserState->Aml < ParserState->PkgEnd)
+            Arg = AcpiPsGetNextField (ParserState);
+            if (!Arg)
             {
-                Field = AcpiPsGetNextField (ParserState);
-                if (!Field)
-                {
-                    return_ACPI_STATUS (AE_NO_MEMORY);
-                }
-
-                if (Prev)
-                {
-                    Prev->Common.Next = Field;
-                }
-                else
-                {
-                    Arg = Field;
-                }
-                Prev = Field;
+                return_ACPI_STATUS (AE_NO_MEMORY);
             }
-
-            /* Skip to End of byte data */
-
-            ParserState->Aml = ParserState->PkgEnd;
+            WalkState->VarArgs = TRUE;
+        }
+        else
+        {
+            WalkState->VarArgs = FALSE;
         }
         break;
 

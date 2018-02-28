@@ -236,6 +236,7 @@ AcpiPsInitScope (
     Scope->Common.DescriptorType = ACPI_DESC_TYPE_STATE_RPSCOPE;
     Scope->ParseScope.Op = RootOp;
     Scope->ParseScope.ArgCount = ACPI_VAR_ARGS;
+    Scope->ParseScope.VarArgs = FALSE;
     Scope->ParseScope.ArgEnd = ParserState->AmlEnd;
     Scope->ParseScope.PkgEnd = ParserState->AmlEnd;
 
@@ -254,6 +255,7 @@ AcpiPsInitScope (
  *              Op                  - Current op to be pushed
  *              RemainingArgs       - List of args remaining
  *              ArgCount            - Fixed or variable number of args
+ *              VarArgs             - Variable args remaining
  *
  * RETURN:      Status
  *
@@ -266,7 +268,8 @@ AcpiPsPushScope (
     ACPI_PARSE_STATE        *ParserState,
     ACPI_PARSE_OBJECT       *Op,
     UINT32                  RemainingArgs,
-    UINT32                  ArgCount)
+    UINT32                  ArgCount,
+    BOOLEAN                 VarArgs)
 {
     ACPI_GENERIC_STATE      *Scope;
 
@@ -284,6 +287,7 @@ AcpiPsPushScope (
     Scope->ParseScope.Op = Op;
     Scope->ParseScope.ArgList = RemainingArgs;
     Scope->ParseScope.ArgCount = ArgCount;
+    Scope->ParseScope.VarArgs = VarArgs;
     Scope->ParseScope.PkgEnd = ParserState->PkgEnd;
 
     /* Push onto scope stack */
@@ -316,6 +320,7 @@ AcpiPsPushScope (
  *              ArgList             - Where the popped "next argument" is
  *                                    returned
  *              ArgCount            - Count of objects in ArgList
+ *              VarAgs              - Variable args remaining
  *
  * RETURN:      Status
  *
@@ -328,7 +333,8 @@ AcpiPsPopScope (
     ACPI_PARSE_STATE        *ParserState,
     ACPI_PARSE_OBJECT       **Op,
     UINT32                  *ArgList,
-    UINT32                  *ArgCount)
+    UINT32                  *ArgCount,
+    BOOLEAN                 *VarArgs)
 {
     ACPI_GENERIC_STATE      *Scope = ParserState->Scope;
 
@@ -347,6 +353,7 @@ AcpiPsPopScope (
         *Op = Scope->ParseScope.Op;
         *ArgList = Scope->ParseScope.ArgList;
         *ArgCount = Scope->ParseScope.ArgCount;
+        *VarArgs = Scope->ParseScope.VarArgs;
         ParserState->PkgEnd = Scope->ParseScope.PkgEnd;
 
         /* All done with this scope state structure */
@@ -360,6 +367,7 @@ AcpiPsPopScope (
         *Op = NULL;
         *ArgList = 0;
         *ArgCount = 0;
+        *VarArgs = FALSE;
     }
 
     ACPI_DEBUG_PRINT ((ACPI_DB_PARSE,
