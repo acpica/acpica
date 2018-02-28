@@ -591,10 +591,10 @@ AcpiEvInitializeGpeBlock (
     ACPI_GPE_EVENT_INFO     *GpeEventInfo;
     UINT32                  GpeEnabledCount;
     UINT32                  GpeIndex;
-    UINT32                  GpeNumber;
     UINT32                  i;
     UINT32                  j;
     BOOLEAN                 *IsPollingNeeded = Context;
+    ACPI_ERROR_ONLY (UINT32 GpeNumber);
 
 
     ACPI_FUNCTION_TRACE (EvInitializeGpeBlock);
@@ -624,7 +624,7 @@ AcpiEvInitializeGpeBlock (
 
             GpeIndex = (i * ACPI_GPE_REGISTER_WIDTH) + j;
             GpeEventInfo = &GpeBlock->EventInfo[GpeIndex];
-            GpeNumber = GpeBlock->BlockBaseNumber + GpeIndex;
+            ACPI_ERROR_ONLY(GpeNumber = GpeBlock->BlockBaseNumber + GpeIndex);
             GpeEventInfo->Flags |= ACPI_GPE_INITIALIZED;
 
             /*
