@@ -711,6 +711,25 @@ main (
         goto EnterDebugger;
     }
 
+    Status = AeLoadTables ();
+
+    /*
+     * Exit namespace initialization for the "load namespace only" option.
+     * No control methods will be executed. However, still enter the
+     * the debugger.
+     */
+    if (AcpiGbl_AeLoadOnly)
+    {
+        goto EnterDebugger;
+    }
+
+    if (ACPI_FAILURE (Status))
+    {
+        printf ("**** Could not load ACPI tables, %s\n",
+            AcpiFormatException (Status));
+        goto EnterDebugger;
+    }
+
     /* Setup initialization flags for ACPICA */
 
     InitFlags = (ACPI_NO_HANDLER_INIT | ACPI_NO_ACPI_ENABLE);
@@ -733,25 +752,6 @@ main (
     if (ACPI_FAILURE (Status))
     {
         printf ("**** Could not EnableSubsystem, %s\n",
-            AcpiFormatException (Status));
-        goto EnterDebugger;
-    }
-
-    Status = AeLoadTables ();
-
-    /*
-     * Exit namespace initialization for the "load namespace only" option.
-     * No control methods will be executed. However, still enter the
-     * the debugger.
-     */
-    if (AcpiGbl_AeLoadOnly)
-    {
-        goto EnterDebugger;
-    }
-
-    if (ACPI_FAILURE (Status))
-    {
-        printf ("**** Could not load ACPI tables, %s\n",
             AcpiFormatException (Status));
         goto EnterDebugger;
     }
