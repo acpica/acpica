@@ -44,11 +44,11 @@
                 Local7 = 0x00
             }
 
-            CH03 (__METHOD__, Z109, 0x00, 0x33, 0x00)
+            CH03 (__METHOD__, Z109, __LINE__, 0x00, 0x00)
             Local0 = Local7
             If (!SLCK)
             {
-                CH04 (__METHOD__, 0x00, 0xFF, Z109, 0x37, 0x00, 0x00)
+                CH04 (__METHOD__, 0x00, 0xFF, Z109, __LINE__, 0x00, 0x00)
             }
         }
 
@@ -116,7 +116,7 @@
          */
         If (X114)
         {
-            CH03 (__METHOD__, Z109, 0x0B, 0x75, 0x00)
+            CH03 (__METHOD__, Z109, __LINE__, 0x00, 0x00)
             Local0 = M901 ()
                 /*CH04(ts, 0, 0xff, z109, __LINE__, 0, 0) */
         }

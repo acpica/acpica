@@ -53,7 +53,7 @@
             0x04
         })
         Name (I001, 0x00)
-        CH03 (__METHOD__, Z154, 0x00, 0x38, 0x00)
+        CH03 (__METHOD__, Z154, __LINE__, 0x00, 0x00)
         I001 = Arg0
         Method (M001, 0, NotSerialized)
         {
@@ -82,7 +82,7 @@
         }
 
         Debug = Local0
-        CH03 (__METHOD__, Z154, 0x02, 0x51, 0x00)
+        CH03 (__METHOD__, Z154, __LINE__, 0x00, 0x00)
     }
 
     Method (M001, 1, Serialized)
@@ -160,7 +160,7 @@
             ERR (__METHOD__, Z154, __LINE__, 0x00, 0x00, I000, 0x80000000)
         }
 
-        CH03 (__METHOD__, Z154, 0x05, 0x92, 0x00)
+        CH03 (__METHOD__, Z154, __LINE__, 0x00, 0x00)
     }
 
     Method (M002, 0, Serialized)
@@ -191,7 +191,7 @@
             ERR (__METHOD__, Z154, __LINE__, 0x00, 0x00, I000, 0x00100064)
         }
 
-        CH03 (__METHOD__, Z154, 0x08, 0xAF, 0x00)
+        CH03 (__METHOD__, Z154, __LINE__, 0x00, 0x00)
     }
 
     Method (M003, 0, Serialized)
@@ -221,7 +221,7 @@
             ERR (__METHOD__, Z154, __LINE__, 0x00, 0x00, I000, 0x00100064)
         }
 
-        CH03 (__METHOD__, Z154, 0x0B, 0xCB, 0x00)
+        CH03 (__METHOD__, Z154, __LINE__, 0x00, 0x00)
     }
 
     /*
@@ -302,7 +302,7 @@
             ERR (__METHOD__, Z154, __LINE__, 0x00, 0x00, Local7, 0x01)
         }
 
-        CH03 (__METHOD__, Z154, 0x0E, 0x0110, 0x00)
+        CH03 (__METHOD__, Z154, __LINE__, 0x00, 0x00)
     }
 
     /*
@@ -383,7 +383,7 @@
             ERR (__METHOD__, Z154, __LINE__, 0x00, 0x00, Arg1, 0x01)
         }
 
-        CH03 (__METHOD__, Z154, 0x11, 0x0155, 0x00)
+        CH03 (__METHOD__, Z154, __LINE__, 0x00, 0x00)
     }
 
     Method (N000, 0, NotSerialized)

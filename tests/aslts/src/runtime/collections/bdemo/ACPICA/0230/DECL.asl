@@ -235,9 +235,9 @@
             Debug = "Finish of test"
         }
 
-        CH03 ("", 0x00, 0x00, 0x70, 0x00)
+        CH03 (__METHOD__, 0x00, __LINE__, 0x00, 0x00)
         M100 ()
         /* Expect either ASL compiler error or any AML interpreter exception */
 
-        CH04 ("", 0x00, 0xFF, 0x00, 0x75, 0x00, 0x00)
+        CH04 (__METHOD__, 0x00, 0xFF, 0x00, __LINE__, 0x00, 0x00)
     }

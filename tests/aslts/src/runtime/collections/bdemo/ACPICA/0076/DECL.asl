@@ -36,9 +36,9 @@
         Debug = Local0
         Store (PD01 [0x00], Local1)
         Debug = Local1
-        CH03 ("", 0x00, 0x00, 0x2B, 0x00)
+        CH03 (__METHOD__, 0x00, __LINE__, 0x00, 0x00)
         Local7 = (Local1 + 0x00)
-        CH04 ("", 0x00, 0x2F, 0x00, 0x2D, 0x00, 0x00) /* AE_AML_OPERAND_TYPE */
+        CH04 (__METHOD__, 0x00, 0x2F, 0x00, __LINE__, 0x00, 0x00) /* AE_AML_OPERAND_TYPE */
         Local2 = RefOf (ID0A)
         Debug = Local2
     }

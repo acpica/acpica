@@ -49,11 +49,11 @@
         SET0 (Z132, __METHOD__, 0x00)
         If (RN00)
         {
-            CH03 (__METHOD__, Z132, 0x00, 0x3B, 0x00)
+            CH03 (__METHOD__, Z132, __LINE__, 0x00, 0x00)
             _TCI (C200, Local1)
             M000 (0x00)
             _TCI (C201, PP0A)
-            CH04 (__METHOD__, 0x00, 0xFF, Z132, 0x41, 0x00, 0x00)
+            CH04 (__METHOD__, 0x00, 0xFF, Z132, __LINE__, 0x00, 0x00)
             M3A3 (Local1, PP0A, Local3)
             M3A4 (Local1, PP0A, Local3, 0x00, 0x00, 0x00, 0x00)
         }

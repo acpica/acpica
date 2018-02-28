@@ -248,7 +248,7 @@
             }
 
             Local1 = DerefOf (Arg1)
-            CH03 (__METHOD__, Z093, 0x00, 0xFC, 0x00)
+            CH03 (__METHOD__, Z093, __LINE__, 0x00, 0x00)
             Local1 = DerefOf (DerefOf (Arg1))
             CH06 (Arg0, 0x2F, 0x2F)
             Store (DerefOf (Arg1) [0x00], Local1)
@@ -360,7 +360,7 @@
                 Local0 = (0x03 * LPC0) /* \M4B1.M007.LPC0 */
                 I001 = 0x00
                 Local1 = DerefOf (M000 (0x01, LPC0))
-                CH03 (__METHOD__, Z093, 0x016A, 0x00, 0x00)
+                CH03 (__METHOD__, Z093, __LINE__, 0x00, 0x00)
                 CH00 (Arg0, 0x01)
                 Local1 = DerefOf (DerefOf (M000 (0x02, LPC0)))
                 CH06 (Arg0, (0x3C + Local0), 0x2F)
@@ -376,7 +376,7 @@
             }
         }
 
-        CH03 (__METHOD__, Z093, 0x03, 0x017E, 0x00)
+        CH03 (__METHOD__, Z093, __LINE__, 0x00, 0x00)
         /* Local Named Object */
 
         M000 (__METHOD__)

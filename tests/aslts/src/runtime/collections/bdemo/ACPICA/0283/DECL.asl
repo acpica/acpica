@@ -67,9 +67,9 @@
             /* "Incorrect checksum" ACPI warning is expected */
 
             Load (RFU0, HI0) /* \D283.TST0.HI0_ */
-            CH03 ("", 0x00, 0x01, 0x49, 0x00)
+            CH03 (__METHOD__, 0x00, __LINE__, 0x00, 0x00)
             Unload (HI0)
-            CH03 ("", 0x00, 0x02, 0x4D, 0x00)
+            CH03 (__METHOD__, 0x00, __LINE__, 0x00, 0x00)
         }
     }
 

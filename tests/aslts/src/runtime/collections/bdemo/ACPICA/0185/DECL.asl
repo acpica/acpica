@@ -60,11 +60,11 @@
         /* m000 */
 
         I000 = 0xDDDD9000
-        CH03 ("", 0x00, 0x00, 0x43, 0x00)
+        CH03 (__METHOD__, 0x00, __LINE__, 0x00, 0x00)
         I000 = M000 ()
         If (SLCK)
         {
-            CH03 ("", 0x00, 0x01, 0x48, 0x00)
+            CH03 (__METHOD__, 0x00, __LINE__, 0x00, 0x00)
             If ((I000 != 0x00))
             {
                 ERR (__METHOD__, ZFFF, __LINE__, 0x00, 0x00, I000, 0x00)
@@ -78,11 +78,11 @@
         /* m009 */
 
         I000 = 0xDDDD9000
-        CH03 ("", 0x00, 0x04, 0x54, 0x00)
+        CH03 (__METHOD__, 0x00, __LINE__, 0x00, 0x00)
         I000 = M009 ()
         If (SLCK)
         {
-            CH03 ("", 0x00, 0x05, 0x59, 0x00)
+            CH03 (__METHOD__, 0x00, __LINE__, 0x00, 0x00)
             If ((I000 != 0x00))
             {
                 ERR (__METHOD__, ZFFF, __LINE__, 0x00, 0x00, I000, 0x00)

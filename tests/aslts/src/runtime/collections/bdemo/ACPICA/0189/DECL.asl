@@ -41,13 +41,13 @@
             {
                  0x79                                             // y
             }
-        CH03 ("", 0x00, 0x00, 0x29, 0x00)
+        CH03 (__METHOD__, 0x00, __LINE__, 0x00, 0x00)
         Local1 = ConcatenateResTemplate (RT00, Local0)
-        CH04 ("", 0x00, 0xFF, 0x00, 0x2D, 0x00, 0x00)
+        CH04 (__METHOD__, 0x00, 0xFF, 0x00, __LINE__, 0x00, 0x00)
         Local0 = Buffer (0x01)
             {
                  0x78                                             // x
             }
         Local1 = ConcatenateResTemplate (RT00, Local0)
-        CH04 ("", 0x00, 0xFF, 0x00, 0x33, 0x00, 0x00)
+        CH04 (__METHOD__, 0x00, 0xFF, 0x00, __LINE__, 0x00, 0x00)
     }

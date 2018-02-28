@@ -37,7 +37,7 @@
         Method (TST0, 0, NotSerialized)
         {
             Local0 = LoadTable ("OEM1", "", "", "", "\\PLDT", "1")
-            If (CH03 ("", 0x00, 0x01, 0x2C, 0x00))
+            If (CH03 (__METHOD__, 0x00, __LINE__, 0x00, 0x00))
             {
                 Return (Zero)
             }
@@ -53,7 +53,7 @@
             }
 
             Unload (Local0)
-            CH03 ("", 0x00, 0x04, 0x39, 0x00)
+            CH03 (__METHOD__, 0x00, __LINE__, 0x00, 0x00)
         }
     }
 

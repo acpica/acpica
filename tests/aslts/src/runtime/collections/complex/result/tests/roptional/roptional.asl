@@ -391,7 +391,7 @@
 
             }
 
-            If (CH03 (Arg0, Z127, 0x03, 0x0154, 0x00))
+            If (CH03 (Arg0, Z127, __LINE__, 0x00, 0x00))
             {
                 /*Exception during preparing of Target Object */
 
@@ -461,7 +461,7 @@
 
             }
 
-            If (CH03 (Arg0, Z127, 0x06, 0x0186, 0x00))
+            If (CH03 (Arg0, Z127, __LINE__, 0x00, 0x00))
             {
                 /* Exception during preparing of Source Object */
 
@@ -640,7 +640,7 @@
                     /* Check that Target can be used as reference */
                     Local0 = DerefOf (Arg1)
                     Local3 = DerefOf (Local0)
-                    If (CH03 (Arg0, Z127, 0x12, 0x0204, Arg3))
+                    If (CH03 (Arg0, Z127, __LINE__, 0x00, Arg3))
                     {
                         /* Derefof caused unexpected exception */
 
@@ -1623,7 +1623,7 @@
                     }
                 }
             }
-            ElseIf (CH03 (Arg0, Z127, 0x1C, 0x0341, Arg2))
+            ElseIf (CH03 (Arg0, Z127, __LINE__, 0x00, Arg2))
             {
                 /* Storing caused unexpected exception */
 
@@ -1985,7 +1985,7 @@
                     }
                 }
             }
-            ElseIf (CH03 (Arg0, Z127, 0x21, 0x03C8, Arg2))
+            ElseIf (CH03 (Arg0, Z127, __LINE__, 0x00, Arg2))
             {
                 /* Storing caused unexpected exception */
 

@@ -582,7 +582,7 @@
 
     Method (FTTT, 0, NotSerialized)
     {
-        CH03 ("FTTT", 0x00, 0x00, 0x0231, 0x00)
+        CH03 ("FTTT", 0x00, __LINE__, 0x00, 0x00)
         /* Report completion of previous root Method */
 
         RPT0 ()
@@ -692,7 +692,7 @@
      * arg1 - absolute index of file reporting the error
      * arg2 - line number of error (inside the file)
      * arg3 - absolute index of file initiating the checking
-     * arg4 - index of checking (inside the file)
+     * arg4 - line number of of checking (inside the file)
      * arg5 - first value (usually, received value)
      * arg6 - second value (usually, expected value)
      */
@@ -879,7 +879,7 @@
                 Debug = Local0
             }
 
-            Concatenate ("             Index  : ", Arg4, Local0)
+            Concatenate ("             Line   : ", ToDecimalString(Arg4), Local0)
             Debug = Local0
         }
     }
@@ -1466,7 +1466,7 @@
             ERR7++
             /* Reset internal information about exceptions */
 
-            CH03 ("", 0x00, 0x0888, 0x0561, 0x00)
+            CH03 (__METHOD__, 0x00, __LINE__, 0x00, 0x00)
             EXC0 = 0x00
             EXC1 = 0x00
         }
@@ -2097,7 +2097,7 @@
     {
         /* Check, the current number of exceptions is zero */
 
-        CH03 ("FNSH", 0x00, 0x00, 0x07B5, 0x00)
+        CH03 ("FNSH", 0x00, __LINE__, 0x00, 0x00)
         /* Check all the constants are not corrupted */
 
         CST0 ()

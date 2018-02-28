@@ -68,18 +68,18 @@
 
         /* Named */
 
-        CH03 ("", 0x00, 0x00, 0x35, 0x00)
+        CH03 (__METHOD__, 0x00, __LINE__, 0x00, 0x00)
         Store (P000 [0x02], Local1)
-        CH04 ("", 0x01, 0x37, 0x00, 0x37, 0x00, 0x00) /* AE_AML_PACKAGE_LIMIT */
-        CH03 ("", 0x00, 0x02, 0x39, 0x00)
+        CH04 (__METHOD__, 0x01, 0x37, 0x00, __LINE__, 0x00, 0x00) /* AE_AML_PACKAGE_LIMIT */
+        CH03 (__METHOD__, 0x00, __LINE__, 0x00, 0x00)
         Store (B000 [0x03], Local1)
-        CH04 ("", 0x01, 0x36, 0x00, 0x3B, 0x00, 0x00) /* AE_AML_BUFFER_LIMIT */
-        CH03 ("", 0x00, 0x04, 0x3D, 0x00)
+        CH04 (__METHOD__, 0x01, 0x36, 0x00, __LINE__, 0x00, 0x00) /* AE_AML_BUFFER_LIMIT */
+        CH03 (__METHOD__, 0x00, __LINE__, 0x00, 0x00)
         Store (S000 [0x04], Local1)
-        CH04 ("", 0x01, 0x3D, 0x00, 0x3F, 0x00, 0x00) /* AE_AML_STRING_LIMIT */
+        CH04 (__METHOD__, 0x01, 0x3D, 0x00, __LINE__, 0x00, 0x00) /* AE_AML_STRING_LIMIT */
         /* Immediate */
 
-        CH03 ("", 0x00, 0x06, 0x43, 0x00)
+        CH03 (__METHOD__, 0x00, __LINE__, 0x00, 0x00)
         Store (Index (Package (0x02)
                 {
                     0x00,
@@ -87,44 +87,44 @@
                 }, 0x02), Local1)
         If (Y900)
         {
-            CH04 ("", 0x01, 0x37, 0x00, 0x46, 0x00, 0x00) /* AE_AML_PACKAGE_LIMIT */
+            CH04 (__METHOD__, 0x01, 0x37, 0x00, __LINE__, 0x00, 0x00) /* AE_AML_PACKAGE_LIMIT */
         }
         Else
         {
-            CH04 ("", 0x00, 0x55, 0x00, 0x48, 0x00, 0x00) /* AE_INDEX_TO_NOT_ATTACHED */
+            CH04 (__METHOD__, 0x00, 0x55, 0x00, __LINE__, 0x00, 0x00) /* AE_INDEX_TO_NOT_ATTACHED */
         }
 
-        CH03 ("", 0x00, 0x09, 0x4B, 0x00)
+        CH03 (__METHOD__, 0x00, __LINE__, 0x00, 0x00)
         Store (Index (Buffer (0x03)
                 {
                      0x02, 0x03, 0x04                                 // ...
                 }, 0x03), Local1)
         If (Y900)
         {
-            CH04 ("", 0x01, 0x36, 0x00, 0x4E, 0x00, 0x00) /* AE_AML_BUFFER_LIMIT */
+            CH04 (__METHOD__, 0x01, 0x36, 0x00, __LINE__, 0x00, 0x00) /* AE_AML_BUFFER_LIMIT */
         }
         Else
         {
-            CH04 ("", 0x00, 0x55, 0x00, 0x50, 0x00, 0x00) /* AE_INDEX_TO_NOT_ATTACHED */
+            CH04 (__METHOD__, 0x00, 0x55, 0x00, __LINE__, 0x00, 0x00) /* AE_INDEX_TO_NOT_ATTACHED */
         }
 
-        CH03 ("", 0x00, 0x0C, 0x53, 0x00)
+        CH03 (__METHOD__, 0x00, __LINE__, 0x00, 0x00)
         Store (Index ("5678", 0x04), Local1)
         If (Y900)
         {
-            CH04 ("", 0x01, 0x3D, 0x00, 0x56, 0x00, 0x00) /* AE_AML_STRING_LIMIT */
+            CH04 (__METHOD__, 0x01, 0x3D, 0x00, __LINE__, 0x00, 0x00) /* AE_AML_STRING_LIMIT */
         }
         Else
         {
-            CH04 ("", 0x00, 0x55, 0x00, 0x58, 0x00, 0x00) /* AE_INDEX_TO_NOT_ATTACHED */
+            CH04 (__METHOD__, 0x00, 0x55, 0x00, __LINE__, 0x00, 0x00) /* AE_INDEX_TO_NOT_ATTACHED */
         }
 
         /* Fields */
 
-        CH03 ("", 0x00, 0x0F, 0x5D, 0x00)
+        CH03 (__METHOD__, 0x00, __LINE__, 0x00, 0x00)
         Local0 = F000 /* \MF07.F000 */
-        CH03 ("", 0x00, 0x10, 0x5F, 0x00)
-        CH03 ("", 0x00, 0x11, 0x61, 0x00)
+        CH03 (__METHOD__, 0x00, __LINE__, 0x00, 0x00)
+        CH03 (__METHOD__, 0x00, __LINE__, 0x00, 0x00)
         Local0 = F001 /* \MF07.F001 */
         If (Y263)
         {
@@ -135,23 +135,23 @@
              * - and on Store-to-debug stage
              * Check opcode of the last exception.
              */
-            CH04 ("", 0x02, 0x35, 0x00, 0x6B, 0x00, 0x00) /* AE_AML_REGION_LIMIT */
+            CH04 (__METHOD__, 0x02, 0x35, 0x00, __LINE__, 0x00, 0x00) /* AE_AML_REGION_LIMIT */
         }
         Else
         {
-            CH04 ("", 0x00, 0x35, 0x00, 0x6D, 0x00, 0x00) /* AE_AML_REGION_LIMIT */
+            CH04 (__METHOD__, 0x00, 0x35, 0x00, __LINE__, 0x00, 0x00) /* AE_AML_REGION_LIMIT */
         }
 
-        CH03 ("", 0x00, 0x14, 0x70, 0x00)
+        CH03 (__METHOD__, 0x00, __LINE__, 0x00, 0x00)
         Local0 = BKF0 /* \MF07.BKF0 */
         If (Y263)
         {
             /* See comment to sub-test above */
 
-            CH04 ("", 0x02, 0x44, 0x00, 0x74, 0x00, 0x00) /* AE_AML_REGISTER_LIMIT */
+            CH04 (__METHOD__, 0x02, 0x44, 0x00, __LINE__, 0x00, 0x00) /* AE_AML_REGISTER_LIMIT */
         }
         Else
         {
-            CH04 ("", 0x00, 0x44, 0x00, 0x76, 0x00, 0x00) /* AE_AML_REGISTER_LIMIT */
+            CH04 (__METHOD__, 0x00, 0x44, 0x00, __LINE__, 0x00, 0x00) /* AE_AML_REGISTER_LIMIT */
         }
     }

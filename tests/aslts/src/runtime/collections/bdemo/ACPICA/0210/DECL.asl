@@ -46,9 +46,9 @@
         Method (M000, 1, NotSerialized)
         {
             Local0 = 0x02
-            CH03 ("", 0x00, 0x00, 0x33, 0x00)
+            CH03 (__METHOD__, 0x00, __LINE__, 0x00, 0x00)
             Divide (0x01, Arg0, Local0)
-            CH04 ("", 0x00, 0x38, 0x00, 0x35, 0x00, 0x00) /* AE_AML_DIVIDE_BY_ZERO */
+            CH04 (__METHOD__, 0x00, 0x38, 0x00, __LINE__, 0x00, 0x00) /* AE_AML_DIVIDE_BY_ZERO */
         }
 
         Method (M001, 0, NotSerialized)

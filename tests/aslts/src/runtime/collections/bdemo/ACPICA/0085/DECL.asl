@@ -54,7 +54,7 @@
 
             Debug = Arg0
             Local1 = DerefOf (Arg0)
-            CH04 ("", 0x02, 0x3E, 0x01, 0x00, 0x00, 0x00)
+            CH04 (__METHOD__, 0x02, 0x3E, 0x01, __LINE__, 0x00, 0x00)
         }
         Else
         {

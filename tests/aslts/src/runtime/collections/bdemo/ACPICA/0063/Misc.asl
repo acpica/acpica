@@ -186,7 +186,7 @@
             ERR (__METHOD__, ZFFF, __LINE__, 0x00, 0x00, Local0, 0x00013456)
         }
 
-        CH03 (__METHOD__, ZFFF, 0x0100, 0xAC, 0x00)
+        CH03 (__METHOD__, ZFFF, __LINE__, 0x00, 0x00)
         /* Too large, all hex, should be trancated */
 
         Local0 = ("abcdef0123456789112233445566778890" + 0x00)
@@ -202,7 +202,7 @@
             ERR (__METHOD__, ZFFF, __LINE__, 0x00, 0x00, Local0, 0xABCDEF01)
         }
 
-        CH03 (__METHOD__, ZFFF, 0x0101, 0xBA, 0x00)
+        CH03 (__METHOD__, ZFFF, __LINE__, 0x00, 0x00)
         /* Large, all hex, looks like octal, should be trancated */
 
         Local0 = ("0abcdef0123456789112233445566778890" + 0x1234)
@@ -218,7 +218,7 @@
             ERR (__METHOD__, ZFFF, __LINE__, 0x00, 0x00, Local0, 0xABCDEF01)
         }
 
-        CH03 (__METHOD__, ZFFF, 0x0102, 0xC8, 0x00)
+        CH03 (__METHOD__, ZFFF, __LINE__, 0x00, 0x00)
         /* Looks like usual hex, but 'x' terminates conversion */
 
         Local0 = ("0x1111" + 0x2222)
@@ -227,7 +227,7 @@
             ERR (__METHOD__, ZFFF, __LINE__, 0x00, 0x00, Local0, 0x2222)
         }
 
-        CH03 (__METHOD__, ZFFF, 0x0103, 0xD0, 0x00)
+        CH03 (__METHOD__, ZFFF, __LINE__, 0x00, 0x00)
         /* Empty string, no action - the relevant parameter of Add remains zero */
 
         Local0 = ("" + 0xDE)
@@ -236,7 +236,7 @@
             ERR (__METHOD__, ZFFF, __LINE__, 0x00, 0x00, Local0, 0xDE)
         }
 
-        CH03 (__METHOD__, ZFFF, 0x0104, 0xD8, 0x00)
+        CH03 (__METHOD__, ZFFF, __LINE__, 0x00, 0x00)
         /* Blank string, no action - the relevant parameter of Add remains zero */
 
         Local0 = (" " + 0x0333)
@@ -245,7 +245,7 @@
             ERR (__METHOD__, ZFFF, __LINE__, 0x00, 0x00, Local0, 0x0333)
         }
 
-        CH03 (__METHOD__, ZFFF, 0x0105, 0xE0, 0x00)
+        CH03 (__METHOD__, ZFFF, __LINE__, 0x00, 0x00)
         /* Blank string, no action - the relevant parameter of Add remains zero */
 
         Local0 = ("                                " + 0x92)
@@ -254,7 +254,7 @@
             ERR (__METHOD__, ZFFF, __LINE__, 0x00, 0x00, Local0, 0x92)
         }
 
-        CH03 (__METHOD__, ZFFF, 0x0106, 0xE8, 0x00)
+        CH03 (__METHOD__, ZFFF, __LINE__, 0x00, 0x00)
         /* Conversion is terminated just by the first symbol (non-hex) though followed by hex-es, remains zero */
 
         Local0 = ("k1234567" + 0x01E9)
@@ -271,7 +271,7 @@
             ERR (__METHOD__, ZFFF, __LINE__, 0x00, 0x00, Local0, 0x000000ABCDEF0000)
         }
 
-        CH03 (__METHOD__, ZFFF, 0x0107, 0xF6, 0x00)
+        CH03 (__METHOD__, ZFFF, __LINE__, 0x00, 0x00)
         /* Looks like designation of hex (terminated by x) */
 
         Local0 = ("0x" + 0x12345678)
@@ -280,7 +280,7 @@
             ERR (__METHOD__, ZFFF, __LINE__, 0x00, 0x00, Local0, 0x12345678)
         }
 
-        CH03 (__METHOD__, ZFFF, 0x0108, 0xFE, 0x00)
+        CH03 (__METHOD__, ZFFF, __LINE__, 0x00, 0x00)
         /* Special symbol in the hex designation (terminated by x) */
 
         Local0 = ("x" + 0x00BC614E)
@@ -377,7 +377,7 @@
             ERR (__METHOD__, ZFFF, __LINE__, 0x00, 0x00, Local0, 0x3021)
         }
 
-        CH03 (__METHOD__, ZFFF, 0x0109, 0x0148, 0x00)
+        CH03 (__METHOD__, ZFFF, __LINE__, 0x00, 0x00)
         /* Only decimal, much more than 16 */
 
         Store (("123456789012345601112223334446667788990087654" + 0x00), Local1)
@@ -393,7 +393,7 @@
             ERR (__METHOD__, ZFFF, __LINE__, 0x00, 0x00, Local0, 0x12345678)
         }
 
-        CH03 (__METHOD__, ZFFF, 0x010A, 0x0156, 0x00)
+        CH03 (__METHOD__, ZFFF, __LINE__, 0x00, 0x00)
         /* Only hex, much more than 16 */
 
         Store (("abcdefabcdefabcdefabcdefabcdefabcdefabcdefabc" + 0x00), Local1)
@@ -409,7 +409,7 @@
             ERR (__METHOD__, ZFFF, __LINE__, 0x00, 0x00, Local0, 0xABCDEFAB)
         }
 
-        CH03 (__METHOD__, ZFFF, 0x010B, 0x0164, 0x00)
+        CH03 (__METHOD__, ZFFF, __LINE__, 0x00, 0x00)
         /* Only decimal, much more than 16, non-hex at the end */
 
         Store (("123456789012345601112223334446667788990087654ZZZZ" + 0x00), Local1)
@@ -425,7 +425,7 @@
             ERR (__METHOD__, ZFFF, __LINE__, 0x00, 0x00, Local0, 0x12345678)
         }
 
-        CH03 (__METHOD__, ZFFF, 0x010C, 0x0172, 0x00)
+        CH03 (__METHOD__, ZFFF, __LINE__, 0x00, 0x00)
         /* Only hex, much more than 16, non-hex at the end */
 
         Store (("abcdefabcdefabcdefabcdefabcdefabcdefabcdefabcZZZZ" + 0x00), Local1)
@@ -441,7 +441,7 @@
             ERR (__METHOD__, ZFFF, __LINE__, 0x00, 0x00, Local0, 0xABCDEFAB)
         }
 
-        CH03 (__METHOD__, ZFFF, 0x010D, 0x0180, 0x00)
+        CH03 (__METHOD__, ZFFF, __LINE__, 0x00, 0x00)
     }
 
     Method (MD75, 0, NotSerialized)
@@ -451,9 +451,9 @@
 
     Method (MD76, 0, Serialized)
     {
-        CH03 (__METHOD__, ZFFF, 0x010E, 0x018B, 0x00)
+        CH03 (__METHOD__, ZFFF, __LINE__, 0x00, 0x00)
         MD74 ()
-        CH03 (__METHOD__, ZFFF, 0x010F, 0x018D, 0x00)
+        CH03 (__METHOD__, ZFFF, __LINE__, 0x00, 0x00)
         MD75 ()
-        CH03 (__METHOD__, ZFFF, 0x0110, 0x018F, 0x00)
+        CH03 (__METHOD__, ZFFF, __LINE__, 0x00, 0x00)
     }

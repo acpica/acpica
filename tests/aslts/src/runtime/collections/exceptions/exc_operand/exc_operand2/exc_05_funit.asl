@@ -92,11 +92,11 @@
             Store (FU03 [0x00], Local1)
             If (Y900)
             {
-                CH03 (__METHOD__, Z097, 0x00, 0x5A, 0x00)
+                CH03 (__METHOD__, Z097, __LINE__, 0x00, 0x00)
             }
             Else
             {
-                CH04 (__METHOD__, 0x00, 0x55, Z094, 0x5C, 0x00, 0x00) /* AE_INDEX_TO_NOT_ATTACHED */
+                CH04 (__METHOD__, 0x00, 0x55, Z094, __LINE__, 0x00, 0x00) /* AE_INDEX_TO_NOT_ATTACHED */
             }
         }
 
@@ -127,11 +127,11 @@
             Store (FU01 [0x00], Local1)
             If (Y900)
             {
-                CH03 (__METHOD__, Z097, 0x01, 0x79, 0x00)
+                CH03 (__METHOD__, Z097, __LINE__, 0x00, 0x00)
             }
             Else
             {
-                CH04 (__METHOD__, 0x00, 0x55, Z094, 0x7B, 0x00, 0x00) /* AE_INDEX_TO_NOT_ATTACHED */
+                CH04 (__METHOD__, 0x00, 0x55, Z094, __LINE__, 0x00, 0x00) /* AE_INDEX_TO_NOT_ATTACHED */
             }
         }
 
@@ -149,7 +149,7 @@
             }
 
             Local1 = DerefOf (Arg1)
-            CH03 (__METHOD__, Z097, 0x02, 0x8C, 0x00)
+            CH03 (__METHOD__, Z097, __LINE__, 0x00, 0x00)
             Local1 = DerefOf (DerefOf (Arg1))
             CH06 (Arg0, 0x07, 0x2F)
             Store (DerefOf (Arg1) [0x00], Local1)
@@ -159,11 +159,11 @@
 
                 If (Y900)
                 {
-                    CH03 (__METHOD__, Z097, 0x03, 0x96, 0x00)
+                    CH03 (__METHOD__, Z097, __LINE__, 0x00, 0x00)
                 }
                 Else
                 {
-                    CH04 (__METHOD__, 0x00, 0x55, Z097, 0x98, 0x00, 0x00) /* AE_INDEX_TO_NOT_ATTACHED */
+                    CH04 (__METHOD__, 0x00, 0x55, Z097, __LINE__, 0x00, 0x00) /* AE_INDEX_TO_NOT_ATTACHED */
                 }
             }
             Else
@@ -232,7 +232,7 @@
                 Local0 = (0x03 * LPC0) /* \M4B5.M003.LPC0 */
                 I000 = 0x00
                 Local1 = DerefOf (M000 (0x01, LPC0))
-                CH03 (__METHOD__, Z097, 0xD3, 0x00, 0x00)
+                CH03 (__METHOD__, Z097, __LINE__, 0x00, 0x00)
                 CH00 (Arg0, 0x01)
                 Local1 = DerefOf (DerefOf (M000 (0x02, LPC0)))
                 CH06 (Arg0, (0x0B + Local0), 0x2F)
@@ -244,11 +244,11 @@
 
                     If (Y900)
                     {
-                        CH03 (__METHOD__, Z097, 0xDF, 0x00, 0x00)
+                        CH03 (__METHOD__, Z097, __LINE__, 0x00, 0x00)
                     }
                     Else
                     {
-                        CH04 (__METHOD__, 0x00, 0x55, Z097, 0xE1, 0x00, 0x00) /* AE_INDEX_TO_NOT_ATTACHED */
+                        CH04 (__METHOD__, 0x00, 0x55, Z097, __LINE__, 0x00, 0x00) /* AE_INDEX_TO_NOT_ATTACHED */
                     }
                 }
                 Else
@@ -267,7 +267,7 @@
             }
         }
 
-        CH03 (__METHOD__, Z097, 0x0C, 0xF2, 0x00)
+        CH03 (__METHOD__, Z097, __LINE__, 0x00, 0x00)
         /* Local Named Object */
 
         M000 (__METHOD__)

@@ -57,12 +57,12 @@
             Load (RFU4, DDB0) /* \D292.TST0.DDB0 */
             Debug = "SSDT loaded"
             Unload (DDB0)
-            CH03 ("", 0x00, 0x01, 0x40, 0x00)
+            CH03 (__METHOD__, 0x00, __LINE__, 0x00, 0x00)
             Debug = "SSDT unloaded"
             Unload (DDB0)
-            CH04 ("", 0x00, 0xFF, 0x00, 0x44, 0x00, 0x00)
+            CH04 (__METHOD__, 0x00, 0xFF, 0x00, __LINE__, 0x00, 0x00)
             Unload (DDB0)
-            CH04 ("", 0x00, 0xFF, 0x00, 0x47, 0x00, 0x00)
+            CH04 (__METHOD__, 0x00, 0xFF, 0x00, __LINE__, 0x00, 0x00)
         }
     }
 

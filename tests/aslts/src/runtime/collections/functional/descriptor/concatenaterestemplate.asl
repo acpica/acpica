@@ -2162,5 +2162,5 @@
         /*	Store(Local1, Index(p441, 1)) */
         M332 (__METHOD__, 0x01, "p443", P441, P442, P443)
         M332 (__METHOD__, 0x01, "p444", P442, P441, P444)
-        CH03 (__METHOD__, Z007, 0x0123, 0x03EC, 0x00)
+        CH03 (__METHOD__, Z007, __LINE__, 0x00, 0x00)
     }

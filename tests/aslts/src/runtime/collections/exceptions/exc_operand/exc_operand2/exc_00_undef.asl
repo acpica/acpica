@@ -52,7 +52,7 @@
             /* CondRefOf */
 
             CondRefOf (Local0, Local1)
-            CH03 (__METHOD__, Z092, 0x01, 0x3B, 0x00)
+            CH03 (__METHOD__, Z092, __LINE__, 0x00, 0x00)
             /* CopyObject */
 
             CopyObject (Local0, Local1)
@@ -92,11 +92,11 @@
             /* ObjectType */
 
             Local1 = ObjectType (Local0)
-            CH03 (__METHOD__, Z092, 0x02, 0x6D, 0x00)
+            CH03 (__METHOD__, Z092, __LINE__, 0x00, 0x00)
             /* RefOf */
 
             Local1 = RefOf (Local0)
-            CH03 (__METHOD__, Z092, 0x03, 0x72, 0x00)
+            CH03 (__METHOD__, Z092, __LINE__, 0x00, 0x00)
             /* Release */
 
             Release (Local0)
@@ -344,7 +344,7 @@
             /* DeRefOf(Index(Package, Ind)) */
 
             Local1 = DerefOf (P000 [0x00])
-            CH04 (__METHOD__, 0x01, 0x33, Z092, 0x01A2, 0x00, 0x00)
+            CH04 (__METHOD__, 0x01, 0x33, Z092, __LINE__, 0x00, 0x00)
             /* CondRefOf */
 
             CondRefOf (DerefOf (P000 [0x00]), Local1)
@@ -390,7 +390,7 @@
             If (X104)
             {
                 Local1 = ObjectType (DerefOf (P000 [0x00]))
-                CH03 (__METHOD__, Z092, 0x05, 0x01DA, 0x00)
+                CH03 (__METHOD__, Z092, __LINE__, 0x00, 0x00)
             }
 
             /* RefOf */
@@ -952,7 +952,7 @@
             }
 
             Local1 = DerefOf (Arg1)
-            CH04 (__METHOD__, 0x00, 0x3E, Z092, 0x04F9, 0x00, 0x00)
+            CH04 (__METHOD__, 0x00, 0x3E, Z092, __LINE__, 0x00, 0x00)
             /* CondRefOf */
 
             CondRefOf (DerefOf (Arg1), Local1)
@@ -998,7 +998,7 @@
             If (X104)
             {
                 Local1 = ObjectType (DerefOf (Arg1))
-                CH03 (__METHOD__, Z092, 0x0B, 0x0531, 0x00)
+                CH03 (__METHOD__, Z092, __LINE__, 0x00, 0x00)
             }
 
             /* RefOf */
@@ -1417,7 +1417,7 @@
             }
         }
 
-        CH03 (__METHOD__, Z092, 0x0C, 0x0716, 0x00)
+        CH03 (__METHOD__, Z092, __LINE__, 0x00, 0x00)
         /* Uninitialized Local */
 
         M000 (Concatenate (__METHOD__, "-m000"), 0x00)

@@ -349,7 +349,7 @@
 
             }
 
-            If (CH03 (Arg0, Z126, 0x03, 0x0137, 0x00))
+            If (CH03 (Arg0, Z126, __LINE__, 0x00, 0x00))
             {
                 /*Exception during preparing of Target Object */
 
@@ -407,7 +407,7 @@
 
             }
 
-            If (CH03 (Arg0, Z126, 0x06, 0x0160, 0x00))
+            If (CH03 (Arg0, Z126, __LINE__, 0x00, 0x00))
             {
                 /* Exception during preparing of Source Object */
 
@@ -1081,7 +1081,7 @@
                     }
                 }
             }
-            ElseIf (CH03 (Arg0, Z126, 0x1B, 0x029A, Arg2))
+            ElseIf (CH03 (Arg0, Z126, __LINE__, 0x00, Arg2))
             {
                 /* Storing caused unexpected exception */
 
@@ -1296,7 +1296,7 @@
                     }
                 }
             }
-            ElseIf (CH03 (Arg0, Z126, 0x20, 0x0300, Arg2))
+            ElseIf (CH03 (Arg0, Z126, __LINE__, 0x00, Arg2))
             {
                 /* Storing caused unexpected exception */
 

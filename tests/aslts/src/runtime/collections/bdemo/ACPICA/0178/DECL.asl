@@ -43,7 +43,7 @@
             BKF0,   9
         }
 
-        CH03 ("", 0x00, 0x00, 0x2A, 0x00)
+        CH03 (__METHOD__, 0x00, __LINE__, 0x00, 0x00)
         Local0 = BKF0 /* \MF0A.BKF0 */
         If (Y263)
         {
@@ -54,11 +54,11 @@
              * - and on Store-to-debug stage
              * Check opcode of the last exception.
              */
-            CH04 ("", 0x02, 0x44, 0x00, 0x35, 0x00, 0x00) /* AE_AML_REGISTER_LIMIT */
+            CH04 (__METHOD__, 0x02, 0x44, 0x00, __LINE__, 0x00, 0x00) /* AE_AML_REGISTER_LIMIT */
         }
         Else
         {
-            CH04 ("", 0x00, 0x44, 0x00, 0x37, 0x00, 0x00) /* AE_AML_REGISTER_LIMIT */
+            CH04 (__METHOD__, 0x00, 0x44, 0x00, __LINE__, 0x00, 0x00) /* AE_AML_REGISTER_LIMIT */
         }
     }
 
@@ -76,9 +76,9 @@
             BKF0,   9
         }
 
-        CH03 ("", 0x00, 0x02, 0x43, 0x00)
+        CH03 (__METHOD__, 0x00, __LINE__, 0x00, 0x00)
         Local0 = BKF0 /* \MF0B.BKF0 */
-        CH04 ("", 0x00, 0x44, 0x00, 0x45, 0x00, 0x00) /* AE_AML_REGISTER_LIMIT */
+        CH04 (__METHOD__, 0x00, 0x44, 0x00, __LINE__, 0x00, 0x00) /* AE_AML_REGISTER_LIMIT */
     }
 
     Method (MF0C, 0, Serialized)
@@ -94,9 +94,9 @@
             BKF0,   9
         }
 
-        CH03 ("", 0x00, 0x04, 0x4F, 0x00)
+        CH03 (__METHOD__, 0x00, __LINE__, 0x00, 0x00)
         Local0 = BKF0 /* \MF0C.BKF0 */
-        CH03 ("", 0x00, 0x05, 0x51, 0x00)
+        CH03 (__METHOD__, 0x00, __LINE__, 0x00, 0x00)
     }
 
     Method (MF0D, 0, Serialized)
@@ -113,9 +113,9 @@
             BKF0,   9
         }
 
-        CH03 ("", 0x00, 0x06, 0x5C, 0x00)
+        CH03 (__METHOD__, 0x00, __LINE__, 0x00, 0x00)
         Local0 = BKF0 /* \MF0D.BKF0 */
-        CH03 ("", 0x00, 0x07, 0x5E, 0x00)
+        CH03 (__METHOD__, 0x00, __LINE__, 0x00, 0x00)
     }
 
     Method (MF0E, 0, Serialized)
@@ -132,7 +132,7 @@
             BKF0,   9
         }
 
-        CH03 ("", 0x00, 0x08, 0x69, 0x00)
+        CH03 (__METHOD__, 0x00, __LINE__, 0x00, 0x00)
         Local0 = BKF0 /* \MF0E.BKF0 */
-        CH03 ("", 0x00, 0x09, 0x6B, 0x00)
+        CH03 (__METHOD__, 0x00, __LINE__, 0x00, 0x00)
     }

@@ -38,9 +38,9 @@
         /* 101 characters */
 
         Local1 = "01234567890123456789012345678901234567890123456789012345678901234567890123456789012345678901234567890"
-        CH03 ("", 0x00, 0x00, 0x2B, 0x00)
+        CH03 (__METHOD__, 0x00, __LINE__, 0x00, 0x00)
         Concatenate (Local0, Local1, Local2)
-        CH03 ("", 0x00, 0x01, 0x2F, 0x00)
+        CH03 (__METHOD__, 0x00, __LINE__, 0x00, 0x00)
         /*
      * The length of String is no more restricted.
      *

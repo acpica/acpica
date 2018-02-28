@@ -9373,13 +9373,13 @@
             }
             Else
             {
-                CH03 (Arg0, Z120, 0x00, 0x2B33, 0x00)
+                CH03 (Arg0, Z120, __LINE__, 0x00, 0x00)
                 Store (M601 (0x02, 0x06) [DerefOf (RefOf (BF74))], Local3)
-                CH04 (Arg0, 0x00, 0x55, Z120, 0x2B36, 0x00, 0x00) /* AE_INDEX_TO_NOT_ATTACHED */
+                CH04 (Arg0, 0x00, 0x55, Z120, __LINE__, 0x00, 0x00) /* AE_INDEX_TO_NOT_ATTACHED */
                 Store (M601 (0x03, 0x06) [DerefOf (RefOf (BF74))], Local3)
-                CH04 (Arg0, 0x00, 0x55, Z120, 0x2B39, 0x00, 0x00) /* AE_INDEX_TO_NOT_ATTACHED */
+                CH04 (Arg0, 0x00, 0x55, Z120, __LINE__, 0x00, 0x00) /* AE_INDEX_TO_NOT_ATTACHED */
                 Store (M601 (0x04, 0x00) [DerefOf (RefOf (BF74))], Local3)
-                CH04 (Arg0, 0x00, 0x55, Z120, 0x2B3C, 0x00, 0x00) /* AE_INDEX_TO_NOT_ATTACHED */
+                CH04 (Arg0, 0x00, 0x55, Z120, __LINE__, 0x00, 0x00) /* AE_INDEX_TO_NOT_ATTACHED */
             }
 
             /* Method returns Reference */
@@ -9429,13 +9429,13 @@
             }
             Else
             {
-                CH03 (Arg0, Z120, 0x00, 0x2B77, 0x00)
+                CH03 (Arg0, Z120, __LINE__, 0x00, 0x00)
                 Local0 = M601 (0x02, 0x06) [DerefOf (RefOf (BF74))]
-                CH04 (Arg0, 0x00, 0x55, Z120, 0x2B7A, 0x00, 0x00) /* AE_INDEX_TO_NOT_ATTACHED */
+                CH04 (Arg0, 0x00, 0x55, Z120, __LINE__, 0x00, 0x00) /* AE_INDEX_TO_NOT_ATTACHED */
                 Local0 = M601 (0x03, 0x06) [DerefOf (RefOf (BF74))]
-                CH04 (Arg0, 0x00, 0x55, Z120, 0x2B7D, 0x00, 0x00) /* AE_INDEX_TO_NOT_ATTACHED */
+                CH04 (Arg0, 0x00, 0x55, Z120, __LINE__, 0x00, 0x00) /* AE_INDEX_TO_NOT_ATTACHED */
                 Local0 = M601 (0x04, 0x00) [DerefOf (RefOf (BF74))]
-                CH04 (Arg0, 0x00, 0x55, Z120, 0x2B80, 0x00, 0x00) /* AE_INDEX_TO_NOT_ATTACHED */
+                CH04 (Arg0, 0x00, 0x55, Z120, __LINE__, 0x00, 0x00) /* AE_INDEX_TO_NOT_ATTACHED */
             }
 
             /* Method returns Reference */
@@ -9510,7 +9510,7 @@
         /* (it can only be checked an exception does not occur) */
         Method (M068, 1, NotSerialized)
         {
-            CH03 (Arg0, Z120, 0x00, 0x2BD1, 0x00)
+            CH03 (Arg0, Z120, __LINE__, 0x00, 0x00)
             Fatal (0xFF, 0xFFFFFFFF, DerefOf (RefOf (BF61)))
             If (F64)
             {
@@ -9521,7 +9521,7 @@
                 Fatal (0xFF, 0xFFFFFFFF, DerefOf (RefOf (BF65)))
             }
 
-            CH03 (Arg0, Z120, 0x01, 0x2BD8, 0x00)
+            CH03 (Arg0, Z120, __LINE__, 0x00, 0x00)
         }
 
         /* Buffer Field to Integer conversion of the Buffer Field Index */
@@ -10145,12 +10145,12 @@
         /* of the Method execution control operators (Sleep, Stall) */
         Method (M06B, 1, NotSerialized)
         {
-            CH03 (Arg0, Z120, 0x02, 0x2E48, 0x00)
+            CH03 (Arg0, Z120, __LINE__, 0x00, 0x00)
             /* Sleep */
 
             Local0 = Timer
             Sleep (DerefOf (RefOf (BF61)))
-            CH03 (Arg0, Z120, 0x03, 0x2E4F, 0x00)
+            CH03 (Arg0, Z120, __LINE__, 0x00, 0x00)
             Local1 = Timer
             Local2 = (Local1 - Local0)
             If ((Local2 < C08C))
@@ -10162,7 +10162,7 @@
 
             Local0 = Timer
             Stall (DerefOf (RefOf (BF75)))
-            CH03 (Arg0, Z120, 0x04, 0x2E5C, 0x00)
+            CH03 (Arg0, Z120, __LINE__, 0x00, 0x00)
             Local1 = Timer
             Local2 = (Local1 - Local0)
             If ((Local2 < 0x03DE))
@@ -10177,12 +10177,12 @@
         {
             Mutex (MTX0, 0x00)
             Acquire (MTX0, 0x0000)
-            CH03 (Arg0, Z120, 0x05, 0x2E6D, 0x00)
+            CH03 (Arg0, Z120, __LINE__, 0x00, 0x00)
             Local0 = Timer
             /* Compiler allows only Integer constant as TimeoutValue (Bug 1)
              Acquire(MTX0, Derefof(Refof(bf61)))
              */
-            CH03 (Arg0, Z120, 0x06, 0x2E74, 0x00)
+            CH03 (Arg0, Z120, __LINE__, 0x00, 0x00)
             Local1 = Timer
             Local2 = (Local1 - Local0)
             If ((Local2 < C08C))
@@ -10196,10 +10196,10 @@
         Method (M06D, 1, Serialized)
         {
             Event (EVT0)
-            CH03 (Arg0, Z120, 0x07, 0x2E83, 0x00)
+            CH03 (Arg0, Z120, __LINE__, 0x00, 0x00)
             Local0 = Timer
             Wait (EVT0, DerefOf (RefOf (BF61)))
-            CH03 (Arg0, Z120, 0x08, 0x2E88, 0x00)
+            CH03 (Arg0, Z120, __LINE__, 0x00, 0x00)
             Local1 = Timer
             Local2 = (Local1 - Local0)
             If ((Local2 < C08C))

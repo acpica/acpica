@@ -77,9 +77,9 @@
             ERR (__METHOD__, ZFFF, __LINE__, 0x00, 0x00, Local3, C009)
         }
 
-        CH03 ("", 0x00, 0x05, 0x52, 0x00)
+        CH03 (__METHOD__, 0x00, __LINE__, 0x00, 0x00)
         Local5 = (Local0 + 0x79)
-        CH04 ("", 0x00, 0x2F, 0x00, 0x54, 0x00, 0x00) /* AE_AML_OPERAND_TYPE */
+        CH04 (__METHOD__, 0x00, 0x2F, 0x00, __LINE__, 0x00, 0x00) /* AE_AML_OPERAND_TYPE */
     }
 
     Method (MF81, 0, Serialized)
@@ -130,9 +130,9 @@
             ERR (__METHOD__, ZFFF, __LINE__, 0x00, 0x00, II03, C009)
         }
 
-        CH03 ("", 0x00, 0x0C, 0x87, 0x00)
+        CH03 (__METHOD__, 0x00, __LINE__, 0x00, 0x00)
         II05 = (Local0 + 0x79)
-        CH04 ("", 0x00, 0x2F, 0x00, 0x89, 0x00, 0x00) /* AE_AML_OPERAND_TYPE */
+        CH04 (__METHOD__, 0x00, 0x2F, 0x00, __LINE__, 0x00, 0x00) /* AE_AML_OPERAND_TYPE */
     }
 
     Method (MF82, 0, Serialized)
@@ -181,9 +181,9 @@
             ERR (__METHOD__, ZFFF, __LINE__, 0x00, 0x00, II03, C009)
         }
 
-        CH03 ("", 0x00, 0x13, 0xBA, 0x00)
+        CH03 (__METHOD__, 0x00, __LINE__, 0x00, 0x00)
         II05 = (II00 + 0x79)
-        CH04 ("", 0x00, 0x2F, 0x00, 0xBC, 0x00, 0x00) /* AE_AML_OPERAND_TYPE */
+        CH04 (__METHOD__, 0x00, 0x2F, 0x00, __LINE__, 0x00, 0x00) /* AE_AML_OPERAND_TYPE */
     }
 
     Method (MD79, 0, NotSerialized)

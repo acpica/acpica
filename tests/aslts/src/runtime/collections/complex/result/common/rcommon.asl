@@ -1121,7 +1121,7 @@
 
         Method (M003, 1, NotSerialized)
         {
-            If (CH03 (Arg0, Z122, 0x01, 0x026F, 0x00))
+            If (CH03 (Arg0, Z122, __LINE__, 0x00, 0x00))
             {
                 If (STCS)
                 {
@@ -1680,7 +1680,7 @@
 
             }
 
-            If (CH03 (Arg0, Z122, 0x05, 0x0456, 0x00))
+            If (CH03 (Arg0, Z122, __LINE__, 0x00, 0x00))
             {
                 /*Exception during preparing of Target Object */
 
@@ -1829,7 +1829,7 @@
 
             }
 
-            If (CH03 (Arg0, Z122, 0x08, 0x04C0, 0x00))
+            If (CH03 (Arg0, Z122, __LINE__, 0x00, 0x00))
             {
                 /* Exception during preparing of Source Object */
 
@@ -1867,7 +1867,7 @@
                 /* Check that it can be used as reference */
                 Local0 = DerefOf (Arg2)
                 Local3 = DerefOf (Local0)
-                If (CH03 (Arg0, Z122, 0x0A, 0x04E0, Local0))
+                If (CH03 (Arg0, Z122, __LINE__, 0x00, Local0))
                 {
                     /* Derefof caused unexpected exception */
 
@@ -2280,7 +2280,7 @@
                     /* Check that Target can be used as reference */
                     Local0 = DerefOf (Arg1)
                     Local3 = DerefOf (Local0)
-                    If (CH03 (Arg0, Z122, 0x28, 0x05FF, Arg3))
+                    If (CH03 (Arg0, Z122, __LINE__, 0x00, Arg3))
                     {
                         /* Derefof caused unexpected exception */
 
@@ -2430,7 +2430,7 @@
                     Else
                     {
                         DerefOf (Local3) = Ones
-                        If (CH03 (Arg0, Z122, 0x30, 0x0665, Arg1))
+                        If (CH03 (Arg0, Z122, __LINE__, 0x00, Arg1))
                         {
                             /* Store caused unexpected exception */
 
@@ -2453,7 +2453,7 @@
                         Else
                         {
                             DerefOf (Local3) = Ones
-                            If (CH03 (Arg0, Z122, 0x31, 0x0673, Arg1))
+                            If (CH03 (Arg0, Z122, __LINE__, 0x00, Arg1))
                             {
                                 /* Store caused unexpected exception */
 
@@ -2489,7 +2489,7 @@
                 Store (~ToInteger (DerefOf (Arg1)), Arg1)
             }
 
-            If (CH03 (Arg0, Z122, 0x32, 0x0687, Arg1))
+            If (CH03 (Arg0, Z122, __LINE__, 0x00, Arg1))
             {
                 /* Update caused unexpected exception */
 
@@ -2651,7 +2651,7 @@
                 Return (0x01)
             }
 
-            If (CH03 (Arg0, Z122, 0x35, 0x06E6, Arg2))
+            If (CH03 (Arg0, Z122, __LINE__, 0x00, Arg2))
             {
                 /* Unexpected exception during preparation */
 
@@ -2981,7 +2981,7 @@
                     }
                     Else
                     {
-                        CH03 (Arg0, Z122, 0x39, 0x078E, Arg2)
+                        CH03 (Arg0, Z122, __LINE__, 0x00, Arg2)
                     }
                 }
                 ElseIf (!CH06 (Arg0, 0x39, 0xFF))
@@ -2996,7 +2996,7 @@
 
                 Return (0x00)
             }
-            ElseIf (CH03 (Arg0, Z122, 0x3A, 0x0797, Arg2))
+            ElseIf (CH03 (Arg0, Z122, __LINE__, 0x00, Arg2))
             {
                 /* Storing caused unexpected exception */
 
@@ -3257,7 +3257,7 @@ DerefOf (Index (Buffer (0x12)
                 Return (0x01)
             }
 
-            If (CH03 (Arg0, Z122, 0x3D, 0x0845, Arg2))
+            If (CH03 (Arg0, Z122, __LINE__, 0x00, Arg2))
             {
                 /* Unexpected exception during preparation */
 
@@ -3377,7 +3377,7 @@ DerefOf (Index (Buffer (0x12)
                     }
                 }
             }
-            ElseIf (CH03 (Arg0, Z122, 0x3F, 0x0883, Arg2))
+            ElseIf (CH03 (Arg0, Z122, __LINE__, 0x00, Arg2))
             {
                 /* Storing caused unexpected exception */
 
@@ -3532,7 +3532,7 @@ DerefOf (Index (Buffer (0x12)
                 Return (0x01)
             }
 
-            If (CH03 (Arg0, Z122, 0x42, 0x08E6, Arg2))
+            If (CH03 (Arg0, Z122, __LINE__, 0x00, Arg2))
             {
                 /* Unexpected exception during preparation */
 
@@ -3628,7 +3628,7 @@ DerefOf (Index (Buffer (0x12)
                     }
                     Else
                     {
-                        CH03 (Arg0, Z122, 0x46, 0x0915, Arg2)
+                        CH03 (Arg0, Z122, __LINE__, 0x00, Arg2)
                     }
                 }
                 ElseIf (!CH06 (Arg0, 0x46, 0xFF))
@@ -3643,7 +3643,7 @@ DerefOf (Index (Buffer (0x12)
 
                 Return (0x00)
             }
-            ElseIf (CH03 (Arg0, Z122, 0x47, 0x091E, Arg2))
+            ElseIf (CH03 (Arg0, Z122, __LINE__, 0x00, Arg2))
             {
                 /* Storing caused unexpected exception */
 
@@ -3827,7 +3827,7 @@ DerefOf (Index (Buffer (0x12)
                 Return (0x01)
             }
 
-            If (CH03 (Arg0, Z122, 0x4A, 0x09A1, Arg2))
+            If (CH03 (Arg0, Z122, __LINE__, 0x00, Arg2))
             {
                 /* Unexpected exception during preparation */
 
@@ -3868,7 +3868,7 @@ DerefOf (Index (Buffer (0x12)
                     }
                 }
             }
-            ElseIf (CH03 (Arg0, Z122, 0x4C, 0x09B6, Arg2))
+            ElseIf (CH03 (Arg0, Z122, __LINE__, 0x00, Arg2))
             {
                 /* Storing caused unexpected exception */
 
@@ -4047,7 +4047,7 @@ DerefOf (Index (Buffer (0x12)
                 }
 
                 Local1 = RefOf (Arg1)
-                If (CH03 (Arg0, Z122, 0x4E, 0x0A32, Arg2))
+                If (CH03 (Arg0, Z122, __LINE__, 0x00, Arg2))
                 {
                     /* Unexpected exception during preparation */
 
@@ -4174,7 +4174,7 @@ DerefOf (Index (Buffer (0x12)
                         }
                         Else
                         {
-                            CH03 (Arg0, Z122, 0x50, 0x0A77, Arg2)
+                            CH03 (Arg0, Z122, __LINE__, 0x00, Arg2)
                         }
                     }
                     ElseIf (!CH06 (Arg0, 0x50, 0xFF))
@@ -4185,7 +4185,7 @@ DerefOf (Index (Buffer (0x12)
                         }
                     }
                 }
-                ElseIf (CH03 (Arg0, Z122, 0x51, 0x0A7E, Arg2))
+                ElseIf (CH03 (Arg0, Z122, __LINE__, 0x00, Arg2))
                 {
                     /* Storing caused unexpected exception */
 
@@ -4315,7 +4315,7 @@ DerefOf (Index (Buffer (0x12)
                 Return (0x01)
             }
 
-            If (CH03 (Arg0, Z122, 0x53, 0x0AD2, Arg2))
+            If (CH03 (Arg0, Z122, __LINE__, 0x00, Arg2))
             {
                 /* Unexpected exception during preparation */
 
@@ -4455,7 +4455,7 @@ DerefOf (Index (Buffer (0x12)
                     Return (0x01)
                 }
 
-                If (CH03 (Arg0, Z122, 0x55, 0x0B31, Arg2))
+                If (CH03 (Arg0, Z122, __LINE__, 0x00, Arg2))
                 {
                     /* Unexpected exception during preparation */
 
@@ -4581,7 +4581,7 @@ DerefOf (Index (Buffer (0x12)
                         }
                         Else
                         {
-                            CH03 (Arg0, Z122, 0x57, 0x0B74, Arg2)
+                            CH03 (Arg0, Z122, __LINE__, 0x00, Arg2)
                         }
                     }
                     ElseIf (!CH06 (Arg0, 0x57, 0xFF))
@@ -4592,7 +4592,7 @@ DerefOf (Index (Buffer (0x12)
                         }
                     }
                 }
-                ElseIf (CH03 (Arg0, Z122, 0x58, 0x0B7B, Arg2))
+                ElseIf (CH03 (Arg0, Z122, __LINE__, 0x00, Arg2))
                 {
                     /* Storing caused unexpected exception */
 
@@ -4731,7 +4731,7 @@ DerefOf (Index (Buffer (0x12)
                 Return (0x01)
             }
 
-            If (CH03 (Arg0, Z122, 0x5A, 0x0BD4, Arg2))
+            If (CH03 (Arg0, Z122, __LINE__, 0x00, Arg2))
             {
                 /* Unexpected exception during preparation */
 
@@ -4794,7 +4794,7 @@ DerefOf (Index (Buffer (0x12)
                 Return (0x01)
             }
 
-            If (CH03 (Arg0, Z122, 0x5D, 0x0C03, Arg2))
+            If (CH03 (Arg0, Z122, __LINE__, 0x00, Arg2))
             {
                 /* Unexpected exception during preparation */
 
@@ -4841,7 +4841,7 @@ DerefOf (Index (Buffer (0x12)
                     }
                 }
             }
-            ElseIf (CH03 (Arg0, Z122, 0x61, 0x0C1F, Arg2))
+            ElseIf (CH03 (Arg0, Z122, __LINE__, 0x00, Arg2))
             {
                 /* Storing caused unexpected exception */
 
@@ -4979,7 +4979,7 @@ DerefOf (Index (Buffer (0x12)
 
             }
 
-            If (CH03 (Arg0, Z122, 0x63, 0x0C80, 0x00))
+            If (CH03 (Arg0, Z122, __LINE__, 0x00, 0x00))
             {
                 /*Exception during preparing of Target Object */
 
@@ -5017,7 +5017,7 @@ DerefOf (Index (Buffer (0x12)
                 /* Check that it can be used as reference */
                 Local0 = DerefOf (Arg2)
                 Local3 = DerefOf (Local0)
-                If (CH03 (Arg0, Z122, 0x65, 0x0CA0, Local0))
+                If (CH03 (Arg0, Z122, __LINE__, 0x00, Local0))
                 {
                     /* Derefof caused unexpected exception */
 
@@ -5103,7 +5103,7 @@ DerefOf (Index (Buffer (0x12)
                     /*Store(Derefof(REF1), Local3) */
 
                     Local3 = REF1 /* \M689.REF1 */
-                    If (CH03 (Arg0, Z122, 0x67, 0x0CDE, Local0))
+                    If (CH03 (Arg0, Z122, __LINE__, 0x00, Local0))
                     {
                         /* Derefof caused unexpected exception */
 
@@ -5358,7 +5358,7 @@ DerefOf (Index (Buffer (0x12)
                     /*Store(Derefof(REF1), Local3) */
 
                     Local3 = REF1 /* \M689.REF1 */
-                    If (CH03 (Arg0, Z122, 0x79, 0x0D95, 0x00))
+                    If (CH03 (Arg0, Z122, __LINE__, 0x00, 0x00))
                     {
                         /* Derefof caused unexpected exception */
 
@@ -5490,7 +5490,7 @@ DerefOf (Index (Buffer (0x12)
                     Else
                     {
                         DerefOf (Local3) = Ones
-                        If (CH03 (Arg0, Z122, 0x82, 0x0DF2, Arg1 [0x00]))
+                        If (CH03 (Arg0, Z122, __LINE__, 0x00, Arg1 [0x00]))
                         {
                             /* Store caused unexpected exception */
 
@@ -5513,7 +5513,7 @@ DerefOf (Index (Buffer (0x12)
                         Else
                         {
                             DerefOf (Local3) = Ones
-                            If (CH03 (Arg0, Z122, 0x83, 0x0E00, Arg1 [0x00]))
+                            If (CH03 (Arg0, Z122, __LINE__, 0x00, Arg1 [0x00]))
                             {
                                 /* Store caused unexpected exception */
 
@@ -5550,7 +5550,7 @@ DerefOf (Index (Buffer (0x12)
                     0x00])
             }
 
-            If (CH03 (Arg0, Z122, 0x84, 0x0E14, Arg1 [0x00]))
+            If (CH03 (Arg0, Z122, __LINE__, 0x00, Arg1 [0x00]))
             {
                 /* Update caused unexpected exception */
 

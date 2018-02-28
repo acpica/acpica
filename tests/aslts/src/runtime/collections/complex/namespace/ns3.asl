@@ -60,7 +60,7 @@
             ERR (__METHOD__, Z157, __LINE__, 0x00, 0x00, Local0, 0x11112222)
         }
 
-        CH03 (__METHOD__, Z157, 0x02, 0x3F, 0x00)
+        CH03 (__METHOD__, Z157, __LINE__, 0x00, 0x00)
     }
 
     Method (M301, 0, Serialized)
@@ -91,7 +91,7 @@
             ERR (__METHOD__, Z157, __LINE__, 0x00, 0x00, Local0, 0x67)
         }
 
-        CH03 (__METHOD__, Z157, 0x05, 0x5F, 0x00)
+        CH03 (__METHOD__, Z157, __LINE__, 0x00, 0x00)
     }
 
     Method (M302, 0, Serialized)
@@ -119,7 +119,7 @@
             ERR (__METHOD__, Z157, __LINE__, 0x00, 0x00, Local0, 0x38)
         }
 
-        CH03 (__METHOD__, Z157, 0x08, 0x7E, 0x00)
+        CH03 (__METHOD__, Z157, __LINE__, 0x00, 0x00)
     }
 
     /*
@@ -143,7 +143,7 @@
                 0x03,
                 0x04
             })
-            CH03 (__METHOD__, Z157, 0x09, 0x8E, 0x00)
+            CH03 (__METHOD__, Z157, __LINE__, 0x00, 0x00)
             I001 = Arg1
             Method (M001, 1, NotSerialized)
             {
@@ -209,7 +209,7 @@
                 ERR (__METHOD__, Z157, __LINE__, 0x00, 0x00, Local1, 0x80000000)
             }
 
-            CH03 (__METHOD__, Z157, 0x0C, 0xC9, 0x00)
+            CH03 (__METHOD__, Z157, __LINE__, 0x00, 0x00)
             Return (Local0)
         }
 
@@ -225,7 +225,7 @@
             ERR (__METHOD__, Z157, __LINE__, 0x00, 0x00, Local0, 0x80000000)
         }
 
-        CH03 (__METHOD__, Z157, 0x0F, 0xDA, 0x00)
+        CH03 (__METHOD__, Z157, __LINE__, 0x00, 0x00)
     }
 
     /*
@@ -284,7 +284,7 @@
             ERR (__METHOD__, Z157, __LINE__, 0x00, 0x00, Local1, 0x00100064)
         }
 
-        CH03 (__METHOD__, Z157, 0x14, 0x010E, 0x00)
+        CH03 (__METHOD__, Z157, __LINE__, 0x00, 0x00)
     }
 
     /*
@@ -293,7 +293,7 @@
     Method (M305, 0, Serialized)
     {
         Name (B000, Buffer (0x10){})
-        CH03 (__METHOD__, Z157, 0x15, 0x0119, 0x00)
+        CH03 (__METHOD__, Z157, __LINE__, 0x00, 0x00)
         CreateField (B000, 0x05, 0x20, BF00)
         BF00 = 0xABCDEF70
         Method (M000, 1, NotSerialized)
@@ -358,7 +358,7 @@
                 ERR (__METHOD__, Z157, __LINE__, 0x00, 0x00, Arg0, Local1)
             }
 
-            CH03 (__METHOD__, Z157, 0x18, 0x0156, 0x00)
+            CH03 (__METHOD__, Z157, __LINE__, 0x00, 0x00)
             Return (Local0)
         }
 
@@ -374,7 +374,7 @@
             ERR (__METHOD__, Z157, __LINE__, 0x00, 0x00, BF00, Local1)
         }
 
-        CH03 (__METHOD__, Z157, 0x1B, 0x0167, 0x00)
+        CH03 (__METHOD__, Z157, __LINE__, 0x00, 0x00)
     }
 
     /*
@@ -390,7 +390,7 @@
             F001,   32
         }
 
-        CH03 (__METHOD__, Z157, 0x1C, 0x0174, 0x00)
+        CH03 (__METHOD__, Z157, __LINE__, 0x00, 0x00)
         F000 = 0xABCDEF70
         Method (M000, 1, NotSerialized)
         {
@@ -454,7 +454,7 @@
                 ERR (__METHOD__, Z157, __LINE__, 0x00, 0x00, Arg0, Local1)
             }
 
-            CH03 (__METHOD__, Z157, 0x1F, 0x01B0, 0x00)
+            CH03 (__METHOD__, Z157, __LINE__, 0x00, 0x00)
             Return (Local0)
         }
 
@@ -470,7 +470,7 @@
             ERR (__METHOD__, Z157, __LINE__, 0x00, 0x00, F000, Local1)
         }
 
-        CH03 (__METHOD__, Z157, 0x22, 0x01C1, 0x00)
+        CH03 (__METHOD__, Z157, __LINE__, 0x00, 0x00)
     }
 
     /*
@@ -491,7 +491,7 @@
             BNK0,   32
         }
 
-        CH03 (__METHOD__, Z157, 0x23, 0x01CF, 0x00)
+        CH03 (__METHOD__, Z157, __LINE__, 0x00, 0x00)
         BNK0 = 0xABCDEF70
         Method (M000, 1, NotSerialized)
         {
@@ -555,7 +555,7 @@
                 ERR (__METHOD__, Z157, __LINE__, 0x00, 0x00, Arg0, Local1)
             }
 
-            CH03 (__METHOD__, Z157, 0x26, 0x020B, 0x00)
+            CH03 (__METHOD__, Z157, __LINE__, 0x00, 0x00)
             Return (Local0)
         }
 
@@ -571,7 +571,7 @@
             ERR (__METHOD__, Z157, __LINE__, 0x00, 0x00, BNK0, Local1)
         }
 
-        CH03 (__METHOD__, Z157, 0x29, 0x021C, 0x00)
+        CH03 (__METHOD__, Z157, __LINE__, 0x00, 0x00)
     }
 
     /*
@@ -592,7 +592,7 @@
             IF00,   32
         }
 
-        CH03 (__METHOD__, Z157, 0x2A, 0x022A, 0x00)
+        CH03 (__METHOD__, Z157, __LINE__, 0x00, 0x00)
         IF00 = 0xABCDEF70
         Method (M000, 1, NotSerialized)
         {
@@ -656,7 +656,7 @@
                 ERR (__METHOD__, Z157, __LINE__, 0x00, 0x00, Arg0, Local1)
             }
 
-            CH03 (__METHOD__, Z157, 0x2D, 0x0266, 0x00)
+            CH03 (__METHOD__, Z157, __LINE__, 0x00, 0x00)
             Return (Local0)
         }
 
@@ -672,7 +672,7 @@
             ERR (__METHOD__, Z157, __LINE__, 0x00, 0x00, IF00, Local1)
         }
 
-        CH03 (__METHOD__, Z157, 0x30, 0x0277, 0x00)
+        CH03 (__METHOD__, Z157, __LINE__, 0x00, 0x00)
     }
 
     /*
@@ -685,7 +685,7 @@
         {
              0x11, 0x01, 0x22                                 // .."
         })
-        CH03 (__METHOD__, Z157, 0x31, 0x0283, 0x00)
+        CH03 (__METHOD__, Z157, __LINE__, 0x00, 0x00)
         I001 = Arg0
         Method (M000, 2, NotSerialized)
         {
@@ -762,7 +762,7 @@
                 ERR (__METHOD__, Z157, __LINE__, 0x00, 0x00, Local1, Local2)
             }
 
-            CH03 (__METHOD__, Z157, 0x34, 0x02C6, 0x00)
+            CH03 (__METHOD__, Z157, __LINE__, 0x00, 0x00)
             Return (Local0)
         }
 
@@ -787,7 +787,7 @@
             ERR (__METHOD__, Z157, __LINE__, 0x00, 0x00, Local1, Local2)
         }
 
-        CH03 (__METHOD__, Z157, 0x37, 0x02DD, 0x00)
+        CH03 (__METHOD__, Z157, __LINE__, 0x00, 0x00)
     }
 
     /*
@@ -797,7 +797,7 @@
     {
         Name (I001, 0x00)
         Name (S000, "q\x01ertyuiop")
-        CH03 (__METHOD__, Z157, 0x38, 0x02E9, 0x00)
+        CH03 (__METHOD__, Z157, __LINE__, 0x00, 0x00)
         I001 = Arg0
         Method (M000, 2, NotSerialized)
         {
@@ -874,7 +874,7 @@
                 ERR (__METHOD__, Z157, __LINE__, 0x00, 0x00, Local1, Local2)
             }
 
-            CH03 (__METHOD__, Z157, 0x3B, 0x032C, 0x00)
+            CH03 (__METHOD__, Z157, __LINE__, 0x00, 0x00)
             Return (Local0)
         }
 
@@ -899,7 +899,7 @@
             ERR (__METHOD__, Z157, __LINE__, 0x00, 0x00, Local1, Local2)
         }
 
-        CH03 (__METHOD__, Z157, 0x3E, 0x0343, 0x00)
+        CH03 (__METHOD__, Z157, __LINE__, 0x00, 0x00)
     }
 
     /*
@@ -912,7 +912,7 @@
         Name (I001, 0x00)
         Name (B000, Buffer (0x10){})
         I001 = Arg0
-        CH03 (__METHOD__, Z157, 0x3F, 0x0353, 0x00)
+        CH03 (__METHOD__, Z157, __LINE__, 0x00, 0x00)
         Method (M000, 2, NotSerialized)
         {
             CreateField (B000, 0x05, 0x20, BF00)
@@ -989,7 +989,7 @@
                 ERR (__METHOD__, Z157, __LINE__, 0x00, 0x00, BF00, Local1)
             }
 
-            CH03 (__METHOD__, Z157, 0x42, 0x0397, 0x00)
+            CH03 (__METHOD__, Z157, __LINE__, 0x00, 0x00)
             Return (Local0)
         }
 
@@ -999,7 +999,7 @@
             ERR (__METHOD__, Z157, __LINE__, 0x00, 0x00, Local0, 0x87654321)
         }
 
-        CH03 (__METHOD__, Z157, 0x44, 0x03A2, 0x00)
+        CH03 (__METHOD__, Z157, __LINE__, 0x00, 0x00)
     }
 
     Method (N003, 0, NotSerialized)

@@ -97,11 +97,11 @@
             /* CondRefOf */
 
             CondRefOf (Local0, Local1)
-            CH03 (__METHOD__, Z103, 0x01, 0x59, 0x00)
+            CH03 (__METHOD__, Z103, __LINE__, 0x00, 0x00)
             /* CopyObject */
 
             CopyObject (Local0, Local1)
-            CH03 (__METHOD__, Z103, 0x02, 0x5E, 0x00)
+            CH03 (__METHOD__, Z103, __LINE__, 0x00, 0x00)
             /* Decrement */
 
             Local0--
@@ -137,11 +137,11 @@
             /* ObjectType */
 
             Local1 = ObjectType (Local0)
-            CH03 (__METHOD__, Z103, 0x03, 0x8B, 0x00)
+            CH03 (__METHOD__, Z103, __LINE__, 0x00, 0x00)
             /* RefOf */
 
             Local1 = RefOf (Local0)
-            CH03 (__METHOD__, Z103, 0x04, 0x90, 0x00)
+            CH03 (__METHOD__, Z103, __LINE__, 0x00, 0x00)
             /* Release */
 
             Release (Local0)
@@ -395,7 +395,7 @@
             Local1 = DerefOf (Arg1)
             If (!SLCK)
             {
-                CH04 (__METHOD__, 0x00, 0x2F, Z103, 0x01C3, 0x00, 0x00)
+                CH04 (__METHOD__, 0x00, 0x2F, Z103, __LINE__, 0x00, 0x00)
             }
 
             /* CondRefOf */
@@ -405,7 +405,7 @@
             /* CopyObject */
 
             CopyObject (DerefOf (Arg1), Local1)
-            CH03 (__METHOD__, Z103, 0x02, 0x01CE, 0x00)
+            CH03 (__METHOD__, Z103, __LINE__, 0x00, 0x00)
             /* Decrement */
 
             DerefOf (Arg1)--
@@ -441,7 +441,7 @@
             /* ObjectType */
 
             Local1 = ObjectType (DerefOf (Arg1))
-            CH03 (__METHOD__, Z103, 0x06, 0x01FB, 0x00)
+            CH03 (__METHOD__, Z103, __LINE__, 0x00, 0x00)
             /* RefOf */
 
             Local1 = RefOf (DerefOf (Arg1))
@@ -695,7 +695,7 @@
             /* CopyObject */
 
             CopyObject (M000 (), Local1)
-            CH03 (__METHOD__, Z103, 0x07, 0x0335, 0x00)
+            CH03 (__METHOD__, Z103, __LINE__, 0x00, 0x00)
             /* Decrement */
 
             M000 ()--
@@ -731,7 +731,7 @@
             /* ObjectType */
             /* **** Nov. 2016: Method invocation as arg to ObjectType is now illegal */
             Local0 = ObjectType (M000)
-            CH03 (__METHOD__, Z103, 0x08, 0x0363, 0x00)
+            CH03 (__METHOD__, Z103, __LINE__, 0x00, 0x00)
             /* RefOf */
             /* **** Oct. 2016: Method invocation as arg to RefOf is now illegal */
             /*		if (y601) { */
@@ -1021,7 +1021,7 @@
                 Local1 = DerefOf (M000 (0x01, LPC0))
                 If (!SLCK)
                 {
-                    CH04 (__METHOD__, 0x00, 0x2F, Z103, 0x04B6, 0x00, 0x00)
+                    CH04 (__METHOD__, 0x00, 0x2F, Z103, __LINE__, 0x00, 0x00)
                 }
 
                 CH00 (Arg0, 0x01)
@@ -1044,7 +1044,7 @@
         }
 
         SET0 (Z103, __METHOD__, 0x00)
-        CH03 (__METHOD__, Z103, 0x0B, 0x04CF, 0x00)
+        CH03 (__METHOD__, Z103, __LINE__, 0x00, 0x00)
         /* Local Named Object */
 
         M000 (__METHOD__)

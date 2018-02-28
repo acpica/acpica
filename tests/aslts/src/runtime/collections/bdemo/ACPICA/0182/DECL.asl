@@ -36,7 +36,7 @@
     Name (ID23, 0xABCD0000)
     Method (MF78, 0, Serialized)
     {
-        CH03 ("", 0x00, 0x00, 0x2A, 0x00)
+        CH03 (__METHOD__, 0x00, __LINE__, 0x00, 0x00)
         If ((ID23 != 0xABCD0000))
         {
             ERR (__METHOD__, ZFFF, __LINE__, 0x00, 0x00, ID23, 0xABCD0000)
@@ -48,7 +48,7 @@
             ERR (__METHOD__, ZFFF, __LINE__, 0x00, 0x00, ID23, 0xABCD0001)
         }
 
-        CH03 ("", 0x00, 0x03, 0x36, 0x00)
+        CH03 (__METHOD__, 0x00, __LINE__, 0x00, 0x00)
     }
 
     /*
@@ -57,12 +57,12 @@
      */
     Method (MF85, 0, Serialized)
     {
-        CH03 ("", 0x00, 0x04, 0x3F, 0x00)
+        CH03 (__METHOD__, 0x00, __LINE__, 0x00, 0x00)
         If ((I9Z8 != 0xABCD0001))
         {
             ERR (__METHOD__, ZFFF, __LINE__, 0x00, 0x00, I9Z8, 0xABCD0001)
         }
 
         Name (I9Z8, 0xABCD0001)
-        CH04 ("", 0x00, 0xFF, 0x00, 0x47, 0x00, 0x00)
+        CH04 (__METHOD__, 0x00, 0xFF, 0x00, __LINE__, 0x00, 0x00)
     }

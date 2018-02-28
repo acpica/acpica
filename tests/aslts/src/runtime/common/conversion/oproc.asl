@@ -816,13 +816,13 @@
         If (EX00)
         {
             TMP0 = FLG2 /* \FLG2 */
-            CH03 (TS, Z064, 0x00, 0x0288, 0x00)
+            CH03 (TS, Z064, __LINE__, 0x00, 0x00)
         }
 
         Local7 = M482 (Local0, Local1, Local2, Local3, Local4, TMP0, Arg0)
         If (EX00)
         {
-            CH04 (TS, 0x00, 0xFF, Z064, 0x028E, 0x00, 0x00)
+            CH04 (__METHOD__, 0x00, 0xFF, Z064, __LINE__, 0x00, 0x00)
         }
         ElseIf (FLG1)
         {
@@ -854,13 +854,13 @@
 
             If (EX00)
             {
-                CH03 (TS, Z064, 0x02, 0x02A6, 0x00)
+                CH03 (TS, Z064, __LINE__, 0x00, 0x00)
             }
 
             Local7 = M482 (Local1, Local0, Local2, Local3, Local4, TMP0, Arg0)
             If (EX00)
             {
-                CH04 (TS, 0x00, 0xFF, Z064, 0x02AC, 0x00, 0x00)
+                CH04 (__METHOD__, 0x00, 0xFF, Z064, __LINE__, 0x00, 0x00)
             }
             ElseIf (FLG1)
             {
@@ -1292,13 +1292,13 @@
         If (EX00)
         {
             TMP0 = FLG2 /* \FLG2 */
-            CH03 (TS, Z064, 0x04, 0x0421, 0x00)
+            CH03 (TS, Z064, __LINE__, 0x00, 0x00)
         }
 
         Local7 = M482 (Local0, Local1, Local2, Local3, 0x00, TMP0, Arg0)
         If (EX00)
         {
-            CH04 (TS, 0x00, 0xFF, Z064, 0x0427, 0x00, 0x00)
+            CH04 (__METHOD__, 0x00, 0xFF, Z064, __LINE__, 0x00, 0x00)
         }
         ElseIf        /* Verify the result */
 

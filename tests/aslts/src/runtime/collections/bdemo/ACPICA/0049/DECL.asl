@@ -53,12 +53,12 @@
         /* ToDecimalString for 101-byte long buffer attempt */
         /* to produce 201 byte long string and have to result */
         /* in AE_AML_STRING_LIMIT exception. */
-        CH03 ("", 0x00, 0x00, 0x36, 0x00)
+        CH03 (__METHOD__, 0x00, __LINE__, 0x00, 0x00)
         ToDecimalString (B000, Local0)
         /*
          * No restriction on the length of String objects now:
          *
          * CH04("", 0, 61, 0, __LINE__, 0, 0) // AE_AML_STRING_LIMIT
          */
-        CH03 ("", 0x00, 0x01, 0x40, 0x00)
+        CH03 (__METHOD__, 0x00, __LINE__, 0x00, 0x00)
     }

@@ -39,7 +39,7 @@
         })
         /* a) StartIndex > 0xffffffff */
         /* c) Modulo(StartIndex, 0x100000000) < Size. */
-        CH03 ("", 0x00, 0x00, 0x2A, 0x00)
+        CH03 (__METHOD__, 0x00, __LINE__, 0x00, 0x00)
         Local0 = Match (P000, MEQ, 0x01, MEQ, 0x01, 0x0000000100000001)
-        CH04 ("", 0x00, 0xFF, 0x00, 0x2C, 0x00, 0x00) /* AE_AML_PACKAGE_LIMIT */
+        CH04 (__METHOD__, 0x00, 0xFF, 0x00, __LINE__, 0x00, 0x00) /* AE_AML_PACKAGE_LIMIT */
     }

@@ -911,20 +911,20 @@
 
     Method (CH05, 0, NotSerialized)
     {
-        Return (CH03 ("CH05", 0x00, 0x00, 0x016E, 0x00))
+        Return (CH03 ("CH05", 0x00, __LINE__, 0x00, 0x00))
     }
 
     Method (CH06, 3, NotSerialized)
     {
         If (EXCV)
         {
-            Return (CH04 (Arg0, 0x00, Arg2, 0x00, 0x0174, 0x00, 0x00))
+            Return (CH04 (Arg0, 0x00, Arg2, 0x00, __LINE__, 0x00, 0x00))
         }
         Else
         {
             /* Just only presence of ANY exception(s) */
 
-            Return (CH04 (Arg0, 0x00, 0xFF, 0x00, 0x0177, 0x00, 0x00))
+            Return (CH04 (Arg0, 0x00, 0xFF, 0x00, __LINE__, 0x00, 0x00))
         }
     }
 
@@ -935,11 +935,11 @@
     {
         If (SLCK)
         {
-            CH03 (Arg0, Arg3, Arg4, 0x0181, Arg6)
+            CH03 (Arg0, Arg3, __LINE__, 0x00, Arg6)
         }
         Else
         {
-            CH04 (Arg0, Arg1, Arg2, Arg3, 0x0183, Arg5, Arg6)
+            CH04 (Arg0, Arg1, Arg2, Arg3, __LINE__, Arg5, Arg6)
         }
     }
 

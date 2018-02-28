@@ -34,7 +34,7 @@
      */
     Method (MF48, 0, Serialized)
     {
-        CH03 ("", 0x00, 0x00, 0x27, 0x00)
+        CH03 (__METHOD__, 0x00, __LINE__, 0x00, 0x00)
         Debug = "mf48 started"
         Field (RD05, ByteAcc, NoLock, Preserve)
         {
@@ -42,12 +42,12 @@
         }
 
         Debug = "mf48 finished"
-        CH03 ("", 0x00, 0x01, 0x2B, 0x00)
+        CH03 (__METHOD__, 0x00, __LINE__, 0x00, 0x00)
     }
 
     Method (MF49, 0, Serialized)
     {
-        CH03 ("", 0x00, 0x02, 0x30, 0x00)
+        CH03 (__METHOD__, 0x00, __LINE__, 0x00, 0x00)
         Debug = "mf49 started"
         If (0x01)
         {
@@ -58,5 +58,5 @@
         }
 
         Debug = "mf49 finished"
-        CH03 ("", 0x00, 0x03, 0x36, 0x00)
+        CH03 (__METHOD__, 0x00, __LINE__, 0x00, 0x00)
     }

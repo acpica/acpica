@@ -65,11 +65,11 @@
             RFU3 = BUF3 /* \D286.BUF3 */
             Load (RFU3, DDB0) /* \D286.TST0.DDB0 */
             M000 (RefOf (\AUXD.PAC0))
-            CH04 ("", 0x00, 0xFF, 0x00, 0x4A, 0x00, 0x00)
+            CH04 (__METHOD__, 0x00, 0xFF, 0x00, __LINE__, 0x00, 0x00)
             Debug = DerefOf (\AUXD.PAC0 [0x00])
-            CH03 ("", 0x00, 0x02, 0x4D, 0x00)
+            CH03 (__METHOD__, 0x00, __LINE__, 0x00, 0x00)
             Unload (DDB0)
-            CH03 ("", 0x00, 0x03, 0x50, 0x00)
+            CH03 (__METHOD__, 0x00, __LINE__, 0x00, 0x00)
         }
     }
 

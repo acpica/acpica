@@ -67,10 +67,10 @@
             /* An exception is expected */
 
             Load (RFU0, HI0) /* \D284.TST0.HI0_ */
-            If (CH04 ("", 0x00, 0xFF, 0x00, 0x49, 0x00, 0x00))
+            If (CH04 (__METHOD__, 0x00, 0xFF, 0x00, __LINE__, 0x00, 0x00))
             {
                 Unload (HI0)
-                CH03 ("", 0x00, 0x02, 0x4B, 0x00)
+                CH03 (__METHOD__, 0x00, __LINE__, 0x00, 0x00)
             }
         }
     }

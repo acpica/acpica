@@ -72,13 +72,13 @@
             Return (Zero)
         }
 
-        If (CH03 ("", 0x00, 0x01, 0x53, 0x00))
+        If (CH03 (__METHOD__, 0x00, __LINE__, 0x00, 0x00))
         {
             Return (Zero)
         }
 
         Load (F257, H257) /* \H257 */
-        If (CH03 ("", 0x00, 0x02, 0x59, 0x00))
+        If (CH03 (__METHOD__, 0x00, __LINE__, 0x00, 0x00))
         {
             Return (Zero)
         }

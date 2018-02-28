@@ -265,7 +265,7 @@
             }
 
             Debug = "******** Test started"
-            CH03 ("", 0x00, 0x01, 0x013F, 0x00)
+            CH03 (__METHOD__, 0x00, __LINE__, 0x00, 0x00)
             If (I104)
             {
                 Debug = "!!!!!!!! ERROR 1: Acquire(T804, 0xffff) failed"
@@ -287,9 +287,9 @@
             }
 
             Release (T804)
-            CH04 ("", 0x00, 0x41, 0x00, 0x0151, 0x00, 0x00) /* AE_AML_MUTEX_NOT_ACQUIRED */
+            CH04 (__METHOD__, 0x00, 0x41, 0x00, __LINE__, 0x00, 0x00) /* AE_AML_MUTEX_NOT_ACQUIRED */
             Release (T805)
-            CH04 ("", 0x00, 0x41, 0x00, 0x0154, 0x00, 0x00) /* AE_AML_MUTEX_NOT_ACQUIRED */
+            CH04 (__METHOD__, 0x00, 0x41, 0x00, __LINE__, 0x00, 0x00) /* AE_AML_MUTEX_NOT_ACQUIRED */
             /* Release T807 */
 
             If (!I107)
@@ -302,7 +302,7 @@
                 ERR (__METHOD__, ZFFF, __LINE__, 0x00, 0x00, 0x00, 0x00)
             }
 
-            CH03 ("", 0x00, 0x07, 0x015E, 0x00)
+            CH03 (__METHOD__, 0x00, __LINE__, 0x00, 0x00)
             /* Release T806 */
 
             If (!I106)
@@ -315,7 +315,7 @@
                 ERR (__METHOD__, ZFFF, __LINE__, 0x00, 0x00, 0x00, 0x00)
             }
 
-            CH03 ("", 0x00, 0x09, 0x0168, 0x00)
+            CH03 (__METHOD__, 0x00, __LINE__, 0x00, 0x00)
             Debug = "******** Test finished"
         }
 

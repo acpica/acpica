@@ -10108,13 +10108,13 @@
             }
             Else
             {
-                CH03 (Arg0, Z117, 0x00, 0x2EED, 0x00)
+                CH03 (Arg0, Z117, __LINE__, 0x00, 0x00)
                 Store (M601 (0x02, 0x06) [Local1], Local5)
-                CH04 (Arg0, 0x00, 0x55, Z117, 0x2EF0, 0x00, 0x00) /* AE_INDEX_TO_NOT_ATTACHED */
+                CH04 (Arg0, 0x00, 0x55, Z117, __LINE__, 0x00, 0x00) /* AE_INDEX_TO_NOT_ATTACHED */
                 Store (M601 (0x03, 0x06) [Local1], Local5)
-                CH04 (Arg0, 0x00, 0x55, Z117, 0x2EF3, 0x00, 0x00) /* AE_INDEX_TO_NOT_ATTACHED */
+                CH04 (Arg0, 0x00, 0x55, Z117, __LINE__, 0x00, 0x00) /* AE_INDEX_TO_NOT_ATTACHED */
                 Store (M601 (0x04, 0x00) [Local1], Local5)
-                CH04 (Arg0, 0x00, 0x55, Z117, 0x2EF6, 0x00, 0x00) /* AE_INDEX_TO_NOT_ATTACHED */
+                CH04 (Arg0, 0x00, 0x55, Z117, __LINE__, 0x00, 0x00) /* AE_INDEX_TO_NOT_ATTACHED */
             }
 
             /* Method returns Reference */
@@ -10164,13 +10164,13 @@
             }
             Else
             {
-                CH03 (Arg0, Z117, 0x00, 0x2F31, 0x00)
+                CH03 (Arg0, Z117, __LINE__, 0x00, 0x00)
                 Local0 = M601 (0x02, 0x06) [Local1]
-                CH04 (Arg0, 0x00, 0x55, Z117, 0x2F34, 0x00, 0x00) /* AE_INDEX_TO_NOT_ATTACHED */
+                CH04 (Arg0, 0x00, 0x55, Z117, __LINE__, 0x00, 0x00) /* AE_INDEX_TO_NOT_ATTACHED */
                 Local0 = M601 (0x03, 0x06) [Local1]
-                CH04 (Arg0, 0x00, 0x55, Z117, 0x2F37, 0x00, 0x00) /* AE_INDEX_TO_NOT_ATTACHED */
+                CH04 (Arg0, 0x00, 0x55, Z117, __LINE__, 0x00, 0x00) /* AE_INDEX_TO_NOT_ATTACHED */
                 Local0 = M601 (0x04, 0x00) [Local1]
-                CH04 (Arg0, 0x00, 0x55, Z117, 0x2F3A, 0x00, 0x00) /* AE_INDEX_TO_NOT_ATTACHED */
+                CH04 (Arg0, 0x00, 0x55, Z117, __LINE__, 0x00, 0x00) /* AE_INDEX_TO_NOT_ATTACHED */
             }
 
             /* Method returns Reference */
@@ -10248,7 +10248,7 @@
             Local1 = "0321"
             Local2 = "FE7CB391D650A284"
             Local3 = "C179B3FE"
-            CH03 (Arg0, Z117, 0x00, 0x2F8F, 0x00)
+            CH03 (Arg0, Z117, __LINE__, 0x00, 0x00)
             Fatal (0xFF, 0xFFFFFFFF, Local1)
             If (F64)
             {
@@ -10259,7 +10259,7 @@
                 Fatal (0xFF, 0xFFFFFFFF, Local3)
             }
 
-            CH03 (Arg0, Z117, 0x01, 0x2F96, 0x00)
+            CH03 (Arg0, Z117, __LINE__, 0x00, 0x00)
         }
 
         /* String to Integer conversion of the String Index and Length */
@@ -10847,12 +10847,12 @@
         {
             Local3 = "0321"
             Local4 = "63"
-            CH03 (Arg0, Z117, 0x02, 0x3217, 0x00)
+            CH03 (Arg0, Z117, __LINE__, 0x00, 0x00)
             /* Sleep */
 
             Local0 = Timer
             Sleep (Local3)
-            CH03 (Arg0, Z117, 0x03, 0x321E, 0x00)
+            CH03 (Arg0, Z117, __LINE__, 0x00, 0x00)
             Local1 = Timer
             Local2 = (Local1 - Local0)
             If ((Local2 < C08C))
@@ -10864,7 +10864,7 @@
 
             Local0 = Timer
             Stall (Local4)
-            CH03 (Arg0, Z117, 0x04, 0x322B, 0x00)
+            CH03 (Arg0, Z117, __LINE__, 0x00, 0x00)
             Local1 = Timer
             Local2 = (Local1 - Local0)
             If ((Local2 < 0x03DE))
@@ -10880,12 +10880,12 @@
             Local3 = "0321"
             Mutex (MTX0, 0x00)
             Acquire (MTX0, 0x0000)
-            CH03 (Arg0, Z117, 0x05, 0x323D, 0x00)
+            CH03 (Arg0, Z117, __LINE__, 0x00, 0x00)
             Local0 = Timer
             /* Compiler allows only Integer constant as TimeoutValue (Bug 1)
              Acquire(MTX0, Local3)
              */
-            CH03 (Arg0, Z117, 0x06, 0x3244, 0x00)
+            CH03 (Arg0, Z117, __LINE__, 0x00, 0x00)
             Local1 = Timer
             Local2 = (Local1 - Local0)
             If ((Local2 < C08C))
@@ -10900,10 +10900,10 @@
         {
             Local1 = "0321"
             Event (EVT0)
-            CH03 (Arg0, Z117, 0x07, 0x3255, 0x00)
+            CH03 (Arg0, Z117, __LINE__, 0x00, 0x00)
             Local0 = Timer
             Wait (EVT0, Local1)
-            CH03 (Arg0, Z117, 0x08, 0x325A, 0x00)
+            CH03 (Arg0, Z117, __LINE__, 0x00, 0x00)
             Local1 = Timer
             Local2 = (Local1 - Local0)
             If ((Local2 < C08C))
@@ -20453,7 +20453,7 @@
                     /* 0000 */  0x84, 0xA2, 0x50, 0xD6, 0x91, 0xB3, 0x7C, 0xFE,  // ..P...|.
                     /* 0008 */  0xA5                                             // .
                 }
-            CH03 (Arg0, Z117, 0x09, 0x5CD9, 0x00)
+            CH03 (Arg0, Z117, __LINE__, 0x00, 0x00)
             Fatal (0xFF, 0xFFFFFFFF, Local1)
             If (F64)
             {
@@ -20464,7 +20464,7 @@
                 Fatal (0xFF, 0xFFFFFFFF, Local2)
             }
 
-            CH03 (Arg0, Z117, 0x0A, 0x5CE0, 0x00)
+            CH03 (Arg0, Z117, __LINE__, 0x00, 0x00)
         }
 
         /* Buffer to Integer conversion of the Buffer Index and Length */
@@ -21078,12 +21078,12 @@
                 {
                      0x3F                                             // ?
                 }
-            CH03 (Arg0, Z117, 0x0B, 0x5F61, 0x00)
+            CH03 (Arg0, Z117, __LINE__, 0x00, 0x00)
             /* Sleep */
 
             Local0 = Timer
             Sleep (Local3)
-            CH03 (Arg0, Z117, 0x0C, 0x5F68, 0x00)
+            CH03 (Arg0, Z117, __LINE__, 0x00, 0x00)
             Local1 = Timer
             Local2 = (Local1 - Local0)
             If ((Local2 < C08C))
@@ -21095,7 +21095,7 @@
 
             Local0 = Timer
             Stall (Local4)
-            CH03 (Arg0, Z117, 0x0D, 0x5F75, 0x00)
+            CH03 (Arg0, Z117, __LINE__, 0x00, 0x00)
             Local1 = Timer
             Local2 = (Local1 - Local0)
             If ((Local2 < 0x03DE))
@@ -21114,12 +21114,12 @@
                 }
             Mutex (MTX0, 0x00)
             Acquire (MTX0, 0x0000)
-            CH03 (Arg0, Z117, 0x0E, 0x5F88, 0x00)
+            CH03 (Arg0, Z117, __LINE__, 0x00, 0x00)
             Local0 = Timer
             /* Compiler allows only Integer constant as TimeoutValue (Bug 1)
              Acquire(MTX0, Local3)
              */
-            CH03 (Arg0, Z117, 0x0F, 0x5F8F, 0x00)
+            CH03 (Arg0, Z117, __LINE__, 0x00, 0x00)
             Local1 = Timer
             Local2 = (Local1 - Local0)
             If ((Local2 < C08C))
@@ -21137,10 +21137,10 @@
                      0x21, 0x03, 0x00                                 // !..
                 }
             Event (EVT0)
-            CH03 (Arg0, Z117, 0x10, 0x5FA0, 0x00)
+            CH03 (Arg0, Z117, __LINE__, 0x00, 0x00)
             Local0 = Timer
             Wait (EVT0, Local1)
-            CH03 (Arg0, Z117, 0x11, 0x5FA5, 0x00)
+            CH03 (Arg0, Z117, __LINE__, 0x00, 0x00)
             Local1 = Timer
             Local2 = (Local1 - Local0)
             If ((Local2 < C08C))

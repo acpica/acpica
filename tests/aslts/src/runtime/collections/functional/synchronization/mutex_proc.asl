@@ -617,13 +617,13 @@ Zero)
         {
             If (Arg3)
             {
-                CH03 ("m38b", Z151, 0x00, 0x01C3, 0x00)
+                CH03 ("m38b", Z151, __LINE__, 0x00, 0x00)
             }
 
             M36F (GLLL, GLIX, Arg3, 0x00) /* Acquire GL */
             If (Arg3)
             {
-                CH04 ("m38b", 0x00, Arg3, Z151, 0x01C7, 0x00, 0x00)
+                CH04 ("m38b", 0x00, Arg3, Z151, __LINE__, 0x00, 0x00)
             }
         }
 
@@ -633,13 +633,13 @@ Zero)
         {
             If (Arg3)
             {
-                CH03 ("m38b", Z151, 0x00, 0x01D0, 0x00)
+                CH03 ("m38b", Z151, __LINE__, 0x00, 0x00)
             }
 
             M36F (LPC0, 0x00, Arg3, 0x00) /* Acquire */
             If (Arg3)
             {
-                CH04 ("m38b", 0x00, Arg3, Z151, 0x01D4, 0x00, 0x00)
+                CH04 ("m38b", 0x00, Arg3, Z151, __LINE__, 0x00, 0x00)
             }
 
             LPN0--
@@ -667,13 +667,13 @@ Zero)
         {
             If (Arg3)
             {
-                Local7 = (CH03 ("m38b", Z151, 0x00, 0x01F1, 0x00) || Local7)
+                Local7 = (CH03 ("m38b", Z151, __LINE__, 0x00, 0x00) || Local7)
             }
 
             M388 (LPC0, 0x00, 0x00) /* Release */
             If (Arg3)
             {
-                Local7 = (CH04 ("m38b", 0x00, Arg3, Z151, 0x01F5, 0x00, 0x00) || Local7)
+                Local7 = (CH04 ("m38b", 0x00, Arg3, Z151, __LINE__, 0x00, 0x00) || Local7)
             }
 
             LPN0--
@@ -684,13 +684,13 @@ Zero)
         {
             If (Arg3)
             {
-                Local7 = (CH03 ("m38b", Z151, 0x00, 0x01FE, 0x00) || Local7)
+                Local7 = (CH03 ("m38b", Z151, __LINE__, 0x00, 0x00) || Local7)
             }
 
             M388 (GLLL, GLIX, 0x00) /* Release GL */
             If (Arg3)
             {
-                Local7 = (CH04 ("m38b", 0x00, Arg3, Z151, 0x0202, 0x00, 0x00) || Local7)
+                Local7 = (CH04 ("m38b", 0x00, Arg3, Z151, __LINE__, 0x00, 0x00) || Local7)
             }
         }
 
@@ -748,13 +748,13 @@ Zero)
                 {
                     If (EXC1)
                     {
-                        CH03 ("m088", Z151, 0x00, 0x0236, 0x00)
+                        CH03 ("m088", Z151, __LINE__, 0x00, 0x00)
                     }
 
                     M36F (LPC0, LPC1, EXC0, Arg6) /* Acquire */
                     If (EXC1)
                     {
-                        CH04 ("m088", 0x00, EXC0, Z151, 0x023A, 0x00, 0x00)
+                        CH04 ("m088", 0x00, EXC0, Z151, __LINE__, 0x00, 0x00)
                     }
 
                     LPN2--
@@ -875,13 +875,13 @@ Zero)
                     {
                         If (EXC1)
                         {
-                            CH03 ("m088", Z151, 0x00, 0x02AD, 0x00)
+                            CH03 ("m088", Z151, __LINE__, 0x00, 0x00)
                         }
 
                         M388 (LPC0, Local0, EXC0) /* Release */
                         If (EXC1)
                         {
-                            CH04 ("m088", 0x00, EXC0, Z151, 0x02B1, 0x00, 0x00)
+                            CH04 ("m088", 0x00, EXC0, Z151, __LINE__, 0x00, 0x00)
                         }
 
                         LPN2--
@@ -919,13 +919,13 @@ Zero)
                     {
                         If (EXC1)
                         {
-                            CH03 ("m088", Z151, 0x00, 0x02D1, 0x00)
+                            CH03 ("m088", Z151, __LINE__, 0x00, 0x00)
                         }
 
                         M388 (LPC0, Local0, EXC0) /* Release */
                         If (EXC1)
                         {
-                            CH04 ("m088", 0x00, EXC0, Z151, 0x02D5, 0x00, 0x00)
+                            CH04 ("m088", 0x00, EXC0, Z151, __LINE__, 0x00, 0x00)
                         }
 
                         LPN2--

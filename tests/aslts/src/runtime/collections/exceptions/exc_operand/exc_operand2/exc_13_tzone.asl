@@ -86,11 +86,11 @@
             /* CondRefOf */
 
             CondRefOf (Local0, Local1)
-            CH03 (__METHOD__, Z105, 0x01, 0x59, 0x00)
+            CH03 (__METHOD__, Z105, __LINE__, 0x00, 0x00)
             /* CopyObject */
 
             CopyObject (Local0, Local1)
-            CH03 (__METHOD__, Z105, 0x02, 0x5E, 0x00)
+            CH03 (__METHOD__, Z105, __LINE__, 0x00, 0x00)
             /* Decrement */
 
             Local0--
@@ -126,11 +126,11 @@
             /* ObjectType */
 
             Local1 = ObjectType (Local0)
-            CH03 (__METHOD__, Z105, 0x03, 0x8B, 0x00)
+            CH03 (__METHOD__, Z105, __LINE__, 0x00, 0x00)
             /* RefOf */
 
             Local1 = RefOf (Local0)
-            CH03 (__METHOD__, Z105, 0x04, 0x90, 0x00)
+            CH03 (__METHOD__, Z105, __LINE__, 0x00, 0x00)
             /* Release */
 
             Release (Local0)
@@ -391,7 +391,7 @@
             }
 
             Local1 = DerefOf (Arg1)
-            CH03 (__METHOD__, Z105, 0x05, 0x01CA, 0x00)
+            CH03 (__METHOD__, Z105, __LINE__, 0x00, 0x00)
             /* CondRefOf */
 
             CondRefOf (DerefOf (Arg1), Local1)
@@ -435,7 +435,7 @@
             /* ObjectType */
 
             Local1 = ObjectType (DerefOf (Arg1))
-            CH03 (__METHOD__, Z105, 0x06, 0x0201, 0x00)
+            CH03 (__METHOD__, Z105, __LINE__, 0x00, 0x00)
             /* RefOf */
 
             Local1 = RefOf (DerefOf (Arg1))
@@ -683,7 +683,7 @@
             /* CopyObject */
 
             CopyObject (M000 (), Local1)
-            CH03 (__METHOD__, Z105, 0x07, 0x0336, 0x00)
+            CH03 (__METHOD__, Z105, __LINE__, 0x00, 0x00)
             /* Decrement */
 
             M000 ()--
@@ -719,7 +719,7 @@
             /* ObjectType */
             /* **** Nov. 2016: Method invocation as arg to ObjectType is now illegal */
             Local0 = ObjectType (M000)
-            CH03 (__METHOD__, Z105, 0x08, 0x0364, 0x00)
+            CH03 (__METHOD__, Z105, __LINE__, 0x00, 0x00)
             /* RefOf */
             /* **** Oct. 2016: Method invocation as arg to RefOf is now illegal */
             /*		Store (RefOf(m000()), Local1) */
@@ -1002,7 +1002,7 @@
                 Local0 = (0x03 * LPC0) /* \M4BD.M005.LPC0 */
                 I000 = 0x00
                 Local1 = DerefOf (M000 (0x01, LPC0))
-                CH03 (__METHOD__, Z105, 0x04B4, 0x00, 0x00)
+                CH03 (__METHOD__, Z105, __LINE__, 0x00, 0x00)
                 CH00 (Arg0, 0x01)
                 Local1 = DerefOf (DerefOf (M000 (0x02, LPC0)))
                 CH06 (Arg0, (0x01 + Local0), 0x2F)
@@ -1018,7 +1018,7 @@
             }
         }
 
-        CH03 (__METHOD__, Z105, 0x0B, 0x04C8, 0x00)
+        CH03 (__METHOD__, Z105, __LINE__, 0x00, 0x00)
         /* Local Named Object */
 
         M000 (__METHOD__)

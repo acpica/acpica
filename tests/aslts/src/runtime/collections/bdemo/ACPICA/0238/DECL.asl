@@ -40,17 +40,17 @@
             Acquire (MX07, 0xFFFF)
             Acquire (MX08, 0xFFFF)
             Acquire (MX09, 0xFFFF)
-            CH03 ("", 0x00, 0x00, 0x2F, 0x00)
+            CH03 (__METHOD__, 0x00, __LINE__, 0x00, 0x00)
             Release (MX08)
             /*
              * Release(MX08) above doesn't cause exception
              * but, seems, it should.
              */
-            CH04 ("", 0x00, 0x40, 0x00, 0x35, 0x00, 0x00) /* AE_AML_MUTEX_ORDER */
+            CH04 (__METHOD__, 0x00, 0x40, 0x00, __LINE__, 0x00, 0x00) /* AE_AML_MUTEX_ORDER */
             /* Also this */
 
             Release (MX07)
-            CH04 ("", 0x00, 0x40, 0x00, 0x39, 0x00, 0x00) /* AE_AML_MUTEX_ORDER */
+            CH04 (__METHOD__, 0x00, 0x40, 0x00, __LINE__, 0x00, 0x00) /* AE_AML_MUTEX_ORDER */
             /*
              * Now, the Release(MX09) below causes exception,
              * so we have no way to release MX09.
@@ -63,7 +63,7 @@
             Release (MX09)
             Release (MX08)
             Release (MX07)
-            CH03 ("", 0x00, 0x03, 0x47, 0x00)
+            CH03 (__METHOD__, 0x00, __LINE__, 0x00, 0x00)
         }
 
         M000 ()

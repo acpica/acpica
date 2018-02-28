@@ -49,10 +49,10 @@
     Name (ID28, 0x00)
     Method (MDC7, 0, Serialized)
     {
-        CH03 ("", 0x00, 0x00, 0x37, 0x00)
+        CH03 (__METHOD__, 0x00, __LINE__, 0x00, 0x00)
         I000 = 0x12345678
         Name (I000, 0x00)
-        CH04 ("", 0x00, 0xFF, 0x00, 0x3A, 0x00, 0x00)
+        CH04 (__METHOD__, 0x00, 0xFF, 0x00, __LINE__, 0x00, 0x00)
     }
 
     Method (M800, 0, Serialized)
@@ -78,15 +78,15 @@
     {
         Name (I000, 0x00)
         I000 = 0xABCD0000
-        CH03 ("", 0x00, 0x02, 0x55, 0x00)
+        CH03 (__METHOD__, 0x00, __LINE__, 0x00, 0x00)
         Name (I001, 0x00)
         I001 = 0xABCD0001
-        CH03 ("", 0x00, 0x03, 0x5A, 0x00)
+        CH03 (__METHOD__, 0x00, __LINE__, 0x00, 0x00)
         Name (I002, 0xABCD0002)
-        CH03 ("", 0x00, 0x03, 0x5E, 0x00)
+        CH03 (__METHOD__, 0x00, __LINE__, 0x00, 0x00)
         If (Y084)
         {
-            CH03 ("", 0x00, 0x04, 0x62, 0x00)
+            CH03 (__METHOD__, 0x00, __LINE__, 0x00, 0x00)
             Method (M000, 0, Serialized)
             {
                 Name (I000, 0xABCD0003)
@@ -96,7 +96,7 @@
                 }
             }
 
-            CH03 ("", 0x00, 0x05, 0x6C, 0x00)
+            CH03 (__METHOD__, 0x00, __LINE__, 0x00, 0x00)
             Method (M001, 0, Serialized)
             {
                 Name (I000, 0xABCD0004)
@@ -107,7 +107,7 @@
                 }
             }
 
-            CH03 ("", 0x00, 0x06, 0x77, 0x00)
+            CH03 (__METHOD__, 0x00, __LINE__, 0x00, 0x00)
             Method (M002, 0, Serialized)
             {
                 Debug = I000 /* \M802.M002.I000 */
@@ -119,7 +119,7 @@
                 }
             }
 
-            CH03 ("", 0x00, 0x07, 0x83, 0x00)
+            CH03 (__METHOD__, 0x00, __LINE__, 0x00, 0x00)
             Method (M003, 0, Serialized)
             {
                 Debug = "------------------------------ 000000000"
@@ -131,10 +131,10 @@
                 }
             }
 
-            CH03 ("", 0x00, 0x08, 0x8F, 0x00)
+            CH03 (__METHOD__, 0x00, __LINE__, 0x00, 0x00)
         }
 
-        CH03 ("", 0x00, 0x09, 0x92, 0x00)
+        CH03 (__METHOD__, 0x00, __LINE__, 0x00, 0x00)
         If ((I000 != 0xABCD0000))
         {
             ERR (__METHOD__, ZFFF, __LINE__, 0x00, 0x00, I000, 0xABCD0000)
@@ -152,15 +152,15 @@
 
         If (Y084)
         {
-            CH03 ("", 0x00, 0x0D, 0x9F, 0x00)
+            CH03 (__METHOD__, 0x00, __LINE__, 0x00, 0x00)
             M000 ()
-            CH03 ("", 0x00, 0x0E, 0xA1, 0x00)
+            CH03 (__METHOD__, 0x00, __LINE__, 0x00, 0x00)
             M001 ()
-            CH03 ("", 0x00, 0x0F, 0xA3, 0x00)
+            CH03 (__METHOD__, 0x00, __LINE__, 0x00, 0x00)
             M002 ()
-            CH03 ("", 0x00, 0x10, 0xA5, 0x00)
+            CH03 (__METHOD__, 0x00, __LINE__, 0x00, 0x00)
             M003 ()
-            CH03 ("", 0x00, 0x11, 0xA7, 0x00)
+            CH03 (__METHOD__, 0x00, __LINE__, 0x00, 0x00)
         }
         Else
         {
@@ -168,10 +168,10 @@
             BLCK ()
         }
 
-        CH03 ("", 0x00, 0x12, 0xAD, 0x00)
+        CH03 (__METHOD__, 0x00, __LINE__, 0x00, 0x00)
         II99 = 0xABCD0009
         Name (II99, 0x00)
-        CH04 ("", 0x00, 0xFF, 0x00, 0xB2, 0x00, 0x00)
+        CH04 (__METHOD__, 0x00, 0xFF, 0x00, __LINE__, 0x00, 0x00)
     }
 
     Method (M1DC, 0, NotSerialized)

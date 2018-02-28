@@ -127,7 +127,7 @@
             MM00 (0x00, I000, I001)
         }
 
-        CH03 ("", 0x00, 0x00, 0x66, 0x00)
+        CH03 (__METHOD__, 0x00, __LINE__, 0x00, 0x00)
         M306 (0x09, 0x00)
         M306 (0x09, 0x00)
         M306 (0x09, 0x00)
@@ -144,7 +144,7 @@
         M306 (0x09, 0x00)
         M306 (0x09, 0x00)
         M306 (0x09, 0x00)
-        CH04 ("", 0x01, 0x40, 0x00, 0x77, 0x00, 0x00) /* AE_AML_MUTEX_ORDER */
+        CH04 (__METHOD__, 0x01, 0x40, 0x00, __LINE__, 0x00, 0x00) /* AE_AML_MUTEX_ORDER */
         /*
          * The problem is not automatically detected,
          * so remove this error report after the problem has been resolved.

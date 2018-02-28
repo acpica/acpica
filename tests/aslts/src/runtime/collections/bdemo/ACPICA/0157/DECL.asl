@@ -71,7 +71,7 @@
         Local0 = "Local0"
         Local0 = M000 ()
         MMM0 ()
-        CH03 ("", 0x00, 0x00, 0x44, 0x00)
+        CH03 (__METHOD__, 0x00, __LINE__, 0x00, 0x00)
         If (("md00.m000" != Local0))
         {
             ERR (__METHOD__, ZFFF, __LINE__, 0x00, 0x00, Local0, "md00.m000")
@@ -82,11 +82,11 @@
         Local0 = "Local0"
         Local0 = MM00 ()
         MMM1 ()
-        CH03 ("", 0x00, 0x02, 0x53, 0x00)
+        CH03 (__METHOD__, 0x00, __LINE__, 0x00, 0x00)
         If (("md00.mm00" != Local0))
         {
             ERR (__METHOD__, ZFFF, __LINE__, 0x00, 0x00, Local0, "md00.mm00")
         }
 
-        CH03 ("", 0x00, 0x04, 0x59, 0x00)
+        CH03 (__METHOD__, 0x00, __LINE__, 0x00, 0x00)
     }

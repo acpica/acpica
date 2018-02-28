@@ -77,11 +77,11 @@
         /* m000 */
 
         I000 = 0xDDDD0000
-        CH03 ("", 0x00, 0x00, 0x4D, 0x00)
+        CH03 (__METHOD__, 0x00, __LINE__, 0x00, 0x00)
         I000 = M000 ()
         If (SLCK)
         {
-            CH03 ("", 0x00, 0x01, 0x52, 0x00)
+            CH03 (__METHOD__, 0x00, __LINE__, 0x00, 0x00)
             /*y901: Predicate generates Implicit Return since ACPICA release 20080926	 */
 
             If (Y901)
@@ -106,11 +106,11 @@
         /* m001 */
 
         I000 = 0xDDDD0001
-        CH03 ("", 0x00, 0x04, 0x65, 0x00)
+        CH03 (__METHOD__, 0x00, __LINE__, 0x00, 0x00)
         I000 = M001 ()
         If (SLCK)
         {
-            CH03 ("", 0x00, 0x05, 0x6A, 0x00)
+            CH03 (__METHOD__, 0x00, __LINE__, 0x00, 0x00)
             /*y901: Predicate generates Implicit Return since ACPICA release 20080926	 */
 
             If (Y901)
@@ -135,11 +135,11 @@
         /* m002 */
 
         I000 = 0xDDDD0002
-        CH03 ("", 0x00, 0x08, 0x7D, 0x00)
+        CH03 (__METHOD__, 0x00, __LINE__, 0x00, 0x00)
         I000 = M001 ()
         If (SLCK)
         {
-            CH03 ("", 0x00, 0x09, 0x82, 0x00)
+            CH03 (__METHOD__, 0x00, __LINE__, 0x00, 0x00)
             /*y901: Predicate generates Implicit Return since ACPICA release 20080926	 */
 
             If (Y901)
