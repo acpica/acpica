@@ -137,6 +137,7 @@ get_mode_string()
 		echo "$OPTMODE"
 	fi
 }
+export -f get_mode_string
 
 # Return string describing mode of run
 # arg1 - bitmap of mode
@@ -574,6 +575,7 @@ cent_units_to_cent_str()
 
 	echo "$rval"
 }
+export -f cent_units_to_cent_str
 
 # Convert time to centisecond units
 #
@@ -679,8 +681,8 @@ diff_of_str_times()
 # Constants
 
 # Bitmap: 1 - 64, 2 - opt
-FLAG64=1
-FLAGOPT=2
+export FLAG64=1
+export FLAGOPT=2
 NORM32=0
 NORM64=1
 OPT32=2
