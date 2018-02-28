@@ -248,7 +248,7 @@ AcpiNsInitializeObjects (
  *
  * FUNCTION:    AcpiNsInitializeDevices
  *
- * PARAMETERS:  None
+ * PARAMETERS:  Flags               - Init/enable Options
  *
  * RETURN:      ACPI_STATUS
  *
@@ -356,16 +356,10 @@ AcpiNsInitializeDevices (
      * root bus that doesn't contain _BBN object. So this code is kept here
      * in order not to break things.
      */
-    if (!(Flags & ACPI_NO_ADDRESS_SPACE_INIT))
+    Status = AcpiEvInitializeOpRegions (Flags);
+    if (ACPI_FAILURE (Status))
     {
-        ACPI_DEBUG_PRINT ((ACPI_DB_EXEC,
-            "[Init] Executing _REG OpRegion methods\n"));
-
-        Status = AcpiEvInitializeOpRegions ();
-        if (ACPI_FAILURE (Status))
-        {
-            goto ErrorExit;
-        }
+        goto ErrorExit;
     }
 
     if (!(Flags & ACPI_NO_DEVICE_INIT))

@@ -258,57 +258,6 @@ UnlockAndExit:
 
 /*******************************************************************************
  *
- * FUNCTION:    AcpiEvHasDefaultHandler
- *
- * PARAMETERS:  Node                - Namespace node for the device
- *              SpaceId             - The address space ID
- *
- * RETURN:      TRUE if default handler is installed, FALSE otherwise
- *
- * DESCRIPTION: Check if the default handler is installed for the requested
- *              space ID.
- *
- ******************************************************************************/
-
-BOOLEAN
-AcpiEvHasDefaultHandler (
-    ACPI_NAMESPACE_NODE     *Node,
-    ACPI_ADR_SPACE_TYPE     SpaceId)
-{
-    ACPI_OPERAND_OBJECT     *ObjDesc;
-    ACPI_OPERAND_OBJECT     *HandlerObj;
-
-
-    /* Must have an existing internal object */
-
-    ObjDesc = AcpiNsGetAttachedObject (Node);
-    if (ObjDesc)
-    {
-        HandlerObj = ObjDesc->CommonNotify.Handler;
-
-        /* Walk the linked list of handlers for this object */
-
-        while (HandlerObj)
-        {
-            if (HandlerObj->AddressSpace.SpaceId == SpaceId)
-            {
-                if (HandlerObj->AddressSpace.HandlerFlags &
-                    ACPI_ADDR_HANDLER_DEFAULT_INSTALLED)
-                {
-                    return (TRUE);
-                }
-            }
-
-            HandlerObj = HandlerObj->AddressSpace.Next;
-        }
-    }
-
-    return (FALSE);
-}
-
-
-/*******************************************************************************
- *
  * FUNCTION:    AcpiEvInstallHandler
  *
  * PARAMETERS:  WalkNamespace callback
