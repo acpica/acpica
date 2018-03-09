@@ -638,7 +638,10 @@ AsConvertFile (
         }
     }
 
-    AsReplaceHeader (FileBuffer, ConversionTable->NewHeader);
+    if (ConversionTable->NewHeader)
+    {
+        AsReplaceHeader (FileBuffer, ConversionTable->NewHeader);
+    }
     if (SpdxHeader)
     {
         AsDoSpdxHeader (FileBuffer, SpdxHeader);
