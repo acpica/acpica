@@ -607,6 +607,11 @@ main (
     AcpiDbgLevel = ACPI_NORMAL_DEFAULT;
     AcpiDbgLayer = 0xFFFFFFFF;
 
+    /* Module-level code. Use new architecture */
+
+    AcpiGbl_ExecuteTablesAsMethods = TRUE;
+    AcpiGbl_GroupModuleLevelCode = FALSE;
+
     /*
      * Initialize ACPICA and start debugger thread.
      *
@@ -761,6 +766,12 @@ main (
      * and fixed event handlers
      */
     AeInstallLateHandlers ();
+
+    /*
+     * This call implements the "initialization file" option for AcpiExec.
+     * This is the precise point that we want to perform the overrides.
+     */
+    AeDoObjectOverrides ();
 
     /* Finish the ACPICA initialization */
 
