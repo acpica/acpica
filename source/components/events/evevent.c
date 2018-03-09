@@ -341,8 +341,8 @@ AcpiEvFixedEventDetect (
     void)
 {
     UINT32                  IntStatus = ACPI_INTERRUPT_NOT_HANDLED;
-    UINT32                  FixedStatus;
-    UINT32                  FixedEnable;
+    UINT32                  FixedStatus = 0;
+    UINT32                  FixedEnable = 0;
     UINT32                  i;
     ACPI_STATUS             Status;
 
