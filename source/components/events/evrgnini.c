@@ -736,6 +736,9 @@ AcpiEvInitializeRegion (
                  * Node's object was replaced by this Method object and we
                  * saved the handler in the method object.
                  *
+                 * Note: Only used for the legacy MLC support. Will
+                 * be removed in the future.
+                 *
                  * See AcpiNsExecModuleCode
                  */
                 if (!AcpiGbl_ExecuteTablesAsMethods &&

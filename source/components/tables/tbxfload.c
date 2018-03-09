@@ -222,10 +222,13 @@ AcpiLoadTables (
     if (AcpiGbl_ExecuteTablesAsMethods || !AcpiGbl_GroupModuleLevelCode)
     {
         /*
-         * Initialize the objects that remain uninitialized. This
-         * runs the executable AML that may be part of the
-         * declaration of these objects:
-         * OperationRegions, BufferFields, Buffers, and Packages.
+         * If the module-level code support is enabled, initialize the objects
+         * in the namespace that remain uninitialized. This runs the executable
+         * AML that may be part of the declaration of these name objects:
+         *     OperationRegions, BufferFields, Buffers, and Packages.
+         *
+         * Note: The module-level code is optional at this time, but will
+         * become the default in the future.
          */
         Status = AcpiNsInitializeObjects ();
         if (ACPI_FAILURE (Status))
