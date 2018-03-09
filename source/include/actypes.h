@@ -1390,7 +1390,6 @@ typedef struct acpi_device_info
     UINT8                           Flags;              /* Miscellaneous info */
     UINT8                           HighestDstates[4];  /* _SxD values: 0xFF indicates not valid */
     UINT8                           LowestDstates[5];   /* _SxW values: 0xFF indicates not valid */
-    UINT32                          CurrentStatus;      /* _STA value */
     UINT64                          Address;            /* _ADR value */
     ACPI_PNP_DEVICE_ID              HardwareId;         /* _HID value */
     ACPI_PNP_DEVICE_ID              UniqueId;           /* _UID value */
@@ -1405,7 +1404,6 @@ typedef struct acpi_device_info
 
 /* Flags for Valid field above (AcpiGetObjectInfo) */
 
-#define ACPI_VALID_STA                  0x0001
 #define ACPI_VALID_ADR                  0x0002
 #define ACPI_VALID_HID                  0x0004
 #define ACPI_VALID_UID                  0x0008
