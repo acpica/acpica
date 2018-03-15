@@ -347,11 +347,16 @@ FlGenerateFilename (
  *
  * FUNCTION:    FlStrdup
  *
- * DESCRIPTION: Local strdup function
+ * PARAMETERS:  String              - Source string to duplicate.
+ *
+ * RETURN:      New string cloned from the source string.
+ *
+ * DESCRIPTION: Generate a new string which is a clone of the
+ *              source string. Similar to strdup function.
  *
  ******************************************************************************/
 
-static char *
+char *
 FlStrdup (
     char                *String)
 {
