@@ -213,7 +213,7 @@
  * IORT - IO Remapping Table
  *
  * Conforms to "IO Remapping Table System Software on ARM Platforms",
- * Document number: ARM DEN 0049C, May 2017
+ * Document number: ARM DEN 0049D, March 2018
  *
  ******************************************************************************/
 
@@ -316,12 +316,18 @@ typedef struct acpi_iort_named_component
 
 } ACPI_IORT_NAMED_COMPONENT;
 
+/* Masks for Flags field above */
+
+#define ACPI_IORT_NC_STALL_SUPPORTED    (1)
+#define ACPI_IORT_NC_PASID_BITS         (31<<1)
 
 typedef struct acpi_iort_root_complex
 {
     UINT64                  MemoryProperties;       /* Memory access properties */
     UINT32                  AtsAttribute;
     UINT32                  PciSegmentNumber;
+    UINT8                   MemoryAddressLimit;     /* Memory address size limit */
+    UINT8                   Reserved[3];            /* Reserved, must be zero */
 
 } ACPI_IORT_ROOT_COMPLEX;
 
@@ -383,9 +389,7 @@ typedef struct acpi_iort_smmu_v3
     UINT32                  PriGsiv;
     UINT32                  GerrGsiv;
     UINT32                  SyncGsiv;
-    UINT8                   Pxm;
-    UINT8                   Reserved1;
-    UINT16                  Reserved2;
+    UINT32                  Pxm;
     UINT32                  IdMappingIndex;
 
 } ACPI_IORT_SMMU_V3;
@@ -399,7 +403,7 @@ typedef struct acpi_iort_smmu_v3
 /* Masks for Flags field above */
 
 #define ACPI_IORT_SMMU_V3_COHACC_OVERRIDE   (1)
-#define ACPI_IORT_SMMU_V3_HTTU_OVERRIDE     (1<<1)
+#define ACPI_IORT_SMMU_V3_HTTU_OVERRIDE     (3<<1)
 #define ACPI_IORT_SMMU_V3_PXM_VALID         (1<<3)
 
 
