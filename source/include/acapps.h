@@ -318,6 +318,10 @@ FlGenerateFilename (
     char                    *InputFilename,
     char                    *Suffix);
 
+char *
+FlStrdup (
+    char                *String);
+
 ACPI_STATUS
 FlSplitInputPathname (
     char                    *InputPath,

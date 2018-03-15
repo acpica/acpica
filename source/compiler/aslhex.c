@@ -150,6 +150,7 @@
  *****************************************************************************/
 
 #include "aslcompiler.h"
+#include "acapps.h"
 
 #define _COMPONENT          ACPI_COMPILER
         ACPI_MODULE_NAME    ("ashex")
@@ -276,7 +277,23 @@ HxDoHexOutputC (
     UINT32                  Offset = 0;
     UINT32                  AmlFileSize;
     UINT32                  i;
+    char                    *FilenamePrefix;
+    char                    *FileGuard;
 
+    /*
+     * Get the filename and use it as a prefix for
+     * the AML code array and the header file guard
+     */
+    FlSplitInputPathname (Gbl_Files [ASL_FILE_HEX_OUTPUT].Filename, NULL,
+        &FilenamePrefix);
+
+    FilenamePrefix = FlGenerateFilename (FilenamePrefix, "");
+
+    FilenamePrefix[strlen (FilenamePrefix) - 1] = 0;
+    AcpiUtStrlwr (FilenamePrefix);
+
+    FileGuard = FlStrdup (FilenamePrefix);
+    AcpiUtStrupr (FileGuard);
 
     /* Get AML size, seek back to start */
 
@@ -286,7 +303,10 @@ HxDoHexOutputC (
     FlPrintFile (ASL_FILE_HEX_OUTPUT, " * C source code output\n");
     FlPrintFile (ASL_FILE_HEX_OUTPUT, " * AML code block contains 0x%X bytes\n *\n */\n",
         AmlFileSize);
-    FlPrintFile (ASL_FILE_HEX_OUTPUT, "unsigned char AmlCode[] =\n{\n");
+
+    FlPrintFile (ASL_FILE_HEX_OUTPUT, "#ifndef %s_HEX_\n", FileGuard);
+    FlPrintFile (ASL_FILE_HEX_OUTPUT, "#define %s_HEX_\n\n", FileGuard);
+    FlPrintFile (ASL_FILE_HEX_OUTPUT, "unsigned char %s_AmlCode[] =\n{\n", FilenamePrefix);
 
     while (Offset < AmlFileSize)
     {
@@ -337,7 +357,8 @@ HxDoHexOutputC (
         Offset += LineLength;
     }
 
-    FlPrintFile (ASL_FILE_HEX_OUTPUT, "};\n");
+    FlPrintFile (ASL_FILE_HEX_OUTPUT, "};\n\n");
+    FlPrintFile (ASL_FILE_HEX_OUTPUT, "#endif /* %s_HEX_ */\n", FileGuard);
 }
 
 
