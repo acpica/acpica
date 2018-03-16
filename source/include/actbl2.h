@@ -250,7 +250,8 @@ enum AcpiIortNodeType
     ACPI_IORT_NODE_NAMED_COMPONENT      = 0x01,
     ACPI_IORT_NODE_PCI_ROOT_COMPLEX     = 0x02,
     ACPI_IORT_NODE_SMMU                 = 0x03,
-    ACPI_IORT_NODE_SMMU_V3              = 0x04
+    ACPI_IORT_NODE_SMMU_V3              = 0x04,
+    ACPI_IORT_NODE_PMCG                 = 0x05
 };
 
 
@@ -405,6 +406,15 @@ typedef struct acpi_iort_smmu_v3
 #define ACPI_IORT_SMMU_V3_COHACC_OVERRIDE   (1)
 #define ACPI_IORT_SMMU_V3_HTTU_OVERRIDE     (3<<1)
 #define ACPI_IORT_SMMU_V3_PXM_VALID         (1<<3)
+
+typedef struct acpi_iort_pmcg
+{
+    UINT64                  Page0BaseAddress;
+    UINT32                  OverflowGsiv;
+    UINT32                  NodeReference;
+    UINT64                  Page1BaseAddress;
+
+} ACPI_IORT_PMCG;
 
 
 /*******************************************************************************

@@ -357,6 +357,17 @@ ACPI_DMTABLE_INFO           AcpiDmTableInfoIort4[] =
     ACPI_DMT_TERMINATOR
 };
 
+/* 0x05: PMCG */
+
+ACPI_DMTABLE_INFO           AcpiDmTableInfoIort5[] =
+{
+    {ACPI_DMT_UINT64,   ACPI_IORT5_OFFSET (Page0BaseAddress),       "Page 0 Base Address", 0},
+    {ACPI_DMT_UINT32,   ACPI_IORT5_OFFSET (OverflowGsiv),           "Overflow Interrupt GSIV", 0},
+    {ACPI_DMT_UINT32,   ACPI_IORT5_OFFSET (NodeReference),          "Node Reference", 0},
+    {ACPI_DMT_UINT64,   ACPI_IORT5_OFFSET (Page1BaseAddress),       "Page 1 Base Address", 0},
+    ACPI_DMT_TERMINATOR
+};
+
 
 /*******************************************************************************
  *
