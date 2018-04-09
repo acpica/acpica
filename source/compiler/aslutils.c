@@ -238,6 +238,87 @@ UtQueryForOverwrite (
 
 /*******************************************************************************
  *
+ * FUNCTION:    UtNodeIsDescendantOf
+ *
+ * PARAMETERS:  Node1                   - Namespace node for any object
+ *              Node2                   - Namespace node for any object
+ *
+ * RETURN:      Boolean
+ *
+ * DESCRIPTION: Returns TRUE if Node1 is a descendant of Node2. Otherwise,
+ *              return FALSE. Note, we assume a NULL element to be the topmost
+ *              scope. Note: Nodes at the same level (siblings) are not
+ *              considered descendants.
+ *
+ ******************************************************************************/
+
+BOOLEAN
+UtNodeIsDescendantOf (
+    ACPI_NAMESPACE_NODE     *Node1,
+    ACPI_NAMESPACE_NODE     *Node2)
+{
+    if (Node1 == Node2)
+    {
+        return (FALSE);
+    }
+    if (!Node2)
+    {
+        return (TRUE);
+    }
+
+    while (Node1)
+    {
+        if (Node1 == Node2)
+        {
+            return (TRUE);
+        }
+        Node1 = Node1->Parent;
+    }
+    return (FALSE);
+}
+
+
+/*******************************************************************************
+ *
+ * FUNCTION:    UtGetParentMethod
+ *
+ * PARAMETERS:  Node                    - Namespace node for any object
+ *
+ * RETURN:      NULL - object is not within a method
+ *              Valid Pointer - Namespace node for the parent method
+ *
+ * DESCRIPTION: Find the parent method node for a namespace object
+ *
+ ******************************************************************************/
+
+void *
+UtGetParentMethod (
+    ACPI_NAMESPACE_NODE     *Node)
+{
+    ACPI_NAMESPACE_NODE     *ParentNode;
+
+
+    if (!Node)
+    {
+        return (NULL);
+    }
+    ParentNode = Node->Parent;
+    while (ParentNode)
+    {
+        if (ParentNode->Type == ACPI_TYPE_METHOD)
+        {
+            return (ParentNode);
+        }
+
+        ParentNode = ParentNode->Parent;
+    }
+
+    return (NULL); /* Object is not within a control method */
+}
+
+
+/*******************************************************************************
+ *
  * FUNCTION:    UtDisplaySupportedTables
  *
  * PARAMETERS:  None
