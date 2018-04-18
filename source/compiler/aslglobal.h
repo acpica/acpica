@@ -328,6 +328,7 @@ ASL_EXTERN BOOLEAN                  ASL_INIT_GLOBAL (Gbl_OptimizeTrivialParseNod
 #define HEX_OUTPUT_C                1
 #define HEX_OUTPUT_ASM              2
 #define HEX_OUTPUT_ASL              3
+#define HEX_OUTPUT_H                4
 
 ASL_EXTERN BOOLEAN                  ASL_INIT_GLOBAL (Gbl_HexOutputFlag, HEX_OUTPUT_NONE);
 
