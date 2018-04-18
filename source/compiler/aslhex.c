@@ -155,6 +155,10 @@
 #define _COMPONENT          ACPI_COMPILER
         ACPI_MODULE_NAME    ("ashex")
 
+#ifndef PATH_MAX
+#define PATH_MAX 256
+#endif
+
 /*
  * This module emits ASCII hex output files in either C, ASM, or ASL format
  */
@@ -171,6 +175,10 @@ HxDoHexOutputAsl (
 
 static void
 HxDoHexOutputAsm (
+    void);
+
+static void
+HxDoHexOutputH (
     void);
 
 static UINT32
@@ -211,6 +219,11 @@ HxDoHexOutput (
     case HEX_OUTPUT_ASL:
 
         HxDoHexOutputAsl ();
+        break;
+
+    case HEX_OUTPUT_H:
+
+        HxDoHexOutputH ();
         break;
 
     default:
@@ -355,6 +368,160 @@ HxDoHexOutputC (
 
     FlPrintFile (ASL_FILE_HEX_OUTPUT, "};\n\n");
     FlPrintFile (ASL_FILE_HEX_OUTPUT, "#endif\n");
+}
+
+
+/*******************************************************************************
+*
+* FUNCTION:    HxDoHexOutputH
+*
+* PARAMETERS:  None
+*
+* RETURN:      None
+*
+* DESCRIPTION: Create the hex output file. This is the same data as the AML
+*              output file, but formatted into hex/ASCII bytes suitable for
+*              inclusion into a C source file.
+*
+******************************************************************************/
+
+static void
+HxDoHexOutputH (
+    void)
+{
+    UINT8                   FileData[HEX_TABLE_LINE_SIZE];
+    UINT32                  LineLength;
+    UINT32                  Offset = 0;
+    UINT32                  AmlFileSize;
+    UINT32                  i;
+    UINT32                  FileNamePrefixLength;
+    char                    *DotPosition;
+    char                    *InputFileName;
+    char                    *NamePosition;
+    char                    *FileNameEndPosition;
+    char                    FileNamePrefix[PATH_MAX];
+    char                    FileGuard[PATH_MAX];
+
+    /* Get AML size, seek back to start */
+
+    AmlFileSize = FlGetFileSize (ASL_FILE_AML_OUTPUT);
+    FlSeekFile (ASL_FILE_AML_OUTPUT, 0);
+
+    /*
+     * Find the filename and use it as a prefix for
+     * the AML code array and the header file guard
+     */
+    InputFileName = Gbl_Files[ASL_FILE_INPUT].Filename;
+    FileNameEndPosition = InputFileName + strlen (InputFileName);
+
+    NamePosition = strrchr (InputFileName, '/');
+    if (NamePosition == NULL)
+    {
+        /* '/' not found. This means the input file name
+         * does not contain the path and is in the current
+         * directory.
+         */
+        NamePosition = InputFileName;
+    }
+    else
+    {
+        /* '/' was found. So move to the next character
+         * which is the name of the input file.
+         */
+        NamePosition++;
+    }
+
+    /* Get the file name without the extension to use
+     * as a prefix.
+     */
+    DotPosition = strrchr (NamePosition, '.');
+    if (DotPosition)
+    {
+        /* No dot or suffix */
+        FileNameEndPosition = DotPosition;
+    }
+
+    FileNamePrefixLength = FileNameEndPosition - NamePosition;
+    if (FileNamePrefixLength > (PATH_MAX - 1))
+    {
+        AslError (ASL_ERROR, ASL_MSG_STRING_LENGTH, NULL, ": Input file name too long.");
+        return;
+    }
+
+    strncpy (FileNamePrefix, NamePosition, FileNamePrefixLength);
+    /* NULL terminate the string */
+    FileNamePrefix[FileNamePrefixLength] = '\0';
+
+    if (strrchr (FileNamePrefix, ' '))
+    {
+        AslError (ASL_ERROR, ASL_MSG_SYNTAX, NULL, "Input file name has space.");
+        return;
+    }
+
+    strcpy (FileGuard, FileNamePrefix);
+    AcpiUtStrupr (FileGuard);
+
+    /* Generate the hex output. */
+    FlPrintFile (ASL_FILE_HEX_OUTPUT, " * C header code output\n");
+    FlPrintFile (ASL_FILE_HEX_OUTPUT, " * AML code block contains 0x%X bytes\n *\n */\n",
+        AmlFileSize);
+    FlPrintFile (ASL_FILE_HEX_OUTPUT, "\n");
+    FlPrintFile (ASL_FILE_HEX_OUTPUT, "#ifndef %s_HEX_\n", FileGuard);
+    FlPrintFile (ASL_FILE_HEX_OUTPUT, "#define %s_HEX_\n", FileGuard);
+    FlPrintFile (ASL_FILE_HEX_OUTPUT, "\n");
+    FlPrintFile (ASL_FILE_HEX_OUTPUT, "unsigned char %sAmlCode[] =\n{\n", FileNamePrefix);
+
+    while (Offset < AmlFileSize)
+    {
+        /* Read enough bytes needed for one output line */
+
+        LineLength = HxReadAmlOutputFile (FileData);
+        if (!LineLength)
+        {
+            break;
+        }
+
+        FlPrintFile (ASL_FILE_HEX_OUTPUT, "    ");
+
+        for (i = 0; i < LineLength; i++)
+        {
+            /*
+            * Print each hex byte.
+            * Add a comma until the very last byte of the AML file
+            * (Some C compilers complain about a trailing comma)
+            */
+            FlPrintFile (ASL_FILE_HEX_OUTPUT, "0x%2.2X", FileData[i]);
+            if ((Offset + i + 1) < AmlFileSize)
+            {
+                FlPrintFile (ASL_FILE_HEX_OUTPUT, ",");
+            }
+            else
+            {
+                FlPrintFile (ASL_FILE_HEX_OUTPUT, " ");
+            }
+        }
+
+        /* Add fill spaces if needed for last line */
+
+        if (LineLength < HEX_TABLE_LINE_SIZE)
+        {
+            FlPrintFile (ASL_FILE_HEX_OUTPUT, "%*s",
+                5 * (HEX_TABLE_LINE_SIZE - LineLength), " ");
+        }
+
+        /* Emit the offset and ASCII dump for the entire line */
+
+        FlPrintFile (ASL_FILE_HEX_OUTPUT, "  /* %8.8X", Offset);
+        LsDumpAsciiInComment (ASL_FILE_HEX_OUTPUT, LineLength, FileData);
+
+        FlPrintFile (ASL_FILE_HEX_OUTPUT, "%*s*/\n",
+            HEX_TABLE_LINE_SIZE - LineLength + 1, " ");
+
+        Offset += LineLength;
+    }
+
+    FlPrintFile (ASL_FILE_HEX_OUTPUT, "};\n");
+    FlPrintFile (ASL_FILE_HEX_OUTPUT, "\n#endif // %s_HEX_\n", FileGuard);
 }
 
 
