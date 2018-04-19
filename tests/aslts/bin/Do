@@ -595,8 +595,9 @@ run_asl_compiler()
 	echo "list of testcases: $list"
 
 	if [ $action == 1 ]; then
+                list="$ALL_AVAILABLE_TEST_CASES"
 		echo "Make-install all the provided test cases"
-		make_install_1 "$1" "$execonly"
+		make_install_2 "$1" "$list" "$execonly"
 	elif [ $action == 2 ]; then
 		echo "Make-install a list of specified test cases: $list"
 		make_install_2 "$1" "$list" "$execonly"
