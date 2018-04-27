@@ -520,13 +520,12 @@ AcpiDbTestOneObject (
         case ACPI_ADR_SPACE_SYSTEM_MEMORY:
         case ACPI_ADR_SPACE_SYSTEM_IO:
         case ACPI_ADR_SPACE_PCI_CONFIG:
-        case ACPI_ADR_SPACE_EC:
 
             break;
 
         default:
 
-            AcpiOsPrintf ("      %s space is not supported [%4.4s]\n",
+            AcpiOsPrintf ("      %s space is not supported in this command [%4.4s]\n",
                 AcpiUtGetRegionName (RegionObj->Region.SpaceId),
                 RegionObj->Region.Node->Name.Ascii);
             return (AE_OK);
