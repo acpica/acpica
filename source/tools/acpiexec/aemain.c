@@ -607,10 +607,6 @@ main (
     ACPI_DEBUG_INITIALIZE (); /* For debug version only */
 
     signal (SIGINT, AeSignalHandler);
-    if (AcpiGbl_UseLocalFaultHandler)
-    {
-        signal (SIGSEGV, AeSignalHandler);
-    }
 
     /* Init debug globals */
 
@@ -667,6 +663,11 @@ main (
         }
 
         goto ErrorExit;
+    }
+
+    if (AcpiGbl_UseLocalFaultHandler)
+    {
+        signal (SIGSEGV, AeSignalHandler);
     }
 
     /* The remaining arguments are filenames for ACPI tables */
