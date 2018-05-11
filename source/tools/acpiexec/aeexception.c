@@ -162,6 +162,10 @@ AeDisplayMethodCallStack (
     void);
 
 
+UINT32                      SigintCount = 0;
+#define ACPI_MAX_CONTROL_C  5
+
+
 /******************************************************************************
  *
  * FUNCTION:    AeExceptionHandler
@@ -320,6 +324,14 @@ AeSignalHandler (
     case SIGINT:
         signal(Sig, SIG_IGN);
         AcpiOsPrintf ("<Control-C>\n");
+
+        /* Force exit on multiple control-c */
+
+        SigintCount++;
+        if (SigintCount >= ACPI_MAX_CONTROL_C)
+        {
+            exit (0);
+        }
 
         /* Abort the application if there are no methods executing */
 
