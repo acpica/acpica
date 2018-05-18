@@ -566,7 +566,7 @@ AeDoOptions (
 
     case 'x':
 
-        AcpiDbgLevel = strtoul (AcpiGbl_Optarg, NULL, 0);
+        AcpiDbgLevel = strtoul (AcpiGbl_Optarg, NULL, 16);
         AcpiGbl_DbConsoleDebugLevel = AcpiDbgLevel;
         printf ("Debug Level: 0x%8.8X\n", AcpiDbgLevel);
         break;
