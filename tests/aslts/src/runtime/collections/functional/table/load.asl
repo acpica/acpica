@@ -2369,6 +2369,7 @@ Local2 = Buffer (0x0A)
         /* DDB Handle */
 
         External (\DDBX, UnknownObj)
+
         /* Recursive Load in module level code */
 
         Method (TSTK, 1, Serialized)
@@ -2431,6 +2432,38 @@ Local2 = Buffer (0x0A)
                 ERR (Arg0, Z174, __LINE__, 0x00, 0x00, "\\DDBX", 0x01)
                 Return (Zero)
             }
+        }
+
+        /* Load a table and check to see if PAC0 is initialized properly */
+        Method (TSTL, 1, Serialized)
+        {
+            Concatenate (Arg0, "-tstl", Arg0)
+            CH03 (Arg0, Z174, __LINE__, 0x00, 0x00)
+            External (SS01, methodobj)
+
+            /* iasl -ts ssdt6.asl */
+
+            Name (BUF1, Buffer()
+            {
+                0x53,0x53,0x44,0x54,0x3E,0x00,0x00,0x00,  /* 00000000    "SSDT>..." */
+                0x02,0x80,0x49,0x6E,0x74,0x65,0x6C,0x00,  /* 00000008    "..Intel." */
+                0x5F,0x42,0x33,0x30,0x37,0x00,0x00,0x00,  /* 00000010    "_B307..." */
+                0x01,0x00,0x00,0x00,0x49,0x4E,0x54,0x4C,  /* 00000018    "....INTL" */
+                0x27,0x04,0x18,0x20,0x14,0x0B,0x53,0x53,  /* 00000020    "'.. ..SS" */
+                0x30,0x31,0x00,0xA4,0x50,0x4B,0x47,0x31,  /* 00000028    "01..PKG1" */
+                0x08,0x50,0x4B,0x47,0x31,0x12,0x08,0x04,  /* 00000030    ".PKG1..." */
+                0x00,0x01,0x0A,0x02,0x0A,0x03             /* 00000038    "......"   */
+            })
+            Name (DDBH, 0x00)
+            Load (BUF1, DDBH)
+            Local0 = SS01()
+            Local1 = sizeof (Local0)
+            if (Local1 != 0x4)
+            {
+                ERR (Arg0, ZFFF, __LINE__, 0x00, 0x00, Local1, 0x4)
+            }
+            Unload (DDBH)
+            CH03 (Arg0, Z174, __LINE__, 0x00, 0x00)
         }
     }
 
@@ -2514,6 +2547,10 @@ Local2 = Buffer (0x0A)
 
         SRMT ("TLD0.tstk")
         \DTM0.TSTK (__METHOD__)
+        CH03 (__METHOD__, Z174, __LINE__, 0x00, 0x00)
+
+        SRMT ("TLD0.tstl")
+        \DTM0.TSTL (__METHOD__)
         CH03 (__METHOD__, Z174, __LINE__, 0x00, 0x00)
     }
 
