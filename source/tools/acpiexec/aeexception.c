@@ -198,34 +198,38 @@ AeExceptionHandler (
 
 
     Exception = AcpiFormatException (AmlStatus);
-    AcpiOsPrintf (AE_PREFIX
-        "Exception %s during execution\n", Exception);
 
-    if (Name)
+    if (AcpiGbl_VerboseHandlers)
     {
-        if (ACPI_COMPARE_NAME (&Name, ACPI_ROOT_PATHNAME))
+        AcpiOsPrintf (AE_PREFIX
+            "Exception %s during execution\n", Exception);
+
+        if (Name)
         {
-            AcpiOsPrintf (AE_PREFIX
-                "Evaluating executable code at [%s]\n", ACPI_NAMESPACE_ROOT);
+            if (ACPI_COMPARE_NAME (&Name, ACPI_ROOT_PATHNAME))
+            {
+                AcpiOsPrintf (AE_PREFIX
+                    "Evaluating executable code at [%s]\n", ACPI_NAMESPACE_ROOT);
+            }
+            else
+            {
+                AcpiOsPrintf (AE_PREFIX
+                    "Evaluating Method or Node: [%4.4s]\n", (char *) &Name);
+            }
         }
-        else
+
+        /* Be terse about loop timeouts */
+
+        if ((AmlStatus == AE_AML_LOOP_TIMEOUT) && AcpiGbl_AbortLoopOnTimeout)
         {
-            AcpiOsPrintf (AE_PREFIX
-                "Evaluating Method or Node: [%4.4s]\n", (char *) &Name);
+            AcpiOsPrintf (AE_PREFIX "Aborting loop after timeout\n");
+            return (AE_OK);
         }
+
+        AcpiOsPrintf ("\n" AE_PREFIX
+            "AML Opcode [%s], Method Offset ~%5.5X\n",
+            AcpiPsGetOpcodeName (Opcode), AmlOffset);
     }
-
-    /* Be terse about loop timeouts */
-
-    if ((AmlStatus == AE_AML_LOOP_TIMEOUT) && AcpiGbl_AbortLoopOnTimeout)
-    {
-        AcpiOsPrintf (AE_PREFIX "Aborting loop after timeout\n");
-        return (AE_OK);
-    }
-
-    AcpiOsPrintf ("\n" AE_PREFIX
-        "AML Opcode [%s], Method Offset ~%5.5X\n",
-        AcpiPsGetOpcodeName (Opcode), AmlOffset);
 
     /* Invoke the _ERR method if present */
 

@@ -188,6 +188,7 @@ AeDoOptions (
 /* Globals */
 
 BOOLEAN                     AcpiGbl_UseLocalFaultHandler = TRUE;
+BOOLEAN                     AcpiGbl_VerboseHandlers = FALSE;
 UINT8                       AcpiGbl_RegionFillValue = 0;
 BOOLEAN                     AcpiGbl_IgnoreErrors = FALSE;
 BOOLEAN                     AcpiGbl_AbortLoopOnTimeout = FALSE;
@@ -279,6 +280,7 @@ usage (
 
     ACPI_OPTION ("-v",                  "Display version information");
     ACPI_OPTION ("-vd",                 "Display build date and time");
+    ACPI_OPTION ("-vh",                 "Verbose exception handler output");
     ACPI_OPTION ("-vi",                 "Verbose initialization output");
     ACPI_OPTION ("-vr",                 "Verbose region handler output");
     ACPI_OPTION ("-x <DebugLevel>",     "Debug output level");
@@ -546,6 +548,11 @@ AeDoOptions (
 
             printf (ACPI_COMMON_BUILD_TIME);
             return (1);
+
+        case 'h':
+
+            AcpiGbl_VerboseHandlers = TRUE;
+            break;
 
         case 'i':
 
