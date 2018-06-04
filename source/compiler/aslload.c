@@ -876,9 +876,7 @@ LdNamespace1Begin (
             {
                 /*
                  * Allow one create on an object or segment that was
-                 * previously declared External only if WalkState->OwnerId and
-                 * Node->OwnerId are different (meaning that the current WalkState
-                 * and the Node are in different tables).
+                 * previously declared External
                  */
                 Node->Flags &= ~ANOBJ_IS_EXTERNAL;
                 Node->Type = (UINT8) ObjectType;
@@ -895,13 +893,6 @@ LdNamespace1Begin (
                 }
 
                 Status = AE_OK;
-
-                if (Node->OwnerId == WalkState->OwnerId)
-                {
-                    AslDualParseOpError (ASL_WARNING, ASL_MSG_EXTERN_COLLISION, Op,
-                        Op->Asl.ExternalName, ASL_MSG_EXTERN_FOUND_HERE, Node->Op,
-                        Node->Op->Asl.ExternalName);
-                }
             }
             else if (!(Node->Flags & ANOBJ_IS_EXTERNAL) &&
                      (Op->Asl.ParseOpcode == PARSEOP_EXTERNAL))
@@ -909,18 +900,9 @@ LdNamespace1Begin (
                 /*
                  * Allow externals in same scope as the definition of the
                  * actual object. Similar to C. Allows multiple definition
-                 * blocks that refer to each other in the same file. However,
-                 * do not allow name declaration and an external declaration
-                 * within the same table. This is considered a re-declaration.
+                 * blocks that refer to each other in the same file.
                  */
                 Status = AE_OK;
-
-                if (Node->OwnerId == WalkState->OwnerId)
-                {
-                    AslDualParseOpError (ASL_WARNING, ASL_MSG_EXTERN_COLLISION, Op,
-                        Op->Asl.ExternalName, ASL_MSG_EXTERN_FOUND_HERE, Node->Op,
-                        Node->Op->Asl.ExternalName);
-                }
             }
             else if ((Node->Flags & ANOBJ_IS_EXTERNAL) &&
                      (Op->Asl.ParseOpcode == PARSEOP_EXTERNAL) &&
