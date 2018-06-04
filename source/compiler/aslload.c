@@ -896,16 +896,11 @@ LdNamespace1Begin (
 
                 Status = AE_OK;
 
-                if (Node->OwnerId == WalkState->OwnerId &&
-                    !(Node->Flags & IMPLICIT_EXTERNAL))
+                if (Node->OwnerId == WalkState->OwnerId)
                 {
                     AslDualParseOpError (ASL_WARNING, ASL_MSG_EXTERN_COLLISION, Op,
                         Op->Asl.ExternalName, ASL_MSG_EXTERN_FOUND_HERE, Node->Op,
                         Node->Op->Asl.ExternalName);
-                }
-                if (Node->Flags & IMPLICIT_EXTERNAL)
-                {
-                    Node->Flags &= ~IMPLICIT_EXTERNAL;
                 }
             }
             else if (!(Node->Flags & ANOBJ_IS_EXTERNAL) &&
