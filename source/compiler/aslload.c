@@ -926,36 +926,7 @@ LdNamespace1Begin (
                      (Op->Asl.ParseOpcode == PARSEOP_EXTERNAL) &&
                      (ObjectType == ACPI_TYPE_ANY))
             {
-                /*
-                 * Allow update of externals of unknown type.
-                 * In the case that multiple definition blocks are being
-                 * parsed, updating the OwnerId allows enables subsequent calls
-                 * of this method to understand which table the most recent
-                 * external declaration was seen. Without this OwnerId update,
-                 * code like the following is allowed to compile:
-                 *
-                 * DefinitionBlock("externtest.aml", "DSDT", 0x02, "Intel", "Many", 0x00000001)
-                 * {
-                 *     External(ERRS,methodobj)
-                 *     Method (MAIN)
-                 *     {
-                 *         Name(NUM2, 0)
-                 *         ERRS(1,2,3)
-                 *     }
-                 * }
-                 *
-                 * DefinitionBlock("externtest.aml", "SSDT", 0x02, "Intel", "Many", 0x00000001)
-                 * {
-                 *     if (0)
-                 *     {
-                 *         External(ERRS,methodobj)
-                 *     }
-                 *     Method (ERRS,3)
-                 *     {}
-                 *
-                 * }
-                 */
-                Node->OwnerId = WalkState->OwnerId;
+                /* Allow update of externals of unknown type. */
 
                 if (AcpiNsOpensScope (ActualObjectType))
                 {
