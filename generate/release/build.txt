@@ -110,19 +110,21 @@ Build Unix versions of all software and utilities
     generate/unix/make clean
     generate/unix/make
 
+NOTE: The following steps are obsolete, not used, but this is how to do it:
+        Generate sizes for the acpica library from generate/release/size.bat
+           Note: This step uses MS dumpbin(link) which is a part of the VC package.
+           It might not work unless the environment variables are set correctly.
+           Execute VC/vcvarsall.bat from the command line if necessary.
+        Sizes appear in the files size_rel.txt and size_dbg.txt
+        Integrate code/data and debug/nodebug sizes into the release notes.
+
 Write the release notes
-Generate sizes for the acpica library from generate/release/size.bat
-   Note: This step uses MS dumpbin(link) which is a part of the VC package.
-   It might not work unless the environment variables are set correctly.
-   Execute VC/vcvarsall.bat from the command line if necessary.
-Sizes appear in the files size_rel.txt and size_dbg.txt
-Integrate code/data and debug/nodebug sizes into the release notes.
 Add the release notes to the documents/changes.txt document via Word.
    Note: From Word, use "Save As", then check the "MS-DOS" and
    "Insert line breaks" boxes before saving.
 
-Checkin documents/changes.txt
-Checkin the new version number, source/include/acpixf.h
+Checkin documents/changes.txt, message "Logfile: Changes for version yyyymmdd"
+Checkin the new version number, source/include/acpixf.h "Update version to yyyymmdd"
 Git push everything
 
 Tag the version file with a name of the form Rmm_dd_yy
