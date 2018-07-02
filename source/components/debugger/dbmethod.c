@@ -412,7 +412,9 @@ AcpiDbDisassembleAml (
     char                    *Statements,
     ACPI_PARSE_OBJECT       *Op)
 {
+#ifdef ACPI_DISASSEMBLER
     UINT32                  NumStatements = 8;
+#endif
 
 
     if (!Op)
@@ -421,12 +423,12 @@ AcpiDbDisassembleAml (
         return;
     }
 
+#ifdef ACPI_DISASSEMBLER
     if (Statements)
     {
         NumStatements = strtoul (Statements, NULL, 0);
     }
 
-#ifdef ACPI_DISASSEMBLER
     AcpiDmDisassemble (NULL, Op, NumStatements);
 #endif
 }
