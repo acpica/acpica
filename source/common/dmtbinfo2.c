@@ -1246,6 +1246,7 @@ ACPI_DMTABLE_INFO           AcpiDmTableInfoPdtt0[] =
     {ACPI_DMT_UINT8,    ACPI_PDTT0_OFFSET (Flags),                  "Flags (Decoded Below)", DT_FLAG},
     {ACPI_DMT_FLAG0,    ACPI_PDTT0_FLAG_OFFSET (Flags,0),           "Runtime Trigger", 0},
     {ACPI_DMT_FLAG1,    ACPI_PDTT0_FLAG_OFFSET (Flags,0),           "Wait for Completion", 0},
+    {ACPI_DMT_FLAG2,    ACPI_PDTT0_FLAG_OFFSET (Flags,0),           "Trigger Order", 0},
     ACPI_DMT_TERMINATOR
 };
 
