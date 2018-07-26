@@ -164,6 +164,7 @@
 #include "acdispat.h"
 #include "amlcode.h"
 #include "acconvert.h"
+#include "acnamesp.h"
 
 #define _COMPONENT          ACPI_PARSER
         ACPI_MODULE_NAME    ("psloop")
@@ -677,18 +678,20 @@ AcpiPsParseLoop (
                 {
                     return_ACPI_STATUS (Status);
                 }
-                if (WalkState->Opcode == AML_SCOPE_OP)
+                if (AcpiNsOpensScope (
+                    AcpiPsGetOpcodeInfo (WalkState->Opcode)->ObjectType))
                 {
                     /*
-                     * If the scope op fails to parse, skip the body of the
-                     * scope op because the parse failure indicates that the
-                     * device may not exist.
+                     * If the scope/device op fails to parse, skip the body of
+                     * the scope op because the parse failure indicates that
+                     * the device may not exist.
                      */
+                    ACPI_ERROR ((AE_INFO, "Skip parsing opcode %s",
+                        AcpiPsGetOpcodeName (WalkState->Opcode)));
                     WalkState->ParserState.Aml = WalkState->Aml + 1;
                     WalkState->ParserState.Aml =
                         AcpiPsGetNextPackageEnd(&WalkState->ParserState);
                     WalkState->Aml = WalkState->ParserState.Aml;
-                    ACPI_ERROR ((AE_INFO, "Skipping Scope block"));
                 }
 
                 continue;
