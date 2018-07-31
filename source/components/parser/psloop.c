@@ -847,16 +847,20 @@ AcpiPsParseLoop (
                 Status = AE_OK;
             }
             else if ((WalkState->ParseFlags & ACPI_PARSE_MODULE_LEVEL) &&
-                ACPI_FAILURE(Status))
+                Status != AE_CTRL_TRANSFER && ACPI_FAILURE(Status))
             {
                 /*
-                 * ACPI_PARSE_MODULE_LEVEL means that we are loading a table by
-                 * executing it as a control method. However, if we encounter
-                 * an error while loading the table, we need to keep trying to
-                 * load the table rather than aborting the table load. Set the
-                 * status to AE_OK to proceed with the table load. If we get a
-                 * failure at this point, it means that the dispatcher got an
-                 * error while processing Op (most likely an AML operand error.
+                 * ACPI_PARSE_MODULE_LEVEL flag means that we are currently
+                 * loading a table by executing it as a control method.
+                 * However, if we encounter an error while loading the table,
+                 * we need to keep trying to load the table rather than
+                 * aborting the table load (setting the status to AE_OK
+                 * continues the table load). If we get a failure at this
+                 * point, it means that the dispatcher got an error while
+                 * processing Op (most likely an AML operand error) or a
+                 * control method was called from module level and the
+                 * dispatcher returned AE_CTRL_TRANSFER. In the latter case,
+                 * leave the status alone, there's nothing wrong with it.
                  */
                 Status = AE_OK;
             }
