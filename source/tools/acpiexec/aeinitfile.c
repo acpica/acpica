@@ -273,7 +273,7 @@ AeProcessInitFile(
         {
             AcpiOsPrintf ("%s %s\n", ValueBuffer,
                 AcpiFormatException (Status));
-            return;
+            goto CleanupAndExit;
         }
 
         AeEnterInitFileEntry (AcpiGbl_InitEntries[idx], WalkState);
