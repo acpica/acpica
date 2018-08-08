@@ -225,8 +225,6 @@ AeProcessInitFile(
 {
     ACPI_WALK_STATE         *WalkState;
     int                     i;
-    char                    *TempBuffer = NULL;
-    UINT64                  TempInt = 0;
     UINT64                  idx;
     ACPI_STATUS             Status;
 
@@ -241,11 +239,10 @@ AeProcessInitFile(
     WalkState = AcpiDsCreateWalkState (0, NULL, NULL, NULL);
     NameBuffer[0] = '\\';
 
-    while (getline (&TempBuffer, &TempInt, InitFile) != -1)
+    while (fgets (LineBuffer, AE_FILE_BUFFER_SIZE, InitFile) != NULL)
     {
         ++AcpiGbl_InitFileLineCount;
     }
-    AcpiOsFree (TempBuffer);
     rewind (InitFile);
 
     AcpiGbl_InitEntries =
@@ -276,7 +273,7 @@ AeProcessInitFile(
         {
             AcpiOsPrintf ("%s %s\n", ValueBuffer,
                 AcpiFormatException (Status));
-            return;
+            goto CleanupAndExit;
         }
 
         AeEnterInitFileEntry (AcpiGbl_InitEntries[idx], WalkState);
