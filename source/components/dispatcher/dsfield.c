@@ -578,14 +578,14 @@ AcpiDsGetFieldNames (
 #ifdef ACPI_EXEC_APP
                     NamePath = AcpiNsGetExternalPathname (Info->FieldNode);
                     ObjDesc = AcpiUtCreateIntegerObject (Value);
-                    if (ACPI_SUCCESS(AeLookupInitFileEntry (NamePath, &Value)))
+                    if (ACPI_SUCCESS (AeLookupInitFileEntry (NamePath, &Value)))
                     {
                         AcpiExWriteDataToField (ObjDesc,
                             AcpiNsGetAttachedObject (Info->FieldNode),
                             &ResultDesc);
-                        ACPI_FREE (NamePath);
-                        AcpiUtRemoveReference (ObjDesc);
                     }
+                    AcpiUtRemoveReference (ObjDesc);
+                    ACPI_FREE (NamePath);
 #endif
                 }
             }
