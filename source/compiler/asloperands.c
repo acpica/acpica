@@ -434,7 +434,7 @@ OpnDoFieldCommon (
                 /*
                  * This Offset() operator is redundant and not needed,
                  * because the offset value is the same as the current
-                 * offset within the field.
+                 * offset.
                  */
                 AslError (ASL_REMARK, ASL_MSG_OFFSET, PkgLengthNode, NULL);
 
@@ -449,6 +449,14 @@ OpnDoFieldCommon (
 
                     AslError (ASL_OPTIMIZATION, ASL_MSG_OFFSET, PkgLengthNode,
                         "Optimizer has removed statement");
+                }
+                else
+                {
+                    /* Optimization is disabled, treat as a valid Offset */
+
+                    PkgLengthNode->Asl.Value.Integer =
+                        NewBitOffset - CurrentBitOffset;
+                    CurrentBitOffset = NewBitOffset;
                 }
             }
             else
