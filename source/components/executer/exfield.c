@@ -211,9 +211,17 @@ AcpiExGetSerialAccessLength (
 
     case AML_FIELD_ATTRIB_MULTIBYTE:
     case AML_FIELD_ATTRIB_RAW_BYTES:
-    case AML_FIELD_ATTRIB_RAW_PROCESS:
 
         Length = AccessLength;
+        break;
+
+    case AML_FIELD_ATTRIB_RAW_PROCESS:
+        /*
+         * Worst case bidirectional buffer size. This ignores the
+         * AccessLength argument to AccessAs because it is not needed.
+         * August 2018.
+         */
+        Length = ACPI_MAX_GSBUS_BUFFER_SIZE;
         break;
 
     case AML_FIELD_ATTRIB_BLOCK:
@@ -308,6 +316,14 @@ AcpiExReadDataFromField (
             ACPI_ADR_SPACE_GSBUS)
         {
             AccessorType = ObjDesc->Field.Attribute;
+            if (AccessorType == AML_FIELD_ATTRIB_RAW_PROCESS)
+            {
+               ACPI_ERROR ((AE_INFO,
+                    "Invalid direct read using bidirectional write-then-read protocol"));
+
+                return_ACPI_STATUS (AE_AML_PROTOCOL);
+            }
+
             Length = AcpiExGetSerialAccessLength (
                 AccessorType, ObjDesc->Field.AccessLength);
 
@@ -473,6 +489,7 @@ AcpiExWriteDataToField (
 {
     ACPI_STATUS             Status;
     UINT32                  Length;
+    UINT32                  DataLength;
     void                    *Buffer;
     ACPI_OPERAND_OBJECT     *BufferDesc;
     UINT32                  Function;
@@ -536,6 +553,7 @@ AcpiExWriteDataToField (
             ACPI_ADR_SPACE_SMBUS)
         {
             Length = ACPI_SMBUS_BUFFER_SIZE;
+            DataLength = Length;
             Function = ACPI_WRITE | (ObjDesc->Field.Attribute << 16);
         }
         else if (ObjDesc->Field.RegionObj->Region.SpaceId ==
@@ -546,32 +564,40 @@ AcpiExWriteDataToField (
                 AccessorType, ObjDesc->Field.AccessLength);
 
             /*
-             * Add additional 2 bytes for the GenericSerialBus data buffer:
-             *
+             * Buffer format for Generic Serial Bus protocols:
              *     Status;    (Byte 0 of the data buffer)
              *     Length;    (Byte 1 of the data buffer)
              *     Data[x-1]: (Bytes 2-x of the arbitrary length data buffer)
              */
-            Length += 2;
+            DataLength = SourceDesc->Buffer.Pointer[1];     /* Data length is 2nd byte */
+            if (!DataLength)
+            {
+                ACPI_ERROR ((AE_INFO,
+                    "Invalid zero data length in transfer buffer"));
+
+                return_ACPI_STATUS (AE_AML_BUFFER_LENGTH);
+            }
+
             Function = ACPI_WRITE | (AccessorType << 16);
         }
         else /* IPMI */
         {
             Length = ACPI_IPMI_BUFFER_SIZE;
+            DataLength = Length;
             Function = ACPI_WRITE;
         }
 
-        if (SourceDesc->Buffer.Length < Length)
+        if (SourceDesc->Buffer.Length < DataLength)
         {
             ACPI_ERROR ((AE_INFO,
                 "SMBus/IPMI/GenericSerialBus write requires "
-                "Buffer of length %u, found length %u",
-                Length, SourceDesc->Buffer.Length));
+                "Buffer data length %u, found buffer length %u",
+                DataLength, SourceDesc->Buffer.Length));
 
             return_ACPI_STATUS (AE_AML_BUFFER_LIMIT);
         }
 
-        /* Create the bi-directional buffer */
+        /* Create the transfer/bidirectional buffer */
 
         BufferDesc = AcpiUtCreateBufferObject (Length);
         if (!BufferDesc)
@@ -579,8 +605,10 @@ AcpiExWriteDataToField (
             return_ACPI_STATUS (AE_NO_MEMORY);
         }
 
+        /* Copy the input buffer data to the transfer buffer */
+
         Buffer = BufferDesc->Buffer.Pointer;
-        memcpy (Buffer, SourceDesc->Buffer.Pointer, Length);
+        memcpy (Buffer, SourceDesc->Buffer.Pointer, DataLength);
 
         /* Lock entire transaction if requested */
 

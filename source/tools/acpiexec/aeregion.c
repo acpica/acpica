@@ -393,7 +393,7 @@ AeRegionHandler (
             case AML_FIELD_ATTRIB_RAW_BYTES:
             case AML_FIELD_ATTRIB_RAW_PROCESS:
 
-                Length = MyContext->AccessLength;
+                Length = ACPI_MAX_GSBUS_BUFFER_SIZE;
                 break;
 
             default:
@@ -434,11 +434,13 @@ AeRegionHandler (
 
         for (i = 0; i < Length; i++)
         {
-            Buffer[i+2] = (UINT8) (0xA0 + i);
+            Buffer[i] = (UINT8) (0xA0 + i);
         }
 
-        Buffer[0] = 0x7A;
-        Buffer[1] = (UINT8) Length;
+        Buffer[0] = 0;              /* Return Status, OK */
+        Buffer[1] = (UINT8) Length; /* Length of valid data */
+        Buffer[2] = 0x12;           /* Reserved for Command byte 1 */
+        Buffer[3] = 0x34;           /* Reserved for Command byte 2 */
         return (AE_OK);
 
 
