@@ -429,14 +429,27 @@ OpnDoFieldCommon (
                 Next->Asl.ParseOpcode = PARSEOP_DEFAULT_ARG;
                 PkgLengthNode->Asl.ParseOpcode = PARSEOP_DEFAULT_ARG;
             }
-            else if ((NewBitOffset == CurrentBitOffset) && Gbl_OptimizeTrivialParseNodes)
+            else if (NewBitOffset == CurrentBitOffset)
             {
                 /*
-                 * Offset is redundant; we don't need to output an
-                 * offset opcode. Just set these nodes to default
+                 * This Offset() operator is redundant and not needed,
+                 * because the offset value is the same as the current
+                 * offset within the field.
                  */
-                Next->Asl.ParseOpcode = PARSEOP_DEFAULT_ARG;
-                PkgLengthNode->Asl.ParseOpcode = PARSEOP_DEFAULT_ARG;
+                AslError (ASL_REMARK, ASL_MSG_OFFSET, PkgLengthNode, NULL);
+
+                if (Gbl_OptimizeTrivialParseNodes)
+                {
+                    /*
+                     * Optimize this Offset() operator by removing/ignoring
+                     * it. Set the related nodes to default.
+                     */
+                    Next->Asl.ParseOpcode = PARSEOP_DEFAULT_ARG;
+                    PkgLengthNode->Asl.ParseOpcode = PARSEOP_DEFAULT_ARG;
+
+                    AslError (ASL_OPTIMIZATION, ASL_MSG_OFFSET, PkgLengthNode,
+                        "Optimizer has removed statement");
+                }
             }
             else
             {
