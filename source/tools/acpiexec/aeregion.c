@@ -440,6 +440,23 @@ AeRegionHandler (
         /* Now perform the "normal" SystemMemory handling, for AcpiExec only */
         break;
 
+    /*
+     * PCC operation region will write the entire subspace's data and expect
+     * a response from the hardware. For acpiexec, we'll fill the buffer with
+     * default values. Note: ASLTS will depend on these values.
+     */
+    case ACPI_ADR_SPACE_PLATFORM_COMM: /* ACPI 6.3 */
+        if (AcpiGbl_DisplayRegionAccess)
+        {
+            AcpiOsPrintf ("AcpiExec: PCC Write : Addr %.4X Width %X\n",
+                (UINT32) Address, BitWidth);
+        }
+        for (i = 0; i < Length; ++i)
+        {
+	     Buffer[i] = i;
+        }
+	return (AE_OK);
+
     default:
         break;
     }
