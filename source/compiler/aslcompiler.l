@@ -566,7 +566,7 @@ NamePathTail                [.]{NameSeg}
 
     /* ExtendedAttribKeyword: Bus attributes, AccessAs operator (ACPI 5.0) */
 
-"AttribBytes"               { count (0); return (PARSEOP_ACCESSATTRIB_MULTIBYTE); }
+"AttribBytes"               { count (0); return (PARSEOP_ACCESSATTRIB_BYTES); }
 "AttribRawBytes"            { count (0); return (PARSEOP_ACCESSATTRIB_RAW_BYTES); }
 "AttribRawProcessBytes"     { count (0); return (PARSEOP_ACCESSATTRIB_RAW_PROCESS); }
 

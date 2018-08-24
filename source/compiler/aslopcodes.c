@@ -466,9 +466,9 @@ OpcDoAccessAs (
     /* Only a few AccessAttributes support AccessLength */
 
     Attribute = (UINT8) AttribOp->Asl.Value.Integer;
-    if ((Attribute != AML_FIELD_ATTRIB_MULTIBYTE) &&
+    if ((Attribute != AML_FIELD_ATTRIB_BYTES) &&
         (Attribute != AML_FIELD_ATTRIB_RAW_BYTES) &&
-        (Attribute != AML_FIELD_ATTRIB_RAW_PROCESS))
+        (Attribute != AML_FIELD_ATTRIB_RAW_PROCESS_BYTES))
     {
         return;
     }
