@@ -607,9 +607,11 @@
         CreateByteField (BUFF, 0x00, OB10)   /* Status (Byte) */
         CreateByteField (BUFF, 0x01, LEN0)   /* Length (Byte) */
         CreateByteField (BUFF, 0x02, DAT0)
+
         CreateByteField (BUFR, 0x00, OB11)
         CreateByteField (BUFR, 0x01, LEN1)
         CreateByteField (BUFR, 0x02, DAT1)
+
         /* Signal device (e.g. ON) */
 
         BUFR = FLD0 = BUFF /* \M751.BUFF */      /* Invoke Write Quick transaction */
@@ -628,9 +630,9 @@
             ERR (Arg0, Z143, __LINE__, 0x00, 0x00, DAT0, 0x00)
         }
 
-        If ((OB11 != 0x7A))
+        If ((OB11 != 0x00))
         {
-            ERR (Arg0, Z143, __LINE__, 0x00, 0x00, OB11, 0x7A)
+            ERR (Arg0, Z143, __LINE__, 0x00, 0x00, OB11, 0x00)
         }
 
         If ((LEN1 != 0x00))
@@ -638,20 +640,16 @@
             ERR (Arg0, Z143, __LINE__, 0x00, 0x00, LEN1, 0x00)
         }
 
-        If ((DAT1 != 0x00))
-        {
-            ERR (Arg0, Z143, __LINE__, 0x00, 0x00, DAT1, 0x00)
-        }
-
         OB10 = 0x00
         LEN0 = 0xFF
         DAT0 = 0x00
+
         /* Signal device (e.g. OFF) */
 
         BUFF = FLD0                   /* Invoke Read Quick transaction */ /* \M751.FLD0 */
-        If ((OB10 != 0x7A))
+        If ((OB10 != 0x00))
         {
-            ERR (Arg0, Z143, __LINE__, 0x00, 0x00, OB10, 0x7A)
+            ERR (Arg0, Z143, __LINE__, 0x00, 0x00, OB10, 0x00)
         }
 
         If ((LEN0 != 0x00))
@@ -663,7 +661,7 @@
         /* Note: Since LEN0 should be zero there's no need to check DAT0 */
     }
 
-    /* Read/Write Quick (SMBQuick) */
+    /* AttribSendReceive */
     /* m752(CallChain) */
     /* CallChain: String */
     Method (M752, 1, Serialized)
@@ -683,13 +681,15 @@
         CreateByteField (BUFF, 0x00, OB10)   /* Status (Byte) */
         CreateByteField (BUFF, 0x01, LEN0)   /* Length (Byte) */
         CreateByteField (BUFF, 0x02, DAT0)
+
         CreateByteField (BUFR, 0x00, OB11)
         CreateByteField (BUFR, 0x01, LEN1)
         CreateByteField (BUFR, 0x02, DAT1)
+
         /* Send the byte '0x16' to the device */
 
         OB10 = 0x00
-        LEN0 = 0x00
+        LEN0 = 0x01
         DAT0 = 0x16                   /* Save 0x16 into the data buffer */
         BUFR = FLD0 = BUFF /* \M752.BUFF */      /* Invoke a Send Byte transaction */
         If ((OB10 != 0x00))
@@ -697,9 +697,9 @@
             ERR (Arg0, Z143, __LINE__, 0x00, 0x00, OB10, 0x00)
         }
 
-        If ((LEN0 != 0x00))
+        If ((LEN0 != 0x01))
         {
-            ERR (Arg0, Z143, __LINE__, 0x00, 0x00, LEN0, 0x00)
+            ERR (Arg0, Z143, __LINE__, 0x00, 0x00, LEN0, 0x01)
         }
 
         If ((DAT0 != 0x16))
@@ -707,27 +707,27 @@
             ERR (Arg0, Z143, __LINE__, 0x00, 0x00, DAT0, 0x16)
         }
 
-        If ((OB11 != 0x7A))
+        If ((OB11 != 0x00))
         {
-            ERR (Arg0, Z143, __LINE__, 0x00, 0x00, OB11, 0x7A)
+            ERR (Arg0, Z143, __LINE__, 0x00, 0x00, OB11, 0x00)
         }
 
-        If ((LEN1 != 0x00))
+        If ((LEN1 != 0x01))
         {
-            ERR (Arg0, Z143, __LINE__, 0x00, 0x00, LEN1, 0x00)
+            ERR (Arg0, Z143, __LINE__, 0x00, 0x00, LEN1, 0x01)
         }
 
-        If ((DAT1 != 0x16))
+        If ((DAT1 != 0xA0))
         {
-            ERR (Arg0, Z143, __LINE__, 0x00, 0x00, DAT1, 0x00)
+            ERR (Arg0, Z143, __LINE__, 0x00, 0x00, DAT1, 0xA0)
         }
 
         /* Receive a byte of data from the device */
 
         BUFF = FLD0                   /* Invoke a Receive Byte transaction */ /* \M752.FLD0 */
-        If ((OB10 != 0x7A))
+        If ((OB10 != 0x00))
         {
-            ERR (Arg0, Z143, __LINE__, 0x00, 0x00, OB10, 0x7A)
+            ERR (Arg0, Z143, __LINE__, 0x00, 0x00, OB10, 0x00)
         }
 
         If ((LEN0 != 0x01))
@@ -763,13 +763,14 @@
         CreateByteField (BUFF, 0x00, OB10)   /* Status (Byte) */
         CreateByteField (BUFF, 0x01, LEN0)   /* Length (Byte) */
         CreateByteField (BUFF, 0x02, DAT0)
+
         CreateByteField (BUFR, 0x00, OB11)
         CreateByteField (BUFR, 0x01, LEN1)
         CreateByteField (BUFR, 0x02, DAT1)
         /* Write the byte '0x16' to the device using command value 2 */
 
         OB10 = 0x00
-        LEN0 = 0x00
+        LEN0 = 0x01
         DAT0 = 0x16                   /* Save 0x16 into the data buffer */
         BUFR = FLD2 = BUFF /* \M753.BUFF */      /* Invoke a Write Byte transaction */
         If ((OB10 != 0x00))
@@ -777,9 +778,9 @@
             ERR (Arg0, Z143, __LINE__, 0x00, 0x00, OB10, 0x00)
         }
 
-        If ((LEN0 != 0x00))
+        If ((LEN0 != 0x01))
         {
-            ERR (Arg0, Z143, __LINE__, 0x00, 0x00, LEN0, 0x00)
+            ERR (Arg0, Z143, __LINE__, 0x00, 0x00, LEN0, 0x01)
         }
 
         If ((DAT0 != 0x16))
@@ -787,27 +788,27 @@
             ERR (Arg0, Z143, __LINE__, 0x00, 0x00, DAT0, 0x16)
         }
 
-        If ((OB11 != 0x7A))
+        If ((OB11 != 0x00))
         {
-            ERR (Arg0, Z143, __LINE__, 0x00, 0x00, OB11, 0x7A)
+            ERR (Arg0, Z143, __LINE__, 0x00, 0x00, OB11, 0x00)
         }
 
-        If ((LEN1 != 0x00))
+        If ((LEN1 != 0x01))
         {
-            ERR (Arg0, Z143, __LINE__, 0x00, 0x00, LEN1, 0x00)
+            ERR (Arg0, Z143, __LINE__, 0x00, 0x00, LEN1, 0x01)
         }
 
-        If ((DAT1 != 0x16))
+        If ((DAT1 != 0xA0))
         {
-            ERR (Arg0, Z143, __LINE__, 0x00, 0x00, DAT1, 0x00)
+            ERR (Arg0, Z143, __LINE__, 0x00, 0x00, DAT1, 0xA0)
         }
 
         /* Read a byte of data from the device using command value 1 */
 
         BUFF = FLD1                   /* Invoke a Read Byte transaction */ /* \M753.FLD1 */
-        If ((OB10 != 0x7A))
+        If ((OB10 != 0x00))
         {
-            ERR (Arg0, Z143, __LINE__, 0x00, 0x00, OB10, 0x7A)
+            ERR (Arg0, Z143, __LINE__, 0x00, 0x00, OB10, 0x00)
         }
 
         If ((LEN0 != 0x01))
@@ -843,6 +844,7 @@
         CreateByteField (BUFF, 0x00, OB10)   /* Status (Byte) */
         CreateByteField (BUFF, 0x01, LEN0)   /* Length (Byte) */
         CreateWordField (BUFF, 0x02, DAT0)
+
         CreateByteField (BUFR, 0x00, OB11)
         CreateByteField (BUFR, 0x01, LEN1)
         CreateWordField (BUFR, 0x02, DAT1)
@@ -864,30 +866,30 @@
 
         If ((DAT0 != 0x5416))
         {
-            ERR (Arg0, Z143, __LINE__, 0x00, 0x00, DAT0, 0x16)
+            ERR (Arg0, Z143, __LINE__, 0x00, 0x00, DAT0, 0x5416)
         }
 
-        If ((OB11 != 0x7A))
+        If ((OB11 != 0x00))
         {
-            ERR (Arg0, Z143, __LINE__, 0x00, 0x00, OB11, 0x7A)
+            ERR (Arg0, Z143, __LINE__, 0x00, 0x00, OB11, 0x00)
         }
 
-        If ((LEN1 != 0x00))
+        If ((LEN1 != 0x02))
         {
-            ERR (Arg0, Z143, __LINE__, 0x00, 0x00, LEN1, 0x00)
+            ERR (Arg0, Z143, __LINE__, 0x00, 0x00, LEN1, 0x02)
         }
 
-        If ((DAT1 != 0x5416))
+        If ((DAT1 != 0xA1A0))
         {
-            ERR (Arg0, Z143, __LINE__, 0x00, 0x00, DAT1, 0x00)
+            ERR (Arg0, Z143, __LINE__, 0x00, 0x00, DAT1, 0xA1A0)
         }
 
         /* Read two bytes of data from the device using command value 1 */
 
         BUFF = FLD1                   /* Invoke a Read Word transaction */ /* \M754.FLD1 */
-        If ((OB10 != 0x7A))
+        If ((OB10 != 0x00))
         {
-            ERR (Arg0, Z143, __LINE__, 0x00, 0x00, OB10, 0x7A)
+            ERR (Arg0, Z143, __LINE__, 0x00, 0x00, OB10, 0x00)
         }
 
         If ((LEN0 != 0x02))
@@ -918,78 +920,30 @@
 
         /* Create the SMBus data buffer */
 
-        Name (BUFF, Buffer (0x22){})            /* Create SMBus data buffer as BUFF */
-        Name (BUFR, Buffer (0x22){})            /* Create SMBus result buffer */
-        CreateByteField (BUFF, 0x00, OB10)   /* Status (Byte) */
-        CreateByteField (BUFF, 0x01, LEN0)   /* Length (Byte) */
-        CreateField (BUFF, 0x10, 0x0100, DAT0)
-        CreateByteField (BUFR, 0x00, OB11)
-        CreateByteField (BUFR, 0x01, LEN1)
-        CreateField (BUFR, 0x10, 0x0100, DAT1)
-        /* Write the block 'TEST' to the device using command value 2 */
+        Name (BUF1, Buffer (24){})              /* Create SMBus result buffer */
+        CreateByteField (BUF1, 0x00, STA1)
+        CreateByteField (BUF1, 0x01, LEN1)
+        CreateField (BUF1, 0x10, 0x0080, DAT1)
 
-        OB10 = 0x00
-        LEN0 = 0x04
-        DAT0 = "TEST"                 /* Save 'TEST' into the data buffer */
-        BUFR = FLD2 = BUFF /* \M755.BUFF */      /* Invoke a Write Block transaction */
-        If ((OB10 != 0x00))
+        // Read block of data from the device using command value 0
+
+        BUF1 = FLD0
+        Printf ("AttribBlock, received: %o", BUF1)
+
+        If ((STA1 != 0x00))
         {
-            ERR (Arg0, Z143, __LINE__, 0x00, 0x00, OB10, 0x00)
+            ERR (Arg0, Z143, __LINE__, 0x00, 0x00, STA1, 0x00)
         }
 
-        If ((LEN0 != 0x04))
-        {
-            ERR (Arg0, Z143, __LINE__, 0x00, 0x00, LEN0, 0x04)
-        }
+        // Perform write-then-read
 
-        Local0 = Buffer (0x20)
-            {
-                "TEST"
-            }
-        If ((DAT0 != Local0))
-        {
-            ERR (Arg0, Z143, __LINE__, 0x00, 0x00, DAT0, Local0)
-        }
+        STA1 = 0x00
+        LEN1 = 16
+        DAT1 = Buffer() {1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16}
+        Printf ("AttribBlock, sent:     %o", BUF1)
 
-        If ((OB11 != 0x7A))
-        {
-            ERR (Arg0, Z143, __LINE__, 0x00, 0x00, OB11, 0x7A)
-        }
-
-        If ((LEN1 != 0x00))
-        {
-            ERR (Arg0, Z143, __LINE__, 0x00, 0x00, LEN1, 0x00)
-        }
-
-        If ((DAT1 != Local0))
-        {
-            ERR (Arg0, Z143, __LINE__, 0x00, 0x00, DAT1, Local0)
-        }
-
-        /* Read block of data from the device using command value 1 */
-
-        BUFF = FLD1                   /* Invoke a Read Block transaction */ /* \M755.FLD1 */
-        If ((OB10 != 0x7A))
-        {
-            ERR (Arg0, Z143, __LINE__, 0x00, 0x00, OB10, 0x7A)
-        }
-
-        If ((LEN0 != 0x20))
-        {
-            ERR (Arg0, Z143, __LINE__, 0x00, 0x00, LEN0, 0x20)
-        }
-
-        Local1 = Buffer (0x20)
-            {
-                /* 0000 */  0xA0, 0xA1, 0xA2, 0xA3, 0xA4, 0xA5, 0xA6, 0xA7,  // ........
-                /* 0008 */  0xA8, 0xA9, 0xAA, 0xAB, 0xAC, 0xAD, 0xAE, 0xAF,  // ........
-                /* 0010 */  0xB0, 0xB1, 0xB2, 0xB3, 0xB4, 0xB5, 0xB6, 0xB7,  // ........
-                /* 0018 */  0xB8, 0xB9, 0xBA, 0xBB, 0xBC, 0xBD, 0xBE, 0xBF   // ........
-            }
-        If ((DAT0 != Local1))
-        {
-            ERR (Arg0, Z143, __LINE__, 0x00, 0x00, DAT0, Local1)
-        }
+        BUF1 = FLD2 = BUF1 /* \M75C.BUF1 */        /* Invoke a Send Byte transaction */
+        Printf ("AttribBlock, received: %o", BUF1)
     }
 
     /* Word Process Call (SMBProcessCall) */
@@ -1014,9 +968,11 @@
         CreateByteField (BUFF, 0x00, OB10)   /* Status (Byte) */
         CreateByteField (BUFF, 0x01, LEN0)   /* Length (Byte) */
         CreateWordField (BUFF, 0x02, DAT0)
+
         CreateByteField (BUFR, 0x00, OB11)
         CreateByteField (BUFR, 0x01, LEN1)
         CreateWordField (BUFR, 0x02, DAT1)
+
         /* Process Call with input value '0x5416' to the device using command value 1 */
 
         OB10 = 0x00
@@ -1038,9 +994,9 @@
             ERR (Arg0, Z143, __LINE__, 0x00, 0x00, DAT0, 0x16)
         }
 
-        If ((OB11 != 0x7A))
+        If ((OB11 != 0x00))
         {
-            ERR (Arg0, Z143, __LINE__, 0x00, 0x00, OB11, 0x7A)
+            ERR (Arg0, Z143, __LINE__, 0x00, 0x00, OB11, 0x00)
         }
 
         If ((LEN1 != 0x02))
@@ -1075,9 +1031,11 @@
         CreateByteField (BUFF, 0x00, OB10)   /* Status (Byte) */
         CreateByteField (BUFF, 0x01, LEN0)   /* Length (Byte) */
         CreateField (BUFF, 0x10, 0x0100, DAT0)
+
         CreateByteField (BUFR, 0x00, OB11)
         CreateByteField (BUFR, 0x01, LEN1)
         CreateField (BUFR, 0x10, 0x0100, DAT1)
+
         /* Process Call with input value "TEST" to the device using command value 1 */
 
         OB10 = 0x00
@@ -1103,9 +1061,9 @@
             ERR (Arg0, Z143, __LINE__, 0x00, 0x00, DAT0, Local0)
         }
 
-        If ((OB11 != 0x7A))
+        If ((OB11 != 0x00))
         {
-            ERR (Arg0, Z143, __LINE__, 0x00, 0x00, OB11, 0x7A)
+            ERR (Arg0, Z143, __LINE__, 0x00, 0x00, OB11, 0x00)
         }
 
         If ((LEN1 != 0x20))
@@ -1144,32 +1102,33 @@
          */
         /* Read/Write Quick (AttribQuick) */
         M758 (Arg0)
+
         /* Send/Receive Byte (AttribSendReceive) */
-
         M759 (Arg0)
+
         /* Read/Write Byte (AttribByte) */
-
         M75A (Arg0)
+
         /* Read/Write Word (AttribWord) */
-
         M75B (Arg0)
+
         /* Read/Write Block (AttribBlock) */
-
         M75C (Arg0)
+
         /* Word Process Call (AttribProcessCall) */
-
         M75D (Arg0)
-        /* Block Process Call (AttribBlockProcessCall) */
 
+        /* Block Process Call (AttribBlockProcessCall) */
         M75E (Arg0)
-        /* Next 3 types are used for GenericSerialBus only */
+
+        /* Next 3 types are exclusive to the GenericSerialBus */
         /* Read/Write N Bytes (AttribBytes) */
         M75F (Arg0)
+
         /* Raw Read/Write N Bytes (AttribRawBytes) */
-
         M760 (Arg0)
-        /* Raw Process Call (AttribRawProcessBytes) */
 
+        /* Raw Process Call (AttribRawProcessBytes) */
         M761 (Arg0)
     }
 
@@ -1183,6 +1142,7 @@
         Field (GSBD, BufferAcc, NoLock, Preserve)
         {
             AccessAs (BufferAcc, AttribQuick),
+
             /* A Connection is required */
 
             Connection (
@@ -1191,73 +1151,33 @@
                     0xEE, ResourceConsumer, , Exclusive,
                     )
             ),
-            FLD0,   8
-        }                            /* Virtual register at command value 0. */
+            FLD0,   8   /* Virtual register at command value 0. */
+        }
 
         /* Create the GenericSerialBus data buffer */
 
-        Name (BUFF, Buffer (0x22){})            /* Create GenericSerialBus data buffer as BUFF */
-        Name (BUFR, Buffer (0x22){})            /* Create GenericSerialBus result buffer */
-        CreateByteField (BUFF, 0x00, OB10)   /* Status (Byte) */
-        CreateByteField (BUFF, 0x01, LEN0)   /* Length (Byte) */
-        CreateByteField (BUFF, 0x02, DAT0)
-        CreateByteField (BUFR, 0x00, OB11)
-        CreateByteField (BUFR, 0x01, LEN1)
-        CreateByteField (BUFR, 0x02, DAT1)
-        /* Signal device (e.g. ON) */
+        Name (BUF0, Buffer (2){})               /* Create GenericSerialBus data buffer as BUF0 */
+        CreateByteField (BUF0, 0x00, STA0)      /* Status (Byte) */
+        CreateByteField (BUF0, 0x01, LEN0)      /* Length (Byte) */
 
-        BUFR = FLD0 = BUFF /* \M758.BUFF */      /* Invoke Write Quick transaction */
-        If ((OB10 != 0x00))
-        {
-            ERR (Arg0, Z143, __LINE__, 0x00, 0x00, OB10, 0x00)
-        }
-
-        If ((LEN0 != 0x00))
-        {
-            ERR (Arg0, Z143, __LINE__, 0x00, 0x00, LEN0, 0x00)
-        }
-
-        If ((DAT0 != 0x00))
-        {
-            ERR (Arg0, Z143, __LINE__, 0x00, 0x00, DAT0, 0x00)
-        }
-
-        If ((OB11 != 0x7A))
-        {
-            ERR (Arg0, Z143, __LINE__, 0x00, 0x00, OB11, 0x7A)
-        }
-
-        If ((LEN1 != 0x00))
-        {
-            ERR (Arg0, Z143, __LINE__, 0x00, 0x00, LEN1, 0x00)
-        }
-
-        If ((DAT1 != 0x00))
-        {
-            ERR (Arg0, Z143, __LINE__, 0x00, 0x00, DAT1, 0x00)
-        }
-
-        OB10 = 0x00
-        LEN0 = 0xFF
-        DAT0 = 0x00
         /* Signal device (e.g. OFF) */
 
-        BUFF = FLD0                   /* Invoke Read Quick transaction */ /* \M758.FLD0 */
-        If ((OB10 != 0x7A))
+        BUF0 = FLD0 /* \M758.BUF0 */            /* Invoke Read Quick transaction */
+        Printf ("AttribQuick, received: %o", BUF0)
+
+        If ((STA0 != 0x00))
         {
-            ERR (Arg0, Z143, __LINE__, 0x00, 0x00, OB10, 0x7A)
+            ERR (Arg0, Z143, __LINE__, 0x00, 0x00, STA0, 0x00)
         }
 
-        If ((LEN0 != 0x00))
-        {
-            /* Length is zero for Quick operations */
+        /* Signal device (e.g. ON) */
 
-            ERR (Arg0, Z143, __LINE__, 0x00, 0x00, LEN0, 0x00)
-        }
-        /* Note: Since LEN0 should be zero there's no need to check DAT0 */
+        LEN0 = 0
+        FLD0 = BUF0                             /* Invoke Write Quick transaction */
+        Printf ("AttribQuick, sent:     %o", BUF0)
     }
 
-    /* Read/Write Quick (AttribQuick) */
+    /* AttribSendReceive */
     /* m759(CallChain) */
     /* CallChain: String */
     Method (M759, 1, Serialized)
@@ -1267,6 +1187,7 @@
         Field (GSBD, BufferAcc, NoLock, Preserve)
         {
             AccessAs (BufferAcc, AttribSendReceive),
+
             /* A Connection is required */
 
             Connection (
@@ -1275,72 +1196,46 @@
                     0xEE, ResourceConsumer, , Exclusive,
                     )
             ),
-            FLD0,   8
-        }                                /* Virtual register at command value 0. */
+            FLD0,   8                           /* Virtual register at command value 0. */
+        }
 
         /* Create the GenericSerialBus data buffer */
 
-        Name (BUFF, Buffer (0x22){})            /* Create GenericSerialBus data buffer as BUFF */
-        Name (BUFR, Buffer (0x22){})            /* Create GenericSerialBus result buffer */
-        CreateByteField (BUFF, 0x00, OB10)  /* Status (Byte) */
-        CreateByteField (BUFF, 0x01, LEN0)  /* Length (Byte) */
-        CreateByteField (BUFF, 0x02, DAT0)
-        CreateByteField (BUFR, 0x00, OB11)
-        CreateByteField (BUFR, 0x01, LEN1)
-        CreateByteField (BUFR, 0x02, DAT1)
-        /* Send the byte '0x16' to the device */
+        Name (BUF0, Buffer (3){})               /* Create GenericSerialBus data buffer as BUF0 */
+        CreateByteField (BUF0, 0x00, STA0)      /* Status (Byte) */
+        CreateByteField (BUF0, 0x01, LEN0)      /* Length (Byte) */
+        CreateByteField (BUF0, 0x02, DAT0)
 
-        OB10 = 0x00
-        LEN0 = 0x00
-        DAT0 = 0x16                   /* Save 0x16 into the data buffer */
-        BUFR = FLD0 = BUFF /* \M759.BUFF */      /* Invoke a Send Byte transaction */
-        If ((OB10 != 0x00))
-        {
-            ERR (Arg0, Z143, __LINE__, 0x00, 0x00, OB10, 0x00)
-        }
-
-        If ((LEN0 != 0x00))
-        {
-            ERR (Arg0, Z143, __LINE__, 0x00, 0x00, LEN0, 0x00)
-        }
-
-        If ((DAT0 != 0x16))
-        {
-            ERR (Arg0, Z143, __LINE__, 0x00, 0x00, DAT0, 0x16)
-        }
-
-        If ((OB11 != 0x7A))
-        {
-            ERR (Arg0, Z143, __LINE__, 0x00, 0x00, OB11, 0x7A)
-        }
-
-        If ((LEN1 != 0x00))
-        {
-            ERR (Arg0, Z143, __LINE__, 0x00, 0x00, LEN1, 0x00)
-        }
-
-        If ((DAT1 != 0x16))
-        {
-            ERR (Arg0, Z143, __LINE__, 0x00, 0x00, DAT1, 0x00)
-        }
+        Name (BUF1, Buffer (3){})               /* Create GenericSerialBus result buffer */
+        CreateByteField (BUF1, 0x00, STA1)
+        CreateByteField (BUF1, 0x01, LEN1)
+        CreateByteField (BUF1, 0x02, DAT1)
 
         /* Receive a byte of data from the device */
 
-        BUFF = FLD0                   /* Invoke a Receive Byte transaction */ /* \M759.FLD0 */
-        If ((OB10 != 0x7A))
+        BUF1 = FLD0
+        Printf ("AttribSendReceive, received: %o", BUF1)
+
+        If ((STA1 != 0x00))
         {
-            ERR (Arg0, Z143, __LINE__, 0x00, 0x00, OB10, 0x7A)
+            ERR (Arg0, Z143, __LINE__, 0x00, 0x00, STA1, 0x00)
+        }
+        If ((LEN1 != 0x01))
+        {
+            ERR (Arg0, Z143, __LINE__, 0x00, 0x00, LEN1, 0x01)
+        }
+        If ((DAT1 != 0xA0))                 /* 0xA0 is from AcpiExec */
+        {
+            ERR (Arg0, Z143, __LINE__, 0x00, 0x00, DAT1, 0xA0)
         }
 
-        If ((LEN0 != 0x01))
-        {
-            ERR (Arg0, Z143, __LINE__, 0x00, 0x00, LEN0, 0x01)
-        }
+        /* Send the byte '0x16' to the device */
 
-        If ((DAT0 != 0xA0))
-        {
-            ERR (Arg0, Z143, __LINE__, 0x00, 0x00, DAT0, 0xA0)
-        }
+        STA0 = 0x00
+        LEN0 = 0x01
+        DAT0 = 0x16                         /* Save 0x16 into the data buffer */
+        FLD0 = BUF0 /* \M759.BUF0 */        /* Invoke a Send Byte transaction */
+        Printf ("AttribSendReceive, sent:     %o", BUF0)
     }
 
     /* Read/Write Byte (AttribByte) */
@@ -1361,74 +1256,43 @@
                     0xEE, ResourceConsumer, , Exclusive,
                     )
             ),
-            FLD0,                        /* Virtual register at command value 0. */   8,
-            FLD1,                        /* Virtual register at command value 1. */   8,
-            FLD2,   8
-        }                        /* Virtual register at command value 2. */
+            FLD0,   8,                      /* Virtual register at command value 0. */
+            FLD1,   8,                      /* Virtual register at command value 1. */
+            FLD2,   8                       /* Virtual register at command value 2. */
+        }
 
         /* Create the GenericSerialBus data buffer */
 
-        Name (BUFF, Buffer (0x22){})            /* Create GenericSerialBus data buffer as BUFF */
-        Name (BUFR, Buffer (0x22){})            /* Create GenericSerialBus result buffer */
-        CreateByteField (BUFF, 0x00, OB10)  /* Status (Byte) */
-        CreateByteField (BUFF, 0x01, LEN0)  /* Length (Byte) */
-        CreateByteField (BUFF, 0x02, DAT0)
-        CreateByteField (BUFR, 0x00, OB11)
-        CreateByteField (BUFR, 0x01, LEN1)
-        CreateByteField (BUFR, 0x02, DAT1)
-        /* Write the byte '0x16' to the device using command value 2 */
+        Name (BUF1, Buffer (3){})           /* Create GenericSerialBus result buffer */
+        CreateByteField (BUF1, 0x00, STA1)
+        CreateByteField (BUF1, 0x01, LEN1)
+        CreateByteField (BUF1, 0x02, DAT1)
 
-        OB10 = 0x00
-        LEN0 = 0x00
-        DAT0 = 0x16                   /* Save 0x16 into the data buffer */
-        BUFR = FLD2 = BUFF /* \M75A.BUFF */      /* Invoke a Write Byte transaction */
-        If ((OB10 != 0x00))
+        /* Receive a byte of data from the device, command value 1 */
+
+        BUF1 = FLD1
+        Printf ("AttribByte, received: %o", BUF1)
+
+        If ((STA1 != 0x00))
         {
-            ERR (Arg0, Z143, __LINE__, 0x00, 0x00, OB10, 0x00)
+            ERR (Arg0, Z143, __LINE__, 0x00, 0x00, STA1, 0x00)
+        }
+        If ((LEN1 != 0x01))
+        {
+            ERR (Arg0, Z143, __LINE__, 0x00, 0x00, LEN1, 0x01)
+        }
+        If ((DAT1 != 0xA0))                 /* 0xA0 is from AcpiExec */
+        {
+            ERR (Arg0, Z143, __LINE__, 0x00, 0x00, DAT1, 0xA0)
         }
 
-        If ((LEN0 != 0x00))
-        {
-            ERR (Arg0, Z143, __LINE__, 0x00, 0x00, LEN0, 0x00)
-        }
+        /* Send the byte '0x16' to the device, command value 2 */
 
-        If ((DAT0 != 0x16))
-        {
-            ERR (Arg0, Z143, __LINE__, 0x00, 0x00, DAT0, 0x16)
-        }
-
-        If ((OB11 != 0x7A))
-        {
-            ERR (Arg0, Z143, __LINE__, 0x00, 0x00, OB11, 0x7A)
-        }
-
-        If ((LEN1 != 0x00))
-        {
-            ERR (Arg0, Z143, __LINE__, 0x00, 0x00, LEN1, 0x00)
-        }
-
-        If ((DAT1 != 0x16))
-        {
-            ERR (Arg0, Z143, __LINE__, 0x00, 0x00, DAT1, 0x00)
-        }
-
-        /* Read a byte of data from the device using command value 1 */
-
-        BUFF = FLD1                   /* Invoke a Read Byte transaction */ /* \M75A.FLD1 */
-        If ((OB10 != 0x7A))
-        {
-            ERR (Arg0, Z143, __LINE__, 0x00, 0x00, OB10, 0x7A)
-        }
-
-        If ((LEN0 != 0x01))
-        {
-            ERR (Arg0, Z143, __LINE__, 0x00, 0x00, LEN0, 0x01)
-        }
-
-        If ((DAT0 != 0xA0))
-        {
-            ERR (Arg0, Z143, __LINE__, 0x00, 0x00, DAT0, 0xA0)
-        }
+        STA1 = 0x00
+        LEN1 = 0x01
+        DAT1 = 0x16                         /* Save 0x16 into the data buffer */
+        FLD2 = BUF1 /* \M75A.BUF1 */        /* Invoke a Send Byte transaction */
+        Printf ("AttribByte, sent:     %o", BUF1)
     }
 
     /* Read/Write Word (AttribWord) */
@@ -1441,6 +1305,7 @@
         Field (GSBD, BufferAcc, NoLock, Preserve)
         {
             AccessAs (BufferAcc, AttribWord),
+
             /* A Connection is required */
 
             Connection (
@@ -1449,74 +1314,43 @@
                     0xEE, ResourceConsumer, , Exclusive,
                     )
             ),
-            FLD0,                        /* Virtual register at command value 0. */   8,
-            FLD1,                        /* Virtual register at command value 1. */   8,
-            FLD2,   8
-        }                        /* Virtual register at command value 2. */
+            FLD0,   8,                      /* Virtual register at command value 0. */
+            FLD1,   8,                      /* Virtual register at command value 1. */
+            FLD2,   8                       /* Virtual register at command value 2. */
+        }
 
         /* Create the GenericSerialBus data buffer */
 
-        Name (BUFF, Buffer (0x22){})            /* Create GenericSerialBus data buffer as BUFF */
-        Name (BUFR, Buffer (0x22){})            /* Create GenericSerialBus result buffer */
-        CreateByteField (BUFF, 0x00, OB10)  /* Status (Byte) */
-        CreateByteField (BUFF, 0x01, LEN0)  /* Length (Byte) */
-        CreateWordField (BUFF, 0x02, DAT0)
-        CreateByteField (BUFR, 0x00, OB11)
-        CreateByteField (BUFR, 0x01, LEN1)
-        CreateWordField (BUFR, 0x02, DAT1)
-        /* Write the word '0x5416' to the device using command value 2 */
+        Name (BUF1, Buffer (4){})           /* Create GenericSerialBus result buffer */
+        CreateByteField (BUF1, 0x00, STA1)
+        CreateByteField (BUF1, 0x01, LEN1)
+        CreateWordField (BUF1, 0x02, DAT1)
 
-        OB10 = 0x00
-        LEN0 = 0x00
-        DAT0 = 0x5416                 /* Save 0x5416 into the data buffer */
-        BUFR = FLD2 = BUFF /* \M75B.BUFF */      /* Invoke a Write Word transaction */
-        If ((OB10 != 0x00))
+        /* Receive a word of data from the device, command value 1 */
+
+        BUF1 = FLD1
+        Printf ("AttribWord, received: %o", BUF1)
+
+        If ((STA1 != 0x00))
         {
-            ERR (Arg0, Z143, __LINE__, 0x00, 0x00, OB10, 0x00)
+            ERR (Arg0, Z143, __LINE__, 0x00, 0x00, STA1, 0x00)
+        }
+        If ((LEN1 != 0x02))
+        {
+            ERR (Arg0, Z143, __LINE__, 0x00, 0x00, LEN1, 0x02)
+        }
+        If ((DAT1 != 0xA1A0))               /* 0xA1A0 is from AcpiExec */
+        {
+            ERR (Arg0, Z143, __LINE__, 0x00, 0x00, DAT1, 0xA1A0)
         }
 
-        If ((LEN0 != 0x00))
-        {
-            ERR (Arg0, Z143, __LINE__, 0x00, 0x00, LEN0, 0x00)
-        }
+        /* Send the word '0x5678' to the device, command value 2 */
 
-        If ((DAT0 != 0x5416))
-        {
-            ERR (Arg0, Z143, __LINE__, 0x00, 0x00, DAT0, 0x16)
-        }
-
-        If ((OB11 != 0x7A))
-        {
-            ERR (Arg0, Z143, __LINE__, 0x00, 0x00, OB11, 0x7A)
-        }
-
-        If ((LEN1 != 0x00))
-        {
-            ERR (Arg0, Z143, __LINE__, 0x00, 0x00, LEN1, 0x00)
-        }
-
-        If ((DAT1 != 0x5416))
-        {
-            ERR (Arg0, Z143, __LINE__, 0x00, 0x00, DAT1, 0x00)
-        }
-
-        /* Read two bytes of data from the device using command value 1 */
-
-        BUFF = FLD1                   /* Invoke a Read Word transaction */ /* \M75B.FLD1 */
-        If ((OB10 != 0x7A))
-        {
-            ERR (Arg0, Z143, __LINE__, 0x00, 0x00, OB10, 0x7A)
-        }
-
-        If ((LEN0 != 0x02))
-        {
-            ERR (Arg0, Z143, __LINE__, 0x00, 0x00, LEN0, 0x02)
-        }
-
-        If ((DAT0 != 0xA1A0))
-        {
-            ERR (Arg0, Z143, __LINE__, 0x00, 0x00, DAT0, 0xA1A0)
-        }
+        STA1 = 0x00
+        LEN1 = 0x02
+        DAT1 = 0x5678                       /* Save 0x16 into the data buffer */
+        FLD2 = BUF1 /* \M75B.BUF1 */        /* Invoke a Send Byte transaction */
+        Printf ("AttribWord, sent:     %o", BUF1)
     }
 
     /* Read/Write Block (AttribBlock) */
@@ -1529,6 +1363,7 @@
         Field (GSBD, BufferAcc, NoLock, Preserve)
         {
             AccessAs (BufferAcc, AttribBlock),
+
             /* A Connection is required */
 
             Connection (
@@ -1537,85 +1372,37 @@
                     0xEE, ResourceConsumer, , Exclusive,
                     )
             ),
-            FLD0,                            /* Virtual register at command value 0. */   8,
-            FLD1,                            /* Virtual register at command value 1. */   8,
-            FLD2,   8
-        }                            /* Virtual register at command value 2. */
+            FLD0,   8,                          /* Virtual register at command value 0. */
+            FLD1,   8,                          /* Virtual register at command value 1. */
+            FLD2,   8                           /* Virtual register at command value 2. */
+        }
 
         /* Create the GenericSerialBus data buffer */
 
-        Name (BUFF, Buffer (0x22){})            /* Create GenericSerialBus data buffer as BUFF */
-        Name (BUFR, Buffer (0x22){})            /* Create GenericSerialBus result buffer */
-        CreateByteField (BUFF, 0x00, OB10)  /* Status (Byte) */
-        CreateByteField (BUFF, 0x01, LEN0)  /* Length (Byte) */
-        CreateField (BUFF, 0x10, 0x0100, DAT0)
-        CreateByteField (BUFR, 0x00, OB11)
-        CreateByteField (BUFR, 0x01, LEN1)
-        CreateField (BUFR, 0x10, 0x0100, DAT1)
-        /* Write the block 'TEST' to the device using command value 2 */
+        Name (BUF1, Buffer (24){})              /* Create GenericSerialBus result buffer */
+        CreateByteField (BUF1, 0x00, STA1)
+        CreateByteField (BUF1, 0x01, LEN1)
+        CreateField (BUF1, 0x10, 0x0080, DAT1)
 
-        OB10 = 0x00
-        LEN0 = 0x04
-        DAT0 = "TEST"                 /* Save 'TEST' into the data buffer */
-        BUFR = FLD2 = BUFF /* \M75C.BUFF */      /* Invoke a Write Block transaction */
-        If ((OB10 != 0x00))
+        // Read block of data from the device using command value 0
+
+        BUF1 = FLD0
+        Printf ("AttribBlock, received: %o", BUF1)
+
+        If ((STA1 != 0x00))
         {
-            ERR (Arg0, Z143, __LINE__, 0x00, 0x00, OB10, 0x00)
+            ERR (Arg0, Z143, __LINE__, 0x00, 0x00, STA1, 0x00)
         }
 
-        If ((LEN0 != 0x04))
-        {
-            ERR (Arg0, Z143, __LINE__, 0x00, 0x00, LEN0, 0x04)
-        }
+        // Perform write-then-read
 
-        Local0 = Buffer (0x20)
-            {
-                "TEST"
-            }
-        If ((DAT0 != Local0))
-        {
-            ERR (Arg0, Z143, __LINE__, 0x00, 0x00, DAT0, Local0)
-        }
+        STA1 = 0x00
+        LEN1 = 16
+        DAT1 = Buffer() {1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16}
+        Printf ("AttribBlock, sent:     %o", BUF1)
 
-        If ((OB11 != 0x7A))
-        {
-            ERR (Arg0, Z143, __LINE__, 0x00, 0x00, OB11, 0x7A)
-        }
-
-        If ((LEN1 != 0x00))
-        {
-            ERR (Arg0, Z143, __LINE__, 0x00, 0x00, LEN1, 0x00)
-        }
-
-        If ((DAT1 != Local0))
-        {
-            ERR (Arg0, Z143, __LINE__, 0x00, 0x00, DAT1, Local0)
-        }
-
-        /* Read block of data from the device using command value 1 */
-
-        BUFF = FLD1                   /* Invoke a Read Block transaction */ /* \M75C.FLD1 */
-        If ((OB10 != 0x7A))
-        {
-            ERR (Arg0, Z143, __LINE__, 0x00, 0x00, OB10, 0x7A)
-        }
-
-        If ((LEN0 != 0x20))
-        {
-            ERR (Arg0, Z143, __LINE__, 0x00, 0x00, LEN0, 0x20)
-        }
-
-        Local1 = Buffer (0x20)
-            {
-                /* 0000 */  0xA0, 0xA1, 0xA2, 0xA3, 0xA4, 0xA5, 0xA6, 0xA7,  // ........
-                /* 0008 */  0xA8, 0xA9, 0xAA, 0xAB, 0xAC, 0xAD, 0xAE, 0xAF,  // ........
-                /* 0010 */  0xB0, 0xB1, 0xB2, 0xB3, 0xB4, 0xB5, 0xB6, 0xB7,  // ........
-                /* 0018 */  0xB8, 0xB9, 0xBA, 0xBB, 0xBC, 0xBD, 0xBE, 0xBF   // ........
-            }
-        If ((DAT0 != Local1))
-        {
-            ERR (Arg0, Z143, __LINE__, 0x00, 0x00, DAT0, Local1)
-        }
+        BUF1 = FLD2 = BUF1 /* \M75C.BUF1 */        /* Invoke a Send Byte transaction */
+        Printf ("AttribBlock, received: %o", BUF1)
     }
 
     /* Word Process Call (AttribProcessCall) */
@@ -1628,6 +1415,7 @@
         Field (GSBD, BufferAcc, NoLock, Preserve)
         {
             AccessAs (BufferAcc, AttribProcessCall),
+
             /* A Connection is required */
 
             Connection (
@@ -1636,55 +1424,39 @@
                     0xEE, ResourceConsumer, , Exclusive,
                     )
             ),
-            FLD0,                                /* Virtual register at command value 0. */   8,
-            FLD1,                                /* Virtual register at command value 1. */   8,
-            FLD2,   8
-        }                                /* Virtual register at command value 2. */
+            FLD0,   8,                          /* Virtual register at command value 0. */
+            FLD1,   8,                          /* Virtual register at command value 1. */
+            FLD2,   8                           /* Virtual register at command value 2. */
+        }
 
         /* Create the GenericSerialBus data buffer */
 
-        Name (BUFF, Buffer (0x22){})            /* Create GenericSerialBus data buffer as BUFF */
-        Name (BUFR, Buffer (0x22){})            /* Create GenericSerialBus result buffer */
-        CreateByteField (BUFF, 0x00, OB10)  /* Status (Byte) */
-        CreateByteField (BUFF, 0x01, LEN0)  /* Length (Byte) */
-        CreateWordField (BUFF, 0x02, DAT0)
-        CreateByteField (BUFR, 0x00, OB11)
-        CreateByteField (BUFR, 0x01, LEN1)
-        CreateWordField (BUFR, 0x02, DAT1)
+        Name (BUF0, Buffer (4){})               /* Create GenericSerialBus data buffer as BUF0 */
+        CreateByteField (BUF0, 0x00, STA0)      /* Status (Byte) */
+        CreateByteField (BUF0, 0x01, LEN0)      /* Length (Byte) */
+        CreateWordField (BUF0, 0x02, DAT0)
+
+        Name (BUF1, Buffer (0){})               /* Create GenericSerialBus result buffer */
+
         /* Process Call with input value '0x5416' to the device using command value 1 */
 
-        OB10 = 0x00
-        LEN0 = 0x00
-        DAT0 = 0x5416                 /* Save 0x5416 into the data buffer */
-        BUFR = FLD1 = BUFF /* \M75D.BUFF */      /* Invoke a Process Call transaction */
-        If ((OB10 != 0x00))
-        {
-            ERR (Arg0, Z143, __LINE__, 0x00, 0x00, OB10, 0x00)
-        }
+        STA0 = 0x00
+        LEN0 = 0x02
+        DAT0 = 0x5416                           /* Save 0x5416 into the data buffer */
+        Printf ("AttribProcessCall, sent:     %o", BUF0)
 
-        If ((LEN0 != 0x00))
-        {
-            ERR (Arg0, Z143, __LINE__, 0x00, 0x00, LEN0, 0x00)
-        }
+        BUF1 = FLD1 = BUF0 /* \M75D.BUF0 */     /* Invoke a Process Call transaction */
+        Printf ("AttribProcessCall, received: %o", BUF1)
 
-        If ((DAT0 != 0x5416))
-        {
-            ERR (Arg0, Z143, __LINE__, 0x00, 0x00, DAT0, 0x16)
-        }
+        /* Now that BUF1 is valid, can create fields within it */
 
-        If ((OB11 != 0x7A))
-        {
-            ERR (Arg0, Z143, __LINE__, 0x00, 0x00, OB11, 0x7A)
-        }
+        CreateByteField (BUF1, 0x00, STA1)
+        CreateByteField (BUF1, 0x01, LEN1)
+        CreateWordField (BUF1, 0x02, DAT1)
 
-        If ((LEN1 != 0x02))
+        If ((STA1 != 0x00))
         {
-            ERR (Arg0, Z143, __LINE__, 0x00, 0x00, LEN1, 0x02)
-        }
-
-        If ((DAT1 != 0xA1A0))
-        {
-            ERR (Arg0, Z143, __LINE__, 0x00, 0x00, DAT1, 0xA1A0)
+            ERR (Arg0, Z143, __LINE__, 0x00, 0x00, STA1, 0x00)
         }
     }
 
@@ -1698,6 +1470,7 @@
         Field (GSBD, BufferAcc, NoLock, Preserve)
         {
             AccessAs (BufferAcc, AttribBlockProcessCall),
+
             /* A Connection is required */
 
             Connection (
@@ -1706,34 +1479,39 @@
                     0xEE, ResourceConsumer, , Exclusive,
                     )
             ),
-            FLD0,                                    /* Virtual register at command value 0. */   8,
-            FLD1,   8
-        }                                    /* Virtual register at command value 1. */
+            FLD0,   8,                          /* Virtual register at command value 0. */
+            FLD1,   8                           /* Virtual register at command value 1. */
+        }
 
         /* Create the GenericSerialBus data buffer */
 
-        Name (BUFF, Buffer (0x22){})            /* Create GenericSerialBus data buffer as BUFF */
-        Name (BUFR, Buffer (0x22){})            /* Create GenericSerialBus result buffer */
-        CreateByteField (BUFF, 0x00, OB10)  /* Status (Byte) */
-        CreateByteField (BUFF, 0x01, LEN0)  /* Length (Byte) */
-        CreateField (BUFF, 0x10, 0x0100, DAT0)
-        CreateByteField (BUFR, 0x00, OB11)
-        CreateByteField (BUFR, 0x01, LEN1)
-        CreateField (BUFR, 0x10, 0x0100, DAT1)
+        Name (BUF0, Buffer (8){})               /* Create GenericSerialBus data buffer as BUF0 */
+        CreateByteField (BUF0, 0x00, STA0)      /* Status (Byte) */
+        CreateByteField (BUF0, 0x01, LEN0)      /* Length (Byte) */
+        CreateField (BUF0, 0x10, 32, DAT0)
+
+        Name (BUF1, Buffer (0x14){})            /* Create GenericSerialBus result buffer */
+        CreateByteField (BUF1, 0x00, STA1)
+        CreateByteField (BUF1, 0x01, LEN1)
+        CreateField (BUF1, 0x10, 32, DAT1)
+
         /* Process Call with input value "TEST" to the device using command value 1 */
 
-        OB10 = 0x00
+        STA0 = 0x00
         LEN0 = 0x04
-        DAT0 = "TEST"                 /* Save 'TEST' into the data buffer */
-        BUFR = FLD1 = BUFF /* \M75E.BUFF */      /* Invoke a Write Block transaction */
-        If ((OB10 != 0x00))
-        {
-            ERR (Arg0, Z143, __LINE__, 0x00, 0x00, OB10, 0x00)
-        }
+        DAT0 = "TEST"                           /* Save 'TEST' into the data buffer */
+        Printf ("AttribBlockProcessCall, sent:     %o", BUF0)
 
-        If ((LEN0 != 0x04))
+        BUF1 = FLD1 = BUF0 /* \M75E.BUF0 */     /* Invoke a Write Block transaction */
+        Printf ("AttribBlockProcessCall, received: %o", BUF1)
+
+        If ((STA1 != 0x00))
         {
-            ERR (Arg0, Z143, __LINE__, 0x00, 0x00, LEN0, 0x04)
+            ERR (Arg0, Z143, __LINE__, 0x00, 0x00, STA1, 0x00)
+        }
+        If ((LEN1 != 0x20))
+        {
+            ERR (Arg0, Z143, __LINE__, 0x00, 0x00, LEN1, 0x20)
         }
 
         Local0 = Buffer (0x20)
@@ -1743,28 +1521,6 @@
         If ((DAT0 != Local0))
         {
             ERR (Arg0, Z143, __LINE__, 0x00, 0x00, DAT0, Local0)
-        }
-
-        If ((OB11 != 0x7A))
-        {
-            ERR (Arg0, Z143, __LINE__, 0x00, 0x00, OB11, 0x7A)
-        }
-
-        If ((LEN1 != 0x20))
-        {
-            ERR (Arg0, Z143, __LINE__, 0x00, 0x00, LEN1, 0x20)
-        }
-
-        Local1 = Buffer (0x20)
-            {
-                /* 0000 */  0xA0, 0xA1, 0xA2, 0xA3, 0xA4, 0xA5, 0xA6, 0xA7,  // ........
-                /* 0008 */  0xA8, 0xA9, 0xAA, 0xAB, 0xAC, 0xAD, 0xAE, 0xAF,  // ........
-                /* 0010 */  0xB0, 0xB1, 0xB2, 0xB3, 0xB4, 0xB5, 0xB6, 0xB7,  // ........
-                /* 0018 */  0xB8, 0xB9, 0xBA, 0xBB, 0xBC, 0xBD, 0xBE, 0xBF   // ........
-            }
-        If ((DAT1 != Local1))
-        {
-            ERR (Arg0, Z143, __LINE__, 0x00, 0x00, DAT1, Local1)
         }
     }
 
@@ -1781,7 +1537,8 @@
              * Note: AccessLength for AttribBytes here must at least 2 less than the
              * transfer buffer to account for the status and length bytes
              */
-            AccessAs (BufferAcc, AttribBytes (0x20)),
+            AccessAs (BufferAcc, AttribBytes (0x22)),
+
             /* A Connection is required */
 
             Connection (
@@ -1790,50 +1547,47 @@
                     0xEE, ResourceConsumer, , Exclusive,
                     )
             ),
-            FLD0,                        /* Virtual register at command value 0. */   8,
-            FLD1,   8
-        }                        /* Virtual register at command value 1. */
+            FLD0,   8,                          /* Virtual register at command value 0. */
+            FLD1,   8                           /* Virtual register at command value 1. */
+        }
 
         /* Create the GenericSerialBus data buffer */
 
-        Name (BUFF, Buffer (0x22){})            /* Create GenericSerialBus data buffer as BUFF */
-        Name (BUFR, Buffer (0x22){})            /* Create GenericSerialBus result buffer */
-        CreateByteField (BUFF, 0x00, OB10)  /* Status (Byte) */
-        CreateByteField (BUFF, 0x01, LEN0)  /* Length (Byte) */
-        CreateField (BUFF, 0x10, 0x0100, DAT0)
-        CreateByteField (BUFR, 0x00, OB11)
-        CreateByteField (BUFR, 0x01, LEN1)
-        CreateField (BUFR, 0x10, 0x0100, DAT1)
-        /* Process Call with input value "TEST" to the device using command value 1 */
+        Name (BUF0, Buffer (0x22){})            /* Create GenericSerialBus data buffer as BUF0 */
+        CreateByteField (BUF0, 0x00, STA0)      /* Status (Byte) */
+        CreateByteField (BUF0, 0x01, LEN0)      /* Length (Byte) */
+        CreateField (BUF0, 0x10, 0x0100, DAT0)
 
-        OB10 = 0x00
-        LEN0 = 0x04
-        DAT0 = "TEST"                 /* Save 'TEST' into the data buffer */
-        BUFR = FLD1 = BUFF /* \M75F.BUFF */      /* Invoke a Write Block transaction */
-        If ((OB10 != 0x00))
+        Name (BUF1, Buffer (0x22){})            /* Create GenericSerialBus result buffer */
+        CreateByteField (BUF1, 0x00, STA1)
+        CreateByteField (BUF1, 0x01, LEN1)
+        CreateField (BUF1, 0x10, 0x0100, DAT1)
+
+        /* Read buffer from FLD0 */
+
+        BUF0 = FLD0
+        Printf ("AttribBytes, received: %o", BUF0)
+
+        If ((STA0 != 0x00))
         {
-            ERR (Arg0, Z143, __LINE__, 0x00, 0x00, OB10, 0x00)
+            ERR (Arg0, Z143, __LINE__, 0x00, 0x00, STA0, 0x00)
+        }
+        If ((LEN0 != 0x20)) /* Size of BUF0 */
+        {
+            ERR (Arg0, Z143, __LINE__, 0x00, 0x00, LEN0, 0x20)
         }
 
-        If ((LEN0 != 0x04))
-        {
-            ERR (Arg0, Z143, __LINE__, 0x00, 0x00, LEN0, 0x04)
-        }
+        /* WRITE then READ to FLD1  (Force READ by not using double store) */
 
-        Local0 = Buffer (0x20)
-            {
-                "TEST"
-            }
-        If ((DAT0 != Local0))
-        {
-            ERR (Arg0, Z143, __LINE__, 0x00, 0x00, DAT0, Local0)
-        }
+        FLD1 = BUF0
+        BUF1 = FLD1
+        Printf ("AttribBytes, sent:     %o", BUF0)
+        Printf ("AttribBytes, received: %o", BUF1)
 
-        If ((OB11 != 0x7A))
+        If ((STA1 != 0))
         {
-            ERR (Arg0, Z143, __LINE__, 0x00, 0x00, OB11, 0x7A)
+            ERR (Arg0, Z143, __LINE__, 0x00, 0x00, STA1, 0)
         }
-
         If ((LEN1 != 0x20))
         {
             ERR (Arg0, Z143, __LINE__, 0x00, 0x00, LEN1, 0x20)
@@ -1846,7 +1600,12 @@
                 /* 0010 */  0xB0, 0xB1, 0xB2, 0xB3, 0xB4, 0xB5, 0xB6, 0xB7,  // ........
                 /* 0018 */  0xB8, 0xB9, 0xBA, 0xBB, 0xBC, 0xBD, 0xBE, 0xBF   // ........
             }
-        If ((DAT1 != Local1))
+
+        If ((DAT0 != Local1))
+        {
+            ERR (Arg0, Z143, __LINE__, 0x00, 0x00, DAT0, Local1)
+        }
+        If ((DAT0 != Local1))
         {
             ERR (Arg0, Z143, __LINE__, 0x00, 0x00, DAT1, Local1)
         }
@@ -1865,7 +1624,7 @@
              * Note: AccessLength for AttribBytes here must at least 2 less than the
              * transfer buffer to account for the status and length bytes
              */
-            AccessAs (BufferAcc, AttribRawBytes (0x20)),
+            AccessAs (BufferAcc, AttribRawBytes (0x22)),
             /* A Connection is required */
 
             Connection (
@@ -1874,50 +1633,47 @@
                     0xEE, ResourceConsumer, , Exclusive,
                     )
             ),
-            FLD0,                        /* Virtual register at command value 0. */   8,
-            FLD1,   8
-        }                        /* Virtual register at command value 1. */
+            FLD0,   8,                          /* Virtual register at command value 0. */
+            FLD1,   8                           /* Virtual register at command value 1. */
+        }
 
         /* Create the GenericSerialBus data buffer */
 
-        Name (BUFF, Buffer (0x22){})            /* Create GenericSerialBus data buffer as BUFF */
-        Name (BUFR, Buffer (0x22){})            /* Create GenericSerialBus result buffer */
-        CreateByteField (BUFF, 0x00, OB10)  /* Status (Byte) */
-        CreateByteField (BUFF, 0x01, LEN0)  /* Length (Byte) */
-        CreateField (BUFF, 0x10, 0x0100, DAT0)
-        CreateByteField (BUFR, 0x00, OB11)
-        CreateByteField (BUFR, 0x01, LEN1)
-        CreateField (BUFR, 0x10, 0x0100, DAT1)
-        /* Process Call with input value "TEST" to the device using command value 1 */
+        Name (BUF0, Buffer (0x22){})            /* Create GenericSerialBus data buffer as BUF0 */
+        CreateByteField (BUF0, 0x00, STA0)      /* Status (Byte) */
+        CreateByteField (BUF0, 0x01, LEN0)      /* Length (Byte) */
+        CreateField (BUF0, 0x10, 0x0100, DAT0)
 
-        OB10 = 0x00
-        LEN0 = 0x04
-        DAT0 = "TEST"                 /* Save 'TEST' into the data buffer */
-        BUFR = FLD1 = BUFF /* \M760.BUFF */      /* Invoke a Write Block transaction */
-        If ((OB10 != 0x00))
+        Name (BUF1, Buffer (0x22){})            /* Create GenericSerialBus result buffer */
+        CreateByteField (BUF1, 0x00, STA1)
+        CreateByteField (BUF1, 0x01, LEN1)
+        CreateField (BUF1, 0x10, 0x0100, DAT1)
+
+        /* Read buffer from FLD0 */
+
+        BUF0 = FLD0
+        Printf ("AttribRawBytes, received: %o", BUF0)
+
+        If ((STA0 != 0x00))
         {
-            ERR (Arg0, Z143, __LINE__, 0x00, 0x00, OB10, 0x00)
+            ERR (Arg0, Z143, __LINE__, 0x00, 0x00, STA0, 0x00)
+        }
+        If ((LEN0 != 0x20)) /* Size of BUF0 */
+        {
+            ERR (Arg0, Z143, __LINE__, 0x00, 0x00, LEN0, 0x20)
         }
 
-        If ((LEN0 != 0x04))
-        {
-            ERR (Arg0, Z143, __LINE__, 0x00, 0x00, LEN0, 0x04)
-        }
+        /* WRITE then READ to FLD1  (Force READ by not using double store) */
 
-        Local0 = Buffer (0x20)
-            {
-                "TEST"
-            }
-        If ((DAT0 != Local0))
-        {
-            ERR (Arg0, Z143, __LINE__, 0x00, 0x00, DAT0, Local0)
-        }
+        FLD1 = BUF0
+        BUF1 = FLD1
+        Printf ("AttribRawBytes, sent:     %o", BUF0)
+        Printf ("AttribRawBytes, received: %o", BUF1)
 
-        If ((OB11 != 0x7A))
+        If ((STA1 != 0))
         {
-            ERR (Arg0, Z143, __LINE__, 0x00, 0x00, OB11, 0x7A)
+            ERR (Arg0, Z143, __LINE__, 0x00, 0x00, STA1, 0)
         }
-
         If ((LEN1 != 0x20))
         {
             ERR (Arg0, Z143, __LINE__, 0x00, 0x00, LEN1, 0x20)
@@ -1930,7 +1686,12 @@
                 /* 0010 */  0xB0, 0xB1, 0xB2, 0xB3, 0xB4, 0xB5, 0xB6, 0xB7,  // ........
                 /* 0018 */  0xB8, 0xB9, 0xBA, 0xBB, 0xBC, 0xBD, 0xBE, 0xBF   // ........
             }
-        If ((DAT1 != Local1))
+
+        If ((DAT0 != Local1))
+        {
+            ERR (Arg0, Z143, __LINE__, 0x00, 0x00, DAT0, Local1)
+        }
+        If ((DAT0 != Local1))
         {
             ERR (Arg0, Z143, __LINE__, 0x00, 0x00, DAT1, Local1)
         }
@@ -1950,6 +1711,7 @@
              * transfer buffer to account for the status and length bytes
              */
             AccessAs (BufferAcc, AttribRawProcessBytes (0x20)),
+
             /* A Connection is required */
 
             Connection (
@@ -1958,53 +1720,51 @@
                     0xEE, ResourceConsumer, , Exclusive,
                     )
             ),
-            FLD0,                        /* Virtual register at command value 0. */   8,
-            FLD1,   8
-        }                        /* Virtual register at command value 1. */
-
-        /* Create the GenericSerialBus data buffer */
-
-        Name (BUFF, Buffer (0x22){})            /* Create GenericSerialBus data buffer as BUFF */
-        Name (BUFR, Buffer (0x22){})            /* Create GenericSerialBus result buffer */
-        CreateByteField (BUFF, 0x00, OB10)  /* Status (Byte) */
-        CreateByteField (BUFF, 0x01, LEN0)  /* Length (Byte) */
-        CreateField (BUFF, 0x10, 0x0100, DAT0)
-        CreateByteField (BUFR, 0x00, OB11)
-        CreateByteField (BUFR, 0x01, LEN1)
-        CreateField (BUFR, 0x10, 0x0100, DAT1)
-        /* Process Call with input value "TEST" to the device using command value 1 */
-
-        OB10 = 0x00
-        LEN0 = 0x04
-        DAT0 = "TEST"                 /* Save 'TEST' into the data buffer */
-        BUFR = FLD1 = BUFF /* \M761.BUFF */      /* Invoke a Write Block transaction */
-        If ((OB10 != 0x00))
-        {
-            ERR (Arg0, Z143, __LINE__, 0x00, 0x00, OB10, 0x00)
+            FLD0,   8,                          /* Virtual register at command value 0. */
+            FLD1,   8                           /* Virtual register at command value 1. */
         }
 
-        If ((LEN0 != 0x04))
+        /* Create the GenericSerialBus data buffers */
+
+        Name (BUF0, Buffer (0x22){})            /* Create GenericSerialBus data buffer as BUF0 */
+        CreateByteField (BUF0, 0x00, STA0)      /* Status (Byte) */
+        CreateByteField (BUF0, 0x01, LEN0)      /* Length (Byte) */
+        CreateWordField(BUF0, 0x02, CMD0)       // Command (Bytes 2 and 3)
+        CreateField (BUF0, 0x10, 0x0100, DAT0)
+
+        Name (BUF1, Buffer (0x22){})            /* Create GenericSerialBus result buffer */
+        CreateByteField (BUF1, 0x00, STA1)
+        CreateByteField (BUF1, 0x01, LEN1)
+        CreateWordField(BUF1, 0x02, CMD1)       // Command (Bytes 2 and 3)
+        CreateField (BUF1, 0x10, 0x0100, DAT1)
+
+        /* Process Call with input value "TEST" to the device using command value 1 */
+
+        STA0 = 0x00
+        LEN0 = 0x08
+        DAT0 = "TEST"                           /* Save 'TEST' into the data buffer */
+
+        BUF1 = FLD1 = BUF0 /* \M761.BUF0 */     /* Invoke a Write Block transaction */
+        Printf ("AttribRawProcessBytes, sent:     %o", BUF0)
+        Printf ("AttribRawProcessBytes, received: %o", BUF1)
+
+        If ((STA1 != 0x00))
         {
-            ERR (Arg0, Z143, __LINE__, 0x00, 0x00, LEN0, 0x04)
+            ERR (Arg0, Z143, __LINE__, 0x00, 0x00, STA1, 0x00)
+        }
+        If ((LEN1 != 0x20))
+        {
+            ERR (Arg0, Z143, __LINE__, 0x00, 0x00, LEN1, 0x20)
         }
 
         Local0 = Buffer (0x20)
             {
                 "TEST"
             }
+
         If ((DAT0 != Local0))
         {
             ERR (Arg0, Z143, __LINE__, 0x00, 0x00, DAT0, Local0)
-        }
-
-        If ((OB11 != 0x7A))
-        {
-            ERR (Arg0, Z143, __LINE__, 0x00, 0x00, OB11, 0x7A)
-        }
-
-        If ((LEN1 != 0x20))
-        {
-            ERR (Arg0, Z143, __LINE__, 0x00, 0x00, LEN1, 0x20)
         }
 
         Local1 = Buffer (0x20)
@@ -2014,6 +1774,7 @@
                 /* 0010 */  0xB0, 0xB1, 0xB2, 0xB3, 0xB4, 0xB5, 0xB6, 0xB7,  // ........
                 /* 0018 */  0xB8, 0xB9, 0xBA, 0xBB, 0xBC, 0xBD, 0xBE, 0xBF   // ........
             }
+
         If ((DAT1 != Local1))
         {
             ERR (Arg0, Z143, __LINE__, 0x00, 0x00, DAT1, Local1)
@@ -2027,7 +1788,7 @@
     Method (M764, 1, Serialized)
     {
         Concatenate (Arg0, "-m764", Arg0)
-        Debug = "TEST: m764, Check GeneralPurposeIo Region Fields (ByteAcc access)"
+        Debug = "TEST: m764, Check GeneralPurposeIo Region Fields (ByteAcc access required)"
         /*...Other required stuff for this device */
 
         Name (GMOD, ResourceTemplate ()
@@ -2100,17 +1861,21 @@
             ERR (Arg0, Z143, __LINE__, 0x00, 0x00, Local0, 0x01)
         }
 
-        Name (TBUF, Buffer (0x10)
-        {
-            /* 0000 */  0xA0, 0xA1, 0xA2, 0xA3, 0xA4, 0xA5, 0xA6, 0xA7,  // ........
-            /* 0008 */  0xA8, 0xA9, 0xAA, 0xAB, 0xAC, 0xAD, 0xAE, 0xAF   // ........
-        })
-        BUFF = TBUF /* \M764.TBUF */
-        Local0 = BUFF /* \M764.BUFF */
-        If ((Local0 != TBUF))
-        {
-            ERR (Arg0, Z143, __LINE__, 0x00, 0x00, Local0, TBUF)
-        }
+// August 2018:
+// Use of Buffer objects with GeneralPurposeIo is disallowed, since it doesn't
+// really make sense. Test removed.
+//
+//        Name (TBUF, Buffer (0x10)
+//        {
+//            /* 0000 */  0xA0, 0xA1, 0xA2, 0xA3, 0xA4, 0xA5, 0xA6, 0xA7,  // ........
+//            /* 0008 */  0xA8, 0xA9, 0xAA, 0xAB, 0xAC, 0xAD, 0xAE, 0xAF   // ........
+//        })
+//        BUFF = TBUF /* \M764.TBUF */
+//        Local0 = BUFF /* \M764.BUFF */
+//        If ((Local0 != TBUF))
+//        {
+//            ERR (Arg0, Z143, __LINE__, 0x00, 0x00, Local0, TBUF)
+//        }
     }
 
     /***** IPMI (ACPI 4.0) - bidirectional buffer **************************** */
@@ -2948,6 +2713,8 @@
         LPC0 = 0x00
         While (LPN0)
         {
+
+printf ("LPN0: %o\n", LPN0)
             /* Operands */
 
             Local6 = (LPC0 * 0x05)
@@ -2963,15 +2730,22 @@
             LPC1 = 0x00
             While (LPN1)
             {
+
+printf ("LPN1: %o\n", LPN1)
+
                 NB00 = Local0
                 LPN2 = Local1
                 LPC2 = 0x00
                 Local6 = DerefOf (PFUO [IB00])
                 While (LPN2)
                 {
+
+printf ("LPN2: %o\n", LPN2)
+
                     Local7 = DerefOf (PFUL [NB00])
                     /* Integer source */
 
+printf ("BINT: %o %o %o %o\n", Arg2, Local6, Local7, Local2)
                     M72E (Concatenate (Arg0, "-BInt"), Arg2, Local6, Local7, Local2, 0x00)
                     If ((Local7 > 0x08))
                     {
