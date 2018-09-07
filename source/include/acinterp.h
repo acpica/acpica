@@ -285,6 +285,11 @@ AcpiExTracePoint (
  * exfield - ACPI AML (p-code) execution - field manipulation
  */
 ACPI_STATUS
+AcpiExGetProtocolBufferLength (
+    UINT32                  ProtocolId,
+    UINT32                  *ReturnLength);
+
+ACPI_STATUS
 AcpiExCommonBufferSetup (
     ACPI_OPERAND_OBJECT     *ObjDesc,
     UINT32                  BufferLength,
