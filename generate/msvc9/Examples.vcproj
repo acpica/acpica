@@ -646,6 +646,10 @@
 					>
 				</File>
 				<File
+					RelativePath="..\..\source\components\executer\exserial.c"
+					>
+				</File>
+				<File
 					RelativePath="..\..\source\components\executer\exstore.c"
 					>
 				</File>

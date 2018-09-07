@@ -500,6 +500,32 @@ AcpiExPrepFieldValue (
 
 
 /*
+ * exserial - FieldUnit support for serial address spaces
+ */
+ACPI_STATUS
+AcpiExReadSerialBus (
+    ACPI_OPERAND_OBJECT     *ObjDesc,
+    ACPI_OPERAND_OBJECT     **ReturnBuffer);
+
+ACPI_STATUS
+AcpiExWriteSerialBus (
+    ACPI_OPERAND_OBJECT     *SourceDesc,
+    ACPI_OPERAND_OBJECT     *ObjDesc,
+    ACPI_OPERAND_OBJECT     **ReturnBuffer);
+
+ACPI_STATUS
+AcpiExReadGpio (
+    ACPI_OPERAND_OBJECT     *ObjDesc,
+    void                    *Buffer);
+
+ACPI_STATUS
+AcpiExWriteGpio (
+    ACPI_OPERAND_OBJECT     *SourceDesc,
+    ACPI_OPERAND_OBJECT     *ObjDesc,
+    ACPI_OPERAND_OBJECT     **ReturnBuffer);
+
+
+/*
  * exsystem - Interface to OS services
  */
 ACPI_STATUS
