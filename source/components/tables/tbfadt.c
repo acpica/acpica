@@ -532,18 +532,20 @@ AcpiTbCreateLocalFadt (
     ACPI_TABLE_HEADER       *Table,
     UINT32                  Length)
 {
+    UINT32 Tmp32;
 
     /*
      * Check if the FADT is larger than the largest table that we expect
      * (typically the current ACPI specification version). If so, truncate
      * the table, and issue a warning.
      */
-    if (Length > sizeof (ACPI_TABLE_FADT))
+    ACPI_MOVE_32_TO_32(&Tmp32, &Length);
+    if (Tmp32 > sizeof (ACPI_TABLE_FADT))
     {
         ACPI_BIOS_WARNING ((AE_INFO,
             "FADT (revision %u) is longer than %s length, "
             "truncating length %u to %u",
-            Table->Revision, ACPI_FADT_CONFORMANCE, Length,
+            Table->Revision, ACPI_FADT_CONFORMANCE, Tmp32,
             (UINT32) sizeof (ACPI_TABLE_FADT)));
     }
 
@@ -554,7 +556,7 @@ AcpiTbCreateLocalFadt (
     /* Copy the original FADT, up to sizeof (ACPI_TABLE_FADT) */
 
     memcpy (&AcpiGbl_FADT, Table,
-        ACPI_MIN (Length, sizeof (ACPI_TABLE_FADT)));
+        ACPI_MIN (Tmp32, sizeof (ACPI_TABLE_FADT)));
 
     /* Take a copy of the Hardware Reduced flag */
 
@@ -628,6 +630,8 @@ AcpiTbConvertFadt (
     UINT8                   Length;
     UINT8                   Flags;
     UINT32                  i;
+    UINT32		    Tmp32;
+    UINT64		    Tmp64;
 
 
     /*
@@ -641,7 +645,8 @@ AcpiTbConvertFadt (
      * Note: The FADT revision value is unreliable. Only the length can be
      * trusted.
      */
-    if (AcpiGbl_FADT.Header.Length <= ACPI_FADT_V2_SIZE)
+    ACPI_MOVE_32_TO_32(&Tmp32, &AcpiGbl_FADT.Header.Length);
+    if (Tmp32 <= ACPI_FADT_V2_SIZE)
     {
         AcpiGbl_FADT.PreferredProfile = 0;
         AcpiGbl_FADT.PstateControl = 0;
@@ -654,14 +659,15 @@ AcpiTbConvertFadt (
      * current FADT version as defined by the ACPI specification.
      * Thus, we will have a common FADT internally.
      */
-    AcpiGbl_FADT.Header.Length = sizeof (ACPI_TABLE_FADT);
+    Tmp32 = sizeof (ACPI_TABLE_FADT);
+    ACPI_MOVE_32_TO_32(&AcpiGbl_FADT.Header.Length, &Tmp32);
 
     /*
      * Expand the 32-bit DSDT addresses to 64-bit as necessary.
      * Later ACPICA code will always use the X 64-bit field.
      */
-    AcpiGbl_FADT.XDsdt = AcpiTbSelectAddress ("DSDT",
-        AcpiGbl_FADT.Dsdt, AcpiGbl_FADT.XDsdt);
+    Tmp64 = AcpiTbSelectAddress ("DSDT", AcpiGbl_FADT.Dsdt, AcpiGbl_FADT.XDsdt);
+    ACPI_MOVE_64_TO_64(&AcpiGbl_FADT.XDsdt, &Tmp64);
 
     /* If Hardware Reduced flag is set, we are all done */
 
@@ -722,7 +728,9 @@ AcpiTbConvertFadt (
         {
             if (Address64->Address)
             {
-                if (Address64->Address != (UINT64) Address32)
+		ACPI_MOVE_32_TO_32(&Tmp32, &Address32);
+		ACPI_MOVE_64_TO_64(&Tmp64, &Address64->Address);
+                if (Tmp64 != (UINT64) Tmp32)
                 {
                     /* Address mismatch */
 
@@ -763,9 +771,11 @@ AcpiTbConvertFadt (
              */
             if (!Address64->Address || AcpiGbl_Use32BitFadtAddresses)
             {
+		ACPI_MOVE_32_TO_32(&Tmp32, &Address32); /* back to host order */
+		Tmp64 = (UINT64) Tmp32;			/* promote only */
                 AcpiTbInitGenericAddress (Address64,
                     ACPI_ADR_SPACE_SYSTEM_IO, Length,
-                    (UINT64) Address32, Name, Flags);
+                    Tmp64, Name, Flags);
             }
         }
 
@@ -888,10 +898,14 @@ AcpiTbSetupFadtRegisters (
 
         if (Source64->Address)
         {
+	    UINT64 Tmp64, Addr64;
+
+	    ACPI_MOVE_64_TO_64(&Tmp64, &Source64->Address);
+	    Tmp64 += (FadtPmInfoTable[i].RegisterNum * Pm1RegisterByteWidth);
+	    ACPI_MOVE_64_TO_64(&Addr64, &Tmp64);
             AcpiTbInitGenericAddress (FadtPmInfoTable[i].Target,
                 Source64->SpaceId, Pm1RegisterByteWidth,
-                Source64->Address +
-                    (FadtPmInfoTable[i].RegisterNum * Pm1RegisterByteWidth),
+                Addr64,
                 "PmRegisters", 0);
         }
     }

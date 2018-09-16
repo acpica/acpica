@@ -299,22 +299,24 @@ AcpiDmGpioCommon (
     char                    *DeviceName = NULL;
     UINT32                  PinCount;
     UINT32                  i;
+    UINT16		    Tmp16;
 
 
     /* ResourceSource, ResourceSourceIndex, ResourceType */
 
     AcpiDmIndent (Level + 1);
-    if (Resource->Gpio.ResSourceOffset)
+    ACPI_MOVE_16_TO_16(&Tmp16, &Resource->Gpio.ResSourceOffset);
+    if (Tmp16)
     {
-        DeviceName = ACPI_ADD_PTR (char,
-            Resource, Resource->Gpio.ResSourceOffset),
+        DeviceName = ACPI_ADD_PTR (char, Resource, Tmp16),
         AcpiUtPrintString (DeviceName, ACPI_UINT16_MAX);
     }
 
     AcpiOsPrintf (", ");
     AcpiOsPrintf ("0x%2.2X, ", Resource->Gpio.ResSourceIndex);
+    ACPI_MOVE_16_TO_16(&Tmp16, &Resource->Gpio.Flags);
     AcpiOsPrintf ("%s, ",
-        AcpiGbl_ConsumeDecode [ACPI_GET_1BIT_FLAG (Resource->Gpio.Flags)]);
+        AcpiGbl_ConsumeDecode [ACPI_GET_1BIT_FLAG (Tmp16)]);
 
     /* Insert a descriptor name */
 
@@ -323,15 +325,16 @@ AcpiDmGpioCommon (
 
     /* Dump the vendor data */
 
-    if (Resource->Gpio.VendorOffset)
+    ACPI_MOVE_16_TO_16(&Tmp16, &Resource->Gpio.VendorOffset);
+    if (Tmp16)
     {
         AcpiOsPrintf ("\n");
         AcpiDmIndent (Level + 1);
-        VendorData = ACPI_ADD_PTR (UINT8, Resource,
-            Resource->Gpio.VendorOffset);
+	ACPI_MOVE_16_TO_16(&Tmp16, &Resource->Gpio.VendorOffset);
+        VendorData = ACPI_ADD_PTR (UINT8, Resource, Tmp16);
 
-        AcpiDmDumpRawDataBuffer (VendorData,
-            Resource->Gpio.VendorLength, Level);
+	ACPI_MOVE_16_TO_16(&Tmp16, &Resource->Gpio.VendorLength);
+        AcpiDmDumpRawDataBuffer (VendorData, Tmp16, Level);
     }
 
     AcpiOsPrintf (")\n");
@@ -341,17 +344,25 @@ AcpiDmGpioCommon (
     AcpiDmIndent (Level + 1);
     AcpiOsPrintf ("{   // Pin list\n");
 
+    /*
     PinCount = ((UINT32) (Resource->Gpio.ResSourceOffset -
         Resource->Gpio.PinTableOffset)) /
         sizeof (UINT16);
+    */
+    ACPI_MOVE_16_TO_16(&Tmp16, &Resource->Gpio.ResSourceOffset);
+    PinCount = (UINT32) Tmp16;
+    ACPI_MOVE_16_TO_16(&Tmp16, &Resource->Gpio.PinTableOffset);
+    PinCount -= (UINT32) Tmp16;
+    PinCount /= sizeof (UINT16);
 
-    PinList = (UINT16 *) ACPI_ADD_PTR (char, Resource,
-        Resource->Gpio.PinTableOffset);
+    ACPI_MOVE_16_TO_16(&Tmp16, &Resource->Gpio.PinTableOffset);
+    PinList = (UINT16 *) ACPI_ADD_PTR (char, Resource, Tmp16);
 
     for (i = 0; i < PinCount; i++)
     {
         AcpiDmIndent (Level + 2);
-        AcpiOsPrintf ("0x%4.4X%s\n", PinList[i],
+	ACPI_MOVE_16_TO_16(&Tmp16, &PinList[i]);
+        AcpiOsPrintf ("0x%4.4X%s\n", Tmp16,
             ((i + 1) < PinCount) ? "," : "");
     }
 
@@ -385,16 +396,18 @@ AcpiDmGpioIntDescriptor (
     UINT32                  Length,
     UINT32                  Level)
 {
+    UINT16		    Tmp16;
 
     /* Dump the GpioInt-specific portion of the descriptor */
 
     /* EdgeLevel, ActiveLevel, Shared */
 
     AcpiDmIndent (Level);
+    ACPI_MOVE_16_TO_16(&Tmp16, &Resource->Gpio.IntFlags);
     AcpiOsPrintf ("GpioInt (%s, %s, %s, ",
-        AcpiGbl_HeDecode [ACPI_GET_1BIT_FLAG (Resource->Gpio.IntFlags)],
-        AcpiGbl_LlDecode [ACPI_EXTRACT_2BIT_FLAG (Resource->Gpio.IntFlags, 1)],
-        AcpiGbl_ShrDecode [ACPI_EXTRACT_2BIT_FLAG (Resource->Gpio.IntFlags, 3)]);
+        AcpiGbl_HeDecode [ACPI_GET_1BIT_FLAG (Tmp16)],
+        AcpiGbl_LlDecode [ACPI_EXTRACT_2BIT_FLAG (Tmp16, 1)],
+        AcpiGbl_ShrDecode [ACPI_EXTRACT_2BIT_FLAG (Tmp16, 3)]);
 
     /* PinConfig, DebounceTimeout */
 
@@ -407,7 +420,8 @@ AcpiDmGpioIntDescriptor (
     {
         AcpiOsPrintf ("0x%2.2X, ", Resource->Gpio.PinConfig);
     }
-    AcpiOsPrintf ("0x%4.4X,\n", Resource->Gpio.DebounceTimeout);
+    ACPI_MOVE_16_TO_16(&Tmp16, &Resource->Gpio.DebounceTimeout);
+    AcpiOsPrintf ("0x%4.4X,\n", Tmp16);
 
     /* Dump the GpioInt/GpioIo common portion of the descriptor */
 
@@ -437,14 +451,16 @@ AcpiDmGpioIoDescriptor (
     UINT32                  Length,
     UINT32                  Level)
 {
+    UINT16		    Tmp16;
 
     /* Dump the GpioIo-specific portion of the descriptor */
 
     /* Shared, PinConfig */
 
     AcpiDmIndent (Level);
+    ACPI_MOVE_16_TO_16(&Tmp16, &Resource->Gpio.IntFlags);
     AcpiOsPrintf ("GpioIo (%s, ",
-        AcpiGbl_ShrDecode [ACPI_EXTRACT_2BIT_FLAG (Resource->Gpio.IntFlags, 3)]);
+        AcpiGbl_ShrDecode [ACPI_EXTRACT_2BIT_FLAG (Tmp16, 3)]);
 
     if (Resource->Gpio.PinConfig <= 3)
     {
@@ -458,10 +474,13 @@ AcpiDmGpioIoDescriptor (
 
     /* DebounceTimeout, DriveStrength, IoRestriction */
 
-    AcpiOsPrintf ("0x%4.4X, ", Resource->Gpio.DebounceTimeout);
-    AcpiOsPrintf ("0x%4.4X, ", Resource->Gpio.DriveStrength);
+    ACPI_MOVE_16_TO_16(&Tmp16, &Resource->Gpio.DebounceTimeout);
+    AcpiOsPrintf ("0x%4.4X, ", Tmp16);
+    ACPI_MOVE_16_TO_16(&Tmp16, &Resource->Gpio.DriveStrength);
+    AcpiOsPrintf ("0x%4.4X, ", Tmp16);
+    ACPI_MOVE_16_TO_16(&Tmp16, &Resource->Gpio.IntFlags);
     AcpiOsPrintf ("%s,\n",
-        AcpiGbl_IorDecode [ACPI_GET_2BIT_FLAG (Resource->Gpio.IntFlags)]);
+        AcpiGbl_IorDecode [ACPI_GET_2BIT_FLAG (Tmp16)]);
 
     /* Dump the GpioInt/GpioIo common portion of the descriptor */
 
@@ -641,6 +660,7 @@ AcpiDmDumpSerialBusVendorData (
 {
     UINT8                   *VendorData;
     UINT32                  VendorLength;
+    UINT16                  Tmp16;
 
 
     /* Get the (optional) vendor data and length */
@@ -649,8 +669,8 @@ AcpiDmDumpSerialBusVendorData (
     {
     case AML_RESOURCE_I2C_SERIALBUSTYPE:
 
-        VendorLength = Resource->CommonSerialBus.TypeDataLength -
-            AML_RESOURCE_I2C_MIN_DATA_LEN;
+	ACPI_MOVE_16_TO_16(&Tmp16, &Resource->CommonSerialBus.TypeDataLength);
+        VendorLength = Tmp16 - AML_RESOURCE_I2C_MIN_DATA_LEN;
 
         VendorData = ACPI_ADD_PTR (UINT8, Resource,
             sizeof (AML_RESOURCE_I2C_SERIALBUS));
@@ -658,8 +678,8 @@ AcpiDmDumpSerialBusVendorData (
 
     case AML_RESOURCE_SPI_SERIALBUSTYPE:
 
-        VendorLength = Resource->CommonSerialBus.TypeDataLength -
-            AML_RESOURCE_SPI_MIN_DATA_LEN;
+	ACPI_MOVE_16_TO_16(&Tmp16, &Resource->CommonSerialBus.TypeDataLength);
+        VendorLength = Tmp16 - AML_RESOURCE_SPI_MIN_DATA_LEN;
 
         VendorData = ACPI_ADD_PTR (UINT8, Resource,
             sizeof (AML_RESOURCE_SPI_SERIALBUS));
@@ -667,8 +687,8 @@ AcpiDmDumpSerialBusVendorData (
 
     case AML_RESOURCE_UART_SERIALBUSTYPE:
 
-        VendorLength = Resource->CommonSerialBus.TypeDataLength -
-            AML_RESOURCE_UART_MIN_DATA_LEN;
+	ACPI_MOVE_16_TO_16(&Tmp16, &Resource->CommonSerialBus.TypeDataLength);
+        VendorLength = Tmp16 - AML_RESOURCE_UART_MIN_DATA_LEN;
 
         VendorData = ACPI_ADD_PTR (UINT8, Resource,
             sizeof (AML_RESOURCE_UART_SERIALBUS));
@@ -709,24 +729,29 @@ AcpiDmI2cSerialBusDescriptor (
 {
     UINT32                  ResourceSourceOffset;
     char                    *DeviceName;
+    UINT16		    Tmp16;
+    UINT32		    Tmp32;
 
 
     /* SlaveAddress, SlaveMode, ConnectionSpeed, AddressingMode */
 
+    ACPI_MOVE_16_TO_16(&Tmp16, &Resource->I2cSerialBus.SlaveAddress);
+    ACPI_MOVE_32_TO_32(&Tmp32, &Resource->I2cSerialBus.ConnectionSpeed);
     AcpiDmIndent (Level);
     AcpiOsPrintf ("I2cSerialBusV2 (0x%4.4X, %s, 0x%8.8X,\n",
-        Resource->I2cSerialBus.SlaveAddress,
+        Tmp16,
         AcpiGbl_SmDecode [ACPI_GET_1BIT_FLAG (Resource->I2cSerialBus.Flags)],
-        Resource->I2cSerialBus.ConnectionSpeed);
+        Tmp32);
 
     AcpiDmIndent (Level + 1);
+    ACPI_MOVE_16_TO_16(&Tmp16, &Resource->I2cSerialBus.TypeSpecificFlags);
     AcpiOsPrintf ("%s, ",
-        AcpiGbl_AmDecode [ACPI_GET_1BIT_FLAG (Resource->I2cSerialBus.TypeSpecificFlags)]);
+        AcpiGbl_AmDecode [ACPI_GET_1BIT_FLAG (Tmp16)]);
 
     /* ResourceSource is a required field */
 
-    ResourceSourceOffset = sizeof (AML_RESOURCE_COMMON_SERIALBUS) +
-        Resource->CommonSerialBus.TypeDataLength;
+    ACPI_MOVE_16_TO_16(&Tmp16, &Resource->CommonSerialBus.TypeDataLength);
+    ResourceSourceOffset = sizeof (AML_RESOURCE_COMMON_SERIALBUS) + Tmp16;
 
     DeviceName = ACPI_ADD_PTR (char, Resource, ResourceSourceOffset);
     AcpiUtPrintString (DeviceName, ACPI_UINT16_MAX);

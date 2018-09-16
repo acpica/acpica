@@ -254,21 +254,25 @@ AeInitializeTableHeader (
     char                    *Signature,
     UINT32                  Length)
 {
+    UINT16		    Tmp16;
+    UINT32		    Tmp32;
 
     ACPI_MOVE_NAME (Header->Signature, Signature);
-    Header->Length = Length;
+    ACPI_MOVE_32_TO_32(&Header->Length, &Length);
 
-    Header->OemRevision = 0x1001;
+    Tmp16 = 0x1001;
+    ACPI_MOVE_16_TO_16(&Header->OemRevision, &Tmp16);
     memcpy (Header->OemId, "Intel ", ACPI_OEM_ID_SIZE);
     memcpy (Header->OemTableId, "AcpiExec", ACPI_OEM_TABLE_ID_SIZE);
     ACPI_MOVE_NAME (Header->AslCompilerId, "INTL");
-    Header->AslCompilerRevision = ACPI_CA_VERSION;
+    Tmp32 = ACPI_CA_VERSION;
+    ACPI_MOVE_32_TO_32(&Header->AslCompilerRevision, &Tmp32);
 
     /* Set the checksum, must set to zero first */
 
     Header->Checksum = 0;
     Header->Checksum = (UINT8) -AcpiTbChecksum (
-        (void *) Header, Header->Length);
+        (void *) Header, Length);
 }
 
 
@@ -296,6 +300,7 @@ AeBuildLocalTables (
     ACPI_NEW_TABLE_DESC     *NextTable;
     UINT32                  NextIndex;
     ACPI_TABLE_FADT         *ExternalFadt = NULL;
+    UINT32		    Tmp32;
 
 
     /*
@@ -482,6 +487,8 @@ AeBuildLocalTables (
     }
     else
     {
+        UINT64		    Tmp64;
+
         /*
          * Build a local FADT so we can test the hardware/event init
          */
@@ -493,34 +500,44 @@ AeBuildLocalTables (
         LocalFADT.Facs = 0;
 
         LocalFADT.XDsdt = DsdtAddress;
-        LocalFADT.XFacs = ACPI_PTR_TO_PHYSADDR (&LocalFACS);
+        Tmp64 = ACPI_PTR_TO_PHYSADDR (&LocalFACS);
+        ACPI_MOVE_64_TO_64(&LocalFADT.XFacs, &Tmp64);
 
         /* Miscellaneous FADT fields */
 
         LocalFADT.Gpe0BlockLength = 0x20;
-        LocalFADT.Gpe0Block = 0x00003210;
+        Tmp32 = 0x00003210;
+        ACPI_MOVE_32_TO_32(&LocalFADT.Gpe0Block, &Tmp32);
 
         LocalFADT.Gpe1BlockLength = 0x20;
-        LocalFADT.Gpe1Block = 0x0000BA98;
+        Tmp32 = 0x0000BA98;
+        ACPI_MOVE_32_TO_32(&LocalFADT.Gpe1Block, &Tmp32);
         LocalFADT.Gpe1Base = 0x80;
 
         LocalFADT.Pm1EventLength = 4;
-        LocalFADT.Pm1aEventBlock = 0x00001aaa;
-        LocalFADT.Pm1bEventBlock = 0x00001bbb;
+        Tmp32 = 0x00001aaa;
+        ACPI_MOVE_32_TO_32(&LocalFADT.Pm1aEventBlock, &Tmp32);
+        Tmp32 = 0x00001bbb;
+        ACPI_MOVE_32_TO_32(&LocalFADT.Pm1bEventBlock, &Tmp32);
 
         LocalFADT.Pm1ControlLength = 2;
-        LocalFADT.Pm1aControlBlock = 0xB0;
+        Tmp32 = 0xB0;
+        ACPI_MOVE_32_TO_32(&LocalFADT.Pm1aControlBlock, &Tmp32);
 
         LocalFADT.PmTimerLength = 4;
-        LocalFADT.PmTimerBlock = 0xA0;
+        Tmp32 = 0xA0;
+        ACPI_MOVE_32_TO_32(&LocalFADT.PmTimerBlock, &Tmp32);
 
-        LocalFADT.Pm2ControlBlock = 0xC0;
+        Tmp32 = 0xC0;
+        ACPI_MOVE_32_TO_32(&LocalFADT.Pm2ControlBlock, &Tmp32);
         LocalFADT.Pm2ControlLength = 1;
 
         /* Setup one example X-64 GAS field */
 
         LocalFADT.XPm1bEventBlock.SpaceId = ACPI_ADR_SPACE_SYSTEM_IO;
-        LocalFADT.XPm1bEventBlock.Address = LocalFADT.Pm1bEventBlock;
+	ACPI_MOVE_32_TO_32(&Tmp32, &LocalFADT.Pm1bEventBlock);
+	Tmp64 = (UINT64)Tmp32;
+        ACPI_MOVE_64_TO_64(&LocalFADT.XPm1bEventBlock.Address, &Tmp64);
         LocalFADT.XPm1bEventBlock.BitWidth = (UINT8)
             ACPI_MUL_8 (LocalFADT.Pm1EventLength);
     }
@@ -533,13 +550,17 @@ AeBuildLocalTables (
     memset (&LocalFACS, 0, sizeof (ACPI_TABLE_FACS));
     ACPI_MOVE_NAME (LocalFACS.Signature, ACPI_SIG_FACS);
 
-    LocalFACS.Length = sizeof (ACPI_TABLE_FACS);
-    LocalFACS.GlobalLock = 0x11AA0011;
+    Tmp32 = sizeof (ACPI_TABLE_FACS);
+    ACPI_MOVE_32_TO_32(&LocalFACS.Length, &Tmp32);
+    Tmp32 = 0x11AA0011;
+    ACPI_MOVE_32_TO_32(&LocalFACS.GlobalLock, &Tmp32);
 
     /* Build the optional local tables */
 
     if (AcpiGbl_LoadTestTables)
     {
+	UINT32 Tmp32;
+
         /*
          * Build a fake table [TEST] so that we make sure that the
          * ACPICA core ignores it
@@ -548,11 +569,12 @@ AeBuildLocalTables (
         ACPI_MOVE_NAME (LocalTEST.Signature, "TEST");
 
         LocalTEST.Revision = 1;
-        LocalTEST.Length = sizeof (ACPI_TABLE_HEADER);
+        Tmp32 = sizeof (ACPI_TABLE_HEADER);
+        ACPI_MOVE_32_TO_32(&LocalTEST.Length, &Tmp32);
 
         LocalTEST.Checksum = 0;
         LocalTEST.Checksum = (UINT8) -AcpiTbChecksum (
-            (void *) &LocalTEST, LocalTEST.Length);
+            (void *) &LocalTEST, Tmp32);
 
         /*
          * Build a fake table with a bad signature [BAD!] so that we make
@@ -562,11 +584,12 @@ AeBuildLocalTables (
         ACPI_MOVE_NAME (LocalBADTABLE.Signature, "BAD!");
 
         LocalBADTABLE.Revision = 1;
-        LocalBADTABLE.Length = sizeof (ACPI_TABLE_HEADER);
+        Tmp32 = sizeof (ACPI_TABLE_HEADER);
+        ACPI_MOVE_32_TO_32(&LocalBADTABLE.Length, &Tmp32);
 
         LocalBADTABLE.Checksum = 0;
         LocalBADTABLE.Checksum = (UINT8) -AcpiTbChecksum (
-            (void *) &LocalBADTABLE, LocalBADTABLE.Length);
+            (void *) &LocalBADTABLE, Tmp32);
     }
 
     return (AE_OK);

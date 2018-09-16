@@ -227,6 +227,7 @@ LkIsObjectUsed (
 {
     ACPI_NAMESPACE_NODE     *Node = ACPI_CAST_PTR (ACPI_NAMESPACE_NODE, ObjHandle);
     ACPI_NAMESPACE_NODE     *Next;
+    ACPI_NAME_UNION         tmp, tmp2;
     ASL_METHOD_LOCAL        *MethodLocals;
     ASL_METHOD_LOCAL        *MethodArgs;
     UINT32                  i;
@@ -283,7 +284,8 @@ LkIsObjectUsed (
                  * We ignore the predefined methods since often, not
                  * all arguments are needed or used.
                  */
-                if ((Node->Name.Ascii[0] != '_') &&
+                ACPI_MOVE_32_TO_32(&tmp.Ascii, Node->Name.Ascii);
+                if ((tmp.Ascii[0] != '_') &&
                     (!(MethodArgs[i].Flags & ASL_ARG_REFERENCED)))
                 {
                     sprintf (MsgBuffer, "Arg%u", i);
@@ -336,8 +338,10 @@ LkIsObjectUsed (
              * Issue a remark even if it is a reserved name (starts
              * with an underscore).
              */
+            ACPI_MOVE_32_TO_32(&tmp.Ascii, Node->Name.Ascii);
+            ACPI_MOVE_32_TO_32(&tmp2.Ascii, Next->Name.Ascii);
             sprintf (MsgBuffer, "Name [%4.4s] is within a method [%4.4s]",
-                Node->Name.Ascii, Next->Name.Ascii);
+                tmp.Ascii, tmp2.Ascii);
             AslError (ASL_REMARK, ASL_MSG_NOT_REFERENCED,
                 LkGetNameOp (Node->Op), MsgBuffer);
             return (AE_OK);
@@ -353,7 +357,8 @@ LkIsObjectUsed (
      * ACPI names and are typically not referenced since they are meant
      * to be called by the host OS.
      */
-    if (Node->Name.Ascii[0] == '_')
+    ACPI_MOVE_32_TO_32(&tmp.Ascii, Node->Name.Ascii);
+    if (tmp.Ascii[0] == '_')
     {
         return (AE_OK);
     }

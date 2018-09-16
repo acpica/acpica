@@ -658,7 +658,7 @@ AcpiDmDumpDataTable (
      */
     if (ACPI_COMPARE_NAME (Table->Signature, ACPI_SIG_FACS))
     {
-        Length = Table->Length;
+        ACPI_MOVE_32_TO_32(&Length, &Table->Length);
         Status = AcpiDmDumpTable (Length, 0, Table, 0, AcpiDmTableInfoFacs);
         if (ACPI_FAILURE (Status))
         {
@@ -672,13 +672,14 @@ AcpiDmDumpDataTable (
     else if (ACPI_COMPARE_NAME (Table->Signature, ACPI_SIG_S3PT))
     {
         Length = AcpiDmDumpS3pt (Table);
+        ACPI_MOVE_32_TO_32(&Length, &Table->Length);
     }
     else
     {
         /*
          * All other tables must use the common ACPI table header, dump it now
          */
-        Length = Table->Length;
+        ACPI_MOVE_32_TO_32(&Length, &Table->Length);
         Status = AcpiDmDumpTable (Length, 0, Table, 0, AcpiDmTableInfoHeader);
         if (ACPI_FAILURE (Status))
         {
@@ -889,6 +890,7 @@ AcpiDmDumpTable (
     BOOLEAN                 LastOutputBlankLine = FALSE;
     ACPI_STATUS             Status;
     char                    RepairedName[8];
+    UINT16		    Val16;
 
 
     if (!Info)
@@ -1285,8 +1287,9 @@ AcpiDmDumpTable (
             /* Checksum, display and validate */
 
             AcpiOsPrintf ("%2.2X", *Target);
-            Temp8 = AcpiDmGenerateChecksum (Table,
-                ACPI_CAST_PTR (ACPI_TABLE_HEADER, Table)->Length,
+	    ACPI_MOVE_32_TO_32(&Temp32,
+			&ACPI_CAST_PTR (ACPI_TABLE_HEADER, Table)->Length);
+            Temp8 = AcpiDmGenerateChecksum (Table, Temp32,
                 ACPI_CAST_PTR (ACPI_TABLE_HEADER, Table)->Checksum);
 
             if (Temp8 != ACPI_CAST_PTR (ACPI_TABLE_HEADER, Table)->Checksum)
@@ -1351,14 +1354,14 @@ AcpiDmDumpTable (
 
             /* DMAR subtable types */
 
-            Temp16 = ACPI_GET16 (Target);
+            Val16 = ACPI_GET16 (Target);
+	    ACPI_MOVE_16_TO_16(&Temp16, &Val16);
             if (Temp16 > ACPI_DMAR_TYPE_RESERVED)
             {
                 Temp16 = ACPI_DMAR_TYPE_RESERVED;
             }
 
-            AcpiOsPrintf (UINT16_FORMAT, ACPI_GET16 (Target),
-                AcpiDmDmarSubnames[Temp16]);
+            AcpiOsPrintf (UINT16_FORMAT, Temp16, AcpiDmDmarSubnames[Temp16]);
             break;
 
         case ACPI_DMT_DMAR_SCOPE:
@@ -1449,14 +1452,14 @@ AcpiDmDumpTable (
 
             /* HEST subtable types */
 
-            Temp16 = ACPI_GET16 (Target);
+            Val16 = ACPI_GET16 (Target);
+	    ACPI_MOVE_16_TO_16(&Temp16, &Val16);
             if (Temp16 > ACPI_HEST_TYPE_RESERVED)
             {
                 Temp16 = ACPI_HEST_TYPE_RESERVED;
             }
 
-            AcpiOsPrintf (UINT16_FORMAT, ACPI_GET16 (Target),
-                AcpiDmHestSubnames[Temp16]);
+            AcpiOsPrintf (UINT16_FORMAT, Temp16, AcpiDmHestSubnames[Temp16]);
             break;
 
         case ACPI_DMT_HESTNTFY:
@@ -1536,13 +1539,14 @@ AcpiDmDumpTable (
 
             /* NFIT subtable types */
 
-            Temp16 = ACPI_GET16 (Target);
+            Val16 = ACPI_GET16 (Target);
+            ACPI_MOVE_16_TO_16(&Temp16, &Val16);
             if (Temp16 > ACPI_NFIT_TYPE_RESERVED)
             {
                 Temp16 = ACPI_NFIT_TYPE_RESERVED;
             }
 
-            AcpiOsPrintf (UINT16_FORMAT, ACPI_GET16 (Target),
+            AcpiOsPrintf (UINT16_FORMAT, Temp16,
                 AcpiDmNfitSubnames[Temp16]);
             break;
 

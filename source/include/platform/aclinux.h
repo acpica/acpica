@@ -301,6 +301,7 @@
 
 #ifdef ACPI_USE_STANDARD_HEADERS
 #include <unistd.h>
+#include <endian.h>
 #endif
 
 /* Define/disable kernel-specific declarators */
@@ -333,6 +334,10 @@
 
 #ifndef __cdecl
 #define __cdecl
+#endif
+
+#if __BYTE_ORDER__ == __ORDER_BIG_ENDIAN__
+#define ACPI_BIG_ENDIAN
 #endif
 
 #endif /* __KERNEL__ */

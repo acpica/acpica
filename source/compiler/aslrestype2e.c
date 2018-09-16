@@ -186,6 +186,13 @@ RsDoExtendedIoDescriptor (
     ACPI_PARSE_OBJECT       *GranOp = NULL;
     ASL_RESOURCE_NODE       *Rnode;
     UINT16                  StringLength = 0;
+    UINT16                  ResourceLength = 0;
+    UINT64                  Minimum = 0;
+    UINT64                  Maximum = 0;
+    UINT64                  AddressLength = 0;
+    UINT64                  Granularity = 0;
+    UINT64                  TranslationOffset = 0;
+    UINT64                  TypeSpecific = 0;
     UINT32                  CurrentByteOffset;
     UINT32                  i;
 
@@ -202,9 +209,10 @@ RsDoExtendedIoDescriptor (
     Descriptor->ExtAddress64.ResourceType = ACPI_ADDRESS_TYPE_IO_RANGE;
     Descriptor->ExtAddress64.RevisionID = AML_RESOURCE_EXTENDED_ADDRESS_REVISION;
 
-    Descriptor->ExtAddress64.ResourceLength = (UINT16)
-        (sizeof (AML_RESOURCE_EXTENDED_ADDRESS64) -
+    ResourceLength  = (UINT16) (sizeof (AML_RESOURCE_EXTENDED_ADDRESS64) -
          sizeof (AML_RESOURCE_LARGE_HEADER));
+    ACPI_MOVE_16_TO_16(&Descriptor->ExtAddress64.ResourceLength,
+        &ResourceLength);
 
     /* Process all child initialization nodes */
 
@@ -247,7 +255,7 @@ RsDoExtendedIoDescriptor (
 
         case 5: /* Address Granularity */
 
-            Descriptor->ExtAddress64.Granularity = InitializerOp->Asl.Value.Integer;
+            Granularity = InitializerOp->Asl.Value.Integer;
             RsCreateQwordField (InitializerOp, ACPI_RESTAG_GRANULARITY,
                 CurrentByteOffset + ASL_RESDESC_OFFSET (ExtAddress64.Granularity));
             GranOp = InitializerOp;
@@ -255,7 +263,7 @@ RsDoExtendedIoDescriptor (
 
         case 6: /* Address Min */
 
-            Descriptor->ExtAddress64.Minimum = InitializerOp->Asl.Value.Integer;
+            Minimum = InitializerOp->Asl.Value.Integer;
             RsCreateQwordField (InitializerOp, ACPI_RESTAG_MINADDR,
                 CurrentByteOffset + ASL_RESDESC_OFFSET (ExtAddress64.Minimum));
             MinOp = InitializerOp;
@@ -263,7 +271,7 @@ RsDoExtendedIoDescriptor (
 
         case 7: /* Address Max */
 
-            Descriptor->ExtAddress64.Maximum = InitializerOp->Asl.Value.Integer;
+            Maximum = InitializerOp->Asl.Value.Integer;
             RsCreateQwordField (InitializerOp, ACPI_RESTAG_MAXADDR,
                 CurrentByteOffset + ASL_RESDESC_OFFSET (ExtAddress64.Maximum));
             MaxOp = InitializerOp;
@@ -271,14 +279,14 @@ RsDoExtendedIoDescriptor (
 
         case 8: /* Translation Offset */
 
-            Descriptor->ExtAddress64.TranslationOffset = InitializerOp->Asl.Value.Integer;
+            TranslationOffset = InitializerOp->Asl.Value.Integer;
             RsCreateQwordField (InitializerOp, ACPI_RESTAG_TRANSLATION,
                 CurrentByteOffset + ASL_RESDESC_OFFSET (ExtAddress64.TranslationOffset));
             break;
 
         case 9: /* Address Length */
 
-            Descriptor->ExtAddress64.AddressLength = InitializerOp->Asl.Value.Integer;
+            AddressLength = InitializerOp->Asl.Value.Integer;
             RsCreateQwordField (InitializerOp, ACPI_RESTAG_LENGTH,
                 CurrentByteOffset + ASL_RESDESC_OFFSET (ExtAddress64.AddressLength));
             LengthOp = InitializerOp;
@@ -286,7 +294,7 @@ RsDoExtendedIoDescriptor (
 
         case 10: /* Type-Specific Attributes */
 
-            Descriptor->ExtAddress64.TypeSpecific = InitializerOp->Asl.Value.Integer;
+            TypeSpecific = InitializerOp->Asl.Value.Integer;
             RsCreateQwordField (InitializerOp, ACPI_RESTAG_TYPESPECIFICATTRIBUTES,
                 CurrentByteOffset + ASL_RESDESC_OFFSET (ExtAddress64.TypeSpecific));
             break;
@@ -322,12 +330,19 @@ RsDoExtendedIoDescriptor (
     /* Validate the Min/Max/Len/Gran values */
 
     RsLargeAddressCheck (
-        Descriptor->ExtAddress64.Minimum,
-        Descriptor->ExtAddress64.Maximum,
-        Descriptor->ExtAddress64.AddressLength,
-        Descriptor->ExtAddress64.Granularity,
+        Minimum,
+        Maximum,
+        AddressLength,
+        Granularity,
         Descriptor->ExtAddress64.Flags,
         MinOp, MaxOp, LengthOp, GranOp, Info->DescriptorTypeOp);
+
+    ACPI_MOVE_64_TO_64(&Descriptor->ExtAddress64.Minimum, &Minimum);
+    ACPI_MOVE_64_TO_64(&Descriptor->ExtAddress64.Maximum, &Maximum);
+    ACPI_MOVE_64_TO_64(&Descriptor->ExtAddress64.AddressLength, &AddressLength);
+    ACPI_MOVE_64_TO_64(&Descriptor->ExtAddress64.Granularity, &Granularity);
+    ACPI_MOVE_64_TO_64(&Descriptor->ExtAddress64.TranslationOffset, &TranslationOffset);
+    ACPI_MOVE_64_TO_64(&Descriptor->ExtAddress64.TypeSpecific, &TypeSpecific);
 
     Rnode->BufferLength = sizeof (AML_RESOURCE_EXTENDED_ADDRESS64) +
         StringLength;

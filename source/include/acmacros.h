@@ -206,9 +206,12 @@
                                            ((UINT8 *)(void *)(d))[6] = ((UINT8 *)(void *)(s))[1];\
                                            ((UINT8 *)(void *)(d))[7] = ((UINT8 *)(void *)(s))[0];}
 
-/* 32-bit source, 16/32/64 destination */
+/* 32-bit source, 8/16/32/64 destination */
 
-#define ACPI_MOVE_32_TO_16(d, s)        ACPI_MOVE_16_TO_16(d, s)    /* Truncate to 16 */
+#define ACPI_MOVE_32_TO_8(d, s)        {((  UINT8 *)(void *)(d))[0] = ((UINT8 *)(void *)(s))[3];}
+
+#define ACPI_MOVE_32_TO_16(d, s)        {((  UINT8 *)(void *)(d))[0] = ((UINT8 *)(void *)(s))[3];\
+                                         ((  UINT8 *)(void *)(d))[1] = ((UINT8 *)(void *)(s))[2];}
 
 #define ACPI_MOVE_32_TO_32(d, s)        {((  UINT8 *)(void *)(d))[0] = ((UINT8 *)(void *)(s))[3];\
                                          ((  UINT8 *)(void *)(d))[1] = ((UINT8 *)(void *)(s))[2];\
@@ -221,11 +224,17 @@
                                            ((UINT8 *)(void *)(d))[6] = ((UINT8 *)(void *)(s))[1];\
                                            ((UINT8 *)(void *)(d))[7] = ((UINT8 *)(void *)(s))[0];}
 
-/* 64-bit source, 16/32/64 destination */
+/* 64-bit source, 8/16/32/64 destination */
 
-#define ACPI_MOVE_64_TO_16(d, s)        ACPI_MOVE_16_TO_16(d, s)    /* Truncate to 16 */
+#define ACPI_MOVE_64_TO_8(d, s)        {((  UINT8 *)(void *)(d))[0] = ((UINT8 *)(void *)(s))[7];}
 
-#define ACPI_MOVE_64_TO_32(d, s)        ACPI_MOVE_32_TO_32(d, s)    /* Truncate to 32 */
+#define ACPI_MOVE_64_TO_16(d, s)        {((  UINT8 *)(void *)(d))[0] = ((UINT8 *)(void *)(s))[7];\
+                                         ((  UINT8 *)(void *)(d))[1] = ((UINT8 *)(void *)(s))[6];}
+
+#define ACPI_MOVE_64_TO_32(d, s)        {((  UINT8 *)(void *)(d))[0] = ((UINT8 *)(void *)(s))[7];\
+                                         ((  UINT8 *)(void *)(d))[1] = ((UINT8 *)(void *)(s))[6];\
+                                         ((  UINT8 *)(void *)(d))[2] = ((UINT8 *)(void *)(s))[5];\
+                                         ((  UINT8 *)(void *)(d))[3] = ((UINT8 *)(void *)(s))[4];}
 
 #define ACPI_MOVE_64_TO_64(d, s)        {((  UINT8 *)(void *)(d))[0] = ((UINT8 *)(void *)(s))[7];\
                                          ((  UINT8 *)(void *)(d))[1] = ((UINT8 *)(void *)(s))[6];\
@@ -244,20 +253,26 @@
 
 /* The hardware supports unaligned transfers, just do the little-endian move */
 
-/* 16-bit source, 16/32/64 destination */
+/* 16-bit source, 8/16/32/64 destination */
 
+#define ACPI_MOVE_16_TO_8(d, s)         *(UINT8 *)(void *)(d) = *(UINT16 *)(void *)(s)
 #define ACPI_MOVE_16_TO_16(d, s)        *(UINT16 *)(void *)(d) = *(UINT16 *)(void *)(s)
 #define ACPI_MOVE_16_TO_32(d, s)        *(UINT32 *)(void *)(d) = *(UINT16 *)(void *)(s)
 #define ACPI_MOVE_16_TO_64(d, s)        *(UINT64 *)(void *)(d) = *(UINT16 *)(void *)(s)
 
-/* 32-bit source, 16/32/64 destination */
+/* 32-bit source, 8/16/32/64 destination */
 
-#define ACPI_MOVE_32_TO_16(d, s)        ACPI_MOVE_16_TO_16(d, s)    /* Truncate to 16 */
+#define ACPI_MOVE_32_TO_8(d, s)        {((  UINT8 *)(void *)(d))[0] = ((UINT8 *)(void *)(s))[0];}
+
+#define ACPI_MOVE_32_TO_16(d, s)        {((  UINT8 *)(void *)(d))[0] = ((UINT8 *)(void *)(s))[0];\
+                                         ((  UINT8 *)(void *)(d))[1] = ((UINT8 *)(void *)(s))[1];}
+
 #define ACPI_MOVE_32_TO_32(d, s)        *(UINT32 *)(void *)(d) = *(UINT32 *)(void *)(s)
 #define ACPI_MOVE_32_TO_64(d, s)        *(UINT64 *)(void *)(d) = *(UINT32 *)(void *)(s)
 
-/* 64-bit source, 16/32/64 destination */
+/* 64-bit source, 8/16/32/64 destination */
 
+#define ACPI_MOVE_64_TO_8(d, s)         ACPI_MOVE_16_TO_8(d, s)    /* Truncate to 8 */
 #define ACPI_MOVE_64_TO_16(d, s)        ACPI_MOVE_16_TO_16(d, s)    /* Truncate to 16 */
 #define ACPI_MOVE_64_TO_32(d, s)        ACPI_MOVE_32_TO_32(d, s)    /* Truncate to 32 */
 #define ACPI_MOVE_64_TO_64(d, s)        *(UINT64 *)(void *)(d) = *(UINT64 *)(void *)(s)
@@ -277,7 +292,9 @@
 #define ACPI_MOVE_16_TO_32(d, s)        {(*(UINT32 *)(void *)(d)) = 0; ACPI_MOVE_16_TO_16(d, s);}
 #define ACPI_MOVE_16_TO_64(d, s)        {(*(UINT64 *)(void *)(d)) = 0; ACPI_MOVE_16_TO_16(d, s);}
 
-/* 32-bit source, 16/32/64 destination */
+/* 32-bit source, 8/16/32/64 destination */
+
+#define ACPI_MOVE_32_TO_8(d, s)         ACPI_MOVE_16_TO_8(d, s)    /* Truncate to 8 */
 
 #define ACPI_MOVE_32_TO_16(d, s)        ACPI_MOVE_16_TO_16(d, s)    /* Truncate to 16 */
 

@@ -389,6 +389,8 @@ DtCompileCsrt (
     DT_FIELD                **PFieldList = (DT_FIELD **) List;
     UINT32                  DescriptorCount;
     UINT32                  GroupLength;
+    ACPI_CSRT_GROUP	    *Pgrp;
+    UINT32		    Tmp32;
 
 
     /* Subtables (Resource Groups) */
@@ -407,12 +409,20 @@ DtCompileCsrt (
 
         /* Compute the number of resource descriptors */
 
+	/*
         GroupLength =
             (ACPI_CAST_PTR (ACPI_CSRT_GROUP,
                 Subtable->Buffer))->Length -
             (ACPI_CAST_PTR (ACPI_CSRT_GROUP,
                 Subtable->Buffer))->SharedInfoLength -
             sizeof (ACPI_CSRT_GROUP);
+	*/
+	Pgrp = ACPI_CAST_PTR(ACPI_CSRT_GROUP, Subtable->Buffer);
+	ACPI_MOVE_32_TO_32(&Tmp32, &Pgrp->Length);
+	GroupLength = Tmp32;
+	ACPI_MOVE_32_TO_32(&Tmp32, &Pgrp->SharedInfoLength);
+	GroupLength -= Tmp32;
+        GroupLength -= sizeof (ACPI_CSRT_GROUP);
 
         DescriptorCount = (GroupLength  /
             sizeof (ACPI_CSRT_DESCRIPTOR));
@@ -500,6 +510,8 @@ DtCompileDbg2 (
     ACPI_DBG2_DEVICE        *DeviceInfo;
     UINT16                  CurrentOffset;
     UINT32                  i;
+    UINT16                  Tmp16;
+    UINT32                  Tmp32;
 
 
     /* Main table */
@@ -516,10 +528,11 @@ DtCompileDbg2 (
     /* Main table fields */
 
     Dbg2Header = ACPI_CAST_PTR (ACPI_DBG2_HEADER, Subtable->Buffer);
-    Dbg2Header->InfoOffset = sizeof (ACPI_TABLE_HEADER) + ACPI_PTR_DIFF (
+    Tmp32 = sizeof (ACPI_TABLE_HEADER) + ACPI_PTR_DIFF (
         ACPI_ADD_PTR (UINT8, Dbg2Header, sizeof (ACPI_DBG2_HEADER)), Dbg2Header);
+    ACPI_MOVE_32_TO_32(&Dbg2Header->InfoOffset, &Tmp32);
 
-    SubtableCount = Dbg2Header->InfoCount;
+    ACPI_MOVE_32_TO_32(&SubtableCount, &Dbg2Header->InfoCount);
     DtPushSubtable (Subtable);
 
     /* Process all Device Information subtables (Count = InfoCount) */
@@ -546,7 +559,7 @@ DtCompileDbg2 (
 
         /* BaseAddressRegister GAS array (Required, size is RegisterCount) */
 
-        DeviceInfo->BaseAddressOffset = CurrentOffset;
+        ACPI_MOVE_16_TO_16(&DeviceInfo->BaseAddressOffset, &CurrentOffset);
         for (i = 0; *PFieldList && (i < DeviceInfo->RegisterCount); i++)
         {
             Status = DtCompileTable (PFieldList, AcpiDmTableInfoDbg2Addr,
@@ -562,7 +575,7 @@ DtCompileDbg2 (
 
         /* AddressSize array (Required, size = RegisterCount) */
 
-        DeviceInfo->AddressSizeOffset = CurrentOffset;
+        ACPI_MOVE_16_TO_16(&DeviceInfo->AddressSizeOffset, &CurrentOffset);
         for (i = 0; *PFieldList && (i < DeviceInfo->RegisterCount); i++)
         {
             Status = DtCompileTable (PFieldList, AcpiDmTableInfoDbg2Size,
@@ -578,7 +591,7 @@ DtCompileDbg2 (
 
         /* NamespaceString device identifier (Required, size = NamePathLength) */
 
-        DeviceInfo->NamepathOffset = CurrentOffset;
+        ACPI_MOVE_16_TO_16(&DeviceInfo->NamepathOffset, &CurrentOffset);
         Status = DtCompileTable (PFieldList, AcpiDmTableInfoDbg2Name,
             &Subtable);
         if (ACPI_FAILURE (Status))
@@ -588,8 +601,9 @@ DtCompileDbg2 (
 
         /* Update the device info header */
 
-        DeviceInfo->NamepathLength = (UINT16) Subtable->Length;
-        CurrentOffset += (UINT16) DeviceInfo->NamepathLength;
+        ACPI_MOVE_32_TO_16(&DeviceInfo->NamepathLength, &Subtable->Length);
+        ACPI_MOVE_16_TO_16(&Tmp16, &DeviceInfo->NamepathLength);
+        CurrentOffset += Tmp16;
         DtInsertSubtable (ParentTable, Subtable);
 
         /* OemData - Variable-length data (Optional, size = OemDataLength) */
@@ -616,8 +630,8 @@ DtCompileDbg2 (
 
         if (Subtable && Subtable->Length)
         {
-            DeviceInfo->OemDataOffset = CurrentOffset;
-            DeviceInfo->OemDataLength = (UINT16) Subtable->Length;
+            ACPI_MOVE_16_TO_16(&DeviceInfo->OemDataOffset, &CurrentOffset);
+            ACPI_MOVE_32_TO_16(&DeviceInfo->OemDataLength, &Subtable->Length);
 
             DtInsertSubtable (ParentTable, Subtable);
         }
@@ -657,6 +671,8 @@ DtCompileDmar (
     ACPI_DMAR_DEVICE_SCOPE  *DmarDeviceScope;
     UINT32                  DeviceScopeLength;
     UINT32                  PciPathLength;
+    UINT16		    Tmp16;
+    UINT16		    HdrType;
 
 
     Status = DtCompileTable (PFieldList, AcpiDmTableInfoDmar, &Subtable);
@@ -686,8 +702,11 @@ DtCompileDmar (
         DtPushSubtable (Subtable);
 
         DmarHeader = ACPI_CAST_PTR (ACPI_DMAR_HEADER, Subtable->Buffer);
+	ACPI_MOVE_16_TO_16(&Tmp16, &DmarHeader->Length);
+	DmarHeader->Length = Tmp16;
 
-        switch (DmarHeader->Type)
+	ACPI_MOVE_16_TO_16(&HdrType, &DmarHeader->Type);
+        switch (HdrType)
         {
         case ACPI_DMAR_TYPE_HARDWARE_UNIT:
 
@@ -734,8 +753,8 @@ DtCompileDmar (
         /*
          * Optional Device Scope subtables
          */
-        if ((DmarHeader->Type == ACPI_DMAR_TYPE_HARDWARE_AFFINITY) ||
-            (DmarHeader->Type == ACPI_DMAR_TYPE_NAMESPACE))
+        if ((HdrType == ACPI_DMAR_TYPE_HARDWARE_AFFINITY) ||
+            (HdrType == ACPI_DMAR_TYPE_NAMESPACE))
         {
             /* These types do not support device scopes */
 
@@ -745,7 +764,7 @@ DtCompileDmar (
 
         DtPushSubtable (Subtable);
         DeviceScopeLength = DmarHeader->Length - Subtable->Length -
-            ParentTable->Length;
+		ParentTable->Length;
         while (DeviceScopeLength)
         {
             Status = DtCompileTable (PFieldList, AcpiDmTableInfoDmarScope,
@@ -870,7 +889,7 @@ DtCompileDrtm (
         Count++;
     }
 
-    DrtmVtl->ValidatedTableCount = Count;
+    ACPI_MOVE_32_TO_32(&DrtmVtl->ValidatedTableCount, &Count);
     DtPopSubtable ();
     ParentTable = DtPeekSubtable ();
 
@@ -908,7 +927,7 @@ DtCompileDrtm (
         Count++;
     }
 
-    DrtmRl->ResourceCount = Count;
+    ACPI_MOVE_32_TO_32(&DrtmRl->ResourceCount, &Count);
     DtPopSubtable ();
     ParentTable = DtPeekSubtable ();
 
@@ -1002,6 +1021,7 @@ DtCompileGtdt (
     ACPI_SUBTABLE_HEADER    *GtdtHeader;
     ACPI_DMTABLE_INFO       *InfoTable;
     UINT32                  GtCount;
+    ACPI_GTDT_TIMER_BLOCK   *TimerBlock;
 
 
     Status = DtCompileTable (PFieldList, AcpiDmTableInfoGtdt,
@@ -1068,8 +1088,9 @@ DtCompileGtdt (
             DtPushSubtable (Subtable);
             ParentTable = DtPeekSubtable ();
 
-            GtCount = (ACPI_CAST_PTR (ACPI_GTDT_TIMER_BLOCK,
-                Subtable->Buffer - sizeof(ACPI_GTDT_HEADER)))->TimerCount;
+	    TimerBlock = ACPI_CAST_PTR (ACPI_GTDT_TIMER_BLOCK,
+                Subtable->Buffer - sizeof(ACPI_GTDT_HEADER));
+	    ACPI_MOVE_32_TO_32(&GtCount, &TimerBlock->TimerCount);
 
             while (GtCount)
             {
@@ -1122,6 +1143,7 @@ DtCompileFpdt (
     ACPI_DMTABLE_INFO       *InfoTable;
     DT_FIELD                **PFieldList = (DT_FIELD **) List;
     DT_FIELD                *SubtableStart;
+    UINT16		    HdrType;
 
 
     while (*PFieldList)
@@ -1140,7 +1162,8 @@ DtCompileFpdt (
 
         FpdtHeader = ACPI_CAST_PTR (ACPI_FPDT_HEADER, Subtable->Buffer);
 
-        switch (FpdtHeader->Type)
+	ACPI_MOVE_16_TO_16(&HdrType, &FpdtHeader->Type);
+        switch (HdrType)
         {
         case ACPI_FPDT_TYPE_BOOT:
 
@@ -1198,6 +1221,7 @@ DtCompileHest (
     ACPI_DMTABLE_INFO       *InfoTable;
     UINT16                  Type;
     UINT32                  BankCount;
+    UINT16		    Tmp16;
 
 
     Status = DtCompileTable (PFieldList, AcpiDmTableInfoHest,
@@ -1215,8 +1239,9 @@ DtCompileHest (
         /* Get subtable type */
 
         SubtableStart = *PFieldList;
-        DtCompileInteger ((UINT8 *) &Type, *PFieldList, 2, 0);
+        DtCompileInteger ((UINT8 *) &Tmp16, *PFieldList, 2, 0);
 
+	ACPI_MOVE_16_TO_16(&Type, &Tmp16);
         switch (Type)
         {
         case ACPI_HEST_TYPE_IA32_CHECK:
@@ -1566,11 +1591,13 @@ DtCompileIort (
     ACPI_IORT_SMMU          *IortSmmu;
     UINT32                  NodeNumber;
     UINT32                  NodeLength;
+    UINT32                  NodeOffset;
     UINT32                  IdMappingNumber;
     UINT32                  ItsNumber;
     UINT32                  ContextIrptNumber;
     UINT32                  PmuIrptNumber;
     UINT32                  PaddingLength;
+    UINT32                  MappingOffset;
 
 
     ParentTable = DtPeekSubtable ();
@@ -1596,7 +1623,7 @@ DtCompileIort (
      * Optionally allows the generic data types to be used for filling
      * this field.
      */
-    Iort->NodeOffset = sizeof (ACPI_TABLE_IORT);
+    NodeOffset = sizeof (ACPI_TABLE_IORT);
     Status = DtCompileTable (PFieldList, AcpiDmTableInfoIortPad,
         &Subtable);
     if (ACPI_FAILURE (Status))
@@ -1606,7 +1633,7 @@ DtCompileIort (
     if (Subtable)
     {
         DtInsertSubtable (ParentTable, Subtable);
-        Iort->NodeOffset += Subtable->Length;
+        NodeOffset += Subtable->Length;
     }
     else
     {
@@ -1616,8 +1643,9 @@ DtCompileIort (
         {
             return (Status);
         }
-        Iort->NodeOffset += PaddingLength;
+        NodeOffset += PaddingLength;
     }
+    ACPI_MOVE_32_TO_32(&Iort->NodeOffset, &NodeOffset);
 
     NodeNumber = 0;
     while (*PFieldList)
@@ -1671,7 +1699,7 @@ DtCompileIort (
                 ItsNumber++;
             }
 
-            IortItsGroup->ItsCount = ItsNumber;
+            ACPI_MOVE_32_TO_32(&IortItsGroup->ItsCount, &ItsNumber);
             break;
 
         case ACPI_IORT_NODE_NAMED_COMPONENT:
@@ -1705,15 +1733,16 @@ DtCompileIort (
             }
             else
             {
-                if (NodeLength > IortNode->MappingOffset)
+		ACPI_MOVE_32_TO_32(&MappingOffset, &IortNode->MappingOffset);
+                if (NodeLength > MappingOffset)
                 {
                     return (AE_BAD_DATA);
                 }
 
-                if (NodeLength < IortNode->MappingOffset)
+                if (NodeLength < MappingOffset)
                 {
                     Status = DtCompilePadding (
-                        IortNode->MappingOffset - NodeLength,
+                        MappingOffset - NodeLength,
                         &Subtable);
                     if (ACPI_FAILURE (Status))
                     {
@@ -1721,7 +1750,8 @@ DtCompileIort (
                     }
 
                     DtInsertSubtable (ParentTable, Subtable);
-                    NodeLength = IortNode->MappingOffset;
+		    ACPI_MOVE_32_TO_32(&MappingOffset, &IortNode->MappingOffset);
+                    NodeLength = MappingOffset;
                 }
             }
             break;
@@ -1754,7 +1784,7 @@ DtCompileIort (
 
             /* Compile global interrupt array */
 
-            IortSmmu->GlobalInterruptOffset = NodeLength;
+            ACPI_MOVE_32_TO_32(&IortSmmu->GlobalInterruptOffset, &NodeLength);
             Status = DtCompileTable (PFieldList, AcpiDmTableInfoIort3a,
                 &Subtable);
             if (ACPI_FAILURE (Status))
@@ -1768,7 +1798,7 @@ DtCompileIort (
             /* Compile context interrupt array */
 
             ContextIrptNumber = 0;
-            IortSmmu->ContextInterruptOffset = NodeLength;
+            ACPI_MOVE_32_TO_32(&IortSmmu->ContextInterruptOffset, &NodeLength);
             while (*PFieldList)
             {
                 Status = DtCompileTable (PFieldList, AcpiDmTableInfoIort3b,
@@ -1788,12 +1818,12 @@ DtCompileIort (
                 ContextIrptNumber++;
             }
 
-            IortSmmu->ContextInterruptCount = ContextIrptNumber;
+            ACPI_MOVE_32_TO_32(&IortSmmu->ContextInterruptCount, &ContextIrptNumber);
 
             /* Compile PMU interrupt array */
 
             PmuIrptNumber = 0;
-            IortSmmu->PmuInterruptOffset = NodeLength;
+            ACPI_MOVE_32_TO_32(&IortSmmu->PmuInterruptOffset, &NodeLength);
             while (*PFieldList)
             {
                 Status = DtCompileTable (PFieldList, AcpiDmTableInfoIort3c,
@@ -1813,7 +1843,7 @@ DtCompileIort (
                 PmuIrptNumber++;
             }
 
-            IortSmmu->PmuInterruptCount = PmuIrptNumber;
+            ACPI_MOVE_32_TO_32(&IortSmmu->PmuInterruptCount, &PmuIrptNumber);
             break;
 
         case ACPI_IORT_NODE_SMMU_V3:
@@ -1850,7 +1880,7 @@ DtCompileIort (
 
         /* Compile Array of ID mappings */
 
-        IortNode->MappingOffset = NodeLength;
+        ACPI_MOVE_32_TO_32(&IortNode->MappingOffset, &NodeLength);
         IdMappingNumber = 0;
         while (*PFieldList)
         {
@@ -1871,7 +1901,7 @@ DtCompileIort (
             IdMappingNumber++;
         }
 
-        IortNode->MappingCount = IdMappingNumber;
+        ACPI_MOVE_32_TO_32(&IortNode->MappingCount, &IdMappingNumber);
         if (!IdMappingNumber)
         {
             IortNode->MappingOffset = 0;
@@ -1886,7 +1916,7 @@ DtCompileIort (
         NodeNumber++;
     }
 
-    Iort->NodeCount = NodeNumber;
+    ACPI_MOVE_32_TO_32(&Iort->NodeCount, &NodeNumber);
     return (AE_OK);
 }
 

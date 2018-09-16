@@ -250,7 +250,9 @@ AdCreateTableHeader (
     ACPI_TABLE_HEADER       *Table)
 {
     UINT8                   Checksum;
-
+    UINT32		    TableLen;
+    UINT32		    OemRev;
+    UINT32		    CompilerRev;
 
     /* Reset globals for External statements */
 
@@ -262,9 +264,10 @@ AdCreateTableHeader (
      */
     AdDisassemblerHeader (Filename, ACPI_IS_AML_TABLE);
 
+    ACPI_MOVE_32_TO_32(&TableLen, &Table->Length);
     AcpiOsPrintf (" * Original Table Header:\n");
     AcpiOsPrintf (" *     Signature        \"%4.4s\"\n",    Table->Signature);
-    AcpiOsPrintf (" *     Length           0x%8.8X (%u)\n", Table->Length, Table->Length);
+    AcpiOsPrintf (" *     Length           0x%8.8X (%u)\n", TableLen, TableLen);
 
     /* Print and validate the revision */
 
@@ -296,7 +299,7 @@ AdCreateTableHeader (
 
     AcpiOsPrintf ("\n *     Checksum         0x%2.2X",        Table->Checksum);
 
-    Checksum = AcpiTbChecksum (ACPI_CAST_PTR (UINT8, Table), Table->Length);
+    Checksum = AcpiTbChecksum (ACPI_CAST_PTR (UINT8, Table), TableLen);
     if (Checksum)
     {
         AcpiOsPrintf (" **** Incorrect checksum, should be 0x%2.2X",
@@ -306,9 +309,11 @@ AdCreateTableHeader (
     AcpiOsPrintf ("\n");
     AcpiOsPrintf (" *     OEM ID           \"%.6s\"\n",     Table->OemId);
     AcpiOsPrintf (" *     OEM Table ID     \"%.8s\"\n",     Table->OemTableId);
-    AcpiOsPrintf (" *     OEM Revision     0x%8.8X (%u)\n", Table->OemRevision, Table->OemRevision);
+    ACPI_MOVE_32_TO_32(&OemRev, &Table->OemRevision);
+    AcpiOsPrintf (" *     OEM Revision     0x%8.8X (%u)\n", OemRev, OemRev);
     AcpiOsPrintf (" *     Compiler ID      \"%.4s\"\n",     Table->AslCompilerId);
-    AcpiOsPrintf (" *     Compiler Version 0x%8.8X (%u)\n", Table->AslCompilerRevision, Table->AslCompilerRevision);
+    ACPI_MOVE_32_TO_32(&CompilerRev, &Table->AslCompilerRevision);
+    AcpiOsPrintf (" *     Compiler Version 0x%8.8X (%u)\n", CompilerRev, CompilerRev);
     AcpiOsPrintf (" */\n");
 
     /*
@@ -329,7 +334,7 @@ AdCreateTableHeader (
     AcpiOsPrintf (
         "DefinitionBlock (\"\", \"%4.4s\", %hu, \"%.6s\", \"%.8s\", 0x%8.8X)\n",
         Table->Signature, Table->Revision,
-        Table->OemId, Table->OemTableId, Table->OemRevision);
+        Table->OemId, Table->OemTableId, OemRev);
 }
 
 
@@ -504,7 +509,8 @@ AdParseTable (
 
     fprintf (stderr, "Pass 1 parse of [%4.4s]\n", (char *) Table->Signature);
 
-    AmlLength = Table->Length - sizeof (ACPI_TABLE_HEADER);
+    ACPI_MOVE_32_TO_32(&AmlLength, &Table->Length);
+    AmlLength -= sizeof (ACPI_TABLE_HEADER);
     AmlStart = ((UINT8 *) Table + sizeof (ACPI_TABLE_HEADER));
     ASL_CV_INIT_FILETREE(Table, AmlStart, AmlLength);
 

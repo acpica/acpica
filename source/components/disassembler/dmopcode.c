@@ -352,6 +352,7 @@ AcpiDmPredefinedDescription (
     char                        *NameString;
     int                         LastCharIsDigit;
     int                         LastCharsAreHex;
+    char			TmpName[ACPI_NAME_SIZE + 1];
 
 
     if (!Op)
@@ -369,7 +370,9 @@ AcpiDmPredefinedDescription (
 
     /* Predefined name must start with an underscore */
 
-    NameString = ACPI_CAST_PTR (char, &Op->Named.Name);
+    memset(TmpName, 0, ACPI_NAME_SIZE + 1);
+    ACPI_MOVE_32_TO_32(TmpName, &Op->Named.Name);
+    NameString = TmpName;
     if (NameString[0] != '_')
     {
         return;
@@ -988,25 +991,29 @@ AcpiDmDisassembleOneOp (
         AcpiDmNamestring (Op->Common.Value.Name);
         break;
 
-    case AML_INT_NAMEDFIELD_OP:
+    case AML_INT_NAMEDFIELD_OP: {
 
-        Length = AcpiDmDumpName (Op->Named.Name);
+	UINT32 TmpName;
+
+	ACPI_MOVE_32_TO_32(&TmpName, &Op->Named.Name);
+        Length = AcpiDmDumpName (TmpName);
 
         AcpiOsPrintf (",");
         ASL_CV_PRINT_ONE_COMMENT (Op, AML_NAMECOMMENT, NULL, 0);
         AcpiOsPrintf ("%*.s  %u", (unsigned) (5 - Length), " ",
-            (UINT32) Op->Common.Value.Integer);
+            (UINT32) Op->Common.Value.Size);
 
         AcpiDmCommaIfFieldMember (Op);
 
-        Info->BitOffset += (UINT32) Op->Common.Value.Integer;
+        Info->BitOffset += (UINT32) Op->Common.Value.Size;
         break;
+    }
 
     case AML_INT_RESERVEDFIELD_OP:
 
         /* Offset() -- Must account for previous offsets */
 
-        Offset = (UINT32) Op->Common.Value.Integer;
+        Offset = Op->Common.Value.Size;
         Info->BitOffset += Offset;
 
         if (Info->BitOffset % 8 == 0)
@@ -1050,10 +1057,15 @@ AcpiDmDisassembleOneOp (
 
         if (Child->Common.AmlOpcode == AML_INT_BYTELIST_OP)
         {
+	    /* UINT64 Tmp64; */
+
             AcpiOsPrintf ("\n");
 
             Aml = Child->Named.Data;
+	    /*
             Length = (UINT32) Child->Common.Value.Integer;
+	    */
+            Length = (UINT32) Child->Common.Value.Size;
 
             Info->Level += 1;
             Info->MappingOp = Op;

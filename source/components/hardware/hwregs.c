@@ -305,7 +305,7 @@ AcpiHwValidateRegister (
      * Address must not be null. A null address also indicates an optional
      * ACPI register that is not supported, so no error message.
      */
-    ACPI_MOVE_64_TO_64 (Address, &Reg->Address);
+    *Address =  Reg->Address;
     if (!(*Address))
     {
         return (AE_BAD_ADDRESS);

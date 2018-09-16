@@ -348,16 +348,12 @@ CgWriteAmlOpcode (
     ACPI_PARSE_OBJECT       *Op)
 {
     UINT8                   PkgLenFirstByte;
-    UINT32                  i;
-    union {
-        UINT16                  Opcode;
-        UINT8                   OpcodeBytes[2];
-    } Aml;
-    union {
-        UINT32                  Len;
-        UINT8                   LenBytes[4];
-    } PkgLen;
-
+    UINT8                   Byte;
+    UINT16                  Word;
+    UINT32                  DWord;
+    UINT64                  QWord;
+    UINT16                  AmlOpcode;
+    UINT32                  PkgLen;
 
     /* We expect some DEFAULT_ARGs, just ignore them */
 
@@ -390,51 +386,52 @@ CgWriteAmlOpcode (
 
         /* Special opcodes for within a field definition */
 
-        Aml.Opcode = AML_FIELD_OFFSET_OP;
+        AmlOpcode = AML_FIELD_OFFSET_OP;
         break;
 
     case AML_INT_ACCESSFIELD_OP:
 
-        Aml.Opcode = AML_FIELD_ACCESS_OP;
+        AmlOpcode = AML_FIELD_ACCESS_OP;
         break;
 
     case AML_INT_CONNECTION_OP:
 
-        Aml.Opcode = AML_FIELD_CONNECTION_OP;
+        AmlOpcode = AML_FIELD_CONNECTION_OP;
         break;
 
     default:
 
-        Aml.Opcode = Op->Asl.AmlOpcode;
+        AmlOpcode = Op->Asl.AmlOpcode;
         break;
     }
 
 
-    switch (Aml.Opcode)
+    switch (AmlOpcode)
     {
     case AML_PACKAGE_LENGTH:
 
         /* Value is the length to be encoded (Used in field definitions) */
 
-        PkgLen.Len = (UINT32) Op->Asl.Value.Integer;
+        PkgLen = (UINT32) Op->Asl.Value.Integer;
         break;
 
     default:
 
         /* Check for two-byte opcode */
 
-        if (Aml.Opcode > 0x00FF)
+        if (AmlOpcode > 0x00FF)
         {
             /* Write the high byte first */
-
-            CgLocalWriteAmlData (Op, &Aml.OpcodeBytes[1], 1);
+	    Byte = ACPI_HIBYTE(AmlOpcode);
+	    CgLocalWriteAmlData (Op, &Byte, 1);
         }
 
-        CgLocalWriteAmlData (Op, &Aml.OpcodeBytes[0], 1);
+	Byte = ACPI_LOBYTE(AmlOpcode);
+        CgLocalWriteAmlData (Op, &Byte, 1);
 
         /* Subtreelength doesn't include length of package length bytes */
 
-        PkgLen.Len = Op->Asl.AmlSubtreeLength + Op->Asl.AmlPkgLenBytes;
+        PkgLen = Op->Asl.AmlSubtreeLength + Op->Asl.AmlPkgLenBytes;
         break;
     }
 
@@ -445,8 +442,8 @@ CgWriteAmlOpcode (
         if (Op->Asl.AmlPkgLenBytes == 1)
         {
             /* Simplest case -- no bytes to follow, just write the count */
-
-            CgLocalWriteAmlData (Op, &PkgLen.LenBytes[0], 1);
+            Byte = ACPI_LOBYTE(PkgLen);
+            CgLocalWriteAmlData (Op, &Byte, 1);
         }
         else if (Op->Asl.AmlPkgLenBytes != 0)
         {
@@ -456,7 +453,7 @@ CgWriteAmlOpcode (
              */
             PkgLenFirstByte = (UINT8)
                 (((UINT32) (Op->Asl.AmlPkgLenBytes - 1) << 6) |
-                (PkgLen.LenBytes[0] & 0x0F));
+                (PkgLen & 0x0F));
 
             CgLocalWriteAmlData (Op, &PkgLenFirstByte, 1);
 
@@ -464,39 +461,47 @@ CgWriteAmlOpcode (
              * Shift the length over by the 4 bits we just stuffed
              * in the first byte
              */
-            PkgLen.Len >>= 4;
+            PkgLen >>= 4;
 
             /*
              * Now we can write the remaining bytes -
              * either 1, 2, or 3 bytes
              */
-            for (i = 0; i < (UINT32) (Op->Asl.AmlPkgLenBytes - 1); i++)
+            Byte = ACPI_LOBYTE(PkgLen);
+            CgLocalWriteAmlData (Op, &Byte, 1);
+            if (Op->Asl.AmlPkgLenBytes >= 3)
             {
-                CgLocalWriteAmlData (Op, &PkgLen.LenBytes[i], 1);
+                Byte = ACPI_HIBYTE(PkgLen);
+                CgLocalWriteAmlData (Op, &Byte, 1);
+            }
+            if (Op->Asl.AmlPkgLenBytes >= 4)
+            {
+                Byte = ACPI_LOBYTE(ACPI_HIWORD(PkgLen));
+                CgLocalWriteAmlData (Op, &Byte, 1);
             }
         }
     }
 
-    switch (Aml.Opcode)
+    switch (AmlOpcode)
     {
     case AML_BYTE_OP:
-
-        CgLocalWriteAmlData (Op, &Op->Asl.Value.Integer, 1);
+        Byte = (UINT8) Op->Asl.Value.Integer;
+        CgLocalWriteAmlData (Op, &Byte, 1);
         break;
 
     case AML_WORD_OP:
-
-        CgLocalWriteAmlData (Op, &Op->Asl.Value.Integer, 2);
+        ACPI_MOVE_64_TO_16(&Word, &Op->Asl.Value.Integer);
+        CgLocalWriteAmlData (Op, &Word, 2);
        break;
 
     case AML_DWORD_OP:
-
-        CgLocalWriteAmlData (Op, &Op->Asl.Value.Integer, 4);
+        ACPI_MOVE_64_TO_32(&DWord, &Op->Asl.Value.Integer);
+        CgLocalWriteAmlData (Op, &DWord, 4);
         break;
 
     case AML_QWORD_OP:
-
-        CgLocalWriteAmlData (Op, &Op->Asl.Value.Integer, 8);
+        ACPI_MOVE_64_TO_64(&QWord, &Op->Asl.Value.Integer);
+        CgLocalWriteAmlData (Op, &QWord, 8);
         break;
 
     case AML_STRING_OP:
@@ -530,6 +535,7 @@ CgWriteTableHeader (
     ACPI_PARSE_OBJECT       *Op)
 {
     ACPI_PARSE_OBJECT       *Child;
+    UINT32                  DWord;
     UINT32                  CommentLength;
     ACPI_COMMENT_NODE       *Current;
 
@@ -583,7 +589,7 @@ CgWriteTableHeader (
     /* OEM Revision */
 
     Child = Child->Asl.Next;
-    TableHeader.OemRevision = (UINT32) Child->Asl.Value.Integer;
+    ACPI_MOVE_64_TO_32(&TableHeader.OemRevision, &Child->Asl.Value.Integer);
 
     /* Compiler ID */
 
@@ -591,12 +597,12 @@ CgWriteTableHeader (
 
     /* Compiler version */
 
-    TableHeader.AslCompilerRevision = ACPI_CA_VERSION;
+    DWord = ACPI_CA_VERSION;
+    ACPI_MOVE_32_TO_32(&TableHeader.AslCompilerRevision, &DWord);
 
     /* Table length. Checksum zero for now, will rewrite later */
 
-    TableHeader.Length = sizeof (ACPI_TABLE_HEADER) +
-        Op->Asl.AmlSubtreeLength;
+    TableHeader.Length = sizeof (ACPI_TABLE_HEADER) + Op->Asl.AmlSubtreeLength;
 
     /* Calculate the comment lengths for this definition block parseOp */
 
@@ -640,6 +646,8 @@ CgWriteTableHeader (
         CvDbgPrint ("    Length: %u\n", CommentLength);
         }
     }
+    DWord = TableHeader.Length;
+    ACPI_MOVE_32_TO_32(&TableHeader.Length, &DWord);
 
     TableHeader.Checksum = 0;
 
@@ -753,7 +761,10 @@ CgWriteNode (
     ACPI_PARSE_OBJECT       *Op)
 {
     ASL_RESOURCE_NODE       *Rnode;
-
+    UINT8                   Byte;
+    UINT16                  Word;
+    UINT32                  DWord;
+    UINT64                  QWord;
 
     /* Write all comments here. */
 
@@ -783,13 +794,24 @@ CgWriteNode (
     switch (Op->Asl.AmlOpcode)
     {
     case AML_RAW_DATA_BYTE:
-    case AML_RAW_DATA_WORD:
-    case AML_RAW_DATA_DWORD:
-    case AML_RAW_DATA_QWORD:
-
-        CgLocalWriteAmlData (Op, &Op->Asl.Value.Integer, Op->Asl.AmlLength);
+        Byte = (UINT8) Op->Asl.Value.Integer;
+        CgLocalWriteAmlData (Op, &Byte, 1);
         return;
 
+    case AML_RAW_DATA_WORD:
+        ACPI_MOVE_64_TO_16(&Word, &Op->Asl.Value.Integer);
+        CgLocalWriteAmlData (Op, &Word, 2);
+        return;
+
+    case AML_RAW_DATA_DWORD:
+        ACPI_MOVE_64_TO_32(&DWord, &Op->Asl.Value.Integer);
+        CgLocalWriteAmlData (Op, &DWord, 4);
+        return;
+
+    case AML_RAW_DATA_QWORD:
+        ACPI_MOVE_64_TO_64(&QWord, &Op->Asl.Value.Integer);
+        CgLocalWriteAmlData (Op, &QWord, 8);
+        return;
 
     case AML_RAW_DATA_BUFFER:
 

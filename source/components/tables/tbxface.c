@@ -401,8 +401,11 @@ AcpiGetTableHeader (
 
     for (i = 0, j = 0; i < AcpiGbl_RootTableList.CurrentTableCount; i++)
     {
+	UINT32 Tmp32;
+
+	ACPI_MOVE_32_TO_32(&Tmp32, (UINT32 *)Signature);
         if (!ACPI_COMPARE_NAME (
-                &(AcpiGbl_RootTableList.Tables[i].Signature), Signature))
+                &(AcpiGbl_RootTableList.Tables[i].Signature), &Tmp32))
         {
             continue;
         }

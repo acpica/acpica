@@ -388,6 +388,7 @@ AcGetOneTableFromFile (
     ACPI_TABLE_HEADER       *Table;
     INT32                   Count;
     long                    TableOffset;
+    UINT32		    TableLen;
 
 
     *ReturnTable = NULL;
@@ -427,7 +428,8 @@ AcGetOneTableFromFile (
 
     /* Allocate a buffer for the entire table */
 
-    Table = AcpiOsAllocate ((ACPI_SIZE) TableHeader.Length);
+    ACPI_MOVE_32_TO_32(&TableLen, &TableHeader.Length);
+    Table = AcpiOsAllocate ((ACPI_SIZE) TableLen);
     if (!Table)
     {
         return (AE_NO_MEMORY);
@@ -437,13 +439,13 @@ AcGetOneTableFromFile (
 
     fseek (File, TableOffset, SEEK_SET);
 
-    Count = fread (Table, 1, TableHeader.Length, File);
+    Count = fread (Table, 1, TableLen, File);
 
     /*
      * Checks for data table headers happen later in the execution. Only verify
      * for Aml tables at this point in the code.
      */
-    if (GetOnlyAmlTables && Count != (INT32) TableHeader.Length)
+    if (GetOnlyAmlTables && Count != TableLen)
     {
         Status = AE_ERROR;
         goto ErrorExit;
@@ -451,7 +453,7 @@ AcGetOneTableFromFile (
 
     /* Validate the checksum (just issue a warning) */
 
-    Status = AcpiTbVerifyChecksum (Table, TableHeader.Length);
+    Status = AcpiTbVerifyChecksum (Table, TableLen);
     if (ACPI_FAILURE (Status))
     {
         Status = AcCheckTextModeCorruption (Table);
@@ -543,6 +545,7 @@ AcValidateTableHeader (
     ACPI_SIZE               Actual;
     long                    OriginalOffset;
     UINT32                  FileSize;
+    UINT32                  TableLength;
     UINT32                  i;
 
 
@@ -572,11 +575,12 @@ AcValidateTableHeader (
     /* Validate table length against bytes remaining in the file */
 
     FileSize = CmGetFileSize (File);
-    if (TableHeader.Length > (UINT32) (FileSize - TableOffset))
+    ACPI_MOVE_32_TO_32(&TableLength, &TableHeader.Length);
+    if (TableLength > (UINT32) (FileSize - TableOffset))
     {
         fprintf (stderr, "Table [%4.4s] is too long for file - "
             "needs: 0x%.2X, remaining in file: 0x%.2X\n",
-            TableHeader.Signature, TableHeader.Length,
+            TableHeader.Signature, TableLength,
             (UINT32) (FileSize - TableOffset));
         return (AE_BAD_HEADER);
     }

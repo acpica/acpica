@@ -249,7 +249,8 @@ AcpiDmMemoryFields (
     UINT32                  Level)
 {
     UINT32                  i;
-
+    UINT16		    Tmp16;
+    UINT32		    Tmp32;
 
     for (i = 0; i < 4; i++)
     {
@@ -259,14 +260,14 @@ AcpiDmMemoryFields (
         {
         case 16:
 
-            AcpiDmDumpInteger16 (ACPI_CAST_PTR (UINT16, Source)[i],
-                AcpiDmMemoryNames[i]);
+	    ACPI_MOVE_16_TO_16(&Tmp16, &(ACPI_CAST_PTR (UINT16, Source)[i]));
+            AcpiDmDumpInteger16 (Tmp16, AcpiDmMemoryNames[i]);
             break;
 
         case 32:
 
-            AcpiDmDumpInteger32 (ACPI_CAST_PTR (UINT32, Source)[i],
-                AcpiDmMemoryNames[i]);
+	    ACPI_MOVE_32_TO_32(&Tmp32, &(ACPI_CAST_PTR (UINT32, Source)[i]));
+            AcpiDmDumpInteger32 (Tmp32, AcpiDmMemoryNames[i]);
             break;
 
         default:
@@ -298,7 +299,9 @@ AcpiDmAddressFields (
     UINT32                  Level)
 {
     UINT32                  i;
-
+    UINT16		    Tmp16;
+    UINT32		    Tmp32;
+    UINT64		    Tmp64;
 
     AcpiOsPrintf ("\n");
 
@@ -310,20 +313,20 @@ AcpiDmAddressFields (
         {
         case 16:
 
-            AcpiDmDumpInteger16 (ACPI_CAST_PTR (UINT16, Source)[i],
-                AcpiDmAddressNames[i]);
+	    ACPI_MOVE_16_TO_16(&Tmp16, &(ACPI_CAST_PTR (UINT16, Source)[i]));
+            AcpiDmDumpInteger16 (Tmp16, AcpiDmAddressNames[i]);
             break;
 
         case 32:
 
-            AcpiDmDumpInteger32 (ACPI_CAST_PTR (UINT32, Source)[i],
-                AcpiDmAddressNames[i]);
+	    ACPI_MOVE_32_TO_32(&Tmp32, &(ACPI_CAST_PTR (UINT32, Source)[i]));
+            AcpiDmDumpInteger32 (Tmp32, AcpiDmAddressNames[i]);
             break;
 
         case 64:
 
-            AcpiDmDumpInteger64 (ACPI_CAST_PTR (UINT64, Source)[i],
-                AcpiDmAddressNames[i]);
+	    ACPI_MOVE_64_TO_64(&Tmp64, &(ACPI_CAST_PTR (UINT64, Source)[i]));
+            AcpiDmDumpInteger64 (Tmp64, AcpiDmAddressNames[i]);
             break;
 
         default:
@@ -976,6 +979,7 @@ AcpiDmFixedMemory32Descriptor (
     UINT32                  Length,
     UINT32                  Level)
 {
+    UINT32 Tmp;
 
     /* Dump name and read/write flag */
 
@@ -984,12 +988,12 @@ AcpiDmFixedMemory32Descriptor (
         AcpiGbl_RwDecode [ACPI_GET_1BIT_FLAG (Resource->FixedMemory32.Flags)]);
 
     AcpiDmIndent (Level + 1);
-    AcpiDmDumpInteger32 (Resource->FixedMemory32.Address,
-        "Address Base");
+    ACPI_MOVE_32_TO_32(&Tmp, &Resource->FixedMemory32.Address);
+    AcpiDmDumpInteger32 (Tmp, "Address Base");
 
     AcpiDmIndent (Level + 1);
-    AcpiDmDumpInteger32 (Resource->FixedMemory32.AddressLength,
-        "Address Length");
+    ACPI_MOVE_32_TO_32(&Tmp, &Resource->FixedMemory32.AddressLength);
+    AcpiDmDumpInteger32 (Tmp, "Address Length");
 
     /* Insert a descriptor name */
 
@@ -1021,6 +1025,7 @@ AcpiDmGenericRegisterDescriptor (
     UINT32                  Length,
     UINT32                  Level)
 {
+    UINT64		    Tmp64;
 
     AcpiDmIndent (Level);
     AcpiOsPrintf ("Register (");
@@ -1034,7 +1039,9 @@ AcpiDmGenericRegisterDescriptor (
     AcpiDmDumpInteger8 (Resource->GenericReg.BitOffset, "Bit Offset");
 
     AcpiDmIndent (Level + 1);
-    AcpiDmDumpInteger64 (Resource->GenericReg.Address, "Address");
+    /* AcpiDmDumpInteger64 (Resource->GenericReg.Address, "Address"); */
+    ACPI_MOVE_64_TO_64(&Tmp64, &Resource->GenericReg.Address);
+    AcpiDmDumpInteger64 (Tmp64, "Address");
 
     /* Optional field for ACPI 3.0 */
 
@@ -1080,7 +1087,7 @@ AcpiDmInterruptDescriptor (
     UINT32                  Level)
 {
     UINT32                  i;
-
+    UINT16		    Tmp16;
 
     AcpiDmIndent (Level);
     AcpiOsPrintf ("Interrupt (%s, %s, %s, %s, ",
@@ -1094,10 +1101,11 @@ AcpiDmInterruptDescriptor (
      * list. Must compute length based on length of the list. First xrupt
      * is included in the struct (reason for -1 below)
      */
+    ACPI_MOVE_16_TO_16(&Tmp16, &Resource->ExtendedIrq.ResourceLength);
     AcpiDmResourceSource (Resource,
         sizeof (AML_RESOURCE_EXTENDED_IRQ) +
             ((UINT32) Resource->ExtendedIrq.InterruptCount - 1) * sizeof (UINT32),
-        Resource->ExtendedIrq.ResourceLength);
+        Tmp16);
 
     /* Insert a descriptor name */
 
@@ -1110,9 +1118,12 @@ AcpiDmInterruptDescriptor (
     AcpiOsPrintf ("{\n");
     for (i = 0; i < Resource->ExtendedIrq.InterruptCount; i++)
     {
+	UINT32 Tmp32, Val32;
+
         AcpiDmIndent (Level + 1);
-        AcpiOsPrintf ("0x%8.8X,\n",
-            (UINT32) Resource->ExtendedIrq.Interrupts[i]);
+	Val32 = (UINT32) Resource->ExtendedIrq.Interrupts[i];
+	ACPI_MOVE_32_TO_32(&Tmp32, &Val32);
+        AcpiOsPrintf ("0x%8.8X,\n", Tmp32);
     }
 
     AcpiDmIndent (Level);

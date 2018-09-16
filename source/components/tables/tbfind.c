@@ -216,8 +216,11 @@ AcpiTbFindTable (
     (void) AcpiUtAcquireMutex (ACPI_MTX_TABLES);
     for (i = 0; i < AcpiGbl_RootTableList.CurrentTableCount; ++i)
     {
+        UINT32 Tmp32;
+
+        ACPI_MOVE_32_TO_32(&Tmp32, &Header.Signature);
         if (memcmp (&(AcpiGbl_RootTableList.Tables[i].Signature),
-            Header.Signature, ACPI_NAME_SIZE))
+            &Tmp32, ACPI_NAME_SIZE))
         {
             /* Not the requested table */
 

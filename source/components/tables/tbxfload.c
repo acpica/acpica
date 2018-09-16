@@ -267,6 +267,7 @@ AcpiTbLoadNamespace (
     ACPI_TABLE_DESC         *Table;
     UINT32                  TablesLoaded = 0;
     UINT32                  TablesFailed = 0;
+    UINT32		    Tmp32;
 
 
     ACPI_FUNCTION_TRACE (TbLoadNamespace);
@@ -280,8 +281,9 @@ AcpiTbLoadNamespace (
      */
     Table = &AcpiGbl_RootTableList.Tables[AcpiGbl_DsdtIndex];
 
+    ACPI_MOVE_32_TO_32(&Tmp32, &Table->Signature.Ascii);
     if (!AcpiGbl_RootTableList.CurrentTableCount ||
-        !ACPI_COMPARE_NAME (Table->Signature.Ascii, ACPI_SIG_DSDT) ||
+        !ACPI_COMPARE_NAME (&Tmp32, ACPI_SIG_DSDT) ||
          ACPI_FAILURE (AcpiTbValidateTable (Table)))
     {
         Status = AE_NO_ACPI_TABLES;

@@ -486,6 +486,21 @@ DtSetSubtableLength (
         return;
     }
 
-    memcpy (Subtable->LengthField, &Subtable->TotalLength,
-        Subtable->SizeOfLengthField);
+    switch(Subtable->SizeOfLengthField) {
+    case 1:
+	ACPI_MOVE_32_TO_8(Subtable->LengthField, &Subtable->TotalLength);
+	break;
+
+    case 2:
+	ACPI_MOVE_32_TO_16(Subtable->LengthField, &Subtable->TotalLength);
+	break;
+
+    case 4:
+	ACPI_MOVE_32_TO_32(Subtable->LengthField, &Subtable->TotalLength);
+	break;
+
+    default:
+    	memcpy (Subtable->LengthField, &Subtable->TotalLength,
+        	Subtable->SizeOfLengthField);
+    }
 }

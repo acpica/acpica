@@ -593,6 +593,7 @@ OpcDoUnicode (
     UINT32                  i;
     UINT8                   *AsciiString;
     UINT16                  *UnicodeString;
+    UINT16                  UChar;
     ACPI_PARSE_OBJECT       *BufferLengthOp;
 
 
@@ -619,7 +620,8 @@ OpcDoUnicode (
 
     for (i = 0; i < Count; i++)
     {
-        UnicodeString[i] = (UINT16) AsciiString[i];
+        UChar = (UINT16) AsciiString[i];
+        ACPI_MOVE_16_TO_16(&UnicodeString[i], &UChar);
     }
 
     /*

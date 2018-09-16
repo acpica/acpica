@@ -196,13 +196,15 @@ AcpiDmProcessSwitch (
     ACPI_PARSE_OBJECT_LIST  *Current;
     ACPI_PARSE_OBJECT_LIST  *Previous;
     BOOLEAN                 FoundTemp = FALSE;
+    UINT32		    Tmp32;
 
 
     switch (Op->Common.AmlOpcode)
     {
     case AML_NAME_OP:
 
-        Temp = (char *) (&Op->Named.Name);
+	ACPI_MOVE_32_TO_32(&Tmp32, &Op->Named.Name);
+        Temp = (char *) (&Tmp32);
 
         if (!strncmp(Temp, "_T_", 3))
         {
@@ -246,7 +248,10 @@ AcpiDmProcessSwitch (
         {
             /* Note, if we get here Temp is not NULL */
 
-            if (!strncmp(Temp, (char *) (&Current->Op->Named.Name), 4))
+   	    ACPI_MOVE_32_TO_32(&Tmp32, &Current->Op->Named.Name);
+
+            /* if (!strncmp(Temp, (char *) (&Current->Op->Named.Name), 4)) */
+            if (!strncmp(Temp, (char *) &Tmp32, 4))
             {
                 /* Match found. Ignore disassembly */
 

@@ -660,6 +660,7 @@ AcpiTbVerifyTempTable (
     UINT32                  *TableIndex)
 {
     ACPI_STATUS             Status = AE_OK;
+    UINT32		    Length;
 
 
     ACPI_FUNCTION_TRACE (TbVerifyTempTable);
@@ -689,7 +690,8 @@ AcpiTbVerifyTempTable (
     {
         /* Verify the checksum */
 
-        Status = AcpiTbVerifyChecksum (TableDesc->Pointer, TableDesc->Length);
+        ACPI_MOVE_32_TO_32(&Length, &TableDesc->Length);
+        Status = AcpiTbVerifyChecksum (TableDesc->Pointer, Length);
         if (ACPI_FAILURE (Status))
         {
             ACPI_EXCEPTION ((AE_INFO, AE_NO_MEMORY,

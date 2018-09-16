@@ -467,7 +467,27 @@ DtCompileInteger (
         DtError (ASL_ERROR, ASL_MSG_INTEGER_SIZE, Field, MsgBuffer);
     }
 
-    memcpy (Buffer, &Value, ByteLength);
+    switch (ByteLength) {
+    case 1:
+	ACPI_MOVE_64_TO_8(Buffer, &Value);
+	break;
+
+    case 2:
+	ACPI_MOVE_64_TO_16(Buffer, &Value);
+	break;
+
+    case 4:
+	ACPI_MOVE_64_TO_32(Buffer, &Value);
+	break;
+
+    case 8:
+	ACPI_MOVE_64_TO_64(Buffer, &Value);
+	break;
+
+    default:
+	memcpy (Buffer, &Value, ByteLength);
+	break;
+    }
     return;
 }
 

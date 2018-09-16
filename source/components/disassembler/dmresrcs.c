@@ -180,6 +180,7 @@ AcpiDmIrqDescriptor (
     UINT32                  Length,
     UINT32                  Level)
 {
+    UINT16 Tmp;
 
     AcpiDmIndent (Level);
     AcpiOsPrintf ("%s (",
@@ -201,7 +202,8 @@ AcpiDmIrqDescriptor (
     AcpiOsPrintf (")\n");
 
     AcpiDmIndent (Level + 1);
-    AcpiDmBitList (Resource->Irq.IrqMask);
+    ACPI_MOVE_16_TO_16(&Tmp, &Resource->Irq.IrqMask);
+    AcpiDmBitList (Tmp);
 }
 
 
@@ -312,16 +314,19 @@ AcpiDmIoDescriptor (
     UINT32                  Length,
     UINT32                  Level)
 {
+    UINT16 Tmp16;
 
     AcpiDmIndent (Level);
     AcpiOsPrintf ("IO (%s,\n",
         AcpiGbl_IoDecode [ACPI_GET_1BIT_FLAG (Resource->Io.Flags)]);
 
     AcpiDmIndent (Level + 1);
-    AcpiDmDumpInteger16 (Resource->Io.Minimum, "Range Minimum");
+    ACPI_MOVE_16_TO_16(&Tmp16, &Resource->Io.Minimum);
+    AcpiDmDumpInteger16 (Tmp16, "Range Minimum");
 
     AcpiDmIndent (Level + 1);
-    AcpiDmDumpInteger16 (Resource->Io.Maximum, "Range Maximum");
+    ACPI_MOVE_16_TO_16(&Tmp16, &Resource->Io.Maximum);
+    AcpiDmDumpInteger16 (Tmp16, "Range Maximum");
 
     AcpiDmIndent (Level + 1);
     AcpiDmDumpInteger8 (Resource->Io.Alignment, "Alignment");
@@ -359,12 +364,14 @@ AcpiDmFixedIoDescriptor (
     UINT32                  Length,
     UINT32                  Level)
 {
+    UINT16                  Tmp16;
 
     AcpiDmIndent (Level);
     AcpiOsPrintf ("FixedIO (\n");
 
     AcpiDmIndent (Level + 1);
-    AcpiDmDumpInteger16 (Resource->FixedIo.Address, "Address");
+    ACPI_MOVE_16_TO_16(&Tmp16, &Resource->FixedIo.Address);
+    AcpiDmDumpInteger16 (Tmp16, "Address");
 
     AcpiDmIndent (Level + 1);
     AcpiDmDumpInteger8 (Resource->FixedIo.AddressLength, "Length");

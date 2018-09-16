@@ -433,6 +433,7 @@ AcpiDsGetFieldNames (
     ACPI_STATUS             Status;
     UINT64                  Position;
     ACPI_PARSE_OBJECT       *Child;
+    UINT32 TmpName;
 
 #ifdef ACPI_EXEC_APP
     UINT64                  Value = 0;
@@ -547,10 +548,17 @@ AcpiDsGetFieldNames (
 
             /* Lookup the name, it should already exist */
 
+	    ACPI_MOVE_32_TO_32(&TmpName, &Arg->Named.Name);
+            Status = AcpiNsLookup (WalkState->ScopeInfo,
+                (char *) &TmpName, Info->FieldType,
+                ACPI_IMODE_EXECUTE, ACPI_NS_DONT_OPEN_SCOPE,
+                WalkState, &Info->FieldNode);
+	/*
             Status = AcpiNsLookup (WalkState->ScopeInfo,
                 (char *) &Arg->Named.Name, Info->FieldType,
                 ACPI_IMODE_EXECUTE, ACPI_NS_DONT_OPEN_SCOPE,
                 WalkState, &Info->FieldNode);
+	*/
             if (ACPI_FAILURE (Status))
             {
                 ACPI_ERROR_NAMESPACE (WalkState->ScopeInfo,
@@ -794,9 +802,17 @@ AcpiDsInitFieldObjects (
          */
         if (Arg->Common.AmlOpcode == AML_INT_NAMEDFIELD_OP)
         {
+	    UINT32 TmpName;
+
+            ACPI_MOVE_32_TO_32(&TmpName, &Arg->Named.Name);
+            Status = AcpiNsLookup (WalkState->ScopeInfo,
+                (char *) &TmpName, Type, ACPI_IMODE_LOAD_PASS1,
+                Flags, WalkState, &Node);
+	/*
             Status = AcpiNsLookup (WalkState->ScopeInfo,
                 (char *) &Arg->Named.Name, Type, ACPI_IMODE_LOAD_PASS1,
                 Flags, WalkState, &Node);
+	*/
             if (ACPI_FAILURE (Status))
             {
                 ACPI_ERROR_NAMESPACE (WalkState->ScopeInfo,
