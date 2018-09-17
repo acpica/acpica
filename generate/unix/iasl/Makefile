@@ -13,6 +13,7 @@
 include ../Makefile.config
 FINAL_PROG = ../$(BINDIR)/iasl
 PROG = $(OBJDIR)/iasl
+MAN = iasl.1
 
 #
 # Search paths for source files

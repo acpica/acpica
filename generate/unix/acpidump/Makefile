@@ -13,6 +13,7 @@
 include ../Makefile.config
 FINAL_PROG = ../$(BINDIR)/acpidump
 PROG = $(OBJDIR)/acpidump
+MAN = acpidump.1
 
 #
 # Search paths for source files
