@@ -1191,7 +1191,8 @@ PrPushDirective (
 
     /* Allocate and populate a stack info item */
 
-    Info = ACPI_ALLOCATE (sizeof (DIRECTIVE_INFO));
+    Info = ACPI_CAST_PTR (DIRECTIVE_INFO,
+        UtLocalCacheCalloc (sizeof (DIRECTIVE_INFO)));
 
     Info->Next = Gbl_DirectiveStack;
     Info->Directive = Directive;

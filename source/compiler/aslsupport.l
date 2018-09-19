@@ -256,7 +256,7 @@ AslDoLineDirective (
     Token = strtok (NULL, " \"");
     if (Token)
     {
-        Filename = ACPI_ALLOCATE_ZEROED (strlen (Token) + 1);
+        Filename = UtLocalCacheCalloc (strlen (Token) + 1);
         strcpy (Filename, Token);
         FlSetFilename (Filename);
     }

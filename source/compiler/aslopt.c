@@ -406,7 +406,7 @@ OptBuildShortestPath (
      * Construct a new target string
      */
     NewPathExternal =
-        ACPI_ALLOCATE_ZEROED (TargetPath->Length + NumCarats + 1);
+        UtLocalCacheCalloc (TargetPath->Length + NumCarats + 1);
 
     /* Insert the Carats into the Target string */
 

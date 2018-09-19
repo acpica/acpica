@@ -257,8 +257,9 @@ FlAddIncludeDirectory (
         NeedsSeparator = 1;
     }
 
-    NewDir = ACPI_ALLOCATE_ZEROED (sizeof (ASL_INCLUDE_DIR));
-    NewDir->Dir = ACPI_ALLOCATE (DirLength + 1 + NeedsSeparator);
+    NewDir = ACPI_CAST_PTR (ASL_INCLUDE_DIR,
+        UtLocalCacheCalloc (sizeof (ASL_INCLUDE_DIR)));
+    NewDir->Dir = UtLocalCacheCalloc (DirLength + 1 + NeedsSeparator);
     strcpy (NewDir->Dir, Dir);
     if (NeedsSeparator)
     {
