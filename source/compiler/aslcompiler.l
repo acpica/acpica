@@ -836,17 +836,17 @@ NamePathTail                [.]{NameSeg}
 .                           { count (1);
                                 if (isprint ((int) *AslCompilertext))
                                 {
-                                    sprintf (MsgBuffer,
+                                    sprintf (AslGbl_MsgBuffer,
                                         "Invalid character (%c), expecting ASL keyword or name",
                                         *AslCompilertext);
                                 }
                                 else
                                 {
-                                    sprintf (MsgBuffer,
+                                    sprintf (AslGbl_MsgBuffer,
                                         "Invalid character (0x%2.2X), expecting ASL keyword or name",
                                         *AslCompilertext);
                                 }
-                                AslCompilererror (MsgBuffer);}
+                                AslCompilererror (AslGbl_MsgBuffer);}
 
 <<EOF>>                     { if (AslPopInputFileStack ())
                                 {yyterminate();}

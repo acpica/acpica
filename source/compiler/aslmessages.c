@@ -496,7 +496,7 @@ AeDecodeExceptionLevel (
 
     /* Differentiate the string type to be used (IDE is all lower case) */
 
-    if (Gbl_VerboseErrors)
+    if (AslGbl_VerboseErrors)
     {
         return (AslErrorLevel[Level]);
     }
