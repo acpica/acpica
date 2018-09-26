@@ -84,9 +84,11 @@ build_acpi_tools() {
 		REBUILD_TOOLS=yes
 	fi
 	if [ "x$REBUILD_TOOLS" = "xyes" ]; then
+		jobs=`nproc`
 		make clean
-		make iasl ASLTS=TRUE
-		make acpiexec ASLTS=TRUE
+		make iasl ASLTS=TRUE -j$jobs
+		make acpibin ASLTS=TRUE -j$jobs
+		make acpiexec ASLTS=TRUE -j$jobs
 	fi
 
 	if [ -d "bin" ] && [ -f "bin/iasl" ]; then
