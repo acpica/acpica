@@ -566,6 +566,7 @@ AcpiPsParseLoop (
     ACPI_PARSE_OBJECT       *Op = NULL;     /* current op */
     ACPI_PARSE_STATE        *ParserState;
     UINT8                   *AmlOpStart = NULL;
+    UINT8                   OpcodeLength;
 
 
     ACPI_FUNCTION_TRACE_PTR (PsParseLoop, WalkState);
@@ -688,7 +689,18 @@ AcpiPsParseLoop (
                      */
                     ACPI_ERROR ((AE_INFO, "Skip parsing opcode %s",
                         AcpiPsGetOpcodeName (WalkState->Opcode)));
-                    WalkState->ParserState.Aml = WalkState->Aml + 1;
+
+                    /*
+                     * Determine the opcode length before skipping the opcode.
+                     * An opcode can be 1 byte or 2 bytes in length.
+                     */
+                    OpcodeLength = 1;
+                    if ((WalkState->Opcode & 0xFF00) == AML_EXTENDED_OPCODE)
+                    {
+                        OpcodeLength = 2;
+                    }
+                    WalkState->ParserState.Aml = WalkState->Aml + OpcodeLength;
+
                     WalkState->ParserState.Aml =
                         AcpiPsGetNextPackageEnd(&WalkState->ParserState);
                     WalkState->Aml = WalkState->ParserState.Aml;
