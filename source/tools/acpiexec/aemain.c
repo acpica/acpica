@@ -319,7 +319,7 @@ AeDoOptions (
 
         if (strlen (AcpiGbl_Optarg) > (AE_BUFFER_SIZE -1))
         {
-            printf ("**** The length of command line (%u) exceeded maximum (%u)\n",
+            printf ("**** The length of command line (%u) exceeded maximum (%d)\n",
                 (UINT32) strlen (AcpiGbl_Optarg), (AE_BUFFER_SIZE -1));
             return (-1);
         }
