@@ -298,7 +298,7 @@ AcpiPsGetArguments (
          * future. Use of this option can cause problems with AML code that
          * depends upon in-order immediate execution of module-level code.
          */
-        if (AcpiGbl_GroupModuleLevelCode &&
+        if (!AcpiGbl_ExecuteTablesAsMethods &&
             (WalkState->PassNumber <= ACPI_IMODE_LOAD_PASS2) &&
             ((WalkState->ParseFlags & ACPI_PARSE_DISASSEMBLE) == 0))
         {
