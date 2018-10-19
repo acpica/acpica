@@ -236,7 +236,7 @@ DtTrim (
 
     /* Skip lines that start with a space */
 
-    if (!strcmp (String, " "))
+    if (*String == 0 || !strcmp (String, " "))
     {
         ReturnString = UtLocalCacheCalloc (1);
         return (ReturnString);
