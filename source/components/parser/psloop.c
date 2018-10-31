@@ -655,7 +655,7 @@ AcpiPsParseLoop (
                  * status to AE_OK to proceed with the table load.
                  */
                 if ((WalkState->ParseFlags & ACPI_PARSE_MODULE_LEVEL) &&
-                    Status == AE_ALREADY_EXISTS)
+                    ((Status == AE_ALREADY_EXISTS) || (Status == AE_NOT_FOUND)))
                 {
                     Status = AE_OK;
                 }
@@ -687,8 +687,8 @@ AcpiPsParseLoop (
                      * the scope op because the parse failure indicates that
                      * the device may not exist.
                      */
-                    ACPI_ERROR ((AE_INFO, "Skip parsing opcode %s",
-                        AcpiPsGetOpcodeName (WalkState->Opcode)));
+                    ACPI_INFO (("Skipping parse of AML opcode: %s (0x%4.4X)",
+                        AcpiPsGetOpcodeName (WalkState->Opcode), WalkState->Opcode));
 
                     /*
                      * Determine the opcode length before skipping the opcode.
