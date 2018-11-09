@@ -406,7 +406,7 @@ PackageList
     ;
 
 PackageElement
-    : DataObject                    {}
+    : PackageDataObject             {}
     | NameString                    {}
     ;
 
@@ -494,6 +494,14 @@ DataObject
     : BufferData                    {}
     | PackageData                   {}
     | IntegerData                   {}
+    | StringData                    {}
+    ;
+
+PackageDataObject
+    : BufferData                    {}
+    | PackageData                   {}
+    | Integer                       {}
+    | ConstTerm                     {}
     | StringData                    {}
     ;
 

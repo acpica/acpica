@@ -164,6 +164,7 @@ NoEcho('
 %type <n> BufferTermData
 %type <n> CompilerDirective
 %type <n> DataObject
+%type <n> PackageDataObject
 %type <n> DefinitionBlockTerm
 %type <n> DefinitionBlockList
 %type <n> IntegerData
