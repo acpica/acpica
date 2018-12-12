@@ -320,7 +320,6 @@ ASL_EXTERN BOOLEAN                  ASL_INIT_GLOBAL (AslGbl_AllExceptionsDisable
 ASL_EXTERN BOOLEAN                  ASL_INIT_GLOBAL (AslGbl_PruneParseTree, FALSE);
 ASL_EXTERN BOOLEAN                  ASL_INIT_GLOBAL (AslGbl_DoTypechecking, TRUE);
 ASL_EXTERN BOOLEAN                  ASL_INIT_GLOBAL (AslGbl_EnableReferenceTypechecking, FALSE);
-ASL_EXTERN BOOLEAN                  ASL_INIT_GLOBAL (AslGbl_DoExternals, TRUE);
 ASL_EXTERN BOOLEAN                  ASL_INIT_GLOBAL (AslGbl_DoExternalsInPlace, FALSE);
 ASL_EXTERN BOOLEAN                  ASL_INIT_GLOBAL (AslGbl_DoAslConversion, FALSE);
 ASL_EXTERN BOOLEAN                  ASL_INIT_GLOBAL (AslGbl_OptimizeTrivialParseNodes, TRUE);
