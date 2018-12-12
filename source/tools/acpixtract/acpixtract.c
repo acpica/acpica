@@ -638,6 +638,7 @@ AxListAllTables (
                 &Header[ByteCount]);
             if (ThisLineByteCount == EOF)
             {
+                fclose (InputFile);
                 return (-1);
             }
 
