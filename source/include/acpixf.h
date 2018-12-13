@@ -1338,6 +1338,16 @@ AcpiBiosError (
     ...))
 
 ACPI_MSG_DEPENDENT_RETURN_VOID (
+ACPI_PRINTF_LIKE(4)
+void  ACPI_INTERNAL_VAR_XFACE
+AcpiBiosException (
+    const char              *ModuleName,
+    UINT32                  LineNumber,
+    ACPI_STATUS             Status,
+    const char              *Format,
+    ...))
+
+ACPI_MSG_DEPENDENT_RETURN_VOID (
 ACPI_PRINTF_LIKE(3)
 void ACPI_INTERNAL_VAR_XFACE
 AcpiBiosWarning (
