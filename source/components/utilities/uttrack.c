@@ -807,6 +807,15 @@ AcpiUtDumpAllocations (
                         Descriptor, Element->Size, Element->Module,
                         Element->Line, AcpiUtGetDescriptorName (Descriptor));
 
+                    /* Optional object hex dump */
+
+                    if (AcpiGbl_VerboseLeakDump)
+                    {
+                        AcpiOsPrintf ("\n");
+                        AcpiUtDumpBuffer ((UINT8 *) Descriptor, Element->Size,
+                            DB_BYTE_DISPLAY, 0);
+                    }
+
                     /* Validate the descriptor type using Type field and length */
 
                     DescriptorType = 0; /* Not a valid descriptor type */

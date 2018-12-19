@@ -308,6 +308,7 @@ ACPI_GLOBAL (ACPI_MEMORY_LIST *,        AcpiGbl_GlobalList);
 ACPI_GLOBAL (ACPI_MEMORY_LIST *,        AcpiGbl_NsNodeList);
 ACPI_GLOBAL (BOOLEAN,                   AcpiGbl_DisplayFinalMemStats);
 ACPI_GLOBAL (BOOLEAN,                   AcpiGbl_DisableMemTracking);
+ACPI_GLOBAL (BOOLEAN,                   AcpiGbl_VerboseLeakDump);
 #endif
 
 
