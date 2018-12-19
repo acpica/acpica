@@ -292,7 +292,7 @@ ACPI_DMTABLE_INFO           AcpiDmTableInfoFacs[] =
 ACPI_DMTABLE_INFO           AcpiDmTableInfoFadt1[] =
 {
     {ACPI_DMT_UINT32,   ACPI_FADT_OFFSET (Facs),                    "FACS Address", 0},
-    {ACPI_DMT_UINT32,   ACPI_FADT_OFFSET (Dsdt),                    "DSDT Address", DT_NON_ZERO},
+    {ACPI_DMT_UINT32,   ACPI_FADT_OFFSET (Dsdt),                    "DSDT Address", 0},
     {ACPI_DMT_UINT8,    ACPI_FADT_OFFSET (Model),                   "Model", 0},
     {ACPI_DMT_FADTPM,   ACPI_FADT_OFFSET (PreferredProfile),        "PM Profile", 0},
     {ACPI_DMT_UINT16,   ACPI_FADT_OFFSET (SciInterrupt),            "SCI Interrupt", 0},
