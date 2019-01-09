@@ -264,6 +264,11 @@ AcpiPsGetArguments (
                 GET_CURRENT_ARG_TYPE (WalkState->ArgTypes), &Arg);
             if (ACPI_FAILURE (Status))
             {
+                /*
+                 * Alternate solution: do not free the op and return.
+                 * Just keep and append the arg
+                 */
+                AcpiPsFreeOp (Arg);
                 return_ACPI_STATUS (Status);
             }
 
