@@ -129,7 +129,7 @@ Git push everything
 
 Tag the version file with a name of the form Rmm_dd_yy
     Get the commit number for the version number commit above (git log)
-    git tag -m"version yyyymmdd" Rmm_dd_yy <commit #>
+    git tag -m"version yyyymmdd" Rmm_dd_yy HEAD
     git push --tags
 
 Build the various tar/zip release files:
