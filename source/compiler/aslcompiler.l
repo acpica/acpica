@@ -816,6 +816,13 @@ NamePathTail                [.]{NameSeg}
                                 s=UtLocalCacheCalloc (ACPI_NAME_SIZE + 1);
                                 if (strcmp (AslCompilertext, "\\"))
                                 {
+                                    /*
+                                     * According to the ACPI specification,
+                                     * NameSegments must have length of 4. If
+                                     * the NameSegment has length less than 4,
+                                     * they are padded with underscores to meet
+                                     * the required length.
+                                     */
                                     strcpy (s, "____");
                                     AcpiUtStrupr (AslCompilertext);
                                 }
