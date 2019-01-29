@@ -370,11 +370,6 @@ AslDoDisassembly (
         return (Status);
     }
 
-    /* Handle additional output files for disassembler */
-
-    AslGbl_FileType = ASL_INPUT_TYPE_BINARY_ACPI_TABLE;
-    Status = FlOpenMiscOutputFiles (AslGbl_OutputFilenamePrefix);
-
     /* This is where the disassembly happens */
 
     AcpiGbl_DmOpt_Disasm = TRUE;
@@ -457,18 +452,6 @@ AslDoOneFile (
 
     strcpy (AslGbl_Files[ASL_FILE_INPUT].Filename, Filename);
     UtConvertBackslashes (AslGbl_Files[ASL_FILE_INPUT].Filename);
-
-    /*
-     * AML Disassembly (Optional)
-     */
-    if (AcpiGbl_DisasmFlag)
-    {
-        Status = AslDoDisassembly ();
-        if (Status != AE_CTRL_CONTINUE)
-        {
-            return (Status);
-        }
-    }
 
     /*
      * Open the input file. Here, this should be an ASCII source file,
