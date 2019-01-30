@@ -254,8 +254,12 @@ void
 AslCompilerFileHeader (
     UINT32                  FileId);
 
-int
+ACPI_STATUS
 CmDoCompile (
+    void);
+
+int
+CmDoAslMiddleAndBackEnd (
     void);
 
 void
@@ -264,6 +268,10 @@ CmDoOutputFiles (
 
 void
 CmCleanupAndExit (
+    void);
+
+ACPI_STATUS
+AslDoDisassembly (
     void);
 
 
@@ -875,9 +883,10 @@ ExDoExternal (
 
 /* Values for "Visitation" parameter above */
 
-#define ASL_WALK_VISIT_DOWNWARD     0x01
-#define ASL_WALK_VISIT_UPWARD       0x02
-#define ASL_WALK_VISIT_TWICE        (ASL_WALK_VISIT_DOWNWARD | ASL_WALK_VISIT_UPWARD)
+#define ASL_WALK_VISIT_DOWNWARD      0x01
+#define ASL_WALK_VISIT_UPWARD        0x02
+#define ASL_WALK_VISIT_DB_SEPARATELY 0x04
+#define ASL_WALK_VISIT_TWICE         (ASL_WALK_VISIT_DOWNWARD | ASL_WALK_VISIT_UPWARD)
 
 
 /*
@@ -1035,6 +1044,11 @@ FlSeekFile (
     long                    Offset);
 
 void
+FlSeekFileSet (
+    UINT32                  FileId,
+    long                    Offset);
+
+void
 FlCloseFile (
     UINT32                  FileId);
 
@@ -1067,6 +1081,29 @@ FlOpenAmlOutputFile (
 ACPI_STATUS
 FlOpenMiscOutputFiles (
     char                    *InputFilename);
+
+ACPI_STATUS
+FlInitOneFile (
+    char                    *InputFilename);
+
+ASL_FILE_SWITCH_STATUS
+FlSwitchFileSet (
+    char                    *InputFilename);
+
+FILE *
+FlGetFileHandle (
+    UINT32                  OutFileId,
+    UINT32                  InFileId,
+    char                    *Filename);
+
+ASL_GLOBAL_FILE_NODE *
+FlGetFileNode (
+    UINT32                  FileId,
+    char                    *Filename);
+
+ASL_GLOBAL_FILE_NODE *
+FlGetCurrentFileNode (
+    void);
 
 /*
  * aslhwmap - hardware map summary
@@ -1219,6 +1256,11 @@ UtEndEvent (
 void
 UtDisplaySummary (
     UINT32                  FileId);
+
+void
+UtDisplayOneSummary (
+    UINT32                  FileId,
+    BOOLEAN                 DisplayErrorSummary);
 
 void
 UtConvertByteToHex (

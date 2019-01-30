@@ -255,6 +255,14 @@ main (
         }
     }
 
+    /* ACPICA subsystem initialization */
+
+    Status = AdInitialize ();
+    if (ACPI_FAILURE (Status))
+    {
+        return (Status);
+    }
+
 
     /* Process each pathname/filename in the list, with possible wildcards */
 
@@ -280,6 +288,48 @@ main (
         Index2++;
     }
 
+    if (!AcpiGbl_DisasmFlag)
+    {
+        CmDoAslMiddleAndBackEnd ();
+
+        /*
+         * At this point, all semantic analysis has been completed. Check
+         * expected error messages before cleanup or conversion.
+         */
+        AslCheckExpectedExceptions ();
+    }
+
+    /* ASL-to-ASL+ conversion - Perform immediate disassembly */
+
+    if (AslGbl_DoAslConversion)
+    {
+        /* re-initialize ACPICA subsystem for disassemble*/
+
+        Status = AdInitialize ();
+        if (ACPI_FAILURE (Status))
+        {
+            return (Status);
+        }
+
+        AcpiGbl_DisasmFlag = TRUE;
+        /*
+         * New input file is the output AML file from above.
+         * New output is from the input ASL file from above.
+         */
+        AslGbl_OutputFilenamePrefix = AslGbl_Files[ASL_FILE_INPUT].Filename;
+        CvDbgPrint ("OUTPUTFILENAME: %s\n", AslGbl_OutputFilenamePrefix);
+        AslGbl_Files[ASL_FILE_INPUT].Filename =
+            AslGbl_Files[ASL_FILE_AML_OUTPUT].Filename;
+        AcpiGbl_DisasmFlag = TRUE;
+        fprintf (stderr, "\n");
+        AslDoDisassembly ();
+
+        /* delete the AML file. This AML file should never be utilized by AML interpreters. */
+
+        FlDeleteFile (ASL_FILE_AML_OUTPUT);
+    }
+
+
 
 CleanupAndExit:
 
@@ -290,6 +340,9 @@ CleanupAndExit:
     {
         AcpiDmClearExternalFileList();
     }
+    (void) AcpiTerminate ();
+    CmCleanupAndExit ();
+
 
     return (ReturnStatus);
 }
@@ -372,9 +425,6 @@ static void
 AslInitialize (
     void)
 {
-    UINT32                  i;
-
-
     AcpiGbl_DmOpt_Verbose = FALSE;
 
     /* Default integer width is 32 bits */
@@ -382,16 +432,4 @@ AslInitialize (
     AcpiGbl_IntegerBitWidth = 32;
     AcpiGbl_IntegerNybbleWidth = 8;
     AcpiGbl_IntegerByteWidth = 4;
-
-    for (i = 0; i < ASL_NUM_FILES; i++)
-    {
-        AslGbl_Files[i].Handle = NULL;
-        AslGbl_Files[i].Filename = NULL;
-    }
-
-    AslGbl_Files[ASL_FILE_STDOUT].Handle   = stdout;
-    AslGbl_Files[ASL_FILE_STDOUT].Filename = "STDOUT";
-
-    AslGbl_Files[ASL_FILE_STDERR].Handle   = stderr;
-    AslGbl_Files[ASL_FILE_STDERR].Filename = "STDERR";
 }

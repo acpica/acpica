@@ -245,8 +245,6 @@ typedef struct asl_file_info
 {
     FILE                        *Handle;
     char                        *Filename;
-    const char                  *ShortDescription;
-    const char                  *Description;
 
 } ASL_FILE_INFO;
 
@@ -257,6 +255,11 @@ typedef struct asl_file_status
 
 } ASL_FILE_STATUS;
 
+
+typedef UINT32                     ASL_FILE_SWITCH_STATUS;    /* File switch status */
+#define SWITCH_TO_DIFFERENT_FILE   0
+#define SWITCH_TO_SAME_FILE        1
+#define FILE_NOT_FOUND             2
 
 /*
  * File types. Note: Any changes to this table must also be reflected
@@ -295,9 +298,15 @@ typedef enum
 
 } ASL_FILE_TYPES;
 
-
 #define ASL_MAX_FILE_TYPE       18
 #define ASL_NUM_FILES           (ASL_MAX_FILE_TYPE + 1)
+
+typedef struct asl_file_desc
+{
+    const char              *ShortDescription;
+    const char              *Description;
+} ASL_FILE_DESC;
+
 
 /* Name suffixes used to create filenames for output files */
 
@@ -343,6 +352,11 @@ typedef struct asl_include_dir
  * An entry in the exception list, one for each error/warning
  * Note: SubError nodes would be treated with the same messageId and Level
  * as the parent error node.
+ *
+ * The source filename represents the name of the .src of where the error
+ * occurred. This is useful for errors that occur inside of include files.
+ * Since include files aren't recorded as a part of the global files list,
+ * this provides a way to get the included file.
  */
 typedef struct asl_error_msg
 {
@@ -355,6 +369,7 @@ typedef struct asl_error_msg
     struct asl_error_msg        *SubError;
     char                        *Filename;
     char                        *SourceLine;
+    char                        *SourceFilename;
     UINT32                      FilenameLength;
     UINT16                      MessageId;
     UINT8                       Level;
@@ -478,5 +493,20 @@ typedef struct asl_file_node
     struct asl_file_node    *Next;
 
 } ASL_FILE_NODE;
+
+typedef struct asl_files_node
+{
+    struct asl_file_info    Files[ASL_NUM_FILES];
+    struct asl_files_node   *Next;
+    char                    *TableSignature;
+    char                    *TableId;
+    UINT64                  TotalLineCount;
+    UINT64                  OriginalInputFileSize;
+    UINT64                  TotalKeywords;
+    UINT64                  TotalNamedObjects;
+    UINT64                  TotalExecutableOpcodes;
+    BOOLEAN                 ParserErrorDetected;
+
+} ASL_GLOBAL_FILE_NODE;
 
 #endif  /* __ASLTYPES_H */
