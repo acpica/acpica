@@ -1350,6 +1350,9 @@ ACPI_DMTABLE_INFO           AcpiDmTableInfoPptt0[] =
     {ACPI_DMT_UINT32,   ACPI_PPTT0_OFFSET (Flags),                  "Flags (decoded below)", 0},
     {ACPI_DMT_FLAG0,    ACPI_PPTT0_FLAG_OFFSET (Flags,0),           "Physical package", 0},
     {ACPI_DMT_FLAG1,    ACPI_PPTT0_FLAG_OFFSET (Flags,0),           "ACPI Processor ID valid", 0},
+    {ACPI_DMT_FLAG2,    ACPI_PPTT0_FLAG_OFFSET (Flags,0),           "Processor is a thread", 0},
+    {ACPI_DMT_FLAG3,    ACPI_PPTT0_FLAG_OFFSET (Flags,0),           "Node is a leaf", 0},
+    {ACPI_DMT_FLAG4,    ACPI_PPTT0_FLAG_OFFSET (Flags,0),           "Identical Implementation", 0},
     {ACPI_DMT_UINT32,   ACPI_PPTT0_OFFSET (Parent),                 "Parent", 0},
     {ACPI_DMT_UINT32,   ACPI_PPTT0_OFFSET (AcpiProcessorId),        "ACPI Processor ID", 0},
     {ACPI_DMT_UINT32,   ACPI_PPTT0_OFFSET (NumberOfPrivResources),  "Private Resource Number", 0},
@@ -1392,12 +1395,12 @@ ACPI_DMTABLE_INFO           AcpiDmTableInfoPptt1[] =
 ACPI_DMTABLE_INFO           AcpiDmTableInfoPptt2[] =
 {
     {ACPI_DMT_UINT16,   ACPI_PPTT2_OFFSET (Reserved),               "Reserved", 0},
-    {ACPI_DMT_UINT32,   ACPI_PPTT2_OFFSET (VendorId),               "VENDOR_ID", 0},
-    {ACPI_DMT_UINT64,   ACPI_PPTT2_OFFSET (Level1Id),               "LEVEL_1_ID", 0},
-    {ACPI_DMT_UINT64,   ACPI_PPTT2_OFFSET (Level2Id),               "LEVEL_2_ID", 0},
-    {ACPI_DMT_UINT16,   ACPI_PPTT2_OFFSET (MajorRev),               "MAJOR_REV", 0},
-    {ACPI_DMT_UINT16,   ACPI_PPTT2_OFFSET (MinorRev),               "MINOR_REV", 0},
-    {ACPI_DMT_UINT16,   ACPI_PPTT2_OFFSET (SpinRev),                "SPIN_REV", 0},
+    {ACPI_DMT_UINT32,   ACPI_PPTT2_OFFSET (VendorId),               "Vendor ID", 0},
+    {ACPI_DMT_UINT64,   ACPI_PPTT2_OFFSET (Level1Id),               "Level1 ID", 0},
+    {ACPI_DMT_UINT64,   ACPI_PPTT2_OFFSET (Level2Id),               "Level2 ID", 0},
+    {ACPI_DMT_UINT16,   ACPI_PPTT2_OFFSET (MajorRev),               "Major revision", 0},
+    {ACPI_DMT_UINT16,   ACPI_PPTT2_OFFSET (MinorRev),               "Minor revision", 0},
+    {ACPI_DMT_UINT16,   ACPI_PPTT2_OFFSET (SpinRev),                "Spin revision", 0},
     ACPI_DMT_TERMINATOR
 };
 
