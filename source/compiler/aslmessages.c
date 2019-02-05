@@ -362,7 +362,8 @@ const char                      *AslCompilerMsgs [] =
 /*    ASL_MSG_LONG_SLEEP */                 "Very long Sleep, greater than 1 second",
 /*    ASL_MSG_PREFIX_NOT_EXIST */           "One or more prefix Scopes do not exist",
 /*    ASL_MSG_NAMEPATH_NOT_EXIST */         "One or more objects within the Pathname do not exist",
-/*    ASL_MSG_REGION_LENGTH */              "Operation Region declared with zero length"
+/*    ASL_MSG_REGION_LENGTH */              "Operation Region declared with zero length",
+/*    ASL_MSG_TEMPORARY_OBJECT */           "Object is created temporarily in another method and cannot be accessed"
 };
 
 /* Table compiler */
