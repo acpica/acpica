@@ -535,6 +535,7 @@ ACPI_DMTABLE_INFO           AcpiDmTableInfoMadt0[] =
     {ACPI_DMT_UINT8,    ACPI_MADT0_OFFSET (Id),                     "Local Apic ID", 0},
     {ACPI_DMT_UINT32,   ACPI_MADT0_OFFSET (LapicFlags),             "Flags (decoded below)", DT_FLAG},
     {ACPI_DMT_FLAG0,    ACPI_MADT0_FLAG_OFFSET (LapicFlags,0),      "Processor Enabled", 0},
+    {ACPI_DMT_FLAG1,    ACPI_MADT0_FLAG_OFFSET (LapicFlags,0),      "Runtime Online Capable", 0},
     ACPI_DMT_TERMINATOR
 };
 
