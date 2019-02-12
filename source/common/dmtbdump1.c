@@ -1406,7 +1406,7 @@ AcpiDmDumpHmat (
         case ACPI_HMAT_TYPE_ADDRESS_RANGE:
 
             InfoTable = AcpiDmTableInfoHmat0;
-            Length = sizeof (ACPI_HMAT_ADDRESS_RANGE);
+            Length = sizeof (ACPI_HMAT_PROXIMITY_DOMAIN);
             break;
 
         case ACPI_HMAT_TYPE_LOCALITY:

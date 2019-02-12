@@ -320,7 +320,7 @@ static const char           *AcpiDmHestNotifySubnames[] =
 
 static const char           *AcpiDmHmatSubnames[] =
 {
-    "Memory Subystem Address Range",
+    "Memory Proximity Domain Attributes",
     "System Locality Latency and Bandwidth Information",
     "Memory Side Cache Information",
     "Unknown Structure Type"         /* Reserved */
