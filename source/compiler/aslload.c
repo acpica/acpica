@@ -331,8 +331,8 @@ LdLoadFieldElements (
                      * The name already exists in this scope
                      * But continue processing the elements
                      */
-                    AslDualParseOpError (ASL_WARNING, ASL_MSG_EXTERN_COLLISION, Child,
-                        Child->Asl.Value.String, ASL_MSG_EXTERN_FOUND_HERE, Node->Op,
+                    AslDualParseOpError (ASL_WARNING, ASL_MSG_NAME_EXISTS, Child,
+                        Child->Asl.Value.String, ASL_MSG_FOUND_HERE, Node->Op,
                         Node->Op->Asl.ExternalName);
                 }
             }
