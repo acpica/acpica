@@ -814,6 +814,15 @@ ACPI_DMTABLE_INFO           AcpiDmTableInfoGtdt[] =
     ACPI_DMT_TERMINATOR
 };
 
+/* GDTD EL2 timer info. This table is appended to AcpiDmTableInfoGtdt for rev 3 and later */
+
+ACPI_DMTABLE_INFO AcpiDmTableInfoGtdtEl2[] =
+{
+    {ACPI_DMT_UINT32,   ACPI_GTDT_EL2_OFFSET (VirtualEL2TimerGsiv),  "Virtual EL2 Timer GSIV", 0},
+    {ACPI_DMT_UINT32,   ACPI_GTDT_EL2_OFFSET (VirtualEL2TimerFlags), "Virtual EL2 Timer Flags", 0},
+    ACPI_DMT_TERMINATOR
+};
+
 /* GTDT Subtable header (one per Subtable) */
 
 ACPI_DMTABLE_INFO           AcpiDmTableInfoGtdtHdr[] =

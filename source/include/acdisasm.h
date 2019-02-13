@@ -409,6 +409,7 @@ extern ACPI_DMTABLE_INFO        AcpiDmTableInfoFpdt1[];
 extern ACPI_DMTABLE_INFO        AcpiDmTableInfoGas[];
 extern ACPI_DMTABLE_INFO        AcpiDmTableInfoGtdt[];
 extern ACPI_DMTABLE_INFO        AcpiDmTableInfoGtdtHdr[];
+extern ACPI_DMTABLE_INFO        AcpiDmTableInfoGtdtEl2[];
 extern ACPI_DMTABLE_INFO        AcpiDmTableInfoGtdt0[];
 extern ACPI_DMTABLE_INFO        AcpiDmTableInfoGtdt0a[];
 extern ACPI_DMTABLE_INFO        AcpiDmTableInfoGtdt1[];

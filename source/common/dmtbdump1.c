@@ -1106,9 +1106,25 @@ AcpiDmDumpGtdt (
         return;
     }
 
-    /* Subtables */
+    /* Rev 3 fields */
 
     Subtable = ACPI_ADD_PTR (ACPI_GTDT_HEADER, Table, Offset);
+
+    if (Table->Revision > 2)
+    {
+        SubtableLength = sizeof (ACPI_GTDT_EL2);
+        Status = AcpiDmDumpTable (Length, Offset, Subtable,
+            SubtableLength, AcpiDmTableInfoGtdtEl2);
+        if (ACPI_FAILURE (Status))
+        {
+            return;
+        }
+	Offset += SubtableLength;
+    }
+
+    Subtable = ACPI_ADD_PTR (ACPI_GTDT_HEADER, Table, Offset);
+    /* Subtables */
+
     while (Offset < Table->Length)
     {
         /* Common subtable header */
