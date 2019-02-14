@@ -1002,13 +1002,35 @@ DtCompileGtdt (
     ACPI_SUBTABLE_HEADER    *GtdtHeader;
     ACPI_DMTABLE_INFO       *InfoTable;
     UINT32                  GtCount;
+    ACPI_TABLE_HEADER       *Header;
 
+
+    ParentTable = DtPeekSubtable ();
+
+    Header = ACPI_CAST_PTR (ACPI_TABLE_HEADER, ParentTable->Buffer);
+
+    /* Compile the main table */
 
     Status = DtCompileTable (PFieldList, AcpiDmTableInfoGtdt,
         &Subtable);
     if (ACPI_FAILURE (Status))
     {
         return (Status);
+    }
+
+    /* GTDT revision 3 later contains 2 extra fields before subtables */
+
+    if (Header->Revision > 2)
+    {
+        ParentTable = DtPeekSubtable ();
+        DtInsertSubtable (ParentTable, Subtable);
+
+        Status = DtCompileTable (PFieldList,
+            AcpiDmTableInfoGtdtEl2, &Subtable);
+        if (ACPI_FAILURE (Status))
+        {
+            return (Status);
+        }
     }
 
     ParentTable = DtPeekSubtable ();

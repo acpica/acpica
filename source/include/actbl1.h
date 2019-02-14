@@ -1319,6 +1319,12 @@ typedef struct acpi_table_gtdt
 #define ACPI_GTDT_INTERRUPT_POLARITY    (1<<1)
 #define ACPI_GTDT_ALWAYS_ON             (1<<2)
 
+typedef struct acpi_gtdt_el2
+{
+    UINT32                  VirtualEL2TimerGsiv;
+    UINT32                  VirtualEL2TimerFlags;
+} ACPI_GTDT_EL2;
+
 
 /* Common GTDT subtable header */
 
@@ -1797,9 +1803,9 @@ typedef struct acpi_hmat_structure
  * HMAT Structures, correspond to Type in ACPI_HMAT_STRUCTURE
  */
 
-/* 0: Memory subystem address range */
+/* 0: Memory proximity domain attributes */
 
-typedef struct acpi_hmat_address_range
+typedef struct acpi_hmat_proximity_domain
 {
     ACPI_HMAT_STRUCTURE     Header;
     UINT16                  Flags;
@@ -1807,10 +1813,10 @@ typedef struct acpi_hmat_address_range
     UINT32                  ProcessorPD;            /* Processor proximity domain */
     UINT32                  MemoryPD;               /* Memory proximity domain */
     UINT32                  Reserved2;
-    UINT64                  PhysicalAddressBase;    /* Physical address range base */
-    UINT64                  PhysicalAddressLength;  /* Physical address range length */
+    UINT64                  Reserved3;
+    UINT64                  Reserved4;
 
-} ACPI_HMAT_ADDRESS_RANGE;
+} ACPI_HMAT_PROXIMITY_DOMAIN;
 
 /* Masks for Flags field above */
 
