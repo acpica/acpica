@@ -453,7 +453,7 @@ AeRegionHandler (
         }
         for (i = 0; i < Length; ++i)
         {
-	     Buffer[i] = i;
+            Buffer[i] = (UINT8) i;
         }
 	return (AE_OK);
 
