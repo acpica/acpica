@@ -414,7 +414,7 @@ AcpiUtDeleteInternalObj (
         }
         if (Object->Field.InternalPccBuffer)
         {
-	    ACPI_FREE(Object->Field.InternalPccBuffer);
+            ACPI_FREE(Object->Field.InternalPccBuffer);
         }
 
         break;

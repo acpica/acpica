@@ -187,7 +187,7 @@ const UINT8     AcpiProtocolLengths[] =
     0xFF                        /* F - ATTRIB_RAW_PROCESS_BYTES */
 };
 
-#define PCC_MASTER_SUBSPACE	3
+#define PCC_MASTER_SUBSPACE     3
 
 /*
  * The following macros determine a given offset is a COMD field.
@@ -195,8 +195,8 @@ const UINT8     AcpiProtocolLengths[] =
  * 2-byte COMD field at offset 4 and master subspaces (type 3) contains a 4-byte
  * COMD field starting at offset 12.
  */
-#define GENERIC_SUBSPACE_COMMAND(a)	(4 == a || a == 5)
-#define MASTER_SUBSPACE_COMMAND(a)	(12 <= a && a <= 15)
+#define GENERIC_SUBSPACE_COMMAND(a)     (4 == a || a == 5)
+#define MASTER_SUBSPACE_COMMAND(a)      (12 <= a && a <= 15)
 
 
 /*******************************************************************************
@@ -352,18 +352,18 @@ AcpiExReadDataFromField (
         (ObjDesc->Field.RegionObj->Region.SpaceId == ACPI_ADR_SPACE_PLATFORM_COMM))
     {
         /*
-	 * Reading from a PCC field unit does not require the handler because
-	 * it only requires reading from the InternalPccBuffer.
-	 */
+         * Reading from a PCC field unit does not require the handler because
+         * it only requires reading from the InternalPccBuffer.
+         */
         ACPI_DEBUG_PRINT ((ACPI_DB_BFIELD,
             "PCC FieldRead bits %u\n", ObjDesc->Field.BitLength));
 
         memcpy (Buffer, ObjDesc->Field.RegionObj->Field.InternalPccBuffer +
-	    ObjDesc->Field.BaseByteOffset, (ACPI_SIZE) ACPI_ROUND_BITS_UP_TO_BYTES (
+        ObjDesc->Field.BaseByteOffset, (ACPI_SIZE) ACPI_ROUND_BITS_UP_TO_BYTES (
             ObjDesc->Field.BitLength));
 
         *RetBufferDesc = BufferDesc;
-	return AE_OK;
+        return AE_OK;
     }
 
     ACPI_DEBUG_PRINT ((ACPI_DB_BFIELD,
@@ -483,10 +483,11 @@ AcpiExWriteDataToField (
         memcpy (ObjDesc->Field.RegionObj->Field.InternalPccBuffer +
             ObjDesc->Field.BaseByteOffset,
             SourceDesc->Buffer.Pointer, DataLength);
+
         if ((ObjDesc->Field.RegionObj->Region.Address == PCC_MASTER_SUBSPACE &&
            MASTER_SUBSPACE_COMMAND (ObjDesc->Field.BaseByteOffset)) ||
            GENERIC_SUBSPACE_COMMAND (ObjDesc->Field.BaseByteOffset))
-	{
+        {
             /* Perform the write */
 
             ACPI_DEBUG_PRINT ((ACPI_DB_BFIELD,
@@ -494,9 +495,9 @@ AcpiExWriteDataToField (
 
             Status = AcpiExAccessRegion (
                 ObjDesc, 0, (UINT64 *) ObjDesc->Field.RegionObj->Field.InternalPccBuffer,
-		ACPI_WRITE);
+                ACPI_WRITE);
             return_ACPI_STATUS (Status);
-	}
+        }
         return (AE_OK);
     }
 

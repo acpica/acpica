@@ -455,7 +455,7 @@ AeRegionHandler (
         {
             Buffer[i] = (UINT8) i;
         }
-	return (AE_OK);
+        return (AE_OK);
 
     default:
         break;

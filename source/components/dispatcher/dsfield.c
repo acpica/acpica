@@ -689,7 +689,7 @@ AcpiDsCreateField (
         !(RegionNode->Object->Field.InternalPccBuffer
         = ACPI_ALLOCATE_ZEROED(Info.RegionNode->Object->Region.Length)))
     {
-	return_ACPI_STATUS (AE_NO_MEMORY);
+        return_ACPI_STATUS (AE_NO_MEMORY);
     }
     return_ACPI_STATUS (Status);
 }

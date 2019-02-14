@@ -1119,10 +1119,11 @@ AcpiDmDumpGtdt (
         {
             return;
         }
-	Offset += SubtableLength;
+        Offset += SubtableLength;
     }
 
     Subtable = ACPI_ADD_PTR (ACPI_GTDT_HEADER, Table, Offset);
+
     /* Subtables */
 
     while (Offset < Table->Length)
