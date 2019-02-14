@@ -5,7 +5,7 @@
 # Calculate the current state of all bugs
 # and report the summary tables.
 #
-# Paremeters:
+# Parameters:
 #
 # arg1 - the first multi-result directory
 # arg2 - the second multi-result directory
@@ -381,10 +381,10 @@ report_state_of_bugs()
 			fi
 
 
-			# Check consistancy of bug-data.
+			# Check consistency of bug-data.
 			#
 			# Check that the state of bugs reported by local and kernel
-			# bugzilla dont contradict with the actual state of bugs
+			# bugzilla don't contradict with the actual state of bugs
 			# reported by test runs and manually provided data.
 
 			# Check STATE-MANUALLY (error # 1)

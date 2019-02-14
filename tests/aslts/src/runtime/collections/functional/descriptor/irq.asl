@@ -148,7 +148,7 @@
      Byte 1 (IRQ mask bits[7:0]): IRQ0 <=> bit[0]
      Byte 2 (IRQ mask bits[15:8]): IRQ8 <=> bit[0]
      Byte 3 (IRQ Information):
-     Bit[4] 		Interrupt is sharable, _SHR
+     Bit[4] 		Interrupt is shareable, _SHR
      Bit[3]		Interrupt Polarity, _LL
      0	Active-High - This interrupt is sampled when the signal is high, or true
      1	Active-Low - This interrupt is sampled when the signal is low, or false.

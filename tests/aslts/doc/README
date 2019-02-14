@@ -20,7 +20,7 @@ plan
 StoreCopyTestPrototype
 
    these demo programs may be considered as a prototypes
-   of separate functional tests for CopyObject ans Store
+   of separate functional tests for CopyObject and Store
    operators
 
 CurrentState

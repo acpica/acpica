@@ -30,7 +30,7 @@
      */
     /*
      !!!!!!!!!!!!!!!!!!!!!!!!!!!!
-     SEE: shouls be a few updated
+     SEE: should be a few updated
      !!!!!!!!!!!!!!!!!!!!!!!!!!!!
      */
     /* The test for ASL-Events to be run on a single invocation only */

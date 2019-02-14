@@ -51,7 +51,7 @@
     Method (MF10, 1, Serialized)
     {
         Name (I001, 0x00)
-        Debug = "m001 started, DONT apply DerefOf()"
+        Debug = "m001 started, DON'T apply DerefOf()"
         Local7 = (Arg0 + 0x01)
         If ((Arg0 != 0x07))
         {

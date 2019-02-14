@@ -435,7 +435,7 @@
                  0x61, 0x62, 0x63, 0x64, 0x65, 0x66               // abcdef
             },
 
-            /* ============= Result omited */
+            /* ============= Result omitted */
 
             0x00,
             0x00,
@@ -469,7 +469,7 @@
                  0x61, 0x62, 0x63, 0x64, 0x65, 0x66               // abcdef
             },
 
-            /* ============= Store omited */
+            /* ============= Store omitted */
 
             0x00ABCDEF12345678,
             0x12345678,
@@ -988,7 +988,7 @@
                  0x61, 0x62, 0x63, 0x64, 0x65, 0x66               // abcdef
             },
 
-            /* ============= Result omited */
+            /* ============= Result omitted */
             /* ,i */
             0x00,
             0x00,
@@ -1030,7 +1030,7 @@
                  0x61, 0x62, 0x63, 0x64, 0x65, 0x66               // abcdef
             },
 
-            /* ============= Store omited */
+            /* ============= Store omitted */
             /* i, */
             0x3231666564636261,
             0x64636261,
@@ -1413,7 +1413,7 @@
 
         BF11 = Concatenate (Arg1, Arg2, BF01) /* \BF01 */
         M4C1 (Arg0, Arg3, 0x18, 0x01, 0x01, BF01, BF11)
-        /* ============= Result omited */
+        /* ============= Result omitted */
         /* ,i,s,b,bf */
         /* ,i */
         II10 = Concatenate (Arg1, Arg2)
@@ -1434,7 +1434,7 @@
 
         BF11 = Concatenate (Arg1, Arg2)
         M4C1 (Arg0, Arg3, 0x1D, 0x00, 0x01, 0x00, BF11)
-        /* ============= Store omited */
+        /* ============= Store omitted */
         /* i,s,b,bf, */
         /* i, */
         Concatenate (Arg1, Arg2, II00) /* \II00 */

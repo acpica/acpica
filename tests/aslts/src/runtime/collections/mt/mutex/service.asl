@@ -225,7 +225,7 @@
     }
 
     /*
-     * Fulfil and report Sleep
+     * Fulfill and report Sleep
      *
      * arg0 - Index of current thread
      * arg1 - number of milliseconds to sleep
@@ -244,7 +244,7 @@
     }
 
     /*
-     * Fulfil and report Stall
+     * Fulfill and report Stall
      *
      * arg0 - Index of current thread
      * arg1 - number of MicroSeconds to Stall

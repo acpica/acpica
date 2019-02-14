@@ -26,7 +26,7 @@
      * EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
      */
     /*
-     * Check Result Object proccessing on Increment/Decrement
+     * Check Result Object processing on Increment/Decrement
      */
     Name (Z125, 0x7D)
     /* Test verifying Result Object processing on storing of the resilt */
@@ -1180,7 +1180,7 @@
 
         /* Output statistics */
 
-        M002 (Concatenate ("Result Object proccessing with ", DerefOf (PAC4 [Arg0])))
+        M002 (Concatenate ("Result Object processing with ", DerefOf (PAC4 [Arg0])))
         Return (0x00)
     }
 
@@ -1188,7 +1188,7 @@
 
     Method (RES2, 0, NotSerialized)
     {
-        Debug = "TEST: RES2, Result Object proccessing on Increment/Decrement"
+        Debug = "TEST: RES2, Result Object processing on Increment/Decrement"
         /* Increment */
 
         M692 (0x00, 0x00)

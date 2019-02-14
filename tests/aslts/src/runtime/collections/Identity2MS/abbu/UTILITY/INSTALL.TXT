@@ -68,7 +68,7 @@ Use Method(TEST) as a template to create new methods.
 
 TO UNINSTALL:
 =============
-- Use Device Manager to uninstall the 'Intel ACPI Black Box Utlity Control Device' under 'System Devices'
+- Use Device Manager to uninstall the 'Intel ACPI Black Box Utility Control Device' under 'System Devices'
 
 - Use Regedit and delete the following Keys:
     - HKLM\System\CurrentControlSet\Services\Acpi\Parameters\DSDT

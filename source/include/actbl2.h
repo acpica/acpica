@@ -303,7 +303,7 @@ typedef struct acpi_iort_memory_access
 typedef struct acpi_iort_its_group
 {
     UINT32                  ItsCount;
-    UINT32                  Identifiers[1];         /* GIC ITS identifier arrary */
+    UINT32                  Identifiers[1];         /* GIC ITS identifier array */
 
 } ACPI_IORT_ITS_GROUP;
 

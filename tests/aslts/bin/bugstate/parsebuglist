@@ -4,7 +4,7 @@
 #
 # Parse the Bug List output file (ID State Result Component)
 #
-# Paremeters:
+# Parameters:
 #
 # arg1 - pathname of file with the Bug List
 

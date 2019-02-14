@@ -398,7 +398,7 @@ const AH_PREDEFINED_NAME    AslPredefinedInfo[] =
     AH_PREDEF ("_SDD",    "Set Device Data", "Sets data for a SATA device"),
     AH_PREDEF ("_SEG",    "PCI Segment", "Returns a device's PCI Segment Group number"),
     AH_PREDEF ("_SHL",    "Set Hardware Limit", "Sets the hardware limit enforced by the Power Meter"),
-    AH_PREDEF ("_SHR",    "Sharable", "Interrupt share status, Resource Descriptor field"),
+    AH_PREDEF ("_SHR",    "Shareable", "Interrupt share status, Resource Descriptor field"),
     AH_PREDEF ("_SI_",    "System Indicators", "Predefined scope"),
     AH_PREDEF ("_SIZ",    "Size", "DMA transfer size, Resource Descriptor field"),
     AH_PREDEF ("_SLI",    "System Locality Information", "Returns a list of NUMA system localities"),

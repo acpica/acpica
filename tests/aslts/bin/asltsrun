@@ -253,7 +253,7 @@ run_set_of_test_cases()
 	total="$x $y"
 
 	# Explanation of command below:
-	# For each testcase that we will run, we are goin to parallelize the
+	# For each testcase that we will run, we are going to parallelize the
 	# execution with the number of available processors.
 	printf '%s\n' "${test_case_arr[@]}" |\
 	xargs -n 1 -P $procs -I {} bash -c 'run_test_case $1 $2 > $3/$4/$1'\
@@ -1029,7 +1029,7 @@ fi
 TS_FMT_ENDTIME=$(date +%T)
 TS_FMT_RUNTIME=`get_cent_str_diff $TS_FMT_INITIME $TS_FMT_ENDTIME`
 # AcpiExec doesn't provide status of test execution,
-# so dont report STATUS of AcpiExec execution here
+# so don't report STATUS of AcpiExec execution here
 # not to mislead as it means STATUS of the tests
 # execution.
 # if [ $UTILSTATUS == 0 ]; then
@@ -1077,7 +1077,7 @@ if [ $ENABLELOG != 0 ]; then
 fi
 
 if [ $AML_DONT_EXIST != 0 ]; then
-	msg="WARNING: some test cases dont have AML code! ($AML_DONT_EXIST)"
+	msg="WARNING: some test cases don't have AML code! ($AML_DONT_EXIST)"
 	echo "$msg"
 	multi_log "$msg"
 fi
@@ -1101,7 +1101,7 @@ else
 		do2path=$MULTIPATH/do2Output.txt
 		Do 2 > $do2path
 		if [ $? -ne 0 ]; then \
-			echo "Detailed comparsion of previous 2 test runs in $do2path"
+			echo "Detailed comparison of previous 2 test runs in $do2path"
 		fi
 	fi
 fi

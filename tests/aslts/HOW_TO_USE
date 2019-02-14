@@ -83,7 +83,7 @@ How to execute the run-time tests
 
     aslts/tmp/RESULTS/
         <date.time.acpica_version>/
-           norm/                      // normal interpeter mode, no slack
+           norm/                      // normal interpreter mode, no slack
                32/                    // 32-bit table execution
                64/                    // 64-bit table execution
            slack/                     // interpreter slack mode enabled

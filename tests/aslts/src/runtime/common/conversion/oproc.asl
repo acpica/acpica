@@ -49,11 +49,11 @@
     /* (low number of available arguments {Arg0-Arg6} complicates algorithms). */
     /* */
     /* Currently from the mask of exceptions to be forced are excluded bits */
-    /* corresponding to the following types ("dont know how" have to be added): */
+    /* corresponding to the following types ("don't know how" have to be added): */
     /* */
-    /* - Method        (dont know how) */
-    /* - Thermal Zones (dont know how) */
-    /* - DDB Handle    (dont know how) */
+    /* - Method        (don't know how) */
+    /* - Thermal Zones (don't know how) */
+    /* - DDB Handle    (don't know how) */
     /* - Debug Object  (impossible, Compiler refuses) */
     /* - Uninitialized (update needed, currently the test is implemented incorrectly. */
     /*                  Uninitialized type have to be passed immediately as operands */
@@ -75,7 +75,7 @@
     /* */
     Name (Z064, 0x40)
     /* Commutative two operands operation */
-    /* (CAUTION: dont forget to clean it) */
+    /* (CAUTION: don't forget to clean it) */
     Name (COM2, 0x00)
     /* Flags exception expected */
     /* (needed due to the lack of Arguments number) */
@@ -1013,7 +1013,7 @@
         Return (Local7)
     }
 
-    /* Initiate exception by inappropreate operand */
+    /* Initiate exception by inappropriate operand */
 
     Method (M488, 6, Serialized)
     {

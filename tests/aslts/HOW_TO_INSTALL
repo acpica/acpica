@@ -41,7 +41,7 @@ SEE ALSO
 
 ENVIRONMENT
 
-   For test generation, the envirnoment variable 'ASL' should be set to the
+   For test generation, the environment variable 'ASL' should be set to the
    pathname of the iASL compiler.
 
         For example, for cygwin under windows:

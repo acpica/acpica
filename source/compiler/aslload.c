@@ -575,7 +575,7 @@ LdNamespace1Begin (
         if (Status == AE_NOT_FOUND)
         {
             /*
-             * This is either a foward reference or the object truly
+             * This is either a forward reference or the object truly
              * does not exist. The two cases can only be differentiated
              * during the cross-reference stage later. Mark the Op/Name
              * as not-found for now to indicate the need for further

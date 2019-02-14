@@ -3163,7 +3163,7 @@ Method(in41, 7, Serialized)
 	/*
 	 * Modification 2:
 	 *
-	 * Some params are intermediately stored to Args (efectively local)
+	 * Some params are intermediately stored to Args (effectively local)
 	 */
 
 /*
@@ -3389,7 +3389,7 @@ Method(in41, 7, Serialized)
 	/*
 	 * Modification 2:
 	 *
-	 * Some params are intermediately stored to Args (efectively local)
+	 * Some params are intermediately stored to Args (effectively local)
 	 *
 	 * Note:
 	 *   in the checking above the locals (Local1, Local3, Local5)
@@ -3618,7 +3618,7 @@ Method(in41, 7, Serialized)
 	/*
 	 * Modification 2:
 	 *
-	 * Some params are intermediately stored to Args (efectively local)
+	 * Some params are intermediately stored to Args (effectively local)
 	 *
 	 * Note:
 	 *   in the checkings above the locals (Arg0-Arg5)
@@ -3842,7 +3842,7 @@ Method(in41, 7, Serialized)
 	/*
 	 * Modification 2:
 	 *
-	 * Some params are intermediately stored to Args (efectively local)
+	 * Some params are intermediately stored to Args (effectively local)
 	 *
 	 * Note:
 	 *   in the checkings above the locals (Arg0-Arg5)
@@ -4059,7 +4059,7 @@ Method(in41, 7, Serialized)
 	/*
 	 * Modification 2:
 	 *
-	 * Some params are intermediately stored to Args (efectively local)
+	 * Some params are intermediately stored to Args (effectively local)
 	 *
 	 * Note: no Args for this checking (see comment above).
 	 */
@@ -4270,7 +4270,7 @@ Method(in41, 7, Serialized)
 	/*
 	 * Modification 2:
 	 *
-	 * Some params are intermediately stored to Args (efectively local)
+	 * Some params are intermediately stored to Args (effectively local)
 	 *
 	 * Note: no Args for this checking (see comment above).
 	 */
@@ -4481,7 +4481,7 @@ Method(in41, 7, Serialized)
 	/*
 	 * Modification 2:
 	 *
-	 * Some params are intermediately stored to Args (efectively local)
+	 * Some params are intermediately stored to Args (effectively local)
 	 *
 	 * Note: no Args for this checking (see comment above).
 	 */

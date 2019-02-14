@@ -48,7 +48,7 @@
         Event (E000)
         Name (I000, 0x00)
         /* Local Named Object */
-        /* ASL compiler prohibits to use Pakage */
+        /* ASL compiler prohibits to use Package */
         /* Named Objects in the most of operators */
         Method (M000, 1, Serialized)
         {

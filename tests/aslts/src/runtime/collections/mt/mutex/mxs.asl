@@ -792,18 +792,18 @@
      *
      *          1) before to run operation:
      *
-     *             check absence of any exception occured on this thread
+     *             check absence of any exception occurred on this thread
      *
      *          2) after the operation is completed depending on X0:
      *
      *             EX0E (particular undefined opcode of exception):
      *
-     *               check that no any exception occured on this thread
+     *               check that no any exception occurred on this thread
      *
      *             otherwise:
      *
      *               check that exception with opcode equal to X0
-     *               has occured on this thread
+     *               has occurred on this thread
      *
      * arg3 - Levels of mutexes (buffer/Integer).
      *

@@ -55,7 +55,7 @@
 #
 # REMEMBER (To-Be-Done items)
 #
-#  1. Dont forget to add testing of aml/nopt mode.
+#  1. Don't forget to add testing of aml/nopt mode.
 #  2. Do make-install till the first error automatically
 #  3. Not implemented yet though announced in Usage:
 #     - "Do 1 [n32 [n64 [s32 [s64]]]] [<test_case_name> [<test_case_name> [...]]]"
@@ -667,7 +667,7 @@ EXECONLY=$3
 RESULTDIR=
 
 # ################################################################## #
-# ATTENTION: dont use yet here any common stuff till the next remark #
+# ATTENTION: don't use yet here any common stuff till the next remark #
 # ################################################################## #
 
 # Only report USAGE

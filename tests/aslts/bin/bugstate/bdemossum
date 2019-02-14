@@ -12,7 +12,7 @@
 # Each line of the summary files represents the state of the relevant bug
 # reported by the relevant bdemo test.
 #
-# Paremeters:
+# Parameters:
 #
 # arg1 - multi-result directory
 #

@@ -831,7 +831,7 @@ DtCompileDrtm (
     DtInsertSubtable (ParentTable, Subtable);
 
     /*
-     * Using ACPI_SUB_PTR, We needn't define a seperate structure. Care
+     * Using ACPI_SUB_PTR, We needn't define a separate structure. Care
      * should be taken to avoid accessing ACPI_TABLE_HADER fields.
      */
 #if 0

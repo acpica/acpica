@@ -3,7 +3,7 @@
    I. Test goals
 
    The intention of the test is to verify all the ASL grammar
-rules of specifying, receiving and proccessing of Result objects
+rules of specifying, receiving and processing of Result objects
 in ASL operators. The main goal of the test is checking that saving
 of Result objects in target (destination) ones for the next use is
 provided as determined by the Advanced Configuration and Power Interface
@@ -17,7 +17,7 @@ is based on are enumerated in the Appendix I.
    The document represents a wide range of testing aspects and describes
 using of them in tests.
 
-   There are the following main issues in Result object proccessing:
+   There are the following main issues in Result object processing:
 
  - intermediate creation of an object of a specified type as a copy
    of the immediate Source Object or the result either of some operator
@@ -314,7 +314,7 @@ using of them in tests.
 
    Thus the storing of a copy of an Object will be verified
 for all possible conditions that could appear in valid AML code.
-The only problem is that implementaion of all testing aspects
+The only problem is that implementation of all testing aspects
 can require too much efforts. So, the minimal set of testing
 aspects to verify should be determined. This set must include
 verifying of the following issues:

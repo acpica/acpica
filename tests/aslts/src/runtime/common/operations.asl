@@ -88,7 +88,7 @@
     /* Flag - it is expected that operation will cause exception */
 
     Name (FLG3, 0x00)
-    /* Flag - dont do further checkings */
+    /* Flag - don't do further checkings */
 
     Name (FLG4, 0x00)
     /* Collect calls to all operators */
@@ -452,7 +452,7 @@
 
         If (FLG4)
         {
-            /* Dont do further checkings. */
+            /* Don't do further checkings. */
 
             Return (0x01)
         }

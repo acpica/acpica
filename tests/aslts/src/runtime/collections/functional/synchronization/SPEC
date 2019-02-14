@@ -15,11 +15,11 @@ then Release them all in the inverse order (keep the exactly inverse order
 for Releasing mutexes of the same level too).
 
 m36a:
-Exactly m301 but additioanlly:
+Exactly m301 but additionally:
 all Release opreations are located into separate method.
 
 m36b:
-Exactly m301 but additioanlly:
+Exactly m301 but additionally:
 all Acquire and Release opreations are located into separate methods.
 
 m36c:

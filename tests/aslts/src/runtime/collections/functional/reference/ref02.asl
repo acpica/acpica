@@ -823,7 +823,7 @@
         If (Arg1)
         {
             /* Data are unchanged, because writings were made */
-            /* into the new objects assosiated with Local7. */
+            /* into the new objects associated with Local7. */
             M1A6 ()
             Return (Zero)
         }
@@ -1201,7 +1201,7 @@
         If (Arg1)
         {
             /* Data are unchanged, because writings were made */
-            /* into the new objects assosiated with Local7. */
+            /* into the new objects associated with Local7. */
             M1A6 ()
             Return (Zero)
         }

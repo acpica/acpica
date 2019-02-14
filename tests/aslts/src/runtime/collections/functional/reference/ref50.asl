@@ -43,7 +43,7 @@
      SEE: CURRENTLY: compiler failed, Too few arguments (M002 requires X)
      SEE: test ref70 now works in accordance with the current behaviour -
      expects exceptions when dealing with ArgX-ORef & ArgX-IRef.
-     should be re-dericted: when read autimatic dereference will
+     should be re-dericted: when read automatic dereference will
      be done properly.
      ??????????????????????
      */
@@ -4884,7 +4884,7 @@
         M391 (I050, C00A, 0x00, __LINE__)
         M000 (RefOf (B050), C00A, C00B)
         M391 (I050, C00A, 0x00, __LINE__)
-        /* Write Bufer */
+        /* Write Buffer */
 
         M000 (RefOf (I060), C00B, C009)
         M391 (I060, C00B, 0x00, __LINE__)
@@ -5496,7 +5496,7 @@
      !!!!!!!!!!!!!!!!!!!!!!!
      Do this test, like this - run Derefof for the chain of references (IR/OR)
      and for ring of them.
-     I dont remember if we have already such test.
+     I don't remember if we have already such test.
      !!!!!!!!!!!!!!!!!!!!!!!
      Method(m000)
      {
@@ -5761,7 +5761,7 @@
      }
      2. do many enclosed method calls
      to show that index to Str,Buf,Pckg
-     changes the intial object nevertheless
+     changes the initial object nevertheless
      */
     /*
      Method (M001)

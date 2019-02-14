@@ -43,7 +43,7 @@ Name(z164, 164)
 
 /*
  *
- * Read/write access to elemens of Package passed to method.
+ * Read/write access to elements of Package passed to method.
  *
  */
 

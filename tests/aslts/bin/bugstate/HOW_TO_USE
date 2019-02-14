@@ -62,7 +62,7 @@ into STATE-MANUALLY of ALLBUGS file
    manually through the code that bug fix is actually
    integrated into ACPICA code.
 
-2. If bug is fixed by other side we dont know where to look for
+2. If bug is fixed by other side we don't know where to look for
    the relevant update and simply run the relevant bdemo test on
    the obtained release to ensure the bug-fix is already integrated.
 

@@ -1454,7 +1454,7 @@ Local2 = Buffer (0x0A)
                 Return (0x01)
             }
 
-            /* Uninitialized: it can not be aplied to Load which */
+            /* Uninitialized: it can not be applied to Load which */
             /* allows NameString only to be used as Object parameter */
             /* Integer */
             Load (\AUXD.INT0, DDBH) /* \DTM0.TSTB.DDBH */
@@ -2125,7 +2125,7 @@ Local2 = Buffer (0x0A)
                 Load (RFU3, DDB3) /* \DTM0.TSTH.DDB3 */
             }
 
-            /* Futher 1 Method can be called */
+            /* Further 1 Method can be called */
 
             Unload (DDB1)
             CH04 (Arg0, 0x00, 0x56, Z174, __LINE__, 0x00, 0x00) /* AE_OWNER_ID_LIMIT */
