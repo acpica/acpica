@@ -495,7 +495,7 @@ XfNamespaceLocateBegin (
             Node->ArgCount = (UINT8)
                 (((UINT8) NextOp->Asl.Value.Integer) & 0x07);
 
-            /* We will track all posible ArgXs */
+            /* We will track all possible ArgXs */
 
             for (i = 0; i < ACPI_METHOD_NUM_ARGS; i++)
             {

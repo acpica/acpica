@@ -122,7 +122,7 @@ Method(m002)
 	ToBCD(Local0, Local2)
 
 
-	// These dont cause the effect:
+	// These don't cause the effect:
 	// Divide(1, Local1, Local2)
 	// Divide(1, Local1, Local7, Local2)
 	// Store(SizeOf(d9Z0), Local2)

@@ -1,5 +1,5 @@
 #/** @file
-# Build discription file to generate ACPICA applications.
+# Build description file to generate ACPICA applications.
 #
 # Copyright (c) 2009 Intel Corporation. All rights reserved
 # This software and associated documentation (if any) is furnished

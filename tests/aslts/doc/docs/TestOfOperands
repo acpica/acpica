@@ -185,7 +185,7 @@ REFERENCES
   Note: it was observed earlier that logical operators
         didn't cause exceptions when using references.
         This looks incorrect. Keep attention to that.
-        Dont forget to build the test for it.
+        Don't forget to build the test for it.
 
   Note: specification of Reference test contains more exact list.
 
@@ -207,7 +207,7 @@ for operator in place of operand.
 
   Note: expressions in place of locations for results
         (Destinations) should be verified in this test
-        as vell, because together with the expressions
+        as well, because together with the expressions
         of operands they can influence each other.
 
   Issue: expressions in result, is that possible to use?
@@ -267,7 +267,7 @@ operands and destinations:
       (one operator)/(several operators)
       (store result in it)/(don't store result in it)...
 
-   2. Pass the object of upper level (or even global) accesible
+   2. Pass the object of upper level (or even global) accessible
 statically by ArgX of sequence of calling methods (operand1) and
 specify the same object as another operand immediately by its NameX
 (operand2) and use them both in turn (operand1/operand2) as locations
@@ -293,7 +293,7 @@ and thus should be verified are these:
 
    The more you mix these aspects the more comprehensive test you
 have. Each impact generated and verified by test is a function of
-(N1,N2,N3,N4,N5,N6,N7,N8) parameters. So, to build the total absolut
+(N1,N2,N3,N4,N5,N6,N7,N8) parameters. So, to build the total absolute
 comprehensive test we have to build and verify all the possible
 combinations of these input states.
 
@@ -343,23 +343,23 @@ be provided by the test immediately also and can not be referred in cycle.
 particularities of Implicit Source Operand Conversion functionality
 which also restricts uniformity of test for different operators.
 
-   So, we cant run in cycle all the possible desirable combinations
+   So, we can't run in cycle all the possible desirable combinations
 (and aspects) of operands for all the ASL operators, because the ASL
-limitations dont allow to achieve uniformity of the test building.
+limitations don't allow to achieve uniformity of the test building.
 It is impossible to build the test which simply enumerates all
 combinations and so achieve the total coverage. One more, such the
 test will go during the huge boundless time.
 
    Thus, it is up to the skill of the designer of the test to choose
 the main points to be verified in order to build the test which would
-achieve the worthy coverage for the acceptible time of execution.
+achieve the worthy coverage for the acceptable time of execution.
 
    So, maybe, attempt to divide operators on groups according to
 the specific of their operands and one operator of each group verify
 comprehensively, while other members of groups verify in a simplified
 manner. Do that if the run time of the test increases extremely.
 
-   So, because of the ASL limitations described above we cant implement
+   So, because of the ASL limitations described above we can't implement
 the comprehencive test, which would be proven to approximate to the absolute
 test on coverage. But this specification and the tests adhered to it would
 allow us to feel ourselves to be on the firm way to achieve the worthy coverage
@@ -502,7 +502,7 @@ Note: the Implicit Rules were a few changed since that!
     ==========================
 
 
-This is a list of operators which are recomended
+This is a list of operators which are recommended
 to be implemented in the first turn.
 
 List of operators which should be verified completely (all the
@@ -747,7 +747,7 @@ be provided by the actions individual for the particular operators.
 24. for the acceptable types of operands check particular unacceptable
     values (exception occur)
 25. check that the result is of the same type as the benchmark
-    (use ObjectType, dont be satisfied with LEqual only)
+    (use ObjectType, don't be satisfied with LEqual only)
 26. the second operands of Logical operators are converted
     to the type of the first ones; do the checkings which
     show and confirm that
@@ -804,7 +804,7 @@ See: LocalX/ArgX
 - particular test: Store Buffer/Integer into String
   which (String) is far longer then Buffer/Integer.
   The String immage will be reduces. Then attempt to
-  work with the rest of String ouside of the new its
+  work with the rest of String outside of the new its
   contents (behind the null symbol of String).
 - reference as an element of Package
 - verify 64-bit values in 32-bit mode

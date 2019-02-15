@@ -41,10 +41,10 @@
      Store(\d900.i900, Debug)
      */
     Name (Z076, 0x4C)
-    /* Check Boolen (CondRefOf) and the type of value */
+    /* Check Boolean (CondRefOf) and the type of value */
     /* arg0 - reference to the value of arbitrary type */
     /* arg1 - expected type of value */
-    /* arg2 - returned Boolen */
+    /* arg2 - returned Boolean */
     /* arg3 - index of checking (inside the file) */
     Method (M1A0, 4, NotSerialized)
     {
@@ -100,7 +100,7 @@
 
                 /* if(c089) */
                 /* ATTENTION: exactly the same in m1a0 and m1a2 */
-                /* (but, dont replace it by call to Method) */
+                /* (but, don't replace it by call to Method) */
                 Method (M002, 1, NotSerialized)
                 {
                     Arg0 = 0xABCD001A
@@ -359,7 +359,7 @@
 
             /* if(c084) */
             /* ATTENTION: exactly the same in m1a0 and m1a2 */
-            /* (but, dont replace it by call to Method) */
+            /* (but, don't replace it by call to Method) */
             Method (M002, 1, NotSerialized)
             {
                 Arg0 = 0xABCD001A
@@ -479,8 +479,8 @@
         RST0 ()
     }
 
-    /* Check only Boolen (CondRefOf) */
-    /* arg0 - returned Boolen */
+    /* Check only Boolean (CondRefOf) */
+    /* arg0 - returned Boolean */
     /* arg1 - index of checking (inside the file) */
     Method (M1A4, 2, NotSerialized)
     {

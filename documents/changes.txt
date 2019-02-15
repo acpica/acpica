@@ -1218,7 +1218,7 @@ internal cache) is detected and ignored via object poisoning.
 
 Debugger: Fixed an AML interpreter mutex issue during the single stepping 
 of control methods. If certain debugger commands are executed during 
-stepping, a mutex aquire/release error could occur. Lv Zheng.
+stepping, a mutex acquire/release error could occur. Lv Zheng.
 
 Fixed some issues generating ACPICA with the Intel C compiler by 
 restoring the original behavior and compiler-specific include file in 
@@ -6760,7 +6760,7 @@ keyword is not standard across compilers, and this type allows inline to
 be 
 configured on a per-compiler basis. Lin Ming.
 
-Made the system global AcpiGbl_SystemAwakeAndRunning publically 
+Made the system global AcpiGbl_SystemAwakeAndRunning publicly
 available. 
 Added an extern for this boolean in acpixf.h. Some hosts utilize this 
 value 
@@ -11427,9 +11427,9 @@ Helgaas.
 Removed the length limit (200) on string objects as per the upcoming ACPI 
 3.0A specification. This affects the following areas of the interpreter: 
 1) 
-any implicit conversion of a Buffer to a String, 2) a String object 
+any implicit conversion of a Buffer to a String, 2) a String object
 result 
-of the ASL Concatentate operator, 3) the String object result of the ASL 
+of the ASL Concatenate operator, 3) the String object result of the ASL
 ToString operator.
 
 Fixed a problem in the Windows OS interface layer (OSL) where a 
@@ -13585,7 +13585,7 @@ next access width boundary (a common coding error.)
 Renamed OSD_HANDLER to ACPI_OSD_HANDLER, and OSD_EXECUTION_CALLBACK to 
 ACPI_OSD_EXEC_CALLBACK for consistency with other ACPI symbols.  Also, 
 these 
-symbols are lowercased by the latest version of the AcpiSrc tool.
+symbols are lowercase by the latest version of the AcpiSrc tool.
 
 The prototypes for the PCI interfaces in acpiosxf.h have been updated to 
 rename "Register" to simply "Reg" to prevent certain compilers from 
@@ -14957,8 +14957,8 @@ with the Linux coding style.
 Removed the non-Linux SourceSafe module revision number from each
 module header.
 
-Completed major overhaul of symbols to be lowercased for linux.
-Doubled the number of symbols that are lowercased.
+Completed major overhaul of symbols to be lowercase for linux.
+Doubled the number of symbols that are lowercase.
 
 Fixed a problem where identifiers within procedure headers and
 within quotes were not fully lower cased (they were left with a
@@ -16454,7 +16454,7 @@ Summary of changes for this label: 02_14_02
 Implemented support in AcpiLoadTable to allow loading of FACS and
 FADT tables.
 
-Suport for the now-obsolete interim 0.71 64-bit ACPI tables has
+Support for the now-obsolete interim 0.71 64-bit ACPI tables has
 been removed.  All 64-bit platforms should be migrated to the ACPI
 2.0 tables.  The actbl71.h header has been removed from the source
 tree.
@@ -16804,7 +16804,7 @@ Updated all files to apply cleanly against 2.4.16.
 
 Added basic PCI Interrupt Routing Table (PRT) support for IA32
 (acpi_pci.c), and unified the PRT code for IA32 and IA64.  This
-version supports both static and dyanmic PRT entries, but dynamic
+version supports both static and dynamic PRT entries, but dynamic
 entries are treated as if they were static (not yet
 reconfigurable).  Architecture- specific code to use this data is
 absent on IA32 but should be available shortly.
@@ -16893,7 +16893,7 @@ power-down, and thermal passive cooling issues (coming soon).
 
 Added additional typechecking for Fields within restricted access
 Operation Regions.  All fields within EC and CMOS regions must be
-declared with ByteAcc. All fields withing SMBus regions must be
+declared with ByteAcc. All fields within SMBus regions must be
 declared with the BufferAcc access type.
 
 Fixed a problem where the listing file output of control methods
@@ -17066,7 +17066,7 @@ objects to not be deleted during subsystem termination.
 
 Fixed a problem with the external AcpiEvaluateObject interface
 where the subsystem would fault if the named object to be
-evaluated refered to a constant such as Zero, Ones, etc.
+evaluated referred to a constant such as Zero, Ones, etc.
 
 Fixed a problem with IndexFields and BankFields where the
 subsystem would fault if the index, data, or bank registers were
@@ -17133,7 +17133,7 @@ sleeps.)
 The AcpiEnterSleepState and AcpiLeaveSleepState interfaces now
 support wake-enabled GPEs.  This means that upon entering the
 sleep state, all GPEs that are not wake-enabled are disabled.
-When leaving the sleep state, these GPEs are reenabled.
+When leaving the sleep state, these GPEs are re-enabled.
 
 A local double-precision divide/modulo module has been added to
 enhance portability to OS kernels where a 64-bit math library is

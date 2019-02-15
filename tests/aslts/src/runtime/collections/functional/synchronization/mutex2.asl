@@ -612,7 +612,7 @@
      * on level 0 too) for all available levels from 0 up to 15,
      * then Release them all in the inverse order.
      *
-     * Exactly m301 but additioanlly:
+     * Exactly m301 but additionally:
      *    all Release opreations are located into separate method.
      */
     Method (M36A, 0, Serialized)
@@ -809,7 +809,7 @@
      * on level 0 too) for all available levels from 0 up to 15,
      * then Release them all in the inverse order.
      *
-     * Exactly m301 but additioanlly:
+     * Exactly m301 but additionally:
      *    all Acquire and Release opreations are located into separate methods.
      */
     Method (M36B, 0, Serialized)
@@ -1313,7 +1313,7 @@
                 /* AE_AML_MUTEX_ORDER */
                 /*
                  * Break for the first bunch of errors encountered,
-                 * dont waste log.
+                 * don't waste log.
                  */
                 BR00 = 0x01
             }
@@ -2051,7 +2051,7 @@
         CN00++
         If (!Y242)
         {
-            /* Always inverse order untill the bug 242 is fixes */
+            /* Always inverse order until the bug 242 is fixes */
 
             Local0 = 0x01
         }

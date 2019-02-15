@@ -41,7 +41,7 @@ Name(MSLP, 2000)	// Max sleep (ms) defined in acconfig.h, Oct 2013
 //
 // Local0 - argument passed by test (MilliSeconds)
 // Local4 - specified time to be delayed (in Timer units)
-// Local6 - time actualy was delayed (measured by Timer, in Timer units)
+// Local6 - time actually was delayed (measured by Timer, in Timer units)
 // Local7 - delta == (actual - specified) (in Timer units)
 //
 Method(m0c8, 6)

@@ -135,10 +135,10 @@ report_exceptions_stat_cmp()
 	local rval=0
 
 	if [[ $3 -gt $4 ]]; then
-		echo "WARNING, $1, exceptions occurance number grown ($2): $3, $4"
+		echo "WARNING, $1, exceptions occurrence number grown ($2): $3, $4"
 		rval=1
 	elif [[ $3 -lt $4 ]]; then
-		echo "INFO,    $1, exceptions occurance number reduced ($2): $3, $4"
+		echo "INFO,    $1, exceptions occurrence number reduced ($2): $3, $4"
 		rval=2
 	fi
 	return $rval
@@ -517,7 +517,7 @@ cmp_result_opcode_to_str()
 		$CMP_MISCMP_OP) msg=miscompared;;
 		$CMP_NO_SECOND_OP) msg="- (the SUMMARY file of second run doesn't exist)";;
 		$CMP_NO_FIRST_OP) msg="- (the SUMMARY file of first run doesn't exist)";;
-		$CMP_NO_BOTH_OP) msg="- (the SUMMARY files of both runs dont exist)";;
+		$CMP_NO_BOTH_OP) msg="- (the SUMMARY files of both runs don't exist)";;
 		*) msg="???"
 	esac
 

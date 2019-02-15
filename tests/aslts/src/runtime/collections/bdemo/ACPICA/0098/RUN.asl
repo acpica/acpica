@@ -33,7 +33,7 @@
             {
                 /*
                  * Method me52 is enough to identify this bug,
-                 * so dont set up BLOCKED for this me58.
+                 * so don't set up BLOCKED for this me58.
                  * me58 will be added after bug-176 fixing.
                  */
                 SRMT ("me58")

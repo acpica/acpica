@@ -50,7 +50,7 @@ LINUXFILE=$CURDIR/linux/${ACPICAFILE#${SRCDIR}/}
 echo "[linuxize.sh] Generating tool (acpisrc)..."
 make_acpisrc $SRCDIR $FORCE_ACPISRC > /dev/null
 
-echo "[linuxize.sh] Coverting format (acpisrc)..."
+echo "[linuxize.sh] Converting format (acpisrc)..."
 mkdir -p $LINUXDIR
 rm -f $LINUXFILE
 $ACPISRC -ldqy $ACPICAFILE $LINUXFILE > /dev/null

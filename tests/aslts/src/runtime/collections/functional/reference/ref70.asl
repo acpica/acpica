@@ -875,7 +875,7 @@
         {
             /* Run simple test only for some particular ways of */
             /* obtaining references. */
-            C086 = 0x00 /* dont break testing on error appearance */
+            C086 = 0x00 /* don't break testing on error appearance */
             SRMT ("m1a9")
             M1A9 ()
         }

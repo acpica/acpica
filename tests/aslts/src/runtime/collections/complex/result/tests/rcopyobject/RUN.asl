@@ -25,7 +25,7 @@
          * NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE,
          * EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
          */
-        If (STTT ("Result Object proccessing in CopyObject()", TCLC, 0x0F, W011))
+        If (STTT ("Result Object processing in CopyObject()", TCLC, 0x0F, W011))
         {
             RES1 ()
         }

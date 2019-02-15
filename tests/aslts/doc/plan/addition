@@ -23,7 +23,7 @@ to be done ever (some remarks can be obsolete).
    checking of AE_AML_METHOD_LIMIT limits (32 and 256)
    should be performed in a separate tests.
 
-5. Do the tests which will show that inappropreate bit-sizes are applied.
+5. Do the tests which will show that inappropriate bit-sizes are applied.
    For example, exoparg2.c: Operand[0]->Buffer.Length - 32-bit
    while "ACPI_SIZE  Length" - 16/32/64.
    Bug 124 was about something like that.

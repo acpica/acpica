@@ -83,7 +83,7 @@
             0x00
         })
         /* Package for _TCI-begin statistics */
-        /* (use NamedX, dont use ArgX/LocalX). */
+        /* (use NamedX, don't use ArgX/LocalX). */
         Name (PP0A, Package (0x01){})
         /* Auxiliary objects for ASL-construction */
         /* being investigated: */
@@ -168,7 +168,7 @@
 
         Name (PP02, Package (0x01){})
         /* Package for _TCI-begin statistics */
-        /* (use NamedX, dont use ArgX/LocalX). */
+        /* (use NamedX, don't use ArgX/LocalX). */
         Name (PP0A, Package (0x01){})
         /* Objects for verified operators */
 
@@ -2220,7 +2220,7 @@
 
         If (RN01)
         {
-            /* Investigate and analize the logic of */
+            /* Investigate and analyze the logic of */
             /* crreating/deleting objects while processing */
             /* the Store operator (the number of objects in */
             /* different cases applying the Store operator). */

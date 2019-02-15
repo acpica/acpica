@@ -48,7 +48,7 @@
      *    as a number of threads parameter.
      *
      * Number of threads actually in work -
-     *    number of threads actually participating the relevent test.
+     *    number of threads actually participating the relevant test.
      *    Note: this value includes the Control Thread too.
      */
     Name (Z147, 0x93)
@@ -358,7 +358,7 @@
      * arg1 - ID of current thread (0, can be used for control only)
      * arg2 - Index of current thread
      * arg3 - cammand - index of the test strategy to be
-     *        managed and controled by the Control Thread
+     *        managed and controlled by the Control Thread
      *        and fulfilled by the Slave Threads (Slaves).
      *
      * Arguments of the command arg3:
@@ -856,7 +856,7 @@
     }
 
     /*
-     * Run and analize result of m10e()
+     * Run and analyze result of m10e()
      *
      * arg0,
      * arg1 - see m10e
@@ -1146,7 +1146,7 @@
             }
         }
 
-        /* Analize opcode of exception to be generated */
+        /* Analyze opcode of exception to be generated */
 
         Switch (Arg2)
         {

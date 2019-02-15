@@ -28,7 +28,7 @@ Active agents of subject of mt-testing
 - invocation (?) -- is not thread (?)
 - can invocation have several different threads?
 - "interpretation of the current invocation could not be
-   transfered to different invocation until the current says
+   transferred to different invocation until the current says
    - 'ok I complete'"
 ========================
 
@@ -105,7 +105,7 @@ DETAILS:
 
 1. The Slave threads do the same actions described below:
    - acquire one by one mutexes of all levels from 0 up to 15 (N mutexes per level)
-   - after aquiring the mutex of 15-th level start releaseng them in the inverse order
+   - after acquiring the mutex of 15-th level start releaseng them in the inverse order
    - do the control actions with the flags and counters of mutexes (see comment to mf01)
 
 # ========================= #
@@ -420,7 +420,7 @@ Similar to test 016 check for non-serialized method.
 
 
 ========================================= XXXXX:
-acquire mutex on a global level but dont release it -
+acquire mutex on a global level but don't release it -
 check that it is released automatically ???
 (code in initialization of global variables)
 
@@ -438,10 +438,10 @@ calls to other methods inside the serialized method)
 
 1) access to  different type data inside serialized method
 ========================================= XXXXX, serialized-method:
-try to Acq/Rel mutex of inappropreate level LL from method MT0 of synclevel NN.
+try to Acq/Rel mutex of inappropriate level LL from method MT0 of synclevel NN.
 - immediately from that method
-- from invoking more the intermittant methods
-  enclosed statically or only dinamically in that method
+- from invoking more the intermittent methods
+  enclosed statically or only dynamically in that method
 ========================================= XXXXX:
 check blocked: check that when one thread fall to sleep
 another can own that mutex ?????????????

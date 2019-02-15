@@ -44,7 +44,7 @@
     Name (TRCF, 0x00)            /* Trace enabling flag */
     Name (TRCH, "ASLTS")      /* Head of trace message */
     Name (STST, "STST")   /* Head of summary status message of test run */
-    Name (CTST, "CTST")   /* Head of curent status message of test run */
+    Name (CTST, "CTST")   /* Head of current status message of test run */
     Name (PR01, 0x01)            /* Printing starts of sub-tests */
     Name (PR02, 0x01)            /* More detailed printing */
     /* Start time (Timer-time) of running test */
@@ -250,7 +250,7 @@
      * the checking". This is possible due to SET0 as well.
      *
      * Note:
-     * Dont attempt to set up the zero "index of checking"
+     * Don't attempt to set up the zero "index of checking"
      * by this Method. It will be ignored and overwritten
      * by arg4 of err().
      *
@@ -331,7 +331,7 @@
      *
      * For example, the test can be run only in 64-bit mode, in
      * 32-bit mode the result of the test is undefined, so in
-     * 32-bit mode, dont run it but only report the status of
+     * 32-bit mode, don't run it but only report the status of
      * test as skipped.
      */
     Name (FLG5, 0x00)
@@ -394,7 +394,7 @@
         Name (B000, Buffer (0x04){})
         If (SizeOf (NRMT))
         {
-            /* Analize previous run of root Method */
+            /* Analyze previous run of root Method */
 
             Concatenate (":", TCN0 (TCLL), Local1)
             Concatenate (Local1, ":", Local0)
@@ -707,7 +707,7 @@
             /* ERR2 (Local5) - index of checking */
             Local4 = ERR0 /* \ERR0 */
             Local3 = ERR1 /* \ERR1 */
-            /* Dont attempt to set up the zero "index of checking" */
+            /* Don't attempt to set up the zero "index of checking" */
             /* by SET0. It will be ignored and overwritten by arg4 */
             /* of err(). */
             If (ERR2)
@@ -843,7 +843,7 @@
         }
         ElseIf ((Arg0 == ZFFF))
         {
-            /* ATTENTION: dont use zFFF in tests other than TCLD */
+            /* ATTENTION: don't use zFFF in tests other than TCLD */
 
             Local1 = SB00 (TIND, 0x00)
         }
@@ -862,7 +862,7 @@
         {
             If ((Arg2 == ZFFF))
             {
-                /* ATTENTION: dont use zFFF in tests other than TCLD */
+                /* ATTENTION: don't use zFFF in tests other than TCLD */
 
                 Local1 = SB00 (TIND, 0x00)
             }
@@ -1961,7 +1961,7 @@
 
         If ((Local2 == ZFFF))
         {
-            /* ATTENTION: dont use zFFF in tests other than TCLD */
+            /* ATTENTION: don't use zFFF in tests other than TCLD */
             /* m - in case of TCLD tests there is an index of bug */
             Local0 = (Arg1 >> 0x17)
             Local2 = (Local0 & 0x01FF)
@@ -1989,7 +1989,7 @@
             Local3 = (Arg1 & 0x0FFF)
             If ((Local2 == ZFFF))
             {
-                /* ATTENTION: dont use zFFF in tests other than TCLD */
+                /* ATTENTION: don't use zFFF in tests other than TCLD */
                 /* m - in case of TCLD tests there is an index of bug */
                 Local0 = (Arg1 >> 0x17)
                 Local2 = (Local0 & 0x01FF)

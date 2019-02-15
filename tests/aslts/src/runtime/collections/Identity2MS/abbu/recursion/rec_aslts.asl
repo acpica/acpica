@@ -28,9 +28,9 @@
 
 /*
  * Tests to check recursive calls of methods for different structure of
- * sub-trees containig the point from where the call is made and the point
+ * sub-trees containing the point from where the call is made and the point
  * which is just the invoked method, and different relative disposition of
- * those sub-trees containig the points.
+ * those sub-trees containing the points.
  */
 
 Name(z172, 172)

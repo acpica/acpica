@@ -983,7 +983,7 @@ Method(ms17, 1, Serialized)
 
 			Name(i001, 0)
 
-			OUTP("m001 started, DONT apply DerefOf()")
+			OUTP("m001 started, DON'T apply DerefOf()")
 
 			Store(arg0, Local0)
 			OUTP("Before Add")
@@ -1188,7 +1188,7 @@ Method(ms19, 1, Serialized)
 		}
 
 		// When an invocation of a Method tries to return a Package,
-		// where some reference was saved, the AE_TYPE exeption occurs.
+		// where some reference was saved, the AE_TYPE exception occurs.
 		//OUTP(ref0)
 
 		Store(DerefOf(ref0), Local1)

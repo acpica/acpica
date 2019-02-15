@@ -2436,7 +2436,7 @@ Method(mf01,, Serialized)
 			Index(DerefOf(Index(DerefOf(Index(p000, 135)), 4)), 0))
 		m002(p000, 135, 0x1074)
 
-		/* Restore the intial state of Packages */
+		/* Restore the initial state of Packages */
 
 		m001(p000, 72, 0x0084)
 		m001(p000, 81, 0x0094)
@@ -2456,7 +2456,7 @@ Method(mf01,, Serialized)
 		m001(p001, 126, 0x10e4)
 		m001(p001, 135, 0x10f4)
 
-		/* Check the intial state of Packages */
+		/* Check the initial state of Packages */
 
 		m000(p000, 0, 0x0004)
 		m000(p000, 9, 0x0014)

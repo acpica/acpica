@@ -1479,7 +1479,7 @@ ACPI_DMTABLE_INFO           AcpiDmTableInfoSbst[] =
 
 /*******************************************************************************
  *
- * SDEI - Software Delegated Execption Interface Descriptor Table
+ * SDEI - Software Delegated Exception Interface Descriptor Table
  *
  ******************************************************************************/
 

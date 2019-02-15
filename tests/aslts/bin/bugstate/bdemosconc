@@ -5,7 +5,7 @@
 # Concatenate bdemo summary files (obtained by bdemossum)
 # of two multi-results.
 #
-# Paremeters:
+# Parameters:
 #
 # arg1 - the first multi-result directory
 # arg2 - the second multi-result directory

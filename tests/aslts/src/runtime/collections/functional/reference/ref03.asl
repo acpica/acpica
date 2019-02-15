@@ -823,7 +823,7 @@
         If (Arg2)
         {
             /* Data are unchanged, because writings were made */
-            /* into the new objects assosiated with arg1. */
+            /* into the new objects associated with arg1. */
             M1A6 ()
             Return (Zero)
         }
@@ -1201,7 +1201,7 @@
         If (Arg2)
         {
             /* Data are unchanged, because writings were made */
-            /* into the new objects assosiated with arg1. */
+            /* into the new objects associated with arg1. */
             M1A6 ()
             Return (Zero)
         }

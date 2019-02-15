@@ -330,7 +330,7 @@ Method(m0fa, 2, Serialized)
 	//	ln0x - next level
 	//	c00x - flag of Continue
 	//	b00x - flag of Break
-	//	i00x - currrent index of iteration
+	//	i00x - current index of iteration
 	//	n00x - number of iterations
 	// ////////////////
 

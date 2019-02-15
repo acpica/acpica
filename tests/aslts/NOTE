@@ -89,7 +89,7 @@ do the relevant RUNTIME tests! As well for Buffer Fields and Field Units.
 Many files contain SEE items at their tops.
 See them and fix what they require!
 |------------------------------------------------------------------------------|
-Dont forget to uncomment ASL code relevant to bugs: y000,y0..., see runmode.asl
+Don't forget to uncomment ASL code relevant to bugs: y000,y0..., see runmode.asl
 |------------------------------------------------------------------------------|
 UPDATE exc.m084: Implement this test for all the types of objects
                  (see for example ref.asl files about objects) and

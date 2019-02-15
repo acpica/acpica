@@ -26,7 +26,7 @@
      * EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
      */
     /*
-     * Check Result Object proccessing on CopyObject
+     * Check Result Object processing on CopyObject
      */
     Name (Z124, 0x7C)
     /* Run-method */

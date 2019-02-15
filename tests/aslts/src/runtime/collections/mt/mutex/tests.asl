@@ -26,7 +26,7 @@
      * EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
      */
     /*
-     * The test strategies to be managed and controled by the
+     * The test strategies to be managed and controlled by the
      * Control Thread and fulfilled by the Slave Threads (Slaves).
      */
     Name (Z152, 0x98)

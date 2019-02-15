@@ -364,7 +364,7 @@ AeRegionHandler (
                     ACPI_FREE (Resource);
                 }
 
-                AcpiOsPrintf (" [AccessLength %.2X Connnection %p]",
+                AcpiOsPrintf (" [AccessLength %.2X Connection %p]",
                     MyContext->AccessLength, MyContext->Connection);
             }
 

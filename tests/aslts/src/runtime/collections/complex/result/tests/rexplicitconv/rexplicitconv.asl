@@ -26,7 +26,7 @@
      * EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
      */
     /*
-     * Check Result Object proccessing on optional storing
+     * Check Result Object processing on optional storing
      * in the explicit conversion operators
      */
     Name (Z126, 0x7E)

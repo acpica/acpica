@@ -85,7 +85,7 @@ DefinitionBlock(
 	 *	in case of Threads command
 	 *	the arguments passed to method are:
 	 *
-	 * arg0 - total number of threads created by Threads commmand
+	 * arg0 - total number of threads created by Threads command
 	 * arg1 - ID of the current thread
 	 * arg2 - index of the current thread (0, 1, 2 ... )
 	 */

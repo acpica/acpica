@@ -639,7 +639,7 @@
         CH04 (__METHOD__, 0x01, 0x37, Z058, __LINE__, 0x00, 0x00)   /* AE_AML_PACKAGE_LIMIT */
     }
 
-    /* Exeptional conditions of ConcatenateResTemplate */
+    /* Exceptional conditions of ConcatenateResTemplate */
 
     Method (M154, 0, Serialized)
     {

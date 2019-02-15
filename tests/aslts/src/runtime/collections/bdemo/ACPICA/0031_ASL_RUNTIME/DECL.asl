@@ -37,7 +37,7 @@
      * Note 1: This test now is a run-time test because the ASL compiler doesn't
      *         actually detect and prohibit (my mistake) use of object before its
      *         declaration. After this bug of ASL compiler is fixed move this bdemo
-     *         to non-run-time bug tests but dont forget to move all positive checkings
+     *         to non-run-time bug tests but don't forget to move all positive checkings
      *         of it in other run-time tests.
      *
      * Note 2: Since the ability itself to tun this test is error

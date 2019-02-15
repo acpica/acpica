@@ -34,7 +34,7 @@
     Method (M374, 0, Serialized)
     {
         /* Package for _TCI-begin statistics */
-        /* (use NamedX, dont use ArgX/LocalX). */
+        /* (use NamedX, don't use ArgX/LocalX). */
         Name (PP0A, Package (0x01){})
         Method (M000, 1, NotSerialized)
         {

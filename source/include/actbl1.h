@@ -797,7 +797,7 @@ typedef struct acpi_dmar_hardware_unit
 #define ACPI_DMAR_INCLUDE_ALL       (1)
 
 
-/* 1: Reserved Memory Defininition */
+/* 1: Reserved Memory Definition */
 
 typedef struct acpi_dmar_reserved_memory
 {
@@ -1784,7 +1784,7 @@ typedef struct acpi_table_hmat
 
 enum AcpiHmatType
 {
-    ACPI_HMAT_TYPE_ADDRESS_RANGE        = 0,   /* Memory subystem address range */
+    ACPI_HMAT_TYPE_ADDRESS_RANGE        = 0,   /* Memory subsystem address range */
     ACPI_HMAT_TYPE_LOCALITY             = 1,   /* System locality latency and bandwidth information */
     ACPI_HMAT_TYPE_CACHE                = 2,   /* Memory side cache information */
     ACPI_HMAT_TYPE_RESERVED             = 3    /* 3 and greater are reserved */

@@ -4108,7 +4108,7 @@ Method(mfcc, 6, Serialized)
  * arg0 - Package to be verified
  * arg1 - index inside of Package
  * arg2 - how many elements to check
- * arg3 - excpected value of element
+ * arg3 - expected value of element
  * arg4 - type of access through the IRefs
  * arg5 - index of error (inside the file)
  */
@@ -4149,7 +4149,7 @@ Method(mfce, 6, Serialized)
  * Verifying the contents of value pointed to by Reference.
  *
  * arg0 - Index reference
- * arg1 - excpected value of element
+ * arg1 - expected value of element
  * arg2 - index of error (inside the file)
  */
 Method(mfd8, 3)

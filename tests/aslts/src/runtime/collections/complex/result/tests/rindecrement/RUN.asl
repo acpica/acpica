@@ -25,7 +25,7 @@
          * NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE,
          * EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
          */
-        If (STTT ("Result Object proccessing in Increment/Decrement", TCLC, 0x10, W011))
+        If (STTT ("Result Object processing in Increment/Decrement", TCLC, 0x10, W011))
         {
             RES2 ()
         }

@@ -967,7 +967,7 @@ fseek (
  * FUNCTION:    AcpiEfiArgify
  *
  * PARAMETERS:  String              - Pointer to command line argument strings
- *                                    which are seperated with spaces
+ *                                    which are separated with spaces
  *              ArgcPtr             - Return number of the arguments
  *              ArgvPtr             - Return vector of the arguments
  *

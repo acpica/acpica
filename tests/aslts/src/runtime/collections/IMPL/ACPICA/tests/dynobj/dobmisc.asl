@@ -41,7 +41,7 @@
 
         Name (PP02, Package (0x01){})
         /* Package for _TCI-begin statistics */
-        /* (use NamedX, dont use ArgX/LocalX). */
+        /* (use NamedX, don't use ArgX/LocalX). */
         Name (PP0A, Package (0x01){})
         /* Create and initialize the Memory Consumption Statistics Packages */
 
