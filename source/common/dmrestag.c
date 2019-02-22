@@ -747,6 +747,7 @@ AcpiGetTagPathname (
     UINT8                   ResourceTableIndex;
     ACPI_SIZE               RequiredSize;
     char                    *Pathname;
+    char                    *PathnameEnd;
     AML_RESOURCE            *Aml;
     ACPI_PARSE_OBJECT       *Op;
     char                    *InternalPath;
@@ -809,19 +810,26 @@ AcpiGetTagPathname (
         RequiredSize, FALSE);
 
     /*
-     * Create the full path to the resource and tag by: remove the buffer name,
-     * append the resource descriptor name, append a dot, append the tag name.
+     * Create the full path to the resource and tag by:
+     *  1) Remove the buffer nameseg from the end of the pathname
+     *  2) Append the resource descriptor nameseg
+     *  3) Append a dot
+     *  4) Append the field tag nameseg
      *
-     * TBD: Always using the full path is a bit brute force, the path can be
+     * Always using the full path is a bit brute force, the path can be
      * often be optimized with carats (if the original buffer namepath is a
      * single nameseg). This doesn't really matter, because these paths do not
      * end up in the final compiled AML, it's just an appearance issue for the
      * disassembled code.
      */
-    Pathname[strlen (Pathname) - ACPI_NAME_SIZE] = 0;
-    strncat (Pathname, ResourceNode->Name.Ascii, ACPI_NAME_SIZE);
-    strcat (Pathname, ".");
-    strncat (Pathname, Tag, ACPI_NAME_SIZE);
+    PathnameEnd = Pathname + (RequiredSize - ACPI_NAME_SIZE - 1);
+    ACPI_MOVE_NAME (PathnameEnd, ResourceNode->Name.Ascii);
+
+    PathnameEnd += ACPI_NAME_SIZE;
+    *PathnameEnd = '.';
+
+    PathnameEnd++;
+    ACPI_MOVE_NAME (PathnameEnd, Tag);
 
     /* Internalize the namepath to AML format */
 
