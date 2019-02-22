@@ -498,11 +498,11 @@ ApDumpTableByName (
 
     /* To be friendly, handle tables whose signatures do not match the name */
 
-    if (ACPI_COMPARE_NAME (LocalSignature, "FADT"))
+    if (ACPI_COMPARE_NAMESEG (LocalSignature, "FADT"))
     {
         strcpy (LocalSignature, ACPI_SIG_FADT);
     }
-    else if (ACPI_COMPARE_NAME (LocalSignature, "MADT"))
+    else if (ACPI_COMPARE_NAMESEG (LocalSignature, "MADT"))
     {
         strcpy (LocalSignature, ACPI_SIG_MADT);
     }

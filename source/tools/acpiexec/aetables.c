@@ -220,14 +220,14 @@ AeTableOverride (
 
     /* This code exercises the table override mechanism in the core */
 
-    if (ACPI_COMPARE_NAME (ExistingTable->Signature, ACPI_SIG_DSDT))
+    if (ACPI_COMPARE_NAMESEG (ExistingTable->Signature, ACPI_SIG_DSDT))
     {
         *NewTable = DsdtToInstallOverride;
     }
 
     /* This code tests override of dynamically loaded tables */
 
-    else if (ACPI_COMPARE_NAME (ExistingTable->Signature, "OEM9"))
+    else if (ACPI_COMPARE_NAMESEG (ExistingTable->Signature, "OEM9"))
     {
         *NewTable = ACPI_CAST_PTR (ACPI_TABLE_HEADER, Ssdt3Code);
     }
@@ -306,8 +306,8 @@ AeBuildLocalTables (
     NextTable = ListHead;
     while (NextTable)
     {
-        if (!ACPI_COMPARE_NAME (NextTable->Table->Signature, ACPI_SIG_DSDT) &&
-            !ACPI_COMPARE_NAME (NextTable->Table->Signature, ACPI_SIG_FADT))
+        if (!ACPI_COMPARE_NAMESEG (NextTable->Table->Signature, ACPI_SIG_DSDT) &&
+            !ACPI_COMPARE_NAMESEG (NextTable->Table->Signature, ACPI_SIG_FADT))
         {
             TableCount++;
         }
@@ -345,7 +345,7 @@ AeBuildLocalTables (
          * Incoming DSDT or FADT are special cases. All other tables are
          * just immediately installed into the XSDT.
          */
-        if (ACPI_COMPARE_NAME (NextTable->Table->Signature, ACPI_SIG_DSDT))
+        if (ACPI_COMPARE_NAMESEG (NextTable->Table->Signature, ACPI_SIG_DSDT))
         {
             if (DsdtAddress)
             {
@@ -358,7 +358,7 @@ AeBuildLocalTables (
             DsdtAddress = ACPI_PTR_TO_PHYSADDR (NextTable->Table);
             DsdtToInstallOverride = NextTable->Table;
         }
-        else if (ACPI_COMPARE_NAME (NextTable->Table->Signature, ACPI_SIG_FADT))
+        else if (ACPI_COMPARE_NAMESEG (NextTable->Table->Signature, ACPI_SIG_FADT))
         {
             ExternalFadt = ACPI_CAST_PTR (ACPI_TABLE_FADT, NextTable->Table);
             LocalXSDT->TableOffsetEntry[0] = ACPI_PTR_TO_PHYSADDR (NextTable->Table);

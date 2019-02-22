@@ -257,8 +257,8 @@ AnBuildLocalTables (
     NextTable = TableList;
     while (NextTable)
     {
-        if (!ACPI_COMPARE_NAME (NextTable->Table->Signature, ACPI_SIG_DSDT) &&
-            !ACPI_COMPARE_NAME (NextTable->Table->Signature, ACPI_SIG_FADT))
+        if (!ACPI_COMPARE_NAMESEG (NextTable->Table->Signature, ACPI_SIG_DSDT) &&
+            !ACPI_COMPARE_NAMESEG (NextTable->Table->Signature, ACPI_SIG_FADT))
         {
             TableCount++;
         }
@@ -294,7 +294,7 @@ AnBuildLocalTables (
          * Incoming DSDT or FADT are special cases. All other tables are
          * just immediately installed into the XSDT.
          */
-        if (ACPI_COMPARE_NAME (NextTable->Table->Signature, ACPI_SIG_DSDT))
+        if (ACPI_COMPARE_NAMESEG (NextTable->Table->Signature, ACPI_SIG_DSDT))
         {
             if (DsdtAddress)
             {
@@ -306,7 +306,7 @@ AnBuildLocalTables (
 
             DsdtAddress = ACPI_PTR_TO_PHYSADDR (NextTable->Table);
         }
-        else if (ACPI_COMPARE_NAME (NextTable->Table->Signature, ACPI_SIG_FADT))
+        else if (ACPI_COMPARE_NAMESEG (NextTable->Table->Signature, ACPI_SIG_FADT))
         {
             ExternalFadt =
                 ACPI_CAST_PTR (ACPI_TABLE_FADT, NextTable->Table);

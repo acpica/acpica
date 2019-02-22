@@ -732,7 +732,7 @@ LdNamespace1Begin (
              * 10/2015.
              */
             if ((Node->Flags & ANOBJ_IS_EXTERNAL) &&
-                (ACPI_COMPARE_NAME (AslGbl_TableSignature, "DSDT")))
+                (ACPI_COMPARE_NAMESEG (AslGbl_TableSignature, "DSDT")))
             {
                 /* However, allowed if the reference is within a method */
 

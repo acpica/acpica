@@ -267,7 +267,7 @@ AxExtractTables (
             {
                 /* Ignore signatures that don't match */
 
-                if (!ACPI_COMPARE_NAME (ThisSignature, UpperSignature))
+                if (!ACPI_COMPARE_NAMESEG (ThisSignature, UpperSignature))
                 {
                     continue;
                 }
@@ -470,8 +470,8 @@ AxExtractToMultiAmlFile (
 
             /* Only want DSDT and SSDTs */
 
-            if (!ACPI_COMPARE_NAME (ThisSignature, ACPI_SIG_DSDT) &&
-                !ACPI_COMPARE_NAME (ThisSignature, ACPI_SIG_SSDT))
+            if (!ACPI_COMPARE_NAMESEG (ThisSignature, ACPI_SIG_DSDT) &&
+                !ACPI_COMPARE_NAMESEG (ThisSignature, ACPI_SIG_SSDT))
             {
                 continue;
             }

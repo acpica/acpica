@@ -253,7 +253,7 @@ AcpiTbPrintTableHeader (
     ACPI_TABLE_HEADER       LocalHeader;
 
 
-    if (ACPI_COMPARE_NAME (Header->Signature, ACPI_SIG_FACS))
+    if (ACPI_COMPARE_NAMESEG (Header->Signature, ACPI_SIG_FACS))
     {
         /* FACS only has signature and length fields */
 
@@ -320,8 +320,8 @@ AcpiTbVerifyChecksum (
      * They are the odd tables, have no standard ACPI header and no checksum
      */
 
-    if (ACPI_COMPARE_NAME (Table->Signature, ACPI_SIG_S3PT) ||
-        ACPI_COMPARE_NAME (Table->Signature, ACPI_SIG_FACS))
+    if (ACPI_COMPARE_NAMESEG (Table->Signature, ACPI_SIG_S3PT) ||
+        ACPI_COMPARE_NAMESEG (Table->Signature, ACPI_SIG_FACS))
     {
         return (AE_OK);
     }

@@ -363,7 +363,7 @@ OptBuildShortestPath (
 
         Index = (NumCommonSegments * ACPI_PATH_SEGMENT_LENGTH) + 1;
 
-        if (!ACPI_COMPARE_NAME (
+        if (!ACPI_COMPARE_NAMESEG (
             &(ACPI_CAST_PTR (char, TargetPath->Pointer)) [Index],
             &(ACPI_CAST_PTR (char, CurrentPath->Pointer)) [Index]))
         {

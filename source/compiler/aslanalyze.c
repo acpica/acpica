@@ -622,7 +622,7 @@ ApCheckForGpeNameConflict (
         if ((NextOp->Asl.ParseOpcode == PARSEOP_METHOD) ||
             (NextOp->Asl.ParseOpcode == PARSEOP_NAME))
         {
-            if (ACPI_COMPARE_NAME (Target, NextOp->Asl.NameSeg))
+            if (ACPI_COMPARE_NAMESEG (Target, NextOp->Asl.NameSeg))
             {
                 /* Found both _Exy and _Lxy in the same scope, error */
 
@@ -666,7 +666,7 @@ ApCheckRegMethod (
 
     /* We are only interested in _REG methods */
 
-    if (!ACPI_COMPARE_NAME (METHOD_NAME__REG, &Op->Asl.NameSeg))
+    if (!ACPI_COMPARE_NAMESEG (METHOD_NAME__REG, &Op->Asl.NameSeg))
     {
         return;
     }
@@ -772,7 +772,7 @@ ApDeviceSubtreeWalk (
 
         /* These are what we are looking for */
 
-        if (ACPI_COMPARE_NAME (Name, Op->Asl.NameSeg))
+        if (ACPI_COMPARE_NAMESEG (Name, Op->Asl.NameSeg))
         {
             return (AE_CTRL_TRUE);
         }
@@ -831,7 +831,7 @@ ApFindNameInScope (
         if ((Next->Asl.ParseOpcode == PARSEOP_METHOD) ||
             (Next->Asl.ParseOpcode == PARSEOP_NAME))
         {
-            if (ACPI_COMPARE_NAME (Name, Next->Asl.NameSeg))
+            if (ACPI_COMPARE_NAMESEG (Name, Next->Asl.NameSeg))
             {
                 return (TRUE);
             }

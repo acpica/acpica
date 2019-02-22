@@ -358,7 +358,7 @@ AcpiNsMatchComplexRepair (
     ThisName = AcpiNsRepairableNames;
     while (ThisName->RepairFunction)
     {
-        if (ACPI_COMPARE_NAME (Node->Name.Ascii, ThisName->Name))
+        if (ACPI_COMPARE_NAMESEG (Node->Name.Ascii, ThisName->Name))
         {
             return (ThisName);
         }
