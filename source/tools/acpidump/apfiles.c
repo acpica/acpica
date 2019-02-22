@@ -272,11 +272,11 @@ ApWriteToBinaryFile (
 
     if (ACPI_VALIDATE_RSDP_SIG (Table->Signature))
     {
-        ACPI_MOVE_NAME (Filename, ACPI_RSDP_NAME);
+        ACPI_COPY_NAMESEG (Filename, ACPI_RSDP_NAME);
     }
     else
     {
-        ACPI_MOVE_NAME (Filename, Table->Signature);
+        ACPI_COPY_NAMESEG (Filename, Table->Signature);
     }
 
     Filename[0] = (char) tolower ((int) Filename[0]);

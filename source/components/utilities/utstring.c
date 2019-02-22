@@ -308,7 +308,7 @@ AcpiUtRepairName (
         return;
     }
 
-    ACPI_MOVE_NAME (&OriginalName, Name);
+    ACPI_COPY_NAMESEG (&OriginalName, Name);
 
     /* Check each character in the name */
 

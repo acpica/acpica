@@ -273,7 +273,7 @@ AcpiNsHandleToName (
     /* Just copy the ACPI name from the Node and zero terminate it */
 
     NodeName = AcpiUtGetNodeName (Node);
-    ACPI_MOVE_NAME (Buffer->Pointer, NodeName);
+    ACPI_COPY_NAMESEG (Buffer->Pointer, NodeName);
     ((char *) Buffer->Pointer) [ACPI_NAME_SIZE] = 0;
 
     ACPI_DEBUG_PRINT ((ACPI_DB_EXEC, "%4.4s\n", (char *) Buffer->Pointer));

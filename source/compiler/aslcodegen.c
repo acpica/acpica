@@ -556,11 +556,11 @@ CgWriteTableHeader (
      */
     if (AcpiGbl_CaptureComments)
     {
-        ACPI_MOVE_NAME (AcpiGbl_TableSig, Child->Asl.Value.String);
+        ACPI_COPY_NAMESEG (AcpiGbl_TableSig, Child->Asl.Value.String);
         Child->Asl.Value.String = ACPI_SIG_XXXX;
     }
 
-    ACPI_MOVE_NAME (AslGbl_TableHeader.Signature, Child->Asl.Value.String);
+    ACPI_COPY_NAMESEG (AslGbl_TableHeader.Signature, Child->Asl.Value.String);
 
     /* Revision */
 
@@ -593,7 +593,7 @@ CgWriteTableHeader (
 
     /* Compiler ID */
 
-    ACPI_MOVE_NAME (AslGbl_TableHeader.AslCompilerId, ASL_CREATOR_ID);
+    ACPI_COPY_NAMESEG (AslGbl_TableHeader.AslCompilerId, ASL_CREATOR_ID);
 
     /* Compiler version */
 

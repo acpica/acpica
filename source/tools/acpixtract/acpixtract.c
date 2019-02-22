@@ -262,7 +262,7 @@ AxExtractTables (
                 continue;
             }
 
-            ACPI_MOVE_NAME (ThisSignature, Gbl_LineBuffer);
+            ACPI_COPY_NAMESEG (ThisSignature, Gbl_LineBuffer);
             if (Signature)
             {
                 /* Ignore signatures that don't match */
@@ -466,7 +466,7 @@ AxExtractToMultiAmlFile (
                 continue;
             }
 
-            ACPI_MOVE_NAME (ThisSignature, Gbl_LineBuffer);
+            ACPI_COPY_NAMESEG (ThisSignature, Gbl_LineBuffer);
 
             /* Only want DSDT and SSDTs */
 

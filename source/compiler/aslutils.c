@@ -823,7 +823,7 @@ UtAttachNameseg (
         UtPadNameWithUnderscores (Name, PaddedNameSeg);
     }
 
-    ACPI_MOVE_NAME (Op->Asl.NameSeg, PaddedNameSeg);
+    ACPI_COPY_NAMESEG (Op->Asl.NameSeg, PaddedNameSeg);
 }
 
 

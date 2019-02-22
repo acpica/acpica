@@ -721,7 +721,7 @@ AcpiNsExternalizeName (
 
             /* Copy and validate the 4-char name segment */
 
-            ACPI_MOVE_NAME (&(*ConvertedName)[j],
+            ACPI_COPY_NAMESEG (&(*ConvertedName)[j],
                 &InternalName[NamesIndex]);
             AcpiUtRepairName (&(*ConvertedName)[j]);
 

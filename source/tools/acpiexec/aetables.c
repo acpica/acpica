@@ -255,13 +255,13 @@ AeInitializeTableHeader (
     UINT32                  Length)
 {
 
-    ACPI_MOVE_NAME (Header->Signature, Signature);
+    ACPI_COPY_NAMESEG (Header->Signature, Signature);
     Header->Length = Length;
 
     Header->OemRevision = 0x1001;
     memcpy (Header->OemId, "Intel ", ACPI_OEM_ID_SIZE);
     memcpy (Header->OemTableId, "AcpiExec", ACPI_OEM_TABLE_ID_SIZE);
-    ACPI_MOVE_NAME (Header->AslCompilerId, "INTL");
+    ACPI_COPY_NAMESEG (Header->AslCompilerId, "INTL");
     Header->AslCompilerRevision = ACPI_CA_VERSION;
 
     /* Set the checksum, must set to zero first */
@@ -531,7 +531,7 @@ AeBuildLocalTables (
     /* Build a FACS */
 
     memset (&LocalFACS, 0, sizeof (ACPI_TABLE_FACS));
-    ACPI_MOVE_NAME (LocalFACS.Signature, ACPI_SIG_FACS);
+    ACPI_COPY_NAMESEG (LocalFACS.Signature, ACPI_SIG_FACS);
 
     LocalFACS.Length = sizeof (ACPI_TABLE_FACS);
     LocalFACS.GlobalLock = 0x11AA0011;
@@ -545,7 +545,7 @@ AeBuildLocalTables (
          * ACPICA core ignores it
          */
         memset (&LocalTEST, 0, sizeof (ACPI_TABLE_HEADER));
-        ACPI_MOVE_NAME (LocalTEST.Signature, "TEST");
+        ACPI_COPY_NAMESEG (LocalTEST.Signature, "TEST");
 
         LocalTEST.Revision = 1;
         LocalTEST.Length = sizeof (ACPI_TABLE_HEADER);
@@ -559,7 +559,7 @@ AeBuildLocalTables (
          * sure that the ACPICA core ignores it
          */
         memset (&LocalBADTABLE, 0, sizeof (ACPI_TABLE_HEADER));
-        ACPI_MOVE_NAME (LocalBADTABLE.Signature, "BAD!");
+        ACPI_COPY_NAMESEG (LocalBADTABLE.Signature, "BAD!");
 
         LocalBADTABLE.Revision = 1;
         LocalBADTABLE.Length = sizeof (ACPI_TABLE_HEADER);

@@ -823,13 +823,13 @@ AcpiGetTagPathname (
      * disassembled code.
      */
     PathnameEnd = Pathname + (RequiredSize - ACPI_NAME_SIZE - 1);
-    ACPI_MOVE_NAME (PathnameEnd, ResourceNode->Name.Ascii);
+    ACPI_COPY_NAMESEG (PathnameEnd, ResourceNode->Name.Ascii);
 
     PathnameEnd += ACPI_NAME_SIZE;
     *PathnameEnd = '.';
 
     PathnameEnd++;
-    ACPI_MOVE_NAME (PathnameEnd, Tag);
+    ACPI_COPY_NAMESEG (PathnameEnd, Tag);
 
     /* Internalize the namepath to AML format */
 

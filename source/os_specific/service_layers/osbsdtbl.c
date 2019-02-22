@@ -862,18 +862,18 @@ OslAddTablesToList(
 
         case 1:
 
-            ACPI_MOVE_NAME (NewInfo->Signature,
+            ACPI_COPY_NAMESEG (NewInfo->Signature,
                 Gbl_Revision ? ACPI_SIG_XSDT : ACPI_SIG_RSDT);
             break;
 
         case 2:
 
-            ACPI_MOVE_NAME (NewInfo->Signature, ACPI_SIG_FACS);
+            ACPI_COPY_NAMESEG (NewInfo->Signature, ACPI_SIG_FACS);
             break;
 
         default:
 
-            ACPI_MOVE_NAME (NewInfo->Signature, ACPI_SIG_DSDT);
+            ACPI_COPY_NAMESEG (NewInfo->Signature, ACPI_SIG_DSDT);
 
         }
 
@@ -932,7 +932,7 @@ OslAddTablesToList(
             return (AE_NO_MEMORY);
         }
 
-        ACPI_MOVE_NAME (NewInfo->Signature, Table->Signature);
+        ACPI_COPY_NAMESEG (NewInfo->Signature, Table->Signature);
 
         AcpiOsUnmapMemory (Table, sizeof (*Table));
 

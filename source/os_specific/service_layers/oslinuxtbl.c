@@ -484,7 +484,7 @@ OslAddTableToList (
         return (AE_NO_MEMORY);
     }
 
-    ACPI_MOVE_NAME (NewInfo->Signature, Signature);
+    ACPI_COPY_NAMESEG (NewInfo->Signature, Signature);
 
     if (!Gbl_TableListHead)
     {
@@ -1479,7 +1479,7 @@ OslTableNameFromFile (
 
     /* Extract signature */
 
-    ACPI_MOVE_NAME (Signature, Filename);
+    ACPI_COPY_NAMESEG (Signature, Filename);
     return (AE_OK);
 }
 

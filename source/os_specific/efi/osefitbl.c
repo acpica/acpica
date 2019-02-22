@@ -378,7 +378,7 @@ OslAddTableToList (
         return (AE_NO_MEMORY);
     }
 
-    ACPI_MOVE_NAME (NewInfo->Signature, Signature);
+    ACPI_COPY_NAMESEG (NewInfo->Signature, Signature);
 
     if (!Gbl_TableListHead)
     {
