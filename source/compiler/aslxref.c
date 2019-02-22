@@ -613,7 +613,8 @@ XfNamespaceLocateBegin (
         (Op->Asl.ParseOpcode != PARSEOP_NAMESTRING) &&
         (Op->Asl.ParseOpcode != PARSEOP_NAMESEG)    &&
         (Op->Asl.ParseOpcode != PARSEOP_METHODCALL) &&
-        (Op->Asl.ParseOpcode != PARSEOP_EXTERNAL))
+        (Op->Asl.ParseOpcode != PARSEOP_EXTERNAL)   &&
+        (OpInfo->Type != AML_TYPE_NAMED_FIELD))
     {
         return_ACPI_STATUS (AE_OK);
     }
@@ -637,7 +638,8 @@ XfNamespaceLocateBegin (
     if ((Op->Asl.ParseOpcode == PARSEOP_NAMESTRING) ||
         (Op->Asl.ParseOpcode == PARSEOP_NAMESEG)    ||
         (Op->Asl.ParseOpcode == PARSEOP_METHODCALL) ||
-        (Op->Asl.ParseOpcode == PARSEOP_EXTERNAL))
+        (Op->Asl.ParseOpcode == PARSEOP_EXTERNAL)   ||
+        (OpInfo->Type == AML_TYPE_NAMED_FIELD))
     {
         /*
          * These are name references, do not push the scope stack
@@ -673,6 +675,10 @@ XfNamespaceLocateBegin (
         }
 
         Path = NextOp->Asl.Value.String;
+    }
+    else if (OpInfo->Type == AML_TYPE_NAMED_FIELD)
+    {
+        Path = Op->Asl.Child->Asl.Value.String;
     }
     else
     {
