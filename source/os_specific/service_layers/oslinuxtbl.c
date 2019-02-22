@@ -167,7 +167,7 @@ typedef struct osl_table_info
 {
     struct osl_table_info   *Next;
     UINT32                  Instance;
-    char                    Signature[ACPI_NAME_SIZE];
+    char                    Signature[ACPI_NAMESEG_SIZE];
 
 } OSL_TABLE_INFO;
 
@@ -1277,7 +1277,7 @@ OslListCustomizedTables (
 {
     void                    *TableDir;
     UINT32                  Instance;
-    char                    TempName[ACPI_NAME_SIZE];
+    char                    TempName[ACPI_NAMESEG_SIZE];
     char                    *Filename;
     ACPI_STATUS             Status = AE_OK;
 
@@ -1457,18 +1457,18 @@ OslTableNameFromFile (
 
     /* Ignore meaningless files */
 
-    if (strlen (Filename) < ACPI_NAME_SIZE)
+    if (strlen (Filename) < ACPI_NAMESEG_SIZE)
     {
         return (AE_BAD_SIGNATURE);
     }
 
     /* Extract instance number */
 
-    if (isdigit ((int) Filename[ACPI_NAME_SIZE]))
+    if (isdigit ((int) Filename[ACPI_NAMESEG_SIZE]))
     {
-        sscanf (&Filename[ACPI_NAME_SIZE], "%u", Instance);
+        sscanf (&Filename[ACPI_NAMESEG_SIZE], "%u", Instance);
     }
-    else if (strlen (Filename) != ACPI_NAME_SIZE)
+    else if (strlen (Filename) != ACPI_NAMESEG_SIZE)
     {
         return (AE_BAD_SIGNATURE);
     }
@@ -1629,7 +1629,7 @@ OslGetCustomizedTable (
 {
     void                    *TableDir;
     UINT32                  CurrentInstance = 0;
-    char                    TempName[ACPI_NAME_SIZE];
+    char                    TempName[ACPI_NAMESEG_SIZE];
     char                    TableFilename[PATH_MAX];
     char                    *Filename;
     ACPI_STATUS             Status;

@@ -703,7 +703,7 @@ LdNamespace1Begin (
 
                 /* However, this is an error -- operand to Scope must exist */
 
-                if (strlen (Op->Asl.ExternalName) == ACPI_NAME_SIZE)
+                if (strlen (Op->Asl.ExternalName) == ACPI_NAMESEG_SIZE)
                 {
                     AslError (ASL_ERROR, ASL_MSG_NOT_FOUND, Op,
                         Op->Asl.ExternalName);
@@ -1096,7 +1096,7 @@ LdNamespace2Begin (
             {
                 /* Standalone NameSeg vs. NamePath */
 
-                if (strlen (Arg->Asl.ExternalName) == ACPI_NAME_SIZE)
+                if (strlen (Arg->Asl.ExternalName) == ACPI_NAMESEG_SIZE)
                 {
                     AslError (ASL_ERROR, ASL_MSG_NOT_FOUND, Op,
                         Arg->Asl.ExternalName);

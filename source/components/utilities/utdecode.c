@@ -416,7 +416,7 @@ AcpiUtGetNodeName (
     ACPI_NAMESPACE_NODE     *Node = (ACPI_NAMESPACE_NODE *) Object;
 
 
-    /* Must return a string of exactly 4 characters == ACPI_NAME_SIZE */
+    /* Must return a string of exactly 4 characters == ACPI_NAMESEG_SIZE */
 
     if (!Object)
     {

@@ -312,7 +312,7 @@ AcpiUtRepairName (
 
     /* Check each character in the name */
 
-    for (i = 0; i < ACPI_NAME_SIZE; i++)
+    for (i = 0; i < ACPI_NAMESEG_SIZE; i++)
     {
         if (AcpiUtValidNameChar (Name[i], i))
         {

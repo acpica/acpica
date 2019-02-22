@@ -217,7 +217,7 @@ AcpiTbFindTable (
     for (i = 0; i < AcpiGbl_RootTableList.CurrentTableCount; ++i)
     {
         if (memcmp (&(AcpiGbl_RootTableList.Tables[i].Signature),
-            Header.Signature, ACPI_NAME_SIZE))
+            Header.Signature, ACPI_NAMESEG_SIZE))
         {
             /* Not the requested table */
 
@@ -245,7 +245,7 @@ AcpiTbFindTable (
         /* Check for table match on all IDs */
 
         if (!memcmp (AcpiGbl_RootTableList.Tables[i].Pointer->Signature,
-                Header.Signature, ACPI_NAME_SIZE) &&
+                Header.Signature, ACPI_NAMESEG_SIZE) &&
             (!OemId[0] ||
              !memcmp (AcpiGbl_RootTableList.Tables[i].Pointer->OemId,
                  Header.OemId, ACPI_OEM_ID_SIZE)) &&

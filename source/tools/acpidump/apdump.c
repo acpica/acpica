@@ -475,7 +475,7 @@ int
 ApDumpTableByName (
     char                    *Signature)
 {
-    char                    LocalSignature [ACPI_NAME_SIZE + 1];
+    char                    LocalSignature [ACPI_NAMESEG_SIZE + 1];
     UINT32                  Instance;
     ACPI_TABLE_HEADER       *Table;
     ACPI_PHYSICAL_ADDRESS   Address;
@@ -483,7 +483,7 @@ ApDumpTableByName (
     int                     TableStatus;
 
 
-    if (strlen (Signature) != ACPI_NAME_SIZE)
+    if (strlen (Signature) != ACPI_NAMESEG_SIZE)
     {
         fprintf (stderr,
             "Invalid table signature [%s]: must be exactly 4 characters\n",

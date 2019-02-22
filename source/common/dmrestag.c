@@ -822,10 +822,10 @@ AcpiGetTagPathname (
      * end up in the final compiled AML, it's just an appearance issue for the
      * disassembled code.
      */
-    PathnameEnd = Pathname + (RequiredSize - ACPI_NAME_SIZE - 1);
+    PathnameEnd = Pathname + (RequiredSize - ACPI_NAMESEG_SIZE - 1);
     ACPI_COPY_NAMESEG (PathnameEnd, ResourceNode->Name.Ascii);
 
-    PathnameEnd += ACPI_NAME_SIZE;
+    PathnameEnd += ACPI_NAMESEG_SIZE;
     *PathnameEnd = '.';
 
     PathnameEnd++;
@@ -871,7 +871,7 @@ static void
 AcpiDmUpdateResourceName (
     ACPI_NAMESPACE_NODE     *ResourceNode)
 {
-    char                    Name[ACPI_NAME_SIZE];
+    char                    Name[ACPI_NAMESEG_SIZE];
 
 
     /* Ignore if a unique name has already been assigned */

@@ -346,7 +346,7 @@ DtCreateOneTemplateFile (
      *  2) Signature must be a recognized ACPI table
      *  3) There must be a template associated with the signature
      */
-    if (strlen (Signature) != ACPI_NAME_SIZE)
+    if (strlen (Signature) != ACPI_NAMESEG_SIZE)
     {
         fprintf (stderr,
             "%s: Invalid ACPI table signature "

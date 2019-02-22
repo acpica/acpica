@@ -745,7 +745,7 @@ AxCheckTableLengths (
     }
 
     if ((ByteCount < sizeof (ACPI_TABLE_HEADER)) &&
-        (ByteCount >= ACPI_NAME_SIZE))
+        (ByteCount >= ACPI_NAMESEG_SIZE))
     {
         printf ("  : (Table too short for an ACPI table)");
     }

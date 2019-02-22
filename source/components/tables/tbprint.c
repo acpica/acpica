@@ -225,10 +225,10 @@ AcpiTbCleanupTableHeader (
 
     memcpy (OutHeader, Header, sizeof (ACPI_TABLE_HEADER));
 
-    AcpiTbFixString (OutHeader->Signature, ACPI_NAME_SIZE);
+    AcpiTbFixString (OutHeader->Signature, ACPI_NAMESEG_SIZE);
     AcpiTbFixString (OutHeader->OemId, ACPI_OEM_ID_SIZE);
     AcpiTbFixString (OutHeader->OemTableId, ACPI_OEM_TABLE_ID_SIZE);
-    AcpiTbFixString (OutHeader->AslCompilerId, ACPI_NAME_SIZE);
+    AcpiTbFixString (OutHeader->AslCompilerId, ACPI_NAMESEG_SIZE);
 }
 
 

@@ -257,7 +257,7 @@ ApWriteToBinaryFile (
     ACPI_TABLE_HEADER       *Table,
     UINT32                  Instance)
 {
-    char                    Filename[ACPI_NAME_SIZE + 16];
+    char                    Filename[ACPI_NAMESEG_SIZE + 16];
     char                    InstanceStr [16];
     ACPI_FILE               File;
     ACPI_SIZE               Actual;
@@ -283,7 +283,7 @@ ApWriteToBinaryFile (
     Filename[1] = (char) tolower ((int) Filename[1]);
     Filename[2] = (char) tolower ((int) Filename[2]);
     Filename[3] = (char) tolower ((int) Filename[3]);
-    Filename[ACPI_NAME_SIZE] = 0;
+    Filename[ACPI_NAMESEG_SIZE] = 0;
 
     /* Handle multiple SSDTs - create different filenames for each */
 

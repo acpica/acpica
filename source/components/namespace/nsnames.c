@@ -274,7 +274,7 @@ AcpiNsHandleToName (
 
     NodeName = AcpiUtGetNodeName (Node);
     ACPI_COPY_NAMESEG (Buffer->Pointer, NodeName);
-    ((char *) Buffer->Pointer) [ACPI_NAME_SIZE] = 0;
+    ((char *) Buffer->Pointer) [ACPI_NAMESEG_SIZE] = 0;
 
     ACPI_DEBUG_PRINT ((ACPI_DB_EXEC, "%4.4s\n", (char *) Buffer->Pointer));
     return_ACPI_STATUS (AE_OK);
@@ -374,7 +374,7 @@ AcpiNsBuildNormalizedPath (
     BOOLEAN                 NoTrailing)
 {
     UINT32                  Length = 0, i;
-    char                    Name[ACPI_NAME_SIZE];
+    char                    Name[ACPI_NAMESEG_SIZE];
     BOOLEAN                 DoNoTrailing;
     char                    c, *Left, *Right;
     ACPI_NAMESPACE_NODE     *NextNode;
@@ -657,7 +657,7 @@ AcpiNsNormalizePathname (
     {
         /* Do one nameseg at a time */
 
-        for (i = 0; (i < ACPI_NAME_SIZE) && *InputPath; i++)
+        for (i = 0; (i < ACPI_NAMESEG_SIZE) && *InputPath; i++)
         {
             if ((i == 0) || (*InputPath != '_')) /* First char is allowed to be underscore */
             {

@@ -563,14 +563,14 @@ ApCheckForGpeNameConflict (
 {
     ACPI_PARSE_OBJECT       *NextOp;
     UINT32                  GpeNumber;
-    char                    Name[ACPI_NAME_SIZE + 1];
-    char                    Target[ACPI_NAME_SIZE];
+    char                    Name[ACPI_NAMESEG_SIZE + 1];
+    char                    Target[ACPI_NAMESEG_SIZE];
 
 
     /* Need a null-terminated string version of NameSeg */
 
     ACPI_MOVE_32_TO_32 (Name, &Op->Asl.NameSeg);
-    Name[ACPI_NAME_SIZE] = 0;
+    Name[ACPI_NAMESEG_SIZE] = 0;
 
     /*
      * For a GPE method:

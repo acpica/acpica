@@ -708,7 +708,7 @@ XfNamespaceLocateBegin (
              * We didn't find the name reference by path -- we can qualify this
              * a little better before we print an error message
              */
-            if (strlen (Path) == ACPI_NAME_SIZE)
+            if (strlen (Path) == ACPI_NAMESEG_SIZE)
             {
                 /* A simple, one-segment ACPI name */
 
@@ -770,7 +770,7 @@ XfNamespaceLocateBegin (
                      * doesn't exist or just can't be reached. However, we
                      * can differentiate between a NameSeg vs. NamePath.
                      */
-                    if (strlen (Op->Asl.ExternalName) == ACPI_NAME_SIZE)
+                    if (strlen (Op->Asl.ExternalName) == ACPI_NAMESEG_SIZE)
                     {
                         AslError (ASL_ERROR, ASL_MSG_NOT_FOUND, Op,
                             Op->Asl.ExternalName);
