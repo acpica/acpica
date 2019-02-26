@@ -47062,6 +47062,131 @@ printf ("BINT: %o %o %o %o\n", Arg2, Local6, Local7, Local2)
         }
     }
 
+    /* PCC operation region generic subspace */
+    /* m745 */
+    Method (M745, 1, Serialized)
+    {
+        Name (OLEN, 16) // Length of the operation region
+        Name (CLEN, 8) // Length of FLGS, LNGT, COMD, COSP
+        OperationRegion (PCC1, PlatformCommChannel, 0x1, OLEN)
+        Field (PCC1, AnyAcc, NoLock, Preserve)
+        {
+            Offset(4),  // 4 bytes
+            COMD, 16,   // 2 bytes
+            STAT, 16,   // 2 bytes
+            COSP, 64,   // 8 bytes
+        }
+        Name (BUF0, Buffer(0x2) {1,0})
+        STAT = BUF0
+        Name (BUF2, Buffer(0x8) {
+            0xA, 0x9, 0x8, 0x7,
+            0x6, 0x5, 0x4, 0x3
+        })
+        COSP = BUF2
+        Name (BUF3, Buffer(0x4) {0x40, 0x41, 0x42, 0x43})
+        COMD = BUF3 // Invoke region handler
+
+        Concatenate (Arg0, "-m745", Arg0)
+
+        /*
+         * Check STAT, COMD and COSP to ensure that they contain expected
+         * values. Note: the PCC operation region handler in acpiexec writes
+         * 0x0 - OLEN in each byte of the field (including the offset 4).
+         * For PCC1,  STAT would contain the values {0x6, 0x7}.
+         */
+        printf ("TEST: m745, Check COMD after write")
+        If (COMD != 0x0504)
+        {
+            ERR (Arg0, Z143, __LINE__, 0x00, 0x00, COMD, 0x0504)
+        }
+        printf ("TEST: m745, Check STAT after write")
+        If (STAT != 0x0706)
+        {
+            ERR (Arg0, Z143, __LINE__, 0x00, 0x00, STAT, 0x0706)
+        }
+
+        /*
+         * Loop through COSP and determine that they contain expected values
+         * set by acpiexec PCC handler
+         */
+        printf ("TEST: m745, Check COSP after write")
+        If (COSP != 0x0F0E0D0C0B0A0908)
+        {
+            ERR (Arg0, Z143, __LINE__, 0x00, 0x00, COSP, 0x0F0E0D0C0B0A0908)
+        }
+    }
+
+    /* PCC operation region master subspace */
+    /* m746 */
+    Method (M746, 1, Serialized)
+    {
+        Name (OLEN, 26) // Length of the operation region
+        Name (CLEN, 16) // Length of FLGS, LNGT, COMD, COSP
+
+        OperationRegion (PCC3, PlatformCommChannel, 0x3, OLEN)
+        Field (PCC3, AnyAcc, NoLock, Preserve)
+        {
+            Offset(4),  // 4 bytes
+            FLGS, 32,   // 4 bytes
+            LNGT, 32,   // 4 Bytes
+            COMD, 32,   // 4 bytes
+            COSP, 80    // 10 bytes
+        }
+
+        Name (BUF5, Buffer(0x4) {3,2,1,0})
+        FLGS = BUF5
+
+        Name (BUF6, Buffer(0x4) {4,3,2,1})
+        LNGT = BUF6
+
+        Name (BUF7, Buffer(0xA) {
+            0xA, 0x9, 0x8, 0x7, 0x6,
+            0x5, 0x4, 0x3, 0x2, 0x1
+        })
+        COSP = BUF7
+        Name (BUF8, Buffer(0x4) {0x40, 0x41, 0x42, 0x43})
+        COMD = BUF8 // Invoke region handler
+
+        /*
+         * Check FLGS, LNGT, COMD and ensure that they contain expected
+         * values. Note: the PCC operation region handler in acpiexec writes
+         * 0x0 - OLEN in each byte of the field (including the offset 4).
+         * For PCC3, FLGS would contain the values {0x4, 0x5, 0x6, 0x7}.
+         */
+        Concatenate (Arg0, "-m746", Arg0)
+        printf ("TEST: m746, Check FLGS after write")
+        If (FLGS != 0x07060504)
+        {
+            ERR (Arg0, Z143, __LINE__, 0x00, 0x00, FLGS, 0x07060504)
+        }
+        printf ("TEST: m746, Check LNGT after write")
+        If (LNGT != 0x0B0A0908)
+        {
+            ERR (Arg0, Z143, __LINE__, 0x00, 0x00, LNGT, 0x0B0A0908)
+        }
+        printf ("TEST: m746, Check COMD after write")
+        If (COMD != 0x0F0E0D0C)
+        {
+            ERR (Arg0, Z143, __LINE__, 0x00, 0x00, COMD, 0x0F0E0D0C)
+        }
+
+        /*
+         * Loop through COSP and determine that they contain expected values
+         * set by acpiexec PCC handler
+         */
+        printf ("TEST: m746, Check COSP after write")
+        Name (IDX, 0)
+        While (OLEN - CLEN)
+        {
+            If (DerefOf(COSP[IDX]) != (CLEN + IDX))
+            {
+                ERR (Arg0, Z143, __LINE__, 0x00, 0x00, DerefOf(COSP[IDX]), (CLEN + IDX))
+            }
+            IDX++
+            OLEN--
+        }
+    }
+
     /* Run-method */
 
     Method (RFC0, 0, Serialized)
@@ -47154,4 +47279,13 @@ printf ("BINT: %o %o %o %o\n", Arg2, Local6, Local7, Local2)
 
         SRMT ("m744")
         M744 (__METHOD__)
+
+        /* PCC generic subspace */
+        SRMT ("m745")
+        M745 (__METHOD__)
+
+        /* PCC master subspace */
+        SRMT ("m746")
+        M746 (__METHOD__)
+
     }
