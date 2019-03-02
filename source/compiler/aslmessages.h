@@ -366,6 +366,7 @@ typedef enum
     ASL_MSG_NAMEPATH_NOT_EXIST,
     ASL_MSG_REGION_LENGTH,
     ASL_MSG_TEMPORARY_OBJECT,
+    ASL_MSG_UNDEFINED_EXTERNAL,
 
     /* These messages are used by the Data Table compiler only */
 
