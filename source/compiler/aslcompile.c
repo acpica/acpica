@@ -991,7 +991,15 @@ FinishFiles(
 
     for (i = ASL_FILE_INPUT; i < ASL_MAX_FILE_TYPE; i++)
     {
-        FlCloseFile (i);
+        /*
+         * Some files could such as debug output files could be pointing to
+         * stderr or stdout. Leave these alone...
+         */
+        if (AslGbl_Files[i].Handle != stderr &&
+            AslGbl_Files[i].Handle != stdout)
+        {
+            FlCloseFile (i);
+        }
     }
 
     /* Delete AML file if there are errors */
