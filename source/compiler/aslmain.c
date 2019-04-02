@@ -328,6 +328,7 @@ main (
         AcpiGbl_DisasmFlag = TRUE;
         fprintf (stderr, "\n");
         AslDoDisassembly ();
+        AcpiGbl_DisasmFlag = FALSE;
 
         /* delete the AML file. This AML file should never be utilized by AML interpreters. */
 
@@ -346,7 +347,13 @@ CleanupAndExit:
         AcpiDmClearExternalFileList();
     }
     (void) AcpiTerminate ();
-    CmCleanupAndExit ();
+
+    /* CmCleanupAndExit is intended for the compiler only */
+
+    if (!AcpiGbl_DisasmFlag)
+    {
+        CmCleanupAndExit ();
+    }
 
 
     return (ReturnStatus);
