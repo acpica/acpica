@@ -341,6 +341,11 @@ FlGetFileHandle (
     ASL_GLOBAL_FILE_NODE    *Current = AslGbl_FilesList;
 
 
+    if (!Filename)
+    {
+        return (NULL);
+    }
+
     while (Current)
     {
         if (!strcmp (Current->Files[InFileId].Filename, Filename))
@@ -374,6 +379,11 @@ FlGetFileNode (
 {
     ASL_GLOBAL_FILE_NODE    *Current = AslGbl_FilesList;
 
+
+    if (!Filename)
+    {
+        return (NULL);
+    }
 
     while (Current)
     {
