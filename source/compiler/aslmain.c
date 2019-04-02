@@ -288,16 +288,21 @@ main (
         Index2++;
     }
 
-    if (!AcpiGbl_DisasmFlag)
+    /*
+     * At this point, compilation of a data table or disassembly is complete.
+     */
+    if (AslGbl_FileType == ASL_INPUT_TYPE_ASCII_DATA || AcpiGbl_DisasmFlag)
     {
-        CmDoAslMiddleAndBackEnd ();
-
-        /*
-         * At this point, all semantic analysis has been completed. Check
-         * expected error messages before cleanup or conversion.
-         */
-        AslCheckExpectedExceptions ();
+        goto CleanupAndExit;
     }
+
+    CmDoAslMiddleAndBackEnd ();
+
+    /*
+     * At this point, all semantic analysis has been completed. Check
+     * expected error messages before cleanup or conversion.
+     */
+    AslCheckExpectedExceptions ();
 
     /* ASL-to-ASL+ conversion - Perform immediate disassembly */
 
