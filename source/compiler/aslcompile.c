@@ -247,6 +247,7 @@ CmDoCompile (
 
         FileNode = FlGetCurrentFileNode ();
         FileNode->ParserErrorDetected = TRUE;
+        AslGbl_ParserErrorDetected = TRUE;
         LsDumpParseTree ();
         goto ErrorExit;
     }
@@ -918,9 +919,9 @@ CmCleanupAndExit (
      * We will delete the AML file if there are errors and the
      * force AML output option has not been used.
      */
-    if ((AslGbl_ExceptionCount[ASL_ERROR] > 0) &&
+    if (AslGbl_ParserErrorDetected || ((AslGbl_ExceptionCount[ASL_ERROR] > 0) &&
         (!AslGbl_IgnoreErrors) &&
-        AslGbl_Files[ASL_FILE_AML_OUTPUT].Handle)
+        AslGbl_Files[ASL_FILE_AML_OUTPUT].Handle))
     {
         DeleteAmlFile = TRUE;
     }

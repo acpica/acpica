@@ -593,7 +593,8 @@ UtDisplayOneSummary (
 
             /* AML summary */
 
-            if ((AslGbl_ExceptionCount[ASL_ERROR] == 0) || (AslGbl_IgnoreErrors))
+            if (!AslGbl_ParserErrorDetected &&
+                ((AslGbl_ExceptionCount[ASL_ERROR] == 0) || AslGbl_IgnoreErrors))
             {
                 if (AslGbl_Files[ASL_FILE_AML_OUTPUT].Handle)
                 {
@@ -676,6 +677,14 @@ UtDisplayErrorSummary (
 
     if (AslGbl_FileType != ASL_INPUT_TYPE_ASCII_DATA)
     {
+
+        if (AslGbl_ParserErrorDetected)
+        {
+            FlPrintFile (FileId,
+                ", no AML files generated due to syntax error(s)\n");
+            return;
+        }
+
         FlPrintFile (FileId, ", %u Optimizations",
             AslGbl_ExceptionCount[ASL_OPTIMIZATION]);
 
