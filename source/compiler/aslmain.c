@@ -308,7 +308,7 @@ main (
 
     if (AslGbl_DoAslConversion)
     {
-        /* re-initialize ACPICA subsystem for disassemble*/
+        /* re-initialize ACPICA subsystem for disassembler */
 
         Status = AdInitialize ();
         if (ACPI_FAILURE (Status))
@@ -316,17 +316,18 @@ main (
             return (Status);
         }
 
-        AcpiGbl_DisasmFlag = TRUE;
         /*
          * New input file is the output AML file from above.
          * New output is from the input ASL file from above.
          */
         AslGbl_OutputFilenamePrefix = AslGbl_Files[ASL_FILE_INPUT].Filename;
-        CvDbgPrint ("OUTPUTFILENAME: %s\n", AslGbl_OutputFilenamePrefix);
         AslGbl_Files[ASL_FILE_INPUT].Filename =
             AslGbl_Files[ASL_FILE_AML_OUTPUT].Filename;
-        AcpiGbl_DisasmFlag = TRUE;
+
+        CvDbgPrint ("Output filename: %s\n", AslGbl_OutputFilenamePrefix);
         fprintf (stderr, "\n");
+
+        AcpiGbl_DisasmFlag = TRUE;
         AslDoDisassembly ();
         AcpiGbl_DisasmFlag = FALSE;
 
@@ -341,11 +342,7 @@ CleanupAndExit:
 
     UtFreeLineBuffers ();
     AslParserCleanup ();
-
-    if (AcpiGbl_ExternalFileList)
-    {
-        AcpiDmClearExternalFileList();
-    }
+    AcpiDmClearExternalFileList();
     (void) AcpiTerminate ();
 
     /* CmCleanupAndExit is intended for the compiler only */
