@@ -594,19 +594,17 @@ UtDisplayOneSummary (
             /* AML summary */
 
             if (!AslGbl_ParserErrorDetected &&
-                ((AslGbl_ExceptionCount[ASL_ERROR] == 0) || AslGbl_IgnoreErrors))
+                ((AslGbl_ExceptionCount[ASL_ERROR] == 0) || AslGbl_IgnoreErrors) &&
+                AslGbl_Files[ASL_FILE_AML_OUTPUT].Handle)
             {
-                if (AslGbl_Files[ASL_FILE_AML_OUTPUT].Handle)
-                {
-                    FlPrintFile (FileId,
-                        "%-14s %s - %u bytes, %u named objects, "
-                        "%u executable opcodes\n",
-                        "AML Output:",
-                        AslGbl_Files[ASL_FILE_AML_OUTPUT].Filename,
-                        FlGetFileSize (ASL_FILE_AML_OUTPUT),
-                        FileNode->TotalNamedObjects,
-                        FileNode->TotalExecutableOpcodes);
-                }
+                FlPrintFile (FileId,
+                    "%-14s %s - %u bytes, %u named objects, "
+                    "%u executable opcodes\n",
+                    "AML Output:",
+                    AslGbl_Files[ASL_FILE_AML_OUTPUT].Filename,
+                    FlGetFileSize (ASL_FILE_AML_OUTPUT),
+                    FileNode->TotalNamedObjects,
+                    FileNode->TotalExecutableOpcodes);
             }
         }
     }
@@ -667,8 +665,23 @@ static void
 UtDisplayErrorSummary (
     UINT32                  FileId)
 {
+    BOOLEAN                 ErrorDetected;
+
+
+    ErrorDetected = AslGbl_ParserErrorDetected ||
+        ((AslGbl_ExceptionCount[ASL_ERROR] > 0) && !AslGbl_IgnoreErrors);
+
+    if (ErrorDetected)
+    {
+        FlPrintFile (FileId, "\nCompilation failed. ");
+    }
+    else
+    {
+        FlPrintFile (FileId, "\nCompilation successful. ");
+    }
+
     FlPrintFile (FileId,
-        "\nCompilation complete. %u Errors, %u Warnings, %u Remarks",
+        "%u Errors, %u Warnings, %u Remarks",
         AslGbl_ExceptionCount[ASL_ERROR],
         AslGbl_ExceptionCount[ASL_WARNING] +
             AslGbl_ExceptionCount[ASL_WARNING2] +
@@ -677,11 +690,16 @@ UtDisplayErrorSummary (
 
     if (AslGbl_FileType != ASL_INPUT_TYPE_ASCII_DATA)
     {
-
         if (AslGbl_ParserErrorDetected)
         {
             FlPrintFile (FileId,
-                ", no AML files generated due to syntax error(s)\n");
+                "\nNo AML files were generated due to syntax error(s)\n");
+            return;
+        }
+        else if (ErrorDetected)
+        {
+            FlPrintFile (FileId,
+                "\nNo AML files were generated due to compiler error(s)\n");
             return;
         }
 
