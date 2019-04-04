@@ -883,10 +883,10 @@ ExDoExternal (
 
 /* Values for "Visitation" parameter above */
 
-#define ASL_WALK_VISIT_DOWNWARD      0x01
-#define ASL_WALK_VISIT_UPWARD        0x02
-#define ASL_WALK_VISIT_DB_SEPARATELY 0x04
-#define ASL_WALK_VISIT_TWICE         (ASL_WALK_VISIT_DOWNWARD | ASL_WALK_VISIT_UPWARD)
+#define ASL_WALK_VISIT_DOWNWARD         0x01
+#define ASL_WALK_VISIT_UPWARD           0x02
+#define ASL_WALK_VISIT_DB_SEPARATELY    0x04
+#define ASL_WALK_VISIT_TWICE            (ASL_WALK_VISIT_DOWNWARD | ASL_WALK_VISIT_UPWARD)
 
 
 /*
@@ -1105,6 +1105,7 @@ ASL_GLOBAL_FILE_NODE *
 FlGetCurrentFileNode (
     void);
 
+
 /*
  * aslhwmap - hardware map summary
  */
@@ -1120,13 +1121,13 @@ ACPI_STATUS
 LdLoadNamespace (
     ACPI_PARSE_OBJECT       *RootOp);
 
-
 /*
  * asllookup - namespace lookup functions
  */
 void
 LkFindUnreferencedObjects (
     void);
+
 
 /*
  * aslhelp - help screens
@@ -1155,6 +1156,7 @@ void
 NsSetupNamespaceListing (
     void                    *Handle);
 
+
 /*
  * asloptions - command line processing
  */
@@ -1162,6 +1164,7 @@ int
 AslCommandLine (
     int                     argc,
     char                    **argv);
+
 
 /*
  * aslxref - namespace cross reference
@@ -1312,6 +1315,7 @@ ACPI_STATUS
 AuConvertUuidToString (
     char                    *UuIdBuffer,
     char                    *OutString);
+
 
 /*
  * aslresource - Resource template generation utilities
@@ -1519,6 +1523,7 @@ RsDoPinGroupFunctionDescriptor (
 ASL_RESOURCE_NODE *
 RsDoPinGroupConfigDescriptor (
     ASL_RESOURCE_INFO       *Info);
+
 
 /*
  * aslrestype2d - DWord address descriptors

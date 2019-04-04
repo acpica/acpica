@@ -179,8 +179,9 @@ CmDumpAllEvents (
     void);
 
 static void
-FinishFiles(
+CmFinishFiles(
     BOOLEAN                 DeleteAmlFile);
+
 
 /*******************************************************************************
  *
@@ -518,9 +519,8 @@ CmDoAslMiddleAndBackEnd (
         switch  (FlSwitchFileSet(AslGbl_CurrentDB->Asl.Filename))
         {
             case SWITCH_TO_DIFFERENT_FILE:
-
                 /*
-                 * reset these parameters when definition blocks belong in
+                 * Reset these parameters when definition blocks belong in
                  * different files. If they belong in the same file, there is
                  * no need to reset these parameters
                  */
@@ -930,12 +930,12 @@ CmCleanupAndExit (
 
     while (CurrentFileNode)
     {
-        switch  (FlSwitchFileSet(CurrentFileNode->Files[ASL_FILE_INPUT].Filename))
+        switch  (FlSwitchFileSet (CurrentFileNode->Files[ASL_FILE_INPUT].Filename))
         {
             case SWITCH_TO_SAME_FILE:
             case SWITCH_TO_DIFFERENT_FILE:
 
-                FinishFiles(DeleteAmlFile);
+                CmFinishFiles (DeleteAmlFile);
                 CurrentFileNode = CurrentFileNode->Next;
                 break;
 
@@ -958,7 +958,7 @@ CmCleanupAndExit (
 
 /*******************************************************************************
  *
- * FUNCTION:    FinishFiles
+ * FUNCTION:    CmFinishFiles
  *
  * PARAMETERS:  DeleteAmlFile
  *
@@ -970,7 +970,7 @@ CmCleanupAndExit (
  ******************************************************************************/
 
 static void
-FinishFiles(
+CmFinishFiles(
     BOOLEAN                 DeleteAmlFile)
 {
     UINT32                  i;
@@ -993,8 +993,8 @@ FinishFiles(
     for (i = ASL_FILE_INPUT; i < ASL_MAX_FILE_TYPE; i++)
     {
         /*
-         * Some files could such as debug output files could be pointing to
-         * stderr or stdout. Leave these alone...
+         * Some files such as debug output files could be pointing to
+         * stderr or stdout. Leave these alone.
          */
         if (AslGbl_Files[i].Handle != stderr &&
             AslGbl_Files[i].Handle != stdout)
@@ -1033,6 +1033,4 @@ FinishFiles(
     {
         FlDeleteFile (ASL_FILE_SOURCE_OUTPUT);
     }
-
-
 }

@@ -198,14 +198,14 @@ FlInitOneFile (
     ASL_GLOBAL_FILE_NODE    *NewFileNode;
 
 
-    if (FlInputFileExists(InputFilename))
+    if (FlInputFileExists (InputFilename))
     {
         AslError (ASL_ERROR, ASL_MSG_DUPLICATE_INPUT_FILE, NULL, InputFilename);
         return (AE_ALREADY_EXISTS);
     }
 
-    NewFileNode =
-        (ASL_GLOBAL_FILE_NODE *)UtLocalCacheCalloc (sizeof (ASL_GLOBAL_FILE_NODE));
+    NewFileNode = ACPI_CAST_PTR (ASL_GLOBAL_FILE_NODE,
+        UtLocalCacheCalloc (sizeof (ASL_GLOBAL_FILE_NODE)));
 
     if (!NewFileNode)
     {
@@ -238,7 +238,6 @@ FlInitOneFile (
     }
 
     AslGbl_Files[ASL_FILE_STDERR].Filename = "STDERR";
-
     return (AE_OK);
 }
 
@@ -268,8 +267,10 @@ FlInputFileExists (
         {
             return (TRUE);
         }
+
         Current = Current->Next;
     }
+
     return (FALSE);
 }
 
@@ -301,6 +302,7 @@ FlSwitchFileSet (
             AslGbl_Files = Current->Files;
             AslGbl_TableSignature = Current->TableSignature;
             AslGbl_TableId = Current->TableId;
+
             if (!strcmp (InputFilename, PrevFilename))
             {
                 return (SWITCH_TO_SAME_FILE);
@@ -310,8 +312,10 @@ FlSwitchFileSet (
                 return (SWITCH_TO_DIFFERENT_FILE);
             }
         }
+
         Current = Current->Next;
     }
+
     return (FILE_NOT_FOUND);
 }
 
@@ -352,6 +356,7 @@ FlGetFileHandle (
         {
             return (Current->Files[OutFileId].Handle);
         }
+
         Current = Current->Next;
     }
 
@@ -363,10 +368,10 @@ FlGetFileHandle (
  *
  * FUNCTION:    FlGetFileNode
  *
- * PARAMETERS:  FileId        - denotes file type of the input Filename
- *              Filename
+ * PARAMETERS:  FileId        - File type (ID) of the input Filename
+ *              Filename      - File to search for
  *
- * RETURN:      Global file node
+ * RETURN:      A global file node
  *
  * DESCRIPTION: Get the file node for a particular filename/FileId.
  *
@@ -391,6 +396,7 @@ FlGetFileNode (
         {
             return (Current);
         }
+
         Current = Current->Next;
     }
 
@@ -400,14 +406,13 @@ FlGetFileNode (
 
 /*******************************************************************************
  *
- * FUNCTION:    FlGetFileNode
+ * FUNCTION:    FlGetCurrentFileNode
  *
- * PARAMETERS:  FileId        - denotes file type of the input Filename
- *              Filename
+ * PARAMETERS:  None
  *
  * RETURN:      Global file node
  *
- * DESCRIPTION: Get the file node for a particular filename/FileId.
+ * DESCRIPTION: Get the current input file node
  *
  ******************************************************************************/
 
@@ -415,7 +420,8 @@ ASL_GLOBAL_FILE_NODE *
 FlGetCurrentFileNode (
     void)
 {
-    return (FlGetFileNode (ASL_FILE_INPUT,AslGbl_Files[ASL_FILE_INPUT].Filename));
+    return (FlGetFileNode (
+        ASL_FILE_INPUT,AslGbl_Files[ASL_FILE_INPUT].Filename));
 }
 
 

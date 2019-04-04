@@ -203,8 +203,8 @@ CgGenerateAmlOutput (
     /* Generate the AML output file */
 
     TrWalkParseTree (AslGbl_CurrentDB,
-        ASL_WALK_VISIT_DOWNWARD | ASL_WALK_VISIT_DB_SEPARATELY, CgAmlWriteWalk,
-        NULL, NULL);
+        ASL_WALK_VISIT_DOWNWARD | ASL_WALK_VISIT_DB_SEPARATELY,
+        CgAmlWriteWalk, NULL, NULL);
 
     DbgPrint (ASL_TREE_OUTPUT, ASL_PARSE_TREE_HEADER2);
     CgUpdateHeader (AslGbl_CurrentDB);

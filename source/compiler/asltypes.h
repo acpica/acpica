@@ -221,10 +221,10 @@ typedef struct asl_analysis_walk_info
 
 typedef struct asl_mapping_entry
 {
-    UINT32                      Value;
-    UINT32                      AcpiBtype;   /* Object type or return type */
-    UINT16                      AmlOpcode;
-    UINT8                       Flags;
+    UINT32                  Value;
+    UINT32                  AcpiBtype;   /* Object type or return type */
+    UINT16                  AmlOpcode;
+    UINT8                   Flags;
 
 } ASL_MAPPING_ENTRY;
 
@@ -233,8 +233,8 @@ typedef struct asl_mapping_entry
 
 typedef struct asl_walk_info
 {
-    ACPI_PARSE_OBJECT           **NodePtr;
-    UINT32                      *LevelPtr;
+    ACPI_PARSE_OBJECT       **NodePtr;
+    UINT32                  *LevelPtr;
 
 } ASL_WALK_INFO;
 
@@ -243,8 +243,8 @@ typedef struct asl_walk_info
 
 typedef struct asl_file_info
 {
-    FILE                        *Handle;
-    char                        *Filename;
+    FILE                    *Handle;
+    char                    *Filename;
 
 } ASL_FILE_INFO;
 
@@ -256,10 +256,10 @@ typedef struct asl_file_status
 } ASL_FILE_STATUS;
 
 
-typedef UINT32                     ASL_FILE_SWITCH_STATUS;    /* File switch status */
-#define SWITCH_TO_DIFFERENT_FILE   0
-#define SWITCH_TO_SAME_FILE        1
-#define FILE_NOT_FOUND             2
+typedef UINT32                      ASL_FILE_SWITCH_STATUS;    /* File switch status */
+#define SWITCH_TO_DIFFERENT_FILE    0
+#define SWITCH_TO_SAME_FILE         1
+#define FILE_NOT_FOUND              2
 
 /*
  * File types. Note: Any changes to this table must also be reflected
@@ -305,6 +305,7 @@ typedef struct asl_file_desc
 {
     const char              *ShortDescription;
     const char              *Description;
+
 } ASL_FILE_DESC;
 
 
@@ -334,16 +335,16 @@ typedef struct asl_file_desc
 
 typedef struct asl_cache_info
 {
-    void                            *Next;
-    char                            Buffer[1];
+    void                    *Next;
+    char                    Buffer[1];
 
 } ASL_CACHE_INFO;
 
 
 typedef struct asl_include_dir
 {
-    char                        *Dir;
-    struct asl_include_dir      *Next;
+    char                    *Dir;
+    struct asl_include_dir  *Next;
 
 } ASL_INCLUDE_DIR;
 
@@ -377,6 +378,7 @@ typedef struct asl_error_msg
 } ASL_ERROR_MSG;
 
 /* An entry in the expected messages array */
+
 typedef struct asl_expected_message
 {
     UINT32                       MessageId;

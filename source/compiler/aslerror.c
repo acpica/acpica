@@ -474,12 +474,12 @@ AePrintErrorSourceLine (
          * Use the merged header/source file if present, otherwise
          * use input file
          */
-        SourceFile = FlGetFileHandle (ASL_FILE_SOURCE_OUTPUT, ASL_FILE_SOURCE_OUTPUT,
-            Enode->SourceFilename);
+        SourceFile = FlGetFileHandle (ASL_FILE_SOURCE_OUTPUT,
+            ASL_FILE_SOURCE_OUTPUT, Enode->SourceFilename);
         if (!SourceFile)
         {
-            SourceFile = FlGetFileHandle (ASL_FILE_INPUT, ASL_FILE_INPUT,
-                Enode->Filename);
+            SourceFile = FlGetFileHandle (ASL_FILE_INPUT,
+                ASL_FILE_INPUT, Enode->Filename);
         }
 
         if (SourceFile)
@@ -862,11 +862,13 @@ static void AslInitEnode (
         {
             Enode->FilenameLength = 6;
         }
+
         FileNode = FlGetCurrentFileNode ();
         if (!FileNode)
         {
             return;
         }
+
         Enode->SourceFilename =
             FileNode->Files[ASL_FILE_SOURCE_OUTPUT].Filename;
     }

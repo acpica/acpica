@@ -461,6 +461,7 @@ AslDoOneFile (
     {
         return (AE_ERROR);
     }
+
     FileNode->OriginalInputFileSize = FlGetFileSize (ASL_FILE_INPUT);
 
     /* Determine input file type */
@@ -562,7 +563,6 @@ AslDoOneFile (
          * to display for post-compilation summary.
          */
         FileNode->TotalLineCount = AslGbl_CurrentLineNumber;
-
         return (AE_OK);
 
     /*
