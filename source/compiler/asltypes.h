@@ -500,11 +500,11 @@ typedef struct asl_files_node
     struct asl_files_node   *Next;
     char                    *TableSignature;
     char                    *TableId;
-    UINT64                  TotalLineCount;
-    UINT64                  OriginalInputFileSize;
-    UINT64                  TotalKeywords;
-    UINT64                  TotalNamedObjects;
-    UINT64                  TotalExecutableOpcodes;
+    UINT32                  TotalLineCount;
+    UINT32                  OriginalInputFileSize;
+    UINT32                  TotalKeywords;
+    UINT32                  TotalNamedObjects;
+    UINT32                  TotalExecutableOpcodes;
     BOOLEAN                 ParserErrorDetected;
 
 } ASL_GLOBAL_FILE_NODE;

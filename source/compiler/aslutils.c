@@ -586,10 +586,12 @@ UtDisplayOneSummary (
         else
         {
             FlPrintFile (FileId,
-                "%-14s %s - %u lines, %u bytes, %u keywords\n",
+                "%-14s %s - %7u bytes %6u keywords %6u source lines\n",
                 "ASL Input:",
-                AslGbl_Files[ASL_FILE_INPUT].Filename, FileNode->TotalLineCount,
-                FileNode->OriginalInputFileSize, FileNode->TotalKeywords);
+                AslGbl_Files[ASL_FILE_INPUT].Filename,
+                FileNode->OriginalInputFileSize,
+                FileNode->TotalKeywords,
+                FileNode->TotalLineCount);
 
             /* AML summary */
 
@@ -598,13 +600,12 @@ UtDisplayOneSummary (
                 AslGbl_Files[ASL_FILE_AML_OUTPUT].Handle)
             {
                 FlPrintFile (FileId,
-                    "%-14s %s - %u bytes, %u named objects, "
-                    "%u executable opcodes\n",
+                    "%-14s %s - %7u bytes %6u opcodes  %6u named objects\n",
                     "AML Output:",
                     AslGbl_Files[ASL_FILE_AML_OUTPUT].Filename,
                     FlGetFileSize (ASL_FILE_AML_OUTPUT),
-                    FileNode->TotalNamedObjects,
-                    FileNode->TotalExecutableOpcodes);
+                    FileNode->TotalExecutableOpcodes,
+                    FileNode->TotalNamedObjects);
             }
         }
     }
