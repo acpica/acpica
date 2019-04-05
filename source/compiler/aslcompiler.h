@@ -1105,6 +1105,10 @@ ASL_GLOBAL_FILE_NODE *
 FlGetCurrentFileNode (
     void);
 
+BOOLEAN
+FlInputFileExists (
+    char                    *InputFilename);
+
 
 /*
  * aslhwmap - hardware map summary

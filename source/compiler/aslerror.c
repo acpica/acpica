@@ -869,8 +869,16 @@ static void AslInitEnode (
             return;
         }
 
-        Enode->SourceFilename =
-            FileNode->Files[ASL_FILE_SOURCE_OUTPUT].Filename;
+	if (!FlInputFileExists (Filename))
+	{
+            /*
+             * This means that this file is an include file. Record the .src
+             * file as the error message source because this file is not in
+             * the global file list.
+             */
+            Enode->SourceFilename =
+                FileNode->Files[ASL_FILE_SOURCE_OUTPUT].Filename;
+	}
     }
 }
 
