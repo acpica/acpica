@@ -252,6 +252,9 @@ CgAmlWriteWalk (
 
     switch (Op->Asl.ParseOpcode)
     {
+    case PARSEOP_CREATEBYTEFIELD:
+        break;
+
     case PARSEOP_NAMESEG:
     case PARSEOP_NAMESTRING:
     case PARSEOP_METHODCALL:

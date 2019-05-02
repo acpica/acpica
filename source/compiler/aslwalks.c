@@ -165,6 +165,10 @@ static void
 AnAnalyzeStoreOperator (
     ACPI_PARSE_OBJECT       *Op);
 
+static void
+AnValidateCreateBufferField (
+    ACPI_PARSE_OBJECT       *CreateBufferFieldOp);
+
 
 /*******************************************************************************
  *
@@ -734,10 +738,17 @@ AnOtherSemanticAnalysisWalkBegin (
         }
     }
 
-
     /*
      * Semantic checks for individual ASL operators
      */
+    if (OpInfo->Flags & AML_CREATE)
+    {
+        /* This group contains all of the Create Buffer Field operators */
+
+        AnValidateCreateBufferField (Op);
+        return (AE_OK);
+    }
+
     switch (Op->Asl.ParseOpcode)
     {
     case PARSEOP_STORE:
@@ -782,22 +793,6 @@ AnOtherSemanticAnalysisWalkBegin (
         {
             AslError (ASL_WARNING, ASL_MSG_TIMEOUT, ArgOp,
                 Op->Asl.ExternalName);
-        }
-        break;
-
-    case PARSEOP_CREATEFIELD:
-        /*
-         * Check for a zero Length (NumBits) operand. NumBits is the 3rd operand
-         */
-        ArgOp = Op->Asl.Child;
-        ArgOp = ArgOp->Asl.Next;
-        ArgOp = ArgOp->Asl.Next;
-
-        if ((ArgOp->Asl.ParseOpcode == PARSEOP_ZERO) ||
-           ((ArgOp->Asl.ParseOpcode == PARSEOP_INTEGER) &&
-            (ArgOp->Asl.Value.Integer == 0)))
-        {
-            AslError (ASL_ERROR, ASL_MSG_NON_ZERO, ArgOp, NULL);
         }
         break;
 
@@ -883,6 +878,209 @@ AnOtherSemanticAnalysisWalkBegin (
     }
 
     return (AE_OK);
+}
+
+
+/*******************************************************************************
+ *
+ * FUNCTION:    AnValidateCreateBufferField
+ *
+ * PARAMETERS:  Op                  - A create buffer field operator
+ *
+ * RETURN:      None
+ *
+ * DESCRIPTION: Check if a buffer index argument to a create buffer field
+ *              operation is beyond the end of the target buffer.
+ *
+ *  Validates these AML operators:
+ *
+ *  AML_CREATE_FIELD_OP
+ *  AML_CREATE_BIT_FIELD_OP
+ *  AML_CREATE_BYTE_FIELD_OP
+ *  AML_CREATE_WORD_FIELD_OP
+ *  AML_CREATE_DWORD_FIELD_OP
+ *  AML_CREATE_QWORD_FIELD_OP
+ *
+ *  There are two conditions that must be satisfied in order to allow this
+ *  validation at compile time:
+ *
+ *  1) The length of the target buffer must be an integer constant
+ *  2) The index specified in the create* must be an integer constant
+ *
+ ******************************************************************************/
+
+static void
+AnValidateCreateBufferField (
+    ACPI_PARSE_OBJECT       *CreateBufferFieldOp)
+{
+    ACPI_PARSE_OBJECT       *TargetBufferOp;
+    ACPI_PARSE_OBJECT       *BufferIndexOp;
+    ACPI_PARSE_OBJECT       *NewBufferOp;
+    ACPI_PARSE_OBJECT       *ArgOp;
+    UINT32                  TargetBufferBitLength;
+    UINT32                  BufferIndex;
+    UINT32                  BufferBitIndex;
+    UINT32                  BufferFieldBitLength;
+
+
+    /*
+     * 1) Get the length of the target buffer
+     */
+    ArgOp = CreateBufferFieldOp->Asl.Child;     /* Reference to target buffer */
+
+    /*
+     * If no attached Node, the target buffer may be something like an
+     * ArgX or LocalX and cannot be evaluated at compile time.
+     */
+    if (!ArgOp->Asl.Node)
+    {
+        return;
+    }
+
+    TargetBufferOp = ArgOp->Asl.Node->Op;
+    TargetBufferOp = TargetBufferOp->Asl.Child; /* Target buffer */
+    TargetBufferOp = TargetBufferOp->Asl.Next;  /* "Buffer" keyword */
+    if (!TargetBufferOp)
+    {
+        /* Not a statement of the form NAME(XXXX, Buffer.... */
+
+        return;
+    }
+
+    ArgOp = TargetBufferOp->Asl.Child;          /* Target buffer length argument */
+    if (!ArgOp || (ArgOp->Asl.ParseOpcode != PARSEOP_INTEGER))
+    {
+        /* The target buffer length argument must an integer constant */
+
+        return;
+    }
+
+    /*
+     * The length is in bytes. Change all byte values into bit values for ease
+     * of computation. CreateField parameters use bit-index and bit-offset.
+     */
+    TargetBufferBitLength = (UINT32) ArgOp->Asl.Value.Integer * 8;
+
+    /*
+     * 2) Get the value of the buffer index argument
+     */
+    ArgOp = CreateBufferFieldOp->Asl.Child;     /* Reference to target buffer */
+    ArgOp = ArgOp->Asl.Next;                    /* Buffer Index argument*/
+    if (ArgOp->Asl.ParseOpcode != PARSEOP_INTEGER)
+    {
+        /* The buffer index argument must be an integer constant */
+
+        return;
+    }
+
+    BufferIndexOp = ArgOp;
+
+    BufferIndex =
+        (UINT32) ArgOp->Asl.Value.Integer;      /* Index can be in either bytes or bits */
+
+    NewBufferOp = ArgOp->Asl.Next;
+
+    /*
+     * 3) Get the length of the new buffer field, in bytes.
+     */
+    switch (CreateBufferFieldOp->Asl.ParseOpcode)
+    {
+    case PARSEOP_CREATEBITFIELD:                /* One-bit field */
+
+        /* CreateBitField uses bit offset */
+
+        BufferBitIndex = BufferIndex;
+        BufferFieldBitLength = 1;
+        break;
+
+    case PARSEOP_CREATEBYTEFIELD:
+
+        BufferBitIndex = BufferIndex * 8;
+        BufferFieldBitLength = 8;
+        break;
+
+    case PARSEOP_CREATEWORDFIELD:
+
+        BufferBitIndex = BufferIndex * 8;
+        BufferFieldBitLength = 16;
+        break;
+
+    case PARSEOP_CREATEDWORDFIELD:
+
+        BufferBitIndex = BufferIndex * 8;
+        BufferFieldBitLength = 32;
+        break;
+
+    case PARSEOP_CREATEQWORDFIELD:
+
+        BufferBitIndex = BufferIndex * 8;
+        BufferFieldBitLength = 64;
+        break;
+
+    case PARSEOP_CREATEFIELD:                   /* Multi-bit field */
+
+        /* CreateField uses bit index rather than byte index */
+
+        BufferBitIndex = BufferIndex;
+
+        /* Bit length argument */
+
+        ArgOp = ArgOp->Asl.Next;
+        NewBufferOp = ArgOp->Asl.Next;
+
+        if (ArgOp->Asl.ParseOpcode != PARSEOP_INTEGER &&
+           (ArgOp->Asl.ParseOpcode != PARSEOP_ZERO))
+        {
+            /* The bit length argument must be an integer constant */
+
+            return;
+        }
+
+        /* It is illegal for the buffer field length to be zero */
+
+        if ((ArgOp->Asl.ParseOpcode == PARSEOP_ZERO) ||
+           ((ArgOp->Asl.ParseOpcode == PARSEOP_INTEGER) &&
+                (ArgOp->Asl.Value.Integer == 0)))
+        {
+            AslError (ASL_ERROR, ASL_MSG_BUFFER_FIELD_LENGTH,
+                NewBufferOp, NULL);
+            return;
+        }
+
+        BufferFieldBitLength =
+            (UINT32) ArgOp->Asl.Value.Integer;  /* Create final bit index */
+
+        break;
+
+    default:
+        return;
+    }
+
+    /*
+     * 4) Check the index. It must not be beyond the target buffer
+     */
+    if (!TargetBufferBitLength || (BufferBitIndex > TargetBufferBitLength))
+    {
+        sprintf (AslGbl_MsgBuffer, "exceeds target buffer by %u bit(s)",
+            BufferBitIndex - TargetBufferBitLength);
+
+        AslError (ASL_REMARK, ASL_MSG_INVALID_BUFFER_START_INDEX, BufferIndexOp,
+            AslGbl_MsgBuffer);
+        return;
+    }
+
+    /*
+     * 5) Check the total length of the buffer being created. It must fit
+     * within the target buffer
+     */
+    if (BufferFieldBitLength + BufferBitIndex > TargetBufferBitLength)
+    {
+        sprintf (AslGbl_MsgBuffer, "exceeds target buffer by %u bit(s)",
+            BufferFieldBitLength + BufferBitIndex - TargetBufferBitLength);
+
+        AslError (ASL_REMARK, ASL_MSG_INVALID_BUFFER_END_INDEX, NewBufferOp,
+            AslGbl_MsgBuffer);
+    }
 }
 
 

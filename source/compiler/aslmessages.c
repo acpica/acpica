@@ -283,7 +283,7 @@ const char                      *AslCompilerMsgs [] =
 /*    ASL_MSG_NO_RETVAL */                  "Called method returns no value",
 /*    ASL_MSG_NO_WHILE */                   "No enclosing While statement",
 /*    ASL_MSG_NON_ASCII */                  "Invalid characters found in file",
-/*    ASL_MSG_NON_ZERO */                   "Operand evaluates to zero",
+/*    ASL_MSG_BUFFER_FIELD_LENGTH */        "Field length must be non-zero",
 /*    ASL_MSG_NOT_EXIST */                  "Object does not exist",
 /*    ASL_MSG_NOT_FOUND */                  "Object not found or not accessible from current scope",
 /*    ASL_MSG_NOT_METHOD */                 "Not a control method, cannot invoke",
@@ -364,7 +364,9 @@ const char                      *AslCompilerMsgs [] =
 /*    ASL_MSG_NAMEPATH_NOT_EXIST */         "One or more objects within the Pathname do not exist",
 /*    ASL_MSG_REGION_LENGTH */              "Operation Region declared with zero length",
 /*    ASL_MSG_TEMPORARY_OBJECT */           "Object is created temporarily in another method and cannot be accessed",
-/*    ASL_MSG_UNDEFINED_EXTERNAL */         "Named object was declared external but the actual definition does not exist"
+/*    ASL_MSG_UNDEFINED_EXTERNAL */         "Named object was declared external but the actual definition does not exist",
+/*    ASL_MSG_INVALID_BUFFER_START_INDEX */ "Buffer starting index might be beyond end of target buffer",
+/*    ASL_MSG_INVALID_BUFFER_END_INDEX */   "Buffer might extend beyond end of target buffer",
 };
 
 /* Table compiler */
