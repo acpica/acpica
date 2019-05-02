@@ -493,7 +493,7 @@ LdNamespace1Begin (
     case AML_FIELD_OP:
 
         Status = LdLoadFieldElements (Op, WalkState);
-        break;
+        return (Status);
 
     case AML_INT_CONNECTION_OP:
 
@@ -557,8 +557,7 @@ LdNamespace1Begin (
          * We only want references to named objects:
          *      Store (2, WXYZ) -> Attempt to resolve the name
          */
-        if ((OpInfo->Class == AML_CLASS_NAMED_OBJECT) &&
-            (OpInfo->Type != AML_TYPE_NAMED_FIELD))
+        if (OpInfo->Class == AML_CLASS_NAMED_OBJECT)
         {
             return (AE_OK);
         }
