@@ -367,8 +367,7 @@ typedef enum
     ASL_MSG_REGION_LENGTH,
     ASL_MSG_TEMPORARY_OBJECT,
     ASL_MSG_UNDEFINED_EXTERNAL,
-    ASL_MSG_INVALID_BUFFER_START_INDEX,
-    ASL_MSG_INVALID_BUFFER_END_INDEX,
+    ASL_MSG_BUFFER_FIELD_OVERFLOW,
 
     /* These messages are used by the Data Table compiler only */
 
