@@ -164,6 +164,7 @@
 
 static ACPI_STATUS
 LdLoadFieldElements (
+    UINT32                  AmlType,
     ACPI_PARSE_OBJECT       *Op,
     ACPI_WALK_STATE         *WalkState);
 
@@ -251,7 +252,8 @@ LdLoadNamespace (
  *
  * FUNCTION:    LdLoadFieldElements
  *
- * PARAMETERS:  Op              - Parent node (Field)
+ * PARAMETERS:  AmlType         - Type to search
+ *              Op              - Parent node (Field)
  *              WalkState       - Current walk state
  *
  * RETURN:      Status
@@ -263,6 +265,7 @@ LdLoadNamespace (
 
 static ACPI_STATUS
 LdLoadFieldElements (
+    UINT32                  AmlType,
     ACPI_PARSE_OBJECT       *Op,
     ACPI_WALK_STATE         *WalkState)
 {
@@ -278,7 +281,7 @@ LdLoadFieldElements (
     {
         Status = AcpiNsLookup (WalkState->ScopeInfo,
             SourceRegion->Asl.Value.String,
-            ACPI_TYPE_REGION, ACPI_IMODE_EXECUTE,
+            AmlType, ACPI_IMODE_EXECUTE,
             ACPI_NS_DONT_OPEN_SCOPE, NULL, &Node);
         if (Status == AE_NOT_FOUND)
         {
@@ -511,11 +514,15 @@ LdNamespace1Begin (
      */
     switch (Op->Asl.AmlOpcode)
     {
-    case AML_BANK_FIELD_OP:
     case AML_INDEX_FIELD_OP:
+
+        Status = LdLoadFieldElements (ACPI_TYPE_LOCAL_REGION_FIELD, Op, WalkState);
+        return (Status);
+
+    case AML_BANK_FIELD_OP:
     case AML_FIELD_OP:
 
-        Status = LdLoadFieldElements (Op, WalkState);
+        Status = LdLoadFieldElements (ACPI_TYPE_REGION, Op, WalkState);
         return (Status);
 
     case AML_INT_CONNECTION_OP:
