@@ -381,11 +381,17 @@ AcpiInitializeObjects (
     ACPI_FUNCTION_TRACE (AcpiInitializeObjects);
 
 
+#ifdef ACPI_OBSOLETE_BEHAVIOR
+    /*
+     * 05/2019: Removed, initialization now happens at both object
+     * creation and table load time
+     */
+
     /*
      * Initialize the objects that remain uninitialized. This
      * runs the executable AML that may be part of the
-     * declaration of these objects:
-     * OperationRegions, BufferFields, Buffers, and Packages.
+     * declaration of these objects: OperationRegions, BufferFields,
+     * BankFields, Buffers, and Packages.
      */
     if (!(Flags & ACPI_NO_OBJECT_INIT))
     {
@@ -395,6 +401,7 @@ AcpiInitializeObjects (
             return_ACPI_STATUS (Status);
         }
     }
+#endif
 
     /*
      * Initialize all device/region objects in the namespace. This runs
