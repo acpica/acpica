@@ -86,6 +86,7 @@
       <CallingConvention>FastCall</CallingConvention>
       <CompileAs>CompileAsC</CompileAs>
       <ConformanceMode>true</ConformanceMode>
+      <BrowseInformation>true</BrowseInformation>
     </ClCompile>
     <PreLinkEvent>
       <Command>if NOT EXIST ..\..\libraries mkdir ..\..\libraries</Command>
@@ -109,7 +110,7 @@
     <Bscmake>
       <SuppressStartupBanner>true</SuppressStartupBanner>
       <OutputFile>.\AslCompiler\AslCompiler.bsc</OutputFile>
-      <AdditionalOptions> /o"/acpica/generate/msvc/AslCompiler/AslCompiler.bsc" </AdditionalOptions>
+      <AdditionalOptions> /o"/acpica/generate/msvc2017/AslCompiler/AslCompiler.bsc" </AdditionalOptions>
     </Bscmake>
     <Link>
       <SuppressStartupBanner>true</SuppressStartupBanner>
@@ -170,7 +171,7 @@
       <IgnoreSpecificDefaultLibraries>libcmt.lib;%(IgnoreSpecificDefaultLibraries)</IgnoreSpecificDefaultLibraries>
       <OutputFile>.\AslCompilerDebug\AslCompiler.exe</OutputFile>
       <AdditionalDependencies>setargv.obj;%(AdditionalDependencies)</AdditionalDependencies>
-      <AdditionalOptions> /pdb:"/acpica/generate/msvc/AslCompilerDebug/AslCompiler.pdb"</AdditionalOptions>
+      <AdditionalOptions> /pdb:"/acpica/generate/msvc2017/AslCompilerDebug/AslCompiler.pdb"</AdditionalOptions>
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
