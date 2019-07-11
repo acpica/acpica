@@ -350,7 +350,7 @@ CleanupAndExit:
 
     if (!AcpiGbl_DisasmFlag)
     {
-        CmCleanupAndExit ();
+        ReturnStatus = CmCleanupAndExit ();
     }
 
 

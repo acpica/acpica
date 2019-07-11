@@ -266,7 +266,7 @@ void
 CmDoOutputFiles (
     void);
 
-void
+int
 CmCleanupAndExit (
     void);
 
