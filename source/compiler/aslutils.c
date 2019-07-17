@@ -994,6 +994,37 @@ UtAttachNamepathToOwner (
 
 /*******************************************************************************
  *
+ * FUNCTION:    UtNameContainsAllPrefix
+ *
+ * PARAMETERS:  Op                  - Op containing NameString
+ *
+ * RETURN:      NameString consists of all ^ characters
+ *
+ * DESCRIPTION: Determine if this Op contains a name segment that consists of
+ *              all '^' characters.
+ *
+ ******************************************************************************/
+
+BOOLEAN
+UtNameContainsAllPrefix (
+    ACPI_PARSE_OBJECT       *Op)
+{
+    UINT32                  Length = Op->Asl.AmlLength;
+    UINT32                  i;
+
+    for (i = 0; i < Length; i++)
+    {
+        if (Op->Asl.Value.String[i] != '^')
+        {
+            return (FALSE);
+        }
+    }
+
+    return (TRUE);
+}
+
+/*******************************************************************************
+ *
  * FUNCTION:    UtDoConstant
  *
  * PARAMETERS:  String              - Hex/Decimal/Octal
