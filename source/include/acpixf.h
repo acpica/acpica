@@ -1076,6 +1076,12 @@ AcpiGetGpeStatus (
     UINT32                  GpeNumber,
     ACPI_EVENT_STATUS       *EventStatus))
 
+ACPI_HW_DEPENDENT_RETURN_VOID (
+void
+AcpiDispatchGpe (
+    ACPI_HANDLE             GpeDevice,
+    UINT32                  GpeNumber))
+
 ACPI_HW_DEPENDENT_RETURN_STATUS (
 ACPI_STATUS
 AcpiDisableAllGpes (
