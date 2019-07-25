@@ -1199,7 +1199,7 @@ AcpiUtPredefinedWarning (
     const char              *ModuleName,
     UINT32                  LineNumber,
     char                    *Pathname,
-    UINT8                   NodeFlags,
+    UINT16                  NodeFlags,
     const char              *Format,
     ...);
 
@@ -1208,7 +1208,7 @@ AcpiUtPredefinedInfo (
     const char              *ModuleName,
     UINT32                  LineNumber,
     char                    *Pathname,
-    UINT8                   NodeFlags,
+    UINT16                  NodeFlags,
     const char              *Format,
     ...);
 
@@ -1217,7 +1217,7 @@ AcpiUtPredefinedBiosError (
     const char              *ModuleName,
     UINT32                  LineNumber,
     char                    *Pathname,
-    UINT8                   NodeFlags,
+    UINT16                  NodeFlags,
     const char              *Format,
     ...);
 

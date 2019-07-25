@@ -830,9 +830,9 @@ AcpiDmLoadDescendingOp (
          * 2) Not the root node
          * 3) Not a node created by Scope
          */
-
-        if (!PreDefined && Node != AcpiGbl_RootNode &&
-            Op->Common.AmlOpcode != AML_SCOPE_OP)
+        if (!PreDefined &&
+            (Node != AcpiGbl_RootNode) &&
+            (Op->Common.AmlOpcode != AML_SCOPE_OP))
         {
             Node->OwnerId = WalkState->OwnerId;
         }

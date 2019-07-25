@@ -591,8 +591,8 @@ typedef void *                          ACPI_HANDLE;    /* Actually a ptr to a N
 
 /* Owner IDs are used to track namespace nodes for selective deletion */
 
-typedef UINT8                           ACPI_OWNER_ID;
-#define ACPI_OWNER_ID_MAX               0xFF
+typedef UINT16                          ACPI_OWNER_ID;
+#define ACPI_OWNER_ID_MAX               0xFFF   /* 4095 possible owner IDs */
 
 
 #define ACPI_INTEGER_BIT_SIZE           64
