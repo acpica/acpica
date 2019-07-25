@@ -1288,6 +1288,10 @@ UtInternalizeName (
     char                    *ExternalName,
     char                    **ConvertedName);
 
+BOOLEAN
+UtNameContainsAllPrefix (
+    ACPI_PARSE_OBJECT       *Op);
+
 void
 UtAttachNamepathToOwner (
     ACPI_PARSE_OBJECT       *Op,
