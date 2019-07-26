@@ -480,6 +480,7 @@ AcpiDmDumpDescending (
 {
     ACPI_OP_WALK_INFO       *Info = Context;
     char                    *Path;
+    ACPI_STATUS             Status;
 
 
     if (!Op)
@@ -522,10 +523,18 @@ AcpiDmDumpDescending (
 
         if (Op->Common.Value.String)
         {
-            AcpiNsExternalizeName (ACPI_UINT32_MAX, Op->Common.Value.String,
+            Status = AcpiNsExternalizeName (ACPI_UINT32_MAX, Op->Common.Value.String,
                 NULL, &Path);
-            AcpiOsPrintf ("%s %p", Path, Op->Common.Node);
-            ACPI_FREE (Path);
+            if (ACPI_SUCCESS (Status))
+            {
+                AcpiOsPrintf ("%s %p", Path, Op->Common.Node);
+                ACPI_FREE (Path);
+            }
+            else
+            {
+                AcpiOsPrintf ("Could not externalize pathname for node [%4.4s]",
+                    Op->Common.Node->Name.Ascii);
+            }
         }
         else
         {
