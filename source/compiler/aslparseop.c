@@ -694,6 +694,7 @@ TrCreateConstantLeafOp (
     char                    *StaticTimeString;
     char                    *TimeString;
     char                    *Filename;
+    ACPI_STATUS             Status;
 
 
     switch (ParseOpcode)
@@ -727,7 +728,12 @@ TrCreateConstantLeafOp (
 
         /* Get the simple filename from the full path */
 
-        FlSplitInputPathname (Op->Asl.Filename, NULL, &Filename);
+        Status = FlSplitInputPathname (Op->Asl.Filename, NULL, &Filename);
+        if (ACPI_FAILURE (Status))
+        {
+            return (NULL);
+        }
+
         Op->Asl.Value.String = Filename;
         break;
 
