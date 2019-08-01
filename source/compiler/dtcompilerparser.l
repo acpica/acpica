@@ -177,6 +177,9 @@ int DtCompilerParserByteOffset = 0;
 
 %option nounput noinput yylineno
 
+    /* Indicates a state used for parsing multiline C comments */
+%x ML_COMMENT
+
 WhiteSpace      [ \t\v\r]+
 NewLines        [\n]+
 
@@ -186,6 +189,13 @@ StringData      [0-9a-zA-Z\\_][ 0-9a-zA-Z]*
 Comment         \[{Text}\]
 
 %%
+
+"/*"                     { BEGIN (ML_COMMENT); }
+<ML_COMMENT>"*/"         { BEGIN (INITIAL); }
+<ML_COMMENT>"*/\n"       { BEGIN (INITIAL); }
+<ML_COMMENT>([^*]|\n)+|. /* Ignore */
+"//".*                   /* Ignore */
+
 
 {WhiteSpace}     /* Ignore */
 {Comment}        /* Ignore */
