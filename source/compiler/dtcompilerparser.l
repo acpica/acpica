@@ -1,7 +1,7 @@
 %{
 /******************************************************************************
  *
- * Module Name: dtparser.l - Flex input file for table compiler lexer
+ * Module Name: dtcompilerparser.l - Flex input file for table compiler lexer
  *
  *****************************************************************************/
 
@@ -9,7 +9,7 @@
  *
  * 1. Copyright Notice
  *
- * Some or all of this work - Copyright (c) 1999 - 2019, Intel Corp.
+ * Some or all of this work - Copyright (c) 1999 - 2018, Intel Corp.
  * All rights reserved.
  *
  * 2. License
@@ -151,89 +151,82 @@
  *****************************************************************************/
 
 #include "aslcompiler.h"
-#include "dtparser.y.h"
+#include "dtcompilerparser.y.h"
 
-#define YY_NO_INPUT     /* No file input, we use strings only */
+YYSTYPE DtCompilerlval;
 
 #define _COMPONENT          ACPI_COMPILER
-        ACPI_MODULE_NAME    ("dtscanner")
+        ACPI_MODULE_NAME    ("dtcompilerscanner")
+
+/* handle locations */
+
+int DtCompilerParsercolumn = 1;
+int DtCompilerParserByteOffset = 0;
+
+#define YY_USER_ACTION \
+            DtCompilerParserlloc.first_line = DtCompilerParserlloc.last_line = DtCompilerParserlineno; \
+            DtCompilerParserlloc.first_column = DtCompilerParsercolumn; \
+            DtCompilerParserlloc.first_byte_offset = DtCompilerParserByteOffset; \
+            DtCompilerParserlloc.last_column = DtCompilerParsercolumn + DtCompilerParserleng-1; \
+            DtCompilerParsercolumn += DtCompilerParserleng; \
+            DtCompilerParserByteOffset += DtCompilerParserleng; \
+            DbgPrint (ASL_PARSE_OUTPUT,\
+                "user action occurred. DtCompilerParserlloc.first_line: %u offset: %u\n",\
+                DtCompilerParserlloc.first_line, DtCompilerParserlloc.first_byte_offset);
 %}
 
-%option noyywrap
-%option nounput
+%option nounput noinput yylineno
 
-Number          [0-9a-fA-F]+
-HexNumber       0[xX][0-9a-fA-F]+
-DecimalNumber   0[dD][0-9]+
-LabelRef        $[a-zA-Z][0-9a-zA-Z]*
 WhiteSpace      [ \t\v\r]+
-NewLine         [\n]
+NewLines        [\n]+
+
+Text            [ :\-\(\)\/\t\v\r0-9a-zA-Z]*
+Data            [0-9a-zA-Z_]([ 0-9a-zA-Z\(\)\-\/_]*[0-9a-zA-Z\(\)])?
+StringData      [0-9a-zA-Z\\_][ 0-9a-zA-Z]*
+Comment         \[{Text}\]
 
 %%
 
-\(              return (OP_EXP_PAREN_OPEN);
-\)              return (OP_EXP_PAREN_CLOSE);
-\~              return (OP_EXP_ONES_COMPLIMENT);
-\!              return (OP_EXP_LOGICAL_NOT);
-\*              return (OP_EXP_MULTIPLY);
-\/              return (OP_EXP_DIVIDE);
-\%              return (OP_EXP_MODULO);
-\+              return (OP_EXP_ADD);
-\-              return (OP_EXP_SUBTRACT);
-">>"            return (OP_EXP_SHIFT_RIGHT);
-"<<"            return (OP_EXP_SHIFT_LEFT);
-\<              return (OP_EXP_LESS);
-\>              return (OP_EXP_GREATER);
-"<="            return (OP_EXP_LESS_EQUAL);
-">="            return (OP_EXP_GREATER_EQUAL);
-"=="            return (OP_EXP_EQUAL);
-"!="            return (OP_EXP_NOT_EQUAL);
-\&              return (OP_EXP_AND);
-\^              return (OP_EXP_XOR);
-\|              return (OP_EXP_OR);
-"&&"            return (OP_EXP_LOGICAL_AND);
-"||"            return (OP_EXP_LOGICAL_OR);
-<<EOF>>         return (OP_EXP_EOF); /* null end-of-string */
+{WhiteSpace}     /* Ignore */
+{Comment}        /* Ignore */
+{Data}           {
+                   char *s;
+                   s=UtLocalCacheCalloc (strlen (DtCompilerParsertext) + 1);
+                   strcpy (s, DtCompilerParsertext);
+                   DtCompilerParserlval.s = s;
+                   DbgPrint (ASL_PARSE_OUTPUT, "Data: %s\n", s);
+                   return (DT_PARSEOP_DATA);
+                 }
 
-{LabelRef}      return (OP_EXP_LABEL);
-{Number}        return (OP_EXP_NUMBER);
-{HexNumber}     return (OP_EXP_HEX_NUMBER);
-{NewLine}       return (OP_EXP_NEW_LINE);
-{WhiteSpace}    /* Ignore */
+\"{StringData}\" { // remove outer quotes from the string, they are unnecessary
+                   char *s;
+                   int size = strlen (DtCompilerParsertext);
+                   s=UtLocalCacheCalloc (size - 1);
+                   strncpy (s, DtCompilerParsertext + 1, size - 2);
+                   DtCompilerParserlval.s = s;
+                   DbgPrint (ASL_PARSE_OUTPUT, "Data: %s\n", s);
+                   return (DT_PARSEOP_STRING_DATA);
+                 }
 
-.               return (OP_EXP_EOF);
+":"              { return (':'); }
+{NewLines}       { DtCompilerParsercolumn = 1; return ('\n'); } /* helps with ambiguity for labels that aren't associated to data */
 
 %%
+
 
 /*
  * Local support functions
  */
-YY_BUFFER_STATE         LexBuffer;
 
-/******************************************************************************
- *
- * FUNCTION:    DtInitLexer, DtTerminateLexer
- *
- * PARAMETERS:  String              - Input string to be parsed
- *
- * RETURN:      None
- *
- * DESCRIPTION: Initialization and termination routines for lexer. Lexer needs
- *              a buffer to handle strings instead of a file.
- *
- *****************************************************************************/
-
-int
-DtInitLexer (
-    char                    *String)
+void
+DtCompilerInitLexer (
+    FILE                *inFile)
 {
-    LexBuffer = yy_scan_string (String);
-    return (LexBuffer == NULL);
+    yyin = inFile;
 }
 
 void
-DtTerminateLexer (
+DtCompilerTerminateLexer (
     void)
 {
-    yy_delete_buffer (LexBuffer);
 }

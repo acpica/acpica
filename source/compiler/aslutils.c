@@ -1057,3 +1057,29 @@ UtDoConstant (
 
     return (ConvertedInteger);
 }
+
+
+/******************************************************************************
+ *
+ * FUNCTION:    AcpiUtStrdup
+ *
+ * PARAMETERS:  String1             - string to duplicate
+ *
+ * RETURN:      int that signifies string relationship. Zero means strings
+ *              are equal.
+ *
+ * DESCRIPTION: Duplicate the string using UtCacheAlloc to avoid manual memory
+ *              reclamation.
+ *
+ ******************************************************************************/
+
+char *
+AcpiUtStrdup(
+    char                    *String)
+{
+    char                    *NewString = (char *) UtLocalCalloc (strlen (String) + 1);
+
+
+    strcpy (NewString, String);
+    return (NewString);
+}

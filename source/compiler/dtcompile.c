@@ -223,13 +223,28 @@ DtDoCompile (
         }
     }
 
-    /*
-     * Scan the input file (file is already open) and
-     * build the parse tree
-     */
-    Event = UtBeginEvent ("Scan and parse input file");
-    FieldList = DtScanFile (AslGbl_Files[ASL_FILE_INPUT].Handle);
-    UtEndEvent (Event);
+    /* Compile the parse tree */
+
+    if (AslGbl_DtLexBisonPrototype)
+    {
+        Event = UtBeginEvent ("Parse data table in prototype mode");
+
+        DtCompilerInitLexer (AslGbl_Files[ASL_FILE_INPUT].Handle);
+        DtCompilerParserparse ();
+        FieldList = AslGbl_FieldList;
+
+        UtEndEvent (Event);
+    }
+    else
+    {
+        /*
+         * Scan the input file (file is already open) and
+         * build the parse tree
+         */
+        Event = UtBeginEvent ("Scan and parse input file");
+        FieldList = DtScanFile (AslGbl_Files[ASL_FILE_INPUT].Handle);
+        UtEndEvent (Event);
+    }
 
     /* Did the parse tree get successfully constructed? */
 
@@ -245,9 +260,6 @@ DtDoCompile (
 
     Event = UtBeginEvent ("Compile parse tree");
 
-    /*
-     * Compile the parse tree
-     */
     Status = DtCompileDataTable (&FieldList);
     UtEndEvent (Event);
 

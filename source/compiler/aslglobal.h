@@ -254,6 +254,7 @@ extern int                          DtParserdebug;
 extern int                          PrParserdebug;
 extern const ASL_MAPPING_ENTRY      AslKeywordMapping[];
 extern char                         *AslCompilertext;
+extern char                         *DtCompilerParsertext;
 
 /*
  * Older versions of Bison won't emit this external in the generated header.
