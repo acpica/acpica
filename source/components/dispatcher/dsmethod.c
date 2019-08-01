@@ -761,7 +761,6 @@ AcpiDsCallControlMethod (
         }
     }
 
-    AcpiDsDeleteWalkState(NextWalkState);
     return_ACPI_STATUS (Status);
 
 
