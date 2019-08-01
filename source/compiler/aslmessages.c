@@ -367,7 +367,8 @@ const char                      *AslCompilerMsgs [] =
 /*    ASL_MSG_UNDEFINED_EXTERNAL */         "Named object was declared external but the actual definition does not exist",
 /*    ASL_MSG_BUFFER_FIELD_OVERFLOW */      "Buffer field extends beyond end of target buffer",
 /*    ASL_MSG_INVALID_SPECIAL_NAME */       "declaration of this named object outside root scope is illegal",
-/*    ASL_MSG_INVALID_PROCESSOR_UID */      "_UID inside processor declaration must be an integer"
+/*    ASL_MSG_INVALID_PROCESSOR_UID */      "_UID inside processor declaration must be an integer",
+/*    ASL_MSG_STATIC_ARG_OPERATION_REGION */"OperationRegion should be declared outside control method",
 };
 
 /* Table compiler */
