@@ -191,8 +191,9 @@ Comment         \[{Text}\]
 {Comment}        /* Ignore */
 {Data}           {
                    char *s;
-                   s=UtLocalCacheCalloc (strlen (DtCompilerParsertext) + 1);
-                   strcpy (s, DtCompilerParsertext);
+                   int size = strlen (DtCompilerParsertext);
+                   s=UtLocalCacheCalloc (size + 1);
+                   AcpiUtSafeStrcpy (s, size, DtCompilerParsertext);
                    DtCompilerParserlval.s = s;
                    DbgPrint (ASL_PARSE_OUTPUT, "Data: %s\n", s);
                    return (DT_PARSEOP_DATA);
@@ -202,7 +203,7 @@ Comment         \[{Text}\]
                    char *s;
                    int size = strlen (DtCompilerParsertext);
                    s=UtLocalCacheCalloc (size - 1);
-                   strncpy (s, DtCompilerParsertext + 1, size - 2);
+                   AcpiUtSafeStrcpy (s, size - 2, DtCompilerParsertext + 1);
                    DtCompilerParserlval.s = s;
                    DbgPrint (ASL_PARSE_OUTPUT, "Data: %s\n", s);
                    return (DT_PARSEOP_STRING_DATA);

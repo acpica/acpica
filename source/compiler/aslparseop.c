@@ -693,7 +693,7 @@ TrCreateConstantLeafOp (
     time_t                  CurrentTime;
     char                    *StaticTimeString;
     char                    *TimeString;
-    char                    *Filename;
+    char                    *Filename = NULL;
     ACPI_STATUS             Status;
 
 
