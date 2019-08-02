@@ -141,6 +141,7 @@ patches
 pmtools
 source_linux
 tools_3rd_party
+tests/templates
 source.zip
 
 
