@@ -265,4 +265,3 @@ DtCompilerParserwrap(void)
 {
   return (1);
 }
-

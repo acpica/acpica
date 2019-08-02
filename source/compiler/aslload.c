@@ -275,7 +275,6 @@ LdLoadFieldElements (
     ACPI_STATUS             Status;
 
 
-
     SourceRegion = UtGetArg (Op, 0);
     if (SourceRegion)
     {

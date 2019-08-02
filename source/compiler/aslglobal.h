@@ -244,7 +244,6 @@ extern const char                   *AslGbl_SpecialNamedObjects[MAX_SPECIAL_NAME
 #endif
 
 
-
 /*
  * Parser and other externals
  */
