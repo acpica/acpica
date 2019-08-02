@@ -559,58 +559,53 @@ UtDisplayOneSummary (
 
     /* Summary of main input and output files */
 
-    if (AslGbl_FileType == ASL_INPUT_TYPE_ASCII_DATA)
+    FileNode = FlGetCurrentFileNode ();
+    if (!FileNode)
+    {
+        fprintf (stderr, "Summary could not be generated");
+        return;
+    }
+
+    if (FileNode->ParserErrorDetected)
+    {
+        FlPrintFile (FileId,
+            "%-14s %s - Compilation aborted due to parser-detected syntax error(s)\n",
+            "Input file:", AslGbl_Files[ASL_FILE_INPUT].Filename);
+    }
+    else if (AslGbl_FileType == ASL_INPUT_TYPE_ASCII_DATA)
     {
         FlPrintFile (FileId,
             "%-14s %s - %u lines, %u bytes, %u fields\n",
             "Table Input:",
-            AslGbl_Files[ASL_FILE_INPUT].Filename, AslGbl_CurrentLineNumber,
-            AslGbl_InputByteCount, AslGbl_InputFieldCount);
+            AslGbl_Files[ASL_FILE_INPUT].Filename, FileNode->TotalLineCount,
+            FileNode->OriginalInputFileSize, FileNode->TotalFields);
 
-        if ((AslGbl_ExceptionCount[ASL_ERROR] == 0) || (AslGbl_IgnoreErrors))
-        {
-            FlPrintFile (FileId,
-                "%-14s %s - %u bytes\n",
-                "Binary Output:",
-                AslGbl_Files[ASL_FILE_AML_OUTPUT].Filename, AslGbl_TableLength);
-        }
+        FlPrintFile (FileId,
+            "%-14s %s - %u bytes\n",
+            "Binary Output:",
+            AslGbl_Files[ASL_FILE_AML_OUTPUT].Filename, FileNode->OutputByteLength);
     }
-    else
+    else if (AslGbl_FileType == ASL_INPUT_TYPE_ASCII_ASL)
     {
-        FileNode = FlGetCurrentFileNode ();
-        if (!FileNode)
-        {
-            fprintf (stderr, "Summary could not be generated");
-            return;
-        }
-        if (FileNode->ParserErrorDetected)
+        FlPrintFile (FileId,
+            "%-14s %s - %7u bytes %6u keywords %6u source lines\n",
+            "ASL Input:",
+            AslGbl_Files[ASL_FILE_INPUT].Filename,
+            FileNode->OriginalInputFileSize,
+            FileNode->TotalKeywords,
+            FileNode->TotalLineCount);
+
+        /* AML summary */
+
+        if (DisplayAMLSummary)
         {
             FlPrintFile (FileId,
-                "%-14s %s - Compilation aborted due to parser-detected syntax error(s)\n",
-                "ASL Input:", AslGbl_Files[ASL_FILE_INPUT].Filename);
-        }
-        else
-        {
-            FlPrintFile (FileId,
-                "%-14s %s - %7u bytes %6u keywords %6u source lines\n",
-                "ASL Input:",
-                AslGbl_Files[ASL_FILE_INPUT].Filename,
-                FileNode->OriginalInputFileSize,
-                FileNode->TotalKeywords,
-                FileNode->TotalLineCount);
-
-            /* AML summary */
-
-            if (DisplayAMLSummary)
-            {
-                FlPrintFile (FileId,
-                    "%-14s %s - %7u bytes %6u opcodes  %6u named objects\n",
-                    "AML Output:",
-                    AslGbl_Files[ASL_FILE_AML_OUTPUT].Filename,
-                    FlGetFileSize (ASL_FILE_AML_OUTPUT),
-                    FileNode->TotalExecutableOpcodes,
-                    FileNode->TotalNamedObjects);
-            }
+                "%-14s %s - %7u bytes %6u opcodes  %6u named objects\n",
+                "AML Output:",
+                AslGbl_Files[ASL_FILE_AML_OUTPUT].Filename,
+                FlGetFileSize (ASL_FILE_AML_OUTPUT),
+                FileNode->TotalExecutableOpcodes,
+                FileNode->TotalNamedObjects);
         }
     }
 

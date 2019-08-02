@@ -282,7 +282,6 @@ main (
         if (ACPI_FAILURE (Status))
         {
             ReturnStatus = -1;
-            goto CleanupAndExit;
         }
 
         Index2++;

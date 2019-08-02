@@ -196,6 +196,7 @@ DtDoCompile (
     ACPI_STATUS             Status;
     UINT8                   Event;
     DT_FIELD                *FieldList;
+    ASL_GLOBAL_FILE_NODE    *FileNode;
 
 
     /* Initialize globals */
@@ -263,8 +264,22 @@ DtDoCompile (
     Status = DtCompileDataTable (&FieldList);
     UtEndEvent (Event);
 
+    FileNode = FlGetCurrentFileNode ();
+    if (!FileNode)
+    {
+        fprintf (stderr, "Summary for %s could not be generated",
+            AslGbl_Files[ASL_FILE_INPUT].Filename);
+    }
+    else
+    {
+        FileNode->TotalLineCount = AslGbl_CurrentLineNumber;
+        FileNode->OriginalInputFileSize = AslGbl_InputByteCount;
+    }
+
     if (ACPI_FAILURE (Status))
     {
+        FileNode->ParserErrorDetected = TRUE;
+
         /* TBD: temporary error message. Msgs should come from function above */
 
         DtError (ASL_ERROR, ASL_MSG_SYNTAX, NULL,
@@ -287,6 +302,14 @@ DtDoCompile (
     DtOutputBinary (AslGbl_RootTable);
     HxDoHexOutput ();
     DtWriteTableToListing ();
+
+    /* Save the compile time statistics to the current file node */
+
+    if (FileNode)
+    {
+        FileNode->TotalFields = AslGbl_InputFieldCount;
+        FileNode->OutputByteLength = AslGbl_TableLength;
+    }
 
     return (Status);
 }
