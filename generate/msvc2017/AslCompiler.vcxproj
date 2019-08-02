@@ -360,7 +360,9 @@
     <ClCompile Include="..\..\source\components\utilities\utinit.c" />
     <ClCompile Include="..\..\source\components\utilities\utlock.c" />
     <ClCompile Include="..\..\source\components\utilities\utmath.c" />
-    <ClCompile Include="..\..\source\components\utilities\utmisc.c" />
+    <ClCompile Include="..\..\source\components\utilities\utmisc.c">
+      <PreprocessorDefinitions Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">_DEBUG;WIN32;_CONSOLE;YY_NEVER_INTERACTIVE;YY_NO_UNISTD_H;ACPI_ASL_COMPILER;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+    </ClCompile>
     <ClCompile Include="..\..\source\components\utilities\utmutex.c" />
     <ClCompile Include="..\..\source\components\utilities\utnonansi.c" />
     <ClCompile Include="..\..\source\components\utilities\utobject.c" />
