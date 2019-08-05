@@ -240,4 +240,10 @@ void
 DtCompilerTerminateLexer (
     void)
 {
+    /*
+     * Flex/Bison increments the lineno for the EOF so decrement by 1 to get
+     * the correct number of lines.
+     */
+    AslGbl_CurrentLineNumber = DtCompilerParserlineno - 1;
+    AslGbl_InputByteCount = DtCompilerParserByteOffset;
 }
