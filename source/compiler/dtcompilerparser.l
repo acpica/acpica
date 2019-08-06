@@ -177,6 +177,9 @@ int DtCompilerParserByteOffset = 0;
 
 %option nounput noinput yylineno
 
+    /* Indicates a state used for parsing multiline C comments */
+%x ML_COMMENT
+
 WhiteSpace      [ \t\v\r]+
 NewLines        [\n]+
 
@@ -187,13 +190,20 @@ Comment         \[{Text}\]
 
 %%
 
+"/*"                     { BEGIN (ML_COMMENT); }
+<ML_COMMENT>"*/"         { BEGIN (INITIAL); }
+<ML_COMMENT>"*/\n"       { BEGIN (INITIAL); }
+<ML_COMMENT>([^*]|\n)+|. /* Ignore */
+"//".*                   /* Ignore */
+
+
 {WhiteSpace}     /* Ignore */
 {Comment}        /* Ignore */
 {Data}           {
                    char *s;
                    int size = strlen (DtCompilerParsertext);
                    s=UtLocalCacheCalloc (size + 1);
-                   AcpiUtSafeStrcpy (s, size, DtCompilerParsertext);
+                   AcpiUtSafeStrncpy (s, DtCompilerParsertext, size + 1);
                    DtCompilerParserlval.s = s;
                    DbgPrint (ASL_PARSE_OUTPUT, "Data: %s\n", s);
                    return (DT_PARSEOP_DATA);
@@ -203,9 +213,9 @@ Comment         \[{Text}\]
                    char *s;
                    int size = strlen (DtCompilerParsertext);
                    s=UtLocalCacheCalloc (size - 1);
-                   AcpiUtSafeStrcpy (s, size - 2, DtCompilerParsertext + 1);
+                   AcpiUtSafeStrncpy (s, DtCompilerParsertext + 1, size - 1);
                    DtCompilerParserlval.s = s;
-                   DbgPrint (ASL_PARSE_OUTPUT, "Data: %s\n", s);
+                   DbgPrint (ASL_PARSE_OUTPUT, "String Data: %s\n", s);
                    return (DT_PARSEOP_STRING_DATA);
                  }
 
@@ -230,4 +240,10 @@ void
 DtCompilerTerminateLexer (
     void)
 {
+    /*
+     * Flex/Bison increments the lineno for the EOF so decrement by 1 to get
+     * the correct number of lines.
+     */
+    AslGbl_CurrentLineNumber = DtCompilerParserlineno - 1;
+    AslGbl_InputByteCount = DtCompilerParserByteOffset;
 }

@@ -233,6 +233,7 @@ DtDoCompile (
         DtCompilerInitLexer (AslGbl_Files[ASL_FILE_INPUT].Handle);
         DtCompilerParserparse ();
         FieldList = AslGbl_FieldList;
+        DtCompilerTerminateLexer ();
 
         UtEndEvent (Event);
     }
@@ -274,6 +275,8 @@ DtDoCompile (
     {
         FileNode->TotalLineCount = AslGbl_CurrentLineNumber;
         FileNode->OriginalInputFileSize = AslGbl_InputByteCount;
+        DbgPrint (ASL_PARSE_OUTPUT, "Line count: %u input file size: %u\n",
+                FileNode->TotalLineCount, FileNode->OriginalInputFileSize);
     }
 
     if (ACPI_FAILURE (Status))
