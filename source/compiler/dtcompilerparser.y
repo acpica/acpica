@@ -206,10 +206,15 @@ extern UINT64               DtCompilerParserlineno; /* Current line number */
 }
 
 
-%type  <f>  Table
-%token <s>  DT_PARSEOP_DATA
-%token <s>  DT_PARSEOP_STRING_DATA
-%type  <s>  Data
+%type  <f> Table
+%token <s> DT_PARSEOP_DATA
+%token <s> DT_PARSEOP_LABEL
+%token <s> DT_PARSEOP_STRING_DATA
+%token <s> DT_PARSEOP_LINE_CONTINUATION
+%type  <s> Data
+%type  <s> Datum
+%type  <s> MultiLineData
+%type  <s> MultiLineDataList
 
 
 %%
@@ -225,14 +230,29 @@ FieldList
     ;
 
 Field
-    : DT_PARSEOP_DATA  ':' '\n' /* ignore this field, it has no valid data */
-    | DT_PARSEOP_DATA  ':' Data '\n' { DtCreateField ($1, $3, (@3).first_line, (@1).first_byte_offset, (@1).first_column, (@3).first_column); }
+    : DT_PARSEOP_LABEL ':' Data { DtCreateField ($1, $3, (@3).first_line, (@1).first_byte_offset, (@1).first_column, (@3).first_column); }
     ;
 
 Data
-    : DT_PARSEOP_DATA        { DbgPrint (ASL_PARSE_OUTPUT, "parser        data: [%s]", DtCompilerParserlval.s); $$ = AcpiUtStrdup(DtCompilerParserlval.s); }
-    | DT_PARSEOP_STRING_DATA { DbgPrint (ASL_PARSE_OUTPUT, "parser string data: [%s]", DtCompilerParserlval.s); $$ = AcpiUtStrdup(DtCompilerParserlval.s); }
+    : MultiLineDataList        { $$ = $1; }
+    | Datum                    { $$ = $1; }
+    | Datum MultiLineDataList  { $$ = $1; } /* combine the string with strcat */
     ;
+
+MultiLineDataList
+    : MultiLineDataList MultiLineData { $$ = AcpiUtStrcat(AcpiUtStrcat($1, " "), $2); } /* combine the strings with strcat */
+    | MultiLineData                   { $$ = $1; }
+    ;
+
+MultiLineData
+    : DT_PARSEOP_LINE_CONTINUATION Datum { DbgPrint (ASL_PARSE_OUTPUT, "line continuation detected\n"); $$ = $2; }
+    ;
+
+Datum
+    : DT_PARSEOP_DATA        { DbgPrint (ASL_PARSE_OUTPUT, "parser        data: [%s]\n", DtCompilerParserlval.s); $$ = AcpiUtStrdup(DtCompilerParserlval.s); }
+    | DT_PARSEOP_STRING_DATA { DbgPrint (ASL_PARSE_OUTPUT, "parser string data: [%s]\n", DtCompilerParserlval.s); $$ = AcpiUtStrdup(DtCompilerParserlval.s); }
+    ;
+
 
 %%
 

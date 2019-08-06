@@ -1311,6 +1311,11 @@ char *
 AcpiUtStrdup(
     char                    *String);
 
+char *
+AcpiUtStrcat(
+    char                    *String1,
+    char                    *String2);
+
 
 /*
  * asluuid - UUID support
