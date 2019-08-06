@@ -183,12 +183,17 @@ int DtCompilerParserByteOffset = 0;
 WhiteSpace      [ \t\v\r]+
 NewLines        [\n]+
 
-Text            [ :\-\(\)\/\t\v\r0-9a-zA-Z]*
-Data            [0-9a-zA-Z_]([ 0-9a-zA-Z\(\)\-\/_]*[0-9a-zA-Z\(\)])?
-StringData      [0-9a-zA-Z\\_][ 0-9a-zA-Z]*
+    /* Avoid ", \n, and [] as a part of data. These are not valid characters of data */
+Data            [^ ":\n\[\]]([^":\n\[\]]*[^" :\n\[\]])?
+Text            [^ ":\n][^":\n]*
 Comment         \[{Text}\]
+BitLenComment   \[[:xdigit:]+\]
 
 %%
+
+{WhiteSpace}     /* Ignore */
+{BitLenComment}  /* Ignore */ { printf ("Bit length comment detected\n"); }
+{Comment}        /* Ignore */ { printf ("Comment detected\n"); }
 
 "/*"                     { BEGIN (ML_COMMENT); }
 <ML_COMMENT>"*/"         { BEGIN (INITIAL); }
@@ -197,8 +202,6 @@ Comment         \[{Text}\]
 "//".*                   /* Ignore */
 
 
-{WhiteSpace}     /* Ignore */
-{Comment}        /* Ignore */
 {Data}           {
                    char *s;
                    int size = strlen (DtCompilerParsertext);
@@ -209,7 +212,7 @@ Comment         \[{Text}\]
                    return (DT_PARSEOP_DATA);
                  }
 
-\"{StringData}\" { // remove outer quotes from the string, they are unnecessary
+\"{Text}\"       { // remove outer quotes from the string, they are unnecessary
                    char *s;
                    int size = strlen (DtCompilerParsertext);
                    s=UtLocalCacheCalloc (size - 1);
