@@ -447,7 +447,7 @@ ACPI_GLOBAL (BOOLEAN,               AcpiGbl_SystemAwakeAndRunning);
     ACPI_EXTERNAL_RETURN_OK(Prototype)
 
 #define ACPI_HW_DEPENDENT_RETURN_UINT32(prototype) \
-	ACPI_EXTERNAL_RETURN_UINT32(prototype)
+    ACPI_EXTERNAL_RETURN_UINT32(prototype)
 
 #define ACPI_HW_DEPENDENT_RETURN_VOID(Prototype) \
     ACPI_EXTERNAL_RETURN_VOID(Prototype)
@@ -460,7 +460,7 @@ ACPI_GLOBAL (BOOLEAN,               AcpiGbl_SystemAwakeAndRunning);
     static ACPI_INLINE Prototype {return(AE_OK);}
 
 #define ACPI_HW_DEPENDENT_RETURN_UINT32(prototype) \
-	static ACPI_INLINE prototype {return(0);}
+    static ACPI_INLINE prototype {return(0);}
 
 #define ACPI_HW_DEPENDENT_RETURN_VOID(Prototype) \
     static ACPI_INLINE Prototype {return;}

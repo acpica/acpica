@@ -679,6 +679,12 @@
     <ClCompile Include="..\..\source\components\dispatcher\dsobject.c">
       <Filter>Source Files\Dispatcher</Filter>
     </ClCompile>
+    <ClCompile Include="dtcompilerparser.l.c">
+      <Filter>Source Files\Intermediate</Filter>
+    </ClCompile>
+    <ClCompile Include="dtcompilerparser.y.c">
+      <Filter>Source Files\Intermediate</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\..\source\compiler\aslcompiler.h">
@@ -714,5 +720,7 @@
     <CustomBuild Include="..\..\source\compiler\dtparser.y" />
     <CustomBuild Include="..\..\source\compiler\prparser.l" />
     <CustomBuild Include="..\..\source\compiler\prparser.y" />
+    <CustomBuild Include="..\..\source\compiler\dtcompilerparser.l" />
+    <CustomBuild Include="..\..\source\compiler\dtcompilerparser.y" />
   </ItemGroup>
 </Project>

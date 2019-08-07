@@ -282,7 +282,6 @@ main (
         if (ACPI_FAILURE (Status))
         {
             ReturnStatus = -1;
-            goto CleanupAndExit;
         }
 
         Index2++;
@@ -336,7 +335,6 @@ main (
 
         FlDeleteFile (ASL_FILE_AML_OUTPUT);
     }
-
 
 
 CleanupAndExit:
