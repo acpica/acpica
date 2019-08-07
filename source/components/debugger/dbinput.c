@@ -785,7 +785,7 @@ AcpiDbGetLine (
     {
         AcpiOsPrintf (
             "Buffer overflow while parsing input line (max %u characters)\n",
-            sizeof (AcpiGbl_DbParsedBuf));
+            (UINT32) sizeof (AcpiGbl_DbParsedBuf));
         return (0);
     }
 

@@ -1307,6 +1307,10 @@ UINT64
 UtDoConstant (
     char                    *String);
 
+char *
+AcpiUtStrdup(
+    char                    *String);
+
 
 /*
  * asluuid - UUID support

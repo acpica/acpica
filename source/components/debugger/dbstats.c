@@ -544,14 +544,14 @@ AcpiDbDisplayStatistics (
 
         for (i = 0; i < ACPI_TYPE_NS_NODE_MAX; i++)
         {
-            AcpiOsPrintf ("%16.16s % 10ld% 10ld\n", AcpiUtGetTypeName (i),
+            AcpiOsPrintf ("%16.16s % 10u% 10u\n", AcpiUtGetTypeName (i),
                 AcpiGbl_NodeTypeCount [i], AcpiGbl_ObjTypeCount [i]);
         }
 
-        AcpiOsPrintf ("%16.16s % 10ld% 10ld\n", "Misc/Unknown",
+        AcpiOsPrintf ("%16.16s % 10u% 10u\n", "Misc/Unknown",
             AcpiGbl_NodeTypeCountMisc, AcpiGbl_ObjTypeCountMisc);
 
-        AcpiOsPrintf ("%16.16s % 10ld% 10ld\n", "TOTALS:",
+        AcpiOsPrintf ("%16.16s % 10u% 10u\n", "TOTALS:",
             AcpiGbl_NumNodes, AcpiGbl_NumObjects);
         break;
 
@@ -577,18 +577,16 @@ AcpiDbDisplayStatistics (
     case CMD_STAT_MISC:
 
         AcpiOsPrintf ("\nMiscellaneous Statistics:\n\n");
-        AcpiOsPrintf ("Calls to AcpiPsFind:..  ........% 7ld\n",
-            AcpiGbl_PsFindCount);
-        AcpiOsPrintf ("Calls to AcpiNsLookup:..........% 7ld\n",
-            AcpiGbl_NsLookupCount);
+        AcpiOsPrintf ("%-28s:       %7lu\n", "Calls to AcpiPsFind",
+            (UINT64) AcpiGbl_PsFindCount);
+        AcpiOsPrintf ("%-28s:       %7lu\n", "Calls to AcpiNsLookup",
+            (UINT64) AcpiGbl_NsLookupCount);
 
-        AcpiOsPrintf ("\n");
-
-        AcpiOsPrintf ("Mutex usage:\n\n");
+        AcpiOsPrintf ("\nMutex usage:\n\n");
         for (i = 0; i < ACPI_NUM_MUTEX; i++)
         {
-            AcpiOsPrintf ("%-28s:       % 7ld\n",
-                AcpiUtGetMutexName (i), AcpiGbl_MutexInfo[i].UseCount);
+            AcpiOsPrintf ("%-28s:       %7lu\n",
+                AcpiUtGetMutexName (i), (UINT64) AcpiGbl_MutexInfo[i].UseCount);
         }
         break;
 
