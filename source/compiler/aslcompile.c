@@ -937,6 +937,17 @@ CmCleanupAndExit (
 
     while (CurrentFileNode)
     {
+        /*
+         * Set the program return status based on file errors. If there are any
+         * errors and during compilation, the command is not considered
+         * successful.
+         */
+        if (Status != -1 && !AslGbl_IgnoreErrors &&
+            CurrentFileNode->ParserErrorDetected)
+        {
+            Status = -1;
+        }
+
         switch  (FlSwitchFileSet (CurrentFileNode->Files[ASL_FILE_INPUT].Filename))
         {
             case SWITCH_TO_SAME_FILE:
