@@ -161,7 +161,7 @@ static char                 VersionString[9];
 
 /* Local prototypes */
 
-static ACPI_STATUS
+void
 DtInitialize (
     void);
 
@@ -201,12 +201,7 @@ DtDoCompile (
 
     /* Initialize globals */
 
-    Status = DtInitialize ();
-    if (ACPI_FAILURE (Status))
-    {
-        printf ("Error during compiler initialization, 0x%X\n", Status);
-        return (Status);
-    }
+    DtInitialize ();
 
     /* Preprocessor */
 
@@ -331,24 +326,11 @@ DtDoCompile (
  *
  *****************************************************************************/
 
-static ACPI_STATUS
+void
 DtInitialize (
     void)
 {
-    ACPI_STATUS             Status;
 
-
-    Status = AcpiOsInitialize ();
-    if (ACPI_FAILURE (Status))
-    {
-        return (Status);
-    }
-
-    Status = AcpiUtInitGlobals ();
-    if (ACPI_FAILURE (Status))
-    {
-        return (Status);
-    }
 
     AcpiUtSetIntegerWidth (2); /* Set width to 64 bits */
 
@@ -357,7 +339,7 @@ DtInitialize (
     AslGbl_SubtableStack = NULL;
 
     sprintf (VersionString, "%X", (UINT32) ACPI_CA_VERSION);
-    return (AE_OK);
+    return;
 }
 
 
