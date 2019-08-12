@@ -575,13 +575,14 @@ UtDisplayOneSummary (
     else if (FileNode->FileType == ASL_INPUT_TYPE_ASCII_DATA)
     {
         FlPrintFile (FileId,
-            "%-14s %s - %u lines, %u bytes, %u fields\n",
+            "%-14s %s - %7u bytes %6u fields %8u source lines\n",
             "Table Input:",
-            AslGbl_Files[ASL_FILE_INPUT].Filename, FileNode->TotalLineCount,
-            FileNode->OriginalInputFileSize, FileNode->TotalFields);
+            AslGbl_Files[ASL_FILE_INPUT].Filename,
+            FileNode->OriginalInputFileSize, FileNode->TotalFields,
+            FileNode->TotalLineCount);
 
         FlPrintFile (FileId,
-            "%-14s %s - %u bytes\n",
+            "%-14s %s - %7u bytes\n",
             "Binary Output:",
             AslGbl_Files[ASL_FILE_AML_OUTPUT].Filename, FileNode->OutputByteLength);
     }
