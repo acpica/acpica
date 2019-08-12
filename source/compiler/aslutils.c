@@ -1069,7 +1069,7 @@ UtDoConstant (
  ******************************************************************************/
 
 char *
-AcpiUtStrdup(
+AcpiUtStrdup (
     char                    *String)
 {
     char                    *NewString = (char *) UtLocalCalloc (strlen (String) + 1);
@@ -1094,7 +1094,7 @@ AcpiUtStrdup(
  ******************************************************************************/
 
 char *
-AcpiUtStrcat(
+AcpiUtStrcat (
     char                    *String1,
     char                    *String2)
 {

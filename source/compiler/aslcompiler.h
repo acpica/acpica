@@ -1308,11 +1308,11 @@ UtDoConstant (
     char                    *String);
 
 char *
-AcpiUtStrdup(
+AcpiUtStrdup (
     char                    *String);
 
 char *
-AcpiUtStrcat(
+AcpiUtStrcat (
     char                    *String1,
     char                    *String2);
 
