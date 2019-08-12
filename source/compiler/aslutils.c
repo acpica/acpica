@@ -572,7 +572,7 @@ UtDisplayOneSummary (
             "%-14s %s - Compilation aborted due to parser-detected syntax error(s)\n",
             "Input file:", AslGbl_Files[ASL_FILE_INPUT].Filename);
     }
-    else if (AslGbl_FileType == ASL_INPUT_TYPE_ASCII_DATA)
+    else if (FileNode->FileType == ASL_INPUT_TYPE_ASCII_DATA)
     {
         FlPrintFile (FileId,
             "%-14s %s - %u lines, %u bytes, %u fields\n",
@@ -585,7 +585,7 @@ UtDisplayOneSummary (
             "Binary Output:",
             AslGbl_Files[ASL_FILE_AML_OUTPUT].Filename, FileNode->OutputByteLength);
     }
-    else if (AslGbl_FileType == ASL_INPUT_TYPE_ASCII_ASL)
+    else if (FileNode->FileType == ASL_INPUT_TYPE_ASCII_ASL)
     {
         FlPrintFile (FileId,
             "%-14s %s - %7u bytes %6u keywords %6u source lines\n",
