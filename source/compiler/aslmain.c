@@ -398,18 +398,21 @@ AslSignalHandler (
      * Close all open files
      * Note: the .pre file is the same as the input source file
      */
-    AslGbl_Files[ASL_FILE_PREPROCESSOR].Handle = NULL;
-
-    for (i = ASL_FILE_INPUT; i < ASL_MAX_FILE_TYPE; i++)
+    if (AslGbl_Files)
     {
-        FlCloseFile (i);
-    }
+        AslGbl_Files[ASL_FILE_PREPROCESSOR].Handle = NULL;
 
-    /* Delete any output files */
+        for (i = ASL_FILE_INPUT; i < ASL_MAX_FILE_TYPE; i++)
+        {
+            FlCloseFile (i);
+        }
 
-    for (i = ASL_FILE_AML_OUTPUT; i < ASL_MAX_FILE_TYPE; i++)
-    {
-        FlDeleteFile (i);
+        /* Delete any output files */
+
+        for (i = ASL_FILE_AML_OUTPUT; i < ASL_MAX_FILE_TYPE; i++)
+        {
+            FlDeleteFile (i);
+        }
     }
 
     printf (ASL_PREFIX "Terminating\n");
