@@ -362,6 +362,8 @@
     <ClCompile Include="..\..\source\components\utilities\utmath.c" />
     <ClCompile Include="..\..\source\components\utilities\utmisc.c">
       <PreprocessorDefinitions Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">_DEBUG;WIN32;_CONSOLE;YY_NEVER_INTERACTIVE;YY_NO_UNISTD_H;ACPI_ASL_COMPILER;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <PreprocessorDefinitions Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">NDEBUG;WIN32;_CONSOLE;YY_NEVER_INTERACTIVE;YY_NO_UNISTD_H;ACPI_ASL_COMPILER;ACPI_DISASSEMBLER;_CRT_SECURE_NO_WARNINGS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <UndefinePreprocessorDefinitions Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">_STDC__;%(UndefinePreprocessorDefinitions)</UndefinePreprocessorDefinitions>
     </ClCompile>
     <ClCompile Include="..\..\source\components\utilities\utmutex.c" />
     <ClCompile Include="..\..\source\components\utilities\utnonansi.c" />
@@ -435,6 +437,9 @@
       <Command Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">flex -i -PAslCompiler -o%(Filename).l.c %(FullPath)</Command>
       <Message Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">Lexing %(FullPath)...</Message>
       <Outputs Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">$(InputName).l.c;%(Outputs)</Outputs>
+      <TreatOutputAsContent Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">false</TreatOutputAsContent>
+      <LinkObjects Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">true</LinkObjects>
+      <FileType>Document</FileType>
     </CustomBuild>
     <CustomBuild Include="..\..\source\compiler\aslcompiler.y">
       <Command Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">bison -d -l -pAslCompiler -v %(FullPath) -vd -o%(Filename).y.c</Command>

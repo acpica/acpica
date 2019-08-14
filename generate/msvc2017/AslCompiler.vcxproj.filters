@@ -713,7 +713,6 @@
     <Text Include="..\..\source\compiler\readme.txt" />
   </ItemGroup>
   <ItemGroup>
-    <CustomBuild Include="..\..\source\compiler\aslcompiler.l" />
     <CustomBuild Include="..\..\source\compiler\aslcompiler.y" />
     <CustomBuild Include="..\..\source\compiler\aslparser.y" />
     <CustomBuild Include="..\..\source\compiler\dtparser.l" />
@@ -722,5 +721,6 @@
     <CustomBuild Include="..\..\source\compiler\prparser.y" />
     <CustomBuild Include="..\..\source\compiler\dtcompilerparser.l" />
     <CustomBuild Include="..\..\source\compiler\dtcompilerparser.y" />
+    <CustomBuild Include="..\..\source\compiler\aslcompiler.l" />
   </ItemGroup>
 </Project>
