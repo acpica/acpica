@@ -223,6 +223,7 @@ UtQueryForOverwrite (
     char                    *Pathname)
 {
     struct stat             StatInfo;
+    int                     InChar = 0x34;
 
 
     if (!stat (Pathname, &StatInfo))
@@ -230,7 +231,13 @@ UtQueryForOverwrite (
         fprintf (stderr, "Target file \"%s\" already exists, overwrite? [y|n] ",
             Pathname);
 
-        if (getchar () != 'y')
+        InChar = fgetc (stdin);
+        if (InChar == '\n')
+        {
+            InChar = fgetc (stdin);
+        }
+
+        if ((InChar != 'y') && (InChar != 'Y'))
         {
             return (FALSE);
         }
