@@ -1052,6 +1052,7 @@ void
 FlCloseFile (
     UINT32                  FileId);
 
+ACPI_PRINTF_LIKE (2)
 void
 FlPrintFile (
     UINT32                  FileId,
@@ -1195,6 +1196,7 @@ OtXrefWalkPart1 (
 /*
  * aslutils - common compiler utilities
  */
+ACPI_PRINTF_LIKE(2)
 void
 DbgPrint (
     UINT32                  Type,
@@ -1612,6 +1614,7 @@ DtCreateTemplates (
 /*
  * ASL/ASL+ converter debug
  */
+ACPI_PRINTF_LIKE (1)
 void
 CvDbgPrint (
     char                    *Fmt,

@@ -403,22 +403,22 @@ TrCreateValuedLeafOp (
     {
     case PARSEOP_STRING_LITERAL:
 
-        DbgPrint (ASL_PARSE_OUTPUT, "STRING->%s", Value);
+        DbgPrint (ASL_PARSE_OUTPUT, "STRING->%s", Op->Asl.Value.String);
         break;
 
     case PARSEOP_NAMESEG:
 
-        DbgPrint (ASL_PARSE_OUTPUT, "NAMESEG->%s", Value);
+        DbgPrint (ASL_PARSE_OUTPUT, "NAMESEG->%s", Op->Asl.Value.String);
         break;
 
     case PARSEOP_NAMESTRING:
 
-        DbgPrint (ASL_PARSE_OUTPUT, "NAMESTRING->%s", Value);
+        DbgPrint (ASL_PARSE_OUTPUT, "NAMESTRING->%s", Op->Asl.Value.String);
         break;
 
     case PARSEOP_EISAID:
 
-        DbgPrint (ASL_PARSE_OUTPUT, "EISAID->%s", Value);
+        DbgPrint (ASL_PARSE_OUTPUT, "EISAID->%s", Op->Asl.Value.String);
         break;
 
     case PARSEOP_METHOD:

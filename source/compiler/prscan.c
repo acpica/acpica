@@ -850,7 +850,7 @@ PrDoDirective (
 
         DbgPrint (ASL_PARSE_OUTPUT, PR_PREFIX_ID
             "Start #include file \"%s\"\n", AslGbl_CurrentLineNumber,
-            Token, AslGbl_CurrentLineNumber);
+            Token);
 
         PrDoIncludeFile (Token);
         break;

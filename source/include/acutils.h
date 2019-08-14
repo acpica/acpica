@@ -1194,6 +1194,7 @@ AcpiUtDeleteAddressLists (
 /*
  * utxferror - various error/warning output functions
  */
+ACPI_PRINTF_LIKE(5)
 void ACPI_INTERNAL_VAR_XFACE
 AcpiUtPredefinedWarning (
     const char              *ModuleName,
@@ -1203,6 +1204,7 @@ AcpiUtPredefinedWarning (
     const char              *Format,
     ...);
 
+ACPI_PRINTF_LIKE(5)
 void ACPI_INTERNAL_VAR_XFACE
 AcpiUtPredefinedInfo (
     const char              *ModuleName,
@@ -1212,6 +1214,7 @@ AcpiUtPredefinedInfo (
     const char              *Format,
     ...);
 
+ACPI_PRINTF_LIKE(5)
 void ACPI_INTERNAL_VAR_XFACE
 AcpiUtPredefinedBiosError (
     const char              *ModuleName,
