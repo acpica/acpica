@@ -1076,12 +1076,39 @@ UtDoConstant (
  ******************************************************************************/
 
 char *
-AcpiUtStrdup(
+AcpiUtStrdup (
     char                    *String)
 {
     char                    *NewString = (char *) UtLocalCalloc (strlen (String) + 1);
 
 
     strcpy (NewString, String);
+    return (NewString);
+}
+
+
+/******************************************************************************
+ *
+ * FUNCTION:    AcpiUtStrcat
+ *
+ * PARAMETERS:  String1
+ *              String2
+ *
+ * RETURN:      New string with String1 concatenated with String2
+ *
+ * DESCRIPTION: Concatenate string1 and string2
+ *
+ ******************************************************************************/
+
+char *
+AcpiUtStrcat (
+    char                    *String1,
+    char                    *String2)
+{
+    UINT32                  String1Length = strlen (String1);
+    char                    *NewString = (char *) UtLocalCalloc (strlen (String1) + strlen (String2) + 1);
+
+    strcpy (NewString, String1);
+    strcpy (NewString + String1Length, String2);
     return (NewString);
 }
