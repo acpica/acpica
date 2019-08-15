@@ -116,6 +116,29 @@ build_acpi_tools() {
 	cd $restore_dir
 }
 
+# Run a simple compiler test.
+# This test does the following:
+# 1 generate all sample tables in the compiler
+# 2 compile all tables (.asl -> .aml)
+# 3 disassembles all tables (.aml -> .dsl)
+# 4 recompiles all all tables (.dsl -> recomp.aml)
+# 5 runs binary comparison between .aml and recomp.aml
+run_compiler_template_test()
+{
+	pushd templates
+
+	rm -f *.asl *.aml *.dsl
+
+	iasl -T all 2> /dev/null
+	for filename in *.asl
+	do
+		make -s NAME=$(basename "$filename" .asl)
+	done
+
+	rm -f *.asl *.aml *.dsl
+	popd
+}
+
 
 # Compile and run the ASLTS suite
 run_aslts() {
@@ -123,6 +146,10 @@ run_aslts() {
 	# Remove a previous version of the AML test code
 	version=`$ASL | grep version | awk '{print $5}'`
 	rm -rf $ASLTSDIR/tmp/aml/$version
+
+	# run templates test
+
+	run_compiler_template_test
 
 	if [ "x$TEST_MODES" = "x" ]; then
 		TEST_MODES="n32 n64 o32 o64"
