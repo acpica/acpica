@@ -510,6 +510,7 @@ typedef struct asl_files_node
     UINT32                  TotalNamedObjects;
     UINT32                  TotalExecutableOpcodes;
     BOOLEAN                 ParserErrorDetected;
+    UINT8                   FileType;
 
 } ASL_GLOBAL_FILE_NODE;
 

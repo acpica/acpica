@@ -289,9 +289,10 @@ main (
 
     /*
      * At this point, compilation of a data table or disassembly is complete.
+     * However, if there is a parse tree, perform compiler analysis and
+     * generate AML.
      */
-    if (AslGbl_PreprocessOnly || AcpiGbl_DisasmFlag ||
-        AslGbl_FileType == ASL_INPUT_TYPE_ASCII_DATA)
+    if (AslGbl_PreprocessOnly || AcpiGbl_DisasmFlag || !AslGbl_ParseTreeRoot)
     {
         goto CleanupAndExit;
     }
