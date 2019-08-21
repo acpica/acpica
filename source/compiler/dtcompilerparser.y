@@ -169,6 +169,7 @@ void                        DtCompilerParsererror (char const *msg);
 extern char                 *DtCompilerParsertext;
 extern DT_FIELD             *AslGbl_CurrentField;
 
+extern int                  DtLabelByteOffset;
 extern UINT64               DtCompilerParserResult; /* Expression return value */
 extern UINT64               DtCompilerParserlineno; /* Current line number */
 
@@ -185,19 +186,6 @@ extern UINT64               DtCompilerParserlineno; /* Current line number */
 #define YYFREE              free
 
 %}
-
-%code requires {
-
-    typedef struct YYLTYPE {
-        int first_line;
-        int last_line;
-        int first_column;
-        int last_column;
-        int first_byte_offset;
-    } YYLTYPE;
-
-    #define YYLTYPE_IS_DECLARED 1
-}
 
 
 %union {
@@ -221,7 +209,7 @@ extern UINT64               DtCompilerParserlineno; /* Current line number */
 
 Table
     :
-    FieldList { DtCompilerParserResult = 5;}
+    FieldList { }
     ;
 
 FieldList
@@ -230,7 +218,7 @@ FieldList
     ;
 
 Field
-    : DT_PARSEOP_LABEL ':' Data { DtCreateField ($1, $3, (@3).first_line, (@1).first_byte_offset, (@1).first_column, (@3).first_column); }
+    : DT_PARSEOP_LABEL ':' Data { DtCreateField ($1, $3, (@3).first_line, DtLabelByteOffset, (@1).first_column, (@3).first_column); }
     ;
 
 Data
