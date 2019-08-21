@@ -840,7 +840,6 @@ DtGetNextLine (
 
             case '\n':
 
-                CurrentLineOffset = AslGbl_NextLineOffset;
                 AslGbl_NextLineOffset = (UINT32) ftell (Handle);
                 AslGbl_CurrentLineNumber++;
                 break;
@@ -882,7 +881,6 @@ DtGetNextLine (
 
                 /* Ignore newline, this will merge the lines */
 
-                CurrentLineOffset = AslGbl_NextLineOffset;
                 AslGbl_NextLineOffset = (UINT32) ftell (Handle);
                 AslGbl_CurrentLineNumber++;
                 State = DT_NORMAL_TEXT;

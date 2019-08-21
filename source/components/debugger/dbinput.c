@@ -894,7 +894,6 @@ AcpiDbCommandDispatch (
 
     ParamCount = AcpiDbGetLine (InputBuffer);
     CommandIndex = AcpiDbMatchCommand (AcpiGbl_DbArgs[0]);
-    Temp = 0;
 
     /*
      * We don't want to add the !! command to the history buffer. It

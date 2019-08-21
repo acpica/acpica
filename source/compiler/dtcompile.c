@@ -276,7 +276,10 @@ DtDoCompile (
 
     if (ACPI_FAILURE (Status))
     {
-        FileNode->ParserErrorDetected = TRUE;
+        if (FileNode)
+        {
+            FileNode->ParserErrorDetected = TRUE;
+        }
 
         /* TBD: temporary error message. Msgs should come from function above */
 
@@ -572,7 +575,7 @@ DtCompileTable (
     ACPI_STATUS             Status = AE_OK;
 
 
-    if (!Field)
+    if (!Field || !Info)
     {
         return (AE_BAD_PARAMETER);
     }
@@ -583,6 +586,11 @@ DtCompileTable (
          * parse. In other words, we are at the end of the table.
          */
         return (AE_END_OF_TABLE);
+    }
+
+    if (!(*Field)->Name || !Info->Name)
+    {
+        return (AE_ERROR);
     }
 
     /* Ignore optional subtable if name does not match */

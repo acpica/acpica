@@ -314,6 +314,11 @@ AcpiDmDumpIort (
                     Status = AcpiDmDumpTable (Table->Length, Offset + NodeOffset,
                         ACPI_ADD_PTR (ACPI_IORT_NODE, IortNode, NodeOffset),
                         4, AcpiDmTableInfoIort0a);
+                    if (ACPI_FAILURE (Status))
+                    {
+                        return;
+                    }
+
                     NodeOffset += 4;
                 }
             }
@@ -410,7 +415,6 @@ NextSubtable:
         /* Point to next node subtable */
 
         Offset += IortNode->Length;
-        IortNode = ACPI_ADD_PTR (ACPI_IORT_NODE, IortNode, IortNode->Length);
     }
 }
 
@@ -1211,7 +1215,6 @@ AcpiDmDumpNfit (
             /* Has a variable number of 32-bit values at the end */
 
             InfoTable = AcpiDmTableInfoNfit2;
-            Interleave = ACPI_CAST_PTR (ACPI_NFIT_INTERLEAVE, Subtable);
             FieldOffset = sizeof (ACPI_NFIT_INTERLEAVE);
             break;
 
@@ -1236,7 +1239,6 @@ AcpiDmDumpNfit (
             /* Has a variable number of 64-bit addresses at the end */
 
             InfoTable = AcpiDmTableInfoNfit6;
-            Hint = ACPI_CAST_PTR (ACPI_NFIT_FLUSH_ADDRESS, Subtable);
             FieldOffset = sizeof (ACPI_NFIT_FLUSH_ADDRESS) - sizeof (UINT64);
             break;
 
@@ -1273,6 +1275,7 @@ AcpiDmDumpNfit (
         {
         case ACPI_NFIT_TYPE_INTERLEAVE:
 
+            Interleave = ACPI_CAST_PTR (ACPI_NFIT_INTERLEAVE, Subtable);
             for (i = 0; i < Interleave->LineCount; i++)
             {
                 Status = AcpiDmDumpTable (Table->Length, Offset + FieldOffset,
@@ -1308,6 +1311,7 @@ AcpiDmDumpNfit (
 
         case ACPI_NFIT_TYPE_FLUSH_ADDRESS:
 
+            Hint = ACPI_CAST_PTR (ACPI_NFIT_FLUSH_ADDRESS, Subtable);
             for (i = 0; i < Hint->HintCount; i++)
             {
                 Status = AcpiDmDumpTable (Table->Length, Offset + FieldOffset,
@@ -1806,6 +1810,11 @@ AcpiDmDumpPptt (
                 Status = AcpiDmDumpTable (Table->Length, Offset + SubtableOffset,
                     ACPI_ADD_PTR (ACPI_SUBTABLE_HEADER, Subtable, SubtableOffset),
                     4, AcpiDmTableInfoPptt0a);
+                if (ACPI_FAILURE (Status))
+                {
+                    return;
+                }
+
                 SubtableOffset += 4;
             }
             break;
@@ -2063,6 +2072,10 @@ AcpiDmDumpSdev (
                 Status = AcpiDmDumpTable (Table->Length, 0,
                     ACPI_ADD_PTR (UINT8, Pcie, VendorDataOffset),
                     VendorDataLength, AcpiDmTableInfoSdev1b);
+                if (ACPI_FAILURE (Status))
+                {
+                    return;
+                }
             }
             break;
 

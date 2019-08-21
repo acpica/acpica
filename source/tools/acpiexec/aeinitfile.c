@@ -336,6 +336,13 @@ AeEnterInitFileEntry (
 
     Status = AcpiNsAttachObject (NewNode, ObjDesc,
          ACPI_TYPE_INTEGER);
+    if (ACPI_FAILURE (Status))
+    {
+        ACPI_EXCEPTION ((AE_INFO, Status,
+            "While attaching object to node from namespace initialization file: %s",
+            Pathname));
+        return;
+    }
 
     /* Remove local reference to the object */
 

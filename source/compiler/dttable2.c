@@ -1474,13 +1474,14 @@ DtCompileSdev (
                         Namesp->DeviceIdOffset + Namesp->DeviceIdLength;
                     Namesp->VendorDataLength =
                         (UINT16) Subtable->Length;
+
+                    /* Final size of entire namespace structure */
+
+                    SdevHeader->Length = (UINT16)(sizeof(ACPI_SDEV_NAMESPACE) +
+                        Subtable->Length + Namesp->DeviceIdLength);
                 }
             }
 
-            /* Final size of entire namespace structure */
-
-            SdevHeader->Length = (UINT16) (sizeof (ACPI_SDEV_NAMESPACE) +
-                Subtable->Length + Namesp->DeviceIdLength);
             break;
 
         case ACPI_SDEV_TYPE_PCIE_ENDPOINT_DEVICE:

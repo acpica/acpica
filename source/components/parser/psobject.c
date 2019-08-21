@@ -651,8 +651,8 @@ AcpiPsCompleteOp (
             WalkState->OpInfo = AcpiPsGetOpcodeInfo ((*Op)->Common.AmlOpcode);
             WalkState->Opcode = (*Op)->Common.AmlOpcode;
 
-            Status = WalkState->AscendingCallback (WalkState);
-            Status = AcpiPsNextParseState (WalkState, *Op, Status);
+            (void) WalkState->AscendingCallback (WalkState);
+            (void) AcpiPsNextParseState (WalkState, *Op, Status);
 
             Status2 = AcpiPsCompleteThisOp (WalkState, *Op);
             if (ACPI_FAILURE (Status2))

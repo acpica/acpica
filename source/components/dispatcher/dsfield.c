@@ -309,7 +309,6 @@ AcpiDsCreateBufferField (
     if (WalkState->DeferredNode)
     {
         Node = WalkState->DeferredNode;
-        Status = AE_OK;
     }
     else
     {
@@ -813,8 +812,6 @@ AcpiDsInitFieldObjects (
                 }
 
                 /* Name already exists, just ignore this error */
-
-                Status = AE_OK;
             }
 
             Arg->Common.Node = Node;
