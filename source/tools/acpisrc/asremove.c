@@ -264,7 +264,6 @@ AsRemoveConditionalCompile (
 
 
     KeywordLength = strlen (Keyword);
-    SubBuffer = Buffer;
     SubString = Buffer;
 
     while (SubString)
