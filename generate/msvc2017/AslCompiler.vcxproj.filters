@@ -33,9 +33,6 @@
     <Filter Include="Source Files\Interpreter">
       <UniqueIdentifier>{4aa50d35-2e23-479b-9942-b47651f3fdc1}</UniqueIdentifier>
     </Filter>
-    <Filter Include="Source Files\Parser">
-      <UniqueIdentifier>{ff23bd4f-21e6-4c96-b566-dd21428f34c4}</UniqueIdentifier>
-    </Filter>
     <Filter Include="Source Files\Dispatcher">
       <UniqueIdentifier>{613032b5-8813-493e-8495-c0cd03cf0ccf}</UniqueIdentifier>
     </Filter>
@@ -49,6 +46,12 @@
     <Filter Include="Resource Files">
       <UniqueIdentifier>{a332cafa-1381-4270-82b3-86c6cb9ffa3d}</UniqueIdentifier>
       <Extensions>ico;cur;bmp;dlg;rc2;rct;bin;rgs;gif;jpg;jpeg;jpe</Extensions>
+    </Filter>
+    <Filter Include="Source Files\Parsers">
+      <UniqueIdentifier>{00e748ce-f6ea-442b-8c79-9fbc1ab72f77}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\Aml Parser">
+      <UniqueIdentifier>{ff23bd4f-21e6-4c96-b566-dd21428f34c4}</UniqueIdentifier>
     </Filter>
   </ItemGroup>
   <ItemGroup>
@@ -530,46 +533,46 @@
       <Filter>Source Files\Interpreter</Filter>
     </ClCompile>
     <ClCompile Include="..\..\source\compiler\prexpress.c">
-      <Filter>Source Files\Parser</Filter>
+      <Filter>Source Files\Aml Parser</Filter>
     </ClCompile>
     <ClCompile Include="..\..\source\compiler\prmacros.c">
-      <Filter>Source Files\Parser</Filter>
+      <Filter>Source Files\Aml Parser</Filter>
     </ClCompile>
     <ClCompile Include="..\..\source\compiler\prscan.c">
-      <Filter>Source Files\Parser</Filter>
+      <Filter>Source Files\Aml Parser</Filter>
     </ClCompile>
     <ClCompile Include="..\..\source\compiler\prutils.c">
-      <Filter>Source Files\Parser</Filter>
+      <Filter>Source Files\Aml Parser</Filter>
     </ClCompile>
     <ClCompile Include="..\..\source\components\parser\psargs.c">
-      <Filter>Source Files\Parser</Filter>
+      <Filter>Source Files\Aml Parser</Filter>
     </ClCompile>
     <ClCompile Include="..\..\source\components\parser\psloop.c">
-      <Filter>Source Files\Parser</Filter>
+      <Filter>Source Files\Aml Parser</Filter>
     </ClCompile>
     <ClCompile Include="..\..\source\components\parser\psobject.c">
-      <Filter>Source Files\Parser</Filter>
+      <Filter>Source Files\Aml Parser</Filter>
     </ClCompile>
     <ClCompile Include="..\..\source\components\parser\psopcode.c">
-      <Filter>Source Files\Parser</Filter>
+      <Filter>Source Files\Aml Parser</Filter>
     </ClCompile>
     <ClCompile Include="..\..\source\components\parser\psopinfo.c">
-      <Filter>Source Files\Parser</Filter>
+      <Filter>Source Files\Aml Parser</Filter>
     </ClCompile>
     <ClCompile Include="..\..\source\components\parser\psparse.c">
-      <Filter>Source Files\Parser</Filter>
+      <Filter>Source Files\Aml Parser</Filter>
     </ClCompile>
     <ClCompile Include="..\..\source\components\parser\psscope.c">
-      <Filter>Source Files\Parser</Filter>
+      <Filter>Source Files\Aml Parser</Filter>
     </ClCompile>
     <ClCompile Include="..\..\source\components\parser\pstree.c">
-      <Filter>Source Files\Parser</Filter>
+      <Filter>Source Files\Aml Parser</Filter>
     </ClCompile>
     <ClCompile Include="..\..\source\components\parser\psutils.c">
-      <Filter>Source Files\Parser</Filter>
+      <Filter>Source Files\Aml Parser</Filter>
     </ClCompile>
     <ClCompile Include="..\..\source\components\parser\pswalk.c">
-      <Filter>Source Files\Parser</Filter>
+      <Filter>Source Files\Aml Parser</Filter>
     </ClCompile>
     <ClCompile Include="..\..\source\components\dispatcher\dsargs.c">
       <Filter>Source Files\Dispatcher</Filter>
@@ -713,14 +716,32 @@
     <Text Include="..\..\source\compiler\readme.txt" />
   </ItemGroup>
   <ItemGroup>
-    <CustomBuild Include="..\..\source\compiler\aslcompiler.y" />
-    <CustomBuild Include="..\..\source\compiler\aslparser.y" />
-    <CustomBuild Include="..\..\source\compiler\dtparser.l" />
-    <CustomBuild Include="..\..\source\compiler\dtparser.y" />
-    <CustomBuild Include="..\..\source\compiler\prparser.l" />
-    <CustomBuild Include="..\..\source\compiler\prparser.y" />
-    <CustomBuild Include="..\..\source\compiler\dtcompilerparser.l" />
-    <CustomBuild Include="..\..\source\compiler\dtcompilerparser.y" />
-    <CustomBuild Include="..\..\source\compiler\aslcompiler.l" />
+    <CustomBuild Include="..\..\source\compiler\aslcompiler.l">
+      <Filter>Source Files\Parsers</Filter>
+    </CustomBuild>
+    <CustomBuild Include="..\..\source\compiler\aslcompiler.y">
+      <Filter>Source Files\Parsers</Filter>
+    </CustomBuild>
+    <CustomBuild Include="..\..\source\compiler\aslparser.y">
+      <Filter>Source Files\Parsers</Filter>
+    </CustomBuild>
+    <CustomBuild Include="..\..\source\compiler\dtcompilerparser.l">
+      <Filter>Source Files\Parsers</Filter>
+    </CustomBuild>
+    <CustomBuild Include="..\..\source\compiler\dtcompilerparser.y">
+      <Filter>Source Files\Parsers</Filter>
+    </CustomBuild>
+    <CustomBuild Include="..\..\source\compiler\dtparser.l">
+      <Filter>Source Files\Parsers</Filter>
+    </CustomBuild>
+    <CustomBuild Include="..\..\source\compiler\dtparser.y">
+      <Filter>Source Files\Parsers</Filter>
+    </CustomBuild>
+    <CustomBuild Include="..\..\source\compiler\prparser.l">
+      <Filter>Source Files\Parsers</Filter>
+    </CustomBuild>
+    <CustomBuild Include="..\..\source\compiler\prparser.y">
+      <Filter>Source Files\Parsers</Filter>
+    </CustomBuild>
   </ItemGroup>
 </Project>
