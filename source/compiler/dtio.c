@@ -512,37 +512,64 @@ DtParseLine (
 
 void
 DtCreateField (
-    char                    *Name,
-    char                    *Value,
-    UINT32                  Line,
-    UINT32                  Offset,
-    UINT32                  Column,
-    UINT32                  NameColumn)
+    DT_TABLE_UNIT           *FieldKey,
+    DT_TABLE_UNIT           *FieldValue,
+    UINT32                  Offset)
 {
     DT_FIELD                *Field = UtFieldCacheCalloc ();
 
 
     Field->StringLength = 0;
-    if (Name)
+    if (FieldKey->Value)
     {
         Field->Name =
-            strcpy (UtLocalCacheCalloc (strlen (Name) + 1), Name);
+            strcpy (UtLocalCacheCalloc (strlen (FieldKey->Value) + 1), FieldKey->Value);
     }
 
-    if (Value)
+    if (FieldValue->Value)
     {
-        Field->StringLength = strlen (Value);
+        Field->StringLength = strlen (FieldValue->Value);
         Field->Value =
-            strcpy (UtLocalCacheCalloc (Field->StringLength + 1), Value);
+            strcpy (UtLocalCacheCalloc (Field->StringLength + 1), FieldValue->Value);
     }
 
-    Field->Line = Line;
+    Field->Line = FieldValue->Line;
     Field->ByteOffset = Offset;
-    Field->NameColumn = NameColumn;
-    Field->Column = Column;
+    Field->NameColumn = FieldKey->Column;
+    Field->Column = FieldValue->Column;
     DtLinkField (Field);
 
     DtDumpFieldList (AslGbl_FieldList);
+}
+
+
+/******************************************************************************
+ *
+ * FUNCTION:    DtCreateTableUnit
+ *
+ * PARAMETERS: Data
+ *             Line
+ *             Column
+ *
+ * RETURN:     a table unit
+ *
+ * DESCRIPTION: Create a table unit
+ *
+ *****************************************************************************/
+
+DT_TABLE_UNIT *
+DtCreateTableUnit (
+    char                    *Data,
+    UINT32                  Line,
+    UINT32                  Column)
+{
+    DT_TABLE_UNIT           *Unit = (DT_TABLE_UNIT *) UtFieldCacheCalloc ();
+
+
+    Unit->Value = Data;
+    Unit->Line = Line;
+    Unit->Column = Column;
+    return (Unit);
 }
 
 

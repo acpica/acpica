@@ -164,15 +164,17 @@ int DtCompilerParsercolumn = 1;
 int DtLabelByteOffset = 0;
 int DtCompilerParserByteOffset = 0;
 
+UINT32 DtTokenFirstLine = 0;
+UINT32 DtTokenFirstColumn = 0;
+
 #define YY_USER_ACTION \
-            DtCompilerParserlloc.first_line = DtCompilerParserlloc.last_line = DtCompilerParserlineno; \
-            DtCompilerParserlloc.first_column = DtCompilerParsercolumn; \
-            DtCompilerParserlloc.last_column = DtCompilerParsercolumn + DtCompilerParserleng-1; \
+            DtTokenFirstLine = DtCompilerParserlineno; \
+            DtTokenFirstColumn = DtCompilerParsercolumn; \
             DtCompilerParsercolumn += DtCompilerParserleng; \
             DtCompilerParserByteOffset += DtCompilerParserleng; \
             DbgPrint (ASL_PARSE_OUTPUT,\
                 "user action occurred. DtCompilerParserlloc.first_line: %u\n",\
-                DtCompilerParserlloc.first_line);
+                DtTokenFirstLine);
 %}
 
 %option nounput noinput yylineno

@@ -173,6 +173,9 @@ extern int                  DtLabelByteOffset;
 extern UINT64               DtCompilerParserResult; /* Expression return value */
 extern UINT64               DtCompilerParserlineno; /* Current line number */
 
+extern UINT32               DtTokenFirstLine;
+extern UINT32               DtTokenFirstColumn;
+
 /* Bison/yacc configuration */
 
 #define yytname             DtCompilerParsername
@@ -191,18 +194,19 @@ extern UINT64               DtCompilerParserlineno; /* Current line number */
 %union {
     char                *s;
     DT_FIELD            *f;
+    DT_TABLE_UNIT       *u;
 }
 
 
 %type  <f> Table
-%token <s> DT_PARSEOP_DATA
-%token <s> DT_PARSEOP_LABEL
-%token <s> DT_PARSEOP_STRING_DATA
-%token <s> DT_PARSEOP_LINE_CONTINUATION
-%type  <s> Data
-%type  <s> Datum
-%type  <s> MultiLineData
-%type  <s> MultiLineDataList
+%token <u> DT_PARSEOP_DATA
+%token <u> DT_PARSEOP_LABEL
+%token <u> DT_PARSEOP_STRING_DATA
+%token <u> DT_PARSEOP_LINE_CONTINUATION
+%type  <u> Data
+%type  <u> Datum
+%type  <u> MultiLineData
+%type  <u> MultiLineDataList
 
 
 %%
@@ -218,7 +222,7 @@ FieldList
     ;
 
 Field
-    : DT_PARSEOP_LABEL ':' Data { DtCreateField ($1, $3, (@3).first_line, DtLabelByteOffset, (@1).first_column, (@3).first_column); }
+    : DT_PARSEOP_LABEL ':' Data { DtCreateField ($1, $3, DtLabelByteOffset); }
     ;
 
 Data
@@ -228,7 +232,7 @@ Data
     ;
 
 MultiLineDataList
-    : MultiLineDataList MultiLineData { $$ = AcpiUtStrcat(AcpiUtStrcat($1, " "), $2); } /* combine the strings with strcat */
+    : MultiLineDataList MultiLineData { $$ = DtCreateTableUnit (AcpiUtStrcat(AcpiUtStrcat($1->Value, " "), $2->Value), $1->Line, $1->Column); } /* combine the strings with strcat */
     | MultiLineData                   { $$ = $1; }
     ;
 
@@ -237,8 +241,14 @@ MultiLineData
     ;
 
 Datum
-    : DT_PARSEOP_DATA        { DbgPrint (ASL_PARSE_OUTPUT, "parser        data: [%s]\n", DtCompilerParserlval.s); $$ = AcpiUtStrdup(DtCompilerParserlval.s); }
-    | DT_PARSEOP_STRING_DATA { DbgPrint (ASL_PARSE_OUTPUT, "parser string data: [%s]\n", DtCompilerParserlval.s); $$ = AcpiUtStrdup(DtCompilerParserlval.s); }
+    : DT_PARSEOP_DATA        {
+                                 DbgPrint (ASL_PARSE_OUTPUT, "parser        data: [%s]\n", DtCompilerParserlval.s);
+                                 $$ = DtCreateTableUnit (AcpiUtStrdup(DtCompilerParserlval.s), DtTokenFirstLine, DtTokenFirstColumn);
+                             }
+    | DT_PARSEOP_STRING_DATA {
+                                 DbgPrint (ASL_PARSE_OUTPUT, "parser string data: [%s]\n", DtCompilerParserlval.s);
+                                 $$ = DtCreateTableUnit (AcpiUtStrdup(DtCompilerParserlval.s), DtTokenFirstLine, DtTokenFirstColumn);
+                             }
     ;
 
 
