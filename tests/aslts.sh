@@ -129,7 +129,7 @@ run_compiler_template_test()
 
 	rm -f *.asl *.aml *.dsl
 
-	iasl -T all 2> /dev/null
+	$ASL -T all 2> /dev/null
 	for filename in *.asl
 	do
 		make -s NAME=$(basename "$filename" .asl)
