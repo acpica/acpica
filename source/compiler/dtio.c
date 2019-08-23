@@ -162,10 +162,6 @@ static char *
 DtTrim (
     char                    *String);
 
-static void
-DtLinkField (
-    DT_FIELD                *Field);
-
 static ACPI_STATUS
 DtParseLine (
     char                    *LineBuffer,
@@ -294,45 +290,6 @@ DtTrim (
 
     ReturnString[Length] = 0;
     return (ReturnString);
-}
-
-
-/******************************************************************************
- *
- * FUNCTION:    DtLinkField
- *
- * PARAMETERS:  Field               - New field object to link
- *
- * RETURN:      None
- *
- * DESCRIPTION: Link one field name and value to the list
- *
- *****************************************************************************/
-
-static void
-DtLinkField (
-    DT_FIELD                *Field)
-{
-    DT_FIELD                *Prev;
-    DT_FIELD                *Next;
-
-
-    Prev = Next = AslGbl_FieldList;
-
-    while (Next)
-    {
-        Prev = Next;
-        Next = Next->Next;
-    }
-
-    if (Prev)
-    {
-        Prev->Next = Field;
-    }
-    else
-    {
-        AslGbl_FieldList = Field;
-    }
 }
 
 
@@ -490,86 +447,6 @@ DtParseLine (
     /* Else -- Ignore this field, it has no valid data */
 
     return (AE_OK);
-}
-
-
-/******************************************************************************
- *
- * FUNCTION:    DtCreateField
- *
- * PARAMETERS: Name
- *             Value
- *             Line
- *             Offset
- *             Column
- *             NameColumn
- *
- * RETURN:     None
- *
- * DESCRIPTION: Create a field
- *
- *****************************************************************************/
-
-void
-DtCreateField (
-    DT_TABLE_UNIT           *FieldKey,
-    DT_TABLE_UNIT           *FieldValue,
-    UINT32                  Offset)
-{
-    DT_FIELD                *Field = UtFieldCacheCalloc ();
-
-
-    Field->StringLength = 0;
-    if (FieldKey->Value)
-    {
-        Field->Name =
-            strcpy (UtLocalCacheCalloc (strlen (FieldKey->Value) + 1), FieldKey->Value);
-    }
-
-    if (FieldValue->Value)
-    {
-        Field->StringLength = strlen (FieldValue->Value);
-        Field->Value =
-            strcpy (UtLocalCacheCalloc (Field->StringLength + 1), FieldValue->Value);
-    }
-
-    Field->Line = FieldValue->Line;
-    Field->ByteOffset = Offset;
-    Field->NameColumn = FieldKey->Column;
-    Field->Column = FieldValue->Column;
-    DtLinkField (Field);
-
-    DtDumpFieldList (AslGbl_FieldList);
-}
-
-
-/******************************************************************************
- *
- * FUNCTION:    DtCreateTableUnit
- *
- * PARAMETERS: Data
- *             Line
- *             Column
- *
- * RETURN:     a table unit
- *
- * DESCRIPTION: Create a table unit
- *
- *****************************************************************************/
-
-DT_TABLE_UNIT *
-DtCreateTableUnit (
-    char                    *Data,
-    UINT32                  Line,
-    UINT32                  Column)
-{
-    DT_TABLE_UNIT           *Unit = (DT_TABLE_UNIT *) UtFieldCacheCalloc ();
-
-
-    Unit->Value = Data;
-    Unit->Line = Line;
-    Unit->Column = Column;
-    return (Unit);
 }
 
 

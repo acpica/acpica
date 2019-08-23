@@ -303,19 +303,6 @@ DtCompilePadding (
     UINT32                  Length,
     DT_SUBTABLE             **RetSubtable);
 
-void
-DtCreateField (
-    DT_TABLE_UNIT           *FieldKey,
-    DT_TABLE_UNIT           *FieldValue,
-    UINT32                  Offset);
-
-DT_TABLE_UNIT *
-DtCreateTableUnit (
-    char                    *Data,
-    UINT32                  Line,
-    UINT32                  Column);
-
-
 
 /* dtio - binary and text input/output */
 
@@ -451,6 +438,26 @@ DtCompileFlag (
     UINT8                   *Buffer,
     DT_FIELD                *Field,
     ACPI_DMTABLE_INFO       *Info);
+
+
+/* dtfield - DT_FIELD operations */
+
+void
+DtLinkField (
+    DT_FIELD                *Field);
+
+void
+DtCreateField (
+    DT_TABLE_UNIT           *FieldKey,
+    DT_TABLE_UNIT           *FieldValue,
+    UINT32                  Offset);
+
+DT_TABLE_UNIT *
+DtCreateTableUnit (
+    char                    *Data,
+    UINT32                  Line,
+    UINT32                  Column);
+
 
 
 /* dtparser - lex/yacc files */
