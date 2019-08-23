@@ -588,11 +588,6 @@ DtCompileTable (
         return (AE_END_OF_TABLE);
     }
 
-    if (!(*Field)->Name || !Info->Name)
-    {
-        return (AE_ERROR);
-    }
-
     /* Ignore optional subtable if name does not match */
 
     if ((Info->Flags & DT_OPTIONAL) &&
