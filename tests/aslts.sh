@@ -13,6 +13,7 @@ TEST_CASES=
 TEST_MODES=
 REBUILD_TOOLS=yes
 BINCOMPONLY=no
+DATATABLEONLY=no
 EXECONLY=no
 
 usage() {
@@ -25,6 +26,7 @@ usage() {
 	echo "  -u:	Do not force rebuilding of ACPICA utilities (acpiexec, iasl)"
 	echo "  -e:     Perform the execution of aml files and omit binary comparison of regular aml and disassembled aml file."
 	echo "  -b:     Only perform binary comparison of regular aml and disasssembled aml file"
+	echo "  -d:     Only execute data table compiler/disassembler test"
 	echo ""
 
 	echo "Available test modes:"
@@ -151,6 +153,10 @@ run_aslts() {
 
 	run_compiler_template_test
 
+	if [ "x$DATATABLEONLY" = "xyes" ]; then
+		return 0
+	fi;
+
 	if [ "x$TEST_MODES" = "x" ]; then
 		TEST_MODES="n32 n64 o32 o64"
 	fi
@@ -189,7 +195,7 @@ RESET_SETTINGS
 INIT_ALL_AVAILABLE_CASES
 INIT_ALL_AVAILABLE_MODES
 
-while getopts "c:m:ueb" opt
+while getopts "c:m:uebd" opt
 do
 	case $opt in
 	b)
@@ -204,6 +210,10 @@ do
 		else
 			TEST_CASES="$OPTARG $TEST_CASES"
 		fi
+	;;
+	d)
+		DATATABLEONLY=yes
+		echo "Running only data table test"
 	;;
 	e)
 		EXECONLY=yes
