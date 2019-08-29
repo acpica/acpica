@@ -238,7 +238,10 @@ CommentField    {LabelName}{WhiteSpace}*:{WhiteSpace}{Comment}?$
     int size = strlen (DtCompilerParsertext);
     s=UtLocalCacheCalloc (size + 1);
     AcpiUtSafeStrncpy (s, DtCompilerParsertext, size + 1);
-    DtCompilerParserlval.s = s;
+    DtCompilerParserlval.u = (DT_TABLE_UNIT *) UtLocalCacheCalloc (sizeof (DT_TABLE_UNIT));
+    DtCompilerParserlval.u->Value = s;
+    DtCompilerParserlval.u->Line = DtCompilerParserlineno;
+    DtCompilerParserlval.u->Column = DtCompilerParsercolumn;
     DtLabelByteOffset = DtCompilerParserByteOffset;
     DbgPrint (ASL_PARSE_OUTPUT, "Label: %s\n", s);
     return (DT_PARSEOP_LABEL);
