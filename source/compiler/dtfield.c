@@ -576,6 +576,14 @@ DtCompileBuffer (
 
     StringValue = DtNormalizeBuffer (StringValue, &Count);
     Substring = StringValue;
+    if (Count != ByteLength)
+    {
+        sprintf(AslGbl_MsgBuffer,
+            "Found %u values, must match expected count: %u",
+            Count, ByteLength);
+        DtError (ASL_ERROR, ASL_MSG_BUFFER_LIST, Field, AslGbl_MsgBuffer);
+        goto Exit;
+    }
 
     /* Each element of StringValue is now three chars (2 hex + 1 space) */
 

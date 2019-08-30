@@ -1621,7 +1621,9 @@ DtCompileSlit (
     DT_SUBTABLE             *ParentTable;
     DT_FIELD                **PFieldList = (DT_FIELD **) List;
     DT_FIELD                *FieldList;
+    DT_FIELD                *EndOfFieldList = NULL;
     UINT32                  Localities;
+    UINT32                  LocalityListLength;
     UINT8                   *LocalityBuffer;
 
 
@@ -1637,6 +1639,7 @@ DtCompileSlit (
 
     Localities = *ACPI_CAST_PTR (UINT32, Subtable->Buffer);
     LocalityBuffer = UtLocalCalloc (Localities);
+    LocalityListLength = 0;
 
     /* Compile each locality buffer */
 
@@ -1646,9 +1649,20 @@ DtCompileSlit (
         DtCompileBuffer (LocalityBuffer,
             FieldList->Value, FieldList, Localities);
 
+        LocalityListLength++;
         DtCreateSubtable (LocalityBuffer, Localities, &Subtable);
         DtInsertSubtable (ParentTable, Subtable);
+        EndOfFieldList = FieldList;
         FieldList = FieldList->Next;
+    }
+
+    if (LocalityListLength != Localities)
+    {
+        sprintf(AslGbl_MsgBuffer,
+            "Found %u entries, must match LocalityCount: %u",
+            LocalityListLength, Localities);
+        DtError (ASL_ERROR, ASL_MSG_ENTRY_LIST, EndOfFieldList, AslGbl_MsgBuffer);
+        return (AE_LIMIT);
     }
 
     ACPI_FREE (LocalityBuffer);

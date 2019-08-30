@@ -388,6 +388,8 @@ typedef enum
     ASL_MSG_UNKNOWN_TABLE,
     ASL_MSG_ZERO_VALUE,
     ASL_MSG_INVALID_LABEL,
+    ASL_MSG_BUFFER_LIST,
+    ASL_MSG_ENTRY_LIST,
 
     /* These messages are used by the Preprocessor only */
 
