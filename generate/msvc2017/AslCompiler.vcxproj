@@ -432,62 +432,68 @@
   <ItemGroup>
     <CustomBuild Include="..\..\source\compiler\aslcompiler.l">
       <Command Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">flex -i -PAslCompiler -o%(Filename).l.c %(FullPath)</Command>
-      <Message Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">Lexing %(FullPath)...</Message>
-      <Outputs Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">$(InputName).l.c;%(Outputs)</Outputs>
+      <Message Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">Lexing %(FullPath)</Message>
+      <Outputs Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">%(Filename).l.c</Outputs>
       <Command Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">flex -i -PAslCompiler -o%(Filename).l.c %(FullPath)</Command>
-      <Message Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">Lexing %(FullPath)...</Message>
-      <Outputs Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">$(InputName).l.c;%(Outputs)</Outputs>
+      <Message Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">Lexing %(FullPath)</Message>
+      <Outputs Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">%(Filename).l.c</Outputs>
       <TreatOutputAsContent Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">false</TreatOutputAsContent>
       <LinkObjects Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">true</LinkObjects>
       <FileType>Document</FileType>
+      <AdditionalInputs Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
+      </AdditionalInputs>
     </CustomBuild>
     <CustomBuild Include="..\..\source\compiler\aslcompiler.y">
       <Command Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">bison -d -l -pAslCompiler -v %(FullPath) -vd -o%(Filename).y.c</Command>
-      <Message Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">Yaccing %(FullPath)...</Message>
-      <Outputs Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">$(InputName).y.c;$(InputName).y.h;%(Outputs)</Outputs>
+      <Message Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">Yaccing %(FullPath)</Message>
+      <Outputs Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">%(Filename).y.c;%(Filename).y.h</Outputs>
       <Command Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">bison -d -l -pAslCompiler -v %(FullPath) -vd -o%(Filename).y.c</Command>
-      <Message Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">Yaccing %(FullPath)...</Message>
-      <Outputs Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">$(InputName).y.c;$(InputName).y.h;%(Outputs)</Outputs>
+      <Message Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">Yaccing %(FullPath)</Message>
+      <Outputs Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">%(Filename).y.c;%(Filename).y.h</Outputs>
+      <AdditionalInputs Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
+      </AdditionalInputs>
     </CustomBuild>
     <CustomBuild Include="..\..\source\compiler\aslparser.y">
       <Command Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">m4 -P -I%(RootDir)%(Directory) %(FullPath) &gt; %(RootDir)%(Directory)/aslcompiler.y</Command>
-      <Message Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">Macro-processing %(FullPath)...</Message>
-      <Outputs Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">$(InputDir)aslcompiler.y;%(Outputs)</Outputs>
+      <Message Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">Macro-processing %(FullPath)</Message>
+      <Outputs Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">%(RootDir)%(Directory)/aslcompiler.y</Outputs>
       <Command Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">m4 -P -I%(RootDir)%(Directory) %(FullPath) &gt; %(RootDir)%(Directory)/aslcompiler.y</Command>
-      <Message Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">Macro-processing %(FullPath)...</Message>
-      <Outputs Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">$(InputDir)aslcompiler.y;%(Outputs)</Outputs>
+      <Message Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">Macro-processing %(FullPath)</Message>
+      <Outputs Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">%(RootDir)%(Directory)/aslcompiler.y</Outputs>
     </CustomBuild>
     <CustomBuild Include="..\..\source\compiler\dtparser.l">
       <Command Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">flex -PDtParser -o%(Filename).l.c %(FullPath)</Command>
-      <Message Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">Lexing %(FullPath)...</Message>
-      <Outputs Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">$(InputName).l.c;%(Outputs)</Outputs>
+      <Message Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">Lexing %(FullPath)</Message>
+      <Outputs Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">%(Filename).l.c</Outputs>
       <Command Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">flex -PDtParser -o%(Filename).l.c %(FullPath)</Command>
-      <Message Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">Lexing %(FullPath)...</Message>
-      <Outputs Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">$(InputName).l.c;%(Outputs)</Outputs>
+      <Message Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">Lexing %(FullPath)</Message>
+      <Outputs Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">%(Filename).l.c</Outputs>
+      <AdditionalInputs Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
+      </AdditionalInputs>
     </CustomBuild>
     <CustomBuild Include="..\..\source\compiler\dtparser.y">
       <Command Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">bison -d -l -pDtParser -v %(FullPath) -vd -o%(Filename).y.c</Command>
-      <Message Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">Yaccing %(FullPath)...</Message>
-      <Outputs Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">$(InputName).y.c;$(InputName).y.h;%(Outputs)</Outputs>
+      <Message Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">Yaccing %(FullPath)</Message>
+      <Outputs Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">%(Filename).y.c;%(Filename).y.h</Outputs>
       <Command Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">bison -d -l -pDtParser -v %(FullPath) -vd -o%(Filename).y.c</Command>
-      <Message Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">Yaccing %(FullPath)...</Message>
-      <Outputs Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">$(InputName).y.c;$(InputName).y.h;%(Outputs)</Outputs>
+      <Message Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">Yaccing %(FullPath)</Message>
+      <Outputs Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">%(Filename).y.c;%(Filename).y.h</Outputs>
     </CustomBuild>
     <CustomBuild Include="..\..\source\compiler\prparser.l">
       <Command Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">flex -PPrParser -o%(Filename).l.c %(FullPath)</Command>
-      <Message Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">Lexing %(FullPath)...</Message>
-      <Outputs Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">$(InputName).l.c;%(Outputs)</Outputs>
+      <Message Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">Lexing %(FullPath)</Message>
+      <Outputs Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">%(Filename).l.c</Outputs>
       <Command Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">flex -PPrParser -o%(Filename).l.c %(FullPath)</Command>
-      <Message Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">Lexing %(FullPath)...</Message>
-      <Outputs Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">$(InputName).l.c;%(Outputs)</Outputs>
+      <Message Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">Lexing %(FullPath)</Message>
+      <Outputs Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">%(Filename).l.c</Outputs>
     </CustomBuild>
     <CustomBuild Include="..\..\source\compiler\prparser.y">
       <Command Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">bison -d -l -pPrParser -v %(FullPath) -vd -o%(Filename).y.c</Command>
-      <Message Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">Yaccing %(FullPath)...</Message>
-      <Outputs Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">$(InputName).y.c;$(InputName).y.h;%(Outputs)</Outputs>
+      <Message Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">Yaccing %(FullPath)</Message>
+      <Outputs Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">%(Filename).y.c;%(Filename).y.h</Outputs>
       <Command Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">bison -d -l -pPrParser -v %(FullPath) -vd -o%(Filename).y.c</Command>
-      <Message Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">Yaccing %(FullPath)...</Message>
-      <Outputs Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">$(InputName).y.c;$(InputName).y.h;%(Outputs)</Outputs>
+      <Message Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">Yaccing %(FullPath)</Message>
+      <Outputs Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">%(Filename).y.c;%(Filename).y.h</Outputs>
     </CustomBuild>
   </ItemGroup>
   <ItemGroup>
@@ -497,20 +503,20 @@
     <CustomBuild Include="..\..\source\compiler\dtcompilerparser.l">
       <FileType>Document</FileType>
       <Command Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">flex -i -PDtCompilerParser -o%(Filename).l.c %(FullPath)</Command>
-      <Message Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">Lexing %(FullPath)...</Message>
-      <Outputs Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">$(InputName).l.c;%(Outputs)</Outputs>
+      <Message Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">Lexing %(FullPath)</Message>
+      <Outputs Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">%(Filename).l.c</Outputs>
       <Command Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">flex -i -PDtCompilerParser -o%(Filename).l.c %(FullPath)</Command>
-      <Message Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">Lexing %(FullPath)...</Message>
-      <Outputs Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">$(InputName).l.c;%(Outputs)</Outputs>
+      <Message Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">Lexing %(FullPath)</Message>
+      <Outputs Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">%(Filename).l.c</Outputs>
     </CustomBuild>
     <CustomBuild Include="..\..\source\compiler\dtcompilerparser.y">
       <FileType>Document</FileType>
       <Command Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">bison -d -l -pDtCompilerParser -v %(FullPath) -vd -o%(Filename).y.c</Command>
-      <Message Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">Yaccing %(FullPath)...</Message>
-      <Outputs Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">$(InputName).y.c;$(InputName).y.h;%(Outputs)</Outputs>
+      <Message Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">Yaccing %(FullPath)</Message>
+      <Outputs Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">%(Filename).y.c;%(Filename).y.h</Outputs>
       <Command Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">bison -d -l -pDtCompilerParser -v %(FullPath) -vd -o%(Filename).y.c</Command>
-      <Message Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">Yaccing %(FullPath)...</Message>
-      <Outputs Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">$(InputName).y.c;$(InputName).y.h;%(Outputs)</Outputs>
+      <Message Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">Yaccing %(FullPath)</Message>
+      <Outputs Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">%(Filename).y.c;%(Filename).y.h</Outputs>
     </CustomBuild>
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
