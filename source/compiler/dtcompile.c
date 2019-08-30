@@ -646,6 +646,14 @@ DtCompileTable (
         FieldType = DtGetFieldType (Info);
         AslGbl_InputFieldCount++;
 
+        if (FieldType != DT_FIELD_TYPE_INLINE_SUBTABLE &&
+            strcmp (Info->Name, LocalField->Name))
+        {
+            sprintf (AslGbl_MsgBuffer, "found \"%s\" expected \"%s\"",
+                LocalField->Name, Info->Name);
+            DtError (ASL_ERROR, ASL_MSG_INVALID_LABEL, LocalField, AslGbl_MsgBuffer);
+        }
+
         switch (FieldType)
         {
         case DT_FIELD_TYPE_FLAGS_INTEGER:

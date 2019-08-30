@@ -410,7 +410,7 @@ AcpiDmDumpStao (
         Namepath = ACPI_ADD_PTR (char, Table, Offset);
         StringLength = strlen (Namepath) + 1;
 
-        AcpiDmLineHeader (Offset, StringLength, "Namestring");
+        AcpiDmLineHeader (Offset, StringLength, "Namepath");
         AcpiOsPrintf ("\"%s\"\n", Namepath);
 
         /* Point to next namepath */
