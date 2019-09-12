@@ -760,6 +760,8 @@ AcpiNsDumpOneObject (
 
             goto Cleanup;
         }
+
+        ObjType = ACPI_TYPE_INVALID;   /* Terminate loop after next pass */
     }
 
 Cleanup:
