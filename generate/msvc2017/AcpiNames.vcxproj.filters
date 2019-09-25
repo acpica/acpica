@@ -37,6 +37,12 @@
       <UniqueIdentifier>{1dd4c807-b6c5-4b9a-802d-2b5fa213788b}</UniqueIdentifier>
       <Extensions>ico;cur;bmp;dlg;rc2;rct;bin;rgs;gif;jpg;jpeg;jpe</Extensions>
     </Filter>
+    <Filter Include="Source Files\Events">
+      <UniqueIdentifier>{29defa3a-31e6-4de7-8525-c631cdae79fb}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\Hardware">
+      <UniqueIdentifier>{b8e8c6d5-af0e-42f7-bf41-63fa785acd58}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\..\source\common\acfileio.c">
@@ -321,9 +327,120 @@
     <ClCompile Include="..\..\source\components\dispatcher\dspkginit.c">
       <Filter>Source Files\Dispatcher</Filter>
     </ClCompile>
+    <ClCompile Include="..\..\source\components\dispatcher\dswexec.c">
+      <Filter>Source Files\Dispatcher</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\source\components\executer\exoparg1.c">
+      <Filter>Source Files\Executer</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\source\components\executer\exoparg2.c">
+      <Filter>Source Files\Executer</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\source\components\executer\exoparg3.c">
+      <Filter>Source Files\Executer</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\source\components\executer\exoparg6.c">
+      <Filter>Source Files\Executer</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\source\components\dispatcher\dscontrol.c">
+      <Filter>Source Files\Dispatcher</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\source\components\dispatcher\dsopcode.c">
+      <Filter>Source Files\Dispatcher</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\source\components\executer\exresop.c">
+      <Filter>Source Files\Executer</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\source\components\executer\exmisc.c">
+      <Filter>Source Files\Executer</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\source\components\executer\exconfig.c">
+      <Filter>Source Files\Executer</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\source\components\executer\exstore.c">
+      <Filter>Source Files\Executer</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\source\components\events\evregion.c">
+      <Filter>Source Files\Events</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\source\components\events\evhandler.c">
+      <Filter>Source Files\Events</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\source\components\executer\exconcat.c">
+      <Filter>Source Files\Executer</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\source\components\events\evrgnini.c">
+      <Filter>Source Files\Events</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\source\components\executer\exregion.c">
+      <Filter>Source Files\Executer</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\source\components\events\evxfregn.c">
+      <Filter>Source Files\Events</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\source\components\executer\exstoren.c">
+      <Filter>Source Files\Executer</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\source\components\utilities\utresrc.c">
+      <Filter>Source Files\Utilities</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\source\components\hardware\hwpci.c">
+      <Filter>Source Files\Hardware</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\source\components\executer\exstorob.c">
+      <Filter>Source Files\Executer</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\source\components\hardware\hwvalid.c">
+      <Filter>Source Files\Hardware</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\source\components\events\evmisc.c">
+      <Filter>Source Files\Events</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\source\components\dispatcher\dsmethod.c">
+      <Filter>Source Files\Dispatcher</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\source\components\dispatcher\dsdebug.c">
+      <Filter>Source Files\Dispatcher</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\source\components\utilities\utcopy.c">
+      <Filter>Source Files\Utilities</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\source\components\executer\exfield.c">
+      <Filter>Source Files\Executer</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\source\components\executer\exfldio.c">
+      <Filter>Source Files\Executer</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\source\components\executer\exserial.c">
+      <Filter>Source Files\Executer</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\source\components\namespace\nseval.c">
+      <Filter>Source Files\Namespace</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\source\components\utilities\utpredef.c">
+      <Filter>Source Files\Utilities</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\source\components\namespace\nsarguments.c">
+      <Filter>Source Files\Namespace</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\source\components\namespace\nspredef.c">
+      <Filter>Source Files\Namespace</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\source\components\namespace\nsprepkg.c">
+      <Filter>Source Files\Namespace</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\source\components\namespace\nsrepair.c">
+      <Filter>Source Files\Namespace</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\source\components\namespace\nsrepair2.c">
+      <Filter>Source Files\Namespace</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\..\source\tools\AcpiNames\AcpiNames.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\source\include\platform\acwin.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>
