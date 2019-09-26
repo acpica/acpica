@@ -668,6 +668,11 @@ AcpiLoadTable (
 
 ACPI_EXTERNAL_RETURN_STATUS (
 ACPI_STATUS
+AcpiUnloadTable (
+    UINT32                  TableIndex))
+
+ACPI_EXTERNAL_RETURN_STATUS (
+ACPI_STATUS
 AcpiUnloadParentTable (
     ACPI_HANDLE             Object))
 
