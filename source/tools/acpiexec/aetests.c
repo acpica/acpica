@@ -218,7 +218,7 @@ AeMiscellaneousTests (
 
         /* Load and unload SSDT4 */
 
-        Status = AcpiLoadTable ((ACPI_TABLE_HEADER *) Ssdt4Code);
+        Status = AcpiLoadTable ((ACPI_TABLE_HEADER *) Ssdt4Code, NULL);
         ACPI_CHECK_OK (AcpiLoadTable, Status);
 
         Status = AcpiGetHandle (NULL, "\\_T96", &Handle);
@@ -229,7 +229,7 @@ AeMiscellaneousTests (
 
         /* Re-load SSDT4 */
 
-        Status = AcpiLoadTable ((ACPI_TABLE_HEADER *) Ssdt4Code);
+        Status = AcpiLoadTable ((ACPI_TABLE_HEADER *) Ssdt4Code, NULL);
         ACPI_CHECK_OK (AcpiLoadTable, Status);
 
         /* Unload and re-load SSDT2 (SSDT2 is in the XSDT) */
@@ -240,12 +240,12 @@ AeMiscellaneousTests (
         Status = AcpiUnloadParentTable (Handle);
         ACPI_CHECK_OK (AcpiUnloadParentTable, Status);
 
-        Status = AcpiLoadTable ((ACPI_TABLE_HEADER *) Ssdt2Code);
+        Status = AcpiLoadTable ((ACPI_TABLE_HEADER *) Ssdt2Code, NULL);
         ACPI_CHECK_OK (AcpiLoadTable, Status);
 
         /* Load OEM9 table (causes table override) */
 
-        Status = AcpiLoadTable ((ACPI_TABLE_HEADER *) Ssdt3Code);
+        Status = AcpiLoadTable ((ACPI_TABLE_HEADER *) Ssdt3Code, NULL);
         ACPI_CHECK_OK (AcpiLoadTable, Status);
     }
 
