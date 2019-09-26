@@ -190,6 +190,7 @@ AeMiscellaneousTests (
     ACPI_STATUS             Status;
     ACPI_STATISTICS         Stats;
     ACPI_HANDLE             Handle;
+    UINT32                  TableIndex;
 
 #if (!ACPI_REDUCED_HARDWARE)
     UINT32                  Temp;
@@ -218,14 +219,11 @@ AeMiscellaneousTests (
 
         /* Load and unload SSDT4 */
 
-        Status = AcpiLoadTable ((ACPI_TABLE_HEADER *) Ssdt4Code, NULL);
+        Status = AcpiLoadTable ((ACPI_TABLE_HEADER *) Ssdt4Code, &TableIndex);
         ACPI_CHECK_OK (AcpiLoadTable, Status);
 
-        Status = AcpiGetHandle (NULL, "\\_T96", &Handle);
-        ACPI_CHECK_OK (AcpiGetHandle, Status);
-
-        Status = AcpiUnloadParentTable (Handle);
-        ACPI_CHECK_OK (AcpiUnloadParentTable, Status);
+        Status = AcpiUnloadTable (TableIndex);
+        ACPI_CHECK_OK (AcpiUnloadTable, Status);
 
         /* Re-load SSDT4 */
 
