@@ -445,6 +445,8 @@ ACPI_EXPORT_SYMBOL_INIT (AcpiInstallTable)
  *
  * PARAMETERS:  Table               - Pointer to a buffer containing the ACPI
  *                                    table to be loaded.
+ *              TableIdx            - Pointer to a UINT32 for storing the table
+ *                                    index, might be NULL
  *
  * RETURN:      Status
  *
@@ -458,7 +460,8 @@ ACPI_EXPORT_SYMBOL_INIT (AcpiInstallTable)
 
 ACPI_STATUS
 AcpiLoadTable (
-    ACPI_TABLE_HEADER       *Table)
+    ACPI_TABLE_HEADER       *Table,
+    UINT32                  *TableIdx)
 {
     ACPI_STATUS             Status;
     UINT32                  TableIndex;
@@ -479,6 +482,11 @@ AcpiLoadTable (
     ACPI_INFO (("Host-directed Dynamic ACPI Table Load:"));
     Status = AcpiTbInstallAndLoadTable (ACPI_PTR_TO_PHYSADDR (Table),
         ACPI_TABLE_ORIGIN_EXTERNAL_VIRTUAL, FALSE, &TableIndex);
+    if (TableIdx)
+    {
+        *TableIdx = TableIndex;
+    }
+
     if (ACPI_SUCCESS (Status))
     {
         /* Complete the initialization/resolution of new objects */

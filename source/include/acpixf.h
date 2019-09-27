@@ -664,7 +664,8 @@ AcpiInstallTable (
 ACPI_EXTERNAL_RETURN_STATUS (
 ACPI_STATUS
 AcpiLoadTable (
-    ACPI_TABLE_HEADER       *Table))
+    ACPI_TABLE_HEADER       *Table,
+    UINT32                  *TableIdx))
 
 ACPI_EXTERNAL_RETURN_STATUS (
 ACPI_STATUS
