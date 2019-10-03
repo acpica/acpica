@@ -187,6 +187,7 @@ AcpiDmDumpIort (
     ACPI_DMTABLE_INFO       *InfoTable;
     char                    *String;
     UINT32                  i;
+    UINT32                  MappingByteLength;
 
 
     /* Main table */
@@ -330,8 +331,10 @@ AcpiDmDumpIort (
 
             if (IortNode->Length > NodeOffset)
             {
+                MappingByteLength =
+                    IortNode->MappingCount * sizeof (ACPI_IORT_ID_MAPPING);
                 Status = AcpiDmDumpTable (Table->Length, Offset + NodeOffset,
-                    Table, IortNode->Length - NodeOffset,
+                    Table, IortNode->Length - NodeOffset - MappingByteLength,
                     AcpiDmTableInfoIort1a);
                 if (ACPI_FAILURE (Status))
                 {
