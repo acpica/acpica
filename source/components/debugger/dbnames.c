@@ -781,7 +781,7 @@ AcpiDbWalkForFields (
     {
         case ACPI_TYPE_INTEGER:
 
-            AcpiOsPrintf ("%lx", RetValue->Integer.Value);
+            AcpiOsPrintf ("%8.8X%8.8X", ACPI_FORMAT_UINT64 (RetValue->Integer.Value));
             break;
 
         case ACPI_TYPE_BUFFER:
@@ -794,10 +794,10 @@ AcpiDbWalkForFields (
 
             break;
     }
+
     AcpiOsPrintf ("\n");
 
     ACPI_FREE (Buffer.Pointer);
-
     return (AE_OK);
 }
 
