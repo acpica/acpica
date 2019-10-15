@@ -580,8 +580,8 @@ AcpiDsGetFieldNames (
                         AcpiExWriteDataToField (ObjDesc,
                             AcpiNsGetAttachedObject (Info->FieldNode),
                             &ResultDesc);
+                        AcpiUtRemoveReference (ObjDesc);
                     }
-                    AcpiUtRemoveReference (ObjDesc);
                     ACPI_FREE (NamePath);
 #endif
                 }
