@@ -686,6 +686,22 @@ AcpiDbGetNextToken (
         }
         break;
 
+    case '{':
+
+        /* This is the start of a field unit, scan until closing brace */
+
+        String++;
+        Start = String;
+        Type = ACPI_TYPE_FIELD_UNIT;
+
+        /* Find end of buffer */
+
+        while (*String && (*String != '}'))
+        {
+            String++;
+        }
+        break;
+
     case '[':
 
         /* This is the start of a package, scan until closing bracket */

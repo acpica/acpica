@@ -776,6 +776,11 @@ AcpiDbWalkForFields (
     Buffer.Length = ACPI_ALLOCATE_LOCAL_BUFFER;
     AcpiEvaluateObject (ObjHandle, NULL, NULL, &Buffer);
 
+    /*
+     * Since this is a field unit, surround the output in braces
+     */
+    AcpiOsPrintf ("{");
+
     RetValue = (ACPI_OBJECT *) Buffer.Pointer;
     switch (RetValue->Type)
     {
@@ -795,7 +800,7 @@ AcpiDbWalkForFields (
             break;
     }
 
-    AcpiOsPrintf ("\n");
+    AcpiOsPrintf ("}\n");
 
     ACPI_FREE (Buffer.Pointer);
     return (AE_OK);

@@ -434,7 +434,6 @@ AcpiDsGetFieldNames (
     ACPI_PARSE_OBJECT       *Child;
 
 #ifdef ACPI_EXEC_APP
-    UINT64                  Value = 0;
     ACPI_OPERAND_OBJECT     *ResultDesc;
     ACPI_OPERAND_OBJECT     *ObjDesc;
     char                    *NamePath;
@@ -576,8 +575,7 @@ AcpiDsGetFieldNames (
                     }
 #ifdef ACPI_EXEC_APP
                     NamePath = AcpiNsGetExternalPathname (Info->FieldNode);
-                    ObjDesc = AcpiUtCreateIntegerObject (Value);
-                    if (ACPI_SUCCESS (AeLookupInitFileEntry (NamePath, &Value)))
+                    if (ACPI_SUCCESS (AeLookupInitFileEntry (NamePath, &ObjDesc)))
                     {
                         AcpiExWriteDataToField (ObjDesc,
                             AcpiNsGetAttachedObject (Info->FieldNode),
