@@ -1638,7 +1638,7 @@ DtCompileSlit (
     DtInsertSubtable (ParentTable, Subtable);
 
     Localities = *ACPI_CAST_PTR (UINT32, Subtable->Buffer);
-    LocalityBuffer = UtLocalCalloc (Localities);
+    LocalityBuffer = (UINT8 *) UtLocalCacheCalloc (Localities);
     LocalityListLength = 0;
 
     /* Compile each locality buffer */
