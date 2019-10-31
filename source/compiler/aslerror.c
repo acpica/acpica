@@ -864,11 +864,6 @@ static void AslInitEnode (
         }
 
         FileNode = FlGetCurrentFileNode ();
-        if (!FileNode)
-        {
-            return;
-        }
-
         Enode->SourceFilename =
             FileNode->Files[ASL_FILE_SOURCE_OUTPUT].Filename;
     }
