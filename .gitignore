@@ -124,8 +124,8 @@ generate/linux/divergence-single.diff
 libraries
 
 tests/aslts/tmp
-tests/misc/grammar.aml
-tests/misc/grammar.dsl
+tests/misc/*.dsl
+tests/misc/*.aml
 
 .pc
 
