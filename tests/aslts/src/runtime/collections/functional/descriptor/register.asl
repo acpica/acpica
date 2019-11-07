@@ -223,13 +223,13 @@
      3-Dword access
      4-Qword access
      Byte 7	Register Address, _ADR bits[7:0]	Register Address
-     Byte 8	Register Address, _ADR bits[15:8]	
-     Byte 9	Register Address, _ADR bits[23:16]	
-     Byte 10	Register Address, _ADR bits[31:24]	
-     Byte 11	Register Address, _ADR bits[39:32]	
-     Byte 12	Register Address, _ADR bits[47:40]	
-     Byte 13	Register Address, _ADR bits[55:48]	
-     Byte 14	Register Address, _ADR bits[63:56]	
+     Byte 8	Register Address, _ADR bits[15:8]
+     Byte 9	Register Address, _ADR bits[23:16]
+     Byte 10	Register Address, _ADR bits[31:24]
+     Byte 11	Register Address, _ADR bits[39:32]
+     Byte 12	Register Address, _ADR bits[47:40]
+     Byte 13	Register Address, _ADR bits[55:48]
+     Byte 14	Register Address, _ADR bits[63:56]
      */
     Name (P437, Package (0x12)
     {

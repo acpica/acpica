@@ -873,9 +873,9 @@
      When this descriptor is returned from _CRS, or when OSPM
      passes this descriptor to _SRS, this field must be set to 1.
      Byte 4n+5	Interrupt Number, _INT bits [7:0]	Interrupt number
-     Byte 4n+6	Interrupt Number, _INT bits [15:8]	
-     Byte 4n+7	Interrupt Number, _INT bits [23:16]	
-     Byte 4n+8	Interrupt Number, _INT bits [31:24]	
+     Byte 4n+6	Interrupt Number, _INT bits [15:8]
+     Byte 4n+7	Interrupt Number, _INT bits [23:16]
+     Byte 4n+8	Interrupt Number, _INT bits [31:24]
      Additional interrupt numbers
      Byte x	Resource Source Index	(Optional) Only present if Resource Source (below) is present.
      This field gives an index to the specific resource descriptor

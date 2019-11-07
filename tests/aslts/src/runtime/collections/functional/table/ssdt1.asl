@@ -45,6 +45,6 @@ DefinitionBlock(
 	Scope(\) {
 		Name(NABS, "absolute location obj")
 	}
-	
+
 	Name(NCRR, "current location obj")
 }

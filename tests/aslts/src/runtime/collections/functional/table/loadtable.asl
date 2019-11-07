@@ -1668,7 +1668,7 @@
          * Nothing like this should happen in real ASL code. The BIOS writer
          * knows whether the table is in the XSDT or not.
          */
-        /*	
+        /*
          Method(tstf, 1)
          {
          Name(DDBH, 0)

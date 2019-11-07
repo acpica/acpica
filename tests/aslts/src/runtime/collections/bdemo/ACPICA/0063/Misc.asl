@@ -52,7 +52,7 @@
      * with the first non-hexadecimal character, end-of-string, or when the size
      * of an integer is reached (8 characters for 32-bit integers and 16 characters
      * for 64-bit integers). Note: the first non-hex character terminates the
-     * conversion without error, and a “0x” prefix is not allowed.	
+     * conversion without error, and a “0x” prefix is not allowed.
      */
     /*
      * To be completed !!!!!!!

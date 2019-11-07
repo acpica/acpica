@@ -1729,7 +1729,7 @@ Method(ms1d, 1, Serialized)
 		Method(m000, 7)
 		{
 			OUTP("LocalX case of Method started:")
-	
+
 			Store(RefOf(i000), Local0)
 			Store(Local0, Local1)
 			Store(Local1, Local2)
@@ -3265,7 +3265,7 @@ Method(ms27, 1, Serialized)
 		OUTP("Check IndexField ByteAcc Ones write Offset (0:7)1-(1:0)1-(2:0)4-4")
 
 		TRY0(0, 0, 0x80)
-		
+
 		Store(0x01, Local0)
 		if (LAnd(ABUU, LNot(q00a))) {
 			Store(0xff, Local0)

@@ -261,7 +261,7 @@ Method(m922, 7, 1, 0) {Return ("m922")}
 
 //  SyncLevel specified when SerializeRule is not specified
 Method(m923, , , 0) {Return ("m923")}
-	
+
 //  SyncLevel specified when SerializeRule is set up to NotSerialized
 Method(m924, , NotSerialized, 0) {Return ("m924")}
 
