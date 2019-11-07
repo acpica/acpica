@@ -7,19 +7,19 @@
 CFG=AcpiExec - Win32 Debug
 !MESSAGE This is not a valid makefile. To build this project using NMAKE,
 !MESSAGE use the Export Makefile command and run
-!MESSAGE 
+!MESSAGE
 !MESSAGE NMAKE /f "AcpiExec.mak".
-!MESSAGE 
+!MESSAGE
 !MESSAGE You can specify a configuration when running NMAKE
 !MESSAGE by defining the macro CFG on the command line. For example:
-!MESSAGE 
+!MESSAGE
 !MESSAGE NMAKE /f "AcpiExec.mak" CFG="AcpiExec - Win32 Debug"
-!MESSAGE 
+!MESSAGE
 !MESSAGE Possible choices for configuration are:
-!MESSAGE 
+!MESSAGE
 !MESSAGE "AcpiExec - Win32 Release" (based on "Win32 (x86) Console Application")
 !MESSAGE "AcpiExec - Win32 Debug" (based on "Win32 (x86) Console Application")
-!MESSAGE 
+!MESSAGE
 
 # Begin Project
 # PROP AllowPerConfigDependencies 0
@@ -94,7 +94,7 @@ PostBuild_Desc=Copying acpiexec to libraries...
 PostBuild_Cmds=copy acpiexecdebug\acpiexec.exe ..\..\libraries\acpiexec_dbg.exe
 # End Special Build Tool
 
-!ENDIF 
+!ENDIF
 
 # Begin Target
 
@@ -189,7 +189,7 @@ SOURCE=..\..\source\components\utilities\utmisc.c
 
 # ADD CPP /Za
 
-!ENDIF 
+!ENDIF
 
 # End Source File
 # Begin Source File
@@ -481,7 +481,7 @@ SOURCE=..\..\source\Tools\AcpiExec\aemain.c
 
 # ADD CPP /Ze /FR
 
-!ENDIF 
+!ENDIF
 
 # End Source File
 # Begin Source File
