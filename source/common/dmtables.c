@@ -543,7 +543,6 @@ AdParseTable (
     }
 
     WalkState->ParseFlags &= ~ACPI_PARSE_DELETE_TREE;
-    WalkState->ParseFlags |= ACPI_PARSE_DISASSEMBLE;
 
     Status = AcpiPsParseAml (WalkState);
     if (ACPI_FAILURE (Status))
