@@ -261,18 +261,11 @@ DtDoCompile (
     UtEndEvent (Event);
 
     FileNode = FlGetCurrentFileNode ();
-    if (!FileNode)
-    {
-        fprintf (stderr, "Summary for %s could not be generated",
-            AslGbl_Files[ASL_FILE_INPUT].Filename);
-    }
-    else
-    {
-        FileNode->TotalLineCount = AslGbl_CurrentLineNumber;
-        FileNode->OriginalInputFileSize = AslGbl_InputByteCount;
-        DbgPrint (ASL_PARSE_OUTPUT, "Line count: %u input file size: %u\n",
-                FileNode->TotalLineCount, FileNode->OriginalInputFileSize);
-    }
+
+    FileNode->TotalLineCount = AslGbl_CurrentLineNumber;
+    FileNode->OriginalInputFileSize = AslGbl_InputByteCount;
+    DbgPrint (ASL_PARSE_OUTPUT, "Line count: %u input file size: %u\n",
+            FileNode->TotalLineCount, FileNode->OriginalInputFileSize);
 
     if (ACPI_FAILURE (Status))
     {

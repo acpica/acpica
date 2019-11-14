@@ -420,8 +420,22 @@ ASL_GLOBAL_FILE_NODE *
 FlGetCurrentFileNode (
     void)
 {
-    return (FlGetFileNode (
-        ASL_FILE_INPUT,AslGbl_Files[ASL_FILE_INPUT].Filename));
+    ASL_GLOBAL_FILE_NODE    *FileNode =
+        FlGetFileNode (ASL_FILE_INPUT,AslGbl_Files[ASL_FILE_INPUT].Filename);
+
+
+    if (!FileNode)
+    {
+        /*
+         * If the current file node does not exist after initializing the file
+         * node structures, something went wrong and this is an unrecoverable
+         * condition.
+         */
+        FlFileError (ASL_FILE_INPUT, ASL_MSG_COMPILER_INTERNAL);
+        AslAbort ();
+    }
+
+    return (FileNode);
 }
 
 
