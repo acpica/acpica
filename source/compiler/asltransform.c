@@ -151,6 +151,7 @@
 
 #include "aslcompiler.h"
 #include "aslcompiler.y.h"
+#include "acnamesp.h"
 
 #define _COMPONENT          ACPI_COMPILER
         ACPI_MODULE_NAME    ("asltransform")
@@ -431,6 +432,7 @@ TrTransformSubtree (
     ACPI_PARSE_OBJECT           *Op)
 {
     ACPI_PARSE_OBJECT           *MethodOp;
+    ACPI_NAMESTRING_INFO        Info;
 
 
     if (Op->Asl.AmlOpcode == AML_RAW_DATA_BYTE)
@@ -492,6 +494,22 @@ TrTransformSubtree (
         Op->Asl.Value.String = "\\";
         break;
 
+    case PARSEOP_NAMESTRING:
+        /*
+         * A NameString can be up to 255 (0xFF) individual NameSegs maximum
+         * (with 254 dot separators) - as per the ACPI specification. Note:
+         * Cannot check for NumSegments == 0 because things like
+         * Scope(\) are legal and OK.
+         */
+        Info.ExternalName = Op->Asl.Value.String;
+        AcpiNsGetInternalNameLength (&Info);
+
+        if (Info.NumSegments > 255)
+        {
+            AslError (ASL_ERROR, ASL_MSG_NAMESTRING_LENGTH, Op, NULL);
+        }
+        break;
+
     case PARSEOP_UNLOAD:
 
         AslError (ASL_WARNING, ASL_MSG_UNLOAD, Op, NULL);
@@ -510,7 +528,6 @@ TrTransformSubtree (
     case PARSEOP_PROCESSOR:
 
         AslError (ASL_WARNING, ASL_MSG_LEGACY_PROCESSOR_OP, Op, Op->Asl.ExternalName);
-
         break;
 
     default:
