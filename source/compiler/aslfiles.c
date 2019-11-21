@@ -207,12 +207,6 @@ FlInitOneFile (
     NewFileNode = ACPI_CAST_PTR (ASL_GLOBAL_FILE_NODE,
         UtLocalCacheCalloc (sizeof (ASL_GLOBAL_FILE_NODE)));
 
-    if (!NewFileNode)
-    {
-        AslError (ASL_ERROR, ASL_MSG_MEMORY_ALLOCATION, NULL, NULL);
-        return (AE_NO_MEMORY);
-    }
-
     NewFileNode->ParserErrorDetected = FALSE;
     NewFileNode->Next = AslGbl_FilesList;
 
