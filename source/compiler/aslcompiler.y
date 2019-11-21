@@ -4843,7 +4843,6 @@ OptionalXferSize
 /* Local support functions in C */
 
 
-
 /******************************************************************************
  *
  * Local support functions
@@ -4918,4 +4917,3 @@ UtGetOpName (
     return ("[Unknown parser generator]");
 #endif
 }
-
