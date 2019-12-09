@@ -56,13 +56,13 @@
         /* Computational Data */
         Arg1 = S900 /* \S900 */
         Store (Arg1 [0x00], Local0)
-        M1A2 (Local0, C016, 0x00, 0x00, C009, 0x31, 0x01)
+        M1A2 (Local0, C016, 0x00, 0x00, C009, 0x31, __LINE__)
         Arg1 = S901 /* \S901 */
         Store (Arg1 [0x02], Local0)
-        M1A2 (Local0, C016, 0x00, 0x00, C009, 0x72, 0x02)
+        M1A2 (Local0, C016, 0x00, 0x00, C009, 0x72, __LINE__)
         Arg1 = B900 /* \B900 */
         Store (Arg1 [0x03], Local0)
-        M1A2 (Local0, C016, 0x00, 0x00, C009, 0xB3, 0x03)
+        M1A2 (Local0, C016, 0x00, 0x00, C009, 0xB3, __LINE__)
         /* Elements of Package are Uninitialized */
 
         If (Y104)
@@ -76,22 +76,22 @@
 
         Arg1 = P901 /* \P901 */
         Store (Arg1 [0x00], Local0)
-        M1A2 (Local0, C009, 0x00, 0x00, C009, 0xABCD0004, 0x05)
+        M1A2 (Local0, C009, 0x00, 0x00, C009, 0xABCD0004, __LINE__)
         Arg1 = P901 /* \P901 */
         Store (Arg1 [0x01], Local0)
-        M1A2 (Local0, C009, 0x00, 0x00, C009, 0x1122334455660005, 0x06)
+        M1A2 (Local0, C009, 0x00, 0x00, C009, 0x1122334455660005, __LINE__)
         Arg1 = P902 /* \P902 */
         Store (Arg1 [0x00], Local0)
-        M1A2 (Local0, C00A, 0x00, 0x00, C00A, "12340006", 0x07)
+        M1A2 (Local0, C00A, 0x00, 0x00, C00A, "12340006", __LINE__)
         Arg1 = P902 /* \P902 */
         Store (Arg1 [0x01], Local0)
-        M1A2 (Local0, C00A, 0x00, 0x00, C00A, "q1w2e3r4t5y6u7i80007", 0x08)
+        M1A2 (Local0, C00A, 0x00, 0x00, C00A, "q1w2e3r4t5y6u7i80007", __LINE__)
         Arg1 = P903 /* \P903 */
         Store (Arg1 [0x00], Local0)
-        M1A2 (Local0, C00A, 0x00, 0x00, C00A, "qwrtyuiop0008", 0x09)
+        M1A2 (Local0, C00A, 0x00, 0x00, C00A, "qwrtyuiop0008", __LINE__)
         Arg1 = P903 /* \P903 */
         Store (Arg1 [0x01], Local0)
-        M1A2 (Local0, C00A, 0x00, 0x00, C00A, "1234567890abdef0250009", 0x0A)
+        M1A2 (Local0, C00A, 0x00, 0x00, C00A, "1234567890abdef0250009", __LINE__)
         Arg1 = P904 /* \P904 */
         Store (Arg1 [0x00], Local0)
         M1A2 (Local0, C00B, 0x00, 0x00, C00B, Buffer (0x03)
@@ -100,16 +100,16 @@
             }, 0x0B)
         Arg1 = P905 /* \P905 */
         Store (Arg1 [0x00], Local0)
-        M1A2 (Local0, C00C, 0x01, 0x00, C009, 0x0ABC000A, 0x0C)
+        M1A2 (Local0, C00C, 0x01, 0x00, C009, 0x0ABC000A, __LINE__)
         Arg1 = P905 /* \P905 */
         Store (Arg1 [0x00], Local0)
-        M1A2 (Local0, C00C, 0x01, 0x01, C00A, "0xabc000b", 0x0D)
+        M1A2 (Local0, C00C, 0x01, 0x01, C00A, "0xabc000b", __LINE__)
         Arg1 = P906 /* \P906 */
         Store (Arg1 [0x00], Local0)
-        M1A2 (Local0, C00C, 0x01, 0x00, C00A, "abc000d", 0x0E)
+        M1A2 (Local0, C00C, 0x01, 0x00, C00A, "abc000d", __LINE__)
         Arg1 = P907 /* \P907 */
         Store (Arg1 [0x00], Local0)
-        M1A2 (Local0, C00C, 0x01, 0x00, C00A, "aqwevbgnm000e", 0x0F)
+        M1A2 (Local0, C00C, 0x01, 0x00, C00A, "aqwevbgnm000e", __LINE__)
         Arg1 = P908 /* \P908 */
         Store (Arg1 [0x00], Local0)
         M1A2 (Local0, C00C, 0x01, 0x00, C00B, Buffer (0x05)
@@ -118,13 +118,13 @@
             }, 0x10)
         Arg1 = P909 /* \P909 */
         Store (Arg1 [0x00], Local0)
-        M1A2 (Local0, C00C, 0x02, 0x00, C009, 0x0ABC000F, 0x11)
+        M1A2 (Local0, C00C, 0x02, 0x00, C009, 0x0ABC000F, __LINE__)
         Arg1 = P90A /* \P90A */
         Store (Arg1 [0x00], Local0)
-        M1A2 (Local0, C00C, 0x02, 0x00, C00A, "12340010", 0x12)
+        M1A2 (Local0, C00C, 0x02, 0x00, C00A, "12340010", __LINE__)
         Arg1 = P90B /* \P90B */
         Store (Arg1 [0x00], Local0)
-        M1A2 (Local0, C00C, 0x02, 0x00, C00A, "zxswefas0011", 0x13)
+        M1A2 (Local0, C00C, 0x02, 0x00, C00A, "zxswefas0011", __LINE__)
         Arg1 = P90C /* \P90C */
         Store (Arg1 [0x00], Local0)
         M1A2 (Local0, C00C, 0x02, 0x00, C00B, Buffer (0x03)
@@ -133,16 +133,16 @@
             }, 0x14)
         Arg1 = P90D /* \P90D */
         Store (Arg1 [0x00], Local0)
-        M1A2 (Local0, C009, 0x00, 0x00, C009, 0xFE7CB391D65A0000, 0x15)
+        M1A2 (Local0, C009, 0x00, 0x00, C009, 0xFE7CB391D65A0000, __LINE__)
         Arg1 = P90E /* \P90E */
         Store (Arg1 [0x00], Local0)
-        M1A2 (Local0, C009, 0x00, 0x00, C009, 0xC1790001, 0x16)
+        M1A2 (Local0, C009, 0x00, 0x00, C009, 0xC1790001, __LINE__)
         Arg1 = P90F /* \P90F */
         Store (Arg1 [0x00], Local0)
-        M1A2 (Local0, C00A, 0x00, 0x00, C00A, "12340002", 0x17)
+        M1A2 (Local0, C00A, 0x00, 0x00, C00A, "12340002", __LINE__)
         Arg1 = P910 /* \P910 */
         Store (Arg1 [0x00], Local0)
-        M1A2 (Local0, C00A, 0x00, 0x00, C00A, "qwrtyu0003", 0x18)
+        M1A2 (Local0, C00A, 0x00, 0x00, C00A, "qwrtyu0003", __LINE__)
         Arg1 = P911 /* \P911 */
         Store (Arg1 [0x00], Local0)
         M1A2 (Local0, C00B, 0x00, 0x00, C00B, Buffer (0x05)
@@ -153,16 +153,16 @@
         {
             Arg1 = P912 /* \P912 */
             Store (Arg1 [0x00], Local0)
-            M1A2 (Local0, C00D, 0x00, 0x00, C00D, 0x00, 0x1A)
+            M1A2 (Local0, C00D, 0x00, 0x00, C00D, 0x00, __LINE__)
             Arg1 = P913 /* \P913 */
             Store (Arg1 [0x00], Local0)
-            M1A2 (Local0, C00D, 0x00, 0x00, C00D, 0x00, 0x1B)
+            M1A2 (Local0, C00D, 0x00, 0x00, C00D, 0x00, __LINE__)
             Arg1 = P914 /* \P914 */
             Store (Arg1 [0x00], Local0)
-            M1A2 (Local0, C00D, 0x00, 0x00, C00D, 0x00, 0x1C)
+            M1A2 (Local0, C00D, 0x00, 0x00, C00D, 0x00, __LINE__)
             Arg1 = P915 /* \P915 */
             Store (Arg1 [0x00], Local0)
-            M1A2 (Local0, C016, 0x00, 0x00, C016, 0xB0, 0x1D)
+            M1A2 (Local0, C016, 0x00, 0x00, C016, 0xB0, __LINE__)
         }
 
         /* Elements of Package are NOT Computational Data */
@@ -364,16 +364,16 @@
         /* Computational Data */
         Arg1 = S900 /* \S900 */
         Local0 = Local1 = Arg1 [0x00]
-        M1A2 (Local0, C016, 0x00, 0x00, C009, 0x31, 0x5B)
-        M1A2 (Local1, C016, 0x00, 0x00, C009, 0x31, 0x5C)
+        M1A2 (Local0, C016, 0x00, 0x00, C009, 0x31, __LINE__)
+        M1A2 (Local1, C016, 0x00, 0x00, C009, 0x31, __LINE__)
         Arg1 = S901 /* \S901 */
         Local0 = Local1 = Arg1 [0x02]
-        M1A2 (Local0, C016, 0x00, 0x00, C009, 0x72, 0x5D)
-        M1A2 (Local1, C016, 0x00, 0x00, C009, 0x72, 0x5E)
+        M1A2 (Local0, C016, 0x00, 0x00, C009, 0x72, __LINE__)
+        M1A2 (Local1, C016, 0x00, 0x00, C009, 0x72, __LINE__)
         Arg1 = B900 /* \B900 */
         Local0 = Local1 = Arg1 [0x04]
-        M1A2 (Local0, C016, 0x00, 0x00, C009, 0xB4, 0x5F)
-        M1A2 (Local1, C016, 0x00, 0x00, C009, 0xB4, 0x60)
+        M1A2 (Local0, C016, 0x00, 0x00, C009, 0xB4, __LINE__)
+        M1A2 (Local1, C016, 0x00, 0x00, C009, 0xB4, __LINE__)
         /* Elements of Package are Uninitialized */
 
         If (Y104)
@@ -388,28 +388,28 @@
 
         Arg1 = P901 /* \P901 */
         Local0 = Local1 = Arg1 [0x00]
-        M1A2 (Local0, C009, 0x00, 0x00, C009, 0xABCD0004, 0x63)
-        M1A2 (Local1, C009, 0x00, 0x00, C009, 0xABCD0004, 0x64)
+        M1A2 (Local0, C009, 0x00, 0x00, C009, 0xABCD0004, __LINE__)
+        M1A2 (Local1, C009, 0x00, 0x00, C009, 0xABCD0004, __LINE__)
         Arg1 = P901 /* \P901 */
         Local0 = Local1 = Arg1 [0x01]
-        M1A2 (Local0, C009, 0x00, 0x00, C009, 0x1122334455660005, 0x65)
-        M1A2 (Local1, C009, 0x00, 0x00, C009, 0x1122334455660005, 0x66)
+        M1A2 (Local0, C009, 0x00, 0x00, C009, 0x1122334455660005, __LINE__)
+        M1A2 (Local1, C009, 0x00, 0x00, C009, 0x1122334455660005, __LINE__)
         Arg1 = P902 /* \P902 */
         Local0 = Local1 = Arg1 [0x00]
-        M1A2 (Local0, C00A, 0x00, 0x00, C00A, "12340006", 0x67)
-        M1A2 (Local1, C00A, 0x00, 0x00, C00A, "12340006", 0x68)
+        M1A2 (Local0, C00A, 0x00, 0x00, C00A, "12340006", __LINE__)
+        M1A2 (Local1, C00A, 0x00, 0x00, C00A, "12340006", __LINE__)
         Arg1 = P902 /* \P902 */
         Local0 = Local1 = Arg1 [0x01]
-        M1A2 (Local0, C00A, 0x00, 0x00, C00A, "q1w2e3r4t5y6u7i80007", 0x69)
-        M1A2 (Local1, C00A, 0x00, 0x00, C00A, "q1w2e3r4t5y6u7i80007", 0x6A)
+        M1A2 (Local0, C00A, 0x00, 0x00, C00A, "q1w2e3r4t5y6u7i80007", __LINE__)
+        M1A2 (Local1, C00A, 0x00, 0x00, C00A, "q1w2e3r4t5y6u7i80007", __LINE__)
         Arg1 = P903 /* \P903 */
         Local0 = Local1 = Arg1 [0x00]
-        M1A2 (Local0, C00A, 0x00, 0x00, C00A, "qwrtyuiop0008", 0x6B)
-        M1A2 (Local1, C00A, 0x00, 0x00, C00A, "qwrtyuiop0008", 0x6C)
+        M1A2 (Local0, C00A, 0x00, 0x00, C00A, "qwrtyuiop0008", __LINE__)
+        M1A2 (Local1, C00A, 0x00, 0x00, C00A, "qwrtyuiop0008", __LINE__)
         Arg1 = P903 /* \P903 */
         Local0 = Local1 = Arg1 [0x01]
-        M1A2 (Local0, C00A, 0x00, 0x00, C00A, "1234567890abdef0250009", 0x6D)
-        M1A2 (Local1, C00A, 0x00, 0x00, C00A, "1234567890abdef0250009", 0x6E)
+        M1A2 (Local0, C00A, 0x00, 0x00, C00A, "1234567890abdef0250009", __LINE__)
+        M1A2 (Local1, C00A, 0x00, 0x00, C00A, "1234567890abdef0250009", __LINE__)
         Arg1 = P904 /* \P904 */
         Local0 = Local1 = Arg1 [0x00]
         M1A2 (Local0, C00B, 0x00, 0x00, C00B, Buffer (0x03)
@@ -422,20 +422,20 @@
             }, 0x70)
         Arg1 = P905 /* \P905 */
         Local0 = Local1 = Arg1 [0x00]
-        M1A2 (Local0, C00C, 0x01, 0x00, C009, 0x0ABC000A, 0x71)
-        M1A2 (Local1, C00C, 0x01, 0x00, C009, 0x0ABC000A, 0x72)
+        M1A2 (Local0, C00C, 0x01, 0x00, C009, 0x0ABC000A, __LINE__)
+        M1A2 (Local1, C00C, 0x01, 0x00, C009, 0x0ABC000A, __LINE__)
         Arg1 = P905 /* \P905 */
         Local0 = Local1 = Arg1 [0x00]
-        M1A2 (Local0, C00C, 0x01, 0x01, C00A, "0xabc000b", 0x73)
-        M1A2 (Local1, C00C, 0x01, 0x01, C00A, "0xabc000b", 0x74)
+        M1A2 (Local0, C00C, 0x01, 0x01, C00A, "0xabc000b", __LINE__)
+        M1A2 (Local1, C00C, 0x01, 0x01, C00A, "0xabc000b", __LINE__)
         Arg1 = P906 /* \P906 */
         Local0 = Local1 = Arg1 [0x00]
-        M1A2 (Local0, C00C, 0x01, 0x00, C00A, "abc000d", 0x75)
-        M1A2 (Local1, C00C, 0x01, 0x00, C00A, "abc000d", 0x76)
+        M1A2 (Local0, C00C, 0x01, 0x00, C00A, "abc000d", __LINE__)
+        M1A2 (Local1, C00C, 0x01, 0x00, C00A, "abc000d", __LINE__)
         Arg1 = P907 /* \P907 */
         Local0 = Local1 = Arg1 [0x00]
-        M1A2 (Local0, C00C, 0x01, 0x00, C00A, "aqwevbgnm000e", 0x77)
-        M1A2 (Local1, C00C, 0x01, 0x00, C00A, "aqwevbgnm000e", 0x78)
+        M1A2 (Local0, C00C, 0x01, 0x00, C00A, "aqwevbgnm000e", __LINE__)
+        M1A2 (Local1, C00C, 0x01, 0x00, C00A, "aqwevbgnm000e", __LINE__)
         Arg1 = P908 /* \P908 */
         Local0 = Local1 = Arg1 [0x00]
         M1A2 (Local0, C00C, 0x01, 0x00, C00B, Buffer (0x05)
@@ -448,16 +448,16 @@
             }, 0x7A)
         Arg1 = P909 /* \P909 */
         Local0 = Local1 = Arg1 [0x00]
-        M1A2 (Local0, C00C, 0x02, 0x00, C009, 0x0ABC000F, 0x7B)
-        M1A2 (Local1, C00C, 0x02, 0x00, C009, 0x0ABC000F, 0x7C)
+        M1A2 (Local0, C00C, 0x02, 0x00, C009, 0x0ABC000F, __LINE__)
+        M1A2 (Local1, C00C, 0x02, 0x00, C009, 0x0ABC000F, __LINE__)
         Arg1 = P90A /* \P90A */
         Local0 = Local1 = Arg1 [0x00]
-        M1A2 (Local0, C00C, 0x02, 0x00, C00A, "12340010", 0x7D)
-        M1A2 (Local1, C00C, 0x02, 0x00, C00A, "12340010", 0x7E)
+        M1A2 (Local0, C00C, 0x02, 0x00, C00A, "12340010", __LINE__)
+        M1A2 (Local1, C00C, 0x02, 0x00, C00A, "12340010", __LINE__)
         Arg1 = P90B /* \P90B */
         Local0 = Local1 = Arg1 [0x00]
-        M1A2 (Local0, C00C, 0x02, 0x00, C00A, "zxswefas0011", 0x7F)
-        M1A2 (Local1, C00C, 0x02, 0x00, C00A, "zxswefas0011", 0x80)
+        M1A2 (Local0, C00C, 0x02, 0x00, C00A, "zxswefas0011", __LINE__)
+        M1A2 (Local1, C00C, 0x02, 0x00, C00A, "zxswefas0011", __LINE__)
         Arg1 = P90C /* \P90C */
         Local0 = Local1 = Arg1 [0x00]
         M1A2 (Local0, C00C, 0x02, 0x00, C00B, Buffer (0x03)
@@ -470,20 +470,20 @@
             }, 0x82)
         Arg1 = P90D /* \P90D */
         Local0 = Local1 = Arg1 [0x00]
-        M1A2 (Local0, C009, 0x00, 0x00, C009, 0xFE7CB391D65A0000, 0x83)
-        M1A2 (Local1, C009, 0x00, 0x00, C009, 0xFE7CB391D65A0000, 0x84)
+        M1A2 (Local0, C009, 0x00, 0x00, C009, 0xFE7CB391D65A0000, __LINE__)
+        M1A2 (Local1, C009, 0x00, 0x00, C009, 0xFE7CB391D65A0000, __LINE__)
         Arg1 = P90E /* \P90E */
         Local0 = Local1 = Arg1 [0x00]
-        M1A2 (Local0, C009, 0x00, 0x00, C009, 0xC1790001, 0x85)
-        M1A2 (Local1, C009, 0x00, 0x00, C009, 0xC1790001, 0x86)
+        M1A2 (Local0, C009, 0x00, 0x00, C009, 0xC1790001, __LINE__)
+        M1A2 (Local1, C009, 0x00, 0x00, C009, 0xC1790001, __LINE__)
         Arg1 = P90F /* \P90F */
         Local0 = Local1 = Arg1 [0x00]
-        M1A2 (Local0, C00A, 0x00, 0x00, C00A, "12340002", 0x87)
-        M1A2 (Local1, C00A, 0x00, 0x00, C00A, "12340002", 0x88)
+        M1A2 (Local0, C00A, 0x00, 0x00, C00A, "12340002", __LINE__)
+        M1A2 (Local1, C00A, 0x00, 0x00, C00A, "12340002", __LINE__)
         Arg1 = P910 /* \P910 */
         Local0 = Local1 = Arg1 [0x00]
-        M1A2 (Local0, C00A, 0x00, 0x00, C00A, "qwrtyu0003", 0x89)
-        M1A2 (Local1, C00A, 0x00, 0x00, C00A, "qwrtyu0003", 0x8A)
+        M1A2 (Local0, C00A, 0x00, 0x00, C00A, "qwrtyu0003", __LINE__)
+        M1A2 (Local1, C00A, 0x00, 0x00, C00A, "qwrtyu0003", __LINE__)
         Arg1 = P911 /* \P911 */
         Local0 = Local1 = Arg1 [0x00]
         M1A2 (Local0, C00B, 0x00, 0x00, C00B, Buffer (0x05)
@@ -498,20 +498,20 @@
         {
             Arg1 = P912 /* \P912 */
             Local0 = Local1 = Arg1 [0x00]
-            M1A2 (Local0, C00D, 0x00, 0x00, C00D, 0x00, 0x8D)
-            M1A2 (Local1, C00D, 0x00, 0x00, C00D, 0x00, 0x8E)
+            M1A2 (Local0, C00D, 0x00, 0x00, C00D, 0x00, __LINE__)
+            M1A2 (Local1, C00D, 0x00, 0x00, C00D, 0x00, __LINE__)
             Arg1 = P913 /* \P913 */
             Local0 = Local1 = Arg1 [0x00]
-            M1A2 (Local0, C00D, 0x00, 0x00, C00D, 0x00, 0x8F)
-            M1A2 (Local1, C00D, 0x00, 0x00, C00D, 0x00, 0x90)
+            M1A2 (Local0, C00D, 0x00, 0x00, C00D, 0x00, __LINE__)
+            M1A2 (Local1, C00D, 0x00, 0x00, C00D, 0x00, __LINE__)
             Arg1 = P914 /* \P914 */
             Local0 = Local1 = Arg1 [0x00]
-            M1A2 (Local0, C00D, 0x00, 0x00, C00D, 0x00, 0x91)
-            M1A2 (Local1, C00D, 0x00, 0x00, C00D, 0x00, 0x92)
+            M1A2 (Local0, C00D, 0x00, 0x00, C00D, 0x00, __LINE__)
+            M1A2 (Local1, C00D, 0x00, 0x00, C00D, 0x00, __LINE__)
             Arg1 = P915 /* \P915 */
             Local0 = Local1 = Arg1 [0x00]
-            M1A2 (Local0, C016, 0x00, 0x00, C016, 0xB0, 0x93)
-            M1A2 (Local1, C016, 0x00, 0x00, C016, 0xB0, 0x94)
+            M1A2 (Local0, C016, 0x00, 0x00, C016, 0xB0, __LINE__)
+            M1A2 (Local1, C016, 0x00, 0x00, C016, 0xB0, __LINE__)
         }
 
         /* Elements of Package are NOT Computational Data */
@@ -799,16 +799,16 @@
 
         Arg1 = I900 /* \I900 */
         Local0 = RefOf (Arg1)
-        M1A2 (Local0, C009, 0x00, 0x00, C009, 0xFE7CB391D65A0000, 0x010F)
+        M1A2 (Local0, C009, 0x00, 0x00, C009, 0xFE7CB391D65A0000, __LINE__)
         Arg1 = I901 /* \I901 */
         Local0 = RefOf (Arg1)
-        M1A2 (Local0, C009, 0x00, 0x00, C009, 0xC1790001, 0x0110)
+        M1A2 (Local0, C009, 0x00, 0x00, C009, 0xC1790001, __LINE__)
         Arg1 = S900 /* \S900 */
         Local0 = RefOf (Arg1)
-        M1A2 (Local0, C00A, 0x00, 0x00, C00A, "12340002", 0x0111)
+        M1A2 (Local0, C00A, 0x00, 0x00, C00A, "12340002", __LINE__)
         Arg1 = S901 /* \S901 */
         Local0 = RefOf (Arg1)
-        M1A2 (Local0, C00A, 0x00, 0x00, C00A, "qwrtyu0003", 0x0112)
+        M1A2 (Local0, C00A, 0x00, 0x00, C00A, "qwrtyu0003", __LINE__)
         Arg1 = B900 /* \B900 */
         Local0 = RefOf (Arg1)
         M1A2 (Local0, C00B, 0x00, 0x00, C00B, Buffer (0x05)
@@ -819,7 +819,7 @@
         /* Package */
         Arg1 = P953 /* \P953 */
         Local0 = RefOf (Arg1)
-        M1A2 (Local0, C00C, 0x01, 0x00, C009, 0xABCD0018, 0x03EF)
+        M1A2 (Local0, C00C, 0x01, 0x00, C009, 0xABCD0018, __LINE__)
         If (Arg2)
         {
             /* Data are unchanged, because writings were made */
@@ -832,16 +832,16 @@
 
         Arg1 = F900 /* \F900 */
         Local0 = RefOf (Arg1)
-        M1A2 (Local0, C009, 0x00, 0x00, C009, 0x00, 0x0114)
+        M1A2 (Local0, C009, 0x00, 0x00, C009, 0x00, __LINE__)
         Arg1 = BN90 /* \BN90 */
         Local0 = RefOf (Arg1)
-        M1A2 (Local0, C009, 0x00, 0x00, C009, 0x00, 0x0115)
+        M1A2 (Local0, C009, 0x00, 0x00, C009, 0x00, __LINE__)
         Arg1 = IF90 /* \IF90 */
         Local0 = RefOf (Arg1)
-        M1A2 (Local0, C009, 0x00, 0x00, C009, 0x00, 0x0116)
+        M1A2 (Local0, C009, 0x00, 0x00, C009, 0x00, __LINE__)
         Arg1 = BF90 /* \BF90 */
         Local0 = RefOf (Arg1)
-        M1A2 (Local0, C009, 0x00, 0x00, C009, 0xB0, 0x0117)
+        M1A2 (Local0, C00B, 0x00, 0x00, C00B, Buffer(){0xB0}, __LINE__)
         /* Elements of Package are Uninitialized */
 
         Arg1 = P900 /* \P900 */
@@ -851,16 +851,16 @@
 
         Arg1 = P901 /* \P901 */
         Local0 = RefOf (Arg1)
-        M1A2 (Local0, C00C, 0x01, 0x00, C009, 0xABCD0004, 0x0120)
-        M1A2 (Local0, C00C, 0x01, 0x01, C009, 0x1122334455660005, 0x0121)
+        M1A2 (Local0, C00C, 0x01, 0x00, C009, 0xABCD0004, __LINE__)
+        M1A2 (Local0, C00C, 0x01, 0x01, C009, 0x1122334455660005, __LINE__)
         Arg1 = P902 /* \P902 */
         Local0 = RefOf (Arg1)
-        M1A2 (Local0, C00C, 0x01, 0x00, C00A, "12340006", 0x0122)
-        M1A2 (Local0, C00C, 0x01, 0x01, C00A, "q1w2e3r4t5y6u7i80007", 0x0123)
+        M1A2 (Local0, C00C, 0x01, 0x00, C00A, "12340006", __LINE__)
+        M1A2 (Local0, C00C, 0x01, 0x01, C00A, "q1w2e3r4t5y6u7i80007", __LINE__)
         Arg1 = P903 /* \P903 */
         Local0 = RefOf (Arg1)
-        M1A2 (Local0, C00C, 0x01, 0x00, C00A, "qwrtyuiop0008", 0x0124)
-        M1A2 (Local0, C00C, 0x01, 0x01, C00A, "1234567890abdef0250009", 0x0125)
+        M1A2 (Local0, C00C, 0x01, 0x00, C00A, "qwrtyuiop0008", __LINE__)
+        M1A2 (Local0, C00C, 0x01, 0x01, C00A, "1234567890abdef0250009", __LINE__)
         Arg1 = P904 /* \P904 */
         Local0 = RefOf (Arg1)
         M1A2 (Local0, C00C, 0x01, 0x00, C00B, Buffer (0x03)
@@ -869,14 +869,14 @@
             }, 0x0126)
         Arg1 = P905 /* \P905 */
         Local0 = RefOf (Arg1)
-        M1A2 (Local0, C00C, 0x02, 0x00, C009, 0x0ABC000A, 0x0127)
-        M1A2 (Local0, C00C, 0x02, 0x01, C00A, "0xabc000b", 0x0128)
+        M1A2 (Local0, C00C, 0x02, 0x00, C009, 0x0ABC000A, __LINE__)
+        M1A2 (Local0, C00C, 0x02, 0x01, C00A, "0xabc000b", __LINE__)
         Arg1 = P906 /* \P906 */
         Local0 = RefOf (Arg1)
-        M1A2 (Local0, C00C, 0x02, 0x00, C00A, "abc000d", 0x0129)
+        M1A2 (Local0, C00C, 0x02, 0x00, C00A, "abc000d", __LINE__)
         Arg1 = P907 /* \P907 */
         Local0 = RefOf (Arg1)
-        M1A2 (Local0, C00C, 0x02, 0x00, C00A, "aqwevbgnm000e", 0x012A)
+        M1A2 (Local0, C00C, 0x02, 0x00, C00A, "aqwevbgnm000e", __LINE__)
         Arg1 = P908 /* \P908 */
         Local0 = RefOf (Arg1)
         M1A2 (Local0, C00C, 0x02, 0x00, C00B, Buffer (0x05)
@@ -885,13 +885,13 @@
             }, 0x012B)
         Arg1 = P909 /* \P909 */
         Local0 = RefOf (Arg1)
-        M1A2 (Local0, C00C, 0x03, 0x00, C009, 0x0ABC000F, 0x012C)
+        M1A2 (Local0, C00C, 0x03, 0x00, C009, 0x0ABC000F, __LINE__)
         Arg1 = P90A /* \P90A */
         Local0 = RefOf (Arg1)
-        M1A2 (Local0, C00C, 0x03, 0x00, C00A, "12340010", 0x012D)
+        M1A2 (Local0, C00C, 0x03, 0x00, C00A, "12340010", __LINE__)
         Arg1 = P90B /* \P90B */
         Local0 = RefOf (Arg1)
-        M1A2 (Local0, C00C, 0x03, 0x00, C00A, "zxswefas0011", 0x012E)
+        M1A2 (Local0, C00C, 0x03, 0x00, C00A, "zxswefas0011", __LINE__)
         Arg1 = P90C /* \P90C */
         Local0 = RefOf (Arg1)
         M1A2 (Local0, C00C, 0x03, 0x00, C00B, Buffer (0x03)
@@ -900,16 +900,16 @@
             }, 0x012F)
         Arg1 = P90D /* \P90D */
         Local0 = RefOf (Arg1)
-        M1A2 (Local0, C00C, 0x01, 0x00, C009, 0xFE7CB391D65A0000, 0x0130)
+        M1A2 (Local0, C00C, 0x01, 0x00, C009, 0xFE7CB391D65A0000, __LINE__)
         Arg1 = P90E /* \P90E */
         Local0 = RefOf (Arg1)
-        M1A2 (Local0, C00C, 0x01, 0x00, C009, 0xC1790001, 0x0131)
+        M1A2 (Local0, C00C, 0x01, 0x00, C009, 0xC1790001, __LINE__)
         Arg1 = P90F /* \P90F */
         Local0 = RefOf (Arg1)
-        M1A2 (Local0, C00C, 0x01, 0x00, C00A, "12340002", 0x0132)
+        M1A2 (Local0, C00C, 0x01, 0x00, C00A, "12340002", __LINE__)
         Arg1 = P910 /* \P910 */
         Local0 = RefOf (Arg1)
-        M1A2 (Local0, C00C, 0x01, 0x00, C00A, "qwrtyu0003", 0x0133)
+        M1A2 (Local0, C00C, 0x01, 0x00, C00A, "qwrtyu0003", __LINE__)
         Arg1 = P911 /* \P911 */
         Local0 = RefOf (Arg1)
         M1A2 (Local0, C00C, 0x01, 0x00, C00B, Buffer (0x05)
@@ -920,16 +920,16 @@
         {
             Arg1 = P912 /* \P912 */
             Local0 = RefOf (Arg1)
-            M1A2 (Local0, C00C, 0x01, 0x00, C00D, 0x00, 0x0135)
+            M1A2 (Local0, C00C, 0x01, 0x00, C00D, 0x00, __LINE__)
             Arg1 = P913 /* \P913 */
             Local0 = RefOf (Arg1)
-            M1A2 (Local0, C00C, 0x01, 0x00, C00D, 0x00, 0x0136)
+            M1A2 (Local0, C00C, 0x01, 0x00, C00D, 0x00, __LINE__)
             Arg1 = P914 /* \P914 */
             Local0 = RefOf (Arg1)
-            M1A2 (Local0, C00C, 0x01, 0x00, C00D, 0x00, 0x0137)
+            M1A2 (Local0, C00C, 0x01, 0x00, C00D, 0x00, __LINE__)
             Arg1 = P915 /* \P915 */
             Local0 = RefOf (Arg1)
-            M1A2 (Local0, C00C, 0x01, 0x00, C016, 0xB0, 0x0138)
+            M1A2 (Local0, C00C, 0x01, 0x00, C016, 0xB0, __LINE__)
         }
 
         /* Elements of Package are NOT Computational Data */
@@ -1155,28 +1155,28 @@
         Local1 = CondRefOf (Arg1, Local0)
         If (M1A4 (Local1, 0x024F))
         {
-            M1A2 (Local0, C009, 0x00, 0x00, C009, 0xFE7CB391D65A0000, 0x0250)
+            M1A2 (Local0, C009, 0x00, 0x00, C009, 0xFE7CB391D65A0000, __LINE__)
         }
 
         Arg1 = I901 /* \I901 */
         Local1 = CondRefOf (Arg1, Local0)
         If (M1A4 (Local1, 0x0251))
         {
-            M1A2 (Local0, C009, 0x00, 0x00, C009, 0xC1790001, 0x0252)
+            M1A2 (Local0, C009, 0x00, 0x00, C009, 0xC1790001, __LINE__)
         }
 
         Arg1 = S900 /* \S900 */
         Local1 = CondRefOf (Arg1, Local0)
         If (M1A4 (Local1, 0x0253))
         {
-            M1A2 (Local0, C00A, 0x00, 0x00, C00A, "12340002", 0x0254)
+            M1A2 (Local0, C00A, 0x00, 0x00, C00A, "12340002", __LINE__)
         }
 
         Arg1 = S901 /* \S901 */
         Local1 = CondRefOf (Arg1, Local0)
         If (M1A4 (Local1, 0x0255))
         {
-            M1A2 (Local0, C00A, 0x00, 0x00, C00A, "qwrtyu0003", 0x0256)
+            M1A2 (Local0, C00A, 0x00, 0x00, C00A, "qwrtyu0003", __LINE__)
         }
 
         Arg1 = B900 /* \B900 */
@@ -1195,7 +1195,7 @@
         Local1 = CondRefOf (Arg1, Local0)
         If (M1A4 (Local1, 0x03F0))
         {
-            M1A2 (Local0, C00C, 0x01, 0x00, C009, 0xABCD0018, 0x03F1)
+            M1A2 (Local0, C00C, 0x01, 0x00, C009, 0xABCD0018, __LINE__)
         }
 
         If (Arg2)
@@ -1212,28 +1212,28 @@
         Local1 = CondRefOf (Arg1, Local0)
         If (M1A4 (Local1, 0x0259))
         {
-            M1A2 (Local0, C009, 0x00, 0x00, C009, 0x00, 0x025A)
+            M1A2 (Local0, C009, 0x00, 0x00, C009, 0x00, __LINE__)
         }
 
         Arg1 = BN90 /* \BN90 */
         Local1 = CondRefOf (Arg1, Local0)
         If (M1A4 (Local1, 0x025B))
         {
-            M1A2 (Local0, C009, 0x00, 0x00, C009, 0x00, 0x025C)
+            M1A2 (Local0, C009, 0x00, 0x00, C009, 0x00, __LINE__)
         }
 
         Arg1 = IF90 /* \IF90 */
         Local1 = CondRefOf (Arg1, Local0)
         If (M1A4 (Local1, 0x025D))
         {
-            M1A2 (Local0, C009, 0x00, 0x00, C009, 0x00, 0x025E)
+            M1A2 (Local0, C009, 0x00, 0x00, C009, 0x00, __LINE__)
         }
 
         Arg1 = BF90 /* \BF90 */
         Local1 = CondRefOf (Arg1, Local0)
         If (M1A4 (Local1, 0x025F))
         {
-            M1A2 (Local0, C009, 0x00, 0x00, C009, 0xB0, 0x0260)
+            M1A2 (Local0, C00B, 0x00, 0x00, C00B, Buffer(){0xB0}, __LINE__)
         }
 
         /* Elements of Package are Uninitialized */
@@ -1247,24 +1247,24 @@
         Local1 = CondRefOf (Arg1, Local0)
         If (M1A4 (Local1, 0x0269))
         {
-            M1A2 (Local0, C00C, 0x01, 0x00, C009, 0xABCD0004, 0x026A)
-            M1A2 (Local0, C00C, 0x01, 0x01, C009, 0x1122334455660005, 0x026B)
+            M1A2 (Local0, C00C, 0x01, 0x00, C009, 0xABCD0004, __LINE__)
+            M1A2 (Local0, C00C, 0x01, 0x01, C009, 0x1122334455660005, __LINE__)
         }
 
         Arg1 = P902 /* \P902 */
         Local1 = CondRefOf (Arg1, Local0)
         If (M1A4 (Local1, 0x026C))
         {
-            M1A2 (Local0, C00C, 0x01, 0x00, C00A, "12340006", 0x026D)
-            M1A2 (Local0, C00C, 0x01, 0x01, C00A, "q1w2e3r4t5y6u7i80007", 0x026E)
+            M1A2 (Local0, C00C, 0x01, 0x00, C00A, "12340006", __LINE__)
+            M1A2 (Local0, C00C, 0x01, 0x01, C00A, "q1w2e3r4t5y6u7i80007", __LINE__)
         }
 
         Arg1 = P903 /* \P903 */
         Local1 = CondRefOf (Arg1, Local0)
         If (M1A4 (Local1, 0x026F))
         {
-            M1A2 (Local0, C00C, 0x01, 0x00, C00A, "qwrtyuiop0008", 0x0270)
-            M1A2 (Local0, C00C, 0x01, 0x01, C00A, "1234567890abdef0250009", 0x0271)
+            M1A2 (Local0, C00C, 0x01, 0x00, C00A, "qwrtyuiop0008", __LINE__)
+            M1A2 (Local0, C00C, 0x01, 0x01, C00A, "1234567890abdef0250009", __LINE__)
         }
 
         Arg1 = P904 /* \P904 */
@@ -1281,22 +1281,22 @@
         Local1 = CondRefOf (Arg1, Local0)
         If (M1A4 (Local1, 0x0274))
         {
-            M1A2 (Local0, C00C, 0x02, 0x00, C009, 0x0ABC000A, 0x0275)
-            M1A2 (Local0, C00C, 0x02, 0x01, C00A, "0xabc000b", 0x0276)
+            M1A2 (Local0, C00C, 0x02, 0x00, C009, 0x0ABC000A, __LINE__)
+            M1A2 (Local0, C00C, 0x02, 0x01, C00A, "0xabc000b", __LINE__)
         }
 
         Arg1 = P906 /* \P906 */
         Local1 = CondRefOf (Arg1, Local0)
         If (M1A4 (Local1, 0x0277))
         {
-            M1A2 (Local0, C00C, 0x02, 0x00, C00A, "abc000d", 0x0278)
+            M1A2 (Local0, C00C, 0x02, 0x00, C00A, "abc000d", __LINE__)
         }
 
         Arg1 = P907 /* \P907 */
         Local1 = CondRefOf (Arg1, Local0)
         If (M1A4 (Local1, 0x0279))
         {
-            M1A2 (Local0, C00C, 0x02, 0x00, C00A, "aqwevbgnm000e", 0x027A)
+            M1A2 (Local0, C00C, 0x02, 0x00, C00A, "aqwevbgnm000e", __LINE__)
         }
 
         Arg1 = P908 /* \P908 */
@@ -1313,21 +1313,21 @@
         Local1 = CondRefOf (Arg1, Local0)
         If (M1A4 (Local1, 0x027D))
         {
-            M1A2 (Local0, C00C, 0x03, 0x00, C009, 0x0ABC000F, 0x027E)
+            M1A2 (Local0, C00C, 0x03, 0x00, C009, 0x0ABC000F, __LINE__)
         }
 
         Arg1 = P90A /* \P90A */
         Local1 = CondRefOf (Arg1, Local0)
         If (M1A4 (Local1, 0x027F))
         {
-            M1A2 (Local0, C00C, 0x03, 0x00, C00A, "12340010", 0x0280)
+            M1A2 (Local0, C00C, 0x03, 0x00, C00A, "12340010", __LINE__)
         }
 
         Arg1 = P90B /* \P90B */
         Local1 = CondRefOf (Arg1, Local0)
         If (M1A4 (Local1, 0x0281))
         {
-            M1A2 (Local0, C00C, 0x03, 0x00, C00A, "zxswefas0011", 0x0282)
+            M1A2 (Local0, C00C, 0x03, 0x00, C00A, "zxswefas0011", __LINE__)
         }
 
         Arg1 = P90C /* \P90C */
@@ -1344,28 +1344,28 @@
         Local1 = CondRefOf (Arg1, Local0)
         If (M1A4 (Local1, 0x0285))
         {
-            M1A2 (Local0, C00C, 0x01, 0x00, C009, 0xFE7CB391D65A0000, 0x0286)
+            M1A2 (Local0, C00C, 0x01, 0x00, C009, 0xFE7CB391D65A0000, __LINE__)
         }
 
         Arg1 = P90E /* \P90E */
         Local1 = CondRefOf (Arg1, Local0)
         If (M1A4 (Local1, 0x0287))
         {
-            M1A2 (Local0, C00C, 0x01, 0x00, C009, 0xC1790001, 0x0288)
+            M1A2 (Local0, C00C, 0x01, 0x00, C009, 0xC1790001, __LINE__)
         }
 
         Arg1 = P90F /* \P90F */
         Local1 = CondRefOf (Arg1, Local0)
         If (M1A4 (Local1, 0x0289))
         {
-            M1A2 (Local0, C00C, 0x01, 0x00, C00A, "12340002", 0x028A)
+            M1A2 (Local0, C00C, 0x01, 0x00, C00A, "12340002", __LINE__)
         }
 
         Arg1 = P910 /* \P910 */
         Local1 = CondRefOf (Arg1, Local0)
         If (M1A4 (Local1, 0x028B))
         {
-            M1A2 (Local0, C00C, 0x01, 0x00, C00A, "qwrtyu0003", 0x028C)
+            M1A2 (Local0, C00C, 0x01, 0x00, C00A, "qwrtyu0003", __LINE__)
         }
 
         Arg1 = P911 /* \P911 */
@@ -1384,28 +1384,28 @@
             Local1 = CondRefOf (Arg1, Local0)
             If (M1A4 (Local1, 0x028F))
             {
-                M1A2 (Local0, C00C, 0x01, 0x00, C00D, 0x00, 0x0290)
+                M1A2 (Local0, C00C, 0x01, 0x00, C00D, 0x00, __LINE__)
             }
 
             Arg1 = P913 /* \P913 */
             Local1 = CondRefOf (Arg1, Local0)
             If (M1A4 (Local1, 0x0291))
             {
-                M1A2 (Local0, C00C, 0x01, 0x00, C00D, 0x00, 0x0292)
+                M1A2 (Local0, C00C, 0x01, 0x00, C00D, 0x00, __LINE__)
             }
 
             Arg1 = P914 /* \P914 */
             Local1 = CondRefOf (Arg1, Local0)
             If (M1A4 (Local1, 0x0293))
             {
-                M1A2 (Local0, C00C, 0x01, 0x00, C00D, 0x00, 0x0294)
+                M1A2 (Local0, C00C, 0x01, 0x00, C00D, 0x00, __LINE__)
             }
 
             Arg1 = P915 /* \P915 */
             Local1 = CondRefOf (Arg1, Local0)
             If (M1A4 (Local1, 0x0295))
             {
-                M1A2 (Local0, C00C, 0x01, 0x00, C016, 0xB0, 0x0296)
+                M1A2 (Local0, C00C, 0x01, 0x00, C016, 0xB0, __LINE__)
             }
         }
 
