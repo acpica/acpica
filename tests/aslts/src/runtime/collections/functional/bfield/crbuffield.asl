@@ -1423,22 +1423,8 @@
         Name (B002, Buffer (Arg4){})
         /* Flag of Integer */
 
-        Name (INT0, 0x00)
         Name (INT1, 0x00)
         CreateField (B001, Arg2, Arg3, F001)
-        /* Expected type */
-
-        If ((F64 == 0x01))
-        {
-            If ((Arg3 <= 0x40))
-            {
-                INT0 = 0x01
-            }
-        }
-        ElseIf ((Arg3 <= 0x20))
-        {
-            INT0 = 0x01
-        }
 
         /* Check Type */
 
@@ -1476,15 +1462,7 @@
 
         /* Check the contents of field */
 
-        If (INT0)
-        {
-            INT1 = Arg5
-            If ((Local0 != INT1))
-            {
-                ERR (Arg0, Z001, __LINE__, 0x00, 0x00, Local0, INT1)
-            }
-        }
-        ElseIf ((Local0 != Arg5))
+        If (Local0 != Arg5)
         {
             ERR (Arg0, Z001, __LINE__, 0x00, 0x00, 0x00, 0x00)
         }
