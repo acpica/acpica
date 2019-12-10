@@ -479,24 +479,12 @@ Zero)
                 ERR (Arg0, Z054, __LINE__, 0x00, 0x00, Local0, 0x0E)
             }
 
-            If (F64)
-            {
-                M000 (Arg0, BF00, 0x01, 0x08)
-                M000 (Arg0, BF01, 0x01, 0x08)
-                M000 (Arg0, BF02, 0x01, 0x08)
-                M000 (Arg0, BF03, 0x01, 0x08)
-                M000 (Arg0, BF04, 0x01, 0x08)
-                M000 (Arg0, BF05, 0x03, 0x09)
-            }
-            Else
-            {
-                M000 (Arg0, BF00, 0x01, 0x04)
-                M000 (Arg0, BF01, 0x01, 0x04)
-                M000 (Arg0, BF02, 0x03, 0x05)
-                M000 (Arg0, BF03, 0x03, 0x08)
-                M000 (Arg0, BF04, 0x03, 0x08)
-                M000 (Arg0, BF05, 0x03, 0x09)
-            }
+            M000 (Arg0, BF00, 0x03, 0x04)
+            M000 (Arg0, BF01, 0x03, 0x04)
+            M000 (Arg0, BF02, 0x03, 0x05)
+            M000 (Arg0, BF03, 0x03, 0x08)
+            M000 (Arg0, BF04, 0x03, 0x08)
+            M000 (Arg0, BF05, 0x03, 0x09)
         }
 
         M001 (Arg0)
@@ -664,24 +652,12 @@ Zero)
 
         Method (M002, 1, NotSerialized)
         {
-            If (F64)
-            {
-                M001 (Arg0, 0x00, 0x01, 0x08)
-                M001 (Arg0, 0x01, 0x01, 0x08)
-                M001 (Arg0, 0x02, 0x01, 0x08)
-                M001 (Arg0, 0x03, 0x01, 0x08)
-                M001 (Arg0, 0x04, 0x01, 0x08)
-                M001 (Arg0, 0x05, 0x03, 0x09)
-            }
-            Else
-            {
-                M001 (Arg0, 0x00, 0x01, 0x04)
-                M001 (Arg0, 0x01, 0x01, 0x04)
-                M001 (Arg0, 0x02, 0x03, 0x05)
-                M001 (Arg0, 0x03, 0x03, 0x08)
-                M001 (Arg0, 0x04, 0x03, 0x08)
-                M001 (Arg0, 0x05, 0x03, 0x09)
-            }
+            M001 (Arg0, 0x00, 0x03, 0x04)
+            M001 (Arg0, 0x01, 0x03, 0x04)
+            M001 (Arg0, 0x02, 0x03, 0x05)
+            M001 (Arg0, 0x03, 0x03, 0x08)
+            M001 (Arg0, 0x04, 0x03, 0x08)
+            M001 (Arg0, 0x05, 0x03, 0x09)
         }
 
         M002 (Arg0)
