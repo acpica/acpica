@@ -195,6 +195,16 @@ static void
 TrDoSwitch (
     ACPI_PARSE_OBJECT       *StartNode);
 
+static void
+TrCheckForDuplicateCase (
+    ACPI_PARSE_OBJECT       *CaseOp,
+    ACPI_PARSE_OBJECT       *Predicate1);
+
+static BOOLEAN
+TrCheckForBufferMatch (
+    ACPI_PARSE_OBJECT       *Next1,
+    ACPI_PARSE_OBJECT       *Next2);
+
 
 /*******************************************************************************
  *
@@ -663,6 +673,8 @@ TrDoSwitch (
 
         if (Next->Asl.ParseOpcode == PARSEOP_CASE)
         {
+            TrCheckForDuplicateCase (Next, Next->Asl.Child);
+
             if (CaseOp)
             {
                 /* Add an ELSE to complete the previous CASE */
@@ -993,4 +1005,154 @@ TrDoSwitch (
     TrAmlInitLineNumbers (BreakOp, NewOp);
     BreakOp->Asl.Parent = StartNode;
     TrAmlInsertPeer (Conditional, BreakOp);
+}
+
+
+/*******************************************************************************
+ *
+ * FUNCTION:    TrCheckForDuplicateCase
+ *
+ * PARAMETERS:  CaseOp          - Parse node for first Case statement in list
+ *              Predicate1      - Case value for the input CaseOp
+ *
+ * RETURN:      None
+ *
+ * DESCRIPTION: Check for duplicate case values. Currently, only handles
+ *              Integers, Strings and Buffers. No support for Package objects.
+ *
+ ******************************************************************************/
+
+static void
+TrCheckForDuplicateCase (
+    ACPI_PARSE_OBJECT       *CaseOp,
+    ACPI_PARSE_OBJECT       *Predicate1)
+{
+    ACPI_PARSE_OBJECT       *Next;
+    ACPI_PARSE_OBJECT       *Predicate2;
+
+
+    /* Walk the list of CASE opcodes */
+
+    Next = CaseOp->Asl.Next;
+    while (Next)
+    {
+        if (Next->Asl.ParseOpcode == PARSEOP_CASE)
+        {
+            /* Emit error only once */
+
+            if (Next->Asl.CompileFlags & OP_IS_DUPLICATE)
+            {
+                goto NextCase;
+            }
+
+            /* Check for a duplicate plain integer */
+
+            Predicate2 = Next->Asl.Child;
+            if ((Predicate1->Asl.ParseOpcode == PARSEOP_INTEGER) &&
+                (Predicate2->Asl.ParseOpcode == PARSEOP_INTEGER))
+            {
+                if (Predicate1->Asl.Value.Integer == Predicate2->Asl.Value.Integer)
+                {
+                    Next->Asl.CompileFlags |= OP_IS_DUPLICATE;
+                    AslError (ASL_ERROR, ASL_MSG_DUPLICATE_CASE, Next, NULL);
+                }
+            }
+
+            /* Check for pairs of the constants ZERO, ONE, ONES */
+
+            else if (((Predicate1->Asl.ParseOpcode == PARSEOP_ZERO) &&
+                (Predicate2->Asl.ParseOpcode == PARSEOP_ZERO)) ||
+                ((Predicate1->Asl.ParseOpcode == PARSEOP_ONE) &&
+                (Predicate2->Asl.ParseOpcode == PARSEOP_ONE)) ||
+                ((Predicate1->Asl.ParseOpcode == PARSEOP_ONES) &&
+                (Predicate2->Asl.ParseOpcode == PARSEOP_ONES)))
+            {
+                Next->Asl.CompileFlags |= OP_IS_DUPLICATE;
+                AslError (ASL_ERROR, ASL_MSG_DUPLICATE_CASE, Next, NULL);
+            }
+
+            /* Check for a duplicate string constant (literal) */
+
+            else if ((Predicate1->Asl.ParseOpcode == PARSEOP_STRING_LITERAL) &&
+                (Predicate2->Asl.ParseOpcode == PARSEOP_STRING_LITERAL))
+            {
+                if (!strcmp (Predicate1->Asl.Value.String,
+                        Predicate2->Asl.Value.String))
+                {
+                    Next->Asl.CompileFlags |= OP_IS_DUPLICATE;
+                    AslError (ASL_ERROR, ASL_MSG_DUPLICATE_CASE, Next, NULL);
+                }
+            }
+
+            /* Check for a duplicate buffer constant */
+
+            else if ((Predicate1->Asl.ParseOpcode == PARSEOP_BUFFER) &&
+                (Predicate2->Asl.ParseOpcode == PARSEOP_BUFFER))
+            {
+                if (TrCheckForBufferMatch (Predicate1->Asl.Child,
+                        Predicate2->Asl.Child))
+                {
+                    Next->Asl.CompileFlags |= OP_IS_DUPLICATE;
+                    AslError (ASL_ERROR, ASL_MSG_DUPLICATE_CASE, Next, NULL);
+                }
+            }
+        }
+
+NextCase:
+        Next = Next->Asl.Next;
+    }
+}
+
+
+/*******************************************************************************
+ *
+ * FUNCTION:    TrCheckForBufferMatch
+ *
+ * PARAMETERS:  Next1       - Parse node for first opcode in first buffer list
+ *                              (The DEFAULT_ARG node)
+ *              Next2       - Parse node for first opcode in second buffer list
+ *                              (The DEFAULT_ARG node)
+ *
+ * RETURN:      TRUE if buffers match, FALSE otherwise
+ *
+ * DESCRIPTION: Check for duplicate Buffer case values.
+ *
+ ******************************************************************************/
+
+static BOOLEAN
+TrCheckForBufferMatch (
+    ACPI_PARSE_OBJECT       *Next1,
+    ACPI_PARSE_OBJECT       *Next2)
+{
+
+    /* Start at the BYTECONST initializer node list */
+
+    Next1 = Next1->Asl.Next;
+    Next2 = Next2->Asl.Next;
+
+    /*
+     * Walk both lists until either a mismatch is found, or one or more
+     * end-of-lists are found
+     */
+    while (Next1 && Next2)
+    {
+        if ((UINT8) Next1->Asl.Value.Integer != (UINT8) Next2->Asl.Value.Integer)
+        {
+            return (FALSE);
+        }
+
+        Next1 = Next1->Asl.Next;
+        Next2 = Next2->Asl.Next;
+    }
+
+    /* Not a match if one of the lists is not at end-of-list */
+
+    if (Next1 || Next2)
+    {
+        return (FALSE);
+    }
+
+    /* Otherwise, the buffers match */
+
+    return (TRUE);
 }
