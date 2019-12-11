@@ -2583,25 +2583,16 @@
                 If ((Local0 == 0x00))
                 {
                     Local6 = RefOf (BFL0)
-                    Local5 = 0x03
                 }
                 ElseIf ((Local0 == 0x01))
                 {
                     Local6 = RefOf (BFL2)
-                    If (F64)
-                    {
-                        Local5 = 0x01
-                    }
-                    Else
-                    {
-                        Local5 = 0x03
-                    }
                 }
                 Else
                 {
                     Local6 = RefOf (BFL4)
-                    Local5 = 0x01
                 }
+                Local5 = 0x03
             }
             Else
             {
@@ -3213,25 +3204,16 @@ DerefOf (Index (Buffer (0x12)
                 If ((Local0 == 0x00))
                 {
                     Local6 = RefOf (BFL0)
-                    Local5 = 0x03
                 }
                 ElseIf ((Local0 == 0x01))
                 {
                     Local6 = RefOf (BFL2)
-                    If (F64)
-                    {
-                        Local5 = 0x01
-                    }
-                    Else
-                    {
-                        Local5 = 0x03
-                    }
                 }
                 Else
                 {
                     Local6 = RefOf (BFL4)
-                    Local5 = 0x01
                 }
+                Local5 = 0x03
             }
             Else
             {
@@ -4013,25 +3995,16 @@ DerefOf (Index (Buffer (0x12)
                     If ((Local0 == 0x00))
                     {
                         Local6 = RefOf (BFL0)
-                        Local5 = 0x03
                     }
                     ElseIf ((Local0 == 0x01))
                     {
                         Local6 = RefOf (BFL2)
-                        If (F64)
-                        {
-                            Local5 = 0x01
-                        }
-                        Else
-                        {
-                            Local5 = 0x03
-                        }
                     }
                     Else
                     {
                         Local6 = RefOf (BFL4)
-                        Local5 = 0x01
                     }
+                    Local5 = 0x03
                 }
                 Else
                 {
@@ -4422,25 +4395,16 @@ DerefOf (Index (Buffer (0x12)
                     If ((Local0 == 0x00))
                     {
                         Local6 = RefOf (BFL0)
-                        Local5 = 0x03
                     }
                     ElseIf ((Local0 == 0x01))
                     {
                         Local6 = RefOf (BFL2)
-                        If (F64)
-                        {
-                            Local5 = 0x01
-                        }
-                        Else
-                        {
-                            Local5 = 0x03
-                        }
                     }
                     Else
                     {
                         Local6 = RefOf (BFL4)
-                        Local5 = 0x01
                     }
+                    Local5 = 0x03
                 }
                 Else
                 {
@@ -6806,13 +6770,13 @@ DerefOf (Index (Buffer (0x12)
             P001,
             /* Benchmark Result object value */
 
-            0x65758595,
+            Buffer() {0x95, 0x85, 0x75, 0x65},
             /* Benchmark Result object converted to Target type values */
 
             Package (0x12)
             {
                 0x00,
-                0x65758595,
+                Buffer() {0x95, 0x85, 0x75, 0x65},
                 "65758595",
                 Buffer (0x11)
                 {
@@ -6867,13 +6831,13 @@ DerefOf (Index (Buffer (0x12)
             P001,
             /* Benchmark Result object value */
 
-            0x65758595,
+            Buffer() {0x95, 0x85, 0x75, 0x65},
             /* Benchmark Result object converted to Target type values */
 
             Package (0x12)
             {
                 0x00,
-                0x65758595,
+                Buffer() {0x95, 0x85, 0x75, 0x65},
                 "0000000065758595",
                 Buffer (0x11)
                 {
@@ -7270,10 +7234,10 @@ DerefOf (SCL0 [LPC0])))
         Concatenate (Arg0, "-m020", Arg0)
         /* Named-Named */
 
-        M020 (Concatenate (Arg0, "-NN"), Arg1, Arg2, B676, B676, 0x00)
+        M020 (Concatenate (Arg0, "-NN"), Arg1, Arg2, B676, B676, 0x00) // TODO:
         /* Named-LocalX */
 
-        M020 (Concatenate (Arg0, "-NL"), Arg1, Arg2, B677, B676, 0x01)
+        M020 (Concatenate (Arg0, "-NL"), Arg1, Arg2, B677, B676, 0x01) // TODO:
         /* LocalX-Named */
 
         M020 (Concatenate (Arg0, "-LN"), Arg1, Arg2, B676, B677, 0x02)
@@ -7282,10 +7246,10 @@ DerefOf (SCL0 [LPC0])))
         M020 (Concatenate (Arg0, "-LL"), Arg1, Arg2, B677, B677, 0x03)
         /* Named-ArgX(Named read-only) */
 
-        M020 (Concatenate (Arg0, "-NA-RO"), Arg1, Arg2, B676, B676, 0x04)
+        M020 (Concatenate (Arg0, "-NA-RO"), Arg1, Arg2, B676, B676, 0x04) // TODO:
         /* Named-ArgX(Named by reference) */
 
-        M020 (Concatenate (Arg0, "-NA-REF"), Arg1, Arg2, B676, B676, 0x05)
+        M020 (Concatenate (Arg0, "-NA-REF"), Arg1, Arg2, B676, B676, 0x05) // TODO:
         /* LocalX-Element of Package */
 
         If ((Arg1 == 0x00))

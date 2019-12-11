@@ -4405,10 +4405,10 @@
             Method (M010, 3, NotSerialized)
             {
                 M680 (Arg0, Arg1, 0x00, ObjectType (BF80), 0x0E)
-                M680 (Arg0, Arg1, 0x01, BF80, 0x5650A284)
+                M680 (Arg0, Arg1, 0x01, BF80, Buffer(){0x84, 0xA2, 0x50, 0x56})
                 BF80 = 0xC179B3FE
                 M680 (Arg0, Arg1, 0x02, ObjectType (BF80), 0x0E)
-                M680 (Arg0, Arg1, 0x03, BF80, 0x4179B3FE)
+                M680 (Arg0, Arg1, 0x03, BF80, Buffer(){0xFE, 0xB3, 0x79, 0x41})
             }
 
             /* Check storing of "FE7CB391D650A284" to bf80, */
@@ -4417,10 +4417,10 @@
             Method (M020, 3, NotSerialized)
             {
                 M680 (Arg0, Arg1, 0x00, ObjectType (BF80), 0x0E)
-                M680 (Arg0, Arg1, 0x01, BF80, 0x43374546)
+                M680 (Arg0, Arg1, 0x01, BF80, Buffer(){0x46, 0x45, 0x37, 0x43})
                 BF80 = "C179B3FE"
                 M680 (Arg0, Arg1, 0x02, ObjectType (BF80), 0x0E)
-                M680 (Arg0, Arg1, 0x03, BF80, 0x39373143)
+                M680 (Arg0, Arg1, 0x03, BF80, Buffer(){0x43, 0x31, 0x37, 0x39})
             }
 
             /* Check storing of Buffer(){0x84, 0xA2, 0x50, 0xD6, 0x91, 0xB3, 0x7C, 0xFE} */
@@ -4429,13 +4429,13 @@
             Method (M030, 3, NotSerialized)
             {
                 M680 (Arg0, Arg1, 0x00, ObjectType (BF80), 0x0E)
-                M680 (Arg0, Arg1, 0x01, BF80, 0x5650A284)
+                M680 (Arg0, Arg1, 0x01, BF80, Buffer(){0x84, 0xA2, 0x50, 0x56})
                 BF80 = Buffer (0x04)
                     {
                          0xFE, 0xB3, 0x79, 0xC1                           // ..y.
                     }
                 M680 (Arg0, Arg1, 0x02, ObjectType (BF80), 0x0E)
-                M680 (Arg0, Arg1, 0x03, BF80, 0x4179B3FE)
+                M680 (Arg0, Arg1, 0x03, BF80, Buffer(){0xFE, 0xB3, 0x79, 0x41})
             }
 
             /* Fill the bytes range of the Buffer Field in the SourceBuffer */
@@ -4818,10 +4818,10 @@
 
                             BF80 = Mid (S6E7, 0x02, 0x0E)
                             M680 (Arg0, 0x0293, 0x00, ObjectType (BF80), 0x0E)
-                            M680 (Arg0, 0x0294, 0x00, BF80, 0x33424337)
+                            M680 (Arg0, 0x0294, 0x00, BF80, Buffer() {0x37, 0x43, 0x42, 0x33})
                             BF80 = "C179B3FE"
                             M680 (Arg0, 0x0295, 0x00, ObjectType (BF80), 0x0E)
-                            M680 (Arg0, 0x0296, 0x00, BF80, 0x39373143)
+                            M680 (Arg0, 0x0296, 0x00, BF80, Buffer() {0x43, 0x31, 0x37, 0x39})
                             M680 (Arg0, 0x0297, 0x00, S6E7, "FE7CB391D650A284")
                         }
                         Case (0x03)
@@ -4830,13 +4830,13 @@
 
                             BF80 = Mid (B6E7, 0x01, 0x07)
                             M680 (Arg0, 0x0298, 0x00, ObjectType (BF80), 0x0E)
-                            M680 (Arg0, 0x0299, 0x00, BF80, 0x11D650A2)
+                            M680 (Arg0, 0x0299, 0x00, BF80, Buffer() {0xA2, 0x50, 0xD6, 0x11})
                             BF80 = Buffer (0x04)
                                 {
                                      0xFE, 0xB3, 0x79, 0xC1                           // ..y.
                                 }
                             M680 (Arg0, 0x029A, 0x00, ObjectType (BF80), 0x0E)
-                            M680 (Arg0, 0x029B, 0x00, BF80, 0x4179B3FE)
+                            M680 (Arg0, 0x029B, 0x00, BF80, Buffer() {0xFE, 0xB3, 0x79, 0x41})
                             M680 (Arg0, 0x029C, 0x00, B6E7, Buffer (0x08)
                                 {
                                      0x84, 0xA2, 0x50, 0xD6, 0x91, 0xB3, 0x7C, 0xFE   // ..P...|.
@@ -4997,33 +4997,19 @@
             Method (M010, 3, NotSerialized)
             {
                 M680 (Arg0, Arg1, 0x00, ObjectType (BF81), 0x0E)
-                If (F64)
-                {
-                    M680 (Arg0, Arg1, 0x01, BF81, 0x7E7CB391D650A284)
-                }
-                Else
-                {
-                    M680 (Arg0, Arg1, 0x02, BF81, Buffer (0x08)
-                        {
-                             0x84, 0xA2, 0x50, 0xD6, 0x00, 0x00, 0x00, 0x00   // ..P.....
-                        })
-                }
+                M680 (Arg0, Arg1, 0x02, BF81, Buffer (0x08)
+                    {
+                        0x84, 0xA2, 0x50, 0xD6, 0x91, 0xB3, 0x7C, 0x7E   // ..P.....
+                    })
 
                 If (Arg2)
                 {
                     BF81 = 0xC179B3FE
                     M680 (Arg0, Arg1, 0x03, ObjectType (BF81), 0x0E)
-                    If (F64)
-                    {
-                        M680 (Arg0, Arg1, 0x04, BF81, 0xC179B3FE)
-                    }
-                    Else
-                    {
-                        M680 (Arg0, Arg1, 0x05, BF81, Buffer (0x08)
-                            {
-                                 0xFE, 0xB3, 0x79, 0xC1, 0x00, 0x00, 0x00, 0x00   // ..y.....
-                            })
-                    }
+                    M680 (Arg0, Arg1, 0x05, BF81, Buffer (0x08)
+                        {
+                            0xFE, 0xB3, 0x79, 0xC1, 0x00, 0x00, 0x00, 0x00   // ..y.....
+                        })
                 }
             }
 
@@ -5033,33 +5019,19 @@
             Method (M020, 3, NotSerialized)
             {
                 M680 (Arg0, Arg1, 0x00, ObjectType (BF81), 0x0E)
-                If (F64)
-                {
-                    M680 (Arg0, Arg1, 0x01, BF81, 0x3139334243374546)
-                }
-                Else
-                {
-                    M680 (Arg0, Arg1, 0x02, BF81, Buffer (0x08)
-                        {
-                             0x46, 0x45, 0x37, 0x43, 0x42, 0x33, 0x39, 0x31   // FE7CB391
-                        })
-                }
+                M680 (Arg0, Arg1, 0x02, BF81, Buffer (0x08)
+                    {
+                        0x46, 0x45, 0x37, 0x43, 0x42, 0x33, 0x39, 0x31   // FE7CB391
+                    })
 
                 If (Arg2)
                 {
                     BF81 = "C179B3FE"
                     M680 (Arg0, Arg1, 0x03, ObjectType (BF81), 0x0E)
-                    If (F64)
-                    {
-                        M680 (Arg0, Arg1, 0x04, BF81, 0x4546334239373143)
-                    }
-                    Else
-                    {
-                        M680 (Arg0, Arg1, 0x05, BF81, Buffer (0x08)
-                            {
-                                 0x43, 0x31, 0x37, 0x39, 0x42, 0x33, 0x46, 0x45   // C179B3FE
-                            })
-                    }
+                    M680 (Arg0, Arg1, 0x05, BF81, Buffer (0x08)
+                        {
+                            0x43, 0x31, 0x37, 0x39, 0x42, 0x33, 0x46, 0x45   // C179B3FE
+                        })
                 }
             }
 
@@ -5069,17 +5041,10 @@
             Method (M030, 3, NotSerialized)
             {
                 M680 (Arg0, Arg1, 0x00, ObjectType (BF81), 0x0E)
-                If (F64)
-                {
-                    M680 (Arg0, Arg1, 0x01, BF81, 0x7E7CB391D650A284)
-                }
-                Else
-                {
-                    M680 (Arg0, Arg1, 0x02, BF81, Buffer (0x08)
-                        {
-                             0x84, 0xA2, 0x50, 0xD6, 0x91, 0xB3, 0x7C, 0x7E   // ..P...|~
-                        })
-                }
+                M680 (Arg0, Arg1, 0x02, BF81, Buffer (0x08)
+                    {
+                        0x84, 0xA2, 0x50, 0xD6, 0x91, 0xB3, 0x7C, 0x7E   // ..P...|~
+                    })
 
                 If (Arg2)
                 {
@@ -5088,17 +5053,10 @@
                              0xFE, 0xB3, 0x79, 0xC1                           // ..y.
                         }
                     M680 (Arg0, Arg1, 0x03, ObjectType (BF81), 0x0E)
-                    If (F64)
-                    {
-                        M680 (Arg0, Arg1, 0x04, BF81, 0xC179B3FE)
-                    }
-                    Else
-                    {
-                        M680 (Arg0, Arg1, 0x05, BF81, Buffer (0x08)
-                            {
-                                 0xFE, 0xB3, 0x79, 0xC1, 0x00, 0x00, 0x00, 0x00   // ..y.....
-                            })
-                    }
+                    M680 (Arg0, Arg1, 0x05, BF81, Buffer (0x08)
+                        {
+                            0xFE, 0xB3, 0x79, 0xC1, 0x00, 0x00, 0x00, 0x00   // ..y.....
+                        })
                 }
             }
 
@@ -5482,31 +5440,17 @@
 
                             BF81 = Mid (S6E7, 0x02, 0x0E)
                             M680 (Arg0, 0x02C6, 0x00, ObjectType (BF81), 0x0E)
-                            If (F64)
-                            {
-                                M680 (Arg0, 0x02C7, 0x00, BF81, 0x3644313933424337)
-                            }
-                            Else
-                            {
-                                M680 (Arg0, 0x02C8, 0x00, BF81, Buffer (0x08)
-                                    {
-                                         0x37, 0x43, 0x42, 0x33, 0x39, 0x31, 0x44, 0x36   // 7CB391D6
-                                    })
-                            }
+                            M680 (Arg0, 0x02C8, 0x00, BF81, Buffer (0x08)
+                                {
+                                     0x37, 0x43, 0x42, 0x33, 0x39, 0x31, 0x44, 0x36   // 7CB391D6
+                                })
 
                             BF81 = "C179B3FE"
                             M680 (Arg0, 0x02C9, 0x00, ObjectType (BF81), 0x0E)
-                            If (F64)
-                            {
-                                M680 (Arg0, 0x02CA, 0x00, BF81, 0x4546334239373143)
-                            }
-                            Else
-                            {
-                                M680 (Arg0, 0x02CB, 0x00, BF81, Buffer (0x08)
-                                    {
-                                         0x43, 0x31, 0x37, 0x39, 0x42, 0x33, 0x46, 0x45   // C179B3FE
-                                    })
-                            }
+                            M680 (Arg0, 0x02CB, 0x00, BF81, Buffer (0x08)
+                                {
+                                     0x43, 0x31, 0x37, 0x39, 0x42, 0x33, 0x46, 0x45   // C179B3FE
+                                })
 
                             M680 (Arg0, 0x02CC, 0x00, S6E7, "FE7CB391D650A284")
                         }
@@ -5516,34 +5460,20 @@
 
                             BF81 = Mid (B6E7, 0x01, 0x07)
                             M680 (Arg0, 0x02CD, 0x00, ObjectType (BF81), 0x0E)
-                            If (F64)
-                            {
-                                M680 (Arg0, 0x02CE, 0x00, BF81, 0x00FE7CB391D650A2)
-                            }
-                            Else
-                            {
-                                M680 (Arg0, 0x02CF, 0x00, BF81, Buffer (0x08)
-                                    {
-                                         0xA2, 0x50, 0xD6, 0x91, 0xB3, 0x7C, 0xFE, 0x00   // .P...|..
-                                    })
-                            }
+                            M680 (Arg0, 0x02CF, 0x00, BF81, Buffer (0x08)
+                                {
+                                     0xA2, 0x50, 0xD6, 0x91, 0xB3, 0x7C, 0xFE, 0x00   // .P...|..
+                                })
 
                             BF81 = Buffer (0x04)
                                 {
                                      0xFE, 0xB3, 0x79, 0xC1                           // ..y.
                                 }
                             M680 (Arg0, 0x02D0, 0x00, ObjectType (BF81), 0x0E)
-                            If (F64)
-                            {
-                                M680 (Arg0, 0x02D1, 0x00, BF81, 0xC179B3FE)
-                            }
-                            Else
-                            {
-                                M680 (Arg0, 0x02D2, 0x00, BF81, Buffer (0x08)
-                                    {
-                                         0xFE, 0xB3, 0x79, 0xC1, 0x00, 0x00, 0x00, 0x00   // ..y.....
-                                    })
-                            }
+                            M680 (Arg0, 0x02D2, 0x00, BF81, Buffer (0x08)
+                                {
+                                     0xFE, 0xB3, 0x79, 0xC1, 0x00, 0x00, 0x00, 0x00   // ..y.....
+                                })
 
                             M680 (Arg0, 0x02D3, 0x00, B6E7, Buffer (0x08)
                                 {
@@ -5705,22 +5635,11 @@
             Method (M010, 3, NotSerialized)
             {
                 M680 (Arg0, Arg1, 0x00, ObjectType (BF82), 0x0E)
-                If (F64)
-                {
-                    M680 (Arg0, Arg1, 0x01, BF82, Buffer (0x09)
-                        {
-                            /* 0000 */  0x84, 0xA2, 0x50, 0xD6, 0x91, 0xB3, 0x7C, 0xFE,  // ..P...|.
-                            /* 0008 */  0x00                                             // .
-                        })
-                }
-                Else
-                {
-                    M680 (Arg0, Arg1, 0x02, BF82, Buffer (0x09)
-                        {
-                            /* 0000 */  0x84, 0xA2, 0x50, 0xD6, 0x00, 0x00, 0x00, 0x00,  // ..P.....
-                            /* 0008 */  0x00                                             // .
-                        })
-                }
+                M680 (Arg0, Arg1, 0x01, BF82, Buffer (0x09)
+                    {
+                        /* 0000 */  0x84, 0xA2, 0x50, 0xD6, 0x91, 0xB3, 0x7C, 0xFE,  // ..P...|.
+                        /* 0008 */  0x00                                             // .
+                    })
 
                 If (Arg2)
                 {
