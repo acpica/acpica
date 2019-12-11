@@ -41,7 +41,7 @@
         /* ObjectType of the value passed to Method */
         /* (BufferField is converted to Integer). */
         Local0 = ObjectType (Arg0)
-        If ((Local0 != C009))
+        If ((Local0 != C00B))
         {
             ERR (__METHOD__, ZFFF, __LINE__, 0x00, 0x00, Local0, C009)
         }
