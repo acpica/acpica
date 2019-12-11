@@ -863,7 +863,19 @@ static void AslInitEnode (
             Enode->FilenameLength = 6;
         }
 
-        FileNode = FlGetCurrentFileNode ();
+        /*
+         * Attempt to get the file node of the filename listed in the parse
+         * node. If the name doesn't exist in the global file node, it is
+         * because the file is included by #include or ASL include. In this
+         * case, get the current file node. The source output of the current
+         * file will contain the contents of the file listed in the parse node.
+         */
+        FileNode = FlGetFileNode (ASL_FILE_INPUT, Filename);
+        if (!FileNode)
+        {
+            FileNode = FlGetCurrentFileNode ();
+        }
+
         Enode->SourceFilename =
             FileNode->Files[ASL_FILE_SOURCE_OUTPUT].Filename;
     }

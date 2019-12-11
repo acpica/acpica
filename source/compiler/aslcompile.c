@@ -220,6 +220,7 @@ CmDoCompile (
         PrDoPreprocess ();
         AslGbl_CurrentLineNumber = 1;
         AslGbl_LogicalLineNumber = 1;
+        AslGbl_CurrentLineOffset = 0;
 
         if (AslGbl_PreprocessOnly)
         {
