@@ -68,7 +68,7 @@
             }
 
             Store (BF02 [0x00], Local1)
-            CH06 (Arg0, 0x01, 0x2F)
+            CH03 (__METHOD__, Z106, __LINE__, 0x00, 0x00)
             /* Like Buffer behaviour */
 
             If (Y083)
@@ -103,7 +103,7 @@
             }
 
             Store (BF20 [0x00], Local1)
-            CH06 (Arg0, 0x04, 0x2F)
+            CH03 (__METHOD__, Z106, __LINE__, 0x00, 0x00)
             /* Like Buffer behaviour */
 
             If (Y083)
@@ -235,12 +235,6 @@
                         CH04 (__METHOD__, 0x00, 0x55, Z106, __LINE__, 0x00, 0x00) /* AE_INDEX_TO_NOT_ATTACHED */
                     }
                 }
-                Else
-                {
-                    /* Like Integer behaviour */
-
-                    CH06 (Arg0, (0x0C + Local0), 0x2F)
-                }
 
                 CH00 (Arg0, 0x03)
                 Local1 = Match (DerefOf (M000 (0x04, LPC0)), MTR, 0x00, MTR, 0x00, 0x00)
@@ -262,11 +256,11 @@
 
         BF02 = II71 /* \II71 */
         BF03 = BI01 /* \BI01 */
-        M002 (Concatenate (__METHOD__, "-m002-RefLocNameI"), RefOf (BF02), 0x00)
+        M002 (Concatenate (__METHOD__, "-m002-RefLocNameI"), RefOf (BF02), 0x01)
         Local0 = RefOf (BF02)
-        M002 (Concatenate (__METHOD__, "-m002-RefLocName2I"), Local0, 0x00)
+        M002 (Concatenate (__METHOD__, "-m002-RefLocName2I"), Local0, 0x01)
         CondRefOf (BF02, Local0)
-        M002 (Concatenate (__METHOD__, "-m002-CondRefLocNameI"), Local0, 0x00)
+        M002 (Concatenate (__METHOD__, "-m002-CondRefLocNameI"), Local0, 0x01)
         M002 (Concatenate (__METHOD__, "-m002-RefLocNameB"), RefOf (BF03), 0x01)
         Local0 = RefOf (BF03)
         M002 (Concatenate (__METHOD__, "-m002-RefLocName2B"), Local0, 0x01)
@@ -274,11 +268,11 @@
         M002 (Concatenate (__METHOD__, "-m002-CondRefLocNameB"), Local0, 0x01)
         BF20 = II71 /* \II71 */
         BF21 = BI01 /* \BI01 */
-        M002 (Concatenate (__METHOD__, "-m002-RefGlobNameI"), RefOf (BF20), 0x00)
+        M002 (Concatenate (__METHOD__, "-m002-RefGlobNameI"), RefOf (BF20), 0x01)
         Local0 = RefOf (BF20)
-        M002 (Concatenate (__METHOD__, "-m002-RefGlobName2I"), Local0, 0x00)
+        M002 (Concatenate (__METHOD__, "-m002-RefGlobName2I"), Local0, 0x01)
         CondRefOf (BF20, Local0)
-        M002 (Concatenate (__METHOD__, "-m002-CondRefGlobNameI"), Local0, 0x00)
+        M002 (Concatenate (__METHOD__, "-m002-CondRefGlobNameI"), Local0, 0x01)
         M002 (Concatenate (__METHOD__, "-m002-RefGlobNameB"), RefOf (BF21), 0x01)
         Local0 = RefOf (BF21)
         M002 (Concatenate (__METHOD__, "-m002-RefGlobName2B"), Local0, 0x01)
