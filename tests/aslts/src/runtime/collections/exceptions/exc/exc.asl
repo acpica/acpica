@@ -893,15 +893,15 @@
         CreateField (B000, 0x00, 0x08, BF00)
         CH03 (__METHOD__, Z058, __LINE__, 0x00, 0x00)
         Store (BF00 [0x00], Local5)
-        CH04 (__METHOD__, 0x01, 0x2F, Z058, __LINE__, 0x00, 0x00)   /* AE_AML_OPERAND_TYPE */
+        CH03 (__METHOD__, Z058, __LINE__, 0x00, 0x00)
         Local0 = BF00 [0x00]
-        CH04 (__METHOD__, 0x00, 0x2F, Z058, __LINE__, 0x00, 0x00)   /* AE_AML_OPERAND_TYPE */
+        CH03 (__METHOD__, Z058, __LINE__, 0x00, 0x00)
         Store (BF00 [0x00], Local0)
-        CH04 (__METHOD__, 0x00, 0xFF, Z058, __LINE__, 0x00, 0x00)
+        CH03 (__METHOD__, Z058, __LINE__, 0x00, 0x00)
         Store (BF00 [0x00], Local0)
-        CH04 (__METHOD__, 0x00, 0xFF, Z058, __LINE__, 0x00, 0x00)
+        CH03 (__METHOD__, Z058, __LINE__, 0x00, 0x00)
         Local1 = Local0 = BF00 [0x00]
-        CH04 (__METHOD__, 0x00, 0xFF, Z058, __LINE__, 0x00, 0x00)
+        CH03 (__METHOD__, Z058, __LINE__, 0x00, 0x00)
     }
 
     /* Bug 83 */

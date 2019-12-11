@@ -152,7 +152,7 @@
          */
         Local0 = BF90 /* \BF90 */
         Local7 = ObjectType (Local0)
-        If ((Local7 != C009))
+        If ((Local7 != C00B))
         {
             ERR (__METHOD__, Z109, __LINE__, 0x00, 0x00, Local7, C009)
         }
