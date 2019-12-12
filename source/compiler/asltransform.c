@@ -1053,8 +1053,7 @@ TrCheckForDuplicateCase (
             {
                 if (Predicate1->Asl.Value.Integer == Predicate2->Asl.Value.Integer)
                 {
-                    Next->Asl.CompileFlags |= OP_IS_DUPLICATE;
-                    AslError (ASL_ERROR, ASL_MSG_DUPLICATE_CASE, Next, NULL);
+                    goto FoundDuplicate;
                 }
             }
 
@@ -1067,8 +1066,7 @@ TrCheckForDuplicateCase (
                 ((Predicate1->Asl.ParseOpcode == PARSEOP_ONES) &&
                 (Predicate2->Asl.ParseOpcode == PARSEOP_ONES)))
             {
-                Next->Asl.CompileFlags |= OP_IS_DUPLICATE;
-                AslError (ASL_ERROR, ASL_MSG_DUPLICATE_CASE, Next, NULL);
+                goto FoundDuplicate;
             }
 
             /* Check for a duplicate string constant (literal) */
@@ -1079,8 +1077,7 @@ TrCheckForDuplicateCase (
                 if (!strcmp (Predicate1->Asl.Value.String,
                         Predicate2->Asl.Value.String))
                 {
-                    Next->Asl.CompileFlags |= OP_IS_DUPLICATE;
-                    AslError (ASL_ERROR, ASL_MSG_DUPLICATE_CASE, Next, NULL);
+                    goto FoundDuplicate;
                 }
             }
 
@@ -1092,11 +1089,20 @@ TrCheckForDuplicateCase (
                 if (TrCheckForBufferMatch (Predicate1->Asl.Child,
                         Predicate2->Asl.Child))
                 {
-                    Next->Asl.CompileFlags |= OP_IS_DUPLICATE;
-                    AslError (ASL_ERROR, ASL_MSG_DUPLICATE_CASE, Next, NULL);
+                    goto FoundDuplicate;
                 }
             }
         }
+        goto NextCase;
+
+FoundDuplicate:
+        /* Emit error message only once */
+
+        Next->Asl.CompileFlags |= OP_IS_DUPLICATE;
+
+        AslDualParseOpError (ASL_ERROR, ASL_MSG_DUPLICATE_CASE, Next,
+            Next->Asl.Value.String, ASL_MSG_CASE_FOUND_HERE, CaseOp,
+            CaseOp->Asl.ExternalName);
 
 NextCase:
         Next = Next->Asl.Next;
@@ -1109,9 +1115,9 @@ NextCase:
  * FUNCTION:    TrCheckForBufferMatch
  *
  * PARAMETERS:  Next1       - Parse node for first opcode in first buffer list
- *                              (The DEFAULT_ARG node)
+ *                              (The DEFAULT_ARG or INTEGER node)
  *              Next2       - Parse node for first opcode in second buffer list
- *                              (The DEFAULT_ARG node)
+ *                              (The DEFAULT_ARG or INTEGER node)
  *
  * RETURN:      TRUE if buffers match, FALSE otherwise
  *
@@ -1121,33 +1127,50 @@ NextCase:
 
 static BOOLEAN
 TrCheckForBufferMatch (
-    ACPI_PARSE_OBJECT       *Next1,
-    ACPI_PARSE_OBJECT       *Next2)
+    ACPI_PARSE_OBJECT       *NextOp1,
+    ACPI_PARSE_OBJECT       *NextOp2)
 {
+
+    if (NextOp1->Asl.Value.Integer != NextOp2->Asl.Value.Integer)
+    {
+        return (FALSE);
+    }
 
     /* Start at the BYTECONST initializer node list */
 
-    Next1 = Next1->Asl.Next;
-    Next2 = Next2->Asl.Next;
+    NextOp1 = NextOp1->Asl.Next;
+    NextOp2 = NextOp2->Asl.Next;
 
     /*
      * Walk both lists until either a mismatch is found, or one or more
      * end-of-lists are found
      */
-    while (Next1 && Next2)
+    while (NextOp1 && NextOp2)
     {
-        if ((UINT8) Next1->Asl.Value.Integer != (UINT8) Next2->Asl.Value.Integer)
+        if ((NextOp1->Asl.ParseOpcode == PARSEOP_STRING_LITERAL) &&
+            (NextOp2->Asl.ParseOpcode == PARSEOP_STRING_LITERAL))
+        {
+            if (!strcmp (NextOp1->Asl.Value.String, NextOp2->Asl.Value.String))
+            {
+                return (TRUE);
+            }
+            else
+            {
+                return (FALSE);
+            }
+        }
+        if ((UINT8) NextOp1->Asl.Value.Integer != (UINT8) NextOp2->Asl.Value.Integer)
         {
             return (FALSE);
         }
 
-        Next1 = Next1->Asl.Next;
-        Next2 = Next2->Asl.Next;
+        NextOp1 = NextOp1->Asl.Next;
+        NextOp2 = NextOp2->Asl.Next;
     }
 
     /* Not a match if one of the lists is not at end-of-list */
 
-    if (Next1 || Next2)
+    if (NextOp1 || NextOp2)
     {
         return (FALSE);
     }
