@@ -195,37 +195,37 @@
                 Case (0x00)
                 {
                     CopyObject (I900, Local0)
-                    M1A3 (Local0, C009, Z110, __METHOD__, 0x00)
+                    M1A3 (Local0, C009, Z110, __METHOD__, __LINE__)
                 }
                 Case (0x01)
                 {
                     CopyObject (S900, Local0)
-                    M1A3 (Local0, C00A, Z110, __METHOD__, 0x01)
+                    M1A3 (Local0, C00A, Z110, __METHOD__, __LINE__)
                 }
                 Case (0x02)
                 {
                     CopyObject (B900, Local0)
-                    M1A3 (Local0, C00B, Z110, __METHOD__, 0x02)
+                    M1A3 (Local0, C00B, Z110, __METHOD__, __LINE__)
                 }
                 Case (0x03)
                 {
                     CopyObject (P900, Local0)
-                    M1A3 (Local0, C00C, Z110, __METHOD__, 0x03)
+                    M1A3 (Local0, C00C, Z110, __METHOD__, __LINE__)
                 }
                 Case (0x04)
                 {
                     CopyObject (F900, Local0)
-                    M1A3 (Local0, C009, Z110, __METHOD__, 0x04)
+                    M1A3 (Local0, C009, Z110, __METHOD__, __LINE__)
                 }
                 Case (0x05)
                 {
                     CopyObject (RefOf (D900), Local0)
-                    M1A3 (Local0, C00E, Z110, __METHOD__, 0x05)
+                    M1A3 (Local0, C00E, Z110, __METHOD__, __LINE__)
                 }
                 Case (0x06)
                 {
                     CopyObject (RefOf (E900), Local0)
-                    M1A3 (Local0, C00F, Z110, __METHOD__, 0x06)
+                    M1A3 (Local0, C00F, Z110, __METHOD__, __LINE__)
                 }
                 Case (0x07)
                 {
@@ -238,43 +238,43 @@
                         CopyObject (RefOf (M901), Local0)
                     }
 
-                    M1A3 (Local0, C010, Z110, __METHOD__, 0x07)
+                    M1A3 (Local0, C010, Z110, __METHOD__, __LINE__)
                 }
                 Case (0x08)
                 {
                     CopyObject (RefOf (MX90), Local0)
-                    M1A3 (Local0, C011, Z110, __METHOD__, 0x08)
+                    M1A3 (Local0, C011, Z110, __METHOD__, __LINE__)
                 }
                 Case (0x09)
                 {
                     If (Y510)
                     {
                         CopyObject (RefOf (R900), Local0)
-                        M1A3 (Local0, C012, Z110, __METHOD__, 0x09)
+                        M1A3 (Local0, C012, Z110, __METHOD__, __LINE__)
                     }
                 }
                 Case (0x0A)
                 {
                     CopyObject (RefOf (PW90), Local0)
-                    M1A3 (Local0, C013, Z110, __METHOD__, 0x0A)
+                    M1A3 (Local0, C013, Z110, __METHOD__, __LINE__)
                 }
                 Case (0x0B)
                 {
                     CopyObject (RefOf (PR90), Local0)
-                    M1A3 (Local0, C014, Z110, __METHOD__, 0x0B)
+                    M1A3 (Local0, C014, Z110, __METHOD__, __LINE__)
                 }
                 Case (0x0C)
                 {
                     If (Y508)
                     {
                         CopyObject (RefOf (TZ90), Local0)
-                        M1A3 (Local0, C015, Z110, __METHOD__, 0x0C)
+                        M1A3 (Local0, C015, Z110, __METHOD__, __LINE__)
                     }
                 }
                 Case (0x0D)
                 {
                     CopyObject (BF90, Local0)
-                    M1A3 (Local0, C009, Z110, __METHOD__, 0x0D)
+                    M1A3 (Local0, C00B, Z110, __METHOD__, __LINE__)
                 }
                 Case                /* ========================= Group 1: */
                 /* All available for Store types */
@@ -282,32 +282,32 @@
  (0x0E)
                 {
                     Local0 = I900 /* \I900 */
-                    M1A3 (Local0, C009, Z110, __METHOD__, 0x0E)
+                    M1A3 (Local0, C009, Z110, __METHOD__, __LINE__)
                 }
                 Case (0x0F)
                 {
                     Local0 = S900 /* \S900 */
-                    M1A3 (Local0, C00A, Z110, __METHOD__, 0x0F)
+                    M1A3 (Local0, C00A, Z110, __METHOD__, __LINE__)
                 }
                 Case (0x10)
                 {
                     Local0 = B900 /* \B900 */
-                    M1A3 (Local0, C00B, Z110, __METHOD__, 0x10)
+                    M1A3 (Local0, C00B, Z110, __METHOD__, __LINE__)
                 }
                 Case (0x11)
                 {
                     Local0 = P900 /* \P900 */
-                    M1A3 (Local0, C00C, Z110, __METHOD__, 0x11)
+                    M1A3 (Local0, C00C, Z110, __METHOD__, __LINE__)
                 }
                 Case (0x12)
                 {
                     Local0 = F900 /* \F900 */
-                    M1A3 (Local0, C009, Z110, __METHOD__, 0x12)
+                    M1A3 (Local0, C009, Z110, __METHOD__, __LINE__)
                 }
                 Case (0x13)
                 {
                     Local0 = BF90 /* \BF90 */
-                    M1A3 (Local0, C009, Z110, __METHOD__, 0x13)
+                    M1A3 (Local0, C00B, Z110, __METHOD__, __LINE__)
                 }
                 Case                /* ========================= Group 2: */
                 /* All types */
@@ -315,72 +315,72 @@
  (0x14)
                 {
                     CopyObject (RefOf (I900), Local0)
-                    M1A3 (Local0, C009, Z110, __METHOD__, 0x14)
+                    M1A3 (Local0, C009, Z110, __METHOD__, __LINE__)
                 }
                 Case (0x15)
                 {
                     CopyObject (RefOf (S900), Local0)
-                    M1A3 (Local0, C00A, Z110, __METHOD__, 0x15)
+                    M1A3 (Local0, C00A, Z110, __METHOD__, __LINE__)
                 }
                 Case (0x16)
                 {
                     CopyObject (RefOf (B900), Local0)
-                    M1A3 (Local0, C00B, Z110, __METHOD__, 0x16)
+                    M1A3 (Local0, C00B, Z110, __METHOD__, __LINE__)
                 }
                 Case (0x17)
                 {
                     CopyObject (RefOf (P900), Local0)
-                    M1A3 (Local0, C00C, Z110, __METHOD__, 0x17)
+                    M1A3 (Local0, C00C, Z110, __METHOD__, __LINE__)
                 }
                 Case (0x18)
                 {
                     CopyObject (RefOf (F900), Local0)
-                    M1A3 (Local0, C00D, Z110, __METHOD__, 0x18)
+                    M1A3 (Local0, C00D, Z110, __METHOD__, __LINE__)
                 }
                 Case (0x19)
                 {
                     CopyObject (RefOf (D900), Local0)
-                    M1A3 (Local0, C00E, Z110, __METHOD__, 0x19)
+                    M1A3 (Local0, C00E, Z110, __METHOD__, __LINE__)
                 }
                 Case (0x1A)
                 {
                     CopyObject (RefOf (E900), Local0)
-                    M1A3 (Local0, C00F, Z110, __METHOD__, 0x1A)
+                    M1A3 (Local0, C00F, Z110, __METHOD__, __LINE__)
                 }
                 Case (0x1B)
                 {
                     CopyObject (RefOf (M901), Local0)
-                    M1A3 (Local0, C010, Z110, __METHOD__, 0x1B)
+                    M1A3 (Local0, C010, Z110, __METHOD__, __LINE__)
                 }
                 Case (0x1C)
                 {
                     CopyObject (RefOf (MX90), Local0)
-                    M1A3 (Local0, C011, Z110, __METHOD__, 0x1C)
+                    M1A3 (Local0, C011, Z110, __METHOD__, __LINE__)
                 }
                 Case (0x1D)
                 {
                     CopyObject (RefOf (R900), Local0)
-                    M1A3 (Local0, C012, Z110, __METHOD__, 0x1D)
+                    M1A3 (Local0, C012, Z110, __METHOD__, __LINE__)
                 }
                 Case (0x1E)
                 {
                     CopyObject (RefOf (PW90), Local0)
-                    M1A3 (Local0, C013, Z110, __METHOD__, 0x1E)
+                    M1A3 (Local0, C013, Z110, __METHOD__, __LINE__)
                 }
                 Case (0x1F)
                 {
                     CopyObject (RefOf (PR90), Local0)
-                    M1A3 (Local0, C014, Z110, __METHOD__, 0x1F)
+                    M1A3 (Local0, C014, Z110, __METHOD__, __LINE__)
                 }
                 Case (0x20)
                 {
                     CopyObject (RefOf (TZ90), Local0)
-                    M1A3 (Local0, C015, Z110, __METHOD__, 0x20)
+                    M1A3 (Local0, C015, Z110, __METHOD__, __LINE__)
                 }
                 Case (0x21)
                 {
                     CopyObject (RefOf (BF90), Local0)
-                    M1A3 (Local0, C016, Z110, __METHOD__, 0x21)
+                    M1A3 (Local0, C016, Z110, __METHOD__, __LINE__)
                 }
                 Case                /* ========================= Group 3: */
                 /* All types */
@@ -388,72 +388,72 @@
  (0x22)
                 {
                     Local0 = RefOf (I900)
-                    M1A3 (Local0, C009, Z110, __METHOD__, 0x22)
+                    M1A3 (Local0, C009, Z110, __METHOD__, __LINE__)
                 }
                 Case (0x23)
                 {
                     Local0 = RefOf (S900)
-                    M1A3 (Local0, C00A, Z110, __METHOD__, 0x23)
+                    M1A3 (Local0, C00A, Z110, __METHOD__, __LINE__)
                 }
                 Case (0x24)
                 {
                     Local0 = RefOf (B900)
-                    M1A3 (Local0, C00B, Z110, __METHOD__, 0x24)
+                    M1A3 (Local0, C00B, Z110, __METHOD__, __LINE__)
                 }
                 Case (0x25)
                 {
                     Local0 = RefOf (P900)
-                    M1A3 (Local0, C00C, Z110, __METHOD__, 0x25)
+                    M1A3 (Local0, C00C, Z110, __METHOD__, __LINE__)
                 }
                 Case (0x26)
                 {
                     Local0 = RefOf (F900)
-                    M1A3 (Local0, C00D, Z110, __METHOD__, 0x26)
+                    M1A3 (Local0, C00D, Z110, __METHOD__, __LINE__)
                 }
                 Case (0x27)
                 {
                     Local0 = RefOf (D900)
-                    M1A3 (Local0, C00E, Z110, __METHOD__, 0x27)
+                    M1A3 (Local0, C00E, Z110, __METHOD__, __LINE__)
                 }
                 Case (0x28)
                 {
                     Local0 = RefOf (E900)
-                    M1A3 (Local0, C00F, Z110, __METHOD__, 0x28)
+                    M1A3 (Local0, C00F, Z110, __METHOD__, __LINE__)
                 }
                 Case (0x29)
                 {
                     Local0 = RefOf (M901)
-                    M1A3 (Local0, C010, Z110, __METHOD__, 0x29)
+                    M1A3 (Local0, C010, Z110, __METHOD__, __LINE__)
                 }
                 Case (0x2A)
                 {
                     Local0 = RefOf (MX90)
-                    M1A3 (Local0, C011, Z110, __METHOD__, 0x2A)
+                    M1A3 (Local0, C011, Z110, __METHOD__, __LINE__)
                 }
                 Case (0x2B)
                 {
                     Local0 = RefOf (R900)
-                    M1A3 (Local0, C012, Z110, __METHOD__, 0x2B)
+                    M1A3 (Local0, C012, Z110, __METHOD__, __LINE__)
                 }
                 Case (0x2C)
                 {
                     Local0 = RefOf (PW90)
-                    M1A3 (Local0, C013, Z110, __METHOD__, 0x2C)
+                    M1A3 (Local0, C013, Z110, __METHOD__, __LINE__)
                 }
                 Case (0x2D)
                 {
                     Local0 = RefOf (PR90)
-                    M1A3 (Local0, C014, Z110, __METHOD__, 0x2D)
+                    M1A3 (Local0, C014, Z110, __METHOD__, __LINE__)
                 }
                 Case (0x2E)
                 {
                     Local0 = RefOf (TZ90)
-                    M1A3 (Local0, C015, Z110, __METHOD__, 0x2E)
+                    M1A3 (Local0, C015, Z110, __METHOD__, __LINE__)
                 }
                 Case (0x2F)
                 {
                     Local0 = RefOf (BF90)
-                    M1A3 (Local0, C016, Z110, __METHOD__, 0x2F)
+                    M1A3 (Local0, C016, Z110, __METHOD__, __LINE__)
                 }
                 Case                /* ========================= Group 4: */
                 /* From m1b6: CopyObject the result of Index to LocalX */
@@ -461,14 +461,14 @@
  (0x30)
                 {
                     CopyObject (Local0 = S900 [0x01], Local1)
-                    M1A3 (Local0, C016, Z110, __METHOD__, 0x30)
-                    M1A3 (Local1, C016, Z110, __METHOD__, 0x31)
+                    M1A3 (Local0, C016, Z110, __METHOD__, __LINE__)
+                    M1A3 (Local1, C016, Z110, __METHOD__, __LINE__)
                 }
                 Case (0x31)
                 {
                     CopyObject (Local0 = B900 [0x01], Local1)
-                    M1A3 (Local0, C016, Z110, __METHOD__, 0x32)
-                    M1A3 (Local1, C016, Z110, __METHOD__, 0x33)
+                    M1A3 (Local0, C016, Z110, __METHOD__, __LINE__)
+                    M1A3 (Local1, C016, Z110, __METHOD__, __LINE__)
                 }
                 Case                /* Elements of Package are Uninitialized */
 
@@ -477,8 +477,8 @@
                     If (Y127)
                     {
                         CopyObject (Local0 = P900 [0x00], Local1)
-                        M1A3 (Local0, C008, Z110, __METHOD__, 0x34)
-                        M1A3 (Local1, C008, Z110, __METHOD__, 0x35)
+                        M1A3 (Local0, C008, Z110, __METHOD__, __LINE__)
+                        M1A3 (Local1, C008, Z110, __METHOD__, __LINE__)
                     }
                 }
                 Case                /* Elements of Package are Computational Data */
@@ -486,144 +486,144 @@
  (0x33)
                 {
                     CopyObject (Local0 = P901 [0x01], Local1)
-                    M1A3 (Local0, C009, Z110, __METHOD__, 0x36)
-                    M1A3 (Local1, C009, Z110, __METHOD__, 0x37)
+                    M1A3 (Local0, C009, Z110, __METHOD__, __LINE__)
+                    M1A3 (Local1, C009, Z110, __METHOD__, __LINE__)
                 }
                 Case (0x34)
                 {
                     CopyObject (Local0 = P904 [0x01], Local1)
-                    M1A3 (Local0, C00B, Z110, __METHOD__, 0x38)
-                    M1A3 (Local1, C00B, Z110, __METHOD__, 0x39)
+                    M1A3 (Local0, C00B, Z110, __METHOD__, __LINE__)
+                    M1A3 (Local1, C00B, Z110, __METHOD__, __LINE__)
                 }
                 Case (0x35)
                 {
                     CopyObject (Local0 = P905 [0x00], Local1)
-                    M1A3 (Local0, C00C, Z110, __METHOD__, 0x3A)
-                    M1A3 (Local1, C00C, Z110, __METHOD__, 0x3B)
+                    M1A3 (Local0, C00C, Z110, __METHOD__, __LINE__)
+                    M1A3 (Local1, C00C, Z110, __METHOD__, __LINE__)
                 }
                 Case (0x36)
                 {
                     CopyObject (Local0 = P90D [0x00], Local1)
-                    M1A3 (Local0, C009, Z110, __METHOD__, 0x3C)
-                    M1A3 (Local1, C009, Z110, __METHOD__, 0x3D)
+                    M1A3 (Local0, C009, Z110, __METHOD__, __LINE__)
+                    M1A3 (Local1, C009, Z110, __METHOD__, __LINE__)
                 }
                 Case (0x37)
                 {
                     CopyObject (Local0 = P90E [0x00], Local1)
-                    M1A3 (Local0, C009, Z110, __METHOD__, 0x3E)
-                    M1A3 (Local1, C009, Z110, __METHOD__, 0x3F)
+                    M1A3 (Local0, C009, Z110, __METHOD__, __LINE__)
+                    M1A3 (Local1, C009, Z110, __METHOD__, __LINE__)
                 }
                 Case (0x38)
                 {
                     CopyObject (Local0 = P90F [0x00], Local1)
-                    M1A3 (Local0, C00A, Z110, __METHOD__, 0x40)
-                    M1A3 (Local1, C00A, Z110, __METHOD__, 0x41)
+                    M1A3 (Local0, C00A, Z110, __METHOD__, __LINE__)
+                    M1A3 (Local1, C00A, Z110, __METHOD__, __LINE__)
                 }
                 Case (0x39)
                 {
                     CopyObject (Local0 = P910 [0x00], Local1)
-                    M1A3 (Local0, C00A, Z110, __METHOD__, 0x42)
-                    M1A3 (Local1, C00A, Z110, __METHOD__, 0x43)
+                    M1A3 (Local0, C00A, Z110, __METHOD__, __LINE__)
+                    M1A3 (Local1, C00A, Z110, __METHOD__, __LINE__)
                 }
                 Case (0x3A)
                 {
                     CopyObject (Local0 = P911 [0x00], Local1)
-                    M1A3 (Local0, C00B, Z110, __METHOD__, 0x44)
-                    M1A3 (Local1, C00B, Z110, __METHOD__, 0x45)
+                    M1A3 (Local0, C00B, Z110, __METHOD__, __LINE__)
+                    M1A3 (Local1, C00B, Z110, __METHOD__, __LINE__)
                 }
                 Case (0x3B)
                 {
                     CopyObject (Local0 = P912 [0x00], Local1)
-                    M1A3 (Local0, C009, Z110, __METHOD__, 0x46)
-                    M1A3 (Local1, C009, Z110, __METHOD__, 0x47)
+                    M1A3 (Local0, C009, Z110, __METHOD__, __LINE__)
+                    M1A3 (Local1, C009, Z110, __METHOD__, __LINE__)
                 }
                 Case (0x3C)
                 {
                     CopyObject (Local0 = P913 [0x00], Local1)
-                    M1A3 (Local0, C009, Z110, __METHOD__, 0x48)
-                    M1A3 (Local1, C009, Z110, __METHOD__, 0x49)
+                    M1A3 (Local0, C009, Z110, __METHOD__, __LINE__)
+                    M1A3 (Local1, C009, Z110, __METHOD__, __LINE__)
                 }
                 Case (0x3D)
                 {
                     CopyObject (Local0 = P914 [0x00], Local1)
-                    M1A3 (Local0, C009, Z110, __METHOD__, 0x4A)
-                    M1A3 (Local1, C009, Z110, __METHOD__, 0x4B)
+                    M1A3 (Local0, C009, Z110, __METHOD__, __LINE__)
+                    M1A3 (Local1, C009, Z110, __METHOD__, __LINE__)
                 }
                 Case (0x3E)
                 {
                     CopyObject (Local0 = P915 [0x00], Local1)
-                    M1A3 (Local0, C009, Z110, __METHOD__, 0x4C)
-                    M1A3 (Local1, C009, Z110, __METHOD__, 0x4D)
+                    M1A3 (Local0, C00B, Z110, __METHOD__, __LINE__)
+                    M1A3 (Local1, C00B, Z110, __METHOD__, __LINE__)
                 }
                 Case                /* Elements of Package are NOT Computational Data */
 
  (0x3F)
                 {
                     CopyObject (Local0 = P916 [0x00], Local1)
-                    M1A3 (Local0, C00E, Z110, __METHOD__, 0x4E)
-                    M1A3 (Local1, C00E, Z110, __METHOD__, 0x4F)
+                    M1A3 (Local0, C00E, Z110, __METHOD__, __LINE__)
+                    M1A3 (Local1, C00E, Z110, __METHOD__, __LINE__)
                 }
                 Case (0x40)
                 {
                     CopyObject (Local0 = P917 [0x00], Local1)
-                    M1A3 (Local0, C00F, Z110, __METHOD__, 0x50)
-                    M1A3 (Local1, C00F, Z110, __METHOD__, 0x51)
+                    M1A3 (Local0, C00F, Z110, __METHOD__, __LINE__)
+                    M1A3 (Local1, C00F, Z110, __METHOD__, __LINE__)
                 }
                 Case (0x41)
                 {
                     CopyObject (Local0 = P918 [0x00], Local1)
-                    M1A3 (Local0, C011, Z110, __METHOD__, 0x52)
-                    M1A3 (Local1, C011, Z110, __METHOD__, 0x53)
+                    M1A3 (Local0, C011, Z110, __METHOD__, __LINE__)
+                    M1A3 (Local1, C011, Z110, __METHOD__, __LINE__)
                 }
                 Case (0x42)
                 {
                     CopyObject (Local0 = P919 [0x00], Local1)
-                    M1A3 (Local0, C012, Z110, __METHOD__, 0x54)
-                    M1A3 (Local1, C012, Z110, __METHOD__, 0x55)
+                    M1A3 (Local0, C012, Z110, __METHOD__, __LINE__)
+                    M1A3 (Local1, C012, Z110, __METHOD__, __LINE__)
                 }
                 Case (0x43)
                 {
                     CopyObject (Local0 = P91A [0x00], Local1)
-                    M1A3 (Local0, C013, Z110, __METHOD__, 0x56)
-                    M1A3 (Local1, C013, Z110, __METHOD__, 0x57)
+                    M1A3 (Local0, C013, Z110, __METHOD__, __LINE__)
+                    M1A3 (Local1, C013, Z110, __METHOD__, __LINE__)
                 }
                 Case (0x44)
                 {
                     CopyObject (Local0 = P91B [0x00], Local1)
-                    M1A3 (Local0, C014, Z110, __METHOD__, 0x58)
-                    M1A3 (Local1, C014, Z110, __METHOD__, 0x59)
+                    M1A3 (Local0, C014, Z110, __METHOD__, __LINE__)
+                    M1A3 (Local1, C014, Z110, __METHOD__, __LINE__)
                 }
                 Case (0x45)
                 {
                     CopyObject (Local0 = P91C [0x00], Local1)
-                    M1A3 (Local0, C015, Z110, __METHOD__, 0x5A)
-                    M1A3 (Local1, C015, Z110, __METHOD__, 0x5B)
+                    M1A3 (Local0, C015, Z110, __METHOD__, __LINE__)
+                    M1A3 (Local1, C015, Z110, __METHOD__, __LINE__)
                 }
                 Case                /* Elements of Package are Methods */
 
  (0x46)
                 {
                     CopyObject (Local0 = P91D [0x00], Local1)
-                    M1A3 (Local0, C010, Z110, __METHOD__, 0x5C)
-                    M1A3 (Local1, C010, Z110, __METHOD__, 0x5D)
+                    M1A3 (Local0, C010, Z110, __METHOD__, __LINE__)
+                    M1A3 (Local1, C010, Z110, __METHOD__, __LINE__)
                 }
                 Case (0x47)
                 {
                     CopyObject (Local0 = P91E [0x00], Local1)
-                    M1A3 (Local0, C010, Z110, __METHOD__, 0x5E)
-                    M1A3 (Local1, C010, Z110, __METHOD__, 0x5F)
+                    M1A3 (Local0, C010, Z110, __METHOD__, __LINE__)
+                    M1A3 (Local1, C010, Z110, __METHOD__, __LINE__)
                 }
                 Case (0x48)
                 {
                     CopyObject (Local0 = P91F [0x00], Local1)
-                    M1A3 (Local0, C010, Z110, __METHOD__, 0x60)
-                    M1A3 (Local1, C010, Z110, __METHOD__, 0x61)
+                    M1A3 (Local0, C010, Z110, __METHOD__, __LINE__)
+                    M1A3 (Local1, C010, Z110, __METHOD__, __LINE__)
                 }
                 Case (0x49)
                 {
                     CopyObject (Local0 = P920 [0x00], Local1)
-                    M1A3 (Local0, C010, Z110, __METHOD__, 0x62)
-                    M1A3 (Local1, C010, Z110, __METHOD__, 0x63)
+                    M1A3 (Local0, C010, Z110, __METHOD__, __LINE__)
+                    M1A3 (Local1, C010, Z110, __METHOD__, __LINE__)
                 }
                 Case                /* ========================= Group 5: */
                 /* From m1b7: Store the result of Index to LocalX */
@@ -631,166 +631,166 @@
  (0x4A)
                 {
                     Local1 = Local0 = S900 [0x01]
-                    M1A3 (Local0, C016, Z110, __METHOD__, 0x64)
-                    M1A3 (Local1, C016, Z110, __METHOD__, 0x65)
+                    M1A3 (Local0, C016, Z110, __METHOD__, __LINE__)
+                    M1A3 (Local1, C016, Z110, __METHOD__, __LINE__)
                 }
                 Case (0x4B)
                 {
                     Local1 = Local0 = B900 [0x01]
-                    M1A3 (Local0, C016, Z110, __METHOD__, 0x66)
-                    M1A3 (Local1, C016, Z110, __METHOD__, 0x67)
+                    M1A3 (Local0, C016, Z110, __METHOD__, __LINE__)
+                    M1A3 (Local1, C016, Z110, __METHOD__, __LINE__)
                 }
                 Case                /* Elements of Package are Uninitialized */
 
  (0x4C)
                 {
                     Local1 = Local0 = P900 [0x00]
-                    M1A3 (Local0, C008, Z110, __METHOD__, 0x68)
-                    M1A3 (Local1, C008, Z110, __METHOD__, 0x69)
+                    M1A3 (Local0, C008, Z110, __METHOD__, __LINE__)
+                    M1A3 (Local1, C008, Z110, __METHOD__, __LINE__)
                 }
                 Case                /* Elements of Package are Computational Data */
 
  (0x4D)
                 {
                     Local1 = Local0 = P901 [0x01]
-                    M1A3 (Local0, C009, Z110, __METHOD__, 0x6A)
-                    M1A3 (Local1, C009, Z110, __METHOD__, 0x6B)
+                    M1A3 (Local0, C009, Z110, __METHOD__, __LINE__)
+                    M1A3 (Local1, C009, Z110, __METHOD__, __LINE__)
                 }
                 Case (0x4E)
                 {
                     Local1 = Local0 = P904 [0x01]
-                    M1A3 (Local0, C00B, Z110, __METHOD__, 0x6C)
-                    M1A3 (Local1, C00B, Z110, __METHOD__, 0x6D)
+                    M1A3 (Local0, C00B, Z110, __METHOD__, __LINE__)
+                    M1A3 (Local1, C00B, Z110, __METHOD__, __LINE__)
                 }
                 Case (0x4F)
                 {
                     Local1 = Local0 = P905 [0x00]
-                    M1A3 (Local0, C00C, Z110, __METHOD__, 0x6E)
-                    M1A3 (Local1, C00C, Z110, __METHOD__, 0x6F)
+                    M1A3 (Local0, C00C, Z110, __METHOD__, __LINE__)
+                    M1A3 (Local1, C00C, Z110, __METHOD__, __LINE__)
                 }
                 Case (0x50)
                 {
                     Local1 = Local0 = P90D [0x00]
-                    M1A3 (Local0, C009, Z110, __METHOD__, 0x70)
-                    M1A3 (Local1, C009, Z110, __METHOD__, 0x71)
+                    M1A3 (Local0, C009, Z110, __METHOD__, __LINE__)
+                    M1A3 (Local1, C009, Z110, __METHOD__, __LINE__)
                 }
                 Case (0x51)
                 {
                     Local1 = Local0 = P90E [0x00]
-                    M1A3 (Local0, C009, Z110, __METHOD__, 0x72)
-                    M1A3 (Local1, C009, Z110, __METHOD__, 0x73)
+                    M1A3 (Local0, C009, Z110, __METHOD__, __LINE__)
+                    M1A3 (Local1, C009, Z110, __METHOD__, __LINE__)
                 }
                 Case (0x52)
                 {
                     Local1 = Local0 = P90F [0x00]
-                    M1A3 (Local0, C00A, Z110, __METHOD__, 0x74)
-                    M1A3 (Local1, C00A, Z110, __METHOD__, 0x75)
+                    M1A3 (Local0, C00A, Z110, __METHOD__, __LINE__)
+                    M1A3 (Local1, C00A, Z110, __METHOD__, __LINE__)
                 }
                 Case (0x53)
                 {
                     Local1 = Local0 = P910 [0x00]
-                    M1A3 (Local0, C00A, Z110, __METHOD__, 0x76)
-                    M1A3 (Local1, C00A, Z110, __METHOD__, 0x77)
+                    M1A3 (Local0, C00A, Z110, __METHOD__, __LINE__)
+                    M1A3 (Local1, C00A, Z110, __METHOD__, __LINE__)
                 }
                 Case (0x54)
                 {
                     Local1 = Local0 = P911 [0x00]
-                    M1A3 (Local0, C00B, Z110, __METHOD__, 0x78)
-                    M1A3 (Local1, C00B, Z110, __METHOD__, 0x79)
+                    M1A3 (Local0, C00B, Z110, __METHOD__, __LINE__)
+                    M1A3 (Local1, C00B, Z110, __METHOD__, __LINE__)
                 }
                 Case (0x55)
                 {
                     Local1 = Local0 = P912 [0x00]
-                    M1A3 (Local0, C009, Z110, __METHOD__, 0x7A)
-                    M1A3 (Local1, C009, Z110, __METHOD__, 0x7B)
+                    M1A3 (Local0, C009, Z110, __METHOD__, __LINE__)
+                    M1A3 (Local1, C009, Z110, __METHOD__, __LINE__)
                 }
                 Case (0x56)
                 {
                     Local1 = Local0 = P913 [0x00]
-                    M1A3 (Local0, C009, Z110, __METHOD__, 0x7C)
-                    M1A3 (Local1, C009, Z110, __METHOD__, 0x7D)
+                    M1A3 (Local0, C009, Z110, __METHOD__, __LINE__)
+                    M1A3 (Local1, C009, Z110, __METHOD__, __LINE__)
                 }
                 Case (0x57)
                 {
                     Local1 = Local0 = P914 [0x00]
-                    M1A3 (Local0, C009, Z110, __METHOD__, 0x7E)
-                    M1A3 (Local1, C009, Z110, __METHOD__, 0x7F)
+                    M1A3 (Local0, C009, Z110, __METHOD__, __LINE__)
+                    M1A3 (Local1, C009, Z110, __METHOD__, __LINE__)
                 }
                 Case (0x58)
                 {
                     Local1 = Local0 = P915 [0x00]
-                    M1A3 (Local0, C009, Z110, __METHOD__, 0x80)
-                    M1A3 (Local1, C009, Z110, __METHOD__, 0x81)
+                    M1A3 (Local0, C00B, Z110, __METHOD__, __LINE__)
+                    M1A3 (Local1, C00B, Z110, __METHOD__, __LINE__)
                 }
                 Case                /* Elements of Package are NOT Computational Data */
 
  (0x59)
                 {
                     Local1 = Local0 = P916 [0x00]
-                    M1A3 (Local0, C00E, Z110, __METHOD__, 0x82)
-                    M1A3 (Local1, C00E, Z110, __METHOD__, 0x83)
+                    M1A3 (Local0, C00E, Z110, __METHOD__, __LINE__)
+                    M1A3 (Local1, C00E, Z110, __METHOD__, __LINE__)
                 }
                 Case (0x5A)
                 {
                     Local1 = Local0 = P917 [0x00]
-                    M1A3 (Local0, C00F, Z110, __METHOD__, 0x84)
-                    M1A3 (Local1, C00F, Z110, __METHOD__, 0x85)
+                    M1A3 (Local0, C00F, Z110, __METHOD__, __LINE__)
+                    M1A3 (Local1, C00F, Z110, __METHOD__, __LINE__)
                 }
                 Case (0x5B)
                 {
                     Local1 = Local0 = P918 [0x00]
-                    M1A3 (Local0, C011, Z110, __METHOD__, 0x86)
-                    M1A3 (Local1, C011, Z110, __METHOD__, 0x87)
+                    M1A3 (Local0, C011, Z110, __METHOD__, __LINE__)
+                    M1A3 (Local1, C011, Z110, __METHOD__, __LINE__)
                 }
                 Case (0x5C)
                 {
                     Local1 = Local0 = P919 [0x00]
-                    M1A3 (Local0, C012, Z110, __METHOD__, 0x88)
-                    M1A3 (Local1, C012, Z110, __METHOD__, 0x89)
+                    M1A3 (Local0, C012, Z110, __METHOD__, __LINE__)
+                    M1A3 (Local1, C012, Z110, __METHOD__, __LINE__)
                 }
                 Case (0x5D)
                 {
                     Local1 = Local0 = P91A [0x00]
-                    M1A3 (Local0, C013, Z110, __METHOD__, 0x8A)
-                    M1A3 (Local1, C013, Z110, __METHOD__, 0x8B)
+                    M1A3 (Local0, C013, Z110, __METHOD__, __LINE__)
+                    M1A3 (Local1, C013, Z110, __METHOD__, __LINE__)
                 }
                 Case (0x5E)
                 {
                     Local1 = Local0 = P91B [0x00]
-                    M1A3 (Local0, C014, Z110, __METHOD__, 0x8C)
-                    M1A3 (Local1, C014, Z110, __METHOD__, 0x8D)
+                    M1A3 (Local0, C014, Z110, __METHOD__, __LINE__)
+                    M1A3 (Local1, C014, Z110, __METHOD__, __LINE__)
                 }
                 Case (0x5F)
                 {
                     Local1 = Local0 = P91C [0x00]
-                    M1A3 (Local0, C015, Z110, __METHOD__, 0x8E)
-                    M1A3 (Local1, C015, Z110, __METHOD__, 0x8F)
+                    M1A3 (Local0, C015, Z110, __METHOD__, __LINE__)
+                    M1A3 (Local1, C015, Z110, __METHOD__, __LINE__)
                 }
                 Case                /* Elements of Package are Methods */
 
  (0x60)
                 {
                     Local1 = Local0 = P91D [0x00]
-                    M1A3 (Local0, C010, Z110, __METHOD__, 0x90)
-                    M1A3 (Local1, C010, Z110, __METHOD__, 0x91)
+                    M1A3 (Local0, C010, Z110, __METHOD__, __LINE__)
+                    M1A3 (Local1, C010, Z110, __METHOD__, __LINE__)
                 }
                 Case (0x61)
                 {
                     Local1 = Local0 = P91E [0x00]
-                    M1A3 (Local0, C010, Z110, __METHOD__, 0x92)
-                    M1A3 (Local1, C010, Z110, __METHOD__, 0x93)
+                    M1A3 (Local0, C010, Z110, __METHOD__, __LINE__)
+                    M1A3 (Local1, C010, Z110, __METHOD__, __LINE__)
                 }
                 Case (0x62)
                 {
                     Local1 = Local0 = P91F [0x00]
-                    M1A3 (Local0, C010, Z110, __METHOD__, 0x94)
-                    M1A3 (Local1, C010, Z110, __METHOD__, 0x95)
+                    M1A3 (Local0, C010, Z110, __METHOD__, __LINE__)
+                    M1A3 (Local1, C010, Z110, __METHOD__, __LINE__)
                 }
                 Case (0x63)
                 {
                     Local1 = Local0 = P920 [0x00]
-                    M1A3 (Local0, C010, Z110, __METHOD__, 0x96)
-                    M1A3 (Local1, C010, Z110, __METHOD__, 0x97)
+                    M1A3 (Local0, C010, Z110, __METHOD__, __LINE__)
+                    M1A3 (Local1, C010, Z110, __METHOD__, __LINE__)
                 }
                 Default
                 {

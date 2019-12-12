@@ -1514,9 +1514,9 @@
             ERR (Arg0, Z143, __LINE__, 0x00, 0x00, LEN1, 0x20)
         }
 
-        Local0 = Buffer (0x20)
+        Local0 = Buffer (0x4)
             {
-                "TEST"
+                0x54, 0x45, 0x53, 0x54 //"TEST"
             }
         If ((DAT0 != Local0))
         {

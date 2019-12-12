@@ -35,40 +35,40 @@
     /* Global CreateField declarations */
     Method (MD8F, 0, NotSerialized)
     {
-        If ((BF32 != 0x14))
+        If ((BF32 != Buffer(){0x14}))
         {
-            ERR (__METHOD__, ZFFF, __LINE__, 0x00, 0x00, BF32, 0x14)
+            ERR (__METHOD__, ZFFF, __LINE__, 0x00, 0x00, BF32, Buffer(){0x14})
         }
 
-        If ((BF33 != 0x1615))
+        If ((BF33 != Buffer(){0x15, 0x16}))
         {
-            ERR (__METHOD__, ZFFF, __LINE__, 0x00, 0x00, BF33, 0x1615)
+            ERR (__METHOD__, ZFFF, __LINE__, 0x00, 0x00, BF33, Buffer(){0x15, 0x16})
         }
     }
 
     Method (MD90, 0, NotSerialized)
     {
-        If ((BF34 != 0x18))
+        If ((BF34 != Buffer() {0x18}))
         {
-            ERR (__METHOD__, ZFFF, __LINE__, 0x00, 0x00, BF34, 0x18)
+            ERR (__METHOD__, ZFFF, __LINE__, 0x00, 0x00, BF34, Buffer(){0x18})
         }
 
-        If ((BF35 != 0x19))
+        If ((BF35 != Buffer() {0x19}))
         {
-            ERR (__METHOD__, ZFFF, __LINE__, 0x00, 0x00, BF35, 0x19)
+            ERR (__METHOD__, ZFFF, __LINE__, 0x00, 0x00, BF35, Buffer(){0x19})
         }
     }
 
     Method (MD91, 0, NotSerialized)
     {
-        If ((BF36 != 0x1A))
+        If ((BF36 != Buffer() {0x1A}))
         {
-            ERR (__METHOD__, ZFFF, __LINE__, 0x00, 0x00, BF36, 0x1A)
+            ERR (__METHOD__, ZFFF, __LINE__, 0x00, 0x00, BF36, Buffer(){0x1A})
         }
 
-        If ((BF37 != 0x1C1B))
+        If ((BF37 != Buffer(){0x1B, 0x1C}))
         {
-            ERR (__METHOD__, ZFFF, __LINE__, 0x00, 0x00, BF37, 0x1C1B)
+            ERR (__METHOD__, ZFFF, __LINE__, 0x00, 0x00, BF37, Buffer(){0x1B, 0x1C})
         }
     }
 
@@ -78,14 +78,14 @@
     {
         CreateField (BD02, 0x20, ID03, BF32)
         CreateField (BD02, 0x28, (ID03 + 0x08), BF33)
-        If ((BF32 != 0x14))
+        If ((BF32 != Buffer(){0x14}))
         {
-            ERR (__METHOD__, ZFFF, __LINE__, 0x00, 0x00, BF32, 0x14)
+            ERR (__METHOD__, ZFFF, __LINE__, 0x00, 0x00, BF32, Buffer(){0x14})
         }
 
-        If ((BF33 != 0x1615))
+        If ((BF33 != Buffer(){0x15, 0x16}))
         {
-            ERR (__METHOD__, ZFFF, __LINE__, 0x00, 0x00, BF33, 0x1615)
+            ERR (__METHOD__, ZFFF, __LINE__, 0x00, 0x00, BF33, Buffer(){0x15, 0x16})
         }
     }
 
@@ -93,14 +93,14 @@
     {
         CreateField (BD02, ID04, 0x08, BF34)
         CreateField (BD02, (ID04 + 0x08), 0x08, BF35)
-        If ((BF34 != 0x18))
+        If ((BF34 != Buffer() {0x18}))
         {
-            ERR (__METHOD__, ZFFF, __LINE__, 0x00, 0x00, BF34, 0x18)
+            ERR (__METHOD__, ZFFF, __LINE__, 0x00, 0x00, BF34, Buffer(){0x18})
         }
 
-        If ((BF35 != 0x19))
+        If ((BF35 != Buffer() {0x19}))
         {
-            ERR (__METHOD__, ZFFF, __LINE__, 0x00, 0x00, BF35, 0x19)
+            ERR (__METHOD__, ZFFF, __LINE__, 0x00, 0x00, BF35, Buffer(){0x19})
         }
     }
 
@@ -108,14 +108,14 @@
     {
         CreateField (BD02, ID05, ID06, BF36)
         CreateField (BD02, (ID07 + 0x08), (ID08 + 0x08), BF37)
-        If ((BF36 != 0x1A))
+        If ((BF36 != Buffer() {0x1A}))
         {
-            ERR (__METHOD__, ZFFF, __LINE__, 0x00, 0x00, BF36, 0x1A)
+            ERR (__METHOD__, ZFFF, __LINE__, 0x00, 0x00, BF36, Buffer(){0x1A})
         }
 
-        If ((BF37 != 0x1C1B))
+        If ((BF37 != Buffer(){0x1B, 0x1C}))
         {
-            ERR (__METHOD__, ZFFF, __LINE__, 0x00, 0x00, BF37, 0x1C1B)
+            ERR (__METHOD__, ZFFF, __LINE__, 0x00, 0x00, BF37, Buffer(){0x1B, 0x1C})
         }
     }
 
@@ -125,14 +125,14 @@
     {
         CreateField (BD03, 0x20, ID03, BF32)
         CreateField (BD03, 0x28, (ID03 + 0x08), BF33)
-        If ((BF32 != 0x14))
+        If ((BF32 != Buffer(){0x14}))
         {
-            ERR (__METHOD__, ZFFF, __LINE__, 0x00, 0x00, BF32, 0x14)
+            ERR (__METHOD__, ZFFF, __LINE__, 0x00, 0x00, BF32, Buffer(){0x14})
         }
 
-        If ((BF33 != 0x1615))
+        If ((BF33 != Buffer(){0x15, 0x16}))
         {
-            ERR (__METHOD__, ZFFF, __LINE__, 0x00, 0x00, BF33, 0x1615)
+            ERR (__METHOD__, ZFFF, __LINE__, 0x00, 0x00, BF33, Buffer(){0x15, 0x16})
         }
     }
 
@@ -140,14 +140,14 @@
     {
         CreateField (BD03, ID04, 0x08, BF34)
         CreateField (BD03, (ID04 + 0x08), 0x08, BF35)
-        If ((BF34 != 0x18))
+        If ((BF34 != Buffer() {0x18}))
         {
-            ERR (__METHOD__, ZFFF, __LINE__, 0x00, 0x00, BF34, 0x18)
+            ERR (__METHOD__, ZFFF, __LINE__, 0x00, 0x00, BF34, Buffer(){0x18})
         }
 
-        If ((BF35 != 0x19))
+        If ((BF35 != Buffer() {0x19}))
         {
-            ERR (__METHOD__, ZFFF, __LINE__, 0x00, 0x00, BF35, 0x19)
+            ERR (__METHOD__, ZFFF, __LINE__, 0x00, 0x00, BF35, Buffer(){0x19})
         }
     }
 
@@ -155,14 +155,14 @@
     {
         CreateField (BD03, ID05, ID06, BF36)
         CreateField (BD03, (ID07 + 0x08), (ID08 + 0x08), BF37)
-        If ((BF36 != 0x1A))
+        If ((BF36 != Buffer() {0x1A}))
         {
-            ERR (__METHOD__, ZFFF, __LINE__, 0x00, 0x00, BF36, 0x1A)
+            ERR (__METHOD__, ZFFF, __LINE__, 0x00, 0x00, BF36, Buffer(){0x1A})
         }
 
-        If ((BF37 != 0x1C1B))
+        If ((BF37 != Buffer(){0x1B, 0x1C}))
         {
-            ERR (__METHOD__, ZFFF, __LINE__, 0x00, 0x00, BF37, 0x1C1B)
+            ERR (__METHOD__, ZFFF, __LINE__, 0x00, 0x00, BF37, Buffer(){0x1B, 0x1C})
         }
     }
 
@@ -204,22 +204,22 @@
             ERR (__METHOD__, ZFFF, __LINE__, 0x00, 0x00, Arg4, B000)
         }
 
-        If ((Arg5 != 0x5D))
+        If ((Arg5 != Buffer(){0x5D}))
         {
-            ERR (__METHOD__, ZFFF, __LINE__, 0x00, 0x00, Arg5, 0x5D)
+            ERR (__METHOD__, ZFFF, __LINE__, 0x00, 0x00, Arg5, Buffer(){0x5D})
         }
     }
 
     Method (M076, 2, NotSerialized)
     {
-        If ((Arg0 != 0x5D))
+        If ((Arg0 != Buffer(){0x5D}))
         {
-            ERR (__METHOD__, ZFFF, __LINE__, 0x00, 0x00, Arg0, 0x5D)
+            ERR (__METHOD__, ZFFF, __LINE__, 0x00, 0x00, Arg0, Buffer(){0x5D})
         }
 
-        If ((Arg1 != 0x5D))
+        If ((Arg1 != Buffer(){0x5D}))
         {
-            ERR (__METHOD__, ZFFF, __LINE__, 0x00, 0x00, Arg1, 0x5D)
+            ERR (__METHOD__, ZFFF, __LINE__, 0x00, 0x00, Arg1, Buffer(){0x5D})
         }
     }
 

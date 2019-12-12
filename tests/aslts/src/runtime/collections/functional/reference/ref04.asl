@@ -78,11 +78,11 @@
         /* Computational Data */
 
         Store (S900 [0x00], Local0)
-        M1A2 (Local0, C016, 0x00, 0x00, C009, 0x31, 0x01)
+        M1A2 (Local0, C016, 0x00, 0x00, C009, 0x31, __LINE__)
         Store (S901 [0x02], Local0)
-        M1A2 (Local0, C016, 0x00, 0x00, C009, 0x72, 0x02)
+        M1A2 (Local0, C016, 0x00, 0x00, C009, 0x72, __LINE__)
         Store (B900 [0x03], Local0)
-        M1A2 (Local0, C016, 0x00, 0x00, C009, 0xB3, 0x03)
+        M1A2 (Local0, C016, 0x00, 0x00, C009, 0xB3, __LINE__)
         /* Elements of Package are Uninitialized */
 
         If (Y104)
@@ -94,54 +94,54 @@
         /* Elements of Package are Computational Data */
 
         Store (P901 [0x00], Local0)
-        M1A2 (Local0, C009, 0x00, 0x00, C009, 0xABCD0004, 0x05)
+        M1A2 (Local0, C009, 0x00, 0x00, C009, 0xABCD0004, __LINE__)
         Store (P901 [0x01], Local0)
-        M1A2 (Local0, C009, 0x00, 0x00, C009, 0x1122334455660005, 0x06)
+        M1A2 (Local0, C009, 0x00, 0x00, C009, 0x1122334455660005, __LINE__)
         Store (P902 [0x00], Local0)
-        M1A2 (Local0, C00A, 0x00, 0x00, C00A, "12340006", 0x07)
+        M1A2 (Local0, C00A, 0x00, 0x00, C00A, "12340006", __LINE__)
         Store (P902 [0x01], Local0)
-        M1A2 (Local0, C00A, 0x00, 0x00, C00A, "q1w2e3r4t5y6u7i80007", 0x08)
+        M1A2 (Local0, C00A, 0x00, 0x00, C00A, "q1w2e3r4t5y6u7i80007", __LINE__)
         Store (P903 [0x00], Local0)
-        M1A2 (Local0, C00A, 0x00, 0x00, C00A, "qwrtyuiop0008", 0x09)
+        M1A2 (Local0, C00A, 0x00, 0x00, C00A, "qwrtyuiop0008", __LINE__)
         Store (P903 [0x01], Local0)
-        M1A2 (Local0, C00A, 0x00, 0x00, C00A, "1234567890abdef0250009", 0x0A)
+        M1A2 (Local0, C00A, 0x00, 0x00, C00A, "1234567890abdef0250009", __LINE__)
         Store (P904 [0x00], Local0)
         M1A2 (Local0, C00B, 0x00, 0x00, C00B, Buffer (0x03)
             {
                  0xB5, 0xB6, 0xB7                                 // ...
             }, 0x0B)
         Store (P905 [0x00], Local0)
-        M1A2 (Local0, C00C, 0x01, 0x00, C009, 0x0ABC000A, 0x0C)
+        M1A2 (Local0, C00C, 0x01, 0x00, C009, 0x0ABC000A, __LINE__)
         Store (P905 [0x00], Local0)
-        M1A2 (Local0, C00C, 0x01, 0x01, C00A, "0xabc000b", 0x0D)
+        M1A2 (Local0, C00C, 0x01, 0x01, C00A, "0xabc000b", __LINE__)
         Store (P906 [0x00], Local0)
-        M1A2 (Local0, C00C, 0x01, 0x00, C00A, "abc000d", 0x0E)
+        M1A2 (Local0, C00C, 0x01, 0x00, C00A, "abc000d", __LINE__)
         Store (P907 [0x00], Local0)
-        M1A2 (Local0, C00C, 0x01, 0x00, C00A, "aqwevbgnm000e", 0x0F)
+        M1A2 (Local0, C00C, 0x01, 0x00, C00A, "aqwevbgnm000e", __LINE__)
         Store (P908 [0x00], Local0)
         M1A2 (Local0, C00C, 0x01, 0x00, C00B, Buffer (0x05)
             {
                  0xBA, 0xBB, 0xBC, 0xBD, 0xBE                     // .....
             }, 0x10)
         Store (P909 [0x00], Local0)
-        M1A2 (Local0, C00C, 0x02, 0x00, C009, 0x0ABC000F, 0x11)
+        M1A2 (Local0, C00C, 0x02, 0x00, C009, 0x0ABC000F, __LINE__)
         Store (P90A [0x00], Local0)
-        M1A2 (Local0, C00C, 0x02, 0x00, C00A, "12340010", 0x12)
+        M1A2 (Local0, C00C, 0x02, 0x00, C00A, "12340010", __LINE__)
         Store (P90B [0x00], Local0)
-        M1A2 (Local0, C00C, 0x02, 0x00, C00A, "zxswefas0011", 0x13)
+        M1A2 (Local0, C00C, 0x02, 0x00, C00A, "zxswefas0011", __LINE__)
         Store (P90C [0x00], Local0)
         M1A2 (Local0, C00C, 0x02, 0x00, C00B, Buffer (0x03)
             {
                  0xBF, 0xC0, 0xC1                                 // ...
             }, 0x14)
         Store (P90D [0x00], Local0)
-        M1A2 (Local0, C009, 0x00, 0x00, C009, 0xFE7CB391D65A0000, 0x15)
+        M1A2 (Local0, C009, 0x00, 0x00, C009, 0xFE7CB391D65A0000, __LINE__)
         Store (P90E [0x00], Local0)
-        M1A2 (Local0, C009, 0x00, 0x00, C009, 0xC1790001, 0x16)
+        M1A2 (Local0, C009, 0x00, 0x00, C009, 0xC1790001, __LINE__)
         Store (P90F [0x00], Local0)
-        M1A2 (Local0, C00A, 0x00, 0x00, C00A, "12340002", 0x17)
+        M1A2 (Local0, C00A, 0x00, 0x00, C00A, "12340002", __LINE__)
         Store (P910 [0x00], Local0)
-        M1A2 (Local0, C00A, 0x00, 0x00, C00A, "qwrtyu0003", 0x18)
+        M1A2 (Local0, C00A, 0x00, 0x00, C00A, "qwrtyu0003", __LINE__)
         Store (P911 [0x00], Local0)
         M1A2 (Local0, C00B, 0x00, 0x00, C00B, Buffer (0x05)
             {
@@ -150,13 +150,13 @@
         If (Y118)
         {
             Store (P912 [0x00], Local0)
-            M1A2 (Local0, C00D, 0x00, 0x00, C00D, 0x00, 0x1A)
+            M1A2 (Local0, C00D, 0x00, 0x00, C00D, 0x00, __LINE__)
             Store (P913 [0x00], Local0)
-            M1A2 (Local0, C00D, 0x00, 0x00, C00D, 0x00, 0x1B)
+            M1A2 (Local0, C00D, 0x00, 0x00, C00D, 0x00, __LINE__)
             Store (P914 [0x00], Local0)
-            M1A2 (Local0, C00D, 0x00, 0x00, C00D, 0x00, 0x1C)
+            M1A2 (Local0, C00D, 0x00, 0x00, C00D, 0x00, __LINE__)
             Store (P915 [0x00], Local0)
-            M1A2 (Local0, C016, 0x00, 0x00, C016, 0xB0, 0x1D)
+            M1A2 (Local0, C016, 0x00, 0x00, C016, 0xB0, __LINE__)
         }
 
         /* Elements of Package are NOT Computational Data */
@@ -296,14 +296,14 @@
         /* T2:IR2-IR4 */
         /* Computational Data */
         Local0 = Local1 = S900 [0x00]
-        M1A2 (Local0, C016, 0x00, 0x00, C009, 0x31, 0x5B)
-        M1A2 (Local1, C016, 0x00, 0x00, C009, 0x31, 0x5C)
+        M1A2 (Local0, C016, 0x00, 0x00, C009, 0x31, __LINE__)
+        M1A2 (Local1, C016, 0x00, 0x00, C009, 0x31, __LINE__)
         Local0 = Local1 = S901 [0x02]
-        M1A2 (Local0, C016, 0x00, 0x00, C009, 0x72, 0x5D)
-        M1A2 (Local1, C016, 0x00, 0x00, C009, 0x72, 0x5E)
+        M1A2 (Local0, C016, 0x00, 0x00, C009, 0x72, __LINE__)
+        M1A2 (Local1, C016, 0x00, 0x00, C009, 0x72, __LINE__)
         Local0 = Local1 = B900 [0x04]
-        M1A2 (Local0, C016, 0x00, 0x00, C009, 0xB4, 0x5F)
-        M1A2 (Local1, C016, 0x00, 0x00, C009, 0xB4, 0x60)
+        M1A2 (Local0, C016, 0x00, 0x00, C009, 0xB4, __LINE__)
+        M1A2 (Local1, C016, 0x00, 0x00, C009, 0xB4, __LINE__)
         /* Elements of Package are Uninitialized */
 
         If (Y104)
@@ -316,23 +316,23 @@
         /* Elements of Package are Computational Data */
 
         Local0 = Local1 = P901 [0x00]
-        M1A2 (Local0, C009, 0x00, 0x00, C009, 0xABCD0004, 0x63)
-        M1A2 (Local1, C009, 0x00, 0x00, C009, 0xABCD0004, 0x64)
+        M1A2 (Local0, C009, 0x00, 0x00, C009, 0xABCD0004, __LINE__)
+        M1A2 (Local1, C009, 0x00, 0x00, C009, 0xABCD0004, __LINE__)
         Local0 = Local1 = P901 [0x01]
-        M1A2 (Local0, C009, 0x00, 0x00, C009, 0x1122334455660005, 0x65)
-        M1A2 (Local1, C009, 0x00, 0x00, C009, 0x1122334455660005, 0x66)
+        M1A2 (Local0, C009, 0x00, 0x00, C009, 0x1122334455660005, __LINE__)
+        M1A2 (Local1, C009, 0x00, 0x00, C009, 0x1122334455660005, __LINE__)
         Local0 = Local1 = P902 [0x00]
-        M1A2 (Local0, C00A, 0x00, 0x00, C00A, "12340006", 0x67)
-        M1A2 (Local1, C00A, 0x00, 0x00, C00A, "12340006", 0x68)
+        M1A2 (Local0, C00A, 0x00, 0x00, C00A, "12340006", __LINE__)
+        M1A2 (Local1, C00A, 0x00, 0x00, C00A, "12340006", __LINE__)
         Local0 = Local1 = P902 [0x01]
-        M1A2 (Local0, C00A, 0x00, 0x00, C00A, "q1w2e3r4t5y6u7i80007", 0x69)
-        M1A2 (Local1, C00A, 0x00, 0x00, C00A, "q1w2e3r4t5y6u7i80007", 0x6A)
+        M1A2 (Local0, C00A, 0x00, 0x00, C00A, "q1w2e3r4t5y6u7i80007", __LINE__)
+        M1A2 (Local1, C00A, 0x00, 0x00, C00A, "q1w2e3r4t5y6u7i80007", __LINE__)
         Local0 = Local1 = P903 [0x00]
-        M1A2 (Local0, C00A, 0x00, 0x00, C00A, "qwrtyuiop0008", 0x6B)
-        M1A2 (Local1, C00A, 0x00, 0x00, C00A, "qwrtyuiop0008", 0x6C)
+        M1A2 (Local0, C00A, 0x00, 0x00, C00A, "qwrtyuiop0008", __LINE__)
+        M1A2 (Local1, C00A, 0x00, 0x00, C00A, "qwrtyuiop0008", __LINE__)
         Local0 = Local1 = P903 [0x01]
-        M1A2 (Local0, C00A, 0x00, 0x00, C00A, "1234567890abdef0250009", 0x6D)
-        M1A2 (Local1, C00A, 0x00, 0x00, C00A, "1234567890abdef0250009", 0x6E)
+        M1A2 (Local0, C00A, 0x00, 0x00, C00A, "1234567890abdef0250009", __LINE__)
+        M1A2 (Local1, C00A, 0x00, 0x00, C00A, "1234567890abdef0250009", __LINE__)
         Local0 = Local1 = P904 [0x00]
         M1A2 (Local0, C00B, 0x00, 0x00, C00B, Buffer (0x03)
             {
@@ -343,17 +343,17 @@
                  0xB5, 0xB6, 0xB7                                 // ...
             }, 0x70)
         Local0 = Local1 = P905 [0x00]
-        M1A2 (Local0, C00C, 0x01, 0x00, C009, 0x0ABC000A, 0x71)
-        M1A2 (Local1, C00C, 0x01, 0x00, C009, 0x0ABC000A, 0x72)
+        M1A2 (Local0, C00C, 0x01, 0x00, C009, 0x0ABC000A, __LINE__)
+        M1A2 (Local1, C00C, 0x01, 0x00, C009, 0x0ABC000A, __LINE__)
         Local0 = Local1 = P905 [0x00]
-        M1A2 (Local0, C00C, 0x01, 0x01, C00A, "0xabc000b", 0x73)
-        M1A2 (Local1, C00C, 0x01, 0x01, C00A, "0xabc000b", 0x74)
+        M1A2 (Local0, C00C, 0x01, 0x01, C00A, "0xabc000b", __LINE__)
+        M1A2 (Local1, C00C, 0x01, 0x01, C00A, "0xabc000b", __LINE__)
         Local0 = Local1 = P906 [0x00]
-        M1A2 (Local0, C00C, 0x01, 0x00, C00A, "abc000d", 0x75)
-        M1A2 (Local1, C00C, 0x01, 0x00, C00A, "abc000d", 0x76)
+        M1A2 (Local0, C00C, 0x01, 0x00, C00A, "abc000d", __LINE__)
+        M1A2 (Local1, C00C, 0x01, 0x00, C00A, "abc000d", __LINE__)
         Local0 = Local1 = P907 [0x00]
-        M1A2 (Local0, C00C, 0x01, 0x00, C00A, "aqwevbgnm000e", 0x77)
-        M1A2 (Local1, C00C, 0x01, 0x00, C00A, "aqwevbgnm000e", 0x78)
+        M1A2 (Local0, C00C, 0x01, 0x00, C00A, "aqwevbgnm000e", __LINE__)
+        M1A2 (Local1, C00C, 0x01, 0x00, C00A, "aqwevbgnm000e", __LINE__)
         Local0 = Local1 = P908 [0x00]
         M1A2 (Local0, C00C, 0x01, 0x00, C00B, Buffer (0x05)
             {
@@ -364,14 +364,14 @@
                  0xBA, 0xBB, 0xBC, 0xBD, 0xBE                     // .....
             }, 0x7A)
         Local0 = Local1 = P909 [0x00]
-        M1A2 (Local0, C00C, 0x02, 0x00, C009, 0x0ABC000F, 0x7B)
-        M1A2 (Local1, C00C, 0x02, 0x00, C009, 0x0ABC000F, 0x7C)
+        M1A2 (Local0, C00C, 0x02, 0x00, C009, 0x0ABC000F, __LINE__)
+        M1A2 (Local1, C00C, 0x02, 0x00, C009, 0x0ABC000F, __LINE__)
         Local0 = Local1 = P90A [0x00]
-        M1A2 (Local0, C00C, 0x02, 0x00, C00A, "12340010", 0x7D)
-        M1A2 (Local1, C00C, 0x02, 0x00, C00A, "12340010", 0x7E)
+        M1A2 (Local0, C00C, 0x02, 0x00, C00A, "12340010", __LINE__)
+        M1A2 (Local1, C00C, 0x02, 0x00, C00A, "12340010", __LINE__)
         Local0 = Local1 = P90B [0x00]
-        M1A2 (Local0, C00C, 0x02, 0x00, C00A, "zxswefas0011", 0x7F)
-        M1A2 (Local1, C00C, 0x02, 0x00, C00A, "zxswefas0011", 0x80)
+        M1A2 (Local0, C00C, 0x02, 0x00, C00A, "zxswefas0011", __LINE__)
+        M1A2 (Local1, C00C, 0x02, 0x00, C00A, "zxswefas0011", __LINE__)
         Local0 = Local1 = P90C [0x00]
         M1A2 (Local0, C00C, 0x02, 0x00, C00B, Buffer (0x03)
             {
@@ -382,17 +382,17 @@
                  0xBF, 0xC0, 0xC1                                 // ...
             }, 0x82)
         Local0 = Local1 = P90D [0x00]
-        M1A2 (Local0, C009, 0x00, 0x00, C009, 0xFE7CB391D65A0000, 0x83)
-        M1A2 (Local1, C009, 0x00, 0x00, C009, 0xFE7CB391D65A0000, 0x84)
+        M1A2 (Local0, C009, 0x00, 0x00, C009, 0xFE7CB391D65A0000, __LINE__)
+        M1A2 (Local1, C009, 0x00, 0x00, C009, 0xFE7CB391D65A0000, __LINE__)
         Local0 = Local1 = P90E [0x00]
-        M1A2 (Local0, C009, 0x00, 0x00, C009, 0xC1790001, 0x85)
-        M1A2 (Local1, C009, 0x00, 0x00, C009, 0xC1790001, 0x86)
+        M1A2 (Local0, C009, 0x00, 0x00, C009, 0xC1790001, __LINE__)
+        M1A2 (Local1, C009, 0x00, 0x00, C009, 0xC1790001, __LINE__)
         Local0 = Local1 = P90F [0x00]
-        M1A2 (Local0, C00A, 0x00, 0x00, C00A, "12340002", 0x87)
-        M1A2 (Local1, C00A, 0x00, 0x00, C00A, "12340002", 0x88)
+        M1A2 (Local0, C00A, 0x00, 0x00, C00A, "12340002", __LINE__)
+        M1A2 (Local1, C00A, 0x00, 0x00, C00A, "12340002", __LINE__)
         Local0 = Local1 = P910 [0x00]
-        M1A2 (Local0, C00A, 0x00, 0x00, C00A, "qwrtyu0003", 0x89)
-        M1A2 (Local1, C00A, 0x00, 0x00, C00A, "qwrtyu0003", 0x8A)
+        M1A2 (Local0, C00A, 0x00, 0x00, C00A, "qwrtyu0003", __LINE__)
+        M1A2 (Local1, C00A, 0x00, 0x00, C00A, "qwrtyu0003", __LINE__)
         Local0 = Local1 = P911 [0x00]
         M1A2 (Local0, C00B, 0x00, 0x00, C00B, Buffer (0x05)
             {
@@ -405,17 +405,17 @@
         If (Y118)
         {
             Local0 = Local1 = P912 [0x00]
-            M1A2 (Local0, C00D, 0x00, 0x00, C00D, 0x00, 0x8D)
-            M1A2 (Local1, C00D, 0x00, 0x00, C00D, 0x00, 0x8E)
+            M1A2 (Local0, C00D, 0x00, 0x00, C00D, 0x00, __LINE__)
+            M1A2 (Local1, C00D, 0x00, 0x00, C00D, 0x00, __LINE__)
             Local0 = Local1 = P913 [0x00]
-            M1A2 (Local0, C00D, 0x00, 0x00, C00D, 0x00, 0x8F)
-            M1A2 (Local1, C00D, 0x00, 0x00, C00D, 0x00, 0x90)
+            M1A2 (Local0, C00D, 0x00, 0x00, C00D, 0x00, __LINE__)
+            M1A2 (Local1, C00D, 0x00, 0x00, C00D, 0x00, __LINE__)
             Local0 = Local1 = P914 [0x00]
-            M1A2 (Local0, C00D, 0x00, 0x00, C00D, 0x00, 0x91)
-            M1A2 (Local1, C00D, 0x00, 0x00, C00D, 0x00, 0x92)
+            M1A2 (Local0, C00D, 0x00, 0x00, C00D, 0x00, __LINE__)
+            M1A2 (Local1, C00D, 0x00, 0x00, C00D, 0x00, __LINE__)
             Local0 = Local1 = P915 [0x00]
-            M1A2 (Local0, C016, 0x00, 0x00, C016, 0xB0, 0x93)
-            M1A2 (Local1, C016, 0x00, 0x00, C016, 0xB0, 0x94)
+            M1A2 (Local0, C016, 0x00, 0x00, C016, 0xB0, __LINE__)
+            M1A2 (Local1, C016, 0x00, 0x00, C016, 0xB0, __LINE__)
         }
 
         /* Elements of Package are NOT Computational Data */
@@ -632,13 +632,13 @@
         /* T2:R1-R14 */
         /* Computational Data */
         Local0 = RefOf (I900)
-        M1A2 (Local0, C009, 0x00, 0x00, C009, 0xFE7CB391D65A0000, 0x010F)
+        M1A2 (Local0, C009, 0x00, 0x00, C009, 0xFE7CB391D65A0000, __LINE__)
         Local0 = RefOf (I901)
-        M1A2 (Local0, C009, 0x00, 0x00, C009, 0xC1790001, 0x0110)
+        M1A2 (Local0, C009, 0x00, 0x00, C009, 0xC1790001, __LINE__)
         Local0 = RefOf (S900)
-        M1A2 (Local0, C00A, 0x00, 0x00, C00A, "12340002", 0x0111)
+        M1A2 (Local0, C00A, 0x00, 0x00, C00A, "12340002", __LINE__)
         Local0 = RefOf (S901)
-        M1A2 (Local0, C00A, 0x00, 0x00, C00A, "qwrtyu0003", 0x0112)
+        M1A2 (Local0, C00A, 0x00, 0x00, C00A, "qwrtyu0003", __LINE__)
         Local0 = RefOf (B900)
         M1A2 (Local0, C00B, 0x00, 0x00, C00B, Buffer (0x05)
             {
@@ -687,7 +687,7 @@
         /* Package */
 
         Local0 = RefOf (P953)
-        M1A2 (Local0, C00C, 0x01, 0x00, C009, 0xABCD0018, 0x03E9)
+        M1A2 (Local0, C00C, 0x01, 0x00, C009, 0xABCD0018, __LINE__)
         If (Arg0)
         {
             M1AB ()
@@ -697,13 +697,13 @@
         /* Computational Data (Field Unit and Buffer Field) */
 
         Local0 = RefOf (F900)
-        M1A2 (Local0, C00D, 0x00, 0x00, C009, 0x00, 0x0114)
+        M1A2 (Local0, C00D, 0x00, 0x00, C009, 0x00, __LINE__)
         Local0 = RefOf (BN90)
-        M1A2 (Local0, C00D, 0x00, 0x00, C009, 0x00, 0x0115)
+        M1A2 (Local0, C00D, 0x00, 0x00, C009, 0x00, __LINE__)
         Local0 = RefOf (IF90)
-        M1A2 (Local0, C00D, 0x00, 0x00, C009, 0x00, 0x0116)
+        M1A2 (Local0, C00D, 0x00, 0x00, C009, 0x00, __LINE__)
         Local0 = RefOf (BF90)
-        M1A2 (Local0, C016, 0x00, 0x00, C009, 0xB0, 0x0117)
+        M1A2 (Local0, C016, 0x00, 0x00, C00B, Buffer(){0xB0}, __LINE__)
         /* Elements of Package are Uninitialized */
 
         Local0 = RefOf (P900)
@@ -711,50 +711,50 @@
         /* Elements of Package are Computational Data */
 
         Local0 = RefOf (P901)
-        M1A2 (Local0, C00C, 0x01, 0x00, C009, 0xABCD0004, 0x0120)
-        M1A2 (Local0, C00C, 0x01, 0x01, C009, 0x1122334455660005, 0x0121)
+        M1A2 (Local0, C00C, 0x01, 0x00, C009, 0xABCD0004, __LINE__)
+        M1A2 (Local0, C00C, 0x01, 0x01, C009, 0x1122334455660005, __LINE__)
         Local0 = RefOf (P902)
-        M1A2 (Local0, C00C, 0x01, 0x00, C00A, "12340006", 0x0122)
-        M1A2 (Local0, C00C, 0x01, 0x01, C00A, "q1w2e3r4t5y6u7i80007", 0x0123)
+        M1A2 (Local0, C00C, 0x01, 0x00, C00A, "12340006", __LINE__)
+        M1A2 (Local0, C00C, 0x01, 0x01, C00A, "q1w2e3r4t5y6u7i80007", __LINE__)
         Local0 = RefOf (P903)
-        M1A2 (Local0, C00C, 0x01, 0x00, C00A, "qwrtyuiop0008", 0x0124)
-        M1A2 (Local0, C00C, 0x01, 0x01, C00A, "1234567890abdef0250009", 0x0125)
+        M1A2 (Local0, C00C, 0x01, 0x00, C00A, "qwrtyuiop0008", __LINE__)
+        M1A2 (Local0, C00C, 0x01, 0x01, C00A, "1234567890abdef0250009", __LINE__)
         Local0 = RefOf (P904)
         M1A2 (Local0, C00C, 0x01, 0x00, C00B, Buffer (0x03)
             {
                  0xB5, 0xB6, 0xB7                                 // ...
             }, 0x0126)
         Local0 = RefOf (P905)
-        M1A2 (Local0, C00C, 0x02, 0x00, C009, 0x0ABC000A, 0x0127)
-        M1A2 (Local0, C00C, 0x02, 0x01, C00A, "0xabc000b", 0x0128)
+        M1A2 (Local0, C00C, 0x02, 0x00, C009, 0x0ABC000A, __LINE__)
+        M1A2 (Local0, C00C, 0x02, 0x01, C00A, "0xabc000b", __LINE__)
         Local0 = RefOf (P906)
-        M1A2 (Local0, C00C, 0x02, 0x00, C00A, "abc000d", 0x0129)
+        M1A2 (Local0, C00C, 0x02, 0x00, C00A, "abc000d", __LINE__)
         Local0 = RefOf (P907)
-        M1A2 (Local0, C00C, 0x02, 0x00, C00A, "aqwevbgnm000e", 0x012A)
+        M1A2 (Local0, C00C, 0x02, 0x00, C00A, "aqwevbgnm000e", __LINE__)
         Local0 = RefOf (P908)
         M1A2 (Local0, C00C, 0x02, 0x00, C00B, Buffer (0x05)
             {
                  0xBA, 0xBB, 0xBC, 0xBD, 0xBE                     // .....
             }, 0x012B)
         Local0 = RefOf (P909)
-        M1A2 (Local0, C00C, 0x03, 0x00, C009, 0x0ABC000F, 0x012C)
+        M1A2 (Local0, C00C, 0x03, 0x00, C009, 0x0ABC000F, __LINE__)
         Local0 = RefOf (P90A)
-        M1A2 (Local0, C00C, 0x03, 0x00, C00A, "12340010", 0x012D)
+        M1A2 (Local0, C00C, 0x03, 0x00, C00A, "12340010", __LINE__)
         Local0 = RefOf (P90B)
-        M1A2 (Local0, C00C, 0x03, 0x00, C00A, "zxswefas0011", 0x012E)
+        M1A2 (Local0, C00C, 0x03, 0x00, C00A, "zxswefas0011", __LINE__)
         Local0 = RefOf (P90C)
         M1A2 (Local0, C00C, 0x03, 0x00, C00B, Buffer (0x03)
             {
                  0xBF, 0xC0, 0xC1                                 // ...
             }, 0x012F)
         Local0 = RefOf (P90D)
-        M1A2 (Local0, C00C, 0x01, 0x00, C009, 0xFE7CB391D65A0000, 0x0130)
+        M1A2 (Local0, C00C, 0x01, 0x00, C009, 0xFE7CB391D65A0000, __LINE__)
         Local0 = RefOf (P90E)
-        M1A2 (Local0, C00C, 0x01, 0x00, C009, 0xC1790001, 0x0131)
+        M1A2 (Local0, C00C, 0x01, 0x00, C009, 0xC1790001, __LINE__)
         Local0 = RefOf (P90F)
-        M1A2 (Local0, C00C, 0x01, 0x00, C00A, "12340002", 0x0132)
+        M1A2 (Local0, C00C, 0x01, 0x00, C00A, "12340002", __LINE__)
         Local0 = RefOf (P910)
-        M1A2 (Local0, C00C, 0x01, 0x00, C00A, "qwrtyu0003", 0x0133)
+        M1A2 (Local0, C00C, 0x01, 0x00, C00A, "qwrtyu0003", __LINE__)
         Local0 = RefOf (P911)
         M1A2 (Local0, C00C, 0x01, 0x00, C00B, Buffer (0x05)
             {
@@ -763,13 +763,13 @@
         If (Y118)
         {
             Local0 = RefOf (P912)
-            M1A2 (Local0, C00C, 0x01, 0x00, C00D, 0x00, 0x0135)
+            M1A2 (Local0, C00C, 0x01, 0x00, C00D, 0x00, __LINE__)
             Local0 = RefOf (P913)
-            M1A2 (Local0, C00C, 0x01, 0x00, C00D, 0x00, 0x0136)
+            M1A2 (Local0, C00C, 0x01, 0x00, C00D, 0x00, __LINE__)
             Local0 = RefOf (P914)
-            M1A2 (Local0, C00C, 0x01, 0x00, C00D, 0x00, 0x0137)
+            M1A2 (Local0, C00C, 0x01, 0x00, C00D, 0x00, __LINE__)
             Local0 = RefOf (P915)
-            M1A2 (Local0, C00C, 0x01, 0x00, C016, 0xB0, 0x0138)
+            M1A2 (Local0, C00C, 0x01, 0x00, C016, 0xB0, __LINE__)
         }
 
         /* Elements of Package are NOT Computational Data */
@@ -1366,25 +1366,25 @@
         Local1 = CondRefOf (I900, Local0)
         If (M1A4 (Local1, 0x024F))
         {
-            M1A2 (Local0, C009, 0x00, 0x00, C009, 0xFE7CB391D65A0000, 0x0250)
+            M1A2 (Local0, C009, 0x00, 0x00, C009, 0xFE7CB391D65A0000, __LINE__)
         }
 
         Local1 = CondRefOf (I901, Local0)
         If (M1A4 (Local1, 0x0251))
         {
-            M1A2 (Local0, C009, 0x00, 0x00, C009, 0xC1790001, 0x0252)
+            M1A2 (Local0, C009, 0x00, 0x00, C009, 0xC1790001, __LINE__)
         }
 
         Local1 = CondRefOf (S900, Local0)
         If (M1A4 (Local1, 0x0253))
         {
-            M1A2 (Local0, C00A, 0x00, 0x00, C00A, "12340002", 0x0254)
+            M1A2 (Local0, C00A, 0x00, 0x00, C00A, "12340002", __LINE__)
         }
 
         Local1 = CondRefOf (S901, Local0)
         If (M1A4 (Local1, 0x0255))
         {
-            M1A2 (Local0, C00A, 0x00, 0x00, C00A, "qwrtyu0003", 0x0256)
+            M1A2 (Local0, C00A, 0x00, 0x00, C00A, "qwrtyu0003", __LINE__)
         }
 
         Local1 = CondRefOf (B900, Local0)
@@ -1441,7 +1441,7 @@
         Local1 = CondRefOf (P953, Local0)
         If (M1A4 (Local1, 0x03ED))
         {
-            M1A2 (Local0, C00C, 0x01, 0x00, C009, 0xABCD0018, 0x03EE)
+            M1A2 (Local0, C00C, 0x01, 0x00, C009, 0xABCD0018, __LINE__)
         }
 
         If (Arg0)
@@ -1455,25 +1455,25 @@
         Local1 = CondRefOf (F900, Local0)
         If (M1A4 (Local1, 0x0259))
         {
-            M1A2 (Local0, C00D, 0x00, 0x00, C009, 0x00, 0x025A)
+            M1A2 (Local0, C00D, 0x00, 0x00, C009, 0x00, __LINE__)
         }
 
         Local1 = CondRefOf (BN90, Local0)
         If (M1A4 (Local1, 0x025B))
         {
-            M1A2 (Local0, C00D, 0x00, 0x00, C009, 0x00, 0x025C)
+            M1A2 (Local0, C00D, 0x00, 0x00, C009, 0x00, __LINE__)
         }
 
         Local1 = CondRefOf (IF90, Local0)
         If (M1A4 (Local1, 0x025D))
         {
-            M1A2 (Local0, C00D, 0x00, 0x00, C009, 0x00, 0x025E)
+            M1A2 (Local0, C00D, 0x00, 0x00, C009, 0x00, __LINE__)
         }
 
         Local1 = CondRefOf (BF90, Local0)
         If (M1A4 (Local1, 0x025F))
         {
-            M1A2 (Local0, C016, 0x00, 0x00, C009, 0xB0, 0x0260)
+            M1A2 (Local0, C016, 0x00, 0x00, C00B, Buffer(){0xB0}, __LINE__)
         }
 
         /* Elements of Package are Uninitialized */
@@ -1485,22 +1485,22 @@
         Local1 = CondRefOf (P901, Local0)
         If (M1A4 (Local1, 0x0269))
         {
-            M1A2 (Local0, C00C, 0x01, 0x00, C009, 0xABCD0004, 0x026A)
-            M1A2 (Local0, C00C, 0x01, 0x01, C009, 0x1122334455660005, 0x026B)
+            M1A2 (Local0, C00C, 0x01, 0x00, C009, 0xABCD0004, __LINE__)
+            M1A2 (Local0, C00C, 0x01, 0x01, C009, 0x1122334455660005, __LINE__)
         }
 
         Local1 = CondRefOf (P902, Local0)
         If (M1A4 (Local1, 0x026C))
         {
-            M1A2 (Local0, C00C, 0x01, 0x00, C00A, "12340006", 0x026D)
-            M1A2 (Local0, C00C, 0x01, 0x01, C00A, "q1w2e3r4t5y6u7i80007", 0x026E)
+            M1A2 (Local0, C00C, 0x01, 0x00, C00A, "12340006", __LINE__)
+            M1A2 (Local0, C00C, 0x01, 0x01, C00A, "q1w2e3r4t5y6u7i80007", __LINE__)
         }
 
         Local1 = CondRefOf (P903, Local0)
         If (M1A4 (Local1, 0x026F))
         {
-            M1A2 (Local0, C00C, 0x01, 0x00, C00A, "qwrtyuiop0008", 0x0270)
-            M1A2 (Local0, C00C, 0x01, 0x01, C00A, "1234567890abdef0250009", 0x0271)
+            M1A2 (Local0, C00C, 0x01, 0x00, C00A, "qwrtyuiop0008", __LINE__)
+            M1A2 (Local0, C00C, 0x01, 0x01, C00A, "1234567890abdef0250009", __LINE__)
         }
 
         Local1 = CondRefOf (P904, Local0)
@@ -1515,20 +1515,20 @@
         Local1 = CondRefOf (P905, Local0)
         If (M1A4 (Local1, 0x0274))
         {
-            M1A2 (Local0, C00C, 0x02, 0x00, C009, 0x0ABC000A, 0x0275)
-            M1A2 (Local0, C00C, 0x02, 0x01, C00A, "0xabc000b", 0x0276)
+            M1A2 (Local0, C00C, 0x02, 0x00, C009, 0x0ABC000A, __LINE__)
+            M1A2 (Local0, C00C, 0x02, 0x01, C00A, "0xabc000b", __LINE__)
         }
 
         Local1 = CondRefOf (P906, Local0)
         If (M1A4 (Local1, 0x0277))
         {
-            M1A2 (Local0, C00C, 0x02, 0x00, C00A, "abc000d", 0x0278)
+            M1A2 (Local0, C00C, 0x02, 0x00, C00A, "abc000d", __LINE__)
         }
 
         Local1 = CondRefOf (P907, Local0)
         If (M1A4 (Local1, 0x0279))
         {
-            M1A2 (Local0, C00C, 0x02, 0x00, C00A, "aqwevbgnm000e", 0x027A)
+            M1A2 (Local0, C00C, 0x02, 0x00, C00A, "aqwevbgnm000e", __LINE__)
         }
 
         Local1 = CondRefOf (P908, Local0)
@@ -1543,19 +1543,19 @@
         Local1 = CondRefOf (P909, Local0)
         If (M1A4 (Local1, 0x027D))
         {
-            M1A2 (Local0, C00C, 0x03, 0x00, C009, 0x0ABC000F, 0x027E)
+            M1A2 (Local0, C00C, 0x03, 0x00, C009, 0x0ABC000F, __LINE__)
         }
 
         Local1 = CondRefOf (P90A, Local0)
         If (M1A4 (Local1, 0x027F))
         {
-            M1A2 (Local0, C00C, 0x03, 0x00, C00A, "12340010", 0x0280)
+            M1A2 (Local0, C00C, 0x03, 0x00, C00A, "12340010", __LINE__)
         }
 
         Local1 = CondRefOf (P90B, Local0)
         If (M1A4 (Local1, 0x0281))
         {
-            M1A2 (Local0, C00C, 0x03, 0x00, C00A, "zxswefas0011", 0x0282)
+            M1A2 (Local0, C00C, 0x03, 0x00, C00A, "zxswefas0011", __LINE__)
         }
 
         Local1 = CondRefOf (P90C, Local0)
@@ -1570,25 +1570,25 @@
         Local1 = CondRefOf (P90D, Local0)
         If (M1A4 (Local1, 0x0285))
         {
-            M1A2 (Local0, C00C, 0x01, 0x00, C009, 0xFE7CB391D65A0000, 0x0286)
+            M1A2 (Local0, C00C, 0x01, 0x00, C009, 0xFE7CB391D65A0000, __LINE__)
         }
 
         Local1 = CondRefOf (P90E, Local0)
         If (M1A4 (Local1, 0x0287))
         {
-            M1A2 (Local0, C00C, 0x01, 0x00, C009, 0xC1790001, 0x0288)
+            M1A2 (Local0, C00C, 0x01, 0x00, C009, 0xC1790001, __LINE__)
         }
 
         Local1 = CondRefOf (P90F, Local0)
         If (M1A4 (Local1, 0x0289))
         {
-            M1A2 (Local0, C00C, 0x01, 0x00, C00A, "12340002", 0x028A)
+            M1A2 (Local0, C00C, 0x01, 0x00, C00A, "12340002", __LINE__)
         }
 
         Local1 = CondRefOf (P910, Local0)
         If (M1A4 (Local1, 0x028B))
         {
-            M1A2 (Local0, C00C, 0x01, 0x00, C00A, "qwrtyu0003", 0x028C)
+            M1A2 (Local0, C00C, 0x01, 0x00, C00A, "qwrtyu0003", __LINE__)
         }
 
         Local1 = CondRefOf (P911, Local0)
@@ -1605,25 +1605,25 @@
             Local1 = CondRefOf (P912, Local0)
             If (M1A4 (Local1, 0x028F))
             {
-                M1A2 (Local0, C00C, 0x01, 0x00, C00D, 0x00, 0x0290)
+                M1A2 (Local0, C00C, 0x01, 0x00, C00D, 0x00, __LINE__)
             }
 
             Local1 = CondRefOf (P913, Local0)
             If (M1A4 (Local1, 0x0291))
             {
-                M1A2 (Local0, C00C, 0x01, 0x00, C00D, 0x00, 0x0292)
+                M1A2 (Local0, C00C, 0x01, 0x00, C00D, 0x00, __LINE__)
             }
 
             Local1 = CondRefOf (P914, Local0)
             If (M1A4 (Local1, 0x0293))
             {
-                M1A2 (Local0, C00C, 0x01, 0x00, C00D, 0x00, 0x0294)
+                M1A2 (Local0, C00C, 0x01, 0x00, C00D, 0x00, __LINE__)
             }
 
             Local1 = CondRefOf (P915, Local0)
             If (M1A4 (Local1, 0x0295))
             {
-                M1A2 (Local0, C00C, 0x01, 0x00, C016, 0xB0, 0x0296)
+                M1A2 (Local0, C00C, 0x01, 0x00, C016, 0xB0, __LINE__)
             }
         }
 
@@ -1897,22 +1897,22 @@
                 {
                     I900
                 }, 0x00), Local0)
-        M1A2 (Local0, C009, 0x00, 0x00, C009, 0xFE7CB391D65A0000, 0x0314)
+        M1A2 (Local0, C009, 0x00, 0x00, C009, 0xFE7CB391D65A0000, __LINE__)
         Store (Index (Package (0x01)
                 {
                     I901
                 }, 0x00), Local0)
-        M1A2 (Local0, C009, 0x00, 0x00, C009, 0xC1790001, 0x0315)
+        M1A2 (Local0, C009, 0x00, 0x00, C009, 0xC1790001, __LINE__)
         Store (Index (Package (0x01)
                 {
                     S900
                 }, 0x00), Local0)
-        M1A2 (Local0, C00A, 0x00, 0x00, C00A, "12340002", 0x0316)
+        M1A2 (Local0, C00A, 0x00, 0x00, C00A, "12340002", __LINE__)
         Store (Index (Package (0x01)
                 {
                     S901
                 }, 0x00), Local0)
-        M1A2 (Local0, C00A, 0x00, 0x00, C00A, "qwrtyu0003", 0x0317)
+        M1A2 (Local0, C00A, 0x00, 0x00, C00A, "qwrtyu0003", __LINE__)
         Store (Index (Package (0x01)
                 {
                     B900
@@ -1927,22 +1927,22 @@
                     {
                         F900
                     }, 0x00), Local0)
-            M1A2 (Local0, C00D, 0x00, 0x00, C00D, 0x00, 0x0319)
+            M1A2 (Local0, C00D, 0x00, 0x00, C00D, 0x00, __LINE__)
             Store (Index (Package (0x01)
                     {
                         BN90
                     }, 0x00), Local0)
-            M1A2 (Local0, C00D, 0x00, 0x00, C00D, 0x00, 0x031A)
+            M1A2 (Local0, C00D, 0x00, 0x00, C00D, 0x00, __LINE__)
             Store (Index (Package (0x01)
                     {
                         IF90
                     }, 0x00), Local0)
-            M1A2 (Local0, C00D, 0x00, 0x00, C00D, 0x00, 0x031B)
+            M1A2 (Local0, C00D, 0x00, 0x00, C00D, 0x00, __LINE__)
             Store (Index (Package (0x01)
                     {
                         BF90
                     }, 0x00), Local0)
-            M1A2 (Local0, C016, 0x00, 0x00, C016, 0xB0, 0x031C)
+            M1A2 (Local0, C016, 0x00, 0x00, C016, 0xB0, __LINE__)
         }
 
         /* Not Computational Data */
@@ -1995,20 +1995,20 @@
                 {
                     P901
                 }, 0x00), Local0)
-        M1A2 (Local0, C00C, 0x01, 0x00, C009, 0xABCD0004, 0x0325)
-        M1A2 (Local0, C00C, 0x01, 0x01, C009, 0x1122334455660005, 0x0326)
+        M1A2 (Local0, C00C, 0x01, 0x00, C009, 0xABCD0004, __LINE__)
+        M1A2 (Local0, C00C, 0x01, 0x01, C009, 0x1122334455660005, __LINE__)
         Store (Index (Package (0x01)
                 {
                     P902
                 }, 0x00), Local0)
-        M1A2 (Local0, C00C, 0x01, 0x00, C00A, "12340006", 0x0327)
-        M1A2 (Local0, C00C, 0x01, 0x01, C00A, "q1w2e3r4t5y6u7i80007", 0x0328)
+        M1A2 (Local0, C00C, 0x01, 0x00, C00A, "12340006", __LINE__)
+        M1A2 (Local0, C00C, 0x01, 0x01, C00A, "q1w2e3r4t5y6u7i80007", __LINE__)
         Store (Index (Package (0x01)
                 {
                     P903
                 }, 0x00), Local0)
-        M1A2 (Local0, C00C, 0x01, 0x00, C00A, "qwrtyuiop0008", 0x0329)
-        M1A2 (Local0, C00C, 0x01, 0x01, C00A, "1234567890abdef0250009", 0x032A)
+        M1A2 (Local0, C00C, 0x01, 0x00, C00A, "qwrtyuiop0008", __LINE__)
+        M1A2 (Local0, C00C, 0x01, 0x01, C00A, "1234567890abdef0250009", __LINE__)
         Store (Index (Package (0x01)
                 {
                     P904
@@ -2021,18 +2021,18 @@
                 {
                     P905
                 }, 0x00), Local0)
-        M1A2 (Local0, C00C, 0x02, 0x00, C009, 0x0ABC000A, 0x032C)
-        M1A2 (Local0, C00C, 0x02, 0x01, C00A, "0xabc000b", 0x032D)
+        M1A2 (Local0, C00C, 0x02, 0x00, C009, 0x0ABC000A, __LINE__)
+        M1A2 (Local0, C00C, 0x02, 0x01, C00A, "0xabc000b", __LINE__)
         Store (Index (Package (0x01)
                 {
                     P906
                 }, 0x00), Local0)
-        M1A2 (Local0, C00C, 0x02, 0x00, C00A, "abc000d", 0x032E)
+        M1A2 (Local0, C00C, 0x02, 0x00, C00A, "abc000d", __LINE__)
         Store (Index (Package (0x01)
                 {
                     P907
                 }, 0x00), Local0)
-        M1A2 (Local0, C00C, 0x02, 0x00, C00A, "aqwevbgnm000e", 0x032F)
+        M1A2 (Local0, C00C, 0x02, 0x00, C00A, "aqwevbgnm000e", __LINE__)
         Store (Index (Package (0x01)
                 {
                     P908
@@ -2045,17 +2045,17 @@
                 {
                     P909
                 }, 0x00), Local0)
-        M1A2 (Local0, C00C, 0x03, 0x00, C009, 0x0ABC000F, 0x0331)
+        M1A2 (Local0, C00C, 0x03, 0x00, C009, 0x0ABC000F, __LINE__)
         Store (Index (Package (0x01)
                 {
                     P90A
                 }, 0x00), Local0)
-        M1A2 (Local0, C00C, 0x03, 0x00, C00A, "12340010", 0x0332)
+        M1A2 (Local0, C00C, 0x03, 0x00, C00A, "12340010", __LINE__)
         Store (Index (Package (0x01)
                 {
                     P90B
                 }, 0x00), Local0)
-        M1A2 (Local0, C00C, 0x03, 0x00, C00A, "zxswefas0011", 0x0333)
+        M1A2 (Local0, C00C, 0x03, 0x00, C00A, "zxswefas0011", __LINE__)
         Store (Index (Package (0x01)
                 {
                     P90C
@@ -2068,22 +2068,22 @@
                 {
                     P90D
                 }, 0x00), Local0)
-        M1A2 (Local0, C00C, 0x01, 0x00, C009, 0xFE7CB391D65A0000, 0x0335)
+        M1A2 (Local0, C00C, 0x01, 0x00, C009, 0xFE7CB391D65A0000, __LINE__)
         Store (Index (Package (0x01)
                 {
                     P90E
                 }, 0x00), Local0)
-        M1A2 (Local0, C00C, 0x01, 0x00, C009, 0xC1790001, 0x0336)
+        M1A2 (Local0, C00C, 0x01, 0x00, C009, 0xC1790001, __LINE__)
         Store (Index (Package (0x01)
                 {
                     P90F
                 }, 0x00), Local0)
-        M1A2 (Local0, C00C, 0x01, 0x00, C00A, "12340002", 0x0337)
+        M1A2 (Local0, C00C, 0x01, 0x00, C00A, "12340002", __LINE__)
         Store (Index (Package (0x01)
                 {
                     P910
                 }, 0x00), Local0)
-        M1A2 (Local0, C00C, 0x01, 0x00, C00A, "qwrtyu0003", 0x0338)
+        M1A2 (Local0, C00C, 0x01, 0x00, C00A, "qwrtyu0003", __LINE__)
         Store (Index (Package (0x01)
                 {
                     P911
@@ -2098,22 +2098,22 @@
                     {
                         P912
                     }, 0x00), Local0)
-            M1A2 (Local0, C00C, 0x01, 0x00, C00D, 0x00, 0x033A)
+            M1A2 (Local0, C00C, 0x01, 0x00, C00D, 0x00, __LINE__)
             Store (Index (Package (0x01)
                     {
                         P913
                     }, 0x00), Local0)
-            M1A2 (Local0, C00C, 0x01, 0x00, C00D, 0x00, 0x033B)
+            M1A2 (Local0, C00C, 0x01, 0x00, C00D, 0x00, __LINE__)
             Store (Index (Package (0x01)
                     {
                         P914
                     }, 0x00), Local0)
-            M1A2 (Local0, C00C, 0x01, 0x00, C00D, 0x00, 0x033C)
+            M1A2 (Local0, C00C, 0x01, 0x00, C00D, 0x00, __LINE__)
             Store (Index (Package (0x01)
                     {
                         P915
                     }, 0x00), Local0)
-            M1A2 (Local0, C00C, 0x01, 0x00, C016, 0xB0, 0x033D)
+            M1A2 (Local0, C00C, 0x01, 0x00, C016, 0xB0, __LINE__)
         }
 
         /* Elements of Package are NOT Computational Data */
@@ -2703,26 +2703,26 @@
                 {
                     I900
                 }, 0x00, Local1)
-        M1A2 (Local0, C009, 0x00, 0x00, C009, 0xFE7CB391D65A0000, 0x03B1)
-        M1A2 (Local1, C009, 0x00, 0x00, C009, 0xFE7CB391D65A0000, 0x03B2)
+        M1A2 (Local0, C009, 0x00, 0x00, C009, 0xFE7CB391D65A0000, __LINE__)
+        M1A2 (Local1, C009, 0x00, 0x00, C009, 0xFE7CB391D65A0000, __LINE__)
         Local0 = Index (Package (0x01)
                 {
                     I901
                 }, 0x00, Local1)
-        M1A2 (Local0, C009, 0x00, 0x00, C009, 0xC1790001, 0x03B3)
-        M1A2 (Local1, C009, 0x00, 0x00, C009, 0xC1790001, 0x03B4)
+        M1A2 (Local0, C009, 0x00, 0x00, C009, 0xC1790001, __LINE__)
+        M1A2 (Local1, C009, 0x00, 0x00, C009, 0xC1790001, __LINE__)
         Local0 = Index (Package (0x01)
                 {
                     S900
                 }, 0x00, Local1)
-        M1A2 (Local0, C00A, 0x00, 0x00, C00A, "12340002", 0x03B5)
-        M1A2 (Local1, C00A, 0x00, 0x00, C00A, "12340002", 0x03B6)
+        M1A2 (Local0, C00A, 0x00, 0x00, C00A, "12340002", __LINE__)
+        M1A2 (Local1, C00A, 0x00, 0x00, C00A, "12340002", __LINE__)
         Local0 = Index (Package (0x01)
                 {
                     S901
                 }, 0x00, Local1)
-        M1A2 (Local0, C00A, 0x00, 0x00, C00A, "qwrtyu0003", 0x03B7)
-        M1A2 (Local1, C00A, 0x00, 0x00, C00A, "qwrtyu0003", 0x03B8)
+        M1A2 (Local0, C00A, 0x00, 0x00, C00A, "qwrtyu0003", __LINE__)
+        M1A2 (Local1, C00A, 0x00, 0x00, C00A, "qwrtyu0003", __LINE__)
         Local0 = Index (Package (0x01)
                 {
                     B900
@@ -2741,26 +2741,26 @@
                     {
                         F900
                     }, 0x00, Local1)
-            M1A2 (Local0, C00D, 0x00, 0x00, C00D, 0x00, 0x03BB)
-            M1A2 (Local1, C00D, 0x00, 0x00, C00D, 0x00, 0x03BC)
+            M1A2 (Local0, C00D, 0x00, 0x00, C00D, 0x00, __LINE__)
+            M1A2 (Local1, C00D, 0x00, 0x00, C00D, 0x00, __LINE__)
             Local0 = Index (Package (0x01)
                     {
                         BN90
                     }, 0x00, Local1)
-            M1A2 (Local0, C00D, 0x00, 0x00, C00D, 0x00, 0x03BD)
-            M1A2 (Local1, C00D, 0x00, 0x00, C00D, 0x00, 0x03BE)
+            M1A2 (Local0, C00D, 0x00, 0x00, C00D, 0x00, __LINE__)
+            M1A2 (Local1, C00D, 0x00, 0x00, C00D, 0x00, __LINE__)
             Local0 = Index (Package (0x01)
                     {
                         IF90
                     }, 0x00, Local1)
-            M1A2 (Local0, C00D, 0x00, 0x00, C00D, 0x00, 0x03BF)
-            M1A2 (Local1, C00D, 0x00, 0x00, C00D, 0x00, 0x03C0)
+            M1A2 (Local0, C00D, 0x00, 0x00, C00D, 0x00, __LINE__)
+            M1A2 (Local1, C00D, 0x00, 0x00, C00D, 0x00, __LINE__)
             Local0 = Index (Package (0x01)
                     {
                         BF90
                     }, 0x00, Local1)
-            M1A2 (Local0, C016, 0x00, 0x00, C016, 0xB0, 0x03C1)
-            M1A2 (Local1, C016, 0x00, 0x00, C016, 0xB0, 0x03C2)
+            M1A2 (Local0, C016, 0x00, 0x00, C016, 0xB0, __LINE__)
+            M1A2 (Local1, C016, 0x00, 0x00, C016, 0xB0, __LINE__)
         }
 
         /* Not Computational Data */
@@ -2821,26 +2821,26 @@
                 {
                     P901
                 }, 0x00, Local1)
-        M1A2 (Local0, C00C, 0x01, 0x00, C009, 0xABCD0004, 0x03D3)
-        M1A2 (Local0, C00C, 0x01, 0x01, C009, 0x1122334455660005, 0x03D4)
-        M1A2 (Local1, C00C, 0x01, 0x00, C009, 0xABCD0004, 0x03D5)
-        M1A2 (Local1, C00C, 0x01, 0x01, C009, 0x1122334455660005, 0x03D6)
+        M1A2 (Local0, C00C, 0x01, 0x00, C009, 0xABCD0004, __LINE__)
+        M1A2 (Local0, C00C, 0x01, 0x01, C009, 0x1122334455660005, __LINE__)
+        M1A2 (Local1, C00C, 0x01, 0x00, C009, 0xABCD0004, __LINE__)
+        M1A2 (Local1, C00C, 0x01, 0x01, C009, 0x1122334455660005, __LINE__)
         Local0 = Index (Package (0x01)
                 {
                     P902
                 }, 0x00, Local1)
-        M1A2 (Local0, C00C, 0x01, 0x00, C00A, "12340006", 0x03D7)
-        M1A2 (Local0, C00C, 0x01, 0x01, C00A, "q1w2e3r4t5y6u7i80007", 0x03D8)
-        M1A2 (Local1, C00C, 0x01, 0x00, C00A, "12340006", 0x03D9)
-        M1A2 (Local1, C00C, 0x01, 0x01, C00A, "q1w2e3r4t5y6u7i80007", 0x03DA)
+        M1A2 (Local0, C00C, 0x01, 0x00, C00A, "12340006", __LINE__)
+        M1A2 (Local0, C00C, 0x01, 0x01, C00A, "q1w2e3r4t5y6u7i80007", __LINE__)
+        M1A2 (Local1, C00C, 0x01, 0x00, C00A, "12340006", __LINE__)
+        M1A2 (Local1, C00C, 0x01, 0x01, C00A, "q1w2e3r4t5y6u7i80007", __LINE__)
         Local0 = Index (Package (0x01)
                 {
                     P903
                 }, 0x00, Local1)
-        M1A2 (Local0, C00C, 0x01, 0x00, C00A, "qwrtyuiop0008", 0x03DB)
-        M1A2 (Local0, C00C, 0x01, 0x01, C00A, "1234567890abdef0250009", 0x03DC)
-        M1A2 (Local1, C00C, 0x01, 0x00, C00A, "qwrtyuiop0008", 0x03DD)
-        M1A2 (Local1, C00C, 0x01, 0x01, C00A, "1234567890abdef0250009", 0x03DE)
+        M1A2 (Local0, C00C, 0x01, 0x00, C00A, "qwrtyuiop0008", __LINE__)
+        M1A2 (Local0, C00C, 0x01, 0x01, C00A, "1234567890abdef0250009", __LINE__)
+        M1A2 (Local1, C00C, 0x01, 0x00, C00A, "qwrtyuiop0008", __LINE__)
+        M1A2 (Local1, C00C, 0x01, 0x01, C00A, "1234567890abdef0250009", __LINE__)
         Local0 = Index (Package (0x01)
                 {
                     P904
@@ -2857,22 +2857,22 @@
                 {
                     P905
                 }, 0x00, Local1)
-        M1A2 (Local0, C00C, 0x02, 0x00, C009, 0x0ABC000A, 0x03E1)
-        M1A2 (Local0, C00C, 0x02, 0x01, C00A, "0xabc000b", 0x03E2)
-        M1A2 (Local1, C00C, 0x02, 0x00, C009, 0x0ABC000A, 0x03E3)
-        M1A2 (Local1, C00C, 0x02, 0x01, C00A, "0xabc000b", 0x03E4)
+        M1A2 (Local0, C00C, 0x02, 0x00, C009, 0x0ABC000A, __LINE__)
+        M1A2 (Local0, C00C, 0x02, 0x01, C00A, "0xabc000b", __LINE__)
+        M1A2 (Local1, C00C, 0x02, 0x00, C009, 0x0ABC000A, __LINE__)
+        M1A2 (Local1, C00C, 0x02, 0x01, C00A, "0xabc000b", __LINE__)
         Local0 = Index (Package (0x01)
                 {
                     P906
                 }, 0x00, Local1)
-        M1A2 (Local0, C00C, 0x02, 0x00, C00A, "abc000d", 0x03E5)
-        M1A2 (Local1, C00C, 0x02, 0x00, C00A, "abc000d", 0x03E6)
+        M1A2 (Local0, C00C, 0x02, 0x00, C00A, "abc000d", __LINE__)
+        M1A2 (Local1, C00C, 0x02, 0x00, C00A, "abc000d", __LINE__)
         Local0 = Index (Package (0x01)
                 {
                     P907
                 }, 0x00, Local1)
-        M1A2 (Local0, C00C, 0x02, 0x00, C00A, "aqwevbgnm000e", 0x03E7)
-        M1A2 (Local1, C00C, 0x02, 0x00, C00A, "aqwevbgnm000e", 0x03E8)
+        M1A2 (Local0, C00C, 0x02, 0x00, C00A, "aqwevbgnm000e", __LINE__)
+        M1A2 (Local1, C00C, 0x02, 0x00, C00A, "aqwevbgnm000e", __LINE__)
         Local0 = Index (Package (0x01)
                 {
                     P908
@@ -2889,20 +2889,20 @@
                 {
                     P909
                 }, 0x00, Local1)
-        M1A2 (Local0, C00C, 0x03, 0x00, C009, 0x0ABC000F, 0x03EB)
-        M1A2 (Local1, C00C, 0x03, 0x00, C009, 0x0ABC000F, 0x03EC)
+        M1A2 (Local0, C00C, 0x03, 0x00, C009, 0x0ABC000F, __LINE__)
+        M1A2 (Local1, C00C, 0x03, 0x00, C009, 0x0ABC000F, __LINE__)
         Local0 = Index (Package (0x01)
                 {
                     P90A
                 }, 0x00, Local1)
-        M1A2 (Local0, C00C, 0x03, 0x00, C00A, "12340010", 0x03ED)
-        M1A2 (Local1, C00C, 0x03, 0x00, C00A, "12340010", 0x03EE)
+        M1A2 (Local0, C00C, 0x03, 0x00, C00A, "12340010", __LINE__)
+        M1A2 (Local1, C00C, 0x03, 0x00, C00A, "12340010", __LINE__)
         Local0 = Index (Package (0x01)
                 {
                     P90B
                 }, 0x00, Local1)
-        M1A2 (Local0, C00C, 0x03, 0x00, C00A, "zxswefas0011", 0x03EF)
-        M1A2 (Local1, C00C, 0x03, 0x00, C00A, "zxswefas0011", 0x03F0)
+        M1A2 (Local0, C00C, 0x03, 0x00, C00A, "zxswefas0011", __LINE__)
+        M1A2 (Local1, C00C, 0x03, 0x00, C00A, "zxswefas0011", __LINE__)
         Local0 = Index (Package (0x01)
                 {
                     P90C
@@ -2919,26 +2919,26 @@
                 {
                     P90D
                 }, 0x00, Local1)
-        M1A2 (Local0, C00C, 0x01, 0x00, C009, 0xFE7CB391D65A0000, 0x03F3)
-        M1A2 (Local1, C00C, 0x01, 0x00, C009, 0xFE7CB391D65A0000, 0x03F4)
+        M1A2 (Local0, C00C, 0x01, 0x00, C009, 0xFE7CB391D65A0000, __LINE__)
+        M1A2 (Local1, C00C, 0x01, 0x00, C009, 0xFE7CB391D65A0000, __LINE__)
         Local0 = Index (Package (0x01)
                 {
                     P90E
                 }, 0x00, Local1)
-        M1A2 (Local0, C00C, 0x01, 0x00, C009, 0xC1790001, 0x03F5)
-        M1A2 (Local1, C00C, 0x01, 0x00, C009, 0xC1790001, 0x03F6)
+        M1A2 (Local0, C00C, 0x01, 0x00, C009, 0xC1790001, __LINE__)
+        M1A2 (Local1, C00C, 0x01, 0x00, C009, 0xC1790001, __LINE__)
         Local0 = Index (Package (0x01)
                 {
                     P90F
                 }, 0x00, Local1)
-        M1A2 (Local0, C00C, 0x01, 0x00, C00A, "12340002", 0x03F7)
-        M1A2 (Local1, C00C, 0x01, 0x00, C00A, "12340002", 0x03F8)
+        M1A2 (Local0, C00C, 0x01, 0x00, C00A, "12340002", __LINE__)
+        M1A2 (Local1, C00C, 0x01, 0x00, C00A, "12340002", __LINE__)
         Local0 = Index (Package (0x01)
                 {
                     P910
                 }, 0x00, Local1)
-        M1A2 (Local0, C00C, 0x01, 0x00, C00A, "qwrtyu0003", 0x03F9)
-        M1A2 (Local1, C00C, 0x01, 0x00, C00A, "qwrtyu0003", 0x03FA)
+        M1A2 (Local0, C00C, 0x01, 0x00, C00A, "qwrtyu0003", __LINE__)
+        M1A2 (Local1, C00C, 0x01, 0x00, C00A, "qwrtyu0003", __LINE__)
         Local0 = Index (Package (0x01)
                 {
                     P911
@@ -2957,26 +2957,26 @@
                     {
                         P912
                     }, 0x00, Local1)
-            M1A2 (Local0, C00C, 0x01, 0x00, C00D, 0x00, 0x03FD)
-            M1A2 (Local1, C00C, 0x01, 0x00, C00D, 0x00, 0x03FE)
+            M1A2 (Local0, C00C, 0x01, 0x00, C00D, 0x00, __LINE__)
+            M1A2 (Local1, C00C, 0x01, 0x00, C00D, 0x00, __LINE__)
             Local0 = Index (Package (0x01)
                     {
                         P913
                     }, 0x00, Local1)
-            M1A2 (Local0, C00C, 0x01, 0x00, C00D, 0x00, 0x03FF)
-            M1A2 (Local1, C00C, 0x01, 0x00, C00D, 0x00, 0x0400)
+            M1A2 (Local0, C00C, 0x01, 0x00, C00D, 0x00, __LINE__)
+            M1A2 (Local1, C00C, 0x01, 0x00, C00D, 0x00, __LINE__)
             Local0 = Index (Package (0x01)
                     {
                         P914
                     }, 0x00, Local1)
-            M1A2 (Local0, C00C, 0x01, 0x00, C00D, 0x00, 0x0401)
-            M1A2 (Local1, C00C, 0x01, 0x00, C00D, 0x00, 0x0402)
+            M1A2 (Local0, C00C, 0x01, 0x00, C00D, 0x00, __LINE__)
+            M1A2 (Local1, C00C, 0x01, 0x00, C00D, 0x00, __LINE__)
             Local0 = Index (Package (0x01)
                     {
                         P915
                     }, 0x00, Local1)
-            M1A2 (Local0, C00C, 0x01, 0x00, C016, 0xB0, 0x0403)
-            M1A2 (Local1, C00C, 0x01, 0x00, C016, 0xB0, 0x0404)
+            M1A2 (Local0, C00C, 0x01, 0x00, C016, 0xB0, __LINE__)
+            M1A2 (Local1, C00C, 0x01, 0x00, C016, 0xB0, __LINE__)
         }
 
         /* Elements of Package are NOT Computational Data */

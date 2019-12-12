@@ -49,8 +49,8 @@
             ERR (__METHOD__, ZFFF, __LINE__, 0x00, 0x00, ID20, 0x08)
         }
 
-        If ((BFD3 != 0x99))
+        If ((BFD3 != Buffer(){0x99}))
         {
-            ERR (__METHOD__, ZFFF, __LINE__, 0x00, 0x00, BFD3, 0x99)
+            ERR (__METHOD__, ZFFF, __LINE__, 0x00, 0x00, BFD3, Buffer(){0x99})
         }
     }

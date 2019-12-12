@@ -52,9 +52,9 @@
             {
                 ERR (__METHOD__, ZFFF, __LINE__, 0x00, 0x00, Local1, Local0)
             }
-            ElseIf ((BF90 != 0x2B))
+            ElseIf ((BF90 != Buffer(){0x2B}))
             {
-                ERR (__METHOD__, ZFFF, __LINE__, 0x00, 0x00, BF90, 0x2B)
+                ERR (__METHOD__, ZFFF, __LINE__, 0x00, 0x00, BF90, Buffer(){0x2B})
             }
         }
     }

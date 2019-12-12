@@ -10431,43 +10431,28 @@
 
         Method (M074, 1, NotSerialized)
         {
-            M600 (Arg0, 0x00, BF61, 0x0321)
-            M600 (Arg0, 0x01, BF62, 0xC179B3FE)
-            If (F64)
-            {
-                M600 (Arg0, 0x02, BF63, 0x00000001C179B3FE)
-            }
-            Else
-            {
-                M600 (Arg0, 0x02, BF63, Buffer (0x05)
-                    {
-                         0xFE, 0xB3, 0x79, 0xC1, 0x01                     // ..y..
-                    })
-            }
+            M600 (Arg0, 0x00, BF61, Buffer()
+                {
+                    0x21, 0x03, 0x00, 0x00
+                })
+            M600 (Arg0, 0x01, BF62, Buffer()
+                {
+                    0xFE, 0xB3, 0x79, 0xC1
+                })
+            M600 (Arg0, 0x02, BF63, Buffer (0x05)
+                {
+                     0xFE, 0xB3, 0x79, 0xC1, 0x01                     // ..y..
+                })
 
-            If (F64)
-            {
-                M600 (Arg0, 0x03, BF64, 0x7E7CB391D650A284)
-            }
-            Else
-            {
-                M600 (Arg0, 0x03, BF64, Buffer (0x08)
-                    {
-                         0x84, 0xA2, 0x50, 0xD6, 0x91, 0xB3, 0x7C, 0x7E   // ..P...|~
-                    })
-            }
+            M600 (Arg0, 0x03, BF64, Buffer (0x08)
+                {
+                     0x84, 0xA2, 0x50, 0xD6, 0x91, 0xB3, 0x7C, 0x7E   // ..P...|~
+                })
 
-            If (F64)
-            {
-                M600 (Arg0, 0x04, BF65, 0xFE7CB391D650A284)
-            }
-            Else
-            {
-                M600 (Arg0, 0x04, BF65, Buffer (0x08)
-                    {
-                         0x84, 0xA2, 0x50, 0xD6, 0x91, 0xB3, 0x7C, 0xFE   // ..P...|.
-                    })
-            }
+            M600 (Arg0, 0x04, BF65, Buffer (0x08)
+                {
+                     0x84, 0xA2, 0x50, 0xD6, 0x91, 0xB3, 0x7C, 0xFE   // ..P...|.
+                })
 
             M600 (Arg0, 0x05, BF66, Buffer (0x09)
                 {
@@ -10496,131 +10481,65 @@
                     /* 0000 */  0x35, 0xEC, 0xE9, 0x2E, 0x16, 0x76, 0x0D, 0x00,  // 5....v..
                     /* 0008 */  0x00                                             // .
                 })
-            If (F64)
-            {
-                M600 (Arg0, 0x09, BF6E, 0x90123456)
-            }
-            Else
-            {
-                M600 (Arg0, 0x09, BF6E, Buffer (0x05)
-                    {
-                         0x56, 0x34, 0x12, 0x90, 0x00                     // V4...
-                    })
-            }
+            M600 (Arg0, 0x09, BF6E, Buffer (0x05)
+                {
+                     0x56, 0x34, 0x12, 0x90, 0x00                     // V4...
+                })
 
-            If (F64)
-            {
-                M600 (Arg0, 0x0A, BF6F, 0x055F2CC0)
-            }
-            Else
-            {
-                M600 (Arg0, 0x0A, BF6F, Buffer (0x05)
-                    {
-                         0xC0, 0x2C, 0x5F, 0x05, 0x00                     // .,_..
-                    })
-            }
+            M600 (Arg0, 0x0A, BF6F, Buffer (0x05)
+                {
+                     0xC0, 0x2C, 0x5F, 0x05, 0x00                     // .,_..
+                })
 
-            M600 (Arg0, 0x0B, BF70, 0x6179534E)
-            If (F64)
-            {
-                M600 (Arg0, 0x0C, BF71, 0x6E7C534136502214)
-            }
-            Else
-            {
-                M600 (Arg0, 0x0C, BF71, Buffer (0x08)
-                    {
-                         0x14, 0x22, 0x50, 0x36, 0x41, 0x53, 0x7C, 0x6E   // ."P6AS|n
-                    })
-            }
+            M600 (Arg0, 0x0B, BF70, Buffer()
+                {
+                    0x4E, 0x53, 0x79, 0x61
+                 })
+            M600 (Arg0, 0x0C, BF71, Buffer (0x08)
+                {
+                     0x14, 0x22, 0x50, 0x36, 0x41, 0x53, 0x7C, 0x6E   // ."P6AS|n
+                })
+            M600 (Arg0, 0x0D, BF72, Buffer (0x08)
+                {
+                     0x14, 0x22, 0x00, 0x36, 0x41, 0x53, 0x00, 0x6E   // .".6AS.n
+                })
+            M600 (Arg0, 0x0E, BF73, Buffer (0x08)
+                {
+                     0x14, 0x22, 0x00, 0x36, 0x41, 0x53, 0x7C, 0x6E   // .".6AS|n
+                })
 
-            If (F64)
-            {
-                M600 (Arg0, 0x0D, BF72, 0x6E00534136002214)
-            }
-            Else
-            {
-                M600 (Arg0, 0x0D, BF72, Buffer (0x08)
-                    {
-                         0x14, 0x22, 0x00, 0x36, 0x41, 0x53, 0x00, 0x6E   // .".6AS.n
-                    })
-            }
+            M600 (Arg0, 0x0F, BF74, Buffer (0x05)
+                {
+                     0x0B, 0x00, 0x00, 0x00, 0x00                     // .....
+                })
 
-            If (F64)
-            {
-                M600 (Arg0, 0x0E, BF73, 0x6E7C534136002214)
-            }
-            Else
-            {
-                M600 (Arg0, 0x0E, BF73, Buffer (0x08)
-                    {
-                         0x14, 0x22, 0x00, 0x36, 0x41, 0x53, 0x7C, 0x6E   // .".6AS|n
-                    })
-            }
+            M600 (Arg0, 0x10, BF75, Buffer (0x05)
+                {
+                     0x3F, 0x00, 0x00, 0x00, 0x00                     // ?....
+                })
 
-            If (F64)
-            {
-                M600 (Arg0, 0x0F, BF74, 0x0B)
-            }
-            Else
-            {
-                M600 (Arg0, 0x0F, BF74, Buffer (0x05)
-                    {
-                         0x0B, 0x00, 0x00, 0x00, 0x00                     // .....
-                    })
-            }
+            M600 (Arg0, 0x11, BF76, Buffer (0x05)
+                {
+                     0x00, 0x00, 0x00, 0x00, 0x00                     // .....
+                })
 
-            If (F64)
-            {
-                M600 (Arg0, 0x10, BF75, 0x3F)
-            }
-            Else
-            {
-                M600 (Arg0, 0x10, BF75, Buffer (0x05)
-                    {
-                         0x3F, 0x00, 0x00, 0x00, 0x00                     // ?....
-                    })
-            }
-
-            If (F64)
-            {
-                M600 (Arg0, 0x11, BF76, 0x00)
-            }
-            Else
-            {
-                M600 (Arg0, 0x11, BF76, Buffer (0x05)
-                    {
-                         0x00, 0x00, 0x00, 0x00, 0x00                     // .....
-                    })
-            }
-
-            M600 (Arg0, 0x12, BF77, 0x36002214)
+            M600 (Arg0, 0x12, BF77, Buffer()
+                {
+                    0x14, 0x22, 0x00, 0x36
+                })
             If (Y365)
             {
                 M600 (Arg0, 0x13, BF91, 0x0320)
                 M600 (Arg0, 0x14, BFA1, 0x0322)
-                If (F64)
+                M600 (Arg0, 0x15, BF95, Buffer (0x08)
                 {
-                    M600 (Arg0, 0x15, BF95, 0xFE7CB391D650A283)
-                }
-                Else
-                {
-                    M600 (Arg0, 0x15, BF95, Buffer (0x08)
-                        {
-                             0x83, 0xA2, 0x50, 0xD6, 0x00, 0x00, 0x00, 0x00   // ..P.....
-                        })
-                }
+                    0x83, 0xA2, 0x50, 0xD6, 0x00, 0x00, 0x00, 0x00   // ..P.....
+                })
 
-                If (F64)
+                M600 (Arg0, 0x16, BFA5, Buffer (0x08)
                 {
-                    M600 (Arg0, 0x16, BFA5, 0xFE7CB391D650A285)
-                }
-                Else
-                {
-                    M600 (Arg0, 0x16, BFA5, Buffer (0x08)
-                        {
-                             0x85, 0xA2, 0x50, 0xD6, 0x00, 0x00, 0x00, 0x00   // ..P.....
-                        })
-                }
+                    0x85, 0xA2, 0x50, 0xD6, 0x00, 0x00, 0x00, 0x00   // ..P.....
+                })
             }
         }
 

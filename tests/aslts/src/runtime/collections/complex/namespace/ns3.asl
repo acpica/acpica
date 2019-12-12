@@ -368,7 +368,7 @@
             ERR (__METHOD__, Z157, __LINE__, 0x00, 0x00, Local0, 0x87654321)
         }
 
-        Local1 = 0xABCDEF70
+        Local1 = Buffer () {0x70, 0xEF, 0xCD, 0xAB}
         If ((BF00 != Local1))
         {
             ERR (__METHOD__, Z157, __LINE__, 0x00, 0x00, BF00, Local1)
@@ -977,11 +977,11 @@
 
             If (Arg1)
             {
-                Local1 = 0x11223344
+                Local1 = Buffer() {0x44, 0x33, 0x22, 0x11}
             }
             Else
             {
-                Local1 = 0x80000000
+                Local1 = Buffer() {0x00, 0x00, 0x00, 0x80}
             }
 
             If ((BF00 != Local1))

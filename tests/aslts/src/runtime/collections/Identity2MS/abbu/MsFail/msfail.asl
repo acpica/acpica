@@ -364,8 +364,8 @@ Method(mf08,, Serialized)
 
 	Store(0x80, bf00)
 
-	if (LNotEqual(bf00, 0x80)) {
-		err(ts, z161, __LINE__, 0, 0, bf00, 0x80)
+	if (LNotEqual(bf00, Buffer(){0x80})) {
+		err(ts, z161, __LINE__, 0, 0, bf00, Buffer(){0x80})
 	}
 
 	} /* if(chk0) */
@@ -622,8 +622,8 @@ Method(mf0d,, Serialized)
 		if (LNotEqual(Local0, 0x1234569e)) {
 			err(ts, z161, __LINE__, 0, 0, Local0, 0x1234569e)
 		}
-		if (LNotEqual(bf00, 0x12345678)) {
-			err(ts, z161, __LINE__, 0, 0, bf00, 0x12345678)
+		if (LNotEqual(bf00, Buffer(){0x78, 0x56, 0x34, 0x12})) {
+			err(ts, z161, __LINE__, 0, 0, bf00, Buffer(){0x78, 0x56, 0x34, 0x12})
 		}
 	}
 
@@ -659,8 +659,8 @@ Method(mf0e,, Serialized)
 		if (LNotEqual(Local0, 0x2468acef)) {
 			err(ts, z161, __LINE__, 0, 0, Local0, 0x2468acef)
 		}
-		if (LNotEqual(bf00, 0x12345675)) {
-			err(ts, z161, __LINE__, 0, 0, bf00, 0x12345675)
+		if (LNotEqual(bf00, Buffer(){0x75, 0x56, 0x34, 0x12})) {
+			err(ts, z161, __LINE__, 0, 0, bf00, Buffer(){0x75, 0x56, 0x34, 0x12})
 		}
 	}
 
@@ -712,8 +712,8 @@ Method(mf0f,, Serialized)
 		if (LNotEqual(Local0, 0x1234569e)) {
 			err(ts, z161, __LINE__, 0, 0, Local0, 0x1234569e)
 		}
-		if (LNotEqual(bf00, 0x12345678)) {
-			err(ts, z161, __LINE__, 0, 0, bf00, 0x12345678)
+		if (LNotEqual(bf00, Buffer(){0x78, 0x56, 0x34, 0x12})) {
+			err(ts, z161, __LINE__, 0, 0, bf00, Buffer(){0x78, 0x56, 0x34, 0x12})
 		}
 	}
 
@@ -723,8 +723,8 @@ Method(mf0f,, Serialized)
 		if (LNotEqual(Local0, 0x2468acef)) {
 			err(ts, z161, __LINE__, 0, 0, Local0, 0x2468acef)
 		}
-		if (LNotEqual(bf00, 0x12345675)) {
-			err(ts, z161, __LINE__, 0, 0, bf00, 0x12345675)
+		if (LNotEqual(bf00, Buffer(){0x75, 0x56, 0x34, 0x12})) {
+			err(ts, z161, __LINE__, 0, 0, bf00, Buffer(){0x75, 0x56, 0x34, 0x12})
 		}
 	}
 
@@ -768,11 +768,11 @@ Method(mf10,, Serialized)
 	// Ok
 	OUTP(b000)
 
-		if (LNotEqual(Local0, 0x12345678)) {
-			err(ts, z161, __LINE__, 0, 0, Local0, 0x12345678)
+		if (LNotEqual(Local0, Buffer(){0x78, 0x56, 0x34, 0x12})) {
+			err(ts, z161, __LINE__, 0, 0, Local0, Buffer(){0x78, 0x56, 0x34, 0x12})
 		}
-		if (LNotEqual(bf00, 0x12345678)) {
-			err(ts, z161, __LINE__, 0, 0, bf00, 0x12345678)
+		if (LNotEqual(bf00, Buffer(){0x78, 0x56, 0x34, 0x12})) {
+			err(ts, z161, __LINE__, 0, 0, bf00, Buffer(){0x78, 0x56, 0x34, 0x12})
 		}
 
 	Return(POUT)

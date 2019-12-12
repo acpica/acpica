@@ -158,9 +158,10 @@
             ERR (TS, Z114, __LINE__, 0x00, 0x00, Local0, C016)
         }
 
-        If ((BF90 != 0xB0))
+        Local1 = Buffer (0x1) { 0xB0}
+        If (BF90 != Local1)
         {
-            ERR (TS, Z114, __LINE__, 0x00, 0x00, BF90, 0xB0)
+            ERR (TS, Z114, __LINE__, 0x00, 0x00, BF90, Local1)
         }
 
         /* One level Package */
@@ -808,7 +809,7 @@
             M1AA (TS, Local0, C015, 0x00, 0x013F)
         }
 
-        /* 14th element is a buffer field, which will be resolved to an integer */
+        /* 14th element is a buffer field created by CreateField, which will be resolved to a buffer */
 
         If (Arg2)
         {
@@ -829,13 +830,13 @@
             }
 
             Local5 = ObjectType (Local7)
-            If ((Local5 != C009))
+            If ((Local5 != C00B))
             {
-                ERR (TS, Z114, __LINE__, 0x00, 0x00, Local5, C009)
+                ERR (TS, Z114, __LINE__, 0x00, 0x00, Local5, C00B)
             }
-            ElseIf ((Local7 != 0xB0))
+            ElseIf ((Local7 != Buffer(){0xB0}))
             {
-                ERR (TS, Z114, __LINE__, 0x00, 0x00, Local7, 0x00)
+                ERR (TS, Z114, __LINE__, 0x00, 0x00, Local7, Buffer(){0xB0})
             }
         }
 
