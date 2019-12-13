@@ -161,6 +161,7 @@ This will update the version number header on all pages where the token is used:
 Update file pathnames:
     Goto "Downloads", click edit
         Update paths to new file versions, update file sizes (3 files)
+        Insert the release notes as the summary
         Click "Save" at the bottom of the page
     Goto "Downloads/Windows Source Code", click edit
         Update paths to new file versions, update file sizes (2 files)
@@ -180,7 +181,7 @@ ACPICA document updates:
 
     Goto the "Documentation" page, click edit.
     Attach/upload all new versions of the document(s)
-    Uncheck the "List" box for each new document
+    Uncheck the "Display" box for each new document
     Update pathnames (and file sizes) in body for each new filename
         (appears at bottom of each attach)
     Update "Last update" dates as needed
