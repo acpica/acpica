@@ -4997,10 +4997,20 @@
             Method (M010, 3, NotSerialized)
             {
                 M680 (Arg0, Arg1, 0x00, ObjectType (BF81), 0x0E)
-                M680 (Arg0, Arg1, 0x02, BF81, Buffer (0x08)
-                    {
-                        0x84, 0xA2, 0x50, 0xD6, 0x91, 0xB3, 0x7C, 0x7E   // ..P.....
-                    })
+                If (F64)
+                {
+                    M680 (Arg0, Arg1, 0x02, BF81, Buffer (0x08)
+                        {
+                            0x84, 0xA2, 0x50, 0xD6, 0x91, 0xB3, 0x7C, 0x7E   // ..P.....
+                        })
+                }
+                else
+                {
+                    M680 (Arg0, Arg1, 0x02, BF81, Buffer (0x08)
+                        {
+                            0x84, 0xA2, 0x50, 0xD6, 0x00, 0x00, 0x00, 0x00   // ..P.....
+                        })
+                }
 
                 If (Arg2)
                 {
@@ -5634,12 +5644,24 @@
             /* m010(<errmsg>, <errnum>, <flag>) */
             Method (M010, 3, NotSerialized)
             {
-                M680 (Arg0, Arg1, 0x00, ObjectType (BF82), 0x0E)
-                M680 (Arg0, Arg1, 0x01, BF82, Buffer (0x09)
-                    {
-                        /* 0000 */  0x84, 0xA2, 0x50, 0xD6, 0x91, 0xB3, 0x7C, 0xFE,  // ..P...|.
-                        /* 0008 */  0x00                                             // .
-                    })
+                If (F64)
+                {
+                    M680 (Arg0, Arg1, 0x00, ObjectType (BF82), 0x0E)
+                    M680 (Arg0, Arg1, 0x01, BF82, Buffer (0x09)
+                        {
+                            /* 0000 */  0x84, 0xA2, 0x50, 0xD6, 0x91, 0xB3, 0x7C, 0xFE,  // ..P...|.
+                            /* 0008 */  0x00                                             // .
+                        })
+                }
+                Else
+                {
+                    M680 (Arg0, Arg1, 0x02, BF82, Buffer (0x09)
+                        {
+                            /* 0000 */  0x84, 0xA2, 0x50, 0xD6, 0x00, 0x00, 0x00, 0x00,  // ..P.....
+                            /* 0008 */  0x00                                             // .
+                        })
+                }
+
 
                 If (Arg2)
                 {
