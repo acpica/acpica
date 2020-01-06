@@ -279,9 +279,8 @@ LdLoadFieldElements (
     if (SourceRegion)
     {
         Status = AcpiNsLookup (WalkState->ScopeInfo,
-            SourceRegion->Asl.Value.String,
-            AmlType, ACPI_IMODE_EXECUTE,
-            ACPI_NS_DONT_OPEN_SCOPE, NULL, &Node);
+            SourceRegion->Asl.Value.String, AmlType, ACPI_IMODE_EXECUTE,
+            ACPI_NS_SEARCH_PARENT | ACPI_NS_DONT_OPEN_SCOPE, NULL, &Node);
         if (Status == AE_NOT_FOUND)
         {
             /*
