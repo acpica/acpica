@@ -751,7 +751,14 @@ AePrintSubError (
 
     MainMessage = AeDecodeMessageId (Enode->MessageId);
 
-    fprintf (OutputFile, "    %s%s", MainMessage, "\n    ");
+    fprintf (OutputFile, "    %s", MainMessage);
+
+    if (Enode->Message)
+    {
+        fprintf (OutputFile, "(%s)", Enode->Message);
+    }
+
+    fprintf (OutputFile, "\n    ");
     (void) AePrintErrorSourceLine (OutputFile, Enode, &PrematureEOF, &Total);
     fprintf (OutputFile, "\n");
 }
