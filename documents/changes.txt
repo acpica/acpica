@@ -1,4 +1,33 @@
 ----------------------------------------
+10 January 2020. Summary of changes for version 20200110:
+
+
+1) ACPICA kernel-resident subsystem:
+
+Updated all copyrights to 2020. This affects all ACPICA source code 
+modules.
+
+
+2) iASL Compiler/Disassembler and ACPICA tools:
+
+ASL test suite (ASLTS): Updated all copyrights to 2020.
+
+Tools and utilities: Updated all signon copyrights to 2020.
+
+iASL: fix forward reference analysis for field declarations. Fixes 
+forward reference analysis for field declarations by searching the 
+parent scope for the named object when the object is not present in 
+the current scope.
+
+iASL: Improved the error output for ALREADY_EXISTS errors. Now, the 
+full pathname of the name that already exists is printed.
+
+iASL: Enhance duplicate Case() detection for buffers. Add check for 
+buffers with no initializer list (these buffers will be filled with 
+zeros at runtime.)
+
+
+----------------------------------------
 13 December 2019. Summary of changes for version 20191213:
 
 
