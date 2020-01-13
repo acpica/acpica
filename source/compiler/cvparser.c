@@ -230,6 +230,7 @@ CvIsFilename (
  * FUNCTION:    CvInitFileTree
  *
  * PARAMETERS:  Table      - input table
+ *              RootFile   - Output file that defines the DefinitionBlock
  *
  * RETURN:      None
  *
@@ -240,7 +241,8 @@ CvIsFilename (
 
 void
 CvInitFileTree (
-    ACPI_TABLE_HEADER       *Table)
+    ACPI_TABLE_HEADER       *Table,
+    FILE                    *RootFile)
 {
     UINT8                   *TreeAml;
     UINT8                   *FileEnd;
@@ -275,7 +277,7 @@ CvInitFileTree (
 
     /* Set the root file to the current open file */
 
-    AcpiGbl_FileTreeRoot->File = AcpiGbl_OutputFile;
+    AcpiGbl_FileTreeRoot->File = RootFile;
 
     /*
      * Set this to true because we don't need to output

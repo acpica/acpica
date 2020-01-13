@@ -236,7 +236,8 @@ CgWriteAmlComment (
  */
 void
 CvInitFileTree (
-    ACPI_TABLE_HEADER       *Table);
+    ACPI_TABLE_HEADER       *Table,
+    FILE                    *RootFile);
 
 void
 CvClearOpComments (

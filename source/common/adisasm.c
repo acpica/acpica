@@ -156,6 +156,7 @@
 #include "acnamesp.h"
 #include "acparser.h"
 #include "acapps.h"
+#include "acconvert.h"
 
 
 #define _COMPONENT          ACPI_TOOLS
@@ -488,6 +489,10 @@ AdDisassembleOneTable (
 
         return (AE_OK);
     }
+
+    /* Initialize the converter output file */
+
+    ASL_CV_INIT_FILETREE(Table, File);
 
     /*
      * This is an AML table (DSDT or SSDT).
