@@ -230,8 +230,6 @@ CvIsFilename (
  * FUNCTION:    CvInitFileTree
  *
  * PARAMETERS:  Table      - input table
- *              AmlStart   - Address of the starting point of the AML.
- *              AmlLength  - Length of the AML file.
  *
  * RETURN:      None
  *
@@ -242,9 +240,7 @@ CvIsFilename (
 
 void
 CvInitFileTree (
-    ACPI_TABLE_HEADER       *Table,
-    UINT8                   *AmlStart,
-    UINT32                  AmlLength)
+    ACPI_TABLE_HEADER       *Table)
 {
     UINT8                   *TreeAml;
     UINT8                   *FileEnd;
@@ -252,6 +248,8 @@ CvInitFileTree (
     char                    *PreviousFilename = NULL;
     char                    *ParentFilename = NULL;
     char                    *ChildFilename = NULL;
+    UINT8                   *AmlStart;
+    UINT32                  AmlLength;
 
 
     if (!AcpiGbl_CaptureComments)
@@ -259,9 +257,13 @@ CvInitFileTree (
         return;
     }
 
+
+    AmlLength = Table->Length - sizeof (ACPI_TABLE_HEADER);
+    AmlStart = ((UINT8 *) Table + sizeof (ACPI_TABLE_HEADER));
+
     CvDbgPrint ("AmlLength: %x\n", AmlLength);
     CvDbgPrint ("AmlStart:  %p\n", AmlStart);
-    CvDbgPrint ("AmlEnd?:   %p\n", AmlStart+AmlLength);
+    CvDbgPrint ("AmlEnd:    %p\n", AmlStart+AmlLength);
 
     AcpiGbl_FileTreeRoot = AcpiOsAcquireObject (AcpiGbl_FileCache);
 
