@@ -719,9 +719,6 @@
     <CustomBuild Include="..\..\source\compiler\aslcompiler.l">
       <Filter>Source Files\Parsers</Filter>
     </CustomBuild>
-    <CustomBuild Include="..\..\source\compiler\aslcompiler.y">
-      <Filter>Source Files\Parsers</Filter>
-    </CustomBuild>
     <CustomBuild Include="..\..\source\compiler\aslparser.y">
       <Filter>Source Files\Parsers</Filter>
     </CustomBuild>
@@ -743,5 +740,37 @@
     <CustomBuild Include="..\..\source\compiler\prparser.y">
       <Filter>Source Files\Parsers</Filter>
     </CustomBuild>
+    <CustomBuild Include="aslcompiler.y">
+      <Filter>Source Files\Intermediate</Filter>
+    </CustomBuild>
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="..\..\source\compiler\aslcstyle.y">
+      <Filter>Source Files\Parsers</Filter>
+    </None>
+    <None Include="..\..\source\compiler\aslhelpers.y">
+      <Filter>Source Files\Parsers</Filter>
+    </None>
+    <None Include="..\..\source\compiler\aslkeywords.y">
+      <Filter>Source Files\Parsers</Filter>
+    </None>
+    <None Include="..\..\source\compiler\aslprimaries.y">
+      <Filter>Source Files\Parsers</Filter>
+    </None>
+    <None Include="..\..\source\compiler\aslresources.y">
+      <Filter>Source Files\Parsers</Filter>
+    </None>
+    <None Include="..\..\source\compiler\aslrules.y">
+      <Filter>Source Files\Parsers</Filter>
+    </None>
+    <None Include="..\..\source\compiler\aslsupport.y">
+      <Filter>Source Files\Parsers</Filter>
+    </None>
+    <None Include="..\..\source\compiler\asltokens.y">
+      <Filter>Source Files\Parsers</Filter>
+    </None>
+    <None Include="..\..\source\compiler\asltypes.y">
+      <Filter>Source Files\Parsers</Filter>
+    </None>
   </ItemGroup>
 </Project>
