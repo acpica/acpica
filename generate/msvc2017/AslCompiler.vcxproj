@@ -450,6 +450,7 @@
       <Command Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">m4 -P -I%(RootDir)%(Directory) %(FullPath) &gt; %(RootDir)%(Directory)/aslcompiler.y</Command>
       <Message Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">Macro-processing %(FullPath)</Message>
       <Outputs Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">%(RootDir)%(Directory)/aslcompiler.y</Outputs>
+      <AdditionalInputs Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">%(Directory)asltokens.y;%(Directory)asltypes.y;%(Directory)aslrules.y;%(Directory)aslprimaries.y;%(Directory)aslcstyle.y;%(Directory)aslkeywords.y;%(Directory)aslresources.y;%(Directory)aslhelpers.y;%(Directory)aslsupport.y</AdditionalInputs>
     </CustomBuild>
     <CustomBuild Include="..\..\source\compiler\dtparser.l">
       <Command Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">flex -PDtParser -o%(Filename).l.c %(FullPath)</Command>
