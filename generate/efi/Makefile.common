@@ -56,6 +56,6 @@ veryclean:	FORCE
 
 machine:	FORCE
 	@echo "Target architecture: $(TARGET)";
-	@echo "Host architecture: $(HOST)";
+	@echo "Host architecture: $(ACPI_HOST)";
 
 FORCE:
