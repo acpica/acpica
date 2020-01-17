@@ -192,7 +192,41 @@ ExDoExternal (
     ACPI_PARSE_OBJECT       *Prev;
     ACPI_PARSE_OBJECT       *Next;
     ACPI_PARSE_OBJECT       *ArgCountOp;
+    ACPI_PARSE_OBJECT       *TypeOp;
+    UINT32                  ExternType;
 
+
+    ExternType = AnMapObjTypeToBtype (Op->Asl.Child->Asl.Next);
+
+    /*
+     * The parser allows optional parameter return types regardless of the
+     * type. Check object type keyword emit error if optional parameter/return
+     * types exist
+     */
+    if (ExternType != ACPI_TYPE_METHOD)
+    {
+        /* Check the parameter return type */
+
+        TypeOp = Op->Asl.Child->Asl.Next->Asl.Next;
+        if (TypeOp->Asl.ParseOpcode != PARSEOP_DEFAULT_ARG ||
+            (TypeOp->Asl.ParseOpcode == PARSEOP_DEFAULT_ARG && TypeOp->Asl.Child))
+        {
+            sprintf (AslGbl_MsgBuffer, "Found type [%s]", AcpiUtGetTypeName(ExternType));
+            AslError (ASL_ERROR, ASL_MSG_EXTERN_INVALID_RET_TYPE, TypeOp,
+                AslGbl_MsgBuffer);
+        }
+
+        /* Check the parameter types */
+
+        TypeOp = TypeOp->Asl.Next;
+        if (TypeOp->Asl.ParseOpcode != PARSEOP_DEFAULT_ARG ||
+            (TypeOp->Asl.ParseOpcode == PARSEOP_DEFAULT_ARG && TypeOp->Asl.Child))
+        {
+            sprintf (AslGbl_MsgBuffer, "Found type [%s]", AcpiUtGetTypeName(ExternType));
+            AslError (ASL_ERROR, ASL_MSG_EXTERN_INVALID_PARAM_TYPE, TypeOp,
+                AslGbl_MsgBuffer);
+        }
+    }
 
     ArgCountOp = Op->Asl.Child->Asl.Next->Asl.Next;
     ArgCountOp->Asl.AmlOpcode = AML_RAW_DATA_BYTE;
