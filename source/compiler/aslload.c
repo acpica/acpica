@@ -575,7 +575,8 @@ LdNamespace1Begin (
     /* Check for a possible illegal forward reference */
 
     if ((Op->Asl.ParseOpcode == PARSEOP_NAMESEG) ||
-        (Op->Asl.ParseOpcode == PARSEOP_NAMESTRING))
+        (Op->Asl.ParseOpcode == PARSEOP_NAMESTRING) ||
+        (Op->Asl.ParseOpcode == PARSEOP_METHODCALL))
     {
         /*
          * Op->Asl.Namepath will be NULL for these opcodes.
@@ -591,7 +592,8 @@ LdNamespace1Begin (
          * We only want references to named objects:
          *      Store (2, WXYZ) -> Attempt to resolve the name
          */
-        if (OpInfo->Class == AML_CLASS_NAMED_OBJECT)
+        if ((Op->Asl.ParseOpcode != PARSEOP_METHODCALL) &&
+            (OpInfo->Class == AML_CLASS_NAMED_OBJECT))
         {
             return (AE_OK);
         }
