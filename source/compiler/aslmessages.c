@@ -370,7 +370,9 @@ const char                      *AslCompilerMsgs [] =
 /*    ASL_MSG_INVALID_PROCESSOR_UID */      "_UID inside processor declaration must be an integer",
 /*    ASL_MSG_LEGACY_PROCESSOR_OP */        "Legacy Processor() keyword detected. Use Device() keyword instead.",
 /*    ASL_MSG_NAMESTRING_LENGTH */          "NameString contains too many NameSegs (>255)",
-/*    ASL_MSG_CASE_FOUND_HERE */            "Original Case value below:"
+/*    ASL_MSG_CASE_FOUND_HERE */            "Original Case value below:",
+/*    ASL_MSG_EXTERN_INVALID_RET_TYPE */    "Return type is only allowed for Externals declared as MethodObj",
+/*    ASL_MSG_EXTERN_INVALID_PARAM_TYPE */  "Parameter type is only allowed for Externals declared as MethodObj"
 };
 
 /* Table compiler */

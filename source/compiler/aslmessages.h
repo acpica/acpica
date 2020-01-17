@@ -373,6 +373,9 @@ typedef enum
     ASL_MSG_LEGACY_PROCESSOR_OP,
     ASL_MSG_NAMESTRING_LENGTH,
     ASL_MSG_CASE_FOUND_HERE,
+    ASL_MSG_EXTERN_INVALID_RET_TYPE,
+    ASL_MSG_EXTERN_INVALID_PARAM_TYPE,
+
 
     /* These messages are used by the Data Table compiler only */
 
