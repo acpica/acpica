@@ -372,7 +372,8 @@ const char                      *AslCompilerMsgs [] =
 /*    ASL_MSG_NAMESTRING_LENGTH */          "NameString contains too many NameSegs (>255)",
 /*    ASL_MSG_CASE_FOUND_HERE */            "Original Case value below:",
 /*    ASL_MSG_EXTERN_INVALID_RET_TYPE */    "Return type is only allowed for Externals declared as MethodObj",
-/*    ASL_MSG_EXTERN_INVALID_PARAM_TYPE */  "Parameter type is only allowed for Externals declared as MethodObj"
+/*    ASL_MSG_EXTERN_INVALID_PARAM_TYPE */  "Parameter type is only allowed for Externals declared as MethodObj",
+/*    ASL_MSG_NAMED_OBJECT_CREATION */      "Creation of named objects within a method is highly inefficient",
 };
 
 /* Table compiler */

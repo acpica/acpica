@@ -672,13 +672,19 @@ MtCheckNamedObjectInMethod (
         /*
          * 1) Mark the method as a method that creates named objects.
          *
-         * 2) If the method is non-serialized, emit a remark that the method
+         * 2) Issue a remark indicating the inefficiency of creating named
+         * objects within a method.
+         *
+         * 3) If the method is non-serialized, emit a remark that the method
          * should be serialized.
          *
          * Reason: If a thread blocks within the method for any reason, and
          * another thread enters the method, the method will fail because
          * an attempt will be made to create the same object twice.
          */
+        AslError (ASL_REMARK, ASL_MSG_NAMED_OBJECT_CREATION, Op,
+            "Use globals or method local variables instead");
+
         MethodInfo->CreatesNamedObjects = TRUE;
         if (!MethodInfo->ShouldBeSerialized)
         {
