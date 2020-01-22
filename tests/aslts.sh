@@ -241,4 +241,3 @@ shift $(($OPTIND - 1))
 
 build_acpi_tools
 run_aslts
-

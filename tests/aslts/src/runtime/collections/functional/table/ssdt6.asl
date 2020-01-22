@@ -34,4 +34,3 @@ DefinitionBlock ("", "SSDT", 2, "Intel", "_SSDT_01", 0x00000001)
     }
     Name (PKG1, Package () {0x0, 0x1, 0x2, 0x3})
 }
-

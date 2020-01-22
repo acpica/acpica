@@ -268,4 +268,3 @@ compile_test_case:
 		rval=1; \
 	fi; \
 	if [ $$rval != 0 ]; then exit 1; fi
-
