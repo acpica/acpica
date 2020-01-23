@@ -325,7 +325,10 @@ MtMethodAnalysisWalkBegin (
         if ((MethodInfo->NumArguments) &&
             (MethodInfo->NumArguments != ActualArgs))
         {
-            /* error: Param list did not match number of args */
+            sprintf (AslGbl_MsgBuffer,
+                "Length = %u", ActualArgs);
+            AslError (ASL_ERROR, ASL_MSG_ARG_COUNT_MISMATCH,
+                Op->Asl.Child->Asl.Next, AslGbl_MsgBuffer);
         }
 
         /* Allow numarguments == 0 for Function() */
