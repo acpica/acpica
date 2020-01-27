@@ -377,6 +377,7 @@ typedef enum
     ASL_MSG_EXTERN_INVALID_PARAM_TYPE,
     ASL_MSG_NAMED_OBJECT_CREATION,
     ASL_MSG_ARG_COUNT_MISMATCH,
+    ASL_MSG_STATIC_OPREGION_IN_METHOD,
 
 
     /* These messages are used by the Data Table compiler only */

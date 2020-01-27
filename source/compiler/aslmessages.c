@@ -375,6 +375,7 @@ const char                      *AslCompilerMsgs [] =
 /*    ASL_MSG_EXTERN_INVALID_PARAM_TYPE */  "Parameter type is only allowed for Externals declared as MethodObj",
 /*    ASL_MSG_NAMED_OBJECT_CREATION */      "Creation of named objects within a method is highly inefficient",
 /*    ASL_MSG_ARG_COUNT_MISMATCH */         "Method NumArgs count does not match length of ParameterTypes list",
+/*    ASL_MSG_STATIC_OPREGION_IN_METHOD */  "Static OperationRegion should be declared outside control method",
 };
 
 /* Table compiler */
