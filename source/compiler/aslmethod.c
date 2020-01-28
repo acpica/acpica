@@ -296,6 +296,15 @@ MtMethodAnalysisWalkBegin (
         Next = Next->Asl.Next;
 
         NextType = Next->Asl.Child;
+        if (!NextType)
+        {
+            /*
+             * The optional parameter types list was omitted  at the source
+             * level. Use the Argument count parameter instead.
+             */
+            ActualArgs = MethodInfo->NumArguments;
+        }
+
         while (NextType)
         {
             if (NextType->Asl.ParseOpcode == PARSEOP_DEFAULT_ARG)
