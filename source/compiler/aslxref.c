@@ -180,10 +180,6 @@ XfValidateCrossReference (
     const ACPI_OPCODE_INFO  *OpInfo,
     ACPI_NAMESPACE_NODE     *Node);
 
-static ACPI_PARSE_OBJECT *
-XfGetParentMethod (
-    ACPI_PARSE_OBJECT       *Op);
-
 static BOOLEAN
 XfObjectExists (
     char                    *Name);
@@ -393,7 +389,7 @@ XfCheckFieldRange (
  *
  ******************************************************************************/
 
-static ACPI_PARSE_OBJECT *
+ACPI_PARSE_OBJECT *
 XfGetParentMethod (
     ACPI_PARSE_OBJECT       *Op)
 {
