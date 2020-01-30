@@ -1174,6 +1174,10 @@ ACPI_STATUS
 XfCrossReferenceNamespace (
     void);
 
+ACPI_PARSE_OBJECT *
+XfGetParentMethod (
+    ACPI_PARSE_OBJECT       *Op);
+
 
 /*
  * aslxrefout

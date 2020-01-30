@@ -759,7 +759,7 @@ MtCheckStaticOperationRegionInMethod(
          * control method has been found. Throw a warning because this is
          * highly inefficient.
          */
-        AslError(ASL_WARNING, ASL_MSG_STATIC_ARG_OPERATION_REGION, Op, NULL);
+        AslError(ASL_WARNING, ASL_MSG_STATIC_OPREGION_IN_METHOD, Op, NULL);
     }
 
     return;
