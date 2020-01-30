@@ -298,7 +298,7 @@ UtNodeIsDescendantOf (
 
 /*******************************************************************************
  *
- * FUNCTION:    UtGetParentMethod
+ * FUNCTION:    UtGetParentMethodNode
  *
  * PARAMETERS:  Node                    - Namespace node for any object
  *
@@ -309,8 +309,8 @@ UtNodeIsDescendantOf (
  *
  ******************************************************************************/
 
-void *
-UtGetParentMethod (
+ACPI_NAMESPACE_NODE *
+UtGetParentMethodNode (
     ACPI_NAMESPACE_NODE     *Node)
 {
     ACPI_NAMESPACE_NODE     *ParentNode;

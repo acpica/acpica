@@ -810,7 +810,7 @@ XfNamespaceLocateBegin (
          * same method or outside of any method, this is a forward reference
          * and should be reported as a compiler error.
          */
-        DeclarationParentMethod = UtGetParentMethod (Node);
+        DeclarationParentMethod = UtGetParentMethodNode (Node);
         ReferenceParentMethod = XfGetParentMethod (Op);
 
         /* case 1: declaration and refrence are both outside of method */
@@ -1334,7 +1334,7 @@ XfNamespaceLocateEnd (
  *
  * NOTES:
  *      A null pointer returned by either XfGetParentMethod or
- *      UtGetParentMethod indicates that the parameter object is not
+ *      UtGetParentMethodNode indicates that the parameter object is not
  *      within a control method.
  *
  *      Five cases are handled: Case(Op, Node)
@@ -1368,7 +1368,7 @@ XfValidateCrossReference (
      * 2) Search upwards in namespace to find the owner of the referenced object
      */
     ReferencingMethodOp = XfGetParentMethod (Op);
-    ReferencedMethodNode = UtGetParentMethod (Node);
+    ReferencedMethodNode = UtGetParentMethodNode (Node);
 
     if (!ReferencingMethodOp && !ReferencedMethodNode)
     {
