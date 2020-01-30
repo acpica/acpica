@@ -1174,10 +1174,6 @@ ACPI_STATUS
 XfCrossReferenceNamespace (
     void);
 
-ACPI_PARSE_OBJECT *
-XfGetParentMethod (
-    ACPI_PARSE_OBJECT       *Op);
-
 
 /*
  * aslxrefout
@@ -1240,6 +1236,10 @@ UtDumpBasicOp (
 ACPI_NAMESPACE_NODE *
 UtGetParentMethodNode (
     ACPI_NAMESPACE_NODE     *Node);
+
+ACPI_PARSE_OBJECT *
+UtGetParentMethodOp (
+    ACPI_PARSE_OBJECT       *Op);
 
 BOOLEAN
 UtNodeIsDescendantOf (

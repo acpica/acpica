@@ -750,7 +750,7 @@ MtCheckStaticOperationRegionInMethod(
     AddressOp = Op->Asl.Child->Asl.Next->Asl.Next;
     LengthOp = Op->Asl.Child->Asl.Next->Asl.Next->Asl.Next;
 
-    if (XfGetParentMethod (Op) &&
+    if (UtGetParentMethodOp (Op) &&
         AddressOp->Asl.ParseOpcode == PARSEOP_INTEGER &&
         LengthOp->Asl.ParseOpcode == PARSEOP_INTEGER)
     {
