@@ -320,7 +320,7 @@ const char                      *AslCompilerMsgs [] =
 /*    ASL_MSG_SCOPE_TYPE */                 "Existing object has invalid type for Scope operator",
 /*    ASL_MSG_SEEK */                       "Could not seek file",
 /*    ASL_MSG_SERIALIZED */                 "Control Method marked Serialized",
-/*    ASL_MSG_SERIALIZED_REQUIRED */        "Control Method should be made Serialized",
+/*    ASL_MSG_SERIALIZED_REQUIRED */        "Control Method should be made Serialized due to creation of named objects within",
 /*    ASL_MSG_SINGLE_NAME_OPTIMIZATION */   "NamePath optimized to NameSeg (uses run-time search path)",
 /*    ASL_MSG_SOME_NO_RETVAL */             "Called method may not always return a value",
 /*    ASL_MSG_STRING_LENGTH */              "String literal too long",
@@ -373,7 +373,7 @@ const char                      *AslCompilerMsgs [] =
 /*    ASL_MSG_CASE_FOUND_HERE */            "Original Case value below:",
 /*    ASL_MSG_EXTERN_INVALID_RET_TYPE */    "Return type is only allowed for Externals declared as MethodObj",
 /*    ASL_MSG_EXTERN_INVALID_PARAM_TYPE */  "Parameter type is only allowed for Externals declared as MethodObj",
-/*    ASL_MSG_NAMED_OBJECT_CREATION */      "Creation of named objects within a method is highly inefficient",
+/*    ASL_MSG_NAMED_OBJECT_CREATION */      "Creation of named objects within a method is highly inefficient, use globals or method local variables instead",
 /*    ASL_MSG_ARG_COUNT_MISMATCH */         "Method NumArgs count does not match length of ParameterTypes list",
 /*    ASL_MSG_STATIC_OPREGION_IN_METHOD */  "Static OperationRegion should be declared outside control method",
 };

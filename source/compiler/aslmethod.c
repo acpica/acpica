@@ -151,6 +151,7 @@
 
 #include "aslcompiler.h"
 #include "aslcompiler.y.h"
+#include "acnamesp.h"
 #include "acparser.h"
 #include "amlcode.h"
 
@@ -667,6 +668,7 @@ MtCheckNamedObjectInMethod (
     ASL_METHOD_INFO         *MethodInfo)
 {
     const ACPI_OPCODE_INFO  *OpInfo;
+    char                    *ExternalPath;
 
 
     /* We don't care about actual method declarations or scopes */
@@ -700,18 +702,25 @@ MtCheckNamedObjectInMethod (
          * another thread enters the method, the method will fail because
          * an attempt will be made to create the same object twice.
          */
+        ExternalPath = AcpiNsGetNormalizedPathname (MethodInfo->Op->Asl.Node, TRUE);
+
         AslError (ASL_REMARK, ASL_MSG_NAMED_OBJECT_CREATION, Op,
-            "Use globals or method local variables instead");
+            ExternalPath);
 
         MethodInfo->CreatesNamedObjects = TRUE;
         if (!MethodInfo->ShouldBeSerialized)
         {
             AslError (ASL_REMARK, ASL_MSG_SERIALIZED_REQUIRED, MethodInfo->Op,
-                "due to creation of named objects within");
+                ExternalPath);
 
             /* Emit message only ONCE per method */
 
             MethodInfo->ShouldBeSerialized = TRUE;
+        }
+
+        if (ExternalPath)
+        {
+            ACPI_FREE (ExternalPath);
         }
     }
 }
@@ -787,6 +796,7 @@ MtMethodAnalysisWalkEnd (
 {
     ASL_ANALYSIS_WALK_INFO  *WalkInfo = (ASL_ANALYSIS_WALK_INFO *) Context;
     ASL_METHOD_INFO         *MethodInfo = WalkInfo->MethodStack;
+    char                    *ExternalPath;
 
 
     switch (Op->Asl.ParseOpcode)
@@ -839,8 +849,15 @@ MtMethodAnalysisWalkEnd (
         if (MethodInfo->NumReturnNoValue &&
             MethodInfo->NumReturnWithValue)
         {
+            ExternalPath = AcpiNsGetNormalizedPathname (Op->Asl.Node, TRUE);
+
             AslError (ASL_WARNING, ASL_MSG_RETURN_TYPES, Op,
-                Op->Asl.ExternalName);
+                ExternalPath);
+
+            if (ExternalPath)
+            {
+                ACPI_FREE (ExternalPath);
+            }
         }
 
         /*
