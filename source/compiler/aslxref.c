@@ -778,7 +778,7 @@ XfNamespaceLocateBegin (
         DeclarationParentMethod = UtGetParentMethodNode (Node);
         ReferenceParentMethod = UtGetParentMethodOp (Op);
 
-        /* case 1: declaration and refrence are both outside of method */
+        /* case 1: declaration and reference are both outside of method */
 
         if (!ReferenceParentMethod && !DeclarationParentMethod)
         {

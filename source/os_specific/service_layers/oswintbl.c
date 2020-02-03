@@ -358,7 +358,7 @@ OslTableInitialize (
 
     /*
      * ACPI table signatures are always 4 characters. Therefore, the data size
-     * buffer should be a multipe of 4
+     * buffer should be a multiple of 4
      */
     DataSize = EnumSystemFirmwareTables ('ACPI', NULL, 0);
     if (DataSize % ACPI_NAMESEG_SIZE)
