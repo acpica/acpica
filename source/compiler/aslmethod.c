@@ -312,27 +312,17 @@ MtMethodAnalysisWalkBegin (
 
         while (NextType)
         {
-            if (NextType->Asl.ParseOpcode == PARSEOP_DEFAULT_ARG)
+            NextParamType = NextType->Asl.Child;
+            while (NextParamType)
             {
-                NextParamType = NextType->Asl.Child;
-                while (NextParamType)
-                {
-                    MethodInfo->ValidArgTypes[ActualArgs] |=
-                        AnMapObjTypeToBtype (NextParamType);
+                MethodInfo->ValidArgTypes[ActualArgs] |=
+                    AnMapObjTypeToBtype (NextParamType);
 
-                    NextParamType->Asl.ParseOpcode = PARSEOP_DEFAULT_ARG;
-                    NextParamType = NextParamType->Asl.Next;
-                }
-            }
-            else
-            {
-                MethodInfo->ValidArgTypes[ActualArgs] =
-                    AnMapObjTypeToBtype (NextType);
-
-                NextType->Asl.ParseOpcode = PARSEOP_DEFAULT_ARG;
-                ActualArgs++;
+                NextParamType->Asl.ParseOpcode = PARSEOP_DEFAULT_ARG;
+                NextParamType = NextParamType->Asl.Next;
             }
 
+            ActualArgs++;
             NextType = NextType->Asl.Next;
         }
 
