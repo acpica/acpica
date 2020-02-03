@@ -175,6 +175,11 @@ static UINT32
 MtProcessTypeOp (
     ACPI_PARSE_OBJECT       *TypeOp);
 
+static UINT8
+MtProcessParameterTypeList (
+    ACPI_PARSE_OBJECT       *ParamTypeOp,
+    UINT32                  *TypeList);
+
 
 /*******************************************************************************
  *
@@ -206,7 +211,6 @@ MtMethodAnalysisWalkBegin (
     char                    ArgName[] = "Arg0";
     ACPI_PARSE_OBJECT       *ArgNode;
     ACPI_PARSE_OBJECT       *NextType;
-    ACPI_PARSE_OBJECT       *NextParamType;
     UINT8                   ActualArgs = 0;
     BOOLEAN                 HidExists;
     BOOLEAN                 AdrExists;
@@ -307,16 +311,10 @@ MtMethodAnalysisWalkBegin (
              */
             ActualArgs = MethodInfo->NumArguments;
         }
-
-        while (NextType)
+        else
         {
-            NextParamType = NextType->Asl.Child;
-
-            MethodInfo->ValidArgTypes[ActualArgs] =
-                MtProcessTypeOp (NextParamType);
-
-            ActualArgs++;
-            NextType = NextType->Asl.Next;
+            ActualArgs = MtProcessParameterTypeList (NextType,
+                MethodInfo->ValidArgTypes);
         }
 
         if ((MethodInfo->NumArguments) &&
@@ -658,6 +656,40 @@ MtProcessTypeOp (
     }
 
     return (Btype);
+}
+
+
+/*******************************************************************************
+ *
+ * FUNCTION:    MtProcessTypeOp
+ *
+ * PARAMETERS:  Op                  - Op representing a btype
+ *
+ * RETURN:      Btype represented by Op
+ *
+ * DESCRIPTION: Process a parse object that represents single parameter type or
+ *              a return type in method, function, and external declarations.
+ *
+ ******************************************************************************/
+
+static UINT8
+MtProcessParameterTypeList (
+    ACPI_PARSE_OBJECT       *ParamTypeOp,
+    UINT32                  *TypeList)
+{
+    UINT8                   ParameterCount = 0;
+
+
+    while (ParamTypeOp)
+    {
+        TypeList[ParameterCount] =
+            MtProcessTypeOp (ParamTypeOp->Asl.Child);
+
+        ParameterCount++;
+        ParamTypeOp = ParamTypeOp->Asl.Next;
+    }
+
+    return (ParameterCount);
 }
 
 
