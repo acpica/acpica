@@ -80,6 +80,7 @@
       <ConformanceMode>true</ConformanceMode>
       <CallingConvention>FastCall</CallingConvention>
       <CompileAs>CompileAsC</CompileAs>
+      <MultiProcessorCompilation>true</MultiProcessorCompilation>
     </ClCompile>
     <PostBuildEvent>
       <Command>copy examples\examples.exe ..\..\libraries\examples.exe</Command>
@@ -123,6 +124,7 @@
       <StringPooling>true</StringPooling>
       <CallingConvention>FastCall</CallingConvention>
       <CompileAs>CompileAsC</CompileAs>
+      <MultiProcessorCompilation>true</MultiProcessorCompilation>
     </ClCompile>
     <PostBuildEvent>
       <Command>copy examplesdebug\examples.exe ..\..\\libraries\examples_dbg.exe</Command>
