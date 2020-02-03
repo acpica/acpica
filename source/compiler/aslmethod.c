@@ -171,6 +171,10 @@ static void
 MtCheckStaticOperationRegionInMethod (
     ACPI_PARSE_OBJECT       *Op);
 
+static UINT32
+MtProcessTypeOp (
+    ACPI_PARSE_OBJECT       *TypeOp);
+
 
 /*******************************************************************************
  *
@@ -287,14 +291,8 @@ MtMethodAnalysisWalkBegin (
         Next = Next->Asl.Next;
 
         NextType = Next->Asl.Child;
-        while (NextType)
-        {
-            /* Get and map each of the ReturnTypes */
 
-            MethodInfo->ValidReturnTypes |= AnMapObjTypeToBtype (NextType);
-            NextType->Asl.ParseOpcode = PARSEOP_DEFAULT_ARG;
-            NextType = NextType->Asl.Next;
-        }
+        MethodInfo->ValidReturnTypes = MtProcessTypeOp (NextType);
 
         /* Get the ParameterType node */
 
@@ -313,14 +311,9 @@ MtMethodAnalysisWalkBegin (
         while (NextType)
         {
             NextParamType = NextType->Asl.Child;
-            while (NextParamType)
-            {
-                MethodInfo->ValidArgTypes[ActualArgs] |=
-                    AnMapObjTypeToBtype (NextParamType);
 
-                NextParamType->Asl.ParseOpcode = PARSEOP_DEFAULT_ARG;
-                NextParamType = NextParamType->Asl.Next;
-            }
+            MethodInfo->ValidArgTypes[ActualArgs] =
+                MtProcessTypeOp (NextParamType);
 
             ActualArgs++;
             NextType = NextType->Asl.Next;
@@ -634,6 +627,37 @@ MtMethodAnalysisWalkBegin (
 
     MtCheckNamedObjectInMethod (Op, MethodInfo);
     return (AE_OK);
+}
+
+
+/*******************************************************************************
+ *
+ * FUNCTION:    MtProcessTypeOp
+ *
+ * PARAMETERS:  Op                  - Op representing a btype
+ *
+ * RETURN:      Btype represented by Op
+ *
+ * DESCRIPTION: Process a parse object that represents single parameter type or
+ *              a return type in method, function, and external declarations.
+ *
+ ******************************************************************************/
+
+static UINT32
+MtProcessTypeOp (
+    ACPI_PARSE_OBJECT       *TypeOp)
+{
+    UINT32                  Btype = ACPI_BTYPE_ANY;
+
+
+    while (TypeOp)
+    {
+        Btype |= AnMapObjTypeToBtype (TypeOp);
+        TypeOp->Asl.ParseOpcode = PARSEOP_DEFAULT_ARG;
+        TypeOp = TypeOp->Asl.Next;
+    }
+
+    return (Btype);
 }
 
 
