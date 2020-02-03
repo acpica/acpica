@@ -193,21 +193,22 @@ ExDoExternal (
     ACPI_PARSE_OBJECT       *Next;
     ACPI_PARSE_OBJECT       *ArgCountOp;
     ACPI_PARSE_OBJECT       *TypeOp;
+    ACPI_PARSE_OBJECT       *ExternTypeOp = Op->Asl.Child->Asl.Next;
     UINT32                  ExternType;
 
 
-    ExternType = AnMapObjTypeToBtype (Op->Asl.Child->Asl.Next);
+    ExternType = AnMapObjTypeToBtype (ExternTypeOp);
 
     /*
      * The parser allows optional parameter return types regardless of the
      * type. Check object type keyword emit error if optional parameter/return
      * types exist
      */
-    if (ExternType != ACPI_TYPE_METHOD)
+    if (ExternType != ACPI_BTYPE_METHOD)
     {
         /* Check the parameter return type */
 
-        TypeOp = Op->Asl.Child->Asl.Next->Asl.Next;
+        TypeOp = ExternTypeOp->Asl.Next;
         if (TypeOp->Asl.ParseOpcode != PARSEOP_DEFAULT_ARG ||
             (TypeOp->Asl.ParseOpcode == PARSEOP_DEFAULT_ARG && TypeOp->Asl.Child))
         {

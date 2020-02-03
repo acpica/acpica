@@ -378,41 +378,6 @@ XfCheckFieldRange (
 
 /*******************************************************************************
  *
- * FUNCTION:    XfGetParentMethod
- *
- * PARAMETERS:  Op                      - Parse Op to be checked
- *
- * RETURN:      Control method Op if found. NULL otherwise
- *
- * DESCRIPTION: Find the control method parent of a parse op. Returns NULL if
- *              the input Op is not within a control method.
- *
- ******************************************************************************/
-
-ACPI_PARSE_OBJECT *
-XfGetParentMethod (
-    ACPI_PARSE_OBJECT       *Op)
-{
-    ACPI_PARSE_OBJECT       *NextOp;
-
-
-    NextOp = Op->Asl.Parent;
-    while (NextOp)
-    {
-        if (NextOp->Asl.AmlOpcode == AML_METHOD_OP)
-        {
-            return (NextOp);
-        }
-
-        NextOp = NextOp->Asl.Parent;
-    }
-
-    return (NULL); /* No parent method found */
-}
-
-
-/*******************************************************************************
- *
  * FUNCTION:    XfNamespaceLocateBegin
  *
  * PARAMETERS:  ASL_WALK_CALLBACK
@@ -535,7 +500,7 @@ XfNamespaceLocateBegin (
     {
         /* Find parent method Op */
 
-        NextOp = XfGetParentMethod (Op);
+        NextOp = UtGetParentMethodOp (Op);
         if (!NextOp)
         {
             return_ACPI_STATUS (AE_OK);
@@ -572,7 +537,7 @@ XfNamespaceLocateBegin (
     {
         /* Find parent method Op */
 
-        NextOp = XfGetParentMethod (Op);
+        NextOp = UtGetParentMethodOp (Op);
         if (!NextOp)
         {
             return_ACPI_STATUS (AE_OK);
@@ -810,8 +775,8 @@ XfNamespaceLocateBegin (
          * same method or outside of any method, this is a forward reference
          * and should be reported as a compiler error.
          */
-        DeclarationParentMethod = UtGetParentMethod (Node);
-        ReferenceParentMethod = XfGetParentMethod (Op);
+        DeclarationParentMethod = UtGetParentMethodNode (Node);
+        ReferenceParentMethod = UtGetParentMethodOp (Op);
 
         /* case 1: declaration and refrence are both outside of method */
 
@@ -1333,8 +1298,8 @@ XfNamespaceLocateEnd (
  *                                      execution of A)
  *
  * NOTES:
- *      A null pointer returned by either XfGetParentMethod or
- *      UtGetParentMethod indicates that the parameter object is not
+ *      A null pointer returned by either UtGetParentMethodOp or
+ *      UtGetParentMethodNode indicates that the parameter object is not
  *      within a control method.
  *
  *      Five cases are handled: Case(Op, Node)
@@ -1367,8 +1332,8 @@ XfValidateCrossReference (
      * 1) Search upwards in parse tree for owner of the referencing object
      * 2) Search upwards in namespace to find the owner of the referenced object
      */
-    ReferencingMethodOp = XfGetParentMethod (Op);
-    ReferencedMethodNode = UtGetParentMethod (Node);
+    ReferencingMethodOp = UtGetParentMethodOp (Op);
+    ReferencedMethodNode = UtGetParentMethodNode (Node);
 
     if (!ReferencingMethodOp && !ReferencedMethodNode)
     {
