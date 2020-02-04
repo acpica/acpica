@@ -421,7 +421,8 @@ ParameterTypePackage
 
 ParameterTypePackageList
     :                               {$$ = NULL;}
-    | ObjectTypeKeyword             {$$ = $1;}
+    | ObjectTypeKeyword             {$$ = TrLinkOpChildren (
+                                        TrCreateLeafOp (PARSEOP_DEFAULT_ARG),1,$1);}
     | '{' ParameterTypePackage '}'  {$$ = TrLinkOpChildren (
                                         TrCreateLeafOp (PARSEOP_DEFAULT_ARG),1,$2);}
     ;
@@ -442,7 +443,8 @@ ParameterTypesPackage
 
 ParameterTypesPackageList
     :                               {$$ = NULL;}
-    | ObjectTypeKeyword             {$$ = $1;}
+    | ObjectTypeKeyword             {$$ = TrLinkOpChildren (
+                                        TrCreateLeafOp (PARSEOP_DEFAULT_ARG),1,$1);}
     | '{' ParameterTypesPackage '}' {$$ = TrLinkOpChildren (
                                         TrCreateLeafOp (PARSEOP_DEFAULT_ARG),1,$2);}
     ;
