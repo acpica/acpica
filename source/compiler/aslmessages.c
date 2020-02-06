@@ -376,6 +376,10 @@ const char                      *AslCompilerMsgs [] =
 /*    ASL_MSG_NAMED_OBJECT_CREATION */      "Creation of named objects within a method is highly inefficient, use globals or method local variables instead",
 /*    ASL_MSG_ARG_COUNT_MISMATCH */         "Method NumArgs count does not match length of ParameterTypes list",
 /*    ASL_MSG_STATIC_OPREGION_IN_METHOD */  "Static OperationRegion should be declared outside control method",
+/*    ASL_MSG_DECLARATION_TYPE_MISMATCH */  "Type mismatch between external declaration and actual object declaration detected",
+/*    ASL_MSG_TYPE_MISMATCH_FOUND_HERE */   "Actual object declaration:",
+/*    ASL_MSG_DUPLICATE_EXTERN_MISMATCH */  "Type mismatch between multiple external declarations detected",
+/*    ASL_MSG_DUPLICATE_EXTERN_FOUND_HERE */"Duplicate external declaration:",
 };
 
 /* Table compiler */
