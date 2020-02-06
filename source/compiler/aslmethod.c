@@ -739,7 +739,8 @@ MtCheckNamedObjectInMethod (
          * 1) Mark the method as a method that creates named objects.
          *
          * 2) Issue a remark indicating the inefficiency of creating named
-         * objects within a method.
+         * objects within a method (Except for compiler-emitted temporary
+         * variables).
          *
          * 3) If the method is non-serialized, emit a remark that the method
          * should be serialized.
@@ -750,8 +751,15 @@ MtCheckNamedObjectInMethod (
          */
         ExternalPath = AcpiNsGetNormalizedPathname (MethodInfo->Op->Asl.Node, TRUE);
 
-        AslError (ASL_REMARK, ASL_MSG_NAMED_OBJECT_CREATION, Op,
-            ExternalPath);
+        /* No error for compiler temp variables (name starts with "_T_") */
+
+        if ((Op->Asl.Node->Name.Ascii[0] != '_') &&
+            (Op->Asl.Node->Name.Ascii[1] != 'T') &&
+            (Op->Asl.Node->Name.Ascii[2] != '_'))
+        {
+            AslError (ASL_REMARK, ASL_MSG_NAMED_OBJECT_CREATION, Op,
+                ExternalPath);
+        }
 
         MethodInfo->CreatesNamedObjects = TRUE;
         if (!MethodInfo->ShouldBeSerialized)
