@@ -1115,7 +1115,7 @@ LdAnalyzeExternals (
             Status = AcpiDsScopeStackPush (Node, ObjectType, WalkState);
             if (ACPI_FAILURE (Status))
             {
-                return_ACPI_STATUS (Status);
+                return (Status);
             }
         }
 
@@ -1150,7 +1150,8 @@ LdAnalyzeExternals (
             Status = AE_ERROR;
         }
     }
-    return_ACPI_STATUS (Status);
+
+    return (Status);
 }
 
 
