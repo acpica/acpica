@@ -753,9 +753,9 @@ MtCheckNamedObjectInMethod (
 
         /* No error for compiler temp variables (name starts with "_T_") */
 
-        if ((Op->Asl.Node->Name.Ascii[0] != '_') &&
-            (Op->Asl.Node->Name.Ascii[1] != 'T') &&
-            (Op->Asl.Node->Name.Ascii[2] != '_'))
+        if ((Op->Asl.NameSeg[0] != '_') &&
+            (Op->Asl.NameSeg[1] != 'T') &&
+            (Op->Asl.NameSeg[2] != '_'))
         {
             AslError (ASL_REMARK, ASL_MSG_NAMED_OBJECT_CREATION, Op,
                 ExternalPath);
