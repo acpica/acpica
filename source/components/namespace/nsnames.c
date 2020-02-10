@@ -542,7 +542,7 @@ AcpiNsBuildPrefixedPathname (
     char                    *FullPath = NULL;
     char                    *ExternalPath = NULL;
     char                    *PrefixPath = NULL;
-    UINT32                  PrefixPathLength = 0;
+    ACPI_SIZE               PrefixPathLength = 0;
 
 
     /* If there is a prefix, get the pathname to it */
