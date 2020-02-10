@@ -209,8 +209,7 @@ ExDoExternal (
         /* Check the parameter return type */
 
         TypeOp = ExternTypeOp->Asl.Next;
-        if (TypeOp->Asl.ParseOpcode != PARSEOP_DEFAULT_ARG ||
-            (TypeOp->Asl.ParseOpcode == PARSEOP_DEFAULT_ARG && TypeOp->Asl.Child))
+        if (TypeOp->Asl.Child)
         {
             sprintf (AslGbl_MsgBuffer, "Found type [%s]", AcpiUtGetTypeName(ExternType));
             AslError (ASL_ERROR, ASL_MSG_EXTERN_INVALID_RET_TYPE, TypeOp,
@@ -220,8 +219,7 @@ ExDoExternal (
         /* Check the parameter types */
 
         TypeOp = TypeOp->Asl.Next;
-        if (TypeOp->Asl.ParseOpcode != PARSEOP_DEFAULT_ARG ||
-            (TypeOp->Asl.ParseOpcode == PARSEOP_DEFAULT_ARG && TypeOp->Asl.Child))
+        if (TypeOp->Asl.Child)
         {
             sprintf (AslGbl_MsgBuffer, "Found type [%s]", AcpiUtGetTypeName(ExternType));
             AslError (ASL_ERROR, ASL_MSG_EXTERN_INVALID_PARAM_TYPE, TypeOp,
