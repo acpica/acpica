@@ -171,15 +171,6 @@ static void
 MtCheckStaticOperationRegionInMethod (
     ACPI_PARSE_OBJECT       *Op);
 
-static UINT32
-MtProcessTypeOp (
-    ACPI_PARSE_OBJECT       *TypeOp);
-
-static UINT8
-MtProcessParameterTypeList (
-    ACPI_PARSE_OBJECT       *ParamTypeOp,
-    UINT32                  *TypeList);
-
 
 /*******************************************************************************
  *
@@ -641,7 +632,7 @@ MtMethodAnalysisWalkBegin (
  *
  ******************************************************************************/
 
-static UINT32
+UINT32
 MtProcessTypeOp (
     ACPI_PARSE_OBJECT       *TypeOp)
 {
@@ -661,18 +652,18 @@ MtProcessTypeOp (
 
 /*******************************************************************************
  *
- * FUNCTION:    MtProcessTypeOp
+ * FUNCTION:    MtProcessParameterTypeList
  *
  * PARAMETERS:  Op                  - Op representing a btype
  *
  * RETURN:      Btype represented by Op
  *
- * DESCRIPTION: Process a parse object that represents single parameter type or
- *              a return type in method, function, and external declarations.
+ * DESCRIPTION: Process a parse object that represents a parameter type list in
+ *              method, function, and external declarations.
  *
  ******************************************************************************/
 
-static UINT8
+UINT8
 MtProcessParameterTypeList (
     ACPI_PARSE_OBJECT       *ParamTypeOp,
     UINT32                  *TypeList)
