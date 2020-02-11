@@ -8845,8 +8845,8 @@ much larger code and data size.
 
 Fix build error under Bison-2.4.
 
-Dissasembler: Enhanced FADT support. Added decoding of the Boot 
-Architecture 
+Disassembler: Enhanced FADT support. Added decoding of the Boot
+Architecture
 flags. Now decode all flags, regardless of the FADT version. Flag output 
 includes the FADT version which first defined each flag.
 

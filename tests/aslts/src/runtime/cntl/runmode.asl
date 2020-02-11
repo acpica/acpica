@@ -281,7 +281,7 @@
     Name (Y296, 0x00)   /* AE_AML_INTERNAL unexpectedly occurs when the Loadtable ParameterData and its Target differ in the types */
     Name (Y297, 0x00)   /* After AE_LIMIT the further work of ACPICA mutex framework looks unstable */
     Name (Y300, 0x00)   /* Recursive calls to methods with the internal names (and Switches) should be provided */
-    Name (Y301, 0x00)   /* Recursive call on the same thread to the Serialized method with the internal objects (Swithces) causes AE_AML_INTERNAL */
+    Name (Y301, 0x00)   /* Recursive call on the same thread to the Serialized method with the internal objects (Switches) causes AE_AML_INTERNAL */
     Name (Y302, 0x00)   /* Scope operation doesn't work for the root node Location */
     /*
      * Issues (replace them with the Bug indexes)

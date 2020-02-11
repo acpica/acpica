@@ -33,7 +33,7 @@
      * APPEARANCE
      *
      * The ASL Timer operator is declared as a 64-bit one
-     * "17.5.117 Timer (Get 64-Bit Timer Value)" but actualy,
+     * "17.5.117 Timer (Get 64-Bit Timer Value)" but actually,
      * we observe it is overrun during each 15 minutes, but we
      * expect that to be one time in more than 50 thousand years!
      *

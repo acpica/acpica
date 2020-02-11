@@ -28,7 +28,7 @@
     /*
      * Bug 301:
      *
-     * SUMMARY: Recursive calls to methods with the internal declarations (and Swithces) causes AE_AML_INTERNAL and crash
+     * SUMMARY: Recursive calls to methods with the internal declarations (and Switches) causes AE_AML_INTERNAL and crash
      */
     Method (M1EA, 0, NotSerialized)
     {
