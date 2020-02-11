@@ -1001,7 +1001,7 @@ FinishNode:
     if (ActualObjectType != ACPI_TYPE_ANY)
     {
         Node->Type = (UINT8) ActualObjectType;
-        Node->Value =
+        Node->Value = (UINT32)
             Op->Asl.Child->Asl.Next->Asl.Next->Asl.Value.Integer;
     }
 
