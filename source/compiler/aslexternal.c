@@ -195,6 +195,8 @@ ExDoExternal (
     ACPI_PARSE_OBJECT       *TypeOp;
     ACPI_PARSE_OBJECT       *ExternTypeOp = Op->Asl.Child->Asl.Next;
     UINT32                  ExternType;
+    UINT8                   ParamCount = ASL_EXTERNAL_METHOD_UNKNOWN_PARAMS;
+    UINT32                  ParamTypes[ACPI_METHOD_NUM_ARGS];
 
 
     ExternType = AnMapObjTypeToBtype (ExternTypeOp);
@@ -202,26 +204,31 @@ ExDoExternal (
     /*
      * The parser allows optional parameter return types regardless of the
      * type. Check object type keyword emit error if optional parameter/return
-     * types exist
+     * types exist.
+     *
+     * Check the parameter return type
      */
-    if (ExternType != ACPI_BTYPE_METHOD)
+    TypeOp = ExternTypeOp->Asl.Next;
+    if (TypeOp->Asl.Child)
     {
-        /* Check the parameter return type */
+        /* Ignore the return type for now. */
 
-        TypeOp = ExternTypeOp->Asl.Next;
-        if (TypeOp->Asl.ParseOpcode != PARSEOP_DEFAULT_ARG ||
-            (TypeOp->Asl.ParseOpcode == PARSEOP_DEFAULT_ARG && TypeOp->Asl.Child))
+        (void) MtProcessTypeOp (TypeOp->Asl.Child);
+        if (ExternType != ACPI_BTYPE_METHOD)
         {
             sprintf (AslGbl_MsgBuffer, "Found type [%s]", AcpiUtGetTypeName(ExternType));
             AslError (ASL_ERROR, ASL_MSG_EXTERN_INVALID_RET_TYPE, TypeOp,
                 AslGbl_MsgBuffer);
         }
+    }
 
-        /* Check the parameter types */
+    /* Check the parameter types */
 
-        TypeOp = TypeOp->Asl.Next;
-        if (TypeOp->Asl.ParseOpcode != PARSEOP_DEFAULT_ARG ||
-            (TypeOp->Asl.ParseOpcode == PARSEOP_DEFAULT_ARG && TypeOp->Asl.Child))
+    TypeOp = TypeOp->Asl.Next;
+    if (TypeOp->Asl.Child)
+    {
+        ParamCount = MtProcessParameterTypeList (TypeOp, ParamTypes);
+        if (ExternType != ACPI_BTYPE_METHOD)
         {
             sprintf (AslGbl_MsgBuffer, "Found type [%s]", AcpiUtGetTypeName(ExternType));
             AslError (ASL_ERROR, ASL_MSG_EXTERN_INVALID_PARAM_TYPE, TypeOp,
@@ -232,7 +239,7 @@ ExDoExternal (
     ArgCountOp = Op->Asl.Child->Asl.Next->Asl.Next;
     ArgCountOp->Asl.AmlOpcode = AML_RAW_DATA_BYTE;
     ArgCountOp->Asl.ParseOpcode = PARSEOP_BYTECONST;
-    ArgCountOp->Asl.Value.Integer = 0;
+    ArgCountOp->Asl.Value.Integer = ParamCount;
     UtSetParseOpName (ArgCountOp);
 
     /* Create new list node of arbitrary type */

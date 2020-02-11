@@ -373,6 +373,15 @@ MtMethodAnalysisWalkEnd (
     UINT32                  Level,
     void                    *Context);
 
+UINT32
+MtProcessTypeOp (
+    ACPI_PARSE_OBJECT       *TypeOp);
+
+UINT8
+MtProcessParameterTypeList (
+    ACPI_PARSE_OBJECT       *ParamTypeOp,
+    UINT32                  *TypeList);
+
 
 /*
  * aslbtypes - bitfield data types
