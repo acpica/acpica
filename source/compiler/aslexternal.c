@@ -227,7 +227,7 @@ ExDoExternal (
     TypeOp = TypeOp->Asl.Next;
     if (TypeOp->Asl.Child)
     {
-        ParamCount = MtProcessParameterTypeList (TypeOp, ParamTypes);
+        ParamCount = MtProcessParameterTypeList (TypeOp->Asl.Child, ParamTypes);
         if (ExternType != ACPI_BTYPE_METHOD)
         {
             sprintf (AslGbl_MsgBuffer, "Found type [%s]", AcpiUtGetTypeName(ExternType));
