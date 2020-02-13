@@ -1109,6 +1109,10 @@ ACPI_STATUS
 AcpiEnableAllWakeupGpes (
     void))
 
+ACPI_HW_DEPENDENT_RETURN_UINT32 (
+    UINT32                  AcpiAnyGpeStatusSet (
+    void))
+
 ACPI_HW_DEPENDENT_RETURN_STATUS (
 ACPI_STATUS
 AcpiGetGpeDevice (
