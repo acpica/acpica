@@ -407,6 +407,20 @@ ACPI_DMTABLE_INFO           AcpiDmTableInfoIvrs0[] =
     ACPI_DMT_TERMINATOR
 };
 
+/* 0x10: I/O Virtualization Hardware Definition (IVHD) Block */
+
+ACPI_DMTABLE_INFO           AcpiDmTableInfoIvrs01[] =
+{
+    {ACPI_DMT_UINT16,   ACPI_IVRS01_OFFSET (CapabilityOffset),       "Capability Offset", 0},
+    {ACPI_DMT_UINT64,   ACPI_IVRS01_OFFSET (BaseAddress),            "Base Address", 0},
+    {ACPI_DMT_UINT16,   ACPI_IVRS01_OFFSET (PciSegmentGroup),        "PCI Segment Group", 0},
+    {ACPI_DMT_UINT16,   ACPI_IVRS01_OFFSET (Info),                   "Virtualization Info", 0},
+    {ACPI_DMT_UINT32,   ACPI_IVRS01_OFFSET (Attributes),             "Attributes", 0},
+    {ACPI_DMT_UINT64,   ACPI_IVRS01_OFFSET (EfrRegisterImage),       "EFR Image", 0},
+    {ACPI_DMT_UINT64,   ACPI_IVRS01_OFFSET (Reserved),               "Reserved", 0},
+    ACPI_DMT_TERMINATOR
+};
+
 /* 0x20, 0x21, 0x22: I/O Virtualization Memory Definition (IVMD) Block */
 
 ACPI_DMTABLE_INFO           AcpiDmTableInfoIvrs1[] =
