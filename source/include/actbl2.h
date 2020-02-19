@@ -493,7 +493,7 @@ typedef struct acpi_ivrs_hardware_10
     UINT64                  BaseAddress;        /* IOMMU control registers */
     UINT16                  PciSegmentGroup;
     UINT16                  Info;               /* MSI number and unit ID */
-    UINT32                  Reserved;
+    UINT32                  FeatureReporting;
 
 } ACPI_IVRS_HARDWARE1;
 

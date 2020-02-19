@@ -403,7 +403,7 @@ ACPI_DMTABLE_INFO           AcpiDmTableInfoIvrs0[] =
     {ACPI_DMT_UINT64,   ACPI_IVRS0_OFFSET (BaseAddress),            "Base Address", 0},
     {ACPI_DMT_UINT16,   ACPI_IVRS0_OFFSET (PciSegmentGroup),        "PCI Segment Group", 0},
     {ACPI_DMT_UINT16,   ACPI_IVRS0_OFFSET (Info),                   "Virtualization Info", 0},
-    {ACPI_DMT_UINT32,   ACPI_IVRS0_OFFSET (Reserved),               "Reserved", 0},
+    {ACPI_DMT_UINT32,   ACPI_IVRS0_OFFSET (FeatureReporting),       "Feature Reporting", 0},
     ACPI_DMT_TERMINATOR
 };
 
