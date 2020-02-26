@@ -231,6 +231,8 @@
  *
  ****************************************************************************/
 
+ACPI_INIT_GLOBAL (BOOLEAN,          AcpiGbl_DbOpt_NoRegionSupport, FALSE);
+
 /*
  * Enable "slack mode" of the AML interpreter?  Default is FALSE, and the
  * interpreter strictly follows the ACPI specification. Setting to TRUE
