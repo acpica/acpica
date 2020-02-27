@@ -47068,7 +47068,7 @@ printf ("BINT: %o %o %o %o\n", Arg2, Local6, Local7, Local2)
     {
         Name (OLEN, 16) // Length of the operation region
         Name (CLEN, 8) // Length of FLGS, LNGT, COMD, COSP
-        OperationRegion (PCC1, PlatformCommChannel, 0x1, OLEN)
+        OperationRegion (PCC1, PCC, 0x1, OLEN)
         Field (PCC1, AnyAcc, NoLock, Preserve)
         {
             Offset(4),  // 4 bytes
@@ -47123,7 +47123,7 @@ printf ("BINT: %o %o %o %o\n", Arg2, Local6, Local7, Local2)
         Name (OLEN, 26) // Length of the operation region
         Name (CLEN, 16) // Length of FLGS, LNGT, COMD, COSP
 
-        OperationRegion (PCC3, PlatformCommChannel, 0x3, OLEN)
+        OperationRegion (PCC3, PCC, 0x3, OLEN)
         Field (PCC3, AnyAcc, NoLock, Preserve)
         {
             Offset(4),  // 4 bytes
