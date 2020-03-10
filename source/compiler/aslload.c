@@ -1207,18 +1207,8 @@ LdAnalyzeExternals (
     {
         /* Allow update of externals of unknown type. */
 
-        if (AcpiNsOpensScope (ExternalOpType))
-        {
-            Node->Type = (UINT8) ExternalOpType;
-            Status = AE_OK;
-        }
-        else
-        {
-            sprintf (AslGbl_MsgBuffer, "%s [%s]", Op->Asl.ExternalName,
-                AcpiUtGetTypeName (Node->Type));
-            AslError (ASL_ERROR, ASL_MSG_SCOPE_TYPE, Op, AslGbl_MsgBuffer);
-            Status = AE_ERROR;
-        }
+        Node->Type = (UINT8) ExternalOpType;
+        Status = AE_OK;
     }
 
     return (Status);
