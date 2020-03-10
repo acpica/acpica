@@ -192,7 +192,6 @@ BOOLEAN                     AcpiGbl_VerboseHandlers = FALSE;
 UINT8                       AcpiGbl_RegionFillValue = 0;
 BOOLEAN                     AcpiGbl_IgnoreErrors = FALSE;
 BOOLEAN                     AcpiGbl_AbortLoopOnTimeout = FALSE;
-BOOLEAN                     AcpiGbl_DbOpt_NoRegionSupport = FALSE;
 UINT8                       AcpiGbl_UseHwReducedFadt = FALSE;
 BOOLEAN                     AcpiGbl_DoInterfaceTests = FALSE;
 BOOLEAN                     AcpiGbl_LoadTestTables = FALSE;
