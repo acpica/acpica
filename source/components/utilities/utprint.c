@@ -565,7 +565,7 @@ vsnprintf (
     if (Size != ACPI_UINT32_MAX) {
         End = String + Size;
     } else {
-        End = (char *)(uintptr_t)ACPI_UINT32_MAX;
+        End = ACPI_CAST_PTR(char, ACPI_UINT32_MAX):
     }
 
     for (; *Format; ++Format)
