@@ -381,9 +381,9 @@ typedef struct asl_error_msg
 
 typedef struct asl_expected_message
 {
-    UINT32                       MessageId;
-    char                         *MessageIdStr;
-    BOOLEAN                      MessageReceived;
+    UINT32                      MessageId;
+    char                        *MessageIdStr;
+    BOOLEAN                     MessageReceived;
 
 } ASL_EXPECTED_MESSAGE;
 

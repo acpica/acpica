@@ -488,7 +488,7 @@ AslCheckExpectedExceptions (
     void);
 
 ACPI_STATUS
-AslExpectException (
+AslLogExpectedException (
     char                    *MessageIdString);
 
 ACPI_STATUS

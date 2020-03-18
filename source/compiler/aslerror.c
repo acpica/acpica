@@ -170,7 +170,8 @@ AslIsExceptionDisabled (
     UINT8                   Level,
     UINT16                  MessageId);
 
-static void AslInitEnode (
+static void
+AslInitEnode (
     ASL_ERROR_MSG           **Enode,
     UINT8                   Level,
     UINT16                  MessageId,
@@ -1104,7 +1105,7 @@ AslIsExceptionIgnored (
 
 /*******************************************************************************
  *
- * FUNCTION:    AslCheckExpectException
+ * FUNCTION:    AslCheckExpectedException
  *
  * PARAMETERS:  none
  *
@@ -1135,7 +1136,7 @@ AslCheckExpectedExceptions (
 
 /*******************************************************************************
  *
- * FUNCTION:    AslExpectException
+ * FUNCTION:    AslLogExpectedException
  *
  * PARAMETERS:  MessageIdString     - ID of excepted exception during compile
  *
@@ -1148,7 +1149,7 @@ AslCheckExpectedExceptions (
  ******************************************************************************/
 
 ACPI_STATUS
-AslExpectException (
+AslLogExpectedException (
     char                    *MessageIdString)
 {
     UINT32                  MessageId;
@@ -1271,6 +1272,7 @@ AslElevateException (
     AslGbl_ElevatedMessagesIndex++;
     return (AE_OK);
 }
+
 
 /*******************************************************************************
  *
