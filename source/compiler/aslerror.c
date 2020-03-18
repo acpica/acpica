@@ -162,6 +162,8 @@ AeAddToErrorLog (
 
 static BOOLEAN
 AslIsExceptionExpected (
+    char                    *Filename,
+    UINT32                  LineNumber,
     UINT8                   Level,
     UINT16                  MessageId);
 
@@ -957,7 +959,7 @@ AslCommonError (
 {
     /* Check if user wants to ignore this exception */
 
-    if (AslIsExceptionIgnored (Level, MessageId))
+    if (AslIsExceptionIgnored (Filename, LogicalLineNumber, Level, MessageId))
     {
         return;
     }
@@ -1088,6 +1090,8 @@ GetModifiedLevel (
 
 BOOLEAN
 AslIsExceptionIgnored (
+    char                    *Filename,
+    UINT32                  LineNumber,
     UINT8                   Level,
     UINT16                  MessageId)
 {
@@ -1097,7 +1101,8 @@ AslIsExceptionIgnored (
     /* Note: this allows exception to be disabled and expected */
 
     ExceptionIgnored = AslIsExceptionDisabled (Level, MessageId);
-    ExceptionIgnored |= AslIsExceptionExpected (Level, MessageId);
+    ExceptionIgnored |=
+        AslIsExceptionExpected (Filename, LineNumber, Level, MessageId);
 
     return (AslGbl_AllExceptionsDisabled || ExceptionIgnored);
 }
@@ -1290,6 +1295,8 @@ AslElevateException (
 
 static BOOLEAN
 AslIsExceptionExpected (
+    char                    *Filename,
+    UINT32                  LineNumber,
     UINT8                   Level,
     UINT16                  MessageId)
 {
@@ -1412,7 +1419,8 @@ AslDualParseOpError (
 
     /* Check if user wants to ignore this exception */
 
-    if (AslIsExceptionIgnored (Level, MainMsgId) || !MainOp)
+    if (!MainOp || AslIsExceptionIgnored (MainOp->Asl.Filename,
+        MainOp->Asl.LogicalLineNumber, Level, MainMsgId))
     {
         return;
     }

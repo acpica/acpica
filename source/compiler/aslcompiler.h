@@ -501,6 +501,8 @@ AslDisableException (
 
 BOOLEAN
 AslIsExceptionIgnored (
+    char                    *Filename,
+    UINT32                  LineNumber,
     UINT8                   Level,
     UINT16                  MessageId);
 
