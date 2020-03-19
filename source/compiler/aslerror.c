@@ -1126,6 +1126,8 @@ AslCheckExpectedExceptions (
     void)
 {
     UINT8                   i;
+    ASL_EXPECTED_MSG_NODE   *Current = AslGbl_ExpectedErrorCodeList;
+    ASL_LOCATION_NODE       *LocationNode;
 
 
     for (i = 0; i < AslGbl_ExpectedMessagesIndex; ++i)
@@ -1135,6 +1137,26 @@ AslCheckExpectedExceptions (
             AslError (ASL_ERROR, ASL_MSG_EXCEPTION_NOT_RECEIVED, NULL,
                 AslGbl_ExpectedMessages[i].MessageIdStr);
         }
+    }
+
+    while (Current)
+    {
+        LocationNode = Current->LocationList;
+
+        while (LocationNode)
+        {
+            if (!LocationNode->MessageReceived)
+            {
+                AslCommonError (ASL_ERROR, ASL_MSG_EXCEPTION_NOT_RECEIVED,
+                    LocationNode->LineNumber, LocationNode->LineNumber,
+                    LocationNode->LogicalByteOffset, LocationNode->Column,
+                    LocationNode->Filename, Current->MessageIdStr);
+            }
+
+            LocationNode = LocationNode->Next;
+        }
+
+        Current = Current->Next;
     }
 }
 
@@ -1185,6 +1207,61 @@ AslLogExpectedException (
     AslGbl_ExpectedMessages[AslGbl_ExpectedMessagesIndex].MessageReceived = FALSE;
     AslGbl_ExpectedMessagesIndex++;
     return (AE_OK);
+}
+
+
+/*******************************************************************************
+ *
+ * FUNCTION:    AslLogExpectedExceptionByLine
+ *
+ * PARAMETERS:  MessageIdString     - ID of excepted exception during compile
+ *
+ * RETURN:      Status
+ *
+ * DESCRIPTION: Enter a message ID into the global expected messages table
+ *              based on file and line number. If these messages are not raised
+ *              during the compilation, throw an error.
+ *
+ ******************************************************************************/
+
+void
+AslLogExpectedExceptionByLine (
+    char                    *MessageIdString)
+{
+    ASL_LOCATION_NODE       *NewErrorLocationNode;
+    ASL_EXPECTED_MSG_NODE   *Current = AslGbl_ExpectedErrorCodeList;
+    UINT32                  MessageId;
+
+
+    NewErrorLocationNode = UtLocalCalloc (sizeof (ASL_LOCATION_NODE));
+
+    NewErrorLocationNode->LineNumber = AslGbl_CurrentLineNumber;
+    NewErrorLocationNode->Filename = AslGbl_Files[ASL_FILE_INPUT].Filename;
+    NewErrorLocationNode->LogicalByteOffset = AslGbl_CurrentLineOffset;
+    NewErrorLocationNode->Column = AslGbl_CurrentColumn;
+
+    MessageId = (UINT32) strtoul (MessageIdString, NULL, 0);
+
+    /* search the existing list for a matching message ID */
+
+    while (Current && Current->MessageId != MessageId )
+    {
+        Current = Current->Next;
+    }
+    if (!Current)
+    {
+        /* ID was not found, create a new node for this message ID */
+
+        Current = UtLocalCalloc (sizeof (ASL_EXPECTED_MSG_NODE));
+
+        Current->Next = AslGbl_ExpectedErrorCodeList;
+        Current->MessageIdStr = MessageIdString;
+        Current->MessageId = MessageId;
+        AslGbl_ExpectedErrorCodeList = Current;
+    }
+
+    NewErrorLocationNode->Next = Current->LocationList;
+    Current->LocationList = NewErrorLocationNode;
 }
 
 
@@ -1300,6 +1377,8 @@ AslIsExceptionExpected (
     UINT8                   Level,
     UINT16                  MessageId)
 {
+    ASL_EXPECTED_MSG_NODE   *Current = AslGbl_ExpectedErrorCodeList;
+    ASL_LOCATION_NODE       *CurrentErrorLocation;
     UINT32                  EncodedMessageId;
     UINT32                  i;
 
@@ -1315,6 +1394,28 @@ AslIsExceptionExpected (
         {
             return (AslGbl_ExpectedMessages[i].MessageReceived = TRUE);
         }
+    }
+
+    while (Current && Current->MessageId != EncodedMessageId)
+    {
+        Current = Current->Next;
+    }
+    if (!Current)
+    {
+        return (FALSE);
+    }
+
+    CurrentErrorLocation = Current->LocationList;
+
+    while (CurrentErrorLocation)
+    {
+        if (!strcmp (CurrentErrorLocation->Filename, Filename) &&
+            CurrentErrorLocation->LineNumber == LineNumber)
+        {
+            return (CurrentErrorLocation->MessageReceived = TRUE);
+        }
+
+        CurrentErrorLocation = CurrentErrorLocation->Next;
     }
 
     return (FALSE);

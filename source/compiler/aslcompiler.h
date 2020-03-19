@@ -507,6 +507,10 @@ AslIsExceptionIgnored (
     UINT16                  MessageId);
 
 void
+AslLogExpectedExceptionByLine (
+    char                    *MessageIdString);
+
+void
 AslCoreSubsystemError (
     ACPI_PARSE_OBJECT       *Op,
     ACPI_STATUS             Status,

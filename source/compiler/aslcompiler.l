@@ -194,6 +194,7 @@ count (int type);
 
 LeadNameChar                [A-Za-z_]
 DigitChar                   [0-9]
+ErrorCode                   [(][ ]*[1-9][0-9][0-9][0-9][ ]*[)]
 OctalChar                   [0-7]
 HexDigitChar                [A-Fa-f0-9]
 RootChar                    [\\]
@@ -809,6 +810,22 @@ NamePathTail                [.]{NameSeg}
 "__LINE__"                  { count (0); return (PARSEOP___LINE__); }
 "__PATH__"                  { count (0); return (PARSEOP___PATH__); }
 "__METHOD__"                { count (0); return (PARSEOP___METHOD__); }
+"__EXPECT__"{ErrorCode}     { char *s;
+                                int index = 0;
+                                count (0);
+                                while (!isdigit (AslCompilertext[index]))
+                                {
+                                    index++;
+                                }
+
+                                /*
+                                 * The eror code is contained inside the
+                                 * {ErrorCode} pattern. Extract it and log it
+                                 * as the expected error code.
+                                 */
+                                s = UtLocalCacheCalloc (ASL_ERROR_CODE_LENGTH + 1);
+                                memcpy (s, AslCompilertext + index, ASL_ERROR_CODE_LENGTH);
+                                AslLogExpectedExceptionByLine (s); }
 
 {NameSeg}                   { char *s;
                                 count (0);
