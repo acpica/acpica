@@ -1145,7 +1145,7 @@ LdAnalyzeExternals (
         if (Op->Asl.ParseOpcode == PARSEOP_EXTERNAL &&
             Node->Op->Asl.ParseOpcode == PARSEOP_EXTERNAL)
         {
-            AslDualParseOpError (ASL_ERROR,
+            AslDualParseOpError (ASL_WARNING,
                 ASL_MSG_DUPLICATE_EXTERN_MISMATCH, Op, NULL,
                 ASL_MSG_DUPLICATE_EXTERN_FOUND_HERE, Node->Op, NULL);
         }
@@ -1162,7 +1162,7 @@ LdAnalyzeExternals (
                 ExternalOp = Node->Op;
                 ActualOp = Op;
             }
-            AslDualParseOpError (ASL_ERROR,
+            AslDualParseOpError (ASL_WARNING,
                 ASL_MSG_DECLARATION_TYPE_MISMATCH, ExternalOp, NULL,
                 ASL_MSG_TYPE_MISMATCH_FOUND_HERE, ActualOp, NULL);
         }
