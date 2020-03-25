@@ -674,8 +674,6 @@ main (
         signal (SIGSEGV, AeSignalHandler);
     }
 
-    AeProcessInitFile();
-
     /* The remaining arguments are filenames for ACPI tables */
 
     if (!argv[AcpiGbl_Optind])
@@ -733,7 +731,21 @@ main (
         goto EnterDebugger;
     }
 
+    /* Read the entire namespace initialization file if requested */
+
+    Status = AeProcessInitFile();
+    if (ACPI_FAILURE (Status))
+    {
+        ExitCode = -1;
+        goto ErrorExit;
+    }
+
     Status = AeLoadTables ();
+    if (ACPI_FAILURE (Status))
+    {
+        ExitCode = -1;
+        goto ErrorExit;
+    }
 
     /*
      * Exit namespace initialization for the "load namespace only" option.
@@ -794,6 +806,7 @@ main (
         goto EnterDebugger;
     }
 
+    AeDisplayUnusedInitFileItems ();
     AeMiscellaneousTests ();
 
 
@@ -840,7 +853,9 @@ NormalExit:
 
 ErrorExit:
     AeLateTest ();
-    AcpiOsFree (AcpiGbl_InitEntries);
+
+    AeDeleteInitFileList ();
+
     (void) AcpiTerminate ();
     AcDeleteTableList (ListHead);
     return (ExitCode);
