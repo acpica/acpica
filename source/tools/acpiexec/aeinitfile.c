@@ -447,7 +447,6 @@ AeDeleteInitFileList (
 
     if (!AcpiGbl_InitEntries)
     {
-        AcpiOsPrintf ("Exiting AeDeleteInitFileList\n");
         return;
     }
 

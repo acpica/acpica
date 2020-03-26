@@ -722,6 +722,11 @@ AcpiDsExecEndOp (
             }
 
             Status = AcpiDsEvalBufferFieldOperands (WalkState, Op);
+            if (ACPI_FAILURE (Status))
+            {
+                break;
+            }
+
 #ifdef ACPI_EXEC_APP
             /*
              * AcpiExec support for namespace initialization file (initialize
@@ -736,7 +741,7 @@ AcpiDsExecEndOp (
                 {
                     ACPI_EXCEPTION ((AE_INFO, Status, "While writing to buffer field"));
                 }
-           }
+            }
             ACPI_FREE (Namepath);
             Status = AE_OK;
 #endif
