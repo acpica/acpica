@@ -149,6 +149,12 @@
  *
  *****************************************************************************/
 
+ /******************************************************************************
+  *
+  * Portions Copyright (c) Microsoft Corporation
+  *
+ *****************************************************************************/
+
 #include "aslcompiler.h"
 #include "aslcompiler.y.h"
 #include "acparser.h"
@@ -198,6 +204,10 @@ XfCheckFieldRange (
     UINT32                  FieldBitOffset,
     UINT32                  FieldBitLength,
     UINT32                  AccessBitWidth);
+
+static void
+XfCheckReservedBytesFieldRange (
+    ACPI_PARSE_OBJECT       *Op);
 
 
 /*******************************************************************************
@@ -378,6 +388,42 @@ XfCheckFieldRange (
 
 /*******************************************************************************
  *
+ * FUNCTION:    XfCheckReservedBytesFieldRange
+ *
+ * PARAMETERS:  Op                      - Parse Op to be checked
+ *
+ * RETURN:      Status
+ *
+ * DESCRIPTION: Checks that reserved byte field unit fits in the parent
+ *              op region.
+ *
+ ******************************************************************************/
+
+static void
+XfCheckReservedBytesFieldRange (
+    ACPI_PARSE_OBJECT       *Op)
+{
+    UINT64                  FieldBitOffset;
+    UINT64                  FieldBitLength;
+    UINT64                  ParentBitLength;
+
+    if (Op->Asl.Child &&
+        Op->Asl.Child->Asl.ParseOpcode == PARSEOP_PACKAGE_LENGTH)
+    {
+        FieldBitOffset = Op->Asl.ExtraValue;
+        FieldBitLength = Op->Asl.Child->Asl.Value.Integer;
+        ParentBitLength = Op->Asl.Parent->Asl.ExtraValue;
+
+        if (FieldBitOffset + FieldBitLength > ParentBitLength)
+        {
+            AslError(ASL_ERROR, ASL_MSG_FIELD_UNIT_OFFSET, Op, NULL);
+        }
+    }
+}
+
+
+/*******************************************************************************
+ *
  * FUNCTION:    XfNamespaceLocateBegin
  *
  * PARAMETERS:  ASL_WALK_CALLBACK
@@ -478,6 +524,16 @@ XfNamespaceLocateBegin (
                 MethodArgs[i].Op = Op;
             }
         }
+    }
+
+    /*
+     * Function ignores PARSEOP_RESERVED_BYTES since it is not a name
+     * declaration. Before returning, check that the reserved bytes field unit
+     * is within the parent region range.
+     */
+    if (Op->Asl.ParseOpcode == PARSEOP_RESERVED_BYTES)
+    {
+        XfCheckReservedBytesFieldRange (Op);
     }
 
     /*
