@@ -30,7 +30,7 @@
      *
      * SUMMARY: The ASL Compiler doesn't try to detect and reject attempts to use object before its declaration is evaluated
      *
-     * ASL-compiler doesnt result in Error
+     * ASL-compiler doesn't result in Error
      *
      * ATTENTION:
      *

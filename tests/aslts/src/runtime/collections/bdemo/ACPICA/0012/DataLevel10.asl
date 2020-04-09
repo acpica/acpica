@@ -272,7 +272,7 @@ Method(mf8c,, Serialized)
 }
 
 /*
- * 5 - Check DerefOf(<String>) - but String doesnt refer NameSpace object
+ * 5 - Check DerefOf(<String>) - but String doesn't refer NameSpace object
  */
 Method(mf8d)
 {
@@ -432,7 +432,7 @@ Method(mf90,, Serialized)
 }
 
 /*
- * 9 - Check DerefOf(<String>) - but String doesnt refer NameSpace object
+ * 9 - Check DerefOf(<String>) - but String doesn't refer NameSpace object
  */
 Method(mf91)
 {

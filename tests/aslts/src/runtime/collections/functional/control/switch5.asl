@@ -33,7 +33,7 @@
  */
 
 /*
-SEE: why exception doesnt occur for uninitialized elements there??????
+SEE: why exception doesn't occur for uninitialized elements there??????
 SEE: use all the specific cases specified in DOCUMENT 1.
 SEE: add the tests for "Specification of Match should explicitly say
      that no exceptions occur while this "cruising through the package""
