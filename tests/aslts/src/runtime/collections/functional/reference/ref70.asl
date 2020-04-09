@@ -32,7 +32,7 @@
      */
     /*
      SEE: FILE BUG: hangs without printing error
-     SEE: FILE BUG: CondRefOf doesnt cause exception but only under some conditions
+     SEE: FILE BUG: CondRefOf doesn't cause an exception but only under some conditions
      */
     Name (Z081, 0x51)
     /* Run operator and expect ANY exception(s) */
@@ -558,7 +558,7 @@
 
     Method (M1A9, 0, Serialized)
     {
-        /* FILE BUG: CondRefOf doesnt cause exception but only under some conditions, */
+        /* FILE BUG: CondRefOf doesn't cause an exception but only under some conditions, */
         /* namely for rn00 == 2. */
         Name (RN00, 0x02) /* Simplest modes, for debugging */
         Name (RN01, 0x01) /* Crash */

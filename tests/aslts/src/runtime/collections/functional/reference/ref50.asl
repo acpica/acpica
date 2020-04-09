@@ -328,8 +328,8 @@
     /* ACTUALLY: */
     /* */
     /* ArgX-String  - writes to the original String */
-    /* ArgX-Buffer  - doesnt */
-    /* ArgX-Package - doesnt */
+    /* ArgX-Buffer  - doesn't */
+    /* ArgX-Package - doesn't */
     Method (M233, 0, NotSerialized)
     {
         TS00 ("m233")

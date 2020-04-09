@@ -1074,7 +1074,7 @@
 
         CH03 (__METHOD__, Z058, __LINE__, 0x00, 0x00)
         /*
-         Discuss: now the ObjectType doesnt cause exception!
+         Discuss: now the ObjectType doesn't cause exception!
          Is it correct? Understand and discuss it.
          Store(ObjectType(i000), Local0)
          CH04(ts, 0, 46, z058, __LINE__, 0, 0)	// AE_AML_NO_OPERAND

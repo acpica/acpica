@@ -204,7 +204,7 @@ Method(mf04,, Serialized)
 
 		Store(0x00001001, arg6)
 
-		// Doesnt work:
+		// Doesn't work:
 		// Return (Add(arg6, 5))
 		// Return (0)
 	}

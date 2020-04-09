@@ -30,7 +30,7 @@
      *
      * SUMMARY: Exception occurs on attempt to rewrite Device type object passed by ArgX to Method
      *
-     * Check that exception doesnt occur
+     * Check that exception doesn't occur
      */
     Method (MF43, 1, NotSerialized)
     {

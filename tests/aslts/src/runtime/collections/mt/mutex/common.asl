@@ -251,8 +251,8 @@
     Name (ER07, 0x80) /* Too big Index of current thread */
     Name (ER08, 0x0100) /* Invalid counter of mutex owning */
     Name (ER09, 0x0200) /* Acquire returned zero but FAIL expected */
-    Name (ER10, 0x0400) /* Serialized method doesnt provide exclusive call */
-    Name (ER11, 0x0800) /* Serialized method doesnt provide exclusive call */
+    Name (ER10, 0x0400) /* Serialized method doesn't provide exclusive call */
+    Name (ER11, 0x0800) /* Serialized method doesn't provide exclusive call */
     Name (ER12, 0x1000) /* Non-serialized method thr-1 didn't get into method */
     Name (ER13, 0x2000) /* Non-serialized method thr-N didn't get into method */
     /* Opcodes of warnings reported by slave threads */

@@ -30,7 +30,7 @@
      *
      * SUMMARY: Manipulation test PASS but started reporting suspicious diagnostic
      *
-     * Check that messages doesnt occur...
+     * Check that messages doesn't occur...
      * but since it was due to the incorrect size of Package
      * generated in that case we do this test as runtime test
      * (but not ACTION_REQUIRED type).

@@ -31,7 +31,7 @@
  *
  * SUMMARY: The EISAID doesn't provides input control of "uppercase letter" part (UUU) of EisaIdString
  *
- * Error/Warning expected but doesnt occur
+ * Error/Warning expected but doesn't occur
  */
 
 Method(mdb9)

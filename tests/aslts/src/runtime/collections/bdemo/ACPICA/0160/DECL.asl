@@ -30,7 +30,7 @@
      *
      * SUMMARY: Attempt to declare Field inside the If scope causes exception
      *
-     * Check that exception doesnt occur
+     * Check that exception doesn't occur
      */
     Method (MF48, 0, Serialized)
     {
