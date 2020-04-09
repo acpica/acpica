@@ -587,7 +587,7 @@ ApCheckForGpeNameConflict (
      * 3rd/4th chars must be a hex number
      */
     if ((Name[0] != '_') ||
-       ((Name[1] != 'L') && (Name[1] != 'E')))
+        !((Name[1] == 'L') || (Name[1] == 'E')))
     {
         return;
     }
