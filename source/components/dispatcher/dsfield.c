@@ -341,7 +341,12 @@ AcpiDsCreateBufferField (
         Status = AcpiNsLookup (WalkState->ScopeInfo,
             Arg->Common.Value.String, ACPI_TYPE_ANY,
             ACPI_IMODE_LOAD_PASS1, Flags, WalkState, &Node);
-        if (ACPI_FAILURE (Status))
+        if ((WalkState->ParseFlags & ACPI_PARSE_DISASSEMBLE) &&
+            Status == AE_ALREADY_EXISTS)
+        {
+            Status = AE_OK;
+        }
+        else if (ACPI_FAILURE (Status))
         {
             ACPI_ERROR_NAMESPACE (WalkState->ScopeInfo,
                 Arg->Common.Value.String, Status);
