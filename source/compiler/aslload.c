@@ -1,6 +1,6 @@
 /******************************************************************************
  *
- * Module Name: dswload - Dispatcher namespace load callbacks
+ * Module Name: aslload - compiler namespace load callbacks
  *
  *****************************************************************************/
 
@@ -1020,7 +1020,7 @@ FinishNode:
 
 /*******************************************************************************
  *
- * FUNCTION:    LdAnalyzeExternals
+ * FUNCTION:    LdMatchExternType
  *
  * PARAMETERS:  Type1
  *              Type2
@@ -1037,7 +1037,7 @@ FinishNode:
  ******************************************************************************/
 
 static BOOLEAN
-LdTypesMatchExternType (
+LdMatchExternType (
     ACPI_OBJECT_TYPE        Type1,
     ACPI_OBJECT_TYPE        Type2)
 {
@@ -1140,7 +1140,7 @@ LdAnalyzeExternals (
 
     if ((ActualOpType != ACPI_TYPE_ANY) &&
         (ActualExternalOpType != ACPI_TYPE_ANY) &&
-        !LdTypesMatchExternType (ActualExternalOpType, ActualOpType))
+        !LdMatchExternType (ActualExternalOpType, ActualOpType))
     {
         if (Op->Asl.ParseOpcode == PARSEOP_EXTERNAL &&
             Node->Op->Asl.ParseOpcode == PARSEOP_EXTERNAL)
