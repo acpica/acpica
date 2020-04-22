@@ -674,7 +674,7 @@ temporary.
 
 iASL: Emit error for creation of a zero-length operation region. Such a 
 region is rather pointless. If encountered, a runtime error is also 
-implemented in the interpeter.
+implemented in the interpreter.
 
 Debugger: Fix a possible fault with the "test objects" command.
 
