@@ -1,6 +1,6 @@
 /******************************************************************************
  *
- * Module Name: dswload - Dispatcher namespace load callbacks
+ * Module Name: aslload - compiler namespace load callbacks
  *
  *****************************************************************************/
 
@@ -929,6 +929,19 @@ LdNamespace1Begin (
                     }
                     return_ACPI_STATUS (Status);
                 }
+
+                if (!(Node->Flags & ANOBJ_IS_EXTERNAL) &&
+                     (Op->Asl.ParseOpcode == PARSEOP_EXTERNAL))
+                {
+                    /*
+                     * If we get to here, it means that an actual definition of
+                     * the object declared external exists. Meaning that Op
+                     * loading this this Op should have no change to the ACPI
+                     * namespace. By going to FinishNode, we skip the
+                     * assignment of Node->Op = Op.
+                     */
+                    goto FinishNode;
+                }
             }
             else
             {
@@ -980,13 +993,15 @@ LdNamespace1Begin (
         }
     }
 
-FinishNode:
-    /*
-     * Point the parse node to the new namespace node, and point
-     * the Node back to the original Parse node
-     */
-    Op->Asl.Node = Node;
+    /* Point the Node back to the original Parse node */
+
     Node->Op = Op;
+
+FinishNode:
+
+    /* Point the parse node to the new namespace node */
+
+    Op->Asl.Node = Node;
 
     /*
      * Set the actual data type if appropriate (EXTERNAL term only)
@@ -1020,7 +1035,7 @@ FinishNode:
 
 /*******************************************************************************
  *
- * FUNCTION:    LdAnalyzeExternals
+ * FUNCTION:    LdMatchExternType
  *
  * PARAMETERS:  Type1
  *              Type2
@@ -1037,7 +1052,7 @@ FinishNode:
  ******************************************************************************/
 
 static BOOLEAN
-LdTypesMatchExternType (
+LdMatchExternType (
     ACPI_OBJECT_TYPE        Type1,
     ACPI_OBJECT_TYPE        Type2)
 {
@@ -1140,7 +1155,7 @@ LdAnalyzeExternals (
 
     if ((ActualOpType != ACPI_TYPE_ANY) &&
         (ActualExternalOpType != ACPI_TYPE_ANY) &&
-        !LdTypesMatchExternType (ActualExternalOpType, ActualOpType))
+        !LdMatchExternType (ActualExternalOpType, ActualOpType))
     {
         if (Op->Asl.ParseOpcode == PARSEOP_EXTERNAL &&
             Node->Op->Asl.ParseOpcode == PARSEOP_EXTERNAL)
