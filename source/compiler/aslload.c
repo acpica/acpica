@@ -1007,6 +1007,13 @@ FinishNode:
          */
         Node->Value = (UINT32) Op->Asl.Extra;
     }
+    else if (Op->Asl.ParseOpcode == PARSEOP_EXTERNAL &&
+        Node->Type == ACPI_TYPE_METHOD &&
+        (Node->Flags & ANOBJ_IS_EXTERNAL))
+    {
+        Node->Value =
+            (UINT32) Op->Asl.Child->Asl.Next->Asl.Next->Asl.Value.Integer;
+    }
 
     return_ACPI_STATUS (Status);
 }
