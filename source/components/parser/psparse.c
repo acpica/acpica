@@ -579,6 +579,13 @@ AcpiPsParseAml (
         return_ACPI_STATUS (AE_BAD_ADDRESS);
     }
 
+    /* If size of AML is zero, we succeeded. There is nothing to do */
+
+    if (!WalkState->ParserState.AmlSize)
+    {
+        return_ACPI_STATUS (AE_OK);
+    }
+
     /* Create and initialize a new thread state */
 
     Thread = AcpiUtCreateThreadState ();
