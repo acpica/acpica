@@ -13,6 +13,7 @@
 include ../Makefile.config
 FINAL_PROG = ../$(BINDIR)/acpixtract
 PROG = $(OBJDIR)/acpixtract
+MAN = acpixtract.1
 
 #
 # Search paths for source files

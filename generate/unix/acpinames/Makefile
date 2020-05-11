@@ -15,6 +15,7 @@
 include ../Makefile.config
 FINAL_PROG = ../$(BINDIR)/acpinames
 PROG = $(OBJDIR)/acpinames
+MAN = acpinames.1
 
 #
 # Search paths for source files

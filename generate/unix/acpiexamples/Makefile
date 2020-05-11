@@ -14,6 +14,7 @@
 include ../Makefile.config
 FINAL_PROG = ../$(BINDIR)/acpiexamples
 PROG = $(OBJDIR)/acpiexamples
+MAN = acpiexamples.1
 
 #
 # Search paths for source files

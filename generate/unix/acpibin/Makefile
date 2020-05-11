@@ -13,6 +13,7 @@
 include ../Makefile.config
 FINAL_PROG = ../$(BINDIR)/acpibin
 PROG = $(OBJDIR)/acpibin
+MAN = acpibin.1
 
 #
 # Search paths for source files

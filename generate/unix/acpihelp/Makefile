@@ -14,6 +14,7 @@
 include ../Makefile.config
 FINAL_PROG = ../$(BINDIR)/acpihelp
 PROG = $(OBJDIR)/acpihelp
+MAN = acpihelp.1
 
 #
 # Search paths for source files
