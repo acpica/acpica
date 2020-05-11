@@ -460,6 +460,7 @@ enum AcpiIvrsType
 {
     ACPI_IVRS_TYPE_HARDWARE1        = 0x10,
     ACPI_IVRS_TYPE_HARDWARE2        = 0x11,
+    ACPI_IVRS_TYPE_HARDWARE3        = 0x40,
     ACPI_IVRS_TYPE_MEMORY1          = 0x20,
     ACPI_IVRS_TYPE_MEMORY2          = 0x21,
     ACPI_IVRS_TYPE_MEMORY3          = 0x22
@@ -556,7 +557,11 @@ enum AcpiIvrsDeviceEntryType
     ACPI_IVRS_TYPE_ALIAS_START      = 67, /* Uses ACPI_IVRS_DEVICE8A */
     ACPI_IVRS_TYPE_EXT_SELECT       = 70, /* Uses ACPI_IVRS_DEVICE8B */
     ACPI_IVRS_TYPE_EXT_START        = 71, /* Uses ACPI_IVRS_DEVICE8B */
-    ACPI_IVRS_TYPE_SPECIAL          = 72  /* Uses ACPI_IVRS_DEVICE8C */
+    ACPI_IVRS_TYPE_SPECIAL          = 72, /* Uses ACPI_IVRS_DEVICE8C */
+
+    /* Variable-length device entries */
+
+    ACPI_IVRS_TYPE_HID              = 240 /* Uses ACPI_IVRS_DEVICE_HID */
 };
 
 /* Values for Data field above */
@@ -616,6 +621,18 @@ typedef struct acpi_ivrs_device8c
 
 #define ACPI_IVHD_IOAPIC            1
 #define ACPI_IVHD_HPET              2
+
+/* Type 240: variable-length device entry */
+
+typedef struct acpi_ivrs_device_hid
+{
+    ACPI_IVRS_DE_HEADER     Header;
+    UINT64                  AcpiHid;
+    UINT64                  AcpiCid;
+    UINT8                   UidType;
+    UINT8                   UidLength;
+
+} ACPI_IVRS_DEVICE_HID;
 
 
 /* 0x20, 0x21, 0x22: I/O Virtualization Memory Definition Block (IVMD) */

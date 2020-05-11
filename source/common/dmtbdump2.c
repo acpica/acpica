@@ -434,8 +434,6 @@ NextSubtable:
  *
  ******************************************************************************/
 
-static UINT8 EntrySizes[] = {4,8,16,32};
-
 void
 AcpiDmDumpIvrs (
     ACPI_TABLE_HEADER       *Table)
@@ -445,6 +443,7 @@ AcpiDmDumpIvrs (
     UINT32                  EntryOffset;
     UINT32                  EntryLength;
     UINT32                  EntryType;
+    ACPI_IVRS_DEVICE_HID    *HidSubtable;
     ACPI_IVRS_DE_HEADER     *DeviceEntry;
     ACPI_IVRS_HEADER        *Subtable;
     ACPI_DMTABLE_INFO       *InfoTable;
@@ -481,6 +480,7 @@ AcpiDmDumpIvrs (
             break;
 
         case ACPI_IVRS_TYPE_HARDWARE2:
+        case ACPI_IVRS_TYPE_HARDWARE3:
 
             InfoTable = AcpiDmTableInfoIvrs01;
             break;
@@ -520,7 +520,8 @@ AcpiDmDumpIvrs (
         /* The hardware subtable can contain multiple device entries */
 
         if (Subtable->Type == ACPI_IVRS_TYPE_HARDWARE1 ||
-            Subtable->Type == ACPI_IVRS_TYPE_HARDWARE2)
+            Subtable->Type == ACPI_IVRS_TYPE_HARDWARE2 ||
+            Subtable->Type == ACPI_IVRS_TYPE_HARDWARE3)
         {
             if (Subtable->Type == ACPI_IVRS_TYPE_HARDWARE1)
             {
@@ -545,11 +546,10 @@ AcpiDmDumpIvrs (
                  *
                  * 00 = 4 byte
                  * 01 = 8 byte
-                 * 10 = 16 byte - currently no entries defined
-                 * 11 = 32 byte - currently no entries defined
+                 * 1x = variable length
                  */
                 EntryType = DeviceEntry->Type;
-                EntryLength = EntrySizes [EntryType >> 6];
+                EntryLength = EntryType >> 6 == 1 ? 8 : 4;
 
                 switch (EntryType)
                 {
@@ -588,6 +588,14 @@ AcpiDmDumpIvrs (
                     InfoTable = AcpiDmTableInfoIvrs8c;
                     break;
 
+                /* Variable-length entries */
+
+                case ACPI_IVRS_TYPE_HID:
+
+                    EntryLength = 22;
+                    InfoTable = AcpiDmTableInfoIvrsHid;
+                    break;
+
                 default:
                     InfoTable = AcpiDmTableInfoIvrs4;
                     AcpiOsPrintf (
@@ -606,9 +614,24 @@ AcpiDmDumpIvrs (
                     return;
                 }
 
+                HidSubtable = ACPI_CAST_PTR (ACPI_IVRS_DEVICE_HID, DeviceEntry);
                 EntryOffset += EntryLength;
                 DeviceEntry = ACPI_ADD_PTR (ACPI_IVRS_DE_HEADER, DeviceEntry,
                     EntryLength);
+
+                if (EntryType == ACPI_IVRS_TYPE_HID)
+                {
+                    EntryLength = HidSubtable->UidLength;
+                    Status = AcpiDmDumpTable (Table->Length, EntryOffset,
+                        Table, EntryLength, AcpiDmTableInfoIvrsHid1);
+                    if (ACPI_FAILURE (Status))
+                    {
+                        return;
+                    }
+                    EntryOffset += EntryLength;
+                    DeviceEntry = ACPI_ADD_PTR (ACPI_IVRS_DE_HEADER,
+                        DeviceEntry, EntryLength);
+                }
             }
         }
 

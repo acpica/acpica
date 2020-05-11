@@ -1678,6 +1678,7 @@ AcpiDmDumpTable (
             {
             case ACPI_IVRS_TYPE_HARDWARE1:
             case ACPI_IVRS_TYPE_HARDWARE2:
+            case ACPI_IVRS_TYPE_HARDWARE3:
 
                 Name = AcpiDmIvrsSubnames[0];
                 break;
