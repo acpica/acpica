@@ -295,11 +295,12 @@ generate_source_package ()
 		# Windows-specific activities
 		#
 
-		# Copy project files for MS Visual Studio 2008 (VC++ 9.0)
+		# Copy project files for MS Visual Studio 2017
 
-		mkdir $TEMP_DIR/generate/msvc9
-		cp -r generate/msvc9/*.sln $TEMP_DIR/generate/msvc9/
-		cp -r generate/msvc9/*.vcproj $TEMP_DIR/generate/msvc9/
+		mkdir $TEMP_DIR/generate/msvc2017
+		cp -r generate/msvc2017/*.sln $TEMP_DIR/generate/msvc2017/
+		cp -r generate/msvc2017/*.dsp $TEMP_DIR/generate/msvc2017/
+		cp -r generate/msvc2017/*.vcxproj $TEMP_DIR/generate/msvc2017/
 
 		build_windows_package
 	fi
