@@ -300,6 +300,7 @@ generate_source_package ()
 		mkdir $TEMP_DIR/generate/msvc2017
 		cp -r generate/msvc2017/*.sln $TEMP_DIR/generate/msvc2017/
 		cp -r generate/msvc2017/*.dsp $TEMP_DIR/generate/msvc2017/
+		cp -r generate/msvc2017/*.dsw $TEMP_DIR/generate/msvc2017/
 		cp -r generate/msvc2017/*.vcxproj $TEMP_DIR/generate/msvc2017/
 
 		build_windows_package
