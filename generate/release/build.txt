@@ -105,7 +105,7 @@ Update the version number (hex in the format: 0xYYYYMMDD)
     in the file source/include/acpixf.h
 Build Windows debug versions of all software and utilities
 Build Windows nodebug versions of all software and utilities
-    (generate/msvc9)
+    (generate/msvc2017)
 Build Unix versions of all software and utilities
     generate/unix/make clean
     generate/unix/make
