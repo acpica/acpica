@@ -176,7 +176,7 @@
             }
             Case (0x02)
             {
-                /* allow only for Slave Threads to report */
+                /* allow only for Worker Threads to report */
 
                 If (Arg0)
                 {

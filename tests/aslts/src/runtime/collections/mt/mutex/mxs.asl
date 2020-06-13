@@ -625,14 +625,14 @@
     }
 
     /*
-     * Control thread initiates slaves to Acquire
+     * Control thread initiates workers to Acquire
      * specified set of mutexes - on each specified
      * level - one mutex of Index which is equal to
      * ((Index of thread) - 1).
      *
-     * When all slaves complete that operation checks up
+     * When all workers complete that operation checks up
      * the state of execution of operation provided by
-     * slaves.
+     * workers.
      *
      * arg0 - number of threads (total)
      * arg1 - number of threads (threads actually in work)
@@ -659,7 +659,7 @@
 
         M210 (BS00, Arg0, C106, 0x00, Arg1, 0x01, C102) /* cmd: Acquire specified set of mutexes */
         M114 (Arg0) /* run */
-        /* Wait for all Slave threads */
+        /* Wait for all Worker threads */
 
         M103 (Arg0)
         /* Check up the values of counters of all Mutexs */
@@ -675,12 +675,12 @@
     }
 
     /*
-     * Control thread initiates slaves to Release
+     * Control thread initiates workers to Release
      * specified set of mutexes - on each specified
      * level - one mutex of Index which is equal to
      * ((Index of thread) - 1).
      *
-     * Control thread initiates slaves to Release
+     * Control thread initiates workers to Release
      * specified set of mutexes.
      *
      * arg0 - number of threads (total)
@@ -699,13 +699,13 @@
 
         M210 (BS00, Arg0, C107, 0x00, Arg1, 0x01, C102) /* cmd: Release specified set of mutexes */
         M114 (Arg0) /* run */
-        /* Wait for all Slave threads */
+        /* Wait for all Worker threads */
 
         M103 (Arg0)
     }
 
     /*
-     * Control thread checks that the specified set of slave threads
+     * Control thread checks that the specified set of worker threads
      * hang on the specified operations or completed the operations.
      *
      * See m10e for args:
@@ -727,7 +727,7 @@
     }
 
     /*
-     * Run command for the specified set of slaves
+     * Run command for the specified set of workers
      *
      * arg0 - number of threads
      * arg1 - specificator of elements (see m20a)
@@ -737,13 +737,13 @@
     {
         M20A (BS00, Arg0, Arg2, Arg1) /* cmd */
         M114 (Arg0)
-        /* Wait for Slave threads */
+        /* Wait for Worker threads */
 
         M103 (Arg0)
     }
 
     /*
-     * Control thread initiates commands for slaves to be fulfilled.
+     * Control thread initiates commands for workers to be fulfilled.
      * After commands execution checks the statuses of all threads.
      *
      * It should be one of the following:
@@ -768,17 +768,17 @@
      *        buffer/Integer, per-thread commands to be fulfilled
      *        Integer:
      *          0        - undefined
-     *          non-zero - the same command for all slave threads
+     *          non-zero - the same command for all worker threads
      *        Buffer (elements of buffer):
      *          0        - undefined
-     *          non-zero - command for the relevant slave thread
+     *          non-zero - command for the relevant worker thread
      *
      * arg2 - Exceptional conditions flags (buffer/Integer)
      *
      *        buffer/Integer, per-thread flags of exceptional conditions
      *        Integer:
      *          - non-zero means that we generate the same
-     *            exceptional condition for all slave threads
+     *            exceptional condition for all worker threads
      *        Buffer (elements of buffer):
      *          0        - exception is not expected
      *          non-zero - means that we generate exceptional condition
@@ -809,7 +809,7 @@
      *
      *        buffer/Integer, per-thread levels of mutexes
      *        Integer:
-     *          - the same level of mutex for all slave threads
+     *          - the same level of mutex for all worker threads
      *            (number of levels is 1)
      *        Buffer (elements of buffer):
      *        Pairs:
@@ -820,7 +820,7 @@
      *
      *        buffer/Integer, per-thread indexes of mutexes
      *        Integer:
-     *          - the same index of mutex for all slave threads
+     *          - the same index of mutex for all worker threads
      *            (number of mutexes of the same level is 1)
      *        Buffer (elements of buffer):
      *        Pairs:
@@ -832,20 +832,20 @@
      *        buffer/Integer, per-thread commands to check for completion
      *        Integer:
      *          0        - do nothing
-     *          non-zero - the same command for all slave threads
+     *          non-zero - the same command for all worker threads
      *        Buffer (elements of buffer):
      *          0        - do nothing
-     *          non-zero - command for the relevant slave thread
+     *          non-zero - command for the relevant worker thread
      *
      * arg6 - Expected hang statuses (the same semantics as Commands) (buffer/Integer).
      *
      *        buffer/Integer, per-thread commands to check for hang
      *        Integer:
      *          0        - do nothing
-     *          non-zero - the same command for all slave threads
+     *          non-zero - the same command for all worker threads
      *        Buffer (elements of buffer):
      *          0        - do nothing
-     *          non-zero - command for the relevant slave thread
+     *          non-zero - command for the relevant worker thread
      *
      *        Note: non-zero 0-th element of the buffer means the
      *              number of hanging threads expected to wake up
@@ -888,7 +888,7 @@
          * Note: not specified elements of buffers are not touched.
          */
         HAS1 = M340 (NTH1, Arg1, Arg2, Arg3, Arg4)
-        /* Allow slaves to execute their commands */
+        /* Allow workers to execute their commands */
 
         M114 (NTH0)
         /* 2) Check status of execution of commands */
@@ -907,7 +907,7 @@
          * Local1 - expectations of hang
          * Local2 - idle
          */
-        /* Wait for all Slave threads and check their statuses */
+        /* Wait for all Worker threads and check their statuses */
         M110 (NTH0, Local0, Local1, Local2)
         /* Reset exception expectation */
 

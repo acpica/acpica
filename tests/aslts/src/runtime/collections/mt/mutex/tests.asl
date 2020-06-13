@@ -27,13 +27,13 @@
      */
     /*
      * The test strategies to be managed and controlled by the
-     * Control Thread and fulfilled by the Slave Threads (Slaves).
+     * Control Thread and fulfilled by the Worker Threads (Workers).
      */
     Name (Z152, 0x98)
     /*
      * Acquire/Sleep/Release
      *
-     * All slaves:
+     * All workers:
      * - Acquire the same mutex
      * - increment global counter
      * - set up another global to its Index
@@ -63,7 +63,7 @@
 
         M210 (BS00, Arg0, C103, 0x00, NUMW, 0x01, C102) /* cmd: Acquire/Sleep/Release */
         M114 (Arg0) /* run */
-        /* Wait for all Slave threads */
+        /* Wait for all Worker threads */
 
         M103 (Arg0)
         /* Check up the values of counters of all Mutexes */
@@ -103,7 +103,7 @@
 
         M210 (BS00, Arg0, C104, 0x00, NUMW, 0x01, C102) /* cmd: <Acquire/Sleep>(0-15 levels)/Release(15-0 levels) */
         M114 (Arg0) /* run */
-        /* Wait for all Slave threads */
+        /* Wait for all Worker threads */
 
         M103 (Arg0)
         /* Check up the values of counters of all Mutexs */
@@ -150,7 +150,7 @@
 
         M210 (BS00, Arg0, C105, 0x00, NUMW, 0x01, C102) /* cmd: Example 0 */
         M114 (Arg0) /* run */
-        /* Wait for all Slave threads */
+        /* Wait for all Worker threads */
 
         M103 (Arg0)
     }
@@ -183,7 +183,7 @@
         M208 (BS00, THR, C106)  /* cmd: Acquire specified set of mutexes */
         M215 (Arg0)             /* Reset TimeOutValue and exceptional condition flags */
         M114 (Arg0)
-        /* Wait for all Slave threads */
+        /* Wait for all Worker threads */
 
         M103 (Arg0)
         /* Check up the values of counters of all Mutexs */
@@ -207,7 +207,7 @@
         M208 (BS00, THR, C106)  /* cmd: Acquire specified set of mutexes */
         M215 (Arg0)             /* Reset TimeOutValue and exceptional condition flags */
         M114 (Arg0)
-        /* Wait for all Slave threads */
+        /* Wait for all Worker threads */
 
         M103 (Arg0)
         /* Check up the values of counters of all Mutexs */
@@ -234,7 +234,7 @@
             M200 (BS00, Arg0, C102) /* cmd: Sleep */
             M208 (BS00, THR, C107)  /* cmd: Release specified set of mutexes */
             M114 (Arg0)
-            /* Wait for all Slave threads */
+            /* Wait for all Worker threads */
 
             M103 (Arg0)
         }
@@ -248,7 +248,7 @@
         M200 (BS00, Arg0, C102) /* cmd: Sleep */
         M208 (BS00, THR, C107)  /* cmd: Release specified set of mutexes */
         M114 (Arg0)
-        /* Wait for all Slave threads */
+        /* Wait for all Worker threads */
 
         M103 (Arg0)
         If (Arg1)
@@ -262,7 +262,7 @@
             M200 (BS00, Arg0, C102) /* cmd: Sleep */
             M208 (BS00, THR, C107)  /* cmd: Release specified set of mutexes */
             M114 (Arg0)
-            /* Wait for all Slave threads */
+            /* Wait for all Worker threads */
 
             M103 (Arg0)
         }
@@ -316,7 +316,7 @@
         M208 (BS00, THR, C106)  /* cmd: Acquire specified set of mutexes */
         M215 (Arg0)             /* Reset TimeOutValue and exceptional condition flags */
         M114 (Arg0)
-        /* Wait for all Slave threads */
+        /* Wait for all Worker threads */
 
         M103 (Arg0)
         /* Check up the values of counters of all Mutexs */
@@ -343,7 +343,7 @@
         M200 (BS00, Arg0, C102) /* cmd: Sleep */
         M208 (BS00, THR, C107)  /* cmd: Release specified set of mutexes */
         M114 (Arg0)
-        /* Wait for all Slave threads */
+        /* Wait for all Worker threads */
 
         M103 (Arg0)
         /* Reset exception expectation */
@@ -359,7 +359,7 @@
         M208 (BS00, THR, C106)  /* cmd: Acquire specified set of mutexes */
         M215 (Arg0)             /* Reset TimeOutValue and exceptional condition flags */
         M114 (Arg0)
-        /* Wait for all Slave threads */
+        /* Wait for all Worker threads */
 
         M103 (Arg0)
         /* Check up the values of counters of all Mutexs */
@@ -386,7 +386,7 @@
         M200 (BS00, Arg0, C102) /* cmd: Sleep */
         M208 (BS00, THR, C107)  /* cmd: Release specified set of mutexes */
         M114 (Arg0)
-        /* Wait for all Slave threads */
+        /* Wait for all Worker threads */
 
         M103 (Arg0)
         /* Reset exception expectation */
@@ -405,7 +405,7 @@
         M200 (BS00, Arg0, C102) /* cmd: Sleep */
         M208 (BS00, THR, C107)  /* cmd: Release specified set of mutexes */
         M114 (Arg0)
-        /* Wait for all Slave threads */
+        /* Wait for all Worker threads */
 
         M103 (Arg0)
         /* Reset exception expectation */
@@ -421,7 +421,7 @@
         M208 (BS00, THR, C107)  /* cmd: Release specified set of mutexes */
         M215 (Arg0)             /* Reset TimeOutValue and exceptional condition flags */
         M114 (Arg0)
-        /* Wait for all Slave threads */
+        /* Wait for all Worker threads */
 
         M103 (Arg0)
         /* 10. Thread_2 Releases its mutexes */
@@ -433,7 +433,7 @@
         M200 (BS00, Arg0, C102) /* cmd: Sleep */
         M208 (BS00, THR, C107)  /* cmd: Release specified set of mutexes */
         M114 (Arg0)
-        /* Wait for all Slave threads */
+        /* Wait for all Worker threads */
 
         M103 (Arg0)
     }
@@ -623,7 +623,7 @@
                  * 3. Acquire mutexes from 0 to (N-1) levels:
                  *	- Set up per-thread set of mutexes
                  *	- Acquire specified set of mutexes
-                 *	- Wait for all Slave threads
+                 *	- Wait for all Worker threads
                  *	- Check up the values of counters of all Mutexs
                  */
                 M337 (Arg0, NUMW, 0x00, LPC0, 0x01, 0x00)
@@ -631,7 +631,7 @@
                  * 4. Release mutexes from 0 to (N-1) levels:
                  *	- Set up per-thread set of mutexes
                  *	- Release specified set of mutexes
-                 *	- Wait for all Slave threads
+                 *	- Wait for all Worker threads
                  */
                 M338 (Arg0, NUMW, 0x00, LPC0)
                 /* Reset all counters (cnt0) and flags (fl00) corresponding to all Mutexes */
@@ -660,7 +660,7 @@
                  * 8. Acquire mutexes from (N+1) to 15 levels
                  *	- Set up per-thread set of mutexes
                  *	- Acquire specified set of mutexes
-                 *	- Wait for all Slave threads
+                 *	- Wait for all Worker threads
                  *	- Check up the values of counters of all Mutexs
                  */
                 Local0 = (LPC0 + 0x01)
@@ -672,7 +672,7 @@
              * 9. Release all mutexes (starting with lpC0 up to 15 level):
              *	- Set up per-thread set of mutexes
              *	- Release specified set of mutexes
-             *	- Wait for all Slave threads
+             *	- Wait for all Worker threads
              */
             Local1 = (MAX0 - LPC0) /* \M807.LPC0 */
             M338 (Arg0, NUMW, LPC0, Local1)
@@ -685,7 +685,7 @@
                  * 10. Acquire mutexes from 0 to (N-1) levels:
                  *	- Set up per-thread set of mutexes
                  *	- Acquire specified set of mutexes
-                 *	- Wait for all Slave threads
+                 *	- Wait for all Worker threads
                  *	- Check up the values of counters of all Mutexs
                  */
                 M337 (Arg0, NUMW, 0x00, LPC0, 0x01, 0x00)
@@ -693,7 +693,7 @@
                  * 11. Release mutexes (from 0 to (N-1) levels):
                  *	- Set up per-thread set of mutexes
                  *	- Release specified set of mutexes
-                 *	- Wait for all Slave threads
+                 *	- Wait for all Worker threads
                  */
                 M338 (Arg0, NUMW, 0x00, LPC0)
                 /* Reset all counters (cnt0) and flags (fl00) corresponding to all Mutexes */
@@ -2070,7 +2070,7 @@
         M208 (BS00, THR2, C106) /* cmd: Acquire specified set of mutexes */
         M215 (Arg0)             /* Reset TimeOutValue and exceptional condition flags */
         M114 (Arg0) /* run */
-        /* Wait for all Slave threads */
+        /* Wait for all Worker threads */
 
         M103 (Arg0)
         /* Check up the values of counters of all Mutexs */
@@ -2102,7 +2102,7 @@
         M214 (Arg0, Arg0, TOV1) /* TimeOutValue equal to 1 msec */
         M20F (Arg0, EX0D, 0x00)    /* Init the exceptional conditions flags (FAIL) */
         M114 (Arg0) /* run */
-        /* Wait for all Slave threads */
+        /* Wait for all Worker threads */
 
         M103 (Arg0)
         /* 3. Thread thr-N terminates */
@@ -2111,7 +2111,7 @@
         M208 (BS00, THR2, C108) /* cmd: Terminate thread */
         M215 (Arg0)             /* Reset TimeOutValue and exceptional condition flags */
         M114 (Arg0) /* run */
-        /* Wait for all Slave threads */
+        /* Wait for all Worker threads */
 
         M103 (Arg0)
         /*
@@ -2129,7 +2129,7 @@
         M208 (BS00, THR1, C106) /* cmd: Acquire specified set of mutexes */
         M215 (Arg0)             /* Reset TimeOutValue and exceptional condition flags */
         M114 (Arg0) /* run */
-        /* Wait for all Slave threads */
+        /* Wait for all Worker threads */
 
         M103 (Arg0)
         /* 5. Thread thr-1 Releases all mutexes */
@@ -2138,7 +2138,7 @@
         M208 (BS00, THR1, C107) /* cmd: Release specified set of mutexes */
         M215 (Arg0)             /* Reset TimeOutValue and exceptional condition flags */
         M114 (Arg0) /* run */
-        /* Wait for all Slave threads */
+        /* Wait for all Worker threads */
 
         M103 (Arg0)
     }
@@ -2179,7 +2179,7 @@
         M208 (BS00, THR2, C106) /* cmd: Acquire specified set of mutexes */
         M215 (Arg0)             /* Reset TimeOutValue and exceptional condition flags */
         M114 (Arg0) /* run */
-        /* Wait for all Slave threads */
+        /* Wait for all Worker threads */
 
         M103 (Arg0)
         /* Check up the values of counters of all Mutexs */
@@ -2211,7 +2211,7 @@
         M214 (Arg0, Arg0, TOV1) /* TimeOutValue equal to 1 msec */
         M20F (Arg0, EX0D, 0x00)    /* Init the exceptional conditions flags (FAIL) */
         M114 (Arg0) /* run */
-        /* Wait for all Slave threads */
+        /* Wait for all Worker threads */
 
         M103 (Arg0)
         /*
@@ -2227,7 +2227,7 @@
         M208 (BS00, THR1, C106) /* cmd: Acquire specified set of mutexes */
         M215 (Arg0)             /* Reset TimeOutValue and exceptional condition flags */
         M114 (Arg0) /* run */
-        /* Wait for all Slave threads */
+        /* Wait for all Worker threads */
 
         Name (CP00, Buffer (Arg0){})
         Name (HG00, Buffer (Arg0){})
@@ -2244,7 +2244,7 @@
         M208 (BS00, THR2, C108) /* cmd: Terminate thread */
         M215 (Arg0)             /* Reset TimeOutValue and exceptional condition flags */
         M114 (Arg0) /* run */
-        /* Wait for all Slave threads */
+        /* Wait for all Worker threads */
 
         Name (CP01, Buffer (Arg0){})
         Name (HG01, Buffer (Arg0){})
@@ -2258,13 +2258,13 @@
         M208 (BS00, THR1, C107) /* cmd: Release specified set of mutexes */
         M215 (Arg0)             /* Reset TimeOutValue and exceptional condition flags */
         M114 (Arg0) /* run */
-        /* Wait for all Slave threads */
+        /* Wait for all Worker threads */
 
         M103 (Arg0)
     }
 
     /*
-     * Serialized method to be executed by Slave thread
+     * Serialized method to be executed by Worker thread
      *
      * arg0 - number of threads
      * arg1 - ID of current thread
@@ -2305,7 +2305,7 @@
     }
 
     /*
-     * Non-serialized method to be executed by Slave thread,
+     * Non-serialized method to be executed by Worker thread,
      * use mutex for exclusive access to critical section.
      *
      * arg0 - number of threads
@@ -2357,7 +2357,7 @@
     }
 
     /*
-     * Non-serialized method to be executed by Slave thread
+     * Non-serialized method to be executed by Worker thread
      *
      * non-serialized method is grabbed simultaneously by several threads
      *
@@ -2421,7 +2421,7 @@
 
     /*
      * arg0 - number of threads (total)
-     * arg1 - main command for slave thread
+     * arg1 - main command for worker thread
      */
     Method (M8FB, 2, Serialized)
     {
@@ -2452,14 +2452,14 @@
         /*
          * 1. Thread thr-1 invokes method MXXX (by c109/c10a) which allows
          *    exclusive access to the critical section.
-         *    Then it calls recursively m101 (infinite loop of slave threads)
+         *    Then it calls recursively m101 (infinite loop of worker threads)
          *    so becomes identical to other threads for managing it.
          */
         M200 (BS00, Arg0, C102) /* cmd: Sleep */
         M208 (BS00, THR1, Arg1) /* cmd: c109/c10a */
         M20F (Arg0, 0x00, 0x00)       /* Init (Reset) the exceptional conditions flags (SUCCESS) */
         M114 (Arg0) /* run */
-        /* Wait for all Slave threads */
+        /* Wait for all Worker threads */
 
         M103 (Arg0)
         /*
@@ -2470,7 +2470,7 @@
         M208 (BS00, THR2, Arg1) /* cmd: c109/c10a */
         M20F (Arg0, 0x00, 0x00)       /* Init (Reset) the exceptional conditions flags (SUCCESS) */
         M114 (Arg0) /* run */
-        /* Wait for all Slave threads */
+        /* Wait for all Worker threads */
 
         Name (CP00, Buffer (Arg0){})
         Name (HG00, Buffer (Arg0){})
@@ -2484,7 +2484,7 @@
          */
         M200 (BS00, Arg0, C102) /* cmd: Sleep */
         M114 (Arg0) /* run */
-        /* Wait for all Slave threads */
+        /* Wait for all Worker threads */
 
         Name (CP01, Buffer (Arg0){})
         Name (HG01, Buffer (Arg0){})
@@ -2495,12 +2495,12 @@
         M110 (Arg0, CP01, HG01, ID01)
         /*
          * 4. Thread thr-1 is directed to exit recursive (second) call to m101
-         *    (infinite loop of slave threads).
+         *    (infinite loop of worker threads).
          */
         M200 (BS00, Arg0, C102) /* cmd: Sleep */
         M208 (BS00, THR1, C101) /* cmd: Exit the infinite loop */
         M114 (Arg0) /* run */
-        /* Wait for all Slave threads */
+        /* Wait for all Worker threads */
 
         Name (CP02, Buffer (Arg0){})
         Name (HG02, Buffer (Arg0){})
@@ -2511,12 +2511,12 @@
         M110 (Arg0, CP02, HG02, ID02)
         /*
          * 5. Thread thr-2 is directed to exit recursive (second) call to m101
-         *    (infinite loop of slave threads).
+         *    (infinite loop of worker threads).
          */
         M200 (BS00, Arg0, C102) /* cmd: Sleep */
         M208 (BS00, THR2, C101) /* cmd: Exit the infinite loop */
         M114 (Arg0) /* run */
-        /* Wait for all Slave threads */
+        /* Wait for all Worker threads */
 
         M103 (Arg0)
     }
@@ -2576,14 +2576,14 @@
 
         /*
          * 1. Thread thr-1 invokes non-Serialized method MXXX.
-         *    Then it calls recursively m101 (infinite loop of slave threads)
+         *    Then it calls recursively m101 (infinite loop of worker threads)
          *    so becomes identical to other threads for managing it.
          */
         M200 (BS00, Arg0, C102) /* cmd: Sleep */
         M208 (BS00, THR1, C10B) /* cmd: Invoke non-Serialized method */
         M20F (Arg0, 0x00, 0x00)       /* Init (Reset) the exceptional conditions flags (SUCCESS) */
         M114 (Arg0) /* run */
-        /* Wait for all Slave threads */
+        /* Wait for all Worker threads */
 
         M103 (Arg0)
         /*
@@ -2592,19 +2592,19 @@
         M200 (BS00, Arg0, C102) /* cmd: Sleep */
         M20F (Arg0, 0x00, 0x00)       /* Init (Reset) the exceptional conditions flags (SUCCESS) */
         M114 (Arg0) /* run */
-        /* Wait for all Slave threads */
+        /* Wait for all Worker threads */
 
         M103 (Arg0)
         /*
          * 3. Thread thr-N invokes non-Serialized method MXXX.
-         *    Then it calls recursively m101 (infinite loop of slave threads)
+         *    Then it calls recursively m101 (infinite loop of worker threads)
          *    so becomes identical to other threads for managing it.
          */
         M200 (BS00, Arg0, C102) /* cmd: Sleep */
         M208 (BS00, THR2, C10B) /* cmd: Invoke non-Serialized method */
         M20F (Arg0, 0x00, 0x00)       /* Init (Reset) the exceptional conditions flags (SUCCESS) */
         M114 (Arg0) /* run */
-        /* Wait for all Slave threads */
+        /* Wait for all Worker threads */
 
         M103 (Arg0)
         /*
@@ -2613,19 +2613,19 @@
         M200 (BS00, Arg0, C102) /* cmd: Sleep */
         M20F (Arg0, 0x00, 0x00)       /* Init (Reset) the exceptional conditions flags (SUCCESS) */
         M114 (Arg0) /* run */
-        /* Wait for all Slave threads */
+        /* Wait for all Worker threads */
 
         M103 (Arg0)
         /*
          * 5. Both threads thr-1 and thr-N are directed to exit recursive (second) calls to m101
-         *    (infinite loops of slave threads).
+         *    (infinite loops of worker threads).
          */
         M200 (BS00, Arg0, C102) /* cmd: Sleep */
         M208 (BS00, THR1, C101) /* cmd: Exit the infinite loop */
         M208 (BS00, THR2, C101) /* cmd: Exit the infinite loop */
         M20F (Arg0, 0x00, 0x00)       /* Init (Reset) the exceptional conditions flags (SUCCESS) */
         M114 (Arg0) /* run */
-        /* Wait for all Slave threads */
+        /* Wait for all Worker threads */
 
         M103 (Arg0)
         If ((FLG2 != THR1))

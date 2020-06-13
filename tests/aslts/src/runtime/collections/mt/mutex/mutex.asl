@@ -34,8 +34,8 @@
      SEE:
      ??????????????????????????????????????????
      1) See sleeping mode ... and m209
-     3) remove all mf0X - slaves only once go into
-     } else { // Slave Threads
+     3) remove all mf0X - workers only once go into
+     } else { // Worker Threads
      m101(arg0, arg1, arg2, 0)
      }
      and Ctl Thread do mf00()
@@ -73,7 +73,7 @@
 
         M204 ("mf01", Arg0, Arg1, Arg2)
         /*
-         * The Slave Threads loop forever executing strategies
+         * The Worker Threads loop forever executing strategies
          * specified and controlled by the Control Thread.
          */
         If ((Arg2 == 0x00))
@@ -88,7 +88,7 @@
             /* Open testing */
 
             M102 (Arg0)
-            /* All slaves to sleep */
+            /* All workers to sleep */
 
             M100 (Arg0, Arg1, Arg2, CM02, 0x00, 0x00, 0x00)
             /* Acquire/Sleep/Release for all 0-15 levels and GL */
@@ -121,7 +121,7 @@
         }
         Else
         {
-            /* Slave Threads */
+            /* Worker Threads */
 
             M101 (Arg0, Arg1, Arg2, 0x00)
         }
@@ -153,7 +153,7 @@
 
         M204 ("mf02", Arg0, Arg1, Arg2)
         /*
-         * The Slave Threads loop forever executing strategies
+         * The Worker Threads loop forever executing strategies
          * specified and controlled by the Control Thread.
          */
         If ((Arg2 == 0x00))
@@ -161,7 +161,7 @@
             /* Control Thread */
             /* Open testing */
             M102 (Arg0)
-            /* All slaves to sleep */
+            /* All workers to sleep */
 
             M100 (Arg0, Arg1, Arg2, CM02, 0x00, 0x00, 0x00)
             /*
@@ -177,7 +177,7 @@
         }
         Else
         {
-            /* Slave Threads */
+            /* Worker Threads */
 
             M101 (Arg0, Arg1, Arg2, 0x00)
         }
@@ -209,7 +209,7 @@
 
         M204 ("mf03", Arg0, Arg1, Arg2)
         /*
-         * The Slave Threads loop forever executing strategies
+         * The Worker Threads loop forever executing strategies
          * specified and controlled by the Control Thread.
          */
         If ((Arg2 == 0x00))
@@ -217,7 +217,7 @@
             /* Control Thread */
             /* Open testing */
             M102 (Arg0)
-            /* All slaves to sleep */
+            /* All workers to sleep */
 
             M100 (Arg0, Arg1, Arg2, CM02, 0x00, 0x00, 0x00)
             /*
@@ -231,7 +231,7 @@
         }
         Else
         {
-            /* Slave Threads */
+            /* Worker Threads */
 
             M101 (Arg0, Arg1, Arg2, 0x00)
         }
@@ -263,7 +263,7 @@
 
         M204 ("mf04", Arg0, Arg1, Arg2)
         /*
-         * The Slave Threads loop forever executing strategies
+         * The Worker Threads loop forever executing strategies
          * specified and controlled by the Control Thread.
          */
         If ((Arg2 == 0x00))
@@ -271,7 +271,7 @@
             /* Control Thread */
             /* Open testing */
             M102 (Arg0)
-            /* All slaves to sleep */
+            /* All workers to sleep */
 
             M100 (Arg0, Arg1, Arg2, CM02, 0x00, 0x00, 0x00)
             /* Test (see SPEC for mf04) */
@@ -283,7 +283,7 @@
         }
         Else
         {
-            /* Slave Threads */
+            /* Worker Threads */
 
             M101 (Arg0, Arg1, Arg2, 0x00)
         }
@@ -315,7 +315,7 @@
 
         M204 ("mf05", Arg0, Arg1, Arg2)
         /*
-         * The Slave Threads loop forever executing strategies
+         * The Worker Threads loop forever executing strategies
          * specified and controlled by the Control Thread.
          */
         If ((Arg2 == 0x00))
@@ -323,7 +323,7 @@
             /* Control Thread */
             /* Open testing */
             M102 (Arg0)
-            /* All slaves to sleep */
+            /* All workers to sleep */
 
             M100 (Arg0, Arg1, Arg2, CM02, 0x00, 0x00, 0x00)
             /* Test (see SPEC for mf05) */
@@ -335,7 +335,7 @@
         }
         Else
         {
-            /* Slave Threads */
+            /* Worker Threads */
 
             M101 (Arg0, Arg1, Arg2, 0x00)
         }
@@ -367,7 +367,7 @@
 
         M204 ("mf06", Arg0, Arg1, Arg2)
         /*
-         * The Slave Threads loop forever executing strategies
+         * The Worker Threads loop forever executing strategies
          * specified and controlled by the Control Thread.
          */
         If ((Arg2 == 0x00))
@@ -375,7 +375,7 @@
             /* Control Thread */
             /* Open testing */
             M102 (Arg0)
-            /* All slaves to sleep */
+            /* All workers to sleep */
 
             M100 (Arg0, Arg1, Arg2, CM02, 0x00, 0x00, 0x00)
             /* Test (see SPEC for mf06) */
@@ -387,7 +387,7 @@
         }
         Else
         {
-            /* Slave Threads */
+            /* Worker Threads */
 
             M101 (Arg0, Arg1, Arg2, 0x00)
         }
@@ -419,7 +419,7 @@
 
         M204 ("mf07", Arg0, Arg1, Arg2)
         /*
-         * The Slave Threads loop forever executing strategies
+         * The Worker Threads loop forever executing strategies
          * specified and controlled by the Control Thread.
          */
         If ((Arg2 == 0x00))
@@ -427,7 +427,7 @@
             /* Control Thread */
             /* Open testing */
             M102 (Arg0)
-            /* All slaves to sleep */
+            /* All workers to sleep */
 
             M100 (Arg0, Arg1, Arg2, CM02, 0x00, 0x00, 0x00)
             /* Test (see SPEC for mf07) */
@@ -439,7 +439,7 @@
         }
         Else
         {
-            /* Slave Threads */
+            /* Worker Threads */
 
             M101 (Arg0, Arg1, Arg2, 0x00)
         }
@@ -471,7 +471,7 @@
 
         M204 ("mf08", Arg0, Arg1, Arg2)
         /*
-         * The Slave Threads loop forever executing strategies
+         * The Worker Threads loop forever executing strategies
          * specified and controlled by the Control Thread.
          */
         If ((Arg2 == 0x00))
@@ -479,7 +479,7 @@
             /* Control Thread */
             /* Open testing */
             M102 (Arg0)
-            /* All slaves to sleep */
+            /* All workers to sleep */
 
             M100 (Arg0, Arg1, Arg2, CM02, 0x00, 0x00, 0x00)
             /* Test (see SPEC for mf08) */
@@ -491,7 +491,7 @@
         }
         Else
         {
-            /* Slave Threads */
+            /* Worker Threads */
 
             M101 (Arg0, Arg1, Arg2, 0x00)
         }
@@ -523,7 +523,7 @@
 
         M204 ("mf09", Arg0, Arg1, Arg2)
         /*
-         * The Slave Threads loop forever executing strategies
+         * The Worker Threads loop forever executing strategies
          * specified and controlled by the Control Thread.
          */
         If ((Arg2 == 0x00))
@@ -531,7 +531,7 @@
             /* Control Thread */
             /* Open testing */
             M102 (Arg0)
-            /* All slaves to sleep */
+            /* All workers to sleep */
 
             M100 (Arg0, Arg1, Arg2, CM02, 0x00, 0x00, 0x00)
             /* Test (see SPEC for mf09) */
@@ -543,7 +543,7 @@
         }
         Else
         {
-            /* Slave Threads */
+            /* Worker Threads */
 
             M101 (Arg0, Arg1, Arg2, 0x00)
         }
@@ -575,7 +575,7 @@
 
         M204 ("mf10", Arg0, Arg1, Arg2)
         /*
-         * The Slave Threads loop forever executing strategies
+         * The Worker Threads loop forever executing strategies
          * specified and controlled by the Control Thread.
          */
         If ((Arg2 == 0x00))
@@ -583,7 +583,7 @@
             /* Control Thread */
             /* Open testing */
             M102 (Arg0)
-            /* All slaves to sleep */
+            /* All workers to sleep */
 
             M100 (Arg0, Arg1, Arg2, CM02, 0x00, 0x00, 0x00)
             /* Test (see SPEC for mf10) */
@@ -595,7 +595,7 @@
         }
         Else
         {
-            /* Slave Threads */
+            /* Worker Threads */
 
             M101 (Arg0, Arg1, Arg2, 0x00)
         }
@@ -627,7 +627,7 @@
 
         M204 ("mf11", Arg0, Arg1, Arg2)
         /*
-         * The Slave Threads loop forever executing strategies
+         * The Worker Threads loop forever executing strategies
          * specified and controlled by the Control Thread.
          */
         If ((Arg2 == 0x00))
@@ -635,7 +635,7 @@
             /* Control Thread */
             /* Open testing */
             M102 (Arg0)
-            /* All slaves to sleep */
+            /* All workers to sleep */
 
             M100 (Arg0, Arg1, Arg2, CM02, 0x00, 0x00, 0x00)
             /* Test (see SPEC for mf11) */
@@ -647,7 +647,7 @@
         }
         Else
         {
-            /* Slave Threads */
+            /* Worker Threads */
 
             M101 (Arg0, Arg1, Arg2, 0x00)
         }
@@ -679,7 +679,7 @@
 
         M204 ("mf12", Arg0, Arg1, Arg2)
         /*
-         * The Slave Threads loop forever executing strategies
+         * The Worker Threads loop forever executing strategies
          * specified and controlled by the Control Thread.
          */
         If ((Arg2 == 0x00))
@@ -687,7 +687,7 @@
             /* Control Thread */
             /* Open testing */
             M102 (Arg0)
-            /* All slaves to sleep */
+            /* All workers to sleep */
 
             M100 (Arg0, Arg1, Arg2, CM02, 0x00, 0x00, 0x00)
             /* Test (see SPEC for mf12) */
@@ -699,7 +699,7 @@
         }
         Else
         {
-            /* Slave Threads */
+            /* Worker Threads */
 
             M101 (Arg0, Arg1, Arg2, 0x00)
         }
@@ -731,7 +731,7 @@
 
         M204 ("mf13", Arg0, Arg1, Arg2)
         /*
-         * The Slave Threads loop forever executing strategies
+         * The Worker Threads loop forever executing strategies
          * specified and controlled by the Control Thread.
          */
         If ((Arg2 == 0x00))
@@ -739,7 +739,7 @@
             /* Control Thread */
             /* Open testing */
             M102 (Arg0)
-            /* All slaves to sleep */
+            /* All workers to sleep */
 
             M100 (Arg0, Arg1, Arg2, CM02, 0x00, 0x00, 0x00)
             /* Test (see SPEC for mf13) */
@@ -751,7 +751,7 @@
         }
         Else
         {
-            /* Slave Threads */
+            /* Worker Threads */
 
             M101 (Arg0, Arg1, Arg2, 0x00)
         }
@@ -783,7 +783,7 @@
 
         M204 ("mf14", Arg0, Arg1, Arg2)
         /*
-         * The Slave Threads loop forever executing strategies
+         * The Worker Threads loop forever executing strategies
          * specified and controlled by the Control Thread.
          */
         If ((Arg2 == 0x00))
@@ -791,7 +791,7 @@
             /* Control Thread */
             /* Open testing */
             M102 (Arg0)
-            /* All slaves to sleep */
+            /* All workers to sleep */
 
             M100 (Arg0, Arg1, Arg2, CM02, 0x00, 0x00, 0x00)
             /* Test (see SPEC for mf14) */
@@ -803,7 +803,7 @@
         }
         Else
         {
-            /* Slave Threads */
+            /* Worker Threads */
 
             M101 (Arg0, Arg1, Arg2, 0x00)
         }
@@ -835,7 +835,7 @@
 
         M204 ("mf15", Arg0, Arg1, Arg2)
         /*
-         * The Slave Threads loop forever executing strategies
+         * The Worker Threads loop forever executing strategies
          * specified and controlled by the Control Thread.
          */
         If ((Arg2 == 0x00))
@@ -843,7 +843,7 @@
             /* Control Thread */
             /* Open testing */
             M102 (Arg0)
-            /* All slaves to sleep */
+            /* All workers to sleep */
 
             M100 (Arg0, Arg1, Arg2, CM02, 0x00, 0x00, 0x00)
             /* Test (see SPEC for mf15) */
@@ -855,7 +855,7 @@
         }
         Else
         {
-            /* Slave Threads */
+            /* Worker Threads */
 
             M101 (Arg0, Arg1, Arg2, 0x00)
         }
@@ -887,7 +887,7 @@
 
         M204 ("mf16", Arg0, Arg1, Arg2)
         /*
-         * The Slave Threads loop forever executing strategies
+         * The Worker Threads loop forever executing strategies
          * specified and controlled by the Control Thread.
          */
         If ((Arg2 == 0x00))
@@ -895,7 +895,7 @@
             /* Control Thread */
             /* Open testing */
             M102 (Arg0)
-            /* All slaves to sleep */
+            /* All workers to sleep */
 
             M100 (Arg0, Arg1, Arg2, CM02, 0x00, 0x00, 0x00)
             /* Test (see SPEC for mf16) */
@@ -907,7 +907,7 @@
         }
         Else
         {
-            /* Slave Threads */
+            /* Worker Threads */
 
             M101 (Arg0, Arg1, Arg2, 0x00)
         }
@@ -939,7 +939,7 @@
 
         M204 ("mf17", Arg0, Arg1, Arg2)
         /*
-         * The Slave Threads loop forever executing strategies
+         * The Worker Threads loop forever executing strategies
          * specified and controlled by the Control Thread.
          */
         If ((Arg2 == 0x00))
@@ -947,7 +947,7 @@
             /* Control Thread */
             /* Open testing */
             M102 (Arg0)
-            /* All slaves to sleep */
+            /* All workers to sleep */
 
             M100 (Arg0, Arg1, Arg2, CM02, 0x00, 0x00, 0x00)
             /* Test (see SPEC for mf17) */
@@ -959,7 +959,7 @@
         }
         Else
         {
-            /* Slave Threads */
+            /* Worker Threads */
 
             M101 (Arg0, Arg1, Arg2, 0x00)
         }
@@ -991,7 +991,7 @@
 
         M204 ("mf18", Arg0, Arg1, Arg2)
         /*
-         * The Slave Threads loop forever executing strategies
+         * The Worker Threads loop forever executing strategies
          * specified and controlled by the Control Thread.
          */
         If ((Arg2 == 0x00))
@@ -999,7 +999,7 @@
             /* Control Thread */
             /* Open testing */
             M102 (Arg0)
-            /* All slaves to sleep */
+            /* All workers to sleep */
 
             M100 (Arg0, Arg1, Arg2, CM02, 0x00, 0x00, 0x00)
             /* Test (see SPEC for mf18) */
@@ -1011,7 +1011,7 @@
         }
         Else
         {
-            /* Slave Threads */
+            /* Worker Threads */
 
             M101 (Arg0, Arg1, Arg2, 0x00)
         }
@@ -1029,8 +1029,8 @@
             /* Sleeping mode */
 
             SL00 = 0x0A /* default milliseconds to sleep for Control thread */
-            SL01 = 0x0A /* default milliseconds to sleep for Slave threads */
-            SLM0 = 0x00  /* sleeping mode for slave threads */
+            SL01 = 0x0A /* default milliseconds to sleep for Worker threads */
+            SLM0 = 0x00  /* sleeping mode for worker threads */
         }
 
         If (!Y251)
@@ -1051,7 +1051,7 @@
                 }
 
                 VB04 = 0x00 /* don't print statistics */
-                CTL0 = 0x01 /* Slave threads - go! */
+                CTL0 = 0x01 /* Worker threads - go! */
                 SRMT ("mt_mutex_tests")
             }
 

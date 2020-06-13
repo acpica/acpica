@@ -59,7 +59,7 @@ DefinitionBlock(
 
 		Store(1, Local0)
 		if (arg2) {
-			/* Slave threads */
+			/* Worker threads */
 			Store(0, Local0)
 		} else {
 			/* Control thread */

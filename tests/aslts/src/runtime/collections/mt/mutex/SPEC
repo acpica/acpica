@@ -1,6 +1,6 @@
 Descriptions of tests
 
-Thread means below the Slave thread
+Thread means below the Worker thread
 (if another is not specified explicitly).
 
 Active agents of subject of mt-testing
@@ -45,7 +45,7 @@ The 0-th thread, so-called Control Thread, is not counted in this entry.
 # ===  TEST 001 (mf01)  === #
 # ========================= #
 
-FUNCTION OF EACH SLAVE THREAD:
+FUNCTION OF EACH WORKER THREAD:
 
    Acquire one mutex of i-th level, Sleep, then Release it.
    Check the mutually exclusive ownership of mutex.
@@ -63,7 +63,7 @@ THR-NUMBER: arbitrary, all threads do the same
 DETAILS:
 
 1. The Control thread resets all flags and counters of all mutexes.
-2. The Slave threads do the same actions with each of the same N mutexes of i-th level:
+2. The Worker threads do the same actions with each of the same N mutexes of i-th level:
    - acquire the mutex
    - check that flag of the mutex is zero (not set up yet)
    - set up flag of the mutex to the index of this thread
@@ -74,11 +74,11 @@ DETAILS:
      while this one was sleeping
    - reset flag of the mutex
    - release mutex
-3. Control thread after all the slave threads complete with all N mutexes of i-th level:
+3. Control thread after all the worker threads complete with all N mutexes of i-th level:
    - checks that the counter of each relevant mutex is correct
-   - report errors detected by Slave threads
+   - report errors detected by Worker threads
    - report other errors
-4. Control thread initiates and Slave threads fulfill actions (2)
+4. Control thread initiates and Worker threads fulfill actions (2)
    for mutexes of all levels one after another from 0 up to 15
    (and GL too).
 
@@ -86,7 +86,7 @@ DETAILS:
 # ===  TEST 002 (mf02)  === #
 # ========================= #
 
-FUNCTION OF EACH SLAVE THREAD:
+FUNCTION OF EACH WORKER THREAD:
 
    Acquire mutexes of all levels then Release them in the inverse order.
 
@@ -103,7 +103,7 @@ THR-NUMBER: arbitrary, all threads do the same
 
 DETAILS:
 
-1. The Slave threads do the same actions described below:
+1. The Worker threads do the same actions described below:
    - acquire one by one mutexes of all levels from 0 up to 15 (N mutexes per level)
    - after acquiring the mutex of 15-th level start releaseng them in the inverse order
    - do the control actions with the flags and counters of mutexes (see comment to mf01)

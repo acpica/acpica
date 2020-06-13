@@ -26,7 +26,7 @@
      * EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
      */
     /*
-     * Run only for the Slave threads,
+     * Run only for the Worker threads,
      * they wait there for the Control
      * thread says 'all is ready',
      * 'go further'.
@@ -50,7 +50,7 @@
     }
 
     /*
-     * Infinite loop of the Slave Threads
+     * Infinite loop of the Worker Threads
      *
      * arg0 - number of threads
      * arg1 - ID of current thread
@@ -80,7 +80,7 @@ Zero)
 
         M116 (Arg2)
         /*
-         * Local0 - command for slave to be executed
+         * Local0 - command for worker to be executed
          *
          * Local7 - non-zero means to do break after
          *          confirming "I see zero do00".
@@ -97,7 +97,7 @@ Zero)
             /* Determine the command for particular thread */
 
             Local0 = C100 /* \C100 */
-            /* Control thread allows for slave threads to fulfill their commands */
+            /* Control thread allows for worker threads to fulfill their commands */
 
             If (DO00)
             {
@@ -124,7 +124,7 @@ Zero)
                 Local1 = DerefOf (BS02 [Arg2])
                 If (!Local1)
                 {
-                    /* Slave thread reports: "I see zero do00" */
+                    /* Worker thread reports: "I see zero do00" */
 
                     BS02 [Arg2] = RS00 /* \RS00 */
                     If (Local7)
@@ -141,7 +141,7 @@ Zero)
                 {
                     /* c100 (Idle thread) */
                     /*
-                     * This command is fulfilled by slave thread
+                     * This command is fulfilled by worker thread
                      * without directive of Control thread.
                      */
                     M201 (Arg2, VB03, "Sleep")

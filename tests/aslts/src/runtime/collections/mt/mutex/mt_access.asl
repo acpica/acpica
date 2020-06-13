@@ -35,7 +35,7 @@
  *
  * Notations:
  *
- * Leading thread - the slave thread #1 which plays in the relevant test
+ * Leading thread - the worker thread #1 which plays in the relevant test
  *                  some control role.
  */
 
@@ -45,16 +45,16 @@ Name(b900, Buffer(){0,0,0,0,0,0,0,0})
 
 /*
  * This buffer is zeroed by the leading thread and then to
- * be filled by other slave threads, some non-zero respond to
+ * be filled by other worker threads, some non-zero respond to
  * the leading thread.
  */
 Name(b901, Buffer(){0,0,0,0,0,0,0,0})
 
 /*
  * This buffer is zeroed by the leading thread and then to be
- * filled by other slave threads when they see that i900 is zero.
+ * filled by other worker threads when they see that i900 is zero.
  *
- * The leading thread uses it to check that all the slave threads
+ * The leading thread uses it to check that all the worker threads
  * saw zero i900 before to start the next command.
  */
 Name(b902, Buffer(){0,0,0,0,0,0,0,0})
@@ -66,7 +66,7 @@ Name(c900, 0x31) //
 /*
  * Test #.
  *
- * Leading thread (thread #1) is a controlling thread other are slave threads here.
+ * Leading thread (thread #1) is a controlling thread other are worker threads here.
  *
  * arg0 - number of threads
  * arg1 - ID of current thread
@@ -104,7 +104,7 @@ Method(m900, 1)
 
 			Store(c900, Local0)
 
-			/* Control thread allows for slave threads to fulfill their commands */
+			/* Control thread allows for worker threads to fulfill their commands */
 			if (i900) {
 				Store(DerefOf(Index(b901, arg2)), Local1)
 				/* This thread doesn't yet fulfill its command */
@@ -131,11 +131,11 @@ Method(m900, 1)
 }
 
 /*
- * Thread 1 waits for all the slave threads to
+ * Thread 1 waits for all the worker threads to
  * fulfill the specified for them the buffer of commands.
  *
  * arg0 - number of threads
- * arg1 - flag if to check that all the slave threads saw my zero do00
+ * arg1 - flag if to check that all the worker threads saw my zero do00
  */
 Method(m9ff, 2)
 {
@@ -144,7 +144,7 @@ Method(m9ff, 2)
 	Name(find, 0)
 
 	/*
-	 * Check that all the slave threads saw my
+	 * Check that all the worker threads saw my
 	 * non-zero do00 and fulfilled the proper command.
 	 */
 	While (1) {
@@ -179,7 +179,7 @@ Method(m9ff, 2)
 	}
 
 	/*
-	 * Check that all the slave threads saw my zero do00
+	 * Check that all the worker threads saw my zero do00
 	 * (if only it is not the EXIT command).
 	 * Note: assumed that EXIT command is specified for all
 	 *       the threads simultaneously, so only.
@@ -225,6 +225,6 @@ Method(m9ff, 2)
 			Sleep(sl00)
 		}
 
-		/* All the slave threads are ready for any next command */
+		/* All the worker threads are ready for any next command */
 	}
 }
