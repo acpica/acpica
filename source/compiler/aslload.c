@@ -1177,13 +1177,13 @@ LdAnalyzeExternals (
          * previously declared External
          */
         Node->Flags &= ~ANOBJ_IS_EXTERNAL;
-        Node->Type = (UINT8) ExternalOpType;
+        Node->Type = (UINT8) ActualOpType;
 
         /* Just retyped a node, probably will need to open a scope */
 
-        if (AcpiNsOpensScope (ExternalOpType))
+        if (AcpiNsOpensScope (ActualOpType))
         {
-            Status = AcpiDsScopeStackPush (Node, ExternalOpType, WalkState);
+            Status = AcpiDsScopeStackPush (Node, ActualOpType, WalkState);
             if (ACPI_FAILURE (Status))
             {
                 return (Status);
