@@ -1204,11 +1204,11 @@ LdAnalyzeExternals (
     }
     else if ((Node->Flags & ANOBJ_IS_EXTERNAL) &&
              (Op->Asl.ParseOpcode == PARSEOP_EXTERNAL) &&
-             (ExternalOpType == ACPI_TYPE_ANY))
+             (ActualOpType == ACPI_TYPE_ANY))
     {
         /* Allow update of externals of unknown type. */
 
-        Node->Type = (UINT8) ExternalOpType;
+        Node->Type = (UINT8) ActualExternalOpType;
         Status = AE_OK;
     }
 
