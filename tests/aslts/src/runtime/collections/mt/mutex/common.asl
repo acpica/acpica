@@ -41,7 +41,7 @@
      *   the test.
      *
      * Control Thread - the thread with index equal to 0
-     * Slave Threads  - all other threads with the non-zero index
+     * Worker Threads  - all other threads with the non-zero index
      *
      * Number of threads (total) -
      *    the value passed to AcpiExec Threads command
@@ -82,16 +82,16 @@
      */
     Name (VB00, 0x00) /* (0) common messages */
     Name (VB02, 0x01) /* (1) trace Control thread */
-    Name (VB03, 0x00) /* (0) trace Slave threads */
+    Name (VB03, 0x00) /* (0) trace Worker threads */
     Name (VB04, 0x01) /* (1) report statistics */
-    Name (VB05, 0x00) /* (0) report warnings by slave-threads */
-    Name (VB06, 0x01) /* (1) report errors by slave-threads */
+    Name (VB05, 0x00) /* (0) report warnings by worker-threads */
+    Name (VB06, 0x01) /* (1) report errors by worker-threads */
     /*
      * Multi-conditional switches of the verbal mode
      *
      * 0 - silent
      * 1 - allow only for Control Thread to report
-     * 2 - allow only for Slave Threads to report
+     * 2 - allow only for Worker Threads to report
      * 3 - allow for all threads to report
      *
      * mc-flags
@@ -100,17 +100,17 @@
     /* Sleep mode */
 
     Name (SL00, 0x32) /* Default milliseconds to sleep for Control thread */
-    Name (SL01, 0x32) /* Default milliseconds to sleep for Slave threads */
+    Name (SL01, 0x32) /* Default milliseconds to sleep for Worker threads */
     /*
      * Default milliseconds to sleep for Control thread
-     * before to check hang status of slave threads on
+     * before to check hang status of worker threads on
      * operations.
      */
     Name (SL02, 0x01F4)
     /* How many times maximum to repeat sl02 sleeping */
 
     Name (SL03, 0x01)
-    Name (SLM0, 0x00)   /* Sleeping mode for slave threads */
+    Name (SLM0, 0x00)   /* Sleeping mode for worker threads */
     /* Milliseconds to sleep for non-zero slm0 */
 
     Name (I100, 0x32)
@@ -122,7 +122,7 @@
     Name (I106, 0x96)
     Name (I107, 0xFA)
     Name (I108, 0x012C)
-    /* Commands for slaves */
+    /* Commands for workers */
 
     Name (C100, 0xF0) /* Idle thread */
     Name (C101, 0xF1) /* Exit the infinite loop */
@@ -136,22 +136,22 @@
     Name (C109, 0xF9) /* Invoke Serialized method */
     Name (C10A, 0xFA) /* Invoke non-Serialized method, use Mutex for exclusive access to critical section */
     Name (C10B, 0xFB) /* Non-serialized method is grabbed simultaneously */
-    /* Responds of slave threads (not intersect with 'Commands for slaves') */
+    /* Responds of worker threads (not intersect with 'Commands for workers') */
 
     Name (RS00, 0x97) /* "I see zero do00" */
     /* Common use strategies provided by the Control thread */
 
-    Name (CM01, 0x01) /* all slaves to exit the infinite loop */
-    Name (CM02, 0x02) /* all slaves to sleep for the specified period */
+    Name (CM01, 0x01) /* all workers to exit the infinite loop */
+    Name (CM02, 0x02) /* all workers to sleep for the specified period */
     /*
      * This buffer is to be filled by the control thread.
      * It is filed with the commands to be fulfilled by the
-     * slave threads.
+     * worker threads.
      *
      * The thread of i-th index takes the command from the
      * i-th element of Buffer.
      *
-     * It is read-only for slave threads.
+     * It is read-only for worker threads.
      */
     Name (BS00, Buffer (0x01)
     {
@@ -159,7 +159,7 @@
     })
     /*
      * This buffer is zeroed by the control thread and then to be
-     * filled by the slave threads with the commands they have been
+     * filled by the worker threads with the commands they have been
      * fulfilled.
      */
     Name (BS01, Buffer (0x01)
@@ -168,9 +168,9 @@
     })
     /*
      * This buffer is zeroed by the control thread and then to be
-     * filled by the slave threads when they see that do00 is zero.
+     * filled by the worker threads when they see that do00 is zero.
      *
-     * The control thread uses it to check that all the slave threads
+     * The control thread uses it to check that all the worker threads
      * saw zero do00 (are idle) before to start the next command.
      */
     Name (BS02, Buffer (0x01)
@@ -179,7 +179,7 @@
     })
     /*
      * This buffer is zeroed by the control thread and then to
-     * be filled by the idle slave threads.
+     * be filled by the idle worker threads.
      */
     Name (BS03, Buffer (0x01)
     {
@@ -187,7 +187,7 @@
     })
     /*
      * This buffer is zeroed by the control thread and then to be
-     * set up by the slave threads when they complete.
+     * set up by the worker threads when they complete.
      */
     Name (BS04, Buffer (0x01)
     {
@@ -198,7 +198,7 @@
      */
     /*
      * These package are zeroed by the control thread,
-     * the slave threads accumulate there:
+     * the worker threads accumulate there:
      * - errors
      * - number of errors
      * - warnings
@@ -239,7 +239,7 @@
      * non-zero enables to fulfill the commands specified by bs00.
      */
     Name (DO00, 0x00)
-    /* Opcodes of errors reported by slave threads */
+    /* Opcodes of errors reported by worker threads */
 
     Name (ER00, 0x01) /* Acquire failed */
     Name (ER01, 0x02) /* Flag of mutex is already non-zero (set up by some thread(s)) */
@@ -255,18 +255,18 @@
     Name (ER11, 0x0800) /* Serialized method doesn't provide exclusive call */
     Name (ER12, 0x1000) /* Non-serialized method thr-1 didn't get into method */
     Name (ER13, 0x2000) /* Non-serialized method thr-N didn't get into method */
-    /* Opcodes of warnings reported by slave threads */
+    /* Opcodes of warnings reported by worker threads */
 
     Name (WN00, 0x01) /* Acquire repeatedly the same mutex by thread which already owns it */
     /*
      * These packages are to be filled by the control thread.
      * They are filed with the arguments of commands specified
-     * for the slave threads.
+     * for the worker threads.
      *
      * The thread of i-th index takes the arguments from the
      * i-th elements of Packages.
      *
-     * These are read-only for slave threads.
+     * These are read-only for worker threads.
      *
      * For Acquire/Release:
      *
@@ -352,14 +352,14 @@
     Name (FLG3, 0x00)
     /*
      * The Control Thread manages and controls the specified testing strategy
-     * to be fulfilled by the Slave Threads.
+     * to be fulfilled by the Worker Threads.
      *
      * arg0 - number of threads
      * arg1 - ID of current thread (0, can be used for control only)
      * arg2 - Index of current thread
      * arg3 - cammand - index of the test strategy to be
      *        managed and controlled by the Control Thread
-     *        and fulfilled by the Slave Threads (Slaves).
+     *        and fulfilled by the Worker Threads (Workers).
      *
      * Arguments of the command arg3:
      *
@@ -369,19 +369,19 @@
      */
     Method (M100, 7, Serialized)
     {
-        /* Prohibits activity of all the slave threads */
+        /* Prohibits activity of all the worker threads */
 
         Switch (Arg3)
         {
             Case (0x01)
             {
-                /* CM01: All slaves to exit the infinite loop */
+                /* CM01: All workers to exit the infinite loop */
 
                 M10C (Arg0)
             }
             Case (0x02)
             {
-                /* CM02: All slaves to sleep for the specified period */
+                /* CM02: All workers to sleep for the specified period */
 
                 M10D (Arg0)
             }
@@ -469,14 +469,14 @@
     }
 
     /*
-     * Control thread waits for all the slave threads to
+     * Control thread waits for all the worker threads to
      * fulfill the specified for them buffer of commands.
      *
      * arg0 - number of threads
      */
     Method (M103, 1, Serialized)
     {
-        /* Wait for all Slave threads and check their statuses */
+        /* Wait for all Worker threads and check their statuses */
 
         Name (B000, Buffer (Arg0){})
         Name (B001, Buffer (Arg0){})
@@ -650,7 +650,7 @@
     }
 
     /*
-     * Report errors detected by the slave threads
+     * Report errors detected by the worker threads
      *
      * arg0 - name of test
      * arg1 - number of threads
@@ -750,26 +750,26 @@
      */
     Method (M108, 4, NotSerialized)
     {
-        /* all slaves to exit the infinite loop */
+        /* all workers to exit the infinite loop */
 
         M100 (Arg1, Arg2, Arg3, CM01, 0x00, 0x00, 0x00)
-        /* Report errors detected by the slave threads */
+        /* Report errors detected by the worker threads */
 
         M106 (Arg0, Arg1)
     }
 
     /*
-     * CM01: all slaves to exit the infinite loop
+     * CM01: all workers to exit the infinite loop
      *
      * arg0 - number of threads
      */
     Method (M10C, 1, Serialized)
     {
-        /* All slaves to exit the infinite loop */
+        /* All workers to exit the infinite loop */
 
         M200 (BS00, Arg0, C101) /* cmd: Exit the infinite loop */
         M114 (Arg0)
-        /* Wait for all Slave threads */
+        /* Wait for all Worker threads */
 
         Name (B000, Buffer (Arg0){})
         Name (B001, Buffer (Arg0){})
@@ -779,23 +779,23 @@
     }
 
     /*
-     * CM02: all slaves to sleep for the specified period
+     * CM02: all workers to sleep for the specified period
      *
      * arg0 - number of threads
      */
     Method (M10D, 1, NotSerialized)
     {
-        /* All slaves to sleep for the specified period */
+        /* All workers to sleep for the specified period */
 
         M200 (BS00, Arg0, C102) /* cmd: Sleep for the specified number of Milliseconds */
         M114 (Arg0)
-        /* Wait for all Slave threads */
+        /* Wait for all Worker threads */
 
         M103 (Arg0)
     }
 
     /*
-     * Control thread checks that the specified set of slave threads
+     * Control thread checks that the specified set of worker threads
      * hang on the specified operations or completed the operations.
      *
      * arg0 - number of threads
@@ -892,7 +892,7 @@
     }
 
     /*
-     * Control thread waits for all the slave threads to
+     * Control thread waits for all the worker threads to
      * fulfill the specified for them buffer of commands.
      *
      * arg0 - number of threads (total)
@@ -912,7 +912,7 @@
         Name (IDL0, 0x00)
         Name (QUIT, 0x00)
         /*
-         * Check that all the slave threads saw my
+         * Check that all the worker threads saw my
          * non-zero do00 and fulfilled the proper command.
          */
         While (0x01)
@@ -1057,7 +1057,7 @@
         }
 
         /*
-         * Set do00 to zero and check that all the slave threads
+         * Set do00 to zero and check that all the worker threads
          * saw my zero do00 (if only it is not the EXIT command).
          */
         M200 (BS02, Arg0, 0x00)
@@ -1122,7 +1122,7 @@
              */
             Sleep (SL00)
         }
-        /* All the slave threads are ready for any next command */
+        /* All the worker threads are ready for any next command */
     }
 
     /*
@@ -1233,7 +1233,7 @@
     }
 
     /*
-     * Control thread initiates execution of commands by the slave threads
+     * Control thread initiates execution of commands by the worker threads
      *
      * arg0 - number of threads (total)
      */
