@@ -306,6 +306,8 @@ MtMethodAnalysisWalkBegin (
         {
             ActualArgs = MtProcessParameterTypeList (NextType,
                 MethodInfo->ValidArgTypes);
+            MethodInfo->NumArguments = ActualArgs;
+            ArgNode->Asl.Value.Integer |= ActualArgs;
         }
 
         if ((MethodInfo->NumArguments) &&
