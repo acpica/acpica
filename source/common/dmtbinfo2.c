@@ -1596,6 +1596,52 @@ ACPI_DMTABLE_INFO           AcpiDmTableInfoPptt2[] =
 
 /*******************************************************************************
  *
+ * PRMT - Platform Runtime Mechanism Table
+ *        Version 1
+ *
+ ******************************************************************************/
+
+ACPI_DMTABLE_INFO           AcpiDmTableInfoPrmtHdr[] =
+{
+    {ACPI_DMT_UUID,     ACPI_PRMTH_OFFSET (PlatformGuid[0]),       "Platform GUID", 0},
+    {ACPI_DMT_UINT32,   ACPI_PRMTH_OFFSET (ModuleInfoOffset),      "Module info offset", 0},
+    {ACPI_DMT_UINT32,   ACPI_PRMTH_OFFSET (ModuleInfoCount),       "Module info count", 0},
+    ACPI_DMT_NEW_LINE,
+    ACPI_DMT_TERMINATOR
+
+};
+
+ACPI_DMTABLE_INFO           AcpiDmTableInfoPrmtModule[] =
+{
+    {ACPI_DMT_UINT16,   ACPI_PRMT0_OFFSET (Revision),               "Revision", 0},
+    {ACPI_DMT_UINT16,   ACPI_PRMT0_OFFSET (Length),                 "Length", 0},
+    {ACPI_DMT_UUID,     ACPI_PRMT0_OFFSET (ModuleGuid[0]),          "Module GUID", 0},
+    {ACPI_DMT_UINT16,   ACPI_PRMT0_OFFSET (MajorRev),               "Major Revision", 0},
+    {ACPI_DMT_UINT16,   ACPI_PRMT0_OFFSET (MinorRev),               "Minor Revision", 0},
+    {ACPI_DMT_UINT16,   ACPI_PRMT0_OFFSET (HandlerInfoCount),       "Handler Info Count", 0},
+    {ACPI_DMT_UINT32,   ACPI_PRMT0_OFFSET (HandlerInfoOffset),      "Handler Info Offset", 0},
+    {ACPI_DMT_UINT64,   ACPI_PRMT0_OFFSET (MmioListPointer),        "Mmio List pointer", 0},
+    ACPI_DMT_NEW_LINE,
+    ACPI_DMT_TERMINATOR
+
+};
+
+ACPI_DMTABLE_INFO           AcpiDmTableInfoPrmtHandler[] =
+{
+    {ACPI_DMT_UINT16,   ACPI_PRMT1_OFFSET (Revision),               "Revision", 0},
+    {ACPI_DMT_UINT16,   ACPI_PRMT1_OFFSET (Length),                 "Length", 0},
+    {ACPI_DMT_UUID,     ACPI_PRMT1_OFFSET (HandlerGuid[0]),         "Handler GUID", 0},
+    {ACPI_DMT_UINT64,   ACPI_PRMT1_OFFSET (HandlerAddress),         "Handler address", 0},
+    {ACPI_DMT_UINT64,   ACPI_PRMT1_OFFSET (StaticDataBufferAddress),"Satic Data Address", 0},
+    {ACPI_DMT_UINT64,   ACPI_PRMT1_OFFSET (AcpiParamBufferAddress), "ACPI Parameter Address", 0},
+    ACPI_DMT_NEW_LINE,
+    ACPI_DMT_TERMINATOR
+
+};
+
+
+/*******************************************************************************
+ *
  * RASF -  RAS Feature table
  *
  ******************************************************************************/

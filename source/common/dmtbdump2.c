@@ -2005,6 +2005,68 @@ NextSubtable:
 
 /*******************************************************************************
  *
+ * FUNCTION:    AcpiDmDumpPrmt
+ *
+ * PARAMETERS:  Table               - A PRMT table
+ *
+ * RETURN:      None
+ *
+ * DESCRIPTION: Format the contents of a PRMT. This table type consists
+ *              of an open-ended number of subtables.
+ *
+ ******************************************************************************/
+
+void
+AcpiDmDumpPrmt (
+    ACPI_TABLE_HEADER       *Table)
+{
+    UINT32                  CurrentOffset = sizeof (ACPI_TABLE_HEADER);
+    ACPI_TABLE_PRMT_HEADER  *PrmtHeader;
+    ACPI_PRMT_MODULE_INFO   *PrmtModuleInfo;
+    ACPI_PRMT_HANDLER_INFO  *PrmtHandlerInfo;
+    ACPI_STATUS             Status;
+    UINT32                  i, j;
+
+
+    /* Main table header */
+
+    PrmtHeader = ACPI_ADD_PTR (ACPI_TABLE_PRMT_HEADER, Table, CurrentOffset);
+    Status = AcpiDmDumpTable (Table->Length, CurrentOffset, PrmtHeader,
+        sizeof (ACPI_TABLE_PRMT_HEADER), AcpiDmTableInfoPrmtHdr);
+    if (ACPI_FAILURE (Status))
+    {
+        AcpiOsPrintf ("Invalid PRMT header\n");
+        return;
+    }
+
+    CurrentOffset += sizeof (ACPI_TABLE_PRMT_HEADER);
+
+    /* PRM Module Information Structure array */
+
+    for (i = 0; i < PrmtHeader->ModuleInfoCount; ++i)
+    {
+        PrmtModuleInfo = ACPI_ADD_PTR (ACPI_PRMT_MODULE_INFO, Table, CurrentOffset);
+        Status = AcpiDmDumpTable (Table->Length, CurrentOffset, PrmtModuleInfo,
+            sizeof (ACPI_PRMT_MODULE_INFO), AcpiDmTableInfoPrmtModule);
+
+        CurrentOffset += sizeof (ACPI_PRMT_MODULE_INFO);
+
+        /* PRM handler information structure array */
+
+        for (j = 0; j < PrmtModuleInfo->HandlerInfoCount; ++j)
+        {
+            PrmtHandlerInfo = ACPI_ADD_PTR (ACPI_PRMT_HANDLER_INFO, Table, CurrentOffset);
+            Status = AcpiDmDumpTable (Table->Length, CurrentOffset, PrmtHandlerInfo,
+                sizeof (ACPI_PRMT_HANDLER_INFO), AcpiDmTableInfoPrmtHandler);
+
+            CurrentOffset += sizeof (ACPI_PRMT_HANDLER_INFO);
+        }
+    }
+}
+
+
+/*******************************************************************************
+ *
  * FUNCTION:    AcpiDmDumpRgrt
  *
  * PARAMETERS:  Table               - A RGRT table
