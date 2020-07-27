@@ -1440,13 +1440,21 @@ typedef struct acpi_pci_id
 
 } ACPI_PCI_ID;
 
+typedef struct acpi_mem_mapping
+{
+    ACPI_PHYSICAL_ADDRESS           PhysicalAddress;
+    UINT8                           *LogicalAddress;
+    ACPI_SIZE                       Length;
+    struct acpi_mem_mapping         *NextMm;
+
+} ACPI_MEM_MAPPING;
+
 typedef struct acpi_mem_space_context
 {
     UINT32                          Length;
     ACPI_PHYSICAL_ADDRESS           Address;
-    ACPI_PHYSICAL_ADDRESS           MappedPhysicalAddress;
-    UINT8                           *MappedLogicalAddress;
-    ACPI_SIZE                       MappedLength;
+    ACPI_MEM_MAPPING                *CurMm;
+    ACPI_MEM_MAPPING                *FirstMm;
 
 } ACPI_MEM_SPACE_CONTEXT;
 
