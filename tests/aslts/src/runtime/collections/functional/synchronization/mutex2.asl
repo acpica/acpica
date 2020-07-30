@@ -613,7 +613,7 @@
      * then Release them all in the inverse order.
      *
      * Exactly m301 but additionally:
-     *    all Release opreations are located into separate method.
+     *    all Release operations are located into separate method.
      */
     Method (M36A, 0, Serialized)
     {
@@ -810,7 +810,7 @@
      * then Release them all in the inverse order.
      *
      * Exactly m301 but additionally:
-     *    all Acquire and Release opreations are located into separate methods.
+     *    all Acquire and Release operations are located into separate methods.
      */
     Method (M36B, 0, Serialized)
     {
@@ -1145,7 +1145,7 @@
 
     /*
      * Exception on Release.
-     * Attempt ot Release clean mutex which was never Acquired.
+     * Attempt to Release clean mutex which was never Acquired.
      */
     Method (M07B, 0, Serialized)
     {
@@ -1301,7 +1301,7 @@
              *
              * Break the sequence of Acquiring mutexes while Releasing them,
              * jump over the level.
-             * Run Releasing mutexes NOT from (lpC0-1) level which whould be
+             * Run Releasing mutexes NOT from (lpC0-1) level which would be
              * correct but from (lpC0-2) level down to 0 level so jumping over
              * the mutex of (lpC0-1) level which is Acquired which should cause
              * each of these Releases to generate AE_AML_MUTEX_ORDER exception.

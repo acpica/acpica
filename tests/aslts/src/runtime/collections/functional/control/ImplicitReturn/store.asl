@@ -754,7 +754,7 @@ Method(mf6e,, Serialized)
           if (tmp0) {
               CH03("", z138, 0x051, __LINE__, 0)
               // Oct 2013, David Box
-              // Implicit return for logical opertions (LNot, LEqual, ...)
+              // Implicit return for logical operations (LNot, LEqual, ...)
               // returns logical value of the operation
               Store(Ones, Local0)
               if (LNotEqual(i000, Local0)) {
@@ -774,7 +774,7 @@ Method(mf6e,, Serialized)
           if (tmp0) {
               CH03("", z138, 0x055, __LINE__, 0)
               // Oct 2013, David Box
-              // Implicit return for logical opertions (LNot, LEqual, ...)
+              // Implicit return for logical operations (LNot, LEqual, ...)
               // returns logical value of the operation
               Store(Zero, Local0)
               if (LNotEqual(i000, Local0)) {
@@ -807,7 +807,7 @@ Method(mf6e,, Serialized)
           if (tmp0) {
               CH03("", z138, 0x05d, __LINE__, 0)
               // Oct 2013, David Box
-              // Implicit return for logical opertions (LNot, LEqual, ...)
+              // Implicit return for logical operations (LNot, LEqual, ...)
               // returns logical value of the operation
               Store(Ones, Local0)
               if (LNotEqual(i000, Local0)) {
@@ -827,7 +827,7 @@ Method(mf6e,, Serialized)
           if (tmp0) {
               CH03("", z138, 0x061, __LINE__, 0)
               // Oct 2013, David Box
-              // Implicit return for logical opertions (LNot, LEqual, ...)
+              // Implicit return for logical operations (LNot, LEqual, ...)
               // returns logical value of the operation
               Store(Zero, Local0)
               if (LNotEqual(i000, Local0)) {

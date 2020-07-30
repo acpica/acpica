@@ -11,7 +11,7 @@ Friday, April 22, 2005 6:17 PM
    1. Intensively applied in other tests and thus
       might be considered being already verified.
 
-      Do simple separate test for each ot these
+      Do simple separate test for each of these
       operators which will be the places where,
       in the future, the additional sub-tests for
       these operators, if any, could be located.

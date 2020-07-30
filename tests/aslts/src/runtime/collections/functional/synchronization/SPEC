@@ -16,11 +16,11 @@ for Releasing mutexes of the same level too).
 
 m36a:
 Exactly m301 but additionally:
-all Release opreations are located into separate method.
+all Release operations are located into separate method.
 
 m36b:
 Exactly m301 but additionally:
-all Acquire and Release opreations are located into separate methods.
+all Acquire and Release operations are located into separate methods.
 
 m36c:
 Invalid sequence of Acquire operations:
@@ -39,7 +39,7 @@ Do it for all level mutexes and Global lock too.
 
 m07b:
 Exception on Release.
-Attempt ot Release clean mutex which was never Acquired.
+Attempt to Release clean mutex which was never Acquired.
 
 m38a:
 Exception on Release.

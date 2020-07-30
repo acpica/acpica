@@ -103,7 +103,7 @@
         /* 0008 */  0x04, 0x05, 0x05, 0x05, 0x05, 0x05, 0x01, 0x00,  // ........
         /* 0010 */  0x00, 0x06                                       // ..
     })
-    /* Flags of types not causing exceptins on Increment/Decrement */
+    /* Flags of types not causing exceptions on Increment/Decrement */
     /* (~ Computational Data Objects) */
     Name (B67B, Buffer (0x12)
     {
