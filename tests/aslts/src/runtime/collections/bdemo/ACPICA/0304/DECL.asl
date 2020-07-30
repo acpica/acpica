@@ -53,10 +53,10 @@
             Name (N200, 0x06) /* number of calls to m200 */
             Name (N300, 0x0C) /* number of calls to m300 */
             Name (N400, 0x18) /* number of calls to m400 */
-            Name (P100, Package (N100){}) /* Package to keep total indexs of call to m100 */
-            Name (P200, Package (N200){}) /* Package to keep total indexs of call to m200 */
-            Name (P300, Package (N300){}) /* Package to keep total indexs of call to m300 */
-            Name (P400, Package (0x0100){}) /* Package to keep total indexs of call to m400 */
+            Name (P100, Package (N100){}) /* Package to keep total indexes of call to m100 */
+            Name (P200, Package (N200){}) /* Package to keep total indexes of call to m200 */
+            Name (P300, Package (N300){}) /* Package to keep total indexes of call to m300 */
+            Name (P400, Package (0x0100){}) /* Package to keep total indexes of call to m400 */
             /* Benchmarks of indexes */
 
             Name (B1B0, Buffer (N100)

@@ -202,10 +202,10 @@ Method(m0fb,, Serialized)
 	Name(n300, 12) // number of calls to m300
 	Name(n400, 24) // number of calls to m400
 
-	Name(p100, Package(n100) {}) // Package to keep total indexs of call to m100
-	Name(p200, Package(n200) {}) // Package to keep total indexs of call to m200
-	Name(p300, Package(n300) {}) // Package to keep total indexs of call to m300
-	Name(p400, Package(n400) {}) // Package to keep total indexs of call to m400
+	Name(p100, Package(n100) {}) // Package to keep total indexes of call to m100
+	Name(p200, Package(n200) {}) // Package to keep total indexes of call to m200
+	Name(p300, Package(n300) {}) // Package to keep total indexes of call to m300
+	Name(p400, Package(n400) {}) // Package to keep total indexes of call to m400
 
 	// Benchmarks of indexes
 	Name(b1b0, Buffer(n100) {0,22,44})
@@ -640,10 +640,10 @@ Method(m18a, 1, Serialized)
 	Name(n300, 12) // number of calls to m300
 	Name(n400, 24) // number of calls to m400
 
-	Name(p100, Package(n100) {}) // Package to keep total indexs of call to m100
-	Name(p200, Package(n200) {}) // Package to keep total indexs of call to m200
-	Name(p300, Package(n300) {}) // Package to keep total indexs of call to m300
-	Name(p400, Package(0x100) {}) // Package to keep total indexs of call to m400
+	Name(p100, Package(n100) {}) // Package to keep total indexes of call to m100
+	Name(p200, Package(n200) {}) // Package to keep total indexes of call to m200
+	Name(p300, Package(n300) {}) // Package to keep total indexes of call to m300
+	Name(p400, Package(0x100) {}) // Package to keep total indexes of call to m400
 
 	// Benchmarks of indexes
 	Name(b1b0, Buffer(n100) {0,22,44})
@@ -916,10 +916,10 @@ Method(m18b, 1, Serialized)
 	Name(n300, 12) // number of calls to m300
 	Name(n400, 24) // number of calls to m400
 
-	Name(p100, Package(n100) {}) // Package to keep total indexs of call to m100
-	Name(p200, Package(n200) {}) // Package to keep total indexs of call to m200
-	Name(p300, Package(n300) {}) // Package to keep total indexs of call to m300
-	Name(p400, Package(0x100) {}) // Package to keep total indexs of call to m400
+	Name(p100, Package(n100) {}) // Package to keep total indexes of call to m100
+	Name(p200, Package(n200) {}) // Package to keep total indexes of call to m200
+	Name(p300, Package(n300) {}) // Package to keep total indexes of call to m300
+	Name(p400, Package(0x100) {}) // Package to keep total indexes of call to m400
 
 	// Benchmarks of indexes
 	Name(b1b0, Buffer(n100) {0,22,44})

@@ -83,7 +83,7 @@
  *         (exotic case of CopyObject usage).
  *         I will not verify this case, at least now.
  *
- * So, there is no much sence to verify behaviour of:
+ * So, there is no much sense to verify behaviour of:
  *
  * - RefOf to combined object
  * - combined object passed by Arg to method

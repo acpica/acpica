@@ -599,7 +599,7 @@ AcpiDbDisplayHelp (
     }
     else
     {
-        /* Display help for all commands that match the subtring */
+        /* Display help for all commands that match the substring */
 
         AcpiDbDisplayCommandInfo (Command, TRUE);
     }

@@ -79,7 +79,7 @@ sec_str_to_cent_units()
 }
 export -f sec_str_to_cent_units
 
-# Return the length ot time period in centisecond time units
+# Return the length of time period in centisecond time units
 # Note: assumed the total running time is less than 24 hours
 # arg1 - start time in centisecond time units
 # arg2 - finish time in centisecond time units
@@ -100,7 +100,7 @@ get_cent_units_diff()
 }
 export -f get_cent_units_diff
 
-# Calculate and return the length ot time period as string {[h:]m:s.c}
+# Calculate and return the length of time period as string {[h:]m:s.c}
 # arg1 - start time string {h:m:s}
 # arg2 - finish time string {h:m:s}
 get_cent_str_diff()

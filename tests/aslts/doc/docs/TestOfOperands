@@ -37,7 +37,7 @@ feature separately), so after implementing some its part you
 see some ASL functionality is involved by test repeatedly though
 you thought about different things. This text is in particular
 intended to enumerate all the aspects to be verified, and don't
-furhter hesitate if all them are applied.
+further hesitate if all them are applied.
 
 The intention of the test is to verify all the grammar rules
 of specifying and delivering operands to operators.
@@ -317,7 +317,7 @@ such simplest and the total coverage assured approach (absolute
 test) impossible, because they prevent automated processing.
 About all that below. In consequence of all that, it is remained
 only to rely on the human factor, intuition and skill to achieve
-the worthy covarage of the test.
+the worthy coverage of the test.
 
    Elements of ASL Package could be only Integer, String, Buffer
 and Package type objects. Other type objects could not be represented
@@ -707,8 +707,8 @@ simplifying the designing of tests. But the rest of checkings should
 be provided by the actions individual for the particular operators.
 
 
-   BRIEF RECOMENDATIONS  (summary from above)
-   ====================
+   BRIEF RECOMMENDATIONS (summary from above)
+   =====================
 
    There should be the most important or usually forgotten things
 
@@ -719,7 +719,7 @@ be provided by the actions individual for the particular operators.
  5. use Methods in expressions and expressions as parameters to Methods 
  6. initiate all kind of Implicit Source Operand Conversion
  7. exercise all Operators
- 8. apply recomendations given in Miscellaneous section
+ 8. apply recommendations given in Miscellaneous section
  9. use full and reduced forms of operators (mean optional Results)
 10. use zero length Buffers
 11. use uninitialized elements of Packages

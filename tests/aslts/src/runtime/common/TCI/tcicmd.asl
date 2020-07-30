@@ -55,7 +55,7 @@
      *   _TCI-end statistics (command TCI_CMD_GET_MC_STAT_AFTER_TCI_TERM)
      *   _TCI-begin statistics (command TCI_CMD_GET_MC_STAT_BEFORE_TCI_RUN)
      */
-    Name (C210, 0x00) /* Tittle */
+    Name (C210, 0x00) /* Title */
     Name (C211, 0x04) /* acq0 */
     Name (C212, 0x09) /* acq1 (-) */
     Name (C213, 0x0E) /* acq2 (-) */
@@ -244,7 +244,7 @@
      * Print out the Memory Consumption Statistics Package
      *
      * arg0 - Memory Consumption Statistics Package
-     * arg1 - opcode of the tittle message
+     * arg1 - opcode of the title message
      */
     Method (M3A2, 2, Serialized)
     {
@@ -275,7 +275,7 @@
         {
             If ((LPC0 == C210))
             {
-                Debug = "Tittle:"
+                Debug = "Title:"
             }
             ElseIf ((LPC0 == C211))
             {

@@ -3568,7 +3568,7 @@
         If (Arg0)
         {
             M486 ()
-            /* Error: CondRefOf failes with the Uninitialized type */
+            /* Error: CondRefOf fails with the Uninitialized type */
 
             Local7 = M488 (OP, 0x01, 0x00, 0x00, 0x00, 0x00)
         }
@@ -3590,7 +3590,7 @@
         If (Arg0)
         {
             M486 ()
-            /* Error: CopyObject failes with the Uninitialized type */
+            /* Error: CopyObject fails with the Uninitialized type */
 
             Local7 = M488 (OP, 0x01, 0x00, 0x00, 0x00, 0x00)
         }
@@ -8462,7 +8462,7 @@
         If (Arg0)
         {
             M486 ()
-            /* Error: ObjectType failes with the Uninitialized type */
+            /* Error: ObjectType fails with the Uninitialized type */
 
             Local7 = M488 (OP, 0x01, 0x00, 0x00, 0x00, 0x00)
         }
@@ -8508,7 +8508,7 @@
         If (Arg0)
         {
             M486 ()
-            /* Error: RefOf failes with the Uninitialized type */
+            /* Error: RefOf fails with the Uninitialized type */
 
             Local7 = M488 (OP, 0x01, 0x00, 0x00, 0x00, 0x00)
         }
@@ -8570,7 +8570,7 @@
         If (Arg0)
         {
             M486 ()
-            /* Error: Return failes with the Uninitialized type */
+            /* Error: Return fails with the Uninitialized type */
 
             Local7 = M488 (OP, 0x01, 0x00, 0x00, 0x00, 0x00)
         }
@@ -8720,7 +8720,7 @@
         If (Arg0)
         {
             M486 ()
-            /* Error: Store failes with the Uninitialized type */
+            /* Error: Store fails with the Uninitialized type */
 
             Local7 = M488 (OP, 0x01, 0x00, 0x00, 0x00, 0x00)
         }

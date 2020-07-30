@@ -94,7 +94,7 @@ would need to be updated to match the same behavior as the acpiexec
 utility and since acpiexec can already dump the entire namespace (via the 
 'namespace' command), we no longer have the need to maintain acpinames.
 
-    In order to dump the contents of the ACPI namepsace using acpiexec, 
+    In order to dump the contents of the ACPI namespace using acpiexec,
 execute the following command from the command line:
 
         acpiexec -b "n" [aml files]
@@ -17606,7 +17606,7 @@ bypass the "implicit conversion" mechanism of the Store operator.)
 The ACPI 2.0 semantics for the SizeOf operator are fully
 implemented.  The change is that performing a SizeOf on a
 reference object causes an automatic dereference of the object to
-tha actual value before the size is evaluated. This behavior was
+the actual value before the size is evaluated. This behavior was
 undefined in ACPI 1.0.
 
 The ACPI 2.0 semantics for the Extended IRQ resource descriptor

@@ -41,7 +41,7 @@
      *         of it in other run-time tests.
      *
      * Note 2: Since the ability itself to tun this test is error
-     *         the test returns Error inconditionally (Method m1dc).
+     *         the test returns Error unconditionally (Method m1dc).
      *         But only one that error is expected. When the bug is
      *         fixed we will encounter that the test is no more
      *         compiled and fix it (see Note 1).
