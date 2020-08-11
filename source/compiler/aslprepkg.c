@@ -917,7 +917,7 @@ ApPackageTooSmall (
     UINT32                      ExpectedCount)
 {
 
-    sprintf (AslGbl_MsgBuffer, "%s: length %u, required minimum is %u",
+    sprintf (AslGbl_MsgBuffer, "%4.4s: length %u, required minimum is %u",
         PredefinedName, Count, ExpectedCount);
 
     AslError (ASL_ERROR, ASL_MSG_RESERVED_PACKAGE_LENGTH, Op, AslGbl_MsgBuffer);
@@ -946,7 +946,7 @@ ApZeroLengthPackage (
     ACPI_PARSE_OBJECT           *Op)
 {
 
-    sprintf (AslGbl_MsgBuffer, "%s: length is zero", PredefinedName);
+    sprintf (AslGbl_MsgBuffer, "%4.4s: length is zero", PredefinedName);
 
     AslError (ASL_ERROR, ASL_MSG_RESERVED_PACKAGE_LENGTH, Op, AslGbl_MsgBuffer);
 }
@@ -975,7 +975,7 @@ ApPackageTooLarge (
     UINT32                      ExpectedCount)
 {
 
-    sprintf (AslGbl_MsgBuffer, "%s: length is %u, only %u required",
+    sprintf (AslGbl_MsgBuffer, "%4.4s: length is %u, only %u required",
         PredefinedName, Count, ExpectedCount);
 
     AslError (ASL_REMARK, ASL_MSG_RESERVED_PACKAGE_LENGTH, Op, AslGbl_MsgBuffer);
