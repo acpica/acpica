@@ -318,6 +318,17 @@ ApCheckPackage (
          */
         for (i = 0; i < Count; i++)
         {
+            if (!Op)
+            {
+                /*
+                 * If we get to this point, it means that the package length
+                 * is larger than the initializer list. Stop processing the
+                 * package and return because we have run out of package
+                 * elements to analyze.
+                 */
+                return;
+            }
+
             ApCheckObjectType (Predefined->Info.Name, Op,
                 Package->RetInfo.ObjectType1, i);
             Op = Op->Asl.Next;
