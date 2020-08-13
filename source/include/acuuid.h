@@ -169,6 +169,10 @@
 #define UUID_PCI_HOST_BRIDGE            "33db4d5b-1ff7-401c-9657-7441c03dd766"
 #define UUID_I2C_DEVICE                 "3cdff6f7-4267-4555-ad05-b30a3d8938de"
 #define UUID_POWER_BUTTON               "dfbcf3c5-e7a5-44e6-9c1f-29c76f6e059c"
+#define UUID_MEMORY_DEVICE              "03b19910-f473-11dd-87af-0800200c9a66"
+#define UUID_GENERIC_BUTTONS_DEVICE     "fa6bd625-9ce8-470d-a2c7-b3ca36c4282e"
+#define UUID_NVDIMM_ROOT_DEVICE         "2f10e7a4-9e91-11e4-89d3-123b93f75cba"
+#define UUID_CONTROL_METHOD_BATTERY     "f18fc78b-0f15-4978-b793-53f833a1d35b"
 
 /* Interfaces */
 
