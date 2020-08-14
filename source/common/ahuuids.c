@@ -200,6 +200,8 @@ const AH_UUID  Gbl_AcpiUuids[] =
     {"Battery Thermal Limit",       UUID_BATTERY_THERMAL_LIMIT},
     {"Thermal Extensions",          UUID_THERMAL_EXTENSIONS},
     {"Device Properties for _DSD",  UUID_DEVICE_PROPERTIES},
+    {"Device Graphs for _DSD",      UUID_DEVICE_GRAPHS},
+    {"Hierarchical Data Extension", UUID_HIERARCHICAL_DATA_EXTENSION},
 
     {NULL, NULL}
 };
