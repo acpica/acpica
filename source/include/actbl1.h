@@ -1844,10 +1844,9 @@ typedef struct acpi_hmat_locality
 /* Values for Memory Hierarchy flag */
 
 #define ACPI_HMAT_MEMORY            0
-#define ACPI_HMAT_LAST_LEVEL_CACHE  1
-#define ACPI_HMAT_1ST_LEVEL_CACHE   2
-#define ACPI_HMAT_2ND_LEVEL_CACHE   3
-#define ACPI_HMAT_3RD_LEVEL_CACHE   4
+#define ACPI_HMAT_1ST_LEVEL_CACHE   1
+#define ACPI_HMAT_2ND_LEVEL_CACHE   2
+#define ACPI_HMAT_3RD_LEVEL_CACHE   3
 
 /* Values for DataType field above */
 
