@@ -380,6 +380,7 @@ AcpiNsBuildInternalName (
     const char              *ExternalName = Info->NextExternalChar;
     char                    *Result = NULL;
     UINT32                  i;
+    char                    TmpSeg[ACPI_NAMESEG_SIZE+1];
 
 
     ACPI_FUNCTION_TRACE (NsBuildInternalName);
@@ -443,6 +444,7 @@ AcpiNsBuildInternalName (
 
     for (; NumSegments; NumSegments--)
     {
+        memset (TmpSeg, 0, ACPI_NAMESEG_SIZE+1);
         for (i = 0; i < ACPI_NAMESEG_SIZE; i++)
         {
             if (ACPI_IS_PATH_SEPARATOR (*ExternalName) ||
@@ -450,16 +452,17 @@ AcpiNsBuildInternalName (
             {
                 /* Pad the segment with underscore(s) if segment is short */
 
-                Result[i] = '_';
+                TmpSeg[i] = '_';
             }
             else
             {
                 /* Convert the character to uppercase and save it */
 
-                Result[i] = (char) toupper ((int) *ExternalName);
+                TmpSeg[i] = (char) toupper ((int) *ExternalName);
                 ExternalName++;
             }
         }
+    AcpiUtWriteUint (Result, ACPI_NAMESEG_SIZE, TmpSeg, ACPI_NAMESEG_SIZE);
 
         /* Now we must have a path separator, or the pathname is bad */
 
