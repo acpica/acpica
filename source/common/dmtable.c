@@ -749,7 +749,7 @@ AcpiDmDumpDataTable (
         {
             /* Dump the raw table data */
 
-            Length = Table->Length;
+            Length = AcpiUtReadUint32 (&Table->Length);
 
             AcpiOsPrintf ("\n/*\n%s: Length %d (0x%X)\n\n",
                 ACPI_RAW_TABLE_DATA_HEADER, Length, Length);
@@ -766,7 +766,7 @@ AcpiDmDumpDataTable (
      */
     if (ACPI_COMPARE_NAMESEG (Table->Signature, ACPI_SIG_FACS))
     {
-        Length = Table->Length;
+        Length = AcpiUtReadUint32 (&Table->Length);
         Status = AcpiDmDumpTable (Length, 0, Table, 0, AcpiDmTableInfoFacs);
         if (ACPI_FAILURE (Status))
         {
@@ -786,7 +786,7 @@ AcpiDmDumpDataTable (
         /*
          * All other tables must use the common ACPI table header, dump it now
          */
-        Length = Table->Length;
+        Length = AcpiUtReadUint32(&Table->Length);
         Status = AcpiDmDumpTable (Length, 0, Table, 0, AcpiDmTableInfoHeader);
         if (ACPI_FAILURE (Status))
         {
@@ -1426,7 +1426,7 @@ AcpiDmDumpTable (
 
             AcpiOsPrintf ("%2.2X", *Target);
             Temp8 = AcpiDmGenerateChecksum (Table,
-                ACPI_CAST_PTR (ACPI_TABLE_HEADER, Table)->Length,
+                AcpiUtReadUint32 (&(ACPI_CAST_PTR (ACPI_TABLE_HEADER, Table)->Length)),
                 ACPI_CAST_PTR (ACPI_TABLE_HEADER, Table)->Checksum);
 
             if (Temp8 != ACPI_CAST_PTR (ACPI_TABLE_HEADER, Table)->Checksum)

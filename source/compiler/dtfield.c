@@ -469,7 +469,7 @@ DtCompileInteger (
         DtError (ASL_ERROR, ASL_MSG_INTEGER_SIZE, Field, AslGbl_MsgBuffer);
     }
 
-    memcpy (Buffer, &Value, ByteLength);
+    AcpiUtWriteUint (Buffer, ByteLength, &Value, sizeof (UINT64));
     return;
 }
 

@@ -152,6 +152,8 @@
 #include "acpi.h"
 #include "accommon.h"
 #include "actables.h"
+#include "platform/acenv.h"
+#include "acutils.h"
 
 #define _COMPONENT          ACPI_TABLES
         ACPI_MODULE_NAME    ("tbprint")
@@ -259,7 +261,7 @@ AcpiTbPrintTableHeader (
 
         ACPI_INFO (("%-4.4s 0x%8.8X%8.8X %06X",
             Header->Signature, ACPI_FORMAT_UINT64 (Address),
-            Header->Length));
+            AcpiUtReadUint32 (&Header->Length)));
     }
     else if (ACPI_VALIDATE_RSDP_SIG (Header->Signature))
     {
@@ -286,9 +288,12 @@ AcpiTbPrintTableHeader (
             "%-4.4s 0x%8.8X%8.8X"
             " %06X (v%.2d %-6.6s %-8.8s %08X %-4.4s %08X)",
             LocalHeader.Signature, ACPI_FORMAT_UINT64 (Address),
-            LocalHeader.Length, LocalHeader.Revision, LocalHeader.OemId,
-            LocalHeader.OemTableId, LocalHeader.OemRevision,
-            LocalHeader.AslCompilerId, LocalHeader.AslCompilerRevision));
+            AcpiUtReadUint32 (&LocalHeader.Length),
+            LocalHeader.Revision, LocalHeader.OemId,
+            LocalHeader.OemTableId,
+            AcpiUtReadUint32 (&LocalHeader.OemRevision),
+            LocalHeader.AslCompilerId,
+            AcpiUtReadUint32 (&LocalHeader.AslCompilerRevision)));
     }
 }
 

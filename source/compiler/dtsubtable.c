@@ -486,6 +486,6 @@ DtSetSubtableLength (
         return;
     }
 
-    memcpy (Subtable->LengthField, &Subtable->TotalLength,
-        Subtable->SizeOfLengthField);
+    AcpiUtWriteUint (Subtable->LengthField, Subtable->SizeOfLengthField,
+                     &Subtable->TotalLength, sizeof (Subtable->TotalLength));
 }
