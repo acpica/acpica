@@ -150,6 +150,7 @@
  *****************************************************************************/
 
 #include "acpibin.h"
+#include "acutils.h"
 
 
 ACPI_TABLE_HEADER           Header1;
@@ -287,14 +288,14 @@ AbPrintHeadersInfo (
     /* Display header information for both headers */
 
     printf ("Signature          %8.4s : %4.4s\n",    Header->Signature, Header2->Signature);
-    printf ("Length             %8.8X : %8.8X\n",    Header->Length, Header2->Length);
+    printf ("Length             %8.8X : %8.8X\n",    AcpiUtReadUint32 (&Header->Length), AcpiUtReadUint32 (&Header2->Length));
     printf ("Revision           %8.2X : %2.2X\n",    Header->Revision, Header2->Revision);
     printf ("Checksum           %8.2X : %2.2X\n",    Header->Checksum, Header2->Checksum);
     printf ("OEM ID             %8.6s : %.6s\n",     Header->OemId, Header2->OemId);
     printf ("OEM Table ID       %8.8s : %.8s\n",     Header->OemTableId, Header2->OemTableId);
-    printf ("OEM Revision       %8.8X : %8.8X\n",    Header->OemRevision, Header2->OemRevision);
+    printf ("OEM Revision       %8.8X : %8.8X\n",    AcpiUtReadUint32 (&Header->OemRevision), AcpiUtReadUint32 (&Header2->OemRevision));
     printf ("ASL Compiler ID    %8.4s : %.4s\n",     Header->AslCompilerId, Header2->AslCompilerId);
-    printf ("Compiler Revision  %8.8X : %8.8X\n",    Header->AslCompilerRevision, Header2->AslCompilerRevision);
+    printf ("Compiler Revision  %8.8X : %8.8X\n",    AcpiUtReadUint32 (&Header->AslCompilerRevision), AcpiUtReadUint32 (&Header2->AslCompilerRevision));
     printf ("\n");
 }
 
