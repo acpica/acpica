@@ -646,7 +646,7 @@ AcpiDmDumpCpep (
 {
     ACPI_STATUS             Status;
     ACPI_CPEP_POLLING       *Subtable;
-    UINT32                  Length = Table->Length;
+    UINT32                  Length = AcpiUtReadUint32 (&Table->Length);
     UINT32                  Offset = sizeof (ACPI_TABLE_CPEP);
 
 
@@ -661,7 +661,7 @@ AcpiDmDumpCpep (
     /* Subtables */
 
     Subtable = ACPI_ADD_PTR (ACPI_CPEP_POLLING, Table, Offset);
-    while (Offset < Table->Length)
+    while (Offset < Length)
     {
         AcpiOsPrintf ("\n");
         Status = AcpiDmDumpTable (Length, Offset, Subtable,
