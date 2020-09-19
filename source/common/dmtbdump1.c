@@ -1097,11 +1097,14 @@ AcpiDmDumpDrtm (
     ACPI_DRTM_RESOURCE_LIST *DrtmRl;
     ACPI_DRTM_DPS_ID        *DrtmDps;
     UINT32                  Count;
+    UINT32                  ResourceCount;
+    UINT32                  ValidatedTableCount;
+    UINT32                  TableLength = AcpiUtReadUint32 (&Table->Length);
 
 
     /* Main table */
 
-    Status = AcpiDmDumpTable (Table->Length, 0, Table, 0,
+    Status = AcpiDmDumpTable (TableLength, 0, Table, 0,
         AcpiDmTableInfoDrtm);
     if (ACPI_FAILURE (Status))
     {
@@ -1116,7 +1119,7 @@ AcpiDmDumpDrtm (
 
     DrtmVtl = ACPI_ADD_PTR (ACPI_DRTM_VTABLE_LIST, Table, Offset);
     AcpiOsPrintf ("\n");
-    Status = AcpiDmDumpTable (Table->Length, Offset,
+    Status = AcpiDmDumpTable (TableLength, Offset,
         DrtmVtl, ACPI_OFFSET (ACPI_DRTM_VTABLE_LIST, ValidatedTables),
         AcpiDmTableInfoDrtm0);
     if (ACPI_FAILURE (Status))
@@ -1129,10 +1132,11 @@ AcpiDmDumpDrtm (
     /* Dump Validated table addresses */
 
     Count = 0;
-    while ((Offset < Table->Length) &&
-            (DrtmVtl->ValidatedTableCount > Count))
+    ValidatedTableCount = AcpiUtReadUint32 (&DrtmVtl->ValidatedTableCount);
+    while ((Offset < TableLength) &&
+            (ValidatedTableCount > Count))
     {
-        Status = AcpiDmDumpTable (Table->Length, Offset,
+        Status = AcpiDmDumpTable (TableLength, Offset,
             ACPI_ADD_PTR (void, Table, Offset), sizeof (UINT64),
             AcpiDmTableInfoDrtm0a);
         if (ACPI_FAILURE (Status))
@@ -1148,7 +1152,7 @@ AcpiDmDumpDrtm (
 
     DrtmRl = ACPI_ADD_PTR (ACPI_DRTM_RESOURCE_LIST, Table, Offset);
     AcpiOsPrintf ("\n");
-    Status = AcpiDmDumpTable (Table->Length, Offset,
+    Status = AcpiDmDumpTable (TableLength, Offset,
         DrtmRl, ACPI_OFFSET (ACPI_DRTM_RESOURCE_LIST, Resources),
         AcpiDmTableInfoDrtm1);
     if (ACPI_FAILURE (Status))
@@ -1161,10 +1165,11 @@ AcpiDmDumpDrtm (
     /* Dump the Resource List */
 
     Count = 0;
-    while ((Offset < Table->Length) &&
-           (DrtmRl->ResourceCount > Count))
+    ResourceCount = AcpiUtReadUint32 (&DrtmRl->ResourceCount);
+    while ((Offset < TableLength) &&
+           (ResourceCount > Count))
     {
-        Status = AcpiDmDumpTable (Table->Length, Offset,
+        Status = AcpiDmDumpTable (TableLength, Offset,
             ACPI_ADD_PTR (void, Table, Offset),
             sizeof (ACPI_DRTM_RESOURCE), AcpiDmTableInfoDrtm1a);
         if (ACPI_FAILURE (Status))
@@ -1180,7 +1185,7 @@ AcpiDmDumpDrtm (
 
     DrtmDps = ACPI_ADD_PTR (ACPI_DRTM_DPS_ID, Table, Offset);
     AcpiOsPrintf ("\n");
-    (void) AcpiDmDumpTable (Table->Length, Offset,
+    (void) AcpiDmDumpTable (TableLength, Offset,
         DrtmDps, sizeof (ACPI_DRTM_DPS_ID), AcpiDmTableInfoDrtm2);
 }
 

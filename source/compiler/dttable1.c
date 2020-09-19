@@ -1174,7 +1174,8 @@ DtCompileDrtm (
         Count++;
     }
 
-    DrtmVtl->ValidatedTableCount = Count;
+    AcpiUtWriteUint (&DrtmVtl->ValidatedTableCount, sizeof (UINT32),
+            &Count, sizeof (UINT32));
     DtPopSubtable ();
     ParentTable = DtPeekSubtable ();
 
@@ -1212,7 +1213,8 @@ DtCompileDrtm (
         Count++;
     }
 
-    DrtmRl->ResourceCount = Count;
+    AcpiUtWriteUint(&DrtmRl->ResourceCount, sizeof(UINT32),
+            &Count, sizeof(UINT32));
     DtPopSubtable ();
     ParentTable = DtPeekSubtable ();
 
