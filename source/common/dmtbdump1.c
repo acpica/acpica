@@ -701,7 +701,7 @@ AcpiDmDumpCsrt (
     ACPI_CSRT_GROUP         *Subtable;
     ACPI_CSRT_SHARED_INFO   *SharedInfoTable;
     ACPI_CSRT_DESCRIPTOR    *SubSubtable;
-    UINT32                  Length = Table->Length;
+    UINT32                  Length = AcpiUtReadUint32 (&Table->Length);
     UINT32                  Offset = sizeof (ACPI_TABLE_CSRT);
     UINT32                  SubOffset;
     UINT32                  SubSubOffset;
@@ -713,7 +713,7 @@ AcpiDmDumpCsrt (
     /* Subtables (Resource Groups) */
 
     Subtable = ACPI_ADD_PTR (ACPI_CSRT_GROUP, Table, Offset);
-    while (Offset < Table->Length)
+    while (Offset < Length)
     {
         /* Resource group subtable */
 
@@ -747,7 +747,7 @@ AcpiDmDumpCsrt (
             Offset + SubOffset);
 
         while ((SubOffset < Subtable->Length) &&
-              ((Offset + SubOffset) < Table->Length))
+              ((Offset + SubOffset) < Length))
         {
             AcpiOsPrintf ("\n");
             Status = AcpiDmDumpTable (Length, Offset + SubOffset, SubSubtable,
@@ -808,12 +808,13 @@ AcpiDmDumpDbg2 (
 {
     ACPI_STATUS             Status;
     ACPI_DBG2_DEVICE        *Subtable;
-    UINT32                  Length = Table->Length;
+    UINT32                  Length = AcpiUtReadUint32 (&Table->Length);
     UINT32                  Offset = sizeof (ACPI_TABLE_DBG2);
     UINT32                  i;
     UINT32                  ArrayOffset;
     UINT32                  AbsoluteOffset;
     UINT8                   *Array;
+    UINT16                  SubtableLength;
 
 
     /* Main table */
@@ -827,11 +828,12 @@ AcpiDmDumpDbg2 (
     /* Subtables */
 
     Subtable = ACPI_ADD_PTR (ACPI_DBG2_DEVICE, Table, Offset);
-    while (Offset < Table->Length)
+    while (Offset < Length)
     {
         AcpiOsPrintf ("\n");
+        SubtableLength = AcpiUtReadUint16 (&Subtable->Length);
         Status = AcpiDmDumpTable (Length, Offset, Subtable,
-            Subtable->Length, AcpiDmTableInfoDbg2Device);
+            SubtableLength, AcpiDmTableInfoDbg2Device);
         if (ACPI_FAILURE (Status))
         {
             return;
@@ -841,13 +843,13 @@ AcpiDmDumpDbg2 (
 
         for (i = 0; i < Subtable->RegisterCount; i++)
         {
-            ArrayOffset = Subtable->BaseAddressOffset +
+            ArrayOffset = AcpiUtReadUint16 (&Subtable->BaseAddressOffset) +
                 (sizeof (ACPI_GENERIC_ADDRESS) * i);
             AbsoluteOffset = Offset + ArrayOffset;
             Array = (UINT8 *) Subtable + ArrayOffset;
 
             Status = AcpiDmDumpTable (Length, AbsoluteOffset, Array,
-                Subtable->Length, AcpiDmTableInfoDbg2Addr);
+                SubtableLength, AcpiDmTableInfoDbg2Addr);
             if (ACPI_FAILURE (Status))
             {
                 return;
@@ -858,13 +860,13 @@ AcpiDmDumpDbg2 (
 
         for (i = 0; i < Subtable->RegisterCount; i++)
         {
-            ArrayOffset = Subtable->AddressSizeOffset +
+            ArrayOffset = AcpiUtReadUint16 (&Subtable->AddressSizeOffset) +
                 (sizeof (UINT32) * i);
             AbsoluteOffset = Offset + ArrayOffset;
             Array = (UINT8 *) Subtable + ArrayOffset;
 
             Status = AcpiDmDumpTable (Length, AbsoluteOffset, Array,
-                Subtable->Length, AcpiDmTableInfoDbg2Size);
+                SubtableLength, AcpiDmTableInfoDbg2Size);
             if (ACPI_FAILURE (Status))
             {
                 return;
@@ -874,12 +876,12 @@ AcpiDmDumpDbg2 (
         /* Dump the Namestring (required) */
 
         AcpiOsPrintf ("\n");
-        ArrayOffset = Subtable->NamepathOffset;
+        ArrayOffset = AcpiUtReadUint16 (&Subtable->NamepathOffset);
         AbsoluteOffset = Offset + ArrayOffset;
         Array = (UINT8 *) Subtable + ArrayOffset;
 
         Status = AcpiDmDumpTable (Length, AbsoluteOffset, Array,
-            Subtable->Length, AcpiDmTableInfoDbg2Name);
+            SubtableLength, AcpiDmTableInfoDbg2Name);
         if (ACPI_FAILURE (Status))
         {
             return;
@@ -889,8 +891,11 @@ AcpiDmDumpDbg2 (
 
         if (Subtable->OemDataOffset)
         {
-            Status = AcpiDmDumpTable (Length, Offset + Subtable->OemDataOffset,
-                Table, Subtable->OemDataLength,
+            Array = (UINT8 *) Subtable + AcpiUtReadUint16 (&Subtable->OemDataOffset);
+
+            Status = AcpiDmDumpTable (Length,
+                Offset + AcpiUtReadUint16 (&Subtable->OemDataOffset),
+                Array, AcpiUtReadUint16 (&Subtable->OemDataLength),
                 AcpiDmTableInfoDbg2OemData);
             if (ACPI_FAILURE (Status))
             {
@@ -900,9 +905,9 @@ AcpiDmDumpDbg2 (
 
         /* Point to next subtable */
 
-        Offset += Subtable->Length;
+        Offset += SubtableLength;
         Subtable = ACPI_ADD_PTR (ACPI_DBG2_DEVICE, Subtable,
-            Subtable->Length);
+            SubtableLength);
     }
 }
 
