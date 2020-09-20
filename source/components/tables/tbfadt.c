@@ -397,7 +397,6 @@ AcpiTbSelectAddress (
     UINT32                  Address32,
     UINT64                  Address64)
 {
-
     if (!Address64)
     {
         /* 64-bit address is zero, use 32-bit address */
@@ -628,6 +627,9 @@ AcpiTbConvertFadt (
     UINT8                   Length;
     UINT8                   Flags;
     UINT32                  i;
+    UINT32                  Tmp;
+    UINT32                  Value32;
+    UINT64                  Value64;
 
 
     /*
@@ -641,7 +643,7 @@ AcpiTbConvertFadt (
      * Note: The FADT revision value is unreliable. Only the length can be
      * trusted.
      */
-    if (AcpiGbl_FADT.Header.Length <= ACPI_FADT_V2_SIZE)
+    if (AcpiUtReadUint32 (&AcpiGbl_FADT.Header.Length) <= ACPI_FADT_V2_SIZE)
     {
         AcpiGbl_FADT.PreferredProfile = 0;
         AcpiGbl_FADT.PstateControl = 0;
@@ -654,14 +656,19 @@ AcpiTbConvertFadt (
      * current FADT version as defined by the ACPI specification.
      * Thus, we will have a common FADT internally.
      */
-    AcpiGbl_FADT.Header.Length = sizeof (ACPI_TABLE_FADT);
+    Tmp = sizeof (ACPI_TABLE_FADT);
+    AcpiUtWriteUint (&AcpiGbl_FADT.Header.Length, sizeof (UINT32),
+            &Tmp, sizeof (UINT32));
 
     /*
      * Expand the 32-bit DSDT addresses to 64-bit as necessary.
      * Later ACPICA code will always use the X 64-bit field.
      */
-    AcpiGbl_FADT.XDsdt = AcpiTbSelectAddress ("DSDT",
-        AcpiGbl_FADT.Dsdt, AcpiGbl_FADT.XDsdt);
+    Value32 = AcpiUtReadUint32 (&AcpiGbl_FADT.Dsdt);
+    Value64 = AcpiUtReadUint64 (&AcpiGbl_FADT.XDsdt);
+    Value64 = AcpiTbSelectAddress ("DSDT", Value32, Value64);
+    AcpiUtWriteUint (&AcpiGbl_FADT.XDsdt, sizeof (UINT64),
+                &Value64, sizeof (UINT64));
 
     /* If Hardware Reduced flag is set, we are all done */
 
@@ -722,7 +729,11 @@ AcpiTbConvertFadt (
         {
             if (Address64->Address)
             {
-                if (Address64->Address != (UINT64) Address32)
+                Value32 = AcpiUtReadUint32 (&Address32);
+                Value64 = AcpiUtReadUint64 (&Address64->Address);
+
+                /* if (Address64->Address != (UINT64) Address32) */
+                if (Value64 != (UINT64) Value32)
                 {
                     /* Address mismatch */
 
@@ -763,9 +774,10 @@ AcpiTbConvertFadt (
              */
             if (!Address64->Address || AcpiGbl_Use32BitFadtAddresses)
             {
+                Value32 = AcpiUtReadUint32 (&Address32);
                 AcpiTbInitGenericAddress (Address64,
                     ACPI_ADR_SPACE_SYSTEM_IO, Length,
-                    (UINT64) Address32, Name, Flags);
+                    (UINT64) Value32, Name, Flags);
             }
         }
 
@@ -888,10 +900,14 @@ AcpiTbSetupFadtRegisters (
 
         if (Source64->Address)
         {
+            UINT64 Address64;
+
+            Address64 = AcpiUtReadUint64 (&Source64->Address);
+            Address64 +=
+                (FadtPmInfoTable[i].RegisterNum * Pm1RegisterByteWidth);
             AcpiTbInitGenericAddress (FadtPmInfoTable[i].Target,
                 Source64->SpaceId, Pm1RegisterByteWidth,
-                Source64->Address +
-                    (FadtPmInfoTable[i].RegisterNum * Pm1RegisterByteWidth),
+                Address64,
                 "PmRegisters", 0);
         }
     }

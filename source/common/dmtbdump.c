@@ -471,11 +471,12 @@ AcpiDmDumpFadt (
     ACPI_TABLE_HEADER       *Table)
 {
     ACPI_STATUS             Status;
+    UINT32                  TableLength = AcpiUtReadUint32 (&Table->Length);
 
 
     /* Always dump the minimum FADT revision 1 fields (ACPI 1.0) */
 
-    Status = AcpiDmDumpTable (Table->Length, 0, Table, 0,
+    Status = AcpiDmDumpTable (TableLength, 0, Table, 0,
         AcpiDmTableInfoFadt1);
     if (ACPI_FAILURE (Status))
     {
@@ -484,10 +485,10 @@ AcpiDmDumpFadt (
 
     /* Check for FADT revision 2 fields (ACPI 1.0B MS extensions) */
 
-    if ((Table->Length > ACPI_FADT_V1_SIZE) &&
-        (Table->Length <= ACPI_FADT_V2_SIZE))
+    if ((TableLength > ACPI_FADT_V1_SIZE) &&
+        (TableLength <= ACPI_FADT_V2_SIZE))
     {
-        Status = AcpiDmDumpTable (Table->Length, 0, Table, 0,
+        Status = AcpiDmDumpTable (TableLength, 0, Table, 0,
             AcpiDmTableInfoFadt2);
         if (ACPI_FAILURE (Status))
         {
@@ -497,9 +498,9 @@ AcpiDmDumpFadt (
 
     /* Check for FADT revision 3/4 fields and up (ACPI 2.0+ extended data) */
 
-    else if (Table->Length > ACPI_FADT_V2_SIZE)
+    else if (TableLength > ACPI_FADT_V2_SIZE)
     {
-        Status = AcpiDmDumpTable (Table->Length, 0, Table, 0,
+        Status = AcpiDmDumpTable (TableLength, 0, Table, 0,
             AcpiDmTableInfoFadt3);
         if (ACPI_FAILURE (Status))
         {
@@ -508,9 +509,9 @@ AcpiDmDumpFadt (
 
         /* Check for FADT revision 5 fields and up (ACPI 5.0+) */
 
-        if (Table->Length > ACPI_FADT_V3_SIZE)
+        if (TableLength > ACPI_FADT_V3_SIZE)
         {
-            Status = AcpiDmDumpTable (Table->Length, 0, Table, 0,
+            Status = AcpiDmDumpTable (TableLength, 0, Table, 0,
                 AcpiDmTableInfoFadt5);
             if (ACPI_FAILURE (Status))
             {
@@ -520,9 +521,9 @@ AcpiDmDumpFadt (
 
         /* Check for FADT revision 6 fields and up (ACPI 6.0+) */
 
-        if (Table->Length > ACPI_FADT_V3_SIZE)
+        if (TableLength > ACPI_FADT_V3_SIZE)
         {
-            Status = AcpiDmDumpTable (Table->Length, 0, Table, 0,
+            Status = AcpiDmDumpTable (TableLength, 0, Table, 0,
                 AcpiDmTableInfoFadt6);
             if (ACPI_FAILURE (Status))
             {
@@ -533,11 +534,11 @@ AcpiDmDumpFadt (
 
     /* Validate various fields in the FADT, including length */
 
-    AcpiTbCreateLocalFadt (Table, Table->Length);
+    AcpiTbCreateLocalFadt (Table, TableLength);
 
     /* Validate FADT length against the revision */
 
-    AcpiDmValidateFadtLength (Table->Revision, Table->Length);
+    AcpiDmValidateFadtLength (Table->Revision, TableLength);
 }
 
 
