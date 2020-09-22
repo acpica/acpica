@@ -1450,6 +1450,7 @@ DtCompileFpdt (
     ACPI_DMTABLE_INFO       *InfoTable;
     DT_FIELD                **PFieldList = (DT_FIELD **) List;
     DT_FIELD                *SubtableStart;
+    UINT16                  SubtableType;
 
 
     while (*PFieldList)
@@ -1468,7 +1469,8 @@ DtCompileFpdt (
 
         FpdtHeader = ACPI_CAST_PTR (ACPI_FPDT_HEADER, Subtable->Buffer);
 
-        switch (FpdtHeader->Type)
+        SubtableType = AcpiUtReadUint16 (&FpdtHeader->Type);
+        switch (SubtableType)
         {
         case ACPI_FPDT_TYPE_BOOT:
 
