@@ -1396,8 +1396,13 @@ DtCompileGtdt (
             DtPushSubtable (Subtable);
             ParentTable = DtPeekSubtable ();
 
-            GtCount = (ACPI_CAST_PTR (ACPI_GTDT_TIMER_BLOCK,
-                Subtable->Buffer - sizeof(ACPI_GTDT_HEADER)))->TimerCount;
+            {
+                UINT32 Tmp32;
+
+                Tmp32 = (ACPI_CAST_PTR (ACPI_GTDT_TIMER_BLOCK,
+                    Subtable->Buffer - sizeof (ACPI_GTDT_HEADER)))->TimerCount;
+                GtCount = AcpiUtReadUint32 (&Tmp32);
+            }
 
             while (GtCount)
             {
