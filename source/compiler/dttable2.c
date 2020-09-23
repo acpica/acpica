@@ -458,7 +458,7 @@ DtCompileMpst (
     DtPushSubtable (Subtable);
 
     MpstChannelInfo = ACPI_CAST_PTR (ACPI_MPST_CHANNEL, Subtable->Buffer);
-    SubtableCount = MpstChannelInfo->PowerNodeCount;
+    SubtableCount = AcpiUtReadUint16 (&MpstChannelInfo->PowerNodeCount);
 
     while (*PFieldList && SubtableCount)
     {
@@ -476,8 +476,8 @@ DtCompileMpst (
         DtPushSubtable (Subtable);
 
         MpstPowerNode = ACPI_CAST_PTR (ACPI_MPST_POWER_NODE, Subtable->Buffer);
-        PowerStateCount = MpstPowerNode->NumPowerStates;
-        ComponentCount = MpstPowerNode->NumPhysicalComponents;
+        PowerStateCount = AcpiUtReadUint16 (&MpstPowerNode->NumPowerStates);
+        ComponentCount = AcpiUtReadUint16 (&MpstPowerNode->NumPhysicalComponents);
 
         ParentTable = DtPeekSubtable ();
 
@@ -530,7 +530,7 @@ DtCompileMpst (
     DtPushSubtable (Subtable);
 
     MpstDataHeader = ACPI_CAST_PTR (ACPI_MPST_DATA_HDR, Subtable->Buffer);
-    SubtableCount = MpstDataHeader->CharacteristicsCount;
+    SubtableCount = AcpiUtReadUint16(&MpstDataHeader->CharacteristicsCount);
 
     ParentTable = DtPeekSubtable ();
 

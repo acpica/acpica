@@ -1103,11 +1103,13 @@ AcpiDmDumpMpst (
     UINT16                  SubtableCount;
     UINT32                  PowerStateCount;
     UINT32                  ComponentCount;
+    UINT32                  TableLength = AcpiUtReadUint32 (&Table->Length);
+    UINT16                  Tmp16;
 
 
     /* Main table */
 
-    Status = AcpiDmDumpTable (Table->Length, 0, Table, 0, AcpiDmTableInfoMpst);
+    Status = AcpiDmDumpTable (TableLength, 0, Table, 0, AcpiDmTableInfoMpst);
     if (ACPI_FAILURE (Status))
     {
         return;
@@ -1115,13 +1117,14 @@ AcpiDmDumpMpst (
 
     /* Subtable: Memory Power Node(s) */
 
-    SubtableCount = (ACPI_CAST_PTR (ACPI_TABLE_MPST, Table))->PowerNodeCount;
+    Tmp16 = (ACPI_CAST_PTR (ACPI_TABLE_MPST, Table))->PowerNodeCount;
+    SubtableCount = AcpiUtReadUint16 (&Tmp16);
     Subtable0 = ACPI_ADD_PTR (ACPI_MPST_POWER_NODE, Table, Offset);
 
-    while ((Offset < Table->Length) && SubtableCount)
+    while ((Offset < TableLength) && SubtableCount)
     {
         AcpiOsPrintf ("\n");
-        Status = AcpiDmDumpTable (Table->Length, Offset, Subtable0,
+        Status = AcpiDmDumpTable (TableLength, Offset, Subtable0,
             sizeof (ACPI_MPST_POWER_NODE), AcpiDmTableInfoMpst0);
         if (ACPI_FAILURE (Status))
         {
@@ -1130,8 +1133,8 @@ AcpiDmDumpMpst (
 
         /* Extract the sub-subtable counts */
 
-        PowerStateCount = Subtable0->NumPowerStates;
-        ComponentCount = Subtable0->NumPhysicalComponents;
+        PowerStateCount = AcpiUtReadUint16 (&Subtable0->NumPowerStates);
+        ComponentCount = AcpiUtReadUint16 (&Subtable0->NumPhysicalComponents);
         Offset += sizeof (ACPI_MPST_POWER_NODE);
 
         /* Sub-subtables - Memory Power State Structure(s) */
@@ -1142,7 +1145,7 @@ AcpiDmDumpMpst (
         while (PowerStateCount)
         {
             AcpiOsPrintf ("\n");
-            Status = AcpiDmDumpTable (Table->Length, Offset, Subtable0A,
+            Status = AcpiDmDumpTable (TableLength, Offset, Subtable0A,
                 sizeof (ACPI_MPST_POWER_STATE), AcpiDmTableInfoMpst0A);
             if (ACPI_FAILURE (Status))
             {
@@ -1165,7 +1168,7 @@ AcpiDmDumpMpst (
 
         while (ComponentCount)
         {
-            Status = AcpiDmDumpTable (Table->Length, Offset, Subtable0B,
+            Status = AcpiDmDumpTable (TableLength, Offset, Subtable0B,
                 sizeof (ACPI_MPST_COMPONENT), AcpiDmTableInfoMpst0B);
             if (ACPI_FAILURE (Status))
             {
@@ -1182,22 +1185,24 @@ AcpiDmDumpMpst (
         SubtableCount--;
         Subtable0 = ACPI_ADD_PTR (ACPI_MPST_POWER_NODE, Subtable0,
             sizeof (ACPI_MPST_POWER_NODE) +
-            (sizeof (ACPI_MPST_POWER_STATE) * Subtable0->NumPowerStates) +
-            (sizeof (ACPI_MPST_COMPONENT) * Subtable0->NumPhysicalComponents));
+            (sizeof (ACPI_MPST_POWER_STATE) *
+                AcpiUtReadUint16 (&Subtable0->NumPowerStates)) +
+            (sizeof (ACPI_MPST_COMPONENT) *
+                AcpiUtReadUint16 (&Subtable0->NumPhysicalComponents)));
     }
 
     /* Subtable: Count of Memory Power State Characteristic structures */
 
     AcpiOsPrintf ("\n");
     Subtable1 = ACPI_CAST_PTR (ACPI_MPST_DATA_HDR, Subtable0);
-    Status = AcpiDmDumpTable (Table->Length, Offset, Subtable1,
+    Status = AcpiDmDumpTable (TableLength, Offset, Subtable1,
         sizeof (ACPI_MPST_DATA_HDR), AcpiDmTableInfoMpst1);
     if (ACPI_FAILURE (Status))
     {
         return;
     }
 
-    SubtableCount = Subtable1->CharacteristicsCount;
+    SubtableCount = AcpiUtReadUint16 (&Subtable1->CharacteristicsCount);
     Offset += sizeof (ACPI_MPST_DATA_HDR);
 
     /* Subtable: Memory Power State Characteristics structure(s) */
@@ -1205,10 +1210,10 @@ AcpiDmDumpMpst (
     Subtable2 = ACPI_ADD_PTR (ACPI_MPST_POWER_DATA, Subtable1,
         sizeof (ACPI_MPST_DATA_HDR));
 
-    while ((Offset < Table->Length) && SubtableCount)
+    while ((Offset < TableLength) && SubtableCount)
     {
         AcpiOsPrintf ("\n");
-        Status = AcpiDmDumpTable (Table->Length, Offset, Subtable2,
+        Status = AcpiDmDumpTable (TableLength, Offset, Subtable2,
             sizeof (ACPI_MPST_POWER_DATA), AcpiDmTableInfoMpst2);
         if (ACPI_FAILURE (Status))
         {
