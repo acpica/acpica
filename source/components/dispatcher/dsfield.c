@@ -369,7 +369,7 @@ AcpiDsCreateBufferField (
     ObjDesc = AcpiNsGetAttachedObject (Node);
     if (ObjDesc)
     {
-        return_ACPI_STATUS (AE_OK);
+        return_ACPI_STATUS (Status);
     }
 
     /*
