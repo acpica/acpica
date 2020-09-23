@@ -67,7 +67,7 @@ setup_environment() {
 	unset ASLTSDIR
 
 	export ASL=$tmp_iasl
-	export acpiexec=$tmp_acpiexec		
+	export acpiexec=$tmp_acpiexec
 	export acpibin=$tmp_acpibin
 	export ASLTSDIR=$aslts_dir
 	export PATH=$ASLTSDIR/bin:$PATH
