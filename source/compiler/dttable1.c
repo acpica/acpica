@@ -1532,6 +1532,7 @@ DtCompileHest (
     DT_FIELD                *SubtableStart;
     ACPI_DMTABLE_INFO       *InfoTable;
     UINT16                  Type;
+    UINT16                  Tmp16;
     UINT32                  BankCount;
 
 
@@ -1550,7 +1551,8 @@ DtCompileHest (
         /* Get subtable type */
 
         SubtableStart = *PFieldList;
-        DtCompileInteger ((UINT8 *) &Type, *PFieldList, 2, 0);
+        DtCompileInteger ((UINT8 *) &Tmp16, *PFieldList, 2, 0);
+        Type = AcpiUtReadUint32 (&Tmp16);
 
         switch (Type)
         {

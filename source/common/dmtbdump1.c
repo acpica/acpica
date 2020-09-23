@@ -1543,12 +1543,13 @@ AcpiDmDumpHest (
 {
     ACPI_STATUS             Status;
     ACPI_HEST_HEADER        *Subtable;
-    UINT32                  Length = Table->Length;
+    UINT32                  Length = AcpiUtReadUint32 (&Table->Length);
     UINT32                  Offset = sizeof (ACPI_TABLE_HEST);
     ACPI_DMTABLE_INFO       *InfoTable;
     UINT32                  SubtableLength;
     UINT32                  BankCount;
     ACPI_HEST_IA_ERROR_BANK *BankTable;
+    UINT16                  SubtableType;
 
 
     /* Main table */
@@ -1562,10 +1563,11 @@ AcpiDmDumpHest (
     /* Subtables */
 
     Subtable = ACPI_ADD_PTR (ACPI_HEST_HEADER, Table, Offset);
-    while (Offset < Table->Length)
+    while (Offset < Length)
     {
         BankCount = 0;
-        switch (Subtable->Type)
+        SubtableType = Subtable->Type;
+        switch (SubtableType)
         {
         case ACPI_HEST_TYPE_IA32_CHECK:
 
@@ -1632,7 +1634,7 @@ AcpiDmDumpHest (
             /* Cannot continue on unknown type - no length */
 
             AcpiOsPrintf ("\n**** Unknown HEST subtable type 0x%X\n",
-                Subtable->Type);
+                SubtableType);
             return;
         }
 
