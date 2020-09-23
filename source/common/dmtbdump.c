@@ -390,6 +390,7 @@ AcpiDmDumpRsdt (
     UINT32                  Entries;
     UINT32                  Offset;
     UINT32                  i;
+    UINT32                  TableLength = AcpiUtReadUint32 (&Table->Length);
 
 
     /* Point to start of table pointer array */
@@ -399,12 +400,12 @@ AcpiDmDumpRsdt (
 
     /* RSDT uses 32-bit pointers */
 
-    Entries = (Table->Length - sizeof (ACPI_TABLE_HEADER)) / sizeof (UINT32);
+    Entries = (TableLength - sizeof (ACPI_TABLE_HEADER)) / sizeof (UINT32);
 
     for (i = 0; i < Entries; i++)
     {
         AcpiDmLineHeader2 (Offset, sizeof (UINT32), "ACPI Table Address", i);
-        AcpiOsPrintf ("%8.8X\n", Array[i]);
+        AcpiOsPrintf ("%8.8X\n", AcpiUtReadUint32 (&Array[i]));
         Offset += sizeof (UINT32);
     }
 }
