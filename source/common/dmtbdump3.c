@@ -281,11 +281,12 @@ AcpiDmDumpSrat (
     UINT32                  Offset = sizeof (ACPI_TABLE_SRAT);
     ACPI_SUBTABLE_HEADER    *Subtable;
     ACPI_DMTABLE_INFO       *InfoTable;
+    UINT32                  TableLength = AcpiUtReadUint32 (&Table->Length);
 
 
     /* Main table */
 
-    Status = AcpiDmDumpTable (Table->Length, 0, Table, 0, AcpiDmTableInfoSrat);
+    Status = AcpiDmDumpTable (TableLength, 0, Table, 0, AcpiDmTableInfoSrat);
     if (ACPI_FAILURE (Status))
     {
         return;
@@ -294,12 +295,12 @@ AcpiDmDumpSrat (
     /* Subtables */
 
     Subtable = ACPI_ADD_PTR (ACPI_SUBTABLE_HEADER, Table, Offset);
-    while (Offset < Table->Length)
+    while (Offset < TableLength)
     {
         /* Common subtable header */
 
         AcpiOsPrintf ("\n");
-        Status = AcpiDmDumpTable (Table->Length, Offset, Subtable,
+        Status = AcpiDmDumpTable (TableLength, Offset, Subtable,
             Subtable->Length, AcpiDmTableInfoSratHdr);
         if (ACPI_FAILURE (Status))
         {
@@ -353,7 +354,7 @@ AcpiDmDumpSrat (
         }
 
         AcpiOsPrintf ("\n");
-        Status = AcpiDmDumpTable (Table->Length, Offset, Subtable,
+        Status = AcpiDmDumpTable (TableLength, Offset, Subtable,
             Subtable->Length, InfoTable);
         if (ACPI_FAILURE (Status))
         {
