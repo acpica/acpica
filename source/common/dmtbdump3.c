@@ -204,11 +204,12 @@ AcpiDmDumpSlit (
     UINT32                  Localities;
     UINT32                  i;
     UINT32                  j;
+    UINT32                  TableLength = AcpiUtReadUint32 (&Table->Length);
 
 
     /* Main table */
 
-    Status = AcpiDmDumpTable (Table->Length, 0, Table, 0, AcpiDmTableInfoSlit);
+    Status = AcpiDmDumpTable (TableLength, 0, Table, 0, AcpiDmTableInfoSlit);
     if (ACPI_FAILURE (Status))
     {
         return;
@@ -216,7 +217,8 @@ AcpiDmDumpSlit (
 
     /* Display the Locality NxN Matrix */
 
-    Localities = (UINT32) ACPI_CAST_PTR (ACPI_TABLE_SLIT, Table)->LocalityCount;
+    Localities = (UINT32)
+        AcpiUtReadUint64 (&ACPI_CAST_PTR (ACPI_TABLE_SLIT, Table)->LocalityCount);
     Offset = ACPI_OFFSET (ACPI_TABLE_SLIT, Entry[0]);
     Row = (UINT8 *) ACPI_CAST_PTR (ACPI_TABLE_SLIT, Table)->Entry;
 
@@ -229,7 +231,7 @@ AcpiDmDumpSlit (
         {
             /* Check for beyond EOT */
 
-            if (Offset >= Table->Length)
+            if (Offset >= TableLength)
             {
                 AcpiOsPrintf (
                     "\n**** Not enough room in table for all localities\n");

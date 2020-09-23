@@ -1945,7 +1945,7 @@ DtCompileSlit (
     ParentTable = DtPeekSubtable ();
     DtInsertSubtable (ParentTable, Subtable);
 
-    Localities = *ACPI_CAST_PTR (UINT32, Subtable->Buffer);
+    Localities = (UINT32) AcpiUtReadUint64 (Subtable->Buffer);
     LocalityBuffer = UtLocalCalloc (Localities);
     LocalityListLength = 0;
 
