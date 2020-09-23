@@ -431,6 +431,7 @@ AcpiDmDumpXsdt (
     UINT32                  Entries;
     UINT32                  Offset;
     UINT32                  i;
+    UINT32                  TableLength = AcpiUtReadUint32 (&Table->Length);
 
 
     /* Point to start of table pointer array */
@@ -440,12 +441,13 @@ AcpiDmDumpXsdt (
 
     /* XSDT uses 64-bit pointers */
 
-    Entries = (Table->Length - sizeof (ACPI_TABLE_HEADER)) / sizeof (UINT64);
+    Entries = (TableLength - sizeof (ACPI_TABLE_HEADER)) / sizeof (UINT64);
 
     for (i = 0; i < Entries; i++)
     {
         AcpiDmLineHeader2 (Offset, sizeof (UINT64), "ACPI Table Address", i);
-        AcpiOsPrintf ("%8.8X%8.8X\n", ACPI_FORMAT_UINT64 (Array[i]));
+        AcpiOsPrintf ("%8.8X%8.8X\n",
+                ACPI_FORMAT_UINT64 (AcpiUtReadUint64 (&Array[i])));
         Offset += sizeof (UINT64);
     }
 }
