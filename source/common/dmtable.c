@@ -1774,13 +1774,13 @@ AcpiDmDumpTable (
 
             /* NFIT subtable types */
 
-            Temp16 = ACPI_GET16 (Target);
+            Temp16 = AcpiUtReadUint16 (Target);
             if (Temp16 > ACPI_NFIT_TYPE_RESERVED)
             {
                 Temp16 = ACPI_NFIT_TYPE_RESERVED;
             }
 
-            AcpiOsPrintf (UINT16_FORMAT, ACPI_GET16 (Target),
+            AcpiOsPrintf (UINT16_FORMAT, Temp16,
                 AcpiDmNfitSubnames[Temp16]);
             break;
 

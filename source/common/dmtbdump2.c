@@ -1300,18 +1300,23 @@ AcpiDmDumpNfit (
     ACPI_STATUS             Status;
     UINT32                  Offset = sizeof (ACPI_TABLE_NFIT);
     UINT32                  FieldOffset = 0;
-    UINT32                  Length;
+    UINT32                  TableLength = AcpiUtReadUint32 (&Table->Length);
     ACPI_NFIT_HEADER        *Subtable;
     ACPI_DMTABLE_INFO       *InfoTable;
     ACPI_NFIT_INTERLEAVE    *Interleave = NULL;
     ACPI_NFIT_SMBIOS        *SmbiosInfo = NULL;
     ACPI_NFIT_FLUSH_ADDRESS *Hint = NULL;
     UINT32                  i;
+    UINT32                  Length;
+    UINT32                  LineCount;
+    UINT16                  SubtableLength;
+    UINT16                  SubtableType;
+    UINT16                  HintCount;
 
 
     /* Main table */
 
-    Status = AcpiDmDumpTable (Table->Length, 0, Table, 0, AcpiDmTableInfoNfit);
+    Status = AcpiDmDumpTable (TableLength, 0, Table, 0, AcpiDmTableInfoNfit);
     if (ACPI_FAILURE (Status))
     {
         return;
@@ -1320,19 +1325,21 @@ AcpiDmDumpNfit (
     /* Subtables */
 
     Subtable = ACPI_ADD_PTR (ACPI_NFIT_HEADER, Table, Offset);
-    while (Offset < Table->Length)
+    while (Offset < TableLength)
     {
         /* NFIT subtable header */
 
         AcpiOsPrintf ("\n");
-        Status = AcpiDmDumpTable (Table->Length, Offset, Subtable,
-            Subtable->Length, AcpiDmTableInfoNfitHdr);
+        SubtableType = AcpiUtReadUint16 (&Subtable->Type);
+        SubtableLength = AcpiUtReadUint16 (&Subtable->Length);
+        Status = AcpiDmDumpTable (TableLength, Offset, Subtable,
+            SubtableLength, AcpiDmTableInfoNfitHdr);
         if (ACPI_FAILURE (Status))
         {
             return;
         }
 
-        switch (Subtable->Type)
+        switch (SubtableType)
         {
         case ACPI_NFIT_TYPE_SYSTEM_ADDRESS:
 
@@ -1383,11 +1390,11 @@ AcpiDmDumpNfit (
 
         default:
             AcpiOsPrintf ("\n**** Unknown NFIT subtable type 0x%X\n",
-                Subtable->Type);
+                SubtableType);
 
             /* Attempt to continue */
 
-            if (!Subtable->Length)
+            if (!SubtableLength)
             {
                 AcpiOsPrintf ("Invalid zero length subtable\n");
                 return;
@@ -1396,8 +1403,8 @@ AcpiDmDumpNfit (
         }
 
         AcpiOsPrintf ("\n");
-        Status = AcpiDmDumpTable (Table->Length, Offset, Subtable,
-            Subtable->Length, InfoTable);
+        Status = AcpiDmDumpTable (TableLength, Offset, Subtable,
+            SubtableLength, InfoTable);
         if (ACPI_FAILURE (Status))
         {
             return;
@@ -1405,14 +1412,15 @@ AcpiDmDumpNfit (
 
         /* Per-subtable variable-length fields */
 
-        switch (Subtable->Type)
+        switch (SubtableType)
         {
         case ACPI_NFIT_TYPE_INTERLEAVE:
 
             Interleave = ACPI_CAST_PTR (ACPI_NFIT_INTERLEAVE, Subtable);
-            for (i = 0; i < Interleave->LineCount; i++)
+            LineCount = AcpiUtReadUint32 (&Interleave->LineCount);
+            for (i = 0; i < LineCount; i++)
             {
-                Status = AcpiDmDumpTable (Table->Length, Offset + FieldOffset,
+                Status = AcpiDmDumpTable (TableLength, Offset + FieldOffset,
                     &Interleave->LineOffset[i],
                     sizeof (UINT32), AcpiDmTableInfoNfit2a);
                 if (ACPI_FAILURE (Status))
@@ -1426,14 +1434,14 @@ AcpiDmDumpNfit (
 
         case ACPI_NFIT_TYPE_SMBIOS:
 
-            Length = Subtable->Length -
+            Length = SubtableLength -
                 sizeof (ACPI_NFIT_SMBIOS) + sizeof (UINT8);
 
             if (Length)
             {
-                Status = AcpiDmDumpTable (Table->Length,
+                Status = AcpiDmDumpTable (TableLength,
                     sizeof (ACPI_NFIT_SMBIOS) - sizeof (UINT8),
-                    SmbiosInfo,
+                    SmbiosInfo + Offset,
                     Length, AcpiDmTableInfoNfit3a);
                 if (ACPI_FAILURE (Status))
                 {
@@ -1446,9 +1454,10 @@ AcpiDmDumpNfit (
         case ACPI_NFIT_TYPE_FLUSH_ADDRESS:
 
             Hint = ACPI_CAST_PTR (ACPI_NFIT_FLUSH_ADDRESS, Subtable);
-            for (i = 0; i < Hint->HintCount; i++)
+            HintCount = AcpiUtReadUint16 (&Hint->HintCount);
+            for (i = 0; i < HintCount; i++)
             {
-                Status = AcpiDmDumpTable (Table->Length, Offset + FieldOffset,
+                Status = AcpiDmDumpTable (TableLength, Offset + FieldOffset,
                     &Hint->HintAddress[i],
                     sizeof (UINT64), AcpiDmTableInfoNfit6a);
                 if (ACPI_FAILURE (Status))
@@ -1467,8 +1476,8 @@ AcpiDmDumpNfit (
 NextSubtable:
         /* Point to next subtable */
 
-        Offset += Subtable->Length;
-        Subtable = ACPI_ADD_PTR (ACPI_NFIT_HEADER, Subtable, Subtable->Length);
+        Offset += SubtableLength;
+        Subtable = ACPI_ADD_PTR (ACPI_NFIT_HEADER, Subtable, SubtableLength);
     }
 }
 
