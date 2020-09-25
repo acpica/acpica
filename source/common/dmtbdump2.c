@@ -1893,6 +1893,8 @@ AcpiDmDumpPptt (
     UINT32                  Offset = sizeof (ACPI_TABLE_FPDT);
     ACPI_DMTABLE_INFO       *InfoTable;
     UINT32                  i;
+    UINT32                  TableLength = AcpiUtReadUint32 (&Table->Length);
+    UINT32                  NumPrivRes;
 
 
     /* There is no main table (other than the standard ACPI header) */
@@ -1900,7 +1902,7 @@ AcpiDmDumpPptt (
     /* Subtables */
 
     Offset = sizeof (ACPI_TABLE_HEADER);
-    while (Offset < Table->Length)
+    while (Offset < TableLength)
     {
         AcpiOsPrintf ("\n");
 
@@ -1912,7 +1914,7 @@ AcpiDmDumpPptt (
             AcpiOsPrintf ("Invalid subtable length\n");
             return;
         }
-        Status = AcpiDmDumpTable (Table->Length, Offset, Subtable,
+        Status = AcpiDmDumpTable (TableLength, Offset, Subtable,
             Subtable->Length, AcpiDmTableInfoPpttHdr);
         if (ACPI_FAILURE (Status))
         {
@@ -1954,7 +1956,7 @@ AcpiDmDumpPptt (
             AcpiOsPrintf ("Invalid subtable length\n");
             return;
         }
-        Status = AcpiDmDumpTable (Table->Length, Offset, Subtable,
+        Status = AcpiDmDumpTable (TableLength, Offset, Subtable,
             Subtable->Length, InfoTable);
         if (ACPI_FAILURE (Status))
         {
@@ -1970,15 +1972,16 @@ AcpiDmDumpPptt (
 
             /* Dump SMBIOS handles */
 
-            if ((UINT8)(Subtable->Length - SubtableOffset) <
-                (UINT8)(PpttProcessor->NumberOfPrivResources * 4))
+            NumPrivRes = AcpiUtReadUint32 (&PpttProcessor->NumberOfPrivResources);
+            if ((UINT8) (Subtable->Length - SubtableOffset) <
+                (UINT8) (NumPrivRes * 4))
             {
                 AcpiOsPrintf ("Invalid private resource number\n");
                 return;
             }
-            for (i = 0; i < PpttProcessor->NumberOfPrivResources; i++)
+            for (i = 0; i < NumPrivRes; i++)
             {
-                Status = AcpiDmDumpTable (Table->Length, Offset + SubtableOffset,
+                Status = AcpiDmDumpTable (TableLength, Offset + SubtableOffset,
                     ACPI_ADD_PTR (ACPI_SUBTABLE_HEADER, Subtable, SubtableOffset),
                     4, AcpiDmTableInfoPptt0a);
                 if (ACPI_FAILURE (Status))
