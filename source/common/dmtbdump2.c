@@ -1606,13 +1606,13 @@ AcpiDmDumpPdtt (
 {
     ACPI_STATUS             Status;
     ACPI_PDTT_CHANNEL       *Subtable;
-    UINT32                  Length = Table->Length;
+    UINT32                  TableLength = AcpiUtReadUint32 (&Table->Length);
     UINT32                  Offset = sizeof (ACPI_TABLE_PDTT);
 
 
     /* Main table */
 
-    Status = AcpiDmDumpTable (Length, 0, Table, 0, AcpiDmTableInfoPdtt);
+    Status = AcpiDmDumpTable (TableLength, 0, Table, 0, AcpiDmTableInfoPdtt);
     if (ACPI_FAILURE (Status))
     {
         return;
@@ -1621,10 +1621,10 @@ AcpiDmDumpPdtt (
     /* Subtables. Currently there is only one type, but can be multiples */
 
     Subtable = ACPI_ADD_PTR (ACPI_PDTT_CHANNEL, Table, Offset);
-    while (Offset < Table->Length)
+    while (Offset < TableLength)
     {
         AcpiOsPrintf ("\n");
-        Status = AcpiDmDumpTable (Length, Offset, Subtable,
+        Status = AcpiDmDumpTable (TableLength, Offset, Subtable,
             sizeof (ACPI_PDTT_CHANNEL), AcpiDmTableInfoPdtt0);
         if (ACPI_FAILURE (Status))
         {
