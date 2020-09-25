@@ -841,7 +841,6 @@ NamePathTail                [.]{NameSeg}
                                      * the required length.
                                      */
                                     strcpy (s, "____");
-                                    AcpiUtStrupr (AslCompilertext);
                                 }
                                 memcpy (s, AslCompilertext, strlen (AslCompilertext));
                                 AslCompilerlval.s = s;
@@ -851,7 +850,6 @@ NamePathTail                [.]{NameSeg}
 {NameString}                { char *s;
                                 count (0);
                                 s=UtLocalCacheCalloc (strlen (AslCompilertext)+1);
-                                AcpiUtStrupr (AslCompilertext);
                                 strcpy (s, AslCompilertext);
                                 AslCompilerlval.s = s;
                                 DbgPrint (ASL_PARSE_OUTPUT, "NameString: %s\n", s);

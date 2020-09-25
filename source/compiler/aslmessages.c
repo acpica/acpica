@@ -382,6 +382,8 @@ const char                      *AslCompilerMsgs [] =
 /*    ASL_MSG_DUPLICATE_EXTERN_FOUND_HERE */"Duplicate external declaration:",
 /*    ASL_MSG_CONDREF_NEEDS_EXTERNAL_DECL */"CondRefOf parameter requires External() declaration",
 /*    ASL_MSG_EXTERNAL_FOUND_HERE */        "External declaration below ",
+/*    ASL_MSG_LOWER_CASE_NAMESEG */         "At least one lower case letter found in NameSeg, ASL is case insensitive - converting to upper case",
+/*    ASL_MSG_LOWER_CASE_NAMEPATH */        "At least one lower case letter found in NamePath, ASL is case insensitive - converting to upper case",
 };
 
 /* Table compiler */
