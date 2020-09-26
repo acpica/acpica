@@ -783,11 +783,12 @@ AcpiDmDumpWdat (
     ACPI_STATUS             Status;
     UINT32                  Offset = sizeof (ACPI_TABLE_WDAT);
     ACPI_WDAT_ENTRY         *Subtable;
+    UINT32                  TableLength = AcpiUtReadUint32 (&Table->Length);
 
 
     /* Main table */
 
-    Status = AcpiDmDumpTable (Table->Length, 0, Table, 0, AcpiDmTableInfoWdat);
+    Status = AcpiDmDumpTable (TableLength, 0, Table, 0, AcpiDmTableInfoWdat);
     if (ACPI_FAILURE (Status))
     {
         return;
@@ -796,12 +797,12 @@ AcpiDmDumpWdat (
     /* Subtables */
 
     Subtable = ACPI_ADD_PTR (ACPI_WDAT_ENTRY, Table, Offset);
-    while (Offset < Table->Length)
+    while (Offset < TableLength)
     {
         /* Common subtable header */
 
         AcpiOsPrintf ("\n");
-        Status = AcpiDmDumpTable (Table->Length, Offset, Subtable,
+        Status = AcpiDmDumpTable (TableLength, Offset, Subtable,
             sizeof (ACPI_WDAT_ENTRY), AcpiDmTableInfoWdat0);
         if (ACPI_FAILURE (Status))
         {
