@@ -509,11 +509,13 @@ AcpiDmDumpTcpa (
     ACPI_TABLE_TCPA_HDR     *Subtable = ACPI_ADD_PTR (
                                 ACPI_TABLE_TCPA_HDR, Table, Offset);
     ACPI_STATUS             Status;
+    UINT32                  TableLength = AcpiUtReadUint32 (&Table->Length);
+    UINT16                  PlatformClass;
 
 
     /* Main table */
 
-    Status = AcpiDmDumpTable (Table->Length, 0, Table,
+    Status = AcpiDmDumpTable (TableLength, 0, Table,
         0, AcpiDmTableInfoTcpaHdr);
     if (ACPI_FAILURE (Status))
     {
@@ -524,18 +526,19 @@ AcpiDmDumpTcpa (
      * Examine the PlatformClass field to determine the table type.
      * Either a client or server table. Only one.
      */
-    switch (CommonHeader->PlatformClass)
+    PlatformClass = AcpiUtReadUint16 (&CommonHeader->PlatformClass);
+    switch (PlatformClass)
     {
     case ACPI_TCPA_CLIENT_TABLE:
 
-        Status = AcpiDmDumpTable (Table->Length, Offset, Subtable,
+        Status = AcpiDmDumpTable (TableLength, Offset, Subtable,
             Table->Length - Offset, AcpiDmTableInfoTcpaClient);
         break;
 
     case ACPI_TCPA_SERVER_TABLE:
 
-        Status = AcpiDmDumpTable (Table->Length, Offset, Subtable,
-            Table->Length - Offset, AcpiDmTableInfoTcpaServer);
+        Status = AcpiDmDumpTable (TableLength, Offset, Subtable,
+            TableLength - Offset, AcpiDmTableInfoTcpaServer);
         break;
 
     default:
