@@ -176,9 +176,11 @@ void
 AcpiDmDumpSlic (
     ACPI_TABLE_HEADER       *Table)
 {
+    UINT32                  TableLength = AcpiUtReadUint32 (&Table->Length);
 
-    (void) AcpiDmDumpTable (Table->Length, sizeof (ACPI_TABLE_HEADER), Table,
-        Table->Length - sizeof (*Table), AcpiDmTableInfoSlic);
+    (void) AcpiDmDumpTable (TableLength, sizeof (ACPI_TABLE_HEADER),
+        (void *) (Table + sizeof (*Table)),
+        TableLength - sizeof (*Table), AcpiDmTableInfoSlic);
 }
 
 
