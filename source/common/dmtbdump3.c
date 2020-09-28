@@ -393,14 +393,14 @@ AcpiDmDumpStao (
 {
     ACPI_STATUS             Status;
     char                    *Namepath;
-    UINT32                  Length = Table->Length;
+    UINT32                  TableLength = AcpiUtReadUint32 (&Table->Length);
     UINT32                  StringLength;
     UINT32                  Offset = sizeof (ACPI_TABLE_STAO);
 
 
     /* Main table */
 
-    Status = AcpiDmDumpTable (Length, 0, Table, 0, AcpiDmTableInfoStao);
+    Status = AcpiDmDumpTable (TableLength, 0, Table, 0, AcpiDmTableInfoStao);
     if (ACPI_FAILURE (Status))
     {
         return;
@@ -408,7 +408,7 @@ AcpiDmDumpStao (
 
     /* The rest of the table consists of Namepath strings */
 
-    while (Offset < Table->Length)
+    while (Offset < TableLength)
     {
         Namepath = ACPI_ADD_PTR (char, Table, Offset);
         StringLength = strlen (Namepath) + 1;
