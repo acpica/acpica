@@ -1038,11 +1038,12 @@ AcpiDmDumpMcfg (
     ACPI_STATUS             Status;
     UINT32                  Offset = sizeof (ACPI_TABLE_MCFG);
     ACPI_MCFG_ALLOCATION    *Subtable;
+    UINT32                  TableLength = AcpiUtReadUint32 (&Table->Length);
 
 
     /* Main table */
 
-    Status = AcpiDmDumpTable (Table->Length, 0, Table, 0, AcpiDmTableInfoMcfg);
+    Status = AcpiDmDumpTable (TableLength, 0, Table, 0, AcpiDmTableInfoMcfg);
     if (ACPI_FAILURE (Status))
     {
         return;
@@ -1051,17 +1052,17 @@ AcpiDmDumpMcfg (
     /* Subtables */
 
     Subtable = ACPI_ADD_PTR (ACPI_MCFG_ALLOCATION, Table, Offset);
-    while (Offset < Table->Length)
+    while (Offset < TableLength)
     {
-        if (Offset + sizeof (ACPI_MCFG_ALLOCATION) > Table->Length)
+        if (Offset + sizeof (ACPI_MCFG_ALLOCATION) > TableLength)
         {
             AcpiOsPrintf ("Warning: there are %u invalid trailing bytes\n",
-                (UINT32) sizeof (ACPI_MCFG_ALLOCATION) - (Offset - Table->Length));
+                (UINT32) sizeof (ACPI_MCFG_ALLOCATION) - (Offset - TableLength));
             return;
         }
 
         AcpiOsPrintf ("\n");
-        Status = AcpiDmDumpTable (Table->Length, Offset, Subtable,
+        Status = AcpiDmDumpTable (TableLength, Offset, Subtable,
             sizeof (ACPI_MCFG_ALLOCATION), AcpiDmTableInfoMcfg0);
         if (ACPI_FAILURE (Status))
         {
