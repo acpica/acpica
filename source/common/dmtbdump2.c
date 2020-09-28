@@ -798,7 +798,7 @@ AcpiDmDumpLpit (
 {
     ACPI_STATUS             Status;
     ACPI_LPIT_HEADER        *Subtable;
-    UINT32                  Length = Table->Length;
+    UINT32                  TableLength = AcpiUtReadUint32 (&Table->Length);
     UINT32                  Offset = sizeof (ACPI_TABLE_LPIT);
     ACPI_DMTABLE_INFO       *InfoTable;
     UINT32                  SubtableLength;
@@ -807,11 +807,11 @@ AcpiDmDumpLpit (
     /* Subtables */
 
     Subtable = ACPI_ADD_PTR (ACPI_LPIT_HEADER, Table, Offset);
-    while (Offset < Table->Length)
+    while (Offset < TableLength)
     {
         /* Common subtable header */
 
-        Status = AcpiDmDumpTable (Length, Offset, Subtable,
+        Status = AcpiDmDumpTable (TableLength, Offset, Subtable,
             sizeof (ACPI_LPIT_HEADER), AcpiDmTableInfoLpitHdr);
         if (ACPI_FAILURE (Status))
         {
@@ -835,7 +835,7 @@ AcpiDmDumpLpit (
             return;
         }
 
-        Status = AcpiDmDumpTable (Length, Offset, Subtable,
+        Status = AcpiDmDumpTable (TableLength, Offset, Subtable,
             SubtableLength, InfoTable);
         if (ACPI_FAILURE (Status))
         {
