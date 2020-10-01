@@ -307,6 +307,7 @@ RsDoFixedDmaDescriptor (
     ASL_RESOURCE_NODE       *Rnode;
     UINT32                  CurrentByteOffset;
     UINT32                  i;
+    UINT16                  Tmp16;
 
 
     InitializerOp = Info->DescriptorTypeOp->Asl.Child;
@@ -325,14 +326,16 @@ RsDoFixedDmaDescriptor (
         {
         case 0: /* DMA Request Lines [WORD] (_DMA) */
 
-            Descriptor->FixedDma.RequestLines = (UINT16) InitializerOp->Asl.Value.Integer;
+            Tmp16 = (UINT16) InitializerOp->Asl.Value.Integer;
+            Descriptor->FixedDma.RequestLines = AcpiUtReadUint16 (&Tmp16);
             RsCreateWordField (InitializerOp, ACPI_RESTAG_DMA,
                 CurrentByteOffset + ASL_RESDESC_OFFSET (FixedDma.RequestLines));
             break;
 
         case 1: /* DMA Channel [WORD] (_TYP) */
 
-            Descriptor->FixedDma.Channels = (UINT16) InitializerOp->Asl.Value.Integer;
+            Tmp16 = (UINT16) InitializerOp->Asl.Value.Integer;
+            Descriptor->FixedDma.Channels = AcpiUtReadUint16 (&Tmp16);
             RsCreateWordField (InitializerOp, ACPI_RESTAG_DMATYPE,
                 CurrentByteOffset + ASL_RESDESC_OFFSET (FixedDma.Channels));
             break;
@@ -383,6 +386,7 @@ RsDoFixedIoDescriptor (
     ASL_RESOURCE_NODE       *Rnode;
     UINT32                  CurrentByteOffset;
     UINT32                  i;
+    UINT16                  Tmp16;
 
 
     InitializerOp = Info->DescriptorTypeOp->Asl.Child;
@@ -401,8 +405,8 @@ RsDoFixedIoDescriptor (
         {
         case 0: /* Base Address */
 
-            Descriptor->FixedIo.Address =
-                (UINT16) InitializerOp->Asl.Value.Integer;
+            Tmp16 = (UINT16) InitializerOp->Asl.Value.Integer;
+            Descriptor->FixedIo.Address = AcpiUtReadUint16 (&Tmp16);
             RsCreateWordField (InitializerOp, ACPI_RESTAG_BASEADDRESS,
                 CurrentByteOffset + ASL_RESDESC_OFFSET (FixedIo.Address));
             AddressOp = InitializerOp;
@@ -432,7 +436,7 @@ RsDoFixedIoDescriptor (
 
     /* Error checks */
 
-    if (Descriptor->FixedIo.Address > 0x03FF)
+    if (AcpiUtReadUint16 (&Descriptor->FixedIo.Address) > 0x03FF)
     {
         AslError (ASL_WARNING, ASL_MSG_ISA_ADDRESS, AddressOp, NULL);
     }
@@ -466,6 +470,7 @@ RsDoIoDescriptor (
     ASL_RESOURCE_NODE       *Rnode;
     UINT32                  CurrentByteOffset;
     UINT32                  i;
+    UINT16                  Tmp16;
 
 
     InitializerOp = Info->DescriptorTypeOp->Asl.Child;
@@ -491,8 +496,8 @@ RsDoIoDescriptor (
 
         case 1:  /* Min Address */
 
-            Descriptor->Io.Minimum =
-                (UINT16) InitializerOp->Asl.Value.Integer;
+            Tmp16 = (UINT16) InitializerOp->Asl.Value.Integer;
+            Descriptor->Io.Minimum = AcpiUtReadUint16 (&Tmp16);
             RsCreateWordField (InitializerOp, ACPI_RESTAG_MINADDR,
                 CurrentByteOffset + ASL_RESDESC_OFFSET (Io.Minimum));
             MinOp = InitializerOp;
@@ -500,8 +505,8 @@ RsDoIoDescriptor (
 
         case 2: /* Max Address */
 
-            Descriptor->Io.Maximum =
-                (UINT16) InitializerOp->Asl.Value.Integer;
+            Tmp16 = (UINT16) InitializerOp->Asl.Value.Integer;
+            Descriptor->Io.Maximum = AcpiUtReadUint16 (&Tmp16);
             RsCreateWordField (InitializerOp, ACPI_RESTAG_MAXADDR,
                 CurrentByteOffset + ASL_RESDESC_OFFSET (Io.Maximum));
             MaxOp = InitializerOp;
@@ -542,10 +547,10 @@ RsDoIoDescriptor (
     /* Validate the Min/Max/Len/Align values */
 
     RsSmallAddressCheck (ACPI_RESOURCE_NAME_IO,
-        Descriptor->Io.Minimum,
-        Descriptor->Io.Maximum,
-        Descriptor->Io.AddressLength,
-        Descriptor->Io.Alignment,
+        (UINT32) (AcpiUtReadUint16 (&Descriptor->Io.Minimum)),
+        (UINT32) (AcpiUtReadUint16 (&Descriptor->Io.Maximum)),
+        (UINT32) Descriptor->Io.AddressLength,
+        (UINT32) Descriptor->Io.Alignment,
         MinOp, MaxOp, LengthOp, AlignOp, Info->DescriptorTypeOp);
 
     return (Rnode);
@@ -669,7 +674,7 @@ RsDoIrqDescriptor (
 
     /* Now we can set the channel mask */
 
-    Descriptor->Irq.IrqMask = IrqMask;
+    Descriptor->Irq.IrqMask = AcpiUtReadUint16 (&IrqMask);
     return (Rnode);
 }
 
@@ -768,6 +773,6 @@ RsDoIrqNoFlagsDescriptor (
 
     /* Now we can set the interrupt mask */
 
-    Descriptor->Irq.IrqMask = IrqMask;
+    Descriptor->Irq.IrqMask = AcpiUtReadUint16(&IrqMask);
     return (Rnode);
 }

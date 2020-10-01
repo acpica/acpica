@@ -192,6 +192,8 @@ RsDoDwordIoDescriptor (
     UINT32                  CurrentByteOffset;
     UINT32                  i;
     BOOLEAN                 ResSourceIndex = FALSE;
+    UINT16                  Tmp16;
+    UINT32                  Tmp32;
 
 
     InitializerOp = Info->DescriptorTypeOp->Asl.Child;
@@ -255,8 +257,8 @@ RsDoDwordIoDescriptor (
 
         case 5: /* Address Granularity */
 
-            Descriptor->Address32.Granularity =
-                (UINT32) InitializerOp->Asl.Value.Integer;
+            Tmp32 = (UINT32) InitializerOp->Asl.Value.Integer;
+            Descriptor->Address32.Granularity = AcpiUtReadUint32 (&Tmp32);
             RsCreateDwordField (InitializerOp, ACPI_RESTAG_GRANULARITY,
                 CurrentByteOffset + ASL_RESDESC_OFFSET (Address32.Granularity));
             GranOp = InitializerOp;
@@ -264,8 +266,8 @@ RsDoDwordIoDescriptor (
 
         case 6: /* Address Min */
 
-            Descriptor->Address32.Minimum =
-                (UINT32) InitializerOp->Asl.Value.Integer;
+            Tmp32 = (UINT32) InitializerOp->Asl.Value.Integer;
+            Descriptor->Address32.Minimum = AcpiUtReadUint32 (&Tmp32);
             RsCreateDwordField (InitializerOp, ACPI_RESTAG_MINADDR,
                 CurrentByteOffset + ASL_RESDESC_OFFSET (Address32.Minimum));
             MinOp = InitializerOp;
@@ -273,8 +275,8 @@ RsDoDwordIoDescriptor (
 
         case 7: /* Address Max */
 
-            Descriptor->Address32.Maximum =
-                (UINT32) InitializerOp->Asl.Value.Integer;
+            Tmp32 = (UINT32) InitializerOp->Asl.Value.Integer;
+            Descriptor->Address32.Maximum = AcpiUtReadUint32 (&Tmp32);
             RsCreateDwordField (InitializerOp, ACPI_RESTAG_MAXADDR,
                 CurrentByteOffset + ASL_RESDESC_OFFSET (Address32.Maximum));
             MaxOp = InitializerOp;
@@ -282,16 +284,16 @@ RsDoDwordIoDescriptor (
 
         case 8: /* Translation Offset */
 
-            Descriptor->Address32.TranslationOffset =
-                (UINT32) InitializerOp->Asl.Value.Integer;
+            Tmp32 = (UINT32) InitializerOp->Asl.Value.Integer;
+            Descriptor->Address32.TranslationOffset = AcpiUtReadUint32 (&Tmp32);
             RsCreateDwordField (InitializerOp, ACPI_RESTAG_TRANSLATION,
                 CurrentByteOffset + ASL_RESDESC_OFFSET (Address32.TranslationOffset));
             break;
 
         case 9: /* Address Length */
 
-            Descriptor->Address32.AddressLength =
-                (UINT32) InitializerOp->Asl.Value.Integer;
+            Tmp32 = (UINT32) InitializerOp->Asl.Value.Integer;
+            Descriptor->Address32.AddressLength = AcpiUtReadUint32 (&Tmp32);
             RsCreateDwordField (InitializerOp, ACPI_RESTAG_LENGTH,
                 CurrentByteOffset + ASL_RESDESC_OFFSET (Address32.AddressLength));
             LengthOp = InitializerOp;
@@ -379,11 +381,14 @@ RsDoDwordIoDescriptor (
 
     /* Validate the Min/Max/Len/Gran values */
 
+    Tmp16 = Descriptor->Address32.ResourceLength;
+    Descriptor->Address32.ResourceLength = AcpiUtReadUint16 (&Tmp16);
+
     RsLargeAddressCheck (
-        (UINT64) Descriptor->Address32.Minimum,
-        (UINT64) Descriptor->Address32.Maximum,
-        (UINT64) Descriptor->Address32.AddressLength,
-        (UINT64) Descriptor->Address32.Granularity,
+        (UINT64) AcpiUtReadUint32 (&Descriptor->Address32.Minimum),
+        (UINT64) AcpiUtReadUint32 (&Descriptor->Address32.Maximum),
+        (UINT64) AcpiUtReadUint32 (&Descriptor->Address32.AddressLength),
+        (UINT64) AcpiUtReadUint32 (&Descriptor->Address32.Granularity),
         Descriptor->Address32.Flags,
         MinOp, MaxOp, LengthOp, GranOp, Info->DescriptorTypeOp);
 
@@ -422,6 +427,8 @@ RsDoDwordMemoryDescriptor (
     UINT32                  CurrentByteOffset;
     UINT32                  i;
     BOOLEAN                 ResSourceIndex = FALSE;
+    UINT16                  Tmp16;
+    UINT32                  Tmp32;
 
 
     InitializerOp = Info->DescriptorTypeOp->Asl.Child;
@@ -493,8 +500,8 @@ RsDoDwordMemoryDescriptor (
 
         case 6: /* Address Granularity */
 
-            Descriptor->Address32.Granularity =
-                (UINT32) InitializerOp->Asl.Value.Integer;
+            Tmp32 = (UINT32) InitializerOp->Asl.Value.Integer;
+            Descriptor->Address32.Granularity = AcpiUtReadUint32 (&Tmp32);
             RsCreateDwordField (InitializerOp, ACPI_RESTAG_GRANULARITY,
                 CurrentByteOffset + ASL_RESDESC_OFFSET (Address32.Granularity));
             GranOp = InitializerOp;
@@ -502,8 +509,8 @@ RsDoDwordMemoryDescriptor (
 
         case 7: /* Min Address */
 
-            Descriptor->Address32.Minimum =
-                (UINT32) InitializerOp->Asl.Value.Integer;
+            Tmp32 = (UINT32) InitializerOp->Asl.Value.Integer;
+            Descriptor->Address32.Minimum = AcpiUtReadUint32 (&Tmp32);
             RsCreateDwordField (InitializerOp, ACPI_RESTAG_MINADDR,
                 CurrentByteOffset + ASL_RESDESC_OFFSET (Address32.Minimum));
             MinOp = InitializerOp;
@@ -511,8 +518,8 @@ RsDoDwordMemoryDescriptor (
 
         case 8: /* Max Address */
 
-            Descriptor->Address32.Maximum =
-                (UINT32) InitializerOp->Asl.Value.Integer;
+            Tmp32 = (UINT32) InitializerOp->Asl.Value.Integer;
+            Descriptor->Address32.Maximum = AcpiUtReadUint32 (&Tmp32);
             RsCreateDwordField (InitializerOp, ACPI_RESTAG_MAXADDR,
                 CurrentByteOffset + ASL_RESDESC_OFFSET (Address32.Maximum));
             MaxOp = InitializerOp;
@@ -520,16 +527,16 @@ RsDoDwordMemoryDescriptor (
 
         case 9: /* Translation Offset */
 
-            Descriptor->Address32.TranslationOffset =
-                (UINT32) InitializerOp->Asl.Value.Integer;
+            Tmp32 = (UINT32) InitializerOp->Asl.Value.Integer;
+            Descriptor->Address32.TranslationOffset = AcpiUtReadUint32 (&Tmp32);
             RsCreateDwordField (InitializerOp, ACPI_RESTAG_TRANSLATION,
                 CurrentByteOffset + ASL_RESDESC_OFFSET (Address32.TranslationOffset));
             break;
 
         case 10: /* Address Length */
 
-            Descriptor->Address32.AddressLength =
-                (UINT32) InitializerOp->Asl.Value.Integer;
+            Tmp32 = (UINT32) InitializerOp->Asl.Value.Integer;
+            Descriptor->Address32.AddressLength = AcpiUtReadUint32 (&Tmp32);
             RsCreateDwordField (InitializerOp, ACPI_RESTAG_LENGTH,
                 CurrentByteOffset + ASL_RESDESC_OFFSET (Address32.AddressLength));
             LengthOp = InitializerOp;
@@ -614,11 +621,14 @@ RsDoDwordMemoryDescriptor (
 
     /* Validate the Min/Max/Len/Gran values */
 
+    Tmp16 = Descriptor->Address32.ResourceLength;
+    Descriptor->Address32.ResourceLength = AcpiUtReadUint16 (&Tmp16);
+
     RsLargeAddressCheck (
-        (UINT64) Descriptor->Address32.Minimum,
-        (UINT64) Descriptor->Address32.Maximum,
-        (UINT64) Descriptor->Address32.AddressLength,
-        (UINT64) Descriptor->Address32.Granularity,
+        (UINT64) AcpiUtReadUint32 (&Descriptor->Address32.Minimum),
+        (UINT64) AcpiUtReadUint32 (&Descriptor->Address32.Maximum),
+        (UINT64) AcpiUtReadUint32 (&Descriptor->Address32.AddressLength),
+        (UINT64) AcpiUtReadUint32 (&Descriptor->Address32.Granularity),
         Descriptor->Address32.Flags,
         MinOp, MaxOp, LengthOp, GranOp, Info->DescriptorTypeOp);
 
@@ -657,6 +667,8 @@ RsDoDwordSpaceDescriptor (
     UINT32                  CurrentByteOffset;
     UINT32                  i;
     BOOLEAN                 ResSourceIndex = FALSE;
+    UINT16                  Tmp16;
+    UINT32                  Tmp32;
 
 
     InitializerOp = Info->DescriptorTypeOp->Asl.Child;
@@ -724,8 +736,8 @@ RsDoDwordSpaceDescriptor (
 
         case 6: /* Address Granularity */
 
-            Descriptor->Address32.Granularity =
-                (UINT32) InitializerOp->Asl.Value.Integer;
+            Tmp32 = (UINT32) InitializerOp->Asl.Value.Integer;
+            Descriptor->Address32.Granularity = AcpiUtReadUint32 (&Tmp32);
             RsCreateDwordField (InitializerOp, ACPI_RESTAG_GRANULARITY,
                 CurrentByteOffset + ASL_RESDESC_OFFSET (Address32.Granularity));
             GranOp = InitializerOp;
@@ -733,8 +745,8 @@ RsDoDwordSpaceDescriptor (
 
         case 7: /* Min Address */
 
-            Descriptor->Address32.Minimum =
-                (UINT32) InitializerOp->Asl.Value.Integer;
+            Tmp32 = (UINT32) InitializerOp->Asl.Value.Integer;
+            Descriptor->Address32.Minimum = AcpiUtReadUint32 (&Tmp32);
             RsCreateDwordField (InitializerOp, ACPI_RESTAG_MINADDR,
                 CurrentByteOffset + ASL_RESDESC_OFFSET (Address32.Minimum));
             MinOp = InitializerOp;
@@ -742,8 +754,8 @@ RsDoDwordSpaceDescriptor (
 
         case 8: /* Max Address */
 
-            Descriptor->Address32.Maximum =
-                (UINT32) InitializerOp->Asl.Value.Integer;
+            Tmp32 = (UINT32) InitializerOp->Asl.Value.Integer;
+            Descriptor->Address32.Maximum = AcpiUtReadUint32 (&Tmp32);
             RsCreateDwordField (InitializerOp, ACPI_RESTAG_MAXADDR,
                 CurrentByteOffset + ASL_RESDESC_OFFSET (Address32.Maximum));
             MaxOp = InitializerOp;
@@ -751,16 +763,16 @@ RsDoDwordSpaceDescriptor (
 
         case 9: /* Translation Offset */
 
-            Descriptor->Address32.TranslationOffset =
-                (UINT32) InitializerOp->Asl.Value.Integer;
+            Tmp32 = (UINT32) InitializerOp->Asl.Value.Integer;
+            Descriptor->Address32.TranslationOffset = AcpiUtReadUint32 (&Tmp32);
             RsCreateDwordField (InitializerOp, ACPI_RESTAG_TRANSLATION,
                 CurrentByteOffset + ASL_RESDESC_OFFSET (Address32.TranslationOffset));
             break;
 
         case 10: /* Address Length */
 
-            Descriptor->Address32.AddressLength =
-                (UINT32) InitializerOp->Asl.Value.Integer;
+            Tmp32 = (UINT32) InitializerOp->Asl.Value.Integer;
+            Descriptor->Address32.AddressLength = AcpiUtReadUint32 (&Tmp32);
             RsCreateDwordField (InitializerOp, ACPI_RESTAG_LENGTH,
                 CurrentByteOffset + ASL_RESDESC_OFFSET (Address32.AddressLength));
             LengthOp = InitializerOp;
@@ -831,11 +843,14 @@ RsDoDwordSpaceDescriptor (
 
     /* Validate the Min/Max/Len/Gran values */
 
+    Tmp16 = Descriptor->Address32.ResourceLength;
+    Descriptor->Address32.ResourceLength = AcpiUtReadUint16 (&Tmp16);
+
     RsLargeAddressCheck (
-        (UINT64) Descriptor->Address32.Minimum,
-        (UINT64) Descriptor->Address32.Maximum,
-        (UINT64) Descriptor->Address32.AddressLength,
-        (UINT64) Descriptor->Address32.Granularity,
+        (UINT64) AcpiUtReadUint32 (&Descriptor->Address32.Minimum),
+        (UINT64) AcpiUtReadUint32 (&Descriptor->Address32.Maximum),
+        (UINT64) AcpiUtReadUint32 (&Descriptor->Address32.AddressLength),
+        (UINT64) AcpiUtReadUint32 (&Descriptor->Address32.Granularity),
         Descriptor->Address32.Flags,
         MinOp, MaxOp, LengthOp, GranOp, Info->DescriptorTypeOp);
 

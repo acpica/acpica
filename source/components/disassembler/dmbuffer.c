@@ -312,7 +312,7 @@ AcpiDmByteList (
 
 
     ByteData = Op->Named.Data;
-    ByteCount = (UINT32) Op->Common.Value.Integer;
+    ByteCount = (UINT32) Op->Common.Value.Size;
 
     /*
      * The byte list belongs to a buffer, and can be produced by either
@@ -416,7 +416,7 @@ AcpiDmIsUuidBuffer (
     /* Extract the byte list info */
 
     ByteData = NextOp->Named.Data;
-    ByteCount = (UINT32) NextOp->Common.Value.Integer;
+    ByteCount = (UINT32) NextOp->Common.Value.Size;
 
     /* Byte count must be exactly 16 */
 
@@ -544,7 +544,7 @@ AcpiDmIsUnicodeBuffer (
     /* Extract the byte list info */
 
     ByteData = NextOp->Named.Data;
-    ByteCount = (UINT32) NextOp->Common.Value.Integer;
+    ByteCount = (UINT32) NextOp->Common.Value.Size;
     WordCount = ACPI_DIV_2 (ByteCount);
 
     /*
@@ -986,14 +986,14 @@ AcpiDmUnicode (
     /* Extract the buffer info as a WORD buffer */
 
     WordData = ACPI_CAST_PTR (UINT16, Op->Named.Data);
-    WordCount = ACPI_DIV_2 (((UINT32) Op->Common.Value.Integer));
+    WordCount = ACPI_DIV_2 (((UINT32) Op->Common.Value.Size));
 
     /* Write every other byte as an ASCII character */
 
     AcpiOsPrintf ("\"");
     for (i = 0; i < (WordCount - 1); i++)
     {
-        OutputValue = (int) WordData[i];
+        OutputValue = (int) AcpiUtReadUint16 (&WordData[i]);
 
         /* Handle values that must be escaped */
 
@@ -1055,7 +1055,29 @@ AcpiDmGetHardwareIdType (
 
         /* Swap from little-endian to big-endian to simplify conversion */
 
-        BigEndianId = AcpiUtDwordByteSwap ((UINT32) Op->Common.Value.Integer);
+        BigEndianId = (UINT32) Op->Common.Value.Integer;
+        if (UtIsBigEndianMachine())
+        {
+            /*
+             * We'll need to store the bytes in little-endian order
+             * so they can be re-used properly later since everything is
+             * assumed to be in little-endian form.
+             */
+
+	     UINT32 *Ptr = (UINT32 *)(&Op->Common.Value.Integer);
+	     *Ptr = AcpiUtDwordByteSwap (BigEndianId);
+        }
+        else
+        {
+            /*
+             * We'll need to just use the bytes in big-endian order;
+             * they're already in little-endian order.
+             */
+
+            UINT32 Tmp32 = BigEndianId;
+          
+            BigEndianId = AcpiUtDwordByteSwap ((UINT32) Tmp32);
+        }
 
         /* Create the 3 leading ASCII letters */
 
@@ -1181,11 +1203,12 @@ AcpiDmDecompressEisaId (
 {
     char                    IdBuffer[ACPI_EISAID_STRING_SIZE];
     const AH_DEVICE_ID      *Info;
+    UINT32                  Tmp32 = EncodedId;
 
 
     /* Convert EISAID to a string an emit the statement */
 
-    AcpiExEisaIdToString (IdBuffer, EncodedId);
+    AcpiExEisaIdToString (IdBuffer, AcpiUtReadUint32 (&Tmp32));
     AcpiOsPrintf ("EisaId (\"%s\")", IdBuffer);
 
     /* If we know about the ID, emit the description */

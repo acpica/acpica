@@ -619,7 +619,8 @@ OpcDoUnicode (
 
     for (i = 0; i < Count; i++)
     {
-        UnicodeString[i] = (UINT16) AsciiString[i];
+        AcpiUtWriteUint (&UnicodeString[i], sizeof (UINT16),
+                &AsciiString[i], sizeof (UINT8));
     }
 
     /*

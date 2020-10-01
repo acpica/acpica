@@ -249,6 +249,8 @@ AcpiDmMemoryFields (
     UINT32                  Level)
 {
     UINT32                  i;
+    UINT16                  Tmp16;
+    UINT32                  Tmp32;
 
 
     for (i = 0; i < 4; i++)
@@ -259,14 +261,16 @@ AcpiDmMemoryFields (
         {
         case 16:
 
-            AcpiDmDumpInteger16 (ACPI_CAST_PTR (UINT16, Source)[i],
-                AcpiDmMemoryNames[i]);
+            Tmp16 = ACPI_CAST_PTR (UINT16, Source)[i];
+            AcpiDmDumpInteger16 (AcpiUtReadUint16 (&Tmp16),
+                     AcpiDmMemoryNames[i]);
             break;
 
         case 32:
 
-            AcpiDmDumpInteger32 (ACPI_CAST_PTR (UINT32, Source)[i],
-                AcpiDmMemoryNames[i]);
+            Tmp32 = ACPI_CAST_PTR (UINT32, Source)[i];
+            AcpiDmDumpInteger32 (AcpiUtReadUint32 (&Tmp32),
+                     AcpiDmMemoryNames[i]);
             break;
 
         default:
@@ -298,6 +302,9 @@ AcpiDmAddressFields (
     UINT32                  Level)
 {
     UINT32                  i;
+    UINT16                  Tmp16;
+    UINT32                  Tmp32;
+    UINT64                  Tmp64;
 
 
     AcpiOsPrintf ("\n");
@@ -310,20 +317,23 @@ AcpiDmAddressFields (
         {
         case 16:
 
-            AcpiDmDumpInteger16 (ACPI_CAST_PTR (UINT16, Source)[i],
-                AcpiDmAddressNames[i]);
+            Tmp16 = ACPI_CAST_PTR (UINT16, Source)[i];
+            AcpiDmDumpInteger16 (AcpiUtReadUint16 (&Tmp16),
+                         AcpiDmAddressNames[i]);
             break;
 
         case 32:
 
-            AcpiDmDumpInteger32 (ACPI_CAST_PTR (UINT32, Source)[i],
-                AcpiDmAddressNames[i]);
+            Tmp32 = ACPI_CAST_PTR (UINT32, Source)[i];
+            AcpiDmDumpInteger32 (AcpiUtReadUint32 (&Tmp32),
+                         AcpiDmAddressNames[i]);
             break;
 
         case 64:
 
-            AcpiDmDumpInteger64 (ACPI_CAST_PTR (UINT64, Source)[i],
-                AcpiDmAddressNames[i]);
+            Tmp64 = ACPI_CAST_PTR (UINT64, Source)[i];
+            AcpiDmDumpInteger64 (AcpiUtReadUint64 (&Tmp64),
+                         AcpiDmAddressNames[i]);
             break;
 
         default:
@@ -857,7 +867,7 @@ AcpiDmExtendedDescriptor (
     /* Extra field for this descriptor only */
 
     AcpiDmIndent (Level + 1);
-    AcpiDmDumpInteger64 (Resource->ExtAddress64.TypeSpecific,
+    AcpiDmDumpInteger64 (AcpiUtReadUint64 (&Resource->ExtAddress64.TypeSpecific),
         "Type-Specific Attributes");
 
     /* Insert a descriptor name */
@@ -984,11 +994,11 @@ AcpiDmFixedMemory32Descriptor (
         AcpiGbl_RwDecode [ACPI_GET_1BIT_FLAG (Resource->FixedMemory32.Flags)]);
 
     AcpiDmIndent (Level + 1);
-    AcpiDmDumpInteger32 (Resource->FixedMemory32.Address,
+    AcpiDmDumpInteger32 (AcpiUtReadUint32 (&Resource->FixedMemory32.Address),
         "Address Base");
 
     AcpiDmIndent (Level + 1);
-    AcpiDmDumpInteger32 (Resource->FixedMemory32.AddressLength,
+    AcpiDmDumpInteger32 (AcpiUtReadUint32 (&Resource->FixedMemory32.AddressLength),
         "Address Length");
 
     /* Insert a descriptor name */
@@ -1034,7 +1044,8 @@ AcpiDmGenericRegisterDescriptor (
     AcpiDmDumpInteger8 (Resource->GenericReg.BitOffset, "Bit Offset");
 
     AcpiDmIndent (Level + 1);
-    AcpiDmDumpInteger64 (Resource->GenericReg.Address, "Address");
+    AcpiDmDumpInteger64 (AcpiUtReadUint64 (&Resource->GenericReg.Address),
+                 "Address");
 
     /* Optional field for ACPI 3.0 */
 
@@ -1097,7 +1108,7 @@ AcpiDmInterruptDescriptor (
     AcpiDmResourceSource (Resource,
         sizeof (AML_RESOURCE_EXTENDED_IRQ) +
             ((UINT32) Resource->ExtendedIrq.InterruptCount - 1) * sizeof (UINT32),
-        Resource->ExtendedIrq.ResourceLength);
+            AcpiUtReadUint16 (&Resource->ExtendedIrq.ResourceLength));
 
     /* Insert a descriptor name */
 
@@ -1112,7 +1123,7 @@ AcpiDmInterruptDescriptor (
     {
         AcpiDmIndent (Level + 1);
         AcpiOsPrintf ("0x%8.8X,\n",
-            (UINT32) Resource->ExtendedIrq.Interrupts[i]);
+            AcpiUtReadUint32 (&Resource->ExtendedIrq.Interrupts[i]));
     }
 
     AcpiDmIndent (Level);

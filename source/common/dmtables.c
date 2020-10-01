@@ -250,6 +250,10 @@ AdCreateTableHeader (
     ACPI_TABLE_HEADER       *Table)
 {
     UINT8                   Checksum;
+    UINT32                  TableLength = AcpiUtReadUint32 (&Table->Length);
+    UINT32                  OemRevision = AcpiUtReadUint32 (&Table->OemRevision);
+    UINT32                  CompilerRevision =
+                                AcpiUtReadUint32 (&Table->AslCompilerRevision);
 
 
     /* Reset globals for External statements */
@@ -264,7 +268,7 @@ AdCreateTableHeader (
 
     AcpiOsPrintf (" * Original Table Header:\n");
     AcpiOsPrintf (" *     Signature        \"%4.4s\"\n",    Table->Signature);
-    AcpiOsPrintf (" *     Length           0x%8.8X (%u)\n", Table->Length, Table->Length);
+    AcpiOsPrintf (" *     Length           0x%8.8X (%u)\n", TableLength, TableLength);
 
     /* Print and validate the revision */
 
@@ -296,7 +300,7 @@ AdCreateTableHeader (
 
     AcpiOsPrintf ("\n *     Checksum         0x%2.2X",        Table->Checksum);
 
-    Checksum = AcpiTbChecksum (ACPI_CAST_PTR (UINT8, Table), Table->Length);
+    Checksum = AcpiTbChecksum (ACPI_CAST_PTR (UINT8, Table), TableLength);
     if (Checksum)
     {
         AcpiOsPrintf (" **** Incorrect checksum, should be 0x%2.2X",
@@ -306,9 +310,9 @@ AdCreateTableHeader (
     AcpiOsPrintf ("\n");
     AcpiOsPrintf (" *     OEM ID           \"%.6s\"\n",     Table->OemId);
     AcpiOsPrintf (" *     OEM Table ID     \"%.8s\"\n",     Table->OemTableId);
-    AcpiOsPrintf (" *     OEM Revision     0x%8.8X (%u)\n", Table->OemRevision, Table->OemRevision);
+    AcpiOsPrintf (" *     OEM Revision     0x%8.8X (%u)\n", OemRevision, OemRevision);
     AcpiOsPrintf (" *     Compiler ID      \"%.4s\"\n",     Table->AslCompilerId);
-    AcpiOsPrintf (" *     Compiler Version 0x%8.8X (%u)\n", Table->AslCompilerRevision, Table->AslCompilerRevision);
+    AcpiOsPrintf (" *     Compiler Version 0x%8.8X (%u)\n", CompilerRevision, CompilerRevision);
     AcpiOsPrintf (" */\n");
 
     /*
@@ -329,7 +333,7 @@ AdCreateTableHeader (
     AcpiOsPrintf (
         "DefinitionBlock (\"\", \"%4.4s\", %u, \"%.6s\", \"%.8s\", 0x%8.8X)\n",
         Table->Signature, Table->Revision,
-        Table->OemId, Table->OemTableId, Table->OemRevision);
+        Table->OemId, Table->OemTableId, OemRevision);
 }
 
 
@@ -504,7 +508,8 @@ AdParseTable (
 
     fprintf (stderr, "Pass 1 parse of [%4.4s]\n", (char *) Table->Signature);
 
-    AmlLength = Table->Length - sizeof (ACPI_TABLE_HEADER);
+    AmlLength = AcpiUtReadUint32 (&Table->Length);
+    AmlLength -= sizeof (ACPI_TABLE_HEADER);
     AmlStart = ((UINT8 *) Table + sizeof (ACPI_TABLE_HEADER));
 
     AcpiUtSetIntegerWidth (Table->Revision);

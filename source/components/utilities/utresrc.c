@@ -649,7 +649,7 @@ AcpiUtGetResourceLength (
     {
         /* Large Resource type -- bytes 1-2 contain the 16-bit length */
 
-        ACPI_MOVE_16_TO_16 (&ResourceLength, ACPI_ADD_PTR (UINT8, Aml, 1));
+        ResourceLength = AcpiUtReadUint16 (ACPI_ADD_PTR (UINT8, Aml, 1));
 
     }
     else

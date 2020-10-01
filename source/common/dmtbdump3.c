@@ -844,13 +844,13 @@ AcpiDmDumpWpbt (
 {
     ACPI_STATUS             Status;
     ACPI_TABLE_WPBT         *Subtable;
-    UINT32                  Length = Table->Length;
+    UINT32                  TableLength = AcpiUtReadUint32 (&Table->Length);
     UINT16                  ArgumentsLength;
 
 
     /* Dump the main table */
 
-    Status = AcpiDmDumpTable (Length, 0, Table, 0, AcpiDmTableInfoWpbt);
+    Status = AcpiDmDumpTable (TableLength, 0, Table, 0, AcpiDmTableInfoWpbt);
     if (ACPI_FAILURE (Status))
     {
         return;
@@ -859,10 +859,10 @@ AcpiDmDumpWpbt (
     /* Extract the arguments buffer length from the main table */
 
     Subtable = ACPI_CAST_PTR (ACPI_TABLE_WPBT, Table);
-    ArgumentsLength = Subtable->ArgumentsLength;
+    ArgumentsLength = AcpiUtReadUint16 (&Subtable->ArgumentsLength);
 
     /* Dump the arguments buffer */
 
-    (void) AcpiDmDumpTable (Table->Length, 0, Table, ArgumentsLength,
+    (void) AcpiDmDumpTable (TableLength, 0, Table, ArgumentsLength,
         AcpiDmTableInfoWpbt0);
 }

@@ -446,8 +446,7 @@ AcpiDmDumpXsdt (
     for (i = 0; i < Entries; i++)
     {
         AcpiDmLineHeader2 (Offset, sizeof (UINT64), "ACPI Table Address", i);
-        AcpiOsPrintf ("%8.8X%8.8X\n",
-                ACPI_FORMAT_UINT64 (AcpiUtReadUint64 (&Array[i])));
+        AcpiOsPrintf ("%16.16lX\n", AcpiUtReadUint64 (&Array[i]));
         Offset += sizeof (UINT64);
     }
 }
