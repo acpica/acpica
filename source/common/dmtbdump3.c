@@ -578,11 +578,12 @@ AcpiDmDumpTpm2Rev3 (
     ACPI_TABLE_TPM23        *CommonHeader = ACPI_CAST_PTR (ACPI_TABLE_TPM23, Table);
     ACPI_TPM23_TRAILER      *Subtable = ACPI_ADD_PTR (ACPI_TPM23_TRAILER, Table, Offset);
     ACPI_STATUS             Status;
+    UINT32                  TableLength = AcpiUtReadUint32 (&Table->Length);
 
 
     /* Main table */
 
-    Status = AcpiDmDumpTable (Table->Length, 0, Table, 0, AcpiDmTableInfoTpm23);
+    Status = AcpiDmDumpTable (TableLength, 0, Table, 0, AcpiDmTableInfoTpm23);
     if (ACPI_FAILURE (Status))
     {
         return;
@@ -594,8 +595,8 @@ AcpiDmDumpTpm2Rev3 (
     {
     case ACPI_TPM23_ACPI_START_METHOD:
 
-        (void) AcpiDmDumpTable (Table->Length, Offset, Subtable,
-            Table->Length - Offset, AcpiDmTableInfoTpm23a);
+        (void) AcpiDmDumpTable (TableLength, Offset, Subtable,
+            TableLength - Offset, AcpiDmTableInfoTpm23a);
         break;
 
     default:
@@ -625,6 +626,7 @@ AcpiDmDumpTpm2 (
     ACPI_TPM2_TRAILER       *Subtable = ACPI_ADD_PTR (ACPI_TPM2_TRAILER, Table, Offset);
     ACPI_TPM2_ARM_SMC       *ArmSubtable;
     ACPI_STATUS             Status;
+    UINT32                  TableLength = AcpiUtReadUint32 (&Table->Length);
 
 
     if (Table->Revision == 3)
@@ -635,7 +637,7 @@ AcpiDmDumpTpm2 (
 
     /* Main table */
 
-    Status = AcpiDmDumpTable (Table->Length, 0, Table, 0, AcpiDmTableInfoTpm2);
+    Status = AcpiDmDumpTable (TableLength, 0, Table, 0, AcpiDmTableInfoTpm2);
 
     if (ACPI_FAILURE (Status))
     {
@@ -643,8 +645,8 @@ AcpiDmDumpTpm2 (
     }
 
     AcpiOsPrintf ("\n");
-    Status = AcpiDmDumpTable (Table->Length, Offset, Subtable,
-        Table->Length - Offset, AcpiDmTableInfoTpm2a);
+    Status = AcpiDmDumpTable (TableLength, Offset, Subtable,
+        TableLength - Offset, AcpiDmTableInfoTpm2a);
     if (ACPI_FAILURE (Status))
     {
         return;
@@ -659,8 +661,8 @@ AcpiDmDumpTpm2 (
         Offset += sizeof (ACPI_TPM2_TRAILER);
 
         AcpiOsPrintf ("\n");
-        (void) AcpiDmDumpTable (Table->Length, Offset, ArmSubtable,
-            Table->Length - Offset, AcpiDmTableInfoTpm211);
+        (void) AcpiDmDumpTable (TableLength, Offset, ArmSubtable,
+            TableLength - Offset, AcpiDmTableInfoTpm211);
         break;
 
     default:
