@@ -41,7 +41,7 @@ names:
     _SBT
     _SBW
 
-AML Disassembler: Added a new command, "All <NameSeg". This command will 
+AML Disassembler: Added a new command, "All <NameSeg>". This command will 
 evaluate all objects in the current namespace whose NameString contains 
 the input NameSeg as the last element of the NameString. Useful for 
 debugging.
@@ -54,6 +54,11 @@ with lengths that exceed the initializer list.
 
 iASL: added more detail to external resolution error message when 
 compiling multiple definition blocks.
+
+iASL: added a remark for an attempt to create a nameseg or namestring 
+containing lower-case letters. This should prevent declaring multiple 
+namesegs or namestrings in an attempt to refer to different objects (with 
+different cases), but actually refer to the same object(s).
 
 iASL: improve alias analysis by saving object type. If the alias is a 
 method type, the parameter count is also recorded.
