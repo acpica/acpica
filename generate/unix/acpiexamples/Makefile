@@ -139,6 +139,7 @@ OBJECTS = \
 	$(OBJDIR)/utdebug.o\
 	$(OBJDIR)/utdecode.o\
 	$(OBJDIR)/utdelete.o\
+	$(OBJDIR)/utendian.o\
 	$(OBJDIR)/uterror.o\
 	$(OBJDIR)/uteval.o\
 	$(OBJDIR)/utexcep.o\

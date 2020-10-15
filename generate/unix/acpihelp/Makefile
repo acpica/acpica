@@ -45,6 +45,7 @@ OBJECTS = \
 	$(OBJDIR)/getopt.o\
 	$(OBJDIR)/osunixxf.o\
 	$(OBJDIR)/utdebug.o\
+	$(OBJDIR)/utendian.o\
 	$(OBJDIR)/utexcep.o\
 	$(OBJDIR)/utglobal.o\
 	$(OBJDIR)/uthex.o\

@@ -184,61 +184,6 @@
  * If the hardware supports the transfer of unaligned data, just do the store.
  * Otherwise, we have to move one byte at a time.
  */
-#ifdef ACPI_BIG_ENDIAN
-/*
- * Macros for big-endian machines
- */
-
-/* These macros reverse the bytes during the move, converting little-endian to big endian */
-
-                                                     /* Big Endian      <==        Little Endian */
-                                                     /*  Hi...Lo                     Lo...Hi     */
-/* 16-bit source, 16/32/64 destination */
-
-#define ACPI_MOVE_16_TO_16(d, s)        {((  UINT8 *)(void *)(d))[0] = ((UINT8 *)(void *)(s))[1];\
-                                         ((  UINT8 *)(void *)(d))[1] = ((UINT8 *)(void *)(s))[0];}
-
-#define ACPI_MOVE_16_TO_32(d, s)        {(*(UINT32 *)(void *)(d))=0;\
-                                           ((UINT8 *)(void *)(d))[2] = ((UINT8 *)(void *)(s))[1];\
-                                           ((UINT8 *)(void *)(d))[3] = ((UINT8 *)(void *)(s))[0];}
-
-#define ACPI_MOVE_16_TO_64(d, s)        {(*(UINT64 *)(void *)(d))=0;\
-                                           ((UINT8 *)(void *)(d))[6] = ((UINT8 *)(void *)(s))[1];\
-                                           ((UINT8 *)(void *)(d))[7] = ((UINT8 *)(void *)(s))[0];}
-
-/* 32-bit source, 16/32/64 destination */
-
-#define ACPI_MOVE_32_TO_16(d, s)        ACPI_MOVE_16_TO_16(d, s)    /* Truncate to 16 */
-
-#define ACPI_MOVE_32_TO_32(d, s)        {((  UINT8 *)(void *)(d))[0] = ((UINT8 *)(void *)(s))[3];\
-                                         ((  UINT8 *)(void *)(d))[1] = ((UINT8 *)(void *)(s))[2];\
-                                         ((  UINT8 *)(void *)(d))[2] = ((UINT8 *)(void *)(s))[1];\
-                                         ((  UINT8 *)(void *)(d))[3] = ((UINT8 *)(void *)(s))[0];}
-
-#define ACPI_MOVE_32_TO_64(d, s)        {(*(UINT64 *)(void *)(d))=0;\
-                                           ((UINT8 *)(void *)(d))[4] = ((UINT8 *)(void *)(s))[3];\
-                                           ((UINT8 *)(void *)(d))[5] = ((UINT8 *)(void *)(s))[2];\
-                                           ((UINT8 *)(void *)(d))[6] = ((UINT8 *)(void *)(s))[1];\
-                                           ((UINT8 *)(void *)(d))[7] = ((UINT8 *)(void *)(s))[0];}
-
-/* 64-bit source, 16/32/64 destination */
-
-#define ACPI_MOVE_64_TO_16(d, s)        ACPI_MOVE_16_TO_16(d, s)    /* Truncate to 16 */
-
-#define ACPI_MOVE_64_TO_32(d, s)        ACPI_MOVE_32_TO_32(d, s)    /* Truncate to 32 */
-
-#define ACPI_MOVE_64_TO_64(d, s)        {((  UINT8 *)(void *)(d))[0] = ((UINT8 *)(void *)(s))[7];\
-                                         ((  UINT8 *)(void *)(d))[1] = ((UINT8 *)(void *)(s))[6];\
-                                         ((  UINT8 *)(void *)(d))[2] = ((UINT8 *)(void *)(s))[5];\
-                                         ((  UINT8 *)(void *)(d))[3] = ((UINT8 *)(void *)(s))[4];\
-                                         ((  UINT8 *)(void *)(d))[4] = ((UINT8 *)(void *)(s))[3];\
-                                         ((  UINT8 *)(void *)(d))[5] = ((UINT8 *)(void *)(s))[2];\
-                                         ((  UINT8 *)(void *)(d))[6] = ((UINT8 *)(void *)(s))[1];\
-                                         ((  UINT8 *)(void *)(d))[7] = ((UINT8 *)(void *)(s))[0];}
-#else
-/*
- * Macros for little-endian machines
- */
 
 #ifndef ACPI_MISALIGNMENT_NOT_SUPPORTED
 
@@ -300,7 +245,6 @@
                                          ((  UINT8 *)(void *)(d))[5] = ((UINT8 *)(void *)(s))[5];\
                                          ((  UINT8 *)(void *)(d))[6] = ((UINT8 *)(void *)(s))[6];\
                                          ((  UINT8 *)(void *)(d))[7] = ((UINT8 *)(void *)(s))[7];}
-#endif
 #endif
 
 

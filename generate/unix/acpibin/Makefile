@@ -37,6 +37,7 @@ OBJECTS = \
 	$(OBJDIR)/utcache.o\
 	$(OBJDIR)/utdebug.o\
 	$(OBJDIR)/utdecode.o\
+	$(OBJDIR)/utendian.o\
 	$(OBJDIR)/utexcep.o\
 	$(OBJDIR)/utglobal.o\
 	$(OBJDIR)/utlock.o\
