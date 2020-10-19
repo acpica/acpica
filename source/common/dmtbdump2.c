@@ -2147,6 +2147,8 @@ AcpiDmDumpS3pt (
     ACPI_FPDT_HEADER        *Subtable;
     ACPI_DMTABLE_INFO       *InfoTable;
     ACPI_TABLE_S3PT         *S3ptTable = ACPI_CAST_PTR (ACPI_TABLE_S3PT, Tables);
+    UINT32                  S3ptTableLength = AcpiUtReadUint32 (&S3ptTable->Length);
+    UINT16                  SubtableType;
 
 
     /* Main table */
@@ -2158,19 +2160,20 @@ AcpiDmDumpS3pt (
     }
 
     Subtable = ACPI_ADD_PTR (ACPI_FPDT_HEADER, S3ptTable, Offset);
-    while (Offset < S3ptTable->Length)
+    while (Offset < S3ptTableLength)
     {
         /* Common subtable header */
 
         AcpiOsPrintf ("\n");
-        Status = AcpiDmDumpTable (S3ptTable->Length, Offset, Subtable,
+        Status = AcpiDmDumpTable (S3ptTableLength, Offset, Subtable,
             Subtable->Length, AcpiDmTableInfoS3ptHdr);
         if (ACPI_FAILURE (Status))
         {
             return 0;
         }
 
-        switch (Subtable->Type)
+        SubtableType = AcpiUtReadUint16 (&Subtable->Type);
+        switch (SubtableType)
         {
         case ACPI_S3PT_TYPE_RESUME:
 
@@ -2185,7 +2188,7 @@ AcpiDmDumpS3pt (
         default:
 
             AcpiOsPrintf ("\n**** Unknown S3PT subtable type 0x%X\n",
-                Subtable->Type);
+                SubtableType);
 
             /* Attempt to continue */
 
@@ -2198,7 +2201,7 @@ AcpiDmDumpS3pt (
         }
 
         AcpiOsPrintf ("\n");
-        Status = AcpiDmDumpTable (S3ptTable->Length, Offset, Subtable,
+        Status = AcpiDmDumpTable (S3ptTableLength, Offset, Subtable,
             Subtable->Length, InfoTable);
         if (ACPI_FAILURE (Status))
         {
@@ -2212,7 +2215,7 @@ NextSubtable:
         Subtable = ACPI_ADD_PTR (ACPI_FPDT_HEADER, Subtable, Subtable->Length);
     }
 
-    return (S3ptTable->Length);
+    return (S3ptTableLength);
 }
 
 

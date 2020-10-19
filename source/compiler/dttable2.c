@@ -1514,6 +1514,7 @@ DtCompileS3pt (
     DT_SUBTABLE             *ParentTable;
     ACPI_DMTABLE_INFO       *InfoTable;
     DT_FIELD                *SubtableStart;
+    UINT16                  S3ptHeaderType;
 
 
     Status = DtCompileTable (PFieldList, AcpiDmTableInfoS3pt,
@@ -1541,7 +1542,8 @@ DtCompileS3pt (
 
         S3ptHeader = ACPI_CAST_PTR (ACPI_FPDT_HEADER, Subtable->Buffer);
 
-        switch (S3ptHeader->Type)
+        S3ptHeaderType = AcpiUtReadUint16 (&S3ptHeader->Type);
+        switch (S3ptHeaderType)
         {
         case ACPI_S3PT_TYPE_RESUME:
 
