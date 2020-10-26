@@ -13,7 +13,7 @@
 # **/
 
 [Defines]
-  PLATFORM_NAME 	  = Acpi
+  PLATFORM_NAME           = Acpi
   PLATFORM_GUID           = b03fdec4-2942-11e6-a416-0024e8c6d30e
   PLATFORM_VERSION        = 1.0
   DSC_SPECIFICATION       = 0x00010005
