@@ -252,6 +252,7 @@ CvInitFileTree (
     char                    *ChildFilename = NULL;
     UINT8                   *AmlStart;
     UINT32                  AmlLength;
+    UINT32                  TableLength = AcpiUtReadUint32 (&Table->Length);
 
 
     if (!AcpiGbl_CaptureComments)
@@ -260,7 +261,7 @@ CvInitFileTree (
     }
 
 
-    AmlLength = Table->Length - sizeof (ACPI_TABLE_HEADER);
+    AmlLength = TableLength - sizeof (ACPI_TABLE_HEADER);
     AmlStart = ((UINT8 *) Table + sizeof (ACPI_TABLE_HEADER));
 
     CvDbgPrint ("AmlLength: %x\n", AmlLength);
@@ -270,7 +271,7 @@ CvInitFileTree (
     AcpiGbl_FileTreeRoot = AcpiOsAcquireObject (AcpiGbl_FileCache);
 
     AcpiGbl_FileTreeRoot->FileStart = (char *)(AmlStart);
-    AcpiGbl_FileTreeRoot->FileEnd = (char *)(AmlStart + Table->Length);
+    AcpiGbl_FileTreeRoot->FileEnd = (char *)(AmlStart + TableLength);
     AcpiGbl_FileTreeRoot->Next = NULL;
     AcpiGbl_FileTreeRoot->Parent = NULL;
     AcpiGbl_FileTreeRoot->Filename = (char *)(AmlStart+2);
