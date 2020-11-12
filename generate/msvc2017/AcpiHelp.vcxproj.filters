@@ -22,6 +22,9 @@
       <UniqueIdentifier>{5d459cf3-feff-40fa-a535-331fc768c69a}</UniqueIdentifier>
       <Extensions>ico;cur;bmp;dlg;rc2;rct;bin;rgs;gif;jpg;jpeg;jpe</Extensions>
     </Filter>
+    <Filter Include="AslCompiler">
+      <UniqueIdentifier>{c3eb069f-93e6-4eba-a651-04f5344689bf}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\..\source\tools\acpihelp\acpihelp.h">
@@ -94,6 +97,9 @@
     </ClCompile>
     <ClCompile Include="..\..\source\tools\acpihelp\ahasl.c">
       <Filter>Source Files\AcpiHelp</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\source\compiler\aslmessages.c">
+      <Filter>AslCompiler</Filter>
     </ClCompile>
   </ItemGroup>
 </Project>

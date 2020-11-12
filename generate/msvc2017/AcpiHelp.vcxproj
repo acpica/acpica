@@ -71,7 +71,7 @@
       <WarningLevel>Level4</WarningLevel>
       <MinimalRebuild>false</MinimalRebuild>
       <StringPooling>true</StringPooling>
-      <AdditionalIncludeDirectories>..\..\source\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>..\..\source\include;..\..\source\compiler;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <PreprocessorDefinitions>_DEBUG;WIN32;_CONSOLE;__STDC__;ACPI_HELP_APP;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <AssemblerListingLocation>.\AcpiHelpDebug\</AssemblerListingLocation>
       <PrecompiledHeaderOutputFile>.\AcpiHelpDebug\AcpiHelp.pch</PrecompiledHeaderOutputFile>
@@ -167,6 +167,7 @@
     <ClCompile Include="..\..\source\common\ahtable.c" />
     <ClCompile Include="..\..\source\common\ahuuids.c" />
     <ClCompile Include="..\..\source\common\getopt.c" />
+    <ClCompile Include="..\..\source\compiler\aslmessages.c" />
     <ClCompile Include="..\..\source\components\utilities\utdebug.c" />
     <ClCompile Include="..\..\source\components\utilities\utexcep.c" />
     <ClCompile Include="..\..\source\components\utilities\utglobal.c" />
