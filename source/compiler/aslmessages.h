@@ -152,7 +152,6 @@
 #ifndef __ASLMESSAGES_H
 #define __ASLMESSAGES_H
 
-
 /* These values must match error type string tables in aslmessages.c */
 
 typedef enum
@@ -167,8 +166,11 @@ typedef enum
 
 } ASL_MESSAGE_TYPES;
 
-
 #define ASL_ERROR_LEVEL_LENGTH          8 /* Length of strings for types above */
+
+void
+AhDecodeAslException (
+    char                    *HexString);
 
 /*
  * Exception code blocks, 0 - 999
