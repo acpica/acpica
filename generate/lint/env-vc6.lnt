@@ -7,7 +7,7 @@
 
     Unit Checkout
     -------------
-  
+
     For example, to add a unit check-out facility to the tools menu do
     the following:
 
@@ -101,22 +101,22 @@
 
     where, again, NAME is the name of the project.
 
-	If you are working with a Workspace containing multiple Projects 
+	If you are working with a Workspace containing multiple Projects
 	use the following commands for converting .dsp's to .lnt's:
 
 	Command:            C:\LINT\LINT-NT.EXE
 	Arguments:          -v -os(project.lnt) $(WkspName).dsp
 	Initial Directory:  $(WkspDir)
 
-	You will need to set a project as the active project before you can convert 
-	its .dsp to a .lnt.  To do so, select Project from the menu bar, then select 
-	Set Active Project and choose a Project.  You then click the newly added 
+	You will need to set a project as the active project before you can convert
+	its .dsp to a .lnt.  To do so, select Project from the menu bar, then select
+	Set Active Project and choose a Project.  You then click the newly added
 	conversion tool on the tools menu and then lint the project.
 
     Tool Bar
     --------
-	
-	You also have the option of creating a PC-lint toolbar for your Visual C++ 
+
+	You also have the option of creating a PC-lint toolbar for your Visual C++
     IDE.  First create one or more tools as described above.  Then, look at
     the Tools menu and make note of the icon(s) next to the menu item(s).
     It's usually a subscripted hammer; remember the subscript(s).
