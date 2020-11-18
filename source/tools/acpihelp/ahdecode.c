@@ -386,7 +386,7 @@ AhDoSpecialNames (
             }
         }
 
-        /* Fallthrough */
+        ACPI_FALLTHROUGH;
 
     case 'L':
     case 'Q':
