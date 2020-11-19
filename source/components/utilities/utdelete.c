@@ -592,9 +592,9 @@ AcpiUtUpdateRefCount (
             "%s: Obj %p Type %.2X Refs %.2X [Decremented]\n",
             ACPI_GET_FUNCTION_NAME, Object, Object->Common.Type, NewCount));
 
-        /* Actually delete the object on a reference count of zero */
+        /* If we haven't already, actually delete the object on a reference count of zero */
 
-        if (NewCount == 0)
+        if (NewCount == 0 && OriginalCount != 0)
         {
             AcpiUtDeleteInternalObj (Object);
         }
