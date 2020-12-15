@@ -825,6 +825,11 @@ AcpiDmDumpMadt (
             InfoTable = AcpiDmTableInfoMadt15;
             break;
 
+        case ACPI_MADT_TYPE_MULTIPROC_WAKEUP:
+
+            InfoTable = AcpiDmTableInfoMadt16;
+            break;
+
         default:
 
             AcpiOsPrintf ("\n**** Unknown MADT subtable type 0x%X\n\n",

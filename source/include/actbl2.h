@@ -734,7 +734,8 @@ enum AcpiMadtType
     ACPI_MADT_TYPE_GENERIC_MSI_FRAME        = 13,
     ACPI_MADT_TYPE_GENERIC_REDISTRIBUTOR    = 14,
     ACPI_MADT_TYPE_GENERIC_TRANSLATOR       = 15,
-    ACPI_MADT_TYPE_RESERVED                 = 16    /* 16 and greater are reserved */
+    ACPI_MADT_TYPE_MULTIPROC_WAKEUP         = 16,
+    ACPI_MADT_TYPE_RESERVED                 = 17    /* 17 and greater are reserved */
 };
 
 
@@ -989,6 +990,17 @@ typedef struct acpi_madt_generic_translator
     UINT32                  Reserved2;
 
 } ACPI_MADT_GENERIC_TRANSLATOR;
+
+/* 16: Multiprocessor wakeup (ACPI 6.4) */
+
+typedef struct acpi_madt_multiproc_wakeup
+{
+    ACPI_SUBTABLE_HEADER    Header;
+    UINT16                  MailboxVersion;
+    UINT32                  Reserved;           /* reserved - must be zero */
+    UINT64                  BaseAddress;
+
+} ACPI_MADT_MULTIPROC_WAKEUP;
 
 
 /*
