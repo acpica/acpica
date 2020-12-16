@@ -1251,6 +1251,25 @@ ACPI_DMTABLE_INFO           AcpiDmTableInfoPcct4[] =
     ACPI_DMT_TERMINATOR
 };
 
+/* 5: HW Registers based Communications Subspace */
+
+ACPI_DMTABLE_INFO           AcpiDmTableInfoPcct5[] =
+{
+    {ACPI_DMT_UINT16,   ACPI_PCCT5_OFFSET (Version),                "Version", 0},
+    {ACPI_DMT_UINT64,   ACPI_PCCT5_OFFSET (BaseAddress),            "Base Address", 0},
+    {ACPI_DMT_UINT64,   ACPI_PCCT5_OFFSET (Length),                 "Length", 0},
+    {ACPI_DMT_GAS,      ACPI_PCCT5_OFFSET (DoorbellRegister),       "Doorbell Register", 0},
+    {ACPI_DMT_UINT64,   ACPI_PCCT5_OFFSET (DoorbellPreserve),       "Preserve Mask", 0},
+    {ACPI_DMT_UINT64,   ACPI_PCCT5_OFFSET (DoorbellWrite),          "Write Mask", 0},
+    {ACPI_DMT_GAS,      ACPI_PCCT5_OFFSET (CmdCompleteRegister),    "Command Complete Register", 0},
+    {ACPI_DMT_UINT64,   ACPI_PCCT5_OFFSET (CmdCompleteMask),        "Command Complete Check Mask", 0},
+    {ACPI_DMT_GAS,      ACPI_PCCT5_OFFSET (ErrorStatusRegister),    "Error Status Register", 0},
+    {ACPI_DMT_UINT64,   ACPI_PCCT5_OFFSET (ErrorStatusMask),        "Error Status Mask", 0},
+    {ACPI_DMT_UINT32,   ACPI_PCCT5_OFFSET (NominalLatency),         "Nominal Latency", 0},
+    {ACPI_DMT_UINT32,   ACPI_PCCT5_OFFSET (MinTurnaroundTime),      "Minimum Turnaround Time", 0},
+    ACPI_DMT_TERMINATOR
+};
+
 
 /*******************************************************************************
  *

@@ -1570,7 +1570,8 @@ enum AcpiPcctType
     ACPI_PCCT_TYPE_HW_REDUCED_SUBSPACE_TYPE2    = 2,    /* ACPI 6.1 */
     ACPI_PCCT_TYPE_EXT_PCC_MASTER_SUBSPACE      = 3,    /* ACPI 6.2 */
     ACPI_PCCT_TYPE_EXT_PCC_SLAVE_SUBSPACE       = 4,    /* ACPI 6.2 */
-    ACPI_PCCT_TYPE_RESERVED                     = 5     /* 5 and greater are reserved */
+    ACPI_PCCT_TYPE_HW_REG_COMM_SUBSPACE         = 5,    /* ACPI 6.4 */
+    ACPI_PCCT_TYPE_RESERVED                     = 6     /* 6 and greater are reserved */
 };
 
 /*
@@ -1698,6 +1699,26 @@ typedef struct acpi_pcct_ext_pcc_slave
     UINT64                  ErrorStatusMask;
 
 } ACPI_PCCT_EXT_PCC_SLAVE;
+
+/* 5: HW Registers based Communications Subspace */
+
+typedef struct acpi_pcct_hw_reg
+{
+    ACPI_SUBTABLE_HEADER    Header;
+    UINT16                  Version;
+    UINT64                  BaseAddress;
+    UINT64                  Length;
+    ACPI_GENERIC_ADDRESS    DoorbellRegister;
+    UINT64                  DoorbellPreserve;
+    UINT64                  DoorbellWrite;
+    ACPI_GENERIC_ADDRESS    CmdCompleteRegister;
+    UINT64                  CmdCompleteMask;
+    ACPI_GENERIC_ADDRESS    ErrorStatusRegister;
+    UINT64                  ErrorStatusMask;
+    UINT32                  NominalLatency;
+    UINT32                  MinTurnaroundTime;
+
+} ACPI_PCCT_HW_REG;
 
 
 /* Values for doorbell flags above */

@@ -820,6 +820,7 @@ ACPI_TYPED_IDENTIFIER_TABLE           AcpiIdentifiers[] = {
     {"ACPI_PCCT_HW_REDUCED_TYPE2",          SRC_TYPE_STRUCT},
     {"ACPI_PCCT_EXT_PCC_MASTER",            SRC_TYPE_STRUCT},
     {"ACPI_PCCT_EXT_PCC_SLAVE",             SRC_TYPE_STRUCT},
+    {"ACPI_PCCT_HW_REG",                    SRC_TYPE_STRUCT},
     {"ACPI_PCCT_SHARED_MEMORY",             SRC_TYPE_STRUCT},
     {"ACPI_PCCT_SUBSPACE",                  SRC_TYPE_STRUCT},
     {"ACPI_PDTT_CHANNEL",                   SRC_TYPE_STRUCT},

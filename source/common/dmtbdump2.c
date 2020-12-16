@@ -1438,6 +1438,11 @@ AcpiDmDumpPcct (
             InfoTable = AcpiDmTableInfoPcct4;
             break;
 
+        case ACPI_PCCT_TYPE_HW_REG_COMM_SUBSPACE:
+
+            InfoTable = AcpiDmTableInfoPcct5;
+            break;
+
         default:
 
             AcpiOsPrintf (

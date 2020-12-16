@@ -523,6 +523,7 @@ extern ACPI_DMTABLE_INFO        AcpiDmTableInfoPcct1[];
 extern ACPI_DMTABLE_INFO        AcpiDmTableInfoPcct2[];
 extern ACPI_DMTABLE_INFO        AcpiDmTableInfoPcct3[];
 extern ACPI_DMTABLE_INFO        AcpiDmTableInfoPcct4[];
+extern ACPI_DMTABLE_INFO        AcpiDmTableInfoPcct5[];
 extern ACPI_DMTABLE_INFO        AcpiDmTableInfoPdtt0[];
 extern ACPI_DMTABLE_INFO        AcpiDmTableInfoPptt0[];
 extern ACPI_DMTABLE_INFO        AcpiDmTableInfoPptt0a[];
