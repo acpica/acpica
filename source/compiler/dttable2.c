@@ -1141,6 +1141,7 @@ DtCompilePptt (
     ACPI_DMTABLE_INFO       *InfoTable;
     DT_FIELD                **PFieldList = (DT_FIELD **) List;
     DT_FIELD                *SubtableStart;
+    ACPI_TABLE_HEADER       *PpttAcpiHeader;
 
 
     ParentTable = DtPeekSubtable ();
@@ -1224,6 +1225,20 @@ DtCompilePptt (
                     PpttProcessor->NumberOfPrivResources++;
                 }
             }
+            break;
+
+        case ACPI_PPTT_TYPE_CACHE:
+
+            PpttAcpiHeader = ACPI_CAST_PTR (ACPI_TABLE_HEADER,
+                AslGbl_RootTable->Buffer);
+            if (PpttAcpiHeader->Revision < 3)
+            {
+                break;
+            }
+            Status = DtCompileTable (PFieldList, AcpiDmTableInfoPptt1a,
+                &Subtable);
+            DtInsertSubtable (ParentTable, Subtable);
+            PpttHeader->Length += (UINT8)(Subtable->Length);
             break;
 
         default:

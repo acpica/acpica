@@ -825,6 +825,7 @@ ACPI_TYPED_IDENTIFIER_TABLE           AcpiIdentifiers[] = {
     {"ACPI_PCCT_SUBSPACE",                  SRC_TYPE_STRUCT},
     {"ACPI_PDTT_CHANNEL",                   SRC_TYPE_STRUCT},
     {"ACPI_PPTT_CACHE",                     SRC_TYPE_STRUCT},
+    {"ACPI_PPTT_CACHE_V1",                  SRC_TYPE_STRUCT},
     {"ACPI_PPTT_ID",                        SRC_TYPE_STRUCT},
     {"ACPI_PPTT_PROCESSOR",                 SRC_TYPE_STRUCT},
     {"ACPI_RSDP_COMMON",                    SRC_TYPE_STRUCT},
