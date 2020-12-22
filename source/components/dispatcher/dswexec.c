@@ -575,9 +575,11 @@ AcpiDsExecEndOp (
         {
             /* Resolve all operands */
 
-            Status = AcpiExResolveOperands (WalkState->Opcode,
-                &(WalkState->Operands [WalkState->NumOperands -1]),
-                WalkState);
+	    Status = AE_OK;
+	    if (WalkState->NumOperands > 0)
+            	Status = AcpiExResolveOperands (WalkState->Opcode,
+                	 &(WalkState->Operands [WalkState->NumOperands -1]),
+                	 WalkState);
         }
 
         if (ACPI_SUCCESS (Status))
