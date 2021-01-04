@@ -251,7 +251,6 @@ const AH_TABLE      AcpiGbl_SupportedTables[] =
     {ACPI_SIG_TCPA, "Trusted Computing Platform Alliance table"},
     {ACPI_SIG_TPM2, "Trusted Platform Module hardware interface table"},
     {ACPI_SIG_UEFI, "UEFI Boot Optimization Table"},
-    {ACPI_SIG_VRTC, "Virtual Real-Time Clock Table"},
     {ACPI_SIG_WAET, "Windows ACPI Emulated Devices Table"},
     {ACPI_SIG_WDAT, "Watchdog Action Table"},
     {ACPI_SIG_WDDT, "Watchdog Description Table"},
