@@ -402,7 +402,8 @@ AcpiEvAddressSpaceDispatch (
      *      the previous Connection)
      *   2) BitWidth is the actual bit length of the field (number of pins)
      */
-    if ((RegionObj->Region.SpaceId == ACPI_ADR_SPACE_GSBUS) &&
+    if ((RegionObj->Region.SpaceId == ACPI_ADR_SPACE_GSBUS ||
+         RegionObj->Region.SpaceId == ACPI_ADR_SPACE_GPIO) &&
         Context &&
         FieldObj)
     {
@@ -420,27 +421,12 @@ AcpiEvAddressSpaceDispatch (
         Context->Connection = FieldObj->Field.ResourceBuffer;
         Context->Length = FieldObj->Field.ResourceLength;
         Context->AccessLength = FieldObj->Field.AccessLength;
-    }
-    if ((RegionObj->Region.SpaceId == ACPI_ADR_SPACE_GPIO) &&
-        Context &&
-        FieldObj)
-    {
 
-        Status = AcpiOsAcquireMutex (ContextMutex, ACPI_WAIT_FOREVER);
-        if (ACPI_FAILURE (Status))
+        if (RegionObj->Region.SpaceId == ACPI_ADR_SPACE_GPIO)
         {
-            goto ReEnterInterpreter;
+            Address = FieldObj->Field.PinNumberIndex;
+            BitWidth = FieldObj->Field.BitLength;
         }
-
-        ContextLocked = TRUE;
-
-        /* Get the Connection (ResourceTemplate) buffer */
-
-        Context->Connection = FieldObj->Field.ResourceBuffer;
-        Context->Length = FieldObj->Field.ResourceLength;
-        Context->AccessLength = FieldObj->Field.AccessLength;
-        Address = FieldObj->Field.PinNumberIndex;
-        BitWidth = FieldObj->Field.BitLength;
     }
 
     /* Call the handler */
