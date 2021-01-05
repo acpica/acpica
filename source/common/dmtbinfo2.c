@@ -911,28 +911,6 @@ ACPI_DMTABLE_INFO           AcpiDmTableInfoMsct0[] =
 
 /*******************************************************************************
  *
- * MTMR - MID Timer Table
- *
- ******************************************************************************/
-
-ACPI_DMTABLE_INFO           AcpiDmTableInfoMtmr[] =
-{
-    ACPI_DMT_TERMINATOR
-};
-
-/* MTMR Subtables - MTMR Entry */
-
-ACPI_DMTABLE_INFO           AcpiDmTableInfoMtmr0[] =
-{
-    {ACPI_DMT_GAS,      ACPI_MTMR0_OFFSET (PhysicalAddress),        "PhysicalAddress", 0},
-    {ACPI_DMT_UINT32,   ACPI_MTMR0_OFFSET (Frequency),              "Frequency", 0},
-    {ACPI_DMT_UINT32,   ACPI_MTMR0_OFFSET (Irq),                    "IRQ", 0},
-    ACPI_DMT_TERMINATOR
-};
-
-
-/*******************************************************************************
- *
  * NFIT - NVDIMM Firmware Interface Table and Subtables - (ACPI 6.0)
  *
  ******************************************************************************/

@@ -1116,59 +1116,6 @@ AcpiDmDumpMsct (
 
 /*******************************************************************************
  *
- * FUNCTION:    AcpiDmDumpMtmr
- *
- * PARAMETERS:  Table               - A MTMR table
- *
- * RETURN:      None
- *
- * DESCRIPTION: Format the contents of a MTMR
- *
- ******************************************************************************/
-
-void
-AcpiDmDumpMtmr (
-    ACPI_TABLE_HEADER       *Table)
-{
-    ACPI_STATUS             Status;
-    UINT32                  Offset = sizeof (ACPI_TABLE_MTMR);
-    ACPI_MTMR_ENTRY         *Subtable;
-
-
-    /* Main table */
-
-    Status = AcpiDmDumpTable (Table->Length, 0, Table, 0, AcpiDmTableInfoMtmr);
-    if (ACPI_FAILURE (Status))
-    {
-        return;
-    }
-
-    /* Subtables */
-
-    Subtable = ACPI_ADD_PTR (ACPI_MTMR_ENTRY, Table, Offset);
-    while (Offset < Table->Length)
-    {
-        /* Common subtable header */
-
-        AcpiOsPrintf ("\n");
-        Status = AcpiDmDumpTable (Table->Length, Offset, Subtable,
-            sizeof (ACPI_MTMR_ENTRY), AcpiDmTableInfoMtmr0);
-        if (ACPI_FAILURE (Status))
-        {
-            return;
-        }
-
-        /* Point to next subtable */
-
-        Offset += sizeof (ACPI_MTMR_ENTRY);
-        Subtable = ACPI_ADD_PTR (ACPI_MTMR_ENTRY, Subtable,
-            sizeof (ACPI_MTMR_ENTRY));
-    }
-}
-
-
-/*******************************************************************************
- *
  * FUNCTION:    AcpiDmDumpNfit
  *
  * PARAMETERS:  Table               - A NFIT table
