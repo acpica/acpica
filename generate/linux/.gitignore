@@ -1,0 +1,9 @@
+bin
+bin*
+linux
+linux-*
+acpica-*
+diffstat.txt
+diffstat-single.txt
+divergence.diff
+divergence-single.diff

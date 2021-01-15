@@ -1,0 +1,10 @@
+bin
+acpibin/obj
+acpidump/obj
+acpiexamples/obj
+acpiexec/obj
+acpihelp/obj
+acpinames/obj
+unix/acpisrc/obj
+acpixtract/obj
+unix/iasl/obj
