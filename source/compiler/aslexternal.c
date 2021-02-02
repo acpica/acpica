@@ -282,6 +282,57 @@ ExDoExternal (
 
 /*******************************************************************************
  *
+ * FUNCTION:    ExFindUnvisitedExternal
+ *
+ * PARAMETERS:  Name             - Name to find in the external list
+ *
+ * RETURN:      ACPI_PARSE_OBJECT
+ *
+ * DESCRIPTION: Find an entry in the external list that matches the Name
+ *              argument
+ *
+ ******************************************************************************/
+
+static ACPI_PARSE_OBJECT *
+ExFindUnvisitedExternal (
+    char                    *Name)
+{
+    ACPI_PARSE_OBJECT       *Current;
+    ACPI_PARSE_OBJECT       *NameOp;
+    char                    *ExternalName;
+
+
+    Current = AslGbl_ExternalsListHead;
+    while (Current)
+    {
+        /* Skip if External node already handled */
+
+        if (Current->Asl.Child->Asl.CompileFlags & OP_VISITED)
+        {
+            Current = Current->Asl.Next;
+            continue;
+        }
+
+        NameOp = Current->Asl.Child->Asl.Child;
+        ExternalName = AcpiNsGetNormalizedPathname (NameOp->Asl.Node, TRUE);
+        if (strcmp (Name, ExternalName))
+        {
+            ACPI_FREE (ExternalName);
+            Current = Current->Asl.Next;
+            continue;
+        }
+        else
+        {
+            ACPI_FREE (ExternalName);
+            return Current;
+        }
+    }
+    return NULL;
+}
+
+
+/*******************************************************************************
+ *
  * FUNCTION:    ExInsertArgCount
  *
  * PARAMETERS:  Op              - Op for a method invocation
@@ -301,7 +352,6 @@ ExInsertArgCount (
     ACPI_PARSE_OBJECT       *NameOp;
     ACPI_PARSE_OBJECT       *Child;
     ACPI_PARSE_OBJECT       *ArgCountOp;
-    char *                  ExternalName;
     char *                  CallName;
     UINT16                  ArgCount = 0;
     ACPI_STATUS             Status;
@@ -309,36 +359,14 @@ ExInsertArgCount (
 
     CallName = AcpiNsGetNormalizedPathname (Op->Asl.Node, TRUE);
 
-    Next = AslGbl_ExternalsListHead;
-    while (Next)
-    {
-        ArgCount = 0;
-
-        /* Skip if External node already handled */
-
-        if (Next->Asl.Child->Asl.CompileFlags & OP_VISITED)
-        {
-            Next = Next->Asl.Next;
-            continue;
-        }
-
-        NameOp = Next->Asl.Child->Asl.Child;
-        ExternalName = AcpiNsGetNormalizedPathname (NameOp->Asl.Node, TRUE);
-        if (strcmp (CallName, ExternalName))
-        {
-            ACPI_FREE (ExternalName);
-            Next = Next->Asl.Next;
-            continue;
-        }
-        ACPI_FREE (ExternalName);
-    }
-
+    Next = ExFindUnvisitedExternal (CallName);
     if (!Next)
     {
        goto Cleanup;
     }
 
     Next->Asl.Child->Asl.CompileFlags |= OP_VISITED;
+    NameOp = Next->Asl.Child->Asl.Child;
 
     /*
      * Since we will reposition Externals to the Root, set Namepath
@@ -392,6 +420,9 @@ ExAmlExternalWalkBegin (
     UINT32                  Level,
     void                    *Context)
 {
+    ACPI_PARSE_OBJECT       *ExternalListOp;
+    char                    *Name;
+
 
     /* External list head saved in the definition block op */
 
@@ -402,6 +433,20 @@ ExAmlExternalWalkBegin (
 
     if (!AslGbl_ExternalsListHead)
     {
+        return (AE_OK);
+    }
+
+    if (Op->Asl.ParseOpcode == PARSEOP_NAMESEG ||
+        Op->Asl.ParseOpcode == PARSEOP_NAMESTRING)
+    {
+        Name = AcpiNsGetNormalizedPathname (Op->Asl.Node, TRUE);
+        ExternalListOp = ExFindUnvisitedExternal (Name);
+        if (ExternalListOp)
+        {
+            ExternalListOp->Asl.Child->Asl.CompileFlags |= OP_VISITED;
+        }
+
+        ACPI_FREE (Name);
         return (AE_OK);
     }
 
