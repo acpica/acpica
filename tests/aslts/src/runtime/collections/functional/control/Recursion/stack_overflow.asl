@@ -322,7 +322,7 @@ Method(m0fc, 1, Serialized)
 	 * We should take into account there how many method
 	 * calls precede invocation of this test method m0fc.
 	 * So, when we run MN00 or MN01 (but not immediately MAIN)
-	 * the number of preceding method calls is greated by 1.
+	 * the number of preceding method calls is greater by 1.
 	 * So, in that case, the number of calls in m0fc should
 	 * be less by 1.
 	 */

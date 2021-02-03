@@ -105,8 +105,8 @@ using of them in tests.
    There are several additional questions related to the issues above:
  - consequences of deletion - should or not any references to the deleted
    object be being applied to the new one or somehow else:
-    = a reference to a whole object obtained trough Refof (Condrefof)
-	= a reference to some part of a object obtained trough creation of
+    = a reference to a whole object obtained through Refof (Condrefof)
+	= a reference to some part of a object obtained through creation of
 	  a field or Index operator
  - consequences of overwriting on shortening of memory occupied by an
    Object (String, Package (Buffer can not be shortened?))- should or
