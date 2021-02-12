@@ -1134,9 +1134,12 @@ ACPI_DMTABLE_INFO           AcpiDmTableInfoHmat0[] =
 ACPI_DMTABLE_INFO           AcpiDmTableInfoHmat1[] =
 {
     {ACPI_DMT_UINT8,    ACPI_HMAT1_OFFSET (Flags),                  "Flags (decoded below)", 0},
-    {ACPI_DMT_FLAGS4_0, ACPI_HMAT1_FLAG_OFFSET (Flags,0),           "Memory Hierarchy", 0},
+    {ACPI_DMT_FLAGS4_0, ACPI_HMAT1_FLAG_OFFSET (Flags,0),           "Memory Hierarchy", 0},         /* First 4 bits */
+    {ACPI_DMT_FLAG4,    ACPI_HMAT1_FLAG_OFFSET (Flags,0),           "Use Minimum Transfer Size", 0},
+    {ACPI_DMT_FLAG5,    ACPI_HMAT1_FLAG_OFFSET (Flags,0),           "Non-sequential Transfers", 0},
     {ACPI_DMT_UINT8,    ACPI_HMAT1_OFFSET (DataType),               "Data Type", 0},
-    {ACPI_DMT_UINT16,   ACPI_HMAT1_OFFSET (Reserved1),              "Reserved1", 0},
+    {ACPI_DMT_UINT8,    ACPI_HMAT1_OFFSET (MinTransferSize),        "Minimum Transfer Size", 0},
+    {ACPI_DMT_UINT8,    ACPI_HMAT1_OFFSET (Reserved1),              "Reserved1", 0},
     {ACPI_DMT_UINT32,   ACPI_HMAT1_OFFSET (NumberOfInitiatorPDs),   "Initiator Proximity Domains #", 0},
     {ACPI_DMT_UINT32,   ACPI_HMAT1_OFFSET (NumberOfTargetPDs),      "Target Proximity Domains #", 0},
     {ACPI_DMT_UINT32,   ACPI_HMAT1_OFFSET (Reserved2),              "Reserved2", 0},

@@ -1829,7 +1829,8 @@ typedef struct acpi_hmat_locality
     ACPI_HMAT_STRUCTURE     Header;
     UINT8                   Flags;
     UINT8                   DataType;
-    UINT16                  Reserved1;
+    UINT8                   MinTransferSize;
+    UINT8                   Reserved1;
     UINT32                  NumberOfInitiatorPDs;
     UINT32                  NumberOfTargetPDs;
     UINT32                  Reserved2;
@@ -1839,14 +1840,17 @@ typedef struct acpi_hmat_locality
 
 /* Masks for Flags field above */
 
-#define ACPI_HMAT_MEMORY_HIERARCHY  (0x0F)
+#define ACPI_HMAT_MEMORY_HIERARCHY  (0x0F)      /* Bits 0-3 */
 
-/* Values for Memory Hierarchy flag */
+/* Values for Memory Hierarchy flags */
 
 #define ACPI_HMAT_MEMORY            0
 #define ACPI_HMAT_1ST_LEVEL_CACHE   1
 #define ACPI_HMAT_2ND_LEVEL_CACHE   2
 #define ACPI_HMAT_3RD_LEVEL_CACHE   3
+#define ACPI_HMAT_MINIMUM_XFER_SIZE 0x10        /* Bit 4: ACPI 6.4 */
+#define ACPI_HMAT_NON_SEQUENTIAL_XFERS 0x20     /* Bit 5: ACPI 6.4 */
+
 
 /* Values for DataType field above */
 
