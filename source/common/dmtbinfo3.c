@@ -378,6 +378,7 @@ ACPI_DMTABLE_INFO           AcpiDmTableInfoSrat5[] =
     {ACPI_DMT_BUF16,    ACPI_SRAT5_OFFSET (DeviceHandle),           "Device Handle", 0},
     {ACPI_DMT_UINT32,   ACPI_SRAT5_OFFSET (Flags),                  "Flags (decoded below)", DT_FLAG},
     {ACPI_DMT_FLAG0,    ACPI_SRAT5_FLAG_OFFSET (Flags,0),           "Enabled", 0},
+    {ACPI_DMT_FLAG1,    ACPI_SRAT5_FLAG_OFFSET (Flags,0),           "Architectural Transactions", 0},
     {ACPI_DMT_UINT32,   ACPI_SRAT5_OFFSET (Reserved1),              "Reserved2", 0},
     ACPI_DMT_TERMINATOR
 };
