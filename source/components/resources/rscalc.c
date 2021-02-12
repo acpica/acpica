@@ -816,9 +816,9 @@ AcpiRsGetListLength (
         *SizeNeeded += BufferSize;
 
         ACPI_DEBUG_PRINT ((ACPI_DB_RESOURCES,
-            "Type %.2X, AmlLength %.2X InternalLength %.2X\n",
+            "Type %.2X, AmlLength %.2X InternalLength %.2lX\n",
             AcpiUtGetResourceType (AmlBuffer),
-            AcpiUtGetDescriptorLength (AmlBuffer), BufferSize));
+            AcpiUtGetDescriptorLength (AmlBuffer), *SizeNeeded));
 
         /*
          * Point to the next resource within the AML stream using the length
