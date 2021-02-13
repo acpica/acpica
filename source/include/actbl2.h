@@ -2182,6 +2182,7 @@ enum AcpiSdevType
 /* Values for flags above */
 
 #define ACPI_SDEV_HANDOFF_TO_UNSECURE_OS    (1)
+#define ACPI_SDEV_SECURE_COMPONENTS_PRESENT (1<<1)
 
 /*
  * SDEV subtables
@@ -2198,6 +2199,58 @@ typedef struct acpi_sdev_namespace
     UINT16                  VendorDataLength;
 
 } ACPI_SDEV_NAMESPACE;
+
+typedef struct acpi_sdev_secure_component
+{
+    UINT16                  SecureComponentOffset;
+    UINT16                  SecureComponentLength;
+
+} ACPI_SDEV_SECURE_COMPONENT;
+
+
+/*
+ * SDEV sub-subtables ("Components") for above
+ */
+typedef struct acpi_sdev_component
+{
+    ACPI_SDEV_HEADER        Header;
+
+} ACPI_SDEV_COMPONENT;
+
+
+/* Values for sub-subtable type above */
+
+enum AcpiSacType
+{
+    ACPI_SDEV_TYPE_ID_COMPONENT     = 0,
+    ACPI_SDEV_TYPE_MEM_COMPONENT    = 1
+};
+
+typedef struct acpi_sdev_id_component
+{
+    ACPI_SDEV_HEADER        Header;
+    UINT16                  HardwareIdOffset;
+    UINT16                  HardwareIdLength;
+    UINT16                  SubsystemIdOffset;
+    UINT16                  SubsystemIdLength;
+    UINT16                  HardwareRevision;
+    UINT8                   HardwareRevPresent;
+    UINT8                   ClassCodePresent;
+    UINT8                   PciBaseClass;
+    UINT8                   PciSubClass;
+    UINT8                   PciProgrammingXface;
+
+} ACPI_SDEV_ID_COMPONENT;
+
+typedef struct acpi_sdev_mem_component
+{
+    ACPI_SDEV_HEADER        Header;
+    UINT32                  Reserved;
+    UINT64                  MemoryBaseAddress;
+    UINT64                  MemoryLength;
+
+} ACPI_SDEV_MEM_COMPONENT;
+
 
 /* 1: PCIe Endpoint Device Based Device Structure */
 

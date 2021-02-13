@@ -1984,17 +1984,20 @@ void
 AcpiDmDumpSdev (
     ACPI_TABLE_HEADER       *Table)
 {
-    ACPI_STATUS             Status;
-    ACPI_SDEV_HEADER        *Subtable;
-    ACPI_SDEV_PCIE          *Pcie;
-    ACPI_SDEV_NAMESPACE     *Namesp;
-    ACPI_DMTABLE_INFO       *InfoTable;
-    UINT32                  Length = Table->Length;
-    UINT32                  Offset = sizeof (ACPI_TABLE_SDEV);
-    UINT16                  PathOffset;
-    UINT16                  PathLength;
-    UINT16                  VendorDataOffset;
-    UINT16                  VendorDataLength;
+    ACPI_STATUS                 Status;
+    ACPI_SDEV_HEADER            *Subtable;
+    ACPI_SDEV_PCIE              *Pcie;
+    ACPI_SDEV_NAMESPACE         *Namesp;
+    ACPI_DMTABLE_INFO           *InfoTable;
+    ACPI_DMTABLE_INFO           *SecureComponentInfoTable;
+    UINT32                      Length = Table->Length;
+    UINT32                      Offset = sizeof (ACPI_TABLE_SDEV);
+    UINT16                      PathOffset;
+    UINT16                      PathLength;
+    UINT16                      VendorDataOffset;
+    UINT16                      VendorDataLength;
+    ACPI_SDEV_SECURE_COMPONENT  *SecureComponent = NULL;
+    UINT32                      CurrentOffset = 0;
 
 
     /* Main table */
@@ -2037,7 +2040,7 @@ AcpiDmDumpSdev (
         }
 
         AcpiOsPrintf ("\n");
-        Status = AcpiDmDumpTable (Table->Length, Offset, Subtable,
+        Status = AcpiDmDumpTable (Table->Length, 0, Subtable,
             Subtable->Length, InfoTable);
         if (ACPI_FAILURE (Status))
         {
@@ -2048,6 +2051,52 @@ AcpiDmDumpSdev (
         {
         case ACPI_SDEV_TYPE_NAMESPACE_DEVICE:
 
+            CurrentOffset = sizeof (ACPI_SDEV_NAMESPACE);
+            if (Subtable->Flags & ACPI_SDEV_SECURE_COMPONENTS_PRESENT)
+            {
+                SecureComponent = ACPI_CAST_PTR (ACPI_SDEV_SECURE_COMPONENT,
+                    ACPI_ADD_PTR (UINT8, Subtable, sizeof (ACPI_SDEV_NAMESPACE)));
+
+                Status = AcpiDmDumpTable (Table->Length, CurrentOffset,
+                    ACPI_ADD_PTR(UINT8, Subtable, sizeof (ACPI_SDEV_NAMESPACE)),
+                    sizeof (ACPI_SDEV_SECURE_COMPONENT), AcpiDmTableInfoSdev0b);
+                if (ACPI_FAILURE (Status))
+                {
+                    return;
+                }
+                CurrentOffset += sizeof (ACPI_SDEV_SECURE_COMPONENT);
+
+                Status = AcpiDmDumpTable (Table->Length, CurrentOffset,
+                    ACPI_ADD_PTR(UINT8, Subtable, SecureComponent->SecureComponentOffset),
+                    sizeof (ACPI_SDEV_HEADER), AcpiDmTableInfoSdevSecCompHdr);
+                if (ACPI_FAILURE (Status))
+                {
+                    return;
+                }
+                CurrentOffset += sizeof (ACPI_SDEV_HEADER);
+
+                switch (Subtable->Type)
+                {
+                case ACPI_SDEV_TYPE_ID_COMPONENT:
+
+                    SecureComponentInfoTable = AcpiDmTableInfoSdevSecCompId;
+                    break;
+
+                case ACPI_SDEV_TYPE_MEM_COMPONENT:
+
+                    SecureComponentInfoTable = AcpiDmTableInfoSdevSecCompMem;
+                    break;
+
+                default:
+                    goto NextSubtable;
+                }
+
+                Status = AcpiDmDumpTable (Table->Length, CurrentOffset,
+                    ACPI_ADD_PTR(UINT8, Subtable, SecureComponent->SecureComponentOffset),
+                    SecureComponent->SecureComponentLength, SecureComponentInfoTable);
+                CurrentOffset += SecureComponent->SecureComponentLength;
+            }
+
             /* Dump the PCIe device ID(s) */
 
             Namesp = ACPI_CAST_PTR (ACPI_SDEV_NAMESPACE, Subtable);
@@ -2056,13 +2105,14 @@ AcpiDmDumpSdev (
 
             if (PathLength)
             {
-                Status = AcpiDmDumpTable (Table->Length, 0,
+                Status = AcpiDmDumpTable (Table->Length, CurrentOffset,
                     ACPI_ADD_PTR (UINT8, Namesp, PathOffset),
                     PathLength, AcpiDmTableInfoSdev0a);
                 if (ACPI_FAILURE (Status))
                 {
                     return;
                 }
+                CurrentOffset += PathLength;
             }
 
             /* Dump the vendor-specific data */
