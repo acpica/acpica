@@ -2139,6 +2139,111 @@ DtCompileUefi (
 
 /******************************************************************************
  *
+ * FUNCTION:    DtCompileViot
+ *
+ * PARAMETERS:  List                - Current field list pointer
+ *
+ * RETURN:      Status
+ *
+ * DESCRIPTION: Compile VIOT.
+ *
+ *****************************************************************************/
+
+ACPI_STATUS
+DtCompileViot (
+    void                    **List)
+{
+    ACPI_STATUS             Status;
+    DT_SUBTABLE             *Subtable;
+    DT_SUBTABLE             *ParentTable;
+    DT_FIELD                **PFieldList = (DT_FIELD **) List;
+    DT_FIELD                *SubtableStart;
+    ACPI_TABLE_VIOT         *Viot;
+    ACPI_VIOT_HEADER        *ViotHeader;
+    ACPI_DMTABLE_INFO       *InfoTable;
+    UINT16                  NodeCount;
+
+    ParentTable = DtPeekSubtable ();
+
+    Status = DtCompileTable (PFieldList, AcpiDmTableInfoViot, &Subtable);
+    if (ACPI_FAILURE (Status))
+    {
+        return (Status);
+    }
+    DtInsertSubtable (ParentTable, Subtable);
+
+    /*
+     * Using ACPI_SUB_PTR, We needn't define a separate structure. Care
+     * should be taken to avoid accessing ACPI_TABLE_HEADER fields.
+     */
+    Viot = ACPI_SUB_PTR (ACPI_TABLE_VIOT, Subtable->Buffer,
+        sizeof (ACPI_TABLE_HEADER));
+
+    Viot->NodeOffset = sizeof (ACPI_TABLE_VIOT);
+
+    NodeCount = 0;
+    while (*PFieldList) {
+        SubtableStart = *PFieldList;
+        Status = DtCompileTable (PFieldList, AcpiDmTableInfoViotHeader,
+            &Subtable);
+        if (ACPI_FAILURE (Status))
+        {
+            return (Status);
+        }
+
+        ParentTable = DtPeekSubtable ();
+        DtInsertSubtable (ParentTable, Subtable);
+        DtPushSubtable (Subtable);
+
+        ViotHeader = ACPI_CAST_PTR (ACPI_VIOT_HEADER, Subtable->Buffer);
+
+        switch (ViotHeader->Type)
+        {
+        case ACPI_VIOT_NODE_PCI_RANGE:
+
+            InfoTable = AcpiDmTableInfoViot1;
+            break;
+
+        case ACPI_VIOT_NODE_MMIO:
+
+            InfoTable = AcpiDmTableInfoViot2;
+            break;
+
+        case ACPI_VIOT_NODE_VIRTIO_IOMMU_PCI:
+
+            InfoTable = AcpiDmTableInfoViot3;
+            break;
+
+        case ACPI_VIOT_NODE_VIRTIO_IOMMU_MMIO:
+
+            InfoTable = AcpiDmTableInfoViot4;
+            break;
+
+        default:
+
+            DtFatal (ASL_MSG_UNKNOWN_SUBTABLE, SubtableStart, "VIOT");
+            return (AE_ERROR);
+        }
+
+        Status = DtCompileTable (PFieldList, InfoTable, &Subtable);
+        if (ACPI_FAILURE (Status))
+        {
+            return (Status);
+        }
+
+        ParentTable = DtPeekSubtable ();
+        DtInsertSubtable (ParentTable, Subtable);
+        DtPopSubtable ();
+        NodeCount++;
+    }
+
+    Viot->NodeCount = NodeCount;
+    return (AE_OK);
+}
+
+
+/******************************************************************************
+ *
  * FUNCTION:    DtCompileWdat
  *
  * PARAMETERS:  List                - Current field list pointer

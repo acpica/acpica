@@ -706,6 +706,10 @@ DtCompileUefi (
     void                    **PFieldList);
 
 ACPI_STATUS
+DtCompileViot (
+    void                    **PFieldList);
+
+ACPI_STATUS
 DtCompileWdat (
     void                    **PFieldList);
 
