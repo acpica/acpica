@@ -783,6 +783,10 @@ AcpiDmDumpTpm2 (
     ACPI_TABLE_HEADER       *Table);
 
 void
+AcpiDmDumpViot (
+    ACPI_TABLE_HEADER       *Table);
+
+void
 AcpiDmDumpWdat (
     ACPI_TABLE_HEADER       *Table);
 
