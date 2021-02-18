@@ -733,7 +733,8 @@ enum AcpiMadtType
     ACPI_MADT_TYPE_GENERIC_MSI_FRAME        = 13,
     ACPI_MADT_TYPE_GENERIC_REDISTRIBUTOR    = 14,
     ACPI_MADT_TYPE_GENERIC_TRANSLATOR       = 15,
-    ACPI_MADT_TYPE_RESERVED                 = 16    /* 16 and greater are reserved */
+    ACPI_MADT_TYPE_MULTIPROC_WAKEUP         = 16,
+    ACPI_MADT_TYPE_RESERVED                 = 17    /* 17 and greater are reserved */
 };
 
 
@@ -988,6 +989,17 @@ typedef struct acpi_madt_generic_translator
     UINT32                  Reserved2;
 
 } ACPI_MADT_GENERIC_TRANSLATOR;
+
+/* 16: Multiprocessor wakeup (ACPI 6.4) */
+
+typedef struct acpi_madt_multiproc_wakeup
+{
+    ACPI_SUBTABLE_HEADER    Header;
+    UINT16                  MailboxVersion;
+    UINT32                  Reserved;           /* reserved - must be zero */
+    UINT64                  BaseAddress;
+
+} ACPI_MADT_MULTIPROC_WAKEUP;
 
 
 /*
@@ -1299,6 +1311,7 @@ typedef struct acpi_nfit_system_address
     UINT64                  Address;
     UINT64                  Length;
     UINT64                  MemoryMapping;
+    UINT64                  LocationCookie;     /* ACPI 6.4 */
 
 } ACPI_NFIT_SYSTEM_ADDRESS;
 
@@ -1306,6 +1319,7 @@ typedef struct acpi_nfit_system_address
 
 #define ACPI_NFIT_ADD_ONLINE_ONLY       (1)     /* 00: Add/Online Operation Only */
 #define ACPI_NFIT_PROXIMITY_VALID       (1<<1)  /* 01: Proximity Domain Valid */
+#define ACPI_NFIT_LOCATION_COOKIE_VALID (1<<2)  /* 02: SPA location cookie valid (ACPI 6.4) */
 
 /* Range Type GUIDs appear in the include/acuuid.h file */
 
@@ -1529,7 +1543,8 @@ enum AcpiPcctType
     ACPI_PCCT_TYPE_HW_REDUCED_SUBSPACE_TYPE2    = 2,    /* ACPI 6.1 */
     ACPI_PCCT_TYPE_EXT_PCC_MASTER_SUBSPACE      = 3,    /* ACPI 6.2 */
     ACPI_PCCT_TYPE_EXT_PCC_SLAVE_SUBSPACE       = 4,    /* ACPI 6.2 */
-    ACPI_PCCT_TYPE_RESERVED                     = 5     /* 5 and greater are reserved */
+    ACPI_PCCT_TYPE_HW_REG_COMM_SUBSPACE         = 5,    /* ACPI 6.4 */
+    ACPI_PCCT_TYPE_RESERVED                     = 6     /* 6 and greater are reserved */
 };
 
 /*
@@ -1657,6 +1672,26 @@ typedef struct acpi_pcct_ext_pcc_slave
     UINT64                  ErrorStatusMask;
 
 } ACPI_PCCT_EXT_PCC_SLAVE;
+
+/* 5: HW Registers based Communications Subspace */
+
+typedef struct acpi_pcct_hw_reg
+{
+    ACPI_SUBTABLE_HEADER    Header;
+    UINT16                  Version;
+    UINT64                  BaseAddress;
+    UINT64                  Length;
+    ACPI_GENERIC_ADDRESS    DoorbellRegister;
+    UINT64                  DoorbellPreserve;
+    UINT64                  DoorbellWrite;
+    ACPI_GENERIC_ADDRESS    CmdCompleteRegister;
+    UINT64                  CmdCompleteMask;
+    ACPI_GENERIC_ADDRESS    ErrorStatusRegister;
+    UINT64                  ErrorStatusMask;
+    UINT32                  NominalLatency;
+    UINT32                  MinTurnaroundTime;
+
+} ACPI_PCCT_HW_REG;
 
 
 /* Values for doorbell flags above */
@@ -1885,6 +1920,15 @@ typedef struct acpi_pptt_cache
 
 } ACPI_PPTT_CACHE;
 
+/* 1: Cache Type Structure for PPTT version 3 */
+
+typedef struct acpi_pptt_cache_v1
+{
+    UINT32                  CacheId;
+
+} ACPI_PPTT_CACHE_V1;
+
+
 /* Flags */
 
 #define ACPI_PPTT_SIZE_PROPERTY_VALID       (1)     /* Physical property valid */
@@ -1894,6 +1938,7 @@ typedef struct acpi_pptt_cache
 #define ACPI_PPTT_CACHE_TYPE_VALID          (1<<4)  /* Cache type valid */
 #define ACPI_PPTT_WRITE_POLICY_VALID        (1<<5)  /* Write policy valid */
 #define ACPI_PPTT_LINE_SIZE_VALID           (1<<6)  /* Line size valid */
+#define ACPI_PPTT_CHACHE_ID_VALID           (1<<7)  /* Cache ID valid */
 
 /* Masks for Attributes */
 
@@ -2108,6 +2153,7 @@ enum AcpiSdevType
 /* Values for flags above */
 
 #define ACPI_SDEV_HANDOFF_TO_UNSECURE_OS    (1)
+#define ACPI_SDEV_SECURE_COMPONENTS_PRESENT (1<<1)
 
 /*
  * SDEV subtables
@@ -2124,6 +2170,58 @@ typedef struct acpi_sdev_namespace
     UINT16                  VendorDataLength;
 
 } ACPI_SDEV_NAMESPACE;
+
+typedef struct acpi_sdev_secure_component
+{
+    UINT16                  SecureComponentOffset;
+    UINT16                  SecureComponentLength;
+
+} ACPI_SDEV_SECURE_COMPONENT;
+
+
+/*
+ * SDEV sub-subtables ("Components") for above
+ */
+typedef struct acpi_sdev_component
+{
+    ACPI_SDEV_HEADER        Header;
+
+} ACPI_SDEV_COMPONENT;
+
+
+/* Values for sub-subtable type above */
+
+enum AcpiSacType
+{
+    ACPI_SDEV_TYPE_ID_COMPONENT     = 0,
+    ACPI_SDEV_TYPE_MEM_COMPONENT    = 1
+};
+
+typedef struct acpi_sdev_id_component
+{
+    ACPI_SDEV_HEADER        Header;
+    UINT16                  HardwareIdOffset;
+    UINT16                  HardwareIdLength;
+    UINT16                  SubsystemIdOffset;
+    UINT16                  SubsystemIdLength;
+    UINT16                  HardwareRevision;
+    UINT8                   HardwareRevPresent;
+    UINT8                   ClassCodePresent;
+    UINT8                   PciBaseClass;
+    UINT8                   PciSubClass;
+    UINT8                   PciProgrammingXface;
+
+} ACPI_SDEV_ID_COMPONENT;
+
+typedef struct acpi_sdev_mem_component
+{
+    ACPI_SDEV_HEADER        Header;
+    UINT32                  Reserved;
+    UINT64                  MemoryBaseAddress;
+    UINT64                  MemoryLength;
+
+} ACPI_SDEV_MEM_COMPONENT;
+
 
 /* 1: PCIe Endpoint Device Based Device Structure */
 
