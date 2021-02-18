@@ -57,7 +57,7 @@
      *
      * - an Object of any type can be used as the DDBHandle argument,
      *
-     * - the DDBHandle argument of the Load operator becames an Object
+     * - the DDBHandle argument of the Load operator becomes an Object
      *   of the DDBHandle type,
      *
      * - the DDBHandle Object returned from the Load operator can be used

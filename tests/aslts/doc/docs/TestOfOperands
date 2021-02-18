@@ -690,7 +690,7 @@ execution.
    ======================
 
 Buffer Field operators should be passed directly only because ASL
-doesnt allow to pass Buffer Field type objects without conversion
+doesn't allow to pass Buffer Field type objects without conversion
 (they are converted to either Integer or Buffer types).
 
 Allocate Buffer Fields for both operands from the same buffer
