@@ -475,8 +475,8 @@ static const char           *AcpiDmGasAccessWidth[] =
  * handler. This table must be NULL terminated. RSDP and FACS are
  * special-cased elsewhere.
  *
- * Note: Any tables added here should be duplicated within AcpiSupportedTables
- * in the file common/ahtable.c
+ * Note: Any tables added here should be duplicated within
+ * AcpiGbl_SupportedTables in the file common/ahtable.c
  *
  ******************************************************************************/
 
