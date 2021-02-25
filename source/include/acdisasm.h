@@ -650,6 +650,10 @@ AcpiDmDumpAsf (
     ACPI_TABLE_HEADER       *Table);
 
 void
+AcpiDmDumpCedt (
+    ACPI_TABLE_HEADER       *Table);
+
+void
 AcpiDmDumpCpep (
     ACPI_TABLE_HEADER       *Table);
 
