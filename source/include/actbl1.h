@@ -172,6 +172,7 @@
 #define ACPI_SIG_BERT           "BERT"      /* Boot Error Record Table */
 #define ACPI_SIG_BGRT           "BGRT"      /* Boot Graphics Resource Table */
 #define ACPI_SIG_BOOT           "BOOT"      /* Simple Boot Flag Table */
+#define ACPI_SIG_CEDT           "CEDT"      /* CXL Early Discovery Table */
 #define ACPI_SIG_CPEP           "CPEP"      /* Corrected Platform Error Polling table */
 #define ACPI_SIG_CSRT           "CSRT"      /* Core System Resource Table */
 #define ACPI_SIG_DBG2           "DBG2"      /* Debug Port table type 2 */
@@ -490,6 +491,56 @@ typedef struct acpi_table_boot
     UINT8                   Reserved[3];
 
 } ACPI_TABLE_BOOT;
+
+/*******************************************************************************
+ *
+ * CEDT - CXL Early Discovery Table
+ *        Version 1
+ *
+ * Conforms to the "CXL Early Discovery Table" (CXL 2.0)
+ *
+ ******************************************************************************/
+
+typedef struct acpi_table_cedt
+{
+    ACPI_TABLE_HEADER       Header;             /* Common ACPI table header */
+
+} ACPI_TABLE_CEDT;
+
+/* CEDT subtable header (Performance Record Structure) */
+
+typedef struct acpi_cedt_header
+{
+    UINT8                   Type;
+    UINT8                   Reserved;
+    UINT16                  Length;
+
+} ACPI_CEDT_HEADER;
+
+/* Values for Type field above */
+
+enum AcpiCedtType
+{
+    ACPI_CEDT_TYPE_CHBS                 = 0,
+};
+
+
+/*
+ * CEDT subtables
+ */
+
+/* 0: CXL Host Bridge Structure */
+
+typedef struct acpi_cedt_chbs
+{
+    ACPI_CEDT_HEADER        Header;
+    UINT32                  Uid;
+    UINT32                  CxlVersion;
+    UINT32                  Reserved;
+    UINT64                  Base;
+    UINT64                  Length;
+
+} ACPI_CEDT_CHBS;
 
 
 /*******************************************************************************
