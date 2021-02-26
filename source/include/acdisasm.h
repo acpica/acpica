@@ -269,6 +269,7 @@ typedef enum
     ACPI_DMT_MADT,
     ACPI_DMT_NFIT,
     ACPI_DMT_PCCT,
+    ACPI_DMT_PHAT,
     ACPI_DMT_PMTT,
     ACPI_DMT_PMTT_VENDOR,
     ACPI_DMT_PPTT,
@@ -511,6 +512,12 @@ extern ACPI_DMTABLE_INFO        AcpiDmTableInfoNfit6[];
 extern ACPI_DMTABLE_INFO        AcpiDmTableInfoNfit6a[];
 extern ACPI_DMTABLE_INFO        AcpiDmTableInfoNfit7[];
 extern ACPI_DMTABLE_INFO        AcpiDmTableInfoPdtt[];
+extern ACPI_DMTABLE_INFO        AcpiDmTableInfoPhatHdr[];
+extern ACPI_DMTABLE_INFO        AcpiDmTableInfoPhat0[];
+extern ACPI_DMTABLE_INFO        AcpiDmTableInfoPhat0a[];
+extern ACPI_DMTABLE_INFO        AcpiDmTableInfoPhat1[];
+extern ACPI_DMTABLE_INFO        AcpiDmTableInfoPhat1a[];
+extern ACPI_DMTABLE_INFO        AcpiDmTableInfoPhat1b[];
 extern ACPI_DMTABLE_INFO        AcpiDmTableInfoPmtt[];
 extern ACPI_DMTABLE_INFO        AcpiDmTableInfoPmtt0[];
 extern ACPI_DMTABLE_INFO        AcpiDmTableInfoPmtt1[];
@@ -746,6 +753,10 @@ AcpiDmDumpPcct (
 
 void
 AcpiDmDumpPdtt (
+    ACPI_TABLE_HEADER       *Table);
+
+void
+AcpiDmDumpPhat (
     ACPI_TABLE_HEADER       *Table);
 
 void

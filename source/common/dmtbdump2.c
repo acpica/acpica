@@ -1471,6 +1471,140 @@ AcpiDmDumpPdtt (
 
 /*******************************************************************************
  *
+ * FUNCTION:    AcpiDmDumpPhat
+ *
+ * PARAMETERS:  Table               - A PHAT table
+ *
+ * RETURN:      None
+ *
+ * DESCRIPTION: Format the contents of a PHAT.
+ *
+ ******************************************************************************/
+
+void
+AcpiDmDumpPhat (
+    ACPI_TABLE_HEADER       *Table)
+{
+    ACPI_STATUS             Status;
+    ACPI_DMTABLE_INFO       *InfoTable;
+    ACPI_PHAT_HEADER        *Subtable;
+    ACPI_PHAT_VERSION_DATA  *VersionData;
+    UINT32                  RecordCount;
+    UINT32                  Length = Table->Length;
+    UINT32                  Offset = sizeof (ACPI_TABLE_PHAT);
+    UINT32                  SubtableLength;
+    UINT32                  PathLength;
+    UINT32                  VendorLength;
+
+
+    Subtable = ACPI_ADD_PTR (ACPI_PHAT_HEADER, Table, sizeof (ACPI_TABLE_PHAT));
+
+    while (Offset < Table->Length)
+    {
+        /* Common subtable header */
+
+        AcpiOsPrintf ("\n");
+        Status = AcpiDmDumpTable (Length, 0, Subtable,
+            sizeof (ACPI_PHAT_HEADER), AcpiDmTableInfoPhatHdr);
+        if (ACPI_FAILURE (Status))
+        {
+            return;
+        }
+
+        switch (Subtable->Type)
+        {
+        case ACPI_PHAT_TYPE_FW_VERSION_DATA:
+
+            InfoTable = AcpiDmTableInfoPhat0;
+            SubtableLength = sizeof (ACPI_PHAT_VERSION_DATA);
+            break;
+
+        case ACPI_PHAT_TYPE_FW_HEALTH_DATA:
+
+            InfoTable = AcpiDmTableInfoPhat1;
+            SubtableLength = sizeof (ACPI_PHAT_HEALTH_DATA);
+            break;
+
+        default:
+
+            AcpiOsPrintf ("\n**** Unknown PHAT subtable type 0x%X\n\n",
+                Subtable->Type);
+
+            return;
+        }
+
+        Status = AcpiDmDumpTable (Length, 0, Subtable,
+            SubtableLength, InfoTable);
+        if (ACPI_FAILURE (Status))
+        {
+            return;
+        }
+
+        switch (Subtable->Type)
+        {
+        case ACPI_PHAT_TYPE_FW_VERSION_DATA:
+
+            VersionData = ACPI_CAST_PTR (ACPI_PHAT_VERSION_DATA, Subtable);
+            RecordCount = VersionData->ElementCount;
+            while (RecordCount)
+            {
+                Status = AcpiDmDumpTable (Length, Offset,
+                    ACPI_ADD_PTR (ACPI_PHAT_HEADER, Subtable, sizeof (ACPI_PHAT_VERSION_DATA)),
+                    sizeof (ACPI_PHAT_VERSION_ELEMENT), AcpiDmTableInfoPhat0a);
+                if (ACPI_FAILURE (Status))
+                {
+                    return;
+                }
+
+                RecordCount--;
+            }
+
+            break;
+
+        case ACPI_PHAT_TYPE_FW_HEALTH_DATA:
+
+            /* account for the null terminator */
+
+            PathLength = strlen (ACPI_ADD_PTR (char, Subtable, sizeof (ACPI_PHAT_HEALTH_DATA))) + 1;
+            Status = AcpiDmDumpTable (Length, Offset,
+                ACPI_ADD_PTR (ACPI_PHAT_HEADER, Subtable, sizeof (ACPI_PHAT_HEALTH_DATA)),
+                PathLength, AcpiDmTableInfoPhat1a);
+            if (ACPI_FAILURE (Status))
+            {
+                return;
+            }
+
+            /* Get vendor data - data length is the remaining subtable length */
+
+            VendorLength =
+                Subtable->Length - sizeof (ACPI_PHAT_HEALTH_DATA) - PathLength;
+            Status = AcpiDmDumpTable (Length, 0,
+                ACPI_ADD_PTR (ACPI_PHAT_HEADER, Subtable, sizeof (ACPI_PHAT_HEALTH_DATA) + PathLength),
+                VendorLength, AcpiDmTableInfoPhat1b);
+            if (ACPI_FAILURE (Status))
+            {
+                return;
+            }
+            break;
+
+        default:
+
+            AcpiOsPrintf ("\n**** Unknown PHAT subtable type 0x%X\n\n",
+                Subtable->Type);
+            return;
+        }
+
+        /* Next subtable */
+
+        Offset += Subtable->Length;
+        Subtable = ACPI_ADD_PTR (ACPI_PHAT_HEADER, Subtable,
+            Subtable->Length);
+    }
+}
+
+
+/*******************************************************************************
+ *
  * FUNCTION:    AcpiDmDumpPmtt
  *
  * PARAMETERS:  Table               - A PMTT table

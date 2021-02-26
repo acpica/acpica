@@ -180,6 +180,7 @@
 #define ACPI_SIG_NFIT           "NFIT"      /* NVDIMM Firmware Interface Table */
 #define ACPI_SIG_PCCT           "PCCT"      /* Platform Communications Channel Table */
 #define ACPI_SIG_PDTT           "PDTT"      /* Platform Debug Trigger Table */
+#define ACPI_SIG_PHAT           "PHAT"      /* Platform Health Assessment Table */
 #define ACPI_SIG_PMTT           "PMTT"      /* Platform Memory Topology Table */
 #define ACPI_SIG_PPTT           "PPTT"      /* Processor Properties Topology Table */
 #define ACPI_SIG_RASF           "RASF"      /* RAS Feature table */
@@ -1761,6 +1762,79 @@ typedef struct acpi_pdtt_channel
 #define ACPI_PDTT_RUNTIME_TRIGGER           (1)
 #define ACPI_PDTT_WAIT_COMPLETION           (1<<1)
 #define ACPI_PDTT_TRIGGER_ORDER             (1<<2)
+
+
+/*******************************************************************************
+ *
+ * PHAT - Platform Health Assessment Table (ACPI 6.4)
+ *        Version 1
+ *
+ ******************************************************************************/
+
+typedef struct acpi_table_phat
+{
+    ACPI_TABLE_HEADER       Header;             /* Common ACPI table header */
+
+} ACPI_TABLE_PHAT;
+
+/* Common header for PHAT subtables that follow main table */
+
+typedef struct acpi_phat_header
+{
+    UINT16                  Type;
+    UINT16                  Length;
+    UINT8                   Revision;
+
+} ACPI_PHAT_HEADER;
+
+
+/* Values for Type field above */
+
+#define ACPI_PHAT_TYPE_FW_VERSION_DATA  0
+#define ACPI_PHAT_TYPE_FW_HEALTH_DATA   1
+#define ACPI_PHAT_TYPE_RESERVED         2 /* 0x02-0xFFFF are reserved */
+
+/*
+ * PHAT subtables, correspond to Type in ACPI_PHAT_HEADER
+ */
+
+/* 0: Firmware Version Data Record */
+
+typedef struct acpi_phat_version_data
+{
+    ACPI_PHAT_HEADER        Header;
+    UINT8                   Reserved[3];
+    UINT32                  ElementCount;
+
+} ACPI_PHAT_VERSION_DATA;
+
+typedef struct acpi_phat_version_element
+{
+    UINT8                   Guid[16];
+    UINT64                  VersionValue;
+    UINT32                  ProducerId;
+
+} ACPI_PHAT_VERSION_ELEMENT;
+
+
+/* 1: Firmware Health Data Record */
+
+typedef struct acpi_phat_health_data
+{
+    ACPI_PHAT_HEADER        Header;
+    UINT8                   Reserved[2];
+    UINT8                   Health;
+    UINT8                   DeviceGuid[16];
+    UINT32                  DeviceSpecificOffset; /* Zero if no Device-specific data */
+
+} ACPI_PHAT_HEALTH_DATA;
+
+/* Values for Health field above */
+
+#define ACPI_PHAT_ERRORS_FOUND          0
+#define ACPI_PHAT_NO_ERRORS             1
+#define ACPI_PHAT_UNKNOWN_ERRORS        2
+#define ACPI_PHAT_ADVISORY              3
 
 
 /*******************************************************************************
