@@ -232,6 +232,7 @@ const AH_TABLE      AcpiGbl_SupportedTables[] =
     {ACPI_SIG_MSDM, "Microsoft Data Management table"},
     {ACPI_SIG_NFIT, "NVDIMM Firmware Interface Table"},
     {ACPI_SIG_PCCT, "Platform Communications Channel Table"},
+    {ACPI_SIG_PHAT, "Platform Health Assessment Table"},
     {ACPI_SIG_PDTT, "Platform Debug Trigger Table"},
     {ACPI_SIG_PMTT, "Platform Memory Topology Table"},
     {ACPI_SIG_PPTT, "Processor Properties Topology Table"},

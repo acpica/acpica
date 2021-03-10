@@ -1278,6 +1278,61 @@ ACPI_DMTABLE_INFO           AcpiDmTableInfoPdtt0[] =
 
 /*******************************************************************************
  *
+ * PHAT - Platform Health Assessment Table (ACPI 6.4)
+ *
+ ******************************************************************************/
+
+ACPI_DMTABLE_INFO           AcpiDmTableInfoPhatHdr[] =
+{
+    {ACPI_DMT_PHAT,     ACPI_PHATH_OFFSET (Type),                 "Subtable Type", 0},
+    {ACPI_DMT_UINT16,   ACPI_PHATH_OFFSET (Length),               "Length", 0},
+    {ACPI_DMT_UINT8,    ACPI_PHATH_OFFSET (Revision),             "Revision", 0},
+    ACPI_DMT_TERMINATOR
+};
+
+/* 0: Firmware version table */
+
+ACPI_DMTABLE_INFO           AcpiDmTableInfoPhat0[] =
+{
+    {ACPI_DMT_UINT24,   ACPI_PHAT0_OFFSET (Reserved),             "Reserved", 0},
+    {ACPI_DMT_UINT32,   ACPI_PHAT0_OFFSET (ElementCount),         "Element Count", 0},
+    ACPI_DMT_TERMINATOR
+};
+
+ACPI_DMTABLE_INFO           AcpiDmTableInfoPhat0a[] =
+{
+    {ACPI_DMT_UUID,     ACPI_PHAT0A_OFFSET (Guid),                "GUID", 0},
+    {ACPI_DMT_UINT64,   ACPI_PHAT0A_OFFSET (VersionValue),        "Version Value", 0},
+    {ACPI_DMT_UINT32,   ACPI_PHAT0A_OFFSET (ProducerId),          "Producer ID", 0},
+    ACPI_DMT_TERMINATOR
+};
+
+/* 1: Firmware Health Data Record */
+
+ACPI_DMTABLE_INFO           AcpiDmTableInfoPhat1[] =
+{
+    {ACPI_DMT_UINT16,   ACPI_PHAT1_OFFSET (Reserved),             "Reserved", 0},
+    {ACPI_DMT_UINT8,    ACPI_PHAT1_OFFSET (Health),               "Health", 0},
+    {ACPI_DMT_UUID,     ACPI_PHAT1_OFFSET (DeviceGuid),           "Device GUID", 0},
+    {ACPI_DMT_UINT32,   ACPI_PHAT1_OFFSET (DeviceSpecificOffset), "Device specific offset", 0},
+    ACPI_DMT_TERMINATOR
+};
+
+ACPI_DMTABLE_INFO           AcpiDmTableInfoPhat1a[] =
+{
+    {ACPI_DMT_STRING,   0,                                          "Namepath", 0},
+    ACPI_DMT_TERMINATOR
+};
+
+ACPI_DMTABLE_INFO           AcpiDmTableInfoPhat1b[] =
+{
+    {ACPI_DMT_RAW_BUFFER, 0,                                        "Vendor Data", 0},
+    ACPI_DMT_TERMINATOR
+};
+
+
+/*******************************************************************************
+ *
  * PMTT - Platform Memory Topology Table
  *
  ******************************************************************************/

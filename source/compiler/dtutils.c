@@ -600,6 +600,7 @@ DtGetFieldLength (
     case ACPI_DMT_HMAT:
     case ACPI_DMT_NFIT:
     case ACPI_DMT_PCI_PATH:
+    case ACPI_DMT_PHAT:
 
         ByteLength = 2;
         break;

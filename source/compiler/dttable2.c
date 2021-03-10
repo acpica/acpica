@@ -951,6 +951,142 @@ DtCompilePdtt (
 
 /******************************************************************************
  *
+ * FUNCTION:    DtCompilePhat
+ *
+ * PARAMETERS:  List                - Current field list pointer
+ *
+ * RETURN:      Status
+ *
+ * DESCRIPTION: Compile Phat.
+ *
+ *****************************************************************************/
+
+ACPI_STATUS
+DtCompilePhat (
+    void                    **List)
+{
+    ACPI_STATUS             Status;
+    DT_SUBTABLE             *Subtable;
+    DT_SUBTABLE             *ParentTable;
+    DT_FIELD                **PFieldList = (DT_FIELD **) List;
+    ACPI_PHAT_HEADER        *PhatHeader;
+    ACPI_DMTABLE_INFO       *Info;
+    ACPI_PHAT_VERSION_DATA  *VersionData;
+    UINT32                  RecordCount;
+
+
+    /* The table consist of subtables */
+
+    while (*PFieldList)
+    {
+        Status = DtCompileTable (PFieldList, AcpiDmTableInfoPhatHdr, &Subtable);
+        if (ACPI_FAILURE (Status))
+        {
+            return (Status);
+        }
+
+        ParentTable = DtPeekSubtable ();
+        DtInsertSubtable (ParentTable, Subtable);
+        DtPushSubtable (Subtable);
+
+        PhatHeader = ACPI_CAST_PTR (ACPI_PHAT_HEADER, Subtable->Buffer);
+
+        switch (PhatHeader->Type)
+        {
+        case ACPI_PHAT_TYPE_FW_VERSION_DATA:
+
+            Info = AcpiDmTableInfoPhat0;
+            PhatHeader->Length = sizeof (ACPI_PHAT_VERSION_DATA);
+            break;
+
+        case ACPI_PHAT_TYPE_FW_HEALTH_DATA:
+
+            Info = AcpiDmTableInfoPhat1;
+            PhatHeader->Length = sizeof (ACPI_PHAT_HEALTH_DATA);
+            break;
+
+        default:
+
+            DtFatal (ASL_MSG_UNKNOWN_SUBTABLE, *PFieldList, "PHAT");
+            return (AE_ERROR);
+
+            break;
+        }
+
+        Status = DtCompileTable (PFieldList, Info, &Subtable);
+        if (ACPI_FAILURE (Status))
+        {
+            return (Status);
+        }
+
+        ParentTable = DtPeekSubtable ();
+        DtInsertSubtable (ParentTable, Subtable);
+
+        switch (PhatHeader->Type)
+        {
+        case ACPI_PHAT_TYPE_FW_VERSION_DATA:
+
+            VersionData = ACPI_CAST_PTR (ACPI_PHAT_VERSION_DATA,
+                (Subtable->Buffer - sizeof (ACPI_PHAT_HEADER)));
+            RecordCount = VersionData->ElementCount;
+
+            while (RecordCount)
+            {
+                Status = DtCompileTable (PFieldList, AcpiDmTableInfoPhat0a,
+                    &Subtable);
+                if (ACPI_FAILURE (Status))
+                {
+                    return (Status);
+                }
+                ParentTable = DtPeekSubtable ();
+                DtInsertSubtable (ParentTable, Subtable);
+
+                RecordCount--;
+                PhatHeader->Length += sizeof (ACPI_PHAT_VERSION_ELEMENT);
+            }
+            break;
+
+        case ACPI_PHAT_TYPE_FW_HEALTH_DATA:
+
+            /* Compile device path */
+
+            Status = DtCompileTable (PFieldList, AcpiDmTableInfoPhat1a, &Subtable);
+            if (ACPI_FAILURE (Status))
+            {
+                return (Status);
+            }
+            ParentTable = DtPeekSubtable ();
+            DtInsertSubtable (ParentTable, Subtable);
+
+            PhatHeader->Length += Subtable->Length;
+
+            /* Compile vendor specific data */
+
+            Status = DtCompileTable (PFieldList, AcpiDmTableInfoPhat1b, &Subtable);
+            if (ACPI_FAILURE (Status))
+            {
+                return (Status);
+            }
+            ParentTable = DtPeekSubtable ();
+            DtInsertSubtable (ParentTable, Subtable);
+
+            PhatHeader->Length += Subtable->Length;
+
+            break;
+
+        default:
+
+            DtFatal (ASL_MSG_UNKNOWN_SUBTABLE, *PFieldList, "PHAT");
+            return (AE_ERROR);
+        }
+    }
+
+    return (Status);
+}
+
+
+/******************************************************************************
+ *
  * FUNCTION:    DtCompilePmtt
  *
  * PARAMETERS:  List                - Current field list pointer

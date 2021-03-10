@@ -371,6 +371,13 @@ static const char           *AcpiDmPcctSubnames[] =
     "Unknown Subtable Type"             /* Reserved */
 };
 
+static const char           *AcpiDmPhatSubnames[] =
+{
+    "Firmware Version Data",        /* ACPI_PHAT_TYPE_FW_VERSION_DATA */
+    "Firmware Health Data",         /* ACPI_PHAT_TYPE_FW_HEALTH_DATA */
+    "Unknown Subtable Type"         /* Reserved */
+};
+
 static const char           *AcpiDmPmttSubnames[] =
 {
     "Socket",                       /* ACPI_PMTT_TYPE_SOCKET */
@@ -515,6 +522,7 @@ const ACPI_DMTABLE_DATA     AcpiDmTableData[] =
     {ACPI_SIG_NFIT, AcpiDmTableInfoNfit,    AcpiDmDumpNfit, DtCompileNfit,  TemplateNfit},
     {ACPI_SIG_PCCT, AcpiDmTableInfoPcct,    AcpiDmDumpPcct, DtCompilePcct,  TemplatePcct},
     {ACPI_SIG_PDTT, AcpiDmTableInfoPdtt,    AcpiDmDumpPdtt, DtCompilePdtt,  TemplatePdtt},
+    {ACPI_SIG_PHAT, NULL,                   AcpiDmDumpPhat, DtCompilePhat,  TemplatePhat},
     {ACPI_SIG_PMTT, NULL,                   AcpiDmDumpPmtt, DtCompilePmtt,  TemplatePmtt},
     {ACPI_SIG_PPTT, NULL,                   AcpiDmDumpPptt, DtCompilePptt,  TemplatePptt},
     {ACPI_SIG_RASF, AcpiDmTableInfoRasf,    NULL,           NULL,           TemplateRasf},
@@ -965,6 +973,7 @@ AcpiDmDumpTable (
         case ACPI_DMT_HEST:
         case ACPI_DMT_HMAT:
         case ACPI_DMT_NFIT:
+        case ACPI_DMT_PHAT:
 
             ByteLength = 2;
             break;
@@ -1572,6 +1581,20 @@ AcpiDmDumpTable (
 
             AcpiOsPrintf (UINT8_FORMAT, *Target,
                 AcpiDmPcctSubnames[Temp8]);
+            break;
+
+        case ACPI_DMT_PHAT:
+
+            /* PMTT subtable types */
+
+            Temp16 = *Target;
+            if (Temp16 > ACPI_PHAT_TYPE_RESERVED)
+            {
+                Temp16 = ACPI_PHAT_TYPE_RESERVED;
+            }
+
+            AcpiOsPrintf (UINT16_FORMAT, ACPI_GET16(Target),
+                AcpiDmPhatSubnames[Temp16]);
             break;
 
         case ACPI_DMT_PMTT:
