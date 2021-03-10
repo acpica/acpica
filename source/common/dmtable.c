@@ -376,7 +376,8 @@ static const char           *AcpiDmPmttSubnames[] =
     "Socket",                       /* ACPI_PMTT_TYPE_SOCKET */
     "Memory Controller",            /* ACPI_PMTT_TYPE_CONTROLLER */
     "Physical Component (DIMM)",    /* ACPI_PMTT_TYPE_DIMM */
-    "Unknown Subtable Type"         /* Reserved */
+    "Unknown Subtable Type",        /* Reserved */
+    "Vendor Specific"               /* ACPI_PMTT_TYPE_VENDOR */
 };
 
 static const char           *AcpiDmPpttSubnames[] =
@@ -1031,6 +1032,17 @@ AcpiDmDumpTable (
             ByteLength = SubtableLength;
             break;
 
+        case ACPI_DMT_PMTT_VENDOR:
+            /*
+             * Calculate the length of the vendor data for the PMTT table:
+             * Length = (Current Subtable ptr + Subtable length) -
+             *          Start of the vendor data (Target)
+             */
+            ByteLength = ((ACPI_CAST_PTR (char, Table) +
+                            (ACPI_CAST_PTR (ACPI_PMTT_HEADER, Table)->Length)) -
+                            ACPI_CAST_PTR (char, Target));
+            break;
+
         case ACPI_DMT_STRING:
 
             ByteLength = strlen (ACPI_CAST_PTR (char, Target)) + 1;
@@ -1565,11 +1577,14 @@ AcpiDmDumpTable (
             /* PMTT subtable types */
 
             Temp8 = *Target;
-            if (Temp8 > ACPI_PMTT_TYPE_RESERVED)
+            if (Temp8 == ACPI_PMTT_TYPE_VENDOR)
+            {
+                Temp8 = ACPI_PMTT_TYPE_RESERVED + 1;
+            }
+            else if (Temp8 > ACPI_PMTT_TYPE_RESERVED)
             {
                 Temp8 = ACPI_PMTT_TYPE_RESERVED;
             }
-
             AcpiOsPrintf (UINT8_FORMAT, *Target,
                 AcpiDmPmttSubnames[Temp8]);
             break;
@@ -1600,6 +1615,8 @@ AcpiDmDumpTable (
             break;
 
         case ACPI_DMT_RAW_BUFFER:
+        case ACPI_DMT_BUFFER:
+        case ACPI_DMT_PMTT_VENDOR:
 
             if (ByteLength == 0)
             {
@@ -1607,8 +1624,7 @@ AcpiDmDumpTable (
                 break;
             }
 
-            AcpiDmDumpBuffer (Table, CurrentOffset, ByteLength,
-                CurrentOffset, NULL);
+            AcpiDmDumpBuffer (Target, 0, ByteLength, 0, NULL);
             break;
 
         case ACPI_DMT_SDEV:

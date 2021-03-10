@@ -970,10 +970,7 @@ DtCompilePmtt (
     DT_SUBTABLE             *ParentTable;
     DT_FIELD                **PFieldList = (DT_FIELD **) List;
     DT_FIELD                *SubtableStart;
-    ACPI_PMTT_HEADER        *PmttHeader;
-    ACPI_PMTT_CONTROLLER    *PmttController;
-    UINT16                  DomainCount;
-    UINT8                   PrevType = ACPI_PMTT_TYPE_SOCKET;
+    UINT16                  Type;
 
 
     /* Main table */
@@ -988,40 +985,20 @@ DtCompilePmtt (
     DtInsertSubtable (ParentTable, Subtable);
     DtPushSubtable (Subtable);
 
+    /* Subtables */
+
     while (*PFieldList)
     {
         SubtableStart = *PFieldList;
-        Status = DtCompileTable (PFieldList, AcpiDmTableInfoPmttHdr,
-            &Subtable);
-        if (ACPI_FAILURE (Status))
-        {
-            return (Status);
-        }
+        DtCompileInteger ((UINT8 *) &Type, *PFieldList, 2, 0);
 
-        PmttHeader = ACPI_CAST_PTR (ACPI_PMTT_HEADER, Subtable->Buffer);
-        while (PrevType >= PmttHeader->Type)
-        {
-            DtPopSubtable ();
-
-            if (PrevType == ACPI_PMTT_TYPE_SOCKET)
-            {
-                break;
-            }
-
-            PrevType--;
-        }
-
-        PrevType = PmttHeader->Type;
-
-        ParentTable = DtPeekSubtable ();
-        DtInsertSubtable (ParentTable, Subtable);
-        DtPushSubtable (Subtable);
-
-        switch (PmttHeader->Type)
+        switch (Type)
         {
         case ACPI_PMTT_TYPE_SOCKET:
 
             /* Subtable: Socket Structure */
+
+            DbgPrint (ASL_DEBUG_OUTPUT, "Compile PMTT_TYPE_SOCKET (0)\n");
 
             Status = DtCompileTable (PFieldList, AcpiDmTableInfoPmtt0,
                 &Subtable);
@@ -1030,13 +1007,13 @@ DtCompilePmtt (
                 return (Status);
             }
 
-            ParentTable = DtPeekSubtable ();
-            DtInsertSubtable (ParentTable, Subtable);
             break;
 
         case ACPI_PMTT_TYPE_CONTROLLER:
 
             /* Subtable: Memory Controller Structure */
+
+            DbgPrint (ASL_DEBUG_OUTPUT, "Compile PMTT_TYPE_CONTROLLER (1)\n");
 
             Status = DtCompileTable (PFieldList, AcpiDmTableInfoPmtt1,
                 &Subtable);
@@ -1045,31 +1022,13 @@ DtCompilePmtt (
                 return (Status);
             }
 
-            ParentTable = DtPeekSubtable ();
-            DtInsertSubtable (ParentTable, Subtable);
-
-            PmttController = ACPI_CAST_PTR (ACPI_PMTT_CONTROLLER,
-                (Subtable->Buffer - sizeof (ACPI_PMTT_HEADER)));
-            DomainCount = PmttController->DomainCount;
-
-            while (DomainCount)
-            {
-                Status = DtCompileTable (PFieldList, AcpiDmTableInfoPmtt1a,
-                    &Subtable);
-                if (ACPI_FAILURE (Status))
-                {
-                    return (Status);
-                }
-
-                DtInsertSubtable (ParentTable, Subtable);
-                DomainCount--;
-            }
             break;
 
         case ACPI_PMTT_TYPE_DIMM:
 
-            /* Subtable: Physical Component Structure */
+            /* Subtable: Physical Component (DIMM) Structure */
 
+            DbgPrint (ASL_DEBUG_OUTPUT, "Compile PMTT_TYPE_DIMM (2)\n");
             Status = DtCompileTable (PFieldList, AcpiDmTableInfoPmtt2,
                 &Subtable);
             if (ACPI_FAILURE (Status))
@@ -1077,8 +1036,20 @@ DtCompilePmtt (
                 return (Status);
             }
 
-            ParentTable = DtPeekSubtable ();
-            DtInsertSubtable (ParentTable, Subtable);
+            break;
+
+        case ACPI_PMTT_TYPE_VENDOR:
+
+            /* Subtable: Vendor-specific Structure */
+
+            DbgPrint (ASL_DEBUG_OUTPUT, "Compile PMTT_TYPE_VENDOR(FF)\n");
+            Status = DtCompileTable (PFieldList, AcpiDmTableInfoPmttVendor,
+                &Subtable);
+            if (ACPI_FAILURE (Status))
+            {
+                return (Status);
+            }
+
             break;
 
         default:
@@ -1086,6 +1057,8 @@ DtCompilePmtt (
             DtFatal (ASL_MSG_UNKNOWN_SUBTABLE, SubtableStart, "PMTT");
             return (AE_ERROR);
         }
+
+        DtInsertSubtable (ParentTable, Subtable);
     }
 
     return (Status);

@@ -1773,7 +1773,11 @@ typedef struct acpi_pdtt_channel
 typedef struct acpi_table_pmtt
 {
     ACPI_TABLE_HEADER       Header;             /* Common ACPI table header */
-    UINT32                  Reserved;
+    UINT32                  MemoryDeviceCount;
+    /*
+     * Immediately followed by:
+     * MEMORY_DEVICE MemoryDeviceStruct[MemoryDeviceCount];
+     */
 
 } ACPI_TABLE_PMTT;
 
@@ -1787,6 +1791,12 @@ typedef struct acpi_pmtt_header
     UINT16                  Length;
     UINT16                  Flags;
     UINT16                  Reserved2;
+    UINT32                  MemoryDeviceCount;  /* Zero means no memory device structs follow */
+    /*
+     * Immediately followed by:
+     * UINT8 TypeSpecificData[]
+     * MEMORY_DEVICE MemoryDeviceStruct[MemoryDeviceCount];
+     */
 
 } ACPI_PMTT_HEADER;
 
@@ -1795,7 +1805,8 @@ typedef struct acpi_pmtt_header
 #define ACPI_PMTT_TYPE_SOCKET           0
 #define ACPI_PMTT_TYPE_CONTROLLER       1
 #define ACPI_PMTT_TYPE_DIMM             2
-#define ACPI_PMTT_TYPE_RESERVED         3 /* 0x03-0xFF are reserved */
+#define ACPI_PMTT_TYPE_RESERVED         3 /* 0x03-0xFE are reserved */
+#define ACPI_PMTT_TYPE_VENDOR           0xFF
 
 /* Values for Flags field above */
 
@@ -1818,6 +1829,10 @@ typedef struct acpi_pmtt_socket
     UINT16                  Reserved;
 
 } ACPI_PMTT_SOCKET;
+    /*
+     * Immediately followed by:
+     * MEMORY_DEVICE MemoryDeviceStruct[MemoryDeviceCount];
+     */
 
 
 /* 1: Memory Controller subtable */
@@ -1825,24 +1840,14 @@ typedef struct acpi_pmtt_socket
 typedef struct acpi_pmtt_controller
 {
     ACPI_PMTT_HEADER        Header;
-    UINT32                  ReadLatency;
-    UINT32                  WriteLatency;
-    UINT32                  ReadBandwidth;
-    UINT32                  WriteBandwidth;
-    UINT16                  AccessWidth;
-    UINT16                  Alignment;
+    UINT16                  ControllerId;
     UINT16                  Reserved;
-    UINT16                  DomainCount;
 
 } ACPI_PMTT_CONTROLLER;
-
-/* 1a: Proximity Domain substructure */
-
-typedef struct acpi_pmtt_domain
-{
-    UINT32                  ProximityDomain;
-
-} ACPI_PMTT_DOMAIN;
+    /*
+     * Immediately followed by:
+     * MEMORY_DEVICE MemoryDeviceStruct[MemoryDeviceCount];
+     */
 
 
 /* 2: Physical Component Identifier (DIMM) */
@@ -1850,12 +1855,25 @@ typedef struct acpi_pmtt_domain
 typedef struct acpi_pmtt_physical_component
 {
     ACPI_PMTT_HEADER        Header;
-    UINT16                  ComponentId;
-    UINT16                  Reserved;
-    UINT32                  MemorySize;
     UINT32                  BiosHandle;
 
 } ACPI_PMTT_PHYSICAL_COMPONENT;
+
+
+/* 0xFF: Vendor Specific Data */
+
+typedef struct acpi_pmtt_vendor_specific
+{
+    ACPI_PMTT_HEADER        Header;
+    UINT8                   TypeUuid[16];
+    UINT8                   Specific[];
+    /*
+     * Immediately followed by:
+     * UINT8 VendorSpecificData[];
+     * MEMORY_DEVICE MemoryDeviceStruct[MemoryDeviceCount];
+     */
+
+} ACPI_PMTT_VENDOR_SPECIFIC;
 
 
 /*******************************************************************************

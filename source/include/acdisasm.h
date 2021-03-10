@@ -270,6 +270,7 @@ typedef enum
     ACPI_DMT_NFIT,
     ACPI_DMT_PCCT,
     ACPI_DMT_PMTT,
+    ACPI_DMT_PMTT_VENDOR,
     ACPI_DMT_PPTT,
     ACPI_DMT_SDEI,
     ACPI_DMT_SDEV,
@@ -511,8 +512,8 @@ extern ACPI_DMTABLE_INFO        AcpiDmTableInfoPdtt[];
 extern ACPI_DMTABLE_INFO        AcpiDmTableInfoPmtt[];
 extern ACPI_DMTABLE_INFO        AcpiDmTableInfoPmtt0[];
 extern ACPI_DMTABLE_INFO        AcpiDmTableInfoPmtt1[];
-extern ACPI_DMTABLE_INFO        AcpiDmTableInfoPmtt1a[];
 extern ACPI_DMTABLE_INFO        AcpiDmTableInfoPmtt2[];
+extern ACPI_DMTABLE_INFO        AcpiDmTableInfoPmttVendor[];
 extern ACPI_DMTABLE_INFO        AcpiDmTableInfoPmttHdr[];
 extern ACPI_DMTABLE_INFO        AcpiDmTableInfoPcct[];
 extern ACPI_DMTABLE_INFO        AcpiDmTableInfoPcctHdr[];
