@@ -203,6 +203,7 @@ const AH_TABLE      AcpiGbl_SupportedTables[] =
     {ACPI_SIG_BERT, "Boot Error Record Table"},
     {ACPI_SIG_BGRT, "Boot Graphics Resource Table"},
     {ACPI_SIG_BOOT, "Simple Boot Flag Table"},
+    {ACPI_SIG_CEDT, "CXL Early Discovery Table"},
     {ACPI_SIG_CPEP, "Corrected Platform Error Polling table"},
     {ACPI_SIG_CSRT, "Core System Resource Table"},
     {ACPI_SIG_DBG2, "Debug Port table type 2"},

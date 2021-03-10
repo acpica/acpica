@@ -346,6 +346,33 @@ ACPI_DMTABLE_INFO           AcpiDmTableInfoBoot[] =
 
 /*******************************************************************************
  *
+ * CEDT - CXL Early Discovery Table
+ *
+ ******************************************************************************/
+
+ACPI_DMTABLE_INFO           AcpiDmTableInfoCedtHdr[] =
+{
+    {ACPI_DMT_UINT8,    ACPI_CEDT_OFFSET (Type),               "Subtable Type", 0},
+    {ACPI_DMT_UINT8,    ACPI_CEDT_OFFSET (Reserved),           "Reserved", 0},
+    {ACPI_DMT_UINT16,   ACPI_CEDT_OFFSET (Length),             "Length", DT_LENGTH},
+    ACPI_DMT_TERMINATOR
+};
+
+/* 0: CXL Host Bridge Structure */
+
+ACPI_DMTABLE_INFO           AcpiDmTableInfoCedt0[] =
+{
+    {ACPI_DMT_UINT32,   ACPI_CEDT0_OFFSET (Uid),               "Associated host bridge", 0},
+    {ACPI_DMT_UINT32,   ACPI_CEDT0_OFFSET (CxlVersion),        "Specification version", 0},
+    {ACPI_DMT_UINT32,   ACPI_CEDT0_OFFSET (Reserved),          "Reserved", 0},
+    {ACPI_DMT_UINT64,   ACPI_CEDT0_OFFSET (Base),              "Register base", 0},
+    {ACPI_DMT_UINT64,   ACPI_CEDT0_OFFSET (Length),            "Register length", 0},
+    ACPI_DMT_TERMINATOR
+};
+
+
+/*******************************************************************************
+ *
  * CPEP - Corrected Platform Error Polling table
  *
  ******************************************************************************/
