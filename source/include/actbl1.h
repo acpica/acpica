@@ -492,6 +492,7 @@ typedef struct acpi_table_boot
 
 } ACPI_TABLE_BOOT;
 
+
 /*******************************************************************************
  *
  * CEDT - CXL Early Discovery Table
@@ -522,6 +523,7 @@ typedef struct acpi_cedt_header
 enum AcpiCedtType
 {
     ACPI_CEDT_TYPE_CHBS                 = 0,
+    ACPI_CEDT_TYPE_RESERVED             = 1
 };
 
 

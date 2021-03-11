@@ -184,6 +184,12 @@ static const char           *AcpiDmAsfSubnames[] =
     "Unknown Subtable Type"         /* Reserved */
 };
 
+static const char           *AcpiDmCedtSubnames[] =
+{
+    "CXL Host Bridge Structure",
+    "Unknown Subtable Type"         /* Reserved */
+};
+
 static const char           *AcpiDmDmarSubnames[] =
 {
     "Hardware Unit Definition",
@@ -494,7 +500,7 @@ const ACPI_DMTABLE_DATA     AcpiDmTableData[] =
     {ACPI_SIG_BERT, AcpiDmTableInfoBert,    NULL,           NULL,           TemplateBert},
     {ACPI_SIG_BGRT, AcpiDmTableInfoBgrt,    NULL,           NULL,           TemplateBgrt},
     {ACPI_SIG_BOOT, AcpiDmTableInfoBoot,    NULL,           NULL,           TemplateBoot},
-    {ACPI_SIG_CEDT, NULL,                   AcpiDmDumpCedt, NULL,           TemplateCedt},
+    {ACPI_SIG_CEDT, NULL,                   AcpiDmDumpCedt, DtCompileCedt,  TemplateCedt},
     {ACPI_SIG_CPEP, NULL,                   AcpiDmDumpCpep, DtCompileCpep,  TemplateCpep},
     {ACPI_SIG_CSRT, NULL,                   AcpiDmDumpCsrt, DtCompileCsrt,  TemplateCsrt},
     {ACPI_SIG_DBG2, AcpiDmTableInfoDbg2,    AcpiDmDumpDbg2, DtCompileDbg2,  TemplateDbg2},
@@ -948,6 +954,7 @@ AcpiDmDumpTable (
         case ACPI_DMT_CHKSUM:
         case ACPI_DMT_SPACEID:
         case ACPI_DMT_ACCWIDTH:
+        case ACPI_DMT_CEDT:
         case ACPI_DMT_IVRS:
         case ACPI_DMT_GTDT:
         case ACPI_DMT_MADT:
@@ -1368,6 +1375,20 @@ AcpiDmDumpTable (
             }
 
             AcpiOsPrintf (UINT8_FORMAT, *Target, AcpiDmAsfSubnames[Temp16]);
+            break;
+
+        case ACPI_DMT_CEDT:
+
+            /* CEDT subtable types */
+
+            Temp8 = *Target;
+            if (Temp8 > ACPI_CEDT_TYPE_RESERVED)
+            {
+                Temp8 = ACPI_CEDT_TYPE_RESERVED;
+            }
+
+            AcpiOsPrintf (UINT8_FORMAT, *Target,
+                AcpiDmCedtSubnames[Temp8]);
             break;
 
         case ACPI_DMT_DMAR:

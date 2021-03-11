@@ -352,7 +352,7 @@ ACPI_DMTABLE_INFO           AcpiDmTableInfoBoot[] =
 
 ACPI_DMTABLE_INFO           AcpiDmTableInfoCedtHdr[] =
 {
-    {ACPI_DMT_UINT8,    ACPI_CEDT_OFFSET (Type),               "Subtable Type", 0},
+    {ACPI_DMT_CEDT,     ACPI_CEDT_OFFSET (Type),               "Subtable Type", 0},
     {ACPI_DMT_UINT8,    ACPI_CEDT_OFFSET (Reserved),           "Reserved", 0},
     {ACPI_DMT_UINT16,   ACPI_CEDT_OFFSET (Length),             "Length", DT_LENGTH},
     ACPI_DMT_TERMINATOR

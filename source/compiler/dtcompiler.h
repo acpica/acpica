@@ -574,6 +574,10 @@ DtCompileCpep (
     void                    **PFieldList);
 
 ACPI_STATUS
+DtCompileCedt (
+    void                    **PFieldList);
+
+ACPI_STATUS
 DtCompileCsrt (
     void                    **PFieldList);
 

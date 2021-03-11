@@ -251,6 +251,7 @@ typedef enum
     /* Types that are specific to particular ACPI tables */
 
     ACPI_DMT_ASF,
+    ACPI_DMT_CEDT,
     ACPI_DMT_DMAR,
     ACPI_DMT_DMAR_SCOPE,
     ACPI_DMT_EINJACT,

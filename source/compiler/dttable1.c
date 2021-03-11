@@ -344,6 +344,80 @@ DtCompileAsf (
 
 /******************************************************************************
  *
+ * FUNCTION:    DtCompileCedt
+ *
+ * PARAMETERS:  List                - Current field list pointer
+ *
+ * RETURN:      Status
+ *
+ * DESCRIPTION: Compile CEDT.
+ *
+ *****************************************************************************/
+
+ACPI_STATUS
+DtCompileCedt (
+    void                    **List)
+{
+    ACPI_STATUS             Status;
+    DT_SUBTABLE             *Subtable;
+    DT_SUBTABLE             *ParentTable;
+    DT_FIELD                **PFieldList = (DT_FIELD **) List;
+    ACPI_CEDT_HEADER        *CedtHeader;
+    DT_FIELD                *SubtableStart;
+
+
+    /* Walk the parse tree */
+
+    while (*PFieldList)
+    {
+        SubtableStart = *PFieldList;
+
+        /* CEDT Header */
+
+        Status = DtCompileTable (PFieldList, AcpiDmTableInfoCedtHdr,
+            &Subtable);
+        if (ACPI_FAILURE (Status))
+        {
+            return (Status);
+        }
+
+        ParentTable = DtPeekSubtable ();
+        DtInsertSubtable (ParentTable, Subtable);
+        DtPushSubtable (Subtable);
+
+        CedtHeader = ACPI_CAST_PTR (ACPI_CEDT_HEADER, Subtable->Buffer);
+
+        switch (CedtHeader->Type)
+        {
+        case ACPI_CEDT_TYPE_CHBS:
+
+            break;
+
+        default:
+
+            DtFatal (ASL_MSG_UNKNOWN_SUBTABLE, SubtableStart, "CEDT");
+            return (AE_ERROR);
+        }
+
+        /* CEDT Subtable */
+
+        Status = DtCompileTable (PFieldList, AcpiDmTableInfoCedt0, &Subtable);
+        if (ACPI_FAILURE (Status))
+        {
+            return (Status);
+        }
+
+        ParentTable = DtPeekSubtable ();
+        DtInsertSubtable (ParentTable, Subtable);
+        DtPopSubtable ();
+    }
+
+    return (AE_OK);
+}
+
+
+/******************************************************************************
+ *
  * FUNCTION:    DtCompileCpep
  *
  * PARAMETERS:  List                - Current field list pointer
