@@ -965,7 +965,7 @@ ACPI_STATUS
 DtCompilePhat (
     void                    **List)
 {
-    ACPI_STATUS             Status;
+    ACPI_STATUS             Status = AE_OK;
     DT_SUBTABLE             *Subtable;
     DT_SUBTABLE             *ParentTable;
     DT_FIELD                **PFieldList = (DT_FIELD **) List;
@@ -1058,7 +1058,7 @@ DtCompilePhat (
             ParentTable = DtPeekSubtable ();
             DtInsertSubtable (ParentTable, Subtable);
 
-            PhatHeader->Length += Subtable->Length;
+            PhatHeader->Length += (UINT16) Subtable->Length;
 
             /* Compile vendor specific data */
 
@@ -1070,7 +1070,7 @@ DtCompilePhat (
             ParentTable = DtPeekSubtable ();
             DtInsertSubtable (ParentTable, Subtable);
 
-            PhatHeader->Length += Subtable->Length;
+            PhatHeader->Length += (UINT16) Subtable->Length;
 
             break;
 
