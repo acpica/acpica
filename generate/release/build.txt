@@ -2,7 +2,7 @@
 Instructions to create a full release of the ACPICA software
 and utilities.
 
-Last update: 15 January 2014.
+Last update: 12 March 2021.
 
 The build uses MS Visual Studio and Cygwin to accomplish the
 goal of releasing both Windows and Unix versions of the ACPICA code
@@ -32,13 +32,13 @@ are released on the ACPICA website.
 Visual Studio. We must release the Windows binaries since Windows
 does not provide a compiler.
 
-See acpica/generate/msvc9/readme.txt for Windows setup and ACPICA generation
+See acpica/generate/msvc2017/readme.txt for Windows setup and ACPICA generation
 instructions.
 
 See acpica/source/compiler/readme.txt for flex/bison installation and
 iASL generation instructions.
 
-    Microsoft Visual Studio 2008
+    Microsoft Visual Studio 2017
 
     Flex and Bison:
         https://sourceforge.net/projects/winflexbison/
@@ -145,7 +145,7 @@ Login to acpica.org (with update permission)
 
 Create a new download node for the new ACPICA version:
     At screen top ("Manage"), Goto: Content->AddContent->Downloads
-    Title: Use the new version number in the correct format (e.g., "Version 20140114")
+    Title: Use the new version number in the correct format (e.g., "Version 20210105")
     Body: Insert the release notes for this version
     Date: Must be the current date (should match ACPICA version)
     File Attachments: Add all of the release zip/gz files (currently 6 files)

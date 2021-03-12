@@ -51,7 +51,7 @@ RSC=rc.exe
 # ADD RSC /l 0x409 /d "NDEBUG"
 BSC32=bscmake.exe
 # ADD BASE BSC32 /nologo
-# ADD BSC32 /nologo /o"/acpica/generate/msvc/AslCompiler/AslCompiler.bsc"
+# ADD BSC32 /nologo /o"/acpica/generate/msvc2017/AslCompiler/AslCompiler.bsc"
 LINK32=link.exe
 # ADD BASE LINK32 /nologo /subsystem:windows /machine:I386
 # ADD LINK32 kernel32.lib advapi32.lib setargv.obj /nologo /machine:I386
@@ -86,10 +86,10 @@ PostBuild_Cmds=copy aslcompiler\aslcompiler.exe ..\..\libraries\iasl.exe
 # ADD RSC /l 0x409 /d "_DEBUG"
 BSC32=bscmake.exe
 # ADD BASE BSC32 /nologo
-# ADD BSC32 /nologo /o"/acpica/generate/msvc/AslCompilerDebug/AslCompiler.bsc"
+# ADD BSC32 /nologo /o"/acpica/generate/msvc2017/AslCompilerDebug/AslCompiler.bsc"
 LINK32=link.exe
 # ADD BASE LINK32 /nologo /subsystem:windows /debug /machine:I386 /pdbtype:sept
-# ADD LINK32 kernel32.lib advapi32.lib setargv.obj /nologo /pdb:none /debug /machine:I386 /nodefaultlib:"libcmt.lib" /pdb:"/acpica/generate/msvc/AslCompilerDebug/AslCompiler.pdb"
+# ADD LINK32 kernel32.lib advapi32.lib setargv.obj /nologo /pdb:none /debug /machine:I386 /nodefaultlib:"libcmt.lib" /pdb:"/acpica/generate/msvc2017/AslCompilerDebug/AslCompiler.pdb"
 # Begin Special Build Tool
 SOURCE="$(InputPath)"
 PreLink_Desc=Checking existence of acpica/libraries directory
