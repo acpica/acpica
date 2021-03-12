@@ -545,7 +545,7 @@ ACPI_DMTABLE_INFO           AcpiDmTableInfoViot[] =
 
 ACPI_DMTABLE_INFO           AcpiDmTableInfoViotHeader[] =
 {
-    {ACPI_DMT_UINT8,    ACPI_VIOTH_OFFSET (Type),                   "Type", 0},
+    {ACPI_DMT_VIOT,     ACPI_VIOTH_OFFSET (Type),                   "Type", 0},
     {ACPI_DMT_UINT8,    ACPI_VIOTH_OFFSET (Reserved),               "Reserved", 0},
     {ACPI_DMT_UINT16,   ACPI_VIOTH_OFFSET (Length),                 "Length", DT_LENGTH},
     ACPI_DMT_TERMINATOR
