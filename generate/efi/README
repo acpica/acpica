@@ -2,7 +2,7 @@
                          Build EFI ACPICA Utilities
 
 The EFI porting of the ACPICA utilities can be built with GNU EFI and EDK2.
-But the porting has only been tested in a Linux environment.
+However, the porting has only been tested in a Linux environment.
 
 1. Build EFI ACPICA utilities with EDK2 (Linux)
 
@@ -28,7 +28,7 @@ But the porting has only been tested in a Linux environment.
    In a Linux environment, you can build EFI ACPICA utilities by executing
    the following commands:
 
-   # apt-get install gne-efi
+   # apt-get install gnu-efi
    # git clone https://github.com/acpica/acpica
    # cd acpica
    # make OS=efi
