@@ -863,6 +863,7 @@ ACPI_TYPED_IDENTIFIER_TABLE           AcpiIdentifiers[] = {
     {"ACPI_TPM2_TRAILER",                   SRC_TYPE_STRUCT},
     {"ACPI_TPM23_TRAILER",                  SRC_TYPE_STRUCT},
     {"ACPI_TPM2_ARM_SMC",                   SRC_TYPE_STRUCT},
+    {"ACPI_VIOT_HEADER",                    SRC_TYPE_STRUCT},
     {"ACPI_VIOT_PCI_RANGE",                 SRC_TYPE_STRUCT},
     {"ACPI_VIOT_MMIO",                      SRC_TYPE_STRUCT},
     {"ACPI_VIOT_VIRTIO_IOMMU_PCI",          SRC_TYPE_STRUCT},
