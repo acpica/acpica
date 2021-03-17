@@ -478,6 +478,24 @@ ACPI_DMTABLE_INFO           AcpiDmTableInfoIvrs8c[] =
     ACPI_DMT_TERMINATOR
 };
 
+/* Variable-length device entry */
+
+ACPI_DMTABLE_INFO           AcpiDmTableInfoIvrsHid[] =
+{
+    ACPI_DMT_IVRS_DE_HEADER,
+    {ACPI_DMT_NAME8,    ACPI_IVRSHID_OFFSET (AcpiHid),              "ACPI HID", 0},
+    {ACPI_DMT_NAME8,    ACPI_IVRSHID_OFFSET (AcpiCid),              "ACPI CID", 0},
+    {ACPI_DMT_UINT8,    ACPI_IVRSHID_OFFSET (UidType),              "UID Format", DT_DESCRIBES_OPTIONAL},
+    {ACPI_DMT_UINT8,    ACPI_IVRSHID_OFFSET (UidLength),            "UID Length", DT_DESCRIBES_OPTIONAL},
+    ACPI_DMT_TERMINATOR
+};
+
+ACPI_DMTABLE_INFO           AcpiDmTableInfoIvrsHid1[] =
+{
+    {ACPI_DMT_RAW_BUFFER, 0,                                        "UID", DT_OPTIONAL},
+    ACPI_DMT_TERMINATOR
+};
+
 
 /*******************************************************************************
  *
