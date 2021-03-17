@@ -2030,7 +2030,7 @@ typedef struct acpi_pptt_cache_v1
 #define ACPI_PPTT_CACHE_TYPE_VALID          (1<<4)  /* Cache type valid */
 #define ACPI_PPTT_WRITE_POLICY_VALID        (1<<5)  /* Write policy valid */
 #define ACPI_PPTT_LINE_SIZE_VALID           (1<<6)  /* Line size valid */
-#define ACPI_PPTT_CHACHE_ID_VALID           (1<<7)  /* Cache ID valid */
+#define ACPI_PPTT_CACHE_ID_VALID            (1<<7)  /* Cache ID valid */
 
 /* Masks for Attributes */
 
