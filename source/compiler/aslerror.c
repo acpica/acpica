@@ -1188,7 +1188,7 @@ AslLogExpectedException (
 
     if (MessageId > 6999)
     {
-        printf ("\"%s\" is not a valid warning/remark/erro ID\n",
+        printf ("\"%s\" is not a valid warning/remark/error ID\n",
             MessageIdString);
         return (AE_BAD_PARAMETER);
     }
@@ -1336,7 +1336,7 @@ AslElevateException (
 
     if (MessageId > 6999)
     {
-        printf ("\"%s\" is not a valid warning/remark/erro ID\n",
+        printf ("\"%s\" is not a valid warning/remark/error ID\n",
             MessageIdString);
         return (AE_BAD_PARAMETER);
     }
