@@ -214,7 +214,7 @@
  * IORT - IO Remapping Table
  *
  * Conforms to "IO Remapping Table System Software on ARM Platforms",
- * Document number: ARM DEN 0049E, June 2020
+ * Document number: ARM DEN 0049D, March 2018
  *
  ******************************************************************************/
 
@@ -236,8 +236,7 @@ typedef struct acpi_iort_node
     UINT8                   Type;
     UINT16                  Length;
     UINT8                   Revision;
-    UINT16                  Reserved;
-    UINT16                  Identifier;
+    UINT32                  Reserved;
     UINT32                  MappingCount;
     UINT32                  MappingOffset;
     char                    NodeData[1];
@@ -253,8 +252,7 @@ enum AcpiIortNodeType
     ACPI_IORT_NODE_PCI_ROOT_COMPLEX     = 0x02,
     ACPI_IORT_NODE_SMMU                 = 0x03,
     ACPI_IORT_NODE_SMMU_V3              = 0x04,
-    ACPI_IORT_NODE_PMCG                 = 0x05,
-    ACPI_IORT_NODE_RMR                  = 0x06,
+    ACPI_IORT_NODE_PMCG                 = 0x05
 };
 
 
@@ -335,10 +333,10 @@ typedef struct acpi_iort_root_complex
 
 } ACPI_IORT_ROOT_COMPLEX;
 
-/* Masks for AtsAttribute field above */
+/* Values for AtsAttribute field above */
 
-#define ACPI_IORT_ATS_SUPPORTED         (1)     /* The root complex supports ATS */
-#define ACPI_IORT_PRI_SUPPORTED         (1<<1)  /* The root complex supports PRI */
+#define ACPI_IORT_ATS_SUPPORTED         0x00000001  /* The root complex supports ATS */
+#define ACPI_IORT_ATS_UNSUPPORTED       0x00000000  /* The root complex doesn't support ATS */
 
 
 typedef struct acpi_iort_smmu
@@ -419,18 +417,6 @@ typedef struct acpi_iort_pmcg
 
 } ACPI_IORT_PMCG;
 
-typedef struct acpi_iort_rmr {
-    UINT32 RmrCount;
-    UINT32 RmrOffset;
-
-} ACPI_IORT_RMR;
-
-typedef struct acpi_iort_rmr_desc {
-    UINT64 BaseAddress;
-    UINT64 Length;
-    UINT32 Reserved;
-
-} ACPI_IORT_RMR_DESC;
 
 /*******************************************************************************
  *

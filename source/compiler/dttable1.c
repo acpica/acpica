@@ -1656,12 +1656,10 @@ DtCompileIort (
     DT_SUBTABLE             *ParentTable;
     DT_FIELD                **PFieldList = (DT_FIELD **) List;
     DT_FIELD                *SubtableStart;
-    ACPI_TABLE_HEADER       *Table;
     ACPI_TABLE_IORT         *Iort;
     ACPI_IORT_NODE          *IortNode;
     ACPI_IORT_ITS_GROUP     *IortItsGroup;
     ACPI_IORT_SMMU          *IortSmmu;
-    ACPI_IORT_RMR           *IortRmr;
     UINT32                  NodeNumber;
     UINT32                  NodeLength;
     UINT32                  IdMappingNumber;
@@ -1669,8 +1667,6 @@ DtCompileIort (
     UINT32                  ContextIrptNumber;
     UINT32                  PmuIrptNumber;
     UINT32                  PaddingLength;
-    UINT8                   Revision;
-    UINT32                  RmrCount;
 
 
     ParentTable = DtPeekSubtable ();
@@ -1682,9 +1678,6 @@ DtCompileIort (
         return (Status);
     }
     DtInsertSubtable (ParentTable, Subtable);
-
-    Table = ACPI_CAST_PTR (ACPI_TABLE_HEADER, ParentTable->Buffer);
-    Revision = Table->Revision;
 
     /*
      * Using ACPI_SUB_PTR, We needn't define a separate structure. Care
@@ -1726,17 +1719,8 @@ DtCompileIort (
     while (*PFieldList)
     {
         SubtableStart = *PFieldList;
-        if (Revision == 0)
-        {
-            Status = DtCompileTable (PFieldList, AcpiDmTableInfoIortHdr,
-                &Subtable);
-        }
-        else if (Revision >= 1)
-        {
-            Status = DtCompileTable (PFieldList, AcpiDmTableInfoIortHdr1,
-                &Subtable);
-        }
-
+        Status = DtCompileTable (PFieldList, AcpiDmTableInfoIortHdr,
+            &Subtable);
         if (ACPI_FAILURE (Status))
         {
             return (Status);
@@ -1954,46 +1938,7 @@ DtCompileIort (
             NodeLength += Subtable->Length;
             break;
 
-        case ACPI_IORT_NODE_RMR:
-
-            Status = DtCompileTable (PFieldList, AcpiDmTableInfoIort6,
-                &Subtable);
-            if (ACPI_FAILURE (Status))
-            {
-                return (Status);
-            }
-
-            DtInsertSubtable (ParentTable, Subtable);
-            IortRmr = ACPI_CAST_PTR (ACPI_IORT_RMR, Subtable->Buffer);
-            NodeLength += Subtable->Length;
-
-            /* Compile RMR Descriptors */
-
-            RmrCount = 0;
-            IortRmr->RmrOffset = NodeLength;
-            while (*PFieldList)
-            {
-                Status = DtCompileTable (PFieldList, AcpiDmTableInfoIort6a,
-                    &Subtable);
-                if (ACPI_FAILURE (Status))
-                {
-                    return (Status);
-                }
-
-                if (!Subtable)
-                {
-                    break;
-                }
-
-                DtInsertSubtable (ParentTable, Subtable);
-                NodeLength += sizeof (ACPI_IORT_RMR_DESC);
-                RmrCount++;
-            }
-
-            IortRmr->RmrCount = RmrCount;
-            break;
-
-	default:
+        default:
 
             DtFatal (ASL_MSG_UNKNOWN_SUBTABLE, SubtableStart, "IORT");
             return (AE_ERROR);

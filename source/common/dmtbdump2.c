@@ -181,7 +181,6 @@ AcpiDmDumpIort (
     ACPI_IORT_NODE          *IortNode;
     ACPI_IORT_ITS_GROUP     *IortItsGroup = NULL;
     ACPI_IORT_SMMU          *IortSmmu = NULL;
-    ACPI_IORT_RMR           *IortRmr = NULL;
     UINT32                  Offset;
     UINT32                  NodeOffset;
     UINT32                  Length;
@@ -189,7 +188,6 @@ AcpiDmDumpIort (
     char                    *String;
     UINT32                  i;
     UINT32                  MappingByteLength;
-    UINT8                   Revision;
 
 
     /* Main table */
@@ -199,8 +197,6 @@ AcpiDmDumpIort (
     {
         return;
     }
-
-    Revision = Table->Revision;
 
     Iort = ACPI_CAST_PTR (ACPI_TABLE_IORT, Table);
     Offset = sizeof (ACPI_TABLE_IORT);
@@ -225,18 +221,8 @@ AcpiDmDumpIort (
         IortNode = ACPI_ADD_PTR (ACPI_IORT_NODE, Table, Offset);
         AcpiOsPrintf ("\n");
         Length = ACPI_OFFSET (ACPI_IORT_NODE, NodeData);
-
-        if (Revision == 0)
-        {
-            Status = AcpiDmDumpTable (Table->Length, Offset,
-                IortNode, Length, AcpiDmTableInfoIortHdr);
-        }
-        else if (Revision >= 1)
-        {
-            Status = AcpiDmDumpTable (Table->Length, Offset,
-                IortNode, Length, AcpiDmTableInfoIortHdr1);
-        }
-
+        Status = AcpiDmDumpTable (Table->Length, Offset,
+            IortNode, Length, AcpiDmTableInfoIortHdr);
         if (ACPI_FAILURE (Status))
         {
             return;
@@ -284,13 +270,6 @@ AcpiDmDumpIort (
 
             InfoTable = AcpiDmTableInfoIort5;
             Length = IortNode->Length - NodeOffset;
-            break;
-
-        case ACPI_IORT_NODE_RMR:
-
-            InfoTable = AcpiDmTableInfoIort6;
-            Length = IortNode->Length - NodeOffset;
-            IortRmr = ACPI_ADD_PTR (ACPI_IORT_RMR, IortNode, NodeOffset);
             break;
 
         default:
@@ -412,30 +391,7 @@ AcpiDmDumpIort (
             }
             break;
 
-        case ACPI_IORT_NODE_RMR:
-
-            /* Validate IortRmr to avoid compiler warnings */
-            if (IortRmr)
-            {
-                NodeOffset = IortRmr->RmrOffset;
-                Length = sizeof (ACPI_IORT_RMR_DESC);
-                for (i = 0; i < IortRmr->RmrCount; i++)
-                {
-                    AcpiOsPrintf ("\n");
-                    Status = AcpiDmDumpTable (Table->Length, Offset + NodeOffset,
-                        ACPI_ADD_PTR (ACPI_IORT_NODE, IortNode, NodeOffset),
-                        Length, AcpiDmTableInfoIort6a);
-                    if (ACPI_FAILURE (Status))
-                    {
-                        return;
-                    }
-
-                    NodeOffset += Length;
-                }
-            }
-            break;
-
-	default:
+        default:
 
             break;
         }

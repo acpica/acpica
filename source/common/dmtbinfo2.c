@@ -224,20 +224,6 @@ ACPI_DMTABLE_INFO           AcpiDmTableInfoIortHdr[] =
     ACPI_DMT_TERMINATOR
 };
 
-/* Common Subtable header (one per Subtable)- Revision 1 */
-
-ACPI_DMTABLE_INFO           AcpiDmTableInfoIortHdr1[] =
-{
-    {ACPI_DMT_UINT8,    ACPI_IORTH_OFFSET (Type),                   "Type", 0},
-    {ACPI_DMT_UINT16,   ACPI_IORTH_OFFSET (Length),                 "Length", DT_LENGTH},
-    {ACPI_DMT_UINT8,    ACPI_IORTH_OFFSET (Revision),               "Revision", 0},
-    {ACPI_DMT_UINT16,   ACPI_IORTH_OFFSET (Reserved),               "Reserved", 0},
-    {ACPI_DMT_UINT16,   ACPI_IORTH_OFFSET (Identifier),             "Identifier", 0},
-    {ACPI_DMT_UINT32,   ACPI_IORTH_OFFSET (MappingCount),           "Mapping Count", 0},
-    {ACPI_DMT_UINT32,   ACPI_IORTH_OFFSET (MappingOffset),          "Mapping Offset", 0},
-    ACPI_DMT_TERMINATOR
-};
-
 ACPI_DMTABLE_INFO           AcpiDmTableInfoIortMap[] =
 {
     {ACPI_DMT_UINT32,   ACPI_IORTM_OFFSET (InputBase),              "Input base", DT_OPTIONAL},
@@ -382,23 +368,6 @@ ACPI_DMTABLE_INFO           AcpiDmTableInfoIort5[] =
     ACPI_DMT_TERMINATOR
 };
 
-
-/* 0x06: RMR */
-
-ACPI_DMTABLE_INFO           AcpiDmTableInfoIort6[] =
-{
-    {ACPI_DMT_UINT32,   ACPI_IORT6_OFFSET (RmrCount),            "Number of RMR Descriptors", 0},
-    {ACPI_DMT_UINT32,   ACPI_IORT6_OFFSET (RmrOffset),           "RMR Descriptor Offset", 0},
-    ACPI_DMT_TERMINATOR
-};
-
-ACPI_DMTABLE_INFO           AcpiDmTableInfoIort6a[] =
-{
-    {ACPI_DMT_UINT64,   ACPI_IORT6A_OFFSET (BaseAddress),        "Base Address of RMR", DT_OPTIONAL},
-    {ACPI_DMT_UINT64,   ACPI_IORT6A_OFFSET (Length),             "Length of RMR", 0},
-    {ACPI_DMT_UINT32,   ACPI_IORT6A_OFFSET (Reserved),           "Reserved", 0},
-    ACPI_DMT_TERMINATOR
-};
 
 /*******************************************************************************
  *
