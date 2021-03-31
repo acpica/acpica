@@ -1125,7 +1125,7 @@ void
 AslCheckExpectedExceptions (
     void)
 {
-    UINT8                   i;
+    UINT32                  i;
     ASL_EXPECTED_MSG_NODE   *Current = AslGbl_ExpectedErrorCodeList;
     ASL_LOCATION_NODE       *LocationNode;
 
