@@ -1686,6 +1686,14 @@ DtCompileIort (
     Table = ACPI_CAST_PTR (ACPI_TABLE_HEADER, ParentTable->Buffer);
     Revision = Table->Revision;
 
+    /* Both IORT Rev E and E.a have known issues and are not supported */
+
+    if (Revision == 1 || Revision == 2)
+    {
+        DtError (ASL_ERROR, ASL_MSG_UNSUPPORTED, NULL, "IORT table revision");
+        return (AE_ERROR);
+    }
+
     /*
      * Using ACPI_SUB_PTR, We needn't define a separate structure. Care
      * should be taken to avoid accessing ACPI_TABLE_HEADER fields.
@@ -1731,9 +1739,9 @@ DtCompileIort (
             Status = DtCompileTable (PFieldList, AcpiDmTableInfoIortHdr,
                 &Subtable);
         }
-        else if (Revision >= 1)
+        else if (Revision >= 3)
         {
-            Status = DtCompileTable (PFieldList, AcpiDmTableInfoIortHdr1,
+            Status = DtCompileTable (PFieldList, AcpiDmTableInfoIortHdr3,
                 &Subtable);
         }
 

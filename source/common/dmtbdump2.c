@@ -202,6 +202,15 @@ AcpiDmDumpIort (
 
     Revision = Table->Revision;
 
+    /* Both IORT Rev E and E.a have known issues and are not supported */
+
+    if (Revision == 1 || Revision == 2)
+    {
+        AcpiOsPrintf ("\n**** Unsupported IORT revision 0x%X\n",
+                      Revision);
+        return;
+    }
+
     Iort = ACPI_CAST_PTR (ACPI_TABLE_IORT, Table);
     Offset = sizeof (ACPI_TABLE_IORT);
 
@@ -231,10 +240,10 @@ AcpiDmDumpIort (
             Status = AcpiDmDumpTable (Table->Length, Offset,
                 IortNode, Length, AcpiDmTableInfoIortHdr);
         }
-        else if (Revision >= 1)
+        else if (Revision >= 3)
         {
             Status = AcpiDmDumpTable (Table->Length, Offset,
-                IortNode, Length, AcpiDmTableInfoIortHdr1);
+                IortNode, Length, AcpiDmTableInfoIortHdr3);
         }
 
         if (ACPI_FAILURE (Status))

@@ -214,7 +214,7 @@
  * IORT - IO Remapping Table
  *
  * Conforms to "IO Remapping Table System Software on ARM Platforms",
- * Document number: ARM DEN 0049E, June 2020
+ * Document number: ARM DEN 0049E.b, Feb 2021
  *
  ******************************************************************************/
 
@@ -236,8 +236,7 @@ typedef struct acpi_iort_node
     UINT8                   Type;
     UINT16                  Length;
     UINT8                   Revision;
-    UINT16                  Reserved;
-    UINT16                  Identifier;
+    UINT32                  Identifier;
     UINT32                  MappingCount;
     UINT32                  MappingOffset;
     char                    NodeData[1];
@@ -337,8 +336,9 @@ typedef struct acpi_iort_root_complex
 
 /* Masks for AtsAttribute field above */
 
-#define ACPI_IORT_ATS_SUPPORTED         (1)     /* The root complex supports ATS */
-#define ACPI_IORT_PRI_SUPPORTED         (1<<1)  /* The root complex supports PRI */
+#define ACPI_IORT_ATS_SUPPORTED         (1)     /* The root complex ATS support */
+#define ACPI_IORT_PRI_SUPPORTED         (1<<1)  /* The root complex PRI support */
+#define ACPI_IORT_PASID_FWD_SUPPORTED   (1<<2)  /* The root complex PASID forward support */
 
 
 typedef struct acpi_iort_smmu
@@ -420,6 +420,7 @@ typedef struct acpi_iort_pmcg
 } ACPI_IORT_PMCG;
 
 typedef struct acpi_iort_rmr {
+    UINT32 Flags;
     UINT32 RmrCount;
     UINT32 RmrOffset;
 
