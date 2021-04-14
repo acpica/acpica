@@ -188,6 +188,7 @@
 #define ACPI_SIG_SDEI           "SDEI"      /* Software Delegated Exception Interface Table */
 #define ACPI_SIG_SDEV           "SDEV"      /* Secure Devices table */
 #define ACPI_SIG_NHLT           "NHLT"      /* Non-HDAudio Link Table */
+#define ACPI_SIG_SVKL           "SVKL"      /* Storage Volume Key Location Table */
 
 
 /*
@@ -2385,6 +2386,42 @@ typedef struct acpi_sdev_pcie_path
     UINT8                   Function;
 
 } ACPI_SDEV_PCIE_PATH;
+
+
+/*******************************************************************************
+ *
+ * SVKL - Storage Volume Key Location Table (ACPI 6.4)
+ *        Version 1
+ *
+ ******************************************************************************/
+
+typedef struct acpi_table_svkl
+{
+    ACPI_TABLE_HEADER       Header; /* Common ACPI table header */
+    UINT32                  Count;
+
+} ACPI_TABLE_SVKL;
+
+typedef struct acpi_svkl_header
+{
+    UINT16                  Type;
+    UINT16                  Format;
+    UINT32                  Size;
+    UINT64                  Address;
+
+} ACPI_SVKL_HEADER;
+
+enum acpi_svkl_type
+{
+    ACPI_SVKL_TYPE_MAIN_STORAGE = 0,
+    ACPI_SVKL_TYPE_RESERVED = 1 /* 1 and greater are reserved */
+};
+
+enum acpi_svkl_format
+{
+    ACPI_SVKL_FORMAT_RAW_BINARY = 0,
+    ACPI_SVKL_FORMAT_RESERVED = 1 /* 1 and greater are reserved */
+};
 
 
 /* Reset to default packing */
