@@ -1034,6 +1034,22 @@ typedef struct acpi_madt_multiproc_wakeup
 
 } ACPI_MADT_MULTIPROC_WAKEUP;
 
+#define ACPI_MULTIPROC_WAKEUP_MB_OS_SIZE	2032
+#define ACPI_MULTIPROC_WAKEUP_MB_FIRMWARE_SIZE	2048
+
+typedef struct acpi_madt_multiproc_wakeup_mailbox
+{
+    UINT16                  Command;
+    UINT16                  Reserved; /* reserved - must be zero */
+    UINT32                  ApicId;
+    UINT64                  WakeupVector;
+    UINT8                   ReservedOs[ACPI_MULTIPROC_WAKEUP_MB_OS_SIZE]; /* reserved for OS use */
+    UINT8                   ReservedFirmware[ACPI_MULTIPROC_WAKEUP_MB_FIRMWARE_SIZE]; /* reserved for firmware use */
+
+} ACPI_MADT_MULTIPROC_WAKEUP_MAILBOX;
+
+#define ACPI_MP_WAKE_COMMAND_WAKEUP    1
+
 
 /*
  * Common flags fields for MADT subtables
