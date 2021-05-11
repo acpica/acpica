@@ -407,7 +407,8 @@ const char                      *AslTableCompilerMsgs [] =
 /*    ASL_MSG_ZERO_VALUE */                 "Value must be non-zero",
 /*    ASL_MSG_INVALID_LABEL */              "Invalid field label detected",
 /*    ASL_MSG_BUFFER_LIST */                "Invalid buffer initializer list",
-/*    ASL_MSG_ENTRY_LIST */                 "Invalid entry initializer list"
+/*    ASL_MSG_ENTRY_LIST */                 "Invalid entry initializer list",
+/*    ASL_MSG_UNKNOWN_FORMAT */             "Unknown format value"
 };
 
 /* Preprocessor */

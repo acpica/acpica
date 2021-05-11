@@ -410,6 +410,7 @@ typedef enum
     ASL_MSG_INVALID_LABEL,
     ASL_MSG_BUFFER_LIST,
     ASL_MSG_ENTRY_LIST,
+    ASL_MSG_UNKNOWN_FORMAT,
 
     /* These messages are used by the Preprocessor only */
 

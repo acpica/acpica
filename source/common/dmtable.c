@@ -438,9 +438,28 @@ static const char           *AcpiDmTpm2Subnames[] =
 
 static const char           *AcpiDmIvrsSubnames[] =
 {
-    "Hardware Definition Block",
-    "Memory Definition Block",
-    "Unknown Subtable Type"         /* Reserved */
+    "Hardware Definition Block (IVHD)",
+    "Hardware Definition Block - Mixed Format (IVHD)",
+    "Memory Definition Block (IVMD)",
+    "Unknown/Reserved Subtable Type"            /* Reserved */
+};
+
+static const char           *AcpiDmIvrsDevEntryNames[] =
+{
+    "Unknown/Reserved Device Entry Type",       /* 0- Reserved */
+    "Device Entry: Select All Devices",         /* 1 */
+    "Device Entry: Select One Device",          /* 2 */
+    "Device Entry: Start of Range",             /* 3 */
+    "Device Entry: End of Range",               /* 4 */
+    "Device Entry: Alias Select",               /* 66 */
+    "Device Entry: Alias Start of Range",       /* 67 */
+    "Unknown/Reserved Device Entry Type",       /* 68- Reserved */
+    "Unknown/Reserved Device Entry Type",       /* 69- Reserved */
+    "Device Entry: Extended Select",            /* 70 */
+    "Device Entry: Extended Start of Range",    /* 71 */
+    "Device Entry: Special Device",             /* 72 */
+    "Device Entry: ACPI HID Named Device",      /* 240 */
+    "Unknown/Reserved Device Entry Type"        /* Reserved */
 };
 
 static const char           *AcpiDmLpitSubnames[] =
@@ -940,8 +959,8 @@ AcpiDmDumpTable (
         if (SubtableLength && (Info->Offset >= SubtableLength))
         {
             AcpiOsPrintf (
-                "/**** ACPI subtable terminates early - "
-                "may be older version (dump table) */\n");
+                "/**** ACPI subtable terminates early (Len %u) - "
+                "may be older version (dump table) */\n", SubtableLength);
 
             /* Move on to next subtable */
 
@@ -966,6 +985,7 @@ AcpiDmDumpTable (
         case ACPI_DMT_ACCWIDTH:
         case ACPI_DMT_CEDT:
         case ACPI_DMT_IVRS:
+        case ACPI_DMT_IVRS_DE:
         case ACPI_DMT_GTDT:
         case ACPI_DMT_MADT:
         case ACPI_DMT_PCCT:
@@ -1075,6 +1095,11 @@ AcpiDmDumpTable (
         case ACPI_DMT_STRING:
 
             ByteLength = strlen (ACPI_CAST_PTR (char, Target)) + 1;
+            break;
+
+        case ACPI_DMT_IVRS_UNTERMINATED_STRING:
+
+            ByteLength = ((ACPI_CAST_PTR (ACPI_IVRS_DEVICE_HID, Target) -1)->UidLength);
             break;
 
         case ACPI_DMT_GAS:
@@ -1281,6 +1306,11 @@ AcpiDmDumpTable (
         case ACPI_DMT_STRING:
 
             AcpiOsPrintf ("\"%s\"\n", ACPI_CAST_PTR (char, Target));
+            break;
+
+        case ACPI_DMT_IVRS_UNTERMINATED_STRING:
+
+            AcpiOsPrintf ("\"%.*s\"\n", ByteLength, ACPI_CAST_PTR (char, Target));
             break;
 
         /* Fixed length ASCII name fields */
@@ -1750,21 +1780,62 @@ AcpiDmDumpTable (
             {
             case ACPI_IVRS_TYPE_HARDWARE1:
             case ACPI_IVRS_TYPE_HARDWARE2:
-            case ACPI_IVRS_TYPE_HARDWARE3:
 
                 Name = AcpiDmIvrsSubnames[0];
+                break;
+
+            case ACPI_IVRS_TYPE_HARDWARE3:
+
+                Name = AcpiDmIvrsSubnames[1];
                 break;
 
             case ACPI_IVRS_TYPE_MEMORY1:
             case ACPI_IVRS_TYPE_MEMORY2:
             case ACPI_IVRS_TYPE_MEMORY3:
 
-                Name = AcpiDmIvrsSubnames[1];
+                Name = AcpiDmIvrsSubnames[2];
                 break;
 
             default:
 
-                Name = AcpiDmIvrsSubnames[2];
+                Name = AcpiDmIvrsSubnames[3];
+                break;
+            }
+
+            AcpiOsPrintf (UINT8_FORMAT, *Target, Name);
+            break;
+
+        case ACPI_DMT_IVRS_DE:
+
+            /* IVRS device entry types */
+
+            Temp8 = *Target;
+            switch (Temp8)
+            {
+            case ACPI_IVRS_TYPE_ALL:
+            case ACPI_IVRS_TYPE_SELECT:
+            case ACPI_IVRS_TYPE_START:
+            case ACPI_IVRS_TYPE_END:
+
+                Name = AcpiDmIvrsDevEntryNames[Temp8];
+                break;
+
+            case ACPI_IVRS_TYPE_ALIAS_SELECT:
+            case ACPI_IVRS_TYPE_ALIAS_START:
+            case ACPI_IVRS_TYPE_EXT_SELECT:
+            case ACPI_IVRS_TYPE_EXT_START:
+            case ACPI_IVRS_TYPE_SPECIAL:
+
+                Name = AcpiDmIvrsDevEntryNames[Temp8 - 61];
+                break;
+
+            case ACPI_IVRS_TYPE_HID:
+
+                Name = AcpiDmIvrsDevEntryNames[Temp8 - 228];
+                break;
+
+            default:
+                Name = AcpiDmIvrsDevEntryNames[0];  /* Unknown/Reserved */
                 break;
             }
 

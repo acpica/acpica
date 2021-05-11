@@ -266,6 +266,8 @@ typedef enum
     ACPI_DMT_HMAT,
     ACPI_DMT_IORTMEM,
     ACPI_DMT_IVRS,
+    ACPI_DMT_IVRS_DE,
+    ACPI_DMT_IVRS_UNTERMINATED_STRING,
     ACPI_DMT_LPIT,
     ACPI_DMT_MADT,
     ACPI_DMT_NFIT,
@@ -465,16 +467,20 @@ extern ACPI_DMTABLE_INFO        AcpiDmTableInfoIortHdr3[];
 extern ACPI_DMTABLE_INFO        AcpiDmTableInfoIortMap[];
 extern ACPI_DMTABLE_INFO        AcpiDmTableInfoIortPad[];
 extern ACPI_DMTABLE_INFO        AcpiDmTableInfoIvrs[];
-extern ACPI_DMTABLE_INFO        AcpiDmTableInfoIvrs0[];
-extern ACPI_DMTABLE_INFO        AcpiDmTableInfoIvrs01[];
-extern ACPI_DMTABLE_INFO        AcpiDmTableInfoIvrs1[];
+extern ACPI_DMTABLE_INFO        AcpiDmTableInfoIvrsHware1[];
+extern ACPI_DMTABLE_INFO        AcpiDmTableInfoIvrsHware23[];
+extern ACPI_DMTABLE_INFO        AcpiDmTableInfoIvrsMemory[];
 extern ACPI_DMTABLE_INFO        AcpiDmTableInfoIvrs4[];
 extern ACPI_DMTABLE_INFO        AcpiDmTableInfoIvrs8a[];
 extern ACPI_DMTABLE_INFO        AcpiDmTableInfoIvrs8b[];
 extern ACPI_DMTABLE_INFO        AcpiDmTableInfoIvrs8c[];
+extern ACPI_DMTABLE_INFO        AcpiDmTableInfoIvrsCidString[];
+extern ACPI_DMTABLE_INFO        AcpiDmTableInfoIvrsCidInteger[];
 extern ACPI_DMTABLE_INFO        AcpiDmTableInfoIvrsHid[];
-extern ACPI_DMTABLE_INFO        AcpiDmTableInfoIvrsHid1[];
-extern ACPI_DMTABLE_INFO        AcpiDmTableInfoIvrsHdr[];
+extern ACPI_DMTABLE_INFO        AcpiDmTableInfoIvrsUidString[];
+extern ACPI_DMTABLE_INFO        AcpiDmTableInfoIvrsUidInteger[];
+extern ACPI_DMTABLE_INFO        AcpiDmTableInfoIvrsHidString[];
+extern ACPI_DMTABLE_INFO        AcpiDmTableInfoIvrsHidInteger[];
 extern ACPI_DMTABLE_INFO        AcpiDmTableInfoMadt[];
 extern ACPI_DMTABLE_INFO        AcpiDmTableInfoMadt0[];
 extern ACPI_DMTABLE_INFO        AcpiDmTableInfoMadt1[];

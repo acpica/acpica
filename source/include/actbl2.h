@@ -649,6 +649,11 @@ typedef struct acpi_ivrs_device_hid
 
 } ACPI_IVRS_DEVICE_HID;
 
+/* Values for UidType above */
+
+#define ACPI_IVRS_UID_NOT_PRESENT   0
+#define ACPI_IVRS_UID_IS_INTEGER    1
+#define ACPI_IVRS_UID_IS_STRING     2
 
 /* 0x20, 0x21, 0x22: I/O Virtualization Memory Definition Block (IVMD) */
 
