@@ -1791,4 +1791,5 @@ ACPI_DMTABLE_INFO           AcpiDmTableInfoSdev1b[] =
     {ACPI_DMT_RAW_BUFFER, 0,                                        "Vendor Data", 0}, /*, DT_OPTIONAL}, */
     ACPI_DMT_TERMINATOR
 };
+
 /*! [End] no source code translation !*/

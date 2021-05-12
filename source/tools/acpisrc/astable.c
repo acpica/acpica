@@ -855,7 +855,7 @@ ACPI_TYPED_IDENTIFIER_TABLE           AcpiIdentifiers[] = {
     {"ACPI_SDEV_NAMESPACE",                 SRC_TYPE_STRUCT},
     {"ACPI_SDEV_PCIE",                      SRC_TYPE_STRUCT},
     {"ACPI_SDEV_PCIE_PATH",                 SRC_TYPE_STRUCT},
-    {"ACPI_SVKL_HEADER",                    SRC_TYPE_STRUCT},
+    {"ACPI_SVKL_KEY",                       SRC_TYPE_STRUCT},
     {"ACPI_SRAT_CPU_AFFINITY",              SRC_TYPE_STRUCT},
     {"ACPI_SRAT_HEADER",                    SRC_TYPE_STRUCT},
     {"ACPI_SRAT_GIC_ITS_AFFINITY",          SRC_TYPE_STRUCT},
