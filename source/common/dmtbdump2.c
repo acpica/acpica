@@ -2005,6 +2005,46 @@ NextSubtable:
 
 /*******************************************************************************
  *
+ * FUNCTION:    AcpiDmDumpRgrt
+ *
+ * PARAMETERS:  Table               - A RGRT table
+ *
+ * RETURN:      None
+ *
+ * DESCRIPTION: Format the contents of a RGRT
+ *
+ ******************************************************************************/
+
+void
+AcpiDmDumpRgrt (
+    ACPI_TABLE_HEADER       *Table)
+{
+    ACPI_STATUS             Status;
+    ACPI_TABLE_RGRT         *Subtable = ACPI_CAST_PTR (ACPI_TABLE_RGRT, Table);
+    UINT32                  Offset = sizeof (ACPI_TABLE_RGRT);
+
+
+    /* Main table */
+
+    Status = AcpiDmDumpTable (Table->Length, 0, Table, 0, AcpiDmTableInfoRgrt);
+    if (ACPI_FAILURE (Status))
+    {
+        return;
+    }
+
+    /* Dump the binary image as a subtable */
+
+    Status = AcpiDmDumpTable (Table->Length, Offset, &Subtable->Image,
+        Table->Length - Offset, AcpiDmTableInfoRgrt0);
+    if (ACPI_FAILURE (Status))
+    {
+        return;
+    }
+}
+
+
+/*******************************************************************************
+ *
  * FUNCTION:    AcpiDmDumpS3pt
  *
  * PARAMETERS:  Table               - A S3PT table

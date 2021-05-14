@@ -676,6 +676,7 @@ ACPI_TYPED_IDENTIFIER_TABLE           AcpiIdentifiers[] = {
     {"ACPI_TABLE_PHAT",                     SRC_TYPE_STRUCT},
     {"ACPI_TABLE_PMTT",                     SRC_TYPE_STRUCT},
     {"ACPI_TABLE_PPTT",                     SRC_TYPE_STRUCT},
+    {"ACPI_TABLE_RGRT",                     SRC_TYPE_STRUCT},
     {"ACPI_TABLE_RSDP",                     SRC_TYPE_STRUCT},
     {"ACPI_TABLE_RSDT",                     SRC_TYPE_STRUCT},
     {"ACPI_TABLE_MCHI",                     SRC_TYPE_STRUCT},

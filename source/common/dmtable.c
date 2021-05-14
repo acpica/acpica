@@ -401,6 +401,12 @@ static const char           *AcpiDmPpttSubnames[] =
     "Unknown Subtable Type"         /* Reserved */
 };
 
+static const char           *AcpiDmRgrtSubnames[] =
+{
+    "Unknown/Reserved Image Type",  /* ACPI_RGRT_TYPE_RESERVED0 */
+    "Type PNG"                      /* ACPI_RGRT_IMAGE_TYPE_PNG */
+};
+
 static const char           *AcpiDmSdevSubnames[] =
 {
     "Namespace Device",             /* ACPI_SDEV_TYPE_NAMESPACE_DEVICE */
@@ -561,6 +567,7 @@ const ACPI_DMTABLE_DATA     AcpiDmTableData[] =
     {ACPI_SIG_PMTT, NULL,                   AcpiDmDumpPmtt, DtCompilePmtt,  TemplatePmtt},
     {ACPI_SIG_PPTT, NULL,                   AcpiDmDumpPptt, DtCompilePptt,  TemplatePptt},
     {ACPI_SIG_RASF, AcpiDmTableInfoRasf,    NULL,           NULL,           TemplateRasf},
+    {ACPI_SIG_RGRT, NULL,                   AcpiDmDumpRgrt, DtCompileRgrt,  TemplateRgrt},
     {ACPI_SIG_RSDT, NULL,                   AcpiDmDumpRsdt, DtCompileRsdt,  TemplateRsdt},
     {ACPI_SIG_S3PT, NULL,                   NULL,           NULL,           TemplateS3pt},
     {ACPI_SIG_SBST, AcpiDmTableInfoSbst,    NULL,           NULL,           TemplateSbst},
@@ -992,6 +999,7 @@ AcpiDmDumpTable (
         case ACPI_DMT_PCCT:
         case ACPI_DMT_PMTT:
         case ACPI_DMT_PPTT:
+        case ACPI_DMT_RGRT:
         case ACPI_DMT_SDEV:
         case ACPI_DMT_SRAT:
         case ACPI_DMT_ASF:
@@ -1713,6 +1721,20 @@ AcpiDmDumpTable (
             }
 
             AcpiDmDumpBuffer (Target, 0, ByteLength, 0, NULL);
+            break;
+
+        case ACPI_DMT_RGRT:
+
+            /* RGRT subtable types */
+
+            Temp8 = *Target;
+            if (Temp8 >= ACPI_RGRT_TYPE_RESERVED)
+            {
+                Temp8 = ACPI_RGRT_TYPE_RESERVED0;
+            }
+
+            AcpiOsPrintf (UINT8_FORMAT, *Target,
+                AcpiDmRgrtSubnames[Temp8]);
             break;
 
         case ACPI_DMT_SDEV:

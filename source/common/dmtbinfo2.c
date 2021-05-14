@@ -1609,6 +1609,31 @@ ACPI_DMTABLE_INFO           AcpiDmTableInfoRasf[] =
 
 /*******************************************************************************
  *
+ * RGRT -  Regulatory Graphics Resource Table
+ *
+ ******************************************************************************/
+
+ACPI_DMTABLE_INFO           AcpiDmTableInfoRgrt[] =
+{
+    {ACPI_DMT_UINT16,   ACPI_RGRT_OFFSET (Version),                 "Version", 0},
+    {ACPI_DMT_RGRT,     ACPI_RGRT_OFFSET (ImageType),               "Image Type", 0},
+    {ACPI_DMT_UINT8,    ACPI_RGRT_OFFSET (Reserved),                "Reserved", 0},
+    ACPI_DMT_TERMINATOR
+};
+
+/*
+ * We treat the binary image field as its own subtable (to make
+ * ACPI_DMT_RAW_BUFFER work properly).
+ */
+ACPI_DMTABLE_INFO           AcpiDmTableInfoRgrt0[] =
+{
+    {ACPI_DMT_RAW_BUFFER, 0,                                        "Image", 0},
+    ACPI_DMT_TERMINATOR
+};
+
+
+/*******************************************************************************
+ *
  * S3PT - S3 Performance Table
  *
  ******************************************************************************/

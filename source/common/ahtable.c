@@ -237,6 +237,7 @@ const AH_TABLE      AcpiGbl_SupportedTables[] =
     {ACPI_SIG_PMTT, "Platform Memory Topology Table"},
     {ACPI_SIG_PPTT, "Processor Properties Topology Table"},
     {ACPI_SIG_RASF, "RAS Features Table"},
+    {ACPI_SIG_RGRT, "Regulatory Graphics Resource Table"},
     {ACPI_RSDP_NAME,"Root System Description Pointer"},
     {ACPI_SIG_RSDT, "Root System Description Table"},
     {ACPI_SIG_S3PT, "S3 Performance Table"},

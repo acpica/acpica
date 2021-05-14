@@ -1337,6 +1337,54 @@ DtCompilePptt (
 
 /******************************************************************************
  *
+ * FUNCTION:    DtCompileRgrt
+ *
+ * PARAMETERS:  List                - Current field list pointer
+ *
+ * RETURN:      Status
+ *
+ * DESCRIPTION: Compile RGRT.
+ *
+ *****************************************************************************/
+
+ACPI_STATUS
+DtCompileRgrt (
+    void                    **List)
+{
+    ACPI_STATUS             Status;
+    DT_SUBTABLE             *Subtable;
+    DT_SUBTABLE             *ParentTable;
+    DT_FIELD                **PFieldList = (DT_FIELD **) List;
+
+
+    /* Compile the main table */
+
+    Status = DtCompileTable (PFieldList, AcpiDmTableInfoRgrt,
+        &Subtable);
+    if (ACPI_FAILURE (Status))
+    {
+        return (Status);
+    }
+
+    ParentTable = DtPeekSubtable ();
+    DtInsertSubtable (ParentTable, Subtable);
+
+    /* Compile the "Subtable" -- actually just the binary (PNG) image */
+
+    Status = DtCompileTable (PFieldList, AcpiDmTableInfoRgrt0,
+        &Subtable);
+    if (ACPI_FAILURE (Status))
+    {
+        return (Status);
+    }
+
+    DtInsertSubtable (ParentTable, Subtable);
+    return (AE_OK);
+}
+
+
+/******************************************************************************
+ *
  * FUNCTION:    DtCompileRsdt
  *
  * PARAMETERS:  List                - Current field list pointer
