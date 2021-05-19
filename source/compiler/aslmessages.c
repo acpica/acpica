@@ -408,7 +408,7 @@ const char                      *AslTableCompilerMsgs [] =
 /*    ASL_MSG_INVALID_LABEL */              "Invalid field label detected",
 /*    ASL_MSG_BUFFER_LIST */                "Invalid buffer initializer list",
 /*    ASL_MSG_ENTRY_LIST */                 "Invalid entry initializer list",
-/*    ASL_MSG_UNKNOWN_FORMAT */             "Unknown format value"
+/*    ASL_MSG_UNKNOWN_FORMAT */             "Unknown format value",
 /*    ASL_MSG_RESERVED_VALUE */             "Value for field is reserved or unknown",
 };
 
