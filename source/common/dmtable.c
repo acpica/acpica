@@ -532,6 +532,7 @@ static const char           *AcpiDmGasAccessWidth[] =
 const ACPI_DMTABLE_DATA     AcpiDmTableData[] =
 {
     {ACPI_SIG_ASF,  NULL,                   AcpiDmDumpAsf,  DtCompileAsf,   TemplateAsf},
+    {ACPI_SIG_BDAT, AcpiDmTableInfoBdat,    NULL,           NULL,           TemplateBdat},
     {ACPI_SIG_BERT, AcpiDmTableInfoBert,    NULL,           NULL,           TemplateBert},
     {ACPI_SIG_BGRT, AcpiDmTableInfoBgrt,    NULL,           NULL,           TemplateBgrt},
     {ACPI_SIG_BOOT, AcpiDmTableInfoBoot,    NULL,           NULL,           TemplateBoot},

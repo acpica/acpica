@@ -168,6 +168,7 @@
  * file. Useful because they make it more difficult to inadvertently type in
  * the wrong signature.
  */
+#define ACPI_SIG_BDAT           "BDAT"      /* BIOS Data ACPI Table */
 #define ACPI_SIG_IORT           "IORT"      /* IO Remapping Table */
 #define ACPI_SIG_IVRS           "IVRS"      /* I/O Virtualization Reporting Structure */
 #define ACPI_SIG_LPIT           "LPIT"      /* Low Power Idle Table */
@@ -209,6 +210,23 @@
  * and stuck with it." Norman Ramsey.
  * See http://stackoverflow.com/a/1053662/41661
  */
+
+
+/*******************************************************************************
+ *
+ * BDAT - BIOS Data ACPI Table
+ *
+ * Conforms to "BIOS Data ACPI Table", Interface Specification v4.0 Draft 5
+ * Nov 2020
+ *
+ ******************************************************************************/
+
+typedef struct acpi_table_bdat
+{
+    ACPI_TABLE_HEADER       Header;
+    ACPI_GENERIC_ADDRESS    Gas;
+
+} ACPI_TABLE_BDAT;
 
 
 /*******************************************************************************

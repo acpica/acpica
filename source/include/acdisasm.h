@@ -368,6 +368,7 @@ extern ACPI_DMTABLE_INFO        AcpiDmTableInfoAsf2a[];
 extern ACPI_DMTABLE_INFO        AcpiDmTableInfoAsf3[];
 extern ACPI_DMTABLE_INFO        AcpiDmTableInfoAsf4[];
 extern ACPI_DMTABLE_INFO        AcpiDmTableInfoAsfHdr[];
+extern ACPI_DMTABLE_INFO        AcpiDmTableInfoBdat[];
 extern ACPI_DMTABLE_INFO        AcpiDmTableInfoBoot[];
 extern ACPI_DMTABLE_INFO        AcpiDmTableInfoBert[];
 extern ACPI_DMTABLE_INFO        AcpiDmTableInfoBgrt[];

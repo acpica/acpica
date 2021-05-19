@@ -640,6 +640,7 @@ ACPI_TYPED_IDENTIFIER_TABLE           AcpiIdentifiers[] = {
      * Acpi table definition names.
      */
     {"ACPI_TABLE_ASF",                      SRC_TYPE_STRUCT},
+    {"ACPI_TABLE_BDAT",                     SRC_TYPE_STRUCT},
     {"ACPI_TABLE_BERT",                     SRC_TYPE_STRUCT},
     {"ACPI_TABLE_BGRT",                     SRC_TYPE_STRUCT},
     {"ACPI_TABLE_BOOT",                     SRC_TYPE_STRUCT},
