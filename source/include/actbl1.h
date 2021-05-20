@@ -523,7 +523,8 @@ typedef struct acpi_cedt_header
 enum AcpiCedtType
 {
     ACPI_CEDT_TYPE_CHBS                 = 0,
-    ACPI_CEDT_TYPE_RESERVED             = 1
+    ACPI_CEDT_TYPE_CFMWS                = 1,
+    ACPI_CEDT_TYPE_RESERVED             = 2,
 };
 
 /* Values for version field above */
@@ -552,6 +553,37 @@ typedef struct acpi_cedt_chbs
     UINT64                  Length;
 
 } ACPI_CEDT_CHBS;
+
+
+/* 1: CXL Fixed Memory Window Structure */
+
+typedef struct acpi_cedt_cfmws
+{
+    ACPI_CEDT_HEADER        Header;
+    UINT32                  Reserved1;
+    UINT64                  BaseHpa;
+    UINT64                  WindowSize;
+    UINT8                   InterleaveWays;
+    UINT8                   InterleaveArithmetic;
+    UINT16                  Reserved2;
+    UINT32                  Granularity;
+    UINT16                  Restrictions;
+    UINT16                  QtgId;
+    UINT32                  InterleaveTargets[];
+
+} ACPI_CEDT_CFMWS;
+
+/* Values for Interleave Arithmetic field above */
+
+#define ACPI_CEDT_CFMWS_ARITHMETIC_MODULO	(0)
+
+/* Values for Restrictions field above */
+
+#define ACPI_CEDT_CFMWS_RESTRICT_TYPE2		(1)
+#define ACPI_CEDT_CFMWS_RESTRICT_TYPE3		(1<<1)
+#define ACPI_CEDT_CFMWS_RESTRICT_VOLATILE	(1<<2)
+#define ACPI_CEDT_CFMWS_RESTRICT_PMEM		(1<<3)
+#define ACPI_CEDT_CFMWS_RESTRICT_FIXED		(1<<4)
 
 
 /*******************************************************************************
