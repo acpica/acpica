@@ -526,6 +526,15 @@ enum AcpiCedtType
     ACPI_CEDT_TYPE_RESERVED             = 1
 };
 
+/* Values for version field above */
+
+#define ACPI_CEDT_CHBS_VERSION_CXL11    (0)
+#define ACPI_CEDT_CHBS_VERSION_CXL20    (1)
+
+/* Values for length field above */
+
+#define ACPI_CEDT_CHBS_LENGTH_CXL11     (0x2000)
+#define ACPI_CEDT_CHBS_LENGTH_CXL20     (0x10000)
 
 /*
  * CEDT subtables
