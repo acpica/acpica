@@ -674,6 +674,10 @@ DtCompilePptt (
     void                    **PFieldList);
 
 ACPI_STATUS
+DtCompilePrmt (
+    void                    **PFieldList);
+
+ACPI_STATUS
 DtCompileRgrt (
     void                    **PFieldList);
 

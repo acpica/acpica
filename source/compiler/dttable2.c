@@ -1337,6 +1337,70 @@ DtCompilePptt (
 
 /******************************************************************************
  *
+ * FUNCTION:    DtCompilePrmt
+ *
+ * PARAMETERS:  List                - Current field list pointer
+ *
+ * RETURN:      Status
+ *
+ * DESCRIPTION: Compile PRMT.
+ *
+ *****************************************************************************/
+
+ACPI_STATUS
+DtCompilePrmt (
+    void                    **List)
+{
+    ACPI_STATUS             Status;
+    ACPI_TABLE_PRMT_HEADER  *PrmtHeader;
+    ACPI_PRMT_MODULE_INFO   *PrmtModuleInfo;
+    DT_SUBTABLE             *Subtable;
+    DT_SUBTABLE             *ParentTable;
+    DT_FIELD                **PFieldList = (DT_FIELD **) List;
+    UINT32                  i, j;
+
+    ParentTable = DtPeekSubtable ();
+
+    /* Compile PRMT subtable header */
+
+    Status = DtCompileTable (PFieldList, AcpiDmTableInfoPrmtHdr,
+        &Subtable);
+    if (ACPI_FAILURE (Status))
+    {
+        return (Status);
+    }
+    DtInsertSubtable (ParentTable, Subtable);
+    PrmtHeader = ACPI_CAST_PTR (ACPI_TABLE_PRMT_HEADER, Subtable->Buffer);
+
+    for (i = 0; i < PrmtHeader->ModuleInfoCount; i++)
+    {
+        Status = DtCompileTable (PFieldList, AcpiDmTableInfoPrmtModule,
+            &Subtable);
+        if (ACPI_FAILURE (Status))
+        {
+            return (Status);
+        }
+        DtInsertSubtable (ParentTable, Subtable);
+        PrmtModuleInfo = ACPI_CAST_PTR (ACPI_PRMT_MODULE_INFO, Subtable->Buffer);
+
+        for (j = 0; j < PrmtModuleInfo->HandlerInfoCount; j++)
+        {
+            Status = DtCompileTable (PFieldList, AcpiDmTableInfoPrmtHandler,
+                &Subtable);
+            if (ACPI_FAILURE (Status))
+            {
+                return (Status);
+            }
+            DtInsertSubtable (ParentTable, Subtable);
+        }
+    }
+
+    return (AE_OK);
+}
+
+
+/******************************************************************************
+ *
  * FUNCTION:    DtCompileRgrt
  *
  * PARAMETERS:  List                - Current field list pointer
