@@ -184,6 +184,7 @@
 #define ACPI_SIG_PHAT           "PHAT"      /* Platform Health Assessment Table */
 #define ACPI_SIG_PMTT           "PMTT"      /* Platform Memory Topology Table */
 #define ACPI_SIG_PPTT           "PPTT"      /* Processor Properties Topology Table */
+#define ACPI_SIG_PRMT           "PRMT"      /* Platform Runtime Mechanism Table */
 #define ACPI_SIG_RASF           "RASF"      /* RAS Feature table */
 #define ACPI_SIG_RGRT           "RGRT"      /* Regulatory Graphics Resource Table */
 #define ACPI_SIG_SBST           "SBST"      /* Smart Battery Specification Table */
@@ -2139,6 +2140,52 @@ typedef struct acpi_pptt_id
     UINT16                  SpinRev;
 
 } ACPI_PPTT_ID;
+
+
+/*******************************************************************************
+ *
+ * PRMT - Platform Runtime Mechanism Table
+ *        Version 1
+ *
+ ******************************************************************************/
+
+typedef struct acpi_table_prmt
+{
+    ACPI_TABLE_HEADER       Header;             /* Common ACPI table header */
+
+} ACPI_TABLE_PRMT;
+
+typedef struct acpi_table_prmt_header
+{
+    UINT8                   PlatformGuid[16];
+    UINT32                  ModuleInfoOffset;
+    UINT32                  ModuleInfoCount;
+
+} ACPI_TABLE_PRMT_HEADER;
+
+typedef struct acpi_prmt_module_info
+{
+    UINT16                  Revision;
+    UINT16                  Length;
+    UINT8                   ModuleGuid[16];
+    UINT16                  MajorRev;
+    UINT16                  MinorRev;
+    UINT16                  HandlerInfoCount;
+    UINT32                  HandlerInfoOffset;
+    UINT64                  MmioListPointer;
+
+} ACPI_PRMT_MODULE_INFO;
+
+typedef struct acpi_prmt_handler_info
+{
+    UINT16                  Revision;
+    UINT16                  Length;
+    UINT8                   HandlerGuid[16];
+    UINT64                  HandlerAddress;
+    UINT64                  StaticDataBufferAddress;
+    UINT64                  AcpiParamBufferAddress;
+
+} ACPI_PRMT_HANDLER_INFO;
 
 
 /*******************************************************************************
