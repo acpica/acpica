@@ -1309,7 +1309,7 @@ AcpiDmDumpTable (
 
             /* Convert 16-byte UUID buffer to 36-byte formatted UUID string */
 
-            (void) AuConvertUuidToString ((char *) Target, AslGbl_MsgBuffer);
+            (void) AcpiUtConvertUuidToString ((char *) Target, AslGbl_MsgBuffer);
 
             AcpiOsPrintf ("%s\n", AslGbl_MsgBuffer);
             break;
