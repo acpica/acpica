@@ -851,6 +851,7 @@ ACPI_TYPED_IDENTIFIER_TABLE           AcpiIdentifiers[] = {
     {"ACPI_PPTT_ID",                        SRC_TYPE_STRUCT},
     {"ACPI_PPTT_PROCESSOR",                 SRC_TYPE_STRUCT},
     {"ACPI_TABLE_PRMT_HEADER",              SRC_TYPE_STRUCT},
+    {"ACPI_PRMT_MODULE_HEADER",             SRC_TYPE_STRUCT},
     {"ACPI_PRMT_MODULE_INFO",               SRC_TYPE_STRUCT},
     {"ACPI_PRMT_HANDLER_INFO",              SRC_TYPE_STRUCT},
     {"ACPI_RSDP_COMMON",                    SRC_TYPE_STRUCT},

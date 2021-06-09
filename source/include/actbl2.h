@@ -2163,6 +2163,13 @@ typedef struct acpi_table_prmt_header
 
 } ACPI_TABLE_PRMT_HEADER;
 
+typedef struct acpi_prmt_module_header
+{
+	UINT16                  Revision;
+	UINT16                  Length;
+
+} ACPI_PRMT_MODULE_HEADER;
+
 typedef struct acpi_prmt_module_info
 {
     UINT16                  Revision;
