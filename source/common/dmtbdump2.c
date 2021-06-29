@@ -1794,8 +1794,9 @@ AcpiDmDumpPmtt (
 {
     ACPI_STATUS             Status;
     ACPI_PMTT_HEADER        *Subtable;
-    UINT32                  Length = Table->Length;
+    UINT32                  Length = AcpiUtReadUint32 (&Table->Length);
     UINT32                  Offset = sizeof (ACPI_TABLE_PMTT);
+    UINT16                  SubtableLength;
 
 
     /* Main table */
@@ -1809,17 +1810,18 @@ AcpiDmDumpPmtt (
     /* Subtables */
 
     Subtable = ACPI_ADD_PTR (ACPI_PMTT_HEADER, Table, Offset);
-    while (Offset < Table->Length)
+    while (Offset < Length)
     {
         /* Each of the types below contain the common subtable header */
 
         AcpiOsPrintf ("\n");
+	SubtableLength = AcpiUtReadUint16 (&Subtable->Length);
         switch (Subtable->Type)
         {
         case ACPI_PMTT_TYPE_SOCKET:
 
             Status = AcpiDmDumpTable (Length, Offset, Subtable,
-                Subtable->Length, AcpiDmTableInfoPmtt0);
+                SubtableLength, AcpiDmTableInfoPmtt0);
             if (ACPI_FAILURE (Status))
             {
                 return;
@@ -1828,7 +1830,7 @@ AcpiDmDumpPmtt (
 
         case ACPI_PMTT_TYPE_CONTROLLER:
             Status = AcpiDmDumpTable (Length, Offset, Subtable,
-                Subtable->Length, AcpiDmTableInfoPmtt1);
+                SubtableLength, AcpiDmTableInfoPmtt1);
             if (ACPI_FAILURE (Status))
             {
                 return;
@@ -1837,7 +1839,7 @@ AcpiDmDumpPmtt (
 
        case ACPI_PMTT_TYPE_DIMM:
             Status = AcpiDmDumpTable (Length, Offset, Subtable,
-                Subtable->Length, AcpiDmTableInfoPmtt2);
+                SubtableLength, AcpiDmTableInfoPmtt2);
             if (ACPI_FAILURE (Status))
             {
                 return;
@@ -1846,7 +1848,7 @@ AcpiDmDumpPmtt (
 
         case ACPI_PMTT_TYPE_VENDOR:
             Status = AcpiDmDumpTable (Length, Offset, Subtable,
-                Subtable->Length, AcpiDmTableInfoPmttVendor);
+                SubtableLength, AcpiDmTableInfoPmttVendor);
             if (ACPI_FAILURE (Status))
             {
                 return;
@@ -1862,9 +1864,9 @@ AcpiDmDumpPmtt (
 
         /* Point to next subtable */
 
-        Offset += Subtable->Length;
+        Offset += SubtableLength;
         Subtable = ACPI_ADD_PTR (ACPI_PMTT_HEADER,
-            Subtable, Subtable->Length);
+            Subtable, SubtableLength);
     }
 }
 
