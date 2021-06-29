@@ -527,11 +527,14 @@ AcpiDmDumpIvrs (
     ACPI_IVRS_DE_HEADER     *DeviceEntry;
     ACPI_IVRS_HEADER        *Subtable;
     ACPI_DMTABLE_INFO       *InfoTable;
+    UINT32                  TableLength = AcpiUtReadUint32 (&Table->Length);
+    UINT16                  SubtableLength;
+
 
 
     /* Main table */
 
-    Status = AcpiDmDumpTable (Table->Length, 0, Table, 0, AcpiDmTableInfoIvrs);
+    Status = AcpiDmDumpTable (TableLength, 0, Table, 0, AcpiDmTableInfoIvrs);
     if (ACPI_FAILURE (Status))
     {
         return;
@@ -541,8 +544,9 @@ AcpiDmDumpIvrs (
 
     Subtable = ACPI_ADD_PTR (ACPI_IVRS_HEADER, Table, Offset);
 
-    while (Offset < Table->Length)
+    while (Offset < TableLength)
     {
+        SubtableLength = AcpiUtReadUint16 (&Subtable->Length);
         switch (Subtable->Type)
         {
         /* Type 10h, IVHD (I/O Virtualization Hardware Definition) */
@@ -579,7 +583,7 @@ AcpiDmDumpIvrs (
 
             /* Attempt to continue */
 
-            if (!Subtable->Length)
+            if (!SubtableLength)
             {
                 AcpiOsPrintf ("Invalid zero length subtable\n");
                 return;
@@ -589,8 +593,8 @@ AcpiDmDumpIvrs (
 
         /* Dump the subtable */
 
-        Status = AcpiDmDumpTable (Table->Length, Offset, Subtable,
-            Subtable->Length, InfoTable);
+        Status = AcpiDmDumpTable (TableLength, Offset, Subtable,
+            SubtableLength, InfoTable);
         if (ACPI_FAILURE (Status))
         {
             return;
@@ -619,7 +623,7 @@ AcpiDmDumpIvrs (
 
             /* Process all of the Device Entries */
 
-            while (EntryOffset < (Offset + Subtable->Length))
+            while (EntryOffset < (Offset + SubtableLength))
             {
                 AcpiOsPrintf ("\n");
 
@@ -689,7 +693,7 @@ AcpiDmDumpIvrs (
 
                 /* Dump the Device Entry */
 
-                Status = AcpiDmDumpTable (Table->Length, EntryOffset,
+                Status = AcpiDmDumpTable (TableLength, EntryOffset,
                     DeviceEntry, EntryLength, InfoTable);
                 if (ACPI_FAILURE (Status))
                 {
@@ -713,12 +717,12 @@ AcpiDmDumpIvrs (
                      */
                     if (UtIsIdInteger ((UINT8 *) &HidSubtable->AcpiHid))
                     {
-                        Status = AcpiDmDumpTable (Table->Length, EntryOffset,
+                        Status = AcpiDmDumpTable (TableLength, EntryOffset,
                             &HidSubtable->AcpiHid, 8, AcpiDmTableInfoIvrsHidInteger);
                     }
                     else
                     {
-                        Status = AcpiDmDumpTable (Table->Length, EntryOffset,
+                        Status = AcpiDmDumpTable (TableLength, EntryOffset,
                             &HidSubtable->AcpiHid, 8, AcpiDmTableInfoIvrsHidString);
                     }
                     if (ACPI_FAILURE (Status))
@@ -736,12 +740,12 @@ AcpiDmDumpIvrs (
                      */
                     if (UtIsIdInteger ((UINT8 *) &HidSubtable->AcpiCid))
                     {
-                        Status = AcpiDmDumpTable (Table->Length, EntryOffset,
+                        Status = AcpiDmDumpTable (TableLength, EntryOffset,
                             &HidSubtable->AcpiCid, 8, AcpiDmTableInfoIvrsCidInteger);
                     }
                     else
                     {
-                        Status = AcpiDmDumpTable (Table->Length, EntryOffset,
+                        Status = AcpiDmDumpTable (TableLength, EntryOffset,
                             &HidSubtable->AcpiCid, 8, AcpiDmTableInfoIvrsCidString);
                     }
                     if (ACPI_FAILURE (Status))
@@ -758,7 +762,7 @@ AcpiDmDumpIvrs (
 
                         if (HidSubtable->UidType == ACPI_IVRS_UID_IS_STRING)
                         {
-                            Status = AcpiDmDumpTable (Table->Length, EntryOffset,
+                            Status = AcpiDmDumpTable (TableLength, EntryOffset,
                                 &HidSubtable->UidType, EntryLength, AcpiDmTableInfoIvrsUidString);
                             if (ACPI_FAILURE (Status))
                             {
@@ -767,7 +771,7 @@ AcpiDmDumpIvrs (
                         }
                         else /* ACPI_IVRS_UID_IS_INTEGER */
                         {
-                            Status = AcpiDmDumpTable (Table->Length, EntryOffset,
+                            Status = AcpiDmDumpTable (TableLength, EntryOffset,
                                 &HidSubtable->UidType, EntryLength, AcpiDmTableInfoIvrsUidInteger);
                             if (ACPI_FAILURE (Status))
                             {
@@ -786,8 +790,8 @@ AcpiDmDumpIvrs (
 NextSubtable:
         /* Point to next subtable */
 
-        Offset += Subtable->Length;
-        Subtable = ACPI_ADD_PTR (ACPI_IVRS_HEADER, Subtable, Subtable->Length);
+        Offset += SubtableLength;
+        Subtable = ACPI_ADD_PTR (ACPI_IVRS_HEADER, Subtable, SubtableLength);
     }
 }
 
