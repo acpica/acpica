@@ -577,7 +577,7 @@ ApCheckForGpeNameConflict (
 
     /* Need a null-terminated string version of NameSeg */
 
-    ACPI_MOVE_32_TO_32 (Name, Op->Asl.NameSeg);
+    ACPI_COPY_NAMESEG (Name, Op->Asl.NameSeg);
     Name[ACPI_NAMESEG_SIZE] = 0;
 
     /*
@@ -604,7 +604,7 @@ ApCheckForGpeNameConflict (
      * We are now sure we have an _Lxx or _Exx.
      * Create the target name that would cause collision (Flip E/L)
      */
-    ACPI_MOVE_32_TO_32 (Target, Name);
+    ACPI_COPY_NAMESEG (Target, Name);
 
     /* Inject opposite letter ("L" versus "E") */
 
