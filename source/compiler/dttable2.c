@@ -1601,6 +1601,7 @@ DtCompileSdev (
     UINT32                      EntryCount;
     ACPI_SDEV_SECURE_COMPONENT  *SecureComponent = NULL;
     UINT16                      ComponentLength = 0;
+    UINT16                      Tmp16;
 
 
     /* Subtables */
@@ -1622,7 +1623,7 @@ DtCompileSdev (
         DtPushSubtable (Subtable);
 
         SdevHeader = ACPI_CAST_PTR (ACPI_SDEV_HEADER, Subtable->Buffer);
-        SdevHeader->Length = (UINT8)(sizeof (ACPI_SDEV_HEADER));
+        SdevHeader->Length = (UINT16) (sizeof (ACPI_SDEV_HEADER));
 
         switch (SdevHeader->Type)
         {
@@ -1795,6 +1796,18 @@ DtCompileSdev (
                 }
             }
 
+            /* Make sure everything is now little-endian */
+            Tmp16 = AcpiUtReadUint16 (&SdevHeader->Length);
+            SdevHeader->Length = Tmp16;
+            Tmp16 = AcpiUtReadUint16 (&Namesp->DeviceIdOffset);
+            Namesp->DeviceIdOffset = Tmp16;
+            Tmp16 = AcpiUtReadUint16 (&Namesp->DeviceIdLength);
+            Namesp->DeviceIdLength = Tmp16;
+            Tmp16 = AcpiUtReadUint16 (&Namesp->VendorDataOffset);
+            Namesp->VendorDataOffset = Tmp16;
+            Tmp16 = AcpiUtReadUint16 (&Namesp->VendorDataLength);
+            Namesp->VendorDataLength = Tmp16;
+
             break;
 
         case ACPI_SDEV_TYPE_PCIE_ENDPOINT_DEVICE:
@@ -1857,6 +1870,18 @@ DtCompileSdev (
             SdevHeader->Length =
                 sizeof (ACPI_SDEV_PCIE) +
                 Pcie->PathLength + Pcie->VendorDataLength;
+
+            Tmp16 = AcpiUtReadUint16 (&SdevHeader->Length);
+            SdevHeader->Length = Tmp16;
+            Tmp16 = AcpiUtReadUint16 (&Pcie->PathOffset);
+            Pcie->PathOffset = Tmp16;
+            Tmp16 = AcpiUtReadUint16 (&Pcie->PathLength);
+            Pcie->PathLength = Tmp16;
+            Tmp16 = AcpiUtReadUint16 (&Pcie->VendorDataOffset);
+            Pcie->VendorDataOffset = Tmp16;
+            Tmp16 = AcpiUtReadUint16 (&Pcie->VendorDataLength);
+            Pcie->VendorDataLength = Tmp16;
+		
             break;
 
         default:
