@@ -639,6 +639,7 @@ ACPI_TYPED_IDENTIFIER_TABLE           AcpiIdentifiers[] = {
     /*
      * Acpi table definition names.
      */
+    {"ACPI_TABLE_AEST",                     SRC_TYPE_STRUCT},
     {"ACPI_TABLE_ASF",                      SRC_TYPE_STRUCT},
     {"ACPI_TABLE_BDAT",                     SRC_TYPE_STRUCT},
     {"ACPI_TABLE_BERT",                     SRC_TYPE_STRUCT},
@@ -706,6 +707,19 @@ ACPI_TYPED_IDENTIFIER_TABLE           AcpiIdentifiers[] = {
     {"ACPI_TABLE_XENV",                     SRC_TYPE_STRUCT},
     {"ACPI_TABLE_XSDT",                     SRC_TYPE_STRUCT},
 
+    /* Individual per-table names (typically subtables) */
+
+    {"ACPI_AEST_GIC",                       SRC_TYPE_STRUCT},
+    {"ACPI_AEST_HEADER",                    SRC_TYPE_STRUCT},
+    {"ACPI_AEST_MEMORY",                    SRC_TYPE_STRUCT},
+    {"ACPI_AEST_NODE_INTERFACE",            SRC_TYPE_STRUCT},
+    {"ACPI_AEST_NODE_INTERRUPT",            SRC_TYPE_STRUCT},
+    {"ACPI_AEST_PROCESSOR",                 SRC_TYPE_STRUCT},
+    {"ACPI_AEST_PROCESSOR_CACHE",           SRC_TYPE_STRUCT},
+    {"ACPI_AEST_PROCESSOR_GENERIC",         SRC_TYPE_STRUCT},
+    {"ACPI_AEST_PROCESSOR_TLB",             SRC_TYPE_STRUCT},
+    {"ACPI_AEST_SMMU",                      SRC_TYPE_STRUCT},
+    {"ACPI_AEST_VENDOR",                    SRC_TYPE_STRUCT},
     {"ACPI_ASF_ADDRESS",                    SRC_TYPE_STRUCT},
     {"ACPI_ASF_ALERT",                      SRC_TYPE_STRUCT},
     {"ACPI_ASF_ALERT_DATA",                 SRC_TYPE_STRUCT},
