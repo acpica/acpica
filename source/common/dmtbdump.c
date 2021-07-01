@@ -254,6 +254,8 @@ AcpiDmDumpUnicode (
     UINT8                   *Buffer;
     UINT32                  Length;
     UINT32                  i;
+    UINT16		    Tmp16;
+    UINT32                  start;
 
 
     Buffer = ((UINT8 *) Table) + BufferOffset;
@@ -263,7 +265,8 @@ AcpiDmDumpUnicode (
 
     for (i = 0; i < Length; i += 2)
     {
-        if (!isprint (Buffer[i]))
+        Tmp16 = AcpiUtReadUint16 (&Buffer[i]);
+        if (!isprint (Tmp16))
         {
             goto DumpRawBuffer;
         }
@@ -271,7 +274,8 @@ AcpiDmDumpUnicode (
 
     /* Ensure all high bytes are zero */
 
-    for (i = 1; i < Length; i += 2)
+    start = UtIsBigEndianMachine() ? 0 : 1;
+    for (i = start; i < Length; i += 2)
     {
         if (Buffer[i])
         {
@@ -284,7 +288,8 @@ AcpiDmDumpUnicode (
     AcpiOsPrintf ("\"");
     for (i = 0; i < Length; i += 2)
     {
-        AcpiOsPrintf ("%c", Buffer[i]);
+        Tmp16 = AcpiUtReadUint16 (&Buffer[i]);
+        AcpiOsPrintf ("%c", Tmp16);
     }
 
     AcpiOsPrintf ("\"\n");
