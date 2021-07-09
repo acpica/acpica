@@ -678,14 +678,16 @@ DtCompileCsrt (
     DT_SUBTABLE             *Subtable;
     DT_SUBTABLE             *ParentTable;
     DT_FIELD                **PFieldList = (DT_FIELD **) List;
-    UINT32                  DescriptorCount;
+    UINT32                  DescriptorLength;
     UINT32                  GroupLength;
     UINT32                  Tmp;
+    UINT32                  Offset;
 
 
     /* Subtables (Resource Groups) */
 
     ParentTable = DtPeekSubtable ();
+                               
     while (*PFieldList)
     {
         /* Resource group subtable */
@@ -700,15 +702,12 @@ DtCompileCsrt (
         /* Compute the number of resource descriptors */
 
         Tmp = AcpiUtReadUint32 (&(ACPI_CAST_PTR (ACPI_CSRT_GROUP,
-                                Subtable->Buffer))->Length);
+                  Subtable->Buffer))->Length);
         GroupLength = Tmp;
         Tmp = AcpiUtReadUint32 (&(ACPI_CAST_PTR (ACPI_CSRT_GROUP,
-                                Subtable->Buffer))->SharedInfoLength);
+                  Subtable->Buffer))->SharedInfoLength);
         GroupLength -= Tmp;
         GroupLength -= sizeof (ACPI_CSRT_GROUP);
-
-        DescriptorCount = (GroupLength  /
-            sizeof (ACPI_CSRT_DESCRIPTOR));
 
         DtInsertSubtable (ParentTable, Subtable);
         DtPushSubtable (Subtable);
@@ -724,10 +723,13 @@ DtCompileCsrt (
         }
 
         DtInsertSubtable (ParentTable, Subtable);
+        DtPushSubtable (Subtable);
+        ParentTable = DtPeekSubtable ();
 
         /* Sub-Subtables (Resource Descriptors) */
 
-        while (*PFieldList && DescriptorCount)
+        Offset = 0;
+        while (*PFieldList && (Offset < GroupLength))
         {
 
             Status = DtCompileTable (PFieldList, AcpiDmTableInfoCsrt2,
@@ -736,6 +738,10 @@ DtCompileCsrt (
             {
                 return (Status);
             }
+	    DescriptorLength = AcpiUtReadUint32 (
+	                           &(ACPI_CAST_PTR (ACPI_CSRT_GROUP,
+                                   Subtable->Buffer))->Length);
+
 
             DtInsertSubtable (ParentTable, Subtable);
 
@@ -745,11 +751,7 @@ DtCompileCsrt (
             {
                 Status = DtCompileTable (PFieldList, AcpiDmTableInfoCsrt2a,
                     &Subtable);
-                if (ACPI_FAILURE (Status))
-                {
-                    return (Status);
-                }
-                if (Subtable)
+                if (ACPI_SUCCESS (Status) && Subtable)
                 {
                     DtInsertSubtable (ParentTable, Subtable);
                 }
@@ -757,7 +759,7 @@ DtCompileCsrt (
 
             DtPopSubtable ();
             ParentTable = DtPeekSubtable ();
-            DescriptorCount--;
+            Offset += DescriptorLength;
         }
 
         DtPopSubtable ();

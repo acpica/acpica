@@ -701,11 +701,13 @@ AcpiDmDumpCsrt (
     ACPI_CSRT_GROUP         *Subtable;
     ACPI_CSRT_SHARED_INFO   *SharedInfoTable;
     ACPI_CSRT_DESCRIPTOR    *SubSubtable;
-    UINT32                  Length = AcpiUtReadUint32 (&Table->Length);
+    UINT32                  TableLength = AcpiUtReadUint32 (&Table->Length);
     UINT32                  Offset = sizeof (ACPI_TABLE_CSRT);
     UINT32                  SubOffset;
     UINT32                  SubSubOffset;
     UINT32                  InfoLength;
+    UINT32                  SubtableLength;
+    UINT32                  SubSubtableLength;
 
 
     /* The main table only contains the ACPI header, thus already handled */
@@ -713,13 +715,14 @@ AcpiDmDumpCsrt (
     /* Subtables (Resource Groups) */
 
     Subtable = ACPI_ADD_PTR (ACPI_CSRT_GROUP, Table, Offset);
-    while (Offset < Length)
+    while (Offset < TableLength)
     {
         /* Resource group subtable */
 
+        SubtableLength = AcpiUtReadUint32 (&Subtable->Length);
         AcpiOsPrintf ("\n");
-        Status = AcpiDmDumpTable (Length, Offset, Subtable,
-            Subtable->Length, AcpiDmTableInfoCsrt0);
+        Status = AcpiDmDumpTable (TableLength, Offset, Subtable,
+            SubtableLength, AcpiDmTableInfoCsrt0);
         if (ACPI_FAILURE (Status))
         {
             return;
@@ -732,26 +735,28 @@ AcpiDmDumpCsrt (
             Offset + SubOffset);
 
         AcpiOsPrintf ("\n");
-        Status = AcpiDmDumpTable (Length, Offset + SubOffset, SharedInfoTable,
-            sizeof (ACPI_CSRT_SHARED_INFO), AcpiDmTableInfoCsrt1);
+        Status = AcpiDmDumpTable (TableLength, Offset + SubOffset,
+	    SharedInfoTable, sizeof (ACPI_CSRT_SHARED_INFO),
+	    AcpiDmTableInfoCsrt1);
         if (ACPI_FAILURE (Status))
         {
             return;
         }
 
-        SubOffset += Subtable->SharedInfoLength;
+        SubOffset += AcpiUtReadUint32 (&Subtable->SharedInfoLength);
 
         /* Sub-Subtables (Resource Descriptors) */
 
         SubSubtable = ACPI_ADD_PTR (ACPI_CSRT_DESCRIPTOR, Table,
             Offset + SubOffset);
 
-        while ((SubOffset < Subtable->Length) &&
-              ((Offset + SubOffset) < Length))
+        while ((SubOffset < SubtableLength) &&
+              ((Offset + SubOffset) < TableLength))
         {
+	    SubSubtableLength = AcpiUtReadUint32 (&SubSubtable->Length);
             AcpiOsPrintf ("\n");
-            Status = AcpiDmDumpTable (Length, Offset + SubOffset, SubSubtable,
-                SubSubtable->Length, AcpiDmTableInfoCsrt2);
+            Status = AcpiDmDumpTable (TableLength, Offset + SubOffset,
+	        SubSubtable, SubSubtableLength, AcpiDmTableInfoCsrt2);
             if (ACPI_FAILURE (Status))
             {
                 return;
@@ -761,11 +766,12 @@ AcpiDmDumpCsrt (
 
             /* Resource-specific info buffer */
 
-            InfoLength = SubSubtable->Length - SubSubOffset;
+            InfoLength = SubSubtableLength - SubSubOffset;
             if (InfoLength)
             {
-                Status = AcpiDmDumpTable (Length,
-                    Offset + SubOffset + SubSubOffset, Table,
+                Status = AcpiDmDumpTable (TableLength,
+		    Offset + SubOffset + SubSubOffset,
+		    (UINT8 *)SubSubtable + SubSubOffset,
                     InfoLength, AcpiDmTableInfoCsrt2a);
                 if (ACPI_FAILURE (Status))
                 {
@@ -775,16 +781,15 @@ AcpiDmDumpCsrt (
 
             /* Point to next sub-subtable */
 
-            SubOffset += SubSubtable->Length;
+            SubOffset += SubSubtableLength;
             SubSubtable = ACPI_ADD_PTR (ACPI_CSRT_DESCRIPTOR, SubSubtable,
-                SubSubtable->Length);
+                SubSubtableLength);
         }
 
         /* Point to next subtable */
 
-        Offset += Subtable->Length;
-        Subtable = ACPI_ADD_PTR (ACPI_CSRT_GROUP, Subtable,
-            Subtable->Length);
+        Offset += SubtableLength;
+        Subtable = ACPI_ADD_PTR (ACPI_CSRT_GROUP, Subtable, SubtableLength);
     }
 }
 
