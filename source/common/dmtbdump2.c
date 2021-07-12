@@ -1681,39 +1681,43 @@ AcpiDmDumpPhat (
     ACPI_PHAT_HEADER        *Subtable;
     ACPI_PHAT_VERSION_DATA  *VersionData;
     UINT32                  RecordCount;
-    UINT32                  Length = Table->Length;
+    UINT32                  TableLength = AcpiUtReadUint32 (&Table->Length);
     UINT32                  Offset = sizeof (ACPI_TABLE_PHAT);
     UINT32                  SubtableLength;
     UINT32                  PathLength;
     UINT32                  VendorLength;
+    UINT16                  SubtableType;
 
 
     Subtable = ACPI_ADD_PTR (ACPI_PHAT_HEADER, Table, sizeof (ACPI_TABLE_PHAT));
 
-    while (Offset < Table->Length)
+    while (Offset < TableLength)
     {
         /* Common subtable header */
 
+        SubtableType = AcpiUtReadUint16 (&Subtable->Type);
+	Subtable->Type = SubtableType;
+        SubtableLength = AcpiUtReadUint16 (&Subtable->Length);
+	Subtable->Length = SubtableLength;
+
         AcpiOsPrintf ("\n");
-        Status = AcpiDmDumpTable (Length, 0, Subtable,
+        Status = AcpiDmDumpTable (TableLength, 0, Subtable,
             sizeof (ACPI_PHAT_HEADER), AcpiDmTableInfoPhatHdr);
         if (ACPI_FAILURE (Status))
         {
             return;
         }
 
-        switch (Subtable->Type)
+        switch (SubtableType)
         {
         case ACPI_PHAT_TYPE_FW_VERSION_DATA:
 
             InfoTable = AcpiDmTableInfoPhat0;
-            SubtableLength = sizeof (ACPI_PHAT_VERSION_DATA);
             break;
 
         case ACPI_PHAT_TYPE_FW_HEALTH_DATA:
 
             InfoTable = AcpiDmTableInfoPhat1;
-            SubtableLength = sizeof (ACPI_PHAT_HEALTH_DATA);
             break;
 
         default:
@@ -1724,22 +1728,22 @@ AcpiDmDumpPhat (
             return;
         }
 
-        Status = AcpiDmDumpTable (Length, 0, Subtable,
+        Status = AcpiDmDumpTable (TableLength, 0, Subtable,
             SubtableLength, InfoTable);
         if (ACPI_FAILURE (Status))
         {
             return;
         }
 
-        switch (Subtable->Type)
+        switch (SubtableType)
         {
         case ACPI_PHAT_TYPE_FW_VERSION_DATA:
 
             VersionData = ACPI_CAST_PTR (ACPI_PHAT_VERSION_DATA, Subtable);
-            RecordCount = VersionData->ElementCount;
+            RecordCount = AcpiUtReadUint32 (&VersionData->ElementCount);
             while (RecordCount)
             {
-                Status = AcpiDmDumpTable (Length, Offset,
+                Status = AcpiDmDumpTable (TableLength, Offset,
                     ACPI_ADD_PTR (ACPI_PHAT_HEADER, Subtable, sizeof (ACPI_PHAT_VERSION_DATA)),
                     sizeof (ACPI_PHAT_VERSION_ELEMENT), AcpiDmTableInfoPhat0a);
                 if (ACPI_FAILURE (Status))
@@ -1757,7 +1761,7 @@ AcpiDmDumpPhat (
             /* account for the null terminator */
 
             PathLength = strlen (ACPI_ADD_PTR (char, Subtable, sizeof (ACPI_PHAT_HEALTH_DATA))) + 1;
-            Status = AcpiDmDumpTable (Length, Offset,
+            Status = AcpiDmDumpTable (TableLength, Offset,
                 ACPI_ADD_PTR (ACPI_PHAT_HEADER, Subtable, sizeof (ACPI_PHAT_HEALTH_DATA)),
                 PathLength, AcpiDmTableInfoPhat1a);
             if (ACPI_FAILURE (Status))
@@ -1768,8 +1772,8 @@ AcpiDmDumpPhat (
             /* Get vendor data - data length is the remaining subtable length */
 
             VendorLength =
-                Subtable->Length - sizeof (ACPI_PHAT_HEALTH_DATA) - PathLength;
-            Status = AcpiDmDumpTable (Length, 0,
+                SubtableLength - sizeof (ACPI_PHAT_HEALTH_DATA) - PathLength;
+            Status = AcpiDmDumpTable (TableLength, 0,
                 ACPI_ADD_PTR (ACPI_PHAT_HEADER, Subtable, sizeof (ACPI_PHAT_HEALTH_DATA) + PathLength),
                 VendorLength, AcpiDmTableInfoPhat1b);
             if (ACPI_FAILURE (Status))
@@ -1781,15 +1785,15 @@ AcpiDmDumpPhat (
         default:
 
             AcpiOsPrintf ("\n**** Unknown PHAT subtable type 0x%X\n\n",
-                Subtable->Type);
+                SubtableType);
             return;
         }
 
         /* Next subtable */
 
-        Offset += Subtable->Length;
+        Offset += SubtableLength;
         Subtable = ACPI_ADD_PTR (ACPI_PHAT_HEADER, Subtable,
-            Subtable->Length);
+            SubtableLength);
     }
 }
 

@@ -978,6 +978,8 @@ DtCompilePhat (
     ACPI_DMTABLE_INFO       *Info;
     ACPI_PHAT_VERSION_DATA  *VersionData;
     UINT32                  RecordCount;
+    UINT16                  SubtableType;
+    UINT16                  Tmp16;
 
 
     /* The table consist of subtables */
@@ -995,8 +997,9 @@ DtCompilePhat (
         DtPushSubtable (Subtable);
 
         PhatHeader = ACPI_CAST_PTR (ACPI_PHAT_HEADER, Subtable->Buffer);
+	SubtableType = AcpiUtReadUint16 (&PhatHeader->Type);
 
-        switch (PhatHeader->Type)
+        switch (SubtableType)
         {
         case ACPI_PHAT_TYPE_FW_VERSION_DATA:
 
@@ -1027,13 +1030,13 @@ DtCompilePhat (
         ParentTable = DtPeekSubtable ();
         DtInsertSubtable (ParentTable, Subtable);
 
-        switch (PhatHeader->Type)
+        switch (SubtableType)
         {
         case ACPI_PHAT_TYPE_FW_VERSION_DATA:
 
             VersionData = ACPI_CAST_PTR (ACPI_PHAT_VERSION_DATA,
                 (Subtable->Buffer - sizeof (ACPI_PHAT_HEADER)));
-            RecordCount = VersionData->ElementCount;
+            RecordCount = AcpiUtReadUint32 (&VersionData->ElementCount);
 
             while (RecordCount)
             {
@@ -1084,6 +1087,9 @@ DtCompilePhat (
             DtFatal (ASL_MSG_UNKNOWN_SUBTABLE, *PFieldList, "PHAT");
             return (AE_ERROR);
         }
+
+	Tmp16 = AcpiUtReadUint16 (&PhatHeader->Length);
+	PhatHeader->Length = Tmp16;
     }
 
     return (Status);
