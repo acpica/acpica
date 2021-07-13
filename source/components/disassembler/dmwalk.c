@@ -1263,7 +1263,7 @@ AcpiDmAscendingOp (
         {
             ParentOp->Common.DisasmFlags |= ACPI_PARSEOP_EMPTY_TERMLIST;
             ASL_CV_CLOSE_PAREN (Op, Level);
-            AcpiOsPrintf ("{");
+            AcpiOsPrintf (" {");
         }
     }
 

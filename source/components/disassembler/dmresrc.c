@@ -525,7 +525,7 @@ AcpiDmIsResourceTemplate (
         return (AE_TYPE);
     }
 
-    DeclaredBufferLength = NextOp->Common.Value.Size;
+    DeclaredBufferLength = NextOp->Common.Value.Integer;
 
     /* Get the length of the raw initialization byte list */
 

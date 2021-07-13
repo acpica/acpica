@@ -661,6 +661,7 @@ AcpiDsCreateField (
         Status = AcpiNsLookup (WalkState->ScopeInfo, Arg->Common.Value.Name,
             ACPI_TYPE_REGION, ACPI_IMODE_EXECUTE,
             ACPI_NS_SEARCH_PARENT, WalkState, &RegionNode);
+
 #ifdef ACPI_ASL_COMPILER
         Status = AcpiDsCreateExternalRegion (Status, Arg,
             Arg->Common.Value.Name, WalkState, &RegionNode);

@@ -886,7 +886,9 @@ AcpiDmDisassembleOneOp (
         }
         else
         {
-            AcpiOsPrintf ("0x%4.4X", (UINT32) Op->Common.Value.Integer);
+            UINT16 Tmp16 = (UINT16) Op->Common.Value.Integer;
+
+            AcpiOsPrintf ("0x%4.4X", (UINT32) AcpiUtReadUint16 (&Tmp16));
         }
         break;
 
@@ -898,14 +900,19 @@ AcpiDmDisassembleOneOp (
         }
         else
         {
-            AcpiOsPrintf ("0x%8.8X", (UINT32) Op->Common.Value.Integer);
+            UINT32 Tmp32 = (UINT32) Op->Common.Value.Integer;
+
+            AcpiOsPrintf ("0x%8.8X", (UINT32) AcpiUtReadUint32 (&Tmp32));
         }
         break;
 
     case AML_QWORD_OP:
 
-        AcpiOsPrintf ("0x%8.8X%8.8X",
-            ACPI_FORMAT_UINT64 (Op->Common.Value.Integer));
+        {
+	    UINT64 Tmp64 = AcpiUtReadUint64 (&Op->Common.Value.Integer);
+
+            AcpiOsPrintf ("0x%8.8X%8.8X", ACPI_FORMAT_UINT64 (Tmp64));
+        }
         break;
 
     case AML_STRING_OP:
@@ -995,18 +1002,18 @@ AcpiDmDisassembleOneOp (
         AcpiOsPrintf (",");
         ASL_CV_PRINT_ONE_COMMENT (Op, AML_NAMECOMMENT, NULL, 0);
         AcpiOsPrintf ("%*.s  %u", (unsigned) (5 - Length), " ",
-            (UINT32) Op->Common.Value.Integer);
+            (UINT32) Op->Common.Value.Size);
 
         AcpiDmCommaIfFieldMember (Op);
 
-        Info->BitOffset += (UINT32) Op->Common.Value.Integer;
+        Info->BitOffset += (UINT32) Op->Common.Value.Size;
         break;
 
     case AML_INT_RESERVEDFIELD_OP:
 
         /* Offset() -- Must account for previous offsets */
 
-        Offset = (UINT32) Op->Common.Value.Integer;
+        Offset = (UINT32) Op->Common.Value.Size;
         Info->BitOffset += Offset;
 
         if (Info->BitOffset % 8 == 0)

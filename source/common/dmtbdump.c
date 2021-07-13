@@ -254,6 +254,8 @@ AcpiDmDumpUnicode (
     UINT8                   *Buffer;
     UINT32                  Length;
     UINT32                  i;
+    UINT16		    Tmp16;
+    UINT32                  start;
 
 
     Buffer = ((UINT8 *) Table) + BufferOffset;
@@ -263,7 +265,8 @@ AcpiDmDumpUnicode (
 
     for (i = 0; i < Length; i += 2)
     {
-        if (!isprint (Buffer[i]))
+        Tmp16 = AcpiUtReadUint16 (&Buffer[i]);
+        if (!isprint (Tmp16))
         {
             goto DumpRawBuffer;
         }
@@ -271,7 +274,8 @@ AcpiDmDumpUnicode (
 
     /* Ensure all high bytes are zero */
 
-    for (i = 1; i < Length; i += 2)
+    start = UtIsBigEndianMachine() ? 0 : 1;
+    for (i = start; i < Length; i += 2)
     {
         if (Buffer[i])
         {
@@ -284,7 +288,8 @@ AcpiDmDumpUnicode (
     AcpiOsPrintf ("\"");
     for (i = 0; i < Length; i += 2)
     {
-        AcpiOsPrintf ("%c", Buffer[i]);
+        Tmp16 = AcpiUtReadUint16 (&Buffer[i]);
+        AcpiOsPrintf ("%c", Tmp16);
     }
 
     AcpiOsPrintf ("\"\n");
@@ -385,6 +390,7 @@ AcpiDmDumpRsdt (
     UINT32                  Entries;
     UINT32                  Offset;
     UINT32                  i;
+    UINT32                  TableLength = AcpiUtReadUint32 (&Table->Length);
 
 
     /* Point to start of table pointer array */
@@ -394,12 +400,12 @@ AcpiDmDumpRsdt (
 
     /* RSDT uses 32-bit pointers */
 
-    Entries = (Table->Length - sizeof (ACPI_TABLE_HEADER)) / sizeof (UINT32);
+    Entries = (TableLength - sizeof (ACPI_TABLE_HEADER)) / sizeof (UINT32);
 
     for (i = 0; i < Entries; i++)
     {
         AcpiDmLineHeader2 (Offset, sizeof (UINT32), "ACPI Table Address", i);
-        AcpiOsPrintf ("%8.8X\n", Array[i]);
+        AcpiOsPrintf ("%8.8X\n", AcpiUtReadUint32 (&Array[i]));
         Offset += sizeof (UINT32);
     }
 }
@@ -425,6 +431,7 @@ AcpiDmDumpXsdt (
     UINT32                  Entries;
     UINT32                  Offset;
     UINT32                  i;
+    UINT32                  TableLength = AcpiUtReadUint32 (&Table->Length);
 
 
     /* Point to start of table pointer array */
@@ -434,12 +441,12 @@ AcpiDmDumpXsdt (
 
     /* XSDT uses 64-bit pointers */
 
-    Entries = (Table->Length - sizeof (ACPI_TABLE_HEADER)) / sizeof (UINT64);
+    Entries = (TableLength - sizeof (ACPI_TABLE_HEADER)) / sizeof (UINT64);
 
     for (i = 0; i < Entries; i++)
     {
         AcpiDmLineHeader2 (Offset, sizeof (UINT64), "ACPI Table Address", i);
-        AcpiOsPrintf ("%8.8X%8.8X\n", ACPI_FORMAT_UINT64 (Array[i]));
+        AcpiOsPrintf ("%16.16lX\n", AcpiUtReadUint64 (&Array[i]));
         Offset += sizeof (UINT64);
     }
 }
@@ -466,11 +473,12 @@ AcpiDmDumpFadt (
     ACPI_TABLE_HEADER       *Table)
 {
     ACPI_STATUS             Status;
+    UINT32                  TableLength = AcpiUtReadUint32 (&Table->Length);
 
 
     /* Always dump the minimum FADT revision 1 fields (ACPI 1.0) */
 
-    Status = AcpiDmDumpTable (Table->Length, 0, Table, 0,
+    Status = AcpiDmDumpTable (TableLength, 0, Table, 0,
         AcpiDmTableInfoFadt1);
     if (ACPI_FAILURE (Status))
     {
@@ -479,10 +487,10 @@ AcpiDmDumpFadt (
 
     /* Check for FADT revision 2 fields (ACPI 1.0B MS extensions) */
 
-    if ((Table->Length > ACPI_FADT_V1_SIZE) &&
-        (Table->Length <= ACPI_FADT_V2_SIZE))
+    if ((TableLength > ACPI_FADT_V1_SIZE) &&
+        (TableLength <= ACPI_FADT_V2_SIZE))
     {
-        Status = AcpiDmDumpTable (Table->Length, 0, Table, 0,
+        Status = AcpiDmDumpTable (TableLength, 0, Table, 0,
             AcpiDmTableInfoFadt2);
         if (ACPI_FAILURE (Status))
         {
@@ -492,9 +500,9 @@ AcpiDmDumpFadt (
 
     /* Check for FADT revision 3/4 fields and up (ACPI 2.0+ extended data) */
 
-    else if (Table->Length > ACPI_FADT_V2_SIZE)
+    else if (TableLength > ACPI_FADT_V2_SIZE)
     {
-        Status = AcpiDmDumpTable (Table->Length, 0, Table, 0,
+        Status = AcpiDmDumpTable (TableLength, 0, Table, 0,
             AcpiDmTableInfoFadt3);
         if (ACPI_FAILURE (Status))
         {
@@ -503,9 +511,9 @@ AcpiDmDumpFadt (
 
         /* Check for FADT revision 5 fields and up (ACPI 5.0+) */
 
-        if (Table->Length > ACPI_FADT_V3_SIZE)
+        if (TableLength > ACPI_FADT_V3_SIZE)
         {
-            Status = AcpiDmDumpTable (Table->Length, 0, Table, 0,
+            Status = AcpiDmDumpTable (TableLength, 0, Table, 0,
                 AcpiDmTableInfoFadt5);
             if (ACPI_FAILURE (Status))
             {
@@ -515,9 +523,9 @@ AcpiDmDumpFadt (
 
         /* Check for FADT revision 6 fields and up (ACPI 6.0+) */
 
-        if (Table->Length > ACPI_FADT_V3_SIZE)
+        if (TableLength > ACPI_FADT_V3_SIZE)
         {
-            Status = AcpiDmDumpTable (Table->Length, 0, Table, 0,
+            Status = AcpiDmDumpTable (TableLength, 0, Table, 0,
                 AcpiDmTableInfoFadt6);
             if (ACPI_FAILURE (Status))
             {
@@ -528,11 +536,11 @@ AcpiDmDumpFadt (
 
     /* Validate various fields in the FADT, including length */
 
-    AcpiTbCreateLocalFadt (Table, Table->Length);
+    AcpiTbCreateLocalFadt (Table, TableLength);
 
     /* Validate FADT length against the revision */
 
-    AcpiDmValidateFadtLength (Table->Revision, Table->Length);
+    AcpiDmValidateFadtLength (Table->Revision, TableLength);
 }
 
 

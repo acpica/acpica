@@ -192,6 +192,7 @@ RsDoQwordIoDescriptor (
     UINT32                  CurrentByteOffset;
     UINT32                  i;
     BOOLEAN                 ResSourceIndex = FALSE;
+    UINT16                  Tmp16;
 
 
     InitializerOp = Info->DescriptorTypeOp->Asl.Child;
@@ -255,7 +256,8 @@ RsDoQwordIoDescriptor (
 
         case 5: /* Address Granularity */
 
-            Descriptor->Address64.Granularity = InitializerOp->Asl.Value.Integer;
+            Descriptor->Address64.Granularity = 
+                AcpiUtReadUint64 (&InitializerOp->Asl.Value.Integer);
             RsCreateQwordField (InitializerOp, ACPI_RESTAG_GRANULARITY,
                 CurrentByteOffset + ASL_RESDESC_OFFSET (Address64.Granularity));
             GranOp = InitializerOp;
@@ -263,7 +265,8 @@ RsDoQwordIoDescriptor (
 
         case 6: /* Address Min */
 
-            Descriptor->Address64.Minimum = InitializerOp->Asl.Value.Integer;
+            Descriptor->Address64.Minimum = 
+                AcpiUtReadUint64 (&InitializerOp->Asl.Value.Integer);
             RsCreateQwordField (InitializerOp, ACPI_RESTAG_MINADDR,
                 CurrentByteOffset + ASL_RESDESC_OFFSET (Address64.Minimum));
             MinOp = InitializerOp;
@@ -271,7 +274,8 @@ RsDoQwordIoDescriptor (
 
         case 7: /* Address Max */
 
-            Descriptor->Address64.Maximum = InitializerOp->Asl.Value.Integer;
+            Descriptor->Address64.Maximum = 
+                AcpiUtReadUint64 (&InitializerOp->Asl.Value.Integer);
             RsCreateQwordField (InitializerOp, ACPI_RESTAG_MAXADDR,
                 CurrentByteOffset + ASL_RESDESC_OFFSET (Address64.Maximum));
             MaxOp = InitializerOp;
@@ -279,14 +283,16 @@ RsDoQwordIoDescriptor (
 
         case 8: /* Translation Offset */
 
-            Descriptor->Address64.TranslationOffset = InitializerOp->Asl.Value.Integer;
+            Descriptor->Address64.TranslationOffset = 
+                AcpiUtReadUint64 (&InitializerOp->Asl.Value.Integer);
             RsCreateByteField (InitializerOp, ACPI_RESTAG_TRANSLATION,
                 CurrentByteOffset + ASL_RESDESC_OFFSET (Address64.TranslationOffset));
             break;
 
         case 9: /* Address Length */
 
-            Descriptor->Address64.AddressLength = InitializerOp->Asl.Value.Integer;
+            Descriptor->Address64.AddressLength = 
+                AcpiUtReadUint64 (&InitializerOp->Asl.Value.Integer);
             RsCreateQwordField (InitializerOp, ACPI_RESTAG_LENGTH,
                 CurrentByteOffset + ASL_RESDESC_OFFSET (Address64.AddressLength));
             LengthOp = InitializerOp;
@@ -370,11 +376,14 @@ RsDoQwordIoDescriptor (
 
     /* Validate the Min/Max/Len/Gran values */
 
+    Tmp16 = Descriptor->Address64.ResourceLength;
+    Descriptor->Address64.ResourceLength = AcpiUtReadUint16 (&Tmp16);
+
     RsLargeAddressCheck (
-        Descriptor->Address64.Minimum,
-        Descriptor->Address64.Maximum,
-        Descriptor->Address64.AddressLength,
-        Descriptor->Address64.Granularity,
+        AcpiUtReadUint64 (&Descriptor->Address64.Minimum),
+        AcpiUtReadUint64 (&Descriptor->Address64.Maximum),
+        AcpiUtReadUint64 (&Descriptor->Address64.AddressLength),
+        AcpiUtReadUint64 (&Descriptor->Address64.Granularity),
         Descriptor->Address64.Flags,
         MinOp, MaxOp, LengthOp, GranOp, Info->DescriptorTypeOp);
 
@@ -413,6 +422,7 @@ RsDoQwordMemoryDescriptor (
     UINT32                  CurrentByteOffset;
     UINT32                  i;
     BOOLEAN                 ResSourceIndex = FALSE;
+    UINT16                  Tmp16;
 
 
     InitializerOp = Info->DescriptorTypeOp->Asl.Child;
@@ -483,7 +493,8 @@ RsDoQwordMemoryDescriptor (
 
         case 6: /* Address Granularity */
 
-            Descriptor->Address64.Granularity = InitializerOp->Asl.Value.Integer;
+            Descriptor->Address64.Granularity = 
+                AcpiUtReadUint64 (&InitializerOp->Asl.Value.Integer);
             RsCreateQwordField (InitializerOp, ACPI_RESTAG_GRANULARITY,
                 CurrentByteOffset + ASL_RESDESC_OFFSET (Address64.Granularity));
             GranOp = InitializerOp;
@@ -491,7 +502,8 @@ RsDoQwordMemoryDescriptor (
 
         case 7: /* Min Address */
 
-            Descriptor->Address64.Minimum = InitializerOp->Asl.Value.Integer;
+            Descriptor->Address64.Minimum = 
+                AcpiUtReadUint64 (&InitializerOp->Asl.Value.Integer);
             RsCreateQwordField (InitializerOp, ACPI_RESTAG_MINADDR,
                 CurrentByteOffset + ASL_RESDESC_OFFSET (Address64.Minimum));
             MinOp = InitializerOp;
@@ -499,7 +511,8 @@ RsDoQwordMemoryDescriptor (
 
         case 8: /* Max Address */
 
-            Descriptor->Address64.Maximum = InitializerOp->Asl.Value.Integer;
+            Descriptor->Address64.Maximum = 
+                AcpiUtReadUint64 (&InitializerOp->Asl.Value.Integer);
             RsCreateQwordField (InitializerOp, ACPI_RESTAG_MAXADDR,
                 CurrentByteOffset + ASL_RESDESC_OFFSET (Address64.Maximum));
             MaxOp = InitializerOp;
@@ -507,14 +520,16 @@ RsDoQwordMemoryDescriptor (
 
         case 9: /* Translation Offset */
 
-            Descriptor->Address64.TranslationOffset = InitializerOp->Asl.Value.Integer;
+            Descriptor->Address64.TranslationOffset = 
+                AcpiUtReadUint64 (&InitializerOp->Asl.Value.Integer);
             RsCreateQwordField (InitializerOp, ACPI_RESTAG_TRANSLATION,
                 CurrentByteOffset + ASL_RESDESC_OFFSET (Address64.TranslationOffset));
             break;
 
         case 10: /* Address Length */
 
-            Descriptor->Address64.AddressLength = InitializerOp->Asl.Value.Integer;
+            Descriptor->Address64.AddressLength = 
+                AcpiUtReadUint64 (&InitializerOp->Asl.Value.Integer);
             RsCreateQwordField (InitializerOp, ACPI_RESTAG_LENGTH,
                 CurrentByteOffset + ASL_RESDESC_OFFSET (Address64.AddressLength));
             LengthOp = InitializerOp;
@@ -599,11 +614,14 @@ RsDoQwordMemoryDescriptor (
 
     /* Validate the Min/Max/Len/Gran values */
 
+    Tmp16 = Descriptor->Address64.ResourceLength;
+    Descriptor->Address64.ResourceLength = AcpiUtReadUint16 (&Tmp16);
+
     RsLargeAddressCheck (
-        Descriptor->Address64.Minimum,
-        Descriptor->Address64.Maximum,
-        Descriptor->Address64.AddressLength,
-        Descriptor->Address64.Granularity,
+        AcpiUtReadUint64 (&Descriptor->Address64.Minimum),
+        AcpiUtReadUint64 (&Descriptor->Address64.Maximum),
+        AcpiUtReadUint64 (&Descriptor->Address64.AddressLength),
+        AcpiUtReadUint64 (&Descriptor->Address64.Granularity),
         Descriptor->Address64.Flags,
         MinOp, MaxOp, LengthOp, GranOp, Info->DescriptorTypeOp);
 
@@ -642,6 +660,7 @@ RsDoQwordSpaceDescriptor (
     UINT32                  CurrentByteOffset;
     UINT32                  i;
     BOOLEAN                 ResSourceIndex = FALSE;
+    UINT16                  Tmp16;
 
 
     InitializerOp = Info->DescriptorTypeOp->Asl.Child;
@@ -709,7 +728,8 @@ RsDoQwordSpaceDescriptor (
 
         case 6: /* Address Granularity */
 
-            Descriptor->Address64.Granularity = InitializerOp->Asl.Value.Integer;
+            Descriptor->Address64.Granularity = 
+                AcpiUtReadUint64 (&InitializerOp->Asl.Value.Integer);
             RsCreateQwordField (InitializerOp, ACPI_RESTAG_GRANULARITY,
                 CurrentByteOffset + ASL_RESDESC_OFFSET (Address64.Granularity));
             GranOp = InitializerOp;
@@ -717,7 +737,8 @@ RsDoQwordSpaceDescriptor (
 
         case 7: /* Min Address */
 
-            Descriptor->Address64.Minimum = InitializerOp->Asl.Value.Integer;
+            Descriptor->Address64.Minimum = 
+                AcpiUtReadUint64 (&InitializerOp->Asl.Value.Integer);
             RsCreateQwordField (InitializerOp, ACPI_RESTAG_MINADDR,
                 CurrentByteOffset + ASL_RESDESC_OFFSET (Address64.Minimum));
             MinOp = InitializerOp;
@@ -725,7 +746,8 @@ RsDoQwordSpaceDescriptor (
 
         case 8: /* Max Address */
 
-            Descriptor->Address64.Maximum = InitializerOp->Asl.Value.Integer;
+            Descriptor->Address64.Maximum = 
+                AcpiUtReadUint64 (&InitializerOp->Asl.Value.Integer);
             RsCreateQwordField (InitializerOp, ACPI_RESTAG_MAXADDR,
                 CurrentByteOffset + ASL_RESDESC_OFFSET (Address64.Maximum));
             MaxOp = InitializerOp;
@@ -733,14 +755,16 @@ RsDoQwordSpaceDescriptor (
 
         case 9: /* Translation Offset */
 
-            Descriptor->Address64.TranslationOffset = InitializerOp->Asl.Value.Integer;
+            Descriptor->Address64.TranslationOffset = 
+                AcpiUtReadUint64 (&InitializerOp->Asl.Value.Integer);
             RsCreateQwordField (InitializerOp, ACPI_RESTAG_TRANSLATION,
                 CurrentByteOffset + ASL_RESDESC_OFFSET (Address64.TranslationOffset));
             break;
 
         case 10: /* Address Length */
 
-            Descriptor->Address64.AddressLength = InitializerOp->Asl.Value.Integer;
+            Descriptor->Address64.AddressLength = 
+                AcpiUtReadUint64 (&InitializerOp->Asl.Value.Integer);
             RsCreateQwordField (InitializerOp, ACPI_RESTAG_LENGTH,
                 CurrentByteOffset + ASL_RESDESC_OFFSET (Address64.AddressLength));
             LengthOp = InitializerOp;
@@ -810,11 +834,14 @@ RsDoQwordSpaceDescriptor (
 
     /* Validate the Min/Max/Len/Gran values */
 
+    Tmp16 = Descriptor->Address64.ResourceLength;
+    Descriptor->Address64.ResourceLength = AcpiUtReadUint16 (&Tmp16);
+
     RsLargeAddressCheck (
-        Descriptor->Address64.Minimum,
-        Descriptor->Address64.Maximum,
-        Descriptor->Address64.AddressLength,
-        Descriptor->Address64.Granularity,
+        AcpiUtReadUint64 (&Descriptor->Address64.Minimum),
+        AcpiUtReadUint64 (&Descriptor->Address64.Maximum),
+        AcpiUtReadUint64 (&Descriptor->Address64.AddressLength),
+        AcpiUtReadUint64 (&Descriptor->Address64.Granularity),
         Descriptor->Address64.Flags,
         MinOp, MaxOp, LengthOp, GranOp, Info->DescriptorTypeOp);
 

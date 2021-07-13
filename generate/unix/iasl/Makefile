@@ -225,6 +225,7 @@ OBJECTS = \
 	$(OBJDIR)/utdebug.o\
 	$(OBJDIR)/utdecode.o\
 	$(OBJDIR)/utdelete.o\
+	$(OBJDIR)/utendian.o\
 	$(OBJDIR)/uterror.o\
 	$(OBJDIR)/utexcep.o\
 	$(OBJDIR)/utglobal.o\

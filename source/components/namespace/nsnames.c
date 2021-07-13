@@ -405,10 +405,10 @@ AcpiNsBuildNormalizedPath (
     {
         if (NextNode != Node)
         {
-            ACPI_PATH_PUT8(FullPath, PathSize, AML_DUAL_NAME_PREFIX, Length);
+            ACPI_PATH_PUT8 (FullPath, PathSize, AML_DUAL_NAME_PREFIX, Length);
         }
 
-        ACPI_MOVE_32_TO_32 (Name, &NextNode->Name);
+        ACPI_COPY_NAMESEG (Name, &NextNode->Name);
         DoNoTrailing = NoTrailing;
         for (i = 0; i < 4; i++)
         {

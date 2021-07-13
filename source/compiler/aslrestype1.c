@@ -251,6 +251,7 @@ RsDoMemory24Descriptor (
     ASL_RESOURCE_NODE       *Rnode;
     UINT32                  CurrentByteOffset;
     UINT32                  i;
+    UINT16                  Tmp16;
 
 
     InitializerOp = Info->DescriptorTypeOp->Asl.Child;
@@ -259,7 +260,8 @@ RsDoMemory24Descriptor (
 
     Descriptor = Rnode->Buffer;
     Descriptor->Memory24.DescriptorType = ACPI_RESOURCE_NAME_MEMORY24;
-    Descriptor->Memory24.ResourceLength = 9;
+    Tmp16 = 9;
+    Descriptor->Memory24.ResourceLength = AcpiUtReadUint16 (&Tmp16);
 
     /* Process all child initialization nodes */
 
@@ -276,7 +278,8 @@ RsDoMemory24Descriptor (
 
         case 1: /* Min Address */
 
-            Descriptor->Memory24.Minimum = (UINT16) InitializerOp->Asl.Value.Integer;
+            Tmp16 = (UINT16) InitializerOp->Asl.Value.Integer;
+            Descriptor->Memory24.Minimum = AcpiUtReadUint16 (&Tmp16);
             RsCreateWordField (InitializerOp, ACPI_RESTAG_MINADDR,
                 CurrentByteOffset + ASL_RESDESC_OFFSET (Memory24.Minimum));
             MinOp = InitializerOp;
@@ -284,7 +287,8 @@ RsDoMemory24Descriptor (
 
         case 2: /* Max Address */
 
-            Descriptor->Memory24.Maximum = (UINT16) InitializerOp->Asl.Value.Integer;
+            Tmp16 = (UINT16) InitializerOp->Asl.Value.Integer;
+            Descriptor->Memory24.Maximum = AcpiUtReadUint16 (&Tmp16);
             RsCreateWordField (InitializerOp, ACPI_RESTAG_MAXADDR,
                 CurrentByteOffset + ASL_RESDESC_OFFSET (Memory24.Maximum));
             MaxOp = InitializerOp;
@@ -292,14 +296,16 @@ RsDoMemory24Descriptor (
 
         case 3: /* Alignment */
 
-            Descriptor->Memory24.Alignment = (UINT16) InitializerOp->Asl.Value.Integer;
+            Tmp16 = (UINT16) InitializerOp->Asl.Value.Integer;
+            Descriptor->Memory24.Alignment = AcpiUtReadUint16 (&Tmp16);
             RsCreateWordField (InitializerOp, ACPI_RESTAG_ALIGNMENT,
                 CurrentByteOffset + ASL_RESDESC_OFFSET (Memory24.Alignment));
             break;
 
         case 4: /* Length */
 
-            Descriptor->Memory24.AddressLength = (UINT16) InitializerOp->Asl.Value.Integer;
+            Tmp16 = (UINT16) InitializerOp->Asl.Value.Integer;
+            Descriptor->Memory24.AddressLength = AcpiUtReadUint16 (&Tmp16);
             RsCreateWordField (InitializerOp, ACPI_RESTAG_LENGTH,
                 CurrentByteOffset + ASL_RESDESC_OFFSET (Memory24.AddressLength));
             LengthOp = InitializerOp;
@@ -322,10 +328,10 @@ RsDoMemory24Descriptor (
     /* Validate the Min/Max/Len/Align values (Alignment==0 means 64K) */
 
     RsSmallAddressCheck (ACPI_RESOURCE_NAME_MEMORY24,
-        Descriptor->Memory24.Minimum,
-        Descriptor->Memory24.Maximum,
-        Descriptor->Memory24.AddressLength,
-        Descriptor->Memory24.Alignment,
+        (UINT32) AcpiUtReadUint16 (&Descriptor->Memory24.Minimum),
+        (UINT32) AcpiUtReadUint16 (&Descriptor->Memory24.Maximum),
+        (UINT32) AcpiUtReadUint16 (&Descriptor->Memory24.AddressLength),
+        (UINT32) AcpiUtReadUint16 (&Descriptor->Memory24.Alignment),
         MinOp, MaxOp, LengthOp, NULL, Info->DescriptorTypeOp);
 
     return (Rnode);
@@ -357,6 +363,8 @@ RsDoMemory32Descriptor (
     ASL_RESOURCE_NODE       *Rnode;
     UINT32                  CurrentByteOffset;
     UINT32                  i;
+    UINT16                  Tmp16;
+    UINT32                  Tmp32;
 
 
     InitializerOp = Info->DescriptorTypeOp->Asl.Child;
@@ -365,7 +373,8 @@ RsDoMemory32Descriptor (
 
     Descriptor = Rnode->Buffer;
     Descriptor->Memory32.DescriptorType = ACPI_RESOURCE_NAME_MEMORY32;
-    Descriptor->Memory32.ResourceLength = 17;
+    Tmp16 = 17;
+    Descriptor->Memory32.ResourceLength = AcpiUtReadUint16 (&Tmp16);
 
     /* Process all child initialization nodes */
 
@@ -382,7 +391,8 @@ RsDoMemory32Descriptor (
 
         case 1:  /* Min Address */
 
-            Descriptor->Memory32.Minimum = (UINT32) InitializerOp->Asl.Value.Integer;
+            Tmp32 = (UINT32) InitializerOp->Asl.Value.Integer;
+            Descriptor->Memory32.Minimum = AcpiUtReadUint32 (&Tmp32);
             RsCreateDwordField (InitializerOp, ACPI_RESTAG_MINADDR,
                 CurrentByteOffset + ASL_RESDESC_OFFSET (Memory32.Minimum));
             MinOp = InitializerOp;
@@ -390,7 +400,8 @@ RsDoMemory32Descriptor (
 
         case 2: /* Max Address */
 
-            Descriptor->Memory32.Maximum = (UINT32) InitializerOp->Asl.Value.Integer;
+            Tmp32 = (UINT32) InitializerOp->Asl.Value.Integer;
+            Descriptor->Memory32.Maximum = AcpiUtReadUint32 (&Tmp32);
             RsCreateDwordField (InitializerOp, ACPI_RESTAG_MAXADDR,
                 CurrentByteOffset + ASL_RESDESC_OFFSET (Memory32.Maximum));
             MaxOp = InitializerOp;
@@ -398,7 +409,8 @@ RsDoMemory32Descriptor (
 
         case 3: /* Alignment */
 
-            Descriptor->Memory32.Alignment = (UINT32) InitializerOp->Asl.Value.Integer;
+            Tmp32 = (UINT32) InitializerOp->Asl.Value.Integer;
+            Descriptor->Memory32.Alignment = AcpiUtReadUint32 (&Tmp32);
             RsCreateDwordField (InitializerOp, ACPI_RESTAG_ALIGNMENT,
                 CurrentByteOffset + ASL_RESDESC_OFFSET (Memory32.Alignment));
             AlignOp = InitializerOp;
@@ -406,7 +418,8 @@ RsDoMemory32Descriptor (
 
         case 4: /* Length */
 
-            Descriptor->Memory32.AddressLength = (UINT32) InitializerOp->Asl.Value.Integer;
+            Tmp32 = (UINT32) InitializerOp->Asl.Value.Integer;
+            Descriptor->Memory32.AddressLength = AcpiUtReadUint32 (&Tmp32);
             RsCreateDwordField (InitializerOp, ACPI_RESTAG_LENGTH,
                 CurrentByteOffset + ASL_RESDESC_OFFSET (Memory32.AddressLength));
             LengthOp = InitializerOp;
@@ -429,10 +442,10 @@ RsDoMemory32Descriptor (
     /* Validate the Min/Max/Len/Align values */
 
     RsSmallAddressCheck (ACPI_RESOURCE_NAME_MEMORY32,
-        Descriptor->Memory32.Minimum,
-        Descriptor->Memory32.Maximum,
-        Descriptor->Memory32.AddressLength,
-        Descriptor->Memory32.Alignment,
+        AcpiUtReadUint32 (&Descriptor->Memory32.Minimum),
+        AcpiUtReadUint32 (&Descriptor->Memory32.Maximum),
+        AcpiUtReadUint32 (&Descriptor->Memory32.AddressLength),
+        AcpiUtReadUint32 (&Descriptor->Memory32.Alignment),
         MinOp, MaxOp, LengthOp, AlignOp, Info->DescriptorTypeOp);
 
     return (Rnode);
@@ -460,6 +473,8 @@ RsDoMemory32FixedDescriptor (
     ASL_RESOURCE_NODE       *Rnode;
     UINT32                  CurrentByteOffset;
     UINT32                  i;
+    UINT16                  Tmp16;
+    UINT32                  Tmp32;
 
 
     InitializerOp = Info->DescriptorTypeOp->Asl.Child;
@@ -468,7 +483,8 @@ RsDoMemory32FixedDescriptor (
 
     Descriptor = Rnode->Buffer;
     Descriptor->FixedMemory32.DescriptorType = ACPI_RESOURCE_NAME_FIXED_MEMORY32;
-    Descriptor->FixedMemory32.ResourceLength = 9;
+    Tmp16 = 9;
+    Descriptor->FixedMemory32.ResourceLength = AcpiUtReadUint16 (&Tmp16);
 
     /* Process all child initialization nodes */
 
@@ -485,14 +501,16 @@ RsDoMemory32FixedDescriptor (
 
         case 1: /* Address */
 
-            Descriptor->FixedMemory32.Address = (UINT32) InitializerOp->Asl.Value.Integer;
+            Tmp32 = (UINT32) InitializerOp->Asl.Value.Integer;
+            Descriptor->FixedMemory32.Address = AcpiUtReadUint32 (&Tmp32);
             RsCreateDwordField (InitializerOp, ACPI_RESTAG_BASEADDRESS,
                 CurrentByteOffset + ASL_RESDESC_OFFSET (FixedMemory32.Address));
             break;
 
         case 2: /* Length */
 
-            Descriptor->FixedMemory32.AddressLength = (UINT32) InitializerOp->Asl.Value.Integer;
+            Tmp32 = (UINT32) InitializerOp->Asl.Value.Integer;
+            Descriptor->FixedMemory32.AddressLength = AcpiUtReadUint32 (&Tmp32);
             RsCreateDwordField (InitializerOp, ACPI_RESTAG_LENGTH,
                 CurrentByteOffset + ASL_RESDESC_OFFSET (FixedMemory32.AddressLength));
             break;

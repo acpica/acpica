@@ -192,6 +192,7 @@ RsDoWordIoDescriptor (
     UINT32                  CurrentByteOffset;
     UINT32                  i;
     BOOLEAN                 ResSourceIndex = FALSE;
+    UINT16                  Tmp16;
 
 
     InitializerOp = Info->DescriptorTypeOp->Asl.Child;
@@ -255,7 +256,8 @@ RsDoWordIoDescriptor (
 
         case 5: /* Address Granularity */
 
-            Descriptor->Address16.Granularity = (UINT16) InitializerOp->Asl.Value.Integer;
+            Tmp16 = (UINT16) InitializerOp->Asl.Value.Integer;
+            Descriptor->Address16.Granularity = AcpiUtReadUint16 (&Tmp16);
             RsCreateWordField (InitializerOp, ACPI_RESTAG_GRANULARITY,
                 CurrentByteOffset + ASL_RESDESC_OFFSET (Address16.Granularity));
             GranOp = InitializerOp;
@@ -263,7 +265,8 @@ RsDoWordIoDescriptor (
 
         case 6: /* Address Min */
 
-            Descriptor->Address16.Minimum = (UINT16) InitializerOp->Asl.Value.Integer;
+            Tmp16 = (UINT16) InitializerOp->Asl.Value.Integer;
+            Descriptor->Address16.Minimum = AcpiUtReadUint16 (&Tmp16);
             RsCreateWordField (InitializerOp, ACPI_RESTAG_MINADDR,
                 CurrentByteOffset + ASL_RESDESC_OFFSET (Address16.Minimum));
             MinOp = InitializerOp;
@@ -271,7 +274,8 @@ RsDoWordIoDescriptor (
 
         case 7: /* Address Max */
 
-            Descriptor->Address16.Maximum = (UINT16) InitializerOp->Asl.Value.Integer;
+            Tmp16 = (UINT16) InitializerOp->Asl.Value.Integer;
+            Descriptor->Address16.Maximum = AcpiUtReadUint16 (&Tmp16);
             RsCreateWordField (InitializerOp, ACPI_RESTAG_MAXADDR,
                 CurrentByteOffset + ASL_RESDESC_OFFSET (Address16.Maximum));
             MaxOp = InitializerOp;
@@ -279,14 +283,16 @@ RsDoWordIoDescriptor (
 
         case 8: /* Translation Offset */
 
-            Descriptor->Address16.TranslationOffset = (UINT16) InitializerOp->Asl.Value.Integer;
+            Tmp16 = (UINT16) InitializerOp->Asl.Value.Integer;
+            Descriptor->Address16.TranslationOffset = AcpiUtReadUint16 (&Tmp16);
             RsCreateWordField (InitializerOp, ACPI_RESTAG_TRANSLATION,
                 CurrentByteOffset + ASL_RESDESC_OFFSET (Address16.TranslationOffset));
             break;
 
         case 9: /* Address Length */
 
-            Descriptor->Address16.AddressLength = (UINT16) InitializerOp->Asl.Value.Integer;
+            Tmp16 = (UINT16) InitializerOp->Asl.Value.Integer;
+            Descriptor->Address16.AddressLength = AcpiUtReadUint16 (&Tmp16);
             RsCreateWordField (InitializerOp, ACPI_RESTAG_LENGTH,
                  CurrentByteOffset + ASL_RESDESC_OFFSET (Address16.AddressLength));
             LengthOp = InitializerOp;
@@ -371,12 +377,16 @@ RsDoWordIoDescriptor (
     /* Validate the Min/Max/Len/Gran values */
 
     RsLargeAddressCheck (
-        (UINT64) Descriptor->Address16.Minimum,
-        (UINT64) Descriptor->Address16.Maximum,
-        (UINT64) Descriptor->Address16.AddressLength,
-        (UINT64) Descriptor->Address16.Granularity,
+        (UINT64) AcpiUtReadUint16 (&Descriptor->Address16.Minimum),
+        (UINT64) AcpiUtReadUint16 (&Descriptor->Address16.Maximum),
+        (UINT64) AcpiUtReadUint16 (&Descriptor->Address16.AddressLength),
+        (UINT64) AcpiUtReadUint16 (&Descriptor->Address16.Granularity),
         Descriptor->Address16.Flags,
         MinOp, MaxOp, LengthOp, GranOp, Info->DescriptorTypeOp);
+
+    /* correct enddianness */
+    Tmp16 = Descriptor->Address16.ResourceLength;
+    Descriptor->Address16.ResourceLength = AcpiUtReadUint16 (&Tmp16);
 
     Rnode->BufferLength = sizeof (AML_RESOURCE_ADDRESS16) +
         OptionIndex + StringLength;
@@ -413,6 +423,7 @@ RsDoWordBusNumberDescriptor (
     UINT32                  CurrentByteOffset;
     UINT32                  i;
     BOOLEAN                 ResSourceIndex = FALSE;
+    UINT16                  Tmp16;
 
 
     InitializerOp = Info->DescriptorTypeOp->Asl.Child;
@@ -469,8 +480,8 @@ RsDoWordBusNumberDescriptor (
 
         case 4: /* Address Granularity */
 
-            Descriptor->Address16.Granularity =
-                (UINT16) InitializerOp->Asl.Value.Integer;
+            Tmp16 = (UINT16) InitializerOp->Asl.Value.Integer;
+            Descriptor->Address16.Granularity = AcpiUtReadUint16 (&Tmp16);
             RsCreateWordField (InitializerOp, ACPI_RESTAG_GRANULARITY,
                 CurrentByteOffset + ASL_RESDESC_OFFSET (Address16.Granularity));
             GranOp = InitializerOp;
@@ -478,8 +489,8 @@ RsDoWordBusNumberDescriptor (
 
         case 5: /* Min Address */
 
-            Descriptor->Address16.Minimum =
-                (UINT16) InitializerOp->Asl.Value.Integer;
+            Tmp16 = (UINT16) InitializerOp->Asl.Value.Integer;
+            Descriptor->Address16.Minimum = AcpiUtReadUint16 (&Tmp16);
             RsCreateWordField (InitializerOp, ACPI_RESTAG_MINADDR,
                 CurrentByteOffset + ASL_RESDESC_OFFSET (Address16.Minimum));
             MinOp = InitializerOp;
@@ -487,8 +498,8 @@ RsDoWordBusNumberDescriptor (
 
         case 6: /* Max Address */
 
-            Descriptor->Address16.Maximum =
-                (UINT16) InitializerOp->Asl.Value.Integer;
+            Tmp16 = (UINT16) InitializerOp->Asl.Value.Integer;
+            Descriptor->Address16.Maximum = AcpiUtReadUint16 (&Tmp16);
             RsCreateWordField (InitializerOp, ACPI_RESTAG_MAXADDR,
                 CurrentByteOffset + ASL_RESDESC_OFFSET (Address16.Maximum));
             MaxOp = InitializerOp;
@@ -496,16 +507,16 @@ RsDoWordBusNumberDescriptor (
 
         case 7: /* Translation Offset */
 
-            Descriptor->Address16.TranslationOffset =
-                (UINT16) InitializerOp->Asl.Value.Integer;
+            Tmp16 = (UINT16) InitializerOp->Asl.Value.Integer;
+            Descriptor->Address16.TranslationOffset = AcpiUtReadUint16 (&Tmp16);
             RsCreateWordField (InitializerOp, ACPI_RESTAG_TRANSLATION,
                 CurrentByteOffset + ASL_RESDESC_OFFSET (Address16.TranslationOffset));
             break;
 
         case 8: /* Address Length */
 
-            Descriptor->Address16.AddressLength =
-                (UINT16) InitializerOp->Asl.Value.Integer;
+            Tmp16 = (UINT16) InitializerOp->Asl.Value.Integer;
+            Descriptor->Address16.AddressLength = AcpiUtReadUint16 (&Tmp16);
             RsCreateWordField (InitializerOp, ACPI_RESTAG_LENGTH,
                  CurrentByteOffset + ASL_RESDESC_OFFSET (Address16.AddressLength));
             LengthOp = InitializerOp;
@@ -576,12 +587,16 @@ RsDoWordBusNumberDescriptor (
     /* Validate the Min/Max/Len/Gran values */
 
     RsLargeAddressCheck (
-        (UINT64) Descriptor->Address16.Minimum,
-        (UINT64) Descriptor->Address16.Maximum,
-        (UINT64) Descriptor->Address16.AddressLength,
-        (UINT64) Descriptor->Address16.Granularity,
+        (UINT64) AcpiUtReadUint16 (&Descriptor->Address16.Minimum),
+        (UINT64) AcpiUtReadUint16 (&Descriptor->Address16.Maximum),
+        (UINT64) AcpiUtReadUint16 (&Descriptor->Address16.AddressLength),
+        (UINT64) AcpiUtReadUint16 (&Descriptor->Address16.Granularity),
         Descriptor->Address16.Flags,
         MinOp, MaxOp, LengthOp, GranOp, Info->DescriptorTypeOp);
+
+    /* correct enddianness */
+    Tmp16 = Descriptor->Address16.ResourceLength;
+    Descriptor->Address16.ResourceLength = AcpiUtReadUint16 (&Tmp16);
 
     Rnode->BufferLength = sizeof (AML_RESOURCE_ADDRESS16) +
         OptionIndex + StringLength;
@@ -618,6 +633,7 @@ RsDoWordSpaceDescriptor (
     UINT32                  CurrentByteOffset;
     UINT32                  i;
     BOOLEAN                 ResSourceIndex = FALSE;
+    UINT16                  Tmp16;
 
 
     InitializerOp = Info->DescriptorTypeOp->Asl.Child;
@@ -685,8 +701,8 @@ RsDoWordSpaceDescriptor (
 
         case 6: /* Address Granularity */
 
-            Descriptor->Address16.Granularity =
-                (UINT16) InitializerOp->Asl.Value.Integer;
+            Tmp16 = (UINT16) InitializerOp->Asl.Value.Integer;
+            Descriptor->Address16.Granularity = AcpiUtReadUint16 (&Tmp16);
             RsCreateWordField (InitializerOp, ACPI_RESTAG_GRANULARITY,
                 CurrentByteOffset + ASL_RESDESC_OFFSET (Address16.Granularity));
             GranOp = InitializerOp;
@@ -694,8 +710,8 @@ RsDoWordSpaceDescriptor (
 
         case 7: /* Min Address */
 
-            Descriptor->Address16.Minimum =
-                (UINT16) InitializerOp->Asl.Value.Integer;
+            Tmp16 = (UINT16) InitializerOp->Asl.Value.Integer;
+            Descriptor->Address16.Minimum = AcpiUtReadUint16 (&Tmp16);
             RsCreateWordField (InitializerOp, ACPI_RESTAG_MINADDR,
                 CurrentByteOffset + ASL_RESDESC_OFFSET (Address16.Minimum));
             MinOp = InitializerOp;
@@ -703,8 +719,8 @@ RsDoWordSpaceDescriptor (
 
         case 8: /* Max Address */
 
-            Descriptor->Address16.Maximum =
-                (UINT16) InitializerOp->Asl.Value.Integer;
+            Tmp16 = (UINT16) InitializerOp->Asl.Value.Integer;
+            Descriptor->Address16.Maximum = AcpiUtReadUint16 (&Tmp16);
             RsCreateWordField (InitializerOp, ACPI_RESTAG_MAXADDR,
                 CurrentByteOffset + ASL_RESDESC_OFFSET (Address16.Maximum));
             MaxOp = InitializerOp;
@@ -712,16 +728,16 @@ RsDoWordSpaceDescriptor (
 
         case 9: /* Translation Offset */
 
-            Descriptor->Address16.TranslationOffset =
-                (UINT16) InitializerOp->Asl.Value.Integer;
+            Tmp16 = (UINT16) InitializerOp->Asl.Value.Integer;
+            Descriptor->Address16.TranslationOffset = AcpiUtReadUint16 (&Tmp16);
             RsCreateWordField (InitializerOp, ACPI_RESTAG_TRANSLATION,
                 CurrentByteOffset + ASL_RESDESC_OFFSET (Address16.TranslationOffset));
             break;
 
         case 10: /* Address Length */
 
-            Descriptor->Address16.AddressLength =
-                (UINT16) InitializerOp->Asl.Value.Integer;
+            Tmp16 = (UINT16) InitializerOp->Asl.Value.Integer;
+            Descriptor->Address16.AddressLength = AcpiUtReadUint16 (&Tmp16);
             RsCreateWordField (InitializerOp, ACPI_RESTAG_LENGTH,
                 CurrentByteOffset + ASL_RESDESC_OFFSET (Address16.AddressLength));
             LengthOp = InitializerOp;
@@ -792,12 +808,16 @@ RsDoWordSpaceDescriptor (
     /* Validate the Min/Max/Len/Gran values */
 
     RsLargeAddressCheck (
-        (UINT64) Descriptor->Address16.Minimum,
-        (UINT64) Descriptor->Address16.Maximum,
-        (UINT64) Descriptor->Address16.AddressLength,
-        (UINT64) Descriptor->Address16.Granularity,
+        (UINT64) AcpiUtReadUint16 (&Descriptor->Address16.Minimum),
+        (UINT64) AcpiUtReadUint16 (&Descriptor->Address16.Maximum),
+        (UINT64) AcpiUtReadUint16 (&Descriptor->Address16.AddressLength),
+        (UINT64) AcpiUtReadUint16 (&Descriptor->Address16.Granularity),
         Descriptor->Address16.Flags,
         MinOp, MaxOp, LengthOp, GranOp, Info->DescriptorTypeOp);
+
+    /* correct enddianness */
+    Tmp16 = Descriptor->Address16.ResourceLength;
+    Descriptor->Address16.ResourceLength = AcpiUtReadUint16 (&Tmp16);
 
     Rnode->BufferLength = sizeof (AML_RESOURCE_ADDRESS16) +
         OptionIndex + StringLength;

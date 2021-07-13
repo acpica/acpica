@@ -1228,10 +1228,6 @@ BOOLEAN
 UtIsIdInteger (
     UINT8                   *Target);
 
-UINT8
-UtIsBigEndianMachine (
-    void);
-
 BOOLEAN
 UtQueryForOverwrite (
     char                    *Pathname);

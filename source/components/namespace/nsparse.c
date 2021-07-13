@@ -311,6 +311,7 @@ AcpiNsOneCompleteParse (
     ACPI_WALK_STATE         *WalkState;
     ACPI_TABLE_HEADER       *Table;
     ACPI_OWNER_ID           OwnerId;
+    UINT32                  TableLength;
 
 
     ACPI_FUNCTION_TRACE (NsOneCompleteParse);
@@ -324,13 +325,14 @@ AcpiNsOneCompleteParse (
 
     /* Table must consist of at least a complete header */
 
-    if (Table->Length < sizeof (ACPI_TABLE_HEADER))
+    TableLength = AcpiUtReadUint32 (&Table->Length);
+    if (TableLength < sizeof (ACPI_TABLE_HEADER))
     {
         return_ACPI_STATUS (AE_BAD_HEADER);
     }
 
     AmlStart = (UINT8 *) Table + sizeof (ACPI_TABLE_HEADER);
-    AmlLength = Table->Length - sizeof (ACPI_TABLE_HEADER);
+    AmlLength = TableLength - sizeof (ACPI_TABLE_HEADER);
 
     Status = AcpiTbGetOwnerId (TableIndex, &OwnerId);
     if (ACPI_FAILURE (Status))

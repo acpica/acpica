@@ -752,7 +752,7 @@ AcpiNsLookup (
 
         /* Extract one ACPI name from the front of the pathname */
 
-        ACPI_MOVE_32_TO_32 (&SimpleName, Path);
+        ACPI_COPY_NAMESEG (&SimpleName, Path);
 
         /* Try to find the single (4 character) ACPI name */
 

@@ -201,7 +201,7 @@ AcpiDmIrqDescriptor (
     AcpiOsPrintf (")\n");
 
     AcpiDmIndent (Level + 1);
-    AcpiDmBitList (Resource->Irq.IrqMask);
+    AcpiDmBitList (AcpiUtReadUint16 (&Resource->Irq.IrqMask));
 }
 
 
@@ -269,8 +269,8 @@ AcpiDmFixedDmaDescriptor (
 
     AcpiDmIndent (Level);
     AcpiOsPrintf ("FixedDMA (0x%4.4X, 0x%4.4X, ",
-        Resource->FixedDma.RequestLines,
-        Resource->FixedDma.Channels);
+        AcpiUtReadUint16 (&Resource->FixedDma.RequestLines),
+        AcpiUtReadUint16 (&Resource->FixedDma.Channels));
 
     if (Resource->FixedDma.Width <= 5)
     {
@@ -318,10 +318,12 @@ AcpiDmIoDescriptor (
         AcpiGbl_IoDecode [ACPI_GET_1BIT_FLAG (Resource->Io.Flags)]);
 
     AcpiDmIndent (Level + 1);
-    AcpiDmDumpInteger16 (Resource->Io.Minimum, "Range Minimum");
+    AcpiDmDumpInteger16 (AcpiUtReadUint16 (&Resource->Io.Minimum),
+                 "Range Minimum");
 
     AcpiDmIndent (Level + 1);
-    AcpiDmDumpInteger16 (Resource->Io.Maximum, "Range Maximum");
+    AcpiDmDumpInteger16 (AcpiUtReadUint16 (&Resource->Io.Maximum),
+                 "Range Maximum");
 
     AcpiDmIndent (Level + 1);
     AcpiDmDumpInteger8 (Resource->Io.Alignment, "Alignment");
@@ -364,10 +366,12 @@ AcpiDmFixedIoDescriptor (
     AcpiOsPrintf ("FixedIO (\n");
 
     AcpiDmIndent (Level + 1);
-    AcpiDmDumpInteger16 (Resource->FixedIo.Address, "Address");
+    AcpiDmDumpInteger16 (AcpiUtReadUint16 (&Resource->FixedIo.Address),
+                 "Address");
 
     AcpiDmIndent (Level + 1);
-    AcpiDmDumpInteger8 (Resource->FixedIo.AddressLength, "Length");
+    AcpiDmDumpInteger8 (AcpiUtReadUint16 (&Resource->FixedIo.AddressLength),
+            "Length");
 
     /* Insert a descriptor name */
 

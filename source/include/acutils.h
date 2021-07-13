@@ -1275,4 +1275,36 @@ AcpiUtConvertUuidToString (
     char                    *OutString);
 #endif
 
+
+/*
+ * utendian -- byte-swapping for big-endian support
+ */
+
+UINT8
+UtIsBigEndianMachine (
+    void);
+
+#if defined(ACPI_ASL_COMPILER) || defined(ACPI_EXEC_APP) || \
+    defined(ACPI_HELP_APP)     || defined(ACPI_DUMP_APP) || \
+    defined(ACPI_EXAMPLE_APP)  || defined(ACPI_BIN_APP)
+UINT32
+AcpiUtReadUint32 (
+    void                    *SrcPtr);
+
+UINT16
+AcpiUtReadUint16 (
+    void                    *SrcPtr);
+
+UINT64
+AcpiUtReadUint64 (
+    void                    *SrcPtr);
+
+void  
+AcpiUtWriteUint (
+    void                    *DstPtr,
+    int                     DstLength,
+    const void              *SrcPtr,
+    const int               SrcLength);
+#endif
+
 #endif /* _ACUTILS_H */

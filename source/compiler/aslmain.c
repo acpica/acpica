@@ -209,18 +209,6 @@ main (
 
     signal (SIGINT, AslSignalHandler);
 
-    /*
-     * Big-endian machines are not currently supported. ACPI tables must
-     * be little-endian, and support for big-endian machines needs to
-     * be implemented.
-     */
-    if (UtIsBigEndianMachine ())
-    {
-        fprintf (stderr,
-            "iASL is not currently supported on big-endian machines.\n");
-        return (-1);
-    }
-
     AcpiOsInitialize ();
     ACPI_DEBUG_INITIALIZE (); /* For debug version only */
 
