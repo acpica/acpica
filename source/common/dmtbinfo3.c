@@ -759,7 +759,7 @@ ACPI_DMTABLE_INFO           AcpiDmTableInfoWpbt[] =
 
 ACPI_DMTABLE_INFO           AcpiDmTableInfoWpbt0[] =
 {
-    {ACPI_DMT_UNICODE,     sizeof (ACPI_TABLE_WPBT),                "Command-line Arguments", 0},
+    {ACPI_DMT_WPBT_UNICODE, ACPI_WPBT2_OFFSET (UnicodeString),      "Command-line Arguments", DT_DESCRIBES_OPTIONAL},
     ACPI_DMT_TERMINATOR
 };
 

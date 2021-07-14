@@ -452,6 +452,7 @@ DtGetFieldType (
         break;
 
     case ACPI_DMT_UNICODE:
+    case ACPI_DMT_WPBT_UNICODE:
 
         Type = DT_FIELD_TYPE_UNICODE;
         break;
@@ -740,12 +741,13 @@ DtGetFieldLength (
         break;
 
     case ACPI_DMT_UNICODE:
+    case ACPI_DMT_WPBT_UNICODE:
 
         Value = DtGetFieldValue (Field);
 
         /* TBD: error if Value is NULL? (as below?) */
 
-        ByteLength = (strlen (Value) + 1) * sizeof(UINT16);
+        ByteLength = (strlen (Value) + 1) * sizeof (UINT16);
         break;
 
     default:

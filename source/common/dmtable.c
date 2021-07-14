@@ -1143,6 +1143,12 @@ AcpiDmDumpTable (
             ByteLength = 128;
             break;
 
+        case ACPI_DMT_WPBT_UNICODE:
+
+            ByteLength = SubtableLength;
+            CurrentOffset = sizeof (ACPI_TABLE_WPBT);
+            break;
+
         case ACPI_DMT_UNICODE:
         case ACPI_DMT_BUFFER:
         case ACPI_DMT_RAW_BUFFER:
@@ -1844,6 +1850,7 @@ AcpiDmDumpTable (
             break;
 
         case ACPI_DMT_UNICODE:
+        case ACPI_DMT_WPBT_UNICODE:
 
             if (ByteLength == 0)
             {
