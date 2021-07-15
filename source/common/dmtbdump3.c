@@ -681,7 +681,7 @@ AcpiDmDumpViot (
     ACPI_TABLE_VIOT         *Viot;
     ACPI_VIOT_HEADER        *ViotHeader;
     UINT16                  Length;
-    UINT16                  Offset;
+    UINT32                  Offset;
     ACPI_DMTABLE_INFO       *InfoTable;
 
     /* Main table */
