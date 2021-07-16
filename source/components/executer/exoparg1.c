@@ -1193,6 +1193,7 @@ AcpiExOpcode_1A_0T_1R (
                             WalkState, ReturnDesc, &TempDesc);
                         if (ACPI_FAILURE (Status))
                         {
+                            ReturnDesc = NULL;
                             goto Cleanup;
                         }
 
