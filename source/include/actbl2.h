@@ -1980,17 +1980,17 @@ typedef struct acpi_nhlt_vendor_mic_config
 {
     UINT8                   Type;
     UINT8                   Panel;
-    UINT16                  SpeakerPositionDistance; // mm
-    UINT16                  HorizontalOffset; // mm
-    UINT16                  VerticalOffset; // mm
-    UINT8                   FrequencyLowBand; // 5*Hz
-    UINT8                   FrequencyHighBand; // 500*Hz
-    UINT16                  DirectionAngle; // -180 - + 180
-    UINT16                  ElevationAngle; // -180 - + 180
-    UINT16                  WorkVerticalAngleBegin; // -180 - + 180 with 2 deg step
-    UINT16                  WorkVerticalAngleEnd; // -180 - + 180 with 2 deg step
-    UINT16                  WorkHorizontalAngleBegin; // -180 - + 180 with 2 deg step
-    UINT16                  WorkHorizontalAngleEnd; // -180 - + 180 with 2 deg step
+    UINT16                  SpeakerPositionDistance;    // mm
+    UINT16                  HorizontalOffset;           // mm
+    UINT16                  VerticalOffset;             // mm
+    UINT8                   FrequencyLowBand;           // 5*Hz
+    UINT8                   FrequencyHighBand;          // 500*Hz
+    UINT16                  DirectionAngle;             // -180 - + 180
+    UINT16                  ElevationAngle;             // -180 - + 180
+    UINT16                  WorkVerticalAngleBegin;     // -180 - + 180 with 2 deg step
+    UINT16                  WorkVerticalAngleEnd;       // -180 - + 180 with 2 deg step
+    UINT16                  WorkHorizontalAngleBegin;   // -180 - + 180 with 2 deg step
+    UINT16                  WorkHorizontalAngleEnd;     // -180 - + 180 with 2 deg step
 
 } ACPI_NHLT_VENDOR_MIC_CONFIG;
 
@@ -2015,9 +2015,9 @@ typedef struct acpi_nhlt_vendor_mic_config
 
 typedef struct acpi_nhlt_vendor_mic_device_specific_config
 {
-    ACPI_NHLT_MIC_DEVICE_SPECIFIC_CONFIG      MicArrayDeviceConfig;
-    UINT8                           NumberOfMicrophones;
-    ACPI_NHLT_VENDOR_MIC_CONFIG     MicConfig[];            // Indexed by NumberOfMicrophones
+    ACPI_NHLT_MIC_DEVICE_SPECIFIC_CONFIG    MicArrayDeviceConfig;
+    UINT8                                   NumberOfMicrophones;
+    ACPI_NHLT_VENDOR_MIC_CONFIG             MicConfig[];            // Indexed by NumberOfMicrophones
 
 } ACPI_NHLT_VENDOR_MIC_DEVICE_SPECIFIC_CONFIG;
 
