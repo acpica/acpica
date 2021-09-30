@@ -239,6 +239,9 @@ typedef short                           INT16;
 typedef COMPILER_DEPENDENT_UINT64       UINT64;
 typedef COMPILER_DEPENDENT_INT64        INT64;
 
+typedef unsigned long                   uintptr_t;
+#define offsetof(TYPE, MEMBER)          ((size_t)&((TYPE *)0)->MEMBER)
+
 #endif /* ACPI_USE_SYSTEM_INTTYPES */
 
 /*
