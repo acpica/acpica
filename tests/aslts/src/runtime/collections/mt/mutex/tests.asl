@@ -106,7 +106,7 @@
         /* Wait for all Worker threads */
 
         M103 (Arg0)
-        /* Check up the values of counters of all Mutexs */
+        /* Check up the values of counters of all Mutexes */
 
         Local0 = (NUMW - 0x01)
         LPN0 = MAX0 /* \MAX0 */
@@ -186,7 +186,7 @@
         /* Wait for all Worker threads */
 
         M103 (Arg0)
-        /* Check up the values of counters of all Mutexs */
+        /* Check up the values of counters of all Mutexes */
 
         LPN0 = Arg3
         LPC0 = Arg2
@@ -210,7 +210,7 @@
         /* Wait for all Worker threads */
 
         M103 (Arg0)
-        /* Check up the values of counters of all Mutexs */
+        /* Check up the values of counters of all Mutexes */
 
         LPN0 = Arg5
         LPC0 = Arg4
@@ -319,7 +319,7 @@
         /* Wait for all Worker threads */
 
         M103 (Arg0)
-        /* Check up the values of counters of all Mutexs */
+        /* Check up the values of counters of all Mutexes */
 
         LPN0 = MAX0 /* \MAX0 */
         LPC0 = 0x00
@@ -362,7 +362,7 @@
         /* Wait for all Worker threads */
 
         M103 (Arg0)
-        /* Check up the values of counters of all Mutexs */
+        /* Check up the values of counters of all Mutexes */
 
         LPN0 = MAX0 /* \MAX0 */
         LPC0 = 0x00
@@ -624,7 +624,7 @@
                  *	- Set up per-thread set of mutexes
                  *	- Acquire specified set of mutexes
                  *	- Wait for all Worker threads
-                 *	- Check up the values of counters of all Mutexs
+                 *	- Check up the values of counters of all Mutexes
                  */
                 M337 (Arg0, NUMW, 0x00, LPC0, 0x01, 0x00)
                 /*
@@ -661,7 +661,7 @@
                  *	- Set up per-thread set of mutexes
                  *	- Acquire specified set of mutexes
                  *	- Wait for all Worker threads
-                 *	- Check up the values of counters of all Mutexs
+                 *	- Check up the values of counters of all Mutexes
                  */
                 Local0 = (LPC0 + 0x01)
                 Local1 = (IX00 - LPC0) /* \M807.LPC0 */
@@ -686,7 +686,7 @@
                  *	- Set up per-thread set of mutexes
                  *	- Acquire specified set of mutexes
                  *	- Wait for all Worker threads
-                 *	- Check up the values of counters of all Mutexs
+                 *	- Check up the values of counters of all Mutexes
                  */
                 M337 (Arg0, NUMW, 0x00, LPC0, 0x01, 0x00)
                 /*
@@ -2073,7 +2073,7 @@
         /* Wait for all Worker threads */
 
         M103 (Arg0)
-        /* Check up the values of counters of all Mutexs */
+        /* Check up the values of counters of all Mutexes */
 
         LPN0 = MAX0 /* \MAX0 */
         LPC0 = 0x00
@@ -2182,7 +2182,7 @@
         /* Wait for all Worker threads */
 
         M103 (Arg0)
-        /* Check up the values of counters of all Mutexs */
+        /* Check up the values of counters of all Mutexes */
 
         LPN0 = MAX0 /* \MAX0 */
         LPC0 = 0x00

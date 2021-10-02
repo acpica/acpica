@@ -662,7 +662,7 @@
         /* Wait for all Worker threads */
 
         M103 (Arg0)
-        /* Check up the values of counters of all Mutexs */
+        /* Check up the values of counters of all Mutexes */
 
         LPN0 = Arg3
         LPC0 = Arg2
