@@ -1458,6 +1458,12 @@ typedef struct acpi_mem_space_context
 
 } ACPI_MEM_SPACE_CONTEXT;
 
+typedef struct acpi_data_table_space_context
+{
+    void                            *Pointer;
+
+} ACPI_DATA_TABLE_MAPPING;
+
 
 /*
  * ACPI_MEMORY_LIST is used only if the ACPICA local cache is enabled
