@@ -193,7 +193,8 @@ ACPI_STATUS
 AcpiTbAcquireTempTable (
     ACPI_TABLE_DESC         *TableDesc,
     ACPI_PHYSICAL_ADDRESS   Address,
-    UINT8                   Flags);
+    UINT8                   Flags,
+    ACPI_TABLE_HEADER       *Table);
 
 void
 AcpiTbReleaseTempTable (
@@ -279,6 +280,7 @@ ACPI_STATUS
 AcpiTbInstallStandardTable (
     ACPI_PHYSICAL_ADDRESS   Address,
     UINT8                   Flags,
+    ACPI_TABLE_HEADER       *Table,
     BOOLEAN                 Reload,
     BOOLEAN                 Override,
     UINT32                  *TableIndex);
@@ -296,6 +298,7 @@ ACPI_STATUS
 AcpiTbInstallAndLoadTable (
     ACPI_PHYSICAL_ADDRESS   Address,
     UINT8                   Flags,
+    ACPI_TABLE_HEADER       *Table,
     BOOLEAN                 Override,
     UINT32                  *TableIndex);
 
