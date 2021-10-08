@@ -193,7 +193,7 @@ AcpiDbDoOneSleepState (
     UINT8                   SleepState);
 
 
-static char                 *AcpiDbTraceMethodName = NULL;
+static char                 *AcpiDbTraceMethodName;
 
 
 /*******************************************************************************

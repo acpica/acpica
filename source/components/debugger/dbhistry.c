@@ -172,9 +172,9 @@ typedef struct HistoryInfo
 
 
 static HISTORY_INFO         AcpiGbl_HistoryBuffer[HISTORY_SIZE];
-static UINT16               AcpiGbl_LoHistory = 0;
-static UINT16               AcpiGbl_NumHistory = 0;
-static UINT16               AcpiGbl_NextHistoryIndex = 0;
+static UINT16               AcpiGbl_LoHistory;
+static UINT16               AcpiGbl_NumHistory;
+static UINT16               AcpiGbl_NextHistoryIndex;
 
 
 /*******************************************************************************
