@@ -257,6 +257,7 @@ typedef enum
     ACPI_DMT_AEST_RES,
     ACPI_DMT_AEST_XFACE,
     ACPI_DMT_AEST_XRUPT,
+    ACPI_DMT_AGDI,
     ACPI_DMT_ASF,
     ACPI_DMT_CEDT,
     ACPI_DMT_DMAR,
@@ -386,6 +387,7 @@ extern ACPI_DMTABLE_INFO        AcpiDmTableInfoAestVendorError[];
 extern ACPI_DMTABLE_INFO        AcpiDmTableInfoAestGicError[];
 extern ACPI_DMTABLE_INFO        AcpiDmTableInfoAestXface[];
 extern ACPI_DMTABLE_INFO        AcpiDmTableInfoAestXrupt[];
+extern ACPI_DMTABLE_INFO        AcpiDmTableInfoAgdi[];
 extern ACPI_DMTABLE_INFO        AcpiDmTableInfoAsf0[];
 extern ACPI_DMTABLE_INFO        AcpiDmTableInfoAsf1[];
 extern ACPI_DMTABLE_INFO        AcpiDmTableInfoAsf1a[];
