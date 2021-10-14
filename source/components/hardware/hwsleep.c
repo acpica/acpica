@@ -376,7 +376,7 @@ AcpiHwLegacyWakePrep (
 
             Pm1aControl |= (AcpiGbl_SleepTypeAS0 <<
                 SleepTypeRegInfo->BitPosition);
-            Pm1aControl |= (AcpiGbl_SleepTypeBS0 <<
+            Pm1bControl |= (AcpiGbl_SleepTypeBS0 <<
                 SleepTypeRegInfo->BitPosition);
 
             /* Write the control registers and ignore any errors */
