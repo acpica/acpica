@@ -1871,12 +1871,10 @@ typedef struct acpi_nhlt_device_specific_config_a
 
 /* Values for Config Type above */
 
-#define ACPI_NHLT_TYPE_MIC_ARRAY            0x01
-#define ACPI_NHLT_TYPE_GENERIC              0x00
-
-/* Mask for Extension field of ArrayType */
-
-#define ACPI_NHLT_ARRAY_TYPE_MASK           0x10
+#define ACPI_NHLT_CONFIG_TYPE_GENERIC              0x00
+#define ACPI_NHLT_CONFIG_TYPE_MIC_ARRAY            0x01
+#define ACPI_NHLT_CONFIG_TYPE_RENDER_FEEDBACK      0x03
+#define ACPI_NHLT_CONFIG_TYPE_RESERVED             0x04   /* 4 and above are reserved */
 
 typedef struct acpi_nhlt_device_specific_config_b
 {
@@ -1890,6 +1888,13 @@ typedef struct acpi_nhlt_device_specific_config_c
     UINT8                   VirtualSlot;
 
 } ACPI_NHLT_DEVICE_SPECIFIC_CONFIG_C;
+
+typedef struct acpi_nhlt_render_device_specific_config
+{
+    UINT32                  CapabilitiesSize;
+    UINT8                   VirtualSlot;
+
+} ACPI_NHLT_RENDER_DEVICE_SPECIFIC_CONFIG;
 
 typedef struct acpi_nhlt_wave_extensible
 {
@@ -1963,18 +1968,24 @@ typedef struct acpi_nhlt_mic_device_specific_config
 
 /* Values for ArrayTypeExt above */
 
-#define SMALL_LINEAR_2ELEMENT               0x0A
-#define BIG_LINEAR_2ELEMENT                 0x0B
-#define FIRST_GEOMETRY_LINEAR_4ELEMENT      0x0C
-#define PLANAR_LSHAPED_4ELEMENT             0x0D
-#define SECOND_GEOMETRY_LINEAR_4ELEMENT     0x0E
-#define VENDOR_DEFINED                      0x0F
-#define ARRAY_TYPE_MASK                     0x0F
-#define ARRAY_TYPE_EXT_MASK                 0x10
+#define ACPI_NHLT_ARRAY_TYPE_RESERVED               0x09 // 9 and below are reserved
+#define ACPI_NHLT_SMALL_LINEAR_2ELEMENT             0x0A
+#define ACPI_NHLT_BIG_LINEAR_2ELEMENT               0x0B
+#define ACPI_NHLT_FIRST_GEOMETRY_LINEAR_4ELEMENT    0x0C
+#define ACPI_NHLT_PLANAR_LSHAPED_4ELEMENT           0x0D
+#define ACPI_NHLT_SECOND_GEOMETRY_LINEAR_4ELEMENT   0x0E
+#define ACPI_NHLT_VENDOR_DEFINED                    0x0F
+#define ACPI_NHLT_ARRAY_TYPE_MASK                   0x0F
+#define ACPI_NHLT_ARRAY_TYPE_EXT_MASK               0x10
 
-#define NO_EXTENSION                        0x0
-#define MIC_SNR_SENSITIVITY_EXT             0x1
+#define ACPI_NHLT_NO_EXTENSION                      0x0
+#define ACPI_NHLT_MIC_SNR_SENSITIVITY_EXT           (1<<4)
 
+typedef struct acpi_nhlt_vendor_mic_count
+{
+    UINT8                           MicrophoneCount;
+
+} ACPI_NHLT_VENDOR_MIC_COUNT;
 
 typedef struct acpi_nhlt_vendor_mic_config
 {
@@ -1996,22 +2007,25 @@ typedef struct acpi_nhlt_vendor_mic_config
 
 /* Values for Type field above */
 
-#define MIC_OMNIDIRECTIONAL                 0
-#define MIC_SUBCARDIOID                     1
-#define MIC_CARDIOID                        2
-#define MIC_SUPER_CARDIOID                  3
-#define MIC_HYPER_CARDIOID                  4
-#define MIC_8_SHAPED                        5
-#define MIC_VENDOR_DEFINED                  7
+#define ACPI_NHLT_MIC_OMNIDIRECTIONAL       0
+#define ACPI_NHLT_MIC_SUBCARDIOID           1
+#define ACPI_NHLT_MIC_CARDIOID              2
+#define ACPI_NHLT_MIC_SUPER_CARDIOID        3
+#define ACPI_NHLT_MIC_HYPER_CARDIOID        4
+#define ACPI_NHLT_MIC_8_SHAPED              5
+#define ACPI_NHLT_MIC_RESERVED6             6 // 6 is reserved
+#define ACPI_NHLT_MIC_VENDOR_DEFINED        7
+#define ACPI_NHLT_MIC_RESERVED              8 // 8 and above are reserved
 
 /* Values for Panel field above */
 
-#define MIC_TOP                             0
-#define MIC_BOTTOM                          1
-#define MIC_LEFT                            2
-#define MIC_RIGHT                           3
-#define MIC_FRONT                           4
-#define MIC_REAR                            5
+#define ACPI_NHLT_MIC_POSITION_TOP          0
+#define ACPI_NHLT_MIC_POSITION_BOTTOM       1
+#define ACPI_NHLT_MIC_POSITION_LEFT         2
+#define ACPI_NHLT_MIC_POSITION_RIGHT        3
+#define ACPI_NHLT_MIC_POSITION_FRONT        4
+#define ACPI_NHLT_MIC_POSITION_BACK         5
+#define ACPI_NHLT_MIC_POSITION_RESERVED     6 // 6 and above are reserved
 
 typedef struct acpi_nhlt_vendor_mic_device_specific_config
 {
@@ -2030,9 +2044,10 @@ typedef struct acpi_nhlt_mic_snr_sensitivity_extension
 
 } ACPI_NHLT_MIC_SNR_SENSITIVITY_EXTENSION;
 
+/* Render device with feedback */
+
 typedef struct acpi_nhlt_render_feedback_device_specific_config
 {
-    ACPI_NHLT_DEVICE_SPECIFIC_CONFIG    DeviceConfig;
     UINT8                               FeedbackVirtualSlot;    // Render slot in case of capture
     UINT16                              FeedbackChannels;       // Informative only
     UINT16                              FeedbackValidBitsPerSample;

@@ -167,10 +167,11 @@ AcpiAhGetTableInfo (
 
 /* Common format strings for commented values */
 
-#define UINT8_FORMAT        "%2.2X [%s]\n"
-#define UINT16_FORMAT       "%4.4X [%s]\n"
-#define UINT32_FORMAT       "%8.8X [%s]\n"
-#define STRING_FORMAT       "[%s]\n"
+#define UINT8_FORMAT            "%2.2X [%s]\n"
+#define UINT8_FORMAT_NO_NEWLINE "%2.2X [%s]"
+#define UINT16_FORMAT           "%4.4X [%s]\n"
+#define UINT32_FORMAT           "%8.8X [%s]\n"
+#define STRING_FORMAT           "[%s]\n"
 
 /* These tables map a subtable type to a description string */
 
@@ -435,6 +436,50 @@ static const char           *AcpiDmNhltDirectionNames[] =
     "Render with Loopback",             /* ACPI_NHLT_DIR_RENDER_LOOPBACK */
     "Feedback for Render",              /* ACPI_NHLT_DIR_RENDER_FEEDBACK */
     "Unknown Direction"                 /* Reserved */
+};
+
+static const char           *AcpiDmNhltMicTypeNames[] =
+{
+    "Omnidirectional",                  /* ACPI_NHLT_MIC_OMNIDIRECTIONAL */
+    "Subcardioid",                      /* ACPI_NHLT_MIC_SUBCARDIOID */
+    "Cardioid",                         /* ACPI_NHLT_MIC_CARDIOID */
+    "SuperCardioid",                    /* ACPI_NHLT_MIC_SUPER_CARDIOID */
+    "HyperCardioid",                    /* ACPI_NHLT_MIC_HYPER_CARDIOID */
+    "8 Shaped",                         /* ACPI_NHLT_MIC_8_SHAPED */
+    "Reserved Mic Type",                /* Reserved */
+    "Vendor Defined",                   /* ACPI_NHLT_MIC_VENDOR_DEFINED */
+    "Unknown Mic Type"                  /* ACPI_NHLT_MIC_RESERVED */
+};
+
+static const char           *AcpiDmNhltMicPositionNames[] =
+{
+    "Top",                              /* ACPI_NHLT_MIC_POSITION_TOP */
+    "Bottom",                           /* ACPI_NHLT_MIC_POSITION_BOTTOM */
+    "Left",                             /* ACPI_NHLT_MIC_POSITION_LEFT */
+    "Right",                            /* ACPI_NHLT_MIC_POSITION_RIGHT */
+    "Front",                            /* ACPI_NHLT_MIC_POSITION_FRONT */
+    "Back",                             /* ACPI_NHLT_MIC_POSITION_BACK */
+    "Unknown Mic Position"              /* 6 and above are reserved */
+};
+
+static const char           *AcpiDmNhltMicArrayTypeNames[] =
+{
+    "Unknown Array Type",               /* ACPI_NHLT_ARRAY_TYPE_RESERVED */
+    "Small Linear 2-element",           /* ACPI_NHLT_SMALL_LINEAR_2ELEMENT */
+    "Big Linear 2-element",             /* ACPI_NHLT_BIG_LINEAR_2ELEMENT */
+    "Linear 4-element 1st Geometry",    /* ACPI_NHLT_FIRST_GEOMETRY_LINEAR_4ELEMENT */
+    "Planar L-shaped 4-element",        /* ACPI_NHLT_PLANAR_LSHAPED_4ELEMENT */
+    "Linear 4-element 2nd Geometry",    /* ACPI_NHLT_SECOND_GEOMETRY_LINEAR_4ELEMENT */
+    "Vendor Defined"                    /* ACPI_NHLT_VENDOR_DEFINED */
+};
+
+static const char           *AcpiDmNhltConfigTypeNames[] =
+{
+    "Generic Type",                     /* ACPI_NHLT_CONFIG_TYPE_GENERIC */
+    "Microphone Array",                 /* ACPI_NHLT_CONFIG_TYPE_MIC_ARRAY */
+    "Reserved",                         /* ACPI_NHLT_CONFIG_TYPE_RESERVED */
+    "Render Feedback",                  /* ACPI_NHLT_CONFIG_TYPE_RENDER_FEEDBACK */
+    "Unknown Config Type"               /* ACPI_NHLT_CONFIG_TYPE_RESERVED */
 };
 
 static const char           *AcpiDmPcctSubnames[] =
@@ -1074,6 +1119,10 @@ AcpiDmDumpTable (
         case ACPI_DMT_MADT:
         case ACPI_DMT_NHLT1:
         case ACPI_DMT_NHLT1a:
+        case ACPI_DMT_NHLT1b:
+        case ACPI_DMT_NHLT1c:
+        case ACPI_DMT_NHLT1d:
+        case ACPI_DMT_NHLT1f:
         case ACPI_DMT_PCCT:
         case ACPI_DMT_PMTT:
         case ACPI_DMT_PPTT:
@@ -1102,6 +1151,7 @@ AcpiDmDumpTable (
         case ACPI_DMT_HEST:
         case ACPI_DMT_HMAT:
         case ACPI_DMT_NFIT:
+        case ACPI_DMT_NHLT1e:
         case ACPI_DMT_PHAT:
 
             ByteLength = 2;
@@ -1848,6 +1898,95 @@ AcpiDmDumpTable (
                 AcpiDmNhltDirectionNames[Temp8]);
             break;
 
+        case ACPI_DMT_NHLT1b:
+
+            /* NHLT microphone type */
+
+            Temp8 = *Target;
+            if (Temp8 > ACPI_NHLT_MIC_RESERVED)
+            {
+                Temp8 = ACPI_NHLT_MIC_RESERVED;
+            }
+
+            AcpiOsPrintf (UINT8_FORMAT, *Target,
+                AcpiDmNhltMicTypeNames[Temp8]);
+            break;
+
+        case ACPI_DMT_NHLT1c:
+
+            /* NHLT microphone position */
+
+            Temp8 = *Target;
+            if (Temp8 > ACPI_NHLT_MIC_POSITION_RESERVED)
+            {
+                Temp8 = ACPI_NHLT_MIC_POSITION_RESERVED;
+            }
+
+            AcpiOsPrintf (UINT8_FORMAT, *Target,
+                AcpiDmNhltMicPositionNames[Temp8]);
+            break;
+
+        case ACPI_DMT_NHLT1d:
+
+            /* NHLT microphone array type */
+
+            Temp8 = *Target & ACPI_NHLT_ARRAY_TYPE_MASK;
+            if (Temp8 < ACPI_NHLT_ARRAY_TYPE_RESERVED)
+            {
+                Temp8 = ACPI_NHLT_ARRAY_TYPE_RESERVED;
+            }
+
+            AcpiOsPrintf (UINT8_FORMAT_NO_NEWLINE, *Target,
+                AcpiDmNhltMicArrayTypeNames[Temp8 - ACPI_NHLT_ARRAY_TYPE_RESERVED]);
+
+            Temp8 = *Target;
+            if (Temp8 & ACPI_NHLT_MIC_SNR_SENSITIVITY_EXT)
+            {
+                AcpiOsPrintf (" [%s]", "SNR and Sensitivity");
+            }
+
+            AcpiOsPrintf ("\n");
+            break;
+
+        case ACPI_DMT_NHLT1e:
+
+            /* NHLT Endpoint Device ID */
+
+            Temp16 = ACPI_GET16 (Target);
+            if (Temp16 == 0xAE20)
+            {
+                Name = "PDM DMIC";
+            }
+            else if (Temp16 == 0xAE30)
+            {
+                Name = "BT Sideband";
+            }
+            else if (Temp16 == 0xAE34)
+            {
+                Name = "I2S/TDM Codecs";
+            }
+            else
+            {
+                Name = "Unknown Device ID";
+            }
+
+            AcpiOsPrintf (UINT16_FORMAT, Temp16, Name);
+            break;
+
+        case ACPI_DMT_NHLT1f:
+
+            /* NHLT ConfigType field */
+
+            Temp8 = *Target;
+            if (Temp8 > ACPI_NHLT_CONFIG_TYPE_RESERVED)
+            {
+                Temp8 = ACPI_NHLT_CONFIG_TYPE_RESERVED;
+            }
+
+            AcpiOsPrintf (UINT8_FORMAT, *Target,
+                AcpiDmNhltConfigTypeNames[Temp8]);
+            break;
+
         case ACPI_DMT_PCCT:
 
             /* PCCT subtable types */
@@ -1929,7 +2068,7 @@ AcpiDmDumpTable (
                 break;
             }
 
-            AcpiDmDumpBuffer (Target, 0, ByteLength, 0, NULL);
+            AcpiDmDumpBuffer (Target, 0, ByteLength, CurrentOffset, NULL);
             break;
 
         case ACPI_DMT_RGRT:

@@ -1217,7 +1217,7 @@ ACPI_DMTABLE_INFO           AcpiDmTableInfoNhlt0[] =
     {ACPI_DMT_NHLT1,    ACPI_NHLT0_OFFSET (LinkType),               "Link Type", 0},
     {ACPI_DMT_UINT8,    ACPI_NHLT0_OFFSET (InstanceId),             "Instance Id", 0},
     {ACPI_DMT_UINT16,   ACPI_NHLT0_OFFSET (VendorId),               "Vendor Id", 0},
-    {ACPI_DMT_UINT16,   ACPI_NHLT0_OFFSET (DeviceId),               "Device Id", 0},
+    {ACPI_DMT_NHLT1e,   ACPI_NHLT0_OFFSET (DeviceId),               "Device Id", 0},
     {ACPI_DMT_UINT16,   ACPI_NHLT0_OFFSET (RevisionId),             "Revision Id", 0},
     {ACPI_DMT_UINT32,   ACPI_NHLT0_OFFSET (SubsystemId),            "Subsystem Id", 0},
     {ACPI_DMT_UINT8,    ACPI_NHLT0_OFFSET (DeviceType),             "Device Type", 0},
@@ -1232,7 +1232,7 @@ ACPI_DMTABLE_INFO           AcpiDmTableInfoNhlt1[] =
 {
     {ACPI_DMT_UINT32,   ACPI_NHLT1_OFFSET (CapabilitiesSize),       "Capabilities Size", DT_LENGTH},
     {ACPI_DMT_UINT8,    ACPI_NHLT1_OFFSET (VirtualSlot),            "Virtual Slot", 0},
-    {ACPI_DMT_UINT8,    ACPI_NHLT1_OFFSET (ConfigType),             "Config Type", 0},
+    {ACPI_DMT_NHLT1f,   ACPI_NHLT1_OFFSET (ConfigType),             "Config Type", 0},
     ACPI_DMT_TERMINATOR
 };
 
@@ -1281,7 +1281,6 @@ ACPI_DMTABLE_INFO           AcpiDmTableInfoNhlt3a[] =
     ACPI_DMT_TERMINATOR
 };
 
-
 /* Formats Config */
 
 ACPI_DMTABLE_INFO           AcpiDmTableInfoNhlt4[] =
@@ -1296,7 +1295,7 @@ ACPI_DMTABLE_INFO           AcpiDmTableInfoNhlt5[] =
 {
     {ACPI_DMT_UINT32,   ACPI_NHLT5_OFFSET (CapabilitiesSize),       "Capabilities Size", DT_LENGTH},
     {ACPI_DMT_UINT8,    ACPI_NHLT5_OFFSET (VirtualSlot),            "Virtual Slot", 0},
-    {ACPI_DMT_UINT8,    ACPI_NHLT5_OFFSET (ConfigType),             "Config Type", 0},
+    {ACPI_DMT_NHLT1f,   ACPI_NHLT5_OFFSET (ConfigType),             "Config Type", 0},
     ACPI_DMT_TERMINATOR
 };
 
@@ -1306,8 +1305,8 @@ ACPI_DMTABLE_INFO           AcpiDmTableInfoNhlt5a[] =
 {
     {ACPI_DMT_UINT32,   ACPI_NHLT5A_OFFSET (CapabilitiesSize),      "Capabilities Size", DT_LENGTH},
     {ACPI_DMT_UINT8,    ACPI_NHLT5A_OFFSET (VirtualSlot),           "Virtual Slot", 0},
-    {ACPI_DMT_UINT8,    ACPI_NHLT5A_OFFSET (ConfigType),            "Config Type", 0},
-    {ACPI_DMT_UINT8,    ACPI_NHLT5A_OFFSET (ArrayType),             "Array Type", 0},
+    {ACPI_DMT_NHLT1f,   ACPI_NHLT5A_OFFSET (ConfigType),            "Config Type", 0},
+    {ACPI_DMT_NHLT1d,   ACPI_NHLT5A_OFFSET (ArrayType),             "Array Type", 0},
     ACPI_DMT_TERMINATOR
 };
 
@@ -1330,10 +1329,26 @@ ACPI_DMTABLE_INFO           AcpiDmTableInfoNhlt5c[] =
 
 /* Microphone array Config */
 
+ACPI_DMTABLE_INFO           AcpiDmTableInfoNhlt6a[] =
+{
+    {ACPI_DMT_UINT8,    ACPI_NHLT6A_OFFSET (MicrophoneCount),       "Microphone Count", 0},
+    ACPI_DMT_TERMINATOR
+};
+
+/* Render Feedback Device Config */
+
+ACPI_DMTABLE_INFO           AcpiDmTableInfoNhlt6b[] =
+{
+    {ACPI_DMT_UINT8,    ACPI_NHLT6B_OFFSET (FeedbackVirtualSlot),       "Feedback Virtual Slot", 0},
+    {ACPI_DMT_UINT16,   ACPI_NHLT6B_OFFSET (FeedbackChannels),          "Feedback Channels", 0},
+    {ACPI_DMT_UINT16,   ACPI_NHLT6B_OFFSET (FeedbackValidBitsPerSample),"Valid Bits Per Sample", 0},
+    ACPI_DMT_TERMINATOR
+};
+
 ACPI_DMTABLE_INFO           AcpiDmTableInfoNhlt6[] =
 {
-    {ACPI_DMT_UINT8,    ACPI_NHLT6_OFFSET (Type),                   "Type", 0},
-    {ACPI_DMT_UINT8,    ACPI_NHLT6_OFFSET (Panel),                  "Panel", 0},
+    {ACPI_DMT_NHLT1b,   ACPI_NHLT6_OFFSET (Type),                   "Type", 0},
+    {ACPI_DMT_NHLT1c,   ACPI_NHLT6_OFFSET (Panel),                  "Panel", 0},
     {ACPI_DMT_UINT16,   ACPI_NHLT6_OFFSET (SpeakerPositionDistance), "Speaker Position Distance", 0},
     {ACPI_DMT_UINT16,   ACPI_NHLT6_OFFSET (HorizontalOffset),       "Horizontal Offset", 0},
     {ACPI_DMT_UINT16,   ACPI_NHLT6_OFFSET (VerticalOffset),         "Vertical Offset", 0},
@@ -1373,6 +1388,15 @@ ACPI_DMTABLE_INFO           AcpiDmTableInfoNhlt8[] =
 {
     {ACPI_DMT_UINT32,   ACPI_NHLT8_OFFSET (TerminatorValue),        "Terminator Value", 0},
     {ACPI_DMT_UINT32,   ACPI_NHLT8_OFFSET (TerminatorSignature),    "Terminator Signature", 0},
+    ACPI_DMT_TERMINATOR
+};
+
+/* Sensitivity Extension */
+
+ACPI_DMTABLE_INFO           AcpiDmTableInfoNhlt9[] =
+{
+    {ACPI_DMT_UINT32,   ACPI_NHLT9_OFFSET (SNR),                    "Signal-to-noise ratio", 0},
+    {ACPI_DMT_UINT32,   ACPI_NHLT9_OFFSET (Sensitivity),            "Mic Sensitivity", 0},
     ACPI_DMT_TERMINATOR
 };
 
