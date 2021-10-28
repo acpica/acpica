@@ -309,7 +309,7 @@ typedef struct              acpi_aest_processor_tlb
 
 typedef struct              acpi_aest_processor_generic
 {
-    UINT8                   *Resource;
+    UINT32                   Resource;
 
 } ACPI_AEST_PROCESSOR_GENERIC;
 
