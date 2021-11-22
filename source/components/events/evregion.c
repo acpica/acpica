@@ -320,6 +320,15 @@ AcpiEvAddressSpaceDispatch (
             return_ACPI_STATUS (AE_NOT_EXIST);
         }
 
+	if (RegionObj->Region.SpaceId == ACPI_ADR_SPACE_PLATFORM_COMM)
+	{
+	    ACPI_PCC_INFO *Ctx = HandlerDesc->AddressSpace.Context;
+
+	    Ctx->InternalBuffer = FieldObj->Field.InternalPccBuffer;
+	    Ctx->Length = RegionObj->Region.Length;
+	    Ctx->SubspaceId = RegionObj->Region.Address;
+	}
+
         /*
          * We must exit the interpreter because the region setup will
          * potentially execute control methods (for example, the _REG method
