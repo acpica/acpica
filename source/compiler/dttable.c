@@ -284,7 +284,7 @@ DtCompileFadt (
     else if (Revision > 2)
     {
         /*
-         * Rev 2 and greater have 64-bit addresses (as well as 32-bit).
+         * Rev 3 and greater have 64-bit addresses (as well as 32-bit).
          * Get the 64-bit DSDT (X_DSDT) Address definition. Note: This
          * appears at field list offset 11 within AcpiDmTableInfoFadt3.
          */
