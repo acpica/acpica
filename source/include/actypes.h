@@ -1319,6 +1319,14 @@ typedef struct acpi_connection_info
 
 } ACPI_CONNECTION_INFO;
 
+/* Special Context data for PCC Opregion (ACPI 6.3) */
+
+typedef struct acpi_pcc_info {
+    UINT8                           SubspaceId;
+    UINT16                          Length;
+    UINT8                           *InternalBuffer;
+} ACPI_PCC_INFO;
+
 
 typedef
 ACPI_STATUS (*ACPI_ADR_SPACE_SETUP) (
