@@ -1813,7 +1813,7 @@ AcpiDmDumpNhlt (
 
         /*
          * Done with all of the Endpoint Descriptors, Emit the table terminator
-         * (if such a legacy structure is present -- not in NHLT specfication)
+         * (if such a legacy structure is present -- not in NHLT specification)
          */
         if (Offset == TableLength - sizeof (ACPI_NHLT_TABLE_TERMINATOR))
         {
