@@ -262,7 +262,10 @@ AcpiHwLegacySleep (
 
     /* Flush caches, as per ACPI specification */
 
-    ACPI_FLUSH_CPU_CACHE ();
+    if (SleepState < ACPI_STATE_S4)
+    {
+        ACPI_FLUSH_CPU_CACHE ();
+    }
 
     Status = AcpiOsEnterSleep (SleepState, Pm1aControl, Pm1bControl);
     if (Status == AE_CTRL_TERMINATE)
