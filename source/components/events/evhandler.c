@@ -563,7 +563,7 @@ AcpiEvInstallSpaceHandler (
         case ACPI_ADR_SPACE_DATA_TABLE:
 
             Handler = AcpiExDataTableSpaceHandler;
-            Setup   = NULL;
+            Setup   = AcpiEvDataTableRegionSetup;
             break;
 
         default:
