@@ -793,6 +793,7 @@ extern const unsigned char  TemplateMpst[];
 extern const unsigned char  TemplateMsct[];
 extern const unsigned char  TemplateMsdm[];
 extern const unsigned char  TemplateNfit[];
+extern const unsigned char  TemplateNhlt[];
 extern const unsigned char  TemplatePcct[];
 extern const unsigned char  TemplatePdtt[];
 extern const unsigned char  TemplatePhat[];

@@ -1796,6 +1796,12 @@ typedef struct acpi_table_nhlt
 
 } ACPI_TABLE_NHLT;
 
+typedef struct acpi_table_nhlt_endpoint_count
+{
+    UINT8                   EndpointCount;
+
+} ACPI_TABLE_NHLT_ENDPOINT_COUNT;
+
 typedef struct acpi_nhlt_endpoint
 {
     UINT32                  DescriptorLength;
@@ -1852,6 +1858,8 @@ typedef struct acpi_nhlt_endpoint
 #define ACPI_NHLT_DIR_RENDER_FEEDBACK       3
 #define ACPI_NHLT_DIR_RESERVED              4   /* 4 and above are reserved */
 
+/* Capabilities = 2 */
+
 typedef struct acpi_nhlt_device_specific_config
 {
     UINT32                  CapabilitiesSize;
@@ -1859,6 +1867,8 @@ typedef struct acpi_nhlt_device_specific_config
     UINT8                   ConfigType;
 
 } ACPI_NHLT_DEVICE_SPECIFIC_CONFIG;
+
+/* Capabilities = 3 */
 
 typedef struct acpi_nhlt_device_specific_config_a
 {
@@ -1869,6 +1879,16 @@ typedef struct acpi_nhlt_device_specific_config_a
 
 } ACPI_NHLT_DEVICE_SPECIFIC_CONFIG_A;
 
+/* Capabilities = 3 */
+
+typedef struct acpi_nhlt_device_specific_config_d
+{
+    UINT8                   VirtualSlot;
+    UINT8                   ConfigType;
+    UINT8                   ArrayType;
+
+} ACPI_NHLT_DEVICE_SPECIFIC_CONFIG_D;
+
 /* Values for Config Type above */
 
 #define ACPI_NHLT_CONFIG_TYPE_GENERIC              0x00
@@ -1876,11 +1896,15 @@ typedef struct acpi_nhlt_device_specific_config_a
 #define ACPI_NHLT_CONFIG_TYPE_RENDER_FEEDBACK      0x03
 #define ACPI_NHLT_CONFIG_TYPE_RESERVED             0x04   /* 4 and above are reserved */
 
+/* Capabilities = 0 */
+
 typedef struct acpi_nhlt_device_specific_config_b
 {
     UINT32                  CapabilitiesSize;
 
 } ACPI_NHLT_DEVICE_SPECIFIC_CONFIG_B;
+
+/* Capabilities = 1 */
 
 typedef struct acpi_nhlt_device_specific_config_c
 {

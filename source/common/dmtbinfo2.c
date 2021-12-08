@@ -1230,7 +1230,7 @@ ACPI_DMTABLE_INFO           AcpiDmTableInfoNhlt0[] =
 
 ACPI_DMTABLE_INFO           AcpiDmTableInfoNhlt1[] =
 {
-    {ACPI_DMT_UINT32,   ACPI_NHLT1_OFFSET (CapabilitiesSize),       "Capabilities Size", DT_LENGTH},
+    {ACPI_DMT_UINT32,   ACPI_NHLT1_OFFSET (CapabilitiesSize),       "Capabilities Size", 0},
     {ACPI_DMT_UINT8,    ACPI_NHLT1_OFFSET (VirtualSlot),            "Virtual Slot", 0},
     {ACPI_DMT_NHLT1f,   ACPI_NHLT1_OFFSET (ConfigType),             "Config Type", 0},
     ACPI_DMT_TERMINATOR
@@ -1253,7 +1253,7 @@ ACPI_DMTABLE_INFO           AcpiDmTableInfoNhlt2[] =
     ACPI_DMT_TERMINATOR
 };
 
-/* Format Config */
+/* Format Config (wave_format_extensible structure) */
 
 ACPI_DMTABLE_INFO           AcpiDmTableInfoNhlt3[] =
 {
@@ -1267,7 +1267,7 @@ ACPI_DMTABLE_INFO           AcpiDmTableInfoNhlt3[] =
     {ACPI_DMT_UINT16,   ACPI_NHLT3_OFFSET (Format.ValidBitsPerSample),      "Valid Bits Per Sample", 0},
     {ACPI_DMT_UINT32,   ACPI_NHLT3_OFFSET (Format.ChannelMask),             "Channel Mask", 0},
     {ACPI_DMT_UUID,     ACPI_NHLT3_OFFSET (Format.SubFormatGuid),           "SubFormat GUID", 0},
-    {ACPI_DMT_UINT32,   ACPI_NHLT3_OFFSET (CapabilitySize),                 "Capabilities Length", DT_LENGTH},
+    {ACPI_DMT_UINT32,   ACPI_NHLT3_OFFSET (CapabilitySize),                 "Capabilities Length", 0},
     ACPI_DMT_TERMINATOR
 };
 
@@ -1293,7 +1293,6 @@ ACPI_DMTABLE_INFO           AcpiDmTableInfoNhlt4[] =
 
 ACPI_DMTABLE_INFO           AcpiDmTableInfoNhlt5[] =
 {
-    {ACPI_DMT_UINT32,   ACPI_NHLT5_OFFSET (CapabilitiesSize),       "Capabilities Size", DT_LENGTH},
     {ACPI_DMT_UINT8,    ACPI_NHLT5_OFFSET (VirtualSlot),            "Virtual Slot", 0},
     {ACPI_DMT_NHLT1f,   ACPI_NHLT5_OFFSET (ConfigType),             "Config Type", 0},
     ACPI_DMT_TERMINATOR
@@ -1303,7 +1302,6 @@ ACPI_DMTABLE_INFO           AcpiDmTableInfoNhlt5[] =
 
 ACPI_DMTABLE_INFO           AcpiDmTableInfoNhlt5a[] =
 {
-    {ACPI_DMT_UINT32,   ACPI_NHLT5A_OFFSET (CapabilitiesSize),      "Capabilities Size", DT_LENGTH},
     {ACPI_DMT_UINT8,    ACPI_NHLT5A_OFFSET (VirtualSlot),           "Virtual Slot", 0},
     {ACPI_DMT_NHLT1f,   ACPI_NHLT5A_OFFSET (ConfigType),            "Config Type", 0},
     {ACPI_DMT_NHLT1d,   ACPI_NHLT5A_OFFSET (ArrayType),             "Array Type", 0},
@@ -1314,7 +1312,6 @@ ACPI_DMTABLE_INFO           AcpiDmTableInfoNhlt5a[] =
 
 ACPI_DMTABLE_INFO           AcpiDmTableInfoNhlt5b[] =
 {
-    {ACPI_DMT_UINT32,   ACPI_NHLT5B_OFFSET (CapabilitiesSize),      "Capabilities Size", DT_LENGTH},
     ACPI_DMT_TERMINATOR
 };
 
@@ -1322,7 +1319,6 @@ ACPI_DMTABLE_INFO           AcpiDmTableInfoNhlt5b[] =
 
 ACPI_DMTABLE_INFO           AcpiDmTableInfoNhlt5c[] =
 {
-    {ACPI_DMT_UINT32,   ACPI_NHLT5C_OFFSET (CapabilitiesSize),      "Capabilities Size", DT_LENGTH},
     {ACPI_DMT_UINT8,    ACPI_NHLT5C_OFFSET (VirtualSlot),           "Virtual Slot", 0},
     ACPI_DMT_TERMINATOR
 };
@@ -1335,7 +1331,7 @@ ACPI_DMTABLE_INFO           AcpiDmTableInfoNhlt6a[] =
     ACPI_DMT_TERMINATOR
 };
 
-/* Render Feedback Device Config */
+/* Render Feedback Device Config, CapabilitiesSize == 7 */
 
 ACPI_DMTABLE_INFO           AcpiDmTableInfoNhlt6b[] =
 {
@@ -1367,7 +1363,7 @@ ACPI_DMTABLE_INFO           AcpiDmTableInfoNhlt6[] =
 
 ACPI_DMTABLE_INFO           AcpiDmTableInfoNhlt7[] =
 {
-    {ACPI_DMT_UINT8,    ACPI_NHLT7_OFFSET (StructureCount),         "Linux-specific struct count", 0},
+    {ACPI_DMT_UINT8,    ACPI_NHLT7_OFFSET (StructureCount),         "Linux-specific Count", 0},
     ACPI_DMT_TERMINATOR
 };
 

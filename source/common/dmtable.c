@@ -680,7 +680,7 @@ const ACPI_DMTABLE_DATA     AcpiDmTableData[] =
     {ACPI_SIG_MSCT, NULL,                   AcpiDmDumpMsct, DtCompileMsct,  TemplateMsct},
     {ACPI_SIG_MSDM, NULL,                   AcpiDmDumpSlic, DtCompileSlic,  TemplateMsdm},
     {ACPI_SIG_NFIT, AcpiDmTableInfoNfit,    AcpiDmDumpNfit, DtCompileNfit,  TemplateNfit},
-    {ACPI_SIG_NHLT, AcpiDmTableInfoNhlt,    AcpiDmDumpNhlt, NULL,           NULL},
+    {ACPI_SIG_NHLT, AcpiDmTableInfoNhlt,    AcpiDmDumpNhlt, DtCompileNhlt,  TemplateNhlt},
     {ACPI_SIG_PCCT, AcpiDmTableInfoPcct,    AcpiDmDumpPcct, DtCompilePcct,  TemplatePcct},
     {ACPI_SIG_PDTT, AcpiDmTableInfoPdtt,    AcpiDmDumpPdtt, DtCompilePdtt,  TemplatePdtt},
     {ACPI_SIG_PHAT, NULL,                   AcpiDmDumpPhat, DtCompilePhat,  TemplatePhat},
@@ -1085,7 +1085,7 @@ AcpiDmDumpTable (
 
         /* Check for beyond subtable end or (worse) beyond EOT */
 
-        if (SubtableLength && (Info->Offset >= SubtableLength))
+        if (SubtableLength && (Info->Offset > SubtableLength))
         {
             AcpiOsPrintf (
                 "/**** ACPI subtable terminates early (Len %u) - "

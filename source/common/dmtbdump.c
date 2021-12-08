@@ -210,11 +210,13 @@ AcpiDmDumpBuffer (
 
     while (i < Length)
     {
+        if ((Length > 16) && (i != 0))
+        {
         if ((Length - i) < 16)
-            AcpiOsPrintf ("\n[%3.3Xh %4.4u %3u]    ", AbsoluteOffset, AbsoluteOffset, Length - i);
+            AcpiOsPrintf ("\n/* %3.3Xh %4.4u %3u */                            ", AbsoluteOffset, AbsoluteOffset, Length - i);
         else
-            AcpiOsPrintf ("\n[%3.3Xh %4.4u  16]    ", AbsoluteOffset, AbsoluteOffset);
-
+            AcpiOsPrintf ("\n/* %3.3Xh %4.4u  16 */                            ", AbsoluteOffset, AbsoluteOffset);
+        }
         AbsoluteOffset += 16;
 
         /* Emit the raw data bytes*/
@@ -231,15 +233,13 @@ AcpiDmDumpBuffer (
             AcpiOsPrintf ("%.02X ", Buffer[(ACPI_SIZE) i + j]);
         }
 
-        AcpiOsPrintf (" ");
-
         /* Emit the ASCII equivalent to the raw data bytes */
 
         for (j = 0; j < 16; j++)
         {
             if (i + j >= Length)
             {
-                AcpiOsPrintf (" */\n");
+                AcpiOsPrintf (" */\\\n");
                 return;
             }
 
@@ -272,7 +272,7 @@ AcpiDmDumpBuffer (
         }
         else
         {
-            AcpiOsPrintf (" */");
+            AcpiOsPrintf (" */\\");
         }
 
         i += 16; /* Point to next line */
