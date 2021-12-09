@@ -418,7 +418,7 @@ AcpiTbAcquireTempTable (
 
         if (!Table)
         {
-            return_ACPI_STATUS (AE_BAD_PARAMETER);
+            return (AE_BAD_PARAMETER);
         }
 
         break;
