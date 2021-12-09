@@ -643,6 +643,7 @@ extern ACPI_DMTABLE_INFO        AcpiDmTableInfoSvkl0[];
 extern ACPI_DMTABLE_INFO        AcpiDmTableInfoTcpaHdr[];
 extern ACPI_DMTABLE_INFO        AcpiDmTableInfoTcpaClient[];
 extern ACPI_DMTABLE_INFO        AcpiDmTableInfoTcpaServer[];
+extern ACPI_DMTABLE_INFO        AcpiDmTableInfoTdel[];
 extern ACPI_DMTABLE_INFO        AcpiDmTableInfoTpm2[];
 extern ACPI_DMTABLE_INFO        AcpiDmTableInfoTpm2a[];
 extern ACPI_DMTABLE_INFO        AcpiDmTableInfoTpm211[];
@@ -888,6 +889,10 @@ AcpiDmDumpSvkl (
 
 void
 AcpiDmDumpTcpa (
+    ACPI_TABLE_HEADER       *Table);
+
+void
+AcpiDmDumpTdel (
     ACPI_TABLE_HEADER       *Table);
 
 void

@@ -192,6 +192,7 @@
 #define ACPI_SIG_SDEI           "SDEI"      /* Software Delegated Exception Interface Table */
 #define ACPI_SIG_SDEV           "SDEV"      /* Secure Devices table */
 #define ACPI_SIG_SVKL           "SVKL"      /* Storage Volume Key Location Table */
+#define ACPI_SIG_TDEL           "TDEL"      /* TD Event Log Table */
 
 
 /*
@@ -3046,6 +3047,24 @@ enum acpi_svkl_format
     ACPI_SVKL_FORMAT_RESERVED   = 1 /* 1 and greater are reserved */
 };
 
+
+/*******************************************************************************
+ *
+ * TDEL - TD-Event Log
+ *        From: "Guest-Host-Communication Interface (GHCI) for Intel
+ *        Trust Domain Extensions (Intel TDX)".
+ *        September 2020
+ *
+ ******************************************************************************/
+
+typedef struct acpi_table_tdel
+{
+    ACPI_TABLE_HEADER       Header; /* Common ACPI table header */
+    UINT32                  Reserved;
+    UINT64                  LogAreaMinimumLength;
+    UINT64                  LogAreaStartAddress;
+
+} ACPI_TABLE_TDEL;
 
 /* Reset to default packing */
 
