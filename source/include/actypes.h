@@ -686,9 +686,14 @@ typedef UINT64                          ACPI_INTEGER;
  * Can be used with AccessSize field of ACPI_GENERIC_ADDRESS and
  * ACPI_RESOURCE_GENERIC_REGISTER.
  */
-#define ACPI_ACCESS_BIT_WIDTH(AccessSize)   (1 << ((AccessSize) + 2))
-#define ACPI_ACCESS_BYTE_WIDTH(AccessSize)  (1 << ((AccessSize) - 1))
-
+#define ACPI_ACCESS_BIT_SHIFT		2
+#define ACPI_ACCESS_BYTE_SHIFT		-1
+#define ACPI_ACCESS_BIT_MAX		(31 - ACPI_ACCESS_BIT_SHIFT)
+#define ACPI_ACCESS_BYTE_MAX		(31 - ACPI_ACCESS_BYTE_SHIFT)
+#define ACPI_ACCESS_BIT_DEFAULT		(8 - ACPI_ACCESS_BIT_SHIFT)
+#define ACPI_ACCESS_BYTE_DEFAULT	(8 - ACPI_ACCESS_BYTE_SHIFT)
+#define ACPI_ACCESS_BIT_WIDTH(size)	(1 << ((size) + ACPI_ACCESS_BIT_SHIFT))
+#define ACPI_ACCESS_BYTE_WIDTH(size)	(1 << ((size) + ACPI_ACCESS_BYTE_SHIFT))
 
 /*******************************************************************************
  *
