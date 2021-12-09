@@ -325,8 +325,8 @@ AcpiEvAddressSpaceDispatch (
 	    ACPI_PCC_INFO *Ctx = HandlerDesc->AddressSpace.Context;
 
 	    Ctx->InternalBuffer = FieldObj->Field.InternalPccBuffer;
-	    Ctx->Length = RegionObj->Region.Length;
-	    Ctx->SubspaceId = RegionObj->Region.Address;
+	    Ctx->Length = (UINT16) RegionObj->Region.Length;
+	    Ctx->SubspaceId = (UINT8) RegionObj->Region.Address;
 	}
 
         /*
