@@ -762,6 +762,7 @@ DtGetGenericTableInfo (
 /* ACPI Table templates */
 
 extern const unsigned char  TemplateAest[];
+extern const unsigned char  TemplateAgdi[];
 extern const unsigned char  TemplateAsf[];
 extern const unsigned char  TemplateBoot[];
 extern const unsigned char  TemplateBdat[];
