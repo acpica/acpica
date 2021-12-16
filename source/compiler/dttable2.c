@@ -1143,11 +1143,21 @@ DtCompileNhlt (
 
         /*
          * All Endpoint Descriptors are completed.
-         * Do the table terminator structure (not in NHLT spec, optional)
+         * Do the table terminator specific config (not in NHLT spec, optional)
          */
         if (*PFieldList && (strcmp ((const char *) (*PFieldList)->Name, "Descriptor Length")))
         {
-            Status = DtCompileTable (PFieldList, AcpiDmTableInfoNhlt8,
+            Status = DtCompileTable (PFieldList, AcpiDmTableInfoNhlt5b,
+                &Subtable);
+            if (ACPI_FAILURE (Status))
+            {
+                return (Status);
+            }
+
+            ParentTable = DtPeekSubtable ();
+            DtInsertSubtable (ParentTable, Subtable);
+
+            Status = DtCompileTable (PFieldList, AcpiDmTableInfoNhlt3a,
                 &Subtable);
             if (ACPI_FAILURE (Status))
             {

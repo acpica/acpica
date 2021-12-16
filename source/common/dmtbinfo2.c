@@ -1403,15 +1403,6 @@ ACPI_DMTABLE_INFO           AcpiDmTableInfoNhlt7b[] =
     ACPI_DMT_TERMINATOR
 };
 
-/* Table terminator (may or may not be present) */
-
-ACPI_DMTABLE_INFO           AcpiDmTableInfoNhlt8[] =
-{
-    {ACPI_DMT_UINT32,   ACPI_NHLT8_OFFSET (TerminatorValue),        "Terminator Value", 0},
-    {ACPI_DMT_UINT32,   ACPI_NHLT8_OFFSET (TerminatorSignature),    "Terminator Signature", 0},
-    ACPI_DMT_TERMINATOR
-};
-
 /* Sensitivity Extension */
 
 ACPI_DMTABLE_INFO           AcpiDmTableInfoNhlt9[] =

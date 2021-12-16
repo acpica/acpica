@@ -1504,6 +1504,7 @@ AcpiDmDumpNhlt (
     ACPI_NHLT_LINUX_SPECIFIC_COUNT      *Count;
     ACPI_NHLT_LINUX_SPECIFIC_DATA       *LinuxData;
     ACPI_NHLT_LINUX_SPECIFIC_DATA_B     *LinuxDataB;
+    ACPI_NHLT_DEVICE_SPECIFIC_CONFIG_B  *Capabilities;
 
 
     /* Main table */
@@ -1761,6 +1762,7 @@ AcpiDmDumpNhlt (
                     /* Do the Capabilities array (of bytes) */
 
                     AcpiOsPrintf ("\n    /* Specific_Config table #%u */\n", j+1);
+
                     FormatSubtable = ACPI_ADD_PTR (ACPI_NHLT_FORMAT_CONFIG, Table, Offset);
                     Status = AcpiDmDumpTable (TableLength, Offset, FormatSubtable,
                         CapabilitiesSize, AcpiDmTableInfoNhlt3a);
@@ -1858,16 +1860,29 @@ AcpiDmDumpNhlt (
          * Done with all of the Endpoint Descriptors, Emit the table terminator
          * (if such a legacy structure is present -- not in NHLT specification)
          */
-        if (Offset == TableLength - sizeof (ACPI_NHLT_TABLE_TERMINATOR))
+        if (Offset < TableLength)
         {
-            LinuxData = ACPI_ADD_PTR (ACPI_NHLT_LINUX_SPECIFIC_DATA, Table, Offset);
-            AcpiOsPrintf ("\n    /* Table terminator structure (not part of NHLT spec) */\n");
+            Capabilities = ACPI_ADD_PTR (ACPI_NHLT_DEVICE_SPECIFIC_CONFIG_B, Table, Offset);
+            AcpiOsPrintf ("\n/* Terminating specific config (not part of NHLT spec) */\n");
 
-            Status = AcpiDmDumpTable (TableLength, Offset, LinuxData,
-                sizeof (ACPI_NHLT_TABLE_TERMINATOR), AcpiDmTableInfoNhlt8);
+            Status = AcpiDmDumpTable (TableLength, Offset, Capabilities,
+                sizeof (ACPI_NHLT_DEVICE_SPECIFIC_CONFIG_B), AcpiDmTableInfoNhlt5b);
             if (ACPI_FAILURE (Status))
             {
                 return;
+            }
+            Offset += sizeof (ACPI_NHLT_DEVICE_SPECIFIC_CONFIG_B);
+
+            if (Capabilities->CapabilitiesSize > 0)
+            {
+                UINT32 remainingBytes = TableLength - Offset;
+                UINT8* buffer = ACPI_ADD_PTR (UINT8, Table, Offset);
+
+                if (remainingBytes != Capabilities->CapabilitiesSize)
+                    AcpiOsPrintf ("\n/* Incorrect config size, should be %X, is %X */\n",
+                        Capabilities->CapabilitiesSize, remainingBytes);
+                Status = AcpiDmDumpTable (TableLength, Offset, buffer,
+                        remainingBytes, AcpiDmTableInfoNhlt3a);
             }
         }
 

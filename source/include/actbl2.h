@@ -2124,13 +2124,6 @@ typedef struct acpi_nhlt_linux_specific_data_b
 
 } ACPI_NHLT_LINUX_SPECIFIC_DATA_B;
 
-typedef struct acpi_nhlt_table_terminator
-{
-    UINT32                  TerminatorValue;
-    UINT32                  TerminatorSignature;
-
-} ACPI_NHLT_TABLE_TERMINATOR;
-
 
 /*******************************************************************************
  *
