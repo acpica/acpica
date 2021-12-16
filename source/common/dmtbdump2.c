@@ -1501,8 +1501,8 @@ AcpiDmDumpNhlt (
     ACPI_NHLT_VENDOR_MIC_COUNT          *MicCount;
     ACPI_NHLT_DEVICE_SPECIFIC_CONFIG_A  *DevSpecific;
     ACPI_NHLT_FORMATS_CONFIG            *FormatsConfig;
-    ACPI_NHLT_LINUX_SPECIFIC_COUNT      *Count;
-    ACPI_NHLT_LINUX_SPECIFIC_DATA       *LinuxData;
+    ACPI_NHLT_DEVICE_INFO_COUNT         *Count;
+    ACPI_NHLT_DEVICE_INFO               *DeviceInfo;
     ACPI_NHLT_DEVICE_SPECIFIC_CONFIG_B  *Capabilities;
 
 
@@ -1777,42 +1777,42 @@ AcpiDmDumpNhlt (
 
             /*
              * If we are not done with the current Endpoint yet, then there must be
-             * some Linux-specific structure(s) yet to be processed. First, get
+             * some non documented structure(s) yet to be processed. First, get
              * the count of such structure(s).
              */
             if (Offset < EndpointEndOffset)
             {
-                AcpiOsPrintf ("\n    /* Linux-specific structures (not part of NHLT spec) */\n");
-                Count = ACPI_ADD_PTR (ACPI_NHLT_LINUX_SPECIFIC_COUNT, Table, Offset);
+                AcpiOsPrintf ("\n    /* Structures that are not part of NHLT spec */\n");
+                Count = ACPI_ADD_PTR (ACPI_NHLT_DEVICE_INFO_COUNT, Table, Offset);
                 Status = AcpiDmDumpTable (TableLength, Offset, Count,
-                    sizeof (ACPI_NHLT_LINUX_SPECIFIC_COUNT), AcpiDmTableInfoNhlt7);
+                    sizeof (ACPI_NHLT_DEVICE_INFO_COUNT), AcpiDmTableInfoNhlt7);
                 if (ACPI_FAILURE (Status))
                 {
                     return;
                 }
-                Offset += sizeof (ACPI_NHLT_LINUX_SPECIFIC_COUNT);
+                Offset += sizeof (ACPI_NHLT_DEVICE_INFO_COUNT);
 
-                /* Variable number of linux-specific structures */
+                /* Variable number of device structures */
 
                 for (j = 0; j < Count->StructureCount; j++)
                 {
-                    LinuxData = ACPI_ADD_PTR (ACPI_NHLT_LINUX_SPECIFIC_DATA, Table, Offset);
-                    AcpiOsPrintf ("\n    /* Linux-specific structure #%u (not part of NHLT spec) */\n", j+1);
+                    DeviceInfo = ACPI_ADD_PTR (ACPI_NHLT_DEVICE_INFO, Table, Offset);
+                    AcpiOsPrintf ("\n    /* Device Info structure #%u (not part of NHLT spec) */\n", j+1);
 
                     /*
-                     * Dump the following Linux-specific fields:
+                     * Dump the following Device Info fields:
                      *  1) Device ID
                      *  2) Device Instance ID
                      *  3) Device Port ID
                      */
-                    Status = AcpiDmDumpTable (TableLength, Offset, LinuxData,
-                        sizeof (ACPI_NHLT_LINUX_SPECIFIC_DATA), AcpiDmTableInfoNhlt7a);
+                    Status = AcpiDmDumpTable (TableLength, Offset, DeviceInfo,
+                        sizeof (ACPI_NHLT_DEVICE_INFO), AcpiDmTableInfoNhlt7a);
                     if (ACPI_FAILURE (Status))
                     {
                         return;
                     }
 
-                    Offset += sizeof (ACPI_NHLT_LINUX_SPECIFIC_DATA);
+                    Offset += sizeof (ACPI_NHLT_DEVICE_INFO);
                 }
 
                 /*
