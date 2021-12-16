@@ -1331,6 +1331,7 @@ ACPI_DMTABLE_INFO           AcpiDmTableInfoNhlt5a[] =
 
 ACPI_DMTABLE_INFO           AcpiDmTableInfoNhlt5b[] =
 {
+    {ACPI_DMT_UINT32,    ACPI_NHLT5B_OFFSET (CapabilitiesSize),     "Capabilities Size", 0},
     ACPI_DMT_TERMINATOR
 };
 
