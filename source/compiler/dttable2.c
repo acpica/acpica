@@ -967,7 +967,8 @@ DtCompileNhlt (
                 ArrayType = ConfigSpecific->ArrayType;
                 ConfigType = ConfigSpecific->ConfigType;
                 break;
-            }
+
+            } /* switch (CapabilitiesSize) */
 
             if (CapabilitiesSize >= 3)
             {
@@ -1097,6 +1098,12 @@ DtCompileNhlt (
 
                 for (j = 0; j < LinuxSpecificCount; j++)
                 {
+                    /*
+                     * Compile the following Linux-specific fields:
+                     *  1) Device ID
+                     *  2) Device Instance ID
+                     *  3) Device Port ID
+                     */
                     Status = DtCompileTable (PFieldList, AcpiDmTableInfoNhlt7a,
                         &Subtable);
                     if (ACPI_FAILURE (Status))
@@ -1106,14 +1113,36 @@ DtCompileNhlt (
 
                     ParentTable = DtPeekSubtable ();
                     DtInsertSubtable (ParentTable, Subtable);
-                }
+
+                    /*
+                     * To have a valid Linux-specific "Specific Data" at this
+                     * point, we need:
+                     * 1) The next field must be named "Specific Data"
+                     */
+                    if (!strcmp ((const char *) (*PFieldList)->Name, "Specific Data"))
+                    {
+                        /* Compile the "Specific Data" field */
+
+                        Status = DtCompileTable (PFieldList, AcpiDmTableInfoNhlt7b,
+                            &Subtable);
+                        if (ACPI_FAILURE (Status))
+                        {
+                            return (Status);
+                        }
+
+                        ParentTable = DtPeekSubtable ();
+                        DtInsertSubtable (ParentTable, Subtable);
+                    }
+
+                } /* for (j = 0; j < LinuxSpecificCount; j++) */
             }
 
             DtPopSubtable ();
+
         } /* for (i = 0; i < EndpointCount; i++) */
 
         /*
-         * All Endpoints are completed.
+         * All Endpoint Descriptors are completed.
          * Do the table terminator structure (not in NHLT spec, optional)
          */
         if (*PFieldList && (strcmp ((const char *) (*PFieldList)->Name, "Descriptor Length")))

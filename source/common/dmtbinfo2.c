@@ -1394,7 +1394,12 @@ ACPI_DMTABLE_INFO           AcpiDmTableInfoNhlt7a[] =
     {ACPI_DMT_BUF16,    ACPI_NHLT7A_OFFSET (DeviceId),              "Device ID", 0},
     {ACPI_DMT_UINT8,    ACPI_NHLT7A_OFFSET (DeviceInstanceId),      "Device Instance ID", 0},
     {ACPI_DMT_UINT8,    ACPI_NHLT7A_OFFSET (DevicePortId),          "Device Port ID", 0},
-    {ACPI_DMT_BUF18,    ACPI_NHLT7A_OFFSET (Filler),                "Specific Data", 0},
+    ACPI_DMT_TERMINATOR
+};
+
+ACPI_DMTABLE_INFO           AcpiDmTableInfoNhlt7b[] =
+{
+    {ACPI_DMT_BUF18,    ACPI_NHLT7B_OFFSET (SpecificData),          "Specific Data", 0},
     ACPI_DMT_TERMINATOR
 };
 

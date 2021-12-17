@@ -570,6 +570,7 @@ extern ACPI_DMTABLE_INFO        AcpiDmTableInfoNhlt6a[];
 extern ACPI_DMTABLE_INFO        AcpiDmTableInfoNhlt6b[];
 extern ACPI_DMTABLE_INFO        AcpiDmTableInfoNhlt7[];
 extern ACPI_DMTABLE_INFO        AcpiDmTableInfoNhlt7a[];
+extern ACPI_DMTABLE_INFO        AcpiDmTableInfoNhlt7b[];
 extern ACPI_DMTABLE_INFO        AcpiDmTableInfoNhlt8[];
 extern ACPI_DMTABLE_INFO        AcpiDmTableInfoNhlt9[];
 extern ACPI_DMTABLE_INFO        AcpiDmTableInfoPhatHdr[];

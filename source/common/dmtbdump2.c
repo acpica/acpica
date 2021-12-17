@@ -1503,6 +1503,7 @@ AcpiDmDumpNhlt (
     ACPI_NHLT_FORMATS_CONFIG            *FormatsConfig;
     ACPI_NHLT_LINUX_SPECIFIC_COUNT      *Count;
     ACPI_NHLT_LINUX_SPECIFIC_DATA       *LinuxData;
+    ACPI_NHLT_LINUX_SPECIFIC_DATA_B     *LinuxDataB;
 
 
     /* Main table */
@@ -1770,7 +1771,8 @@ AcpiDmDumpNhlt (
 
                     Offset += CapabilitiesSize; // + sizeof (ACPI_NHLT_DEVICE_SPECIFIC_CONFIG_B);
                 }
-            }
+
+            } /* for (j = 0; j < FormatsCount; j++) */
 
             /*
              * If we are not done with the current Endpoint yet, then there must be
@@ -1789,14 +1791,32 @@ AcpiDmDumpNhlt (
                 }
                 Offset += sizeof (ACPI_NHLT_LINUX_SPECIFIC_COUNT);
 
+                if (Count->StructureCount > 1)
+                {
+                    /*
+                     * We currently cannot disassemble more than one
+                     * Linux-Specific section, because we have no way of
+                     * knowing whether the "Specific Data" part is present.
+                     */
+                    Count->StructureCount = 1;
+                    fprintf (stderr, "%s %s\n", "Feature not supported:",
+                        "Cannot disassemble more than one Linux-Specific structure");
+                    return;
+                }
+
                 /* Variable number of linux-specific structures */
 
                 for (j = 0; j < Count->StructureCount; j++)
                 {
                     LinuxData = ACPI_ADD_PTR (ACPI_NHLT_LINUX_SPECIFIC_DATA, Table, Offset);
-
                     AcpiOsPrintf ("\n    /* Linux-specific structure #%u (not part of NHLT spec) */\n", j+1);
 
+                    /*
+                     * Dump the following Linux-specific fields:
+                     *  1) Device ID
+                     *  2) Device Instance ID
+                     *  3) Device Port ID
+                     */
                     Status = AcpiDmDumpTable (TableLength, Offset, LinuxData,
                         sizeof (ACPI_NHLT_LINUX_SPECIFIC_DATA), AcpiDmTableInfoNhlt7a);
                     if (ACPI_FAILURE (Status))
@@ -1805,11 +1825,34 @@ AcpiDmDumpNhlt (
                     }
 
                     Offset += sizeof (ACPI_NHLT_LINUX_SPECIFIC_DATA);
+
+                    /*
+                     * Check that the current offset is not beyond the end of
+                     * this endpoint descriptor. If it is not, we assume that
+                     * the "Specific Data" field is present and valid. Note:
+                     * This does not seem to be documented anywhere.
+                     */
+                    if (Offset < EndpointEndOffset)
+                    {
+                        /* Dump the linux-specific "Specific Data" field */
+
+                        LinuxDataB = ACPI_ADD_PTR (ACPI_NHLT_LINUX_SPECIFIC_DATA_B, Table, Offset);
+                        Status = AcpiDmDumpTable (TableLength, Offset, LinuxDataB,
+                            sizeof (ACPI_NHLT_LINUX_SPECIFIC_DATA_B), AcpiDmTableInfoNhlt7b);
+                        if (ACPI_FAILURE (Status))
+                        {
+                            return;
+                        }
+
+                        Offset += sizeof (ACPI_NHLT_LINUX_SPECIFIC_DATA_B);
+                    }
                 }
 
                 /* Should be at the end of the Endpoint structure. */
             }
-        }
+
+        } /* for (i = 0; i < EndpointCount; i++) */
+
 
         /*
          * Done with all of the Endpoint Descriptors, Emit the table terminator
