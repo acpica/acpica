@@ -567,7 +567,6 @@ AcpiDmDumpCedt (
     ACPI_CEDT_HEADER        *Subtable;
     UINT32                  Length = Table->Length;
     UINT32                  Offset = sizeof (ACPI_TABLE_CEDT);
-    ACPI_DMTABLE_INFO       *InfoTable;
 
 
     /* There is no main table (other than the standard ACPI header) */
@@ -588,35 +587,50 @@ AcpiDmDumpCedt (
         switch (Subtable->Type)
         {
         case ACPI_CEDT_TYPE_CHBS:
-
-            InfoTable = AcpiDmTableInfoCedt0;
+            Status = AcpiDmDumpTable (Length, Offset, Subtable,
+                Subtable->Length, AcpiDmTableInfoCedt0);
+            if (ACPI_FAILURE (Status)) {
+                return;
+            }
             break;
 
-        default:
+        case ACPI_CEDT_TYPE_CFMWS: {
+            ACPI_CEDT_CFMWS *ptr = (ACPI_CEDT_CFMWS *) Subtable;
+            unsigned int i, max = 0x01 << (ptr->InterleaveWays);
 
+            // print out table with first "Interleave target"
+            Status = AcpiDmDumpTable (Length, Offset, Subtable,
+                Subtable->Length, AcpiDmTableInfoCedt1);
+            if (ACPI_FAILURE (Status)) {
+                return;
+            }
+
+            // Now, print out any interleave targets beyond the first.
+            for (i = 1; i < max; i++) {
+                unsigned int loc_offset = Offset + (i * 4) + ACPI_OFFSET(ACPI_CEDT_CFMWS, InterleaveTargets);
+                unsigned int *trg = &(ptr->InterleaveTargets[i]);
+                Status = AcpiDmDumpTable (Length, loc_offset, trg,
+                        Subtable->Length, AcpiDmTableInfoCedt1_te);
+                if (ACPI_FAILURE (Status)) {
+                    return;
+                }
+            }
+            break;
+        }
+
+        default:
             AcpiOsPrintf ("\n**** Unknown CEDT subtable type 0x%X\n\n",
                 Subtable->Type);
 
             /* Attempt to continue */
-
             if (!Subtable->Length)
             {
                 AcpiOsPrintf ("Invalid zero length subtable\n");
                 return;
             }
-            goto NextSubtable;
         }
 
-        Status = AcpiDmDumpTable (Length, Offset, Subtable,
-            Subtable->Length, InfoTable);
-        if (ACPI_FAILURE (Status))
-        {
-            return;
-        }
-
-NextSubtable:
         /* Point to next subtable */
-
         Offset += Subtable->Length;
         Subtable = ACPI_ADD_PTR (ACPI_CEDT_HEADER, Subtable,
             Subtable->Length);

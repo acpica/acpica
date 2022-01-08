@@ -607,18 +607,18 @@ DtCompileCedt (
         switch (CedtHeader->Type)
         {
         case ACPI_CEDT_TYPE_CHBS:
-
+            Status = DtCompileTable (PFieldList, AcpiDmTableInfoCedt0, &Subtable);
+            break;
+        case ACPI_CEDT_TYPE_CFMWS:
+            Status = DtCompileTable (PFieldList, AcpiDmTableInfoCedt1, &Subtable);
             break;
 
         default:
-
             DtFatal (ASL_MSG_UNKNOWN_SUBTABLE, SubtableStart, "CEDT");
             return (AE_ERROR);
         }
 
         /* CEDT Subtable */
-
-        Status = DtCompileTable (PFieldList, AcpiDmTableInfoCedt0, &Subtable);
         if (ACPI_FAILURE (Status))
         {
             return (Status);
