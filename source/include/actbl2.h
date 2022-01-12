@@ -2118,12 +2118,6 @@ typedef struct acpi_nhlt_linux_specific_data
 
 } ACPI_NHLT_LINUX_SPECIFIC_DATA;
 
-typedef struct acpi_nhlt_linux_specific_data_b
-{
-    UINT8                               SpecificData[18];
-
-} ACPI_NHLT_LINUX_SPECIFIC_DATA_B;
-
 
 /*******************************************************************************
  *

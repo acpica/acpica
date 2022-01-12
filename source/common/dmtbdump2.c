@@ -1503,7 +1503,6 @@ AcpiDmDumpNhlt (
     ACPI_NHLT_FORMATS_CONFIG            *FormatsConfig;
     ACPI_NHLT_LINUX_SPECIFIC_COUNT      *Count;
     ACPI_NHLT_LINUX_SPECIFIC_DATA       *LinuxData;
-    ACPI_NHLT_LINUX_SPECIFIC_DATA_B     *LinuxDataB;
     ACPI_NHLT_DEVICE_SPECIFIC_CONFIG_B  *Capabilities;
 
 
@@ -1793,19 +1792,6 @@ AcpiDmDumpNhlt (
                 }
                 Offset += sizeof (ACPI_NHLT_LINUX_SPECIFIC_COUNT);
 
-                if (Count->StructureCount > 1)
-                {
-                    /*
-                     * We currently cannot disassemble more than one
-                     * Linux-Specific section, because we have no way of
-                     * knowing whether the "Specific Data" part is present.
-                     */
-                    Count->StructureCount = 1;
-                    fprintf (stderr, "%s %s\n", "Feature not supported:",
-                        "Cannot disassemble more than one Linux-Specific structure");
-                    return;
-                }
-
                 /* Variable number of linux-specific structures */
 
                 for (j = 0; j < Count->StructureCount; j++)
@@ -1827,27 +1813,22 @@ AcpiDmDumpNhlt (
                     }
 
                     Offset += sizeof (ACPI_NHLT_LINUX_SPECIFIC_DATA);
+                }
 
-                    /*
-                     * Check that the current offset is not beyond the end of
-                     * this endpoint descriptor. If it is not, we assume that
-                     * the "Specific Data" field is present and valid. Note:
-                     * This does not seem to be documented anywhere.
-                     */
-                    if (Offset < EndpointEndOffset)
-                    {
-                        /* Dump the linux-specific "Specific Data" field */
-
-                        LinuxDataB = ACPI_ADD_PTR (ACPI_NHLT_LINUX_SPECIFIC_DATA_B, Table, Offset);
-                        Status = AcpiDmDumpTable (TableLength, Offset, LinuxDataB,
-                            sizeof (ACPI_NHLT_LINUX_SPECIFIC_DATA_B), AcpiDmTableInfoNhlt7b);
-                        if (ACPI_FAILURE (Status))
-                        {
-                            return;
-                        }
-
-                        Offset += sizeof (ACPI_NHLT_LINUX_SPECIFIC_DATA_B);
-                    }
+                /*
+                 * Check that the current offset is not beyond the end of
+                 * this endpoint descriptor. If it is not, print those
+                 * undocumented bytes.
+                 */
+                if (Offset < EndpointEndOffset)
+                {
+                    /* Unknown data at the end of the Endpoint */
+                    UINT32 size = EndpointEndOffset - Offset;
+                    UINT8* buffer = ACPI_ADD_PTR (UINT8, Table, Offset);
+                    AcpiOsPrintf ("\n    /* Unknown data at the end of the Endpoint, size: %X */\n", size);
+                    Status = AcpiDmDumpTable (TableLength, Offset, buffer,
+                        size, AcpiDmTableInfoNhlt7b);
+                    Offset = EndpointEndOffset;
                 }
 
                 /* Should be at the end of the Endpoint structure. */

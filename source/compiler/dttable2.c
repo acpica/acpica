@@ -1113,28 +1113,22 @@ DtCompileNhlt (
 
                     ParentTable = DtPeekSubtable ();
                     DtInsertSubtable (ParentTable, Subtable);
+                } /* for (j = 0; j < LinuxSpecificCount; j++) */
 
-                    /*
-                     * To have a valid Linux-specific "Specific Data" at this
-                     * point, we need:
-                     * 1) The next field must be named "Specific Data"
-                     */
-                    if (!strcmp ((const char *) (*PFieldList)->Name, "Specific Data"))
+
+                /* Undocumented data at the end of endpoint */
+                if (*PFieldList && (strcmp ((const char *) (*PFieldList)->Name, "Descriptor Length")))
+                {
+                    Status = DtCompileTable (PFieldList, AcpiDmTableInfoNhlt7b,
+                        &Subtable);
+                    if (ACPI_FAILURE (Status))
                     {
-                        /* Compile the "Specific Data" field */
-
-                        Status = DtCompileTable (PFieldList, AcpiDmTableInfoNhlt7b,
-                            &Subtable);
-                        if (ACPI_FAILURE (Status))
-                        {
-                            return (Status);
-                        }
-
-                        ParentTable = DtPeekSubtable ();
-                        DtInsertSubtable (ParentTable, Subtable);
+                        return (Status);
                     }
 
-                } /* for (j = 0; j < LinuxSpecificCount; j++) */
+                    ParentTable = DtPeekSubtable ();
+                    DtInsertSubtable (ParentTable, Subtable);
+                }
             }
 
             DtPopSubtable ();

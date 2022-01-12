@@ -1399,7 +1399,7 @@ ACPI_DMTABLE_INFO           AcpiDmTableInfoNhlt7a[] =
 
 ACPI_DMTABLE_INFO           AcpiDmTableInfoNhlt7b[] =
 {
-    {ACPI_DMT_BUF18,    ACPI_NHLT7B_OFFSET (SpecificData),          "Specific Data", 0},
+    {ACPI_DMT_RAW_BUFFER, 0,                                        "Bytes", 0},
     ACPI_DMT_TERMINATOR
 };
 
