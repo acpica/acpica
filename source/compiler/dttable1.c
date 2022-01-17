@@ -587,6 +587,7 @@ DtCompileCedt (
 
     while (*PFieldList)
     {
+        int InsertFlag = 1;             // if CFMWS and has more than one target, then set to zero later
         SubtableStart = *PFieldList;
 
         /* CEDT Header */
@@ -608,24 +609,68 @@ DtCompileCedt (
         {
         case ACPI_CEDT_TYPE_CHBS:
             Status = DtCompileTable (PFieldList, AcpiDmTableInfoCedt0, &Subtable);
+            if (ACPI_FAILURE (Status))
+            {
+                return (Status);
+            }
             break;
-        case ACPI_CEDT_TYPE_CFMWS:
+        case ACPI_CEDT_TYPE_CFMWS: {
+            unsigned char *dump;
+            unsigned int idx, offset, max = 0;
+
+            // Compile table with first "Interleave target"
             Status = DtCompileTable (PFieldList, AcpiDmTableInfoCedt1, &Subtable);
+            if (ACPI_FAILURE (Status))
+            {
+                return (Status);
+            }
+
+            // Look in buffer for the number of targets
+            offset = (unsigned int) ACPI_OFFSET (ACPI_CEDT_CFMWS, InterleaveWays);
+            dump = (unsigned char *) Subtable->Buffer - 4;     // place at beginning of cedt1
+            max = 0x01 << dump[offset]; // 2^max, so 0=1, 1=2, 2=4, 3=8.  8 is MAX
+            if (max > 8)    max=1;      // Error in encoding Interleaving Ways.
+            if (max == 1)               // if only one target, then break here.
+                break;                  // break if only one target.
+
+            // We need to add more interleave targets, so write the current Subtable.
+            ParentTable = DtPeekSubtable ();
+            DtInsertSubtable (ParentTable, Subtable);   // Insert AcpiDmTableInfoCedt1 table so we can put in
+            DtPushSubtable (Subtable);                  // the targets > the first.
+
+            // Now, find out all interleave targets beyond the first.
+            for (idx = 1; idx < max; idx++) {
+                ParentTable = DtPeekSubtable ();
+
+                if (*PFieldList)
+                {
+                    Status = DtCompileTable (PFieldList, AcpiDmTableInfoCedt1_te, &Subtable);
+                    if (ACPI_FAILURE (Status))
+                    {
+                        return (Status);
+                    }
+                    if (Subtable)
+                    {
+                        DtInsertSubtable (ParentTable, Subtable);       // got a target, so insert table.
+                        InsertFlag = 0;
+                    }
+                }
+            }
+
+            DtPopSubtable ();
+            ParentTable = DtPeekSubtable ();
             break;
+        }
 
         default:
             DtFatal (ASL_MSG_UNKNOWN_SUBTABLE, SubtableStart, "CEDT");
             return (AE_ERROR);
         }
 
-        /* CEDT Subtable */
-        if (ACPI_FAILURE (Status))
-        {
-            return (Status);
-        }
-
         ParentTable = DtPeekSubtable ();
-        DtInsertSubtable (ParentTable, Subtable);
+        if (InsertFlag == 1) {
+                DtInsertSubtable (ParentTable, Subtable);
+        }
         DtPopSubtable ();
     }
 
