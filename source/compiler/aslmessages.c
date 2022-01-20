@@ -193,7 +193,8 @@ const char              *AslErrorLevelIde [ASL_NUM_REPORT_LEVELS] = {
  *
  * NOTE2: With the introduction of the -vw option to disable specific messages,
  * new messages should only be added to the end of this list, so that values
- * for existing messages are not disturbed.
+ * for existing messages are not disturbed. As important, obsolete messages
+ * cannot be removed from this list, as it will affect the -vw option.
  */
 
 /* ASL compiler */

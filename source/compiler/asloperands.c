@@ -429,6 +429,11 @@ OpnDoFieldCommon (
                 Next->Asl.ParseOpcode = PARSEOP_DEFAULT_ARG;
                 PkgLengthNode->Asl.ParseOpcode = PARSEOP_DEFAULT_ARG;
             }
+#ifdef _OBSOLETE_CODE
+            /*
+             * January 2022: removed this check due to complaints by users
+             * for too many (invalid) remarks.
+             */
             else if (NewBitOffset == CurrentBitOffset)
             {
                 /*
@@ -459,6 +464,7 @@ OpnDoFieldCommon (
                     CurrentBitOffset = NewBitOffset;
                 }
             }
+#endif
             else
             {
                 /*
