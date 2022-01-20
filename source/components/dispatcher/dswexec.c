@@ -173,7 +173,7 @@ static ACPI_EXECUTE_OP      AcpiGbl_OpTypeDispatch [] =
     AcpiExOpcode_0A_0T_1R,
     AcpiExOpcode_1A_0T_0R,
     AcpiExOpcode_1A_0T_1R,
-    AcpiExOpcode_1A_1T_0R,
+    NULL,   /* Was: AcpiExOpcode_1A_0T_0R (Was for Load operator) */
     AcpiExOpcode_1A_1T_1R,
     AcpiExOpcode_2A_0T_0R,
     AcpiExOpcode_2A_0T_1R,

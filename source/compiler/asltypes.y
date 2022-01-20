@@ -175,7 +175,9 @@ NoEcho('
 %type <n> ParameterTypePackageList
 %type <n> ParameterTypesPackage
 %type <n> ParameterTypesPackageList
+/*
 %type <n> RequiredTarget
+*/
 %type <n> SimpleName
 %type <n> StringData
 %type <n> StringLiteral

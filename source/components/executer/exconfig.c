@@ -423,7 +423,7 @@ AcpiExRegionRead (
  *
  * PARAMETERS:  ObjDesc         - Region or Buffer/Field where the table will be
  *                                obtained
- *              Target          - Where a handle to the table will be stored
+ *              Target          - Where the status of the load will be stored
  *              WalkState       - Current state
  *
  * RETURN:      Status
@@ -454,6 +454,18 @@ AcpiExLoadOp (
 
     ACPI_FUNCTION_TRACE (ExLoadOp);
 
+
+    if (Target->Common.DescriptorType == ACPI_DESC_TYPE_NAMED)
+    {
+        Target = AcpiNsGetAttachedObject (ACPI_CAST_PTR (ACPI_NAMESPACE_NODE, Target));
+    }
+    if (Target->Common.Type != ACPI_TYPE_INTEGER)
+    {
+        fprintf (stderr, "Type not integer: %X\n", Target->Common.Type);
+        return_ACPI_STATUS (AE_AML_OPERAND_TYPE);
+    }
+
+    Target->Integer.Value = 0;
 
     /* Source Object can be either an OpRegion or a Buffer/Field */
 
@@ -616,8 +628,6 @@ AcpiExLoadOp (
     Status = AcpiExAddTable (TableIndex, &DdbHandle);
     if (ACPI_FAILURE (Status))
     {
-        /* On error, TablePtr was deallocated above */
-
         return_ACPI_STATUS (Status);
     }
 
@@ -627,22 +637,13 @@ AcpiExLoadOp (
     AcpiNsInitializeObjects ();
     AcpiExEnterInterpreter ();
 
-    /* Store the DdbHandle into the Target operand */
-
-    Status = AcpiExStore (DdbHandle, Target, WalkState);
-    if (ACPI_FAILURE (Status))
-    {
-        (void) AcpiExUnloadTable (DdbHandle);
-
-        /* TablePtr was deallocated above */
-
-        AcpiUtRemoveReference (DdbHandle);
-        return_ACPI_STATUS (Status);
-    }
-
-    /* Remove the reference by added by AcpiExStore above */
+    /* Remove the reference to DdbHandle created by AcpiExAddTable above */
 
     AcpiUtRemoveReference (DdbHandle);
+
+    /* Return -1 (non-zero) indicates success */
+
+    Target->Integer.Value = 0xFFFFFFFFFFFFFFFF;
     return_ACPI_STATUS (Status);
 }
 

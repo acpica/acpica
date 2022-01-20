@@ -379,7 +379,7 @@ const ASL_MAPPING_ENTRY     AslKeywordMapping [] =
 /* LLESSEQUAL */                OP_TABLE_ENTRY (AML_LOGICAL_LESS_EQUAL_OP,  0,                              0,                  ACPI_BTYPE_INTEGER),
 /* LNOT */                      OP_TABLE_ENTRY (AML_LOGICAL_NOT_OP,         0,                              0,                  ACPI_BTYPE_INTEGER),
 /* LNOTEQUAL */                 OP_TABLE_ENTRY (AML_LOGICAL_NOT_EQUAL_OP,   0,                              0,                  ACPI_BTYPE_INTEGER),
-/* LOAD */                      OP_TABLE_ENTRY (AML_LOAD_OP,                0,                              0,                  0),
+/* LOAD */                      OP_TABLE_ENTRY (AML_LOAD_OP,                0,                              0,                  ACPI_BTYPE_INTEGER),
 /* LOADTABLE */                 OP_TABLE_ENTRY (AML_LOAD_TABLE_OP,          0,                              0,                  ACPI_BTYPE_DDB_HANDLE),
 /* LOCAL0 */                    OP_TABLE_ENTRY (AML_LOCAL0,                 0,                              0,                  ACPI_BTYPE_OBJECTS_AND_REFS),
 /* LOCAL1 */                    OP_TABLE_ENTRY (AML_LOCAL1,                 0,                              0,                  ACPI_BTYPE_OBJECTS_AND_REFS),
