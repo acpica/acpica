@@ -244,12 +244,23 @@ AcpiExLoadTableOp (
     ACPI_NAMESPACE_NODE     *ParentNode;
     ACPI_NAMESPACE_NODE     *StartNode;
     ACPI_NAMESPACE_NODE     *ParameterNode = NULL;
+    ACPI_OPERAND_OBJECT     *ReturnObj;
     ACPI_OPERAND_OBJECT     *DdbHandle;
     UINT32                  TableIndex;
 
 
     ACPI_FUNCTION_TRACE (ExLoadTableOp);
 
+
+    /* Create the return object */
+
+    ReturnObj = AcpiUtCreateIntegerObject ((UINT64) 0);
+    if (!ReturnObj)
+    {
+        return_ACPI_STATUS (AE_NO_MEMORY);
+    }
+
+    *ReturnDesc = ReturnObj;
 
     /* Find the ACPI table in the RSDT/XSDT */
 
@@ -268,13 +279,6 @@ AcpiExLoadTableOp (
 
         /* Table not found, return an Integer=0 and AE_OK */
 
-        DdbHandle = AcpiUtCreateIntegerObject ((UINT64) 0);
-        if (!DdbHandle)
-        {
-            return_ACPI_STATUS (AE_NO_MEMORY);
-        }
-
-        *ReturnDesc = DdbHandle;
         return_ACPI_STATUS (AE_OK);
     }
 
@@ -365,7 +369,13 @@ AcpiExLoadTableOp (
         }
     }
 
-    *ReturnDesc = DdbHandle;
+    /* Remove the reference to DdbHandle created by AcpiExAddTable above */
+
+    AcpiUtRemoveReference (DdbHandle);
+
+    /* Return -1 (non-zero) indicates success */
+
+    ReturnObj->Integer.Value = 0xFFFFFFFFFFFFFFFF;
     return_ACPI_STATUS (Status);
 }
 
