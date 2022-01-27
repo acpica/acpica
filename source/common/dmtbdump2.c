@@ -1501,9 +1501,9 @@ AcpiDmDumpNhlt (
     ACPI_NHLT_VENDOR_MIC_COUNT          *MicCount;
     ACPI_NHLT_DEVICE_SPECIFIC_CONFIG_A  *DevSpecific;
     ACPI_NHLT_FORMATS_CONFIG            *FormatsConfig;
-    ACPI_NHLT_LINUX_SPECIFIC_COUNT      *Count;
-    ACPI_NHLT_LINUX_SPECIFIC_DATA       *LinuxData;
-    ACPI_NHLT_LINUX_SPECIFIC_DATA_B     *LinuxDataB;
+    ACPI_NHLT_DEVICE_INFO_COUNT         *Count;
+    ACPI_NHLT_DEVICE_INFO               *DeviceInfo;
+    ACPI_NHLT_DEVICE_SPECIFIC_CONFIG_B  *Capabilities;
 
 
     /* Main table */
@@ -1757,12 +1757,12 @@ AcpiDmDumpNhlt (
 
                 if (CapabilitiesSize > 0)
                 {
-                    FormatSubtable = ACPI_ADD_PTR (ACPI_NHLT_FORMAT_CONFIG, Table, Offset);
+                    UINT8* Capabilities = ACPI_ADD_PTR (UINT8, Table, Offset);
                     /* Do the Capabilities array (of bytes) */
 
                     AcpiOsPrintf ("\n    /* Specific_Config table #%u */\n", j+1);
-                    FormatSubtable = ACPI_ADD_PTR (ACPI_NHLT_FORMAT_CONFIG, Table, Offset);
-                    Status = AcpiDmDumpTable (TableLength, Offset, FormatSubtable,
+
+                    Status = AcpiDmDumpTable (TableLength, Offset, Capabilities,
                         CapabilitiesSize, AcpiDmTableInfoNhlt3a);
                     if (ACPI_FAILURE (Status))
                     {
@@ -1776,76 +1776,58 @@ AcpiDmDumpNhlt (
 
             /*
              * If we are not done with the current Endpoint yet, then there must be
-             * some Linux-specific structure(s) yet to be processed. First, get
+             * some non documented structure(s) yet to be processed. First, get
              * the count of such structure(s).
              */
             if (Offset < EndpointEndOffset)
             {
-                AcpiOsPrintf ("\n    /* Linux-specific structures (not part of NHLT spec) */\n");
-                Count = ACPI_ADD_PTR (ACPI_NHLT_LINUX_SPECIFIC_COUNT, Table, Offset);
+                AcpiOsPrintf ("\n    /* Structures that are not part of NHLT spec */\n");
+                Count = ACPI_ADD_PTR (ACPI_NHLT_DEVICE_INFO_COUNT, Table, Offset);
                 Status = AcpiDmDumpTable (TableLength, Offset, Count,
-                    sizeof (ACPI_NHLT_LINUX_SPECIFIC_COUNT), AcpiDmTableInfoNhlt7);
+                    sizeof (ACPI_NHLT_DEVICE_INFO_COUNT), AcpiDmTableInfoNhlt7);
                 if (ACPI_FAILURE (Status))
                 {
                     return;
                 }
-                Offset += sizeof (ACPI_NHLT_LINUX_SPECIFIC_COUNT);
+                Offset += sizeof (ACPI_NHLT_DEVICE_INFO_COUNT);
 
-                if (Count->StructureCount > 1)
-                {
-                    /*
-                     * We currently cannot disassemble more than one
-                     * Linux-Specific section, because we have no way of
-                     * knowing whether the "Specific Data" part is present.
-                     */
-                    Count->StructureCount = 1;
-                    fprintf (stderr, "%s %s\n", "Feature not supported:",
-                        "Cannot disassemble more than one Linux-Specific structure");
-                    return;
-                }
-
-                /* Variable number of linux-specific structures */
+                /* Variable number of device structures */
 
                 for (j = 0; j < Count->StructureCount; j++)
                 {
-                    LinuxData = ACPI_ADD_PTR (ACPI_NHLT_LINUX_SPECIFIC_DATA, Table, Offset);
-                    AcpiOsPrintf ("\n    /* Linux-specific structure #%u (not part of NHLT spec) */\n", j+1);
+                    DeviceInfo = ACPI_ADD_PTR (ACPI_NHLT_DEVICE_INFO, Table, Offset);
+                    AcpiOsPrintf ("\n    /* Device Info structure #%u (not part of NHLT spec) */\n", j+1);
 
                     /*
-                     * Dump the following Linux-specific fields:
+                     * Dump the following Device Info fields:
                      *  1) Device ID
                      *  2) Device Instance ID
                      *  3) Device Port ID
                      */
-                    Status = AcpiDmDumpTable (TableLength, Offset, LinuxData,
-                        sizeof (ACPI_NHLT_LINUX_SPECIFIC_DATA), AcpiDmTableInfoNhlt7a);
+                    Status = AcpiDmDumpTable (TableLength, Offset, DeviceInfo,
+                        sizeof (ACPI_NHLT_DEVICE_INFO), AcpiDmTableInfoNhlt7a);
                     if (ACPI_FAILURE (Status))
                     {
                         return;
                     }
 
-                    Offset += sizeof (ACPI_NHLT_LINUX_SPECIFIC_DATA);
+                    Offset += sizeof (ACPI_NHLT_DEVICE_INFO);
+                }
 
-                    /*
-                     * Check that the current offset is not beyond the end of
-                     * this endpoint descriptor. If it is not, we assume that
-                     * the "Specific Data" field is present and valid. Note:
-                     * This does not seem to be documented anywhere.
-                     */
-                    if (Offset < EndpointEndOffset)
-                    {
-                        /* Dump the linux-specific "Specific Data" field */
-
-                        LinuxDataB = ACPI_ADD_PTR (ACPI_NHLT_LINUX_SPECIFIC_DATA_B, Table, Offset);
-                        Status = AcpiDmDumpTable (TableLength, Offset, LinuxDataB,
-                            sizeof (ACPI_NHLT_LINUX_SPECIFIC_DATA_B), AcpiDmTableInfoNhlt7b);
-                        if (ACPI_FAILURE (Status))
-                        {
-                            return;
-                        }
-
-                        Offset += sizeof (ACPI_NHLT_LINUX_SPECIFIC_DATA_B);
-                    }
+                /*
+                 * Check that the current offset is not beyond the end of
+                 * this endpoint descriptor. If it is not, print those
+                 * undocumented bytes.
+                 */
+                if (Offset < EndpointEndOffset)
+                {
+                    /* Unknown data at the end of the Endpoint */
+                    UINT32 size = EndpointEndOffset - Offset;
+                    UINT8* buffer = ACPI_ADD_PTR (UINT8, Table, Offset);
+                    AcpiOsPrintf ("\n    /* Unknown data at the end of the Endpoint, size: %X */\n", size);
+                    Status = AcpiDmDumpTable (TableLength, Offset, buffer,
+                        size, AcpiDmTableInfoNhlt7b);
+                    Offset = EndpointEndOffset;
                 }
 
                 /* Should be at the end of the Endpoint structure. */
@@ -1858,16 +1840,29 @@ AcpiDmDumpNhlt (
          * Done with all of the Endpoint Descriptors, Emit the table terminator
          * (if such a legacy structure is present -- not in NHLT specification)
          */
-        if (Offset == TableLength - sizeof (ACPI_NHLT_TABLE_TERMINATOR))
+        if (Offset < TableLength)
         {
-            LinuxData = ACPI_ADD_PTR (ACPI_NHLT_LINUX_SPECIFIC_DATA, Table, Offset);
-            AcpiOsPrintf ("\n    /* Table terminator structure (not part of NHLT spec) */\n");
+            Capabilities = ACPI_ADD_PTR (ACPI_NHLT_DEVICE_SPECIFIC_CONFIG_B, Table, Offset);
+            AcpiOsPrintf ("\n/* Terminating specific config (not part of NHLT spec) */\n");
 
-            Status = AcpiDmDumpTable (TableLength, Offset, LinuxData,
-                sizeof (ACPI_NHLT_TABLE_TERMINATOR), AcpiDmTableInfoNhlt8);
+            Status = AcpiDmDumpTable (TableLength, Offset, Capabilities,
+                sizeof (ACPI_NHLT_DEVICE_SPECIFIC_CONFIG_B), AcpiDmTableInfoNhlt5b);
             if (ACPI_FAILURE (Status))
             {
                 return;
+            }
+            Offset += sizeof (ACPI_NHLT_DEVICE_SPECIFIC_CONFIG_B);
+
+            if (Capabilities->CapabilitiesSize > 0)
+            {
+                UINT32 remainingBytes = TableLength - Offset;
+                UINT8* buffer = ACPI_ADD_PTR (UINT8, Table, Offset);
+
+                if (remainingBytes != Capabilities->CapabilitiesSize)
+                    AcpiOsPrintf ("\n/* Incorrect config size, should be %X, is %X */\n",
+                        Capabilities->CapabilitiesSize, remainingBytes);
+                Status = AcpiDmDumpTable (TableLength, Offset, buffer,
+                        remainingBytes, AcpiDmTableInfoNhlt3a);
             }
         }
 

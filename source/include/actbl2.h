@@ -2102,34 +2102,21 @@ typedef struct acpi_nhlt_render_feedback_device_specific_config
 
 } ACPI_NHLT_RENDER_FEEDBACK_DEVICE_SPECIFIC_CONFIG;
 
-/* Linux-specific structures */
+/* Non documented structures */
 
-typedef struct acpi_nhlt_linux_specific_count
+typedef struct acpi_nhlt_device_info_count
 {
     UINT8                               StructureCount;
 
-} ACPI_NHLT_LINUX_SPECIFIC_COUNT;
+} ACPI_NHLT_DEVICE_INFO_COUNT;
 
-typedef struct acpi_nhlt_linux_specific_data
+typedef struct acpi_nhlt_device_info
 {
     UINT8                               DeviceId[16];
     UINT8                               DeviceInstanceId;
     UINT8                               DevicePortId;
 
-} ACPI_NHLT_LINUX_SPECIFIC_DATA;
-
-typedef struct acpi_nhlt_linux_specific_data_b
-{
-    UINT8                               SpecificData[18];
-
-} ACPI_NHLT_LINUX_SPECIFIC_DATA_B;
-
-typedef struct acpi_nhlt_table_terminator
-{
-    UINT32                  TerminatorValue;
-    UINT32                  TerminatorSignature;
-
-} ACPI_NHLT_TABLE_TERMINATOR;
+} ACPI_NHLT_DEVICE_INFO;
 
 
 /*******************************************************************************

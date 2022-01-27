@@ -1379,19 +1379,19 @@ ACPI_DMTABLE_INFO           AcpiDmTableInfoNhlt6[] =
     ACPI_DMT_TERMINATOR
 };
 
-/* Number of Linux-specific structures */
+/* Number of DeviceInfo structures */
 
 ACPI_DMTABLE_INFO           AcpiDmTableInfoNhlt7[] =
 {
-    {ACPI_DMT_UINT8,    ACPI_NHLT7_OFFSET (StructureCount),         "Linux-specific Count", 0},
+    {ACPI_DMT_UINT8,    ACPI_NHLT7_OFFSET (StructureCount),         "Device Info struct count", 0},
     ACPI_DMT_TERMINATOR
 };
 
-/* The Linux-specific structure */
+/* The DeviceInfo structure */
 
 ACPI_DMTABLE_INFO           AcpiDmTableInfoNhlt7a[] =
 {
-    {ACPI_DMT_BUF16,    ACPI_NHLT7A_OFFSET (DeviceId),              "Device ID", 0},
+    {ACPI_DMT_UUID,     ACPI_NHLT7A_OFFSET (DeviceId),              "Device ID GUID", 0},
     {ACPI_DMT_UINT8,    ACPI_NHLT7A_OFFSET (DeviceInstanceId),      "Device Instance ID", 0},
     {ACPI_DMT_UINT8,    ACPI_NHLT7A_OFFSET (DevicePortId),          "Device Port ID", 0},
     ACPI_DMT_TERMINATOR
@@ -1399,16 +1399,7 @@ ACPI_DMTABLE_INFO           AcpiDmTableInfoNhlt7a[] =
 
 ACPI_DMTABLE_INFO           AcpiDmTableInfoNhlt7b[] =
 {
-    {ACPI_DMT_BUF18,    ACPI_NHLT7B_OFFSET (SpecificData),          "Specific Data", 0},
-    ACPI_DMT_TERMINATOR
-};
-
-/* Table terminator (may or may not be present) */
-
-ACPI_DMTABLE_INFO           AcpiDmTableInfoNhlt8[] =
-{
-    {ACPI_DMT_UINT32,   ACPI_NHLT8_OFFSET (TerminatorValue),        "Terminator Value", 0},
-    {ACPI_DMT_UINT32,   ACPI_NHLT8_OFFSET (TerminatorSignature),    "Terminator Signature", 0},
+    {ACPI_DMT_RAW_BUFFER, 0,                                        "Bytes", 0},
     ACPI_DMT_TERMINATOR
 };
 
