@@ -322,6 +322,10 @@ AcpiNsWalkNamespace (
     if (StartNode == ACPI_ROOT_OBJECT)
     {
         StartNode = AcpiGbl_RootNode;
+        if (!StartNode)
+        {
+            return_ACPI_STATUS (AE_NO_NAMESPACE);
+        }
     }
 
     /* Null child means "get first node" */
