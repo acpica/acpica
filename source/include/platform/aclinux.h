@@ -252,6 +252,11 @@
 #define ACPI_SPINLOCK               spinlock_t *
 #define ACPI_CPU_FLAGS              unsigned long
 
+#define ACPI_UINTPTR_T              uintptr_t
+
+#define ACPI_TO_INTEGER(p)          ((uintptr_t)(p))
+#define ACPI_OFFSET(d, f)           offsetof(d, f)
+
 /* Use native linux version of AcpiOsAllocateZeroed */
 
 #define USE_NATIVE_ALLOCATE_ZEROED
