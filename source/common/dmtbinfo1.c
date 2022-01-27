@@ -521,6 +521,28 @@ ACPI_DMTABLE_INFO           AcpiDmTableInfoCedt0[] =
     ACPI_DMT_TERMINATOR
 };
 
+/* 1: CXL Fixed Memory Window Structure */
+
+ACPI_DMTABLE_INFO           AcpiDmTableInfoCedt1[] =
+{
+    {ACPI_DMT_UINT32,   ACPI_CEDT1_OFFSET (Reserved1),            "Reserved", 0},
+    {ACPI_DMT_UINT64,   ACPI_CEDT1_OFFSET (BaseHpa),              "Window base address", 0},
+    {ACPI_DMT_UINT64,   ACPI_CEDT1_OFFSET (WindowSize),           "Window size", 0},
+    {ACPI_DMT_UINT8,    ACPI_CEDT1_OFFSET (InterleaveWays),       "Interleave Members (2^n)", 0},
+    {ACPI_DMT_UINT8,    ACPI_CEDT1_OFFSET (InterleaveArithmetic), "Interleave Arithmetic", 0},
+    {ACPI_DMT_UINT16,   ACPI_CEDT1_OFFSET (Reserved2),            "Reserved", 0},
+    {ACPI_DMT_UINT32,   ACPI_CEDT1_OFFSET (Granularity),          "Granularity", 0},
+    {ACPI_DMT_UINT16,   ACPI_CEDT1_OFFSET (Restrictions),         "Restrictions", 0},
+    {ACPI_DMT_UINT16,   ACPI_CEDT1_OFFSET (QtgId),                "QtgId", 0},
+    {ACPI_DMT_UINT32,   ACPI_CEDT1_OFFSET (InterleaveTargets),    "First Target", 0},
+    ACPI_DMT_TERMINATOR
+};
+
+ACPI_DMTABLE_INFO           AcpiDmTableInfoCedt1_te[] =
+{
+    {ACPI_DMT_UINT32,   ACPI_CEDT1_TE_OFFSET (InterleaveTarget),  "Next Target", 0},
+    ACPI_DMT_TERMINATOR
+};
 
 /*******************************************************************************
  *

@@ -574,6 +574,11 @@ typedef struct acpi_cedt_cfmws
 
 } ACPI_CEDT_CFMWS;
 
+typedef struct acpi_cedt_cfmws_target_element
+{
+    UINT32                  InterleaveTarget;
+} ACPI_CEDT_CFMWS_TARGET_ELEMENT;
+
 /* Values for Interleave Arithmetic field above */
 
 #define ACPI_CEDT_CFMWS_ARITHMETIC_MODULO	(0)
