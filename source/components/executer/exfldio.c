@@ -262,7 +262,7 @@ AcpiExSetupRegion (
 #ifdef ACPI_UNDER_DEVELOPMENT
     /*
      * If the Field access is AnyAcc, we can now compute the optimal
-     * access (because we know know the length of the parent region)
+     * access (because we know the length of the parent region)
      */
     if (!(ObjDesc->Common.Flags & AOPOBJ_DATA_VALID))
     {
