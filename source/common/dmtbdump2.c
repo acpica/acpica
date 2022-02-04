@@ -1757,12 +1757,12 @@ AcpiDmDumpNhlt (
 
                 if (CapabilitiesSize > 0)
                 {
-                    UINT8* Capabilities = ACPI_ADD_PTR (UINT8, Table, Offset);
+                    UINT8* CapabilitiesBuf = ACPI_ADD_PTR (UINT8, Table, Offset);
                     /* Do the Capabilities array (of bytes) */
 
                     AcpiOsPrintf ("\n    /* Specific_Config table #%u */\n", j+1);
 
-                    Status = AcpiDmDumpTable (TableLength, Offset, Capabilities,
+                    Status = AcpiDmDumpTable (TableLength, Offset, CapabilitiesBuf,
                         CapabilitiesSize, AcpiDmTableInfoNhlt3a);
                     if (ACPI_FAILURE (Status))
                     {
