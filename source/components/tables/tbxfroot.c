@@ -299,7 +299,12 @@ AcpiFindRootPointer (
 
     /* EBDA present? */
 
-    if (PhysicalAddress > 0x400)
+    /*
+     * Check that the EBDA pointer from memory is sane and does not point
+     * above valid low memory
+     */
+    if (PhysicalAddress > 0x400 &&
+        PhysicalAddress < 0xA0000)
     {
         /*
          * 1b) Search EBDA paragraphs (EBDA is required to be a
