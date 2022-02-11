@@ -271,6 +271,7 @@ AcpiFindRootPointer (
     UINT8                   *TablePtr;
     UINT8                   *MemRover;
     UINT32                  PhysicalAddress;
+    UINT32                  EbdaWindowSize;
 
 
     ACPI_FUNCTION_TRACE (AcpiFindRootPointer);
@@ -307,24 +308,32 @@ AcpiFindRootPointer (
         PhysicalAddress < 0xA0000)
     {
         /*
-         * 1b) Search EBDA paragraphs (EBDA is required to be a
-         *     minimum of 1K length)
+         * Calculate the scan window size
+         * The EBDA is not guaranteed to be larger than a KiB and in case
+         * that it is smaller, the scanning function would leave the low
+         * memory and continue to the VGA range.
+         */
+        EbdaWindowSize = ACPI_MIN(ACPI_EBDA_WINDOW_SIZE,
+            0xA0000 - PhysicalAddress);
+
+        /*
+         * 1b) Search EBDA paragraphs
          */
         TablePtr = AcpiOsMapMemory (
             (ACPI_PHYSICAL_ADDRESS) PhysicalAddress,
-            ACPI_EBDA_WINDOW_SIZE);
+            EbdaWindowSize);
         if (!TablePtr)
         {
             ACPI_ERROR ((AE_INFO,
                 "Could not map memory at 0x%8.8X for length %u",
-                PhysicalAddress, ACPI_EBDA_WINDOW_SIZE));
+                PhysicalAddress, EbdaWindowSize));
 
             return_ACPI_STATUS (AE_NO_MEMORY);
         }
 
         MemRover = AcpiTbScanMemoryForRsdp (
-            TablePtr, ACPI_EBDA_WINDOW_SIZE);
-        AcpiOsUnmapMemory (TablePtr, ACPI_EBDA_WINDOW_SIZE);
+            TablePtr, EbdaWindowSize);
+        AcpiOsUnmapMemory (TablePtr, EbdaWindowSize);
 
         if (MemRover)
         {
