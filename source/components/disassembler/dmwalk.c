@@ -959,7 +959,15 @@ AcpiDmDescendingOp (
                 NextOp->Common.DisasmFlags |= ACPI_PARSEOP_IGNORE;
                 ASL_CV_CLOSE_PAREN (Op, Level);
 
-                /* Emit description comment for Name() with a predefined ACPI name */
+                if (Op->Asl.Parent->Common.AmlOpcode == AML_NAME_OP)
+                {
+                    /*
+                     * Emit description comment showing the full ACPI name
+                     * of the ResourceTemplate only if it was defined using a
+                     * Name statement.
+                     */
+                     AcpiDmPredefinedDescription (Op->Asl.Parent);
+                }
 
                 AcpiDmPredefinedDescription (Op->Asl.Parent);
 
