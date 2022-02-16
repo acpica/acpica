@@ -2849,7 +2849,7 @@ typedef struct acpi_table_rgrt
     UINT16                  Version;
     UINT8                   ImageType;
     UINT8                   Reserved;
-    UINT8                   Image[0];
+    UINT8                   Image[];
 
 } ACPI_TABLE_RGRT;
 
