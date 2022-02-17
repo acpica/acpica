@@ -587,7 +587,9 @@ DtCompileCedt (
 
     while (*PFieldList)
     {
-        int InsertFlag = 1;             // if CFMWS and has more than one target, then set to zero later
+        /* if CFMWS and has more than one target, then set to zero later */
+
+        int InsertFlag = 1;
         SubtableStart = *PFieldList;
 
         /* CEDT Header */
@@ -618,27 +620,30 @@ DtCompileCedt (
             unsigned char *dump;
             unsigned int idx, offset, max = 0;
 
-            // Compile table with first "Interleave target"
+            /* Compile table with first "Interleave target" */
+
             Status = DtCompileTable (PFieldList, AcpiDmTableInfoCedt1, &Subtable);
             if (ACPI_FAILURE (Status))
             {
                 return (Status);
             }
 
-            // Look in buffer for the number of targets
+            /* Look in buffer for the number of targets */
             offset = (unsigned int) ACPI_OFFSET (ACPI_CEDT_CFMWS, InterleaveWays);
-            dump = (unsigned char *) Subtable->Buffer - 4;     // place at beginning of cedt1
-            max = 0x01 << dump[offset]; // 2^max, so 0=1, 1=2, 2=4, 3=8.  8 is MAX
-            if (max > 8)    max=1;      // Error in encoding Interleaving Ways.
-            if (max == 1)               // if only one target, then break here.
-                break;                  // break if only one target.
+            dump = (unsigned char *) Subtable->Buffer - 4;     /* place at beginning of cedt1 */
+            max = 0x01 << dump[offset];     /* 2^max, so 0=1, 1=2, 2=4, 3=8.  8 is MAX */
+            if (max > 8)    max=1;          /* Error in encoding Interleaving Ways. */
+            if (max == 1)                   /* if only one target, then break here. */
+                break;                      /* break if only one target. */
 
-            // We need to add more interleave targets, so write the current Subtable.
+            /* We need to add more interleave targets, so write the current Subtable. */
+
             ParentTable = DtPeekSubtable ();
-            DtInsertSubtable (ParentTable, Subtable);   // Insert AcpiDmTableInfoCedt1 table so we can put in
-            DtPushSubtable (Subtable);                  // the targets > the first.
+            DtInsertSubtable (ParentTable, Subtable);   /* Insert AcpiDmTableInfoCedt1 table so we can put in */
+            DtPushSubtable (Subtable);                  /* the targets > the first. */
 
-            // Now, find out all interleave targets beyond the first.
+            /* Now, find out all interleave targets beyond the first. */
+
             for (idx = 1; idx < max; idx++) {
                 ParentTable = DtPeekSubtable ();
 
@@ -651,7 +656,7 @@ DtCompileCedt (
                     }
                     if (Subtable)
                     {
-                        DtInsertSubtable (ParentTable, Subtable);       // got a target, so insert table.
+                        DtInsertSubtable (ParentTable, Subtable);       /* got a target, so insert table. */
                         InsertFlag = 0;
                     }
                 }
@@ -2263,7 +2268,7 @@ DtCompileIort (
             IortRmr->RmrCount = RmrCount;
             break;
 
-	default:
+        default:
 
             DtFatal (ASL_MSG_UNKNOWN_SUBTABLE, SubtableStart, "IORT");
             return (AE_ERROR);

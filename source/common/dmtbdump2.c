@@ -445,7 +445,7 @@ AcpiDmDumpIort (
             }
             break;
 
-	default:
+        default:
 
             break;
         }
@@ -1769,7 +1769,7 @@ AcpiDmDumpNhlt (
                         return;
                     }
 
-                    Offset += CapabilitiesSize; // + sizeof (ACPI_NHLT_DEVICE_SPECIFIC_CONFIG_B);
+                    Offset += CapabilitiesSize; /* + sizeof (ACPI_NHLT_DEVICE_SPECIFIC_CONFIG_B); */
                 }
 
             } /* for (j = 0; j < FormatsCount; j++) */

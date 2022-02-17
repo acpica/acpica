@@ -1271,8 +1271,8 @@ typedef struct acpi_madt_multiproc_wakeup
 
 } ACPI_MADT_MULTIPROC_WAKEUP;
 
-#define ACPI_MULTIPROC_WAKEUP_MB_OS_SIZE	2032
-#define ACPI_MULTIPROC_WAKEUP_MB_FIRMWARE_SIZE	2048
+#define ACPI_MULTIPROC_WAKEUP_MB_OS_SIZE        2032
+#define ACPI_MULTIPROC_WAKEUP_MB_FIRMWARE_SIZE  2048
 
 typedef struct acpi_madt_multiproc_wakeup_mailbox
 {
@@ -2016,7 +2016,7 @@ typedef struct acpi_nhlt_mic_device_specific_config
 
 /* Values for ArrayTypeExt above */
 
-#define ACPI_NHLT_ARRAY_TYPE_RESERVED               0x09 // 9 and below are reserved
+#define ACPI_NHLT_ARRAY_TYPE_RESERVED               0x09    /* 9 and below are reserved */
 #define ACPI_NHLT_SMALL_LINEAR_2ELEMENT             0x0A
 #define ACPI_NHLT_BIG_LINEAR_2ELEMENT               0x0B
 #define ACPI_NHLT_FIRST_GEOMETRY_LINEAR_4ELEMENT    0x0C
@@ -2039,17 +2039,17 @@ typedef struct acpi_nhlt_vendor_mic_config
 {
     UINT8                   Type;
     UINT8                   Panel;
-    UINT16                  SpeakerPositionDistance;    // mm
-    UINT16                  HorizontalOffset;           // mm
-    UINT16                  VerticalOffset;             // mm
-    UINT8                   FrequencyLowBand;           // 5*Hz
-    UINT8                   FrequencyHighBand;          // 500*Hz
-    UINT16                  DirectionAngle;             // -180 - + 180
-    UINT16                  ElevationAngle;             // -180 - + 180
-    UINT16                  WorkVerticalAngleBegin;     // -180 - + 180 with 2 deg step
-    UINT16                  WorkVerticalAngleEnd;       // -180 - + 180 with 2 deg step
-    UINT16                  WorkHorizontalAngleBegin;   // -180 - + 180 with 2 deg step
-    UINT16                  WorkHorizontalAngleEnd;     // -180 - + 180 with 2 deg step
+    UINT16                  SpeakerPositionDistance;    /* mm */
+    UINT16                  HorizontalOffset;           /* mm */
+    UINT16                  VerticalOffset;             /* mm */
+    UINT8                   FrequencyLowBand;           /* 5*Hz */
+    UINT8                   FrequencyHighBand;          /* 500*Hz */
+    UINT16                  DirectionAngle;             /* -180 - + 180 */
+    UINT16                  ElevationAngle;             /* -180 - + 180 */
+    UINT16                  WorkVerticalAngleBegin;     /* -180 - + 180 with 2 deg step */
+    UINT16                  WorkVerticalAngleEnd;       /* -180 - + 180 with 2 deg step */
+    UINT16                  WorkHorizontalAngleBegin;   /* -180 - + 180 with 2 deg step */
+    UINT16                  WorkHorizontalAngleEnd;     /* -180 - + 180 with 2 deg step */
 
 } ACPI_NHLT_VENDOR_MIC_CONFIG;
 
@@ -2061,9 +2061,9 @@ typedef struct acpi_nhlt_vendor_mic_config
 #define ACPI_NHLT_MIC_SUPER_CARDIOID        3
 #define ACPI_NHLT_MIC_HYPER_CARDIOID        4
 #define ACPI_NHLT_MIC_8_SHAPED              5
-#define ACPI_NHLT_MIC_RESERVED6             6 // 6 is reserved
+#define ACPI_NHLT_MIC_RESERVED6             6   /* 6 is reserved */
 #define ACPI_NHLT_MIC_VENDOR_DEFINED        7
-#define ACPI_NHLT_MIC_RESERVED              8 // 8 and above are reserved
+#define ACPI_NHLT_MIC_RESERVED              8   /* 8 and above are reserved */
 
 /* Values for Panel field above */
 
@@ -2073,13 +2073,13 @@ typedef struct acpi_nhlt_vendor_mic_config
 #define ACPI_NHLT_MIC_POSITION_RIGHT        3
 #define ACPI_NHLT_MIC_POSITION_FRONT        4
 #define ACPI_NHLT_MIC_POSITION_BACK         5
-#define ACPI_NHLT_MIC_POSITION_RESERVED     6 // 6 and above are reserved
+#define ACPI_NHLT_MIC_POSITION_RESERVED     6   /* 6 and above are reserved */
 
 typedef struct acpi_nhlt_vendor_mic_device_specific_config
 {
     ACPI_NHLT_MIC_DEVICE_SPECIFIC_CONFIG    MicArrayDeviceConfig;
     UINT8                                   NumberOfMicrophones;
-    ACPI_NHLT_VENDOR_MIC_CONFIG             MicConfig[];            // Indexed by NumberOfMicrophones
+    ACPI_NHLT_VENDOR_MIC_CONFIG             MicConfig[];            /* Indexed by NumberOfMicrophones */
 
 } ACPI_NHLT_VENDOR_MIC_DEVICE_SPECIFIC_CONFIG;
 
@@ -2096,8 +2096,8 @@ typedef struct acpi_nhlt_mic_snr_sensitivity_extension
 
 typedef struct acpi_nhlt_render_feedback_device_specific_config
 {
-    UINT8                               FeedbackVirtualSlot;    // Render slot in case of capture
-    UINT16                              FeedbackChannels;       // Informative only
+    UINT8                               FeedbackVirtualSlot;        /* Render slot in case of capture */
+    UINT16                              FeedbackChannels;           /* Informative only */
     UINT16                              FeedbackValidBitsPerSample;
 
 } ACPI_NHLT_RENDER_FEEDBACK_DEVICE_SPECIFIC_CONFIG;
@@ -2694,8 +2694,8 @@ typedef struct acpi_table_prmt_header
 
 typedef struct acpi_prmt_module_header
 {
-	UINT16                  Revision;
-	UINT16                  Length;
+    UINT16                  Revision;
+    UINT16                  Length;
 
 } ACPI_PRMT_MODULE_HEADER;
 

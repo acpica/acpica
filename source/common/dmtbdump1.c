@@ -598,14 +598,16 @@ AcpiDmDumpCedt (
             ACPI_CEDT_CFMWS *ptr = (ACPI_CEDT_CFMWS *) Subtable;
             unsigned int i, max = 0x01 << (ptr->InterleaveWays);
 
-            // print out table with first "Interleave target"
+            /* print out table with first "Interleave target" */
+
             Status = AcpiDmDumpTable (Length, Offset, Subtable,
                 Subtable->Length, AcpiDmTableInfoCedt1);
             if (ACPI_FAILURE (Status)) {
                 return;
             }
 
-            // Now, print out any interleave targets beyond the first.
+            /* Now, print out any interleave targets beyond the first. */
+
             for (i = 1; i < max; i++) {
                 unsigned int loc_offset = Offset + (i * 4) + ACPI_OFFSET(ACPI_CEDT_CFMWS, InterleaveTargets);
                 unsigned int *trg = &(ptr->InterleaveTargets[i]);
