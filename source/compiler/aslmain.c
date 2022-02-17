@@ -417,7 +417,7 @@ AslSignalHandler (
     }
 
     printf (ASL_PREFIX "Terminating\n");
-    exit (0);
+    _exit (0);
 }
 
 
