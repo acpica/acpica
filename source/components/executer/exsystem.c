@@ -339,6 +339,16 @@ AcpiExSystemDoSleep (
     AcpiExExitInterpreter ();
 
     /*
+     * Warn users about excessive sleep times, so ASL code can be improved to
+     * use polling or similar techniques.
+     */
+    if (HowLongMs > 10)
+    {
+        ACPI_WARNING ((AE_INFO,
+            "Firmware issue: Excessive sleep time (%llu ms > 10 ms) in ACPI Control Method", HowLongUs));
+    }
+
+    /*
      * For compatibility with other ACPI implementations and to prevent
      * accidental deep sleeps, limit the sleep time to something reasonable.
      */
