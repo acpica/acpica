@@ -302,6 +302,11 @@ AcpiExSystemDoStall (
     }
     else
     {
+        if (HowLongUS > 100)
+	{
+            ACPI_WARNING ((AE_INFO,
+                "Time parameter %u us > 100 us violating ACPI spec, please fix the firmware.", HowLongUs));
+	}
         AcpiOsStall (HowLongUs);
     }
 
