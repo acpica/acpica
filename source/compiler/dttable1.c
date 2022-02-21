@@ -1953,9 +1953,9 @@ DtCompileIort (
     Table = ACPI_CAST_PTR (ACPI_TABLE_HEADER, ParentTable->Buffer);
     Revision = Table->Revision;
 
-    /* Both IORT Rev E and E.a have known issues and are not supported */
+    /* IORT Revisions E, E.a & E.c have known issues and are not supported */
 
-    if (Revision == 1 || Revision == 2)
+    if (Revision == 1 || Revision == 2 || Revision == 4)
     {
         DtError (ASL_ERROR, ASL_MSG_UNSUPPORTED, NULL, "IORT table revision");
         return (AE_ERROR);
