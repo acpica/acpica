@@ -248,6 +248,7 @@ static const char           *AcpiDmDmarSubnames[] =
     "Root Port ATS Capability",
     "Remapping Hardware Static Affinity",
     "ACPI Namespace Device Declaration",
+    "SoC Integrated Address Translation Cache",
     "Unknown Subtable Type"         /* Reserved */
 };
 
