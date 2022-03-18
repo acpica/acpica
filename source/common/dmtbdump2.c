@@ -887,6 +887,8 @@ AcpiDmDumpMadt (
     /* Subtables */
 
     Subtable = ACPI_ADD_PTR (ACPI_SUBTABLE_HEADER, Table, Offset);
+    DbgPrint (ASL_PARSE_OUTPUT, "//0B) Offset %X, from table start: %X\n",
+        Offset, ACPI_CAST_PTR (char, Subtable) - ACPI_CAST_PTR (char, Table));
     while (Offset < Table->Length)
     {
         /* Common subtable header */
@@ -899,6 +901,7 @@ AcpiDmDumpMadt (
             return;
         }
 
+        DbgPrint (ASL_PARSE_OUTPUT, "subtableType: %X\n", Subtable->Type);
         switch (Subtable->Type)
         {
         case ACPI_MADT_TYPE_LOCAL_APIC:
@@ -988,8 +991,23 @@ AcpiDmDumpMadt (
 
         default:
 
-            AcpiOsPrintf ("\n**** Unknown MADT subtable type 0x%X\n\n",
-                Subtable->Type);
+            if ((Subtable->Type >= ACPI_MADT_TYPE_RESERVED) &&
+                (Subtable->Type < ACPI_MADT_TYPE_OEM_RESERVED))
+            {
+                AcpiOsPrintf ("\n**** Unknown MADT subtable type 0x%X\n\n",
+                    Subtable->Type);
+                goto NextSubtable;
+            }
+            else if (Subtable->Type >= ACPI_MADT_TYPE_OEM_RESERVED)
+            {
+                DbgPrint (ASL_PARSE_OUTPUT, "//[Found an OEM structure, type = %0x]\n",
+                    Subtable->Type);
+                Offset += sizeof (ACPI_SUBTABLE_HEADER);
+                DbgPrint (ASL_PARSE_OUTPUT, "//[0) Subtable->Length = %X, Subtable = %p, Offset = %X]\n",
+                    Subtable->Length, Subtable, Offset);
+                DbgPrint (ASL_PARSE_OUTPUT, "//[0A) Offset from table start: %X]\n",
+                    ACPI_CAST_PTR (char, Subtable) - ACPI_CAST_PTR (char, Table));
+            }
 
             /* Attempt to continue */
 
@@ -999,9 +1017,24 @@ AcpiDmDumpMadt (
                 return;
             }
 
+            /* Dump the OEM data */
+
+            Status = AcpiDmDumpTable (Length, Offset, ACPI_CAST_PTR (UINT8, Table) + Offset,
+                Subtable->Length - sizeof (ACPI_SUBTABLE_HEADER), AcpiDmTableInfoMadt17);
+            if (ACPI_FAILURE (Status))
+            {
+                return;
+            }
+
+            DbgPrint (ASL_PARSE_OUTPUT, "//[1) Subtable->Length = %X, Offset = %X]\n",
+                Subtable->Length, Offset);
+            Offset -= sizeof (ACPI_SUBTABLE_HEADER);
+
             goto NextSubtable;
         }
 
+        DbgPrint (ASL_PARSE_OUTPUT, "//[2) Subtable->Length = %X, Offset = %X]\n",
+            Subtable->Length, Offset);
         Status = AcpiDmDumpTable (Length, Offset, Subtable,
             Subtable->Length, InfoTable);
         if (ACPI_FAILURE (Status))
@@ -1012,9 +1045,28 @@ AcpiDmDumpMadt (
 NextSubtable:
         /* Point to next subtable */
 
-        Offset += Subtable->Length;
+        DbgPrint (ASL_PARSE_OUTPUT, "//[3) Subtable->Length = %X, Offset = %X]\n",
+            Subtable->Length, Offset);
+        DbgPrint (ASL_PARSE_OUTPUT, "//[4) Offset from table start: %X (%p) %p]\n",
+            ACPI_CAST_PTR (UINT8, Subtable) - ACPI_CAST_PTR (UINT8, Table), Subtable, Table);
+        if (Offset > Table->Length)
+        {
+            return;
+        }
+
         Subtable = ACPI_ADD_PTR (ACPI_SUBTABLE_HEADER, Subtable,
             Subtable->Length);
+
+        DbgPrint (ASL_PARSE_OUTPUT, "//[5) Next Subtable %p, length %X]\n",
+            Subtable, Subtable->Length);
+        DbgPrint (ASL_PARSE_OUTPUT, "//[5B) Offset from table start: %X %p]\n",
+            ACPI_CAST_PTR (char, Subtable) - ACPI_CAST_PTR (char, Table), Subtable);
+
+        Offset = ACPI_CAST_PTR (char, Subtable) - ACPI_CAST_PTR (char, Table);
+        if (Offset >= Table->Length)
+        {
+            return;
+        }
     }
 }
 

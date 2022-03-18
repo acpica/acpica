@@ -1004,7 +1004,8 @@ enum AcpiMadtType
     ACPI_MADT_TYPE_GENERIC_REDISTRIBUTOR    = 14,
     ACPI_MADT_TYPE_GENERIC_TRANSLATOR       = 15,
     ACPI_MADT_TYPE_MULTIPROC_WAKEUP         = 16,
-    ACPI_MADT_TYPE_RESERVED                 = 17    /* 17 and greater are reserved */
+    ACPI_MADT_TYPE_RESERVED                 = 17,   /* 17 to 0x7F are reserved */
+    ACPI_MADT_TYPE_OEM_RESERVED             = 0x80  /* 0x80 to 0xFF are reserved for OEM use */
 };
 
 
@@ -1286,6 +1287,13 @@ typedef struct acpi_madt_multiproc_wakeup_mailbox
 } ACPI_MADT_MULTIPROC_WAKEUP_MAILBOX;
 
 #define ACPI_MP_WAKE_COMMAND_WAKEUP    1
+
+/* 17: OEM data */
+
+typedef struct acpi_madt_oem_data
+{
+    UINT8                   OemData[0];
+} ACPI_MADT_OEM_DATA;
 
 
 /*

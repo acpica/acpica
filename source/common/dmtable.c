@@ -402,7 +402,8 @@ static const char           *AcpiDmMadtSubnames[] =
     "Generic Interrupt Redistributor",  /* ACPI_MADT_GENERIC_REDISTRIBUTOR */
     "Generic Interrupt Translator",     /* ACPI_MADT_GENERIC_TRANSLATOR */
     "Mutiprocessor Wakeup",             /* ACPI_MADT_TYPE_MULTIPROC_WAKEUP */
-    "Unknown Subtable Type"             /* Reserved */
+    "Unknown Subtable Type",            /* Reserved */
+    "Types 80-FF are used for OEM data" /* Reserved for OEM data */
 };
 
 static const char           *AcpiDmNfitSubnames[] =
@@ -1850,11 +1851,14 @@ AcpiDmDumpTable (
             /* MADT subtable types */
 
             Temp8 = *Target;
-            if (Temp8 > ACPI_MADT_TYPE_RESERVED)
+            if ((Temp8 >= ACPI_MADT_TYPE_RESERVED) && (Temp8 < ACPI_MADT_TYPE_OEM_RESERVED))
             {
                 Temp8 = ACPI_MADT_TYPE_RESERVED;
             }
-
+            else if (Temp8 >= ACPI_MADT_TYPE_OEM_RESERVED)
+            {
+                Temp8 = ACPI_MADT_TYPE_RESERVED + 1;
+            }
             AcpiOsPrintf (UINT8_FORMAT, *Target,
                 AcpiDmMadtSubnames[Temp8]);
             break;
