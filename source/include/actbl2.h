@@ -678,7 +678,7 @@ typedef struct acpi_iort_rmr {
 #define ACPI_IORT_RMR_ATTR_DEVICE_nGRE     0x02
 #define ACPI_IORT_RMR_ATTR_DEVICE_GRE      0x03
 #define ACPI_IORT_RMR_ATTR_NORMAL_NC       0x04
-#define ACPI_IORT_RMR_ATTR_NORMAL          0x05
+#define ACPI_IORT_RMR_ATTR_NORMAL_IWB_OWB  0x05
 
 typedef struct acpi_iort_rmr_desc {
     UINT64 BaseAddress;
