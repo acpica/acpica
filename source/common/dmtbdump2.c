@@ -887,7 +887,7 @@ AcpiDmDumpMadt (
     /* Subtables */
 
     Subtable = ACPI_ADD_PTR (ACPI_SUBTABLE_HEADER, Table, Offset);
-    DbgPrint (ASL_PARSE_OUTPUT, "//0B) Offset %X, from table start: %X\n",
+    DbgPrint (ASL_PARSE_OUTPUT, "//0B) Offset %X, from table start: %lX\n",
         Offset, ACPI_CAST_PTR (char, Subtable) - ACPI_CAST_PTR (char, Table));
     while (Offset < Table->Length)
     {
@@ -1005,7 +1005,7 @@ AcpiDmDumpMadt (
                 Offset += sizeof (ACPI_SUBTABLE_HEADER);
                 DbgPrint (ASL_PARSE_OUTPUT, "//[0) Subtable->Length = %X, Subtable = %p, Offset = %X]\n",
                     Subtable->Length, Subtable, Offset);
-                DbgPrint (ASL_PARSE_OUTPUT, "//[0A) Offset from table start: %X]\n",
+                DbgPrint (ASL_PARSE_OUTPUT, "//[0A) Offset from table start: %lX]\n",
                     ACPI_CAST_PTR (char, Subtable) - ACPI_CAST_PTR (char, Table));
             }
 
@@ -1047,7 +1047,7 @@ NextSubtable:
 
         DbgPrint (ASL_PARSE_OUTPUT, "//[3) Subtable->Length = %X, Offset = %X]\n",
             Subtable->Length, Offset);
-        DbgPrint (ASL_PARSE_OUTPUT, "//[4) Offset from table start: %X (%p) %p]\n",
+        DbgPrint (ASL_PARSE_OUTPUT, "//[4) Offset from table start: %lX (%p) %p]\n",
             ACPI_CAST_PTR (UINT8, Subtable) - ACPI_CAST_PTR (UINT8, Table), Subtable, Table);
         if (Offset > Table->Length)
         {
@@ -1059,7 +1059,7 @@ NextSubtable:
 
         DbgPrint (ASL_PARSE_OUTPUT, "//[5) Next Subtable %p, length %X]\n",
             Subtable, Subtable->Length);
-        DbgPrint (ASL_PARSE_OUTPUT, "//[5B) Offset from table start: %X %p]\n",
+        DbgPrint (ASL_PARSE_OUTPUT, "//[5B) Offset from table start: %lX %p]\n",
             ACPI_CAST_PTR (char, Subtable) - ACPI_CAST_PTR (char, Table), Subtable);
 
         Offset = ACPI_CAST_PTR (char, Subtable) - ACPI_CAST_PTR (char, Table);
