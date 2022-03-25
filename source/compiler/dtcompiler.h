@@ -570,6 +570,10 @@ DtCompileAest (
     void                    **PFieldList);
 
 ACPI_STATUS
+DtCompileApmt (
+    void                    **PFieldList);
+
+ACPI_STATUS
 DtCompileAsf (
     void                    **PFieldList);
 
@@ -763,6 +767,7 @@ DtGetGenericTableInfo (
 
 extern const unsigned char  TemplateAest[];
 extern const unsigned char  TemplateAgdi[];
+extern const unsigned char  TemplateApmt[];
 extern const unsigned char  TemplateAsf[];
 extern const unsigned char  TemplateBoot[];
 extern const unsigned char  TemplateBdat[];

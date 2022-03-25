@@ -388,6 +388,7 @@ extern ACPI_DMTABLE_INFO        AcpiDmTableInfoAestGicError[];
 extern ACPI_DMTABLE_INFO        AcpiDmTableInfoAestXface[];
 extern ACPI_DMTABLE_INFO        AcpiDmTableInfoAestXrupt[];
 extern ACPI_DMTABLE_INFO        AcpiDmTableInfoAgdi[];
+extern ACPI_DMTABLE_INFO        AcpiDmTableInfoApmtNode[];
 extern ACPI_DMTABLE_INFO        AcpiDmTableInfoAsf0[];
 extern ACPI_DMTABLE_INFO        AcpiDmTableInfoAsf1[];
 extern ACPI_DMTABLE_INFO        AcpiDmTableInfoAsf1a[];
@@ -734,6 +735,10 @@ AcpiDmDumpUnicode (
 
 void
 AcpiDmDumpAest (
+    ACPI_TABLE_HEADER       *Table);
+
+void
+AcpiDmDumpApmt (
     ACPI_TABLE_HEADER       *Table);
 
 void
