@@ -673,9 +673,9 @@ typedef struct acpi_iort_rmr {
 
 /* Values for above Access Attributes */
 
-#define ACPI_IORT_RMR_ATTR_DEVICE_nGnRnE   0x00
-#define ACPI_IORT_RMR_ATTR_DEVICE_nGnRE    0x01
-#define ACPI_IORT_RMR_ATTR_DEVICE_nGRE     0x02
+#define ACPI_IORT_RMR_ATTR_DEVICE_NGNRNE   0x00
+#define ACPI_IORT_RMR_ATTR_DEVICE_NGNRE    0x01
+#define ACPI_IORT_RMR_ATTR_DEVICE_NGRE     0x02
 #define ACPI_IORT_RMR_ATTR_DEVICE_GRE      0x03
 #define ACPI_IORT_RMR_ATTR_NORMAL_NC       0x04
 #define ACPI_IORT_RMR_ATTR_NORMAL_IWB_OWB  0x05
