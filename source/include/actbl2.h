@@ -446,7 +446,7 @@ typedef struct acpi_table_bdat
  * IORT - IO Remapping Table
  *
  * Conforms to "IO Remapping Table System Software on ARM Platforms",
- * Document number: ARM DEN 0049E.b, Feb 2021
+ * Document number: ARM DEN 0049E.d, Feb 2022
  *
  ******************************************************************************/
 
@@ -562,7 +562,8 @@ typedef struct acpi_iort_root_complex
     UINT32                  AtsAttribute;
     UINT32                  PciSegmentNumber;
     UINT8                   MemoryAddressLimit;     /* Memory address size limit */
-    UINT8                   Reserved[3];            /* Reserved, must be zero */
+    UINT16                  PasidCapabilities;      /* PASID Capabilities */
+    UINT8                   Reserved[1];            /* Reserved, must be zero */
 
 } ACPI_IORT_ROOT_COMPLEX;
 
@@ -572,6 +573,8 @@ typedef struct acpi_iort_root_complex
 #define ACPI_IORT_PRI_SUPPORTED         (1<<1)  /* The root complex PRI support */
 #define ACPI_IORT_PASID_FWD_SUPPORTED   (1<<2)  /* The root complex PASID forward support */
 
+/* Masks for PasidCapabilities field above */
+#define ACPI_IORT_PASID_MAX_WIDTH       (0x1F)  /* Bits 0-4 */
 
 typedef struct acpi_iort_smmu
 {
@@ -657,6 +660,25 @@ typedef struct acpi_iort_rmr {
     UINT32 RmrOffset;
 
 } ACPI_IORT_RMR;
+
+/* Masks for Flags field above */
+#define ACPI_IORT_RMR_REMAP_PERMITTED      (1)
+#define ACPI_IORT_RMR_ACCESS_PRIVILEGE     (1<<1)
+
+/*
+ * Macro to access the Access Attributes in flags field above:
+ *  Access Attributes is encoded in bits 9:2
+ */
+#define ACPI_IORT_RMR_ACCESS_ATTRIBUTES(flags)          (((flags) >> 2) & 0xFF)
+
+/* Values for above Access Attributes */
+
+#define ACPI_IORT_RMR_ATTR_DEVICE_NGNRNE   0x00
+#define ACPI_IORT_RMR_ATTR_DEVICE_NGNRE    0x01
+#define ACPI_IORT_RMR_ATTR_DEVICE_NGRE     0x02
+#define ACPI_IORT_RMR_ATTR_DEVICE_GRE      0x03
+#define ACPI_IORT_RMR_ATTR_NORMAL_NC       0x04
+#define ACPI_IORT_RMR_ATTR_NORMAL_IWB_OWB  0x05
 
 typedef struct acpi_iort_rmr_desc {
     UINT64 BaseAddress;
