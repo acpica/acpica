@@ -357,7 +357,8 @@ ACPI_DMTABLE_INFO           AcpiDmTableInfoIort2[] =
     {ACPI_DMT_UINT32,   ACPI_IORT2_OFFSET (AtsAttribute),           "ATS Attribute", 0},
     {ACPI_DMT_UINT32,   ACPI_IORT2_OFFSET (PciSegmentNumber),       "PCI Segment Number", 0},
     {ACPI_DMT_UINT8,    ACPI_IORT2_OFFSET (MemoryAddressLimit),     "Memory Size Limit", 0},
-    {ACPI_DMT_UINT24,   ACPI_IORT2_OFFSET (Reserved[0]),            "Reserved", 0},
+    {ACPI_DMT_UINT16,   ACPI_IORT2_OFFSET (PasidCapabilities),      "PASID Capabilities", 0},
+    {ACPI_DMT_UINT8,    ACPI_IORT2_OFFSET (Reserved[0]),            "Reserved", 0},
     ACPI_DMT_TERMINATOR
 };
 
@@ -441,6 +442,8 @@ ACPI_DMTABLE_INFO           AcpiDmTableInfoIort6[] =
 {
     {ACPI_DMT_UINT32,   ACPI_IORT6_OFFSET (Flags),                  "Flags (decoded below)", 0},
     {ACPI_DMT_FLAG0,    ACPI_IORT6_FLAG_OFFSET (Flags, 0),          "Remapping Permitted", 0},
+    {ACPI_DMT_FLAG1,    ACPI_IORT6_FLAG_OFFSET (Flags, 0),          "Access Privileged", 0},
+    {ACPI_DMT_FLAGS8_2, ACPI_IORT6_FLAG_OFFSET (Flags, 0),          "Access Attributes", 0},
     {ACPI_DMT_UINT32,   ACPI_IORT6_OFFSET (RmrCount),               "Number of RMR Descriptors", 0},
     {ACPI_DMT_UINT32,   ACPI_IORT6_OFFSET (RmrOffset),              "RMR Descriptor Offset", 0},
     ACPI_DMT_TERMINATOR

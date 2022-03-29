@@ -1364,7 +1364,12 @@ AcpiDmDumpTable (
             AcpiOsPrintf ("%1.1X\n", (*Target >> 2) & 0x03);
             break;
 
-        case ACPI_DMT_FLAGS4:
+        case ACPI_DMT_FLAGS8_2:
+
+            AcpiOsPrintf ("%2.2X\n", (*Target >> 2) & 0xFF);
+            break;
+
+	case ACPI_DMT_FLAGS4:
 
             AcpiOsPrintf ("%1.1X\n", (*Target >> 4) & 0x03);
             break;

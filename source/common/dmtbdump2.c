@@ -203,9 +203,9 @@ AcpiDmDumpIort (
 
     Revision = Table->Revision;
 
-    /* Both IORT Rev E and E.a have known issues and are not supported */
+    /* IORT Revisions E, E.a and E.c have known issues and are not supported */
 
-    if (Revision == 1 || Revision == 2)
+    if (Revision == 1 || Revision == 2 || Revision == 4)
     {
         AcpiOsPrintf ("\n**** Unsupported IORT revision 0x%X\n",
                       Revision);
