@@ -302,7 +302,7 @@ AcpiExSystemDoStall (
     }
     else
     {
-        if (HowLongUS > 100)
+        if (HowLongUs > 100)
 	{
             ACPI_WARNING ((AE_INFO,
                 "Time parameter %u us > 100 us violating ACPI spec, please fix the firmware.", HowLongUs));
@@ -345,7 +345,7 @@ AcpiExSystemDoSleep (
     if (HowLongMs > 10)
     {
         ACPI_WARNING ((AE_INFO,
-            "Firmware issue: Excessive sleep time (%llu ms > 10 ms) in ACPI Control Method", HowLongUs));
+            "Firmware issue: Excessive sleep time (%lu ms > 10 ms) in ACPI Control Method", HowLongMs));
     }
 
     /*
