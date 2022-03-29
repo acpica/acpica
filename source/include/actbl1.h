@@ -853,7 +853,8 @@ enum AcpiDmarType
     ACPI_DMAR_TYPE_ROOT_ATS             = 2,
     ACPI_DMAR_TYPE_HARDWARE_AFFINITY    = 3,
     ACPI_DMAR_TYPE_NAMESPACE            = 4,
-    ACPI_DMAR_TYPE_RESERVED             = 5     /* 5 and greater are reserved */
+    ACPI_DMAR_TYPE_SATC                 = 5,
+    ACPI_DMAR_TYPE_RESERVED             = 6     /* 6 and greater are reserved */
 };
 
 
@@ -968,6 +969,18 @@ typedef struct acpi_dmar_andd
 } ACPI_DMAR_ANDD;
 
 
+/* 5: SoC Integrated Address Translation Cache (SATC)  */
+
+typedef struct acpi_dmar_satc
+{
+    ACPI_DMAR_HEADER        Header;
+    UINT8                   Flags;
+    UINT8                   Reserved;
+    UINT16                  Segment;
+
+} ACPI_DMAR_SATC
+
+;
 /*******************************************************************************
  *
  * DRTM - Dynamic Root of Trust for Measurement table
