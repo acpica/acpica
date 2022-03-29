@@ -345,7 +345,9 @@ AcpiExSystemDoSleep (
     if (HowLongMs > 10)
     {
         ACPI_WARNING ((AE_INFO,
-            "Firmware issue: Excessive sleep time (%lu ms > 10 ms) in ACPI Control Method", HowLongMs));
+            "Firmware issue: Excessive sleep time (0x%8.8X%8.8X ms > 10 ms)"
+            " in ACPI Control Method",
+            ACPI_FORMAT_UINT64 (HowLongMs)));
     }
 
     /*
