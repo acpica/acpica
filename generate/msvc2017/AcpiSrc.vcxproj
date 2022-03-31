@@ -82,6 +82,7 @@
       <CallingConvention>FastCall</CallingConvention>
       <CompileAs>CompileAsC</CompileAs>
       <MultiProcessorCompilation>true</MultiProcessorCompilation>
+      <ControlFlowGuard>Guard</ControlFlowGuard>
     </ClCompile>
     <PreLinkEvent>
       <Command>if NOT EXIST ..\..\libraries mkdir ..\..\libraries</Command>
@@ -107,6 +108,8 @@
       <SubSystem>Console</SubSystem>
       <OutputFile>.\AcpiSrc\AcpiSrc.exe</OutputFile>
       <AdditionalDependencies>kernel32.lib;advapi32.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalOptions>/INTEGRITYCHECK %(AdditionalOptions)</AdditionalOptions>
+      <GenerateDebugInformation>false</GenerateDebugInformation>
     </Link>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">

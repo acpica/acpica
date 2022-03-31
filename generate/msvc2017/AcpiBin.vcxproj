@@ -66,8 +66,7 @@
       <ObjectFileName>.\AcpiBin\</ObjectFileName>
       <ProgramDataBaseFileName>.\AcpiBin\</ProgramDataBaseFileName>
       <FavorSizeOrSpeed>Speed</FavorSizeOrSpeed>
-      <ControlFlowGuard>
-      </ControlFlowGuard>
+      <ControlFlowGuard>Guard</ControlFlowGuard>
       <DisableLanguageExtensions>false</DisableLanguageExtensions>
       <CallingConvention>FastCall</CallingConvention>
       <CompileAs>CompileAsC</CompileAs>
@@ -99,6 +98,8 @@
       <IgnoreSpecificDefaultLibraries>advapi32.lib;%(IgnoreSpecificDefaultLibraries)</IgnoreSpecificDefaultLibraries>
       <OutputFile>.\AcpiBin\AcpiBin.exe</OutputFile>
       <AdditionalDependencies>kernel32.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalOptions>/INTEGRITYCHECK %(AdditionalOptions)</AdditionalOptions>
+      <GenerateDebugInformation>false</GenerateDebugInformation>
     </Link>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
