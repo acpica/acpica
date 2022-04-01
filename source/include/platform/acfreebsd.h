@@ -166,6 +166,9 @@
 
 #define ACPI_UINTPTR_T      uintptr_t
 
+#define ACPI_TO_INTEGER(p)  ((uintptr_t)(p))
+#define ACPI_OFFSET(d, f)   __offsetof(d, f)
+
 #define ACPI_USE_DO_WHILE_0
 #define ACPI_USE_LOCAL_CACHE
 #define ACPI_USE_NATIVE_DIVIDE
