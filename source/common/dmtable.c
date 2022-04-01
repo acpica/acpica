@@ -403,6 +403,13 @@ static const char           *AcpiDmMadtSubnames[] =
     "Generic Interrupt Redistributor",  /* ACPI_MADT_GENERIC_REDISTRIBUTOR */
     "Generic Interrupt Translator",     /* ACPI_MADT_GENERIC_TRANSLATOR */
     "Mutiprocessor Wakeup",             /* ACPI_MADT_TYPE_MULTIPROC_WAKEUP */
+    "CPU Core Interrupt Controller",    /* ACPI_MADT_TYPE_CORE_PIC */
+    "Legacy I/O Interrupt Controller",  /* ACPI_MADT_TYPE_LIO_PIC */
+    "HT Interrupt Controller",          /* ACPI_MADT_TYPE_HT_PIC */
+    "Extend I/O Interrupt Controller",  /* ACPI_MADT_TYPE_EIO_PIC */
+    "MSI Interrupt Controller",         /* ACPI_MADT_TYPE_MSI_PIC */
+    "Bridge I/O Interrupt Controller",  /* ACPI_MADT_TYPE_BIO_PIC */
+    "LPC Interrupt Controller",         /* ACPI_MADT_TYPE_LPC_PIC */
     "Unknown Subtable Type",            /* Reserved */
     "Types 80-FF are used for OEM data" /* Reserved for OEM data */
 };
