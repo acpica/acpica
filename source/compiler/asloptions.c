@@ -270,7 +270,7 @@ AslDoOptions (
     BOOLEAN                 IsResponseFile)
 {
     ACPI_STATUS             Status;
-    UINT32                  j;
+    INT32                  j;
 
 
     /* Get the command line options */
