@@ -2592,7 +2592,6 @@ DtCompileIvrs (
 
             DtInsertSubtable (MainSubtable, Subtable);
             DtPushSubtable (Subtable);
-            ParentTable = MainSubtable;
             break;
 
         case ACPI_IVRS_TYPE_HID:
