@@ -825,6 +825,7 @@ DtCompileNhlt (
     ACPI_NHLT_FORMATS_CONFIG            *FormatsConfig;
     ACPI_NHLT_DEVICE_SPECIFIC_CONFIG_D  *ConfigSpecific;
     ACPI_NHLT_DEVICE_INFO_COUNT         *DeviceInfo;
+    ACPI_NHLT_DEVICE_SPECIFIC_CONFIG_B  *Terminator;
 
 
     /* Main table */
@@ -1088,7 +1089,7 @@ DtCompileNhlt (
              * some non documeneted structure(s) yet to be processed. First, get
              * the count of such structure(s).
              */
-            if (*PFieldList && (strcmp ((const char *) (*PFieldList)->Name, "Descriptor Length")))
+            if (*PFieldList && !(strcmp ((const char *) (*PFieldList)->Name, "Device Info struct count")))
             {
                 /* Get the count of non documented structures */
 
@@ -1124,9 +1125,8 @@ DtCompileNhlt (
                     DtInsertSubtable (ParentTable, Subtable);
                 } /* for (j = 0; j < LinuxSpecificCount; j++) */
 
-
                 /* Undocumented data at the end of endpoint */
-                if (*PFieldList && (strcmp ((const char *) (*PFieldList)->Name, "Descriptor Length")))
+                if (*PFieldList && !(strcmp ((const char *) (*PFieldList)->Name, "Bytes")))
                 {
                     Status = DtCompileTable (PFieldList, AcpiDmTableInfoNhlt7b,
                         &Subtable);
@@ -1148,7 +1148,7 @@ DtCompileNhlt (
          * All Endpoint Descriptors are completed.
          * Do the table terminator specific config (not in NHLT spec, optional)
          */
-        if (*PFieldList && (strcmp ((const char *) (*PFieldList)->Name, "Descriptor Length")))
+        if (*PFieldList && !(strcmp ((const char *) (*PFieldList)->Name, "Capabilities Size")))
         {
             Status = DtCompileTable (PFieldList, AcpiDmTableInfoNhlt5b,
                 &Subtable);
@@ -1160,15 +1160,20 @@ DtCompileNhlt (
             ParentTable = DtPeekSubtable ();
             DtInsertSubtable (ParentTable, Subtable);
 
-            Status = DtCompileTable (PFieldList, AcpiDmTableInfoNhlt3a,
-                &Subtable);
-            if (ACPI_FAILURE (Status))
-            {
-                return (Status);
-            }
+            Terminator = ACPI_CAST_PTR (ACPI_NHLT_DEVICE_SPECIFIC_CONFIG_B, Subtable->Buffer);
 
-            ParentTable = DtPeekSubtable ();
-            DtInsertSubtable (ParentTable, Subtable);
+            if (Terminator->CapabilitiesSize)
+            {
+                Status = DtCompileTable (PFieldList, AcpiDmTableInfoNhlt3a,
+                    &Subtable);
+                if (ACPI_FAILURE (Status))
+                {
+                    return (Status);
+                }
+
+                ParentTable = DtPeekSubtable ();
+                DtInsertSubtable (ParentTable, Subtable);
+            }
         }
 
         return (AE_OK);
