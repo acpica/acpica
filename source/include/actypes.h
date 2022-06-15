@@ -1336,6 +1336,12 @@ typedef struct acpi_pcc_info {
     UINT8                           *InternalBuffer;
 } ACPI_PCC_INFO;
 
+/* Special Context data for FFH Opregion (ACPI 6.5) */
+
+typedef struct acpi_ffh_info {
+    UINT64                          Offset;
+    UINT64                          Length;
+} ACPI_FFH_INFO;
 
 typedef
 ACPI_STATUS (*ACPI_ADR_SPACE_SETUP) (
