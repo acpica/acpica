@@ -171,6 +171,7 @@
 #define ACPI_SIG_AGDI           "AGDI"      /* Arm Generic Diagnostic Dump and Reset Device Interface */
 #define ACPI_SIG_APMT           "APMT"      /* Arm Performance Monitoring Unit table */
 #define ACPI_SIG_BDAT           "BDAT"      /* BIOS Data ACPI Table */
+#define ACPI_SIG_CCEL           "CCEL"      /* CC Event Log Table */
 #define ACPI_SIG_IORT           "IORT"      /* IO Remapping Table */
 #define ACPI_SIG_IVRS           "IVRS"      /* I/O Virtualization Reporting Structure */
 #define ACPI_SIG_LPIT           "LPIT"      /* Low Power Idle Table */
@@ -521,6 +522,24 @@ typedef struct acpi_table_bdat
 
 } ACPI_TABLE_BDAT;
 
+/*******************************************************************************
+ *
+ * CCEL - CC-Event Log
+ *        From: "Guest-Host-Communication Interface (GHCI) for Intel
+ *        Trust Domain Extensions (Intel TDX)". Feb 2022
+ *
+ ******************************************************************************/
+
+typedef struct acpi_table_ccel
+{
+    ACPI_TABLE_HEADER       Header; /* Common ACPI table header */
+    UINT8                   CCType;
+    UINT8                   CCSubType;
+    UINT16                  Reserved;
+    UINT64                  LogAreaMinimumLength;
+    UINT64                  LogAreaStartAddress;
+
+} ACPI_TABLE_CCEL;
 
 /*******************************************************************************
  *
