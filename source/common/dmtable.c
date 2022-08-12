@@ -984,7 +984,7 @@ AcpiDmLineHeader (
     {
         if (ByteLength)
         {
-            AcpiOsPrintf ("[%3.3Xh %4.4d% 4d] %28s : ",
+            AcpiOsPrintf ("[%3.3Xh %4.4u %3.3Xh] %27s : ",
                 Offset, Offset, ByteLength, Name);
         }
         else
@@ -1026,12 +1026,12 @@ AcpiDmLineHeader2 (
     {
         if (ByteLength)
         {
-            AcpiOsPrintf ("[%3.3Xh %4.4d %3d] %24s %3d : ",
+            AcpiOsPrintf ("[%3.3Xh %4.4u %3.3Xh] %24s %3d : ",
                 Offset, Offset, ByteLength, Name, Value);
         }
         else
         {
-            AcpiOsPrintf ("[%3.3Xh %4.4d   ] %24s %3d : ",
+            AcpiOsPrintf ("[%3.3Xh %4.4u   ] %24s %3d : ",
                 Offset, Offset, Name, Value);
         }
     }
@@ -2024,15 +2024,15 @@ AcpiDmDumpTable (
 
         case ACPI_DMT_PHAT:
 
-            /* PMTT subtable types */
+            /* PHAT subtable types */
 
-            Temp16 = *Target;
+            Temp16 = ACPI_GET16 (Target);
             if (Temp16 > ACPI_PHAT_TYPE_RESERVED)
             {
                 Temp16 = ACPI_PHAT_TYPE_RESERVED;
             }
 
-            AcpiOsPrintf (UINT16_FORMAT, ACPI_GET16(Target),
+            AcpiOsPrintf (UINT16_FORMAT, ACPI_GET16 (Target),
                 AcpiDmPhatSubnames[Temp16]);
             break;
 
@@ -2076,7 +2076,7 @@ AcpiDmDumpTable (
                 break;
             }
 
-            AcpiDmDumpUnicode (Table, CurrentOffset, ByteLength);
+            AcpiDmDumpUnicode (Table, 0, ByteLength);
             break;
 
         case ACPI_DMT_RAW_BUFFER:
