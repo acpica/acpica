@@ -888,7 +888,6 @@ ACPI_TYPED_IDENTIFIER_TABLE           AcpiIdentifiers[] = {
     {"ACPI_PHAT_HEADER",                    SRC_TYPE_STRUCT},
     {"ACPI_PHAT_VERSION_DATA",              SRC_TYPE_STRUCT},
     {"ACPI_PHAT_VERSION_ELEMENT",           SRC_TYPE_STRUCT},
-    {"ACPI_PHAT_VERSION_ELEMENT",           SRC_TYPE_STRUCT},
     {"ACPI_PHAT_HEALTH_DATA",               SRC_TYPE_STRUCT},
     {"ACPI_PMTT_CONTROLLER",                SRC_TYPE_STRUCT},
     {"ACPI_PMTT_HEADER",                    SRC_TYPE_STRUCT},
