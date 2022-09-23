@@ -2128,6 +2128,128 @@ DtCompileRgrt (
 
 /******************************************************************************
  *
+ * FUNCTION:    DtCompileRhct
+ *
+ * PARAMETERS:  List                - Current field list pointer
+ *
+ * RETURN:      Status
+ *
+ * DESCRIPTION: Compile RHCT.
+ *
+ *****************************************************************************/
+
+ACPI_STATUS
+DtCompileRhct (
+    void                    **List)
+{
+    ACPI_STATUS             Status;
+    ACPI_RHCT_NODE_HEADER   *RhctHeader;
+    ACPI_RHCT_HART_INFO     *RhctHartInfo = NULL;
+    DT_SUBTABLE             *Subtable;
+    DT_SUBTABLE             *ParentTable;
+    ACPI_DMTABLE_INFO       *InfoTable;
+    DT_FIELD                **PFieldList = (DT_FIELD **) List;
+    DT_FIELD                *SubtableStart;
+
+
+    /* Compile the main table */
+
+    Status = DtCompileTable (PFieldList, AcpiDmTableInfoRhct,
+        &Subtable);
+    if (ACPI_FAILURE (Status))
+    {
+        return (Status);
+    }
+
+    ParentTable = DtPeekSubtable ();
+    while (*PFieldList)
+    {
+        SubtableStart = *PFieldList;
+
+        /* Compile RHCT subtable header */
+
+        Status = DtCompileTable (PFieldList, AcpiDmTableInfoRhctNodeHdr,
+            &Subtable);
+        if (ACPI_FAILURE (Status))
+        {
+            return (Status);
+        }
+        DtInsertSubtable (ParentTable, Subtable);
+        RhctHeader = ACPI_CAST_PTR (ACPI_RHCT_NODE_HEADER, Subtable->Buffer);
+        RhctHeader->Length = (UINT16)(Subtable->Length);
+
+        switch (RhctHeader->Type)
+        {
+        case ACPI_RHCT_NODE_TYPE_ISA_STRING:
+
+            InfoTable = AcpiDmTableInfoRhctIsa1;
+            break;
+
+        case ACPI_RHCT_NODE_TYPE_HART_INFO:
+
+            InfoTable = AcpiDmTableInfoRhctHartInfo1;
+            break;
+
+        default:
+
+            DtFatal (ASL_MSG_UNKNOWN_SUBTABLE, SubtableStart, "RHCT");
+            return (AE_ERROR);
+        }
+
+        /* Compile RHCT subtable body */
+
+        Status = DtCompileTable (PFieldList, InfoTable, &Subtable);
+        if (ACPI_FAILURE (Status))
+        {
+            return (Status);
+        }
+        DtInsertSubtable (ParentTable, Subtable);
+        RhctHeader->Length += (UINT16)(Subtable->Length);
+
+        /* Compile RHCT subtable additionals */
+
+        switch (RhctHeader->Type)
+        {
+        case ACPI_RHCT_NODE_TYPE_HART_INFO:
+
+            RhctHartInfo = ACPI_SUB_PTR (ACPI_RHCT_HART_INFO,
+                Subtable->Buffer, sizeof (ACPI_RHCT_NODE_HEADER));
+            if (RhctHartInfo)
+            {
+
+                RhctHartInfo->NumOffsets = 0;
+                while (*PFieldList)
+                {
+                    Status = DtCompileTable (PFieldList,
+                        AcpiDmTableInfoRhctHartInfo2, &Subtable);
+                    if (ACPI_FAILURE (Status))
+                    {
+                        return (Status);
+                    }
+                    if (!Subtable)
+                    {
+                        break;
+                    }
+
+                    DtInsertSubtable (ParentTable, Subtable);
+                    RhctHeader->Length += (UINT16)(Subtable->Length);
+                    RhctHartInfo->NumOffsets++;
+                }
+            }
+            break;
+
+        default:
+
+            break;
+        }
+    }
+
+    return (AE_OK);
+}
+
+
+/******************************************************************************
+ *
  * FUNCTION:    DtCompileRsdt
  *
  * PARAMETERS:  List                - Current field list pointer

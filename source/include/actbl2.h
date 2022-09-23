@@ -192,6 +192,7 @@
 #define ACPI_SIG_PRMT           "PRMT"      /* Platform Runtime Mechanism Table */
 #define ACPI_SIG_RASF           "RASF"      /* RAS Feature table */
 #define ACPI_SIG_RGRT           "RGRT"      /* Regulatory Graphics Resource Table */
+#define ACPI_SIG_RHCT           "RHCT"      /* RISC-V Hart Capabilities Table */
 #define ACPI_SIG_SBST           "SBST"      /* Smart Battery Specification Table */
 #define ACPI_SIG_SDEI           "SDEI"      /* Software Delegated Exception Interface Table */
 #define ACPI_SIG_SDEV           "SDEV"      /* Secure Devices table */
@@ -3275,6 +3276,53 @@ enum AcpiRgrtImageType
     ACPI_RGRT_TYPE_RESERVED             = 2     /* 2 and greater are reserved */
 };
 
+
+/*******************************************************************************
+ *
+ * RHCT - RISC-V Hart Capabilities Table
+ *        Version 1
+ *
+ ******************************************************************************/
+
+typedef struct acpi_table_rhct {
+    ACPI_TABLE_HEADER       Header;             /* Common ACPI table header */
+    UINT32                  Reserved;
+    UINT64                  TimeBaseFreq;
+    UINT32                  NodeCount;
+    UINT32                  NodeOffset;
+} ACPI_TABLE_RHCT;
+
+/*
+ * RHCT subtables
+ */
+typedef struct acpi_rhct_node_header {
+    UINT16                  Type;
+    UINT16                  Length;
+    UINT16                  Revision;
+} ACPI_RHCT_NODE_HEADER;
+
+/* Values for RHCT subtable Type above */
+
+enum acpi_rhct_node_type {
+    ACPI_RHCT_NODE_TYPE_ISA_STRING = 0x0000,
+    ACPI_RHCT_NODE_TYPE_HART_INFO  = 0xFFFF,
+};
+
+/*
+ * RHCT node specific subtables
+ */
+
+/* ISA string node structure */
+typedef struct acpi_rhct_isa_string {
+    UINT16                  IsaLength;
+    char                    Isa[];
+} ACPI_RHCT_ISA_STRING;
+
+/* Hart Info node structure */
+typedef struct acpi_rhct_hart_info {
+    UINT16                  NumOffsets;
+    UINT32                  Uid;                /* ACPI processor UID */
+} ACPI_RHCT_HART_INFO;
 
 /*******************************************************************************
  *
