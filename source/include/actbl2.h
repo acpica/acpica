@@ -1135,7 +1135,8 @@ enum AcpiMadtType
     ACPI_MADT_TYPE_MSI_PIC                  = 21,
     ACPI_MADT_TYPE_BIO_PIC                  = 22,
     ACPI_MADT_TYPE_LPC_PIC                  = 23,
-    ACPI_MADT_TYPE_RESERVED                 = 24,   /* 24 to 0x7F are reserved */
+    ACPI_MADT_TYPE_RINTC                    = 24,
+    ACPI_MADT_TYPE_RESERVED                 = 25,   /* 25 to 0x7F are reserved */
     ACPI_MADT_TYPE_OEM_RESERVED             = 0x80  /* 0x80 to 0xFF are reserved for OEM use */
 };
 
@@ -1546,6 +1547,24 @@ enum AcpiMadtLpcPicVersion {
     ACPI_MADT_LPC_PIC_VERSION_NONE       = 0,
     ACPI_MADT_LPC_PIC_VERSION_V1         = 1,
     ACPI_MADT_LPC_PIC_VERSION_RESERVED   = 2	/* 2 and greater are reserved */
+};
+
+/* 24: RISC-V INTC */
+struct acpi_madt_rintc {
+    ACPI_SUBTABLE_HEADER    Header;
+    UINT8                   Version;
+    UINT8                   Reserved;
+    UINT32                  Flags;
+    UINT64                  HartId;
+    UINT32                  Uid;                /* ACPI processor UID */
+};
+
+/* Values for RISC-V INTC Version field above */
+
+enum AcpiMadtRintcVersion {
+    ACPI_MADT_RINTC_VERSION_NONE       = 0,
+    ACPI_MADT_RINTC_VERSION_V1         = 1,
+    ACPI_MADT_RINTC_VERSION_RESERVED   = 2	/* 2 and greater are reserved */
 };
 
 /* 80: OEM data */

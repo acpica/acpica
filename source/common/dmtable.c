@@ -421,6 +421,7 @@ static const char           *AcpiDmMadtSubnames[] =
     "MSI Interrupt Controller",         /* ACPI_MADT_TYPE_MSI_PIC */
     "Bridge I/O Interrupt Controller",  /* ACPI_MADT_TYPE_BIO_PIC */
     "LPC Interrupt Controller",         /* ACPI_MADT_TYPE_LPC_PIC */
+    "RISC-V Interrupt Controller",      /* ACPI_MADT_TYPE_RINTC */
     "Unknown Subtable Type",            /* Reserved */
     "Types 80-FF are used for OEM data" /* Reserved for OEM data */
 };
