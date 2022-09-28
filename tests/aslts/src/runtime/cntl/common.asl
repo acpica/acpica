@@ -1459,7 +1459,7 @@
          * The internal data about the exceptions initiated by some
          * bdemo tests on a global level should be reset by them to
          * this point as they didn't take place. Otherwise, an error
-         * will be below registrated.
+         * will be below registered.
          */
         If (CH02 ())
         {

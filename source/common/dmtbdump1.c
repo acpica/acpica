@@ -1837,7 +1837,7 @@ AcpiDmDumpHmat (
             return;
         }
 
-        /* Dump HMAT structure additionals */
+        /* Dump HMAT structure additional */
 
         switch (HmatStruct->Type)
         {

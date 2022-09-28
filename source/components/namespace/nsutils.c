@@ -500,7 +500,7 @@ AcpiNsBuildInternalName (
  *
  * PARAMETERS:  *ExternalName           - External representation of name
  *              **Converted Name        - Where to return the resulting
- *                                        internal represention of the name
+ *                                        internal representation of the name
  *
  * RETURN:      Status
  *
