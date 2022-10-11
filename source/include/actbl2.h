@@ -1289,7 +1289,7 @@ typedef struct acpi_madt_local_x2apic_nmi
 } ACPI_MADT_LOCAL_X2APIC_NMI;
 
 
-/* 11: Generic Interrupt - GICC (ACPI 5.0 + ACPI 6.0 + ACPI 6.3 changes) */
+/* 11: Generic Interrupt - GICC (ACPI 5.0 + ACPI 6.0 + ACPI 6.3 + ACPI 6.5 changes) */
 
 typedef struct acpi_madt_generic_interrupt
 {
@@ -1310,6 +1310,7 @@ typedef struct acpi_madt_generic_interrupt
     UINT8                   EfficiencyClass;
     UINT8                   Reserved2[1];
     UINT16                  SpeInterrupt;       /* ACPI 6.3 */
+    UINT16                  TrbeInterrupt;      /* ACPI 6.5 */
 
 } ACPI_MADT_GENERIC_INTERRUPT;
 
