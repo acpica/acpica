@@ -333,6 +333,7 @@
     <ClCompile Include="..\..\source\components\utilities\utascii.c" />
     <ClCompile Include="..\..\source\components\utilities\utbuffer.c" />
     <ClCompile Include="..\..\source\components\utilities\utcache.c" />
+    <ClCompile Include="..\..\source\components\utilities\utcksum.c" />
     <ClCompile Include="..\..\source\components\utilities\utcopy.c" />
     <ClCompile Include="..\..\source\components\utilities\utdebug.c" />
     <ClCompile Include="..\..\source\components\utilities\utdecode.c" />

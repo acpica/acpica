@@ -435,6 +435,9 @@
     <ClCompile Include="..\..\source\components\dispatcher\dspkginit.c">
       <Filter>Source Files\Dispatcher</Filter>
     </ClCompile>
+    <ClCompile Include="..\..\source\components\utilities\utcksum.c">
+      <Filter>Source Files\Utilities</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\..\source\tools\examples\examples.h">

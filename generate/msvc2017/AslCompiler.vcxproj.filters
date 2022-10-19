@@ -688,6 +688,9 @@
     <ClCompile Include="dtcompilerparser.y.c">
       <Filter>Source Files\Intermediate</Filter>
     </ClCompile>
+    <ClCompile Include="..\..\source\components\utilities\utcksum.c">
+      <Filter>Source Files\Utilities</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\..\source\compiler\aslcompiler.h">

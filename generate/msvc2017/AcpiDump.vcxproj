@@ -122,7 +122,7 @@
       <WarningLevel>Level4</WarningLevel>
       <MinimalRebuild>false</MinimalRebuild>
       <StringPooling>true</StringPooling>
-      <AdditionalIncludeDirectories>..\..\source\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>..\..\source\include;%(AdditionalIncludeDirectories);..\..\source\compiler</AdditionalIncludeDirectories>
       <PreprocessorDefinitions>_DEBUG;WIN32;_CONSOLE;__STDC__;ACPI_DUMP_APP;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <AssemblerListingLocation>.\AcpiDumpDebug\</AssemblerListingLocation>
       <PrecompiledHeaderOutputFile>.\AcpiDumpDebug\AcpiDump.pch</PrecompiledHeaderOutputFile>
@@ -169,6 +169,7 @@
     <ClCompile Include="..\..\source\components\tables\tbxfroot.c" />
     <ClCompile Include="..\..\source\components\utilities\utascii.c" />
     <ClCompile Include="..\..\source\components\utilities\utbuffer.c" />
+    <ClCompile Include="..\..\source\components\utilities\utcksum.c" />
     <ClCompile Include="..\..\source\components\utilities\utdebug.c" />
     <ClCompile Include="..\..\source\components\utilities\utexcep.c" />
     <ClCompile Include="..\..\source\components\utilities\utglobal.c" />

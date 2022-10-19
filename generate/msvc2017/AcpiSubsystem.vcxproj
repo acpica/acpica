@@ -299,6 +299,7 @@
     <ClCompile Include="..\..\source\components\utilities\utalloc.c" />
     <ClCompile Include="..\..\source\components\utilities\utbuffer.c" />
     <ClCompile Include="..\..\source\components\utilities\utcache.c" />
+    <ClCompile Include="..\..\source\components\utilities\utcksum.c" />
     <ClCompile Include="..\..\source\components\utilities\utclib.c" />
     <ClCompile Include="..\..\source\components\utilities\utcopy.c" />
     <ClCompile Include="..\..\source\components\utilities\utdebug.c" />

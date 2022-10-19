@@ -95,6 +95,9 @@
     <ClCompile Include="..\..\source\components\utilities\utstrsuppt.c">
       <Filter>Source Files\Utils</Filter>
     </ClCompile>
+    <ClCompile Include="..\..\source\components\utilities\utcksum.c">
+      <Filter>Source Files\Utils</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\..\source\tools\acpidump\acpidump.h">

@@ -592,6 +592,9 @@
     <ClCompile Include="..\..\source\common\cmfsize.c">
       <Filter>Source Files\Common</Filter>
     </ClCompile>
+    <ClCompile Include="..\..\source\components\utilities\utcksum.c">
+      <Filter>Source Files\Utilities</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\..\source\include\acbuffer.h">
