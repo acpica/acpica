@@ -234,6 +234,17 @@ static const char           *AcpiDmAsfSubnames[] =
     "Unknown Subtable Type"         /* Reserved */
 };
 
+static const char           *AcpiDmCdatSubnames[] =
+{
+    "Device Scoped Memory Affinity Structure (DSMAS)",
+    "Device scoped Latency and Bandwidth Information Structure (DSLBIS)",
+    "Device Scoped Memory Side Cache Information Structure (DSMSCIS)",
+    "Device Scoped Initiator Structure (DSIS)",
+    "Device Scoped EFI Memory Type Structure (DSEMTS)",
+    "Switch Scoped Latency and Bandwidth Information Structure (SSLBIS)",
+    "Unknown Subtable Type"         /* Reserved */
+};
+
 static const char           *AcpiDmCedtSubnames[] =
 {
     "CXL Host Bridge Structure",
@@ -666,6 +677,7 @@ const ACPI_DMTABLE_DATA     AcpiDmTableData[] =
     {ACPI_SIG_BGRT, AcpiDmTableInfoBgrt,    NULL,           NULL,           TemplateBgrt},
     {ACPI_SIG_BOOT, AcpiDmTableInfoBoot,    NULL,           NULL,           TemplateBoot},
     {ACPI_SIG_CCEL, AcpiDmTableInfoCcel,    NULL,           NULL,           TemplateCcel},
+    {ACPI_SIG_CDAT, NULL,                   AcpiDmDumpCdat, NULL,           TemplateCdat},
     {ACPI_SIG_CEDT, NULL,                   AcpiDmDumpCedt, DtCompileCedt,  TemplateCedt},
     {ACPI_SIG_CPEP, NULL,                   AcpiDmDumpCpep, DtCompileCpep,  TemplateCpep},
     {ACPI_SIG_CSRT, NULL,                   AcpiDmDumpCsrt, DtCompileCsrt,  TemplateCsrt},
@@ -728,44 +740,6 @@ const ACPI_DMTABLE_DATA     AcpiDmTableData[] =
     {ACPI_SIG_XSDT, NULL,                   AcpiDmDumpXsdt, DtCompileXsdt,  TemplateXsdt},
     {NULL,          NULL,                   NULL,           NULL,           NULL}
 };
-
-
-/*******************************************************************************
- *
- * FUNCTION:    AcpiDmGenerateChecksum
- *
- * PARAMETERS:  Table               - Pointer to table to be checksummed
- *              Length              - Length of the table
- *              OriginalChecksum    - Value of the checksum field
- *
- * RETURN:      8 bit checksum of buffer
- *
- * DESCRIPTION: Computes an 8 bit checksum of the table.
- *
- ******************************************************************************/
-
-UINT8
-AcpiDmGenerateChecksum (
-    void                    *Table,
-    UINT32                  Length,
-    UINT8                   OriginalChecksum)
-{
-    UINT8                   Checksum;
-
-
-    /* Sum the entire table as-is */
-
-    Checksum = AcpiTbChecksum ((UINT8 *) Table, Length);
-
-    /* Subtract off the existing checksum value in the table */
-
-    Checksum = (UINT8) (Checksum - OriginalChecksum);
-
-    /* Compute the final checksum */
-
-    Checksum = (UINT8) (0 - Checksum);
-    return (Checksum);
-}
 
 
 /*******************************************************************************
@@ -842,7 +816,7 @@ AcpiDmDumpDataTable (
 
     /*
      * Handle tables that don't use the common ACPI table header structure.
-     * Currently, these are the FACS, RSDP, and S3PT.
+     * Currently, these are the FACS, RSDP, S3PT and CDAT.
      */
     if (ACPI_COMPARE_NAMESEG (Table->Signature, ACPI_SIG_FACS))
     {
@@ -861,6 +835,28 @@ AcpiDmDumpDataTable (
     else if (ACPI_COMPARE_NAMESEG (Table->Signature, ACPI_SIG_S3PT))
     {
         Length = AcpiDmDumpS3pt (Table);
+    }
+    else if (!AcpiUtValidNameseg (Table->Signature))
+    {
+        /*
+         * For CDAT we are assuming that there should be at least one non-ASCII
+         * byte in the (normally) 4-character Signature field (at least the
+         * high-order byte should be zero).
+         */
+        if (AcpiGbl_CDAT)
+        {
+            /*
+             * Invalid signature and <-ds CDAT> was specified on the command line.
+             * Therefore, we have a CDAT table.
+             */
+            AcpiDmDumpCdat (Table);
+        }
+        else
+        {
+            fprintf (stderr, "Table has an invalid signature\n");
+        }
+
+        return;
     }
     else
     {
@@ -1114,7 +1110,8 @@ AcpiDmDumpTable (
         {
             AcpiOsPrintf (
                 "/**** ACPI table terminates "
-                "in the middle of a data structure! (dump table) */\n");
+                "in the middle of a data structure! (dump table) \n"
+                "CurrentOffset: %X, TableLength: %X ***/", CurrentOffset, TableLength);
             return (AE_BAD_DATA);
         }
 
@@ -1148,6 +1145,7 @@ AcpiDmDumpTable (
         case ACPI_DMT_AEST_XFACE:
         case ACPI_DMT_AEST_XRUPT:
         case ACPI_DMT_ASF:
+        case ACPI_DMT_CDAT:
         case ACPI_DMT_HESTNTYP:
         case ACPI_DMT_FADTPM:
         case ACPI_DMT_EINJACT:
@@ -1530,7 +1528,7 @@ AcpiDmDumpTable (
             /* Checksum, display and validate */
 
             AcpiOsPrintf ("%2.2X", *Target);
-            Temp8 = AcpiDmGenerateChecksum (Table,
+            Temp8 = AcpiUtGenerateChecksum (Table,
                 ACPI_CAST_PTR (ACPI_TABLE_HEADER, Table)->Length,
                 ACPI_CAST_PTR (ACPI_TABLE_HEADER, Table)->Checksum);
 
@@ -1674,6 +1672,20 @@ AcpiDmDumpTable (
             }
 
             AcpiOsPrintf (UINT8_FORMAT, *Target, AcpiDmAsfSubnames[Temp16]);
+            break;
+
+        case ACPI_DMT_CDAT:
+
+            /* CDAT subtable types */
+
+            Temp8 = *Target;
+            if (Temp8 > ACPI_CDAT_TYPE_RESERVED)
+            {
+                Temp8 = ACPI_CDAT_TYPE_RESERVED;
+            }
+
+            AcpiOsPrintf (UINT8_FORMAT, *Target,
+                AcpiDmCdatSubnames[Temp8]);
             break;
 
         case ACPI_DMT_CEDT:

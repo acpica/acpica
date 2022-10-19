@@ -291,7 +291,6 @@ CmDoCompile (
     AslGbl_SyntaxError = FALSE;
     UtEndEvent (Event);
     UtEndEvent (FullCompile);
-    return (AE_OK);
 
     AslGbl_ParserErrorDetected = FALSE;
     AslGbl_SyntaxError = FALSE;
