@@ -291,6 +291,12 @@ CFLAGS += \
     -I$(ASL_COMPILER)\
     -I$(OBJDIR)
 
+ifeq ($(NOWERROR),TRUE)
+WERROR_FLAGS=
+else
+WERROR_FLAGS=-Werror
+endif
+
 #
 # Common Rules
 #
@@ -361,32 +367,32 @@ $(OBJDIR)/prparserparse.c $(OBJDIR)/prparser.y.h :       $(ASL_COMPILER)/prparse
 #
 $(OBJDIR)/aslcompilerlex.o :   $(OBJDIR)/aslcompilerlex.c
 	@echo "- " "Intermediate" $<
-	@$(CC) -c $(CFLAGS) -Wall -Werror -o$@ $<
+	@$(CC) -c $(CFLAGS) -Wall $(WERROR_FLAGS) -o$@ $<
 
 $(OBJDIR)/aslcompilerparse.o : $(OBJDIR)/aslcompilerparse.c
 	@echo "- " "Intermediate" $<
-	@$(CC) -c $(CFLAGS) -Wall -Werror -o$@ $<
+	@$(CC) -c $(CFLAGS) -Wall $(WERROR_FLAGS) -o$@ $<
 
 $(OBJDIR)/dtcompilerparserlex.o :      $(OBJDIR)/dtcompilerparserlex.c
 	@echo "- " "Intermediate" $<
-	@$(CC) -c $(CFLAGS) -Wall -Werror -o$@ $<
+	@$(CC) -c $(CFLAGS) -Wall $(WERROR_FLAGS) -o$@ $<
 
 $(OBJDIR)/dtcompilerparserparse.o :    $(OBJDIR)/dtcompilerparserparse.c
 	@echo "- " "Intermediate" $<
-	@$(CC) -c $(CFLAGS) -Wall -Werror -o$@ $<
+	@$(CC) -c $(CFLAGS) -Wall $(WERROR_FLAGS) -o$@ $<
 
 $(OBJDIR)/dtparserlex.o :      $(OBJDIR)/dtparserlex.c
 	@echo "- " "Intermediate" $<
-	@$(CC) -c $(CFLAGS) -Wall -Werror -o$@ $<
+	@$(CC) -c $(CFLAGS) -Wall $(WERROR_FLAGS) -o$@ $<
 
 $(OBJDIR)/dtparserparse.o :    $(OBJDIR)/dtparserparse.c
 	@echo "- " "Intermediate" $<
-	@$(CC) -c $(CFLAGS) -Wall -Werror -o$@ $<
+	@$(CC) -c $(CFLAGS) -Wall $(WERROR_FLAGS) -o$@ $<
 
 $(OBJDIR)/prparserlex.o :      $(OBJDIR)/prparserlex.c
 	@echo "- " "Intermediate" $<
-	@$(CC) -c $(CFLAGS) -Wall -Werror -o$@ $<
+	@$(CC) -c $(CFLAGS) -Wall $(WERROR_FLAGS) -o$@ $<
 
 $(OBJDIR)/prparserparse.o :    $(OBJDIR)/prparserparse.c
 	@echo "- " "Intermediate" $<
-	@$(CC) -c $(CFLAGS) -Wall -Werror -o$@ $<
+	@$(CC) -c $(CFLAGS) -Wall $(WERROR_FLAGS) -o$@ $<
