@@ -153,7 +153,6 @@
  * Macros used to generate offsets to specific table fields
  */
 #define ACPI_AGDI_OFFSET(f)             (UINT16) ACPI_OFFSET (ACPI_TABLE_AGDI,f)
-//define ACPI_CDAT_OFFSET(f)             (UINT16) ACPI_OFFSET (ACPI_TABLE_CDAT,f)
 #define ACPI_FACS_OFFSET(f)             (UINT16) ACPI_OFFSET (ACPI_TABLE_FACS,f)
 #define ACPI_GAS_OFFSET(f)              (UINT16) ACPI_OFFSET (ACPI_GENERIC_ADDRESS,f)
 #define ACPI_HDR_OFFSET(f)              (UINT16) ACPI_OFFSET (ACPI_TABLE_HEADER,f)
