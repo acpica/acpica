@@ -220,6 +220,13 @@ AcpiHwLegacySleep (
         return_ACPI_STATUS (Status);
     }
 
+    /* Enable pcie wake event if support */
+    if ((AcpiGbl_FADT.Flags & ACPI_FADT_PCI_EXPRESS_WAKE)) {
+        (void) AcpiWriteBitRegister (
+		AcpiGbl_FixedEventInfo[ACPI_EVENT_PCIE_WAKE].EnableRegisterId,
+		ACPI_DISABLE_EVENT);
+    }
+
     /* Get current value of PM1A control */
 
     Status = AcpiHwRegisterRead (ACPI_REGISTER_PM1_CONTROL,
@@ -475,11 +482,11 @@ AcpiHwLegacyWake (
             AcpiGbl_FixedEventInfo[ACPI_EVENT_SLEEP_BUTTON].StatusRegisterId,
             ACPI_CLEAR_STATUS);
 
-    /* Enable pcie wake event if support */
+    /* Clear and disable pcie wake event if support */
     if ((AcpiGbl_FADT.Flags & ACPI_FADT_PCI_EXPRESS_WAKE)) {
         (void) AcpiWriteBitRegister (
 		AcpiGbl_FixedEventInfo[ACPI_EVENT_PCIE_WAKE].EnableRegisterId,
-		ACPI_DISABLE_EVENT);
+		ACPI_ENABLE_EVENT);
         (void) AcpiWriteBitRegister (
 		AcpiGbl_FixedEventInfo[ACPI_EVENT_PCIE_WAKE].StatusRegisterId,
 		ACPI_CLEAR_STATUS);
