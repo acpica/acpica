@@ -28,7 +28,7 @@
     /*
      * Bug 0004:
      *
-     * SUMMARY: Concatenate being invoked in Method M000 changes the type of LocalX of calling Method passsed as operand to M000
+     * SUMMARY: Concatenate being invoked in Method M000 changes the type of LocalX of calling Method passed as operand to M000
      */
     Method (MD9F, 1, NotSerialized)
     {

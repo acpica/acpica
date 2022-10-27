@@ -403,7 +403,7 @@
      * arg5 - Package with the benchmark information on memory acq0 and rel0
      *        (if non-Package, then compare acq0 and rel0 of arg2,
      *         otherwise, arg5 is a Package with the expected per-memory
-     *         type differencies, expected: acq0[i] - rel0[i] = arg5[i])
+     *         type differences, expected: acq0[i] - rel0[i] = arg5[i])
      * arg6 - index of checking (inside the file)
      *
      * Return:

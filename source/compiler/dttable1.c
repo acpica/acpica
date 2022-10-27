@@ -2009,7 +2009,7 @@ DtCompileHmat (
         DtInsertSubtable (ParentTable, Subtable);
         HmatStruct->Length += Subtable->Length;
 
-        /* Compile HMAT structure additionals */
+        /* Compile HMAT structure additional */
 
         switch (HmatStruct->Type)
         {

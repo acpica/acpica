@@ -29,7 +29,7 @@
      * This test should be investigated and probably fixed because
      * it most likely not conforms with the changed functionality of
      * the Store operator - storing of non-computational data and
-     * BufferFields and Fields was once diasbled.
+     * BufferFields and Fields was once disabled.
      *
      * Such are exc_operand1, exc_result, oconversion and rconversion tests.
      */

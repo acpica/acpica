@@ -1086,7 +1086,7 @@ DtCompileNhlt (
 
             /*
              * If we are not done with the current Endpoint yet, then there must be
-             * some non documeneted structure(s) yet to be processed. First, get
+             * some non documented structure(s) yet to be processed. First, get
              * the count of such structure(s).
              */
             if (*PFieldList && !(strcmp ((const char *) (*PFieldList)->Name, "Device Info struct count")))
@@ -1800,7 +1800,7 @@ DtCompilePptt (
         DtInsertSubtable (ParentTable, Subtable);
         PpttHeader->Length += (UINT8)(Subtable->Length);
 
-        /* Compile PPTT subtable additionals */
+        /* Compile PPTT subtable additional */
 
         switch (PpttHeader->Type)
         {
