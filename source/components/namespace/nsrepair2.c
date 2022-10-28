@@ -702,7 +702,7 @@ AcpiNsRepair_HID (
     char                    *Dest;
 
 
-    ACPI_FUNCTION_NAME (NsRepair_HID);
+    ACPI_FUNCTION_TRACE (NsRepair_HID);
 
 
     /* We only care about string _HID objects (not integers) */
