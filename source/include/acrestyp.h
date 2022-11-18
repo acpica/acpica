@@ -538,7 +538,7 @@ typedef struct acpi_resource_extended_irq
     UINT8                           WakeCapable;
     UINT8                           InterruptCount;
     ACPI_RESOURCE_SOURCE            ResourceSource;
-    UINT32                          Interrupts[1];
+    UINT32                          Interrupts[];
 
 } ACPI_RESOURCE_EXTENDED_IRQ;
 
