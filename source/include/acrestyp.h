@@ -290,7 +290,10 @@ typedef struct acpi_resource_irq
     UINT8                           Shareable;
     UINT8                           WakeCapable;
     UINT8                           InterruptCount;
-    UINT8                           Interrupts[1];
+    union {
+        UINT8                       Interrupt;
+        ACPI_FLEX_ARRAY(UINT8,      Interrupts);
+    };
 
 } ACPI_RESOURCE_IRQ;
 
@@ -541,7 +544,10 @@ typedef struct acpi_resource_extended_irq
     UINT8                           WakeCapable;
     UINT8                           InterruptCount;
     ACPI_RESOURCE_SOURCE            ResourceSource;
-    UINT32                          Interrupts[1];
+    union {
+        UINT32                      Interrupt;
+        ACPI_FLEX_ARRAY(UINT32,     Interrupts);
+    };
 
 } ACPI_RESOURCE_EXTENDED_IRQ;
 
