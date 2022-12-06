@@ -979,6 +979,133 @@ ACPI_DMTABLE_INFO           AcpiDmTableInfoMchi[] =
     ACPI_DMT_TERMINATOR
 };
 
+/*******************************************************************************
+ *
+ * MPAM - Memory System Resource Partitioning and Monitoring Tables
+ * Arm's DEN0065 MPAM ACPI 2.0. December 2022.
+ ******************************************************************************/
+
+/* MPAM subtables */
+
+/* 0: MPAM Resource Node Structure - A root MSC table.
+ * Arm's DEN0065 MPAM ACPI 2.0. Table 4: MPAM MSC node body.
+ */
+ACPI_DMTABLE_INFO           AcpiDmTableInfoMpam0[] =
+{
+    {ACPI_DMT_UINT16,   ACPI_MPAM0_OFFSET (Length),                      "Length", 0},
+    {ACPI_DMT_UINT8,    ACPI_MPAM0_OFFSET (InterfaceType),               "Interface type", 0},
+    {ACPI_DMT_UINT8,    ACPI_MPAM0_OFFSET (Reserved),                    "Reserved", 0},
+    {ACPI_DMT_UINT32,   ACPI_MPAM0_OFFSET (Identifier),                  "Identifier", 0},
+    {ACPI_DMT_UINT64,   ACPI_MPAM0_OFFSET (BaseAddress),                 "Base address", 0},
+    {ACPI_DMT_UINT32,   ACPI_MPAM0_OFFSET (MMIOSize),                    "MMIO size", 0},
+    {ACPI_DMT_UINT32,   ACPI_MPAM0_OFFSET (OverflowInterrupt),           "Overflow interrupt", 0},
+    {ACPI_DMT_UINT32,   ACPI_MPAM0_OFFSET (OverflowInterruptFlags),      "Overflow interrupt flags", 0},
+    {ACPI_DMT_UINT32,   ACPI_MPAM0_OFFSET (Reserved1),                   "Reserved1", 0},
+    {ACPI_DMT_UINT32,   ACPI_MPAM0_OFFSET (OverflowInterruptAffinity),   "Overflow interrupt affinity", 0},
+    {ACPI_DMT_UINT32,   ACPI_MPAM0_OFFSET (ErrorInterrupt),              "Error interrupt", 0},
+    {ACPI_DMT_UINT32,   ACPI_MPAM0_OFFSET (ErrorInterruptFlags),         "Error interrupt flags", 0},
+    {ACPI_DMT_UINT32,   ACPI_MPAM0_OFFSET (Reserved2),                   "Reserved2", 0},
+    {ACPI_DMT_UINT32,   ACPI_MPAM0_OFFSET (ErrorInterruptAffinity),      "Error interrupt affinity", 0},
+    {ACPI_DMT_UINT32,   ACPI_MPAM0_OFFSET (MaxNrdyUsec),                 "MAX_NRDY_USEC", 0},
+    {ACPI_DMT_NAME8,    ACPI_MPAM0_OFFSET (HardwareIdLinkedDevice),      "Hardware ID of linked device", 0},
+    {ACPI_DMT_UINT32,   ACPI_MPAM0_OFFSET (InstanceIdLinkedDevice),      "Instance ID of linked device", 0},
+    {ACPI_DMT_UINT32,   ACPI_MPAM0_OFFSET (NumResouceNodes),             "Number of resource nodes", 0},
+
+    ACPI_DMT_TERMINATOR
+};
+
+/* 1: MPAM Resource (RIS) Node Structure - A subtable of MSC Nodes.
+ * Arm's DEN0065 MPAM ACPI 2.0. Table 9: Resource node.
+ */
+ACPI_DMTABLE_INFO           AcpiDmTableInfoMpam1[] =
+{
+    {ACPI_DMT_UINT32,          ACPI_MPAM1_OFFSET (Identifier),              "Identifier", 0},
+    {ACPI_DMT_UINT8,           ACPI_MPAM1_OFFSET (RISIndex),                "RIS Index", 0},
+    {ACPI_DMT_UINT16,          ACPI_MPAM1_OFFSET (Reserved1),               "Reserved1", 0},
+    {ACPI_DMT_MPAM_LOCATOR,    ACPI_MPAM1_OFFSET (LocatorType),             "Locator type", 0},
+    ACPI_DMT_TERMINATOR
+};
+
+/* An RIS field part of the RIS subtable */
+ACPI_DMTABLE_INFO           AcpiDmTableInfoMpam1Deps[] =
+{
+    {ACPI_DMT_UINT32, 0, "Number of functional dependencies", 0},
+    ACPI_DMT_TERMINATOR
+};
+
+/* 1A: MPAM Processor cache locator descriptor. A subtable of RIS.
+ * Arm's DEN0065 MPAM ACPI 2.0. Table 13.
+ */
+ACPI_DMTABLE_INFO           AcpiDmTableInfoMpam1A[] =
+{
+    {ACPI_DMT_UINT64,   ACPI_MPAM1A_OFFSET (CacheReference),                "Cache reference", 0},
+    {ACPI_DMT_UINT32,   ACPI_MPAM1A_OFFSET (Reserved),                      "Reserved", 0},
+};
+
+/* 1B: MPAM Memory locator descriptor. A subtable of RIS.
+ * Arm's DEN0065 MPAM ACPI 2.0. Table 14.
+ */
+ACPI_DMTABLE_INFO           AcpiDmTableInfoMpam1B[] =
+{
+    {ACPI_DMT_UINT64,   ACPI_MPAM1B_OFFSET (ProximityDomain),               "Proximity domain", 0},
+    {ACPI_DMT_UINT32,   ACPI_MPAM1B_OFFSET (Reserved),                      "Reserved", 0},
+};
+
+/* 1C: MPAM SMMU locator descriptor. A subtable of RIS.
+ * Arm's DEN0065 MPAM ACPI 2.0. Table 15.
+ */
+ACPI_DMTABLE_INFO           AcpiDmTableInfoMpam1C[] =
+{
+    {ACPI_DMT_UINT64,   ACPI_MPAM1C_OFFSET (SmmuInterface),                 "SMMU Interface", 0},
+    {ACPI_DMT_UINT32,   ACPI_MPAM1C_OFFSET (Reserved),                      "Reserved", 0},
+};
+
+/* 1D: MPAM Memory-side cache locator descriptor. A subtable of RIS.
+ * Arm's DEN0065 MPAM ACPI 2.0. Table 16.
+ */
+ACPI_DMTABLE_INFO           AcpiDmTableInfoMpam1D[] =
+{
+    {ACPI_DMT_UINT56,   ACPI_MPAM1D_OFFSET (Level),                         "Reserved", 0},
+    {ACPI_DMT_UINT8,    ACPI_MPAM1D_OFFSET (Level),                         "Level", 0},
+    {ACPI_DMT_UINT32,   ACPI_MPAM1D_OFFSET (Reference),                     "Reference", 0},
+};
+
+/* 1E: MPAM ACPI device locator descriptor. A subtable of RIS.
+ * Arm's DEN0065 MPAM ACPI 2.0. Table 17.
+ */
+ACPI_DMTABLE_INFO           AcpiDmTableInfoMpam1E[] =
+{
+    {ACPI_DMT_UINT64,   ACPI_MPAM1E_OFFSET (AcpiHwId),                      "ACPI Hardware ID", 0},
+    {ACPI_DMT_UINT32,   ACPI_MPAM1E_OFFSET (AcpiUniqueId),                  "ACPI Unique ID", 0},
+};
+
+/* 1F: MPAM Interconnect locator descriptor. A subtable of RIS.
+ * Arm's DEN0065 MPAM ACPI 2.0. Table 18.
+ */
+ACPI_DMTABLE_INFO           AcpiDmTableInfoMpam1F[] =
+{
+    {ACPI_DMT_UINT64,   ACPI_MPAM1F_OFFSET (InterConnectDescTblOff),        "Interconnect descriptor table offset", 0},
+    {ACPI_DMT_UINT32,   ACPI_MPAM1F_OFFSET (Reserved),                      "Reserved", 0},
+};
+
+/* 1G: MPAM Locator structure.
+ * Arm's DEN0065 MPAM ACPI 2.0. Table 12.
+ */
+ACPI_DMTABLE_INFO           AcpiDmTableInfoMpam1G[] =
+{
+    {ACPI_DMT_UINT64,   ACPI_MPAM1G_OFFSET (Descriptor1),                   "Descriptor1", 0},
+    {ACPI_DMT_UINT32,   ACPI_MPAM1G_OFFSET (Descriptor2),                   "Descriptor2", 0},
+};
+
+/* 2: MPAM Functional dependency descriptor.
+ * Arm's DEN0065 MPAM ACPI 2.0. Table 10.
+ */
+ACPI_DMTABLE_INFO           AcpiDmTableInfoMpam2[] =
+{
+    {ACPI_DMT_UINT32,   ACPI_MPAM2_OFFSET (Producer),                       "Producer", 0},
+    {ACPI_DMT_UINT32,   ACPI_MPAM2_OFFSET (Reserved),                       "Reserved", 0},
+};
+
 
 /*******************************************************************************
  *

@@ -1129,6 +1129,124 @@ AcpiDmDumpMcfg (
     }
 }
 
+/*******************************************************************************
+ *
+ * FUNCTION:    AcpiDmDumpMpam
+ *
+ * PARAMETERS:  Table               - A MPAM table
+ *
+ * RETURN:      None
+ *
+ * DESCRIPTION: Format the contents of a MPAM table
+ *
+ ******************************************************************************/
+
+void
+AcpiDmDumpMpam (
+    ACPI_TABLE_HEADER          *Table)
+{
+    ACPI_STATUS                Status;
+    ACPI_MPAM_MSC_NODE         *MpamMscNode;
+    ACPI_MPAM_RESOURCE_NODE    *MpamResourceNode;
+    ACPI_DMTABLE_INFO          *InfoTable;
+    UINT32                     Offset = sizeof(ACPI_TABLE_HEADER);
+    UINT32                     MpamResourceNodeLength = 0;
+
+    while (Offset < Table->Length)
+    {
+        MpamMscNode = ACPI_ADD_PTR (ACPI_MPAM_MSC_NODE, Table, Offset);
+
+        /* Subtable: MSC */
+        Status = AcpiDmDumpTable (MpamMscNode->Length, 0, MpamMscNode, 0,
+            AcpiDmTableInfoMpam0);
+        if (ACPI_FAILURE (Status))
+        {
+            return;
+        }
+
+        /* Offset the start of the array of resources */
+        Offset += sizeof(ACPI_MPAM_MSC_NODE);
+
+        /* Subtable: MSC RIS(es) */
+        for (int ResourceIdx = 0; ResourceIdx < MpamMscNode->NumResouceNodes; ResourceIdx++)
+        {
+            MpamResourceNode = ACPI_ADD_PTR (ACPI_MPAM_RESOURCE_NODE, Table, Offset);
+
+            MpamResourceNodeLength = sizeof(ACPI_MPAM_RESOURCE_NODE) +
+                MpamResourceNode->NumFunctionalDeps * sizeof(ACPI_MPAM_FUNC_DEPS);
+
+            Offset += MpamResourceNodeLength;
+
+            /* Subtable: MSC RIS */
+            Status = AcpiDmDumpTable (MpamResourceNodeLength, 0, MpamResourceNode, 0,
+                AcpiDmTableInfoMpam1);
+            if (ACPI_FAILURE (Status))
+            {
+                return;
+            }
+
+            switch (MpamResourceNode->LocatorType)
+            {
+                case ACPI_MPAM_LOCATION_TYPE_PROCESSOR_CACHE:
+                    InfoTable = AcpiDmTableInfoMpam1A;
+                    break;
+                case ACPI_MPAM_LOCATION_TYPE_MEMORY:
+                    InfoTable = AcpiDmTableInfoMpam1B;
+                    break;
+                case ACPI_MPAM_LOCATION_TYPE_SMMU:
+                    InfoTable = AcpiDmTableInfoMpam1C;
+                    break;
+                case ACPI_MPAM_LOCATION_TYPE_MEMORY_CACHE:
+                    InfoTable = AcpiDmTableInfoMpam1D;
+                    break;
+                case ACPI_MPAM_LOCATION_TYPE_ACPI_DEVICE:
+                    InfoTable = AcpiDmTableInfoMpam1E;
+                    break;
+                case ACPI_MPAM_LOCATION_TYPE_INTERCONNECT:
+                    InfoTable = AcpiDmTableInfoMpam1F;
+                    break;
+                case ACPI_MPAM_LOCATION_TYPE_UNKNOWN:
+                    InfoTable = AcpiDmTableInfoMpam1G;
+                default:
+                    AcpiOsPrintf ("\n**** Unknown MPAM locator type 0x%X\n",
+                        MpamResourceNode->LocatorType);
+                    return;
+            }
+
+            /* Subtable: MSC Resource Locator(s) */
+            Status = AcpiDmDumpTable (sizeof(ACPI_MPAM_RESOURCE_LOCATOR), 0,
+                &MpamResourceNode->Locator, 0, InfoTable);
+            if (ACPI_FAILURE (Status))
+            {
+                return;
+            }
+
+            /* Get the number of functional dependencies of an RIS */
+            Status = AcpiDmDumpTable (sizeof(UINT32), 0, &MpamResourceNode->NumFunctionalDeps, 0,
+                AcpiDmTableInfoMpam1Deps);
+            if (ACPI_FAILURE (Status))
+            {
+                return;
+            }
+
+            /* Subtable: MSC functional dependencies */
+            for (int funcDep = 0; funcDep < MpamResourceNode->NumFunctionalDeps; funcDep++)
+            {
+                Status = AcpiDmDumpTable (sizeof(ACPI_MPAM_FUNC_DEPS), 0,
+                    &MpamResourceNode->NumFunctionalDeps, 0, AcpiDmTableInfoMpam2);
+                if (ACPI_FAILURE (Status))
+                {
+                    return;
+                }
+            }
+
+            AcpiOsPrintf ("\n\n");
+        }
+
+    }
+
+    return;
+}
 
 /*******************************************************************************
  *

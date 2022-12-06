@@ -179,6 +179,7 @@
 #define ACPI_SIG_MADT           "APIC"      /* Multiple APIC Description Table */
 #define ACPI_SIG_MCFG           "MCFG"      /* PCI Memory Mapped Configuration table */
 #define ACPI_SIG_MCHI           "MCHI"      /* Management Controller Host Interface table */
+#define ACPI_SIG_MPAM           "MPAM"      /* Memory System Resource Partitioning and Monitoring Table */
 #define ACPI_SIG_MPST           "MPST"      /* Memory Power State Table */
 #define ACPI_SIG_MSDM           "MSDM"      /* Microsoft Data Management Table */
 #define ACPI_SIG_NFIT           "NFIT"      /* NVDIMM Firmware Interface Table */
@@ -1639,6 +1640,132 @@ typedef struct acpi_table_mchi
 
 } ACPI_TABLE_MCHI;
 
+/*******************************************************************************
+ *
+ * MPAM - Memory System Resource Partitioning and Monitoring
+ *
+ * Conforms to "ACPI for Memory System Resource Partitioning and Monitoring 2.0"
+ * Document number: ARM DEN 0065, December, 2022.
+ *
+ ******************************************************************************/
+
+/* MPAM RIS locator types. Table 11, Location types */
+enum AcpiMpamLocatorType {
+    ACPI_MPAM_LOCATION_TYPE_PROCESSOR_CACHE    = 0,
+    ACPI_MPAM_LOCATION_TYPE_MEMORY             = 1,
+    ACPI_MPAM_LOCATION_TYPE_SMMU               = 2,
+    ACPI_MPAM_LOCATION_TYPE_MEMORY_CACHE       = 3,
+    ACPI_MPAM_LOCATION_TYPE_ACPI_DEVICE        = 4,
+    ACPI_MPAM_LOCATION_TYPE_INTERCONNECT       = 5,
+    ACPI_MPAM_LOCATION_TYPE_UNKNOWN            = 0xFF
+};
+
+/* MPAM Functional dependency descriptor. Table 10 */
+typedef struct acpi_mpam_func_deps
+{
+    UINT32                        Producer;
+    UINT32                        Reserved;
+} ACPI_MPAM_FUNC_DEPS;
+
+/* MPAM Processor cache locator descriptor. Table 13 */
+typedef struct acpi_mpam_resource_cache_locator
+{
+    UINT64                        CacheReference;
+    UINT32                        Reserved;
+} ACPI_MPAM_RESOURCE_CACHE_LOCATOR;
+
+/* MPAM Memory locator descriptor. Table 14 */
+typedef struct acpi_mpam_resource_memory_locator
+{
+    UINT64                        ProximityDomain;
+    UINT32                        Reserved;
+} ACPI_MPAM_RESOURCE_MEMORY_LOCATOR;
+
+/* MPAM SMMU locator descriptor. Table 15 */
+typedef struct acpi_mpam_resource_smmu_locator
+{
+    UINT64                        SmmuInterface;
+    UINT32                        Reserved;
+} ACPI_MPAM_RESOURCE_SMMU_INTERFACE;
+
+/* MPAM Memory-side cache locator descriptor. Table 16 */
+typedef struct acpi_mpam_resource_memcache_locator
+{
+    UINT8                         Reserved[7];
+    UINT8                         Level;
+    UINT32                        Reference;
+} ACPI_MPAM_RESOURCE_MEMCACHE_INTERFACE;
+
+/* MPAM ACPI device locator descriptor. Table 17 */
+typedef struct acpi_mpam_resource_acpi_locator
+{
+    UINT64                        AcpiHwId;
+    UINT32                        AcpiUniqueId;
+} ACPI_MPAM_RESOURCE_ACPI_INTERFACE;
+
+/* MPAM Interconnect locator descriptor. Table 18 */
+typedef struct acpi_mpam_resource_interconnect_locator
+{
+    UINT64                        InterConnectDescTblOff;
+    UINT32                        Reserved;
+} ACPI_MPAM_RESOURCE_INTERCONNECT_INTERFACE;
+
+/* MPAM Locator structure. Table 12 */
+typedef struct acpi_mpam_resource_generic_locator
+{
+    UINT64                        Descriptor1;
+    UINT32                        Descriptor2;
+} ACPI_MPAM_RESOURCE_GENERIC_LOCATOR;
+
+typedef union acpi_mpam_resource_locator
+{
+    ACPI_MPAM_RESOURCE_CACHE_LOCATOR             CacheLocator;
+    ACPI_MPAM_RESOURCE_MEMORY_LOCATOR            MemoryLocator;
+    ACPI_MPAM_RESOURCE_SMMU_INTERFACE            SmmuLocator;
+    ACPI_MPAM_RESOURCE_MEMCACHE_INTERFACE        MemCacheLocator;
+    ACPI_MPAM_RESOURCE_ACPI_INTERFACE            AcpiLocator;
+    ACPI_MPAM_RESOURCE_INTERCONNECT_INTERFACE    InterconnectIfcLocator;
+    ACPI_MPAM_RESOURCE_GENERIC_LOCATOR           GenericLocator;
+} ACPI_MPAM_RESOURCE_LOCATOR;
+
+/* Memory System Component Resource Node Structure Table 9 */
+typedef struct acpi_mpam_resource_node
+{
+    UINT32                        Identifier;
+    UINT8                         RISIndex;
+    UINT16                        Reserved1;
+    UINT8                         LocatorType;
+    ACPI_MPAM_RESOURCE_LOCATOR    Locator;
+    UINT32                        NumFunctionalDeps;
+} ACPI_MPAM_RESOURCE_NODE;
+
+/* Memory System Component (MSC) Node Structure. Table 4 */
+typedef struct acpi_mpam_msc_node
+{
+    UINT16                     Length;
+    UINT8                      InterfaceType;
+    UINT8                      Reserved;
+    UINT32                     Identifier;
+    UINT64                     BaseAddress;
+    UINT32                     MMIOSize;
+    UINT32                     OverflowInterrupt;
+    UINT32                     OverflowInterruptFlags;
+    UINT32                     Reserved1;
+    UINT32                     OverflowInterruptAffinity;
+    UINT32                     ErrorInterrupt;
+    UINT32                     ErrorInterruptFlags;
+    UINT32                     Reserved2;
+    UINT32                     ErrorInterruptAffinity;
+    UINT32                     MaxNrdyUsec;
+    UINT64                     HardwareIdLinkedDevice;
+    UINT32                     InstanceIdLinkedDevice;
+    UINT32                     NumResouceNodes;
+} ACPI_MPAM_MSC_NODE;
+
+typedef struct acpi_table_mpam
+{
+    ACPI_TABLE_HEADER         Header;          /* Common ACPI table header */
+} ACPI_TABLE_MPAM;
 
 /*******************************************************************************
  *
