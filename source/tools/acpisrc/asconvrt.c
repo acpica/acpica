@@ -1618,6 +1618,8 @@ AsInsertPrefix (
     int                     TrailingSpaces;
     char                    LowerKeyword[128];
     int                     KeywordLength;
+    char                    *LineStart;
+    BOOLEAN                 FoundPrefix;
 
 
     switch (Type)
@@ -1664,7 +1666,66 @@ AsInsertPrefix (
         {
             /* Make sure the keyword isn't already prefixed with the insert */
 
-            if (!strncmp (SubString - InsertLength, InsertString, InsertLength))
+            /* We find the beginning of the line and try to find the InsertString
+             * from LineStart up to SubBuffer (our keyword). If it's not there,
+             * we assume it doesn't have a prefix; this is a limitation, as having
+             * a keyword on another line is absolutely valid C.
+             */
+
+            LineStart = SubString;
+            FoundPrefix = FALSE;
+
+            /* Find the start of the line */
+
+            while (LineStart > Buffer)
+            {
+                if (*LineStart == '\n')
+                {
+                    LineStart++;
+                    break;
+                }
+
+                LineStart--;
+            }
+
+            /* Try to find InsertString from the start of the line up to SubBuffer */
+            /* Note that this algorithm is a bit naive. */
+
+            while (SubBuffer > LineStart)
+            {
+                if (*LineStart != *InsertString)
+                {
+                    LineStart++;
+                    continue;
+                }
+
+                if (strncmp (LineStart++, InsertString, InsertLength))
+                {
+                    continue;
+                }
+
+                FoundPrefix = TRUE;
+                LineStart += InsertLength - 1;
+
+                /* Now check if there's non-whitespace between InsertString and SubBuffer, as that
+                 * means it's not a valid prefix in this case. */
+
+                while (LineStart != SubBuffer)
+                {
+                    if (!strchr (" \t\r\n", *LineStart))
+                    {
+                        /* We found non-whitespace while traversing up to SubBuffer,
+                         * so this isn't a prefix.
+                         */
+                        FoundPrefix = FALSE;
+                        break;
+                    }
+
+                    LineStart++;
+                }
+            }
+
+            if (FoundPrefix)
             {
                 /* Add spaces if not already at the end-of-line */
 
