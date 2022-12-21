@@ -1550,7 +1550,7 @@ enum AcpiMadtLpcPicVersion {
 
 typedef struct acpi_madt_oem_data
 {
-    UINT8                   OemData[];
+    UINT8                   OemData[0];
 } ACPI_MADT_OEM_DATA;
 
 
