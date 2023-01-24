@@ -260,6 +260,7 @@ typedef enum
     ACPI_DMT_AEST_XRUPT,
     ACPI_DMT_AGDI,
     ACPI_DMT_ASF,
+    ACPI_DMT_ASPT,
     ACPI_DMT_CDAT,
     ACPI_DMT_CEDT,
     ACPI_DMT_DMAR,
@@ -399,6 +400,11 @@ extern ACPI_DMTABLE_INFO        AcpiDmTableInfoAsf2a[];
 extern ACPI_DMTABLE_INFO        AcpiDmTableInfoAsf3[];
 extern ACPI_DMTABLE_INFO        AcpiDmTableInfoAsf4[];
 extern ACPI_DMTABLE_INFO        AcpiDmTableInfoAsfHdr[];
+extern ACPI_DMTABLE_INFO        AcpiDmTableInfoAspt[];
+extern ACPI_DMTABLE_INFO        AcpiDmTableInfoAsptHdr[];
+extern ACPI_DMTABLE_INFO        AcpiDmTableInfoAspt0[];
+extern ACPI_DMTABLE_INFO        AcpiDmTableInfoAspt1[];
+extern ACPI_DMTABLE_INFO        AcpiDmTableInfoAspt2[];
 extern ACPI_DMTABLE_INFO        AcpiDmTableInfoBdat[];
 extern ACPI_DMTABLE_INFO        AcpiDmTableInfoBoot[];
 extern ACPI_DMTABLE_INFO        AcpiDmTableInfoBert[];
@@ -756,6 +762,10 @@ AcpiDmDumpApmt (
 
 void
 AcpiDmDumpAsf (
+    ACPI_TABLE_HEADER       *Table);
+
+void
+AcpiDmDumpAspt (
     ACPI_TABLE_HEADER       *Table);
 
 void
