@@ -543,7 +543,7 @@ enum AcpiCdatType
 
 /* Subtable 0: Device Scoped Memory Affinity Structure (DSMAS) */
 
-typedef struct acpi_cadt_dsmas
+typedef struct acpi_cdat_dsmas
 {
     UINT8                   DsmadHandle;
     UINT8                   Flags;
