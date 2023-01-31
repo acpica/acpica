@@ -196,6 +196,8 @@ extern const char                       *AcpiGbl_SbDecode[];
 extern const char                       *AcpiGbl_FcDecode[];
 extern const char                       *AcpiGbl_PtDecode[];
 extern const char                       *AcpiGbl_PtypDecode[];
+extern const char                       *AcpiGbl_ClockInputMode[];
+extern const char                       *AcpiGbl_ClockInputScale[];
 #endif
 
 /*

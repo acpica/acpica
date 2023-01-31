@@ -770,6 +770,16 @@ typedef struct acpi_resource_pin_config
 
 } ACPI_RESOURCE_PIN_CONFIG;
 
+typedef struct acpi_resource_clock_input
+{
+    UINT8                           RevisionId;
+    UINT8                           Mode;
+    UINT8                           Scale;
+    UINT16                          FrequencyDivisor;
+    UINT32                          FrequencyNumerator;
+    ACPI_RESOURCE_SOURCE            ResourceSource;
+} ACPI_RESOURCE_CLOCK_INPUT;
+
 /* Values for PinConfigType field above */
 
 #define ACPI_PIN_CONFIG_DEFAULT                 0
@@ -853,7 +863,8 @@ typedef struct acpi_resource_pin_group_config
 #define ACPI_RESOURCE_TYPE_PIN_GROUP            22  /* ACPI 6.2 */
 #define ACPI_RESOURCE_TYPE_PIN_GROUP_FUNCTION   23  /* ACPI 6.2 */
 #define ACPI_RESOURCE_TYPE_PIN_GROUP_CONFIG     24  /* ACPI 6.2 */
-#define ACPI_RESOURCE_TYPE_MAX                  24
+#define ACPI_RESOURCE_TYPE_CLOCK_INPUT          25  /* ACPI 6.5 */
+#define ACPI_RESOURCE_TYPE_MAX                  25
 
 /* Master union for resource descriptors */
 
@@ -888,6 +899,7 @@ typedef union acpi_resource_data
     ACPI_RESOURCE_PIN_GROUP                 PinGroup;
     ACPI_RESOURCE_PIN_GROUP_FUNCTION        PinGroupFunction;
     ACPI_RESOURCE_PIN_GROUP_CONFIG          PinGroupConfig;
+    ACPI_RESOURCE_CLOCK_INPUT               ClockInput;
 
     /* Common fields */
 
