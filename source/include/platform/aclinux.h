@@ -168,8 +168,6 @@
 #define ACPI_USE_DO_WHILE_0
 #define ACPI_IGNORE_PACKAGE_RESOLUTION_ERRORS
 
-#define ACPI_UINTPTR_T uintptr_t
-
 
 #ifdef __KERNEL__
 
@@ -254,6 +252,8 @@
 #define ACPI_SPINLOCK               spinlock_t *
 #define ACPI_CPU_FLAGS              unsigned long
 
+#define ACPI_UINTPTR_T              uintptr_t
+
 #define ACPI_TO_INTEGER(p)          ((uintptr_t)(p))
 #define ACPI_OFFSET(d, f)           offsetof(d, f)
 
@@ -311,7 +311,6 @@
 
 #ifdef ACPI_USE_STANDARD_HEADERS
 #include <unistd.h>
-#include <stdint.h>
 #endif
 
 /* Define/disable kernel-specific declarators */

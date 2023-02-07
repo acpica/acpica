@@ -332,8 +332,8 @@ extern const ACPI_PREDEFINED_NAMES      AcpiGbl_PreDefinedNames [NUM_PREDEFINED_
 ACPI_GLOBAL (UINT32,                    AcpiGbl_CurrentNodeCount);
 ACPI_GLOBAL (UINT32,                    AcpiGbl_CurrentNodeSize);
 ACPI_GLOBAL (UINT32,                    AcpiGbl_MaxConcurrentNodeCount);
-ACPI_GLOBAL (ACPI_UINTPTR_T,            AcpiGbl_EntryStackPointer);
-ACPI_GLOBAL (ACPI_UINTPTR_T,            AcpiGbl_LowestStackPointer);
+ACPI_GLOBAL (ACPI_SIZE *,               AcpiGbl_EntryStackPointer);
+ACPI_GLOBAL (ACPI_SIZE *,               AcpiGbl_LowestStackPointer);
 ACPI_GLOBAL (UINT32,                    AcpiGbl_DeepestNesting);
 ACPI_INIT_GLOBAL (UINT32,               AcpiGbl_NestingLevel, 0);
 #endif
