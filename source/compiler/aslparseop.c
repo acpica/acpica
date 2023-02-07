@@ -861,7 +861,7 @@ TrAllocateOp (
         }
 
         AslGbl_CommentState.LatestParseOp = Op;
-        CvDbgPrint ("TrAllocateOp=Set latest parse op to this op.\n");
+        CvDbgPrint ("%s=Set latest parse op to this op.\n",  ACPI_GET_FUNCTION_NAME);
         CvDbgPrint ("           Op->Asl.ParseOpName = %s\n",
             AslGbl_CommentState.LatestParseOp->Asl.ParseOpName);
         CvDbgPrint ("           Op->Asl.ParseOpcode = 0x%x\n", ParseOpcode);

@@ -482,8 +482,8 @@ DtInsertLabelField (
 {
 
     DbgPrint (ASL_DEBUG_OUTPUT,
-        "DtInsertLabelField: Found Label : %s at output table offset %X\n",
-        Field->Value, Field->TableOffset);
+        "%s: Found Label : %s at output table offset %X\n",
+         ACPI_GET_FUNCTION_NAME, Field->Value, Field->TableOffset);
 
     Field->NextLabel = AslGbl_LabelList;
     AslGbl_LabelList = Field;
