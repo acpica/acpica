@@ -425,6 +425,17 @@ static const char           *AcpiDmMadtSubnames[] =
     "Types 80-FF are used for OEM data" /* Reserved for OEM data */
 };
 
+static const char           *AcpiDmMpamSubnames[] =
+{
+    "Processor cache",      /* ACPI_MPAM_LOCATION_TYPE_PROCESSOR_CACHE */
+    "Memory",               /* ACPI_MPAM_LOCATION_TYPE_MEMORY */
+    "SMMU",                 /* ACPI_MPAM_LOCATION_TYPE_SMMU */
+    "Memory-side cache",    /* ACPI_MPAM_LOCATION_TYPE_MEMORY_CACHE */
+    "ACPI device",          /* ACPI_MPAM_LOCATION_TYPE_ACPI_DEVICE */
+    "Interconnect",         /* ACPI_MPAM_LOCATION_TYPE_INTERCONNECT */
+    "Unknown"               /* ACPI_MPAM_LOCATION_TYPE_UNKNOWN */
+};
+
 static const char           *AcpiDmNfitSubnames[] =
 {
     "System Physical Address Range",    /* ACPI_NFIT_TYPE_SYSTEM_ADDRESS */
@@ -700,6 +711,7 @@ const ACPI_DMTABLE_DATA     AcpiDmTableData[] =
     {ACPI_SIG_MADT, NULL,                   AcpiDmDumpMadt, DtCompileMadt,  TemplateMadt},
     {ACPI_SIG_MCFG, NULL,                   AcpiDmDumpMcfg, DtCompileMcfg,  TemplateMcfg},
     {ACPI_SIG_MCHI, AcpiDmTableInfoMchi,    NULL,           NULL,           TemplateMchi},
+    {ACPI_SIG_MPAM, NULL,                   AcpiDmDumpMpam, DtCompileMpam,  TemplateMpam},
     {ACPI_SIG_MPST, AcpiDmTableInfoMpst,    AcpiDmDumpMpst, DtCompileMpst,  TemplateMpst},
     {ACPI_SIG_MSCT, NULL,                   AcpiDmDumpMsct, DtCompileMsct,  TemplateMsct},
     {ACPI_SIG_MSDM, NULL,                   AcpiDmDumpSlic, DtCompileSlic,  TemplateMsdm},
@@ -1128,6 +1140,7 @@ AcpiDmDumpTable (
         case ACPI_DMT_IVRS_DE:
         case ACPI_DMT_GTDT:
         case ACPI_DMT_MADT:
+        case ACPI_DMT_MPAM_LOCATOR:
         case ACPI_DMT_NHLT1:
         case ACPI_DMT_NHLT1a:
         case ACPI_DMT_NHLT1b:
@@ -1888,6 +1901,20 @@ AcpiDmDumpTable (
             }
             AcpiOsPrintf (UINT8_FORMAT, *Target,
                 AcpiDmMadtSubnames[Temp8]);
+            break;
+
+        case ACPI_DMT_MPAM_LOCATOR:
+
+            /* MPAM subtable locator types */
+
+            Temp8 = *Target;
+            if (Temp8 > ACPI_MPAM_LOCATION_TYPE_INTERCONNECT)
+            {
+                Temp8 = ACPI_MPAM_LOCATION_TYPE_INTERCONNECT + 1;
+            }
+
+            AcpiOsPrintf (UINT8_FORMAT, *Target,
+                AcpiDmMpamSubnames[Temp8]);
             break;
 
         case ACPI_DMT_NFIT:
