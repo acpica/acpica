@@ -647,8 +647,8 @@ AcpiDbDisplayStatistics (
             AcpiGbl_EntryStackPointer, AcpiGbl_LowestStackPointer);
 
         AcpiOsPrintf ("\nSubsystem Stack Usage:\n\n");
-        AcpiOsPrintf ("Entry Stack Pointer          %p\n", AcpiGbl_EntryStackPointer);
-        AcpiOsPrintf ("Lowest Stack Pointer         %p\n", AcpiGbl_LowestStackPointer);
+        AcpiOsPrintf ("Entry Stack Pointer          %p\n", ACPI_TO_POINTER(AcpiGbl_EntryStackPointer));
+        AcpiOsPrintf ("Lowest Stack Pointer         %p\n", ACPI_TO_POINTER(AcpiGbl_LowestStackPointer));
         AcpiOsPrintf ("Stack Use                    %X (%u)\n", Temp, Temp);
         AcpiOsPrintf ("Deepest Procedure Nesting    %u\n", AcpiGbl_DeepestNesting);
 #endif
