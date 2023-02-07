@@ -538,7 +538,7 @@ typedef struct acpi_resource_extended_irq
     UINT8                           WakeCapable;
     UINT8                           InterruptCount;
     ACPI_RESOURCE_SOURCE            ResourceSource;
-    UINT32                          Interrupts[];
+    UINT32                          Interrupts[1];
 
 } ACPI_RESOURCE_EXTENDED_IRQ;
 
@@ -927,10 +927,8 @@ typedef struct acpi_pci_routing_table
     UINT32                          Pin;
     UINT64                          Address;        /* here for 64-bit alignment */
     UINT32                          SourceIndex;
-    union {
-                                    char Pad[4];    /* pad to 64 bits so sizeof() works in all cases */
-                                    ACPI_FLEX_ARRAY(char, Source);
-    };
+    char                            Source[4];      /* pad to 64 bits so sizeof() works in all cases */
+
 } ACPI_PCI_ROUTING_TABLE;
 
 #endif /* __ACRESTYP_H__ */
