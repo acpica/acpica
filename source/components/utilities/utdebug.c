@@ -185,7 +185,7 @@ AcpiUtInitStackPtrTrace (
     ACPI_SIZE               CurrentSp;
 
 
-    AcpiGbl_EntryStackPointer = ACPI_TO_INTEGER(&CurrentSp);
+    AcpiGbl_EntryStackPointer = &CurrentSp;
 }
 
 
@@ -208,9 +208,9 @@ AcpiUtTrackStackPtr (
     ACPI_SIZE               CurrentSp;
 
 
-    if (ACPI_TO_INTEGER(&CurrentSp) < AcpiGbl_LowestStackPointer)
+    if (&CurrentSp < AcpiGbl_LowestStackPointer)
     {
-        AcpiGbl_LowestStackPointer = ACPI_TO_INTEGER(&CurrentSp);
+        AcpiGbl_LowestStackPointer = &CurrentSp;
     }
 
     if (AcpiGbl_NestingLevel > AcpiGbl_DeepestNesting)
