@@ -172,7 +172,7 @@
  *
  * DESCRIPTION: Verifies that the table checksums to zero. Optionally returns
  *              exception on bad checksum.
- *              Note: We don't have to check for a CDAT here, since CDAT is 
+ *              Note: We don't have to check for a CDAT here, since CDAT is
  *              not in the RSDT/XSDT, and the CDAT table is never installed
  *              via ACPICA.
  *
