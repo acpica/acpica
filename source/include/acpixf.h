@@ -944,6 +944,21 @@ AcpiInstallAddressSpaceHandler (
 
 ACPI_EXTERNAL_RETURN_STATUS (
 ACPI_STATUS
+AcpiInstallAddressSpaceHandlerNo_Reg(
+    ACPI_HANDLE             Device,
+    ACPI_ADR_SPACE_TYPE     SpaceId,
+    ACPI_ADR_SPACE_HANDLER  Handler,
+    ACPI_ADR_SPACE_SETUP    Setup,
+    void                    *Context))
+
+ACPI_EXTERNAL_RETURN_STATUS (
+ACPI_STATUS
+AcpiExecuteRegMethods (
+    ACPI_HANDLE             Device,
+    ACPI_ADR_SPACE_TYPE     SpaceId))
+
+ACPI_EXTERNAL_RETURN_STATUS (
+ACPI_STATUS
 AcpiRemoveAddressSpaceHandler (
     ACPI_HANDLE             Device,
     ACPI_ADR_SPACE_TYPE     SpaceId,
