@@ -482,7 +482,7 @@ DtCompileMpam (
         RisLength = 0;
 
         /* Iterate over RIS subtables per MSC node */
-        for (int ris = 0; ris < MpamMscNode->NumResouceNodes; ris++)
+        for (UINT32 ris = 0; ris < MpamMscNode->NumResouceNodes; ris++)
         {
             /* Compile RIS subtable */
             Status = DtCompileTable (PFieldList, AcpiDmTableInfoMpam1,
@@ -552,7 +552,7 @@ DtCompileMpam (
                 FuncDepsCount * sizeof(ACPI_MPAM_FUNC_DEPS);
 
             /* Iterate over functional dependencies per RIS */
-            for (int funcDep = 0; funcDep < FuncDepsCount; funcDep++)
+            for (UINT32 funcDep = 0; funcDep < FuncDepsCount; funcDep++)
             {
                 /* Compiler functional dependencies table */
                 Status = DtCompileTable (PFieldList, AcpiDmTableInfoMpam2,
@@ -572,7 +572,7 @@ DtCompileMpam (
         /* Check if the length of the MSC is correct and override with the correct length */
         if (MpamMscNode->Length != sizeof(ACPI_MPAM_MSC_NODE) + RisLength)
         {
-            MpamMscNode->Length = sizeof(ACPI_MPAM_MSC_NODE) + RisLength;
+            MpamMscNode->Length = (UINT16) (sizeof(ACPI_MPAM_MSC_NODE) + RisLength);
             DbgPrint (ASL_DEBUG_OUTPUT, "Overriding MSC->Length: %X\n", MpamMscNode->Length);
         }
 
