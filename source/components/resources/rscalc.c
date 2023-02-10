@@ -480,6 +480,13 @@ AcpiRsGetAmlLength (
 
             break;
 
+        case ACPI_RESOURCE_TYPE_CLOCK_INPUT:
+
+            TotalSize = (ACPI_RS_LENGTH) (TotalSize +
+                Resource->Data.ClockInput.ResourceSource.StringLength);
+
+            break;
+
 
         case ACPI_RESOURCE_TYPE_SERIAL_BUS:
 
@@ -786,6 +793,12 @@ AcpiRsGetListLength (
                 AmlResource->PinGroupConfig.VendorOffset -
                 AmlResource->PinGroupConfig.ResSourceOffset +
                 AmlResource->PinGroupConfig.VendorLength;
+
+            break;
+
+        case ACPI_RESOURCE_NAME_CLOCK_INPUT:
+            ExtraStructBytes = AcpiRsStreamOptionLength (
+                ResourceLength, MinimumAmlResourceLength);
 
             break;
 

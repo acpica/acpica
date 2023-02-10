@@ -1566,6 +1566,9 @@ ASL_RESOURCE_NODE *
 RsDoPinGroupConfigDescriptor (
     ASL_RESOURCE_INFO       *Info);
 
+ASL_RESOURCE_NODE *
+RsDoClockInputDescriptor (
+    ASL_RESOURCE_INFO       *Info);
 
 /*
  * aslrestype2d - DWord address descriptors

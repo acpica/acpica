@@ -236,7 +236,7 @@ typedef struct acpi_table_aest
 
 /* Common Subtable header - one per Node Structure (Subtable) */
 
-typedef struct              acpi_aest_hdr
+typedef struct acpi_aest_hdr
 {
     UINT8                   Type;
     UINT16                  Length;
@@ -267,7 +267,7 @@ typedef struct              acpi_aest_hdr
 
 /* 0: Processor Error */
 
-typedef struct              acpi_aest_processor
+typedef struct acpi_aest_processor
 {
     UINT32                  ProcessorId;
     UINT8                   ResourceType;
@@ -287,7 +287,7 @@ typedef struct              acpi_aest_processor
 
 /* 0R: Processor Cache Resource Substructure */
 
-typedef struct              acpi_aest_processor_cache
+typedef struct acpi_aest_processor_cache
 {
     UINT32                  CacheReference;
     UINT32                  Reserved;
@@ -303,7 +303,7 @@ typedef struct              acpi_aest_processor_cache
 
 /* 1R: Processor TLB Resource Substructure */
 
-typedef struct              acpi_aest_processor_tlb
+typedef struct acpi_aest_processor_tlb
 {
     UINT32                  TlbLevel;
     UINT32                  Reserved;
@@ -312,7 +312,7 @@ typedef struct              acpi_aest_processor_tlb
 
 /* 2R: Processor Generic Resource Substructure */
 
-typedef struct              acpi_aest_processor_generic
+typedef struct acpi_aest_processor_generic
 {
     UINT32                   Resource;
 
@@ -320,7 +320,7 @@ typedef struct              acpi_aest_processor_generic
 
 /* 1: Memory Error */
 
-typedef struct              acpi_aest_memory
+typedef struct acpi_aest_memory
 {
     UINT32                  SratProximityDomain;
 
@@ -328,7 +328,7 @@ typedef struct              acpi_aest_memory
 
 /* 2: Smmu Error */
 
-typedef struct              acpi_aest_smmu
+typedef struct acpi_aest_smmu
 {
     UINT32                  IortNodeReference;
     UINT32                  SubcomponentReference;
@@ -337,7 +337,7 @@ typedef struct              acpi_aest_smmu
 
 /* 3: Vendor Defined */
 
-typedef struct              acpi_aest_vendor
+typedef struct acpi_aest_vendor
 {
     UINT32                  AcpiHid;
     UINT32                  AcpiUid;
@@ -347,7 +347,7 @@ typedef struct              acpi_aest_vendor
 
 /* 4: Gic Error */
 
-typedef struct              acpi_aest_gic
+typedef struct acpi_aest_gic
 {
     UINT32                  InterfaceType;
     UINT32                  InstanceId;
@@ -365,7 +365,7 @@ typedef struct              acpi_aest_gic
 
 /* Node Interface Structure */
 
-typedef struct              acpi_aest_node_interface
+typedef struct acpi_aest_node_interface
 {
     UINT8                   Type;
     UINT8                   Reserved[3];
@@ -387,7 +387,7 @@ typedef struct              acpi_aest_node_interface
 
 /* Node Interrupt Structure */
 
-typedef struct              acpi_aest_node_interrupt
+typedef struct acpi_aest_node_interrupt
 {
     UINT8                   Type;
     UINT8                   Reserved[2];

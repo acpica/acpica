@@ -374,6 +374,17 @@ ACPI_RSDUMP_INFO        AcpiRsDumpPinFunction[10] =
     {ACPI_RSD_SHORTLISTX,ACPI_RSD_OFFSET (PinFunction.VendorData),          "VendorData",               NULL},
 };
 
+ACPI_RSDUMP_INFO        AcpiRsDumpClockInput[7] =
+{
+    {ACPI_RSD_TITLE,    ACPI_RSD_TABLE_SIZE (AcpiRsDumpClockInput),         "ClockInput",            NULL},
+    {ACPI_RSD_UINT8,    ACPI_RSD_OFFSET (ClockInput.RevisionId),            "RevisionId",            NULL},
+    {ACPI_RSD_UINT32,   ACPI_RSD_OFFSET (ClockInput.FrequencyNumerator),    "FrequencyNumerator",    NULL},
+    {ACPI_RSD_UINT32,   ACPI_RSD_OFFSET (ClockInput.FrequencyDivisor),      "FrequencyDivisor",      NULL},
+    {ACPI_RSD_1BITFLAG, ACPI_RSD_OFFSET (ClockInput.Scale),                 "Scale",                 AcpiGbl_ClockInputScale},
+    {ACPI_RSD_1BITFLAG, ACPI_RSD_OFFSET (ClockInput.Mode),                  "Mode",                  AcpiGbl_ClockInputMode},
+    {ACPI_RSD_SOURCE,   ACPI_RSD_OFFSET (ClockInput.ResourceSource),        "ResourceSource",        NULL},
+};
+
 ACPI_RSDUMP_INFO        AcpiRsDumpPinConfig[11] =
 {
     {ACPI_RSD_TITLE,    ACPI_RSD_TABLE_SIZE (AcpiRsDumpPinConfig),          "PinConfig",                NULL},
