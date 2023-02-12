@@ -169,15 +169,6 @@ static void
 CgGenerateAmlOpcodeLength (
     ACPI_PARSE_OBJECT       *Op);
 
-
-#ifdef ACPI_OBSOLETE_FUNCTIONS
-void
-LnAdjustLengthToRoot (
-    ACPI_PARSE_OBJECT       *Op,
-    UINT32                  LengthDelta);
-#endif
-
-
 /*******************************************************************************
  *
  * FUNCTION:    LnInitLengthsWalk
@@ -529,43 +520,3 @@ CgGenerateAmlLengths (
         break;
     }
 }
-
-
-#ifdef ACPI_OBSOLETE_FUNCTIONS
-/*******************************************************************************
- *
- * FUNCTION:    LnAdjustLengthToRoot
- *
- * PARAMETERS:  Op      - Node whose Length was changed
- *
- * RETURN:      None.
- *
- * DESCRIPTION: Change the Subtree length of the given node, and bubble the
- *              change all the way up to the root node. This allows for
- *              last second changes to a package length (for example, if the
- *              package length encoding gets shorter or longer.)
- *
- ******************************************************************************/
-
-void
-LnAdjustLengthToRoot (
-    ACPI_PARSE_OBJECT       *SubtreeOp,
-    UINT32                  LengthDelta)
-{
-    ACPI_PARSE_OBJECT       *Op;
-
-
-    /* Adjust all subtree lengths up to the root */
-
-    Op = SubtreeOp->Asl.Parent;
-    while (Op)
-    {
-        Op->Asl.AmlSubtreeLength -= LengthDelta;
-        Op = Op->Asl.Parent;
-    }
-
-    /* Adjust the global table length */
-
-    AslGbl_TableLength -= LengthDelta;
-}
-#endif

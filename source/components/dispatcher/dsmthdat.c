@@ -174,15 +174,6 @@ AcpiDsMethodDataSetValue (
     ACPI_OPERAND_OBJECT     *Object,
     ACPI_WALK_STATE         *WalkState);
 
-#ifdef ACPI_OBSOLETE_FUNCTIONS
-ACPI_OBJECT_TYPE
-AcpiDsMethodDataGetType (
-    UINT16                  Opcode,
-    UINT32                  Index,
-    ACPI_WALK_STATE         *WalkState);
-#endif
-
-
 /*******************************************************************************
  *
  * FUNCTION:    AcpiDsMethodDataInit
@@ -829,58 +820,3 @@ AcpiDsStoreObjectToLocal (
 
     return_ACPI_STATUS (Status);
 }
-
-
-#ifdef ACPI_OBSOLETE_FUNCTIONS
-/*******************************************************************************
- *
- * FUNCTION:    AcpiDsMethodDataGetType
- *
- * PARAMETERS:  Opcode              - Either AML_FIRST LOCAL_OP or
- *                                    AML_FIRST_ARG_OP
- *              Index               - Which Local or Arg whose type to get
- *              WalkState           - Current walk state object
- *
- * RETURN:      Data type of current value of the selected Arg or Local
- *
- * DESCRIPTION: Get the type of the object stored in the Local or Arg
- *
- ******************************************************************************/
-
-ACPI_OBJECT_TYPE
-AcpiDsMethodDataGetType (
-    UINT16                  Opcode,
-    UINT32                  Index,
-    ACPI_WALK_STATE         *WalkState)
-{
-    ACPI_STATUS             Status;
-    ACPI_NAMESPACE_NODE     *Node;
-    ACPI_OPERAND_OBJECT     *Object;
-
-
-    ACPI_FUNCTION_TRACE (DsMethodDataGetType);
-
-
-    /* Get the namespace node for the arg/local */
-
-    Status = AcpiDsMethodDataGetNode (Opcode, Index, WalkState, &Node);
-    if (ACPI_FAILURE (Status))
-    {
-        return_VALUE ((ACPI_TYPE_NOT_FOUND));
-    }
-
-    /* Get the object */
-
-    Object = AcpiNsGetAttachedObject (Node);
-    if (!Object)
-    {
-        /* Uninitialized local/arg, return TYPE_ANY */
-
-        return_VALUE (ACPI_TYPE_ANY);
-    }
-
-    /* Get the object type */
-
-    return_VALUE (Object->Type);
-}
-#endif

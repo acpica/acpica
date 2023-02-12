@@ -271,62 +271,6 @@ Unlock:
     return_ACPI_STATUS (Status);
 }
 
-
-#ifdef ACPI_OBSOLETE_FUNCTIONS
-/*******************************************************************************
- *
- * FUNCTION:    AcpiLoadNamespace
- *
- * PARAMETERS:  None
- *
- * RETURN:      Status
- *
- * DESCRIPTION: Load the name space from what ever is pointed to by DSDT.
- *              (DSDT points to either the BIOS or a buffer.)
- *
- ******************************************************************************/
-
-ACPI_STATUS
-AcpiNsLoadNamespace (
-    void)
-{
-    ACPI_STATUS             Status;
-
-
-    ACPI_FUNCTION_TRACE (AcpiLoadNameSpace);
-
-
-    /* There must be at least a DSDT installed */
-
-    if (AcpiGbl_DSDT == NULL)
-    {
-        ACPI_ERROR ((AE_INFO, "DSDT is not in memory"));
-        return_ACPI_STATUS (AE_NO_ACPI_TABLES);
-    }
-
-    /*
-     * Load the namespace. The DSDT is required,
-     * but the SSDT and PSDT tables are optional.
-     */
-    Status = AcpiNsLoadTableByType (ACPI_TABLE_ID_DSDT);
-    if (ACPI_FAILURE (Status))
-    {
-        return_ACPI_STATUS (Status);
-    }
-
-    /* Ignore exceptions from these */
-
-    (void) AcpiNsLoadTableByType (ACPI_TABLE_ID_SSDT);
-    (void) AcpiNsLoadTableByType (ACPI_TABLE_ID_PSDT);
-
-    ACPI_DEBUG_PRINT_RAW ((ACPI_DB_INIT,
-        "ACPI Namespace successfully loaded at root %p\n",
-        AcpiGbl_RootNode));
-
-    return_ACPI_STATUS (Status);
-}
-#endif
-
 #ifdef ACPI_FUTURE_IMPLEMENTATION
 /*******************************************************************************
  *

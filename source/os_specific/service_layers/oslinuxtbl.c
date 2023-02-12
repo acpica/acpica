@@ -1532,31 +1532,6 @@ OslReadTableFromFile (
         goto Exit;
     }
 
-#ifdef ACPI_OBSOLETE_FUNCTIONS
-
-    /* If signature is specified, it must match the table */
-
-    if (Signature)
-    {
-        if (ACPI_VALIDATE_RSDP_SIG (Signature))
-        {
-            if (!ACPI_VALIDATE_RSDP_SIG (Header.Signature)) {
-                fprintf (stderr, "Incorrect RSDP signature: found %8.8s\n",
-                    Header.Signature);
-                Status = AE_BAD_SIGNATURE;
-                goto Exit;
-            }
-        }
-        else if (!ACPI_COMPARE_NAMESEG (Signature, Header.Signature))
-        {
-            fprintf (stderr, "Incorrect signature: Expecting %4.4s, found %4.4s\n",
-                Signature, Header.Signature);
-            Status = AE_BAD_SIGNATURE;
-            goto Exit;
-        }
-    }
-#endif
-
     TableLength = ApGetTableLength (&Header);
     if (TableLength == 0)
     {

@@ -160,13 +160,6 @@
 
 /* Local prototypes */
 
-#ifdef ACPI_OBSOLETE_FUNCTIONS
-ACPI_NAME
-AcpiNsFindParentName (
-    ACPI_NAMESPACE_NODE     *NodeToSearch);
-#endif
-
-
 /*******************************************************************************
  *
  * FUNCTION:    AcpiNsPrintNodePathname

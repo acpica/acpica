@@ -168,12 +168,6 @@ AcpiDbStartCommand (
     ACPI_WALK_STATE         *WalkState,
     ACPI_PARSE_OBJECT       *Op);
 
-#ifdef ACPI_OBSOLETE_FUNCTIONS
-void
-AcpiDbMethodEnd (
-    ACPI_WALK_STATE         *WalkState);
-#endif
-
 #ifdef ACPI_DISASSEMBLER
 static ACPI_PARSE_OBJECT *
 AcpiDbGetDisplayOp (

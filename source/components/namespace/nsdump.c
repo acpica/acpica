@@ -161,20 +161,6 @@
 
 /* Local prototypes */
 
-#ifdef ACPI_OBSOLETE_FUNCTIONS
-void
-AcpiNsDumpRootDevices (
-    void);
-
-static ACPI_STATUS
-AcpiNsDumpOneDevice (
-    ACPI_HANDLE             ObjHandle,
-    UINT32                  Level,
-    void                    *Context,
-    void                    **ReturnValue);
-#endif
-
-
 #if defined(ACPI_DEBUG_OUTPUT) || defined(ACPI_DEBUGGER)
 
 static ACPI_STATUS
@@ -246,53 +232,6 @@ AcpiNsPrintPathname (
 
     AcpiOsPrintf ("]\n");
 }
-
-
-#ifdef ACPI_OBSOLETE_FUNCTIONS
-/* Not used at this time, perhaps later */
-
-/*******************************************************************************
- *
- * FUNCTION:    AcpiNsDumpPathname
- *
- * PARAMETERS:  Handle              - Object
- *              Msg                 - Prefix message
- *              Level               - Desired debug level
- *              Component           - Caller's component ID
- *
- * RETURN:      None
- *
- * DESCRIPTION: Print an object's full namespace pathname
- *              Manages allocation/freeing of a pathname buffer
- *
- ******************************************************************************/
-
-void
-AcpiNsDumpPathname (
-    ACPI_HANDLE             Handle,
-    const char              *Msg,
-    UINT32                  Level,
-    UINT32                  Component)
-{
-
-    ACPI_FUNCTION_TRACE (NsDumpPathname);
-
-
-    /* Do this only if the requested debug level and component are enabled */
-
-    if (!ACPI_IS_DEBUG_ENABLED (Level, Component))
-    {
-        return_VOID;
-    }
-
-    /* Convert handle to a full pathname and print it (with supplied message) */
-
-    AcpiNsPrintNodePathname (Handle, Msg);
-    AcpiOsPrintf ("\n");
-    return_VOID;
-}
-#endif
-
 
 /*******************************************************************************
  *

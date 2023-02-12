@@ -167,13 +167,6 @@ static BOOLEAN
 FlInputFileExists (
     char                    *InputFilename);
 
-#ifdef ACPI_OBSOLETE_FUNCTIONS
-ACPI_STATUS
-FlParseInputPathname (
-    char                    *InputFilename);
-#endif
-
-
 /*******************************************************************************
  *
  * FUNCTION:    FlInitOneFile
@@ -1253,72 +1246,3 @@ FlOpenMiscOutputFiles (
 
     return (AE_OK);
 }
-
-
-#ifdef ACPI_OBSOLETE_FUNCTIONS
-/*******************************************************************************
- *
- * FUNCTION:    FlParseInputPathname
- *
- * PARAMETERS:  InputFilename       - The user-specified ASL source file to be
- *                                    compiled
- *
- * RETURN:      Status
- *
- * DESCRIPTION: Split the input path into a directory and filename part
- *              1) Directory part used to open include files
- *              2) Filename part used to generate output filenames
- *
- ******************************************************************************/
-
-ACPI_STATUS
-FlParseInputPathname (
-    char                    *InputFilename)
-{
-    char                    *Substring;
-
-
-    if (!InputFilename)
-    {
-        return (AE_OK);
-    }
-
-    /* Get the path to the input filename's directory */
-
-    AslGbl_DirectoryPath = strdup (InputFilename);
-    if (!AslGbl_DirectoryPath)
-    {
-        return (AE_NO_MEMORY);
-    }
-
-    Substring = strrchr (AslGbl_DirectoryPath, '\\');
-    if (!Substring)
-    {
-        Substring = strrchr (AslGbl_DirectoryPath, '/');
-        if (!Substring)
-        {
-            Substring = strrchr (AslGbl_DirectoryPath, ':');
-        }
-    }
-
-    if (!Substring)
-    {
-        AslGbl_DirectoryPath[0] = 0;
-        if (AslGbl_UseDefaultAmlFilename)
-        {
-            AslGbl_OutputFilenamePrefix = strdup (InputFilename);
-        }
-    }
-    else
-    {
-        if (AslGbl_UseDefaultAmlFilename)
-        {
-            AslGbl_OutputFilenamePrefix = strdup (Substring + 1);
-        }
-        *(Substring+1) = 0;
-    }
-
-    UtConvertBackslashes (AslGbl_OutputFilenamePrefix);
-    return (AE_OK);
-}
-#endif
