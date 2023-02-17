@@ -170,6 +170,7 @@
  */
 #define ACPI_SIG_AEST           "AEST"      /* Arm Error Source Table */
 #define ACPI_SIG_ASF            "ASF!"      /* Alert Standard Format table */
+#define ACPI_SIG_ASPT           "ASPT"      /* AMD Secure Processor Table */
 #define ACPI_SIG_BERT           "BERT"      /* Boot Error Record Table */
 #define ACPI_SIG_BGRT           "BGRT"      /* Boot Graphics Resource Table */
 #define ACPI_SIG_BOOT           "BOOT"      /* Simple Boot Flag Table */
@@ -397,6 +398,86 @@ typedef struct acpi_asf_address
     UINT8                   Devices;
 
 } ACPI_ASF_ADDRESS;
+
+/*******************************************************************************
+ *
+ * ASPT - AMD Secure Processor Table (Signature "ASPT")
+ *        Revision 0x1
+ *
+ * Conforms to AMD Socket SP5/SP6 Platform ASPT Rev1 Specification,
+ * 12 September 2022
+ *
+ ******************************************************************************/
+
+typedef struct acpi_table_aspt
+{
+    ACPI_TABLE_HEADER       Header;             /* Common ACPI table header */
+    UINT32                  NumEntries;
+
+} ACPI_TABLE_ASPT;
+
+
+/* ASPT subtable header */
+
+typedef struct acpi_aspt_header
+{
+    UINT16                  Type;
+    UINT16                  Length;
+
+} ACPI_ASPT_HEADER;
+
+
+/* Values for Type field above */
+
+enum AcpiAsptType
+{
+    ACPI_ASPT_TYPE_GLOBAL_REGS      = 0,
+    ACPI_ASPT_TYPE_SEV_MBOX_REGS    = 1,
+    ACPI_ASPT_TYPE_ACPI_MBOX_REGS   = 2,
+    ACPI_ASPT_TYPE_UNKNOWN          = 3,
+};
+
+/*
+ * ASPT subtables
+ */
+
+/* 0: ASPT Global Registers */
+
+typedef struct acpi_aspt_global_regs
+{
+    ACPI_ASPT_HEADER        Header;
+    UINT32                  Reserved;
+    UINT64                  FeatureRegAddr;
+    UINT64                  IrqEnRegAddr;
+    UINT64                  IrqStRegAddr;
+
+} ACPI_ASPT_GLOBAL_REGS;
+
+
+/* 1: ASPT SEV Mailbox Registers */
+
+typedef struct acpi_aspt_sev_mbox_regs
+{
+    ACPI_ASPT_HEADER        Header;
+    UINT8                   MboxIrqId;
+    UINT8                   Reserved[3];
+    UINT64                  CmdRespRegAddr;
+    UINT64                  CmdBufLoRegAddr;
+    UINT64                  CmdBufHiRegAddr;
+
+} ACPI_ASPT_SEV_MBOX_REGS;
+
+
+/* 2: ASPT ACPI Mailbox Registers */
+
+typedef struct acpi_aspt_acpi_mbox_regs
+{
+    ACPI_ASPT_HEADER        Header;
+    UINT32                  Reserved1;
+    UINT64                  CmdRespRegAddr;
+    UINT64                  Reserved2[2];
+
+} ACPI_ASPT_ACPI_MBOX_REGS;
 
 
 /*******************************************************************************

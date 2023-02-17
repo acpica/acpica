@@ -234,6 +234,14 @@ static const char           *AcpiDmAsfSubnames[] =
     "Unknown Subtable Type"         /* Reserved */
 };
 
+static const char           *AcpiDmAsptSubnames[] =
+{
+    "ASPT Global Registers",
+    "ASPT SEV Mailbox Registers",
+    "ASPT ACPI Mailbox Registers",
+    "Unknown Subtable Type"         /* Reserved */
+};
+
 static const char           *AcpiDmCdatSubnames[] =
 {
     "Device Scoped Memory Affinity Structure (DSMAS)",
@@ -683,6 +691,7 @@ const ACPI_DMTABLE_DATA     AcpiDmTableData[] =
     {ACPI_SIG_AGDI, AcpiDmTableInfoAgdi,    NULL,           NULL,           TemplateAgdi},
     {ACPI_SIG_APMT, NULL,                   AcpiDmDumpApmt, DtCompileApmt,  TemplateApmt},
     {ACPI_SIG_ASF,  NULL,                   AcpiDmDumpAsf,  DtCompileAsf,   TemplateAsf},
+    {ACPI_SIG_ASPT, NULL,                   AcpiDmDumpAspt, DtCompileAspt,  TemplateAspt},
     {ACPI_SIG_BDAT, AcpiDmTableInfoBdat,    NULL,           NULL,           TemplateBdat},
     {ACPI_SIG_BERT, AcpiDmTableInfoBert,    NULL,           NULL,           TemplateBert},
     {ACPI_SIG_BGRT, AcpiDmTableInfoBgrt,    NULL,           NULL,           TemplateBgrt},
@@ -1171,6 +1180,7 @@ AcpiDmDumpTable (
             ByteLength = 1;
             break;
 
+        case ACPI_DMT_ASPT:
         case ACPI_DMT_UINT16:
         case ACPI_DMT_DMAR:
         case ACPI_DMT_HEST:
@@ -1672,6 +1682,17 @@ AcpiDmDumpTable (
 
             AcpiOsPrintf (UINT8_FORMAT, *Target,
                 AcpiDmAestXruptNames[Temp8]);
+            break;
+
+        case ACPI_DMT_ASPT:
+            /* ASPT subtable types */
+            Temp16 = ACPI_GET16(Target);
+            if (Temp16 > ACPI_ASPT_TYPE_UNKNOWN)
+            {
+                Temp16 = ACPI_ASPT_TYPE_UNKNOWN;
+            }
+
+            AcpiOsPrintf(UINT16_FORMAT, Temp16, AcpiDmAsptSubnames[Temp16]);
             break;
 
         case ACPI_DMT_ASF:

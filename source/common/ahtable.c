@@ -202,6 +202,7 @@ const AH_TABLE      AcpiGbl_SupportedTables[] =
     {ACPI_SIG_AEST, "Arm Error Source Table"},
     {ACPI_SIG_AGDI, "Arm Generic Diagnostic Dump and Reset Device Interface Table"},
     {ACPI_SIG_ASF,  "Alert Standard Format Table"},
+    {ACPI_SIG_ASPT, "AMD Secure Processor Table"},
     {ACPI_SIG_BDAT, "BIOS Data ACPI Table"},
     {ACPI_SIG_BERT, "Boot Error Record Table"},
     {ACPI_SIG_BGRT, "Boot Graphics Resource Table"},
