@@ -504,7 +504,7 @@ AnGetBtype (
 
     if (!Op)
     {
-        AcpiOsPrintf ("Null Op in AnGetBtype\n");
+        AcpiOsPrintf ("Null Op in %s\n",  ACPI_GET_FUNCTION_NAME);
         return (ACPI_UINT32_MAX);
     }
 

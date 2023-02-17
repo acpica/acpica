@@ -624,7 +624,7 @@ TrLinkOpChildren (
     if (AcpiGbl_CaptureComments)
     {
         AslGbl_CommentState.LatestParseOp = Op;
-        CvDbgPrint ("TrLinkOpChildren=====Set latest parse op to this op.\n");
+        CvDbgPrint ("%s=====Set latest parse op to this op.\n",  ACPI_GET_FUNCTION_NAME);
     }
 
     return (Op);
