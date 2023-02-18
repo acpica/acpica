@@ -789,6 +789,7 @@ AdDoExternalFileList (
             AcpiDmFinishNamespaceLoad (AcpiGbl_ParseOpRoot,
                 AcpiGbl_RootNode, OwnerId);
             AcpiPsDeleteParseTree (AcpiGbl_ParseOpRoot);
+            AcpiGbl_ParseOpRoot = NULL;
 
             ExternalListHead = ExternalListHead->Next;
         }
