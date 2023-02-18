@@ -1058,16 +1058,16 @@ NextSubtable:
         Subtable = ACPI_ADD_PTR (ACPI_SUBTABLE_HEADER, Subtable,
             Subtable->Length);
 
-        DbgPrint (ASL_PARSE_OUTPUT, "//[5) Next Subtable %p, length %X]\n",
-            Subtable, Subtable->Length);
-        DbgPrint (ASL_PARSE_OUTPUT, "//[5B) Offset from table start: 0x%8.8X%8.8X (%p)]\n",
-            ACPI_FORMAT_UINT64 (ACPI_CAST_PTR (char, Subtable) - ACPI_CAST_PTR (char, Table)), Subtable);
-
         Offset = ACPI_CAST_PTR (char, Subtable) - ACPI_CAST_PTR (char, Table);
         if (Offset >= Table->Length)
         {
             return;
         }
+
+        DbgPrint (ASL_PARSE_OUTPUT, "//[5) Next Subtable %p, length %X]\n",
+            Subtable, Subtable->Length);
+        DbgPrint (ASL_PARSE_OUTPUT, "//[5B) Offset from table start: 0x%8.8X%8.8X (%p)]\n",
+            ACPI_FORMAT_UINT64 (ACPI_CAST_PTR (char, Subtable) - ACPI_CAST_PTR (char, Table)), Subtable);
     }
 }
 
