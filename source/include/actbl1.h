@@ -1272,7 +1272,7 @@ typedef struct acpi_table_drtm
 typedef struct acpi_drtm_vtable_list
 {
     UINT32                  ValidatedTableCount;
-    UINT64                  ValidatedTables[1];
+    UINT64                  ValidatedTables[];
 
 } ACPI_DRTM_VTABLE_LIST;
 
@@ -1291,7 +1291,7 @@ typedef struct acpi_drtm_resource
 typedef struct acpi_drtm_resource_list
 {
     UINT32                  ResourceCount;
-    ACPI_DRTM_RESOURCE      Resources[1];
+    ACPI_DRTM_RESOURCE      Resources[];
 
 } ACPI_DRTM_RESOURCE_LIST;
 
@@ -1319,7 +1319,7 @@ typedef struct acpi_table_ecdt
     ACPI_GENERIC_ADDRESS    Data;               /* Address of EC data register */
     UINT32                  Uid;                /* Unique ID - must be same as the EC _UID method */
     UINT8                   Gpe;                /* The GPE for the EC */
-    UINT8                   Id[1];              /* Full namepath of the EC in the ACPI namespace */
+    UINT8                   Id[];               /* Full namepath of the EC in the ACPI namespace */
 
 } ACPI_TABLE_ECDT;
 
