@@ -300,7 +300,10 @@ typedef struct acpi_resource_dma
     UINT8                           BusMaster;
     UINT8                           Transfer;
     UINT8                           ChannelCount;
-    UINT8                           Channels[1];
+    union {
+        UINT8                       Channel;
+        ACPI_FLEX_ARRAY(UINT8,      Channels);
+    };
 
 } ACPI_RESOURCE_DMA;
 
