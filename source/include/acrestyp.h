@@ -357,7 +357,7 @@ typedef struct acpi_resource_fixed_dma
 typedef struct acpi_resource_vendor
 {
     UINT16                          ByteLength;
-    UINT8                           ByteData[1];
+    UINT8                           ByteData[];
 
 } ACPI_RESOURCE_VENDOR;
 
@@ -368,7 +368,7 @@ typedef struct acpi_resource_vendor_typed
     UINT16                          ByteLength;
     UINT8                           UuidSubtype;
     UINT8                           Uuid[ACPI_UUID_LENGTH];
-    UINT8                           ByteData[1];
+    UINT8                           ByteData[];
 
 } ACPI_RESOURCE_VENDOR_TYPED;
 
