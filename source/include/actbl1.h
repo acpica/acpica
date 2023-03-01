@@ -1219,7 +1219,10 @@ typedef struct acpi_dmar_andd
     ACPI_DMAR_HEADER        Header;
     UINT8                   Reserved[3];
     UINT8                   DeviceNumber;
-    char                    DeviceName[1];
+    union {
+        char                  __pad;
+        ACPI_FLEX_ARRAY(char, DeviceName);
+    };
 
 } ACPI_DMAR_ANDD;
 
