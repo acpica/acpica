@@ -2045,7 +2045,7 @@ typedef struct acpi_nfit_interleave
     UINT16                  Reserved;           /* Reserved, must be zero */
     UINT32                  LineCount;
     UINT32                  LineSize;
-    UINT32                  LineOffset[1];      /* Variable length */
+    UINT32                  LineOffset[];       /* Variable length */
 
 } ACPI_NFIT_INTERLEAVE;
 
