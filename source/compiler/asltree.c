@@ -467,6 +467,7 @@ TrLinkOpChildren (
     UINT32                  i;
     BOOLEAN                 FirstChild;
 
+    ACPI_FUNCTION_NAME (TrLinkOpChildren);
 
     va_start (ap, NumChildren);
 
