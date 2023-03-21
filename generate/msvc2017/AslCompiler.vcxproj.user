@@ -5,4 +5,9 @@
     <LocalDebuggerWorkingDirectory>C:\0acpi-bugs\CDAT</LocalDebuggerWorkingDirectory>
     <DebuggerFlavor>WindowsLocalDebugger</DebuggerFlavor>
   </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
+    <LocalDebuggerCommandArguments>dsdt.asl</LocalDebuggerCommandArguments>
+    <LocalDebuggerWorkingDirectory>C:\0acpi-features\macros</LocalDebuggerWorkingDirectory>
+    <DebuggerFlavor>WindowsLocalDebugger</DebuggerFlavor>
+  </PropertyGroup>
 </Project>

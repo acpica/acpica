@@ -157,7 +157,6 @@
       <SubSystem>Console</SubSystem>
       <OutputFile>.\AcpiHelp\AcpiHelp.exe</OutputFile>
       <AdditionalDependencies>kernel32.lib;advapi32.lib;%(AdditionalDependencies)</AdditionalDependencies>
-      <AdditionalOptions>/INTEGRITYCHECK %(AdditionalOptions)</AdditionalOptions>
       <GenerateDebugInformation>false</GenerateDebugInformation>
     </Link>
   </ItemDefinitionGroup>
