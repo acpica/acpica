@@ -883,6 +883,9 @@ AcpiDbDisplayObjects (
     if (!ObjTypeArg)
     {
         ObjectInfo = ACPI_ALLOCATE_ZEROED (sizeof (ACPI_OBJECT_INFO));
+            
+        if (!ObjectInfo)
+                return (AE_NO_MEMORY);
 
         /* Walk the namespace from the root */
 
