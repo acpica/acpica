@@ -503,7 +503,10 @@ typedef struct aml_resource_extended_irq
     AML_RESOURCE_LARGE_HEADER_COMMON
     UINT8                           Flags;
     UINT8                           InterruptCount;
-    UINT32                          Interrupts[1];
+    union {
+        UINT32                      Interrupt;
+        ACPI_FLEX_ARRAY(UINT32,     Interrupts);
+    };
     /* ResSourceIndex, ResSource optional fields follow */
 
 } AML_RESOURCE_EXTENDED_IRQ;

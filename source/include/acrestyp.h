@@ -290,7 +290,10 @@ typedef struct acpi_resource_irq
     UINT8                           Shareable;
     UINT8                           WakeCapable;
     UINT8                           InterruptCount;
-    UINT8                           Interrupts[1];
+    union {
+        UINT8                       Interrupt;
+        ACPI_FLEX_ARRAY(UINT8,      Interrupts);
+    };
 
 } ACPI_RESOURCE_IRQ;
 
@@ -300,7 +303,10 @@ typedef struct acpi_resource_dma
     UINT8                           BusMaster;
     UINT8                           Transfer;
     UINT8                           ChannelCount;
-    UINT8                           Channels[1];
+    union {
+        UINT8                       Channel;
+        ACPI_FLEX_ARRAY(UINT8,      Channels);
+    };
 
 } ACPI_RESOURCE_DMA;
 
@@ -357,7 +363,7 @@ typedef struct acpi_resource_fixed_dma
 typedef struct acpi_resource_vendor
 {
     UINT16                          ByteLength;
-    UINT8                           ByteData[1];
+    UINT8                           ByteData[];
 
 } ACPI_RESOURCE_VENDOR;
 
@@ -368,7 +374,7 @@ typedef struct acpi_resource_vendor_typed
     UINT16                          ByteLength;
     UINT8                           UuidSubtype;
     UINT8                           Uuid[ACPI_UUID_LENGTH];
-    UINT8                           ByteData[1];
+    UINT8                           ByteData[];
 
 } ACPI_RESOURCE_VENDOR_TYPED;
 
@@ -538,7 +544,10 @@ typedef struct acpi_resource_extended_irq
     UINT8                           WakeCapable;
     UINT8                           InterruptCount;
     ACPI_RESOURCE_SOURCE            ResourceSource;
-    UINT32                          Interrupts[1];
+    union {
+        UINT32                      Interrupt;
+        ACPI_FLEX_ARRAY(UINT32,     Interrupts);
+    };
 
 } ACPI_RESOURCE_EXTENDED_IRQ;
 
@@ -939,8 +948,10 @@ typedef struct acpi_pci_routing_table
     UINT32                          Pin;
     UINT64                          Address;        /* here for 64-bit alignment */
     UINT32                          SourceIndex;
-    char                            Source[4];      /* pad to 64 bits so sizeof() works in all cases */
-
+    union {
+                                    char Pad[4];    /* pad to 64 bits so sizeof() works in all cases */
+                                    ACPI_FLEX_ARRAY(char, Source);
+    };
 } ACPI_PCI_ROUTING_TABLE;
 
 #endif /* __ACRESTYP_H__ */

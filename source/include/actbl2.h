@@ -571,7 +571,7 @@ typedef struct acpi_iort_node
     UINT32                  Identifier;
     UINT32                  MappingCount;
     UINT32                  MappingOffset;
-    char                    NodeData[1];
+    char                    NodeData[];
 
 } ACPI_IORT_NODE;
 
@@ -637,7 +637,7 @@ typedef struct acpi_iort_memory_access
 typedef struct acpi_iort_its_group
 {
     UINT32                  ItsCount;
-    UINT32                  Identifiers[1];         /* GIC ITS identifier array */
+    UINT32                  Identifiers[];          /* GIC ITS identifier array */
 
 } ACPI_IORT_ITS_GROUP;
 
@@ -647,7 +647,7 @@ typedef struct acpi_iort_named_component
     UINT32                  NodeFlags;
     UINT64                  MemoryProperties;       /* Memory access properties */
     UINT8                   MemoryAddressLimit;     /* Memory address size limit */
-    char                    DeviceName[1];          /* Path of namespace object */
+    char                    DeviceName[];           /* Path of namespace object */
 
 } ACPI_IORT_NAMED_COMPONENT;
 
@@ -663,7 +663,7 @@ typedef struct acpi_iort_root_complex
     UINT32                  PciSegmentNumber;
     UINT8                   MemoryAddressLimit;     /* Memory address size limit */
     UINT16                  PasidCapabilities;      /* PASID Capabilities */
-    UINT8                   Reserved[1];            /* Reserved, must be zero */
+    UINT8                   Reserved[];             /* Reserved, must be zero */
 
 } ACPI_IORT_ROOT_COMPLEX;
 
@@ -687,7 +687,7 @@ typedef struct acpi_iort_smmu
     UINT32                  ContextInterruptOffset;
     UINT32                  PmuInterruptCount;
     UINT32                  PmuInterruptOffset;
-    UINT64                  Interrupts[1];          /* Interrupt array */
+    UINT64                  Interrupts[];           /* Interrupt array */
 
 } ACPI_IORT_SMMU;
 
@@ -1239,7 +1239,7 @@ typedef struct acpi_madt_local_sapic
     UINT8                   Reserved[3];        /* Reserved, must be zero */
     UINT32                  LapicFlags;
     UINT32                  Uid;                /* Numeric UID - ACPI 3.0 */
-    char                    UidString[1];       /* String UID  - ACPI 3.0 */
+    char                    UidString[];        /* String UID  - ACPI 3.0 */
 
 } ACPI_MADT_LOCAL_SAPIC;
 
@@ -1551,7 +1551,7 @@ enum AcpiMadtLpcPicVersion {
 
 typedef struct acpi_madt_oem_data
 {
-    UINT8                   OemData[0];
+    ACPI_FLEX_ARRAY(UINT8,  OemData);
 } ACPI_MADT_OEM_DATA;
 
 
@@ -2044,7 +2044,7 @@ typedef struct acpi_nfit_interleave
     UINT16                  Reserved;           /* Reserved, must be zero */
     UINT32                  LineCount;
     UINT32                  LineSize;
-    UINT32                  LineOffset[1];      /* Variable length */
+    UINT32                  LineOffset[];       /* Variable length */
 
 } ACPI_NFIT_INTERLEAVE;
 
@@ -2055,7 +2055,7 @@ typedef struct acpi_nfit_smbios
 {
     ACPI_NFIT_HEADER        Header;
     UINT32                  Reserved;           /* Reserved, must be zero */
-    UINT8                   Data[1];            /* Variable length */
+    UINT8                   Data[];             /* Variable length */
 
 } ACPI_NFIT_SMBIOS;
 
@@ -2121,7 +2121,7 @@ typedef struct acpi_nfit_flush_address
     UINT32                  DeviceHandle;
     UINT16                  HintCount;
     UINT8                   Reserved[6];        /* Reserved, must be zero */
-    UINT64                  HintAddress[1];     /* Variable length */
+    UINT64                  HintAddress[];      /* Variable length */
 
 } ACPI_NFIT_FLUSH_ADDRESS;
 

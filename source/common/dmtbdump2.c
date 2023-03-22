@@ -1538,7 +1538,7 @@ AcpiDmDumpNfit (
             /* Has a variable number of 64-bit addresses at the end */
 
             InfoTable = AcpiDmTableInfoNfit6;
-            FieldOffset = sizeof (ACPI_NFIT_FLUSH_ADDRESS) - sizeof (UINT64);
+            FieldOffset = sizeof (ACPI_NFIT_FLUSH_ADDRESS);
             break;
 
         case ACPI_NFIT_TYPE_CAPABILITIES:    /* ACPI 6.0A */
@@ -1592,12 +1592,12 @@ AcpiDmDumpNfit (
         case ACPI_NFIT_TYPE_SMBIOS:
 
             Length = Subtable->Length -
-                sizeof (ACPI_NFIT_SMBIOS) + sizeof (UINT8);
+                sizeof (ACPI_NFIT_SMBIOS);
 
             if (Length)
             {
                 Status = AcpiDmDumpTable (Table->Length,
-                    sizeof (ACPI_NFIT_SMBIOS) - sizeof (UINT8),
+                    sizeof (ACPI_NFIT_SMBIOS),
                     SmbiosInfo,
                     Length, AcpiDmTableInfoNfit3a);
                 if (ACPI_FAILURE (Status))
