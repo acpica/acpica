@@ -480,6 +480,7 @@ static void
 DtInsertLabelField (
     DT_FIELD                *Field)
 {
+    ACPI_FUNCTION_NAME (DtInsertLabelField);
 
     DbgPrint (ASL_DEBUG_OUTPUT,
         "%s: Found Label : %s at output table offset %X\n",
