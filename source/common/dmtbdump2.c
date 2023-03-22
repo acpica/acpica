@@ -2747,6 +2747,122 @@ AcpiDmDumpRgrt (
 
 /*******************************************************************************
  *
+ * FUNCTION:    AcpiDmDumpRhct
+ *
+ * PARAMETERS:  Table               - A RHCT table
+ *
+ * RETURN:      None
+ *
+ * DESCRIPTION: Format the contents of a RHCT.
+ *
+ ******************************************************************************/
+
+void
+AcpiDmDumpRhct (
+    ACPI_TABLE_HEADER       *Table)
+{
+    ACPI_STATUS             Status;
+    ACPI_RHCT_NODE_HEADER   *Subtable;
+    ACPI_RHCT_HART_INFO     *RhctHartInfo;
+    ACPI_RHCT_ISA_STRING    *RhctIsaString;
+    UINT32                  Length = Table->Length;
+    UINT8                   SubtableOffset, IsaPadOffset;
+    UINT32                  Offset = sizeof (ACPI_TABLE_RHCT);
+    UINT32                  i;
+
+    /* Main table */
+
+    Status = AcpiDmDumpTable (Length, 0, Table, 0, AcpiDmTableInfoRhct);
+    if (ACPI_FAILURE (Status))
+    {
+        return;
+    }
+
+    /* Subtables */
+
+    while (Offset < Table->Length)
+    {
+        AcpiOsPrintf ("\n");
+
+        /* Common subtable header */
+
+        Subtable = ACPI_ADD_PTR (ACPI_RHCT_NODE_HEADER, Table, Offset);
+        if (Subtable->Length < sizeof (ACPI_RHCT_NODE_HEADER))
+        {
+            AcpiOsPrintf ("Invalid subtable length\n");
+            return;
+        }
+        Status = AcpiDmDumpTable (Table->Length, Offset, Subtable,
+            Subtable->Length, AcpiDmTableInfoRhctNodeHdr);
+        if (ACPI_FAILURE (Status))
+        {
+            return;
+        }
+
+        Length = sizeof (ACPI_RHCT_NODE_HEADER);
+
+        if (Subtable->Length < Length)
+        {
+            AcpiOsPrintf ("Invalid subtable length\n");
+            return;
+        }
+        SubtableOffset = Length;
+
+        switch (Subtable->Type)
+        {
+        case ACPI_RHCT_NODE_TYPE_HART_INFO:
+            Status = AcpiDmDumpTable (Table->Length, Offset + SubtableOffset,
+                    ACPI_ADD_PTR (ACPI_RHCT_HART_INFO, Subtable, SubtableOffset),
+                    sizeof (ACPI_RHCT_HART_INFO), AcpiDmTableInfoRhctHartInfo1);
+
+            RhctHartInfo = ACPI_ADD_PTR (ACPI_RHCT_HART_INFO, Subtable, SubtableOffset);
+
+            if ((UINT16)(Subtable->Length - SubtableOffset) <
+                (UINT16)(RhctHartInfo->NumOffsets * 4))
+            {
+                AcpiOsPrintf ("Invalid number of offsets\n");
+                return;
+            }
+            SubtableOffset += sizeof (ACPI_RHCT_HART_INFO);
+            for (i = 0; i < RhctHartInfo->NumOffsets; i++)
+            {
+                Status = AcpiDmDumpTable (Table->Length, Offset + SubtableOffset,
+                    ACPI_ADD_PTR (UINT32, Subtable, SubtableOffset),
+                    4, AcpiDmTableInfoRhctHartInfo2);
+                if (ACPI_FAILURE (Status))
+                {
+                    return;
+                }
+
+                SubtableOffset += 4;
+            }
+            break;
+
+        case ACPI_RHCT_NODE_TYPE_ISA_STRING:
+            RhctIsaString = ACPI_ADD_PTR (ACPI_RHCT_ISA_STRING, Subtable, SubtableOffset);
+            IsaPadOffset = SubtableOffset + 2 + RhctIsaString->IsaLength;
+            Status = AcpiDmDumpTable (Table->Length, Offset + SubtableOffset,
+                    RhctIsaString, RhctIsaString->IsaLength, AcpiDmTableInfoRhctIsa1);
+            if (Subtable->Length > IsaPadOffset)
+            {
+                Status = AcpiDmDumpTable (Table->Length, Offset + SubtableOffset,
+                         ACPI_ADD_PTR (UINT8, Subtable, IsaPadOffset),
+                         (Subtable->Length - IsaPadOffset), AcpiDmTableInfoRhctIsaPad);
+            }
+
+        default:
+            break;
+        }
+
+        /* Point to next subtable */
+
+        Offset += Subtable->Length;
+    }
+}
+
+
+/*******************************************************************************
+ *
  * FUNCTION:    AcpiDmDumpS3pt
  *
  * PARAMETERS:  Table               - A S3PT table

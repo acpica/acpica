@@ -2074,6 +2074,67 @@ ACPI_DMTABLE_INFO           AcpiDmTableInfoRgrt0[] =
 
 /*******************************************************************************
  *
+ * RHCT - RISC-V Hart Capabilities Table
+ *
+ ******************************************************************************/
+
+ACPI_DMTABLE_INFO           AcpiDmTableInfoRhct[] =
+{
+    {ACPI_DMT_UINT32,   ACPI_RHCT_OFFSET (Reserved),         "Reserved", 0},
+    {ACPI_DMT_UINT64,   ACPI_RHCT_OFFSET (TimeBaseFreq),     "Timer Base Frequency", 0},
+    {ACPI_DMT_UINT32,   ACPI_RHCT_OFFSET (NodeCount),        "Number of nodes", 0},
+    {ACPI_DMT_UINT32,   ACPI_RHCT_OFFSET (NodeOffset),       "Offset to the node array", 0},
+    ACPI_DMT_TERMINATOR
+};
+
+
+/* Common Subtable header (one per Subtable) */
+
+ACPI_DMTABLE_INFO           AcpiDmTableInfoRhctNodeHdr[] =
+{
+    {ACPI_DMT_UINT16,    ACPI_RHCTH_OFFSET (Type),            "Subtable Type", 0},
+    {ACPI_DMT_UINT16,    ACPI_RHCTH_OFFSET (Length),          "Length", 0},
+    {ACPI_DMT_UINT16,    ACPI_RHCTH_OFFSET (Revision),        "Revision", 0},
+    ACPI_DMT_TERMINATOR
+};
+
+/* 0: ISA string type */
+
+ACPI_DMTABLE_INFO           AcpiDmTableInfoRhctIsa1[] =
+{
+    {ACPI_DMT_UINT16,   ACPI_RHCT0_OFFSET (IsaLength),        "ISA string length", 0},
+    {ACPI_DMT_STRING,   ACPI_RHCT0_OFFSET (Isa[0]),           "ISA string", 0},
+    ACPI_DMT_TERMINATOR
+};
+
+
+/* Optional padding field */
+
+ACPI_DMTABLE_INFO           AcpiDmTableInfoRhctIsaPad[] =
+{
+    {ACPI_DMT_RAW_BUFFER, 0,                                  "Optional Padding", DT_OPTIONAL},
+    ACPI_DMT_TERMINATOR
+};
+
+/* 0xFFFF: Hart Info type */
+
+ACPI_DMTABLE_INFO           AcpiDmTableInfoRhctHartInfo1[] =
+{
+    {ACPI_DMT_UINT16,   ACPI_RHCTFFFF_OFFSET (NumOffsets),    "Number of offsets", 0},
+    {ACPI_DMT_UINT32,   ACPI_RHCTFFFF_OFFSET (Uid),           "Processor UID", 0},
+    ACPI_DMT_TERMINATOR
+};
+
+
+ACPI_DMTABLE_INFO           AcpiDmTableInfoRhctHartInfo2[] =
+{
+    {ACPI_DMT_UINT32,   0,                                    "Nodes", DT_OPTIONAL},
+    ACPI_DMT_TERMINATOR
+};
+
+
+/*******************************************************************************
+ *
  * S3PT - S3 Performance Table
  *
  ******************************************************************************/
