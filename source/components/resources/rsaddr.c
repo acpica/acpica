@@ -431,12 +431,12 @@ AcpiRsGetAddressCommon (
     ACPI_RESOURCE           *Resource,
     AML_RESOURCE            *Aml)
 {
-    ACPI_FUNCTION_ENTRY ();
-
     /* Avoid undefined behavior: member access within misaligned address */
 
     AML_RESOURCE_ADDRESS Address;
     memcpy(&Address, Aml, sizeof(Address));
+
+    ACPI_FUNCTION_ENTRY();
 
     /* Validate the Resource Type */
 
