@@ -767,6 +767,15 @@ typedef struct acpi_field_info
 
 } ACPI_FIELD_INFO;
 
+/* Information about the interrupt ID and _EVT of a GED device */
+
+typedef struct acpi_ged_handler_info
+{
+    struct acpi_ged_handler_info    *Next;
+    UINT32                          IntId;      /* The interrupt ID that triggers the execution ofthe EvtMethod. */
+    ACPI_NAMESPACE_NODE             *EvtMethod; /* The _EVT method to be executed when an interrupt with ID = IntID is received */
+
+} ACPI_GED_HANDLER_INFO;
 
 /*****************************************************************************
  *
