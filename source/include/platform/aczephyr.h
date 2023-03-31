@@ -188,6 +188,5 @@
  *****************************************************************************/
 
 void AcpiEnableDbgPrint (
-	bool Enable);
+    bool Enable);
 #endif
-

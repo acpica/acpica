@@ -191,7 +191,7 @@ AcpiOsReadable (
     void                    *Pointer,
     ACPI_SIZE               Length)
 {
-	return TRUE;
+    return (TRUE);
 }
 
 
@@ -209,16 +209,16 @@ AcpiOsReadable (
 
 void
 AcpiEnableDbgPrint (
-    bool Enable)
+    bool                    Enable)
 {
-	if (Enable)
-	{
-		EnDbgPrint = TRUE;
-	}
-	else
-	{
-		EnDbgPrint = FALSE;
-	}
+    if (Enable)
+    {
+        EnDbgPrint = TRUE;
+    }
+    else
+    {
+        EnDbgPrint = FALSE;
+    }
 }
 
 
@@ -239,16 +239,16 @@ AcpiOsPrintf (
     const char              *Fmt,
     ...)
 {
-	va_list args;
+    va_list                 args;
 
-	va_start(args, Fmt);
+    va_start (args, Fmt);
 
-	if (EnDbgPrint)
-	{
-		printk(Fmt, args);
-	}
+    if (EnDbgPrint)
+    {
+        printk (Fmt, args);
+    }
 
-	va_end(args);
+    va_end (args);
 }
 
 
@@ -272,7 +272,7 @@ AcpiOsGetLine (
     UINT32                  BufferLength,
     UINT32                  *BytesRead)
 {
-	return -1;
+    return (-1);
 }
 
 
@@ -292,7 +292,7 @@ void *
 AcpiOsAllocate (
     ACPI_SIZE               Size)
 {
-	return k_malloc(Size);
+    return (k_malloc (Size));
 }
 
 
@@ -313,16 +313,16 @@ void *
 AcpiOsAllocateZeroed (
     ACPI_SIZE               Size)
 {
-	void *mem;
+    void *mem;
 
-	mem = AcpiOsAllocate(Size);
+    mem = AcpiOsAllocate (Size);
 
-	if (mem)
-	{
-		memset(mem, 0, Size);
-	}
+    if (mem)
+    {
+        memset (mem, 0, Size);
+    }
 
-	return mem;
+    return (mem);
 }
 #endif
 
@@ -343,7 +343,7 @@ void
 AcpiOsFree (
     void                    *Mem)
 {
-	k_free(Mem);
+    k_free (Mem);
 }
 
 
@@ -368,34 +368,34 @@ AcpiOsReadMemory (
     UINT64                  *Value,
     UINT32                  Width)
 {
-	switch (Width)
-	{
-	case 8:
+    switch (Width)
+    {
+    case 8:
 
-		*((UINT8 *)Value) = sys_read8(Address);
-		break;
+        *((UINT8 *) Value) = sys_read8 (Address);
+        break;
 
-	case 16:
+    case 16:
 
-		*((UINT16 *)Value) = sys_read16(Address);
-		break;
+        *((UINT16 *) Value) = sys_read16 (Address);
+        break;
 
-	case 32:
+    case 32:
 
-		*((UINT32 *)Value) = sys_read32(Address);
-		break;
+        *((UINT32 *) Value) = sys_read32 (Address);
+        break;
 
-	case 64:
+    case 64:
 
-		*((UINT64 *)Value) = sys_read64(Address);
-		break;
+        *((UINT64 *) Value) = sys_read64 (Address);
+        break;
 
-	default:
+    default:
 
-		return (AE_BAD_PARAMETER);
-	}
+        return (AE_BAD_PARAMETER);
+    }
 
-	return AE_OK;
+    return (AE_OK);
 }
 
 
@@ -419,34 +419,34 @@ AcpiOsWriteMemory (
     UINT64                  Value,
     UINT32                  Width)
 {
-	switch (Width)
-	{
-	case 8:
+    switch (Width)
+    {
+    case 8:
 
-		sys_write8((UINT8)Value, Address);
-		break;
+        sys_write8 ((UINT8) Value, Address);
+        break;
 
-	case 16:
+    case 16:
 
-		sys_write16((UINT16)Value, Address);
-		break;
+        sys_write16 ((UINT16) Value, Address);
+        break;
 
-	case 32:
+    case 32:
 
-		sys_write32((UINT32)Value, Address);
-		break;
+        sys_write32 ((UINT32) Value, Address);
+        break;
 
-	case 64:
+    case 64:
 
-		sys_write64((UINT64)Value, Address);
-		break;
+        sys_write64 ((UINT64) Value, Address);
+        break;
 
-	default:
+    default:
 
-		return (AE_BAD_PARAMETER);
-	}
+        return (AE_BAD_PARAMETER);
+    }
 
-	return AE_OK;
+    return (AE_OK);
 }
 
 
@@ -470,35 +470,36 @@ AcpiOsReadPort (
     UINT32                  *Value,
     UINT32                  Width)
 {
-	switch (Width) 
-	{
-	case 8:
 
-		*((UINT8 *)Value) = sys_in8(Address);
-		break;
+    switch (Width)
+    {
+    case 8:
 
-	case 16:
+        *((UINT8 *) Value) = sys_in8 (Address);
+        break;
 
-		*((UINT16 *)Value) = sys_in16(Address);
-		break;
+    case 16:
 
-	case 32:
+        *((UINT16 *) Value) = sys_in16 (Address);
+        break;
 
-		*((UINT32 *)Value) = sys_in32(Address);
-		break;
-		
-	case 64:
+    case 32:
 
-		*((UINT32 *)Value) = sys_in32(Address);
-		*((UINT32 *)Value + 4) = sys_in32(Address + 4);
-		break;
+        *((UINT32 *) Value) = sys_in32 (Address);
+        break;
 
-	default:
+    case 64:
 
-		return (AE_BAD_PARAMETER);
-	}
+        *((UINT32 *) Value) = sys_in32 (Address);
+        *((UINT32 *) Value + 4) = sys_in32 (Address + 4);
+        break;
 
-	return AE_OK;
+    default:
+
+        return (AE_BAD_PARAMETER);
+    }
+
+    return (AE_OK);
 }
 
 
@@ -522,36 +523,36 @@ AcpiOsWritePort (
     UINT32                  Value,
     UINT32                  Width)
 {
-	switch (Width)
-	{
-	case 8:
 
-		sys_out8((UINT8)Value, Address);
-		break;
+    switch (Width)
+    {
+    case 8:
 
-	case 16:
+        sys_out8 ((UINT8) Value, Address);
+        break;
 
-		sys_out16((UINT16)Value, Address);
-		break;
+    case 16:
 
-	case 32:
+        sys_out16 ((UINT16) Value, Address);
+        break;
 
-		sys_out32((UINT32)Value, Address);
-		break;
+    case 32:
 
-	case 64:
+        sys_out32 ((UINT32) Value, Address);
+        break;
 
-		sys_out32((UINT32)Value, Address);
-		sys_out32((UINT32)(Value + 4), (Address + 4));
-		break;
+    case 64:
 
-	default:
+        sys_out32 ((UINT32) Value, Address);
+        sys_out32 ((UINT32) (Value + 4), (Address + 4));
+        break;
 
-		return (AE_BAD_PARAMETER);
+    default:
 
-	}
+        return (AE_BAD_PARAMETER);
+    }
 
-	return AE_OK;
+    return (AE_OK);
 }
 
 
@@ -577,42 +578,43 @@ AcpiOsWritePciConfiguration (
     UINT64                  Value,
     UINT32                  Width)
 {
-	UINT32           value32;
-	pcie_bdf_t       bdf = PCIE_BDF(PciId->Bus, PciId->Device, PciId->Function);
+    UINT32                  value32;
+    pcie_bdf_t              bdf = PCIE_BDF (PciId->Bus, PciId->Device, PciId->Function);
 
-	switch (Width)
-	{
-	case 8:
 
-		value32 = pcie_conf_read(bdf, Register);
-		value32 = (value32 & 0xffffff00) | (UINT8)Value;
-		pcie_conf_write(bdf, Register, value32);
-		break;
+    switch (Width)
+    {
+    case 8:
 
-	case 16:
+        value32 = pcie_conf_read (bdf, Register);
+        value32 = (value32 & 0xffffff00) | (UINT8) Value;
+        pcie_conf_write (bdf, Register, value32);
+        break;
 
-		value32 = pcie_conf_read(bdf, Register);
-		value32 = (value32 & 0xffff0000) | (UINT16)Value;
-		pcie_conf_write(bdf, Register, value32);
-		break;
+    case 16:
 
-	case 32:
+        value32 = pcie_conf_read (bdf, Register);
+        value32 = (value32 & 0xffff0000) | (UINT16) Value;
+        pcie_conf_write (bdf, Register, value32);
+        break;
 
-		pcie_conf_write(bdf, Register, (UINT32)Value);
-		break;
+    case 32:
 
-	case 64:
+        pcie_conf_write (bdf, Register, (UINT32) Value);
+        break;
 
-		pcie_conf_write(bdf, Register, (UINT32)Value);
-		pcie_conf_write(bdf, (Register + 4), (UINT32)(Value >> 32));
-		break;
+    case 64:
 
-	default:
+        pcie_conf_write (bdf, Register, (UINT32) Value);
+        pcie_conf_write (bdf, (Register + 4), (UINT32) (Value >> 32));
+        break;
 
-		return (AE_BAD_PARAMETER);
-	}
+    default:
 
-	return AE_OK;
+        return (AE_BAD_PARAMETER);
+    }
+
+    return (AE_OK);
 }
 
 
@@ -638,37 +640,38 @@ AcpiOsReadPciConfiguration (
     UINT64                  *Value,
     UINT32                  Width)
 {
-	pcie_bdf_t bdf = PCIE_BDF(PciId->Bus, PciId->Device, PciId->Function);
 
-	switch (Width)
-	{
-	case 8:
+    pcie_bdf_t bdf = PCIE_BDF (PciId->Bus, PciId->Device, PciId->Function);
 
-		*((UINT8 *)Value) = (UINT8)pcie_conf_read(bdf, Register);
-		break;
+    switch (Width)
+    {
+    case 8:
 
-	case 16:
+        *((UINT8 *) Value) = (UINT8) pcie_conf_read (bdf, Register);
+        break;
 
-		*((UINT16 *)Value) = (UINT16)pcie_conf_read(bdf, Register);
-		break;
+    case 16:
 
-	case 32:
+        *((UINT16 *) Value) = (UINT16) pcie_conf_read (bdf, Register);
+        break;
 
-		*((UINT32 *)Value) = (UINT32)pcie_conf_read(bdf, Register);
-		break;
+    case 32:
 
-	case 64:
+        *((UINT32 *) Value) = (UINT32) pcie_conf_read (bdf, Register);
+        break;
 
-		*((UINT32 *)Value) = (UINT32)pcie_conf_read(bdf, Register);
-		*((UINT32 *)Value + 1) = (UINT32)pcie_conf_read(bdf, (Register + 4));
-		break;
+    case 64:
 
-	default:
+        *((UINT32 *) Value) = (UINT32) pcie_conf_read (bdf, Register);
+        *((UINT32 *) Value + 1) = (UINT32) pcie_conf_read (bdf, (Register + 4));
+        break;
 
-		return (AE_BAD_PARAMETER);
-	}
+    default:
 
-	return AE_OK;
+        return (AE_BAD_PARAMETER);
+    }
+
+    return (AE_OK);
 }
 
 
@@ -711,14 +714,15 @@ AcpiOsPredefinedOverride (
     const ACPI_PREDEFINED_NAMES *InitVal,
     ACPI_STRING                 *NewVal)
 {
-	if (!InitVal || !NewVal)
-	{
-		return AE_BAD_PARAMETER;
-	}
 
-	*NewVal = NULL;
+    if (!InitVal || !NewVal)
+    {
+        return (AE_BAD_PARAMETER);
+    }
 
-	return AE_OK;
+    *NewVal = NULL;
+
+    return (AE_OK);
 }
 
 
@@ -741,14 +745,15 @@ AcpiOsTableOverride (
     ACPI_TABLE_HEADER       *ExistingTable,
     ACPI_TABLE_HEADER       **NewTable)
 {
-	if (!ExistingTable || !NewTable)
-	{
-		return AE_BAD_PARAMETER;
-	}
 
-	*NewTable = NULL;
+    if (!ExistingTable || !NewTable)
+    {
+        return (AE_BAD_PARAMETER);
+    }
 
-	return AE_NO_ACPI_TABLES;
+    *NewTable = NULL;
+
+    return (AE_NO_ACPI_TABLES);
 }
 
 
@@ -768,8 +773,9 @@ ACPI_PHYSICAL_ADDRESS
 AcpiOsGetRootPointer (
     void)
 {
-	LOG_DBG("");
-	return (ACPI_PHYSICAL_ADDRESS)efi_get_acpi_rsdp();
+
+    LOG_DBG ("");
+    return ((ACPI_PHYSICAL_ADDRESS) efi_get_acpi_rsdp ());
 }
 
 
@@ -792,11 +798,11 @@ AcpiOsMapMemory (
     ACPI_PHYSICAL_ADDRESS   Where,
     ACPI_SIZE               Length)
 {
-	uint8_t                 *VirtlAdd;
+    uint8_t                 *VirtlAdd;
 
-	LOG_DBG("");
-	z_phys_map(&VirtlAdd, Where, Length, 0);
-	return (void *)VirtlAdd;
+    LOG_DBG ("");
+    z_phys_map (&VirtlAdd, Where, Length, 0);
+    return ((void *) VirtlAdd);
 }
 #endif
 
@@ -820,8 +826,8 @@ AcpiOsUnmapMemory (
     void                    *Where,
     ACPI_SIZE               Length)
 {
-	LOG_DBG("");
-	z_phys_unmap(Where, Length);
+    LOG_DBG ("");
+    z_phys_unmap (Where, Length);
 }
 
 
@@ -847,8 +853,9 @@ AcpiOsPhysicalTableOverride (
     ACPI_PHYSICAL_ADDRESS   *NewAddress,
     UINT32                  *NewTableLength)
 {
-	LOG_DBG("");
-	return AE_SUPPORT;
+
+    LOG_DBG ("");
+    return (AE_SUPPORT);
 }
 
 
@@ -868,8 +875,8 @@ ACPI_STATUS
 AcpiOsInitialize (
     void)
 {
-	LOG_DBG("");
-	return AE_OK;
+    LOG_DBG ("");
+    return (AE_OK);
 }
 
 
@@ -889,7 +896,7 @@ void
 AcpiOsStall (
     UINT32                  Microseconds)
 {
-	k_busy_wait(Microseconds);
+    k_busy_wait (Microseconds);
 }
 
 
@@ -909,7 +916,7 @@ void
 AcpiOsSleep (
     UINT64                  Milliseconds)
 {
-	k_msleep((UINT32)Milliseconds);
+    k_msleep ((UINT32) Milliseconds);
 }
 
 
@@ -935,8 +942,8 @@ AcpiOsEnterSleep (
     UINT32                  RegaValue,
     UINT32                  RegbValue)
 {
-	__ASSERT(FALSE, "function Not implimented");
-	return AE_OK;
+    __ASSERT (FALSE, "function Not implemented");
+    return (AE_OK);
 }
 
 
@@ -956,7 +963,7 @@ UINT64
 AcpiOsGetTimer (
     void)
 {
-	return k_cycle_get_64();
+    return (k_cycle_get_64 ());
 }
 
 
@@ -981,11 +988,11 @@ AcpiOsInstallInterruptHandler (
     ACPI_OSD_HANDLER        ServiceRoutine,
     void                    *Context)
 {
-	LOG_DBG("");
-	irq_connect_dynamic(InterruptNumber, 3, (zephyr_irq_t)ServiceRoutine, Context,
-			    IRQ_TYPE_LOWEST_LEVEL_LOW);
-	irq_enable(InterruptNumber);
-	return AE_OK;
+    LOG_DBG ("");
+    irq_connect_dynamic (InterruptNumber, 3, (zephyr_irq_t) ServiceRoutine, Context,
+        IRQ_TYPE_LOWEST_LEVEL_LOW);
+    irq_enable (InterruptNumber);
+    return (AE_OK);
 }
 
 
@@ -1006,9 +1013,10 @@ AcpiOsRemoveInterruptHandler (
     UINT32                  InterruptNumber,
     ACPI_OSD_HANDLER        ServiceRoutine)
 {
-	LOG_DBG("");
-	irq_disable(InterruptNumber);
-	return AE_OK;
+
+    LOG_DBG ("");
+    irq_disable (InterruptNumber);
+    return (AE_OK);
 }
 
 
@@ -1030,20 +1038,21 @@ AcpiOsSignal (
     UINT32                  Function,
     void                    *Info)
 {
-	switch (Function) {
-	case ACPI_SIGNAL_FATAL:
-		LOG_DBG("ACPI_SIGNAL_FATAL error");
-		break;
+    switch (Function)
+    {
+    case ACPI_SIGNAL_FATAL:
+        LOG_DBG ("ACPI_SIGNAL_FATAL error");
+        break;
 
-	case ACPI_SIGNAL_BREAKPOINT:
-		LOG_DBG("ACPI_SIGNAL_BREAKPOINT");
-		break;
+    case ACPI_SIGNAL_BREAKPOINT:
+        LOG_DBG ("ACPI_SIGNAL_BREAKPOINT");
+        break;
 
-	default:
-		break;
-	}
+    default:
+        break;
+    }
 
-	return AE_OK;
+    return (AE_OK);
 }
 
 
@@ -1060,24 +1069,24 @@ ACPI_STATUS
 AcpiOsCreateLock (
     ACPI_SPINLOCK           *OutHandle)
 {
-	LOG_DBG("");
+    LOG_DBG ("");
 
-	return AE_OK;
+    return (AE_OK);
 }
 
 void
 AcpiOsDeleteLock (
     ACPI_SPINLOCK           Handle)
 {
-	LOG_DBG("");
+    LOG_DBG ("");
 }
 
 ACPI_CPU_FLAGS
 AcpiOsAcquireLock (
     ACPI_SPINLOCK           Handle)
 {
-	LOG_DBG("");
-	return 0;
+    LOG_DBG ("");
+    return (0);
 }
 
 void
@@ -1085,7 +1094,7 @@ AcpiOsReleaseLock (
     ACPI_SPINLOCK           Handle,
     ACPI_CPU_FLAGS          Flags)
 {
-	LOG_DBG("");
+    LOG_DBG ("");
 }
 
 ACPI_STATUS
@@ -1094,15 +1103,15 @@ AcpiOsCreateSemaphore (
     UINT32              InitialUnits,
     ACPI_HANDLE         *OutHandle)
 {
-	*OutHandle = (ACPI_HANDLE)1;
-	return AE_OK;
+    *OutHandle = (ACPI_HANDLE) 1;
+    return (AE_OK);
 }
 
 ACPI_STATUS
 AcpiOsDeleteSemaphore (
     ACPI_HANDLE         Handle)
 {
-	return AE_OK;
+    return (AE_OK);
 }
 
 ACPI_STATUS
@@ -1111,7 +1120,7 @@ AcpiOsWaitSemaphore (
     UINT32              Units,
     UINT16              Timeout)
 {
-	return AE_OK;
+    return (AE_OK);
 }
 
 ACPI_STATUS
@@ -1119,15 +1128,15 @@ AcpiOsSignalSemaphore (
     ACPI_HANDLE         Handle,
     UINT32              Units)
 {
-	return AE_OK;
+    return (AE_OK);
 }
 
 ACPI_THREAD_ID
 AcpiOsGetThreadId (
     void)
 {
-	LOG_DBG("");
-	return 1;
+    LOG_DBG ("");
+    return (1);
 }
 
 ACPI_STATUS
@@ -1136,8 +1145,7 @@ AcpiOsExecute (
     ACPI_OSD_EXEC_CALLBACK  Function,
     void                    *Context)
 {
-	Function(Context);
-	return AE_OK;
+    Function (Context);
+    return (AE_OK);
 }
 #endif
-

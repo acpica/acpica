@@ -438,7 +438,7 @@ AcpiEvFixedEventDispatch (
         (void) AcpiWriteBitRegister (
             AcpiGbl_FixedEventInfo[Event].EnableRegisterId,
             (Event == ACPI_EVENT_PCIE_WAKE) ?
-	    ACPI_ENABLE_EVENT : ACPI_DISABLE_EVENT);
+            ACPI_ENABLE_EVENT : ACPI_DISABLE_EVENT);
 
         ACPI_ERROR ((AE_INFO,
             "No installed handler for fixed event - %s (%u), disabling",
