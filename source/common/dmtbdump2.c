@@ -2841,7 +2841,7 @@ AcpiDmDumpRhct (
             AcpiOsPrintf ("Invalid subtable length\n");
             return;
         }
-        SubtableOffset = Length;
+        SubtableOffset = (UINT8) Length;
 
         switch (Subtable->Type)
         {
@@ -2875,7 +2875,7 @@ AcpiDmDumpRhct (
 
         case ACPI_RHCT_NODE_TYPE_ISA_STRING:
             RhctIsaString = ACPI_ADD_PTR (ACPI_RHCT_ISA_STRING, Subtable, SubtableOffset);
-            IsaPadOffset = SubtableOffset + 2 + RhctIsaString->IsaLength;
+            IsaPadOffset = (UINT8) (SubtableOffset + 2 + RhctIsaString->IsaLength);
             Status = AcpiDmDumpTable (Table->Length, Offset + SubtableOffset,
                     RhctIsaString, RhctIsaString->IsaLength, AcpiDmTableInfoRhctIsa1);
             if (Subtable->Length > IsaPadOffset)

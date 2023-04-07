@@ -1,4 +1,47 @@
 ----------------------------------------
+31 March 2023. Summary of changes for version 20230331:
+
+This release is available at https://acpica.org/downloads
+
+0) Global changes:
+
+
+Update all copyright notices to the year 2023. This effects all source 
+modules, as well as utility signons.
+Add OS-specific support for Zephyr RTOS.
+Fix miscellaneous code that accesses various objects.
+Remove some dead code.
+Add C ?Flexible Array? support.
+Add support for 64 bit LoongArch compilation.
+Add first batch of RISC-V related definitions.
+Performed a global automated update to remove tabs, fix indentation 
+issues, etc.
+
+1) ACPICA kernel-resident subsystem:
+
+hwvalid: Drop port I/O validation.
+
+2) ACPICA tools and utilities:
+
+iASL: Added full macro support in the preprocessor. Example:
+#define ABCD(a,b,c,d) a+b+c-d
+
+Known macro support limitations (at this time):
+	No support for multi-line #define macros (backslash continuation 
+lines)
+	No support for the C-style ternary operator
+	No support for the stringizing operator (#)
+	No support for the concatenation (token pasting) operator (##)
+	No support for variable number of macro arguments
+
+Add support for AMD Secure Processor Table (ASPT) version 1.
+Add support for Arm's MPAM ACPI table version 2.
+ACPI 6.5: MADT: add support for trace buffer extension in GICC.
+Headers: Delete bogus NodeArray array of pointers from AEST table.
+PHAT table support is still ongoing.
+
+
+----------------------------------------
 20 October 2022. Summary of changes for version 20221020:
 
 This release is available at https://acpica.org/downloads

@@ -678,7 +678,7 @@ DtCompileFlag (
 
     case ACPI_DMT_FLAGS8_2:
 
-	BitPosition = 2;
+        BitPosition = 2;
         BitLength = 8;
         break;
 

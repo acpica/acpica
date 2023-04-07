@@ -939,7 +939,7 @@ DtCompileCedt (
             /* Look in buffer for the number of targets */
             offset = (unsigned int) ACPI_OFFSET (ACPI_CEDT_CFMWS, InterleaveWays);
             dump = (unsigned char *) Subtable->Buffer - 4;     /* place at beginning of cedt1 */
-            max = 0x01 << dump[offset];     /* 2^max, so 0=1, 1=2, 2=4, 3=8.  8 is MAX */
+            max = 0x01 << dump[offset];     /* 2^max, so 0=1, 1=2, 2=4, 3=8. 8 is MAX */
             if (max > 8)    max=1;          /* Error in encoding Interleaving Ways. */
             if (max == 1)                   /* if only one target, then break here. */
                 break;                      /* break if only one target. */
