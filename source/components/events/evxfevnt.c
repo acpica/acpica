@@ -320,13 +320,18 @@ AcpiEnableEvent (
         return_ACPI_STATUS (AE_BAD_PARAMETER);
     }
 
+    if (Event == ACPI_EVENT_PCIE_WAKE &&
+        !(AcpiGbl_FADT.Flags & ACPI_FADT_PCI_EXPRESS_WAKE)) {
+            return_ACPI_STATUS (AE_BAD_PARAMETER);
+    }
+
     /*
      * Enable the requested fixed event (by writing a one to the enable
      * register bit)
      */
     Status = AcpiWriteBitRegister (
         AcpiGbl_FixedEventInfo[Event].EnableRegisterId,
-        ACPI_ENABLE_EVENT);
+        Event == ACPI_EVENT_PCIE_WAKE ? ACPI_DISABLE_EVENT : ACPI_ENABLE_EVENT);
     if (ACPI_FAILURE (Status))
     {
         return_ACPI_STATUS (Status);
@@ -341,7 +346,7 @@ AcpiEnableEvent (
         return_ACPI_STATUS (Status);
     }
 
-    if (Value != 1)
+    if (Value != (Event == ACPI_EVENT_PCIE_WAKE ? 0 : 1))
     {
         ACPI_ERROR ((AE_INFO,
             "Could not enable %s event", AcpiUtGetEventName (Event)));
@@ -393,13 +398,17 @@ AcpiDisableEvent (
         return_ACPI_STATUS (AE_BAD_PARAMETER);
     }
 
+    if (Event == ACPI_EVENT_PCIE_WAKE &&
+        !(AcpiGbl_FADT.Flags & ACPI_FADT_PCI_EXPRESS_WAKE)) {
+            return_ACPI_STATUS (AE_BAD_PARAMETER);
+    }
     /*
      * Disable the requested fixed event (by writing a zero to the enable
      * register bit)
      */
     Status = AcpiWriteBitRegister (
         AcpiGbl_FixedEventInfo[Event].EnableRegisterId,
-        ACPI_DISABLE_EVENT);
+        Event == ACPI_EVENT_PCIE_WAKE ? ACPI_ENABLE_EVENT : ACPI_DISABLE_EVENT);
     if (ACPI_FAILURE (Status))
     {
         return_ACPI_STATUS (Status);
@@ -412,7 +421,7 @@ AcpiDisableEvent (
         return_ACPI_STATUS (Status);
     }
 
-    if (Value != 0)
+    if (Value != (Event == ACPI_EVENT_PCIE_WAKE ? 1 : 0))
     {
         ACPI_ERROR ((AE_INFO,
             "Could not disable %s events", AcpiUtGetEventName (Event)));
@@ -461,6 +470,10 @@ AcpiClearEvent (
         return_ACPI_STATUS (AE_BAD_PARAMETER);
     }
 
+    if (Event == ACPI_EVENT_PCIE_WAKE &&
+        !(AcpiGbl_FADT.Flags & ACPI_FADT_PCI_EXPRESS_WAKE)) {
+            return_ACPI_STATUS (AE_BAD_PARAMETER);
+    }
     /*
      * Clear the requested fixed event (By writing a one to the status
      * register bit)
@@ -514,6 +527,11 @@ AcpiGetEventStatus (
         return_ACPI_STATUS (AE_BAD_PARAMETER);
     }
 
+    if (Event == ACPI_EVENT_PCIE_WAKE &&
+        !(AcpiGbl_FADT.Flags & ACPI_FADT_PCI_EXPRESS_WAKE)) {
+            return_ACPI_STATUS (AE_BAD_PARAMETER);
+    }
+
     /* Fixed event currently can be dispatched? */
 
     if (AcpiGbl_FixedEventHandlers[Event].Handler)
@@ -530,7 +548,7 @@ AcpiGetEventStatus (
         return_ACPI_STATUS (Status);
     }
 
-    if (InByte)
+    if (Event == ACPI_EVENT_PCIE_WAKE ? !InByte : InByte)
     {
         LocalEventStatus |=
             (ACPI_EVENT_FLAG_ENABLED | ACPI_EVENT_FLAG_ENABLE_SET);

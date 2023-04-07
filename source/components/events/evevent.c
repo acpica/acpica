@@ -310,13 +310,23 @@ AcpiEvFixedEventInitialize (
 
         if (AcpiGbl_FixedEventInfo[i].EnableRegisterId != 0xFF)
         {
-            Status = AcpiWriteBitRegister (
-                AcpiGbl_FixedEventInfo[i].EnableRegisterId,
-                (i == ACPI_EVENT_PCIE_WAKE) ?
-                ACPI_ENABLE_EVENT : ACPI_DISABLE_EVENT);
-            if (ACPI_FAILURE (Status))
-            {
-                return (Status);
+            if (i == ACPI_EVENT_PCIE_WAKE &&
+                (AcpiGbl_FADT.Flags & ACPI_FADT_PCI_EXPRESS_WAKE)) {
+                Status = AcpiWriteBitRegister (
+                    AcpiGbl_FixedEventInfo[i].EnableRegisterId,
+                    ACPI_ENABLE_EVENT);
+                if (ACPI_FAILURE (Status))
+                {
+                    return (Status);
+                }
+            } else {
+                Status = AcpiWriteBitRegister (
+                    AcpiGbl_FixedEventInfo[i].EnableRegisterId,
+                    ACPI_DISABLE_EVENT);
+                if (ACPI_FAILURE (Status))
+                {
+                    return (Status);
+                }
             }
         }
     }
@@ -376,6 +386,11 @@ AcpiEvFixedEventDetect (
      */
     for (i = 0; i < ACPI_NUM_FIXED_EVENTS; i++)
     {
+        if (i == ACPI_EVENT_PCIE_WAKE &&
+		!(AcpiGbl_FADT.Flags & ACPI_FADT_PCI_EXPRESS_WAKE)) {
+		continue;
+	}
+
         /* Both the status and enable bits must be on for this event */
 
         if ((FixedStatus & AcpiGbl_FixedEventInfo[i].StatusBitMask) &&
