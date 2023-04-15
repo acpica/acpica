@@ -1136,7 +1136,10 @@ enum AcpiMadtType
     ACPI_MADT_TYPE_BIO_PIC                  = 22,
     ACPI_MADT_TYPE_LPC_PIC                  = 23,
     ACPI_MADT_TYPE_RINTC                    = 24,
-    ACPI_MADT_TYPE_RESERVED                 = 25,   /* 25 to 0x7F are reserved */
+    ACPI_MADT_TYPE_IMSIC                    = 25,
+    ACPI_MADT_TYPE_APLIC                    = 26,
+    ACPI_MADT_TYPE_PLIC                     = 27,
+    ACPI_MADT_TYPE_RESERVED                 = 28,   /* 28 to 0x7F are reserved */
     ACPI_MADT_TYPE_OEM_RESERVED             = 0x80  /* 0x80 to 0xFF are reserved for OEM use */
 };
 
@@ -1550,14 +1553,17 @@ enum AcpiMadtLpcPicVersion {
 };
 
 /* 24: RISC-V INTC */
-struct acpi_madt_rintc {
+typedef struct acpi_madt_rintc {
     ACPI_SUBTABLE_HEADER    Header;
     UINT8                   Version;
     UINT8                   Reserved;
     UINT32                  Flags;
     UINT64                  HartId;
     UINT32                  Uid;                /* ACPI processor UID */
-};
+    UINT32                  ExtIntcId;          /* External INTC Id */
+    UINT64                  ImsicAddr;          /* IMSIC base address */
+    UINT32                  ImsicSize;          /* IMSIC size */
+} ACPI_MADT_RINTC;
 
 /* Values for RISC-V INTC Version field above */
 
@@ -1566,6 +1572,49 @@ enum AcpiMadtRintcVersion {
     ACPI_MADT_RINTC_VERSION_V1         = 1,
     ACPI_MADT_RINTC_VERSION_RESERVED   = 2	/* 2 and greater are reserved */
 };
+
+/* 25: RISC-V IMSIC */
+typedef struct acpi_madt_imsic {
+    ACPI_SUBTABLE_HEADER    Header;
+    UINT8                   Version;
+    UINT8                   Reserved;
+    UINT32                  Flags;
+    UINT16                  NumIds;
+    UINT16                  NumGuestIds;
+    UINT8                   GuestIndexBits;
+    UINT8                   HartIndexBits;
+    UINT8                   GroupIndexBits;
+    UINT8                   GroupIndexShift;
+} ACPI_MADT_IMSIC;
+
+/* 26: RISC-V APLIC */
+typedef struct acpi_madt_aplic {
+    ACPI_SUBTABLE_HEADER    Header;
+    UINT8                   Version;
+    UINT8                   Id;
+    UINT32                  Flags;
+    UINT8                   HwId[8];
+    UINT16                  NumIdcs;
+    UINT16                  NumSources;
+    UINT32                  GsiBase;
+    UINT64                  BaseAddr;
+    UINT32                  Size;
+} ACPI_MADT_APLIC;
+
+/* 27: RISC-V PLIC */
+typedef struct acpi_madt_plic {
+    ACPI_SUBTABLE_HEADER    Header;
+    UINT8                   Version;
+    UINT8                   Id;
+    UINT8                   HwId[8];
+    UINT16                  NumIrqs;
+    UINT16                  MaxPrio;
+    UINT32                  Flags;
+    UINT32                  Size;
+    UINT64                  BaseAddr;
+    UINT32                  GsiBase;
+} ACPI_MADT_PLIC;
+
 
 /* 80: OEM data */
 
