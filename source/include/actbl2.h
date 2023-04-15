@@ -3334,12 +3334,15 @@ enum AcpiRgrtImageType
 
 typedef struct acpi_table_rhct {
     ACPI_TABLE_HEADER       Header;             /* Common ACPI table header */
-    UINT32                  Reserved;
+    UINT32                  Flags;              /* RHCT flags */
     UINT64                  TimeBaseFreq;
     UINT32                  NodeCount;
     UINT32                  NodeOffset;
 } ACPI_TABLE_RHCT;
 
+/* RHCT Flags */
+
+#define ACPI_RHCT_TIMER_CANNOT_WAKEUP_CPU       (1)
 /*
  * RHCT subtables
  */
@@ -3353,6 +3356,9 @@ typedef struct acpi_rhct_node_header {
 
 enum acpi_rhct_node_type {
     ACPI_RHCT_NODE_TYPE_ISA_STRING = 0x0000,
+    ACPI_RHCT_NODE_TYPE_CMO        = 0x0001,
+    ACPI_RHCT_NODE_TYPE_MMU        = 0x0002,
+    ACPI_RHCT_NODE_TYPE_RESERVED   = 0x0003,
     ACPI_RHCT_NODE_TYPE_HART_INFO  = 0xFFFF,
 };
 
@@ -3365,6 +3371,24 @@ typedef struct acpi_rhct_isa_string {
     UINT16                  IsaLength;
     char                    Isa[];
 } ACPI_RHCT_ISA_STRING;
+
+typedef struct acpi_rhct_cmo_node {
+    UINT8                  Reserved;           /* Must be zero */
+    UINT8                  CbomSize;           /* CBOM size in powerof 2 */
+    UINT8                  CbopSize;           /* CBOP size in powerof 2 */
+    UINT8                  CbozSize;           /* CBOZ size in powerof 2 */
+} ACPI_RHCT_CMO_NODE;
+
+typedef struct acpi_rhct_mmu_node {
+    UINT8                   Reserved;          /* Must be zero */
+    UINT8                   MmuType;           /* Virtual Address Scheme */
+} ACPI_RHCT_MMU_NODE;
+
+enum acpi_rhct_mmu_type {
+    ACPI_RHCT_MMU_TYPE_SV39 = 0,
+    ACPI_RHCT_MMU_TYPE_SV48 = 1,
+    ACPI_RHCT_MMU_TYPE_SV57 = 2
+};
 
 /* Hart Info node structure */
 typedef struct acpi_rhct_hart_info {

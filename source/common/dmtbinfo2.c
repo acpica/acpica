@@ -2221,7 +2221,7 @@ ACPI_DMTABLE_INFO           AcpiDmTableInfoRgrt0[] =
 
 ACPI_DMTABLE_INFO           AcpiDmTableInfoRhct[] =
 {
-    {ACPI_DMT_UINT32,   ACPI_RHCT_OFFSET (Reserved),         "Reserved", 0},
+    {ACPI_DMT_UINT32,   ACPI_RHCT_OFFSET (Flags),            "Flags", 0},
     {ACPI_DMT_UINT64,   ACPI_RHCT_OFFSET (TimeBaseFreq),     "Timer Base Frequency", 0},
     {ACPI_DMT_UINT32,   ACPI_RHCT_OFFSET (NodeCount),        "Number of nodes", 0},
     {ACPI_DMT_UINT32,   ACPI_RHCT_OFFSET (NodeOffset),       "Offset to the node array", 0},
