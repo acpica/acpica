@@ -313,7 +313,7 @@ AcpiEvFixedEventInitialize (
             Status = AcpiWriteBitRegister (
                 AcpiGbl_FixedEventInfo[i].EnableRegisterId,
                 (i == ACPI_EVENT_PCIE_WAKE) ?
-                ACPI_ENABLE_EVENT : ACPI_DISABLE_EVENT);
+		ACPI_ENABLE_EVENT : ACPI_DISABLE_EVENT);
             if (ACPI_FAILURE (Status))
             {
                 return (Status);
