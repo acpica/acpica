@@ -1222,7 +1222,7 @@ typedef struct acpi_dmar_andd
     union {
         char                  __pad;
         ACPI_FLEX_ARRAY(char, DeviceName);
-    } u;
+    };
 
 } ACPI_DMAR_ANDD;
 
