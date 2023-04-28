@@ -678,8 +678,6 @@ ACPI_DMTABLE_INFO           AcpiDmTableInfoLpit0[] =
     {ACPI_DMT_UINT64,   ACPI_LPIT0_OFFSET (CounterFrequency),       "Counter Frequency", 0},
     ACPI_DMT_TERMINATOR
 };
-
-
 /*******************************************************************************
  *
  * MADT - Multiple APIC Description Table and subtables
@@ -926,12 +924,91 @@ ACPI_DMTABLE_INFO           AcpiDmTableInfoMadt16[] =
    ACPI_DMT_TERMINATOR
 };
 
-/* 17: OEM data structure */
+/* 17: core interrupt controller */
 
 ACPI_DMTABLE_INFO           AcpiDmTableInfoMadt17[] =
 {
+    {ACPI_DMT_UINT8,    ACPI_MADT17_OFFSET (Version),               "Version", 0},
+    {ACPI_DMT_UINT32,   ACPI_MADT17_OFFSET (ProcessorId),           "ProcessorId", 0},
+    {ACPI_DMT_UINT32,   ACPI_MADT17_OFFSET (CoreId),                "CoreId", 0},
+    {ACPI_DMT_UINT32,   ACPI_MADT17_OFFSET (Flags),                 "Flags", 0},
+   ACPI_DMT_TERMINATOR
+};
+
+/* 18: Legacy I/O interrupt controller */
+
+ACPI_DMTABLE_INFO           AcpiDmTableInfoMadt18[] =
+{
+    {ACPI_DMT_UINT8,    ACPI_MADT18_OFFSET (Version),               "Version", 0},
+    {ACPI_DMT_UINT64,   ACPI_MADT18_OFFSET (Address),               "Address", 0},
+    {ACPI_DMT_UINT16,   ACPI_MADT18_OFFSET (Size),                  "Size", 0},
+    {ACPI_DMT_UINT16,   ACPI_MADT18_OFFSET (Cascade),               "Cascade", 0},
+    {ACPI_DMT_UINT64,   ACPI_MADT18_OFFSET (CascadeMap),            "CascadeMap", 0},
+   ACPI_DMT_TERMINATOR
+};
+
+/* 19: HT interrupt controller */
+
+ACPI_DMTABLE_INFO           AcpiDmTableInfoMadt19[] =
+{
+    {ACPI_DMT_UINT8,    ACPI_MADT19_OFFSET (Version),               "Version", 0},
+    {ACPI_DMT_UINT64,   ACPI_MADT19_OFFSET (Address),               "Address", 0},
+    {ACPI_DMT_UINT16,   ACPI_MADT19_OFFSET (Size),                  "Size", 0},
+    {ACPI_DMT_UINT64,   ACPI_MADT19_OFFSET (Cascade),               "Cascade", 0},
+   ACPI_DMT_TERMINATOR
+};
+
+/* 20: Extend I/O interrupt controller */
+
+ACPI_DMTABLE_INFO           AcpiDmTableInfoMadt20[] =
+{
+    {ACPI_DMT_UINT8,    ACPI_MADT20_OFFSET (Version),               "Version", 0},
+    {ACPI_DMT_UINT8,    ACPI_MADT20_OFFSET (Cascade),               "Cascade", 0},
+    {ACPI_DMT_UINT8,    ACPI_MADT20_OFFSET (Node),                  "Node", 0},
+    {ACPI_DMT_UINT64,   ACPI_MADT20_OFFSET (NodeMap),               "NodeMap", 0},
+   ACPI_DMT_TERMINATOR
+};
+
+/* 21: MSI controller */
+
+ACPI_DMTABLE_INFO           AcpiDmTableInfoMadt21[] =
+{
+    {ACPI_DMT_UINT8,    ACPI_MADT21_OFFSET (Version),               "Version", 0},
+    {ACPI_DMT_UINT64,   ACPI_MADT21_OFFSET (MsgAddress),            "MsgAddress", 0},
+    {ACPI_DMT_UINT32,   ACPI_MADT21_OFFSET (Start),                 "Start", 0},
+    {ACPI_DMT_UINT32,   ACPI_MADT21_OFFSET (Count),                 "Count", 0},
+   ACPI_DMT_TERMINATOR
+};
+
+/* 22: BIO interrupt controller */
+
+ACPI_DMTABLE_INFO           AcpiDmTableInfoMadt22[] =
+{
+    {ACPI_DMT_UINT8,    ACPI_MADT22_OFFSET (Version),               "Version", 0},
+    {ACPI_DMT_UINT64,   ACPI_MADT22_OFFSET (Address),               "Address", 0},
+    {ACPI_DMT_UINT16,   ACPI_MADT22_OFFSET (Size),                  "Size", 0},
+    {ACPI_DMT_UINT16,   ACPI_MADT22_OFFSET (Id),                    "Id", 0},
+    {ACPI_DMT_UINT16,   ACPI_MADT22_OFFSET (GsiBase),               "GsiBase", 0},
+   ACPI_DMT_TERMINATOR
+};
+
+/* 23: LPC interrupt controller */
+
+ACPI_DMTABLE_INFO           AcpiDmTableInfoMadt23[] =
+{
+    {ACPI_DMT_UINT8,    ACPI_MADT23_OFFSET (Version),               "Version", 0},
+    {ACPI_DMT_UINT64,   ACPI_MADT23_OFFSET (Address),               "Address", 0},
+    {ACPI_DMT_UINT16,   ACPI_MADT23_OFFSET (Size),                  "Size", 0},
+    {ACPI_DMT_UINT8,    ACPI_MADT23_OFFSET (Cascade),               "Cascade", 0},
+   ACPI_DMT_TERMINATOR
+};
+
+/* 24: OEM data structure */
+
+ACPI_DMTABLE_INFO           AcpiDmTableInfoMadt128[] =
+{
     {ACPI_DMT_RAW_BUFFER, 0,                                        "OEM Data", 0},
-    ACPI_DMT_TERMINATOR
+   ACPI_DMT_TERMINATOR
 };
 
 /*******************************************************************************
