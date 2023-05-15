@@ -635,7 +635,7 @@ typedef struct acpi_cdat_dsmas
 
 /* Flags for subtable above */
 
-#define ACPI_CEDT_DSMAS_NON_VOLATILE        (1 << 2)
+#define ACPI_CDAT_DSMAS_NON_VOLATILE        (1 << 2)
 
 
 /* Subtable 1: Device scoped Latency and Bandwidth Information Structure (DSLBIS) */
