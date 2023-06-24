@@ -1003,7 +1003,71 @@ ACPI_DMTABLE_INFO           AcpiDmTableInfoMadt23[] =
    ACPI_DMT_TERMINATOR
 };
 
-/* 24: OEM data structure */
+/* 24: RINTC interrupt controller */
+
+ACPI_DMTABLE_INFO           AcpiDmTableInfoMadt24[] =
+{
+    {ACPI_DMT_UINT8,    ACPI_MADT24_OFFSET (Version),               "Version", 0},
+    {ACPI_DMT_UINT8,    ACPI_MADT24_OFFSET (Reserved),              "Reserved", 0},
+    {ACPI_DMT_UINT32,   ACPI_MADT24_OFFSET (Flags),                 "Flags", 0},
+    {ACPI_DMT_UINT64,   ACPI_MADT24_OFFSET (HartId),                "HartId", 0},
+    {ACPI_DMT_UINT32,   ACPI_MADT24_OFFSET (Uid),                   "Uid", 0},
+    {ACPI_DMT_UINT32,   ACPI_MADT24_OFFSET (ExtIntcId),             "ExtIntcId", 0},
+    {ACPI_DMT_UINT64,   ACPI_MADT24_OFFSET (ImsicAddr),             "ImsicAddr", 0},
+    {ACPI_DMT_UINT32,   ACPI_MADT24_OFFSET (ImsicSize),             "ImsicSize", 0},
+   ACPI_DMT_TERMINATOR
+};
+
+/* 25: RISC-V IMSIC interrupt controller */
+
+ACPI_DMTABLE_INFO           AcpiDmTableInfoMadt25[] =
+{
+    {ACPI_DMT_UINT8,    ACPI_MADT25_OFFSET (Version),               "Version", 0},
+    {ACPI_DMT_UINT8,    ACPI_MADT25_OFFSET (Reserved),              "Reserved", 0},
+    {ACPI_DMT_UINT32,   ACPI_MADT25_OFFSET (Flags),                 "Flags", 0},
+    {ACPI_DMT_UINT16,   ACPI_MADT25_OFFSET (NumIds),                "NumIds", 0},
+    {ACPI_DMT_UINT16,   ACPI_MADT25_OFFSET (NumGuestIds),           "NumGuestIds", 0},
+    {ACPI_DMT_UINT8,    ACPI_MADT25_OFFSET (GuestIndexBits),        "GuestIndexBits", 0},
+    {ACPI_DMT_UINT8,    ACPI_MADT25_OFFSET (HartIndexBits),         "HartIndexBits", 0},
+    {ACPI_DMT_UINT8,    ACPI_MADT25_OFFSET (GroupIndexBits),        "GroupIndexBits", 0},
+    {ACPI_DMT_UINT8,    ACPI_MADT25_OFFSET (GroupIndexShift),       "GroupIndexShift", 0},
+   ACPI_DMT_TERMINATOR
+};
+
+/* 26: RISC-V APLIC interrupt controller */
+
+ACPI_DMTABLE_INFO           AcpiDmTableInfoMadt26[] =
+{
+    {ACPI_DMT_UINT8,    ACPI_MADT26_OFFSET (Version),               "Version", 0},
+    {ACPI_DMT_UINT8,    ACPI_MADT26_OFFSET (Id),                    "Id", 0},
+    {ACPI_DMT_UINT32,   ACPI_MADT26_OFFSET (Flags),                 "Flags", 0},
+    {ACPI_DMT_UINT64,   ACPI_MADT26_OFFSET (HwId),                  "HwId", 0},
+    {ACPI_DMT_UINT16,   ACPI_MADT26_OFFSET (NumIdcs),               "NumIdcs", 0},
+    {ACPI_DMT_UINT16,   ACPI_MADT26_OFFSET (NumSources),            "NumSources", 0},
+    {ACPI_DMT_UINT32,   ACPI_MADT26_OFFSET (GsiBase),               "GsiBase", 0},
+    {ACPI_DMT_UINT64,   ACPI_MADT26_OFFSET (BaseAddr),              "BaseAddr", 0},
+    {ACPI_DMT_UINT32,   ACPI_MADT26_OFFSET (Size),                  "Size", 0},
+   ACPI_DMT_TERMINATOR
+};
+
+/* 27: RISC-V PLIC interrupt controller */
+
+ACPI_DMTABLE_INFO           AcpiDmTableInfoMadt27[] =
+{
+    {ACPI_DMT_UINT8,    ACPI_MADT27_OFFSET (Version),               "Version", 0},
+    {ACPI_DMT_UINT8,    ACPI_MADT27_OFFSET (Id),                    "Id", 0},
+    {ACPI_DMT_UINT32,   ACPI_MADT27_OFFSET (Flags),                 "Flags", 0},
+    {ACPI_DMT_UINT64,   ACPI_MADT27_OFFSET (HwId),                  "HwId", 0},
+    {ACPI_DMT_UINT16,   ACPI_MADT27_OFFSET (NumIrqs),               "NumIrqs", 0},
+    {ACPI_DMT_UINT16,   ACPI_MADT27_OFFSET (MaxPrio),               "MaxPrio", 0},
+    {ACPI_DMT_UINT32,   ACPI_MADT27_OFFSET (Flags),                 "Flags", 0},
+    {ACPI_DMT_UINT32,   ACPI_MADT27_OFFSET (Size),                  "Size", 0},
+    {ACPI_DMT_UINT64,   ACPI_MADT27_OFFSET (BaseAddr),              "BaseAddr", 0},
+    {ACPI_DMT_UINT32,   ACPI_MADT27_OFFSET (GsiBase),               "GsiBase", 0},
+   ACPI_DMT_TERMINATOR
+};
+
+/* 128: OEM data structure */
 
 ACPI_DMTABLE_INFO           AcpiDmTableInfoMadt128[] =
 {
