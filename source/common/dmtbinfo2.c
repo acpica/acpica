@@ -2233,7 +2233,7 @@ ACPI_DMTABLE_INFO           AcpiDmTableInfoRhct[] =
 
 ACPI_DMTABLE_INFO           AcpiDmTableInfoRhctNodeHdr[] =
 {
-    {ACPI_DMT_UINT16,    ACPI_RHCTH_OFFSET (Type),            "Subtable Type", 0},
+    {ACPI_DMT_RHCT,      ACPI_RHCTH_OFFSET (Type),            "Subtable Type", 0},
     {ACPI_DMT_UINT16,    ACPI_RHCTH_OFFSET (Length),          "Length", 0},
     {ACPI_DMT_UINT16,    ACPI_RHCTH_OFFSET (Revision),        "Revision", 0},
     ACPI_DMT_TERMINATOR
@@ -2254,6 +2254,26 @@ ACPI_DMTABLE_INFO           AcpiDmTableInfoRhctIsa1[] =
 ACPI_DMTABLE_INFO           AcpiDmTableInfoRhctIsaPad[] =
 {
     {ACPI_DMT_RAW_BUFFER, 0,                                  "Optional Padding", DT_OPTIONAL},
+    ACPI_DMT_TERMINATOR
+};
+
+/* 1: CMO node type */
+
+ACPI_DMTABLE_INFO           AcpiDmTableInfoRhctCmo1[] =
+{
+    {ACPI_DMT_UINT8,   ACPI_RHCT1_OFFSET (Reserved),          "Reserved", 0},
+    {ACPI_DMT_UINT8,   ACPI_RHCT1_OFFSET (CbomSize),          "CBOM Block Size", 0},
+    {ACPI_DMT_UINT8,   ACPI_RHCT1_OFFSET (CbopSize),          "CBOP Block Size", 0},
+    {ACPI_DMT_UINT8,   ACPI_RHCT1_OFFSET (CbozSize),          "CBOZ Block Size", 0},
+    ACPI_DMT_TERMINATOR
+};
+
+/* 2: MMU node type */
+
+ACPI_DMTABLE_INFO           AcpiDmTableInfoRhctMmu1[] =
+{
+    {ACPI_DMT_UINT8,   ACPI_RHCT2_OFFSET (Reserved),          "Reserved", 0},
+    {ACPI_DMT_UINT8,   ACPI_RHCT2_OFFSET (MmuType),           "MMU Type", 0},
     ACPI_DMT_TERMINATOR
 };
 

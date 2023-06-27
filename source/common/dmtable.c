@@ -672,6 +672,14 @@ static const char           *AcpiDmGasAccessWidth[] =
     "Unknown Width Encoding"
 };
 
+static const char           *AcpiDmRhctSubnames[] =
+{
+    "RISC-V ISA string structure",  /* ACPI_RHCT_ISA_STRING */
+    "RISC-V CMO node structure",    /* ACPI_RHCT_CMO_NODE */
+    "RISC-V MMU node structure",    /* ACPI_RHCT_MMU_NODE */
+    "RISC-V Hart Info structure",   /* ACPI_RHCT_HART_INFO */
+};
+
 
 /*******************************************************************************
  *
@@ -1193,6 +1201,7 @@ AcpiDmDumpTable (
         case ACPI_DMT_NFIT:
         case ACPI_DMT_NHLT1e:
         case ACPI_DMT_PHAT:
+        case ACPI_DMT_RHCT:
 
             ByteLength = 2;
             break;
@@ -2170,6 +2179,20 @@ AcpiDmDumpTable (
 
             AcpiOsPrintf (UINT8_FORMAT, *Target,
                 AcpiDmRgrtSubnames[Temp8]);
+            break;
+
+        case ACPI_DMT_RHCT:
+
+            /* RHCT subtable types */
+
+            Temp16 = ACPI_GET16 (Target);
+            if (Temp16 == ACPI_RHCT_NODE_TYPE_HART_INFO)
+            {
+                Temp16 = ACPI_RHCT_NODE_TYPE_RESERVED;
+            }
+
+            AcpiOsPrintf (UINT16_FORMAT, ACPI_GET16 (Target),
+                AcpiDmRhctSubnames[Temp16]);
             break;
 
         case ACPI_DMT_SDEV:

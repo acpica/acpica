@@ -2245,6 +2245,16 @@ DtCompileRhct (
             InfoTable = AcpiDmTableInfoRhctHartInfo1;
             break;
 
+        case ACPI_RHCT_NODE_TYPE_CMO:
+
+            InfoTable = AcpiDmTableInfoRhctCmo1;
+            break;
+
+        case ACPI_RHCT_NODE_TYPE_MMU:
+
+            InfoTable = AcpiDmTableInfoRhctMmu1;
+            break;
+
         default:
 
             DtFatal (ASL_MSG_UNKNOWN_SUBTABLE, SubtableStart, "RHCT");

@@ -657,6 +657,8 @@ extern ACPI_DMTABLE_INFO        AcpiDmTableInfoRhct[];
 extern ACPI_DMTABLE_INFO        AcpiDmTableInfoRhctNodeHdr[];
 extern ACPI_DMTABLE_INFO        AcpiDmTableInfoRhctIsa1[];
 extern ACPI_DMTABLE_INFO        AcpiDmTableInfoRhctIsaPad[];
+extern ACPI_DMTABLE_INFO        AcpiDmTableInfoRhctCmo1[];
+extern ACPI_DMTABLE_INFO        AcpiDmTableInfoRhctMmu1[];
 extern ACPI_DMTABLE_INFO        AcpiDmTableInfoRhctHartInfo1[];
 extern ACPI_DMTABLE_INFO        AcpiDmTableInfoRhctHartInfo2[];
 extern ACPI_DMTABLE_INFO        AcpiDmTableInfoRsdp1[];
