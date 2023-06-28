@@ -1025,6 +1025,26 @@ AcpiDmDumpMadt (
             InfoTable = AcpiDmTableInfoMadt23;
             break;
 
+        case ACPI_MADT_TYPE_RINTC:
+
+            InfoTable = AcpiDmTableInfoMadt24;
+            break;
+
+        case ACPI_MADT_TYPE_IMSIC:
+
+            InfoTable = AcpiDmTableInfoMadt25;
+            break;
+
+        case ACPI_MADT_TYPE_APLIC:
+
+            InfoTable = AcpiDmTableInfoMadt26;
+            break;
+
+        case ACPI_MADT_TYPE_PLIC:
+
+            InfoTable = AcpiDmTableInfoMadt27;
+            break;
+
         default:
 
             if ((Subtable->Type >= ACPI_MADT_TYPE_RESERVED) &&
@@ -2800,6 +2820,8 @@ AcpiDmDumpRhct (
     ACPI_RHCT_NODE_HEADER   *Subtable;
     ACPI_RHCT_HART_INFO     *RhctHartInfo;
     ACPI_RHCT_ISA_STRING    *RhctIsaString;
+    ACPI_RHCT_CMO_NODE      *RhctCmoNode;
+    ACPI_RHCT_MMU_NODE      *RhctMmuNode;
     UINT32                  Length = Table->Length;
     UINT8                   SubtableOffset, IsaPadOffset;
     UINT32                  Offset = sizeof (ACPI_TABLE_RHCT);
@@ -2884,6 +2906,20 @@ AcpiDmDumpRhct (
                          ACPI_ADD_PTR (UINT8, Subtable, IsaPadOffset),
                          (Subtable->Length - IsaPadOffset), AcpiDmTableInfoRhctIsaPad);
             }
+
+            break;
+
+        case ACPI_RHCT_NODE_TYPE_CMO:
+            RhctCmoNode = ACPI_ADD_PTR (ACPI_RHCT_CMO_NODE, Subtable, SubtableOffset);
+            Status = AcpiDmDumpTable (Table->Length, Offset + SubtableOffset,
+                                      RhctCmoNode, 4, AcpiDmTableInfoRhctCmo1);
+            break;
+
+        case ACPI_RHCT_NODE_TYPE_MMU:
+            RhctMmuNode = ACPI_ADD_PTR (ACPI_RHCT_MMU_NODE, Subtable, SubtableOffset);
+            Status = AcpiDmDumpTable (Table->Length, Offset + SubtableOffset,
+                                      RhctMmuNode, 2, AcpiDmTableInfoRhctMmu1);
+            break;
 
         default:
             break;
