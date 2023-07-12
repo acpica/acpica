@@ -375,7 +375,7 @@ JumpHere1:
             Buff[j] = AslGbl_MacroTokenBuffer[j];
         }
         Buff[strlen (AslGbl_MacroTokenBuffer)] = '\0';
-        //fprintf (stderr, "Buff: %s\n", Buff);
+        /* fprintf(stderr, "Buff: %s\n", Buff); */
 
         UINT32 len = strlen (Buff);
 
@@ -404,7 +404,7 @@ JumpHere1:
                 j--;
             }
         }
-        //fprintf(stderr, "Buff: %s\n", Buff);
+        /* fprintf(stderr, "Buff: %s\n", Buff); */
 
         for (k = 0; k < strlen (Buff); k++)
         {
