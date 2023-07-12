@@ -1056,7 +1056,6 @@ ACPI_DMTABLE_INFO           AcpiDmTableInfoMadt27[] =
 {
     {ACPI_DMT_UINT8,    ACPI_MADT27_OFFSET (Version),               "Version", 0},
     {ACPI_DMT_UINT8,    ACPI_MADT27_OFFSET (Id),                    "Id", 0},
-    {ACPI_DMT_UINT32,   ACPI_MADT27_OFFSET (Flags),                 "Flags", 0},
     {ACPI_DMT_UINT64,   ACPI_MADT27_OFFSET (HwId),                  "HwId", 0},
     {ACPI_DMT_UINT16,   ACPI_MADT27_OFFSET (NumIrqs),               "NumIrqs", 0},
     {ACPI_DMT_UINT16,   ACPI_MADT27_OFFSET (MaxPrio),               "MaxPrio", 0},
