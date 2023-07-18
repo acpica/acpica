@@ -2314,7 +2314,7 @@ AcpiDmDumpPhat (
         case ACPI_PHAT_TYPE_FW_HEALTH_DATA:
 
             InfoTable = AcpiDmTableInfoPhat1;
-            SubtableLength = Offset += sizeof (ACPI_PHAT_TYPE_FW_HEALTH_DATA);
+            SubtableLength = Offset += sizeof (ACPI_PHAT_HEALTH_DATA);
             break;
 
         default:
