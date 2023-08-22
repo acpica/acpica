@@ -2344,31 +2344,6 @@ typedef struct acpi_nhlt_endpoint
 #define ACPI_NHLT_DIR_RENDER_FEEDBACK       3
 #define ACPI_NHLT_DIR_RESERVED              4   /* 4 and above are reserved */
 
-/* The only guaranteed configuration space header. Any other requires validation. */
-typedef struct acpi_nhlt_cfg
-{
-    UINT32                  CapabilitiesSize;
-    UINT8                   Capabilities[];
-
-} ACPI_NHLT_CFG;
-
-typedef struct acpi_nhlt_devcfg
-{
-    UINT32                  CapabilitiesSize;
-    UINT8                   VirtualSlot;
-    UINT8                   ConfigType;
-
-} ACPI_NHLT_DEVCFG;
-
-typedef struct acpi_nhlt_mic_devcfg
-{
-    UINT32                  CapabilitiesSize;
-    UINT8                   VirtualSlot;
-    UINT8                   ConfigType;
-    UINT8                   ArrayType;
-
-} ACPI_NHLT_MIC_DEVCFG;
-
 /* Capabilities = 2 */
 
 typedef struct acpi_nhlt_device_specific_config
@@ -2539,17 +2514,6 @@ typedef struct acpi_nhlt_vendor_mic_config
     UINT16                  WorkHorizontalAngleEnd;     /* -180 - + 180 with 2 deg step */
 
 } ACPI_NHLT_VENDOR_MIC_CONFIG;
-
-typedef struct acpi_nhlt_vendor_mic_devcfg
-{
-    UINT32                        CapabilitiesSize;
-    UINT8                         VirtualSlot;
-    UINT8                         ConfigType;
-    UINT8                         ArrayType;
-    UINT8                         NumMics;
-    ACPI_NHLT_VENDOR_MIC_CONFIG   Mics[];   /* Indexed by NumMics */
-
-} ACPI_NHLT_VENDOR_MIC_DEVCFG;
 
 /* Values for Type field above */
 
