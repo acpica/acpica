@@ -283,13 +283,6 @@ typedef enum
     ACPI_DMT_MADT,
     ACPI_DMT_MPAM_LOCATOR,
     ACPI_DMT_NFIT,
-    ACPI_DMT_NHLT1,
-    ACPI_DMT_NHLT1a,
-    ACPI_DMT_NHLT1b,
-    ACPI_DMT_NHLT1c,
-    ACPI_DMT_NHLT1d,
-    ACPI_DMT_NHLT1e,
-    ACPI_DMT_NHLT1f,
     ACPI_DMT_PCCT,
     ACPI_DMT_PHAT,
     ACPI_DMT_PMTT,
@@ -601,24 +594,6 @@ extern ACPI_DMTABLE_INFO        AcpiDmTableInfoNfit5[];
 extern ACPI_DMTABLE_INFO        AcpiDmTableInfoNfit6[];
 extern ACPI_DMTABLE_INFO        AcpiDmTableInfoNfit6a[];
 extern ACPI_DMTABLE_INFO        AcpiDmTableInfoNfit7[];
-extern ACPI_DMTABLE_INFO        AcpiDmTableInfoNhlt[];
-extern ACPI_DMTABLE_INFO        AcpiDmTableInfoNhlt0[];
-extern ACPI_DMTABLE_INFO        AcpiDmTableInfoNhlt1[];
-extern ACPI_DMTABLE_INFO        AcpiDmTableInfoNhlt2[];
-extern ACPI_DMTABLE_INFO        AcpiDmTableInfoNhlt3[];
-extern ACPI_DMTABLE_INFO        AcpiDmTableInfoNhlt3a[];
-extern ACPI_DMTABLE_INFO        AcpiDmTableInfoNhlt4[];
-extern ACPI_DMTABLE_INFO        AcpiDmTableInfoNhlt5[];
-extern ACPI_DMTABLE_INFO        AcpiDmTableInfoNhlt5a[];
-extern ACPI_DMTABLE_INFO        AcpiDmTableInfoNhlt5b[];
-extern ACPI_DMTABLE_INFO        AcpiDmTableInfoNhlt5c[];
-extern ACPI_DMTABLE_INFO        AcpiDmTableInfoNhlt6[];
-extern ACPI_DMTABLE_INFO        AcpiDmTableInfoNhlt6a[];
-extern ACPI_DMTABLE_INFO        AcpiDmTableInfoNhlt6b[];
-extern ACPI_DMTABLE_INFO        AcpiDmTableInfoNhlt7[];
-extern ACPI_DMTABLE_INFO        AcpiDmTableInfoNhlt7a[];
-extern ACPI_DMTABLE_INFO        AcpiDmTableInfoNhlt7b[];
-extern ACPI_DMTABLE_INFO        AcpiDmTableInfoNhlt9[];
 extern ACPI_DMTABLE_INFO        AcpiDmTableInfoPhatHdr[];
 extern ACPI_DMTABLE_INFO        AcpiDmTableInfoPhat0[];
 extern ACPI_DMTABLE_INFO        AcpiDmTableInfoPhat0a[];
@@ -894,10 +869,6 @@ AcpiDmDumpMsct (
 
 void
 AcpiDmDumpNfit (
-    ACPI_TABLE_HEADER       *Table);
-
-void
-AcpiDmDumpNhlt (
     ACPI_TABLE_HEADER       *Table);
 
 void
