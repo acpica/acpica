@@ -2267,6 +2267,215 @@ typedef struct nfit_device_handle
 
 /*******************************************************************************
  *
+ * NHLT - Non HDAudio Link Table
+ *        Version 1
+ *
+ ******************************************************************************/
+
+typedef struct acpi_table_nhlt
+{
+    ACPI_TABLE_HEADER              Header;          /* Common ACPI table header */
+    UINT8                          EndpointsCount;
+    /*
+     * ACPI_NHLT_ENDPOINT          Endpoints[];
+     * ACPI_NHLT_CONFIG            OEDConfig;
+     */
+
+} ACPI_TABLE_NHLT;
+
+typedef struct acpi_nhlt_endpoint
+{
+    UINT32                         Length;
+    UINT8                          LinkType;
+    UINT8                          InstanceId;
+    UINT16                         VendorId;
+    UINT16                         DeviceId;
+    UINT16                         RevisionId;
+    UINT32                         SubsystemId;
+    UINT8                          DeviceType;
+    UINT8                          Direction;
+    UINT8                          VirtualBusId;
+    /*
+     * ACPI_NHLT_CONFIG            DeviceConfig;
+     * ACPI_NHLT_FORMATS_CONFIG    FormatsConfig;
+     * ACPI_NHLT_DEVICES_INFO      DevicesInfo;
+     */
+
+} ACPI_NHLT_ENDPOINT;
+
+/* Values for LinkType field above */
+
+#define ACPI_NHLT_LINKTYPE_HDA               0
+#define ACPI_NHLT_LINKTYPE_DSP               1
+#define ACPI_NHLT_LINKTYPE_PDM               2
+#define ACPI_NHLT_LINKTYPE_SSP               3
+#define ACPI_NHLT_LINKTYPE_SLIMBUS           4
+#define ACPI_NHLT_LINKTYPE_SDW               5
+#define ACPI_NHLT_LINKTYPE_UAOL              6
+
+/* Values for DeviceId field above */
+
+#define ACPI_NHLT_DEVICEID_DMIC              0xAE20
+#define ACPI_NHLT_DEVICEID_BT                0xAE30
+#define ACPI_NHLT_DEVICEID_I2S               0xAE34
+
+/* Values for DeviceType field above */
+
+/* Device types unique to endpoint of LinkType=PDM */
+#define ACPI_NHLT_DEVICETYPE_PDM             0
+#define ACPI_NHLT_DEVICETYPE_PDM_SKL         1
+/* Device types unique to endpoint of LinkType=SSP */
+#define ACPI_NHLT_DEVICETYPE_BT              0
+#define ACPI_NHLT_DEVICETYPE_FM              1
+#define ACPI_NHLT_DEVICETYPE_MODEM           2
+#define ACPI_NHLT_DEVICETYPE_CODEC           4
+
+/* Values for Direction field above */
+
+#define ACPI_NHLT_DIR_RENDER                 0
+#define ACPI_NHLT_DIR_CAPTURE                1
+
+typedef struct acpi_nhlt_config
+{
+    UINT32                         CapabilitiesSize;
+    UINT8                          Capabilities[];
+
+} ACPI_NHLT_CONFIG;
+
+typedef struct acpi_nhlt_gendevice_config
+{
+    UINT8                          VirtualSlot;
+    UINT8                          ConfigType;
+
+} ACPI_NHLT_GENDEVICE_CONFIG;
+
+/* Values for ConfigType field above */
+
+#define ACPI_NHLT_CONFIGTYPE_GENERIC         0
+#define ACPI_NHLT_CONFIGTYPE_MICARRAY        1
+
+typedef struct acpi_nhlt_micdevice_config
+{
+    UINT8                          VirtualSlot;
+    UINT8                          ConfigType;
+    UINT8                          ArrayType;
+
+} ACPI_NHLT_MICDEVICE_CONFIG;
+
+/* Values for ArrayType field above */
+
+#define ACPI_NHLT_ARRAYTYPE_LINEAR2_SMALL    0xA
+#define ACPI_NHLT_ARRAYTYPE_LINEAR2_BIG      0xB
+#define ACPI_NHLT_ARRAYTYPE_LINEAR4_GEO1     0xC
+#define ACPI_NHLT_ARRAYTYPE_PLANAR4_LSHAPED  0xD
+#define ACPI_NHLT_ARRAYTYPE_LINEAR4_GEO2     0xE
+#define ACPI_NHLT_ARRAYTYPE_VENDOR           0xF
+
+typedef struct acpi_nhlt_vendor_mic_config
+{
+    UINT8                          Type;
+    UINT8                          Panel;
+    UINT16                         SpeakerPositionDistance;   /* mm */
+    UINT16                         HorizontalOffset;          /* mm */
+    UINT16                         VerticalOffset;            /* mm */
+    UINT8                          FrequencyLowBand;          /* 5*Hz */
+    UINT8                          FrequencyHighBand;         /* 500*Hz */
+    UINT16                         DirectionAngle;            /* -180 - +180 */
+    UINT16                         ElevationAngle;            /* -180 - +180 */
+    UINT16                         WorkVerticalAngleBegin;    /* -180 - +180 with 2 deg step */
+    UINT16                         WorkVerticalAngleEnd;      /* -180 - +180 with 2 deg step */
+    UINT16                         WorkHorizontalAngleBegin;  /* -180 - +180 with 2 deg step */
+    UINT16                         WorkHorizontalAngleEnd;    /* -180 - +180 with 2 deg step */
+
+} ACPI_NHLT_VENDOR_MIC_CONFIG;
+
+/* Values for Type field above */
+
+#define ACPI_NHLT_MICTYPE_OMNIDIRECTIONAL    0
+#define ACPI_NHLT_MICTYPE_SUBCARDIOID        1
+#define ACPI_NHLT_MICTYPE_CARDIOID           2
+#define ACPI_NHLT_MICTYPE_SUPERCARDIOID      3
+#define ACPI_NHLT_MICTYPE_HYPERCARDIOID      4
+#define ACPI_NHLT_MICTYPE_8SHAPED            5
+#define ACPI_NHLT_MICTYPE_RESERVED           6
+#define ACPI_NHLT_MICTYPE_VENDORDEFINED      7
+
+/* Values for Panel field above */
+
+#define ACPI_NHLT_MICLOCATION_TOP             0
+#define ACPI_NHLT_MICLOCATION_BOTTOM          1
+#define ACPI_NHLT_MICLOCATION_LEFT            2
+#define ACPI_NHLT_MICLOCATION_RIGHT           3
+#define ACPI_NHLT_MICLOCATION_FRONT           4
+#define ACPI_NHLT_MICLOCATION_REAR            5
+
+typedef struct acpi_nhlt_vendor_micdevice_config
+{
+    UINT8                          VirtualSlot;
+    UINT8                          ConfigType;
+    UINT8                          ArrayType;
+    UINT8                          MicsCount;
+    ACPI_NHLT_VENDOR_MIC_CONFIG    Mics[];
+
+} ACPI_NHLT_VENDOR_MICDEVICE_CONFIG;
+
+typedef union acpi_nhlt_device_config
+{
+    UINT8                                VirtualSlot;
+    ACPI_NHLT_GENDEVICE_CONFIG           Gen;
+    ACPI_NHLT_MICDEVICE_CONFIG           Mic;
+    ACPI_NHLT_VENDOR_MICDEVICE_CONFIG    VendorMic;
+
+} ACPI_NHLT_DEVICE_CONFIG;
+
+/* Inherited from Microsoft's WAVEFORMATEXTENSIBLE. */
+typedef struct acpi_nhlt_wave_formatext
+{
+    UINT16                         FormatTag;
+    UINT16                         ChannelCount;
+    UINT32                         SamplesPerSec;
+    UINT32                         AvgBytesPerSec;
+    UINT16                         BlockAlign;
+    UINT16                         BitsPerSample;
+    UINT16                         ExtraFormatSize;
+    UINT16                         ValidBitsPerSample;
+    UINT32                         ChannelMask;
+    UINT8                          Subformat[16];
+
+} ACPI_NHLT_WAVE_FORMATEXT;
+
+typedef struct acpi_nhlt_format_config
+{
+    ACPI_NHLT_WAVE_FORMATEXT       Format;
+    ACPI_NHLT_CONFIG               Config;
+
+} ACPI_NHLT_FORMAT_CONFIG;
+
+typedef struct acpi_nhlt_formats_config
+{
+    UINT8                          FormatsCount;
+    ACPI_NHLT_FORMAT_CONFIG        Formats[];
+
+} ACPI_NHLT_FORMATS_CONFIG;
+
+typedef struct acpi_nhlt_device_info
+{
+    UINT8                          Id[16];
+    UINT8                          InstanceId;
+    UINT8                          PortId;
+
+} ACPI_NHLT_DEVICE_INFO;
+
+typedef struct acpi_nhlt_devices_info
+{
+    UINT8                          DevicesCount;
+    ACPI_NHLT_DEVICE_INFO          Devices[];
+
+} ACPI_NHLT_DEVICES_INFO;
+
+
+/*******************************************************************************
+ *
  * PCCT - Platform Communications Channel Table (ACPI 5.0)
  *        Version 2 (ACPI 6.2)
  *
