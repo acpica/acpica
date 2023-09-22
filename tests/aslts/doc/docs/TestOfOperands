@@ -331,7 +331,7 @@ references to the Uninitialized objects which prevents automated
 processing as well.
 
    One more inconvenience for testing arises from the type conversion
-functionality. Due to that some type objects could not be representes
+functionality. Due to that some type objects could not be represented
 not only as elements of Package, but also be passed to Method as parameters
 (Buffer Field, Field Unit, etc..), since they are converted to either Integer
 or Buffer types in the latter case. As a result, these conditions should

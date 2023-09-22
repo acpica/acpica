@@ -266,14 +266,7 @@ AcpiDmDumpBuffer (
         /* Done with that line. */
         /* Close the comment and insert a backslash - line continuation character */
 
-        if (Length > 16)
-        {
-            AcpiOsPrintf (" */\\");
-        }
-        else
-        {
-            AcpiOsPrintf (" */\\");
-        }
+        AcpiOsPrintf (" */\\");
 
         i += 16; /* Point to next line */
     }

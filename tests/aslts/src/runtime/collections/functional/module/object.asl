@@ -48,7 +48,7 @@
  *
  * It appears the AML interpreter shouldn't support TermList for these
  * objects as both the ASL grammar and AML grammar doesn't allow it. But
- * the real world apears not.
+ * the real world appears not.
  */
 
 Name(z181, 181)
