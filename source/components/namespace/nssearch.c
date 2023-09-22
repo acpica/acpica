@@ -169,6 +169,13 @@ AcpiNsSearchParentTree (
     ACPI_OBJECT_TYPE        Type,
     ACPI_NAMESPACE_NODE     **ReturnNode);
 
+#ifdef ACPI_USE_NS_SEARCH_ACCELERATION
+static ACPI_NAMESPACE_NODE *
+AcpiNsSearchOneScopeCoreAccelerated(
+    UINT32                  TargetName,
+    ACPI_NAMESPACE_NODE     *ParentNode);
+#endif
+
 
 /*******************************************************************************
  *
@@ -229,16 +236,14 @@ AcpiNsSearchOneScopeCore(
  *      Named object lists are built (and subsequently dumped) in the
  *      order in which the names are encountered during the namespace load;
  *
- *      All namespace searching is linear in this implementation, but
- *      could be easily modified to support any improved search
- *      algorithm. However, the linear search was chosen for simplicity
- *      and because the trees are small and the other interpreter
- *      execution overhead is relatively high.
+ *      The namespace searching has a slow path and a fast path. The slow path
+ *      is based on iterating over the nodes in linear time, while the fast path
+ *      is using a hash map for lookup.
  *
- *      Note: CPU execution analysis has shown that the AML interpreter spends
- *      a very small percentage of its time searching the namespace. Therefore,
- *      the linear search seems to be sufficient, as there would seem to be
- *      little value in improving the search.
+ *      If compiled with ACPI_USE_NS_SEARCH_ACCELERATION, the fast path will
+ *      be used, unless it is unavailable (e.g. due to hash table allocation
+ *      failure during initialisation), at which point execution falls back to
+ *      the slow path.
  *
  ******************************************************************************/
 
@@ -249,7 +254,7 @@ AcpiNsSearchOneScope (
     ACPI_OBJECT_TYPE        Type,
     ACPI_NAMESPACE_NODE     **ReturnNode)
 {
-    ACPI_NAMESPACE_NODE     *Node;
+    ACPI_NAMESPACE_NODE     *Node = NULL;
 
 
     ACPI_FUNCTION_TRACE (NsSearchOneScope);
@@ -273,6 +278,11 @@ AcpiNsSearchOneScope (
     }
 #endif
 
+#ifdef ACPI_USE_NS_SEARCH_ACCELERATION
+    Node = AcpiNsSearchOneScopeCoreAccelerated (TargetName, ParentNode);
+    /* Fallback in case accelerated search is not available */
+    if (!Node)
+#endif
     Node = AcpiNsSearchOneScopeCore (TargetName, ParentNode);
 
     if (Node)
@@ -586,3 +596,218 @@ AcpiNsSearchAndEnter (
     *ReturnNode = NewNode;
     return_ACPI_STATUS (AE_OK);
 }
+
+
+#ifdef ACPI_USE_NS_SEARCH_ACCELERATION
+
+/* TODO: Rather than fixed value, scale this heuristically */
+static const int                      AcpiNsSearchHashBits = 10;
+static ACPI_NS_SEARCH_LIST_HEAD_TYPE *AcpiNsSearchHashTable = NULL;
+
+
+/*******************************************************************************
+ *
+ * FUNCTION:    AcpiNsSearchAccelerationInit
+ *
+ * PARAMETERS:  None
+ *
+ * RETURN:      Status (currently always AE_OK)
+ *
+ * DESCRIPTION: Initializes the hash table that is used to accelerate the
+ *              namespace search queries. If allocating memory fails,
+ *              a warning is emitted (and no acceleration is used later).
+ *
+ ******************************************************************************/
+
+ACPI_STATUS
+AcpiNsSearchAccelerationInit (
+    void)
+{
+    int             HashTableBuckets = (1 << AcpiNsSearchHashBits);
+    int             HashTableSize = HashTableBuckets *
+                                    sizeof(ACPI_NS_SEARCH_LIST_HEAD_TYPE);
+
+    ACPI_FUNCTION_TRACE (AcpiNsSearchAccelerationInit);
+
+    /* If already initialized, nothing to do */
+    if (AcpiNsSearchHashTable)
+        return_ACPI_STATUS (AE_OK);
+
+    AcpiNsSearchHashTable = ACPI_ALLOCATE_ZEROED (HashTableSize);
+    if (!AcpiNsSearchHashTable)
+    {
+        ACPI_WARNING((
+            AE_INFO,
+            "Failed to allocate %ud bytes for namespace search hash table. "
+            "Acceleration will not be used.",
+            HashTableSize));
+    }
+
+    return_ACPI_STATUS(AE_OK);
+}
+
+
+/*******************************************************************************
+ *
+ * FUNCTION:    AcpiNsSearchAccelerationTerminate
+ *
+ * PARAMETERS:  None
+ *
+ * RETURN:      None
+ *
+ * DESCRIPTION: Frees up memory of the hash table that is used to accelerate the
+ *              namespace search queries.
+ *
+ ******************************************************************************/
+
+void
+AcpiNsSearchAccelerationTerminate(
+    void)
+{
+    ACPI_FUNCTION_TRACE (AcpiNsSearchAccelerationTerminate);
+
+    ACPI_FREE (AcpiNsSearchHashTable);
+    AcpiNsSearchHashTable = NULL;
+}
+
+
+/*******************************************************************************
+ *
+ * FUNCTION:    AcpiNsSearchHashParentAndName
+ *
+ * PARAMETERS:  TargetName      - Ascii ACPI name
+ *              ParentNode      - Pointer to a namespace node
+ *
+ * RETURN:      A hash of the provided parameters
+ *
+ * DESCRIPTION: Computes a hash for use in accelerating namespace searches
+ *
+ ******************************************************************************/
+
+static UINT32
+AcpiNsSearchHashParentAndName(
+    ACPI_NAMESPACE_NODE     *ParentNode,
+    UINT32                  Name)
+{
+    return ACPI_HASH_PTR (ParentNode, AcpiNsSearchHashBits) ^
+           ACPI_HASH_UINT32 (Name, AcpiNsSearchHashBits);
+}
+
+
+/*******************************************************************************
+ *
+ * FUNCTION:    AcpiNsSearchHashNode
+ *
+ * PARAMETERS:  Node - The namespace node to compute a hash for
+ *
+ * RETURN:      A hash of the provided node's name and parent node pointer
+ *
+ * DESCRIPTION: Computes a hash for use in accelerating namespace searches
+ *
+ ******************************************************************************/
+
+static UINT32
+AcpiNsSearchHashNode(
+    ACPI_NAMESPACE_NODE     *Node)
+{
+    return AcpiNsSearchHashParentAndName (Node->Parent, Node->Name.Integer);
+}
+
+
+/*******************************************************************************
+ *
+ * FUNCTION:    AcpiNsSearchAccelerationAddNode
+ *
+ * PARAMETERS:  Node - namespace node to add to the acceleration
+ *
+ * RETURN:      None
+ *
+ * DESCRIPTION: This function adds the node to the hash table used to
+ *              accelerate namespace searches
+ *
+ ******************************************************************************/
+
+void
+AcpiNsSearchAccelerationAddNode(
+    ACPI_NAMESPACE_NODE     *Node)
+{
+    ACPI_FUNCTION_TRACE (AcpiNsSearchAccelerationAddNode);
+
+    if (AcpiNsSearchHashTable)
+    {
+        UINT32              Key;
+
+        Key = AcpiNsSearchHashNode (Node);
+
+        ACPI_NS_SEARCH_LIST_ADD_HEAD (&Node->SearchListNode,
+                                      &AcpiNsSearchHashTable[Key]);
+    }
+}
+
+
+/*******************************************************************************
+ *
+ * FUNCTION:    AcpiNsSearchAccelerationDeleteNode
+ *
+ * PARAMETERS:  Node - namespace node to remove from the acceleration
+ *
+ * RETURN:      None
+ *
+ * DESCRIPTION: This function removes the node from the hash table used to
+ *              accelerate namespace searches
+ *
+ ******************************************************************************/
+
+void
+AcpiNsSearchAccelerationDeleteNode(
+    ACPI_NAMESPACE_NODE     *Node)
+{
+    ACPI_FUNCTION_TRACE (AcpiNsSearchAccelerationDeleteNode);
+
+    if (AcpiNsSearchHashTable)
+    {
+        ACPI_HASH_DEL (&Node->SearchListNode);
+    }
+}
+
+
+/*******************************************************************************
+ *
+ * FUNCTION:    AcpiNsSearchOneScopeCoreAccelerated
+ *
+ * PARAMETERS:  TargetName      - Ascii ACPI name to search for
+ *              ParentNode      - Node to search under
+ *
+ * RETURN:      The matching node or NULL, when a node with the provided name,
+ *              parented by the provided node doesn't exist.
+ *
+ * DESCRIPTION: This function uses a hash-based lookup table with a best-case
+ *              O(1) lookup time.
+ *
+ ******************************************************************************/
+
+static ACPI_NAMESPACE_NODE *
+AcpiNsSearchOneScopeCoreAccelerated(
+    UINT32                  TargetName,
+    ACPI_NAMESPACE_NODE     *ParentNode)
+{
+    ACPI_NAMESPACE_NODE     *Node;
+    UINT32                  Key;
+
+    if (!AcpiNsSearchHashTable)
+        return NULL;
+
+    Key = AcpiNsSearchHashParentAndName (ParentNode, TargetName);
+
+    ACPI_LIST_FOR_EACH_ENTRY (Node,
+                              &AcpiNsSearchHashTable[Key],
+                              SearchListNode)
+    {
+        if (Node->Parent == ParentNode && Node->Name.Integer == TargetName)
+            return Node;
+    }
+
+    return NULL;
+}
+
+#endif
