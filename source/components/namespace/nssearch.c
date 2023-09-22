@@ -172,6 +172,46 @@ AcpiNsSearchParentTree (
 
 /*******************************************************************************
  *
+ * FUNCTION:    AcpiNsSearchOneScopeCore
+ *
+ * PARAMETERS:  TargetName      - Ascii ACPI name to search for
+ *              ParentNode      - Node to search under
+ *
+ * RETURN:      The matching node or NULL, when a node with the provided name,
+ *              parented by the provided node doesn't exist.
+ *
+ * DESCRIPTION: This function iterates over the list of child nodes in O(n)
+ *
+ ******************************************************************************/
+
+static ACPI_NAMESPACE_NODE *
+AcpiNsSearchOneScopeCore(
+    UINT32                  TargetName,
+    ACPI_NAMESPACE_NODE     *ParentNode)
+{
+    ACPI_NAMESPACE_NODE     *Node;
+
+    ACPI_FUNCTION_TRACE (AcpiNsSearchOneScopeCore);
+
+    Node = ParentNode->Child;
+    while (Node)
+    {
+        /* Check for match against the name */
+        if (Node->Name.Integer == TargetName)
+        {
+            return Node;
+        }
+
+        /* Didn't match name, move on to the next peer object */
+        Node = Node->Peer;
+    }
+
+    return NULL;
+}
+
+
+/*******************************************************************************
+ *
  * FUNCTION:    AcpiNsSearchOneScope
  *
  * PARAMETERS:  TargetName      - Ascii ACPI name to search for
@@ -233,39 +273,26 @@ AcpiNsSearchOneScope (
     }
 #endif
 
-    /*
-     * Search for name at this namespace level, which is to say that we
-     * must search for the name among the children of this object
-     */
-    Node = ParentNode->Child;
-    while (Node)
+    Node = AcpiNsSearchOneScopeCore (TargetName, ParentNode);
+
+    if (Node)
     {
-        /* Check for match against the name */
-
-        if (Node->Name.Integer == TargetName)
+        /* Resolve a control method alias if any */
+        if (AcpiNsGetType (Node) == ACPI_TYPE_LOCAL_METHOD_ALIAS)
         {
-            /* Resolve a control method alias if any */
-
-            if (AcpiNsGetType (Node) == ACPI_TYPE_LOCAL_METHOD_ALIAS)
-            {
-                Node = ACPI_CAST_PTR (ACPI_NAMESPACE_NODE, Node->Object);
-            }
-
-            /* Found matching entry */
-
-            ACPI_DEBUG_PRINT ((ACPI_DB_NAMES,
-                "Name [%4.4s] (%s) %p found in scope [%4.4s] %p\n",
-                ACPI_CAST_PTR (char, &TargetName),
-                AcpiUtGetTypeName (Node->Type),
-                Node, AcpiUtGetNodeName (ParentNode), ParentNode));
-
-            *ReturnNode = Node;
-            return_ACPI_STATUS (AE_OK);
+            Node = ACPI_CAST_PTR (ACPI_NAMESPACE_NODE, Node->Object);
         }
 
-        /* Didn't match name, move on to the next peer object */
+        /* Found matching entry */
 
-        Node = Node->Peer;
+        ACPI_DEBUG_PRINT ((ACPI_DB_NAMES,
+            "Name [%4.4s] (%s) %p found in scope [%4.4s] %p\n",
+            ACPI_CAST_PTR (char, &TargetName),
+            AcpiUtGetTypeName (Node->Type),
+            Node, AcpiUtGetNodeName (ParentNode), ParentNode));
+
+        *ReturnNode = Node;
+        return_ACPI_STATUS (AE_OK);
     }
 
     /* Searched entire namespace level, not found */
