@@ -191,6 +191,7 @@
 #define ACPI_SIG_PPTT           "PPTT"      /* Processor Properties Topology Table */
 #define ACPI_SIG_PRMT           "PRMT"      /* Platform Runtime Mechanism Table */
 #define ACPI_SIG_RASF           "RASF"      /* RAS Feature table */
+#define ACPI_SIG_RAS2           "RAS2"      /* RAS2 Feature table */
 #define ACPI_SIG_RGRT           "RGRT"      /* Regulatory Graphics Resource Table */
 #define ACPI_SIG_RHCT           "RHCT"      /* RISC-V Hart Capabilities Table */
 #define ACPI_SIG_SBST           "SBST"      /* Smart Battery Specification Table */
@@ -2976,6 +2977,148 @@ enum AcpiRasfStatus
 #define ACPI_RASF_SCI_DOORBELL          (1<<1)
 #define ACPI_RASF_ERROR                 (1<<2)
 #define ACPI_RASF_STATUS                (0x1F<<3)
+
+
+/*******************************************************************************
+ *
+ * RAS2 - RAS2 Feature Table (ACPI 6.5)
+ *        Version 1
+ *
+ *
+ ******************************************************************************/
+
+typedef struct acpi_table_ras2 {
+    ACPI_TABLE_HEADER       Header;             /* Common ACPI table header */
+    UINT16                  Reserved;
+    UINT16                  NumPccDescs;
+
+} ACPI_TABLE_RAS2;
+
+/* RAS2 Platform Communication Channel Descriptor */
+
+typedef struct acpi_ras2_pcc_desc {
+    UINT8                   ChannelId;
+    UINT16                  Reserved;
+    UINT8                   FeatureType;
+    UINT32                  Instance;
+
+} ACPI_RAS2_PCC_DESC;
+
+/* RAS2 Platform Communication Channel Shared Memory Region */
+
+typedef struct acpi_ras2_shared_memory {
+    UINT32                  Signature;
+    UINT16                  Command;
+    UINT16                  Status;
+    UINT16                  Version;
+    UINT8                   Features[16];
+    UINT8                   SetCapabilities[16];
+    UINT16                  NumParameterBlocks;
+    UINT32                  SetCapabilitiesStatus;
+
+} ACPI_RAS2_SHARED_MEMORY;
+
+/* RAS2 Parameter Block Structure for PATROL_SCRUB */
+
+typedef struct acpi_ras2_parameter_block
+{
+    UINT16                  Type;
+    UINT16                  Version;
+    UINT16                  Length;
+
+} ACPI_RAS2_PARAMETER_BLOCK;
+
+/* RAS2 Parameter Block Structure for PATROL_SCRUB */
+
+typedef struct acpi_ras2_patrol_scrub_parameter {
+    ACPI_RAS2_PARAMETER_BLOCK   Header;
+    UINT16                      PatrolScrubCommand;
+    UINT64                      RequestedAddressRange[2];
+    UINT64                      ActualAddressRange[2];
+    UINT32                      Flags;
+    UINT32                      ScrubParamsOut;
+    UINT32                      ScrubParamsIn;
+
+} ACPI_RAS2_PATROL_SCRUB_PARAMETER;
+
+/* Masks for Flags field above */
+
+#define ACPI_RAS2_SCRUBBER_RUNNING      1
+
+/* RAS2 Parameter Block Structure for LA2PA_TRANSLATION */
+
+typedef struct acpi_ras2_la2pa_translation_parameter {
+    ACPI_RAS2_PARAMETER_BLOCK   Header;
+    UINT16                      AddrTranslationCommand;
+    UINT64                      SubInstId;
+    UINT64                      LogicalAddress;
+    UINT64                      PhysicalAddress;
+    UINT32                      Status;
+
+} ACPI_RAS2_LA2PA_TRANSLATION_PARAM;
+
+/* Channel Commands */
+
+enum AcpiRas2Commands
+{
+    ACPI_RAS2_EXECUTE_RAS2_COMMAND      = 1
+};
+
+/* Platform RAS2 Features */
+
+enum AcpiRas2Features
+{
+    ACPI_RAS2_PATROL_SCRUB_SUPPORTED    = 0,
+    ACPI_RAS2_LA2PA_TRANSLATION         = 1
+};
+
+/* RAS2 Patrol Scrub Commands */
+
+enum AcpiRas2PatrolScrubCommands
+{
+    ACPI_RAS2_GET_PATROL_PARAMETERS     = 1,
+    ACPI_RAS2_START_PATROL_SCRUBBER     = 2,
+    ACPI_RAS2_STOP_PATROL_SCRUBBER      = 3
+};
+
+/* RAS2 LA2PA Translation Commands */
+
+enum AcpiRas2La2PaTranslationCommands
+{
+    ACPI_RAS2_GET_LA2PA_TRANSLATION     = 1,
+};
+
+/* RAS2 LA2PA Translation Status values */
+
+enum AcpiRas2La2PaTranslationStatus
+{
+    ACPI_RAS2_LA2PA_TRANSLATION_SUCCESS = 0,
+    ACPI_RAS2_LA2PA_TRANSLATION_FAIL    = 1,
+};
+
+/* Channel Command flags */
+
+#define ACPI_RAS2_GENERATE_SCI          (1<<15)
+
+/* Status values */
+
+enum AcpiRas2Status
+{
+    ACPI_RAS2_SUCCESS                   = 0,
+    ACPI_RAS2_NOT_VALID                 = 1,
+    ACPI_RAS2_NOT_SUPPORTED             = 2,
+    ACPI_RAS2_BUSY                      = 3,
+    ACPI_RAS2_FAILED                    = 4,
+    ACPI_RAS2_ABORTED                   = 5,
+    ACPI_RAS2_INVALID_DATA              = 6
+};
+
+/* Status flags */
+
+#define ACPI_RAS2_COMMAND_COMPLETE      (1)
+#define ACPI_RAS2_SCI_DOORBELL          (1<<1)
+#define ACPI_RAS2_ERROR                 (1<<2)
+#define ACPI_RAS2_STATUS                (0x1F<<3)
 
 
 /*******************************************************************************
