@@ -1989,6 +1989,31 @@ ACPI_DMTABLE_INFO           AcpiDmTableInfoRasf[] =
 
 /*******************************************************************************
  *
+ * RAS2 -  RAS2 Feature table (ACPI 6.5)
+ *
+ ******************************************************************************/
+
+ACPI_DMTABLE_INFO           AcpiDmTableInfoRas2[] =
+{
+    {ACPI_DMT_UINT16,    ACPI_RAS2_OFFSET (Reserved),                "Reserved", 0},
+    {ACPI_DMT_UINT16,    ACPI_RAS2_OFFSET (NumPccDescs),             "Number of PCC Descriptors", 0},
+    ACPI_DMT_TERMINATOR
+};
+
+/* RAS2 PCC Descriptor */
+
+ACPI_DMTABLE_INFO           AcpiDmTableInfoRas2PccDesc[] =
+{
+    {ACPI_DMT_UINT8,    ACPI_RAS2_PCC_DESC_OFFSET (ChannelId),              "Channel ID", 0},
+    {ACPI_DMT_UINT16,   ACPI_RAS2_PCC_DESC_OFFSET (Reserved),               "Reserved", 0},
+    {ACPI_DMT_UINT8,    ACPI_RAS2_PCC_DESC_OFFSET (FeatureType),            "Feature Type", 0},
+    {ACPI_DMT_UINT32,   ACPI_RAS2_PCC_DESC_OFFSET (Instance),               "Instance", 0},
+    ACPI_DMT_TERMINATOR
+};
+
+
+/*******************************************************************************
+ *
  * RGRT -  Regulatory Graphics Resource Table
  *
  ******************************************************************************/

@@ -1742,6 +1742,65 @@ DtCompilePrmt (
 
 /******************************************************************************
  *
+ * FUNCTION:    DtCompileRas2
+ *
+ * PARAMETERS:  List                - Current field list pointer
+ *
+ * RETURN:      Status
+ *
+ * DESCRIPTION: Compile RAS2.
+ *
+ *****************************************************************************/
+
+ACPI_STATUS
+DtCompileRas2 (
+    void                    **List)
+{
+    ACPI_STATUS             Status;
+    DT_SUBTABLE             *Subtable;
+    DT_SUBTABLE             *ParentTable;
+    DT_FIELD                **PFieldList = (DT_FIELD **) List;
+    ACPI_TABLE_RAS2         *Ras2Header;
+    UINT32                  Count = 0;
+
+
+    /* Main table */
+
+    Status = DtCompileTable (PFieldList, AcpiDmTableInfoRas2, &Subtable);
+    if (ACPI_FAILURE (Status))
+    {
+        return (Status);
+    }
+
+    ParentTable = DtPeekSubtable ();
+    DtInsertSubtable (ParentTable, Subtable);
+
+    Ras2Header = ACPI_CAST_PTR (ACPI_TABLE_RAS2, ParentTable->Buffer);
+
+    /* There is only one type of subtable at this time, no need to decode */
+
+    while (*PFieldList)
+    {
+        /* List of RAS2 PCC descriptors, each 8 bytes */
+
+        Status = DtCompileTable (PFieldList, AcpiDmTableInfoRas2PccDesc,
+            &Subtable);
+        if (ACPI_FAILURE (Status))
+        {
+            return (Status);
+        }
+
+        DtInsertSubtable (ParentTable, Subtable);
+        Count++;
+    }
+
+    Ras2Header->NumPccDescs = (UINT8) Count;
+    return (AE_OK);
+}
+
+
+/******************************************************************************
+ *
  * FUNCTION:    DtCompileRgrt
  *
  * PARAMETERS:  List                - Current field list pointer
