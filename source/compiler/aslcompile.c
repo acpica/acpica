@@ -655,8 +655,6 @@ void
 AslCompilerFileHeader (
     UINT32                  FileId)
 {
-    char                    *NewTime;
-    time_t                  Aclock;
     char                    *Prefix = "";
 
 
@@ -697,19 +695,11 @@ AslCompilerFileHeader (
         break;
     }
 
-    /* Compilation header with timestamp */
-
-    Aclock = time (NULL);
-    NewTime = ctime (&Aclock);
+    /* Compilation header */
 
     FlPrintFile (FileId,
-        "%sCompilation of \"%s\" -",
+        "%sCompilation of \"%s\"",
         Prefix, AslGbl_Files[ASL_FILE_INPUT].Filename);
-
-    if (NewTime)
-    {
-        FlPrintFile (FileId, " %s%s\n", NewTime, Prefix);
-    }
 
     switch (FileId)
     {
