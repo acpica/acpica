@@ -630,6 +630,13 @@ AslDoOptions (
             AcpiGbl_DmOpt_Listing = TRUE;
             break;
 
+        case 'd':
+
+            /* Produce deterministic output, suppressing timestamp */
+
+            AslGbl_Deterministic = TRUE;
+            break;
+
         case 'i':
 
             /* Produce preprocessor output file */
