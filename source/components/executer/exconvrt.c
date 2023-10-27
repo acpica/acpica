@@ -437,6 +437,7 @@ AcpiExConvertToAscii (
     UINT32                  DecimalLength;
     UINT32                  Remainder;
     BOOLEAN                 SupressZeros = !LeadingZeros;
+    UINT8                   HexChar;
 
 
     ACPI_FUNCTION_ENTRY ();
@@ -503,8 +504,18 @@ AcpiExConvertToAscii (
         {
             /* Get one hex digit, most significant digits first */
 
-            String[k] = (UINT8)
+            HexChar = (UINT8)
                 AcpiUtHexToAsciiChar (Integer, ACPI_MUL_4 (j));
+
+            /* Supress leading zeros until the first non-zero character */
+
+            if (HexChar == ACPI_ASCII_ZERO && SupressZeros)
+            {
+                continue;
+            }
+
+            SupressZeros = FALSE;
+            String[k] = HexChar;
             k++;
         }
         break;
