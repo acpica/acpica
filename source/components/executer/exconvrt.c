@@ -599,6 +599,15 @@ AcpiExConvertToString (
             Base = 10;
             break;
 
+        case ACPI_EXPLICIT_CONVERT_HEX:
+            /*
+             * From ToHexString.
+             *
+             * Supress leading zeros and append "0x"
+             */
+            StringLength = ACPI_MUL_2 (AcpiGbl_IntegerByteWidth) + 2;
+            LeadingZeros = FALSE;
+            break;
         default:
 
             /* Two hex string characters for each integer byte */
@@ -619,6 +628,13 @@ AcpiExConvertToString (
         }
 
         NewBuf = ReturnDesc->Buffer.Pointer;
+        if (Type == ACPI_EXPLICIT_CONVERT_HEX)
+        {
+            /* Append "0x" prefix for explicit hex conversion */
+
+            *NewBuf++ = '0';
+            *NewBuf++ = 'x';
+        }
 
         /* Convert integer to string */
 
@@ -628,6 +644,13 @@ AcpiExConvertToString (
         /* Null terminate at the correct place */
 
         ReturnDesc->String.Length = StringLength;
+        if (Type == ACPI_EXPLICIT_CONVERT_HEX)
+        {
+            /* Take "0x" prefix into account */
+
+            ReturnDesc->String.Length += 2;
+        }
+
         NewBuf [StringLength] = 0;
         break;
 
