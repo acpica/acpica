@@ -243,7 +243,7 @@ AcpiOsPrintf (
 
     if (EnDbgPrint)
     {
-        printk (Fmt, args);
+        vprintk (Fmt, args);
     }
 
     va_end (args);
