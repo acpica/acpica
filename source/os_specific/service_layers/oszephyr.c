@@ -243,7 +243,7 @@ AcpiOsPrintf (
 
     if (EnDbgPrint)
     {
-        printk (Fmt, args);
+        vprintk (Fmt, args);
     }
 
     va_end (args);
@@ -805,7 +805,7 @@ AcpiOsMapMemory (
     uint8_t                 *VirtlAdd;
 
     LOG_DBG ("");
-    z_phys_map (&VirtlAdd, Where, Length, 0);
+    z_phys_map (&VirtlAdd, Where, Length, K_MEM_PERM_RW);
     return ((void *) VirtlAdd);
 }
 #endif
