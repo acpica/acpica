@@ -875,6 +875,7 @@ AcpiDmDumpMadt (
     UINT32                  Length = Table->Length;
     UINT32                  Offset = sizeof (ACPI_TABLE_MADT);
     ACPI_DMTABLE_INFO       *InfoTable;
+    UINT8                   Revision;
 
 
     /* Main table */
@@ -884,6 +885,8 @@ AcpiDmDumpMadt (
     {
         return;
     }
+
+    Revision = Table->Revision;
 
     /* Subtables */
 
@@ -962,7 +965,8 @@ AcpiDmDumpMadt (
 
         case ACPI_MADT_TYPE_GENERIC_INTERRUPT:
 
-            InfoTable = AcpiDmTableInfoMadt11;
+            InfoTable = Revision > 5 ? AcpiDmTableInfoMadt11a :
+				AcpiDmTableInfoMadt11;
             break;
 
         case ACPI_MADT_TYPE_GENERIC_DISTRIBUTOR:
