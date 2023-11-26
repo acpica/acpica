@@ -24,7 +24,7 @@ The layout of test specification:
   Some purposes of the tests dont contain the
   specification of the expected normal behaviour of
   the feature under testing. This takes place when the
-  ACPI specification doesnt assert anything definitely
+  ACPI specification doesn't assert anything definitely
   on that or when an additional investigation involving
   the BlackBox are needed.
 
@@ -113,7 +113,7 @@ Improve implementation of tests:
     Extend them for Arg{1-6} and Local{1-7} too.
 
  4) improve FEATURE entries: the way of improving the test is
-    analysing the implemented sub-tests desribing them more exactly
+    analysing the implemented sub-tests describing them more exactly
     by FEATURE entries and then examining the summary coverage of
     sub-tests basing on the FEATURE entries of them propose the
     additional sub-tests.
@@ -183,7 +183,7 @@ Notation:
 
    M0                   - start Method of test
    M1,M2...             - Methods invoked from M0
-   M1-M2-M3             - the chain of invokations of Methods (started from M0)
+   M1-M2-M3             - the chain of invocations of Methods (started from M0)
 
 
 
@@ -535,7 +535,7 @@ to the writing operator).
 
 Pass the result of RefOf to another Method (M2) for
 the following calculations as in the original test TEST 00.
-Check that the data refered to by ArgX of (M1) are changed {type,size,value}.
+Check that the data referred to by ArgX of (M1) are changed {type,size,value}.
 Check that the original objects (M0) are not changed {type,size,value}.
 
 M0 {Object} --> M1 {RefOf(ArgX);write} --> M2 {write(ArgX)}
@@ -677,7 +677,7 @@ FEATURE: ArgX-ORef:write_into_ArgY:write
 
 INCORRECT: not quite correct, because there is no way to
            "transfer" ArgX-Reference from ArgX to ArgY.
-           In fact, the object assosiated with ArgX-Reference
+           In fact, the object associated with ArgX-Reference
            is copied into ArgY or into the Object associated with
            ArgY in ArgY-Reference case for any ASL-operation.
 
@@ -717,7 +717,7 @@ Do the same actions as in the TEST 00.
 
 5. After completion of the Method call, returning
    from it, check the original object {type,size,value}
-   coresponding to Arg0.
+   corresponding to Arg0.
    Use BlackBox for to clarify ACPI specification.
 
 
@@ -760,8 +760,8 @@ FEATURE: ArgX-ORef:write_into_LocalX:write
 
 INCORRECT: not quite correct, because there is no way to
            "transfer" ArgX-Reference from ArgX to LocalX.
-           In fact, the object assosiated with ArgX-Reference
-           is copied into LocalX (independantly on the value
+           In fact, the object associated with ArgX-Reference
+           is copied into LocalX (independently on the value
            of LocalX).
 
 So, the test is transformed into another one (see below).
@@ -838,7 +838,7 @@ The same as the TEST 20, but at first obtain the ORef
 to some global object and put it into ArgX and do all the read/write
 actions with that ArgX.
 
-Check the original object {type,size,value} coresponding to ArgX.
+Check the original object {type,size,value} corresponding to ArgX.
 Use BlackBox for to clarify ACPI specification.
 
 Example:
@@ -861,7 +861,7 @@ The same as the TEST 25 but use not global but local source objects:
    c) LocalX {0-7}
    d) Named: types {1-16}
 
-Check the original object {type,size,value} coresponding to ArgX.
+Check the original object {type,size,value} corresponding to ArgX.
 Use BlackBox for to clarify ACPI specification.
 
 Example:
@@ -1149,7 +1149,7 @@ WRITE_OPERATOR(XXXX, Index(LocalX, 0))
 WRITE_OPERATOR(XXXX, Index(NamedX, 0))
 
 Do this for all the ASL Operators which write results.
-FEATURE: write(Bufer:Index:IRef)
+FEATURE: write(Buffer:Index:IRef)
 
 
 ==========
@@ -1407,8 +1407,8 @@ FEATURE: Store(Index(arg0, x), Local0)
 ==========
 
 
-When this satart work the user will feel himself free
-in the way coding its toughts.
+When this start work the user will feel himself free
+in the way coding its thoughts.
 
 Store(ImageX    , RefOf())
 Store(ArgX      , RefOf())
@@ -1471,8 +1471,8 @@ as far as fixing the bugs.
 ==========
 
 
-When this satart work the user will feel himself free
-in the way coding its toughts.
+When this start work the user will feel himself free
+in the way coding its thoughts.
 
 Copy(ImageX    , RefOf())
 Copy(ArgX      , RefOf())
@@ -1544,7 +1544,7 @@ Do it after the current bugs fixing.
 ==========
 
 When this starts work the user will feel himself free
-in the way coding its toughts.
+in the way coding its thoughts.
 
 Do this comprehensive test after all the particular
 bugs will be fixed. Now, due to the bugs, it looks
@@ -1848,7 +1848,7 @@ and the contents of that object are returned.
 ==========
 
 
-Check the asertion above.
+Check the assertion above.
 
 
 SPEC:
@@ -1864,7 +1864,7 @@ then a fatal error is generated.
 ==========
 
 
-Check the asertion above.
+Check the assertion above.
 
 
 SPEC:
@@ -1882,7 +1882,7 @@ base object is returned.
 ==========
 
 
-The asertion above has been verified for Index and RefOf
+The assertion above has been verified for Index and RefOf
 cases by all the tests above by the (TEST_00.2) entry.
 
 Check it for the Alias case in this test.
@@ -1979,11 +1979,11 @@ Store(0, Derefof(Refof(Local0)))
 ==========
 
 
-Check presense/absence of Result conversion while writing
+Check presence/absence of Result conversion while writing
 to ORef.
 
 Do that without details.
-Details are to be exercised in onother separate test.
+Details are to be exercised in another separate test.
 
 
 ==========

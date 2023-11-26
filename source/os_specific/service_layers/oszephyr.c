@@ -163,7 +163,7 @@ LOG_MODULE_DECLARE(acpica, LOG_LEVEL_ERR);
 
 typedef void (*zephyr_irq_t)(const void *);
 
-/* Global varibles use from acpica lib. */
+/* Global variables use from acpica lib. */
 BOOLEAN                     AslGbl_DoTemplates = FALSE;
 BOOLEAN                     AslGbl_VerboseTemplates = FALSE;
 

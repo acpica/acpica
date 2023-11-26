@@ -8,7 +8,7 @@ ALLBUGS| Dont remove this line, it is used in the automatic processing of the ta
   1| C     | 419  |      |                  | 100 | The ASL Compiler doesn't allow non-constant TimeoutValue for Acquire
   2| I     |      |      |                  |     | The elseif operator works incorrectly
   3| C     | 420  |      |                  | 100 | The ASL Compiler should reject Switch operators with the identical Case operators in it
-  4| I     |      |      |                  |     | Concatenate being invoked in Method M000 changes the type of LocalX of calling Method passsed as operand to M000
+  4| I     |      |      |                  |     | Concatenate being invoked in Method M000 changes the type of LocalX of calling Method passed as operand to M000
   5| I     |      |      |                  |     | Switch operator doesn't provide Default branch
   6| I     |      |      |                  |     | ToInteger converts a decimal string the same way as a hexadecimal one
   7| I     |      |      |                  |     | ToString updates the LocalX value (if it is zero) passed as Length parameter
@@ -300,7 +300,7 @@ ALLBUGS| Dont remove this line, it is used in the automatic processing of the ta
 | is fixing ACPI specification. It should be checked out manually
 | that the relevant part of specification is actually fixed/updated.
 | After that write manually INTEGRATED key in the STATE-MANUALLY
-| colomn of the relevant bug to confirm completion of bug. Some
+| column of the relevant bug to confirm completion of bug. Some
 | these bugs against specs may nevertheless have the relevant bdemo
 | tests which make use just of the relevant functionality touched
 | by the part of specification. But nevertheless PASS of these
