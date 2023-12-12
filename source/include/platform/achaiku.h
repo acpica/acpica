@@ -197,8 +197,8 @@ struct mutex;
 #endif
 
 /* Based on FreeBSD's due to lack of documentation */
-int AcpiOsAcquireGlobalLock(uint32 *lock);
-int AcpiOsReleaseGlobalLock(uint32 *lock);
+extern int AcpiOsAcquireGlobalLock(volatile uint32_t *lock);
+extern int AcpiOsReleaseGlobalLock(volatile uint32_t *lock);
 
 #define ACPI_ACQUIRE_GLOBAL_LOCK(GLptr, Acq)    do {                \
         (Acq) = AcpiOsAcquireGlobalLock(&((GLptr)->GlobalLock));    \
