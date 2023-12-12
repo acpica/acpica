@@ -208,6 +208,8 @@ extern int AcpiOsReleaseGlobalLock(volatile uint32_t *lock);
         (Acq) = AcpiOsReleaseGlobalLock(&((GLptr)->GlobalLock));    \
 } while (0)
 
+#define ACPI_SEMAPHORE_NULL -1
+
 #else /* _KERNEL_MODE */
 /* Host-dependent types and defines for user-space ACPICA */
 
