@@ -457,7 +457,7 @@
             Concatenate (Arg0, " test started", Debug)
         }
 
-        NRMT = Arg0
+        CopyObject(Arg0, NRMT)
     }
 
     /*
