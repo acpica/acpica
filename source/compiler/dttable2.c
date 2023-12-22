@@ -254,8 +254,10 @@ DtCompileMadt (
     DT_SUBTABLE             *ParentTable;
     DT_FIELD                **PFieldList = (DT_FIELD **) List;
     DT_FIELD                *SubtableStart;
+    ACPI_TABLE_HEADER       *Table;
     ACPI_SUBTABLE_HEADER    *MadtHeader;
     ACPI_DMTABLE_INFO       *InfoTable;
+    UINT8                   Revision;
 
 
     Status = DtCompileTable (PFieldList, AcpiDmTableInfoMadt,
@@ -267,6 +269,9 @@ DtCompileMadt (
 
     ParentTable = DtPeekSubtable ();
     DtInsertSubtable (ParentTable, Subtable);
+
+    Table = ACPI_CAST_PTR (ACPI_TABLE_HEADER, ParentTable->Buffer);
+    Revision = Table->Revision;
 
     while (*PFieldList)
     {
@@ -343,7 +348,12 @@ DtCompileMadt (
 
         case ACPI_MADT_TYPE_GENERIC_INTERRUPT:
 
-            InfoTable = AcpiDmTableInfoMadt11;
+            if (Revision > 6)
+                    InfoTable = AcpiDmTableInfoMadt11b;
+            else if (Revision == 6)
+                    InfoTable = AcpiDmTableInfoMadt11a;
+            else
+                    InfoTable = AcpiDmTableInfoMadt11;
             break;
 
         case ACPI_MADT_TYPE_GENERIC_DISTRIBUTOR:
@@ -358,12 +368,15 @@ DtCompileMadt (
 
         case ACPI_MADT_TYPE_GENERIC_REDISTRIBUTOR:
 
-            InfoTable = AcpiDmTableInfoMadt14;
+            InfoTable = Revision > 6 ? AcpiDmTableInfoMadt14a
+                                     : AcpiDmTableInfoMadt14;
             break;
 
         case ACPI_MADT_TYPE_GENERIC_TRANSLATOR:
 
-            InfoTable = AcpiDmTableInfoMadt15;
+            InfoTable = Revision > 6 ? AcpiDmTableInfoMadt15a
+                                     : AcpiDmTableInfoMadt15;
+
             break;
 
         case ACPI_MADT_TYPE_MULTIPROC_WAKEUP:
