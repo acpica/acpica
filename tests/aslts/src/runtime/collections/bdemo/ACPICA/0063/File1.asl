@@ -1066,7 +1066,7 @@
      * 4. "0000000000000000000000001234"
      * (zeros before significant characters in image without '0x' are skipped).
      *
-     * Exampples: mf9b + 000000000
+     * Examples: mf9b + 000000000
      *
      * All the above examples but
      *
