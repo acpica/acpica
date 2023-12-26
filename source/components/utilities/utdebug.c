@@ -220,7 +220,7 @@ AcpiUtTrackStackPtr (
 #pragma GCC diagnostic ignored "-Wdangling-pointer="
 #endif
         AcpiGbl_LowestStackPointer = &CurrentSp;
-#pragma GCC diagnostic popmake
+#pragma GCC diagnostic pop
     }
 
     if (AcpiGbl_NestingLevel > AcpiGbl_DeepestNesting)
