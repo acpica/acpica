@@ -518,6 +518,7 @@ static const char           *AcpiDmSratSubnames[] =
     "GIC ITS Affinity",             /* Acpi 6.2 */
     "Generic Initiator Affinity",   /* Acpi 6.3 */
     "Generic Port Affinity",        /* Acpi 6.4 */
+    "RINTC Affinity",               /* Acpi 6.6 */
     "Unknown Subtable Type"         /* Reserved */
 };
 
