@@ -1286,7 +1286,7 @@ ACPI_DMTABLE_INFO           AcpiDmTableInfoMpam1C[] =
  */
 ACPI_DMTABLE_INFO           AcpiDmTableInfoMpam1D[] =
 {
-    {ACPI_DMT_UINT56,   ACPI_MPAM1D_OFFSET (Level),                         "Reserved", 0},
+    {ACPI_DMT_UINT56,   ACPI_MPAM1D_OFFSET (Reserved),                      "Reserved", 0},
     {ACPI_DMT_UINT8,    ACPI_MPAM1D_OFFSET (Level),                         "Level", 0},
     {ACPI_DMT_UINT32,   ACPI_MPAM1D_OFFSET (Reference),                     "Reference", 0},
 };
