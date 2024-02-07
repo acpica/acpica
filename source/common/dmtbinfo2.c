@@ -1230,7 +1230,7 @@ ACPI_DMTABLE_INFO           AcpiDmTableInfoMpam0[] =
     {ACPI_DMT_UINT32,   ACPI_MPAM0_OFFSET (MaxNrdyUsec),                 "MAX_NRDY_USEC", 0},
     {ACPI_DMT_NAME8,    ACPI_MPAM0_OFFSET (HardwareIdLinkedDevice),      "Hardware ID of linked device", 0},
     {ACPI_DMT_UINT32,   ACPI_MPAM0_OFFSET (InstanceIdLinkedDevice),      "Instance ID of linked device", 0},
-    {ACPI_DMT_UINT32,   ACPI_MPAM0_OFFSET (NumResouceNodes),             "Number of resource nodes", 0},
+    {ACPI_DMT_UINT32,   ACPI_MPAM0_OFFSET (NumResourceNodes),            "Number of resource nodes", 0},
 
     ACPI_DMT_TERMINATOR
 };

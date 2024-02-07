@@ -1931,7 +1931,7 @@ typedef struct acpi_mpam_msc_node
     UINT32                     MaxNrdyUsec;
     UINT64                     HardwareIdLinkedDevice;
     UINT32                     InstanceIdLinkedDevice;
-    UINT32                     NumResouceNodes;
+    UINT32                     NumResourceNodes;
 } ACPI_MPAM_MSC_NODE;
 
 typedef struct acpi_table_mpam

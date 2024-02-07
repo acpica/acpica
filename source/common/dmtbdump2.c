@@ -1233,7 +1233,7 @@ AcpiDmDumpMpam (
         Offset += sizeof(ACPI_MPAM_MSC_NODE);
 
         /* Subtable: MSC RIS(es) */
-        for (UINT32 ResourceIdx = 0; ResourceIdx < MpamMscNode->NumResouceNodes; ResourceIdx++)
+        for (UINT32 ResourceIdx = 0; ResourceIdx < MpamMscNode->NumResourceNodes; ResourceIdx++)
         {
             MpamResourceNode = ACPI_ADD_PTR (ACPI_MPAM_RESOURCE_NODE, Table, Offset);
 
