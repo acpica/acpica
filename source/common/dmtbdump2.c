@@ -1235,6 +1235,7 @@ AcpiDmDumpMpam (
         /* Subtable: MSC RIS(es) */
         for (UINT32 ResourceIdx = 0; ResourceIdx < MpamMscNode->NumResourceNodes; ResourceIdx++)
         {
+	    AcpiOsPrintf ("\n");
             MpamResourceNode = ACPI_ADD_PTR (ACPI_MPAM_RESOURCE_NODE, Table, Offset);
 
             MpamResourceNodeLength = sizeof(ACPI_MPAM_RESOURCE_NODE) +
@@ -1297,6 +1298,7 @@ AcpiDmDumpMpam (
             /* Subtable: MSC functional dependencies */
             for (UINT32 funcDep = 0; funcDep < MpamResourceNode->NumFunctionalDeps; funcDep++)
             {
+		AcpiOsPrintf ("\n");
                 Status = AcpiDmDumpTable (sizeof(ACPI_MPAM_FUNC_DEPS), 0,
                     &MpamResourceNode->NumFunctionalDeps, 0, AcpiDmTableInfoMpam2);
                 if (ACPI_FAILURE (Status))
