@@ -2338,7 +2338,7 @@ typedef struct acpi_nhlt_endpoint
 typedef struct acpi_nhlt_config
 {
     UINT32                         CapabilitiesSize;
-    UINT8                          Capabilities[];
+    UINT8                          Capabilities[1024];
 
 } ACPI_NHLT_CONFIG;
 
