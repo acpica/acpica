@@ -834,8 +834,6 @@ struct acpi_cedt_cxims {
 
 struct acpi_cedt_rdpas {
     ACPI_CEDT_HEADER        Header;
-    UINT8                   Reserved1;
-    UINT16                  Length;
     UINT16                  Segment;
     UINT16                  Bdf;
     UINT8                   Protocol;
