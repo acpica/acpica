@@ -635,10 +635,6 @@ AcpiNsDumpOneObject (
             break;
         }
         break;
-
-    default:
-        AcpiOsPrintf ("\n");
-        break;
     }
 
     /* If debug turned off, done */

@@ -901,6 +901,7 @@ AcpiPsGetNextArg (
     ACPI_PARSE_OBJECT       *Field;
     UINT32                  Subop;
     ACPI_STATUS             Status = AE_OK;
+    ACPI_PARSE_OBJECT       *tmp = NULL;
 
 
     ACPI_FUNCTION_TRACE_PTR (PsGetNextArg, ParserState);
@@ -948,6 +949,12 @@ AcpiPsGetNextArg (
                 Field = AcpiPsGetNextField (ParserState);
                 if (!Field)
                 {
+                    while (Arg)
+                    {
+                        tmp = Arg->Common.Next;
+                        AcpiPsFreeOp (Arg);
+                        Arg = tmp;
+                    }
                     return_ACPI_STATUS (AE_NO_MEMORY);
                 }
 

@@ -426,8 +426,8 @@ AcpiDsResultStackPop (
     WalkState->ResultSize -= ACPI_RESULTS_FRAME_OBJ_NUM;
 
     ACPI_DEBUG_PRINT ((ACPI_DB_EXEC,
-        "Result=%p RemainingResults=%X State=%p\n",
-        State, WalkState->ResultCount, WalkState));
+        "RemainingResults=%X State=%p\n",
+        WalkState->ResultCount, WalkState));
 
     return (AE_OK);
 }
