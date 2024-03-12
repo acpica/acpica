@@ -185,15 +185,7 @@ AcpiTbInitializeFacs (
 {
     ACPI_TABLE_FACS         *Facs;
 
-
-    /* If Hardware Reduced flag is set, there is no FACS */
-
-    if (AcpiGbl_ReducedHardware)
-    {
-        AcpiGbl_FACS = NULL;
-        return (AE_OK);
-    }
-    else if (AcpiGbl_FADT.XFacs &&
+    if (AcpiGbl_FADT.XFacs &&
          (!AcpiGbl_FADT.Facs || !AcpiGbl_Use32BitFacsAddresses))
     {
         (void) AcpiGetTableByIndex (AcpiGbl_XFacsIndex,
