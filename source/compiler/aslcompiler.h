@@ -1582,9 +1582,12 @@ RsDoDwordMemoryDescriptor (
     ASL_RESOURCE_INFO       *Info);
 
 ASL_RESOURCE_NODE *
-RsDoDwordSpaceDescriptor (
+RsDoDwordPccDescriptor (
     ASL_RESOURCE_INFO       *Info);
 
+ASL_RESOURCE_NODE *
+RsDoDwordSpaceDescriptor (
+    ASL_RESOURCE_INFO       *Info);
 
 /*
  * aslrestype2e - Extended address descriptors
