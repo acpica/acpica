@@ -418,6 +418,8 @@ extern ACPI_DMTABLE_INFO        AcpiDmTableInfoCedtHdr[];
 extern ACPI_DMTABLE_INFO        AcpiDmTableInfoCedt0[];
 extern ACPI_DMTABLE_INFO        AcpiDmTableInfoCedt1[];
 extern ACPI_DMTABLE_INFO        AcpiDmTableInfoCedt1_te[];
+extern ACPI_DMTABLE_INFO        AcpiDmTableInfoCedt2[];
+extern ACPI_DMTABLE_INFO        AcpiDmTableInfoCedt2_te[];
 extern ACPI_DMTABLE_INFO        AcpiDmTableInfoCpep[];
 extern ACPI_DMTABLE_INFO        AcpiDmTableInfoCpep0[];
 extern ACPI_DMTABLE_INFO        AcpiDmTableInfoCsrt0[];
