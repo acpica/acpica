@@ -257,6 +257,7 @@ static const char           *AcpiDmCedtSubnames[] =
 {
     "CXL Host Bridge Structure",
     "CXL Fixed Memory Window Structure",
+    "CXL XOR Interleave Math Structure",
     "Unknown Subtable Type"         /* Reserved */
 };
 

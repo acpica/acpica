@@ -969,6 +969,37 @@ AcpiDmDumpCedt (
             break;
         }
 
+        case ACPI_CEDT_TYPE_CXIMS:
+        {
+            ACPI_CEDT_CXIMS *ptr = (ACPI_CEDT_CXIMS *) Subtable;
+            unsigned int i, max = ptr->NrXormaps;
+
+            /* print out table with first "XOR Map" */
+
+            Status = AcpiDmDumpTable (Length, Offset, Subtable,
+                Subtable->Length, AcpiDmTableInfoCedt2);
+            if (ACPI_FAILURE (Status))
+            {
+                return;
+            }
+
+            /* Now, print out any XOR Map beyond the first. */
+
+            for (i = 1; i < max; i++)
+            {
+                unsigned int loc_offset = Offset + (i * 1) + ACPI_OFFSET (ACPI_CEDT_CXIMS, XormapList);
+                UINT64 *trg = &(ptr->XormapList[i]);
+
+                Status = AcpiDmDumpTable (Length, loc_offset, trg,
+                        Subtable->Length, AcpiDmTableInfoCedt2_te);
+                if (ACPI_FAILURE (Status))
+                {
+                    return;
+                }
+            }
+            break;
+        }
+
         default:
             AcpiOsPrintf ("\n**** Unknown CEDT subtable type 0x%X\n\n",
                 Subtable->Type);
