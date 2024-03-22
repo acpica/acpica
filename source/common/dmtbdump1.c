@@ -936,9 +936,14 @@ AcpiDmDumpCedt (
         case ACPI_CEDT_TYPE_CFMWS:
         {
             ACPI_CEDT_CFMWS *ptr = (ACPI_CEDT_CFMWS *) Subtable;
-            unsigned int i, max = 0x01 << (ptr->InterleaveWays);
+            unsigned int i, max;
 
-            /* print out table with first "Interleave target" */
+            if (ptr->InterleaveWays < 8)
+                max = 1 << (ptr->InterleaveWays);
+            else
+                max = 3 << (ptr->InterleaveWays - 8);
+
+	    /* print out table with first "Interleave target" */
 
             Status = AcpiDmDumpTable (Length, Offset, Subtable,
                 Subtable->Length, AcpiDmTableInfoCedt1);
