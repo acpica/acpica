@@ -1213,8 +1213,10 @@ AcpiDmDumpMpam (
     ACPI_STATUS                Status;
     ACPI_MPAM_MSC_NODE         *MpamMscNode;
     ACPI_MPAM_RESOURCE_NODE    *MpamResourceNode;
+    ACPI_MPAM_FUNC_DEPS	       *MpamFunctionalDependency;
     ACPI_DMTABLE_INFO          *InfoTable;
     UINT32                     Offset = sizeof(ACPI_TABLE_HEADER);
+    UINT32		       TempOffset;
     UINT32                     MpamResourceNodeLength = 0;
 
     while (Offset < Table->Length)
@@ -1222,8 +1224,8 @@ AcpiDmDumpMpam (
         MpamMscNode = ACPI_ADD_PTR (ACPI_MPAM_MSC_NODE, Table, Offset);
 
         /* Subtable: MSC */
-        Status = AcpiDmDumpTable (MpamMscNode->Length, 0, MpamMscNode, 0,
-            AcpiDmTableInfoMpam0);
+        Status = AcpiDmDumpTable (Table->Length, Offset, MpamMscNode,
+            MpamMscNode->Length, AcpiDmTableInfoMpam0);
         if (ACPI_FAILURE (Status))
         {
             return;
@@ -1233,18 +1235,19 @@ AcpiDmDumpMpam (
         Offset += sizeof(ACPI_MPAM_MSC_NODE);
 
         /* Subtable: MSC RIS(es) */
-        for (UINT32 ResourceIdx = 0; ResourceIdx < MpamMscNode->NumResouceNodes; ResourceIdx++)
+        for (UINT32 ResourceIdx = 0; ResourceIdx < MpamMscNode->NumResourceNodes; ResourceIdx++)
         {
+	    AcpiOsPrintf ("\n");
             MpamResourceNode = ACPI_ADD_PTR (ACPI_MPAM_RESOURCE_NODE, Table, Offset);
 
             MpamResourceNodeLength = sizeof(ACPI_MPAM_RESOURCE_NODE) +
                 MpamResourceNode->NumFunctionalDeps * sizeof(ACPI_MPAM_FUNC_DEPS);
-
+	    TempOffset = Offset;
             Offset += MpamResourceNodeLength;
 
             /* Subtable: MSC RIS */
-            Status = AcpiDmDumpTable (MpamResourceNodeLength, 0, MpamResourceNode, 0,
-                AcpiDmTableInfoMpam1);
+	    Status = AcpiDmDumpTable (Table->Length, TempOffset, MpamResourceNode,
+		sizeof(ACPI_MPAM_RESOURCE_NODE), AcpiDmTableInfoMpam1);
             if (ACPI_FAILURE (Status))
             {
                 return;
@@ -1279,30 +1282,40 @@ AcpiDmDumpMpam (
             }
 
             /* Subtable: MSC Resource Locator(s) */
-            Status = AcpiDmDumpTable (sizeof(ACPI_MPAM_RESOURCE_LOCATOR), 0,
-                &MpamResourceNode->Locator, 0, InfoTable);
+	    TempOffset += ACPI_OFFSET(ACPI_MPAM_RESOURCE_NODE, Locator);
+	    Status = AcpiDmDumpTable (Table->Length, TempOffset, &MpamResourceNode->Locator,
+		sizeof(ACPI_MPAM_RESOURCE_LOCATOR), InfoTable);
             if (ACPI_FAILURE (Status))
             {
                 return;
             }
 
             /* Get the number of functional dependencies of an RIS */
-            Status = AcpiDmDumpTable (sizeof(UINT32), 0, &MpamResourceNode->NumFunctionalDeps, 0,
-                AcpiDmTableInfoMpam1Deps);
+	    TempOffset += sizeof(ACPI_MPAM_RESOURCE_LOCATOR);
+            Status = AcpiDmDumpTable (Table->Length, TempOffset, &MpamResourceNode->NumFunctionalDeps,
+		sizeof(UINT32), AcpiDmTableInfoMpam1Deps);
             if (ACPI_FAILURE (Status))
             {
                 return;
             }
 
+	    TempOffset += sizeof(UINT32);
+	    MpamFunctionalDependency = ACPI_ADD_PTR (ACPI_MPAM_FUNC_DEPS, MpamResourceNode,
+		sizeof(ACPI_MPAM_RESOURCE_NODE));
             /* Subtable: MSC functional dependencies */
             for (UINT32 funcDep = 0; funcDep < MpamResourceNode->NumFunctionalDeps; funcDep++)
             {
+		AcpiOsPrintf ("\n");
                 Status = AcpiDmDumpTable (sizeof(ACPI_MPAM_FUNC_DEPS), 0,
                     &MpamResourceNode->NumFunctionalDeps, 0, AcpiDmTableInfoMpam2);
+		Status = AcpiDmDumpTable (Table->Length, TempOffset, MpamFunctionalDependency,
+		    sizeof(ACPI_MPAM_FUNC_DEPS), AcpiDmTableInfoMpam2);
                 if (ACPI_FAILURE (Status))
                 {
                     return;
                 }
+		TempOffset += sizeof(ACPI_MPAM_FUNC_DEPS);
+		MpamFunctionalDependency++;
             }
 
             AcpiOsPrintf ("\n\n");
