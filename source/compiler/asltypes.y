@@ -419,6 +419,7 @@ NoEcho('
 %type <n> DMATerm
 %type <n> DWordIOTerm
 %type <n> DWordMemoryTerm
+%type <n> DWordPccTerm
 %type <n> DWordSpaceTerm
 %type <n> EndDependentFnTerm
 %type <n> ExtendedIOTerm

@@ -788,6 +788,11 @@ RsDoOneResourceDescriptor (
         Rnode = RsDoDwordMemoryDescriptor (Info);
         break;
 
+    case PARSEOP_DWORDPCC:
+
+        Rnode = RsDoDwordPccDescriptor (Info);
+        break;
+
     case PARSEOP_DWORDSPACE:
 
         Rnode = RsDoDwordSpaceDescriptor (Info);

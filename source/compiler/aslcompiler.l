@@ -438,6 +438,7 @@ NamePathTail                [.]{NameSeg}
 "DMA"                       { count (1); return (PARSEOP_DMA); }
 "DWordIO"                   { count (1); return (PARSEOP_DWORDIO); }
 "DWordMemory"               { count (1); return (PARSEOP_DWORDMEMORY); }
+"DWordPcc"                  { count (1); return (PARSEOP_DWORDPCC); }
 "DWordSpace"                { count (1); return (PARSEOP_DWORDSPACE); }
 "EndDependentFn"            { count (1); return (PARSEOP_ENDDEPENDENTFN); }
 "ExtendedIO"                { count (1); return (PARSEOP_EXTENDEDIO); }

@@ -319,6 +319,7 @@ const ASL_MAPPING_ENTRY     AslKeywordMapping [] =
 /* DWORDCONST */                OP_TABLE_ENTRY (AML_RAW_DATA_DWORD,         0,                              0,                  ACPI_BTYPE_INTEGER),
 /* DWORDIO */                   OP_TABLE_ENTRY (AML_DEFAULT_ARG_OP,         0,                              0,                  0),
 /* DWORDMEMORY */               OP_TABLE_ENTRY (AML_DEFAULT_ARG_OP,         0,                              0,                  0),
+/* DWORDPCC */                  OP_TABLE_ENTRY (AML_DEFAULT_ARG_OP,         0,                              0,                  0),
 /* DWORDSPACE */                OP_TABLE_ENTRY (AML_BYTE_OP,                0,                              0,                  0),
 /* EISAID */                    OP_TABLE_ENTRY (AML_DWORD_OP,               0,                              0,                  ACPI_BTYPE_INTEGER),
 /* ELSE */                      OP_TABLE_ENTRY (AML_ELSE_OP,                0,                              OP_AML_PACKAGE,     0),

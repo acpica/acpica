@@ -256,6 +256,7 @@ NoEcho('
 %token <i> PARSEOP_DWORDCONST
 %token <i> PARSEOP_DWORDIO
 %token <i> PARSEOP_DWORDMEMORY
+%token <i> PARSEOP_DWORDPCC
 %token <i> PARSEOP_DWORDSPACE
 %token <i> PARSEOP_EISAID
 %token <i> PARSEOP_ELSE
