@@ -974,6 +974,53 @@ DtCompileCedt (
             ParentTable = DtPeekSubtable ();
             break;
         }
+        case ACPI_CEDT_TYPE_CXIMS: {
+            unsigned char *dump;
+            unsigned int idx, offset, max = 0;
+
+            /* Compile table with first "Xor map" */
+
+            Status = DtCompileTable (PFieldList, AcpiDmTableInfoCedt2, &Subtable);
+            if (ACPI_FAILURE (Status))
+            {
+                return (Status);
+            }
+
+            /* Look in buffer for the number of Xor maps */
+            offset = (unsigned int) ACPI_OFFSET (ACPI_CEDT_CXIMS, NrXormaps);
+            dump = (unsigned char *) Subtable->Buffer - 4;     /* place at beginning of cedt2 */
+            max = dump[offset];
+
+            /* We need to add more XOR maps, so write the current Subtable. */
+
+            ParentTable = DtPeekSubtable ();
+            DtInsertSubtable (ParentTable, Subtable);   /* Insert AcpiDmTableInfoCedt2 table so we can put in */
+            DtPushSubtable (Subtable);
+
+            /* Now, find out all Xor maps beyond the first. */
+
+            for (idx = 1; idx < max; idx++) {
+                ParentTable = DtPeekSubtable ();
+
+                if (*PFieldList)
+                {
+                    Status = DtCompileTable (PFieldList, AcpiDmTableInfoCedt2_te, &Subtable);
+                    if (ACPI_FAILURE (Status))
+                    {
+                        return (Status);
+                    }
+                    if (Subtable)
+                    {
+                        DtInsertSubtable (ParentTable, Subtable);       /* got an Xor map, so insert table. */
+                        InsertFlag = 0;
+                    }
+                }
+            }
+
+            DtPopSubtable ();
+            ParentTable = DtPeekSubtable ();
+            break;
+        }
 
         default:
             DtFatal (ASL_MSG_UNKNOWN_SUBTABLE, SubtableStart, "CEDT");

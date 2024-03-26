@@ -936,9 +936,14 @@ AcpiDmDumpCedt (
         case ACPI_CEDT_TYPE_CFMWS:
         {
             ACPI_CEDT_CFMWS *ptr = (ACPI_CEDT_CFMWS *) Subtable;
-            unsigned int i, max = 0x01 << (ptr->InterleaveWays);
+            unsigned int i, max;
 
-            /* print out table with first "Interleave target" */
+            if (ptr->InterleaveWays < 8)
+                max = 1 << (ptr->InterleaveWays);
+            else
+                max = 3 << (ptr->InterleaveWays - 8);
+
+	    /* print out table with first "Interleave target" */
 
             Status = AcpiDmDumpTable (Length, Offset, Subtable,
                 Subtable->Length, AcpiDmTableInfoCedt1);
@@ -956,6 +961,37 @@ AcpiDmDumpCedt (
 
                 Status = AcpiDmDumpTable (Length, loc_offset, trg,
                         Subtable->Length, AcpiDmTableInfoCedt1_te);
+                if (ACPI_FAILURE (Status))
+                {
+                    return;
+                }
+            }
+            break;
+        }
+
+        case ACPI_CEDT_TYPE_CXIMS:
+        {
+            ACPI_CEDT_CXIMS *ptr = (ACPI_CEDT_CXIMS *) Subtable;
+            unsigned int i, max = ptr->NrXormaps;
+
+            /* print out table with first "XOR Map" */
+
+            Status = AcpiDmDumpTable (Length, Offset, Subtable,
+                Subtable->Length, AcpiDmTableInfoCedt2);
+            if (ACPI_FAILURE (Status))
+            {
+                return;
+            }
+
+            /* Now, print out any XOR Map beyond the first. */
+
+            for (i = 1; i < max; i++)
+            {
+                unsigned int loc_offset = Offset + (i * 1) + ACPI_OFFSET (ACPI_CEDT_CXIMS, XormapList);
+                UINT64 *trg = &(ptr->XormapList[i]);
+
+                Status = AcpiDmDumpTable (Length, loc_offset, trg,
+                        Subtable->Length, AcpiDmTableInfoCedt2_te);
                 if (ACPI_FAILURE (Status))
                 {
                     return;

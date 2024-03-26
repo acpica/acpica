@@ -822,13 +822,20 @@ typedef struct acpi_cedt_cfmws_target_element
 
 /* 2: CXL XOR Interleave Math Structure */
 
-struct acpi_cedt_cxims {
+typedef struct acpi_cedt_cxims {
     ACPI_CEDT_HEADER        Header;
     UINT16                  Reserved1;
     UINT8                   Hbig;
     UINT8                   NrXormaps;
     UINT64                  XormapList[];
-};
+} ACPI_CEDT_CXIMS;
+
+typedef struct acpi_cedt_cxims_target_element
+{
+    UINT64                   Xormap;
+
+} ACPI_CEDT_CXIMS_TARGET_ELEMENT;
+
 
 /* 3: CXL RCEC Downstream Port Association Structure */
 
