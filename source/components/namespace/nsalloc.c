@@ -275,8 +275,8 @@ AcpiNsDeleteNode (
     (void) AcpiOsReleaseObject (AcpiGbl_NamespaceCache, Node);
 
     ACPI_MEM_TRACKING (AcpiGbl_NsNodeList->TotalFreed++);
-    ACPI_DEBUG_PRINT ((ACPI_DB_ALLOCATIONS, "Node %p, Remaining %X\n",
-        Node, AcpiGbl_CurrentNodeCount));
+    ACPI_DEBUG_PRINT ((ACPI_DB_ALLOCATIONS, "Remaining %X\n",
+        AcpiGbl_CurrentNodeCount));
 }
 
 
