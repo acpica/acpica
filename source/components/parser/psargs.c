@@ -1016,6 +1016,11 @@ AcpiPsGetNextArg (
 
             Status = AcpiPsGetNextNamepath (WalkState, ParserState,
                 Arg, ACPI_NOT_METHOD_CALL);
+            if (ACPI_FAILURE(Status))
+            {
+                AcpiPsFreeOp (Arg);
+                return_ACPI_STATUS (Status);
+            }
         }
         else
         {
@@ -1048,6 +1053,11 @@ AcpiPsGetNextArg (
 
             Status = AcpiPsGetNextNamepath (WalkState, ParserState,
                 Arg, ACPI_POSSIBLE_METHOD_CALL);
+            if (ACPI_FAILURE(Status))
+            {
+                AcpiPsFreeOp (Arg);
+                return_ACPI_STATUS (Status);
+            }
 
             if (Arg->Common.AmlOpcode == AML_INT_METHODCALL_OP)
             {
