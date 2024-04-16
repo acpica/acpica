@@ -989,10 +989,10 @@ AcpiPsGetNextArg (
                 Field = AcpiPsGetNextField (ParserState);
                 if (!Field)
                 {
-		    if (Arg)
-		    {
-		        AcpiPsFreeFieldList(Arg);
-		    }
+                    if (Arg)
+                    {
+                        AcpiPsFreeFieldList(Arg);
+                    }
 
                     return_ACPI_STATUS (AE_NO_MEMORY);
                 }
