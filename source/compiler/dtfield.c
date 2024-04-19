@@ -282,8 +282,7 @@ DtCompileString (
     {
         sprintf (AslGbl_MsgBuffer,
             "Maximum %u characters, found %u characters [%.*s]",
-            ByteLength, Length, (UINT32) (ASL_MSG_STRING_LENGTH + 2 - sizeof 
-            ("Maximum %u characters, found %u characters [%.*s]")), Field->Value);
+            ByteLength, Length, (ASL_MSG_BUFFER_SIZE / 2), Field->Value);
         DtError (ASL_ERROR, ASL_MSG_STRING_LENGTH, Field, AslGbl_MsgBuffer);
         Length = ByteLength;
     }
