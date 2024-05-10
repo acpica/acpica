@@ -312,7 +312,6 @@ AcpiUtCreateMutex (
     {
         Status = AcpiOsCreateMutex (&AcpiGbl_MutexInfo[MutexId].Mutex);
         AcpiGbl_MutexInfo[MutexId].ThreadId = ACPI_MUTEX_NOT_ACQUIRED;
-        AcpiGbl_MutexInfo[MutexId].UseCount = 0;
     }
 
     return_ACPI_STATUS (Status);
@@ -426,7 +425,6 @@ AcpiUtAcquireMutex (
             "Thread %u acquired Mutex [%s]\n",
             (UINT32) ThisThreadId, AcpiUtGetMutexName (MutexId)));
 
-        AcpiGbl_MutexInfo[MutexId].UseCount++;
         AcpiGbl_MutexInfo[MutexId].ThreadId = ThisThreadId;
     }
     else

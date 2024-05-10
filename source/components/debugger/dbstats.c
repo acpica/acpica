@@ -585,8 +585,9 @@ AcpiDbDisplayStatistics (
         AcpiOsPrintf ("\nMutex usage:\n\n");
         for (i = 0; i < ACPI_NUM_MUTEX; i++)
         {
-            AcpiOsPrintf ("%-28s:       %7u\n",
-                AcpiUtGetMutexName (i), AcpiGbl_MutexInfo[i].UseCount);
+            AcpiOsPrintf ("%-28s:       %d\n",
+                AcpiUtGetMutexName (i),
+                AcpiOsGetThreadId () == AcpiGbl_MutexInfo[i].ThreadId);
         }
         break;
 

@@ -267,7 +267,6 @@ AcpiUtInitGlobals (
     {
         AcpiGbl_MutexInfo[i].Mutex          = NULL;
         AcpiGbl_MutexInfo[i].ThreadId       = ACPI_MUTEX_NOT_ACQUIRED;
-        AcpiGbl_MutexInfo[i].UseCount       = 0;
     }
 
     for (i = 0; i < ACPI_NUM_OWNERID_MASKS; i++)

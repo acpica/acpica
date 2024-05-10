@@ -239,7 +239,6 @@ typedef struct acpi_rw_lock
 typedef struct acpi_mutex_info
 {
     ACPI_MUTEX                      Mutex;
-    UINT32                          UseCount;
     ACPI_THREAD_ID                  ThreadId;
 
 } ACPI_MUTEX_INFO;
