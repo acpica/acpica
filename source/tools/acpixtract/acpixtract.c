@@ -213,7 +213,7 @@ AxExtractTables (
         AxNormalizeSignature (UpperSignature);
         Instances = AxCountTableInstances (InputPathname, UpperSignature);
 
-        if (Instances < MinimumInstances)
+        if (Instances < MinimumInstances || MinimumInstances == AX_OPTIONAL_TABLES)
         {
             printf ("Table [%s] was not found in %s\n",
                 UpperSignature, InputPathname);
