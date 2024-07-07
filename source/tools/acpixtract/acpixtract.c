@@ -186,6 +186,7 @@ AxExtractTables (
     int                     Status = 0;
     unsigned int            State = AX_STATE_FIND_HEADER;
 
+    memset (UpperSignature, 0, sizeof(UpperSignature));
 
     /* Open input in text mode, output is in binary mode */
 
