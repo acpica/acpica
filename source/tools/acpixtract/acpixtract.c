@@ -204,7 +204,7 @@ AxExtractTables (
 
     if (Signature)
     {
-        strncpy (UpperSignature, Signature, ACPI_NAMESEG_SIZE);
+        strncpy (UpperSignature, Signature, ACPI_NAMESEG_SIZE + 1);
         AcpiUtStrupr (UpperSignature);
 
         /* Are there enough instances of the table to continue? */
@@ -212,7 +212,7 @@ AxExtractTables (
         AxNormalizeSignature (UpperSignature);
         Instances = AxCountTableInstances (InputPathname, UpperSignature);
 
-        if (Instances < MinimumInstances)
+        if (Instances < MinimumInstances || MinimumInstances == AX_OPTIONAL_TABLES)
         {
             printf ("Table [%s] was not found in %s\n",
                 UpperSignature, InputPathname);
