@@ -7099,7 +7099,6 @@ features become unavailable:
     General Purpose Events (GPEs)
     Global Lock
     ACPI PM timer
-    FACS table (Waking vectors and Global Lock)
 
 Updated the unix tarball directory structure to match the ACPICA git 
 source 
