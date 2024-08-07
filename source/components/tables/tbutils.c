@@ -165,7 +165,6 @@ AcpiTbGetRootTableEntry (
     UINT32                  TableEntrySize);
 
 
-#if (!ACPI_REDUCED_HARDWARE)
 /*******************************************************************************
  *
  * FUNCTION:    AcpiTbInitializeFacs
@@ -203,7 +202,6 @@ AcpiTbInitializeFacs (
 
     return (AE_OK);
 }
-#endif /* !ACPI_REDUCED_HARDWARE */
 
 
 /*******************************************************************************
