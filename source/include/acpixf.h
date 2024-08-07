@@ -1295,7 +1295,7 @@ ACPI_STATUS
 AcpiLeaveSleepState (
     UINT8                   SleepState))
 
-ACPI_HW_DEPENDENT_RETURN_STATUS (
+ACPI_EXTERNAL_RETURN_STATUS (
 ACPI_STATUS
 AcpiSetFirmwareWakingVector (
     ACPI_PHYSICAL_ADDRESS   PhysicalAddress,
