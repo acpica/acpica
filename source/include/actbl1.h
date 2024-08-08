@@ -2270,7 +2270,7 @@ typedef struct acpi_hmat_cache
     UINT32                  Reserved1;
     UINT64                  CacheSize;
     UINT32                  CacheAttributes;
-    UINT16                  Reserved2;
+    UINT16                  AddressMode;
     UINT16                  NumberOfSMBIOSHandles;
 
 } ACPI_HMAT_CACHE;
@@ -2282,6 +2282,9 @@ typedef struct acpi_hmat_cache
 #define ACPI_HMAT_CACHE_ASSOCIATIVITY   (0x00000F00)
 #define ACPI_HMAT_WRITE_POLICY          (0x0000F000)
 #define ACPI_HMAT_CACHE_LINE_SIZE       (0xFFFF0000)
+
+#define ACPI_HMAT_CACHE_MODE_UNKNOWN            (0)
+#define ACPI_HMAT_CACHE_MODE_EXTENDED_LINEAR    (1)
 
 /* Values for cache associativity flag */
 

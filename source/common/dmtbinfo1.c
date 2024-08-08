@@ -1668,7 +1668,7 @@ ACPI_DMTABLE_INFO           AcpiDmTableInfoHmat2[] =
     {ACPI_DMT_FLAGS4_8,     ACPI_HMAT2_FLAG_OFFSET (CacheAttributes,0), "Cache Associativity", 0},
     {ACPI_DMT_FLAGS4_12,    ACPI_HMAT2_FLAG_OFFSET (CacheAttributes,0), "Write Policy", 0},
     {ACPI_DMT_FLAGS16_16,   ACPI_HMAT2_FLAG_OFFSET (CacheAttributes,0), "Cache Line Size", 0},
-    {ACPI_DMT_UINT16,       ACPI_HMAT2_OFFSET (Reserved2),              "Reserved2", 0},
+    {ACPI_DMT_UINT16,       ACPI_HMAT2_OFFSET (AddressMode),            "Address Mode", 0},
     {ACPI_DMT_UINT16,       ACPI_HMAT2_OFFSET (NumberOfSMBIOSHandles),  "SMBIOS Handle #", 0},
     ACPI_DMT_TERMINATOR
 };
