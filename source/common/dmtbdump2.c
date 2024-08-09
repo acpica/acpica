@@ -149,7 +149,6 @@
  *
  *****************************************************************************/
 
-#include <wchar.h>
 #include "acpi.h"
 #include "accommon.h"
 #include "acdisasm.h"
@@ -1902,7 +1901,8 @@ AcpiDmDumpPhat (
     UINT32                  PathLength;
     UINT32                  VendorLength;
     UINT16                  RecordType;
-    const wchar_t           *WideString;
+    const UINT16            *WideString;
+    UINT32                  i;
 
 
     Subtable = ACPI_ADD_PTR (ACPI_PHAT_HEADER, Table, sizeof (ACPI_TABLE_PHAT));
@@ -1933,7 +1933,7 @@ AcpiDmDumpPhat (
         case ACPI_PHAT_TYPE_FW_HEALTH_DATA:
 
             InfoTable = AcpiDmTableInfoPhat1;
-            SubtableLength = Offset += sizeof (ACPI_PHAT_TYPE_FW_HEALTH_DATA);
+            SubtableLength = Offset += sizeof (ACPI_PHAT_HEALTH_DATA);
             break;
 
         default:
@@ -2010,10 +2010,13 @@ AcpiDmDumpPhat (
              * Get the length of the Device Path (UEFI wide string).
              * Include the wide null terminator (+2),
              */
-            WideString = ACPI_ADD_PTR (wchar_t, Subtable,
+            WideString = ACPI_ADD_PTR (UINT16, Subtable,
                 sizeof (ACPI_PHAT_HEALTH_DATA));
 
-            PathLength = (wcslen (WideString) * 2) + 2;
+	   for (i = 0; *WideString; i++, WideString++)
+		;
+
+            PathLength = i * 2 + 2;
             DbgPrint (ASL_DEBUG_OUTPUT, "/* %u, PathLength %X, Offset %X, Table->Length %X */\n",
                 __LINE__, PathLength, Offset, Length);
 
