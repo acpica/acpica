@@ -2028,8 +2028,10 @@ AcpiDmDumpPhat (
 
             /* Get Device-Specific Data - length of which is the remaining subtable length. */
 
-            VendorLength =
-                Subtable->Length - sizeof (ACPI_PHAT_HEALTH_DATA) - PathLength;
+	    VendorLength = 0;
+	    if (Subtable->Length > sizeof (ACPI_PHAT_HEALTH_DATA) + PathLength)
+		VendorLength =
+			Subtable->Length - sizeof (ACPI_PHAT_HEALTH_DATA) - PathLength;
             DbgPrint (ASL_DEBUG_OUTPUT, "%u, Subtable->Length %X, VendorLength %X, Offset %X PathLength: %X\n",
                 __LINE__, Subtable->Length, VendorLength, Offset, PathLength);
 
