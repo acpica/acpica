@@ -1894,6 +1894,7 @@ AcpiDmDumpPhat (
     ACPI_DMTABLE_INFO       *InfoTable;
     ACPI_PHAT_HEADER        *Subtable;
     ACPI_PHAT_VERSION_DATA  *VersionData;
+    ACPI_PHAT_HEALTH_DATA   *HealthData;
     UINT32                  RecordCount;
     UINT32                  Length = Table->Length;
     UINT32                  Offset = sizeof (ACPI_TABLE_PHAT);
@@ -1902,7 +1903,6 @@ AcpiDmDumpPhat (
     UINT32                  PathLength;
     UINT32                  VendorLength;
     UINT16                  RecordType;
-    const wchar_t           *WideString;
 
 
     Subtable = ACPI_ADD_PTR (ACPI_PHAT_HEADER, Table, sizeof (ACPI_TABLE_PHAT));
@@ -2006,41 +2006,55 @@ AcpiDmDumpPhat (
 
         case ACPI_PHAT_TYPE_FW_HEALTH_DATA:
 
-            /*
-             * Get the length of the Device Path (UEFI wide string).
-             * Include the wide null terminator (+2),
-             */
-            WideString = ACPI_ADD_PTR (wchar_t, Subtable,
-                sizeof (ACPI_PHAT_HEALTH_DATA));
+            HealthData = ACPI_CAST_PTR (ACPI_PHAT_HEALTH_DATA, Subtable);
+            PathLength = Subtable->Length - sizeof (ACPI_PHAT_HEALTH_DATA);
+            VendorLength = 0;
 
-            PathLength = (wcslen (WideString) * 2) + 2;
-            DbgPrint (ASL_DEBUG_OUTPUT, "/* %u, PathLength %X, Offset %X, Table->Length %X */\n",
-                __LINE__, PathLength, Offset, Length);
-
-            Status = AcpiDmDumpTable (Length, Offset,
-                ACPI_ADD_PTR (ACPI_PHAT_HEADER, Subtable, sizeof (ACPI_PHAT_HEALTH_DATA)),
-                PathLength, AcpiDmTableInfoPhat1a);
-            Offset += PathLength;
-            if (ACPI_FAILURE (Status))
+            /* An offset of 0 should be ignored */
+            if (HealthData->DeviceSpecificOffset != 0)
             {
-                return;
+                if (HealthData->DeviceSpecificOffset > Subtable->Length)
+                {
+                    AcpiOsPrintf ("\n/* Warning: Oversized device-specific data offset %X */\n"
+                        "/* (maximum is %X -- ignoring device-specific data) */\n",
+                        HealthData->DeviceSpecificOffset, Subtable->Length);
+                }
+                else if (HealthData->DeviceSpecificOffset < sizeof (ACPI_PHAT_HEALTH_DATA))
+                {
+                    AcpiOsPrintf ("\n/* Warning: Undersized device-specific data offset %X */\n"
+                        "/* (minimum is %X -- ignoring device-specific data) */\n",
+                        HealthData->DeviceSpecificOffset, (UINT8) sizeof (ACPI_PHAT_HEALTH_DATA));
+                }
+                else
+                {
+                    PathLength = HealthData->DeviceSpecificOffset - sizeof (ACPI_PHAT_HEALTH_DATA);
+                    VendorLength = Subtable->Length - HealthData->DeviceSpecificOffset;
+                }
             }
 
-            /* Get Device-Specific Data - length of which is the remaining subtable length. */
+            DbgPrint (ASL_DEBUG_OUTPUT, "/* %u, PathLength %X, Offset %X */\n",
+                __LINE__, PathLength, Offset);
 
-	    VendorLength = 0;
-	    if (Subtable->Length > sizeof (ACPI_PHAT_HEALTH_DATA) + PathLength)
-		VendorLength =
-			Subtable->Length - sizeof (ACPI_PHAT_HEALTH_DATA) - PathLength;
-            DbgPrint (ASL_DEBUG_OUTPUT, "%u, Subtable->Length %X, VendorLength %X, Offset %X PathLength: %X\n",
-                __LINE__, Subtable->Length, VendorLength, Offset, PathLength);
+            if (PathLength)
+            {
+                Status = AcpiDmDumpTable (Length, Offset,
+                    ACPI_ADD_PTR (ACPI_PHAT_HEADER, Subtable, sizeof (ACPI_PHAT_HEALTH_DATA)),
+                    PathLength, AcpiDmTableInfoPhat1a);
+                if (ACPI_FAILURE (Status))
+                {
+                    return;
+                }
+
+                Offset += PathLength;
+            }
+
+            DbgPrint (ASL_DEBUG_OUTPUT, "/* %u, VendorLength %X, Offset %X */\n",
+                __LINE__, VendorLength, Offset);
 
             if (VendorLength)
             {
-                /* Point past the Device Path, Compile the Device-Specific Data */
-
                 Status = AcpiDmDumpTable (Length, Offset,
-                    ACPI_ADD_PTR (ACPI_PHAT_HEADER, Subtable, sizeof (ACPI_PHAT_HEALTH_DATA) + PathLength),
+                    ACPI_ADD_PTR (ACPI_PHAT_HEADER, Subtable, HealthData->DeviceSpecificOffset),
                     VendorLength, AcpiDmTableInfoPhat1b);
                 if (ACPI_FAILURE (Status))
                 {
