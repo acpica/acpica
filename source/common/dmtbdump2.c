@@ -1927,13 +1927,13 @@ AcpiDmDumpPhat (
         case ACPI_PHAT_TYPE_FW_VERSION_DATA:
 
             InfoTable = AcpiDmTableInfoPhat0;
-            SubtableLength = Offset += sizeof (ACPI_PHAT_VERSION_DATA);
+            SubtableLength = sizeof (ACPI_PHAT_VERSION_DATA);
             break;
 
         case ACPI_PHAT_TYPE_FW_HEALTH_DATA:
 
             InfoTable = AcpiDmTableInfoPhat1;
-            SubtableLength = Offset += sizeof (ACPI_PHAT_HEALTH_DATA);
+            SubtableLength = sizeof (ACPI_PHAT_HEALTH_DATA);
             break;
 
         default:
@@ -1944,12 +1944,14 @@ AcpiDmDumpPhat (
             return;
         }
 
-        Status = AcpiDmDumpTable (Length, SubtableLength, Subtable,
+        Status = AcpiDmDumpTable (Length, Offset, Subtable,
             SubtableLength, InfoTable);
         if (ACPI_FAILURE (Status))
         {
             return;
         }
+
+        Offset += SubtableLength;
 
         OriginalOffset = Offset;
         switch (Subtable->Type)
