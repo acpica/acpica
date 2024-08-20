@@ -1086,7 +1086,7 @@ AcpiDmDumpTable (
         {
             AcpiOsPrintf (
                 "/**** ACPI table terminates "
-                "in the middle of a data structure! (dump table) \n"
+                "in the middle of a data structure! (dump table)\n"
                 "CurrentOffset: %X, TableLength: %X ***/", CurrentOffset, TableLength);
             return (AE_BAD_DATA);
         }
