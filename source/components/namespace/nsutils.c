@@ -806,6 +806,9 @@ AcpiNsTerminate (
 
     ACPI_FUNCTION_TRACE (NsTerminate);
 
+#ifdef ACPI_USE_NS_SEARCH_ACCELERATION
+    AcpiNsSearchAccelerationTerminate ();
+#endif
 
     /*
      * Free the entire namespace -- all nodes and all objects
