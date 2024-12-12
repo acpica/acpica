@@ -142,16 +142,30 @@ Update the ACPICA website for every new release
 
 -------------------------
 
-Newer Intel Developer Zone based Website Guidelines
+Newer Intel Developer Zone (IDZ) based Website Guidelines
 
 Intel employee maintainer:
-    Sign in as an Intel employee (using SSO) here: https://digitalrequest.intel.com/servicedesk/customer/portal/83
+    Sign in as an Intel employee (using SSO) here: 
+        https://digitalrequest.intel.com/servicedesk/customer/portal/83
+
     Open a ticket request of type "Create or Update Landing Page or Video"
-    Edit the exact instructions which will very for every new release in "acpica new release scope analysis.rtf" document
-    Upload the document as part of attachments in the ticket along with the 6 release files + release notes
+        Fill all the required information in the ticket
+
+    Edit the exact instructions which will vary for every new release in:
+        "acpica new release scope analysis.rtf" document
+
+    Upload the document as part of attachments in the ticket along with:
+        the 6 release files + release notes
+
+    Make all the necessary changes to webpages in GatherContent (GC)
+
     The IDZ website will take about 1-2 weeks to reflect the changes
-    IDZ homepage (Overview page) - https://www.intel.com/content/www/us/en/developer/topic-technology/open/acpica/overview.html
-    GatherContent project pages (for pre-release drafts) - https://idz.gathercontent.com/content/215567/items/5111dd3d-282d-4d57-99ab-ffb739a73548
+
+    IDZ homepage (Overview page) - 
+        https://www.intel.com/content/www/us/en/developer/topic-technology/open/acpica/overview.html
+
+    GC project pages (for pre-release drafts) - 
+        https://idz.gathercontent.com/content/215567/items/5111dd3d-282d-4d57-99ab-ffb739a73548
 
 
 -------------------------
