@@ -929,11 +929,11 @@ Cleanup:
      * pop everything off of the operand stack and delete those
      * objects
      */
-    WalkState->NumOperands = i;
+    WalkState->NumOperands = (UINT8) (i);
     AcpiDsObjStackPopAndDelete (NewNumOperands, WalkState);
 
     /* Restore operand count */
-    WalkState->NumOperands = PrevNumOperands;
+    WalkState->NumOperands = (UINT8) (PrevNumOperands);
 
     ACPI_EXCEPTION ((AE_INFO, Status, "While creating Arg %u", Index));
     return_ACPI_STATUS (Status);
