@@ -127,7 +127,7 @@ Checkin documents/changes.txt, message "Logfile: Changes for version yyyymmdd"
 Checkin the new version number, source/include/acpixf.h "Update version to yyyymmdd"
 Git push everything
 
-Tag the version file with a name of the form Rmm_dd_yy
+Tag the version file with a name of the form Ryyyy_mm_dd
     Get the commit number for the version number commit above (git log)
     git tag -m"version yyyymmdd" Ryyyy_mm_dd HEAD
     git push --tags
