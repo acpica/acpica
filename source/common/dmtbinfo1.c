@@ -1024,7 +1024,8 @@ ACPI_DMTABLE_INFO           AcpiDmTableInfoDmarScope[] =
 ACPI_DMTABLE_INFO           AcpiDmTableInfoDmar0[] =
 {
     {ACPI_DMT_UINT8,    ACPI_DMAR0_OFFSET (Flags),                  "Flags", 0},
-    {ACPI_DMT_UINT8,    ACPI_DMAR0_OFFSET (Reserved),               "Reserved", 0},
+    {ACPI_DMT_UINT8,    ACPI_DMAR0_OFFSET (Size),                   "Size (decoded below)", 0},
+    {ACPI_DMT_FLAGS4_0, ACPI_DMAR0_FLAG_OFFSET (Size,0),            "Size (pages, log2)", 0},
     {ACPI_DMT_UINT16,   ACPI_DMAR0_OFFSET (Segment),                "PCI Segment Number", 0},
     {ACPI_DMT_UINT64,   ACPI_DMAR0_OFFSET (Address),                "Register Base Address", 0},
     ACPI_DMT_TERMINATOR

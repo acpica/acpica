@@ -1166,7 +1166,7 @@ typedef struct acpi_dmar_hardware_unit
 {
     ACPI_DMAR_HEADER        Header;
     UINT8                   Flags;
-    UINT8                   Reserved;
+    UINT8                   Size;
     UINT16                  Segment;
     UINT64                  Address;            /* Register Base Address */
 
