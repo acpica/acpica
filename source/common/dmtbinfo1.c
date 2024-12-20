@@ -1011,7 +1011,8 @@ ACPI_DMTABLE_INFO           AcpiDmTableInfoDmarScope[] =
 {
     {ACPI_DMT_DMAR_SCOPE, ACPI_DMARS_OFFSET (EntryType),            "Device Scope Type", 0},
     {ACPI_DMT_UINT8,    ACPI_DMARS_OFFSET (Length),                 "Entry Length", DT_LENGTH},
-    {ACPI_DMT_UINT16,   ACPI_DMARS_OFFSET (Reserved),               "Reserved", 0},
+    {ACPI_DMT_UINT8,    ACPI_DMARS_OFFSET (Flags),                  "Flags", 0},
+    {ACPI_DMT_UINT8,    ACPI_DMARS_OFFSET (Reserved),               "Reserved", 0},
     {ACPI_DMT_UINT8,    ACPI_DMARS_OFFSET (EnumerationId),          "Enumeration ID", 0},
     {ACPI_DMT_UINT8,    ACPI_DMARS_OFFSET (Bus),                    "PCI Bus Number", 0},
     ACPI_DMT_TERMINATOR
@@ -1081,6 +1082,16 @@ ACPI_DMTABLE_INFO           AcpiDmTableInfoDmar5[] =
     {ACPI_DMT_UINT16,   ACPI_DMAR5_OFFSET (Segment),                "PCI Segment Number", 0},
     ACPI_DMT_TERMINATOR
 };
+
+/* 6: SoC Integrated Device Property */
+
+ACPI_DMTABLE_INFO           AcpiDmTableInfoDmar6[] =
+{
+    {ACPI_DMT_UINT16,   ACPI_DMAR6_OFFSET (Reserved),               "Reserved", 0},
+    {ACPI_DMT_UINT16,   ACPI_DMAR6_OFFSET (Segment),                "PCI Segment Number", 0},
+    ACPI_DMT_TERMINATOR
+};
+
 
 /*******************************************************************************
  *
