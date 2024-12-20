@@ -1507,6 +1507,11 @@ DtCompileDmar (
             InfoTable = AcpiDmTableInfoDmar5;
             break;
 
+        case ACPI_DMAR_TYPE_SIDP:
+
+            InfoTable = AcpiDmTableInfoDmar6;
+            break;
+
         default:
 
             DtFatal (ASL_MSG_UNKNOWN_SUBTABLE, SubtableStart, "DMAR");
