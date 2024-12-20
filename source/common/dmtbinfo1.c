@@ -1072,7 +1072,7 @@ ACPI_DMTABLE_INFO           AcpiDmTableInfoDmar4[] =
     ACPI_DMT_TERMINATOR
 };
 
-/* 5: Hardware Unit Definition */
+/* 5: SoC Integrated Address Translation Cache */
 
 ACPI_DMTABLE_INFO           AcpiDmTableInfoDmar5[] =
 {
