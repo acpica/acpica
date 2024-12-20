@@ -1480,6 +1480,12 @@ AcpiDmDumpDmar (
             ScopeOffset = sizeof (ACPI_DMAR_SATC);
             break;
 
+        case ACPI_DMAR_TYPE_SIDP:
+
+            InfoTable = AcpiDmTableInfoDmar6;
+            ScopeOffset = sizeof (ACPI_DMAR_SIDP);
+            break;
+
         default:
 
             AcpiOsPrintf ("\n**** Unknown DMAR subtable type 0x%X\n\n",
