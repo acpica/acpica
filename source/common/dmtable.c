@@ -272,6 +272,7 @@ static const char           *AcpiDmDmarSubnames[] =
     "Remapping Hardware Static Affinity",
     "ACPI Namespace Device Declaration",
     "SoC Integrated Address Translation Cache",
+    "SoC Integrated Device Property",
     "Unknown Subtable Type"         /* Reserved */
 };
 
