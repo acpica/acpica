@@ -655,6 +655,8 @@ typedef struct acpi_table_tpm2
 #define ACPI_TPM2_RESERVED10                        10
 #define ACPI_TPM2_COMMAND_BUFFER_WITH_ARM_SMC       11  /* V1.2 Rev 8 */
 #define ACPI_TPM2_RESERVED                          12
+#define ACPI_TPM2_COMMAND_BUFFER_WITH_PLUTON        13
+#define ACPI_TPM2_CRB_WITH_ARM_FFA                  15
 
 
 /* Optional trailer appears after any StartMethod subtables */
