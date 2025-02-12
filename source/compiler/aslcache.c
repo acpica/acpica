@@ -210,7 +210,8 @@ UtLocalCacheCalloc (
         }
     }
 
-    if ((AslGbl_StringCacheNext + Length) >= AslGbl_StringCacheLast)
+    if ((!AslGbl_StringCacheNext) ||
+        ((AslGbl_StringCacheNext + Length) >= AslGbl_StringCacheLast))
     {
         /* Allocate a new buffer */
 
