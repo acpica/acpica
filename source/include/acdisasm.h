@@ -293,6 +293,7 @@ typedef enum
     ACPI_DMT_PPTT,
     ACPI_DMT_RGRT,
     ACPI_DMT_RHCT,
+    ACPI_DMT_RIMT,
     ACPI_DMT_SDEI,
     ACPI_DMT_SDEV,
     ACPI_DMT_SLIC,
@@ -658,6 +659,14 @@ extern ACPI_DMTABLE_INFO        AcpiDmTableInfoRhctCmo1[];
 extern ACPI_DMTABLE_INFO        AcpiDmTableInfoRhctMmu1[];
 extern ACPI_DMTABLE_INFO        AcpiDmTableInfoRhctHartInfo1[];
 extern ACPI_DMTABLE_INFO        AcpiDmTableInfoRhctHartInfo2[];
+extern ACPI_DMTABLE_INFO        AcpiDmTableInfoRimt[];
+extern ACPI_DMTABLE_INFO        AcpiDmTableInfoRimtNodeHdr[];
+extern ACPI_DMTABLE_INFO        AcpiDmTableInfoRimtIommu[];
+extern ACPI_DMTABLE_INFO        AcpiDmTableInfoRimtIommuWire[];
+extern ACPI_DMTABLE_INFO        AcpiDmTableInfoRimtPcieRc[];
+extern ACPI_DMTABLE_INFO        AcpiDmTableInfoRimtIdMapping[];
+extern ACPI_DMTABLE_INFO        AcpiDmTableInfoRimtPlatDev[];
+extern ACPI_DMTABLE_INFO        AcpiDmTableInfoRimtPlatDevPad[];
 extern ACPI_DMTABLE_INFO        AcpiDmTableInfoRsdp1[];
 extern ACPI_DMTABLE_INFO        AcpiDmTableInfoRsdp2[];
 extern ACPI_DMTABLE_INFO        AcpiDmTableInfoS3pt[];
@@ -932,6 +941,10 @@ AcpiDmDumpRgrt (
 
 void
 AcpiDmDumpRhct (
+    ACPI_TABLE_HEADER       *Table);
+
+void
+AcpiDmDumpRimt (
     ACPI_TABLE_HEADER       *Table);
 
 UINT32
