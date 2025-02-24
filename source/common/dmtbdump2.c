@@ -1473,6 +1473,50 @@ AcpiDmDumpMpst (
 
 /*******************************************************************************
  *
+ * FUNCTION:    AcpiDmDumpMrrm
+ *
+ * PARAMETERS:  Table               - A MRRM table
+ *
+ * RETURN:      None
+ *
+ * DESCRIPTION: Format the contents of a MRRM
+ *
+ ******************************************************************************/
+
+void
+AcpiDmDumpMrrm (
+    ACPI_TABLE_HEADER       *Table)
+{
+    ACPI_STATUS             Status;
+    ACPI_TABLE_MRRM_MEM_RANGE_ENTRY        *Subtable;
+    UINT16                  Offset = sizeof (ACPI_TABLE_MRRM);
+
+    Status = AcpiDmDumpTable (Table->Length, 0, Table, 0, AcpiDmTableInfoMrrm);
+    if (ACPI_FAILURE (Status))
+    {
+        return;
+    }
+
+    Subtable = ACPI_ADD_PTR (ACPI_TABLE_MRRM_MEM_RANGE_ENTRY, Table, Offset);
+    while (Offset < Table->Length)
+    {
+        AcpiOsPrintf ("\n");
+        Status = AcpiDmDumpTable (Table->Length, Offset, Subtable,
+            Subtable->Header.Length, AcpiDmTableInfoMrrm0);
+        if (ACPI_FAILURE (Status))
+        {
+            return;
+        }
+
+        Offset += Subtable->Header.Length;
+        Subtable = ACPI_ADD_PTR (ACPI_TABLE_MRRM_MEM_RANGE_ENTRY, Subtable,
+           Subtable->Header.Length);
+    }
+}
+
+
+/*******************************************************************************
+ *
  * FUNCTION:    AcpiDmDumpMsct
  *
  * PARAMETERS:  Table               - A MSCT table

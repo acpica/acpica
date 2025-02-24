@@ -887,6 +887,10 @@ AcpiDmDumpMpst (
     ACPI_TABLE_HEADER       *Table);
 
 void
+AcpiDmDumpMrrm (
+    ACPI_TABLE_HEADER       *Table);
+
+void
 AcpiDmDumpMsct (
     ACPI_TABLE_HEADER       *Table);
 
