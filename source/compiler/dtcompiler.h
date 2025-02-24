@@ -820,6 +820,7 @@ extern const unsigned char  TemplateMcfg[];
 extern const unsigned char  TemplateMchi[];
 extern const unsigned char  TemplateMpam[];
 extern const unsigned char  TemplateMpst[];
+extern const unsigned char  TemplateMrrm[];
 extern const unsigned char  TemplateMsct[];
 extern const unsigned char  TemplateMsdm[];
 extern const unsigned char  TemplateNfit[];
