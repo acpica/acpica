@@ -1202,6 +1202,11 @@ AcpiDmDumpTable (
             ByteLength = 18;
             break;
 
+        case ACPI_DMT_BUF26:
+
+            ByteLength = 26;
+            break;
+
         case ACPI_DMT_BUF32:
 
             ByteLength = 32;
@@ -1423,6 +1428,7 @@ AcpiDmDumpTable (
         case ACPI_DMT_BUF12:
         case ACPI_DMT_BUF16:
         case ACPI_DMT_BUF18:
+        case ACPI_DMT_BUF26:
         case ACPI_DMT_BUF32:
         case ACPI_DMT_BUF112:
         case ACPI_DMT_BUF128:

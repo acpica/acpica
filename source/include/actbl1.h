@@ -260,6 +260,16 @@ typedef struct acpi_whea_header
 } ACPI_WHEA_HEADER;
 
 
+/* Larger subtable header (when Length can exceed 255) */
+
+typedef struct acpi_subtable_header_16
+{
+    UINT16                  Type;
+    UINT16                  Length;
+
+} ACPI_SUBTABLE_HEADER_16;
+
+
 /*******************************************************************************
  *
  * ASF - Alert Standard Format table (Signature "ASF!")
