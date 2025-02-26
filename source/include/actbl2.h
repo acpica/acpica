@@ -181,6 +181,7 @@
 #define ACPI_SIG_MCHI           "MCHI"      /* Management Controller Host Interface table */
 #define ACPI_SIG_MPAM           "MPAM"      /* Memory System Resource Partitioning and Monitoring Table */
 #define ACPI_SIG_MPST           "MPST"      /* Memory Power State Table */
+#define ACPI_SIG_MRRM           "MRRM"      /* Memory Range and Region Mapping table */
 #define ACPI_SIG_MSDM           "MSDM"      /* Microsoft Data Management Table */
 #define ACPI_SIG_NFIT           "NFIT"      /* NVDIMM Firmware Interface Table */
 #define ACPI_SIG_NHLT           "NHLT"      /* Non HD Audio Link Table */
@@ -2088,6 +2089,48 @@ typedef struct acpi_msct_proximity
     UINT64                  MemoryCapacity;     /* In bytes */
 
 } ACPI_MSCT_PROXIMITY;
+
+
+/*******************************************************************************
+ *
+ * MRRM - Memory Range and Region Mapping (MRRM) table
+ *
+ ******************************************************************************/
+
+typedef struct acpi_table_mrrm {
+        ACPI_TABLE_HEADER   Header;             /* Common ACPI table header */
+        UINT8               MaxMemRegion;       /* Max Memory Regions supported */
+        UINT8               Flags;              /* Region assignment type */
+        UINT8               Reserved[26];
+        UINT8               Memory_Range_Entry[];
+
+} ACPI_TABLE_MRRM;
+
+/* Flags */
+#define ACPI_MRRM_FLAGS_REGION_ASSIGNMENT_OS    (1<<0)
+
+/*******************************************************************************
+ *
+ * Memory Range entry - Memory Range entry in MRRM table
+ *
+ ******************************************************************************/
+
+typedef struct acpi_table_mrrm_mem_range_entry {
+        ACPI_SUBTABLE_HEADER_16    Header;
+        UINT32                     Reserved0;          /* Reserved */
+        UINT64                     AddrBase;           /* Base addr of the mem range */
+        UINT64                     AddrLen;            /* Length of the mem range */
+        UINT16                     RegionIdFlags;      /* Valid local or remote Region-ID */
+        UINT8                      LocalRegionId;      /* Platform-assigned static local Region-ID */
+        UINT8                      RemoteRegionId;     /* Platform-assigned static remote Region-ID */
+        UINT32                     Reserved1;          /* Reserved */
+        /* Region-ID Programming Registers[] */
+
+} ACPI_TABLE_MRRM_MEM_RANGE_ENTRY;
+
+/* Values for RegionIdFlags above */
+#define ACPI_MRRM_VALID_REGION_ID_FLAGS_LOCAL   (1<<0)
+#define ACPI_MRRM_VALID_REGION_ID_FLAGS_REMOTE  (1<<1)
 
 
 /*******************************************************************************

@@ -226,6 +226,7 @@ typedef enum
     ACPI_DMT_BUF12,
     ACPI_DMT_BUF16,
     ACPI_DMT_BUF18,
+    ACPI_DMT_BUF26,
     ACPI_DMT_BUF32,
     ACPI_DMT_BUF112,
     ACPI_DMT_BUF128,
@@ -596,6 +597,8 @@ extern ACPI_DMTABLE_INFO        AcpiDmTableInfoMpst0A[];
 extern ACPI_DMTABLE_INFO        AcpiDmTableInfoMpst0B[];
 extern ACPI_DMTABLE_INFO        AcpiDmTableInfoMpst1[];
 extern ACPI_DMTABLE_INFO        AcpiDmTableInfoMpst2[];
+extern ACPI_DMTABLE_INFO        AcpiDmTableInfoMrrm[];
+extern ACPI_DMTABLE_INFO        AcpiDmTableInfoMrrm0[];
 extern ACPI_DMTABLE_INFO        AcpiDmTableInfoMsct[];
 extern ACPI_DMTABLE_INFO        AcpiDmTableInfoMsct0[];
 extern ACPI_DMTABLE_INFO        AcpiDmTableInfoNfit[];
@@ -881,6 +884,10 @@ AcpiDmDumpMpam (
 
 void
 AcpiDmDumpMpst (
+    ACPI_TABLE_HEADER       *Table);
+
+void
+AcpiDmDumpMrrm (
     ACPI_TABLE_HEADER       *Table);
 
 void

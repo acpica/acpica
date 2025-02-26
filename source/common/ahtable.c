@@ -235,6 +235,7 @@ const AH_TABLE      AcpiGbl_SupportedTables[] =
     {ACPI_SIG_MCHI, "Management Controller Host Interface Table"},
     {ACPI_SIG_MPAM, "Memory System Resource Partitioning and Monitoring Table"},
     {ACPI_SIG_MPST, "Memory Power State Table"},
+    {ACPI_SIG_MRRM, "Memory Range and Region Mapping Table"},
     {ACPI_SIG_MSCT, "Maximum System Characteristics Table"},
     {ACPI_SIG_MSDM, "Microsoft Data Management Table"},
     {ACPI_SIG_NFIT, "NVDIMM Firmware Interface Table"},
