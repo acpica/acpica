@@ -1487,9 +1487,11 @@ void
 AcpiDmDumpMrrm (
     ACPI_TABLE_HEADER       *Table)
 {
-    ACPI_STATUS             Status;
-    ACPI_TABLE_MRRM_MEM_RANGE_ENTRY        *Subtable;
-    UINT16                  Offset = sizeof (ACPI_TABLE_MRRM);
+    ACPI_STATUS                      Status;
+    ACPI_MRRM_MEM_RANGE_ENTRY        *Subtable;
+    UINT16                           Offset = sizeof (ACPI_TABLE_MRRM);
+
+    /* Main table */
 
     Status = AcpiDmDumpTable (Table->Length, 0, Table, 0, AcpiDmTableInfoMrrm);
     if (ACPI_FAILURE (Status))
@@ -1497,7 +1499,9 @@ AcpiDmDumpMrrm (
         return;
     }
 
-    Subtable = ACPI_ADD_PTR (ACPI_TABLE_MRRM_MEM_RANGE_ENTRY, Table, Offset);
+    /* Subtables (all are same type) */
+
+    Subtable = ACPI_ADD_PTR (ACPI_MRRM_MEM_RANGE_ENTRY, Table, Offset);
     while (Offset < Table->Length)
     {
         AcpiOsPrintf ("\n");
@@ -1509,7 +1513,7 @@ AcpiDmDumpMrrm (
         }
 
         Offset += Subtable->Header.Length;
-        Subtable = ACPI_ADD_PTR (ACPI_TABLE_MRRM_MEM_RANGE_ENTRY, Subtable,
+        Subtable = ACPI_ADD_PTR (ACPI_MRRM_MEM_RANGE_ENTRY, Subtable,
            Subtable->Header.Length);
     }
 }
