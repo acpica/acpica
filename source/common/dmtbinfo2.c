@@ -1441,11 +1441,11 @@ ACPI_DMTABLE_INFO           AcpiDmTableInfoMrrm0[] =
     {ACPI_DMT_UINT16,   ACPI_MRRM0_OFFSET (Header.Type),            "Memory Range", 0},
     {ACPI_DMT_UINT16,   ACPI_MRRM0_OFFSET (Header.Length),          "Length", DT_LENGTH},
     {ACPI_DMT_UINT32,   ACPI_MRRM0_OFFSET (Reserved0),              "Reserved", 0},
-    {ACPI_DMT_UINT64,   ACPI_MRRM0_OFFSET (AddrBase),               "MMIO Address Base", 0},
-    {ACPI_DMT_UINT64,   ACPI_MRRM0_OFFSET (AddrLen),                "MMIO Address Length", 0},
+    {ACPI_DMT_UINT64,   ACPI_MRRM0_OFFSET (AddrBase),               "System Address Base", 0},
+    {ACPI_DMT_UINT64,   ACPI_MRRM0_OFFSET (AddrLen),                "System Address Length", 0},
     {ACPI_DMT_UINT16,   ACPI_MRRM0_OFFSET (RegionIdFlags),          "Region Valid Flags", 0},
-    {ACPI_DMT_UINT8,    ACPI_MRRM0_OFFSET (AddrBase),               "Static Local Region ID", 0},
-    {ACPI_DMT_UINT8,    ACPI_MRRM0_OFFSET (AddrBase),               "Static Remote Region ID", 0},
+    {ACPI_DMT_UINT8,    ACPI_MRRM0_OFFSET (LocalRegionId),          "Static Local Region ID", 0},
+    {ACPI_DMT_UINT8,    ACPI_MRRM0_OFFSET (RemoteRegionId),         "Static Remote Region ID", 0},
     {ACPI_DMT_UINT32,   ACPI_MRRM0_OFFSET (Reserved1),              "Reserved", 0},
     ACPI_DMT_TERMINATOR
 };
