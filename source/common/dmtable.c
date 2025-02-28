@@ -313,6 +313,22 @@ static const char           *AcpiDmEinjInstructions[] =
     "Unknown Instruction"
 };
 
+static const char           *AcpiDmErdtSubnames[] =
+{
+    "RMDD",
+    "CACD",
+    "DACD",
+    "CMRC",
+    "MMRC",
+    "MARC",
+    "CARC",
+    "CMRD",
+    "IBRD",
+    "IBAD",
+    "CARD",
+    "RESERVED"
+};
+
 static const char           *AcpiDmErstActions[] =
 {
     "Begin Write Operation",
@@ -1134,6 +1150,7 @@ AcpiDmDumpTable (
         case ACPI_DMT_ASPT:
         case ACPI_DMT_UINT16:
         case ACPI_DMT_DMAR:
+        case ACPI_DMT_ERDT:
         case ACPI_DMT_HEST:
         case ACPI_DMT_HMAT:
         case ACPI_DMT_NFIT:
@@ -1785,6 +1802,20 @@ AcpiDmDumpTable (
 
             AcpiOsPrintf (UINT8_FORMAT, *Target,
                 AcpiDmErstActions[Temp8]);
+            break;
+
+        case ACPI_DMT_ERDT:
+
+            /* ERDT subtable types */
+
+            Temp16 = *Target;
+            if (Temp16 > ACPI_ERDT_TYPE_RESERVED)
+            {
+                Temp16 = ACPI_ERDT_TYPE_RESERVED;
+            }
+
+            AcpiOsPrintf (UINT8_FORMAT, *Target,
+                AcpiDmErdtSubnames[Temp16]);
             break;
 
         case ACPI_DMT_ERSTINST:
