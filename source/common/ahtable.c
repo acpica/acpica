@@ -219,6 +219,7 @@ const AH_TABLE      AcpiGbl_SupportedTables[] =
     {ACPI_SIG_DSDT, "Differentiated System Description Table (AML table)"},
     {ACPI_SIG_ECDT, "Embedded Controller Boot Resources Table"},
     {ACPI_SIG_EINJ, "Error Injection Table"},
+    {ACPI_SIG_ERDT, "Enhanced Resource Director Technology Table"},
     {ACPI_SIG_ERST, "Error Record Serialization Table"},
     {ACPI_SIG_FACS, "Firmware ACPI Control Structure"},
     {ACPI_SIG_FADT, "Fixed ACPI Description Table (FADT)"},
