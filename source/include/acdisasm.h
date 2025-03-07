@@ -856,6 +856,10 @@ AcpiDmDumpEinj (
     ACPI_TABLE_HEADER       *Table);
 
 void
+AcpiDmDumpErdt (
+    ACPI_TABLE_HEADER       *Table);
+
+void
 AcpiDmDumpErst (
     ACPI_TABLE_HEADER       *Table);
 
