@@ -537,7 +537,7 @@ ACPI_TYPED_IDENTIFIER_TABLE           AcpiIdentifiers[] = {
     {"ACPI_STRING",                         SRC_TYPE_SIMPLE},
     {"ACPI_STRING_TABLE",                   SRC_TYPE_STRUCT},
     {"ACPI_SUBTABLE_HEADER",                SRC_TYPE_STRUCT},
-    {"ACPI_SUBTABLE_HEADER_16",             SRC_TYPE_STRUCT},
+    {"ACPI_SUBTBL_HDR_16",                  SRC_TYPE_STRUCT},
     {"ACPI_SYSTEM_INFO",                    SRC_TYPE_STRUCT},
     {"ACPI_TABLE_DESC",                     SRC_TYPE_STRUCT},
     {"ACPI_TABLE_HANDLER",                  SRC_TYPE_SIMPLE},

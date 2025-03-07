@@ -2120,7 +2120,7 @@ typedef struct acpi_table_mrrm
 
 typedef struct acpi_mrrm_mem_range_entry
 {
-    ACPI_SUBTABLE_HEADER_16 Header;
+    ACPI_SUBTBL_HDR_16      Header;
     UINT32                  Reserved0;          /* Reserved */
     UINT64                  AddrBase;           /* Base addr of the mem range */
     UINT64                  AddrLen;            /* Length of the mem range */
