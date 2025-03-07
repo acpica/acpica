@@ -614,6 +614,10 @@ DtCompileEinj (
     void                    **PFieldList);
 
 ACPI_STATUS
+DtCompileErdt (
+    void                    **PFieldList);
+
+ACPI_STATUS
 DtCompileErst (
     void                    **PFieldList);
 

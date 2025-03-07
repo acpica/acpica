@@ -1753,6 +1753,265 @@ DtCompileEinj (
 
 /******************************************************************************
  *
+ * FUNCTION:    DtCompileErdt
+ *
+ * PARAMETERS:  List                - Current field list pointer
+ *
+ * RETURN:      Status
+ *
+ * DESCRIPTION: Compile ERST. Complex table with subtables and subsubtables.
+ *
+ *****************************************************************************/
+
+ACPI_STATUS
+DtCompileErdt (
+    void                    **List)
+{
+    ACPI_STATUS             Status;
+    DT_SUBTABLE             *Subtable, *RmddSubtable = NULL, *Subsubtable;
+    DT_SUBTABLE             *ParentTable;
+    DT_FIELD                **PFieldList = (DT_FIELD **) List;
+    DT_FIELD                *SubtableStart;
+    ACPI_SUBTBL_HDR_16      *ErdtHeader;
+    ACPI_DMTABLE_INFO       *InfoTable;
+    ACPI_ERDT_MMRC          *Mmrc;
+    ACPI_ERDT_IBRD          *Ibrd;
+    UINT32                  NumEntries;
+    BOOLEAN                 SeenRmdd = FALSE;
+    BOOLEAN                 SeenSubtable = FALSE;
+
+    Status = DtCompileTable (PFieldList, AcpiDmTableInfoErdt,
+        &Subtable);
+    if (ACPI_FAILURE (Status))
+    {
+        return (Status);
+    }
+
+    ParentTable = DtPeekSubtable ();
+    DtInsertSubtable (ParentTable, Subtable);
+
+    while (*PFieldList)
+    {
+        SubtableStart = *PFieldList;
+        Status = DtCompileTable (PFieldList, AcpiDmTableInfoErdtHdr,
+            &Subtable);
+        if (ACPI_FAILURE (Status))
+        {
+            return (Status);
+        }
+
+        ErdtHeader = ACPI_CAST_PTR (ACPI_SUBTBL_HDR_16, Subtable->Buffer);
+
+        /* RMDD tables at top level. All others are subtables of preceeding RMDD */
+        if (ErdtHeader->Type == ACPI_ERDT_TYPE_RMDD)
+        {
+            if (SeenRmdd && SeenSubtable)
+                DtPopSubtable ();
+            SeenRmdd = TRUE;
+            SeenSubtable = FALSE;
+            RmddSubtable = Subtable;
+        }
+        else
+        {
+            if (!SeenSubtable)
+            {
+                DtPushSubtable (RmddSubtable);
+                SeenSubtable = TRUE;
+            }
+        }
+
+        ParentTable = DtPeekSubtable ();
+        DtInsertSubtable (ParentTable, Subtable);
+        DtPushSubtable (Subtable);
+
+        switch (ErdtHeader->Type)
+        {
+        case ACPI_ERDT_TYPE_RMDD:
+            InfoTable = AcpiDmTableInfoErdtRmdd;
+            break;
+
+        case ACPI_ERDT_TYPE_CACD:
+             InfoTable = AcpiDmTableInfoErdtCacd;
+             break;
+
+        case ACPI_ERDT_TYPE_DACD:
+             InfoTable = AcpiDmTableInfoErdtDacd;
+             break;
+
+        case ACPI_ERDT_TYPE_CMRC:
+             InfoTable = AcpiDmTableInfoErdtCmrc;
+             break;
+
+        case ACPI_ERDT_TYPE_MMRC:
+             InfoTable = AcpiDmTableInfoErdtMmrc;
+             break;
+
+        case ACPI_ERDT_TYPE_MARC:
+             InfoTable = AcpiDmTableInfoErdtMarc;
+             break;
+
+        case ACPI_ERDT_TYPE_CARC:
+             InfoTable = AcpiDmTableInfoErdtCarc;
+             break;
+
+        case ACPI_ERDT_TYPE_CMRD:
+             InfoTable = AcpiDmTableInfoErdtCmrd;
+             break;
+
+        case ACPI_ERDT_TYPE_IBRD:
+             InfoTable = AcpiDmTableInfoErdtIbrd;
+             break;
+
+        case ACPI_ERDT_TYPE_IBAD:
+             InfoTable = AcpiDmTableInfoErdtIbad;
+             break;
+
+        case ACPI_ERDT_TYPE_CARD:
+             InfoTable = AcpiDmTableInfoErdtCard;
+             break;
+
+        default:
+            DtFatal (ASL_MSG_UNKNOWN_SUBTABLE, SubtableStart, "ERDT");
+            return (AE_ERROR);
+        }
+
+        Status = DtCompileTable (PFieldList, InfoTable, &Subtable);
+        if (ACPI_FAILURE (Status))
+        {
+            return (Status);
+        }
+
+        ParentTable = DtPeekSubtable ();
+        DtInsertSubtable (ParentTable, Subtable);
+
+        /* Some subtable types end with flex arrays */
+
+        switch (ErdtHeader->Type)
+        {
+        case ACPI_ERDT_TYPE_CACD:
+            while (*PFieldList)
+            {
+                Status = DtCompileTable (PFieldList,
+                    AcpiDmTableInfoErdtCacdX2apic, &Subtable);
+                if (ACPI_FAILURE (Status))
+                {
+                    return (Status);
+                }
+                if (!Subtable)
+                {
+                    break;
+                }
+
+                ParentTable = DtPeekSubtable ();
+                DtInsertSubtable (ParentTable, Subtable);
+            }
+            break;
+
+        case ACPI_ERDT_TYPE_DACD:
+            while (*PFieldList)
+            {
+                Status = DtCompileTable (PFieldList,
+                    AcpiDmTableInfoErdtDacdScope, &Subtable);
+                if (ACPI_FAILURE (Status))
+                {
+                    return (Status);
+                }
+                if (!Subtable)
+                {
+                    break;
+                }
+
+                DtPushSubtable (Subtable);
+                while (*PFieldList)
+                {
+                    Status = DtCompileTable (PFieldList,
+                        AcpiDmTableInfoErdtDacdPath, &Subsubtable);
+                    if (ACPI_FAILURE (Status))
+                    {
+                        return (Status);
+                    }
+                    if (!Subsubtable)
+                    {
+                        break;
+                    }
+
+                    ParentTable = DtPeekSubtable ();
+                    DtInsertSubtable (ParentTable, Subsubtable);
+                }
+                DtPopSubtable ();
+
+                ParentTable = DtPeekSubtable ();
+                DtInsertSubtable (ParentTable, Subtable);
+            }
+            break;
+
+        case ACPI_ERDT_TYPE_MMRC:
+            Mmrc = ACPI_SUB_PTR (ACPI_ERDT_MMRC, Subtable->Buffer,
+                sizeof(ACPI_SUBTBL_HDR_16));
+            NumEntries = 0;
+            while (*PFieldList)
+            {
+                Status = DtCompileTable (PFieldList,
+                    AcpiDmTableInfoErdtMmrcCorrFactor, &Subtable);
+                if (ACPI_FAILURE (Status))
+                {
+                    return (Status);
+                }
+                if (!Subtable)
+                {
+                    break;
+                }
+
+                ParentTable = DtPeekSubtable ();
+                DtInsertSubtable (ParentTable, Subtable);
+                NumEntries++;
+            }
+            Mmrc->CorrFactorListLen = NumEntries;
+            break;
+
+        case ACPI_ERDT_TYPE_IBRD:
+            Ibrd = ACPI_SUB_PTR (ACPI_ERDT_IBRD, Subtable->Buffer,
+                sizeof(ACPI_SUBTBL_HDR_16));
+            NumEntries = 0;
+            while (*PFieldList)
+            {
+                Status = DtCompileTable (PFieldList,
+                    AcpiDmTableInfoErdtIbrdCorrFactor, &Subtable);
+                if (ACPI_FAILURE (Status))
+                {
+                    return (Status);
+                }
+                if (!Subtable)
+                {
+                    break;
+                }
+
+                ParentTable = DtPeekSubtable ();
+                DtInsertSubtable (ParentTable, Subtable);
+                NumEntries++;
+            }
+            Ibrd->CorrFactorListLen = NumEntries;
+            break;
+
+        default:
+            /* Already checked for valid subtable type above */
+
+            break;
+        }
+        DtPopSubtable ();
+    }
+
+    if (SeenSubtable)
+    {
+        DtPopSubtable ();
+    }
+
+    return (AE_OK);
+}
+
+
+/******************************************************************************
+ *
  * FUNCTION:    DtCompileErst
  *
  * PARAMETERS:  List                - Current field list pointer
