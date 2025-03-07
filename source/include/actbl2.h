@@ -173,6 +173,7 @@
 #define ACPI_SIG_BDAT           "BDAT"      /* BIOS Data ACPI Table */
 #define ACPI_SIG_CCEL           "CCEL"      /* CC Event Log Table */
 #define ACPI_SIG_CDAT           "CDAT"      /* Coherent Device Attribute Table */
+#define ACPI_SIG_ERDT           "ERDT"      /* Enhanced Resource Director Technology */
 #define ACPI_SIG_IORT           "IORT"      /* IO Remapping Table */
 #define ACPI_SIG_IVRS           "IVRS"      /* I/O Virtualization Reporting Structure */
 #define ACPI_SIG_LPIT           "LPIT"      /* Low Power Idle Table */
@@ -639,6 +640,235 @@ typedef struct acpi_table_ccel
     UINT64                  LogAreaStartAddress;
 
 } ACPI_TABLE_CCEL;
+
+/*******************************************************************************
+ *
+ * ERDT - Enhanced Resource Director Technology (ERDT) table
+ *
+ * Conforms to "Intel Resource Director Technology Architecture Specification"
+ * Version 1.1, January 2025
+ *
+ ******************************************************************************/
+
+typedef struct acpi_table_erdt
+{
+    ACPI_TABLE_HEADER       Header;             /* Common ACPI table header */
+    UINT32                  MaxClos;            /* Maximum classes of service */
+    UINT8                   Reserved[24];
+    UINT8                   Erdt_Substructures[];
+
+} ACPI_TABLE_ERDT;
+
+
+/* Values for subtable type in ACPI_SUBTBL_HDR_16 */
+
+enum AcpiErdtType
+{
+    ACPI_ERDT_TYPE_RMDD                 = 0,
+    ACPI_ERDT_TYPE_CACD                 = 1,
+    ACPI_ERDT_TYPE_DACD                 = 2,
+    ACPI_ERDT_TYPE_CMRC                 = 3,
+    ACPI_ERDT_TYPE_MMRC                 = 4,
+    ACPI_ERDT_TYPE_MARC                 = 5,
+    ACPI_ERDT_TYPE_CARC                 = 6,
+    ACPI_ERDT_TYPE_CMRD                 = 7,
+    ACPI_ERDT_TYPE_IBRD                 = 8,
+    ACPI_ERDT_TYPE_IBAD                 = 9,
+    ACPI_ERDT_TYPE_CARD                 = 10,
+    ACPI_ERDT_TYPE_RESERVED             = 11    /* 11 and above are reserved */
+
+};
+
+/*
+ * ERDT Subtables, correspond to Type in ACPI_SUBTBL_HDR_16
+ */
+
+/* 0: RMDD - Resource Management Domain Description */
+
+typedef struct acpi_erdt_rmdd
+{
+    ACPI_SUBTBL_HDR_16      Header;
+    UINT16                  Flags;
+    UINT16                  IO_l3_Slices;       /* Number of slices in IO cache */
+    UINT8                   IO_l3_Sets;         /* Number of sets in IO cache */
+    UINT8                   IO_l3_Ways;         /* Number of ways in IO cache */
+    UINT64                  Reserved;
+    UINT16                  DomainId;           /* Unique domain ID */
+    UINT32                  MaxRmid;            /* Maximun RMID supported */
+    UINT64                  CregBase;           /* Control Register Base Address */
+    UINT16                  CregSize;           /* Control Register Size (4K pages) */
+    UINT8                   RmddStructs[];
+
+} ACPI_ERDT_RMDD;
+
+
+/* 1: CACD - CPU Agent Collection Description */
+
+typedef struct acpi_erdt_cacd
+{
+    ACPI_SUBTBL_HDR_16      Header;
+    UINT16                  Reserved;
+    UINT16                  DomainId;           /* Unique domain ID */
+    UINT32                  X2APICIDS[];
+
+} ACPI_ERDT_CACD;
+
+
+/* 2: DACD - Device Agent Collection Description */
+
+typedef struct acpi_erdt_dacd
+{
+    ACPI_SUBTBL_HDR_16      Header;
+    UINT16                  Reserved;
+    UINT16                  DomainId;           /* Unique domain ID */
+    UINT8                   DevPaths[];
+
+} ACPI_ERDT_DACD;
+
+typedef struct acpi_erdt_dacd_dev_paths
+{
+    ACPI_SUBTABLE_HEADER    Header;
+    UINT16                  Segment;
+    UINT8                   Reserved;
+    UINT8                   StartBus;
+    UINT8                   Path[];
+
+} ACPI_ERDT_DACD_PATHS;
+
+
+/* 3: CMRC - Cache Monitoring Registers for CPU Agents */
+
+typedef struct acpi_erdt_cmrc
+{
+    ACPI_SUBTBL_HDR_16      Header;
+    UINT32                  Reserved1;
+    UINT32                  Flags;
+    UINT8                   IndexFn;
+    UINT8                   Reserved2[11];
+    UINT64                  CmtRegBase;
+    UINT32                  CmtRegSize;
+    UINT16                  ClumpSize;
+    UINT16                  ClumpStride;
+    UINT64                  UpScale;
+
+} ACPI_ERDT_CMRC;
+
+
+/* 4: MMRC - Memory-bandwidth Monitoring Registers for CPU Agents */
+
+typedef struct acpi_erdt_mmrc
+{
+    ACPI_SUBTBL_HDR_16      Header;
+    UINT32                  Reserved1;
+    UINT32                  Flags;
+    UINT8                   IndexFn;
+    UINT8                   Reserved2[11];
+    UINT64                  RegBase;
+    UINT32                  RegSize;
+    UINT8                   CounterWidth;
+    UINT64                  UpScale;
+    UINT8                   Reserved3[7];
+    UINT32                  CorrFactorListLen;
+    UINT32                  CorrFactorList[];
+
+} ACPI_ERDT_MMRC;
+
+
+/* 5: MARC - Memory-bandwidth Allocation Registers for CPU Agents */
+
+typedef struct acpi_erdt_marc
+{
+    ACPI_SUBTBL_HDR_16      Header;
+    UINT16                  Reserved1;
+    UINT16                  Flags;
+    UINT8                   IndexFn;
+    UINT8                   Reserved2[7];
+    UINT64                  RegBaseOpt;
+    UINT64                  RegBaseMin;
+    UINT64                  RegBaseMax;
+    UINT32                  MbaRegSize;
+    UINT32                  MbaCtrlRange;
+
+} ACPI_ERDT_MARC;
+
+
+/* 6: CARC - Cache Allocation Registers for CPU Agents */
+
+typedef struct acpi_erdt_carc
+{
+    ACPI_SUBTBL_HDR_16      Header;
+
+} ACPI_ERDT_CARC;
+
+
+/* 7: CMRD - Cache Monitoring Registers for Device Agents */
+
+typedef struct acpi_erdt_cmrd
+{
+    ACPI_SUBTBL_HDR_16      Header;
+    UINT32                  Reserved1;
+    UINT32                  Flags;
+    UINT8                   IndexFn;
+    UINT8                   Reserved2[11];
+    UINT64                  RegBase;
+    UINT32                  RegSize;
+    UINT16                  CmtRegOff;
+    UINT16                  CmtClumpSize;
+    UINT64                  UpScale;
+
+} ACPI_ERDT_CMRD;
+
+
+/* 8: IBRD - Cache Monitoring Registers for Device Agents */
+
+typedef struct acpi_erdt_ibrd
+{
+    ACPI_SUBTBL_HDR_16      Header;
+    UINT32                  Reserved1;
+    UINT32                  Flags;
+    UINT8                   IndexFn;
+    UINT8                   Reserved2[11];
+    UINT64                  RegBase;
+    UINT32                  RegSize;
+    UINT16                  TotalBwOffset;
+    UINT16                  IOMissBwOffset;
+    UINT16                  TotalBwClump;
+    UINT16                  IOMissBwClump;
+    UINT8                   Reserved3[7];
+    UINT8                   CounterWidth;
+    UINT64                  UpScale;
+    UINT32                  CorrFactorListLen;
+    UINT32                  CorrFactorList[];
+
+} ACPI_ERDT_IBRD;
+
+
+/* 9: IBAD - IO bandwidth Allocation Registers for device agents */
+
+typedef struct acpi_erdt_ibad
+{
+    ACPI_SUBTBL_HDR_16      Header;
+
+} ACPI_ERDT_IBAD;
+
+
+/* 10: CARD - IO bandwidth Allocation Registers for Device Agents */
+
+typedef struct acpi_erdt_card
+{
+    ACPI_SUBTBL_HDR_16      Header;
+    UINT32                  Reserved1;
+    UINT32                  Flags;
+    UINT32                  ContentionMask;
+    UINT8                   IndexFn;
+    UINT8                   Reserved2[7];
+    UINT64                  RegBase;
+    UINT32                  RegSize;
+    UINT16                  CatRegOffset;
+    UINT16                  CatRegBlockSize;
+
+} ACPI_ERDT_CARD;
+
 
 /*******************************************************************************
  *
@@ -2120,7 +2350,7 @@ typedef struct acpi_table_mrrm
 
 typedef struct acpi_mrrm_mem_range_entry
 {
-    ACPI_SUBTABLE_HEADER_16 Header;
+    ACPI_SUBTBL_HDR_16      Header;
     UINT32                  Reserved0;          /* Reserved */
     UINT64                  AddrBase;           /* Base addr of the mem range */
     UINT64                  AddrLen;            /* Length of the mem range */
