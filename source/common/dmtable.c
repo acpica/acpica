@@ -677,6 +677,7 @@ const ACPI_DMTABLE_DATA     AcpiDmTableData[] =
     {ACPI_SIG_DRTM, NULL,                   AcpiDmDumpDrtm, DtCompileDrtm,  TemplateDrtm},
     {ACPI_SIG_ECDT, AcpiDmTableInfoEcdt,    NULL,           NULL,           TemplateEcdt},
     {ACPI_SIG_EINJ, NULL,                   AcpiDmDumpEinj, DtCompileEinj,  TemplateEinj},
+    {ACPI_SIG_ERDT, NULL,                   AcpiDmDumpErdt, DtCompileErdt,  TemplateErdt},
     {ACPI_SIG_ERST, NULL,                   AcpiDmDumpErst, DtCompileErst,  TemplateErst},
     {ACPI_SIG_FADT, NULL,                   AcpiDmDumpFadt, DtCompileFadt,  TemplateFadt},
     {ACPI_SIG_FPDT, NULL,                   AcpiDmDumpFpdt, DtCompileFpdt,  TemplateFpdt},
