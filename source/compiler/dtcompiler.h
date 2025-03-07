@@ -809,6 +809,7 @@ extern const unsigned char  TemplateDmar[];
 extern const unsigned char  TemplateDrtm[];
 extern const unsigned char  TemplateEcdt[];
 extern const unsigned char  TemplateEinj[];
+extern const unsigned char  TemplateErdt[];
 extern const unsigned char  TemplateErst[];
 extern const unsigned char  TemplateFadt[];
 extern const unsigned char  TemplateFpdt[];
