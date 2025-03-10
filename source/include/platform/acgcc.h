@@ -224,4 +224,12 @@ typedef __builtin_va_list       va_list;
         }
 #endif
 
+/*
+ * Explicitly mark strings that lack a terminating NUL character so
+ * that ACPICA can be built with -Wunterminated-string-initialization.
+ */
+#if __has_attribute(__nonstring__)
+#define ACPI_NONSTRING __attribute__((__nonstring__))
+#endif
+
 #endif /* __ACGCC_H__ */
