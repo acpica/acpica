@@ -3595,17 +3595,17 @@ typedef struct acpi_ras2_pcc_desc {
 
 /* RAS2 Platform Communication Channel Shared Memory Region */
 
-typedef struct acpi_ras2_shared_memory {
+typedef struct acpi_ras2_shmem {
     UINT32                  Signature;
     UINT16                  Command;
     UINT16                  Status;
     UINT16                  Version;
     UINT8                   Features[16];
-    UINT8                   SetCapabilities[16];
-    UINT16                  NumParameterBlocks;
-    UINT32                  SetCapabilitiesStatus;
+    UINT8                   SetCaps[16];
+    UINT16                  NumParamBlks;
+    UINT32                  SetCapsStatus;
 
-} ACPI_RAS2_SHARED_MEMORY;
+} ACPI_RAS2_SHMEM;
 
 /* RAS2 Parameter Block Structure for PATROL_SCRUB */
 
@@ -3619,16 +3619,16 @@ typedef struct acpi_ras2_parameter_block
 
 /* RAS2 Parameter Block Structure for PATROL_SCRUB */
 
-typedef struct acpi_ras2_patrol_scrub_parameter {
+typedef struct acpi_ras2_patrol_scrub_param {
     ACPI_RAS2_PARAMETER_BLOCK   Header;
-    UINT16                      PatrolScrubCommand;
-    UINT64                      RequestedAddressRange[2];
-    UINT64                      ActualAddressRange[2];
+    UINT16                      Command;
+    UINT64                      ReqAddrRange[2];
+    UINT64                      ActlAddrRange[2];
     UINT32                      Flags;
     UINT32                      ScrubParamsOut;
     UINT32                      ScrubParamsIn;
 
-} ACPI_RAS2_PATROL_SCRUB_PARAMETER;
+} ACPI_RAS2_PATROL_SCRUB_PARAM;
 
 /* Masks for Flags field above */
 
