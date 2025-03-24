@@ -368,7 +368,7 @@ AcpiNsBuildNormalizedPath (
     BOOLEAN                 NoTrailing)
 {
     UINT32                  Length = 0, i;
-    char                    Name[ACPI_NAMESEG_SIZE];
+    char                    Name[ACPI_NAMESEG_SIZE] ACPI_NONSTRING;
     BOOLEAN                 DoNoTrailing;
     char                    c, *Left, *Right;
     ACPI_NAMESPACE_NODE     *NextNode;

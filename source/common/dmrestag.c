@@ -894,7 +894,7 @@ static void
 AcpiDmUpdateResourceName (
     ACPI_NAMESPACE_NODE     *ResourceNode)
 {
-    char                    Name[ACPI_NAMESEG_SIZE];
+    char                    Name[ACPI_NAMESEG_SIZE] ACPI_NONSTRING;
 
 
     /* Ignore if a unique name has already been assigned */
