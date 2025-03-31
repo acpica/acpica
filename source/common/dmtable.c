@@ -708,6 +708,7 @@ const ACPI_DMTABLE_DATA     AcpiDmTableData[] =
     {ACPI_SIG_RAS2, AcpiDmTableInfoRas2,    AcpiDmDumpRas2, DtCompileRas2,  TemplateRas2},
     {ACPI_SIG_RGRT, NULL,                   AcpiDmDumpRgrt, DtCompileRgrt,  TemplateRgrt},
     {ACPI_SIG_RHCT, NULL,                   AcpiDmDumpRhct, DtCompileRhct,  TemplateRhct},
+    {ACPI_SIG_RIMT, NULL,                   AcpiDmDumpRimt, DtCompileRimt,  TemplateRimt},
     {ACPI_SIG_RSDT, NULL,                   AcpiDmDumpRsdt, DtCompileRsdt,  TemplateRsdt},
     {ACPI_SIG_S3PT, NULL,                   NULL,           NULL,           TemplateS3pt},
     {ACPI_SIG_SBST, AcpiDmTableInfoSbst,    NULL,           NULL,           TemplateSbst},

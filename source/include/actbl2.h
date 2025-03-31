@@ -196,6 +196,7 @@
 #define ACPI_SIG_RAS2           "RAS2"      /* RAS2 Feature table */
 #define ACPI_SIG_RGRT           "RGRT"      /* Regulatory Graphics Resource Table */
 #define ACPI_SIG_RHCT           "RHCT"      /* RISC-V Hart Capabilities Table */
+#define ACPI_SIG_RIMT           "RIMT"      /* RISC-V IO Mapping Table */
 #define ACPI_SIG_SBST           "SBST"      /* Smart Battery Specification Table */
 #define ACPI_SIG_SDEI           "SDEI"      /* Software Delegated Exception Interface Table */
 #define ACPI_SIG_SDEV           "SDEV"      /* Secure Devices table */
@@ -3810,6 +3811,89 @@ typedef struct acpi_rhct_hart_info {
     UINT16                  NumOffsets;
     UINT32                  Uid;                /* ACPI processor UID */
 } ACPI_RHCT_HART_INFO;
+
+/*******************************************************************************
+ *
+ * RIMT - RISC-V IO Remapping Table
+ *
+ * https://github.com/riscv-non-isa/riscv-acpi-rimt
+ *
+ ******************************************************************************/
+
+typedef struct acpi_table_rimt {
+    ACPI_TABLE_HEADER Header;              /* Common ACPI table header */
+    UINT32            NumNodes;            /* Number of RIMT Nodes */
+    UINT32            NodeOffset;          /* Offset to RIMT Node Array */
+    UINT32            Reserved;
+} ACPI_TABLE_RIMT;
+
+typedef struct acpi_rimt_node {
+    UINT8             Type;
+    UINT8             Revision;
+    UINT16            Length;
+    UINT16            Reserved;
+    UINT16            Id;
+    char              NodeData[];
+} ACPI_RIMT_NODE;
+
+enum acpi_rimt_node_type {
+    ACPI_RIMT_NODE_TYPE_IOMMU             = 0x0,
+    ACPI_RIMT_NODE_TYPE_PCIE_ROOT_COMPLEX = 0x1,
+    ACPI_RIMT_NODE_TYPE_PLAT_DEVICE       = 0x2,
+};
+
+typedef struct acpi_rimt_iommu {
+    UINT8             HardwareId[8];       /* Hardware ID */
+    UINT64            BaseAddress;         /* Base Address */
+    UINT32            Flags;               /* Flags */
+    UINT32            ProximityDomain;     /* Proximity Domain */
+    UINT16            PcieSegmentNumber;   /* PCIe Segment number */
+    UINT16            PcieBdf;             /* PCIe B/D/F */
+    UINT16            NumInterruptWires;   /* Number of interrupt wires */
+    UINT16            InterruptWireOffset; /* Interrupt wire array offset */
+    UINT64            InterruptWire[];     /* Interrupt wire array */
+} ACPI_RIMT_IOMMU;
+
+/* IOMMU Node Flags */
+#define ACPI_RIMT_IOMMU_FLAGS_PCIE      (1)
+#define ACPI_RIMT_IOMMU_FLAGS_PXM_VALID (1 << 1)
+
+/* Interrupt Wire Structure */
+typedef struct acpi_rimt_iommu_wire_gsi {
+    UINT32             IrqNum;             /* Interrupt Number */
+    UINT32             Flags;              /* Flags */
+} ACPI_RIMT_IOMMU_WIRE_GSI;
+
+/* Interrupt Wire Flags */
+#define ACPI_RIMT_GSI_LEVEL_TRIGGERRED  (1)
+#define ACPI_RIMT_GSI_ACTIVE_HIGH       (1 << 1)
+
+typedef struct acpi_rimt_id_mapping {
+    UINT32              SourceIdBase;      /* Source ID Base */
+    UINT32              NumIds;            /* Number of IDs */
+    UINT32              DestIdBase;        /* Destination Device ID Base */
+    UINT32              DestOffset;        /* Destination IOMMU Offset */
+    UINT32              Flags;             /* Flags */
+} ACPI_RIMT_ID_MAPPING;
+
+typedef struct acpi_rimt_pcie_rc {
+    UINT32              Flags;             /* Flags */
+    UINT16              Reserved;          /* Reserved */
+    UINT16              PcieSegmentNumber; /* PCIe Segment number */
+    UINT16              IdMappingOffset;   /* ID mapping array offset */
+    UINT16              NumIdMappings;     /* Number of ID mappings */
+} ACPI_RIMT_PCIE_RC;
+
+/* PCIe Root Complex Node Flags */
+#define ACPI_RIMT_PCIE_ATS_SUPPORTED   (1)
+#define ACPI_RIMT_PCIE_PRI_SUPPORTED   (1 << 1)
+
+typedef struct acpi_rimt_platform_device {
+    UINT16              IdMappingOffset;   /* ID Mapping array offset */
+    UINT16              NumIdMappings;     /* Number of ID mappings */
+    char                DeviceName[];      /* Device Object Name */
+} ACPI_RIMT_PLATFORM_DEVICE;
+
 
 /*******************************************************************************
  *

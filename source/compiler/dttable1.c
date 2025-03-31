@@ -3343,3 +3343,254 @@ DtCompileIvrs (
 
     return (AE_OK);
 }
+
+
+/******************************************************************************
+ *
+ * FUNCTION:    DtCompileRimt
+ *
+ * PARAMETERS:  List                - Current field list pointer
+ *
+ * RETURN:      Status
+ *
+ * DESCRIPTION: Compile RIMT.
+ *
+ *****************************************************************************/
+
+ACPI_STATUS
+DtCompileRimt (
+    void                    **List)
+{
+    ACPI_RIMT_PLATFORM_DEVICE  *PlatDevNode;
+    ACPI_RIMT_PCIE_RC          *PcieRcNode;
+    ACPI_TABLE_RIMT            *Rimt;
+    ACPI_RIMT_IOMMU            *IommuNode;
+    ACPI_RIMT_NODE             *RimtNode;
+    ACPI_STATUS                Status;
+    DT_SUBTABLE                *Subtable;
+    DT_SUBTABLE                *ParentTable;
+    DT_FIELD                   **PFieldList = (DT_FIELD **) List;
+    DT_FIELD                   *SubtableStart;
+    UINT32                     NodeNumber;
+    UINT32                     NodeLength;
+    UINT16                     IdMappingNumber;
+    UINT32                     i;
+
+
+    ParentTable = DtPeekSubtable ();
+
+    Status = DtCompileTable (PFieldList, AcpiDmTableInfoRimt, &Subtable);
+    if (ACPI_FAILURE (Status))
+    {
+        return (Status);
+    }
+
+    DtInsertSubtable (ParentTable, Subtable);
+
+    /*
+     * Using ACPI_SUB_PTR, We needn't define a separate structure. Care
+     * should be taken to avoid accessing ACPI_TABLE_HEADER fields.
+     */
+    Rimt = ACPI_SUB_PTR (ACPI_TABLE_RIMT, Subtable->Buffer,
+                         sizeof (ACPI_TABLE_HEADER));
+
+    NodeNumber = 0;
+    while (*PFieldList)
+    {
+        SubtableStart = *PFieldList;
+        Status = DtCompileTable (PFieldList, AcpiDmTableInfoRimtNodeHdr, &Subtable);
+
+        if (ACPI_FAILURE (Status))
+        {
+            return (Status);
+        }
+
+        DtInsertSubtable (ParentTable, Subtable);
+        RimtNode = ACPI_CAST_PTR (ACPI_RIMT_NODE, Subtable->Buffer);
+        NodeLength = ACPI_OFFSET (ACPI_RIMT_NODE, NodeData);
+
+        DtPushSubtable (Subtable);
+        ParentTable = DtPeekSubtable ();
+
+        switch (RimtNode->Type)
+        {
+        case ACPI_RIMT_NODE_TYPE_IOMMU:
+
+            Status = DtCompileTable (PFieldList, AcpiDmTableInfoRimtIommu,
+                                     &Subtable);
+            if (ACPI_FAILURE (Status))
+            {
+                return (Status);
+            }
+
+            IommuNode = ACPI_CAST_PTR (ACPI_RIMT_IOMMU, Subtable->Buffer);
+            DtInsertSubtable (ParentTable, Subtable);
+            NodeLength += Subtable->Length;
+
+            for (i = 0; i < IommuNode->NumInterruptWires; i++)
+            {
+                while (*PFieldList)
+                {
+                    Status = DtCompileTable (PFieldList,
+                                             AcpiDmTableInfoRimtIommuWire,
+                                             &Subtable);
+                    if (ACPI_FAILURE (Status))
+                    {
+                        return (Status);
+                    }
+                    if (!Subtable)
+                    {
+                        break;
+                    }
+
+                    DtInsertSubtable (ParentTable, Subtable);
+                    NodeLength += Subtable->Length;
+                }
+            }
+
+            break;
+
+        case ACPI_RIMT_NODE_TYPE_PCIE_ROOT_COMPLEX:
+
+            Status = DtCompileTable (PFieldList, AcpiDmTableInfoRimtPcieRc,
+                                     &Subtable);
+            if (ACPI_FAILURE (Status))
+            {
+                return (Status);
+            }
+
+            DtInsertSubtable (ParentTable, Subtable);
+            PcieRcNode = ACPI_CAST_PTR (ACPI_RIMT_PCIE_RC, Subtable->Buffer);
+            NodeLength += Subtable->Length;
+
+            /* Compile Array of ID mappings */
+
+            PcieRcNode->IdMappingOffset = (UINT16) NodeLength;
+            IdMappingNumber = 0;
+            while (*PFieldList)
+            {
+                Status = DtCompileTable (PFieldList,
+                                         AcpiDmTableInfoRimtIdMapping,
+                                         &Subtable);
+                if (ACPI_FAILURE (Status))
+                {
+                    return (Status);
+                }
+
+                if (!Subtable)
+                {
+                    break;
+                }
+
+                DtInsertSubtable (ParentTable, Subtable);
+                NodeLength += sizeof (ACPI_RIMT_ID_MAPPING);
+                IdMappingNumber++;
+            }
+
+            PcieRcNode->NumIdMappings = IdMappingNumber;
+            if (!IdMappingNumber)
+            {
+                PcieRcNode->IdMappingOffset = 0;
+            }
+
+            break;
+
+        case ACPI_RIMT_NODE_TYPE_PLAT_DEVICE:
+
+            Status = DtCompileTable (PFieldList, AcpiDmTableInfoRimtPlatDev,
+                                     &Subtable);
+            if (ACPI_FAILURE (Status))
+            {
+                return (Status);
+            }
+
+            DtInsertSubtable (ParentTable, Subtable);
+            PlatDevNode = ACPI_CAST_PTR (ACPI_RIMT_PLATFORM_DEVICE, Subtable->Buffer);
+            NodeLength += Subtable->Length;
+
+            /*
+             * Padding - Variable-length data
+             * Optionally allows the offset of the ID mappings to be used
+             * for filling this field.
+             */
+            Status = DtCompileTable (PFieldList, AcpiDmTableInfoRimtPlatDevPad,
+                                     &Subtable);
+            if (ACPI_FAILURE (Status))
+            {
+                return (Status);
+            }
+
+            if (Subtable)
+            {
+                DtInsertSubtable (ParentTable, Subtable);
+                NodeLength += Subtable->Length;
+            }
+            else
+            {
+                if (NodeLength > PlatDevNode->IdMappingOffset)
+                {
+                    return (AE_BAD_DATA);
+                }
+
+                if (NodeLength < PlatDevNode->IdMappingOffset)
+                {
+                    Status = DtCompilePadding (
+                        PlatDevNode->IdMappingOffset - (UINT16) NodeLength,
+                        &Subtable);
+                    if (ACPI_FAILURE (Status))
+                    {
+                        return (Status);
+                    }
+
+                    DtInsertSubtable (ParentTable, Subtable);
+                    NodeLength = PlatDevNode->IdMappingOffset;
+                }
+            }
+
+            /* Compile Array of ID mappings */
+
+            PlatDevNode->IdMappingOffset = (UINT16) NodeLength;
+            IdMappingNumber = 0;
+            while (*PFieldList)
+            {
+                Status = DtCompileTable (PFieldList,
+                                         AcpiDmTableInfoRimtIdMapping,
+                                         &Subtable);
+                if (ACPI_FAILURE (Status))
+                {
+                    return (Status);
+                }
+
+                if (!Subtable)
+                {
+                    break;
+                }
+
+                DtInsertSubtable (ParentTable, Subtable);
+                NodeLength += sizeof (ACPI_RIMT_ID_MAPPING);
+                IdMappingNumber++;
+            }
+
+            PlatDevNode->NumIdMappings = IdMappingNumber;
+            if (!IdMappingNumber)
+            {
+                PlatDevNode->IdMappingOffset = 0;
+            }
+
+            break;
+
+
+        default:
+
+            DtFatal (ASL_MSG_UNKNOWN_SUBTABLE, SubtableStart, "RIMT");
+            return (AE_ERROR);
+        }
+
+        DtPopSubtable ();
+        ParentTable = DtPeekSubtable ();
+        NodeNumber++;
+    }
+
+    Rimt->NumNodes = NodeNumber;
+    return (AE_OK);
+}

@@ -718,6 +718,10 @@ DtCompileRhct (
     void                    **PFieldList);
 
 ACPI_STATUS
+DtCompileRimt (
+    void                    **PFieldList);
+
+ACPI_STATUS
 DtCompileRsdt (
     void                    **PFieldList);
 
@@ -839,6 +843,7 @@ extern const unsigned char  TemplateRasf[];
 extern const unsigned char  TemplateRas2[];
 extern const unsigned char  TemplateRgrt[];
 extern const unsigned char  TemplateRhct[];
+extern const unsigned char  TemplateRimt[];
 extern const unsigned char  TemplateRsdt[];
 extern const unsigned char  TemplateS3pt[];
 extern const unsigned char  TemplateSbst[];

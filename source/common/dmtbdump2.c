@@ -2666,6 +2666,138 @@ AcpiDmDumpRhct (
     }
 }
 
+/*******************************************************************************
+ *
+ * FUNCTION:    AcpiDmDumpRimt
+ *
+ * PARAMETERS:  Table               - A RIMT table
+ *
+ * RETURN:      None
+ *
+ * DESCRIPTION: Format the contents of a RIMT.
+ *
+ ******************************************************************************/
+
+void
+AcpiDmDumpRimt (
+    ACPI_TABLE_HEADER       *Table)
+{
+    ACPI_RIMT_PLATFORM_DEVICE  *PlatNode;
+    ACPI_RIMT_PCIE_RC          *PcieNode;
+    ACPI_RIMT_NODE             *Subtable;
+    ACPI_STATUS                Status;
+    UINT32                     Length = Table->Length;
+    UINT16                     SubtableOffset;
+    UINT32                     NodeOffset;
+    UINT16                     i;
+    UINT32                     Offset = sizeof (ACPI_TABLE_RIMT);
+
+    /* Main table */
+
+    Status = AcpiDmDumpTable (Length, 0, Table, 0, AcpiDmTableInfoRimt);
+    if (ACPI_FAILURE (Status))
+    {
+        return;
+    }
+
+    /* Subtables */
+
+    while (Offset < Table->Length)
+    {
+        AcpiOsPrintf ("\n");
+
+        /* Common subtable header */
+
+        Subtable = ACPI_ADD_PTR (ACPI_RIMT_NODE, Table, Offset);
+        if (Subtable->Length < sizeof (ACPI_RIMT_NODE))
+        {
+            AcpiOsPrintf ("Invalid subtable length\n");
+            return;
+        }
+        Status = AcpiDmDumpTable (Table->Length, Offset, Subtable,
+            Subtable->Length, AcpiDmTableInfoRimtNodeHdr);
+        if (ACPI_FAILURE (Status))
+        {
+            return;
+        }
+
+        Length = sizeof (ACPI_RIMT_NODE);
+
+        if (Subtable->Length < Length)
+        {
+            AcpiOsPrintf ("Invalid subtable length\n");
+            return;
+        }
+        SubtableOffset = (UINT16) Length;
+
+        switch (Subtable->Type)
+        {
+        case ACPI_RIMT_NODE_TYPE_IOMMU:
+            Status = AcpiDmDumpTable (Table->Length, Offset + SubtableOffset,
+                    ACPI_ADD_PTR (ACPI_RIMT_IOMMU, Subtable, SubtableOffset),
+                    sizeof (ACPI_RIMT_IOMMU), AcpiDmTableInfoRimtIommu);
+
+            break;
+
+        case ACPI_RIMT_NODE_TYPE_PCIE_ROOT_COMPLEX:
+            Status = AcpiDmDumpTable (Table->Length, Offset + SubtableOffset,
+                    ACPI_ADD_PTR (ACPI_RIMT_PCIE_RC, Subtable, SubtableOffset),
+                    sizeof (ACPI_RIMT_PCIE_RC), AcpiDmTableInfoRimtPcieRc);
+
+            PcieNode = ACPI_ADD_PTR (ACPI_RIMT_PCIE_RC, Subtable, SubtableOffset);
+
+            /* Dump the ID mappings */
+            NodeOffset = PcieNode->IdMappingOffset;
+            for (i = 0; i < PcieNode->NumIdMappings; i++)
+            {
+                AcpiOsPrintf ("\n");
+                Length = sizeof (ACPI_RIMT_ID_MAPPING);
+                Status = AcpiDmDumpTable (Table->Length, Offset + NodeOffset,
+                    ACPI_ADD_PTR (ACPI_RIMT_ID_MAPPING, Subtable, NodeOffset),
+                    Length, AcpiDmTableInfoRimtIdMapping);
+                if (ACPI_FAILURE (Status))
+                {
+                    return;
+                }
+
+                NodeOffset += Length;
+            }
+            break;
+
+        case ACPI_RIMT_NODE_TYPE_PLAT_DEVICE:
+            Status = AcpiDmDumpTable (Table->Length, Offset + SubtableOffset,
+                    ACPI_ADD_PTR (ACPI_RIMT_PLATFORM_DEVICE, Subtable, SubtableOffset),
+                    sizeof (ACPI_RIMT_PLATFORM_DEVICE), AcpiDmTableInfoRimtPlatDev);
+            PlatNode = ACPI_ADD_PTR (ACPI_RIMT_PLATFORM_DEVICE, Subtable, SubtableOffset);
+
+            /* Dump the ID mappings */
+            NodeOffset = PlatNode->IdMappingOffset;
+            for (i = 0; i < PlatNode->NumIdMappings; i++)
+            {
+                AcpiOsPrintf ("\n");
+                Length = sizeof (ACPI_RIMT_ID_MAPPING);
+                Status = AcpiDmDumpTable (Table->Length, Offset + NodeOffset,
+                    ACPI_ADD_PTR (ACPI_RIMT_ID_MAPPING, Subtable, NodeOffset),
+                    Length, AcpiDmTableInfoRimtIdMapping);
+                if (ACPI_FAILURE (Status))
+                {
+                    return;
+                }
+
+                NodeOffset += Length;
+            }
+            break;
+
+        default:
+            break;
+        }
+
+        /* Point to next subtable */
+
+        Offset += Subtable->Length;
+    }
+}
+
 
 /*******************************************************************************
  *
