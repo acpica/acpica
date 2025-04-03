@@ -294,7 +294,7 @@ OpcParsePrintf (
         if (StringToProcess)
         {
             NewString = UtLocalCacheCalloc (StringLength + 1);
-            strncpy (NewString, StartPosition, StringLength);
+            memcpy (NewString, StartPosition, StringLength);
 
             NewOp = TrAllocateOp (PARSEOP_STRING_LITERAL);
             NewOp->Asl.Value.String = NewString;
@@ -383,7 +383,7 @@ OpcParsePrintf (
     if (StringToProcess)
     {
         NewString = UtLocalCacheCalloc (StringLength + 1);
-        strncpy (NewString, StartPosition, StringLength);
+        memcpy (NewString, StartPosition, StringLength);
 
         NewOp = TrAllocateOp (PARSEOP_STRING_LITERAL);
         NewOp->Asl.Value.String = NewString;

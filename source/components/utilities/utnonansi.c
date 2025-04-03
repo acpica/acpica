@@ -353,7 +353,7 @@ AcpiUtSafeStrncpy (
 {
     /* Always terminate destination string */
 
-    strncpy (Dest, Source, DestSize);
+    memcpy (Dest, Source, DestSize);
     Dest[DestSize - 1] = 0;
 }
 
