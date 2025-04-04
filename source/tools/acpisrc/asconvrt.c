@@ -185,7 +185,7 @@ AsCountLines (
 
 #define MODULE_HEADER_BEGIN "/******************************************************************************\n *\n * Module Name:";
 #define MODULE_HEADER_END   " *****************************************************************************/\n\n"
-#define INTEL_COPYRIGHT     " * Copyright (C) 2000 - 2023, Intel Corp.\n"
+#define INTEL_COPYRIGHT     " * Copyright (C) 2000 - 2025, Intel Corp.\n"
 
 /* Opening signature of the Intel legal header */
 

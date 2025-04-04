@@ -197,7 +197,7 @@ ACPI_STRING_TABLE           StandardDataTypes[] = {
 char                        EmptyHeader[] = "";
 char                        DualLicenseHeader[] =
 "/*\n"
-" * Copyright (C) 2000 - 2023, Intel Corp.\n"
+" * Copyright (C) 2000 - 2025, Intel Corp.\n"
 " * All rights reserved.\n"
 " *\n"
 " * Redistribution and use in source and binary forms, with or without\n"
@@ -1260,8 +1260,8 @@ ACPI_CONVERSION_TABLE       LicenseConversionTable =
 
 ACPI_STRING_TABLE           CustomReplacements[] =
 {
-    {"(c) 1999 - 2021",     "(c) 1999 - 2024",         REPLACE_WHOLE_WORD}, /* Main ACPICA source */
-    {"(c) 2006 - 2021",     "(c) 2006 - 2023",         REPLACE_WHOLE_WORD}, /* Test suites */
+    {"(c) 1999 - 2024",     "(c) 1999 - 2025",         REPLACE_WHOLE_WORD}, /* Main ACPICA source */
+    {"(c) 2006 - 2023",     "(c) 2006 - 2025",         REPLACE_WHOLE_WORD}, /* Test suites */
 
 #if 0
     {"SUPPORT, ASSISTANCE", "SUPPORT, ASSISTANCE",     REPLACE_WHOLE_WORD}, /* Fix intel header */
