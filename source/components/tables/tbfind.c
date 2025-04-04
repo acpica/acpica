@@ -208,8 +208,8 @@ AcpiTbFindTable (
 
     memset (&Header, 0, sizeof (ACPI_TABLE_HEADER));
     ACPI_COPY_NAMESEG (Header.Signature, Signature);
-    strncpy (Header.OemId, OemId, ACPI_OEM_ID_SIZE);
-    strncpy (Header.OemTableId, OemTableId, ACPI_OEM_TABLE_ID_SIZE);
+    memcpy (Header.OemId, OemId, ACPI_OEM_ID_SIZE);
+    memcpy (Header.OemTableId, OemTableId, ACPI_OEM_TABLE_ID_SIZE);
 
     /* Search for the table */
 

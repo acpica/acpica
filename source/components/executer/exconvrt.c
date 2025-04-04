@@ -388,7 +388,7 @@ AcpiExConvertToBuffer (
         /* Copy the string to the buffer */
 
         NewBuf = ReturnDesc->Buffer.Pointer;
-        strncpy ((char *) NewBuf, (char *) ObjDesc->String.Pointer,
+        memcpy ((char *) NewBuf, (char *) ObjDesc->String.Pointer,
             ObjDesc->String.Length);
         break;
 

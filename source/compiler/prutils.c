@@ -474,7 +474,7 @@ ResetHere2:
          * at the correct offset value which is resetted every iteration
          */
 JumpHere2:
-        strncpy (AslGbl_MacroTokenReplaceBuffer, AslGbl_MacroTokenBuffer, Args->Offset[i]);
+        memcpy (AslGbl_MacroTokenReplaceBuffer, AslGbl_MacroTokenBuffer, Args->Offset[i]);
         strcat (AslGbl_MacroTokenReplaceBuffer, Token);
         strcat (AslGbl_MacroTokenReplaceBuffer, (AslGbl_MacroTokenBuffer +
             (Args->Offset[i] + strlen (Args->Name))));
