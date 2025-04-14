@@ -181,7 +181,7 @@ AcpiPsGetOpcodeInfo (
     UINT16                  Opcode)
 {
 #ifdef ACPI_DEBUG_OUTPUT
-    const char              *OpcodeName = "Unknown AML opcode";
+    
 #endif
 
     ACPI_FUNCTION_NAME (PsGetOpcodeInfo);
@@ -207,7 +207,9 @@ AcpiPsGetOpcodeInfo (
 
 #if defined ACPI_ASL_COMPILER && defined ACPI_DEBUG_OUTPUT
 #include "asldefine.h"
-
+    
+    const char *OpcodeName = "Unknown AML opcode";
+    
     switch (Opcode)
     {
     case AML_RAW_DATA_BYTE:
@@ -249,12 +251,12 @@ AcpiPsGetOpcodeInfo (
     default:
         break;
     }
-#endif
 
     /* Unknown AML opcode */
 
     ACPI_DEBUG_PRINT ((ACPI_DB_EXEC,
         "%s [%4.4X]\n", OpcodeName, Opcode));
+#endif
 
     return (&AcpiGbl_AmlOpInfo [_UNK]);
 }
