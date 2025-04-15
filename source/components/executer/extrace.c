@@ -361,9 +361,9 @@ AcpiExTracePoint (
     if (Pathname)
     {
         ACPI_DEBUG_PRINT ((ACPI_DB_TRACE_POINT,
-            "%s %s [0x%p:%s] execution.\n",
+            "%s %s [%s] execution.\n",
             AcpiExGetTraceEventName (Type), Begin ? "Begin" : "End",
-            Aml, Pathname));
+            Pathname));
     }
     else
     {
