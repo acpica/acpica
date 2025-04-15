@@ -325,8 +325,8 @@ AcpiExTraceArgs(ACPI_OPERAND_OBJECT **Params, UINT32 Count)
         {
             ACPI_DEBUG_PRINT_RAW((ACPI_DB_TRACE_POINT, "\n"));
         }
-	else
-	{
+        else
+        {
             ACPI_DEBUG_PRINT_RAW((ACPI_DB_TRACE_POINT, ", "));
         }
     }
