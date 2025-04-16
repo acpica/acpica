@@ -180,9 +180,6 @@ const ACPI_OPCODE_INFO *
 AcpiPsGetOpcodeInfo (
     UINT16                  Opcode)
 {
-#ifdef ACPI_DEBUG_OUTPUT
-    
-#endif
 
     ACPI_FUNCTION_NAME (PsGetOpcodeInfo);
 
