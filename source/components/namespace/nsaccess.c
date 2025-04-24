@@ -449,7 +449,6 @@ AcpiNsLookup (
     ACPI_NAMESPACE_NODE     *CurrentNode = NULL;
     ACPI_NAMESPACE_NODE     *ThisNode = NULL;
     UINT32                  NumSegments;
-    UINT32                  NumCarats;
     ACPI_NAME               SimpleName;
     ACPI_OBJECT_TYPE        TypeToCheckFor;
     ACPI_OBJECT_TYPE        ThisSearchType;
@@ -457,6 +456,12 @@ AcpiNsLookup (
     UINT32                  LocalFlags;
     ACPI_INTERPRETER_MODE   LocalInterpreterMode;
 
+#pragma clang diagnostic push
+#if defined(__clang__) && __clang__ >= 15
+#pragma clang diagnostic ignored "-Wunused-but-set-variable"
+#endif
+    UINT32                  NumCarats;
+#pragma clang diagnostic pop
 
     ACPI_FUNCTION_TRACE (NsLookup);
 
