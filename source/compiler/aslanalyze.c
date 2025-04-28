@@ -571,7 +571,7 @@ ApCheckForGpeNameConflict (
 {
     ACPI_PARSE_OBJECT       *NextOp;
     UINT32                  GpeNumber;
-    char                    Name[ACPI_NAMESEG_SIZE + 1] ACPI_NONSTRING;
+    char                    Name[ACPI_NAMESEG_SIZE + 1];
     char                    Target[ACPI_NAMESEG_SIZE] ACPI_NONSTRING;
 
 
