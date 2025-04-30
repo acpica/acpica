@@ -167,7 +167,7 @@ typedef struct osl_table_info
 {
     struct osl_table_info   *Next;
     UINT32                  Instance;
-    char                    Signature[ACPI_NAMESEG_SIZE];
+    char                    Signature[ACPI_NAMESEG_SIZE] ACPI_NONSTRING;
 
 } OSL_TABLE_INFO;
 
