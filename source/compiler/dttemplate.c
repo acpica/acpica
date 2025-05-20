@@ -421,7 +421,7 @@ DtCreateAllTemplates (
 
         if (TableData->Template)
         {
-	    if (!strcmp (TableData->Signature, ACPI_SIG_CDAT))
+	    if (ACPI_COMPARE_NAMESEG (TableData->Signature, ACPI_SIG_CDAT))
 		/* Special handling of CDAT */
                 Status = DtCreateOneTemplate (TableData->Signature,
                     0, NULL);
