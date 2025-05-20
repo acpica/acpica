@@ -421,8 +421,13 @@ DtCreateAllTemplates (
 
         if (TableData->Template)
         {
-            Status = DtCreateOneTemplate (TableData->Signature,
-                0, TableData);
+	    if (ACPI_COMPARE_NAMESEG (TableData->Signature, ACPI_SIG_CDAT))
+		/* Special handling of CDAT */
+                Status = DtCreateOneTemplate (TableData->Signature,
+                    0, NULL);
+	    else
+                Status = DtCreateOneTemplate (TableData->Signature,
+                    0, TableData);
             if (ACPI_FAILURE (Status))
             {
                 return (Status);
@@ -563,7 +568,7 @@ DtCreateOneTemplate (
     }
     else
     {
-        /* Special ACPI tables - DSDT, SSDT, OSDT, FACS, RSDP */
+        /* Special ACPI tables - DSDT, SSDT, OSDT, FACS, RSDP, CDAT */
 
         AcpiOsPrintf (" (AML byte code table)\n");
         AcpiOsPrintf (" */\n");
@@ -620,6 +625,11 @@ DtCreateOneTemplate (
         {
             AcpiDmDumpDataTable (ACPI_CAST_PTR (ACPI_TABLE_HEADER,
                 TemplateRsdp));
+        }
+        else if (ACPI_COMPARE_NAMESEG (Signature, ACPI_SIG_CDAT))
+        {
+            AcpiDmDumpCdat (ACPI_CAST_PTR (ACPI_TABLE_HEADER,
+                TemplateCdat));
         }
         else
         {
