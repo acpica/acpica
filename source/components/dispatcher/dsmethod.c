@@ -646,8 +646,6 @@ AcpiDsCallControlMethod (
     ACPI_WALK_STATE         *NextWalkState = NULL;
     ACPI_OPERAND_OBJECT     *ObjDesc;
     ACPI_EVALUATE_INFO      *Info;
-    UINT32                  i;
-
 
     ACPI_FUNCTION_TRACE_PTR (DsCallControlMethod, ThisWalkState);
 
