@@ -668,6 +668,23 @@ AcpiDsCallControlMethod (
         return_ACPI_STATUS (AE_NULL_OBJECT);
     }
 
+    if (ThisWalkState->NumOperands < ObjDesc->Method.ParamCount)
+    {
+        ACPI_ERROR ((AE_INFO, "Missing argument(s) for method [%4.4s]", 
+            AcpiUtGetNodeName (MethodNode)));
+
+        return_ACPI_STATUS (AE_AML_TOO_FEW_ARGUMENTS);
+    }
+
+    else if (ThisWalkState->NumOperands > ObjDesc->Method.ParamCount)
+    {
+        ACPI_ERROR ((AE_INFO, "Too many arguments for method [%4.4s]",
+            AcpiUtGetNodeName (MethodNode)));
+
+        return_ACPI_STATUS (AE_AML_TOO_MANY_ARGUMENTS);
+    }
+
+
     /* Init for new method, possibly wait on method mutex */
 
     Status = AcpiDsBeginMethodExecution (
