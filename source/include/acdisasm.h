@@ -301,6 +301,7 @@ typedef enum
     ACPI_DMT_SDEV,
     ACPI_DMT_SLIC,
     ACPI_DMT_SRAT,
+    ACPI_DMT_SWFT,
     ACPI_DMT_TPM2,
     ACPI_DMT_VIOT,
     ACPI_DMT_WPBT_UNICODE,
@@ -725,6 +726,9 @@ extern ACPI_DMTABLE_INFO        AcpiDmTableInfoStao[];
 extern ACPI_DMTABLE_INFO        AcpiDmTableInfoStaoStr[];
 extern ACPI_DMTABLE_INFO        AcpiDmTableInfoSvkl[];
 extern ACPI_DMTABLE_INFO        AcpiDmTableInfoSvkl0[];
+extern ACPI_DMTABLE_INFO        AcpiDmTableInfoSwft[];
+extern ACPI_DMTABLE_INFO        AcpiDmTableInfoSwftFileHdr[];
+extern ACPI_DMTABLE_INFO        AcpiDmTableInfoSwftFileData[];
 extern ACPI_DMTABLE_INFO        AcpiDmTableInfoTcpaHdr[];
 extern ACPI_DMTABLE_INFO        AcpiDmTableInfoTcpaClient[];
 extern ACPI_DMTABLE_INFO        AcpiDmTableInfoTcpaServer[];
