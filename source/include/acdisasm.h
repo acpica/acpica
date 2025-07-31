@@ -1013,6 +1013,10 @@ AcpiDmDumpSvkl (
     ACPI_TABLE_HEADER       *Table);
 
 void
+AcpiDmDumpSwft (
+    ACPI_TABLE_HEADER       *Table);
+
+void
 AcpiDmDumpTcpa (
     ACPI_TABLE_HEADER       *Table);
 
