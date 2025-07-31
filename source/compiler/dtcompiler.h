@@ -754,6 +754,10 @@ DtCompileSvkl (
     void                    **PFieldList);
 
 ACPI_STATUS
+DtCompileSwft (
+    void                    **PFieldList);
+
+ACPI_STATUS
 DtCompileTcpa (
     void                    **PFieldList);
 
