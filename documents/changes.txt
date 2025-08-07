@@ -43,7 +43,7 @@ EINJ V2 updates - Zaid Alali (Ampere Computing)
 
 CDAT updates - Ira Weiny (Intel Corporation)
 
-Fix mutex handling, don?t release ones that were never acquired - Daniil Tatianin
+Fix mutex handling, do not release ones that were never acquired - Daniil Tatianin
 
 Experiment with new tag name format Ryyyy_mm_dd to solve chronological sorting problems
 
