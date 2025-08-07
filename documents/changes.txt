@@ -23,7 +23,7 @@ Major changes:
 
 Update all the copyright continuation year to 2025 in the license header of all files
 
-Add complete support for 3 new ACPI tables: MRRM, ERDT and RIMT (Tony Luck & V L Sunil)
+Add complete support for 3 new ACPI tables - MRRM,ERDT and RIMT (Tony Luck & V L Sunil)
 
 Add a license file to the project which is a great improvement (Dionna Glaze)
 
