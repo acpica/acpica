@@ -917,6 +917,7 @@ enum AcpiIortNodeType
     ACPI_IORT_NODE_SMMU_V3              = 0x04,
     ACPI_IORT_NODE_PMCG                 = 0x05,
     ACPI_IORT_NODE_RMR                  = 0x06,
+    ACPI_IORT_NODE_IWB                  = 0x07,
 };
 
 
@@ -1119,6 +1120,13 @@ typedef struct acpi_iort_rmr_desc {
     UINT32 Reserved;
 
 } ACPI_IORT_RMR_DESC;
+
+typedef struct acpi_iort_iwb {
+    UINT64 ConfigFrameBase;
+    UINT16 IwbIndex;           /* Unique IWB identifier matching with the IWB GSI namespace. */
+    char   DeviceObjectName[]; /* Path of the IWB namespace object */
+
+} ACPI_IORT_IWB;
 
 /*******************************************************************************
  *
