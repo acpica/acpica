@@ -1189,6 +1189,21 @@ AcpiDmDumpMadt (
             InfoTable = AcpiDmTableInfoMadt27;
             break;
 
+        case ACPI_MADT_TYPE_GICV5_IRS:
+
+            InfoTable = AcpiDmTableInfoMadt28;
+            break;
+
+        case ACPI_MADT_TYPE_GICV5_ITS:
+
+            InfoTable = AcpiDmTableInfoMadt29;
+            break;
+
+        case ACPI_MADT_TYPE_GICV5_ITS_TRANSLATE:
+
+            InfoTable = AcpiDmTableInfoMadt30;
+            break;
+
         default:
 
             if ((Subtable->Type >= ACPI_MADT_TYPE_RESERVED) &&

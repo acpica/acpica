@@ -1205,6 +1205,39 @@ ACPI_DMTABLE_INFO           AcpiDmTableInfoMadt27[] =
    ACPI_DMT_TERMINATOR
 };
 
+ACPI_DMTABLE_INFO           AcpiDmTableInfoMadt28[] =
+{
+    {ACPI_DMT_UINT8,    ACPI_MADT28_OFFSET (Version),               "Gic version", 0},
+    {ACPI_DMT_UINT8,    ACPI_MADT28_OFFSET (Reserved),              "Reserved", 0},
+    {ACPI_DMT_UINT32,   ACPI_MADT28_OFFSET (IrsId),                 "Irs Id", 0},
+    {ACPI_DMT_UINT32,   ACPI_MADT28_OFFSET (Flags),                 "Flags (decoded below)", DT_FLAG},
+    {ACPI_DMT_FLAG0,    ACPI_MADT28_FLAG_OFFSET (Flags,0),          "GICV5 IRS non-coherent", 0},
+    {ACPI_DMT_UINT32,   ACPI_MADT28_OFFSET (Reserved2),             "Reserved", 0},
+    {ACPI_DMT_UINT64,   ACPI_MADT28_OFFSET (ConfigBaseAddress),     "Irs Config Frame Physical Base Address", 0},
+    {ACPI_DMT_UINT64,   ACPI_MADT28_OFFSET (SetlpiBaseAddress),     "Irs Setlpi Frame Physical Base Address", 0},
+   ACPI_DMT_TERMINATOR
+};
+
+ACPI_DMTABLE_INFO           AcpiDmTableInfoMadt29[] =
+{
+    {ACPI_DMT_UINT8,    ACPI_MADT29_OFFSET (Flags),                 "Flags (decoded below)", DT_FLAG},
+    {ACPI_DMT_FLAG0,    ACPI_MADT29_FLAG_OFFSET (Flags,0),          "GICV5 ITS non-coherent", 0},
+    {ACPI_DMT_UINT8,    ACPI_MADT29_OFFSET (Reserved),              "Reserved", 0},
+    {ACPI_DMT_UINT32,   ACPI_MADT29_OFFSET (TranslatorId),          "Gic Its Id", 0},
+    {ACPI_DMT_UINT64,   ACPI_MADT29_OFFSET (BaseAddress),           "Physical Base Address", 0},
+   ACPI_DMT_TERMINATOR
+};
+
+ACPI_DMTABLE_INFO           AcpiDmTableInfoMadt30[] =
+{
+    {ACPI_DMT_UINT16,   ACPI_MADT30_OFFSET (Reserved),              "Reserved", 0},
+    {ACPI_DMT_UINT32,   ACPI_MADT30_OFFSET (LinkedTranslatorId),    "Linked Its Id", 0},
+    {ACPI_DMT_UINT32,   ACPI_MADT30_OFFSET (TranslateFrameId),      "Its Transalte Id", 0},
+    {ACPI_DMT_UINT32,   ACPI_MADT30_OFFSET (Reserved2),             "Reserved", 0},
+    {ACPI_DMT_UINT64,   ACPI_MADT30_OFFSET (BaseAddress),           "Its Translate Frame Physical Base Address", 0},
+   ACPI_DMT_TERMINATOR
+};
+
 /* 128: OEM data structure */
 
 ACPI_DMTABLE_INFO           AcpiDmTableInfoMadt128[] =
