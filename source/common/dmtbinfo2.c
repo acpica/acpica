@@ -459,6 +459,16 @@ ACPI_DMTABLE_INFO           AcpiDmTableInfoIort6a[] =
     ACPI_DMT_TERMINATOR
 };
 
+/* 0x07: IWB */
+
+ACPI_DMTABLE_INFO           AcpiDmTableInfoIort7[] =
+{
+    {ACPI_DMT_UINT64,   ACPI_IORT7_OFFSET (BaseAddress),            "Config Frame base", 0},
+    {ACPI_DMT_UINT16,   ACPI_IORT7_OFFSET (IwbIndex),               "IWB Index", 0},
+    {ACPI_DMT_STRING,   ACPI_IORT7_OFFSET (DeviceName[0]),          "IWB Device Name", 0},
+    ACPI_DMT_TERMINATOR
+};
+
 
 /*******************************************************************************
  *
