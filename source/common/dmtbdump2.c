@@ -304,6 +304,14 @@ AcpiDmDumpIort (
             IortRmr = ACPI_ADD_PTR (ACPI_IORT_RMR, IortNode, NodeOffset);
             break;
 
+        case ACPI_IORT_NODE_IWB:
+
+            InfoTable = AcpiDmTableInfoIort7;
+            Length = ACPI_OFFSET (ACPI_IORT_IWB, DeviceName);
+            String = ACPI_ADD_PTR (char, IortNode, NodeOffset + Length);
+            Length += strlen (String) + 1;
+            break;
+
         default:
 
             AcpiOsPrintf ("\n**** Unknown IORT node type 0x%X\n",
