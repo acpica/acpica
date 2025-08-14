@@ -168,6 +168,7 @@
  * file. Useful because they make it more difficult to inadvertently type in
  * the wrong signature.
  */
+#define ACPI_SIG_IOVT           "IOVT"      /* I/O Virtualization Table */
 #define ACPI_SIG_SLIC           "SLIC"      /* Software Licensing Description Table */
 #define ACPI_SIG_SLIT           "SLIT"      /* System Locality Distance Information Table */
 #define ACPI_SIG_SPCR           "SPCR"      /* Serial Port Console Redirection table */
@@ -204,6 +205,83 @@
  * and stuck with it." Norman Ramsey.
  * See http://stackoverflow.com/a/1053662/41661
  */
+
+
+/*******************************************************************************
+ *
+ * IOVT - I/O Virtualization Table
+ *
+ * Conforms to "LoongArch I/O Virtualization Table",
+ *        Version 0.1, October 2024
+ *
+ ******************************************************************************/
+
+typedef struct acpi_table_iovt
+{
+    ACPI_TABLE_HEADER       Header;             /* Common ACPI table header */
+    UINT16                  IommuCount;
+    UINT16                  IommuOffset;
+    UINT8                   Reserved[8];
+
+} ACPI_TABLE_IOVT;
+
+/* IOVT subtable header */
+
+typedef struct acpi_iovt_header
+{
+    UINT16                  Type;
+    UINT16                  Length;
+
+} ACPI_IOVT_HEADER;
+
+/* Values for Type field above */
+
+enum AcpiIovtIommuType
+{
+    ACPI_IOVT_IOMMU_V1     = 0x00,
+};
+
+/* IOVT subtables */
+
+typedef struct acpi_iovt_iommu
+{
+    ACPI_IOVT_HEADER        Header;
+    UINT32                  Flags;
+    UINT16                  Segment;
+    UINT16                  PhyWidth;            /* Physical Address Width */
+    UINT16                  VirtWidth;           /* Virtual Address Width */
+    UINT16                  MaxPageLevel;
+    UINT64                  PageSize;
+    UINT32                  DeviceId;
+    UINT64                  BaseAddress;
+    UINT32                  AddressSpaceSize;
+    UINT8                   InterruptType;
+    UINT8                   Reserved[3];
+    UINT32                  GsiNumber;
+    UINT32                  ProximityDomain;
+    UINT32                  MaxDeviceNum;
+    UINT32                  DeviceEntryNum;
+    UINT32                  DeviceEntryOffset;
+
+} ACPI_IOVT_IOMMU;
+
+typedef struct acpi_iovt_device_entry
+{
+    UINT8                   Type;
+    UINT8                   Length;
+    UINT8                   Flags;
+    UINT8                   Reserved[3];
+    UINT16                  DeviceId;
+
+} ACPI_IOVT_DEVICE_ENTRY;
+
+enum AcpiIovtDeviceEntryType
+{
+    ACPI_IOVT_DEVICE_ENTRY_SINGLE     = 0x00,
+    ACPI_IOVT_DEVICE_ENTRY_START      = 0x01,
+    ACPI_IOVT_DEVICE_ENTRY_END        = 0x02,
+    ACPI_IOVT_DEVICE_ENTRY_RESERVED   = 0x03     /* 3 and greater are reserved */
+};
 
 
 /*******************************************************************************
