@@ -459,6 +459,64 @@ ACPI_DMTABLE_INFO           AcpiDmTableInfoIort6a[] =
     ACPI_DMT_TERMINATOR
 };
 
+
+/*******************************************************************************
+ *
+ * IOVT - I/O Virtualization Table
+ *
+ ******************************************************************************/
+
+ACPI_DMTABLE_INFO           AcpiDmTableInfoIovt[] =
+{
+    {ACPI_DMT_UINT16,   ACPI_IOVT_OFFSET (IommuCount),              "IOMMU Count", 0},
+    {ACPI_DMT_UINT16,   ACPI_IOVT_OFFSET (IommuOffset),             "IOMMU Offset", 0},
+    {ACPI_DMT_UINT64,   ACPI_IOVT_OFFSET (Reserved),                "Reserved", 0},
+    ACPI_DMT_TERMINATOR
+};
+
+/* IOVT Subtables */
+
+ACPI_DMTABLE_INFO           AcpiDmTableInfoIovt0[] =
+{
+    {ACPI_DMT_UINT16,   ACPI_IOVTH_OFFSET (Type),                   "Subtable Type", 0},
+    {ACPI_DMT_UINT16,   ACPI_IOVTH_OFFSET (Length),                 "Length", DT_LENGTH},
+    {ACPI_DMT_UINT32,   ACPI_IOVT0_OFFSET (Flags),                  "Flags (decoded below)", DT_FLAG},
+    {ACPI_DMT_FLAG0,    ACPI_IOVT0_FLAG_OFFSET (Flags,0),           "PCI Device", 0},
+    {ACPI_DMT_FLAG1,    ACPI_IOVT0_FLAG_OFFSET (Flags,0),           "Proximity Domain Valid", 0},
+    {ACPI_DMT_FLAG2,    ACPI_IOVT0_FLAG_OFFSET (Flags,0),           "Manageable Devices Range", 0},
+    {ACPI_DMT_FLAG3,    ACPI_IOVT0_FLAG_OFFSET (Flags,0),           "HW Capability Supported", 0},
+    {ACPI_DMT_FLAG4,    ACPI_IOVT0_FLAG_OFFSET (Flags,0),           "MSI Interrupt Address", 0},
+    {ACPI_DMT_UINT16,   ACPI_IOVT0_OFFSET (Segment),                "PCI Segment Number", 0},
+    {ACPI_DMT_UINT16,   ACPI_IOVT0_OFFSET (PhyWidth),               "Physical Address Width", 0},
+    {ACPI_DMT_UINT16,   ACPI_IOVT0_OFFSET (VirtWidth),              "Virtual Address Width", 0},
+    {ACPI_DMT_UINT16,   ACPI_IOVT0_OFFSET (MaxPageLevel),           "Max Page Level", 0},
+    {ACPI_DMT_UINT64,   ACPI_IOVT0_OFFSET (PageSize),               "Page Size Supported", 0},
+    {ACPI_DMT_UINT32,   ACPI_IOVT0_OFFSET (DeviceId),               "IOMMU DeviceID", 0},
+    {ACPI_DMT_UINT64,   ACPI_IOVT0_OFFSET (BaseAddress),            "IOMMU Base Address", 0},
+    {ACPI_DMT_UINT32,   ACPI_IOVT0_OFFSET (AddressSpaceSize),       "IOMMU Register Size", 0},
+    {ACPI_DMT_UINT8,    ACPI_IOVT0_OFFSET (InterruptType),          "Interrupt Type", 0},
+    {ACPI_DMT_UINT24,   ACPI_IOVT0_OFFSET (Reserved),               "Reserved", 0},
+    {ACPI_DMT_UINT32,   ACPI_IOVT0_OFFSET (GsiNumber),              "Global System Interrupt", 0},
+    {ACPI_DMT_UINT32,   ACPI_IOVT0_OFFSET (ProximityDomain),        "Proximity Domain", 0},
+    {ACPI_DMT_UINT32,   ACPI_IOVT0_OFFSET (MaxDeviceNum),           "Max Device Num", 0},
+    {ACPI_DMT_UINT32,   ACPI_IOVT0_OFFSET (DeviceEntryNum),         "Number of Device Entries", 0},
+    {ACPI_DMT_UINT32,   ACPI_IOVT0_OFFSET (DeviceEntryOffset),      "Offset of Device Entries", 0},
+    ACPI_DMT_TERMINATOR
+};
+
+/* device entry */
+
+ACPI_DMTABLE_INFO           AcpiDmTableInfoIovtdev[] =
+{
+    {ACPI_DMT_UINT8,    ACPI_IOVTDEV_OFFSET (Type),                 "Subtable Type", 0},
+    {ACPI_DMT_UINT8,    ACPI_IOVTDEV_OFFSET (Length),               "Length", 0},
+    {ACPI_DMT_UINT8,    ACPI_IOVTDEV_OFFSET (Flags),                "Flags", 0},
+    {ACPI_DMT_UINT24,   ACPI_IOVTDEV_OFFSET (Reserved),             "Reserved", 0},
+    {ACPI_DMT_UINT16,   ACPI_IOVTDEV_OFFSET (DeviceId),             "DeviceID", 0},
+    ACPI_DMT_TERMINATOR
+};
+
+
 /*******************************************************************************
  *
  * IVRS - I/O Virtualization Reporting Structure
