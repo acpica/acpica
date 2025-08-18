@@ -900,6 +900,10 @@ AcpiDmDumpIort (
     ACPI_TABLE_HEADER       *Table);
 
 void
+AcpiDmDumpIovt (
+    ACPI_TABLE_HEADER       *Table);
+
+void
 AcpiDmDumpIvrs (
     ACPI_TABLE_HEADER       *Table);
 
