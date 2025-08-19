@@ -478,7 +478,7 @@ ACPI_DMTABLE_INFO           AcpiDmTableInfoIovt[] =
 
 ACPI_DMTABLE_INFO           AcpiDmTableInfoIovt0[] =
 {
-    {ACPI_DMT_UINT16,   ACPI_IOVTH_OFFSET (Type),                   "Subtable Type", 0},
+    {ACPI_DMT_IOVT,     ACPI_IOVTH_OFFSET (Type),                   "Subtable Type", 0},
     {ACPI_DMT_UINT16,   ACPI_IOVTH_OFFSET (Length),                 "Length", DT_LENGTH},
     {ACPI_DMT_UINT32,   ACPI_IOVT0_OFFSET (Flags),                  "Flags (decoded below)", DT_FLAG},
     {ACPI_DMT_FLAG0,    ACPI_IOVT0_FLAG_OFFSET (Flags,0),           "PCI Device", 0},
@@ -508,7 +508,7 @@ ACPI_DMTABLE_INFO           AcpiDmTableInfoIovt0[] =
 
 ACPI_DMTABLE_INFO           AcpiDmTableInfoIovtdev[] =
 {
-    {ACPI_DMT_UINT8,    ACPI_IOVTDEV_OFFSET (Type),                 "Subtable Type", 0},
+    {ACPI_DMT_IOVTDEV,  ACPI_IOVTDEV_OFFSET (Type),                 "Subtable Type", 0},
     {ACPI_DMT_UINT8,    ACPI_IOVTDEV_OFFSET (Length),               "Length", 0},
     {ACPI_DMT_UINT8,    ACPI_IOVTDEV_OFFSET (Flags),                "Flags", 0},
     {ACPI_DMT_UINT24,   ACPI_IOVTDEV_OFFSET (Reserved),             "Reserved", 0},
