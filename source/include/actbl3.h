@@ -238,7 +238,8 @@ typedef struct acpi_iovt_header
 
 enum AcpiIovtIommuType
 {
-    ACPI_IOVT_IOMMU_V1     = 0x00,
+    ACPI_IOVT_IOMMU_V1         = 0x00,
+    ACPI_IOVT_IOMMU_RESERVED   = 0x01     /* 1 and greater are reserved */
 };
 
 /* IOVT subtables */

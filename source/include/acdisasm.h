@@ -303,6 +303,8 @@ typedef enum
     ACPI_DMT_SRAT,
     ACPI_DMT_TPM2,
     ACPI_DMT_VIOT,
+    ACPI_DMT_IOVT,
+    ACPI_DMT_IOVTD,
     ACPI_DMT_WPBT_UNICODE,
 
     /* Special opcodes */
