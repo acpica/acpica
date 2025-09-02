@@ -211,6 +211,7 @@ const AH_UUID  Gbl_AcpiUuids[] =
     {"USB4 Capabilities",           UUID_USB4_CAPABILITIES},
     {"First Function ID for _DSM",  UUID_1ST_FUNCTION_ID},
     {"Second Function ID for _DSM", UUID_2ND_FUNCTION_ID},
+    {"Fan Trip Points",             UUID_FAN_TRIP_POINTS},
 
     {NULL, NULL}
 };
