@@ -472,6 +472,31 @@ ACPI_DMTABLE_INFO           AcpiDmTableInfoSvkl0[] =
     ACPI_DMT_TERMINATOR
 };
 
+/*******************************************************************************
+ *
+ * SWFT - SoundWire File Table
+ *
+ ******************************************************************************/
+
+ACPI_DMTABLE_INFO           AcpiDmTableInfoSwft[] =
+{
+    ACPI_DMT_TERMINATOR
+};
+
+ACPI_DMTABLE_INFO           AcpiDmTableInfoSwftFileHdr[] =
+{
+    {ACPI_DMT_UINT16,   ACPI_SWFT_FILE_OFFSET (VendorID),               "SW File Vendor ID", 0},
+    {ACPI_DMT_UINT32,   ACPI_SWFT_FILE_OFFSET (FileID),                 "SW File ID", 0},
+    {ACPI_DMT_UINT16,   ACPI_SWFT_FILE_OFFSET (FileVersion),            "SW File Version", 0},
+    {ACPI_DMT_UINT32,   ACPI_SWFT_FILE_OFFSET (FileLength),             "SW File Length", 0},
+    ACPI_DMT_TERMINATOR
+};
+
+ACPI_DMTABLE_INFO           AcpiDmTableInfoSwftFileData[] =
+{
+    {ACPI_DMT_BUFFER,     0,                                            "SW File Data",  0},
+    ACPI_DMT_TERMINATOR
+};
 
 /*******************************************************************************
  *
