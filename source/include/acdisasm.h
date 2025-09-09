@@ -303,6 +303,8 @@ typedef enum
     ACPI_DMT_SRAT,
     ACPI_DMT_TPM2,
     ACPI_DMT_VIOT,
+    ACPI_DMT_IOVT,
+    ACPI_DMT_IOVTD,
     ACPI_DMT_WPBT_UNICODE,
 
     /* Special opcodes */
@@ -549,6 +551,9 @@ extern ACPI_DMTABLE_INFO        AcpiDmTableInfoIortHdr[];
 extern ACPI_DMTABLE_INFO        AcpiDmTableInfoIortHdr3[];
 extern ACPI_DMTABLE_INFO        AcpiDmTableInfoIortMap[];
 extern ACPI_DMTABLE_INFO        AcpiDmTableInfoIortPad[];
+extern ACPI_DMTABLE_INFO        AcpiDmTableInfoIovt[];
+extern ACPI_DMTABLE_INFO        AcpiDmTableInfoIovt0[];
+extern ACPI_DMTABLE_INFO        AcpiDmTableInfoIovtd[];
 extern ACPI_DMTABLE_INFO        AcpiDmTableInfoIvrs[];
 extern ACPI_DMTABLE_INFO        AcpiDmTableInfoIvrsHware1[];
 extern ACPI_DMTABLE_INFO        AcpiDmTableInfoIvrsHware23[];
@@ -894,6 +899,10 @@ AcpiDmDumpHmat (
 
 void
 AcpiDmDumpIort (
+    ACPI_TABLE_HEADER       *Table);
+
+void
+AcpiDmDumpIovt (
     ACPI_TABLE_HEADER       *Table);
 
 void
