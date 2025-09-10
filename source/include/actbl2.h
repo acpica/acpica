@@ -1470,7 +1470,10 @@ enum AcpiMadtType
     ACPI_MADT_TYPE_IMSIC                    = 25,
     ACPI_MADT_TYPE_APLIC                    = 26,
     ACPI_MADT_TYPE_PLIC                     = 27,
-    ACPI_MADT_TYPE_RESERVED                 = 28,   /* 28 to 0x7F are reserved */
+    ACPI_MADT_TYPE_GICV5_IRS                = 28,
+    ACPI_MADT_TYPE_GICV5_ITS                = 29,
+    ACPI_MADT_TYPE_GICV5_ITS_TRANSLATE      = 30,
+    ACPI_MADT_TYPE_RESERVED                 = 31,   /* 31 to 0x7F are reserved */
     ACPI_MADT_TYPE_OEM_RESERVED             = 0x80  /* 0x80 to 0xFF are reserved for OEM use */
 };
 
@@ -1626,7 +1629,7 @@ typedef struct acpi_madt_local_x2apic_nmi
 } ACPI_MADT_LOCAL_X2APIC_NMI;
 
 
-/* 11: Generic Interrupt - GICC (ACPI 5.0 + ACPI 6.0 + ACPI 6.3 + ACPI 6.5 changes) */
+/* 11: Generic Interrupt - GICC (ACPI 5.0 + ACPI 6.0 + ACPI 6.3 + ACPI 6.5 + ACPI 6.7 changes) */
 
 typedef struct acpi_madt_generic_interrupt
 {
@@ -1648,6 +1651,8 @@ typedef struct acpi_madt_generic_interrupt
     UINT8                   Reserved2[1];
     UINT16                  SpeInterrupt;       /* ACPI 6.3 */
     UINT16                  TrbeInterrupt;      /* ACPI 6.5 */
+    UINT16                  Iaffid;             /* ACPI 6.7 */
+    UINT32                  IrsId;
 
 } ACPI_MADT_GENERIC_INTERRUPT;
 
@@ -1951,6 +1956,46 @@ typedef struct acpi_madt_plic {
     UINT64                  BaseAddr;
     UINT32                  GsiBase;
 } ACPI_MADT_PLIC;
+
+/* 28: Arm GICv5 IRS (ACPI 6.7) */
+
+typedef struct acpi_madt_gicv5_irs {
+    ACPI_SUBTABLE_HEADER    Header;
+    UINT8                   GicVersion;
+    UINT8                   Reserved;
+    UINT32                  IrsId;
+    UINT32                  Flags;
+    UINT32                  Reserved2;
+    UINT64                  IrsConfigFrameBase;
+    UINT64                  IrsSetlpiFrameBase;
+} ACPI_MADT_GICV5_IRS;
+
+
+/* 29: Arm GICv5 ITS Config Frame (ACPI 6.7) */
+
+typedef struct acpi_madt_gicv5_its
+{
+    ACPI_SUBTABLE_HEADER    Header;
+    UINT8                   Flags;
+    UINT8                   Reserved;           /* reserved - must be zero */
+    UINT32                  GicItsId;
+    UINT64                  PhysicalBaseAddress;
+    UINT32                  Reserved2;
+
+} ACPI_MADT_GICv5_ITS;
+
+/* 30: Arm GICv5 ITS Translate Frame (ACPI 6.7) */
+
+typedef struct acpi_madt_gicv5_its_translate
+{
+    ACPI_SUBTABLE_HEADER    Header;
+    UINT16                  Reserved;           /* reserved - must be zero */
+    UINT32                  LinkedGicItsId;
+    UINT32                  ItsTranslateId;
+    UINT32                  Reserved2;
+    UINT64                  ItsTranslateFrameBase;
+
+} ACPI_MADT_GICv5_ITS_TRANSLATE;
 
 
 /* 80: OEM data */
