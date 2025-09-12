@@ -522,7 +522,7 @@ const ACPI_PREDEFINED_INFO          AcpiGbl_PredefinedMethods[] =
 
     {{"_CPC",   METHOD_0ARGS,
                 METHOD_RETURNS (ACPI_RTYPE_PACKAGE)}}, /* Variable-length (Ints/Bufs) */
-                    PACKAGE_INFO (ACPI_PTYPE1_VAR, ACPI_RTYPE_INTEGER | ACPI_RTYPE_BUFFER, 0,0,0,0),
+                    PACKAGE_INFO (ACPI_PTYPE1_VAR, ACPI_RTYPE_INTEGER | ACPI_RTYPE_BUFFER | ACPI_RTYPE_PACKAGE, 0,0,0,0),
 
     {{"_CR3",   METHOD_0ARGS,                          /* ACPI 6.0 */
                 METHOD_RETURNS (ACPI_RTYPE_INTEGER)}},
