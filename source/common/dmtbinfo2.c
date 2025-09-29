@@ -459,6 +459,16 @@ ACPI_DMTABLE_INFO           AcpiDmTableInfoIort6a[] =
     ACPI_DMT_TERMINATOR
 };
 
+/* 0x07: IWB */
+
+ACPI_DMTABLE_INFO           AcpiDmTableInfoIort7[] =
+{
+    {ACPI_DMT_UINT64,   ACPI_IORT7_OFFSET (ConfigFrameBase),        "Config Frame base", 0},
+    {ACPI_DMT_UINT16,   ACPI_IORT7_OFFSET (IwbIndex),               "IWB Index", 0},
+    {ACPI_DMT_STRING,   ACPI_IORT7_OFFSET (DeviceObjectName[0]),    "IWB Device Name", 0},
+    ACPI_DMT_TERMINATOR
+};
+
 /*******************************************************************************
  *
  * IVRS - I/O Virtualization Reporting Structure
@@ -1144,6 +1154,39 @@ ACPI_DMTABLE_INFO           AcpiDmTableInfoMadt27[] =
     {ACPI_DMT_UINT32,   ACPI_MADT27_OFFSET (Size),                  "Size", 0},
     {ACPI_DMT_UINT64,   ACPI_MADT27_OFFSET (BaseAddr),              "BaseAddr", 0},
     {ACPI_DMT_UINT32,   ACPI_MADT27_OFFSET (GsiBase),               "GsiBase", 0},
+   ACPI_DMT_TERMINATOR
+};
+
+ACPI_DMTABLE_INFO           AcpiDmTableInfoMadt28[] =
+{
+    {ACPI_DMT_UINT8,    ACPI_MADT28_OFFSET (GicVersion),            "Gic version", 0},
+    {ACPI_DMT_UINT8,    ACPI_MADT28_OFFSET (Reserved),              "Reserved", 0},
+    {ACPI_DMT_UINT32,   ACPI_MADT28_OFFSET (IrsId),                 "Irs Id", 0},
+    {ACPI_DMT_UINT32,   ACPI_MADT28_OFFSET (Flags),                 "Flags (decoded below)", DT_FLAG},
+    {ACPI_DMT_FLAG0,    ACPI_MADT28_FLAG_OFFSET (Flags,0),          "GICV5 IRS non-coherent", 0},
+    {ACPI_DMT_UINT32,   ACPI_MADT28_OFFSET (Reserved2),             "Reserved", 0},
+    {ACPI_DMT_UINT64,   ACPI_MADT28_OFFSET (IrsConfigFrameBase),    "Irs Config Frame Base", 0},
+    {ACPI_DMT_UINT64,   ACPI_MADT28_OFFSET (IrsSetlpiFrameBase),    "Irs Setlpi Frame Base", 0},
+   ACPI_DMT_TERMINATOR
+};
+
+ACPI_DMTABLE_INFO           AcpiDmTableInfoMadt29[] =
+{
+    {ACPI_DMT_UINT8,    ACPI_MADT29_OFFSET (Flags),                 "Flags (decoded below)", DT_FLAG},
+    {ACPI_DMT_FLAG0,    ACPI_MADT29_FLAG_OFFSET (Flags,0),          "GICV5 ITS non-coherent", 0},
+    {ACPI_DMT_UINT8,    ACPI_MADT29_OFFSET (Reserved),              "Reserved", 0},
+    {ACPI_DMT_UINT32,   ACPI_MADT29_OFFSET (GicItsId),              "Gic Its Id", 0},
+    {ACPI_DMT_UINT64,   ACPI_MADT29_OFFSET (PhysicalBaseAddress),   "Physical Base Address", 0},
+   ACPI_DMT_TERMINATOR
+};
+
+ACPI_DMTABLE_INFO           AcpiDmTableInfoMadt30[] =
+{
+    {ACPI_DMT_UINT16,   ACPI_MADT30_OFFSET (Reserved),              "Reserved", 0},
+    {ACPI_DMT_UINT32,   ACPI_MADT30_OFFSET (LinkedGicItsId),        "Linked Its Id", 0},
+    {ACPI_DMT_UINT32,   ACPI_MADT30_OFFSET (ItsTranslateId),        "Its Transalte Id", 0},
+    {ACPI_DMT_UINT32,   ACPI_MADT30_OFFSET (Reserved2),             "Reserved", 0},
+    {ACPI_DMT_UINT64,   ACPI_MADT30_OFFSET (ItsTranslateFrameBase), "Its Translate Frame Base", 0},
    ACPI_DMT_TERMINATOR
 };
 
