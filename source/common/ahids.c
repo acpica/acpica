@@ -300,6 +300,7 @@ const AH_DEVICE_ID  AslDeviceIds[] =
     {"PNP0C12",     "Device Bay Controller"},
     {"PNP0C14",     "Windows Management Instrumentation Device"},
     {"PNP0C15",     "Docking Station"},
+    {"PNP0C32",     "Direct App Launch Button"},
     {"PNP0C33",     "Error Device"},
     {"PNP0C40",     "Standard Button Controller"},
     {"PNP0C50",     "HID Protocol Device (I2C bus)"},
