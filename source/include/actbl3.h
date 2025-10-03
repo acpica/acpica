@@ -168,6 +168,7 @@
  * file. Useful because they make it more difficult to inadvertently type in
  * the wrong signature.
  */
+#define ACPI_SIG_KEYP           "KEYP"      /* Key Programming Interface for IDE */
 #define ACPI_SIG_SLIC           "SLIC"      /* Software Licensing Description Table */
 #define ACPI_SIG_SLIT           "SLIT"      /* System Locality Distance Information Table */
 #define ACPI_SIG_SPCR           "SPCR"      /* Serial Port Console Redirection table */
@@ -1035,6 +1036,65 @@ typedef struct acpi_table_xenv
 
 } ACPI_TABLE_XENV;
 
+/*******************************************************************************
+ *
+ * KEYP - Key Programming Interface for Root Complex Integrity and Data
+ *        Encryption (IDE)
+ *        Version 1
+ *
+ * Conforms to "Key Programming Interface for Root Complex Integrity and Data
+ * Encryption (IDE)" document. See under ACPI-Related Documents.
+ *
+ ******************************************************************************/
+typedef struct acpi_table_keyp {
+    ACPI_TABLE_HEADER       Header;             /* Common ACPI table header */
+    UINT32                  Reserved;
+} ACPI_TABLE_KEYP;
+
+/* KEYP common subtable header */
+
+typedef struct acpi_keyp_common_header {
+    UINT8                   Type;
+    UINT8                   Reserved;
+    UINT16                  Length;
+} ACPI_KEYP_COMMON_HEADER;
+
+/* Values for Type field above */
+
+enum AcpiKeypType
+{
+    ACPI_KEYP_TYPE_CONFIG_UNIT      = 0,
+};
+
+/* Root Port Information Structure */
+
+typedef struct acpi_keyp_rp_info {
+    UINT16                  Segment;
+    UINT8                   Bus;
+    UINT8                   Devfn;
+} ACPI_KEYP_RP_INFO;
+
+/* Key Configuration Unit Structure */
+
+typedef struct acpi_keyp_config_unit {
+    ACPI_KEYP_COMMON_HEADER           Header;
+    UINT8                             ProtocolType;
+    UINT8                             Version;
+    UINT8                             RootPortCount;
+    UINT8                             Flags;
+    UINT64                            RegisterBaseAddress;
+    ACPI_KEYP_RP_INFO                 RpInfo[];
+} ACPI_KEYP_CONFIG_UNIT;
+
+enum AcpiKeypProtocolType
+{
+    ACPI_KEYP_PROTO_TYPE_INVALID    = 0,
+    ACPI_KEYP_PROTO_TYPE_PCIE,
+    ACPI_KEYP_PROTO_TYPE_CXL,
+    ACPI_KEYP_PROTO_TYPE_RESERVED
+};
+
+#define ACPI_KEYP_F_TVM_USABLE      (1)
 
 /* Reset to default packing */
 
