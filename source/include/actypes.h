@@ -751,9 +751,8 @@ typedef UINT64                          ACPI_INTEGER;
 #define ACPI_STATE_C1                   (UINT8) 1
 #define ACPI_STATE_C2                   (UINT8) 2
 #define ACPI_STATE_C3                   (UINT8) 3
-#define ACPI_STATE_C4                   (UINT8) 4
-#define ACPI_C_STATES_MAX               ACPI_STATE_C4
-#define ACPI_C_STATE_COUNT              5
+#define ACPI_C_STATES_MAX               ACPI_STATE_C3
+#define ACPI_C_STATE_COUNT              4
 
 /*
  * Sleep type invalid value
