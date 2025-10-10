@@ -254,6 +254,10 @@ AcpiTbPrintTableHeader (
 {
     ACPI_TABLE_HEADER       LocalHeader;
 
+#pragma GCC diagnostic push
+#if defined(__GNUC__) && __GNUC__ >= 11
+#pragma GCC diagnostic ignored "-Wstringop-overread"
+#endif
 
     if (ACPI_COMPARE_NAMESEG (Header->Signature, ACPI_SIG_FACS))
     {
@@ -263,13 +267,8 @@ AcpiTbPrintTableHeader (
             Header->Signature, ACPI_FORMAT_UINT64 (Address),
             Header->Length));
     }
-#pragma GCC diagnostic push
-#if defined(__GNUC__) && __GNUC__ >= 11
-#pragma GCC diagnostic ignored "-Wstringop-overread"
-#endif
     else if (ACPI_VALIDATE_RSDP_SIG (ACPI_CAST_PTR (ACPI_TABLE_RSDP,
         Header)->Signature))
-#pragma GCC diagnostic pop
     {
         /* RSDP has no common fields */
 
@@ -306,4 +305,5 @@ AcpiTbPrintTableHeader (
             LocalHeader.OemTableId, LocalHeader.OemRevision,
             LocalHeader.AslCompilerId, LocalHeader.AslCompilerRevision));
     }
+#pragma GCC diagnostic pop
 }
