@@ -2829,6 +2829,64 @@ DtCompileSvkl (
 
 /******************************************************************************
  *
+ * FUNCTION:    DtCompileSwft
+ *
+ * PARAMETERS:  PFieldList          - Current field list pointer
+ *
+ * RETURN:      Status
+ *
+ * DESCRIPTION: Compile SWFT.
+ *
+ *****************************************************************************/
+
+ACPI_STATUS
+DtCompileSwft (
+    void                    **List)
+{
+    DT_FIELD                **PFieldList = (DT_FIELD **) List;
+    DT_SUBTABLE             *HdrSub;
+    DT_SUBTABLE             *DataSub;
+    DT_SUBTABLE             *ParentTable;
+    ACPI_STATUS             Status;
+
+    /* Main SWFT header */
+    Status = DtCompileTable (PFieldList, AcpiDmTableInfoSwft, &HdrSub);
+    if (ACPI_FAILURE (Status))
+    {
+        return (Status);
+    }
+
+    ParentTable = DtPeekSubtable ();
+    DtInsertSubtable (ParentTable, HdrSub);
+
+    while (*PFieldList)
+    {
+        /* File header */
+        Status = DtCompileTable (PFieldList, AcpiDmTableInfoSwftFileHdr,
+                                 &HdrSub);
+        if (ACPI_FAILURE (Status))
+        {
+            return (Status);
+        }
+
+        DtInsertSubtable (ParentTable, HdrSub);
+
+        /* File data */
+        Status = DtCompileTable (PFieldList, AcpiDmTableInfoSwftFileData,
+                                 &DataSub);
+        if (ACPI_FAILURE (Status))
+        {
+            return (Status);
+        }
+
+        DtInsertSubtable (ParentTable, DataSub);
+    }
+
+    return (AE_OK);
+}
+
+/******************************************************************************
+ *
  * FUNCTION:    DtCompileTcpa
  *
  * PARAMETERS:  PFieldList          - Current field list pointer

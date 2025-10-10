@@ -4175,9 +4175,8 @@ typedef struct acpi_swft_file
     UINT16                  VendorID;
     UINT32                  FileID;
     UINT16                  FileVersion;
-    UINT16                  FileLength;
+    UINT32                  FileLength;
     UINT8                   FileData[];
-
 } ACPI_SWFT_FILE;
 
 /*******************************************************************************
