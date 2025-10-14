@@ -181,6 +181,7 @@
 #define ACPI_SIG_DBGP           "DBGP"      /* Debug Port table */
 #define ACPI_SIG_DMAR           "DMAR"      /* DMA Remapping table */
 #define ACPI_SIG_DRTM           "DRTM"      /* Dynamic Root of Trust for Measurement table */
+#define ACPI_SIG_DTPR           "DTPR"      /* DMA TXT Protection Ranges table */
 #define ACPI_SIG_ECDT           "ECDT"      /* Embedded Controller Boot Resources Table */
 #define ACPI_SIG_EINJ           "EINJ"      /* Error Injection table */
 #define ACPI_SIG_ERST           "ERST"      /* Error Record Serialization Table */
@@ -191,7 +192,6 @@
 #define ACPI_SIG_HPET           "HPET"      /* High Precision Event Timer table */
 #define ACPI_SIG_IBFT           "IBFT"      /* iSCSI Boot Firmware Table */
 #define ACPI_SIG_MSCT           "MSCT"      /* Maximum System Characteristics Table*/
-#define ACPI_SIG_DTPR           "DTPR"      /* TXT DMA Protection Ranges reporting table */
 
 #define ACPI_SIG_S3PT           "S3PT"      /* S3 Performance (sub)Table */
 #define ACPI_SIG_PCCS           "PCC"       /* PCC Shared Memory Region */
@@ -2493,11 +2493,11 @@ typedef struct acpi_tpr_array {
     UINT64 base;
 } ACPI_TPR_ARRAY;
 
-typedef struct acpi_dtpr_instance {
+typedef struct acpi_tpr_instance {
     UINT32 flags;
     UINT32 tpr_cnt;
     ACPI_TPR_ARRAY tpr_array[];
-} ACPI_DTPR_INSTANCE;
+} ACPI_TPR_INSTANCE;
 
 /*******************************************************************************
  * TPRn_BASE
@@ -2507,7 +2507,7 @@ typedef struct acpi_dtpr_instance {
  * TPRn_LIMIT[63:20] * applied to the incoming address, to determine if an
  * access fall within the TPRn defined region.
 *******************************************************************************/
-typedef struct acpi_dtprn_base_reg {
+typedef struct acpi_tprn_base_reg {
     UINT64 reserved0 : 3;
     UINT64 rw : 1; // access: 1 == RO, 0 == RW (for TPR must be RW)
     UINT64 enable : 1; // 0 == range enabled, 1 == range disabled
@@ -2518,7 +2518,7 @@ typedef struct acpi_dtprn_base_reg {
                           // Width is determined by a bus width which can be
                           // obtainedvia CPUID function 0x80000008.
     //UINT64 unused : 1;
-} ACPI_DTPRN_BASE_REG;
+} ACPI_TPRN_BASE_REG;
 
 /*******************************************************************************
  * TPRn_LIMIT
@@ -2529,7 +2529,7 @@ typedef struct acpi_dtprn_base_reg {
  * transaction from changing the state of memory.
 *******************************************************************************/
 
-typedef struct acpi_dtprn_limit_reg {
+typedef struct acpi_tprn_limit_reg {
     UINT64 reserved0 : 3;
     UINT64 rw : 1; // access: 1 == RO, 0 == RW (for TPR must be RW)
     UINT64 enable : 1; // 0 == range enabled, 1 == range disabled
@@ -2539,7 +2539,7 @@ typedef struct acpi_dtprn_limit_reg {
                            // Width is determined by a bus width.
 
     //UINT64 unused : 1;
-} ACPI_DTPRN_LIMIT_REG;
+} ACPI_TPRN_LIMIT_REG;
 
 /*******************************************************************************
  * SERIALIZE_REQUEST
