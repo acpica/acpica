@@ -207,12 +207,16 @@ typedef enum
     ACPI_DMT_FLAGS1,
     ACPI_DMT_FLAGS2,
     ACPI_DMT_FLAGS8_2,
+    ACPI_DMT_FLAGS3_0,
     ACPI_DMT_FLAGS4,
     ACPI_DMT_FLAGS4_0,
     ACPI_DMT_FLAGS4_4,
     ACPI_DMT_FLAGS4_8,
     ACPI_DMT_FLAGS4_12,
+    ACPI_DMT_FLAGS15_5,
+    ACPI_DMT_FLAGS16_4,
     ACPI_DMT_FLAGS16_16,
+    ACPI_DMT_FLAGS44_20,
     ACPI_DMT_UINT8,
     ACPI_DMT_UINT16,
     ACPI_DMT_UINT24,
@@ -464,6 +468,12 @@ extern ACPI_DMTABLE_INFO        AcpiDmTableInfoDrtm0a[];
 extern ACPI_DMTABLE_INFO        AcpiDmTableInfoDrtm1[];
 extern ACPI_DMTABLE_INFO        AcpiDmTableInfoDrtm1a[];
 extern ACPI_DMTABLE_INFO        AcpiDmTableInfoDrtm2[];
+extern ACPI_DMTABLE_INFO        AcpiDmTableInfoDtpr[];
+extern ACPI_DMTABLE_INFO        AcpiDmTableInfoDtprInstance[];
+extern ACPI_DMTABLE_INFO        AcpiDmTableInfoDtprArr[];
+extern ACPI_DMTABLE_INFO        AcpiDmTableInfoDtprBaseAddress[];
+extern ACPI_DMTABLE_INFO        AcpiDmTableInfoDtprLimitAddress[];
+extern ACPI_DMTABLE_INFO        AcpiDmTableInfoDtprSerializeReq[];
 extern ACPI_DMTABLE_INFO        AcpiDmTableInfoEcdt[];
 extern ACPI_DMTABLE_INFO        AcpiDmTableInfoEinj[];
 extern ACPI_DMTABLE_INFO        AcpiDmTableInfoEinj0[];

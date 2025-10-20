@@ -2475,7 +2475,7 @@ typedef struct acpi_ibft_target
 
 /*******************************************************************************
  *
- * DTPR - DMA TPR Reporting
+ * DTPR - DMA TXT Protection Ranges Table
  *        Version 1
  *
  * Conforms to "Intel® Trusted Execution Technology (Intel® TXT) DMA Protection
@@ -2487,6 +2487,7 @@ typedef struct acpi_ibft_target
 typedef struct acpi_table_dtpr {
     ACPI_TABLE_HEADER header;
     UINT32 flags; // 36
+    UINT32 ins_cnt;
 } ACPI_TABLE_DTPR;
 
 typedef struct acpi_tpr_array {
