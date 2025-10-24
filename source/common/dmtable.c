@@ -299,6 +299,14 @@ static const char           *AcpiDmEinjActions[] =
     "Get Command Status",
     "Set Error Type With Address",
     "Get Execute Timings",
+    "Unassigned",
+    "Unassigned",
+    "Unassigned",
+    "Unassigned",
+    "Unassigned",
+    "Unassigned",
+    "EinjV2 Set Error Type(deprecated)",
+    "EinjV2 Get Error Type",
     "Unknown Action"
 };
 
