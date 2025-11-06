@@ -3769,6 +3769,8 @@ typedef struct acpi_ras2_patrol_scrub_param {
     UINT32                      Flags;
     UINT32                      ScrubParamsOut;
     UINT32                      ScrubParamsIn;
+    UINT32                      ExtScrubParams;
+    UINT8                       ScrubRateDesc[256];
 
 } ACPI_RAS2_PATROL_SCRUB_PARAM;
 
