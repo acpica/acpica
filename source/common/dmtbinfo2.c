@@ -2089,6 +2089,25 @@ ACPI_DMTABLE_INFO           AcpiDmTableInfoPptt1[] =
 
 ACPI_DMTABLE_INFO           AcpiDmTableInfoPptt1a[] =
 {
+    {ACPI_DMT_UINT16,   ACPI_PPTT1A_OFFSET (Reserved),               "Reserved", 0},
+    {ACPI_DMT_UINT32,   ACPI_PPTT1A_OFFSET (Flags),                  "Flags (decoded below)", 0},
+    {ACPI_DMT_FLAG0,    ACPI_PPTT1A_FLAG_OFFSET (Flags,0),           "Size valid", 0},
+    {ACPI_DMT_FLAG1,    ACPI_PPTT1A_FLAG_OFFSET (Flags,0),           "Number of Sets valid", 0},
+    {ACPI_DMT_FLAG2,    ACPI_PPTT1A_FLAG_OFFSET (Flags,0),           "Associativity valid", 0},
+    {ACPI_DMT_FLAG3,    ACPI_PPTT1A_FLAG_OFFSET (Flags,0),           "Allocation Type valid", 0},
+    {ACPI_DMT_FLAG4,    ACPI_PPTT1A_FLAG_OFFSET (Flags,0),           "Cache Type valid", 0},
+    {ACPI_DMT_FLAG5,    ACPI_PPTT1A_FLAG_OFFSET (Flags,0),           "Write Policy valid", 0},
+    {ACPI_DMT_FLAG6,    ACPI_PPTT1A_FLAG_OFFSET (Flags,0),           "Line Size valid", 0},
+    {ACPI_DMT_FLAG7,    ACPI_PPTT1A_FLAG_OFFSET (Flags,0),           "Cache ID valid", 0},
+    {ACPI_DMT_UINT32,   ACPI_PPTT1A_OFFSET (NextLevelOfCache),       "Next Level of Cache", 0},
+    {ACPI_DMT_UINT32,   ACPI_PPTT1A_OFFSET (Size),                   "Size", 0},
+    {ACPI_DMT_UINT32,   ACPI_PPTT1A_OFFSET (NumberOfSets),           "Number of Sets", 0},
+    {ACPI_DMT_UINT8,    ACPI_PPTT1A_OFFSET (Associativity),          "Associativity", 0},
+    {ACPI_DMT_UINT8,    ACPI_PPTT1A_OFFSET (Attributes),             "Attributes", 0},
+    {ACPI_DMT_FLAGS0,   ACPI_PPTT1A_OFFSET (Attributes),             "Allocation Type", 0},
+    {ACPI_DMT_FLAGS2,   ACPI_PPTT1A_OFFSET (Attributes),             "Cache Type", 0},
+    {ACPI_DMT_FLAG4,    ACPI_PPTT1A_OFFSET (Attributes),             "Write Policy", 0},
+    {ACPI_DMT_UINT16,   ACPI_PPTT1A_OFFSET (LineSize),               "Line Size", 0},
     {ACPI_DMT_UINT32,   ACPI_PPTT1A_OFFSET (CacheId),               "Cache ID", 0},
     ACPI_DMT_TERMINATOR
 };

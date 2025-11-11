@@ -3496,6 +3496,15 @@ typedef struct acpi_pptt_cache
 
 typedef struct acpi_pptt_cache_v1
 {
+    ACPI_SUBTABLE_HEADER    Header;
+    UINT16                  Reserved;
+    UINT32                  Flags;
+    UINT32                  NextLevelOfCache;
+    UINT32                  Size;
+    UINT32                  NumberOfSets;
+    UINT8                   Associativity;
+    UINT8                   Attributes;
+    UINT16                  LineSize;
     UINT32                  CacheId;
 
 } ACPI_PPTT_CACHE_V1;
