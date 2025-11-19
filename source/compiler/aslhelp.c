@@ -218,6 +218,7 @@ Usage (
     ACPI_OPTION ("-oi",             "Disable integer optimization to Zero/One/Ones");
     ACPI_OPTION ("-on",             "Disable named reference string optimization");
     ACPI_OPTION ("-ot",             "Disable typechecking");
+    ACPI_OPTION ("-ol",             "Preserve integer width (keep leading zeroes - 32/64 bits)");
     ACPI_OPTION ("-cr",             "Disable Resource Descriptor error checking");
     ACPI_OPTION ("-in",             "Ignore NoOp operators");
     ACPI_OPTION ("-r <revision>",   "Override table header Revision (1-255)");

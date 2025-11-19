@@ -754,6 +754,13 @@ AslDoOptions (
             AslGbl_IntegerOptimizationFlag = FALSE;
             break;
 
+        case 'l':   
+
+            /* Preserve integer width */
+
+            AslGbl_PreserveIntegerWidth = TRUE;
+            break;
+
         case 'n':
 
             /* Disable named reference optimization */

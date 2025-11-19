@@ -307,6 +307,32 @@ UINT32
 OpcSetOptimalIntegerSize (
     ACPI_PARSE_OBJECT       *Op)
 {
+    /* If preserving width, always emit fixed-width integer opcode */
+    if (AslGbl_PreserveIntegerWidth)
+    {
+        /* Do not use Zero/One/Ones optimization or the chopping off 
+         * of leading zeroes optimization, keep declared integer width 
+         */
+
+        if (AcpiGbl_IntegerByteWidth == 4)
+        {
+            if (Op->Asl.Value.Integer > ACPI_UINT32_MAX)
+            {
+                AslError(ASL_WARNING, ASL_MSG_INTEGER_LENGTH, Op, NULL);
+                if (!AslGbl_IgnoreErrors)
+                {
+                    Op->Asl.Value.Integer &= ACPI_UINT32_MAX;
+                }
+            }
+            Op->Asl.AmlOpcode = AML_DWORD_OP;
+            return (4);
+        }
+        else /* 64-bit mode */
+        {
+            Op->Asl.AmlOpcode = AML_QWORD_OP;
+            return (8);
+        }
+    }
 
 #if 0
     /*

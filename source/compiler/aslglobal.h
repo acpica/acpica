@@ -334,6 +334,7 @@ ASL_EXTERN BOOLEAN                  ASL_INIT_GLOBAL (AslGbl_CompileGeneric, FALS
 ASL_EXTERN BOOLEAN                  ASL_INIT_GLOBAL (AslGbl_AllExceptionsDisabled, FALSE);
 ASL_EXTERN BOOLEAN                  ASL_INIT_GLOBAL (AslGbl_PruneParseTree, FALSE);
 ASL_EXTERN BOOLEAN                  ASL_INIT_GLOBAL (AslGbl_DoTypechecking, TRUE);
+ASL_EXTERN BOOLEAN                  ASL_INIT_GLOBAL (AslGbl_PreserveIntegerWidth, FALSE);
 ASL_EXTERN BOOLEAN                  ASL_INIT_GLOBAL (AslGbl_EnableReferenceTypechecking, FALSE);
 ASL_EXTERN BOOLEAN                  ASL_INIT_GLOBAL (AslGbl_DoExternalsInPlace, FALSE);
 ASL_EXTERN BOOLEAN                  ASL_INIT_GLOBAL (AslGbl_DoAslConversion, FALSE);
