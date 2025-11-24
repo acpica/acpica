@@ -225,11 +225,18 @@ AcpiExOpcode_3A_0T_0R (
 
         AcpiOsSignal (ACPI_SIGNAL_FATAL, &Fatal);
 
+#ifndef ACPI_CONTINUE_ON_FATAL
         /*
          * Might return while OS is shutting down, so abort the AML execution
          * by returning an error.
          */
         return_ACPI_STATUS (AE_ERROR);
+#else
+	/*
+	 * The alstests require that the Fatal() opcode does not return an error.
+	 */
+	return_ACPI_STATUS (AE_OK);
+#endif
 
     case AML_EXTERNAL_OP:
         /*
