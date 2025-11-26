@@ -706,12 +706,6 @@ DtCompileFlag (
         BitLength = 4;
         break;
 
-    case ACPI_DMT_FLAGS4_12:
-
-        BitPosition = 12;
-        BitLength = 4;
-        break;
-
     case ACPI_DMT_FLAGS16_16:
 
         BitPosition = 16;

@@ -1672,6 +1672,120 @@ AcpiDmDumpDrtm (
 
 /*******************************************************************************
  *
+ * FUNCTION:    AcpiDmDumpDtpr
+ *
+ * PARAMETERS:  Table               - A DTPR table
+ *
+ * RETURN:      None
+ *
+ * DESCRIPTION: Format the contents of a DTPR.
+ *
+ ******************************************************************************/
+
+void
+AcpiDmDumpDtpr (
+    ACPI_TABLE_HEADER       *Table)
+{
+    ACPI_STATUS                Status;
+    ACPI_TPR_ARRAY             *TprArr;
+    ACPI_TPR_INSTANCE          *TprInstance;
+    ACPI_TPR_SERIALIZE_REQUEST *TprSerializeRequest;
+    UINT32                     InsCnt = 0;
+    UINT32                     TprRefCnt = 0;
+    UINT32                     SrlCnt = 0;
+    UINT32                     Offset = sizeof(ACPI_TABLE_DTPR);
+
+    /* Main table */
+
+    Status = AcpiDmDumpTable (Table->Length, 0, Table, 0, AcpiDmTableInfoDtpr);
+    if (ACPI_FAILURE (Status))
+    {
+        return;
+    }
+
+    /* Subtables */
+
+    while (Offset < Table->Length)
+    {
+        InsCnt = ((ACPI_TABLE_DTPR*) Table)->InsCnt;
+
+        for (int i = 0; i < InsCnt; i++)
+        {
+            TprInstance = ACPI_ADD_PTR(ACPI_TPR_INSTANCE, Table, Offset);
+            Status = AcpiDmDumpTable(Table->Length, Offset, TprInstance,
+                                     sizeof(ACPI_TPR_INSTANCE),
+                                     AcpiDmTableInfoDtprInstance);
+            if (ACPI_FAILURE (Status))
+            {
+                return;
+            }
+
+            if (i == 0)
+            {
+                /* Each of the TPR instances must have the same number of TPRs*/
+                TprRefCnt = TprInstance->TprCnt;
+            }
+
+            Offset += sizeof(ACPI_TPR_INSTANCE);
+
+
+            if (TprInstance->TprCnt < 2)
+            {
+                AcpiOsPrintf("TPR Instance No.%d has invalid number of TPRs.\n"
+                             "There should be at least 2 of them, but there is %d.",
+                             i, TprInstance->TprCnt);
+                return;
+            }
+            else
+            {
+                if (TprInstance->TprCnt != TprRefCnt)
+                {
+                    AcpiOsPrintf("Each of TPR instances should have equal\n"
+                                 "number of TPRs. TprInstance No.%d has %d TPRs"
+                                 ", while the reference TPR instance has %d.\n",
+                                 i, TprInstance->TprCnt, TprRefCnt);
+                    return;
+                }
+            }
+
+            for (int j = 0; j < TprInstance->TprCnt; j++)
+            {
+                TprArr = ACPI_ADD_PTR(ACPI_TPR_ARRAY, Table, Offset);
+                Status = AcpiDmDumpTable(Table->Length, Offset, TprArr,
+                                         sizeof(ACPI_TPR_ARRAY),
+                                         AcpiDmTableInfoDtprArr);
+                if (ACPI_FAILURE (Status))
+                {
+                    return;
+                }
+
+                Offset += sizeof(ACPI_TPR_ARRAY);
+            }
+        }
+
+        SrlCnt = *ACPI_ADD_PTR(UINT32, Table, Offset);
+        AcpiDmDumpInteger32(SrlCnt, "SrlCnt");
+
+        Offset += sizeof(UINT32);
+
+        for (int i = 0; i < SrlCnt; i++)
+        {
+            TprSerializeRequest = ACPI_ADD_PTR(ACPI_TPR_SERIALIZE_REQUEST,
+                                               Table, Offset);
+            Status = AcpiDmDumpTable(Table->Length, Offset, TprSerializeRequest,
+                                     sizeof(ACPI_TPR_SERIALIZE_REQUEST),
+                                     AcpiDmTableInfoDtprSerializeReq);
+            if (ACPI_FAILURE (Status))
+            {
+                return;
+            }
+        }
+    }
+}
+
+
+/*******************************************************************************
+ *
  * FUNCTION:    AcpiDmDumpEinj
  *
  * PARAMETERS:  Table               - A EINJ table

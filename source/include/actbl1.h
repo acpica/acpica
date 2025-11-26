@@ -2486,18 +2486,18 @@ typedef struct acpi_ibft_target
 
 typedef struct acpi_table_dtpr {
     ACPI_TABLE_HEADER header;
-    UINT32 flags; // 36
-    UINT32 ins_cnt;
+    UINT32 Flags; // 36
+    UINT32 InsCnt;
 } ACPI_TABLE_DTPR;
 
 typedef struct acpi_tpr_array {
-    UINT64 base;
+    UINT64 Base;
 } ACPI_TPR_ARRAY;
 
 typedef struct acpi_tpr_instance {
-    UINT32 flags;
-    UINT32 tpr_cnt;
-    ACPI_TPR_ARRAY tpr_array[];
+    UINT32 Flags;
+    UINT32 TprCnt;
+    // ACPI_TPR_ARRAY tpr_array[];
 } ACPI_TPR_INSTANCE;
 
 /*******************************************************************************
@@ -2509,11 +2509,11 @@ typedef struct acpi_tpr_instance {
  * access fall within the TPRn defined region.
 *******************************************************************************/
 typedef struct acpi_tprn_base_reg {
-    UINT64 reserved0 : 3;
-    UINT64 rw : 1; // access: 1 == RO, 0 == RW (for TPR must be RW)
-    UINT64 enable : 1; // 0 == range enabled, 1 == range disabled
-    UINT64 reserved1 : 15;
-    UINT64 tpr_base_rw : 44; // Minimal TPRn_Base resolution is 1MB.
+    UINT64 Reserved0 : 3;
+    UINT64 Rw : 1; // access: 1 == RO, 0 == RW (for TPR must be RW)
+    UINT64 Enable : 1; // 0 == range enabled, 1 == range disabled
+    UINT64 Reserved1 : 15;
+    UINT64 TprBaseRw : 44; // Minimal TPRn_Base resolution is 1MB.
                           // Applied to the incoming address, to determine if an
                           // access fall within the TPRn defined region.
                           // Width is determined by a bus width which can be
@@ -2531,11 +2531,11 @@ typedef struct acpi_tprn_base_reg {
 *******************************************************************************/
 
 typedef struct acpi_tprn_limit_reg {
-    UINT64 reserved0 : 3;
-    UINT64 rw : 1; // access: 1 == RO, 0 == RW (for TPR must be RW)
-    UINT64 enable : 1; // 0 == range enabled, 1 == range disabled
-    UINT64 reserved1 : 15;
-    UINT64 tpr_limit_rw : 44; // Minimal TPRn_Limit resolution is 1MB.
+    UINT64 Reserved0 : 3;
+    UINT64 Rw : 1; // access: 1 == RO, 0 == RW (for TPR must be RW)
+    UINT64 Enable : 1; // 0 == range enabled, 1 == range disabled
+    UINT64 Reserved1 : 15;
+    UINT64 TprLimitRw : 44; // Minimal TPRn_Limit resolution is 1MB.
                            // These bits define TPR limit address.
                            // Width is determined by a bus width.
 
@@ -2551,12 +2551,12 @@ typedef struct acpi_tprn_limit_reg {
 *******************************************************************************/
 
 typedef struct acpi_tpr_serialize_request {
-    UINT64 sts : 1; // Status of serialization request (RO)
+    UINT64 Sts : 1; // Status of serialization request (RO)
                  // 0 == register idle, 1 == serialization in progress
-    UINT64 ctrl : 1; // Control field to initiate serialization (RW)
+    UINT64 Ctrl : 1; // Control field to initiate serialization (RW)
                   // 0 == normal, 1 == initialize serialization
                   // (self-clear to allow multiple serialization requests)
-    UINT64 unused : 62;
+    UINT64 Unused : 62;
 } ACPI_TPR_SERIALIZE_REQUEST;
 
 /* Reset to default packing */

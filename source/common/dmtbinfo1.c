@@ -1161,50 +1161,29 @@ ACPI_DMTABLE_INFO           AcpiDmTableInfoDrtm2[] =
 
 ACPI_DMTABLE_INFO           AcpiDmTableInfoDtpr[] =
 {
-    {ACPI_DMT_UINT32,   ACPI_DTPR_OFFSET (Flags),                   "Flags (reserved)", 0},
-    {ACPI_DMT_UINT32,   ACPI_DTPR_OFFSET (InsCnt),                  "Instance Count", 1},
+    {ACPI_DMT_UINT32,   ACPI_DTPR_OFFSET (Flags),                  "Flags (reserved)", 0},
+    {ACPI_DMT_UINT32,   ACPI_DTPR_OFFSET (InsCnt),                 "Instance Count", 1},
     ACPI_DMT_TERMINATOR
 };
 
 ACPI_DMTABLE_INFO           AcpiDmTableInfoDtprInstance[] =
 {
-    {ACPI_DMT_UINT32,   ACPI_DTPR_INST_OFFSET (Flags),              "Instance control flags (reserved)", 0},
-    {ACPI_DMT_UINT32,   ACPI_DTPR_INST_OFFSET (TprCnt),             "Number of TPR ranges in instance", 0},
+    {ACPI_DMT_UINT32,   ACPI_DTPR_INST_OFFSET (Flags),             "Instance control flags (reserved)", 0},
+    {ACPI_DMT_UINT32,   ACPI_DTPR_INST_OFFSET (TprCnt),            "Number of TPR ranges in instance", 0},
     ACPI_DMT_TERMINATOR
 };
 
 ACPI_DMTABLE_INFO           AcpiDmTableInfoDtprArr[] =
 {
-    {ACPI_DMT_UINT64,   ACPI_DTPR_ARR_OFFSET (TprBase),             "TPR Base or Limit address", 0},
-    ACPI_DMT_TERMINATOR
-};
-
-ACPI_DMTABLE_INFO           AcpiDmTableInfoDtprBaseAddress[] =
-{
-    {ACPI_DMT_UINT64,     ACPI_DTPR_BASE_ADDR_OFFSET (Raw),         "TPRn Base register", 0},
-    {ACPI_DMT_FLAGS3_0,   ACPI_DTPR_BASE_FLAG_OFFSET (Reserved1),   "Reserved1", 0},
-    {ACPI_DMT_FLAG3,      ACPI_DTPR_BASE_FLAG_OFFSET (Rw),          "Rw", 0},
-    {ACPI_DMT_FLAG4,      ACPI_DTPR_BASE_FLAG_OFFSET (Disable),     "TPRn address range enabled - 0, disabled - 1", 0},
-    {ACPI_DMT_FLAGS15_5,  ACPI_DTPR_BASE_FLAG_OFFSET (Reserved2),   "Reserved2", 0},
-    {ACPI_DMT_FLAGS44_20, ACPI_DTPR_BASE_FLAG_OFFSET (TPRnBaseRw),  "TPRnBaseRw", 0},
-    ACPI_DMT_TERMINATOR
-};
-
-ACPI_DMTABLE_INFO           AcpiDmTableInfoDtprLimitAddress[] =
-{
-    {ACPI_DMT_UINT64,     ACPI_DTPR_LIMIT_ADDR_OFFSET (Raw),        "TPRn Limit register", 0},
-    {ACPI_DMT_FLAGS3_0,   ACPI_DTPR_LIM_FLAG_OFFSET (Reserved1),    "Reserved1", 0},
-    {ACPI_DMT_FLAG3,      ACPI_DTPR_LIM_FLAG_OFFSET (Rw),           "Rw", 0},
-    {ACPI_DMT_FLAGS16_4,  ACPI_DTPR_LIM_FLAG_OFFSET (Reserved2),    "Reserved2", 0},
-    {ACPI_DMT_FLAGS44_20, ACPI_DTPR_LIM_FLAG_OFFSET (TPRnLimitRw),  "TPRnLimitRw", 0},
+    {ACPI_DMT_UINT64,   ACPI_DTPR_ARR_OFFSET (Base),               "TPR Base Address", 0},
     ACPI_DMT_TERMINATOR
 };
 
 ACPI_DMTABLE_INFO           AcpiDmTableInfoDtprSerializeReq[] =
 {
-    {ACPI_DMT_UINT64,     ACPI_DTPR_SERIAL_REQ_OFFSET (Raw),        "TPR Serialize Request", 0},
-    {ACPI_DMT_FLAG0,      ACPI_DTPR_SR_FLAG_OFFSET (Sts),           "Status of serialization request", 0},
-    {ACPI_DMT_FLAG1,      ACPI_DTPR_SR_FLAG_OFFSET (Ctrl),          "Control field to initiate serialization", 0},
+    // {ACPI_DMT_UINT64,     ACPI_DTPR_SERIAL_REQ_OFFSET (Raw),       "TPR Serialize Request", 0},
+    {ACPI_DMT_FLAG0,      ACPI_DTPR_SR_FLAG_OFFSET (Sts, 0),          "Status of serialization request", 0},
+    {ACPI_DMT_FLAG1,      ACPI_DTPR_SR_FLAG_OFFSET (Ctrl, 0),         "Control field to initiate serialization", 0},
     ACPI_DMT_TERMINATOR
 };
 
