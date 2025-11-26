@@ -1181,9 +1181,9 @@ ACPI_DMTABLE_INFO           AcpiDmTableInfoDtprArr[] =
 
 ACPI_DMTABLE_INFO           AcpiDmTableInfoDtprSerializeReq[] =
 {
-    // {ACPI_DMT_UINT64,     ACPI_DTPR_SERIAL_REQ_OFFSET (Raw),       "TPR Serialize Request", 0},
-    {ACPI_DMT_FLAG0,      ACPI_DTPR_SR_FLAG_OFFSET (Sts, 0),          "Status of serialization request", 0},
-    {ACPI_DMT_FLAG1,      ACPI_DTPR_SR_FLAG_OFFSET (Ctrl, 0),         "Control field to initiate serialization", 0},
+    { ACPI_DMT_UINT64, ACPI_DMT_FLAG0, "Status (Sts)",     0 },  // bit 0
+    { ACPI_DMT_UINT64, ACPI_DMT_FLAG1, "Control (Ctrl)",   0 },  // bit 1
+    { ACPI_DMT_UINT64, ACPI_DMT_FLAGS2, "Unused",          0 },  // bits 2–63
     ACPI_DMT_TERMINATOR
 };
 
