@@ -1689,6 +1689,7 @@ AcpiDmDumpDtpr (
     ACPI_STATUS                Status;
     ACPI_TPR_ARRAY             *TprArr;
     ACPI_TPR_INSTANCE          *TprInstance;
+    ACPI_TPR_AUX_SR            *TprAuxSr;
     ACPI_TPR_SERIALIZE_REQUEST *TprSerializeRequest;
     UINT32                     InsCnt = 0;
     UINT32                     TprRefCnt = 0;
@@ -1763,18 +1764,20 @@ AcpiDmDumpDtpr (
             }
         }
 
-        SrlCnt = *ACPI_ADD_PTR(UINT32, Table, Offset);
-        AcpiDmDumpInteger32(SrlCnt, "SrlCnt");
+        TprAuxSr = ACPI_ADD_PTR(ACPI_TPR_AUX_SR, Table, Offset);
+        Status = AcpiDmDumpTable(Table->Length, Offset, TprAuxSr,
+                                 sizeof(ACPI_TPR_AUX_SR),
+                                 AcpiDmTableInfoDtprSerializeReq0);
 
-        Offset += sizeof(UINT32);
+        Offset += sizeof(ACPI_TPR_AUX_SR);
 
-        for (int i = 0; i < SrlCnt; i++)
+        for (int i = 0; i < TprAuxSr->SrlCnt; i++)
         {
             TprSerializeRequest = ACPI_ADD_PTR(ACPI_TPR_SERIALIZE_REQUEST,
                                                Table, Offset);
             Status = AcpiDmDumpTable(Table->Length, Offset, TprSerializeRequest,
                                      sizeof(ACPI_TPR_SERIALIZE_REQUEST),
-                                     AcpiDmTableInfoDtprSerializeReq);
+                                     AcpiDmTableInfoDtprSerializeReq1);
             if (ACPI_FAILURE (Status))
             {
                 return;

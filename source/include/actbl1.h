@@ -2500,6 +2500,11 @@ typedef struct acpi_tpr_instance {
     // ACPI_TPR_ARRAY tpr_array[];
 } ACPI_TPR_INSTANCE;
 
+typedef struct acpi_tpr_aux_sr {
+    UINT32 SrlCnt;
+    //ACPI_TPR_SERIALIZE_REQUEST TprSrArr[];
+} ACPI_TPR_AUX_SR;
+
 /*******************************************************************************
  * TPRn_BASE
  *
