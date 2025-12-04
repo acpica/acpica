@@ -1728,6 +1728,115 @@ DtCompileDrtm (
 
 /******************************************************************************
  *
+ * FUNCTION:    DtCompileDtpr
+ *
+ * PARAMETERS:  List                - Current field list pointer
+ *
+ * RETURN:      Status
+ *
+ * DESCRIPTION: Compile DTPR.
+ *
+ *****************************************************************************/
+
+ACPI_STATUS
+DtCompileDtpr (
+    void                    **List)
+{
+    ACPI_STATUS             Status;
+    DT_SUBTABLE             *Subtable;
+    DT_SUBTABLE             *ParentTable;
+    DT_FIELD                **PFieldList = (DT_FIELD **) List;
+    ACPI_TABLE_DTPR         *Dtpr;
+    ACPI_TPR_INSTANCE       *TprInst;
+    UINT32                  InsCnt = 0;
+    UINT32                  SrlCnt = 0;
+    UINT32                  TprCnt = 0;
+
+    ParentTable = DtPeekSubtable ();
+
+    Status = DtCompileTable (PFieldList, AcpiDmTableInfoDtpr, &Subtable);
+    if (ACPI_FAILURE (Status))
+    {
+        return (Status);
+    }
+
+    DtInsertSubtable (ParentTable, Subtable);
+
+    Dtpr = ACPI_SUB_PTR (ACPI_TABLE_DTPR, Subtable->Buffer,
+                         sizeof (ACPI_TABLE_DTPR));
+
+    InsCnt = Dtpr->InsCnt;
+
+    while (*PFieldList)
+    {
+        for (UINT32 i = 0; i < InsCnt; i++)
+        {
+            Status = DtCompileTable (PFieldList, AcpiDmTableInfoDtprInstance,
+                                     &Subtable);
+            if (ACPI_FAILURE (Status))
+            {
+                return (Status);
+            }
+
+            TprInst = ACPI_CAST_PTR (ACPI_TPR_INSTANCE, Subtable->Buffer);
+            TprCnt = TprInst->TprCnt;
+            DtInsertSubtable (ParentTable, Subtable);
+            DtPushSubtable (Subtable);
+            ParentTable = DtPeekSubtable ();
+
+            while (*PFieldList && TprCnt)
+            {
+                Status = DtCompileTable (PFieldList, AcpiDmTableInfoDtprArr,
+                                         &Subtable);
+                if (ACPI_FAILURE (Status))
+                {
+                    return (Status);
+                }
+
+                DtInsertSubtable (ParentTable, Subtable);
+                TprCnt--;
+            }
+
+            DtPopSubtable();
+            ParentTable = DtPeekSubtable ();
+        }
+
+        Status = DtCompileTable (PFieldList, AcpiDmTableInfoDtprSerializeReq0,
+                                 &Subtable);
+        if (ACPI_FAILURE (Status))
+        {
+            return (Status);
+        }
+
+        SrlCnt = *ACPI_CAST_PTR(UINT32, Subtable->Buffer);
+        DtInsertSubtable (ParentTable, Subtable);
+        DtPushSubtable (Subtable);
+        ParentTable = DtPeekSubtable ();
+
+        while (*PFieldList && SrlCnt)
+        {
+            Status = DtCompileTable (PFieldList,
+                                     AcpiDmTableInfoDtprSerializeReq1,
+                                     &Subtable);
+            if (ACPI_FAILURE (Status))
+            {
+                return (Status);
+            }
+
+            DtInsertSubtable (ParentTable, Subtable);
+            SrlCnt--;
+        }
+
+
+        DtPopSubtable();
+        ParentTable = DtPeekSubtable ();
+    }
+
+    return Status;
+}
+
+/******************************************************************************
+ *
  * FUNCTION:    DtCompileEinj
  *
  * PARAMETERS:  List                - Current field list pointer

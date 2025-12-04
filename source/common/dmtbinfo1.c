@@ -1181,8 +1181,8 @@ ACPI_DMTABLE_INFO           AcpiDmTableInfoDtprArr[] =
 
 ACPI_DMTABLE_INFO           AcpiDmTableInfoDtprSerializeReq0[] =
 {
-    {ACPI_DMT_UINT32, ACPI_DTPR_AUX_SR_OFFSET (SrlCnt),             "Number of serialization registers", 1};
-    ACPI_DMT_TERMINATOR;
+    {ACPI_DMT_UINT32, ACPI_DTPR_AUX_SR_OFFSET (SrlCnt),             "Number of serialization registers", 1},
+    ACPI_DMT_TERMINATOR
 };
 
 ACPI_DMTABLE_INFO           AcpiDmTableInfoDtprSerializeReq1[] =

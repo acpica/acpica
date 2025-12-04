@@ -1693,7 +1693,6 @@ AcpiDmDumpDtpr (
     ACPI_TPR_SERIALIZE_REQUEST *TprSerializeRequest;
     UINT32                     InsCnt = 0;
     UINT32                     TprRefCnt = 0;
-    UINT32                     SrlCnt = 0;
     UINT32                     Offset = sizeof(ACPI_TABLE_DTPR);
 
     /* Main table */
