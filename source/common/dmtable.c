@@ -434,36 +434,39 @@ static const char           *AcpiDmHmatSubnames[] =
 
 static const char           *AcpiDmMadtSubnames[] =
 {
-    "Processor Local APIC",             /* ACPI_MADT_TYPE_LOCAL_APIC */
-    "I/O APIC",                         /* ACPI_MADT_TYPE_IO_APIC */
-    "Interrupt Source Override",        /* ACPI_MADT_TYPE_INTERRUPT_OVERRIDE */
-    "NMI Source",                       /* ACPI_MADT_TYPE_NMI_SOURCE */
-    "Local APIC NMI",                   /* ACPI_MADT_TYPE_LOCAL_APIC_NMI */
-    "Local APIC Address Override",      /* ACPI_MADT_TYPE_LOCAL_APIC_OVERRIDE */
-    "I/O SAPIC",                        /* ACPI_MADT_TYPE_IO_SAPIC */
-    "Local SAPIC",                      /* ACPI_MADT_TYPE_LOCAL_SAPIC */
-    "Platform Interrupt Sources",       /* ACPI_MADT_TYPE_INTERRUPT_SOURCE */
-    "Processor Local x2APIC",           /* ACPI_MADT_TYPE_LOCAL_X2APIC */
-    "Local x2APIC NMI",                 /* ACPI_MADT_TYPE_LOCAL_X2APIC_NMI */
-    "Generic Interrupt Controller",     /* ACPI_MADT_GENERIC_INTERRUPT */
-    "Generic Interrupt Distributor",    /* ACPI_MADT_GENERIC_DISTRIBUTOR */
-    "Generic MSI Frame",                /* ACPI_MADT_GENERIC_MSI_FRAME */
-    "Generic Interrupt Redistributor",  /* ACPI_MADT_GENERIC_REDISTRIBUTOR */
-    "Generic Interrupt Translator",     /* ACPI_MADT_GENERIC_TRANSLATOR */
-    "Mutiprocessor Wakeup",             /* ACPI_MADT_TYPE_MULTIPROC_WAKEUP */
-    "CPU Core Interrupt Controller",    /* ACPI_MADT_TYPE_CORE_PIC */
-    "Legacy I/O Interrupt Controller",  /* ACPI_MADT_TYPE_LIO_PIC */
-    "HT Interrupt Controller",          /* ACPI_MADT_TYPE_HT_PIC */
-    "Extend I/O Interrupt Controller",  /* ACPI_MADT_TYPE_EIO_PIC */
-    "MSI Interrupt Controller",         /* ACPI_MADT_TYPE_MSI_PIC */
-    "Bridge I/O Interrupt Controller",  /* ACPI_MADT_TYPE_BIO_PIC */
-    "LPC Interrupt Controller",         /* ACPI_MADT_TYPE_LPC_PIC */
-    "RISC-V Interrupt Controller",      /* ACPI_MADT_TYPE_RINTC */
-    "RISC-V Incoming MSI Controller",   /* ACPI_MADT_TYPE_IMSIC */
-    "RISC-V APLIC Controller",          /* ACPI_MADT_TYPE_APLIC */
-    "RISC-V PLIC Controller",           /* ACPI_MADT_TYPE_PLIC */
-    "Unknown Subtable Type",            /* Reserved */
-    "Types 80-FF are used for OEM data" /* Reserved for OEM data */
+    "Processor Local APIC",                   /* ACPI_MADT_TYPE_LOCAL_APIC */
+    "I/O APIC",                               /* ACPI_MADT_TYPE_IO_APIC */
+    "Interrupt Source Override",              /* ACPI_MADT_TYPE_INTERRUPT_OVERRIDE */
+    "NMI Source",                             /* ACPI_MADT_TYPE_NMI_SOURCE */
+    "Local APIC NMI",                         /* ACPI_MADT_TYPE_LOCAL_APIC_NMI */
+    "Local APIC Address Override",            /* ACPI_MADT_TYPE_LOCAL_APIC_OVERRIDE */
+    "I/O SAPIC",                              /* ACPI_MADT_TYPE_IO_SAPIC */
+    "Local SAPIC",                            /* ACPI_MADT_TYPE_LOCAL_SAPIC */
+    "Platform Interrupt Sources",             /* ACPI_MADT_TYPE_INTERRUPT_SOURCE */
+    "Processor Local x2APIC",                 /* ACPI_MADT_TYPE_LOCAL_X2APIC */
+    "Local x2APIC NMI",                       /* ACPI_MADT_TYPE_LOCAL_X2APIC_NMI */
+    "Generic Interrupt Controller",           /* ACPI_MADT_GENERIC_INTERRUPT */
+    "Generic Interrupt Distributor",          /* ACPI_MADT_GENERIC_DISTRIBUTOR */
+    "Generic MSI Frame",                      /* ACPI_MADT_GENERIC_MSI_FRAME */
+    "Generic Interrupt Redistributor",        /* ACPI_MADT_GENERIC_REDISTRIBUTOR */
+    "Generic Interrupt Translator",           /* ACPI_MADT_GENERIC_TRANSLATOR */
+    "Mutiprocessor Wakeup",                   /* ACPI_MADT_TYPE_MULTIPROC_WAKEUP */
+    "CPU Core Interrupt Controller",          /* ACPI_MADT_TYPE_CORE_PIC */
+    "Legacy I/O Interrupt Controller",        /* ACPI_MADT_TYPE_LIO_PIC */
+    "HT Interrupt Controller",                /* ACPI_MADT_TYPE_HT_PIC */
+    "Extend I/O Interrupt Controller",        /* ACPI_MADT_TYPE_EIO_PIC */
+    "MSI Interrupt Controller",               /* ACPI_MADT_TYPE_MSI_PIC */
+    "Bridge I/O Interrupt Controller",        /* ACPI_MADT_TYPE_BIO_PIC */
+    "LPC Interrupt Controller",               /* ACPI_MADT_TYPE_LPC_PIC */
+    "RISC-V Interrupt Controller",            /* ACPI_MADT_TYPE_RINTC */
+    "RISC-V Incoming MSI Controller",         /* ACPI_MADT_TYPE_IMSIC */
+    "RISC-V APLIC Controller",                /* ACPI_MADT_TYPE_APLIC */
+    "RISC-V PLIC Controller",                 /* ACPI_MADT_TYPE_PLIC */
+    "Generic Interrupt v5 Router",            /* ACPI_MADT_TYPE_GICV5_IRS */
+    "Generic Interrupt v5 Translator Config", /* ACPI_MADT_TYPE_GICV5_ITS */
+    "Generic Interrupt v5 Translator Entry",  /* ACPI_MADT_TYPE_GICV5_ITS_TRANSLATE */
+    "Unknown Subtable Type",                  /* Reserved */
+    "Types 80-FF are used for OEM data"       /* Reserved for OEM data */
 };
 
 static const char           *AcpiDmMpamSubnames[] =

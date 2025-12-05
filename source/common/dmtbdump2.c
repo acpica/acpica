@@ -304,6 +304,14 @@ AcpiDmDumpIort (
             IortRmr = ACPI_ADD_PTR (ACPI_IORT_RMR, IortNode, NodeOffset);
             break;
 
+        case ACPI_IORT_NODE_IWB:
+
+            InfoTable = AcpiDmTableInfoIort7;
+            Length = ACPI_OFFSET (ACPI_IORT_IWB, DeviceName);
+            String = ACPI_ADD_PTR (char, IortNode, NodeOffset + Length);
+            Length += strlen (String) + 1;
+            break;
+
         default:
 
             AcpiOsPrintf ("\n**** Unknown IORT node type 0x%X\n",
@@ -1187,6 +1195,21 @@ AcpiDmDumpMadt (
         case ACPI_MADT_TYPE_PLIC:
 
             InfoTable = AcpiDmTableInfoMadt27;
+            break;
+
+        case ACPI_MADT_TYPE_GICV5_IRS:
+
+            InfoTable = AcpiDmTableInfoMadt28;
+            break;
+
+        case ACPI_MADT_TYPE_GICV5_ITS:
+
+            InfoTable = AcpiDmTableInfoMadt29;
+            break;
+
+        case ACPI_MADT_TYPE_GICV5_ITS_TRANSLATE:
+
+            InfoTable = AcpiDmTableInfoMadt30;
             break;
 
         default:
