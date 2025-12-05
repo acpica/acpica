@@ -2447,8 +2447,16 @@ AcpiDmDumpPptt (
 
         case ACPI_PPTT_TYPE_CACHE:
 
-            InfoTable = AcpiDmTableInfoPptt1;
-            Length = sizeof (ACPI_PPTT_CACHE);
+            if (Table->Revision < 3)
+            {
+                InfoTable = AcpiDmTableInfoPptt1;
+                Length = sizeof (ACPI_PPTT_CACHE);
+            }
+            else
+            {
+                InfoTable = AcpiDmTableInfoPptt1a;
+                Length = sizeof (ACPI_PPTT_CACHE_V1);
+            }
             break;
 
         case ACPI_PPTT_TYPE_ID:
@@ -2507,22 +2515,6 @@ AcpiDmDumpPptt (
                 SubtableOffset += 4;
             }
             break;
-
-        case ACPI_PPTT_TYPE_CACHE:
-
-            if (Table->Revision < 3)
-            {
-                break;
-            }
-            Status = AcpiDmDumpTable (Table->Length, Offset + SubtableOffset,
-                ACPI_ADD_PTR (ACPI_SUBTABLE_HEADER, Subtable, SubtableOffset),
-                sizeof (ACPI_PPTT_CACHE_V1), AcpiDmTableInfoPptt1a);
-            if (ACPI_FAILURE (Status))
-            {
-                return;
-            }
-            break;
-
         default:
 
             break;
