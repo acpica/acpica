@@ -741,6 +741,71 @@ AcpiDmDumpTpm2 (
 
 /*******************************************************************************
  *
+ * FUNCTION:    AcpiDmDumpTpmc
+ *
+ * PARAMETERS:  Table               - A TPMC table
+ *
+ * RETURN:      None
+ *
+ * DESCRIPTION: Format the contents of a TPMC table
+ *
+ ******************************************************************************/
+
+void
+AcpiDmDumpTpmc(
+    ACPI_TABLE_HEADER           *Table)
+{
+    ACPI_STATUS                 Status;
+    ACPI_TABLE_TPMC             *Subtable;
+    ACPI_TPMC_PFS               *PfsEntry;
+    UINT32                      Offset;
+    UINT32                      i;
+
+
+    /* Main TPMC table */
+
+    Status = AcpiDmDumpTable(Table->Length, 0, Table, 0, AcpiDmTableInfoTpmc);
+    if (ACPI_FAILURE(Status))
+    {
+        return;
+    }
+
+    Subtable = ACPI_CAST_PTR(ACPI_TABLE_TPMC, Table);
+    Offset = sizeof(ACPI_TABLE_TPMC);
+
+    /* Dump each PFS entry */
+
+    for (i = 0; i < Subtable->EntryCount; i++)
+    {
+        AcpiOsPrintf("\n");
+
+        /* Validate offset */
+ 
+#if 1         
+        if ((Offset + sizeof(ACPI_TPMC_PFS)) > Table->Length)
+        {
+            AcpiOsPrintf("**** TPMC: PFS entry %u extends beyond table (Offset 0x%X)\n",
+                i, Offset);
+            return;
+        }         
+#endif
+
+        PfsEntry = ACPI_ADD_PTR(ACPI_TPMC_PFS, Table, Offset);
+
+        Status = AcpiDmDumpTable(Table->Length, Offset, PfsEntry,
+            sizeof(ACPI_TPMC_PFS), AcpiDmTableInfoTpmcPfs);
+        if (ACPI_FAILURE(Status))
+        {
+            return;
+        }
+
+        Offset += sizeof(ACPI_TPMC_PFS);
+    }
+}
+
+
+/*******************************************************************************
+ *
  * FUNCTION:    AcpiDmDumpViot
  *
  * PARAMETERS:  Table               - A VIOT table

@@ -624,6 +624,31 @@ ACPI_DMTABLE_INFO           AcpiDmTableInfoTpm211[] =
 
 /*******************************************************************************
  *
+ * TPMC - TPMI Configuration Table
+ *
+ ******************************************************************************/
+
+ACPI_DMTABLE_INFO           AcpiDmTableInfoTpmc[] =
+{
+    {ACPI_DMT_UINT32,   ACPI_TPMC_OFFSET (HeaderSize),              "TPMC Header Size", 0},
+    {ACPI_DMT_UINT32,   ACPI_TPMC_OFFSET (EntryCount),              "Entry Count PFS", 0},
+    ACPI_DMT_TERMINATOR
+};
+
+/* TPMI Subtables */
+
+ACPI_DMTABLE_INFO           AcpiDmTableInfoTpmcPfs[] =
+{
+    {ACPI_DMT_GAS,      ACPI_TPMCPFS_OFFSET (PfsGas),               "PFS Generic Address", 0},
+    {ACPI_DMT_UINT32,   ACPI_TPMCPFS_OFFSET (NumEntries),           "Number of Entries Features", 0},
+    {ACPI_DMT_UINT64,   ACPI_TPMCPFS_OFFSET (ReadBlockedMask),      "Read Blocked Mask", 0},
+    {ACPI_DMT_UINT64,   ACPI_TPMCPFS_OFFSET (WriteBlockedMask),     "Write Blocked Mask", 0},
+    ACPI_DMT_TERMINATOR
+};
+
+
+/*******************************************************************************
+ *
  * UEFI - UEFI Boot optimization Table
  *
  ******************************************************************************/
