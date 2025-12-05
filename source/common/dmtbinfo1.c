@@ -1162,14 +1162,14 @@ ACPI_DMTABLE_INFO           AcpiDmTableInfoDrtm2[] =
 ACPI_DMTABLE_INFO           AcpiDmTableInfoDtpr[] =
 {
     {ACPI_DMT_UINT32,   ACPI_DTPR_OFFSET (Flags),                  "Flags (reserved)", 0},
-    {ACPI_DMT_UINT32,   ACPI_DTPR_OFFSET (InsCnt),                 "Instance Count", 1},
+    {ACPI_DMT_UINT32,   ACPI_DTPR_OFFSET (InsCnt),                 "Instance Count", 2},
     ACPI_DMT_TERMINATOR
 };
 
 ACPI_DMTABLE_INFO           AcpiDmTableInfoDtprInstance[] =
 {
     {ACPI_DMT_UINT32,   ACPI_DTPR_INST_OFFSET (Flags),             "Instance control flags (reserved)", 0},
-    {ACPI_DMT_UINT32,   ACPI_DTPR_INST_OFFSET (TprCnt),            "Number of TPR ranges in instance", 0},
+    {ACPI_DMT_UINT32,   ACPI_DTPR_INST_OFFSET (TprCnt),            "Number of TPR ranges in instance", 2},
     ACPI_DMT_TERMINATOR
 };
 
@@ -1187,9 +1187,7 @@ ACPI_DMTABLE_INFO           AcpiDmTableInfoDtprSerializeReq0[] =
 
 ACPI_DMTABLE_INFO           AcpiDmTableInfoDtprSerializeReq1[] =
 {
-    { ACPI_DMT_UINT64, ACPI_DMT_FLAG0, "Status (Sts)",     0 },  // bit 0
-    { ACPI_DMT_UINT64, ACPI_DMT_FLAG1, "Control (Ctrl)",   0 },  // bit 1
-    { ACPI_DMT_UINT64, ACPI_DMT_FLAGS2, "Unused",          0 },  // bits 2–63
+    {ACPI_DMT_UINT64, ACPI_DTPR_SR_OFFSET (SrRegister),            "Serialize Request register", 0},
     ACPI_DMT_TERMINATOR
 };
 

@@ -2556,12 +2556,12 @@ typedef struct acpi_tprn_limit_reg {
 *******************************************************************************/
 
 typedef struct acpi_tpr_serialize_request {
-    UINT64 Sts : 1; // Status of serialization request (RO)
-                 // 0 == register idle, 1 == serialization in progress
-    UINT64 Ctrl : 1; // Control field to initiate serialization (RW)
-                  // 0 == normal, 1 == initialize serialization
-                  // (self-clear to allow multiple serialization requests)
-    UINT64 Unused : 62;
+    UINT64 SrRegister;
+    // BIT 1 - Status of serialization request (RO)
+    //         0 == register idle, 1 == serialization in progress
+    // BIT 2 - Control field to initiate serialization (RW)
+    //         0 == normal, 1 == initialize serialization
+    // (self-clear to allow multiple serialization requests)
 } ACPI_TPR_SERIALIZE_REQUEST;
 
 /* Reset to default packing */

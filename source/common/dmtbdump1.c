@@ -1781,6 +1781,8 @@ AcpiDmDumpDtpr (
             {
                 return;
             }
+
+            Offset += sizeof(ACPI_TPR_SERIALIZE_REQUEST);
         }
     }
 }
