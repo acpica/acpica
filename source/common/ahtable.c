@@ -270,6 +270,7 @@ const AH_TABLE      AcpiGbl_SupportedTables[] =
     {ACPI_SIG_TCPA, "Trusted Computing Platform Alliance Table"},
     {ACPI_SIG_TDEL, "TD-Event Log Table"},
     {ACPI_SIG_TPM2, "Trusted Platform Module hardware interface Table"},
+    {ACPI_SIG_TPMC, "TPMI Configuration Table"},
     {ACPI_SIG_UEFI, "UEFI Boot Optimization Table"},
     {ACPI_SIG_VIOT, "Virtual I/O Translation Table"},
     {ACPI_SIG_WAET, "Windows ACPI Emulated Devices Table"},

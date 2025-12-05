@@ -568,6 +568,19 @@ static const char           *AcpiDmTpm2Subnames[] =
     "Unknown Subtable Type"         /* Reserved */
 };
 
+static const char           *AcpiDmTpmcSubnames[] =
+{
+    "PFS",
+    "Unknown Subtable Type"         /* Reserved */
+};
+
+static const char           *AcpiDmTpmcPfsSubnames[] =
+{
+    "PFS Generic Address Structure",
+    "Unknown Subtable Type"         /* Reserved */
+};
+
+
 static const char           *AcpiDmIovtSubnames[] =
 {
     "IOMMUv1",
@@ -748,6 +761,7 @@ const ACPI_DMTABLE_DATA     AcpiDmTableData[] =
     {ACPI_SIG_TCPA, NULL,                   AcpiDmDumpTcpa, DtCompileTcpa,  TemplateTcpa},
     {ACPI_SIG_TDEL, AcpiDmTableInfoTdel,    NULL,           NULL,           TemplateTdel},
     {ACPI_SIG_TPM2, AcpiDmTableInfoTpm2,    AcpiDmDumpTpm2, DtCompileTpm2,  TemplateTpm2},
+    {ACPI_SIG_TPMC, AcpiDmTableInfoTpmc,    AcpiDmDumpTpmc, DtCompileTpmc,  TemplateTpmc},
     {ACPI_SIG_UEFI, AcpiDmTableInfoUefi,    NULL,           DtCompileUefi,  TemplateUefi},
     {ACPI_SIG_VIOT, AcpiDmTableInfoViot,    AcpiDmDumpViot, DtCompileViot,  TemplateViot},
     {ACPI_SIG_WAET, AcpiDmTableInfoWaet,    NULL,           NULL,           TemplateWaet},
@@ -1170,6 +1184,7 @@ AcpiDmDumpTable (
         case ACPI_DMT_DMAR_SCOPE:
         case ACPI_DMT_IOVTDEV:
         case ACPI_DMT_VIOT:
+        case ACPI_DMT_TPMC_PFS:
 
             ByteLength = 1;
             break;
@@ -1200,6 +1215,7 @@ AcpiDmDumpTable (
         case ACPI_DMT_SIG:
         case ACPI_DMT_LPIT:
         case ACPI_DMT_TPM2:
+        case ACPI_DMT_TPMC: 
 
             ByteLength = 4;
             break;
@@ -2144,6 +2160,34 @@ AcpiDmDumpTable (
 
             AcpiOsPrintf (UINT8_FORMAT, *Target,
                 AcpiDmTpm2Subnames[Temp8]);
+            break;
+
+        case ACPI_DMT_TPMC:
+
+            /* TPMC Start Method types */
+
+            Temp32 = ACPI_GET32 (Target);
+            if (Temp32 > ACPI_TPMC_RESERVED)
+            {
+                Temp32 = ACPI_TPMC_RESERVED;
+            }
+
+            AcpiOsPrintf(UINT32_FORMAT, ACPI_GET32 (Target),
+                AcpiDmTpmcSubnames[Temp32]);
+            break;
+
+        case ACPI_DMT_TPMC_PFS:
+
+            /* TPMC Start Method types */
+
+            Temp8 = *Target;
+            if (Temp8 > ACPI_TPMC_PFS_RESERVED)
+            {
+                Temp8 = ACPI_TPMC_PFS_RESERVED;
+            }
+
+            AcpiOsPrintf(UINT8_FORMAT, *Target,
+                AcpiDmTpmcPfsSubnames[Temp8]);
             break;
 
 

@@ -176,6 +176,7 @@
 #define ACPI_SIG_STAO           "STAO"      /* Status Override table */
 #define ACPI_SIG_TCPA           "TCPA"      /* Trusted Computing Platform Alliance table */
 #define ACPI_SIG_TPM2           "TPM2"      /* Trusted Platform Module 2.0 H/W interface table */
+#define ACPI_SIG_TPMC           "TPMC"      /* TPMI Configuration table */
 #define ACPI_SIG_UEFI           "UEFI"      /* Uefi Boot Optimization Table */
 #define ACPI_SIG_VIOT           "VIOT"      /* Virtual I/O Translation Table */
 #define ACPI_SIG_WAET           "WAET"      /* Windows ACPI Emulated devices Table */
@@ -693,6 +694,48 @@ typedef struct acpi_tpm2_arm_smc
 /* Values for OperationFlags above */
 
 #define ACPI_TPM2_IDLE_SUPPORT          (1)
+
+
+/*******************************************************************************
+ *
+ * TPMC - TPMI Configuration Table
+ *
+ * TBD: Does not yet conform to any published specification yet
+ * 
+ ******************************************************************************/
+
+typedef struct acpi_table_tpmc
+{
+    ACPI_TABLE_HEADER       Header;             /* Standard ACPI table header */
+    UINT32                  HeaderSize;         /* TPMC header size (8 bytes) */
+    UINT32                  EntryCount;         /* Number of PFS entries */
+
+} ACPI_TABLE_TPMC;
+
+/* Followed by EntryCount number of instances of ACPI_TPMC_PFS */
+
+enum AcpiTpmcType
+{
+    TPMC_PFS =                      0x00,
+    ACPI_TPMC_RESERVED =            0x01        /* 1 and greater are reserved */
+};
+
+/* TPMC PFS Entry Structure */
+
+typedef struct acpi_tpmc_pfs
+{
+    ACPI_GENERIC_ADDRESS    PfsGas;             /* GAS pointing to first PFS entry */
+    UINT32                  NumEntries;         /* Number of PM features (max 64) */
+    UINT64                  ReadBlockedMask;    /* Read-blocked feature bitmask */
+    UINT64                  WriteBlockedMask;   /* Write-blocked feature bitmask */
+
+} ACPI_TPMC_PFS;
+
+enum AcpiTpmcPfsType
+{
+    PFS_GAS =                         0x00,
+    ACPI_TPMC_PFS_RESERVED =          0x01      /* 1 and greater are reserved */
+};
 
 
 /*******************************************************************************

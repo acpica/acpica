@@ -3125,6 +3125,63 @@ DtCompileTpm2 (
 
 /******************************************************************************
  *
+ * FUNCTION:    DtCompileTpmc
+ *
+ * PARAMETERS:  List                - Current field list pointer
+ *
+ * RETURN:      Status
+ *
+ * DESCRIPTION: Compile TPMC table
+ *
+ *****************************************************************************/
+
+ACPI_STATUS
+DtCompileTpmc(
+    void** List)
+{
+    ACPI_STATUS                 Status = AE_OK;
+    DT_SUBTABLE                 *Subtable;
+    DT_SUBTABLE                 *ParentTable;
+    DT_FIELD                    **PFieldList = (DT_FIELD**) List;
+    ACPI_TABLE_TPMC             *TpmcHeader;
+    /* ACPI_TPMC_PFS               *PfsEntry; */
+    UINT32                      EntryCount;
+    UINT32                      i;
+
+
+    /* Main TPMC table */
+
+    Status = DtCompileTable(PFieldList, AcpiDmTableInfoTpmc, &Subtable);
+    if (ACPI_FAILURE(Status))
+    {
+        return (Status);
+    }
+
+    ParentTable = DtPeekSubtable();
+    DtInsertSubtable(ParentTable, Subtable);
+
+    TpmcHeader = ACPI_CAST_PTR(ACPI_TABLE_TPMC, Subtable->Buffer);
+    EntryCount = TpmcHeader->EntryCount;
+
+    /* Compile PFS entries */
+
+    for (i = 0; i < EntryCount; i++)
+    {
+        Status = DtCompileTable(PFieldList, AcpiDmTableInfoTpmcPfs, &Subtable);
+        if (ACPI_FAILURE(Status))
+        {
+            return (Status);
+        }
+
+        DtInsertSubtable(ParentTable, Subtable);
+    }
+
+    return (Status);
+}
+
+
+/******************************************************************************
+ *
  * FUNCTION:    DtGetGenericTableInfo
  *
  * PARAMETERS:  Name                - Generic type name

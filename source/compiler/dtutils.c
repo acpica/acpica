@@ -611,6 +611,7 @@ DtGetFieldLength (
     case ACPI_DMT_DMAR_SCOPE:
     case ACPI_DMT_IOVTDEV:
     case ACPI_DMT_VIOT:
+    case ACPI_DMT_TPMC_PFS:
 
         ByteLength = 1;
         break;
@@ -642,6 +643,7 @@ DtGetFieldLength (
     case ACPI_DMT_SIG:
     case ACPI_DMT_LPIT:
     case ACPI_DMT_TPM2:
+    case ACPI_DMT_TPMC:
 
         ByteLength = 4;
         break;
