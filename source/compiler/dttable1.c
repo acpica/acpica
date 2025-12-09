@@ -1763,8 +1763,7 @@ DtCompileDtpr (
     DtInsertSubtable (ParentTable, Subtable);
 
     Dtpr = ACPI_SUB_PTR (ACPI_TABLE_DTPR, Subtable->Buffer,
-                         sizeof (ACPI_TABLE_DTPR));
-
+                         sizeof (ACPI_TABLE_HEADER));
     InsCnt = Dtpr->InsCnt;
 
     while (*PFieldList)

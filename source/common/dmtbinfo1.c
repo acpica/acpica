@@ -1162,14 +1162,14 @@ ACPI_DMTABLE_INFO           AcpiDmTableInfoDrtm2[] =
 ACPI_DMTABLE_INFO           AcpiDmTableInfoDtpr[] =
 {
     {ACPI_DMT_UINT32,   ACPI_DTPR_OFFSET (Flags),                  "Flags (reserved)", 0},
-    {ACPI_DMT_UINT32,   ACPI_DTPR_OFFSET (InsCnt),                 "Instance Count", 2},
+    {ACPI_DMT_UINT32,   ACPI_DTPR_OFFSET (InsCnt),                 "Instance Count", 0},
     ACPI_DMT_TERMINATOR
 };
 
 ACPI_DMTABLE_INFO           AcpiDmTableInfoDtprInstance[] =
 {
     {ACPI_DMT_UINT32,   ACPI_DTPR_INST_OFFSET (Flags),             "Instance control flags (reserved)", 0},
-    {ACPI_DMT_UINT32,   ACPI_DTPR_INST_OFFSET (TprCnt),            "Number of TPR ranges in instance", 2},
+    {ACPI_DMT_UINT32,   ACPI_DTPR_INST_OFFSET (TprCnt),            "Number of TPR ranges in instance", 0},
     ACPI_DMT_TERMINATOR
 };
 
@@ -1181,7 +1181,7 @@ ACPI_DMTABLE_INFO           AcpiDmTableInfoDtprArr[] =
 
 ACPI_DMTABLE_INFO           AcpiDmTableInfoDtprSerializeReq0[] =
 {
-    {ACPI_DMT_UINT32, ACPI_DTPR_AUX_SR_OFFSET (SrlCnt),             "Number of serialization registers", 1},
+    {ACPI_DMT_UINT32, ACPI_DTPR_AUX_SR_OFFSET (SrlCnt),             "Number of serialization registers", 0},
     ACPI_DMT_TERMINATOR
 };
 
