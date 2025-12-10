@@ -1691,9 +1691,11 @@ AcpiDmDumpDtpr (
     ACPI_TPR_INSTANCE          *TprInstance;
     ACPI_TPR_AUX_SR            *TprAuxSr;
     ACPI_TPR_SERIALIZE_REQUEST *TprSerializeRequest;
-    UINT32                     InsCnt = 0;
+    UINT32                     i         = 0;
+    UINT32                     j         = 0;
+    UINT32                     InsCnt    = 0;
     UINT32                     TprRefCnt = 0;
-    UINT32                     Offset = sizeof(ACPI_TABLE_DTPR);
+    UINT32                     Offset    = sizeof(ACPI_TABLE_DTPR);
 
     /* Main table */
 
@@ -1709,7 +1711,7 @@ AcpiDmDumpDtpr (
     {
         InsCnt = ((ACPI_TABLE_DTPR*) Table)->InsCnt;
 
-        for (int i = 0; i < InsCnt; i++)
+        for (i = 0; i < InsCnt; i++)
         {
             TprInstance = ACPI_ADD_PTR(ACPI_TPR_INSTANCE, Table, Offset);
             Status = AcpiDmDumpTable(Table->Length, Offset, TprInstance,
@@ -1748,7 +1750,7 @@ AcpiDmDumpDtpr (
                 }
             }
 
-            for (int j = 0; j < TprInstance->TprCnt; j++)
+            for (j = 0; j < TprInstance->TprCnt; j++)
             {
                 TprArr = ACPI_ADD_PTR(ACPI_TPR_ARRAY, Table, Offset);
                 Status = AcpiDmDumpTable(Table->Length, Offset, TprArr,
@@ -1770,7 +1772,7 @@ AcpiDmDumpDtpr (
 
         Offset += sizeof(ACPI_TPR_AUX_SR);
 
-        for (int i = 0; i < TprAuxSr->SrlCnt; i++)
+        for (i = 0; i < TprAuxSr->SrlCnt; i++)
         {
             TprSerializeRequest = ACPI_ADD_PTR(ACPI_TPR_SERIALIZE_REQUEST,
                                                Table, Offset);

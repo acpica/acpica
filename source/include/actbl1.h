@@ -2486,7 +2486,7 @@ typedef struct acpi_ibft_target
 
 typedef struct acpi_table_dtpr {
     ACPI_TABLE_HEADER header;
-    UINT32 Flags; // 36
+    UINT32 Flags; /* 36 */
     UINT32 InsCnt;
 } ACPI_TABLE_DTPR;
 
@@ -2497,71 +2497,76 @@ typedef struct acpi_tpr_array {
 typedef struct acpi_tpr_instance {
     UINT32 Flags;
     UINT32 TprCnt;
-    // ACPI_TPR_ARRAY tpr_array[];
+    /* ACPI_TPR_ARRAY tpr_array[]; */
 } ACPI_TPR_INSTANCE;
 
 typedef struct acpi_tpr_aux_sr {
     UINT32 SrlCnt;
-    //ACPI_TPR_SERIALIZE_REQUEST TprSrArr[];
+    /* ACPI_TPR_SERIALIZE_REQUEST TprSrArr[]; */
 } ACPI_TPR_AUX_SR;
 
-/*******************************************************************************
+/*
  * TPRn_BASE
  *
  * Specifies the start address of TPRn region. TPR region address and size must
  * be with 1MB resolution. These bits are compared with the result of the
  * TPRn_LIMIT[63:20] * applied to the incoming address, to determine if an
  * access fall within the TPRn defined region.
-*******************************************************************************/
+ */
+
 typedef struct acpi_tprn_base_reg {
     UINT64 Reserved0 : 3;
-    UINT64 Rw : 1; // access: 1 == RO, 0 == RW (for TPR must be RW)
-    UINT64 Enable : 1; // 0 == range enabled, 1 == range disabled
+    UINT64 Rw : 1;         /* access: 1 == RO, 0 == RW (for TPR must be RW) */
+    UINT64 Enable : 1;     /* 0 == range enabled, 1 == range disabled */
     UINT64 Reserved1 : 15;
-    UINT64 TprBaseRw : 44; // Minimal TPRn_Base resolution is 1MB.
-                          // Applied to the incoming address, to determine if an
-                          // access fall within the TPRn defined region.
-                          // Width is determined by a bus width which can be
-                          // obtainedvia CPUID function 0x80000008.
-    //UINT64 unused : 1;
+    UINT64 TprBaseRw : 44; /* Minimal TPRn_Base resolution is 1MB.
+                           *  Applied to the incoming address, to determine if
+                           *  an access fall within the TPRn defined region.
+                           *  Width is determined by a bus width which can be
+                           *  obtained via CPUID function 0x80000008.
+                           */
+    /* UINT64 unused : 1;   */
 } ACPI_TPRN_BASE_REG;
 
-/*******************************************************************************
+/*
  * TPRn_LIMIT
  *
  * This register defines an isolated region of memory that can be enabled
  * to prohibit certain system agents from accessing memory. When an agent
  * sends a request upstream, whether snooped or not, a TPR prevents that
  * transaction from changing the state of memory.
-*******************************************************************************/
+ */
 
 typedef struct acpi_tprn_limit_reg {
     UINT64 Reserved0 : 3;
-    UINT64 Rw : 1; // access: 1 == RO, 0 == RW (for TPR must be RW)
-    UINT64 Enable : 1; // 0 == range enabled, 1 == range disabled
+    UINT64 Rw : 1;          /* access: 1 == RO, 0 == RW (for TPR must be RW) */
+    UINT64 Enable : 1;      /* 0 == range enabled, 1 == range disabled */
     UINT64 Reserved1 : 15;
-    UINT64 TprLimitRw : 44; // Minimal TPRn_Limit resolution is 1MB.
-                           // These bits define TPR limit address.
-                           // Width is determined by a bus width.
+    UINT64 TprLimitRw : 44; /* Minimal TPRn_Limit resolution is 1MB.
+                            *  These bits define TPR limit address.
+                            *  Width is determined by a bus width.
+                            */
 
-    //UINT64 unused : 1;
+    /* UINT64 unused : 1; */
 } ACPI_TPRN_LIMIT_REG;
 
-/*******************************************************************************
+/*
  * SERIALIZE_REQUEST
  *
  * This register is used to request serialization of non-coherent DMA
  * transactions. OS shall  issue it before changing of TPR settings
  * (base / size).
-*******************************************************************************/
+ */
 
 typedef struct acpi_tpr_serialize_request {
     UINT64 SrRegister;
-    // BIT 1 - Status of serialization request (RO)
-    //         0 == register idle, 1 == serialization in progress
-    // BIT 2 - Control field to initiate serialization (RW)
-    //         0 == normal, 1 == initialize serialization
-    // (self-clear to allow multiple serialization requests)
+    /*
+    *  BIT 1 - Status of serialization request (RO)
+    *          0 == register idle, 1 == serialization in progress
+    *  BIT 2 - Control field to initiate serialization (RW)
+    *          0 == normal, 1 == initialize serialization
+    *  (self-clear to allow multiple serialization requests)
+    */
 } ACPI_TPR_SERIALIZE_REQUEST;
 
 /* Reset to default packing */

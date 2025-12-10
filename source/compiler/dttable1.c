@@ -1748,6 +1748,7 @@ DtCompileDtpr (
     DT_FIELD                **PFieldList = (DT_FIELD **) List;
     ACPI_TABLE_DTPR         *Dtpr;
     ACPI_TPR_INSTANCE       *TprInst;
+    UINT32                  i      = 0;
     UINT32                  InsCnt = 0;
     UINT32                  SrlCnt = 0;
     UINT32                  TprCnt = 0;
@@ -1764,11 +1765,17 @@ DtCompileDtpr (
 
     Dtpr = ACPI_SUB_PTR (ACPI_TABLE_DTPR, Subtable->Buffer,
                          sizeof (ACPI_TABLE_HEADER));
+    if (!Dtpr)
+    {
+        AcpiOsPrintf ("DTPR buffer pointer is NULL\n");
+        return (AE_NULL_OBJECT);
+    }
+
     InsCnt = Dtpr->InsCnt;
 
     while (*PFieldList)
     {
-        for (UINT32 i = 0; i < InsCnt; i++)
+        for (i = 0; i < InsCnt; i++)
         {
             Status = DtCompileTable (PFieldList, AcpiDmTableInfoDtprInstance,
                                      &Subtable);
@@ -1778,6 +1785,12 @@ DtCompileDtpr (
             }
 
             TprInst = ACPI_CAST_PTR (ACPI_TPR_INSTANCE, Subtable->Buffer);
+            if (!TprInst)
+            {
+                AcpiOsPrintf ("Tpr Instance buffer pointer is NULL\n");
+                return (AE_NULL_OBJECT);
+            }
+
             TprCnt = TprInst->TprCnt;
             DtInsertSubtable (ParentTable, Subtable);
             DtPushSubtable (Subtable);
