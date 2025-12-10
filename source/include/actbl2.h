@@ -1888,7 +1888,7 @@ typedef struct acpi_madt_generic_translator
 
 #define ACPI_MADT_ITS_NON_COHERENT      (1)
 
-/* 16: Multiprocessor wakeup (ACPI 6.4) */
+/* 16: Multiprocessor wakeup (ACPI 6.6) */
 
 typedef struct acpi_madt_multiproc_wakeup
 {
@@ -1896,6 +1896,7 @@ typedef struct acpi_madt_multiproc_wakeup
     UINT16                  MailboxVersion;
     UINT32                  Reserved;           /* reserved - must be zero */
     UINT64                  BaseAddress;
+    UINT64                  ResetVector;
 
 } ACPI_MADT_MULTIPROC_WAKEUP;
 
@@ -1914,6 +1915,7 @@ typedef struct acpi_madt_multiproc_wakeup_mailbox
 } ACPI_MADT_MULTIPROC_WAKEUP_MAILBOX;
 
 #define ACPI_MP_WAKE_COMMAND_WAKEUP    1
+#define ACPI_MP_WAKE_COMMAND_TEST      2
 
 /* 17: CPU Core Interrupt Controller (ACPI 6.5) */
 
@@ -3832,6 +3834,8 @@ typedef struct acpi_ras2_patrol_scrub_param {
     UINT32                      Flags;
     UINT32                      ScrubParamsOut;
     UINT32                      ScrubParamsIn;
+    UINT32                      ExtScrubParams;
+    UINT8                       ScrubRateDesc[256];
 
 } ACPI_RAS2_PATROL_SCRUB_PARAM;
 
