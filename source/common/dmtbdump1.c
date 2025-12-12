@@ -1691,10 +1691,7 @@ AcpiDmDumpDtpr (
     ACPI_TPR_INSTANCE          *TprInstance;
     ACPI_TPR_AUX_SR            *TprAuxSr;
     ACPI_TPR_SERIALIZE_REQUEST *TprSerializeRequest;
-    UINT32                     i         = 0;
-    UINT32                     j         = 0;
-    UINT32                     InsCnt    = 0;
-    UINT32                     TprRefCnt = 0;
+    UINT32                     i, j, InsCnt, TprRefCnt = 0;
     UINT32                     Offset    = sizeof(ACPI_TABLE_DTPR);
 
     /* Main table */
@@ -1715,8 +1712,7 @@ AcpiDmDumpDtpr (
         {
             TprInstance = ACPI_ADD_PTR(ACPI_TPR_INSTANCE, Table, Offset);
             Status = AcpiDmDumpTable(Table->Length, Offset, TprInstance,
-                                     sizeof(ACPI_TPR_INSTANCE),
-                                     AcpiDmTableInfoDtprInstance);
+                                     sizeof(ACPI_TPR_INSTANCE), AcpiDmTableInfoDtprInstance);
             if (ACPI_FAILURE (Status))
             {
                 return;
@@ -1754,8 +1750,7 @@ AcpiDmDumpDtpr (
             {
                 TprArr = ACPI_ADD_PTR(ACPI_TPR_ARRAY, Table, Offset);
                 Status = AcpiDmDumpTable(Table->Length, Offset, TprArr,
-                                         sizeof(ACPI_TPR_ARRAY),
-                                         AcpiDmTableInfoDtprArr);
+                                         sizeof(ACPI_TPR_ARRAY), AcpiDmTableInfoDtprArr);
                 if (ACPI_FAILURE (Status))
                 {
                     return;
@@ -1767,8 +1762,7 @@ AcpiDmDumpDtpr (
 
         TprAuxSr = ACPI_ADD_PTR(ACPI_TPR_AUX_SR, Table, Offset);
         Status = AcpiDmDumpTable(Table->Length, Offset, TprAuxSr,
-                                 sizeof(ACPI_TPR_AUX_SR),
-                                 AcpiDmTableInfoDtprSerializeReq0);
+                                 sizeof(ACPI_TPR_AUX_SR), AcpiDmTableInfoDtprSerializeReq0);
 
         Offset += sizeof(ACPI_TPR_AUX_SR);
 
@@ -1777,8 +1771,7 @@ AcpiDmDumpDtpr (
             TprSerializeRequest = ACPI_ADD_PTR(ACPI_TPR_SERIALIZE_REQUEST,
                                                Table, Offset);
             Status = AcpiDmDumpTable(Table->Length, Offset, TprSerializeRequest,
-                                     sizeof(ACPI_TPR_SERIALIZE_REQUEST),
-                                     AcpiDmTableInfoDtprSerializeReq1);
+                                     sizeof(ACPI_TPR_SERIALIZE_REQUEST), AcpiDmTableInfoDtprSerializeReq1);
             if (ACPI_FAILURE (Status))
             {
                 return;

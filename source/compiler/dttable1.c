@@ -1748,10 +1748,8 @@ DtCompileDtpr (
     DT_FIELD                **PFieldList = (DT_FIELD **) List;
     ACPI_TABLE_DTPR         *Dtpr;
     ACPI_TPR_INSTANCE       *TprInst;
-    UINT32                  i      = 0;
-    UINT32                  InsCnt = 0;
-    UINT32                  SrlCnt = 0;
-    UINT32                  TprCnt = 0;
+    UINT32                  i,InsCnt, SrlCnt, TprCnt = 0;
+
 
     ParentTable = DtPeekSubtable ();
 
@@ -1827,8 +1825,7 @@ DtCompileDtpr (
 
         while (*PFieldList && SrlCnt)
         {
-            Status = DtCompileTable (PFieldList,
-                                     AcpiDmTableInfoDtprSerializeReq1,
+            Status = DtCompileTable (PFieldList, AcpiDmTableInfoDtprSerializeReq1,
                                      &Subtable);
             if (ACPI_FAILURE (Status))
             {
