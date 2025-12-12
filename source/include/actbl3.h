@@ -706,7 +706,7 @@ typedef struct acpi_tpm2_arm_smc
 
 typedef struct acpi_table_tpmc
 {
-    ACPI_TABLE_HEADER       Header;             /* Standard ACPI table header */
+    ACPI_TABLE_HEADER       Header;             /* Common ACPI table header */
     UINT32                  HeaderSize;         /* TPMC header size (8 bytes) */
     UINT32                  EntryCount;         /* Number of PFS entries */
 
@@ -725,7 +725,7 @@ enum AcpiTpmcType
 typedef struct acpi_tpmc_pfs
 {
     ACPI_GENERIC_ADDRESS    PfsGas;             /* GAS pointing to first PFS entry */
-    UINT32                  NumEntries;         /* Number of PM features (max 64) */
+    UINT32                  NumEntries;         /* Number of PM features (max 64 per PFS) */
     UINT64                  ReadBlockedMask;    /* Read-blocked feature bitmask */
     UINT64                  WriteBlockedMask;   /* Write-blocked feature bitmask */
 

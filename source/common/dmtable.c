@@ -2178,7 +2178,7 @@ AcpiDmDumpTable (
 
         case ACPI_DMT_TPMC_PFS:
 
-            /* TPMC Start Method types */
+            /* TPMC PFS Start Method types */
 
             Temp8 = *Target;
             if (Temp8 > ACPI_TPMC_PFS_RESERVED)

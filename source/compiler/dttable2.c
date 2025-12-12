@@ -3137,14 +3137,13 @@ DtCompileTpm2 (
 
 ACPI_STATUS
 DtCompileTpmc(
-    void** List)
+    void                        **List)
 {
     ACPI_STATUS                 Status = AE_OK;
     DT_SUBTABLE                 *Subtable;
     DT_SUBTABLE                 *ParentTable;
     DT_FIELD                    **PFieldList = (DT_FIELD**) List;
     ACPI_TABLE_TPMC             *TpmcHeader;
-    /* ACPI_TPMC_PFS               *PfsEntry; */
     UINT32                      EntryCount;
     UINT32                      i;
 
@@ -3159,23 +3158,37 @@ DtCompileTpmc(
 
     ParentTable = DtPeekSubtable();
     DtInsertSubtable(ParentTable, Subtable);
+    DtPushSubtable(Subtable);
 
     TpmcHeader = ACPI_CAST_PTR(ACPI_TABLE_TPMC, Subtable->Buffer);
-    EntryCount = TpmcHeader->EntryCount;
+
+    /*  Since sizeof(TpmcHeader->HeaderSize) returns 8, which is the total size
+     *  of the non-standard TPMC header, we need to add the size of EntryCount
+     *  field to get the correct offset of 4 bytes to read EntryCount value as 
+     *  both these non-standard header fields are the same UINT32 types! 
+     */
+    EntryCount = *ACPI_CAST_PTR(UINT32, (Subtable->Buffer + 
+                        sizeof(TpmcHeader->EntryCount))); 
 
     /* Compile PFS entries */
+    ParentTable = DtPeekSubtable();
 
     for (i = 0; i < EntryCount; i++)
     {
         Status = DtCompileTable(PFieldList, AcpiDmTableInfoTpmcPfs, &Subtable);
+        
         if (ACPI_FAILURE(Status))
         {
+            AcpiOsPrintf("ERROR: Failed to compile PFS entry %u\n", i);
+            DtPopSubtable();
             return (Status);
         }
 
         DtInsertSubtable(ParentTable, Subtable);
+        DtPopSubtable();
     }
 
+    DtPopSubtable();
     return (Status);
 }
 

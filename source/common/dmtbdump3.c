@@ -777,18 +777,16 @@ AcpiDmDumpTpmc(
 
     for (i = 0; i < Subtable->EntryCount; i++)
     {
-        AcpiOsPrintf("\n");
-
-        /* Validate offset */
+        /*  If we encounter any PFS entry that is not completely contained
+         *   within the table length, issue a warning and exit out
+         */       
  
-#if 1         
         if ((Offset + sizeof(ACPI_TPMC_PFS)) > Table->Length)
         {
             AcpiOsPrintf("**** TPMC: PFS entry %u extends beyond table (Offset 0x%X)\n",
                 i, Offset);
             return;
         }         
-#endif
 
         PfsEntry = ACPI_ADD_PTR(ACPI_TPMC_PFS, Table, Offset);
 
