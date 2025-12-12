@@ -1691,7 +1691,7 @@ AcpiDmDumpDtpr (
     ACPI_TPR_INSTANCE          *TprInstance;
     ACPI_TPR_AUX_SR            *TprAuxSr;
     ACPI_TPR_SERIALIZE_REQUEST *TprSerializeRequest;
-    UINT32                     i, j, InsCnt, TprRefCnt;
+    UINT32                     i = 0, j, InsCnt, TprRefCnt;
     UINT32                     Offset = sizeof(ACPI_TABLE_DTPR);
 
     /* Main table */
@@ -1718,14 +1718,10 @@ AcpiDmDumpDtpr (
                 return;
             }
 
-            if (i == 0)
-            {
                 /* Each of the TPR instances must have the same number of TPRs*/
-                TprRefCnt = TprInstance->TprCnt;
-            }
+            TprRefCnt = TprInstance->TprCnt;
 
             Offset += sizeof(ACPI_TPR_INSTANCE);
-
 
             if (TprInstance->TprCnt < 2)
             {
