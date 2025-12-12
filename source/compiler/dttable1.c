@@ -1748,7 +1748,7 @@ DtCompileDtpr (
     DT_FIELD                **PFieldList = (DT_FIELD **) List;
     ACPI_TABLE_DTPR         *Dtpr;
     ACPI_TPR_INSTANCE       *TprInst;
-    UINT32                  i,InsCnt, SrlCnt, TprCnt = 0;
+    UINT32                  i, InsCnt, SrlCnt, TprCnt;
 
 
     ParentTable = DtPeekSubtable ();

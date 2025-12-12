@@ -1691,8 +1691,8 @@ AcpiDmDumpDtpr (
     ACPI_TPR_INSTANCE          *TprInstance;
     ACPI_TPR_AUX_SR            *TprAuxSr;
     ACPI_TPR_SERIALIZE_REQUEST *TprSerializeRequest;
-    UINT32                     i, j, InsCnt, TprRefCnt = 0;
-    UINT32                     Offset    = sizeof(ACPI_TABLE_DTPR);
+    UINT32                     i, j, InsCnt, TprRefCnt;
+    UINT32                     Offset = sizeof(ACPI_TABLE_DTPR);
 
     /* Main table */
 
