@@ -2497,16 +2497,10 @@ typedef struct acpi_tpr_array {
 typedef struct acpi_tpr_instance {
     UINT32 Flags;
     UINT32 TprCnt;
-    /*
-     * ACPI_TPR_ARRAY tpr_array[];
-     */
 } ACPI_TPR_INSTANCE;
 
 typedef struct acpi_tpr_aux_sr {
     UINT32 SrlCnt;
-    /*
-     * ACPI_TPR_SERIALIZE_REQUEST TprSrArr[];
-     */
 } ACPI_TPR_AUX_SR;
 
 /*
@@ -2523,13 +2517,14 @@ typedef struct acpi_tprn_base_reg {
     UINT64 Rw : 1;         /* access: 1 == RO, 0 == RW (for TPR must be RW) */
     UINT64 Enable : 1;     /* 0 == range enabled, 1 == range disabled */
     UINT64 Reserved1 : 15;
-    UINT64 TprBaseRw : 44; /*
-                            * Minimal TPRn_Base resolution is 1MB.
-                            * Applied to the incoming address, to determine if
-                            * an access fall within the TPRn defined region.
-                            * Width is determined by a bus width which can be
-                            * obtained via CPUID function 0x80000008.
-                            */
+    UINT64 TprBaseRw : 44;
+    /*
+     * Minimal TPRn_Base resolution is 1MB.
+     * Applied to the incoming address, to determine if
+     * an access fall within the TPRn defined region.
+     * Width is determined by a bus width which can be
+     * obtained via CPUID function 0x80000008.
+     */
 } ACPI_TPRN_BASE_REG;
 
 /*
@@ -2546,11 +2541,12 @@ typedef struct acpi_tprn_limit_reg {
     UINT64 Rw : 1;          /* access: 1 == RO, 0 == RW (for TPR must be RW) */
     UINT64 Enable : 1;      /* 0 == range enabled, 1 == range disabled */
     UINT64 Reserved1 : 15;
-    UINT64 TprLimitRw : 44; /*
-                             * Minimal TPRn_Limit resolution is 1MB.
-                             * These bits define TPR limit address.
-                             * Width is determined by a bus width.
-                             */
+    UINT64 TprLimitRw : 44;
+    /*
+     * Minimal TPRn_Limit resolution is 1MB.
+     * These bits define TPR limit address.
+     * Width is determined by a bus width.
+     */
 } ACPI_TPRN_LIMIT_REG;
 
 /*
