@@ -186,6 +186,7 @@
 
 #pragma warning( disable: 4201)
 #pragma warning( disable: 4068)
+#pragma warning( disable: 4214)
 #pragma warning( push)
 
 #define ACPI_MACHINE_WIDTH      32
