@@ -51,7 +51,7 @@ ENVIRONMENT
 
    For test execution, three additional variables are required:
 
-        acpiexec - path to acpiexec utility: (example)
+        acpiexec - path to acpiexec utility: (example, needs to be build with ACPI_CONTINUE_ON_FATAL)
 
             > export acpiexec="c:/acpica/libraries/acpiexec.exe"
 
