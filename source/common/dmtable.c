@@ -568,6 +568,10 @@ static const char           *AcpiDmTpm2Subnames[] =
     "Reserved",
     "Reserved",
     "Command Response Buffer with ARM SMC",
+    "FIFO over I2C",
+    "Command Response Buffer with AMD Mailbox",
+    "Reserved",
+    "Command Response Buffer with ARM Framework-A",
     "Unknown Subtable Type"         /* Reserved */
 };
 
