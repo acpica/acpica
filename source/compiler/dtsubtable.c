@@ -430,7 +430,12 @@ DtGetSubtableLength (
 
         case ACPI_DMT_IORTMEM:
 
-            Step = 10;
+            /*
+             * The ACPI_DMT_IORTMEM type is defined in AcpiDmTableInfoIortAcc.
+             * TODO: compute number of fields ("Step") directly from the array initialisation.
+             * This may require some refactoring of dmtbinfo2.c and acdiasasm.h
+             */
+            Step = 11;
             break;
 
         default:
