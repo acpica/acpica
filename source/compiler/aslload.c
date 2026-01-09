@@ -1406,6 +1406,8 @@ LdNamespace2Begin (
 
         /* Save the target node within the alias node as well as type information */
 
+        /* Mark as alias node and store target namespace node */
+        Node->Flags |= ANOBJ_IS_ALIAS;
         Node->Object = ACPI_CAST_PTR (ACPI_OPERAND_OBJECT, TargetNode);
         Node->Type = TargetNode->Type;
         if (Node->Type == ACPI_TYPE_METHOD)
