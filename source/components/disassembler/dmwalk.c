@@ -305,19 +305,19 @@ AcpiDmWalkParseTree (
             }
         }
 
-        /* Terminate walk at start op */
-
-        if (Op == StartOp)
-        {
-            break;
-        }
-
         /* No more children, re-visit this node */
 
         if (!NodePreviouslyVisited)
         {
             NodePreviouslyVisited = TRUE;
             continue;
+        }
+
+        /* Terminate walk at start op */
+
+        if (Op == StartOp)
+        {
+            break;
         }
 
         /* No more children, visit peers */
