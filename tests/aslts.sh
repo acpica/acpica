@@ -88,9 +88,10 @@ build_acpi_tools() {
 	if [ "x$REBUILD_TOOLS" = "xyes" ]; then
 		jobs=`nproc`
 		make clean
-		make iasl ASLTS=TRUE -j$jobs
-		make acpibin ASLTS=TRUE -j$jobs
-		make acpiexec ASLTS=TRUE -j$jobs
+		# We need to disable the Fatal() opcode in order to test it
+		make iasl ASLTS=TRUE OPT_CFLAGS="-DACPI_CONTINUE_ON_FATAL" -j$jobs
+		make acpibin ASLTS=TRUE OPT_CFLAGS="-DACPI_CONTINUE_ON_FATAL" -j$jobs
+		make acpiexec ASLTS=TRUE OPT_CFLAGS="-DACPI_CONTINUE_ON_FATAL" -j$jobs
 	fi
 
 	if [ -d "bin" ] && [ -f "bin/iasl" ]; then

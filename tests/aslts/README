@@ -19,7 +19,9 @@ more common functionality.
    The testing is performed in "hardware-independent" mode without any
 access to ACPI subsystem hardware. In this purpose the AcpiExec utility
 is used which includes the entire ACPICA subsystem and allows to execute
-the AML code and thus verify functionality of ACPICA subsystem.
+the AML code and thus verify functionality of ACPICA subsystem. Please keep
+in mind that AcpiExec needs to be build with ACPI_CONTINUE_ON_FATAL being
+defined in order to run tests dealing with the Fatal() operator.
 
    The ASL source code is compiled to AML code and then passed to
 AcpiExec utility. In this relation one more type tests are provided,
