@@ -566,7 +566,8 @@ AcpiPsParseLoop (
                     WalkState->Aml = ParserState->Aml;
 
                     ACPI_ERROR ((AE_INFO, "Skipping While/If block"));
-                    if (*WalkState->Aml == AML_ELSE_OP)
+                    if ((WalkState->Aml < ParserState->AmlEnd) &&
+                        (*WalkState->Aml == AML_ELSE_OP))
                     {
                         ACPI_ERROR ((AE_INFO, "Skipping Else block"));
                         WalkState->ParserState.Aml = WalkState->Aml + 1;
