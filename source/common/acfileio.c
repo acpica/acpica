@@ -452,6 +452,15 @@ AcGetOneTableFromFile (
         TableLength = TableHeader.Length;
     }
 
+    /* Table length must be at least large enough to hold the header */
+
+    if (TableLength < HeaderLength)
+    {
+        fprintf (stderr, "Table length too small for header: 0x%.2X\n",
+            TableLength);
+        return (AE_BAD_HEADER);
+    }
+
     /* Allocate a buffer for the entire table */
 
     Table = AcpiOsAllocate ((ACPI_SIZE) TableLength);
