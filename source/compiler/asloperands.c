@@ -999,7 +999,13 @@ OpnDoLoadTable (
     /* Fourth child is the RootPath string */
 
     Next = Next->Asl.Next;
-    if (Next->Asl.ParseOpcode == PARSEOP_ZERO)
+    if ((Next->Asl.ParseOpcode == PARSEOP_ZERO)           ||
+        ((Next->Asl.Value.Integer == 0) &&
+            ((Next->Asl.ParseOpcode == PARSEOP_INTEGER)   ||
+             (Next->Asl.ParseOpcode == PARSEOP_BYTECONST) ||
+             (Next->Asl.ParseOpcode == PARSEOP_WORDCONST) ||
+             (Next->Asl.ParseOpcode == PARSEOP_DWORDCONST)||
+             (Next->Asl.ParseOpcode == PARSEOP_QWORDCONST))))
     {
         Next->Asl.ParseOpcode = PARSEOP_STRING_LITERAL;
         Next->Asl.Value.String = "\\";
