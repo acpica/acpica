@@ -218,7 +218,7 @@ AcpiDmDumpSlit (
     /* Display the Locality NxN Matrix */
 
     Localities = (UINT32) ACPI_CAST_PTR (ACPI_TABLE_SLIT, Table)->LocalityCount;
-    Offset = ACPI_OFFSET (ACPI_TABLE_SLIT, Entry[0]);
+    Offset = (UINT32)ACPI_OFFSET (ACPI_TABLE_SLIT, Entry[0]);
     Row = (UINT8 *) ACPI_CAST_PTR (ACPI_TABLE_SLIT, Table)->Entry;
 
     for (i = 0; i < Localities; i++)
@@ -419,7 +419,7 @@ AcpiDmDumpStao (
     while (Offset < Table->Length)
     {
         Namepath = ACPI_ADD_PTR (char, Table, Offset);
-        StringLength = strlen (Namepath) + 1;
+        StringLength = (UINT32)strlen (Namepath) + 1;
 
         AcpiDmLineHeader (Offset, StringLength, "Namepath");
         AcpiOsPrintf ("\"%s\"\n", Namepath);

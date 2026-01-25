@@ -286,7 +286,7 @@ AsProcessTree (
     int                     MaxPathLength;
 
 
-    MaxPathLength = AsMaxInt (strlen (SourcePath), strlen (TargetPath));
+    MaxPathLength = AsMaxInt ((UINT32)strlen (SourcePath), (UINT32)strlen (TargetPath));
 
     if (!(ConversionTable->Flags & FLG_NO_FILE_OUTPUT))
     {
@@ -720,7 +720,7 @@ AsProcessOneFile (
         return (-1);
     }
 
-    Gbl_FileType = FileType;
+    Gbl_FileType = (UINT32)FileType;
 
     /* Generate the source pathname and read the file */
 
@@ -1007,7 +1007,7 @@ AsPutFile (
 
     /* Write the buffer to the file */
 
-    FileSize = strlen (FileBuffer);
+    FileSize = (UINT32)strlen (FileBuffer);
     Actual = fwrite (FileBuffer, 1, FileSize, File);
     if (Actual != FileSize)
     {

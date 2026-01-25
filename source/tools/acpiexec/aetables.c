@@ -448,7 +448,7 @@ AeBuildLocalTables (
         ExternalFadt->Dsdt = (UINT32) DsdtAddress;
         if (!AcpiGbl_ReducedHardware)
         {
-            ExternalFadt->Facs = ACPI_PTR_TO_PHYSADDR (&LocalFACS);
+            ExternalFadt->Facs = (UINT32)ACPI_PTR_TO_PHYSADDR (&LocalFACS);
         }
 
         /*

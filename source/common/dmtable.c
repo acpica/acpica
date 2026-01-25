@@ -1300,14 +1300,14 @@ AcpiDmDumpTable (
              * Length = (Current Subtable ptr + Subtable length) -
              *          Start of the vendor data (Target)
              */
-            ByteLength = ((ACPI_CAST_PTR (char, Table) +
+            ByteLength = (UINT32)((ACPI_CAST_PTR (char, Table) +
                             (ACPI_CAST_PTR (ACPI_PMTT_HEADER, Table)->Length)) -
                             ACPI_CAST_PTR (char, Target));
             break;
 
         case ACPI_DMT_STRING:
 
-            ByteLength = strlen (ACPI_CAST_PTR (char, Target)) + 1;
+            ByteLength = (UINT32)strlen (ACPI_CAST_PTR (char, Target)) + 1;
             break;
 
         case ACPI_DMT_IVRS_UNTERMINATED_STRING:

@@ -349,7 +349,7 @@ ExInsertArgCount (
             break;
         }
 
-        NameOp->Asl.AmlLength = strlen (NameOp->Asl.Value.String);
+        NameOp->Asl.AmlLength = (UINT32)strlen (NameOp->Asl.Value.String);
 
         /* Get argument count */
 
@@ -534,7 +534,7 @@ ExMoveExternals (
             return;
         }
 
-        Next->Asl.AmlLength = strlen (Next->Asl.Value.String);
+        Next->Asl.AmlLength = (UINT32)strlen (Next->Asl.Value.String);
 
         Next = Next->Asl.Next;
         Next->Asl.LineNumber = 0;

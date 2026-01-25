@@ -1154,7 +1154,7 @@ char *
 AcpiUtStrdup (
     char                    *String)
 {
-    char                    *NewString = (char *) UtLocalCalloc (strlen (String) + 1);
+    char                    *NewString = (char *) UtLocalCalloc ((UINT32)strlen (String) + 1);
 
 
     strcpy (NewString, String);
@@ -1180,8 +1180,8 @@ AcpiUtStrcat (
     char                    *String1,
     char                    *String2)
 {
-    UINT32                  String1Length = strlen (String1);
-    char                    *NewString = (char *) UtLocalCalloc (strlen (String1) + strlen (String2) + 1);
+    UINT32                  String1Length = (UINT32)strlen (String1);
+    char                    *NewString = (char *) UtLocalCalloc ((UINT32)strlen (String1) + (UINT32)strlen (String2) + 1);
 
     strcpy (NewString, String1);
     strcpy (NewString + String1Length, String2);

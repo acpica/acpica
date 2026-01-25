@@ -227,7 +227,7 @@ AcpiOsOpenDirectory (
 
     /* Initialize the find functions, get first match */
 
-    FindHandle = _findfirst (FullWildcardSpec, &SearchInfo->DosInfo);
+    FindHandle = (long)_findfirst (FullWildcardSpec, &SearchInfo->DosInfo);
     if (FindHandle == -1)
     {
         /* Failure means that no match was found */

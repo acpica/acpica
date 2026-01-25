@@ -282,7 +282,7 @@ DtTrim (
     /* Create the trimmed return string */
 
     Length = ACPI_PTR_DIFF (End, Start) + 1;
-    ReturnString = UtLocalCacheCalloc (Length + 1);
+    ReturnString = UtLocalCacheCalloc ((UINT32)Length + 1);
     if (strlen (Start))
     {
         memcpy (ReturnString, Start, Length);
@@ -371,10 +371,10 @@ DtParseLine (
      * There are two column values. One for the field name,
      * and one for the field value.
      */
-    Column = ACPI_PTR_DIFF (Colon, LineBuffer) + 3;
-    NameColumn = ACPI_PTR_DIFF (Start, LineBuffer) + 1;
+    Column = (UINT32)ACPI_PTR_DIFF (Colon, LineBuffer) + 3;
+    NameColumn = (UINT32)ACPI_PTR_DIFF (Start, LineBuffer) + 1;
 
-    Length = ACPI_PTR_DIFF (End, Start);
+    Length = (UINT32)ACPI_PTR_DIFF (End, Start);
 
     TmpName = UtLocalCalloc (Length + 1);
     memcpy (TmpName, Start, Length);
@@ -422,7 +422,7 @@ DtParseLine (
         End++;
     }
 
-    Length = ACPI_PTR_DIFF (End, Start);
+    Length = (UINT32)ACPI_PTR_DIFF (End, Start);
     TmpValue = UtLocalCalloc (Length + 1);
 
     memcpy (TmpValue, Start, Length);

@@ -269,7 +269,7 @@ AcpiDmDumpIort (
             InfoTable = AcpiDmTableInfoIort1;
             Length = ACPI_OFFSET (ACPI_IORT_NAMED_COMPONENT, DeviceName);
             String = ACPI_ADD_PTR (char, IortNode, NodeOffset + Length);
-            Length += strlen (String) + 1;
+            Length += (UINT32)strlen (String) + 1;
             break;
 
         case ACPI_IORT_NODE_PCI_ROOT_COMPLEX:
@@ -309,7 +309,7 @@ AcpiDmDumpIort (
             InfoTable = AcpiDmTableInfoIort7;
             Length = ACPI_OFFSET (ACPI_IORT_IWB, DeviceName);
             String = ACPI_ADD_PTR (char, IortNode, NodeOffset + Length);
-            Length += strlen (String) + 1;
+            Length += (UINT32)strlen (String) + 1;
             break;
 
         default:
@@ -1280,7 +1280,7 @@ NextSubtable:
         Subtable = ACPI_ADD_PTR (ACPI_SUBTABLE_HEADER, Subtable,
             Subtable->Length);
 
-        Offset = ACPI_CAST_PTR (char, Subtable) - ACPI_CAST_PTR (char, Table);
+        Offset = (UINT32)(ACPI_CAST_PTR (char, Subtable) - ACPI_CAST_PTR (char, Table));
         if (Offset >= Table->Length)
         {
             return;

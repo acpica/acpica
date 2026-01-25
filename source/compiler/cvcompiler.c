@@ -193,7 +193,7 @@ CvProcessComment (
         *StringBuffer = 0;
 
         CvDbgPrint ("Multi-line comment\n");
-        CommentString = UtLocalCacheCalloc (strlen (AslGbl_MsgBuffer) + 1);
+        CommentString = UtLocalCacheCalloc ((UINT32)strlen (AslGbl_MsgBuffer) + 1);
         strcpy (CommentString, AslGbl_MsgBuffer);
 
         CvDbgPrint ("CommentString: %s\n", CommentString);
@@ -208,7 +208,7 @@ CvProcessComment (
 
         if (LineToken)
         {
-            FinalLineToken = UtLocalCacheCalloc (strlen (LineToken) + 1);
+            FinalLineToken = UtLocalCacheCalloc ((UINT32)strlen (LineToken) + 1);
             strcpy (FinalLineToken, LineToken);
 
             /* Get rid of any carriage returns */
@@ -238,7 +238,7 @@ CvProcessComment (
                     }
                 }
 
-                FinalLineToken = UtLocalCacheCalloc (strlen (LineToken) + 1);
+                FinalLineToken = UtLocalCacheCalloc ((UINT32)strlen (LineToken) + 1);
                 strcat (FinalLineToken, LineToken);
 
                 /* Get rid of any carriage returns */
@@ -268,7 +268,7 @@ CvProcessComment (
             * spacing.
             */
             FinalCommentString =
-                UtLocalCacheCalloc (strlen (CommentString) +
+                UtLocalCacheCalloc ((UINT32)strlen (CommentString) +
                 CurrentState.SpacesBefore + 1);
 
             for (i = 0; (CurrentState.CommentType != ASL_COMMENT_STANDARD) &&
@@ -313,7 +313,7 @@ CvProcessCommentType2 (
     {
         *StringBuffer = 0; /* null terminate */
         CvDbgPrint ("Single-line comment\n");
-        CommentString = UtLocalCacheCalloc (strlen (AslGbl_MsgBuffer) + 1);
+        CommentString = UtLocalCacheCalloc ((UINT32)strlen (AslGbl_MsgBuffer) + 1);
         strcpy (CommentString, AslGbl_MsgBuffer);
 
         /* If this comment lies on the same line as the latest parse op,
@@ -343,7 +343,7 @@ CvProcessCommentType2 (
          *
          */
         FinalCommentString = UtLocalCacheCalloc (CurrentState.SpacesBefore +
-            strlen (CommentString) + 3 + 1);
+            (UINT32)strlen (CommentString) + 3 + 1);
 
         for (i = 0; (CurrentState.CommentType != 1) &&
             (i < CurrentState.SpacesBefore); i++)
@@ -405,12 +405,12 @@ CvCalculateCommentLengths(
 
     if (Op->Asl.FileChanged)
     {
-        TotalCommentLength += strlen (Op->Asl.Filename) + 3;
+        TotalCommentLength += (UINT32)strlen (Op->Asl.Filename) + 3;
 
         if (Op->Asl.ParentFilename &&
             AcpiUtStricmp (Op->Asl.Filename, Op->Asl.ParentFilename))
         {
-            TotalCommentLength += strlen (Op->Asl.ParentFilename) + 3;
+            TotalCommentLength += (UINT32)strlen (Op->Asl.ParentFilename) + 3;
         }
     }
 
@@ -419,7 +419,7 @@ CvCalculateCommentLengths(
         Current = Op->Asl.CommentList;
         while (Current)
         {
-            CommentLength = strlen (Current->Comment)+3;
+            CommentLength = (UINT32)strlen (Current->Comment)+3;
             CvDbgPrint ("Length of standard comment: %d\n", CommentLength);
             CvDbgPrint ("    Comment string: %s\n\n", Current->Comment);
             TotalCommentLength += CommentLength;
@@ -432,7 +432,7 @@ CvCalculateCommentLengths(
         Current = Op->Asl.EndBlkComment;
         while (Current)
         {
-            CommentLength = strlen (Current->Comment)+3;
+            CommentLength = (UINT32)strlen (Current->Comment)+3;
             CvDbgPrint ("Length of endblkcomment: %d\n", CommentLength);
             CvDbgPrint ("    Comment string: %s\n\n", Current->Comment);
             TotalCommentLength += CommentLength;
@@ -442,7 +442,7 @@ CvCalculateCommentLengths(
 
     if (Op->Asl.InlineComment)
     {
-        CommentLength = strlen (Op->Asl.InlineComment)+3;
+        CommentLength = (UINT32)strlen (Op->Asl.InlineComment)+3;
         CvDbgPrint ("Length of inline comment: %d\n", CommentLength);
         CvDbgPrint ("    Comment string: %s\n\n", Op->Asl.InlineComment);
         TotalCommentLength += CommentLength;
@@ -450,7 +450,7 @@ CvCalculateCommentLengths(
 
     if (Op->Asl.EndNodeComment)
     {
-        CommentLength = strlen(Op->Asl.EndNodeComment)+3;
+        CommentLength = (UINT32)strlen(Op->Asl.EndNodeComment)+3;
         CvDbgPrint ("Length of end node comment +3: %d\n", CommentLength);
         CvDbgPrint ("    Comment string: %s\n\n", Op->Asl.EndNodeComment);
         TotalCommentLength += CommentLength;
@@ -458,7 +458,7 @@ CvCalculateCommentLengths(
 
     if (Op->Asl.CloseBraceComment)
     {
-        CommentLength = strlen (Op->Asl.CloseBraceComment)+3;
+        CommentLength = (UINT32)strlen (Op->Asl.CloseBraceComment)+3;
         CvDbgPrint ("Length of close brace comment: %d\n", CommentLength);
         CvDbgPrint ("    Comment string: %s\n\n", Op->Asl.CloseBraceComment);
         TotalCommentLength += CommentLength;
@@ -507,7 +507,7 @@ CgWriteAmlDefBlockComment(
 
     /* First, print the file name comment after changing .asl to .dsl */
 
-    NewFilename = UtLocalCacheCalloc (strlen (Op->Asl.Filename));
+    NewFilename = UtLocalCacheCalloc ((UINT32)strlen (Op->Asl.Filename));
     strcpy (NewFilename, Op->Asl.Filename);
     DirectoryPosition = strrchr (NewFilename, '/');
     Position = strrchr (NewFilename, '.');
@@ -588,7 +588,7 @@ CgWriteOneAmlComment(
 
     /* The strlen (..) + 1 is to include the null terminator */
 
-    CgLocalWriteAmlData (Op, CommentToPrint, strlen (CommentToPrint) + 1);
+    CgLocalWriteAmlData (Op, CommentToPrint, (UINT32)strlen (CommentToPrint) + 1);
 }
 
 
@@ -942,8 +942,8 @@ CvAppendInlineComment (
         return (InlineComment);
     }
 
-    Size = strlen (ToAdd);
-    Size += strlen (InlineComment);
+    Size = (UINT32)strlen (ToAdd);
+    Size += (UINT32)strlen (InlineComment);
     Str = UtLocalCacheCalloc (Size + 1);
 
     strcpy (Str, InlineComment);

@@ -241,7 +241,7 @@ HxReadAmlOutputFile (
     UINT32                  Actual;
 
 
-    Actual = fread (Buffer, 1, HEX_TABLE_LINE_SIZE,
+    Actual = (UINT32)fread (Buffer, 1, HEX_TABLE_LINE_SIZE,
         AslGbl_Files[ASL_FILE_AML_OUTPUT].Handle);
 
     if (ferror (AslGbl_Files[ASL_FILE_AML_OUTPUT].Handle))

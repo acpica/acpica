@@ -228,7 +228,7 @@ AcpiDmDisassemble (
     memset (&Info, 0, sizeof (ACPI_OP_WALK_INFO));
     Info.WalkState = WalkState;
     Info.StartAml = Op->Common.Aml - sizeof (ACPI_TABLE_HEADER);
-    Info.AmlOffset = Op->Common.Aml - Info.StartAml;
+    Info.AmlOffset = (UINT32)(Op->Common.Aml - Info.StartAml);
 
     AcpiDmWalkParseTree (Op, AcpiDmDescendingOp, AcpiDmAscendingOp, &Info);
     return;
@@ -563,12 +563,12 @@ AcpiDmDescendingOp (
                     AcpiOsPrintf ("\n");
                     AcpiUtDumpBuffer (
                         (Info->StartAml + Info->AmlOffset),
-                        (Op->Common.Aml - Info->PreviousAml),
+                        (UINT32)(Op->Common.Aml - Info->PreviousAml),
                         DB_BYTE_DISPLAY, Info->AmlOffset);
                     AcpiOsPrintf ("\n");
                 }
 
-                Info->AmlOffset = (Op->Common.Aml - Info->StartAml);
+                Info->AmlOffset = (UINT32)(Op->Common.Aml - Info->StartAml);
             }
 
             Info->PreviousAml = Op->Common.Aml;

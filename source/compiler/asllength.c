@@ -476,7 +476,7 @@ CgGenerateAmlLengths (
         Op->Asl.ExternalName = Op->Asl.Value.String;
         Op->Asl.Value.String = Buffer;
         Op->Asl.CompileFlags |= OP_NAME_INTERNALIZED;
-        Op->Asl.AmlLength = strlen (Buffer);
+        Op->Asl.AmlLength = (UINT32)strlen (Buffer);
 
         /*
          * Check for single backslash reference to root or reference to a name
@@ -495,7 +495,7 @@ CgGenerateAmlLengths (
 
         /* Get null terminator */
 
-        Op->Asl.AmlLength = strlen (Op->Asl.Value.String) + 1;
+        Op->Asl.AmlLength = (UINT32)strlen (Op->Asl.Value.String) + 1;
         break;
 
     case PARSEOP_PACKAGE_LENGTH:

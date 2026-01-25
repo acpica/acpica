@@ -182,7 +182,7 @@ AsRemoveStatement (
     int                     KeywordLength;
 
 
-    KeywordLength = strlen (Keyword);
+    KeywordLength = (UINT32)strlen (Keyword);
     SubBuffer = Buffer;
     SubString = Buffer;
 
@@ -263,7 +263,7 @@ AsRemoveConditionalCompile (
     int                     KeywordLength;
 
 
-    KeywordLength = strlen (Keyword);
+    KeywordLength = (UINT32)strlen (Keyword);
     SubString = Buffer;
 
     while (SubString)

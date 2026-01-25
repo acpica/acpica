@@ -508,12 +508,12 @@ PrPreprocessInputFile (
 
                     TokenOffset = Token - AslGbl_MainTokenBuffer + OffsetAdjust;
                     PrReplaceData (
-                        &AslGbl_CurrentLineBuffer[TokenOffset], strlen (Token),
-                        ReplaceString, strlen (ReplaceString));
+                        &AslGbl_CurrentLineBuffer[TokenOffset], (UINT32)strlen (Token),
+                        ReplaceString, (UINT32)strlen (ReplaceString));
 
                     /* Adjust for length difference between old and new name length */
 
-                    OffsetAdjust += strlen (ReplaceString) - strlen (Token);
+                    OffsetAdjust += (UINT32)(strlen (ReplaceString) - strlen (Token));
 
                     DbgPrint (ASL_DEBUG_OUTPUT, PR_PREFIX_ID
                         "Matched #define: %s->%s\n",
@@ -534,7 +534,7 @@ WriteEntireLine:
          * preprocessor file(s).
          */
         FlWriteFile (ASL_FILE_PREPROCESSOR, AslGbl_CurrentLineBuffer,
-            strlen (AslGbl_CurrentLineBuffer));
+            (UINT32)strlen (AslGbl_CurrentLineBuffer));
     }
 }
 
@@ -575,7 +575,7 @@ PrDoDirective (
     if (Directive == ASL_DIRECTIVE_NOT_FOUND)
     {
         PrError (ASL_ERROR, ASL_MSG_UNKNOWN_DIRECTIVE,
-            THIS_TOKEN_OFFSET (DirectiveToken));
+            (UINT32)THIS_TOKEN_OFFSET (DirectiveToken));
 
         DbgPrint (ASL_PARSE_OUTPUT, PR_PREFIX_ID
             "#%s: Unknown directive\n",
@@ -650,7 +650,7 @@ PrDoDirective (
         if (ACPI_FAILURE (PrPopDirective ()))
         {
             PrError (ASL_ERROR, ASL_MSG_COMPILER_INTERNAL,
-                THIS_TOKEN_OFFSET (DirectiveToken));
+                (UINT32)THIS_TOKEN_OFFSET (DirectiveToken));
         }
 
         PrDbgPrint ("Executing", "elif block");
@@ -665,7 +665,7 @@ PrDoDirective (
         if (ACPI_FAILURE (PrPopDirective ()))
         {
             PrError (ASL_ERROR, ASL_MSG_ENDIF_MISMATCH,
-                THIS_TOKEN_OFFSET (DirectiveToken));
+                (UINT32)THIS_TOKEN_OFFSET (DirectiveToken));
         }
         return;
 
@@ -836,7 +836,7 @@ PrDoDirective (
         /* Note: No macro expansion */
 
         PrError (ASL_ERROR, ASL_MSG_ERROR_DIRECTIVE,
-            THIS_TOKEN_OFFSET (Token));
+            (UINT32)THIS_TOKEN_OFFSET (Token));
 
         AslGbl_SourceLine = 0;
         AslGbl_NextError = AslGbl_ErrorLog;
@@ -929,7 +929,7 @@ PrDoDirective (
         else
         {
             PrError (ASL_ERROR, ASL_MSG_UNKNOWN_PRAGMA,
-                THIS_TOKEN_OFFSET (Token));
+                (UINT32)THIS_TOKEN_OFFSET (Token));
             return;
         }
 
@@ -946,7 +946,7 @@ PrDoDirective (
     case PR_DIRECTIVE_WARNING:
 
         PrError (ASL_WARNING, ASL_MSG_WARNING_DIRECTIVE,
-            THIS_TOKEN_OFFSET (Token));
+            (UINT32)THIS_TOKEN_OFFSET (Token));
 
         AslGbl_SourceLine = 0;
         AslGbl_NextError = AslGbl_ErrorLog;
@@ -966,7 +966,7 @@ PrDoDirective (
 SyntaxError:
 
     PrError (ASL_ERROR, ASL_MSG_DIRECTIVE_SYNTAX,
-        THIS_TOKEN_OFFSET (DirectiveToken));
+        (UINT32)THIS_TOKEN_OFFSET (DirectiveToken));
     return;
 }
 
