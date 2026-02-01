@@ -4,11 +4,11 @@
 Major changes:
 
 Update many existing ACPI tables to follow the ACPI 6.6 Specification 
-changes and/or newly approved ASWG ECRs ? multiple contributors
+changes and/or newly approved ASWG ECRs - multiple contributors
 
-Add a few new ACPI tables: IOVT, SWFT, KEYP ? multiple contributors
+Add a few new ACPI tables: IOVT, SWFT, KEYP - multiple contributors
 
-Add many new UUIDs, Hardware/PnP/ACPI IDs ? Armin Wolf and Pawel 
+Add many new UUIDs, Hardware/PnP/ACPI IDs - Armin Wolf and Pawel 
 Chmielewski
 
 Support a few new special methods (_xxx format) and modify few existing 

@@ -28,7 +28,7 @@ How to execute the run-time tests
 
             > export ASL="c:/acpica/libraries/iasl.exe"
 
-        acpiexec - path to acpiexec utility: (example)
+        acpiexec - path to acpiexec utility: (example, needs to be build with ACPI_CONTINUE_ON_FATAL)
 
             > export acpiexec="c:/acpica/libraries/acpiexec.exe"
 
