@@ -234,7 +234,7 @@ AsReplaceData (
     /*
      * Buffer is a string, so the length must include the terminating zero
      */
-    BufferLength = strlen (Buffer) + 1;
+    BufferLength = (UINT32)strlen (Buffer) + 1;
 
     if (LengthToRemove != LengthToAdd)
     {
@@ -286,7 +286,7 @@ AsInsertData (
         /*
          * Buffer is a string, so the length must include the terminating zero
          */
-        BufferLength = strlen (Buffer) + 1;
+        BufferLength = (UINT32)strlen (Buffer) + 1;
 
         /*
          * Move some of the existing data
@@ -328,7 +328,7 @@ AsRemoveData (
     /*
      * Buffer is a string, so the length must include the terminating zero
      */
-    BufferLength = strlen (EndPointer) + 1;
+    BufferLength = (UINT32)strlen (EndPointer) + 1;
 
     Gbl_MadeChanges = TRUE;
     memmove (StartPointer, EndPointer, BufferLength);

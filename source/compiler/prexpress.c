@@ -252,12 +252,12 @@ PrExpandMacros (
 
                 TokenOffset = Token - AslGbl_ExpressionTokenBuffer + OffsetAdjust;
                 PrReplaceData (
-                    &AslGbl_CurrentLineBuffer[TokenOffset], strlen (Token),
-                    ReplaceString, strlen (ReplaceString));
+                    &AslGbl_CurrentLineBuffer[TokenOffset], (UINT32)strlen (Token),
+                    ReplaceString, (UINT32)strlen (ReplaceString));
 
                 /* Adjust for length difference between old and new name length */
 
-                OffsetAdjust += strlen (ReplaceString) - strlen (Token);
+                OffsetAdjust += (UINT32)strlen (ReplaceString) - (UINT32)strlen (Token);
 
                 DbgPrint (ASL_DEBUG_OUTPUT, PR_PREFIX_ID
                     "Matched #define within expression: %s->%s\n",

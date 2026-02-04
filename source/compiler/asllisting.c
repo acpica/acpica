@@ -712,7 +712,7 @@ LsWriteNodeToListing (
                     /* Get the full pathname associated with this node */
 
                     Pathname = AcpiNsGetExternalPathname (Op->Asl.Node);
-                    Length = strlen (Pathname);
+                    Length = (UINT32)strlen (Pathname);
                     if (Length >= 4)
                     {
                         /* Convert all dots in the path to underscores */

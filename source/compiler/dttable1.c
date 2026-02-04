@@ -1304,7 +1304,7 @@ DtCompileDbg2 (
     /* Main table fields */
 
     Dbg2Header = ACPI_CAST_PTR (ACPI_DBG2_HEADER, Subtable->Buffer);
-    Dbg2Header->InfoOffset = sizeof (ACPI_TABLE_HEADER) + ACPI_PTR_DIFF (
+    Dbg2Header->InfoOffset = (UINT32)sizeof (ACPI_TABLE_HEADER) + (UINT32)ACPI_PTR_DIFF (
         ACPI_ADD_PTR (UINT8, Dbg2Header, sizeof (ACPI_DBG2_HEADER)), Dbg2Header);
 
     SubtableCount = Dbg2Header->InfoCount;

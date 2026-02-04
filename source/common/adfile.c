@@ -315,7 +315,7 @@ FlGenerateFilename (
      * case where we append the suffix, an added dot and the null terminator.
      */
     NewFilename = UtLocalCacheCalloc ((ACPI_SIZE)
-        strlen (InputFilename) + strlen (Suffix) + 2);
+        (UINT32)strlen (InputFilename) + (UINT32)strlen (Suffix) + 2);
     strcpy (NewFilename, InputFilename);
 
     /* Try to find the last dot in the filename */
@@ -358,7 +358,7 @@ FlStrdup (
     char                *NewString;
 
 
-    NewString = UtLocalCacheCalloc ((ACPI_SIZE) strlen (String) + 1);
+    NewString = UtLocalCacheCalloc ((UINT32) strlen (String) + 1);
     strcpy (NewString, String);
     return (NewString);
 }

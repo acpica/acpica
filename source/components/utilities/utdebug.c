@@ -347,7 +347,7 @@ AcpiDebugPrint (
     }
 
     FillCount = 48 - AcpiGbl_NestingLevel -
-        strlen (AcpiUtTrimFunctionName (FunctionName));
+        (int)strlen (AcpiUtTrimFunctionName (FunctionName));
     if (FillCount < 0)
     {
         FillCount = 0;

@@ -342,8 +342,8 @@ ResetHere1:
         {
             return;
         }
-        Args->Offset[i] = strlen (AslGbl_MacroTokenBuffer) -
-            strlen (temp);
+        Args->Offset[i] = (UINT32)(strlen (AslGbl_MacroTokenBuffer) -
+            strlen (temp));
         if (Args->Offset[i] == 0)
         {
             goto JumpHere1;
@@ -365,7 +365,7 @@ ResetHere1:
          * chars so it will be ignored during compilation
          */
 JumpHere1:
-        b = strlen (Token) + Args->Offset[i];
+        b = (UINT32)strlen (Token) + Args->Offset[i];
         memset (&AslGbl_MacroTokenBuffer[b], ' ', Diff1);
 
 # if 0
@@ -422,7 +422,7 @@ JumpHere1:
 
         PrReplaceData (
             &AslGbl_MacroTokenBuffer[Args->Offset[i]],
-            strlen (Token), Token, strlen (Token));
+            (UINT32)strlen (Token), Token, (UINT32)strlen (Token));
 
         temp = NULL;
         Args->Offset[i] = PrevOffset;
@@ -450,8 +450,8 @@ ResetHere2:
         {
             return;
         }
-        Args->Offset[i] = strlen (AslGbl_MacroTokenBuffer) -
-            strlen (temp);
+        Args->Offset[i] = (UINT32)(strlen (AslGbl_MacroTokenBuffer) -
+            strlen (temp));
         if (Args->Offset[i] == 0)
         {
             goto JumpHere2;
@@ -511,8 +511,8 @@ ResetHere3:
         {
             return;
         }
-        Args->Offset[i] = strlen (AslGbl_MacroTokenBuffer) -
-            strlen (temp);
+        Args->Offset[i] = (UINT32)(strlen (AslGbl_MacroTokenBuffer) -
+            strlen (temp));
         if (Args->Offset[i] == 0)
         {
             goto JumpHere3;
@@ -531,7 +531,7 @@ ResetHere3:
 JumpHere3:
         PrReplaceData (
             &AslGbl_MacroTokenBuffer[Args->Offset[i]],
-            strlen (Args->Name), Token, strlen (Token));
+            (UINT32)strlen (Args->Name), Token, (UINT32)strlen (Token));
         temp = NULL;
         Args->Offset[i] = PrevOffset;
     }
@@ -565,7 +565,7 @@ PrReplaceData (
 
     /* Buffer is a string, so the length must include the terminating zero */
 
-    BufferLength = strlen (Buffer) + 1;
+    BufferLength = (UINT32)strlen (Buffer) + 1;
 
     if (LengthToRemove != LengthToAdd)
     {
@@ -769,7 +769,7 @@ PrPushInputFileStack (
     /* Reset the global line count and filename */
 
     AslGbl_Files[ASL_FILE_INPUT].Filename =
-        UtLocalCacheCalloc (strlen (Filename) + 1);
+        UtLocalCacheCalloc ((UINT32)strlen (Filename) + 1);
     strcpy (AslGbl_Files[ASL_FILE_INPUT].Filename, Filename);
 
     AslGbl_Files[ASL_FILE_INPUT].Handle = InputFile;

@@ -674,7 +674,7 @@ DtGetFieldLength (
         Value = DtGetFieldValue (Field);
         if (Value)
         {
-            ByteLength = strlen (Value) + 1;
+            ByteLength = (UINT32)strlen (Value) + 1;
         }
         else
         {   /* At this point, this is a fatal error */
@@ -690,7 +690,7 @@ DtGetFieldLength (
         Value = DtGetFieldValue (Field);
         if (Value)
         {
-            ByteLength = strlen (Value);
+            ByteLength = (UINT32)strlen (Value);
         }
         else
         {   /* At this point, this is a fatal error */
@@ -792,7 +792,7 @@ DtGetFieldLength (
 
         /* TBD: error if Value is NULL? (as below?) */
 
-        ByteLength = (strlen (Value) + 1) * sizeof (UINT16);
+        ByteLength = (UINT32)((strlen (Value) + 1) * sizeof (UINT16));
         break;
 
     default:

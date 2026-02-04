@@ -181,7 +181,7 @@ AsLowerCaseString (
     int                     i;
 
 
-    TargetLength = strlen (Target);
+    TargetLength = (int)strlen (Target);
 
     SubBuffer = Buffer;
     SubString1 = Buffer;
@@ -527,7 +527,7 @@ AsMixedCaseToUnderscores (
                     if ((SubString[0] == ' ') &&
                         (SubString[1] == ' '))
                     {
-                        Length = SubString - SubBuffer - 1;
+                        Length = (UINT32)(SubString - SubBuffer - 1);
                         break;
                     }
 
@@ -536,7 +536,7 @@ AsMixedCaseToUnderscores (
 
                 if (!Length)
                 {
-                    Length = strlen (&SubBuffer[0]);
+                    Length = (UINT32)strlen (&SubBuffer[0]);
                 }
 
                 /*
@@ -719,7 +719,7 @@ AsUppercaseTokens (
                         if ((SubString[0] == ' ') &&
                             (SubString[1] == ' '))
                         {
-                            Length = SubString - &SubBuffer[i] - 2;
+                            Length = (UINT32)(SubString - &SubBuffer[i] - 2);
                             break;
                         }
 
@@ -728,7 +728,7 @@ AsUppercaseTokens (
 
                     if (!Length)
                     {
-                        Length = strlen (&SubBuffer[i+1]);
+                        Length = (UINT32)strlen (&SubBuffer[i+1]);
                     }
 
                     memmove (&SubBuffer[i+2], &SubBuffer[i+1], (Length+1));

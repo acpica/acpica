@@ -386,9 +386,9 @@ AcGetOneTableFromFile (
     ACPI_STATUS             Status = AE_OK;
     ACPI_TABLE_HEADER       TableHeader;
     ACPI_TABLE_HEADER       *Table;
-    INT32                   Count;
+    size_t                  Count;
     UINT32                  TableLength;
-    UINT32                  HeaderLength;
+    size_t                  HeaderLength;
     long                    TableOffset = 0;
 
     *ReturnTable = NULL;
@@ -416,7 +416,7 @@ AcGetOneTableFromFile (
 
     TableOffset = ftell (File);
     Count = fread (&TableHeader, 1, HeaderLength, File);
-    if (Count != (INT32) HeaderLength)
+    if (Count !=  HeaderLength)
     {
         return (AE_CTRL_TERMINATE);
     }
@@ -577,7 +577,7 @@ AcValidateTableHeader (
 {
     ACPI_TABLE_HEADER       TableHeader;
     ACPI_TABLE_CDAT         *CdatTableHeader = ACPI_CAST_PTR (ACPI_TABLE_CDAT, &TableHeader);
-    UINT32                  HeaderLength;
+    size_t                  HeaderLength;
     ACPI_SIZE               Actual;
     long                    OriginalOffset;
     UINT32                  FileSize;
@@ -613,7 +613,7 @@ AcValidateTableHeader (
     if (Actual < HeaderLength)
     {
         fprintf (stderr,
-            "Could not read entire table header: Actual %u, Requested %u\n",
+            "Could not read entire table header: Actual %u, Requested %zu\n",
             (UINT32) Actual, HeaderLength);
         return (AE_ERROR);
     }

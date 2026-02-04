@@ -274,7 +274,7 @@ DtCompileString (
     UINT32                  Length;
 
 
-    Length = strlen (Field->Value);
+    Length = (UINT32)strlen (Field->Value);
 
     /* Check if the string is too long for the field */
 
@@ -322,7 +322,7 @@ DtCompileUnicode (
 
     AsciiString = Field->Value;
     UnicodeString = (UINT16 *) Buffer;
-    Count = strlen (AsciiString) + 1;
+    Count = (UINT32)strlen (AsciiString) + 1;
 
     /* Convert to Unicode string (including null terminator) */
 
@@ -501,7 +501,7 @@ DtNormalizeBuffer (
     char                    c;
 
 
-    NewBuffer = UtLocalCalloc (strlen (Buffer) + 1);
+    NewBuffer = UtLocalCalloc ((UINT32)strlen (Buffer) + 1);
     TmpBuffer = NewBuffer;
 
     while ((c = *Buffer++))
@@ -767,12 +767,12 @@ DtCreateField (
     if (FieldKey->Value)
     {
         Field->Name =
-            strcpy (UtLocalCacheCalloc (strlen (FieldKey->Value) + 1), FieldKey->Value);
+            strcpy (UtLocalCacheCalloc ((UINT32)strlen (FieldKey->Value) + 1), FieldKey->Value);
     }
 
     if (FieldValue->Value)
     {
-        Field->StringLength = strlen (FieldValue->Value);
+        Field->StringLength = (UINT32)strlen (FieldValue->Value);
         Field->Value =
             strcpy (UtLocalCacheCalloc (Field->StringLength + 1), FieldValue->Value);
     }

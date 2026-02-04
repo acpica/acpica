@@ -466,7 +466,7 @@ RsDoInterruptDescriptor (
 
                 RsCreateDwordField (InitializerOp, ACPI_RESTAG_INTERRUPT,
                     CurrentByteOffset +
-                    ASL_RESDESC_OFFSET (ExtendedIrq.Interrupts[0]));
+                    (UINT32)ASL_RESDESC_OFFSET (ExtendedIrq.Interrupts[0]));
             }
         }
 
@@ -494,7 +494,7 @@ RsDoInterruptDescriptor (
     }
 
     Rnode->BufferLength =
-        (ASL_RESDESC_OFFSET (ExtendedIrq.Interrupts[0]) -
+        (UINT32)(ASL_RESDESC_OFFSET (ExtendedIrq.Interrupts[0]) -
         ASL_RESDESC_OFFSET (ExtendedIrq.DescriptorType))
         + OptionIndex + StringLength;
     return (Rnode);

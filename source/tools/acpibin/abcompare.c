@@ -322,7 +322,7 @@ AbDisplayHeader (
         return;
     }
 
-    Actual = fread (&Header1, 1, sizeof (ACPI_TABLE_HEADER), File);
+    Actual = (UINT32)fread (&Header1, 1, sizeof (ACPI_TABLE_HEADER), File);
     fclose (File);
 
     if (Actual != sizeof (ACPI_TABLE_HEADER))
@@ -365,7 +365,7 @@ AbComputeChecksum (
         return;
     }
 
-    Actual = fread (&Header1, 1, sizeof (ACPI_TABLE_HEADER), File);
+    Actual = (UINT32)fread (&Header1, 1, sizeof (ACPI_TABLE_HEADER), File);
     if (Actual < sizeof (ACPI_TABLE_HEADER))
     {
         printf ("File %s does not contain a valid ACPI table header\n", FilePath);
@@ -394,7 +394,7 @@ AbComputeChecksum (
     /* Read the entire table, including header */
 
     fseek (File, 0, SEEK_SET);
-    Actual = fread (Table, 1, Header1.Length, File);
+    Actual = (UINT32)fread (Table, 1, Header1.Length, File);
     if (Actual != Header1.Length)
     {
         printf ("Could not read table, length %u\n", Header1.Length);
@@ -428,7 +428,7 @@ AbComputeChecksum (
 
     Header1.Checksum = Checksum;
 
-    Actual = fwrite (&Header1, 1, sizeof (ACPI_TABLE_HEADER), File);
+    Actual = (UINT32)fwrite (&Header1, 1, sizeof (ACPI_TABLE_HEADER), File);
     if (Actual != sizeof (ACPI_TABLE_HEADER))
     {
         printf ("Could not write updated table header\n");
@@ -490,14 +490,14 @@ AbCompareAmlFiles (
 
     /* Read the ACPI header from each file */
 
-    Actual1 = fread (&Header1, 1, sizeof (ACPI_TABLE_HEADER), File1);
+    Actual1 = (UINT32)fread (&Header1, 1, sizeof (ACPI_TABLE_HEADER), File1);
     if (Actual1 != sizeof (ACPI_TABLE_HEADER))
     {
         printf ("File %s does not contain an ACPI table header\n", File1Path);
         goto Exit2;
     }
 
-    Actual2 = fread (&Header2, 1, sizeof (ACPI_TABLE_HEADER), File2);
+    Actual2 = (UINT32)fread (&Header2, 1, sizeof (ACPI_TABLE_HEADER), File2);
     if (Actual2 != sizeof (ACPI_TABLE_HEADER))
     {
         printf ("File %s does not contain an ACPI table header\n", File2Path);
@@ -544,8 +544,8 @@ AbCompareAmlFiles (
         }
     }
 
-    Actual1 = fread (&Char1, 1, 1, File1);
-    Actual2 = fread (&Char2, 1, 1, File2);
+    Actual1 = (UINT32)fread (&Char1, 1, 1, File1);
+    Actual2 = (UINT32)fread (&Char2, 1, 1, File2);
     Offset = sizeof (ACPI_TABLE_HEADER);
 
     while ((Actual1 == 1) && (Actual2 == 1))
@@ -563,8 +563,8 @@ AbCompareAmlFiles (
         }
 
         Offset++;
-        Actual1 = fread (&Char1, 1, 1, File1);
-        Actual2 = fread (&Char2, 1, 1, File2);
+        Actual1 = (UINT32)fread (&Char1, 1, 1, File1);
+        Actual2 = (UINT32)fread (&Char2, 1, 1, File2);
     }
 
     if (Actual1)

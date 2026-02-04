@@ -415,7 +415,7 @@ DtCompileDataTable (
         return (AE_ERROR);
     }
 
-    AslGbl_Signature = UtLocalCacheCalloc (strlen (Signature) + 1);
+    AslGbl_Signature = UtLocalCacheCalloc ((UINT32)strlen (Signature) + 1);
     strcpy (AslGbl_Signature, Signature);
 
     /*

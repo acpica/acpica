@@ -212,7 +212,7 @@ OtPrintHeaders (
     UINT32                  Length;
 
 
-    Length = strlen (Message);
+    Length = (UINT32)strlen (Message);
 
     FlPrintFile (ASL_FILE_XREF_OUTPUT, "\n\n%s\n", Message);
     while (Length)

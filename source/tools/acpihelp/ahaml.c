@@ -312,7 +312,7 @@ AhDisplayAmlOpcode (
     if (Op->FixedArguments)
     {
         printf (" FixedArgs (");
-        AhPrintOneField (37, 36 + 7 + strlen (Op->Type) + 12,
+        AhPrintOneField (37, 36 + 7 + (UINT32)strlen (Op->Type) + 12,
             AH_MAX_AML_LINE_LENGTH, Op->FixedArguments);
         printf (")");
     }

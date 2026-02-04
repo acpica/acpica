@@ -611,7 +611,7 @@ OpcDoUnicode (
 
     /* Create a new buffer for the Unicode string */
 
-    Count = strlen (InitializerOp->Asl.Value.String) + 1;
+    Count = (UINT32)strlen (InitializerOp->Asl.Value.String) + 1;
     Length = Count * sizeof (UINT16);
     UnicodeString = UtLocalCalloc (Length);
 

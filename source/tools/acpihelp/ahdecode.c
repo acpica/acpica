@@ -218,7 +218,7 @@ AhPrintOneField (
     Last = This + strlen (This);
     while ((Next = strpbrk (This, " ")))
     {
-        TokenLength = Next - This;
+        TokenLength = (UINT32)(Next - This);
         Position += TokenLength;
 
         /* Split long lines */
@@ -235,7 +235,7 @@ AhPrintOneField (
 
     /* Handle last token on the input line */
 
-    TokenLength = Last - This;
+    TokenLength = (UINT32)(Last - This);
     if (TokenLength > 0)
     {
         Position += TokenLength;
@@ -296,7 +296,7 @@ void
 AhFindPredefinedNames (
     char                    *NamePrefix)
 {
-    UINT32                  Length;
+    size_t                  Length;
     BOOLEAN                 Found;
     char                    Name[ACPI_NAMESEG_SIZE + 1];
 
@@ -332,7 +332,7 @@ AhFindPredefinedNames (
 
     /* Lookup and display the name(s) */
 
-    Found = AhDisplayPredefinedName (Name, Length);
+    Found = AhDisplayPredefinedName (Name, (UINT32)Length);
     if (!Found)
     {
         printf ("%s, no matching predefined names\n", Name);
@@ -605,7 +605,7 @@ AhDisplayDeviceIds (
         return;
     }
 
-    Length = strlen (Name);
+    Length = (UINT32)strlen (Name);
     if (Length > 8)
     {
         printf ("%.8s: Hardware ID must be 8 characters maximum\n", Name);

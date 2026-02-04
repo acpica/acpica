@@ -218,7 +218,7 @@ AcpiHwLowSetGpe (
     ACPI_GPE_REGISTER_INFO  *GpeRegisterInfo;
     ACPI_STATUS             Status = AE_OK;
     UINT64                  EnableMask;
-    UINT32                  RegisterBit;
+    UINT64                  RegisterBit;
 
 
     ACPI_FUNCTION_ENTRY ();

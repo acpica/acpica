@@ -277,7 +277,7 @@ FlReadFile (
 
     /* Read and check for error */
 
-    Actual = fread (Buffer, 1, Length, AslGbl_Files[FileId].Handle);
+    Actual = (UINT32)fread (Buffer, 1, Length, AslGbl_Files[FileId].Handle);
     if (Actual < Length)
     {
         if (feof (AslGbl_Files[FileId].Handle))
@@ -321,7 +321,7 @@ FlWriteFile (
 
     /* Write and check for error */
 
-    Actual = fwrite ((char *) Buffer, 1, Length, AslGbl_Files[FileId].Handle);
+    Actual = (UINT32)fwrite ((char *) Buffer, 1, Length, AslGbl_Files[FileId].Handle);
     if (Actual != Length)
     {
         FlFileError (FileId, ASL_MSG_WRITE);
@@ -332,7 +332,7 @@ FlWriteFile (
     {
         /* Duplicate the output to the user preprocessor (.i) file */
 
-        Actual = fwrite ((char *) Buffer, 1, Length,
+        Actual = (UINT32)fwrite ((char *) Buffer, 1, Length,
             AslGbl_Files[ASL_FILE_PREPROCESSOR_USER].Handle);
         if (Actual != Length)
         {

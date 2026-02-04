@@ -505,10 +505,10 @@ FlAddIncludeDirectory (
     ASL_INCLUDE_DIR         *NextDir;
     ASL_INCLUDE_DIR         *PrevDir = NULL;
     UINT32                  NeedsSeparator = 0;
-    size_t                  DirLength;
+    UINT32                  DirLength;
 
 
-    DirLength = strlen (Dir);
+    DirLength = (UINT32)strlen (Dir);
     if (!DirLength)
     {
         return;
@@ -591,14 +591,14 @@ FlMergePathnames (
         (*FilePathname == '/') ||
          (FilePathname[1] == ':'))
     {
-        Pathname = UtLocalCacheCalloc (strlen (FilePathname) + 1);
+        Pathname = UtLocalCacheCalloc ((UINT32)strlen (FilePathname) + 1);
         strcpy (Pathname, FilePathname);
         goto ConvertBackslashes;
     }
 
     /* Need a local copy of the prefix directory path */
 
-    CommonPath = UtLocalCacheCalloc (strlen (PrefixDir) + 1);
+    CommonPath = UtLocalCacheCalloc ((UINT32)strlen (PrefixDir) + 1);
     strcpy (CommonPath, PrefixDir);
 
     /*
@@ -635,7 +635,7 @@ FlMergePathnames (
 
 ConcatenatePaths:
     Pathname = UtLocalCacheCalloc (
-        strlen (CommonPath) + strlen (FilePathname) + 2);
+        (UINT32)strlen (CommonPath) + (UINT32)strlen (FilePathname) + 2);
     if (LastElement && *CommonPath)
     {
         strcpy (Pathname, CommonPath);

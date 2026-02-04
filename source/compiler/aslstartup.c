@@ -448,7 +448,7 @@ AslDoOneFile (
     /* Take a copy of the input filename, convert any backslashes */
 
     AslGbl_Files[ASL_FILE_INPUT].Filename =
-        UtLocalCacheCalloc (strlen (Filename) + 1);
+        UtLocalCacheCalloc ((UINT32)strlen (Filename) + 1);
 
     strcpy (AslGbl_Files[ASL_FILE_INPUT].Filename, Filename);
     UtConvertBackslashes (AslGbl_Files[ASL_FILE_INPUT].Filename);

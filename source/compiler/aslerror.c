@@ -375,7 +375,7 @@ AeDecodeErrorMessageId (
         return;
     }
 
-    MsgLength = strlen (MainMessage);
+    MsgLength = (UINT32)strlen (MainMessage);
     if (MsgLength == 0)
     {
         /* Use the secondary/extra message as main message */
@@ -386,7 +386,7 @@ AeDecodeErrorMessageId (
             MainMessage = "";
         }
 
-        MsgLength = strlen (MainMessage);
+        MsgLength = (UINT32)strlen (MainMessage);
         ExtraMessage = NULL;
     }
 
@@ -852,7 +852,7 @@ static void AslInitEnode (
     {
         /* Allocate a buffer for the message and a new error node */
 
-        Enode->Message = UtLocalCacheCalloc (strlen (ExtraMessage) + 1);
+        Enode->Message = UtLocalCacheCalloc ((UINT32)strlen (ExtraMessage) + 1);
 
         /* Keep a copy of the extra message */
 
@@ -861,7 +861,7 @@ static void AslInitEnode (
 
     if (SourceLine)
     {
-        Enode->SourceLine = UtLocalCalloc (strlen (SourceLine) + 1);
+        Enode->SourceLine = UtLocalCalloc ((UINT32)strlen (SourceLine) + 1);
         strcpy (Enode->SourceLine, SourceLine);
     }
 
@@ -869,7 +869,7 @@ static void AslInitEnode (
     if (Filename)
     {
         Enode->Filename = Filename;
-        Enode->FilenameLength = strlen (Filename);
+        Enode->FilenameLength = (UINT32)strlen (Filename);
         if (Enode->FilenameLength < 6)
         {
             Enode->FilenameLength = 6;

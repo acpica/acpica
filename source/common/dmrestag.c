@@ -826,7 +826,7 @@ AcpiGetTagPathname (
     }
 
     (void) AcpiNsBuildNormalizedPath (BufferNode, Pathname,
-        RequiredSize, FALSE);
+        (UINT32)RequiredSize, FALSE);
 
     /*
      * Create the full path to the resource and tag by:
