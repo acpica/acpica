@@ -422,6 +422,12 @@ DtParseLine (
         End++;
     }
 
+    /* No value characters present */
+    if (End <= Start)
+    {
+        return (AE_OK);
+    }
+
     Length = ACPI_PTR_DIFF (End, Start);
     TmpValue = UtLocalCalloc (Length + 1);
 
