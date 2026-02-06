@@ -204,6 +204,11 @@ const AH_UUID  Gbl_AcpiUuids[] =
     {"Cache Properties",            UUID_CACHE_PROPERTIES},
     {"Physical Package Property",   UUID_PHYSICAL_PROPERTY},
 
+    {"[Modern Standby]",            NULL},
+    {"Modern Standby Microsoft",    UUID_LPS0_MICROSOFT},
+    {"Modern Standby Intel",        UUID_LPS0_INTEL},
+    {"Modern Standby AMD",          UUID_LPS0_AMD},
+
     {"[Miscellaneous]",             NULL},
     {"Platform-wide Capabilities",  UUID_PLATFORM_CAPABILITIES},
     {"Dynamic Enumeration",         UUID_DYNAMIC_ENUMERATION},
