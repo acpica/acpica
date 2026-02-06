@@ -336,6 +336,13 @@ AcpiNsDetachObject (
 
     ObjDesc = Node->Object;
 
+    /* Alias nodes point directly to other namespace nodes; skip teardown */
+    if (Node->Flags & ANOBJ_IS_ALIAS)
+    {
+        Node->Object = NULL;
+        return_VOID;
+    }
+
     if (!ObjDesc ||
         (ObjDesc->Common.Type == ACPI_TYPE_LOCAL_DATA))
     {
