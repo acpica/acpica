@@ -188,6 +188,7 @@
 #define ACPI_MUTEX_DEBUG
 #endif
 
+#include <linux/hashtable.h>
 #include <linux/string.h>
 #include <linux/kernel.h>
 #include <linux/ctype.h>
@@ -304,6 +305,15 @@
  * Linux wants to use designated initializers for function pointer structs.
  */
 #define ACPI_STRUCT_INIT(field, value)  .field = value
+
+#define ACPI_USE_NS_SEARCH_ACCELERATION
+#define ACPI_NS_SEARCH_LIST_NODE_TYPE struct hlist_node
+#define ACPI_NS_SEARCH_LIST_HEAD_TYPE struct hlist_head
+#define ACPI_HASH_UINT32(val, bits) hash_32(val, bits)
+#define ACPI_HASH_PTR(ptr, bits) hash_ptr(ptr, bits)
+#define ACPI_NS_SEARCH_LIST_ADD_HEAD(node, head) hlist_add_head(node, head)
+#define ACPI_HASH_DEL(node) hash_del(node)
+#define ACPI_LIST_FOR_EACH_ENTRY(pos, head, member) hlist_for_each_entry(pos, head, member)
 
 #else /* !__KERNEL__ */
 
