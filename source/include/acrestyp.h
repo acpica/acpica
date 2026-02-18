@@ -641,6 +641,7 @@ typedef struct acpi_resource_i2c_serialbus
     UINT8                           AccessMode;
     UINT16                          SlaveAddress;
     UINT32                          ConnectionSpeed;
+    UINT8                           Lvr;
 
 } ACPI_RESOURCE_I2C_SERIALBUS;
 
