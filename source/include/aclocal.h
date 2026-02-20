@@ -301,6 +301,9 @@ typedef struct acpi_namespace_node
     struct acpi_namespace_node      *Child;         /* First child */
     struct acpi_namespace_node      *Peer;          /* First peer */
     ACPI_OWNER_ID                   OwnerId;        /* Node creator */
+#ifdef ACPI_USE_NS_SEARCH_ACCELERATION
+    ACPI_NS_SEARCH_LIST_NODE_TYPE   SearchListNode; /* Link together nodes that hash to the same bucket */
+#endif
 
     /*
      * The following fields are used by the ASL compiler and disassembler only

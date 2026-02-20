@@ -237,6 +237,10 @@ AcpiNsDeleteNode (
         return_VOID;
     }
 
+#ifdef ACPI_USE_ACCELERATED_NS_SEARCH
+    AcpiNsSearchAccelerationDeleteNode(Node);
+#endif
+
     /* Detach an object if there is one */
 
     AcpiNsDetachObject (Node);
@@ -421,6 +425,10 @@ AcpiNsInstallNode (
 
     Node->OwnerId = OwnerId;
     Node->Type = (UINT8) Type;
+
+#ifdef ACPI_USE_NS_SEARCH_ACCELERATION
+    AcpiNsSearchAccelerationAddNode (Node);
+#endif
 
     ACPI_DEBUG_PRINT ((ACPI_DB_NAMES,
         "%4.4s (%s) [Node %p Owner %3.3X] added to %4.4s (%s) [Node %p]\n",
