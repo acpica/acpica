@@ -252,6 +252,7 @@ extern FILE                         *AslCompilerin;
 extern int                          DtParserdebug;
 extern int                          PrParserdebug;
 extern const ASL_MAPPING_ENTRY      AslKeywordMapping[];
+extern const UINT32                 AslKeywordMappingCount;
 extern char                         *AslCompilertext;
 extern char                         *DtCompilerParsertext;
 
