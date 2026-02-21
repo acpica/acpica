@@ -846,7 +846,7 @@ AcpiDbTestStringType (
     /* Write a new value */
 
     WriteValue.Type = ACPI_TYPE_STRING;
-    WriteValue.String.Length = strlen (ValueToWrite);
+    WriteValue.String.Length = (UINT32)strlen (ValueToWrite);
     WriteValue.String.Pointer = ValueToWrite;
 
     Status = AcpiDbWriteToObject (Node, &WriteValue);
@@ -871,7 +871,7 @@ AcpiDbTestStringType (
 
     /* Write back the original value */
 
-    WriteValue.String.Length = strlen (Temp1->String.Pointer);
+    WriteValue.String.Length = (UINT32)strlen (Temp1->String.Pointer);
     WriteValue.String.Pointer = Temp1->String.Pointer;
 
     Status = AcpiDbWriteToObject (Node, &WriteValue);
@@ -1280,7 +1280,7 @@ AcpiDbEvaluateOnePredefinedName (
                 ThisParam->String.Pointer =
                     "This is the default argument string";
                 ThisParam->String.Length =
-                    strlen (ThisParam->String.Pointer);
+                    (UINT32)strlen (ThisParam->String.Pointer);
                 break;
 
             case ACPI_TYPE_BUFFER:

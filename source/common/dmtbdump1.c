@@ -286,7 +286,7 @@ AcpiDmDumpAest (
 
         /* Dump the node-specific subtable */
 
-        Status = AcpiDmDumpTable (Table->Length, Offset, Subtable, Length,
+        Status = AcpiDmDumpTable (Table->Length, Offset, Subtable, (UINT32)Length,
             InfoTable);
         if (ACPI_FAILURE (Status))
         {
@@ -304,7 +304,7 @@ AcpiDmDumpAest (
 
             /* Point past the node-specific data */
 
-            Offset += Length;
+            Offset += (UINT32)Length;
             ProcessorSubtable = ACPI_CAST_PTR (ACPI_AEST_PROCESSOR, Subtable);
 
             switch (ProcessorSubtable->ResourceType)
@@ -339,7 +339,7 @@ AcpiDmDumpAest (
             /* Dump the resource substructure subtable */
 
             Status = AcpiDmDumpTable (Table->Length, Offset, ProcessorSubtable,
-                Length, InfoTable);
+                (UINT32)Length, InfoTable);
             if (ACPI_FAILURE (Status))
             {
                 return;
@@ -350,7 +350,7 @@ AcpiDmDumpAest (
 
         /* Point past the resource substructure or the node-specific data */
 
-        Offset += Length;
+        Offset += (UINT32)Length;
 
         /* Dump the interface structure, required to be present */
 
@@ -372,13 +372,13 @@ AcpiDmDumpAest (
             InfoTable = AcpiDmTableInfoAestXfaceHeader;
             Length = sizeof (ACPI_AEST_NODE_INTERFACE_HEADER);
 
-            Status = AcpiDmDumpTable (Table->Length, Offset, Subtable, Length, InfoTable);
+            Status = AcpiDmDumpTable (Table->Length, Offset, Subtable, (UINT32)Length, InfoTable);
             if (ACPI_FAILURE (Status))
             {
                 return;
             }
 
-            Offset += Length;
+            Offset += (UINT32)Length;
 
             InterfaceHeader = ACPI_CAST_PTR (ACPI_AEST_NODE_INTERFACE_HEADER, Subtable);
             switch (InterfaceHeader->GroupFormat)
@@ -412,7 +412,7 @@ AcpiDmDumpAest (
             return;
         }
 
-        Status = AcpiDmDumpTable (Table->Length, Offset, Subtable, Length, InfoTable);
+        Status = AcpiDmDumpTable (Table->Length, Offset, Subtable, (UINT32)Length, InfoTable);
         if (ACPI_FAILURE (Status))
         {
             return;
@@ -421,7 +421,7 @@ AcpiDmDumpAest (
         /* Point past the interface structure */
 
         AcpiOsPrintf ("\n");
-        Offset += Length;
+        Offset += (UINT32)Length;
 
         /* Dump the entire interrupt structure array, if present */
 
@@ -450,7 +450,7 @@ AcpiDmDumpAest (
                     return;
                 }
                 Status = AcpiDmDumpTable (Table->Length, Offset, Subtable,
-                    Length, InfoTable);
+                    (UINT32)Length, InfoTable);
                 if (ACPI_FAILURE (Status))
                 {
                     return;
@@ -458,7 +458,7 @@ AcpiDmDumpAest (
 
                 /* Point to the next interrupt structure */
 
-                Offset += Length;
+                Offset += (UINT32)Length;
                 Subtable = ACPI_ADD_PTR (ACPI_AEST_HEADER, Table, Offset);
                 Count--;
                 AcpiOsPrintf ("\n");

@@ -646,7 +646,7 @@ AxConvertAndWrite (
 
     /* Write the binary data */
 
-    BytesWritten = fwrite (Gbl_BinaryData, 1, BytesConverted, OutputFile);
+    BytesWritten = (int)fwrite (Gbl_BinaryData, 1, BytesConverted, OutputFile);
     if (BytesWritten != BytesConverted)
     {
         printf ("Error while writing file %s\n", Gbl_OutputFilename);

@@ -1343,7 +1343,7 @@ DtCompilePhat (
 
             /* Compute the size of the input ASCII string as a unicode string (*2 + 2) */
 
-            DevicePathField->StringLength = (strlen ((const char *) DevicePathField->Value) * 2) + 2;
+            DevicePathField->StringLength = ((UINT32)strlen ((const char *) DevicePathField->Value) * 2) + 2;
             TableOffset += DevicePathField->StringLength;
 
             DbgPrint (ASL_DEBUG_OUTPUT, "3 Offset: %X, Length: %X devicepathLength: %X\n",
@@ -2020,7 +2020,7 @@ DtCompileRhct (
         DtInsertSubtable (ParentTable, Subtable);
         if (FirstNode)
         {
-            Table->NodeOffset = ACPI_PTR_DIFF(ParentTable->Buffer, Table);
+            Table->NodeOffset = (UINT32)ACPI_PTR_DIFF(ParentTable->Buffer, Table);
             FirstNode = FALSE;
         }
 

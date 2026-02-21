@@ -301,7 +301,7 @@ UtDumpStringOp (
 
     /* Emit the ParseOp name, leaving room for the string */
 
-    UtDumpParseOpName (Op, Level, strlen (String));
+    UtDumpParseOpName (Op, Level, (UINT32)strlen (String));
     DbgPrint (ASL_TREE_OUTPUT, "%s", String);
 }
 
@@ -449,7 +449,7 @@ UtDumpParseOpName (
     /* Calculate various lengths for output alignment */
 
     IndentLength = Level * DEBUG_SPACES_PER_INDENT;
-    NameLength = strlen (ParseOpName);
+    NameLength = (UINT32)strlen (ParseOpName);
     LineLength = IndentLength + 1 + NameLength + 1 + DataLength;
     PaddingLength = (DEBUG_MAX_LINE_LENGTH + 1) - LineLength;
 

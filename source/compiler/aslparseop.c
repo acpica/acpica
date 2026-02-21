@@ -775,7 +775,7 @@ TrCreateConstantLeafOp (
         StaticTimeString = ctime (&CurrentTime);
         if (StaticTimeString)
         {
-            TimeString = UtLocalCalloc (strlen (StaticTimeString) + 1);
+            TimeString = UtLocalCalloc ((UINT32)strlen (StaticTimeString) + 1);
             strcpy (TimeString, StaticTimeString);
 
             TimeString[strlen(TimeString) -1] = 0;  /* Remove trailing newline */

@@ -234,7 +234,7 @@ PrAddDefine (
         if (strcmp (Replacement, DefineInfo->Replacement))
         {
             PrError (ASL_ERROR, ASL_MSG_EXISTING_NAME,
-                THIS_TOKEN_OFFSET (Identifier));
+                (UINT32)THIS_TOKEN_OFFSET (Identifier));
 
             return (NULL);
         }
@@ -244,10 +244,10 @@ PrAddDefine (
 
     /* Copy input strings */
 
-    IdentifierString = UtLocalCalloc (strlen (Identifier) + 1);
+    IdentifierString = UtLocalCalloc ((UINT32)strlen (Identifier) + 1);
     strcpy (IdentifierString, Identifier);
 
-    ReplacementString = UtLocalCalloc (strlen (Replacement) + 1);
+    ReplacementString = UtLocalCalloc ((UINT32)strlen (Replacement) + 1);
     strcpy (ReplacementString, Replacement);
 
     /* Init and link new define info struct */
@@ -413,7 +413,7 @@ PrAddMacro (
         }
         else if (BufferChar == 0)
         {
-            PrError (ASL_ERROR, ASL_MSG_MACRO_SYNTAX, TokenOffset);
+            PrError (ASL_ERROR, ASL_MSG_MACRO_SYNTAX, (UINT32)TokenOffset);
             return;
         }
 
@@ -421,7 +421,7 @@ PrAddMacro (
         {
             /* Found arg list end */
 
-            EndOfArgList = TokenOffset;
+            EndOfArgList = (UINT32)TokenOffset;
             break;
         }
 
@@ -458,14 +458,14 @@ PrAddMacro (
             "Macro param: %s\n",
             AslGbl_CurrentLineNumber, Token);
 
-        Args[i].Name = UtLocalCalloc (strlen (Token) + 1);
+        Args[i].Name = UtLocalCalloc ((UINT32)strlen (Token) + 1);
         strcpy (Args[i].Name, Token);
 
         Args[i].UseCount = 0;
         ArgCount++;
         if (ArgCount >= PR_MAX_MACRO_ARGS)
         {
-            PrError (ASL_ERROR, ASL_MSG_TOO_MANY_ARGUMENTS, TokenOffset);
+            PrError (ASL_ERROR, ASL_MSG_TOO_MANY_ARGUMENTS, (UINT32)TokenOffset);
             goto ErrorExit;
         }
     }
@@ -493,7 +493,7 @@ PrAddMacro (
                 UseCount = Args[i].UseCount;
 
                 Args[i].Offset[UseCount] =
-                    (Token - AslGbl_MainTokenBuffer) - MacroBodyOffset;
+                    (UINT32)(Token - AslGbl_MainTokenBuffer) - (UINT32)MacroBodyOffset;
 
 
                 DbgPrint (ASL_DEBUG_OUTPUT, PR_PREFIX_ID
@@ -506,7 +506,7 @@ PrAddMacro (
                 if (Args[i].UseCount >= PR_MAX_ARG_INSTANCES)
                 {
                     PrError (ASL_ERROR, ASL_MSG_TOO_MANY_ARGUMENTS,
-                        THIS_TOKEN_OFFSET (Token));
+                        (UINT32)THIS_TOKEN_OFFSET (Token));
 
                     goto ErrorExit;
                 }
@@ -537,7 +537,7 @@ AddMacroToList:
             (DefineInfo->ArgCount != ArgCount))
         {
             PrError (ASL_ERROR, ASL_MSG_EXISTING_NAME,
-                THIS_TOKEN_OFFSET (Name));
+                (UINT32)THIS_TOKEN_OFFSET (Name));
         }
 
         goto ErrorExit;
@@ -552,7 +552,7 @@ AddMacroToList:
     DefineInfo = PrAddDefine (Name, BodyInSource, FALSE);
     if (DefineInfo)
     {
-        Body = UtLocalCalloc (strlen (BodyInSource) + 1);
+        Body = UtLocalCalloc ((UINT32)strlen (BodyInSource) + 1);
         strcpy (Body, BodyInSource);
 
         DefineInfo->Body = Body;
@@ -618,12 +618,12 @@ PrDoMacroInvocation (
             goto BadInvocation;
         }
 
-        TokenOffset = (MacroStart - TokenBuffer);
-        Length = Token - MacroStart + strlen (Token) + 1;
+        TokenOffset = (UINT32)(MacroStart - TokenBuffer);
+        Length = (UINT32)(Token - MacroStart + (UINT32)strlen (Token) + 1);
 
         PrReplaceData (
             &AslGbl_CurrentLineBuffer[TokenOffset], Length,
-            AslGbl_MacroTokenBuffer, strlen (AslGbl_MacroTokenBuffer));
+            AslGbl_MacroTokenBuffer, (UINT32)strlen (AslGbl_MacroTokenBuffer));
         return;
     }
 
@@ -641,11 +641,11 @@ PrDoMacroInvocation (
          * Avoid optimizing using just 1 signed int due to specific
          * non-portable implementations of signed ints
          */
-        Diff1 = strlen (Args->Name) > strlen (Token) ? strlen (Args->Name) -
-            strlen (Token) : 0;
+        Diff1 = (UINT32)(strlen (Args->Name) > strlen (Token) ? strlen (Args->Name) -
+            strlen (Token) : 0);
 
-        Diff2 = strlen (Args->Name) < strlen (Token) ? strlen (Token) -
-            strlen (Args->Name) : 0;
+        Diff2 = (UINT32)(strlen (Args->Name) < strlen (Token) ? strlen (Token) -
+            strlen (Args->Name) : 0);
 
         /* Replace all instances of this argument */
 
@@ -682,18 +682,18 @@ PrDoMacroInvocation (
 
     /* Replace the entire macro invocation with the expanded macro */
 
-    TokenOffset = (MacroStart - TokenBuffer);
-    Length = Token - MacroStart + strlen (Token) + 1;
+    TokenOffset = (UINT32)(MacroStart - TokenBuffer);
+    Length = (UINT32)(Token - MacroStart + strlen (Token) + 1);
 
     PrReplaceData (
         &AslGbl_CurrentLineBuffer[TokenOffset], Length,
-        AslGbl_MacroTokenBuffer, strlen (AslGbl_MacroTokenBuffer));
+        AslGbl_MacroTokenBuffer, (UINT32)strlen (AslGbl_MacroTokenBuffer));
 
     return;
 
 BadInvocation:
     PrError (ASL_ERROR, ASL_MSG_INVALID_INVOCATION,
-        THIS_TOKEN_OFFSET (MacroStart));
+        (UINT32)THIS_TOKEN_OFFSET (MacroStart));
 
     DbgPrint (ASL_DEBUG_OUTPUT, PR_PREFIX_ID
         "Bad macro invocation: %s\n",

@@ -345,10 +345,10 @@ OptBuildShortestPath (
      * Note: The external NamePath string lengths are always a multiple of 5
      * (ACPI_NAMESEG_SIZE + separator)
      */
-    MaxCommonSegments = TargetPath->Length / ACPI_PATH_SEGMENT_LENGTH;
+    MaxCommonSegments = (UINT32)TargetPath->Length / ACPI_PATH_SEGMENT_LENGTH;
     if (CurrentPath->Length < TargetPath->Length)
     {
-        MaxCommonSegments = CurrentPath->Length / ACPI_PATH_SEGMENT_LENGTH;
+        MaxCommonSegments = (UINT32)CurrentPath->Length / ACPI_PATH_SEGMENT_LENGTH;
     }
 
     /*
@@ -399,14 +399,14 @@ OptBuildShortestPath (
 
     /* Determine how many prefix Carats are required */
 
-    NumCarats = (CurrentPath->Length / ACPI_PATH_SEGMENT_LENGTH) -
+    NumCarats = ((UINT32)CurrentPath->Length / ACPI_PATH_SEGMENT_LENGTH) -
         NumCommonSegments;
 
     /*
      * Construct a new target string
      */
     NewPathExternal =
-        UtLocalCacheCalloc (TargetPath->Length + NumCarats + 1);
+        UtLocalCacheCalloc ((UINT32)TargetPath->Length + NumCarats + 1);
 
     /* Insert the Carats into the Target string */
 
@@ -445,9 +445,9 @@ OptBuildShortestPath (
 
     /* Make sure we haven't gone off the end of the target path */
 
-    if (Index > TargetPath->Length)
+    if (Index > (UINT32)TargetPath->Length)
     {
-        Index = TargetPath->Length;
+        Index = (UINT32)TargetPath->Length;
     }
 
     strcpy (&NewPathExternal[i],
@@ -864,7 +864,7 @@ OptOptimizeNamePath (
     if (ACPI_SUCCESS (Status))
     {
         HowMuchShorter = (AmlNameStringLength - strlen (NewPath));
-        OptTotal += HowMuchShorter;
+        OptTotal += (UINT32)HowMuchShorter;
 
         ACPI_DEBUG_PRINT_RAW ((ACPI_DB_OPTIMIZATIONS,
             " REDUCED BY %2u (TOTAL SAVED %2u)",
@@ -879,12 +879,12 @@ OptOptimizeNamePath (
                  * (alias name) is the second operand
                  */
                 Op->Asl.Child->Asl.Next->Asl.Value.String = NewPath;
-                Op->Asl.Child->Asl.Next->Asl.AmlLength = strlen (NewPath);
+                Op->Asl.Child->Asl.Next->Asl.AmlLength = (UINT32)strlen (NewPath);
             }
             else
             {
                 Op->Asl.Child->Asl.Value.String = NewPath;
-                Op->Asl.Child->Asl.AmlLength = strlen (NewPath);
+                Op->Asl.Child->Asl.AmlLength = (UINT32)strlen (NewPath);
             }
         }
         else if (Flags & AML_CREATE)
@@ -899,14 +899,14 @@ OptOptimizeNamePath (
             /* Update the parse node with the new NamePath */
 
             NextOp->Asl.Value.String = NewPath;
-            NextOp->Asl.AmlLength = strlen (NewPath);
+            NextOp->Asl.AmlLength = (UINT32)strlen (NewPath);
         }
         else
         {
             /* Update the parse node with the new NamePath */
 
             Op->Asl.Value.String = NewPath;
-            Op->Asl.AmlLength = strlen (NewPath);
+            Op->Asl.AmlLength = (UINT32)strlen (NewPath);
         }
     }
     else

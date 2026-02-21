@@ -489,7 +489,7 @@ AsRemoveExtraLines (
 
     /* Remove any extra lines at the end of the file */
 
-    Length = strlen (FileBuffer);
+    Length = (UINT32)strlen (FileBuffer);
     FileEnd = FileBuffer + (Length - 2);
 
     while (*FileEnd == '\n')
@@ -646,7 +646,7 @@ AsTrimLines (
 
         if (StartWhiteSpace)
         {
-            SpaceCount += (SubBuffer - StartWhiteSpace);
+            SpaceCount += (UINT32)(SubBuffer - StartWhiteSpace);
 
             /* Remove the spaces */
 
@@ -757,8 +757,8 @@ AsReplaceHeader (
 
     /* Delete old header, insert new one */
 
-    AsReplaceData (SubBuffer, TokenEnd - SubBuffer,
-        NewHeader, strlen (NewHeader));
+    AsReplaceData (SubBuffer, (UINT32)(TokenEnd - SubBuffer),
+        NewHeader, (UINT32)strlen (NewHeader));
 }
 
 
@@ -781,7 +781,7 @@ AsDoSpdxHeader (
     /* Place an SPDX header at the very top */
 
     AsReplaceData (Buffer, 0,
-        SpdxHeader, strlen (SpdxHeader));
+        SpdxHeader, (UINT32)strlen (SpdxHeader));
 
     /* Place an Intel copyright notice in the module header */
 
@@ -791,8 +791,8 @@ AsDoSpdxHeader (
         return;
     }
 
-    AsReplaceData (SubBuffer, strlen (MODULE_HEADER_END),
-        CopyRightHeaderEnd, strlen (CopyRightHeaderEnd));
+    AsReplaceData (SubBuffer, (UINT32)strlen (MODULE_HEADER_END),
+        CopyRightHeaderEnd, (UINT32)strlen (CopyRightHeaderEnd));
 }
 
 /******************************************************************************
@@ -819,8 +819,8 @@ AsReplaceString (
     int                     ReplaceCount = 0;
 
 
-    TargetLength = strlen (Target);
-    ReplacementLength = strlen (Replacement);
+    TargetLength = (int)strlen (Target);
+    ReplacementLength = (int)strlen (Replacement);
 
     SubBuffer = Buffer;
     SubString1 = Buffer;
@@ -1107,11 +1107,11 @@ AsBracesOnSameLine (
                          !strncmp (StartOfThisLine, "else while", 10) ||
                           strncmp (StartOfThisLine, "else", 4)))
                     {
-                        AsReplaceData (Beginning, SubBuffer - Beginning, " {\n", 3);
+                        AsReplaceData (Beginning, (UINT32)(SubBuffer - Beginning), " {\n", 3);
                     }
                     else
                     {
-                        AsReplaceData (Beginning, SubBuffer - Beginning, " {", 2);
+                        AsReplaceData (Beginning, (UINT32)(SubBuffer - Beginning), " {", 2);
                     }
 #endif
                 }
@@ -1267,7 +1267,7 @@ AsTabify8 (
              * continuation line (which was indented correctly for tabs=4) would
              * get indented off the screen if we just blindly converted to tabs.
              */
-            ThisColumnStart = FirstNonBlank - SubBuffer;
+            ThisColumnStart = (UINT32)(FirstNonBlank - SubBuffer);
 
             if (LastLineTabCount == 0)
             {
@@ -1639,8 +1639,8 @@ AsInsertPrefix (
 
     SubBuffer = Buffer;
     SubString = Buffer;
-    InsertLength = strlen (InsertString);
-    KeywordLength = strlen (Keyword);
+    InsertLength = (UINT32)strlen (InsertString);
+    KeywordLength = (UINT32)strlen (Keyword);
 
 
     while (SubString)

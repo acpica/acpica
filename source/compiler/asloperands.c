@@ -776,7 +776,7 @@ OpnDoBuffer (
          * Only one initializer, the string. Buffer must be big enough to hold
          * the string plus the null termination byte
          */
-        BufferLength = strlen (InitializerOp->Asl.Value.String) + 1;
+        BufferLength = (UINT32)strlen (InitializerOp->Asl.Value.String) + 1;
 
         InitializerOp->Asl.AmlOpcode = AML_RAW_DATA_BUFFER;
         InitializerOp->Asl.AmlLength = BufferLength;
@@ -1087,8 +1087,8 @@ OpnDoDefinitionBlock (
          * We will use the AML filename that is embedded in the source file
          * for the output filename.
          */
-        Filename = UtLocalCacheCalloc (strlen (AslGbl_DirectoryPath) +
-            strlen ((char *) Child->Asl.Value.Buffer) + 1);
+        Filename = UtLocalCacheCalloc ((UINT32)strlen (AslGbl_DirectoryPath) +
+            (UINT32)strlen ((char *) Child->Asl.Value.Buffer) + 1);
 
         /* Prepend the current directory path */
 
@@ -1174,7 +1174,7 @@ OpnDoDefinitionBlock (
                 "Length cannot exceed 8 characters");
         }
 
-        AslGbl_TableId = UtLocalCacheCalloc (Length + 1);
+        AslGbl_TableId = UtLocalCacheCalloc ((UINT32)Length + 1);
         strcpy (AslGbl_TableId, Child->Asl.Value.String);
         AslGbl_FilesList->TableId = AslGbl_TableId;
 

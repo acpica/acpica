@@ -558,7 +558,7 @@ ExecuteOSI (
 
     Arg[0].Type = ACPI_TYPE_STRING;
     Arg[0].String.Pointer = "Windows 2001";
-    Arg[0].String.Length = strlen (Arg[0].String.Pointer);
+    Arg[0].String.Length = (UINT32)strlen (Arg[0].String.Pointer);
 
     /* Ask ACPICA to allocate space for the return object */
 
@@ -626,7 +626,7 @@ ExecuteMAIN (void)
 
     Arg[0].Type = ACPI_TYPE_STRING;
     Arg[0].String.Pointer = "Method [MAIN] is executing";
-    Arg[0].String.Length = strlen (Arg[0].String.Pointer);
+    Arg[0].String.Length = (UINT32)strlen (Arg[0].String.Pointer);
 
     /* Ask ACPICA to allocate space for the return object */
 

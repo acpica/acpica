@@ -249,7 +249,7 @@ AeExceptionHandler (
 
     Arg[1].Type = ACPI_TYPE_STRING;
     Arg[1].String.Pointer = ACPI_CAST_PTR (char, Exception);
-    Arg[1].String.Length = strlen (Exception);
+    Arg[1].String.Length = (UINT32)strlen (Exception);
 
     Arg[2].Type = ACPI_TYPE_INTEGER;
     Arg[2].Integer.Value = AcpiOsGetThreadId();

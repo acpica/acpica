@@ -865,7 +865,7 @@ NamePathTail                [.]{NameSeg}
 
 {NameString}                { char *s;
                                 count (0);
-                                s=UtLocalCacheCalloc (strlen (AslCompilertext)+1);
+                                s=UtLocalCacheCalloc ((UINT32)strlen (AslCompilertext)+1);
                                 strcpy (s, AslCompilertext);
                                 AslCompilerlval.s = s;
                                 DbgPrint (ASL_PARSE_OUTPUT, "NameString: %s\n", s);
