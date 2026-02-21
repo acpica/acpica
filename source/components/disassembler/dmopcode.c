@@ -986,6 +986,13 @@ AcpiDmDisassembleOneOp (
     case AML_INT_NAMEPATH_OP:
 
         AcpiDmNamestring (Op->Common.Value.Name);
+        /* If this namepath is a Package element, emit a separating comma */
+        if ((Op->Common.Parent) &&
+            ((Op->Common.Parent->Common.AmlOpcode == AML_PACKAGE_OP) ||
+             (Op->Common.Parent->Common.AmlOpcode == AML_VARIABLE_PACKAGE_OP)))
+        {
+            AcpiOsPrintf (", ");
+        }
         break;
 
     case AML_INT_NAMEDFIELD_OP:
@@ -1085,12 +1092,23 @@ AcpiDmDisassembleOneOp (
         break;
 
     case AML_INT_METHODCALL_OP:
+    {
+        ACPI_PARSE_OBJECT *MethodCallOp = Op;
 
         Op = AcpiPsGetDepthNext (NULL, Op);
         Op->Common.DisasmFlags |= ACPI_PARSEOP_IGNORE;
 
         AcpiDmNamestring (Op->Common.Value.Name);
+
+        /* If the method name is a Package element, emit a separating comma */
+        if ((MethodCallOp->Common.Parent) &&
+            ((MethodCallOp->Common.Parent->Common.AmlOpcode == AML_PACKAGE_OP) ||
+             (MethodCallOp->Common.Parent->Common.AmlOpcode == AML_VARIABLE_PACKAGE_OP)))
+        {
+            AcpiOsPrintf (", ");
+        }
         break;
+    }
 
     case AML_WHILE_OP:
 
