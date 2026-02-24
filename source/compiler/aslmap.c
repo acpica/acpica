@@ -611,3 +611,5 @@ const ASL_MAPPING_ENTRY     AslKeywordMapping [] =
 /*! [End] no source code translation !*/
 
 };
+
+const UINT32     AslKeywordMappingCount = ACPI_ARRAY_LENGTH (AslKeywordMapping);
