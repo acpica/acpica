@@ -603,6 +603,7 @@ DtCompileMpam (
                     break;
                 case ACPI_MPAM_LOCATION_TYPE_UNKNOWN:
                     InfoTable = AcpiDmTableInfoMpam1G;
+		    break;
                 default:
                     DtFatal (ASL_MSG_UNKNOWN_SUBTABLE, SubtableStart, "Resource Locator Type");
                     return (AE_ERROR);
