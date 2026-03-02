@@ -518,7 +518,7 @@ ACPI_RSCONVERT_INFO     AcpiRsConvertI2cSerialBus[18] =
     /* Read LVR from Type Specific Flags, bits[15:8] */
     {ACPI_RSC_MOVE8,    ACPI_RS_OFFSET (Data.I2cSerialBus.Lvr),
                         AML_OFFSET (I2cSerialBus.TypeSpecificFlags) + 1,
-                        0},
+                        1},
 
     {ACPI_RSC_MOVE32,   ACPI_RS_OFFSET (Data.I2cSerialBus.ConnectionSpeed),
                         AML_OFFSET (I2cSerialBus.ConnectionSpeed),
