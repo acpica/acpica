@@ -545,6 +545,7 @@ AcpiPsGetNextSimpleArg (
     UINT32                  Length;
     UINT16                  Opcode;
     UINT8                   *Aml = ParserState->Aml;
+    UINT32                  Remaining = (UINT32) ACPI_PTR_DIFF (ParserState->AmlEnd, Aml);
 
 
     ACPI_FUNCTION_TRACE_U32 (PsGetNextSimpleArg, ArgType);
@@ -557,8 +558,16 @@ AcpiPsGetNextSimpleArg (
         /* Get 1 byte from the AML stream */
 
         Opcode = AML_BYTE_OP;
-        Arg->Common.Value.Integer = (UINT64) *Aml;
-        Length = 1;
+        if (Remaining >= 1)
+        {
+            Arg->Common.Value.Integer = (UINT64) *Aml;
+            Length = 1;
+        }
+        else
+        {
+            Arg->Common.Value.Integer = 0;
+            Length = 0;
+        }
         break;
 
     case ARGP_WORDDATA:
@@ -566,8 +575,26 @@ AcpiPsGetNextSimpleArg (
         /* Get 2 bytes from the AML stream */
 
         Opcode = AML_WORD_OP;
-        ACPI_MOVE_16_TO_64 (&Arg->Common.Value.Integer, Aml);
-        Length = 2;
+        if (Remaining >= 2)
+        {
+            ACPI_MOVE_16_TO_64 (&Arg->Common.Value.Integer, Aml);
+            Length = 2;
+        }
+        else
+        {
+            Arg->Common.Value.Integer = 0;
+            if (Remaining > 0)
+            {
+                UINT64 Tmp = 0;
+                memcpy (&Tmp, Aml, Remaining);
+                Arg->Common.Value.Integer = Tmp;
+                Length = Remaining;
+            }
+            else
+            {
+                Length = 0;
+            }
+        }
         break;
 
     case ARGP_DWORDDATA:
@@ -575,8 +602,26 @@ AcpiPsGetNextSimpleArg (
         /* Get 4 bytes from the AML stream */
 
         Opcode = AML_DWORD_OP;
-        ACPI_MOVE_32_TO_64 (&Arg->Common.Value.Integer, Aml);
-        Length = 4;
+        if (Remaining >= 4)
+        {
+            ACPI_MOVE_32_TO_64 (&Arg->Common.Value.Integer, Aml);
+            Length = 4;
+        }
+        else
+        {
+            Arg->Common.Value.Integer = 0;
+            if (Remaining > 0)
+            {
+                UINT64 Tmp = 0;
+                memcpy (&Tmp, Aml, Remaining);
+                Arg->Common.Value.Integer = Tmp;
+                Length = Remaining;
+            }
+            else
+            {
+                Length = 0;
+            }
+        }
         break;
 
     case ARGP_QWORDDATA:
@@ -584,8 +629,26 @@ AcpiPsGetNextSimpleArg (
         /* Get 8 bytes from the AML stream */
 
         Opcode = AML_QWORD_OP;
-        ACPI_MOVE_64_TO_64 (&Arg->Common.Value.Integer, Aml);
-        Length = 8;
+        if (Remaining >= 8)
+        {
+            ACPI_MOVE_64_TO_64 (&Arg->Common.Value.Integer, Aml);
+            Length = 8;
+        }
+        else
+        {
+            Arg->Common.Value.Integer = 0;
+            if (Remaining > 0)
+            {
+                UINT64 Tmp = 0;
+                memcpy (&Tmp, Aml, Remaining);
+                Arg->Common.Value.Integer = Tmp;
+                Length = Remaining;
+            }
+            else
+            {
+                Length = 0;
+            }
+        }
         break;
 
     case ARGP_CHARLIST:
@@ -598,11 +661,20 @@ AcpiPsGetNextSimpleArg (
         /* Find the null terminator */
 
         Length = 0;
-        while (Aml[Length])
+        while ((Length < Remaining) && Aml[Length])
         {
             Length++;
         }
-        Length++;
+        if (Length < Remaining)
+        {
+            /* Account for the terminating null */
+            Length++;
+        }
+        else
+        {
+            /* No terminator found within bounds; clamp to Remaining */
+            Length = Remaining;
+        }
         break;
 
     case ARGP_NAME:
