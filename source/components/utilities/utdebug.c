@@ -161,6 +161,8 @@
 
 #ifdef ACPI_DEBUG_OUTPUT
 
+static DEFINE_SPINLOCK(AcpiUtdebug_lock);
+
 static ACPI_THREAD_ID       AcpiGbl_PreviousThreadId = (ACPI_THREAD_ID) 0xFFFFFFFF;
 static const char           *AcpiGbl_FunctionEntryPrefix = "----Entry";
 static const char           *AcpiGbl_FunctionExitPrefix  = "----Exit-";
@@ -223,10 +225,12 @@ AcpiUtTrackStackPtr (
 #pragma GCC diagnostic pop
     }
 
+    spin_lock(&AcpiUtdebug_Lock);
     if (AcpiGbl_NestingLevel > AcpiGbl_DeepestNesting)
     {
         AcpiGbl_DeepestNesting = AcpiGbl_NestingLevel;
     }
+    spin_unlock(&AcpiUtdebug_Lock);
 }
 
 
@@ -302,6 +306,7 @@ AcpiDebugPrint (
     va_list                 args;
 #ifdef ACPI_APPLICATION
     int                     FillCount;
+    UINT32		    NestingLevel;
 #endif
 
     /* Check if debug output enabled */
@@ -325,7 +330,7 @@ AcpiDebugPrint (
         }
 
         AcpiGbl_PreviousThreadId = ThreadId;
-        AcpiGbl_NestingLevel = 0;
+        WRITE_ONCE(AcpiGbl_NestingLevel, 0);
     }
 
     /*
@@ -346,7 +351,9 @@ AcpiDebugPrint (
         AcpiOsPrintf ("[%u] ", (UINT32) ThreadId);
     }
 
-    FillCount = 48 - AcpiGbl_NestingLevel -
+    NestingLevel = READ_ONCE(AcpiGbl_NestingLevel);
+
+    FillCount = 48 - NestingLevel -
         strlen (AcpiUtTrimFunctionName (FunctionName));
     if (FillCount < 0)
     {
@@ -354,7 +361,7 @@ AcpiDebugPrint (
     }
 
     AcpiOsPrintf ("[%02d] %*s",
-        AcpiGbl_NestingLevel, AcpiGbl_NestingLevel + 1, " ");
+        NestingLevel, NestingLevel + 1, " ");
     AcpiOsPrintf ("%s%*s: ",
         AcpiUtTrimFunctionName (FunctionName), FillCount, " ");
 
@@ -441,7 +448,10 @@ AcpiUtTrace (
     UINT32                  ComponentId)
 {
 
+    spin_lock(&AcpiUtdebug_Lock);
     AcpiGbl_NestingLevel++;
+    spin_unlock(&AcpiUtdebug_Lock);
+
     AcpiUtTrackStackPtr ();
 
     /* Check if enabled up-front for performance */
@@ -483,7 +493,10 @@ AcpiUtTracePtr (
     const void              *Pointer)
 {
 
+    spin_lock(&AcpiUtdebug_Lock);
     AcpiGbl_NestingLevel++;
+    spin_unlock(&AcpiUtdebug_Lock);
+
     AcpiUtTrackStackPtr ();
 
     /* Check if enabled up-front for performance */
@@ -523,7 +536,10 @@ AcpiUtTraceStr (
     const char              *String)
 {
 
+    spin_lock(&AcpiUtdebug_Lock);
     AcpiGbl_NestingLevel++;
+    spin_unlock(&AcpiUtdebug_Lock);
+
     AcpiUtTrackStackPtr ();
 
     /* Check if enabled up-front for performance */
@@ -563,7 +579,10 @@ AcpiUtTraceU32 (
     UINT32                  Integer)
 {
 
+    spin_lock(&AcpiUtdebug_Lock);
     AcpiGbl_NestingLevel++;
+    spin_unlock(&AcpiUtdebug_Lock);
+
     AcpiUtTrackStackPtr ();
 
     /* Check if enabled up-front for performance */
@@ -610,10 +629,12 @@ AcpiUtExit (
             "%s\n", AcpiGbl_FunctionExitPrefix);
     }
 
+    spin_lock(&AcpiUtdebug_Lock);
     if (AcpiGbl_NestingLevel)
     {
         AcpiGbl_NestingLevel--;
     }
+    spin_unlock(&AcpiUtdebug_Lock);
 }
 
 ACPI_EXPORT_SYMBOL (AcpiUtExit)
@@ -665,10 +686,12 @@ AcpiUtStatusExit (
         }
     }
 
+    spin_lock(&AcpiUtdebug_Lock);
     if (AcpiGbl_NestingLevel)
     {
         AcpiGbl_NestingLevel--;
     }
+    spin_unlock(&AcpiUtdebug_Lock);
 }
 
 ACPI_EXPORT_SYMBOL (AcpiUtStatusExit)
@@ -710,10 +733,12 @@ AcpiUtValueExit (
             ACPI_FORMAT_UINT64 (Value));
     }
 
+    spin_lock(&AcpiUtdebug_Lock);
     if (AcpiGbl_NestingLevel)
     {
         AcpiGbl_NestingLevel--;
     }
+    spin_unlock(&AcpiUtdebug_Lock);
 }
 
 ACPI_EXPORT_SYMBOL (AcpiUtValueExit)
@@ -754,10 +779,12 @@ AcpiUtPtrExit (
             "%s %p\n", AcpiGbl_FunctionExitPrefix, Ptr);
     }
 
+    spin_lock(&AcpiUtdebug_Lock);
     if (AcpiGbl_NestingLevel)
     {
         AcpiGbl_NestingLevel--;
     }
+    spin_unlock(&AcpiUtdebug_Lock);
 }
 
 
@@ -796,10 +823,12 @@ AcpiUtStrExit (
             "%s %s\n", AcpiGbl_FunctionExitPrefix, String);
     }
 
+    spin_lock(&AcpiUtdebug_Lock);
     if (AcpiGbl_NestingLevel)
     {
         AcpiGbl_NestingLevel--;
     }
+    spin_unlock(&AcpiUtdebug_Lock);
 }
 
 
