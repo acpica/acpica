@@ -363,18 +363,38 @@ DtInsertCompilerIds (
         return;
     }
 
-    /* Walk to the Compiler fields at the end of the header */
+    /* Walk to the Compiler fields at the end of the header, with safety checks */
+
+    if (!FieldList)
+    {
+        return;
+    }
 
     Next = FieldList;
     for (i = 0; i < 7; i++)
     {
+        if (!Next || !Next->Next)
+        {
+            /* Malformed/short header: cannot insert compiler IDs */
+            return;
+        }
         Next = Next->Next;
+    }
+
+    /* Ensure both Creator ID and Revision fields exist */
+    if (!Next || !Next->Next)
+    {
+        return;
     }
 
     Next->Value = ASL_CREATOR_ID;
     Next->Flags = DT_FIELD_NOT_ALLOCATED;
 
     Next = Next->Next;
+    if (!Next)
+    {
+        return;
+    }
     Next->Value = VersionString;
     Next->Flags = DT_FIELD_NOT_ALLOCATED;
 }
