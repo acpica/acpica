@@ -724,10 +724,11 @@ enum AcpiTpmcType
 
 typedef struct acpi_tpmc_pfs
 {
-    ACPI_GENERIC_ADDRESS    PfsGas;             /* GAS pointing to first PFS entry */
-    UINT32                  NumEntries;         /* Number of PM features (max 64 per PFS) */
-    UINT64                  ReadBlockedMask;    /* Read-blocked feature bitmask */
-    UINT64                  WriteBlockedMask;   /* Write-blocked feature bitmask */
+    ACPI_GENERIC_ADDRESS    PfsGas;                   /* GAS pointing to first PFS entry */
+    UINT8                   NumEntries;               /* Number of PM features (max 256 per PFS) */
+    UINT64                  FeatureEnabledMask[4];    /* Feature enabled/disabled bitmask */
+    UINT64                  ReadBlockedMask[4];       /* Read-blocked feature bitmask */
+    UINT64                  WriteBlockedMask[4];      /* Write-blocked feature bitmask */
 
 } ACPI_TPMC_PFS;
 
