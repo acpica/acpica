@@ -556,6 +556,10 @@ AcpiPsGetNextSimpleArg (
 
         /* Get 1 byte from the AML stream */
 
+        if (Aml >= ParserState->AmlEnd)
+        {
+            return_VOID;
+        }
         Opcode = AML_BYTE_OP;
         Arg->Common.Value.Integer = (UINT64) *Aml;
         Length = 1;
@@ -565,6 +569,10 @@ AcpiPsGetNextSimpleArg (
 
         /* Get 2 bytes from the AML stream */
 
+        if ((Aml + 2) > ParserState->AmlEnd)
+        {
+            return_VOID;
+        }
         Opcode = AML_WORD_OP;
         ACPI_MOVE_16_TO_64 (&Arg->Common.Value.Integer, Aml);
         Length = 2;
@@ -574,6 +582,10 @@ AcpiPsGetNextSimpleArg (
 
         /* Get 4 bytes from the AML stream */
 
+        if ((Aml + 4) > ParserState->AmlEnd)
+        {
+            return_VOID;
+        }
         Opcode = AML_DWORD_OP;
         ACPI_MOVE_32_TO_64 (&Arg->Common.Value.Integer, Aml);
         Length = 4;
@@ -583,6 +595,10 @@ AcpiPsGetNextSimpleArg (
 
         /* Get 8 bytes from the AML stream */
 
+        if ((Aml + 8) > ParserState->AmlEnd)
+        {
+            return_VOID;
+        }
         Opcode = AML_QWORD_OP;
         ACPI_MOVE_64_TO_64 (&Arg->Common.Value.Integer, Aml);
         Length = 8;
@@ -598,7 +614,7 @@ AcpiPsGetNextSimpleArg (
         /* Find the null terminator */
 
         Length = 0;
-        while (Aml[Length])
+        while ((Aml + Length) < ParserState->AmlEnd && Aml[Length])
         {
             Length++;
         }
