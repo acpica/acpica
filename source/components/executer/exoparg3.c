@@ -320,7 +320,8 @@ AcpiExOpcode_3A_1T_1R (
 
         /* Truncate request if larger than the actual String/Buffer */
 
-        else if ((Index + Length) > Operand[0]->String.Length)
+        else if ((Index + Length) > Operand[0]->String.Length ||
+                 (Index + Length) < Index) /* Check for overflow */
         {
             Length =
                 (ACPI_SIZE) Operand[0]->String.Length - (ACPI_SIZE) Index;
