@@ -227,11 +227,24 @@ AnMethodTypingWalkEnd (
                 if (Op->Asl.Child->Asl.Node &&
                     (Op->Asl.ParentMethod != Op->Asl.Child->Asl.Node->Op))
                 {
+                    ACPI_PARSE_OBJECT *TargetMethodOp =
+                        Op->Asl.Child->Asl.Node->Op;
+
+                    /* Break mutual-recursion loops during typing */
+                    if (TargetMethodOp->Asl.CompileFlags & OP_VISITED)
+                    {
+                        break;
+                    }
+
+                    TargetMethodOp->Asl.CompileFlags |= OP_VISITED;
+
                     /* We must type the method here */
 
-                    TrWalkParseTree (Op->Asl.Child->Asl.Node->Op,
+                    TrWalkParseTree (TargetMethodOp,
                         ASL_WALK_VISIT_UPWARD, NULL,
                         AnMethodTypingWalkEnd, NULL);
+
+                    TargetMethodOp->Asl.CompileFlags &= ~OP_VISITED;
 
                     ThisOpBtype = AnGetBtype (Op->Asl.Child);
                 }
