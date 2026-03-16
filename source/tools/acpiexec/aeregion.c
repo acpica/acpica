@@ -682,6 +682,11 @@ DoFunction:
     /*
      * Perform a read or write to the buffer space
      */
+    if (ByteWidth == 0 || ByteWidth > 256)
+    {
+        return (AE_AML_OPERAND_VALUE);
+    }
+
     switch (Function)
     {
     case ACPI_READ:
