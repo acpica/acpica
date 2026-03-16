@@ -293,10 +293,19 @@ AcpiPsGetNextNamestring (
 
     /* Point past any namestring prefix characters (backslash or carat) */
 
-    while (ACPI_IS_ROOT_PREFIX (*End) ||
-           ACPI_IS_PARENT_PREFIX (*End))
+    while ((End < ParserState->AmlEnd) &&
+           (ACPI_IS_ROOT_PREFIX (*End) ||
+            ACPI_IS_PARENT_PREFIX (*End)))
     {
         End++;
+    }
+
+    /* Check for buffer overflow before dereferencing */
+
+    if (End >= ParserState->AmlEnd)
+    {
+        ParserState->Aml = ParserState->AmlEnd;
+        return_PTR (NULL);
     }
 
     /* Decode the path prefix character */
@@ -334,6 +343,14 @@ AcpiPsGetNextNamestring (
 
         End += ACPI_NAMESEG_SIZE;
         break;
+    }
+
+    /* Check for buffer overflow */
+
+    if (End > ParserState->AmlEnd)
+    {
+        ParserState->Aml = ParserState->AmlEnd;
+        return_PTR (NULL);
     }
 
     ParserState->Aml = End;
@@ -387,6 +404,17 @@ AcpiPsGetNextNamepath (
 
     if (!Path)
     {
+        /*
+         * If Aml did not advance, the NULL path indicates an error
+         * (buffer overflow), not a valid Null name
+         */
+        if (ParserState->Aml == Start)
+        {
+            /* Force AML pointer to end to prevent infinite loop */
+            ParserState->Aml = ParserState->AmlEnd;
+            return_ACPI_STATUS (AE_AML_BUFFER_LIMIT);
+        }
+
         Arg->Common.Value.Name = Path;
         return_ACPI_STATUS (AE_OK);
     }
