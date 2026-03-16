@@ -752,6 +752,13 @@ AcpiNsLookup (
 
         /* Extract one ACPI name from the front of the pathname */
 
+        /* Validate that Path is within the current AML buffer */
+        if (WalkState && ((UINT8 *) Path < WalkState->ParserState.AmlStart ||
+            (UINT8 *) Path + ACPI_NAMESEG_SIZE > WalkState->ParserState.AmlEnd))
+        {
+            return_ACPI_STATUS (AE_AML_BAD_NAME);
+        }
+
         ACPI_MOVE_32_TO_32 (&SimpleName, Path);
 
         /* Try to find the single (4 character) ACPI name */
