@@ -401,7 +401,7 @@ AcpiPsGetNextNamepath (
      */
     Status = AcpiNsLookup (WalkState->ScopeInfo, Path,
         ACPI_TYPE_ANY, ACPI_IMODE_EXECUTE,
-        ACPI_NS_SEARCH_PARENT | ACPI_NS_DONT_OPEN_SCOPE, NULL, &Node);
+        ACPI_NS_SEARCH_PARENT | ACPI_NS_DONT_OPEN_SCOPE, WalkState, &Node);
 
     /*
      * If this name is a control method invocation, we must
