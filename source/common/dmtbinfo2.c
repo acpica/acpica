@@ -1243,7 +1243,7 @@ ACPI_DMTABLE_INFO           AcpiDmTableInfoMadt30[] =
 {
     {ACPI_DMT_UINT16,   ACPI_MADT30_OFFSET (Reserved),              "Reserved", 0},
     {ACPI_DMT_UINT32,   ACPI_MADT30_OFFSET (LinkedTranslatorId),    "Linked Its Id", 0},
-    {ACPI_DMT_UINT32,   ACPI_MADT30_OFFSET (TranslateFrameId),      "Its Transalte Id", 0},
+    {ACPI_DMT_UINT32,   ACPI_MADT30_OFFSET (TranslateFrameId),      "Its Translate Id", 0},
     {ACPI_DMT_UINT32,   ACPI_MADT30_OFFSET (Reserved2),             "Reserved", 0},
     {ACPI_DMT_UINT64,   ACPI_MADT30_OFFSET (BaseAddress),           "Its Translate Frame Physical Base Address", 0},
    ACPI_DMT_TERMINATOR
