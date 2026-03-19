@@ -251,6 +251,7 @@ AcpiPsGetNextPackageEnd (
     ACPI_PARSE_STATE        *ParserState)
 {
     UINT8                   *Start = ParserState->Aml;
+    UINT8                   *PackageEnd;
     UINT32                  PackageLength;
 
 
@@ -261,7 +262,15 @@ AcpiPsGetNextPackageEnd (
 
     PackageLength = AcpiPsGetNextPackageLength (ParserState);
 
-    return_PTR (Start + PackageLength); /* end of package */
+    /* Clamp PackageEnd to AmlEnd to prevent out-of-bounds access */
+
+    PackageEnd = Start + PackageLength;
+    if (PackageEnd > ParserState->AmlEnd)
+    {
+        PackageEnd = ParserState->AmlEnd;
+    }
+
+    return_PTR (PackageEnd); /* end of package */
 }
 
 
