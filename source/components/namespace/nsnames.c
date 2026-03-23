@@ -400,6 +400,13 @@ AcpiNsBuildNormalizedPath (
         goto BuildTrailingNull;
     }
 
+    /* Validate the Node to avoid use-after-free vulnerabilities */
+
+    if (ACPI_GET_DESCRIPTOR_TYPE (Node) != ACPI_DESC_TYPE_NAMED)
+    {
+        goto BuildTrailingNull;
+    }
+
     NextNode = Node;
     while (NextNode && NextNode != AcpiGbl_RootNode)
     {
