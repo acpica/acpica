@@ -753,6 +753,11 @@ AcpiPsGetNextField (
     ASL_CV_CAPTURE_COMMENTS_ONLY (ParserState);
     Aml = ParserState->Aml;
 
+    if (Aml >= ParserState->AmlEnd)
+    {
+        return_PTR (NULL);
+    }
+
     /* Determine field type */
 
     switch (ACPI_GET8 (ParserState->Aml))
@@ -804,6 +809,11 @@ AcpiPsGetNextField (
 
         /* Get the 4-character name */
 
+        if ((ParserState->Aml + ACPI_NAMESEG_SIZE) > ParserState->AmlEnd)
+        {
+            AcpiPsFreeOp (Field);
+            return_PTR (NULL);
+        }
         ACPI_MOVE_32_TO_32 (&Name, ParserState->Aml);
         AcpiPsSetName (Field, Name);
         ParserState->Aml += ACPI_NAMESEG_SIZE;
@@ -850,6 +860,11 @@ AcpiPsGetNextField (
 
         /* Get the two bytes (Type/Attribute) */
 
+        if ((ParserState->Aml + 2) > ParserState->AmlEnd)
+        {
+            AcpiPsFreeOp (Field);
+            return_PTR (NULL);
+        }
         AccessType = ACPI_GET8 (ParserState->Aml);
         ParserState->Aml++;
         AccessAttribute = ACPI_GET8 (ParserState->Aml);
@@ -862,6 +877,11 @@ AcpiPsGetNextField (
 
         if (Opcode == AML_INT_EXTACCESSFIELD_OP)
         {
+            if (ParserState->Aml >= ParserState->AmlEnd)
+            {
+                AcpiPsFreeOp (Field);
+                return_PTR (NULL);
+            }
             AccessLength = ACPI_GET8 (ParserState->Aml);
             ParserState->Aml++;
 
