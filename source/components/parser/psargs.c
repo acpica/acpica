@@ -197,6 +197,7 @@ AcpiPsGetNextPackageLength (
     UINT32                  PackageLength = 0;
     UINT32                  ByteCount;
     UINT8                   ByteZeroMask = 0x3F; /* Default [0:5] */
+    UINT32                  Remaining;
 
 
     ACPI_FUNCTION_TRACE (PsGetNextPackageLength);
@@ -206,7 +207,24 @@ AcpiPsGetNextPackageLength (
      * Byte 0 bits [6:7] contain the number of additional bytes
      * used to encode the package length, either 0,1,2, or 3
      */
+
+    /* Check if we have at least one byte to read */
+    Remaining = (UINT32) ACPI_PTR_DIFF (ParserState->AmlEnd, Aml);
+    if (Remaining == 0)
+    {
+        return_UINT32 (0);
+    }
+
     ByteCount = (Aml[0] >> 6);
+
+    /* Validate ByteCount and ensure we have enough bytes to read */
+    if (ByteCount >= Remaining)
+    {
+        /* Clamp to available bytes and advance to end */
+        ParserState->Aml = ParserState->AmlEnd;
+        return_UINT32 (0);
+    }
+
     ParserState->Aml += ((ACPI_SIZE) ByteCount + 1);
 
     /* Get bytes 3, 2, 1 as needed */
