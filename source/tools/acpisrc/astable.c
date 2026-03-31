@@ -945,7 +945,7 @@ ACPI_TYPED_IDENTIFIER_TABLE           AcpiIdentifiers[] = {
     {"ACPI_MADT_LOCAL_SAPIC",               SRC_TYPE_STRUCT},
     {"ACPI_MADT_LOCAL_X2APIC",              SRC_TYPE_STRUCT},
     {"ACPI_MADT_LOCAL_X2APIC_NMI",          SRC_TYPE_STRUCT},
-    {"ACPI_MADT_LPC_PIC",   `               SRC_TYPE_STRUCT},
+    {"ACPI_MADT_LPC_PIC",                   SRC_TYPE_STRUCT},
     {"ACPI_MADT_MSI_PIC",                   SRC_TYPE_STRUCT},
     {"ACPI_MADT_GENERIC_DISTRIBUTOR",       SRC_TYPE_STRUCT},
     {"ACPI_MADT_GENERIC_INTERRUPT",         SRC_TYPE_STRUCT},
