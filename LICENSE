@@ -2,7 +2,7 @@ Most of ACPICA is under the following license:
 
 1. Copyright Notice
 
-Some or all of this work - Copyright (c) 1999 - 2025, Intel Corp.
+Some or all of this work - Copyright (c) 1999 - 2026, Intel Corp.
 All rights reserved.
 
 2. License
@@ -116,7 +116,7 @@ licenses described above. The way to submit patches and/or bug reports or
 fixes is by creating the appropriate ticket (Issue, PR) on our GitHub page.
 
 License for Contributions to ACPICA:
-Copyright © 2000 – 2025 Intel Corp.
+Copyright © 2000 – 2026 Intel Corp.
 All rights reserved.
 
 Alternatively, you may choose to be licensed under the terms of the
@@ -156,7 +156,7 @@ Software Foundation.
 ----------------------------------
 tests/misc/grammar.asl is under the following license:
 
-Some or all of this work - Copyright (c) 2006 - 2025, Intel Corp.
+Some or all of this work - Copyright (c) 2006 - 2026, Intel Corp.
 All rights reserved.
 
 Redistribution and use in source and binary forms, with or without modification,
