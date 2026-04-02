@@ -198,7 +198,7 @@ AcpiPsDeleteParseTree (
             {
                 /* This debug option will print the entire parse tree */
 
-                AcpiOsPrintf ("        %*.s%s %p", (Level * 4), " ",
+                AcpiOsPrintf ("        %*s%s %p", (Level * 4), "",
                     AcpiPsGetOpcodeName (Op->Common.AmlOpcode), Op);
 
                 if (Op->Named.AmlOpcode == AML_INT_NAMEPATH_OP)
