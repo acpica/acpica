@@ -1062,6 +1062,10 @@ AcpiDmDisassembleOneOp (
 
             Aml = Child->Named.Data;
             Length = (UINT32) Child->Common.Value.Integer;
+            if (Length > Child->Named.Length)
+            {
+                Length = Child->Named.Length;
+            }
 
             Info->Level += 1;
             Info->MappingOp = Op;
