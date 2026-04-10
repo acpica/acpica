@@ -311,10 +311,17 @@ AcpiPsGetNextNamestring (
 
     /* Point past any namestring prefix characters (backslash or carat) */
 
-    while (ACPI_IS_ROOT_PREFIX (*End) ||
-           ACPI_IS_PARENT_PREFIX (*End))
+    while (End < ParserState->AmlEnd &&
+           (ACPI_IS_ROOT_PREFIX (*End) ||
+            ACPI_IS_PARENT_PREFIX (*End)))
     {
         End++;
+    }
+
+    if (End >= ParserState->AmlEnd)
+    {
+        ParserState->Aml = ParserState->AmlEnd;
+        return_PTR (NULL);
     }
 
     /* Decode the path prefix character */
@@ -343,6 +350,12 @@ AcpiPsGetNextNamestring (
 
         /* Multiple name segments, 4 chars each, count in next byte */
 
+        if ((End + 1) >= ParserState->AmlEnd)
+        {
+            ParserState->Aml = ParserState->AmlEnd;
+            return_PTR (NULL);
+        }
+
         End += 2 + (*(End + 1) * ACPI_NAMESEG_SIZE);
         break;
 
@@ -352,6 +365,12 @@ AcpiPsGetNextNamestring (
 
         End += ACPI_NAMESEG_SIZE;
         break;
+    }
+
+    if (End > ParserState->AmlEnd)
+    {
+        ParserState->Aml = ParserState->AmlEnd;
+        return_PTR (NULL);
     }
 
     ParserState->Aml = End;
