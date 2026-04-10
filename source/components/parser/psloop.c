@@ -507,6 +507,11 @@ AcpiPsParseLoop (
 
                     WalkState->ParserState.Aml =
                         AcpiPsGetNextPackageEnd(&WalkState->ParserState);
+                    if ((WalkState->ParserState.Aml > WalkState->ParserState.AmlEnd) ||
+                        (WalkState->ParserState.Aml < WalkState->Aml))
+                    {
+                        return_ACPI_STATUS (AE_AML_PACKAGE_LIMIT);
+                    }
                     WalkState->Aml = WalkState->ParserState.Aml;
                 }
 
@@ -563,6 +568,11 @@ AcpiPsParseLoop (
                         WalkState->ControlState->Control.AmlPredicateStart + 1;
                     ParserState->Aml =
                         AcpiPsGetNextPackageEnd (ParserState);
+                    if ((ParserState->Aml > ParserState->AmlEnd) ||
+                        (ParserState->Aml < WalkState->ControlState->Control.AmlPredicateStart))
+                    {
+                        return_ACPI_STATUS (AE_AML_PACKAGE_LIMIT);
+                    }
                     WalkState->Aml = ParserState->Aml;
 
                     ACPI_ERROR ((AE_INFO, "Skipping While/If block"));
@@ -573,6 +583,11 @@ AcpiPsParseLoop (
                         WalkState->ParserState.Aml = WalkState->Aml + 1;
                         WalkState->ParserState.Aml =
                             AcpiPsGetNextPackageEnd (ParserState);
+                        if ((WalkState->ParserState.Aml > WalkState->ParserState.AmlEnd) ||
+                            (WalkState->ParserState.Aml < WalkState->Aml))
+                        {
+                            return_ACPI_STATUS (AE_AML_PACKAGE_LIMIT);
+                        }
                         WalkState->Aml = ParserState->Aml;
                     }
                     ACPI_FREE(AcpiUtPopGenericState (&WalkState->ControlState));
