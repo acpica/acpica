@@ -710,6 +710,11 @@ AcpiInstallMethod (
 
     ParserState.Aml += AcpiPsGetOpcodeSize (Opcode);
     ParserState.PkgEnd = AcpiPsGetNextPackageEnd (&ParserState);
+    if ((ParserState.PkgEnd > ParserState.AmlEnd) ||
+        (ParserState.PkgEnd < ParserState.Aml))
+    {
+        return (AE_AML_PACKAGE_LIMIT);
+    }
     Path = AcpiPsGetNextNamestring (&ParserState);
 
     MethodFlags = *ParserState.Aml++;

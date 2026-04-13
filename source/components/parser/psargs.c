@@ -1090,6 +1090,11 @@ AcpiPsGetNextArg (
         /* Package length, nothing returned */
 
         ParserState->PkgEnd = AcpiPsGetNextPackageEnd (ParserState);
+        if ((ParserState->PkgEnd > ParserState->AmlEnd) ||
+            (ParserState->PkgEnd < ParserState->Aml))
+        {
+            return_ACPI_STATUS (AE_AML_PACKAGE_LIMIT);
+        }
         break;
 
     case ARGP_FIELDLIST:
