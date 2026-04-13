@@ -221,6 +221,10 @@ AcpiPsPeekOpcode (
 
 
     Aml = ParserState->Aml;
+    if (Aml >= ParserState->AmlEnd)
+    {
+        return (0xFFFF);
+    }
     Opcode = (UINT16) ACPI_GET8 (Aml);
 
     if (Opcode == AML_EXTENDED_PREFIX)
@@ -228,6 +232,10 @@ AcpiPsPeekOpcode (
         /* Extended opcode, get the second opcode byte */
 
         Aml++;
+        if (Aml >= ParserState->AmlEnd)
+        {
+            return (0xFFFF);
+        }
         Opcode = (UINT16) ((Opcode << 8) | ACPI_GET8 (Aml));
     }
 
