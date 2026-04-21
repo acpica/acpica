@@ -540,7 +540,7 @@ MtMethodAnalysisWalkBegin (
 
         if (!HidExists && !AdrExists)
         {
-            AslError (ASL_ERROR, ASL_MSG_MISSING_DEPENDENCY, Op,
+            AslError (ASL_WARNING, ASL_MSG_MISSING_DEPENDENCY, Op,
                 "Device object requires a _HID or _ADR");
         }
         else if (HidExists && AdrExists)
