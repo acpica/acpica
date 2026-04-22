@@ -690,6 +690,10 @@ DtCompileNfit (
     void                    **PFieldList);
 
 ACPI_STATUS
+DtCompileNhlt (
+    void                    **PFieldList);
+
+ACPI_STATUS
 DtCompilePcct (
     void                    **PFieldList);
 
@@ -847,6 +851,7 @@ extern const unsigned char  TemplateMrrm[];
 extern const unsigned char  TemplateMsct[];
 extern const unsigned char  TemplateMsdm[];
 extern const unsigned char  TemplateNfit[];
+extern const unsigned char  TemplateNhlt[];
 extern const unsigned char  TemplatePcct[];
 extern const unsigned char  TemplatePdtt[];
 extern const unsigned char  TemplatePhat[];
