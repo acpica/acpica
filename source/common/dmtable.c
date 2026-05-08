@@ -438,6 +438,14 @@ static const char           *AcpiDmTpm2Subnames[] =
     "Unknown Subtable Type"         /* Reserved */
 };
 
+static const char           *AcpiDmUbrtSubnames[] =
+{
+    "UBC Information Subtable",
+    "UMMU Information Subtable",
+    "UB Reserved Memory Information Subtable",
+    "Unknown Subtable Type"
+};
+
 static const char           *AcpiDmIovtSubnames[] =
 {
     "IOMMUv1",
@@ -619,6 +627,7 @@ const ACPI_DMTABLE_DATA     AcpiDmTableData[] =
     {ACPI_SIG_TCPA, NULL,                   AcpiDmDumpTcpa, DtCompileTcpa,  TemplateTcpa},
     {ACPI_SIG_TDEL, AcpiDmTableInfoTdel,    NULL,           NULL,           TemplateTdel},
     {ACPI_SIG_TPM2, AcpiDmTableInfoTpm2,    AcpiDmDumpTpm2, DtCompileTpm2,  TemplateTpm2},
+    {ACPI_SIG_UBRT, NULL,                   AcpiDmDumpUbrt, DtCompileUbrt,  TemplateUbrt},
     {ACPI_SIG_UEFI, AcpiDmTableInfoUefi,    NULL,           DtCompileUefi,  TemplateUefi},
     {ACPI_SIG_VIOT, AcpiDmTableInfoViot,    AcpiDmDumpViot, DtCompileViot,  TemplateViot},
     {ACPI_SIG_WAET, AcpiDmTableInfoWaet,    NULL,           NULL,           TemplateWaet},
@@ -1040,6 +1049,7 @@ AcpiDmDumpTable (
         case ACPI_DMT_ERSTINST:
         case ACPI_DMT_DMAR_SCOPE:
         case ACPI_DMT_IOVTDEV:
+        case ACPI_DMT_UBRT:
         case ACPI_DMT_VIOT:
 
             ByteLength = 1;
@@ -2142,6 +2152,20 @@ AcpiDmDumpTable (
 
             AcpiOsPrintf (UINT32_FORMAT, ACPI_GET32 (Target),
                 AcpiDmLpitSubnames[Temp32]);
+            break;
+
+        case ACPI_DMT_UBRT:
+
+            /* UBRT subtable types */
+
+            Temp8 = *Target;
+            if (Temp8 > ACPI_UBRT_TYPE_RESERVED_MEM)
+            {
+                Temp8 = ACPI_UBRT_TYPE_RESERVED_MEM + 1;
+            }
+
+            AcpiOsPrintf (UINT8_FORMAT, *Target,
+                AcpiDmUbrtSubnames[Temp8]);
             break;
 
         case ACPI_DMT_VIOT:

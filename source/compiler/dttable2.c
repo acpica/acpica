@@ -3049,6 +3049,71 @@ DtGetGenericTableInfo (
 
 /******************************************************************************
  *
+ * FUNCTION:    DtCompileUbrt
+ *
+ * PARAMETERS:  List                - Current field list pointer
+ *
+ * RETURN:      Status
+ *
+ * DESCRIPTION: Compile UBRT.
+ *
+ ******************************************************************************/
+
+ACPI_STATUS
+DtCompileUbrt (
+    void                    **List)
+{
+    ACPI_STATUS             Status;
+    DT_SUBTABLE             *Subtable;
+    DT_SUBTABLE             *ParentTable;
+    DT_FIELD                **PFieldList = (DT_FIELD **) List;
+    ACPI_TABLE_UBRT         *Ubrt;
+    UINT32                  SubtableCount = 0;
+
+
+    /* Compile main table */
+
+    Status = DtCompileTable (PFieldList, AcpiDmTableInfoUbrt, &Subtable);
+    if (ACPI_FAILURE (Status))
+    {
+        return (Status);
+    }
+
+    ParentTable = DtPeekSubtable ();
+    DtInsertSubtable (ParentTable, Subtable);
+
+    /*
+     * Using ACPI_SUB_PTR, we needn't define a separate structure. Care should
+     * be taken to avoid accessing ACPI_TABLE_HEADER fields. We only want to
+     * access the Count field.
+     */
+    Ubrt = ACPI_SUB_PTR (ACPI_TABLE_UBRT, Subtable->Buffer,
+        sizeof (ACPI_TABLE_HEADER));
+
+    /* Compile sub-tables */
+
+    while (*PFieldList)
+    {
+        Status = DtCompileTable (PFieldList, AcpiDmTableInfoUbrtSubtable, &Subtable);
+        if (ACPI_FAILURE (Status))
+        {
+            return (Status);
+        }
+
+        ParentTable = DtPeekSubtable ();
+        DtInsertSubtable (ParentTable, Subtable);
+        SubtableCount++;
+    }
+
+    /* Update Count field in the main table */
+
+    Ubrt->Count = SubtableCount;
+    return (AE_OK);
+}
+
+
+/******************************************************************************
+ *
  * FUNCTION:    DtCompileUefi
  *
  * PARAMETERS:  List                - Current field list pointer

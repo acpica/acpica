@@ -636,6 +636,10 @@ DtCompileTpm2 (
     void                    **PFieldList);
 
 ACPI_STATUS
+DtCompileUbrt (
+    void                    **PFieldList);
+
+ACPI_STATUS
 DtCompileUefi (
     void                    **PFieldList);
 
@@ -736,6 +740,7 @@ extern const unsigned char  TemplateSwft[];
 extern const unsigned char  TemplateTcpa[];
 extern const unsigned char  TemplateTdel[];
 extern const unsigned char  TemplateTpm2[];
+extern const unsigned char  TemplateUbrt[];
 extern const unsigned char  TemplateUefi[];
 extern const unsigned char  TemplateViot[];
 extern const unsigned char  TemplateWaet[];
