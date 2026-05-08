@@ -3229,6 +3229,68 @@ DtCompileUefi (
 }
 
 
+
+/******************************************************************************
+ *
+ * FUNCTION:    DtCompileUbrt
+ *
+ * PARAMETERS:  List                - Current field list pointer
+ *
+ * RETURN:      Status
+ *
+ * DESCRIPTION: Compile UBRT.
+ *
+ ******************************************************************************/
+
+ACPI_STATUS
+DtCompileUbrt (
+    void                    **List)
+{
+    ACPI_STATUS             Status;
+    DT_SUBTABLE             *Subtable;
+    DT_SUBTABLE             *ParentTable;
+    DT_FIELD                **PFieldList = (DT_FIELD **) List;
+    ACPI_TABLE_UBRT         *Ubrt;
+    UINT32                  SubtableCount = 0;
+
+
+    /* Compile main table */
+
+    Status = DtCompileTable (PFieldList, AcpiDmTableInfoUbrt, &Subtable);
+    if (ACPI_FAILURE (Status))
+    {
+        return (Status);
+    }
+
+    ParentTable = DtPeekSubtable ();
+    DtInsertSubtable (ParentTable, Subtable);
+
+    /* Get Count field from the main table */
+
+    Ubrt = ACPI_CAST_PTR (ACPI_TABLE_UBRT, ParentTable->Buffer);
+
+    /* Compile sub-tables */
+
+    while (*PFieldList)
+    {
+        Status = DtCompileTable (PFieldList, AcpiDmTableInfoUbrtSubtable, &Subtable);
+        if (ACPI_FAILURE (Status))
+        {
+            return (Status);
+        }
+
+        ParentTable = DtPeekSubtable ();
+        DtInsertSubtable (ParentTable, Subtable);
+        SubtableCount++;
+    }
+
+    /* Update Count field in the main table */
+
+    Ubrt->Count = SubtableCount;
+    return (AE_OK);
+}
+
+
 /******************************************************************************
  *
  * FUNCTION:    DtCompileViot

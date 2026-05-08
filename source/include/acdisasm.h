@@ -753,6 +753,8 @@ extern ACPI_DMTABLE_INFO        AcpiDmTableInfoTpm2a[];
 extern ACPI_DMTABLE_INFO        AcpiDmTableInfoTpm211[];
 extern ACPI_DMTABLE_INFO        AcpiDmTableInfoTpm23[];
 extern ACPI_DMTABLE_INFO        AcpiDmTableInfoTpm23a[];
+extern ACPI_DMTABLE_INFO        AcpiDmTableInfoUbrt[];
+extern ACPI_DMTABLE_INFO        AcpiDmTableInfoUbrtSubtable[];
 extern ACPI_DMTABLE_INFO        AcpiDmTableInfoUefi[];
 extern ACPI_DMTABLE_INFO        AcpiDmTableInfoViot[];
 extern ACPI_DMTABLE_INFO        AcpiDmTableInfoViotHeader[];
@@ -1049,6 +1051,10 @@ AcpiDmDumpTdel (
 
 void
 AcpiDmDumpTpm2 (
+    ACPI_TABLE_HEADER       *Table);
+
+void
+AcpiDmDumpUbrt (
     ACPI_TABLE_HEADER       *Table);
 
 void
