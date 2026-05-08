@@ -205,6 +205,7 @@
 #define ACPI_SIG_SVKL           "SVKL"      /* Storage Volume Key Location Table */
 #define ACPI_SIG_SWFT           "SWFT"      /* SoundWire File Table */
 #define ACPI_SIG_TDEL           "TDEL"      /* TD Event Log Table */
+#define ACPI_SIG_UBRT           "UBRT"      /* UnifiedBus Root Table */
 
 
 /*
@@ -4343,6 +4344,176 @@ typedef struct acpi_table_tdel
     UINT64                  LogAreaStartAddress;
 
 } ACPI_TABLE_TDEL;
+
+
+/*******************************************************************************
+ *
+ * UBRT - UnifiedBus Root Table
+ *        Revision 1
+ *
+ * Conforms to "UnifiedBus Root Table (UBRT) Specification"
+ * Revision 1.0, Release Date 2026-03-26
+ *
+ ******************************************************************************/
+
+typedef struct acpi_table_ubrt
+{
+    ACPI_TABLE_HEADER       Header;             /* Common ACPI table header */
+    UINT32                  Count;              /* Number of sub-tables */
+
+} ACPI_TABLE_UBRT;
+
+/* UBRT sub-table entry (16 bytes) */
+
+typedef struct acpi_ubrt_subtable
+{
+    UINT8                   Type;               /* Sub-table type (0=UBC, 1=UMMU, 2=ReservedMem) */
+    UINT8                   Reserved[7];        /* Reserved, must be zero */
+    UINT64                  Pointer;            /* Physical address of the sub-table */
+
+} ACPI_UBRT_SUBTABLE;
+
+/* Values for Type field above */
+
+#define ACPI_UBRT_TYPE_UBC              0       /* UBC information sub-table */
+#define ACPI_UBRT_TYPE_UMMU             1       /* UMMU information sub-table */
+#define ACPI_UBRT_TYPE_RESERVED_MEM     2       /* UB reserved memory information sub-table */
+
+/*
+ * UBRT Sub-tables, correspond to Type in ACPI_UBRT_SUBTABLE.
+ * These are accessed via the physical Pointer field - not contiguous with UBRT.
+ */
+
+/* Common header for all UBRT sub-tables */
+
+typedef struct acpi_ubrt_header
+{
+    char                    Name[16];           /* Table name, null-terminated */
+    UINT32                  TotalSize;          /* Total size including header */
+    UINT8                   Version;            /* Version number */
+    UINT8                   Reserved[3];        /* Reserved, must be zero */
+    UINT32                  RemainingSize;      /* Remaining size of the sub-table */
+    UINT32                  Checksum;           /* Entire table must sum to zero */
+
+} ACPI_UBRT_HEADER;
+
+/* Type 0: UBC Information Table */
+
+typedef struct acpi_ubrt_ubc
+{
+    ACPI_UBRT_HEADER        Header;             /* Common sub-table header */
+    UINT32                  LocalCnaStart;      /* Start CNA available for local UBPU */
+    UINT32                  LocalCnaEnd;        /* End CNA available for local UBPU (included) */
+    UINT32                  LocalEidStart;      /* Start EID available for local UBPU */
+    UINT32                  LocalEidEnd;        /* End EID available for local UBPU (included) */
+    UINT8                   FeatureSets;        /* Features enabled for the UBC */
+    UINT8                   Reserved[3];        /* Reserved, must be zero */
+    UINT16                  ClusterMode;        /* System operating mode */
+    UINT16                  UbcCount;           /* Number of UBC structures */
+
+} ACPI_UBRT_UBC;
+
+/* Values for FeatureSets field above */
+
+#define ACPI_UBRT_UBC_FEAT_MMIO_TOKEN      (1<<0)  /* Bit 0: MMIO token value */
+#define ACPI_UBRT_UBC_FEAT_MCTP_UB        (1<<1)  /* Bit 1: MCTP over UB */
+
+/* Values for ClusterMode field above */
+
+#define ACPI_UBRT_CLUSTER_MODE_STANDALONE   0
+#define ACPI_UBRT_CLUSTER_MODE_SUPERPOD      1
+
+/* UBC Structure entry (one per UbcCount) */
+
+typedef struct acpi_ubrt_ubc_entry
+{
+    UINT32                  InterruptIdStart;       /* Start interrupt ID */
+    UINT32                  InterruptIdEnd;         /* End interrupt ID (included) */
+    UINT64                  HpaBase;                /* Base address of available HPA */
+    UINT64                  HpaSize;                /* Size of available HPA */
+    UINT8                   MemorySizeLimit;        /* Maximum address bit width */
+    UINT8                   DmaCca;                 /* DMA and cache coherent attribute */
+    UINT16                  UmmuMapping;            /* Mapping between UBC and UMMU */
+    UINT16                  ProximityDomain;        /* NUMA domain sequence number */
+    UINT16                  Reserved;               /* Reserved, must be zero */
+    UINT64                  MsgQueueBase;           /* MSG queue register base address */
+    UINT64                  MsgQueueSize;           /* MSG queue register size */
+    UINT16                  MsgQueueDepth;          /* MSG queue depth */
+    UINT16                  MsgQueueInterrupt;      /* MSG queue interrupt ID */
+    UINT8                   MsgQueueInterruptAttr;  /* MSG queue interrupt attribute */
+    UINT8                   Reserved1[59];          /* Reserved, must be zero */
+    UINT8                   Guid[16];               /* UBC GUID */
+    UINT8                   VendorInfo[256];        /* Vendor-defined information */
+
+} ACPI_UBRT_UBC_ENTRY;
+
+/* Values for DmaCca field above */
+
+#define ACPI_UBRT_UBC_DMA_ONLY               0
+#define ACPI_UBRT_UBC_DMA_CCA                1
+
+/* Values for MsgQueueIntAttribute field above */
+
+#define ACPI_UBRT_UBC_MSG_INT_LEVEL          (0<<0)  /* Bit 0: level-triggered */
+#define ACPI_UBRT_UBC_MSG_INT_EDGE           (1<<0)  /* Bit 0: edge-triggered */
+#define ACPI_UBRT_UBC_MSG_INT_HIGH           (0<<1)  /* Bit 1: high level (rising edge) */
+#define ACPI_UBRT_UBC_MSG_INT_LOW            (1<<1)  /* Bit 1: low level (falling edge) */
+
+/* Type 1: UMMU Information Table */
+
+typedef struct acpi_ubrt_ummu
+{
+    ACPI_UBRT_HEADER        Header;             /* Common sub-table header */
+    UINT16                  UmmuCount;          /* Number of UMMU structures */
+    UINT8                   Reserved[6];        /* Reserved, must be zero */
+
+} ACPI_UBRT_UMMU;
+
+/* UMMU Structure entry (one per UmmuCount) */
+
+typedef struct acpi_ubrt_ummu_entry
+{
+    UINT64                  BaseAddress;        /* Base address of UMMU register */
+    UINT64                  Size;               /* Size of UMMU register */
+    UINT32                  Reserved;           /* Reserved, must be zero */
+    UINT16                  ProximityDomain;    /* NUMA domain sequence number */
+    UINT16                  Reserved1;          /* Reserved, must be zero */
+    UINT64                  PmuBaseAddress;     /* PMU register base address */
+    UINT64                  PmuSize;            /* PMU register size */
+    UINT32                  Reserved2;          /* Reserved, must be zero */
+    UINT32                  MinTokenId;         /* Minimum TokenID */
+    UINT32                  MaxTokenId;         /* Maximum TokenID */
+    UINT8                   Reserved3[26];      /* Reserved, must be zero */
+    UINT16                  VendorId;           /* Vendor ID */
+    UINT8                   VendorInfo[80];     /* Vendor-defined information */
+
+} ACPI_UBRT_UMMU_ENTRY;
+
+/* Type 2: UB Reserved Memory Information Table */
+
+typedef struct acpi_ubrt_reserved_mem
+{
+    ACPI_UBRT_HEADER        Header;                 /* Common sub-table header */
+    UINT16                  MemoryRangesCount;      /* Number of memory ranges */
+    UINT8                   Reserved[6];            /* Reserved, must be zero */
+
+} ACPI_UBRT_RESERVED_MEM;
+
+/* Memory Range entry (one per MemoryRangesCount) */
+
+typedef struct acpi_ubrt_mem_range
+{
+    UINT8                   Flags;              /* Memory segment flags */
+    UINT8                   Reserved[7];        /* Reserved, must be zero */
+    UINT64                  MemoryBase;         /* Base address of allocated UB memory (64KB aligned) */
+    UINT64                  MemorySize;         /* Size of allocated UB memory (64KB aligned) */
+
+} ACPI_UBRT_MEM_RANGE;
+
+/* Values for Flags field above */
+
+#define ACPI_UBRT_MEM_FLAG_1_1_MAPPING     (1<<0)  /* Bit 0: 1:1 mapped mode */
+
 
 /* Reset to default packing */
 
