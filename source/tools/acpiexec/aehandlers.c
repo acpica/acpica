@@ -427,6 +427,9 @@ AeTableHandler (
     ACPI_STATUS             Status;
     UINT32                  i;
     ACPI_OWNER_ID           OwnerId = 0;
+    ACPI_GED_HANDLER_INFO   **PrevPtr;
+    ACPI_GED_HANDLER_INFO   *GedInfo;
+    ACPI_GED_HANDLER_INFO   *Next;
 #endif /* !ACPI_REDUCED_HARDWARE */
 
 
@@ -446,9 +449,10 @@ AeTableHandler (
         ((ACPI_TABLE_HEADER *) Table)->Signature, Table);
 
     /*
-     * On table unload, clear GPE dispatch info for methods belonging
-     * to the unloading table. This prevents use-after-free when GPEs
-     * are fired after the table's namespace nodes have been freed.
+     * On table unload, clear GPE dispatch and GED handler entries
+     * belonging to the unloading table. This prevents use-after-free
+     * when GPEs or GED interrupts are fired after the table's
+     * namespace nodes have been freed.
      */
     if (Event == ACPI_TABLE_EVENT_UNLOAD)
     {
@@ -466,6 +470,24 @@ AeTableHandler (
         if (OwnerId)
         {
             (void) AcpiEvClearGpeDispatchByOwner (OwnerId);
+
+            PrevPtr = &AcpiGbl_GedHandlerList;
+            GedInfo = AcpiGbl_GedHandlerList;
+            while (GedInfo)
+            {
+                Next = GedInfo->Next;
+                if (GedInfo->EvtMethod &&
+                    GedInfo->EvtMethod->OwnerId == OwnerId)
+                {
+                    *PrevPtr = Next;
+                    ACPI_FREE (GedInfo);
+                }
+                else
+                {
+                    PrevPtr = &GedInfo->Next;
+                }
+                GedInfo = Next;
+            }
         }
     }
 #endif /* !ACPI_REDUCED_HARDWARE */
