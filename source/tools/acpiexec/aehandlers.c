@@ -224,6 +224,11 @@ static char                *TableEvents[] =
 
 static AE_DEBUG_REGIONS     AeRegions;
 
+ACPI_HW_DEPENDENT_RETURN_STATUS (
+ACPI_STATUS
+AcpiEvClearGpeDispatchByOwner (
+    ACPI_OWNER_ID           OwnerId));
+
 
 /******************************************************************************
  *
@@ -420,6 +425,8 @@ AeTableHandler (
 {
 #if (!ACPI_REDUCED_HARDWARE)
     ACPI_STATUS             Status;
+    UINT32                  i;
+    ACPI_OWNER_ID           OwnerId = 0;
 #endif /* !ACPI_REDUCED_HARDWARE */
 
 
@@ -437,6 +444,30 @@ AeTableHandler (
     printf (AE_PREFIX "Table Event %s, [%4.4s] %p\n",
         TableEvents[Event],
         ((ACPI_TABLE_HEADER *) Table)->Signature, Table);
+
+    /*
+     * On table unload, clear GPE dispatch info for methods belonging
+     * to the unloading table. This prevents use-after-free when GPEs
+     * are fired after the table's namespace nodes have been freed.
+     */
+    if (Event == ACPI_TABLE_EVENT_UNLOAD)
+    {
+        OwnerId = 0;
+
+        for (i = 0; i < AcpiGbl_RootTableList.CurrentTableCount; i++)
+        {
+            if (AcpiGbl_RootTableList.Tables[i].Pointer == Table)
+            {
+                OwnerId = AcpiGbl_RootTableList.Tables[i].OwnerId;
+                break;
+            }
+        }
+
+        if (OwnerId)
+        {
+            (void) AcpiEvClearGpeDispatchByOwner (OwnerId);
+        }
+    }
 #endif /* !ACPI_REDUCED_HARDWARE */
 
     return (AE_OK);
