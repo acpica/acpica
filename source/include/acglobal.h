@@ -266,6 +266,10 @@ ACPI_GLOBAL (ACPI_INTERFACE_HANDLER,    AcpiGbl_InterfaceHandler);
 ACPI_GLOBAL (ACPI_SCI_HANDLER_INFO *,   AcpiGbl_SciHandlerList);
 ACPI_GLOBAL (ACPI_GED_HANDLER_INFO *,   AcpiGbl_GedHandlerList);
 
+/* Notify dispatch tracking */
+
+ACPI_GLOBAL (UINT32,                    AcpiGbl_NotifyExecuteCount);
+
 /* Owner ID support */
 
 ACPI_GLOBAL (UINT32,                    AcpiGbl_OwnerIdMask[ACPI_NUM_OWNERID_MASKS]);

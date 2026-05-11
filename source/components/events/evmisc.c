@@ -292,10 +292,13 @@ AcpiEvQueueNotifyRequest (
         AcpiUtGetNodeName (Node), AcpiUtGetTypeName (Node->Type),
         NotifyValue, AcpiUtGetNotifyName (NotifyValue, ACPI_TYPE_ANY), Node));
 
+    AcpiGbl_NotifyExecuteCount++;
+
     Status = AcpiOsExecute (OSL_NOTIFY_HANDLER,
         AcpiEvNotifyDispatch, Info);
     if (ACPI_FAILURE (Status))
     {
+        AcpiGbl_NotifyExecuteCount--;
         AcpiUtDeleteGenericState (Info);
     }
 
@@ -350,6 +353,7 @@ AcpiEvNotifyDispatch (
 
     /* All done with the info object */
 
+    AcpiGbl_NotifyExecuteCount--;
     AcpiUtDeleteGenericState (Info);
 }
 
