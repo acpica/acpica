@@ -698,6 +698,10 @@ AcpiUtUpdateObjectReference (
                 PrevObject = Object->CommonNotify.NotifyList[i];
                 while (PrevObject)
                 {
+                    if (PrevObject->Common.Type != ACPI_TYPE_LOCAL_NOTIFY)
+                    {
+                        break;
+                    }
                     NextObject = PrevObject->Notify.Next[i];
                     AcpiUtUpdateRefCount (PrevObject, Action);
                     PrevObject = NextObject;
