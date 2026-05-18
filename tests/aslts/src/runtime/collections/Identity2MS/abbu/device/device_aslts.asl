@@ -27,7 +27,7 @@
  */
 
 /*
- * Aplicable for AcpiExec only
+ * Applicable for AcpiExec only
  */
 
 Name(z173, 173)
