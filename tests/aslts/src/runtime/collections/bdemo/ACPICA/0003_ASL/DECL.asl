@@ -34,7 +34,7 @@
  * SUMMARY: The ASL Compiler should reject Switch operators with the identical Case operators in it
  *
  * Expected: Error of iASL
- * Two the same values of Case should be reporeted as Error by iASL
+ * Two the same values of Case should be reported as Error by iASL
  */
 
 Method(md9d, 1)
