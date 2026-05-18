@@ -29,7 +29,7 @@
 /*
  * The Load operator tests auxiliary SSDT,
  * specifies the _REG Methods for globally and
- * dynamically decleared OpRegions.
+ * dynamically declared OpRegions.
  */
 
 DefinitionBlock(
