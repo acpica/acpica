@@ -331,7 +331,7 @@
     Name (Y525, 0x00)   /* Store(RefOf(NamedX), RefOf(Named_X)) */
     Name (Y526, 0x00)   /* CopyObject(RefOf(NamedX), ArgX-ORef-to-Named_X) */
     Name (Y527, 0x00)   /* The code path taken after AE_OWNER_ID_LIMIT is incorrect */
-    Name (Y600, 0x00)   /* Some oprators (not all) doesn't provide passing invocation */
+    Name (Y600, 0x00)   /* Some operators (not all) doesn't provide passing invocation */
     /* of Method as a parameter to them (though iASL succeeds). */
     /* Looks that Method is simply not invoked. But, since it doesn't */
     /* now look as an important feature for those particular operators */
