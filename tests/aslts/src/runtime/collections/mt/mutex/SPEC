@@ -132,7 +132,7 @@ DETAILS:
 I.
 
 1. Thread_1 owns mutexes of all levels and fall into sleeping
-2. Thread_2 owns mutexes of all levels too not touching those occuppied by Thread_1
+2. Thread_2 owns mutexes of all levels too not touching those occupied by Thread_1
 3. Thread_2 Releases its mutexes
 4. Thread_1 Releases its mutexes
 
@@ -141,7 +141,7 @@ II. Do the same as (I) but {1,2,4,3}.
 III.
 
 1. Thread_1 owns one (non-zero level) mutex and falls into sleeping
-2. Thread_2 owns mutexes of all levels not touching that occuppied by Thread_1
+2. Thread_2 owns mutexes of all levels not touching that occupied by Thread_1
 3. Thread_2 Releases its mutex
 4. Thread_1 Releases its mutexes
 
