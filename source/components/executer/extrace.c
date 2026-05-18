@@ -274,7 +274,7 @@ AcpiExGetTraceEventName (
  * FUNCTION:    AcpiExTraceArgs
  *
  * PARAMETERS:  Params            - AML method arguments
- *              Count             - numer of method arguments
+ *              Count             - number of method arguments
  *
  * RETURN:      None
  *
