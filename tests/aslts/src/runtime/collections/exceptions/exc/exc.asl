@@ -1335,7 +1335,7 @@
     /*	CH04(ts, 0, 47, z058, __LINE__, 0, 0)	// AE_AML_OPERAND_TYPE */
     }
 
-    /* Check SMBus OpRegion restictions */
+    /* Check SMBus OpRegion restrictions */
 
     Method (M7F6, 0, Serialized)
     {
