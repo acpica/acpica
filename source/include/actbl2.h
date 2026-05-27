@@ -175,8 +175,8 @@
 #define ACPI_SIG_CDAT           "CDAT"      /* Coherent Device Attribute Table */
 #define ACPI_SIG_ERDT           "ERDT"      /* Enhanced Resource Director Technology */
 #define ACPI_SIG_IORT           "IORT"      /* IO Remapping Table */
-#define ACPI_SIG_IRDT           "IRDT"      /* Intel Resource Director Technology */
 #define ACPI_SIG_IOVT           "IOVT"      /* I/O Virtualization Table */
+#define ACPI_SIG_IRDT           "IRDT"      /* Intel Resource Director Technology */
 #define ACPI_SIG_IVRS           "IVRS"      /* I/O Virtualization Reporting Structure */
 #define ACPI_SIG_KEYP           "KEYP"      /* Key Programming Interface for IDE */
 #define ACPI_SIG_LPIT           "LPIT"      /* Low Power Idle Table */
