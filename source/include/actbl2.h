@@ -175,6 +175,7 @@
 #define ACPI_SIG_CDAT           "CDAT"      /* Coherent Device Attribute Table */
 #define ACPI_SIG_ERDT           "ERDT"      /* Enhanced Resource Director Technology */
 #define ACPI_SIG_IORT           "IORT"      /* IO Remapping Table */
+#define ACPI_SIG_IRDT           "IRDT"      /* I/O RDT Table of Parameters */
 #define ACPI_SIG_IOVT           "IOVT"      /* I/O Virtualization Table */
 #define ACPI_SIG_IVRS           "IVRS"      /* I/O Virtualization Reporting Structure */
 #define ACPI_SIG_KEYP           "KEYP"      /* Key Programming Interface for IDE */
@@ -1129,6 +1130,122 @@ typedef struct acpi_iort_iwb {
     char   DeviceName[];       /* Path of the IWB namespace object */
 
 } ACPI_IORT_IWB;
+
+
+/*******************************************************************************
+ *
+ * IRDT - I/O RDT Table of Parameters
+ *
+ ******************************************************************************/
+
+typedef struct acpi_table_irdt
+{
+    ACPI_TABLE_HEADER       Header;             /* Common ACPI table header */
+    UINT16                  IoProtoFlags;
+    UINT16                  CacheProtoFlags;
+    UINT64                  Reserved;
+
+} ACPI_TABLE_IRDT;
+
+/* Bitmasks for IoProtoFlags */
+
+#define ACPI_IRDT_IO_PROTO_MON          (1)
+#define ACPI_IRDT_IO_PROTO_CTL          (1<<1)
+
+/* Bitmasks for CacheProtoFlags */
+
+#define ACPI_IRDT_IO_COH_MON            (1)
+#define ACPI_IRDT_IO_COH_CTL            (1<<1)
+
+/* RMUD type values */
+
+enum AcpiIrdtRmudType
+{
+    ACPI_IRDT_RMUD_TYPE0          = 0x00,
+    ACPI_IRDT_RMUD_TYPE_RESERVED  = 0x01      /* 1 and greater are reserved */
+};
+
+typedef struct acpi_irdt_rmud
+{
+    UINT8                   Type;
+    UINT8                   Reserved[3];
+    UINT32                  Length;
+    UINT16                  Segment;
+    UINT8                   Reserved1[3];
+
+} ACPI_IRDT_RMUD;
+
+/* DSS and RCS type values */
+
+enum AcpiIrdtDsType
+{
+    ACPI_IRDT_TYPE_DSS        = 0x0000,
+    ACPI_IRDT_TYPE_RCS        = 0x0001,
+    ACPI_IRDT_TYPE_RESERVED   = 0x0002     /* 2 and greater are reserved */
+};
+
+typedef struct acpi_irdt_dss
+{
+    UINT16                  Type;
+    UINT16                  Length;
+    UINT8                   DeviceType;
+    UINT16                  EnumId;
+    UINT8                   Reserved;
+
+} ACPI_IRDT_DSS;
+
+/* DSS device type values */
+
+#define ACPI_IRDT_DSS_RCEIP            0x01
+#define ACPI_IRDT_DSS_PCI_SUBHIER      0x02
+
+typedef struct acpi_irdt_chms
+{
+    UINT8                   RcsEnumId;
+    UINT8                   Ch0;
+    UINT8                   Ch1;
+    UINT8                   Ch2;
+    UINT8                   Ch3;
+    UINT8                   Ch4;
+    UINT8                   Ch5;
+    UINT8                   Ch6;
+    UINT8                   Ch7;
+    UINT8                   Reserved0;
+    UINT8                   Reserved1;
+    UINT8                   Reserved2;
+    UINT8                   Reserved3;
+    UINT8                   Reserved4;
+    UINT8                   Reserved5;
+    UINT8                   Reserved6;
+
+} ACPI_IRDT_CHMS;
+
+typedef struct acpi_irdt_rcs
+{
+    UINT16                  Type;
+    UINT16                  Length;
+    UINT16                  LinkType;
+    UINT8                   RcsEnumId;
+    UINT8                   ChannelCount;
+    UINT16                  Flags;
+    UINT16                  RmidOffset;
+    UINT16                  ClosOffset;
+    UINT8                   Reserved[18];
+    UINT64                  MmioBase;
+
+} ACPI_IRDT_RCS;
+
+/* LinkType values */
+
+#define ACPI_IRDT_LINK_PCIE_CXLIO      0x0000
+#define ACPI_IRDT_LINK_CXLCACHE        0x0001
+
+/* RCS Flags bitmasks */
+
+#define ACPI_IRDT_RCS_RTS              (1<<1)
+#define ACPI_IRDT_RCS_CTS              (1<<2)
+#define ACPI_IRDT_RCS_REGW             (1<<3)
+#define ACPI_IRDT_RCS_CXLD             (1<<4)
 
 
 /*******************************************************************************

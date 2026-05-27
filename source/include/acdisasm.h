@@ -282,6 +282,8 @@ typedef enum
     ACPI_DMT_HESTNTYP,
     ACPI_DMT_HMAT,
     ACPI_DMT_IORTMEM,
+    ACPI_DMT_IRDT,
+    ACPI_DMT_IRDTDSS,
     ACPI_DMT_IOVT,
     ACPI_DMT_IOVTDEV,
     ACPI_DMT_IVRS,
@@ -558,6 +560,11 @@ extern ACPI_DMTABLE_INFO        AcpiDmTableInfoIortHdr[];
 extern ACPI_DMTABLE_INFO        AcpiDmTableInfoIortHdr3[];
 extern ACPI_DMTABLE_INFO        AcpiDmTableInfoIortMap[];
 extern ACPI_DMTABLE_INFO        AcpiDmTableInfoIortPad[];
+extern ACPI_DMTABLE_INFO        AcpiDmTableInfoIrdt[];
+extern ACPI_DMTABLE_INFO        AcpiDmTableInfoIrdtRmud[];
+extern ACPI_DMTABLE_INFO        AcpiDmTableInfoIrdtDss[];
+extern ACPI_DMTABLE_INFO        AcpiDmTableInfoIrdtChms[];
+extern ACPI_DMTABLE_INFO        AcpiDmTableInfoIrdtRcs[];
 extern ACPI_DMTABLE_INFO        AcpiDmTableInfoIovt[];
 extern ACPI_DMTABLE_INFO        AcpiDmTableInfoIovt0[];
 extern ACPI_DMTABLE_INFO        AcpiDmTableInfoIovtdev[];
@@ -916,6 +923,10 @@ AcpiDmDumpHmat (
 
 void
 AcpiDmDumpIort (
+    ACPI_TABLE_HEADER       *Table);
+
+void
+AcpiDmDumpIrdt (
     ACPI_TABLE_HEADER       *Table);
 
 void
