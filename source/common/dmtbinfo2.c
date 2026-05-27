@@ -472,7 +472,7 @@ ACPI_DMTABLE_INFO           AcpiDmTableInfoIort7[] =
 
 /*******************************************************************************
  *
- * IRDT - I/O RDT Table of Parameters
+ * IRDT - Intel Resource Director Technology
  *
  ******************************************************************************/
 
@@ -511,21 +511,21 @@ ACPI_DMTABLE_INFO           AcpiDmTableInfoIrdtDss[] =
 ACPI_DMTABLE_INFO           AcpiDmTableInfoIrdtChms[] =
 {
     {ACPI_DMT_UINT8,    ACPI_IRDTC_OFFSET (RcsEnumId),             "RCS Enumeration ID", 0},
-    {ACPI_DMT_UINT8,    ACPI_IRDTC_OFFSET (Ch0),                   "Channel VC0", 0},
-    {ACPI_DMT_UINT8,    ACPI_IRDTC_OFFSET (Ch1),                   "Channel VC1", 0},
-    {ACPI_DMT_UINT8,    ACPI_IRDTC_OFFSET (Ch2),                   "Channel VC2", 0},
-    {ACPI_DMT_UINT8,    ACPI_IRDTC_OFFSET (Ch3),                   "Channel VC3", 0},
-    {ACPI_DMT_UINT8,    ACPI_IRDTC_OFFSET (Ch4),                   "Channel VC4", 0},
-    {ACPI_DMT_UINT8,    ACPI_IRDTC_OFFSET (Ch5),                   "Channel VC5", 0},
-    {ACPI_DMT_UINT8,    ACPI_IRDTC_OFFSET (Ch6),                   "Channel VC6", 0},
-    {ACPI_DMT_UINT8,    ACPI_IRDTC_OFFSET (Ch7),                   "Channel VC7", 0},
-    {ACPI_DMT_UINT8,    ACPI_IRDTC_OFFSET (Reserved0),             "Reserved", 0},
-    {ACPI_DMT_UINT8,    ACPI_IRDTC_OFFSET (Reserved1),             "Reserved", 0},
-    {ACPI_DMT_UINT8,    ACPI_IRDTC_OFFSET (Reserved2),             "Reserved", 0},
-    {ACPI_DMT_UINT8,    ACPI_IRDTC_OFFSET (Reserved3),             "Reserved", 0},
-    {ACPI_DMT_UINT8,    ACPI_IRDTC_OFFSET (Reserved4),             "Reserved", 0},
-    {ACPI_DMT_UINT8,    ACPI_IRDTC_OFFSET (Reserved5),             "Reserved", 0},
-    {ACPI_DMT_UINT8,    ACPI_IRDTC_OFFSET (Reserved6),             "Reserved", 0},
+    {ACPI_DMT_UINT8,    ACPI_IRDTC_OFFSET (Channel[0]),            "Channel VC0", 0},
+    {ACPI_DMT_UINT8,    ACPI_IRDTC_OFFSET (Channel[1]),            "Channel VC1", 0},
+    {ACPI_DMT_UINT8,    ACPI_IRDTC_OFFSET (Channel[2]),            "Channel VC2", 0},
+    {ACPI_DMT_UINT8,    ACPI_IRDTC_OFFSET (Channel[3]),            "Channel VC3", 0},
+    {ACPI_DMT_UINT8,    ACPI_IRDTC_OFFSET (Channel[4]),            "Channel VC4", 0},
+    {ACPI_DMT_UINT8,    ACPI_IRDTC_OFFSET (Channel[5]),            "Channel VC5", 0},
+    {ACPI_DMT_UINT8,    ACPI_IRDTC_OFFSET (Channel[6]),            "Channel VC6", 0},
+    {ACPI_DMT_UINT8,    ACPI_IRDTC_OFFSET (Channel[7]),            "Channel VC7", 0},
+    {ACPI_DMT_UINT8,    ACPI_IRDTC_OFFSET (Reserved[0]),           "Reserved", 0},
+    {ACPI_DMT_UINT8,    ACPI_IRDTC_OFFSET (Reserved[1]),           "Reserved", 0},
+    {ACPI_DMT_UINT8,    ACPI_IRDTC_OFFSET (Reserved[2]),           "Reserved", 0},
+    {ACPI_DMT_UINT8,    ACPI_IRDTC_OFFSET (Reserved[3]),           "Reserved", 0},
+    {ACPI_DMT_UINT8,    ACPI_IRDTC_OFFSET (Reserved[4]),           "Reserved", 0},
+    {ACPI_DMT_UINT8,    ACPI_IRDTC_OFFSET (Reserved[5]),           "Reserved", 0},
+    {ACPI_DMT_UINT8,    ACPI_IRDTC_OFFSET (Reserved[6]),           "Reserved", 0},
     ACPI_DMT_TERMINATOR
 };
 

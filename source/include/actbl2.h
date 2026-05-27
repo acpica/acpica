@@ -175,7 +175,7 @@
 #define ACPI_SIG_CDAT           "CDAT"      /* Coherent Device Attribute Table */
 #define ACPI_SIG_ERDT           "ERDT"      /* Enhanced Resource Director Technology */
 #define ACPI_SIG_IORT           "IORT"      /* IO Remapping Table */
-#define ACPI_SIG_IRDT           "IRDT"      /* I/O RDT Table of Parameters */
+#define ACPI_SIG_IRDT           "IRDT"      /* Intel Resource Director Technology */
 #define ACPI_SIG_IOVT           "IOVT"      /* I/O Virtualization Table */
 #define ACPI_SIG_IVRS           "IVRS"      /* I/O Virtualization Reporting Structure */
 #define ACPI_SIG_KEYP           "KEYP"      /* Key Programming Interface for IDE */
@@ -1134,7 +1134,7 @@ typedef struct acpi_iort_iwb {
 
 /*******************************************************************************
  *
- * IRDT - I/O RDT Table of Parameters
+ * IRDT - Intel Resource Director Technology
  *
  ******************************************************************************/
 
@@ -1202,21 +1202,8 @@ typedef struct acpi_irdt_dss
 typedef struct acpi_irdt_chms
 {
     UINT8                   RcsEnumId;
-    UINT8                   Ch0;
-    UINT8                   Ch1;
-    UINT8                   Ch2;
-    UINT8                   Ch3;
-    UINT8                   Ch4;
-    UINT8                   Ch5;
-    UINT8                   Ch6;
-    UINT8                   Ch7;
-    UINT8                   Reserved0;
-    UINT8                   Reserved1;
-    UINT8                   Reserved2;
-    UINT8                   Reserved3;
-    UINT8                   Reserved4;
-    UINT8                   Reserved5;
-    UINT8                   Reserved6;
+    UINT8                   Channel[8];
+    UINT8                   Reserved[7];
 
 } ACPI_IRDT_CHMS;
 
