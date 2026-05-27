@@ -1190,8 +1190,8 @@ AcpiDmDumpTable (
         case ACPI_DMT_ERSTACT:
         case ACPI_DMT_ERSTINST:
         case ACPI_DMT_DMAR_SCOPE:
-        case ACPI_DMT_IRDT:
         case ACPI_DMT_IOVTDEV:
+        case ACPI_DMT_IRDT:
         case ACPI_DMT_VIOT:
 
             ByteLength = 1;
@@ -1203,8 +1203,8 @@ AcpiDmDumpTable (
         case ACPI_DMT_ERDT:
         case ACPI_DMT_HEST:
         case ACPI_DMT_HMAT:
-        case ACPI_DMT_IRDTDSS:
         case ACPI_DMT_IOVT:
+        case ACPI_DMT_IRDTDSS:
         case ACPI_DMT_NFIT:
         case ACPI_DMT_PHAT:
         case ACPI_DMT_RHCT:
@@ -2185,30 +2185,6 @@ AcpiDmDumpTable (
                 AcpiDmFadtProfiles[Temp8]);
             break;
 
-        case ACPI_DMT_IRDT:
-
-            Temp8 = *Target;
-            if (Temp8 > ACPI_IRDT_RMUD_TYPE_RESERVED)
-            {
-                Temp8 = ACPI_IRDT_RMUD_TYPE_RESERVED;
-            }
-
-            AcpiOsPrintf (UINT8_FORMAT, *Target,
-                AcpiDmIrdtRmudSubnames[Temp8]);
-            break;
-
-        case ACPI_DMT_IRDTDSS:
-
-            Temp16 = ACPI_GET16 (Target);
-            if (Temp16 > ACPI_IRDT_TYPE_RESERVED)
-            {
-                Temp16 = ACPI_IRDT_TYPE_RESERVED;
-            }
-
-            AcpiOsPrintf (UINT16_FORMAT, ACPI_GET16 (Target),
-                AcpiDmIrdtDsSubnames[Temp16]);
-            break;
-
         case ACPI_DMT_IOVT:
 
             /* IOVT subtable types */
@@ -2234,6 +2210,30 @@ AcpiDmDumpTable (
 
             AcpiOsPrintf (UINT8_FORMAT, *Target,
                 AcpiDmIovtdevSubnames[Temp8]);
+            break;
+
+        case ACPI_DMT_IRDT:
+
+            Temp8 = *Target;
+            if (Temp8 > ACPI_IRDT_RMUD_TYPE_RESERVED)
+            {
+                Temp8 = ACPI_IRDT_RMUD_TYPE_RESERVED;
+            }
+
+            AcpiOsPrintf (UINT8_FORMAT, *Target,
+                AcpiDmIrdtRmudSubnames[Temp8]);
+            break;
+
+        case ACPI_DMT_IRDTDSS:
+
+            Temp16 = ACPI_GET16 (Target);
+            if (Temp16 > ACPI_IRDT_TYPE_RESERVED)
+            {
+                Temp16 = ACPI_IRDT_TYPE_RESERVED;
+            }
+
+            AcpiOsPrintf (UINT16_FORMAT, ACPI_GET16 (Target),
+                AcpiDmIrdtDsSubnames[Temp16]);
             break;
 
         case ACPI_DMT_IVRS:
