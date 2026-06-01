@@ -532,6 +532,10 @@ DtCompileMcfg (
     void                    **PFieldList);
 
 ACPI_STATUS
+DtCompileMisc (
+    void                    **PFieldList);
+
+ACPI_STATUS
 DtCompileMpam (
     void                    **PFieldList);
 
@@ -703,6 +707,7 @@ extern const unsigned char  TemplateLpit[];
 extern const unsigned char  TemplateMadt[];
 extern const unsigned char  TemplateMcfg[];
 extern const unsigned char  TemplateMchi[];
+extern const unsigned char  TemplateMisc[];
 extern const unsigned char  TemplateMpam[];
 extern const unsigned char  TemplateMpst[];
 extern const unsigned char  TemplateMrrm[];

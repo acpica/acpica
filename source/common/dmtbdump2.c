@@ -1215,6 +1215,58 @@ AcpiDmDumpMcfg (
 
 /*******************************************************************************
  *
+ * FUNCTION:    AcpiDmDumpMisc
+ *
+ * PARAMETERS:  Table               - A MISC table
+ *
+ * RETURN:      None
+ *
+ * DESCRIPTION: Format the contents of a MISC.
+ *
+ ******************************************************************************/
+
+void
+AcpiDmDumpMisc (
+    ACPI_TABLE_HEADER       *Table)
+{
+    ACPI_STATUS             Status;
+    UINT32                  Length = Table->Length;
+    UINT32                  Offset = sizeof (ACPI_TABLE_HEADER);
+    ACPI_MISC_GUID_ENTRY    *Subtable;
+    UINT32                  SubtableLength;
+
+    Status = AcpiDmDumpTable (Length, 0, Table, 0, AcpiDmTableInfoMisc);
+    if (ACPI_FAILURE (Status))
+    {
+        return;
+    }
+
+    Subtable = ACPI_ADD_PTR (ACPI_MISC_GUID_ENTRY, Table, Offset);
+    while (Offset < Table->Length)
+    {
+
+        AcpiOsPrintf ("\n");
+        Status = AcpiDmDumpTable (Table->Length, Offset, Subtable,
+            ACPI_MISC_MIN_ENTRY_LENGTH, AcpiDmTableInfoMisc0);
+        if (ACPI_FAILURE (Status))
+        {
+            return;
+        }
+
+        SubtableLength = Subtable->EntryLength;
+        if (SubtableLength < ACPI_MISC_MIN_ENTRY_LENGTH)
+        {
+            AcpiOsPrintf ("Invalid EntryLength: 0x%X\n", SubtableLength);
+            return;
+        }
+
+        Offset += SubtableLength;
+        Subtable = ACPI_ADD_PTR (ACPI_MISC_GUID_ENTRY, Subtable, SubtableLength);
+    }
+}
+
+/*******************************************************************************
+ *
  * FUNCTION:    AcpiDmDumpMpam
  *
  * PARAMETERS:  Table               - A MPAM table

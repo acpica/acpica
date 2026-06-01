@@ -585,6 +585,7 @@ const ACPI_DMTABLE_DATA     AcpiDmTableData[] =
     {ACPI_SIG_MADT, NULL,                   AcpiDmDumpMadt, DtCompileMadt,  TemplateMadt},
     {ACPI_SIG_MCFG, NULL,                   AcpiDmDumpMcfg, DtCompileMcfg,  TemplateMcfg},
     {ACPI_SIG_MCHI, AcpiDmTableInfoMchi,    NULL,           NULL,           TemplateMchi},
+    {ACPI_SIG_MISC, NULL,                   AcpiDmDumpMisc, DtCompileMisc,  TemplateMisc},
     {ACPI_SIG_MPAM, NULL,                   AcpiDmDumpMpam, DtCompileMpam,  TemplateMpam},
     {ACPI_SIG_MPST, AcpiDmTableInfoMpst,    AcpiDmDumpMpst, DtCompileMpst,  TemplateMpst},
     {ACPI_SIG_MRRM, NULL,                   AcpiDmDumpMrrm, DtCompileMrrm,  TemplateMrrm},
@@ -1170,6 +1171,26 @@ AcpiDmDumpTable (
              */
             ByteLength = ((ACPI_CAST_PTR (char, Table) +
                             (ACPI_CAST_PTR (ACPI_PMTT_HEADER, Table)->Length)) -
+                            ACPI_CAST_PTR (char, Target));
+            break;
+
+        case ACPI_DMT_MISC_DATA:
+            /*
+             * Calculate the length of the vendor data for the MISC table:
+             * Length = (Current Subtable ptr + EntryLength) -
+             *          Start of the vendor data (Target)
+             *
+             * Validate EntryLength first - a value smaller than the entry
+             * header would underflow the length computation below.
+             */
+            Temp32 = ACPI_CAST_PTR (ACPI_MISC_GUID_ENTRY, Table)->EntryLength;
+            if (Temp32 < ACPI_MISC_MIN_ENTRY_LENGTH)
+            {
+                AcpiOsPrintf ("Invalid EntryLength: 0x%X\n", Temp32);
+                return (AE_BAD_DATA);
+            }
+
+            ByteLength = ((ACPI_CAST_PTR (char, Table) + Temp32) -
                             ACPI_CAST_PTR (char, Target));
             break;
 
@@ -1937,6 +1958,7 @@ AcpiDmDumpTable (
         case ACPI_DMT_RAW_BUFFER:
         case ACPI_DMT_BUFFER:
         case ACPI_DMT_PMTT_VENDOR:
+        case ACPI_DMT_MISC_DATA:
 
             if (ByteLength == 0)
             {
