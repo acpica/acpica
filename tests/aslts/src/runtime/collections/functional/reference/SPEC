@@ -76,7 +76,7 @@ Note: the implicit conversion of result is verified in the
       Complex Test of Result, but not verified here.
 
 Note: the {type,size,value} features of the references to all
-      type obects passed to Method (call-by-reference convention)
+      type objects passed to Method (call-by-reference convention)
       is verified by the (TEST_00.2) entry.
 
 Note: check in tests all the ways of keeping and passing (delivering)
@@ -1103,7 +1103,7 @@ Note:
 though these expressions are applied in other sub-tests,
 nevertheles, this one (and some the following sub-tests
 which verify similar constructions) are supposed and have
-the perpose to verify this ability - immediate use of result
+the purpose to verify this ability - immediate use of result
 of the operator generating reference - comprehensively.
 
 FEATURE: write(Object:RefOf:ORef)

@@ -92,7 +92,7 @@ Warning  1038 -        Invalid or unknown escape sequence ^
 grammar.asl  6800:                 And (Local0, 1, Local0) //  Local0 &= 1
 Error    4050 -                              ^ Method local variable is not initialized (Local0)
 
-grammar.asl  6886:             Name (_HID, "*PNP0C0A")     //  Control Method Battey ID
+grammar.asl  6886:             Name (_HID, "*PNP0C0A")     //  Control Method Battery ID
 Error    4001 -                                     ^ String must be entirely alphanumeric (*PNP0C0A)
 
 ASL Input:  grammar.asl - 10254 lines, 322162 bytes, 4810 keywords
@@ -6537,7 +6537,7 @@ DefinitionBlock (
 
         Device (IDX0)
         {   //  Test device name
-            Name (_HID, EISAID ("PNP0C0A"))     //  Control Method Battey ID
+            Name (_HID, EISAID ("PNP0C0A"))     //  Control Method Battery ID
             Name (_PCL, Package() {\_SB})
             Method (_STA)
             {
@@ -6900,7 +6900,7 @@ DefinitionBlock (
 
         Device (C154)
         {   //  C154:   Battery 0
-            Name (_HID, "*PNP0C0A")     //  Control Method Battey ID
+            Name (_HID, "*PNP0C0A")     //  Control Method Battery ID
             Name (_UID, 0)                  //  first instance
 
             Method (_BIF)
@@ -8258,7 +8258,7 @@ DefinitionBlock (
 
         Device (BAT1)
         {   //  BAT1
-            Name (_HID, EISAID ("PNP0C0A"))     //  Control Method Battey ID
+            Name (_HID, EISAID ("PNP0C0A"))     //  Control Method Battery ID
             Name (_UID, 1)
             Name (_PCL, Package (1) {\_SB})
 

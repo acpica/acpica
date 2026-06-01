@@ -507,7 +507,7 @@ AcpiExConvertToAscii (
             HexChar = (UINT8)
                 AcpiUtHexToAsciiChar (Integer, ACPI_MUL_4 (j));
 
-            /* Supress leading zeros until the first non-zero character */
+            /* Suppress leading zeros until the first non-zero character */
 
             if (HexChar == ACPI_ASCII_ZERO && SupressZeros)
             {
@@ -603,7 +603,7 @@ AcpiExConvertToString (
             /*
              * From ToHexString.
              *
-             * Supress leading zeros and append "0x"
+             * Suppress leading zeros and append "0x"
              */
             StringLength = ACPI_MUL_2 (AcpiGbl_IntegerByteWidth) + 2;
             LeadingZeros = FALSE;

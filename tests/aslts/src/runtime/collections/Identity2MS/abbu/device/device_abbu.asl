@@ -27,7 +27,7 @@
  */
 
 /*
- * Aplicable for abbu only
+ * Applicable for abbu only
  */
 
 Name(z172, 172)

@@ -1720,7 +1720,7 @@
         /*		4, 1, 0x200, 1, 1, 2, */
         /*		6, 1, 0x69, 1, 1, 2, */
         /* examines the whole range possible for the size */
-        /* of the unerlying 256-byte Buffer: */
+        /* of the underlying 256-byte Buffer: */
         /*		0, 17, 1, 2032, 1, 2, */
         /*		0, 1, 1, 1, 1, 2, */
         /*		0, 10, 1, 30, 1, 2, */

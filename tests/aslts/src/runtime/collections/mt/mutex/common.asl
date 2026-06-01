@@ -357,7 +357,7 @@
      * arg0 - number of threads
      * arg1 - ID of current thread (0, can be used for control only)
      * arg2 - Index of current thread
-     * arg3 - cammand - index of the test strategy to be
+     * arg3 - command - index of the test strategy to be
      *        managed and controlled by the Control Thread
      *        and fulfilled by the Worker Threads (Workers).
      *

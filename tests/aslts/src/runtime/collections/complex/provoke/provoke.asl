@@ -28,7 +28,7 @@
     /*
      * Check operators under the known critical conditions
      *
-     * Collection of the tests which exersice the operators under the
+     * Collection of the tests which exercise the operators under the
      * known conditions. If some operator was observed failing under some
      * conditions, do the similar checkings for other operators under the
      * similar conditions too.

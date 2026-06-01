@@ -782,7 +782,7 @@ Zero)
      *
      * arg6 - order of Releasing bitmap,
      *        determinates the order of Releasing mutexes of the same level:
-     *           [0] - 0 - derect order
+     *           [0] - 0 - direct order
      *                 1 - inverse order
      *           [1] - 0 - don't replace the last index
      *                 1 - replace the last index
