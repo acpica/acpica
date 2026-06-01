@@ -289,6 +289,7 @@ typedef enum
     ACPI_DMT_IVRS_UNTERMINATED_STRING,
     ACPI_DMT_LPIT,
     ACPI_DMT_MADT,
+    ACPI_DMT_MISC_DATA,
     ACPI_DMT_MPAM_LOCATOR,
     ACPI_DMT_NFIT,
     ACPI_DMT_PCCT,
@@ -617,6 +618,8 @@ extern ACPI_DMTABLE_INFO        AcpiDmTableInfoMadtHdr[];
 extern ACPI_DMTABLE_INFO        AcpiDmTableInfoMcfg[];
 extern ACPI_DMTABLE_INFO        AcpiDmTableInfoMcfg0[];
 extern ACPI_DMTABLE_INFO        AcpiDmTableInfoMchi[];
+extern ACPI_DMTABLE_INFO        AcpiDmTableInfoMisc[];
+extern ACPI_DMTABLE_INFO        AcpiDmTableInfoMisc0[];
 extern ACPI_DMTABLE_INFO        AcpiDmTableInfoMpam0[];
 extern ACPI_DMTABLE_INFO        AcpiDmTableInfoMpam1[];
 extern ACPI_DMTABLE_INFO        AcpiDmTableInfoMpam1A[];
@@ -936,6 +939,10 @@ AcpiDmDumpMadt (
 
 void
 AcpiDmDumpMcfg (
+    ACPI_TABLE_HEADER       *Table);
+
+void
+AcpiDmDumpMisc (
     ACPI_TABLE_HEADER       *Table);
 
 void
