@@ -231,6 +231,7 @@ const AH_TABLE      AcpiGbl_SupportedTables[] =
     {ACPI_SIG_HPET, "High Precision Event Timer Table"},
     {ACPI_SIG_IORT, "IO Remapping Table"},
     {ACPI_SIG_IOVT, "I/O Virtualization Table"},
+    {ACPI_SIG_IRDT, "Intel Resource Director Technology"},
     {ACPI_SIG_IVRS, "I/O Virtualization Reporting Structure"},
     {ACPI_SIG_LPIT, "Low Power Idle Table"},
     {ACPI_SIG_MADT, "Multiple APIC Description Table (MADT)"},
