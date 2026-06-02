@@ -449,7 +449,11 @@ AcpiNsLookup (
     ACPI_NAMESPACE_NODE     *CurrentNode = NULL;
     ACPI_NAMESPACE_NODE     *ThisNode = NULL;
     UINT32                  NumSegments;
+
+#ifdef ACPI_DEBUG_OUTPUT
     UINT32                  NumCarats;
+#endif
+
     ACPI_NAME               SimpleName;
     ACPI_OBJECT_TYPE        TypeToCheckFor;
     ACPI_OBJECT_TYPE        ThisSearchType;
@@ -573,7 +577,11 @@ AcpiNsLookup (
              * the parent node for each prefix instance.
              */
             ThisNode = PrefixNode;
+
+#ifdef ACPI_DEBUG_OUTPUT
             NumCarats = 0;
+#endif
+
             while (*Path == (UINT8) AML_PARENT_PREFIX)
             {
                 /* Name is fully qualified, no search rules apply */
@@ -588,7 +596,10 @@ AcpiNsLookup (
 
                 /* Backup to the parent node */
 
+#ifdef ACPI_DEBUG_OUTPUT
                 NumCarats++;
+#endif
+
                 ThisNode = ThisNode->Parent;
                 if (!ThisNode)
                 {
