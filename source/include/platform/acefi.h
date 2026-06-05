@@ -189,7 +189,7 @@
 
 #define VOID        void
 
-#if defined(__ia64__) || defined(__x86_64__)
+#if defined(__ia64__) || defined(__x86_64__) || __riscv_xlen == 64
 
 #define ACPI_MACHINE_WIDTH          64
 
