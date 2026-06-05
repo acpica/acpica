@@ -1336,6 +1336,17 @@ AcpiTbUnloadTable (
         AcpiTbNotifyTable (ACPI_TABLE_EVENT_UNLOAD, Table);
     }
 
+    /*
+     * Check for executing GPE methods or notify handlers belonging to
+     * this table. If any are running, refuse to unload to prevent UAF.
+     */
+    if (AcpiGbl_NotifyExecuteCount > 0)
+    {
+        ACPI_ERROR ((AE_INFO,
+            "Cannot unload table: notify handler is executing"));
+        return_ACPI_STATUS (AE_ABORT_METHOD);
+    }
+
     /* Delete the portion of the namespace owned by this table */
 
     Status = AcpiTbDeleteNamespaceByOwner (TableIndex);
