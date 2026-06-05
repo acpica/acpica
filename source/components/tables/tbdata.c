@@ -1336,6 +1336,53 @@ AcpiTbUnloadTable (
         AcpiTbNotifyTable (ACPI_TABLE_EVENT_UNLOAD, Table);
     }
 
+#if (!ACPI_REDUCED_HARDWARE)
+    {
+        ACPI_GPE_XRUPT_INFO     *GpeXruptInfo;
+        ACPI_GPE_BLOCK_INFO     *GpeBlock;
+        ACPI_GPE_EVENT_INFO     *GpeEventInfo;
+        UINT32                  GpeNumber;
+        ACPI_OWNER_ID           OwnerId;
+
+        Status = AcpiUtAcquireMutex (ACPI_MTX_EVENTS);
+        if (ACPI_FAILURE (Status))
+        {
+            return_ACPI_STATUS (Status);
+        }
+
+        OwnerId = AcpiGbl_RootTableList.Tables[TableIndex].OwnerId;
+
+        GpeXruptInfo = AcpiGbl_GpeXruptListHead;
+        while (GpeXruptInfo)
+        {
+            GpeBlock = GpeXruptInfo->GpeBlockListHead;
+            while (GpeBlock)
+            {
+                for (GpeNumber = 0; GpeNumber < GpeBlock->GpeCount; GpeNumber++)
+                {
+                    GpeEventInfo = &GpeBlock->EventInfo[GpeNumber];
+
+                    if (GpeEventInfo->DisableForDispatch &&
+                        (ACPI_GPE_DISPATCH_TYPE (GpeEventInfo->Flags) ==
+                            ACPI_GPE_DISPATCH_METHOD) &&
+                        GpeEventInfo->Dispatch.MethodNode &&
+                        (GpeEventInfo->Dispatch.MethodNode->OwnerId == OwnerId))
+                    {
+                        (void) AcpiUtReleaseMutex (ACPI_MTX_EVENTS);
+                        return_ACPI_STATUS (AE_ABORT_METHOD);
+                    }
+                }
+
+                GpeBlock = GpeBlock->Next;
+            }
+
+            GpeXruptInfo = GpeXruptInfo->Next;
+        }
+
+        (void) AcpiUtReleaseMutex (ACPI_MTX_EVENTS);
+    }
+#endif /* !ACPI_REDUCED_HARDWARE */
+
     /* Delete the portion of the namespace owned by this table */
 
     Status = AcpiTbDeleteNamespaceByOwner (TableIndex);
