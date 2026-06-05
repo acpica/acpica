@@ -33,6 +33,7 @@
   components/tables/tbxfroot.c
   components/utilities/utascii.c
   components/utilities/utbuffer.c
+  components/utilities/utcksum.c
   components/utilities/utdebug.c
   components/utilities/utexcep.c
   components/utilities/utglobal.c
