@@ -544,6 +544,10 @@ AcpiNsBuildPrefixedPathname (
     char                    *ExternalPath = NULL;
     char                    *PrefixPath = NULL;
     ACPI_SIZE               PrefixPathLength = 0;
+    char                    NameBuffer[ACPI_NAMESEG_SIZE + 1];
+    const char              *UsePath;
+    UINT32                  PathLength;
+    UINT32                  i;
 
 
     /* If there is a prefix, get the pathname to it */
@@ -557,7 +561,33 @@ AcpiNsBuildPrefixedPathname (
         }
     }
 
-    Status = AcpiNsExternalizeName (ACPI_UINT32_MAX, InternalPath,
+    /*
+     * InternalPath may point to AML bytecode that is not null-terminated.
+     * Check for a null terminator within a single NameSeg; if not found,
+     * copy to a local buffer with null termination.
+     */
+    for (i = 0; i < ACPI_NAMESEG_SIZE; i++)
+    {
+        if (InternalPath[i] == '\0')
+        {
+            break;
+        }
+    }
+
+    if (i < ACPI_NAMESEG_SIZE)
+    {
+        UsePath = InternalPath;
+        PathLength = i;
+    }
+    else
+    {
+        ACPI_COPY_NAMESEG (NameBuffer, InternalPath);
+        NameBuffer[ACPI_NAMESEG_SIZE] = 0;
+        UsePath = NameBuffer;
+        PathLength = ACPI_NAMESEG_SIZE;
+    }
+
+    Status = AcpiNsExternalizeName (PathLength, UsePath,
         NULL, &ExternalPath);
     if (ACPI_FAILURE (Status))
     {

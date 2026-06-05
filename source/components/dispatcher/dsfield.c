@@ -647,6 +647,7 @@ AcpiDsCreateField (
     ACPI_STATUS             Status;
     ACPI_PARSE_OBJECT       *Arg;
     ACPI_CREATE_FIELD_INFO  Info;
+    char                    NameString[ACPI_NAMESEG_SIZE + 1];
 
 
     ACPI_FUNCTION_TRACE_PTR (DsCreateField, Op);
@@ -658,17 +659,20 @@ AcpiDsCreateField (
 
     if (!RegionNode)
     {
-        Status = AcpiNsLookup (WalkState->ScopeInfo, Arg->Common.Value.Name,
+        ACPI_COPY_NAMESEG (NameString, Arg->Common.Value.Name);
+        NameString[ACPI_NAMESEG_SIZE] = 0;
+
+        Status = AcpiNsLookup (WalkState->ScopeInfo, NameString,
             ACPI_TYPE_REGION, ACPI_IMODE_EXECUTE,
             ACPI_NS_SEARCH_PARENT, WalkState, &RegionNode);
 #ifdef ACPI_ASL_COMPILER
         Status = AcpiDsCreateExternalRegion (Status, Arg,
-            Arg->Common.Value.Name, WalkState, &RegionNode);
+            NameString, WalkState, &RegionNode);
 #endif
         if (ACPI_FAILURE (Status))
         {
             ACPI_ERROR_NAMESPACE (WalkState->ScopeInfo,
-                Arg->Common.Value.Name, Status);
+                NameString, Status);
             return_ACPI_STATUS (Status);
         }
     }
@@ -731,6 +735,7 @@ AcpiDsInitFieldObjects (
     ACPI_NAMESPACE_NODE     *Node;
     UINT8                   Type = 0;
     UINT32                  Flags;
+    char                    NameString[ACPI_NAMESEG_SIZE + 1];
 
 
     ACPI_FUNCTION_TRACE_PTR (DsInitFieldObjects, Op);
@@ -811,13 +816,16 @@ AcpiDsInitFieldObjects (
          */
         if (Arg->Common.AmlOpcode == AML_INT_NAMEDFIELD_OP)
         {
+            ACPI_COPY_NAMESEG (NameString, &Arg->Named.Name);
+            NameString[ACPI_NAMESEG_SIZE] = 0;
+
             Status = AcpiNsLookup (WalkState->ScopeInfo,
-                (char *) &Arg->Named.Name, Type, ACPI_IMODE_LOAD_PASS1,
+                NameString, Type, ACPI_IMODE_LOAD_PASS1,
                 Flags, WalkState, &Node);
             if (ACPI_FAILURE (Status))
             {
                 ACPI_ERROR_NAMESPACE (WalkState->ScopeInfo,
-                    (char *) &Arg->Named.Name, Status);
+                    NameString, Status);
                 if (Status != AE_ALREADY_EXISTS)
                 {
                     return_ACPI_STATUS (Status);

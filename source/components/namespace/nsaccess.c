@@ -445,6 +445,7 @@ AcpiNsLookup (
     ACPI_STATUS             Status;
     char                    *Path = Pathname;
     char                    *ExternalPath;
+    char                    NameBuffer[ACPI_NAMESEG_SIZE + 1];
     ACPI_NAMESPACE_NODE     *PrefixNode;
     ACPI_NAMESPACE_NODE     *CurrentNode = NULL;
     ACPI_NAMESPACE_NODE     *ThisNode = NULL;
@@ -595,9 +596,15 @@ AcpiNsLookup (
                     /*
                      * Current scope has no parent scope. Externalize
                      * the internal path for error message.
+                     * Pathname may point to a 4-byte Name field that is
+                     * not null-terminated, so create a copy with a null
+                     * terminator.
                      */
-                    Status = AcpiNsExternalizeName (ACPI_UINT32_MAX, Pathname,
-                        NULL, &ExternalPath);
+                    ACPI_COPY_NAMESEG (NameBuffer, Pathname);
+                    NameBuffer[ACPI_NAMESEG_SIZE] = 0;
+
+                    Status = AcpiNsExternalizeName (ACPI_NAMESEG_SIZE,
+                        NameBuffer, NULL, &ExternalPath);
                     if (ACPI_SUCCESS (Status))
                     {
                         ACPI_ERROR ((AE_INFO,
