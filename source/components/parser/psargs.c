@@ -973,6 +973,8 @@ AcpiPsGetNextField (
 
                 ASL_CV_CAPTURE_COMMENTS_ONLY (ParserState);
                 Arg->Named.Value.Size = BufferLength;
+                Arg->Named.Length = (UINT32)
+                    ACPI_PTR_DIFF (ParserState->PkgEnd, ParserState->Aml);
                 Arg->Named.Data = ParserState->Aml;
             }
 
@@ -1167,7 +1169,7 @@ AcpiPsGetNextArg (
 
             /* Fill in bytelist data */
 
-            Arg->Common.Value.Size = (UINT32)
+            Arg->Common.Value.Size = Arg->Named.Length = (UINT32)
                 ACPI_PTR_DIFF (ParserState->PkgEnd, ParserState->Aml);
             Arg->Named.Data = ParserState->Aml;
 
