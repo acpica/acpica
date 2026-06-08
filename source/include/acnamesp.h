@@ -645,6 +645,24 @@ AcpiNsInstallNode (
     ACPI_NAMESPACE_NODE     *Node,
     ACPI_OBJECT_TYPE        Type);
 
+#ifdef ACPI_USE_NS_SEARCH_ACCELERATION
+ACPI_STATUS
+AcpiNsSearchAccelerationInit(
+    void);
+
+void
+AcpiNsSearchAccelerationTerminate(
+    void);
+
+void
+AcpiNsSearchAccelerationAddNode(
+    ACPI_NAMESPACE_NODE     *Node);
+
+void
+AcpiNsSearchAccelerationDeleteNode(
+    ACPI_NAMESPACE_NODE     *Node);
+#endif
+
 
 /*
  * nsutils - Utility functions
