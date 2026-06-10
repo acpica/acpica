@@ -465,6 +465,16 @@ AcpiDsLoad2BeginOp (
         Status = AcpiNsLookup (WalkState->ScopeInfo, BufferPtr, ObjectType,
             ACPI_IMODE_LOAD_PASS2, Flags, WalkState, &Node);
 
+        /*
+         * If the object already exists but its type matches the new object
+         * type (no type conflict), treat it as a benign duplicate and
+         * allow the table load to continue.
+         */
+        if (Status == AE_ALREADY_EXISTS && Node && Node->Type == ObjectType)
+        {
+            Status = AE_OK;
+        }
+
         if (ACPI_SUCCESS (Status) && (Flags & ACPI_NS_TEMPORARY))
         {
             ACPI_DEBUG_PRINT ((ACPI_DB_DISPATCH,
