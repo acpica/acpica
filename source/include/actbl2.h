@@ -182,6 +182,7 @@
 #define ACPI_SIG_MADT           "APIC"      /* Multiple APIC Description Table */
 #define ACPI_SIG_MCFG           "MCFG"      /* PCI Memory Mapped Configuration table */
 #define ACPI_SIG_MCHI           "MCHI"      /* Management Controller Host Interface table */
+#define ACPI_SIG_MISC           "MISC"      /* Miscellaneous GUIDed Table */
 #define ACPI_SIG_MPAM           "MPAM"      /* Memory System Resource Partitioning and Monitoring Table */
 #define ACPI_SIG_MPST           "MPST"      /* Memory Power State Table */
 #define ACPI_SIG_MRRM           "MRRM"      /* Memory Range and Region Mapping table */
@@ -1502,6 +1503,30 @@ enum AcpiKeypProtocolType
 };
 
 #define ACPI_KEYP_F_TVM_USABLE      (1)
+
+/*******************************************************************************
+ *
+ * MISC - Miscellaneous GUIDed Table
+ *
+ * Conforms to section "Miscellaneous GUIDed Table Entries" of ACPI
+ * Specification v6.5
+ *
+ ******************************************************************************/
+
+typedef struct acpi_misc_guid_entry {
+    UINT8       EntryGuid[16];
+    UINT32      EntryLength;
+    UINT32      Revision;
+    UINT32      ProducerId;
+    UINT8       Data[];
+} ACPI_MISC_GUID_ENTRY;
+
+
+typedef struct acpi_table_misc {
+    ACPI_TABLE_HEADER       Header;             /* Common ACPI table header */
+    ACPI_MISC_GUID_ENTRY    Entries[];
+} ACPI_TABLE_MISC;
+
 
 /*******************************************************************************
  *
