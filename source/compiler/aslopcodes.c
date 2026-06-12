@@ -866,8 +866,11 @@ OpcGenerateAmlOpcode (
     if ((Op->Asl.ParseOpcode < ASL_PARSE_OPCODE_BASE) ||
         (Index >= AslKeywordMappingCount))
     {
-        AslError (ASL_ERROR, ASL_MSG_COMPILER_INTERNAL, Op,
-            "Invalid parse opcode in OpcGenerateAmlOpcode");
+        /*
+         * Parse opcode is not in the keyword mapping table. This can
+         * happen for internal parser tokens (expression operators,
+         * punctuation) that don't need AML opcode generation.
+         */
         return;
     }
 
