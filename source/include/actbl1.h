@@ -857,8 +857,8 @@ struct acpi_cedt_rdpas {
     ACPI_CEDT_HEADER        Header;
     UINT16                  Segment;
     UINT16                  Bdf;
-    UINT8                   Protocol;
     UINT64                  Address;
+    UINT8                   Protocol;
     UINT8                   Reserved[3];
 };
 
