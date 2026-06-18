@@ -316,6 +316,11 @@ void
 AcpiEvUpdateGpes (
     ACPI_OWNER_ID           TableOwnerId))
 
+ACPI_HW_DEPENDENT_RETURN_STATUS (
+ACPI_STATUS
+AcpiEvClearGpeDispatchByOwner (
+    ACPI_OWNER_ID           OwnerId))
+
 ACPI_STATUS
 AcpiEvMatchGpeMethod (
     ACPI_HANDLE             ObjHandle,

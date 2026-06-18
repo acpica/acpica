@@ -683,6 +683,18 @@ AcpiEvAsynchExecuteGpeMethod (
 
     case ACPI_GPE_DISPATCH_METHOD:
 
+        /*
+         * Re-check dispatch type. The table may have been unloaded
+         * and its GPE dispatch cleared while we were waiting.
+         */
+        if (ACPI_GPE_DISPATCH_TYPE (GpeEventInfo->Flags) !=
+                ACPI_GPE_DISPATCH_METHOD)
+        {
+            ACPI_DEBUG_PRINT ((ACPI_DB_EVENTS,
+                "GPE method dispatch cleared during wait\n"));
+            goto UnlockAndExit;
+        }
+
         /* Allocate the evaluation information block */
 
         Info = ACPI_ALLOCATE_ZEROED (sizeof (ACPI_EVALUATE_INFO));
@@ -728,6 +740,96 @@ AcpiEvAsynchExecuteGpeMethod (
 ErrorExit:
     AcpiEvAsynchEnableGpe (GpeEventInfo);
     return_VOID;
+
+UnlockAndExit:
+    /* Dispatch was cleared, just re-enable the GPE without executing */
+    (void) AcpiEvFinishGpe (GpeEventInfo);
+    return_VOID;
+}
+
+
+/*******************************************************************************
+ *
+ * FUNCTION:    AcpiEvClearGpeDispatchByOwner
+ *
+ * PARAMETERS:  OwnerId         - Table OwnerId being unloaded
+ *
+ * RETURN:      Status
+ *
+ * DESCRIPTION: Clear GPE dispatch info for methods belonging to the table
+ *              being unloaded. If any matching GPE is currently dispatching,
+ *              it is not cleared and AE_ABORT_METHOD is returned.
+ *
+ ******************************************************************************/
+
+ACPI_STATUS
+AcpiEvClearGpeDispatchByOwner (
+    ACPI_OWNER_ID           OwnerId)
+{
+    ACPI_GPE_XRUPT_INFO     *GpeXruptInfo;
+    ACPI_GPE_BLOCK_INFO     *GpeBlock;
+    ACPI_GPE_EVENT_INFO     *GpeEventInfo;
+    UINT32                  GpeNumber;
+    ACPI_STATUS             Status = AE_OK;
+
+
+    ACPI_FUNCTION_TRACE_U32 (EvClearGpeDispatchByOwner, OwnerId);
+
+
+    if (OwnerId == 0)
+    {
+        return_ACPI_STATUS (AE_OK);
+    }
+
+    Status = AcpiUtAcquireMutex (ACPI_MTX_EVENTS);
+    if (ACPI_FAILURE (Status))
+    {
+        return_ACPI_STATUS (Status);
+    }
+
+    /* Walk all GPE interrupt blocks */
+
+    GpeXruptInfo = AcpiGbl_GpeXruptListHead;
+    while (GpeXruptInfo)
+    {
+        GpeBlock = GpeXruptInfo->GpeBlockListHead;
+        while (GpeBlock)
+        {
+            /* Walk all GPEs in this block */
+
+            for (GpeNumber = 0; GpeNumber < GpeBlock->GpeCount; GpeNumber++)
+            {
+                GpeEventInfo = &GpeBlock->EventInfo[GpeNumber];
+
+                if ((ACPI_GPE_DISPATCH_TYPE (GpeEventInfo->Flags) ==
+                        ACPI_GPE_DISPATCH_METHOD) &&
+                    (GpeEventInfo->Dispatch.MethodNode) &&
+                    (GpeEventInfo->Dispatch.MethodNode->OwnerId == OwnerId))
+                {
+                    /* GPE method belongs to table being unloaded */
+
+                    if (GpeEventInfo->DisableForDispatch)
+                    {
+                        /* Handler is executing, cannot clear */
+                        Status = AE_ABORT_METHOD;
+                    }
+                    else
+                    {
+                        /* Clear the dispatch info */
+                        GpeEventInfo->Flags = ACPI_GPE_DISPATCH_NONE;
+                        GpeEventInfo->Dispatch.MethodNode = NULL;
+                    }
+                }
+            }
+
+            GpeBlock = GpeBlock->Next;
+        }
+
+        GpeXruptInfo = GpeXruptInfo->Next;
+    }
+
+    (void) AcpiUtReleaseMutex (ACPI_MTX_EVENTS);
+    return_ACPI_STATUS (Status);
 }
 
 
