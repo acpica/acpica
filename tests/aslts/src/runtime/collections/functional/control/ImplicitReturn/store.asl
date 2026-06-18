@@ -1052,11 +1052,7 @@ Method(mf6e,, Serialized)
 	Store(m005(1), i003)
 	if (SLCK) {
 		CH03("", z138, 0x059, __LINE__, 0)
-		if (y901) {
-			Store(0, Local0)
-		} else {
-			Store(Ones, Local0)
-		}
+		Store(0, Local0)
 		if (LNotEqual(i003, Local0)) {
 			err("", z138, __LINE__, 0, 0, i003, Local0)
 		}
