@@ -719,6 +719,7 @@ const ACPI_DMTABLE_DATA     AcpiDmTableData[] =
     {ACPI_SIG_IORT, NULL,                   AcpiDmDumpIort, DtCompileIort,  TemplateIort},
     {ACPI_SIG_IOVT, AcpiDmTableInfoIovt,    AcpiDmDumpIovt, DtCompileIovt,  TemplateIovt},
     {ACPI_SIG_IVRS, NULL,                   AcpiDmDumpIvrs, DtCompileIvrs,  TemplateIvrs},
+    {ACPI_SIG_KEYP, NULL,                   AcpiDmDumpKeyp, DtCompileKeyp,  TemplateKeyp},
     {ACPI_SIG_LPIT, NULL,                   AcpiDmDumpLpit, DtCompileLpit,  TemplateLpit},
     {ACPI_SIG_MADT, NULL,                   AcpiDmDumpMadt, DtCompileMadt,  TemplateMadt},
     {ACPI_SIG_MCFG, NULL,                   AcpiDmDumpMcfg, DtCompileMcfg,  TemplateMcfg},

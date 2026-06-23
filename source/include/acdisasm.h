@@ -577,6 +577,10 @@ extern ACPI_DMTABLE_INFO        AcpiDmTableInfoIvrsUidString[];
 extern ACPI_DMTABLE_INFO        AcpiDmTableInfoIvrsUidInteger[];
 extern ACPI_DMTABLE_INFO        AcpiDmTableInfoIvrsHidString[];
 extern ACPI_DMTABLE_INFO        AcpiDmTableInfoIvrsHidInteger[];
+extern ACPI_DMTABLE_INFO        AcpiDmTableInfoKeyp[];
+extern ACPI_DMTABLE_INFO        AcpiDmTableInfoKeypHdr[];
+extern ACPI_DMTABLE_INFO        AcpiDmTableInfoKeyp0[];
+extern ACPI_DMTABLE_INFO        AcpiDmTableInfoKeyp0a[];
 extern ACPI_DMTABLE_INFO        AcpiDmTableInfoMadt[];
 extern ACPI_DMTABLE_INFO        AcpiDmTableInfoMadt0[];
 extern ACPI_DMTABLE_INFO        AcpiDmTableInfoMadt1[];
@@ -925,6 +929,10 @@ AcpiDmDumpIovt (
 
 void
 AcpiDmDumpIvrs (
+    ACPI_TABLE_HEADER       *Table);
+
+void
+AcpiDmDumpKeyp (
     ACPI_TABLE_HEADER       *Table);
 
 void

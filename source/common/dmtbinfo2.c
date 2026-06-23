@@ -714,6 +714,53 @@ ACPI_DMTABLE_INFO           AcpiDmTableInfoIvrsCidInteger[] =
 
 /*******************************************************************************
  *
+ * KEYP - Key Programming Interface for Root Complex Integrity and Data
+ *        Encryption (IDE)
+ *
+ ******************************************************************************/
+
+ACPI_DMTABLE_INFO           AcpiDmTableInfoKeyp[] =
+{
+    {ACPI_DMT_UINT32,   ACPI_KEYP_OFFSET (Reserved),                "Reserved", 0},
+    ACPI_DMT_TERMINATOR
+};
+
+/* Common Key Configuration Unit subtable header */
+
+ACPI_DMTABLE_INFO           AcpiDmTableInfoKeypHdr[] =
+{
+    {ACPI_DMT_UINT8,    ACPI_KEYPH_OFFSET (Type),                   "Type", 0},
+    {ACPI_DMT_UINT8,    ACPI_KEYPH_OFFSET (Reserved),               "Reserved", 0},
+    {ACPI_DMT_UINT16,   ACPI_KEYPH_OFFSET (Length),                 "Length", DT_LENGTH},
+    ACPI_DMT_TERMINATOR
+};
+
+/* 0: Key Configuration Unit Structure */
+
+ACPI_DMTABLE_INFO           AcpiDmTableInfoKeyp0[] =
+{
+    {ACPI_DMT_UINT8,    ACPI_KEYP0_OFFSET (ProtocolType),           "Protocol Type", 0},
+    {ACPI_DMT_UINT8,    ACPI_KEYP0_OFFSET (Version),                "Version", 0},
+    {ACPI_DMT_UINT8,    ACPI_KEYP0_OFFSET (RootPortCount),          "Root Port Count", 0},
+    {ACPI_DMT_UINT8,    ACPI_KEYP0_OFFSET (Flags),                  "Flags (decoded below)", DT_FLAG},
+    {ACPI_DMT_FLAG0,    ACPI_KEYP0_OFFSET (Flags),                  "TVM Usable", 0},
+    {ACPI_DMT_UINT64,   ACPI_KEYP0_OFFSET (RegisterBaseAddress),    "Register Base Address", 0},
+    ACPI_DMT_TERMINATOR
+};
+
+/* Root Port Information Structure */
+
+ACPI_DMTABLE_INFO           AcpiDmTableInfoKeyp0a[] =
+{
+    {ACPI_DMT_UINT16,   ACPI_KEYP0A_OFFSET (Segment),               "Segment", 0},
+    {ACPI_DMT_UINT8,    ACPI_KEYP0A_OFFSET (Bus),                   "Bus", 0},
+    {ACPI_DMT_UINT8,    ACPI_KEYP0A_OFFSET (Devfn),                 "Device/Function", 0},
+    ACPI_DMT_TERMINATOR
+};
+
+
+/*******************************************************************************
+ *
  * LPIT - Low Power Idle Table
  *
  ******************************************************************************/
