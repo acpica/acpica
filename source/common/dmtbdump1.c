@@ -1059,6 +1059,15 @@ AcpiDmDumpCedt (
             break;
         }
 
+        case ACPI_CEDT_TYPE_RDPAS:
+            Status = AcpiDmDumpTable (Length, Offset, Subtable,
+                Subtable->Length, AcpiDmTableInfoCedt3);
+            if (ACPI_FAILURE (Status))
+            {
+                return;
+            }
+            break;
+
         case ACPI_CEDT_TYPE_CXIMS:
         {
             ACPI_CEDT_CXIMS *ptr = (ACPI_CEDT_CXIMS *) Subtable;

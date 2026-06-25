@@ -853,14 +853,14 @@ typedef struct acpi_cedt_cxims_target_element
 
 /* 3: CXL RCEC Downstream Port Association Structure */
 
-struct acpi_cedt_rdpas {
+typedef struct acpi_cedt_rdpas {
     ACPI_CEDT_HEADER        Header;
     UINT16                  Segment;
     UINT16                  Bdf;
     UINT64                  Address;
     UINT8                   Protocol;
     UINT8                   Reserved[3];
-};
+} ACPI_CEDT_RDPAS;
 
 /* Masks for bdf field above */
 #define ACPI_CEDT_RDPAS_BUS_MASK            0xff00
