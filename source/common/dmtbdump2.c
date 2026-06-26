@@ -639,7 +639,9 @@ AcpiDmDumpIrdt (
     UINT32                  Offset;
     UINT32                  DsOffset;
     UINT32                  ChmsOffset;
+    UINT32                  RmudEnd;
     UINT16                  DsType;
+    UINT16                  DsLength;
     ACPI_IRDT_RMUD          *Rmud;
     ACPI_IRDT_DSS           *Dss;
     ACPI_IRDT_RCS           *Rcs;
@@ -684,12 +686,14 @@ AcpiDmDumpIrdt (
             return;
         }
 
+        RmudEnd = Offset + Rmud->Length;
         DsOffset = Offset + sizeof (ACPI_IRDT_RMUD);
-        while (DsOffset < (Offset + Rmud->Length))
+        while (DsOffset < RmudEnd)
         {
-            if ((DsOffset + sizeof (UINT16) + sizeof (UINT16)) > Table->Length)
+            if ((DsOffset + sizeof (UINT16) + sizeof (UINT16)) > RmudEnd)
             {
-                AcpiOsPrintf ("**** IRDT: DSS/RCS header extends beyond table\n");
+                AcpiOsPrintf (
+                    "**** IRDT: DSS/RCS header extends beyond RMUD\n");
                 return;
             }
 
@@ -719,7 +723,8 @@ AcpiDmDumpIrdt (
                 {
                     if ((ChmsOffset + sizeof (ACPI_IRDT_CHMS)) > (DsOffset + Dss->Length))
                     {
-                        AcpiOsPrintf ("**** IRDT: CHMS size is not aligned to 16 bytes\n");
+                        AcpiOsPrintf (
+                            "**** IRDT: DSS payload truncated in CHMS array\n");
                         return;
                     }
 
@@ -772,8 +777,18 @@ AcpiDmDumpIrdt (
                 return;
             }
 
-            DsOffset += ACPI_GET16 (ACPI_ADD_PTR (UINT8, Table, DsOffset + sizeof (UINT16)));
-            if (DsOffset > (Offset + Rmud->Length))
+            DsLength = ACPI_GET16 (
+                ACPI_ADD_PTR (UINT8, Table, DsOffset + sizeof (UINT16)));
+            if (DsLength < (sizeof (UINT16) + sizeof (UINT16)))
+            {
+                AcpiOsPrintf (
+                    "**** IRDT: Invalid unknown DSS/RCS length 0x%X at 0x%X\n",
+                    DsLength, DsOffset);
+                return;
+            }
+
+            DsOffset += DsLength;
+            if (DsOffset > RmudEnd)
             {
                 AcpiOsPrintf ("**** IRDT: Unknown DSS/RCS entry exceeded RMUD length\n");
                 return;
