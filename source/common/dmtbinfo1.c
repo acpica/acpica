@@ -648,6 +648,23 @@ ACPI_DMTABLE_INFO           AcpiDmTableInfoBoot[] =
     ACPI_DMT_TERMINATOR
 };
 
+
+/*******************************************************************************
+ *
+ * CCEL - CC-Event Log Table
+ *
+ ******************************************************************************/
+
+ACPI_DMTABLE_INFO           AcpiDmTableInfoCcel[] =
+{
+    {ACPI_DMT_UINT8,    ACPI_CCEL_OFFSET (CCType),                  "CC Type", 0},
+    {ACPI_DMT_UINT8,    ACPI_CCEL_OFFSET (CCSubType),               "CC Sub Type", 0},
+    {ACPI_DMT_UINT16,   ACPI_CCEL_OFFSET (Reserved),                "Reserved", 0},
+    {ACPI_DMT_UINT64,   ACPI_CCEL_OFFSET (LogAreaMinimumLength),    "Log Area Minimum Length", 0},
+    {ACPI_DMT_UINT64,   ACPI_CCEL_OFFSET (LogAreaStartAddress),     "Log Area Start Address", 0},
+    ACPI_DMT_TERMINATOR
+};
+
 /*******************************************************************************
  *
  * CDAT - Coherent Device Attribute Table
