@@ -1985,20 +1985,31 @@ AcpiDmDumpNhlt (
 
         for (i = 0; i < EndpointCount; i++)
         {
+            if ((Offset + sizeof (ACPI_NHLT_ENDPOINT)) >
+                TableLength)
+            {
+                AcpiOsPrintf (
+                    "\n    /* NHLT endpoint header exceeds bounds"
+                    " at offset 0x%X */\n",
+                    Offset);
+                return;
+            }
+
             /* Do the Endpoint Descriptor table */
 
             Subtable = ACPI_ADD_PTR (ACPI_NHLT_ENDPOINT, Table, Offset);
 
-            /* Check for endpoint descriptor length beyond end-of-table */
+            /* Validate endpoint descriptor boundaries */
 
-            if (Subtable->DescriptorLength > TableLength)
+            if ((Subtable->DescriptorLength < sizeof (ACPI_NHLT_ENDPOINT)) ||
+                ((Offset + Subtable->DescriptorLength) > TableLength))
             {
-                Offset += 1;
-                AcpiOsPrintf ("\n    /* Endpoint Descriptor Length larger than"
-                    " table size: %X, table %X, adjusting table offset (+1) */\n",
-                    Subtable->DescriptorLength, TableLength);
-
-                Subtable = ACPI_ADD_PTR (ACPI_NHLT_ENDPOINT, Table, Offset);
+                AcpiOsPrintf (
+                    "\n    /* Invalid Endpoint Descriptor"
+                    " Length 0x%X at offset 0x%X"
+                    " (table length 0x%X) */\n",
+                    Subtable->DescriptorLength, Offset, TableLength);
+                return;
             }
 
             AcpiOsPrintf ("\n    /* Endpoint Descriptor #%u */\n", i+1);
@@ -2011,15 +2022,19 @@ AcpiDmDumpNhlt (
 
             EndpointEndOffset = Subtable->DescriptorLength + Offset;
 
-            /* Check for endpoint descriptor beyond end-of-table */
+            Offset += sizeof (ACPI_NHLT_ENDPOINT);
 
-            if (Subtable->DescriptorLength > TableLength)
+            if ((Offset + sizeof (ACPI_NHLT_DEVICE_SPECIFIC_CONFIG_B)) >
+                EndpointEndOffset)
             {
-                AcpiOsPrintf ("\n    /* Endpoint Descriptor Length larger than table size: %X, table %X */\n",
-                    Subtable->DescriptorLength, TableLength);
+                AcpiOsPrintf (
+                    "\n    /* Endpoint #%u truncated before"
+                    " Device_Specific_Config"
+                    " (end 0x%X, offset 0x%X) */\n",
+                    i+1, EndpointEndOffset, Offset);
+                return;
             }
 
-            Offset += sizeof (ACPI_NHLT_ENDPOINT);
             Subtable = ACPI_ADD_PTR (ACPI_NHLT_ENDPOINT, Table, Offset);
 
             /* Do the Device Specific table */
@@ -2134,6 +2149,18 @@ AcpiDmDumpNhlt (
                         return;
                     }
 
+                    if ((Offset +
+                        ((UINT32) MicrophoneCount *
+                            sizeof (ACPI_NHLT_VENDOR_MIC_CONFIG))) >
+                        EndpointEndOffset)
+                    {
+                        AcpiOsPrintf (
+                            "\n    /* MicrophoneCount mismatch:"
+                            " declared %u, available bytes 0x%X */\n",
+                            MicrophoneCount, (EndpointEndOffset - Offset));
+                        return;
+                    }
+
                     /* Get the vendor microphone config structure(s) */
 
                     for (j = 0; j < MicrophoneCount; j++)
@@ -2172,6 +2199,17 @@ AcpiDmDumpNhlt (
 
             /* Do the Formats_Config table - starts with the FormatsCount field */
 
+            if ((Offset + sizeof (ACPI_NHLT_FORMATS_CONFIG)) >
+                EndpointEndOffset)
+            {
+                AcpiOsPrintf (
+                    "\n    /* Endpoint #%u truncated before"
+                    " Formats_Config"
+                    " (end 0x%X, offset 0x%X) */\n",
+                    i+1, EndpointEndOffset, Offset);
+                return;
+            }
+
             FormatsConfig = ACPI_ADD_PTR (ACPI_NHLT_FORMATS_CONFIG, Table, Offset);
             FormatsCount = FormatsConfig->FormatsCount;
 
@@ -2194,6 +2232,17 @@ AcpiDmDumpNhlt (
 
             for (j = 0; j < FormatsCount; j++)
             {
+                if ((Offset + sizeof (ACPI_NHLT_FORMAT_CONFIG)) >
+                    EndpointEndOffset)
+                {
+                    AcpiOsPrintf (
+                        "\n    /* FormatsCount mismatch:"
+                        " declared %u, parsed %u"
+                        " (endpoint end 0x%X) */\n",
+                        FormatsCount, j, EndpointEndOffset);
+                    return;
+                }
+
                 FormatSubtable = ACPI_ADD_PTR (ACPI_NHLT_FORMAT_CONFIG, Table, Offset);
                 CapabilitiesSize = FormatSubtable->CapabilitySize;
 
@@ -2212,6 +2261,17 @@ AcpiDmDumpNhlt (
                 if (CapabilitiesSize > 0)
                 {
                     UINT8* CapabilitiesBuf = ACPI_ADD_PTR (UINT8, Table, Offset);
+
+                    if ((Offset + CapabilitiesSize) > EndpointEndOffset)
+                    {
+                        AcpiOsPrintf (
+                            "\n    /* Format_Config #%u capabilities"
+                            " exceed endpoint: size 0x%X,"
+                            " available 0x%X */\n",
+                            j+1, CapabilitiesSize, (EndpointEndOffset - Offset));
+                        return;
+                    }
+
                     /* Do the Capabilities array (of bytes) */
 
                     AcpiOsPrintf ("\n    /* Specific_Config table #%u */\n", j+1);
@@ -2227,6 +2287,15 @@ AcpiDmDumpNhlt (
                 }
 
             } /* for (j = 0; j < FormatsCount; j++) */
+
+            if (Offset > EndpointEndOffset)
+            {
+                AcpiOsPrintf (
+                    "\n    /* Endpoint #%u parse exceeded"
+                    " descriptor bounds by 0x%X byte(s) */\n",
+                    i+1, (Offset - EndpointEndOffset));
+                return;
+            }
 
             /*
              * If we are not done with the current Endpoint yet, then there must be
@@ -2244,6 +2313,18 @@ AcpiDmDumpNhlt (
                     return;
                 }
                 Offset += sizeof (ACPI_NHLT_DEVICE_INFO_COUNT);
+
+                if ((Offset +
+                    ((UINT32) Count->StructureCount *
+                        sizeof (ACPI_NHLT_DEVICE_INFO))) >
+                    EndpointEndOffset)
+                {
+                    AcpiOsPrintf (
+                        "\n    /* DeviceInfo count mismatch:"
+                        " declared %u, available bytes 0x%X */\n",
+                        Count->StructureCount, (EndpointEndOffset - Offset));
+                    return;
+                }
 
                 /* Variable number of device structures */
 
