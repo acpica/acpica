@@ -825,6 +825,18 @@ ACPI_DMTABLE_INFO           AcpiDmTableInfoCedt2_te[] =
     ACPI_DMT_TERMINATOR
 };
 
+/* 3: CXL RCEC Downstream Port Association Structure */
+
+ACPI_DMTABLE_INFO           AcpiDmTableInfoCedt3[] =
+{
+    {ACPI_DMT_UINT16,   ACPI_CEDT3_OFFSET (Segment),              "PCI Segment", 0},
+    {ACPI_DMT_UINT16,   ACPI_CEDT3_OFFSET (Bdf),                  "PCI BDF", 0},
+    {ACPI_DMT_UINT64,   ACPI_CEDT3_OFFSET (Address),              "RCRB Base Address", 0},
+    {ACPI_DMT_UINT8,    ACPI_CEDT3_OFFSET (Protocol),             "Protocol", 0},
+    {ACPI_DMT_UINT24,   ACPI_CEDT3_OFFSET (Reserved[0]),          "Reserved", 0},
+    ACPI_DMT_TERMINATOR
+};
+
 /*******************************************************************************
  *
  * CPEP - Corrected Platform Error Polling table

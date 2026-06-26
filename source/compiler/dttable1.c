@@ -1066,6 +1066,14 @@ DtCompileCedt (
             ParentTable = DtPeekSubtable ();
             break;
         }
+        case ACPI_CEDT_TYPE_RDPAS:
+            Status = DtCompileTable (PFieldList, AcpiDmTableInfoCedt3, &Subtable);
+            if (ACPI_FAILURE (Status))
+            {
+                return (Status);
+            }
+            break;
+
         case ACPI_CEDT_TYPE_CXIMS: {
             unsigned char *dump;
             unsigned int idx, offset, max = 0;
@@ -1082,6 +1090,8 @@ DtCompileCedt (
             offset = (unsigned int) ACPI_OFFSET (ACPI_CEDT_CXIMS, NrXormaps);
             dump = (unsigned char *) Subtable->Buffer - 4;     /* place at beginning of cedt2 */
             max = dump[offset];
+            if (max <= 1)           /* if only one (or zero) xormap, already in base descriptor */
+                break;              /* break to allow single insert via InsertFlag */
 
             /* We need to add more XOR maps, so write the current Subtable. */
 
