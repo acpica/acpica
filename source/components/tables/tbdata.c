@@ -1336,6 +1336,20 @@ AcpiTbUnloadTable (
         AcpiTbNotifyTable (ACPI_TABLE_EVENT_UNLOAD, Table);
     }
 
+#if (!ACPI_REDUCED_HARDWARE)
+    /*
+     * Clear GPE dispatch for methods owned by the table being unloaded.
+     * If any matching GPE is currently dispatching, AE_ABORT_METHOD is
+     * returned and the unload cannot proceed.
+     */
+    Status = AcpiEvClearGpeDispatchByOwner (
+        AcpiGbl_RootTableList.Tables[TableIndex].OwnerId);
+    if (ACPI_FAILURE (Status))
+    {
+        return_ACPI_STATUS (Status);
+    }
+#endif /* !ACPI_REDUCED_HARDWARE */
+
     /* Delete the portion of the namespace owned by this table */
 
     Status = AcpiTbDeleteNamespaceByOwner (TableIndex);

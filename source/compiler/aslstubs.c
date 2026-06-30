@@ -274,6 +274,13 @@ AcpiEvUpdateGpes (
 }
 
 ACPI_STATUS
+AcpiEvClearGpeDispatchByOwner (
+    ACPI_OWNER_ID           OwnerId)
+{
+    return (AE_OK);
+}
+
+ACPI_STATUS
 AcpiEvAcquireGlobalLock (
     UINT16                  Timeout)
 {
