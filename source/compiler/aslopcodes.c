@@ -866,6 +866,33 @@ OpcGenerateAmlOpcode (
     if ((Op->Asl.ParseOpcode < ASL_PARSE_OPCODE_BASE) ||
         (Index >= AslKeywordMappingCount))
     {
+        /*
+         * Some ParseOpcodes (e.g., PARSEOP_PRINTF, PARSEOP_FPRINTF) are
+         * declared after the PARSEOP_EXP_* C-style expression tokens in
+         * asltokens.y, but those expression tokens have no corresponding
+         * entries in AslKeywordMapping[].  This causes the computed Index
+         * to exceed AslKeywordMappingCount for these valid opcodes.
+         *
+         * Handle them here before reporting an error, since they do not
+         * need anything from the mapping table — their entire setup is
+         * performed by the dedicated handler functions.
+         */
+        switch (Op->Asl.ParseOpcode)
+        {
+        case PARSEOP_PRINTF:
+
+            OpcDoPrintf (Op);
+            return;
+
+        case PARSEOP_FPRINTF:
+
+            OpcDoFprintf (Op);
+            return;
+
+        default:
+            break;
+        }
+
         AslError (ASL_ERROR, ASL_MSG_COMPILER_INTERNAL, Op,
             "Invalid parse opcode in OpcGenerateAmlOpcode");
         return;
