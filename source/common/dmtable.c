@@ -723,6 +723,7 @@ const ACPI_DMTABLE_DATA     AcpiDmTableData[] =
     {ACPI_SIG_MADT, NULL,                   AcpiDmDumpMadt, DtCompileMadt,  TemplateMadt},
     {ACPI_SIG_MCFG, NULL,                   AcpiDmDumpMcfg, DtCompileMcfg,  TemplateMcfg},
     {ACPI_SIG_MCHI, AcpiDmTableInfoMchi,    NULL,           NULL,           TemplateMchi},
+    {ACPI_SIG_MISC, AcpiDmTableInfoMisc,    AcpiDmDumpMisc, DtCompileMisc,  TemplateMisc},
     {ACPI_SIG_MPAM, NULL,                   AcpiDmDumpMpam, DtCompileMpam,  TemplateMpam},
     {ACPI_SIG_MPST, AcpiDmTableInfoMpst,    AcpiDmDumpMpst, DtCompileMpst,  TemplateMpst},
     {ACPI_SIG_MRRM, NULL,                   AcpiDmDumpMrrm, DtCompileMrrm,  TemplateMrrm},
@@ -1308,6 +1309,17 @@ AcpiDmDumpTable (
              */
             ByteLength = ((ACPI_CAST_PTR (char, Table) +
                             (ACPI_CAST_PTR (ACPI_PMTT_HEADER, Table)->Length)) -
+                            ACPI_CAST_PTR (char, Target));
+            break;
+
+        case ACPI_DMT_MISC_DATA:
+            /*
+             * Calculate the length of the vendor data for the MISC table:
+             * Length = (Current Subtable ptr + EntryLength) -
+             *          Start of the vendor data (Target)
+             */
+            ByteLength = ((ACPI_CAST_PTR (char, Table) +
+                            (ACPI_CAST_PTR (ACPI_MISC_GUID_ENTRY, Table)->EntryLength)) -
                             ACPI_CAST_PTR (char, Target));
             break;
 
@@ -2075,6 +2087,7 @@ AcpiDmDumpTable (
         case ACPI_DMT_RAW_BUFFER:
         case ACPI_DMT_BUFFER:
         case ACPI_DMT_PMTT_VENDOR:
+        case ACPI_DMT_MISC_DATA:
 
             if (ByteLength == 0)
             {
