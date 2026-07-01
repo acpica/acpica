@@ -457,7 +457,10 @@ AcpiExStoreObjectToIndex (
 
             /* Note: Takes advantage of common string/buffer fields */
 
-            Value = SourceDesc->Buffer.Pointer[0];
+            if (SourceDesc->Buffer.Length > 0)
+                    Value = SourceDesc->Buffer.Pointer[0];
+            else
+                    Value = 0;
             break;
 
         default:
