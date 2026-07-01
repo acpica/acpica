@@ -351,10 +351,23 @@ AcpiUtSafeStrncpy (
     char                    *Source,
     ACPI_SIZE               DestSize)
 {
-    /* Always terminate destination string */
+    /*
+      Always zero terminated strncpy func
+      strncpy must not be used here, because the Linux kernel
+      got rid of it
+    */
+    ACPI_SIZE StrLength;
 
-    strncpy (Dest, Source, DestSize);
-    Dest[DestSize - 1] = 0;
+    if (DestSize == 0)
+	return;
+
+    StrLength = strlen(Source);
+
+    if (StrLength > DestSize - 1)
+	StrLength = DestSize - 1;
+
+    memset (Dest, 0, DestSize);
+    memcpy (Dest, Source, StrLength);
 }
 
 #endif
