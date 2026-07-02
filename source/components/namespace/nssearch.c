@@ -169,6 +169,14 @@ AcpiNsSearchParentTree (
     ACPI_OBJECT_TYPE        Type,
     ACPI_NAMESPACE_NODE     **ReturnNode);
 
+#if !defined (ACPI_ASL_COMPILER)
+static void
+AcpiNsWarnOnShadowedObject (
+    ACPI_NAMESPACE_NODE     *ScopeNode,
+    UINT32                  TargetName,
+    ACPI_OBJECT_TYPE        Type);
+#endif
+
 
 /*******************************************************************************
  *
@@ -372,6 +380,63 @@ AcpiNsSearchParentTree (
     return_ACPI_STATUS (AE_NOT_FOUND);
 }
 
+#if !defined (ACPI_ASL_COMPILER)
+/*******************************************************************************
+ *
+ * FUNCTION:    AcpiNsWarnOnShadowedObject
+ *
+ * PARAMETERS:  ScopeNode       - Scope where the new object is being created
+ *              TargetName      - New ACPI name segment
+ *              Type            - Namespace type being created
+ *
+ * RETURN:      None
+ *
+ * DESCRIPTION: Emit a diagnostic when a newly created object shadows an
+ *              existing same-named object in an ancestor scope, which can make
+ *              unqualified references ambiguous.
+ *
+ ******************************************************************************/
+
+static void
+AcpiNsWarnOnShadowedObject (
+    ACPI_NAMESPACE_NODE     *ScopeNode,
+    UINT32                  TargetName,
+    ACPI_OBJECT_TYPE        Type)
+{
+    ACPI_NAMESPACE_NODE     *ExistingNode;
+    char                    *ScopePath = NULL;
+    char                    *ExistingPath = NULL;
+    ACPI_STATUS             Status;
+
+
+    if (!ScopeNode || !ScopeNode->Parent || AcpiNsLocal (Type))
+    {
+        return;
+    }
+
+    Status = AcpiNsSearchParentTree (TargetName, ScopeNode,
+        ACPI_TYPE_ANY, &ExistingNode);
+    if (ACPI_FAILURE (Status))
+    {
+        return;
+    }
+
+    ScopePath = AcpiNsGetNormalizedPathname (ScopeNode, TRUE);
+    ExistingPath = AcpiNsGetNormalizedPathname (ExistingNode, TRUE);
+    if (ScopePath && ExistingPath)
+    {
+        ACPI_WARNING ((AE_INFO,
+            "%s %4.4s defined in %s shadows existing %s; "
+            "unqualified references to %4.4s may be ambiguous",
+            AcpiUtGetTypeName (Type), ACPI_CAST_PTR (char, &TargetName),
+            ScopePath, ExistingPath, ACPI_CAST_PTR (char, &TargetName)));
+    }
+
+    ACPI_FREE (ScopePath);
+    ACPI_FREE (ExistingPath);
+}
+#endif
+
 
 /*******************************************************************************
  *
@@ -555,6 +620,9 @@ AcpiNsSearchAndEnter (
 
     /* Install the new object into the parent's list of children */
 
+#if !defined (ACPI_ASL_COMPILER)
+    AcpiNsWarnOnShadowedObject (Node, TargetName, Type);
+#endif
     AcpiNsInstallNode (WalkState, Node, NewNode, Type);
     *ReturnNode = NewNode;
     return_ACPI_STATUS (AE_OK);
