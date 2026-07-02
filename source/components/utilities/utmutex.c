@@ -221,6 +221,12 @@ AcpiUtMutexInitialize (
         return_ACPI_STATUS (Status);
     }
 
+    Status = AcpiOsCreateLock (&AcpiGbl_NotifyLock);
+    if (ACPI_FAILURE (Status))
+    {
+        return_ACPI_STATUS (Status);
+    }
+
     /* Mutex for _OSI support */
 
     Status = AcpiOsCreateMutex (&AcpiGbl_OsiMutex);
@@ -278,6 +284,7 @@ AcpiUtMutexTerminate (
     AcpiOsDeleteLock (AcpiGbl_GpeLock);
     AcpiOsDeleteLock (AcpiGbl_HardwareLock);
     AcpiOsDeleteLock (AcpiGbl_ReferenceCountLock);
+    AcpiOsDeleteLock (AcpiGbl_NotifyLock);
 
     /* Delete the reader/writer lock */
 

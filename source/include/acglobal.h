@@ -266,6 +266,13 @@ ACPI_GLOBAL (ACPI_INTERFACE_HANDLER,    AcpiGbl_InterfaceHandler);
 ACPI_GLOBAL (ACPI_SCI_HANDLER_INFO *,   AcpiGbl_SciHandlerList);
 ACPI_GLOBAL (ACPI_GED_HANDLER_INFO *,   AcpiGbl_GedHandlerList);
 
+/* Notify dispatch tracking — per-OwnerId counters with spinlock */
+
+#define ACPI_NOTIFY_COUNT_MAX_OWNER     (ACPI_OWNER_ID_MAX + 1) /* 4096 */
+ACPI_GLOBAL (UINT16,                    AcpiGbl_NotifyExecuteCount[ACPI_NOTIFY_COUNT_MAX_OWNER]);
+ACPI_GLOBAL (BOOLEAN,                   AcpiGbl_NotifyUnloading[ACPI_NOTIFY_COUNT_MAX_OWNER]);
+ACPI_GLOBAL (ACPI_SPINLOCK,             AcpiGbl_NotifyLock);
+
 /* Owner ID support */
 
 ACPI_GLOBAL (UINT32,                    AcpiGbl_OwnerIdMask[ACPI_NUM_OWNERID_MASKS]);
