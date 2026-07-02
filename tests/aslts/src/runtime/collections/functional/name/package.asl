@@ -5034,6 +5034,54 @@
         M202 (0x01)
     }
 
+    /*
+     * Verify empty (zero-element) packages.
+     *
+     * Package(){} and Package(0){} are valid per the ACPI specification.
+     * The iASL compiler emits a remark (not an error) for these.
+     * Verify that SizeOf returns 0 and ObjectType returns Package type.
+     */
+    Method (M208, 0, Serialized)
+    {
+        TS00 (__METHOD__)
+
+        /* Package() {} - empty package with implicit zero count */
+
+        Name (PKG1, Package () {})
+
+        /* Package(0) {} - empty package with explicit zero count */
+
+        Name (PKG2, Package (0x00) {})
+
+        /* Verify ObjectType returns Package (4) for both forms */
+
+        Local0 = ObjectType (PKG1)
+        If ((Local0 != C00C))
+        {
+            ERR (__METHOD__, Z051, __LINE__, 0x00, 0x00, Local0, C00C)
+        }
+
+        Local0 = ObjectType (PKG2)
+        If ((Local0 != C00C))
+        {
+            ERR (__METHOD__, Z051, __LINE__, 0x00, 0x00, Local0, C00C)
+        }
+
+        /* Verify SizeOf returns 0 for both forms */
+
+        Local0 = SizeOf (PKG1)
+        If ((Local0 != 0x00))
+        {
+            ERR (__METHOD__, Z051, __LINE__, 0x00, 0x00, Local0, 0x00)
+        }
+
+        Local0 = SizeOf (PKG2)
+        If ((Local0 != 0x00))
+        {
+            ERR (__METHOD__, Z051, __LINE__, 0x00, 0x00, Local0, 0x00)
+        }
+    }
+
     /* Run-method */
 
     Method (PCG0, 0, NotSerialized)
@@ -5061,4 +5109,6 @@
         M200 ()
         SRMT ("m203")
         M203 ()
+        SRMT ("m208")
+        M208 ()
     }
