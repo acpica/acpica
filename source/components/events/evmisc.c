@@ -225,6 +225,7 @@ AcpiEvQueueNotifyRequest (
     ACPI_GENERIC_STATE      *Info;
     UINT8                   HandlerListId = 0;
     ACPI_STATUS             Status = AE_OK;
+    ACPI_CPU_FLAGS          Flags;
 
 
     ACPI_FUNCTION_NAME (EvQueueNotifyRequest);
@@ -286,16 +287,40 @@ AcpiEvQueueNotifyRequest (
     Info->Notify.HandlerListId = HandlerListId;
     Info->Notify.HandlerListHead = HandlerListHead;
     Info->Notify.Global = &AcpiGbl_GlobalNotify[HandlerListId];
+    Info->Notify.OwnerId = Node->OwnerId;
 
     ACPI_DEBUG_PRINT ((ACPI_DB_INFO,
         "Dispatching Notify on [%4.4s] (%s) Value 0x%2.2X (%s) Node %p\n",
         AcpiUtGetNodeName (Node), AcpiUtGetTypeName (Node->Type),
         NotifyValue, AcpiUtGetNotifyName (NotifyValue, ACPI_TYPE_ANY), Node));
 
+    if (Node->OwnerId > 0 && Node->OwnerId < ACPI_NOTIFY_COUNT_MAX_OWNER)
+    {
+        Flags = AcpiOsAcquireLock (AcpiGbl_NotifyLock);
+
+        /* Reject if table is being unloaded — avoid use-after-free of Node */
+
+        if (AcpiGbl_NotifyUnloading[Node->OwnerId])
+        {
+            AcpiOsReleaseLock (AcpiGbl_NotifyLock, Flags);
+            AcpiUtDeleteGenericState (Info);
+            return (AE_OK);
+        }
+
+        AcpiGbl_NotifyExecuteCount[Node->OwnerId]++;
+        AcpiOsReleaseLock (AcpiGbl_NotifyLock, Flags);
+    }
+
     Status = AcpiOsExecute (OSL_NOTIFY_HANDLER,
         AcpiEvNotifyDispatch, Info);
     if (ACPI_FAILURE (Status))
     {
+        if (Node->OwnerId > 0 && Node->OwnerId < ACPI_NOTIFY_COUNT_MAX_OWNER)
+        {
+            Flags = AcpiOsAcquireLock (AcpiGbl_NotifyLock);
+            AcpiGbl_NotifyExecuteCount[Node->OwnerId]--;
+            AcpiOsReleaseLock (AcpiGbl_NotifyLock, Flags);
+        }
         AcpiUtDeleteGenericState (Info);
     }
 
@@ -322,6 +347,7 @@ AcpiEvNotifyDispatch (
 {
     ACPI_GENERIC_STATE      *Info = (ACPI_GENERIC_STATE *) Context;
     ACPI_OPERAND_OBJECT     *HandlerObj;
+    ACPI_CPU_FLAGS          Flags;
 
 
     ACPI_FUNCTION_ENTRY ();
@@ -349,6 +375,13 @@ AcpiEvNotifyDispatch (
     }
 
     /* All done with the info object */
+
+    if (Info->Notify.OwnerId > 0 && Info->Notify.OwnerId < ACPI_NOTIFY_COUNT_MAX_OWNER)
+    {
+        Flags = AcpiOsAcquireLock (AcpiGbl_NotifyLock);
+        AcpiGbl_NotifyExecuteCount[Info->Notify.OwnerId]--;
+        AcpiOsReleaseLock (AcpiGbl_NotifyLock, Flags);
+    }
 
     AcpiUtDeleteGenericState (Info);
 }

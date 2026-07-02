@@ -1316,6 +1316,8 @@ AcpiTbUnloadTable (
 {
     ACPI_STATUS             Status = AE_OK;
     ACPI_TABLE_HEADER       *Table;
+    ACPI_OWNER_ID           OwnerId;
+    ACPI_CPU_FLAGS          Flags;
 
 
     ACPI_FUNCTION_TRACE (TbUnloadTable);
@@ -1350,9 +1352,45 @@ AcpiTbUnloadTable (
     }
 #endif /* !ACPI_REDUCED_HARDWARE */
 
+    /*
+     * Gate notify dispatch for this table's OwnerId so no new notifies
+     * are queued against namespace nodes that are about to be freed.
+     * If any notify dispatch is in-flight, abort the unload — the caller
+     * must retry after the dispatch completes.
+     */
+    OwnerId = AcpiGbl_RootTableList.Tables[TableIndex].OwnerId;
+    if (OwnerId > 0 && OwnerId < ACPI_NOTIFY_COUNT_MAX_OWNER)
+    {
+        Flags = AcpiOsAcquireLock (AcpiGbl_NotifyLock);
+        AcpiGbl_NotifyUnloading[OwnerId] = TRUE;
+
+        if (AcpiGbl_NotifyExecuteCount[OwnerId] > 0)
+        {
+            AcpiGbl_NotifyUnloading[OwnerId] = FALSE;
+            AcpiOsReleaseLock (AcpiGbl_NotifyLock, Flags);
+            return_ACPI_STATUS (AE_ABORT_METHOD);
+        }
+
+        AcpiOsReleaseLock (AcpiGbl_NotifyLock, Flags);
+    }
+
     /* Delete the portion of the namespace owned by this table */
 
     Status = AcpiTbDeleteNamespaceByOwner (TableIndex);
+
+    /*
+     * Clear the unloading gate. If namespace deletion failed the table
+     * remains loaded so notifies must be allowed again. If it succeeded
+     * the OwnerId is about to be released and may be reused — clear
+     * the gate before release to avoid a stale flag on the new owner.
+     */
+    if (OwnerId > 0 && OwnerId < ACPI_NOTIFY_COUNT_MAX_OWNER)
+    {
+        Flags = AcpiOsAcquireLock (AcpiGbl_NotifyLock);
+        AcpiGbl_NotifyUnloading[OwnerId] = FALSE;
+        AcpiOsReleaseLock (AcpiGbl_NotifyLock, Flags);
+    }
+
     if (ACPI_FAILURE (Status))
     {
         return_ACPI_STATUS (Status);
