@@ -366,9 +366,32 @@ AcpiExReadDataFromField (
         ACPI_DEBUG_PRINT ((ACPI_DB_BFIELD,
             "PCC FieldRead bits %u\n", ObjDesc->Field.BitLength));
 
+        /*
+         * Ensure the field access does not exceed the bounds of the
+         * InternalPccBuffer. The buffer is allocated with the region length,
+         * so verify that BaseByteOffset + field byte length <= Region.Length.
+         */
+        if (!ObjDesc->Field.RegionObj->Field.InternalPccBuffer)
+        {
+            Status = AE_AML_NO_OPERAND;
+            goto Exit;
+        }
+
+        BufferLength = (ACPI_SIZE) ACPI_ROUND_BITS_UP_TO_BYTES (
+            ObjDesc->Field.BitLength);
+        if (ObjDesc->Field.BaseByteOffset + BufferLength >
+            ObjDesc->Field.RegionObj->Region.Length)
+        {
+            ACPI_ERROR ((AE_INFO,
+                "PCC field at offset %u length %u exceeds region size %u",
+                ObjDesc->Field.BaseByteOffset, BufferLength,
+                ObjDesc->Field.RegionObj->Region.Length));
+            Status = AE_AML_BUFFER_LIMIT;
+            goto Exit;
+        }
+
         memcpy (Buffer, ObjDesc->Field.RegionObj->Field.InternalPccBuffer +
-        ObjDesc->Field.BaseByteOffset, (ACPI_SIZE) ACPI_ROUND_BITS_UP_TO_BYTES (
-            ObjDesc->Field.BitLength));
+            ObjDesc->Field.BaseByteOffset, BufferLength);
 
         *RetBufferDesc = BufferDesc;
         return AE_OK;
