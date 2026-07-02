@@ -1291,6 +1291,13 @@ AcpiTbInstallAndLoadTable (
     }
 
     Status = AcpiTbLoadTable (i, AcpiGbl_RootNode);
+    if (ACPI_FAILURE (Status))
+    {
+        /* Table was installed but not loaded, uninstall to clean up */
+
+        AcpiTbUninstallTable (&AcpiGbl_RootTableList.Tables[i]);
+        goto Exit;
+    }
 
 Exit:
     *TableIndex = i;
