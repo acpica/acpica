@@ -487,9 +487,28 @@ AcpiExWriteDataToField (
          * implementation will use the offsets specified rather than the name
          * of the field. This is considered safer because some firmware tools
          * are known to obfiscate named objects.
+         *
+         * Ensure the field access does not exceed the bounds of the
+         * InternalPccBuffer.
          */
         DataLength = (ACPI_SIZE) ACPI_ROUND_BITS_UP_TO_BYTES (
             ObjDesc->Field.BitLength);
+
+        if (!ObjDesc->Field.RegionObj->Field.InternalPccBuffer)
+        {
+            return_ACPI_STATUS (AE_AML_NO_OPERAND);
+        }
+
+        if (ObjDesc->Field.BaseByteOffset + DataLength >
+            ObjDesc->Field.RegionObj->Region.Length)
+        {
+            ACPI_ERROR ((AE_INFO,
+                "PCC field at offset %u length %u exceeds region size %u",
+                ObjDesc->Field.BaseByteOffset, DataLength,
+                ObjDesc->Field.RegionObj->Region.Length));
+            return_ACPI_STATUS (AE_AML_BUFFER_LIMIT);
+        }
+
         memcpy (ObjDesc->Field.RegionObj->Field.InternalPccBuffer +
             ObjDesc->Field.BaseByteOffset,
             SourceDesc->Buffer.Pointer, DataLength);
