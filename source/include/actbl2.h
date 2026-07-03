@@ -1471,6 +1471,7 @@ typedef struct acpi_keyp_common_header {
 enum AcpiKeypType
 {
     ACPI_KEYP_TYPE_CONFIG_UNIT      = 0,
+    ACPI_KEYP_TYPE_RESERVED         = 1,
 };
 
 /* Root Port Information Structure */

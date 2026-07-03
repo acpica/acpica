@@ -729,7 +729,7 @@ ACPI_DMTABLE_INFO           AcpiDmTableInfoKeyp[] =
 
 ACPI_DMTABLE_INFO           AcpiDmTableInfoKeypHdr[] =
 {
-    {ACPI_DMT_UINT8,    ACPI_KEYPH_OFFSET (Type),                   "Type", 0},
+    {ACPI_DMT_KEYP,     ACPI_KEYPH_OFFSET (Type),                   "Type", 0},
     {ACPI_DMT_UINT8,    ACPI_KEYPH_OFFSET (Reserved),               "Reserved", 0},
     {ACPI_DMT_UINT16,   ACPI_KEYPH_OFFSET (Length),                 "Length", DT_LENGTH},
     ACPI_DMT_TERMINATOR
