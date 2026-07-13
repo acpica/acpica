@@ -944,6 +944,8 @@ AcpiDmDumpKeyp (
     ACPI_KEYP_CONFIG_UNIT   *ConfigUnit;
     UINT32                  Length = Table->Length;
     UINT32                  Offset = sizeof (ACPI_TABLE_KEYP);
+    UINT32                  SubtableLength;
+    UINT32                  RootPortLength;
     UINT32                  RpOffset;
     UINT32                  i;
 
@@ -963,6 +965,13 @@ AcpiDmDumpKeyp (
         /* Common subtable header */
 
         Subtable = ACPI_ADD_PTR (ACPI_KEYP_COMMON_HEADER, Table, Offset);
+        SubtableLength = Table->Length - Offset;
+        if (SubtableLength < sizeof (ACPI_KEYP_COMMON_HEADER))
+        {
+            AcpiOsPrintf ("Invalid KEYP subtable header length\n");
+            return;
+        }
+
         AcpiOsPrintf ("\n");
         Status = AcpiDmDumpTable (Length, Offset, Subtable,
             sizeof (ACPI_KEYP_COMMON_HEADER), AcpiDmTableInfoKeypHdr);
@@ -971,9 +980,10 @@ AcpiDmDumpKeyp (
             return;
         }
 
-        if (!Subtable->Length)
+        if ((Subtable->Length < sizeof (ACPI_KEYP_COMMON_HEADER)) ||
+            (Subtable->Length > SubtableLength))
         {
-            AcpiOsPrintf ("Invalid zero length KEYP subtable\n");
+            AcpiOsPrintf ("Invalid KEYP subtable length\n");
             return;
         }
 
@@ -982,6 +992,26 @@ AcpiDmDumpKeyp (
         case ACPI_KEYP_TYPE_CONFIG_UNIT:
 
             ConfigUnit = ACPI_CAST_PTR (ACPI_KEYP_CONFIG_UNIT, Subtable);
+
+            if (Subtable->Length < sizeof (ACPI_KEYP_CONFIG_UNIT))
+            {
+                AcpiOsPrintf ("Invalid KEYP config unit length\n");
+                return;
+            }
+
+            RootPortLength = Subtable->Length - sizeof (ACPI_KEYP_CONFIG_UNIT);
+            if (RootPortLength % sizeof (ACPI_KEYP_RP_INFO))
+            {
+                AcpiOsPrintf ("Invalid KEYP root port array size\n");
+                return;
+            }
+
+            if ((((UINT32) ConfigUnit->RootPortCount) * sizeof (ACPI_KEYP_RP_INFO)) !=
+                RootPortLength)
+            {
+                AcpiOsPrintf ("Invalid KEYP root port array length\n");
+                return;
+            }
 
             AcpiOsPrintf ("\n");
             Status = AcpiDmDumpTable (Length, Offset, Subtable,

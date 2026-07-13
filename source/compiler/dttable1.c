@@ -3594,7 +3594,8 @@ DtCompileKeyp (
     DT_FIELD                *SubtableStart;
     ACPI_KEYP_COMMON_HEADER *KeypHeader;
     ACPI_KEYP_CONFIG_UNIT   *ConfigUnit;
-    UINT32                  i;
+    UINT32                  RootPortCount;
+    char                    MsgBuffer[64] = "";
 
 
     /* Main table */
@@ -3650,7 +3651,8 @@ DtCompileKeyp (
 
             /* Root Port Information structures */
 
-            for (i = 0; i < ConfigUnit->RootPortCount; i++)
+            RootPortCount = 0;
+            while (*PFieldList && !strcmp ((*PFieldList)->Name, "Segment"))
             {
                 Status = DtCompileTable (PFieldList, AcpiDmTableInfoKeyp0a,
                     &Subtable);
@@ -3661,6 +3663,16 @@ DtCompileKeyp (
 
                 ParentTable = DtPeekSubtable ();
                 DtInsertSubtable (ParentTable, Subtable);
+                RootPortCount++;
+            }
+
+            if (RootPortCount != ConfigUnit->RootPortCount)
+            {
+                snprintf (MsgBuffer, sizeof (MsgBuffer),
+                    "KEYP root port count %u does not match actual entries %u",
+                    ConfigUnit->RootPortCount, RootPortCount);
+                DtFatal (ASL_MSG_INVALID_LENGTH, SubtableStart, MsgBuffer);
+                return (AE_ERROR);
             }
             break;
 
