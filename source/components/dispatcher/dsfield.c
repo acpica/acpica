@@ -548,6 +548,13 @@ AcpiDsGetFieldNames (
 
         case AML_INT_NAMEDFIELD_OP:
 
+            /* Validate the 4-char name to prevent OOB read in AcpiNsLookup */
+
+            if (!AcpiUtValidNameseg ((char *) &Arg->Named.Name))
+            {
+                return_ACPI_STATUS (AE_BAD_CHARACTER);
+            }
+
             /* Lookup the name, it should already exist */
 
             Status = AcpiNsLookup (WalkState->ScopeInfo,
@@ -811,6 +818,13 @@ AcpiDsInitFieldObjects (
          */
         if (Arg->Common.AmlOpcode == AML_INT_NAMEDFIELD_OP)
         {
+            /* Validate the 4-char name to prevent OOB read in AcpiNsLookup */
+
+            if (!AcpiUtValidNameseg ((char *) &Arg->Named.Name))
+            {
+                return_ACPI_STATUS (AE_BAD_CHARACTER);
+            }
+
             Status = AcpiNsLookup (WalkState->ScopeInfo,
                 (char *) &Arg->Named.Name, Type, ACPI_IMODE_LOAD_PASS1,
                 Flags, WalkState, &Node);
