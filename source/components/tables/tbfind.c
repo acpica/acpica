@@ -208,8 +208,25 @@ AcpiTbFindTable (
 
     memset (&Header, 0, sizeof (ACPI_TABLE_HEADER));
     ACPI_COPY_NAMESEG (Header.Signature, Signature);
-    memcpy (Header.OemId, OemId, ACPI_OEM_ID_SIZE);
-    memcpy (Header.OemTableId, OemTableId, ACPI_OEM_TABLE_ID_SIZE);
+    if (strlen (OemId) >= ACPI_OEM_ID_SIZE)
+    {
+        memcpy (Header.OemId, OemId, ACPI_OEM_ID_SIZE);
+    }
+    else
+    {
+        memcpy (Header.OemId, OemId, strlen (OemId));
+        /* Remainder is already zeroed by memset above */
+    }
+
+    if (strlen (OemTableId) >= ACPI_OEM_TABLE_ID_SIZE)
+    {
+        memcpy (Header.OemTableId, OemTableId, ACPI_OEM_TABLE_ID_SIZE);
+    }
+    else
+    {
+        memcpy (Header.OemTableId, OemTableId, strlen (OemTableId));
+        /* Remainder is already zeroed by memset above */
+    }
 
     /* Search for the table */
 
