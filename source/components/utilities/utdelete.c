@@ -698,7 +698,11 @@ AcpiUtUpdateObjectReference (
                 PrevObject = Object->CommonNotify.NotifyList[i];
                 while (PrevObject)
                 {
-                    if (PrevObject->Common.Type != ACPI_TYPE_LOCAL_NOTIFY)
+                    /* Stop if list entry is not a valid notify descriptor */
+                    if (((ACPI_SIZE) PrevObject < sizeof (ACPI_OPERAND_OBJECT)) ||
+                        (ACPI_GET_DESCRIPTOR_TYPE (PrevObject) !=
+                            ACPI_DESC_TYPE_OPERAND) ||
+                        (PrevObject->Common.Type != ACPI_TYPE_LOCAL_NOTIFY))
                     {
                         break;
                     }
