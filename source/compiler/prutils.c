@@ -41,24 +41,6 @@
  *
  * 3.1. Redistribution of Source with Rights to Further Distribute Source.
  * Redistribution of source code of any substantial portion of the Covered
- * Code or modification with rights to further distribute source must include
- * the above Copyright Notice, the above License, this list of Conditions,
- * and the following Disclaimer and Export Compliance provision. In addition,
- * Licensee must cause all Covered Code to which Licensee contributes to
- * contain a file documenting the changes Licensee made to create that Covered
- * Code and the date of any change. Licensee must include in that file the
- * documentation of any changes made by any predecessor Licensee. Licensee
- * must include a prominent statement that the modification is derived,
- * directly or indirectly, from Original Intel Code.
- *
- * 3.2. Redistribution of Source with no Rights to Further Distribute Source.
- * Redistribution of source code of any substantial portion of the Covered
- * Code or modification without rights to further distribute source must
- * include the following Disclaimer and Export Compliance provision in the
- * documentation and/or other materials provided with distribution. In
- * addition, Licensee may not authorize further sublicense of source of any
- * portion of the Covered Code, and must include terms to the effect that the
- * license from Licensee to its licensee is limited to the intellectual
  * property embodied in the software Licensee provides to its licensee, and
  * not to intellectual property embodied in modifications its licensee may
  * make.
@@ -289,8 +271,9 @@ PrError (
  * PARAMETERS:  Args                - Struct containing name, offset & usecount
  *              Diff1               - Difference in lengths when new < old
  *              Diff2               - Difference in lengths when new > old
-*               i                   - The curr. no. of iteration of replacement
+ *              i                   - The curr. no. of iteration of replacement
  *              Token               - Substring that replaces Args->Name
+ *              Stringize           - TRUE if the argument is stringized
  *
  * RETURN:      None
  *
@@ -304,17 +287,73 @@ PrReplaceResizeSubstring(
     UINT32                  Diff1,
     UINT32                  Diff2,
     UINT32                  i,
-    char                    *Token)
+    char                    *Token,
+    BOOLEAN                 Stringize)
 {
     UINT32                  b, PrevOffset;
     char                    *temp;
     char                    macro_sep[64];
+    char                    *SearchName = NULL;
+    char                    *QuotedToken = NULL;
+    UINT32                  SearchLength;
 
 
     AslGbl_MacroTokenReplaceBuffer = (char *) realloc (AslGbl_MacroTokenReplaceBuffer,
         (2 * (strlen (AslGbl_MacroTokenBuffer))));
 
     strcpy (macro_sep, "~,() {}!*/%+-<>=&^|\"\t\n");
+
+    if (Stringize)
+    {
+        SearchLength = strlen (Args->Name) + 1;
+        SearchName = UtLocalCalloc (SearchLength + 1);
+        SearchName[0] = '#';
+        strcpy (&SearchName[1], Args->Name);
+
+        QuotedToken = UtLocalCalloc (strlen (Token) + 3);
+        sprintf (QuotedToken, "\"%s\"", Token);
+
+        PrevOffset = Args->Offset[i];
+        temp = strstr (AslGbl_MacroTokenBuffer, SearchName);
+        if (temp == NULL)
+        {
+            goto StringizeExit;
+        }
+
+ResetStringize:
+        temp = strstr (temp, SearchName);
+        if (temp == NULL)
+        {
+            goto StringizeExit;
+        }
+
+        Args->Offset[i] = strlen (AslGbl_MacroTokenBuffer) -
+            strlen (temp);
+        if (Args->Offset[i] != 0)
+        {
+            if ((strchr (macro_sep, AslGbl_MacroTokenBuffer[(Args->Offset[i] - 1)])) &&
+                (strchr (macro_sep, AslGbl_MacroTokenBuffer[(Args->Offset[i] + SearchLength)])))
+            {
+                Args->Offset[i] += 0;
+            }
+            else
+            {
+                temp += SearchLength;
+                goto ResetStringize;
+            }
+        }
+
+        PrReplaceData (
+            &AslGbl_MacroTokenBuffer[Args->Offset[i]],
+            SearchLength, QuotedToken, strlen (QuotedToken));
+
+        Args->Offset[i] = PrevOffset;
+
+StringizeExit:
+        ACPI_FREE (SearchName);
+        ACPI_FREE (QuotedToken);
+        return;
+    }
 
     /*
      * When the replacement argument (during invocation) length

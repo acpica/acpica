@@ -478,7 +478,16 @@ PrAddMacro (
 
     while (Token)
     {
+        BOOLEAN                 Stringize = FALSE;
+        char                    *TokenStart = Token;
+
         /* Search the macro arg list for matching arg */
+
+        if (*Token == '#')
+        {
+            Stringize = TRUE;
+            Token++;
+        }
 
         for (i = 0; ((i < PR_MAX_MACRO_ARGS) && Args[i].Name); i++)
         {
@@ -493,13 +502,15 @@ PrAddMacro (
                 UseCount = Args[i].UseCount;
 
                 Args[i].Offset[UseCount] =
-                    (Token - AslGbl_MainTokenBuffer) - MacroBodyOffset;
+                    (TokenStart - AslGbl_MainTokenBuffer) - MacroBodyOffset;
+                Args[i].Stringize[UseCount] = Stringize;
 
 
                 DbgPrint (ASL_DEBUG_OUTPUT, PR_PREFIX_ID
-                    "Macro Arg #%u: %s UseCount %u Offset %u\n",
+                    "Macro Arg #%u: %s UseCount %u Offset %u%s\n",
                     AslGbl_CurrentLineNumber, i, Token,
-                    UseCount+1, Args[i].Offset[UseCount]);
+                    UseCount+1, Args[i].Offset[UseCount],
+                    Stringize ? " (stringize)" : "");
 
                 Args[i].UseCount++;
 
@@ -665,7 +676,8 @@ PrDoMacroInvocation (
 
             AslGbl_MacroTokenReplaceBuffer = (char *) calloc ((strlen (AslGbl_MacroTokenBuffer)), sizeof (char));
 
-            PrReplaceResizeSubstring (Args, Diff1, Diff2, i, Token);
+            PrReplaceResizeSubstring (Args, Diff1, Diff2, i, Token,
+                Args->Stringize[i]);
 
             DbgPrint (ASL_DEBUG_OUTPUT, PR_PREFIX_ID
                 "ExpandArg: %s\n",

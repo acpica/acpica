@@ -193,6 +193,7 @@ typedef struct pr_macro_arg
 {
     char                        *Name;
     UINT32                      Offset[PR_MAX_ARG_INSTANCES];
+    BOOLEAN                     Stringize[PR_MAX_ARG_INSTANCES];
     UINT16                      UseCount;
 
 } PR_MACRO_ARG;
@@ -376,7 +377,8 @@ PrReplaceResizeSubstring(
     UINT32                  Diff1,
     UINT32                  Diff2,
     UINT32                  i,
-    char                    *Token);
+    char                    *Token,
+    BOOLEAN                 Stringize);
 
 char *
 PrReplaceData (
