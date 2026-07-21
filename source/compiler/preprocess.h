@@ -380,6 +380,10 @@ PrReplaceResizeSubstring(
     char                    *Token,
     BOOLEAN                 Stringize);
 
+void
+PrResolveTokenPasting (
+    void);
+
 char *
 PrReplaceData (
     char                    *Buffer,

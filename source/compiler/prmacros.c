@@ -629,6 +629,8 @@ PrDoMacroInvocation (
             goto BadInvocation;
         }
 
+        PrResolveTokenPasting ();
+
         TokenOffset = (MacroStart - TokenBuffer);
         Length = Token - MacroStart + strlen (Token) + 1;
 
@@ -691,6 +693,8 @@ PrDoMacroInvocation (
     {
         return;
     }
+
+    PrResolveTokenPasting ();
 
     /* Replace the entire macro invocation with the expanded macro */
 

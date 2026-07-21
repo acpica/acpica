@@ -633,6 +633,44 @@ PrReplaceData (
 
 /*******************************************************************************
  *
+ * FUNCTION:    PrResolveTokenPasting
+ *
+ * DESCRIPTION: Resolve simple token pasting by removing ## and adjacent
+ *              whitespace in the expanded macro buffer.
+ *
+ ******************************************************************************/
+
+void
+PrResolveTokenPasting (
+    void)
+{
+    char                    *PoundPound;
+    char                    *Start;
+    char                    *End;
+
+
+    while ((PoundPound = strstr (AslGbl_MacroTokenBuffer, "##")) != NULL)
+    {
+        Start = PoundPound;
+        while ((Start > AslGbl_MacroTokenBuffer) &&
+            isspace ((int) Start[-1]))
+        {
+            Start--;
+        }
+
+        End = PoundPound + 2;
+        while (*End && isspace ((int) *End))
+        {
+            End++;
+        }
+
+        PrReplaceData (Start, (UINT32) (End - Start), "", 0);
+    }
+}
+
+
+/*******************************************************************************
+ *
  * FUNCTION:    PrOpenIncludeFile
  *
  * PARAMETERS:  Filename            - Filename or pathname for include file
