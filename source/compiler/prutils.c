@@ -292,16 +292,26 @@ PrReplaceResizeSubstring(
 {
     UINT32                  b, PrevOffset;
     char                    *temp;
-    char                    macro_sep[64];
+    const char              *MacroSeparators = PR_MACRO_SEPARATORS;
     char                    *SearchName = NULL;
     char                    *QuotedToken = NULL;
     UINT32                  SearchLength;
+    ACPI_SIZE               CurrentLength;
+    ACPI_SIZE               RequiredLength;
+    ACPI_SIZE               ReplaceLength;
 
 
-    AslGbl_MacroTokenReplaceBuffer = (char *) realloc (AslGbl_MacroTokenReplaceBuffer,
-        (2 * (strlen (AslGbl_MacroTokenBuffer))));
+    CurrentLength = strlen (AslGbl_MacroTokenBuffer);
+    ReplaceLength = Stringize ? (strlen (Token) + 2) : strlen (Token);
+    RequiredLength = CurrentLength + 1;
 
-    strcpy (macro_sep, "~,() {}!*/%+-<>=&^|\"\t\n");
+    if (ReplaceLength > strlen (Args->Name))
+    {
+        RequiredLength += (ReplaceLength - strlen (Args->Name));
+    }
+
+    AslGbl_MacroTokenReplaceBuffer = (char *) realloc (
+        AslGbl_MacroTokenReplaceBuffer, RequiredLength);
 
     if (Stringize)
     {
@@ -331,8 +341,10 @@ ResetStringize:
             strlen (temp);
         if (Args->Offset[i] != 0)
         {
-            if ((strchr (macro_sep, AslGbl_MacroTokenBuffer[(Args->Offset[i] - 1)])) &&
-                (strchr (macro_sep, AslGbl_MacroTokenBuffer[(Args->Offset[i] + SearchLength)])))
+            if ((strchr (MacroSeparators,
+                    AslGbl_MacroTokenBuffer[(Args->Offset[i] - 1)])) &&
+                (strchr (MacroSeparators,
+                    AslGbl_MacroTokenBuffer[(Args->Offset[i] + SearchLength)])))
             {
                 Args->Offset[i] += 0;
             }
@@ -387,8 +399,10 @@ ResetHere1:
         {
             goto JumpHere1;
         }
-        if ((strchr (macro_sep, AslGbl_MacroTokenBuffer[(Args->Offset[i] - 1)])) &&
-            (strchr (macro_sep, AslGbl_MacroTokenBuffer[(Args->Offset[i] + strlen (Args->Name))])))
+        if ((strchr (MacroSeparators,
+                AslGbl_MacroTokenBuffer[(Args->Offset[i] - 1)])) &&
+            (strchr (MacroSeparators,
+                AslGbl_MacroTokenBuffer[(Args->Offset[i] + strlen (Args->Name))])))
         {
             Args->Offset[i] += 0;
         }
@@ -495,8 +509,10 @@ ResetHere2:
         {
             goto JumpHere2;
         }
-        if ((strchr (macro_sep, AslGbl_MacroTokenBuffer[(Args->Offset[i] - 1)])) &&
-            (strchr (macro_sep, AslGbl_MacroTokenBuffer[(Args->Offset[i] + strlen (Args->Name))])))
+        if ((strchr (MacroSeparators,
+                AslGbl_MacroTokenBuffer[(Args->Offset[i] - 1)])) &&
+            (strchr (MacroSeparators,
+                AslGbl_MacroTokenBuffer[(Args->Offset[i] + strlen (Args->Name))])))
         {
             Args->Offset[i] += 0;
         }
@@ -556,8 +572,10 @@ ResetHere3:
         {
             goto JumpHere3;
         }
-        if ((strchr (macro_sep, AslGbl_MacroTokenBuffer[(Args->Offset[i] - 1)])) &&
-            (strchr (macro_sep, AslGbl_MacroTokenBuffer[(Args->Offset[i] + strlen (Args->Name))])))
+        if ((strchr (MacroSeparators,
+                AslGbl_MacroTokenBuffer[(Args->Offset[i] - 1)])) &&
+            (strchr (MacroSeparators,
+                AslGbl_MacroTokenBuffer[(Args->Offset[i] + strlen (Args->Name))])))
         {
             Args->Offset[i] += 0;
         }

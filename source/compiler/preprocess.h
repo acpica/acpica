@@ -177,7 +177,7 @@
  * Local defines and macros
  */
 #define PR_TOKEN_SEPARATORS     " ,(){}\t\n"
-#define PR_MACRO_SEPARATORS     " ,(){}~!*/%+-<>=&^|\"\t\n"
+#define PR_MACRO_SEPARATORS     " ,(){}[];?:~!*/%+-<>=&^|\"\t\n"
 #define PR_MACRO_ARGUMENTS      " ,\t\n"
 #define PR_EXPR_SEPARATORS      " ,(){}~!*/%+-<>=&^|\"\t\n"
 

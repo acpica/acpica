@@ -386,9 +386,12 @@ PrAddMacro (
     char                    *Token = NULL;
     ACPI_SIZE               TokenOffset;
     ACPI_SIZE               MacroBodyOffset;
+    ACPI_SIZE               BodyTokenOffset;
     PR_DEFINE_INFO          *DefineInfo;
     PR_MACRO_ARG            *Args;
     char                    *Body;
+    char                    *BodyScanBuffer = NULL;
+    char                    *BodyNext = NULL;
     char                    *BodyInSource;
     UINT32                  i;
     UINT16                  UseCount = 0;
@@ -502,13 +505,26 @@ PrAddMacro (
 
     /* Get the macro body. Token now points to start of body */
 
-    if (!Token)
+    BodyTokenOffset = EndOfArgList + 1;
+    while (AslGbl_CurrentLineBuffer[BodyTokenOffset] &&
+        isspace ((int) AslGbl_CurrentLineBuffer[BodyTokenOffset]))
+    {
+        BodyTokenOffset++;
+    }
+
+    if (!AslGbl_CurrentLineBuffer[BodyTokenOffset])
     {
         BodyInSource = "";
         goto AddMacroToList;
     }
 
-    MacroBodyOffset = Token - AslGbl_MainTokenBuffer;
+    MacroBodyOffset = BodyTokenOffset;
+    BodyInSource = &AslGbl_CurrentLineBuffer[MacroBodyOffset];
+
+    BodyScanBuffer = UtLocalCalloc (strlen (BodyInSource) + 1);
+    strcpy (BodyScanBuffer, BodyInSource);
+
+    Token = PrGetNextToken (BodyScanBuffer, PR_MACRO_SEPARATORS, &BodyNext);
 
     /* Match each method arg in the macro body for later use */
 
@@ -538,7 +554,7 @@ PrAddMacro (
                 UseCount = Args[i].UseCount;
 
                 Args[i].Offset[UseCount] =
-                    (TokenStart - AslGbl_MainTokenBuffer) - MacroBodyOffset;
+                    (TokenStart - BodyScanBuffer);
                 Args[i].Stringize[UseCount] = Stringize;
 
 
@@ -561,10 +577,11 @@ PrAddMacro (
             }
         }
 
-        Token = PrGetNextToken (NULL, PR_MACRO_SEPARATORS, Next);
+        Token = PrGetNextToken (NULL, PR_MACRO_SEPARATORS, &BodyNext);
     }
 
-    BodyInSource = &AslGbl_CurrentLineBuffer[MacroBodyOffset];
+    ACPI_FREE (BodyScanBuffer);
+    BodyScanBuffer = NULL;
 
 
 AddMacroToList:
@@ -613,6 +630,7 @@ AddMacroToList:
 
 
 ErrorExit:
+    ACPI_FREE (BodyScanBuffer);
     ACPI_FREE (Args);
     return;
 }
@@ -656,9 +674,12 @@ PrDoMacroInvocation (
     UINT32                  ArgCount;
     UINT32                  ArgIndex;
     UINT32                  FixedArgCount;
-    UINT32                  Depth;
+    UINT32                  ParenDepth;
+    UINT32                  BraceDepth;
+    UINT32                  BracketDepth;
     ACPI_SIZE               ArgLength;
     BOOLEAN                 Variadic;
+    BOOLEAN                 InString;
 
 
     /* This path parses invocation directly from source text */
@@ -690,30 +711,87 @@ PrDoMacroInvocation (
 
     Cursor++;
     ArgStart = Cursor;
-    Depth = 0;
+    ParenDepth = 0;
+    BraceDepth = 0;
+    BracketDepth = 0;
+    InString = FALSE;
     ArgIndex = 0;
 
     while (*Cursor)
     {
+        if (*Cursor == '\\' && InString && Cursor[1])
+        {
+            Cursor += 2;
+            continue;
+        }
+
+        if (*Cursor == '"')
+        {
+            InString = (BOOLEAN) !InString;
+            Cursor++;
+            continue;
+        }
+
+        if (InString)
+        {
+            Cursor++;
+            continue;
+        }
+
         if (*Cursor == '(')
         {
-            Depth++;
+            ParenDepth++;
+            Cursor++;
+            continue;
+        }
+
+        if (*Cursor == '{')
+        {
+            BraceDepth++;
+            Cursor++;
+            continue;
+        }
+
+        if (*Cursor == '[')
+        {
+            BracketDepth++;
             Cursor++;
             continue;
         }
 
         if (*Cursor == ')')
         {
-            if (Depth)
+            if (ParenDepth)
             {
-                Depth--;
+                ParenDepth--;
                 Cursor++;
                 continue;
             }
         }
 
-        if ((*Cursor == ',' && !Depth && (!Variadic || (ArgIndex < FixedArgCount))) ||
-            (*Cursor == ')' && !Depth))
+        if (*Cursor == '}')
+        {
+            if (BraceDepth)
+            {
+                BraceDepth--;
+                Cursor++;
+                continue;
+            }
+        }
+
+        if (*Cursor == ']')
+        {
+            if (BracketDepth)
+            {
+                BracketDepth--;
+                Cursor++;
+                continue;
+            }
+        }
+
+        if ((*Cursor == ',' && !ParenDepth && !BraceDepth && !BracketDepth &&
+                (!Variadic || (ArgIndex < FixedArgCount))) ||
+            (*Cursor == ')' && !ParenDepth && !BraceDepth && !BracketDepth))
         {
             if (ArgIndex >= PR_MAX_MACRO_ARGS)
             {
@@ -757,21 +835,68 @@ PrDoMacroInvocation (
                 }
 
                 Cursor = ArgStart;
-                Depth = 0;
+                ParenDepth = 0;
+                BraceDepth = 0;
+                BracketDepth = 0;
+                InString = FALSE;
                 while (*Cursor)
                 {
+                    if (*Cursor == '\\' && InString && Cursor[1])
+                    {
+                        Cursor += 2;
+                        continue;
+                    }
+
+                    if (*Cursor == '"')
+                    {
+                        InString = (BOOLEAN) !InString;
+                        Cursor++;
+                        continue;
+                    }
+
+                    if (InString)
+                    {
+                        Cursor++;
+                        continue;
+                    }
+
                     if (*Cursor == '(')
                     {
-                        Depth++;
+                        ParenDepth++;
+                    }
+                    else if (*Cursor == '{')
+                    {
+                        BraceDepth++;
+                    }
+                    else if (*Cursor == '[')
+                    {
+                        BracketDepth++;
                     }
                     else if (*Cursor == ')')
                     {
-                        if (!Depth)
+                        if (!ParenDepth && !BraceDepth && !BracketDepth)
                         {
                             break;
                         }
 
-                        Depth--;
+                        if (ParenDepth)
+                        {
+                            ParenDepth--;
+                        }
+                    }
+                    else if (*Cursor == '}')
+                    {
+                        if (BraceDepth)
+                        {
+                            BraceDepth--;
+                        }
+                    }
+                    else if (*Cursor == ']')
+                    {
+                        if (BracketDepth)
+                        {
+                            BracketDepth--;
+                        }
                     }
 
                     Cursor++;
