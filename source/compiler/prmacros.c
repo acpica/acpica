@@ -154,6 +154,23 @@
 #define _COMPONENT          ASL_PREPROCESSOR
         ACPI_MODULE_NAME    ("prmacros")
 
+#define PR_BUILTIN_TERNARY_STORE    "ASL_TERNARY_STORE"
+#define PR_BUILTIN_TERNARY_RETURN   "ASL_TERNARY_RETURN"
+
+static void
+PrAddBuiltInMacro (
+    const char              *Name,
+    const char              *Body,
+    const char              **ArgNames,
+    UINT32                  ArgCount);
+
+static BOOLEAN
+PrExpandBuiltInMacro (
+    PR_DEFINE_INFO          *DefineInfo,
+    char                    **ArgValues,
+    UINT32                  TokenOffset,
+    UINT32                  Length);
+
 
 /*******************************************************************************
  *
@@ -185,6 +202,161 @@ PrDumpPredefinedNames (
 
         DefineInfo = DefineInfo->Next;
     }
+}
+
+
+/*******************************************************************************
+ *
+ * FUNCTION:    PrAddBuiltInMacros
+ *
+ * PARAMETERS:  None
+ *
+ * RETURN:      None
+ *
+ * DESCRIPTION: Install built-in helper macros that lower ternary-like usage
+ *              into compile-safe ASL If/Else constructs.
+ *
+ ******************************************************************************/
+
+void
+PrAddBuiltInMacros (
+    void)
+{
+    static const char       *StoreArgs[] =
+    {
+        "dst", "cond", "tv", "fv"
+    };
+    static const char       *ReturnArgs[] =
+    {
+        "cond", "tv", "fv"
+    };
+
+
+    PrAddBuiltInMacro (PR_BUILTIN_TERNARY_STORE,
+        "If (cond) { Store (tv, dst) } Else { Store (fv, dst) }",
+        StoreArgs, 4);
+
+    PrAddBuiltInMacro (PR_BUILTIN_TERNARY_RETURN,
+        "If (cond) { Return (tv) } Else { Return (fv) }",
+        ReturnArgs, 3);
+}
+
+
+/*******************************************************************************
+ *
+ * FUNCTION:    PrAddBuiltInMacro
+ *
+ * PARAMETERS:  Name                - Built-in macro name
+ *              Body                - Prototype body text
+ *              ArgNames            - Argument names
+ *              ArgCount            - Number of arguments
+ *
+ * RETURN:      None
+ *
+ * DESCRIPTION: Register a built-in macro directly in define list.
+ *
+ ******************************************************************************/
+
+static void
+PrAddBuiltInMacro (
+    const char              *Name,
+    const char              *Body,
+    const char              **ArgNames,
+    UINT32                  ArgCount)
+{
+    PR_DEFINE_INFO          *DefineInfo;
+    PR_MACRO_ARG            *Args;
+    UINT32                  i;
+
+
+    DefineInfo = PrAddDefine ((char *) Name, (char *) Body, FALSE);
+    if (!DefineInfo)
+    {
+        return;
+    }
+
+    if (DefineInfo->Body)
+    {
+        return;
+    }
+
+    DefineInfo->Body = UtLocalCalloc (strlen (Body) + 1);
+    strcpy (DefineInfo->Body, Body);
+
+    Args = UtLocalCalloc (sizeof (PR_MACRO_ARG) * PR_MAX_MACRO_ARGS);
+    for (i = 0; i < ArgCount; i++)
+    {
+        Args[i].Name = UtLocalCalloc (strlen (ArgNames[i]) + 1);
+        strcpy (Args[i].Name, ArgNames[i]);
+    }
+
+    DefineInfo->Args = Args;
+    DefineInfo->ArgCount = (UINT16) ArgCount;
+    DefineInfo->Variadic = FALSE;
+}
+
+
+/*******************************************************************************
+ *
+ * FUNCTION:    PrExpandBuiltInMacro
+ *
+ * PARAMETERS:  DefineInfo           - Macro metadata
+ *              ArgValues            - Invocation arguments
+ *              TokenOffset          - Invocation start offset
+ *              Length               - Invocation source length
+ *
+ * RETURN:      TRUE if handled, FALSE otherwise.
+ *
+ * DESCRIPTION: Expand built-in helper macros to compile-safe ASL constructs.
+ *
+ ******************************************************************************/
+
+static BOOLEAN
+PrExpandBuiltInMacro (
+    PR_DEFINE_INFO          *DefineInfo,
+    char                    **ArgValues,
+    UINT32                  TokenOffset,
+    UINT32                  Length)
+{
+    int                     Count;
+
+
+    if (!strcmp (DefineInfo->Identifier, PR_BUILTIN_TERNARY_STORE))
+    {
+        Count = snprintf (AslGbl_MacroTokenBuffer, AslGbl_LineBufferSize,
+            "If (%s) { Store (%s, %s) } Else { Store (%s, %s) }",
+            ArgValues[1], ArgValues[2], ArgValues[0], ArgValues[3],
+            ArgValues[0]);
+        if (Count <= 0 || ((UINT32) Count >= AslGbl_LineBufferSize))
+        {
+            PrError (ASL_ERROR, ASL_MSG_INVALID_INVOCATION, TokenOffset);
+            return (TRUE);
+        }
+
+        PrReplaceData (
+            &AslGbl_CurrentLineBuffer[TokenOffset], Length,
+            AslGbl_MacroTokenBuffer, strlen (AslGbl_MacroTokenBuffer));
+        return (TRUE);
+    }
+
+    if (!strcmp (DefineInfo->Identifier, PR_BUILTIN_TERNARY_RETURN))
+    {
+        Count = snprintf (AslGbl_MacroTokenBuffer, AslGbl_LineBufferSize,
+            "If (%s) { Return (%s) } Else { Return (%s) }",
+            ArgValues[0], ArgValues[1], ArgValues[2]);
+        if (Count <= 0 || ((UINT32) Count >= AslGbl_LineBufferSize))
+        {
+            PrError (ASL_ERROR, ASL_MSG_INVALID_INVOCATION, TokenOffset);
+            return (TRUE);
+        }
+
+        PrReplaceData (
+            &AslGbl_CurrentLineBuffer[TokenOffset], Length,
+            AslGbl_MacroTokenBuffer, strlen (AslGbl_MacroTokenBuffer));
+        return (TRUE);
+    }
+
+    return (FALSE);
 }
 
 
@@ -961,6 +1133,11 @@ PrDoMacroInvocation (
     }
 
     Length = (UINT32) ((Cursor - InvocationStart) + 1);
+
+    if (PrExpandBuiltInMacro (DefineInfo, ArgValues, TokenOffset, Length))
+    {
+        goto Cleanup;
+    }
 
     /* Replace each argument within the prototype body */
 

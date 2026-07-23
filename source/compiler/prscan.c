@@ -276,6 +276,7 @@ PrInitializePreprocessor (
 
     PrInitializeGlobals ();
     AslGbl_DefineList = NULL;
+    PrAddBuiltInMacros ();
 }
 
 

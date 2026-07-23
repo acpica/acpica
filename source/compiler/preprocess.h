@@ -310,6 +310,10 @@ void
 PrDumpPredefinedNames (
     void);
 
+void
+PrAddBuiltInMacros (
+    void);
+
 PR_DEFINE_INFO *
 PrAddDefine (
     char                    *Token,
