@@ -1,4 +1,5 @@
 %{
+
 /******************************************************************************
  *
  * Module Name: prparser.y - Bison input file for preprocessor parser
@@ -169,6 +170,12 @@ extern char                 *PrParsertext;
 
 UINT64                      PrParserResult; /* Expression return value */
 
+static UINT64
+PrDoOperator (
+    UINT64                  LeftValue,
+    UINT32                  Operator,
+    UINT64                  RightValue);
+
 /* Bison/yacc configuration */
 
 #define yytname             PrParsername
@@ -201,7 +208,10 @@ UINT64                      PrParserResult; /* Expression return value */
 %token <op>     EXPOP_RESERVED2
 %token <op>     EXPOP_PAREN_OPEN
 %token <op>     EXPOP_PAREN_CLOSE
+%token <op>     EXPOP_QUESTION
+%token <op>     EXPOP_COLON
 
+%right          EXPOP_QUESTION EXPOP_COLON
 %left <op>      EXPOP_LOGICAL_OR
 %left <op>      EXPOP_LOGICAL_AND
 %left <op>      EXPOP_OR
@@ -236,6 +246,7 @@ UINT64                      PrParserResult; /* Expression return value */
  *  10)     |
  *  11)     &&
  *  12)     ||
+ *  13)     ?:
  */
 
 /*! [End] no source code translation !*/
@@ -249,29 +260,31 @@ Expression
 
       /* Unary operators */
 
-    : EXPOP_LOGICAL_NOT         Expression          { $$ = DtDoOperator ($2, EXPOP_LOGICAL_NOT,     $2);}
-    | EXPOP_ONES_COMPLIMENT     Expression          { $$ = DtDoOperator ($2, EXPOP_ONES_COMPLIMENT, $2);}
+    : EXPOP_LOGICAL_NOT         Expression          { $$ = PrDoOperator ($2, EXPOP_LOGICAL_NOT,     $2);}
+    | EXPOP_ONES_COMPLIMENT     Expression          { $$ = PrDoOperator ($2, EXPOP_ONES_COMPLIMENT, $2);}
 
       /* Binary operators */
 
-    | Expression EXPOP_MULTIPLY         Expression  { $$ = DtDoOperator ($1, EXPOP_MULTIPLY,        $3);}
-    | Expression EXPOP_DIVIDE           Expression  { $$ = DtDoOperator ($1, EXPOP_DIVIDE,          $3);}
-    | Expression EXPOP_MODULO           Expression  { $$ = DtDoOperator ($1, EXPOP_MODULO,          $3);}
-    | Expression EXPOP_ADD              Expression  { $$ = DtDoOperator ($1, EXPOP_ADD,             $3);}
-    | Expression EXPOP_SUBTRACT         Expression  { $$ = DtDoOperator ($1, EXPOP_SUBTRACT,        $3);}
-    | Expression EXPOP_SHIFT_RIGHT      Expression  { $$ = DtDoOperator ($1, EXPOP_SHIFT_RIGHT,     $3);}
-    | Expression EXPOP_SHIFT_LEFT       Expression  { $$ = DtDoOperator ($1, EXPOP_SHIFT_LEFT,      $3);}
-    | Expression EXPOP_GREATER          Expression  { $$ = DtDoOperator ($1, EXPOP_GREATER,         $3);}
-    | Expression EXPOP_LESS             Expression  { $$ = DtDoOperator ($1, EXPOP_LESS,            $3);}
-    | Expression EXPOP_GREATER_EQUAL    Expression  { $$ = DtDoOperator ($1, EXPOP_GREATER_EQUAL,   $3);}
-    | Expression EXPOP_LESS_EQUAL       Expression  { $$ = DtDoOperator ($1, EXPOP_LESS_EQUAL,      $3);}
-    | Expression EXPOP_EQUAL            Expression  { $$ = DtDoOperator ($1, EXPOP_EQUAL,           $3);}
-    | Expression EXPOP_NOT_EQUAL        Expression  { $$ = DtDoOperator ($1, EXPOP_NOT_EQUAL,       $3);}
-    | Expression EXPOP_AND              Expression  { $$ = DtDoOperator ($1, EXPOP_AND,             $3);}
-    | Expression EXPOP_XOR              Expression  { $$ = DtDoOperator ($1, EXPOP_XOR,             $3);}
-    | Expression EXPOP_OR               Expression  { $$ = DtDoOperator ($1, EXPOP_OR,              $3);}
-    | Expression EXPOP_LOGICAL_AND      Expression  { $$ = DtDoOperator ($1, EXPOP_LOGICAL_AND,     $3);}
-    | Expression EXPOP_LOGICAL_OR       Expression  { $$ = DtDoOperator ($1, EXPOP_LOGICAL_OR,      $3);}
+    | Expression EXPOP_MULTIPLY         Expression  { $$ = PrDoOperator ($1, EXPOP_MULTIPLY,        $3);}
+    | Expression EXPOP_DIVIDE           Expression  { $$ = PrDoOperator ($1, EXPOP_DIVIDE,          $3);}
+    | Expression EXPOP_MODULO           Expression  { $$ = PrDoOperator ($1, EXPOP_MODULO,          $3);}
+    | Expression EXPOP_ADD              Expression  { $$ = PrDoOperator ($1, EXPOP_ADD,             $3);}
+    | Expression EXPOP_SUBTRACT         Expression  { $$ = PrDoOperator ($1, EXPOP_SUBTRACT,        $3);}
+    | Expression EXPOP_SHIFT_RIGHT      Expression  { $$ = PrDoOperator ($1, EXPOP_SHIFT_RIGHT,     $3);}
+    | Expression EXPOP_SHIFT_LEFT       Expression  { $$ = PrDoOperator ($1, EXPOP_SHIFT_LEFT,      $3);}
+    | Expression EXPOP_GREATER          Expression  { $$ = PrDoOperator ($1, EXPOP_GREATER,         $3);}
+    | Expression EXPOP_LESS             Expression  { $$ = PrDoOperator ($1, EXPOP_LESS,            $3);}
+    | Expression EXPOP_GREATER_EQUAL    Expression  { $$ = PrDoOperator ($1, EXPOP_GREATER_EQUAL,   $3);}
+    | Expression EXPOP_LESS_EQUAL       Expression  { $$ = PrDoOperator ($1, EXPOP_LESS_EQUAL,      $3);}
+    | Expression EXPOP_EQUAL            Expression  { $$ = PrDoOperator ($1, EXPOP_EQUAL,           $3);}
+    | Expression EXPOP_NOT_EQUAL        Expression  { $$ = PrDoOperator ($1, EXPOP_NOT_EQUAL,       $3);}
+    | Expression EXPOP_AND              Expression  { $$ = PrDoOperator ($1, EXPOP_AND,             $3);}
+    | Expression EXPOP_XOR              Expression  { $$ = PrDoOperator ($1, EXPOP_XOR,             $3);}
+    | Expression EXPOP_OR               Expression  { $$ = PrDoOperator ($1, EXPOP_OR,              $3);}
+    | Expression EXPOP_LOGICAL_AND      Expression  { $$ = PrDoOperator ($1, EXPOP_LOGICAL_AND,     $3);}
+    | Expression EXPOP_LOGICAL_OR       Expression  { $$ = PrDoOperator ($1, EXPOP_LOGICAL_OR,      $3);}
+    | Expression EXPOP_QUESTION Expression EXPOP_COLON Expression
+                                                    { $$ = $1 ? $3 : $5;}
 
       /* Parentheses: '(' Expression ')' */
 
@@ -296,6 +309,113 @@ Expression
     | EXPOP_HEX_NUMBER                              { AcpiUtStrtoul64 (PrParsertext, &$$);}
     ;
 %%
+
+static UINT64
+PrDoOperator (
+    UINT64                  LeftValue,
+    UINT32                  Operator,
+    UINT64                  RightValue)
+{
+
+    switch (Operator)
+    {
+    case EXPOP_ONES_COMPLIMENT:
+
+        return (~RightValue);
+
+    case EXPOP_LOGICAL_NOT:
+
+        return (!RightValue);
+
+    case EXPOP_MULTIPLY:
+
+        return (LeftValue * RightValue);
+
+    case EXPOP_DIVIDE:
+
+        if (!RightValue)
+        {
+            PrError (ASL_ERROR, ASL_MSG_DIVIDE_BY_ZERO, 0);
+            return (0);
+        }
+
+        return (LeftValue / RightValue);
+
+    case EXPOP_MODULO:
+
+        if (!RightValue)
+        {
+            PrError (ASL_ERROR, ASL_MSG_DIVIDE_BY_ZERO, 0);
+            return (0);
+        }
+
+        return (LeftValue % RightValue);
+
+    case EXPOP_ADD:
+        return (LeftValue + RightValue);
+
+    case EXPOP_SUBTRACT:
+
+        return (LeftValue - RightValue);
+
+    case EXPOP_SHIFT_RIGHT:
+
+        return (LeftValue >> RightValue);
+
+    case EXPOP_SHIFT_LEFT:
+
+        return (LeftValue << RightValue);
+
+    case EXPOP_LESS:
+
+        return (LeftValue < RightValue);
+
+    case EXPOP_GREATER:
+
+        return (LeftValue > RightValue);
+
+    case EXPOP_LESS_EQUAL:
+
+        return (LeftValue <= RightValue);
+
+    case EXPOP_GREATER_EQUAL:
+
+        return (LeftValue >= RightValue);
+
+    case EXPOP_EQUAL:
+
+        return (LeftValue == RightValue);
+
+    case EXPOP_NOT_EQUAL:
+
+        return (LeftValue != RightValue);
+
+    case EXPOP_AND:
+
+        return (LeftValue & RightValue);
+
+    case EXPOP_XOR:
+
+        return (LeftValue ^ RightValue);
+
+    case EXPOP_OR:
+
+        return (LeftValue | RightValue);
+
+    case EXPOP_LOGICAL_AND:
+
+        return (LeftValue && RightValue);
+
+    case EXPOP_LOGICAL_OR:
+
+        return (LeftValue || RightValue);
+
+    default:
+
+        PrError (ASL_ERROR, ASL_MSG_INVALID_EXPRESSION, 0);
+        return (0);
+    }
+}
 
 /*
  * Local support functions, including parser entry point

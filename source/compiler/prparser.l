@@ -207,6 +207,8 @@ Identifier      [a-zA-Z][0-9a-zA-Z]*
 \|              return (EXPOP_OR);
 "&&"            return (EXPOP_LOGICAL_AND);
 "||"            return (EXPOP_LOGICAL_OR);
+"?"             return (EXPOP_QUESTION);
+":"             return (EXPOP_COLON);
 
 "defined"       return (EXPOP_DEFINE);
 {Identifier}    {STRING_SETUP; return (EXPOP_IDENTIFIER);}
