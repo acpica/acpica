@@ -207,6 +207,7 @@ typedef struct pr_define_info
     char                        *Body;          /* Macro body */
     PR_MACRO_ARG                *Args;          /* Macro arg list */
     UINT16                      ArgCount;       /* Macro arg count */
+    BOOLEAN                     Variadic;       /* Macro has variadic args */
     BOOLEAN                     Persist;        /* Keep for entire compiler run */
 
 } PR_DEFINE_INFO;

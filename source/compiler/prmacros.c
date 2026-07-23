@@ -382,6 +382,7 @@ PrAddMacro (
     char                    *Name,
     char                    **Next)
 {
+    static const char       *VariadicArg = "__VA_ARGS__";
     char                    *Token = NULL;
     ACPI_SIZE               TokenOffset;
     ACPI_SIZE               MacroBodyOffset;
@@ -396,6 +397,7 @@ PrAddMacro (
     /*UINT32                  Depth = 1;*/
     UINT32                  EndOfArgList;
     char                    BufferChar;
+    BOOLEAN                 Variadic = FALSE;
 
     /* Find the end of the arguments list */
 
@@ -458,6 +460,34 @@ PrAddMacro (
             "Macro param: %s\n",
             AslGbl_CurrentLineNumber, Token);
 
+        if (!strcmp (Token, "..."))
+        {
+            Args[i].Name = UtLocalCalloc (strlen (VariadicArg) + 1);
+            strcpy (Args[i].Name, VariadicArg);
+            Args[i].UseCount = 0;
+            ArgCount++;
+            Variadic = TRUE;
+
+            if (ArgCount >= PR_MAX_MACRO_ARGS)
+            {
+                PrError (ASL_ERROR, ASL_MSG_TOO_MANY_ARGUMENTS, TokenOffset);
+                goto ErrorExit;
+            }
+
+            Token = PrGetNextToken (NULL, PR_MACRO_SEPARATORS, Next);
+
+            if (Token)
+            {
+                TokenOffset = Token - AslGbl_MainTokenBuffer + strlen (Token);
+                if (TokenOffset <= EndOfArgList)
+                {
+                    PrError (ASL_ERROR, ASL_MSG_MACRO_SYNTAX, TokenOffset);
+                    goto ErrorExit;
+                }
+            }
+            break;
+        }
+
         Args[i].Name = UtLocalCalloc (strlen (Token) + 1);
         strcpy (Args[i].Name, Token);
 
@@ -471,6 +501,12 @@ PrAddMacro (
     }
 
     /* Get the macro body. Token now points to start of body */
+
+    if (!Token)
+    {
+        BodyInSource = "";
+        goto AddMacroToList;
+    }
 
     MacroBodyOffset = Token - AslGbl_MainTokenBuffer;
 
@@ -545,7 +581,8 @@ AddMacroToList:
         /* Error only if not exactly the same macro */
 
         if (strcmp (DefineInfo->Body, BodyInSource) ||
-            (DefineInfo->ArgCount != ArgCount))
+            (DefineInfo->ArgCount != ArgCount) ||
+            (DefineInfo->Variadic != Variadic))
         {
             PrError (ASL_ERROR, ASL_MSG_EXISTING_NAME,
                 THIS_TOKEN_OFFSET (Name));
@@ -569,6 +606,7 @@ AddMacroToList:
         DefineInfo->Body = Body;
         DefineInfo->Args = Args;
         DefineInfo->ArgCount = ArgCount;
+        DefineInfo->Variadic = Variadic;
     }
 
     return;
@@ -604,51 +642,217 @@ PrDoMacroInvocation (
     char                    **Next)
 {
     PR_MACRO_ARG            *Args;
-    char                    *Token = NULL;
+    char                    *Token;
+    char                    *ArgStart;
+    char                    *ArgEnd;
+    char                    *Cursor;
+    char                    *InvocationStart;
+    char                    *ArgValues[PR_MAX_MACRO_ARGS];
     UINT32                  TokenOffset;
     UINT32                  Length;
     UINT32                  i;
     UINT32                  Diff1;
     UINT32                  Diff2;
+    UINT32                  ArgCount;
+    UINT32                  ArgIndex;
+    UINT32                  FixedArgCount;
+    UINT32                  Depth;
+    ACPI_SIZE               ArgLength;
+    BOOLEAN                 Variadic;
+
+
+    /* This path parses invocation directly from source text */
+
+    (void) Next;
+
+    memset (ArgValues, 0, sizeof (ArgValues));
 
     /* Take a copy of the macro body for expansion */
 
     strcpy (AslGbl_MacroTokenBuffer, DefineInfo->Body);
 
+    TokenOffset = (UINT32) (MacroStart - TokenBuffer);
+    InvocationStart = &AslGbl_CurrentLineBuffer[TokenOffset];
+    Cursor = InvocationStart + strlen (DefineInfo->Identifier);
+    while (*Cursor && isspace ((int) *Cursor))
+    {
+        Cursor++;
+    }
+
+    if (*Cursor != '(')
+    {
+        goto BadInvocation;
+    }
+
+    ArgCount = DefineInfo->ArgCount;
+    Variadic = DefineInfo->Variadic;
+    FixedArgCount = Variadic ? (ArgCount ? (ArgCount - 1) : 0) : ArgCount;
+
+    Cursor++;
+    ArgStart = Cursor;
+    Depth = 0;
+    ArgIndex = 0;
+
+    while (*Cursor)
+    {
+        if (*Cursor == '(')
+        {
+            Depth++;
+            Cursor++;
+            continue;
+        }
+
+        if (*Cursor == ')')
+        {
+            if (Depth)
+            {
+                Depth--;
+                Cursor++;
+                continue;
+            }
+        }
+
+        if ((*Cursor == ',' && !Depth && (!Variadic || (ArgIndex < FixedArgCount))) ||
+            (*Cursor == ')' && !Depth))
+        {
+            if (ArgIndex >= PR_MAX_MACRO_ARGS)
+            {
+                goto BadInvocation;
+            }
+
+            ArgEnd = Cursor;
+            while ((ArgEnd > ArgStart) && isspace ((int) ArgEnd[-1]))
+            {
+                ArgEnd--;
+            }
+            while ((*ArgStart != 0) && isspace ((int) *ArgStart) &&
+                (ArgStart < ArgEnd))
+            {
+                ArgStart++;
+            }
+
+            ArgLength = (ArgEnd > ArgStart) ? (ACPI_SIZE) (ArgEnd - ArgStart) : 0;
+            Token = UtLocalCalloc (ArgLength + 1);
+            if (ArgLength)
+            {
+                memcpy (Token, ArgStart, ArgLength);
+            }
+
+            ArgValues[ArgIndex] = Token;
+            ArgIndex++;
+
+            if (*Cursor == ')')
+            {
+                break;
+            }
+
+            Cursor++;
+            ArgStart = Cursor;
+
+            if (Variadic && (ArgIndex == FixedArgCount))
+            {
+                while (*ArgStart && isspace ((int) *ArgStart))
+                {
+                    ArgStart++;
+                }
+
+                Cursor = ArgStart;
+                Depth = 0;
+                while (*Cursor)
+                {
+                    if (*Cursor == '(')
+                    {
+                        Depth++;
+                    }
+                    else if (*Cursor == ')')
+                    {
+                        if (!Depth)
+                        {
+                            break;
+                        }
+
+                        Depth--;
+                    }
+
+                    Cursor++;
+                }
+
+                if (*Cursor != ')')
+                {
+                    goto BadInvocation;
+                }
+
+                ArgEnd = Cursor;
+                while ((ArgEnd > ArgStart) && isspace ((int) ArgEnd[-1]))
+                {
+                    ArgEnd--;
+                }
+
+                ArgLength = (ArgEnd > ArgStart) ?
+                    (ACPI_SIZE) (ArgEnd - ArgStart) : 0;
+                Token = UtLocalCalloc (ArgLength + 1);
+                if (ArgLength)
+                {
+                    memcpy (Token, ArgStart, ArgLength);
+                }
+
+                if (ArgIndex >= PR_MAX_MACRO_ARGS)
+                {
+                    ACPI_FREE (Token);
+                    goto BadInvocation;
+                }
+
+                ArgValues[ArgIndex] = Token;
+                ArgIndex++;
+                break;
+            }
+
+            continue;
+        }
+
+        Cursor++;
+    }
+
+    if (*Cursor != ')')
+    {
+        goto BadInvocation;
+    }
+
+    if ((!Variadic && (ArgIndex != ArgCount)) ||
+        (Variadic && (ArgIndex < FixedArgCount)))
+    {
+        goto BadInvocation;
+    }
+
+    if (Variadic && (ArgIndex == FixedArgCount))
+    {
+        ArgValues[ArgIndex] = UtLocalCalloc (1);
+        ArgIndex++;
+    }
+
+    if (ArgIndex != ArgCount)
+    {
+        goto BadInvocation;
+    }
+
+    Length = (UINT32) ((Cursor - InvocationStart) + 1);
+
     /* Replace each argument within the prototype body */
 
     Args = DefineInfo->Args;
-    if (!Args->Name)
+    if (!ArgCount)
     {
-        /* This macro has no arguments */
-
-        Token = PrGetNextToken (NULL, PR_MACRO_ARGUMENTS, Next);
-
-        if (!Token)
-        {
-            goto BadInvocation;
-        }
-
         PrResolveTokenPasting ();
-
-        TokenOffset = (MacroStart - TokenBuffer);
-        Length = Token - MacroStart + strlen (Token) + 1;
 
         PrReplaceData (
             &AslGbl_CurrentLineBuffer[TokenOffset], Length,
             AslGbl_MacroTokenBuffer, strlen (AslGbl_MacroTokenBuffer));
-        return;
+        goto Cleanup;
     }
 
-    while (Args->Name)
+    for (i = 0; i < ArgCount; i++)
     {
-        /* Get the next argument from macro invocation */
-
-        Token = PrGetNextToken (NULL, PR_MACRO_SEPARATORS, Next);
-        if (!Token)
-        {
-            goto BadInvocation;
-        }
+        Token = ArgValues[i] ? ArgValues[i] : "";
 
         /*
          * Avoid optimizing using just 1 signed int due to specific
@@ -662,24 +866,13 @@ PrDoMacroInvocation (
 
         /* Replace all instances of this argument */
 
-        for (i = 0; i < Args->UseCount; i++)
+        for (ArgIndex = 0; ArgIndex < Args->UseCount; ArgIndex++)
         {
-            /*
-             * To test the output of the preprocessed macro function that
-             * is passed to the compiler
-             */
+            AslGbl_MacroTokenReplaceBuffer = (char *) calloc (
+                (strlen (AslGbl_MacroTokenBuffer)), sizeof (char));
 
-             /*
-              * fprintf (stderr, "Current token = %s \t Current arg_name = %s \
-              * \t strlen (Token) = %u \t strlen (Args->Name) = %u \t Offset = %u \
-              * \t UseCount = %u \t", Token, Args->Name, strlen (Token), \
-              *     strlen (Args->Name), Args->Offset[i], Args->UseCount);
-              */
-
-            AslGbl_MacroTokenReplaceBuffer = (char *) calloc ((strlen (AslGbl_MacroTokenBuffer)), sizeof (char));
-
-            PrReplaceResizeSubstring (Args, Diff1, Diff2, i, Token,
-                Args->Stringize[i]);
+            PrReplaceResizeSubstring (Args, Diff1, Diff2, ArgIndex, Token,
+                Args->Stringize[ArgIndex]);
 
             DbgPrint (ASL_DEBUG_OUTPUT, PR_PREFIX_ID
                 "ExpandArg: %s\n",
@@ -689,25 +882,30 @@ PrDoMacroInvocation (
         Args++;
     }
 
-    if (!Token)
-    {
-        return;
-    }
-
     PrResolveTokenPasting ();
 
     /* Replace the entire macro invocation with the expanded macro */
 
     TokenOffset = (MacroStart - TokenBuffer);
-    Length = Token - MacroStart + strlen (Token) + 1;
 
     PrReplaceData (
         &AslGbl_CurrentLineBuffer[TokenOffset], Length,
         AslGbl_MacroTokenBuffer, strlen (AslGbl_MacroTokenBuffer));
 
+Cleanup:
+    for (i = 0; i < PR_MAX_MACRO_ARGS; i++)
+    {
+        ACPI_FREE (ArgValues[i]);
+    }
+
     return;
 
 BadInvocation:
+    for (i = 0; i < PR_MAX_MACRO_ARGS; i++)
+    {
+        ACPI_FREE (ArgValues[i]);
+    }
+
     PrError (ASL_ERROR, ASL_MSG_INVALID_INVOCATION,
         THIS_TOKEN_OFFSET (MacroStart));
 
