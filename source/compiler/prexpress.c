@@ -154,13 +154,6 @@
 #define _COMPONENT          ASL_PREPROCESSOR
         ACPI_MODULE_NAME    ("prexpress")
 
-/* Local prototypes */
-
-static char *
-PrExpandMacros (
-    char                    *Line);
-
-
 #ifdef _UNDER_DEVELOPMENT
 /******************************************************************************
  *
@@ -197,80 +190,6 @@ PrUnTokenize (
     }
 }
 #endif
-
-
-/******************************************************************************
- *
- * FUNCTION:    PrExpandMacros
- *
- * PARAMETERS:  Line                - Pointer into the current line
- *
- * RETURN:      Updated pointer into the current line
- *
- * DESCRIPTION: Expand any macros found in the current line buffer.
- *
- *****************************************************************************/
-
-static char *
-PrExpandMacros (
-    char                    *Line)
-{
-    char                    *Token;
-    char                    *ReplaceString;
-    PR_DEFINE_INFO          *DefineInfo;
-    ACPI_SIZE               TokenOffset;
-    char                    *Next;
-    int                     OffsetAdjust;
-
-
-    strcpy (AslGbl_ExpressionTokenBuffer, AslGbl_CurrentLineBuffer);
-    Token = PrGetNextToken (AslGbl_ExpressionTokenBuffer, PR_EXPR_SEPARATORS, &Next);
-    OffsetAdjust = 0;
-
-    while (Token)
-    {
-        DefineInfo = PrMatchDefine (Token);
-        if (DefineInfo)
-        {
-            if (DefineInfo->Body)
-            {
-                /* This is a macro. TBD: Is this allowed? */
-
-                DbgPrint (ASL_DEBUG_OUTPUT, PR_PREFIX_ID
-                    "Matched Macro: %s->%s\n",
-                    AslGbl_CurrentLineNumber, DefineInfo->Identifier,
-                    DefineInfo->Replacement);
-
-                PrDoMacroInvocation (AslGbl_ExpressionTokenBuffer, Token,
-                    DefineInfo, &Next);
-            }
-            else
-            {
-                ReplaceString = DefineInfo->Replacement;
-
-                /* Replace the name in the original line buffer */
-
-                TokenOffset = Token - AslGbl_ExpressionTokenBuffer + OffsetAdjust;
-                PrReplaceData (
-                    &AslGbl_CurrentLineBuffer[TokenOffset], strlen (Token),
-                    ReplaceString, strlen (ReplaceString));
-
-                /* Adjust for length difference between old and new name length */
-
-                OffsetAdjust += strlen (ReplaceString) - strlen (Token);
-
-                DbgPrint (ASL_DEBUG_OUTPUT, PR_PREFIX_ID
-                    "Matched #define within expression: %s->%s\n",
-                    AslGbl_CurrentLineNumber, Token,
-                    *ReplaceString ? ReplaceString : "(NULL STRING)");
-            }
-        }
-
-        Token = PrGetNextToken (NULL, PR_EXPR_SEPARATORS, &Next);
-    }
-
-    return (Line);
-}
 
 
 /******************************************************************************
@@ -372,19 +291,16 @@ PrResolveIntegerExpression (
     UINT64                  *ReturnValue)
 {
     UINT64                  Result;
-    char                    *ExpandedLine;
-
-
     DbgPrint (ASL_DEBUG_OUTPUT, PR_PREFIX_ID
         "**** Resolve #if:  %s\n", AslGbl_CurrentLineNumber, Line);
 
     /* Expand all macros within the expression first */
 
-    ExpandedLine = PrExpandMacros (Line);
+    PrExpandLineMacros (AslGbl_ExpressionTokenBuffer, PR_EXPR_SEPARATORS);
 
     /* Now we can evaluate the expression */
 
-    Result = PrEvaluateExpression (ExpandedLine);
+    Result = PrEvaluateExpression (Line);
     DbgPrint (ASL_DEBUG_OUTPUT, PR_PREFIX_ID
         "**** Expression Resolved to: %8.8X%8.8X\n",
         AslGbl_CurrentLineNumber, ACPI_FORMAT_UINT64 (Result));

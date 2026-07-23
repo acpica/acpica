@@ -170,6 +170,7 @@
  */
 #define PR_MAX_MACRO_ARGS       32              /* Max number of macro args */
 #define PR_MAX_ARG_INSTANCES    24              /* Max instances of any one arg */
+#define PR_MAX_MACRO_DEPTH      5               /* Max nested macro expansions */
 #define PR_LINES_PER_BLOCK      4096            /* Max input source lines per block */
 
 
@@ -334,11 +335,18 @@ PrAddMacro (
     char                    **Next);
 
 void
+PrExpandLineMacros (
+    char                    *TokenBuffer,
+    char                    *Separators);
+
+void
 PrDoMacroInvocation (
     char                    *TokenBuffer,
     char                    *MacroStart,
     PR_DEFINE_INFO          *DefineInfo,
-    char                    **Next);
+    char                    **Next,
+    UINT32                  TokenOffset,
+    int                     *OffsetAdjust);
 
 
 /*

@@ -171,6 +171,16 @@ PrExpandBuiltInMacro (
     UINT32                  TokenOffset,
     UINT32                  Length);
 
+static BOOLEAN
+PrExpandMacrosOnce (
+    char                    *TokenBuffer,
+    char                    *Separators);
+
+static UINT32
+PrGetNextMacroOffset (
+    char                    *TokenBuffer,
+    char                    *Separators);
+
 
 /*******************************************************************************
  *
@@ -357,6 +367,159 @@ PrExpandBuiltInMacro (
     }
 
     return (FALSE);
+}
+
+
+/*******************************************************************************
+ *
+ * FUNCTION:    PrExpandLineMacros
+ *
+ * PARAMETERS:  TokenBuffer          - Scratch token buffer for rescans
+ *              Separators           - Token separator set for this context
+ *
+ * RETURN:      None
+ *
+ * DESCRIPTION: Expand macros recursively with a bounded rescan depth.
+ *
+ ******************************************************************************/
+
+void
+PrExpandLineMacros (
+    char                    *TokenBuffer,
+    char                    *Separators)
+{
+    UINT32                  Depth;
+    UINT32                  ErrorOffset;
+
+
+    for (Depth = 0; Depth < PR_MAX_MACRO_DEPTH; Depth++)
+    {
+        if (!PrExpandMacrosOnce (TokenBuffer, Separators))
+        {
+            return;
+        }
+    }
+
+    ErrorOffset = PrGetNextMacroOffset (TokenBuffer, Separators);
+    if (ErrorOffset)
+    {
+        PrError (ASL_ERROR, ASL_MSG_MACRO_DEPTH, ErrorOffset);
+    }
+}
+
+
+/*******************************************************************************
+ *
+ * FUNCTION:    PrExpandMacrosOnce
+ *
+ * PARAMETERS:  TokenBuffer          - Scratch token buffer for this pass
+ *              Separators           - Token separator set for this context
+ *
+ * RETURN:      TRUE if any macro was expanded during the pass
+ *
+ * DESCRIPTION: Expand all macros visible in the current line buffer for one
+ *              pass. Nested expansions are handled by outer rescans.
+ *
+ ******************************************************************************/
+
+static BOOLEAN
+PrExpandMacrosOnce (
+    char                    *TokenBuffer,
+    char                    *Separators)
+{
+    char                    *Token;
+    char                    *ReplaceString;
+    PR_DEFINE_INFO          *DefineInfo;
+    char                    *Next;
+    UINT32                  TokenOffset;
+    int                     OffsetAdjust;
+    BOOLEAN                 Expanded = FALSE;
+
+
+    strcpy (TokenBuffer, AslGbl_CurrentLineBuffer);
+    Token = PrGetNextToken (TokenBuffer, Separators, &Next);
+    OffsetAdjust = 0;
+
+    while (Token)
+    {
+        DefineInfo = PrMatchDefine (Token);
+        if (DefineInfo)
+        {
+            Expanded = TRUE;
+            TokenOffset = (UINT32) ((Token - TokenBuffer) + OffsetAdjust);
+
+            if (DefineInfo->Body)
+            {
+                DbgPrint (ASL_DEBUG_OUTPUT, PR_PREFIX_ID
+                    "Matched Macro: %s->%s\n",
+                    AslGbl_CurrentLineNumber, DefineInfo->Identifier,
+                    DefineInfo->Replacement);
+
+                PrDoMacroInvocation (TokenBuffer, Token, DefineInfo,
+                    &Next, TokenOffset, &OffsetAdjust);
+            }
+            else
+            {
+                ReplaceString = DefineInfo->Replacement;
+
+                PrReplaceData (
+                    &AslGbl_CurrentLineBuffer[TokenOffset], strlen (Token),
+                    ReplaceString, strlen (ReplaceString));
+
+                OffsetAdjust += (int) strlen (ReplaceString) -
+                    (int) strlen (Token);
+
+                DbgPrint (ASL_DEBUG_OUTPUT, PR_PREFIX_ID
+                    "Matched #define: %s->%s\n",
+                    AslGbl_CurrentLineNumber, Token,
+                    *ReplaceString ? ReplaceString : "(NULL STRING)");
+            }
+        }
+
+        Token = PrGetNextToken (NULL, Separators, &Next);
+    }
+
+    return (Expanded);
+}
+
+
+/*******************************************************************************
+ *
+ * FUNCTION:    PrGetNextMacroOffset
+ *
+ * PARAMETERS:  TokenBuffer          - Scratch token buffer for scanning
+ *              Separators           - Token separator set for this context
+ *
+ * RETURN:      1-based column of next expandable macro, zero if none.
+ *
+ * DESCRIPTION: Detect whether additional macro expansion is still possible.
+ *
+ ******************************************************************************/
+
+static UINT32
+PrGetNextMacroOffset (
+    char                    *TokenBuffer,
+    char                    *Separators)
+{
+    char                    *Token;
+    char                    *Next;
+    PR_DEFINE_INFO          *DefineInfo;
+
+
+    strcpy (TokenBuffer, AslGbl_CurrentLineBuffer);
+    Token = PrGetNextToken (TokenBuffer, Separators, &Next);
+    while (Token)
+    {
+        DefineInfo = PrMatchDefine (Token);
+        if (DefineInfo)
+        {
+            return ((UINT32) ((Token - TokenBuffer) + 1));
+        }
+
+        Token = PrGetNextToken (NULL, Separators, &Next);
+    }
+
+    return (0);
 }
 
 
@@ -829,7 +992,9 @@ PrDoMacroInvocation (
     char                    *TokenBuffer,
     char                    *MacroStart,
     PR_DEFINE_INFO          *DefineInfo,
-    char                    **Next)
+    char                    **Next,
+    UINT32                  TokenOffset,
+    int                     *OffsetAdjust)
 {
     PR_MACRO_ARG            *Args;
     char                    *Token;
@@ -838,7 +1003,6 @@ PrDoMacroInvocation (
     char                    *Cursor;
     char                    *InvocationStart;
     char                    *ArgValues[PR_MAX_MACRO_ARGS];
-    UINT32                  TokenOffset;
     UINT32                  Length;
     UINT32                  i;
     UINT32                  Diff1;
@@ -864,7 +1028,6 @@ PrDoMacroInvocation (
 
     strcpy (AslGbl_MacroTokenBuffer, DefineInfo->Body);
 
-    TokenOffset = (UINT32) (MacroStart - TokenBuffer);
     InvocationStart = &AslGbl_CurrentLineBuffer[TokenOffset];
     Cursor = InvocationStart + strlen (DefineInfo->Identifier);
     while (*Cursor && isspace ((int) *Cursor))
@@ -1136,6 +1299,11 @@ PrDoMacroInvocation (
 
     if (PrExpandBuiltInMacro (DefineInfo, ArgValues, TokenOffset, Length))
     {
+        if (OffsetAdjust)
+        {
+            *OffsetAdjust += (int) strlen (AslGbl_MacroTokenBuffer) -
+                (int) Length;
+        }
         goto Cleanup;
     }
 
@@ -1188,11 +1356,15 @@ PrDoMacroInvocation (
 
     /* Replace the entire macro invocation with the expanded macro */
 
-    TokenOffset = (MacroStart - TokenBuffer);
-
     PrReplaceData (
         &AslGbl_CurrentLineBuffer[TokenOffset], Length,
         AslGbl_MacroTokenBuffer, strlen (AslGbl_MacroTokenBuffer));
+
+    if (OffsetAdjust)
+    {
+        *OffsetAdjust += (int) strlen (AslGbl_MacroTokenBuffer) -
+            (int) Length;
+    }
 
 Cleanup:
     for (i = 0; i < PR_MAX_MACRO_ARGS; i++)
@@ -1209,7 +1381,7 @@ BadInvocation:
     }
 
     PrError (ASL_ERROR, ASL_MSG_INVALID_INVOCATION,
-        THIS_TOKEN_OFFSET (MacroStart));
+        TokenOffset + 1);
 
     DbgPrint (ASL_DEBUG_OUTPUT, PR_PREFIX_ID
         "Bad macro invocation: %s\n",
