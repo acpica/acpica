@@ -1103,6 +1103,27 @@ PrGetNextLine (
 
         if (c == '\n')
         {
+            /*
+             * Handle line continuation: splice escaped physical newlines
+             * into one logical preprocessor line.
+             */
+            if (((i >= 2) && (AslGbl_CurrentLineBuffer[i-2] == '\\')) ||
+                ((i >= 3) && (AslGbl_CurrentLineBuffer[i-2] == '\r') &&
+                    (AslGbl_CurrentLineBuffer[i-3] == '\\')))
+            {
+                if ((i >= 3) && (AslGbl_CurrentLineBuffer[i-2] == '\r') &&
+                    (AslGbl_CurrentLineBuffer[i-3] == '\\'))
+                {
+                    i -= 3;
+                }
+                else
+                {
+                    i -= 2;
+                }
+
+                continue;
+            }
+
             /* Handle multi-line comments */
 
             if (AcpiGbl_LineScanState == PR_MULTI_LINE_COMMENT)
