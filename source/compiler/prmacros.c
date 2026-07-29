@@ -875,6 +875,11 @@ PrAddMacro (
     {
         BOOLEAN                 Stringize = FALSE;
         char                    *TokenStart = Token;
+        char                    *SubToken = Token;
+        char                    *PastePtr = NULL;
+        char                    *SearchPtr = NULL;
+        char                    TempToken[256];
+        UINT32                  LenBefore;
 
         /* Search the macro arg list for matching arg */
 
@@ -884,39 +889,123 @@ PrAddMacro (
             Token++;
         }
 
-        for (i = 0; ((i < PR_MAX_MACRO_ARGS) && Args[i].Name); i++)
+        /* Handle tokens with ## - look for all params before and after ## */
+        SearchPtr = Token;
+        while ((PastePtr = strstr (SearchPtr, "##")) != NULL)
         {
-            /*
-             * Save argument offset within macro body. This is the mechanism
-             * used to expand the macro upon invocation.
-             *
-             * Handles multiple instances of the same argument
-             */
-            if (!strcmp (Token, Args[i].Name))
+            /* Extract and process substring before ## */
+            LenBefore = PastePtr - SearchPtr;
+            if (LenBefore > 0 && LenBefore < sizeof(TempToken))
             {
-                UseCount = Args[i].UseCount;
-
-                Args[i].Offset[UseCount] =
-                    (TokenStart - BodyScanBuffer);
-                Args[i].Stringize[UseCount] = Stringize;
-
-
-                DbgPrint (ASL_DEBUG_OUTPUT, PR_PREFIX_ID
-                    "Macro Arg #%u: %s UseCount %u Offset %u%s\n",
-                    AslGbl_CurrentLineNumber, i, Token,
-                    UseCount+1, Args[i].Offset[UseCount],
-                    Stringize ? " (stringize)" : "");
-
-                Args[i].UseCount++;
-
-                if (Args[i].UseCount >= PR_MAX_ARG_INSTANCES)
+                strncpy (TempToken, SearchPtr, LenBefore);
+                TempToken[LenBefore] = '\0';
+                SubToken = TempToken;
+                
+                for (i = 0; ((i < PR_MAX_MACRO_ARGS) && Args[i].Name); i++)
                 {
-                    PrError (ASL_ERROR, ASL_MSG_TOO_MANY_ARGUMENTS,
-                        THIS_TOKEN_OFFSET (Token));
+                    if (!strcmp (SubToken, Args[i].Name))
+                    {
+                        UseCount = Args[i].UseCount;
+                        Args[i].Offset[UseCount] =
+                            (TokenStart - BodyScanBuffer) + (SearchPtr - Token);
+                        Args[i].Stringize[UseCount] = Stringize;
 
-                    goto ErrorExit;
+                        DbgPrint (ASL_DEBUG_OUTPUT, PR_PREFIX_ID
+                            "Macro Arg #%u: %s UseCount %u Offset %u (before ##)%s\n",
+                            AslGbl_CurrentLineNumber, i, SubToken,
+                            UseCount+1, Args[i].Offset[UseCount],
+                            Stringize ? " (stringize)" : "");
+
+                        Args[i].UseCount++;
+
+                        if (Args[i].UseCount >= PR_MAX_ARG_INSTANCES)
+                        {
+                            PrError (ASL_ERROR, ASL_MSG_TOO_MANY_ARGUMENTS,
+                                THIS_TOKEN_OFFSET (Token));
+                            goto ErrorExit;
+                        }
+                        break;
+                    }
                 }
-                break;
+            }
+            
+            /* Move search pointer past the ## */
+            SearchPtr = PastePtr + 2;
+        }
+        
+        /* Handle the last substring after the last ## (or the whole token if no ##) */
+        if (*SearchPtr != '\0')
+        {
+            for (i = 0; ((i < PR_MAX_MACRO_ARGS) && Args[i].Name); i++)
+            {
+                /* Check if SearchPtr starts with an argument name */
+                if (!strncmp (SearchPtr, Args[i].Name, strlen(Args[i].Name)))
+                {
+                    /* Verify it's a complete match (followed by separator or end) */
+                    char *NextChar = SearchPtr + strlen(Args[i].Name);
+                    if (*NextChar == '\0' || strchr (PR_MACRO_SEPARATORS, *NextChar))
+                    {
+                        UseCount = Args[i].UseCount;
+                        Args[i].Offset[UseCount] =
+                            (TokenStart - BodyScanBuffer) + (SearchPtr - Token);
+                        Args[i].Stringize[UseCount] = Stringize;
+
+                        DbgPrint (ASL_DEBUG_OUTPUT, PR_PREFIX_ID
+                            "Macro Arg #%u: %s UseCount %u Offset %u (last segment)%s\n",
+                            AslGbl_CurrentLineNumber, i, Args[i].Name,
+                            UseCount+1, Args[i].Offset[UseCount],
+                            Stringize ? " (stringize)" : "");
+
+                        Args[i].UseCount++;
+
+                        if (Args[i].UseCount >= PR_MAX_ARG_INSTANCES)
+                        {
+                            PrError (ASL_ERROR, ASL_MSG_TOO_MANY_ARGUMENTS,
+                                THIS_TOKEN_OFFSET (Token));
+                            goto ErrorExit;
+                        }
+                        break;
+                    }
+                }
+            }
+        }
+        else if (PastePtr == NULL)
+        {
+            /* No ## in this token - use original logic */
+            for (i = 0; ((i < PR_MAX_MACRO_ARGS) && Args[i].Name); i++)
+            {
+                /*
+                 * Save argument offset within macro body. This is the mechanism
+                 * used to expand the macro upon invocation.
+                 *
+                 * Handles multiple instances of the same argument
+                 */
+                if (!strcmp (Token, Args[i].Name))
+                {
+                    UseCount = Args[i].UseCount;
+
+                    Args[i].Offset[UseCount] =
+                        (TokenStart - BodyScanBuffer);
+                    Args[i].Stringize[UseCount] = Stringize;
+
+
+                    DbgPrint (ASL_DEBUG_OUTPUT, PR_PREFIX_ID
+                        "Macro Arg #%u: %s UseCount %u Offset %u%s\n",
+                        AslGbl_CurrentLineNumber, i, Token,
+                        UseCount+1, Args[i].Offset[UseCount],
+                        Stringize ? " (stringize)" : "");
+
+                    Args[i].UseCount++;
+
+                    if (Args[i].UseCount >= PR_MAX_ARG_INSTANCES)
+                    {
+                        PrError (ASL_ERROR, ASL_MSG_TOO_MANY_ARGUMENTS,
+                            THIS_TOKEN_OFFSET (Token));
+
+                        goto ErrorExit;
+                    }
+                    break;
+                }
             }
         }
 
