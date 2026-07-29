@@ -960,8 +960,18 @@ AddMacroToList:
     DefineInfo = PrAddDefine (Name, BodyInSource, FALSE);
     if (DefineInfo)
     {
-        Body = UtLocalCalloc (strlen (BodyInSource) + 1);
+        ACPI_SIZE                  BodyLength;
+
+        /* Copy macro body and trim trailing newline if present */
+        BodyLength = strlen (BodyInSource);
+        Body = UtLocalCalloc (BodyLength + 1);
         strcpy (Body, BodyInSource);
+
+        /* Remove trailing newline from macro body */
+        if (BodyLength > 0 && Body[BodyLength - 1] == '\n')
+        {
+            Body[BodyLength - 1] = '\0';
+        }
 
         DefineInfo->Body = Body;
         DefineInfo->Args = Args;

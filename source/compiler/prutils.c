@@ -311,13 +311,23 @@ PrReplaceResizeSubstring(
     UINT32                  b, PrevOffset;
     char                    *temp;
     const char              *MacroSeparators = PR_MACRO_SEPARATORS;
+    /* For argument boundary checking, treat # as a separator too (for token pasting) */
+    char                    ArgSeparatorsStr[256];
+    const char              *ArgSeparators;
     char                    *SearchName = NULL;
     char                    *QuotedToken = NULL;
     UINT32                  SearchLength;
     ACPI_SIZE               CurrentLength;
     ACPI_SIZE               RequiredLength;
     ACPI_SIZE               ReplaceLength;
+    BOOLEAN                 ValidBoundary;
+    char                    BeforeChar;
+    char                    AfterChar;
 
+    /* Create ArgSeparators string by concatenating MacroSeparators with "#" */
+    strcpy (ArgSeparatorsStr, MacroSeparators);
+    strcat (ArgSeparatorsStr, "#");
+    ArgSeparators = ArgSeparatorsStr;
 
     CurrentLength = strlen (AslGbl_MacroTokenBuffer);
     ReplaceLength = Stringize ? (strlen (Token) + 2) : strlen (Token);
@@ -431,19 +441,24 @@ ResetHere1:
         }
         Args->Offset[i] = strlen (AslGbl_MacroTokenBuffer) -
             strlen (temp);
+        
+        /* Check token boundaries for all cases, including offset == 0 */
         if (Args->Offset[i] == 0)
         {
-            goto JumpHere1;
-        }
-        if ((strchr (MacroSeparators,
-                AslGbl_MacroTokenBuffer[(Args->Offset[i] - 1)])) &&
-            (!AslGbl_MacroTokenBuffer[(Args->Offset[i] + strlen (Args->Name))] ||
-                strchr (MacroSeparators,
-                    AslGbl_MacroTokenBuffer[(Args->Offset[i] + strlen (Args->Name))])))
-        {
-            Args->Offset[i] += 0;
+            /* At start of buffer: only need to check after token */
+            AfterChar = AslGbl_MacroTokenBuffer[strlen (Args->Name)];
+            ValidBoundary = (!AfterChar || strchr (ArgSeparators, (unsigned char) AfterChar));
         }
         else
+        {
+            /* Check both before and after token */
+            BeforeChar = AslGbl_MacroTokenBuffer[(Args->Offset[i] - 1)];
+            AfterChar = AslGbl_MacroTokenBuffer[(Args->Offset[i] + strlen (Args->Name))];
+            ValidBoundary = (strchr (ArgSeparators, (unsigned char) BeforeChar)) &&
+                (!AfterChar || strchr (ArgSeparators, (unsigned char) AfterChar));
+        }
+        
+        if (!ValidBoundary)
         {
             temp += strlen (Args->Name);
             goto ResetHere1;
@@ -454,7 +469,6 @@ ResetHere1:
          * due to longer name replaced by shorter name) to whitespace
          * chars so it will be ignored during compilation
          */
-JumpHere1:
         b = strlen (Token) + Args->Offset[i];
         memset (&AslGbl_MacroTokenBuffer[b], ' ', Diff1);
 
@@ -512,7 +526,7 @@ JumpHere1:
 
         PrReplaceData (
             &AslGbl_MacroTokenBuffer[Args->Offset[i]],
-            strlen (Token), Token, strlen (Token));
+            strlen (Args->Name), Token, strlen (Token));
 
         temp = NULL;
         Args->Offset[i] = PrevOffset;
@@ -542,19 +556,24 @@ ResetHere2:
         }
         Args->Offset[i] = strlen (AslGbl_MacroTokenBuffer) -
             strlen (temp);
+        
+        /* Check token boundaries for all cases, including offset == 0 */
         if (Args->Offset[i] == 0)
         {
-            goto JumpHere2;
-        }
-        if ((strchr (MacroSeparators,
-                AslGbl_MacroTokenBuffer[(Args->Offset[i] - 1)])) &&
-            (!AslGbl_MacroTokenBuffer[(Args->Offset[i] + strlen (Args->Name))] ||
-                strchr (MacroSeparators,
-                    AslGbl_MacroTokenBuffer[(Args->Offset[i] + strlen (Args->Name))])))
-        {
-            Args->Offset[i] += 0;
+            /* At start of buffer: only need to check after token */
+            AfterChar = AslGbl_MacroTokenBuffer[strlen (Args->Name)];
+            ValidBoundary = (!AfterChar || strchr (ArgSeparators, (unsigned char) AfterChar));
         }
         else
+        {
+            /* Check both before and after token */
+            BeforeChar = AslGbl_MacroTokenBuffer[(Args->Offset[i] - 1)];
+            AfterChar = AslGbl_MacroTokenBuffer[(Args->Offset[i] + strlen (Args->Name))];
+            ValidBoundary = (strchr (ArgSeparators, (unsigned char) BeforeChar)) &&
+                (!AfterChar || strchr (ArgSeparators, (unsigned char) AfterChar));
+        }
+        
+        if (!ValidBoundary)
         {
             temp+= strlen (Args->Name);
             goto ResetHere2;
@@ -566,7 +585,6 @@ ResetHere2:
          * over the shorter outgoing arg string and do the replacement
          * at the correct offset value which is resetted every iteration
          */
-JumpHere2:
         memcpy (AslGbl_MacroTokenReplaceBuffer, AslGbl_MacroTokenBuffer, Args->Offset[i]);
         strcat (AslGbl_MacroTokenReplaceBuffer, Token);
         strcat (AslGbl_MacroTokenReplaceBuffer, (AslGbl_MacroTokenBuffer +
@@ -606,25 +624,29 @@ ResetHere3:
         }
         Args->Offset[i] = strlen (AslGbl_MacroTokenBuffer) -
             strlen (temp);
+        
+        /* Check token boundaries for all cases, including offset == 0 */
         if (Args->Offset[i] == 0)
         {
-            goto JumpHere3;
-        }
-        if ((strchr (MacroSeparators,
-                AslGbl_MacroTokenBuffer[(Args->Offset[i] - 1)])) &&
-            (!AslGbl_MacroTokenBuffer[(Args->Offset[i] + strlen (Args->Name))] ||
-                strchr (MacroSeparators,
-                    AslGbl_MacroTokenBuffer[(Args->Offset[i] + strlen (Args->Name))])))
-        {
-            Args->Offset[i] += 0;
+            /* At start of buffer: only need to check after token */
+            AfterChar = AslGbl_MacroTokenBuffer[strlen (Args->Name)];
+            ValidBoundary = (!AfterChar || strchr (ArgSeparators, (unsigned char) AfterChar));
         }
         else
+        {
+            /* Check both before and after token */
+            BeforeChar = AslGbl_MacroTokenBuffer[(Args->Offset[i] - 1)];
+            AfterChar = AslGbl_MacroTokenBuffer[(Args->Offset[i] + strlen (Args->Name))];
+            ValidBoundary = (strchr (ArgSeparators, (unsigned char) BeforeChar)) &&
+                (!AfterChar || strchr (ArgSeparators, (unsigned char) AfterChar));
+        }
+        
+        if (!ValidBoundary)
         {
             temp += strlen (Args->Name);
             goto ResetHere3;
         }
 
-JumpHere3:
         PrReplaceData (
             &AslGbl_MacroTokenBuffer[Args->Offset[i]],
             strlen (Args->Name), Token, strlen (Token));
