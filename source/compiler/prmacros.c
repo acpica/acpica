@@ -780,10 +780,17 @@ PrAddMacro (
 
         if (!Token)
         {
-            /* This is the case for a NULL macro body */
+            /* This is the case for a zero-argument macro or NULL macro body */
 
             BodyInSource = "";
             goto AddMacroToList;
+        }
+
+        /* Check for end of argument list (closing paren) */
+        TokenOffset = Token - AslGbl_MainTokenBuffer + strlen (Token);
+        if (TokenOffset > EndOfArgList)
+        {
+            break;
         }
 
         /* Don't go beyond the argument list */
@@ -805,6 +812,7 @@ PrAddMacro (
             Args[i].UseCount = 0;
             ArgCount++;
             Variadic = TRUE;
+            /* Variadic args can end the argument list */
 
             if (ArgCount >= PR_MAX_MACRO_ARGS)
             {
@@ -842,7 +850,7 @@ PrAddMacro (
 
     BodyTokenOffset = EndOfArgList + 1;
     while (AslGbl_CurrentLineBuffer[BodyTokenOffset] &&
-        isspace ((int) AslGbl_CurrentLineBuffer[BodyTokenOffset]))
+        isspace ((unsigned char) AslGbl_CurrentLineBuffer[BodyTokenOffset]))
     {
         BodyTokenOffset++;
     }
@@ -1030,7 +1038,7 @@ PrDoMacroInvocation (
 
     InvocationStart = &AslGbl_CurrentLineBuffer[TokenOffset];
     Cursor = InvocationStart + strlen (DefineInfo->Identifier);
-    while (*Cursor && isspace ((int) *Cursor))
+    while (*Cursor && isspace ((unsigned char) *Cursor))
     {
         Cursor++;
     }
@@ -1134,25 +1142,30 @@ PrDoMacroInvocation (
             }
 
             ArgEnd = Cursor;
-            while ((ArgEnd > ArgStart) && isspace ((int) ArgEnd[-1]))
+            while ((ArgEnd > ArgStart) && isspace ((unsigned char) ArgEnd[-1]))
             {
                 ArgEnd--;
             }
-            while ((*ArgStart != 0) && isspace ((int) *ArgStart) &&
+            while ((*ArgStart != 0) && isspace ((unsigned char) *ArgStart) &&
                 (ArgStart < ArgEnd))
             {
                 ArgStart++;
             }
 
             ArgLength = (ArgEnd > ArgStart) ? (ACPI_SIZE) (ArgEnd - ArgStart) : 0;
-            Token = UtLocalCalloc (ArgLength + 1);
-            if (ArgLength)
+            
+            /* For zero-argument macros, skip the empty argument slot */
+            if (ArgLength > 0 || ArgIndex > 0 || ArgCount > 0)
             {
-                memcpy (Token, ArgStart, ArgLength);
-            }
+                Token = UtLocalCalloc (ArgLength + 1);
+                if (ArgLength)
+                {
+                    memcpy (Token, ArgStart, ArgLength);
+                }
 
-            ArgValues[ArgIndex] = Token;
-            ArgIndex++;
+                ArgValues[ArgIndex] = Token;
+                ArgIndex++;
+            }
 
             if (*Cursor == ')')
             {
@@ -1164,7 +1177,7 @@ PrDoMacroInvocation (
 
             if (Variadic && (ArgIndex == FixedArgCount))
             {
-                while (*ArgStart && isspace ((int) *ArgStart))
+                while (*ArgStart && isspace ((unsigned char) *ArgStart))
                 {
                     ArgStart++;
                 }
@@ -1304,6 +1317,11 @@ PrDoMacroInvocation (
             *OffsetAdjust += (int) strlen (AslGbl_MacroTokenBuffer) -
                 (int) Length;
         }
+        /* Update Next to point past the invocation */
+        if (Next)
+        {
+            *Next = &TokenBuffer[TokenOffset + strlen (AslGbl_MacroTokenBuffer)];
+        }
         goto Cleanup;
     }
 
@@ -1364,6 +1382,12 @@ PrDoMacroInvocation (
     {
         *OffsetAdjust += (int) strlen (AslGbl_MacroTokenBuffer) -
             (int) Length;
+    }
+
+    /* Update Next to point past the invocation in the token buffer */
+    if (Next)
+    {
+        *Next = MacroStart + Length;
     }
 
 Cleanup:

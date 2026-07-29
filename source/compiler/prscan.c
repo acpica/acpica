@@ -1077,6 +1077,8 @@ PrGetNextLine (
                     i -= 2;
                 }
 
+                /* Update PreviousChar to the last logical character before splice */
+                PreviousChar = (i > 0) ? AslGbl_CurrentLineBuffer[i-1] : '\0';
                 continue;
             }
 

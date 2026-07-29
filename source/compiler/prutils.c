@@ -333,13 +333,30 @@ PrReplaceResizeSubstring(
 
     if (Stringize)
     {
+        UINT32                  k;
+        const char              *Src;
+
         SearchLength = strlen (Args->Name) + 1;
         SearchName = UtLocalCalloc (SearchLength + 1);
         SearchName[0] = '#';
         strcpy (&SearchName[1], Args->Name);
 
-        QuotedToken = UtLocalCalloc (strlen (Token) + 3);
-        sprintf (QuotedToken, "\"%s\"", Token);
+        /* Allocate space for escaped content plus surrounding quotes */
+        QuotedToken = UtLocalCalloc ((2 * strlen (Token)) + 3);
+        
+        /* Build stringized token with proper escaping */
+        QuotedToken[0] = '"';
+        k = 1;
+        for (Src = Token; *Src; Src++)
+        {
+            if (*Src == '\\' || *Src == '"')
+            {
+                QuotedToken[k++] = '\\';
+            }
+            QuotedToken[k++] = *Src;
+        }
+        QuotedToken[k++] = '"';
+        QuotedToken[k] = '\0';
 
         PrevOffset = Args->Offset[i];
         temp = strstr (AslGbl_MacroTokenBuffer, SearchName);
@@ -359,10 +376,11 @@ ResetStringize:
             strlen (temp);
         if (Args->Offset[i] != 0)
         {
+            char CheckChar = AslGbl_MacroTokenBuffer[(Args->Offset[i] + SearchLength)];
             if ((strchr (MacroSeparators,
-                    AslGbl_MacroTokenBuffer[(Args->Offset[i] - 1)])) &&
+                    (unsigned char) AslGbl_MacroTokenBuffer[(Args->Offset[i] - 1)])) &&
                 (strchr (MacroSeparators,
-                    AslGbl_MacroTokenBuffer[(Args->Offset[i] + SearchLength)])))
+                    (unsigned char) CheckChar) || CheckChar == '\0'))
             {
                 Args->Offset[i] += 0;
             }
@@ -419,8 +437,9 @@ ResetHere1:
         }
         if ((strchr (MacroSeparators,
                 AslGbl_MacroTokenBuffer[(Args->Offset[i] - 1)])) &&
-            (strchr (MacroSeparators,
-                AslGbl_MacroTokenBuffer[(Args->Offset[i] + strlen (Args->Name))])))
+            (!AslGbl_MacroTokenBuffer[(Args->Offset[i] + strlen (Args->Name))] ||
+                strchr (MacroSeparators,
+                    AslGbl_MacroTokenBuffer[(Args->Offset[i] + strlen (Args->Name))])))
         {
             Args->Offset[i] += 0;
         }
@@ -529,8 +548,9 @@ ResetHere2:
         }
         if ((strchr (MacroSeparators,
                 AslGbl_MacroTokenBuffer[(Args->Offset[i] - 1)])) &&
-            (strchr (MacroSeparators,
-                AslGbl_MacroTokenBuffer[(Args->Offset[i] + strlen (Args->Name))])))
+            (!AslGbl_MacroTokenBuffer[(Args->Offset[i] + strlen (Args->Name))] ||
+                strchr (MacroSeparators,
+                    AslGbl_MacroTokenBuffer[(Args->Offset[i] + strlen (Args->Name))])))
         {
             Args->Offset[i] += 0;
         }
@@ -592,8 +612,9 @@ ResetHere3:
         }
         if ((strchr (MacroSeparators,
                 AslGbl_MacroTokenBuffer[(Args->Offset[i] - 1)])) &&
-            (strchr (MacroSeparators,
-                AslGbl_MacroTokenBuffer[(Args->Offset[i] + strlen (Args->Name))])))
+            (!AslGbl_MacroTokenBuffer[(Args->Offset[i] + strlen (Args->Name))] ||
+                strchr (MacroSeparators,
+                    AslGbl_MacroTokenBuffer[(Args->Offset[i] + strlen (Args->Name))])))
         {
             Args->Offset[i] += 0;
         }
@@ -680,27 +701,61 @@ void
 PrResolveTokenPasting (
     void)
 {
-    char                    *PoundPound;
+    char                    *Ptr;
     char                    *Start;
     char                    *End;
+    BOOLEAN                 InString = FALSE;
 
 
-    while ((PoundPound = strstr (AslGbl_MacroTokenBuffer, "##")) != NULL)
+    Ptr = AslGbl_MacroTokenBuffer;
+    while (*Ptr)
     {
-        Start = PoundPound;
-        while ((Start > AslGbl_MacroTokenBuffer) &&
-            isspace ((int) Start[-1]))
+        /* Track entry/exit from quoted strings */
+        if (*Ptr == '"')
         {
-            Start--;
+            InString = (BOOLEAN) !InString;
+            Ptr++;
+            continue;
         }
 
-        End = PoundPound + 2;
-        while (*End && isspace ((int) *End))
+        /* Skip over string contents */
+        if (InString)
         {
-            End++;
+            /* Handle escaped quotes and backslashes */
+            if (*Ptr == '\\' && Ptr[1])
+            {
+                Ptr += 2;
+            }
+            else
+            {
+                Ptr++;
+            }
+            continue;
         }
 
-        PrReplaceData (Start, (UINT32) (End - Start), "", 0);
+        /* Look for ## token pasting operator outside strings */
+        if (*Ptr == '#' && Ptr[1] == '#')
+        {
+            Start = Ptr;
+            while ((Start > AslGbl_MacroTokenBuffer) &&
+                isspace ((unsigned char) Start[-1]))
+            {
+                Start--;
+            }
+
+            End = Ptr + 2;
+            while (*End && isspace ((unsigned char) *End))
+            {
+                End++;
+            }
+
+            PrReplaceData (Start, (UINT32) (End - Start), "", 0);
+            /* Don't increment Ptr; the replacement shifted buffer */
+        }
+        else
+        {
+            Ptr++;
+        }
     }
 }
 
