@@ -1125,10 +1125,6 @@ PrDoMacroInvocation (
     BOOLEAN                 InString;
 
 
-    /* This path parses invocation directly from source text */
-
-    (void) Next;
-
     memset (ArgValues, 0, sizeof (ArgValues));
 
     /* Take a copy of the macro body for expansion */
@@ -1416,10 +1412,9 @@ PrDoMacroInvocation (
             *OffsetAdjust += (int) strlen (AslGbl_MacroTokenBuffer) -
                 (int) Length;
         }
-        /* Update Next to point past the invocation in the token buffer */
         if (Next)
         {
-            *Next = &TokenBuffer[TokenOffset + Length];
+            *Next = MacroStart + Length;
         }
         goto Cleanup;
     }
