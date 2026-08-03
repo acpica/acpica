@@ -395,16 +395,16 @@ ResetStringize:
         Args->Offset[i] = strlen (AslGbl_MacroTokenBuffer) -
             strlen (temp);
         
-        /* Validate token boundaries */
+        /* Validate token boundaries using ArgSeparators (includes #) */
         CheckChar = AslGbl_MacroTokenBuffer[(Args->Offset[i] + SearchLength)];
-        ValidBoundary = (strchr (MacroSeparators,
+        ValidBoundary = (strchr (ArgSeparators,
                 (unsigned char) CheckChar) || CheckChar == '\0');
         
         /* If not at start of buffer, also check preceding character */
         if (Args->Offset[i] != 0)
         {
             ValidBoundary = ValidBoundary &&
-                (strchr (MacroSeparators,
+                (strchr (ArgSeparators,
                     (unsigned char) AslGbl_MacroTokenBuffer[(Args->Offset[i] - 1)]));
         }
         
