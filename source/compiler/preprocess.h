@@ -339,7 +339,7 @@ PrExpandLineMacros (
     char                    *TokenBuffer,
     char                    *Separators);
 
-void
+BOOLEAN
 PrDoMacroInvocation (
     char                    *TokenBuffer,
     char                    *MacroStart,

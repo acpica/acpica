@@ -445,7 +445,6 @@ PrExpandMacrosOnce (
         DefineInfo = PrMatchDefine (Token);
         if (DefineInfo)
         {
-            Expanded = TRUE;
             TokenOffset = (UINT32) ((Token - TokenBuffer) + OffsetAdjust);
 
             if (DefineInfo->Body)
@@ -455,11 +454,15 @@ PrExpandMacrosOnce (
                     AslGbl_CurrentLineNumber, DefineInfo->Identifier,
                     DefineInfo->Replacement);
 
-                PrDoMacroInvocation (TokenBuffer, Token, DefineInfo,
-                    &Next, TokenOffset, &OffsetAdjust);
+                if (PrDoMacroInvocation (TokenBuffer, Token, DefineInfo,
+                    &Next, TokenOffset, &OffsetAdjust))
+                {
+                    Expanded = TRUE;
+                }
             }
             else
             {
+                Expanded = TRUE;
                 ReplaceString = DefineInfo->Replacement;
 
                 PrReplaceData (
@@ -921,7 +924,8 @@ PrAddMacro (
                         if (Args[i].UseCount >= PR_MAX_ARG_INSTANCES)
                         {
                             PrError (ASL_ERROR, ASL_MSG_TOO_MANY_ARGUMENTS,
-                                THIS_TOKEN_OFFSET (Token));
+                                (UINT32)(MacroBodyOffset +
+                                    (ACPI_SIZE)(TokenStart - BodyScanBuffer)));
                             goto ErrorExit;
                         }
                         break;
@@ -961,7 +965,8 @@ PrAddMacro (
                         if (Args[i].UseCount >= PR_MAX_ARG_INSTANCES)
                         {
                             PrError (ASL_ERROR, ASL_MSG_TOO_MANY_ARGUMENTS,
-                                THIS_TOKEN_OFFSET (Token));
+                                (UINT32)(MacroBodyOffset +
+                                    (ACPI_SIZE)(TokenStart - BodyScanBuffer)));
                             goto ErrorExit;
                         }
                         break;
@@ -1000,7 +1005,8 @@ PrAddMacro (
                     if (Args[i].UseCount >= PR_MAX_ARG_INSTANCES)
                     {
                         PrError (ASL_ERROR, ASL_MSG_TOO_MANY_ARGUMENTS,
-                            THIS_TOKEN_OFFSET (Token));
+                            (UINT32)(MacroBodyOffset +
+                                (ACPI_SIZE)(TokenStart - BodyScanBuffer)));
 
                         goto ErrorExit;
                     }
@@ -1094,7 +1100,7 @@ ErrorExit:
  *
  ******************************************************************************/
 
-void
+BOOLEAN
 PrDoMacroInvocation (
     char                    *TokenBuffer,
     char                    *MacroStart,
@@ -1451,10 +1457,13 @@ PrDoMacroInvocation (
         for (ArgIndex = 0; ArgIndex < Args->UseCount; ArgIndex++)
         {
             AslGbl_MacroTokenReplaceBuffer = (char *) calloc (
-                (strlen (AslGbl_MacroTokenBuffer)), sizeof (char));
+                strlen (AslGbl_MacroTokenBuffer) + 1, sizeof (char));
 
             PrReplaceResizeSubstring (Args, Diff1, Diff2, ArgIndex, Token,
                 Args->Stringize[ArgIndex]);
+
+            free (AslGbl_MacroTokenReplaceBuffer);
+            AslGbl_MacroTokenReplaceBuffer = NULL;
 
             DbgPrint (ASL_DEBUG_OUTPUT, PR_PREFIX_ID
                 "ExpandArg: %s\n",
@@ -1490,7 +1499,7 @@ Cleanup:
         ACPI_FREE (ArgValues[i]);
     }
 
-    return;
+    return (TRUE);
 
 BadInvocation:
     for (i = 0; i < PR_MAX_MACRO_ARGS; i++)
@@ -1504,5 +1513,5 @@ BadInvocation:
     DbgPrint (ASL_DEBUG_OUTPUT, PR_PREFIX_ID
         "Bad macro invocation: %s\n",
         AslGbl_CurrentLineNumber, AslGbl_MacroTokenBuffer);
-    return;
+    return (FALSE);
 }
