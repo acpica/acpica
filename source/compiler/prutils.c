@@ -310,6 +310,8 @@ PrReplaceResizeSubstring(
 {
     UINT32                  b, PrevOffset;
     char                    *temp;
+    char                    *NewBuffer;
+    char                    CheckChar;
     const char              *MacroSeparators = PR_MACRO_SEPARATORS;
     /* For argument boundary checking, treat # as a separator too (for token pasting) */
     char                    ArgSeparatorsStr[256];
@@ -338,8 +340,16 @@ PrReplaceResizeSubstring(
         RequiredLength += (ReplaceLength - strlen (Args->Name));
     }
 
-    AslGbl_MacroTokenReplaceBuffer = (char *) realloc (
+    NewBuffer = (char *) realloc (
         AslGbl_MacroTokenReplaceBuffer, RequiredLength);
+    
+    if (!NewBuffer)
+    {
+        PrError (ASL_ERROR, ASL_MSG_INVALID_INVOCATION, 0);
+        return;
+    }
+    
+    AslGbl_MacroTokenReplaceBuffer = NewBuffer;
 
     if (Stringize)
     {
@@ -384,21 +394,24 @@ ResetStringize:
 
         Args->Offset[i] = strlen (AslGbl_MacroTokenBuffer) -
             strlen (temp);
+        
+        /* Validate token boundaries */
+        CheckChar = AslGbl_MacroTokenBuffer[(Args->Offset[i] + SearchLength)];
+        ValidBoundary = (strchr (MacroSeparators,
+                (unsigned char) CheckChar) || CheckChar == '\0');
+        
+        /* If not at start of buffer, also check preceding character */
         if (Args->Offset[i] != 0)
         {
-            char CheckChar = AslGbl_MacroTokenBuffer[(Args->Offset[i] + SearchLength)];
-            if ((strchr (MacroSeparators,
-                    (unsigned char) AslGbl_MacroTokenBuffer[(Args->Offset[i] - 1)])) &&
+            ValidBoundary = ValidBoundary &&
                 (strchr (MacroSeparators,
-                    (unsigned char) CheckChar) || CheckChar == '\0'))
-            {
-                Args->Offset[i] += 0;
-            }
-            else
-            {
-                temp += SearchLength;
-                goto ResetStringize;
-            }
+                    (unsigned char) AslGbl_MacroTokenBuffer[(Args->Offset[i] - 1)]));
+        }
+        
+        if (!ValidBoundary)
+        {
+            temp += SearchLength;
+            goto ResetStringize;
         }
 
         PrReplaceData (

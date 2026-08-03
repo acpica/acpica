@@ -1355,7 +1355,7 @@ PrDoMacroInvocation (
                 }
 
                 ArgEnd = Cursor;
-                while ((ArgEnd > ArgStart) && isspace ((int) ArgEnd[-1]))
+                while ((ArgEnd > ArgStart) && isspace ((unsigned char) ArgEnd[-1]))
                 {
                     ArgEnd--;
                 }
@@ -1416,10 +1416,10 @@ PrDoMacroInvocation (
             *OffsetAdjust += (int) strlen (AslGbl_MacroTokenBuffer) -
                 (int) Length;
         }
-        /* Update Next to point past the invocation */
+        /* Update Next to point past the invocation in the token buffer */
         if (Next)
         {
-            *Next = &TokenBuffer[TokenOffset + strlen (AslGbl_MacroTokenBuffer)];
+            *Next = &TokenBuffer[TokenOffset + Length];
         }
         goto Cleanup;
     }
