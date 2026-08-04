@@ -633,6 +633,64 @@ AcpiDsGetFieldNames (
 
 /*******************************************************************************
  *
+ * FUNCTION:    AcpiDsPccIsHwRegSubspace
+ *
+ * PARAMETERS:  ChannelIndex    - PCC channel number from OperationRegion address
+ *
+ * RETURN:      TRUE if the channel maps to a Type 5 (HW Registers) subspace
+ *
+ * DESCRIPTION: Walk the PCCT to determine whether a PCC channel uses the
+ *              HW-Registers-based model, which has no shared memory buffer.
+ *
+ ******************************************************************************/
+
+static BOOLEAN
+AcpiDsPccIsHwRegSubspace (
+    UINT8                   ChannelIndex)
+{
+    ACPI_STATUS             Status;
+    ACPI_TABLE_HEADER       *Table;
+    ACPI_SUBTABLE_HEADER    *Subtable;
+    UINT32                  Offset;
+    UINT8                   Channel = 0;
+    BOOLEAN                 Result = FALSE;
+
+
+    Status = AcpiGetTable (ACPI_SIG_PCCT, 1, &Table);
+    if (ACPI_FAILURE (Status))
+    {
+        return (FALSE);
+    }
+
+    Offset = sizeof (ACPI_TABLE_PCCT);
+    while (Offset < Table->Length)
+    {
+        if (Offset + sizeof (ACPI_SUBTABLE_HEADER) > Table->Length)
+        {
+            break;
+        }
+        Subtable = ACPI_ADD_PTR (ACPI_SUBTABLE_HEADER, Table, Offset);
+        if (Subtable->Length == 0 ||
+            Offset + Subtable->Length > Table->Length)
+        {
+            break;
+        }
+        if (Channel == ChannelIndex)
+        {
+            Result = (Subtable->Type == ACPI_PCCT_TYPE_HW_REG_COMM_SUBSPACE);
+            break;
+        }
+        Channel++;
+        Offset += Subtable->Length;
+    }
+
+    AcpiPutTable (Table);
+    return (Result);
+}
+
+
+/*******************************************************************************
+ *
  * FUNCTION:    AcpiDsCreateField
  *
  * PARAMETERS:  Op              - Op containing the Field definition and args
@@ -699,7 +757,10 @@ AcpiDsCreateField (
         return_ACPI_STATUS (Status);
     }
 
-    if (Info.RegionNode->Object->Region.SpaceId == ACPI_ADR_SPACE_PLATFORM_COMM)
+    /* Type 5 (HW Registers) uses no shared memory buffer */
+    if (Info.RegionNode->Object->Region.SpaceId == ACPI_ADR_SPACE_PLATFORM_COMM &&
+        !AcpiDsPccIsHwRegSubspace (
+            (UINT8) Info.RegionNode->Object->Region.Address))
     {
         RegionNode->Object->Field.InternalPccBuffer =
             ACPI_ALLOCATE_ZEROED(Info.RegionNode->Object->Region.Length);

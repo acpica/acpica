@@ -196,8 +196,67 @@ static const UINT8      AcpiProtocolLengths[] =
  * have a 2-byte COMD field at OperationRegion offset 0; extended PCC
  * subspaces (types 3-4) have a 4-byte COMD field at OperationRegion offset 8.
  */
-#define GENERIC_SUBSPACE_COMMAND(a)     ((a) < 2)
-#define MASTER_SUBSPACE_COMMAND(a)      (((a) - 8) < 4)
+#define GENERIC_SUBSPACE_COMMAND(a)     (4 == a || a == 5)
+#define MASTER_SUBSPACE_COMMAND(a)      (12 <= a && a <= 15)
+
+
+/*******************************************************************************
+ *
+ * FUNCTION:    AcpiExGetPccSubspaceType
+ *
+ * PARAMETERS:  ChannelIndex    - PCC channel number from OperationRegion address
+ *
+ * RETURN:      PCCT subtable type for the channel, or ACPI_PCCT_TYPE_RESERVED
+ *              if the PCCT is absent or the index is out of range.
+ *
+ * DESCRIPTION: Walk the PCCT to identify the subspace type of a PCC channel.
+ *              Used to apply the correct COMD offset check per subspace class.
+ *
+ ******************************************************************************/
+
+static UINT8
+AcpiExGetPccSubspaceType (
+    UINT8                   ChannelIndex)
+{
+    ACPI_STATUS             Status;
+    ACPI_TABLE_HEADER       *Table;
+    ACPI_SUBTABLE_HEADER    *Subtable;
+    UINT32                  Offset;
+    UINT8                   Channel = 0;
+    UINT8                   Type = ACPI_PCCT_TYPE_RESERVED;
+
+
+    Status = AcpiGetTable (ACPI_SIG_PCCT, 1, &Table);
+    if (ACPI_FAILURE (Status))
+    {
+        return (ACPI_PCCT_TYPE_RESERVED);
+    }
+
+    Offset = sizeof (ACPI_TABLE_PCCT);
+    while (Offset < Table->Length)
+    {
+        if (Offset + sizeof (ACPI_SUBTABLE_HEADER) > Table->Length)
+        {
+            break;
+        }
+        Subtable = ACPI_ADD_PTR (ACPI_SUBTABLE_HEADER, Table, Offset);
+        if (Subtable->Length == 0 ||
+            Offset + Subtable->Length > Table->Length)
+        {
+            break;
+        }
+        if (Channel == ChannelIndex)
+        {
+            Type = Subtable->Type;
+            break;
+        }
+        Channel++;
+        Offset += Subtable->Length;
+    }
+
+    AcpiPutTable (Table);
+    return (Type);
+}
 
 
 /*******************************************************************************
@@ -360,42 +419,36 @@ AcpiExReadDataFromField (
     else if ((ObjDesc->Common.Type == ACPI_TYPE_LOCAL_REGION_FIELD) &&
         (ObjDesc->Field.RegionObj->Region.SpaceId == ACPI_ADR_SPACE_PLATFORM_COMM))
     {
-        /*
-         * Reading from a PCC field unit does not require the handler because
-         * it only requires reading from the InternalPccBuffer.
-         */
         ACPI_DEBUG_PRINT ((ACPI_DB_BFIELD,
             "PCC FieldRead bits %u\n", ObjDesc->Field.BitLength));
 
         /*
-         * Ensure the field access does not exceed the bounds of the
-         * InternalPccBuffer. The buffer is allocated with the region length,
-         * so verify that BaseByteOffset + field byte length <= Region.Length.
+         * PCC reads for types 0-4 are served directly from InternalPccBuffer
+         * without invoking the region handler. Type 5 (HW Registers) has no
+         * shared memory buffer and falls through to the normal region read,
+         * which dispatches to the registered PCC address-space handler.
          */
-        if (!ObjDesc->Field.RegionObj->Field.InternalPccBuffer)
+        if (ObjDesc->Field.RegionObj->Field.InternalPccBuffer)
         {
-            Status = AE_AML_NO_OPERAND;
-            goto Exit;
+            BufferLength = (ACPI_SIZE) ACPI_ROUND_BITS_UP_TO_BYTES (
+                ObjDesc->Field.BitLength);
+            if (ObjDesc->Field.BaseByteOffset + BufferLength >
+                ObjDesc->Field.RegionObj->Region.Length)
+            {
+                ACPI_ERROR ((AE_INFO,
+                    "PCC field at offset %u length %u exceeds region size %u",
+                    ObjDesc->Field.BaseByteOffset, BufferLength,
+                    ObjDesc->Field.RegionObj->Region.Length));
+                Status = AE_AML_BUFFER_LIMIT;
+                goto Exit;
+            }
+
+            memcpy (Buffer, ObjDesc->Field.RegionObj->Field.InternalPccBuffer +
+                ObjDesc->Field.BaseByteOffset, BufferLength);
+
+            *RetBufferDesc = BufferDesc;
+            return AE_OK;
         }
-
-        BufferLength = (ACPI_SIZE) ACPI_ROUND_BITS_UP_TO_BYTES (
-            ObjDesc->Field.BitLength);
-        if (ObjDesc->Field.BaseByteOffset + BufferLength >
-            ObjDesc->Field.RegionObj->Region.Length)
-        {
-            ACPI_ERROR ((AE_INFO,
-                "PCC field at offset %u length %u exceeds region size %u",
-                ObjDesc->Field.BaseByteOffset, BufferLength,
-                ObjDesc->Field.RegionObj->Region.Length));
-            Status = AE_AML_BUFFER_LIMIT;
-            goto Exit;
-        }
-
-        memcpy (Buffer, ObjDesc->Field.RegionObj->Field.InternalPccBuffer +
-            ObjDesc->Field.BaseByteOffset, BufferLength);
-
-        *RetBufferDesc = BufferDesc;
-        return AE_OK;
     }
 
     ACPI_DEBUG_PRINT ((ACPI_DB_BFIELD,
@@ -454,6 +507,7 @@ AcpiExWriteDataToField (
     ACPI_STATUS             Status;
     UINT32                  BufferLength;
     UINT32                  DataLength;
+    UINT8                   PccType;
     void                    *Buffer;
 
 
@@ -512,45 +566,80 @@ AcpiExWriteDataToField (
          * of the field. This is considered safer because some firmware tools
          * are known to obfiscate named objects.
          *
-         * Ensure the field access does not exceed the bounds of the
-         * InternalPccBuffer.
+         * Type 5 (HW Registers) has no shared memory buffer; if
+         * InternalPccBuffer is NULL the write falls through to the normal
+         * region handler path below.
          */
-        DataLength = (ACPI_SIZE) ACPI_ROUND_BITS_UP_TO_BYTES (
-            ObjDesc->Field.BitLength);
-
-        if (!ObjDesc->Field.RegionObj->Field.InternalPccBuffer)
+        if (ObjDesc->Field.RegionObj->Field.InternalPccBuffer)
         {
-            return_ACPI_STATUS (AE_AML_NO_OPERAND);
+            DataLength = (ACPI_SIZE) ACPI_ROUND_BITS_UP_TO_BYTES (
+                ObjDesc->Field.BitLength);
+
+            if (ObjDesc->Field.BaseByteOffset + DataLength >
+                ObjDesc->Field.RegionObj->Region.Length)
+            {
+                ACPI_ERROR ((AE_INFO,
+                    "PCC field at offset %u length %u exceeds region size %u",
+                    ObjDesc->Field.BaseByteOffset, DataLength,
+                    ObjDesc->Field.RegionObj->Region.Length));
+                return_ACPI_STATUS (AE_AML_BUFFER_LIMIT);
+            }
+
+            /* Select source pointer based on SourceDesc type, same as normal path */
+            switch (SourceDesc->Common.Type)
+            {
+            case ACPI_TYPE_INTEGER:
+                Buffer = &SourceDesc->Integer.Value;
+                BufferLength = sizeof (SourceDesc->Integer.Value);
+                break;
+
+            case ACPI_TYPE_BUFFER:
+                Buffer = SourceDesc->Buffer.Pointer;
+                BufferLength = SourceDesc->Buffer.Length;
+                break;
+
+            case ACPI_TYPE_STRING:
+                Buffer = SourceDesc->String.Pointer;
+                BufferLength = SourceDesc->String.Length;
+                break;
+
+            default:
+                return_ACPI_STATUS (AE_AML_OPERAND_TYPE);
+            }
+
+            memcpy (ObjDesc->Field.RegionObj->Field.InternalPccBuffer +
+                ObjDesc->Field.BaseByteOffset,
+                Buffer, ACPI_MIN (DataLength, BufferLength));
+
+            PccType = AcpiExGetPccSubspaceType (
+                (UINT8) ObjDesc->Field.RegionObj->Region.Address);
+
+            /*
+             * When the PCCT is absent or the channel is not found, fall back
+             * to checking both offsets (preserves behavior for environments
+             * without a PCCT, e.g. test harnesses).
+             */
+            if ((PccType == ACPI_PCCT_TYPE_RESERVED &&
+                 (GENERIC_SUBSPACE_COMMAND (ObjDesc->Field.BaseByteOffset) ||
+                  MASTER_SUBSPACE_COMMAND (ObjDesc->Field.BaseByteOffset))) ||
+                ((PccType <= ACPI_PCCT_TYPE_HW_REDUCED_SUBSPACE_TYPE2) &&
+                 GENERIC_SUBSPACE_COMMAND (ObjDesc->Field.BaseByteOffset)) ||
+                ((PccType == ACPI_PCCT_TYPE_EXT_PCC_MASTER_SUBSPACE ||
+                  PccType == ACPI_PCCT_TYPE_EXT_PCC_SLAVE_SUBSPACE) &&
+                 MASTER_SUBSPACE_COMMAND (ObjDesc->Field.BaseByteOffset)))
+            {
+                /* Perform the write */
+
+                ACPI_DEBUG_PRINT ((ACPI_DB_BFIELD,
+                    "PCC COMD field has been written. Invoking PCC handler now.\n"));
+
+                Status = AcpiExAccessRegion (
+                    ObjDesc, 0, (UINT64 *) ObjDesc->Field.RegionObj->Field.InternalPccBuffer,
+                    ACPI_WRITE);
+                return_ACPI_STATUS (Status);
+            }
+            return (AE_OK);
         }
-
-        if (ObjDesc->Field.BaseByteOffset + DataLength >
-            ObjDesc->Field.RegionObj->Region.Length)
-        {
-            ACPI_ERROR ((AE_INFO,
-                "PCC field at offset %u length %u exceeds region size %u",
-                ObjDesc->Field.BaseByteOffset, DataLength,
-                ObjDesc->Field.RegionObj->Region.Length));
-            return_ACPI_STATUS (AE_AML_BUFFER_LIMIT);
-        }
-
-        memcpy (ObjDesc->Field.RegionObj->Field.InternalPccBuffer +
-            ObjDesc->Field.BaseByteOffset,
-            SourceDesc->Buffer.Pointer, DataLength);
-
-        if (GENERIC_SUBSPACE_COMMAND (ObjDesc->Field.BaseByteOffset) ||
-            MASTER_SUBSPACE_COMMAND (ObjDesc->Field.BaseByteOffset))
-        {
-            /* Perform the write */
-
-            ACPI_DEBUG_PRINT ((ACPI_DB_BFIELD,
-                "PCC COMD field has been written. Invoking PCC handler now.\n"));
-
-            Status = AcpiExAccessRegion (
-                ObjDesc, 0, (UINT64 *) ObjDesc->Field.RegionObj->Field.InternalPccBuffer,
-                ACPI_WRITE);
-            return_ACPI_STATUS (Status);
-        }
-        return (AE_OK);
     }
 
 
