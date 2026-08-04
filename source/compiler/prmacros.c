@@ -871,6 +871,7 @@ PrAddMacro (
     while (Token)
     {
         BOOLEAN                 Stringize = FALSE;
+        BOOLEAN                 HasPaste = FALSE;
         char                    *TokenStart = Token;
         char                    *SubToken = Token;
         char                    *PastePtr = NULL;
@@ -890,6 +891,8 @@ PrAddMacro (
         SearchPtr = Token;
         while ((PastePtr = strstr (SearchPtr, "##")) != NULL)
         {
+            HasPaste = TRUE;
+
             /* Extract and process substring before ## */
             LenBefore = PastePtr - SearchPtr;
             if (LenBefore > 0 && LenBefore < sizeof(TempToken))
@@ -968,7 +971,7 @@ PrAddMacro (
                 }
             }
         }
-        else if (PastePtr == NULL)
+        else if (!HasPaste)
         {
             /* No ## in this token - use original logic */
             for (i = 0; ((i < PR_MAX_MACRO_ARGS) && Args[i].Name); i++)
