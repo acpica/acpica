@@ -191,12 +191,13 @@ static const UINT8      AcpiProtocolLengths[] =
 
 /*
  * The following macros determine a given offset is a COMD field.
- * According to the specification, generic subspaces (types 0-2) contains a
- * 2-byte COMD field at offset 4 and master subspaces (type 3) contains a 4-byte
- * COMD field starting at offset 12.
+ * The PCC OperationRegion begins after the 4-byte PCC signature, so raw
+ * shared memory offsets are reduced by 4. Generic subspaces (types 0-2)
+ * have a 2-byte COMD field at OperationRegion offset 0; extended PCC
+ * subspaces (types 3-4) have a 4-byte COMD field at OperationRegion offset 8.
  */
-#define GENERIC_SUBSPACE_COMMAND(a)     (4 == a || a == 5)
-#define MASTER_SUBSPACE_COMMAND(a)      (12 <= a && a <= 15)
+#define GENERIC_SUBSPACE_COMMAND(a)     ((a) < 2)
+#define MASTER_SUBSPACE_COMMAND(a)      (((a) - 8) < 4)
 
 
 /*******************************************************************************
@@ -536,7 +537,8 @@ AcpiExWriteDataToField (
             ObjDesc->Field.BaseByteOffset,
             SourceDesc->Buffer.Pointer, DataLength);
 
-        if (MASTER_SUBSPACE_COMMAND (ObjDesc->Field.BaseByteOffset))
+        if (GENERIC_SUBSPACE_COMMAND (ObjDesc->Field.BaseByteOffset) ||
+            MASTER_SUBSPACE_COMMAND (ObjDesc->Field.BaseByteOffset))
         {
             /* Perform the write */
 
