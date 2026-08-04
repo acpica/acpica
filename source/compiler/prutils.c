@@ -598,7 +598,9 @@ ResetHere2:
          * over the shorter outgoing arg string and do the replacement
          * at the correct offset value which is resetted every iteration
          */
-        memcpy (AslGbl_MacroTokenReplaceBuffer, AslGbl_MacroTokenBuffer, Args->Offset[i]);
+        memcpy (AslGbl_MacroTokenReplaceBuffer, AslGbl_MacroTokenBuffer,
+            Args->Offset[i]);
+        AslGbl_MacroTokenReplaceBuffer[Args->Offset[i]] = '\0';
         strcat (AslGbl_MacroTokenReplaceBuffer, Token);
         strcat (AslGbl_MacroTokenReplaceBuffer, (AslGbl_MacroTokenBuffer +
             (Args->Offset[i] + strlen (Args->Name))));

@@ -339,7 +339,8 @@ PrExpandBuiltInMacro (
             ArgValues[0]);
         if (Count <= 0 || ((UINT32) Count >= AslGbl_LineBufferSize))
         {
-            PrError (ASL_ERROR, ASL_MSG_INVALID_INVOCATION, TokenOffset);
+            PrError (ASL_ERROR, ASL_MSG_INVALID_INVOCATION,
+                TokenOffset + 1);
             return (TRUE);
         }
 
@@ -356,7 +357,8 @@ PrExpandBuiltInMacro (
             ArgValues[0], ArgValues[1], ArgValues[2]);
         if (Count <= 0 || ((UINT32) Count >= AslGbl_LineBufferSize))
         {
-            PrError (ASL_ERROR, ASL_MSG_INVALID_INVOCATION, TokenOffset);
+            PrError (ASL_ERROR, ASL_MSG_INVALID_INVOCATION,
+                TokenOffset + 1);
             return (TRUE);
         }
 
