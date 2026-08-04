@@ -796,14 +796,6 @@ PrAddMacro (
             break;
         }
 
-        /* Don't go beyond the argument list */
-
-        TokenOffset = Token - AslGbl_MainTokenBuffer + strlen (Token);
-        if (TokenOffset > EndOfArgList)
-        {
-            break;
-        }
-
         DbgPrint (ASL_DEBUG_OUTPUT, PR_PREFIX_ID
             "Macro param: %s\n",
             AslGbl_CurrentLineNumber, Token);
