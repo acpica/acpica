@@ -287,6 +287,7 @@ typedef enum
     ACPI_DMT_IVRS,
     ACPI_DMT_IVRS_DE,
     ACPI_DMT_IVRS_UNTERMINATED_STRING,
+    ACPI_DMT_KEYP,
     ACPI_DMT_LPIT,
     ACPI_DMT_MADT,
     ACPI_DMT_MPAM_LOCATOR,
@@ -577,6 +578,10 @@ extern ACPI_DMTABLE_INFO        AcpiDmTableInfoIvrsUidString[];
 extern ACPI_DMTABLE_INFO        AcpiDmTableInfoIvrsUidInteger[];
 extern ACPI_DMTABLE_INFO        AcpiDmTableInfoIvrsHidString[];
 extern ACPI_DMTABLE_INFO        AcpiDmTableInfoIvrsHidInteger[];
+extern ACPI_DMTABLE_INFO        AcpiDmTableInfoKeyp[];
+extern ACPI_DMTABLE_INFO        AcpiDmTableInfoKeypHdr[];
+extern ACPI_DMTABLE_INFO        AcpiDmTableInfoKeyp0[];
+extern ACPI_DMTABLE_INFO        AcpiDmTableInfoKeyp0a[];
 extern ACPI_DMTABLE_INFO        AcpiDmTableInfoMadt[];
 extern ACPI_DMTABLE_INFO        AcpiDmTableInfoMadt0[];
 extern ACPI_DMTABLE_INFO        AcpiDmTableInfoMadt1[];
@@ -925,6 +930,10 @@ AcpiDmDumpIovt (
 
 void
 AcpiDmDumpIvrs (
+    ACPI_TABLE_HEADER       *Table);
+
+void
+AcpiDmDumpKeyp (
     ACPI_TABLE_HEADER       *Table);
 
 void

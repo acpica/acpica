@@ -149,7 +149,7 @@
  *
  *****************************************************************************/
 
-/* Compile all complex data tables, signatures starting with A-I */
+/* Compile all complex data tables, signatures starting with A-K */
 
 #include "aslcompiler.h"
 
@@ -3565,6 +3565,112 @@ DtCompileIvrs (
             /* All other subtable types come through here */
             break;
         }
+    }
+
+    return (AE_OK);
+}
+
+
+/******************************************************************************
+ *
+ * FUNCTION:    DtCompileKeyp
+ *
+ * PARAMETERS:  List                - Current field list pointer
+ *
+ * RETURN:      Status
+ *
+ * DESCRIPTION: Compile KEYP.
+ *
+ *****************************************************************************/
+
+ACPI_STATUS
+DtCompileKeyp (
+    void                    **List)
+{
+    ACPI_STATUS             Status;
+    DT_SUBTABLE             *Subtable;
+    DT_SUBTABLE             *ParentTable;
+    DT_FIELD                **PFieldList = (DT_FIELD **) List;
+    DT_FIELD                *SubtableStart;
+    ACPI_KEYP_COMMON_HEADER *KeypHeader;
+    ACPI_KEYP_CONFIG_UNIT   *ConfigUnit;
+    UINT32                  i;
+
+
+    /* Main table */
+
+    Status = DtCompileTable (PFieldList, AcpiDmTableInfoKeyp, &Subtable);
+    if (ACPI_FAILURE (Status))
+    {
+        return (Status);
+    }
+
+    ParentTable = DtPeekSubtable ();
+    DtInsertSubtable (ParentTable, Subtable);
+
+    /* Subtables - Key Configuration Unit structures */
+
+    while (*PFieldList)
+    {
+        SubtableStart = *PFieldList;
+
+        /* Common Key Configuration Unit subtable header */
+
+        Status = DtCompileTable (PFieldList, AcpiDmTableInfoKeypHdr,
+            &Subtable);
+        if (ACPI_FAILURE (Status))
+        {
+            return (Status);
+        }
+
+        ParentTable = DtPeekSubtable ();
+        DtInsertSubtable (ParentTable, Subtable);
+        DtPushSubtable (Subtable);
+
+        KeypHeader = ACPI_CAST_PTR (ACPI_KEYP_COMMON_HEADER, Subtable->Buffer);
+
+        switch (KeypHeader->Type)
+        {
+        case ACPI_KEYP_TYPE_CONFIG_UNIT:
+
+            /* Key Configuration Unit structure body */
+
+            Status = DtCompileTable (PFieldList, AcpiDmTableInfoKeyp0,
+                &Subtable);
+            if (ACPI_FAILURE (Status))
+            {
+                return (Status);
+            }
+
+            ParentTable = DtPeekSubtable ();
+            DtInsertSubtable (ParentTable, Subtable);
+
+            ConfigUnit = ACPI_SUB_PTR (ACPI_KEYP_CONFIG_UNIT,
+                Subtable->Buffer, sizeof (ACPI_KEYP_COMMON_HEADER));
+
+            /* Root Port Information structures */
+
+            for (i = 0; i < ConfigUnit->RootPortCount; i++)
+            {
+                Status = DtCompileTable (PFieldList, AcpiDmTableInfoKeyp0a,
+                    &Subtable);
+                if (ACPI_FAILURE (Status))
+                {
+                    return (Status);
+                }
+
+                ParentTable = DtPeekSubtable ();
+                DtInsertSubtable (ParentTable, Subtable);
+            }
+            break;
+
+        default:
+
+            DtFatal (ASL_MSG_UNKNOWN_SUBTABLE, SubtableStart, "KEYP");
+            return (AE_ERROR);
+        }
+
+        DtPopSubtable ();
     }
 
     return (AE_OK);
