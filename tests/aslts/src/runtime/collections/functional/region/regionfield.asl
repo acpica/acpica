@@ -47067,14 +47067,13 @@ printf ("BINT: %o %o %o %o\n", Arg2, Local6, Local7, Local2)
     Method (M745, 1, Serialized)
     {
         Name (OLEN, 16) // Length of the operation region
-        Name (CLEN, 8) // Length of FLGS, LNGT, COMD, COSP
+        Name (CLEN, 4) // Byte offset to COSP
         OperationRegion (PCC1, PCC, 0x1, OLEN)
         Field (PCC1, AnyAcc, NoLock, Preserve)
         {
-            Offset(4),  // 4 bytes
-            COMD, 16,   // 2 bytes
-            STAT, 16,   // 2 bytes
-            COSP, 64,   // 8 bytes
+            COMD, 16,   // 2 bytes — OperationRegion offset 0-1
+            STAT, 16,   // 2 bytes — OperationRegion offset 2-3
+            COSP, 64,   // 8 bytes — OperationRegion offset 4-11
         }
         Name (BUF0, Buffer(0x2) {1,0})
         STAT = BUF0
@@ -47091,18 +47090,18 @@ printf ("BINT: %o %o %o %o\n", Arg2, Local6, Local7, Local2)
         /*
          * Check STAT, COMD and COSP to ensure that they contain expected
          * values. Note: the PCC operation region handler in acpiexec writes
-         * 0x0 - OLEN in each byte of the field (including the offset 4).
-         * For PCC1,  STAT would contain the values {0x6, 0x7}.
+         * 0x0 - OLEN in each byte of the buffer.
+         * For PCC1, STAT would contain the values {0x2, 0x3}.
          */
         printf ("TEST: m745, Check COMD after write")
-        If (COMD != 0x0504)
+        If (COMD != 0x0100)
         {
-            ERR (Arg0, Z143, __LINE__, 0x00, 0x00, COMD, 0x0504)
+            ERR (Arg0, Z143, __LINE__, 0x00, 0x00, COMD, 0x0100)
         }
         printf ("TEST: m745, Check STAT after write")
-        If (STAT != 0x0706)
+        If (STAT != 0x0302)
         {
-            ERR (Arg0, Z143, __LINE__, 0x00, 0x00, STAT, 0x0706)
+            ERR (Arg0, Z143, __LINE__, 0x00, 0x00, STAT, 0x0302)
         }
 
         /*
@@ -47110,9 +47109,9 @@ printf ("BINT: %o %o %o %o\n", Arg2, Local6, Local7, Local2)
          * set by acpiexec PCC handler
          */
         printf ("TEST: m745, Check COSP after write")
-        If (COSP != 0x0F0E0D0C0B0A0908)
+        If (COSP != 0x0B0A090807060504)
         {
-            ERR (Arg0, Z143, __LINE__, 0x00, 0x00, COSP, 0x0F0E0D0C0B0A0908)
+            ERR (Arg0, Z143, __LINE__, 0x00, 0x00, COSP, 0x0B0A090807060504)
         }
     }
 
@@ -47120,17 +47119,16 @@ printf ("BINT: %o %o %o %o\n", Arg2, Local6, Local7, Local2)
     /* m746 */
     Method (M746, 1, Serialized)
     {
-        Name (OLEN, 26) // Length of the operation region
-        Name (CLEN, 16) // Length of FLGS, LNGT, COMD, COSP
+        Name (OLEN, 22) // Length of the operation region
+        Name (CLEN, 12) // Byte offset to COSP
 
         OperationRegion (PCC3, PCC, 0x3, OLEN)
         Field (PCC3, AnyAcc, NoLock, Preserve)
         {
-            Offset(4),  // 4 bytes
-            FLGS, 32,   // 4 bytes
-            LNGT, 32,   // 4 Bytes
-            COMD, 32,   // 4 bytes
-            COSP, 80    // 10 bytes
+            FLGS, 32,   // 4 bytes — OperationRegion offset 0-3
+            LNGT, 32,   // 4 bytes — OperationRegion offset 4-7
+            COMD, 32,   // 4 bytes — OperationRegion offset 8-11
+            COSP, 80    // 10 bytes — OperationRegion offset 12-21
         }
 
         Name (BUF5, Buffer(0x4) {3,2,1,0})
@@ -47150,24 +47148,24 @@ printf ("BINT: %o %o %o %o\n", Arg2, Local6, Local7, Local2)
         /*
          * Check FLGS, LNGT, COMD and ensure that they contain expected
          * values. Note: the PCC operation region handler in acpiexec writes
-         * 0x0 - OLEN in each byte of the field (including the offset 4).
-         * For PCC3, FLGS would contain the values {0x4, 0x5, 0x6, 0x7}.
+         * 0x0 - OLEN in each byte of the buffer.
+         * For PCC3, FLGS would contain the values {0x0, 0x1, 0x2, 0x3}.
          */
         Concatenate (Arg0, "-m746", Arg0)
         printf ("TEST: m746, Check FLGS after write")
-        If (FLGS != 0x07060504)
+        If (FLGS != 0x03020100)
         {
-            ERR (Arg0, Z143, __LINE__, 0x00, 0x00, FLGS, 0x07060504)
+            ERR (Arg0, Z143, __LINE__, 0x00, 0x00, FLGS, 0x03020100)
         }
         printf ("TEST: m746, Check LNGT after write")
-        If (LNGT != 0x0B0A0908)
+        If (LNGT != 0x07060504)
         {
-            ERR (Arg0, Z143, __LINE__, 0x00, 0x00, LNGT, 0x0B0A0908)
+            ERR (Arg0, Z143, __LINE__, 0x00, 0x00, LNGT, 0x07060504)
         }
         printf ("TEST: m746, Check COMD after write")
-        If (COMD != 0x0F0E0D0C)
+        If (COMD != 0x0B0A0908)
         {
-            ERR (Arg0, Z143, __LINE__, 0x00, 0x00, COMD, 0x0F0E0D0C)
+            ERR (Arg0, Z143, __LINE__, 0x00, 0x00, COMD, 0x0B0A0908)
         }
 
         /*
