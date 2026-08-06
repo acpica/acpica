@@ -150,6 +150,7 @@
  *****************************************************************************/
 
 #include "aslcompiler.h"
+#include "aslcompiler.y.h"
 #include "amlcode.h"
 #include "acparser.h"
 
@@ -576,7 +577,6 @@ const ASL_MAPPING_ENTRY     AslKeywordMapping [] =
 /* XOR */                       OP_TABLE_ENTRY (AML_BIT_XOR_OP,             0,                              0,                  ACPI_BTYPE_INTEGER),
 /* ZERO */                      OP_TABLE_ENTRY (AML_ZERO_OP,                0,                              0,                  ACPI_BTYPE_INTEGER),
 /* TOPLD */                     OP_TABLE_ENTRY (AML_DWORD_OP,               0,                              OP_AML_PACKAGE,     ACPI_BTYPE_INTEGER),
-/* XFERSIZE_128 */              OP_TABLE_ENTRY (AML_BYTE_OP,                0,                              0,                  0),
 /* REVISION */                  OP_TABLE_ENTRY (AML_BYTE_OP,                0,                              0,                  0),
 /* IGNORECOLOR */               OP_TABLE_ENTRY (AML_BYTE_OP,                0,                              0,                  0),
 /* RED */                       OP_TABLE_ENTRY (AML_BYTE_OP,                0,                              0,                  0),
@@ -605,11 +605,107 @@ const ASL_MAPPING_ENTRY     AslKeywordMapping [] =
 /* RESERVED */                  OP_TABLE_ENTRY (AML_BYTE_OP,                0,                              0,                  0),
 /* VERTICALOFFSET */            OP_TABLE_ENTRY (AML_BYTE_OP,                0,                              0,                  0),
 /* HORIZONTALOFFSET */          OP_TABLE_ENTRY (AML_BYTE_OP,                0,                              0,                  0),
+
+/*
+ * The C-style expression tokens below (and the parentheses tokens) are
+ * rewritten by the parser into the equivalent standard ASL parse opcodes,
+ * so they never reach OpcGenerateAmlOpcode. The entries must exist
+ * regardless, because this table is indexed directly by
+ * (ParseOpcode - ASL_PARSE_OPCODE_BASE) and must therefore track the
+ * token declaration order in asltokens.y one-for-one.
+ */
+/* EXP_EQUALS */                OP_TABLE_ENTRY (AML_DEFAULT_ARG_OP,         0,                              0,                  0),
+/* EXP_ADD_EQ */                OP_TABLE_ENTRY (AML_DEFAULT_ARG_OP,         0,                              0,                  0),
+/* EXP_SUB_EQ */                OP_TABLE_ENTRY (AML_DEFAULT_ARG_OP,         0,                              0,                  0),
+/* EXP_MUL_EQ */                OP_TABLE_ENTRY (AML_DEFAULT_ARG_OP,         0,                              0,                  0),
+/* EXP_DIV_EQ */                OP_TABLE_ENTRY (AML_DEFAULT_ARG_OP,         0,                              0,                  0),
+/* EXP_MOD_EQ */                OP_TABLE_ENTRY (AML_DEFAULT_ARG_OP,         0,                              0,                  0),
+/* EXP_SHL_EQ */                OP_TABLE_ENTRY (AML_DEFAULT_ARG_OP,         0,                              0,                  0),
+/* EXP_SHR_EQ */                OP_TABLE_ENTRY (AML_DEFAULT_ARG_OP,         0,                              0,                  0),
+/* EXP_AND_EQ */                OP_TABLE_ENTRY (AML_DEFAULT_ARG_OP,         0,                              0,                  0),
+/* EXP_XOR_EQ */                OP_TABLE_ENTRY (AML_DEFAULT_ARG_OP,         0,                              0,                  0),
+/* EXP_OR_EQ */                 OP_TABLE_ENTRY (AML_DEFAULT_ARG_OP,         0,                              0,                  0),
+/* EXP_LOGICAL_OR */            OP_TABLE_ENTRY (AML_DEFAULT_ARG_OP,         0,                              0,                  0),
+/* EXP_LOGICAL_AND */           OP_TABLE_ENTRY (AML_DEFAULT_ARG_OP,         0,                              0,                  0),
+/* EXP_OR */                    OP_TABLE_ENTRY (AML_DEFAULT_ARG_OP,         0,                              0,                  0),
+/* EXP_XOR */                   OP_TABLE_ENTRY (AML_DEFAULT_ARG_OP,         0,                              0,                  0),
+/* EXP_AND */                   OP_TABLE_ENTRY (AML_DEFAULT_ARG_OP,         0,                              0,                  0),
+/* EXP_EQUAL */                 OP_TABLE_ENTRY (AML_DEFAULT_ARG_OP,         0,                              0,                  0),
+/* EXP_NOT_EQUAL */             OP_TABLE_ENTRY (AML_DEFAULT_ARG_OP,         0,                              0,                  0),
+/* EXP_GREATER */               OP_TABLE_ENTRY (AML_DEFAULT_ARG_OP,         0,                              0,                  0),
+/* EXP_LESS */                  OP_TABLE_ENTRY (AML_DEFAULT_ARG_OP,         0,                              0,                  0),
+/* EXP_GREATER_EQUAL */         OP_TABLE_ENTRY (AML_DEFAULT_ARG_OP,         0,                              0,                  0),
+/* EXP_LESS_EQUAL */            OP_TABLE_ENTRY (AML_DEFAULT_ARG_OP,         0,                              0,                  0),
+/* EXP_SHIFT_RIGHT */           OP_TABLE_ENTRY (AML_DEFAULT_ARG_OP,         0,                              0,                  0),
+/* EXP_SHIFT_LEFT */            OP_TABLE_ENTRY (AML_DEFAULT_ARG_OP,         0,                              0,                  0),
+/* EXP_ADD */                   OP_TABLE_ENTRY (AML_DEFAULT_ARG_OP,         0,                              0,                  0),
+/* EXP_SUBTRACT */              OP_TABLE_ENTRY (AML_DEFAULT_ARG_OP,         0,                              0,                  0),
+/* EXP_MULTIPLY */              OP_TABLE_ENTRY (AML_DEFAULT_ARG_OP,         0,                              0,                  0),
+/* EXP_DIVIDE */                OP_TABLE_ENTRY (AML_DEFAULT_ARG_OP,         0,                              0,                  0),
+/* EXP_MODULO */                OP_TABLE_ENTRY (AML_DEFAULT_ARG_OP,         0,                              0,                  0),
+/* EXP_NOT */                   OP_TABLE_ENTRY (AML_DEFAULT_ARG_OP,         0,                              0,                  0),
+/* EXP_LOGICAL_NOT */           OP_TABLE_ENTRY (AML_DEFAULT_ARG_OP,         0,                              0,                  0),
+/* EXP_INCREMENT */             OP_TABLE_ENTRY (AML_DEFAULT_ARG_OP,         0,                              0,                  0),
+/* EXP_DECREMENT */             OP_TABLE_ENTRY (AML_DEFAULT_ARG_OP,         0,                              0,                  0),
+/* OPEN_PAREN */                OP_TABLE_ENTRY (AML_DEFAULT_ARG_OP,         0,                              0,                  0),
+/* CLOSE_PAREN */               OP_TABLE_ENTRY (AML_DEFAULT_ARG_OP,         0,                              0,                  0),
+/* EXP_INDEX_LEFT */            OP_TABLE_ENTRY (AML_DEFAULT_ARG_OP,         0,                              0,                  0),
+/* EXP_INDEX_RIGHT */           OP_TABLE_ENTRY (AML_DEFAULT_ARG_OP,         0,                              0,                  0),
+
 /* PRINTF */                    OP_TABLE_ENTRY (AML_STORE_OP,               0,                              0,                  ACPI_BTYPE_DATA_REFERENCE),
 /* FPRINTF */                   OP_TABLE_ENTRY (AML_STORE_OP,               0,                              0,                  ACPI_BTYPE_DATA_REFERENCE),
-/* ASLCODE  */                  OP_TABLE_ENTRY (0,                          0,                              0,                  0)
+
+/* For() is converted to a While() by the parser */
+
+/* FOR */                       OP_TABLE_ENTRY (AML_DEFAULT_ARG_OP,         0,                              0,                  0),
+
+/* Structures are a preprocessor/parser-only construct */
+
+/* STRUCTURE */                 OP_TABLE_ENTRY (AML_DEFAULT_ARG_OP,         0,                              0,                  0),
+/* STRUCTURE_NAMESTRING */      OP_TABLE_ENTRY (AML_DEFAULT_ARG_OP,         0,                              0,                  0),
+/* STRUCTURE_TAG */             OP_TABLE_ENTRY (AML_DEFAULT_ARG_OP,         0,                              0,                  0),
+/* STRUCTURE_ELEMENT */         OP_TABLE_ENTRY (AML_DEFAULT_ARG_OP,         0,                              0,                  0),
+/* STRUCTURE_INSTANCE */        OP_TABLE_ENTRY (AML_DEFAULT_ARG_OP,         0,                              0,                  0),
+/* STRUCTURE_REFERENCE */       OP_TABLE_ENTRY (AML_DEFAULT_ARG_OP,         0,                              0,                  0),
+/* STRUCTURE_POINTER */         OP_TABLE_ENTRY (AML_DEFAULT_ARG_OP,         0,                              0,                  0),
+
+/* ASLCODE  */                  OP_TABLE_ENTRY (0,                          0,                              0,                  0),
+
+/*
+ * ASL+ variable creation. These are consumed by the parser.
+ */
+/* INTEGER_TYPE */              OP_TABLE_ENTRY (AML_DEFAULT_ARG_OP,         0,                              0,                  0),
+/* STRING_TYPE */               OP_TABLE_ENTRY (AML_DEFAULT_ARG_OP,         0,                              0,                  0),
+/* BUFFER_TYPE */               OP_TABLE_ENTRY (AML_DEFAULT_ARG_OP,         0,                              0,                  0),
+/* PACKAGE_TYPE */              OP_TABLE_ENTRY (AML_DEFAULT_ARG_OP,         0,                              0,                  0),
+/* REFERENCE_TYPE */            OP_TABLE_ENTRY (AML_DEFAULT_ARG_OP,         0,                              0,                  0),
+
+/*
+ * Special functions. TrCreateConstantLeafOp converts each of these to a
+ * STRING_LITERAL or INTEGER op at parse time.
+ */
+/* __DATE__ */                  OP_TABLE_ENTRY (AML_DEFAULT_ARG_OP,         0,                              0,                  0),
+/* __FILE__ */                  OP_TABLE_ENTRY (AML_DEFAULT_ARG_OP,         0,                              0,                  0),
+/* __LINE__ */                  OP_TABLE_ENTRY (AML_DEFAULT_ARG_OP,         0,                              0,                  0),
+/* __PATH__ */                  OP_TABLE_ENTRY (AML_DEFAULT_ARG_OP,         0,                              0,                  0),
+/* __METHOD__ */                OP_TABLE_ENTRY (AML_DEFAULT_ARG_OP,         0,                              0,                  0)
 /*! [End] no source code translation !*/
 
 };
 
 const UINT32     AslKeywordMappingCount = ACPI_ARRAY_LENGTH (AslKeywordMapping);
+
+/*
+ * The table above is indexed directly by the parse opcode, so it must
+ * contain exactly one entry for every token declared in asltokens.y.
+ * Catch any mismatch at build time rather than emitting bad AML (or
+ * failing with an internal error) at runtime.
+ *
+ * This declares an array with an invalid (negative) size if the table and
+ * the token list ever get out of step. It is not a real object - the
+ * typedef exists only to make the compiler evaluate the expression.
+ */
+struct AslKeywordMappingSizeCheck
+{
+    int                     Mismatch : (ACPI_ARRAY_LENGTH (AslKeywordMapping) == ASL_PARSE_OPCODE_COUNT) ? 1 : -1;
+};

@@ -173,6 +173,8 @@
 
 #define ASL_FIRST_PARSE_OPCODE      PARSEOP_ACCESSAS
 #define ASL_PARSE_OPCODE_BASE       PARSEOP_ACCESSAS        /* First Lex type */
+#define ASL_LAST_PARSE_OPCODE       PARSEOP___METHOD__      /* Last Lex type */
+#define ASL_PARSE_OPCODE_COUNT      (ASL_LAST_PARSE_OPCODE - ASL_PARSE_OPCODE_BASE + 1)
 
 
 /*
