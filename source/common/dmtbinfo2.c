@@ -1305,6 +1305,29 @@ ACPI_DMTABLE_INFO           AcpiDmTableInfoMchi[] =
 
 /*******************************************************************************
  *
+ * MISC - Miscellaneous GUIDed Table
+ *
+ ******************************************************************************/
+
+ACPI_DMTABLE_INFO           AcpiDmTableInfoMisc[] =
+{
+    ACPI_DMT_TERMINATOR
+};
+
+/* GUIDed Entries */
+
+ACPI_DMTABLE_INFO           AcpiDmTableInfoMisc0[] =
+{
+    {ACPI_DMT_UUID,     ACPI_MISC0_OFFSET (EntryGuid[0]),          "Entry GUID", 0},
+    {ACPI_DMT_UINT32,   ACPI_MISC0_OFFSET (EntryLength),           "Entry Length", 0},
+    {ACPI_DMT_UINT32,   ACPI_MISC0_OFFSET (Revision),              "Revision", 0},
+    {ACPI_DMT_UINT32,   ACPI_MISC0_OFFSET (ProducerId),            "Producer ID", 0},
+    {ACPI_DMT_MISC_DATA, ACPI_MISC0_OFFSET (Data),                 "Vendor Data", 0},
+    ACPI_DMT_TERMINATOR
+};
+
+/*******************************************************************************
+ *
  * MPAM - Memory System Resource Partitioning and Monitoring Tables
  * Arm's DEN0065 MPAM ACPI 2.0. December 2022.
  ******************************************************************************/

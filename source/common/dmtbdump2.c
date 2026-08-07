@@ -1314,9 +1314,6 @@ AcpiDmDumpMcfg (
     UINT32                  Offset = sizeof (ACPI_TABLE_MCFG);
     ACPI_MCFG_ALLOCATION    *Subtable;
 
-
-    /* Main table */
-
     Status = AcpiDmDumpTable (Table->Length, 0, Table, 0, AcpiDmTableInfoMcfg);
     if (ACPI_FAILURE (Status))
     {
@@ -1348,6 +1345,58 @@ AcpiDmDumpMcfg (
         Offset += sizeof (ACPI_MCFG_ALLOCATION);
         Subtable = ACPI_ADD_PTR (ACPI_MCFG_ALLOCATION, Subtable,
             sizeof (ACPI_MCFG_ALLOCATION));
+    }
+}
+
+/*******************************************************************************
+ *
+ * FUNCTION:    AcpiDmDumpMisc
+ *
+ * PARAMETERS:  Table               - A MISC table
+ *
+ * RETURN:      None
+ *
+ * DESCRIPTION: Format the contents of a MISC.
+ *
+ ******************************************************************************/
+
+void
+AcpiDmDumpMisc (
+    ACPI_TABLE_HEADER       *Table)
+{
+    ACPI_STATUS             Status;
+    UINT32                  Length = Table->Length;
+    UINT32                  Offset = sizeof (ACPI_TABLE_MISC);
+    ACPI_MISC_GUID_ENTRY    *Subtable;
+    UINT32                  SubtableLength;
+
+    Status = AcpiDmDumpTable (Length, 0, Table, 0, AcpiDmTableInfoMisc);
+    if (ACPI_FAILURE (Status))
+    {
+        return;
+    }
+
+    Subtable = ACPI_ADD_PTR (ACPI_MISC_GUID_ENTRY, Table, Offset);
+    while (Offset < Table->Length)
+    {
+
+        AcpiOsPrintf ("\n");
+        Status = AcpiDmDumpTable (Table->Length, Offset, Subtable,
+            sizeof (UINT8) * 16 + sizeof (UINT32) * 3, AcpiDmTableInfoMisc0);
+        if (ACPI_FAILURE (Status))
+        {
+            return;
+        }
+
+        SubtableLength = Subtable->EntryLength;
+        if (SubtableLength < (sizeof (UINT8) * 16 + sizeof (UINT32) * 3))
+        {
+            AcpiOsPrintf ("Invalid EntryLength: 0x%X\n", SubtableLength);
+            return;
+        }
+
+        Offset += SubtableLength;
+        Subtable = ACPI_ADD_PTR (ACPI_MISC_GUID_ENTRY, Subtable, SubtableLength);
     }
 }
 

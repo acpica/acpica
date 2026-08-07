@@ -447,6 +447,7 @@ DtGetFieldType (
     case ACPI_DMT_BUF128:
     case ACPI_DMT_PCI_PATH:
     case ACPI_DMT_PMTT_VENDOR:
+    case ACPI_DMT_MISC_DATA:
 
         Type = DT_FIELD_TYPE_BUFFER;
         break;
@@ -719,6 +720,7 @@ DtGetFieldLength (
     case ACPI_DMT_BUFFER:
     case ACPI_DMT_RAW_BUFFER:
     case ACPI_DMT_PMTT_VENDOR:
+    case ACPI_DMT_MISC_DATA:
 
         Value = DtGetFieldValue (Field);
         if (Value)
