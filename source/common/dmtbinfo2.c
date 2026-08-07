@@ -2637,4 +2637,28 @@ ACPI_DMTABLE_INFO           AcpiDmTableInfoSdev1b[] =
     ACPI_DMT_TERMINATOR
 };
 
+
+/*******************************************************************************
+ *
+ * UBRT - UnifiedBus Root Table
+ *
+ * Conforms to "UnifiedBus Root Table (UBRT) Specification"
+ * Revision 1.0, Release Date 2026-03-05
+ *
+ ******************************************************************************/
+
+ACPI_DMTABLE_INFO           AcpiDmTableInfoUbrt[] =
+{
+    {ACPI_DMT_UINT32,   ACPI_UBRT_OFFSET (Count),                   "Number of Sub-tables", 0},
+    ACPI_DMT_TERMINATOR
+};
+
+ACPI_DMTABLE_INFO           AcpiDmTableInfoUbrtSubtable[] =
+{
+    {ACPI_DMT_UINT8,    ACPI_UBRTS_OFFSET (Type),                   "Sub-table Type", 0},
+    {ACPI_DMT_BUF7,     ACPI_UBRTS_OFFSET (Reserved[0]),            "Reserved", 0},
+    {ACPI_DMT_UINT64,   ACPI_UBRTS_OFFSET (Pointer),                "Sub-table Physical Address", 0},
+    ACPI_DMT_TERMINATOR
+};
+
 /*! [End] no source code translation !*/
