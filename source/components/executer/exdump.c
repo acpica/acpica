@@ -1195,9 +1195,12 @@ AcpiExDumpReferenceObj (
             }
             else
             {
-                AcpiOsPrintf (" [%s]\n",
-                    AcpiUtGetTypeName (((ACPI_OPERAND_OBJECT *)
-                    ObjDesc->Reference.Object)->Common.Type));
+                /*
+                 * ObjDesc->Reference.Object may point to a freed object
+                 * due to concurrent namespace cleanup. Skip dereferencing
+                 * to avoid use-after-free; print pointer value only.
+                 */
+                AcpiOsPrintf (" %p\n", ObjDesc->Reference.Object);
             }
         }
         else
