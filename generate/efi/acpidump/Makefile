@@ -41,6 +41,7 @@ OBJECTS = \
 	$(OBJDIR)/utascii.o\
 	$(OBJDIR)/utbuffer.o\
 	$(OBJDIR)/utclib.o\
+	$(OBJDIR)/utcksum.o\
 	$(OBJDIR)/utdebug.o\
 	$(OBJDIR)/utexcep.o\
 	$(OBJDIR)/utglobal.o\
