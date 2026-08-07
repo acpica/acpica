@@ -333,3 +333,4 @@
         Include ("../../../../../runtime/collections/bdemo/ACPICA/0304/RUN.asl")
         Include ("../../../../../runtime/collections/bdemo/ACPICA/0305/RUN.asl")
         Include ("../../../../../runtime/collections/bdemo/ACPICA/0306/RUN.asl")
+        Include ("../../../../../runtime/collections/bdemo/ACPICA/0307/RUN.asl")
