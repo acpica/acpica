@@ -631,6 +631,28 @@ AcpiExResolveOperands (
                 /* Valid operand */
                break;
 
+            case ACPI_TYPE_PACKAGE:
+                /*
+                 * A Package was passed where Integer/String/Buffer
+                 * is required (BIOS bug). Replace with an empty
+                 * string so the method can continue executing.
+                 */
+                ACPI_BIOS_WARNING ((AE_INFO,
+                    "Needed [Integer/String/Buffer], found [Package] "
+                    "- substituting empty String"));
+
+                *StackPtr = AcpiUtCreateStringObject (0);
+                if (!*StackPtr)
+                {
+                    return_ACPI_STATUS (AE_NO_MEMORY);
+                }
+
+                if (ObjDesc != *StackPtr)
+                {
+                    AcpiUtRemoveReference (ObjDesc);
+                }
+                break;
+
             default:
                 ACPI_ERROR ((AE_INFO,
                     "Needed [Integer/String/Buffer], found [%s] %p",
