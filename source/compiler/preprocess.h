@@ -170,6 +170,7 @@
  */
 #define PR_MAX_MACRO_ARGS       32              /* Max number of macro args */
 #define PR_MAX_ARG_INSTANCES    24              /* Max instances of any one arg */
+#define PR_MAX_MACRO_DEPTH      5               /* Max nested macro expansions */
 #define PR_LINES_PER_BLOCK      4096            /* Max input source lines per block */
 
 
@@ -177,9 +178,9 @@
  * Local defines and macros
  */
 #define PR_TOKEN_SEPARATORS     " ,(){}\t\n"
-#define PR_MACRO_SEPARATORS     " ,(){}~!*/%+-<>=&^|\"\t\n"
+#define PR_MACRO_SEPARATORS     " ,(){}[];?:~!*/%+-<>=&^|\"\t\n"
 #define PR_MACRO_ARGUMENTS      " ,\t\n"
-#define PR_EXPR_SEPARATORS      " ,(){}~!*/%+-<>=&^|\"\t\n"
+#define PR_EXPR_SEPARATORS      " ,(){}[];?:~!*/%+-<>=&^|\"\t\n"
 
 #define PR_PREFIX_ID            "Pr(%.4u) - "             /* Used for debug output */
 
@@ -193,6 +194,7 @@ typedef struct pr_macro_arg
 {
     char                        *Name;
     UINT32                      Offset[PR_MAX_ARG_INSTANCES];
+    BOOLEAN                     Stringize[PR_MAX_ARG_INSTANCES];
     UINT16                      UseCount;
 
 } PR_MACRO_ARG;
@@ -206,6 +208,7 @@ typedef struct pr_define_info
     char                        *Body;          /* Macro body */
     PR_MACRO_ARG                *Args;          /* Macro arg list */
     UINT16                      ArgCount;       /* Macro arg count */
+    BOOLEAN                     Variadic;       /* Macro has variadic args */
     BOOLEAN                     Persist;        /* Keep for entire compiler run */
 
 } PR_DEFINE_INFO;
@@ -308,6 +311,10 @@ void
 PrDumpPredefinedNames (
     void);
 
+void
+PrAddBuiltInMacros (
+    void);
+
 PR_DEFINE_INFO *
 PrAddDefine (
     char                    *Token,
@@ -328,11 +335,18 @@ PrAddMacro (
     char                    **Next);
 
 void
+PrExpandLineMacros (
+    char                    *TokenBuffer,
+    char                    *Separators);
+
+BOOLEAN
 PrDoMacroInvocation (
     char                    *TokenBuffer,
     char                    *MacroStart,
     PR_DEFINE_INFO          *DefineInfo,
-    char                    **Next);
+    char                    **Next,
+    UINT32                  TokenOffset,
+    int                     *OffsetAdjust);
 
 
 /*
@@ -376,7 +390,12 @@ PrReplaceResizeSubstring(
     UINT32                  Diff1,
     UINT32                  Diff2,
     UINT32                  i,
-    char                    *Token);
+    char                    *Token,
+    BOOLEAN                 Stringize);
+
+void
+PrResolveTokenPasting (
+    void);
 
 char *
 PrReplaceData (

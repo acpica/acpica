@@ -425,6 +425,7 @@ const char                      *AslPreprocessorMsgs [] =
 /*    ASL_MSG_ERROR_DIRECTIVE */            "#error",
 /*    ASL_MSG_EXISTING_NAME */              "Name is already defined",
 /*    ASL_MSG_INVALID_INVOCATION */         "Invalid macro invocation",
+/*    ASL_MSG_MACRO_DEPTH */                "Maximum macro expansion depth exceeded",
 /*    ASL_MSG_MACRO_SYNTAX */               "Invalid macro syntax",
 /*    ASL_MSG_TOO_MANY_ARGUMENTS */         "Too many macro arguments",
 /*    ASL_MSG_UNKNOWN_DIRECTIVE */          "Unknown directive",

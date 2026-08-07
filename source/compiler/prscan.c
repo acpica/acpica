@@ -276,6 +276,7 @@ PrInitializePreprocessor (
 
     PrInitializeGlobals ();
     AslGbl_DefineList = NULL;
+    PrAddBuiltInMacros ();
 }
 
 
@@ -425,11 +426,7 @@ PrPreprocessInputFile (
 {
     UINT32                  Status;
     char                    *Token;
-    char                    *ReplaceString;
-    PR_DEFINE_INFO          *DefineInfo;
-    ACPI_SIZE               TokenOffset;
     char                    *Next;
-    int                     OffsetAdjust;
 
 
     PrGetNextLineInit ();
@@ -450,7 +447,6 @@ PrPreprocessInputFile (
 
         strcpy (AslGbl_MainTokenBuffer, AslGbl_CurrentLineBuffer);
         Token = PrGetNextToken (AslGbl_MainTokenBuffer, PR_TOKEN_SEPARATORS, &Next);
-        OffsetAdjust = 0;
 
         /* All preprocessor directives must begin with '#' */
 
@@ -483,47 +479,7 @@ PrPreprocessInputFile (
 
         /* Match and replace all #defined names within this source line */
 
-        while (Token)
-        {
-            DefineInfo = PrMatchDefine (Token);
-            if (DefineInfo)
-            {
-                if (DefineInfo->Body)
-                {
-                    /* This is a macro */
-
-                    DbgPrint (ASL_DEBUG_OUTPUT, PR_PREFIX_ID
-                        "Matched Macro: %s->%s\n",
-                        AslGbl_CurrentLineNumber, DefineInfo->Identifier,
-                        DefineInfo->Replacement);
-
-                    PrDoMacroInvocation (AslGbl_MainTokenBuffer, Token,
-                        DefineInfo, &Next);
-                }
-                else
-                {
-                    ReplaceString = DefineInfo->Replacement;
-
-                    /* Replace the name in the original line buffer */
-
-                    TokenOffset = Token - AslGbl_MainTokenBuffer + OffsetAdjust;
-                    PrReplaceData (
-                        &AslGbl_CurrentLineBuffer[TokenOffset], strlen (Token),
-                        ReplaceString, strlen (ReplaceString));
-
-                    /* Adjust for length difference between old and new name length */
-
-                    OffsetAdjust += strlen (ReplaceString) - strlen (Token);
-
-                    DbgPrint (ASL_DEBUG_OUTPUT, PR_PREFIX_ID
-                        "Matched #define: %s->%s\n",
-                        AslGbl_CurrentLineNumber, Token,
-                        *ReplaceString ? ReplaceString : "(NULL STRING)");
-                }
-            }
-
-            Token = PrGetNextToken (NULL, PR_TOKEN_SEPARATORS, &Next);
-        }
+        PrExpandLineMacros (AslGbl_MainTokenBuffer, PR_TOKEN_SEPARATORS);
 
         AslGbl_PreprocessorLineNumber++;
 
@@ -1103,6 +1059,29 @@ PrGetNextLine (
 
         if (c == '\n')
         {
+            /*
+             * Handle line continuation: splice escaped physical newlines
+             * into one logical preprocessor line.
+             */
+            if (((i >= 2) && (AslGbl_CurrentLineBuffer[i-2] == '\\')) ||
+                ((i >= 3) && (AslGbl_CurrentLineBuffer[i-2] == '\r') &&
+                    (AslGbl_CurrentLineBuffer[i-3] == '\\')))
+            {
+                if ((i >= 3) && (AslGbl_CurrentLineBuffer[i-2] == '\r') &&
+                    (AslGbl_CurrentLineBuffer[i-3] == '\\'))
+                {
+                    i -= 3;
+                }
+                else
+                {
+                    i -= 2;
+                }
+
+                /* Update PreviousChar to the last logical character before splice */
+                PreviousChar = (i > 0) ? AslGbl_CurrentLineBuffer[i-1] : '\0';
+                continue;
+            }
+
             /* Handle multi-line comments */
 
             if (AcpiGbl_LineScanState == PR_MULTI_LINE_COMMENT)
