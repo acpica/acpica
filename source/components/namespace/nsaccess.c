@@ -208,6 +208,14 @@ AcpiNsRootInitialize (
         goto UnlockAndExit;
     }
 
+#ifdef ACPI_USE_NS_SEARCH_ACCELERATION
+    Status = AcpiNsSearchAccelerationInit ();
+    if (ACPI_FAILURE (Status))
+    {
+        return_ACPI_STATUS (Status);
+    }
+#endif
+
     /*
      * Tell the rest of the subsystem that the root is initialized
      * (This is OK because the namespace is locked)
@@ -272,6 +280,10 @@ AcpiNsRootInitialize (
 
         NewNode->Parent = &AcpiGbl_RootNodeStruct;
         PrevNode = NewNode;
+
+#ifdef ACPI_USE_NS_SEARCH_ACCELERATION
+        AcpiNsSearchAccelerationAddNode (NewNode);
+#endif
 
         /*
          * Name entered successfully. If entry in PreDefinedNames[] specifies
