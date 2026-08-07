@@ -529,6 +529,85 @@ ACPI_DMTABLE_INFO           AcpiDmTableInfoIovtdev[] =
 
 /*******************************************************************************
  *
+ * IRDT - Intel Resource Director Technology
+ *
+ ******************************************************************************/
+
+ACPI_DMTABLE_INFO           AcpiDmTableInfoIrdt[] =
+{
+    {ACPI_DMT_UINT16,   ACPI_IRDT_OFFSET (IoProtoFlags),           "IO Protocol Flags (decoded below)", DT_FLAG},
+    {ACPI_DMT_FLAG0,    ACPI_FLAG_OFFSET (ACPI_TABLE_IRDT,IoProtoFlags,0), "IO_PROTO_MON", 0},
+    {ACPI_DMT_FLAG1,    ACPI_FLAG_OFFSET (ACPI_TABLE_IRDT,IoProtoFlags,0), "IO_PROTO_CTL", 0},
+    {ACPI_DMT_UINT16,   ACPI_IRDT_OFFSET (CacheProtoFlags),        "Cache Protocol Flags (decoded below)", DT_FLAG},
+    {ACPI_DMT_FLAG0,    ACPI_FLAG_OFFSET (ACPI_TABLE_IRDT,CacheProtoFlags,0), "IO_COH_MON", 0},
+    {ACPI_DMT_FLAG1,    ACPI_FLAG_OFFSET (ACPI_TABLE_IRDT,CacheProtoFlags,0), "IO_COH_CTL", 0},
+    {ACPI_DMT_UINT64,   ACPI_IRDT_OFFSET (Reserved),               "Reserved", 0},
+    ACPI_DMT_TERMINATOR
+};
+
+ACPI_DMTABLE_INFO           AcpiDmTableInfoIrdtRmud[] =
+{
+    {ACPI_DMT_IRDT,     ACPI_IRDTR_OFFSET (Type),                  "RMUD Type", 0},
+    {ACPI_DMT_UINT24,   ACPI_IRDTR_OFFSET (Reserved),              "Reserved", 0},
+    {ACPI_DMT_UINT32,   ACPI_IRDTR_OFFSET (Length),                "Length", DT_LENGTH},
+    {ACPI_DMT_UINT16,   ACPI_IRDTR_OFFSET (Segment),               "Segment", 0},
+    {ACPI_DMT_UINT24,   ACPI_IRDTR_OFFSET (Reserved1),             "Reserved", 0},
+    ACPI_DMT_TERMINATOR
+};
+
+ACPI_DMTABLE_INFO           AcpiDmTableInfoIrdtDss[] =
+{
+    {ACPI_DMT_IRDTDSS,  ACPI_IRDTD_OFFSET (Type),                  "Type", 0},
+    {ACPI_DMT_UINT16,   ACPI_IRDTD_OFFSET (Length),                "Length", DT_LENGTH},
+    {ACPI_DMT_UINT8,    ACPI_IRDTD_OFFSET (DeviceType),            "Device Type", 0},
+    {ACPI_DMT_UINT16,   ACPI_IRDTD_OFFSET (EnumId),                "Enumeration ID", 0},
+    {ACPI_DMT_UINT8,    ACPI_IRDTD_OFFSET (Reserved),              "Reserved", 0},
+    ACPI_DMT_TERMINATOR
+};
+
+ACPI_DMTABLE_INFO           AcpiDmTableInfoIrdtChms[] =
+{
+    {ACPI_DMT_UINT8,    ACPI_IRDTC_OFFSET (RcsEnumId),             "RCS Enumeration ID", 0},
+    {ACPI_DMT_UINT8,    ACPI_IRDTC_OFFSET (Channel[0]),            "Channel VC0", 0},
+    {ACPI_DMT_UINT8,    ACPI_IRDTC_OFFSET (Channel[1]),            "Channel VC1", 0},
+    {ACPI_DMT_UINT8,    ACPI_IRDTC_OFFSET (Channel[2]),            "Channel VC2", 0},
+    {ACPI_DMT_UINT8,    ACPI_IRDTC_OFFSET (Channel[3]),            "Channel VC3", 0},
+    {ACPI_DMT_UINT8,    ACPI_IRDTC_OFFSET (Channel[4]),            "Channel VC4", 0},
+    {ACPI_DMT_UINT8,    ACPI_IRDTC_OFFSET (Channel[5]),            "Channel VC5", 0},
+    {ACPI_DMT_UINT8,    ACPI_IRDTC_OFFSET (Channel[6]),            "Channel VC6", 0},
+    {ACPI_DMT_UINT8,    ACPI_IRDTC_OFFSET (Channel[7]),            "Channel VC7", 0},
+    {ACPI_DMT_UINT8,    ACPI_IRDTC_OFFSET (Reserved[0]),           "Reserved", 0},
+    {ACPI_DMT_UINT8,    ACPI_IRDTC_OFFSET (Reserved[1]),           "Reserved", 0},
+    {ACPI_DMT_UINT8,    ACPI_IRDTC_OFFSET (Reserved[2]),           "Reserved", 0},
+    {ACPI_DMT_UINT8,    ACPI_IRDTC_OFFSET (Reserved[3]),           "Reserved", 0},
+    {ACPI_DMT_UINT8,    ACPI_IRDTC_OFFSET (Reserved[4]),           "Reserved", 0},
+    {ACPI_DMT_UINT8,    ACPI_IRDTC_OFFSET (Reserved[5]),           "Reserved", 0},
+    {ACPI_DMT_UINT8,    ACPI_IRDTC_OFFSET (Reserved[6]),           "Reserved", 0},
+    ACPI_DMT_TERMINATOR
+};
+
+ACPI_DMTABLE_INFO           AcpiDmTableInfoIrdtRcs[] =
+{
+    {ACPI_DMT_IRDTDSS,  ACPI_IRDTS_OFFSET (Type),                  "Type", 0},
+    {ACPI_DMT_UINT16,   ACPI_IRDTS_OFFSET (Length),                "Length", DT_LENGTH},
+    {ACPI_DMT_UINT16,   ACPI_IRDTS_OFFSET (LinkType),              "Link Interface Type", 0},
+    {ACPI_DMT_UINT8,    ACPI_IRDTS_OFFSET (RcsEnumId),             "RCS Enumeration ID", 0},
+    {ACPI_DMT_UINT8,    ACPI_IRDTS_OFFSET (ChannelCount),          "Channel Count", 0},
+    {ACPI_DMT_UINT16,   ACPI_IRDTS_OFFSET (Flags),                 "Flags (decoded below)", DT_FLAG},
+    {ACPI_DMT_FLAG1,    ACPI_FLAG_OFFSET (ACPI_IRDT_RCS,Flags,0),  "RTS", 0},
+    {ACPI_DMT_FLAG2,    ACPI_FLAG_OFFSET (ACPI_IRDT_RCS,Flags,0),  "CTS", 0},
+    {ACPI_DMT_FLAG3,    ACPI_FLAG_OFFSET (ACPI_IRDT_RCS,Flags,0),  "REGW", 0},
+    {ACPI_DMT_FLAG4,    ACPI_FLAG_OFFSET (ACPI_IRDT_RCS,Flags,0),  "CXLD", 0},
+    {ACPI_DMT_UINT16,   ACPI_IRDTS_OFFSET (RmidOffset),            "RMID Block Offset", 0},
+    {ACPI_DMT_UINT16,   ACPI_IRDTS_OFFSET (ClosOffset),            "CLOS Block Offset", 0},
+    {ACPI_DMT_BUF18,    ACPI_IRDTS_OFFSET (Reserved),              "Reserved", 0},
+    {ACPI_DMT_UINT64,   ACPI_IRDTS_OFFSET (MmioBase),              "RCS Block MMIO Location", 0},
+    ACPI_DMT_TERMINATOR
+};
+
+
+/*******************************************************************************
+ *
  * IVRS - I/O Virtualization Reporting Structure
  *
  ******************************************************************************/

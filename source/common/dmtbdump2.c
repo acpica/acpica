@@ -621,6 +621,187 @@ NextSubtable:
 
 /*******************************************************************************
  *
+ * FUNCTION:    AcpiDmDumpIrdt
+ *
+ * PARAMETERS:  Table               - An IRDT table
+ *
+ * RETURN:      None
+ *
+ * DESCRIPTION: Format the contents of an IRDT table
+ *
+ ******************************************************************************/
+
+void
+AcpiDmDumpIrdt (
+    ACPI_TABLE_HEADER       *Table)
+{
+    ACPI_STATUS             Status;
+    UINT32                  Offset;
+    UINT32                  DsOffset;
+    UINT32                  ChmsOffset;
+    UINT32                  RmudEnd;
+    UINT16                  DsType;
+    UINT16                  DsLength;
+    ACPI_IRDT_RMUD          *Rmud;
+    ACPI_IRDT_DSS           *Dss;
+    ACPI_IRDT_RCS           *Rcs;
+
+
+    Status = AcpiDmDumpTable (Table->Length, 0, Table, 0, AcpiDmTableInfoIrdt);
+    if (ACPI_FAILURE (Status))
+    {
+        return;
+    }
+
+    Offset = sizeof (ACPI_TABLE_IRDT);
+    while (Offset < Table->Length)
+    {
+        if ((Offset + sizeof (ACPI_IRDT_RMUD)) > Table->Length)
+        {
+            AcpiOsPrintf ("\n**** IRDT: RMUD header extends beyond table\n");
+            return;
+        }
+
+        Rmud = ACPI_ADD_PTR (ACPI_IRDT_RMUD, Table, Offset);
+
+        AcpiOsPrintf ("\n");
+        Status = AcpiDmDumpTable (Table->Length, Offset, Rmud,
+            sizeof (ACPI_IRDT_RMUD), AcpiDmTableInfoIrdtRmud);
+        if (ACPI_FAILURE (Status))
+        {
+            return;
+        }
+
+        if (Rmud->Type != ACPI_IRDT_RMUD_TYPE0)
+        {
+            AcpiOsPrintf ("**** IRDT: Unknown RMUD type 0x%X, attempting continuation\n",
+                Rmud->Type);
+        }
+
+        if (Rmud->Length < sizeof (ACPI_IRDT_RMUD) ||
+            (Offset + Rmud->Length) > Table->Length)
+        {
+            AcpiOsPrintf ("**** IRDT: Invalid RMUD length 0x%X at offset 0x%X\n",
+                Rmud->Length, Offset);
+            return;
+        }
+
+        RmudEnd = Offset + Rmud->Length;
+        DsOffset = Offset + sizeof (ACPI_IRDT_RMUD);
+        while (DsOffset < RmudEnd)
+        {
+            if ((DsOffset + sizeof (UINT16) + sizeof (UINT16)) > RmudEnd)
+            {
+                AcpiOsPrintf (
+                    "**** IRDT: DSS/RCS header extends beyond RMUD\n");
+                return;
+            }
+
+            DsType = ACPI_GET16 (ACPI_ADD_PTR (UINT8, Table, DsOffset));
+            if (DsType == ACPI_IRDT_TYPE_DSS)
+            {
+                Dss = ACPI_ADD_PTR (ACPI_IRDT_DSS, Table, DsOffset);
+
+                if (Dss->Length < sizeof (ACPI_IRDT_DSS) ||
+                    (DsOffset + Dss->Length) > (Offset + Rmud->Length))
+                {
+                    AcpiOsPrintf ("**** IRDT: Invalid DSS length 0x%X at offset 0x%X\n",
+                        Dss->Length, DsOffset);
+                    return;
+                }
+
+                AcpiOsPrintf ("\n");
+                Status = AcpiDmDumpTable (Table->Length, DsOffset, Dss,
+                    sizeof (ACPI_IRDT_DSS), AcpiDmTableInfoIrdtDss);
+                if (ACPI_FAILURE (Status))
+                {
+                    return;
+                }
+
+                ChmsOffset = DsOffset + sizeof (ACPI_IRDT_DSS);
+                while (ChmsOffset < (DsOffset + Dss->Length))
+                {
+                    if ((ChmsOffset + sizeof (ACPI_IRDT_CHMS)) > (DsOffset + Dss->Length))
+                    {
+                        AcpiOsPrintf (
+                            "**** IRDT: DSS payload truncated in CHMS array\n");
+                        return;
+                    }
+
+                    AcpiOsPrintf ("\n");
+                    Status = AcpiDmDumpTable (Table->Length, ChmsOffset,
+                        ACPI_ADD_PTR (ACPI_IRDT_CHMS, Table, ChmsOffset),
+                        sizeof (ACPI_IRDT_CHMS), AcpiDmTableInfoIrdtChms);
+                    if (ACPI_FAILURE (Status))
+                    {
+                        return;
+                    }
+
+                    ChmsOffset += sizeof (ACPI_IRDT_CHMS);
+                }
+
+                DsOffset += Dss->Length;
+                continue;
+            }
+
+            if (DsType == ACPI_IRDT_TYPE_RCS)
+            {
+                Rcs = ACPI_ADD_PTR (ACPI_IRDT_RCS, Table, DsOffset);
+
+                if (Rcs->Length < sizeof (ACPI_IRDT_RCS) ||
+                    (DsOffset + Rcs->Length) > (Offset + Rmud->Length))
+                {
+                    AcpiOsPrintf ("**** IRDT: Invalid RCS length 0x%X at offset 0x%X\n",
+                        Rcs->Length, DsOffset);
+                    return;
+                }
+
+                AcpiOsPrintf ("\n");
+                Status = AcpiDmDumpTable (Table->Length, DsOffset, Rcs,
+                    sizeof (ACPI_IRDT_RCS), AcpiDmTableInfoIrdtRcs);
+                if (ACPI_FAILURE (Status))
+                {
+                    return;
+                }
+
+                DsOffset += Rcs->Length;
+                continue;
+            }
+
+            AcpiOsPrintf ("\n**** IRDT: Unknown DSS/RCS type 0x%X, attempting continuation\n",
+                DsType);
+
+            if ((DsOffset + sizeof (UINT16) + sizeof (UINT16)) > (Offset + Rmud->Length))
+            {
+                AcpiOsPrintf ("**** IRDT: No room for unknown length field\n");
+                return;
+            }
+
+            DsLength = ACPI_GET16 (
+                ACPI_ADD_PTR (UINT8, Table, DsOffset + sizeof (UINT16)));
+            if (DsLength < (sizeof (UINT16) + sizeof (UINT16)))
+            {
+                AcpiOsPrintf (
+                    "**** IRDT: Invalid unknown DSS/RCS length 0x%X at 0x%X\n",
+                    DsLength, DsOffset);
+                return;
+            }
+
+            DsOffset += DsLength;
+            if (DsOffset > RmudEnd)
+            {
+                AcpiOsPrintf ("**** IRDT: Unknown DSS/RCS entry exceeded RMUD length\n");
+                return;
+            }
+        }
+
+        Offset += Rmud->Length;
+    }
+}
+
+
+/*******************************************************************************
+ *
  * FUNCTION:    AcpiDmDumpIvrs
  *
  * PARAMETERS:  Table               - A IVRS table

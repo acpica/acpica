@@ -3261,6 +3261,174 @@ DtCompileIovt (
 
 /******************************************************************************
  *
+ * FUNCTION:    DtCompileIrdt
+ *
+ * PARAMETERS:  List                - Current field list pointer
+ *
+ * RETURN:      Status
+ *
+ * DESCRIPTION: Compile IRDT
+ *
+ *****************************************************************************/
+
+ACPI_STATUS
+DtCompileIrdt (
+    void                    **List)
+{
+    ACPI_STATUS             Status;
+    DT_SUBTABLE             *Subtable;
+    DT_SUBTABLE             *ParentTable;
+    DT_FIELD                **PFieldList = (DT_FIELD **) List;
+    DT_FIELD                *SubtableStart;
+    ACPI_TABLE_IRDT         *Irdt;
+    ACPI_IRDT_RMUD          *Rmud;
+    ACPI_IRDT_DSS           *Dss;
+    ACPI_IRDT_RCS           *Rcs;
+    UINT32                  RmudUsed;
+    UINT32                  DssUsed;
+    UINT8                   RmudType;
+    UINT16                  DsType;
+
+
+    ParentTable = DtPeekSubtable ();
+
+    Status = DtCompileTable (PFieldList, AcpiDmTableInfoIrdt, &Subtable);
+    if (ACPI_FAILURE (Status))
+    {
+        return (Status);
+    }
+
+    DtInsertSubtable (ParentTable, Subtable);
+    DtPushSubtable (Subtable);
+
+    Irdt = ACPI_SUB_PTR (ACPI_TABLE_IRDT, Subtable->Buffer,
+        sizeof (ACPI_TABLE_HEADER));
+
+    while (*PFieldList)
+    {
+        SubtableStart = *PFieldList;
+        DtCompileInteger (&RmudType, *PFieldList, 1, 0);
+        if (RmudType != ACPI_IRDT_RMUD_TYPE0)
+        {
+            DtFatal (ASL_MSG_UNKNOWN_SUBTABLE, SubtableStart, "IRDT RMUD");
+            return (AE_ERROR);
+        }
+
+        Status = DtCompileTable (PFieldList, AcpiDmTableInfoIrdtRmud, &Subtable);
+        if (ACPI_FAILURE (Status))
+        {
+            return (Status);
+        }
+
+        ParentTable = DtPeekSubtable ();
+        DtInsertSubtable (ParentTable, Subtable);
+        DtPushSubtable (Subtable);
+
+        Rmud = ACPI_CAST_PTR (ACPI_IRDT_RMUD, Subtable->Buffer);
+        if (Rmud->Length < sizeof (ACPI_IRDT_RMUD))
+        {
+            DtFatal (ASL_MSG_INVALID_LENGTH, SubtableStart, "IRDT RMUD");
+            return (AE_ERROR);
+        }
+
+        RmudUsed = sizeof (ACPI_IRDT_RMUD);
+        while ((RmudUsed < Rmud->Length) && *PFieldList)
+        {
+            SubtableStart = *PFieldList;
+            DtCompileInteger ((UINT8 *) &DsType, *PFieldList, 2, 0);
+
+            switch (DsType)
+            {
+            case ACPI_IRDT_TYPE_DSS:
+
+                Status = DtCompileTable (PFieldList, AcpiDmTableInfoIrdtDss,
+                    &Subtable);
+                if (ACPI_FAILURE (Status))
+                {
+                    return (Status);
+                }
+
+                ParentTable = DtPeekSubtable ();
+                DtInsertSubtable (ParentTable, Subtable);
+                DtPushSubtable (Subtable);
+
+                Dss = ACPI_CAST_PTR (ACPI_IRDT_DSS, Subtable->Buffer);
+                if (Dss->Length < sizeof (ACPI_IRDT_DSS))
+                {
+                    DtFatal (ASL_MSG_INVALID_LENGTH, SubtableStart, "IRDT DSS");
+                    return (AE_ERROR);
+                }
+
+                DssUsed = sizeof (ACPI_IRDT_DSS);
+                while ((DssUsed < Dss->Length) && *PFieldList)
+                {
+                    Status = DtCompileTable (PFieldList, AcpiDmTableInfoIrdtChms,
+                        &Subtable);
+                    if (ACPI_FAILURE (Status))
+                    {
+                        return (Status);
+                    }
+
+                    ParentTable = DtPeekSubtable ();
+                    DtInsertSubtable (ParentTable, Subtable);
+                    DssUsed += sizeof (ACPI_IRDT_CHMS);
+                }
+
+                if (DssUsed != Dss->Length)
+                {
+                    DtFatal (ASL_MSG_INVALID_LENGTH, SubtableStart, "IRDT DSS CHMS");
+                    return (AE_ERROR);
+                }
+
+                DtPopSubtable ();
+                RmudUsed += Dss->Length;
+                break;
+
+            case ACPI_IRDT_TYPE_RCS:
+
+                Status = DtCompileTable (PFieldList, AcpiDmTableInfoIrdtRcs,
+                    &Subtable);
+                if (ACPI_FAILURE (Status))
+                {
+                    return (Status);
+                }
+
+                ParentTable = DtPeekSubtable ();
+                DtInsertSubtable (ParentTable, Subtable);
+
+                Rcs = ACPI_CAST_PTR (ACPI_IRDT_RCS, Subtable->Buffer);
+                if (Rcs->Length < sizeof (ACPI_IRDT_RCS))
+                {
+                    DtFatal (ASL_MSG_INVALID_LENGTH, SubtableStart, "IRDT RCS");
+                    return (AE_ERROR);
+                }
+
+                RmudUsed += Rcs->Length;
+                break;
+
+            default:
+
+                DtFatal (ASL_MSG_UNKNOWN_SUBTABLE, SubtableStart, "IRDT DSS/RCS");
+                return (AE_ERROR);
+            }
+        }
+
+        if (RmudUsed != Rmud->Length)
+        {
+            DtFatal (ASL_MSG_INVALID_LENGTH, SubtableStart, "IRDT RMUD Body");
+            return (AE_ERROR);
+        }
+
+        DtPopSubtable ();
+    }
+
+    Irdt->Reserved = 0;
+    return (AE_OK);
+}
+
+
+/******************************************************************************
+ *
  * FUNCTION:    DtCompileIvrs
  *
  * PARAMETERS:  List                - Current field list pointer
