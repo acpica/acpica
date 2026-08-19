@@ -226,6 +226,7 @@ AcpiDmIsSwitchBlock (
     ACPI_PARSE_OBJECT       *PredicateOp;
     ACPI_PARSE_OBJECT       *CurrentOp;
     ACPI_PARSE_OBJECT       *TempOp;
+    ACPI_PARSE_OBJECT       *BreakOp;
 
 
     /* Check for One Op Predicate */
@@ -254,6 +255,48 @@ AcpiDmIsSwitchBlock (
     }
 
     if (strncmp ((char *) (NamePathOp->Common.Value.Name), "_T_", 3))
+    {
+        return (FALSE);
+    }
+
+    /*
+     * Locate the Break Op that terminates the compiler-emitted While loop.
+     * From the first If advance to the Break op. It's possible to have an
+     * Else (Default) op here when there is only one Case statement, so
+     * check for it.
+     *
+     * Note: The entire Switch pattern must be validated before the parse
+     * tree is modified below. Otherwise, a While loop that only partially
+     * matches the pattern is left half-converted, and is disassembled as a
+     * While loop containing Case statements, which cannot be recompiled.
+     */
+    BreakOp = StoreOp->Common.Next;
+    if (!BreakOp)
+    {
+        return (FALSE);
+    }
+
+    BreakOp = BreakOp->Common.Next;
+    if (!BreakOp)
+    {
+        return (FALSE);
+    }
+
+    if (BreakOp->Common.AmlOpcode == AML_ELSE_OP)
+    {
+        BreakOp = BreakOp->Common.Next;
+        if (!BreakOp)
+        {
+            return (FALSE);
+        }
+    }
+
+    /*
+     * The op that terminates the loop must in fact be a Break. Otherwise,
+     * ignoring it below would silently delete a real statement from the
+     * disassembly.
+     */
+    if (BreakOp->Common.AmlOpcode != AML_BREAK_OP)
     {
         return (FALSE);
     }
@@ -401,28 +444,9 @@ AcpiDmIsSwitchBlock (
         CurrentOp->Common.DisasmOpcode = ACPI_DASM_DEFAULT;
     }
 
-    /*
-     * From the first If advance to the Break op. It's possible to
-     * have an Else (Default) op here when there is only one Case
-     * statement, so check for it.
-     */
-    CurrentOp = StoreOp->Common.Next->Common.Next;
-    if (!CurrentOp)
-    {
-        return (FALSE);
-    }
-    if (CurrentOp->Common.AmlOpcode == AML_ELSE_OP)
-    {
-        CurrentOp = CurrentOp->Common.Next;
-        if (!CurrentOp)
-        {
-            return (FALSE);
-        }
-    }
+    /* Ignore the Break Op that was located above */
 
-    /* Ignore the Break Op */
-
-    CurrentOp->Common.DisasmFlags |= ACPI_PARSEOP_IGNORE;
+    BreakOp->Common.DisasmFlags |= ACPI_PARSEOP_IGNORE;
     return (TRUE);
 }
 
