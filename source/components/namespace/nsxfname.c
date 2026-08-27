@@ -580,6 +580,15 @@ AcpiInstallMethod (
     }
     Path = AcpiPsGetNextNamestring (&ParserState);
 
+    /*
+     * Path can be NULL, and Aml can be PkgEnd which combined with the Aml++
+     * a few lines below will cause AmlLength to underflow.
+     */
+    if (!Path || (ParserState.Aml >= ParserState.PkgEnd))
+    {
+        return (AE_AML_PACKAGE_LIMIT);
+    }
+
     MethodFlags = *ParserState.Aml++;
     AmlStart = ParserState.Aml;
     AmlLength = (UINT32) ACPI_PTR_DIFF (ParserState.PkgEnd, AmlStart);
