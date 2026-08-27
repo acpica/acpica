@@ -1576,30 +1576,34 @@ DtCompilePptt (
         {
         case ACPI_PPTT_TYPE_PROCESSOR:
 
+            if (!Subtable->Buffer)
+            {
+                AcpiOsPrintf ("Pptt subtable buffer pointer is NULL\n");
+                return (AE_NULL_OBJECT);
+            }
+
             PpttProcessor = ACPI_SUB_PTR (ACPI_PPTT_PROCESSOR,
                 Subtable->Buffer, sizeof (ACPI_SUBTABLE_HEADER));
-            if (PpttProcessor)
+
+            /* Compile initiator proximity domain list */
+
+            PpttProcessor->NumberOfPrivResources = 0;
+            while (*PFieldList)
             {
-                /* Compile initiator proximity domain list */
-
-                PpttProcessor->NumberOfPrivResources = 0;
-                while (*PFieldList)
+                Status = DtCompileTable (PFieldList,
+                    AcpiDmTableInfoPptt0a, &Subtable);
+                if (ACPI_FAILURE (Status))
                 {
-                    Status = DtCompileTable (PFieldList,
-                        AcpiDmTableInfoPptt0a, &Subtable);
-                    if (ACPI_FAILURE (Status))
-                    {
-                        return (Status);
-                    }
-                    if (!Subtable)
-                    {
-                        break;
-                    }
-
-                    DtInsertSubtable (ParentTable, Subtable);
-                    PpttHeader->Length += (UINT8)(Subtable->Length);
-                    PpttProcessor->NumberOfPrivResources++;
+                    return (Status);
                 }
+                if (!Subtable)
+                {
+                    break;
+                }
+
+                DtInsertSubtable (ParentTable, Subtable);
+                PpttHeader->Length += (UINT8)(Subtable->Length);
+                PpttProcessor->NumberOfPrivResources++;
             }
             break;
         default:
