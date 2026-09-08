@@ -36,6 +36,7 @@
 #define ACPI_SIG_SPMI           "SPMI"      /* Server Platform Management Interface table */
 #define ACPI_SIG_SRAT           "SRAT"      /* System Resource Affinity Table */
 #define ACPI_SIG_STAO           "STAO"      /* Status Override table */
+#define ACPI_SIG_TARP           "TARP"      /* TPMI Configuration table */
 #define ACPI_SIG_TCPA           "TCPA"      /* Trusted Computing Platform Alliance table */
 #define ACPI_SIG_TPM2           "TPM2"      /* Trusted Platform Module 2.0 H/W interface table */
 #define ACPI_SIG_UEFI           "UEFI"      /* Uefi Boot Optimization Table */
@@ -374,6 +375,51 @@ typedef struct acpi_table_stao
     UINT8                   IgnoreUart;
 
 } ACPI_TABLE_STAO;
+
+
+/*******************************************************************************
+ *
+ * TARP - TPMI Configuration Table
+ *
+ * TBD: Does not yet conform to any published specification yet
+ * 
+ ******************************************************************************/
+
+typedef struct acpi_table_tarp
+{
+    ACPI_TABLE_HEADER       Header;             /* Common ACPI table header */
+    UINT32                  HeaderSize;         /* TARP header size (8 bytes) */
+    UINT32                  EntryCount;         /* Number of PFS entries */
+
+} ACPI_TABLE_TARP;
+
+/* Followed by EntryCount number of instances of ACPI_TARP_PFS */
+
+enum AcpiTarpType
+{
+    TARP_PFS =                      0x00,
+    ACPI_TARP_RESERVED =            0x01        /* 1 and greater are reserved */
+};
+
+/* TARP PFS Entry Structure */
+
+typedef struct acpi_tarp_pfs
+{
+    ACPI_GENERIC_ADDRESS    PfsGas;                   /* GAS pointing to first PFS entry */
+    UINT32                  X2ApicBase;               /* X2APIC base */
+    UINT8                   X2ApicShift;              /* X2APIC shift */
+    UINT8                   NumEntries;               /* Number of PM features (max 256 per PFS) */
+    UINT64                  FeatureEnabledMask[4];    /* Feature enabled/disabled bitmask */
+    UINT64                  ReadBlockedMask[4];       /* Read-blocked feature bitmask */
+    UINT64                  WriteBlockedMask[4];      /* Write-blocked feature bitmask */
+
+} ACPI_TARP_PFS;
+
+enum AcpiTarpPfsType
+{
+    PFS_GAS =                         0x00,
+    ACPI_TARP_PFS_RESERVED =          0x01      /* 1 and greater are reserved */
+};
 
 
 /*******************************************************************************

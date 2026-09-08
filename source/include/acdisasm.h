@@ -167,6 +167,8 @@ typedef enum
     ACPI_DMT_SRAT,
     ACPI_DMT_SWFT,
     ACPI_DMT_TPM2,
+    ACPI_DMT_TARP,
+    ACPI_DMT_TARP_PFS,
     ACPI_DMT_VIOT,
     ACPI_DMT_WPBT_UNICODE,
 
@@ -606,6 +608,8 @@ extern ACPI_DMTABLE_INFO        AcpiDmTableInfoSvkl0[];
 extern ACPI_DMTABLE_INFO        AcpiDmTableInfoSwft[];
 extern ACPI_DMTABLE_INFO        AcpiDmTableInfoSwftFileHdr[];
 extern ACPI_DMTABLE_INFO        AcpiDmTableInfoSwftFileData[];
+extern ACPI_DMTABLE_INFO        AcpiDmTableInfoTarp[];
+extern ACPI_DMTABLE_INFO        AcpiDmTableInfoTarpPfs[];
 extern ACPI_DMTABLE_INFO        AcpiDmTableInfoTcpaHdr[];
 extern ACPI_DMTABLE_INFO        AcpiDmTableInfoTcpaClient[];
 extern ACPI_DMTABLE_INFO        AcpiDmTableInfoTcpaServer[];
@@ -899,6 +903,10 @@ AcpiDmDumpSvkl (
 
 void
 AcpiDmDumpSwft (
+    ACPI_TABLE_HEADER       *Table);
+
+void
+AcpiDmDumpTarp(
     ACPI_TABLE_HEADER       *Table);
 
 void

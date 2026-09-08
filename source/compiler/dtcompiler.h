@@ -628,6 +628,10 @@ DtCompileSwft (
     void                    **PFieldList);
 
 ACPI_STATUS
+DtCompileTarp(
+    void                    **List);
+
+ACPI_STATUS
 DtCompileTcpa (
     void                    **PFieldList);
 
@@ -733,6 +737,7 @@ extern const unsigned char  TemplateSrat[];
 extern const unsigned char  TemplateStao[];
 extern const unsigned char  TemplateSvkl[];
 extern const unsigned char  TemplateSwft[];
+extern const unsigned char  TemplateTarp[];
 extern const unsigned char  TemplateTcpa[];
 extern const unsigned char  TemplateTdel[];
 extern const unsigned char  TemplateTpm2[];

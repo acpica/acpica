@@ -603,6 +603,69 @@ AcpiDmDumpTpm2 (
 
 /*******************************************************************************
  *
+ * FUNCTION:    AcpiDmDumpTarp
+ *
+ * PARAMETERS:  Table               - A TARP table
+ *
+ * RETURN:      None
+ *
+ * DESCRIPTION: Format the contents of a TARP table
+ *
+ ******************************************************************************/
+
+void
+AcpiDmDumpTarp(
+    ACPI_TABLE_HEADER           *Table)
+{
+    ACPI_STATUS                 Status;
+    ACPI_TABLE_TARP             *Subtable;
+    ACPI_TARP_PFS               *PfsEntry;
+    UINT32                      Offset;
+    UINT32                      i;
+
+
+    /* Main TARP table */
+
+    Status = AcpiDmDumpTable(Table->Length, 0, Table, 0, AcpiDmTableInfoTarp);
+    if (ACPI_FAILURE(Status))
+    {
+        return;
+    }
+
+    Subtable = ACPI_CAST_PTR(ACPI_TABLE_TARP, Table);
+    Offset = sizeof(ACPI_TABLE_TARP);
+
+    /* Dump each PFS entry */
+
+    for (i = 0; i < Subtable->EntryCount; i++)
+    {
+        /*  If we encounter any PFS entry that is not completely contained
+         *   within the table length, issue a warning and exit out
+         */       
+ 
+        if ((Offset + sizeof(ACPI_TARP_PFS)) > Table->Length)
+        {
+            AcpiOsPrintf("**** TARP: PFS entry %u extends beyond table (Offset 0x%X)\n",
+                i, Offset);
+            return;
+        }         
+
+        PfsEntry = ACPI_ADD_PTR(ACPI_TARP_PFS, Table, Offset);
+
+        Status = AcpiDmDumpTable(Table->Length, Offset, PfsEntry,
+            sizeof(ACPI_TARP_PFS), AcpiDmTableInfoTarpPfs);
+        if (ACPI_FAILURE(Status))
+        {
+            return;
+        }
+
+        Offset += sizeof(ACPI_TARP_PFS);
+    }
+}
+
+
+/*******************************************************************************
+ *
  * FUNCTION:    AcpiDmDumpViot
  *
  * PARAMETERS:  Table               - A VIOT table

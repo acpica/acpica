@@ -486,6 +486,34 @@ ACPI_DMTABLE_INFO           AcpiDmTableInfoTpm211[] =
 
 /*******************************************************************************
  *
+ * TARP - TPMI Configuration Table
+ *
+ *******************************************************************************/
+
+ACPI_DMTABLE_INFO           AcpiDmTableInfoTarp[] =
+{
+    {ACPI_DMT_UINT32,   ACPI_TARP_OFFSET (HeaderSize),              "TARP Header Size", 0},
+    {ACPI_DMT_UINT32,   ACPI_TARP_OFFSET (EntryCount),              "Entry Count PFS", 0},
+    ACPI_DMT_TERMINATOR
+};
+
+/* TARP Subtables */
+
+ACPI_DMTABLE_INFO           AcpiDmTableInfoTarpPfs[] =
+{
+    {ACPI_DMT_GAS,      ACPI_TARPPFS_OFFSET (PfsGas),               "PFS Generic Address", 0},
+    {ACPI_DMT_UINT32,   ACPI_TARPPFS_OFFSET (X2ApicBase),           "X2APIC Base", 0},
+    {ACPI_DMT_UINT8,    ACPI_TARPPFS_OFFSET (X2ApicShift),          "X2APIC Shift", 0},
+    {ACPI_DMT_UINT8,    ACPI_TARPPFS_OFFSET (NumEntries),           "Number of Entries Features", 0},
+    {ACPI_DMT_BUF32,    ACPI_TARPPFS_OFFSET (FeatureEnabledMask),   "Feature Enabled Mask", 0},
+    {ACPI_DMT_BUF32,    ACPI_TARPPFS_OFFSET (ReadBlockedMask),      "Read Blocked Mask", 0},
+    {ACPI_DMT_BUF32,    ACPI_TARPPFS_OFFSET (WriteBlockedMask),     "Write Blocked Mask", 0},
+    ACPI_DMT_TERMINATOR
+};
+
+
+/*******************************************************************************
+ *
  * UEFI - UEFI Boot optimization Table
  *
  ******************************************************************************/
