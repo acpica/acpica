@@ -561,7 +561,8 @@ AcpiDsCreateField (
         return_ACPI_STATUS (Status);
     }
 
-    if (Info.RegionNode->Object->Region.SpaceId == ACPI_ADR_SPACE_PLATFORM_COMM)
+    if (Info.RegionNode->Object->Region.SpaceId == ACPI_ADR_SPACE_PLATFORM_COMM &&
+        !RegionNode->Object->Field.InternalPccBuffer)
     {
         RegionNode->Object->Field.InternalPccBuffer =
             ACPI_ALLOCATE_ZEROED(Info.RegionNode->Object->Region.Length);
