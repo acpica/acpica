@@ -287,7 +287,14 @@ AcpiDsLoad2BeginOp (
         {
             /* Execution mode, node cannot already exist, node is temporary */
 
-            Flags |= ACPI_NS_ERROR_IF_FOUND;
+            if (WalkState->NamespaceOverride)
+            {
+                Flags |= ACPI_NS_OVERRIDE_IF_FOUND;
+            }
+            else
+            {
+                Flags |= ACPI_NS_ERROR_IF_FOUND;
+            }
 
             if (!(WalkState->ParseFlags & ACPI_PARSE_MODULE_LEVEL))
             {

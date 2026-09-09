@@ -103,6 +103,12 @@ AcpiNsExecuteTable (
         goto Cleanup;
     }
 
+    if (ACPI_COMPARE_NAMESEG(Table->Signature, ACPI_SIG_OSDT))
+    {
+        Info->Flags |= ACPI_NAMESPACE_OVERRIDE;
+    }
+
+
     ACPI_DEBUG_PRINT_RAW ((ACPI_DB_PARSE,
         "%s: Create table pseudo-method for [%4.4s] @%p, method %p\n",
         ACPI_GET_FUNCTION_NAME, Table->Signature, Table, MethodObj));

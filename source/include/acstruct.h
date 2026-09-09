@@ -199,6 +199,7 @@ typedef struct acpi_evaluate_info
 /* Values for Flags above */
 
 #define ACPI_IGNORE_RETURN_VALUE    1
+#define ACPI_NAMESPACE_OVERRIDE     2
 
 /* Defines for ReturnFlags field above */
 

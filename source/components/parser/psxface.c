@@ -294,6 +294,10 @@ AcpiPsExecuteTable (
         goto Cleanup;
     }
 
+	if (Info->Flags & ACPI_NAMESPACE_OVERRIDE) {
+		WalkState->NamespaceOverride = TRUE;
+	}
+
     Status = AcpiDsInitAmlWalk (WalkState, Op, Info->Node,
         Info->ObjDesc->Method.AmlStart,
         Info->ObjDesc->Method.AmlLength, Info, Info->PassNumber);
