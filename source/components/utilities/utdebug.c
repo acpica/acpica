@@ -182,6 +182,7 @@ AcpiDebugPrint (
         if (ACPI_LV_THREADS & AcpiDbgLevel)
         {
             AcpiOsPrintf (
+                ACPI_MSG_DEBUG
                 "\n**** Context Switch from TID %u to TID %u ****\n\n",
                 (UINT32) AcpiGbl_PreviousThreadId, (UINT32) ThreadId);
         }
@@ -194,7 +195,7 @@ AcpiDebugPrint (
      * Display the module name, current line number, thread ID (if requested),
      * current procedure nesting level, and the current procedure name
      */
-    AcpiOsPrintf ("%9s-%04d ", ModuleName, LineNumber);
+    AcpiOsPrintf (ACPI_MSG_DEBUG "%9s-%04d ", ModuleName, LineNumber);
 
 #ifdef ACPI_APPLICATION
     /*
