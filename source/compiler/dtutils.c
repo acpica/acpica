@@ -452,6 +452,12 @@ DtGetFieldLength (
     case ACPI_DMT_GTDT:
     case ACPI_DMT_MADT:
     case ACPI_DMT_MPAM_LOCATOR:
+    case ACPI_DMT_NHLT1:
+    case ACPI_DMT_NHLT1a:
+    case ACPI_DMT_NHLT1b:
+    case ACPI_DMT_NHLT1c:
+    case ACPI_DMT_NHLT1d:
+    case ACPI_DMT_NHLT1f:
     case ACPI_DMT_PCCT:
     case ACPI_DMT_PMTT:
     case ACPI_DMT_PPTT:
@@ -485,6 +491,7 @@ DtGetFieldLength (
     case ACPI_DMT_HMAT:
     case ACPI_DMT_IOVT:
     case ACPI_DMT_NFIT:
+    case ACPI_DMT_NHLT1e:
     case ACPI_DMT_PCI_PATH:
     case ACPI_DMT_PHAT:
     case ACPI_DMT_RHCT:
