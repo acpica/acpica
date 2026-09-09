@@ -1004,6 +1004,31 @@ DtCompileCedt (
 
 /******************************************************************************
  *
+ * FUNCTION:    DtCompileCpat
+ *
+ * PARAMETERS:  List                - Current field list pointer
+ *
+ * RETURN:      Status
+ *
+ * DESCRIPTION: Compile CPAT.
+ *
+ *****************************************************************************/
+
+ACPI_STATUS
+DtCompileCpat (
+    void                    **List)
+{
+    ACPI_STATUS             Status;
+
+
+    Status = DtCompileTwoSubtables (List,
+        AcpiDmTableInfoCpat, AcpiDmTableInfoCpat0);
+    return (Status);
+}
+
+
+/******************************************************************************
+ *
  * FUNCTION:    DtCompileCpep
  *
  * PARAMETERS:  List                - Current field list pointer

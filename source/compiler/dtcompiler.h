@@ -452,6 +452,10 @@ DtCompileCedt (
     void                    **PFieldList);
 
 ACPI_STATUS
+DtCompileCpat (
+    void                    **List);
+
+ACPI_STATUS
 DtCompileCpep (
     void                    **PFieldList);
 
@@ -679,6 +683,7 @@ extern const unsigned char  TemplateBgrt[];
 extern const unsigned char  TemplateCcel[];
 extern const unsigned char  TemplateCdat[];
 extern const unsigned char  TemplateCedt[];
+extern const unsigned char  TemplateCpat[];
 extern const unsigned char  TemplateCpep[];
 extern const unsigned char  TemplateCsrt[];
 extern const unsigned char  TemplateDbg2[];

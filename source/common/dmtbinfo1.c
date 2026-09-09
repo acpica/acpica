@@ -699,6 +699,36 @@ ACPI_DMTABLE_INFO           AcpiDmTableInfoCedt3[] =
     ACPI_DMT_TERMINATOR
 };
 
+
+/*******************************************************************************
+ *
+ * CPAT - Core Performance Allocation Technology table
+ *
+ ******************************************************************************/
+
+ACPI_DMTABLE_INFO           AcpiDmTableInfoCpat[] =
+{
+    {ACPI_DMT_UINT8,    ACPI_CPAT_OFFSET (Features),              "Features (Supported Algorithms)", 0},
+    {ACPI_DMT_UINT16,   ACPI_CPAT_OFFSET (Reserved),              "Reserved", 0},
+    {ACPI_DMT_UINT8,    ACPI_CPAT_OFFSET (LpSubgrpShift),         "LP Subgroup Shift", 0},
+    ACPI_DMT_TERMINATOR
+};
+
+ACPI_DMTABLE_INFO           AcpiDmTableInfoCpat0[] =
+{
+    {ACPI_DMT_UINT8,    ACPI_CPAT0_OFFSET (Type),                 "Subtable Type", 0},
+    {ACPI_DMT_UINT8,    ACPI_CPAT0_OFFSET (Version),              "Version", 0},
+    {ACPI_DMT_UINT16,   ACPI_CPAT0_OFFSET (Length),               "Length", DT_LENGTH},
+    {ACPI_DMT_UINT32,   ACPI_CPAT0_OFFSET (X2ApicBase),           "X2APIC Base ID", 0},
+    {ACPI_DMT_UINT8,    ACPI_CPAT0_OFFSET (X2ApicShift),          "X2APIC Shift", 0},
+    {ACPI_DMT_UINT8,    ACPI_CPAT0_OFFSET (RegSetInfo),           "RegSet Info", 0},
+    {ACPI_DMT_UINT16,   ACPI_CPAT0_OFFSET (Domain),               "Performance-Budget Domain", 0},
+    {ACPI_DMT_UINT32,   ACPI_CPAT0_OFFSET (Reserved2),            "Reserved", 0},
+    {ACPI_DMT_UINT64,   ACPI_CPAT0_OFFSET (RegSetAddress),        "Register Set MMIO Address", 0},
+    ACPI_DMT_TERMINATOR
+};
+
+
 /*******************************************************************************
  *
  * CPEP - Corrected Platform Error Polling table

@@ -37,6 +37,7 @@
 #define ACPI_SIG_BGRT           "BGRT"      /* Boot Graphics Resource Table */
 #define ACPI_SIG_BOOT           "BOOT"      /* Simple Boot Flag Table */
 #define ACPI_SIG_CEDT           "CEDT"      /* CXL Early Discovery Table */
+#define ACPI_SIG_CPAT           "CPAT"      /* Core Performance Allocation Technology table */
 #define ACPI_SIG_CPEP           "CPEP"      /* Corrected Platform Error Polling table */
 #define ACPI_SIG_CSRT           "CSRT"      /* Core System Resource Table */
 #define ACPI_SIG_DBG2           "DBG2"      /* Debug Port table type 2 */
@@ -731,6 +732,49 @@ typedef struct acpi_cedt_rdpas {
 
 #define ACPI_CEDT_RDPAS_PROTOCOL_IO        (0)
 #define ACPI_CEDT_RDPAS_PROTOCOL_CACHEMEM  (1)
+
+
+/*******************************************************************************
+ *
+ * CPAT - Core Performance Allocation Technology table
+ *
+ ******************************************************************************/
+
+typedef struct acpi_table_cpat
+{
+    ACPI_TABLE_HEADER       Header;             /* Common ACPI table header */
+    UINT8                   Features;           /* Supported CPAT feature algorithms */
+    UINT16                  Reserved;           /* Must be 0 */
+    UINT8                   LpSubgrpShift;      /* LP subgroup X2APIC boundary shift */
+
+} ACPI_TABLE_CPAT;
+
+/* Subtable: CPAT Pointer Sub-structure (Type 0) */
+
+typedef struct acpi_cpat_entry
+{
+    UINT8                   Type;               /* 0 = CPAT Pointer Sub-structure */
+    UINT8                   Version;            /* Reserved. Must be 0 */
+    UINT16                  Length;             /* Length of this sub-structure */
+    UINT32                  X2ApicBase;         /* Starting X2APIC ID for the register set */
+    UINT8                   X2ApicShift;        /* Shift count for ending X2APIC ID */
+    UINT8                   RegSetInfo;         /* [1:0] Excursion reporting field */
+    UINT16                  Domain;             /* CPAT Performance-Budget Domain number */
+    UINT32                  Reserved2;          /* Must be 0 */
+    UINT64                  RegSetAddress;      /* 64-bit physical MMIO starting address */
+
+} ACPI_CPAT_ENTRY;
+
+/* Values for Type above */
+
+#define ACPI_CPAT_TYPE_ENTRY            0       /* CPAT Pointer Sub-structure */
+
+/* Values for RegSetInfo [1:0] above */
+
+#define ACPI_CPAT_EXCURSION_UNSUPPORTED (0)
+#define ACPI_CPAT_EXCURSION_LOCAL       (1)
+#define ACPI_CPAT_EXCURSION_DOMAIN      (3)
+
 
 /*******************************************************************************
  *

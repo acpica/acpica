@@ -980,6 +980,60 @@ AcpiDmDumpCedt (
     }
 }
 
+
+/*******************************************************************************
+ *
+ * FUNCTION:    AcpiDmDumpCpat
+ *
+ * PARAMETERS:  Table               - A CPAT table
+ *
+ * RETURN:      None
+ *
+ * DESCRIPTION: Format the contents of a CPAT. This table type consists
+ *              of an open-ended number of subtables.
+ *
+ ******************************************************************************/
+
+void
+AcpiDmDumpCpat (
+    ACPI_TABLE_HEADER       *Table)
+{
+    ACPI_STATUS             Status;
+    ACPI_CPAT_ENTRY         *Subtable;
+    UINT32                  Length = Table->Length;
+    UINT32                  Offset = sizeof (ACPI_TABLE_CPAT);
+
+
+    /* Main table */
+
+    Status = AcpiDmDumpTable (Length, 0, Table, 0, AcpiDmTableInfoCpat);
+    if (ACPI_FAILURE (Status))
+    {
+        return;
+    }
+
+    /* Subtables */
+
+    Subtable = ACPI_ADD_PTR (ACPI_CPAT_ENTRY, Table, Offset);
+    while (Offset < Table->Length)
+    {
+        AcpiOsPrintf ("\n");
+        Status = AcpiDmDumpTable (Length, Offset, Subtable,
+            Subtable->Length, AcpiDmTableInfoCpat0);
+        if (ACPI_FAILURE (Status))
+        {
+            return;
+        }
+
+        /* Point to next subtable */
+
+        Offset += Subtable->Length;
+        Subtable = ACPI_ADD_PTR (ACPI_CPAT_ENTRY, Subtable,
+            Subtable->Length);
+    }
+}
+
+
 /*******************************************************************************
  *
  * FUNCTION:    AcpiDmDumpCpep
