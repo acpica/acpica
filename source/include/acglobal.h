@@ -296,7 +296,7 @@ ACPI_INIT_GLOBAL (ACPI_PARSE_OBJECT_LIST, *AcpiGbl_TempListHead, NULL);
 
 ACPI_GLOBAL (BOOLEAN,                   AcpiGbl_DmOpt_Disasm);
 ACPI_GLOBAL (BOOLEAN,                   AcpiGbl_DmOpt_Listing);
-ACPI_GLOBAL (BOOLEAN,                   AcpiGbl_NumExternalMethods);
+ACPI_GLOBAL (UINT32,                    AcpiGbl_NumExternalMethods);
 ACPI_GLOBAL (UINT32,                    AcpiGbl_ResolvedExternalMethods);
 ACPI_GLOBAL (ACPI_EXTERNAL_LIST *,      AcpiGbl_ExternalList);
 ACPI_GLOBAL (ACPI_EXTERNAL_FILE *,      AcpiGbl_ExternalFileList);

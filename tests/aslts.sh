@@ -142,6 +142,23 @@ run_compiler_template_test()
 	popd
 }
 
+# Run the disassembler external control method test.
+# This test does the following:
+# 1 generates tables that refer to a given number of control methods
+# 2 compiles the tables (.asl -> .aml)
+# 3 disassembles the tables (.aml -> .dsl)
+# 4 compares the method counts of the disassembler against the known counts
+run_disassembler_externals_test()
+{
+	pushd externals
+
+	sh externals.sh
+	externals_status=$?
+
+	popd
+	return $externals_status
+}
+
 
 # Compile and run the ASLTS suite
 run_aslts() {
@@ -157,6 +174,14 @@ run_aslts() {
 	if [ "x$DATATABLEONLY" = "xyes" ]; then
 		return 0
 	fi;
+
+	# run disassembler externals test
+
+	run_disassembler_externals_test
+	if [ $? -ne 0 ]; then
+		echo "Disassembler External Method Test Failure"
+		exit 1
+	fi
 
 	if [ "x$TEST_MODES" = "x" ]; then
 		TEST_MODES="n32 n64 o32 o64"
