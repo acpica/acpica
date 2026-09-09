@@ -161,6 +161,7 @@
 
 #define ACPI_MSG_BIOS_ERROR     KERN_ERR "ACPI BIOS Error (bug): "
 #define ACPI_MSG_BIOS_WARNING   KERN_WARNING "ACPI BIOS Warning (bug): "
+#define ACPI_MSG_DEBUG          KERN_DEBUG
 
 /*
  * Linux wants to use designated initializers for function pointer structs.

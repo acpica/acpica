@@ -105,6 +105,9 @@ extern const char                       *AcpiGbl_ClockInputScale[];
 #ifndef ACPI_MSG_BIOS_WARNING
 #define ACPI_MSG_BIOS_WARNING   "Firmware Warning (ACPI): "
 #endif
+#ifndef ACPI_MSG_DEBUG
+#define ACPI_MSG_DEBUG          ""
+#endif
 
 /*
  * Common message suffix
