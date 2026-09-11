@@ -3533,7 +3533,7 @@ DtCompileKeyp (
                 snprintf (MsgBuffer, sizeof (MsgBuffer),
                     "KEYP root port count %u does not match actual entries %u",
                     ConfigUnit->RootPortCount, RootPortCount);
-                DtFatal (ASL_MSG_INVALID_LENGTH, SubtableStart, MsgBuffer);
+                DtFatal (ASL_MSG_ENTRY_LIST, SubtableStart, MsgBuffer);
                 return (AE_ERROR);
             }
             break;
