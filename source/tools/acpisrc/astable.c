@@ -260,6 +260,7 @@ ACPI_TYPED_IDENTIFIER_TABLE           AcpiIdentifiers[] = {
     {"ACPI_INTERPRETER_MODE",               SRC_TYPE_SIMPLE},
     {"ACPI_IO_ADDRESS",                     SRC_TYPE_SIMPLE},
     {"ACPI_IO_ATTRIBUTE",                   SRC_TYPE_STRUCT},
+    {"ACPI_KEYP_COMMON_HEADER",             SRC_TYPE_STRUCT},
     {"ACPI_KEYP_CONFIG_UNIT",               SRC_TYPE_STRUCT},
     {"ACPI_KEYP_RP_INFO",                   SRC_TYPE_STRUCT},
     {"ACPI_LPIT_HEADER",                    SRC_TYPE_STRUCT},

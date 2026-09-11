@@ -520,6 +520,10 @@ DtCompileIvrs (
     void                    **PFieldList);
 
 ACPI_STATUS
+DtCompileKeyp (
+    void                    **List);
+
+ACPI_STATUS
 DtCompileLpit (
     void                    **PFieldList);
 
@@ -699,6 +703,7 @@ extern const unsigned char  TemplateHpet[];
 extern const unsigned char  TemplateIort[];
 extern const unsigned char  TemplateIovt[];
 extern const unsigned char  TemplateIvrs[];
+extern const unsigned char  TemplateKeyp[];
 extern const unsigned char  TemplateLpit[];
 extern const unsigned char  TemplateMadt[];
 extern const unsigned char  TemplateMcfg[];

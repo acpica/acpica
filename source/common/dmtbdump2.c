@@ -784,6 +784,139 @@ NextSubtable:
 
 /*******************************************************************************
  *
+ * FUNCTION:    AcpiDmDumpKeyp
+ *
+ * PARAMETERS:  Table               - A KEYP table
+ *
+ * RETURN:      None
+ *
+ * DESCRIPTION: Format the contents of a KEYP. This table consists of the
+ *              main table followed by an open-ended number of Key
+ *              Configuration Unit subtables, each of which is followed by a
+ *              variable-length array of Root Port Information structures.
+ *
+ ******************************************************************************/
+
+void
+AcpiDmDumpKeyp (
+    ACPI_TABLE_HEADER       *Table)
+{
+    ACPI_STATUS             Status;
+    ACPI_KEYP_COMMON_HEADER *Subtable;
+    ACPI_KEYP_CONFIG_UNIT   *ConfigUnit;
+    UINT32                  Length = Table->Length;
+    UINT32                  Offset = sizeof (ACPI_TABLE_KEYP);
+    UINT32                  SubtableLength;
+    UINT32                  RootPortLength;
+    UINT32                  RpOffset;
+    UINT32                  i;
+
+
+    /* Main table */
+
+    Status = AcpiDmDumpTable (Length, 0, Table, 0, AcpiDmTableInfoKeyp);
+    if (ACPI_FAILURE (Status))
+    {
+        return;
+    }
+
+    /* Subtables - Key Configuration Unit structures */
+
+    while (Offset < Table->Length)
+    {
+        /* Common subtable header */
+
+        Subtable = ACPI_ADD_PTR (ACPI_KEYP_COMMON_HEADER, Table, Offset);
+        SubtableLength = Table->Length - Offset;
+        if (SubtableLength < sizeof (ACPI_KEYP_COMMON_HEADER))
+        {
+            AcpiOsPrintf ("Invalid KEYP subtable header length\n");
+            return;
+        }
+
+        AcpiOsPrintf ("\n");
+        Status = AcpiDmDumpTable (Length, Offset, Subtable,
+            sizeof (ACPI_KEYP_COMMON_HEADER), AcpiDmTableInfoKeypHdr);
+        if (ACPI_FAILURE (Status))
+        {
+            return;
+        }
+
+        if ((Subtable->Length < sizeof (ACPI_KEYP_COMMON_HEADER)) ||
+            (Subtable->Length > SubtableLength))
+        {
+            AcpiOsPrintf ("Invalid KEYP subtable length\n");
+            return;
+        }
+
+        switch (Subtable->Type)
+        {
+        case ACPI_KEYP_TYPE_CONFIG_UNIT:
+
+            ConfigUnit = ACPI_CAST_PTR (ACPI_KEYP_CONFIG_UNIT, Subtable);
+
+            if (Subtable->Length < sizeof (ACPI_KEYP_CONFIG_UNIT))
+            {
+                AcpiOsPrintf ("Invalid KEYP config unit length\n");
+                return;
+            }
+
+            RootPortLength = Subtable->Length - sizeof (ACPI_KEYP_CONFIG_UNIT);
+            if (RootPortLength % sizeof (ACPI_KEYP_RP_INFO))
+            {
+                AcpiOsPrintf ("Invalid KEYP root port array size\n");
+                return;
+            }
+
+            if ((((UINT32) ConfigUnit->RootPortCount) * sizeof (ACPI_KEYP_RP_INFO)) !=
+                RootPortLength)
+            {
+                AcpiOsPrintf ("Invalid KEYP root port array length\n");
+                return;
+            }
+
+            AcpiOsPrintf ("\n");
+            Status = AcpiDmDumpTable (Length, Offset, Subtable,
+                Subtable->Length, AcpiDmTableInfoKeyp0);
+            if (ACPI_FAILURE (Status))
+            {
+                return;
+            }
+
+            /* Root Port Information structures */
+
+            RpOffset = Offset + sizeof (ACPI_KEYP_CONFIG_UNIT);
+            for (i = 0; i < ConfigUnit->RootPortCount; i++)
+            {
+                AcpiOsPrintf ("\n");
+                Status = AcpiDmDumpTable (Length, RpOffset,
+                    ACPI_ADD_PTR (ACPI_KEYP_RP_INFO, Table, RpOffset),
+                    sizeof (ACPI_KEYP_RP_INFO), AcpiDmTableInfoKeyp0a);
+                if (ACPI_FAILURE (Status))
+                {
+                    return;
+                }
+
+                RpOffset += sizeof (ACPI_KEYP_RP_INFO);
+            }
+            break;
+
+        default:
+
+            AcpiOsPrintf ("\n*** Unknown KEYP subtable type 0x%X\n",
+                Subtable->Type);
+            break;
+        }
+
+        /* Point to next subtable */
+
+        Offset += Subtable->Length;
+    }
+}
+
+
+/*******************************************************************************
+ *
  * FUNCTION:    AcpiDmDumpLpit
  *
  * PARAMETERS:  Table               - A LPIT table
